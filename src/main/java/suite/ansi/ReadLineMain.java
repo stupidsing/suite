@@ -55,16 +55,21 @@ public class ReadLineMain extends ExecutableProgram {
 		try (Termios termios = new Termios()) {
 			System.out.println("abcdefgh\b\b\bxyz\n");
 
-			Source<Pair<VK, Character>> source = FunUtil.suck(new Sink<Sink<Pair<VK, Character>>>() {
+			Source<Character> source0 = () -> {
+				int ch = Libc.getchar();
+				return ch >= 0 ? (char) ch : null;
+			};
+
+			Source<Pair<VK, Character>> source1 = FunUtil.suck(new Sink<Sink<Pair<VK, Character>>>() {
 				private List<Character> chs = new ArrayList<>();
 				private Trie t = trie;
 
 				public void sink(Sink<Pair<VK, Character>> sink) {
-					int ch_;
+					Character ch_;
 
-					while ((ch_ = Libc.getchar()) != -1) {
-						if (ch_ != -1) {
-							chs.add((char) ch_);
+					while ((ch_ = source0.source()) != null) {
+						if (ch_ != null) {
+							chs.add(ch_);
 							t = t.map.get(ch_);
 							if (t != null)
 								if (t.vk != null) {
@@ -91,7 +96,7 @@ public class ReadLineMain extends ExecutableProgram {
 				}
 			});
 
-			source.source();
+			source1.source();
 		}
 
 		return true;
