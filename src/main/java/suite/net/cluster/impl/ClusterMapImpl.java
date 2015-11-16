@@ -28,8 +28,8 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 			peers.addAll(cluster.getActivePeers());
 			Collections.sort(peers);
 
-			cluster.addOnJoined(onJoined);
-			cluster.addOnLeft(onLeft);
+			cluster.getOnJoined().register(onJoined);
+			cluster.getOnLeft().register(onLeft);
 			cluster.setOnReceive(GetQuery.Request.class, onGet);
 			cluster.setOnReceive(PutQuery.Request.class, onPut);
 		}

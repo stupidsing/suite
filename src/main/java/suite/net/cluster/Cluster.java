@@ -3,8 +3,8 @@ package suite.net.cluster;
 import java.util.Set;
 
 import suite.net.Service;
+import suite.streamlet.Reactive;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
 
 public interface Cluster extends Service {
 
@@ -18,14 +18,14 @@ public interface Cluster extends Service {
 
 	public Object requestForResponse(String peer, Object request);
 
-	public void addOnJoined(Sink<String> onJoined);
-
-	public void addOnLeft(Sink<String> onLeft);
-
 	public <I, O> void setOnReceive(Class<I> clazz, Fun<I, O> onReceive);
 
-	public String getMe();
-
 	public Set<String> getActivePeers();
+
+	public Reactive<String> getOnJoined();
+
+	public Reactive<String> getOnLeft();
+
+	public String getMe();
 
 }

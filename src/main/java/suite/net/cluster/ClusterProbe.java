@@ -3,7 +3,7 @@ package suite.net.cluster;
 import java.util.Set;
 
 import suite.net.Service;
-import suite.util.FunUtil.Sink;
+import suite.streamlet.Reactive;
 
 public interface ClusterProbe extends Service {
 
@@ -11,8 +11,8 @@ public interface ClusterProbe extends Service {
 
 	public Set<String> getActivePeers();
 
-	public void setOnJoined(Sink<String> onJoined);
+	public Reactive<String> getOnJoined();
 
-	public void setOnLeft(Sink<String> onLeft);
+	public Reactive<String> getOnLeft();
 
 }

@@ -22,9 +22,8 @@ import suite.net.cluster.ClusterProbe;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.streamlet.As;
+import suite.streamlet.Reactive;
 import suite.streamlet.Read;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Sink;
 import suite.util.To;
 import suite.util.Util;
 
@@ -60,8 +59,8 @@ public class ClusterProbeImpl implements ClusterProbe {
 	 */
 	private Map<String, Long> lastSentTime = new HashMap<>();
 
-	private Sink<String> onJoined = FunUtil.nullSink();
-	private Sink<String> onLeft = FunUtil.nullSink();
+	private Reactive<String> onJoined = new Reactive<>();
+	private Reactive<String> onLeft = new Reactive<>();
 
 	private enum Command {
 		HELO, FINE, BYEE
@@ -159,7 +158,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			}
 
 			for (String peer : lastActiveTime.keySet())
-				onLeft.sink(peer);
+				onLeft.fire(peer);
 		}
 
 		dc.close();
@@ -207,7 +206,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 				if (data == Command.HELO) // Reply HELO messages
 					sendMessage(remote, formMessage(Command.FINE));
 				else if (data == Command.BYEE && lastActiveTime.remove(remote) != null)
-					onLeft.sink(remote);
+					onLeft.fire(remote);
 		}
 	}
 
@@ -216,7 +215,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 		if (oldTime == null || oldTime < time)
 			if (lastActiveTime.put(node, time) == null)
-				onJoined.sink(node);
+				onJoined.fire(node);
 	}
 
 	private void keepAlive(long current) {
@@ -245,7 +244,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 			if (current - e.getValue() > timeoutDuration) {
 				peerIter.remove();
-				onLeft.sink(node);
+				onLeft.fire(node);
 			}
 		}
 	}
@@ -303,14 +302,12 @@ public class ClusterProbeImpl implements ClusterProbe {
 			this.peers.put(e.getKey(), new IpPort(e.getValue()));
 	}
 
-	@Override
-	public void setOnJoined(Sink<String> onJoined) {
-		this.onJoined = onJoined;
+	public Reactive<String> getOnJoined() {
+		return onJoined;
 	}
 
-	@Override
-	public void setOnLeft(Sink<String> onLeft) {
-		this.onLeft = onLeft;
+	public Reactive<String> getOnLeft() {
+		return onLeft;
 	}
 
 }

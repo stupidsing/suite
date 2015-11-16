@@ -16,9 +16,8 @@ import suite.net.channels.PersistentChannel;
 import suite.net.cluster.Cluster;
 import suite.net.cluster.ClusterProbe;
 import suite.primitive.Bytes;
+import suite.streamlet.Reactive;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Sinks;
 import suite.util.Util;
 
 public class ClusterImpl implements Cluster {
@@ -39,8 +38,8 @@ public class ClusterImpl implements Cluster {
 	 */
 	private Map<String, ClusterChannel> channels = new HashMap<>();
 
-	private Sinks<String> onJoined = new Sinks<>();
-	private Sinks<String> onLeft = new Sinks<>();
+	private Reactive<String> onJoined;
+	private Reactive<String> onLeft;
 	private Map<Class<?>, Fun<?, ?>> onReceive = new HashMap<>();
 
 	private class ClusterChannel extends PersistentChannel<ClusterChannel> {
@@ -62,13 +61,13 @@ public class ClusterImpl implements Cluster {
 		unlisten = nio.listen(peers.get(me).getPort());
 		nio.start();
 
-		probe.setOnJoined(onJoined::sink);
+		onJoined = probe.getOnJoined();
 
-		probe.setOnLeft(node -> {
+		onLeft = probe.getOnLeft().map(node -> {
 			ClusterChannel channel = channels.get(node);
 			if (channel != null)
 				channel.stop();
-			onLeft.sink(node);
+			return node;
 		});
 
 		probe.start();
@@ -121,28 +120,28 @@ public class ClusterImpl implements Cluster {
 	}
 
 	@Override
-	public void addOnJoined(Sink<String> onJoined) {
-		this.onJoined.add(onJoined);
-	}
-
-	@Override
-	public void addOnLeft(Sink<String> onLeft) {
-		this.onLeft.add(onLeft);
-	}
-
-	@Override
 	public <I, O> void setOnReceive(Class<I> clazz, Fun<I, O> onReceive) {
 		this.onReceive.put(clazz, onReceive);
 	}
 
 	@Override
-	public String getMe() {
-		return me;
+	public Set<String> getActivePeers() {
+		return probe.getActivePeers();
 	}
 
 	@Override
-	public Set<String> getActivePeers() {
-		return probe.getActivePeers();
+	public Reactive<String> getOnJoined() {
+		return onJoined;
+	}
+
+	@Override
+	public Reactive<String> getOnLeft() {
+		return onLeft;
+	}
+
+	@Override
+	public String getMe() {
+		return me;
 	}
 
 }
