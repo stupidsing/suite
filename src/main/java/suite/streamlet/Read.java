@@ -16,12 +16,13 @@ import java.util.Map;
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.os.FileUtil;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 
 public class Read {
 
 	public static <T> Streamlet<T> empty() {
-		return Streamlet.from(() -> null);
+		return Streamlet.from(FunUtil.nullSource());
 	}
 
 	public static <K, V> Streamlet<Pair<K, V>> from(Map<K, V> map) {

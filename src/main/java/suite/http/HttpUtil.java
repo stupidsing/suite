@@ -11,6 +11,7 @@ import suite.primitive.Bytes;
 import suite.primitive.BytesUtil;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil;
 import suite.util.To;
 
 public class HttpUtil {
@@ -30,7 +31,7 @@ public class HttpUtil {
 	}
 
 	public static HttpResult http(String method, URL url) throws IOException {
-		return http(method, url, () -> null);
+		return http(method, url, FunUtil.nullSource());
 	}
 
 	public static HttpResult http(String method, URL url, Source<Bytes> in) throws IOException {

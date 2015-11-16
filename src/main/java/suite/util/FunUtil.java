@@ -1,7 +1,5 @@
 package suite.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Function;
 
@@ -22,19 +20,6 @@ public class FunUtil {
 
 	@FunctionalInterface
 	public interface Fun<I, O> extends Function<I, O> {
-	}
-
-	public static class Sinks<I> implements Sink<I> {
-		private Collection<Sink<I>> sinks = new ArrayList<>();
-
-		public void sink(I i) {
-			for (Sink<I> sink : sinks)
-				sink.sink(i);
-		}
-
-		public void add(Sink<I> sink) {
-			sinks.add(sink);
-		}
 	}
 
 	public static <T> Source<T> concat(Source<Source<T>> source) {
