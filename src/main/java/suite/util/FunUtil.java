@@ -21,11 +21,6 @@ public class FunUtil {
 	}
 
 	@FunctionalInterface
-	public interface Sink2<I0, I1> {
-		public void sink(I0 i0, I1 i1);
-	}
-
-	@FunctionalInterface
 	public interface Fun<I, O> extends Function<I, O> {
 	}
 

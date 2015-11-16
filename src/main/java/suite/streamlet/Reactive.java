@@ -29,6 +29,10 @@ public class Reactive<T> {
 
 	private Bag<Sink<T>> receivers;
 
+	public interface Redirector<T0, T1> {
+		public void accept(T0 t0, Reactive<T1> reactive);
+	}
+
 	public static <T> Reactive<T> append(Reactive<T> r0, Reactive<T> r1) {
 		Reactive<T> reactive1 = new Reactive<>();
 		Sink<T> sink = reactive1::fire;
@@ -69,37 +73,35 @@ public class Reactive<T> {
 	}
 
 	public <U> Reactive<U> concatMap(Fun<T, Reactive<U>> fun) {
+		return redirect((t, reactive1) -> fun.apply(t).register(reactive1::fire));
+	}
+
+	public <U> Reactive<U> redirect(Redirector<T, U> redirector) {
 		Reactive<U> reactive1 = new Reactive<>();
-		register(t -> fun.apply(t).register(reactive1::fire));
+		register(t -> redirector.accept(t, reactive1));
 		return reactive1;
 	}
 
 	public Reactive<T> delay(int milliseconds) {
-		Reactive<T> reactive1 = new Reactive<>();
-		register(t -> executor.schedule(() -> reactive1.fire(t), milliseconds, TimeUnit.MILLISECONDS));
-		return reactive1;
+		return redirect((t, reactive1) -> executor.schedule(() -> reactive1.fire(t), milliseconds, TimeUnit.MILLISECONDS));
 	}
 
 	public Reactive<T> edge() {
-		Reactive<T> reactive1 = new Reactive<>();
-		register(new Sink<T>() {
+		return redirect(new Redirector<T, T>() {
 			private T previous = null;
 
-			public void sink(T t) {
+			public void accept(T t, Reactive<T> reactive1) {
 				if (previous == null || !previous.equals(t))
 					reactive1.fire(t);
 			}
 		});
-		return reactive1;
 	}
 
 	public Reactive<T> filter(Predicate<T> pred) {
-		Reactive<T> reactive1 = new Reactive<>();
-		register(t -> {
+		return redirect((t, reactive1) -> {
 			if (pred.test(t))
 				reactive1.fire(t);
 		});
-		return reactive1;
 	}
 
 	public void fire(T t) {
@@ -107,10 +109,8 @@ public class Reactive<T> {
 	}
 
 	public <U> Reactive<U> fold(U init, BiFunction<U, T, U> fun) {
-		Reactive<U> reactive1 = new Reactive<>();
 		CasReference<U> cr = new CasReference<>(init);
-		register(t1 -> reactive1.fire(cr.apply(t0 -> fun.apply(t0, t1))));
-		return reactive1;
+		return redirect((t1, reactive1) -> reactive1.fire(cr.apply(t0 -> fun.apply(t0, t1))));
 	}
 
 	public Outlet<T> outlet() {
@@ -126,19 +126,14 @@ public class Reactive<T> {
 	}
 
 	public <U> Reactive<U> map(Fun<T, U> fun) {
-		Reactive<U> reactive1 = new Reactive<>();
-		register(t -> reactive1.fire(fun.apply(t)));
-		return reactive1;
+		return redirect((t, reactive1) -> reactive1.fire(fun.apply(t)));
 	}
 
 	public Reactive<T> resample(Reactive<?> event) {
 		List<T> ts = new ArrayList<>();
 		ts.add(null);
 		register(t -> ts.set(0, t));
-
-		Reactive<T> reactive1 = new Reactive<>();
-		event.register(e -> reactive1.fire(ts.get(0)));
-		return reactive1;
+		return event.redirect((e, reactive1) -> reactive1.fire(ts.get(0)));
 	}
 
 	public void register(Sink<T> receiver) {
@@ -147,12 +142,10 @@ public class Reactive<T> {
 
 	public Reactive<T> unique() {
 		Set<T> set = new HashSet<>();
-		Reactive<T> reactive1 = new Reactive<>();
-		register(t -> {
+		return redirect((t, reactive1) -> {
 			if (set.add(t))
 				reactive1.fire(t);
 		});
-		return reactive1;
 	}
 
 }

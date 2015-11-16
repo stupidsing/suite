@@ -3,14 +3,13 @@ package suite.ansi;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import suite.adt.Pair;
+import suite.adt.Trie;
+import suite.streamlet.Reactive;
+import suite.streamlet.Reactive.Redirector;
 import suite.streamlet.Read;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
@@ -18,18 +17,13 @@ import suite.util.Util.ExecutableProgram;
 // mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar suite.ansi.ReadLineMain
 public class ReadLineMain extends ExecutableProgram {
 
-	private Trie trie;
+	private Trie<Integer, VK> trie;
 
 	private enum VK {
 		UP___, //
 		DOWN_, //
 		LEFT_, //
 		RIGHT, //
-	}
-
-	private class Trie {
-		private VK vk;
-		private Map<Integer, Trie> map = new HashMap<>();
 	}
 
 	public static void main(String args[]) throws IOException {
@@ -43,14 +37,10 @@ public class ReadLineMain extends ExecutableProgram {
 		pairs.add(Pair.of(Arrays.asList(27, 91, 68), VK.LEFT_));
 		pairs.add(Pair.of(Arrays.asList(27, 91, 67), VK.RIGHT));
 
-		trie = new Trie();
+		trie = new Trie<>();
 
-		for (Pair<List<Integer>, VK> pair : pairs) {
-			Trie t = trie;
-			for (int ch : pair.t0)
-				t = trie.map.computeIfAbsent(ch, ch_ -> new Trie());
-			t.vk = pair.t1;
-		}
+		for (Pair<List<Integer>, VK> pair : pairs)
+			trie.add(pair.t0, pair.t1);
 
 		try (Termios termios = new Termios()) {
 			System.out.println("abcdefgh\b\b\bxyz\n");
@@ -60,33 +50,29 @@ public class ReadLineMain extends ExecutableProgram {
 				return ch >= 0 ? (char) ch : null;
 			};
 
-			Source<Pair<VK, Character>> source1 = FunUtil.suck(new Sink<Sink<Pair<VK, Character>>>() {
+			Reactive.from(source0).redirect(new Redirector<Character, Pair<VK, Character>>() {
 				private List<Character> chs = new ArrayList<>();
-				private Trie t = trie;
+				private Trie<Integer, VK> t = trie;
 
-				public void sink(Sink<Pair<VK, Character>> sink) {
-					Character ch_;
+				public void accept(Character ch_, Reactive<Pair<VK, Character>> reactive) {
+					if (ch_ != null) {
+						chs.add(ch_);
+						VK vk;
 
-					while ((ch_ = source0.source()) != null) {
-						if (ch_ != null) {
-							chs.add(ch_);
-							t = t.map.get(ch_);
-							if (t != null)
-								if (t.vk != null) {
-									sink.sink(Pair.of(t.vk, null));
-									reset();
-								} else
-									;
-							else
-								flushChars(sink);
-						}
-
-						flushChars(sink);
-					}
+						if ((t = t.getMap().get(ch_)) != null)
+							if ((vk = t.getValue()) != null) {
+								reactive.fire(Pair.of(vk, null));
+								reset();
+							} else
+								;
+						else
+							flushChars(reactive);
+					} else
+						flushChars(reactive);
 				}
 
-				private void flushChars(Sink<Pair<VK, Character>> sink) {
-					Read.from(chs).sink(ch -> sink.sink(Pair.of(null, ch)));
+				private void flushChars(Reactive<Pair<VK, Character>> reactive) {
+					Read.from(chs).sink(ch -> reactive.fire(Pair.of(null, ch)));
 					reset();
 				}
 
@@ -94,9 +80,7 @@ public class ReadLineMain extends ExecutableProgram {
 					chs.clear();
 					t = trie;
 				}
-			});
-
-			source1.source();
+			}).outlet().source().source();
 		}
 
 		return true;

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,6 @@ import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink2;
 
 public class LazyFunInterpreter {
 
@@ -76,7 +76,7 @@ public class LazyFunInterpreter {
 			return new Mapping(parent, size + 1, indices.put(v, index));
 		}
 
-		private Sink2<Frame, Thunk_> setter(Node v) {
+		private BiConsumer<Frame, Thunk_> setter(Node v) {
 			return (frame, t) -> frame.values.add(t);
 		}
 
@@ -120,7 +120,7 @@ public class LazyFunInterpreter {
 		for (String key : keys) {
 			Atom var = Atom.of(key);
 			mapping = mapping.extend(var);
-			mapping.setter(var).sink(frame, df.get(key));
+			mapping.setter(var).accept(frame, df.get(key));
 		}
 
 		return lazy0(mapping, parsed).apply(frame);
@@ -158,8 +158,8 @@ public class LazyFunInterpreter {
 		} else if ((m = Suite.matcher("DECONS .0 .1 .2 .3 .4 .5").apply(node)) != null) {
 			Fun<Frame, Thunk_> value_ = lazy0(mapping, m[1]);
 			Mapping mapping1 = mapping.extend(m[2]).extend(m[3]);
-			Sink2<Frame, Thunk_> left_ = mapping1.setter(m[2]);
-			Sink2<Frame, Thunk_> right_ = mapping1.setter(m[3]);
+			BiConsumer<Frame, Thunk_> left_ = mapping1.setter(m[2]);
+			BiConsumer<Frame, Thunk_> right_ = mapping1.setter(m[3]);
 			Fun<Frame, Thunk_> then_ = lazy0(mapping1, m[4]);
 			Fun<Frame, Thunk_> else_ = lazy0(mapping, m[5]);
 
@@ -167,8 +167,8 @@ public class LazyFunInterpreter {
 				Node value = value_.apply(frame).get();
 				if (value instanceof Pair_) {
 					Pair_ pair = (Pair_) value;
-					left_.sink(frame, pair.first_);
-					right_.sink(frame, pair.second);
+					left_.accept(frame, pair.first_);
+					right_.accept(frame, pair.second);
 					return then_.apply(frame);
 				} else
 					return else_.apply(frame);
@@ -179,7 +179,7 @@ public class LazyFunInterpreter {
 			int size = vars.size();
 
 			Mapping mapping1 = vars.fold(mapping, Mapping::extend);
-			List<Sink2<Frame, Thunk_>> setters = vars.map(mapping1::setter).toList();
+			List<BiConsumer<Frame, Thunk_>> setters = vars.map(mapping1::setter).toList();
 			List<Fun<Frame, Thunk_>> values_ = arrays.map(m1 -> lazy0(mapping1, m1[1])).toList();
 			Fun<Frame, Thunk_> expr = lazy0(mapping1, m[1]);
 
@@ -187,7 +187,7 @@ public class LazyFunInterpreter {
 				List<Thunk_> values = new ArrayList<Thunk_>(size);
 				for (int i = 0; i < size; i++) {
 					int i1 = i;
-					setters.get(i).sink(frame, () -> values.get(i1).get());
+					setters.get(i).accept(frame, () -> values.get(i1).get());
 				}
 				for (int i = 0; i < size; i++)
 					values.add(values_.get(i).apply(frame)::get);
@@ -199,11 +199,11 @@ public class LazyFunInterpreter {
 			};
 		else if ((m = Suite.matcher("FUN .0 .1").apply(node)) != null) {
 			Mapping mapping1 = new Mapping(mapping).extend(m[0]);
-			Sink2<Frame, Thunk_> setter = mapping1.setter(m[0]);
+			BiConsumer<Frame, Thunk_> setter = mapping1.setter(m[0]);
 			Fun<Frame, Thunk_> value_ = lazy0(mapping1, m[1]);
 			result = frame -> () -> new Fun_(in -> {
 				Frame frame1 = new Frame(frame);
-				setter.sink(frame1, in);
+				setter.accept(frame1, in);
 				return value_.apply(frame1);
 			});
 		} else if ((m = Suite.matcher("IF .0 .1 .2").apply(node)) != null)
