@@ -2,8 +2,13 @@
 
 var frp = () => {
 	var receivers = [];
-	var register_ = receiver => receivers.push(receiver);
 	var fire_ = data => { for (var i = 0; i < receivers.length; i++) receivers[i](data); };
+	var redirect_ = tf => {
+		var frp1 = frp();
+		register_(data => tf(data, frp1));
+		return frp1;
+	};
+	var register_ = receiver => receivers.push(receiver);
 	return {
 		append: frp_ => {
 			var frp1 = frp();
@@ -12,46 +17,24 @@ var frp = () => {
 			return frp1;
 		},
 		close: () => receivers = [], // for garbage collection
-		concatmap: f => {
-			var frp1 = frp();
-			register_(data => f(data).register(frp1.fire));
-			return frp1;
-		},
-		delay: time => {
-			var frp1 = frp();
-			register_(data => setTimeout(() => frp1.fire(data), time));
-			return frp1;
-		},
+		concatmap: f => redirect_((data, frp1) => f(data).register(frp1.fire)),
+		delay: time => redirect_((data, frp1) => setTimeout(() => frp1.fire(data), time)),
 		edge: () => {
-			var frp1 = frp();
 			var data_;
-			register_(data => {
+			return redirect_((data, frp1) => {
 				if(data != data_) frp1.fire(data);
 				data_ = data;
 			});
-			return frp1;
 		},
-		filter: f => {
-			var frp1 = frp();
-			register_(data => { if (f(data)) frp1.fire(data); });
-			return frp1;
-		},
+		filter: f => redirect_((data, frp1) => { if (f(data)) frp1.fire(data); }),
 		fire: fire_,
-		fold: (f, value) => {
-			var frp1 = frp();
-			register_(data => frp1.fire(value = f(value, data)));
-			return frp1;
-		},
+		fold: (f, value) => redirect_((data, frp1) => frp1.fire(value = f(value, data))),
 		last: () => {
 			var data_;
 			register_(data => data_ = data);
 			return () => data_;
 		},
-		map: f => {
-			var frp1 = frp();
-			register_(data => frp1.fire(f(data)));
-			return frp1;
-		},
+		map: f => redirect_((data, frp1) => frp1.fire(f(data))),
 		merge: (frp_, f) => {
 			var v0, v1;
 			var frp1 = frp();
@@ -60,24 +43,21 @@ var frp = () => {
 			f.register(data => { v1 = data; fire1(); });
 			return frp1;
 		},
+		redirect: redirect_,
 		register: register_,
 		resample: frp_ => {
 			var data_;
 			register_(data => data_ = data);
-			var frp1 = frp();
-			frp_.register(data => frp1.fire(data_));
-			return frp1;
+			return redirect_((data, frp1) => frp1.fire(data_));
 		},
 		unique: () => {
-			var frp1 = frp();
 			var list = [];
-			register_(data => {
+			return redirect_((data, frp1) => {
 				if (!read(list).fold((b_, d) => b_ || e == data, false)) {
 					frp1.fire(data);
 					list.push(data);
 				}
 			});
-			return frp1;
 		},
 	};
 };
