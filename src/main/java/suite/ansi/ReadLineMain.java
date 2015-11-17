@@ -43,8 +43,6 @@ public class ReadLineMain extends ExecutableProgram {
 			trie.add(pair.t0, pair.t1);
 
 		try (Termios termios = new Termios()) {
-			System.out.println("abcdefgh\b\b\bxyz\n");
-
 			Source<Character> source0 = () -> {
 				int ch = Libc.getchar();
 				return ch >= 0 ? (char) ch : null;
