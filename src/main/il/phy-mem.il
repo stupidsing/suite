@@ -1,35 +1,40 @@
 declare pm-sync = 0;
+declare pm-stackx;
 
-declare pm-page0 = memory-region-start;
-declare pm-pagex = pm-page0;
-declare pm-stack0 = memory-region-start;
-declare pm-stackx = pm-stack0;
+declare pm-stack = memory-region-start as pointer:(int * 0);
+declare pm-stack-pointer = 0;
 
 declare pm-allocate = function [] (
 	synchronized (& pm-sync) (
-		if (pm-stack0 != pm-stackx) then (dw-get [pm-stack0 =+ 4,]) else 0;
+		if (pm-stack-pointer != 0) then (
+			pm-stack-pointer += -1;
+			`pm-stack`:pm-stack-pointer;
+		) else 0;
 	);
 );
 
 declare pm-deallocate = function [page,] (
 	synchronized (& pm-sync) (
-		dw-set [pm-stack0 += -4, page,];
+		let `pm-stack`:pm-stack-pointer = page;
+		pm-stack-pointer =+ 1;
 	);
 );
 
 declare pm-setup = function [] (
+	declare pagex = memory-region-start;
 
 	-- Detects memory size
 	while (
-		declare t = (dw-get [pm-pagex,]) xor +xFFFFFFFF;
-		dw-set [pm-pagex, t,];
-		dw-get [pm-pagex =+ 4096,] = t;
+		declare t = (dw-get [pagex,]) xor +xFFFFFFFF;
+		dw-set [pagex, t,];
+		dw-get [pagex =+ 4096,] = t;
 	) do ();
 
 	-- Sets up page allocator
-	declare size = 4 * (pm-pagex - pm-page0) shr 12;
-	declare first-page = pm-page0 + (size + 4096 - 1) and +xFFFFF000;
-	for (declare page = first-page; page < pm-pagex; page =+ 4096) (
-		dw-set [pm-stackx =+ 4, page,];
+	declare nPages = (pagex - memory-region-start) shr 12;
+	let pm-stackx = address `pm-stack`:nPages;
+	while (pagex > memory-region-start) do (
+		let `pm-stack`:pm-stack-pointer = pagex += -4096;
+		pm-stack-pointer =+ 1;
 	);
 );
