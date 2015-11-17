@@ -30,6 +30,6 @@ declare pm-allocate = function [] (
 
 declare pm-deallocate = function [page,] (
 	synchronized (& pm-sync) (
-		dw-set [stack0 += 4, page,];
+		dw-set [stack0 += -4, page,];
 	);
 );
