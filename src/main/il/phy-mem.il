@@ -5,6 +5,18 @@ declare pm-pagex = pm-page0;
 declare pm-stack0 = memory-region-start;
 declare pm-stackx = pm-stack0;
 
+declare pm-allocate = function [] (
+	synchronized (& pm-sync) (
+		if (pm-stack0 != pm-stackx) then (dw-get [pm-stack0 =+ 4,]) else 0;
+	);
+);
+
+declare pm-deallocate = function [page,] (
+	synchronized (& pm-sync) (
+		dw-set [pm-stack0 += -4, page,];
+	);
+);
+
 declare pm-setup = function [] (
 
 	-- Detects memory size
@@ -19,17 +31,5 @@ declare pm-setup = function [] (
 	declare first-page = pm-page0 + (size + 4096 - 1) and +xFFFFF000;
 	for (declare page = first-page; page < pm-pagex; page =+ 4096) (
 		dw-set [pm-stackx =+ 4, page,];
-	);
-);
-
-declare pm-allocate = function [] (
-	synchronized (& pm-sync) (
-		if (pm-stack0 != pm-stackx) then (dw-get [pm-stack0 =+ 4,]) else 0;
-	);
-);
-
-declare pm-deallocate = function [page,] (
-	synchronized (& pm-sync) (
-		dw-set [pm-stack0 += -4, page,];
 	);
 );
