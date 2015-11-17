@@ -43,8 +43,6 @@ public class ReadLineMain extends ExecutableProgram {
 			trie.add(pair.t0, pair.t1);
 
 		try (Termios termios = new Termios()) {
-			System.out.println("abcdefgh\b\b\bxyz\n");
-
 			Source<Character> source0 = () -> {
 				int ch = Libc.getchar();
 				return ch >= 0 ? (char) ch : null;
@@ -66,12 +64,12 @@ public class ReadLineMain extends ExecutableProgram {
 							} else
 								;
 						else
-							flushChars(reactive);
+							flush(reactive);
 					} else
-						flushChars(reactive);
+						flush(reactive);
 				}
 
-				private void flushChars(Reactive<Pair<VK, Character>> reactive) {
+				private void flush(Reactive<Pair<VK, Character>> reactive) {
 					Read.from(chs).sink(ch -> reactive.fire(Pair.of(null, ch)));
 					reset();
 				}
