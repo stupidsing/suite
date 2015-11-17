@@ -1,4 +1,4 @@
-data dl-node = fix :dl-node struct (
+constant dl-node = fix :dl-node struct (
 	prev as pointer:(:dl-node),
 	next as pointer:(:dl-node),
 );

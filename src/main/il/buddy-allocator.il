@@ -1,4 +1,4 @@
-data ba-node = struct (
+constant ba-node = struct (
 	dl as dl-node,
 	size as int,
 );

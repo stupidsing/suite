@@ -1,4 +1,4 @@
-data ffa-node = struct (
+constant ffa-node = struct (
 	dl as dl-node,
 	size as int,
 );

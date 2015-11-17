@@ -3,7 +3,7 @@ constant sch-action-none = 0;
 constant sch-action-exit = 1;
 constant sch-action-fork = 2;
 
-data sch-node = struct (
+constant sch-node = struct (
 	dl as dl-node,
 	esp as int,
 	action as int,
