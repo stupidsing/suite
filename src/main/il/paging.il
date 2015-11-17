@@ -110,7 +110,7 @@ declare pg-setup = function [] (
 	zero [pt1, 4096,];
 	declare offset = 0;
 
-	for (declare physical = 0; physical < stackx; physical =+ 4096) (
+	for (declare physical = 0; physical < pm-stackx; physical =+ 4096) (
 		dw-set [pt1 + offset =+ 4, physical + 261,]; -- User, read/write
 	);
 
