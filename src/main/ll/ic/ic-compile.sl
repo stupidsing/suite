@@ -404,7 +404,8 @@ ic-copy-memory 0 .size .e0/.ex
 	, once (.mod4 >= 1, .e1 = (_ MOVSB (), .e2); .e1 = .e2)
 	, once (.mod4 >= 2, .e2 = (_ MOVSB (), .e3); .e2 = .e3)
 	, once (.mod4 >= 3, .e3 = (_ MOVSB (), .e4); .e3 = .e4)
-	, .e4 = (_ MOV (ESI, EDX), .ex)
+	, .e4 = (_ MOV (ESI, EDX)
+		, .ex)
 #
 ic-copy-memory .o .size .e0/.ex
   :- .size > 4
