@@ -1,11 +1,4 @@
--- TODO use constant to encapsulate code fragments
--- TODO better compiler type checking
--- TODO better compiler structure handling
--- TODO better compiler method reference (with this pointer embedded)
--- TODO compiler declare should return pointers
--- TODO fork
 -- TODO garbage collection
--- TODO exit
 
 -- Physical memory layout
 -- 00000000 -> 00100000 refer logical memory layout below
