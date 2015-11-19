@@ -104,7 +104,7 @@ constant mm-allocate .type = (
 	(ba-allocate [size-of .type,]) as pointer:.type
 );
 constant mm-deallocate .type .pointer = (
-	ba-deallocate [.pointer as int, size-of .type,]
+	ba-deallocate [address `.pointer`, size-of .type,]
 );
 
 #include(irq.il);
