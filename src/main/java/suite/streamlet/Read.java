@@ -79,14 +79,14 @@ public class Read {
 	}
 
 	public static Streamlet<Integer> range(int s, int e) {
-		return new Streamlet<>(() -> {
+		return new Streamlet<Integer>(() -> {
 			int i[] = new int[] { s };
 			return Outlet.from(() -> i[0] < e ? i[0]++ : null);
 		});
 	}
 
 	public static <K, V, C extends Collection<V>> Streamlet<Pair<K, V>> multimap(Map<K, C> map) {
-		return Read.from(map).concatMap(p -> Read.from(p.t1).map(v -> Pair.of(p.t0, v)));
+		return from(map).concatMap(p -> from(p.t1).map(v -> Pair.of(p.t0, v)));
 	}
 
 }
