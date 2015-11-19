@@ -20,7 +20,7 @@ ic-parse (declare .var = .value; .do) (DECLARE MONO .var _ (SEQ (LET (VAR .var) 
 	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
 	, ic-parse .do .do1
 #
-ic-parse (declare .var as .t; .do) (DECLARE POLY .var .type .do1)
+ic-parse (declare .var as .t; .do) (DECLARE MONO .var .type .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
 	, ic-parse-type .t .type
