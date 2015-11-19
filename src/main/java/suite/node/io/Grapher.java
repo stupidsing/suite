@@ -85,6 +85,10 @@ public class Grapher {
 		id = graph0(new HashMap<>(), node);
 	}
 
+	public Node ungraph() {
+		return ungraph0(id);
+	}
+
 	private int graph0(Map<IdentityKey<Node>, Integer> ids, Node node) {
 		IdentityKey<Node> key = IdentityKey.of(node);
 		Integer id = ids.get(key);
@@ -105,7 +109,7 @@ public class Grapher {
 		return id;
 	}
 
-	public Node ungraph() {
+	private Node ungraph0(int id) {
 		int size = gns.size();
 
 		List<Node> nodes = Read.from(gns).map(gn -> {
@@ -230,6 +234,18 @@ public class Grapher {
 					return gn1;
 				}) //
 				.toList();
+	}
+
+	public static Node replace(Node from, Node to, Node node) {
+		HashMap<IdentityKey<Node>, Integer> ids = new HashMap<>();
+
+		Grapher grapher = new Grapher();
+		int n0 = grapher.graph0(ids, from);
+		int nx = grapher.graph0(ids, to);
+		int id = grapher.graph0(ids, node);
+
+		grapher.gns.set(n0, grapher.gns.get(nx));
+		return grapher.ungraph0(id);
 	}
 
 	public void load(DataInputStream dis) throws IOException {
