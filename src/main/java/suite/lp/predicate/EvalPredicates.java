@@ -103,6 +103,11 @@ public class EvalPredicates {
 		return grapher.ungraph();
 	});
 
+	public BuiltinPredicate graphReplace = PredicateUtil.p4((prover, from, to, n0, nx) -> {
+		Node n = Grapher.replace(from, to, n0);
+		return Grapher.bind(n, nx, prover.getTrail());
+	});
+
 	public BuiltinPredicate graphSpecialize = PredicateUtil.fun(n -> {
 		Grapher grapher = new Grapher();
 		grapher.graph(n);

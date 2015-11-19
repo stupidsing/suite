@@ -211,5 +211,5 @@ ic-parse-type (struct .nts) (STRUCT-OF .nameTypes)
 	:- zip .nts .nameTypes .list
 	, list.query .list (.name as .t):(.name .type) (ic-parse-type .t .type)
 #
-ic-parse-type :.typeVar (TYPE-VAR .typeVar)
+ic-parse-type :.typeVar .typeVar
 #

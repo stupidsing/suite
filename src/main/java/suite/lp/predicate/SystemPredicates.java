@@ -49,6 +49,7 @@ public class SystemPredicates {
 		addPredicate("generalize", evalPredicates.generalize);
 		addPredicate("graph.bind", evalPredicates.graphBind);
 		addPredicate("graph.generalize", evalPredicates.graphGeneralize);
+		addPredicate("graph.replace", evalPredicates.graphReplace);
 		addPredicate("graph.specialize", evalPredicates.graphSpecialize);
 		addPredicate("hash", evalPredicates.hash);
 		addPredicate("hash.id", evalPredicates.hashId);
