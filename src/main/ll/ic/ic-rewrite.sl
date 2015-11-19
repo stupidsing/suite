@@ -14,7 +14,8 @@ ic-rewrite (INDEX .type0 .array0 .index0) (INDEX .type1 .array1 .index1) (.array
 #
 ic-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) (.if0 .if1, .then0 .then1, .else0 .else1, .ts)/.ts
 #
-ic-rewrite (IN .var .do0) (IN .var .do1) (.do0 .do1, .ts)/.ts
+ic-rewrite (IN .var .type0 .do0) (IN .var .type1 .do1) (.do0 .do1, .ts)/.ts
+	:- ic-rewrite-type .type0 .type1
 #
 ic-rewrite (INVOKE .sub0 ()) (INVOKE .sub1 ()) (.sub0 .sub1, .ts)/.ts
 #

@@ -25,7 +25,7 @@ ic-infer-type0 .vs (INDEX .type .array .index) .type
 	:- ic-infer-type .vs .array (ARRAY-OF _ .type)
 	, ic-infer-type .vs .index I32
 #
-ic-infer-type0 .vs (IN .var .do) .type
+ic-infer-type0 .vs (IN .var .type .do) .type
 	:- try (ic-infer-type .vs .do .type) .ex (throw .ex "%0Aat variable" .var)
 #
 ic-infer-type0 .vs (INVOKE .method .ips) .returnType

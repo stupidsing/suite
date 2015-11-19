@@ -7,14 +7,14 @@ ic-parse .do0 .parsed
 	:- ic-parse-sugar .do0 .do1
 	, ic-parse .do1 .parsed
 #
-ic-parse (declare .var as .t = .value; .do) (DECLARE POLY .var .type (SEQ (LET (VAR .var) (IN .var .value1)) .do1))
+ic-parse (declare .var as .t = .value; .do) (DECLARE POLY .var .type (SEQ (LET (VAR .var) (IN .var .type .value1)) .do1))
 	:- !
 	, is.atom .var
 	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
 	, ic-parse .do .do1
 	, ic-parse-type .t .type
 #
-ic-parse (declare .var = .value; .do) (DECLARE MONO .var _ (SEQ (LET (VAR .var) (IN .var .value1)) .do1))
+ic-parse (declare .var = .value; .do) (DECLARE MONO .var .type (SEQ (LET (VAR .var) (IN .var .type .value1)) .do1))
 	:- !
 	, is.atom .var
 	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
@@ -179,6 +179,9 @@ ic-parse-method-parameter .p .mp
 	:- not (.p = _/_), .mp = MP IN .p _
 #
 
+ic-parse-type .t _
+	:- to.string .t "_"
+#
 ic-parse-type (.tv0 => .type0) .typex
 	:- ic-parse-type .tv0 .tv1
 	, ic-parse-type .type0 .type1
