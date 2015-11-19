@@ -20,7 +20,7 @@ declare dl-set-next = function [e as pointer:dl-node, p,] (
 );
 
 declare dl-new = function [e,] (
-	let `e` = new dl-node (next = null, prev = null,);
+	let `e` = new dl-node (prev = null, next = null,);
 	e;
 );
 
