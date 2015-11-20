@@ -47,9 +47,6 @@ ic-erase-type0 (OFFSET .offset0 .pointer0) (TREE ' + ' .pointerx .offsetx)
 	:- ic-erase-type .offset0 .offsetx
 	, ic-erase-type .pointer0 .pointerx
 #
-ic-erase-type0 (REF (OBJECT _ .pointer0)) .pointerx
-	:- ic-erase-type .pointer0 .pointerx
-#
 ic-erase-type0 (SIZE-OF .type) (NUMBER .size)
 	:- ic-type-size .type .size
 #
