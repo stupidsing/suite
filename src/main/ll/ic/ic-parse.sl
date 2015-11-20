@@ -216,3 +216,6 @@ ic-parse-type (struct .nts) (STRUCT-OF .nameTypes)
 #
 ic-parse-type :.typeVar .typeVar
 #
+ic-parse-type .t _
+	:- ic-error "Unknown type" .t
+#
