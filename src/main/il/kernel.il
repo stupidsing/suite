@@ -195,8 +195,8 @@ asm _ MOV (ESP, kernel-second-esp);
 			asm _ CLI ();
 			declare process = head-process;
 			declare busy = 0;
-			while ((let process = sch-next [process,]) != head-process) do (
-				let busy = (busy || `process`/busy);
+			while ((let process = dl-next [process,]) != head-process) do (
+				let busy = (busy || `process`/current/busy);
 			);
 			asm _ STI ();
 			(busy ||  asm _ HLT ());
