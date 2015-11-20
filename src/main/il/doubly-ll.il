@@ -1,6 +1,6 @@
 constant dl-node = fix :dl-node struct (
-	prev as pointer:(:dl-node),
-	next as pointer:(:dl-node),
+	prev as pointer::dl-node,
+	next as pointer::dl-node,
 );
 
 declare dl-prev = function [e as pointer:dl-node,] (
