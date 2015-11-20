@@ -68,10 +68,6 @@ ic-infer-type0 .vs (OFFSET .offset .pointer) (POINTER-OF .type)
 	:- ic-infer-type .vs .offset I32
 	, ic-infer-type .vs .pointer (POINTER-OF .type)
 #
-ic-infer-type0 .vs (OFFSET .offset .pointer) (POINTER-OF .type)
-	:- ic-infer-type .vs .offset I32
-	, ic-infer-type .vs .pointer (POINTER-OF .type)
-#
 ic-infer-type0 .vs (POST-ADD-NUMBER .pointer _) I32
 	:- ic-infer-type .vs .pointer I32
 #
