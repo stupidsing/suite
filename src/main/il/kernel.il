@@ -94,6 +94,7 @@ declare wrmsr = function [msr, value,] (
 	asm _ WRMSR ();
 );
 
+#include(bitmap.il);
 #include(doubly-ll.il);
 #include(sync.il);
 #include(console.il);
