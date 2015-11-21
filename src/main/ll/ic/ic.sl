@@ -12,7 +12,7 @@ compile-imperative .do0 .e0/.ex
 	, !, ic-return-type .type
 	, !, ic-erase-type .do1 .do2
 	, !, ic-erase-variable ()/() .do2 .do3
-	, !, ic-compile .do3 .e0/.ex
+	, !, ic-compile-register .do3 .e0/.ex
 	, !
 #
 

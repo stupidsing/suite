@@ -7,15 +7,15 @@
 -- EDI - scratch
 -- EBP - stack frame
 -- ESP - stack pointer
-ic-compile .do .e0/.ex
+ic-compile-register .do .e0/.ex
 	:- ic-compile-operand-better-option .do .e0/.e1 .op
 	, !, .e1 = (_ MOV ($0, .op), .ex)
 #
-ic-compile .do .e0/.ex
+ic-compile-register .do .e0/.ex
 	:- ic-compile-better-option .do .e0/.ex, !
 #
-ic-compile .do .e
-	:- ic-compile0 .do .e
+ic-compile-register .do .e
+	:- ic-compile-register0 .do .e
 #
 
 ic-compile-memory (LET .var .value) .e0/.ex .size .pointer
@@ -30,23 +30,23 @@ ic-compile-operand .do .e .op
 	, !
 #
 ic-compile-operand .do .e $0
-	:- ic-compile .do .e
+	:- ic-compile-register .do .e
 #
 
-ic-compile0 (ASM .i) (.i, _ R+, .e)/.e
+ic-compile-register0 (ASM .i) (.i, _ R+, .e)/.e
 	:- ! -- Assembler might have variables, skip processing
 #
-ic-compile0 (DECLARES _ .offset .size .do) .e0/.ex
+ic-compile-register0 (DECLARES _ .offset .size .do) .e0/.ex
 	:- .e0 = (_ FR-PUSHN (.size)
 		, _ SUB (ESP, .size)
 		, _ FR-GET (.offset)
 		, .e1)
-	, ic-compile .do .e1/.e2
+	, ic-compile-register .do .e1/.e2
 	, .e2 = (_ ADD (ESP, .size)
 		, _ FR-POPN (.size)
 		, .ex)
 #
-ic-compile0 (INVOKE .mr .ips) .e0/.ex
+ic-compile-register0 (INVOKE .mr .ips) .e0/.ex
 	:- once (
 		.mr = METHOD .this .sub
 		, .e0 = .e1
@@ -57,7 +57,7 @@ ic-compile0 (INVOKE .mr .ips) .e0/.ex
 	, .e1 = (_ RSAVE
 		, .e2)
 	, ic-push-pop-invoke-parameters .ips .e2/.e3 .e6/.e7
-	, ic-compile .sub .e3/.e4
+	, ic-compile-register .sub .e3/.e4
 	, ic-compile-operand .this .e4/.e5 .thisOp
 	, .e5 = (_ FR-PUSH (EBP)
 		, _ MOV (EBP, .thisOp)
@@ -71,20 +71,20 @@ ic-compile0 (INVOKE .mr .ips) .e0/.ex
 		, _ R+
 		, .ex)
 #
-ic-compile0 (IF .if .then .else) .e0/.ex
+ic-compile-register0 (IF .if .then .else) .e0/.ex
 	:- ic-compile-jump-if-false .if .e0/.e1 .elseLabel
 	, ic-compile-then-else .then .else .elseLabel .e1/.ex
 #
-ic-compile0 (LET .var .value) .e0/.ex
+ic-compile-register0 (LET .var .value) .e0/.ex
 	:- ic-compile-let .value .var .e0/.ex
 #
-ic-compile0 (METHOD0 _ .do) .e0/.ex
+ic-compile-register0 (METHOD0 _ .do) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .funLabel FR-BEGIN
 		, _ PUSH (EBP)
 		, _ MOV (EBP, ESP)
 		, .e1)
-	, ic-compile .do .e1/.e2
+	, ic-compile-register .do .e1/.e2
 	, .e2 = (_ POP (EBP)
 		, _ RET ()
 		, _ R-
@@ -93,19 +93,19 @@ ic-compile0 (METHOD0 _ .do) .e0/.ex
 		, _ MOV ($0, .funLabel)
 		, .ex)
 #
-ic-compile0 NOP .e0/.ex
+ic-compile-register0 NOP .e0/.ex
 	:- .e0 = (_ R+, .ex)
 #
-ic-compile0 (POST-ADD-NUMBER .memory .i) .e0/.ex
+ic-compile-register0 (POST-ADD-NUMBER .memory .i) .e0/.ex
 	:- ic-compile-memory .memory .e0/.e1 4 .pointer
-	, ic-compile .pointer .e1/.e2
+	, ic-compile-register .pointer .e1/.e2
 	, .e2 = (_ ADD (DWORD `$0`, .i)
 		, _ MOV ($0, `$0`)
 		, .ex)
 #
-ic-compile0 (PRE-ADD-NUMBER .memory .i) .e0/.ex
+ic-compile-register0 (PRE-ADD-NUMBER .memory .i) .e0/.ex
 	:- ic-compile-memory .memory .e0/.e1 4 .pointer
-	, ic-compile .pointer .e1/.e2
+	, ic-compile-register .pointer .e1/.e2
 	, .e2 = (_ R+
 		, _ MOV ($0, $1)
 		, _ MOV ($1, `$0`)
@@ -113,43 +113,43 @@ ic-compile0 (PRE-ADD-NUMBER .memory .i) .e0/.ex
 		, _ R-
 		, .ex)
 #
-ic-compile0 (REF .memory) .e0/.ex
+ic-compile-register0 (REF .memory) .e0/.ex
 	:- ic-compile-memory .memory .e0/.e1 _ .pointer
-	, ic-compile .pointer .e1/.ex
+	, ic-compile-register .pointer .e1/.ex
 #
-ic-compile0 (SEQ .do0 .do1) .e0/.ex
-	:- ic-compile .do0 .e0/.e1
+ic-compile-register0 (SEQ .do0 .do1) .e0/.ex
+	:- ic-compile-register .do0 .e0/.e1
 	, .e1 = (_ R-, .e2)
-	, ic-compile .do1 .e2/.ex
+	, ic-compile-register .do1 .e2/.ex
 #
-ic-compile0 (SNIPPET .snippet) .e0/.ex
+ic-compile-register0 (SNIPPET .snippet) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .snippetLabel ()
 		, _ FR-BEGIN
 		, .e1)
-	, ic-compile .snippet .e1/.e2
+	, ic-compile-register .snippet .e1/.e2
 	, .e2 = (_ R-
 		, _ FR-END
 		, .label R+
 		, _ MOV ($0, .snippetLabel)
 		, .ex)
 #
-ic-compile0 (TREE .operator .value0 .value1) .e0/.ex
+ic-compile-register0 (TREE .operator .value0 .value1) .e0/.ex
 	:- ic-operator .operator .op .e2/.ex
 	, once (
 		ic-right-associative .operator
-		, ic-compile .value1 .e0/.e1
+		, ic-compile-register .value1 .e0/.e1
 		, ic-compile-operand .value0 .e1/.e2 .op
 	;
-		, ic-compile .value0 .e0/.e1
+		, ic-compile-register .value0 .e0/.e1
 		, ic-compile-operand .value1 .e1/.e2 .op
 	)
 #
-ic-compile0 (WHILE .while .do) .e0/.ex
+ic-compile-register0 (WHILE .while .do) .e0/.ex
 	:- .e0 = (.nextLabel ()
 		, .e1)
 	, ic-compile-jump-if-false .while .e1/.e2 .endLabel
-	, ic-compile .do .e2/.e3
+	, ic-compile-register .do .e2/.e3
 	, .e3 = (_ JMP (DWORD .nextLabel)
 		, .endLabel ()
 		, .ex)
@@ -157,7 +157,7 @@ ic-compile0 (WHILE .while .do) .e0/.ex
 
 -- Generates smaller code
 ic-compile-better-option (LET .memory .value) .e0/.ex
-	:- ic-compile .value .e0/.e1
+	:- ic-compile-register .value .e0/.e1
 	, ic-compile-operand-better-option .memory .e1/.e2 .op
 	, .e2 = (_ MOV (.op, $1), _ R-, .ex)
 #
@@ -167,7 +167,7 @@ ic-compile-better-option (TREE ' + ' THIS (NUMBER .i)) .e0/.ex
 	:- .e0 = (_ R+, _ LEA ($0, `EBP + .i`), .ex)
 #
 ic-compile-better-option (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
-	:- ic-compile .do0 .e0/.e1
+	:- ic-compile-register .do0 .e0/.e1
 	, .e1 = (_ ADD ($0, .i), .ex)
 #
 
@@ -182,10 +182,10 @@ ic-compile-operand-better-option (MEMORY 4 THIS) .e0/.ex .op
 	:- .e0 = (_ R+, .ex), .op = `EBP`
 #
 ic-compile-operand-better-option (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex .op
-	:- ic-compile .pointer .e0/.ex, .op = `$0 + .i`
+	:- ic-compile-register .pointer .e0/.ex, .op = `$0 + .i`
 #
 ic-compile-operand-better-option (MEMORY 4 .pointer) .e0/.ex .op
-	:- ic-compile .pointer .e0/.ex, .op = `$0`
+	:- ic-compile-register .pointer .e0/.ex, .op = `$0`
 #
 ic-compile-operand-better-option (NUMBER .i) (_ R+, .e)/.e (DWORD .i)
 #
@@ -205,7 +205,7 @@ ic-compile-jump-if-false .if .e0/.ex .elseLabel
 	:- ic-compile-jump-if-false-better-option .if .e0/.ex .elseLabel, !
 #
 ic-compile-jump-if-false .if .e0/.ex .elseLabel
-	:- ic-compile .if .e0/.e1
+	:- ic-compile-register .if .e0/.e1
 	, .e1 = (_ OR ($0, $0)
 		, _ R-
 		, _ JZ (DWORD .elseLabel)
@@ -231,7 +231,7 @@ ic-compile-jump-if-false-better-option (TREE .operator .left .right) .e0/.ex .el
 ic-compile-jump-if (TREE .operator .left .right) .e0/.ex .elseLabel
 	:- ic-operator-jmpcc .operator .jmp
 	, !
-	, ic-compile .left .e0/.e1
+	, ic-compile-register .left .e0/.e1
 	, ic-compile-operand .right .e1/.e2 .rightOp
 	, .e2 = (_ CMP ($1, .rightOp)
 		, _ R-
@@ -240,7 +240,7 @@ ic-compile-jump-if (TREE .operator .left .right) .e0/.ex .elseLabel
 		, .ex)
 #
 ic-compile-jump-if .if .e0/.ex .elseLabel
-	:- ic-compile .if .e0/.e1
+	:- ic-compile-register .if .e0/.e1
 	, .e1 = (_ OR ($0, $0)
 		, _ R-
 		, _ JNZ (DWORD .elseLabel)
@@ -248,23 +248,23 @@ ic-compile-jump-if .if .e0/.ex .elseLabel
 #
 
 ic-compile-then-else .then .else .elseLabel .e0/.ex
-	:- ic-compile .then .e0/.e1
+	:- ic-compile-register .then .e0/.e1
 	, .e1 = (_ JMP (DWORD .endLabel)
 		, .elseLabel R-
 		, .e2)
-	, ic-compile .else .e2/.e3
+	, ic-compile-register .else .e2/.e3
 	, .e3 = (.endLabel ()
 		, .ex)
 #
 
 ic-compile-let (METHOD .this .sub) .memory .e0/.ex
 	:- ic-compile-memory .memory .e0/.e1 8 .pointer
-	, ic-compile .pointer .e1/.e2
-	, ic-compile .this .e2/.e3
+	, ic-compile-register .pointer .e1/.e2
+	, ic-compile-register .this .e2/.e3
 	, .e3 = (_ MOV (`$1`, $0)
 		, _ R-
 		, .e4)
-	, ic-compile .sub .e4/.e5
+	, ic-compile-register .sub .e4/.e5
 	, .e5 = (_ MOV (`$1 + 4`, $0)
 		, _ R-
 		, .ex)
@@ -280,13 +280,13 @@ ic-compile-let (NEWS (.size .offset .value, .sovs)) .memory .e0/.ex
 ic-compile-let .memory0 .memory1 .e0/.ex
 	:- ic-compile-memory .memory0 .e0/.e1 .size .pointer0
 	, ic-compile-memory .memory1 .e1/.e2 .size .pointer1
-	, ic-compile .pointer0 .e2/.e3
-	, ic-compile .pointer1 .e3/.e4
+	, ic-compile-register .pointer0 .e2/.e3
+	, ic-compile-register .pointer1 .e3/.e4
 	, ic-copy-memory 0 .size .e4/.e5
 	, .e5 = (_ R-, .ex)
 #
 ic-compile-let .value .memory .e0/.ex
-	:- ic-compile .value .e0/.e1
+	:- ic-compile-register .value .e0/.e1
 	, ic-compile-operand .memory .e1/.e2 .op
 	, .e2 = (_ MOV (.op, $1), _ R-, .ex)
 #
