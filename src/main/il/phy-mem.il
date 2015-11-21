@@ -4,6 +4,10 @@ declare pm-stackx;
 declare pm-stack = memory-region-start as pointer:(int * 0);
 declare pm-stack-pointer = 0;
 
+declare pm-get-number = function [page,] (
+	(page - memory-region-start) shr 12;
+);
+
 declare pm-allocate = function [] (
 	synchronized (& pm-sync) (
 		if (pm-stack-pointer != 0) then (
@@ -29,7 +33,7 @@ declare pm-setup = function [] (
 	) do ();
 
 	-- Sets up page allocator
-	declare nPages = (pagex - memory-region-start) shr 12;
+	declare nPages = pm-get-number [pagex,];
 	let pm-stackx = address `pm-stack`:nPages;
 	while (pagex > memory-region-start) do (
 		let `pm-stack`:(pm-stack-pointer =+ 1) = pagex += -4096;
