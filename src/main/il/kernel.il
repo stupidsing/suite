@@ -180,7 +180,7 @@ asm _ MOV (ESP, kernel-second-esp);
 	kb-setup [];
 	asm _ STI ();
 
-	cs-puts [if (ne2k-probe []) then "ne2000 detected" else "ne2k not found",];
+	cs-puts [if (ne2k-probe []) then "ne2k detected" else "ne2k not found",];
 	cs-nl [];
 
 	ne2k-setup [];
