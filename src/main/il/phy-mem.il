@@ -7,16 +7,14 @@ declare pm-stack-pointer = 0;
 declare pm-allocate = function [] (
 	synchronized (& pm-sync) (
 		if (pm-stack-pointer != 0) then (
-			pm-stack-pointer += -1;
-			`pm-stack`:pm-stack-pointer;
+			`pm-stack`:(pm-stack-pointer += -1);
 		) else 0;
 	);
 );
 
 declare pm-deallocate = function [page,] (
 	synchronized (& pm-sync) (
-		let `pm-stack`:pm-stack-pointer = page;
-		pm-stack-pointer =+ 1;
+		let `pm-stack`:(pm-stack-pointer =+ 1) = page;
 	);
 );
 
@@ -34,7 +32,6 @@ declare pm-setup = function [] (
 	declare nPages = (pagex - memory-region-start) shr 12;
 	let pm-stackx = address `pm-stack`:nPages;
 	while (pagex > memory-region-start) do (
-		let `pm-stack`:pm-stack-pointer = pagex += -4096;
-		pm-stack-pointer =+ 1;
+		let `pm-stack`:(pm-stack-pointer =+ 1) = pagex += -4096;
 	);
 );

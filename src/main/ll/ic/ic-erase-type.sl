@@ -19,7 +19,7 @@ ic-erase-type0 (FIELD (STRUCT-OF .nts) .name .do0) (MEMORY .size (TREE ' + ' .do
 ic-erase-type0 (IN .var _ .do0) .dox
 	:- try (ic-erase-type .do0 .dox) .ex (throw .ex "%0Aat variable" .var)
 #
-ic-erase-type0 (INDEX .type .array .i0) (MEMORY .size (TREE ' + ' .pointer TREE ' * ' .ix (NUMBER .size)))
+ic-erase-type0 (INDEX .type .array .i0) (MEMORY .size (TREE ' + ' .pointer (TREE ' * ' (NUMBER .size) .ix)))
 	:- ic-type-size .type .size
 	, ic-erase-type (REF .array) .pointer
 	, ic-erase-type .i0 .ix
