@@ -19,10 +19,11 @@ import suite.text.Preprocess;
 public class ImperativeCompiler {
 
 	private RuleSet ruleSet = Suite.imperativeCompilerRuleSet();
-	private Finder finder = new SewingProverBuilder().build(ruleSet).apply(Suite.parse("" //
-			+ "source .ip" //
-			+ ", compile-imperative .ip .code/()" //
-			+ ", sink .code"));
+	private Finder finder = new SewingProverBuilder().build(ruleSet)
+			.apply(Suite.parse("" //
+					+ "source .ip" //
+					+ ", compile-imperative .ip .code/()" //
+					+ ", sink .code"));
 
 	public Bytes compile(int org, Path path) throws IOException {
 		String s0 = FileUtil.read(path);
