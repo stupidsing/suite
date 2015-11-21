@@ -44,14 +44,15 @@ declare pm-setup = function [] (
 		dw-get [pagex =+ 4096,] = t;
 	) do ();
 
+	-- Sets up page allocator
 	declare nPages = pm-get-number [pagex,];
 	let pm-ref-counts = memory-region-start as pointer:(int * 0);
 	let pm-stack = (address `pm-ref-counts`:nPages) as pointer:(int * 0);
 	let pm-stackx = address `pm-stack`:nPages;
+	declare page0 = (pm-stackx + 4095) and +xFFFFF000;
 
-	-- Sets up page allocator
-	while (pagex > memory-region-start) do (
-		let `pm-ref-counts`:(pm-get-number [pagex,]) = 0;
-		let `pm-stack`:(pm-stack-pointer =+ 1) = pagex += -4096;
+	while (pagex > page0) do (
+		let `pm-ref-counts`:(pm-get-number [pagex += -4096,]) = 0;
+		let `pm-stack`:(pm-stack-pointer =+ 1) = pagex;
 	);
 );
