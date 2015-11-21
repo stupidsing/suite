@@ -1,11 +1,23 @@
 declare pm-sync = 0;
+declare pm-ref-counts;
+declare pm-stack;
 declare pm-stackx;
-
-declare pm-stack = memory-region-start as pointer:(int * 0);
 declare pm-stack-pointer = 0;
 
 declare pm-get-number = function [page,] (
 	(page - memory-region-start) shr 12;
+);
+
+declare pm-ref = function [page,] (
+	synchronized (& pm-sync) (
+		`pm-ref-counts`:(pm-get-number [page,]) += 1;
+	);
+);
+
+declare pm-unref = function [page,] (
+	synchronized (& pm-sync) (
+		`pm-ref-counts`:(pm-get-number [page,]) += -1;
+	);
 );
 
 declare pm-allocate = function [] (
@@ -32,10 +44,14 @@ declare pm-setup = function [] (
 		dw-get [pagex =+ 4096,] = t;
 	) do ();
 
-	-- Sets up page allocator
 	declare nPages = pm-get-number [pagex,];
+	let pm-ref-counts = memory-region-start as pointer:(int * 0);
+	let pm-stack = (address `pm-ref-counts`:nPages) as pointer:(int * 0);
 	let pm-stackx = address `pm-stack`:nPages;
+
+	-- Sets up page allocator
 	while (pagex > memory-region-start) do (
+		let `pm-ref-counts`:(pm-get-number [pagex,]) = 0;
 		let `pm-stack`:(pm-stack-pointer =+ 1) = pagex += -4096;
 	);
 );
