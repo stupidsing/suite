@@ -12,7 +12,7 @@ ic-compile-register .do .e0/.ex
 	, !, .e1 = (_ MOV ($0, .op), .ex)
 #
 ic-compile-register .do .e0/.ex
-	:- ic-compile-better-option .do .e0/.ex, !
+	:- ic-compile-register-better-option .do .e0/.ex, !
 #
 ic-compile-register .do .e
 	:- ic-compile-register0 .do .e
@@ -156,17 +156,17 @@ ic-compile-register0 (WHILE .while .do) .e0/.ex
 #
 
 -- Generates smaller code
-ic-compile-better-option (LET .memory .value) .e0/.ex
+ic-compile-register-better-option (LET .memory .value) .e0/.ex
 	:- ic-compile-register .value .e0/.e1
 	, ic-compile-operand-better-option .memory .e1/.e2 .op
 	, .e2 = (_ MOV (.op, $1), _ R-, .ex)
 #
-ic-compile-better-option (NUMBER 0) (_ R+, _ XOR ($0, $0), .e)/.e
+ic-compile-register-better-option (NUMBER 0) (_ R+, _ XOR ($0, $0), .e)/.e
 #
-ic-compile-better-option (TREE ' + ' THIS (NUMBER .i)) .e0/.ex
+ic-compile-register-better-option (TREE ' + ' THIS (NUMBER .i)) .e0/.ex
 	:- .e0 = (_ R+, _ LEA ($0, `EBP + .i`), .ex)
 #
-ic-compile-better-option (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
+ic-compile-register-better-option (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
 	:- ic-compile-register .do0 .e0/.e1
 	, .e1 = (_ ADD ($0, .i), .ex)
 #
