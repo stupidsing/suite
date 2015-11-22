@@ -108,6 +108,9 @@ declare pg-setup = function [] (
 	declare pt0 = pm-allocate [];
 	declare pt1 = pm-allocate [];
 
+	pm-ref [pt0,];
+	pm-ref [pt1,];
+
 	zero [pt0, 4096,];
 	dw-set [pt0, pt1 + 5,]; -- Maps kernel memory
 	dw-set [pt0 + 4092,  pt0 + 1,]; -- Maps itself
@@ -145,6 +148,6 @@ declare pg-teardown = function [] (
 	asm _ D8 (+x00);
 
 	declare pt1 = (dw-get [pt0,]) and +xFFFFF000;
-	pm-deallocate [pt1,];
-	pm-deallocate [pt0,];
+	(pm-unref [pt1,] || pm-deallocate [pt1,]);
+	(pm-unref [pt0,] || pm-deallocate [pt0,]);
 );

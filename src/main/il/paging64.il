@@ -124,6 +124,11 @@ declare pg-setup = function [] (
 	declare pt2 = pm-allocate [];
 	declare pt3 = pm-allocate [];
 
+	pm-ref [pt0,];
+	pm-ref [pt1,];
+	pm-ref [pt2,];
+	pm-ref [pt3,];
+
 	zero [pt0, 4096,];
 	zero [pt1, 4096,];
 	zero [pt2, 4096,];
@@ -176,8 +181,8 @@ declare pg-teardown = function [] (
 	declare pt1 = (dw-get [pt0,]) and +xFFFFFFFFFFFFF000;
 	declare pt2 = (dw-get [pt1,]) and +xFFFFFFFFFFFFF000;
 	declare pt3 = (dw-get [pt2,]) and +xFFFFFFFFFFFFF000;
-	pm-deallocate [pt3,];
-	pm-deallocate [pt2,];
-	pm-deallocate [pt1,];
-	pm-deallocate [pt0,];
+	(pm-unref [pt3,] || pm-deallocate [pt3,]);
+	(pm-unref [pt2,] || pm-deallocate [pt2,]);
+	(pm-unref [pt1,] || pm-deallocate [pt1,]);
+	(pm-unref [pt0,] || pm-deallocate [pt0,]);
 );
