@@ -96,9 +96,10 @@ declare pg-allocate = function [nPages,] (
 
 		(r0 && (
 			for i in (0, nPages) (
+				declare logical = r0 + i shl 12;
 				declare physical = pm-allocate [];
 				pm-ref [physical,];
-				pg-map [r0 + i shl 12, physical,];
+				pg-map [logical, physical,];
 			);
 		));
 
@@ -108,10 +109,11 @@ declare pg-allocate = function [nPages,] (
 
 declare pg-deallocate = function [p, nPages,] (
 	synchronized (& pg-sync) (
-		for (declare i = 0; i < nPages; i =+ 1) (
+		for i in (0, nPages) (
 			declare logical = p + i shl 12;
+			declare physical = pg-get-physical [logical,];
 			pg-unmap [logical,];
-			pm-unref [pg-get-physical [logical,],];
+			pm-unref [physical,];
 		);
 	);
 );
