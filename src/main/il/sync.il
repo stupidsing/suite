@@ -28,7 +28,7 @@ declare sync-leave = function [p,] (
 	let `p` = 0;
 );
 
-declare sync-wait = function [p, w,] (
+declare sync-wait = function [p, w,] ( -- TODO
 	let `w` = 0;
 	while (`w` = 0) do (
 		sync-leave [p,];
@@ -37,7 +37,7 @@ declare sync-wait = function [p, w,] (
 	);
 );
 
-declare sync-notify = function [p as pointer:int, w,] (
+declare sync-notify = function [p as pointer:int, w,] ( -- TODO
 	let `w` = 1;
 );
 
