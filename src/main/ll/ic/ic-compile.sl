@@ -306,7 +306,7 @@ ic-push-pop-invoke-parameters (IP .io .param, .ips) .e0/.ex .f0/.fx
 			; .e1 = (_ FR-PUSHN (.size)
 				, _ SUB (ESP, .size)
 				, .e2)
-			, ic-compile-let .p (MEMORY .size (REG ESP)) .e2/.e3
+			, ic-compile-let .param (MEMORY .size (REG ESP)) .e2/.e3
 			, .e3 = (_ R-, .ex)
 			, .f0 = (_ ADD (ESP, .size)
 				, _ FR-POPN (.size)
@@ -316,7 +316,7 @@ ic-push-pop-invoke-parameters (IP .io .param, .ips) .e0/.ex .f0/.fx
 			.e1 = (_ FR-PUSHN (.size)
 				, _ SUB (ESP, .size)
 				, .ex)
-			, ic-compile-let (MEMORY .size (REG ESP)) .p .f0/.f1
+			, ic-compile-let (MEMORY .size (REG ESP)) .param .f0/.f1
 			, .f1 = (_ R-, .f2)
 			, .f2 = (_ ADD (ESP, .size)
 				, _ FR-POPN (.size)
