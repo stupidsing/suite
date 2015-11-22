@@ -113,7 +113,7 @@ declare pg-setup = function [] (
 
 	zero [pt0, 4096,];
 	dw-set [pt0, pt1 + 5,]; -- Maps kernel memory
-	dw-set [pt0 + 4092,  pt0 + 1,]; -- Maps itself
+	dw-set [pt0 + 4092, pt0 + 1,]; -- Maps itself
 
 	zero [pt1, 4096,];
 	declare offset = 0;

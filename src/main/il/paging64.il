@@ -38,7 +38,7 @@ declare pg-set-pt-entry = function [pe0, pt1, pm-alloc,] (
 );
 
 declare pg-unset-pt-entry = function [pe0, pt1,] (
-	declare physical =  (dw-get [pe0,]) and +xFFFFFFFFFFFFF000;
+	declare physical = (dw-get [pe0,]) and +xFFFFFFFFFFFFF000;
 	(pm-unref [physical,] || (
 		dw-set [pe0, 0,];
 		pg-invalidate-page [pt1,];
