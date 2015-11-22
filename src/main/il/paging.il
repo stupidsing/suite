@@ -148,6 +148,7 @@ declare pg-teardown = function [] (
 	asm _ D8 (+x00);
 
 	declare pt1 = (dw-get [pt0,]) and +xFFFFF000;
+
 	(pm-unref [pt1,] || pm-deallocate [pt1,]);
 	(pm-unref [pt0,] || pm-deallocate [pt0,]);
 );

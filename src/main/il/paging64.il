@@ -181,6 +181,7 @@ declare pg-teardown = function [] (
 	declare pt1 = (dw-get [pt0,]) and +xFFFFFFFFFFFFF000;
 	declare pt2 = (dw-get [pt1,]) and +xFFFFFFFFFFFFF000;
 	declare pt3 = (dw-get [pt2,]) and +xFFFFFFFFFFFFF000;
+
 	(pm-unref [pt3,] || pm-deallocate [pt3,]);
 	(pm-unref [pt2,] || pm-deallocate [pt2,]);
 	(pm-unref [pt1,] || pm-deallocate [pt1,]);
