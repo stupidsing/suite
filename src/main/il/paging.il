@@ -25,6 +25,23 @@ declare pg-get-physical = function [logical,] (
 	(dw-get [pe1,]) and +xFFFFF000;
 );
 
+declare pg-set-pt-entry = function [pe0, pt1, pm-alloc,] (
+	declare physical = dw-get [pe0,];
+	(physical = 0 && (
+		dw-set [pe0, (let physical = pm-alloc []) + 7,];
+		pg-invalidate-page [pt1,];
+		zero [pt1, 4096,];
+	));
+	pm-ref [physical,];
+);
+
+declare pg-unset-pt-entry = function [pe0, pt1,] (
+	(pm-unref [(dw-get [pe0,]) and +xFFFFF000,] || (
+		dw-set [pe0, 0,];
+		pg-invalidate-page [pt1,];
+	));
+);
+
 declare pg-map = function [logical, physical,] (
 	declare pe0 = +xFFFFF000 + (logical ushr 22) shl 2;
 	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
