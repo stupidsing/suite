@@ -223,5 +223,6 @@ asm _ MOV (ESP, kernel-second-esp);
 
 	pg-deallocate [user-stack-address, 1,];
 	kb-teardown [];
+	pg-teardown [];
 	sch-teardown [];
 )) [];

@@ -121,12 +121,30 @@ declare pg-setup = function [] (
 
 	dw-set [pt1, 0,]; -- Trap zero pointers
 
-	pt0;
+	& pt0;
 
+	asm _ MOV (EAX, `EAX`);
 	asm _ MOV (CR3, EAX); -- Set page table address
 	asm _ MOV (EAX, CR0); -- Enable paging
 	asm _ OR (EAX, +x80000000);
 	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2
 	asm _ D8 (+x00);
+);
+
+declare pg-teardown = function [] (
+	declare pt0 as int;
+	& pt0;
+
+	asm _ MOV (EBX, CR3); -- Get page table address
+	asm _ MOV (`EAX`, EBX);
+	asm _ MOV (EAX, CR0); -- Disable paging
+	asm _ AND (EAX, +x7FFFFFFF);
+	asm _ MOV (CR0, EAX);
+	asm _ D8 (+xEB); -- JMP $ + 2
+	asm _ D8 (+x00);
+
+	declare pt1 = (dw-get [pt0,]) and +xFFFFF000;
+	pm-deallocate [pt1,];
+	pm-deallocate [pt0,];
 );
