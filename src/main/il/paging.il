@@ -36,9 +36,11 @@ declare pg-set-pt-entry = function [pe0, pt1, pm-alloc,] (
 );
 
 declare pg-unset-pt-entry = function [pe0, pt1,] (
-	(pm-unref [(dw-get [pe0,]) and +xFFFFF000,] || (
+	declare physical = (dw-get [pe0,]) and +xFFFFF000;
+	(pm-unref [physical,] || (
 		dw-set [pe0, 0,];
 		pg-invalidate-page [pt1,];
+		pm-deallocate [physical,];
 	));
 );
 
@@ -47,35 +49,17 @@ declare pg-map = function [logical, physical,] (
 	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
 	declare pt1 = pe1 and +xFFFFF000;
 
-	(dw-get [pe0,] = 0 && (
-		dw-set [pe0, pm-allocate [] + 7,];
-		pg-invalidate-page [pt1,];
-		zero [pt1, 4096,];
-	));
-
-	dw-set [pe1, physical + 7,];
-
-	pg-invalidate-page [logical,];
+	pg-set-pt-entry [pe0, pt1, pm-allocate,];
+	pg-set-pt-entry [pe1, logical, function [] physical,];
 );
 
 declare pg-unmap = function [logical,] (
 	declare pe0 = +xFFFFF000 + (logical ushr 22) shl 2;
 	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
 	declare pt1 = pe1 and +xFFFFF000;
-	declare isEmpty = 1;
 
-	dw-set [pe1, 0,];
-
-	for (declare offset = 0; offset < 4096; offset =+ 4) (
-		let isEmpty = (isEmpty && (dw-get [pt1 + offset,] = 0));
-	);
-
-	(isEmpty && (
-		pm-deallocate [(dw-get [pe0,]) and +xFFFFF000,];
-		dw-set [pe0, 0,];
-	));
-
-	pg-invalidate-page [logical,];
+	pg-unset-pt-entry [pe1, logical,];
+	pg-unset-pt-entry [pe0, pt1,];
 );
 
 declare pg-allocate = function [nPages,] (
@@ -98,7 +82,9 @@ declare pg-allocate = function [nPages,] (
 
 		(r0 && (
 			for i in (0, nPages) (
-				pg-map [r0 + i shl 12, pm-allocate [],];
+				declare physical = pm-allocate [];
+				pm-ref [physical,];
+				pg-map [r0 + i shl 12, physical,];
 			);
 		));
 
@@ -110,8 +96,8 @@ declare pg-deallocate = function [p, nPages,] (
 	synchronized (& pg-sync) (
 		for (declare i = 0; i < nPages; i =+ 1) (
 			declare logical = p + i shl 12;
-			pm-deallocate [pg-get-physical [logical,],];
 			pg-unmap [logical,];
+			pm-unref [pg-get-physical [logical,],];
 		);
 	);
 );
@@ -135,8 +121,8 @@ declare pg-setup = function [] (
 
 	pt0;
 
-	asm _ MOV (CR3, EAX);
-	asm _ MOV (EAX, CR0);
+	asm _ MOV (CR3, EAX); -- Set page table address
+	asm _ MOV (EAX, CR0); -- Enable paging
 	asm _ OR (EAX, +x80000000);
 	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2
