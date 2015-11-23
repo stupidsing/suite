@@ -89,4 +89,8 @@ public class Read {
 		return from(map).concatMap(p -> from(p.t1).map(v -> Pair.of(p.t0, v)));
 	}
 
+	public static <K, V> Streamlet<Pair<K, V>> multimap(ListMultimap<K, V> multimap) {
+		return from(multimap).concatMap(p -> from(p.t1).map(v -> Pair.of(p.t0, v)));
+	}
+
 }
