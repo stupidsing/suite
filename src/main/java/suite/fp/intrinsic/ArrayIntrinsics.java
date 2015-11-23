@@ -14,7 +14,7 @@ public class ArrayIntrinsics {
 	public Intrinsic append = (callback, inputs) -> {
 		List<Node> array0 = ((Tuple) inputs.get(0)).nodes;
 		List<Node> array1 = ((Tuple) inputs.get(1)).nodes;
-		return new Tuple(Util.add(array0, array1));
+		return Tuple.of(Util.add(array0, array1));
 	};
 
 	public Intrinsic arrayList = (callback, inputs) -> {
@@ -23,7 +23,7 @@ public class ArrayIntrinsics {
 	};
 
 	public Intrinsic listArray = (callback, inputs) -> {
-		return new Tuple(ThunkUtil.yawnList(callback::yawn, inputs.get(0), true).toList());
+		return Tuple.of(ThunkUtil.yawnList(callback::yawn, inputs.get(0), true).toList());
 	};
 
 	public Intrinsic slice = (callback, inputs) -> {
@@ -34,7 +34,7 @@ public class ArrayIntrinsics {
 			s += array.size();
 		if (e < s)
 			e += array.size();
-		return new Tuple(array.subList(s, e));
+		return Tuple.of(array.subList(s, e));
 	};
 
 }

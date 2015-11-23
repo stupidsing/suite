@@ -1,5 +1,6 @@
 package suite.lp.kb;
 
+import java.util.List;
 import java.util.Objects;
 
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
@@ -7,6 +8,8 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.Tuple;
+import suite.node.io.TermOp;
 import suite.util.Util;
 
 /**
@@ -28,7 +31,7 @@ public class Prototype implements Comparable<Prototype> {
 
 	public static Prototype of(Node node, int n) {
 		for (int i = 0; i < n; i++) {
-			Tree tree = Tree.decompose(node);
+			Tree tree = decompose(node);
 			node = tree != null ? tree.getRight() : Atom.NIL;
 		}
 
@@ -38,13 +41,27 @@ public class Prototype implements Comparable<Prototype> {
 	public static Prototype of(Node node) {
 		Tree t0, t1;
 
-		while ((t1 = Tree.decompose(node)) != null) {
+		while ((t1 = decompose(node)) != null) {
 			t0 = t1;
 			node = t0.getLeft();
 		}
 
 		boolean indexable = !SewingGeneralizerImpl.isVariant(node) && !(node instanceof Reference);
 		return indexable ? new Prototype(node) : null;
+	}
+
+	private static Tree decompose(Node node) {
+		Tree tree;
+		if ((tree = Tree.decompose(node)) != null)
+			return tree;
+		else if (node instanceof Tuple) {
+			List<Node> nodes = ((Tuple) node).nodes;
+			if (!nodes.isEmpty())
+				return Tree.of(TermOp.TUPLE_, nodes.get(0), Tuple.of(Util.right(nodes, 1)));
+			else
+				return null;
+		} else
+			return null;
 	}
 
 	private Prototype(Node head) {

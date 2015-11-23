@@ -9,7 +9,11 @@ public class Tuple extends Node {
 
 	public final List<Node> nodes;
 
-	public Tuple(List<Node> nodes) {
+	public static Tuple of(List<Node> nodes) {
+		return new Tuple(nodes);
+	}
+
+	private Tuple(List<Node> nodes) {
 		this.nodes = nodes;
 	}
 

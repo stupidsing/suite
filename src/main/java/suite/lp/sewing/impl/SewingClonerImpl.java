@@ -74,7 +74,7 @@ public class SewingClonerImpl extends VariableMapperImpl implements SewingCloner
 					List<Node> nodes = new ArrayList<>(size);
 					for (Fun<Env, Node> p : ps)
 						nodes.add(p.apply(env));
-					return new Tuple(nodes);
+					return Tuple.of(nodes);
 				};
 			} else
 				fun = env -> node0;

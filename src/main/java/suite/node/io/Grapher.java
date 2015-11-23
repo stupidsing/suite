@@ -121,7 +121,7 @@ public class Grapher {
 			case TREE:
 				return Tree.of(gn.op, null, null);
 			case TUPLE:
-				return new Tuple(new ArrayList<>(gn.children.size()));
+				return Tuple.of(new ArrayList<>(gn.children.size()));
 			default:
 				throw new RuntimeException();
 			}

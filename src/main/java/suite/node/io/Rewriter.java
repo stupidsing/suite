@@ -112,7 +112,7 @@ public class Rewriter {
 				node = Tree.of(op, children.get(0).t1, children.get(1).t1);
 				break;
 			case TUPLE:
-				node = new Tuple(Read.from(children).map(p -> p.t1).toList());
+				node = Tuple.of(Read.from(children).map(p -> p.t1).toList());
 				break;
 			default:
 				throw new RuntimeException();
