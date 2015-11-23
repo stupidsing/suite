@@ -148,8 +148,12 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	public SewingProverImpl(RuleSet rs) {
+		this(Read.from(rs.getRules()).toMultimap(Prototype::of));
+	}
+
+	public SewingProverImpl(ListMultimap<Prototype, Rule> rules) {
+		this.rules = rules;
 		systemPredicates = new SystemPredicates(null);
-		rules = Read.from(rs.getRules()).toMultimap(Prototype::of);
 
 		if (!rules.containsKey(null))
 			compileAll();
