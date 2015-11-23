@@ -15,14 +15,12 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Rewriter.NodeRead;
 import suite.os.LogUtil;
+import suite.streamlet.Read;
 
 public class SingletonVariableChecker {
 
 	public void check(List<Rule> rules) {
-		ListMultimap<Prototype, Rule> rulesByPrototype = new ListMultimap<>();
-
-		for (Rule rule : rules)
-			rulesByPrototype.put(Prototype.of(rule), rule);
+		ListMultimap<Prototype, Rule> rulesByPrototype = Read.from(rules).toMultimap(Prototype::of);
 
 		for (Pair<Prototype, Rule> pair : rulesByPrototype.entries()) {
 			Prototype prototype = pair.t0;
