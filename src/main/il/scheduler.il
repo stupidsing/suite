@@ -1,4 +1,4 @@
-constant stack-size = 250;
+constant stack-size = 240;
 constant sch-action-none = 0;
 constant sch-action-exit = 1;
 constant sch-action-fork = 2;
