@@ -227,4 +227,8 @@ asm _ MOV (ESP, kernel-second-esp);
 	kb-teardown [];
 	pg-teardown [];
 	sch-teardown [];
+
+	cs-puts ["System halted",];
+	asm _ CLI ();
+	asm _ HLT ();
 )) [];
