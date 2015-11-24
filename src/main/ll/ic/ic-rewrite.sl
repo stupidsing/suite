@@ -6,6 +6,8 @@ ic-rewrite (DECLARE .mp .var .type0 .do0) (DECLARE .mp .var .type1 .do1) (.do0 .
 #
 ic-rewrite (DECLARES .var .offset .size .do0) (DECLARES .var .offset .size .do1) (.do0 .do1, .ts)/.ts
 #
+ic-rewrite (EXTEND-SIGNED .do0) (EXTEND-SIGNED .do1) (.do0 .do1, .ts)/.ts
+#
 ic-rewrite (FIELD .type0 .name .do0) (FIELD .type1 .name .do1) (.do0 .do1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1
 #

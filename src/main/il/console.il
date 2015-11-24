@@ -33,8 +33,8 @@ declare cs-put = function [ch,] (
 );
 
 declare cs-puts = function [s,] (
-	declare ch = 0;
-	for (declare s1 = s; (copy [address ch, s1, 1,]; ch); s1 += 1) (
+	declare ch;
+	for (declare s1 = s; let ch = extend `s1 as pointer:byte`; s1 += 1) (
 		cs-put [ch,];
 	);
 );

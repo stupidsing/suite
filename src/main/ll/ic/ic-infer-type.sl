@@ -15,6 +15,9 @@ ic-infer-type0 .vs (FIELD (STRUCT-OF .nts) .name .do) .type
 	:- ic-infer-type .vs .do (STRUCT-OF .nts)
 	, ic-field-type .nts .name .type
 #
+ic-infer-type0 .vs (EXTEND-SIGNED .do) I32
+	:- ic-infer-type .vs .do I8
+#
 ic-infer-type0 .vs (IF .if .then .else) .type
 	:- ic-infer-type .vs .if .ifType
 	, ic-return-type .ifType

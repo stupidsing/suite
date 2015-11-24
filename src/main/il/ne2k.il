@@ -103,9 +103,7 @@ declare ne2k-setup = function [] (
 		cs-puts ["MAC ADDRESS = ",];
 
 		for p in (0, 6) (
-			declare b;
-			copy [address b, address ne2k-mac-address + p, 1,];
-			cs-put-hex1 [b,];
+			cs-put-hex1 [extend ne2k-mac-address:p,];
 		);
 
 		cs-nl [];

@@ -108,6 +108,7 @@ constant mm-deallocate .type .pointer = (
 	ba-deallocate [address `.pointer`, size-of .type,]
 );
 
+#include(apic.il);
 #include(irq.il);
 #include(scheduler.il);
 #include(idt.il);
@@ -172,6 +173,7 @@ asm _ MOV (ESP, kernel-second-esp);
 	asm _ MOV (`EBP`, EAX);
 
 	ba-setup [];
+	apic-setup [];
 	irq-setup [];
 	sch-setup [];
 	idt-setup [];
