@@ -3,6 +3,7 @@ package suite.lp.kb;
 import java.util.List;
 import java.util.Objects;
 
+import suite.adt.ListMultimap;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
@@ -10,6 +11,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.TermOp;
+import suite.streamlet.Read;
 import suite.util.Util;
 
 /**
@@ -20,6 +22,14 @@ import suite.util.Util;
 public class Prototype implements Comparable<Prototype> {
 
 	public final Node head;
+
+	public static ListMultimap<Prototype, Rule> multimap(RuleSet ruleSet) {
+		return multimap(ruleSet.getRules());
+	}
+
+	public static ListMultimap<Prototype, Rule> multimap(List<Rule> rules) {
+		return Read.from(rules).toMultimap(Prototype::of);
+	}
 
 	public static Prototype of(Rule rule) {
 		return of(rule.head);

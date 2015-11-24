@@ -148,7 +148,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	public SewingProverImpl(RuleSet rs) {
-		this(Read.from(rs.getRules()).toMultimap(Prototype::of));
+		this(Prototype.multimap(rs));
 	}
 
 	public SewingProverImpl(ListMultimap<Prototype, Rule> rules) {

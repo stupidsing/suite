@@ -58,7 +58,7 @@ public class QueryRewriter {
 		return new Rule(rewriteQuery(rule.head), rewriteClause(rule.tail));
 	}
 
-	private Node rewriteClause(Node node0) {
+	public Node rewriteClause(Node node0) {
 		Node nodex;
 		if ((nodex = rewriteClause(".0, .1", Arrays.asList(0, 1), node0)) != null //
 				|| (nodex = rewriteClause(".0; .1", Arrays.asList(0, 1), node0)) != null//
