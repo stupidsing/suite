@@ -122,12 +122,12 @@ declare apic-setup = function [] (
 			apic-parse-rsdt [rsdt as pointer:apic-acpi-header,];
 		);
 	) else (
-		cs-puts ["UNSUPPORTED ACPI VERSION ",];
+		cs-puts ["Unsupported ACPI version ",];
 		cs-put-hex1 [revision,];
 		cs-nl [];
 	);
 
-	cs-puts ["IO APIC ADDRESS = ",];
+	cs-puts ["IO APIC address = ",];
 	cs-put-hex4 [io-apic-address,];
 	cs-nl [];
 );

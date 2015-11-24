@@ -100,7 +100,7 @@ declare ne2k-setup = function [] (
 		ne2k-rx-page-start = ne2k-mem-base ushr 8;
 		ne2k-rx-page-stop = ne2k-rx-page-start + ne2k-mem-size ushr 8 - 12;
 
-		cs-puts ["MAC ADDRESS = ",];
+		cs-puts ["MAC address = ",];
 
 		for p in (0, 6) (
 			cs-put-hex1 [extend ne2k-mac-address:p,];
