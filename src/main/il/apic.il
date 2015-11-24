@@ -88,10 +88,10 @@ declare apic-parse-dt = function [header as pointer:apic-acpi-header,] (
 );
 
 declare apic-parse-rsdt = function [rsdt as pointer:apic-acpi-header,] (
-	declare p2 = rsdt as int + size-of apic-acpi-header;
+	declare p = rsdt as int + size-of apic-acpi-header;
 	declare px = rsdt as int + `rsdt`/length;
-	while (p2 < px) do (
-		apic-parse-dt [(p2 += 4) as pointer:apic-acpi-header,];
+	while (p < px) do (
+		apic-parse-dt [(p =+ 4) as pointer:apic-acpi-header,];
 	);
 );
 
@@ -110,7 +110,7 @@ declare apic-setup = function [] (
 
 	declare revision = extend `(p1 + 15) as pointer:byte`;
 
-	if (revision = 1) then (
+	if (revision = 0) then (
 		declare rsdt = dw-get [p1 + 16,];
 		apic-parse-rsdt [rsdt as pointer:apic-acpi-header,];
 	) else if (revision = 2) then (
