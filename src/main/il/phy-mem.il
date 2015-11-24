@@ -5,7 +5,7 @@ declare pm-stackx;
 declare pm-stack-pointer = 0;
 
 declare pm-get-number = function [page,] (
-	(page - memory-region-start) shr 12;
+	(page - memory-region-start) ushr 12;
 );
 
 declare pm-ref = function [page,] (

@@ -6,7 +6,7 @@ declare cs-set-cursor = function [row, col,] (
 	outb [+x3D4, +x0F,];
 	outb [+x3D5, pos and +xFF,];
 	outb [+x3D4, +x0E,];
-	outb [+x3D5, pos shr 8,];
+	outb [+x3D5, pos ushr 8,];
 );
 
 declare cs-nl0 = function [] (
@@ -15,7 +15,7 @@ declare cs-nl0 = function [] (
 	zero [p0 + 3840, 160,];
 
 	let cs-column-offset = 0;
-	cs-set-cursor [24, cs-column-offset shr 1,];
+	cs-set-cursor [24, cs-column-offset ushr 1,];
 );
 
 declare cs-nl = function [] (
@@ -45,16 +45,16 @@ declare cs-put-hex = function [h,] (
 );
 
 declare cs-put-hex1 = function [h,] (
-	cs-put-hex [h shr 4,];
+	cs-put-hex [h ushr 4,];
 	cs-put-hex [h,];
 );
 
 declare cs-put-hex2 = function [h,] (
-	cs-put-hex1 [h shr 8,];
+	cs-put-hex1 [h ushr 8,];
 	cs-put-hex1 [h,];
 );
 
 declare cs-put-hex4 = function [h,] (
-	cs-put-hex2 [h shr 16,];
+	cs-put-hex2 [h ushr 16,];
 	cs-put-hex2 [h,];
 );

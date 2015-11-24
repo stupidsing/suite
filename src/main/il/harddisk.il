@@ -1,9 +1,9 @@
 declare hd-set-lba = function [lba, count,] (
-	outb [+x1F6, (lba shr 24) or +xE0,];
+	outb [+x1F6, (lba ushr 24) or +xE0,];
 	outb [+x1F2, count,];
-	outb [+x1F3, (lba shr 0) and +xFF,];
-	outb [+x1F4, (lba shr 8) and +xFF,];
-	outb [+x1F5, (lba shr 16) and +xFF,];
+	outb [+x1F3, (lba ushr 0) and +xFF,];
+	outb [+x1F4, (lba ushr 8) and +xFF,];
+	outb [+x1F5, (lba ushr 16) and +xFF,];
 );
 
 -- http://wiki.osdev.org/ATA_read/write_sectors
@@ -37,7 +37,7 @@ declare hd-write = function [lba, count, buffer as int,] (
 
 	while (buffer < end) do (
 		declare d = dw-get [buffer =+ 4,];
-		outw [+x1F0, (d shr 0) and +xFFFF,];
-		outw [+x1F0, (d shr 16) and +xFFFF,];
+		outw [+x1F0, (d ushr 0) and +xFFFF,];
+		outw [+x1F0, (d ushr 16) and +xFFFF,];
 	);
 );
