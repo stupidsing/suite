@@ -105,8 +105,8 @@ declare pg-deallocate = function [p, nPages,] (
 );
 
 declare pg-setup = function [] (
-	declare np1 = (pm-stackx + 4095) ushr 12;
-	declare np0 = (np0 + 1023) ushr 10;
+	declare phyx0 = (pm-stackx + +x003FFFFF) and +xFFC00000;
+	declare phyx1 = (pm-stackx + +x00000FFF) and +xFFFFE000;
 	declare physical = 0;
 
 	declare pt0 = pm-allocate [];
@@ -115,12 +115,12 @@ declare pg-setup = function [] (
 	for i0 in (0, 1024) (
 		declare entry0;
 
-		if (physical < np0 shl 10) then (
+		if (physical < phyx0) then (
 			declare pt1 = pm-allocate [];
 			pm-ref [pt1,];
 
 			for i1 in (0, 1024) (
-				declare entry1 = if (0 < physical && physical < pm-stackx) then (physical + 261) else 0;
+				declare entry1 = if (0 < physical && physical < phyx1) then (physical + 261) else 0;
 				physical += 4096;
 				dw-set [pt1 + i1 shl 2, entry1,]; -- Global, user, present
 			);

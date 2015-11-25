@@ -119,10 +119,10 @@ declare pg-deallocate = function [p, nPages,] (
 );
 
 declare pg-setup = function [] (
-	declare phyx0 = (pm-stackx + +x0000007FFFFFFFFF) ushr 37;
-	declare phyx1 = (pm-stackx + +x000000003FFFFFFF) ushr 28;
-	declare phyx2 = (pm-stackx + +x00000000001FFFFF) ushr 21;
-	declare phyx3 = (pm-stackx + +x0000000000000FFF) ushr 12;
+	declare phyx0 = (pm-stackx + +x0000007FFFFFFFFF) and +xFFFFFF8000000000;
+	declare phyx1 = (pm-stackx + +x000000003FFFFFFF) and +xFFFFFFFFC0000000;
+	declare phyx2 = (pm-stackx + +x00000000001FFFFF) and +xFFFFFFFFFFE00000;
+	declare phyx3 = (pm-stackx + +x0000000000000FFF) and +xFFFFFFFFFFFFF000;
 	declare physical = 0;
 
 	declare pt0 = pm-allocate [];
