@@ -99,7 +99,6 @@ declare apic-parse-xsdt = function [rsdt as pointer:apic-acpi-header,] (
 );
 
 declare apic-setup = function [] (
-	declare p = +xE0000;
 	declare p1;
 
 	for (declare p = +xE0000; p < +x100000; p += 16) (
