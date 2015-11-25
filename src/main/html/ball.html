@@ -51,40 +51,44 @@
 			},
 		};
 
-		var ball = {
-			move: () => {
-				var ix = fx();
-				var iy = fy();
-				if (ix) ballx += 2 * ix;
-				if (iy) bally += 2 * iy;
-				ballx += dx;
-				bally += dy;
+		var ball_ = function(ballx, bally) {
+			var ball = {
+				move: () => {
+					var ix = fx();
+					var iy = fy();
+					if (ix) ballx += 2 * ix;
+					if (iy) bally += 2 * iy;
+					ballx += dx;
+					bally += dy;
 
-				if (ballx < 0) { ballx = 0; dx = 2; }
-				if (bally < 0) { bally = 0; dy = 2; }
-				if (ballx > width) { ballx = width; dx = -2; }
-				if (bally > height) { bally = height; dy = -2; }
-				return [ball];
-			},
-			draw: context => {
-				var radius = 24;
+					if (ballx < 0) { ballx = 0; dx = 2; }
+					if (bally < 0) { bally = 0; dy = 2; }
+					if (ballx > width) { ballx = width; dx = -2; }
+					if (bally > height) { bally = height; dy = -2; }
+					return [ball];
+				},
+				draw: context => {
+					var radius = 24;
 
-				/* context.beginPath(); context.arc(ballx, bally, radius, 0, 2 * Math.PI); context.stroke(); */
+					/* context.beginPath(); context.arc(ballx, bally, radius, 0, 2 * Math.PI); context.stroke(); */
 
-				context.fillStyle = "#0000FF";
-				context.beginPath();
-				context.moveTo(ballx, bally - radius);
-				context.lineTo(ballx + radius * 0.866, bally - radius * 0.5);
-				context.lineTo(ballx + radius * 0.866, bally + radius * 0.5);
-				context.lineTo(ballx, bally + radius);
-				context.lineTo(ballx - radius * 0.866, bally + radius * 0.5);
-				context.lineTo(ballx - radius * 0.866, bally - radius * 0.5);
-				context.closePath();
-				context.fill();
-			},
+					context.fillStyle = "#0000FF";
+					context.beginPath();
+					context.moveTo(ballx, bally - radius);
+					context.lineTo(ballx + radius * 0.866, bally - radius * 0.5);
+					context.lineTo(ballx + radius * 0.866, bally + radius * 0.5);
+					context.lineTo(ballx, bally + radius);
+					context.lineTo(ballx - radius * 0.866, bally + radius * 0.5);
+					context.lineTo(ballx - radius * 0.866, bally - radius * 0.5);
+					context.closePath();
+					context.fill();
+				},
+			};
+
+			return ball;
 		};
 
-		var objects = [background, ball];
+		var objects = [background, ball_(ballx, bally)];
 
 		frame.register(data => {
 
