@@ -118,6 +118,16 @@ declare pg-deallocate = function [p, nPages,] (
 	);
 );
 
+declare pg-acquire-pt = function [] (
+	declare pt = pm-allocate [];
+	pm-ref [pt,];
+	pt;
+);
+
+declare pg-release-pt = function [pt,] (
+	(pm-unref [pt,] || pm-deallocate [pt,]);
+);
+
 declare pg-setup = function [] (
 	declare phyx0 = (pm-stackx + +x0000007FFFFFFFFF) and +xFFFFFF8000000000;
 	declare phyx1 = (pm-stackx + +x000000003FFFFFFF) and +xFFFFFFFFC0000000;
@@ -125,59 +135,43 @@ declare pg-setup = function [] (
 	declare phyx3 = (pm-stackx + +x0000000000000FFF) and +xFFFFFFFFFFFFF000;
 	declare physical = 0;
 
-	declare pt0 = pm-allocate [];
-	pm-ref [pt0,];
+	declare pt0 = pg-acquire-pt [];
 
 	for i0 in (0, 1024) (
 		declare entry0;
-
 		if (physical < phyx0) then (
-			declare pt1 = pm-allocate [];
-			pm-ref [pt1,];
-
+			declare pt1 = pg-acquire-pt [];
 			for i1 in (0, 1024) (
 				declare entry1;
-
 				if (physical < phyx1) then (
-					declare pt2 = pm-allocate [];
-					pm-ref [pt2,];
-
+					declare pt2 = pg-acquire-pt [];
 					for i2 in (0, 1024) (
 						declare entry2;
-
 						if (physical < phyx2) then (
-							declare pt3 = pm-allocate [];
-							pm-ref [pt3,];
-		
+							declare pt3 = pg-acquire-pt [];
 							for i3 in (0, 1024) (
 								declare entry3 = if (0 < physical && physical < phyx3) then (physical + 261) else 0;
 								physical += 4096;
 								qw-set [pt3 + i3 shl 3, entry3,]; -- Global, user, present
 							);
-
 							let entry2 = pt3 + 7; -- Maps kernel memory, user, read/write, present
 						) else (
 							let entry2 = 0;
 						);
-
 						qw-set [pt1 + i2 shl 3, entry2,];
 					);
-
 					let entry1 = pt2 + 7; -- Maps kernel memory, user, read/write, present
 				) else (
 					let entry1 = 0;
 				);
-
 				qw-set [pt0 + i1 shl 3, entry1,];
 			);
-
 			let entry0 = pt1 + 7; -- Maps kernel memory, user, read/write, present
 		) else if (i0 = 1023) then (
 			let entry0 = pt0 + 1; -- Maps itself
 		) else (
 			let entry0 = 0;
 		);
-
 		qw-set [pt0 + i0 shl 3, entry0,];
 	);
 
@@ -222,18 +216,16 @@ declare pg-teardown = function [] (
 						(pt3 && (
 							for i3 in (0, 1024) (
 								declare pt4 = (dw-get [pt3 + i3 shl 3,]) and +xFFFFFFFFFFFFF000;
-								(pt4 && (
-									(pm-unref [pt4,] || pm-deallocate [pt4,]);
-								));
+								(pt4 && pg-release-pt [pt4,]);
 							);
-							(pm-unref [pt3,] || pm-deallocate [pt3,]);
+							pg-release-pt [pt3,];
 						));
 					);
-					(pm-unref [pt2,] || pm-deallocate [pt2,]);
+					pg-release-pt [pt2,];
 				));
 			);
-			(pm-unref [pt1,] || pm-deallocate [pt1,]);
+			pg-release-pt [pt1,];
 		));
 	);
-	(pm-unref [pt0,] || pm-deallocate [pt0,]);
+	pg-release-pt [pt0,];
 );

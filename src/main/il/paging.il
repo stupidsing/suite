@@ -104,19 +104,29 @@ declare pg-deallocate = function [p, nPages,] (
 	);
 );
 
+declare pg-acquire-pt = function [] (
+	declare pt = pm-allocate [];
+	pm-ref [pt,];
+	pt;
+);
+
+declare pg-release-pt = function [pt,] (
+	(pm-unref [pt,] || pm-deallocate [pt,]);
+);
+
 declare pg-setup = function [] (
 	declare phyx0 = (pm-stackx + +x003FFFFF) and +xFFC00000;
 	declare phyx1 = (pm-stackx + +x00000FFF) and +xFFFFE000;
 	declare physical = 0;
 
-	declare pt0 = pm-allocate [];
+	declare pt0 = pg-acquire-pt [];
 	pm-ref [pt0,];
 
 	for i0 in (0, 1024) (
 		declare entry0;
 
 		if (physical < phyx0) then (
-			declare pt1 = pm-allocate [];
+			declare pt1 = pg-acquire-pt [];
 			pm-ref [pt1,];
 
 			for i1 in (0, 1024) (
@@ -163,12 +173,10 @@ declare pg-teardown = function [] (
 		(pt1 && (
 			for i1 in (0, 1024) (
 				declare pt2 = (dw-get [pt1 + i1 shl 2,]) and +xFFFFF000;
-				(pt2 && (
-					(pm-unref [pt2,] || pm-deallocate [pt2,]);
-				));
+				(pt2 && pg-release-pt [pt2,]);
 			);
-			(pm-unref [pt1,] || pm-deallocate [pt1,]);
+			pg-release-pt [pt1,];
 		));
 	);
-	(pm-unref [pt0,] || pm-deallocate [pt0,]);
+	pg-release-pt [pt0,];
 );
