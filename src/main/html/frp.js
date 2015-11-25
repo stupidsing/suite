@@ -48,7 +48,7 @@ var frp = () => {
 		resample: frp_ => {
 			var data_;
 			register_(data => data_ = data);
-			return frp_.redirect_((data, frp1) => frp1.fire(data_));
+			return frp_.redirect((data, frp1) => frp1.fire(data_));
 		},
 		unique: () => {
 			var list = [];
