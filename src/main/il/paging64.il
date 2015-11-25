@@ -136,7 +136,6 @@ declare pg-setup = function [] (
 	declare physical = 0;
 
 	declare pt0 = pg-acquire-pt [];
-
 	for i0 in (0, 1024) (
 		declare entry0;
 		if (physical < phyx0) then (
