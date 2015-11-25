@@ -76,6 +76,16 @@ declare pg-unmap = function [logical,] (
 	pg-unset-pt-entry [pe0, pt1,];
 );
 
+declare pg-acquire-pt = function [] (
+	declare pt = pm-allocate [];
+	pm-ref [pt,];
+	pt;
+);
+
+declare pg-release-pt = function [pt,] (
+	(pm-unref [pt,] || pm-deallocate [pt,]);
+);
+
 declare pg-allocate = function [nPages,] (
 	declare next-page = function [page,] (
 		declare n = page + 4096;
@@ -97,8 +107,7 @@ declare pg-allocate = function [nPages,] (
 		(r0 && (
 			for i in (0, nPages) (
 				declare logical = r0 + i shl 12;
-				declare physical = pm-allocate [];
-				pm-ref [physical,];
+				declare physical = pg-acquire-pt [];
 				pg-map [logical, physical,];
 			);
 		));
@@ -116,16 +125,6 @@ declare pg-deallocate = function [p, nPages,] (
 			pm-unref [physical,];
 		);
 	);
-);
-
-declare pg-acquire-pt = function [] (
-	declare pt = pm-allocate [];
-	pm-ref [pt,];
-	pt;
-);
-
-declare pg-release-pt = function [pt,] (
-	(pm-unref [pt,] || pm-deallocate [pt,]);
 );
 
 declare pg-setup = function [] (

@@ -62,6 +62,16 @@ declare pg-unmap = function [logical,] (
 	pg-unset-pt-entry [pe0, pt1,];
 );
 
+declare pg-acquire-pt = function [] (
+	declare pt = pm-allocate [];
+	pm-ref [pt,];
+	pt;
+);
+
+declare pg-release-pt = function [pt,] (
+	(pm-unref [pt,] || pm-deallocate [pt,]);
+);
+
 declare pg-allocate = function [nPages,] (
 	declare next-page = function [page,] (
 		declare n = page + 4096;
@@ -83,8 +93,7 @@ declare pg-allocate = function [nPages,] (
 		(r0 && (
 			for i in (0, nPages) (
 				declare logical = r0 + i shl 12;
-				declare physical = pm-allocate [];
-				pm-ref [physical,];
+				declare physical = pg-acquire-pt [];
 				pg-map [logical, physical,];
 			);
 		));
@@ -99,19 +108,9 @@ declare pg-deallocate = function [p, nPages,] (
 			declare logical = p + i shl 12;
 			declare physical = pg-get-physical [logical,];
 			pg-unmap [logical,];
-			pm-unref [physical,];
+			pg-release-pt [physical,];
 		);
 	);
-);
-
-declare pg-acquire-pt = function [] (
-	declare pt = pm-allocate [];
-	pm-ref [pt,];
-	pt;
-);
-
-declare pg-release-pt = function [pt,] (
-	(pm-unref [pt,] || pm-deallocate [pt,]);
 );
 
 declare pg-setup = function [] (
@@ -120,28 +119,21 @@ declare pg-setup = function [] (
 	declare physical = 0;
 
 	declare pt0 = pg-acquire-pt [];
-	pm-ref [pt0,];
-
 	for i0 in (0, 1024) (
 		declare entry0;
-
 		if (physical < phyx0) then (
 			declare pt1 = pg-acquire-pt [];
-			pm-ref [pt1,];
-
 			for i1 in (0, 1024) (
 				declare entry1 = if (0 < physical && physical < phyx1) then (physical + 261) else 0;
 				physical += 4096;
 				dw-set [pt1 + i1 shl 2, entry1,]; -- Global, user, present
 			);
-
 			let entry0 = pt1 + 7; -- Maps kernel memory, user, read/write, present
 		) else if (i0 = 1023) then (
 			let entry0 = pt0 + 1; -- Maps itself
 		) else (
 			let entry0 = 0;
 		);
-
 		dw-set [pt0 + i0 shl 2, entry0,];
 	);
 
