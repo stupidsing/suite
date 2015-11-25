@@ -302,11 +302,18 @@ as-mod-rm:_:_a (`.reg + .disp`) (.mod (.rexr .r)) () (.ds .disp)
 	, as-disp-mod:.ds .disp .mod
 	, not (.r = 4; .mod = 0, .r = 5; .r = 12; .mod = 0, .r = 13)
 #
+as-mod-rm:_:_a (`.indexReg * .scale + .disp`) (0 (0 4)) (.s (.rexir .ir) 5) (32 .disp)
+	:- as-sib-scale .scale .s
+	, as-rex-reg:32 .indexReg .rexir .ir
+	, as-imm:32 .disp
+	, not (.ir = 4)
+#
 as-mod-rm:_:_a (`.indexReg * .scale + .baseReg + .disp`) (.mod (.rexbr 4)) (.s (.rexir .ir) .br) (.ds .disp)
 	:- as-sib-scale .scale .s
 	, as-rex-reg:32 .indexReg .rexir .ir
 	, as-rex-reg:32 .baseReg .rexbr .br
 	, as-disp-mod:.ds .disp .mod
+	, not (.ir = 4; .br = 5)
 #
 as-mod-rm:.size:.a (.prefix `.ptr`) .modrm .sib .dsd
 	:- as-prefix-size .prefix .size
@@ -315,6 +322,9 @@ as-mod-rm:.size:.a (.prefix `.ptr`) .modrm .sib .dsd
 as-mod-rm:_:_a (`.reg`) .modrm .sib .dsd
 	:- as-rex-reg:32 .reg _ _
 	, as-mod-rm:_ (`.reg + 0`) .modrm .sib .dsd
+#
+as-mod-rm:_:_a (`.indexReg * .scale`) .modrm .sib .dsd
+	:- as-mod-rm:_:_a (`.indexReg * .scale + 0`) .modrm .sib .dsd
 #
 as-mod-rm:_:_a (`.indexReg * .scale + .baseReg`) .modrm .sib .dsd
 	:- as-mod-rm:_:_a (`.indexReg * .scale + .baseReg + 0`) .modrm .sib .dsd

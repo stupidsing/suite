@@ -168,14 +168,34 @@ ic-compile-register-better-option (LET .memory .value) .e0/.ex
 #
 ic-compile-register-better-option (NUMBER 0) (_ R+, _ XOR ($0, $0), .e)/.e
 #
+ic-compile-register-better-option (TREE ' + ' (NUMBER .j) (TREE ' * ' (NUMBER .i) .do)) .e0/.ex
+	:- member (1, 2, 4, 8,) .i
+	, ic-compile-register .do .e0/.e1
+	, .e1 = (_ LEA ($0, `$0 * .i + .j`), .ex)
+#
+ic-compile-register-better-option (TREE ' * ' (NUMBER .i) .do) .e0/.ex
+	:- member (1, 2, 4, 8,) .i
+	, ic-compile-register .do .e0/.e1
+	, .e1 = (_ LEA ($0, `$0 * .i`), .ex)
+#
 ic-compile-register-better-option (TREE ' + ' (NUMBER .i) THIS) .e0/.ex
 	:- .e0 = (_ R+, _ LEA ($0, `EBP + .i`), .ex)
 #
-ic-compile-register-better-option (TREE ' + ' (NUMBER .i) .do0) .e0/.ex
-	:- ic-compile-register .do0 .e0/.e1
+ic-compile-register-better-option (TREE ' + ' (NUMBER .i) .do) .e0/.ex
+	:- ic-compile-register .do .e0/.e1
 	, .e1 = (_ ADD ($0, .i), .ex)
 #
 
+ic-compile-operand-better-option (MEMORY 4 (TREE ' * ' (NUMBER .i) .pointer)) .e0/.ex .op
+	:- member (1, 2, 4, 8,) .i
+	, ic-compile-register .pointer .e0/.ex
+	, .op = `$0 * .i`
+#
+ic-compile-operand-better-option (MEMORY 4 (TREE ' + ' (NUMBER .j) (TREE ' * ' (NUMBER .i) .pointer))) .e0/.ex .op
+	:- member (1, 2, 4, 8,) .i
+	, ic-compile-register .pointer .e0/.ex
+	, .op = `$0 * .i + .j`
+#
 ic-compile-operand-better-option (MEMORY .size (TREE ' + ' (NUMBER .i0) (TREE ' + ' (NUMBER .i1) .pointer))) .e0/.ex .op
 	:- .e0 = (_ LET (.i, .i0 + .i1), .e1)
 	, ic-compile-operand-better-option (MEMORY .size (TREE ' + ' (NUMBER .i) .pointer)) .e1/.ex .op
