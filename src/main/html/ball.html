@@ -36,9 +36,6 @@
 		var fx = frpkbarrowx.resample(frame).last();
 		var fy = frpkbarrowy.resample(frame).last();
 
-		var ballx = Math.floor(width * Math.random()), bally = Math.floor(height * Math.random());
-		var dx = 2, dy = 2;
-
 		var background = {
 			move: () => [background],
 			draw: context => {
@@ -52,6 +49,8 @@
 		};
 
 		var ball_ = function(ballx, bally) {
+			var dx = 2, dy = 2;
+
 			var ball = {
 				move: () => {
 					var ix = fx();
@@ -68,6 +67,7 @@
 					return [ball];
 				},
 				draw: context => {
+					document.getElementById("log").value = document.getElementById("log").value+"... "+ballx+","+bally;
 					var radius = 24;
 
 					/* context.beginPath(); context.arc(ballx, bally, radius, 0, 2 * Math.PI); context.stroke(); */
@@ -88,14 +88,22 @@
 			return ball;
 		};
 
-		var objects = [background, ball_(ballx, bally)];
+		var ballx0 = Math.floor(width * Math.random()), bally0 = Math.floor(height * Math.random());
+		var objects = [background, ball_(ballx0, bally0)];
+
+		var clicks = frpmousemove
+			.resample(frpmousebutton.filter(mb => mb))
+			.map(xy => { return { x: xy.x - canvas.offsetLeft, y: xy.y - canvas.offsetTop, }; })
+			.read();
 
 		frame.register(data => {
+			document.getElementById("log").value = "";
 
 			// move
 			objects = read(objects)
 				.map(object => object.move())
 				.concat()
+				.append(clicks().map(xy => ball_(xy.x, xy.y)))
 				.list();
 
 			// repaint

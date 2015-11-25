@@ -2,6 +2,18 @@
 
 var read = list => {
 	return {
+		append: r => {
+			var l = r.list();
+			var list1 = [];
+			for (var i = 0; i < list.length; i++) list1.push(list[i]);
+			for (var i = 0; i < l.length; i++) list1.push(l[i]);
+			return read(list1);
+		},
+		cons: e => {
+			var list1 = [e];
+			for (var i = 0; i < list.length; i++) list1.push(list[i]);
+			return read(list1);
+		},
 		concat: () => {
 			var list1 = [];
 			for (var i = 0; i < list.length; i++) {

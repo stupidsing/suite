@@ -43,6 +43,15 @@ var frp = () => {
 			f.register(data => { v1 = data; fire1(); });
 			return frp1;
 		},
+		read: () => {
+			var list = [];
+			register_(data => list.push(data));
+			return () => {
+				var r = read(list);
+				list = [];
+				return r;
+			};
+		},
 		redirect: redirect_,
 		register: register_,
 		resample: frp_ => {
