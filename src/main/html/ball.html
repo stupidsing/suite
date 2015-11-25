@@ -67,7 +67,6 @@
 					return [ball];
 				},
 				draw: context => {
-					document.getElementById("log").value = document.getElementById("log").value+"... "+ballx+","+bally;
 					var radius = 24;
 
 					/* context.beginPath(); context.arc(ballx, bally, radius, 0, 2 * Math.PI); context.stroke(); */
@@ -97,7 +96,6 @@
 			.read();
 
 		frame.register(data => {
-			document.getElementById("log").value = "";
 
 			// move
 			objects = read(objects)
