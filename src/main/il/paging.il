@@ -119,7 +119,7 @@ declare pg-setup = function [] (
 	declare offset = 0;
 
 	for (declare physical = 0; physical < pm-stackx; physical =+ 4096) (
-		dw-set [pt1 + offset =+ 4, physical + 261,]; -- User, read/write
+		dw-set [pt1 + offset =+ 4, physical + 261,]; -- Global, user, read/write
 	);
 
 	dw-set [pt1, 0,]; -- Trap zero pointers
