@@ -206,16 +206,16 @@ declare pg-teardown = function [] (
 	asm _ D8 (+x00);
 
 	for i0 in (0, 1024) (
-		declare pt1 = (dw-get [pt0 + i0 shl 3,]) and +xFFFFFFFFFFFFF000;
+		declare pt1 = (qw-get [pt0 + i0 shl 3,]) and +xFFFFFFFFFFFFF000;
 		(pt1 && (
 			for i1 in (0, 1024) (
-				declare pt2 = (dw-get [pt1 + i1 shl 3,]) and +xFFFFFFFFFFFFF000;
+				declare pt2 = (qw-get [pt1 + i1 shl 3,]) and +xFFFFFFFFFFFFF000;
 				(pt2 && (
 					for i2 in (0, 1024) (
-						declare pt3 = (dw-get [pt2 + i2 shl 3,]) and +xFFFFFFFFFFFFF000;
+						declare pt3 = (qw-get [pt2 + i2 shl 3,]) and +xFFFFFFFFFFFFF000;
 						(pt3 && (
 							for i3 in (0, 1024) (
-								declare pt4 = (dw-get [pt3 + i3 shl 3,]) and +xFFFFFFFFFFFFF000;
+								declare pt4 = (qw-get [pt3 + i3 shl 3,]) and +xFFFFFFFFFFFFF000;
 								(pt4 && pg-release-pt [pt4,]);
 							);
 							pg-release-pt [pt3,];
