@@ -96,7 +96,7 @@ if (window.DeviceMotionEvent) {
 		frpori.fire({
 			a: e.acceleration,
 			aig: e.accelerationIncludingGravity,
-			rr:e.rotationRate,
+			rr: e.rotationRate,
 			interval: e.interval,
 		});
 	}, false);
