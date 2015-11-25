@@ -9,7 +9,7 @@ import suite.asm.StackAssembler;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Finder;
-import suite.lp.search.SewingProverBuilder;
+import suite.lp.search.SewingProverBuilder2;
 import suite.node.Node;
 import suite.os.FileUtil;
 import suite.parser.IncludePreprocessor;
@@ -19,7 +19,7 @@ import suite.text.Preprocess;
 public class ImperativeCompiler {
 
 	private RuleSet ruleSet = Suite.imperativeCompilerRuleSet();
-	private Finder finder = new SewingProverBuilder().build(ruleSet)
+	private Finder finder = new SewingProverBuilder2().build(ruleSet)
 			.apply(Suite.parse("" //
 					+ "source .ip" //
 					+ ", compile-imperative .ip .code/()" //

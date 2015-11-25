@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.lp.kb.RuleSet;
-import suite.lp.search.SewingProverBuilder;
+import suite.lp.search.SewingProverBuilder2;
 
 public class GrapherTest {
 
@@ -23,7 +23,7 @@ public class GrapherTest {
 
 	private boolean prove(String lp) {
 		RuleSet rs = Suite.createRuleSet();
-		return Suite.proveLogic(new SewingProverBuilder(), rs, lp);
+		return Suite.proveLogic(new SewingProverBuilder2(), rs, lp);
 	}
 
 }

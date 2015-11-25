@@ -16,7 +16,7 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
-import suite.lp.search.SewingProverBuilder;
+import suite.lp.search.SewingProverBuilder2;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -96,7 +96,7 @@ public class InstructionTranslatorTest {
 	}
 
 	private Node compile(RuleSet ruleSet, Node goal, Node program) {
-		Builder builder = new SewingProverBuilder();
+		Builder builder = new SewingProverBuilder2();
 		Finder compiler = builder.build(ruleSet).apply(goal);
 		return FindUtil.collectSingle(compiler, program);
 	}

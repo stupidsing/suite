@@ -11,7 +11,7 @@ import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.InterpretedProverBuilder;
-import suite.lp.search.SewingProverBuilder;
+import suite.lp.search.SewingProverBuilder2;
 
 public class ProverTest {
 
@@ -131,7 +131,7 @@ public class ProverTest {
 	private boolean test(RuleSet rs, String lp) {
 		ProverConfig pc = new ProverConfig();
 		boolean b0 = Suite.proveLogic(new InterpretedProverBuilder(pc), rs, lp);
-		boolean b1 = Suite.proveLogic(new SewingProverBuilder(pc), rs, lp);
+		boolean b1 = Suite.proveLogic(new SewingProverBuilder2(pc), rs, lp);
 		if (b0 == b1)
 			return b0;
 		else

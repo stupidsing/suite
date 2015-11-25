@@ -15,7 +15,7 @@ import suite.immutable.IMap;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Finder;
-import suite.lp.search.SewingProverBuilder;
+import suite.lp.search.SewingProverBuilder2;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -99,7 +99,7 @@ public class EagerFunInterpreter {
 		Node query = Suite.substitute("source .in, fc-process-function .0 .in .out, sink .out", mode);
 
 		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
-		Finder finder = new SewingProverBuilder().build(rs).apply(query);
+		Finder finder = new SewingProverBuilder2().build(rs).apply(query);
 		Node parsed = FindUtil.collectSingle(finder, node);
 
 		Map<String, Node> df = new HashMap<>();

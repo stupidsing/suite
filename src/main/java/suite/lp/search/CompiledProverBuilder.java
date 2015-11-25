@@ -21,7 +21,7 @@ public class CompiledProverBuilder implements Builder {
 	 * given code, then execute.
 	 */
 	public static CompiledProverBuilder level1(ProverConfig proverConfig) {
-		return new CompiledProverBuilder(new SewingProverBuilder(proverConfig), proverConfig);
+		return new CompiledProverBuilder(new SewingProverBuilder2(proverConfig), proverConfig);
 	}
 
 	/**

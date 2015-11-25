@@ -13,7 +13,7 @@ import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Finder;
-import suite.lp.search.SewingProverBuilder;
+import suite.lp.search.SewingProverBuilder2;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -46,7 +46,7 @@ public class Assembler {
 		if (isLongMode)
 			Suite.addRule(ruleSet, "as-long-mode");
 
-		finder = new SewingProverBuilder().build(ruleSet)
+		finder = new SewingProverBuilder2().build(ruleSet)
 				.apply(Suite.parse("" //
 						+ "source (.bits, .address, .instruction,)" //
 						+ ", asi:.bits:.address .instruction .code" //
