@@ -19,18 +19,18 @@ declare pg-is-mapped = function [logical,] (
 	declare pe1 = +xFFFFFFFFFFE00000 + (logical ushr 30) shl 3;
 	declare pe2 = +xFFFFFFFFC0000000 + (logical ushr 21) shl 3;
 	declare pe3 = +xFFFFFF8000000000 + (logical ushr 12) shl 3;
-	(dw-get [pe0,] && dw-get [pe1,] && dw-get [pe2,] && dw-get [pe3,]);
+	(qw-get [pe0,] && qw-get [pe1,] && qw-get [pe2,] && qw-get [pe3,]);
 );
 
 declare pg-get-physical = function [logical,] (
 	declare pe3 = +xFFFFFF8000000000 + (logical ushr 12) shl 3;
-	(dw-get [pe3,]) and +xFFFFFFFFFFFFF000;
+	(qw-get [pe3,]) and +xFFFFFFFFFFFFF000;
 );
 
 declare pg-set-pt-entry = function [pe0, pt1, pm-alloc,] (
-	declare physical = dw-get [pe0,];
+	declare physical = qw-get [pe0,];
 	(physical = 0 && (
-		dw-set [pe0, (let physical = pm-alloc []) + 7,];
+		qw-set [pe0, (let physical = pm-alloc []) + 7,];
 		pg-invalidate-page [pt1,];
 		zero [pt1, 4096,];
 	));
@@ -38,9 +38,9 @@ declare pg-set-pt-entry = function [pe0, pt1, pm-alloc,] (
 );
 
 declare pg-unset-pt-entry = function [pe0, pt1,] (
-	declare physical = (dw-get [pe0,]) and +xFFFFFFFFFFFFF000;
+	declare physical = (qw-get [pe0,]) and +xFFFFFFFFFFFFF000;
 	(pm-unref [physical,] || (
-		dw-set [pe0, 0,];
+		qw-set [pe0, 0,];
 		pg-invalidate-page [pt1,];
 		pm-deallocate [physical,];
 	));
@@ -119,34 +119,67 @@ declare pg-deallocate = function [p, nPages,] (
 );
 
 declare pg-setup = function [] (
+	declare phyx0 = (pm-stackx + +x0000007FFFFFFFFF) ushr 37;
+	declare phyx1 = (pm-stackx + +x000000003FFFFFFF) ushr 28;
+	declare phyx2 = (pm-stackx + +x00000000001FFFFF) ushr 21;
+	declare phyx3 = (pm-stackx + +x0000000000000FFF) ushr 12;
+	declare physical = 0;
+
 	declare pt0 = pm-allocate [];
-	declare pt1 = pm-allocate [];
-	declare pt2 = pm-allocate [];
-	declare pt3 = pm-allocate [];
-
 	pm-ref [pt0,];
-	pm-ref [pt1,];
-	pm-ref [pt2,];
-	pm-ref [pt3,];
 
-	zero [pt0, 4096,];
-	zero [pt1, 4096,];
-	zero [pt2, 4096,];
-	zero [pt3, 4096,];
+	for i0 in (0, 1024) (
+		declare entry0;
 
-	dw-set [pt0 + 4092, pt0 + 1,]; -- Maps itself
-	dw-set [pt0, pt1 + 5,]; -- Maps kernel memory
-	dw-set [pt1, pt2 + 5,];
-	dw-set [pt2, pt3 + 5,];
+		if (physical < phyx0) then (
+			declare pt1 = pm-allocate [];
+			pm-ref [pt1,];
 
-	declare offset = 0;
+			for i1 in (0, 1024) (
+				declare entry1;
 
-	for (declare physical = 0; physical < pm-stackx; physical =+ 4096) (
-		dw-set [pt3 + offset =+ 4, 0,];
-		dw-set [pt3 + offset =+ 4, physical + 261,]; -- User, read/write
+				if (physical < phyx1) then (
+					declare pt2 = pm-allocate [];
+					pm-ref [pt2,];
+
+					for i2 in (0, 1024) (
+						declare entry2;
+
+						if (physical < phyx2) then (
+							declare pt3 = pm-allocate [];
+							pm-ref [pt3,];
+		
+							for i3 in (0, 1024) (
+								declare entry3 = if (0 < physical && physical < phyx3) then (physical + 261) else 0;
+								physical += 4096;
+								qw-set [pt3 + i3 shl 3, entry3,]; -- Global, user, present
+							);
+
+							let entry2 = pt3 + 7; -- Maps kernel memory, user, read/write, present
+						) else (
+							let entry2 = 0;
+						);
+
+						qw-set [pt1 + i2 shl 3, entry2,];
+					);
+
+					let entry1 = pt2 + 7; -- Maps kernel memory, user, read/write, present
+				) else (
+					let entry1 = 0;
+				);
+
+				qw-set [pt0 + i1 shl 3, entry1,];
+			);
+
+			let entry0 = pt1 + 7; -- Maps kernel memory, user, read/write, present
+		) else if (i0 = 1023) then (
+			let entry0 = pt0 + 1; -- Maps itself
+		) else (
+			let entry0 = 0;
+		);
+
+		qw-set [pt0 + i0 shl 3, entry0,];
 	);
-
-	dw-set [pt3, 0,]; -- Trap zero pointers
 
 	& pt0;
 
@@ -178,12 +211,29 @@ declare pg-teardown = function [] (
 	asm _ D8 (+xEB); -- JMP $ + 2
 	asm _ D8 (+x00);
 
-	declare pt1 = (dw-get [pt0,]) and +xFFFFFFFFFFFFF000;
-	declare pt2 = (dw-get [pt1,]) and +xFFFFFFFFFFFFF000;
-	declare pt3 = (dw-get [pt2,]) and +xFFFFFFFFFFFFF000;
-
-	(pm-unref [pt3,] || pm-deallocate [pt3,]);
-	(pm-unref [pt2,] || pm-deallocate [pt2,]);
-	(pm-unref [pt1,] || pm-deallocate [pt1,]);
+	for i0 in (0, 1024) (
+		declare pt1 = (dw-get [pt0 + i0 shl 3,]) and +xFFFFFFFFFFFFF000;
+		(pt1 && (
+			for i1 in (0, 1024) (
+				declare pt2 = (dw-get [pt1 + i1 shl 3,]) and +xFFFFFFFFFFFFF000;
+				(pt2 && (
+					for i2 in (0, 1024) (
+						declare pt3 = (dw-get [pt2 + i2 shl 3,]) and +xFFFFFFFFFFFFF000;
+						(pt3 && (
+							for i3 in (0, 1024) (
+								declare pt4 = (dw-get [pt3 + i3 shl 3,]) and +xFFFFFFFFFFFFF000;
+								(pt4 && (
+									(pm-unref [pt4,] || pm-deallocate [pt4,]);
+								));
+							);
+							(pm-unref [pt3,] || pm-deallocate [pt3,]);
+						));
+					);
+					(pm-unref [pt2,] || pm-deallocate [pt2,]);
+				));
+			);
+			(pm-unref [pt1,] || pm-deallocate [pt1,]);
+		));
+	);
 	(pm-unref [pt0,] || pm-deallocate [pt0,]);
 );

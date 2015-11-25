@@ -105,24 +105,35 @@ declare pg-deallocate = function [p, nPages,] (
 );
 
 declare pg-setup = function [] (
+	declare np1 = (pm-stackx + 4095) ushr 12;
+	declare np0 = (np0 + 1023) ushr 10;
+	declare physical = 0;
+
 	declare pt0 = pm-allocate [];
-	declare pt1 = pm-allocate [];
-
 	pm-ref [pt0,];
-	pm-ref [pt1,];
 
-	zero [pt0, 4096,];
-	dw-set [pt0, pt1 + 7,]; -- Maps kernel memory, user, read/write, present
-	dw-set [pt0 + 4092, pt0 + 1,]; -- Maps itself
+	for i0 in (0, 1024) (
+		declare entry0;
 
-	zero [pt1, 4096,];
-	declare offset = 0;
+		if (physical < np0 shl 10) then (
+			declare pt1 = pm-allocate [];
+			pm-ref [pt1,];
 
-	for (declare physical = 0; physical < pm-stackx; physical =+ 4096) (
-		dw-set [pt1 + offset =+ 4, physical + 261,]; -- Global, user, present
+			for i1 in (0, 1024) (
+				declare entry1 = if (0 < physical && physical < pm-stackx) then (physical + 261) else 0;
+				physical += 4096;
+				dw-set [pt1 + i1 shl 2, entry1,]; -- Global, user, present
+			);
+
+			let entry0 = pt1 + 7; -- Maps kernel memory, user, read/write, present
+		) else if (i0 = 1023) then (
+			let entry0 = pt0 + 1; -- Maps itself
+		) else (
+			let entry0 = 0;
+		);
+
+		dw-set [pt0 + i0 shl 2, entry0,];
 	);
-
-	dw-set [pt1, 0,]; -- Trap zero pointers
 
 	& pt0;
 
@@ -147,8 +158,17 @@ declare pg-teardown = function [] (
 	asm _ D8 (+xEB); -- JMP $ + 2
 	asm _ D8 (+x00);
 
-	declare pt1 = (dw-get [pt0,]) and +xFFFFF000;
-
-	(pm-unref [pt1,] || pm-deallocate [pt1,]);
+	for i0 in (0, 1024) (
+		declare pt1 = (dw-get [pt0 + i0 shl 2,]) and +xFFFFF000;
+		(pt1 && (
+			for i1 in (0, 1024) (
+				declare pt2 = (dw-get [pt1 + i1 shl 2,]) and +xFFFFF000;
+				(pt2 && (
+					(pm-unref [pt2,] || pm-deallocate [pt2,]);
+				));
+			);
+			(pm-unref [pt1,] || pm-deallocate [pt1,]);
+		));
+	);
 	(pm-unref [pt0,] || pm-deallocate [pt0,]);
 );
