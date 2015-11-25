@@ -11,7 +11,7 @@ ic-erase-type0 (DECLARE .mp .var .type .do0) (DECLARES .var _ .size .dox)
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
 #
-ic-erase-type0 (FIELD (STRUCT-OF .nts) .name .do0) (MEMORY .size (TREE ' + ' .dox (NUMBER .offset)))
+ic-erase-type0 (FIELD (STRUCT-OF .nts) .name .do0) (MEMORY .size (TREE ' + ' (NUMBER .offset) .dox))
 	:- ic-struct-offset .nts .name .type .offset
 	, ic-type-size .type .size
 	, ic-erase-type (REF .do0) .dox

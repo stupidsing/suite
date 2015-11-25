@@ -8,7 +8,7 @@ ic-erase-variable .frame/.vs (METHOD0 .pss .do0) (METHOD0 .pss .dox)
 	, ic-parameters-variables .frame1 12 .pss .vs1/.vs
 	, ic-erase-variable .frame1/.vs1 .do0 .dox
 #
-ic-erase-variable .frame/.vs (VAR .var) (MEMORY .size (TREE ' + ' .this (NUMBER .offset)))
+ic-erase-variable .frame/.vs (VAR .var) (MEMORY .size (TREE ' + ' (NUMBER .offset) .this))
 	:- !
 	, once (member .vs (FRAME-VAR .var .frame1 .offset .size))
 	, ic-this .frame .frame1 .this
