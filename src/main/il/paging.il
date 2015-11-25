@@ -112,14 +112,14 @@ declare pg-setup = function [] (
 	pm-ref [pt1,];
 
 	zero [pt0, 4096,];
-	dw-set [pt0, pt1 + 5,]; -- Maps kernel memory
+	dw-set [pt0, pt1 + 7,]; -- Maps kernel memory, user, read/write, present
 	dw-set [pt0 + 4092, pt0 + 1,]; -- Maps itself
 
 	zero [pt1, 4096,];
 	declare offset = 0;
 
 	for (declare physical = 0; physical < pm-stackx; physical =+ 4096) (
-		dw-set [pt1 + offset =+ 4, physical + 261,]; -- Global, user, read/write
+		dw-set [pt1 + offset =+ 4, physical + 261,]; -- Global, user, present
 	);
 
 	dw-set [pt1, 0,]; -- Trap zero pointers
