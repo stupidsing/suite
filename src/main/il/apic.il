@@ -91,7 +91,7 @@ declare ap-parse-rsdt = function [rsdt as pointer:ap-acpi-header,] (
 	declare p = rsdt as int + size-of ap-acpi-header;
 	declare px = rsdt as int + `rsdt`/length;
 	while (p < px) do (
-		ap-parse-dt [(p =+ 4) as pointer:ap-acpi-header,];
+		ap-parse-dt [(dw-get [p =+ 4,]) as pointer:ap-acpi-header,];
 	);
 );
 
@@ -101,6 +101,7 @@ declare ap-parse-xsdt = function [rsdt as pointer:ap-acpi-header,] (
 declare ap-setup = function [] (
 	declare p1;
 
+	-- https://github.com/pdoane/osdev/blob/master/acpi/acpi.c
 	for (declare p = +xE0000; p < +x100000; p += 16) (
 		(dw-get [p,] = +x20445352 && dw-get [p + 4,] = +x20525450 -- 'RSD PTR '
 			&& let p1 = p
