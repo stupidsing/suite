@@ -51,30 +51,27 @@ public class StackAssembler extends Assembler {
 		for (Pair<Reference, Node> lni0 : lnis0) {
 			Node node0 = lni0.t1;
 			Node node1;
-			Node node2;
 			Node m[];
 
 			if ((m = ADDI__.apply(node0)) != null) {
+				Node m0 = rewrite(rs, m[0]);
 				int i = new EvalPredicates().evaluate(m[1]);
 				if (i == 1)
-					node1 = Suite.substitute("INC .0", m[0]);
+					node1 = Suite.substitute("INC .0", m0);
 				else if (i == -1)
-					node1 = Suite.substitute("DEC .0", m[0]);
+					node1 = Suite.substitute("DEC .0", m0);
 				else if (i > 0)
-					node1 = Suite.substitute("ADD (.0, .1)", m[0], Int.of(i));
+					node1 = Suite.substitute("ADD (.0, .1)", m0, Int.of(i));
 				else if (i < 0)
-					node1 = Suite.substitute("SUB (.0, .1)", m[0], Int.of(-i));
+					node1 = Suite.substitute("SUB (.0, .1)", m0, Int.of(-i));
 				else
 					node1 = Atom.NIL;
-			} else
-				node1 = node0;
-
-			if (node1 == FRBGN_) {
+			} else if (node0 == FRBGN_) {
 				deque.push(new int[] { fs, rs });
 				fs = 0;
 				rs = 0;
-				node2 = Atom.NIL;
-			} else if (node1 == FREND_) {
+				node1 = Atom.NIL;
+			} else if (node0 == FREND_) {
 				if (fs != 0)
 					throw new RuntimeException("Unbalanced frame stack in subroutine definition");
 				else if (rs != 0)
@@ -84,51 +81,51 @@ public class StackAssembler extends Assembler {
 					fs = arr[0];
 					rs = arr[1];
 				}
-				node2 = Atom.NIL;
-			} else if ((m = FRGET_.apply(node1)) != null)
+				node1 = Atom.NIL;
+			} else if ((m = FRGET_.apply(node0)) != null)
 				if (Binder.bind(m[0], Int.of(-fs), trail))
-					node2 = Atom.NIL;
+					node1 = Atom.NIL;
 				else
 					throw new RuntimeException("Cannot bind local variable offset");
-			else if ((m = FRPOP_.apply(node1)) != null) {
+			else if ((m = FRPOP_.apply(node0)) != null) {
 				fs -= 4;
-				node2 = Suite.substitute("POP .0", rewrite(rs, m[0]));
-			} else if ((m = FRPOPN.apply(node1)) != null) {
+				node1 = Suite.substitute("POP .0", rewrite(rs, m[0]));
+			} else if ((m = FRPOPN.apply(node0)) != null) {
 				Int int_ = (Int) m[0].finalNode();
 				fs -= int_.number;
-				node2 = Atom.NIL;
-			} else if ((m = FRPSH_.apply(node1)) != null) {
+				node1 = Atom.NIL;
+			} else if ((m = FRPSH_.apply(node0)) != null) {
 				fs += 4;
-				node2 = Suite.substitute("PUSH .0", rewrite(rs, m[0]));
-			} else if ((m = FRPSHN.apply(node1)) != null) {
+				node1 = Suite.substitute("PUSH .0", rewrite(rs, m[0]));
+			} else if ((m = FRPSHN.apply(node0)) != null) {
 				Int int_ = (Int) m[0].finalNode();
 				fs += int_.number;
-				node2 = Atom.NIL;
-			} else if ((m = LET___.apply(node1)) != null)
+				node1 = Atom.NIL;
+			} else if ((m = LET___.apply(node0)) != null)
 				if (Binder.bind(m[0], Int.of(new EvalPredicates().evaluate(m[1])), trail))
-					node2 = Atom.NIL;
+					node1 = Atom.NIL;
 				else
 					throw new RuntimeException("Cannot calculate expression");
-			else if (node1 == RPOP__) {
+			else if (node0 == RPOP__) {
 				rs--;
-				node2 = Atom.NIL;
-			} else if (node1 == RPSH__) {
+				node1 = Atom.NIL;
+			} else if (node0 == RPSH__) {
 				rs++;
-				node2 = Atom.NIL;
-			} else if (node1 == RREST_) {
+				node1 = Atom.NIL;
+			} else if (node0 == RREST_) {
 				fs -= 4 * rs;
 				for (int r = rs - 1; r >= 0; r--)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
-				node2 = Atom.NIL;
-			} else if (node1 == RSAVE_) {
+				node1 = Atom.NIL;
+			} else if (node0 == RSAVE_) {
 				for (int r = 0; r < rs; r++)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("PUSH .0", getRegister(r))));
 				fs += 4 * rs;
-				node2 = Atom.NIL;
+				node1 = Atom.NIL;
 			} else
-				node2 = rewrite(rs, node1);
+				node1 = rewrite(rs, node0);
 
-			lnis1.add(Pair.of(lni0.t0, node2));
+			lnis1.add(Pair.of(lni0.t0, node1));
 		}
 
 		return lnis1;
