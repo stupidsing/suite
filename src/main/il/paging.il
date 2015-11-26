@@ -120,20 +120,17 @@ declare pg-setup = function [] (
 
 	declare pt0 = pg-acquire-pt [];
 	for i0 in (0, 1024) (
-		declare entry0;
-		if (physical < phyx0) then (
+		declare entry0 = if (physical < phyx0) then (
 			declare pt1 = pg-acquire-pt [];
 			for i1 in (0, 1024) (
 				declare entry1 = if (0 < physical && physical < phyx1) then (physical + 261) else 0;
 				physical += 4096;
 				dw-set [pt1 + i1 shl 2, entry1,]; -- Global, user, present
 			);
-			let entry0 = pt1 + 7; -- Maps kernel memory, user, read/write, present
+			pt1 + 7; -- Maps kernel memory, user, read/write, present
 		) else if (i0 = 1023) then (
-			let entry0 = pt0 + 1; -- Maps itself
-		) else (
-			let entry0 = 0;
-		);
+			pt0 + 1; -- Maps itself
+		) else 0;
 		dw-set [pt0 + i0 shl 2, entry0,];
 	);
 

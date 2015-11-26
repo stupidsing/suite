@@ -136,40 +136,31 @@ declare pg-setup = function [] (
 
 	declare pt0 = pg-acquire-pt [];
 	for i0 in (0, 1024) (
-		declare entry0;
-		if (physical < phyx0) then (
+		declare entry0 = if (physical < phyx0) then (
 			declare pt1 = pg-acquire-pt [];
 			for i1 in (0, 1024) (
-				declare entry1;
-				if (physical < phyx1) then (
+				declare entry1 = if (physical < phyx1) then (
 					declare pt2 = pg-acquire-pt [];
 					for i2 in (0, 1024) (
-						declare entry2;
-						if (physical < phyx2) then (
+						declare entry2 = if (physical < phyx2) then (
 							declare pt3 = pg-acquire-pt [];
 							for i3 in (0, 1024) (
 								declare entry3 = if (0 < physical && physical < phyx3) then (physical + 261) else 0;
 								physical += 4096;
 								qw-set [pt3 + i3 shl 3, entry3,]; -- Global, user, present
 							);
-							let entry2 = pt3 + 7; -- Maps kernel memory, user, read/write, present
-						) else (
-							let entry2 = 0;
-						);
+							pt3 + 7; -- Maps kernel memory, user, read/write, present
+						) else 0;
 						qw-set [pt1 + i2 shl 3, entry2,];
 					);
-					let entry1 = pt2 + 7; -- Maps kernel memory, user, read/write, present
-				) else (
-					let entry1 = 0;
-				);
+					pt2 + 7; -- Maps kernel memory, user, read/write, present
+				) else 0;
 				qw-set [pt0 + i1 shl 3, entry1,];
 			);
-			let entry0 = pt1 + 7; -- Maps kernel memory, user, read/write, present
+			pt1 + 7; -- Maps kernel memory, user, read/write, present
 		) else if (i0 = 1023) then (
-			let entry0 = pt0 + 1; -- Maps itself
-		) else (
-			let entry0 = 0;
-		);
+			pt0 + 1; -- Maps itself
+		) else 0;
 		qw-set [pt0 + i0 shl 3, entry0,];
 	);
 
