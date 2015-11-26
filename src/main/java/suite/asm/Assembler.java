@@ -35,12 +35,17 @@ public class Assembler {
 	private RuleSet ruleSet;
 	private Finder finder;
 	private int bits;
+	private Fun<List<Pair<Reference, Node>>, List<Pair<Reference, Node>>> preassemble;
 
 	public Assembler(int bits) {
 		this(bits, false);
 	}
 
 	public Assembler(int bits, boolean isLongMode) {
+		this(bits, isLongMode, lnis -> lnis);
+	}
+
+	public Assembler(int bits, boolean isLongMode, Fun<List<Pair<Reference, Node>>, List<Pair<Reference, Node>>> preassemble) {
 		ruleSet = Suite.createRuleSet(Arrays.asList("asm.sl", "auto.sl"));
 
 		if (isLongMode)
@@ -54,6 +59,7 @@ public class Assembler {
 		));
 
 		this.bits = bits;
+		this.preassemble = preassemble;
 	}
 
 	public Bytes assemble(String in0) {
@@ -106,11 +112,7 @@ public class Assembler {
 				throw new RuntimeException("Cannot assemble " + node);
 		}
 
-		return assemble(generalizer, preassemble(lnis));
-	}
-
-	public List<Pair<Reference, Node>> preassemble(List<Pair<Reference, Node>> lnis) {
-		return lnis;
+		return assemble(generalizer, preassemble.apply(lnis));
 	}
 
 	private Bytes assemble(Generalizer generalizer, List<Pair<Reference, Node>> lnis) {

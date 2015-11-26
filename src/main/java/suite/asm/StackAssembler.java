@@ -17,13 +17,12 @@ import suite.node.Reference;
 import suite.node.util.TreeRewriter;
 import suite.util.FunUtil.Fun;
 
-public class StackAssembler extends Assembler {
+public class StackAssembler {
 
 	private Node rsOp0 = Atom.of("$0");
 	private Node rsOp1 = Atom.of("$1");
 	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI") };
 
-	private Fun<Node, Node[]> ADDI__ = Suite.matcher("ADDI (.0, .1)");
 	private Node FRBGN_ = Atom.of("FR-BEGIN");
 	private Node FREND_ = Atom.of("FR-END");
 	private Fun<Node, Node[]> FRGET_ = Suite.matcher("FR-GET .0");
@@ -32,18 +31,18 @@ public class StackAssembler extends Assembler {
 	private Fun<Node, Node[]> FRPSH_ = Suite.matcher("FR-PUSH .0");
 	private Fun<Node, Node[]> FRPSHN = Suite.matcher("FR-PUSHN .0");
 	private Fun<Node, Node[]> LET___ = Suite.matcher("LET (.0, .1)");
-	private Fun<Node, Node[]> MOVR__ = Suite.matcher("MOVR (.0, .1)");
 	private Node RPOP__ = Atom.of("R-");
 	private Node RPSH__ = Atom.of("R+");
 	private Node RREST_ = Atom.of("RRESTORE");
 	private Node RSAVE_ = Atom.of("RSAVE");
 
+	public final Assembler assembler;
+
 	public StackAssembler(int bits) {
-		super(bits);
+		assembler = new Assembler(bits, false, this::preassemble);
 	}
 
-	@Override
-	public List<Pair<Reference, Node>> preassemble(List<Pair<Reference, Node>> lnis0) {
+	private List<Pair<Reference, Node>> preassemble(List<Pair<Reference, Node>> lnis0) {
 		List<Pair<Reference, Node>> lnis1 = new ArrayList<>();
 		Deque<int[]> deque = new ArrayDeque<>();
 		Trail trail = new Trail();
@@ -54,20 +53,7 @@ public class StackAssembler extends Assembler {
 			Node node1;
 			Node m[];
 
-			if ((m = ADDI__.apply(node0)) != null) {
-				Node m0 = rewrite(rs, m[0]);
-				int i = new EvalPredicates().evaluate(m[1]);
-				if (i == 1)
-					node1 = Suite.substitute("INC .0", m0);
-				else if (i == -1)
-					node1 = Suite.substitute("DEC .0", m0);
-				else if (i > 0)
-					node1 = Suite.substitute("ADD (.0, .1)", m0, Int.of(i));
-				else if (i < 0)
-					node1 = Suite.substitute("SUB (.0, .1)", m0, Int.of(-i));
-				else
-					node1 = Atom.NIL;
-			} else if (node0 == FRBGN_) {
+			if (node0 == FRBGN_) {
 				deque.push(new int[] { fs, rs });
 				fs = 0;
 				rs = 0;
@@ -107,16 +93,7 @@ public class StackAssembler extends Assembler {
 					node1 = Atom.NIL;
 				else
 					throw new RuntimeException("Cannot calculate expression");
-			else if ((m = MOVR__.apply(node0)) != null) {
-				Node m0 = rewrite(rs, m[0]);
-				Node m1 = rewrite(rs, m[1]);
-				if (m0 == m1)
-					node1 = Atom.NIL;
-				else if (m1 instanceof Int && ((Int) m1).number == 0)
-					node1 = Suite.substitute("XOR (.0, .0)", m0);
-				else
-					node1 = Suite.substitute("MOV (.0, .1)", m0, m1);
-			} else if (node0 == RPOP__) {
+			else if (node0 == RPOP__) {
 				rs--;
 				node1 = Atom.NIL;
 			} else if (node0 == RPSH__) {
@@ -138,7 +115,7 @@ public class StackAssembler extends Assembler {
 			lnis1.add(Pair.of(lni0.t0, node1));
 		}
 
-		return lnis1;
+		return new PeepholeOptimizer().optimize(lnis1);
 	}
 
 	private Node rewrite(int sp, Node n) {

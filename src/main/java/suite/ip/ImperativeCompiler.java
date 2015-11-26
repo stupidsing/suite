@@ -33,7 +33,7 @@ public class ImperativeCompiler {
 
 	public Bytes compile(int org, String ip) {
 		Node code = FindUtil.collectSingle(finder, Suite.parse(ip));
-		return new StackAssembler(32).assemble(Suite.substitute(".0, .1", Suite.parse(".org = " + org), code));
+		return new StackAssembler(32).assembler.assemble(Suite.substitute(".0, .1", Suite.parse(".org = " + org), code));
 	}
 
 }
