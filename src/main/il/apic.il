@@ -52,15 +52,18 @@ constant ap-acpi-fadt = struct (
 
 constant ap-acpi-madt = struct (
 	header as ap-acpi-header,
-	local-apio-address as int,
+	local-apic-address as int,
 	flags as int,
 );
 
-declare io-apic-address;
+declare ap-io-apic-address;
+declare ap-local-apic-address;
 
 declare ap-parse-madt = function [madt as pointer:ap-acpi-madt,] (
 	declare p = madt as int + size-of ap-acpi-madt;
 	declare px = madt as int + `madt`/header/length;
+
+	let ap-local-apic-address = `madt`/local-apic-address;
 
 	while (p < px) do (
 		declare header = p as pointer:ap-header;
@@ -70,7 +73,7 @@ declare ap-parse-madt = function [madt as pointer:ap-acpi-madt,] (
 			declare local-apic = p as pointer:ap-local-apic;
 		) else if (type = 1) then ( -- IO APIC
 			declare io-apic = p as pointer:ap-io-apic;
-			let io-apic-address = `io-apic`/io-apic-address;
+			let ap-io-apic-address = `io-apic`/io-apic-address;
 		) else if (type = 2) then ( -- Interrupt override
 			declare intr-override = p as pointer:ap-interrupt-override;
 		) else ();
@@ -127,6 +130,9 @@ declare ap-setup = function [] (
 	);
 
 	cs-puts ["IO APIC address = ",];
-	cs-put-hex4 [io-apic-address,];
+	cs-put-hex4 [ap-io-apic-address,];
+	cs-nl [];
+	cs-puts ["Local APIC address = ",];
+	cs-put-hex4 [ap-local-apic-address,];
 	cs-nl [];
 );
