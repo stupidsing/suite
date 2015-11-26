@@ -1,32 +1,32 @@
-constant apic-header = struct (
+constant ap-header = struct (
 	type as byte,
 	length as byte,
 );
 
-constant apic-local-apic = struct (
-	header as apic-header,
+constant ap-local-apic = struct (
+	header as ap-header,
 	acpi-processor-id as byte,
 	apic-id as byte,
 	flags as int, 
 );
 
-constant apic-io-apic = struct (
-	header as apic-header,
+constant ap-io-apic = struct (
+	header as ap-header,
 	io-apic-id as byte,
 	reserved as byte,
 	io-apic-address as int,
 	global-system-interrupt-base as int,
 );
 
-constant apic-interrupt-override = struct (
-	header as apic-header,
+constant ap-interrupt-override = struct (
+	header as ap-header,
 	bus as byte,
 	source as byte,
 	interrupt as int,
 	flags as (byte * 2),
 );
 
-constant apic-acpi-header = struct (
+constant ap-acpi-header = struct (
 	signature as int,
 	length as int,
 	revision as byte,
@@ -38,8 +38,8 @@ constant apic-acpi-header = struct (
 	creator-revision as int,
 );
 
-constant apic-acpi-fadt = struct (
-	header as apic-acpi-header,
+constant ap-acpi-fadt = struct (
+	header as ap-acpi-header,
 	firmware-control as int,
 	dsdt as int,
 	reserved as byte,
@@ -50,55 +50,55 @@ constant apic-acpi-fadt = struct (
 	acpi-disable as byte,
 );
 
-constant apic-acpi-madt = struct (
-	header as apic-acpi-header,
-	local-apic-address as int,
+constant ap-acpi-madt = struct (
+	header as ap-acpi-header,
+	local-apio-address as int,
 	flags as int,
 );
 
 declare io-apic-address;
 
-declare apic-parse-madt = function [madt as pointer:apic-acpi-madt,] (
+declare ap-parse-madt = function [madt as pointer:ap-acpi-madt,] (
 	declare io-apic-address;
-	declare p = madt as int + size-of apic-acpi-madt;
+	declare p = madt as int + size-of ap-acpi-madt;
 	declare px = madt as int + `madt`/header/length;
 
 	while (p < px) do (
-		declare header = p as pointer:apic-header;
+		declare header = p as pointer:ap-header;
 		declare type = extend `header`/type;
 
 		if (type = 0) then ( -- local APIC
-			declare local-apic = p as pointer:apic-local-apic;
+			declare local-apic = p as pointer:ap-local-apic;
 		) else if (type = 1) then ( -- IO APIC
-			declare io-apic = p as pointer:apic-io-apic;
+			declare io-apic = p as pointer:ap-io-apic;
 			let io-apic-address = `io-apic`/io-apic-address;
 		) else if (type = 2) then ( -- Interrupt override
-			declare intr-override = p as pointer:apic-interrupt-override;
+			declare intr-override = p as pointer:ap-interrupt-override;
 		) else ();
 
 		p += extend `header`/length;
 	);
 );
 
-declare apic-parse-dt = function [header as pointer:apic-acpi-header,] (
+declare ap-parse-dt = function [header as pointer:ap-acpi-header,] (
 	if (`header`/signature = +x50434146) then (
 	) else if (`header`/signature = +x43495041) then (
-		apic-parse-madt [header as pointer:apic-acpi-madt,];
+		ap-parse-madt [header as pointer:ap-acpi-madt,];
 	) else ();
 );
 
-declare apic-parse-rsdt = function [rsdt as pointer:apic-acpi-header,] (
-	declare p = rsdt as int + size-of apic-acpi-header;
+declare ap-parse-rsdt = function [rsdt as pointer:ap-acpi-header,] (
+	declare p = rsdt as int + size-of ap-acpi-header;
 	declare px = rsdt as int + `rsdt`/length;
 	while (p < px) do (
-		apic-parse-dt [(p =+ 4) as pointer:apic-acpi-header,];
+		ap-parse-dt [(p =+ 4) as pointer:ap-acpi-header,];
 	);
 );
 
-declare apic-parse-xsdt = function [rsdt as pointer:apic-acpi-header,] (
+declare ap-parse-xsdt = function [rsdt as pointer:ap-acpi-header,] (
 );
 
-declare apic-setup = function [] (
+declare ap-setup = function [] (
 	declare p1;
 
 	for (declare p = +xE0000; p < +x100000; p += 16) (
@@ -111,14 +111,14 @@ declare apic-setup = function [] (
 
 	if (revision = 0) then (
 		declare rsdt = dw-get [p1 + 16,];
-		apic-parse-rsdt [rsdt as pointer:apic-acpi-header,];
+		ap-parse-rsdt [rsdt as pointer:ap-acpi-header,];
 	) else if (revision = 2) then (
 		declare rsdt = dw-get [p1 + 16,];
 		declare xsdt = dw-get [p1 + 24,];
 		if xsdt then (
-			apic-parse-xsdt [xsdt as pointer:apic-acpi-header,];
+			ap-parse-xsdt [xsdt as pointer:ap-acpi-header,];
 		) else (
-			apic-parse-rsdt [rsdt as pointer:apic-acpi-header,];
+			ap-parse-rsdt [rsdt as pointer:ap-acpi-header,];
 		);
 	) else (
 		cs-puts ["Unsupported ACPI version ",];

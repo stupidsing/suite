@@ -173,7 +173,7 @@ asm _ MOV (ESP, kernel-second-esp);
 	asm _ MOV (`EBP`, EAX);
 
 	ba-setup [];
-	apic-setup [];
+	ap-setup [];
 	irq-setup [];
 	sch-setup [];
 	idt-setup [];
