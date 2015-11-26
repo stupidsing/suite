@@ -17,7 +17,7 @@ public class AssemblerTest {
 		Suite.isProverTrace = true;
 		try {
 			Assembler assembler = new Assembler(32);
-			assembler.assemble(Suite.parse(".org = 0, .l LEA (EAX, `EAX * 4`),"));
+			assembler.assemble(Suite.parse(".org = 0, .l LEA (EAX, `EAX * 4 + (0 - 4)`),"));
 		} finally {
 			Suite.isProverTrace = isProverTrace0;
 		}
