@@ -104,7 +104,7 @@ ic-compile-register0 NOP .e0/.ex
 ic-compile-register0 (POST-ADD-NUMBER .memory .i) .e0/.ex
 	:- ic-compile-memory .memory .e0/.e1 4 .pointer
 	, ic-compile-register .pointer .e1/.e2
-	, .e2 = (_ ADD (DWORD `$0`, .i)
+	, .e2 = (_ ADDI (DWORD `$0`, .i)
 		, _ MOV ($0, `$0`)
 		, .ex)
 #
@@ -114,7 +114,7 @@ ic-compile-register0 (PRE-ADD-NUMBER .memory .i) .e0/.ex
 	, .e2 = (_ R+
 		, _ MOV ($0, $1)
 		, _ MOV ($1, `$0`)
-		, _ ADD (DWORD `$0`, .i)
+		, _ ADDI (DWORD `$0`, .i)
 		, _ R-
 		, .ex)
 #
@@ -183,7 +183,7 @@ ic-compile-register-better-option (TREE ' + ' (NUMBER .i) THIS) .e0/.ex
 #
 ic-compile-register-better-option (TREE ' + ' (NUMBER .i) .do) .e0/.ex
 	:- ic-compile-register .do .e0/.e1
-	, .e1 = (_ ADD ($0, .i), .ex)
+	, .e1 = (_ ADDI ($0, .i), .ex)
 #
 
 ic-compile-operand-better-option (MEMORY 4 (TREE ' * ' (NUMBER .i) .pointer)) .e0/.ex .op
