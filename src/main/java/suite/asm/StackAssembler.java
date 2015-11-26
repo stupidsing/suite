@@ -56,7 +56,11 @@ public class StackAssembler extends Assembler {
 
 			if ((m = ADDI__.apply(node0)) != null) {
 				int i = new EvalPredicates().evaluate(m[1]);
-				if (i > 0)
+				if (i == 1)
+					node1 = Suite.substitute("INC .0", m[0]);
+				else if (i == -1)
+					node1 = Suite.substitute("DEC .0", m[0]);
+				else if (i > 0)
 					node1 = Suite.substitute("ADD (.0, .1)", m[0], Int.of(i));
 				else if (i < 0)
 					node1 = Suite.substitute("SUB (.0, .1)", m[0], Int.of(-i));
