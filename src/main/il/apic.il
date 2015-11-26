@@ -59,7 +59,6 @@ constant ap-acpi-madt = struct (
 declare io-apic-address;
 
 declare ap-parse-madt = function [madt as pointer:ap-acpi-madt,] (
-	declare io-apic-address;
 	declare p = madt as int + size-of ap-acpi-madt;
 	declare px = madt as int + `madt`/header/length;
 
