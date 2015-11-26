@@ -124,15 +124,9 @@ declare ap-setup = function [] (
 			ap-parse-rsdt [rsdt as pointer:ap-acpi-header,];
 		);
 	) else (
-		cs-puts ["Unsupported ACPI version ",];
-		cs-put-hex1 [revision,];
-		cs-nl [];
+		log-byte "Unsupported ACPI version " revision;
 	);
 
-	cs-puts ["IO APIC address = ",];
-	cs-put-hex4 [ap-io-apic-address,];
-	cs-nl [];
-	cs-puts ["Local APIC address = ",];
-	cs-put-hex4 [ap-local-apic-address,];
-	cs-nl [];
+	log-dword "IO APIC address = " ap-io-apic-address;
+	log-dword "Local APIC address = " ap-local-apic-address;
 );

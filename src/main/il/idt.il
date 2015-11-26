@@ -70,9 +70,7 @@ declare idt-setup = function [] (
 				(irq-number >= 8 && outb [+xA0, +x20,]);
 				outb [+x20, +x20,];
 			) else (
-				cs-puts ["SPURIOUS INTERRUPT = ",];
-				cs-put-hex1 [irq-number,];
-				cs-nl [];
+				log-byte "SPURIOUS INTERRUPT = " irq-number;
 			);
 		);
 
@@ -108,17 +106,11 @@ declare idt-setup = function [] (
 			asm _ MOV (EAX, CR2);
 			asm _ PUSH (EAX);
 
-			cs-puts ["FAULT INTERRUPT = ",];
-			cs-put-hex1 [vector,];
-			cs-puts [", ERROR CODE = ",];
-			cs-put-hex4 [code,];
-			cs-puts [", CS = ",];
-			cs-put-hex2 [cs0,];
-			cs-puts [", EIP = ",];
-			cs-put-hex4 [eip0,];
-			cs-puts [", CR2 = ",];
-			cs-put-hex4 [cr2,];
-			cs-nl [];
+			log-byte "FAULT INTERRUPT = " vector;
+			log-dword "ERROR CODE = " code;
+			log-word "CS = " cs0;
+			log-dword "EIP = " eip0;
+			log-dword "CR2 = " cr2;
 		);
 
 		sch-exit [];

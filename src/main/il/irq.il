@@ -2,9 +2,7 @@ declare irq = this;
 declare irq-sinks as ((baseless [int,] int) * 16);
 
 declare dump-sink = baseless [irq-number,] (
-	cs-puts ["IRQ = ",];
-	cs-put-hex1 [irq-number,];
-	cs-nl [];
+	log-byte "IRQ = " irq-number;
 );
 
 declare irq-get-isr = function [] (

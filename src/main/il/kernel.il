@@ -108,6 +108,11 @@ constant mm-deallocate .type .pointer = (
 	ba-deallocate [address `.pointer`, size-of .type,]
 );
 
+constant log .s = ( cs-puts [.s,]; cs-nl []; );
+constant log-byte .s .i = ( cs-puts [.s,]; cs-put-hex1 [.i,]; cs-nl []; );
+constant log-word .s .i = ( cs-puts [.s,]; cs-put-hex2 [.i,]; cs-nl []; );
+constant log-dword .s .i = ( cs-puts [.s,]; cs-put-hex4 [.i,]; cs-nl []; );
+
 #include(apic.il);
 #include(irq.il);
 #include(scheduler.il);
@@ -183,17 +188,14 @@ asm _ MOV (ESP, kernel-second-esp);
 	kb-setup [];
 	asm _ STI ();
 
-	cs-puts [if (ne2k-probe []) then "ne2k detected" else "ne2k not found",];
-	cs-nl [];
+	log (if (ne2k-probe []) then "ne2k detected" else "ne2k not found");
 
 	ne2k-setup [];
 
 	if (sch-fork []) then (
-		cs-puts ["From another thread",];
-		cs-nl [];
+		log "From another thread";
 	) else (
-		cs-puts ["From first thread",];
-		cs-nl [];
+		log "From first thread";
 		while 1 do ( -- Halt CPU if none of the process is busy
 			asm _ CLI ();
 			declare process = head-process;
@@ -228,7 +230,7 @@ asm _ MOV (ESP, kernel-second-esp);
 	pg-teardown [];
 	sch-teardown [];
 
-	cs-puts ["System halted",];
+	log "System halted";
 	asm _ CLI ();
 	asm _ HLT ();
 )) [];
