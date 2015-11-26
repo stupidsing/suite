@@ -289,7 +289,9 @@ ic-compile-let (METHOD .this .sub) .memory .e0/.ex
 	, .e3 = (_ MOV (`$1`, $0)
 		, _ R-
 		, .e4)
-	, ic-compile-register .sub .e4/.e5
+	, once (ic-compile-register .sub .e4/.e5
+		; ic-error "Cannot return value" .sub
+	)
 	, .e5 = (_ MOV (`$1 + 4`, $0)
 		, _ R-
 		, .ex)

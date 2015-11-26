@@ -1,11 +1,16 @@
 ic-parse (asm .i) (ASM .i)
 	:- ! -- Assembler might have variables, skip processing
 #
-ic-parse .do0 .parsed :- ic-parse-better-option .do0 .parsed, !
+ic-parse .do0 .parsed
+	:- ic-parse-better-option .do0 .parsed, !
 #
 ic-parse .do0 .parsed
 	:- ic-parse-sugar .do0 .do1
 	, ic-parse .do1 .parsed
+#
+ic-parse false (BOOLEAN 0)
+#
+ic-parse true (BOOLEAN 1)
 #
 ic-parse (declare .var as .t = .value; .do) (DECLARE POLY .var .type (SEQ (LET (VAR .var) (IN .var .type .value1)) .do1))
 	:- !
@@ -156,8 +161,6 @@ ic-parse-sugar (constant .var = .value; .do) .do1
 ic-parse-sugar (declare-pointer .var to .type; .do) (declare .mem as .type; declare .var = & .mem; .do)
 	:- is.atom .var, temp .mem
 #
-ic-parse-sugar false 0
-#
 ic-parse-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .step))
 #
 ic-parse-sugar (for .var in (.start, .end) .do) (declare .var = .start; while (.var < .end) do (.do; .var += 1))
@@ -166,8 +169,6 @@ ic-parse-sugar (not .b) (if .b then 0 else 1)
 #
 ic-parse-sugar (var .var = .value; .do) (var .var; let .var = .value; .do)
 	:- is.atom .var
-#
-ic-parse-sugar true 1
 #
 
 ic-parse-method-parameter (out .param) (MP OUT .param _)
@@ -197,6 +198,8 @@ ic-parse-type (fix .tv0 .type0) .typex
 #
 ic-parse-type (.t * .size) (ARRAY-OF .size .type)
 	:- ic-parse-type .t .type
+#
+ic-parse-type boolean BOOLEAN
 #
 ic-parse-type int I32
 #

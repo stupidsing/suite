@@ -117,7 +117,7 @@ declare idt-setup = function [] (
 	);
 
 	for i in (0, 256) (
-		idt-set-entry [i, handle-general-interrupt, 1,];
+		idt-set-entry [i, handle-general-interrupt, true,];
 	);
 
 	(
@@ -125,7 +125,7 @@ declare idt-setup = function [] (
 			idt-set-entry [.i, snippet (
 				asm _ PUSH (.i);
 				asm _ JMP (DWORD .h0);
-			), 0,]
+			), false,]
 		);
 		set-fault-handler +x00 .fault-handler-0;
 		set-fault-handler +x01 .fault-handler-0;
@@ -166,7 +166,7 @@ declare idt-setup = function [] (
 			idt-set-entry [.i, snippet (
 				asm _ PUSH (.i);
 				asm _ JMP (DWORD .h0);
-			), 1,]
+			), true,]
 		);
 		set-irq-handler +x20 .irq-handler;
 		set-irq-handler +x21 .irq-handler;
@@ -186,7 +186,7 @@ declare idt-setup = function [] (
 		set-irq-handler +x2F .irq-handler;
 	);
 
-	idt-set-entry [+x20, handle-timer-interrupt, 1,];
+	idt-set-entry [+x20, handle-timer-interrupt, true,];
 
 	(
 		declare-pointer idtr to (int * 2);

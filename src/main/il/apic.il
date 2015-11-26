@@ -98,6 +98,7 @@ declare ap-parse-rsdt = function [rsdt as pointer:ap-acpi-header,] (
 );
 
 declare ap-parse-xsdt = function [rsdt as pointer:ap-acpi-header,] (
+	0;
 );
 
 declare ap-setup = function [] (

@@ -6,6 +6,8 @@ ic-erase-type .do0 .dox
 	, list.query .ts (.do0_ .dox_) (ic-erase-type .do0_ .dox_)
 #
 
+ic-erase-type0 (BOOLEAN .b) (NUMBER .b)
+#
 ic-erase-type0 (DECLARE .mp .var .type .do0) (DECLARES .var _ .size .dox)
 	:- dump (type-of {.var} = .mp .type), nl
 	, ic-type-size .type .size
@@ -68,6 +70,8 @@ ic-struct-offset (_ .dummyType, .nameTypes) .name .type .offset
 ic-type-size .type _
 	:- not (bound .type)
 	, ic-error "Cannot get size of" .type
+#
+ic-type-size BOOLEAN 4
 #
 ic-type-size I32 4
 #

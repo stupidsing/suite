@@ -8,6 +8,8 @@ ic-infer-type .vs .do .typex
 
 ic-infer-type0 _ (ASM _) I32
 #
+ic-infer-type0 _ (BOOLEAN _) BOOLEAN
+#
 ic-infer-type0 .vs (DECLARE .mp .var .varType .do) .type
 	:- ic-infer-type (.mp .var .varType, .vs) .do .type
 #
@@ -20,7 +22,7 @@ ic-infer-type0 .vs (EXTEND-SIGNED .do) I32
 #
 ic-infer-type0 .vs (IF .if .then .else) .type
 	:- ic-infer-type .vs .if .ifType
-	, ic-return-type .ifType
+	, ic-condition-type .ifType
 	, ic-infer-type .vs .then .type
 	, ic-infer-type .vs .else .type
 #
@@ -41,7 +43,6 @@ ic-infer-type0 .vs (LET .var .value) .type
 #
 ic-infer-type0 .vs (METHOD0 () .do) (METHOD0-OF () .returnType)
 	:- ic-infer-type .vs .do .returnType
-	, ic-return-type .returnType
 #
 ic-infer-type0 .vs (METHOD0 (MP .io .var .paramType, .mps) .do) (METHOD0-OF (PARAM-OF .io .paramType, .pos) .returnType)
 	:- ic-infer-type (MONO .var .paramType, .vs) (METHOD0 .mps .do) (METHOD0-OF .pos .returnType)
@@ -94,7 +95,8 @@ ic-infer-type0 _ (STRING _) I32
 ic-infer-type0 _ THIS I32
 #
 ic-infer-type0 .vs (TREE .op .value0 .value1) .type
-	:- once (member (' = ', ' != ',) .op, .type = I32
+	:- once (
+		member (' = ', ' != ', ' <= ', ' < ', ' >= ', ' > ',) .op, .type = BOOLEAN
 		; .type = .valueType
 	)
 	, ic-infer-type .vs .value0 .valueType
@@ -109,7 +111,8 @@ ic-infer-type0 .vs (VAR .var) .type
 	)
 #
 ic-infer-type0 .vs (WHILE .while .do) I32
-	:- ic-infer-type .vs .while I32
+	:- ic-infer-type .vs .while .whileType
+	, ic-condition-type .whileType
 	, ic-infer-type .vs .do _
 #
 
@@ -125,6 +128,6 @@ ic-field-type .nts .name .type
 	, member .nts (.name .type)
 #
 
-ic-return-type .type
-	:- once (.type = I32; .type = METHOD0-OF _ _; .type = POINTER-OF _)
+ic-condition-type .type
+	:- once (.type = BOOLEAN; .type = I32; .type = METHOD0-OF _ _; .type = POINTER-OF _)
 #

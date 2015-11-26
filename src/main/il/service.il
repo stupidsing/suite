@@ -9,7 +9,7 @@ declare svc-handle-service = function [p0, p1, p2,] (
 	if (p0 = svc-exit_) then (
 		sch-exit [];
 	) else if (p0 = svc-fork_) then (
-		sch-fork [];
+		if (sch-fork []) then 1 else 0;
 	) else if (p0 = svc-nl___) then (
 		cs-nl [];
 	) else if (p0 = svc-putc_) then (

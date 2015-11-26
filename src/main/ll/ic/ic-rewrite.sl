@@ -1,5 +1,7 @@
 ic-rewrite (ASM .i) (ASM .i) .ts/.ts
 #
+ic-rewrite (BOOLEAN .i) (BOOLEAN .i) .ts/.ts
+#
 ic-rewrite (DECLARE .mp .var .type0 .do0) (DECLARE .mp .var .type1 .do1) (.do0 .do1, .ts)/.ts
 	:- member (MONO, POLY,) .mp
 	, ic-rewrite-type .type0 .type1
@@ -95,6 +97,8 @@ ic-rewrite-method-parameter .mps0 .mps1
 	, .mps1 = MPS .var .size
 #
 
+ic-rewrite-type BOOLEAN BOOLEAN
+#
 ic-rewrite-type I8 I8
 #
 ic-rewrite-type I32 I32
