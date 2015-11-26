@@ -32,6 +32,7 @@ public class StackAssembler extends Assembler {
 	private Fun<Node, Node[]> FRPSH_ = Suite.matcher("FR-PUSH .0");
 	private Fun<Node, Node[]> FRPSHN = Suite.matcher("FR-PUSHN .0");
 	private Fun<Node, Node[]> LET___ = Suite.matcher("LET (.0, .1)");
+	private Fun<Node, Node[]> MOVR__ = Suite.matcher("MOVR (.0, .1)");
 	private Node RPOP__ = Atom.of("R-");
 	private Node RPSH__ = Atom.of("R+");
 	private Node RREST_ = Atom.of("RRESTORE");
@@ -106,7 +107,16 @@ public class StackAssembler extends Assembler {
 					node1 = Atom.NIL;
 				else
 					throw new RuntimeException("Cannot calculate expression");
-			else if (node0 == RPOP__) {
+			else if ((m = MOVR__.apply(node0)) != null) {
+				Node m0 = rewrite(rs, m[0]);
+				Node m1 = rewrite(rs, m[1]);
+				if (m0 == m1)
+					node1 = Atom.NIL;
+				else if (m1 instanceof Int && ((Int) m1).number == 0)
+					node1 = Suite.substitute("XOR (.0, .0)", m0);
+				else
+					node1 = Suite.substitute("MOV (.0, .1)", m0, m1);
+			} else if (node0 == RPOP__) {
 				rs--;
 				node1 = Atom.NIL;
 			} else if (node0 == RPSH__) {

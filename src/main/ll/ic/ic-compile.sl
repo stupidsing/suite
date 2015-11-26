@@ -9,7 +9,7 @@
 -- ESP - stack pointer
 ic-compile-register .do .e0/.ex
 	:- ic-compile-operand-better-option .do .e0/.e1 .op
-	, !, .e1 = (_ MOV ($0, .op), .ex)
+	, !, .e1 = (_ MOVR ($0, .op), .ex)
 #
 ic-compile-register .do .e0/.ex
 	:- ic-compile-register-better-option .do .e0/.ex, !
@@ -68,7 +68,7 @@ ic-compile-register0 (INVOKE .mr .ips) .e0/.ex
 		, _ MOV (EBP, .thisOp)
 		, _ R-
 		, _ CALL ($0)
-		, _ MOV ($0, EAX)
+		, _ MOVR ($0, EAX)
 		, _ FR-POP (EBP)
 		, .e6)
 	, .e7 = (_ R-
@@ -373,7 +373,7 @@ ic-operator .operator .op
 	:- ic-operator-setcc .operator .setcc
 #
 ic-operator ' * ' .op -- IMUL cannot accept immediate operands
-	(_ MOV ($0, .op)
+	(_ MOVR ($0, .op)
 	, _ IMUL ($1, $0)
 	, _ R-
 	, .e
@@ -384,7 +384,7 @@ ic-operator ' / ' .op .e :- ic-divide .op EAX .e
 ic-operator ' %% ' .op .e :- ic-divide .op EDX .e
 #
 ic-operator .shift .op
-	(_ MOV (ECX, .op)
+	(_ MOVR (ECX, .op)
 	, _ R-
 	, _ .insn ($0, CL)
 	, .e
@@ -393,17 +393,17 @@ ic-operator .shift .op
 #
 
 ic-divide .op .reg
-	(_ MOV (ECX, .op)
+	(_ MOVR (ECX, .op)
 	, _ R-
 	, _ XOR (EDX, EDX)
 	, _ FR-PUSH (EAX)
-	, _ MOV (EAX, $0)
+	, _ MOVR (EAX, $0)
 	, _ R-
 	, _ IDIV (ECX)
-	, _ MOV (ECX, .reg)
+	, _ MOVR (ECX, .reg)
 	, _ FR-POP (EAX)
 	, _ R+
-	, _ MOV ($0, ECX)
+	, _ MOVR ($0, ECX)
 	, .e
 )/.e #
 
@@ -421,9 +421,9 @@ ic-copy-memory 0 .size .e0/.ex
 	, let .mod4 (.size % 4)
 	, .e0 = (_ CLD ()
 		, _ MOV (EDX, ESI)
-		, _ MOV (EDI, $0)
-		, _ MOV (ESI, $1)
-		, _ MOV (ECX, .div4)
+		, _ MOVR (EDI, $0)
+		, _ MOVR (ESI, $1)
+		, _ MOVR (ECX, .div4)
 		, _ REP MOVSD ()
 		, .e1)
 	, once (.mod4 >= 1, .e1 = (_ MOVSB (), .e2); .e1 = .e2)
