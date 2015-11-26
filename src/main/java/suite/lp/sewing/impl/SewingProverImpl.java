@@ -622,7 +622,6 @@ public class SewingProverImpl implements SewingProver {
 			tr2 = tr1;
 
 		return tr2;
-
 	}
 
 	private Trampoline and(Streamlet<Trampoline> trs) {
