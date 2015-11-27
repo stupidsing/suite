@@ -166,9 +166,9 @@ public class EbnfTopDownParse {
 				.collect(As::map);
 	}
 
-	public Node parse(String s, EbnfGrammar grammar) {
+	public Node parse(String s, EbnfGrammar eg) {
 		Parse parse = new Parse(s);
-		Node node = parse.parse(0, build(grammar));
+		Node node = parse.parse(0, build(eg));
 		if (node != null)
 			return node;
 		else {
@@ -178,8 +178,8 @@ public class EbnfTopDownParse {
 
 	}
 
-	public Node check(String s, EbnfGrammar grammar) {
-		return new Parse(s).parse(0, build(grammar));
+	public Node check(String s, EbnfGrammar eg) {
+		return new Parse(s).parse(0, build(eg));
 	}
 
 	private Parser build(EbnfGrammar eg) {

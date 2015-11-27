@@ -137,7 +137,7 @@ public class Reactive<T> {
 	}
 
 	public void register(Sink<T> receiver) {
-		register(receiver);
+		receivers.add(receiver);
 	}
 
 	public Reactive<T> unique() {
