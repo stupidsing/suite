@@ -31,7 +31,7 @@ import suite.util.Util;
 public class Ebnf {
 
 	private EbnfBreakdown breakdown = new EbnfBreakdown();
-	private EbnfEngine engine;
+	private EbnfTopDownParse engine;
 	private String rootEntity;
 
 	public static class Node {
@@ -84,7 +84,7 @@ public class Ebnf {
 		for (Entry<String, EbnfGrammar> entry : grammarsByEntity.entrySet())
 			entry.setValue(headRecursion.reduceHeadRecursion(entry.getValue()));
 
-		engine = new EbnfEngine(grammarsByEntity);
+		engine = new EbnfTopDownParse(grammarsByEntity);
 	}
 
 	public Node parse(String s) {

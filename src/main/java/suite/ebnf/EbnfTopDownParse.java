@@ -28,7 +28,7 @@ import suite.util.Util;
  *
  * @author ywsing
  */
-public class EbnfEngine {
+public class EbnfTopDownParse {
 
 	private static boolean trace = false;
 
@@ -160,7 +160,7 @@ public class EbnfEngine {
 		}
 	}
 
-	public EbnfEngine(Map<String, EbnfGrammar> grammarsByEntity) {
+	public EbnfTopDownParse(Map<String, EbnfGrammar> grammarsByEntity) {
 		parsersByEntity = Read.from(grammarsByEntity) //
 				.map(Pair.map1(this::build)) //
 				.collect(As::map);
