@@ -185,6 +185,11 @@ ic-compile-register-better-option (TREE ' + ' (NUMBER .i) .do) .e0/.ex
 	:- ic-compile-register .do .e0/.e1
 	, .e1 = (_ ADDI ($0, .i), .ex)
 #
+ic-compile-register-better-option (TREE .shift .do (NUMBER .i)) .e0/.ex
+	:- ic-operator-shift .shift .insn
+	, ic-compile-register .do .e0/.e1
+	, .e1 = (_ .insn ($0, .i), .ex)
+#
 
 ic-compile-operand-better-option (MEMORY 4 (TREE ' * ' (NUMBER .i) .pointer)) .e0/.ex .op
 	:- member (1, 2, 4, 8,) .i
