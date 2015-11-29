@@ -33,8 +33,8 @@ public class StackAssembler {
 	private Fun<Node, Node[]> LET___ = Suite.matcher("LET (.0, .1)");
 	private Node RPOP__ = Atom.of("R-");
 	private Node RPSH__ = Atom.of("R+");
-	private Node RREST_ = Atom.of("RRESTORE");
-	private Node RSAVE_ = Atom.of("RSAVE");
+	private Node RRESTA = Atom.of("RRESTORE-ALL");
+	private Node RSAVEA = Atom.of("RSAVE-ALL");
 
 	public final Assembler assembler;
 
@@ -99,12 +99,12 @@ public class StackAssembler {
 			} else if (node0 == RPSH__) {
 				rs++;
 				node1 = Atom.NIL;
-			} else if (node0 == RREST_) {
+			} else if (node0 == RRESTA) {
 				fs -= 4 * rs;
 				for (int r = rs - 1; r >= 0; r--)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
 				node1 = Atom.NIL;
-			} else if (node0 == RSAVE_) {
+			} else if (node0 == RSAVEA) {
 				for (int r = 0; r < rs; r++)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("PUSH .0", getRegister(r))));
 				fs += 4 * rs;

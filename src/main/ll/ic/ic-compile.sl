@@ -59,7 +59,7 @@ ic-compile-register0 (INVOKE .mr .ips) .e0/.ex
 		, .this = MEMORY 4 .pointer
 		, .sub = MEMORY 4 (TREE ' + ' (NUMBER 4) .pointer)
 	)
-	, .e1 = (_ RSAVE
+	, .e1 = (_ RSAVE-ALL
 		, .e2)
 	, ic-push-pop-invoke-parameters .ips .e2/.e3 .e6/.e7
 	, ic-compile-register .sub .e3/.e4
@@ -72,7 +72,7 @@ ic-compile-register0 (INVOKE .mr .ips) .e0/.ex
 		, _ FR-POP (EBP)
 		, .e6)
 	, .e7 = (_ R-
-		, _ RRESTORE
+		, _ RRESTORE-ALL
 		, _ R+
 		, .ex)
 #
