@@ -28,7 +28,7 @@ ic-erase-type0 (INDEX .type .array .i0) (MEMORY .size (TREE ' + ' .pointer (TREE
 #
 ic-erase-type0 (METHOD0 .mps .do0) (METHOD0 .mpss .dox)
 	:- zip .mps .mpss .list
-	, list.query .list (MP IN .var .type):(MPS .var .size) (ic-type-size .type .size)
+	, list.query .list (MP _ .var .type):(MPS .var .size) (ic-type-size .type .size)
 	, ic-erase-type .do0 .dox
 #
 ic-erase-type0 (NEW _ ()) (NEWS ())
