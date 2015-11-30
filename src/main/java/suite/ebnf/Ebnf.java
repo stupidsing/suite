@@ -3,6 +3,7 @@ package suite.ebnf;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,16 +38,21 @@ public class Ebnf {
 	public static class Node {
 		public int start, end;
 		public final String entity;
-		public final List<Node> nodes = new ArrayList<>();
+		public final List<Node> nodes;
 
 		public Node(String entity, int start) {
 			this(entity, start, 0);
 		}
 
 		public Node(String entity, int start, int end) {
+			this(entity, start, end, Collections.emptyList());
+		}
+
+		public Node(String entity, int start, int end, List<Node> nodes) {
 			this.entity = entity;
 			this.start = start;
 			this.end = end;
+			this.nodes = nodes;
 		}
 
 		public String toString() {
