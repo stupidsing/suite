@@ -210,9 +210,6 @@ public class EbnfTopDownParse {
 		case NAMED_:
 			parser = deepen(build(eg.children.get(0)), eg.content);
 			break;
-		case NIL___:
-			parser = (parse, st) -> Outlet.from(st);
-			break;
 		case OPTION:
 			Parser g = build(eg.children.get(0));
 			parser = (parse, st) -> st.pr(parse, g).cons(st);

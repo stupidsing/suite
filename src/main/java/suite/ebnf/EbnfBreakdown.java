@@ -30,7 +30,7 @@ public class EbnfBreakdown {
 		else if ((list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size() > 1)
 			en = new EbnfGrammar(EbnfGrammarType.AND___, breakdown(list));
 		else if (s.equals(""))
-			en = new EbnfGrammar(EbnfGrammarType.NIL___);
+			en = new EbnfGrammar(EbnfGrammarType.AND___);
 		else if (s.endsWith("?"))
 			en = new EbnfGrammar(EbnfGrammarType.OPTION, breakdown(Util.substr(s, 0, -1)));
 		else if (s.endsWith("*"))

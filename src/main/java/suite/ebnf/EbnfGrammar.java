@@ -11,7 +11,6 @@ public class EbnfGrammar {
 		ENTITY, //
 		EXCEPT, //
 		NAMED_, //
-		NIL___, //
 		OPTION, //
 		OR____, //
 		REPT0_, //

@@ -77,7 +77,7 @@ public class EbnfHeadRecursion {
 
 			hrf = new HeadRecursionForm(fun.apply(hrf0.listb), fun.apply(hrf0.listc));
 		} else if (en.type == EbnfGrammarType.NAMED_ && Util.stringEquals(en.content, entity))
-			hrf = new HeadRecursionForm(empty, Arrays.asList(new EbnfGrammar(EbnfGrammarType.NIL___)));
+			hrf = new HeadRecursionForm(empty, Arrays.asList(new EbnfGrammar(EbnfGrammarType.AND___)));
 		else if (en.type == EbnfGrammarType.OR____) {
 			List<HeadRecursionForm> hrfs = Read.from(en.children).map(en_ -> getHeadRecursionForm(en_, entity)).toList();
 			List<EbnfGrammar> listb = Read.from(hrfs).concatMap(hrf_ -> Read.from(hrf_.listb)).toList();

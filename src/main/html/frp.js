@@ -112,7 +112,7 @@ if (window.DeviceMotionEvent) {
 }
 else log("device motion not supported");
 
-if (window.DeviceOrientationEvent) {
+if (window.DeviceOrientationEvent)
 	window.addEventListener("deviceorientation", e => {
 		frpori.fire({
 			lr: e.gamma, // the left-to-right tilt in degrees, where right is positive
@@ -120,7 +120,6 @@ if (window.DeviceOrientationEvent) {
 			dir: e.alpha, // the compass direction the device is facing in degrees
 		});
 	}, false);
-}
 else log("device orientation not supported");
 
 var frpanimframe = () => {
