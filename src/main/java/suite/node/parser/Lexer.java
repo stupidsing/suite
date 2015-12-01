@@ -3,13 +3,13 @@ package suite.node.parser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import suite.adt.Pair;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.streamlet.Read;
 import suite.util.CommandUtil;
 
 /**
@@ -46,10 +46,10 @@ public class Lexer {
 	public Lexer(Operator operators[], String in) {
 		this.in = in;
 
-		Map<String, Operator> operatorsByName = new HashMap<>();
-		for (Operator operator : operators)
-			if (operator != TermOp.TUPLE_)
-				operatorsByName.put(operator.getName(), operator);
+		Map<String, Operator> operatorsByName = Read.from(operators) //
+				.filter(operator -> operator != TermOp.TUPLE_) //
+				.toMap(Operator::getName, operator -> operator);
+
 		commandUtil = new CommandUtil<>(operatorsByName);
 	}
 
