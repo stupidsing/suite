@@ -13,6 +13,7 @@ import suite.node.parser.FactorizeResult.FTerminal;
 import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.util.FunUtil.Fun;
 import suite.util.Util;
 
 /**
@@ -67,6 +68,10 @@ public class Ebnf {
 	}
 
 	public Ebnf(Reader reader) throws IOException {
+		this(reader, EbnfTopDownParse::new);
+	}
+
+	public Ebnf(Reader reader, Fun<Map<String, EbnfGrammar>, EbnfParse> fun) throws IOException {
 		List<Pair<String, String>> pairs = Read.lines(reader) //
 				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
 				.map(line -> line.replace('\t', ' ')) //
@@ -85,7 +90,7 @@ public class Ebnf {
 		for (Entry<String, EbnfGrammar> entry : grammarsByEntity.entrySet())
 			entry.setValue(headRecursion.reduceHeadRecursion(entry.getValue()));
 
-		engine = new EbnfTopDownParse(grammarsByEntity);
+		engine = fun.apply(grammarsByEntity);
 	}
 
 	public FactorizeResult parseFNode(String s, String entity) {

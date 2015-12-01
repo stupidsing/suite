@@ -54,7 +54,7 @@ public class EbnfLrParse implements EbnfParse {
 		}
 	}
 
-	public EbnfLrParse(Map<String, EbnfGrammar> grammarsByEntity, EbnfGrammar root) {
+	public EbnfLrParse(Map<String, EbnfGrammar> grammarsByEntity) {
 		for (EbnfGrammar eg : grammarsByEntity.values())
 			buildLr(eg, newState());
 
