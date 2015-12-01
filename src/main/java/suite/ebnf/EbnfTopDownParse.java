@@ -28,7 +28,7 @@ import suite.util.Util;
  *
  * @author ywsing
  */
-public class EbnfTopDownParse {
+public class EbnfTopDownParse implements EbnfParse {
 
 	private static boolean trace = false;
 
@@ -166,7 +166,7 @@ public class EbnfTopDownParse {
 				.collect(As::map);
 	}
 
-	public Node parse(String s, EbnfGrammar eg) {
+	public Node parse(EbnfGrammar eg, String s) {
 		Parse parse = new Parse(s);
 		Node node = parse.parse(0, build(eg));
 		if (node != null)
@@ -175,10 +175,9 @@ public class EbnfTopDownParse {
 			Pair<Integer, Integer> pos = parse.findPosition(parse.errorPosition);
 			throw new RuntimeException("Syntax error for entity " + parse.errorEntity + " at " + pos);
 		}
-
 	}
 
-	public Node check(String s, EbnfGrammar eg) {
+	public Node check(EbnfGrammar eg, String s) {
 		return new Parse(s).parse(0, build(eg));
 	}
 

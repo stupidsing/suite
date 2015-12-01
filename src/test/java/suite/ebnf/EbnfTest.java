@@ -24,16 +24,16 @@ public class EbnfTest {
 				+ "non-alpha ::= <CHARACTER> /except/ ([a-z] | [A-Z]) \n" //
 				+ "non-boolean ::= <IDENTIFIER> /except/ (\"true\" | \"false\") \n" //
 		));
-		assertNotNull(ebnf.check("123!@#", "non-alphas"));
-		assertNotNull(ebnf.check("beatles", "non-boolean"));
-		assertNull(ebnf.check("456q$%^", "non-alphas"));
-		assertNull(ebnf.check("false", "non-boolean"));
+		assertNotNull(ebnf.check("non-alphas", "123!@#"));
+		assertNotNull(ebnf.check("non-boolean", "beatles"));
+		assertNull(ebnf.check("non-alphas", "456q$%^"));
+		assertNull(ebnf.check("non-boolean", "false"));
 	}
 
 	@Test
 	public void testExpression() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/expression.ebnf"));
-		System.out.println(ebnf.parse("1 + 2 + 3", "<expression>"));
+		System.out.println(ebnf.parse("<expression>", "1 + 2 + 3"));
 	}
 
 	@Test
@@ -42,34 +42,34 @@ public class EbnfTest {
 				+ "number ::= number \"x\" digit | digit \n" //
 				+ "digit ::= [0-9] \n" //
 		));
-		System.out.println(ebnf.parse("1", "number"));
-		System.out.println(ebnf.parse("1x2", "number"));
-		System.out.println(ebnf.parse("1x2x3x4", "number"));
+		System.out.println(ebnf.parse("number", "1"));
+		System.out.println(ebnf.parse("number", "1x2"));
+		System.out.println(ebnf.parse("number", "1x2x3x4"));
 	}
 
 	@Test
 	public void testId() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
-		System.out.println(ebnf.parse("abc", "<IDENTIFIER>"));
+		System.out.println(ebnf.parse("<IDENTIFIER>", "abc"));
 	}
 
 	@Test
 	public void testJava() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		String s = FileUtil.read("src/test/java/suite/ebnf/EbnfTest.java");
-		System.out.println(new EbnfDump(ebnf.parse(s), s));
+		System.out.println(new EbnfDump(ebnf.parse("CompilationUnit", s), s));
 	}
 
 	@Test
 	public void testJavaExpression() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
-		System.out.println(ebnf.parse("\"1\" + \"2\"", "Expression"));
+		System.out.println(ebnf.parse("Expression", "\"1\" + \"2\""));
 	}
 
 	@Test
 	public void testJavaSimple() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
-		System.out.println(ebnf.parse("public class C { public void f() { int a; } }"));
+		System.out.println(ebnf.parse("CompilationUnit", "public class C { public void f() { int a; } }"));
 	}
 
 	@Test
@@ -88,7 +88,7 @@ public class EbnfTest {
 	public void testSql() throws IOException {
 		String sql = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
-		System.out.println(ebnf.parse(sql, "sql"));
+		System.out.println(ebnf.parse("sql", sql));
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class EbnfTest {
 		String s = sb.toString();
 		System.out.println(s);
 		Ebnf ebnf = new Ebnf(new StringReader(s));
-		System.out.println(ebnf.parse("1 * 2 + 3"));
+		System.out.println(ebnf.parse("e0", "1 * 2 + 3"));
 	}
 
 	private FactorizeResult rewrite(Ebnf ebnf, String entity, String from, String to, FactorizeResult fr0) {

@@ -5,24 +5,22 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.adt.Pair;
 import suite.algo.UnionFind;
 import suite.ebnf.Ebnf.Node;
 import suite.immutable.IList;
+import suite.parser.Lexer;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
-import suite.util.Util;
 
-public class EbnfLrParse {
+public class EbnfLrParse implements EbnfParse {
 
 	private UnionFind<State> unionFind = new UnionFind<>();
 	private List<Rule> rules = new ArrayList<>();
 	private List<Reduce> reduces0 = new ArrayList<>();
 
-	private State state0, statex;
 	private Map<Pair<String, State>, State> fsm;
 	private Map<State, Reduce> reduces;
 
@@ -49,23 +47,16 @@ public class EbnfLrParse {
 	}
 
 	private class State {
-		private int nc;
+		private int n;
 
 		private State(int nc) {
-			this.nc = nc;
+			this.n = nc;
 		}
 	}
 
-	public EbnfLrParse(Map<String, EbnfGrammar> grammarsByEntity, String rootEntity) {
-		state0 = newState();
-		statex = newState();
-
-		for (Entry<String, EbnfGrammar> entry : grammarsByEntity.entrySet()) {
-			Streamlet<State> states = buildLr(entry.getValue(), state0);
-			if (Util.stringEquals(entry.getKey(), rootEntity))
-				for (State state : states)
-					unionFind.union(state, statex);
-		}
+	public EbnfLrParse(Map<String, EbnfGrammar> grammarsByEntity, EbnfGrammar root) {
+		for (EbnfGrammar eg : grammarsByEntity.values())
+			buildLr(eg, newState());
 
 		fsm = Read.from(rules) //
 				.toMap(rule -> Pair.of(rule.input, unionFind.find(rule.state0)), rule -> unionFind.find(rule.statex));
@@ -74,7 +65,22 @@ public class EbnfLrParse {
 				.toMap(reduce -> unionFind.find(reduce.state0), reduce -> reduce);
 	}
 
-	public Node parse(Source<String> tokens) {
+	@Override
+	public Node check(EbnfGrammar eg, String in) {
+		return parse(eg, in);
+	}
+
+	@Override
+	public Node parse(EbnfGrammar eg, String in) {
+		State state0 = newState();
+		State statex = newState();
+
+		for (State state : buildLr(eg, state0))
+			unionFind.union(state, statex);
+		return parse(new Lexer(in).tokens(), state0, statex);
+	}
+
+	private Node parse(Source<String> tokens, State state0, State statex) {
 		Deque<Node> stack = new ArrayDeque<>();
 		State state = state0;
 		Reduce reduce;
@@ -87,7 +93,7 @@ public class EbnfLrParse {
 			if ((reduce = reduces.get(state)) != null) {
 				IList<Node> nodes = IList.end();
 
-				for (int i = 0; i < state.nc; i++)
+				for (int i = 0; i < state.n; i++)
 					nodes = IList.cons(stack.pop(), nodes);
 
 				stack.push(new Node(reduce.name, 0, 0, Read.from(nodes).toList()));
@@ -140,7 +146,7 @@ public class EbnfLrParse {
 	}
 
 	private State newState(State state) {
-		return new State(state.nc + 1);
+		return new State(state.n + 1);
 	}
 
 	private State newState() {

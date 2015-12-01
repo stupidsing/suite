@@ -31,8 +31,7 @@ import suite.util.Util;
 public class Ebnf {
 
 	private EbnfBreakdown breakdown = new EbnfBreakdown();
-	private EbnfTopDownParse engine;
-	private String rootEntity;
+	private EbnfParse engine;
 
 	public static class Node {
 		public int start, end;
@@ -77,9 +76,6 @@ public class Ebnf {
 				.filter(lr -> lr != null) //
 				.toList();
 
-		if (!pairs.isEmpty())
-			rootEntity = pairs.get(0).t0;
-
 		Map<String, EbnfGrammar> grammarsByEntity = Read.from(pairs) //
 				.map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t0, lr.t1))) //
 				.collect(As::map);
@@ -92,21 +88,9 @@ public class Ebnf {
 		engine = new EbnfTopDownParse(grammarsByEntity);
 	}
 
-	public Node parse(String s) {
-		return parse(s, rootEntity);
-	}
-
-	public Node parse(String s, String entity) {
-		return engine.parse(s, breakdown.breakdown(entity));
-	}
-
-	public Node check(String s, String entity) {
-		return engine.check(s, breakdown.breakdown(entity));
-	}
-
 	public FactorizeResult parseFNode(String s, String entity) {
 		char[] cs = s.toCharArray();
-		return toFactorizeResult(cs, 0, cs.length, parse(s, entity));
+		return toFactorizeResult(cs, 0, cs.length, parse(entity, s));
 	}
 
 	private FactorizeResult toFactorizeResult(char cs[], int p0, int px, Node node) {
@@ -129,6 +113,14 @@ public class Ebnf {
 			Chars post = Chars.of(cs, node.end, px);
 			return new FactorizeResult(pre, new FTerminal(mid), post);
 		}
+	}
+
+	public Node check(String entity, String s) {
+		return engine.check(breakdown.breakdown(entity), s);
+	}
+
+	public Node parse(String entity, String s) {
+		return engine.parse(breakdown.breakdown(entity), s);
 	}
 
 }
