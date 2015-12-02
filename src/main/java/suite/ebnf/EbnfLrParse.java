@@ -73,10 +73,11 @@ public class EbnfLrParse implements EbnfParse {
 				.forEach(p -> converge(buildLr(grammarsByEntity.get(p.t0), p.t1.state0).cons(p.t1.statex)));
 
 		fsm = Read.from(rules) //
-				.toMap(rule -> Pair.of(rule.input, unionFind.find(rule.t.state0)), rule -> unionFind.find(rule.t.statex));
+				.toMap(rule -> Pair.of(rule.input, find(rule.t.state0)), rule -> find(rule.t.statex));
 
 		reduces = Read.from(reduces0) //
-				.toMap(reduce -> unionFind.find(reduce.t.state0), reduce -> reduce);
+				.toMap(reduce -> find(reduce.t.state0),
+						reduce -> new Reduce(reduce.name, find(reduce.t.state0), find(reduce.t.statex)));
 	}
 
 	@Override
@@ -89,7 +90,7 @@ public class EbnfLrParse implements EbnfParse {
 		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
 		State state0 = newState();
 		State statex = converge(buildLr(eg, state0));
-		return parse(source, state0, statex);
+		return parse(source, find(state0), find(statex));
 	}
 
 	private Node parse(Source<Node> tokens, State state0, State statex) {
@@ -164,6 +165,10 @@ public class EbnfLrParse implements EbnfParse {
 		for (State state : states)
 			unionFind.union(state, statex);
 		return statex;
+	}
+
+	private State find(State state) {
+		return unionFind.find(state);
 	}
 
 	private State newState(State state) {

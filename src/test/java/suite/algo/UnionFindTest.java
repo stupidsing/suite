@@ -1,6 +1,7 @@
 package suite.algo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +21,8 @@ public class UnionFindTest {
 		unionFind.union(7, 8);
 		unionFind.union(0, 9);
 
+		assertTrue(unionFind.find(1) == unionFind.find(4));
+		assertTrue(unionFind.find(0) != unionFind.find(7));
 		assertEquals(1, find(unionFind, 1, 6).size());
 		assertEquals(1, find(unionFind, 7, 8).size());
 	}
