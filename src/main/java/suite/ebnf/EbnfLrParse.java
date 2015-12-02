@@ -75,7 +75,7 @@ public class EbnfLrParse implements EbnfParse {
 		Read.from(entities) //
 				.forEach(entity -> {
 					EbnfGrammar eg = grammarByEntity.get(entity);
-					Transition t = transitionByEntity.get(entity);
+					Transition t = transitionByEntity0.get(entity);
 					converge(buildLr(eg, t.state0), t.statex);
 				});
 
