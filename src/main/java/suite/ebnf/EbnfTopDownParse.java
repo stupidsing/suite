@@ -8,6 +8,7 @@ import java.util.Map;
 import suite.adt.Pair;
 import suite.ebnf.Ebnf.Node;
 import suite.ebnf.EbnfExpect.Expect;
+import suite.ebnf.EbnfGrammar.EbnfGrammarType;
 import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
@@ -166,9 +167,10 @@ public class EbnfTopDownParse implements EbnfParse {
 				.collect(As::map);
 	}
 
-	public Node parse(EbnfGrammar eg, String s) {
+	@Override
+	public Node parse(String entity, String s) {
 		Parse parse = new Parse(s);
-		Node node = parse.parse(0, build(eg));
+		Node node = parse.parse(0, build(new EbnfGrammar(EbnfGrammarType.ENTITY, entity)));
 		if (node != null)
 			return node;
 		else {
@@ -177,8 +179,9 @@ public class EbnfTopDownParse implements EbnfParse {
 		}
 	}
 
-	public Node check(EbnfGrammar eg, String s) {
-		return new Parse(s).parse(0, build(eg));
+	@Override
+	public Node check(String entity, String s) {
+		return new Parse(s).parse(0, build(new EbnfGrammar(EbnfGrammarType.ENTITY, entity)));
 	}
 
 	private Parser build(EbnfGrammar eg) {

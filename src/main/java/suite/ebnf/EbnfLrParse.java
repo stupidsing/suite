@@ -87,16 +87,15 @@ public class EbnfLrParse implements EbnfParse {
 	}
 
 	@Override
-	public Node check(EbnfGrammar eg, String in) {
-		return parse(eg, in);
+	public Node check(String entity, String in) {
+		return parse(entity, in);
 	}
 
 	@Override
-	public Node parse(EbnfGrammar eg, String in) {
+	public Node parse(String entity, String in) {
+		Transition t = transitionByEntity.get(entity);
 		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
-		State state0 = newState();
-		State statex = converge(buildLr(eg, state0));
-		return parse(source, find(state0), find(statex));
+		return parse(source, find(t.state0), find(t.statex));
 	}
 
 	private Node parse(Source<Node> tokens, State state0, State statex) {

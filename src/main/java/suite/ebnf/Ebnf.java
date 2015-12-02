@@ -121,11 +121,11 @@ public class Ebnf {
 	}
 
 	public Node check(String entity, String s) {
-		return engine.check(breakdown.breakdown(entity), s);
+		return engine.check(entity, s);
 	}
 
 	public Node parse(String entity, String s) {
-		return engine.parse(breakdown.breakdown(entity), s);
+		return engine.parse(entity, s);
 	}
 
 }
