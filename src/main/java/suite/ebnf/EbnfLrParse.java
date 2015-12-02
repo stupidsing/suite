@@ -76,7 +76,7 @@ public class EbnfLrParse implements EbnfParse {
 				.forEach(entity -> {
 					EbnfGrammar eg = grammarByEntity.get(entity);
 					Transition t = transitionByEntity.get(entity);
-					converge(buildLr(eg, t.state0).cons(t.statex));
+					converge(buildLr(eg, t.state0), t.statex);
 				});
 
 		shifts = Read.from(shifts0) //
@@ -151,7 +151,8 @@ public class EbnfLrParse implements EbnfParse {
 			statesx = Read.from(eg.children).concatMap(eg_ -> buildLr(eg_, state0));
 			break;
 		case REPT0_:
-			statesx = Read.from(converge(buildLr(eg.children.get(0), state0).cons(state0)));
+			converge(buildLr(eg.children.get(0), state0), state0);
+			statesx = Read.from(state0);
 			break;
 		case STRING:
 			State statex = newState(state0);
@@ -165,11 +166,9 @@ public class EbnfLrParse implements EbnfParse {
 		return statesx;
 	}
 
-	private State converge(Streamlet<State> states) {
-		State statex = newState();
-		for (State state : states)
-			unionFind.union(state, statex);
-		return statex;
+	private void converge(Streamlet<State> states, State state) {
+		for (State state_ : states)
+			unionFind.union(state_, state);
 	}
 
 	private State find(State state) {
