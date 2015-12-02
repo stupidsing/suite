@@ -63,8 +63,8 @@ public class EbnfLrParse implements EbnfParse {
 		}
 	}
 
-	public EbnfLrParse(Map<String, EbnfGrammar> grammarsByEntity) {
-		List<String> entities = Read.from(grammarsByEntity) //
+	public EbnfLrParse(Map<String, EbnfGrammar> grammarByEntity) {
+		List<String> entities = Read.from(grammarByEntity) //
 				.map(Pair::first_) //
 				.toList();
 
@@ -74,7 +74,7 @@ public class EbnfLrParse implements EbnfParse {
 
 		Read.from(entities) //
 				.forEach(entity -> {
-					EbnfGrammar eg = grammarsByEntity.get(entity);
+					EbnfGrammar eg = grammarByEntity.get(entity);
 					Transition t = transitionByEntity.get(entity);
 					converge(buildLr(eg, t.state0).cons(t.statex));
 				});

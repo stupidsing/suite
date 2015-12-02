@@ -9,17 +9,17 @@ import suite.ebnf.EbnfGrammar.EbnfGrammarType;
 
 public class EbnfDesugar {
 
-	private Map<String, EbnfGrammar> grammarsByEntity = new HashMap<>();
+	private Map<String, EbnfGrammar> grammarByEntity = new HashMap<>();
 	private EbnfGrammar nil = new EbnfGrammar(EbnfGrammarType.AND___);
 	private int counter;
 
-	public EbnfDesugar(Map<String, EbnfGrammar> grammarsByEntity0) {
-		for (Entry<String, EbnfGrammar> entry : grammarsByEntity0.entrySet())
-			grammarsByEntity.put(entry.getKey(), desugar(entry.getValue()));
+	public EbnfDesugar(Map<String, EbnfGrammar> grammarByEntity0) {
+		for (Entry<String, EbnfGrammar> entry : grammarByEntity0.entrySet())
+			grammarByEntity.put(entry.getKey(), desugar(entry.getValue()));
 	}
 
-	public Map<String, EbnfGrammar> getGrammarsByEntity() {
-		return grammarsByEntity;
+	public Map<String, EbnfGrammar> getGrammarByEntity() {
+		return grammarByEntity;
 	}
 
 	private EbnfGrammar desugar(EbnfGrammar eg0) {
@@ -46,7 +46,7 @@ public class EbnfDesugar {
 				egx = new EbnfGrammar(EbnfGrammarType.NAMED_, name //
 						, new EbnfGrammar(EbnfGrammarType.OR____, //
 								Arrays.asList(bs, new EbnfGrammar(EbnfGrammarType.AND___, Arrays.asList(ege, cs)))));
-				grammarsByEntity.put(name, egx);
+				grammarByEntity.put(name, egx);
 			}
 			break;
 		case REPT1_:
@@ -66,7 +66,7 @@ public class EbnfDesugar {
 		EbnfGrammar ega = new EbnfGrammar(EbnfGrammarType.AND___, Arrays.asList(child, ege));
 		EbnfGrammar ego = new EbnfGrammar(EbnfGrammarType.OR____, Arrays.asList(nil, ega));
 		EbnfGrammar egn = new EbnfGrammar(EbnfGrammarType.NAMED_, name, ego);
-		grammarsByEntity.put(name, egn);
+		grammarByEntity.put(name, egn);
 		return egn;
 	}
 

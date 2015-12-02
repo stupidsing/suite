@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class HtmlUtil {
 
-	private Map<String, String> escapeTokensByChar = new HashMap<>();
-	private Map<String, String> charsByEscapeToken = new HashMap<>();
+	private Map<String, String> escapeTokenByChar = new HashMap<>();
+	private Map<String, String> charByEscapeToken = new HashMap<>();
 
 	public HtmlUtil() {
 		initialize();
@@ -32,7 +32,7 @@ public class HtmlUtil {
 					if (Util.charAt(key, 1) == '#')
 						sb.append((char) Integer.parseInt(Util.substr(key, 2, -1)));
 					else {
-						String entity = charsByEscapeToken.get(key);
+						String entity = charByEscapeToken.get(key);
 
 						if (entity != null)
 							sb.append(entity);
@@ -60,7 +60,7 @@ public class HtmlUtil {
 				char ch = in.charAt(index);
 
 				if (ch < 32 || ch >= 128 || ch == '"' || ch == '<' || ch == '>') {
-					String escaped = escapeTokensByChar.get("" + ch);
+					String escaped = escapeTokenByChar.get("" + ch);
 
 					if (escaped != null)
 						sb.append(escaped);
@@ -181,8 +181,8 @@ public class HtmlUtil {
 	}
 
 	private void putEscapeMap(String ch, String escapeToken) {
-		escapeTokensByChar.put(ch, escapeToken);
-		charsByEscapeToken.put(escapeToken, ch);
+		escapeTokenByChar.put(ch, escapeToken);
+		charByEscapeToken.put(escapeToken, ch);
 	}
 
 }

@@ -46,11 +46,11 @@ public class Lexer {
 	public Lexer(Operator operators[], String in) {
 		this.in = in;
 
-		Map<String, Operator> operatorsByName = Read.from(operators) //
+		Map<String, Operator> operatorByName = Read.from(operators) //
 				.filter(operator -> operator != TermOp.TUPLE_) //
 				.toMap(Operator::getName, operator -> operator);
 
-		commandUtil = new CommandUtil<>(operatorsByName);
+		commandUtil = new CommandUtil<>(operatorByName);
 	}
 
 	public Token lex() {

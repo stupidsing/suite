@@ -26,7 +26,7 @@ import suite.util.Util;
 
 public class InstructionExtractor implements AutoCloseable {
 
-	private Map<IdentityKey<Node>, Integer> ipsByLabelId = new HashMap<>();
+	private Map<IdentityKey<Node>, Integer> ipByLabelId = new HashMap<>();
 	private Deque<Instruction> frameBegins = new ArrayDeque<>();
 	private BiMap<Integer, Node> constantPool;
 	private Trail trail = new Trail();
@@ -60,10 +60,10 @@ public class InstructionExtractor implements AutoCloseable {
 		while (!deque.isEmpty())
 			if ((tree = Tree.decompose(deque.pop(), TermOp.AND___)) != null) {
 				IdentityKey<Node> key = IdentityKey.of(tree);
-				Integer ip = ipsByLabelId.get(key);
+				Integer ip = ipByLabelId.get(key);
 
 				if (ip == null) {
-					ipsByLabelId.put(key, ip = rsList.size());
+					ipByLabelId.put(key, ip = rsList.size());
 					List<Node> rs = tupleToList(tree.getLeft());
 
 					if (rs.get(0) == FRAME)
@@ -133,7 +133,7 @@ public class InstructionExtractor implements AutoCloseable {
 				if (key == KEYC)
 					return allocateInPool(value);
 				else if (key == KEYL)
-					return ipsByLabelId.get(IdentityKey.of(value));
+					return ipByLabelId.get(IdentityKey.of(value));
 				else if (key == KEYR)
 					return 0;
 			}

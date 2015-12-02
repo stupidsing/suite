@@ -16,7 +16,7 @@ import suite.util.FunUtil.Source;
 
 public class InstructionAnalyzer {
 
-	private List<AnalyzedFrame> framesByIp = new ArrayList<>();
+	private List<AnalyzedFrame> frameByIp = new ArrayList<>();
 	private Set<Integer> tailCalls = new HashSet<>();
 
 	public static class AnalyzedFrame {
@@ -101,7 +101,7 @@ public class InstructionAnalyzer {
 				analyzedFrames.push(new AnalyzedFrame(ip));
 
 			AnalyzedFrame frame = !analyzedFrames.isEmpty() ? analyzedFrames.peek() : null;
-			framesByIp.add(frame);
+			frameByIp.add(frame);
 
 			if (insn.insn == Insn.FRAMEEND______)
 				analyzedFrames.pop();
@@ -115,7 +115,7 @@ public class InstructionAnalyzer {
 			// Recognize frames and their parents.
 			// Assume ASSIGN-THUNK points to the FRAME-BEGIN instruction.
 			if (insn.insn == Insn.ASSIGNTHUNK___)
-				framesByIp.get(insn.op1).parent = framesByIp.get(ip);
+				frameByIp.get(insn.op1).parent = frameByIp.get(ip);
 		}
 	}
 
@@ -126,7 +126,7 @@ public class InstructionAnalyzer {
 			int currentIp = ip;
 			Instruction insn = instructions.get(ip++);
 			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
-			AnalyzedFrame frame = framesByIp.get(currentIp);
+			AnalyzedFrame frame = frameByIp.get(currentIp);
 			List<AnalyzedRegister> registers = frame != null ? frame.registers : null;
 
 			switch (insn.insn) {
@@ -285,7 +285,7 @@ public class InstructionAnalyzer {
 	}
 
 	public AnalyzedFrame getFrame(Integer ip) {
-		return framesByIp.get(ip);
+		return frameByIp.get(ip);
 	}
 
 }

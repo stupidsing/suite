@@ -22,7 +22,7 @@ import suite.util.To;
 public class Huffman<Unit> {
 
 	private Node root;
-	private Map<Unit, Node> nodesByUnit = new HashMap<>();
+	private Map<Unit, Node> nodeByUnit = new HashMap<>();
 
 	private Comparator<Node> comparator = (node0, node1) -> node0.count - node1.count;
 
@@ -35,7 +35,7 @@ public class Huffman<Unit> {
 		private Node(int count, Unit unit) {
 			this.count = count;
 			this.unit = unit;
-			nodesByUnit.put(unit, this);
+			nodeByUnit.put(unit, this);
 		}
 
 		private Node(Node node0, Node node1) {
@@ -70,7 +70,7 @@ public class Huffman<Unit> {
 			Unit unit;
 
 			while (stack.isEmpty() && (unit = source.source()) != null) {
-				Node node = nodesByUnit.get(unit), parent;
+				Node node = nodeByUnit.get(unit), parent;
 
 				while ((parent = node.parent) != null) {
 					stack.push(parent.node0 == node ? Boolean.FALSE : Boolean.TRUE);
@@ -111,7 +111,7 @@ public class Huffman<Unit> {
 			} else {
 				Node node = new Node(0, unit);
 				deque.push(node);
-				nodesByUnit.put(unit, node);
+				nodeByUnit.put(unit, node);
 			}
 
 		root = deque.pop();

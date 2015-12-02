@@ -33,7 +33,7 @@ public class EbnfTopDownParse implements EbnfParse {
 
 	private static boolean trace = false;
 
-	private Map<String, Parser> parsersByEntity;
+	private Map<String, Parser> parserByEntity;
 	private EbnfExpect expect = new EbnfExpect();
 	private Outlet<State> noResult = Outlet.empty();
 
@@ -161,8 +161,8 @@ public class EbnfTopDownParse implements EbnfParse {
 		}
 	}
 
-	public EbnfTopDownParse(Map<String, EbnfGrammar> grammarsByEntity) {
-		parsersByEntity = Read.from(grammarsByEntity) //
+	public EbnfTopDownParse(Map<String, EbnfGrammar> grammarByEntity) {
+		parserByEntity = Read.from(grammarByEntity) //
 				.map(Pair.map1(this::build)) //
 				.collect(As::map);
 	}
@@ -298,7 +298,7 @@ public class EbnfTopDownParse implements EbnfParse {
 		Parser parser1;
 		if ((parser1 = buildLiteral(entity)) == null)
 			parser1 = (parse, st) -> {
-				Parser parser = parsersByEntity.get(entity);
+				Parser parser = parserByEntity.get(entity);
 				if (parser != null)
 					return st.p(parse, parser);
 				else

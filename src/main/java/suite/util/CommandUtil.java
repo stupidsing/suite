@@ -1,23 +1,23 @@
 package suite.util;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import suite.adt.Pair;
+import suite.streamlet.Read;
 
 public class CommandUtil<Command> {
 
-	private Map<String, Command> commandsByName;
+	private Map<String, Command> commandByName;
 	private int maxLength;
 
 	public CommandUtil(Command commands[]) {
-		this(getCommandsByName(commands));
+		this(getCommandByName(commands));
 	}
 
-	public CommandUtil(Map<String, Command> commandsByName) {
-		this.commandsByName = commandsByName;
+	public CommandUtil(Map<String, Command> commandByName) {
+		this.commandByName = commandByName;
 		maxLength = 0;
-		for (String name : commandsByName.keySet())
+		for (String name : commandByName.keySet())
 			maxLength = Math.max(maxLength, name.length());
 	}
 
@@ -28,20 +28,15 @@ public class CommandUtil<Command> {
 	public Pair<Command, String> recognize(String input, int start) {
 		for (int end = Math.min(start + maxLength, input.length()); end >= start; end--) {
 			String starts = input.substring(start, end);
-			Command command = commandsByName.get(starts);
+			Command command = commandByName.get(starts);
 			if (command != null)
 				return Pair.of(command, input.substring(end));
 		}
 		return null;
 	}
 
-	private static <Command> Map<String, Command> getCommandsByName(Command commands[]) {
-		Map<String, Command> commandsByName = new HashMap<>();
-		for (Command command : commands) {
-			String name = command.toString();
-			commandsByName.put(name, command);
-		}
-		return commandsByName;
+	private static <Command> Map<String, Command> getCommandByName(Command commands[]) {
+		return Read.from(commands).toMap(Command::toString, command -> command);
 	}
 
 }

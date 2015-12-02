@@ -27,7 +27,7 @@ import suite.util.Util;
  */
 public class QueryRewriter {
 
-	private Map<Prototype, PrototypeInfo> infosByPrototype;
+	private Map<Prototype, PrototypeInfo> infoByPrototype;
 	private ListMultimap<Prototype, Rule> rules1;
 
 	private class PrototypeInfo {
@@ -45,7 +45,7 @@ public class QueryRewriter {
 	}
 
 	public QueryRewriter(ListMultimap<Prototype, Rule> rules) {
-		infosByPrototype = Read.from(rules.listEntries()) //
+		infoByPrototype = Read.from(rules.listEntries()) //
 				.map(Pair.map1(PrototypeInfo::new)) //
 				.collect(As::map);
 
@@ -98,7 +98,7 @@ public class QueryRewriter {
 		Prototype prototype = Prototype.of(node0);
 		PrototypeInfo pi;
 
-		if ((pi = infosByPrototype.get(prototype)) != null) {
+		if ((pi = infoByPrototype.get(prototype)) != null) {
 			int length = pi.length;
 
 			if (length <= 0)

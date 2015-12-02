@@ -22,7 +22,7 @@ import suite.util.Util;
  */
 public class EbnfHeadRecursion {
 
-	private Map<String, EbnfGrammar> nodesByEntity;
+	private Map<String, EbnfGrammar> grammarByEntity;
 
 	private class HeadRecursionForm {
 		private List<EbnfGrammar> listb;
@@ -34,8 +34,8 @@ public class EbnfHeadRecursion {
 		}
 	}
 
-	public EbnfHeadRecursion(Map<String, EbnfGrammar> nodesByEntity) {
-		this.nodesByEntity = nodesByEntity;
+	public EbnfHeadRecursion(Map<String, EbnfGrammar> grammarByEntity) {
+		this.grammarByEntity = grammarByEntity;
 	}
 
 	public EbnfGrammar reduceHeadRecursion(EbnfGrammar en0) {
@@ -91,7 +91,7 @@ public class EbnfHeadRecursion {
 
 	private EbnfGrammar expand(EbnfGrammar en) {
 		if (en.type == EbnfGrammarType.ENTITY) {
-			EbnfGrammar en1 = nodesByEntity.get(en.content);
+			EbnfGrammar en1 = grammarByEntity.get(en.content);
 			return en1 != null ? expand(en1) : en;
 		} else
 			return en;

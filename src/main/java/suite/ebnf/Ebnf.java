@@ -81,16 +81,16 @@ public class Ebnf {
 				.filter(lr -> lr != null) //
 				.toList();
 
-		Map<String, EbnfGrammar> grammarsByEntity = Read.from(pairs) //
+		Map<String, EbnfGrammar> grammarByEntity = Read.from(pairs) //
 				.map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t0, lr.t1))) //
 				.collect(As::map);
 
-		EbnfHeadRecursion headRecursion = new EbnfHeadRecursion(grammarsByEntity);
+		EbnfHeadRecursion headRecursion = new EbnfHeadRecursion(grammarByEntity);
 
-		for (Entry<String, EbnfGrammar> entry : grammarsByEntity.entrySet())
+		for (Entry<String, EbnfGrammar> entry : grammarByEntity.entrySet())
 			entry.setValue(headRecursion.reduceHeadRecursion(entry.getValue()));
 
-		engine = fun.apply(grammarsByEntity);
+		engine = fun.apply(grammarByEntity);
 	}
 
 	public FactorizeResult parseFNode(String s, String entity) {
