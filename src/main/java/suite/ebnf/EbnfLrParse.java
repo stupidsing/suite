@@ -19,10 +19,10 @@ import suite.util.FunUtil.Source;
 public class EbnfLrParse implements EbnfParse {
 
 	private UnionFind<State> unionFind = new UnionFind<>();
-	private Map<String, Transition> transitionByEntity;
 	private List<Shift> shifts0 = new ArrayList<>();
 	private List<Reduce> reduces0 = new ArrayList<>();
 
+	private Map<String, Transition> transitionByEntity;
 	private Map<Pair<String, State>, State> shifts;
 	private Map<State, Pair<String, State>> reduces;
 
@@ -68,7 +68,7 @@ public class EbnfLrParse implements EbnfParse {
 				.map(Pair::first_) //
 				.toList();
 
-		transitionByEntity = Read.from(entities) //
+		Map<String, Transition> transitionByEntity0 = Read.from(entities) //
 				.map(entity -> Pair.of(entity, new Transition(newState(), newState()))) //
 				.collect(As::map);
 
@@ -78,6 +78,10 @@ public class EbnfLrParse implements EbnfParse {
 					Transition t = transitionByEntity.get(entity);
 					converge(buildLr(eg, t.state0), t.statex);
 				});
+
+		transitionByEntity = Read.from(transitionByEntity0) //
+				.map(Pair.map1(t -> new Transition(find(t.state0), find(t.statex)))) //
+				.collect(As::map);
 
 		shifts = Read.from(shifts0) //
 				.toMap(shift -> Pair.of(shift.input, find(shift.t.state0)), shift -> find(shift.t.statex));
@@ -95,7 +99,7 @@ public class EbnfLrParse implements EbnfParse {
 	public Node parse(String entity, String in) {
 		Transition t = transitionByEntity.get(entity);
 		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
-		return parse(source, find(t.state0), find(t.statex));
+		return parse(source, t.state0, t.statex);
 	}
 
 	private Node parse(Source<Node> tokens, State state0, State statex) {
