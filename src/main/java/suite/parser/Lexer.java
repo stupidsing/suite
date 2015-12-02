@@ -48,6 +48,8 @@ public class Lexer {
 	public Lexer(Reader reader, Set<String> operators) {
 		this.reader = reader;
 		this.operators = operators;
+		nextChar();
+
 	}
 
 	public Source<String> tokens() {
