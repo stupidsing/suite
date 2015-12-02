@@ -64,13 +64,19 @@ public class EbnfLrParse implements EbnfParse {
 	}
 
 	public EbnfLrParse(Map<String, EbnfGrammar> grammarsByEntity) {
-		ruleByEntity = Read.from(grammarsByEntity) //
+		List<String> entities = Read.from(grammarsByEntity) //
 				.map(Pair::first_) //
+				.toList();
+
+		ruleByEntity = Read.from(entities) //
 				.map(entity -> Pair.of(entity, new Transition(newState(), newState()))) //
 				.collect(As::map);
 
-		Read.from(ruleByEntity) //
-				.forEach(p -> converge(buildLr(grammarsByEntity.get(p.t0), p.t1.state0).cons(p.t1.statex)));
+		Read.from(entities) //
+				.forEach(entity -> {
+					Transition t = ruleByEntity.get(entity);
+					converge(buildLr(grammarsByEntity.get(entity), t.state0).cons(t.statex));
+				});
 
 		fsm = Read.from(rules) //
 				.toMap(rule -> Pair.of(rule.input, find(rule.t.state0)), rule -> find(rule.t.statex));
