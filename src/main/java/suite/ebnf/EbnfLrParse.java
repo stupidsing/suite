@@ -19,18 +19,18 @@ import suite.util.FunUtil.Source;
 public class EbnfLrParse implements EbnfParse {
 
 	private UnionFind<State> unionFind = new UnionFind<>();
-	private Map<String, Transition> ruleByEntity;
-	private List<Rule> rules = new ArrayList<>();
+	private Map<String, Transition> transitionByEntity;
+	private List<Shift> shifts0 = new ArrayList<>();
 	private List<Reduce> reduces0 = new ArrayList<>();
 
-	private Map<Pair<String, State>, State> fsm;
-	private Map<State, Reduce> reduces;
+	private Map<Pair<String, State>, State> shifts;
+	private Map<State, Pair<String, State>> reduces;
 
-	private class Rule {
+	private class Shift {
 		private String input;
 		private Transition t;
 
-		private Rule(String input, State state0, State statex) {
+		private Shift(String input, State state0, State statex) {
 			this.input = input;
 			t = new Transition(state0, statex);
 		}
@@ -68,22 +68,21 @@ public class EbnfLrParse implements EbnfParse {
 				.map(Pair::first_) //
 				.toList();
 
-		ruleByEntity = Read.from(entities) //
+		transitionByEntity = Read.from(entities) //
 				.map(entity -> Pair.of(entity, new Transition(newState(), newState()))) //
 				.collect(As::map);
 
 		Read.from(entities) //
 				.forEach(entity -> {
-					Transition t = ruleByEntity.get(entity);
+					Transition t = transitionByEntity.get(entity);
 					converge(buildLr(grammarsByEntity.get(entity), t.state0).cons(t.statex));
 				});
 
-		fsm = Read.from(rules) //
-				.toMap(rule -> Pair.of(rule.input, find(rule.t.state0)), rule -> find(rule.t.statex));
+		shifts = Read.from(shifts0) //
+				.toMap(shift -> Pair.of(shift.input, find(shift.t.state0)), shift -> find(shift.t.statex));
 
 		reduces = Read.from(reduces0) //
-				.toMap(reduce -> find(reduce.t.state0),
-						reduce -> new Reduce(reduce.name, find(reduce.t.state0), find(reduce.t.statex)));
+				.toMap(reduce -> find(reduce.t.state0), reduce -> Pair.of(reduce.name, find(reduce.t.statex)));
 	}
 
 	@Override
@@ -102,13 +101,13 @@ public class EbnfLrParse implements EbnfParse {
 	private Node parse(Source<Node> tokens, State state0, State statex) {
 		Deque<Node> stack = new ArrayDeque<>();
 		State state = state0;
-		Reduce reduce;
+		Pair<String, State> reduce;
 		Node token;
 
 		while ((token = tokens.source()) != null && state != null)
 			while (true) {
 				stack.push(token);
-				state = fsm.get(Pair.of(token.entity, state));
+				state = shifts.get(Pair.of(token.entity, state));
 
 				if ((reduce = reduces.get(state)) != null) {
 					IList<Node> nodes = IList.end();
@@ -116,8 +115,8 @@ public class EbnfLrParse implements EbnfParse {
 					for (int i = 0; i < state.n; i++)
 						nodes = IList.cons(stack.pop(), nodes);
 
-					token = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
-					state = reduce.t.statex;
+					token = new Node(reduce.t0, 0, 0, Read.from(nodes).toList());
+					state = reduce.t1;
 				} else
 					break;
 			}
@@ -135,7 +134,7 @@ public class EbnfLrParse implements EbnfParse {
 				statesx = statesx.concatMap(state_ -> buildLr(child, state_));
 			break;
 		case ENTITY:
-			Transition t = ruleByEntity.get(eg.content);
+			Transition t = transitionByEntity.get(eg.content);
 			unionFind.union(state0, t.state0);
 			statesx = Read.from(t.statex);
 			break;
@@ -156,7 +155,7 @@ public class EbnfLrParse implements EbnfParse {
 			break;
 		case STRING:
 			State statex = newState(state0);
-			rules.add(new Rule(eg.content, state0, statex));
+			shifts0.add(new Shift(eg.content, state0, statex));
 			statesx = Read.from(statex);
 			break;
 		default:
