@@ -106,10 +106,10 @@ public class EbnfLrParse implements EbnfParse {
 		Deque<Node> stack = new ArrayDeque<>();
 		State state = state0;
 		Pair<String, State> reduce;
-		Node token;
+		Node token = null;
 
-		while ((token = tokens.source()) != null && state != null)
-			while (true) {
+		while (state != statex && (token = tokens.source()) != null)
+			while (state != statex) {
 				stack.push(token);
 				state = shifts.get(Pair.of(token.entity, state));
 
@@ -125,7 +125,7 @@ public class EbnfLrParse implements EbnfParse {
 					break;
 			}
 
-		return token == null && state.equals(statex) && stack.size() == 1 ? stack.getFirst() : null;
+		return state == statex && stack.isEmpty() && tokens.source() == null ? token : null;
 	}
 
 	private Streamlet<State> buildLr(EbnfGrammar eg, State state0) {
