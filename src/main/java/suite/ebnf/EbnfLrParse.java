@@ -100,28 +100,31 @@ public class EbnfLrParse implements EbnfParse {
 
 	private Node parse(Source<Node> tokens, State state0, State statex) {
 		Deque<Node> stack = new ArrayDeque<>();
+		Node token = tokens.source();
 		State state = state0;
+		State shift;
 		Pair<String, State> reduce;
-		Node token = null;
 
-		while (state != statex && (token = tokens.source()) != null)
-			while (state != statex) {
-				stack.push(token);
-				state = shifts.get(Pair.of(token.entity, state));
-
-				if ((reduce = reduces.get(state)) != null) {
-					IList<Node> nodes = IList.end();
-
-					for (int i = 0; i < state.n; i++)
-						nodes = IList.cons(stack.pop(), nodes);
-
-					token = new Node(reduce.t0, 0, 0, Read.from(nodes).toList());
-					state = reduce.t1;
-				} else
-					break;
-			}
-
-		return state == statex && stack.isEmpty() && tokens.source() == null ? token : null;
+		for (;;)
+			if (token != null && (shift = shifts.get(Pair.of(token.entity, state))) != null) {
+				System.out.println("SHIFT " + token);
+				Node token1 = tokens.source();
+				if (token1 != null) {
+					stack.push(token);
+					token = token1;
+				}
+				state = shift;
+			} else if ((reduce = reduces.get(state)) != null) {
+				System.out.println("REDUCE" + reduce.t0);
+				IList<Node> nodes = IList.cons(token, IList.end());
+				for (int i = 1; i < state.n; i++)
+					nodes = IList.cons(stack.pop(), nodes);
+				token = new Node(reduce.t0, 0, 0, Read.from(nodes).toList());
+				state = reduce.t1;
+			} else if (state == statex && stack.isEmpty())
+				return token;
+			else
+				throw new RuntimeException("Parse error at " + token);
 	}
 
 	private Streamlet<State> buildLr(EbnfGrammar eg, State state0) {
