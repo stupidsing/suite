@@ -13,7 +13,6 @@ import suite.immutable.IList;
 import suite.parser.Lexer;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 
 public class EbnfLrParse implements EbnfParse {
@@ -23,26 +22,42 @@ public class EbnfLrParse implements EbnfParse {
 	private List<Reduce> reduces0 = new ArrayList<>();
 
 	private Map<String, Transition> transitionByEntity;
-	private Map<Pair<String, State>, State> shifts;
-	private Map<State, Pair<String, State>> reduces;
+	private Map<Pair<String, State>, Shift> shifts;
+	private Map<State, Reduce> reduces;
 
 	private class Shift {
 		private String input;
-		private Transition t;
+		private State state0, statex;
+
+		private Shift(Shift shift) {
+			this(shift.input, find(shift.state0), find(shift.statex));
+		}
 
 		private Shift(String input, State state0, State statex) {
 			this.input = input;
-			t = new Transition(state0, statex);
+			this.state0 = state0;
+			this.statex = statex;
 		}
 	}
 
 	private class Reduce {
 		private String name;
-		private Transition t;
+		private int n;
+		private State state0, statex;
 
-		private Reduce(String name, State state0, State statex) {
+		private Reduce(Reduce reduce) {
+			this(reduce.name, reduce.n, find(reduce.state0), find(reduce.statex));
+		}
+
+		private Reduce(String name, Pair<Integer, State> pair, State statex) {
+			this(name, pair.t0, pair.t1, statex);
+		}
+
+		private Reduce(String name, int n, State state0, State statex) {
 			this.name = name;
-			t = new Transition(state0, statex);
+			this.n = n;
+			this.state0 = state0;
+			this.statex = statex;
 		}
 	}
 
@@ -56,11 +71,6 @@ public class EbnfLrParse implements EbnfParse {
 	}
 
 	private class State {
-		private int n;
-
-		private State(int nc) {
-			this.n = nc;
-		}
 	}
 
 	public EbnfLrParse(Map<String, EbnfGrammar> grammarByEntity) {
@@ -69,21 +79,22 @@ public class EbnfLrParse implements EbnfParse {
 				.toList();
 
 		transitionByEntity = Read.from(entities) //
-				.map(entity -> Pair.of(entity, new Transition(newState(), newState()))) //
+				.map(entity -> Pair.of(entity, new Transition(new State(), new State()))) //
 				.collect(As::map);
 
-		Read.from(entities) //
-				.forEach(entity -> {
-					EbnfGrammar eg = grammarByEntity.get(entity);
-					Transition t = transitionByEntity.get(entity);
-					converge(buildLr(eg, t.state0), t.statex);
-				});
+		Read.from(entities).forEach(entity -> {
+			EbnfGrammar eg = grammarByEntity.get(entity);
+			Transition t = transitionByEntity.get(entity);
+			unionFind.union(buildLr(eg, t.state0).t1, t.statex);
+		});
 
 		shifts = Read.from(shifts0) //
-				.toMap(shift -> Pair.of(shift.input, find(shift.t.state0)), shift -> find(shift.t.statex));
+				.map(Shift::new) //
+				.toMap(shift -> Pair.of(shift.input, shift.state0), shift -> shift);
 
 		reduces = Read.from(reduces0) //
-				.toMap(reduce -> find(reduce.t.state0), reduce -> Pair.of(reduce.name, find(reduce.t.statex)));
+				.map(Reduce::new) //
+				.toMap(reduce -> find(reduce.state0), reduce -> reduce);
 	}
 
 	@Override
@@ -106,8 +117,8 @@ public class EbnfLrParse implements EbnfParse {
 				stack.push(token);
 		};
 		State state = state0;
-		State shift;
-		Pair<String, State> reduce;
+		Shift shift;
+		Reduce reduce;
 
 		shiftToken.run();
 
@@ -117,14 +128,14 @@ public class EbnfLrParse implements EbnfParse {
 			if (top != null && (shift = shifts.get(Pair.of(top.entity, state))) != null) {
 				System.out.println("SHIFT " + top);
 				shiftToken.run();
-				state = shift;
+				state = shift.statex;
 			} else if ((reduce = reduces.get(state)) != null) {
-				System.out.println("REDUCE" + reduce.t0);
+				System.out.println("REDUCE " + reduce.n + "," + reduce.name);
 				IList<Node> nodes = IList.end();
-				for (int i = 0; i < state.n; i++)
+				for (int i = 0; i < reduce.n; i++)
 					nodes = IList.cons(stack.pop(), nodes);
-				stack.push(new Node(reduce.t0, 0, 0, Read.from(nodes).toList()));
-				state = reduce.t1;
+				stack.push(new Node(reduce.name, 0, 0, Read.from(nodes).toList()));
+				state = reduce.statex;
 			} else if (state == statex && stack.size() == 1)
 				return top;
 			else
@@ -132,63 +143,59 @@ public class EbnfLrParse implements EbnfParse {
 		}
 	}
 
-	private Streamlet<State> buildLr(EbnfGrammar eg, State state0) {
-		Streamlet<State> statesx;
+	private Pair<Integer, State> buildLr(EbnfGrammar eg, State state0) {
+		int nTokens;
+		State statex;
 
 		switch (eg.type) {
 		case AND___:
-			statesx = Read.from(state0);
-			for (EbnfGrammar child : eg.children)
-				statesx = statesx.concatMap(state_ -> buildLr(child, state_));
+			nTokens = 0;
+			statex = state0;
+			for (EbnfGrammar child : eg.children) {
+				Pair<Integer, State> p = buildLr(child, statex);
+				nTokens += p.t0;
+				statex = p.t1;
+			}
 			break;
 		case ENTITY:
 			Transition t = transitionByEntity.get(eg.content);
+			nTokens = 1;
+			statex = new State();
 			unionFind.union(state0, t.state0);
-			statesx = Read.from(t.statex);
+			unionFind.union(statex, t.statex);
 			break;
 		case NAMED_:
-			State statex_ = newState();
-			for (State state : buildLr(eg.children.get(0), state0))
-				reduces0.add(new Reduce(eg.content, state, statex_));
-			statesx = Read.from(statex_);
+			nTokens = 1;
+			statex = new State();
+			reduces0.add(new Reduce(eg.content, buildLr(eg.children.get(0), state0), statex));
 			break;
 		case OPTION:
-			statesx = buildLr(eg.children.get(0), state0).cons(state0);
+			EbnfGrammar child_ = eg.children.get(0);
+			nTokens = 1;
+			statex = new State();
+			reduces0.add(new Reduce("nil", Pair.of(0, state0), statex));
+			reduces0.add(new Reduce(child_.toString(), buildLr(child_, state0), statex));
 			break;
 		case OR____:
-			statesx = Read.from(eg.children).concatMap(eg_ -> buildLr(eg_, state0));
-			break;
-		case REPT0_:
-			converge(buildLr(eg.children.get(0), state0), state0);
-			statesx = Read.from(state0);
+			nTokens = 1;
+			statex = new State();
+			for (EbnfGrammar child : eg.children)
+				reduces0.add(new Reduce(eg.content, buildLr(child, state0), statex));
 			break;
 		case STRING:
-			State statex = newState(state0);
+			nTokens = 1;
+			statex = new State();
 			shifts0.add(new Shift(eg.content, state0, statex));
-			statesx = Read.from(statex);
 			break;
 		default:
 			throw new RuntimeException("LR parser cannot recognize " + eg.type);
 		}
 
-		return statesx;
-	}
-
-	private void converge(Streamlet<State> states, State state) {
-		for (State state_ : states)
-			unionFind.union(state_, state);
+		return Pair.of(nTokens, statex);
 	}
 
 	private State find(State state) {
 		return unionFind.find(state);
-	}
-
-	private State newState(State state) {
-		return new State(state.n + 1);
-	}
-
-	private State newState() {
-		return new State(0);
 	}
 
 }
