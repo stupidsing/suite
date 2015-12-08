@@ -48,7 +48,7 @@ public class Lexer {
 
 		Map<String, Operator> operatorByName = Read.from(operators) //
 				.filter(operator -> operator != TermOp.TUPLE_) //
-				.toMap(Operator::getName, operator -> operator);
+				.toMap(Operator::getName);
 
 		commandUtil = new CommandUtil<>(operatorByName);
 	}

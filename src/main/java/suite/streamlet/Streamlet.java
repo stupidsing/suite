@@ -167,8 +167,16 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().toList();
 	}
 
+	public <K> Map<K, List<T>> toListMap(Fun<T, K> keyFun) {
+		return spawn().toListMap(keyFun, value -> value);
+	}
+
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
 		return spawn().toListMap(keyFun, valueFun);
+	}
+
+	public <K> Map<K, T> toMap(Fun<T, K> keyFun) {
+		return spawn().toMap(keyFun, value -> value);
 	}
 
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {

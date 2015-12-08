@@ -108,8 +108,8 @@ public class Nodify {
 			else if (clazz == String.class)
 				nodifier = new Nodifier(object -> new Str(object.toString()), node -> ((Str) node).value);
 			else if (clazz.isEnum())
-				nodifier = new Nodifier(object -> Atom.of(object.toString()), Read.from(clazz.getEnumConstants()).toMap(
-						e -> Atom.of(e.toString()), e -> e)::get);
+				nodifier = new Nodifier(object -> Atom.of(object.toString()),
+						Read.from(clazz.getEnumConstants()).toMap(e -> Atom.of(e.toString()))::get);
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
 				Nodifier nodifier1 = getNodifier(componentType);
@@ -141,7 +141,7 @@ public class Nodify {
 					Class<?> clazz1 = object.getClass();
 					Node n = apply0(getNodifier(clazz1), object);
 					return Tree.of(TermOp.COLON_, Atom.of(clazz1.getName()), n);
-				}, node -> {
+				} , node -> {
 					Tree tree = Tree.decompose(node, TermOp.COLON_);
 					if (tree != null) {
 						Class<?> clazz1;
@@ -170,7 +170,7 @@ public class Nodify {
 						}
 					}
 					return dict;
-				}, node -> {
+				} , node -> {
 					Map<Node, Reference> map = ((Dict) node).map;
 					try {
 						Object object1 = clazz.newInstance();
@@ -201,7 +201,7 @@ public class Nodify {
 					}
 					Tree.forceSetRight(tree, Atom.NIL);
 					return start.getRight();
-				}, node -> {
+				} , node -> {
 					List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)).map(n -> apply0(nodifier1, n)).toList();
 					Collection<Object> object1 = (Collection<Object>) create(clazz);
 					object1.addAll(list);
@@ -215,7 +215,7 @@ public class Nodify {
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
 						dict.map.put(apply0(kn, e.getKey()), Reference.of(apply0(vn, e.getValue())));
 					return dict;
-				}, node -> {
+				} , node -> {
 					Map<Node, Reference> map = ((Dict) node).map;
 					Map<Object, Object> object1 = (Map<Object, Object>) create(clazz);
 					for (Entry<Node, Reference> e : map.entrySet())

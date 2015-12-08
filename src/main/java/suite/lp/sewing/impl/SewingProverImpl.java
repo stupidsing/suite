@@ -206,7 +206,7 @@ public class SewingProverImpl implements SewingProver {
 			// Second-level indexing optimization
 			if (rules.size() >= 6) {
 				Map<Prototype, List<Rule>> rulesByProto1 = Read.from(rules) //
-						.toListMap(rule -> Prototype.of(rule, 1), rule -> rule);
+						.toListMap(rule -> Prototype.of(rule, 1));
 
 				if (!rulesByProto1.containsKey(null)) {
 					Map<Prototype, Trampoline> trByProto1 = Read.from(rulesByProto1) //

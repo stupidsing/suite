@@ -90,11 +90,11 @@ public class EbnfLrParse implements EbnfParse {
 
 		shifts = Read.from(shifts0) //
 				.map(Shift::new) //
-				.toMap(shift -> Pair.of(shift.input, shift.state0), shift -> shift);
+				.toMap(shift -> Pair.of(shift.input, shift.state0));
 
 		reduces = Read.from(reduces0) //
 				.map(Reduce::new) //
-				.toMap(reduce -> find(reduce.state0), reduce -> reduce);
+				.toMap(reduce -> reduce.state0);
 	}
 
 	@Override
@@ -158,23 +158,14 @@ public class EbnfLrParse implements EbnfParse {
 			}
 			break;
 		case ENTITY:
-			Transition t = transitionByEntity.get(eg.content);
 			nTokens = 1;
 			statex = new State();
-			unionFind.union(state0, t.state0);
-			unionFind.union(statex, t.statex);
+			shifts0.add(new Shift(eg.content, state0, statex));
 			break;
 		case NAMED_:
 			nTokens = 1;
 			statex = new State();
 			reduces0.add(new Reduce(eg.content, buildLr(eg.children.get(0), state0), statex));
-			break;
-		case OPTION:
-			EbnfGrammar child_ = eg.children.get(0);
-			nTokens = 1;
-			statex = new State();
-			reduces0.add(new Reduce("nil", Pair.of(0, state0), statex));
-			reduces0.add(new Reduce(child_.toString(), buildLr(child_, state0), statex));
 			break;
 		case OR____:
 			nTokens = 1;
