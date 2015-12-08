@@ -38,6 +38,10 @@ public class EbnfLrParse implements EbnfParse {
 			this.state0 = state0;
 			this.statex = statex;
 		}
+
+		public String toString() {
+			return "(" + input + ", " + state0 + ") => " + statex;
+		}
 	}
 
 	private class Reduce {
@@ -58,6 +62,10 @@ public class EbnfLrParse implements EbnfParse {
 			this.n = n;
 			this.state0 = state0;
 			this.statex = statex;
+		}
+
+		public String toString() {
+			return state0 + " => (" + name + "/" + n + ", " + statex + ")";
 		}
 	}
 
@@ -85,7 +93,8 @@ public class EbnfLrParse implements EbnfParse {
 		Read.from(entities).forEach(entity -> {
 			EbnfGrammar eg = grammarByEntity.get(entity);
 			Transition t = transitionByEntity.get(entity);
-			unionFind.union(buildLr(eg, t.state0).t1, t.statex);
+			Pair<Integer, State> pair = buildLr(eg, t.state0);
+			unionFind.union(pair.t1, t.statex);
 		});
 
 		shifts = Read.from(shifts0) //
@@ -106,6 +115,14 @@ public class EbnfLrParse implements EbnfParse {
 	public Node parse(String entity, String in) {
 		Transition t = transitionByEntity.get(entity);
 		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
+
+		System.out.println(shifts.values());
+		System.out.println();
+		System.out.println(reduces.values());
+		System.out.println();
+		System.out.println("FROM " + find(t.state0) + " TO " + find(t.statex));
+		System.out.println();
+
 		return parse(source, find(t.state0), find(t.statex));
 	}
 
@@ -130,7 +147,7 @@ public class EbnfLrParse implements EbnfParse {
 				shiftToken.run();
 				state = shift.statex;
 			} else if ((reduce = reduces.get(state)) != null) {
-				System.out.println("REDUCE " + reduce.n + "," + reduce.name);
+				System.out.println("REDUCE " + reduce.name + "/" + reduce.n);
 				IList<Node> nodes = IList.end();
 				for (int i = 0; i < reduce.n; i++)
 					nodes = IList.cons(stack.pop(), nodes);
@@ -160,7 +177,9 @@ public class EbnfLrParse implements EbnfParse {
 		case ENTITY:
 			nTokens = 1;
 			statex = new State();
-			shifts0.add(new Shift(eg.content, state0, statex));
+			Transition t = transitionByEntity.get(eg.content);
+			unionFind.union(state0, t.state0);
+			unionFind.union(statex, t.statex);
 			break;
 		case NAMED_:
 			nTokens = 1;
@@ -171,7 +190,7 @@ public class EbnfLrParse implements EbnfParse {
 			nTokens = 1;
 			statex = new State();
 			for (EbnfGrammar child : eg.children)
-				reduces0.add(new Reduce(eg.content, buildLr(child, state0), statex));
+				reduces0.add(new Reduce("OR", buildLr(child, state0), statex));
 			break;
 		case STRING:
 			nTokens = 1;
