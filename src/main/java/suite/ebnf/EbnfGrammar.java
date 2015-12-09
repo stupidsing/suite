@@ -49,4 +49,17 @@ public class EbnfGrammar {
 		this.children = children;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		toString("", sb);
+		return sb.toString();
+	}
+
+	private void toString(String indent, StringBuilder sb) {
+		sb.append(indent + type + " (" + content + ")\n");
+		for (EbnfGrammar child : children)
+			child.toString(indent + "| ", sb);
+	}
+
 }

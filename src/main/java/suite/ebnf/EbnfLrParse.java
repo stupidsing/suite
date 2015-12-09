@@ -72,9 +72,9 @@ public class EbnfLrParse implements EbnfParse {
 	private class Transition {
 		private State state0, statex;
 
-		private Transition(State state0, State statex) {
-			this.state0 = state0;
-			this.statex = statex;
+		private Transition() {
+			this.state0 = new State();
+			this.statex = new State();
 		}
 	}
 
@@ -87,14 +87,17 @@ public class EbnfLrParse implements EbnfParse {
 				.toList();
 
 		transitionByEntity = Read.from(entities) //
-				.map(entity -> Pair.of(entity, new Transition(new State(), new State()))) //
+				.map(entity -> Pair.of(entity, new Transition())) //
 				.collect(As::map);
 
 		Read.from(entities).forEach(entity -> {
 			EbnfGrammar eg = grammarByEntity.get(entity);
 			Transition t = transitionByEntity.get(entity);
 			Pair<Integer, State> pair = buildLr(eg, t.state0);
-			unionFind.union(pair.t1, t.statex);
+			if (pair.t0 == 1)
+				unionFind.union(pair.t1, t.statex);
+			else
+				throw new RuntimeException();
 		});
 
 		shifts = Read.from(shifts0) //
@@ -114,16 +117,19 @@ public class EbnfLrParse implements EbnfParse {
 	@Override
 	public Node parse(String entity, String in) {
 		Transition t = transitionByEntity.get(entity);
+		State state0 = find(t.state0);
+		State statex = find(t.statex);
+
 		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
 
 		System.out.println(shifts.values());
 		System.out.println();
 		System.out.println(reduces.values());
 		System.out.println();
-		System.out.println("FROM " + find(t.state0) + " TO " + find(t.statex));
+		System.out.println("FROM " + state0 + " TO " + statex);
 		System.out.println();
 
-		return parse(source, find(t.state0), find(t.statex));
+		return parse(source, state0, statex);
 	}
 
 	private Node parse(Source<Node> tokens, State state0, State statex) {

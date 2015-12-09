@@ -64,7 +64,9 @@ public class EbnfHeadRecursion {
 		EbnfGrammar en = expand(en0);
 		HeadRecursionForm hrf;
 
-		if (en.type == EbnfGrammarType.AND___) {
+		if (en.type == EbnfGrammarType.AND___ && en.children.isEmpty())
+			hrf = new HeadRecursionForm(empty, empty);
+		else if (en.type == EbnfGrammarType.AND___) {
 			HeadRecursionForm hrf0 = getHeadRecursionForm(en.children.get(0), entity);
 			List<EbnfGrammar> tail = Util.right(en.children, 1);
 
