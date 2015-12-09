@@ -35,14 +35,11 @@ public class UnionFind<T> {
 	}
 
 	private Record find0(T t) {
-		return find0(getRecord(t));
-	}
-
-	private Record find0(Record record) {
-		Record parent = getRecord(record.parent);
-		if (parent.parent != record.parent) {
-			parent.parent = find0(parent.parent).parent;
-			return parent;
+		Record record = getRecord(t);
+		if (!t.equals(record.parent)) {
+			Record record1 = find0(record.parent);
+			record.parent = record1.parent;
+			return record1;
 		} else
 			return record;
 	}
