@@ -70,12 +70,8 @@ public class EbnfLrParse implements EbnfParse {
 	}
 
 	private class Transition {
-		private State state0, statex;
-
-		private Transition() {
-			this.state0 = new State();
-			this.statex = new State();
-		}
+		private State state0 = new State();
+		private State statex = new State();
 	}
 
 	private class State {
