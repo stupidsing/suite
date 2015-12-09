@@ -17,6 +17,7 @@ public class UnionFind<T> {
 	private Map<T, Record> nodes = new HashMap<>();
 
 	public void union(T t0, T t1) {
+		System.out.println("UF " + t0 + " = " + t1);
 		Record pair0 = find0(t0);
 		Record pair1 = find0(t1);
 

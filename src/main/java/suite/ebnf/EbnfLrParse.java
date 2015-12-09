@@ -72,6 +72,10 @@ public class EbnfLrParse implements EbnfParse {
 	private class Transition {
 		private State state0 = new State();
 		private State statex = new State();
+
+		public String toString() {
+			return state0 + " => " + statex;
+		}
 	}
 
 	private class State {
@@ -118,9 +122,11 @@ public class EbnfLrParse implements EbnfParse {
 
 		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
 
-		System.out.println(shifts.values());
+		System.out.println("transitionByEntity = " + transitionByEntity);
 		System.out.println();
-		System.out.println(reduces.values());
+		System.out.println("shifts = " + shifts.values());
+		System.out.println();
+		System.out.println("reduces = " + reduces.values());
 		System.out.println();
 		System.out.println("FROM " + state0 + " TO " + statex);
 		System.out.println();
