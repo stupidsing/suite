@@ -40,7 +40,7 @@ public class EbnfLrParse implements EbnfParse {
 		}
 
 		public String toString() {
-			return "(" + input + ", " + state0 + ") => " + statex;
+			return "(" + input + ", " + state0 + ") -> " + statex;
 		}
 	}
 
@@ -65,7 +65,7 @@ public class EbnfLrParse implements EbnfParse {
 		}
 
 		public String toString() {
-			return state0 + " => (" + name + "/" + n + ", " + statex + ")";
+			return state0 + " -> (" + name + "/" + n + ", " + statex + ")";
 		}
 	}
 
@@ -74,7 +74,7 @@ public class EbnfLrParse implements EbnfParse {
 		private State statex = new State();
 
 		public String toString() {
-			return state0 + " => " + statex;
+			return find(state0) + " -> " + find(statex);
 		}
 	}
 
