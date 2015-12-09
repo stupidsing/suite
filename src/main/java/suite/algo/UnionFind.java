@@ -20,14 +20,15 @@ public class UnionFind<T> {
 		Record pair0 = find0(t0);
 		Record pair1 = find0(t1);
 
-		if (pair0.rank < pair1.rank)
-			pair0.parent = t1;
-		else if (pair0.rank > pair1.rank)
-			pair1.parent = t0;
-		else if (pair0.rank == pair1.rank) {
-			pair1.parent = t0;
-			pair0.rank++;
-		}
+		if (pair0 != pair1)
+			if (pair0.rank < pair1.rank)
+				pair0.parent = t1;
+			else if (pair0.rank > pair1.rank)
+				pair1.parent = t0;
+			else if (pair0.rank == pair1.rank) {
+				pair1.parent = t0;
+				pair0.rank++;
+			}
 	}
 
 	public T find(T t) {
@@ -37,9 +38,9 @@ public class UnionFind<T> {
 	private Record find0(T t) {
 		Record record = getRecord(t);
 		if (!t.equals(record.parent)) {
-			Record record1 = find0(record.parent);
-			record.parent = record1.parent;
-			return record1;
+			Record parentRecord = find0(record.parent);
+			record.parent = parentRecord.parent;
+			return parentRecord;
 		} else
 			return record;
 	}
