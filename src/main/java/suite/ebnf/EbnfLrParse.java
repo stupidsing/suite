@@ -3,11 +3,13 @@ package suite.ebnf;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import suite.adt.ListMultimap;
 import suite.adt.Pair;
-import suite.algo.UnionFind;
 import suite.ebnf.Ebnf.Node;
 import suite.immutable.IList;
 import suite.parser.Lexer;
@@ -17,21 +19,18 @@ import suite.util.FunUtil.Source;
 
 public class EbnfLrParse implements EbnfParse {
 
-	private UnionFind<State> unionFind = new UnionFind<>();
+	private Map<State, String> references = new HashMap<>();
 	private List<Shift> shifts0 = new ArrayList<>();
 	private List<Reduce> reduces0 = new ArrayList<>();
+	private int counter;
 
-	private Map<String, Transition> transitionByEntity;
+	private Map<String, State> stateByEntity;
 	private Map<Pair<String, State>, Shift> shifts;
 	private Map<State, Reduce> reduces;
 
 	private class Shift {
 		private String input;
 		private State state0, statex;
-
-		private Shift(Shift shift) {
-			this(shift.input, find(shift.state0), find(shift.statex));
-		}
 
 		private Shift(String input, State state0, State statex) {
 			this.input = input;
@@ -47,34 +46,20 @@ public class EbnfLrParse implements EbnfParse {
 	private class Reduce {
 		private String name;
 		private int n;
-		private State state0, statex;
+		private State state;
 
-		private Reduce(Reduce reduce) {
-			this(reduce.name, reduce.n, find(reduce.state0), find(reduce.statex));
+		private Reduce(String name, Pair<Integer, State> pair) {
+			this(name, pair.t0, pair.t1);
 		}
 
-		private Reduce(String name, Pair<Integer, State> pair, State statex) {
-			this(name, pair.t0, pair.t1, statex);
-		}
-
-		private Reduce(String name, int n, State state0, State statex) {
+		private Reduce(String name, int n, State state) {
 			this.name = name;
 			this.n = n;
-			this.state0 = state0;
-			this.statex = statex;
+			this.state = state;
 		}
 
 		public String toString() {
-			return state0 + " -> (" + name + "/" + n + ", " + statex + ")";
-		}
-	}
-
-	private class Transition {
-		private State state0 = new State();
-		private State statex = new State();
-
-		public String toString() {
-			return find(state0) + " -> " + find(statex);
+			return state + " -> " + name + "/" + n;
 		}
 	}
 
@@ -86,27 +71,38 @@ public class EbnfLrParse implements EbnfParse {
 				.map(Pair::first_) //
 				.toList();
 
-		transitionByEntity = Read.from(entities) //
-				.map(entity -> Pair.of(entity, new Transition())) //
+		stateByEntity = Read.from(entities) //
+				.map(entity -> {
+					EbnfGrammar eg = grammarByEntity.get(entity);
+					State state = new State();
+					reduces0.add(new Reduce(eg.content, buildLr(eg, state)));
+					return Pair.of(entity, state);
+				}) //
 				.collect(As::map);
 
-		Read.from(entities).forEach(entity -> {
-			EbnfGrammar eg = grammarByEntity.get(entity);
-			Transition t = transitionByEntity.get(entity);
-			Pair<Integer, State> pair = buildLr(eg, t.state0);
-			if (pair.t0 == 1)
-				unionFind.union(pair.t1, t.statex);
-			else
-				throw new RuntimeException();
-		});
+		ListMultimap<State, Shift> shiftsByState = Read.from(shifts0).toMultimap(shift -> shift.state0);
 
-		shifts = Read.from(shifts0) //
-				.map(Shift::new) //
+		c: while (!references.isEmpty()) {
+			for (Entry<State, String> entry : references.entrySet()) {
+				State state1;
+
+				if (!references.containsKey(state1 = stateByEntity.get(entry.getValue()))) {
+					State state = entry.getKey();
+					for (Shift shift : shiftsByState.get(state1))
+						shiftsByState.put(state, new Shift(shift.input, state, shift.statex));
+					references.remove(state);
+					continue c;
+				}
+			}
+
+			throw new RuntimeException();
+		}
+
+		shifts = Read.from(shiftsByState.entries()) //
+				.map(Pair::second) //
 				.toMap(shift -> Pair.of(shift.input, shift.state0));
 
-		reduces = Read.from(reduces0) //
-				.map(Reduce::new) //
-				.toMap(reduce -> reduce.state0);
+		reduces = Read.from(reduces0).toMap(reduce -> reduce.state);
 	}
 
 	@Override
@@ -116,55 +112,49 @@ public class EbnfLrParse implements EbnfParse {
 
 	@Override
 	public Node parse(String entity, String in) {
-		Transition t = transitionByEntity.get(entity);
-		State state0 = find(t.state0);
-		State statex = find(t.statex);
-
+		State state = stateByEntity.get(entity);
 		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
 
-		System.out.println("transitionByEntity = " + transitionByEntity);
+		System.out.println("transitionByEntity = " + stateByEntity);
 		System.out.println();
 		System.out.println("shifts = " + shifts.values());
 		System.out.println();
 		System.out.println("reduces = " + reduces.values());
 		System.out.println();
-		System.out.println("FROM " + state0 + " TO " + statex);
+		System.out.println("Initial state = " + state);
 		System.out.println();
 
-		return parse(source, state0, statex);
+		return parse(source, state, entity);
 	}
 
-	private Node parse(Source<Node> tokens, State state0, State statex) {
-		Deque<Node> stack = new ArrayDeque<>();
-		Runnable shiftToken = () -> {
-			Node token = tokens.source();
-			if (token != null)
-				stack.push(token);
-		};
+	private Node parse(Source<Node> tokens, State state0, String entity) {
+		Deque<Pair<Node, State>> stack = new ArrayDeque<>();
 		State state = state0;
+		Node token = tokens.source();
 		Shift shift;
 		Reduce reduce;
 
-		shiftToken.run();
+		while (true) {
+			String lookahead = token != null ? token.entity : null;
+			System.out.print("(L=" + lookahead + ", S=" + state + ", Stack=" + stack.size() + ") ");
 
-		for (;;) {
-			Node top = stack.peek();
-
-			if (top != null && (shift = shifts.get(Pair.of(top.entity, state))) != null) {
-				System.out.println("SHIFT " + top);
-				shiftToken.run();
-				state = shift.statex;
-			} else if ((reduce = reduces.get(state)) != null) {
+			if ((reduce = reduces.get(state)) != null) {
 				System.out.println("REDUCE " + reduce.name + "/" + reduce.n);
+				Pair<Node, State> pair = null;
 				IList<Node> nodes = IList.end();
 				for (int i = 0; i < reduce.n; i++)
-					nodes = IList.cons(stack.pop(), nodes);
-				stack.push(new Node(reduce.name, 0, 0, Read.from(nodes).toList()));
-				state = reduce.statex;
-			} else if (state == statex && stack.size() == 1)
-				return top;
+					nodes = IList.cons((pair = stack.pop()).t0, nodes);
+				token = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
+				state = pair != null ? pair.t1 : state;
+			} else if ((shift = shifts.get(Pair.of(lookahead, state))) != null) {
+				System.out.println("SHIFT " + token);
+				stack.push(Pair.of(token, state));
+				token = tokens.source();
+				state = shift.statex;
+			} else if (entity.equals(lookahead) && stack.size() == 0)
+				return token;
 			else
-				throw new RuntimeException("Parse error at " + top);
+				throw new RuntimeException("Parse error at " + token);
 		}
 	}
 
@@ -185,20 +175,22 @@ public class EbnfLrParse implements EbnfParse {
 		case ENTITY:
 			nTokens = 1;
 			statex = new State();
-			Transition t = transitionByEntity.get(eg.content);
-			unionFind.union(state0, t.state0);
-			unionFind.union(statex, t.statex);
+			shifts0.add(new Shift(eg.content, state0, statex));
+			references.put(state0, eg.content);
 			break;
 		case NAMED_:
-			nTokens = 1;
-			statex = new State();
-			reduces0.add(new Reduce(eg.content, buildLr(eg.children.get(0), state0), statex));
+			Pair<Integer, State> pair = buildLr(eg.children.get(0), state0);
+			nTokens = pair.t0;
+			statex = pair.t1;
 			break;
 		case OR____:
 			nTokens = 1;
 			statex = new State();
-			for (EbnfGrammar child : eg.children)
-				reduces0.add(new Reduce("OR", buildLr(child, state0), statex));
+			for (EbnfGrammar child : eg.children) {
+				String entity1 = "OR" + counter++;
+				reduces0.add(new Reduce(entity1, buildLr(child, state0)));
+				shifts0.add(new Shift(entity1, state0, statex));
+			}
 			break;
 		case STRING:
 			nTokens = 1;
@@ -210,10 +202,6 @@ public class EbnfLrParse implements EbnfParse {
 		}
 
 		return Pair.of(nTokens, statex);
-	}
-
-	private State find(State state) {
-		return unionFind.find(state);
 	}
 
 }
