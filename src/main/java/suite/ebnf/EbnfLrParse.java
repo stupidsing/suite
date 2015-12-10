@@ -135,7 +135,7 @@ public class EbnfLrParse implements EbnfParse {
 		Reduce reduce;
 
 		while (true) {
-			String lookahead = token != null ? token.entity : null;
+			String lookahead = token.entity;
 			System.out.print("(L=" + lookahead + ", S=" + state + ", Stack=" + stack.size() + ") ");
 
 			if ((shift = shifts.get(Pair.of(lookahead, state))) != null) {
