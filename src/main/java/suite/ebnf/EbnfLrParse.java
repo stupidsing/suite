@@ -138,23 +138,27 @@ public class EbnfLrParse implements EbnfParse {
 			String lookahead = token != null ? token.entity : null;
 			System.out.print("(L=" + lookahead + ", S=" + state + ", Stack=" + stack.size() + ") ");
 
-			if ((reduce = reduces.get(state)) != null) {
-				System.out.println("REDUCE " + reduce.name + "/" + reduce.n);
-				Pair<Node, State> pair = null;
-				IList<Node> nodes = IList.end();
-				for (int i = 0; i < reduce.n; i++)
-					nodes = IList.cons((pair = stack.pop()).t0, nodes);
-				token = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
-				state = pair != null ? pair.t1 : state;
-			} else if ((shift = shifts.get(Pair.of(lookahead, state))) != null) {
-				System.out.println("SHIFT " + token);
+			if ((shift = shifts.get(Pair.of(lookahead, state))) != null) {
+				System.out.print("SHIFT " + token);
 				stack.push(Pair.of(token, state));
-				token = tokens.source();
 				state = shift.statex;
-			} else if (entity.equals(lookahead) && stack.size() == 0)
+
+				if ((reduce = reduces.get(state)) != null) {
+					System.out.print(", REDUCE " + reduce.name + "/" + reduce.n);
+					Pair<Node, State> pair = null;
+					IList<Node> nodes = IList.end();
+					for (int i = 0; i < reduce.n; i++)
+						nodes = IList.cons((pair = stack.pop()).t0, nodes);
+					token = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
+					state = pair != null ? pair.t1 : state;
+				} else
+					token = tokens.source();
+			} else if (entity.equals(lookahead) && stack.size() == 0 && tokens.source() == null)
 				return token;
 			else
 				throw new RuntimeException("Parse error at " + token);
+
+			System.out.println();
 		}
 	}
 
