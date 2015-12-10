@@ -149,8 +149,8 @@ public class EbnfLrParse implements EbnfParse {
 					IList<Node> nodes = IList.end();
 					for (int i = 0; i < reduce.n; i++)
 						nodes = IList.cons((pair = stack.pop()).t0, nodes);
+					state = pair.t1;
 					token = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
-					state = pair != null ? pair.t1 : state;
 				} else
 					token = tokens.source();
 			} else if (entity.equals(lookahead) && stack.size() == 0 && tokens.source() == null)
