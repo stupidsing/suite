@@ -1,8 +1,15 @@
 package suite.ebnf;
 
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import suite.adt.Pair;
+import suite.streamlet.As;
+import suite.streamlet.Read;
+import suite.util.Util;
 
 public class EbnfGrammar {
 
@@ -22,6 +29,25 @@ public class EbnfGrammar {
 	public final EbnfGrammarType type;
 	public final String content;
 	public final List<EbnfGrammar> children;
+
+	public static Map<String, EbnfGrammar> parse(Reader reader) {
+		EbnfBreakdown breakdown = new EbnfBreakdown();
+
+		List<Pair<String, String>> pairs = Read.lines(reader) //
+				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
+				.map(line -> line.replace('\t', ' ')) //
+				.split(line -> !line.startsWith(" ")) //
+				.map(o -> o.fold("", String::concat)) //
+				.map(line -> Util.split2(line, " ::= ")) //
+				.filter(lr -> lr != null) //
+				.toList();
+
+		Map<String, EbnfGrammar> grammarByEntity = Read.from(pairs) //
+				.map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t0, lr.t1))) //
+				.collect(As::map);
+
+		return grammarByEntity;
+	}
 
 	public EbnfGrammar(EbnfGrammarType type) {
 		this(type, null, Collections.emptyList());

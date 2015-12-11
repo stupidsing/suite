@@ -7,14 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import suite.adt.Pair;
 import suite.node.parser.FactorizeResult;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.primitive.Chars;
-import suite.streamlet.As;
-import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
-import suite.util.Util;
 
 /**
  * Parser for Backus-Naur form grammars.
@@ -31,7 +26,6 @@ import suite.util.Util;
  */
 public class Ebnf {
 
-	private EbnfBreakdown breakdown = new EbnfBreakdown();
 	private EbnfParse engine;
 
 	public static class Node {
@@ -68,29 +62,14 @@ public class Ebnf {
 	}
 
 	public Ebnf(Reader reader) throws IOException {
-		this(reader, EbnfTopDownParse::new);
-	}
-
-	public Ebnf(Reader reader, Fun<Map<String, EbnfGrammar>, EbnfParse> fun) throws IOException {
-		List<Pair<String, String>> pairs = Read.lines(reader) //
-				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
-				.map(line -> line.replace('\t', ' ')) //
-				.split(line -> !line.startsWith(" ")) //
-				.map(o -> o.fold("", String::concat)) //
-				.map(line -> Util.split2(line, " ::= ")) //
-				.filter(lr -> lr != null) //
-				.toList();
-
-		Map<String, EbnfGrammar> grammarByEntity = Read.from(pairs) //
-				.map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t0, lr.t1))) //
-				.collect(As::map);
+		Map<String, EbnfGrammar> grammarByEntity = EbnfGrammar.parse(reader);
 
 		EbnfHeadRecursion headRecursion = new EbnfHeadRecursion(grammarByEntity);
 
 		for (Entry<String, EbnfGrammar> entry : grammarByEntity.entrySet())
 			entry.setValue(headRecursion.reduceHeadRecursion(entry.getValue()));
 
-		engine = fun.apply(grammarByEntity);
+		engine = new EbnfTopDownParse(grammarByEntity);
 	}
 
 	public FactorizeResult parseFNode(String s, String entity) {

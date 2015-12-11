@@ -11,28 +11,25 @@ public class EbnfLrParseTest {
 
 	@Test
 	public void testAnd() throws IOException {
-		Ebnf ebnf = new Ebnf(new StringReader("" //
-				+ "<digit> ::= \"0\" \"1\"\n" //
-				+ ""), EbnfLrParse::new);
-		assertNotNull(ebnf.parse("<digit>", "0 1"));
+		String grammar = "<digit> ::= \"0\" \"1\"\n";
+		assertNotNull(new EbnfLrParse(EbnfGrammar.parse(new StringReader(grammar))).parse("<digit>", "0 1"));
 	}
 
 	@Test
 	public void testOr() throws IOException {
-		Ebnf ebnf = new Ebnf(new StringReader("" //
-				+ "<digit> ::= \"0\" | \"1\"\n" //
-				+ ""), EbnfLrParse::new);
-		assertNotNull(ebnf.parse("<digit>", "0"));
-		assertNotNull(ebnf.parse("<digit>", "1"));
+		String grammar = "<digit> ::= \"0\" | \"1\"\n";
+
+		assertNotNull(new EbnfLrParse(EbnfGrammar.parse(new StringReader(grammar))).parse("<digit>", "0"));
+		assertNotNull(new EbnfLrParse(EbnfGrammar.parse(new StringReader(grammar))).parse("<digit>", "1"));
 	}
 
 	@Test
 	public void testEntity() throws IOException {
-		Ebnf ebnf = new Ebnf(new StringReader("" //
+		String grammar = "" //
 				+ "<digit> ::= \"0\" | \"1\"\n" //
-				+ "<digit2> ::= <digit> <digit>\n" //
-				+ ""), EbnfLrParse::new);
-		assertNotNull(ebnf.parse("<digit2>", "0 1"));
+				+ "<digit2> ::= <digit> <digit>\n";
+
+		assertNotNull(new EbnfLrParse(EbnfGrammar.parse(new StringReader(grammar))).parse("<digit2>", "0 1"));
 	}
 
 }
