@@ -1,5 +1,6 @@
 package suite.ebnf;
 
+import java.io.StringReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -64,6 +65,12 @@ public class EbnfLrParse implements EbnfParse {
 	}
 
 	private class State {
+	}
+
+	public static EbnfLrParse of(String grammar) {
+		try (StringReader reader = new StringReader(grammar)) {
+			return new EbnfLrParse(EbnfGrammar.parse(reader));
+		}
 	}
 
 	public EbnfLrParse(Map<String, EbnfGrammar> grammarByEntity) {
