@@ -22,12 +22,11 @@ public class EbnfLrParse implements EbnfParse {
 
 	private Map<State, String> references = new HashMap<>();
 	private List<Shift> shifts0 = new ArrayList<>();
-	private List<Reduce> reduces0 = new ArrayList<>();
 	private int counter;
 
 	private Map<String, State> stateByEntity;
 	private Map<Pair<String, State>, Shift> shifts;
-	private Map<State, Reduce> reduces;
+	private Map<State, Reduce> reduces = new HashMap<>();
 
 	private class Shift {
 		private String input;
@@ -82,7 +81,7 @@ public class EbnfLrParse implements EbnfParse {
 				.map(entity -> {
 					EbnfGrammar eg = grammarByEntity.get(entity);
 					State state = new State();
-					reduces0.add(new Reduce(eg.content, buildLr(eg, state)));
+					addReduce(new Reduce(eg.content, buildLr(eg, state)));
 					return Pair.of(entity, state);
 				}) //
 				.collect(As::map);
@@ -108,8 +107,6 @@ public class EbnfLrParse implements EbnfParse {
 		shifts = Read.from(shiftsByState.entries()) //
 				.map(Pair::second) //
 				.toMap(shift -> Pair.of(shift.input, shift.state0));
-
-		reduces = Read.from(reduces0).toMap(reduce -> reduce.state);
 	}
 
 	@Override
@@ -199,7 +196,7 @@ public class EbnfLrParse implements EbnfParse {
 			statex = new State();
 			for (EbnfGrammar child : eg.children) {
 				String entity1 = "OR" + counter++;
-				reduces0.add(new Reduce(entity1, buildLr(child, state0)));
+				addReduce(new Reduce(entity1, buildLr(child, state0)));
 				shifts0.add(new Shift(entity1, state0, statex));
 			}
 			break;
@@ -213,6 +210,14 @@ public class EbnfLrParse implements EbnfParse {
 		}
 
 		return Pair.of(nTokens, statex);
+	}
+
+	private void addReduce(Reduce reduce) {
+		Reduce reduce0 = reduces.get(reduce.state);
+		if (reduce0 == null)
+			reduces.put(reduce.state, reduce);
+		else
+			throw new RuntimeException();
 	}
 
 }
