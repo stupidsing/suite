@@ -25,7 +25,7 @@ public class EbnfLrParse implements EbnfParse {
 	private int counter;
 
 	private Map<String, State> stateByEntity;
-	private Map<Pair<String, State>, Shift> shifts;
+	private Map<Pair<String, State>, State> shifts;
 	private Map<State, Reduce> reduces = new HashMap<>();
 
 	private class Shift {
@@ -100,7 +100,7 @@ public class EbnfLrParse implements EbnfParse {
 
 		shifts = Read.from(shiftsByState.entries()) //
 				.map(Pair::second) //
-				.toMap(shift -> Pair.of(shift.input, shift.state0));
+				.toMap(shift -> Pair.of(shift.input, shift.state0), shift -> shift.statex);
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class EbnfLrParse implements EbnfParse {
 
 		System.out.println("transitionByEntity = " + stateByEntity);
 		System.out.println();
-		System.out.println("shifts = " + shifts.values());
+		System.out.println("shifts = " + shifts);
 		System.out.println();
 		System.out.println("reduces = " + reduces);
 		System.out.println();
@@ -127,19 +127,18 @@ public class EbnfLrParse implements EbnfParse {
 
 	private Node parse(Source<Node> tokens, State state0, String entity) {
 		Deque<Pair<Node, State>> stack = new ArrayDeque<>();
-		State state = state0;
+		State state = state0, state1;
 		Node token = tokens.source();
-		Shift shift;
 		Reduce reduce;
 
 		while (true) {
 			String lookahead = token.entity;
 			System.out.print("(L=" + lookahead + ", S=" + state + ", Stack=" + stack.size() + ") ");
 
-			if ((shift = shifts.get(Pair.of(lookahead, state))) != null) {
+			if ((state1 = shifts.get(Pair.of(lookahead, state))) != null) {
 				System.out.print("SHIFT " + token);
 				stack.push(Pair.of(token, state));
-				state = shift.statex;
+				state = state1;
 
 				if ((reduce = reduces.get(state)) != null) {
 					System.out.print(", REDUCE " + reduce.name + "/" + reduce.n);
