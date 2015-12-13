@@ -98,11 +98,11 @@ public class EbnfLrParse implements EbnfParse {
 		State state = stateByEntity.get(entity);
 		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
 
-		System.out.println("transitionByEntity = " + stateByEntity);
+		System.out.println("transitionByEntity = " + list(stateByEntity));
 		System.out.println();
-		System.out.println("shifts = " + shifts);
+		System.out.println("shifts = " + list(shifts));
 		System.out.println();
-		System.out.println("reduces = " + reduces);
+		System.out.println("reduces = " + list(reduces));
 		System.out.println();
 		System.out.println("Initial state = " + state);
 		System.out.println();
@@ -203,6 +203,15 @@ public class EbnfLrParse implements EbnfParse {
 			map.put(key, value);
 		else
 			throw new RuntimeException();
+	}
+
+	public <K, V> String list(Map<K, V> map) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{\n");
+		for (Entry<K, V> pair : map.entrySet())
+			sb.append(pair.getKey() + " = " + pair.getValue() + "\n");
+		sb.append("}\n");
+		return sb.toString();
 	}
 
 }
