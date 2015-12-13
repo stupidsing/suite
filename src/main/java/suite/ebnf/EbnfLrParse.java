@@ -2,14 +2,12 @@ package suite.ebnf;
 
 import java.io.StringReader;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.ebnf.Ebnf.Node;
 import suite.immutable.IList;
@@ -21,27 +19,11 @@ import suite.util.FunUtil.Source;
 public class EbnfLrParse implements EbnfParse {
 
 	private Map<State, String> references = new HashMap<>();
-	private List<Shift> shifts0 = new ArrayList<>();
 	private int counter;
 
 	private Map<String, State> stateByEntity;
-	private Map<Pair<String, State>, State> shifts;
+	private Map<State, Map<String, State>> shifts = new HashMap<>();
 	private Map<State, Reduce> reduces = new HashMap<>();
-
-	private class Shift {
-		private String input;
-		private State state0, statex;
-
-		private Shift(String input, State state0, State statex) {
-			this.input = input;
-			this.state0 = state0;
-			this.statex = statex;
-		}
-
-		public String toString() {
-			return "(" + input + ", " + state0 + ") -> " + statex;
-		}
-	}
 
 	private class Reduce {
 		private String name;
@@ -80,27 +62,21 @@ public class EbnfLrParse implements EbnfParse {
 				}) //
 				.collect(As::map);
 
-		ListMultimap<State, Shift> shiftsByState = Read.from(shifts0).toMultimap(shift -> shift.state0);
-
 		c: while (!references.isEmpty()) {
 			for (Entry<State, String> entry : references.entrySet()) {
-				State state1;
+				State sourceState;
 
-				if (!references.containsKey(state1 = stateByEntity.get(entry.getValue()))) {
-					State state = entry.getKey();
-					for (Shift shift : shiftsByState.get(state1))
-						shiftsByState.put(state, new Shift(shift.input, state, shift.statex));
-					references.remove(state);
+				if (!references.containsKey(sourceState = stateByEntity.get(entry.getValue()))) {
+					State targetState = entry.getKey();
+					for (Entry<String, State> entry1 : shifts.get(sourceState).entrySet())
+						put(shifts.computeIfAbsent(targetState, state -> new HashMap<>()), entry1.getKey(), entry1.getValue());
+					references.remove(targetState);
 					continue c;
 				}
 			}
 
 			throw new RuntimeException();
 		}
-
-		shifts = Read.from(shiftsByState.entries()) //
-				.map(Pair::second) //
-				.toMap(shift -> Pair.of(shift.input, shift.state0), shift -> shift.statex);
 	}
 
 	@Override
@@ -127,6 +103,7 @@ public class EbnfLrParse implements EbnfParse {
 
 	private Node parse(Source<Node> tokens, State state0, String entity) {
 		Deque<Pair<Node, State>> stack = new ArrayDeque<>();
+		Map<String, State> m;
 		State state = state0, state1;
 		Node token = tokens.source();
 		Reduce reduce;
@@ -135,7 +112,7 @@ public class EbnfLrParse implements EbnfParse {
 			String lookahead = token.entity;
 			System.out.print("(L=" + lookahead + ", S=" + state + ", Stack=" + stack.size() + ") ");
 
-			if ((state1 = shifts.get(Pair.of(lookahead, state))) != null) {
+			if ((m = shifts.get(state)) != null && (state1 = m.get(lookahead)) != null) {
 				System.out.print("SHIFT " + token);
 				stack.push(Pair.of(token, state));
 				state = state1;
@@ -175,8 +152,7 @@ public class EbnfLrParse implements EbnfParse {
 			break;
 		case ENTITY:
 			nTokens = 1;
-			statex = new State();
-			shifts0.add(new Shift(eg.content, state0, statex));
+			statex = getShiftMap(state0).computeIfAbsent(eg.content, content -> new State());
 			references.put(state0, eg.content);
 			break;
 		case NAMED_:
@@ -187,16 +163,16 @@ public class EbnfLrParse implements EbnfParse {
 		case OR____:
 			nTokens = 1;
 			statex = new State();
+			Map<String, State> m = getShiftMap(state0);
 			for (EbnfGrammar child : eg.children) {
 				String entity1 = "OR" + counter++;
 				addReduce(entity1, buildLr(child, state0));
-				shifts0.add(new Shift(entity1, state0, statex));
+				put(m, entity1, statex);
 			}
 			break;
 		case STRING:
 			nTokens = 1;
-			statex = new State();
-			shifts0.add(new Shift(eg.content, state0, statex));
+			statex = getShiftMap(state0).computeIfAbsent(eg.content, content -> new State());
 			break;
 		default:
 			throw new RuntimeException("LR parser cannot recognize " + eg.type);
@@ -205,10 +181,17 @@ public class EbnfLrParse implements EbnfParse {
 		return Pair.of(nTokens, statex);
 	}
 
+	private Map<String, State> getShiftMap(State state0) {
+		return shifts.computeIfAbsent(state0, state -> new HashMap<>());
+	}
+
 	private void addReduce(String entity, Pair<Integer, State> pair) {
-		Reduce reduce0 = reduces.get(pair.t1);
-		if (reduce0 == null)
-			reduces.put(pair.t1, new Reduce(entity, pair.t0));
+		put(reduces, pair.t1, new Reduce(entity, pair.t0));
+	}
+
+	private <K, V> void put(Map<K, V> map, K key, V value) {
+		if (map.get(key) == null)
+			map.put(key, value);
 		else
 			throw new RuntimeException();
 	}
