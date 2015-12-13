@@ -119,10 +119,10 @@ public class EbnfLrParse implements EbnfParse {
 
 		while (true) {
 			String lookahead = token.entity;
-			System.out.print("(L=" + lookahead + ", S=" + state + ", Stack=" + stack.size() + ") ");
+			System.out.print("(S=" + state + ", L=" + lookahead + ", Stack=" + stack.size() + ")");
 
 			if ((m = shifts.get(state)) != null && (state1 = m.get(lookahead)) != null) {
-				System.out.print("SHIFT " + token);
+				System.out.print(", SHIFT " + lookahead);
 				stack.push(Pair.of(token, state));
 				state = state1;
 
@@ -139,7 +139,7 @@ public class EbnfLrParse implements EbnfParse {
 			} else if (entity.equals(lookahead) && stack.size() == 0 && tokens.source() == null)
 				return token;
 			else
-				throw new RuntimeException("Parse error at " + token);
+				throw new RuntimeException("Parse error at " + lookahead);
 
 			System.out.println();
 		}
