@@ -63,13 +63,13 @@ public class EbnfLrParse implements EbnfParse {
 				.collect(As::map);
 
 		c: while (!references.isEmpty()) {
-			for (Entry<State, String> entry : references.entrySet()) {
-				State sourceState;
+			for (Entry<State, String> e0 : references.entrySet()) {
+				State sourceState = stateByEntity.get(e0.getValue());
+				State targetState = e0.getKey();
 
-				if (!references.containsKey(sourceState = stateByEntity.get(entry.getValue()))) {
-					State targetState = entry.getKey();
-					for (Entry<String, State> entry1 : shifts.get(sourceState).entrySet())
-						put(shifts.computeIfAbsent(targetState, state -> new HashMap<>()), entry1.getKey(), entry1.getValue());
+				if (!references.containsKey(sourceState)) {
+					for (Entry<String, State> e1 : shifts.get(sourceState).entrySet())
+						put(shifts.computeIfAbsent(targetState, state -> new HashMap<>()), e1.getKey(), e1.getValue());
 					references.remove(targetState);
 					continue c;
 				}
