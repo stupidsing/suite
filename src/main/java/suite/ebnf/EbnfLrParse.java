@@ -46,20 +46,14 @@ public class EbnfLrParse implements EbnfParse {
 	private class Reduce {
 		private String name;
 		private int n;
-		private State state;
 
-		private Reduce(String name, Pair<Integer, State> pair) {
-			this(name, pair.t0, pair.t1);
-		}
-
-		private Reduce(String name, int n, State state) {
+		private Reduce(String name, int n) {
 			this.name = name;
 			this.n = n;
-			this.state = state;
 		}
 
 		public String toString() {
-			return state + " -> " + name + "/" + n;
+			return name + "/" + n;
 		}
 	}
 
@@ -81,7 +75,7 @@ public class EbnfLrParse implements EbnfParse {
 				.map(entity -> {
 					EbnfGrammar eg = grammarByEntity.get(entity);
 					State state = new State();
-					addReduce(new Reduce(eg.content, buildLr(eg, state)));
+					addReduce(eg.content, buildLr(eg, state));
 					return Pair.of(entity, state);
 				}) //
 				.collect(As::map);
@@ -123,7 +117,7 @@ public class EbnfLrParse implements EbnfParse {
 		System.out.println();
 		System.out.println("shifts = " + shifts.values());
 		System.out.println();
-		System.out.println("reduces = " + reduces.values());
+		System.out.println("reduces = " + reduces);
 		System.out.println();
 		System.out.println("Initial state = " + state);
 		System.out.println();
@@ -196,7 +190,7 @@ public class EbnfLrParse implements EbnfParse {
 			statex = new State();
 			for (EbnfGrammar child : eg.children) {
 				String entity1 = "OR" + counter++;
-				addReduce(new Reduce(entity1, buildLr(child, state0)));
+				addReduce(entity1, buildLr(child, state0));
 				shifts0.add(new Shift(entity1, state0, statex));
 			}
 			break;
@@ -212,10 +206,10 @@ public class EbnfLrParse implements EbnfParse {
 		return Pair.of(nTokens, statex);
 	}
 
-	private void addReduce(Reduce reduce) {
-		Reduce reduce0 = reduces.get(reduce.state);
+	private void addReduce(String entity, Pair<Integer, State> pair) {
+		Reduce reduce0 = reduces.get(pair.t1);
 		if (reduce0 == null)
-			reduces.put(reduce.state, reduce);
+			reduces.put(pair.t1, new Reduce(entity, pair.t0));
 		else
 			throw new RuntimeException();
 	}
