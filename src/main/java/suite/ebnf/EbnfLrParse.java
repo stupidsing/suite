@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.ebnf.Ebnf.Node;
 import suite.immutable.IList;
@@ -18,7 +19,7 @@ import suite.util.FunUtil.Source;
 
 public class EbnfLrParse implements EbnfParse {
 
-	private Map<State, String> references = new HashMap<>();
+	private ListMultimap<State, String> references = new ListMultimap<>();
 	private int counter;
 
 	private Map<String, State> stateByEntity;
@@ -63,14 +64,22 @@ public class EbnfLrParse implements EbnfParse {
 				.collect(As::map);
 
 		c: while (!references.isEmpty()) {
-			for (Entry<State, String> e0 : references.entrySet()) {
-				State sourceState = stateByEntity.get(e0.getValue());
-				State targetState = e0.getKey();
+			for (Pair<State, String> e0 : references.entries()) {
+				State sourceState = stateByEntity.get(e0.t1);
+				State targetState = e0.t0;
+				boolean b = false;
 
-				if (!references.containsKey(sourceState)) {
+				if (sourceState == targetState)
+					b = true;
+				else if (references.get(sourceState).isEmpty()) {
 					for (Entry<String, State> e1 : shifts.get(sourceState).entrySet())
 						put(shifts.computeIfAbsent(targetState, state -> new HashMap<>()), e1.getKey(), e1.getValue());
-					references.remove(targetState);
+					b = true;
+				} else
+					b = false;
+
+				if (b) {
+					references.remove(targetState, e0.t1);
 					continue c;
 				}
 			}

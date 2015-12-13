@@ -53,7 +53,10 @@ public class ListMultimap<K, V> {
 	}
 
 	public boolean isEmpty() {
-		return map.isEmpty();
+		for (List<V> value : map.values())
+			if (!value.isEmpty())
+				return false;
+		return true;
 	}
 
 	public Iterable<Pair<K, Collection<V>>> listEntries() {
@@ -69,6 +72,16 @@ public class ListMultimap<K, V> {
 
 	public void remove(K k, V v) {
 		get(k).remove(v);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		for (Pair<K, V> pair : entries())
+			sb.append(pair.t0 + "=" + pair.t1 + ", ");
+		sb.append("}");
+		return sb.toString();
 	}
 
 }
