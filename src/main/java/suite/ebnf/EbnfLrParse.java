@@ -19,10 +19,10 @@ import suite.util.FunUtil.Source;
 
 public class EbnfLrParse implements EbnfParse {
 
-	private ListMultimap<State, String> references = new ListMultimap<>();
 	private int counter;
-
 	private Map<String, State> stateByEntity;
+	private ListMultimap<State, String> references = new ListMultimap<>();
+
 	private Map<State, Map<String, State>> shifts = new HashMap<>();
 	private Map<State, Reduce> reduces = new HashMap<>();
 
