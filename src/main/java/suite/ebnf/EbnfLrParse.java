@@ -112,37 +112,50 @@ public class EbnfLrParse implements EbnfParse {
 
 	private Node parse(Source<Node> tokens, State state0, String entity) {
 		Deque<Pair<Node, State>> stack = new ArrayDeque<>();
-		Map<String, State> m;
-		State state = state0, state1;
 		Node token = tokens.source();
-		Reduce reduce;
+		State state = state0;
 
 		while (true) {
-			String lookahead = token.entity;
-			System.out.print("(S=" + state + ", L=" + lookahead + ", Stack=" + stack.size() + ")");
+			State shift;
 
-			if ((m = shifts.get(state)) != null && (state1 = m.get(lookahead)) != null) {
-				System.out.print(", SHIFT " + lookahead);
-				stack.push(Pair.of(token, state));
-				state = state1;
+			// Shift as much as possible
+			while (token != null && (shift = shift(state, token, stack)) != null) {
+				state = shift;
+				token = tokens.source();
+			}
 
-				if ((reduce = reduces.get(state)) != null) {
-					System.out.print(", REDUCE " + reduce.name + "/" + reduce.n);
-					Pair<Node, State> pair = null;
-					IList<Node> nodes = IList.end();
-					for (int i = 0; i < reduce.n; i++)
-						nodes = IList.cons((pair = stack.pop()).t0, nodes);
-					state = pair.t1;
-					token = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
-				} else
-					token = tokens.source();
-			} else if (entity.equals(lookahead) && stack.size() == 0 && tokens.source() == null)
-				return token;
+			// Reduce
+			Reduce reduce = reduces.get(state);
+			Pair<Node, State> pair = null;
+			IList<Node> nodes = IList.end();
+			System.out.println("(S=" + state + ", Stack=" + stack.size() + "), REDUCE " + reduce.name + "/" + reduce.n);
+
+			for (int i = 0; i < reduce.n; i++)
+				nodes = IList.cons((pair = stack.pop()).t0, nodes);
+
+			Node token1 = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
+
+			// Force shift after reduce
+			if ((shift = shift(pair.t1, token1, stack)) != null)
+				state = shift;
+			else if (entity.equals(reduce.name) && stack.size() == 0 && token == null)
+				return token1;
 			else
-				throw new RuntimeException("Parse error at " + lookahead);
-
-			System.out.println();
+				throw new RuntimeException();
 		}
+	}
+
+	private State shift(State state, Node token, Deque<Pair<Node, State>> stack) {
+		String lookahead = token.entity;
+		Map<String, State> m;
+		State state1;
+
+		if ((m = shifts.get(state)) != null && (state1 = m.get(lookahead)) != null) {
+			System.out.println("(S=" + state + ", L=" + lookahead + ", Stack=" + stack.size() + "), SHIFT " + lookahead);
+			stack.push(Pair.of(token, state));
+			return state1;
+		} else
+			return null;
 	}
 
 	private Pair<Integer, State> buildLr(EbnfGrammar eg, State state0) {
