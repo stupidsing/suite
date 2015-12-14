@@ -213,10 +213,11 @@ public class EbnfLrParse implements EbnfParse {
 		put(reduces, pair.t1, new Reduce(entity, pair.t0));
 	}
 
-	private <K, V> void put(Map<K, V> map, K key, V value) {
-		if (map.get(key) == null)
-			map.put(key, value);
-		else
+	private <K, V> void put(Map<K, V> map, K key, V value1) {
+		V value0 = map.get(key);
+		if (value0 == null)
+			map.put(key, value1);
+		else if (value0 != value1)
 			throw new RuntimeException();
 	}
 
