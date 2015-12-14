@@ -34,4 +34,15 @@ public class EbnfLrParseTest {
 		assertNotNull(elp.parse("<digit2>", "0 1"));
 	}
 
+	@Test
+	public void testList() throws IOException {
+		String grammar = "" //
+				+ "<list> ::= () | <list> <digit>\n" //
+				+ "<digit> ::= \"0\" | \"1\"\n";
+
+		assertNotNull(EbnfLrParse.of(grammar).parse("<list>", ""));
+		assertNotNull(EbnfLrParse.of(grammar).parse("<list>", "0"));
+		assertNotNull(EbnfLrParse.of(grammar).parse("<list>", "0 1 0 1"));
+	}
+
 }

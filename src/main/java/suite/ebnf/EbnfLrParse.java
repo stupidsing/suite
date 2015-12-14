@@ -126,20 +126,22 @@ public class EbnfLrParse implements EbnfParse {
 
 			// Reduce
 			Reduce reduce = reduces.get(state);
-			Pair<Node, State> pair = null;
 			IList<Node> nodes = IList.end();
 			System.out.println("(S=" + state + ", Stack=" + stack.size() + "), REDUCE " + reduce.name + "/" + reduce.n);
 
-			for (int i = 0; i < reduce.n; i++)
-				nodes = IList.cons((pair = stack.pop()).t0, nodes);
+			for (int i = 0; i < reduce.n; i++) {
+				Pair<Node, State> pair = stack.pop();
+				nodes = IList.cons(pair.t0, nodes);
+				state = pair.t1;
+			}
 
 			Node token1 = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
 
 			// Force shift after reduce
-			if ((shift = shift(pair.t1, token1, stack)) != null)
-				state = shift;
-			else if (entity.equals(reduce.name) && stack.size() == 0 && token == null)
+			if (entity.equals(reduce.name) && stack.size() == 0 && token == null)
 				return token1;
+			else if ((shift = shift(state, token1, stack)) != null)
+				state = shift;
 			else
 				throw new RuntimeException();
 		}
@@ -151,7 +153,7 @@ public class EbnfLrParse implements EbnfParse {
 		State state1;
 
 		if ((m = shifts.get(state)) != null && (state1 = m.get(lookahead)) != null) {
-			System.out.println("(S=" + state + ", L=" + lookahead + ", Stack=" + stack.size() + "), SHIFT " + lookahead);
+			System.out.println("(S=" + state + ", Stack=" + stack.size() + "), SHIFT " + lookahead);
 			stack.push(Pair.of(token, state));
 			return state1;
 		} else
