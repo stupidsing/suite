@@ -21,7 +21,7 @@ public class EbnfLrParse implements EbnfParse {
 
 	private int counter;
 	private Map<String, State> stateByEntity;
-	private ListMultimap<State, String> references = new ListMultimap<>();
+	private ListMultimap<State, String> nextEntities = new ListMultimap<>();
 
 	private Map<State, Map<String, State>> shifts = new HashMap<>();
 	private Map<State, Reduce> reduces = new HashMap<>();
@@ -63,15 +63,15 @@ public class EbnfLrParse implements EbnfParse {
 				}) //
 				.collect(As::map);
 
-		c: while (!references.isEmpty()) {
-			for (Pair<State, String> e0 : references.entries()) {
+		c: while (!nextEntities.isEmpty()) {
+			for (Pair<State, String> e0 : nextEntities.entries()) {
 				State sourceState = stateByEntity.get(e0.t1);
 				State targetState = e0.t0;
 				boolean b = false;
 
 				if (sourceState == targetState)
 					b = true;
-				else if (references.get(sourceState).isEmpty()) {
+				else if (nextEntities.get(sourceState).isEmpty()) {
 					for (Entry<String, State> e1 : shifts.get(sourceState).entrySet())
 						put(shifts.computeIfAbsent(targetState, state -> new HashMap<>()), e1.getKey(), e1.getValue());
 					b = true;
@@ -79,7 +79,7 @@ public class EbnfLrParse implements EbnfParse {
 					b = false;
 
 				if (b) {
-					references.remove(targetState, e0.t1);
+					nextEntities.remove(targetState, e0.t1);
 					continue c;
 				}
 			}
@@ -177,7 +177,7 @@ public class EbnfLrParse implements EbnfParse {
 		case ENTITY:
 			nTokens = 1;
 			statex = getShiftMap(state0).computeIfAbsent(eg.content, content -> new State());
-			references.put(state0, eg.content);
+			nextEntities.put(state0, eg.content);
 			break;
 		case NAMED_:
 			Pair<Integer, State> pair = buildLr(eg.children.get(0), state0);
