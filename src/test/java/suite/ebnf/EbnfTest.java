@@ -10,8 +10,6 @@ import java.io.StringReader;
 
 import org.junit.Test;
 
-import suite.node.io.Operator.Assoc;
-import suite.node.io.TermOp;
 import suite.node.parser.FactorizeResult;
 import suite.os.FileUtil;
 
@@ -91,38 +89,10 @@ public class EbnfTest {
 		System.out.println(ebnf.parse("sql", sql));
 	}
 
-	@Test
-	public void testTermOp() throws IOException {
-		StringBuilder sb = new StringBuilder();
-		int i = 0;
-
-		for (TermOp operator : TermOp.values()) {
-			String op = "\"" + operator.getName().trim() + "\"";
-			String v = v(i++);
-			String v1 = v(i);
-			if (operator.getAssoc() == Assoc.LEFT)
-				sb.append(v + " ::= " + v1 + " | " + v + " " + op + " " + v1 + "\n");
-			else
-				sb.append(v + " ::= " + v1 + " | " + v1 + " " + op + " " + v + "\n");
-		}
-
-		String vx = v(i);
-		sb.append(vx + " ::= [0-9] | \"(\" " + v(0) + " \")\"\n");
-
-		String s = sb.toString();
-		System.out.println(s);
-		Ebnf ebnf = new Ebnf(new StringReader(s));
-		System.out.println(ebnf.parse("e0", "1 * 2 + 3"));
-	}
-
 	private FactorizeResult rewrite(Ebnf ebnf, String entity, String from, String to, FactorizeResult fr0) {
 		FactorizeResult frfrom = ebnf.parseFNode(from, entity);
 		FactorizeResult frto = ebnf.parseFNode(to, entity);
 		return FactorizeResult.rewrite(frfrom, frto, fr0);
-	}
-
-	private String v(int i) {
-		return "e" + i;
 	}
 
 }
