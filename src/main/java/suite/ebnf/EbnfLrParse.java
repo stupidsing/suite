@@ -73,7 +73,7 @@ public class EbnfLrParse implements EbnfParse {
 					b = true;
 				else if (nextEntities.get(sourceState).isEmpty()) {
 					for (Entry<String, State> e1 : shifts.get(sourceState).entrySet())
-						put(shifts.computeIfAbsent(targetState, state -> new HashMap<>()), e1.getKey(), e1.getValue());
+						put(getShiftMap(targetState), e1.getKey(), e1.getValue());
 					b = true;
 				} else
 					b = false;
