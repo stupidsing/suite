@@ -1,6 +1,7 @@
 package suite.streamlet;
 
 import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -13,13 +14,25 @@ import java.util.function.Predicate;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.To;
 
 public class Streamlet<T> implements Iterable<T> {
 
 	private Source<Outlet<T>> in;
+
+	@SafeVarargs
+	public static <T> Streamlet<T> concat(Streamlet<T>... streamlets) {
+		return streamlet(() -> {
+			List<Source<T>> sources = new ArrayList<>();
+			for (Streamlet<T> streamlet : streamlets)
+				sources.add(streamlet.in.source().source());
+			return new Outlet<>(FunUtil.concat(To.source(sources)));
+		});
+	}
 
 	public static <T> Streamlet<T> from(Source<T> source) {
 		return streamlet(() -> new Outlet<>(source));

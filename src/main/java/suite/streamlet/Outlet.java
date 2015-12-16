@@ -34,6 +34,14 @@ public class Outlet<T> implements Iterable<T> {
 
 	private Source<T> source;
 
+	@SafeVarargs
+	public static <T> Outlet<T> concat(Outlet<T>... outlets) {
+		List<Source<T>> sources = new ArrayList<>();
+		for (Outlet<T> outlet : outlets)
+			sources.add(outlet.source);
+		return from(FunUtil.concat(To.source(sources)));
+	}
+
 	public static <T> Outlet<T> empty() {
 		return from(FunUtil.nullSource());
 	}
