@@ -141,12 +141,12 @@ public class To {
 	}
 
 	@SafeVarargs
-	public static <O> Source<O> source(O... array) {
+	public static <T> Source<T> source(T... array) {
 		return source(Arrays.asList(array));
 	}
 
-	public static <O> Source<O> source(Iterable<O> iterable) {
-		Iterator<O> iterator = iterable.iterator();
+	public static <T> Source<T> source(Iterable<T> iterable) {
+		Iterator<T> iterator = iterable.iterator();
 		return () -> iterator.hasNext() ? iterator.next() : null;
 	}
 

@@ -87,11 +87,9 @@ public class FunUtil2 {
 		return () -> iterator(source);
 	}
 
-	public static <T0, T1> Source<T1> map(Fun<T0, T1> fun, Source<T0> source) {
-		return () -> {
-			T0 e = source.source();
-			return e != null ? fun.apply(e) : null;
-		};
+	public static <K, V, T> Source<T> map(BiFunction<K, V, T> fun, Source2<K, V> source) {
+		Pair<K, V> pair = Pair.of(null, null);
+		return () -> source.source(pair) ? fun.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <K, V> Source2<K, V> nullSource() {
@@ -107,11 +105,11 @@ public class FunUtil2 {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static <K, V> Source<Source2<K, V>> split(Source2<K, V> source, BiFunction<K, V, Boolean> fun) {
+	public static <K, V> Source<Source2<K, V>> split(Source2<K, V> source, BiPredicate<K, V> fun) {
 		return new Source<Source2<K, V>>() {
 			private Pair<K, V> pair = Pair.of(null, null);
 			private boolean isAvailable;
-			private Source2<K, V> source_ = pair_ -> (isAvailable &= source.source(pair_)) && !fun.apply(pair.t0, pair.t1);
+			private Source2<K, V> source_ = pair_ -> (isAvailable &= source.source(pair_)) && !fun.test(pair.t0, pair.t1);
 
 			{
 				isAvailable = source.source(pair);

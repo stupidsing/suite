@@ -193,6 +193,18 @@ public class Outlet<T> implements Iterable<T> {
 		return from(FunUtil.map(fun, source));
 	}
 
+	public <K, V> Outlet2<K, V> map2(Fun<T, K> kf, Fun<T, V> vf) {
+		return Outlet2.from(pair -> {
+			T t;
+			if ((t = source.source()) != null) {
+				pair.t0 = kf.apply(t);
+				pair.t1 = vf.apply(t);
+				return true;
+			} else
+				return false;
+		});
+	}
+
 	public T min(Comparator<T> comparator) {
 		T t = minOrNull(comparator);
 		if (t != null)

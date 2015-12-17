@@ -85,7 +85,10 @@ public class As {
 
 	public static <K, V> Map<K, V> map(Outlet<Pair<K, V>> outlet) {
 		Map<K, V> map = new HashMap<>();
-		outlet.sink(pair -> map.put(pair.t0, pair.t1));
+		outlet.sink(pair -> {
+			if (map.put(pair.t0, pair.t1) != null)
+				throw new RuntimeException("Duplicate key " + pair.t0);
+		});
 		return map;
 	}
 

@@ -124,6 +124,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().map(fun));
 	}
 
+	public <K, V> Streamlet2<K, V> map2(Fun<T, K> kf, Fun<T, V> vf) {
+		return new Streamlet2<>(() -> spawn().map2(kf, vf));
+	}
+
 	public T min(Comparator<T> comparator) {
 		return spawn().min(comparator);
 	}
@@ -154,10 +158,6 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public Streamlet<T> reverse() {
 		return streamlet(() -> spawn().reverse());
-	}
-
-	public Streamlet<T> single() {
-		return Read.from(uniqueResult());
 	}
 
 	public Streamlet<T> skip(int n) {
