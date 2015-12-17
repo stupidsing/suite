@@ -65,8 +65,6 @@ public class EbnfLrParse implements EbnfParse {
 
 		ListMultimap<State, State> merges = Streamlet.concat(ss0, ss1).toMultimap(Pair::first_, Pair::second);
 
-		System.out.println(merges);
-
 		c: while (!merges.isEmpty()) {
 			for (Pair<State, State> e0 : merges.entries()) {
 				State sourceState = e0.t1;
