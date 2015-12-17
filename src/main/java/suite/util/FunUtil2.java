@@ -56,7 +56,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V, R> R fold(Fun<Pair<R, Pair<K, V>>, R> fun, R init, Source2<K, V> source) {
-		Pair<K, V> pair = Pair.<K, V> of(null, null);
+		Pair<K, V> pair = Pair.of(null, null);
 		while (source.source(pair))
 			init = fun.apply(Pair.of(init, pair));
 		return init;
@@ -68,7 +68,7 @@ public class FunUtil2 {
 
 			public boolean hasNext() {
 				if (next == null) {
-					Pair<K, V> next1 = Pair.<K, V> of(null, null);
+					Pair<K, V> next1 = Pair.of(null, null);
 					if (source.source(next1))
 						next = next1;
 				}
@@ -109,7 +109,7 @@ public class FunUtil2 {
 	 */
 	public static <K, V> Source<Source2<K, V>> split(Source2<K, V> source, BiFunction<K, V, Boolean> fun) {
 		return new Source<Source2<K, V>>() {
-			private Pair<K, V> pair = Pair.<K, V> of(null, null);
+			private Pair<K, V> pair = Pair.of(null, null);
 			private boolean isAvailable;
 			private Source2<K, V> source_ = pair_ -> (isAvailable &= source.source(pair_)) && !fun.apply(pair.t0, pair.t1);
 
