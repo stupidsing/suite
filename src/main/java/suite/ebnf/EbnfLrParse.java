@@ -6,6 +6,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
@@ -14,7 +15,6 @@ import suite.immutable.IList;
 import suite.parser.Lexer;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 
 public class EbnfLrParse implements EbnfParse {
@@ -163,9 +163,7 @@ public class EbnfLrParse implements EbnfParse {
 	private Pair<Integer, State> buildLr(EbnfGrammar eg, State state0) {
 		Map<String, State> shiftMap = getShiftMap(state0);
 
-		Sink<Pair<String, State>> reducer = pair -> {
-			String entity1 = pair.t0;
-			State statex_ = pair.t1;
+		BiConsumer<String, State> reducer = (entity1, statex_) -> {
 			for (EbnfGrammar child : eg.children)
 				addReduce(entity1, buildLr(child, state0));
 			transitionByEntity.put(entity1, Pair.of(state0, statex_));
@@ -191,13 +189,13 @@ public class EbnfLrParse implements EbnfParse {
 		case NAMED_:
 			nTokens = 1;
 			statex = new State();
-			reducer.sink(Pair.of(eg.content, statex));
+			reducer.accept(eg.content, statex);
 			break;
 		case OR____:
 			String entity1 = "OR" + counter++;
 			nTokens = 1;
 			statex = shiftMap.computeIfAbsent(entity1, content -> new State());
-			reducer.sink(Pair.of(entity1, statex));
+			reducer.accept(entity1, statex);
 			break;
 		case STRING:
 			nTokens = 1;
