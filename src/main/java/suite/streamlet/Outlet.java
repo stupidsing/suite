@@ -259,7 +259,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public List<T> toList() {
-		return form(() -> new ArrayList<>());
+		return form(ArrayList::new);
 	}
 
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
@@ -287,7 +287,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Set<T> toSet() {
-		return form(() -> new HashSet<>());
+		return form(HashSet::new);
 	}
 
 	public T uniqueResult() {
