@@ -65,6 +65,11 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return new Streamlet<>(() -> Outlet.from(spawn().concatMap(bf)));
 	}
 
+	public <K1, V1> Streamlet2<K1, V1> concatMap2(BiFunction<K, V, Streamlet2<K1, V1>> fun) {
+		BiFunction<K, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet();
+		return streamlet(() -> Outlet2.from(spawn().concatMap2(bf)));
+	}
+
 	public Streamlet2<K, V> closeAtEnd(Closeable c) {
 		return streamlet(() -> {
 			Outlet2<K, V> in = spawn();

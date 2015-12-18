@@ -84,6 +84,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return Outlet.from(FunUtil.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source(), source)));
 	}
 
+	public <K1, V1> Outlet2<K1, V1> concatMap2(BiFunction<K, V, Outlet2<K1, V1>> fun) {
+		return Outlet2.from(FunUtil2.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source(), source)));
+	}
+
 	public Outlet2<K, V> closeAtEnd(Closeable c) {
 		return from(pair -> {
 			boolean b = next(pair);
