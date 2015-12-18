@@ -53,7 +53,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <V1> Streamlet2<K, V1> aggregate(Fun<Streamlet<V>, V1> valueFun) {
-		return groupBy().map1(list -> valueFun.apply(Read.from(list)));
+		return groupBy().mapValue(list -> valueFun.apply(Read.from(list)));
 	}
 
 	public <R> R collect(Fun<Outlet2<K, V>, R> fun) {
@@ -119,16 +119,16 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return new Streamlet<>(() -> spawn().map(fun));
 	}
 
-	public <K1> Streamlet2<K1, V> map0(Fun<K, K1> fun) {
-		return new Streamlet2<>(() -> spawn().map0(fun));
+	public <K1> Streamlet2<K1, V> mapKey(Fun<K, K1> fun) {
+		return new Streamlet2<>(() -> spawn().mapKey(fun));
 	}
 
-	public <V1> Streamlet2<K, V1> map1(Fun<V, V1> fun) {
-		return new Streamlet2<>(() -> spawn().map1(fun));
+	public <V1> Streamlet2<K, V1> mapValue(Fun<V, V1> fun) {
+		return new Streamlet2<>(() -> spawn().mapValue(fun));
 	}
 
-	public <K1, V1> Streamlet2<K1, V1> map01(Fun<K, K1> kf, Fun<V, V1> vf) {
-		return new Streamlet2<>(() -> spawn().map01(kf, vf));
+	public <K1, V1> Streamlet2<K1, V1> mapKeyValue(Fun<K, K1> kf, Fun<V, V1> vf) {
+		return new Streamlet2<>(() -> spawn().mapKeyValue(kf, vf));
 	}
 
 	public Pair<K, V> min(Comparator<Pair<K, V>> comparator) {

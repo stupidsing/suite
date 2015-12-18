@@ -184,15 +184,15 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return Outlet.from(() -> source.source(pair) ? fun.apply(pair.t0, pair.t1) : null);
 	}
 
-	public <K1> Outlet2<K1, V> map0(Fun<K, K1> fun) {
-		return map01(fun, v -> v);
+	public <K1> Outlet2<K1, V> mapKey(Fun<K, K1> fun) {
+		return mapKeyValue(fun, v -> v);
 	}
 
-	public <V1> Outlet2<K, V1> map1(Fun<V, V1> fun) {
-		return map01(k -> k, fun);
+	public <V1> Outlet2<K, V1> mapValue(Fun<V, V1> fun) {
+		return mapKeyValue(k -> k, fun);
 	}
 
-	public <K1, V1> Outlet2<K1, V1> map01(Fun<K, K1> kf, Fun<V, V1> vf) {
+	public <K1, V1> Outlet2<K1, V1> mapKeyValue(Fun<K, K1> kf, Fun<V, V1> vf) {
 		Pair<K, V> pair1 = Pair.of(null, null);
 		return from(pair -> {
 			if (source.source(pair1)) {
@@ -296,7 +296,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public Map<K, V> toMap() {
 		Map<K, V> map = new HashMap<>();
-		groupBy().map1(values -> Read.from(values).uniqueResult()).sink((k, v) -> {
+		groupBy().mapValue(values -> Read.from(values).uniqueResult()).sink((k, v) -> {
 			if (map.put(k, v) != null)
 				throw new RuntimeException("Duplicate key " + k);
 		});
@@ -305,12 +305,12 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public ListMultimap<K, V> toMultimap() {
 		ListMultimap<K, V> map = new ListMultimap<>();
-		groupBy().map1(values -> Read.from(values).uniqueResult()).sink(map::put);
+		groupBy().mapValue(values -> Read.from(values).uniqueResult()).sink(map::put);
 		return map;
 	}
 
 	public Map<K, Set<V>> toSetMap() {
-		return groupBy().map1(values -> Read.from(values).toSet()).toMap();
+		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	public Set<Pair<K, V>> toSet() {
