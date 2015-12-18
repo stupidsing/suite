@@ -74,6 +74,13 @@ public class ListMultimap<K, V> {
 		get(k).remove(v);
 	}
 
+	public int size() {
+		int size = 0;
+		for (List<V> value : map.values())
+			size += value.size();
+		return size;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
