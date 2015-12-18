@@ -14,7 +14,7 @@ import suite.ebnf.Ebnf.Node;
 import suite.immutable.IList;
 import suite.parser.Lexer;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Source;
 
 public class EbnfLrParse implements EbnfParse {
@@ -51,19 +51,19 @@ public class EbnfLrParse implements EbnfParse {
 		for (EbnfGrammar eg : grammarByEntity.values())
 			buildLr(eg, new State());
 
-		Streamlet<Pair<State, State>> ss0 = Read.from(shifts) //
+		Streamlet2<State, State> ss0 = Read.from(shifts) //
 				.concatMapValue(v -> Read.from(v.keySet())) //
 				.mapValue(transitionByEntity::get) //
 				.filter((k, v) -> v != null) //
-				.map((k, v) -> Pair.of(k, v.t0));
+				.mapValue(v -> v.t0);
 
-		Streamlet<Pair<State, State>> ss1 = Read.from(shifts) //
+		Streamlet2<State, State> ss1 = Read.from(shifts) //
 				.concatMap2((k, v) -> Read.from(v)) //
 				.mapKey(transitionByEntity::get) //
 				.filter((k, v) -> k != null) //
-				.map((k, v) -> Pair.of(k.t1, v));
+				.mapKey(k -> k.t1);
 
-		ListMultimap<State, State> merges = Streamlet.concat(ss0, ss1).toMultimap(Pair::first_, Pair::second);
+		ListMultimap<State, State> merges = Streamlet2.concat(ss0, ss1).toMultimap();
 
 		c: while (!merges.isEmpty()) {
 			for (Pair<State, State> e0 : merges.entries()) {
@@ -163,10 +163,10 @@ public class EbnfLrParse implements EbnfParse {
 	private Pair<Integer, State> buildLr(EbnfGrammar eg, State state0) {
 		Map<String, State> shiftMap = getShiftMap(state0);
 
-		BiConsumer<String, State> reducer = (entity1, statex_) -> {
+		BiConsumer<String, State> newEntity = (entity1, statex_) -> {
+			transitionByEntity.put(entity1, Pair.of(state0, statex_));
 			for (EbnfGrammar child : eg.children)
 				addReduce(entity1, buildLr(child, state0));
-			transitionByEntity.put(entity1, Pair.of(state0, statex_));
 		};
 
 		int nTokens;
@@ -189,13 +189,13 @@ public class EbnfLrParse implements EbnfParse {
 		case NAMED_:
 			nTokens = 1;
 			statex = new State();
-			reducer.accept(eg.content, statex);
+			newEntity.accept(eg.content, statex);
 			break;
 		case OR____:
 			String entity1 = "OR" + counter++;
 			nTokens = 1;
 			statex = shiftMap.computeIfAbsent(entity1, content -> new State());
-			reducer.accept(entity1, statex);
+			newEntity.accept(entity1, statex);
 			break;
 		case STRING:
 			nTokens = 1;
