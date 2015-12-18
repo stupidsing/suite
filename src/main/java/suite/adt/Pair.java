@@ -65,7 +65,7 @@ public class Pair<T0, T1> {
 
 	@Override
 	public String toString() {
-		return t0.toString() + ":" + t1.toString();
+		return t0 + ":" + t1;
 	}
 
 }
