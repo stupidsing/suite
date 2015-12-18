@@ -55,13 +55,13 @@ public class EbnfLrParse implements EbnfParse {
 				.concatMapValue(v -> Read.from(v.keySet())) //
 				.mapValue(transitionByEntity::get) //
 				.filter((k, v) -> v != null) //
-				.mapValue(v -> v.t0);
+				.mapValue(Pair::first_);
 
 		Streamlet2<State, State> ss1 = Read.from(shifts) //
 				.concatMap2((k, v) -> Read.from(v)) //
 				.mapKey(transitionByEntity::get) //
 				.filter((k, v) -> k != null) //
-				.mapKey(k -> k.t1);
+				.mapKey(Pair::second);
 
 		ListMultimap<State, State> merges = Streamlet2.concat(ss0, ss1).toMultimap();
 
