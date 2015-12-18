@@ -23,16 +23,15 @@ public class Huffman<Unit> {
 
 	private Node root;
 	private Map<Unit, Node> nodeByUnit = new HashMap<>();
-
 	private Comparator<Node> comparator = (node0, node1) -> node0.count - node1.count;
 
 	private class Node {
-		private int count;
 		private Unit unit;
+		private int count;
 		private Node parent;
 		private Node node0, node1;
 
-		private Node(int count, Unit unit) {
+		private Node(Unit unit, int count) {
 			this.count = count;
 			this.unit = unit;
 			nodeByUnit.put(unit, this);
@@ -109,7 +108,7 @@ public class Huffman<Unit> {
 				Node node1 = deque.pop();
 				deque.push(new Node(node0, node1));
 			} else {
-				Node node = new Node(0, unit);
+				Node node = new Node(unit, 0);
 				deque.push(node);
 				nodeByUnit.put(unit, node);
 			}
@@ -134,7 +133,7 @@ public class Huffman<Unit> {
 
 	private void build(List<Unit> input) {
 		PriorityQueue<Node> priorityQueue = Read.from(histogram(input)) //
-				.map((k, v) -> new Node(v, k)) //
+				.map(Node::new) //
 				.form(() -> new PriorityQueue<>(0, comparator));
 
 		while (priorityQueue.size() > 1) {

@@ -52,12 +52,12 @@ public class ClusterProbeImpl implements ClusterProbe {
 	/**
 	 * Active nodes with their ages.
 	 */
-	private Map<String, Long> lastActiveTime = new HashMap<>();
+	private Map<String, Long> lastActiveTimes = new HashMap<>();
 
 	/**
 	 * Time-stamp to avoid HELO bombing.
 	 */
-	private Map<String, Long> lastSentTime = new HashMap<>();
+	private Map<String, Long> lastSentTimes = new HashMap<>();
 
 	private Reactive<String> onJoined = new Reactive<>();
 	private Reactive<String> onLeft = new Reactive<>();
@@ -119,7 +119,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	@Override
 	public synchronized void start() {
 		synchronized (lock) {
-			lastActiveTime.put(me, System.currentTimeMillis());
+			lastActiveTimes.put(me, System.currentTimeMillis());
 			broadcast(Command.HELO);
 		}
 		threadService.start();
@@ -130,7 +130,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 		threadService.stop();
 		synchronized (lock) {
 			broadcast(Command.BYEE);
-			lastActiveTime.clear();
+			lastActiveTimes.clear();
 		}
 	}
 
@@ -157,7 +157,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 				}
 			}
 
-			for (String peer : lastActiveTime.keySet())
+			for (String peer : lastActiveTimes.keySet())
 				onLeft.fire(peer);
 		}
 
@@ -205,16 +205,16 @@ public class ClusterProbeImpl implements ClusterProbe {
 			if (peers.get(remote) != null)
 				if (data == Command.HELO) // Reply HELO messages
 					sendMessage(remote, formMessage(Command.FINE));
-				else if (data == Command.BYEE && lastActiveTime.remove(remote) != null)
+				else if (data == Command.BYEE && lastActiveTimes.remove(remote) != null)
 					onLeft.fire(remote);
 		}
 	}
 
 	private void nodeJoined(String node, long time) {
-		Long oldTime = lastActiveTime.get(node);
+		Long oldTime = lastActiveTimes.get(node);
 
 		if (oldTime == null || oldTime < time)
-			if (lastActiveTime.put(node, time) == null)
+			if (lastActiveTimes.put(node, time) == null)
 				onJoined.fire(node);
 	}
 
@@ -222,8 +222,8 @@ public class ClusterProbeImpl implements ClusterProbe {
 		byte bytes[] = formMessage(Command.HELO);
 
 		for (String remote : peers.keySet()) {
-			Long lastActive = lastActiveTime.get(remote);
-			Long lastSent = lastSentTime.get(remote);
+			Long lastActive = lastActiveTimes.get(remote);
+			Long lastSent = lastSentTimes.get(remote);
 
 			// Sends to those who are nearly forgotten, i.e.:
 			// - The node is not active, or node's active time is expired
@@ -235,7 +235,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private void eliminateOutdatedPeers(long current) {
-		Set<Entry<String, Long>> entries = lastActiveTime.entrySet();
+		Set<Entry<String, Long>> entries = lastActiveTimes.entrySet();
 		Iterator<Entry<String, Long>> peerIter = entries.iterator();
 
 		while (peerIter.hasNext()) {
@@ -265,7 +265,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	private void sendMessage(String remote, byte bytes[]) {
 		try {
 			channel.send(ByteBuffer.wrap(bytes), peers.get(remote).get());
-			lastSentTime.put(remote, System.currentTimeMillis());
+			lastSentTimes.put(remote, System.currentTimeMillis());
 		} catch (IOException ex) {
 			LogUtil.error(ex);
 		}
@@ -274,7 +274,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	private byte[] formMessage(Command data) {
 		StringBuilder sb = new StringBuilder(data.name() + "," + me);
 
-		for (Entry<String, Long> e : lastActiveTime.entrySet())
+		for (Entry<String, Long> e : lastActiveTimes.entrySet())
 			sb.append("," + e.getKey() + "," + e.getValue());
 
 		return sb.toString().getBytes(FileUtil.charset);
@@ -282,18 +282,18 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 	@Override
 	public boolean isActive(String node) {
-		return lastActiveTime.containsKey(node);
+		return lastActiveTimes.containsKey(node);
 	}
 
 	@Override
 	public Set<String> getActivePeers() {
-		return Collections.unmodifiableSet(lastActiveTime.keySet());
+		return Collections.unmodifiableSet(lastActiveTimes.keySet());
 	}
 
 	@Override
 	public String toString() {
-		return Read.from(lastActiveTime) //
-				.map((k, v) -> k + " (last-active = " + To.string(v) + ")") //
+		return Read.from(lastActiveTimes) //
+				.map((peer, lastActiveTime) -> peer + " (last-active = " + To.string(lastActiveTime) + ")") //
 				.collect(As.joined("\n"));
 	}
 

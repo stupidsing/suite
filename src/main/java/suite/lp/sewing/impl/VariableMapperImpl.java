@@ -4,13 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.adt.IdentityKey;
-import suite.adt.Pair;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
+import suite.streamlet.Streamlet;
 import suite.util.Util;
 
 public class VariableMapperImpl implements VariableMapper {
@@ -28,14 +27,15 @@ public class VariableMapperImpl implements VariableMapper {
 		}
 
 		public String dumpVariables() {
-			Streamlet2<Node, Node> variables = Read.from(variableIndices) //
-					.mapEntry((k, v) -> k.key, (k, v) -> env.refs[v].finalNode()) //
-					.sortByKey(Util::compare);
+			Streamlet<String> kvs = Read.from(variableIndices) //
+					.mapEntry((k, index) -> k.key, (k, index) -> env.refs[index].finalNode()) //
+					.sortByKey(Util::compare) //
+					.map((k, v) -> Formatter.display(k) + " = " + Formatter.dump(v));
 			StringBuilder sb = new StringBuilder();
-			for (Pair<Node, Node> variable : variables) {
+			for (String kv : kvs) {
 				if (sb.length() > 0)
 					sb.append(", ");
-				sb.append(Formatter.display(variable.t0) + " = " + Formatter.dump(variable.t1.finalNode()));
+				sb.append(kv);
 			}
 			return sb.toString();
 		}
