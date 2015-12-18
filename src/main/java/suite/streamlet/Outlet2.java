@@ -185,19 +185,19 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <K1> Outlet2<K1, V> mapKey(Fun<K, K1> fun) {
-		return mapKeyValue(fun, v -> v);
+		return mapKeyValue((k, v) -> fun.apply(k), (k, v) -> v);
 	}
 
 	public <V1> Outlet2<K, V1> mapValue(Fun<V, V1> fun) {
-		return mapKeyValue(k -> k, fun);
+		return mapKeyValue((k, v) -> k, (k, v) -> fun.apply(v));
 	}
 
-	public <K1, V1> Outlet2<K1, V1> mapKeyValue(Fun<K, K1> kf, Fun<V, V1> vf) {
+	public <K1, V1> Outlet2<K1, V1> mapKeyValue(BiFunction<K, V, K1> kf, BiFunction<K, V, V1> vf) {
 		Pair<K, V> pair1 = Pair.of(null, null);
 		return from(pair -> {
 			if (source.source(pair1)) {
-				pair.t0 = kf.apply(pair1.t0);
-				pair.t1 = vf.apply(pair1.t1);
+				pair.t0 = kf.apply(pair1.t0, pair1.t1);
+				pair.t1 = vf.apply(pair1.t0, pair1.t1);
 				return true;
 			} else
 				return false;
