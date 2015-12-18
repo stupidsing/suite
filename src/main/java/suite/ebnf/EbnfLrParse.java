@@ -52,16 +52,16 @@ public class EbnfLrParse implements EbnfParse {
 			buildLr(eg, new State());
 
 		Streamlet<Pair<State, State>> ss0 = Read.from(shifts) //
-				.concatMap(shift -> Read.from(shift.t1.keySet()).map(e -> Pair.of(shift.t0, e))) //
-				.map(Pair.map1(transitionByEntity::get)) //
-				.filter(ss -> ss.t1 != null) //
-				.map(ss -> Pair.of(ss.t0, ss.t1.t0));
+				.concatMapValue(v -> Read.from(v.keySet())) //
+				.mapValue(transitionByEntity::get) //
+				.filter((k, v) -> v != null) //
+				.map((k, v) -> Pair.of(k, v.t0));
 
 		Streamlet<Pair<State, State>> ss1 = Read.from(shifts) //
-				.concatMap(shift -> Read.from(shift.t1)) //
-				.map(Pair.map0(transitionByEntity::get)) //
-				.filter(ss -> ss.t0 != null) //
-				.map(ss -> Pair.of(ss.t0.t1, ss.t1));
+				.concatMap2((k, v) -> Read.from(v)) //
+				.mapKey(transitionByEntity::get) //
+				.filter((k, v) -> k != null) //
+				.map((k, v) -> Pair.of(k.t1, v));
 
 		ListMultimap<State, State> merges = Streamlet.concat(ss0, ss1).toMultimap(Pair::first_, Pair::second);
 

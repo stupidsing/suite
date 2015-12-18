@@ -1,16 +1,16 @@
 package suite.lp.sewing.impl;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.adt.IdentityKey;
+import suite.adt.Pair;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet2;
 import suite.util.Util;
 
 public class VariableMapperImpl implements VariableMapper {
@@ -28,18 +28,16 @@ public class VariableMapperImpl implements VariableMapper {
 		}
 
 		public String dumpVariables() {
-			List<Entry<Node, Node>> entries = Util.sort(getVariables().entrySet(), (e0, e1) -> e0.getKey().compareTo(e1.getKey()));
+			Streamlet2<Node, Node> variables = Read.from(variableIndices) //
+					.mapEntry((k, v) -> k.key, (k, v) -> env.refs[v].finalNode()) //
+					.sortByKey(Util::compare);
 			StringBuilder sb = new StringBuilder();
-			for (Entry<Node, Node> entry : entries) {
+			for (Pair<Node, Node> variable : variables) {
 				if (sb.length() > 0)
 					sb.append(", ");
-				sb.append(Formatter.display(entry.getKey()) + " = " + Formatter.dump(entry.getValue().finalNode()));
+				sb.append(Formatter.display(variable.t0) + " = " + Formatter.dump(variable.t1.finalNode()));
 			}
 			return sb.toString();
-		}
-
-		public Map<Node, Node> getVariables() {
-			return Read.from(variableIndices).toMap(pair -> pair.t0.key, pair -> env.refs[pair.t1]);
 		}
 
 		public Node getVariable(Node variable) {

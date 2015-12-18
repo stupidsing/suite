@@ -294,12 +294,12 @@ public class Outlet<T> implements Iterable<T> {
 		return groupBy(keyFun, valueFun).collect(As::multimap);
 	}
 
-	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return groupBy(keyFun, valueFun).map(Pair.map1(values -> Read.from(values).toSet())).collect(As::map);
-	}
-
 	public Set<T> toSet() {
 		return form(HashSet::new);
+	}
+
+	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		return groupBy(keyFun, valueFun).map(Pair.map1(values -> Read.from(values).toSet())).collect(As::map);
 	}
 
 	public T uniqueResult() {

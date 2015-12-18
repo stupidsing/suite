@@ -27,19 +27,19 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	@SafeVarargs
 	public static <K, V> Streamlet2<K, V> concat(Streamlet2<K, V>... streamlets) {
-		return streamlet(() -> {
+		return streamlet2(() -> {
 			List<Source2<K, V>> sources = new ArrayList<>();
 			for (Streamlet2<K, V> streamlet : streamlets)
-				sources.add(streamlet.in.source().source());
+				sources.add(streamlet.in.source().source2());
 			return new Outlet2<>(FunUtil2.concat(To.source(sources)));
 		});
 	}
 
 	public static <K, V> Streamlet2<K, V> from(Source2<K, V> source) {
-		return streamlet(() -> new Outlet2<>(source));
+		return streamlet2(() -> new Outlet2<>(source));
 	}
 
-	private static <K, V> Streamlet2<K, V> streamlet(Source<Outlet2<K, V>> in) {
+	private static <K, V> Streamlet2<K, V> streamlet2(Source<Outlet2<K, V>> in) {
 		return new Streamlet2<>(in);
 	}
 
@@ -56,6 +56,14 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return groupBy().mapValue(list -> valueFun.apply(Read.from(list)));
 	}
 
+	public Streamlet2<K, V> closeAtEnd(Closeable c) {
+		return streamlet2(() -> {
+			Outlet2<K, V> in = spawn();
+			in.closeAtEnd(c);
+			return in;
+		});
+	}
+
 	public <R> R collect(Fun<Outlet2<K, V>, R> fun) {
 		return fun.apply(in.source());
 	}
@@ -66,32 +74,25 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <K1, V1> Streamlet2<K1, V1> concatMap2(BiFunction<K, V, Streamlet2<K1, V1>> fun) {
-		BiFunction<K, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return streamlet(() -> Outlet2.from(spawn().concatMap2(bf)));
+		BiFunction<K, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet2();
+		return streamlet2(() -> Outlet2.from(spawn().concatMap2(bf)));
 	}
 
-	public Streamlet2<K, V> closeAtEnd(Closeable c) {
-		return streamlet(() -> {
-			Outlet2<K, V> in = spawn();
-			in.closeAtEnd(c);
-			return in;
-		});
+	public <V1> Streamlet2<K, V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
+		Fun<V, Outlet<V1>> f = v -> fun.apply(v).outlet();
+		return streamlet2(() -> Outlet2.from(spawn().concatMapValue(f)));
 	}
 
 	public Streamlet2<K, V> cons(K key, V value) {
-		return streamlet(() -> spawn().cons(key, value));
-	}
-
-	public int size() {
-		return spawn().count();
+		return streamlet2(() -> spawn().cons(key, value));
 	}
 
 	public Streamlet2<K, V> distinct() {
-		return streamlet(() -> spawn().distinct());
+		return streamlet2(() -> spawn().distinct());
 	}
 
 	public Streamlet2<K, V> drop(int n) {
-		return streamlet(() -> spawn().drop(n));
+		return streamlet2(() -> spawn().drop(n));
 	}
 
 	@Override
@@ -99,12 +100,21 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return object.getClass() == Streamlet2.class ? Objects.equals(spawn(), ((Streamlet2<?, ?>) object).spawn()) : false;
 	}
 
+	public Streamlet2<K, V> filter(BiPredicate<K, V> fun) {
+		return streamlet2(() -> spawn().filter(fun));
+	}
+
+	public Pair<K, V> first() {
+		Pair<K, V> pair = Pair.of(null, null);
+		return spawn().next(pair) ? pair : null;
+	}
+
 	public <R extends Collection<Pair<K, V>>> R form(Source<R> source) {
 		return spawn().form(source);
 	}
 
-	public void sink(BiConsumer<K, V> sink) {
-		spawn().sink(sink);
+	public Streamlet2<K, List<V>> groupBy() {
+		return new Streamlet2<>(() -> spawn().groupBy());
 	}
 
 	public boolean isAll(BiPredicate<K, V> pred) {
@@ -119,16 +129,16 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return new Streamlet<>(() -> spawn().map(fun));
 	}
 
+	public <K1, V1> Streamlet2<K1, V1> mapEntry(BiFunction<K, V, K1> kf, BiFunction<K, V, V1> vf) {
+		return new Streamlet2<>(() -> spawn().mapEntry(kf, vf));
+	}
+
 	public <K1> Streamlet2<K1, V> mapKey(Fun<K, K1> fun) {
 		return new Streamlet2<>(() -> spawn().mapKey(fun));
 	}
 
 	public <V1> Streamlet2<K, V1> mapValue(Fun<V, V1> fun) {
 		return new Streamlet2<>(() -> spawn().mapValue(fun));
-	}
-
-	public <K1, V1> Streamlet2<K1, V1> mapKeyValue(BiFunction<K, V, K1> kf, BiFunction<K, V, V1> vf) {
-		return new Streamlet2<>(() -> spawn().mapKeyValue(kf, vf));
 	}
 
 	public Pair<K, V> min(Comparator<Pair<K, V>> comparator) {
@@ -139,45 +149,44 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return spawn().minOrNull(comparator);
 	}
 
-	public Streamlet2<K, V> filter(BiPredicate<K, V> fun) {
-		return streamlet(() -> spawn().filter(fun));
-	}
-
-	public Pair<K, V> first() {
-		Pair<K, V> pair = Pair.of(null, null);
-		return spawn().next(pair) ? pair : null;
-	}
-
-	public Streamlet2<K, List<V>> groupBy() {
-		return new Streamlet2<>(() -> spawn().groupBy());
-	}
-
-	public Outlet2<K, V> outlet() {
+	public Outlet2<K, V> outlet2() {
 		return spawn();
 	}
 
+	public Streamlet<Pair<K, V>> pairs() {
+		return new Streamlet<>(() -> spawn().pairs());
+	}
+
 	public Streamlet2<K, V> reverse() {
-		return streamlet(() -> spawn().reverse());
+		return streamlet2(() -> spawn().reverse());
+	}
+
+	public void sink(BiConsumer<K, V> sink) {
+		spawn().sink(sink);
+	}
+
+	public int size() {
+		return spawn().size();
 	}
 
 	public Streamlet2<K, V> skip(int n) {
-		return streamlet(() -> spawn().skip(n));
-	}
-
-	public Source2<K, V> source() {
-		return spawn().source();
+		return streamlet2(() -> spawn().skip(n));
 	}
 
 	public Streamlet2<K, V> sort(Comparator<Pair<K, V>> comparator) {
-		return streamlet(() -> spawn().sort(comparator));
+		return streamlet2(() -> spawn().sort(comparator));
 	}
 
 	public Streamlet2<K, V> sortByKey(Comparator<K> comparator) {
-		return streamlet(() -> spawn().sortByKey(comparator));
+		return streamlet2(() -> spawn().sortByKey(comparator));
+	}
+
+	public Source2<K, V> source() {
+		return spawn().source2();
 	}
 
 	public Streamlet2<K, V> take(int n) {
-		return streamlet(() -> spawn().take(n));
+		return streamlet2(() -> spawn().take(n));
 	}
 
 	public List<Pair<K, V>> toList() {
@@ -196,12 +205,12 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return spawn().toMultimap();
 	}
 
-	public Map<K, Set<V>> toSetMap() {
-		return spawn().toSetMap();
-	}
-
 	public Set<Pair<K, V>> toSet() {
 		return spawn().toSet();
+	}
+
+	public Map<K, Set<V>> toSetMap() {
+		return spawn().toSetMap();
 	}
 
 	public Pair<K, V> uniqueResult() {

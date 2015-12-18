@@ -19,7 +19,8 @@ public class FunctionalTemplateRenderer {
 
 		String fps = "id " + new TemplateRenderer(wrapText, wrapExpression).apply(template);
 		Node fp0 = Suite.substitute("() | .0", Suite.parse(fps));
-		Node fp1 = Read.from(inputs).fold(fp0, (fp_, p) -> Suite.substitute("let .1 := .2 >> .0", fp_, Atom.of(p.t0), p.t1));
+		Node fp1 = Read.from(inputs).pairs().fold(fp0,
+				(fp_, p) -> Suite.substitute("let .1 := .2 >> .0", fp_, Atom.of(p.t0), p.t1));
 		Node fp2 = Suite.applyWriter(fp1);
 
 		try (StringWriter sw = new StringWriter()) {

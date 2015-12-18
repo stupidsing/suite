@@ -61,11 +61,7 @@ public class Profiler implements Service {
 		sb.append("TOTAL SAMPLES = " + count.get() + "\n\n");
 		sb.append(Read.from(records) //
 				.sort((p0, p1) -> p1.t1.count - p0.t1.count) //
-				.map(pair -> {
-					String name = pair.t0;
-					Record record = pair.t1;
-					return String.format("%d\t%s:%d\n", record.count, name, record.minLineNumber);
-				}) //
+				.map((name, record) -> String.format("%d\t%s:%d\n", record.count, name, record.minLineNumber)) //
 				.collect(As.joined("")));
 		return sb.toString();
 	}

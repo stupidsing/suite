@@ -95,13 +95,13 @@ public class FunUtil {
 		};
 	}
 
-	public static <O> Source<O> nullSource() {
-		return () -> null;
-	}
-
 	public static <I> Sink<I> nullSink() {
 		return i -> {
 		};
+	}
+
+	public static <O> Source<O> nullSource() {
+		return () -> null;
 	}
 
 	/**

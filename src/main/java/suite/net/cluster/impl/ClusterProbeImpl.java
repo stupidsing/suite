@@ -293,7 +293,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	@Override
 	public String toString() {
 		return Read.from(lastActiveTime) //
-				.map(p -> p.t0 + " (last-active = " + To.string(p.t1) + ")") //
+				.map((k, v) -> k + " (last-active = " + To.string(v) + ")") //
 				.collect(As.joined("\n"));
 	}
 

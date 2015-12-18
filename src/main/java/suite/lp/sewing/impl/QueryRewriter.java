@@ -7,7 +7,6 @@ import java.util.Map;
 
 import suite.Suite;
 import suite.adt.ListMultimap;
-import suite.adt.Pair;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.node.Atom;
@@ -16,7 +15,6 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Util;
 
@@ -45,13 +43,8 @@ public class QueryRewriter {
 	}
 
 	public QueryRewriter(ListMultimap<Prototype, Rule> rules) {
-		infoByPrototype = Read.from(rules.listEntries()) //
-				.map(Pair.map1(PrototypeInfo::new)) //
-				.collect(As::map);
-
-		rules1 = Read.multimap(rules) //
-				.map(Pair.map1(this::rewriteRule)) //
-				.toMultimap(p -> p.t0, p -> p.t1);
+		infoByPrototype = Read.from(rules).mapValue(PrototypeInfo::new).toMap();
+		rules1 = Read.multimap(rules).mapValue(this::rewriteRule).toMultimap();
 	}
 
 	private Rule rewriteRule(Rule rule) {

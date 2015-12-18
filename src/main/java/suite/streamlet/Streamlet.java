@@ -55,14 +55,6 @@ public class Streamlet<T> implements Iterable<T> {
 		return groupBy(keyFun).map(Pair.map1(list -> valueFun.apply(Read.from(list))));
 	}
 
-	public <R> R collect(Fun<Outlet<T>, R> fun) {
-		return fun.apply(in.source());
-	}
-
-	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
-		return streamlet(() -> spawn().concatMap(t -> fun.apply(t).spawn()));
-	}
-
 	public Streamlet<T> closeAtEnd(Closeable c) {
 		return streamlet(() -> {
 			Outlet<T> in = spawn();
@@ -71,12 +63,16 @@ public class Streamlet<T> implements Iterable<T> {
 		});
 	}
 
-	public Streamlet<T> cons(T t) {
-		return streamlet(() -> spawn().cons(t));
+	public <R> R collect(Fun<Outlet<T>, R> fun) {
+		return fun.apply(in.source());
 	}
 
-	public int size() {
-		return spawn().count();
+	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
+		return streamlet(() -> spawn().concatMap(t -> fun.apply(t).spawn()));
+	}
+
+	public Streamlet<T> cons(T t) {
+		return streamlet(() -> spawn().cons(t));
 	}
 
 	public <U, R> Streamlet<R> cross(Streamlet<U> st1, BiFunction<T, U, R> fun) {
@@ -96,6 +92,14 @@ public class Streamlet<T> implements Iterable<T> {
 		return object.getClass() == Streamlet.class ? Objects.equals(spawn(), ((Streamlet<?>) object).spawn()) : false;
 	}
 
+	public Streamlet<T> filter(Fun<T, Boolean> fun) {
+		return streamlet(() -> spawn().filter(fun));
+	}
+
+	public T first() {
+		return spawn().next();
+	}
+
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {
 		return spawn().fold(init, fun);
 	}
@@ -104,8 +108,12 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().form(source);
 	}
 
-	public void sink(Sink<T> sink) {
-		spawn().sink(sink);
+	public <K, V> Streamlet<Pair<K, List<T>>> groupBy(Fun<T, K> keyFun) {
+		return groupBy(keyFun, value -> value);
+	}
+
+	public <K, V> Streamlet<Pair<K, List<V>>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		return streamlet(() -> spawn().groupBy(keyFun, valueFun));
 	}
 
 	public <R> Streamlet<R> index(BiFunction<Integer, T, R> fun) {
@@ -136,22 +144,6 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().minOrNull(comparator);
 	}
 
-	public Streamlet<T> filter(Fun<T, Boolean> fun) {
-		return streamlet(() -> spawn().filter(fun));
-	}
-
-	public T first() {
-		return spawn().next();
-	}
-
-	public <K, V> Streamlet<Pair<K, List<T>>> groupBy(Fun<T, K> keyFun) {
-		return groupBy(keyFun, value -> value);
-	}
-
-	public <K, V> Streamlet<Pair<K, List<V>>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return streamlet(() -> spawn().groupBy(keyFun, valueFun));
-	}
-
 	public Outlet<T> outlet() {
 		return spawn();
 	}
@@ -160,16 +152,24 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().reverse());
 	}
 
+	public void sink(Sink<T> sink) {
+		spawn().sink(sink);
+	}
+
+	public int size() {
+		return spawn().count();
+	}
+
 	public Streamlet<T> skip(int n) {
 		return streamlet(() -> spawn().skip(n));
 	}
 
-	public Source<T> source() {
-		return spawn().source();
-	}
-
 	public Streamlet<T> sort(Comparator<T> comparator) {
 		return streamlet(() -> spawn().sort(comparator));
+	}
+
+	public Source<T> source() {
+		return spawn().source();
 	}
 
 	public Streamlet<T> take(int n) {
@@ -204,12 +204,12 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().toMultimap(keyFun, valueFun);
 	}
 
-	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return spawn().toSetMap(keyFun, valueFun);
-	}
-
 	public Set<T> toSet() {
 		return spawn().toSet();
+	}
+
+	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		return spawn().toSetMap(keyFun, valueFun);
 	}
 
 	public T uniqueResult() {

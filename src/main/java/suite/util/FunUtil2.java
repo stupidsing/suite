@@ -14,29 +14,29 @@ public class FunUtil2 {
 
 	@FunctionalInterface
 	public interface Source2<K, V> {
-		public boolean source(Pair<K, V> pair);
+		public boolean source2(Pair<K, V> pair);
 	}
 
 	public static <K, V> Source2<K, V> concat(Source<Source2<K, V>> source) {
 		return new Source2<K, V>() {
-			private Source2<K, V> source0 = nullSource();
+			private Source2<K, V> source2 = nullSource();
 
-			public boolean source(Pair<K, V> pair) {
+			public boolean source2(Pair<K, V> pair) {
 				boolean b = false;
-				while (source0 != null && !(b = source0.source(pair)))
-					source0 = source.source();
+				while (source2 != null && !(b = source2.source2(pair)))
+					source2 = source.source();
 				return b;
 			}
 		};
 	}
 
-	public static <K, V> Source2<K, V> cons(K key, V value, Source2<K, V> source) {
+	public static <K, V> Source2<K, V> cons(K key, V value, Source2<K, V> source2) {
 		return new Source2<K, V>() {
 			private boolean isFirst = true;
 
-			public boolean source(Pair<K, V> pair) {
+			public boolean source2(Pair<K, V> pair) {
 				if (!isFirst)
-					return source.source(pair);
+					return source2.source2(pair);
 				else {
 					pair.t0 = key;
 					pair.t1 = value;
@@ -46,30 +46,30 @@ public class FunUtil2 {
 		};
 	}
 
-	public static <K, V> Source2<K, V> filter(BiPredicate<K, V> fun, Source2<K, V> source) {
+	public static <K, V> Source2<K, V> filter(BiPredicate<K, V> fun, Source2<K, V> source2) {
 		return pair -> {
 			boolean b;
-			while ((b = source.source(pair)) && !fun.test(pair.t0, pair.t1))
+			while ((b = source2.source2(pair)) && !fun.test(pair.t0, pair.t1))
 				;
 			return b;
 		};
 	}
 
-	public static <K, V, R> R fold(Fun<Pair<R, Pair<K, V>>, R> fun, R init, Source2<K, V> source) {
+	public static <K, V, R> R fold(Fun<Pair<R, Pair<K, V>>, R> fun, R init, Source2<K, V> source2) {
 		Pair<K, V> pair = Pair.of(null, null);
-		while (source.source(pair))
+		while (source2.source2(pair))
 			init = fun.apply(Pair.of(init, pair));
 		return init;
 	}
 
-	public static <K, V> Iterator<Pair<K, V>> iterator(Source2<K, V> source) {
+	public static <K, V> Iterator<Pair<K, V>> iterator(Source2<K, V> source2) {
 		return new Iterator<Pair<K, V>>() {
 			private Pair<K, V> next = null;
 
 			public boolean hasNext() {
 				if (next == null) {
 					Pair<K, V> next1 = Pair.of(null, null);
-					if (source.source(next1))
+					if (source2.source2(next1))
 						next = next1;
 				}
 				return next != null;
@@ -83,17 +83,13 @@ public class FunUtil2 {
 		};
 	}
 
-	public static <K, V> Iterable<Pair<K, V>> iter(Source2<K, V> source) {
-		return () -> iterator(source);
+	public static <K, V> Iterable<Pair<K, V>> iter(Source2<K, V> source2) {
+		return () -> iterator(source2);
 	}
 
-	public static <K, V, T> Source<T> map(BiFunction<K, V, T> fun, Source2<K, V> source) {
+	public static <K, V, T> Source<T> map(BiFunction<K, V, T> fun, Source2<K, V> source2) {
 		Pair<K, V> pair = Pair.of(null, null);
-		return () -> source.source(pair) ? fun.apply(pair.t0, pair.t1) : null;
-	}
-
-	public static <K, V> Source2<K, V> nullSource() {
-		return pair -> false;
+		return () -> source2.source2(pair) ? fun.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <I> Sink<I> nullSink() {
@@ -101,22 +97,26 @@ public class FunUtil2 {
 		};
 	}
 
+	public static <K, V> Source2<K, V> nullSource() {
+		return pair -> false;
+	}
+
 	/**
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static <K, V> Source<Source2<K, V>> split(Source2<K, V> source, BiPredicate<K, V> fun) {
+	public static <K, V> Source<Source2<K, V>> split(Source2<K, V> source2, BiPredicate<K, V> fun) {
 		return new Source<Source2<K, V>>() {
 			private Pair<K, V> pair = Pair.of(null, null);
 			private boolean isAvailable;
-			private Source2<K, V> source_ = pair_ -> (isAvailable &= source.source(pair_)) && !fun.test(pair.t0, pair.t1);
+			private Source2<K, V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun.test(pair.t0, pair.t1);
 
 			{
-				isAvailable = source.source(pair);
+				isAvailable = source2.source2(pair);
 			}
 
 			public Source2<K, V> source() {
-				return isAvailable ? FunUtil2.cons(pair.t0, pair.t1, source_) : null;
+				return isAvailable ? FunUtil2.cons(pair.t0, pair.t1, source2_) : null;
 			}
 		};
 	}

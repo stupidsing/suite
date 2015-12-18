@@ -10,7 +10,6 @@ import suite.ebnf.Ebnf.Node;
 import suite.ebnf.EbnfExpect.Expect;
 import suite.ebnf.EbnfGrammar.EbnfGrammarType;
 import suite.os.LogUtil;
-import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
@@ -163,8 +162,8 @@ public class EbnfTopDownParse implements EbnfParse {
 
 	public EbnfTopDownParse(Map<String, EbnfGrammar> grammarByEntity) {
 		parserByEntity = Read.from(grammarByEntity) //
-				.map(Pair.map1(this::build)) //
-				.collect(As::map);
+				.mapValue(this::build) //
+				.toMap();
 	}
 
 	@Override
