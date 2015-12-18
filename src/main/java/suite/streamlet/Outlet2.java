@@ -302,7 +302,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public List<Pair<K, V>> toList() {
-		return form(() -> new ArrayList<>());
+		return form(ArrayList::new);
 	}
 
 	public Map<K, List<V>> toListMap() {
@@ -329,7 +329,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Set<Pair<K, V>> toSet() {
-		return form(() -> new HashSet<>());
+		return form(HashSet::new);
 	}
 
 	public Map<K, Set<V>> toSetMap() {
