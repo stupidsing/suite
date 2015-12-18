@@ -177,9 +177,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public <T> Outlet<T> map(BiFunction<K, V, T> fun) {
 		Pair<K, V> pair = Pair.of(null, null);
-		return Outlet.from(() -> {
-			return source.source(pair) ? fun.apply(pair.t0, pair.t1) : null;
-		});
+		return Outlet.from(() -> source.source(pair) ? fun.apply(pair.t0, pair.t1) : null);
 	}
 
 	public <K1> Outlet2<K1, V> map0(Fun<K, K1> fun) {
