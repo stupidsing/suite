@@ -172,6 +172,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return streamlet(() -> spawn().sort(comparator));
 	}
 
+	public Streamlet2<K, V> sortByKey(Comparator<K> comparator) {
+		return streamlet(() -> spawn().sortByKey(comparator));
+	}
+
 	public Streamlet2<K, V> take(int n) {
 		return streamlet(() -> spawn().take(n));
 	}

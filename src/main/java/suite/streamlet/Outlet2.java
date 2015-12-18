@@ -268,6 +268,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return from(Util.sort(list, comparator));
 	}
 
+	public Outlet2<K, V> sortByKey(Comparator<K> comparator) {
+		return sort((p0, p1) -> comparator.compare(p0.t0, p1.t0));
+	}
+
 	public Outlet<Outlet2<K, V>> split(BiPredicate<K, V> fun) {
 		return Outlet.from(FunUtil.map(Outlet2<K, V>::new, FunUtil2.split(source, fun)));
 	}
