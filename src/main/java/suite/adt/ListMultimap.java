@@ -49,7 +49,8 @@ public class ListMultimap<K, V> {
 	}
 
 	public List<V> get(K k) {
-		return map.computeIfAbsent(k, k_ -> new ArrayList<>());
+		List<V> list = map.get(k);
+		return list != null ? list : Collections.emptyList();
 	}
 
 	public boolean isEmpty() {
@@ -67,11 +68,11 @@ public class ListMultimap<K, V> {
 	}
 
 	public void put(K k, V v) {
-		get(k).add(v);
+		get_(k).add(v);
 	}
 
 	public void remove(K k, V v) {
-		get(k).remove(v);
+		get_(k).remove(v);
 	}
 
 	public int size() {
@@ -89,6 +90,10 @@ public class ListMultimap<K, V> {
 			sb.append(pair.t0 + "=" + pair.t1 + ", ");
 		sb.append("}");
 		return sb.toString();
+	}
+
+	private List<V> get_(K k) {
+		return map.computeIfAbsent(k, k_ -> new ArrayList<>());
 	}
 
 }
