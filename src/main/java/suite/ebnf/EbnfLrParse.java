@@ -175,9 +175,9 @@ public class EbnfLrParse {
 			nTokens = 0;
 			statex = state0;
 			for (EbnfGrammar child : eg.children) {
-				Pair<Integer, State> p = buildLr(child, statex);
-				nTokens += p.t0;
-				statex = p.t1;
+				Pair<Integer, State> pair = buildLr(child, statex);
+				nTokens += pair.t0;
+				statex = pair.t1;
 			}
 			break;
 		case ENTITY:
