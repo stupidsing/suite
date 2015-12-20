@@ -19,13 +19,13 @@ public class IndexedRuleSet extends LinearRuleSet {
 	@Override
 	public void addRule(Rule rule) {
 		super.addRule(rule);
-		index.get(Prototype.of(rule)).add(rule);
+		index.getMutable(Prototype.of(rule)).add(rule);
 	}
 
 	@Override
 	public void addRuleToFront(Rule rule) {
 		super.addRuleToFront(rule);
-		index.get(Prototype.of(rule)).add(0, rule);
+		index.getMutable(Prototype.of(rule)).add(0, rule);
 	}
 
 	@Override

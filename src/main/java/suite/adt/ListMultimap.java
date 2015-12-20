@@ -53,6 +53,10 @@ public class ListMultimap<K, V> {
 		return list != null ? list : Collections.emptyList();
 	}
 
+	public List<V> getMutable(K k) {
+		return get_(k);
+	}
+
 	public boolean isEmpty() {
 		for (List<V> value : map.values())
 			if (!value.isEmpty())

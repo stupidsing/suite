@@ -22,17 +22,13 @@ public class DoubleIndexedRuleSet extends IndexedRuleSet {
 	@Override
 	public void addRule(Rule rule) {
 		super.addRule(rule);
-		List<Rule> rules1 = ruleList(rule);
-		if (rules1 != null)
-			rules1.add(rule);
+		ruleList(rule).add(rule);
 	}
 
 	@Override
 	public void addRuleToFront(Rule rule) {
 		super.addRuleToFront(rule);
-		List<Rule> rules1 = ruleList(rule);
-		if (rules1 != null)
-			rules1.add(0, rule);
+		ruleList(rule).add(0, rule);
 	}
 
 	@Override
@@ -70,7 +66,7 @@ public class DoubleIndexedRuleSet extends IndexedRuleSet {
 		Prototype p0 = Prototype.of(rule);
 		Prototype p1 = Prototype.of(rule, 1);
 		ListMultimap<Prototype, Rule> index1 = index0.computeIfAbsent(p0, any -> new ListMultimap<>());
-		return index1.get(p1);
+		return index1.getMutable(p1);
 	}
 
 }
