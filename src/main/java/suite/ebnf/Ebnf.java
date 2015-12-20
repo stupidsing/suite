@@ -26,7 +26,7 @@ import suite.primitive.Chars;
  */
 public class Ebnf {
 
-	private EbnfParse engine;
+	private EbnfTopDownParse engine;
 
 	public static class Node {
 		public int start, end;

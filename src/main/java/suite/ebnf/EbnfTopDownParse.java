@@ -28,7 +28,7 @@ import suite.util.Util;
  *
  * @author ywsing
  */
-public class EbnfTopDownParse implements EbnfParse {
+public class EbnfTopDownParse {
 
 	private static boolean trace = false;
 
@@ -166,7 +166,6 @@ public class EbnfTopDownParse implements EbnfParse {
 				.toMap();
 	}
 
-	@Override
 	public Node parse(String entity, String s) {
 		Parse parse = new Parse(s);
 		Node node = parse.parse(0, build(new EbnfGrammar(EbnfGrammarType.ENTITY, entity)));
@@ -178,7 +177,6 @@ public class EbnfTopDownParse implements EbnfParse {
 		}
 	}
 
-	@Override
 	public Node check(String entity, String s) {
 		return new Parse(s).parse(0, build(new EbnfGrammar(EbnfGrammarType.ENTITY, entity)));
 	}

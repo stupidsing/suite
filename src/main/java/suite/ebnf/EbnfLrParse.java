@@ -17,7 +17,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Source;
 
-public class EbnfLrParse implements EbnfParse {
+public class EbnfLrParse {
 
 	private int counter;
 	private Map<String, Pair<State, State>> transitionByEntity = new HashMap<>();
@@ -92,12 +92,10 @@ public class EbnfLrParse implements EbnfParse {
 		}
 	}
 
-	@Override
 	public Node check(String entity, String in) {
 		return parse(entity, in);
 	}
 
-	@Override
 	public Node parse(String entity, String in) {
 		State state = transitionByEntity.get(entity).t0;
 		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
