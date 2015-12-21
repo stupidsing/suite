@@ -41,7 +41,7 @@ public class Read {
 		});
 	}
 
-	public static <K, V> Streamlet2<K, Collection<V>> from(ListMultimap<K, V> multimap) {
+	public static <K, V> Streamlet2<K, Collection<V>> from0(ListMultimap<K, V> multimap) {
 		Iterator<Pair<K, Collection<V>>> iter = multimap.listEntries().iterator();
 		return Streamlet2.from(pair -> {
 			if (iter.hasNext()) {
@@ -123,8 +123,8 @@ public class Read {
 		return from(map).concatMap2((k, l) -> from(l).map2(v -> k, v -> v));
 	}
 
-	public static <K, V> Streamlet2<K, V> multimap(ListMultimap<K, V> multimap) {
-		return from(multimap).concatMapValue(Read::from);
+	public static <K, V> Streamlet2<K, V> from(ListMultimap<K, V> multimap) {
+		return from0(multimap).concatMapValue(Read::from);
 	}
 
 }

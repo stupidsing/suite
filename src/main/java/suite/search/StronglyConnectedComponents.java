@@ -39,7 +39,7 @@ public class StronglyConnectedComponents<V> {
 
 	public StronglyConnectedComponents(DirectedGraph<V> dg) {
 		Map<V, Scc> sccs = Read.from(dg.vertices).map2(v -> v, v -> new Scc(v)).toMap();
-		forwards = Read.multimap(dg.forwards).mapEntry((u, v) -> sccs.get(u), (u, v) -> sccs.get(v)).toMultimap();
+		forwards = Read.from(dg.forwards).mapEntry((u, v) -> sccs.get(u), (u, v) -> sccs.get(v)).toMultimap();
 
 		for (Scc vscc : sccs.values())
 			if (!vscc.isVisited)
