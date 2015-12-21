@@ -4,14 +4,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 import org.junit.Test;
 
 import suite.adt.Pair;
 import suite.streamlet.Read;
+import suite.util.Util;
 
 public class StronglyConnectedComponentsTest {
+
+	@Test
+	public void test0() {
+		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(Arrays.asList( //
+				Pair.of("a", "b") //
+				, Pair.of("b", "a") //
+		)));
+
+		assertEquals(1, scc.components.size());
+	}
 
 	@Test
 	public void test() {
@@ -33,9 +43,9 @@ public class StronglyConnectedComponentsTest {
 		)));
 
 		assertEquals(3, scc.components.size());
-		assertTrue(Read.from(scc.components).isAny(c -> c.equals(new HashSet<>(Arrays.asList("a", "b", "e")))));
-		assertTrue(Read.from(scc.components).isAny(c -> c.equals(new HashSet<>(Arrays.asList("c", "d", "h")))));
-		assertTrue(Read.from(scc.components).isAny(c -> c.equals(new HashSet<>(Arrays.asList("f", "h")))));
+		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Util.set("a", "b", "e"))));
+		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Util.set("c", "d", "h"))));
+		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Util.set("f", "h"))));
 	}
 
 }

@@ -3,13 +3,13 @@ package suite.weiqi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import suite.util.Util;
 import suite.weiqi.GroupAnalysis.Group;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -28,12 +28,12 @@ public class BoardTest {
 		for (Coordinate c1 : c.neighbors)
 			neighbors.add(c1);
 
-		assertEquals(new HashSet<>(Arrays.asList( //
+		assertEquals(Util.set( //
 				Coordinate.c(9, 10) //
 				, Coordinate.c(11, 10) //
 				, Coordinate.c(10, 9) //
 				, Coordinate.c(10, 11) //
-				)), neighbors);
+		), neighbors);
 	}
 
 	@Test

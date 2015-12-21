@@ -1,7 +1,5 @@
 package suite.node.pp;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import suite.node.Atom;
@@ -27,7 +25,7 @@ public class PrettyPrinter {
 
 	private static Node lineBreakBeforeKeyword = Atom.of("else-if");
 	private static Node preferLineBreakBeforeKeyword = Atom.of("else");
-	private static Set<Operator> lineBreakAfterOperators = new HashSet<>(Arrays.asList(TermOp.BRACES, TermOp.CONTD_, TermOp.FUN___));
+	private static Set<Operator> lineBreakAfterOperators = Util.set(TermOp.BRACES, TermOp.CONTD_, TermOp.FUN___);
 
 	private LengthEstimator lengthEstimator = new LengthEstimator(lineLength);
 
@@ -47,10 +45,8 @@ public class PrettyPrinter {
 		return sb.toString();
 	}
 
-	private void prettyPrint0(Node node //
-			, Operator op0 // for avoiding unnecessary indenting
-			, int prec0 // for parenthesizing
-	) {
+	// op0 for avoiding unnecessary indenting; prec0 for parenthesizing
+	private void prettyPrint0(Node node, Operator op0, int prec0) {
 		int x = getX(), y = getY();
 		int length = lengthEstimator.getEstimatedLength(node);
 

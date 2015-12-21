@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,10 +35,8 @@ import suite.util.FunUtil.Fun;
  */
 public class Nodify {
 
-	private Set<Type> collectionClasses = new HashSet<>(Arrays.asList( //
-			ArrayList.class, Collection.class, HashSet.class, List.class, Set.class));
-	private Set<Type> mapClasses = new HashSet<>(Arrays.asList( //
-			HashMap.class, Map.class));
+	private Set<Type> collectionClasses = Util.set(ArrayList.class, Collection.class, HashSet.class, List.class, Set.class);
+	private Set<Type> mapClasses = Util.set(HashMap.class, Map.class);
 
 	private Map<Type, Nodifier> nodifiers = new ConcurrentHashMap<>();
 	private Inspect inspect;

@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.Util;
 
 /**
  * Convert (supposedly) any Java structures to recursive maps.
@@ -25,10 +25,8 @@ import suite.util.FunUtil.Fun;
  */
 public class Mapify {
 
-	private Set<Type> collectionClasses = new HashSet<>(Arrays.asList( //
-			ArrayList.class, Collection.class, HashSet.class, List.class, Set.class));
-	private Set<Type> mapClasses = new HashSet<>(Arrays.asList( //
-			HashMap.class, Map.class));
+	private Set<Type> collectionClasses = Util.set(ArrayList.class, Collection.class, HashSet.class, List.class, Set.class);
+	private Set<Type> mapClasses = Util.set(HashMap.class, Map.class);
 
 	private Fun<Object, Object> id = object -> object;
 
@@ -76,7 +74,7 @@ public class Mapify {
 		Mapifier mapifier = mapifiers.get(type);
 		if (mapifier == null) {
 			mapifiers.put(type, new Mapifier(object -> apply0(getMapifier(type).mapify, object) //
-					, object -> apply0(getMapifier(type).unmapify, object)));
+			, object -> apply0(getMapifier(type).unmapify, object)));
 			mapifiers.put(type, mapifier = createMapifier(type));
 		}
 		return mapifier;
@@ -101,7 +99,7 @@ public class Mapify {
 						for (int i = 0; i < length; i++)
 							map.put(i, apply0(mapifier1.mapify, Array.get(object, i)));
 						return map;
-					}, object -> {
+					} , object -> {
 						Map<?, ?> map = (Map<?, ?>) object;
 						Object objects = Array.newInstance(componentType, map.size());
 						int i = 0;
@@ -118,7 +116,7 @@ public class Mapify {
 						for (int i = 0; i < objects.length; i++)
 							map.put(i, apply0(mapifier1.mapify, objects[i]));
 						return map;
-					}, object -> {
+					} , object -> {
 						Map<?, ?> map = (Map<?, ?>) object;
 						Object objects[] = new Object[map.size()];
 						int i = 0;
@@ -137,7 +135,7 @@ public class Mapify {
 					} else
 						// Happens when an enum implements an interface
 						return m;
-				}, object -> {
+				} , object -> {
 					if (object instanceof Map) {
 						Map<?, ?> map = (Map<?, ?>) object;
 						Class<?> clazz1;
@@ -162,7 +160,7 @@ public class Mapify {
 							throw new RuntimeException(ex);
 						}
 					return map;
-				}, object -> {
+				} , object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					try {
 						Object object1 = clazz.newInstance();
@@ -188,7 +186,7 @@ public class Mapify {
 					for (Object o : (Collection<?>) object)
 						map.put(i++, apply0(mapifier1.mapify, o));
 					return map;
-				}, object -> {
+				} , object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					Collection<Object> object1 = (Collection<Object>) create(clazz);
 					int i = 0;
@@ -204,7 +202,7 @@ public class Mapify {
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
 						map.put(apply0(km.mapify, e.getKey()), apply0(vm.mapify, e.getValue()));
 					return map;
-				}, object -> {
+				} , object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					Map<Object, Object> object1 = (Map<Object, Object>) create(clazz);
 					for (Entry<?, ?> e : map.entrySet())

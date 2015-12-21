@@ -1,7 +1,6 @@
 package suite.node.parser;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,10 +10,11 @@ import suite.parser.IndentationPreprocessor;
 import suite.parser.WhitespacePreprocessor;
 import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
+import suite.util.Util;
 
 public class PreprocessorFactory {
 
-	private static Set<Character> whitespaces = new HashSet<>(Arrays.asList('\t', '\r', '\n'));
+	private static Set<Character> whitespaces = Util.set('\t', '\r', '\n');
 
 	public static List<Fun<String, List<Run>>> create(Operator operators[]) {
 		Fun<String, List<Run>> gct = CommentPreprocessor.groupCommentPreprocessor(whitespaces);

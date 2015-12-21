@@ -300,6 +300,14 @@ public class Util {
 		System.exit(code[0]);
 	}
 
+	@SafeVarargs
+	public static <T> Set<T> set(T... ts) {
+		Set<T> set = new HashSet<>();
+		for (T t : ts)
+			set.add(t);
+		return set;
+	}
+
 	public static void sleepQuietly(long time) {
 		try {
 			Thread.sleep(time);
