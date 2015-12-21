@@ -39,6 +39,11 @@ public class EbnfLrParse {
 	}
 
 	private class State {
+		private int id = counter++;
+
+		public String toString() {
+			return Integer.toString(id);
+		}
 	}
 
 	public static EbnfLrParse of(String grammar) {
