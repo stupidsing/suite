@@ -12,16 +12,6 @@ import suite.util.Util;
 public class StronglyConnectedComponentsTest {
 
 	@Test
-	public void test0() {
-		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(Util.set( //
-				Pair.of("a", "b") //
-				, Pair.of("b", "a") //
-		)));
-
-		assertEquals(1, scc.components.size());
-	}
-
-	@Test
 	public void test() {
 		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(Util.set( //
 				Pair.of("a", "b") //
@@ -43,7 +33,7 @@ public class StronglyConnectedComponentsTest {
 		assertEquals(3, scc.components.size());
 		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Util.set("a", "b", "e"))));
 		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Util.set("c", "d", "h"))));
-		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Util.set("f", "h"))));
+		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Util.set("f", "g"))));
 	}
 
 }

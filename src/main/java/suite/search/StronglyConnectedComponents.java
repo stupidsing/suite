@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.adt.ListMultimap;
-import suite.adt.Pair;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 
 /**
@@ -40,8 +38,8 @@ public class StronglyConnectedComponents<V> {
 	}
 
 	public StronglyConnectedComponents(DirectedGraph<V> dg) {
-		Map<V, Scc> sccs = Read.from(dg.vertices).map(v -> Pair.of(v, new Scc(v))).collect(As::map);
-		forwards = Read.from(dg.forwards).mapEntry((u, v) -> sccs.get(u), (u, v) -> sccs.get(v)).toMultimap();
+		Map<V, Scc> sccs = Read.from(dg.vertices).map2(v -> v, v -> new Scc(v)).toMap();
+		forwards = Read.multimap(dg.forwards).mapEntry((u, v) -> sccs.get(u), (u, v) -> sccs.get(v)).toMultimap();
 
 		for (Scc vscc : sccs.values())
 			if (!vscc.isVisited)
