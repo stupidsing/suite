@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 
@@ -95,31 +94,6 @@ public class As {
 
 	public static <K, V> ListMultimap<K, V> multimap(Outlet<Pair<K, List<V>>> outlet) {
 		return new ListMultimap<>(map(outlet));
-	}
-
-	public static <V> Streamlet2<V, V> orderDagEdges(Outlet2<V, V> streamlet) {
-		ListMultimap<V, V> dag = streamlet.toMultimap();
-		List<Pair<V, V>> pairs = new ArrayList<>();
-
-		while (!dag.isEmpty()) {
-			ListMultimap<V, V> dag0 = dag;
-			ListMultimap<V, V> dag1 = new ListMultimap<>();
-
-			Read.multimap(dag).sink((to, from) -> {
-				if (dag0.get(from).isEmpty())
-					pairs.add(Pair.of(to, from));
-				else if (!Objects.equals(from, to))
-					dag1.put(to, from);
-			});
-
-			if (dag1.size() < dag.size())
-				dag = dag1;
-			else
-
-				throw new RuntimeException();
-		}
-
-		return Read.from2(pairs);
 	}
 
 	public static <K, V, T> Fun<Outlet<Pair<K, V>>, Streamlet<T>> pairMap(BiFunction<K, V, T> fun) {
