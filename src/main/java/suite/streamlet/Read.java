@@ -20,6 +20,7 @@ import suite.adt.Pair;
 import suite.os.FileUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Source2;
 
 public class Read {
 
@@ -64,6 +65,19 @@ public class Read {
 
 	public static <T> Streamlet<T> from(Source<T> source) {
 		return Streamlet.from(source);
+	}
+
+	@SafeVarargs
+	public static <K, V> Streamlet2<K, V> from2(Pair<K, V>... col) {
+		return from2(Arrays.asList(col));
+	}
+
+	public static <K, V> Streamlet2<K, V> from2(Iterable<Pair<K, V>> col) {
+		return new Streamlet2<>(() -> Outlet2.from(col));
+	}
+
+	public static <K, V> Streamlet2<K, V> from2(Source2<K, V> source) {
+		return Streamlet2.from(source);
 	}
 
 	public static Streamlet<String> lines(Path path) throws IOException {
