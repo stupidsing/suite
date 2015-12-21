@@ -3,8 +3,6 @@ package suite.search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 
 import suite.adt.Pair;
@@ -15,7 +13,7 @@ public class StronglyConnectedComponentsTest {
 
 	@Test
 	public void test0() {
-		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(Arrays.asList( //
+		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(Util.set( //
 				Pair.of("a", "b") //
 				, Pair.of("b", "a") //
 		)));
@@ -25,7 +23,7 @@ public class StronglyConnectedComponentsTest {
 
 	@Test
 	public void test() {
-		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(Arrays.asList( //
+		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(Util.set( //
 				Pair.of("a", "b") //
 				, Pair.of("b", "c") //
 				, Pair.of("b", "e") //
