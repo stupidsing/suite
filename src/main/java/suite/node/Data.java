@@ -20,7 +20,7 @@ public class Data<T> extends Node {
 
 	@Override
 	public String toString() {
-		return "Data [" + (data != null ? data.toString() : "null") + "]";
+		return "Data [" + data + "]";
 	}
 
 	@Override
