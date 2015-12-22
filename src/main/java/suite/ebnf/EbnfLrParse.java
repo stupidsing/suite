@@ -20,6 +20,7 @@ import suite.util.FunUtil.Source;
 public class EbnfLrParse {
 
 	private int counter;
+	private String rootEntity;
 	private Map<String, Pair<State, State>> transitionByEntity = new HashMap<>();
 	private Map<State, Map<String, State>> shifts = new HashMap<>();
 	private Map<State, Reduce> reduces = new HashMap<>();
@@ -46,13 +47,15 @@ public class EbnfLrParse {
 		}
 	}
 
-	public static EbnfLrParse of(String grammar) {
+	public static EbnfLrParse of(String grammar, String rootEntity) {
 		try (StringReader reader = new StringReader(grammar)) {
-			return new EbnfLrParse(EbnfGrammar.parse(reader));
+			return new EbnfLrParse(EbnfGrammar.parse(reader), rootEntity);
 		}
 	}
 
-	public EbnfLrParse(Map<String, EbnfGrammar> grammarByEntity) {
+	public EbnfLrParse(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
+		this.rootEntity = rootEntity;
+
 		for (EbnfGrammar eg : grammarByEntity.values())
 			buildLr(eg, new State());
 
@@ -97,12 +100,12 @@ public class EbnfLrParse {
 		}
 	}
 
-	public Node check(String entity, String in) {
-		return parse(entity, in);
+	public Node check(String in) {
+		return parse(in);
 	}
 
-	public Node parse(String entity, String in) {
-		State state = transitionByEntity.get(entity).t0;
+	public Node parse(String in) {
+		State state = transitionByEntity.get(rootEntity).t0;
 		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
 
 		System.out.println("transitionByEntity = " + list(transitionByEntity));
@@ -110,7 +113,7 @@ public class EbnfLrParse {
 		System.out.println("reduces = " + list(reduces));
 		System.out.println("Initial state = " + state);
 
-		return parse(source, state, entity);
+		return parse(source, state, rootEntity);
 	}
 
 	private Node parse(Source<Node> tokens, State state0, String entity) {
