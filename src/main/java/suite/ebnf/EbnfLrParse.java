@@ -16,6 +16,7 @@ import suite.parser.Lexer;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Source;
+import suite.util.Util;
 
 public class EbnfLrParse {
 
@@ -239,8 +240,10 @@ public class EbnfLrParse {
 	public <K, V> String list(Map<K, V> map) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{\n");
-		for (Entry<K, V> pair : map.entrySet())
-			sb.append(pair.getKey() + " = " + pair.getValue() + "\n");
+		Read.from(map) //
+				.mapKey(Object::toString) //
+				.sortByKey(Util::compare) //
+				.sink((k, v) -> sb.append(k + " = " + v + "\n"));
 		sb.append("}\n");
 		return sb.toString();
 	}
