@@ -59,12 +59,18 @@ public class EbnfLrParse {
 		for (EbnfGrammar eg : grammarByEntity.values())
 			buildLr(eg, new State());
 
+		// State S -> Entity E
+		// - Find all post-reduction states of entity E
+		// - Merge the lookahead transitions into state S
 		Streamlet2<State, State> ss0 = Read.from(shifts) //
 				.concatMapValue(m -> Read.from(m.keySet())) //
 				.mapValue(transitionByEntity::get) //
 				.filter((state0, transition) -> transition != null) //
 				.mapValue(Pair::first_);
 
+		// Entity E -> State S
+		// - Find all post-reduction states of entity E
+		// - Merge the lookahead transitions of state S into those states
 		Streamlet2<State, State> ss1 = Read.from(shifts) //
 				.concatMap2((state0, m) -> Read.from(m)) //
 				.mapKey(transitionByEntity::get) //
