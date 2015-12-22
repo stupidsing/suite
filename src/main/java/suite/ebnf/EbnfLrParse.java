@@ -42,7 +42,7 @@ public class EbnfLrParse {
 		private int id = counter++;
 
 		public String toString() {
-			return String.format("%02d", id);
+			return String.format("S%02d", id);
 		}
 	}
 
