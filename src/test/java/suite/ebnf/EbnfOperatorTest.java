@@ -18,8 +18,8 @@ public class EbnfOperatorTest {
 
 	@Test
 	public void testLr() throws IOException {
-		EbnfLrParse elp = EbnfLrParse.of(ebnf());
-		System.out.println(elp.parse("e0", "1 * 2 + 3"));
+		EbnfLrParse elp = EbnfLrParse.of(ebnf(), "e0");
+		System.out.println(elp.parse("1 * 2 + 3"));
 	}
 
 	private String ebnf() {

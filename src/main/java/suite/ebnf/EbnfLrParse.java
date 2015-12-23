@@ -2,8 +2,10 @@ package suite.ebnf;
 
 import java.io.StringReader;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
@@ -11,6 +13,7 @@ import java.util.function.BiConsumer;
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.ebnf.Ebnf.Node;
+import suite.ebnf.EbnfGrammar.EbnfGrammarType;
 import suite.immutable.IList;
 import suite.parser.Lexer;
 import suite.streamlet.Read;
@@ -25,6 +28,7 @@ public class EbnfLrParse {
 	private Map<String, Pair<State, State>> transitionByEntity = new HashMap<>();
 	private Map<State, Map<String, State>> shifts = new HashMap<>();
 	private Map<State, Reduce> reduces = new HashMap<>();
+	private Map<State, Map<String, Pair<State, Reduce>>> fsm = new HashMap<>();
 
 	private class Reduce {
 		private String name;
@@ -50,7 +54,12 @@ public class EbnfLrParse {
 
 	public static EbnfLrParse of(String grammar, String rootEntity) {
 		try (StringReader reader = new StringReader(grammar)) {
-			return new EbnfLrParse(EbnfGrammar.parse(reader), rootEntity);
+			EbnfGrammar eg0 = new EbnfGrammar(EbnfGrammarType.ENTITY, rootEntity);
+			EbnfGrammar eg1 = new EbnfGrammar(EbnfGrammarType.ENTITY, "EOF");
+			EbnfGrammar eg = new EbnfGrammar(EbnfGrammarType.AND___, Arrays.asList(eg0, eg1));
+			Map<String, EbnfGrammar> egs = EbnfGrammar.parse(reader);
+			egs.put("ROOT", new EbnfGrammar(EbnfGrammarType.NAMED_, "ROOT", eg));
+			return new EbnfLrParse(egs, rootEntity);
 		}
 	}
 
@@ -59,6 +68,16 @@ public class EbnfLrParse {
 
 		for (EbnfGrammar eg : grammarByEntity.values())
 			buildLr(eg, new State());
+
+		System.out.println("transitionByEntity = " + list(transitionByEntity));
+		System.out.println("shifts = " + list(shifts));
+		System.out.println("reduces = " + list(reduces));
+
+		Read.from(shifts).sink((state0, map) -> {
+			Read.from(map).sink((lookahead, statex) -> {
+				put(subMap(fsm, state0), lookahead, Pair.of(statex, null));
+			});
+		});
 
 		// State S -> Entity E
 		// - Find all post-reduction states of entity E
@@ -78,32 +97,48 @@ public class EbnfLrParse {
 				.filter((transition, statex) -> transition != null) //
 				.mapKey(Pair::second);
 
-		ListMultimap<State, State> merges = Streamlet2.concat(ss0, ss1).toMultimap();
+		// State S reduce to Entity E
+		// - Find all possible states after entity E
+		// - Merge those states into S as reduction lookahead
+		ListMultimap<String, State> postReductionStatesByEntity = Read.from(shifts) //
+				.concatMap2((state0, m) -> Read.from(m)) //
+				.toMultimap();
 
-		c: while (!merges.isEmpty()) {
-			for (Pair<State, State> e0 : merges.entries()) {
-				State sourceState = e0.t1;
-				State targetState = e0.t0;
-				boolean b = false;
+		List<Pair<State, State>> mergeShifts = Streamlet2.concat(ss0, ss1).toList();
 
-				if (sourceState == targetState)
-					b = true;
-				else if (merges.get(sourceState).isEmpty()) {
-					Map<String, State> sourceShiftMap = getShiftMap(sourceState);
-					Map<String, State> targetShiftMap = getShiftMap(targetState);
-					for (Entry<String, State> e1 : sourceShiftMap.entrySet())
-						put(targetShiftMap, e1.getKey(), e1.getValue());
-					b = true;
-				} else
-					b = false;
+		List<Pair<State, State>> mergeReduces = Read.from(reduces) //
+				.concatMapValue(reduce -> Read.from(postReductionStatesByEntity.get(reduce.name))) //
+				.toList();
 
-				if (b) {
-					merges.remove(targetState, sourceState);
-					continue c;
-				}
+		System.out.println("mergeShifts = " + mergeShifts);
+		System.out.println("mergeReduces = " + mergeReduces);
+
+		while (true) {
+			boolean b = false;
+
+			for (Pair<State, State> pair : mergeShifts) {
+				State sourceState = pair.t1;
+				State targetState = pair.t0;
+				System.out.println("Merging shifts from " + sourceState + " to " + targetState);
+				Map<String, Pair<State, Reduce>> sourceMap = subMap(fsm, sourceState);
+				Map<String, Pair<State, Reduce>> targetMap = subMap(fsm, targetState);
+				for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
+					b |= resolve(targetMap, e1.getKey(), e1.getValue());
 			}
 
-			throw new RuntimeException();
+			for (Pair<State, State> pair : mergeReduces) {
+				State sourceState = pair.t1;
+				State targetState = pair.t0;
+				System.out.println("Merging reduces from " + sourceState + " to " + targetState);
+				Map<String, Pair<State, Reduce>> sourceMap = subMap(fsm, sourceState);
+				Map<String, Pair<State, Reduce>> targetMap = subMap(fsm, targetState);
+				Reduce reduce = reduces.get(targetState);
+				for (String lookahead : sourceMap.keySet())
+					b |= resolve(targetMap, lookahead, Pair.of(null, reduce));
+			}
+
+			if (!b)
+				break;
 		}
 	}
 
@@ -112,74 +147,67 @@ public class EbnfLrParse {
 	}
 
 	public Node parse(String in) {
-		State state = transitionByEntity.get(rootEntity).t0;
 		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
+		State state0 = transitionByEntity.get(rootEntity).t0;
 
-		System.out.println("transitionByEntity = " + list(transitionByEntity));
-		System.out.println("shifts = " + list(shifts));
-		System.out.println("reduces = " + list(reduces));
-		System.out.println("Initial state = " + state);
+		System.out.println("shifts/reduces = " + list(fsm));
+		System.out.println("Initial state = " + state0);
 
-		return parse(source, state, rootEntity);
+		return parse(source, state0);
 	}
 
-	private Node parse(Source<Node> tokens, State state0, String entity) {
+	private Node parse(Source<Node> tokens, State state) {
 		Deque<Pair<Node, State>> stack = new ArrayDeque<>();
 		Node token = tokens.source();
-		State state = state0;
 
 		while (true) {
-			State shift;
+			String lookahead = token != null ? token.entity : "EOF";
+			Pair<State, Reduce> sr = shift(stack, state, lookahead);
 
-			// Shift as much as possible
-			while (token != null && (shift = shift(state, token, stack)) != null) {
-				state = shift;
+			if (sr.t0 != null) { // Shift
+				stack.push(Pair.of(token, state));
+				state = sr.t0;
 				token = tokens.source();
+			} else { // Reduce
+				Reduce reduce = sr.t1;
+				IList<Node> nodes = IList.end();
+
+				for (int i = 0; i < reduce.n; i++) {
+					Pair<Node, State> ns = stack.pop();
+					nodes = IList.cons(ns.t0, nodes);
+					state = ns.t1;
+				}
+
+				Node token1 = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
+
+				// Force shift after reduce
+				if (rootEntity.equals(reduce.name) && stack.size() == 0 && token == null)
+					return token1;
+
+				stack.push(Pair.of(token1, state));
+				state = shift(stack, state, token1.entity).t0;
 			}
-
-			// Reduce
-			Reduce reduce = reduces.get(state);
-			IList<Node> nodes = IList.end();
-			System.out.println("(S=" + state + ", Stack=" + stack.size() + "), REDUCE " + reduce.name + "/" + reduce.n);
-
-			for (int i = 0; i < reduce.n; i++) {
-				Pair<Node, State> pair = stack.pop();
-				nodes = IList.cons(pair.t0, nodes);
-				state = pair.t1;
-			}
-
-			Node token1 = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
-
-			// Force shift after reduce
-			if (entity.equals(reduce.name) && stack.size() == 0 && token == null)
-				return token1;
-			else if ((shift = shift(state, token1, stack)) != null)
-				state = shift;
-			else
-				throw new RuntimeException();
 		}
 	}
 
-	private State shift(State state, Node token, Deque<Pair<Node, State>> stack) {
-		String lookahead = token.entity;
-		Map<String, State> m;
-		State state1;
-
-		if ((m = shifts.get(state)) != null && (state1 = m.get(lookahead)) != null) {
-			System.out.println("(S=" + state + ", Stack=" + stack.size() + "), SHIFT " + lookahead);
-			stack.push(Pair.of(token, state));
-			return state1;
-		} else
-			return null;
+	private Pair<State, Reduce> shift(Deque<Pair<Node, State>> stack, State state, String lookahead) {
+		System.out.print("(S=" + state + ", Lookahead=" + lookahead + ", Stack=" + stack.size() + ")");
+		Pair<State, Reduce> sr = fsm.get(state).get(lookahead);
+		System.out.println(" => " + sr);
+		return sr;
 	}
 
 	private Pair<Integer, State> buildLr(EbnfGrammar eg, State state0) {
-		Map<String, State> shiftMap = getShiftMap(state0);
+		Map<String, State> shiftMap = subMap(shifts, state0);
 
-		BiConsumer<String, State> newEntity = (entity1, statex_) -> {
-			transitionByEntity.put(entity1, Pair.of(state0, statex_));
-			for (EbnfGrammar child : eg.children)
-				addReduce(entity1, buildLr(child, state0));
+		BiConsumer<String, State> newEntity = (entity1, statex) -> {
+			transitionByEntity.put(entity1, Pair.of(state0, statex));
+			for (EbnfGrammar child : eg.children) {
+				Pair<Integer, State> pair = buildLr(child, state0);
+				Integer n = pair.t0;
+				State state = pair.t1;
+				put(reduces, state, new Reduce(entity1, n));
+			}
 		};
 
 		int nTokens;
@@ -221,20 +249,35 @@ public class EbnfLrParse {
 		return Pair.of(nTokens, statex);
 	}
 
-	private Map<String, State> getShiftMap(State state0) {
-		return shifts.computeIfAbsent(state0, state -> new HashMap<>());
+	private <K0, K1, V> Map<K1, V> subMap(Map<K0, Map<K1, V>> map, K0 k0) {
+		return map.computeIfAbsent(k0, k -> new HashMap<>());
 	}
 
-	private void addReduce(String entity, Pair<Integer, State> pair) {
-		put(reduces, pair.t1, new Reduce(entity, pair.t0));
+	// Shift-reduce conflict ends in reduce
+	private boolean resolve(Map<String, Pair<State, Reduce>> map, String key, Pair<State, Reduce> pair1) {
+		Pair<State, Reduce> pair0 = map.get(key);
+		if (pair0 == null || isShiftReduceConflict(pair0, pair1)) {
+			map.put(key, pair1);
+			return true;
+		} else if (pair0.equals(pair1) || isShiftReduceConflict(pair1, pair0))
+			return false;
+		else
+			throw new RuntimeException("Duplicate key " + key + " old (" + pair0 + ") new (" + pair1 + ")");
 	}
 
-	private <K, V> void put(Map<K, V> map, K key, V value1) {
+	private boolean isShiftReduceConflict(Pair<State, Reduce> shift, Pair<State, Reduce> reduce) {
+		return shift.t1 == null && reduce.t1 != null;
+	}
+
+	private <K, V> boolean put(Map<K, V> map, K key, V value1) {
 		V value0 = map.get(key);
-		if (value0 == null)
+		if (value0 == null) {
 			map.put(key, value1);
-		else if (value0 != value1)
-			throw new RuntimeException("Duplicate key " + key);
+			return true;
+		} else if (value0.equals(value1))
+			return false;
+		else
+			throw new RuntimeException("Duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
 	}
 
 	public <K, V> String list(Map<K, V> map) {
