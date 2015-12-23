@@ -15,6 +15,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.AbstractAction;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import suite.util.FunUtil.Sink;
 
@@ -47,6 +49,22 @@ public class Listen {
 	public static ComponentListener componentResized(Sink<ComponentEvent> sink) {
 		return new ComponentAdapter() {
 			public void componentResized(ComponentEvent event) {
+				sink.sink(event);
+			}
+		};
+	}
+
+	public static DocumentListener documentChanged(Sink<DocumentEvent> sink) {
+		return new DocumentListener() {
+			public void removeUpdate(DocumentEvent event) {
+				sink.sink(event);
+			}
+
+			public void insertUpdate(DocumentEvent event) {
+				sink.sink(event);
+			}
+
+			public void changedUpdate(DocumentEvent event) {
 				sink.sink(event);
 			}
 		};

@@ -6,8 +6,6 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JEditorPane;
 import javax.swing.KeyStroke;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Segment;
@@ -58,23 +56,7 @@ public class EditorPane extends JEditorPane {
 		bind(KeyEvent.VK_Z, Event.CTRL_MASK, event -> undoManager.undo());
 
 		document.addUndoableEditListener(event -> undoManager.addEdit(event.getEdit()));
-
-		document.addDocumentListener(new DocumentListener() {
-			public void removeUpdate(DocumentEvent event) {
-				changed();
-			}
-
-			public void insertUpdate(DocumentEvent event) {
-				changed();
-			}
-
-			public void changedUpdate(DocumentEvent event) {
-			}
-
-			private void changed() {
-				setModified(true);
-			}
-		});
+		document.addDocumentListener(Listen.documentChanged(event -> setModified(true)));
 	}
 
 	private void replaceLines(Fun<Segment, String> fun) throws BadLocationException {
