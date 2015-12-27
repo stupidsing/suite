@@ -98,7 +98,7 @@ public class PopupMain extends ExecutableProgram {
 			frame.repaint();
 		};
 
-		frame.addComponentListener(Listen.componentResized(event -> refresh.run()));
+		Listen.componentResized(frame).register(event -> refresh.run());
 
 		refresh.run();
 		System.in.read();
