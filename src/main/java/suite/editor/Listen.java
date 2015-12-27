@@ -1,23 +1,24 @@
 package suite.editor;
 
+import java.awt.Component;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 
+import suite.streamlet.Reactive;
 import suite.util.FunUtil.Sink;
 
 public class Listen {
@@ -26,14 +27,16 @@ public class Listen {
 		public void sink(T t) throws Ex;
 	}
 
-	public static AbstractAction actionPerformed(Sink<ActionEvent> sink) {
-		return new AbstractAction() {
+	public static Reactive<ActionEvent> actionPerformed(JComponent component, Object key) {
+		Reactive<ActionEvent> reactive = new Reactive<>();
+		component.getActionMap().put(key, new AbstractAction() {
 			private static final long serialVersionUID = 1l;
 
 			public void actionPerformed(ActionEvent event) {
-				sink.sink(event);
+				reactive.fire(event);
 			}
-		};
+		});
+		return reactive;
 	}
 
 	public static <T, Ex extends Exception> Sink<T> catchAll(SinkEx<T, Ex> sink) {
@@ -46,52 +49,62 @@ public class Listen {
 		};
 	}
 
-	public static ComponentListener componentResized(Sink<ComponentEvent> sink) {
-		return new ComponentAdapter() {
+	public static Reactive<ComponentEvent> componentResized(Component component) {
+		Reactive<ComponentEvent> reactive = new Reactive<>();
+		component.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent event) {
-				sink.sink(event);
+				reactive.fire(event);
 			}
-		};
+		});
+		return reactive;
 	}
 
-	public static DocumentListener documentChanged(Sink<DocumentEvent> sink) {
-		return new DocumentListener() {
+	public static Reactive<DocumentEvent> documentChanged(Document document) {
+		Reactive<DocumentEvent> reactive = new Reactive<>();
+		document.addDocumentListener(new DocumentListener() {
 			public void removeUpdate(DocumentEvent event) {
-				sink.sink(event);
+				reactive.fire(event);
 			}
 
 			public void insertUpdate(DocumentEvent event) {
-				sink.sink(event);
+				reactive.fire(event);
 			}
 
 			public void changedUpdate(DocumentEvent event) {
-				sink.sink(event);
+				reactive.fire(event);
 			}
-		};
+		});
+		return reactive;
 	}
 
-	public static KeyListener keyPressed(Sink<KeyEvent> sink) {
-		return new KeyAdapter() {
+	public static Reactive<KeyEvent> keyPressed(Component component) {
+		Reactive<KeyEvent> reactive = new Reactive<>();
+		component.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent event) {
-				sink.sink(event);
+				reactive.fire(event);
 			}
-		};
+		});
+		return reactive;
 	}
 
-	public static MouseListener mouseClicked(Sink<MouseEvent> sink) {
-		return new MouseAdapter() {
+	public static Reactive<MouseEvent> mouseClicked(Component component) {
+		Reactive<MouseEvent> reactive = new Reactive<>();
+		component.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent event) {
-				sink.sink(event);
+				reactive.fire(event);
 			}
-		};
+		});
+		return reactive;
 	}
 
-	public static WindowListener windowClosing(Sink<WindowEvent> sink) {
-		return new WindowAdapter() {
+	public static Reactive<WindowEvent> windowClosing(Window window) {
+		Reactive<WindowEvent> reactive = new Reactive<>();
+		window.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent event) {
-				sink.sink(event);
+				reactive.fire(event);
 			}
-		};
+		});
+		return reactive;
 	}
 
 }

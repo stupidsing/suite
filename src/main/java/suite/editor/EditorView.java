@@ -52,25 +52,25 @@ public class EditorView {
 
 	public JFrame run(String title) {
 		JTextField searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
-		searchTextField.addActionListener(event -> controller.searchFiles(EditorView.this));
-		searchTextField.addKeyListener(Listen.keyPressed(event -> {
+		searchTextField.addActionListener(event -> controller.searchFiles(this));
+		Listen.keyPressed(searchTextField).register(event -> {
 			if (event.getKeyCode() == KeyEvent.VK_DOWN)
-				controller.downToSearchList(EditorView.this);
-		}));
+				controller.downToSearchList(this);
+		});
 
 		DefaultListModel<String> listModel = this.listModel = new DefaultListModel<>();
 		listModel.addElement("<Empty>");
 
 		JList<String> searchList = this.searchList = applyDefaults(new JList<>(listModel));
 		searchList.setFont(sansFont);
-		searchList.addKeyListener(Listen.keyPressed(event -> {
+		Listen.keyPressed(searchList).register(event -> {
 			if (event.getKeyCode() == KeyEvent.VK_ENTER)
-				controller.selectList(EditorView.this);
-		}));
-		searchList.addMouseListener(Listen.mouseClicked(event -> {
+				controller.selectList(this);
+		});
+		Listen.mouseClicked(searchList).register(event -> {
 			if (event.getClickCount() == 2)
-				controller.selectList(EditorView.this);
-		}));
+				controller.selectList(this);
+		});
 
 		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
 		rightLabel.setVisible(false);
@@ -90,37 +90,36 @@ public class EditorView {
 		JScrollPane editorScrollPane = createScrollPane(editor);
 
 		JButton okButton = applyDefaults(new JButton("OK"));
-		okButton.addMouseListener(Listen.mouseClicked(event -> controller.evaluate(EditorView.this)));
+		Listen.mouseClicked(okButton).register(event -> controller.evaluate(this));
 
 		JFrame frame = this.frame = new JFrame(title);
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		frame.setJMenuBar(createMenuBar());
 		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
-		frame.addComponentListener(Listen.componentResized(event -> refresh()));
-		frame.addWindowListener(Listen.windowClosing(event -> controller.close(EditorView.this)));
+		Listen.componentResized(frame).register(event -> refresh());
+		Listen.windowClosing(frame).register(event -> controller.close(this));
 
 		int u = 64, u3 = u * 3;
 
 		lay = new LayoutCalculator(frame.getContentPane());
-		layout = lay.box(Orientation.HORIZONTAL //
-				, lay.ex(u, lay.box(Orientation.VERTICAL //
-						, lay.fx(24, lay.c(searchTextField)) //
-						, lay.ex(u, lay.c(searchList)) //
-						)) //
-				, lay.ex(u3, lay.box(Orientation.VERTICAL //
-						, lay.fx(24, lay.c(filenameTextField)) //
-						, lay.ex(u3, lay.c(editorScrollPane)) //
-						, lay.fx(8, lay.b()) //
-						, lay.fx(24, lay.box(Orientation.HORIZONTAL //
-								, lay.ex(u3, lay.b()) //
-								, lay.fx(64, lay.c(okButton)) //
-								, lay.ex(u3, lay.b()) //
-								)) //
-						, lay.ex(u, lay.c(messageScrollPane)) //
-						)) //
-				, lay.ex(u, lay.c(rightLabel)) //
-				);
+		layout = lay.box(Orientation.HORIZONTAL, //
+				lay.ex(u,
+						lay.box(Orientation.VERTICAL, //
+								lay.fx(24, lay.c(searchTextField)), //
+								lay.ex(u, lay.c(searchList)))), //
+				lay.ex(u3,
+						lay.box(Orientation.VERTICAL, //
+								lay.fx(24, lay.c(filenameTextField)), //
+								lay.ex(u3, lay.c(editorScrollPane)), //
+								lay.fx(8, lay.b()), //
+								lay.fx(24,
+										lay.box(Orientation.HORIZONTAL, //
+												lay.ex(u3, lay.b()), //
+												lay.fx(64, lay.c(okButton)), //
+												lay.ex(u3, lay.b()))), //
+								lay.ex(u, lay.c(messageScrollPane)))), //
+				lay.ex(u, lay.c(rightLabel)));
 
 		controller.newFile(this);
 		refresh();
@@ -166,7 +165,7 @@ public class EditorView {
 		searchMenuItem.addActionListener(event -> controller.searchFor(view));
 
 		JMenuItem exitMenuItem = applyDefaults(new JMenuItem("Close", KeyEvent.VK_C));
-		exitMenuItem.addActionListener(event -> controller.close(EditorView.this));
+		exitMenuItem.addActionListener(event -> controller.close(this));
 
 		JMenuItem copyMenuItem = applyDefaults(new JMenuItem("Copy"));
 		copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
@@ -181,13 +180,13 @@ public class EditorView {
 		pasteMenuItem.addActionListener(event -> controller.paste(view));
 
 		JMenuItem formatMenuItem = applyDefaults(new JMenuItem("Format", KeyEvent.VK_F));
-		formatMenuItem.addActionListener(event -> controller.format(EditorView.this));
+		formatMenuItem.addActionListener(event -> controller.format(this));
 
 		JMenuItem funFilterMenuItem = applyDefaults(new JMenuItem("Functional Filter...", KeyEvent.VK_U));
-		funFilterMenuItem.addActionListener(event -> controller.funFilter(EditorView.this));
+		funFilterMenuItem.addActionListener(event -> controller.funFilter(this));
 
 		JMenuItem unixFilterMenuItem = applyDefaults(new JMenuItem("Unix Filter...", KeyEvent.VK_X));
-		unixFilterMenuItem.addActionListener(event -> controller.unixFilter(EditorView.this));
+		unixFilterMenuItem.addActionListener(event -> controller.unixFilter(this));
 
 		JMenuItem leftMenuItem = applyDefaults(new JMenuItem("Left", KeyEvent.VK_L));
 		leftMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.ALT_MASK));
@@ -214,20 +213,20 @@ public class EditorView {
 		JMenuItem newWindowMenuItem = applyDefaults(new JMenuItem("New Window", KeyEvent.VK_N));
 		newWindowMenuItem.addActionListener(event -> controller.newWindow(view));
 
-		JMenu fileMenu = createMenu("File", KeyEvent.VK_F //
-				, newMenuItem, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
+		JMenu fileMenu = createMenu("File", KeyEvent.VK_F, //
+				newMenuItem, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
 
-		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E //
-				, copyMenuItem, copyAppendMenuItem, pasteMenuItem, formatMenuItem, funFilterMenuItem, unixFilterMenuItem);
+		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E, //
+				copyMenuItem, copyAppendMenuItem, pasteMenuItem, formatMenuItem, funFilterMenuItem, unixFilterMenuItem);
 
-		JMenu viewMenu = createMenu("View", KeyEvent.VK_V //
-				, leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
+		JMenu viewMenu = createMenu("View", KeyEvent.VK_V, //
+				leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
 
-		JMenu projectMenu = createMenu("Project", KeyEvent.VK_P //
-				, evalMenuItem, evalTypeMenuItem);
+		JMenu projectMenu = createMenu("Project", KeyEvent.VK_P, //
+				evalMenuItem, evalTypeMenuItem);
 
-		JMenu windowMenu = createMenu("Window", KeyEvent.VK_W //
-				, newWindowMenuItem, newWindowMenuItem);
+		JMenu windowMenu = createMenu("Window", KeyEvent.VK_W, //
+				newWindowMenuItem, newWindowMenuItem);
 
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(fileMenu);

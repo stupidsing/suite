@@ -13,8 +13,8 @@ import javax.swing.undo.UndoManager;
 
 import suite.adt.Pair;
 import suite.editor.Listen.SinkEx;
+import suite.streamlet.Reactive;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
 import suite.util.Util;
 
 public class EditorPane extends JEditorPane {
@@ -50,13 +50,13 @@ public class EditorPane extends JEditorPane {
 				});
 		};
 
-		bind(KeyEvent.VK_TAB, 0, Listen.catchAll(tabize));
-		bind(KeyEvent.VK_TAB, Event.SHIFT_MASK, Listen.catchAll(untabize));
-		bind(KeyEvent.VK_Y, Event.CTRL_MASK, event -> undoManager.redo());
-		bind(KeyEvent.VK_Z, Event.CTRL_MASK, event -> undoManager.undo());
+		bind(KeyEvent.VK_TAB, 0).register(Listen.catchAll(tabize));
+		bind(KeyEvent.VK_TAB, Event.SHIFT_MASK).register(Listen.catchAll(untabize));
+		bind(KeyEvent.VK_Y, Event.CTRL_MASK).register(event -> undoManager.redo());
+		bind(KeyEvent.VK_Z, Event.CTRL_MASK).register(event -> undoManager.undo());
 
 		document.addUndoableEditListener(event -> undoManager.addEdit(event.getEdit()));
-		document.addDocumentListener(Listen.documentChanged(event -> setModified(true)));
+		Listen.documentChanged(document).register(event -> setModified(true));
 	}
 
 	private void replaceLines(Fun<Segment, String> fun) throws BadLocationException {
@@ -77,11 +77,11 @@ public class EditorPane extends JEditorPane {
 		replace(document, start, end, fun);
 	}
 
-	private void bind(int keyCode, int modifiers, Sink<ActionEvent> sink) {
+	private Reactive<ActionEvent> bind(int keyCode, int modifiers) {
 		KeyStroke keyStroke = KeyStroke.getKeyStroke(keyCode, modifiers);
 		Object key = Pair.of(keyCode, modifiers);
 		getInputMap().put(keyStroke, key);
-		getActionMap().put(key, Listen.actionPerformed(sink));
+		return Listen.actionPerformed(this, key);
 	}
 
 	private boolean isSelectedText() {
