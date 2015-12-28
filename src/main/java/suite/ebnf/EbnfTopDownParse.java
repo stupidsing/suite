@@ -16,7 +16,7 @@ import suite.util.FunUtil.Source;
 import suite.util.Util;
 
 /**
- * Parser for Backus-Naur form grammars.
+ * Backtracking LL parser for Backus-Naur form grammars.
  *
  * TODO cyclic problem:
  *
