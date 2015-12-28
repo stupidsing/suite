@@ -2,7 +2,6 @@ package suite.ebnf;
 
 import java.io.StringReader;
 import java.util.ArrayDeque;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +78,7 @@ public class EbnfLrParse {
 				State state1 = new State();
 				fsm.put(state1, nextx);
 				nTokens = 1;
-				next = Collections.singletonMap(eg.content, Pair.of(state1, null));
+				next = kv(eg.content, Pair.of(state1, null));
 				break;
 			}
 			default:
@@ -115,7 +114,7 @@ public class EbnfLrParse {
 		this.grammarByEntity = grammarByEntity;
 		this.rootEntity = rootEntity;
 
-		BuildLr buildLr = new BuildLr(grammarByEntity.get(rootEntity), Collections.singletonMap("EOF", Pair.of(new State(), null)));
+		BuildLr buildLr = new BuildLr(grammarByEntity.get(rootEntity), kv("EOF", Pair.of(new State(), null)));
 		state0 = new State();
 		fsm.put(state0, buildLr.next);
 	}
@@ -190,7 +189,13 @@ public class EbnfLrParse {
 		return shift.t1 == null && reduce.t1 != null;
 	}
 
-	public <K, V> String list(Map<K, V> map) {
+	private <K, V> Map<K, V> kv(K k, V v) {
+		Map<K, V> m = new HashMap<>();
+		m.put(k, v);
+		return m;
+	}
+
+	private <K, V> String list(Map<K, V> map) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{\n");
 		Read.from(map) //
