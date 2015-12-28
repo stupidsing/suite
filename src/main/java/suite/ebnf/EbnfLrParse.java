@@ -5,6 +5,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.adt.Pair;
@@ -70,7 +71,7 @@ public class EbnfLrParse {
 					String egn = "OR" + counter++;
 					BuildLr buildLr1 = new BuildLr(new EbnfGrammar(EbnfGrammarType.NAMED_, egn, eg1), nextx);
 					resolve(next, egn, Pair.of(state1, null));
-					Read.from(buildLr1.next).sink((entity, pair) -> resolve(next, entity, pair));
+					resolveAll(next, buildLr1.next);
 				}
 				break;
 			}
@@ -171,6 +172,13 @@ public class EbnfLrParse {
 		Pair<State, Reduce> sr = fsm.get(state).get(lookahead);
 		System.out.println(" => " + sr);
 		return sr;
+	}
+
+	private boolean resolveAll(Map<String, Pair<State, Reduce>> targetMap, Map<String, Pair<State, Reduce>> sourceMap) {
+		boolean b = false;
+		for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
+			b |= resolve(targetMap, e1.getKey(), e1.getValue());
+		return b;
 	}
 
 	// Shift-reduce conflict ends in reduce
