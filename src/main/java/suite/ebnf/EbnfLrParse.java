@@ -175,15 +175,15 @@ public class EbnfLrParse {
 	}
 
 	// Shift-reduce conflict ends in reduce
-	private boolean resolve(Map<String, Pair<State, Reduce>> map, String key, Pair<State, Reduce> pair1) {
-		Pair<State, Reduce> pair0 = map.get(key);
-		if (pair0 == null || isShiftReduceConflict(pair0, pair1)) {
-			map.put(key, pair1);
+	private boolean resolve(Map<String, Pair<State, Reduce>> map, String key, Pair<State, Reduce> value1) {
+		Pair<State, Reduce> value0 = map.get(key);
+		if (value0 == null || isShiftReduceConflict(value0, value1)) {
+			map.put(key, value1);
 			return true;
-		} else if (pair0.equals(pair1) || isShiftReduceConflict(pair1, pair0))
+		} else if (value0.equals(value1) || isShiftReduceConflict(value1, value0))
 			return false;
 		else
-			throw new RuntimeException("Duplicate key " + key + " old (" + pair0 + ") new (" + pair1 + ")");
+			throw new RuntimeException("Duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
 	}
 
 	private boolean isShiftReduceConflict(Pair<State, Reduce> shift, Pair<State, Reduce> reduce) {
