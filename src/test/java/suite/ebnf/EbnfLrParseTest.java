@@ -28,6 +28,15 @@ public class EbnfLrParseTest {
 	}
 
 	@Test
+	public void testEof() throws IOException {
+		EbnfLrParse elp = EbnfLrParse.of("" //
+				+ "<nil> ::= ()\n" //
+				, "<nil>");
+
+		assertNotNull(elp.parse(""));
+	}
+
+	@Test
 	public void testOr() throws IOException {
 		EbnfLrParse elp = EbnfLrParse.of("" //
 				+ "<digit> ::= \"0\" | \"1\"\n" //
@@ -42,6 +51,15 @@ public class EbnfLrParseTest {
 		EbnfLrParse elp = EbnfLrParse.of("" //
 				+ "<list> ::= () | \"0\" <list>\n" //
 				, "<list>");
+
+		assertNotNull(elp.parse("0"));
+	}
+
+	@Test
+	public void testToken() throws IOException {
+		EbnfLrParse elp = EbnfLrParse.of("" //
+				+ "<digit> ::= \"0\"\n" //
+				, "<digit>");
 
 		assertNotNull(elp.parse("0"));
 	}

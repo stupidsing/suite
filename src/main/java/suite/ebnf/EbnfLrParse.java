@@ -2,22 +2,18 @@ package suite.ebnf;
 
 import java.io.StringReader;
 import java.util.ArrayDeque;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.BiConsumer;
+import java.util.Set;
 
-import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.ebnf.Ebnf.Node;
 import suite.ebnf.EbnfGrammar.EbnfGrammarType;
 import suite.immutable.IList;
 import suite.parser.Lexer;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
@@ -25,19 +21,76 @@ public class EbnfLrParse {
 
 	private int counter;
 	private String rootEntity;
-	private Map<String, Pair<State, State>> transitionByEntity = new HashMap<>();
-	private Map<State, Map<String, State>> shifts = new HashMap<>();
-	private Map<State, Reduce> reduces = new HashMap<>();
+	private Map<String, EbnfGrammar> grammarByEntity;
+	private Map<Pair<String, Set<String>>, BuildLr> buildLrs = new HashMap<>();
+
+	private State state0;
 	private Map<State, Map<String, Pair<State, Reduce>>> fsm = new HashMap<>();
+
+	private class BuildLr {
+		private int nTokens;
+		private Map<String, Pair<State, Reduce>> next;
+
+		private BuildLr(EbnfGrammar eg, Map<String, Pair<State, Reduce>> nextx) {
+			switch (eg.type) {
+			case AND___: {
+				next = nextx;
+				for (EbnfGrammar eg1 : Read.from(eg.children).reverse()) {
+					BuildLr buildLr1 = new BuildLr(eg1, next);
+					nTokens += buildLr1.nTokens;
+					next = buildLr1.next;
+				}
+				break;
+			}
+			case ENTITY: {
+				Pair<String, Set<String>> pair = Pair.of(eg.content, nextx.keySet());
+				BuildLr buildLr1 = buildLrs.computeIfAbsent(pair, pair_ -> new BuildLr(grammarByEntity.get(eg.content), nextx));
+				State state1 = new State();
+				fsm.put(state1, nextx);
+				nTokens = buildLr1.nTokens;
+				next = Read.from(buildLr1.next).cons(eg.content, Pair.of(state1, null)).toMap();
+				break;
+			}
+			case NAMED_: {
+				State nullState = null;
+				Reduce reduce = new Reduce();
+				Map<String, Pair<State, Reduce>> next1 = Read.from(nextx).mapValue(lookahead -> Pair.of(nullState, reduce)).toMap();
+				BuildLr buildLr1 = new BuildLr(eg.children.get(0), next1);
+				reduce.name = eg.content;
+				reduce.n = buildLr1.nTokens;
+				nTokens = 1;
+				next = buildLr1.next;
+				break;
+			}
+			case OR____: {
+				State state1 = new State();
+				fsm.put(state1, nextx);
+				nTokens = 1;
+				next = new HashMap<>();
+				for (EbnfGrammar eg1 : Read.from(eg.children)) {
+					String egn = "OR" + counter++;
+					BuildLr buildLr1 = new BuildLr(new EbnfGrammar(EbnfGrammarType.NAMED_, egn, eg1), nextx);
+					resolve(next, egn, Pair.of(state1, null));
+					Read.from(buildLr1.next).sink((entity, pair) -> resolve(next, entity, pair));
+				}
+				break;
+			}
+			case STRING: {
+				State state1 = new State();
+				fsm.put(state1, nextx);
+				nTokens = 1;
+				next = Collections.singletonMap(eg.content, Pair.of(state1, null));
+				break;
+			}
+			default:
+				throw new RuntimeException("LR parser cannot recognize " + eg.type);
+			}
+		}
+	}
 
 	private class Reduce {
 		private String name;
 		private int n;
-
-		private Reduce(String name, int n) {
-			this.name = name;
-			this.n = n;
-		}
 
 		public String toString() {
 			return name + "/" + n;
@@ -54,92 +107,17 @@ public class EbnfLrParse {
 
 	public static EbnfLrParse of(String grammar, String rootEntity) {
 		try (StringReader reader = new StringReader(grammar)) {
-			EbnfGrammar eg0 = new EbnfGrammar(EbnfGrammarType.ENTITY, rootEntity);
-			EbnfGrammar eg1 = new EbnfGrammar(EbnfGrammarType.ENTITY, "EOF");
-			EbnfGrammar eg = new EbnfGrammar(EbnfGrammarType.AND___, Arrays.asList(eg0, eg1));
-			Map<String, EbnfGrammar> egs = EbnfGrammar.parse(reader);
-			egs.put("ROOT", new EbnfGrammar(EbnfGrammarType.NAMED_, "ROOT", eg));
-			return new EbnfLrParse(egs, rootEntity);
+			return new EbnfLrParse(EbnfGrammar.parse(reader), rootEntity);
 		}
 	}
 
 	public EbnfLrParse(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
+		this.grammarByEntity = grammarByEntity;
 		this.rootEntity = rootEntity;
 
-		for (EbnfGrammar eg : grammarByEntity.values())
-			buildLr(eg, new State());
-
-		System.out.println("transitionByEntity = " + list(transitionByEntity));
-		System.out.println("shifts = " + list(shifts));
-		System.out.println("reduces = " + list(reduces));
-
-		Read.from(shifts).sink((state0, map) -> {
-			Read.from(map).sink((lookahead, statex) -> {
-				put(subMap(fsm, state0), lookahead, Pair.of(statex, null));
-			});
-		});
-
-		// State S -> Entity E
-		// - Find all post-reduction states of entity E
-		// - Merge the lookahead transitions into state S
-		Streamlet2<State, State> ss0 = Read.from(shifts) //
-				.concatMapValue(m -> Read.from(m.keySet())) //
-				.mapValue(transitionByEntity::get) //
-				.filter((state0, transition) -> transition != null) //
-				.mapValue(Pair::first_);
-
-		// Entity E -> State S
-		// - Find all post-reduction states of entity E
-		// - Merge the lookahead transitions of state S into those states
-		Streamlet2<State, State> ss1 = Read.from(shifts) //
-				.concatMap2((state0, m) -> Read.from(m)) //
-				.mapKey(transitionByEntity::get) //
-				.filter((transition, statex) -> transition != null) //
-				.mapKey(Pair::second);
-
-		// State S reduce to Entity E
-		// - Find all possible states after entity E
-		// - Merge those states into S as reduction lookahead
-		ListMultimap<String, State> postReductionStatesByEntity = Read.from(shifts) //
-				.concatMap2((state0, m) -> Read.from(m)) //
-				.toMultimap();
-
-		List<Pair<State, State>> mergeShifts = Streamlet2.concat(ss0, ss1).toList();
-
-		List<Pair<State, State>> mergeReduces = Read.from(reduces) //
-				.concatMapValue(reduce -> Read.from(postReductionStatesByEntity.get(reduce.name))) //
-				.toList();
-
-		System.out.println("mergeShifts = " + mergeShifts);
-		System.out.println("mergeReduces = " + mergeReduces);
-
-		while (true) {
-			boolean b = false;
-
-			for (Pair<State, State> pair : mergeShifts) {
-				State sourceState = pair.t1;
-				State targetState = pair.t0;
-				System.out.println("Merging shifts from " + sourceState + " to " + targetState);
-				Map<String, Pair<State, Reduce>> sourceMap = subMap(fsm, sourceState);
-				Map<String, Pair<State, Reduce>> targetMap = subMap(fsm, targetState);
-				for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
-					b |= resolve(targetMap, e1.getKey(), e1.getValue());
-			}
-
-			for (Pair<State, State> pair : mergeReduces) {
-				State sourceState = pair.t1;
-				State targetState = pair.t0;
-				System.out.println("Merging reduces from " + sourceState + " to " + targetState);
-				Map<String, Pair<State, Reduce>> sourceMap = subMap(fsm, sourceState);
-				Map<String, Pair<State, Reduce>> targetMap = subMap(fsm, targetState);
-				Reduce reduce = reduces.get(targetState);
-				for (String lookahead : sourceMap.keySet())
-					b |= resolve(targetMap, lookahead, Pair.of(null, reduce));
-			}
-
-			if (!b)
-				break;
-		}
+		BuildLr buildLr = new BuildLr(grammarByEntity.get(rootEntity), Collections.singletonMap("EOF", Pair.of(new State(), null)));
+		state0 = new State();
+		fsm.put(state0, buildLr.next);
 	}
 
 	public Node check(String in) {
@@ -148,7 +126,6 @@ public class EbnfLrParse {
 
 	public Node parse(String in) {
 		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
-		State state0 = transitionByEntity.get(rootEntity).t0;
 
 		System.out.println("shifts/reduces = " + list(fsm));
 		System.out.println("Initial state = " + state0);
@@ -180,10 +157,10 @@ public class EbnfLrParse {
 
 				Node token1 = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
 
-				// Force shift after reduce
 				if (rootEntity.equals(reduce.name) && stack.size() == 0 && token == null)
 					return token1;
 
+				// Force shift after reduce
 				stack.push(Pair.of(token1, state));
 				state = shift(stack, state, token1.entity).t0;
 			}
@@ -195,62 +172,6 @@ public class EbnfLrParse {
 		Pair<State, Reduce> sr = fsm.get(state).get(lookahead);
 		System.out.println(" => " + sr);
 		return sr;
-	}
-
-	private Pair<Integer, State> buildLr(EbnfGrammar eg, State state0) {
-		Map<String, State> shiftMap = subMap(shifts, state0);
-
-		BiConsumer<String, State> newEntity = (entity1, statex) -> {
-			transitionByEntity.put(entity1, Pair.of(state0, statex));
-			for (EbnfGrammar child : eg.children) {
-				Pair<Integer, State> pair = buildLr(child, state0);
-				Integer n = pair.t0;
-				State state = pair.t1;
-				put(reduces, state, new Reduce(entity1, n));
-			}
-		};
-
-		int nTokens;
-		State statex;
-
-		switch (eg.type) {
-		case AND___:
-			nTokens = 0;
-			statex = state0;
-			for (EbnfGrammar child : eg.children) {
-				Pair<Integer, State> pair = buildLr(child, statex);
-				nTokens += pair.t0;
-				statex = pair.t1;
-			}
-			break;
-		case ENTITY:
-			nTokens = 1;
-			statex = shiftMap.computeIfAbsent(eg.content, content -> new State());
-			break;
-		case NAMED_:
-			nTokens = 1;
-			statex = new State();
-			newEntity.accept(eg.content, statex);
-			break;
-		case OR____:
-			String entity1 = "OR" + counter++;
-			nTokens = 1;
-			statex = shiftMap.computeIfAbsent(entity1, content -> new State());
-			newEntity.accept(entity1, statex);
-			break;
-		case STRING:
-			nTokens = 1;
-			statex = shiftMap.computeIfAbsent(eg.content, content -> new State());
-			break;
-		default:
-			throw new RuntimeException("LR parser cannot recognize " + eg.type);
-		}
-
-		return Pair.of(nTokens, statex);
-	}
-
-	private <K0, K1, V> Map<K1, V> subMap(Map<K0, Map<K1, V>> map, K0 k0) {
-		return map.computeIfAbsent(k0, k -> new HashMap<>());
 	}
 
 	// Shift-reduce conflict ends in reduce
@@ -267,17 +188,6 @@ public class EbnfLrParse {
 
 	private boolean isShiftReduceConflict(Pair<State, Reduce> shift, Pair<State, Reduce> reduce) {
 		return shift.t1 == null && reduce.t1 != null;
-	}
-
-	private <K, V> boolean put(Map<K, V> map, K key, V value1) {
-		V value0 = map.get(key);
-		if (value0 == null) {
-			map.put(key, value1);
-			return true;
-		} else if (value0.equals(value1))
-			return false;
-		else
-			throw new RuntimeException("Duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
 	}
 
 	public <K, V> String list(Map<K, V> map) {
