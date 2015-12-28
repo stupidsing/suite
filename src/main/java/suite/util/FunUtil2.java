@@ -38,6 +38,7 @@ public class FunUtil2 {
 				if (!isFirst)
 					return source2.source2(pair);
 				else {
+					isFirst = false;
 					pair.t0 = key;
 					pair.t1 = value;
 					return true;
