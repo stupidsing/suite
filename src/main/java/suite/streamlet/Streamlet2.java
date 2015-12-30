@@ -141,6 +141,11 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return new Streamlet2<>(() -> spawn().mapValue(fun));
 	}
 
+	public Streamlet2<K, V> memoize() {
+		List<Pair<K, V>> list = toList();
+		return streamlet2(() -> Outlet2.from(list));
+	}
+
 	public Pair<K, V> min(Comparator<Pair<K, V>> comparator) {
 		return spawn().min(comparator);
 	}

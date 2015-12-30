@@ -19,11 +19,6 @@ public class IList<T> implements Iterable<T> {
 
 	private static IList<?> end = new IList<>(null, null);
 
-	public IList(T head, IList<T> tail) {
-		this.head = head;
-		this.tail = tail;
-	}
-
 	public static <T> IList<T> end() {
 		@SuppressWarnings("unchecked")
 		IList<T> end = (IList<T>) IList.end;
@@ -40,6 +35,15 @@ public class IList<T> implements Iterable<T> {
 
 	public static <T> IList<T> cons(T t, IList<T> list) {
 		return new IList<>(t, list);
+	}
+
+	public IList(T head, IList<T> tail) {
+		this.head = head;
+		this.tail = tail;
+	}
+
+	public boolean contains(T t) {
+		return !isEmpty() ? head.equals(t) || tail.contains(t) : false;
 	}
 
 	public boolean isEmpty() {

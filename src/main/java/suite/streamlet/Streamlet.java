@@ -136,6 +136,11 @@ public class Streamlet<T> implements Iterable<T> {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
 	}
 
+	public Streamlet<T> memoize() {
+		List<T> list = toList();
+		return streamlet(() -> Outlet.from(list));
+	}
+
 	public T min(Comparator<T> comparator) {
 		return spawn().min(comparator);
 	}

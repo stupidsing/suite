@@ -63,6 +63,16 @@ public class Memoize {
 		};
 	}
 
+	public static <T> Source<T> memoize(Source<T> source) {
+		return new Source<T>() {
+			private T result;
+
+			public synchronized T source() {
+				return result = result != null ? result : source.source();
+			}
+		};
+	}
+
 	public static <T> Source<T> timed(Source<T> source) {
 		return timed(source, 30 * 1000l);
 	}

@@ -4,6 +4,7 @@ import java.io.StringReader;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -14,6 +15,7 @@ import suite.ebnf.EbnfGrammar.EbnfGrammarType;
 import suite.immutable.IList;
 import suite.parser.Lexer;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
@@ -22,6 +24,7 @@ public class EbnfLrParse {
 	private int counter;
 	private String rootEntity;
 	private Map<String, EbnfGrammar> grammarByEntity;
+	private Set<Pair<String, Set<String>>> instances = new HashSet<>();
 	private Map<Pair<String, Set<String>>, BuildLr> buildLrs = new HashMap<>();
 
 	private State state0;
@@ -31,60 +34,9 @@ public class EbnfLrParse {
 		private int nTokens;
 		private Map<String, Pair<State, Reduce>> next;
 
-		private BuildLr(EbnfGrammar eg, Map<String, Pair<State, Reduce>> nextx) {
-			switch (eg.type) {
-			case AND___: {
-				next = nextx;
-				for (EbnfGrammar eg1 : Read.from(eg.children).reverse()) {
-					BuildLr buildLr1 = new BuildLr(eg1, next);
-					nTokens += buildLr1.nTokens;
-					next = buildLr1.next;
-				}
-				break;
-			}
-			case ENTITY: {
-				Pair<String, Set<String>> pair = Pair.of(eg.content, nextx.keySet());
-				BuildLr buildLr1 = buildLrs.computeIfAbsent(pair, pair_ -> new BuildLr(grammarByEntity.get(eg.content), nextx));
-				State state1 = new State();
-				fsm.put(state1, nextx);
-				nTokens = buildLr1.nTokens;
-				next = Read.from(buildLr1.next).cons(eg.content, Pair.of(state1, null)).toMap();
-				break;
-			}
-			case NAMED_: {
-				State nullState = null;
-				Reduce reduce = new Reduce();
-				Map<String, Pair<State, Reduce>> next1 = Read.from(nextx).mapValue(lookahead -> Pair.of(nullState, reduce)).toMap();
-				BuildLr buildLr1 = new BuildLr(eg.children.get(0), next1);
-				reduce.name = eg.content;
-				reduce.n = buildLr1.nTokens;
-				nTokens = 1;
-				next = buildLr1.next;
-				break;
-			}
-			case OR____: {
-				State state1 = new State();
-				fsm.put(state1, nextx);
-				nTokens = 1;
-				next = new HashMap<>();
-				for (EbnfGrammar eg1 : Read.from(eg.children)) {
-					String egn = "OR" + counter++;
-					BuildLr buildLr1 = new BuildLr(new EbnfGrammar(EbnfGrammarType.NAMED_, egn, eg1), nextx);
-					resolve(next, egn, Pair.of(state1, null));
-					resolveAll(next, buildLr1.next);
-				}
-				break;
-			}
-			case STRING: {
-				State state1 = new State();
-				fsm.put(state1, nextx);
-				nTokens = 1;
-				next = kv(eg.content, Pair.of(state1, null));
-				break;
-			}
-			default:
-				throw new RuntimeException("LR parser cannot recognize " + eg.type);
-			}
+		private BuildLr(int nTokens, Map<String, Pair<State, Reduce>> next) {
+			this.nTokens = nTokens;
+			this.next = next;
 		}
 	}
 
@@ -115,9 +67,110 @@ public class EbnfLrParse {
 		this.grammarByEntity = grammarByEntity;
 		this.rootEntity = rootEntity;
 
-		BuildLr buildLr = new BuildLr(grammarByEntity.get(rootEntity), kv("EOF", Pair.of(new State(), null)));
-		state0 = new State();
-		fsm.put(state0, buildLr.next);
+		EbnfGrammar eg = grammarByEntity.get(rootEntity);
+		getLookaheadSet(eg, Read.empty(), IList.end());
+		fsm.put(state0 = new State(), buildLr(eg, kv("EOF", Pair.of(new State(), null))).next);
+	}
+
+	private Streamlet<String> getLookaheadSet(EbnfGrammar eg //
+	, Streamlet<String> lookaheadSetx //
+	, IList<Pair<String, Set<String>>> ps) {
+		Streamlet<String> lookaheadSet0;
+
+		switch (eg.type) {
+		case AND___:
+			if (eg.children.isEmpty())
+				lookaheadSet0 = lookaheadSetx;
+			else {
+				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
+				Streamlet<String> lookaheadSet1 = getLookaheadSet(tail, lookaheadSetx, ps);
+				lookaheadSet0 = getLookaheadSet(eg.children.get(0), lookaheadSet1, ps);
+			}
+			break;
+		case ENTITY:
+			Pair<String, Set<String>> p = Pair.of(eg.content, lookaheadSetx.toSet());
+			instances.add(p);
+			Streamlet<String> st = !ps.contains(p) //
+					? getLookaheadSet(grammarByEntity.get(eg.content), lookaheadSetx, IList.cons(p, ps)) //
+					: Read.empty();
+			lookaheadSet0 = st.cons(eg.content);
+			break;
+		case NAMED_:
+			lookaheadSet0 = getLookaheadSet(eg.children.get(0), lookaheadSetx, ps);
+			break;
+		case OR____:
+			Streamlet<String> lookaheadSetx1 = lookaheadSetx.memoize();
+			lookaheadSet0 = Read.from(eg.children).concatMap(eg1 -> getLookaheadSet(eg1, lookaheadSetx1, ps));
+			break;
+		case STRING:
+			lookaheadSet0 = Read.from(eg.content);
+			break;
+		default:
+			throw new RuntimeException("LR parser cannot recognize " + eg.type);
+		}
+
+		return lookaheadSet0;
+	}
+
+	private BuildLr buildLr(EbnfGrammar eg, Map<String, Pair<State, Reduce>> nextx) {
+		BuildLr buildLr;
+
+		switch (eg.type) {
+		case AND___: {
+			int nTokens = 0;
+			Map<String, Pair<State, Reduce>> next;
+			next = nextx;
+			for (EbnfGrammar eg1 : Read.from(eg.children).reverse()) {
+				BuildLr buildLr1 = buildLr(eg1, next);
+				nTokens += buildLr1.nTokens;
+				next = buildLr1.next;
+			}
+			buildLr = new BuildLr(nTokens, next);
+			break;
+		}
+		case ENTITY: {
+			Pair<String, Set<String>> pair = Pair.of(eg.content, nextx.keySet());
+			BuildLr buildLr1 = buildLrs.computeIfAbsent(pair, pair_ -> buildLr(grammarByEntity.get(eg.content), nextx));
+			State state1 = new State();
+			fsm.put(state1, nextx);
+			buildLr = new BuildLr(buildLr1.nTokens, Read.from(buildLr1.next).cons(eg.content, Pair.of(state1, null)).toMap());
+			break;
+		}
+		case NAMED_: {
+			State nullState = null;
+			Reduce reduce = new Reduce();
+			Map<String, Pair<State, Reduce>> next1 = Read.from(nextx).mapValue(lookahead -> Pair.of(nullState, reduce)).toMap();
+			BuildLr buildLr1 = buildLr(eg.children.get(0), next1);
+			reduce.name = eg.content;
+			reduce.n = buildLr1.nTokens;
+			buildLr = new BuildLr(1, buildLr1.next);
+			break;
+		}
+		case OR____: {
+			State state1 = new State();
+			fsm.put(state1, nextx);
+			int nTokens = 1;
+			Map<String, Pair<State, Reduce>> next = new HashMap<>();
+			for (EbnfGrammar eg1 : Read.from(eg.children)) {
+				String egn = "OR" + counter++;
+				BuildLr buildLr1 = buildLr(new EbnfGrammar(EbnfGrammarType.NAMED_, egn, eg1), nextx);
+				resolve(next, egn, Pair.of(state1, null));
+				resolveAll(next, buildLr1.next);
+			}
+			buildLr = new BuildLr(nTokens, next);
+			break;
+		}
+		case STRING: {
+			State state1 = new State();
+			fsm.put(state1, nextx);
+			buildLr = new BuildLr(1, kv(eg.content, Pair.of(state1, null)));
+			break;
+		}
+		default:
+			throw new RuntimeException("LR parser cannot recognize " + eg.type);
+		}
+
+		return buildLr;
 	}
 
 	public Node check(String in) {
