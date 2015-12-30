@@ -137,7 +137,9 @@ public class EbnfLrParse {
 			BuildLr buildLr1 = buildLrs.computeIfAbsent(pair, pair_ -> buildLr(grammarByEntity.get(eg.content), nextx));
 			State state1 = new State();
 			fsm.put(state1, nextx);
-			buildLr = new BuildLr(buildLr1.nTokens, Read.from(buildLr1.next).cons(eg.content, Pair.of(state1, null)).toMap());
+			Map<String, Pair<State, Reduce>> next = kv(eg.content, Pair.of(state1, null));
+			resolveAll(next, buildLr1.next);
+			buildLr = new BuildLr(buildLr1.nTokens, next);
 			break;
 		}
 		case NAMED_: {
