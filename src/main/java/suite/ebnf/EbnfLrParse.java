@@ -68,48 +68,46 @@ public class EbnfLrParse {
 		this.rootEntity = rootEntity;
 
 		EbnfGrammar eg = grammarByEntity.get(rootEntity);
-		getLookaheadSet(eg, Read.empty(), IList.end());
+		getls(eg, Read.empty(), IList.end());
 		fsm.put(state0 = new State(), buildLr(eg, kv("EOF", Pair.of(new State(), null))).next);
 	}
 
-	private Streamlet<String> getLookaheadSet(EbnfGrammar eg //
-	, Streamlet<String> lookaheadSetx //
-	, IList<Pair<String, Set<String>>> ps) {
-		Streamlet<String> lookaheadSet0;
+	private Streamlet<String> getls(EbnfGrammar eg, Streamlet<String> lsx, IList<Pair<String, Set<String>>> ps) {
+		Streamlet<String> ls0;
 
 		switch (eg.type) {
 		case AND___:
 			if (eg.children.isEmpty())
-				lookaheadSet0 = lookaheadSetx;
+				ls0 = lsx;
 			else {
 				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
-				Streamlet<String> lookaheadSet1 = getLookaheadSet(tail, lookaheadSetx, ps);
-				lookaheadSet0 = getLookaheadSet(eg.children.get(0), lookaheadSet1, ps);
+				Streamlet<String> ls1 = getls(tail, lsx, ps);
+				ls0 = getls(eg.children.get(0), ls1, ps);
 			}
 			break;
 		case ENTITY:
-			Pair<String, Set<String>> p = Pair.of(eg.content, lookaheadSetx.toSet());
+			Pair<String, Set<String>> p = Pair.of(eg.content, lsx.toSet());
 			instances.add(p);
 			Streamlet<String> st = !ps.contains(p) //
-					? getLookaheadSet(grammarByEntity.get(eg.content), lookaheadSetx, IList.cons(p, ps)) //
+					? getls(grammarByEntity.get(eg.content), lsx, IList.cons(p, ps)) //
 					: Read.empty();
-			lookaheadSet0 = st.cons(eg.content);
+			ls0 = st.cons(eg.content);
 			break;
 		case NAMED_:
-			lookaheadSet0 = getLookaheadSet(eg.children.get(0), lookaheadSetx, ps);
+			ls0 = getls(eg.children.get(0), lsx, ps);
 			break;
 		case OR____:
-			Streamlet<String> lookaheadSetx1 = lookaheadSetx.memoize();
-			lookaheadSet0 = Read.from(eg.children).concatMap(eg1 -> getLookaheadSet(eg1, lookaheadSetx1, ps));
+			Streamlet<String> lsx1 = lsx.memoize();
+			ls0 = Read.from(eg.children).concatMap(eg1 -> getls(eg1, lsx1, ps));
 			break;
 		case STRING:
-			lookaheadSet0 = Read.from(eg.content);
+			ls0 = Read.from(eg.content);
 			break;
 		default:
 			throw new RuntimeException("LR parser cannot recognize " + eg.type);
 		}
 
-		return lookaheadSet0;
+		return ls0;
 	}
 
 	private BuildLr buildLr(EbnfGrammar eg, Map<String, Pair<State, Reduce>> nextx) {
