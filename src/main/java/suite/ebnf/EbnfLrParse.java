@@ -69,6 +69,13 @@ public class EbnfLrParse {
 
 		EbnfGrammar eg = grammarByEntity.get(rootEntity);
 		getLookaheadSet(eg, Read.empty(), IList.end());
+
+		Pair<State, Reduce> pair = Pair.of(null, null);
+		Read.from2(instances).sink((entity, lookaheads) -> {
+			Map<String, Pair<State, Reduce>> next = Read.from(lookaheads).map2(l -> l, l -> pair).toMap();
+			buildLr(grammarByEntity.get(entity), next);
+		});
+
 		fsm.put(state0 = new State(), buildLr(eg, kv("EOF", Pair.of(new State(), null))).next);
 	}
 
