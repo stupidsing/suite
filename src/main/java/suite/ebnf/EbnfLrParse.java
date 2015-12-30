@@ -68,11 +68,11 @@ public class EbnfLrParse {
 		this.rootEntity = rootEntity;
 
 		EbnfGrammar eg = grammarByEntity.get(rootEntity);
-		getls(eg, Read.empty(), IList.end());
+		getLookaheadSet(eg, Read.empty(), IList.end());
 		fsm.put(state0 = new State(), buildLr(eg, kv("EOF", Pair.of(new State(), null))).next);
 	}
 
-	private Streamlet<String> getls(EbnfGrammar eg, Streamlet<String> lsx, IList<Pair<String, Set<String>>> ps) {
+	private Streamlet<String> getLookaheadSet(EbnfGrammar eg, Streamlet<String> lsx, IList<Pair<String, Set<String>>> ps) {
 		Streamlet<String> ls0;
 
 		switch (eg.type) {
@@ -81,24 +81,24 @@ public class EbnfLrParse {
 				ls0 = lsx;
 			else {
 				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
-				Streamlet<String> ls1 = getls(tail, lsx, ps);
-				ls0 = getls(eg.children.get(0), ls1, ps);
+				Streamlet<String> ls1 = getLookaheadSet(tail, lsx, ps);
+				ls0 = getLookaheadSet(eg.children.get(0), ls1, ps);
 			}
 			break;
 		case ENTITY:
 			Pair<String, Set<String>> p = Pair.of(eg.content, lsx.toSet());
 			instances.add(p);
 			Streamlet<String> st = !ps.contains(p) //
-					? getls(grammarByEntity.get(eg.content), lsx, IList.cons(p, ps)) //
+					? getLookaheadSet(grammarByEntity.get(eg.content), lsx, IList.cons(p, ps)) //
 					: Read.empty();
 			ls0 = st.cons(eg.content);
 			break;
 		case NAMED_:
-			ls0 = getls(eg.children.get(0), lsx, ps);
+			ls0 = getLookaheadSet(eg.children.get(0), lsx, ps);
 			break;
 		case OR____:
 			Streamlet<String> lsx1 = lsx.memoize();
-			ls0 = Read.from(eg.children).concatMap(eg1 -> getls(eg1, lsx1, ps));
+			ls0 = Read.from(eg.children).concatMap(eg1 -> getLookaheadSet(eg1, lsx1, ps));
 			break;
 		case STRING:
 			ls0 = Read.from(eg.content);
