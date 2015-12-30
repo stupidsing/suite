@@ -77,13 +77,12 @@ public class EbnfLrParse {
 
 		switch (eg.type) {
 		case AND___:
-			if (eg.children.isEmpty())
-				ls0 = lsx;
-			else {
+			if (!eg.children.isEmpty()) {
 				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
 				Streamlet<String> ls1 = getLookaheadSet(tail, lsx, ps);
 				ls0 = getLookaheadSet(eg.children.get(0), ls1, ps);
-			}
+			} else
+				ls0 = lsx;
 			break;
 		case ENTITY:
 			Pair<String, Set<String>> p = Pair.of(eg.content, lsx.toSet());
