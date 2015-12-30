@@ -143,9 +143,9 @@ public class EbnfLrParse {
 			break;
 		}
 		case NAMED_: {
-			State nullState = null;
 			Reduce reduce = new Reduce();
-			Map<String, Pair<State, Reduce>> next1 = Read.from(nextx).mapValue(lookahead -> Pair.of(nullState, reduce)).toMap();
+			Map<String, Pair<State, Reduce>> next1 = new HashMap<>();
+			resolveAllReduces(next1, nextx, reduce);
 			BuildLr buildLr1 = buildLr(eg.children.get(0), next1);
 			reduce.name = eg.content;
 			reduce.n = buildLr1.nTokens;
@@ -231,6 +231,15 @@ public class EbnfLrParse {
 		Pair<State, Reduce> sr = fsm.get(state).get(lookahead);
 		System.out.println(" => " + sr);
 		return sr;
+	}
+
+	private boolean resolveAllReduces(Map<String, Pair<State, Reduce>> targetMap, Map<String, Pair<State, Reduce>> sourceMap,
+			Reduce reduce) {
+		State nullState = null;
+		boolean b = false;
+		for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
+			b |= resolve(targetMap, e1.getKey(), Pair.of(nullState, reduce));
+		return b;
 	}
 
 	private boolean resolveAll(Map<String, Pair<State, Reduce>> targetMap, Map<String, Pair<State, Reduce>> sourceMap) {
