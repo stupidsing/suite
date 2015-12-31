@@ -122,8 +122,7 @@ public class EbnfLrParse {
 		switch (eg.type) {
 		case AND___: {
 			int nTokens = 0;
-			Map<String, Pair<State, Reduce>> next;
-			next = nextx;
+			Map<String, Pair<State, Reduce>> next = nextx;
 			for (EbnfGrammar eg1 : Read.from(eg.children).reverse()) {
 				BuildLr buildLr1 = buildLr(eg1, next);
 				nTokens += buildLr1.nTokens;
