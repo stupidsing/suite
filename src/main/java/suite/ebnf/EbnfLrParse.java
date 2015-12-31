@@ -68,7 +68,7 @@ public class EbnfLrParse {
 		this.rootEntity = rootEntity;
 
 		EbnfGrammar eg = grammarByEntity.get(rootEntity);
-		getLookaheadSet(eg, Read.empty(), IList.end());
+		readLookaheadSet(eg, Read.empty(), IList.end());
 
 		Pair<State, Reduce> pair = Pair.of(null, null);
 		Read.from2(instances).sink((entity, lookaheads) -> {
@@ -79,15 +79,15 @@ public class EbnfLrParse {
 		fsm.put(state0 = new State(), buildLr(eg, kv("EOF", Pair.of(new State(), null))).next);
 	}
 
-	private Streamlet<String> getLookaheadSet(EbnfGrammar eg, Streamlet<String> lsx, IList<Pair<String, Set<String>>> ps) {
+	private Streamlet<String> readLookaheadSet(EbnfGrammar eg, Streamlet<String> lsx, IList<Pair<String, Set<String>>> ps) {
 		Streamlet<String> ls0;
 
 		switch (eg.type) {
 		case AND___:
 			if (!eg.children.isEmpty()) {
 				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
-				Streamlet<String> ls1 = getLookaheadSet(tail, lsx, ps);
-				ls0 = getLookaheadSet(eg.children.get(0), ls1, ps);
+				Streamlet<String> ls1 = readLookaheadSet(tail, lsx, ps);
+				ls0 = readLookaheadSet(eg.children.get(0), ls1, ps);
 			} else
 				ls0 = lsx;
 			break;
@@ -95,16 +95,16 @@ public class EbnfLrParse {
 			Pair<String, Set<String>> p = Pair.of(eg.content, lsx.toSet());
 			instances.add(p);
 			Streamlet<String> st = !ps.contains(p) //
-					? getLookaheadSet(grammarByEntity.get(eg.content), lsx, IList.cons(p, ps)) //
+					? readLookaheadSet(grammarByEntity.get(eg.content), lsx, IList.cons(p, ps)) //
 					: Read.empty();
 			ls0 = st.cons(eg.content);
 			break;
 		case NAMED_:
-			ls0 = getLookaheadSet(eg.children.get(0), lsx, ps);
+			ls0 = readLookaheadSet(eg.children.get(0), lsx, ps);
 			break;
 		case OR____:
 			Streamlet<String> lsx1 = lsx.memoize();
-			ls0 = Read.from(eg.children).concatMap(eg1 -> getLookaheadSet(eg1, lsx1, ps));
+			ls0 = Read.from(eg.children).concatMap(eg1 -> readLookaheadSet(eg1, lsx1, ps));
 			break;
 		case STRING:
 			ls0 = Read.from(eg.content);
