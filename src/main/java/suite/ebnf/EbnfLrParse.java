@@ -123,9 +123,9 @@ public class EbnfLrParse {
 		case AND___: {
 			if (!eg.children.isEmpty()) {
 				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
-				BuildLr buildLr0 = buildLr(tail, nextx);
-				BuildLr buildLr1 = buildLr(eg.children.get(0), buildLr0.next);
-				buildLr = new BuildLr(buildLr0.nTokens + buildLr1.nTokens, buildLr1.next);
+				BuildLr buildLr1 = buildLr(tail, nextx);
+				BuildLr buildLr0 = buildLr(eg.children.get(0), buildLr1.next);
+				buildLr = new BuildLr(buildLr1.nTokens + buildLr0.nTokens, buildLr0.next);
 			} else
 				buildLr = new BuildLr(0, nextx);
 			break;
