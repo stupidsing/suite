@@ -121,14 +121,13 @@ public class EbnfLrParse {
 
 		switch (eg.type) {
 		case AND___: {
-			int nTokens = 0;
-			Map<String, Pair<State, Reduce>> next = nextx;
-			for (EbnfGrammar eg1 : Read.from(eg.children).reverse()) {
-				BuildLr buildLr1 = buildLr(eg1, next);
-				nTokens += buildLr1.nTokens;
-				next = buildLr1.next;
-			}
-			buildLr = new BuildLr(nTokens, next);
+			if (!eg.children.isEmpty()) {
+				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
+				BuildLr buildLr0 = buildLr(tail, nextx);
+				BuildLr buildLr1 = buildLr(eg.children.get(0), buildLr0.next);
+				buildLr = new BuildLr(buildLr0.nTokens + buildLr1.nTokens, buildLr1.next);
+			} else
+				buildLr = new BuildLr(0, nextx);
 			break;
 		}
 		case ENTITY: {
