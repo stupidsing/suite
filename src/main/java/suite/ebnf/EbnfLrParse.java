@@ -68,10 +68,12 @@ public class EbnfLrParse {
 	}
 
 	private BuildLr buildLr(IList<Pair<String, Set<String>>> ps, EbnfGrammar eg, Map<String, Pair<State, Reduce>> nextx) {
+		Map<String, Pair<State, Reduce>> next;
+		State state1;
 		BuildLr buildLr;
 
 		switch (eg.type) {
-		case AND___: {
+		case AND___:
 			if (!eg.children.isEmpty()) {
 				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
 				BuildLr buildLr1 = buildLr(ps, tail, nextx);
@@ -80,29 +82,26 @@ public class EbnfLrParse {
 			} else
 				buildLr = new BuildLr(0, nextx);
 			break;
-		}
-		case ENTITY: {
-			State state1 = newState(nextx);
-			Map<String, Pair<State, Reduce>> next = kv(eg.content, Pair.of(state1, null));
+		case ENTITY:
+			state1 = newState(nextx);
+			next = kv(eg.content, Pair.of(state1, null));
 			Pair<String, Set<String>> p = Pair.of(eg.content, nextx.keySet());
 			if (!ps.contains(p))
 				resolveAll(next, buildLr(IList.cons(p, ps), grammarByEntity.get(eg.content), nextx).next);
 			buildLr = new BuildLr(1, next);
 			break;
-		}
-		case NAMED_: {
+		case NAMED_:
 			Reduce reduce = new Reduce();
-			Map<String, Pair<State, Reduce>> next1 = new HashMap<>();
-			resolveAllReduces(next1, nextx, reduce);
-			BuildLr buildLr1 = buildLr(ps, eg.children.get(0), next1);
+			next = new HashMap<>();
+			resolveAllReduces(next, nextx, reduce);
+			BuildLr buildLr1 = buildLr(ps, eg.children.get(0), next);
 			reduce.name = eg.content;
 			reduce.n = buildLr1.nTokens;
 			buildLr = new BuildLr(1, buildLr1.next);
 			break;
-		}
-		case OR____: {
-			State state1 = newState(nextx);
-			Map<String, Pair<State, Reduce>> next = new HashMap<>();
+		case OR____:
+			state1 = newState(nextx);
+			next = new HashMap<>();
 			for (EbnfGrammar eg1 : Read.from(eg.children)) {
 				String egn = "OR" + counter++;
 				resolve(next, egn, Pair.of(state1, null));
@@ -110,11 +109,9 @@ public class EbnfLrParse {
 			}
 			buildLr = new BuildLr(1, next);
 			break;
-		}
-		case STRING: {
+		case STRING:
 			buildLr = new BuildLr(1, kv(eg.content, Pair.of(newState(nextx), null)));
 			break;
-		}
 		default:
 			throw new RuntimeException("LR parser cannot recognize " + eg.type);
 		}
