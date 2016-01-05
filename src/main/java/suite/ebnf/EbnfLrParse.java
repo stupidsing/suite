@@ -24,16 +24,20 @@ public class EbnfLrParse {
 	private Map<String, EbnfGrammar> grammarByEntity;
 
 	private State state0;
-	private Map<State, Map<String, Pair<State, Reduce>>> fsm = new HashMap<>();
+	private Map<State, Transition> fsm = new HashMap<>();
 
 	private class BuildLr {
 		private int nTokens;
-		private Map<String, Pair<State, Reduce>> next;
+		private Transition next;
 
-		private BuildLr(int nTokens, Map<String, Pair<State, Reduce>> next) {
+		private BuildLr(int nTokens, Transition next) {
 			this.nTokens = nTokens;
 			this.next = next;
 		}
+	}
+
+	private class Transition extends HashMap<String, Pair<State, Reduce>> {
+		private static final long serialVersionUID = 1l;
 	}
 
 	private class Reduce {
@@ -67,8 +71,8 @@ public class EbnfLrParse {
 		state0 = newState(buildLr(IList.end(), eg, kv("EOF", Pair.of(new State(), null))).next);
 	}
 
-	private BuildLr buildLr(IList<Pair<String, Set<String>>> ps, EbnfGrammar eg, Map<String, Pair<State, Reduce>> nextx) {
-		Map<String, Pair<State, Reduce>> next;
+	private BuildLr buildLr(IList<Pair<String, Set<String>>> ps, EbnfGrammar eg, Transition nextx) {
+		Transition next;
 		BuildLr buildLr;
 
 		switch (eg.type) {
@@ -92,7 +96,7 @@ public class EbnfLrParse {
 			break;
 		case NAMED_:
 			Reduce reduce = new Reduce();
-			next = new HashMap<>();
+			next = new Transition();
 			resolveAllReduces(next, nextx, reduce);
 			BuildLr buildLr1 = buildLr(ps, eg.children.get(0), next);
 			reduce.name = eg.content;
@@ -101,7 +105,7 @@ public class EbnfLrParse {
 			break;
 		case OR____:
 			State state1 = newState(nextx);
-			next = new HashMap<>();
+			next = new Transition();
 			for (EbnfGrammar eg1 : Read.from(eg.children)) {
 				String egn = "OR" + counter++;
 				resolve(next, egn, Pair.of(state1, null));
@@ -119,7 +123,7 @@ public class EbnfLrParse {
 		return buildLr;
 	}
 
-	private State newState(Map<String, Pair<State, Reduce>> nextx) {
+	private State newState(Transition nextx) {
 		State state = new State();
 		fsm.put(state, nextx);
 		return state;
@@ -179,8 +183,7 @@ public class EbnfLrParse {
 		return sr;
 	}
 
-	private boolean resolveAllReduces(Map<String, Pair<State, Reduce>> targetMap, Map<String, Pair<State, Reduce>> sourceMap,
-			Reduce reduce) {
+	private boolean resolveAllReduces(Transition targetMap, Transition sourceMap, Reduce reduce) {
 		State nullState = null;
 		boolean b = false;
 		for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
@@ -188,7 +191,7 @@ public class EbnfLrParse {
 		return b;
 	}
 
-	private boolean resolveAll(Map<String, Pair<State, Reduce>> targetMap, Map<String, Pair<State, Reduce>> sourceMap) {
+	private boolean resolveAll(Transition targetMap, Transition sourceMap) {
 		boolean b = false;
 		for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
 			b |= resolve(targetMap, e1.getKey(), e1.getValue());
@@ -196,7 +199,7 @@ public class EbnfLrParse {
 	}
 
 	// Shift-reduce conflict ends in reduce
-	private boolean resolve(Map<String, Pair<State, Reduce>> map, String key, Pair<State, Reduce> value1) {
+	private boolean resolve(Transition map, String key, Pair<State, Reduce> value1) {
 		Pair<State, Reduce> value0 = map.get(key);
 		if (value0 == null || isShiftReduceConflict(value0, value1)) {
 			map.put(key, value1);
@@ -211,10 +214,10 @@ public class EbnfLrParse {
 		return shift.t1 == null && reduce.t1 != null;
 	}
 
-	private <K, V> Map<K, V> kv(K k, V v) {
-		Map<K, V> m = new HashMap<>();
-		m.put(k, v);
-		return m;
+	private Transition kv(String k, Pair<State, Reduce> v) {
+		Transition transition = new Transition();
+		transition.put(k, v);
+		return transition;
 	}
 
 	private <K, V> String list(Map<K, V> map) {
