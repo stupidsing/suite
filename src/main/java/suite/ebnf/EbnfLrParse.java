@@ -84,8 +84,10 @@ public class EbnfLrParse {
 		case ENTITY:
 			next = kv(eg.content, Pair.of(newState(nextx), null));
 			Pair<String, Set<String>> p = Pair.of(eg.content, nextx.keySet());
-			if (!ps.contains(p))
-				resolveAll(next, buildLr(IList.cons(p, ps), grammarByEntity.get(eg.content), nextx).next);
+			if (!ps.contains(p)) {
+				EbnfGrammar eg1 = grammarByEntity.get(eg.content);
+				resolveAll(next, buildLr(IList.cons(p, ps), eg1, nextx).next);
+			}
 			buildLr = new BuildLr(1, next);
 			break;
 		case NAMED_:
