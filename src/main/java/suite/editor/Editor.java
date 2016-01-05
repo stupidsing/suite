@@ -10,7 +10,7 @@ public class Editor {
 	}
 
 	public void open() {
-		new EditorController().newWindow(null);
+		new EditorController().newWindow();
 	}
 
 }

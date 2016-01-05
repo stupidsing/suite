@@ -1,6 +1,5 @@
 package suite.editor;
 
-import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,14 +9,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
-import javax.swing.text.JTextComponent;
 
 import suite.Suite;
 import suite.node.Node;
@@ -32,23 +29,35 @@ import suite.util.Util;
 public class EditorController {
 
 	private Thread runThread;
+	private EditorModel model;
+	private EditorView view;
 
-	public void bottom(EditorView view) {
-		toggleVisible(view, view.getBottomToolbar());
+	public EditorController() {
 	}
 
-	public void close(EditorView view) {
-		confirmSave(view, view.getFrame()::dispose);
+	public void _init(EditorModel model, EditorView view, EditorController controller) {
+		this.model = model;
+		this.view = view;
+
+		model.getModifiedChanged().register(b -> view.repaint());
 	}
 
-	public void copy(EditorView view, boolean isAppend) {
+	public void bottom() {
+		view.toggleBottom();
+	}
+
+	public void close() {
+		confirmSave(view.getFrame()::dispose);
+	}
+
+	public void copy(boolean isAppend) {
 		ClipboardUtil clipboardUtil = new ClipboardUtil();
 		String selectedText = view.getEditor().getSelectedText();
 		if (selectedText != null)
 			clipboardUtil.setClipboardText((isAppend ? clipboardUtil.getClipboardText() : "") + selectedText);
 	}
 
-	public void downToSearchList(EditorView view) {
+	public void downToSearchList() {
 		JList<String> leftList = view.getLeftList();
 		DefaultListModel<String> listModel = view.getListModel();
 
@@ -58,8 +67,8 @@ public class EditorController {
 			leftList.setSelectedValue(listModel.get(0), true);
 	}
 
-	public void evaluate(EditorView view) {
-		run(view, text -> {
+	public void evaluate() {
+		run(text -> {
 			String result;
 			try {
 				Node node = Suite.evaluateFun(text, true);
@@ -71,8 +80,8 @@ public class EditorController {
 		});
 	}
 
-	public void evaluateType(EditorView view) {
-		run(view, text -> {
+	public void evaluateType() {
+		run(text -> {
 			String result;
 			try {
 				Node node = Suite.evaluateFunType(text);
@@ -84,13 +93,13 @@ public class EditorController {
 		});
 	}
 
-	public void format(EditorView view) {
+	public void format() {
 		JEditorPane editor = view.getEditor();
 		Node node = Suite.parse(editor.getText());
 		editor.setText(new PrettyPrinter().prettyPrint(node));
 	}
 
-	public void funFilter(EditorView view) {
+	public void funFilter() {
 		boolean isDo = false;
 		JFrame frame = view.getFrame();
 		JEditorPane editor = view.getEditor();
@@ -101,37 +110,42 @@ public class EditorController {
 		editor.setText(Suite.evaluateFilterFun(fun, editor.getText(), false, false));
 	}
 
-	public void left(EditorView view) {
-		toggleVisible(view, view.getLeftToolbar(), view.getSearchTextField());
+	public void left() {
+		view.toggleLeft();
 	}
 
-	public void newFile(EditorView view) {
-		JEditorPane editor = view.getEditor();
-		editor.setText("");
-		editor.requestFocusInWindow();
+	public void newFile() {
+		confirmSave(() -> {
+			JEditorPane editor = view.getEditor();
+			editor.setText("");
+			editor.requestFocusInWindow();
 
-		view.getFilenameTextField().setText("pad");
-		view.setModified(false);
-	}
-
-	public void newWindow(EditorView view) {
-		EditorController controller = new EditorController();
-
-		EditorView view1 = new EditorView();
-		view1.setController(controller);
-		view1.run(Editor.class.getSimpleName());
-	}
-
-	public void open(EditorView view) {
-		confirmSave(view, () -> {
-			File dir = new File(view.getFilenameTextField().getText()).getParentFile();
-			JFileChooser fileChooser = dir != null ? new JFileChooser(dir) : new JFileChooser();
-			if (fileChooser.showOpenDialog(view.getFrame()) == JFileChooser.APPROVE_OPTION)
-				load(view, fileChooser.getSelectedFile().getPath());
+			model.changeFilename("pad");
+			model.changeModified(false);
 		});
 	}
 
-	public void paste(EditorView view) {
+	public void newWindow() {
+		EditorModel model = new EditorModel();
+		EditorController controller = new EditorController();
+		EditorView view1 = new EditorView();
+
+		view1._init(model, view1, controller);
+		controller._init(model, view1, controller);
+
+		view1.run(controller, Editor.class.getSimpleName());
+	}
+
+	public void open() {
+		confirmSave(() -> {
+			File dir = new File(model.getFilename()).getParentFile();
+			JFileChooser fileChooser = dir != null ? new JFileChooser(dir) : new JFileChooser();
+			if (fileChooser.showOpenDialog(view.getFrame()) == JFileChooser.APPROVE_OPTION)
+				load(fileChooser.getSelectedFile().getPath());
+		});
+	}
+
+	public void paste() {
 		JEditorPane editor = view.getEditor();
 		String orig = editor.getText();
 		String pasteText = new ClipboardUtil().getClipboardText();
@@ -144,28 +158,28 @@ public class EditorController {
 		}
 	}
 
-	public void save(EditorView view) {
-		try (OutputStream os = FileUtil.out(view.getFilenameTextField().getText())) {
+	public void save() {
+		try (OutputStream os = FileUtil.out(model.getFilename())) {
 			os.write(view.getEditor().getText().getBytes(FileUtil.charset));
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-		view.setModified(false);
+		model.changeModified(false);
 	}
 
-	public void right(EditorView view) {
-		toggleVisible(view, view.getRightToolbar());
+	public void right() {
+		view.toggleRight();
 	}
 
-	public void searchFor(EditorView view) {
-		focus(view.getSearchTextField());
+	public void searchFor() {
+		view.focusSearchTextField();
 	}
 
-	public void searchFiles(EditorView view) {
+	public void searchFiles() {
 		DefaultListModel<String> listModel = view.getListModel();
 		listModel.clear();
 
-		String text = view.getSearchTextField().getText();
+		String text = model.getSearchText();
 
 		if (!text.isEmpty()) {
 			Streamlet<String> files = FileUtil.findPaths(Paths.get(".")) //
@@ -177,15 +191,15 @@ public class EditorController {
 		}
 	}
 
-	public void selectList(EditorView view) {
-		load(view, view.getLeftList().getSelectedValue());
+	public void selectList() {
+		load(view.getLeftList().getSelectedValue());
 	}
 
-	public void top(EditorView view) {
-		toggleVisible(view, view.getFilenameTextField());
+	public void top() {
+		view.toggleTop();
 	}
 
-	public void unixFilter(EditorView view) {
+	public void unixFilter() {
 		JFrame frame = view.getFrame();
 		JEditorPane editor = view.getEditor();
 
@@ -207,10 +221,11 @@ public class EditorController {
 		}
 	}
 
-	private void load(EditorView view, String filename) {
+	private void load(String filename) {
 		try {
+			model.changeFilename(filename);
+
 			String text = FileUtil.read(filename);
-			view.getFilenameTextField().setText(filename);
 
 			JEditorPane editor = view.getEditor();
 			editor.setText(text);
@@ -219,48 +234,17 @@ public class EditorController {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-		view.setModified(false);
+		model.changeModified(false);
 	}
 
-	private boolean toggleVisible(EditorView view, JComponent component) {
-		return toggleVisible(view, component, component);
-	}
-
-	private boolean toggleVisible(EditorView view, JComponent component, JComponent focusOn) {
-		boolean visible = !component.isVisible();
-		component.setVisible(visible);
-		view.refresh();
-		if (visible)
-			if (focusOn instanceof JTextComponent)
-				focus((JTextComponent) focusOn);
-			else
-				focusOn.requestFocusInWindow();
-		else if (isOwningFocus(component))
-			view.getEditor().requestFocusInWindow();
-		return visible;
-	}
-
-	private void focus(JTextComponent component) {
-		component.selectAll();
-		component.requestFocusInWindow();
-	}
-
-	private boolean isOwningFocus(Component component) {
-		boolean isFocusOwner = component.isFocusOwner();
-		if (component instanceof JComponent)
-			for (Component c : ((JComponent) component).getComponents())
-				isFocusOwner |= isOwningFocus(c);
-		return isFocusOwner;
-	}
-
-	private void confirmSave(EditorView view, Runnable action) {
+	private void confirmSave(Runnable action) {
 		JFrame frame = view.getFrame();
-		if (view.isModified())
+		if (model.getIsModified())
 			switch (JOptionPane.showConfirmDialog(frame //
 					, "Would you like to save your changes?", "Close" //
 					, JOptionPane.YES_NO_CANCEL_OPTION)) {
 			case JOptionPane.YES_OPTION:
-				save(view);
+				save();
 			case JOptionPane.NO_OPTION:
 				action.run();
 				break;
@@ -270,7 +254,7 @@ public class EditorController {
 			action.run();
 	}
 
-	private void run(EditorView view, Fun<String, String> fun) {
+	private void run(Fun<String, String> fun) {
 		JEditorPane editor = view.getEditor();
 		String selectedText = editor.getSelectedText();
 		String text = selectedText != null ? selectedText : editor.getText();

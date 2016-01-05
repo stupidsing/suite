@@ -21,9 +21,7 @@ public class EditorPane extends JEditorPane {
 
 	private static final long serialVersionUID = 1l;
 
-	private boolean isModified = false;
-
-	public EditorPane() {
+	public EditorPane(EditorModel model) {
 		Document document = getDocument();
 		UndoManager undoManager = new UndoManager();
 
@@ -56,7 +54,7 @@ public class EditorPane extends JEditorPane {
 		bind(KeyEvent.VK_Z, Event.CTRL_MASK).register(event -> undoManager.undo());
 
 		document.addUndoableEditListener(event -> undoManager.addEdit(event.getEdit()));
-		Listen.documentChanged(document).register(event -> setModified(true));
+		Listen.documentChanged(document).register(event -> model.changeModified(true));
 	}
 
 	private void replaceLines(Fun<Segment, String> fun) throws BadLocationException {
@@ -97,14 +95,6 @@ public class EditorPane extends JEditorPane {
 		document.insertString(start, s, null);
 		setSelectionStart(start);
 		setSelectionEnd(start + s.length());
-	}
-
-	public boolean isModified() {
-		return isModified;
-	}
-
-	public void setModified(boolean isModified) {
-		this.isModified = isModified;
 	}
 
 }

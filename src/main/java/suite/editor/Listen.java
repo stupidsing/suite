@@ -17,6 +17,7 @@ import javax.swing.JComponent;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 
 import suite.streamlet.Reactive;
 import suite.util.FunUtil.Sink;
@@ -57,6 +58,10 @@ public class Listen {
 			}
 		});
 		return reactive;
+	}
+
+	public static Reactive<DocumentEvent> documentChanged(JTextComponent textComponent) {
+		return documentChanged(textComponent.getDocument());
 	}
 
 	public static Reactive<DocumentEvent> documentChanged(Document document) {
