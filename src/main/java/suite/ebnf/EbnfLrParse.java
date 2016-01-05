@@ -2,8 +2,12 @@ package suite.ebnf;
 
 import java.io.StringReader;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -23,8 +27,21 @@ public class EbnfLrParse {
 	private String rootEntity;
 	private Map<String, EbnfGrammar> grammarByEntity;
 
+	private Map<Pair<String, Set<String>>, Transition> transitions = new HashMap<>();
+	private List<Source<Boolean>> merges = new ArrayList<>();
+
 	private State state0;
 	private Map<State, Transition> fsm = new HashMap<>();
+
+	private class LookaheadSet {
+		private boolean isPassThru;
+		private Set<String> lookaheads;
+
+		private LookaheadSet(boolean isPassThru, Set<String> lookaheads) {
+			this.isPassThru = isPassThru;
+			this.lookaheads = lookaheads;
+		}
+	}
 
 	private class BuildLr {
 		private int nTokens;
@@ -68,11 +85,41 @@ public class EbnfLrParse {
 		this.rootEntity = rootEntity;
 
 		EbnfGrammar eg = grammarByEntity.get(rootEntity);
-		state0 = newState(buildLr(IList.end(), eg, kv("EOF", Pair.of(new State(), null))).next);
+		BuildLr buildLr = buildLrs(eg, kv("EOF", new State()));
+		state0 = newState(buildLr.next);
+	}
+
+	private BuildLr buildLrs(EbnfGrammar eg, Transition nextx) {
+		Set<Pair<String, Set<String>>> keys0 = new HashSet<>();
+		BuildLr buildLr = buildLr(IList.end(), eg, nextx);
+
+		while (keys0.size() < transitions.size()) {
+			Set<Pair<String, Set<String>>> keys1 = new HashSet<>(transitions.keySet());
+			keys1.removeAll(keys0);
+
+			for (Pair<String, Set<String>> pair : keys1) {
+				Transition next_ = transitions.get(pair);
+				Transition nextx_ = newTransition(pair.t1);
+
+				BuildLr buildLr1 = buildLr(IList.end(), grammarByEntity.get(pair.t0), nextx_);
+				merges.add(() -> resolveAll(next_, buildLr1.next));
+				keys0.add(pair);
+			}
+		}
+
+		boolean b;
+		do {
+			b = false;
+			for (Source<Boolean> merge : merges)
+				b |= merge.source();
+		} while (b);
+
+		return buildLr;
 	}
 
 	private BuildLr buildLr(IList<Pair<String, Set<String>>> ps, EbnfGrammar eg, Transition nextx) {
 		Transition next;
+		State state1;
 		BuildLr buildLr;
 
 		switch (eg.type) {
@@ -86,35 +133,37 @@ public class EbnfLrParse {
 				buildLr = new BuildLr(0, nextx);
 			break;
 		case ENTITY:
-			next = kv(eg.content, Pair.of(newState(nextx), null));
+			next = newTransition(readLookaheadSet(eg, nextx));
+			state1 = newState(nextx);
 			Pair<String, Set<String>> p = Pair.of(eg.content, nextx.keySet());
-			if (!ps.contains(p)) {
-				EbnfGrammar eg1 = grammarByEntity.get(eg.content);
-				resolveAll(next, buildLr(IList.cons(p, ps), eg1, nextx).next);
-			}
+			Transition next1 = transitions.computeIfAbsent(p, p_ -> new Transition());
 			buildLr = new BuildLr(1, next);
+			merges.add(() -> resolve(next, eg.content, Pair.of(state1, null)));
+			merges.add(() -> resolveAll(next, next1));
 			break;
 		case NAMED_:
 			Reduce reduce = new Reduce();
 			next = new Transition();
-			resolveAllReduces(next, nextx, reduce);
+			for (String lookahead : nextx.keySet())
+				next.put(lookahead, Pair.of(null, reduce));
 			BuildLr buildLr1 = buildLr(ps, eg.children.get(0), next);
-			reduce.name = eg.content;
 			reduce.n = buildLr1.nTokens;
+			reduce.name = eg.content;
 			buildLr = new BuildLr(1, buildLr1.next);
 			break;
 		case OR____:
-			State state1 = newState(nextx);
-			next = new Transition();
+			next = newTransition(readLookaheadSet(eg, nextx));
+			state1 = newState(nextx);
+			buildLr = new BuildLr(1, next);
 			for (EbnfGrammar eg1 : Read.from(eg.children)) {
 				String egn = "OR" + counter++;
-				resolve(next, egn, Pair.of(state1, null));
-				resolveAll(next, buildLr(ps, new EbnfGrammar(EbnfGrammarType.NAMED_, egn, eg1), nextx).next);
+				Transition next_ = buildLr(ps, new EbnfGrammar(EbnfGrammarType.NAMED_, egn, eg1), nextx).next;
+				merges.add(() -> resolve(next, egn, Pair.of(state1, null)));
+				merges.add(() -> resolveAll(next, next_));
 			}
-			buildLr = new BuildLr(1, next);
 			break;
 		case STRING:
-			buildLr = new BuildLr(1, kv(eg.content, Pair.of(newState(nextx), null)));
+			buildLr = new BuildLr(1, kv(eg.content, newState(nextx)));
 			break;
 		default:
 			throw new RuntimeException("LR parser cannot recognize " + eg.type);
@@ -127,6 +176,65 @@ public class EbnfLrParse {
 		State state = new State();
 		fsm.put(state, nextx);
 		return state;
+	}
+
+	private Transition newTransition(Set<String> lookaheads) {
+		Transition transition = new Transition();
+		for (String lookahead : lookaheads)
+			transition.put(lookahead, null);
+		return transition;
+	}
+
+	private Set<String> readLookaheadSet(EbnfGrammar eg, Transition nextx) {
+		LookaheadSet ls = readLookaheadSet(IList.end(), eg);
+		Set<String> lookaheadSet = new HashSet<>();
+		if (ls.isPassThru)
+			lookaheadSet.addAll(nextx.keySet());
+		lookaheadSet.addAll(ls.lookaheads);
+		return lookaheadSet;
+	}
+
+	private LookaheadSet readLookaheadSet(IList<EbnfGrammar> stack, EbnfGrammar eg) {
+		LookaheadSet ls;
+
+		switch (eg.type) {
+		case AND___:
+			if (!eg.children.isEmpty()) {
+				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
+				LookaheadSet ls0 = readLookaheadSet(stack, eg.children.get(0));
+				if (ls0.isPassThru) {
+					LookaheadSet ls1 = readLookaheadSet(stack, tail);
+					ls1.lookaheads.addAll(ls0.lookaheads);
+					ls = ls1;
+				} else
+					ls = ls0;
+			} else
+				ls = new LookaheadSet(true, new HashSet<>());
+			break;
+		case ENTITY:
+			EbnfGrammar eg_ = grammarByEntity.get(eg.content);
+			ls = !stack.contains(eg_) ? readLookaheadSet(IList.cons(eg_, stack), eg_) : new LookaheadSet(false, new HashSet<>());
+			ls.lookaheads.add(eg.content);
+			break;
+		case NAMED_:
+			ls = readLookaheadSet(stack, eg.children.get(0));
+			break;
+		case OR____:
+			ls = new LookaheadSet(false, new HashSet<>());
+			for (EbnfGrammar eg1 : eg.children) {
+				LookaheadSet pair1 = readLookaheadSet(stack, eg1);
+				ls.isPassThru |= pair1.isPassThru;
+				ls.lookaheads.addAll(pair1.lookaheads);
+			}
+			break;
+		case STRING:
+			ls = new LookaheadSet(false, new HashSet<>(Arrays.asList(eg.content)));
+			break;
+		default:
+			throw new RuntimeException("LR parser cannot recognize " + eg.type);
+		}
+
+		return ls;
 	}
 
 	public Node check(String in) {
@@ -183,14 +291,6 @@ public class EbnfLrParse {
 		return sr;
 	}
 
-	private boolean resolveAllReduces(Transition targetMap, Transition sourceMap, Reduce reduce) {
-		State nullState = null;
-		boolean b = false;
-		for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
-			b |= resolve(targetMap, e1.getKey(), Pair.of(nullState, reduce));
-		return b;
-	}
-
 	private boolean resolveAll(Transition targetMap, Transition sourceMap) {
 		boolean b = false;
 		for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
@@ -214,9 +314,9 @@ public class EbnfLrParse {
 		return shift.t1 == null && reduce.t1 != null;
 	}
 
-	private Transition kv(String k, Pair<State, Reduce> v) {
+	private Transition kv(String k, State v) {
 		Transition transition = new Transition();
-		transition.put(k, v);
+		transition.put(k, Pair.of(v, null));
 		return transition;
 	}
 
