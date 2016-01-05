@@ -69,7 +69,6 @@ public class EbnfLrParse {
 
 	private BuildLr buildLr(IList<Pair<String, Set<String>>> ps, EbnfGrammar eg, Map<String, Pair<State, Reduce>> nextx) {
 		Map<String, Pair<State, Reduce>> next;
-		State state1;
 		BuildLr buildLr;
 
 		switch (eg.type) {
@@ -83,8 +82,7 @@ public class EbnfLrParse {
 				buildLr = new BuildLr(0, nextx);
 			break;
 		case ENTITY:
-			state1 = newState(nextx);
-			next = kv(eg.content, Pair.of(state1, null));
+			next = kv(eg.content, Pair.of(newState(nextx), null));
 			Pair<String, Set<String>> p = Pair.of(eg.content, nextx.keySet());
 			if (!ps.contains(p))
 				resolveAll(next, buildLr(IList.cons(p, ps), grammarByEntity.get(eg.content), nextx).next);
@@ -100,7 +98,7 @@ public class EbnfLrParse {
 			buildLr = new BuildLr(1, buildLr1.next);
 			break;
 		case OR____:
-			state1 = newState(nextx);
+			State state1 = newState(nextx);
 			next = new HashMap<>();
 			for (EbnfGrammar eg1 : Read.from(eg.children)) {
 				String egn = "OR" + counter++;
