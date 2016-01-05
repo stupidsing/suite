@@ -8,13 +8,10 @@ import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
 
 import suite.Suite;
 import suite.node.Node;
@@ -58,13 +55,7 @@ public class EditorController {
 	}
 
 	public void downToSearchList() {
-		JList<String> leftList = view.getLeftList();
-		DefaultListModel<String> listModel = view.getListModel();
-
-		leftList.requestFocusInWindow();
-
-		if (!listModel.isEmpty())
-			leftList.setSelectedValue(listModel.get(0), true);
+		view.focusLeftList();
 	}
 
 	public void evaluate() {
@@ -175,24 +166,18 @@ public class EditorController {
 		view.focusSearchTextField();
 	}
 
-	public void searchFiles() {
-		DefaultListModel<String> listModel = view.getListModel();
-		listModel.clear();
-
-		String text = model.getSearchText();
-
+	public void searchFiles(String text) {
 		if (!text.isEmpty()) {
 			Streamlet<String> files = FileUtil.findPaths(Paths.get(".")) //
 					.map(Path::toString) //
 					.filter(filename -> filename.contains(text));
 
-			for (String filename : files)
-				listModel.addElement(filename);
+			view.showSearchFileResult(files);
 		}
 	}
 
-	public void selectList() {
-		load(view.getLeftList().getSelectedValue());
+	public void selectList(String selectedValue) {
+		load(selectedValue);
 	}
 
 	public void top() {
@@ -261,17 +246,8 @@ public class EditorController {
 
 		if (runThread == null || !runThread.isAlive())
 			(runThread = Util.startThread(() -> {
-				JTextArea bottomTextArea = view.getMessageTextArea();
-				bottomTextArea.setEnabled(false);
-				bottomTextArea.setText("RUNNING...");
-
-				String result = fun.apply(text);
-
-				bottomTextArea.setText(result);
-				bottomTextArea.setEnabled(true);
-				bottomTextArea.setVisible(true);
-
-				view.refresh();
+				view.showMessageRunning();
+				view.showMessage(fun.apply(text));
 				view.getEditor().requestFocusInWindow();
 			})).start();
 		else

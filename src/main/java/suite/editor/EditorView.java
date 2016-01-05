@@ -27,6 +27,7 @@ import javax.swing.WindowConstants;
 import javax.swing.text.JTextComponent;
 
 import suite.editor.LayoutCalculator.Orientation;
+import suite.streamlet.Streamlet;
 
 public class EditorView {
 
@@ -57,7 +58,7 @@ public class EditorView {
 
 	public JFrame run(EditorController controller, String title) {
 		JTextField searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
-		searchTextField.addActionListener(event -> controller.searchFiles());
+		searchTextField.addActionListener(event -> controller.searchFiles(model.getSearchText()));
 		Listen.documentChanged(searchTextField).register(event -> model.setSearchText(searchTextField.getText()));
 		Listen.keyPressed(searchTextField).register(event -> {
 			if (event.getKeyCode() == KeyEvent.VK_DOWN)
@@ -71,11 +72,11 @@ public class EditorView {
 		searchList.setFont(sansFont);
 		Listen.keyPressed(searchList).register(event -> {
 			if (event.getKeyCode() == KeyEvent.VK_ENTER)
-				controller.selectList();
+				controller.selectList(searchList.getSelectedValue());
 		});
 		Listen.mouseClicked(searchList).register(event -> {
 			if (event.getClickCount() == 2)
-				controller.selectList();
+				controller.selectList(searchList.getSelectedValue());
 		});
 
 		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
@@ -260,8 +261,36 @@ public class EditorView {
 		return t;
 	}
 
+	public void focusLeftList() {
+		searchList.requestFocusInWindow();
+
+		if (!listModel.isEmpty())
+			searchList.setSelectedValue(listModel.get(0), true);
+	}
+
 	public void focusSearchTextField() {
 		focus(searchTextField);
+	}
+
+	public void showMessage(String text) {
+		JTextArea bottomTextArea = messageTextArea;
+		bottomTextArea.setText(text);
+		bottomTextArea.setEnabled(true);
+		bottomTextArea.setVisible(true);
+		refresh();
+	}
+
+	public void showMessageRunning() {
+		JTextArea bottomTextArea = messageTextArea;
+		bottomTextArea.setEnabled(false);
+		bottomTextArea.setText("RUNNING...");
+	}
+
+	public void showSearchFileResult(Streamlet<String> filenames) {
+		listModel.clear();
+		for (String filename : filenames)
+			listModel.addElement(filename);
+
 	}
 
 	public void toggleBottom() {
@@ -309,14 +338,6 @@ public class EditorView {
 
 	public JList<String> getLeftList() {
 		return searchList;
-	}
-
-	public DefaultListModel<String> getListModel() {
-		return listModel;
-	}
-
-	public JTextArea getMessageTextArea() {
-		return messageTextArea;
 	}
 
 	public JEditorPane getEditor() {
