@@ -52,7 +52,7 @@ public class EbnfLrParseTest {
 				+ "<list> ::= () | \"0\" <list>\n" //
 				, "<list>");
 
-		assertNotNull(elp.parse("0 0"));
+		assertNotNull(elp.parse("0 0 0 0 0"));
 	}
 
 	@Test

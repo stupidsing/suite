@@ -301,7 +301,9 @@ public class EbnfLrParse {
 	// Shift-reduce conflict ends in reduce
 	private boolean resolve(Transition map, String key, Pair<State, Reduce> value1) {
 		Pair<State, Reduce> value0 = map.get(key);
-		if (value0 == null || isShiftReduceConflict(value0, value1)) {
+		if (value1 == null)
+			return false;
+		else if (value0 == null || isShiftReduceConflict(value0, value1)) {
 			map.put(key, value1);
 			return true;
 		} else if (value0.equals(value1) || isShiftReduceConflict(value1, value0))
