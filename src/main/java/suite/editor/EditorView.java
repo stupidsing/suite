@@ -143,7 +143,7 @@ public class EditorView {
 	}
 
 	public void repaint() {
-		frame.setTitle((model.getIsModified() ? "* " : "") + filenameTextField.getText().replace(File.separatorChar, '/'));
+		frame.setTitle((model.getIsModified() ? "* " : "") + model.getFilename().replace(File.separatorChar, '/'));
 		frame.revalidate();
 		frame.repaint();
 	}
@@ -336,16 +336,20 @@ public class EditorView {
 		return isFocusOwner;
 	}
 
-	public JList<String> getLeftList() {
-		return searchList;
-	}
-
 	public JEditorPane getEditor() {
 		return editor;
 	}
 
 	public JFrame getFrame() {
 		return frame;
+	}
+
+	public JList<String> getSearchList() {
+		return searchList;
+	}
+
+	public JTextField getFilenameTextField() {
+		return filenameTextField;
 	}
 
 }

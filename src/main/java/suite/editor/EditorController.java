@@ -36,7 +36,11 @@ public class EditorController {
 		this.model = model;
 		this.view = view;
 
-		model.getModifiedChanged().register(b -> view.repaint());
+		model.getFilenameChanged().register(filename -> {
+			view.getFilenameTextField().setText(filename);
+			view.repaint();
+		});
+		model.getModifiedChanged().register(isModified -> view.repaint());
 	}
 
 	public void bottom() {
@@ -208,8 +212,6 @@ public class EditorController {
 
 	private void load(String filename) {
 		try {
-			model.changeFilename(filename);
-
 			String text = FileUtil.read(filename);
 
 			JEditorPane editor = view.getEditor();
@@ -219,6 +221,7 @@ public class EditorController {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+		model.changeFilename(filename);
 		model.changeModified(false);
 	}
 
