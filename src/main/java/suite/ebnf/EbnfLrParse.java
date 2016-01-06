@@ -143,9 +143,7 @@ public class EbnfLrParse {
 			break;
 		case NAMED_:
 			Reduce reduce = new Reduce();
-			next = new Transition();
-			for (String lookahead : nextx.keySet())
-				next.put(lookahead, Pair.of(null, reduce));
+			next = newTransition(nextx.keySet(), Pair.of(null, reduce));
 			BuildLr buildLr1 = buildLr(ps, eg.children.get(0), next);
 			reduce.n = buildLr1.nTokens;
 			reduce.name = eg.content;
@@ -163,7 +161,8 @@ public class EbnfLrParse {
 			}
 			break;
 		case STRING:
-			buildLr = new BuildLr(1, kv(eg.content, newState(nextx)));
+			state1 = newState(nextx);
+			buildLr = new BuildLr(1, kv(eg.content, state1));
 			break;
 		default:
 			throw new RuntimeException("LR parser cannot recognize " + eg.type);
@@ -179,9 +178,14 @@ public class EbnfLrParse {
 	}
 
 	private Transition newTransition(Set<String> lookaheads) {
+		Pair<State, Reduce> value = null;
+		return newTransition(lookaheads, value);
+	}
+
+	private Transition newTransition(Set<String> lookaheads, Pair<State, Reduce> value) {
 		Transition transition = new Transition();
 		for (String lookahead : lookaheads)
-			transition.put(lookahead, null);
+			transition.put(lookahead, value);
 		return transition;
 	}
 
