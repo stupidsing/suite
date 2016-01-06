@@ -89,8 +89,9 @@ public class EbnfLrParse {
 	}
 
 	private BuildLr buildLrs(String entity, Transition nextx) {
+		Pair<String, Set<String>> k = Pair.of(entity, nextx.keySet());
 		Set<Pair<String, Set<String>>> keys0 = new HashSet<>();
-		BuildLr buildLr = buildLr(entity, nextx);
+		transitions.put(k, new Transition());
 
 		while (keys0.size() < transitions.size()) {
 			Set<Pair<String, Set<String>>> keys1 = new HashSet<>(transitions.keySet());
@@ -113,7 +114,7 @@ public class EbnfLrParse {
 				b |= merge.source();
 		} while (b);
 
-		return buildLr;
+		return new BuildLr(1, transitions.get(k));
 	}
 
 	private BuildLr buildLr(String entity, Transition nextx) {
