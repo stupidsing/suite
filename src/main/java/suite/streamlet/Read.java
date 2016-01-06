@@ -67,6 +67,10 @@ public class Read {
 		return Streamlet.from(source);
 	}
 
+	public static <K, V> Streamlet2<K, V> from2(K k, V v) {
+		return from2(Arrays.asList(Pair.of(k, v)));
+	}
+
 	@SafeVarargs
 	public static <K, V> Streamlet2<K, V> from2(Pair<K, V>... col) {
 		return from2(Arrays.asList(col));
