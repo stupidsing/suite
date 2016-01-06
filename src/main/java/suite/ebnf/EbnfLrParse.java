@@ -144,8 +144,8 @@ public class EbnfLrParse {
 				buildLr = new BuildLr(0, nextx);
 			break;
 		case ENTITY:
-			Pair<String, Set<String>> p = Pair.of(eg.content, nextx.keySet());
-			Transition next1 = transitions.computeIfAbsent(p, p_ -> new Transition());
+			Pair<String, Set<String>> k = Pair.of(eg.content, nextx.keySet());
+			Transition next1 = transitions.computeIfAbsent(k, k_ -> new Transition());
 			buildLr = mergeAll.apply(Read.from2(eg.content, next1));
 			break;
 		case NAMED_:
