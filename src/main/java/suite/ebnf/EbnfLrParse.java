@@ -86,14 +86,13 @@ public class EbnfLrParse {
 		this.grammarByEntity = grammarByEntity;
 		this.rootEntity = rootEntity;
 
-		EbnfGrammar eg = grammarByEntity.get(rootEntity);
-		BuildLr buildLr = buildLrs(eg, kv("EOF", new State()));
+		BuildLr buildLr = buildLrs(rootEntity, kv("EOF", new State()));
 		state0 = newState(buildLr.next);
 	}
 
-	private BuildLr buildLrs(EbnfGrammar eg, Transition nextx) {
+	private BuildLr buildLrs(String entity, Transition nextx) {
 		Set<Pair<String, Set<String>>> keys0 = new HashSet<>();
-		BuildLr buildLr = buildLr(eg, nextx);
+		BuildLr buildLr = buildLr(entity, nextx);
 
 		while (keys0.size() < transitions.size()) {
 			Set<Pair<String, Set<String>>> keys1 = new HashSet<>(transitions.keySet());
@@ -103,7 +102,7 @@ public class EbnfLrParse {
 				Transition next_ = transitions.get(pair);
 				Transition nextx_ = newTransition(pair.t1);
 
-				BuildLr buildLr1 = buildLr(grammarByEntity.get(pair.t0), nextx_);
+				BuildLr buildLr1 = buildLr(pair.t0, nextx_);
 				merges.add(() -> resolveAll(next_, buildLr1.next));
 				keys0.add(pair);
 			}
@@ -119,8 +118,8 @@ public class EbnfLrParse {
 		return buildLr;
 	}
 
-	private BuildLr buildLr(EbnfGrammar eg, Transition nextx) {
-		return buildLr(IList.end(), eg, nextx);
+	private BuildLr buildLr(String entity, Transition nextx) {
+		return buildLr(IList.end(), grammarByEntity.get(entity), nextx);
 	}
 
 	private BuildLr buildLr(IList<Pair<String, Set<String>>> ps, EbnfGrammar eg, Transition nextx) {
