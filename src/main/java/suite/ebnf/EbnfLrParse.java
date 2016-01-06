@@ -120,7 +120,6 @@ public class EbnfLrParse {
 	}
 
 	private BuildLr buildLr(EbnfGrammar eg, Transition nextx) {
-		System.out.println("BLR " + eg + nextx);
 		return buildLr(IList.end(), eg, nextx);
 	}
 
