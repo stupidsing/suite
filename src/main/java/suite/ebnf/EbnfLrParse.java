@@ -85,9 +85,7 @@ public class EbnfLrParse {
 	public EbnfLrParse(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
 		this.grammarByEntity = grammarByEntity;
 		this.rootEntity = rootEntity;
-
-		BuildLr buildLr = buildLrs(rootEntity, kv("EOF", new State()));
-		state0 = newState(buildLr.next);
+		state0 = newState(buildLrs(rootEntity, kv("EOF", new State())).next);
 	}
 
 	private BuildLr buildLrs(String entity, Transition nextx) {
