@@ -77,7 +77,9 @@ public class EbnfGrammar {
 
 	public String describe() {
 		return type + (content != null ? "." + content : "") //
-				+ "(" + Read.from(children).map(EbnfGrammar::describe).collect(As.joined(",")) + ")";
+				+ (type != EbnfGrammarType.NAMED_
+						? "(" + Read.from(children).map(EbnfGrammar::describe).collect(As.joined(",")) + ")" //
+						: "");
 	}
 
 	@Override
