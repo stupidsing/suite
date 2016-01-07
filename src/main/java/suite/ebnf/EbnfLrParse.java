@@ -183,7 +183,7 @@ public class EbnfLrParse {
 		case OR____:
 			List<Pair<String, Transition>> pairs = new ArrayList<>();
 			for (EbnfGrammar eg1 : Read.from(eg.children)) {
-				String egn = "OR" + System.identityHashCode(eg1);
+				String egn = "OR." + System.identityHashCode(eg1);
 				pairs.add(Pair.of(egn, buildLr(ps, new EbnfGrammar(EbnfGrammarType.NAMED_, egn, eg1), nextx).next));
 			}
 			buildLr = mergeAll.apply(Read.from2(pairs));
@@ -254,7 +254,7 @@ public class EbnfLrParse {
 		case OR____:
 			ls = new LookaheadSet(false, new HashSet<>());
 			for (EbnfGrammar eg1 : eg.children) {
-				String egn = "OR" + System.identityHashCode(eg1);
+				String egn = "OR." + System.identityHashCode(eg1);
 				LookaheadSet pair1 = readLookaheadSet(stack, eg1);
 				ls.isPassThru |= pair1.isPassThru;
 				ls.lookaheads.add(egn);
