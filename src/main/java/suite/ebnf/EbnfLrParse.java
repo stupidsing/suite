@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.adt.Pair;
@@ -57,6 +56,28 @@ public class EbnfLrParse {
 
 	private class Transition extends HashMap<String, Pair<State, Reduce>> {
 		private static final long serialVersionUID = 1l;
+
+		private boolean putAll(Transition sourceMap) {
+			boolean b = false;
+			for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
+				b |= put_(e1.getKey(), e1.getValue());
+			return b;
+		}
+
+		// Shift-reduce conflict ends in reduce
+		private boolean put_(String key, Pair<State, Reduce> value1) {
+			Pair<State, Reduce> value0 = get(key);
+			if (value1 == null)
+				return false;
+			else if (value0 == null || isShiftReduceConflict(value0, value1)) {
+				put(key, value1);
+				return true;
+			} else if (value0.equals(value1) || isShiftReduceConflict(value1, value0))
+				return false;
+			else
+				throw new RuntimeException("Duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
+		}
+
 	}
 
 	private class Reduce {
@@ -102,7 +123,7 @@ public class EbnfLrParse {
 				Transition nextx_ = newTransition(pair.t1);
 
 				BuildLr buildLr1 = buildLr(pair.t0, nextx_);
-				merges.add(() -> resolveAll(next_, buildLr1.next));
+				merges.add(() -> next_.putAll(buildLr1.next));
 				keys0.add(pair);
 			}
 		}
@@ -126,8 +147,8 @@ public class EbnfLrParse {
 			Transition next = newTransition(readLookaheadSet(eg, nextx));
 			State state1 = newState(nextx);
 			st2.sink((egn, next1) -> {
-				merges.add(() -> resolve(next, egn, Pair.of(state1, null)));
-				merges.add(() -> resolveAll(next, next1));
+				next.put_(egn, Pair.of(state1, null));
+				merges.add(() -> next.putAll(next1));
 			});
 			return new BuildLr(1, next);
 		};
@@ -298,27 +319,6 @@ public class EbnfLrParse {
 		Pair<State, Reduce> sr = fsm.get(state).get(lookahead);
 		System.out.println(" => " + sr);
 		return sr;
-	}
-
-	private boolean resolveAll(Transition targetMap, Transition sourceMap) {
-		boolean b = false;
-		for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
-			b |= resolve(targetMap, e1.getKey(), e1.getValue());
-		return b;
-	}
-
-	// Shift-reduce conflict ends in reduce
-	private boolean resolve(Transition map, String key, Pair<State, Reduce> value1) {
-		Pair<State, Reduce> value0 = map.get(key);
-		if (value1 == null)
-			return false;
-		else if (value0 == null || isShiftReduceConflict(value0, value1)) {
-			map.put(key, value1);
-			return true;
-		} else if (value0.equals(value1) || isShiftReduceConflict(value1, value0))
-			return false;
-		else
-			throw new RuntimeException("Duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
 	}
 
 	private boolean isShiftReduceConflict(Pair<State, Reduce> shift, Pair<State, Reduce> reduce) {
