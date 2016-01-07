@@ -75,6 +75,11 @@ public class EbnfGrammar {
 		this.children = children;
 	}
 
+	public String describe() {
+		return type + (content != null ? "." + content : "") //
+				+ "(" + Read.from(children).map(EbnfGrammar::describe).collect(As.joined(",")) + ")";
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
