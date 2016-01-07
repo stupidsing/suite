@@ -28,7 +28,7 @@ public class PackageManager {
 	public boolean install(String packageFilename) throws IOException {
 		PackageManifest packageManifest = getPackageManifest(packageFilename);
 
-		List<Pair<String, String>> filenameMappings = Read.from(packageManifest.getFilenameMappings()) //
+		List<Pair<String, String>> filenameMappings = Read.from2(packageManifest.getFilenameMappings()) //
 				.sort((p0, p1) -> p1.t0.length() - p0.t0.length()) //
 				.toList();
 

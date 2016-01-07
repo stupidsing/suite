@@ -132,7 +132,7 @@ public class Huffman<Unit> {
 	}
 
 	private void build(List<Unit> input) {
-		PriorityQueue<Node> priorityQueue = Read.from(histogram(input)) //
+		PriorityQueue<Node> priorityQueue = Read.from2(histogram(input)) //
 				.map(Node::new) //
 				.form(() -> new PriorityQueue<>(0, comparator));
 

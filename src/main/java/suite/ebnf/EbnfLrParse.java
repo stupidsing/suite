@@ -334,7 +334,7 @@ public class EbnfLrParse {
 	private <K, V> String list(Map<K, V> map) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{\n");
-		Read.from(map) //
+		Read.from2(map) //
 				.mapKey(Object::toString) //
 				.sortByKey(Util::compare) //
 				.sink((k, v) -> sb.append(k + " = " + v + "\n"));

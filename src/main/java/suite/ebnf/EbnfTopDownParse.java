@@ -161,7 +161,7 @@ public class EbnfTopDownParse {
 	}
 
 	public EbnfTopDownParse(Map<String, EbnfGrammar> grammarByEntity) {
-		parserByEntity = Read.from(grammarByEntity) //
+		parserByEntity = Read.from2(grammarByEntity) //
 				.mapValue(this::build) //
 				.toMap();
 	}

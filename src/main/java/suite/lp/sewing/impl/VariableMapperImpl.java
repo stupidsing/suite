@@ -27,7 +27,7 @@ public class VariableMapperImpl implements VariableMapper {
 		}
 
 		public String dumpVariables() {
-			Streamlet<String> kvs = Read.from(variableIndices) //
+			Streamlet<String> kvs = Read.from2(variableIndices) //
 					.mapEntry((k, index) -> k.key, (k, index) -> env.refs[index].finalNode()) //
 					.sortByKey(Util::compare) //
 					.map((k, v) -> Formatter.display(k) + " = " + Formatter.dump(v));

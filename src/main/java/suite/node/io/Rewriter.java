@@ -64,7 +64,7 @@ public class Rewriter {
 				type = ReadType.DICT;
 				terminal = null;
 				op = null;
-				children = Read.from(map) //
+				children = Read.from2(map) //
 						.sort((p0, p1) -> Comparer.comparer.compare(p0.t0, p1.t0)) //
 						.mapValue(Node::finalNode) //
 						.toList();

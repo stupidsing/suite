@@ -209,7 +209,7 @@ public class SewingProverImpl implements SewingProver {
 						.toListMap(rule -> Prototype.of(rule, 1));
 
 				if (!rulesByProto1.containsKey(null)) {
-					Map<Prototype, Trampoline> trByProto1 = Read.from(rulesByProto1) //
+					Map<Prototype, Trampoline> trByProto1 = Read.from2(rulesByProto1) //
 							.mapValue(rules_ -> compileRules(prototype, rules_, traceLevel)) //
 							.toMap();
 

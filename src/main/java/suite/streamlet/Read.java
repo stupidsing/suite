@@ -11,9 +11,7 @@ import java.io.Reader;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
@@ -28,32 +26,6 @@ public class Read {
 		return Streamlet.from(FunUtil.nullSource());
 	}
 
-	public static <K, V> Streamlet2<K, V> from(Map<K, V> map) {
-		Iterator<Entry<K, V>> iter = map.entrySet().iterator();
-		return Streamlet2.from(pair -> {
-			if (iter.hasNext()) {
-				Entry<K, V> pair1 = iter.next();
-				pair.t0 = pair1.getKey();
-				pair.t1 = pair1.getValue();
-				return true;
-			} else
-				return false;
-		});
-	}
-
-	public static <K, V> Streamlet2<K, Collection<V>> from0(ListMultimap<K, V> multimap) {
-		Iterator<Pair<K, Collection<V>>> iter = multimap.listEntries().iterator();
-		return Streamlet2.from(pair -> {
-			if (iter.hasNext()) {
-				Pair<K, Collection<V>> pair1 = iter.next();
-				pair.t0 = pair1.t0;
-				pair.t1 = pair1.t1;
-				return true;
-			} else
-				return false;
-		});
-	}
-
 	@SafeVarargs
 	public static <T> Streamlet<T> from(T... col) {
 		return from(Arrays.asList(col));
@@ -65,6 +37,14 @@ public class Read {
 
 	public static <T> Streamlet<T> from(Source<T> source) {
 		return Streamlet.from(source);
+	}
+
+	public static <K, V> Streamlet2<K, Collection<V>> from2(ListMultimap<K, V> multimap) {
+		return new Streamlet2<>(() -> Outlet2.from(multimap));
+	}
+
+	public static <K, V> Streamlet2<K, V> from2(Map<K, V> map) {
+		return new Streamlet2<>(() -> Outlet2.from(map));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(K k, V v) {
@@ -124,11 +104,11 @@ public class Read {
 	}
 
 	public static <K, V, C extends Collection<V>> Streamlet2<K, V> multimap(Map<K, C> map) {
-		return from(map).concatMap2((k, l) -> from(l).map2(v -> k, v -> v));
+		return from2(map).concatMap2((k, l) -> from(l).map2(v -> k, v -> v));
 	}
 
 	public static <K, V> Streamlet2<K, V> from(ListMultimap<K, V> multimap) {
-		return from0(multimap).concatMapValue(Read::from);
+		return from2(multimap).concatMapValue(Read::from);
 	}
 
 }
