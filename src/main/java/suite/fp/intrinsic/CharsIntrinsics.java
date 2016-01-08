@@ -41,6 +41,13 @@ public class CharsIntrinsics {
 		return Intrinsics.drain(callback, p);
 	};
 
+	public Intrinsic replace = (callback, inputs) -> {
+		Chars from = Data.get(inputs.get(0));
+		Chars to = Data.get(inputs.get(1));
+		Chars chars = Data.get(inputs.get(2));
+		return new Data<>(chars.replace(from, to));
+	};
+
 	public Intrinsic stringChars = (callback, inputs) -> {
 		String value = ThunkUtil.yawnString(callback::yawn, inputs.get(0));
 		return new Data<>(To.chars(value));
