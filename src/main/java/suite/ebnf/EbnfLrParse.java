@@ -106,7 +106,7 @@ public class EbnfLrParse {
 	public EbnfLrParse(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
 		Transition nextx = kv("EOF", new State());
 		this.grammarByEntity = grammarByEntity;
-		this.endReduceKey = rootEntity;
+		this.endReduceKey = newReduceKey(rootEntity, nextx);
 		state0 = newState(buildLrs(rootEntity, nextx).next);
 	}
 
@@ -148,7 +148,7 @@ public class EbnfLrParse {
 			Transition next = newTransition(readLookaheadSet(eg, nextx));
 			State state1 = newState(nextx);
 			st2.sink((egn, next1) -> {
-				next.put_(egn, Pair.of(state1, null));
+				next.put_(newReduceKey(egn, nextx), Pair.of(state1, null));
 				merges.add(() -> next.putAll(next1));
 			});
 			return new BuildLr(1, next);
@@ -177,7 +177,7 @@ public class EbnfLrParse {
 			Transition next = newTransition(nextx.keySet(), Pair.of(null, reduce));
 			BuildLr buildLr1 = buildLr(ps, eg.children.get(0), next);
 			reduce.n = buildLr1.nTokens;
-			reduce.name = eg.content;
+			reduce.name = newReduceKey(eg.content, next);
 			buildLr = new BuildLr(1, buildLr1.next);
 			break;
 		case OR____:
@@ -197,6 +197,10 @@ public class EbnfLrParse {
 		}
 
 		return buildLr;
+	}
+
+	private String newReduceKey(String entity, Transition transition) {
+		return entity + "." + transition.keySet().hashCode();
 	}
 
 	private State newState(Transition nextx) {
@@ -246,7 +250,6 @@ public class EbnfLrParse {
 		case ENTITY:
 			EbnfGrammar eg_ = grammarByEntity.get(eg.content);
 			ls = !stack.contains(eg_) ? readLookaheadSet(IList.cons(eg_, stack), eg_) : new LookaheadSet(false, new HashSet<>());
-			ls.lookaheads.add(eg.content);
 			break;
 		case NAMED_:
 			ls = readLookaheadSet(stack, eg.children.get(0));
@@ -254,10 +257,8 @@ public class EbnfLrParse {
 		case OR____:
 			ls = new LookaheadSet(false, new HashSet<>());
 			for (EbnfGrammar eg1 : eg.children) {
-				String egn = "OR." + System.identityHashCode(eg1);
 				LookaheadSet pair1 = readLookaheadSet(stack, eg1);
 				ls.isPassThru |= pair1.isPassThru;
-				ls.lookaheads.add(egn);
 				ls.lookaheads.addAll(pair1.lookaheads);
 			}
 			break;
