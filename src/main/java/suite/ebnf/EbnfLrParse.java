@@ -209,15 +209,15 @@ public class EbnfLrParse {
 		return state;
 	}
 
-	private Transition newTransition(Set<String> lookaheads) {
+	private Transition newTransition(Set<String> keys) {
 		Pair<State, Reduce> value = null;
-		return newTransition(lookaheads, value);
+		return newTransition(keys, value);
 	}
 
-	private Transition newTransition(Set<String> lookaheads, Pair<State, Reduce> value) {
+	private Transition newTransition(Set<String> keys, Pair<State, Reduce> value) {
 		Transition transition = new Transition();
-		for (String lookahead : lookaheads)
-			transition.put(lookahead, value);
+		for (String key : keys)
+			transition.put(key, value);
 		return transition;
 	}
 
@@ -320,9 +320,9 @@ public class EbnfLrParse {
 		}
 	}
 
-	private Pair<State, Reduce> shift(Deque<Pair<Node, State>> stack, State state, String lookahead) {
-		System.out.print("(S=" + state + ", Lookahead=" + lookahead + ", Stack=" + stack.size() + ")");
-		Pair<State, Reduce> sr = fsm.get(state).get(lookahead);
+	private Pair<State, Reduce> shift(Deque<Pair<Node, State>> stack, State state, String next) {
+		System.out.print("(S=" + state + ", Next=" + next + ", Stack=" + stack.size() + ")");
+		Pair<State, Reduce> sr = fsm.get(state).get(next);
 		System.out.println(" => " + sr);
 		return sr;
 	}
