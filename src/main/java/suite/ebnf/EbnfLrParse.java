@@ -230,6 +230,7 @@ public class EbnfLrParse {
 		return lookaheadSet;
 	}
 
+	// Only return terminal lookaheads
 	private LookaheadSet readLookaheadSet(IList<EbnfGrammar> stack, EbnfGrammar eg) {
 		LookaheadSet ls;
 
