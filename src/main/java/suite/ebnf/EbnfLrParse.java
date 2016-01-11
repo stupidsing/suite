@@ -30,7 +30,7 @@ public class EbnfLrParse {
 	private Map<String, EbnfGrammar> grammarByEntity;
 
 	private Map<Pair<String, Set<String>>, Transition> transitions = new HashMap<>();
-	private List<Source<Boolean>> merges = new ArrayList<>();
+	private Set<Pair<Transition, Transition>> merges = new HashSet<>();
 
 	private State state0;
 	private Map<State, Transition> fsm = new HashMap<>();
@@ -58,6 +58,14 @@ public class EbnfLrParse {
 	private class Transition extends HashMap<String, Pair<State, Reduce>> {
 		private static final long serialVersionUID = 1l;
 
+		public int hashCode() {
+			return System.identityHashCode(this);
+		}
+
+		public boolean equals(Object object) {
+			return this == object;
+		}
+
 		private boolean putAll(Transition sourceMap) {
 			boolean b = false;
 			for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
@@ -80,7 +88,7 @@ public class EbnfLrParse {
 				// Merge each children if both are shifts
 				Transition transition0 = fsm.get(value0.t0);
 				Transition transition1 = fsm.get(value1.t0);
-				return transition0.putAll(transition1);
+				return merges.add(Pair.of(transition0, transition1));
 			} else
 				throw new RuntimeException("Duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
 		}
@@ -139,7 +147,7 @@ public class EbnfLrParse {
 				Transition nextx_ = newTransition(pair.t1);
 
 				BuildLr buildLr1 = buildLr(pair.t0, nextx_);
-				merges.add(() -> next_.putAll(buildLr1.next));
+				merges.add(Pair.of(next_, buildLr1.next));
 				keys0.add(pair);
 			}
 		}
@@ -147,8 +155,8 @@ public class EbnfLrParse {
 		boolean b;
 		do {
 			b = false;
-			for (Source<Boolean> merge : merges)
-				b |= merge.source();
+			for (Pair<Transition, Transition> merge : new ArrayList<>(merges))
+				b |= merge.t0.putAll(merge.t1);
 		} while (b);
 
 		return new BuildLr(1, transitions.get(k));
@@ -164,7 +172,7 @@ public class EbnfLrParse {
 			State state1 = newState(nextx);
 			st2.sink((egn, next1) -> {
 				next.put_(newReduceKey(egn, nextx), Pair.of(state1, null));
-				merges.add(() -> next.putAll(next1));
+				merges.add(Pair.of(next, next1));
 			});
 			return new BuildLr(1, next);
 		};
