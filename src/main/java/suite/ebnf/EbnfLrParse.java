@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.Pair;
@@ -67,19 +68,24 @@ public class EbnfLrParse {
 		// Shift-reduce conflict ends in reduce
 		private boolean put_(String key, Pair<State, Reduce> value1) {
 			Pair<State, Reduce> value0 = get(key);
-			if (value1 == null)
-				return false;
-			else if (value0 == null || isShiftReduceConflict(value0, value1)) {
+			int order0 = order(value0);
+			int order1 = order(value1);
+			if (order0 < order1) {
 				put(key, value1);
 				return true;
-			} else if (value0.equals(value1) || isShiftReduceConflict(value1, value0))
+			} else if (order0 > order1 || Objects.equals(value0, value1))
 				return false;
 			else
 				throw new RuntimeException("Duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
 		}
 
-		private boolean isShiftReduceConflict(Pair<State, Reduce> shift, Pair<State, Reduce> reduce) {
-			return shift.t1 == null && reduce.t1 != null;
+		private int order(Pair<State, Reduce> pair) {
+			if (pair == null) // Nothing
+				return 0;
+			else if (pair.t1 != null) // Reduce
+				return 1;
+			else
+				return 2;
 		}
 	}
 
