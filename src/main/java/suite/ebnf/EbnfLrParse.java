@@ -26,7 +26,7 @@ import suite.util.Util;
 public class EbnfLrParse {
 
 	private int counter;
-	private String endReduceKey;
+	private String rootEntity;
 	private Map<String, EbnfGrammar> grammarByEntity;
 
 	private Map<Pair<String, Set<String>>, Transition> transitions = new HashMap<>();
@@ -129,7 +129,7 @@ public class EbnfLrParse {
 	public EbnfLrParse(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
 		Transition nextx = kv("EOF", new State());
 		this.grammarByEntity = grammarByEntity;
-		this.endReduceKey = newReduceKey(rootEntity, nextx);
+		this.rootEntity = rootEntity;
 		state0 = newState(buildLrs(rootEntity, nextx).next);
 	}
 
@@ -171,7 +171,7 @@ public class EbnfLrParse {
 			Transition next = newTransition(readLookaheadSet(eg, nextx));
 			State state1 = newState(nextx);
 			st2.sink((egn, next1) -> {
-				next.put_(newReduceKey(egn, nextx), Pair.of(state1, null));
+				next.put_(egn, Pair.of(state1, null));
 				merges.add(Pair.of(next, next1));
 			});
 			return new BuildLr(1, next);
@@ -200,7 +200,7 @@ public class EbnfLrParse {
 			Transition next = newTransition(nextx.keySet(), Pair.of(null, reduce));
 			BuildLr buildLr1 = buildLr(ps, eg.children.get(0), next);
 			reduce.n = buildLr1.nTokens;
-			reduce.name = newReduceKey(eg.content, next);
+			reduce.name = eg.content;
 			buildLr = new BuildLr(1, buildLr1.next);
 			break;
 		case OR____:
@@ -220,10 +220,6 @@ public class EbnfLrParse {
 		}
 
 		return buildLr;
-	}
-
-	private String newReduceKey(String entity, Transition transition) {
-		return entity + "." + transition.keySet().hashCode();
 	}
 
 	private State newState(Transition nextx) {
@@ -333,7 +329,7 @@ public class EbnfLrParse {
 
 				Node token1 = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
 
-				if (endReduceKey.equals(reduce.name) && stack.size() == 0 && token == null)
+				if (rootEntity.equals(reduce.name) && stack.size() == 0 && token == null)
 					return token1;
 
 				// Force shift after reduce
