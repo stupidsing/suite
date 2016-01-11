@@ -78,6 +78,9 @@ public class EbnfLrParse {
 				throw new RuntimeException("Duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
 		}
 
+		private boolean isShiftReduceConflict(Pair<State, Reduce> shift, Pair<State, Reduce> reduce) {
+			return shift.t1 == null && reduce.t1 != null;
+		}
 	}
 
 	private class Reduce {
@@ -325,10 +328,6 @@ public class EbnfLrParse {
 		Pair<State, Reduce> sr = fsm.get(state).get(next);
 		System.out.println(" => " + sr);
 		return sr;
-	}
-
-	private boolean isShiftReduceConflict(Pair<State, Reduce> shift, Pair<State, Reduce> reduce) {
-		return shift.t1 == null && reduce.t1 != null;
 	}
 
 	private Transition kv(String k, State v) {
