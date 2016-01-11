@@ -37,6 +37,15 @@ public class EbnfLrParseTest {
 	}
 
 	@Test
+	public void testList() throws IOException {
+		EbnfLrParse elp = EbnfLrParse.of("" //
+				+ "<list> ::= () | <list> \"0\"\n" //
+				, "<list>");
+
+		assertNotNull(elp.parse("0"));
+	}
+
+	@Test
 	public void testOr() throws IOException {
 		EbnfLrParse elp = EbnfLrParse.of("" //
 				+ "<digit> ::= \"0\" | \"1\"\n" //

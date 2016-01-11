@@ -75,7 +75,13 @@ public class EbnfLrParse {
 				return true;
 			} else if (order0 > order1 || Objects.equals(value0, value1))
 				return false;
-			else
+			else if (value0.t0 != null && value1.t0 != null) {
+
+				// Merge each children if both are shifts
+				Transition transition0 = fsm.get(value0.t0);
+				Transition transition1 = fsm.get(value1.t0);
+				return transition0.putAll(transition1);
+			} else
 				throw new RuntimeException("Duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
 		}
 
