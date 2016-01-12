@@ -122,6 +122,10 @@ public class FileUtil {
 		};
 	}
 
+	public static String read(String filename) throws IOException {
+		return read(Paths.get(filename));
+	}
+
 	public static String read(Path path) throws IOException {
 		byte bytes[] = Files.readAllBytes(path);
 		boolean isBomExist = bytes.length >= 3 //
@@ -133,10 +137,6 @@ public class FileUtil {
 			return new String(bytes, FileUtil.charset);
 		else
 			return new String(bytes, 3, bytes.length - 3, FileUtil.charset);
-	}
-
-	public static String read(String filename) throws IOException {
-		return read(Paths.get(filename));
 	}
 
 }
