@@ -18,6 +18,7 @@ import suite.os.FileUtil;
 import suite.search.DirectedGraph;
 import suite.search.StronglyConnectedComponents;
 import suite.streamlet.Read;
+import suite.util.Util;
 
 public class DependencyTest {
 
@@ -54,7 +55,7 @@ public class DependencyTest {
 		List<Set<Set<String>>> layers = scc.group().layers();
 
 		for (Set<Set<String>> layer : layers) {
-			Read.from(layer).concatMap(Read::from).forEach(System.out::println);
+			Read.from(layer).concatMap(Read::from).sort(Util::compare).forEach(System.out::println);
 			System.out.println();
 		}
 	}
