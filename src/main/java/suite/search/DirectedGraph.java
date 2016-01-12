@@ -32,4 +32,8 @@ public class DirectedGraph<V> {
 		this.backwards = backwards;
 	}
 
+	public DirectedGraph<V> reverse() {
+		return new DirectedGraph<>(vertices, backwards, forwards);
+	}
+
 }
