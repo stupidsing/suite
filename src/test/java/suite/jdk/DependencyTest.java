@@ -52,9 +52,7 @@ public class DependencyTest {
 
 		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(vertices, edges));
 
-		List<Set<Set<String>>> layers = scc.group().layers();
-
-		for (Set<Set<String>> layer : layers) {
+		for (Set<Set<String>> layer : scc.group().layers()) {
 			Read.from(layer).concatMap(Read::from).sort(Util::compare).forEach(System.out::println);
 			System.out.println();
 		}
