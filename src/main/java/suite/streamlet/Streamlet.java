@@ -71,6 +71,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().concatMap(t -> fun.apply(t).spawn()));
 	}
 
+	public <K, V> Streamlet2<K, V> concatMap2(Fun<T, Streamlet2<K, V>> fun) {
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet2()));
+	}
+
 	public Streamlet<T> cons(T t) {
 		return streamlet(() -> spawn().cons(t));
 	}

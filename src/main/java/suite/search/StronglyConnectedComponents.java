@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.adt.ListMultimap;
+import suite.adt.Pair;
 import suite.streamlet.Read;
 
 /**
@@ -19,6 +20,7 @@ import suite.streamlet.Read;
  */
 public class StronglyConnectedComponents<V> {
 
+	private DirectedGraph<V> dg;
 	private ListMultimap<Scc, Scc> forwards = new ListMultimap<>();
 	private int index = 0;
 	private Deque<Scc> stack = new ArrayDeque<>();
@@ -38,12 +40,30 @@ public class StronglyConnectedComponents<V> {
 	}
 
 	public StronglyConnectedComponents(DirectedGraph<V> dg) {
+		this.dg = dg;
+
 		Map<V, Scc> sccs = Read.from(dg.vertices).map2(v -> v, v -> new Scc(v)).toMap();
 		forwards = Read.from(dg.forwards).mapEntry((u, v) -> sccs.get(u), (u, v) -> sccs.get(v)).toMultimap();
 
 		for (Scc vscc : sccs.values())
 			if (!vscc.isVisited)
 				strongConnect(vscc);
+	}
+
+	public DirectedGraph<Set<V>> group() {
+		Map<V, Set<V>> map = Read.from(components).concatMap2(vs -> Read.from(vs).map2(v -> v, v -> vs)).toMap();
+		Set<Set<V>> vertices = Read.from(components).toSet();
+		Set<Pair<Set<V>, Set<V>>> edges = new HashSet<>();
+
+		for (V v0 : dg.vertices)
+			for (V v1 : dg.forwards.get(v0)) {
+				Set<V> vs0 = map.get(v0);
+				Set<V> vs1 = map.get(v1);
+				if (vs0 != vs1)
+					edges.add(Pair.of(vs0, vs1));
+			}
+
+		return DirectedGraph.of(vertices, edges);
 	}
 
 	private void strongConnect(Scc vscc) {

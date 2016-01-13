@@ -21,6 +21,7 @@ import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2;
 import suite.util.To;
 import suite.util.Util;
 
@@ -74,6 +75,10 @@ public class Outlet<T> implements Iterable<T> {
 
 	public <O> Outlet<O> concatMap(Fun<T, Outlet<O>> fun) {
 		return from(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
+	}
+
+	public <K, V> Outlet2<K, V> concatMap2(Fun<T, Outlet2<K, V>> fun) {
+		return Outlet2.from(FunUtil2.concat(FunUtil.map(t -> fun.apply(t).source2(), source)));
 	}
 
 	public Outlet<T> closeAtEnd(Closeable c) {
