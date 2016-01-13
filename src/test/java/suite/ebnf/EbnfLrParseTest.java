@@ -37,7 +37,7 @@ public class EbnfLrParseTest {
 	}
 
 	@Test
-	public void testExpression() throws IOException {
+	public void testExpression0() throws IOException {
 		EbnfLrParse elp = EbnfLrParse.of("" //
 				+ "<expression> ::= <number> | <number> \"+\" <expression>\n" //
 				+ "<number> ::= <digit> | <digit> <number>\n" //
@@ -45,6 +45,16 @@ public class EbnfLrParseTest {
 				, "<expression>");
 
 		System.out.println(elp.parse("1 + 2 + 3"));
+	}
+
+	@Test
+	public void testExpression1() throws IOException {
+		EbnfLrParse elp = EbnfLrParse.of("" //
+				+ "<e> ::= <e> \"*\" <b> | <e> \"+\" <b> | <b>\n" //
+				+ "<b> ::= \"0\" | \"1\"\n" //
+				, "<e>");
+
+		System.out.println(elp.parse("0 * 0 + 1"));
 	}
 
 	@Test
