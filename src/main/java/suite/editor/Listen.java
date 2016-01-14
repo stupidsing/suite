@@ -13,7 +13,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.JComponent;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
@@ -26,6 +28,18 @@ public class Listen {
 
 	public interface SinkEx<T, Ex extends Exception> {
 		public void sink(T t) throws Ex;
+	}
+
+	public static Reactive<ActionEvent> action(AbstractButton component) {
+		Reactive<ActionEvent> reactive = new Reactive<>();
+		component.addActionListener(event -> reactive.fire(event));
+		return reactive;
+	}
+
+	public static Reactive<ActionEvent> action(JTextField component) {
+		Reactive<ActionEvent> reactive = new Reactive<>();
+		component.addActionListener(event -> reactive.fire(event));
+		return reactive;
 	}
 
 	public static Reactive<ActionEvent> actionPerformed(JComponent component, Object key) {

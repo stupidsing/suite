@@ -58,7 +58,7 @@ public class EditorView {
 
 	public JFrame run(EditorController controller, String title) {
 		JTextField searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
-		searchTextField.addActionListener(event -> controller.searchFiles(model.getSearchText()));
+		Listen.action(searchTextField).register(event -> controller.searchFiles(model.getSearchText()));
 		Listen.documentChanged(searchTextField).register(event -> model.setSearchText(searchTextField.getText()));
 		Listen.keyPressed(searchTextField).register(event -> {
 			if (event.getKeyCode() == KeyEvent.VK_DOWN)
@@ -151,68 +151,68 @@ public class EditorView {
 	private JMenuBar createMenuBar(EditorController controller) {
 		JMenuItem newMenuItem = applyDefaults(new JMenuItem("New...", KeyEvent.VK_N));
 		newMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
-		newMenuItem.addActionListener(event -> controller.newFile());
+		Listen.action(newMenuItem).register(event -> controller.newFile());
 
 		JMenuItem openMenuItem = applyDefaults(new JMenuItem("Open...", KeyEvent.VK_O));
 		openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
-		openMenuItem.addActionListener(event -> controller.open());
+		Listen.action(openMenuItem).register(event -> controller.open());
 
 		JMenuItem saveMenuItem = applyDefaults(new JMenuItem("Save", KeyEvent.VK_S));
 		saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
-		saveMenuItem.addActionListener(event -> controller.save());
+		Listen.action(saveMenuItem).register(event -> controller.save());
 
 		JMenuItem searchMenuItem = applyDefaults(new JMenuItem("Search"));
 		searchMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
-		searchMenuItem.addActionListener(event -> controller.searchFor());
+		Listen.action(searchMenuItem).register(event -> controller.searchFor());
 
 		JMenuItem exitMenuItem = applyDefaults(new JMenuItem("Close", KeyEvent.VK_C));
-		exitMenuItem.addActionListener(event -> controller.close());
+		Listen.action(exitMenuItem).register(event -> controller.close());
 
 		JMenuItem copyMenuItem = applyDefaults(new JMenuItem("Copy"));
 		copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
-		copyMenuItem.addActionListener(event -> controller.copy(false));
+		Listen.action(copyMenuItem).register(event -> controller.copy(false));
 
 		JMenuItem copyAppendMenuItem = applyDefaults(new JMenuItem("Copy Append"));
 		copyAppendMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
-		copyAppendMenuItem.addActionListener(event -> controller.copy(true));
+		Listen.action(copyAppendMenuItem).register(event -> controller.copy(true));
 
 		JMenuItem pasteMenuItem = applyDefaults(new JMenuItem("Paste"));
 		pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
-		pasteMenuItem.addActionListener(event -> controller.paste());
+		Listen.action(pasteMenuItem).register(event -> controller.paste());
 
 		JMenuItem formatMenuItem = applyDefaults(new JMenuItem("Format", KeyEvent.VK_F));
-		formatMenuItem.addActionListener(event -> controller.format());
+		Listen.action(formatMenuItem).register(event -> controller.format());
 
 		JMenuItem funFilterMenuItem = applyDefaults(new JMenuItem("Functional Filter...", KeyEvent.VK_U));
-		funFilterMenuItem.addActionListener(event -> controller.funFilter());
+		Listen.action(funFilterMenuItem).register(event -> controller.funFilter());
 
 		JMenuItem unixFilterMenuItem = applyDefaults(new JMenuItem("Unix Filter...", KeyEvent.VK_X));
-		unixFilterMenuItem.addActionListener(event -> controller.unixFilter());
+		Listen.action(unixFilterMenuItem).register(event -> controller.unixFilter());
 
 		JMenuItem leftMenuItem = applyDefaults(new JMenuItem("Left", KeyEvent.VK_L));
 		leftMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.ALT_MASK));
-		leftMenuItem.addActionListener(event -> controller.left());
+		Listen.action(leftMenuItem).register(event -> controller.left());
 
 		JMenuItem rightMenuItem = applyDefaults(new JMenuItem("Right", KeyEvent.VK_R));
 		rightMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.ALT_MASK));
-		rightMenuItem.addActionListener(event -> controller.right());
+		Listen.action(rightMenuItem).register(event -> controller.right());
 
 		JMenuItem topMenuItem = applyDefaults(new JMenuItem("Top", KeyEvent.VK_T));
 		topMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.ALT_MASK));
-		topMenuItem.addActionListener(event -> controller.top());
+		Listen.action(topMenuItem).register(event -> controller.top());
 
 		JMenuItem bottomMenuItem = applyDefaults(new JMenuItem("Bottom", KeyEvent.VK_B));
 		bottomMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.ALT_MASK));
-		bottomMenuItem.addActionListener(event -> controller.bottom());
+		Listen.action(bottomMenuItem).register(event -> controller.bottom());
 
 		JMenuItem evalMenuItem = applyDefaults(new JMenuItem("Evaluate", KeyEvent.VK_E));
-		evalMenuItem.addActionListener(event -> controller.evaluate());
+		Listen.action(evalMenuItem).register(event -> controller.evaluate());
 
 		JMenuItem evalTypeMenuItem = applyDefaults(new JMenuItem("Evaluate Type", KeyEvent.VK_T));
-		evalTypeMenuItem.addActionListener(event -> controller.evaluateType());
+		Listen.action(evalTypeMenuItem).register(event -> controller.evaluateType());
 
 		JMenuItem newWindowMenuItem = applyDefaults(new JMenuItem("New Window", KeyEvent.VK_N));
-		newWindowMenuItem.addActionListener(event -> controller.newWindow());
+		Listen.action(newWindowMenuItem).register(event -> controller.newWindow());
 
 		JMenu fileMenu = createMenu("File", KeyEvent.VK_F, //
 				newMenuItem, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
