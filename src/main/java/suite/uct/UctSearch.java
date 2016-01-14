@@ -60,7 +60,19 @@ public class UctSearch<Move> {
 		long end = System.currentTimeMillis() + boundedTime;
 
 		for (int i = 0; i < numberOfThreads; i++)
-			(threads[i] = new SearchThread(count, end)).start();
+			(threads[i] = new Thread(() -> {
+				int j = 0;
+
+				while (count.getAndIncrement() < numberOfSimulations) {
+					playSimulation(visitor.cloneVisitor(), root, 0);
+
+					if (++j > 100) {
+						j = 0;
+						if (System.currentTimeMillis() > end)
+							break;
+					}
+				}
+			})).start();
 
 		try {
 			for (int i = 0; i < numberOfThreads; i++)
@@ -72,30 +84,6 @@ public class UctSearch<Move> {
 		// Finds best node
 		best = root.bestChild;
 		return best != null ? best.move : null;
-	}
-
-	private class SearchThread extends Thread {
-		private AtomicInteger count;
-		private long end;
-
-		private SearchThread(AtomicInteger count, long end) {
-			this.count = count;
-			this.end = end;
-		}
-
-		public void run() {
-			int i = 0;
-
-			while (count.getAndIncrement() < numberOfSimulations) {
-				playSimulation(visitor.cloneVisitor(), root, 0);
-
-				if (++i > 100) {
-					i = 0;
-					if (System.currentTimeMillis() > end)
-						break;
-				}
-			}
-		}
 	}
 
 	/**
