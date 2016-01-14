@@ -31,7 +31,7 @@ public class UctSearch<Move> {
 	private Map<Move, AtomicInteger> nRaveWins = new HashMap<>();
 	private Map<Move, AtomicInteger> nRaveVisits = new HashMap<>();
 
-	public static class UctNode<Move> {
+	private static class UctNode<Move> {
 		private Move move;
 		private int nWins, nVisits;
 		private UctNode<Move> child, sibling, bestChild;
