@@ -5,8 +5,7 @@ import java.io.OutputStream;
 
 import org.junit.Test;
 
-import suite.Suite;
-import suite.asm.Assembler;
+import suite.ip.ImperativeCompiler;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 
@@ -48,14 +47,15 @@ public class ElfTest {
 
 	@Test
 	public void test() throws IOException {
+		String program = "" //
+				+ "asm _ MOV (EAX, 1);" //
+				+ "asm _ MOV (EBX, 42);" //
+				+ "asm _ INT (-128);" //
+				;
+
 		int org = 0x08048000;
 
-		Assembler assembler = new Assembler(32);
-		Bytes code = assembler.assemble(Suite.parse(".org = +x08048000" //
-				+ ", _ MOV (EAX, 1)" //
-				+ ", _ MOV (EBX, 42)" //
-				+ ", _ INT (-128)" //
-				+ ", ()"));
+		Bytes code = new ImperativeCompiler().compile(org, program);
 
 		Bytes header = new Bb() //
 				.db(0x7F) // e_ident
