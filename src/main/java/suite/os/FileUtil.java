@@ -104,7 +104,7 @@ public class FileUtil {
 
 	public static OutputStream out(String filename) throws IOException {
 		Path parentFile = Paths.get(filename).getParent();
-		if (parentFile != null)
+		if (parentFile != null && !Files.isDirectory(parentFile))
 			Files.createDirectories(parentFile);
 
 		String filename1 = filename + ".new";
