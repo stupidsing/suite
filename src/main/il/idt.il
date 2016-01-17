@@ -116,7 +116,7 @@ declare idt-setup = function [] (
 		sch-exit [];
 	);
 
-	for i in (0, 256) (
+	for i in (0, 256) do (
 		idt-set-entry [i, handle-general-interrupt, true,];
 	);
 

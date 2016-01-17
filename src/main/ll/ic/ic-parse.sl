@@ -161,9 +161,9 @@ ic-parse-sugar (constant .var = .value; .do) .do1
 ic-parse-sugar (declare-pointer .var to .type; .do) (declare .mem as .type; declare .var = & .mem; .do)
 	:- is.atom .var, temp .mem
 #
-ic-parse-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .step))
+ic-parse-sugar (for (.init; .cond; .step) do .do) (.init; while .cond do (.do; .step))
 #
-ic-parse-sugar (for .var in (.start, .end) .do) (declare .var = .start; while (.var < .end) do (.do; .var += 1))
+ic-parse-sugar (for .var in (.start, .end) do .do) (declare .var = .start; while (.var < .end) do (.do; .var += 1))
 #
 ic-parse-sugar (not .b) (if .b then 0 else 1)
 #

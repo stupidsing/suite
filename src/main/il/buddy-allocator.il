@@ -75,7 +75,7 @@ declare ba-deallocate = function [block, size,] (
 );
 
 declare ba-setup = function [] (
-	for i in (0, 32) (
+	for i in (0, 32) do (
 		dl-new [& lists:i,];
 		lists:i/current/size = 0;
 	);

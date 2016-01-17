@@ -84,14 +84,14 @@ declare pg-allocate = function [nPages,] (
 
 		while (r0 = 0 && ((let pg-current = next-page [pg-current,]) != initial)) do (
 			declare r1 = 1;
-			for (declare i = 0; (r1 && i < nPages); i =+ 1) (
+			for (declare i = 0; (r1 && i < nPages); i =+ 1) do (
 				let r1 = (r1 && not pg-is-mapped [pg-current + i shl 12,]);
 			);
 			(r1 && let r0 = pg-current);
 		);
 
 		(r0 && (
-			for i in (0, nPages) (
+			for i in (0, nPages) do (
 				declare logical = r0 + i shl 12;
 				declare physical = pg-acquire-pt [];
 				pg-map [logical, physical,];
@@ -104,7 +104,7 @@ declare pg-allocate = function [nPages,] (
 
 declare pg-deallocate = function [p, nPages,] (
 	synchronized (& pg-sync) (
-		for i in (0, nPages) (
+		for i in (0, nPages) do (
 			declare logical = p + i shl 12;
 			declare physical = pg-get-physical [logical,];
 			pg-unmap [logical,];
@@ -119,10 +119,10 @@ declare pg-setup = function [] (
 	declare physical = 0;
 
 	declare pt0 = pg-acquire-pt [];
-	for i0 in (0, 1024) (
+	for i0 in (0, 1024) do (
 		declare entry0 = if (physical < phyx0) then (
 			declare pt1 = pg-acquire-pt [];
-			for i1 in (0, 1024) (
+			for i1 in (0, 1024) do (
 				declare entry1 = if (0 < physical && physical < phyx1) then (physical + 261) else 0;
 				physical += 4096;
 				dw-set [pt1 + i1 shl 2, entry1,]; -- Global, user, present
@@ -157,10 +157,10 @@ declare pg-teardown = function [] (
 	asm _ D8 (+xEB); -- JMP $ + 2
 	asm _ D8 (+x00);
 
-	for i0 in (0, 1024) (
+	for i0 in (0, 1024) do (
 		declare pt1 = (dw-get [pt0 + i0 shl 2,]) and +xFFFFF000;
 		(pt1 && (
-			for i1 in (0, 1024) (
+			for i1 in (0, 1024) do (
 				declare pt2 = (dw-get [pt1 + i1 shl 2,]) and +xFFFFF000;
 				(pt2 && pg-release-pt [pt2,]);
 			);

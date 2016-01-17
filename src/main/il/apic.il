@@ -105,7 +105,7 @@ declare ap-setup = function [] (
 	declare p1;
 
 	-- https://github.com/pdoane/osdev/blob/master/acpi/acpi.c
-	for (declare p = +xE0000; p < +x100000; p += 16) (
+	for (declare p = +xE0000; p < +x100000; p += 16) do (
 		(dw-get [p,] = +x20445352 && dw-get [p + 4,] = +x20525450 -- 'RSD PTR '
 			&& let p1 = p
 		);

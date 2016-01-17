@@ -20,7 +20,7 @@ declare irq-set-sink = function [irq-number, irq-sink,] (
 );
 
 declare irq-setup = function [] (
-	for irq-number in (0, 16) (
+	for irq-number in (0, 16) do (
 		irq-set-sink [irq-number, dump-sink,];
 	);
 

@@ -34,7 +34,7 @@ declare ne2k-read = function [src, dst, len,] (
 	outb [ne2k-io-base + +x09, src ushr 8,];
 	outb [ne2k-io-base + +x00, +x0A,];
 
-	for (declare p = 0; p < len; p =+ 2) (
+	for (declare p = 0; p < len; p =+ 2) do (
 		declare w = inw [ne2k-io-base + +x10,];
 		copy [dst + p, address w, 2,];
 	);
@@ -52,7 +52,7 @@ declare ne2k-send = function [buffer, len,] (
 	outb [ne2k-io-base + +x09, ne2k-rx-page-stop,];
 	outb [ne2k-io-base + +x00, +x12,];
 
-	for (declare p = 0; p < len; p =+ 2) (
+	for (declare p = 0; p < len; p =+ 2) do (
 		declare b as int;
 		copy [address b, buffer + p, 2,];
 		outw [ne2k-io-base + +x10, b,];
@@ -93,7 +93,7 @@ declare ne2k-setup = function [] (
 
 		declare romdata as (byte * 16);
 		ne2k-read [0, address romdata, 16,];
-		for p in (0, 6) (
+		for p in (0, 6) do (
 			copy [address ne2k-mac-address + p, address romdata + p shl 1, 1,];
 		);
 
@@ -102,7 +102,7 @@ declare ne2k-setup = function [] (
 
 		cs-puts ["MAC address = ",];
 
-		for p in (0, 6) (
+		for p in (0, 6) do (
 			cs-put-hex1 [extend ne2k-mac-address:p,];
 		);
 

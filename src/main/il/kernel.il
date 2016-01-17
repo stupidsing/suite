@@ -148,7 +148,7 @@ outb [+x40, 11932 / 256,];
 outb [+x21, +xFC,];
 
 -- Initializes task state segment (TSS)
-for (declare i = 0; i < 104; i =+ 4) (
+for (declare i = 0; i < 104; i =+ 4) do (
 	dw-set [tss-address + i, 0,];
 );
 --dw-set [tss-address + 4, current-process as int + size-of sch-node,]; -- Set by scheduler instead
