@@ -123,7 +123,7 @@ public class PrettyPrinter {
 				revertIndent(parsIndent0);
 			}
 		} else {
-			if (node != lineBreakBeforeKeyword && !isLineBegin())
+			if (node == lineBreakBeforeKeyword && !isLineBegin())
 				nl();
 
 			append(Formatter.dump(node)); // Space sufficient
