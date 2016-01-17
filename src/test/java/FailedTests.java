@@ -8,9 +8,11 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.fp.FunRbTreeTest;
+import suite.ip.ImperativeCompiler;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.sewing.impl.SewingProverImpl;
+import suite.primitive.Bytes;
 
 public class FailedTests {
 
@@ -23,6 +25,18 @@ public class FailedTests {
 						+ "data (C1 {:t}) over :t as (C0 {:t}) >> \n" //
 						+ "data (C2 {:t}) over :t as (C1 {:t}) >> \n" //
 						+ "(C2 {boolean}) of (A true)"));
+	}
+
+	// Cannot capture reference to a structure
+	@Test
+	public void testDataStructure() {
+		String s = "" //
+				+ "constant p = fix :p struct (next as pointer:(:p),);" //
+				+ "declare r = & new p (next = null,);" //
+				+ "0";
+		Bytes bytes = new ImperativeCompiler().compile(0, s);
+		assertNotNull(bytes);
+		System.out.println(bytes);
 	}
 
 	// Duplicate symbols. Cannot bind again when using is used in a closure
