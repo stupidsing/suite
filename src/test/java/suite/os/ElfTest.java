@@ -47,12 +47,14 @@ public class ElfTest {
 
 	@Test
 	public void test() throws IOException {
-		String program = "" //
+		generateElf("" //
 				+ "asm _ MOV (EAX, 1);" //
 				+ "asm _ MOV (EBX, 42);" //
 				+ "asm _ INT (-128);" //
-				;
+				, FileUtil.tmp + "/a.out");
+	}
 
+	private void generateElf(String program, String elf) throws IOException {
 		int org = 0x08048000;
 
 		Bytes code = new ImperativeCompiler().compile(org, program);
@@ -85,7 +87,7 @@ public class ElfTest {
 				.dd(0x1000) // p_align
 				.toBytes();
 
-		try (OutputStream os = FileUtil.out(FileUtil.tmp + "/a.out")) {
+		try (OutputStream os = FileUtil.out(elf)) {
 			os.write(header.toBytes());
 			os.write(code.toBytes());
 		}
