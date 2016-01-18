@@ -1,3 +1,4 @@
+-- Mark-and-sweep garbage collection
 constant gc-free = 0;
 constant gc-allocated = 1;
 constant gc-marked = 2;
