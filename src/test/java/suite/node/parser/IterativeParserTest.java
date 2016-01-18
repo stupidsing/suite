@@ -13,6 +13,8 @@ import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
+import suite.os.LogUtil;
+import suite.util.FunUtil.Source;
 
 public class IterativeParserTest {
 
@@ -88,6 +90,18 @@ public class IterativeParserTest {
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));
+	}
+
+	@Test
+	public void testParsePerformance() throws IOException {
+		String in = FileUtil.read("src/main/fl/STANDARD.slf");
+		Source<Boolean> test = () -> {
+			for (int i = 0; i < 20; i++)
+				iterativeParser.parse(in);
+			return true;
+		};
+		test.source(); // Warm-up
+		LogUtil.duration("parse", test);
 	}
 
 	private void test(String s) {
