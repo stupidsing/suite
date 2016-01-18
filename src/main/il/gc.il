@@ -1,5 +1,6 @@
-constant gc-none = 0;
-constant gc-marked = 1;
+constant gc-free = 0;
+constant gc-allocated = 1;
+constant gc-marked = 2;
 
 constant gc-class = struct (
 	size as int,
@@ -17,15 +18,16 @@ declare gc-current;
 
 declare-pointer head to gc-node;
 
-declare ffa-prev = dl-prev;
-declare ffa-next = dl-next;
+declare gc-prev = dl-prev;
+declare gc-next = dl-next;
 
 declare gc-mark = function [root,] (
-	declare start = gc-current;
-	declare next = start;
+	(
+		declare node = gc-current;
 
-	while ((let next = gc-next [next,]) != start) do (
-		let `next`/flag = gc-none;
+		while (let node = gc-next [node,]) do (
+			`node`/flag = gc-marked && let `node`/flag = gc-allocated
+		);
 	);
 
 	declare nodes = pointer:gc-node * 1024;
@@ -33,9 +35,9 @@ declare gc-mark = function [root,] (
 	let `nodes:(n =+ 1)` = root;
 
 	while (n > 0) do (
-		let node = `nodes:(n += -1)`;
+		declare node = `nodes:(n += -1)`;
 
-		(`node`/flag = gc-none && (
+		(`node`/flag = gc-allocated && (
 			let `node`/flag = gc-marked;
 
 			let class = `node`/class;
@@ -48,17 +50,29 @@ declare gc-mark = function [root,] (
 );
 
 declare gc-sweep = function [root,] (
-	declare start = gc-current;
-	declare next = start;
+	declare node = gc-current;
 
-	while ((let next = gc-next [next,]) != start) do (
-		(`node`/flag = gc-none && dl-remove [next,]);
+	while (let node = gc-next [node,]) do (
+		(`node`/flag = gc-allocated && let `node`/flag = gc-free);
+	);
+);
+
+declare gc-merge = function [root,] (
+	declare node = gc-current;
+
+	while (let node = gc-next [node,]) do (
+		declare node1 = gc-next [node,];
+		(node1
+			&& `node`/flag = gc-allocated
+			&& `node1`/flag = gc-allocated
+			&& dl-remove [node1,]);
 	);
 );
 
 declare gc-gc = function [root,] (
 	gc-mark [root,];
 	gc-sweep [];
+	gc-merge [];
 );
 
 declare gc-allocate = function [class,] (
