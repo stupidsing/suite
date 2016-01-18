@@ -1,6 +1,7 @@
 constant ba-node = dl-node struct (
 	size as int,
 );
+declare ba-node-size = size-of ba-node;
 
 declare ba-sync = 0;
 declare lists as (ba-node * 32);
@@ -64,13 +65,13 @@ declare ba-deallocate0 = function [block, l2,] (
 
 declare ba-allocate = function [size,] (
 	synchronized (& ba-sync) (
-		(ba-allocate0 [log2rel [size + 12 - 1,],]) as int + 12;
+		(ba-allocate0 [log2rel [size + ba-node-size - 1,],]) as int + ba-node-size;
 	);
 );
 
 declare ba-deallocate = function [block, size,] (
 	synchronized (& ba-sync) (
-		ba-deallocate0 [(block - 12) as pointer:ba-node, log2rel [size + 12,],];
+		ba-deallocate0 [(block - ba-node-size) as pointer:ba-node, log2rel [size + ba-node-size,],];
 	);
 );
 

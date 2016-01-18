@@ -1,6 +1,7 @@
 constant ffa-node = dl-node struct (
 	size as int,
 );
+declare ffa-node-size = size-of ffa-node;
 
 declare ffa-sync = 0;
 declare ffa-region0 = +x50000;
@@ -27,14 +28,14 @@ declare ffa-allocate0 = function [size,] (
 	declare diff = `ffa-current`/current/size - size;
 
 	if (diff >= 0) then (
-		if (diff >= 16) then (
-			dl-insert-next [ffa-current, ffa-current +offset (size + 12),];
+		if (diff >= ffa-node-size + 4) then (
+			dl-insert-next [ffa-current, ffa-current +offset (size + ffa-node-size),];
 			let next = ffa-next [ffa-current,];
-			let `next`/current/size = diff - 12;
+			let `next`/current/size = diff - ffa-node-size;
 		) else ();
 
 		let `ffa-current`/current/size = 0;
-		ffa-current +offset 12;
+		ffa-current +offset ffa-node-size;
 	) else null;
 );
 
@@ -51,24 +52,24 @@ declare ffa-deallocate0 = function [block,] (
 		dl-remove [next,];
 	) else ();
 
-	let `block`/current/size = (ffa-next [block,]) as int - block as int - 12;
+	let `block`/current/size = (ffa-next [block,]) as int - block as int - ffa-node-size;
 );
 
 declare ffa-allocate = function [size,] (
 	synchronized (& ffa-sync) (
-		(ffa-allocate0 [size,]) as int + 12;
+		(ffa-allocate0 [size,]) as int + ffa-node-size;
 	);
 );
 
 declare ffa-deallocate = function [p, size as int,] (
 	synchronized (& ffa-sync) (
-		ffa-deallocate0 [(p - 12) as pointer:ffa-node,];
+		ffa-deallocate0 [(p - ffa-node-size) as pointer:ffa-node,];
 	);
 );
 
 declare ffa-setup = function [] (
 	declare first = ffa-region0 as pointer:ffa-node;
-	declare last = (ffa-regionx - 12) as pointer:ffa-node; -- Stopper record
+	declare last = (ffa-regionx - ffa-node-size) as pointer:ffa-node; -- Stopper record
 
 	let `first`/current/size = ffa-regionx - ffa-region0 - 24;
 	let `last`/current/size = 0;

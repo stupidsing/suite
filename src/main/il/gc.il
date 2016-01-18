@@ -10,8 +10,10 @@ constant gc-class = struct (
 
 constant gc-node = dl-node struct (
 	flag as int,
+	size as int,
 	class as pointer:gc-class,
 );
+declare gc-node-size = size-of gc-node;
 
 declare gc-sync = 0;
 declare gc-current;
@@ -21,7 +23,7 @@ declare-pointer head to gc-node;
 declare gc-prev = dl-prev;
 declare gc-next = dl-next;
 
-declare gc-premark = function [] (
+declare gc-prepare = function [] (
 	declare node = head;
 	while (let node = gc-next [node,]) do (
 		`node`/flag = gc-free || let `node`/flag = gc-allocated
@@ -36,7 +38,7 @@ declare gc-mark = function [root,] (
 	while (index > 0) do (
 		declare node = `nodes:(index += -1)`;
 
-		(`node`/flag = gc-allocated && (
+		if (`node`/flag = gc-allocated) then (
 			let `node`/flag = gc-marked;
 
 			let class = `node`/class;
@@ -44,41 +46,51 @@ declare gc-mark = function [root,] (
 			for i in (0, `class`/number-of-pointers) (
 				let `nodes:(index =+ 1)` = (p + i) as pointer:gc-node;
 			);
-		));
+		) else ();
 	);
 );
 
 declare gc-sweep = function [] (
 	declare node = head;
-
 	while (let node = gc-next [node,]) do (
-		`node`/flag = gc-allocated && let `node`/flag = gc-free
+		`node`/flag = gc-marked || let `node`/flag = gc-free;
 	);
 );
 
 declare gc-merge = function [] (
 	declare node = head;
-
 	while (let node = gc-next [node,]) do (
 		declare node1 = gc-next [node,];
-		(node1
-			&& `node`/flag = gc-free
-			&& `node1`/flag = gc-free
-			&& dl-remove [node1,]);
+		if (node1 && `node`/flag = gc-free && `node1`/flag = gc-free) then (
+			dl-remove [node1,];
+			let `node`/current/size = (gc-next [node,]) as int - node as int - gc-node-size;
+		) else ();
 	);
 );
 
 declare gc-gc = function [root,] (
 	synchronized (& gc-sync) (
-		gc-premark [];
+		gc-prepare [];
 		gc-mark [root,];
 		gc-sweep [];
 		gc-merge [];
 	);
 );
 
-declare gc-allocate = function [class,] (
-	0;
+declare gc-allocate = function [class as pointer:gc-class,] (
+	declare size = `class`/size;
+	declare next;
+	while (let next = gc-next [gc-current,]) do (let gc-current = next);
+
+	if next then (
+		declare p = next +offset ffa-node-size;
+		zero [p, size,];
+		p;
+	) else (
+		gc-gc [];
+		gc-current = head;
+		gc-allocate [class,];
+	);
 );
 
 declare gc-setup = function [] (
