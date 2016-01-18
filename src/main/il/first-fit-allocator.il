@@ -13,9 +13,9 @@ declare ffa-prev = dl-prev;
 declare ffa-next = dl-next;
 
 declare ffa-allocate0 = function [size,] (
-	declare next-block = function [block,] (
-		declare n = ffa-next [block,];
-		if (n != null) then n else head;
+	declare next-block = function [n,] (
+		declare n1 = ffa-next [n,];
+		if (n1 != null) then n1 else head;
 	);
 
 	declare start = ffa-current;
