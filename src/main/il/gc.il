@@ -16,7 +16,7 @@ constant gc-node = dl-node struct (
 declare gc-node-size = size-of gc-node;
 
 declare gc-sync = 0;
-declare gc-current;
+declare gc-current as pointer:gc-node;
 
 declare-pointer head to gc-node;
 
@@ -59,12 +59,14 @@ declare gc-sweep = function [] (
 
 declare gc-merge = function [] (
 	declare node = head;
-	while (let node = gc-next [node,]) do (
+	while node do (
 		declare node1 = gc-next [node,];
 		if (node1 && `node`/flag = gc-free && `node1`/flag = gc-free) then (
 			dl-remove [node1,];
 			let `node`/current/size = (gc-next [node,]) as int - node as int - gc-node-size;
-		) else ();
+		) else (
+			let node = node1;
+		);
 	);
 );
 

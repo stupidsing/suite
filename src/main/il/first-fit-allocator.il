@@ -6,7 +6,7 @@ declare ffa-node-size = size-of ffa-node;
 declare ffa-sync = 0;
 declare ffa-region0 = +x50000;
 declare ffa-regionx = +xA0000;
-declare ffa-current;
+declare ffa-current as pointer:ffa-node;
 
 declare-pointer head to ffa-node;
 
