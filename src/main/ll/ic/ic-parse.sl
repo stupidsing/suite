@@ -52,7 +52,7 @@ ic-parse .array:.index (INDEX _ .array1 .index1)
 ic-parse (.sub [.params]) (INVOKE .sub1 .ips) -- Traditional subroutine invocation
 	:- ic-parse .sub .sub1
 	, zip .params .ips .list
-	, list.query .list .param:(IP IN .param1) (ic-parse .param .param1)
+	, list.query .list .param:.ip (ic-parse-invoke-parameter .param .ip)
 #
 ic-parse (let .var = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
@@ -169,6 +169,15 @@ ic-parse-sugar (not .b) (if .b then 0 else 1)
 #
 ic-parse-sugar (var .var = .value; .do) (var .var; let .var = .value; .do)
 	:- is.atom .var
+#
+
+ic-parse-invoke-parameter (out .param) .ip
+	:- ic-parse .param .param1
+	, .ip = IP OUT .param1
+#
+ic-parse-invoke-parameter .param .ip
+	:- ic-parse .param .param1
+	, .ip = IP IN .param1
 #
 
 ic-parse-method-parameter (out .param) (MP OUT .param _)
