@@ -79,14 +79,14 @@ declare gc-gc = function [root,] (
 declare gc-allocate0 = function [class as pointer:gc-class,] (
 	declare size = `class`/size;
 	declare node = null;
-	declare b = 0;
+	declare ok = 0;
 
-	while (not b) do (
+	while (not ok) do (
 		declare next;
-		while (let b = (`gc-current`/current/size < size) && let next = gc-next [gc-current,]) do (
+		while (let ok = (`gc-current`/current/size < size) && let next = gc-next [gc-current,]) do (
 			let gc-current = next;
 		);
-		b || gc-gc [];
+		ok || gc-gc [];
 	);
 
 	declare diff = `gc-current`/current/size - size;
