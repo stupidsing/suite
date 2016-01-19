@@ -14,14 +14,14 @@ declare ffa-prev = dl-prev;
 declare ffa-next = dl-next;
 
 declare ffa-allocate0 = function [size,] (
-	declare next-block = function [n,] (
+	declare next-node = function [n,] (
 		declare n1 = ffa-next [n,];
 		if (n1 != null) then n1 else head;
 	);
 
 	declare start = ffa-current;
 	declare next;
-	while ((let next = next-block [ffa-current,]) != start && `ffa-current`/current/size < size) do (
+	while (`ffa-current`/current/size < size && (let next = next-node [ffa-current,]) != start) do (
 		let ffa-current = next;
 	);
 
@@ -35,24 +35,24 @@ declare ffa-allocate0 = function [size,] (
 		) else ();
 
 		let `ffa-current`/current/size = 0;
-		ffa-current +offset ffa-node-size;
+		ffa-current;
 	) else null;
 );
 
-declare ffa-deallocate0 = function [block,] (
-	declare prev = ffa-prev [block,];
-	declare next = ffa-next [block,];
+declare ffa-deallocate0 = function [node,] (
+	declare prev = ffa-prev [node,];
+	declare next = ffa-next [node,];
 
 	if (prev != null && `prev`/current/size != 0) then (
-		dl-remove [block,];
-		let block = prev;
+		dl-remove [node,];
+		let node = prev;
 	) else ();
 
 	if (next != null && `next`/current/size != 0) then (
 		dl-remove [next,];
 	) else ();
 
-	let `block`/current/size = (ffa-next [block,]) as int - block as int - ffa-node-size;
+	let `node`/current/size = (ffa-next [node,]) as int - node as int - ffa-node-size;
 );
 
 declare ffa-allocate = function [size,] (

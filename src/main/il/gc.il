@@ -69,29 +69,46 @@ declare gc-merge = function [] (
 );
 
 declare gc-gc = function [root,] (
-	synchronized (& gc-sync) (
-		gc-prepare [];
-		gc-mark [root,];
-		gc-sweep [];
-		gc-merge [];
-		gc-current = head;
-	);
+	gc-prepare [];
+	gc-mark [root,];
+	gc-sweep [];
+	gc-merge [];
+	gc-current = head;
 );
 
-declare gc-allocate = function [class as pointer:gc-class,] (
+declare gc-allocate0 = function [class as pointer:gc-class,] (
 	declare size = `class`/size;
-	declare next = null;
+	declare node = null;
+	declare b = 0;
 
-	while (next = null) do (
-		declare size = `class`/size;
-		while (let next = gc-next [gc-current,]) do (let gc-current = next);
-		next || gc-gc [];
+	while (not b) do (
+		declare next;
+		while (let b = (`gc-current`/current/size < size) && let next = gc-next [gc-current,]) do (
+			let gc-current = next;
+		);
+		b || gc-gc [];
 	);
 
-	declare p = next +offset ffa-node-size;
-	zero [p, size,];
-	p;
+	declare diff = `gc-current`/current/size - size;
+	if (diff >= gc-node-size + 4) then (
+		dl-insert-next [gc-current, gc-current +offset (size + gc-node-size),];
+		declare node1 = gc-next [gc-current,];
+		let `node1`/current/size = diff - gc-node-size;
+	) else ();
+
+	node;
+);
+
+declare gc-allocate = function [class,] (
+	synchronized (& gc-sync) (
+		(gc-allocate0 [class,]) as int + gc-node-size;
+		zero [p, size,];
+	);
 );
 
 declare gc-setup = function [] (
+	constant pool = int * 1048576;
+	declare p = (mm-allocate [int * 1048576,]) as int;
+	head = p as pointer:gc-node;
+	let `head`/size = p + size-of pool - size-of gc-node;
 );
