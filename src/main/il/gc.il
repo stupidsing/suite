@@ -74,23 +74,23 @@ declare gc-gc = function [root,] (
 		gc-mark [root,];
 		gc-sweep [];
 		gc-merge [];
+		gc-current = head;
 	);
 );
 
 declare gc-allocate = function [class as pointer:gc-class,] (
 	declare size = `class`/size;
-	declare next;
-	while (let next = gc-next [gc-current,]) do (let gc-current = next);
+	declare next = null;
 
-	if next then (
-		declare p = next +offset ffa-node-size;
-		zero [p, size,];
-		p;
-	) else (
-		gc-gc [];
-		gc-current = head;
-		gc-allocate [class,];
+	while (next = null) do (
+		declare size = `class`/size;
+		while (let next = gc-next [gc-current,]) do (let gc-current = next);
+		next || gc-gc [];
 	);
+
+	declare p = next +offset ffa-node-size;
+	zero [p, size,];
+	p;
 );
 
 declare gc-setup = function [] (
