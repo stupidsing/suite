@@ -19,7 +19,7 @@ public class ElfTest {
 				+ "asm _ INT (-128);";
 		int org = 0x08048000;
 
-		Bytes code = new ImperativeCompiler().compile(org, program);
+		Bytes code = new ImperativeCompiler().compile(org + 84, program);
 
 		try (OutputStream os = FileUtil.out(FileUtil.tmp + "/a.out")) {
 			new ElfWriter().write(org, code, os);
