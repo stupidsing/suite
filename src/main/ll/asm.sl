@@ -31,7 +31,7 @@ asis:_s:.a (ADVANCE .a) .e/.e #
 asis:.s:.a0 (ADVANCE .a1) (0, .e1)/.ex :- .a0 < .a1, let .a (.a0 + 1), asis:.s:.a (ADVANCE .a1) .e1/.ex #
 asis:.s:.a (AND (.op0, .op1)) .e :- asi-2op:.s:.a .op0 .op1 +x20 +x80 4 .e #
 asis:_s:_a (AOP ()) (+x67, .e)/.e #
-asis:.s:.a (CALL .target) (+xE8, .e1)/.ex :- asi-jump-rel:.s .target .a 1 .rel, as-verify-emit:.s .rel .e1/.ex #
+asis:.s:.a (CALL .target) (+xE8, .e1)/.ex :- .s = 32, asi-jump-rel:.s .target .a 1 .rel, as-verify-emit:.s .rel .e1/.ex #
 asis:_s:.a (CALL .rm) .e0/.ex :- as-mod-num-rm:32:.a .rm (0 2) .e0/(+xFF, .e1)/.e1/.ex #
 asis:_s:_a (CLD ()) (+xFC, .e)/.e #
 asis:_s:_a (CLI ()) (+xFA, .e)/.e #

@@ -83,7 +83,7 @@ public class NioDispatcherTest {
 			InetSocketAddress address = new InetSocketAddress(localHost, 5151);
 			RequestResponseChannel client = dispatcher.connect(address);
 
-			for (String s : new String[] { "ABC", "WXYZ", "" }) {
+			for (String s : new String[] { "ABC", "WXYZ", "", }) {
 				byte bs[] = s.getBytes(FileUtil.charset);
 				Bytes request = Bytes.of(bs);
 				Bytes response = matcher.requestForResponse(client, request);

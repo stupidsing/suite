@@ -54,7 +54,7 @@ public class StackAssembler {
 			Node m[];
 
 			if (node0 == FRBGN_) {
-				deque.push(new int[] { fs, rs });
+				deque.push(new int[] { fs, rs, });
 				fs = 0;
 				rs = 0;
 				node1 = Atom.NIL;

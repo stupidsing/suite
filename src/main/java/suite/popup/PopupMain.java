@@ -63,7 +63,7 @@ public class PopupMain extends ExecutableProgram {
 		Fun<String, ExecUtil> volumeControl = (String c) -> {
 			inTextField.requestFocusInWindow();
 			try {
-				return new ExecUtil(new String[] { "/usr/bin/amixer", "set", "PCM", "2" + c }, "");
+				return new ExecUtil(new String[] { "/usr/bin/amixer", "set", "PCM", "2" + c, }, "");
 			} catch (IOException ex) {
 				LogUtil.error(ex);
 				return null;
@@ -82,16 +82,14 @@ public class PopupMain extends ExecutableProgram {
 
 		LayoutCalculator lay = new LayoutCalculator(frame.getContentPane());
 
-		Node layout = lay.box(Orientation.VERTICAL //
-				, lay.fx(32, lay.box(Orientation.HORIZONTAL //
-						, lay.ex(32, lay.c(inTextField)) //
-						, lay.fx(64, lay.c(volLabel)) //
-						, lay.fx(48, lay.c(volUpButton)) //
-						, lay.fx(48, lay.c(volDnButton)) //
-						) //
-				) //
-				, lay.ex(32, lay.c(outLabel)) //
-				);
+		Node layout = lay.box(Orientation.VERTICAL, //
+				lay.fx(32,
+						lay.box(Orientation.HORIZONTAL, //
+								lay.ex(32, lay.c(inTextField)), //
+								lay.fx(64, lay.c(volLabel)), //
+								lay.fx(48, lay.c(volUpButton)), //
+								lay.fx(48, lay.c(volDnButton)))), //
+				lay.ex(32, lay.c(outLabel)));
 
 		Runnable refresh = () -> {
 			lay.arrange(layout);

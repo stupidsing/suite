@@ -76,7 +76,7 @@ public class LazyFunInterpreter0 {
 			Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(m[1]);
 			Fun<IMap<String, Thunk_>, Thunk_> expr = lazy0(m[2]);
 			result = env -> {
-				Thunk_ val[] = new Thunk_[] { null };
+				Thunk_ val[] = new Thunk_[] { null, };
 				IMap<String, Thunk_> env1 = env.put(vk, () -> val[0].get());
 				val[0] = value.apply(env1)::get;
 				return expr.apply(env1);

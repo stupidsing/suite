@@ -14,7 +14,7 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 
 	public JdkLoadClassUtil(String srcDir, String binDir) throws MalformedURLException {
 		super(srcDir, binDir);
-		classLoader = new URLClassLoader(new URL[] { new URL("file://" + binDir + "/") });
+		classLoader = new URLClassLoader(new URL[] { new URL("file://" + binDir + "/"), });
 
 	}
 
@@ -23,8 +23,8 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 		classLoader.close();
 	}
 
-	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) throws IOException,
-			ReflectiveOperationException {
+	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java)
+			throws IOException, ReflectiveOperationException {
 		compile(canonicalName, java);
 		Class<? extends T> clazz = load(canonicalName);
 		return clazz.newInstance();

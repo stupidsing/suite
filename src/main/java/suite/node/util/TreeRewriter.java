@@ -34,7 +34,7 @@ public class TreeRewriter {
 	public Node rewrite(Node from, Node to, Node node0) {
 		return rewrite(() -> {
 			Cloner cloner = new Cloner();
-			return new Node[] { cloner.clone(from), cloner.clone(to) };
+			return new Node[] { cloner.clone(from), cloner.clone(to), };
 		} , node0);
 	}
 
