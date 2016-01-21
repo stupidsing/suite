@@ -9,27 +9,27 @@ import suite.primitive.Bytes.BytesBuilder;
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfWriter {
 
-	private class Bb {
+	private class Writer_ {
 		private BytesBuilder bb = new BytesBuilder();
 
-		public Bb db(int i) {
+		public Writer_ db(int i) {
 			return d(1, i);
 		}
 
-		public Bb dw(int i) {
+		public Writer_ dw(int i) {
 			return d(2, i);
 		}
 
-		public Bb dd(int i) {
+		public Writer_ dd(int i) {
 			return d(4, i);
 		}
 
-		public Bb append(byte bs[]) {
+		public Writer_ append(byte bs[]) {
 			bb.append(bs);
 			return this;
 		}
 
-		private Bb d(int n, int i) {
+		private Writer_ d(int n, int i) {
 			for (int j = 0; j < n; j++) {
 				bb.append((byte) (i & 0xFF));
 				i = i >> 8;
@@ -43,7 +43,7 @@ public class ElfWriter {
 	}
 
 	public void write(int org, Bytes code, OutputStream os) throws IOException {
-		Bytes header = new Bb() //
+		Bytes header = new Writer_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(FileUtil.charset)) //
 				.append(new byte[] { 1, 1, 1, 0, }) //
