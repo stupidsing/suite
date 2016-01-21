@@ -295,7 +295,7 @@ ic-compile-let (METHOD .this .sub) .memory .e0/.ex
 		, _ R-
 		, .e4)
 	, once (ic-compile-register .sub .e4/.e5
-		; ic-error "Cannot return value" .sub
+		; ic-error "Cannot assign value" .sub
 	)
 	, .e5 = (_ MOV (`$1 + 4`, $0)
 		, _ R-
