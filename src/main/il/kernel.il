@@ -204,7 +204,7 @@ asm _ MOV (ESP, kernel-second-esp);
 				let busy = (busy || `process`/current/busy);
 			);
 			asm _ STI ();
-			(busy ||  asm _ HLT ());
+			(busy || asm _ HLT ());
 		);
 	);
 
