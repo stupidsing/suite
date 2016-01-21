@@ -28,7 +28,7 @@ public class LoadBalancer {
 	}
 
 	public void run() throws IOException {
-		boolean running[] = new boolean[] { true };
+		boolean running[] = new boolean[] { true, };
 
 		Thread probe = new Thread(() -> {
 			while (running[0])

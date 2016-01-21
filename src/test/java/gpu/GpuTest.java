@@ -20,7 +20,7 @@ public class GpuTest {
 				+ "    int i = get_global_id(0); \n" //
 				+ "    if (i < n) o[i] = a[i] * a[i] + b[i] * b[i]; \n" //
 				+ "} \n" //
-		;
+				;
 
 		CLContext context = JavaCL.createBestContext();
 		CLQueue queue = context.createDefaultQueue();
@@ -38,11 +38,9 @@ public class GpuTest {
 		CLBuffer<Float> out = context.createBuffer(Usage.Output, Float.class, n);
 
 		CLKernel kernel = context.createProgram(openCl).createKernel("add_floats");
-		kernel.setArgs(context.createBuffer(Usage.Input, inp0) //
-				, context.createBuffer(Usage.Input, inp1) //
-				, out, n);
+		kernel.setArgs(context.createBuffer(Usage.Input, inp0), context.createBuffer(Usage.Input, inp1), out, n);
 
-		Pointer<Float> outp = out.read(queue, kernel.enqueueNDRange(queue, new int[] { n }));
+		Pointer<Float> outp = out.read(queue, kernel.enqueueNDRange(queue, new int[] { n, }));
 
 		for (CLDevice device : context.getDevices())
 			System.out.println(device);

@@ -24,7 +24,7 @@ public class LazyFunInstructionExecutor extends FunInstructionExecutor {
 			}
 
 			public Node enclose(Intrinsic intrinsic, Node node) {
-				Frame frame = new Frame(null, new Node[] { node, new Data<>(intrinsic), null });
+				Frame frame = new Frame(null, new Node[] { node, new Data<>(intrinsic), null, });
 				return new Thunk(frame, invokeJavaEntryPoint);
 			}
 		});

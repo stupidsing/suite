@@ -21,7 +21,7 @@ public class LcsSesMyers<T> {
 		int nm = size0 + size1;
 
 		int d, i1 = 0;
-		int vdummy[] = new int[] { 0 };
+		int vdummy[] = new int[] { 0, };
 		int v0[] = vdummy, v1[] = null;
 		int k1 = 0;
 		int x2 = 0, y2 = 0;

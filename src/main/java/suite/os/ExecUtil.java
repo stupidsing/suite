@@ -27,9 +27,10 @@ public class ExecUtil {
 			InputStream pes = process.getErrorStream();
 			OutputStream pos = process.getOutputStream();
 
-			threads = new Thread[] { Copy.streamByThread(pis, bos0) //
-					, Copy.streamByThread(pes, bos1) //
-					, Copy.streamByThread(bis, pos) };
+			threads = new Thread[] { //
+					Copy.streamByThread(pis, bos0), //
+					Copy.streamByThread(pes, bos1), //
+					Copy.streamByThread(bis, pos), };
 
 			for (Thread thread : threads)
 				thread.start();

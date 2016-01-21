@@ -119,7 +119,7 @@ public class Assembler {
 		int org = ((Int) generalizer.getVariable(Atom.of(".org")).finalNode()).number;
 		BytesBuilder out = new BytesBuilder();
 
-		for (boolean isPass2 : new boolean[] { false, true }) {
+		for (boolean isPass2 : new boolean[] { false, true, }) {
 			AssemblePredicates.isPass2 = isPass2;
 			out.clear();
 

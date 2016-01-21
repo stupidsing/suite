@@ -11,7 +11,7 @@ public class ExecUtilTest {
 
 	@Test
 	public void test0() throws IOException {
-		ExecUtil exec = new ExecUtil(new String[] { "git", "status" }, "");
+		ExecUtil exec = new ExecUtil(new String[] { "git", "status", }, "");
 		System.out.println(exec);
 
 		assertEquals(0, exec.code);
@@ -26,7 +26,7 @@ public class ExecUtilTest {
 			sb.append("01234567890123456789012345678901234567890123456789012345678901234567890123456789\n");
 		String in = sb.toString();
 
-		ExecUtil exec = new ExecUtil(new String[] { "cat" }, in);
+		ExecUtil exec = new ExecUtil(new String[] { "cat", }, in);
 
 		assertEquals(0, exec.code);
 		assertEquals(in, exec.out);

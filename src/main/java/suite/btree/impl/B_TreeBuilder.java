@@ -134,7 +134,7 @@ public class B_TreeBuilder<Key, Value> {
 		String f = pathName + ".pages";
 
 		if (isNew)
-			for (String filename : new String[] { sbf, alf, f })
+			for (String filename : new String[] { sbf, alf, f, })
 				Files.deleteIfExists(Paths.get(filename));
 
 		return build(isNew, cmp //
