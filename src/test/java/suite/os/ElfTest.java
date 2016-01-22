@@ -14,9 +14,15 @@ public class ElfTest {
 	@Test
 	public void test() throws IOException {
 		String program = "" //
+				+ "asm _ MOV (EBP, ESP);" //
+				+ "declare inc = function [i0, out ix,] ( let ix = i0 + 1; );" //
+				+ "declare j as int;" //
+				+ "inc [41, out j,];" //
+				+ "j;" //
+				+ "asm _ MOV (EBX, EAX);" //
 				+ "asm _ MOV (EAX, 1);" //
-				+ "asm _ MOV (EBX, 42);" //
 				+ "asm _ INT (-128);";
+
 		int org = 0x08048000;
 
 		Bytes code = new ImperativeCompiler().compile(org + 84, program);
