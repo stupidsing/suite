@@ -25,6 +25,9 @@ public class LockFreeQueue<T> {
 		cas.apply(queue0 -> new FrontBack(IList.cons(t, queue0.front), queue0.back));
 	}
 
+	/**
+	 * @return null if the queue is empty.
+	 */
 	public T dequeue() {
 		List<T> result = new ArrayList<>(Arrays.asList((T) null));
 
