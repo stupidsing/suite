@@ -1,4 +1,4 @@
-declare keyboard-sink = baseless [irq-number,] (
+declare keyboard-sink = function [irq-number,] (
 	declare status = inb [+x64,];
 	declare scan-code = inb [+x60,];
 	log-byte "SCAN CODE = " scan-code;
@@ -10,5 +10,5 @@ declare kb-setup = function [] (
 );
 
 declare kb-teardown = function [] (
-	irq-set-sink [1, 0 as (baseless [int,] int),];
+	irq-set-sink [1, 0 as (function [int,] int),];
 );

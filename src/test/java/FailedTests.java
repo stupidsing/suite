@@ -16,6 +16,11 @@ import suite.primitive.Bytes;
 
 public class FailedTests {
 
+	@Test
+	public void testAssignWrongSize() {
+		new ImperativeCompiler().compile(0, "declare f = function [] 0; (f as int && 1);");
+	}
+
 	// Shall we support this?
 	@Test
 	public void testClassOfClass() {

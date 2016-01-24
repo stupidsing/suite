@@ -13,7 +13,7 @@ declare ne2k-is-arrived;
 declare ne2k-is-transmitted;
 declare ne2k-is-dma-completed;
 
-declare ne2k-irq-sink = baseless [irq-number as int,] (
+declare ne2k-irq-sink = function [irq-number as int,] (
 	declare isr;
 	outb [ne2k-io-base + +x00, +x22,];
 	while (let isr = inb [ne2k-io-base + +x07,]) do (

@@ -60,11 +60,9 @@ declare idt-setup = function [] (
 			declare isr = irq-get-isr [];
 
 			if (isr and 1 shl irq-number) then (
-				declare irq-sink = irq-get-sink [irq-number,];
-				declare irqf as (int * 2);
-				let irqf:0 = irq;
-				let irqf:1 = irq-sink as int;
-				(irq-sink && (irqf as (function [int,] int)) [irq-number,]);
+				declare irq-sink;
+				irq-get-sink [irq-number, out irq-sink,];
+				(`(& irq-sink) as pointer:int` && irq-sink [irq-number,]);
 
 				-- Sends end of interrupt signal
 				(irq-number >= 8 && outb [+xA0, +x20,]);

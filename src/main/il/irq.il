@@ -1,7 +1,6 @@
-declare irq = this;
-declare irq-sinks as ((baseless [int,] int) * 16);
+declare irq-sinks as ((function [int,] int) * 16);
 
-declare dump-sink = baseless [irq-number,] (
+declare dump-sink = function [irq-number,] (
 	log-byte "IRQ = " irq-number;
 );
 
@@ -11,8 +10,8 @@ declare irq-get-isr = function [] (
 	(inb [+xA0,]) shl 8 + inb [+x20,];
 );
 
-declare irq-get-sink = function [irq-number,] (
-	irq-sinks:irq-number;
+declare irq-get-sink = function [irq-number, out irq-sink,] (
+	let irq-sink = irq-sinks:irq-number;
 );
 
 declare irq-set-sink = function [irq-number, irq-sink,] (
