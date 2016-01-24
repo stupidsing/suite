@@ -27,12 +27,12 @@ public class FailedTests {
 	// Shall we support this?
 	@Test
 	public void testClassOfClass() {
-		assertEquals(Suite.parse("C2 {boolean}"),
+		assertEquals(Suite.parse("C2 boolean"),
 				Suite.evaluateFunType("" //
-						+ "data (C0 {:t}) over :t as A :t >> \n" //
-						+ "data (C1 {:t}) over :t as (C0 {:t}) >> \n" //
-						+ "data (C2 {:t}) over :t as (C1 {:t}) >> \n" //
-						+ "(C2 {boolean}) of (A true)"));
+						+ "data (C0 :t) over :t as A :t >> \n" //
+						+ "data (C1 :t) over :t as (C0 :t) >> \n" //
+						+ "data (C2 :t) over :t as (C1 :t) >> \n" //
+						+ "(C2 boolean) of (A true)"));
 	}
 
 	// Cannot capture reference to a structure
