@@ -26,7 +26,7 @@ public class LockFreeQueue<T> {
 	}
 
 	public T dequeue() {
-		List<T> list = new ArrayList<>(Arrays.asList((T) null));
+		List<T> result = new ArrayList<>(Arrays.asList((T) null));
 
 		cas.apply(fb0 -> {
 			IList<T> front = fb0.front;
@@ -37,15 +37,15 @@ public class LockFreeQueue<T> {
 				front = IList.end();
 			}
 			if (!back.isEmpty()) {
-				list.set(0, back.head);
+				result.set(0, back.head);
 				return new FrontBack(front, back.tail);
 			} else {
-				list.set(0, null);
+				result.set(0, null);
 				return fb0;
 			}
 		});
 
-		return list.get(0);
+		return result.get(0);
 	}
 
 }
