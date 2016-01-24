@@ -17,6 +17,8 @@ import suite.primitive.Bytes;
 public class FailedTests {
 
 	// Cannot understand the error message
+	// "Cannot assign from (METHOD THIS METHOD0 NUMBER 0) to MEMORY 8 TREE +
+	// (NUMBER .143093) THIS"
 	@Test
 	public void testAssignWrongSize() {
 		new ImperativeCompiler().compile(0, "declare f as (function [] int) = function [] 0; (f as int && 1);");
