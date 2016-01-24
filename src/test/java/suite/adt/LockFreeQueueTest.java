@@ -9,10 +9,12 @@ public class LockFreeQueueTest {
 	@Test
 	public void test() {
 		LockFreeQueue<Integer> lfq = new LockFreeQueue<>();
-		for (int i = 0; i < 256; i++)
-			lfq.enqueue(i);
-		for (int i = 0; i < 256; i++)
-			assertEquals(i, (int) lfq.dequeue());
+		for (int i = 0; i < 256; i++) {
+			for (int j = 0; j < 256; j++)
+				lfq.enqueue(j);
+			for (int j = 0; j < 256; j++)
+				assertEquals(j, (int) lfq.dequeue());
+		}
 	}
 
 }
