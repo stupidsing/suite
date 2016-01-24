@@ -67,7 +67,7 @@ public class ElfWriter {
 				.dd(org) // p_paddr
 				.dd(code.size() + 84) // p_filesz
 				.dd(code.size() + 84) // p_memsz
-				.dd(5) // p_flags
+				.dd(7) // p_flags PF_R|PF_W|PF_X
 				.dd(0x1000) // p_align
 				.toBytes();
 
