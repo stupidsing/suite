@@ -18,6 +18,13 @@ public class ImperativeCompilerTest {
 	}
 
 	@Test
+	public void testArray1() {
+		Bytes bytes = imperativeCompiler.compile(0, "declare array as (int * 2) = array (1, 2,);");
+		assertNotNull(bytes);
+		System.out.println(bytes);
+	}
+
+	@Test
 	public void testDataStructure() {
 		String s = "" //
 				+ "constant p = fix :p struct (next as pointer:(:p),);" //

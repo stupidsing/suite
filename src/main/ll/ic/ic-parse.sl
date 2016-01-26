@@ -8,6 +8,10 @@ ic-parse .do0 .parsed
 	:- ic-parse-sugar .do0 .do1
 	, ic-parse .do1 .parsed
 #
+ic-parse (array .array0) (ARRAY _ .array1)
+	:- zip .array0 .array1 .list
+	, list.query .list .elem0:.elem1 (ic-parse .elem0 .elem1)
+#
 ic-parse false (BOOLEAN 0)
 #
 ic-parse true (BOOLEAN 1)

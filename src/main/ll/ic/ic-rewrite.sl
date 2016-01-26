@@ -1,5 +1,16 @@
 ic-rewrite (ASM .i) (ASM .i) .ts/.ts
 #
+ic-rewrite (ARRAY .type0 ()) (ARRAY .type1 ()) .ts/.ts
+	:- ic-rewrite-type .type0 .type1
+#
+ic-rewrite (ARRAY .type0 (.e0, .array0)) (ARRAY .type1 (.e1, .array1)) (.e0 .e1, .ts0)/.tsx
+	:- ic-rewrite (ARRAY .type0 .array0) (ARRAYS .type1 .array1) .ts0/.tsx
+#
+ic-rewrite (ARRAYS .size ()) (ARRAYS .size ()) .ts/.ts
+#
+ic-rewrite (ARRAYS .size (.e0, .array0)) (ARRAYS .size (.e1, .array1)) (.e0 .e1, .ts0)/.tsx
+	:- ic-rewrite (ARRAYS .size .array0) (ARRAYS .size .array1) .ts0/.tsx
+#
 ic-rewrite (BOOLEAN .i) (BOOLEAN .i) .ts/.ts
 #
 ic-rewrite (DECLARE .mp .var .type0 .do0) (DECLARE .mp .var .type1 .do1) (.do0 .do1, .ts)/.ts

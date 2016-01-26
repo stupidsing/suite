@@ -6,6 +6,13 @@ ic-erase-type .do0 .dox
 	, list.query .ts (.do0_ .dox_) (ic-erase-type .do0_ .dox_)
 #
 
+ic-erase-type0 (ARRAY .type ()) (ARRAYS .size ())
+	:- ic-type-size .type .size
+#
+ic-erase-type0 (ARRAY .type (.elem0, .array0)) (ARRAYS .size (.elemx, .arrayx))
+	:- ic-erase-type .elem0 .elemx
+	, ic-erase-type (ARRAY .type .array0) (ARRAYS .size .arrayx)
+#
 ic-erase-type0 (BOOLEAN .b) (NUMBER .b)
 #
 ic-erase-type0 (DECLARE .mp .var .type .do0) (DECLARES .var _ .size .dox)

@@ -6,6 +6,13 @@ ic-infer-type .vs .do .typex
 	)
 #
 
+ic-infer-type0 _ (ARRAY .type ()) (ARRAY-OF 0 .type)
+#
+ic-infer-type0 .vs (ARRAY .type (.elem, .array)) (ARRAY-OF .arraySize1 .type)
+	:- ic-infer-type .vs .elem .type
+	, ic-infer-type .vs (ARRAY .type .array) (ARRAY-OF .arraySize0 .type)
+	, let .arraySize1 (.arraySize0 + 1)
+#
 ic-infer-type0 _ (ASM _) I32
 #
 ic-infer-type0 _ (BOOLEAN _) BOOLEAN

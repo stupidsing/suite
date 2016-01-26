@@ -287,6 +287,9 @@ ic-compile-then-else .then .else .elseLabel .e0/.ex
 		, .ex)
 #
 
+ic-compile-let (ARRAYS .size .array) .memory .e0/.ex
+	:- ic-compile-let-array (ARRAYS .size .array) 0 .memory .e0/.ex
+#
 ic-compile-let (METHOD .this .sub) .memory .e0/.ex
 	:- ic-compile-memory .memory .e0/.e1 8 .pointer
 	, ic-compile-register .pointer .e1/.e2
@@ -324,6 +327,16 @@ ic-compile-let .value .memory .e0/.ex
 #
 ic-compile-let .memory0 .memory1 _
 	:- ic-error "Cannot assign from" .memory0 "to" .memory1
+#
+
+ic-compile-let-array (ARRAYS _ ()) _ _ (_ R+, .e)/.e
+#
+ic-compile-let-array (ARRAYS .size (.elem, .array)) .offset .memory .e0/.ex
+	:- ic-compile-memory .memory .e0/.e1 _ .pointer
+	, ic-compile-let .elem (MEMORY .size (TREE ' + ' (NUMBER .offset) .pointer)) .e1/.e2
+	, .e2 = (_ R-, .e3)
+	, let .offset1 (.offset + .size)
+	, ic-compile-let-array (ARRAYS .size .array) .offset1 .memory .e3/.ex
 #
 
 ic-push-pop-invoke-parameters () .e/.e .f/.f
