@@ -42,7 +42,9 @@ ic-parse (extend .do) (EXTEND-SIGNED .do1)
 	:- ic-parse .do .do1
 #
 ic-parse .do/.name (FIELD _ .name .do1)
-	:- ic-parse .do .do1
+	:- to.string .name .s
+	, substring .s 0 1 "+"
+	, ic-parse .do .do1
 #
 ic-parse (if .if then .then else .else) (IF .if1 .then1 .else1)
 	:- ic-parse .if .if1
