@@ -34,10 +34,10 @@ declare idt-setup = function [] (
 	declare handle-timer-interrupt = snippet (
 		isr-prolog;
 		ticks =+ 1;
-		`+xB8000 as pointer:int` =+ 1;
+		(+xB8000 as pointer:int)/* =+ 1;
 
 		-- Switch processes
-		let `current-process`/+current/+busy = 1;
+		let current-process/*/+current/+busy = 1;
 		sch-yield [];
 
 		-- Sends end of interrupt signal
@@ -62,7 +62,7 @@ declare idt-setup = function [] (
 			if (isr and 1 shl irq-number) then (
 				declare irq-sink;
 				irq-get-sink [irq-number, out irq-sink,];
-				(`(& irq-sink) as pointer:int` && irq-sink [irq-number,]);
+				(((& irq-sink) as pointer:int)/* && irq-sink [irq-number,]);
 
 				-- Sends end of interrupt signal
 				(irq-number >= 8 && outb [+xA0, +x20,]);

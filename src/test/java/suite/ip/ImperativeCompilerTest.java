@@ -21,7 +21,7 @@ public class ImperativeCompilerTest {
 	public void testDataStructure() {
 		String s = "" //
 				+ "constant p = fix :p struct (+next as pointer:(:p),);" //
-				+ "declare pnext = function [e as pointer:p,] `e`/+next;" //
+				+ "declare pnext = function [e as pointer:p,] e/*/+next;" //
 				+ "declare object = new p (+next = null,);" //
 				+ "let object/+next = pnext [& object,];" //
 				+ "0";
@@ -39,7 +39,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testExpr() {
-		Bytes bytes = imperativeCompiler.compile(0, "`null` + 1 = 2;");
+		Bytes bytes = imperativeCompiler.compile(0, "null/* + 1 = 2;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
@@ -60,7 +60,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testLet() {
-		Bytes bytes = imperativeCompiler.compile(0, "let `null` = 1 shl 3;");
+		Bytes bytes = imperativeCompiler.compile(0, "let null/* = 1 shl 3;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}

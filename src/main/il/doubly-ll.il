@@ -7,24 +7,24 @@ constant dl-node .t = fix :dl-node struct (
 constant dl-node$t = (:t => dl-node :t);
 
 declare dl-prev as _ = function [e as pointer:dl-node$t,] (
-	`e`/+prev;
+	e/*/+prev;
 );
 
 declare dl-next as _ = function [e as pointer:dl-node$t,] (
-	`e`/+next;
+	e/*/+next;
 );
 
 declare dl-set-prev as _ = function [e as pointer:dl-node$t, p,] (
-	let `e`/+prev = p;
+	let e/*/+prev = p;
 );
 
 declare dl-set-next as _ = function [e as pointer:dl-node$t, p,] (
-	let `e`/+next = p;
+	let e/*/+next = p;
 );
 
 declare dl-new as _ = function [e as pointer:dl-node$t,] (
-	let `e`/+prev = null;
-	let `e`/+next = null;
+	let e/*/+prev = null;
+	let e/*/+next = null;
 	e;
 );
 

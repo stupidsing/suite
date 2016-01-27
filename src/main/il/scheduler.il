@@ -15,10 +15,10 @@ declare head-process; -- Cyclic doubly-linked list
 
 declare sch-allocate = function [] (
 	declare process = mm-allocate sch-node;
-	let `process`/+prev = process;
-	let `process`/+next = process;
-	let `process`/+current/+action = sch-action-none;
-	let `process`/+current/+busy = 1;
+	let process/*/+prev = process;
+	let process/*/+next = process;
+	let process/*/+current/+action = sch-action-none;
+	let process/*/+current/+busy = 1;
 	process;
 );
 
@@ -40,19 +40,19 @@ declare sch-yield = function [] (
 	asm _ FR-PUSH (EBX);
 	asm _ MOV (`EAX`, ESP);
 
-	(`current-process`/+current/+action = sch-action-exit && (
+	(current-process/*/+current/+action = sch-action-exit && (
 		declare process0 = current-process;
 		let current-process = dl-prev [current-process,];
 		dl-remove [process0,];
 		sch-deallocate [process0,];
 	));
 
-	(`current-process`/+current/+action = sch-action-fork && (
+	(current-process/*/+current/+action = sch-action-fork && (
 		declare process1 = sch-allocate [];
-		let `process1`/+current/+kernel-stack = `current-process`/+current/+kernel-stack;
-		let `process1`/+current/+esp = `current-process`/+current/+esp - current-process as int + process1 as int;
+		let process1/*/+current/+kernel-stack = current-process/*/+current/+kernel-stack;
+		let process1/*/+current/+esp = current-process/*/+current/+esp - current-process as int + process1 as int;
 		dl-insert-next [head-process, process1,];
-		let `current-process`/+current/+action = sch-action-none;
+		let current-process/*/+current/+action = sch-action-none;
 	));
 
 	sch-switch [];
@@ -70,13 +70,13 @@ declare sch-yield = function [] (
 
 declare sch-fork = function [] (
 	declare process0 = current-process;
-	let `process0`/+current/+action = sch-action-fork;
+	let process0/*/+current/+action = sch-action-fork;
 	sch-yield [];
 	current-process != process0;
 );
 
 declare sch-exit = function [] (
-	let `current-process`/+current/+action = sch-action-exit;
+	let current-process/*/+current/+action = sch-action-exit;
 	if (current-process != head-process) then (
 		sch-yield [];
 	) else ( -- Initial process should not exit. Halt if this happened.

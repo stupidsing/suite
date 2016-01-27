@@ -56,11 +56,11 @@ declare zero = function [dst, len,] (
 );
 
 declare dw-get = function [p,] (
-	`p as pointer:int`;
+	(p as pointer:int)/*;
 );
 
 declare dw-set = function [p, i,] (
-	let `p as pointer:int` = i;
+	let (p as pointer:int)/* = i;
 );
 
 declare inb = function [port,] (
@@ -105,7 +105,7 @@ constant mm-allocate .type = (
 	(ba-allocate [size-of .type,]) as pointer:.type
 );
 constant mm-deallocate .type .pointer = (
-	ba-deallocate [address `.pointer`, size-of .type,]
+	ba-deallocate [address .pointer/*, size-of .type,]
 );
 
 constant log .s = ( cs-puts [.s,]; cs-nl []; );
@@ -201,7 +201,7 @@ asm _ MOV (ESP, kernel-second-esp);
 			declare process = head-process;
 			declare busy = 0;
 			while ((let process = dl-next [process,]) != head-process) do (
-				let busy = (busy || `process`/+current/+busy);
+				let busy = (busy || process/*/+current/+busy);
 			);
 			asm _ STI ();
 			(busy || asm _ HLT ());

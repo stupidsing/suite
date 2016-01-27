@@ -84,7 +84,7 @@ ic-parse null NULL
 ic-parse .i (NUMBER .i)
 	:- is.int .i
 #
-ic-parse `.pointer` (OBJECT _ .pointer1)
+ic-parse .pointer/* (OBJECT _ .pointer1)
 	:- ic-parse .pointer .pointer1
 #
 ic-parse (.pointer +offset .offset) (OFFSET .offset1 .pointer1)
@@ -150,12 +150,12 @@ ic-parse-sugar (.a && .b) (if .a then .b else (no-type 0))
 #
 ic-parse-sugar (.a || .b) (if .a then (no-type 1) else .b)
 #
-ic-parse-sugar (.p +f .f) (& `.p`/.f)
+ic-parse-sugar (.p +f .f) (& .p/*/.f)
 #
-ic-parse-sugar (.var =+ .inc) (declare .p = & .var; declare .o = `.p`; let `.p` = .o + .inc; .o)
+ic-parse-sugar (.var =+ .inc) (declare .p = & .var; declare .o = .p/*; let .p/* = .o + .inc; .o)
 	:- temp .p, temp .o
 #
-ic-parse-sugar (.var += .inc) (declare .p = & .var; let `.p` = `.p` + .inc)
+ic-parse-sugar (.var += .inc) (declare .p = & .var; let .p/* = .p/* + .inc)
 	:- temp .p
 #
 ic-parse-sugar (address .value) ((& .value) as int)

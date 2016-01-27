@@ -61,37 +61,37 @@ declare ap-local-apic-address;
 
 declare ap-parse-madt = function [madt as pointer:ap-acpi-madt,] (
 	declare p = madt as int + size-of ap-acpi-madt;
-	declare px = madt as int + `madt`/+header/+length;
+	declare px = madt as int + madt/*/+header/+length;
 
-	let ap-local-apic-address = `madt`/+local-apic-address;
+	let ap-local-apic-address = madt/*/+local-apic-address;
 
 	while (p < px) do (
 		declare header = p as pointer:ap-header;
-		declare type = extend `header`/+type;
+		declare type = extend header/*/+type;
 
 		if (type = 0) then ( -- local APIC
 			declare local-apic = p as pointer:ap-local-apic;
 		) else if (type = 1) then ( -- IO APIC
 			declare io-apic = p as pointer:ap-io-apic;
-			let ap-io-apic-address = `io-apic`/+io-apic-address;
+			let ap-io-apic-address = io-apic/*/+io-apic-address;
 		) else if (type = 2) then ( -- Interrupt override
 			declare intr-override = p as pointer:ap-interrupt-override;
 		) else ();
 
-		p += extend `header`/+length;
+		p += extend header/*/+length;
 	);
 );
 
 declare ap-parse-dt = function [header as pointer:ap-acpi-header,] (
-	if (`header`/+signature = +x50434146) then (
-	) else if (`header`/+signature = +x43495041) then (
+	if (header/*/+signature = +x50434146) then (
+	) else if (header/*/+signature = +x43495041) then (
 		ap-parse-madt [header as pointer:ap-acpi-madt,];
 	) else ();
 );
 
 declare ap-parse-rsdt = function [rsdt as pointer:ap-acpi-header,] (
 	declare p = rsdt as int + size-of ap-acpi-header;
-	declare px = rsdt as int + `rsdt`/+length;
+	declare px = rsdt as int + rsdt/*/+length;
 	while (p < px) do (
 		ap-parse-dt [(dw-get [p =+ 4,]) as pointer:ap-acpi-header,];
 	);
@@ -111,7 +111,7 @@ declare ap-setup = function [] (
 		);
 	);
 
-	declare revision = extend `(p1 + 15) as pointer:byte`;
+	declare revision = extend ((p1 + 15) as pointer:byte)/*;
 
 	if (revision = 0) then (
 		declare rsdt = dw-get [p1 + 16,];
