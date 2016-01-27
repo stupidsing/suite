@@ -33,10 +33,10 @@ declare gc-prepare = function [] (
 declare gc-mark = function [root,] (
 	declare nodes = pointer:gc-node * 1024;
 	declare index = 0;
-	let `nodes:(index =+ 1)` = root;
+	let `nodes/:(index =+ 1)` = root;
 
 	while (index > 0) do (
-		declare node = `nodes:(index += -1)`;
+		declare node = `nodes/:(index += -1)`;
 
 		if (`node`/+flag = gc-allocated) then (
 			let `node`/+flag = gc-marked;
@@ -44,7 +44,7 @@ declare gc-mark = function [root,] (
 			let class = `node`/+class;
 			let p = address node + size-of gc-node;
 			for i in (0, `class`/+number-of-pointers) (
-				let `nodes:(index =+ 1)` = (p + i) as pointer:gc-node;
+				let `nodes/:(index =+ 1)` = (p + i) as pointer:gc-node;
 			);
 		) else ();
 	);

@@ -51,7 +51,7 @@ ic-parse (if .if then .then else .else) (IF .if1 .then1 .else1)
 	, ic-parse .then .then1
 	, ic-parse .else .else1
 #
-ic-parse .array:.index (INDEX _ .array1 .index1)
+ic-parse .array/:.index (INDEX _ .array1 .index1)
 	:- ic-parse .array .array1
 	, ic-parse .index .index1
 #
