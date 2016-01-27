@@ -12,14 +12,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testArray() {
-		Bytes bytes = imperativeCompiler.compile(0, "declare array as (int * 16); let array:3 = array:4;");
-		assertNotNull(bytes);
-		System.out.println(bytes);
-	}
-
-	@Test
-	public void testArray1() {
-		Bytes bytes = imperativeCompiler.compile(0, "declare array as (int * 2) = array (1, 2,);");
+		Bytes bytes = imperativeCompiler.compile(0, "declare array as (int * 2) = array (1, 2,); let array:3 = array:4;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
