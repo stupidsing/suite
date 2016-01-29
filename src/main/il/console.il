@@ -14,7 +14,7 @@ declare cs-nl0 = function [] (
 	copy [p0, p0 + 160, 3840,]; -- Scrolls up
 	zero [p0 + 3840, 160,];
 
-	let cs-column-offset = 0;
+	{cs-column-offset} = 0;
 	cs-set-cursor [24, cs-column-offset ushr 1,];
 );
 
@@ -34,13 +34,13 @@ declare cs-put = function [ch,] (
 
 declare cs-puts = function [s,] (
 	declare ch;
-	for (declare s1 = s; let ch = extend (s1 as pointer:byte)/*; s1 += 1) do (
+	for (declare s1 = s; {ch} = extend (s1 as pointer:byte)/*; s1 += 1) do (
 		cs-put [ch,];
 	);
 );
 
 declare cs-put-hex = function [h,] (
-	let h = h and +xF;
+	{h} = h and +xF;
 	cs-put [h + if (h < 10) then 48 else 55,];
 );
 

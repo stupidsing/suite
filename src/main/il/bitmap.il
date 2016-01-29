@@ -9,5 +9,5 @@ declare bm-set = function [bm, index, flag,] (
 	declare m = index and 31;
 	declare p = & bm/*/:d;
 	declare b = 1 shl m;
-	let p/* = if flag then (p/* or b) else (p/* and +xFFFFFFFF xor b);
+	{p/*} = if flag then (p/* or b) else (p/* and +xFFFFFFFF xor b);
 );

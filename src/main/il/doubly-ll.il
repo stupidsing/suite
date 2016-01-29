@@ -15,16 +15,16 @@ declare dl-next as _ = function [e as pointer:dl-node$t,] (
 );
 
 declare dl-set-prev as _ = function [e as pointer:dl-node$t, p,] (
-	let e/*/+prev = p;
+	{e/*/+prev} = p;
 );
 
 declare dl-set-next as _ = function [e as pointer:dl-node$t, p,] (
-	let e/*/+next = p;
+	{e/*/+next} = p;
 );
 
 declare dl-new as _ = function [e as pointer:dl-node$t,] (
-	let e/*/+prev = null;
-	let e/*/+next = null;
+	{e/*/+prev} = null;
+	{e/*/+next} = null;
 	e;
 );
 

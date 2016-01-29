@@ -25,11 +25,11 @@ declare sync-enter = function [p,] (
 );
 
 declare sync-leave = function [p,] (
-	let p/* = 0;
+	{p/*} = 0;
 );
 
 declare sync-wait = function [p, w,] ( -- TODO
-	let w/* = 0;
+	{w/*} = 0;
 	while (w/* = 0) do (
 		sync-leave [p,];
 		sync-yield [];
@@ -38,7 +38,7 @@ declare sync-wait = function [p, w,] ( -- TODO
 );
 
 declare sync-notify = function [p as pointer:int, w,] ( -- TODO
-	let w/* = 1;
+	{w/*} = 1;
 );
 
 constant synchronized .p .block = (

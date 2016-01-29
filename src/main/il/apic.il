@@ -63,7 +63,7 @@ declare ap-parse-madt = function [madt as pointer:ap-acpi-madt,] (
 	declare p = madt as int + size-of ap-acpi-madt;
 	declare px = madt as int + madt/*/+header/+length;
 
-	let ap-local-apic-address = madt/*/+local-apic-address;
+	{ap-local-apic-address} = madt/*/+local-apic-address;
 
 	while (p < px) do (
 		declare header = p as pointer:ap-header;
@@ -73,7 +73,7 @@ declare ap-parse-madt = function [madt as pointer:ap-acpi-madt,] (
 			declare local-apic = p as pointer:ap-local-apic;
 		) else if (type = 1) then ( -- IO APIC
 			declare io-apic = p as pointer:ap-io-apic;
-			let ap-io-apic-address = io-apic/*/+io-apic-address;
+			{ap-io-apic-address} = io-apic/*/+io-apic-address;
 		) else if (type = 2) then ( -- Interrupt override
 			declare intr-override = p as pointer:ap-interrupt-override;
 		) else ();
@@ -107,7 +107,7 @@ declare ap-setup = function [] (
 	-- https://github.com/pdoane/osdev/blob/master/acpi/acpi.c
 	for (declare p = +xE0000; p < +x100000; p += 16) do (
 		(dw-get [p,] = +x20445352 && dw-get [p + 4,] = +x20525450 -- 'RSD PTR '
-			&& let p1 = p
+			&& {p1} = p
 		);
 	);
 

@@ -12,7 +12,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testArray() {
-		Bytes bytes = imperativeCompiler.compile(0, "declare array as (int * 2) = array (1, 2,); let array/:3 = array/:4;");
+		Bytes bytes = imperativeCompiler.compile(0, "declare array as (int * 2) = array (1, 2,); {array/:3} = array/:4;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
@@ -23,7 +23,7 @@ public class ImperativeCompilerTest {
 				+ "constant p = fix :p struct (+next as pointer:(:p),);" //
 				+ "declare pnext = function [e as pointer:p,] e/*/+next;" //
 				+ "declare object = new p (+next = null,);" //
-				+ "let object/+next = pnext [& object,];" //
+				+ "{object/+next} = pnext [& object,];" //
 				+ "0";
 		Bytes bytes = imperativeCompiler.compile(0, s);
 		assertNotNull(bytes);
@@ -32,7 +32,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testDeclare() {
-		Bytes bytes = imperativeCompiler.compile(0, "declare v = 1; let v = 2;");
+		Bytes bytes = imperativeCompiler.compile(0, "declare v = 1; {v} = 2;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
@@ -60,7 +60,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testLet() {
-		Bytes bytes = imperativeCompiler.compile(0, "let null/* = 1 shl 3;");
+		Bytes bytes = imperativeCompiler.compile(0, "{null/*} = 1 shl 3;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}

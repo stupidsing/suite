@@ -60,7 +60,7 @@ ic-parse (.sub [.params]) (INVOKE .sub1 .ips) -- Traditional subroutine invocati
 	, zip .params .ips .list
 	, list.query .list .param:.ip (ic-parse-invoke-parameter .param .ip)
 #
-ic-parse (let .var = .value) (LET .var1 .value1)
+ic-parse ({.var} = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
 	, ic-parse .value .value1
 #
@@ -152,10 +152,10 @@ ic-parse-sugar (.a || .b) (if .a then (no-type 1) else .b)
 #
 ic-parse-sugar (.p +f .f) (& .p/*/.f)
 #
-ic-parse-sugar (.var =+ .inc) (declare .p = & .var; declare .o = .p/*; let .p/* = .o + .inc; .o)
+ic-parse-sugar (.var =+ .inc) (declare .p = & .var; declare .o = .p/*; {.p/*} = .o + .inc; .o)
 	:- temp .p, temp .o
 #
-ic-parse-sugar (.var += .inc) (declare .p = & .var; let .p/* = .p/* + .inc)
+ic-parse-sugar (.var += .inc) (declare .p = & .var; {.p/*} = .p/* + .inc)
 	:- temp .p
 #
 ic-parse-sugar (address .value) ((& .value) as int)
@@ -173,7 +173,7 @@ ic-parse-sugar (for .var in (.start, .end) do .do) (declare .var = .start; while
 #
 ic-parse-sugar (not .b) (if .b then 0 else 1)
 #
-ic-parse-sugar (var .var = .value; .do) (var .var; let .var = .value; .do)
+ic-parse-sugar (var .var = .value; .do) (var .var; {.var} = .value; .do)
 	:- is.atom .var
 #
 

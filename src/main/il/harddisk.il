@@ -19,8 +19,8 @@ declare hd-read = function [lba, count, buffer as int,] (
 
 	while (buffer < end) do (
 		declare d = 0;
-		let d = d shl 16 + inw [+x1F0,];
-		let d = d shl 16 + inw [+x1F0,];
+		{d} = d shl 16 + inw [+x1F0,];
+		{d} = d shl 16 + inw [+x1F0,];
 		dw-set [buffer =+ 4, d,];
 	);
 );

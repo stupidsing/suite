@@ -1,24 +1,3 @@
--- TODO garbage collection
-
--- Physical memory layout
--- 00000000 -> 00100000 refer logical memory layout below
--- 00100000 -> stackx   physical page stack
--- stackx   -> pagex    allocatable physical pages
-
--- Logical memory layout
--- 00007C00 -> 00007E00 boot sector
--- 00020000 -> 00020800 interrupt descriptor table (IDT)
--- 00020800 -> 00020868 task state segment (TSS)
--- 00020870 -> 00023000 kernel first stack
--- 00023000 -> 00024000 kernel second stack
--- 00040000 -> 00040004 kernel this frame pointer
--- 00040000 -> 00050000 kernel code
--- 00050000 -> 000A0000 kernel buddy allocation pool
--- 000A0000 -> 00100000 BIOS / video memory
--- 00800000 -> FFC00000 allocatable logical pages
--- FFC00000 -> FFFFF000 second level page tables, for the current address space
--- FFFFF000 -> end      first level page table, for the current address space
-
 constant idt-address = +x20000;
 constant tss-address = +x20800;
 constant kernel-first-esp = +x23000;
@@ -60,7 +39,7 @@ declare dw-get = function [p,] (
 );
 
 declare dw-set = function [p, i,] (
-	let (p as pointer:int)/* = i;
+	{(p as pointer:int)/*} = i;
 );
 
 declare inb = function [port,] (
@@ -200,8 +179,8 @@ asm _ MOV (ESP, kernel-second-esp);
 			asm _ CLI ();
 			declare process = head-process;
 			declare busy = 0;
-			while ((let process = dl-next [process,]) != head-process) do (
-				let busy = (busy || process/*/+current/+busy);
+			while (({process} = dl-next [process,]) != head-process) do (
+				{busy} = (busy || process/*/+current/+busy);
 			);
 			asm _ STI ();
 			(busy || asm _ HLT ());

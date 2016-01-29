@@ -22,17 +22,11 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 
 	protected boolean run(String args[]) throws IOException {
 		List<Pair<String, String>> fts = Arrays.asList( //
-				Pair.of("ic-compile-register .0 .1", "ic-compile-register .1") //
-				, Pair.of("ic-compile-register0 .0 .1", "ic-compile-register0 .1") //
-				, Pair.of("ic-compile-operand .0 .1", "ic-compile-operand .1") //
-				, Pair.of("ic-compile-operand0 .0 .1", "ic-compile-operand0 .1") //
-				, Pair.of("ic-compile-better-option .0 .1", "ic-compile-better-option .1") //
-				, Pair.of("ic-let .0 .1", "ic-let .1") //
-				, Pair.of("ic-push-pop-parameters .0 .1", "ic-push-pop-parameters .1") //
+				Pair.of("let .0 = .1", "{.0} = .1") //
 		);
 
 		FileUtil.findPaths(Paths.get("src/")) //
-				.filter(path -> WildcardUtil.isMatch("ic*.sl", path.getFileName().toString())) //
+				.filter(path -> WildcardUtil.isMatch("*.il", path.getFileName().toString())) //
 				.forEach(path -> {
 					try {
 						RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());

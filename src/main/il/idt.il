@@ -1,4 +1,3 @@
--- Sets up and loads interrupt descriptor table
 declare idt-set-entry = function [vector, handler, is-interrupt-gate,] (
 	declare p = idt-address + vector shl 3;
 	dw-set [p + 0, handler and +x0000FFFF + +x00080000,];
@@ -37,7 +36,7 @@ declare idt-setup = function [] (
 		(+xB8000 as pointer:int)/* =+ 1;
 
 		-- Switch processes
-		let current-process/*/+current/+busy = 1;
+		{current-process/*/+current/+busy} = 1;
 		sch-yield [];
 
 		-- Sends end of interrupt signal

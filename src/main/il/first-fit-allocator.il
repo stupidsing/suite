@@ -21,8 +21,8 @@ declare ffa-allocate0 = function [size,] (
 
 	declare start = ffa-current;
 	declare next;
-	while (ffa-current/*/+current/+size < size && (let next = next-node [ffa-current,]) != start) do (
-		let ffa-current = next;
+	while (ffa-current/*/+current/+size < size && ({next} = next-node [ffa-current,]) != start) do (
+		{ffa-current} = next;
 	);
 
 	declare diff = ffa-current/*/+current/+size - size;
@@ -30,11 +30,11 @@ declare ffa-allocate0 = function [size,] (
 	if (diff >= 0) then (
 		if (diff >= ffa-node-size + 4) then (
 			dl-insert-next [ffa-current, ffa-current +offset (size + ffa-node-size),];
-			let next = ffa-next [ffa-current,];
-			let next/*/+current/+size = diff - ffa-node-size;
+			{next} = ffa-next [ffa-current,];
+			{next/*/+current/+size} = diff - ffa-node-size;
 		) else ();
 
-		let ffa-current/*/+current/+size = 0;
+		{ffa-current/*/+current/+size} = 0;
 		ffa-current;
 	) else null;
 );
@@ -45,14 +45,14 @@ declare ffa-deallocate0 = function [node,] (
 
 	if (prev != null && prev/*/+current/+size != 0) then (
 		dl-remove [node,];
-		let node = prev;
+		{node} = prev;
 	) else ();
 
 	if (next != null && next/*/+current/+size != 0) then (
 		dl-remove [next,];
 	) else ();
 
-	let node/*/+current/+size = (ffa-next [node,]) as int - node as int - ffa-node-size;
+	{node/*/+current/+size} = (ffa-next [node,]) as int - node as int - ffa-node-size;
 );
 
 declare ffa-allocate = function [size,] (
@@ -71,11 +71,11 @@ declare ffa-setup = function [] (
 	declare first = ffa-region0 as pointer:ffa-node;
 	declare last = (ffa-regionx - ffa-node-size) as pointer:ffa-node; -- Stopper record
 
-	let first/*/+current/+size = ffa-regionx - ffa-region0 - 24;
-	let last/*/+current/+size = 0;
+	{first/*/+current/+size} = ffa-regionx - ffa-region0 - 24;
+	{last/*/+current/+size} = 0;
 
 	dl-new [head,];
 	dl-insert-next [head, first,];
 	dl-insert-next [first, last,];
-	let ffa-current = head;
+	{ffa-current} = head;
 );

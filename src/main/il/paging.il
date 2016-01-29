@@ -28,7 +28,7 @@ declare pg-get-physical = function [logical,] (
 declare pg-set-pt-entry = function [pe0, pt1, pm-alloc,] (
 	declare physical = dw-get [pe0,];
 	(physical = 0 && (
-		dw-set [pe0, (let physical = pm-alloc []) + 7,];
+		dw-set [pe0, ({physical} = pm-alloc []) + 7,];
 		pg-invalidate-page [pt1,];
 		zero [pt1, 4096,];
 	));
@@ -82,12 +82,12 @@ declare pg-allocate = function [nPages,] (
 		declare initial = pg-current;
 		declare r0 = 0;
 
-		while (r0 = 0 && ((let pg-current = next-page [pg-current,]) != initial)) do (
+		while (r0 = 0 && (({pg-current} = next-page [pg-current,]) != initial)) do (
 			declare r1 = 1;
 			for (declare i = 0; (r1 && i < nPages); i =+ 1) do (
-				let r1 = (r1 && not pg-is-mapped [pg-current + i shl 12,]);
+				{r1} = (r1 && not pg-is-mapped [pg-current + i shl 12,]);
 			);
-			(r1 && let r0 = pg-current);
+			(r1 && {r0} = pg-current);
 		);
 
 		(r0 && (

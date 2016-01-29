@@ -11,11 +11,11 @@ declare irq-get-isr = function [] (
 );
 
 declare irq-get-sink = function [irq-number, out irq-sink,] (
-	let irq-sink = irq-sinks/:irq-number;
+	{irq-sink} = irq-sinks/:irq-number;
 );
 
 declare irq-set-sink = function [irq-number, irq-sink,] (
-	let irq-sinks/:irq-number = irq-sink;
+	{irq-sinks/:irq-number} = irq-sink;
 );
 
 declare irq-setup = function [] (

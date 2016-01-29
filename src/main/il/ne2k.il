@@ -1,5 +1,3 @@
--- Reference http://www.jbox.dk/sanos/source/sys/dev/ne2000.c.html
-
 constant ne2k-io-base = +x300;
 constant ne2k-irq-number = 3;
 
@@ -16,17 +14,17 @@ declare ne2k-is-dma-completed;
 declare ne2k-irq-sink = function [irq-number as int,] (
 	declare isr;
 	outb [ne2k-io-base + +x00, +x22,];
-	while (let isr = inb [ne2k-io-base + +x07,]) do (
+	while ({isr} = inb [ne2k-io-base + +x07,]) do (
 		outb [ne2k-io-base + +x07, isr,];
-		(isr and +x01 && let ne2k-is-arrived = 1);
-		(isr and +x02 && let ne2k-is-transmitted = 1);
-		(isr and +x40 && let ne2k-is-dma-completed = 1);
+		(isr and +x01 && {ne2k-is-arrived} = 1);
+		(isr and +x02 && {ne2k-is-transmitted} = 1);
+		(isr and +x40 && {ne2k-is-dma-completed} = 1);
 	);
 	outb [ne2k-io-base + +x00, +x22,];
 );
 
 declare ne2k-read = function [src, dst, len,] (
-	let len = (len + 1) and +xFFFFFFFE;
+	{len} = (len + 1) and +xFFFFFFFE;
 	outb [ne2k-io-base + +x00, +x22,];
 	outb [ne2k-io-base + +x0A, len,];
 	outb [ne2k-io-base + +x0B, len ushr 8,];
@@ -41,9 +39,9 @@ declare ne2k-read = function [src, dst, len,] (
 );
 
 declare ne2k-send = function [buffer, len,] (
-	let ne2k-is-dma-completed = 0;
+	{ne2k-is-dma-completed} = 0;
 
-	let len = (len + 1) and +xFFFFFFFE;
+	{len} = (len + 1) and +xFFFFFFFE;
 	outb [ne2k-io-base + +x00, +x22,];
 	outb [ne2k-io-base + +x04, +x40,];
 	outb [ne2k-io-base + +x0A, len,];
@@ -62,7 +60,7 @@ declare ne2k-send = function [buffer, len,] (
 		sch-yield [];
 	);
 
-	let ne2k-is-transmitted = 0;
+	{ne2k-is-transmitted} = 0;
 
 	declare padded-len = if (len >= 64) then len else 64;
 	outb [ne2k-io-base + +x05, padded-len,];
