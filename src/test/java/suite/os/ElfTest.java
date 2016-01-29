@@ -15,7 +15,7 @@ public class ElfTest {
 	public void test() throws IOException {
 		String program = "" //
 				+ "asm _ MOV (EBP, ESP);" //
-				+ "declare inc = function [i0, out ix,] ( let ix = i0 + 1; );" //
+				+ "declare inc = function [i0, out ix,] ( {ix} = i0 + 1; );" //
 				+ "declare j as int;" //
 				+ "inc [41, out j,];" //
 				+ "j;" //
