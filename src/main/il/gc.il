@@ -13,7 +13,6 @@ constant gc-node = ll-node struct (
 	+flag as int,
 	+class as pointer:gc-class,
 );
-declare gc-node-size = size-of gc-node;
 
 declare gc-sync = 0;
 declare gc-current as pointer:gc-node;
@@ -21,6 +20,8 @@ declare gc-current as pointer:gc-node;
 declare-pointer head to gc-node;
 
 declare gc-next = ll-next;
+
+declare gc-node-size = size-of gc-node;
 
 declare gc-create = function [node, class,] (
 	sl-create [node,];
