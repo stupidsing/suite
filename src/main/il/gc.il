@@ -82,7 +82,7 @@ declare gc-gc = function [root,] (
 );
 
 declare gc-allocate0 = function [class as pointer:gc-class,] (
-	declare gc-size = function [node,] (
+	declare get-size = function [node,] (
 		declare next = node/*/+next;
 		if next then (next as int - node as int - gc-node-size) else 0;
 	);
@@ -93,7 +93,7 @@ declare gc-allocate0 = function [class as pointer:gc-class,] (
 
 	while (not ok) do (
 		declare next;
-		while ({ok} = ((diff = gc-size [gc-current,] - size) < 0) && {next} = gc-next [gc-current,]) do (
+		while ({ok} = ((diff = get-size [gc-current,] - size) < 0) && {next} = gc-next [gc-current,]) do (
 			{gc-current} = next;
 		);
 		ok || gc-gc [];
