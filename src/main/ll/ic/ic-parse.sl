@@ -171,7 +171,7 @@ ic-parse-sugar (for (.init; .cond; .step) do .do) (.init; while .cond do (.do; .
 #
 ic-parse-sugar (for .var in (.start, .end) do .do) (declare .var = .start; while (.var < .end) do (.do; .var += 1))
 #
-ic-parse-sugar (not .b) (if .b then 0 else 1)
+ic-parse-sugar (not .b) (if .b then (no-type 0) else (no-type 1))
 #
 ic-parse-sugar (var .var = .value; .do) (var .var; {.var} = .value; .do)
 	:- is.atom .var
