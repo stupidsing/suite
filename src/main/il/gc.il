@@ -5,9 +5,10 @@ constant gc-marked = 2;
 constant gc-class = struct (
 	+number-of-pointers as int,
 	+pointer-offsets as (int * 0),
+	+get-pointers as function [gc-node, int, pointer:gc-node * 0,] int,
 );
 
-constant gc-node = dl-node struct (
+constant gc-node = ll-node struct (
 	+flag as int,
 	+size as int,
 	+class as pointer:gc-class,
@@ -19,8 +20,7 @@ declare gc-current as pointer:gc-node;
 
 declare-pointer head to gc-node;
 
-declare gc-prev = dl-prev;
-declare gc-next = dl-next;
+declare gc-next = ll-next;
 
 declare gc-prepare = function [] (
 	declare node = head;
@@ -39,12 +39,7 @@ declare gc-mark = function [root,] (
 
 		if (node/*/+flag = gc-allocated) then (
 			{node/*/+flag} = gc-marked;
-			{class} = node/*/+class;
-			declare p = address node + size-of gc-node;
-
-			for i in (0, class/*/+number-of-pointers) (
-				{nodes/:(index =+ 1)/*} = (p + class/*/+number-of-pointers/i) as pointer:gc-node;
-			);
+			{index} = node/*/+class/*/+get-pointers [node, index, nodes,];
 		) else ();
 	);
 );
@@ -61,7 +56,7 @@ declare gc-merge = function [] (
 	while node do (
 		declare node1 = gc-next [node,];
 		if (node1 && node/*/+flag = gc-free && node1/*/+flag = gc-free) then (
-			dl-remove [node1,];
+			ll-remove-next [node,];
 			{node/*/+current/+size} = (gc-next [node,]) as int - node as int - gc-node-size;
 		) else (
 			{node} = node1;
@@ -93,7 +88,7 @@ declare gc-allocate0 = function [class as pointer:gc-class,] (
 	declare diff = gc-current/*/+current/+size - size;
 
 	if (diff >= gc-node-size + 4) then (
-		dl-insert-next [gc-current, gc-current +offset (size + gc-node-size),];
+		ll-insert-next [gc-current, gc-current +offset (size + gc-node-size),];
 		declare node1 = gc-next [gc-current,];
 		{node1/*/+current/+size} = diff - gc-node-size;
 	) else ();
@@ -110,7 +105,10 @@ declare gc-allocate = function [class,] (
 
 declare gc-setup0 = function [buffer, size,] (
 	head = buffer as pointer:gc-node;
-	{head/*/+size} = size - size-of gc-node;
+	declare tail = (buffer + size - size-of gc-node) as pointer:gc-node;
+	ll-create [head,];
+	ll-create [tail,];
+	ll-insert-next [head, tail,];
 );
 
 declare gc-setup = function [] (

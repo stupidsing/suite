@@ -74,7 +74,7 @@ declare ffa-setup = function [] (
 	{first/*/+current/+size} = ffa-regionx - ffa-region0 - 24;
 	{last/*/+current/+size} = 0;
 
-	dl-new [head,];
+	dl-create [head,];
 	dl-insert-next [head, first,];
 	dl-insert-next [first, last,];
 	{ffa-current} = head;

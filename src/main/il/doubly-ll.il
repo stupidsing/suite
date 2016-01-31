@@ -22,7 +22,7 @@ declare dl-set-next as _ = function [e as pointer:dl-node$t, p,] (
 	{e/*/+next} = p;
 );
 
-declare dl-new as _ = function [e as pointer:dl-node$t,] (
+declare dl-create as _ = function [e as pointer:dl-node$t,] (
 	{e/*/+prev} = null;
 	{e/*/+next} = null;
 	e;
