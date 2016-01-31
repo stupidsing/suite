@@ -13,6 +13,10 @@ declare-pointer head to ffa-node;
 declare ffa-prev = dl-prev;
 declare ffa-next = dl-next;
 
+declare ffa-create = function [node as pointer:ffa-node,] (
+	dl-create [node,];
+);
+
 declare ffa-allocate0 = function [size,] (
 	declare next-node = function [n,] (
 		declare n1 = ffa-next [n,];
@@ -74,7 +78,9 @@ declare ffa-setup = function [] (
 	{first/*/+current/+size} = ffa-regionx - ffa-region0 - 24;
 	{last/*/+current/+size} = 0;
 
-	dl-create [head,];
+	ffa-create [head,];
+	ffa-create [first,];
+	ffa-create [last,];
 	dl-insert-next [head, first,];
 	dl-insert-next [first, last,];
 	{ffa-current} = head;
