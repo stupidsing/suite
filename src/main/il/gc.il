@@ -3,6 +3,7 @@ constant gc-allocated = 1;
 constant gc-marked = 2;
 
 constant gc-class = struct (
+	+size as int,
 	+number-of-pointers as int,
 	+pointer-offsets as (int * 0),
 	+get-pointers as function [gc-node, int, pointer:gc-node * 0,] int,
@@ -10,7 +11,6 @@ constant gc-class = struct (
 
 constant gc-node = ll-node struct (
 	+flag as int,
-	+size as int,
 	+class as pointer:gc-class,
 );
 declare gc-node-size = size-of gc-node;
@@ -21,6 +21,12 @@ declare gc-current as pointer:gc-node;
 declare-pointer head to gc-node;
 
 declare gc-next = ll-next;
+
+declare gc-create = function [node, class,] (
+	sl-create [node,];
+	{node/*/+flag} = gc-free;
+	{node/*/+class} = class;
+);
 
 declare gc-prepare = function [] (
 	declare node = head;
@@ -39,7 +45,10 @@ declare gc-mark = function [root,] (
 
 		if (node/*/+flag = gc-allocated) then (
 			{node/*/+flag} = gc-marked;
-			{index} = node/*/+class/*/+get-pointers [node, index, nodes,];
+			declare class = node/*/+class;
+			if class then (
+				{index} = class/*/+get-pointers [node, index, nodes,];
+			) else ();
 		) else ();
 	);
 );
@@ -57,7 +66,6 @@ declare gc-merge = function [] (
 		declare node1 = gc-next [node,];
 		if (node1 && node/*/+flag = gc-free && node1/*/+flag = gc-free) then (
 			ll-remove-next [node,];
-			{node/*/+current/+size} = (gc-next [node,]) as int - node as int - gc-node-size;
 		) else (
 			{node} = node1;
 		);
@@ -73,24 +81,27 @@ declare gc-gc = function [root,] (
 );
 
 declare gc-allocate0 = function [class as pointer:gc-class,] (
+	declare gc-size = function [node,] (
+		declare next = node/*/+next;
+		if next then (next as int - node as int - gc-node-size) else 0;
+	);
+
 	declare size = class/*/+size;
 	declare node = null;
-	declare ok = 0;
+	declare diff;
 
 	while (not ok) do (
 		declare next;
-		while ({ok} = (gc-current/*/+current/+size < size) && {next} = gc-next [gc-current,]) do (
+		while ({ok} = ((diff = gc-size [gc-current,] - size) < 0) && {next} = gc-next [gc-current,]) do (
 			{gc-current} = next;
 		);
 		ok || gc-gc [];
 	);
 
-	declare diff = gc-current/*/+current/+size - size;
-
 	if (diff >= gc-node-size + 4) then (
-		ll-insert-next [gc-current, gc-current +offset (size + gc-node-size),];
-		declare node1 = gc-next [gc-current,];
-		{node1/*/+current/+size} = diff - gc-node-size;
+		declare node1 = (gc-current +offset (size + gc-node-size)) as pointer:gc-node;
+		gc-create [node1, class,];
+		ll-insert-next [gc-current, node1,];
 	) else ();
 
 	node;
@@ -105,9 +116,9 @@ declare gc-allocate = function [class,] (
 
 declare gc-setup0 = function [buffer, size,] (
 	head = buffer as pointer:gc-node;
-	declare tail = (buffer + size - size-of gc-node) as pointer:gc-node;
-	ll-create [head,];
-	ll-create [tail,];
+	declare tail = (buffer + size - gc-node-size) as pointer:gc-node;
+	gc-create [head, null,];
+	gc-create [tail, null,];
 	ll-insert-next [head, tail,];
 );
 
