@@ -39,11 +39,11 @@ declare gc-mark = function [root,] (
 
 		if (node/*/+flag = gc-allocated) then (
 			{node/*/+flag} = gc-marked;
-
 			{class} = node/*/+class;
-			{p} = address node + size-of gc-node;
+			declare p = address node + size-of gc-node;
+
 			for i in (0, class/*/+number-of-pointers) (
-				{nodes/:(index =+ 1)/*} = (p + i) as pointer:gc-node;
+				{nodes/:(index =+ 1)/*} = (p + class/*/+number-of-pointers/i) as pointer:gc-node;
 			);
 		) else ();
 	);
@@ -91,6 +91,7 @@ declare gc-allocate0 = function [class as pointer:gc-class,] (
 	);
 
 	declare diff = gc-current/*/+current/+size - size;
+
 	if (diff >= gc-node-size + 4) then (
 		dl-insert-next [gc-current, gc-current +offset (size + gc-node-size),];
 		declare node1 = gc-next [gc-current,];
@@ -107,9 +108,13 @@ declare gc-allocate = function [class,] (
 	);
 );
 
+declare gc-setup0 = function [buffer, size,] (
+	head = buffer as pointer:gc-node;
+	{head/*/+size} = size - size-of gc-node;
+);
+
 declare gc-setup = function [] (
 	constant pool = int * 1048576;
 	declare p = (mm-allocate [int * 1048576,]) as int;
-	head = p as pointer:gc-node;
-	{head/*/+size} = p + size-of pool - size-of gc-node;
+	gc-setup0 [p as pointer:gc-node, size-of pool,];
 );
