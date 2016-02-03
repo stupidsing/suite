@@ -132,7 +132,7 @@ ic-rewrite-type (POINTER-OF .type0) (POINTER-OF .type1)
 #
 ic-rewrite-type (STRUCT-OF ()) (STRUCT-OF ())
 #
-ic-rewrite-type (STRUCT-OF (.name .type0, .nameTypes0)) (STRUCT-OF (.name .type1, .nameTypes1))
+ic-rewrite-type (STRUCT-OF (.nameTypes0 | .name .type0)) (STRUCT-OF (.nameTypes1 | .name .type1))
 	:- ic-rewrite-type .type0 .type1
 	, ic-rewrite-type (STRUCT-OF .nameTypes0) (STRUCT-OF .nameTypes1)
 #

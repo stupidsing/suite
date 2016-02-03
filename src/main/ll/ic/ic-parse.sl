@@ -231,9 +231,11 @@ ic-parse-type (function .m .rt) (METHOD-OF .pos .returnType)
 ic-parse-type pointer:.t (POINTER-OF .type)
 	:- ic-parse-type .t .type
 #
-ic-parse-type (struct .nts) (STRUCT-OF .nameTypes)
-	:- zip .nts .nameTypes .list
-	, list.query .list (.name as .t):(.name .type) (ic-parse-type .t .type)
+ic-parse-type (struct ()) (STRUCT-OF ())
+#
+ic-parse-type (struct (.nts | .name as .t)) (STRUCT-OF (.nameTypes | .name .type))
+	:- ic-parse-type .t .type
+	, ic-parse-type (struct .nts) (STRUCT-OF .nameTypes)
 #
 ic-parse-type :.typeVar .typeVar
 #

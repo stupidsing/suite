@@ -3,15 +3,15 @@ constant gc-allocated = 1;
 constant gc-marked = 2;
 
 constant gc-class = struct (
-	+size as int,
-	+number-of-pointers as int,
-	+pointer-offsets as (int * 0),
-	+get-pointers as function [gc-node, int, pointer:gc-node * 0,] int,
+| +size as int
+| +number-of-pointers as int
+| +pointer-offsets as (int * 0)
+| +get-pointers as function [gc-node int pointer:gc-node * 0] int
 );
 
 constant gc-node = ll-node struct (
-	+flag as int,
-	+class as pointer:gc-class,
+| +flag as int
+| +class as pointer:gc-class
 );
 
 declare gc-sync = 0;

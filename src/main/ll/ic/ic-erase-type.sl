@@ -20,10 +20,13 @@ ic-erase-type0 (DECLARE .mp .var .type .do0) (DECLARES .var _ .size .dox)
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
 #
-ic-erase-type0 (FIELD (STRUCT-OF .nts) .name .do0) (MEMORY .size (TREE ' + ' (NUMBER .offset) .dox))
-	:- ic-struct-offset .nts .name .type .offset
+ic-erase-type0 (FIELD (STRUCT-OF (.nts | .name .type)) .name .do0) (MEMORY .size (TREE ' + ' (NUMBER .offset) .dox))
+	:- ic-type-size (STRUCT-OF .nts) .offset
 	, ic-type-size .type .size
 	, ic-erase-type (REF .do0) .dox
+#
+ic-erase-type0 (FIELD (STRUCT-OF (.nts | _)) .name .do0) .dox
+	:- ic-erase-type (FIELD (STRUCT-OF .nts) .name .do0) .dox
 #
 ic-erase-type0 (IN .var _ .do0) .dox
 	:- try (ic-erase-type .do0 .dox) .ex (throw .ex "%0Aat variable" .var)
@@ -66,12 +69,11 @@ ic-erase-type0 (TYPE-CAST _ .do0) .dox
 	:- ic-erase-type .do0 .dox
 #
 
-ic-struct-offset (.name .type, _) .name .type 0
+ic-struct-offset (.nts | .name .type) .name .type .offset
+	:- ic-type-size (STRUCT-OF .nts) .offset
 #
-ic-struct-offset (_ .dummyType, .nameTypes) .name .type .offset
-	:- ic-struct-offset .nameTypes .name .type .offset0
-	, ic-type-size .dummyType .offset1
-	, let .offset (.offset0 + .offset1)
+ic-struct-offset (.nts | _ _) .name .type .offset
+	:- ic-struct-offset .nts .name .type .offset
 #
 
 ic-type-size .type _
@@ -96,8 +98,8 @@ ic-type-size (POINTER-OF _) 4
 #
 ic-type-size (STRUCT-OF ()) 0
 #
-ic-type-size (STRUCT-OF (_ .type, .nameTypes)) .size
+ic-type-size (STRUCT-OF (.nts | _ .type)) .size
 	:- ic-type-size .type .size0
-	, ic-type-size (STRUCT-OF .nameTypes) .size1
+	, ic-type-size (STRUCT-OF .nts) .size1
 	, let .size (.size0 + .size1)
 #

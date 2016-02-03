@@ -130,9 +130,11 @@ ic-match-parameter-types .vs (IP .io .do, .ips) (PARAM-OF .io .type, .pos)
 	, ic-match-parameter-types .vs .ips .pos
 #
 
-ic-field-type .nts .name .type
+ic-field-type (.nts | .name .type) .name .type
 	:- once (bound .nts; ic-error "Cannot access field of unknown type")
-	, member .nts (.name .type)
+#
+ic-field-type (.nts | _ _) .name .type
+	:- ic-field-type .nts .name .type
 #
 
 ic-condition-type .type

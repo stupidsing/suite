@@ -4,10 +4,10 @@ constant sch-action-exit = 1;
 constant sch-action-fork = 2;
 
 constant sch-node = dl-node struct (
-	+esp as int,
-	+action as int,
-	+busy as int,
-	+kernel-stack as (int * stack-size),
+| +esp as int
+| +action as int
+| +busy as int
+| +kernel-stack as (int * stack-size)
 );
 
 declare current-process as pointer:sch-node = null;

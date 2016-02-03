@@ -20,7 +20,7 @@ public class ImperativeCompilerTest {
 	@Test
 	public void testDataStructure() {
 		String s = "" //
-				+ "constant p = fix :p struct (+next as pointer:(:p),);" //
+				+ "constant p = fix :p struct ( | +next as pointer:(:p));" //
 				+ "declare pnext = function [e as pointer:p,] e/*/+next;" //
 				+ "declare object = new p (+next = null,);" //
 				+ "{object/+next} = pnext [& object,];" //
@@ -46,7 +46,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testField() {
-		Bytes bytes = imperativeCompiler.compile(0, "declare x as struct (+i as int, +j as int,); x/+j = 3;");
+		Bytes bytes = imperativeCompiler.compile(0, "declare x as struct ( | +i as int | +j as int); x/+j = 3;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}

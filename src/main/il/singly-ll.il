@@ -1,6 +1,6 @@
 constant ll-node .t = fix :ll-node struct (
-	+next as pointer::ll-node,
-	+current as .t,
+| +next as pointer::ll-node
+| +current as .t
 );
 
 constant ll-node$t = (:t => ll-node :t);

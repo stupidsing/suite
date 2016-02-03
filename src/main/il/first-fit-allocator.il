@@ -1,5 +1,5 @@
 constant ffa-node = dl-node struct (
-	+is-occupied as boolean,
+| +is-occupied as boolean
 );
 declare ffa-node-size = size-of ffa-node;
 

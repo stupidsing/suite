@@ -1,59 +1,59 @@
 constant ap-header = struct (
-	+type as byte,
-	+length as byte,
+| +type as byte
+| +length as byte
 );
 
 constant ap-local-apic = struct (
-	+header as ap-header,
-	+acpi-processor-id as byte,
-	+apic-id as byte,
-	+flags as int, 
+| +header as ap-header
+| +acpi-processor-id as byte
+| +apic-id as byte
+| +flags as int
 );
 
 constant ap-io-apic = struct (
-	+header as ap-header,
-	+io-apic-id as byte,
-	+reserved as byte,
-	+io-apic-address as int,
-	+global-system-interrupt-base as int,
+| +header as ap-header
+| +io-apic-id as byte
+| +reserved as byte
+| +io-apic-address as int
+| +global-system-interrupt-base as int
 );
 
 constant ap-interrupt-override = struct (
-	+header as ap-header,
-	+bus as byte,
-	+source as byte,
-	+interrupt as int,
-	+flags as (byte * 2),
+| +header as ap-header
+| +bus as byte
+| +source as byte
+| +interrupt as int
+| +flags as (byte * 2)
 );
 
 constant ap-acpi-header = struct (
-	+signature as int,
-	+length as int,
-	+revision as byte,
-	+checksum as byte,
-	+oem as (byte * 6),
-	+oem-table-id as (byte * 8),
-	+oem-revision as int,
-	+creator-id as int,
-	+creator-revision as int,
+| +signature as int
+| +length as int
+| +revision as byte
+| +checksum as byte
+| +oem as (byte * 6)
+| +oem-table-id as (byte * 8)
+| +oem-revision as int
+| +creator-id as int
+| +creator-revision as int
 );
 
 constant ap-acpi-fadt = struct (
-	+header as ap-acpi-header,
-	+firmware-control as int,
-	+dsdt as int,
-	+reserved as byte,
-	+preferred-pm-profile as byte,
-	+sci-interrupt as (byte * 2),
-	+smi-command-port as int,
-	+acpi-enable as byte,
-	+acpi-disable as byte,
+| +header as ap-acpi-header
+| +firmware-control as int
+| +dsdt as int
+| +reserved as byte
+| +preferred-pm-profile as byte
+| +sci-interrupt as (byte * 2)
+| +smi-command-port as int
+| +acpi-enable as byte
+| +acpi-disable as byte
 );
 
 constant ap-acpi-madt = struct (
-	+header as ap-acpi-header,
-	+local-apic-address as int,
-	+flags as int,
+| +header as ap-acpi-header
+| +local-apic-address as int
+| +flags as int
 );
 
 declare ap-io-apic-address;
