@@ -72,7 +72,7 @@ ic-erase-type0 (TYPE-CAST _ .do0) .dox
 ic-struct-offset (.nts | .name .type) .name .type .offset
 	:- ic-type-size (STRUCT-OF .nts) .offset
 #
-ic-struct-offset (.nts | _ _) .name .type .offset
+ic-struct-offset (.nts | _) .name .type .offset
 	:- ic-struct-offset .nts .name .type .offset
 #
 
