@@ -9,20 +9,20 @@ import suite.immutable.IList;
 
 public class LockFreeQueue<T> {
 
-	private CasReference<FrontBack> cas = new CasReference<>(new FrontBack(IList.end(), IList.end()));
+	private CasReference<BackFront> cas = new CasReference<>(new BackFront(IList.end(), IList.end()));
 
-	private class FrontBack {
-		private IList<T> front;
+	private class BackFront {
 		private IList<T> back;
+		private IList<T> front;
 
-		private FrontBack(IList<T> front, IList<T> back) {
-			this.front = front;
+		private BackFront(IList<T> back, IList<T> front) {
 			this.back = back;
+			this.front = front;
 		}
 	}
 
 	public void enqueue(T t) {
-		cas.apply(queue0 -> new FrontBack(IList.cons(t, queue0.front), queue0.back));
+		cas.apply(queue0 -> new BackFront(IList.cons(t, queue0.back), queue0.front));
 	}
 
 	/**
@@ -32,16 +32,16 @@ public class LockFreeQueue<T> {
 		List<T> result = new ArrayList<>(Arrays.asList((T) null));
 
 		cas.apply(fb0 -> {
-			IList<T> front = fb0.front;
 			IList<T> back = fb0.back;
-			if (back.isEmpty()) { // Reverse elements from front to back
-				for (T t_ : fb0.front)
-					back = IList.cons(t_, back);
-				front = IList.end();
+			IList<T> front = fb0.front;
+			if (front.isEmpty()) { // Reverse elements from back to front
+				for (T t_ : fb0.back)
+					front = IList.cons(t_, front);
+				back = IList.end();
 			}
-			if (!back.isEmpty()) {
-				result.set(0, back.head);
-				return new FrontBack(front, back.tail);
+			if (!front.isEmpty()) {
+				result.set(0, front.head);
+				return new BackFront(back, front.tail);
 			} else {
 				result.set(0, null);
 				return fb0;
