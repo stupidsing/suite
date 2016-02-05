@@ -20,12 +20,12 @@ ic-infer-type0 _ (BOOLEAN _) BOOLEAN
 ic-infer-type0 .vs (DECLARE .mp .var .varType .do) .type
 	:- ic-infer-type (.mp .var .varType, .vs) .do .type
 #
+ic-infer-type0 .vs (EXTEND-SIGNED .do) I32
+	:- ic-infer-type .vs .do I8
+#
 ic-infer-type0 .vs (FIELD (STRUCT-OF .nts) .name .do) .type
 	:- ic-infer-type .vs .do (STRUCT-OF .nts)
 	, ic-field-type .nts .name .type
-#
-ic-infer-type0 .vs (EXTEND-SIGNED .do) I32
-	:- ic-infer-type .vs .do I8
 #
 ic-infer-type0 .vs (IF .if .then .else) .type
 	:- ic-infer-type .vs .if .ifType
