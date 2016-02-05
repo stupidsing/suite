@@ -1,7 +1,7 @@
 constant dl-node .t = fix :dl-node struct (
-| +prev as pointer::dl-node
-| +next as pointer::dl-node
-| +current as .t
+| pointer::dl-node +prev
+| pointer::dl-node +next
+| .t +current
 );
 
 constant dl-node$t = (:t => dl-node :t);

@@ -12,7 +12,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testArray() {
-		Bytes bytes = imperativeCompiler.compile(0, "declare array as (int * 2) = array (1, 2,); {array/:3} = array/:4;");
+		Bytes bytes = imperativeCompiler.compile(0, "declare (int * 2) array = array (1, 2,); {array/:3} = array/:4;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
@@ -20,8 +20,8 @@ public class ImperativeCompilerTest {
 	@Test
 	public void testDataStructure() {
 		String s = "" //
-				+ "constant p = fix :p struct ( | +next as pointer:(:p));" //
-				+ "declare pnext = function [e as pointer:p,] e/*/+next;" //
+				+ "constant p = fix :p struct ( | pointer::p +next);" //
+				+ "declare pnext = function [pointer:p e,] e/*/+next;" //
 				+ "declare object = new p (+next = null,);" //
 				+ "{object/+next} = pnext [& object,];" //
 				+ "0";
@@ -46,7 +46,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testField() {
-		Bytes bytes = imperativeCompiler.compile(0, "declare x as struct ( | +i as int | +j as int); x/+j = 3;");
+		Bytes bytes = imperativeCompiler.compile(0, "declare (struct ( | int +i | int +j)) x; x/+j = 3;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}

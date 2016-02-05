@@ -1,5 +1,5 @@
 constant ba-node = dl-node struct (
-| +size as int
+| int +size
 );
 declare ba-node-size = size-of ba-node;
 

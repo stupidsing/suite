@@ -233,7 +233,7 @@ ic-parse-type pointer:.t (POINTER-OF .type)
 #
 ic-parse-type (struct ()) (STRUCT-OF ())
 #
-ic-parse-type (struct (.nts | .name as .t)) (STRUCT-OF (.nameTypes | .name .type))
+ic-parse-type (struct (.nts | .t .name)) (STRUCT-OF (.nameTypes | .name .type))
 	:- ic-parse-type .t .type
 	, ic-parse-type (struct .nts) (STRUCT-OF .nameTypes)
 #

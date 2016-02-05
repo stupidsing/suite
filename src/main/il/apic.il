@@ -1,59 +1,59 @@
 constant ap-header = struct (
-| +type as byte
-| +length as byte
+| byte +type
+| byte +length
 );
 
 constant ap-local-apic = struct (
-| +header as ap-header
-| +acpi-processor-id as byte
-| +apic-id as byte
-| +flags as int
+| ap-header +header
+| byte +acpi-processor-id
+| byte +apic-id
+| int +flags
 );
 
 constant ap-io-apic = struct (
-| +header as ap-header
-| +io-apic-id as byte
-| +reserved as byte
-| +io-apic-address as int
-| +global-system-interrupt-base as int
+| ap-header +header
+| byte +io-apic-id
+| byte +reserved
+| int +io-apic-address
+| int +global-system-interrupt-base
 );
 
 constant ap-interrupt-override = struct (
-| +header as ap-header
-| +bus as byte
-| +source as byte
-| +interrupt as int
-| +flags as (byte * 2)
+| ap-header +header
+| byte +bus
+| byte +source
+| int +interrupt
+| (byte * 2) +flags
 );
 
 constant ap-acpi-header = struct (
-| +signature as int
-| +length as int
-| +revision as byte
-| +checksum as byte
-| +oem as (byte * 6)
-| +oem-table-id as (byte * 8)
-| +oem-revision as int
-| +creator-id as int
-| +creator-revision as int
+| int +signature
+| int +length
+| byte +revision
+| byte +checksum
+| (byte * 6) +oem
+| (byte * 8) +oem-table-id
+| int +oem-revision
+| int +creator-id
+| int +creator-revision
 );
 
 constant ap-acpi-fadt = struct (
-| +header as ap-acpi-header
-| +firmware-control as int
-| +dsdt as int
-| +reserved as byte
-| +preferred-pm-profile as byte
-| +sci-interrupt as (byte * 2)
-| +smi-command-port as int
-| +acpi-enable as byte
-| +acpi-disable as byte
+| ap-acpi-header +header
+| int +firmware-control
+| int +dsdt
+| byte +reserved
+| byte +preferred-pm-profile
+| (byte * 2) +sci-interrupt
+| int +smi-command-port
+| byte +acpi-enable
+| byte +acpi-disable
 );
 
 constant ap-acpi-madt = struct (
-| +header as ap-acpi-header
-| +local-apic-address as int
-| +flags as int
+| ap-acpi-header +header
+| int +local-apic-address
+| int +flags
 );
 
 declare ap-io-apic-address;
