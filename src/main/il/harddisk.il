@@ -7,7 +7,7 @@ declare hd-set-lba = function [lba, count,] (
 );
 
 -- http://wiki.osdev.org/ATA_read/write_sectors
-declare hd-read = function [lba, count, buffer as int,] (
+declare hd-read = function [lba, count, int buffer,] (
 	hd-set-lba [lba, count,];
 	outb [+x1F7, +x20,];
 
@@ -25,7 +25,7 @@ declare hd-read = function [lba, count, buffer as int,] (
 	);
 );
 
-declare hd-write = function [lba, count, buffer as int,] (
+declare hd-write = function [lba, count, int buffer,] (
 	hd-set-lba [lba, count,];
 	outb [+x1F7, +x30,];
 

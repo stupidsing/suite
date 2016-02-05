@@ -81,7 +81,7 @@ declare gc-gc = function [root,] (
 	gc-current = head;
 );
 
-declare gc-allocate0 = function [class as pointer:gc-class,] (
+declare gc-allocate0 = function [pointer:gc-class class,] (
 	declare get-size = function [node,] (
 		declare next = node/*/+next;
 		if next then (next as int - node as int - gc-node-size) else 0;

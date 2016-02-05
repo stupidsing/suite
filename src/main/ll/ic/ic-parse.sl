@@ -188,10 +188,10 @@ ic-parse-invoke-parameter .param .ip
 
 ic-parse-method-parameter (out .param) (MP OUT .param _)
 #
-ic-parse-method-parameter (out .param as .t) (MP OUT .param .type)
+ic-parse-method-parameter (out .t .param) (MP OUT .param .type)
 	:- ic-parse-type .t .type
 #
-ic-parse-method-parameter (.param as .t) (MP IN .param .type)
+ic-parse-method-parameter (.t .param) (MP IN .param .type)
 	:- ic-parse-type .t .type
 #
 ic-parse-method-parameter .p .mp

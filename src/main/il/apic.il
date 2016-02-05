@@ -59,7 +59,7 @@ constant ap-acpi-madt = struct (
 declare ap-io-apic-address;
 declare ap-local-apic-address;
 
-declare ap-parse-madt = function [madt as pointer:ap-acpi-madt,] (
+declare ap-parse-madt = function [pointer:ap-acpi-madt madt,] (
 	declare p = madt as int + size-of ap-acpi-madt;
 	declare px = madt as int + madt/*/+header/+length;
 
@@ -82,14 +82,14 @@ declare ap-parse-madt = function [madt as pointer:ap-acpi-madt,] (
 	);
 );
 
-declare ap-parse-dt = function [header as pointer:ap-acpi-header,] (
+declare ap-parse-dt = function [pointer:ap-acpi-header header,] (
 	if (header/*/+signature = +x50434146) then (
 	) else if (header/*/+signature = +x43495041) then (
 		ap-parse-madt [header as pointer:ap-acpi-madt,];
 	) else ();
 );
 
-declare ap-parse-rsdt = function [rsdt as pointer:ap-acpi-header,] (
+declare ap-parse-rsdt = function [pointer:ap-acpi-header rsdt,] (
 	declare p = rsdt as int + size-of ap-acpi-header;
 	declare px = rsdt as int + rsdt/*/+length;
 	while (p < px) do (
@@ -97,7 +97,7 @@ declare ap-parse-rsdt = function [rsdt as pointer:ap-acpi-header,] (
 	);
 );
 
-declare ap-parse-xsdt = function [rsdt as pointer:ap-acpi-header,] (
+declare ap-parse-xsdt = function [pointer:ap-acpi-header rsdt,] (
 	0;
 );
 

@@ -37,7 +37,7 @@ declare sync-wait = function [p, w,] ( -- TODO
 	);
 );
 
-declare sync-notify = function [p as pointer:int, w,] ( -- TODO
+declare sync-notify = function [pointer:int p, w,] ( -- TODO
 	{w/*} = 1;
 );
 

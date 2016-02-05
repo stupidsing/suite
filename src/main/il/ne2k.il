@@ -11,7 +11,7 @@ declare ne2k-is-arrived;
 declare ne2k-is-transmitted;
 declare ne2k-is-dma-completed;
 
-declare ne2k-irq-sink = function [irq-number as int,] (
+declare ne2k-irq-sink = function [int irq-number,] (
 	declare isr;
 	outb [ne2k-io-base + +x00, +x22,];
 	while ({isr} = inb [ne2k-io-base + +x07,]) do (

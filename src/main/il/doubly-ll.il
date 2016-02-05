@@ -6,29 +6,29 @@ constant dl-node .t = fix :dl-node struct (
 
 constant dl-node$t = (:t => dl-node :t);
 
-declare dl-prev as _ = function [e as pointer:dl-node$t,] (
+declare dl-prev as _ = function [pointer:dl-node$t e,] (
 	e/*/+prev;
 );
 
-declare dl-next as _ = function [e as pointer:dl-node$t,] (
+declare dl-next as _ = function [pointer:dl-node$t e,] (
 	e/*/+next;
 );
 
-declare dl-set-prev as _ = function [e as pointer:dl-node$t, p,] (
+declare dl-set-prev as _ = function [pointer:dl-node$t e, p,] (
 	{e/*/+prev} = p;
 );
 
-declare dl-set-next as _ = function [e as pointer:dl-node$t, p,] (
+declare dl-set-next as _ = function [pointer:dl-node$t e, p,] (
 	{e/*/+next} = p;
 );
 
-declare dl-create as _ = function [e as pointer:dl-node$t,] (
+declare dl-create as _ = function [pointer:dl-node$t e,] (
 	{e/*/+prev} = null;
 	{e/*/+next} = null;
 	e;
 );
 
-declare dl-insert-prev as _ = function [e as pointer:dl-node$t, ne,] (
+declare dl-insert-prev as _ = function [pointer:dl-node$t e, ne,] (
 	declare prev = dl-prev [e,];
 	dl-set-prev [ne, prev,];
 	dl-set-next [ne, e,];
@@ -36,7 +36,7 @@ declare dl-insert-prev as _ = function [e as pointer:dl-node$t, ne,] (
 	(prev && dl-set-next [prev, ne,]);
 );
 
-declare dl-insert-next as _ = function [e as pointer:dl-node$t, ne,] (
+declare dl-insert-next as _ = function [pointer:dl-node$t e, ne,] (
 	declare next = dl-next [e,];
 	dl-set-prev [ne, e,];
 	dl-set-next [ne, next,];
@@ -44,7 +44,7 @@ declare dl-insert-next as _ = function [e as pointer:dl-node$t, ne,] (
 	dl-set-next [e, ne,];
 );
 
-declare dl-remove as _ = function [e as pointer:dl-node$t,] (
+declare dl-remove as _ = function [pointer:dl-node$t e,] (
 	declare prev = dl-prev [e,];
 	declare next = dl-next [e,];
 	(prev && dl-set-next [prev, next,]);

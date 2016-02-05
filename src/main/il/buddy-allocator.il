@@ -25,11 +25,11 @@ declare log2rel = function [size,] (
 
 declare max-l2 = log2rel [total,];
 
-declare ba-parent-of = function [block as pointer:ba-node, l2,] (
+declare ba-parent-of = function [pointer:ba-node block, l2,] (
 	(ba-region0 + (block as int - ba-region0) and (+xFFFFFFFF xor (exp2rel [l2,]))) as pointer:ba-node;
 );
 
-declare ba-buddy-of = function [block as pointer:ba-node, l2,] (
+declare ba-buddy-of = function [pointer:ba-node block, l2,] (
 	(ba-region0 + (block as int - ba-region0) xor (exp2rel [l2,])) as pointer:ba-node;
 );
 

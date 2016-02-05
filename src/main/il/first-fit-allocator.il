@@ -13,7 +13,7 @@ declare-pointer head to ffa-node;
 declare ffa-prev = dl-prev;
 declare ffa-next = dl-next;
 
-declare ffa-create = function [node as pointer:ffa-node,] (
+declare ffa-create = function [pointer:ffa-node node,] (
 	dl-create [node,];
 	{node/*/+current/+is-occupied} = false;
 );
@@ -24,7 +24,7 @@ declare ffa-allocate0 = function [size,] (
 		if n1 then n1 else head;
 	);
 
-	declare get-size = function [node as pointer:ffa-node,] (
+	declare get-size = function [pointer:ffa-node node,] (
 		declare next = node/*/+next;
 		if (not node/*/+current/+is-occupied && next) then (next as int - node as int - ffa-node-size) else 0;
 	);
@@ -47,7 +47,7 @@ declare ffa-allocate0 = function [size,] (
 	) else null;
 );
 
-declare ffa-deallocate0 = function [node as pointer:ffa-node,] (
+declare ffa-deallocate0 = function [pointer:ffa-node node,] (
 	{node/*/+current/+is-occupied} = false;
 	declare prev = ffa-prev [node,];
 	declare next = ffa-next [node,];
@@ -68,7 +68,7 @@ declare ffa-allocate = function [size,] (
 	);
 );
 
-declare ffa-deallocate = function [p, size as int,] (
+declare ffa-deallocate = function [p, int size,] (
 	synchronized (& ffa-sync) (
 		ffa-deallocate0 [(p - ffa-node-size) as pointer:ffa-node,];
 	);
