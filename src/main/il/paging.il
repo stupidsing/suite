@@ -146,7 +146,7 @@ declare pg-setup = function [] (
 );
 
 declare pg-teardown = function [] (
-	declare pt0 as int;
+	declare int pt0;
 	& pt0;
 
 	asm _ MOV (EBX, CR3); -- Get page table address

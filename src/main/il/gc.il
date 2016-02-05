@@ -15,7 +15,7 @@ constant gc-node = ll-node struct (
 );
 
 declare gc-sync = 0;
-declare gc-current as pointer:gc-node;
+declare pointer:gc-node gc-current;
 
 declare-pointer head to gc-node;
 

@@ -22,7 +22,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 
 	protected boolean run(String args[]) throws IOException {
 		List<Pair<String, String>> fts = Arrays.asList( //
-				Pair.of("let .0 = .1", "{.0} = .1") //
+				Pair.of("declare .0 as .1", "declare .1 .0") //
 		);
 
 		FileUtil.findPaths(Paths.get("src/")) //

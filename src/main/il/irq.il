@@ -1,4 +1,4 @@
-declare irq-sinks as ((function [int,] int) * 16);
+declare ((function [int,] int) * 16) irq-sinks;
 
 declare dump-sink = function [irq-number,] (
 	log-byte "IRQ = " irq-number;

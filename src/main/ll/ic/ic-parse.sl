@@ -16,7 +16,7 @@ ic-parse false (BOOLEAN 0)
 #
 ic-parse true (BOOLEAN 1)
 #
-ic-parse (declare .var as .t = .value; .do) (DECLARE POLY .var .type (SEQ (LET (VAR .var) (IN .var .type .value1)) .do1))
+ic-parse (declare .t .var = .value; .do) (DECLARE POLY .var .type (SEQ (LET (VAR .var) (IN .var .type .value1)) .do1))
 	:- !
 	, is.atom .var
 	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
@@ -29,7 +29,7 @@ ic-parse (declare .var = .value; .do) (DECLARE MONO .var .type (SEQ (LET (VAR .v
 	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
 	, ic-parse .do .do1
 #
-ic-parse (declare .var as .t; .do) (DECLARE MONO .var .type .do1)
+ic-parse (declare .t .var; .do) (DECLARE MONO .var .type .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
 	, ic-parse-type .t .type
@@ -164,7 +164,7 @@ ic-parse-sugar (constant .var = .value; .do) .do1
 	:- generalize (.var .value) (.var1 .value1)
 	, rewrite .var1 .value1 .do .do1
 #
-ic-parse-sugar (declare-pointer .var to .type; .do) (declare .mem as .type; declare .var = & .mem; .do)
+ic-parse-sugar (declare-pointer .var to .type; .do) (declare .type .mem; declare .var = & .mem; .do)
 	:- is.atom .var, temp .mem
 #
 ic-parse-sugar (for (.init; .cond; .step) do .do) (.init; while .cond do (.do; .step))

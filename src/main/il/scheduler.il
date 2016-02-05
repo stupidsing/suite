@@ -10,7 +10,7 @@ constant sch-node = dl-node struct (
 | +kernel-stack as (int * stack-size)
 );
 
-declare current-process as pointer:sch-node = null;
+declare pointer:sch-node current-process = null;
 declare head-process; -- Cyclic doubly-linked list
 
 declare sch-allocate = function [] (
