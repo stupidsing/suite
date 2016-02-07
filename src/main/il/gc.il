@@ -125,6 +125,6 @@ declare gc-setup0 = function [buffer, size,] (
 
 declare gc-setup = function [] (
 	constant pool = int * 1048576;
-	declare p = (mm-allocate [int * 1048576,]) as int;
+	declare p = (mm-allocate [pool,]) as int;
 	gc-setup0 [p as pointer:gc-node, size-of pool,];
 );
