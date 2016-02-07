@@ -41,7 +41,7 @@ declare gc-mark = function [root,] (
 	declare index = 0;
 	{nodes/:(index =+ 1)/*} = root;
 
-	while (index > 0) do (
+	while (0 < index) do (
 		declare node = nodes/:(index += -1)/*;
 
 		if (node/*/+flag = gc-allocated) then (

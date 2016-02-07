@@ -51,7 +51,7 @@ declare pm-setup = function [] (
 	{pm-stackx} = address pm-stack/*/:nPages;
 	declare page0 = (pm-stackx + 4095) and +xFFFFF000;
 
-	while (pagex > page0) do (
+	while (page0 < pagex) do (
 		{pm-ref-counts/*/:(pm-get-number [pagex += -4096,])} = 0;
 		{pm-stack/*/:(pm-stack-pointer =+ 1)} = pagex;
 	);

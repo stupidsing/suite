@@ -20,7 +20,7 @@
 
 		var log = m => {
 			var text = document.getElementById("log").value + m + "\n";
-			if (text.length > 256) text = text.substring(text.length - 256, text.length);
+			if (256 < text.length) text = text.substring(text.length - 256, text.length);
 			document.getElementById("log").value = text;
 			// alert(m);
 		};
@@ -62,8 +62,8 @@
 
 					if (ballx < 0) { ballx = 0; dx = 2; }
 					if (bally < 0) { bally = 0; dy = 2; }
-					if (ballx > width) { ballx = width; dx = -2; }
-					if (bally > height) { bally = height; dy = -2; }
+					if (width < ballx) { ballx = width; dx = -2; }
+					if (height < bally) { bally = height; dy = -2; }
 					return [ball];
 				},
 				draw: context => {

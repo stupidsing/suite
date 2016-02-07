@@ -25,7 +25,7 @@ v =>
 		|| `Tree ($color, $n0, $pivot, $n1)` =>
 			if (v < pivot) then
 				Tree (color, add0 {n0}, pivot, n1) | balance
-			else-if (v > pivot) then
+			else-if (pivot < v) then
 				Tree (color, n0, pivot, add0 {n1}) | balance
 			else error
 		|| `Empty` =>

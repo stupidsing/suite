@@ -17,7 +17,7 @@ define int-to-str := i =>
 		. map {`+ +'0'`}
 		. unfold-right {i => optional {i != 0} {i % 10, i / 10}}
 	>> i |
-		if (i > 0) then
+		if (0 < i) then
 			unsigned-int-to-str
 		else-if (i < 0) then
 			append {"-"} . unsigned-int-to-str . `0 -`

@@ -39,7 +39,7 @@ define and := x => y =>
 	if x then y else false
 >>
 define drop := n => list =>
-	if (n > 0 && is-list {list})
+	if (0 < n && is-list {list})
 	then (list | tail | drop {n - 1})
 	else list
 >>
@@ -60,7 +60,7 @@ define fold-right := fun => init => -- possible for short-circuit evaluation in 
 	|| anything => init
 >>
 define greater := a => b =>
-	if (a > b) then a else b
+	if (b < a) then a else b
 >>
 define id := v =>
 	v
@@ -72,7 +72,7 @@ define iterate := f => init =>
 	init | f | iterate {f} | `init;`
 >>
 define lesser := a => b =>
-	if (a > b) then b else a
+	if (b < a) then b else a
 >>
 define lines :=
 	case
@@ -108,12 +108,12 @@ define scan-right := fun => init =>
 	|| anything => init;
 >>
 define take := n => list =>
-	if (n > 0 && is-list {list})
+	if (0 < n && is-list {list})
 	then (let `$h; $t` := list >> t | take {n - 1} | cons {h})
 	else ()
 >>
 define take-drop := n => list =>
-	if (n > 0 && is-list {list}) then
+	if (0 < n && is-list {list}) then
 		let `$h; $t` := list >>
 		let `$t1, $d1` := t | take-drop {n - 1} >>
 		(h; t1), d1
@@ -193,8 +193,8 @@ define reverse :=
 >>
 define substring := start => end => list =>
 	let len := length {list} >>
-	let s := if (start >= 0) then start else (len + start) >>
-	let e := if (end > 0) then end else (len + end) >>
+	let s := if (0 <= start) then start else (len + start) >>
+	let e := if (0 < end) then end else (len + end) >>
 	list | take {e} | drop {s}
 >>
 define tails :=
@@ -225,7 +225,7 @@ define maximum :=
 >>
 define merge := merger => list =>
 	let len := length {list} >>
-	if (len > 1) then
+	if (1 < len) then
 		let `$list0, $list1` := take-drop {len / 2} {list} >>
 		merger {list0 | merge {merger}} {list1 | merge {merger}}
 	else list
@@ -252,8 +252,8 @@ define split := separator =>
 >>
 define transpose := m =>
 	let height := length {m} >>
-	let width := if (height > 0) then (m | head | length) else 0 >>
-	if (width > 0) then
+	let width := if (0 < height) then (m | head | length) else 0 >>
+	if (0 < width) then
 		let w1 := width - 1 >>
 		let gets := tail | replicate {w1} | tails | reverse >>
 		gets | map {f => map {head . apply {f}} {m}}
@@ -272,7 +272,7 @@ define group :=
 			if (list1 = `$k1, $v1; $t1`) then
 				case
 				|| (k0 < k1) (k0, v0; group0 {t0} {list1})
-				|| (k0 > k1) (k1, v1; group0 {list0} {t1})
+				|| (k1 < k0) (k1, v1; group0 {list0} {t1})
 				|| k0, append {v0} {v1}; group0 {t0} {t1}
 			else list0
 		else list1

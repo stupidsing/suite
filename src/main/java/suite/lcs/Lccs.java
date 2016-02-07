@@ -23,7 +23,7 @@ public class Lccs {
 	public Pair<Segment, Segment> lccs(Bytes bytes0, Bytes bytes1) {
 		int rollingSize = Math.min(bytes0.size(), bytes1.size());
 
-		if (rollingSize > 0) {
+		if (0 < rollingSize) {
 			Map<Integer, Segment> segments0 = createInitialHashes(bytes0, rollingSize);
 			Map<Integer, Segment> segments1 = createInitialHashes(bytes1, rollingSize);
 

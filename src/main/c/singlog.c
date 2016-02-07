@@ -40,7 +40,7 @@ int compare(struct Node *node0, struct Node *node1) {
 		case ATOM: case STR_: return strcmp(node0->u.name, node1->u.name);
 		case INT_:
 			if(node0->u.value == node1->u.value) return 0;
-			else return node0->u.value > node1->u.value ? 1 : -1;
+			else return node0->u.value < node1->u.value ? -1 : 1;
 		case TREE:
 			tree0 = node0->u.tree;
 			tree1 = node1->u.tree;
@@ -131,7 +131,7 @@ void bindref(struct Node *from, struct Node *to, struct Node ***ptrail) {
 }
 
 void rollback(struct Node ***trail, struct Node **to) {
-	while(*trail > to) {
+	while(to < *trail) {
 		struct Node *ref = *--*trail;
 		unref(ref->u.target);
 		ref->u.target = 0;
@@ -333,7 +333,7 @@ int prove(struct Node *goal) {
 	int tracedepth0 = tracedepth;
 	struct Node *trailStack[trailSize], **trail = trailStack;
 	int result = prove0(goal, &trail);
-	while(trail > trailStack) unref(*--trail);
+	while(trailStack < trail) unref(*--trail);
 	if(enabletrace) tracedepth = tracedepth0;
 	return result;
 }
@@ -384,7 +384,7 @@ int handleelaborate(struct Node *query, struct Node ***trail, struct Node **rema
 	qsort(entries, nEntries, sizeof(char*), &cmpstr);
 
 	for(i = 0; i < nEntries; i++) {
-		if(i > 0) fputs(", ", stdout);
+		if(0 < i) fputs(", ", stdout);
 		fputs(entries[i], stdout);
 		memfree(entries[i]);
 	}
@@ -449,7 +449,7 @@ int importfile(char *filename) {
 	else snprintf(filename1, bufferSize, "%s", filename);
 
 	s = filename1 + strlen(filename1);
-	while(s > filename1 && *s != '/') s--;
+	while(filename1 < s && *s != '/') s--;
 	importingpath = substr(filename1, s);
 
 	FILE *file = fopen(filename1, "r");
@@ -652,7 +652,7 @@ int handleliststr(struct Node *query, struct Node ***ptrail, struct Node **prem,
 		while(list != nilAtom) {
 			char *s = list->u.tree->left->u.name;
 			int len1 = strlen(s);
-			while(len + len1 > size) buf = realloc(buf, (size <<= 1) + 1);
+			while(size < len + len1) buf = realloc(buf, (size <<= 1) + 1);
 
 			strcpy(buf + len, s);
 			len += len1;

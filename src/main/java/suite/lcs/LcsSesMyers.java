@@ -55,7 +55,7 @@ public class LcsSesMyers<T> {
 				v1[i1] = x2;
 
 				// Solution found?
-				if (x2 >= size0 && y2 >= size1)
+				if (size0 <= x2 && size1 <= y2)
 					break found;
 			}
 
@@ -64,8 +64,8 @@ public class LcsSesMyers<T> {
 
 		Deque<T> deque = new ArrayDeque<>();
 
-		for (; x2 > 0 || y2 > 0; d--) {
-			v0 = d > 0 ? vs.get(d - 1) : vdummy;
+		for (; 0 < x2 || 0 < y2; d--) {
+			v0 = 0 < d ? vs.get(d - 1) : vdummy;
 
 			// Move down or move right?
 			boolean down = k1 == -d || k1 != d && v0[i1 - 1] < v0[i1];
@@ -77,7 +77,7 @@ public class LcsSesMyers<T> {
 			x2 = v1[i1];
 
 			// Saves end point
-			while (x2 > x1)
+			while (x1 < x2)
 				deque.addFirst(list0.get(--x2));
 
 			v1 = v0;

@@ -68,9 +68,9 @@ int findOperatorIndex(char *operator) {
 }
 
 int fromHexDigit(char c) {
-	if(c > 'a') return c - 'a' + 10;
-	else if(c > 'A') return c - 'A' + 10;
-	else if(c > '0') return c - '0';
+	if('a' < c) return c - 'a' + 10;
+	else if('A' < c) return c - 'A' + 10;
+	else if('0' < c) return c - '0';
 	else return -1; // wtf
 }
 
@@ -186,7 +186,7 @@ struct Node *parse0(char *start, char *end) {
 				if(quote == 0 || quote == q) quote = q - quote;
 
 				if(!depth && !quote && match) {
-					while(s > start && isspace(s[-1])) s--; // trims space before/after
+					while(start < s && isspace(s[-1])) s--; // trims space before/after
 					while(p0 < end && isspace(*p0)) p0++;
 					node = newTree(operator, parse0(start, s), parse0(p0, end));
 					goto done;
