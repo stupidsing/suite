@@ -20,8 +20,7 @@ public class Hex {
 	public List<XY> directions = Arrays.asList( //
 			XY.of(0, -1), XY.of(0, 1) //
 			, XY.of(-1, 0), XY.of(1, 0) //
-			, XY.of(-1, 1), XY.of(1, -1) //
-			);
+			, XY.of(-1, 1), XY.of(1, -1));
 
 	public XY diff(XY from, XY to) {
 		return XY.of(to.x - from.x, to.y - from.y);
@@ -44,10 +43,10 @@ public class Hex {
 		int dx = diff.x;
 		int dy = diff.y;
 
-		if (dx > 0)
+		if (0 < dx)
 			return XY.of(1, dy < 0 ? -1 : 0);
 		else if (dx < 0)
-			return XY.of(-1, dy > 0 ? 1 : 0);
+			return XY.of(-1, dy <= 0 ? 0 : 1);
 		else
 			return XY.of(0, dy < 0 ? -1 : 1);
 	}

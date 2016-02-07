@@ -119,7 +119,7 @@ public class LogUtil {
 		while (th != null) {
 			StackTraceElement st0[] = th.getStackTrace();
 
-			if (st0.length > maxStackTraceLength) {
+			if (maxStackTraceLength < st0.length) {
 				StackTraceElement st1[] = new StackTraceElement[maxStackTraceLength];
 				Copy.array(st0, 0, st1, 0, maxStackTraceLength);
 				th.setStackTrace(st1);

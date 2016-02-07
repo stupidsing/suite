@@ -319,7 +319,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 				// Merges with a neighbor if reached minimum number of nodes
 				if (slots1.size() < minBranchFactor)
-					if (s0 > 0)
+					if (0 < s0)
 						replaceSlots = merge(discard(slots0.get(--s0)).slots(), slots1);
 					else if (s1 < size)
 						replaceSlots = merge(slots1, discard(slots0.get(s1++)).slots());
@@ -341,10 +341,10 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			if (slots0.size() + slots1.size() >= maxBranchFactor) {
 				List<Slot> leftSlots, rightSlots;
 
-				if (slots0.size() > minBranchFactor) {
+				if (minBranchFactor < slots0.size()) {
 					leftSlots = Util.left(slots0, -1);
 					rightSlots = Util.add(Arrays.asList(Util.last(slots0)), slots1);
-				} else if (slots1.size() > minBranchFactor) {
+				} else if (minBranchFactor < slots1.size()) {
 					leftSlots = Util.add(slots0, Arrays.asList(Util.first(slots1)));
 					rightSlots = Util.right(slots1, 1);
 				} else {

@@ -27,13 +27,13 @@ public class IndexedSourceReader<T> {
 		return new IPointer<T>() {
 			public T head() {
 				synchronized (IndexedSourceReader.this) {
-					while (position - offset >= queue.size()) {
+					while (queue.size() <= position - offset) {
 						T t = source != null ? source.source() : null;
 
 						if (t != null) {
 							int size1 = queue.size() + 1;
 
-							if (size1 > maxBuffers) {
+							if (maxBuffers < size1) {
 								int shift = size1 - maxBuffers / 2;
 								queue = new ArrayList<>(Util.right(queue, shift));
 								offset += shift;
@@ -48,7 +48,7 @@ public class IndexedSourceReader<T> {
 
 					int index = position - offset;
 
-					if (index >= 0)
+					if (0 <= index)
 						return index < queue.size() ? queue.get(index) : null;
 					else
 						throw new RuntimeException("Cannot unwind flushed input buffer");

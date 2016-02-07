@@ -44,7 +44,7 @@ public class RecursiveFactorizer {
 	private FactorizeResult parse0(Chars chars, int fromOp) {
 		Chars chars1 = CharsUtil.trim(chars);
 
-		if (chars1.size() > 0) {
+		if (0 < chars1.size()) {
 			char first = chars1.get(0);
 			char last = chars1.get(-1);
 
@@ -63,7 +63,7 @@ public class RecursiveFactorizer {
 				int li, ri;
 
 				if (operator == TermOp.BRACES) {
-					if (ops.start > chars1.end || last != '}')
+					if (chars1.end < ops.start || last != '}')
 						continue;
 
 					right = Chars.of(chars.cs, ops.end, chars1.end - 1);

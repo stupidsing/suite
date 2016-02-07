@@ -15,17 +15,17 @@ public class YCombinatorTest {
 	@Test
 	public void testFactorial() {
 		assertEquals(Suite.parse("3628800"), Suite.evaluateFun("" //
-				+ "10 | " + y + " {fac => n => if (n > 1) then (n * fac {n - 1}) else 1}", false));
+				+ "10 | " + y + " {fac => n => if (1 < n) then (n * fac {n - 1}) else 1}", false));
 		assertEquals(Suite.parse("3628800"), Suite.evaluateFun("" //
-				+ "10 | " + lazyy + " {fac => n => if (n > 1) then (n * fac {n - 1}) else 1}", true));
+				+ "10 | " + lazyy + " {fac => n => if (1 < n) then (n * fac {n - 1}) else 1}", true));
 	}
 
 	@Test
 	public void testFibonacci() {
 		assertEquals(Suite.parse("55"), Suite.evaluateFun("" //
-				+ "10 | " + y + " {fib => n => if (n > 1) then (fib {n - 1} + fib {n - 2}) else n}", false));
+				+ "10 | " + y + " {fib => n => if (1 < n) then (fib {n - 1} + fib {n - 2}) else n}", false));
 		assertEquals(Suite.parse("55"), Suite.evaluateFun("" //
-				+ "10 | " + lazyy + " {fib => n => if (n > 1) then (fib {n - 1} + fib {n - 2}) else n}", true));
+				+ "10 | " + lazyy + " {fib => n => if (1 < n) then (fib {n - 1} + fib {n - 2}) else n}", true));
 	}
 
 }

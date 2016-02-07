@@ -17,11 +17,11 @@ public class MathUtil {
 			n0 /= 2;
 
 		// n0 is odd here
-		while (n0 > 0) {
+		while (0 < n0) {
 			while (isEven(n1))
 				n1 /= 2;
 
-			if (n0 > n1)
+			if (n1 < n0)
 				n0 -= n1;
 			else {
 				int diff = n1 - n0;
@@ -44,7 +44,7 @@ public class MathUtil {
 				return steinGcd0(n0 / 2, n1);
 			else if (isEven1)
 				return steinGcd0(n0, n1 / 2);
-			else if (n1 > n0)
+			else if (n0 < n1)
 				return steinGcd0(n0, (n1 - n0) / 2);
 			else
 				return steinGcd0(n1, (n0 - n1) / 2);

@@ -117,7 +117,7 @@ public class UctWeiqi {
 				}
 			}
 
-			return Evaluator.evaluate(me, board) > 0;
+			return 0 < Evaluator.evaluate(me, board);
 		}
 
 		/**
@@ -159,7 +159,7 @@ public class UctWeiqi {
 			if (move == null)
 				return gameSet.getNextPlayer() != me;
 			else
-				return Evaluator.evaluate(me, board) > 0;
+				return 0 < Evaluator.evaluate(me, board);
 		}
 
 		private Move removePossibleMove(Iterator<Coordinate> iter) {

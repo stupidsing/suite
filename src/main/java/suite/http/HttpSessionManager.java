@@ -24,13 +24,13 @@ public class HttpSessionManager implements SessionManager {
 		sessions.put(id, session);
 		int size1 = sessions.size();
 
-		if (lg2(size1) > lg2(size0)) // Exceeded a power of two?
+		if (lg2(size0) < lg2(size1)) // Exceeded a power of two?
 			if (isCleaning.getAndSet(true)) { // One thread cleaning is enough
 				long current = System.currentTimeMillis();
 				Iterator<Session> iter = sessions.values().iterator();
 
 				while (iter.hasNext())
-					if (current > iter.next().getLastRequestDt() + HttpSessionController.TIMEOUTDURATION)
+					if (iter.next().getLastRequestDt() + HttpSessionController.TIMEOUTDURATION < current)
 						iter.remove();
 
 				isCleaning.set(false);
@@ -44,7 +44,7 @@ public class HttpSessionManager implements SessionManager {
 
 	private int lg2(int n) {
 		int i = 0;
-		while (n > 0) {
+		while (0 < n) {
 			n /= 2;
 			i++;
 		}

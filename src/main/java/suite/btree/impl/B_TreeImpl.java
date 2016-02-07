@@ -317,8 +317,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			int lsize = lp != null ? lp.size() : 0;
 			int rsize = rp != null ? rp.size() : 0;
 
-			if (lsize >= rsize && lsize != 0)
-				if (lsize > half) { // Shift
+			if (rsize <= lsize && lsize != 0)
+				if (half < lsize) { // Shift
 					KeyPointer out = lp.remove(lsize - 1);
 					mp.add(0, out);
 					savePage(mp);
@@ -326,8 +326,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 					page.set(index, pointerTo(mp));
 				} else
 					merge(page, lp, mp, index - 1);
-			else if (rsize >= lsize && rsize != 0)
-				if (rsize > half) { // Shift
+			else if (lsize <= rsize && rsize != 0)
+				if (half < rsize) { // Shift
 					KeyPointer out = rp.remove(0);
 					mp.add(out);
 					savePage(mp);
@@ -408,7 +408,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	private int findPosition(Page page, Key key, boolean isInclusive) {
 		int i, c;
-		for (i = page.size() - 1; i >= 0; i--)
+		for (i = page.size() - 1; 0 <= i; i--)
 			if ((c = comparator.compare(page.get(i).key, key)) <= 0)
 				if (isInclusive || c < 0)
 					break;
@@ -416,7 +416,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private KeyPointer getKeyPointer(Page page, Integer index) {
-		if (index >= 0 && index < page.size())
+		if (0 <= index && index < page.size())
 			return page.get(index);
 		else
 			return null;

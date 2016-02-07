@@ -21,9 +21,9 @@ public class ComparerTest {
 
 	@Test
 	public void testOrdinality() {
-		assertTrue(comparer.compare(Suite.parse("1 = 2"), Int.of(3)) > 0);
-		assertTrue(comparer.compare(Suite.parse("a"), Int.of(3)) > 0);
-		assertTrue(comparer.compare(Suite.parse("b"), new Reference()) > 0);
+		assertTrue(comparer.compare(Int.of(3), Suite.parse("1 = 2")) < 0);
+		assertTrue(comparer.compare(Int.of(3), Suite.parse("a")) < 0);
+		assertTrue(comparer.compare(new Reference(), Suite.parse("b")) < 0);
 	}
 
 }

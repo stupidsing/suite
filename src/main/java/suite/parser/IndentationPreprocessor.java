@@ -67,11 +67,11 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 					}
 				}
 
-				if (startPos > endPos) // When a line has only one operator
+				if (endPos < startPos) // When a line has only one operator
 					startPos = 0;
 
 				// Insert parentheses by line indentation
-				while (nLastIndents > nIndents) {
+				while (nIndents < nLastIndents) {
 					runs.add(new Run(") "));
 					nLastIndents--;
 				}
@@ -88,7 +88,7 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 			pos = pos2;
 		}
 
-		while (nLastIndents-- > 0)
+		while (0 < nLastIndents--)
 			runs.add(new Run(") "));
 		return runs;
 	}

@@ -120,7 +120,7 @@ public class EbnfExpect {
 
 	public int expectWhitespaces(String in, int length, int start) {
 		int pos = start, pos1;
-		while ((pos1 = expectWhitespace(in, length, pos)) > pos)
+		while (pos < (pos1 = expectWhitespace(in, length, pos)))
 			pos = pos1;
 		return pos;
 	};

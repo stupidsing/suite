@@ -79,7 +79,7 @@ public class IRbTree<T> implements ITree<T> {
 			int c = comparator.compare(node.pivot, t);
 			if (c < 0)
 				node = node.left;
-			else if (c > 0)
+			else if (0 < c)
 				node = node.right;
 			else
 				return node.pivot;
@@ -123,7 +123,7 @@ public class IRbTree<T> implements ITree<T> {
 
 			if (c < 0)
 				node1 = new Node(node.isBlack, node.pivot, add(node.left, t, isReplace), node.right);
-			else if (c > 0)
+			else if (0 < c)
 				node1 = new Node(node.isBlack, node.pivot, node.left, add(node.right, t, isReplace));
 			else if (isReplace)
 				node1 = new Node(node.isBlack, t, node.left, node.right);

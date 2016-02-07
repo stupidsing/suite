@@ -136,7 +136,7 @@ public class Huffman<Unit> {
 				.map(Node::new) //
 				.form(() -> new PriorityQueue<>(0, comparator));
 
-		while (priorityQueue.size() > 1) {
+		while (1 < priorityQueue.size()) {
 			Node node0 = priorityQueue.remove();
 			Node node1 = priorityQueue.remove();
 			priorityQueue.add(new Node(node0, node1));

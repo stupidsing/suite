@@ -24,7 +24,7 @@ public class PriorityQueue<T> {
 	public void insert(T t) {
 		int i, p;
 		ts[++size] = t;
-		for (i = size; i > 1 && compare(ts[p = i / 2], ts[i]) > 0; i = p)
+		for (i = size; 1 < i && 0 < compare(ts[p = i / 2], ts[i]); i = p)
 			swap(p, i);
 	}
 

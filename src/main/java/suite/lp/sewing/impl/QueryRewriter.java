@@ -36,7 +36,7 @@ public class QueryRewriter {
 			int n = Read.from(rules) //
 					.map(rule -> TreeUtil.getNumberOfElements(rule.head)) //
 					.min(Integer::compare);
-			isSkipFirst = n > 0
+			isSkipFirst = 0 < n
 					&& Read.from(rules).map(rule -> rule.head).isAll(head -> TreeUtil.getElements(head, 1)[0] instanceof Atom);
 			length = n - (isSkipFirst ? 1 : 0);
 		}

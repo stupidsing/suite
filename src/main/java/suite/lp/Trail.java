@@ -36,7 +36,7 @@ public class Trail {
 
 	public void unwind(int pointInTime) {
 		int i = boundReferences.size();
-		while (i > pointInTime)
+		while (pointInTime < i)
 			boundReferences.remove(--i).unbound();
 	}
 

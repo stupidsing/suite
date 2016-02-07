@@ -21,7 +21,7 @@ public class Judge {
 			nPiecesCount += color != Occupation.EMPTY ? 1 : 0;
 		}
 
-		if (nPiecesCount > 1)
+		if (1 < nPiecesCount)
 			for (Occupation player : Weiqi.players)
 				if (players.contains(player) && !players.contains(player.opponent()))
 					return player;

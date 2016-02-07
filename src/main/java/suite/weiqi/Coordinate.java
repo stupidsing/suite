@@ -35,14 +35,14 @@ public class Coordinate implements Comparable<Coordinate> {
 			for (int y = 0; y < Weiqi.size; y++) {
 				Coordinate c0 = coords[x][y];
 
-				if (x > 0) {
+				if (0 < x) {
 					Coordinate c1 = coords[x - 1][y];
 					c0.leftOrUp.add(c1);
 					c0.neighbors.add(c1);
 					c1.neighbors.add(c0);
 				}
 
-				if (y > 0) {
+				if (0 < y) {
 					Coordinate c2 = coords[x][y - 1];
 					c0.leftOrUp.add(c2);
 					c0.neighbors.add(c2);

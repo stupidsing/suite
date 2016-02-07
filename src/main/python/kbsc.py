@@ -55,7 +55,7 @@ def scscroll(nlines):
 	while nlines < 0:
 		print esc + 'D'
 		nlines += 1
-	while nlines > 0:
+	while 0 < nlines:
 		print esc + 'M'
 		nlines -= 1
 

@@ -93,7 +93,7 @@ public class EagerFunTest {
 	public void testFibonacci() {
 		String fp0 = "" //
 				+ "define fib := n => \n" //
-				+ "    if (n > 1) \n" //
+				+ "    if (1 < n) \n" //
 				+ "    then (fib {n - 1} + fib {n - 2}) \n" //
 				+ "    else 1 \n" //
 				+ ">> \n" //
@@ -133,7 +133,7 @@ public class EagerFunTest {
 
 	@Test
 	public void testIf() {
-		assertEquals(Int.of(0), eval("if (3 > 4) then 1 else 0"));
+		assertEquals(Int.of(0), eval("if (4 < 3) then 1 else 0"));
 		assertEquals(Int.of(1), eval("if (3 = 3) then 1 else 0"));
 		assertEquals(Int.of(1), eval("if (1 = 2) then 0 else-if (2 = 2) then 1 else 2"));
 	}
@@ -317,7 +317,7 @@ public class EagerFunTest {
 		, eval("10 | replicate {65536} | reverse | length"));
 
 		assertEquals(Int.of((1 + 16384) * 16384 / 2) //
-		, eval("define sum := n => s => if (n > 0) then (sum {n - 1} {s + n}) else s >> sum {16384} {0}"));
+		, eval("define sum := n => s => if (0 < n) then (sum {n - 1} {s + n}) else s >> sum {16384} {0}"));
 	}
 
 	@Test

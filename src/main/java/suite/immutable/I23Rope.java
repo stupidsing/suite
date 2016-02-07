@@ -18,7 +18,7 @@ public class I23Rope {
 		int weight = 0;
 		for (I23Rope node : nodes)
 			weight += node.weight;
-		this.depth = nodes.size() > 0 ? nodes.get(0).depth + 1 : 0;
+		this.depth = 0 < nodes.size() ? nodes.get(0).depth + 1 : 0;
 		this.weight = weight;
 		this.nodes = nodes;
 	}
@@ -62,7 +62,7 @@ public class I23Rope {
 	private static List<I23Rope> merge0(I23Rope rope0, I23Rope rope1) {
 		List<I23Rope> nodes;
 
-		if (rope0.depth > rope1.depth)
+		if (rope1.depth < rope0.depth)
 			nodes = Util.add(Util.left(rope0.nodes, -1), merge0(Util.last(rope0.nodes), rope1));
 		else if (rope0.depth < rope1.depth)
 			nodes = Util.add(merge0(rope0, Util.first(rope1.nodes)), Util.right(rope1.nodes, 1));
@@ -72,7 +72,7 @@ public class I23Rope {
 		List<I23Rope> list;
 		int size1 = nodes.size();
 
-		if (size1 >= maxBranchFactor) {
+		if (maxBranchFactor <= size1) {
 			List<I23Rope> left = Util.left(nodes, minBranchFactor);
 			List<I23Rope> right = Util.right(nodes, minBranchFactor);
 			list = Arrays.asList(new I23Rope(left), new I23Rope(right));

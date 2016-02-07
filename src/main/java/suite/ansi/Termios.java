@@ -105,7 +105,7 @@ public class Termios implements Closeable {
 			puts(esc + "M");
 			dir++;
 		}
-		while (dir > 0) {
+		while (0 < dir) {
 			puts(esc + "D");
 			dir--;
 		}

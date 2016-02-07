@@ -59,7 +59,7 @@ public class LockFreeLazyQueue<T> {
 	private Pair<T, BackFront> dequeue_(BackFront bf0) {
 		T t;
 		BackFront bf1;
-		if (bf0.size > 1) {
+		if (1 < bf0.size) {
 			Pair<T, BackFront> pair = dequeue_(bf0.front);
 			t = bf0.t;
 			bf1 = make(bf0.back, pair.t1, pair.t0);

@@ -32,7 +32,7 @@ public class PeepholeOptimizer {
 					node1 = Suite.substitute("INC .0", m0);
 				else if (i == -1)
 					node1 = Suite.substitute("DEC .0", m0);
-				else if (i > 0)
+				else if (0 < i)
 					node1 = Suite.substitute("ADD (.0, .1)", m0, Int.of(i));
 				else if (i < 0)
 					node1 = Suite.substitute("SUB (.0, .1)", m0, Int.of(-i));

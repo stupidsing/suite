@@ -63,7 +63,7 @@ public class EditorPane extends JEditorPane {
 		int ss = getSelectionStart();
 		int se = Math.max(ss, getSelectionEnd() - 1);
 
-		while (ss > 0 && document.getText(ss, 1).charAt(0) != 10)
+		while (0 < ss && document.getText(ss, 1).charAt(0) != 10)
 			ss--;
 		while (se < length && document.getText(se, 1).charAt(0) != 10)
 			se++;

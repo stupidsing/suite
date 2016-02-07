@@ -39,7 +39,7 @@ public class Sphere implements RtObject {
 		float discriminant = b * b - 4 * a * c;
 		List<RayHit> rayHits;
 
-		if (discriminant > 0) { // Hit?
+		if (0 < discriminant) { // Hit?
 			float sqrt = (float) Math.sqrt(discriminant);
 			float denom = 1 / (2f * a);
 			rayHits = Arrays.asList(rayHit(ray, (-b - sqrt) * denom), rayHit(ray, (-b + sqrt) * denom));

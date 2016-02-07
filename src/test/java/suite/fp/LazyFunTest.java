@@ -39,8 +39,8 @@ public class LazyFunTest {
 	public void testDefines() {
 		String fp0 = "" //
 				+ "lets ( \n" //
-				+ "    a := n => if (n > 0) then (b {n - 1} * 2) else 0 # \n" //
-				+ "    b := n => if (n > 0) then (a {n - 1} + 1) else 0 # \n" //
+				+ "    a := n => if (0 < n) then (b {n - 1} * 2) else 0 # \n" //
+				+ "    b := n => if (0 < n) then (a {n - 1} + 1) else 0 # \n" //
 				+ ") >> a {10}";
 		assertEquals(Int.of(62), eval(fp0));
 	}

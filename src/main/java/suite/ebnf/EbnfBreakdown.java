@@ -23,11 +23,11 @@ public class EbnfBreakdown {
 		Pair<String, String> pair;
 		s = s.trim();
 
-		if ((list = ParseUtil.searchn(s, " | ", Assoc.RIGHT)).size() > 1)
+		if (1 < (list = ParseUtil.searchn(s, " | ", Assoc.RIGHT)).size())
 			en = new EbnfGrammar(EbnfGrammarType.OR____, breakdown(list));
 		else if ((pair = ParseUtil.search(s, " /except/ ", Assoc.RIGHT)) != null)
 			en = new EbnfGrammar(EbnfGrammarType.EXCEPT, Arrays.asList(breakdown(pair.t0), breakdown(pair.t1)));
-		else if ((list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size() > 1)
+		else if (1 < (list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size())
 			en = new EbnfGrammar(EbnfGrammarType.AND___, breakdown(list));
 		else if (s.equals(""))
 			en = new EbnfGrammar(EbnfGrammarType.AND___);

@@ -33,7 +33,7 @@ public class VariableMapperImpl implements VariableMapper {
 					.map((k, v) -> Formatter.display(k) + " = " + Formatter.dump(v));
 			StringBuilder sb = new StringBuilder();
 			for (String kv : kvs) {
-				if (sb.length() > 0)
+				if (0 < sb.length())
 					sb.append(", ");
 				sb.append(kv);
 			}

@@ -23,7 +23,7 @@ public class UnionFind<T> {
 		if (pair0 != pair1)
 			if (pair0.rank < pair1.rank)
 				pair0.parent = t1;
-			else if (pair0.rank > pair1.rank)
+			else if (pair1.rank < pair0.rank)
 				pair1.parent = t0;
 			else if (pair0.rank == pair1.rank) {
 				pair1.parent = t0;

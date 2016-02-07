@@ -107,16 +107,16 @@ public class HttpServer {
 			private int remaining = size;
 
 			public int read() throws IOException {
-				return remaining-- > 0 ? is.read() : -1;
+				return 0 < remaining-- ? is.read() : -1;
 			}
 
 			public int read(byte bytes[], int offset, int length) throws IOException {
 				int result;
 
-				if (remaining > 0) {
+				if (0 < remaining) {
 					result = is.read(bytes, offset, Math.min(length, remaining));
 
-					if (result >= 0)
+					if (0 <= result)
 						remaining -= result;
 				} else
 					result = -1;

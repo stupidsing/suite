@@ -53,7 +53,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testJump() {
-		Bytes bytes = imperativeCompiler.compile(0, "if (2 > 1) then 1 else 0;");
+		Bytes bytes = imperativeCompiler.compile(0, "if (1 < 2) then 1 else 0;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}

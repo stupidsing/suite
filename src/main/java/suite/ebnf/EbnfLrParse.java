@@ -81,7 +81,7 @@ public class EbnfLrParse {
 			if (order0 < order1) {
 				put(key, value1);
 				return true;
-			} else if (order0 > order1 || Objects.equals(value0, value1))
+			} else if (order1 < order0 || Objects.equals(value0, value1))
 				return false;
 			else if (value0.t0 != null && value1.t0 != null) {
 

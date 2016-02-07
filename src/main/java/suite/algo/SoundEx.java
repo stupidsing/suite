@@ -51,7 +51,7 @@ public class SoundEx {
 
 		while (word1.length() < 3)
 			word1 += "0";
-		if (word1.length() > 3)
+		if (3 < word1.length())
 			word1 = word1.substring(0, 3);
 
 		return first + word1;

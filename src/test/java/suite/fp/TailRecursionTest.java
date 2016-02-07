@@ -13,13 +13,13 @@ public class TailRecursionTest {
 	public void testTailRecursion() {
 		Suite.useLibraries(() -> {
 			String fp0 = "" //
-					+ "define dec := n => if (n > 1) then (dec {n - 1}) else 0 \n" //
+					+ "define dec := n => if (1 < n) then (dec {n - 1}) else 0 \n" //
 					+ ">> \n" //
 					+ "dec {65536}";
 			assertEquals(Int.of(0), Suite.evaluateFun(fp0, false));
 
 			String fp1 = "" //
-					+ "define sum := n => s => if (n > 0) then (sum {n - 1} {s + n}) else s >> \n" //
+					+ "define sum := n => s => if (0 < n) then (sum {n - 1} {s + n}) else s >> \n" //
 					+ "sum {16384} {0}";
 			assertEquals(Int.of((1 + 16384) * 16384 / 2), Suite.evaluateFun(fp1, false));
 

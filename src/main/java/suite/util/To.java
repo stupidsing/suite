@@ -95,7 +95,7 @@ public class To {
 			public int read() throws IOException {
 				byte b[] = new byte[1];
 				int nBytesRead = read(b, 0, 1);
-				return nBytesRead > 0 ? b[0] : nBytesRead;
+				return 0 < nBytesRead ? b[0] : nBytesRead;
 			}
 
 			public int read(byte bs[], int offset, int length) throws IOException {
@@ -160,7 +160,7 @@ public class To {
 				throw new RuntimeException(ex);
 			}
 
-			if (nBytesRead >= 0)
+			if (0 <= nBytesRead)
 				return Bytes.of(bs, 0, nBytesRead);
 			else {
 				try {

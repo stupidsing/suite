@@ -66,9 +66,9 @@ public class UctSearch<Move> {
 				while (count.getAndIncrement() < numberOfSimulations) {
 					playSimulation(visitor.cloneVisitor(), root, 0);
 
-					if (++j > 100) {
+					if (100 < ++j) {
 						j = 0;
-						if (System.currentTimeMillis() > end)
+						if (end < System.currentTimeMillis())
 							break;
 					}
 				}
@@ -125,8 +125,8 @@ public class UctSearch<Move> {
 
 				// Only calculates UCT when required, that is, if all children
 				// have been evaluated at least once
-				if (child.nVisits > 0) {
-					if ((uct = uct(child, lnPnVisits, lnPnRaveVisits)) > bestUct) {
+				if (0 < child.nVisits) {
+					if (bestUct < (uct = uct(child, lnPnVisits, lnPnRaveVisits))) {
 						bestSelected = child;
 						bestUct = uct;
 					}
@@ -194,11 +194,11 @@ public class UctSearch<Move> {
 	}
 
 	private void dumpSearch(StringBuilder sb, int indent, UctNode<Move> parent, UctNode<Move> child) {
-		if (indent > 9)
+		if (9 < indent)
 			return;
 
 		while (child != null) {
-			if (child.nVisits > 0) {
+			if (0 < child.nVisits) {
 				for (int i = 0; i < indent; i++)
 					sb.append('\t');
 
@@ -239,7 +239,7 @@ public class UctSearch<Move> {
 		for (Move move : visitor.getAllMoves()) {
 			float nWins = getMoveRave(nRaveWins, move);
 			float nTotals = getMoveRave(nRaveVisits, move);
-			String s = nTotals > 0 ? df3.format(nWins / nTotals) : "  -  ";
+			String s = 0 < nTotals ? df3.format(nWins / nTotals) : "  -  ";
 			System.out.print(s + " ");
 
 			if (++n % Weiqi.size == 0)

@@ -28,7 +28,7 @@ public class Alphabeta<State> {
 	}
 
 	private Pair<Integer, List<State>> search0(State state, int depth, int alpha, int beta) {
-		if (depth > 0) {
+		if (0 < depth) {
 			List<State> states = traverser.generate(state);
 
 			if (!states.isEmpty()) {
@@ -40,14 +40,14 @@ public class Alphabeta<State> {
 					Pair<Integer, List<State>> result = search0(state1, depth - 1, -beta, -alpha);
 					int score = -result.t0;
 
-					if (score > alpha) {
+					if (alpha < score) {
 						alpha = score;
 						principalVariation = result.t1;
 					}
 
 					moves.pop();
 
-					if (score > beta)
+					if (beta < score)
 						break;
 				}
 

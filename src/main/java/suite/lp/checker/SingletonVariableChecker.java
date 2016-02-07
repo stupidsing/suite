@@ -44,7 +44,7 @@ public class SingletonVariableChecker {
 					// Check all variables starting with alphabets; ignore
 					// computer-generated code
 					if (name.startsWith(ProverConstant.variablePrefix) //
-							&& name.length() > 1 //
+							&& 1 < name.length() //
 							&& Character.isAlphabetic(name.charAt(1))) {
 						Boolean value = isSingleton.get(atom);
 						if (value == null)

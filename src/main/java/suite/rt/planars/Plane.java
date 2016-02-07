@@ -30,14 +30,14 @@ public class Plane implements RtObject {
 		float denum = Vector.dot(normal, ray.dir);
 		float adv;
 
-		if (Math.abs(denum) > MathUtil.epsilon)
+		if (MathUtil.epsilon < Math.abs(denum))
 			adv = (originIndex - Vector.dot(normal, ray.startPoint)) / denum;
 		else
 			adv = -1f; // Treats as not-hit
 
 		float advance = adv;
 
-		if (advance > RayTracer.negligibleAdvance) {
+		if (RayTracer.negligibleAdvance < advance) {
 			RayHit rayHit = new RayHit() {
 				public float advance() {
 					return advance;

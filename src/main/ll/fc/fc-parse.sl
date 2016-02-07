@@ -234,7 +234,7 @@ fc-parse-sugar "" () :- !
 fc-parse-sugar .s (string of (skip-type-check (
 	chars:.s | (atom:INTRN!CharsIntrinsics.charsString | get%i | call%i-v1)
 )))
-	:- is.string .s, string.length .s .l, .l > 2, !
+	:- is.string .s, string.length .s .l, 2 < .l, !
 #
 fc-parse-sugar .s (.ascii; .cs)
 	:- is.string .s

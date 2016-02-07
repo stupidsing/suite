@@ -56,7 +56,7 @@ call-prototype .name .name #
 params-length .ps .n
 	:- if (bound .ps, .ps = _ .ps1) then (
 		params-length .ps1 .n1, sum .n 1 .n1
-	) else-if (.n > 1, .ps = _ .ps1) then (
+	) else-if (1 < .n, .ps = _ .ps1) then (
 		sum .n 1 .n1, params-length .ps1 .n1
 	) else (
 		(not (bound .ps); .ps != _ _), .n = 1

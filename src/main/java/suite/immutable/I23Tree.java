@@ -43,7 +43,7 @@ public class I23Tree<T> implements ITree<T> {
 
 		private FindSlot(List<Slot> slots, T t, boolean isExclusive) {
 			i = slots.size() - 1;
-			while ((c = compare((slot = slots.get(i)).pivot, t)) > 0 || isExclusive && c == 0)
+			while (0 < (c = compare((slot = slots.get(i)).pivot, t)) || isExclusive && c == 0)
 				i--;
 		}
 	}
@@ -155,7 +155,7 @@ public class I23Tree<T> implements ITree<T> {
 
 			// Merges with a neighbor if less than minimum number of nodes
 			if (slots1.size() == 1 && (inner = slots1.get(0).slots).size() < minBranchFactor)
-				if (s0 > 0)
+				if (0 < s0)
 					replaceSlots = merge(node0.get(--s0).slots, inner);
 				else if (s1 < size)
 					replaceSlots = merge(inner, node0.get(s1++).slots);
@@ -195,10 +195,10 @@ public class I23Tree<T> implements ITree<T> {
 		if (node0.size() + node1.size() >= maxBranchFactor) {
 			List<Slot> leftSlots, rightSlots;
 
-			if (node0.size() > minBranchFactor) {
+			if (minBranchFactor < node0.size()) {
 				leftSlots = Util.left(node0, -1);
 				rightSlots = Util.add(Arrays.asList(Util.last(node0)), node1);
-			} else if (node1.size() > minBranchFactor) {
+			} else if (minBranchFactor < node1.size()) {
 				leftSlots = Util.add(node0, Arrays.asList(Util.first(node1)));
 				rightSlots = Util.right(node1, 1);
 			} else {

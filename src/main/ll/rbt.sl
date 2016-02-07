@@ -24,7 +24,7 @@ rbt-depth () 0 #
 rbt-depth (_ .n0 _ .n1) .depth
 	:- rbt-depth .n0 .d0
 	, rbt-depth .n1 .d1
-	, (.d0 > .d1, .d = .d0; .d = .d1)
+	, (.d0 < .d1, .d = .d1; .d = .d0)
 	, let .depth (.d + 1)
 	, !
 #

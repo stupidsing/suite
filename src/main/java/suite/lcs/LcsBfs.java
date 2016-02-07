@@ -81,7 +81,7 @@ public class LcsBfs<T> {
 			int pos0 = node.pos0;
 			int pos1 = node.pos1;
 
-			while (pos0 > previous.pos0 && pos1 > previous.pos1) {
+			while (previous.pos0 < pos0 && previous.pos1 < pos1) {
 				pos0--;
 				pos1--;
 				deque.addFirst(l0.get(pos0));

@@ -242,7 +242,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			Entry<String, Long> e = peerIter.next();
 			String node = e.getKey();
 
-			if (current - e.getValue() > timeoutDuration) {
+			if (timeoutDuration < current - e.getValue()) {
 				peerIter.remove();
 				onLeft.fire(node);
 			}

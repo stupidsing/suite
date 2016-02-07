@@ -155,7 +155,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	public Outlet2<K, V> drop(int n) {
 		Pair<K, V> pair = Pair.of(null, null);
 		boolean isAvailable = true;
-		while (n > 0 && (isAvailable &= next(pair)))
+		while (0 < n && (isAvailable &= next(pair)))
 			n--;
 		return isAvailable ? this : Outlet2.empty();
 	}
@@ -251,7 +251,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		boolean b = next(pair);
 		if (b) {
 			while (next(pair1))
-				if (comparator.compare(pair, pair1) > 0) {
+				if (0<comparator.compare(pair, pair1)) {
 					pair.t0 = pair1.t0;
 					pair.t1 = pair1.t1;
 				}
@@ -322,7 +322,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 			private int count = n;
 
 			public boolean source2(Pair<K, V> pair) {
-				return count-- > 0 ? next(pair) : false;
+				return 0 < count-- ? next(pair) : false;
 			}
 		});
 	}

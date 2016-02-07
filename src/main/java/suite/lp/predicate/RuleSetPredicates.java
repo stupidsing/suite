@@ -54,7 +54,7 @@ public class RuleSetPredicates {
 
 	public BuiltinPredicate list = PredicateUtil.ps((prover, ps) -> {
 		Prototype proto = null;
-		if (ps.length > 0)
+		if (0 < ps.length)
 			proto = Prototype.of(ps[0]);
 
 		Node node = Suite.listRules(prover.ruleSet(), proto);

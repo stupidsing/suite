@@ -83,7 +83,7 @@ public class PackageManager {
 	}
 
 	private int unact(List<InstallAction> installActions, int progress) {
-		for (; progress > 0; progress--)
+		for (; 0 < progress; progress--)
 			try {
 				installActions.get(progress - 1).unact();
 			} catch (Exception ex) {

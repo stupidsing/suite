@@ -42,7 +42,7 @@ public class Memoize {
 				if (r == null) {
 					while ((r = array[p]).state != State.FLAGGED) {
 						r.state = State.INUSE_;
-						p = ++p > size ? p - size : p;
+						p = size < ++p ? p - size : p;
 					}
 
 					if (r.state == State.INUSE_)
@@ -84,7 +84,7 @@ public class Memoize {
 
 			public synchronized T source() {
 				long current = System.currentTimeMillis();
-				if (result == null || current > timestamp + duration) {
+				if (result == null || timestamp + duration < current) {
 					timestamp = current;
 					result = source.source();
 				}

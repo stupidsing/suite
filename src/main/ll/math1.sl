@@ -13,7 +13,7 @@ sm-rewrite (SIN .x0) (SIN .x1) (.x0 .x1, .es)/.es #
 sm-rewrite (COS .x0) (COS .x1) (.x0 .x1, .es)/.es #
 sm-rewrite (D .x0) (D .x1) (.x0 .x1, .es)/.es #
 
-sm-reduce .c (.c0 + 1) :- is.int .c, .c > 0, let .c0 (.c - 1) #
+sm-reduce .c (.c0 + 1) :- is.int .c, 0 < .c, let .c0 (.c - 1) #
 sm-reduce .c (.c0 + -1) :- is.int .c, .c < 0, let .c0 (.c + 1) #
 sm-reduce 0.5 ((1 + 1) ^ -1) #
 sm-reduce E (EXP 1) #

@@ -94,7 +94,7 @@ public class Lexer {
 					if (t != null && t.operator != null)
 						precs.add(t.operator.getPrecedence());
 
-				if (!precs.isEmpty() && Collections.min(precs) > TermOp.TUPLE_.getPrecedence()) {
+				if (!precs.isEmpty() && TermOp.TUPLE_.getPrecedence() < Collections.min(precs)) {
 					token = new Token(LexType.OPER_, TermOp.TUPLE_);
 					token.data = data;
 				} else

@@ -31,7 +31,7 @@ public class ArtificialNeuralNetworkTest {
 		for (boolean b0 : new boolean[] { false, true, })
 			for (boolean b1 : new boolean[] { false, true, }) {
 				float f = ann.feed(input(b0, b1))[0];
-				assertEquals(oper(b0, b1), f > 0.5f);
+				assertEquals(oper(b0, b1), .5f < f);
 			}
 	}
 

@@ -17,7 +17,7 @@ public class LazyFunInterpreterTest {
 
 	@Test
 	public void testFibonacci() {
-		String expr = "define fib := (n => if (n > 1) then (fib {n - 1} + fib {n - 2}) else n) >> fib {12}";
+		String expr = "define fib := (n => if (1 < n) then (fib {n - 1} + fib {n - 2}) else n) >> fib {12}";
 		assertEquals(Int.of(144), new LazyFunInterpreter().lazy(Suite.parse(expr)).get());
 	}
 

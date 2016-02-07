@@ -48,7 +48,7 @@ public class LazyIbTree<T> implements ITree<T> {
 
 		private FindSlot(List<Slot<T>> slots, T t, boolean isExclusive) {
 			i = slots.size() - 1;
-			while ((c = compare((slot = slots.get(i)).pivot, t)) > 0 || isExclusive && c == 0)
+			while (0 < (c = compare((slot = slots.get(i)).pivot, t)) || isExclusive && c == 0)
 				i--;
 		}
 	}
@@ -71,10 +71,10 @@ public class LazyIbTree<T> implements ITree<T> {
 		int size = slots.size();
 		T p = null;
 
-		if (size > 0)
+		if (0 < size)
 			if (size < minBranchFactor)
 				throw new RuntimeException("Too few branches");
-			else if (size >= maxBranchFactor)
+			else if (minBranchFactor <= size)
 				throw new RuntimeException("Too many branches");
 
 		for (Slot<T> slot_ : slots) {
@@ -163,7 +163,7 @@ public class LazyIbTree<T> implements ITree<T> {
 
 			// Merges with a neighbor if less than minimum number of nodes
 			if (slots1.size() == 1 && (inner = slots1.get(0).readSlots()).size() < minBranchFactor)
-				if (s0 > 0)
+				if (0 < s0)
 					slots2 = merge(node0.get(--s0).readSlots(), inner);
 				else if (s1 < size)
 					slots2 = merge(inner, node0.get(s1++).readSlots());
@@ -200,13 +200,13 @@ public class LazyIbTree<T> implements ITree<T> {
 	private List<Slot<T>> merge(List<Slot<T>> node0, List<Slot<T>> node1) {
 		List<Slot<T>> merged;
 
-		if (node0.size() + node1.size() >= maxBranchFactor) {
+		if (maxBranchFactor <= node0.size() + node1.size() ) {
 			List<Slot<T>> leftSlots, rightSlots;
 
-			if (node0.size() > minBranchFactor) {
+			if (minBranchFactor < node0.size()) {
 				leftSlots = Util.left(node0, -1);
 				rightSlots = Util.add(Arrays.asList(Util.last(node0)), node1);
-			} else if (node1.size() > minBranchFactor) {
+			} else if (minBranchFactor < node1.size()) {
 				leftSlots = Util.add(node0, Arrays.asList(Util.first(node1)));
 				rightSlots = Util.right(node1, 1);
 			} else {

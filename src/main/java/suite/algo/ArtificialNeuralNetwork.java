@@ -63,7 +63,7 @@ public class ArtificialNeuralNetwork {
 	private void backwardPropagate(List<float[]> activations, float expected[]) {
 		float errors[] = null;
 
-		for (int layer = nLayers; layer > 0; layer--) {
+		for (int layer = nLayers; 0 < layer; layer--) {
 			float wij[][] = weightsByLayer.get(layer - 1);
 			int ni = wij.length;
 			int nj = wij[0].length;

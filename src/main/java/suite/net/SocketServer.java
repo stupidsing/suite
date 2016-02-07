@@ -30,7 +30,7 @@ public class SocketServer {
 
 		while ((nBytesRead = is.read(buffer, 0, Math.min(max - bb.size(), buffer.length))) != -1) {
 			bb.append(buffer, 0, nBytesRead);
-			if (bb.size() > max)
+			if (max < bb.size())
 				throw new RuntimeException("Input too long");
 		}
 

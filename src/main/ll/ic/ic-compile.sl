@@ -436,7 +436,7 @@ ic-copy-memory .o 2 (_ MOV (CX, `$1 + .o`), _ MOV (`$0 + .o`, CX), .e)/.e
 ic-copy-memory .o 4 (_ MOV (ECX, `$1 + .o`), _ MOV (`$0 + .o`, ECX), .e)/.e
 #
 ic-copy-memory 0 .size .e0/.ex
-	:- .size > 16
+	:- 16 < .size
 	, let .div4 (.size / 4)
 	, let .mod4 (.size % 4)
 	, .e0 = (_ CLD ()
@@ -453,7 +453,7 @@ ic-copy-memory 0 .size .e0/.ex
 		, .ex)
 #
 ic-copy-memory .o .size .e0/.ex
-  :- .size > 4
+  :- 4 < .size
   , ic-copy-memory .o 4 .e0/.e1
   , let .size1 (.size - 4)
   , let .o1 (.o + 4)

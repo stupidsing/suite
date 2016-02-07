@@ -283,7 +283,7 @@ lc-call-prototype .name .name #
 lc-params-length .ps .n
 	:- if (bound .ps, .ps = _ .ps1) (
 		lc-params-length .ps1 .n1, sum .n 1 .n1
-	) if (.n > 1, .ps = _ .ps1) (
+	) if (1 < .n, .ps = _ .ps1) (
 		sum .n 1 .n1, lc-params-length .ps1 .n1
 	) (
 		(not bound .ps; .ps != _ _), .n = 1

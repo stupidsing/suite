@@ -135,7 +135,7 @@ public class EvalPredicates {
 		else {
 			int size1 = ((Int) length).number;
 			Node list1 = Atom.NIL;
-			while (size1-- > 0)
+			while (0 < size1--)
 				list1 = Tree.of(TermOp.AND___, new Reference(), list1);
 			return prover.bind(list, list1);
 		}

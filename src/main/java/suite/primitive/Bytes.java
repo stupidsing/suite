@@ -34,7 +34,7 @@ public class Bytes implements Iterable<Byte> {
 		while (c == 0 && index < minSize) {
 			byte b0 = bytes0.bs[start0 + index];
 			byte b1 = bytes1.bs[start1 + index];
-			c = b0 == b1 ? 0 : b0 > b1 ? 1 : -1;
+			c = b0 == b1 ? 0 : b0 < b1 ? -1 : 1;
 			index++;
 		}
 
@@ -247,12 +247,12 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	private void checkOpenBounds(int index) {
-		if (index < start || index > end)
+		if (index < start || end < index)
 			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "}");
 	}
 
 	private void checkClosedBounds(int index) {
-		if (index < start || index >= end)
+		if (index < start || end <= index)
 			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "]");
 	}
 

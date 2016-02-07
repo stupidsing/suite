@@ -33,7 +33,7 @@ public class Chars implements Iterable<Character> {
 		while (c == 0 && index < minSize) {
 			char c0 = chars0.cs[start0 + index];
 			char c1 = chars1.cs[start1 + index];
-			c = c0 == c1 ? 0 : c0 > c1 ? 1 : -1;
+			c = c0 == c1 ? 0 : c0 < c1 ? -1 : 1;
 			index++;
 		}
 
@@ -246,12 +246,12 @@ public class Chars implements Iterable<Character> {
 	}
 
 	private void checkOpenBounds(int index) {
-		if (index < start || index > end)
+		if (index < start || end < index)
 			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "}");
 	}
 
 	private void checkClosedBounds(int index) {
-		if (index < start || index >= end)
+		if (index < start || end <= index)
 			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "]");
 	}
 

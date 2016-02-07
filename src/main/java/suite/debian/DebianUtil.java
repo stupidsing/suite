@@ -33,7 +33,7 @@ public class DebianUtil {
 			String line;
 
 			while ((line = br.readLine()) != null) {
-				if (!line.startsWith(" ") && sb.length() > 0) {
+				if (!line.startsWith(" ") && 0 < sb.length()) {
 					String kv = sb.toString();
 					int pos = kv.indexOf(':');
 					pm.put(kv.substring(0, pos).trim(), kv.substring(pos + 1).trim());

@@ -128,7 +128,7 @@ public class Outlet<T> implements Iterable<T> {
 
 	public Outlet<T> drop(int n) {
 		boolean isAvailable = true;
-		while (n > 0 && (isAvailable &= next() != null))
+		while (0 < n && (isAvailable &= next() != null))
 			n--;
 		return isAvailable ? this : Outlet.empty();
 	}
@@ -222,7 +222,7 @@ public class Outlet<T> implements Iterable<T> {
 		T t = next(), t1;
 		if (t != null) {
 			while ((t1 = next()) != null)
-				if (comparator.compare(t, t1) > 0)
+				if (0<comparator.compare(t, t1))
 					t = t1;
 			return t;
 		} else
@@ -270,7 +270,7 @@ public class Outlet<T> implements Iterable<T> {
 			private int count = n;
 
 			public T source() {
-				return count-- > 0 ? next() : null;
+				return 0 < count-- ? next() : null;
 			}
 		});
 	}

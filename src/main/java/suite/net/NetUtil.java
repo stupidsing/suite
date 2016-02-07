@@ -14,7 +14,7 @@ public class NetUtil {
 		int value = 0, i = 4;
 		do
 			value = value << 8 | bytes.get(--i) & 0xFF;
-		while (i > 0);
+		while (0 < i);
 		return value;
 	}
 

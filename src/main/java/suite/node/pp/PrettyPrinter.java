@@ -64,7 +64,7 @@ public class PrettyPrinter {
 				append("(");
 			}
 
-			if (x + length > lineLength)
+			if (lineLength<x + length )
 				if (isLookingLikeList(op, node))
 					prettyPrintList(op, node);
 				else {
@@ -244,7 +244,7 @@ public class PrettyPrinter {
 
 	private int getLineBeginPosition() {
 		int pos = getCurrentPosition();
-		while (--pos > 0 && sb.charAt(pos) != '\n')
+		while (0 < --pos && sb.charAt(pos) != '\n')
 			;
 		return pos + 1;
 	}

@@ -116,7 +116,7 @@ public class EbnfTopDownParse {
 						int d = state_.sign;
 						if (d < 0)
 							stack.pop().end = state_.pos;
-						else if (d > 0)
+						else if (0 < d)
 							for (int i = 0; i < state_.frame.depth; i++) {
 								Node node = new Node(state_.frame.entity, state_.pos);
 								stack.peek().nodes.add(node);
@@ -135,7 +135,7 @@ public class EbnfTopDownParse {
 				LogUtil.info("parse(" + parser + "): " + in.substring(state.pos));
 
 			Outlet<State> states = state.p(this, parser);
-			if (states == noResult && state.sign > 0 && state.frame.entity != null && state.pos >= errorPosition) {
+			if (states == noResult && 0 < state.sign && state.frame.entity != null && errorPosition <= state.pos) {
 				errorPosition = state.pos;
 				errorEntity = state.frame.entity;
 			}

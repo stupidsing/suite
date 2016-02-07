@@ -19,7 +19,7 @@ public class RayUtil {
 	 * Remove hits that are shooting backwards.
 	 */
 	public static Streamlet<RayHit> filterRayHits(List<RayHit> rayHits) {
-		return Read.from(rayHits).filter(rh -> rh.advance() > 0);
+		return Read.from(rayHits).filter(rh -> 0 < rh.advance());
 	}
 
 	public static List<RayHit> joinRayHits(Collection<RtObject> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {

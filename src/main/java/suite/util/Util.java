@@ -234,7 +234,7 @@ public class Util {
 
 		while ((c = is.read()) != -1 && c != 10) {
 			sb.append((char) c);
-			if (sb.length() > 65536)
+			if (65536 < sb.length())
 				throw new RuntimeException("Line too long");
 		}
 
@@ -248,7 +248,7 @@ public class Util {
 
 	public static <T> List<T> reverse(List<T> list0) {
 		List<T> list1 = new ArrayList<>();
-		for (int i = list0.size() - 1; i >= 0; i--)
+		for (int i = list0.size() - 1; 0 <= i; i--)
 			list1.add(list0.get(i));
 		return list1;
 	}
@@ -330,7 +330,7 @@ public class Util {
 
 	public static Pair<String, String> split2(String s, String delimiter) {
 		int pos = s.indexOf(delimiter);
-		if (pos >= 0)
+		if (0 <= pos)
 			return Pair.of(s.substring(0, pos).trim(), s.substring(pos + delimiter.length()).trim());
 		else
 			return Pair.of(s.trim(), "");

@@ -163,7 +163,7 @@ public class RayTracer {
 			Vector normal0 = Vector.norm(i.normal());
 
 			float dot0 = Vector.dot(ray.dir, normal0);
-			boolean isInside = dot0 > 0f;
+			boolean isInside = 0f < dot0;
 			float dot;
 			Vector normal;
 
@@ -180,7 +180,7 @@ public class RayTracer {
 			float transparency = material.transparency();
 			Vector color;
 
-			if ((reflective || transparency > 0f) && depth > 0) {
+			if ((reflective || transparency < 0f) && 0 < depth) {
 				float cos = -dot / (float) Math.sqrt(Vector.abs2(ray.dir));
 
 				// Account reflection
@@ -227,11 +227,11 @@ public class RayTracer {
 					Vector lightDir = Vector.sub(lightSource.source(), hitPoint);
 					float lightDot = Vector.dot(lightDir, normal);
 
-					if (lightDot > 0) { // Facing the light
+					if (0 < lightDot) { // Facing the light
 						Vector lightPoint = Vector.add(hitPoint, negligible(normal));
 						RayHit lightRayHit = nearestHit(scene.hit(new Ray(lightPoint, lightDir)));
 
-						if (lightRayHit == null || lightRayHit.advance() > 1f) {
+						if (lightRayHit == null || 1f < lightRayHit.advance()) {
 							Vector lightColor = lightSource.lit(hitPoint);
 							float cos = lightDot / (float) Math.sqrt(Vector.abs2(lightDir));
 							color = Vector.add(color, Vector.mul(lightColor, cos));
@@ -263,7 +263,7 @@ public class RayTracer {
 	}
 
 	private static float negligible(float f) {
-		if (f > 0f)
+		if (0f < f)
 			return negligibleAdvance;
 		else if (f < 0f)
 			return -negligibleAdvance;

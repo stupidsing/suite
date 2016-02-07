@@ -5,7 +5,7 @@ public class HashCodeComparable<E extends HashCodeComparable<?>> implements Comp
 	@Override
 	public int compareTo(E other) {
 		long c = (long) hashCode() - (long) other.hashCode();
-		return c != 0 ? c > 0 ? 1 : -1 : 0;
+		return c != 0 ? 0 < c ? 1 : -1 : 0;
 	}
 
 }

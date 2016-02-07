@@ -181,7 +181,7 @@ public class LayoutCalculator {
 		int totalMin = portions.stream().mapToInt(p -> p.minUnit).sum();
 		int totalMax = portions.stream().mapToInt(p -> p.maxUnit).sum();
 
-		if (totalAssigned > totalMin) {
+		if (totalMin < totalAssigned) {
 			int nom = totalAssigned - totalMin;
 			int denom = totalMax - totalMin;
 			float ratio = (float) nom / denom;

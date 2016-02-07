@@ -45,7 +45,7 @@ public class FilterTest {
 
 				// Makes sure there are new line characters, otherwise lines
 				// function would blow off the stack
-				if (nBytesRead > 0) {
+				if (0 < nBytesRead) {
 					for (int i = 0; i < nBytesRead; i++)
 						buffer[pos + i] = (char) ((count - i) % 64);
 					count -= nBytesRead;

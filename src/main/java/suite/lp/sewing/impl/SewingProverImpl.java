@@ -261,9 +261,9 @@ public class SewingProverImpl implements SewingProver {
 		Tree tree;
 		Node m[];
 
-		if ((list = breakdown(TermOp.AND___, node)).size() > 1)
+		if (1 < (list = breakdown(TermOp.AND___, node)).size())
 			tr = and(Read.from(list).map(n -> compile0(sb, n)));
-		else if ((list = breakdown(TermOp.OR____, node)).size() > 1)
+		else if (1 < (list = breakdown(TermOp.OR____, node)).size())
 			tr = or(Read.from(list).map(n -> compile0(sb, n)));
 		else if ((m = Suite.matcher(".0 = .1").apply(node)) != null) {
 			boolean b = complexity(m[0]) > complexity(m[1]);

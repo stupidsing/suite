@@ -61,7 +61,7 @@ public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingG
 					Fun<Env, Node> rf = compile(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
-			} else if ((nr = NodeRead.of(node)).children.size() > 0) {
+			} else if (0 < (nr = NodeRead.of(node)).children.size()) {
 				List<Pair<Node, Fun<Env, Node>>> ps = Read.from(nr.children) //
 						.map(Pair.map1(this::compile)) //
 						.toList();
@@ -78,7 +78,7 @@ public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingG
 			break;
 		}
 
-		if (funs.size() > 1)
+		if (1 < funs.size())
 			return env -> {
 				Tree t = Tree.of(null, null, null);
 				Node node_ = t;

@@ -75,14 +75,14 @@ public class Preprocess {
 			Segment segment = run.segment;
 			if (segment != null) {
 				int runLength = segment.end - segment.start;
-				if (towardsEnd && targetPosition == runLength || targetPosition > runLength) {
+				if (towardsEnd && targetPosition == runLength || runLength < targetPosition) {
 					sourcePosition = segment.start + runLength;
 					targetPosition -= runLength;
 				} else
 					return segment.start + targetPosition;
 			} else {
 				int runLength = run.text.length();
-				if (towardsEnd && targetPosition == runLength || targetPosition > runLength)
+				if (towardsEnd && targetPosition == runLength || runLength < targetPosition)
 					targetPosition -= runLength;
 				else
 					return sourcePosition;

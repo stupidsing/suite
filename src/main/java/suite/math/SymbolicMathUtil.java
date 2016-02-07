@@ -35,7 +35,7 @@ public class SymbolicMathUtil {
 
 		for (int times = 0; times < 20; times++) {
 			Collections.sort(freshNodes, comparator);
-			if (freshNodes.size() > space)
+			if (space < freshNodes.size())
 				freshNodes = freshNodes.subList(0, space);
 
 			List<Node> freshNodes1 = new ArrayList<>();

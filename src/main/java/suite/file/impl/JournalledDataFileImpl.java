@@ -88,7 +88,7 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDat
 			dataFile.save(journalEntry.pointer, journalEntry.bytes);
 		}
 
-		if (nCommittedJournalEntries > 8)
+		if (8 < nCommittedJournalEntries)
 			saveJournal();
 	}
 
@@ -106,7 +106,7 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDat
 	private void saveJournal() throws IOException {
 		pointerPageFile.save(0, nCommittedJournalEntries);
 
-		if (nCommittedJournalEntries > 128)
+		if (128 < nCommittedJournalEntries)
 			applyJournal();
 	}
 

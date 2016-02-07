@@ -138,7 +138,7 @@ public class InstructionUtil {
 			super(frame, ip);
 			this.previous = previous;
 			depth = previous != null ? 1 + previous.depth : 0;
-			if (depth > Suite.stackSize)
+			if (Suite.stackSize < depth)
 				throw new RuntimeException("Activation overflow");
 		}
 	}
