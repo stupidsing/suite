@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.search.Alphabeta.Game;
+import suite.search.Alphabeta.Traverser;
 
 public class AlphabetaTest {
 
@@ -26,7 +26,7 @@ public class AlphabetaTest {
 		}
 	}
 
-	private static Game<TicTacToe> ticTacToeGame = new Game<TicTacToe>() {
+	private static Traverser<TicTacToe> ticTacToeGame = new Traverser<TicTacToe>() {
 		private int lines[][] = new int[][] { //
 				{ 0, 1, 2, }, //
 				{ 3, 4, 5, }, //

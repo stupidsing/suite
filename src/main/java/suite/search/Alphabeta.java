@@ -9,17 +9,17 @@ import suite.adt.Pair;
 
 public class Alphabeta<State> {
 
-	public interface Game<State> {
+	public interface Traverser<State> {
 		public List<State> generate(State state);
 
 		public int evaluate(State state);
 	}
 
-	private Game<State> game;
+	private Traverser<State> traverser;
 	private Deque<State> moves = new ArrayDeque<>();
 
-	public Alphabeta(Game<State> game) {
-		this.game = game;
+	public Alphabeta(Traverser<State> game) {
+		this.traverser = game;
 	}
 
 	public List<State> search(State state, int depth) {
@@ -29,7 +29,7 @@ public class Alphabeta<State> {
 
 	private Pair<Integer, List<State>> search0(State state, int depth, int alpha, int beta) {
 		if (depth > 0) {
-			List<State> states = game.generate(state);
+			List<State> states = traverser.generate(state);
 
 			if (!states.isEmpty()) {
 				List<State> principalVariation = null;
@@ -56,7 +56,7 @@ public class Alphabeta<State> {
 		}
 
 		List<State> moves1 = new ArrayList<>(moves);
-		return Pair.of(game.evaluate(state), moves1);
+		return Pair.of(traverser.evaluate(state), moves1);
 	}
 
 }

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 import suite.search.Search;
-import suite.search.Search.Game;
+import suite.search.Search.Traverser;
 import suite.util.Util;
 
 /**
@@ -48,7 +48,7 @@ public class LcsBfs<T> {
 		int size0 = l0.size();
 		int size1 = l1.size();
 
-		Node node = Search.breadthFirst(new Game<Node>() {
+		Node node = Search.breadthFirst(new Traverser<Node>() {
 			public List<Node> generate(Node node) {
 				List<Node> nodes = new ArrayList<>();
 				if (node.pos0 < size0)
@@ -58,7 +58,7 @@ public class LcsBfs<T> {
 				return nodes;
 			}
 
-			public boolean isDone(Node node) {
+			public boolean evaluate(Node node) {
 				return node.pos0 == size0 && node.pos1 == size1;
 			}
 
