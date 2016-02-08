@@ -146,9 +146,9 @@ ic-parse-better-option (.var += .i) .do
 
 ic-parse-sugar (.a | .b [.list]) (.b [.a, .list])
 #
-ic-parse-sugar (.a && .b) (if .a then .b else (no-type 0))
+ic-parse-sugar (.a && .b) (if .a then .b else (no-type false))
 #
-ic-parse-sugar (.a || .b) (if .a then (no-type 1) else .b)
+ic-parse-sugar (.a || .b) (if .a then (no-type true) else .b)
 #
 ic-parse-sugar (.p +f .f) (& .p/*/.f)
 #
@@ -171,7 +171,7 @@ ic-parse-sugar (for (.init; .cond; .step) do .do) (.init; while .cond do (.do; .
 #
 ic-parse-sugar (for .var in (.start, .end) do .do) (declare .var = .start; while (.var < .end) do (.do; .var += 1))
 #
-ic-parse-sugar (not .b) (if .b then (no-type 0) else (no-type 1))
+ic-parse-sugar (not .b) (if .b then (no-type false) else (no-type true))
 #
 ic-parse-sugar (var .var = .value; .do) (var .var; {.var} = .value; .do)
 	:- is.atom .var
