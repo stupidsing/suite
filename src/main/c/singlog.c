@@ -377,7 +377,7 @@ int handleelaborate(struct Node *query, struct Node ***trail, struct Node **rema
 			memfree(sv);
 			entries[nEntries++] = s;
 
-			if(nEntries >= arraySize) break;
+			if(arraySize <= nEntries) break;
 		}
 	}
 
@@ -432,10 +432,10 @@ void import(FILE *in) {
 		while(*current) current++;
 
 		last = current - 1;
-		while(last >= previous && isspace(*last)) last--;
+		while(previous <= last && isspace(*last)) last--;
 
 		if(last < previous || *last == '#') {
-			if(last >= previous) *last = 0;
+			if(previous <= last) *last = 0;
 			process(buffer);
 			current = buffer;
 		}

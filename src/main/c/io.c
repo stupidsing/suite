@@ -29,7 +29,7 @@ struct Node *getAtom0(char *start, char *end) {
 	int i = getAtomHashPos0(start, end), j;
 
 	if(!atomHashes[i]) {
-		if(nAtomHashes >= atomHashSize * 3 / 4) { // rehash if looks full
+		if(atomHashSize * 3 / 4 <= nAtomHashes) { // rehash if looks full
 			struct Node **atomHashes0 = atomHashes;
 			int atomHashSize0 = atomHashSize;
 
@@ -57,7 +57,7 @@ struct Node *getAtom(char *name) {
 }
 
 struct Node *getInt(int value) {
-	if(value >= -128 && value < 128) return intNodes[value + 128];
+	if(-128 <= value && value < 128) return intNodes[value + 128];
 	else return newInt(value);
 }
 
@@ -89,10 +89,10 @@ char *escape(char *s, int asString) {
 		unsigned char c = s[i0++];
 
 		int normalChar;
-		if(asString) normalChar = c >= 32 && c < 128 && c != '"';
-		else normalChar = c >= '0' && c <= '9'
-				|| c >= 'A' && c <= 'Z'
-				|| c >= 'a' && c <= 'z'
+		if(asString) normalChar = 32 <= c && c < 128 && c != '"';
+		else normalChar = '0' <= c && c <= '9'
+				|| 'A' <= c && c <= 'Z'
+				|| 'a' <= c && c <= 'z'
 				|| c == '.' || c == '_' || c == '-' || c == '!' || c == '$';
 
 		if(normalChar) out[0] = c;
@@ -105,7 +105,7 @@ char *escape(char *s, int asString) {
 
 		char *o = out;
 		while(*o) {
-			if(i1 >= length1) {
+			if(length1 <= i1) {
 				length1 += max(length1 >> 1, 32);
 				s1 = realloc(s1, length1 + 1);
 			}
@@ -121,7 +121,7 @@ char *escape(char *s, int asString) {
 		char *s2 = memalloc(i1 + 3);
 		s2[i1 + 2] = 0;
 		s2[0] = s2[i1 + 1] = quote;
-		while(--i1 >= 0) s2[i1 + 1] = s1[i1];
+		while(0 <= --i1) s2[i1 + 1] = s1[i1];
 		memfree(s1);
 		return s2;
 	} else return s1;
@@ -142,8 +142,8 @@ char *unescape(char *s) {
 			if(d0 == '%') {
 				i0++;
 				s1[i1++] = d0;
-			} else if((v0 = fromHexDigit(d0)) >= 0
-					&& (v1 = fromHexDigit(s[i0 + 1])) >= 0) {
+			} else if(0 <= (v0 = fromHexDigit(d0))
+					&& 0 <= (v1 = fromHexDigit(s[i0 + 1]))) {
 				i0 += 2;
 				s1[i1++] = (v0 << 4) + v1;
 			}
