@@ -16,9 +16,9 @@ declare ne2k-irq-sink = function [int irq-number,] (
 	outb [ne2k-io-base + +x00, +x22,];
 	while (({isr} = inb [ne2k-io-base + +x07,]) != 0) do (
 		outb [ne2k-io-base + +x07, isr,];
-		if (isr and +x01 != 0) then ({ne2k-is-arrived} = 1) else ();
-		if (isr and +x02 != 0) then ({ne2k-is-transmitted} = 1) else ();
-		if (isr and +x40 != 0) then ({ne2k-is-dma-completed} = 1) else ();
+		if (isr and +x01 != 0) then ({ne2k-is-arrived} = true) else ();
+		if (isr and +x02 != 0) then ({ne2k-is-transmitted} = true) else ();
+		if (isr and +x40 != 0) then ({ne2k-is-dma-completed} = true) else ();
 	);
 	outb [ne2k-io-base + +x00, +x22,];
 );
@@ -39,7 +39,7 @@ declare ne2k-read = function [src, dst, len,] (
 );
 
 declare ne2k-send = function [buffer, len,] (
-	{ne2k-is-dma-completed} = 0;
+	{ne2k-is-dma-completed} = false;
 
 	{len} = (len + 1) and +xFFFFFFFE;
 	outb [ne2k-io-base + +x00, +x22,];
@@ -56,18 +56,18 @@ declare ne2k-send = function [buffer, len,] (
 		outw [ne2k-io-base + +x10, b,];
 	);
 
-	while (ne2k-is-dma-completed = 0) do ( -- Wait for DMA to complete
+	while (not ne2k-is-dma-completed) do ( -- Wait for DMA to complete
 		sch-yield [];
 	);
 
-	{ne2k-is-transmitted} = 0;
+	{ne2k-is-transmitted} = false;
 
 	declare padded-len = if (len >= 64) then len else 64;
 	outb [ne2k-io-base + +x05, padded-len,];
 	outb [ne2k-io-base + +x06, padded-len ushr 8,];
 	outb [ne2k-io-base + +x00, +x26,];
 
-	while (ne2k-is-transmitted = 0) do ( -- Wait for packet to transmit
+	while (not ne2k-is-transmitted) do ( -- Wait for packet to transmit
 		sch-yield [];
 	);
 );
