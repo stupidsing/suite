@@ -119,7 +119,7 @@ declare ap-setup = function [] (
 	) else if (revision = 2) then (
 		declare rsdt = dw-get [p1 + 16,];
 		declare xsdt = dw-get [p1 + 24,];
-		if xsdt then (
+		if (xsdt != 0) then (
 			ap-parse-xsdt [xsdt as pointer:ap-acpi-header,];
 		) else (
 			ap-parse-rsdt [rsdt as pointer:ap-acpi-header,];

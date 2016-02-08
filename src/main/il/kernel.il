@@ -145,7 +145,7 @@ declare user-mode = function [] (
 	svc-service [svc-putc_, +x4B, 0,];
 	svc-service [svc-putc_, +x0A, 0,];
 
-	while 1 do (time-yield []);
+	while true do (time-yield []);
 );
 
 -- Switch stack to keep stack smaller so as to fit in the process stack space.
@@ -175,10 +175,10 @@ asm _ MOV (ESP, kernel-second-esp);
 		log "From another thread";
 	) else (
 		log "From first thread";
-		while 1 do ( -- Halt CPU if none of the process is busy
+		while true do ( -- Halt CPU if none of the process is busy
 			asm _ CLI ();
 			declare process = head-process;
-			declare busy = 0;
+			declare busy = false;
 			while (({process} = dl-next [process,]) != head-process) do (
 				{busy} = (busy || process/*/+current/+busy);
 			);

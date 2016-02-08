@@ -17,7 +17,7 @@ declare svc-handle-service = function [p0, p1, p2,] (
 	) else if (p0 = svc-ticks) then (
 		ticks;
 	) else if (p0 = svc-yield) then (
-		{current-process/*/+current/+busy} = 0;
+		{current-process/*/+current/+busy} = false;
 		sch-yield [];
 	) else 1;
 );

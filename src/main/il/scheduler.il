@@ -6,7 +6,7 @@ constant sch-action-fork = 2;
 constant sch-node = dl-node struct (
 | int +esp
 | int +action
-| int +busy
+| boolean +busy
 | (int * stack-size) +kernel-stack
 );
 
@@ -18,7 +18,7 @@ declare sch-allocate = function [] (
 	{process/*/+prev} = process;
 	{process/*/+next} = process;
 	{process/*/+current/+action} = sch-action-none;
-	{process/*/+current/+busy} = 1;
+	{process/*/+current/+busy} = true;
 	process;
 );
 

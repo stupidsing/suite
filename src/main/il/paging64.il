@@ -19,7 +19,7 @@ declare pg-is-mapped = function [logical,] (
 	declare pe1 = +xFFFFFFFFFFE00000 + (logical ushr 30) shl 3;
 	declare pe2 = +xFFFFFFFFC0000000 + (logical ushr 21) shl 3;
 	declare pe3 = +xFFFFFF8000000000 + (logical ushr 12) shl 3;
-	(qw-get [pe0,] && qw-get [pe1,] && qw-get [pe2,] && qw-get [pe3,]);
+	(qw-get [pe0,] != 0 && qw-get [pe1,] != 0 && qw-get [pe2,] != 0 && qw-get [pe3,] != 0);
 );
 
 declare pg-get-physical = function [logical,] (
@@ -39,7 +39,7 @@ declare pg-set-pt-entry = function [pe0, pt1, pm-alloc,] (
 
 declare pg-unset-pt-entry = function [pe0, pt1,] (
 	declare physical = (qw-get [pe0,]) and +xFFFFFFFFFFFFF000;
-	(pm-unref [physical,] || (
+	(pm-unref [physical,] != 0 || (
 		qw-set [pe0, 0,];
 		pg-invalidate-page [pt1,];
 		pm-deallocate [physical,];
@@ -94,25 +94,25 @@ declare pg-allocate = function [nPages,] (
 
 	synchronized (& pg-sync) (
 		declare initial = pg-current;
-		declare r0 = 0;
+		declare page = 0;
 
-		while (r0 = 0 && (({pg-current} = next-page [pg-current,]) != initial)) do (
-			declare r1 = 1;
-			for (declare i = 0; (r1 && i < nPages); i =+ 1) do (
-				{r1} = (r1 && not pg-is-mapped [pg-current + i shl 12,]);
+		while (page = 0 && (({pg-current} = next-page [pg-current,]) != initial)) do (
+			declare b = true;
+			for (declare i = 0; (b && i < nPages); i =+ 1) do (
+				{b} = (b && not pg-is-mapped [pg-current + i shl 12,]);
 			);
-			(r1 && {r0} = pg-current);
+			(b && {page} = pg-current);
 		);
 
-		(r0 && (
+		(page != 0 && (
 			for i in (0, nPages) do (
-				declare logical = r0 + i shl 12;
+				declare logical = page + i shl 12;
 				declare physical = pg-acquire-pt [];
 				pg-map [logical, physical,];
 			);
 		));
 
-		r0;
+		page;
 	);
 );
 
@@ -196,16 +196,16 @@ declare pg-teardown = function [] (
 
 	for i0 in (0, 1024) do (
 		declare pt1 = (qw-get [pt0 + i0 shl 3,]) and +xFFFFFFFFFFFFF000;
-		(pt1 && (
+		(pt1 != 0 && (
 			for i1 in (0, 1024) do (
 				declare pt2 = (qw-get [pt1 + i1 shl 3,]) and +xFFFFFFFFFFFFF000;
-				(pt2 && (
+				(pt2 != 0 && (
 					for i2 in (0, 1024) do (
 						declare pt3 = (qw-get [pt2 + i2 shl 3,]) and +xFFFFFFFFFFFFF000;
-						(pt3 && (
+						(pt3 != 0 && (
 							for i3 in (0, 1024) do (
 								declare pt4 = (qw-get [pt3 + i3 shl 3,]) and +xFFFFFFFFFFFFF000;
-								(pt4 && pg-release-pt [pt4,]);
+								(pt4 != 0 && pg-release-pt [pt4,]);
 							);
 							pg-release-pt [pt3,];
 						));

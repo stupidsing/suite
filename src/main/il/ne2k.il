@@ -14,11 +14,11 @@ declare ne2k-is-dma-completed;
 declare ne2k-irq-sink = function [int irq-number,] (
 	declare isr;
 	outb [ne2k-io-base + +x00, +x22,];
-	while ({isr} = inb [ne2k-io-base + +x07,]) do (
+	while (({isr} = inb [ne2k-io-base + +x07,]) != 0) do (
 		outb [ne2k-io-base + +x07, isr,];
-		(isr and +x01 && {ne2k-is-arrived} = 1);
-		(isr and +x02 && {ne2k-is-transmitted} = 1);
-		(isr and +x40 && {ne2k-is-dma-completed} = 1);
+		(isr and +x01 != 0 && {ne2k-is-arrived} = 1);
+		(isr and +x02 != 0 && {ne2k-is-transmitted} = 1);
+		(isr and +x40 != 0 && {ne2k-is-dma-completed} = 1);
 	);
 	outb [ne2k-io-base + +x00, +x22,];
 );

@@ -9,7 +9,7 @@
 compile-imperative .do0 .e0/.ex
 	:- ic-parse .do0 .do1
 	, !, ic-infer-type () .do1 .type
-	, !, ic-condition-type .type
+	, !, (.type = I32; ic-condition-type .type)
 	, !, ic-erase-type .do1 .do2
 	, !, ic-erase-variable ()/() .do2 .do3
 	, !, ic-compile-register .do3 .e0/.ex

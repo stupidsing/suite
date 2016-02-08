@@ -34,7 +34,7 @@ declare cs-put = function [ch,] (
 
 declare cs-puts = function [s,] (
 	declare ch;
-	for (declare s1 = s; {ch} = extend (s1 as pointer:byte)/*; s1 += 1) do (
+	for (declare s1 = s; ({ch} = extend (s1 as pointer:byte)/*) != 0; s1 += 1) do (
 		cs-put [ch,];
 	);
 );
