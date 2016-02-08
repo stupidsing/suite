@@ -106,9 +106,9 @@ declare ap-setup = function [] (
 
 	-- https://github.com/pdoane/osdev/blob/master/acpi/acpi.c
 	for (declare p = +xE0000; p < +x100000; p += 16) do (
-		(dw-get [p,] = +x20445352 && dw-get [p + 4,] = +x20525450 -- 'RSD PTR '
-			&& {p1} = p
-		);
+		if (dw-get [p,] = +x20445352 && dw-get [p + 4,] = +x20525450) then ( -- 'RSD PTR '
+			{p1} = p
+		) else ();
 	);
 
 	declare revision = extend ((p1 + 15) as pointer:byte)/*;

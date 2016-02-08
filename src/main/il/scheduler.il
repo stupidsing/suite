@@ -40,20 +40,20 @@ declare sch-yield = function [] (
 	asm _ FR-PUSH (EBX);
 	asm _ MOV (`EAX`, ESP);
 
-	(current-process/*/+current/+action = sch-action-exit && (
+	if (current-process/*/+current/+action = sch-action-exit) then (
 		declare process0 = current-process;
 		{current-process} = dl-prev [current-process,];
 		dl-remove [process0,];
 		sch-deallocate [process0,];
-	));
+	) else ();
 
-	(current-process/*/+current/+action = sch-action-fork && (
+	if (current-process/*/+current/+action = sch-action-fork) then (
 		declare process1 = sch-allocate [];
 		{process1/*/+current/+kernel-stack} = current-process/*/+current/+kernel-stack;
 		{process1/*/+current/+esp} = current-process/*/+current/+esp - current-process as int + process1 as int;
 		dl-insert-next [head-process, process1,];
 		{current-process/*/+current/+action} = sch-action-none;
-	));
+	) else ();
 
 	sch-switch [];
 	dw-set [tss-address + 4, current-process as int + size-of sch-node,]; -- TSS ESP0

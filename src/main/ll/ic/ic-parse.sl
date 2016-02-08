@@ -146,9 +146,9 @@ ic-parse-better-option (.var += .i) .do
 
 ic-parse-sugar (.a | .b [.list]) (.b [.a, .list])
 #
-ic-parse-sugar (.a && .b) (if .a then .b else (no-type false))
+ic-parse-sugar (.a && .b) (if .a then .b else false)
 #
-ic-parse-sugar (.a || .b) (if .a then (no-type true) else .b)
+ic-parse-sugar (.a || .b) (if .a then true else .b)
 #
 ic-parse-sugar (.p +f .f) (& .p/*/.f)
 #

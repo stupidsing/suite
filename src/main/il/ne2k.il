@@ -16,9 +16,9 @@ declare ne2k-irq-sink = function [int irq-number,] (
 	outb [ne2k-io-base + +x00, +x22,];
 	while (({isr} = inb [ne2k-io-base + +x07,]) != 0) do (
 		outb [ne2k-io-base + +x07, isr,];
-		(isr and +x01 != 0 && {ne2k-is-arrived} = 1);
-		(isr and +x02 != 0 && {ne2k-is-transmitted} = 1);
-		(isr and +x40 != 0 && {ne2k-is-dma-completed} = 1);
+		if (isr and +x01 != 0) then ({ne2k-is-arrived} = 1) else ();
+		if (isr and +x02 != 0) then ({ne2k-is-transmitted} = 1) else ();
+		if (isr and +x40 != 0) then ({ne2k-is-dma-completed} = 1) else ();
 	);
 	outb [ne2k-io-base + +x00, +x22,];
 );
@@ -85,7 +85,7 @@ declare ne2k-probe = function [] (
 );
 
 declare ne2k-setup = function [] (
-	(ne2k-probe [] && (
+	if (ne2k-probe []) then (
 		outb [ne2k-io-base + +x00, +x21,];
 		outb [ne2k-io-base + +x0E, +x49,];
 
@@ -107,5 +107,5 @@ declare ne2k-setup = function [] (
 		cs-nl [];
 
 		irq-set-sink [ne2k-irq-number, ne2k-irq-sink,];
-	));
+	) else ();
 );

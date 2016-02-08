@@ -28,7 +28,7 @@ declare cs-put = function [ch,] (
 	synchronized (& cs-sync) (
 		declare w = +x0700 + ch;
 		copy [+xB8000 + 3840 + cs-column-offset, address w, 2,];
-		(cs-column-offset += 2 = 160 && cs-nl0 []);
+		if (cs-column-offset += 2 = 160) then (cs-nl0 []) else ();
 	);
 );
 

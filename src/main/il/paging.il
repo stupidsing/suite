@@ -27,21 +27,21 @@ declare pg-get-physical = function [logical,] (
 
 declare pg-set-pt-entry = function [pe0, pt1, pm-alloc,] (
 	declare physical = dw-get [pe0,];
-	(physical = 0 && (
+	if (physical = 0) then (
 		dw-set [pe0, ({physical} = pm-alloc []) + 7,];
 		pg-invalidate-page [pt1,];
 		zero [pt1, 4096,];
-	));
+	) else ();
 	pm-ref [physical,];
 );
 
 declare pg-unset-pt-entry = function [pe0, pt1,] (
 	declare physical = (dw-get [pe0,]) and +xFFFFF000;
-	(pm-unref [physical,] != 0 || (
+	if (pm-unref [physical,] = 0) then (
 		dw-set [pe0, 0,];
 		pg-invalidate-page [pt1,];
 		pm-deallocate [physical,];
-	));
+	) else ();
 );
 
 declare pg-map = function [logical, physical,] (
@@ -69,7 +69,7 @@ declare pg-acquire-pt = function [] (
 );
 
 declare pg-release-pt = function [pt,] (
-	(pm-unref [pt,] != 0 || pm-deallocate [pt,]);
+	if (pm-unref [pt,] = 0) then (pm-deallocate [pt,]) else ();
 );
 
 declare pg-allocate = function [nPages,] (
@@ -82,21 +82,21 @@ declare pg-allocate = function [nPages,] (
 		declare initial = pg-current;
 		declare page = 0;
 
-		while (page = 0 && (({pg-current} = next-page [pg-current,]) != initial)) do (
+		while (page = 0 && ({pg-current} = next-page [pg-current,]) != initial) do (
 			declare b = true;
 			for (declare i = 0; (b && i < nPages); i =+ 1) do (
 				{b} = (b && not pg-is-mapped [pg-current + i shl 12,]);
 			);
-			(b && {page} = pg-current);
+			if b then ({page} = pg-current) else ();
 		);
 
-		(page != 0 && (
+		if (page != 0) then (
 			for i in (0, nPages) do (
 				declare logical = page + i shl 12;
 				declare physical = pg-acquire-pt [];
 				pg-map [logical, physical,];
 			);
-		));
+		) else ();
 
 		page;
 	);
@@ -159,13 +159,13 @@ declare pg-teardown = function [] (
 
 	for i0 in (0, 1024) do (
 		declare pt1 = (dw-get [pt0 + i0 shl 2,]) and +xFFFFF000;
-		(pt1 != 0 && (
+		if (pt1 != 0) then (
 			for i1 in (0, 1024) do (
 				declare pt2 = (dw-get [pt1 + i1 shl 2,]) and +xFFFFF000;
-				(pt2 != 0 && pg-release-pt [pt2,]);
+				if (pt2 != 0) then (pg-release-pt [pt2,]) else ();
 			);
 			pg-release-pt [pt1,];
-		));
+		) else ();
 	);
 	pg-release-pt [pt0,];
 );

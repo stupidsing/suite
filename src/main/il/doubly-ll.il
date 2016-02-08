@@ -33,20 +33,20 @@ declare _ dl-insert-prev = function [pointer:dl-node$t e, ne,] (
 	dl-set-prev [ne, prev,];
 	dl-set-next [ne, e,];
 	dl-set-prev [e, ne,];
-	(prev && dl-set-next [prev, ne,]);
+	if prev then (dl-set-next [prev, ne,]) else ();
 );
 
 declare _ dl-insert-next = function [pointer:dl-node$t e, ne,] (
 	declare next = dl-next [e,];
 	dl-set-prev [ne, e,];
 	dl-set-next [ne, next,];
-	(next && dl-set-prev [next, ne,]);
+	if next then (dl-set-prev [next, ne,]) else ();
 	dl-set-next [e, ne,];
 );
 
 declare _ dl-remove = function [pointer:dl-node$t e,] (
 	declare prev = dl-prev [e,];
 	declare next = dl-next [e,];
-	(prev && dl-set-next [prev, next,]);
-	(next && dl-set-prev [next, prev,]);
+	if prev then (dl-set-next [prev, next,]) else ();
+	if next then (dl-set-prev [next, prev,]) else ();
 );

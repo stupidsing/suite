@@ -183,7 +183,7 @@ asm _ MOV (ESP, kernel-second-esp);
 				{busy} = (busy || process/*/+current/+busy);
 			);
 			asm _ STI ();
-			(busy || asm _ HLT ());
+			if (not busy) then (asm _ HLT ()) else ();
 		);
 	);
 

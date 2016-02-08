@@ -26,7 +26,7 @@ declare ffa-allocate0 = function [size,] (
 
 	declare get-size = function [pointer:ffa-node node,] (
 		declare next = node/*/+next;
-		if (not node/*/+current/+is-occupied && next) then (next as int - node as int - ffa-node-size) else 0;
+		if (not node/*/+current/+is-occupied && next != null) then (next as int - node as int - ffa-node-size) else 0;
 	);
 
 	declare start = ffa-current;
