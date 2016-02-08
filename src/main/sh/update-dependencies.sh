@@ -3,6 +3,7 @@ sed 's#com.fasterxml.jackson.databind.*#<groupId>com.fasterxml.jackson.core</gro
 sed 's#com.jcraft.jsch.*#<groupId>com.jcraft</groupId><artifactId>jsch</artifactId>#g' |
 sed 's#com.nativelibs4java.bridj.*#<groupId>com.nativelibs4java</groupId><artifactId>bridj</artifactId>#g' |
 sed 's#com.nativelibs4java.opencl.*#<groupId>com.nativelibs4java</groupId><artifactId>javacl</artifactId>#g' |
+sed 's#jline.console.*#<groupId>jline</groupId><artifactId>jline</artifactId>#g' |
 sed 's#org.apache.commons.logging.*#<groupId>commons-logging</groupId><artifactId>commons-logging</artifactId>#g' |
 sed 's#org.apache.log4j.*#<groupId>log4j</groupId><artifactId>log4j</artifactId>#g' |
 sed 's#org.junit.*#<groupId>junit</groupId><artifactId>junit</artifactId>#g' |
