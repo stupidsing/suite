@@ -138,5 +138,5 @@ ic-field-type (.nts | _ _) .name .type
 #
 
 ic-condition-type .type
-	:- once (.type = BOOLEAN; .type = I32; .type = METHOD0-OF _ _; .type = POINTER-OF _)
+	:- once (.type = BOOLEAN; .type = I32; .type = POINTER-OF _)
 #
