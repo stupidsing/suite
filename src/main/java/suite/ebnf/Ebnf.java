@@ -28,28 +28,28 @@ public class Ebnf {
 
 	private EbnfTopDownParse engine;
 
-	public static class Node {
+	public static class Ast {
 		public int start, end;
 		public final String entity;
-		public final List<Node> nodes;
+		public final List<Ast> children;
 
-		public Node(String entity, int start) {
+		public Ast(String entity, int start) {
 			this(entity, start, 0);
 		}
 
-		public Node(String entity, int start, int end) {
+		public Ast(String entity, int start, int end) {
 			this(entity, start, end, new ArrayList<>());
 		}
 
-		public Node(String entity, int start, int end, List<Node> nodes) {
+		public Ast(String entity, int start, int end, List<Ast> children) {
 			this.entity = entity;
 			this.start = start;
 			this.end = end;
-			this.nodes = nodes;
+			this.children = children;
 		}
 
 		public String toString() {
-			return entity + "@" + start + "-" + end + nodes;
+			return entity + "@" + start + "-" + end + children;
 		}
 
 		public int getStart() {
@@ -77,33 +77,33 @@ public class Ebnf {
 		return toFactorizeResult(cs, 0, cs.length, parse(entity, s));
 	}
 
-	private FactorizeResult toFactorizeResult(char cs[], int p0, int px, Node node) {
-		List<Node> nodes = node.nodes;
-		int size = nodes.size();
+	private FactorizeResult toFactorizeResult(char cs[], int p0, int px, Ast ast) {
+		List<Ast> children = ast.children;
+		int size = children.size();
 
 		if (0 < size) {
 			List<FactorizeResult> frs = new ArrayList<>();
 			int pos = p0;
 			for (int i = 0; i < size; i++) {
-				Node child = nodes.get(i);
+				Ast child = children.get(i);
 				int pos0 = pos;
 				pos = i != size - 1 ? child.end : px;
 				frs.add(toFactorizeResult(cs, pos0, pos, child));
 			}
-			return FactorizeResult.merge(node.entity, frs);
+			return FactorizeResult.merge(ast.entity, frs);
 		} else {
-			Chars pre = Chars.of(cs, p0, node.start);
-			Chars mid = Chars.of(cs, node.start, node.end);
-			Chars post = Chars.of(cs, node.end, px);
+			Chars pre = Chars.of(cs, p0, ast.start);
+			Chars mid = Chars.of(cs, ast.start, ast.end);
+			Chars post = Chars.of(cs, ast.end, px);
 			return new FactorizeResult(pre, new FTerminal(mid), post);
 		}
 	}
 
-	public Node check(String entity, String s) {
+	public Ast check(String entity, String s) {
 		return engine.check(entity, s);
 	}
 
-	public Node parse(String entity, String s) {
+	public Ast parse(String entity, String s) {
 		return engine.parse(entity, s);
 	}
 

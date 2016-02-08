@@ -5,7 +5,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
-import suite.ebnf.Ebnf.Node;
+import suite.ebnf.Ebnf.Ast;
 import suite.util.Util;
 
 public class EbnfDump {
@@ -13,10 +13,10 @@ public class EbnfDump {
 	private String in;
 	private Writer w = new StringWriter();
 
-	public EbnfDump(Node node, String in) {
+	public EbnfDump(Ast ast, String in) {
 		this.in = in;
 		try {
-			prettyPrint(node, "");
+			prettyPrint(ast, "");
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -26,31 +26,31 @@ public class EbnfDump {
 		return w.toString();
 	}
 
-	private void prettyPrint(Node node, String indent) throws IOException {
-		String entity0 = node.entity;
-		List<Node> nodes;
+	private void prettyPrint(Ast ast, String indent) throws IOException {
+		String entity0 = ast.entity;
+		List<Ast> children;
 
-		while ((nodes = node.nodes).size() == 1)
-			node = nodes.get(0);
+		while ((children = ast.children).size() == 1)
+			ast = children.get(0);
 
-		if (nodes.size() != 1) {
+		if (children.size() != 1) {
 			String indent1 = indent + "  ";
-			String entity1 = node.entity;
-			int start = node.getStart();
-			int end = node.getEnd();
+			String entity1 = ast.entity;
+			int start = ast.getStart();
+			int end = ast.getEnd();
 
 			w.write(indent + entity0);
 			if (!Util.stringEquals(entity0, entity1))
 				w.write(".." + entity1);
 			w.write("@" + start + "-" + end);
-			if (nodes.isEmpty())
+			if (children.isEmpty())
 				w.write("[" + in.substring(start, end) + "]");
 			w.write("\n");
 
-			for (Node childNode : nodes)
-				prettyPrint(childNode, indent1);
+			for (Ast child : children)
+				prettyPrint(child, indent1);
 		} else
-			prettyPrint(nodes.get(0), indent);
+			prettyPrint(children.get(0), indent);
 	}
 
 }

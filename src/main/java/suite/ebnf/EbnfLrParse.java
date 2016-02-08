@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.Pair;
-import suite.ebnf.Ebnf.Node;
+import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.EbnfGrammar.EbnfGrammarType;
 import suite.immutable.IList;
 import suite.parser.Lexer;
@@ -292,12 +292,12 @@ public class EbnfLrParse {
 		return ls;
 	}
 
-	public Node check(String in) {
+	public Ast check(String in) {
 		return parse(in);
 	}
 
-	public Node parse(String in) {
-		Source<Node> source = Read.from(new Lexer(in).tokens()).map(token -> new Node(token, 0)).source();
+	public Ast parse(String in) {
+		Source<Ast> source = Read.from(new Lexer(in).tokens()).map(token -> new Ast(token, 0)).source();
 
 		System.out.println("shifts/reduces = " + list(fsm));
 		System.out.println("Initial state = " + state0);
@@ -305,9 +305,9 @@ public class EbnfLrParse {
 		return parse(source, state0);
 	}
 
-	private Node parse(Source<Node> tokens, State state) {
-		Deque<Pair<Node, State>> stack = new ArrayDeque<>();
-		Node token = tokens.source();
+	private Ast parse(Source<Ast> tokens, State state) {
+		Deque<Pair<Ast, State>> stack = new ArrayDeque<>();
+		Ast token = tokens.source();
 
 		while (true) {
 			String lookahead = token != null ? token.entity : "EOF";
@@ -319,15 +319,15 @@ public class EbnfLrParse {
 				token = tokens.source();
 			} else { // Reduce
 				Reduce reduce = sr.t1;
-				IList<Node> nodes = IList.end();
+				IList<Ast> nodes = IList.end();
 
 				for (int i = 0; i < reduce.n; i++) {
-					Pair<Node, State> ns = stack.pop();
+					Pair<Ast, State> ns = stack.pop();
 					nodes = IList.cons(ns.t0, nodes);
 					state = ns.t1;
 				}
 
-				Node token1 = new Node(reduce.name, 0, 0, Read.from(nodes).toList());
+				Ast token1 = new Ast(reduce.name, 0, 0, Read.from(nodes).toList());
 
 				if (rootEntity.equals(reduce.name) && stack.size() == 0 && token == null)
 					return token1;
@@ -339,7 +339,7 @@ public class EbnfLrParse {
 		}
 	}
 
-	private Pair<State, Reduce> shift(Deque<Pair<Node, State>> stack, State state, String next) {
+	private Pair<State, Reduce> shift(Deque<Pair<Ast, State>> stack, State state, String next) {
 		System.out.print("(S=" + state + ", Next=" + next + ", Stack=" + stack.size() + ")");
 		Pair<State, Reduce> sr = fsm.get(state).get(next);
 		System.out.println(" => " + sr);

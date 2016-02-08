@@ -37,7 +37,7 @@ public class LcsBfs<T> {
 
 		public boolean equals(Object object) {
 			if (Util.clazz(object) == Node.class) {
-				LcsBfs<?>.Node node = (LcsBfs<?>.Node) object;
+				LcsBfs<?>.Node node = (LcsBfs<?>.Ast) object;
 				return pos0 == node.pos0 && pos1 == node.pos1;
 			} else
 				return false;

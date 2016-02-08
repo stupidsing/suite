@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.Pair;
-import suite.ebnf.Ebnf.Node;
+import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.EbnfExpect.Expect;
 import suite.ebnf.EbnfGrammar.EbnfGrammarType;
 import suite.os.LogUtil;
@@ -90,7 +90,7 @@ public class EbnfTopDownParse {
 			length = in.length();
 		}
 
-		private Node parse(int pos, Parser parser) {
+		private Ast parse(int pos, Parser parser) {
 			State initialState = new State(null, pos, null, 0);
 			Outlet<State> o = initialState.pr(this, parser);
 			State state;
@@ -107,9 +107,9 @@ public class EbnfTopDownParse {
 						state = state.previous;
 					}
 
-					Node root = new Node(null, 0);
+					Ast root = new Ast(null, 0);
 
-					Deque<Node> stack = new ArrayDeque<>();
+					Deque<Ast> stack = new ArrayDeque<>();
 					stack.push(root);
 
 					for (State state_ : states) {
@@ -118,13 +118,13 @@ public class EbnfTopDownParse {
 							stack.pop().end = state_.pos;
 						else if (0 < d)
 							for (int i = 0; i < state_.frame.depth; i++) {
-								Node node = new Node(state_.frame.entity, state_.pos);
-								stack.peek().nodes.add(node);
+								Ast node = new Ast(state_.frame.entity, state_.pos);
+								stack.peek().children.add(node);
 								stack.push(node);
 							}
 					}
 
-					return root.nodes.get(0);
+					return root.children.get(0);
 				}
 
 			return null;
@@ -166,9 +166,9 @@ public class EbnfTopDownParse {
 				.toMap();
 	}
 
-	public Node parse(String entity, String s) {
+	public Ast parse(String entity, String s) {
 		Parse parse = new Parse(s);
-		Node node = parse.parse(0, build(new EbnfGrammar(EbnfGrammarType.ENTITY, entity)));
+		Ast node = parse.parse(0, build(new EbnfGrammar(EbnfGrammarType.ENTITY, entity)));
 		if (node != null)
 			return node;
 		else {
@@ -177,7 +177,7 @@ public class EbnfTopDownParse {
 		}
 	}
 
-	public Node check(String entity, String s) {
+	public Ast check(String entity, String s) {
 		return new Parse(s).parse(0, build(new EbnfGrammar(EbnfGrammarType.ENTITY, entity)));
 	}
 
