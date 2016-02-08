@@ -160,7 +160,7 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 				} else if (key.isReadable()) {
 					int n = sc1.read(ByteBuffer.wrap(buffer));
 
-					if (n >= 0)
+					if (0 <= n)
 						channel.onReceive(Bytes.of(buffer, 0, n));
 					else {
 						channel.onClose();

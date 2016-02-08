@@ -101,7 +101,7 @@ public class StackAssembler {
 				node1 = Atom.NIL;
 			} else if (node0 == RRESTA) {
 				fs -= 4 * rs;
-				for (int r = rs - 1; r >= 0; r--)
+				for (int r = rs - 1; 0 <= r; r--)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
 				node1 = Atom.NIL;
 			} else if (node0 == RSAVEA) {
@@ -119,9 +119,9 @@ public class StackAssembler {
 	}
 
 	private Node rewrite(int sp, Node n) {
-		if (sp - 1 >= 0)
+		if (0 <= sp - 1)
 			n = new TreeRewriter().replace(rsOp0, getRegister(sp - 1), n);
-		if (sp - 2 >= 0)
+		if (0 <= sp - 2)
 			n = new TreeRewriter().replace(rsOp1, getRegister(sp - 2), n);
 		return n;
 	}

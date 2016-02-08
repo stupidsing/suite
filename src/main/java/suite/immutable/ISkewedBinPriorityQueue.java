@@ -169,13 +169,13 @@ public class ISkewedBinPriorityQueue<T> {
 		IList<Node> nodes;
 		Node smallest;
 
-		if (c01 >= 0 && c12 <= 0) {
+		if (0 <= c01 && c12 <= 0) {
 			smallest = node1;
 			nodes = IList.cons(node0, IList.cons(node2, smallest.nodes));
-		} else if (c12 >= 0 && c20 <= 0) {
+		} else if (0 <= c12 && c20 <= 0) {
 			smallest = node2;
 			nodes = IList.cons(node0, IList.cons(node1, smallest.nodes));
-		} else { // c20 >= 0 && c01 <= 0
+		} else { // 0 <= c20 && c01 <= 0
 			smallest = node0;
 			nodes = IList.asList(node1, node2);
 		}

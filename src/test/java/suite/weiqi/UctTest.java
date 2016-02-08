@@ -126,8 +126,8 @@ public class UctTest {
 		gameSet.play(move);
 
 		System.out.println(move);
-		assertTrue(move.getX() >= 2);
-		assertTrue(move.getY() >= 2);
+		assertTrue(2 <= move.getX());
+		assertTrue(2 <= move.getY());
 		assertTrue(move.getX() < Weiqi.size - 2);
 		assertTrue(move.getY() < Weiqi.size - 2);
 	}
@@ -138,41 +138,41 @@ public class UctTest {
 			DecimalFormat df = new DecimalFormat("0.000");
 			int nThreads = Runtime.getRuntime().availableProcessors();
 			int nSimulations = 5000; // 20000
-				int boundedTime = 300000;
-				int seed = new Random().nextInt();
+			int boundedTime = 300000;
+			int seed = new Random().nextInt();
 
-				System.out.println("RANDOM SEED = " + seed);
-				ShuffleUtil.setSeed(seed);
+			System.out.println("RANDOM SEED = " + seed);
+			ShuffleUtil.setSeed(seed);
 
-				Board board = new Board();
-				GameSet gameSet = new GameSet(board, Occupation.BLACK);
+			Board board = new Board();
+			GameSet gameSet = new GameSet(board, Occupation.BLACK);
 
-				while (true) {
-					GameSet gameSet1 = new GameSet(gameSet);
-					UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet1);
-					UctSearch<Coordinate> search = new UctSearch<>(visitor);
-					search.setNumberOfThreads(nThreads);
-					search.setNumberOfSimulations(nSimulations);
-					search.setBoundedTime(boundedTime);
+			while (true) {
+				GameSet gameSet1 = new GameSet(gameSet);
+				UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet1);
+				UctSearch<Coordinate> search = new UctSearch<>(visitor);
+				search.setNumberOfThreads(nThreads);
+				search.setNumberOfSimulations(nSimulations);
+				search.setBoundedTime(boundedTime);
 
-					TimedResult<Coordinate> timed = new TimeUtil().time(search::search);
-					Coordinate move = timed.result;
+				TimedResult<Coordinate> timed = new TimeUtil().time(search::search);
+				Coordinate move = timed.result;
 
-					if (move == null)
-						break;
+				if (move == null)
+					break;
 
-					Occupation player = gameSet.getNextPlayer();
+				Occupation player = gameSet.getNextPlayer();
 
-					search.dumpPrincipalVariation();
-					System.out.println(player //
-							+ " " + move //
-							+ " " + df.format(search.getWinningChance()) //
-							+ " " + timed.duration + "ms");
+				search.dumpPrincipalVariation();
+				System.out.println(player //
+						+ " " + move //
+						+ " " + df.format(search.getWinningChance()) //
+						+ " " + timed.duration + "ms");
 
-					gameSet.play(move);
-					UserInterface.display(gameSet);
-				}
-			}));
+				gameSet.play(move);
+				UserInterface.display(gameSet);
+			}
+		}));
 	}
 
 }

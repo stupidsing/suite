@@ -70,7 +70,7 @@ public class Lexer {
 				pos += 4;
 			else if (type == LexType.HEX__) {
 				pos += 2;
-				while (pos < in.length() && "0123456789ABCDEF".indexOf(in.charAt(pos)) >= 0)
+				while (pos < in.length() && 0 <= "0123456789ABCDEF".indexOf(in.charAt(pos)))
 					pos++;
 			} else if (type == LexType.OPER_)
 				pos += token.operator.getName().length();

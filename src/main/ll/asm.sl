@@ -447,13 +447,13 @@ as-rex-reg0:64 R14 1 6 :- as-long-mode #
 as-rex-reg0:64 R15 1 7 :- as-long-mode #
 
 as-xmm-reg0 XMM:.r 0 .r :- .r < 8 #
-as-xmm-reg0 XMM:.r 0 .rb :- .r >= 8, let .rb (.r - 8) #
+as-xmm-reg0 XMM:.r 0 .rb :- 8 <= .r, let .rb (.r - 8) #
 
 as-ymm-reg0 YMM:.r 0 .r :- .r < 8 #
-as-ymm-reg0 YMM:.r 0 .rb :- .r >= 8, let .rb (.r - 8) #
+as-ymm-reg0 YMM:.r 0 .rb :- 8 <= .r, let .rb (.r - 8) #
 
 as-zmm-reg0 ZMM:.r 0 .r :- .r < 8 #
-as-zmm-reg0 ZMM:.r 0 .rb :- .r >= 8, let .rb (.r - 8) #
+as-zmm-reg0 ZMM:.r 0 .rb :- 8 <= .r, let .rb (.r - 8) #
 
 as-segment-reg0 ES 0 #
 as-segment-reg0 CS 1 #

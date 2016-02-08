@@ -45,7 +45,7 @@ public class ReadLineMain extends ExecutableProgram {
 		try (Termios termios = new Termios()) {
 			Source<Character> source0 = () -> {
 				int ch = Libc.getchar();
-				return ch >= 0 ? (char) ch : null;
+				return 0 <= ch ? (char) ch : null;
 			};
 
 			Reactive.from(source0).redirect(new Redirector<Character, Pair<VK, Character>>() {

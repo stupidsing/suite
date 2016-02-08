@@ -59,7 +59,7 @@ public class RequestResponseChannel extends PacketChannel {
 
 	@Override
 	public void onReceivePacket(Bytes packet) {
-		if (packet.size() >= 5) {
+		if (5 <= packet.size()) {
 			char type = (char) packet.get(0);
 			int token = NetUtil.intValue(packet.subbytes(1, 5));
 			Bytes contents = packet.subbytes(5);

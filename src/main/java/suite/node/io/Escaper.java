@@ -11,7 +11,7 @@ public class Escaper {
 
 		for (char ch : Util.chars(s))
 			if (Character.isWhitespace(ch) && ch != ' ')
-				if (ch >= 256)
+				if (256 <= ch)
 					sb.append(encodeHex16(ch >> 8));
 				else
 					sb.append(encodeHex8(ch & 0xff));

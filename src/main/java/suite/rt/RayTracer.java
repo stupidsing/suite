@@ -193,7 +193,7 @@ public class RayTracer {
 				float k = 1 - eta * eta * (1 - cos * cos);
 				Vector refractColor;
 
-				if (k >= 0) {
+				if (0 <= k) {
 					Vector refractDir = Vector.add(Vector.mul(ray.dir, eta / (float) Math.sqrt(Vector.abs2(ray.dir))),
 							Vector.mul(normal, eta * cos - (float) Math.sqrt(k)));
 					Vector refractPoint = Vector.sub(hitPoint, negligible(normal));

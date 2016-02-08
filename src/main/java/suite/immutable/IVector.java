@@ -75,7 +75,7 @@ public class IVector<T> {
 	public IVector<T> cons(T n, IVector<T> v) {
 		int vlen = v.length();
 
-		if (v.start == v.data.startUsed && v.start >= 1) {
+		if (v.start == v.data.startUsed && 1 <= v.start) {
 			v.data.insertBefore(n);
 			return new IVector<>(v.data, v.start - 1, v.end);
 		} else {
@@ -89,10 +89,10 @@ public class IVector<T> {
 	public IVector<T> concat(IVector<T> u, IVector<T> v) {
 		int ulen = u.length(), vlen = v.length();
 
-		if (u.end == u.data.endUsed && u.data.nodes.length - u.end >= vlen) {
+		if (u.end == u.data.endUsed && vlen <= u.data.nodes.length - u.end) {
 			u.data.insertAfter(v.data.nodes, v.start, v.end);
 			return new IVector<>(u.data, u.start, u.end + vlen);
-		} else if (v.start == v.data.startUsed && v.start >= ulen) {
+		} else if (v.start == v.data.startUsed && ulen <= v.start) {
 			v.data.insertBefore(u.data.nodes, u.start, u.end);
 			return new IVector<>(v.data, v.start - ulen, v.end);
 		} else {

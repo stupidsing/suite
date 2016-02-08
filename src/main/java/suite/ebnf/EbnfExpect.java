@@ -61,7 +61,7 @@ public class EbnfExpect {
 			pos++;
 			pos = expectIntegerLiteral.expect(in, length, pos);
 		}
-		if (pos < length && "fd".indexOf(in.charAt(pos)) >= 0)
+		if (pos < length && 0 <= "fd".indexOf(in.charAt(pos)))
 			pos++;
 		return pos;
 	};

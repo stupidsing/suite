@@ -446,9 +446,9 @@ ic-copy-memory 0 .size .e0/.ex
 		, _ MOV (ECX, .div4)
 		, _ REP MOVSD ()
 		, .e1)
-	, once (.mod4 >= 1, .e1 = (_ MOVSB (), .e2); .e1 = .e2)
-	, once (.mod4 >= 2, .e2 = (_ MOVSB (), .e3); .e2 = .e3)
-	, once (.mod4 >= 3, .e3 = (_ MOVSB (), .e4); .e3 = .e4)
+	, once (1 <= .mod4, .e1 = (_ MOVSB (), .e2); .e1 = .e2)
+	, once (2 <= .mod4, .e2 = (_ MOVSB (), .e3); .e2 = .e3)
+	, once (3 <= .mod4, .e3 = (_ MOVSB (), .e4); .e3 = .e4)
 	, .e4 = (_ MOV (ESI, EDX)
 		, .ex)
 #

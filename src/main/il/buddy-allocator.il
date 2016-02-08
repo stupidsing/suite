@@ -16,7 +16,7 @@ declare exp2rel = function [l2,] (
 
 declare log2rel = function [size,] (
 	declare result = 0;
-	while (size >= 16) do (
+	while (16 <= size) do (
 		{size} = size ushr 1;
 		result =+ 1;
 	);

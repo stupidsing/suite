@@ -33,12 +33,12 @@ function isNum(s) {
 	result = i;
 	for (var i = 0; i < s.length; i++) {
 		var c = s.charAt(i);
-		result &= c >= '0' && c <= '9';
+		result &= '0' <= c && c <= '9';
 	}
 	return result;
 }
 
 function match(s, i, s1) {
 	l = s1.length;
-	return s.length >= i + l && s.substr(i, l) == s1;
+	return i + 1 <= s.length && s.substr(i, l) == s1;
 }

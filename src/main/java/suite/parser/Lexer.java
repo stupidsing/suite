@@ -113,7 +113,7 @@ public class Lexer {
 		char ch = peeked;
 		try {
 			int read = reader.read();
-			if (read >= 0)
+			if (0 <= read)
 				peeked = (char) read;
 			else
 				eof = true;

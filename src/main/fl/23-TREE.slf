@@ -46,7 +46,7 @@ define insert := key =>
 				error
 		>>
 		let slots1 := concat {left; replaceSlots; right;} >>
-		if (length {slots1} >= max-branches) then
+		if (max-branches <= length {slots1}) then
 			let `$ls, $rs` := take-drop {min-branches} {slots1} >>
 			create-slot {ls}; create-slot {rs};
 		else
@@ -64,7 +64,7 @@ define remove := key =>
 		reverse {tail {rev}}, head {rev}
 	>>
 	define merge := left => right =>
-		if (length {left} + length {right} >= max-branches) then
+		if (max-branches <= length {left} + length {right}) then
 			if (min-branches < length {left}) then
 				let `$left1, $slot` := rth {left} >>
 				create-slot {left1}; create-slot {cons {slot} {right}};

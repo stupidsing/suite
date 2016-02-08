@@ -57,7 +57,7 @@ public class IbTreeTest {
 			int size = ibTree.guaranteedCapacity();
 			for (int i = 0; i < size; i++)
 				mutator.putTerminal(i);
-			for (int i = size - 1; i >= 0; i--)
+			for (int i = size - 1; 0 <= i; i--)
 				mutator.remove(i);
 			for (int i = 0; i < size; i++)
 				mutator.putTerminal(i);

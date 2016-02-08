@@ -90,7 +90,7 @@ public class IoPredicates {
 		try {
 			BytesBuilder bb = new BytesBuilder();
 			byte b;
-			while ((b = (byte) System.in.read()) >= 0 && b != 10)
+			while (0 <= (b = (byte) System.in.read()) && b != 10)
 				bb.append(b);
 			String s = new String(bb.toBytes().toBytes(), FileUtil.charset);
 			return prover.bind(new Str(s), p0);

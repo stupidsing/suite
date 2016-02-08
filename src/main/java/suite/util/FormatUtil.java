@@ -18,7 +18,7 @@ public class FormatUtil {
 
 	public static String rightTrim(String s) {
 		int pos = s.length();
-		while (--pos >= 0)
+		while (0 <= --pos)
 			if (!Character.isWhitespace(s.charAt(pos)))
 				break;
 		return s.substring(0, pos + 1);

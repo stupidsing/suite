@@ -24,10 +24,10 @@ public abstract class PacketChannel extends BufferedChannel {
 	public void onReceive(Bytes message) {
 		received = received.append(message);
 
-		if (received.size() >= 4) {
+		if (4 <= received.size()) {
 			int end = 4 + NetUtil.intValue(received.subbytes(0, 4));
 
-			if (received.size() >= end) {
+			if (end <= received.size()) {
 				Bytes packet = received.subbytes(4, end);
 				received = received.subbytes(end);
 				onReceivePacket(packet);

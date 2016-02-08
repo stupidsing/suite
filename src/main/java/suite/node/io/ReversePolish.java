@@ -54,10 +54,11 @@ public class ReversePolish {
 					Node value = deque.pop();
 					children.add(Pair.of(key, value));
 				}
-				n = new NodeWrite(ReadType.valueOf(a[0]) //
-						, !Util.stringEquals(a[1], "null") ? Suite.parse(a[1]) : null //
-						, TermOp.valueOf(a[2]) //
-						, children).node;
+				n = new NodeWrite(ReadType.valueOf(a[0]), //
+						!Util.stringEquals(a[1], "null") ? Suite.parse(a[1]) : null, //
+						TermOp.valueOf(a[2]), //
+						children) //
+						.node;
 				// n = Suite.parse(s);
 			} else if (type == 'i')
 				n = Int.of(Integer.parseInt(s));
@@ -113,7 +114,7 @@ public class ReversePolish {
 
 		StringBuilder sb = new StringBuilder();
 
-		for (int i = list.size() - 1; i >= 0; i--)
+		for (int i = list.size() - 1; 0 <= i; i--)
 			sb.append(list.get(i) + '\n');
 
 		return sb.toString();

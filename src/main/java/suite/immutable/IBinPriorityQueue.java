@@ -115,7 +115,7 @@ public class IBinPriorityQueue<T> {
 
 			int size = list1.size();
 
-			if (size >= 2) {
+			if (2 <= size) {
 				tree = link(rank, list1.get(0), list1.get(1));
 				list1 = list1.subList(2, size);
 			} else

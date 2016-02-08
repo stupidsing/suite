@@ -14,7 +14,7 @@ import suite.util.Serialize.Serializer;
  *
  * The following must holds when using this class:
  *
- * pageSize >= sizeof(char) + 2 * sizeof(int) + branchFactor * branchPointerSize
+ * sizeof(char) + 2 * sizeof(int) + branchFactor * branchPointerSize <= pageSize
  *
  * where branchPointerSize = max(sizeof(int), sizeof(Value))
  */

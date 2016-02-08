@@ -68,8 +68,8 @@ public class SimpleCgiServer {
 		int length = 0;
 		int c;
 
-		while ((c = sis.read()) >= 0 && c != ':' && length < 65536)
-			if (c >= '0' && c <= '9')
+		while (0 <= (c = sis.read()) && c != ':' && length < 65536)
+			if ('0' <= c && c <= '9')
 				length = length * 10 + c - '0';
 			else
 				throw new RuntimeException("Invalid netstring length");

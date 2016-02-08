@@ -33,7 +33,7 @@ public class Subst {
 			int pos0 = s.indexOf(openSubst);
 			int pos1 = s.indexOf(closeSubst, pos0);
 
-			if (pos0 >= 0 && pos1 >= 0) {
+			if (0 <= pos0 && 0 <= pos1) {
 				String left = s.substring(0, pos0);
 				String key = s.substring(pos0 + 2, pos1);
 				String right = s.substring(pos1 + 1);

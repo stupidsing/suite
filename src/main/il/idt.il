@@ -64,7 +64,7 @@ declare idt-setup = function [] (
 				if (((& irq-sink) as pointer:int)/* != 0) then (irq-sink [irq-number,]) else ();
 
 				-- Sends end of interrupt signal
-				if (irq-number >= 8) then (outb [+xA0, +x20,]) else ();
+				if (8 <= irq-number) then (outb [+xA0, +x20,]) else ();
 				outb [+x20, +x20,];
 			) else (
 				log-byte "SPURIOUS INTERRUPT = " irq-number;

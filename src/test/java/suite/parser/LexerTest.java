@@ -20,7 +20,7 @@ public class LexerTest {
 		int nCharsRead;
 
 		try (FileReader reader = new FileReader("src/main/java/suite/parser/Lexer.java")) {
-			while ((nCharsRead = reader.read(buffer)) >= 0)
+			while (0 <= (nCharsRead = reader.read(buffer)))
 				sb.append(buffer, 0, nCharsRead);
 		}
 

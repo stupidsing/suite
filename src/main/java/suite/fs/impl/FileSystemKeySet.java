@@ -61,7 +61,7 @@ public class FileSystemKeySet {
 	public void remove(Bytes name) {
 		List<NameKey> keys = keyUtil.toNameKeys(name);
 
-		for (int i = keys.size() - 1; i >= 0; i--) {
+		for (int i = keys.size() - 1; 0 <= i; i--) {
 			NameKey key = keys.get(i);
 
 			if (key.size == 0) {

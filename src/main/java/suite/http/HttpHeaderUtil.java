@@ -34,7 +34,7 @@ public class HttpHeaderUtil {
 		char buffer[] = new char[size];
 		int nCharsRead;
 
-		while ((nCharsRead = br.read(buffer)) >= 0)
+		while (0 <= (nCharsRead = br.read(buffer)))
 			sb.append(buffer, 0, nCharsRead);
 
 		return HttpHeaderUtil.getAttrs(sb.toString());

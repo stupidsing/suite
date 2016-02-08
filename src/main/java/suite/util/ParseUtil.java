@@ -64,7 +64,7 @@ public class ParseUtil {
 				depth = checkDepth(depth, c);
 		}
 
-		if (!isThrow || depth >= 0)
+		if (!isThrow || 0 <= depth)
 			return quote == 0 && depth == 0;
 		else
 			throw new RuntimeException("Parse error");

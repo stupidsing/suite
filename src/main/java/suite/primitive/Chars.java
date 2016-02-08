@@ -112,7 +112,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public boolean isEmpty() {
-		return start >= end;
+		return end <= start;
 	}
 
 	public Chars pad(int size) {
@@ -126,7 +126,7 @@ public class Chars implements Iterable<Character> {
 	public Chars replace(Chars from, Chars to) {
 		CharsBuilder cb = new CharsBuilder();
 		int i0 = 0, i;
-		while ((i = indexOf(from, i0)) >= 0) {
+		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(subchars(i0, i));
 			cb.append(to);
 			i0 = i + from.size();
@@ -239,7 +239,7 @@ public class Chars implements Iterable<Character> {
 		Chars result = new Chars(cs, start, end);
 
 		// Avoid small pack of chars object keeping a large buffer
-		if (Boolean.FALSE && cs.length >= reallocSize && end - start < reallocSize / 4)
+		if (Boolean.FALSE && reallocSize <= cs.length && end - start < reallocSize / 4)
 			result = empty.append(result); // Do not share reference
 
 		return result;

@@ -62,10 +62,10 @@ public class ObstructionFreeStmTest {
 		private void work(List<Memory<Integer>> memories) throws InterruptedException {
 			int order = orders.get(step++);
 
-			if (order >= nMemories * 2) { // Commit or rollback
+			if (nMemories * 2 <= order) { // Commit or rollback
 				System.out.println(this + " COMMIT");
 				transaction.end(TransactionStatus.DONE____);
-			} else if (order >= nMemories) { // Write a memory
+			} else if (nMemories <= order) { // Write a memory
 				int mi = order - nMemories;
 				System.out.println(this + " WRITE " + mi);
 

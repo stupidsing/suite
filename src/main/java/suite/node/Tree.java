@@ -50,7 +50,7 @@ public class Tree extends Node {
 	public static Node of(Operator operator, List<Node> nodes) {
 		Node result = Atom.NIL;
 		int i = nodes.size();
-		while (--i >= 0)
+		while (0 <= --i)
 			result = of(operator, nodes.get(i), result);
 		return result;
 	}

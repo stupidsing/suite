@@ -27,7 +27,7 @@ public class AssemblePredicates {
 				i >>= 8;
 			}
 
-			for (int j = n - 1; j >= 0; j--)
+			for (int j = n - 1; 0 <= j; j--)
 				p = Tree.of(TermOp.AND___, Int.of(Byte.toUnsignedInt(bytes[j])), p);
 
 			return prover.bind(p0, p);

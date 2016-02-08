@@ -62,7 +62,7 @@ declare ne2k-send = function [buffer, len,] (
 
 	{ne2k-is-transmitted} = false;
 
-	declare padded-len = if (len >= 64) then len else 64;
+	declare padded-len = if (64 <= len) then len else 64;
 	outb [ne2k-io-base + +x05, padded-len,];
 	outb [ne2k-io-base + +x06, padded-len ushr 8,];
 	outb [ne2k-io-base + +x00, +x26,];

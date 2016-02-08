@@ -28,7 +28,7 @@ public class SoundEx {
 						&& index(a[p]) == index(a[p1 + 1]))
 					p1++;
 				else if (p1 + 2 < len //
-						&& "HW".indexOf(a[p1 + 1]) >= 0 //
+						&& 0 <= "HW".indexOf(a[p1 + 1]) //
 						&& index(a[p]) == index(a[p1 + 2]))
 					p1 += 2;
 				else
@@ -66,19 +66,19 @@ public class SoundEx {
 	}
 
 	private int index(char ch) {
-		if (CHARS0.indexOf(ch) >= 0)
+		if (0 <= CHARS0.indexOf(ch))
 			return 0;
-		else if (CHARS1.indexOf(ch) >= 0)
+		else if (0 <= CHARS1.indexOf(ch))
 			return 1;
-		else if (CHARS2.indexOf(ch) >= 0)
+		else if (0 <= CHARS2.indexOf(ch))
 			return 2;
-		else if (CHARS3.indexOf(ch) >= 0)
+		else if (0 <= CHARS3.indexOf(ch))
 			return 3;
-		else if (CHARS4.indexOf(ch) >= 0)
+		else if (0 <= CHARS4.indexOf(ch))
 			return 4;
-		else if (CHARS5.indexOf(ch) >= 0)
+		else if (0 <= CHARS5.indexOf(ch))
 			return 5;
-		else if (CHARS6.indexOf(ch) >= 0)
+		else if (0 <= CHARS6.indexOf(ch))
 			return 6;
 		else
 			throw new RuntimeException("Unknown soundex character " + ch);

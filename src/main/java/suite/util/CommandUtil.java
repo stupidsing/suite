@@ -26,7 +26,7 @@ public class CommandUtil<Command> {
 	}
 
 	public Pair<Command, String> recognize(String input, int start) {
-		for (int end = Math.min(start + maxLength, input.length()); end >= start; end--) {
+		for (int end = Math.min(start + maxLength, input.length()); start <= end; end--) {
 			String starts = input.substring(start, end);
 			Command command = commandByName.get(starts);
 			if (command != null)

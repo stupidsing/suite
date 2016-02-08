@@ -101,7 +101,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		private FindSlot(List<Slot> slots, Key key, boolean isInclusive) {
-			for (i = slots.size() - 1; i >= 0; i--)
+			for (i = slots.size() - 1; 0 <= i; i--)
 				if ((c = comparator.compare((slot = slots.get(i)).pivot, key)) <= 0)
 					if (isInclusive || c < 0)
 						break;
@@ -338,7 +338,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		private List<Slot> merge(List<Slot> slots0, List<Slot> slots1) {
 			List<Slot> merged;
 
-			if (slots0.size() + slots1.size() >= maxBranchFactor) {
+			if (maxBranchFactor <= slots0.size() + slots1.size()) {
 				List<Slot> leftSlots, rightSlots;
 
 				if (minBranchFactor < slots0.size()) {

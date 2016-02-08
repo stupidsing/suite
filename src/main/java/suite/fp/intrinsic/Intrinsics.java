@@ -79,7 +79,7 @@ public class Intrinsics {
 			try {
 				char buffer[] = new char[bufferSize];
 				int nCharsRead = reader.read(buffer);
-				if (nCharsRead >= 0)
+				if (0 <= nCharsRead)
 					return Chars.of(buffer, 0, nCharsRead);
 				else {
 					Util.closeQuietly(reader);

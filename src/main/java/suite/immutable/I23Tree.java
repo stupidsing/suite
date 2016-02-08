@@ -71,7 +71,7 @@ public class I23Tree<T> implements ITree<T> {
 
 			if (size < minBranchFactor)
 				throw new RuntimeException("Too few branches");
-			else if (size >= maxBranchFactor)
+			else if (maxBranchFactor <= size)
 				throw new RuntimeException("Too many branches");
 
 			for (Slot slot_ : slots) {
@@ -192,7 +192,7 @@ public class I23Tree<T> implements ITree<T> {
 	private List<Slot> merge(List<Slot> node0, List<Slot> node1) {
 		List<Slot> merged;
 
-		if (node0.size() + node1.size() >= maxBranchFactor) {
+		if (maxBranchFactor <= node0.size() + node1.size()) {
 			List<Slot> leftSlots, rightSlots;
 
 			if (minBranchFactor < node0.size()) {

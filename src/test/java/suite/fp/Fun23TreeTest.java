@@ -25,7 +25,7 @@ public class Fun23TreeTest {
 		System.out.println("OUT:\n" + out0);
 
 		int nPars0 = Read.from(Util.chars(out0)).filter(c -> c == '(').size();
-		assertTrue(nPars0 >= 3);
+		assertTrue(3 <= nPars0);
 
 		Node fp1 = Suite.substitute("using 23-TREE >> 0 until " + n / 2 + " | map {remove} | apply | {" + list100 + "}");
 		Node result1 = Suite.evaluateFun(Suite.fcc(fp1, false));
@@ -33,7 +33,7 @@ public class Fun23TreeTest {
 		System.out.println("OUT:\n" + out1);
 
 		int nPars1 = Read.from(Util.chars(out1)).filter(c -> c == '(').size();
-		assertTrue(nPars1 >= 3);
+		assertTrue(3 <= nPars1);
 	}
 
 }

@@ -59,7 +59,7 @@ public class HtmlUtil {
 			for (int index = 0; index < in.length(); index++) {
 				char ch = in.charAt(index);
 
-				if (ch < 32 || ch >= 128 || ch == '"' || ch == '<' || ch == '>') {
+				if (ch < 32 || 128 <= ch || ch == '"' || ch == '<' || ch == '>') {
 					String escaped = escapeTokenByChar.get("" + ch);
 
 					if (escaped != null)

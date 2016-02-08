@@ -90,14 +90,14 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 		while ((pos = checkNextEmptyExtent(read, pos)) < size) {
 			int pos0 = pos;
 			pos = checkEmptyExtent(read, pos, count);
-			if (pos - pos0 >= count)
+			if (count <= pos - pos0)
 				return pos0;
 		}
 		pos = 0;
 		while ((pos = checkNextEmptyExtent(read, pos)) < start) {
 			int pos0 = pos;
 			pos = checkEmptyExtent(read, pos, count);
-			if (pos - pos0 >= count)
+			if (count <= pos - pos0)
 				return pos0;
 		}
 		return -1;

@@ -128,7 +128,7 @@ public class FileUtil {
 
 	public static String read(Path path) throws IOException {
 		byte bytes[] = Files.readAllBytes(path);
-		boolean isBomExist = bytes.length >= 3 //
+		boolean isBomExist = 3 <= bytes.length //
 				&& bytes[0] == (byte) 0xEF //
 				&& bytes[1] == (byte) 0xBB //
 				&& bytes[2] == (byte) 0xBF;

@@ -28,7 +28,7 @@ try:
 	redraw(lines, (baserow, basecol), ((0, 0), (scsizerow, scsizecol)))
 
 	while True:
-		if filerow >= len(lines): lines.append('')
+		if len(lines) <= filerow: lines.append('')
 		nlines = len(lines)
 		line = lines[filerow]
 		cursorrow, cursorcol = filerow - baserow, filecol - basecol

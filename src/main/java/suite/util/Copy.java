@@ -35,7 +35,7 @@ public class Copy {
 		try (Reader in_ = in) {
 			int len;
 			char buffer[] = new char[bufferSize];
-			while ((len = in_.read(buffer)) >= 0)
+			while (0 <= (len = in_.read(buffer)))
 				out.write(buffer, 0, len);
 		}
 	}
@@ -72,7 +72,7 @@ public class Copy {
 		try (InputStream in_ = in) {
 			int len;
 			byte buffer[] = new byte[bufferSize];
-			while ((len = in_.read(buffer)) >= 0) {
+			while (0 <= (len = in_.read(buffer))) {
 				out.write(buffer, 0, len);
 				out.flush();
 			}

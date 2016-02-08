@@ -36,8 +36,8 @@ declare ffa-allocate0 = function [size,] (
 		{ffa-current} = next;
 	);
 
-	if (diff >= 0) then (
-		if (diff >= ffa-node-size + 4) then (
+	if (0 <= diff) then (
+		if (ffa-node-size + 4 <= diff) then (
 			dl-insert-next [ffa-current, ffa-current +offset (size + ffa-node-size),];
 			{next} = ffa-next [ffa-current,];
 		) else ();

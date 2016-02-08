@@ -1,6 +1,6 @@
 define gcd := a => b =>
-	if (b != 0) then
-		gcd {b} {if (a >= b) then (a % b) else a}
+	if (a != 0) then
+		gcd {if (a <= b) then (b % a) else b} {a}
 	else
 		a
 >>

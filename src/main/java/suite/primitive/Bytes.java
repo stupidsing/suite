@@ -113,7 +113,7 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public boolean isEmpty() {
-		return start >= end;
+		return end <= start;
 	}
 
 	public Bytes pad(int size) {
@@ -127,7 +127,7 @@ public class Bytes implements Iterable<Byte> {
 	public Bytes replace(Bytes from, Bytes to) {
 		BytesBuilder bb = new BytesBuilder();
 		int i0 = 0, i;
-		while ((i = indexOf(from, i0)) >= 0) {
+		while (0 <= (i = indexOf(from, i0))) {
 			bb.append(subbytes(i0, i));
 			bb.append(to);
 			i0 = i + from.size();
@@ -240,7 +240,7 @@ public class Bytes implements Iterable<Byte> {
 		Bytes result = Bytes.of(bs, start, end);
 
 		// Avoid small pack of bytes object keeping a large buffer
-		if (Boolean.FALSE && bs.length >= reallocSize && end - start < reallocSize / 4)
+		if (Boolean.FALSE && reallocSize <= bs.length && end - start < reallocSize / 4)
 			result = empty.append(result); // Do not share reference
 
 		return result;

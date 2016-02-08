@@ -99,7 +99,7 @@ declare gc-allocate0 = function [pointer:gc-class class,] (
 		ok || gc-gc [];
 	);
 
-	if (diff >= gc-node-size + 4) then (
+	if (gc-node-size + 4 <= diff) then (
 		declare node1 = (gc-current +offset (size + gc-node-size)) as pointer:gc-node;
 		gc-create [node1, class,];
 		ll-insert-next [gc-current, node1,];
