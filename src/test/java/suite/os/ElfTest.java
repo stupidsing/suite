@@ -16,7 +16,7 @@ public class ElfTest {
 		String program = "" //
 				+ "asm _ MOV (EBP, ESP);" //
 				+ "declare inc = function [i0, out ix,] ( {ix} = i0 + 1; );" //
-				+ "declare j as int;" //
+				+ "declare int j;" //
 				+ "inc [41, out j,];" //
 				+ "j;" //
 				+ "asm _ MOV (EBX, EAX);" //
