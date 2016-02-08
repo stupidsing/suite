@@ -4,6 +4,7 @@ cut -d' ' -f2 |
 tr -d \; |
 sort |
 uniq |
+sed 's#ch.qos.logback.*#<groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId>#g' |
 sed 's#com.fasterxml.jackson.databind.*#<groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId>#g' |
 sed 's#com.jcraft.jsch.*#<groupId>com.jcraft</groupId><artifactId>jsch</artifactId>#g' |
 sed 's#com.nativelibs4java.bridj.*#<groupId>com.nativelibs4java</groupId><artifactId>bridj</artifactId>#g' |
@@ -12,7 +13,9 @@ sed 's#jline.console.*#<groupId>jline</groupId><artifactId>jline</artifactId>#g'
 sed 's#org.apache.commons.logging.*#<groupId>commons-logging</groupId><artifactId>commons-logging</artifactId>#g' |
 sed 's#org.apache.log4j.*#<groupId>log4j</groupId><artifactId>log4j</artifactId>#g' |
 sed 's#org.junit.*#<groupId>junit</groupId><artifactId>junit</artifactId>#g' |
-sort | uniq |
+sed 's#org.slf4j.*#<groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId>#g' |
+sort |
+uniq |
 grep artifactId |
 while read DEP; do
   echo -n "<dependency>${DEP}<version>LATEST</version></dependency>"
