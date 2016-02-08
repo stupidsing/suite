@@ -1,4 +1,9 @@
-DEPS=$(find src/ -name \*.java | xargs grep -h ^import | cut -d' ' -f2 | tr -d \; | sort | uniq |
+DEPS=$(find src/ -name \*.java |
+xargs grep -h ^import |
+cut -d' ' -f2 |
+tr -d \; |
+sort |
+uniq |
 sed 's#com.fasterxml.jackson.databind.*#<groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId>#g' |
 sed 's#com.jcraft.jsch.*#<groupId>com.jcraft</groupId><artifactId>jsch</artifactId>#g' |
 sed 's#com.nativelibs4java.bridj.*#<groupId>com.nativelibs4java</groupId><artifactId>bridj</artifactId>#g' |
@@ -17,4 +22,5 @@ mv pom.xml pom0.xml &&
 cat pom0.xml |
 tr '\n' '@' |
 sed "s#<dependencies>.*</dependencies>#<dependencies>${DEPS}</dependencies>#g" |
-tr '@' '\n' > pom.xml
+tr '@' '\n' |
+xmllint --format - > pom.xml
