@@ -12,16 +12,21 @@ public class PatchDataSegment {
 	public final DataSegment dataSegmentOrg;
 	public final DataSegment dataSegmentNew;
 
-	public PatchDataSegment(int startOrg, int startNew, Bytes bytes) {
-		this(startOrg, startNew, bytes, bytes);
+	public static PatchDataSegment of(int startOrg, int startNew, Bytes bytes) {
+		return of(startOrg, startNew, bytes, bytes);
 	}
 
-	public PatchDataSegment(int startOrg, int startNew, Bytes bytesOrg, Bytes bytesNew) {
-		this(new DataSegment(startOrg, startOrg + bytesOrg.size(), bytesOrg) //
-				, new DataSegment(startNew, startNew + bytesNew.size(), bytesNew));
+	public static PatchDataSegment of(int startOrg, int startNew, Bytes bytesOrg, Bytes bytesNew) {
+		return of( //
+				new DataSegment(startOrg, startOrg + bytesOrg.size(), bytesOrg), //
+				new DataSegment(startNew, startNew + bytesNew.size(), bytesNew));
 	}
 
-	public PatchDataSegment(DataSegment dataSegmentOrg, DataSegment dataSegmentNew) {
+	public static PatchDataSegment of(DataSegment dataSegmentOrg, DataSegment dataSegmentNew) {
+		return new PatchDataSegment(dataSegmentOrg, dataSegmentNew);
+	}
+
+	private PatchDataSegment(DataSegment dataSegmentOrg, DataSegment dataSegmentNew) {
 		this.dataSegmentOrg = dataSegmentOrg;
 		this.dataSegmentNew = dataSegmentNew;
 	}

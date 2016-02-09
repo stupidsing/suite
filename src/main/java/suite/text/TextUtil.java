@@ -40,15 +40,15 @@ public class TextUtil {
 		int n0 = 0, n1 = sn.start, n2 = sn.end;
 
 		if (!so.isEmpty() && !sn.isEmpty()) {
-			PatchDataSegment pds0 = new PatchDataSegment(o0, n0 //
+			PatchDataSegment pds0 = PatchDataSegment.of(o0, n0 //
 					, bytesOrg.subbytes(o0, o1) //
 					, bytesNew.subbytes(n0, n1));
 
-			PatchDataSegment pds1 = new PatchDataSegment(o1, n1 //
+			PatchDataSegment pds1 = PatchDataSegment.of(o1, n1 //
 					, bytesOrg.subbytes(o1, o2) //
 			);
 
-			PatchDataSegment pds2 = new PatchDataSegment(o2, n2 //
+			PatchDataSegment pds2 = PatchDataSegment.of(o2, n2 //
 					, bytesOrg.subbytes(o2) //
 					, bytesNew.subbytes(n2));
 
@@ -60,7 +60,7 @@ public class TextUtil {
 			return new PatchData(pdsList);
 		} else
 			return new PatchData(Arrays.asList( //
-					new PatchDataSegment(0, 0, bytesOrg, bytesNew)));
+					PatchDataSegment.of(0, 0, bytesOrg, bytesNew)));
 	}
 
 	private PatchData diff(PatchDataSegment patchDataSegment) {
@@ -135,8 +135,7 @@ public class TextUtil {
 		// target sections, the head parts can be merged
 		int dsxOrgLength = dsxOrg.length(), dsxNewLength = dsxNew.length();
 		int dsyOrgLength = dsyOrg.length(), dsyNewLength = dsyNew.length();
-		boolean isMappingsAgree = dsxOrg.start == dsyOrg.start
-				&& dsxOrgLength <= dsyOrgLength //
+		boolean isMappingsAgree = dsxOrg.start == dsyOrg.start && dsxOrgLength <= dsyOrgLength //
 				&& dsxNewLength <= dsyNewLength //
 				&& Objects.equals(dsxOrg.bytes, dsyOrg.bytes.subbytes(0, dsxOrgLength))
 				&& Objects.equals(dsxNew.bytes, dsyNew.bytes.subbytes(0, dsyOrgLength));
@@ -144,7 +143,7 @@ public class TextUtil {
 		if (isSeparate || isUnchanged || isMappingsAgree) {
 			DataSegment dsOrg1 = dsxOrg.right(start);
 			DataSegment dsNew1 = dsxNew.right(start + mdx.offset);
-			pdsList.add(new PatchDataSegment(dsOrg1, dsNew1.adjust(mdy.offset)));
+			pdsList.add(PatchDataSegment.of(dsOrg1, dsNew1.adjust(mdy.offset)));
 
 			// If only the head part can merge, add back tail parts to the lists
 			if (isMappingsAgree) {
@@ -152,9 +151,9 @@ public class TextUtil {
 				DataSegment dsyNew0 = dsyNew.left(dsyNew.start + dsxNewLength);
 				DataSegment dsyOrg1 = dsyOrg.right(dsxOrg.end);
 				DataSegment dsyNew1 = dsyNew.right(dsyNew.start + dsxNewLength);
-				mdy.patchDataSegments.set(mdy.pos, new PatchDataSegment(dsyOrg0, dsyNew0));
+				mdy.patchDataSegments.set(mdy.pos, PatchDataSegment.of(dsyOrg0, dsyNew0));
 				mdy.next();
-				mdy.patchDataSegments.add(mdy.pos, new PatchDataSegment(dsyOrg1, dsyNew1));
+				mdy.patchDataSegments.add(mdy.pos, PatchDataSegment.of(dsyOrg1, dsyNew1));
 			}
 
 			mdx.next();
