@@ -57,9 +57,9 @@ public class TextUtil {
 			pdsList.add(pds1);
 			pdsList.addAll(diff(pds2).patchDataSegments);
 
-			return new PatchData(pdsList);
+			return PatchData.of(pdsList);
 		} else
-			return new PatchData(Arrays.asList( //
+			return PatchData.of(Arrays.asList( //
 					PatchDataSegment.of(0, 0, bytesOrg, bytesNew)));
 	}
 
@@ -72,7 +72,7 @@ public class TextUtil {
 		for (PatchDataSegment pds : subPatchData.patchDataSegments)
 			pdsList.add(pds.adjust(dsOrg.start, dsNew.start));
 
-		return new PatchData(pdsList);
+		return PatchData.of(pdsList);
 	}
 
 	public Bytes patch(Bytes bytes, PatchData patchData) {
@@ -114,7 +114,7 @@ public class TextUtil {
 			start = isAdvanceX ? advance(mdx, mdy, start, merged) : advance(mdy, mdx, start, merged);
 		}
 
-		return new PatchData(merged);
+		return PatchData.of(merged);
 	}
 
 	private int advance(MergeData mdx, MergeData mdy, int start, List<PatchDataSegment> pdsList) throws ConflictException {

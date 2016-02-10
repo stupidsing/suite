@@ -6,7 +6,11 @@ public class DataSegment extends Segment {
 
 	public final Bytes bytes;
 
-	public DataSegment(int start, int end, Bytes bytes) {
+	public static DataSegment of(int start, int end, Bytes bytes) {
+		return new DataSegment(start, end, bytes);
+	}
+
+	private DataSegment(int start, int end, Bytes bytes) {
 		super(start, end);
 		this.bytes = bytes;
 	}

@@ -7,7 +7,11 @@ public class PatchData implements Iterable<PatchDataSegment> {
 
 	public final List<PatchDataSegment> patchDataSegments;
 
-	public PatchData(List<PatchDataSegment> patchDataSegments) {
+	public static PatchData of(List<PatchDataSegment> patchDataSegments) {
+		return new PatchData(patchDataSegments);
+	}
+
+	private PatchData(List<PatchDataSegment> patchDataSegments) {
 		this.patchDataSegments = patchDataSegments;
 	}
 

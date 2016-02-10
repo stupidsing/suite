@@ -18,8 +18,8 @@ public class PatchDataSegment {
 
 	public static PatchDataSegment of(int startOrg, int startNew, Bytes bytesOrg, Bytes bytesNew) {
 		return of( //
-				new DataSegment(startOrg, startOrg + bytesOrg.size(), bytesOrg), //
-				new DataSegment(startNew, startNew + bytesNew.size(), bytesNew));
+				DataSegment.of(startOrg, startOrg + bytesOrg.size(), bytesOrg), //
+				DataSegment.of(startNew, startNew + bytesNew.size(), bytesNew));
 	}
 
 	public static PatchDataSegment of(DataSegment dataSegmentOrg, DataSegment dataSegmentNew) {
