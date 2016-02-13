@@ -36,8 +36,8 @@ public class TextUtil {
 		Lccs lccs = new Lccs();
 		Pair<Segment, Segment> diff = lccs.lccs(bytesOld, bytesNew);
 		Segment so = diff.t0, sn = diff.t1;
-		int o0 = 0, o1 = so.start, o2 = so.end;
-		int n0 = 0, n1 = sn.start, n2 = sn.end;
+		int o0 = 0, o1 = so.start, o2 = so.end, ox = bytesOld.size();
+		int n0 = 0, n1 = sn.start, n2 = sn.end, nx = bytesNew.size();
 
 		if (!so.isEmpty() && !sn.isEmpty()) {
 			PatchDataSegment pds0 = PatchDataSegment.of(o0, n0 //
@@ -49,8 +49,8 @@ public class TextUtil {
 			);
 
 			PatchDataSegment pds2 = PatchDataSegment.of(o2, n2 //
-					, bytesOld.subbytes(o2) //
-					, bytesNew.subbytes(n2));
+					, bytesOld.subbytes(o2, ox) //
+					, bytesNew.subbytes(n2, nx));
 
 			List<PatchDataSegment> pdsList = new ArrayList<>();
 			pdsList.addAll(diff(pds0).patchDataSegments);
