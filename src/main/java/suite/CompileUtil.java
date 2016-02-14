@@ -6,7 +6,7 @@ import java.util.List;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
-import suite.lp.search.SewingProverBuilder2;
+import suite.lp.search.SewingProverBuilder;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
 
@@ -29,7 +29,7 @@ public class CompileUtil {
 	public boolean precompile(String libraryName, ProverConfig pc) {
 		System.out.println("Pre-compiling [" + libraryName + "]...");
 
-		Builder builder = new SewingProverBuilder2(pc);
+		Builder builder = new SewingProverBuilder(pc);
 		RuleSet rs = funCompilerRuleSet();
 		boolean result = Suite.proveLogic(builder, rs, "fc-precompile-lib " + libraryName);
 
