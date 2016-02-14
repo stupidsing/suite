@@ -11,7 +11,6 @@ import suite.fp.FunRbTreeTest;
 import suite.ip.ImperativeCompiler;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
-import suite.lp.sewing.impl.SewingProverImpl;
 import suite.primitive.Bytes;
 
 public class FailedTests {
@@ -91,14 +90,6 @@ public class FailedTests {
 	// @Test
 	public void testRecursiveType() {
 		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (:t => rb-tree {:t}) of 1");
-	}
-
-	// NullPointerException
-	@Test
-	public void testQueryRewrite() {
-		RuleSet rs = Suite.createRuleSet();
-		Suite.addRule(rs, "ic-parse .params (METHOD .params do1)");
-		new SewingProverImpl(rs).compile(Suite.parse("ic-parse ([a,] a) .v")).apply(new ProverConfig());
 	}
 
 	// Takes 11 seconds to type check
