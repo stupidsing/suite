@@ -60,6 +60,12 @@ public class FailedTests {
 		Suite.useLibraries(() -> Suite.evaluateFun("using MONAD >> 0", false));
 	}
 
+	// Unmatched types
+	@Test
+	public void testPrecompile() {
+		Suite.precompile("CHARS", new ProverConfig());
+	}
+
 	// (Expected) infinite loop.
 	// (Actual) short boolean evaluation in Prover skipped the loop:
 	// alt = andTree(bt, orTree(andTree(right, rem), alt));
