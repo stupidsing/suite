@@ -29,7 +29,7 @@ import suite.util.Util;
 
 public class EvaluateUtil {
 
-	private Fun<Boolean, Node> fccNodeFun = Memoize.byInput(isLazy -> {
+	private Fun<Boolean, Node> fccNodeFun = Memoize.fun(isLazy -> {
 		Atom mode = Atom.of(isLazy ? "LAZY" : "EAGER");
 
 		return new Specializer().specialize(Suite.substitute("" //
@@ -38,7 +38,7 @@ public class EvaluateUtil {
 
 	// Using level 1 CompiledProverBuilder would break the test case
 	// FunRbTreeTest. It would blow up the stack in InstructionExecutor
-	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = Memoize.byInput(pair -> {
+	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = Memoize.fun(pair -> {
 		Builder builder = new SewingProverBuilder(pair.t0);
 		// Builder builder = new InterpretedProverBuilder(pair.t0);
 		// Builder builder = new CompiledProverBuilder.level1(pair.t0);

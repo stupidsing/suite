@@ -17,10 +17,11 @@ import suite.node.io.TermOp;
 import suite.node.util.TermKey;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
+import suite.util.Memoize;
 
 public class FindPredicates {
 
-	private static Map<TermKey, Node> memoizedPredicates = new ConcurrentHashMap<>();
+	private static Map<TermKey, Source<Node>> memoizedPredicates = new ConcurrentHashMap<>();
 
 	public BuiltinPredicate findAll = PredicateUtil
 			.p3((prover, var, goal, results) -> prover.bind(results, findAll(prover, var, goal)));
@@ -28,7 +29,8 @@ public class FindPredicates {
 	// memoize is not re-entrant due to using computeIfAbsent()
 	public BuiltinPredicate findAllMemoized = PredicateUtil.p3((prover, var, goal, results) -> {
 		TermKey key = new TermKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
-		return prover.bind(results, memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
+		Node results_ = memoizedPredicates.computeIfAbsent(key, k -> Memoize.future(() -> findAll(prover, var, goal))).source();
+		return prover.bind(results, results_);
 	});
 
 	public BuiltinPredicate findAllMemoizedClear = PredicateUtil.run(() -> memoizedPredicates.clear());

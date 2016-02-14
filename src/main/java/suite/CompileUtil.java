@@ -12,7 +12,7 @@ import suite.util.Memoize;
 
 public class CompileUtil {
 
-	private Fun<List<String>, RuleSet> createRuleSetFun = Memoize.byInput(Suite::createRuleSet);
+	private Fun<List<String>, RuleSet> createRuleSetFun = Memoize.fun(Suite::createRuleSet);
 
 	public synchronized RuleSet funCompilerRuleSet() {
 		return createRuleSetFun.apply(Arrays.asList("auto.sl", "fc/fc.sl"));

@@ -3,6 +3,7 @@ package suite.util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -13,12 +14,12 @@ public class Memoize {
 		EMPTY__, INUSE_, FLAGGED
 	}
 
-	public static <I, O> Fun<I, O> byInput(Fun<I, O> fun) {
+	public static <I, O> Fun<I, O> fun(Fun<I, O> fun) {
 		Map<I, O> results = new ConcurrentHashMap<>();
 		return in -> results.computeIfAbsent(in, in_ -> fun.apply(in_));
 	}
 
-	public static <I, O> Fun<I, O> byInput(Class<O> clazz, Fun<I, O> fun, int size) {
+	public static <I, O> Fun<I, O> funLimited(Class<O> clazz, Fun<I, O> fun, int size) {
 		return new Fun<I, O>() {
 			class R {
 				State state = State.EMPTY__;
@@ -58,6 +59,32 @@ public class Memoize {
 		};
 	}
 
+	public static <I, O> Fun<I, O> funReentrant(Fun<I, O> fun) {
+		Map<I, Source<O>> results = new ConcurrentHashMap<>();
+		return in -> results.computeIfAbsent(in, in_ -> () -> fun.apply(in_)).source();
+	}
+
+	public static <T> Source<T> future(Source<T> source) {
+		return new Source<T>() {
+			private AtomicReference<Thread> ar = new AtomicReference<>();
+			private volatile T result;
+
+			public T source() {
+				if (result == null)
+					synchronized (this) {
+						if (ar.compareAndSet(null, Thread.currentThread())) {
+							result = source.source();
+							notifyAll();
+							ar.set(null);
+						}
+						while (result == null)
+							Util.wait(this);
+					}
+				return result;
+			}
+		};
+	}
+
 	public static <T> Source<T> memoize(Source<T> source) {
 		return new Source<T>() {
 			private T result;
@@ -66,10 +93,6 @@ public class Memoize {
 				return result = result != null ? result : source.source();
 			}
 		};
-	}
-
-	public static <T> Source<T> timed(Source<T> source) {
-		return timed(source, 30 * 1000l);
 	}
 
 	public static <T> Source<T> timed(Source<T> source, long duration) {

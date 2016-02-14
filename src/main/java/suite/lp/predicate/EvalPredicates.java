@@ -39,7 +39,7 @@ public class EvalPredicates {
 	private Atom SHL = Atom.of("shl");
 	private Atom SHR = Atom.of("shr");
 	private Comparer comparer = Comparer.comparer;
-	private Fun<String, ScriptEngine> engines = Memoize.byInput(new ScriptEngineManager()::getEngineByExtension);
+	private Fun<String, ScriptEngine> engines = Memoize.fun(new ScriptEngineManager()::getEngineByExtension);
 
 	private static Random random = new Random();
 
