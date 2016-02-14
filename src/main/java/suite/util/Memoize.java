@@ -36,29 +36,24 @@ public class Memoize {
 			}
 
 			public synchronized O apply(I in) {
-				O result;
 				R r = map.get(in);
 
 				if (r == null) {
-					while ((r = array[p]).state != State.FLAGGED) {
+					while ((r = array[p]).state == State.FLAGGED) {
 						r.state = State.INUSE_;
-						p = size < ++p ? p - size : p;
+						p = (p + 1) % size;
 					}
 
 					if (r.state == State.INUSE_)
 						map.remove(r.input);
-					else
-						r.state = State.INUSE_;
 
 					r.input = in;
-					r.output = result = fun.apply(in);
+					r.output = fun.apply(in);
 					map.put(in, r);
-				} else {
-					r.state = State.FLAGGED;
-					result = r.output;
 				}
 
-				return result;
+				r.state = State.FLAGGED;
+				return r.output;
 			}
 		};
 	}
