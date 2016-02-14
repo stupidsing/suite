@@ -62,7 +62,7 @@ public class FailedTests {
 	// Unmatched types
 	@Test
 	public void testPrecompile() {
-		Suite.precompile("CHARS", new ProverConfig());
+		assertTrue(Suite.precompile("CHARS", new ProverConfig()));
 	}
 
 	// (Expected) infinite loop.

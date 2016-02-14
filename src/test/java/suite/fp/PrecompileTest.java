@@ -1,5 +1,7 @@
 package suite.fp;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,14 +34,18 @@ public class PrecompileTest {
 
 	@Test
 	public void testPrecompileAll() {
-		Read.from(allLibraries).sink(lib -> Suite.precompile(lib, new ProverConfig()));
+		Read.from(allLibraries).sink(lib -> assertTrue(Suite.precompile(lib, new ProverConfig())));
 	}
 
 	@Test
 	public void testThreeTimes() {
 		System.out.println(new Profiler().profile(() -> {
 			for (int i = 0; i < 3; i++)
-				LogUtil.duration("", () -> Suite.precompile("STANDARD", new ProverConfig()));
+				LogUtil.duration("", () -> {
+					boolean b = Suite.precompile("STANDARD", new ProverConfig());
+					assertTrue(b);
+					return b;
+				});
 		}));
 	}
 
