@@ -177,12 +177,12 @@ public class To {
 		return To.source(Arrays.asList(Bytes.of(data.getBytes(FileUtil.charset))));
 	}
 
-	public static String string(byte bs[]) {
-		return new String(bs, FileUtil.charset);
-	}
-
 	public static String string(Bytes bytes) {
 		return string(bytes.toBytes());
+	}
+
+	public static String string(byte bs[]) {
+		return new String(bs, FileUtil.charset);
 	}
 
 	public static String string(long time) {
