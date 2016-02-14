@@ -20,6 +20,8 @@ import suite.util.Util.ExecutableProgram;
  */
 public class CompareZip extends ExecutableProgram {
 
+	private TextUtil textUtil = new TextUtil();
+
 	public static void main(String args[]) throws IOException {
 		Util.run(CompareZip.class, args);
 	}
@@ -45,7 +47,7 @@ public class CompareZip extends ExecutableProgram {
 			if (b) {
 				Bytes bytes0 = To.bytes(zf0.getInputStream(e0));
 				Bytes bytes1 = To.bytes(zf1.getInputStream(e1));
-				b = !new TextUtil().diff(bytes0, bytes1).isChanged();
+				b = !textUtil.isDiff(textUtil.diff(bytes0, bytes1));
 				if (!b)
 					System.out.println(name + " differs");
 			} else if (e0 == null)

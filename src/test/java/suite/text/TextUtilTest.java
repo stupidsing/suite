@@ -8,12 +8,12 @@ import org.junit.Test;
 
 import suite.adt.Pair;
 import suite.primitive.Bytes;
-import suite.text.TextUtil1.ConflictException;
+import suite.text.TextUtil.ConflictException;
 import suite.util.To;
 
 public class TextUtilTest {
 
-	private TextUtil1 textUtil = new TextUtil1();
+	private TextUtil textUtil = new TextUtil();
 
 	@Test
 	public void test() throws ConflictException {

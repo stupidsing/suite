@@ -9,6 +9,9 @@ import suite.adt.Pair;
 import suite.lcs.Lccs;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.streamlet.Read;
+import suite.util.To;
+import suite.util.Util;
 
 public class TextUtil {
 
@@ -16,148 +19,132 @@ public class TextUtil {
 		private static final long serialVersionUID = 1l;
 	}
 
-	private class MergeData {
-		private List<PatchDataSegment> patchDataSegments;
-		private int pos;
-		private int offset;
-
-		public MergeData(List<PatchDataSegment> patchDataSegments) {
-			this.patchDataSegments = new ArrayList<>(patchDataSegments);
-		}
-
-		public void next() {
-			PatchDataSegment pds = patchDataSegments.get(pos);
-			offset += pds.dataSegmentNew.length() - pds.dataSegmentOld.length();
-			pos++;
-		}
+	public Bytes merge(Bytes bytes, Bytes bytesx, Bytes bytesy) throws ConflictException {
+		List<Pair<Bytes, Bytes>> pairsx = diff(bytes, bytesx);
+		List<Pair<Bytes, Bytes>> pairsy = diff(bytes, bytesy);
+		return patch(bytes, merge(pairsx, pairsy));
 	}
 
-	public PatchData diff(Bytes bytesOld, Bytes bytesNew) {
+	public boolean isDiff(List<Pair<Bytes, Bytes>> pairs) {
+		return Read.from(pairs).isAny(pair -> pair.t0 != pair.t1);
+	}
+
+	public List<Pair<Bytes, Bytes>> diff(Bytes bytesx, Bytes bytesy) {
 		Lccs lccs = new Lccs();
-		Pair<Segment, Segment> diff = lccs.lccs(bytesOld, bytesNew);
-		Segment so = diff.t0, sn = diff.t1;
-		int o0 = 0, o1 = so.start, o2 = so.end, ox = bytesOld.size();
-		int n0 = 0, n1 = sn.start, n2 = sn.end, nx = bytesNew.size();
+		Pair<Segment, Segment> diff = lccs.lccs(bytesx, bytesy);
+		Segment sx = diff.t0, sy = diff.t1;
+		int x0 = 0, x1 = sx.start, x2 = sx.end, xx = bytesx.size();
+		int y0 = 0, y1 = sy.start, y2 = sy.end, yx = bytesy.size();
+		Bytes common = bytesx.subbytes(x1, x2);
 
-		if (!so.isEmpty() && !sn.isEmpty()) {
-			PatchDataSegment pds0 = PatchDataSegment.of(o0, n0 //
-					, bytesOld.subbytes(o0, o1) //
-					, bytesNew.subbytes(n0, n1));
-
-			PatchDataSegment pds1 = PatchDataSegment.of(o1, n1 //
-					, bytesOld.subbytes(o1, o2) //
-			);
-
-			PatchDataSegment pds2 = PatchDataSegment.of(o2, n2 //
-					, bytesOld.subbytes(o2, ox) //
-					, bytesNew.subbytes(n2, nx));
-
-			List<PatchDataSegment> pdsList = new ArrayList<>();
-			pdsList.addAll(diff(pds0).patchDataSegments);
-			pdsList.add(pds1);
-			pdsList.addAll(diff(pds2).patchDataSegments);
-
-			return PatchData.of(pdsList);
-		} else
-			return PatchData.of(Arrays.asList( //
-					PatchDataSegment.of(0, 0, bytesOld, bytesNew)));
+		if (!sx.isEmpty() && !sy.isEmpty()) {
+			List<Pair<Bytes, Bytes>> patch = new ArrayList<>();
+			patch.addAll(diff(bytesx.subbytes(x0, x1), bytesy.subbytes(y0, y1)));
+			patch.add(Pair.of(common, common));
+			patch.addAll(diff(bytesx.subbytes(x2, xx), bytesy.subbytes(y2, yx)));
+			return patch;
+		} else if (!bytesx.isEmpty() || !bytesy.isEmpty())
+			return Arrays.asList(Pair.of(bytesx, bytesy));
+		else
+			return new ArrayList<>();
 	}
 
-	private PatchData diff(PatchDataSegment patchDataSegment) {
-		DataSegment dsOld = patchDataSegment.dataSegmentOld;
-		DataSegment dsNew = patchDataSegment.dataSegmentNew;
-		PatchData subPatchData = diff(dsOld.bytes, dsNew.bytes);
-		List<PatchDataSegment> pdsList = new ArrayList<>();
-
-		for (PatchDataSegment pds : subPatchData.patchDataSegments)
-			pdsList.add(pds.adjust(dsOld.start, dsNew.start));
-
-		return PatchData.of(pdsList);
-	}
-
-	public Bytes patch(Bytes bytes, PatchData patchData) {
-		BytesBuilder bytesBuilder = new BytesBuilder();
-
-		for (PatchDataSegment pds : patchData)
-			if (!pds.isChanged()) {
-				DataSegment dso = pds.dataSegmentOld;
-				bytesBuilder.append(bytes.subbytes(dso.start, dso.end));
-			} else
-				bytesBuilder.append(pds.dataSegmentNew.bytes);
-
-		return bytesBuilder.toBytes();
-	}
-
-	public PatchData merge(PatchData patchDataX, PatchData patchDataY) throws ConflictException {
-		List<PatchDataSegment> merged = new ArrayList<>();
-		MergeData mdx = new MergeData(patchDataX.patchDataSegments);
-		MergeData mdy = new MergeData(patchDataY.patchDataSegments);
-		boolean isAvailX, isAvailY;
-		int start = 0;
-
-		while ((isAvailX = mdx.pos < mdx.patchDataSegments.size()) && (isAvailY = mdy.pos < mdy.patchDataSegments.size())) {
-			boolean isAdvanceX;
-
-			if (isAvailX && isAvailY) {
-				PatchDataSegment pdsx = mdx.patchDataSegments.get(mdx.pos);
-				PatchDataSegment pdsy = mdy.patchDataSegments.get(mdy.pos);
-				int endx = pdsx.dataSegmentOld.end;
-				int endy = pdsy.dataSegmentOld.end;
-
-				if (endx == endy)
-					isAdvanceX = !pdsy.isChanged();
-				else
-					isAdvanceX = endx < endy;
-			} else
-				isAdvanceX = isAvailX;
-
-			start = isAdvanceX ? advance(mdx, mdy, start, merged) : advance(mdy, mdx, start, merged);
+	public Bytes patch(Bytes bytes, List<Pair<Bytes, Bytes>> pairs) throws ConflictException {
+		BytesBuilder bb = new BytesBuilder();
+		int p = 0;
+		for (Pair<Bytes, Bytes> pair : pairs) {
+			int p1 = p + pair.t0.size();
+			if (Objects.equals(bytes.subbytes(p, p1), pair.t0))
+				bb.append(pair.t1);
+			else
+				throw new ConflictException();
+			p = p1;
 		}
-
-		return PatchData.of(merged);
+		return bb.toBytes();
 	}
 
-	private int advance(MergeData mdx, MergeData mdy, int start, List<PatchDataSegment> pdsList) throws ConflictException {
-		PatchDataSegment pdsx = mdx.patchDataSegments.get(mdx.pos);
-		PatchDataSegment pdsy = mdy.patchDataSegments.get(mdy.pos);
-		DataSegment dsxOld = pdsx.dataSegmentOld, dsxNew = pdsx.dataSegmentNew;
-		DataSegment dsyOld = pdsy.dataSegmentOld, dsyNew = pdsy.dataSegmentNew;
+	public List<Pair<Bytes, Bytes>> merge(List<Pair<Bytes, Bytes>> pairsx, List<Pair<Bytes, Bytes>> pairsy)
+			throws ConflictException {
+		return merge(pairsx, pairsy, false);
+	}
 
-		// If both patches do not overlap in original sections,
-		// they can be merged
-		boolean isSeparate = dsxOld.end <= dsyOld.start;
+	public List<Pair<Bytes, Bytes>> merge( //
+			List<Pair<Bytes, Bytes>> pairsx, List<Pair<Bytes, Bytes>> pairsy, boolean isDetectSamePatch) throws ConflictException {
+		boolean isEmptyx = pairsx.isEmpty();
+		boolean isEmptyy = pairsy.isEmpty();
 
-		// If the longer patch segment is not changing anything,
-		// they can be merged
-		boolean isUnchanged = !pdsy.isChanged();
+		if (!isEmptyx || !isEmptyy) {
+			Pair<Bytes, Bytes> phx = !isEmptyx ? pairsx.get(0) : Pair.of(Bytes.empty, Bytes.empty);
+			Pair<Bytes, Bytes> phy = !isEmptyy ? pairsy.get(0) : Pair.of(Bytes.empty, Bytes.empty);
+			List<Pair<Bytes, Bytes>> ptx = !isEmptyx ? Util.right(pairsx, 1) : pairsx;
+			List<Pair<Bytes, Bytes>> pty = !isEmptyy ? Util.right(pairsy, 1) : pairsy;
 
-		// If both patches have same starting (head) content in original and
-		// target sections, the head parts can be merged
-		int dsxOldLength = dsxOld.length(), dsxNewLength = dsxNew.length();
-		int dsyOldLength = dsyOld.length(), dsyNewLength = dsyNew.length();
-		boolean isMappingsAgree = dsxOld.start == dsyOld.start && dsxOldLength <= dsyOldLength //
-				&& dsxNewLength <= dsyNewLength //
-				&& Objects.equals(dsxOld.bytes, dsyOld.bytes.subbytes(0, dsxOldLength))
-				&& Objects.equals(dsxNew.bytes, dsyNew.bytes.subbytes(0, dsyOldLength));
+			int c = Math.min(phx.t0.size(), phy.t0.size());
+			Bytes commonx = phx.t0.subbytes(0, c);
+			Bytes commony = phy.t0.subbytes(0, c);
 
-		if (isSeparate || isUnchanged || isMappingsAgree) {
-			DataSegment dsOld1 = dsxOld.right(start);
-			DataSegment dsNew1 = dsxNew.right(start + mdx.offset);
-			pdsList.add(PatchDataSegment.of(dsOld1, dsNew1.adjust(mdy.offset)));
+			if (Objects.equals(commonx, commony)) {
+				int s0, s1;
+				Pair<Bytes, Bytes> pair;
+				List<Pair<Bytes, Bytes>> pairs;
 
-			// If only the head part can merge, add back tail parts to the lists
-			if (isMappingsAgree) {
-				DataSegment dsyOld0 = dsyOld.left(dsxOld.end);
-				DataSegment dsyNew0 = dsyNew.left(dsyNew.start + dsxNewLength);
-				DataSegment dsyOld1 = dsyOld.right(dsxOld.end);
-				DataSegment dsyNew1 = dsyNew.right(dsyNew.start + dsxNewLength);
-				mdy.patchDataSegments.set(mdy.pos, PatchDataSegment.of(dsyOld0, dsyNew0));
-				mdy.next();
-				mdy.patchDataSegments.add(mdy.pos, PatchDataSegment.of(dsyOld1, dsyNew1));
-			}
+				if (isDetectSamePatch //
+						&& phx.t0 != phx.t1 //
+						&& phy.t0 != phy.t1 //
+						&& (s0 = detectSame(phx.t0, phy.t0)) > 0 //
+						&& (s1 = detectSame(phx.t1, phy.t1)) > 0) {
+					pair = Pair.of(phx.t0.subbytes(0, s0), phx.t1.subbytes(0, s1));
+					pairs = merge( //
+							cons(Pair.of(phx.t0.subbytes(s0), phx.t1.subbytes(s1)), ptx), //
+							cons(Pair.of(phy.t0.subbytes(s0), phy.t1.subbytes(s1)), pty), //
+							isDetectSamePatch);
+				} else if (phx.t0 != phx.t1) {
+					pair = phx;
+					pairs = merge(ptx, cons(skip(phy, c), pty), isDetectSamePatch);
+				} else if (phy.t0 != phy.t1) {
+					pair = phy;
+					pairs = merge(cons(skip(phx, c), ptx), pty, isDetectSamePatch);
+				} else {
+					pair = Pair.of(commonx, commonx);
+					pairs = merge(cons(skip(phx, c), ptx), cons(skip(phy, c), pty), isDetectSamePatch);
+				}
 
-			mdx.next();
-			return dsxOld.end;
+				return cons(pair, pairs);
+			} else
+				throw new ConflictException();
+		} else
+			return new ArrayList<>();
+	}
+
+	private int detectSame(Bytes x, Bytes y) {
+		int s = Math.min(x.size(), y.size());
+		int i = 0;
+		while (i < s && x.get(i) == y.get(i))
+			i++;
+		return i;
+	}
+
+	public String toString(List<Pair<Bytes, Bytes>> pairs) {
+		StringBuilder sb = new StringBuilder();
+		for (Pair<Bytes, Bytes> pair : pairs)
+			if (pair.t0 == pair.t1)
+				sb.append(To.string(pair.t0));
+			else
+				sb.append("[" + To.string(pair.t0) + "|" + To.string(pair.t1) + "]");
+		return sb.toString();
+	}
+
+	private List<Pair<Bytes, Bytes>> cons(Pair<Bytes, Bytes> ph, List<Pair<Bytes, Bytes>> pt) {
+		if (!ph.t0.isEmpty() || !ph.t1.isEmpty())
+			return Util.add(Arrays.asList(ph), pt);
+		else
+			return pt;
+	}
+
+	private Pair<Bytes, Bytes> skip(Pair<Bytes, Bytes> pair, int c) throws ConflictException {
+		if (pair.t0 == pair.t1 && c <= pair.t0.size()) {
+			Bytes bytes = pair.t0.subbytes(c);
+			return Pair.of(bytes, bytes);
 		} else
 			throw new ConflictException();
 	}
