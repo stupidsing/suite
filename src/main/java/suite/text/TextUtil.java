@@ -68,8 +68,8 @@ public class TextUtil {
 		return merge(pairsx, pairsy, false);
 	}
 
-	public List<Pair<Bytes, Bytes>> merge( //
-			List<Pair<Bytes, Bytes>> pairsx, List<Pair<Bytes, Bytes>> pairsy, boolean isDetectSamePatch) throws ConflictException {
+	public List<Pair<Bytes, Bytes>> merge(List<Pair<Bytes, Bytes>> pairsx, List<Pair<Bytes, Bytes>> pairsy,
+			boolean isDetectSameChanges) throws ConflictException {
 		boolean isEmptyx = pairsx.isEmpty();
 		boolean isEmptyy = pairsy.isEmpty();
 
@@ -88,7 +88,7 @@ public class TextUtil {
 				Pair<Bytes, Bytes> pair;
 				List<Pair<Bytes, Bytes>> pairs;
 
-				if (isDetectSamePatch //
+				if (isDetectSameChanges //
 						&& phx.t0 != phx.t1 //
 						&& phy.t0 != phy.t1 //
 						&& (s0 = detectSame(phx.t0, phy.t0)) > 0 //
@@ -97,16 +97,16 @@ public class TextUtil {
 					pairs = merge( //
 							cons(Pair.of(phx.t0.subbytes(s0), phx.t1.subbytes(s1)), ptx), //
 							cons(Pair.of(phy.t0.subbytes(s0), phy.t1.subbytes(s1)), pty), //
-							isDetectSamePatch);
+							isDetectSameChanges);
 				} else if (phx.t0 != phx.t1) {
 					pair = phx;
-					pairs = merge(ptx, cons(skip(phy, c), pty), isDetectSamePatch);
+					pairs = merge(ptx, cons(skip(phy, c), pty), isDetectSameChanges);
 				} else if (phy.t0 != phy.t1) {
 					pair = phy;
-					pairs = merge(cons(skip(phx, c), ptx), pty, isDetectSamePatch);
+					pairs = merge(cons(skip(phx, c), ptx), pty, isDetectSameChanges);
 				} else {
 					pair = Pair.of(commonx, commonx);
-					pairs = merge(cons(skip(phx, c), ptx), cons(skip(phy, c), pty), isDetectSamePatch);
+					pairs = merge(cons(skip(phx, c), ptx), cons(skip(phy, c), pty), isDetectSameChanges);
 				}
 
 				return cons(pair, pairs);
