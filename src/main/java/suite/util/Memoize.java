@@ -60,7 +60,7 @@ public class Memoize {
 
 	public static <I, O> Fun<I, O> funReentrant(Fun<I, O> fun) {
 		Map<I, Source<O>> results = new ConcurrentHashMap<>();
-		return in -> results.computeIfAbsent(in, in_ -> () -> fun.apply(in_)).source();
+		return in -> results.computeIfAbsent(in, in_ -> future(() -> fun.apply(in_))).source();
 	}
 
 	public static <T> Source<T> future(Source<T> source) {
