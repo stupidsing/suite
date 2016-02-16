@@ -3,7 +3,6 @@ package suite.util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -66,19 +65,17 @@ public class Memoize {
 
 	public static <T> Source<T> future(Source<T> source) {
 		return new Source<T>() {
-			private AtomicReference<Thread> ar = new AtomicReference<>();
 			private volatile T result;
 
 			public T source() {
 				if (result == null)
 					synchronized (this) {
-						if (ar.compareAndSet(null, Thread.currentThread())) {
+						if (result == null) {
 							result = source.source();
 							notifyAll();
-							ar.set(null);
-						}
-						while (result == null)
-							Util.wait(this);
+						} else
+							while (result == null)
+								Util.wait(this);
 					}
 				return result;
 			}
