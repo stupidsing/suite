@@ -28,9 +28,9 @@ public class Statistic {
 		this.dimension = dimension;
 	}
 
-	public Collection<List<float[]>> kmeansCluster(List<float[]> points, int k) {
+	public Collection<List<float[]>> kmeansCluster(List<float[]> points, int k, int nIterations) {
 		List<float[]> kmeans = Util.left(points, k);
-		int i = 0;
+		int iteration = 0;
 
 		while (true) {
 			KmeansBin bins[] = new KmeansBin[k];
@@ -44,7 +44,7 @@ public class Statistic {
 				bin.count++;
 			}
 
-			if (i++ <= 99)
+			if (iteration++ <= nIterations)
 				kmeans = Read.from(bins).map(bin -> div(bin.sum, bin.count)).toList();
 			else {
 				List<float[]> kmeans0 = kmeans;
