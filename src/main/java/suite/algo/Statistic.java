@@ -65,14 +65,7 @@ public class Statistic {
 		Map<Integer, AtomicInteger> map = new HashMap<>();
 
 		Read.from(bins) //
-				.sort((b0, b1) -> {
-					if (b0.sqdist < b1.sqdist)
-						return -1;
-					else if (b0.sqdist > b1.sqdist)
-						return 1;
-					else
-						return 0;
-				}) //
+				.sort((b0, b1) -> Float.compare(b0.sqdist, b1.sqdist)) //
 				.take(points.size()) //
 				.forEach(bin -> map.computeIfAbsent(bin.category, c -> new AtomicInteger()).incrementAndGet());
 
