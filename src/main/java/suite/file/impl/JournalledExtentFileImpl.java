@@ -31,7 +31,7 @@ public class JournalledExtentFileImpl implements JournalledExtentFile {
 	@Override
 	public Bytes load(Extent extent) throws IOException {
 		BytesBuilder bb = new BytesBuilder();
-		for (int pointer = extent.start; pointer < extent.count; pointer++)
+		for (int pointer = extent.start; pointer < extent.start + extent.count; pointer++)
 			bb.append(journalledPageFile.load(pointer));
 		return bb.toBytes();
 	}
@@ -39,7 +39,7 @@ public class JournalledExtentFileImpl implements JournalledExtentFile {
 	@Override
 	public void save(Extent extent, Bytes bytes) throws IOException {
 		int offset = 0;
-		for (int pointer = extent.start; pointer < extent.count; pointer++) {
+		for (int pointer = extent.start; pointer < extent.start + extent.count; pointer++) {
 			int offset0 = offset;
 			journalledPageFile.save(pointer, bytes.subbytes(offset0, offset += pageSize));
 		}
