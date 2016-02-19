@@ -24,6 +24,10 @@ public class Statistic {
 		private float sqdist;
 	}
 
+	public Statistic(int dimension) {
+		this.dimension = dimension;
+	}
+
 	public Collection<List<float[]>> kmeansCluster(List<float[]> points, int k) {
 		List<float[]> kmeans = Util.left(points, k);
 		int i = 0;
