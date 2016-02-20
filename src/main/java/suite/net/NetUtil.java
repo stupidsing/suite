@@ -10,7 +10,7 @@ import suite.primitive.Bytes;
 
 public class NetUtil {
 
-	public static int intValue(Bytes bytes) {
+	public static int bytesToInt(Bytes bytes) {
 		int value = 0, i = 4;
 		do
 			value = value << 8 | bytes.get(--i) & 0xFF;
@@ -18,7 +18,7 @@ public class NetUtil {
 		return value;
 	}
 
-	public static Bytes bytesValue(int value) {
+	public static Bytes intToBytes(int value) {
 		byte bytes[] = new byte[4];
 		for (int i = 0; i < 4; i++) {
 			bytes[i] = (byte) (value & 0xFF);

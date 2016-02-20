@@ -15,7 +15,7 @@ public abstract class PacketChannel extends BufferedChannel {
 
 	protected void sendPacket(Bytes packet) {
 		send(new BytesBuilder() //
-				.append(NetUtil.bytesValue(packet.size())) //
+				.append(NetUtil.intToBytes(packet.size())) //
 				.append(packet) //
 				.toBytes());
 	}
@@ -25,7 +25,7 @@ public abstract class PacketChannel extends BufferedChannel {
 		received = received.append(message);
 
 		if (4 <= received.size()) {
-			int end = 4 + NetUtil.intValue(received.subbytes(0, 4));
+			int end = 4 + NetUtil.bytesToInt(received.subbytes(0, 4));
 
 			if (end <= received.size()) {
 				Bytes packet = received.subbytes(4, end);

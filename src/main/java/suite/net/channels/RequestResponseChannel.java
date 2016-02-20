@@ -37,7 +37,7 @@ public class RequestResponseChannel extends PacketChannel {
 
 		sendPacket(new BytesBuilder() //
 				.append((byte) type) //
-				.append(NetUtil.bytesValue(token)) //
+				.append(NetUtil.intToBytes(token)) //
 				.append(data) //
 				.toBytes());
 	}
@@ -61,7 +61,7 @@ public class RequestResponseChannel extends PacketChannel {
 	public void onReceivePacket(Bytes packet) {
 		if (5 <= packet.size()) {
 			char type = (char) packet.get(0);
-			int token = NetUtil.intValue(packet.subbytes(1, 5));
+			int token = NetUtil.bytesToInt(packet.subbytes(1, 5));
 			Bytes contents = packet.subbytes(5);
 
 			if (type == RESPONSE)

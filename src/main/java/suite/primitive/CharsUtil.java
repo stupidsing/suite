@@ -13,29 +13,26 @@ public class CharsUtil {
 
 	public static Outlet<Chars> buffer(Outlet<Chars> o) {
 		return new Outlet<>(new Source<Chars>() {
-			private Outlet<Chars> o_ = o;
 			protected Chars buffer = Chars.empty;
 			protected boolean isEof = false;
 
 			public Chars source() {
-				fill();
-				int n = Math.min(buffer.size(), bufferSize);
-				Chars head = buffer.subchars(0, n);
-				buffer = buffer.subchars(n);
-				return head;
-			}
-
-			private void fill() {
 				CharsBuilder cb = new CharsBuilder();
 				cb.append(buffer);
 
-				Chars chars;
+				Chars in;
 				while (!isEof && cb.size() < bufferSize)
-					if ((chars = o_.next()) != null)
-						cb.append(chars);
+					if ((in = o.next()) != null)
+						cb.append(in);
 					else
 						isEof = true;
-				buffer = cb.toChars();
+
+				Chars chars = cb.toChars();
+				int n = Math.min(chars.size(), bufferSize);
+				Chars head = chars.subchars(0, n);
+				buffer = chars.subchars(n);
+
+				return head;
 			}
 		});
 	}

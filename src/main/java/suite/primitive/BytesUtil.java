@@ -13,29 +13,26 @@ public class BytesUtil {
 
 	public static Outlet<Bytes> buffer(Outlet<Bytes> o) {
 		return new Outlet<>(new Source<Bytes>() {
-			private Outlet<Bytes> o_ = o;
 			protected Bytes buffer = Bytes.empty;
 			protected boolean isEof = false;
 
 			public Bytes source() {
-				fill();
-				int n = Math.min(buffer.size(), bufferSize);
-				Bytes head = buffer.subbytes(0, n);
-				buffer = buffer.subbytes(n);
-				return head;
-			}
+				BytesBuilder bb = new BytesBuilder();
+				bb.append(buffer);
 
-			private void fill() {
-				BytesBuilder cb = new BytesBuilder();
-				cb.append(buffer);
-
-				Bytes Bytes;
-				while (!isEof && cb.size() < bufferSize)
-					if ((Bytes = o_.next()) != null)
-						cb.append(Bytes);
+				Bytes in;
+				while (!isEof && bb.size() < bufferSize)
+					if ((in = o.next()) != null)
+						bb.append(in);
 					else
 						isEof = true;
-				buffer = cb.toBytes();
+
+				Bytes bytes = bb.toBytes();
+				int n = Math.min(bytes.size(), bufferSize);
+				Bytes head = bytes.subbytes(0, n);
+				buffer = bytes.subbytes(n);
+
+				return head;
 			}
 		});
 	}
