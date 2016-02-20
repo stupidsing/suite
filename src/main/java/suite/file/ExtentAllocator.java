@@ -6,11 +6,11 @@ public interface ExtentAllocator extends Closeable {
 
 	public class Extent {
 		public final int start;
-		public final int count;
+		public final int end;
 
-		public Extent(int start, int count) {
+		public Extent(int start, int end) {
 			this.start = start;
-			this.count = count;
+			this.end = end;
 		}
 	}
 

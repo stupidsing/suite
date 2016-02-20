@@ -29,7 +29,7 @@ public class ExtentFileImpl implements Closeable, ExtentFile {
 
 	@Override
 	public Bytes load(Extent extent) throws IOException {
-		int start = extent.start * pageSize, end = start + extent.count * pageSize;
+		int start = extent.start * pageSize, end = extent.end * pageSize;
 		return file.load(start, end);
 	}
 

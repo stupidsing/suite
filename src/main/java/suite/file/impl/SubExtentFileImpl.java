@@ -39,9 +39,9 @@ public class SubExtentFileImpl implements Closeable, ExtentFile {
 	}
 
 	private Extent convert(Extent extent0) throws IOException {
-		Extent extent1 = new Extent(extent0.start + startPointer, extent0.count);
+		Extent extent1 = new Extent(extent0.start + startPointer, extent0.end + startPointer);
 
-		if (startPointer <= extent0.start + startPointer && extent0.start + startPointer + extent1.count <= endPointer)
+		if (startPointer <= extent1.start && extent1.end <= endPointer)
 			return extent1;
 		else
 			throw new IOException("Extent index out of range");

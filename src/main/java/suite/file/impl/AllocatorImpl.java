@@ -53,7 +53,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 
 	@Override
 	public void deallocate(Extent pointer) {
-		deallocate_(pointer.start, pointer.count);
+		deallocate_(pointer.start, pointer.end);
 	}
 
 	private int allocate_(int count) {
@@ -65,8 +65,8 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 		return lastAllocatedPointer = pointer + count;
 	}
 
-	private void deallocate_(int pointer, int count) {
-		updateAllocMap(pointer, pointer + count, (byte) 0);
+	private void deallocate_(int start, int end) {
+		updateAllocMap(start, end, (byte) 0);
 	}
 
 	private int findFreeExtentPages(int count) {
