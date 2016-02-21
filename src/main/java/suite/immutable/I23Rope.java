@@ -31,10 +31,6 @@ public class I23Rope {
 		return right0(w);
 	}
 
-	public static I23Rope merge(I23Rope rope0, I23Rope rope1) {
-		return normalize(merge0(rope0, rope1));
-	}
-
 	private I23Rope left0(int weight) {
 		int index = nodes.size(), index1;
 		int aw = 0, aw1;
@@ -55,8 +51,8 @@ public class I23Rope {
 		return merge(nodes.get(index).right0(weight - aw), normalize(Util.right(nodes, index1)));
 	}
 
-	private static I23Rope normalize(List<I23Rope> nodes) {
-		return nodes.size() != 1 ? new I23Rope(nodes) : nodes.get(0);
+	public static I23Rope merge(I23Rope rope0, I23Rope rope1) {
+		return normalize(merge0(rope0, rope1));
 	}
 
 	private static List<I23Rope> merge0(I23Rope rope0, I23Rope rope1) {
@@ -80,6 +76,10 @@ public class I23Rope {
 			list = Arrays.asList(new I23Rope(nodes));
 
 		return list;
+	}
+
+	private static I23Rope normalize(List<I23Rope> nodes) {
+		return nodes.size() != 1 ? new I23Rope(nodes) : nodes.get(0);
 	}
 
 }
