@@ -24,7 +24,7 @@ import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
-public class LazyIbTreePersister<T> implements Closeable {
+public class LazyIbTreePageFilePersister<T> implements Closeable {
 
 	private SerializedPageFile<Integer> nPagesFile;
 	private SerializedPageFile<PersistSlot<T>> pageFile;
@@ -41,7 +41,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 		}
 	}
 
-	public LazyIbTreePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
+	public LazyIbTreePageFilePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
 		Serializer<T> ts1 = Serialize.nullable(ts);
 		Serializer<Pair<T, Integer>> ps = Serialize.pair(ts1, Serialize.int_);
 		Serializer<List<Pair<T, Integer>>> lps = Serialize.list(ps);
