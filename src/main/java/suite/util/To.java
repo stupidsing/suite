@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -142,6 +143,10 @@ public class To {
 	@SafeVarargs
 	public static <T> Source<T> source(T... array) {
 		return source(Arrays.asList(array));
+	}
+
+	public static <T> Source<T> source(Enumeration<T> en) {
+		return () -> en.hasMoreElements() ? en.nextElement() : null;
 	}
 
 	public static <T> Source<T> source(Iterable<T> iterable) {

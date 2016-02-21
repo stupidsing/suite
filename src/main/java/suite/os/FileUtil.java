@@ -17,8 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -68,11 +66,7 @@ public class FileUtil {
 	}
 
 	public static List<String> listZip(ZipFile zipFile) {
-		List<String> names = new ArrayList<>();
-		Enumeration<? extends ZipEntry> e = zipFile.entries();
-		while (e.hasMoreElements())
-			names.add(e.nextElement().getName());
-		return names;
+		return Read.from(zipFile.entries()).map(ZipEntry::getName).toList();
 	}
 
 	/**

@@ -11,6 +11,7 @@ import java.io.Reader;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Map;
 
 import suite.adt.ListMultimap;
@@ -30,6 +31,10 @@ public class Read {
 	@SafeVarargs
 	public static <T> Streamlet<T> from(T... col) {
 		return from(Arrays.asList(col));
+	}
+
+	public static <T> Streamlet<T> from(Enumeration<T> en) {
+		return new Streamlet<>(() -> Outlet.from(en));
 	}
 
 	public static <T> Streamlet<T> from(Iterable<T> col) {

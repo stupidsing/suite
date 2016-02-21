@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,6 +51,10 @@ public class Outlet<T> implements Iterable<T> {
 	@SafeVarargs
 	public static <T> Outlet<T> from(T... col) {
 		return from(Arrays.asList(col));
+	}
+
+	public static <T> Outlet<T> from(Enumeration<T> en) {
+		return from(To.source(en));
 	}
 
 	public static <T> Outlet<T> from(Iterable<T> col) {
@@ -222,7 +227,7 @@ public class Outlet<T> implements Iterable<T> {
 		T t = next(), t1;
 		if (t != null) {
 			while ((t1 = next()) != null)
-				if (0<comparator.compare(t, t1))
+				if (0 < comparator.compare(t, t1))
 					t = t1;
 			return t;
 		} else
