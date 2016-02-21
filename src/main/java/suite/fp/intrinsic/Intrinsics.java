@@ -1,6 +1,5 @@
 package suite.fp.intrinsic;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -19,6 +18,7 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.os.LogUtil;
 import suite.primitive.Chars;
+import suite.util.Rethrow;
 import suite.util.Util;
 
 public class Intrinsics {
@@ -75,20 +75,16 @@ public class Intrinsics {
 	}
 
 	public static IPointer<Chars> read(Reader reader) {
-		return IndexedSourceReader.of(() -> {
-			try {
-				char buffer[] = new char[bufferSize];
-				int nCharsRead = reader.read(buffer);
-				if (0 <= nCharsRead)
-					return Chars.of(buffer, 0, nCharsRead);
-				else {
-					Util.closeQuietly(reader);
-					return null;
-				}
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+		return IndexedSourceReader.of(() -> Rethrow.ioException(() -> {
+			char buffer[] = new char[bufferSize];
+			int nCharsRead = reader.read(buffer);
+			if (0 <= nCharsRead)
+				return Chars.of(buffer, 0, nCharsRead);
+			else {
+				Util.closeQuietly(reader);
+				return null;
 			}
-		});
+		}));
 	}
 
 	static {

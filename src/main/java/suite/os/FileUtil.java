@@ -26,6 +26,7 @@ import java.util.zip.ZipFile;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Copy;
+import suite.util.Rethrow;
 
 public class FileUtil {
 
@@ -40,13 +41,7 @@ public class FileUtil {
 	}
 
 	public static Streamlet<Path> findPaths(Path path) {
-		return Read.from(() -> {
-			try {
-				return Files.walk(path).filter(p -> Files.isRegularFile(p)).iterator();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-		});
+		return Read.from(() -> Rethrow.ioException(() -> Files.walk(path).filter(p -> Files.isRegularFile(p)).iterator()));
 	}
 
 	public static int getPid() {

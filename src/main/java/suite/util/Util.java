@@ -4,7 +4,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
-import java.net.Socket;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -85,15 +84,6 @@ public class Util {
 	}
 
 	public static void closeQuietly(Closeable o) {
-		if (o != null)
-			try {
-				o.close();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-	}
-
-	public static void closeQuietly(Socket o) {
 		if (o != null)
 			try {
 				o.close();

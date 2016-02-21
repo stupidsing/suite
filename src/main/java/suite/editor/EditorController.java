@@ -19,6 +19,7 @@ import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
+import suite.util.Rethrow;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 import suite.util.Util;
@@ -211,16 +212,13 @@ public class EditorController {
 	}
 
 	private void load(String filename) {
-		try {
-			String text = FileUtil.read(filename);
+		String text = Rethrow.ioException(() -> FileUtil.read(filename));
 
-			JEditorPane editor = view.getEditor();
-			editor.setText(text);
-			editor.setCaretPosition(0);
-			editor.requestFocusInWindow();
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		JEditorPane editor = view.getEditor();
+		editor.setText(text);
+		editor.setCaretPosition(0);
+		editor.requestFocusInWindow();
+
 		model.changeFilename(filename);
 		model.changeModified(false);
 	}

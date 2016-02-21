@@ -1,7 +1,6 @@
 package suite.fp.intrinsic;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -25,6 +24,7 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
 import suite.primitive.Chars;
+import suite.util.Rethrow;
 import suite.util.FunUtil.Fun;
 import suite.util.Util;
 
@@ -40,7 +40,7 @@ public class MonadIntrinsics {
 
 		Node in = inputs.get(1);
 
-		try {
+		return Rethrow.ioException(() -> {
 			Process process = Runtime.getRuntime().exec(list.toArray(new String[list.size()]));
 
 			Node n0 = Intrinsics.enclose(callback, new Suspend(() -> {
@@ -66,11 +66,10 @@ public class MonadIntrinsics {
 				process.waitFor();
 			});
 
-			return Tree.of(TermOp.AND___, n0 //
-					, Intrinsics.enclose(callback, Tree.of(TermOp.AND___, n1, n2)));
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+			return Tree.of(TermOp.AND___, //
+					n0, //
+					Intrinsics.enclose(callback, Tree.of(TermOp.AND___, n1, n2)));
+		});
 	};
 
 	public Intrinsic put = (callback, inputs) -> {

@@ -19,6 +19,7 @@ import suite.os.FileUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Source2;
+import suite.util.Rethrow;
 
 public class Read {
 
@@ -70,12 +71,7 @@ public class Read {
 
 	public static Streamlet<String> lines(File file) throws FileNotFoundException {
 		return new Streamlet<>(() -> {
-			InputStream is;
-			try {
-				is = new FileInputStream(file);
-			} catch (FileNotFoundException ex) {
-				throw new RuntimeException(ex);
-			}
+			InputStream is = Rethrow.ioException(() -> new FileInputStream(file));
 			return lines(is).closeAtEnd(is);
 		});
 	}
@@ -87,13 +83,7 @@ public class Read {
 
 	public static Outlet<String> lines(Reader reader) {
 		BufferedReader br = new BufferedReader(reader);
-		return new Outlet<>(() -> {
-			try {
-				return br.readLine();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-		}).closeAtEnd(br);
+		return new Outlet<>(() -> Rethrow.ioException(() -> br.readLine())).closeAtEnd(br);
 	}
 
 	public static Streamlet<Integer> range(int s, int e) {

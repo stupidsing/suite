@@ -12,7 +12,6 @@ import suite.file.SerializedPageFile;
 import suite.file.impl.AllocatorImpl;
 import suite.file.impl.JournalledPageFileImpl;
 import suite.file.impl.PageFileImpl;
-import suite.file.impl.RandomAccessibleFile.RandomAccessFileException;
 import suite.file.impl.SerializedPageFileImpl;
 import suite.file.impl.SubPageFileImpl;
 import suite.primitive.Bytes;
@@ -115,7 +114,7 @@ public class B_TreeBuilder<Key, Value> {
 			try {
 				Files.deleteIfExists(Paths.get(filename));
 			} catch (IOException ex) {
-				throw new RandomAccessFileException(ex);
+				throw new RuntimeException(ex);
 			}
 
 		PageFile f = new JournalledPageFileImpl(filename, pageSize);
@@ -143,7 +142,7 @@ public class B_TreeBuilder<Key, Value> {
 				try {
 					Files.deleteIfExists(Paths.get(filename));
 				} catch (IOException ex) {
-					throw new RandomAccessFileException(ex);
+					throw new RuntimeException(ex);
 				}
 
 		return build(isNew, cmp //

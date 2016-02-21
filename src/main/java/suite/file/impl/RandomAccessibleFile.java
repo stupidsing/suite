@@ -16,20 +16,12 @@ public class RandomAccessibleFile implements Closeable {
 	private RandomAccessFile file;
 	private FileChannel channel;
 
-	public static class RandomAccessFileException extends RuntimeException {
-		private static final long serialVersionUID = 1l;
-
-		public RandomAccessFileException(IOException ex) {
-			super(ex);
-		}
-	}
-
 	public RandomAccessibleFile(String filename) {
 		FileUtil.mkdir(Paths.get(filename).getParent());
 		try {
 			file = new RandomAccessFile(filename, "rw");
 		} catch (FileNotFoundException ex) {
-			throw new RandomAccessFileException(ex);
+			throw new RuntimeException(ex);
 		}
 		channel = file.getChannel();
 	}
@@ -40,7 +32,7 @@ public class RandomAccessibleFile implements Closeable {
 			channel.close();
 			file.close();
 		} catch (IOException ex) {
-			throw new RandomAccessFileException(ex);
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -48,7 +40,7 @@ public class RandomAccessibleFile implements Closeable {
 		try {
 			channel.force(true);
 		} catch (IOException ex) {
-			throw new RandomAccessFileException(ex);
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -59,7 +51,7 @@ public class RandomAccessibleFile implements Closeable {
 		try {
 			channel.read(bb, start);
 		} catch (IOException ex) {
-			throw new RandomAccessFileException(ex);
+			throw new RuntimeException(ex);
 		}
 
 		bb.limit(size);
@@ -70,7 +62,7 @@ public class RandomAccessibleFile implements Closeable {
 		try {
 			channel.write(bytes.toByteBuffer(), start);
 		} catch (IOException ex) {
-			throw new RandomAccessFileException(ex);
+			throw new RuntimeException(ex);
 		}
 	}
 

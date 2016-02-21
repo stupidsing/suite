@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import suite.file.DataFile;
 import suite.file.SerializedFile;
-import suite.file.impl.RandomAccessibleFile.RandomAccessFileException;
 import suite.primitive.Bytes;
+import suite.util.Rethrow;
 import suite.util.Serialize.Serializer;
 
 /**
@@ -41,20 +41,12 @@ public class SerializedDataFileImpl<Pointer, V> implements Closeable, Serialized
 
 	@Override
 	public V load(Pointer pointer) {
-		try {
-			return serializer.read(new DataInputStream(dataFile.load(pointer).asInputStream()));
-		} catch (IOException ex) {
-			throw new RandomAccessFileException(ex);
-		}
+		return Rethrow.ioException(() -> serializer.read(new DataInputStream(dataFile.load(pointer).asInputStream())));
 	}
 
 	@Override
 	public void save(Pointer pointer, V value) {
-		try {
-			dataFile.save(pointer, Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
-		} catch (IOException ex) {
-			throw new RandomAccessFileException(ex);
-		}
+		dataFile.save(pointer, Rethrow.ioException(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value))));
 	}
 
 }

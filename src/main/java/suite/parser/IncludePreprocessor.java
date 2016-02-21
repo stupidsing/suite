@@ -11,6 +11,7 @@ import suite.os.FileUtil;
 import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
+import suite.util.Rethrow;
 
 /**
  * Process #include tags.
@@ -30,13 +31,11 @@ public class IncludePreprocessor implements Fun<String, List<Run>> {
 	}
 
 	public List<Run> apply(String in) {
-		List<Run> runs = new ArrayList<>();
-		try {
+		return Rethrow.ioException(() -> {
+			List<Run> runs = new ArrayList<>();
 			doIncludes(dir, in, true, runs);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		return runs;
+			return runs;
+		});
 	}
 
 	private void doIncludes(Path dir, String in, boolean isInput, List<Run> runs) throws IOException {

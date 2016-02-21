@@ -20,13 +20,13 @@ import suite.file.PageFile;
 import suite.file.SerializedExtentFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.ExtentMetadataFileImpl;
-import suite.file.impl.RandomAccessibleFile.RandomAccessFileException;
 import suite.file.impl.SerializedExtentFileImpl;
 import suite.file.impl.SerializedPageFileImpl;
 import suite.file.impl.SubPageFileImpl;
 import suite.immutable.LazyIbTree.Slot;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
+import suite.util.Rethrow;
 import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
@@ -145,12 +145,7 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements Closeable {
 	}
 
 	private Extent saveFrom(int start, PersistSlot<T> value) {
-		Bytes bytes;
-		try {
-			bytes = Bytes.of(dataOutput -> serializer.write(dataOutput, value));
-		} catch (IOException ex) {
-			throw new RandomAccessFileException(ex);
-		}
+		Bytes bytes = Rethrow.ioException(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
 		int bs = DataFile.defaultPageSize - 8;
 		Extent extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
 		extentMetadataFile.save(extent, bytes);

@@ -19,6 +19,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
+import suite.util.Rethrow;
 import suite.util.To;
 
 public class ImportUtil {
@@ -35,14 +36,12 @@ public class ImportUtil {
 	}
 
 	public RuleSet createRuleSet(List<String> toImports) {
-		RuleSet rs = createRuleSet();
-		try {
+		return Rethrow.ioException(() -> {
+			RuleSet rs = createRuleSet();
 			for (String toImport : toImports)
 				importPath(rs, toImport);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		return rs;
+			return rs;
+		});
 	}
 
 	public RuleSet createRuleSet() {

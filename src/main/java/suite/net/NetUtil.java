@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import suite.primitive.Bytes;
+import suite.util.Rethrow;
 
 public class NetUtil {
 
@@ -29,15 +30,13 @@ public class NetUtil {
 
 	public static Bytes serialize(Object o) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try {
+		return Rethrow.ioException(() -> {
 			ObjectOutputStream out = new ObjectOutputStream(baos);
 			out.writeObject(o);
 			out.flush();
 			out.close();
 			return Bytes.of(baos.toByteArray());
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		});
 	}
 
 	public static <T> T deserialize(Bytes s) {

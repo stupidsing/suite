@@ -14,6 +14,7 @@ import suite.debian.AptUtil.Repo;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Rethrow;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
@@ -129,7 +130,7 @@ public class DependencyMain extends ExecutableProgram {
 			, debianList //
 			, supplementaryList //
 			, operatingSystemList //
-			));
+	));
 
 	public static void main(String args[]) {
 		Util.run(DependencyMain.class, args);
@@ -159,20 +160,13 @@ public class DependencyMain extends ExecutableProgram {
 		String packageName = "dkms";
 
 		List<Map<String, String>> packages;
-		try {
-			packages = aptUtil.readRepoPackages( //
-					repo //
-					);
-
-			Set<String> required = new HashSet<>(Arrays.asList(packageName));
-			Set<String> required1 = dpkgUtil.getDependingSet(packages, required);
-			Read.from(required1) //
-					.map(packageName_ -> aptUtil.getDownloadUrl(repo, packages, packageName_)) //
-					.sort(Util.comparator()) //
-					.forEach(System.out::println);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		packages = Rethrow.ioException(() -> aptUtil.readRepoPackages(repo));
+		Set<String> required = new HashSet<>(Arrays.asList(packageName));
+		Set<String> required1 = dpkgUtil.getDependingSet(packages, required);
+		Read.from(required1) //
+				.map(packageName_ -> aptUtil.getDownloadUrl(repo, packages, packageName_)) //
+				.sort(Util.comparator()) //
+				.forEach(System.out::println);
 	}
 
 	public void listManuallyInstalled() {

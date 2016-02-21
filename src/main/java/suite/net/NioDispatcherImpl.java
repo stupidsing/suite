@@ -18,6 +18,7 @@ import suite.net.channels.Channel.Sender;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Source;
+import suite.util.Util;
 
 public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 
@@ -88,13 +89,7 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 
 		wakeUpSelector();
 
-		return () -> {
-			try {
-				ssc.close();
-			} catch (IOException ex) {
-				LogUtil.error(ex);
-			}
-		};
+		return () -> Util.closeQuietly(ssc);
 	}
 
 	private void serve() throws IOException {

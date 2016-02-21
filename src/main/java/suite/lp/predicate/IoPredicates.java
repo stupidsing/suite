@@ -21,6 +21,7 @@ import suite.node.util.SuiteException;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.util.Rethrow;
 
 public class IoPredicates {
 
@@ -53,20 +54,14 @@ public class IoPredicates {
 
 	public BuiltinPredicate fileRead = PredicateUtil.fun(n -> {
 		String filename = Formatter.display(n);
-		try {
-			return new Str(FileUtil.read(filename));
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		return Rethrow.ioException(() -> new Str(FileUtil.read(filename)));
 	});
 
 	public BuiltinPredicate fileTime = PredicateUtil.fun(n -> {
-		try {
+		return Rethrow.ioException(() -> {
 			FileTime lastModifiedTime = Files.getLastModifiedTime(Paths.get(Formatter.display(n)));
 			return Int.of((int) lastModifiedTime.to(TimeUnit.SECONDS));
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		});
 	});
 
 	public BuiltinPredicate fileWrite = PredicateUtil.p2((prover, fn, contents) -> {
@@ -87,16 +82,14 @@ public class IoPredicates {
 	public BuiltinPredicate nl = PredicateUtil.run(() -> System.out.println());
 
 	public BuiltinPredicate readLine = PredicateUtil.p1((prover, p0) -> {
-		try {
+		return Rethrow.ioException(() -> {
 			BytesBuilder bb = new BytesBuilder();
 			byte b;
 			while (0 <= (b = (byte) System.in.read()) && b != 10)
 				bb.append(b);
 			String s = new String(bb.toBytes().toBytes(), FileUtil.charset);
 			return prover.bind(new Str(s), p0);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		});
 	});
 
 	public BuiltinPredicate log = PredicateUtil.sink(n -> LogUtil.info(Formatter.dump(n)));

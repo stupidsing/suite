@@ -21,16 +21,13 @@ import suite.node.Tree;
 import suite.node.io.Rewriter.NodeRead;
 import suite.node.io.Rewriter.NodeWrite;
 import suite.node.io.Rewriter.ReadType;
+import suite.util.Rethrow;
 import suite.util.Util;
 
 public class ReversePolish {
 
 	public Node fromRpn(String s) {
-		try {
-			return fromRpn(new StringReader(s));
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		return Rethrow.ioException(() -> fromRpn(new StringReader(s)));
 	}
 
 	public Node fromRpn(Reader reader) throws IOException {

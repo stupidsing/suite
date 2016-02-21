@@ -21,7 +21,6 @@ import java.util.Map;
 
 import suite.adt.Pair;
 import suite.os.FileUtil;
-import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Chars;
@@ -153,21 +152,12 @@ public class To {
 	public static Source<Bytes> source(InputStream is) {
 		return () -> {
 			byte bs[] = new byte[bufferSize];
-			int nBytesRead;
-			try {
-				nBytesRead = is.read(bs);
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
+			int nBytesRead = Rethrow.ioException(() -> is.read(bs));
 
 			if (0 <= nBytesRead)
 				return Bytes.of(bs, 0, nBytesRead);
 			else {
-				try {
-					is.close();
-				} catch (IOException ex) {
-					LogUtil.error(ex);
-				}
+				Util.closeQuietly(is);
 				return null;
 			}
 		};
