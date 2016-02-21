@@ -24,31 +24,23 @@ public class I23Rope {
 	}
 
 	public I23Rope left(int w) {
-		return left0(weight - w);
+		int index = nodes.size(), index1;
+		int aw = 0, aw1;
+		while (0 <= (index1 = index - 1) && (aw1 = aw + nodes.get(index).weight) <= weight - w) {
+			index = index1;
+			aw = aw1;
+		}
+		return merge(normalize(Util.left(nodes, index)), nodes.get(index).left(weight - w - aw));
 	}
 
 	public I23Rope right(int w) {
-		return right0(w);
-	}
-
-	private I23Rope left0(int weight) {
-		int index = nodes.size(), index1;
-		int aw = 0, aw1;
-		while (0 <= (index1 = index - 1) && (aw1 = aw + nodes.get(index).weight) <= weight) {
-			index = index1;
-			aw = aw1;
-		}
-		return merge(normalize(Util.left(nodes, index)), nodes.get(index).left0(weight - aw));
-	}
-
-	private I23Rope right0(int weight) {
 		int index = 0, index1;
 		int aw = 0, aw1;
-		while ((index1 = index + 1) < nodes.size() && (aw1 = aw + nodes.get(index).weight) <= weight) {
+		while ((index1 = index + 1) < nodes.size() && (aw1 = aw + nodes.get(index).weight) <= w) {
 			index = index1;
 			aw = aw1;
 		}
-		return merge(nodes.get(index).right0(weight - aw), normalize(Util.right(nodes, index1)));
+		return merge(nodes.get(index).right(w - aw), normalize(Util.right(nodes, index1)));
 	}
 
 	public static I23Rope merge(I23Rope rope0, I23Rope rope1) {
