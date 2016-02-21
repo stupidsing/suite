@@ -21,10 +21,10 @@ public class Database implements Closeable {
 		journalledPageFile = new JournalledPageFileImpl(filename, PageFile.defaultPageSize);
 
 		txm = new TransactionManager<>(() -> new LazyIbTreeMutator<>( //
-				journalledPageFile //
-				, Util.comparator() //
-				, Serialize.int_ //
-				, Serialize.string(64)));
+				journalledPageFile, //
+				Util.comparator(), //
+				Serialize.int_, //
+				Serialize.string(64)));
 	}
 
 	@Override
