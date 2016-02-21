@@ -27,7 +27,14 @@ public class FunUtil {
 			private T t = source.source();
 			private boolean isAvail = t != null;
 			private int i;
-			private Source<T> source_ = () -> (isAvail = isAvail && (t = source.source()) != null) && i++ < n ? t : null;
+			private Source<T> source_ = () -> {
+				if ((isAvail = isAvail && (t = source.source()) != null) && ++i < n)
+					return t;
+				else {
+					i = 0;
+					return null;
+				}
+			};
 
 			public Source<T> source() {
 				return isAvail ? cons(t, source_) : null;

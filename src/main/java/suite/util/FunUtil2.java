@@ -23,11 +23,12 @@ public class FunUtil2 {
 			private boolean isAvail;
 			private int i;
 			private Source2<K, V> source_ = pair1 -> {
-				boolean b = (isAvail = isAvail && source2.source2(pair)) && i++ < n;
+				boolean b = (isAvail = isAvail && source2.source2(pair)) && ++i < n;
 				if (b) {
 					pair1.t0 = pair.t0;
 					pair1.t1 = pair.t1;
-				}
+				} else
+					i = 0;
 				return b;
 			};
 
