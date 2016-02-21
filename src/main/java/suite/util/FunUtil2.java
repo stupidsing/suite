@@ -17,6 +17,30 @@ public class FunUtil2 {
 		public boolean source2(Pair<K, V> pair);
 	}
 
+	public static <K, V> Source<Source2<K, V>> chunk(Source2<K, V> source2, int n) {
+		return new Source<Source2<K, V>>() {
+			private Pair<K, V> pair;
+			private boolean isAvail;
+			private int i;
+			private Source2<K, V> source_ = pair1 -> {
+				boolean b = (isAvail = isAvail && source2.source2(pair)) && i++ < n;
+				if (b) {
+					pair1.t0 = pair.t0;
+					pair1.t1 = pair.t1;
+				}
+				return b;
+			};
+
+			{
+				isAvail = source2.source2(pair);
+			}
+
+			public Source2<K, V> source() {
+				return isAvail ? cons(pair.t0, pair.t1, source_) : null;
+			}
+		};
+	}
+
 	public static <K, V> Source2<K, V> concat(Source<Source2<K, V>> source) {
 		return new Source2<K, V>() {
 			private Source2<K, V> source2 = nullSource();
@@ -117,7 +141,7 @@ public class FunUtil2 {
 			}
 
 			public Source2<K, V> source() {
-				return isAvailable ? FunUtil2.cons(pair.t0, pair.t1, source2_) : null;
+				return isAvailable ? cons(pair.t0, pair.t1, source2_) : null;
 			}
 		};
 	}

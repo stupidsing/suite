@@ -22,6 +22,19 @@ public class FunUtil {
 	public interface Fun<I, O> extends Function<I, O> {
 	}
 
+	public static <T> Source<Source<T>> chunk(Source<T> source, int n) {
+		return new Source<Source<T>>() {
+			private T t = source.source();
+			private boolean isAvail = t != null;
+			private int i;
+			private Source<T> source_ = () -> (isAvail = isAvail && (t = source.source()) != null) && i++ < n ? t : null;
+
+			public Source<T> source() {
+				return isAvail ? cons(t, source_) : null;
+			}
+		};
+	}
+
 	public static <T> Source<T> concat(Source<Source<T>> source) {
 		return new Source<T>() {
 			private Source<T> source0 = nullSource();
@@ -111,11 +124,11 @@ public class FunUtil {
 	public static <T> Source<Source<T>> split(Source<T> source, Fun<T, Boolean> fun) {
 		return new Source<Source<T>>() {
 			private T t = source.source();
-			private boolean isAvailable = t != null;
-			private Source<T> source_ = () -> (isAvailable &= (t = source.source()) != null) && !fun.apply(t) ? t : null;
+			private boolean isAvail = t != null;
+			private Source<T> source_ = () -> (isAvail = isAvail && (t = source.source()) != null) && !fun.apply(t) ? t : null;
 
 			public Source<T> source() {
-				return isAvailable ? FunUtil.cons(t, source_) : null;
+				return isAvail ? cons(t, source_) : null;
 			}
 		};
 	}
