@@ -74,6 +74,15 @@ public class Outlet<T> implements Iterable<T> {
 		return FunUtil.iterator(source);
 	}
 
+	public Outlet<T> closeAtEnd(Closeable c) {
+		return from(() -> {
+			T next = next();
+			if (next == null)
+				Util.closeQuietly(c);
+			return next;
+		});
+	}
+
 	public <R> R collect(Fun<Outlet<T>, R> fun) {
 		return fun.apply(this);
 	}
@@ -84,15 +93,6 @@ public class Outlet<T> implements Iterable<T> {
 
 	public <K, V> Outlet2<K, V> concatMap2(Fun<T, Outlet2<K, V>> fun) {
 		return Outlet2.from(FunUtil2.concat(FunUtil.map(t -> fun.apply(t).source2(), source)));
-	}
-
-	public Outlet<T> closeAtEnd(Closeable c) {
-		return from(() -> {
-			T next = next();
-			if (next == null)
-				Util.closeQuietly(c);
-			return next;
-		});
 	}
 
 	public Outlet<T> cons(T t) {
