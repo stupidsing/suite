@@ -15,6 +15,7 @@ import suite.immutable.btree.impl.IbTreeConfiguration;
 import suite.immutable.btree.impl.IbTreeImpl;
 import suite.immutable.btree.impl.IbTreeStack;
 import suite.os.FileUtil;
+import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
@@ -134,7 +135,7 @@ public class IbTreeTest {
 		// we would run out of allocatable pages. Here we limit ourself to
 		// updating 25 keys each.
 
-		for (List<String> subset : Util.splitn(list, 25)) {
+		for (Outlet<String> subset : Outlet.from(list).chunk(25)) {
 			KeyDataStoreMutator<String> mutator0 = ibTree.begin();
 			for (String s : subset)
 				mutator0.putTerminal(s);
