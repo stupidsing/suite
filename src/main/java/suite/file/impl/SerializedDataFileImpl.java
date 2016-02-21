@@ -46,8 +46,12 @@ public class SerializedDataFileImpl<Pointer, V> implements Closeable, Serialized
 	}
 
 	@Override
-	public void sync() throws IOException {
-		dataFile.sync();
+	public void sync() {
+		try {
+			dataFile.sync();
+		} catch (IOException ex) {
+			throw new SerializedPagingException(ex);
+		}
 	}
 
 	@Override
