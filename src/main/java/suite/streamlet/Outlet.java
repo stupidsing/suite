@@ -74,6 +74,10 @@ public class Outlet<T> implements Iterable<T> {
 		return FunUtil.iterator(source);
 	}
 
+	public Outlet<Outlet<T>> chunk(int n) {
+		return from(FunUtil.map(Outlet<T>::new, FunUtil.chunk(source, n)));
+	}
+
 	public Outlet<T> closeAtEnd(Closeable c) {
 		return from(() -> {
 			T next = next();

@@ -102,6 +102,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return FunUtil2.iterator(source2);
 	}
 
+	public Outlet<Outlet2<K, V>> chunk(int n) {
+		return Outlet.from(FunUtil.map(Outlet2<K, V>::new, FunUtil2.chunk(source2, n)));
+	}
+
 	public Outlet2<K, V> closeAtEnd(Closeable c) {
 		return from(pair -> {
 			boolean b = next(pair);
@@ -251,7 +255,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		boolean b = next(pair);
 		if (b) {
 			while (next(pair1))
-				if (0<comparator.compare(pair, pair1)) {
+				if (0 < comparator.compare(pair, pair1)) {
 					pair.t0 = pair1.t0;
 					pair.t1 = pair1.t1;
 				}
