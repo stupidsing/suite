@@ -14,7 +14,7 @@ public class IbTreeStack<Key> implements Closeable {
 	private List<IbTreeImpl<Integer>> allocationIbTrees = new ArrayList<>();
 	private IbTree<Key> ibTree;
 
-	public IbTreeStack(IbTreeConfiguration<Key> config) throws IOException {
+	public IbTreeStack(IbTreeConfiguration<Key> config) {
 		String filenamePrefix = config.getFilenamePrefix();
 		int pageSize = config.getPageSize();
 		long capacity = config.getCapacity();

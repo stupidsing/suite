@@ -1,13 +1,10 @@
 package suite.immutable.btree;
 
 import java.io.Closeable;
-import java.io.IOException;
 
 import suite.fs.KeyDataStoreMutator;
 
 public interface IbTree<Key> extends Closeable {
-
-	public void close() throws IOException;
 
 	/**
 	 * @return A new mutator object.

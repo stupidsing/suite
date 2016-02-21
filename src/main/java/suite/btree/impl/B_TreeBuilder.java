@@ -12,6 +12,7 @@ import suite.file.SerializedPageFile;
 import suite.file.impl.AllocatorImpl;
 import suite.file.impl.JournalledPageFileImpl;
 import suite.file.impl.PageFileImpl;
+import suite.file.impl.RandomAccessibleFile.RandomAccessFileException;
 import suite.file.impl.SerializedPageFileImpl;
 import suite.file.impl.SubPageFileImpl;
 import suite.primitive.Bytes;
@@ -109,15 +110,19 @@ public class B_TreeBuilder<Key, Value> {
 		this.valueSerializer = valueSerializer;
 	}
 
-	public B_TreeImpl<Key, Value> build(String filename, boolean isNew, Comparator<Key> cmp, int nPages) throws IOException {
+	public B_TreeImpl<Key, Value> build(String filename, boolean isNew, Comparator<Key> cmp, int nPages) {
 		if (isNew)
-			Files.deleteIfExists(Paths.get(filename));
+			try {
+				Files.deleteIfExists(Paths.get(filename));
+			} catch (IOException ex) {
+				throw new RandomAccessFileException(ex);
+			}
 
 		PageFile f = new JournalledPageFileImpl(filename, pageSize);
 		return build(f, isNew, cmp, nPages);
 	}
 
-	public B_TreeImpl<Key, Value> build(PageFile f, boolean isNew, Comparator<Key> cmp, int nPages) throws IOException {
+	public B_TreeImpl<Key, Value> build(PageFile f, boolean isNew, Comparator<Key> cmp, int nPages) {
 		int nSuperblockPages = 1;
 		int nAllocatorPages = nPages / pageSize;
 		int p0 = 0, p1 = p0 + nAllocatorPages, p2 = p1 + nSuperblockPages, p3 = p2 + nPages;
@@ -128,14 +133,18 @@ public class B_TreeBuilder<Key, Value> {
 				, new SubPageFileImpl(f, p2, p3));
 	}
 
-	public B_TreeImpl<Key, Value> build(String pathName, boolean isNew, Comparator<Key> cmp) throws IOException {
+	public B_TreeImpl<Key, Value> build(String pathName, boolean isNew, Comparator<Key> cmp) {
 		String sbf = pathName + ".superblock";
 		String alf = pathName + ".alloc";
 		String f = pathName + ".pages";
 
 		if (isNew)
 			for (String filename : new String[] { sbf, alf, f, })
-				Files.deleteIfExists(Paths.get(filename));
+				try {
+					Files.deleteIfExists(Paths.get(filename));
+				} catch (IOException ex) {
+					throw new RandomAccessFileException(ex);
+				}
 
 		return build(isNew, cmp //
 				, new PageFileImpl(alf, pageSize) //
@@ -143,8 +152,7 @@ public class B_TreeBuilder<Key, Value> {
 				, new PageFileImpl(f, pageSize));
 	}
 
-	private B_TreeImpl<Key, Value> build(boolean isNew, Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0)
-			throws IOException {
+	private B_TreeImpl<Key, Value> build(boolean isNew, Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {
 		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(Util.nullsFirst(comparator));
 
 		Serializer<Bytes> als = Serialize.bytes(pageSize);

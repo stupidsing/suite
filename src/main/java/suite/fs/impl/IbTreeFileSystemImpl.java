@@ -15,7 +15,7 @@ public class IbTreeFileSystemImpl implements FileSystem {
 	private IbTreeStack<Bytes> ibTreeStack;
 	private FileSystemMutator mutator;
 
-	public IbTreeFileSystemImpl(IbTreeConfiguration<Bytes> config) throws IOException {
+	public IbTreeFileSystemImpl(IbTreeConfiguration<Bytes> config) {
 		config.setComparator(Bytes.comparator);
 		config.setSerializer(keyUtil.serializer());
 		ibTreeStack = new IbTreeStack<>(config);

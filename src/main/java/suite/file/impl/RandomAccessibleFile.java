@@ -1,6 +1,7 @@
 package suite.file.impl;
 
 import java.io.Closeable;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -15,33 +16,62 @@ public class RandomAccessibleFile implements Closeable {
 	private RandomAccessFile file;
 	private FileChannel channel;
 
-	public RandomAccessibleFile(String filename) throws IOException {
+	public static class RandomAccessFileException extends RuntimeException {
+		private static final long serialVersionUID = 1l;
+
+		public RandomAccessFileException(IOException ex) {
+			super(ex);
+		}
+	}
+
+	public RandomAccessibleFile(String filename) {
 		FileUtil.mkdir(Paths.get(filename).getParent());
-		file = new RandomAccessFile(filename, "rw");
+		try {
+			file = new RandomAccessFile(filename, "rw");
+		} catch (FileNotFoundException ex) {
+			throw new RandomAccessFileException(ex);
+		}
 		channel = file.getChannel();
 	}
 
 	@Override
-	public void close() throws IOException {
-		channel.close();
-		file.close();
+	public void close() {
+		try {
+			channel.close();
+			file.close();
+		} catch (IOException ex) {
+			throw new RandomAccessFileException(ex);
+		}
 	}
 
-	public void sync() throws IOException {
-		channel.force(true);
+	public void sync() {
+		try {
+			channel.force(true);
+		} catch (IOException ex) {
+			throw new RandomAccessFileException(ex);
+		}
 	}
 
-	public Bytes load(int start, int end) throws IOException {
+	public Bytes load(int start, int end) {
 		int size = end - start;
-
 		ByteBuffer bb = ByteBuffer.allocate(size);
-		channel.read(bb, start);
+
+		try {
+			channel.read(bb, start);
+		} catch (IOException ex) {
+			throw new RandomAccessFileException(ex);
+		}
+
 		bb.limit(size);
 		return Bytes.of(bb);
 	}
 
-	public void save(int start, Bytes bytes) throws IOException {
-		channel.write(bytes.toByteBuffer(), start);
+	public void save(int start, Bytes bytes) {
+		try {
+			channel.write(bytes.toByteBuffer(), start);
+		} catch (IOException ex) {
+			throw new RandomAccessFileException(ex);
+		}
 	}
 
 }

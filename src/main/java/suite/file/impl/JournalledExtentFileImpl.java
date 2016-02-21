@@ -13,7 +13,7 @@ public class JournalledExtentFileImpl implements JournalledExtentFile {
 	private JournalledPageFile journalledPageFile;
 	private int pageSize;
 
-	public JournalledExtentFileImpl(String filename, int pageSize) throws IOException {
+	public JournalledExtentFileImpl(String filename, int pageSize) {
 		this.journalledPageFile = new JournalledPageFileImpl(filename, pageSize);
 		this.pageSize = pageSize;
 	}
@@ -24,12 +24,12 @@ public class JournalledExtentFileImpl implements JournalledExtentFile {
 	}
 
 	@Override
-	public void sync() throws IOException {
+	public void sync() {
 		journalledPageFile.sync();
 	}
 
 	@Override
-	public Bytes load(Extent extent) throws IOException {
+	public Bytes load(Extent extent) {
 		BytesBuilder bb = new BytesBuilder();
 		for (int pointer = extent.start; pointer < extent.end; pointer++)
 			bb.append(journalledPageFile.load(pointer));
@@ -37,7 +37,7 @@ public class JournalledExtentFileImpl implements JournalledExtentFile {
 	}
 
 	@Override
-	public void save(Extent extent, Bytes bytes) throws IOException {
+	public void save(Extent extent, Bytes bytes) {
 		int offset = 0;
 		for (int pointer = extent.start; pointer < extent.end; pointer++) {
 			int offset0 = offset;
@@ -46,7 +46,7 @@ public class JournalledExtentFileImpl implements JournalledExtentFile {
 	}
 
 	@Override
-	public void commit() throws IOException {
+	public void commit() {
 		journalledPageFile.commit();
 	}
 

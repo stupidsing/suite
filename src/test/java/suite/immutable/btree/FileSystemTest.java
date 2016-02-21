@@ -70,7 +70,7 @@ public class FileSystemTest {
 		}
 	}
 
-	private void testWriteOneFile(FileSystem fs) throws IOException {
+	private void testWriteOneFile(FileSystem fs) {
 		Bytes filename = To.bytes("file");
 		Bytes data = To.bytes("data");
 

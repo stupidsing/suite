@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import suite.file.DataFile;
 import suite.file.SerializedFile;
+import suite.file.impl.RandomAccessibleFile.RandomAccessFileException;
 import suite.primitive.Bytes;
 import suite.util.Serialize.Serializer;
 
@@ -23,35 +24,19 @@ public class SerializedDataFileImpl<Pointer, V> implements Closeable, Serialized
 	private DataFile<Pointer> dataFile;
 	private Serializer<V> serializer;
 
-	private static class SerializedPagingException extends RuntimeException {
-		private static final long serialVersionUID = 1l;
-
-		public SerializedPagingException(IOException ex) {
-			super(ex);
-		}
-	}
-
 	public SerializedDataFileImpl(DataFile<Pointer> dataFile, Serializer<V> serializer) {
 		this.dataFile = dataFile;
 		this.serializer = serializer;
 	}
 
 	@Override
-	public void close() {
-		try {
-			dataFile.close();
-		} catch (IOException ex) {
-			throw new SerializedPagingException(ex);
-		}
+	public void close() throws IOException {
+		dataFile.close();
 	}
 
 	@Override
 	public void sync() {
-		try {
-			dataFile.sync();
-		} catch (IOException ex) {
-			throw new SerializedPagingException(ex);
-		}
+		dataFile.sync();
 	}
 
 	@Override
@@ -59,7 +44,7 @@ public class SerializedDataFileImpl<Pointer, V> implements Closeable, Serialized
 		try {
 			return serializer.read(new DataInputStream(dataFile.load(pointer).asInputStream()));
 		} catch (IOException ex) {
-			throw new SerializedPagingException(ex);
+			throw new RandomAccessFileException(ex);
 		}
 	}
 
@@ -68,7 +53,7 @@ public class SerializedDataFileImpl<Pointer, V> implements Closeable, Serialized
 		try {
 			dataFile.save(pointer, Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
 		} catch (IOException ex) {
-			throw new SerializedPagingException(ex);
+			throw new RandomAccessFileException(ex);
 		}
 	}
 

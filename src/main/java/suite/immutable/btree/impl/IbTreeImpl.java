@@ -393,7 +393,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	private class Mutate implements Closeable {
 		private SerializedPageFile<List<Integer>> stampFile;
 
-		private Mutate() throws IOException {
+		private Mutate() {
 			PageFileImpl stampPageFile = new PageFileImpl(filename + ".stamp", pageSize);
 			stampFile = new SerializedPageFileImpl<>(stampPageFile, Serialize.list(Serialize.int_));
 		}
@@ -417,7 +417,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	 * Constructor for larger trees that require another tree for page
 	 * allocation management.
 	 */
-	public IbTreeImpl(String filename, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) throws IOException {
+	public IbTreeImpl(String filename, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) {
 		this.filename = filename;
 		pageSize = config.getPageSize();
 		comparator = Util.nullsFirst(config.getComparator());
@@ -522,11 +522,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private void sync() {
-		try {
-			pageFile0.sync();
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		pageFile0.sync();
 	}
 
 	private Serializer<Page> createPageSerializer() {

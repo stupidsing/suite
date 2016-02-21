@@ -1,7 +1,6 @@
 package suite.file.impl;
 
 import java.io.Closeable;
-import java.io.IOException;
 
 import suite.file.PageFile;
 import suite.primitive.Bytes;
@@ -11,29 +10,29 @@ public class PageFileImpl implements Closeable, PageFile {
 	private RandomAccessibleFile file;
 	private int pageSize;
 
-	public PageFileImpl(String filename, int pageSize) throws IOException {
+	public PageFileImpl(String filename, int pageSize) {
 		file = new RandomAccessibleFile(filename);
 		this.pageSize = pageSize;
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		file.close();
 	}
 
 	@Override
-	public void sync() throws IOException {
+	public void sync() {
 		file.sync();
 	}
 
 	@Override
-	public Bytes load(Integer pointer) throws IOException {
+	public Bytes load(Integer pointer) {
 		int start = pointer * pageSize, end = start + pageSize;
 		return file.load(start, end);
 	}
 
 	@Override
-	public void save(Integer pointer, Bytes bytes) throws IOException {
+	public void save(Integer pointer, Bytes bytes) {
 		file.save(pointer * pageSize, bytes);
 	}
 

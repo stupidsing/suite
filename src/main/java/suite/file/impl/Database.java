@@ -17,7 +17,7 @@ public class Database implements Closeable {
 	private JournalledPageFile journalledPageFile;
 	private TransactionManager<Integer, String> txm;
 
-	public Database(String filename) throws IOException {
+	public Database(String filename) {
 		journalledPageFile = new JournalledPageFileImpl(filename, PageFile.defaultPageSize);
 
 		txm = new TransactionManager<>(() -> new LazyIbTreeMutator<>( //
@@ -33,7 +33,7 @@ public class Database implements Closeable {
 		journalledPageFile.close();
 	}
 
-	public <T> T transact(Fun<KeyValueStoreMutator<Integer, String>, T> callback) throws IOException {
+	public <T> T transact(Fun<KeyValueStoreMutator<Integer, String>, T> callback) {
 		try {
 			return txm.begin(callback);
 		} finally {

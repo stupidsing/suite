@@ -21,7 +21,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 	private SerializedPageFile<Bytes> allocMapFile;
 	private int lastAllocatedPointer;
 
-	public AllocatorImpl(SerializedPageFile<Bytes> pageFile) throws IOException {
+	public AllocatorImpl(SerializedPageFile<Bytes> pageFile) {
 		allocMapFile = pageFile;
 	}
 

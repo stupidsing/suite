@@ -20,19 +20,13 @@ public class B_TreeFileSystemImpl implements FileSystem {
 	private B_Tree<Bytes, Integer> b_tree;
 	private FileSystemMutator mutator;
 
-	public B_TreeFileSystemImpl(String filename, int pageSize) throws IOException {
+	public B_TreeFileSystemImpl(String filename, int pageSize) {
 		jpf = new JournalledPageFileImpl(filename, pageSize);
 
 		b_tree = new B_TreeBuilder<>(keyUtil.serializer(), Serialize.int_) //
 				.build(jpf, false, Bytes.comparator, pageSize);
 
-		KeyDataStoreMutator<Bytes> b_treeMutator = new B_TreeMutator<>(b_tree, () -> {
-			try {
-				jpf.commit();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-		});
+		KeyDataStoreMutator<Bytes> b_treeMutator = new B_TreeMutator<>(b_tree, () -> jpf.commit());
 
 		mutator = new FileSystemMutatorImpl(keyUtil, () -> b_treeMutator);
 	}
@@ -43,7 +37,7 @@ public class B_TreeFileSystemImpl implements FileSystem {
 	}
 
 	@Override
-	public void create() throws IOException {
+	public void create() {
 		b_tree.create();
 		jpf.commit();
 	}

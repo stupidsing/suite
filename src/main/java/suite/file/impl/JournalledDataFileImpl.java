@@ -60,7 +60,7 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDat
 			, PageFile jpf //
 			, PageFile ppf //
 			, int pageSize //
-			, Serializer<Pointer> ps) throws IOException {
+			, Serializer<Pointer> ps) {
 		dataFile = df;
 		journalPageFile = new SerializedPageFileImpl<>(jpf, journalEntrySerializer);
 		pointerPageFile = new SerializedPageFileImpl<>(ppf, Serialize.int_);
@@ -82,7 +82,7 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDat
 	/**
 	 * Marks a snapshot that data can be recovered to.
 	 */
-	public synchronized void commit() throws IOException {
+	public synchronized void commit() {
 		while (nCommittedJournalEntries < journalEntries.size()) {
 			JournalEntry journalEntry = journalEntries.get(nCommittedJournalEntries++);
 			dataFile.save(journalEntry.pointer, journalEntry.bytes);
@@ -97,13 +97,13 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDat
 	 * failure, upon the return of method call.
 	 */
 	@Override
-	public synchronized void sync() throws IOException {
+	public synchronized void sync() {
 		journalPageFile.sync();
 		saveJournal();
 		pointerPageFile.sync();
 	}
 
-	private void saveJournal() throws IOException {
+	private void saveJournal() {
 		pointerPageFile.save(0, nCommittedJournalEntries);
 
 		if (128 < nCommittedJournalEntries)
@@ -113,7 +113,7 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDat
 	/**
 	 * Shortens the journal by applying them to page file.
 	 */
-	public synchronized void applyJournal() throws IOException {
+	public synchronized void applyJournal() {
 
 		// Make sure all changes are written to main file
 		dataFile.sync();
@@ -132,7 +132,7 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDat
 	}
 
 	@Override
-	public synchronized Bytes load(Pointer pointer) throws IOException {
+	public synchronized Bytes load(Pointer pointer) {
 		int jp = findPageInJournal(pointer);
 		if (jp < 0)
 			return dataFile.load(pointer);
@@ -141,7 +141,7 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDat
 	}
 
 	@Override
-	public synchronized void save(Pointer pointer, Bytes bytes) throws IOException {
+	public synchronized void save(Pointer pointer, Bytes bytes) {
 		int jp = findDirtyPageInJournal(pointer);
 
 		if (jp < 0) {

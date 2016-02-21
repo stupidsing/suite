@@ -1,7 +1,6 @@
 package suite.file.impl;
 
 import java.io.Closeable;
-import java.io.IOException;
 
 import suite.file.DataFile;
 import suite.file.ExtentAllocator.Extent;
@@ -20,31 +19,31 @@ public class SubExtentFileImpl implements Closeable, ExtentFile {
 	}
 
 	@Override
-	public void sync() throws IOException {
+	public void sync() {
 		parent.sync();
 	}
 
 	@Override
-	public Bytes load(Extent extent) throws IOException {
+	public Bytes load(Extent extent) {
 		return parent.load(convert(extent));
 	}
 
 	@Override
-	public void save(Extent extent, Bytes bytes) throws IOException {
+	public void save(Extent extent, Bytes bytes) {
 		parent.save(convert(extent), bytes);
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 	}
 
-	private Extent convert(Extent extent0) throws IOException {
+	private Extent convert(Extent extent0) {
 		Extent extent1 = new Extent(extent0.start + startPointer, extent0.end + startPointer);
 
 		if (startPointer <= extent1.start && extent1.end <= endPointer)
 			return extent1;
 		else
-			throw new IOException("Extent index out of range");
+			throw new RuntimeException("Extent index out of range");
 	}
 
 }
