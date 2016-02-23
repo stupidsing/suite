@@ -52,18 +52,7 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 
 	public LazyIbTreeExtentMetadataFilePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
 		Serializer<T> ts1 = Serialize.nullable(ts);
-		Serializer<Extent> es = new Serializer<Extent>() {
-			public Extent read(DataInput dataInput) throws IOException {
-				int start = dataInput.readInt();
-				int end = dataInput.readInt();
-				return new Extent(start, end);
-			}
-
-			public void write(DataOutput dataOutput, Extent value) throws IOException {
-				dataOutput.writeByte(value.start);
-				dataOutput.writeByte(value.end);
-			}
-		};
+		Serializer<Extent> es = Serialize.extent();
 		Serializer<Pair<T, Extent>> ps = Serialize.pair(ts1, es);
 		Serializer<List<Pair<T, Extent>>> lps = Serialize.list(ps);
 		PageFile pf0 = new SubPageFileImpl(pf, 0, 1);
