@@ -159,11 +159,13 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public Bytes subbytes(int s, int e) {
+		int size = size();
 		if (s < 0)
-			s += size();
-		if (e < s)
-			e += size();
-
+			s += size;
+		if (e < 0)
+			e += size;
+		s = Math.min(size, s);
+		e = Math.min(size, e);
 		return subbytes0(start + s, start + e);
 	}
 
@@ -235,8 +237,6 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	private Bytes subbytes0(int start, int end) {
-		checkOpenBounds(start);
-		checkOpenBounds(end);
 		Bytes result = Bytes.of(bs, start, end);
 
 		// Avoid small pack of bytes object keeping a large buffer
@@ -244,11 +244,6 @@ public class Bytes implements Iterable<Byte> {
 			result = empty.append(result); // Do not share reference
 
 		return result;
-	}
-
-	private void checkOpenBounds(int index) {
-		if (index < start || end < index)
-			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "}");
 	}
 
 	private void checkClosedBounds(int index) {

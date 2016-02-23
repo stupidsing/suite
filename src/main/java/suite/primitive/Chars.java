@@ -158,11 +158,13 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public Chars subchars(int s, int e) {
+		int size = size();
 		if (s < 0)
-			s += size();
-		if (e < s)
-			e += size();
-
+			s += size;
+		if (e < 0)
+			e += size;
+		s = Math.min(size, s);
+		e = Math.min(size, e);
 		return subchars0(start + s, start + e);
 	}
 
@@ -234,8 +236,6 @@ public class Chars implements Iterable<Character> {
 	}
 
 	private Chars subchars0(int start, int end) {
-		checkOpenBounds(start);
-		checkOpenBounds(end);
 		Chars result = new Chars(cs, start, end);
 
 		// Avoid small pack of chars object keeping a large buffer
@@ -243,11 +243,6 @@ public class Chars implements Iterable<Character> {
 			result = empty.append(result); // Do not share reference
 
 		return result;
-	}
-
-	private void checkOpenBounds(int index) {
-		if (index < start || end < index)
-			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "}");
 	}
 
 	private void checkClosedBounds(int index) {
