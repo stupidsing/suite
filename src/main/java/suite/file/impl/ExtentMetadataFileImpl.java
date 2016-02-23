@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.file.DataFile;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
 import suite.file.PageFile;
@@ -19,8 +18,10 @@ import suite.util.Serialize.Serializer;
 
 public class ExtentMetadataFileImpl implements Closeable, ExtentFile {
 
+	public static int blockSize = defaultPageSize - 12;
+
 	private Serializer<Extent> extentSerializer = Serialize.extent();
-	private Serializer<Bytes> bytesSerializer = Serialize.bytes(defaultPageSize - 8);
+	private Serializer<Bytes> bytesSerializer = Serialize.variableLengthBytes();
 
 	private Serializer<Block> serializer = new Serializer<Block>() {
 		public Block read(DataInput dataInput) throws IOException {
@@ -75,9 +76,8 @@ public class ExtentMetadataFileImpl implements Closeable, ExtentFile {
 
 	@Override
 	public void save(Extent extent, Bytes bytes) {
-		int bs = DataFile.defaultPageSize - 8;
 		for (int pointer = extent.start, p = 0; pointer < extent.end; pointer++) {
-			int p1 = p + bs;
+			int p1 = p + blockSize;
 			pageFile.save(pointer, new Block(extent, bytes.subbytes(p, p1)));
 			p = p1;
 		}

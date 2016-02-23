@@ -122,6 +122,22 @@ public class Serialize {
 		};
 	}
 
+	public static Serializer<Bytes> variableLengthBytes() {
+		return new Serializer<Bytes>() {
+			public Bytes read(DataInput dataInput) throws IOException {
+				int length = dataInput.readInt();
+				byte bs[] = new byte[length];
+				dataInput.readFully(bs);
+				return Bytes.of(bs);
+			}
+
+			public void write(DataOutput dataOutput, Bytes bytes) throws IOException {
+				dataOutput.writeInt(bytes.size());
+				bytes.write(dataOutput);
+			}
+		};
+	}
+
 	/**
 	 * Serializes a string as default character set (UTF-8).
 	 *

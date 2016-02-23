@@ -15,7 +15,6 @@ import suite.adt.BiMap;
 import suite.adt.HashBiMap;
 import suite.adt.IdentityKey;
 import suite.adt.Pair;
-import suite.file.DataFile;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
@@ -160,8 +159,8 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 	}
 
 	private Extent save0(int start, PersistSlot<T> value) {
+		int bs = ExtentMetadataFileImpl.blockSize;
 		Bytes bytes = Rethrow.ioException(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
-		int bs = DataFile.defaultPageSize - 8;
 		Extent extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
 		extentMetadataFile.save(extent, bytes);
 		return extent;
