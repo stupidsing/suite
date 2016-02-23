@@ -359,7 +359,7 @@ public class Util {
 		int length = s.length();
 		if (start < 0)
 			start += length;
-		if (end <= 0)
+		if (end < 0)
 			end += length;
 		end = Math.min(length, end);
 		return s.substring(start, end);
