@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import suite.adt.Pair;
+import suite.file.ExtentAllocator.Extent;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 
@@ -24,6 +25,42 @@ public class Serialize {
 		public V read(DataInput dataInput) throws IOException;
 
 		public void write(DataOutput dataOutput, V value) throws IOException;
+	}
+
+	/**
+	 * Serialize bytes.
+	 *
+	 * Size = length
+	 */
+	public static Serializer<Bytes> bytes(int length) {
+		return new Serializer<Bytes>() {
+			public Bytes read(DataInput dataInput) throws IOException {
+				byte bs[] = new byte[length];
+				dataInput.readFully(bs);
+				return Bytes.of(bs);
+			}
+
+			public void write(DataOutput dataOutput, Bytes bytes) throws IOException {
+				bytes.write(dataOutput);
+				for (int i = bytes.size(); i < length; i++)
+					dataOutput.write(0);
+			}
+		};
+	}
+
+	public static Serializer<Extent> extent() {
+		return new Serializer<Extent>() {
+			public Extent read(DataInput dataInput) throws IOException {
+				int start = dataInput.readInt();
+				int end = dataInput.readInt();
+				return new Extent(start, end);
+			}
+
+			public void write(DataOutput dataOutput, Extent value) throws IOException {
+				dataOutput.writeByte(value.start);
+				dataOutput.writeByte(value.end);
+			}
+		};
 	}
 
 	/**
@@ -81,27 +118,6 @@ public class Serialize {
 			public void write(DataOutput dataOutput, Pair<T0, T1> pair) throws IOException {
 				serializer0.write(dataOutput, pair.t0);
 				serializer1.write(dataOutput, pair.t1);
-			}
-		};
-	}
-
-	/**
-	 * Serialize bytes.
-	 *
-	 * Size = length
-	 */
-	public static Serializer<Bytes> bytes(int length) {
-		return new Serializer<Bytes>() {
-			public Bytes read(DataInput dataInput) throws IOException {
-				byte bs[] = new byte[length];
-				dataInput.readFully(bs);
-				return Bytes.of(bs);
-			}
-
-			public void write(DataOutput dataOutput, Bytes bytes) throws IOException {
-				bytes.write(dataOutput);
-				for (int i = bytes.size(); i < length; i++)
-					dataOutput.write(0);
 			}
 		};
 	}
