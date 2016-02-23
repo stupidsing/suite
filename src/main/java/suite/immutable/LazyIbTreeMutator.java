@@ -20,7 +20,7 @@ import suite.util.Serialize.Serializer;
 public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 
 	private SerializedPageFile<Integer> superblockFile;
-	private LazyIbTreePageFilePersister<Pair<K, V>> persister;
+	private LazyIbTreePersister<Integer, Pair<K, V>> persister;
 	private LazyIbTree<Pair<K, V>> tree;
 
 	public LazyIbTreeMutator(PageFile pageFile, Comparator<K> kc, Serializer<K> ks, Serializer<V> vs) {
