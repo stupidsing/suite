@@ -83,10 +83,6 @@ public class ExtentMetadataFileImpl implements Closeable, ExtentFile {
 		}
 	}
 
-	public Extent next(Extent extent) {
-		return pageFile.load(extent.end).extent;
-	}
-
 	public List<Extent> scan(int start, int end) {
 		List<Extent> extents = new ArrayList<>();
 		int pointer = start;
