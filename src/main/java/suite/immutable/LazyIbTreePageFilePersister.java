@@ -1,6 +1,5 @@
 package suite.immutable;
 
-import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -24,7 +23,7 @@ import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
-public class LazyIbTreePageFilePersister<T> implements Closeable {
+public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integer, T> {
 
 	private SerializedPageFile<Integer> nPagesFile;
 	private SerializedPageFile<PersistSlot<T>> pageFile;

@@ -1,6 +1,5 @@
 package suite.immutable;
 
-import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -31,7 +30,7 @@ import suite.util.Rethrow;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
-public class LazyIbTreeExtentMetadataFilePersister<T> implements Closeable {
+public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersister<Extent, T> {
 
 	private SerializedPageFile<Integer> nPagesFile;
 	private ExtentMetadataFileImpl extentMetadataFile;
