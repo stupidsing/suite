@@ -26,8 +26,8 @@ import suite.file.impl.SubPageFileImpl;
 import suite.immutable.LazyIbTree.Slot;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
-import suite.util.Rethrow;
 import suite.util.FunUtil.Sink;
+import suite.util.Rethrow;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 

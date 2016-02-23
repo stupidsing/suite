@@ -24,8 +24,8 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
 import suite.primitive.Chars;
-import suite.util.Rethrow;
 import suite.util.FunUtil.Fun;
+import suite.util.Rethrow;
 import suite.util.Util;
 
 public class MonadIntrinsics {

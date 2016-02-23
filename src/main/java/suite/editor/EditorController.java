@@ -19,8 +19,8 @@ import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
-import suite.util.Rethrow;
 import suite.util.FunUtil.Fun;
+import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.Util;
 

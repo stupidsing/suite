@@ -10,8 +10,8 @@ import java.util.Map;
 import suite.primitive.Bytes;
 import suite.primitive.BytesUtil;
 import suite.streamlet.Outlet;
-import suite.util.FunUtil.Source;
 import suite.util.FunUtil;
+import suite.util.FunUtil.Source;
 import suite.util.To;
 
 public class HttpUtil {
