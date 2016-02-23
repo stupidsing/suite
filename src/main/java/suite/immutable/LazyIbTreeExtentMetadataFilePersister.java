@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.adt.BiMap;
 import suite.adt.HashBiMap;
@@ -39,7 +38,7 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 	private Serializer<PersistSlot<T>> serializer;
 
 	private Object writeLock = new Object();
-	private AtomicInteger nPages;
+	private int nPages;
 	private BiMap<Extent, IdentityKey<List<Slot<T>>>> slotsByPointer = new HashBiMap<>();
 
 	public static class PersistSlot<T> {
@@ -71,13 +70,13 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 		this.comparator = comparator;
 		nPagesFile = new SerializedPageFileImpl<>(pf0, Serialize.int_);
 		extentFile = new SerializedExtentFileImpl<>(extentMetadataFile = new ExtentMetadataFileImpl(pf1), serializer);
-		nPages = new AtomicInteger(nPagesFile.load(0));
+		nPages = nPagesFile.load(0);
 	}
 
 	@Override
 	public void close() throws IOException {
 		synchronized (writeLock) {
-			nPagesFile.save(0, nPages.get());
+			nPagesFile.save(0, nPages);
 			extentFile.close();
 			nPagesFile.close();
 		}
@@ -95,7 +94,7 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 
 	public Map<Extent, Extent> gc(List<Extent> pointers, int back) {
 		synchronized (writeLock) {
-			int end = nPages.get();
+			int end = nPages;
 			int start = Math.max(0, end - back);
 			List<Extent> extents = extentMetadataFile.scan(start, end);
 			Map<Extent, Boolean> isInUse = new HashMap<>();
@@ -126,18 +125,10 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 					map.put(extent0, extent1);
 				}
 
-			nPages.set(pointer);
+			nPages = pointer;
 			slotsByPointer.clear();
 			return map;
 		}
-	}
-
-	private Extent saveFrom(int start, PersistSlot<T> value) {
-		Bytes bytes = Rethrow.ioException(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
-		int bs = DataFile.defaultPageSize - 8;
-		Extent extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
-		extentMetadataFile.save(extent, bytes);
-		return extent;
 	}
 
 	private List<Slot<T>> load_(Extent pointer) {
@@ -155,19 +146,21 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 	private Extent save_(List<Slot<T>> slots) {
 		IdentityKey<List<Slot<T>>> key = IdentityKey.of(slots);
 		Extent extent = slotsByPointer.inverse().get(key);
-
 		if (extent == null) {
 			List<Pair<T, Extent>> pairs = Read.from(slots) //
 					.map(slot -> Pair.of(slot.pivot, save_(slot.readSlots()))) //
 					.toList();
-
-			int count = 1;
-			int pointer = nPages.getAndAdd(count);
-			slotsByPointer.put(extent = new Extent(pointer, pointer + count), key);
-
-			extentFile.save(extent, new PersistSlot<>(pairs));
+			slotsByPointer.put(extent = saveFrom(nPages, new PersistSlot<>(pairs)), key);
+			nPages = extent.end;
 		}
+		return extent;
+	}
 
+	private Extent saveFrom(int start, PersistSlot<T> value) {
+		Bytes bytes = Rethrow.ioException(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
+		int bs = DataFile.defaultPageSize - 8;
+		Extent extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
+		extentMetadataFile.save(extent, bytes);
 		return extent;
 	}
 

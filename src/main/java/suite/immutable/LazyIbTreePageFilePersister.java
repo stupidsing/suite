@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.adt.BiMap;
 import suite.adt.HashBiMap;
@@ -29,7 +28,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 	private SerializedPageFile<PersistSlot<T>> pageFile;
 	private Comparator<T> comparator;
 	private Object writeLock = new Object();
-	private AtomicInteger nPages;
+	private int nPages;
 	private BiMap<Integer, IdentityKey<List<Slot<T>>>> slotsByPointer = new HashBiMap<>();
 
 	public static class PersistSlot<T> {
@@ -60,13 +59,13 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 		this.comparator = comparator;
 		nPagesFile = new SerializedPageFileImpl<>(pf0, Serialize.int_);
 		pageFile = new SerializedPageFileImpl<>(pf1, pss);
-		nPages = new AtomicInteger(nPagesFile.load(0));
+		nPages = nPagesFile.load(0);
 	}
 
 	@Override
 	public void close() throws IOException {
 		synchronized (writeLock) {
-			nPagesFile.save(0, nPages.get());
+			nPagesFile.save(0, nPages);
 			pageFile.close();
 			nPagesFile.close();
 		}
@@ -84,7 +83,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 
 	public Map<Integer, Integer> gc(List<Integer> pointers, int back) {
 		synchronized (writeLock) {
-			int end = nPages.get();
+			int end = nPages;
 			int start = Math.max(0, end - back);
 			boolean isInUse[] = new boolean[end - start];
 
@@ -113,7 +112,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 					map.put(p0, p1++);
 				}
 
-			nPages.set(p1);
+			nPages = p1;
 			slotsByPointer.clear();
 			return map;
 		}
@@ -138,7 +137,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 			List<Pair<T, Integer>> pairs = Read.from(slots) //
 					.map(slot -> Pair.of(slot.pivot, save_(slot.readSlots()))) //
 					.toList();
-			slotsByPointer.put(pointer = nPages.getAndIncrement(), key);
+			slotsByPointer.put(pointer = nPages++, key);
 			pageFile.save(pointer, new PersistSlot<>(pairs));
 		}
 		return pointer;
