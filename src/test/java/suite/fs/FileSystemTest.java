@@ -1,4 +1,4 @@
-package suite.immutable.btree;
+package suite.fs;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,8 +11,6 @@ import java.nio.file.Paths;
 import org.junit.Test;
 
 import suite.file.PageFile;
-import suite.fs.FileSystem;
-import suite.fs.FileSystemMutator;
 import suite.fs.impl.B_TreeFileSystemImpl;
 import suite.fs.impl.IbTreeFileSystemImpl;
 import suite.immutable.btree.impl.IbTreeConfiguration;
