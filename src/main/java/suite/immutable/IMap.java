@@ -7,7 +7,7 @@ import suite.streamlet.Streamlet;
 
 public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
-	private ITree<Pair<K, V>> tree = new I23Tree<>(Pair.<K, V> comparatorByFirst());
+	private ITree<Pair<K, V>> tree = new IbTree<>(Pair.<K, V> comparatorByFirst());
 
 	public IMap() {
 	}

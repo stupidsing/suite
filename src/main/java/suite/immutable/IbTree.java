@@ -10,7 +10,7 @@ import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.Util;
 
-public class I23Tree<T> implements ITree<T> {
+public class IbTree<T> implements ITree<T> {
 
 	private int maxBranchFactor = 4;
 	private int minBranchFactor = maxBranchFactor / 2;
@@ -48,12 +48,12 @@ public class I23Tree<T> implements ITree<T> {
 		}
 	}
 
-	public I23Tree(Comparator<T> comparator) {
+	public IbTree(Comparator<T> comparator) {
 		this.root = Arrays.asList(new Slot(null, null));
 		this.comparator = comparator;
 	}
 
-	private I23Tree(Comparator<T> comparator, List<Slot> root) {
+	private IbTree(Comparator<T> comparator, List<Slot> root) {
 		this.root = root;
 		this.comparator = comparator;
 	}
@@ -113,7 +113,7 @@ public class I23Tree<T> implements ITree<T> {
 		return fs != null && fs.c == 0 ? fs.slot.pivot : null;
 	}
 
-	public I23Tree<T> add(T t) {
+	public IbTree<T> add(T t) {
 		return update(t, t0 -> {
 			if (t0 == null)
 				return t;
@@ -128,16 +128,16 @@ public class I23Tree<T> implements ITree<T> {
 	 *
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
-	public I23Tree<T> replace(T t) {
+	public IbTree<T> replace(T t) {
 		return update(t, t_ -> t);
 	}
 
-	public I23Tree<T> remove(T t) {
-		return new I23Tree<>(comparator, createRoot(update(root, t, t_ -> null)));
+	public IbTree<T> remove(T t) {
+		return new IbTree<>(comparator, createRoot(update(root, t, t_ -> null)));
 	}
 
-	public I23Tree<T> update(T t, Fun<T, T> fun) {
-		return new I23Tree<>(comparator, createRoot(update(root, t, fun)));
+	public IbTree<T> update(T t, Fun<T, T> fun) {
+		return new IbTree<>(comparator, createRoot(update(root, t, fun)));
 	}
 
 	private List<Slot> update(List<Slot> node0, T t, Fun<T, T> fun) {

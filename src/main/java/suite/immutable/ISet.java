@@ -7,7 +7,7 @@ import suite.util.Util;
 
 public class ISet<V extends Comparable<V>> implements Iterable<V> {
 
-	private ITree<V> tree = new I23Tree<V>(Util.comparator());
+	private ITree<V> tree = new IbTree<V>(Util.comparator());
 
 	public ISet() {
 	}
