@@ -7,33 +7,27 @@ import java.util.Comparator;
 import java.util.List;
 
 import suite.adt.Pair;
-import suite.file.PageFile;
 import suite.file.SerializedPageFile;
-import suite.file.impl.SerializedPageFileImpl;
-import suite.file.impl.SubPageFileImpl;
 import suite.fs.KeyValueStoreMutator;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
-import suite.util.Serialize;
-import suite.util.Serialize.Serializer;
 
-public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
+public class LazyIbTreeMutator<Pointer, K, V> implements KeyValueStoreMutator<K, V> {
 
-	private SerializedPageFile<Integer> superblockFile;
-	private LazyIbTreePersister<Integer, Pair<K, V>> persister;
+	private SerializedPageFile<Pointer> superblockFile;
+	private LazyIbTreePersister<Pointer, Pair<K, V>> persister;
 	private LazyIbTree<Pair<K, V>> tree;
 
-	public LazyIbTreeMutator(PageFile pageFile, Comparator<K> kc, Serializer<K> ks, Serializer<V> vs) {
-		PageFile pf0 = new SubPageFileImpl(pageFile, 0, 1);
-		PageFile pf1 = new SubPageFileImpl(pageFile, 1, Integer.MAX_VALUE);
-		Comparator<Pair<K, V>> comparator = (p0, p1) -> kc.compare(p0.t0, p1.t0);
+	public LazyIbTreeMutator( //
+			SerializedPageFile<Pointer> superblockFile, //
+			LazyIbTreePersister<Pointer, Pair<K, V>> persister, //
+			Comparator<K> kc) {
+		this.superblockFile = superblockFile;
+		this.persister = persister;
 
-		superblockFile = new SerializedPageFileImpl<>(pf0, Serialize.nullable(Serialize.int_));
-		persister = new LazyIbTreePageFilePersister<>(pf1, comparator, Serialize.pair(ks, vs));
-
-		Integer pointer = superblockFile.load(0);
+		Pointer pointer = superblockFile.load(0);
 		if (pointer == null)
-			superblockFile.save(0, pointer = persister.save(new LazyIbTree<>(comparator)));
+			superblockFile.save(0, pointer = persister.save(new LazyIbTree<>((p0, p1) -> kc.compare(p0.t0, p1.t0))));
 		tree = persister.load(pointer);
 	}
 
@@ -65,8 +59,8 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 	@Override
 	public void end(boolean isComplete) {
 		if (isComplete) {
-			int pointer1 = persister.save(tree);
-			int pointerx = persister.gc(Arrays.asList(pointer1), 9).get(pointer1);
+			Pointer pointer1 = persister.save(tree);
+			Pointer pointerx = persister.gc(Arrays.asList(pointer1), 9).get(pointer1);
 			superblockFile.save(0, pointerx);
 		}
 
