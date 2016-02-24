@@ -1,6 +1,5 @@
 package suite.file.impl;
 
-import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -16,7 +15,7 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
-public class ExtentMetadataFileImpl implements Closeable, ExtentFile {
+public class ExtentMetadataFileImpl implements ExtentFile {
 
 	public static int blockSize = defaultPageSize - 12;
 

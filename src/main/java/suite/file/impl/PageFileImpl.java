@@ -1,11 +1,9 @@
 package suite.file.impl;
 
-import java.io.Closeable;
-
 import suite.file.PageFile;
 import suite.primitive.Bytes;
 
-public class PageFileImpl implements Closeable, PageFile {
+public class PageFileImpl implements PageFile {
 
 	private RandomAccessibleFile file;
 	private int pageSize;

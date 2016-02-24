@@ -1,6 +1,5 @@
 package suite.file.impl;
 
-import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -21,7 +20,7 @@ import suite.util.Serialize.Serializer;
  *
  * @author ywsing
  */
-public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDataFile<Pointer> {
+public class JournalledDataFileImpl<Pointer> implements JournalledDataFile<Pointer> {
 
 	private DataFile<Pointer> dataFile;
 	private SerializedPageFile<JournalEntry> journalPageFile;

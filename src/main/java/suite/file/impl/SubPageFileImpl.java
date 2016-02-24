@@ -1,11 +1,9 @@
 package suite.file.impl;
 
-import java.io.Closeable;
-
 import suite.file.PageFile;
 import suite.primitive.Bytes;
 
-public class SubPageFileImpl implements Closeable, PageFile {
+public class SubPageFileImpl implements PageFile {
 
 	private PageFile parent;
 	private int startPointer, endPointer;
