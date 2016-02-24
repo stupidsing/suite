@@ -10,10 +10,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import suite.file.PageFile;
 import suite.fs.impl.B_TreeFileSystemImpl;
-import suite.fs.impl.IbTreeFileSystemImpl;
-import suite.immutable.btree.impl.IbTreeConfiguration;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Streamlet;
@@ -27,39 +24,14 @@ public class FileSystemTest {
 	}
 
 	@Test
-	public void testIbTreeFileSystem() throws IOException {
-		testIbTree(FileUtil.tmp + "/ibTree-fs", this::testWriteOneFile);
-	}
-
-	@Test
 	public void testB_TreeFileSystem() throws IOException {
 		testB_Tree(FileUtil.tmp + "/b_tree-fs", this::testWriteOneFile);
 	}
 
-	// Writing too many files (testWriteFiles1) would fail this test case. Do
-	// not know why.
-	@Test
-	public void testIbTreeFileSystem1() throws IOException {
-		testIbTree(FileUtil.tmp + "/ibTree-fs1", this::testWriteFiles0);
-		testIbTree(FileUtil.tmp + "/ibTree-fs1", this::testReadFile);
-	}
-
 	@Test
 	public void testB_TreeFileSystem1() throws IOException {
-		testB_Tree(FileUtil.tmp + "/b_tree-fs1", this::testWriteFiles1);
+		testB_Tree(FileUtil.tmp + "/b_tree-fs1", this::testWriteFiles);
 		testB_Tree(FileUtil.tmp + "/b_tree-fs1", this::testReadFile);
-	}
-
-	private void testIbTree(String name, TestCase testCase) throws IOException {
-		IbTreeConfiguration<Bytes> config = new IbTreeConfiguration<>();
-		config.setFilenamePrefix(name);
-		config.setPageSize(PageFile.defaultPageSize);
-		config.setMaxBranchFactor(PageFile.defaultPageSize / 64);
-		config.setCapacity(64 * 1024);
-
-		try (FileSystem fs = new IbTreeFileSystemImpl(config)) {
-			testCase.test(fs);
-		}
 	}
 
 	private void testB_Tree(String name, TestCase testCase) throws IOException {
@@ -83,11 +55,7 @@ public class FileSystemTest {
 		assertEquals(0, fsm.list(filename, null).size());
 	}
 
-	private void testWriteFiles0(FileSystem fs) throws IOException {
-		testWriteFile(fs, "src/test/java/suite/immutable/");
-	}
-
-	private void testWriteFiles1(FileSystem fs) throws IOException {
+	private void testWriteFiles(FileSystem fs) throws IOException {
 		testWriteFile(fs, "src/test/java/");
 	}
 
@@ -105,7 +73,7 @@ public class FileSystemTest {
 	}
 
 	private void testReadFile(FileSystem fs) throws IOException {
-		String filename = "src/test/java/suite/immutable/btree/FileSystemTest.java";
+		String filename = "src/test/java/suite/fs/FileSystemTest.java";
 		FileSystemMutator fsm = fs.mutate();
 		Bytes name = Bytes.of(filename.getBytes(FileUtil.charset));
 		Copy.stream(fsm.read(name).asInputStream(), System.out);
