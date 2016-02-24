@@ -22,20 +22,6 @@ public class ExtentMetadataFileImpl implements Closeable, ExtentFile {
 
 	private Serializer<Extent> extentSerializer = Serialize.extent();
 	private Serializer<Bytes> bytesSerializer = Serialize.variableLengthBytes();
-
-	private Serializer<Block> serializer = new Serializer<Block>() {
-		public Block read(DataInput dataInput) throws IOException {
-			Extent extent = extentSerializer.read(dataInput);
-			Bytes bytes = bytesSerializer.read(dataInput);
-			return new Block(extent, bytes);
-		}
-
-		public void write(DataOutput dataOutput, Block block) throws IOException {
-			extentSerializer.write(dataOutput, block.extent);
-			bytesSerializer.write(dataOutput, block.bytes);
-		}
-	};
-
 	private SerializedPageFile<Block> pageFile;
 
 	private class Block {
@@ -49,7 +35,18 @@ public class ExtentMetadataFileImpl implements Closeable, ExtentFile {
 	}
 
 	public ExtentMetadataFileImpl(PageFile pageFile) {
-		this.pageFile = new SerializedPageFileImpl<>(pageFile, serializer);
+		this.pageFile = new SerializedPageFileImpl<>(pageFile, new Serializer<Block>() {
+			public Block read(DataInput dataInput) throws IOException {
+				Extent extent = extentSerializer.read(dataInput);
+				Bytes bytes = bytesSerializer.read(dataInput);
+				return new Block(extent, bytes);
+			}
+
+			public void write(DataOutput dataOutput, Block block) throws IOException {
+				extentSerializer.write(dataOutput, block.extent);
+				bytesSerializer.write(dataOutput, block.bytes);
+			}
+		});
 	}
 
 	@Override
