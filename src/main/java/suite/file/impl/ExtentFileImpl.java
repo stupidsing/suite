@@ -15,7 +15,7 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
-public class ExtentMetadataFileImpl implements ExtentFile {
+public class ExtentFileImpl implements ExtentFile {
 
 	public static int blockSize = defaultPageSize - 12;
 
@@ -33,7 +33,7 @@ public class ExtentMetadataFileImpl implements ExtentFile {
 		}
 	}
 
-	public ExtentMetadataFileImpl(PageFile pageFile) {
+	public ExtentFileImpl(PageFile pageFile) {
 		this.pageFile = new SerializedPageFileImpl<>(pageFile, new Serializer<Block>() {
 			public Block read(DataInput dataInput) throws IOException {
 				Extent extent = extentSerializer.read(dataInput);

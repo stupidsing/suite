@@ -11,9 +11,9 @@ import suite.file.impl.SubPageFileImpl;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
-public class LazyIbTreeExtentMetadataFileMutator<K, V> extends LazyIbTreeMutator<Extent, K, V> {
+public class LazyIbTreeExtentFileMutator<K, V> extends LazyIbTreeMutator<Extent, K, V> {
 
-	public static <K, V> LazyIbTreeExtentMetadataFileMutator<K, V> of( //
+	public static <K, V> LazyIbTreeExtentFileMutator<K, V> of( //
 			PageFile pageFile, //
 			Comparator<K> kc, //
 			Serializer<K> ks, //
@@ -23,11 +23,11 @@ public class LazyIbTreeExtentMetadataFileMutator<K, V> extends LazyIbTreeMutator
 		PageFile pf0 = new SubPageFileImpl(pageFile, 0, 1);
 		PageFile pf1 = new SubPageFileImpl(pageFile, 1, Integer.MAX_VALUE);
 		SerializedPageFile<Extent> superblockFile = new SerializedPageFileImpl<>(pf0, Serialize.nullable(Serialize.extent()));
-		LazyIbTreePersister<Extent, Pair<K, V>> persister = new LazyIbTreeExtentMetadataFilePersister<>(pf1, pc, ps);
-		return new LazyIbTreeExtentMetadataFileMutator<>(superblockFile, persister, kc);
+		LazyIbTreePersister<Extent, Pair<K, V>> persister = new LazyIbTreeExtentFilePersister<>(pf1, pc, ps);
+		return new LazyIbTreeExtentFileMutator<>(superblockFile, persister, kc);
 	}
 
-	private LazyIbTreeExtentMetadataFileMutator( //
+	private LazyIbTreeExtentFileMutator( //
 			SerializedPageFile<Extent> superblockFile, //
 			LazyIbTreePersister<Extent, Pair<K, V>> persister, //
 			Comparator<K> kc) {

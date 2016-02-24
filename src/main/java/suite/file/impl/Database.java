@@ -7,7 +7,7 @@ import suite.file.JournalledPageFile;
 import suite.file.PageFile;
 import suite.fs.KeyValueStoreMutator;
 import suite.fs.impl.TransactionManager;
-import suite.immutable.LazyIbTreeExtentMetadataFileMutator;
+import suite.immutable.LazyIbTreeExtentFileMutator;
 import suite.util.FunUtil.Fun;
 import suite.util.Serialize;
 import suite.util.Util;
@@ -20,7 +20,7 @@ public class Database implements Closeable {
 	public Database(String filename) {
 		journalledPageFile = new JournalledPageFileImpl(filename, PageFile.defaultPageSize);
 
-		txm = new TransactionManager<>(() -> LazyIbTreeExtentMetadataFileMutator.of( //
+		txm = new TransactionManager<>(() -> LazyIbTreeExtentFileMutator.of( //
 				journalledPageFile, //
 				Util.comparator(), //
 				Serialize.int_, //

@@ -18,7 +18,7 @@ import suite.adt.Pair;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
-import suite.file.impl.ExtentMetadataFileImpl;
+import suite.file.impl.ExtentFileImpl;
 import suite.file.impl.SerializedPageFileImpl;
 import suite.file.impl.SubPageFileImpl;
 import suite.immutable.LazyIbTree.Slot;
@@ -29,10 +29,10 @@ import suite.util.Rethrow;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
-public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersister<Extent, T> {
+public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Extent, T> {
 
 	private SerializedPageFile<Integer> nPagesFile;
-	private ExtentMetadataFileImpl extentMetadataFile;
+	private ExtentFileImpl extentMetadataFile;
 	private Comparator<T> comparator;
 	private Serializer<PersistSlot<T>> serializer;
 
@@ -48,7 +48,7 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 		}
 	}
 
-	public LazyIbTreeExtentMetadataFilePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
+	public LazyIbTreeExtentFilePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
 		Serializer<T> ts1 = Serialize.nullable(ts);
 		Serializer<Extent> es = Serialize.extent();
 		Serializer<Pair<T, Extent>> ps = Serialize.pair(ts1, es);
@@ -68,7 +68,7 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 
 		this.comparator = comparator;
 		nPagesFile = new SerializedPageFileImpl<>(pf0, Serialize.int_);
-		extentMetadataFile = new ExtentMetadataFileImpl(pf1);
+		extentMetadataFile = new ExtentFileImpl(pf1);
 		nPages = nPagesFile.load(0);
 	}
 
@@ -161,7 +161,7 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 	}
 
 	private Extent saveSlot(int start, PersistSlot<T> value) {
-		int bs = ExtentMetadataFileImpl.blockSize;
+		int bs = ExtentFileImpl.blockSize;
 		Bytes bytes = Rethrow.ioException(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
 		Extent extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
 		extentMetadataFile.save(extent, bytes);
