@@ -53,9 +53,6 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 		Serializer<Extent> es = Serialize.extent();
 		Serializer<Pair<T, Extent>> ps = Serialize.pair(ts1, es);
 		Serializer<List<Pair<T, Extent>>> lps = Serialize.list(ps);
-		PageFile pf0 = new SubPageFileImpl(pf, 0, 1);
-		PageFile pf1 = new SubPageFileImpl(pf, 1, Integer.MAX_VALUE);
-
 		serializer = new Serializer<PersistSlot<T>>() {
 			public PersistSlot<T> read(DataInput dataInput) throws IOException {
 				return new PersistSlot<>(lps.read(dataInput));
@@ -65,6 +62,9 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 				lps.write(dataOutput, value.pairs);
 			}
 		};
+
+		PageFile pf0 = new SubPageFileImpl(pf, 0, 1);
+		PageFile pf1 = new SubPageFileImpl(pf, 1, Integer.MAX_VALUE);
 
 		this.comparator = comparator;
 		nPagesFile = new SerializedPageFileImpl<>(pf0, Serialize.int_);
@@ -80,10 +80,12 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 		}
 	}
 
+	@Override
 	public LazyIbTree<T> load(Extent extent) {
 		return new LazyIbTree<>(comparator, load_(extent));
 	}
 
+	@Override
 	public Extent save(LazyIbTree<T> tree) {
 		synchronized (writeLock) {
 			return save_(tree.root);
@@ -107,18 +109,18 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 
 			for (Extent extent : Read.from(extents).reverse())
 				if (isInUse.contains(extent))
-					use.sink(Read.from(load0(extent).pairs).map(Pair::second).toList());
+					use.sink(Read.from(loadSlot(extent).pairs).map(Pair::second).toList());
 
 			Map<Extent, Extent> map = new HashMap<>();
 			int pointer = start;
 
 			for (Extent extent0 : extents)
 				if (isInUse.contains(extent0)) {
-					PersistSlot<T> ps0 = load0(extent0);
+					PersistSlot<T> ps0 = loadSlot(extent0);
 					List<Pair<T, Extent>> pairs0 = ps0.pairs;
 					List<Pair<T, Extent>> pairsx = Read.from(pairs0).map(Pair.map1(p -> map.getOrDefault(p, p))).toList();
 					PersistSlot<T> psx = new PersistSlot<>(pairsx);
-					Extent extent1 = save0(pointer, psx);
+					Extent extent1 = saveSlot(pointer, psx);
 					pointer = extent1.end;
 					map.put(extent0, extent1);
 				}
@@ -132,7 +134,7 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 	private List<Slot<T>> load_(Extent extent) {
 		IdentityKey<List<Slot<T>>> key = slotsByExtent.get(extent);
 		if (key == null) {
-			PersistSlot<T> ps = load0(extent);
+			PersistSlot<T> ps = loadSlot(extent);
 			List<Slot<T>> slots = Read.from(ps.pairs) //
 					.map(pair -> new Slot<>(() -> load_(pair.t1), pair.t0)) //
 					.toList();
@@ -148,17 +150,17 @@ public class LazyIbTreeExtentMetadataFilePersister<T> implements LazyIbTreePersi
 			List<Pair<T, Extent>> pairs = Read.from(slots) //
 					.map(slot -> Pair.of(slot.pivot, save_(slot.readSlots()))) //
 					.toList();
-			slotsByExtent.put(extent = save0(nPages, new PersistSlot<>(pairs)), key);
+			slotsByExtent.put(extent = saveSlot(nPages, new PersistSlot<>(pairs)), key);
 			nPages = extent.end;
 		}
 		return extent;
 	}
 
-	private PersistSlot<T> load0(Extent extent) {
+	private PersistSlot<T> loadSlot(Extent extent) {
 		return Rethrow.ioException(() -> serializer.read(new DataInputStream(extentMetadataFile.load(extent).asInputStream())));
 	}
 
-	private Extent save0(int start, PersistSlot<T> value) {
+	private Extent saveSlot(int start, PersistSlot<T> value) {
 		int bs = ExtentMetadataFileImpl.blockSize;
 		Bytes bytes = Rethrow.ioException(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
 		Extent extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);

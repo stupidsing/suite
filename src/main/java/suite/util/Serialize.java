@@ -57,8 +57,8 @@ public class Serialize {
 			}
 
 			public void write(DataOutput dataOutput, Extent value) throws IOException {
-				dataOutput.writeByte(value.start);
-				dataOutput.writeByte(value.end);
+				dataOutput.writeInt(value.start);
+				dataOutput.writeInt(value.end);
 			}
 		};
 	}
