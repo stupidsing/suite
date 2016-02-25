@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
-import suite.fs.KeyValueStoreMutator;
+import suite.fs.KeyValueStore;
 import suite.fs.impl.TransactionManager;
 import suite.immutable.LazyIbTreeExtentFileMutator;
 import suite.util.FunUtil.Fun;
@@ -33,7 +33,7 @@ public class Database implements Closeable {
 		journalledPageFile.close();
 	}
 
-	public <T> T transact(Fun<KeyValueStoreMutator<Integer, String>, T> callback) {
+	public <T> T transact(Fun<KeyValueStore<Integer, String>, T> callback) {
 		try {
 			return txm.begin(callback);
 		} finally {

@@ -1,5 +1,7 @@
 package suite.fs;
 
-public interface KeyDataStoreMutator<Key> extends KeyDataStore<Key>, KeyValueStoreMutator<Key, Integer> {
+public interface KeyDataStoreMutator<Key> extends KeyValueStoreMutator<Key, Integer> {
+
+	public KeyDataStore<Key> dataStore();
 
 }

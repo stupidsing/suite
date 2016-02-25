@@ -1,9 +1,9 @@
 package suite.btree.impl;
 
 import suite.btree.B_Tree;
+import suite.fs.KeyDataStore;
 import suite.fs.KeyDataStoreMutator;
-import suite.primitive.Bytes;
-import suite.streamlet.Streamlet;
+import suite.fs.KeyValueStore;
 
 public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 
@@ -22,43 +22,13 @@ public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 	}
 
 	@Override
-	public Streamlet<Key> keys(Key start, Key end) {
-		return b_tree.keys(start, end);
+	public KeyValueStore<Key, Integer> store() {
+		return b_tree;
 	}
 
 	@Override
-	public Integer get(Key key) {
-		return b_tree.get(key);
-	}
-
-	@Override
-	public Bytes getPayload(Key key) {
-		return b_tree.getPayload(key);
-	}
-
-	@Override
-	public boolean getTerminal(Key key) {
-		return b_tree.getTerminal(key);
-	}
-
-	@Override
-	public void put(Key key, Integer data) {
-		b_tree.put(key, data);
-	}
-
-	@Override
-	public void putPayload(Key key, Bytes payload) {
-		b_tree.putPayload(key, payload);
-	}
-
-	@Override
-	public void putTerminal(Key key) {
-		b_tree.putTerminal(key);
-	}
-
-	@Override
-	public void remove(Key key) {
-		b_tree.remove(key);
+	public KeyDataStore<Key> dataStore() {
+		return b_tree;
 	}
 
 }

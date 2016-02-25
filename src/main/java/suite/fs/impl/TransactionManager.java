@@ -10,6 +10,7 @@ import suite.concurrent.ObstructionFreeStm;
 import suite.concurrent.ObstructionFreeStm.Memory;
 import suite.concurrent.Stm;
 import suite.concurrent.Stm.TransactionStatus;
+import suite.fs.KeyValueStore;
 import suite.fs.KeyValueStoreMutator;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
@@ -37,36 +38,39 @@ public class TransactionManager<Key, Value> {
 		}
 
 		@Override
+		public KeyValueStore<Key, Value> store() {
+			KeyValueStore<Key, Value> store = mutator.store();
+
+			return new KeyValueStore<Key, Value>() {
+				public Streamlet<Key> keys(Key start, Key end) {
+					return store.keys(start, end);
+				}
+
+				public Value get(Key key) {
+					return stm.get(st, getMemory(key));
+				}
+
+				public void put(Key key, Value value) {
+					stm.put(st, getMemory(key), value);
+				}
+
+				public void remove(Key key) {
+					stm.put(st, getMemory(key), null);
+					store.remove(key);
+				}
+
+				private Memory<Value> getMemory(Key key) {
+					return memoryByKey.computeIfAbsent(key, key_ -> stm.create(store.get(key_)));
+				}
+			};
+		}
+
+		@Override
 		public void end(boolean isComplete) {
 			st.end(isComplete ? TransactionStatus.DONE____ : TransactionStatus.ROLLBACK);
 			mutator.end(isComplete);
 			if (isComplete)
 				flush();
-		}
-
-		@Override
-		public Streamlet<Key> keys(Key start, Key end) {
-			return mutator.keys(start, end);
-		}
-
-		@Override
-		public Value get(Key key) {
-			return stm.get(st, getMemory(key));
-		}
-
-		@Override
-		public void put(Key key, Value value) {
-			stm.put(st, getMemory(key), value);
-		}
-
-		@Override
-		public void remove(Key key) {
-			stm.put(st, getMemory(key), null);
-			mutator.remove(key);
-		}
-
-		private Memory<Value> getMemory(Key key) {
-			return memoryByKey.computeIfAbsent(key, key_ -> stm.create(mutator.get(key_)));
 		}
 	}
 
@@ -90,21 +94,22 @@ public class TransactionManager<Key, Value> {
 
 		if (ok) {
 			KeyValueStoreMutator<Key, Value> mutator = source.source();
+			KeyValueStore<Key, Value> store = mutator.store();
 			map.forEach((k, v) -> {
 				if (v != null)
-					mutator.put(k, v);
+					store.put(k, v);
 				else
-					mutator.remove(k);
+					store.remove(k);
 			});
 			mutator.end(ok);
 		}
 	}
 
-	public <T> T begin(Fun<KeyValueStoreMutator<Key, Value>, T> fun) {
+	public <T> T begin(Fun<KeyValueStore<Key, Value>, T> fun) {
 		KeyValueStoreMutator<Key, Value> mutator = begin();
 		boolean ok = false;
 		try {
-			T t = fun.apply(mutator);
+			T t = fun.apply(mutator.store());
 			ok = true;
 			return t;
 		} finally {

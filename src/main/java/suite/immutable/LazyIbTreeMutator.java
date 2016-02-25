@@ -6,19 +6,19 @@ import java.util.Comparator;
 
 import suite.adt.Pair;
 import suite.file.SerializedPageFile;
+import suite.fs.KeyValueStore;
 import suite.fs.KeyValueStoreMutator;
-import suite.streamlet.Streamlet;
 
-public class LazyIbTreeMutator<Pointer, K, V> implements KeyValueStoreMutator<K, V> {
+public class LazyIbTreeMutator<Pointer, Key, Value> implements KeyValueStoreMutator<Key, Value> {
 
 	private SerializedPageFile<Pointer> superblockFile;
-	private LazyIbTreePersister<Pointer, Pair<K, V>> persister;
-	private LazyIbTreeStore<K, V> store;
+	private LazyIbTreePersister<Pointer, Pair<Key, Value>> persister;
+	private LazyIbTreeStore<Key, Value> store;
 
 	public LazyIbTreeMutator( //
 			SerializedPageFile<Pointer> superblockFile, //
-			LazyIbTreePersister<Pointer, Pair<K, V>> persister, //
-			Comparator<K> kc) {
+			LazyIbTreePersister<Pointer, Pair<Key, Value>> persister, //
+			Comparator<Key> kc) {
 		this.superblockFile = superblockFile;
 		this.persister = persister;
 
@@ -26,26 +26,6 @@ public class LazyIbTreeMutator<Pointer, K, V> implements KeyValueStoreMutator<K,
 		if (pointer == null)
 			superblockFile.save(0, pointer = persister.save(new LazyIbTree<>((p0, p1) -> kc.compare(p0.t0, p1.t0))));
 		store = new LazyIbTreeStore<>(persister.load(pointer));
-	}
-
-	@Override
-	public Streamlet<K> keys(K start, K end) {
-		return store.keys(start, end);
-	}
-
-	@Override
-	public V get(K key) {
-		return store.get(key);
-	}
-
-	@Override
-	public void put(K key, V value) {
-		store.put(key, value);
-	}
-
-	@Override
-	public void remove(K key) {
-		store.remove(key);
 	}
 
 	@Override
@@ -62,6 +42,11 @@ public class LazyIbTreeMutator<Pointer, K, V> implements KeyValueStoreMutator<K,
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	@Override
+	public KeyValueStore<Key, Value> store() {
+		return store;
 	}
 
 }
