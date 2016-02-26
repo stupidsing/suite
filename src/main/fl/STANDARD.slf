@@ -203,6 +203,11 @@ define tails :=
 define take-while := fun =>
 	fold-right {h => if (fun {h}) then (cons {h}) else (t => ())} {}
 >>
+define transpose :=
+	case
+	|| `$c; $cs` => zip {`;`} {c} {transpose {cs}}
+	|| anything => (define list := ((); list) >> list)
+>>
 define uniq :=
 	fold-right {item => list =>
 		case
@@ -249,11 +254,6 @@ define split := separator =>
 	. filter {`= separator` . head}
 	. filter {not . `=` {}}
 	. tails . cons {separator}
->>
-define transpose :=
-	case
-	|| `$c; $cs` => zip {`;`} {c} {transpose {cs}}
-	|| anything => (define list := ((); list) >> list)
 >>
 ---------------------------------------------------------------------------
 define contains := m =>
