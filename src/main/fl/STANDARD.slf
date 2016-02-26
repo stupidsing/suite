@@ -250,14 +250,10 @@ define split := separator =>
 	. filter {not . `=` {}}
 	. tails . cons {separator}
 >>
-define transpose := m =>
-	let height := length {m} >>
-	let width := if (0 < height) then (m | head | length) else 0 >>
-	if (0 < width) then
-		let w1 := width - 1 >>
-		let gets := tail | replicate {w1} | tails | reverse >>
-		gets | map {f => map {head . apply {f}} {m}}
-	else ()
+define transpose :=
+	case
+	|| `$c; $cs` => zip {`;`} {c} {transpose {cs}}
+	|| anything => (define list := ((); list) >> list)
 >>
 ---------------------------------------------------------------------------
 define contains := m =>

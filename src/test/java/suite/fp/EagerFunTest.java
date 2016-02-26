@@ -331,12 +331,6 @@ public class EagerFunTest {
 	}
 
 	@Test
-	public void testTranspose() {
-		String r = "(1; 4; 7;); (2; 5; 8;); (3; 6; 9;);";
-		assertEquals(Suite.parse(r), eval("transpose {(1; 2; 3;); (4; 5; 6;); (7; 8; 9;);}"));
-	}
-
-	@Test
 	public void testUniq() {
 		assertEquals(Suite.parse("1; 2; 3; 5; 2;"), eval("uniq {1; 2; 2; 2; 3; 5; 2;}"));
 	}

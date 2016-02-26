@@ -119,6 +119,12 @@ public class LazyFunTest {
 		assertEquals(Suite.parse("0; 1; 2; 3;"), eval("0 | iterate {`+ 1`} | take-while {`<= 3`}"));
 	}
 
+	@Test
+	public void testTranspose() {
+		String r = "(1; 4; 7;); (2; 5; 8;); (3; 6; 9;);";
+		assertEquals(Suite.parse(r), eval("transpose {(1; 2; 3;); (4; 5; 6;); (7; 8; 9;);}"));
+	}
+
 	private static Node eval(String f) {
 		return Suite.evaluateFun(f, true);
 	}
