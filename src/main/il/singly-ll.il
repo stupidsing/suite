@@ -1,5 +1,5 @@
 constant ll-node .t = fix :ll-node struct (
-| pointer:ll-node +next
+| pointer::ll-node +next
 | .t +current
 );
 
