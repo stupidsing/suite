@@ -171,6 +171,12 @@ ic-parse-sugar (for (.init; .cond; .step) do .do) (.init; while .cond do (.do; .
 #
 ic-parse-sugar (for .var in (.start, .end) do .do) (declare .var = .start; while (.var < .end) do (.do; .var += 1))
 #
+ic-parse-sugar (new ()) (new (struct ()) ())
+#
+ic-parse-sugar (new (.name = .value, .nvs0)) (new (struct (.tns | .type .name)) (.name = .value, .nvs1))
+	:- to.atom "_" .type
+	, ic-parse-sugar (new .nvs0) (new (struct .tns) .nvs1)
+#
 ic-parse-sugar (not .b) (if .b then (no-type false) else (no-type true))
 #
 ic-parse-sugar (var .var = .value; .do) (var .var; {.var} = .value; .do)
