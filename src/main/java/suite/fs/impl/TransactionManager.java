@@ -106,7 +106,7 @@ public class TransactionManager<Key, Value> {
 	}
 
 	public <T> T begin(Fun<KeyValueStore<Key, Value>, T> fun) {
-		KeyValueStoreMutator<Key, Value> mutator = begin();
+		KeyValueStoreMutator<Key, Value> mutator = new Transaction(source.source());
 		boolean ok = false;
 		try {
 			T t = fun.apply(mutator.store());
@@ -115,10 +115,6 @@ public class TransactionManager<Key, Value> {
 		} finally {
 			mutator.end(ok);
 		}
-	}
-
-	public KeyValueStoreMutator<Key, Value> begin() {
-		return new Transaction(source.source());
 	}
 
 }
