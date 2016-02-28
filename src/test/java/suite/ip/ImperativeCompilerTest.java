@@ -33,7 +33,7 @@ public class ImperativeCompilerTest {
 	@Test
 	public void testDataStructureType() {
 		String s = "" //
-				+ "declare object = new (+next = 1,);" //
+				+ "declare object = new (+prev = 0, +next = 1,);" //
 				+ "object/+next";
 		Bytes bytes = imperativeCompiler.compile(0, s);
 		assertNotNull(bytes);

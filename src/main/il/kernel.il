@@ -75,11 +75,13 @@ declare wrmsr = function [msr, value,] (
 
 #include(bitmap.il);
 #include(doubly-ll.il);
+#include(singly-ll.il);
 #include(sync.il);
 
 #include(buddy-allocator.il);
 #include(console.il);
 #include(first-fit-allocator.il);
+#include(gc.il);
 
 constant mm-allocate .type = (
 	(ba-allocate [size-of .type,]) as pointer:.type
