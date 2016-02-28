@@ -81,7 +81,6 @@ declare wrmsr = function [msr, value,] (
 #include(buddy-allocator.il);
 #include(console.il);
 #include(first-fit-allocator.il);
-#include(gc.il);
 
 constant mm-allocate .type = (
 	(ba-allocate [size-of .type,]) as pointer:.type
