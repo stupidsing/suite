@@ -60,7 +60,7 @@ public class TreeRewriter {
 	}
 
 	public Node rewrite(Fun<Node, Node> fun, Node node0) {
-		return fun.apply(Rewriter.transform(node0, n -> rewrite(fun, n)));
+		return fun.apply(Rewriter.map(node0, n -> rewrite(fun, n)));
 	}
 
 	private boolean eq(Node n0, Node n1) {

@@ -120,7 +120,7 @@ public class Rewriter {
 		}
 	}
 
-	public static Node transform(Node node, Fun<Node, Node> fun) {
+	public static Node map(Node node, Fun<Node, Node> fun) {
 		NodeRead nr = NodeRead.of(node);
 		List<Pair<Node, Node>> children1 = new ArrayList<>();
 		boolean isSame = true;

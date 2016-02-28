@@ -34,7 +34,7 @@ public class Generalizer {
 			} else if ((rt = Tree.decompose(right)) != null)
 				right = nextTree = Tree.of(rt.getOperator(), generalize(rt.getLeft()), rt.getRight());
 			else
-				right = Rewriter.transform(right, this::generalize);
+				right = Rewriter.map(right, this::generalize);
 
 			Tree.forceSetRight(tree, right);
 			tree = nextTree;
