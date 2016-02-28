@@ -76,8 +76,9 @@ declare wrmsr = function [msr, value,] (
 #include(bitmap.il);
 #include(doubly-ll.il);
 #include(sync.il);
-#include(console.il);
+
 #include(buddy-allocator.il);
+#include(console.il);
 #include(first-fit-allocator.il);
 
 constant mm-allocate .type = (
@@ -94,14 +95,17 @@ constant log-dword .s .i = ( cs-puts [.s,]; cs-put-hex4 [.i,]; cs-nl []; );
 
 #include(apic.il);
 #include(irq.il);
-#include(scheduler.il);
-#include(idt.il);
 #include(phy-mem.il);
+#include(scheduler.il);
+
+#include(idt.il);
+#include(harddisk.il);
+#include(keyboard.il);
 #include(paging.il);
 #include(service.il);
+
 #include(time.il);
-#include(keyboard.il);
-#include(harddisk.il);
+
 #include(ne2k.il);
 
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
