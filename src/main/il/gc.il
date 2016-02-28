@@ -2,16 +2,16 @@ constant gc-free = 0;
 constant gc-allocated = 1;
 constant gc-marked = 2;
 
-constant gc-class = struct (
+constant gc-class .gc-node = struct (
 | int +size
 | int +number-of-pointers
 | (int * 0) +pointer-offsets
-| (function [gc-node, int, pointer:gc-node * 0,] int) +get-pointers
+| (function [pointer:.gc-node, int, pointer:.gc-node * 0,] int) +get-pointers
 );
 
-constant gc-node = ll-node struct (
+constant gc-node = fix :gc-node ll-node struct (
 | int +flag
-| pointer:gc-class +class
+| pointer:(gc-class :gc-node) +class
 );
 
 declare gc-sync = 0;
@@ -42,7 +42,7 @@ declare gc-mark = function [root,] (
 	{nodes/:(index =+ 1)/*} = root;
 
 	while (0 < index) do (
-		declare node = nodes/:(index += -1)/*;
+		declare node = nodes/:(index += -1);
 
 		if (node/*/+flag = gc-allocated) then (
 			{node/*/+flag} = gc-marked;
