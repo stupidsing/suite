@@ -70,11 +70,8 @@ public class CharsUtil {
 
 				while (!isMatched && p + ds <= buffer.size()) {
 					boolean isMatched_ = true;
-					for (int i = 0; i < ds; i++)
-						if (buffer.get(p + i) != delim.get(i)) {
-							isMatched_ = false;
-							break;
-						}
+					for (int i = 0; isMatched_ && i < ds; i++)
+						isMatched_ = buffer.get(p + i) == delim.get(i);
 					if (isMatched_)
 						isMatched = true;
 					else
