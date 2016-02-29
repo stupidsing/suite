@@ -24,7 +24,7 @@ declare gc-next = ll-next;
 declare gc-node-size = size-of gc-node;
 
 declare gc-create = function [node, class,] (
-	sl-create [node,];
+	ll-create [node,];
 	{node/*/+flag} = gc-free;
 	{node/*/+class} = class;
 );
