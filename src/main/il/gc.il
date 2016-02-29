@@ -39,7 +39,7 @@ declare gc-prepare = function [] (
 );
 
 declare gc-mark = function [root,] (
-	declare nodes = pointer:gc-node * 1024;
+	declare (pointer:gc-node * 1024) nodes;
 	declare index = 0;
 	{nodes/:(index =+ 1)/*} = root;
 
