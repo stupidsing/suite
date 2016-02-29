@@ -25,30 +25,32 @@ declare gc-next = ll-next;
 
 declare gc-node-size = size-of gc-node;
 
-declare gc-create = function [node, class,] (
+declare gc-create = function [pointer:gc-node node, class,] (
 	ll-create [node,];
-	{node/*/+flag} = gc-free;
-	{node/*/+class} = class;
+	{node/*/+current/+flag} = gc-free;
+	{node/*/+current/+class} = class;
 );
 
 declare gc-prepare = function [] (
 	declare node = head;
 	while ({node} = gc-next [node,]) do (
-		node/*/+flag = gc-free || {node/*/+flag} = gc-allocated
+		if (node/*/+current/+flag != gc-free) then (
+			{node/*/+current/+flag} = gc-allocated
+		) else ();
 	);
 );
 
 declare gc-mark = function [root,] (
 	declare (pointer:gc-node * 1024) nodes;
 	declare index = 0;
-	{nodes/:(index =+ 1)/*} = root;
+	{nodes/:(index =+ 1)} = root;
 
 	while (0 < index) do (
 		declare node = nodes/:(index += -1);
 
-		if (node/*/+flag = gc-allocated) then (
-			{node/*/+flag} = gc-marked;
-			declare class = node/*/+class;
+		if (node/*/+current/+flag = gc-allocated) then (
+			{node/*/+current/+flag} = gc-marked;
+			declare class = node/*/+current/+class;
 			if class then (
 				{index} = class/*/+get-pointers [node, index, nodes,];
 			) else ();
@@ -67,7 +69,7 @@ declare gc-merge = function [] (
 	declare node = head;
 	while node do (
 		declare node1 = gc-next [node,];
-		if (node1 && node/*/+flag = gc-free && node1/*/+flag = gc-free) then (
+		if (node1 && node/*/+current/+flag = gc-free && node1/*/+current/+flag = gc-free) then (
 			ll-remove-next [node,];
 		) else (
 			{node} = node1;
@@ -85,7 +87,7 @@ declare gc-gc = function [root,] (
 
 declare gc-allocate0 = function [pointer:gc-class class,] (
 	declare get-size = function [node,] (
-		declare next = node/*/+next;
+		declare next = node/*/+current/+next;
 		if next then (next as int - node as int - gc-node-size) else 0;
 	);
 
