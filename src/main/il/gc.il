@@ -11,7 +11,7 @@ constant gc-class = fix :gc-class struct (
 | int +size
 | int +number-of-pointers
 | (int * 0) +pointer-offsets
-| (function [pointer:(gc-node_ :gc-class), int, pointer:(gc-node_ :gc-class) * 0,] int) +get-pointers
+| (function [pointer:(gc-node_ :gc-class), int, pointer:(pointer:(gc-node_ :gc-class) * 1024),] int) +get-pointers
 );
 
 constant gc-node = gc-node_ gc-class;
@@ -52,7 +52,7 @@ declare gc-mark = function [root,] (
 			{node/*/+current/+flag} = gc-marked;
 			declare class = node/*/+current/+class;
 			if class then (
-				{index} = class/*/+get-pointers [node, index, nodes,];
+				{index} = class/*/+get-pointers [node, index, & nodes,];
 			) else ();
 		) else ();
 	);
@@ -61,7 +61,9 @@ declare gc-mark = function [root,] (
 declare gc-sweep = function [] (
 	declare node = head;
 	while ({node} = gc-next [node,]) do (
-		node/*/+flag = gc-marked || {node/*/+flag} = gc-free;
+		if (node/*/+current/+flag != gc-marked) then (
+			{node/*/+current/+flag} = gc-free;
+		) else ();
 	);
 );
 
@@ -86,21 +88,24 @@ declare gc-gc = function [root,] (
 );
 
 declare gc-allocate0 = function [pointer:gc-class class,] (
-	declare get-size = function [node,] (
-		declare next = node/*/+current/+next;
+	declare get-size = function [pointer:gc-node node,] (
+		declare next = node/*/+next;
 		if next then (next as int - node as int - gc-node-size) else 0;
 	);
 
 	declare size = class/*/+size;
 	declare node = null;
 	declare diff;
+	declare ok = false;
 
 	while (not ok) do (
 		declare next;
-		while ({ok} = ((diff = get-size [gc-current,] - size) < 0) && {next} = gc-next [gc-current,]) do (
+		while ({ok} = ((diff = get-size [gc-current,] - size) < 0) && ({next} = gc-next [gc-current,]) != null) do (
 			{gc-current} = next;
 		);
-		ok || gc-gc [];
+		if (not ok) then (
+			gc-gc [];
+		) else ();
 	);
 
 	if (gc-node-size + 4 <= diff) then (
