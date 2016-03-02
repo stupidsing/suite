@@ -2,6 +2,7 @@ package suite.file.impl;
 
 import suite.file.PageFile;
 import suite.primitive.Bytes;
+import suite.util.Util;
 
 public class PageFileImpl implements PageFile {
 
@@ -31,6 +32,7 @@ public class PageFileImpl implements PageFile {
 
 	@Override
 	public void save(Integer pointer, Bytes bytes) {
+		Util.assert_(bytes.size() <= pageSize);
 		file.save(pointer * pageSize, bytes);
 	}
 
