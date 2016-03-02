@@ -138,6 +138,18 @@ public class Serialize {
 		};
 	}
 
+	public static Serializer<String> variableLengthString() {
+		return new Serializer<String>() {
+			public String read(DataInput dataInput) throws IOException {
+				return dataInput.readUTF();
+			}
+
+			public void write(DataOutput dataOutput, String value) throws IOException {
+				dataOutput.writeUTF(value);
+			}
+		};
+	}
+
 	/**
 	 * Serializes a string as default character set (UTF-8).
 	 *
