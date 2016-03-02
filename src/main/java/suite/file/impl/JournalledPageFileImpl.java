@@ -7,11 +7,11 @@ public class JournalledPageFileImpl extends JournalledDataFileImpl<Integer> impl
 
 	public JournalledPageFileImpl(String filename, int pageSize) {
 		super( //
-				new PageFileImpl(filename, pageSize) //
-				, new PageFileImpl(filename + ".journal", pageSize + 4) //
-				, new PageFileImpl(filename + ".pointer", 4) //
-				, pageSize //
-				, Serialize.int_);
+				new PageFileImpl(filename, pageSize), //
+				new PageFileImpl(filename + ".journal", pageSize + 4), //
+				new PageFileImpl(filename + ".pointer", 4), //
+				pageSize, //
+				Serialize.int_);
 	}
 
 }
