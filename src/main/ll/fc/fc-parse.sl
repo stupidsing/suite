@@ -256,7 +256,7 @@ fc-parse-type (.paramType -> .returnType) (FUN-OF .paramType1 .returnType1)
 	, fc-parse-type .paramType .paramType1
 	, fc-parse-type .returnType .returnType1
 #
-fc-parse-type ([.type]) (LIST-OF .type1)
+fc-parse-type ([.type]) (FUNCTOR-OF LIST .type1)
 	:- !, fc-parse-type .type .type1
 #
 fc-parse-type (.functor^.type0) (FUNCTOR-OF .functor .type1)
@@ -287,7 +287,7 @@ fc-parse-type boolean BOOLEAN :- !
 #
 fc-parse-type number NUMBER :- !
 #
-fc-parse-type string (LIST-OF NUMBER) :- !
+fc-parse-type string (FUNCTOR-OF LIST NUMBER) :- !
 #
 fc-parse-type .type .type
 	:- fc-is-type-variable .type

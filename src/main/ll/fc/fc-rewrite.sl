@@ -94,9 +94,6 @@ fc-rewrite-type (FUN-OF .paramType0 .returnType0) (FUN-OF .paramType1 .returnTyp
 fc-rewrite-type (FUNCTOR-OF .functor .type0) (FUNCTOR-OF .functor .type1)
 	:- fc-rewrite-type .type0 .type1
 #
-fc-rewrite-type (LIST-OF .type0) (LIST-OF .type1)
-	:- fc-rewrite-type .type0 .type1
-#
 fc-rewrite-type NUMBER NUMBER
 #
 fc-rewrite-type (PAIR-OF .leftType0 .rightType0) (PAIR-OF .leftType1 .rightType1)

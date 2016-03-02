@@ -32,9 +32,9 @@ fc-infer-type-rule (APPLY .param .callee) .env .tr0/.trx .returnType
 	:- fc-infer-type-rule .callee .env .tr0/.tr1 (FUN-OF .paramType .returnType)
 	, fc-infer-type-rule .param .env .tr1/.trx .paramType
 #
-fc-infer-type-rule (CONS L .v0 .v1) .env .tr0/.trx (LIST-OF .t)
+fc-infer-type-rule (CONS L .v0 .v1) .env .tr0/.trx (FUNCTOR-OF LIST .t)
 	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t
-	, fc-infer-type-rule .v1 .env .tr1/.trx (LIST-OF .t)
+	, fc-infer-type-rule .v1 .env .tr1/.trx (FUNCTOR-OF LIST .t)
 #
 fc-infer-type-rule (CONS P .v0 .v1) .env .tr0/.trx (PAIR-OF .t0 .t1)
 	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t0
@@ -152,7 +152,7 @@ fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 fc-find-simple-type (BOOLEAN _) _ BOOLEAN #
 fc-find-simple-type (CHARS _) _ (FUNCTOR-OF n PAIR-OF (ATOM-OF Chars) ATOM-OF ()) #
 fc-find-simple-type (DO _) _ (FUNCTOR-OF Do _) #
-fc-find-simple-type NIL _ (LIST-OF _) :- ! #
+fc-find-simple-type NIL _ (FUNCTOR-OF LIST _) :- ! #
 fc-find-simple-type (NUMBER _) _ NUMBER #
 fc-find-simple-type (VAR .var) .ue/.ve/_ .type
 	:- once (
