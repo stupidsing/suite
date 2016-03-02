@@ -6,7 +6,7 @@ import suite.primitive.Bytes;
 
 public interface DataFile<Pointer> extends Closeable {
 
-	public static int defaultPageSize = 4096;
+	public static int defaultPageSize = 512;
 
 	public void sync();
 
