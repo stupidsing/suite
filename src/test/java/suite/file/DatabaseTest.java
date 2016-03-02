@@ -11,7 +11,7 @@ import suite.os.FileUtil;
 
 public class DatabaseTest {
 
-	private int nRecords = 65536;
+	private int nRecords = 1000;
 
 	@Test
 	public void testRollback() throws IOException {
@@ -35,14 +35,17 @@ public class DatabaseTest {
 			});
 
 			database.transact(tx -> {
-				for (int i = 0; i < nRecords; i += 2)
+				for (int i = 0; i < nRecords; i += 4)
 					tx.put(i, "updated-" + tx.get(i));
+				for (int i = 1; i < nRecords; i += 4)
+					tx.remove(i);
 				return true;
 			});
 
 			assertEquals("updated-sample", database.transact(tx -> tx.get(0)));
-			assertEquals("sample", database.transact(tx -> tx.get(1)));
-			assertEquals("updated-sample", database.transact(tx -> tx.get(2)));
+			assertEquals(null, database.transact(tx -> tx.get(1)));
+			assertEquals("sample", database.transact(tx -> tx.get(2)));
+			assertEquals("sample", database.transact(tx -> tx.get(3)));
 		}
 	}
 
