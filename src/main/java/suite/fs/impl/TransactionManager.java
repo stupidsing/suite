@@ -56,7 +56,6 @@ public class TransactionManager<Key, Value> {
 
 				public void remove(Key key) {
 					stm.put(st, getMemory(key), null);
-					store.remove(key);
 				}
 
 				private Memory<Value> getMemory(Key key) {
