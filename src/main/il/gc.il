@@ -119,7 +119,7 @@ declare gc-allocate0 = function [pointer:gc-class class,] (
 
 declare gc-allocate = function [class,] (
 	synchronized (& gc-sync) (
-		(gc-allocate0 [class,]) as int + gc-node-size;
+		declare p = (gc-allocate0 [class,]) as int + gc-node-size;
 		zero [p, size,];
 	);
 );
