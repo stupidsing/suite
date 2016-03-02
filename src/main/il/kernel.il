@@ -95,6 +95,7 @@ constant log-word .s .i = ( cs-puts [.s,]; cs-put-hex2 [.i,]; cs-nl []; );
 constant log-dword .s .i = ( cs-puts [.s,]; cs-put-hex4 [.i,]; cs-nl []; );
 
 #include(apic.il);
+#include(gc.il);
 #include(irq.il);
 #include(phy-mem.il);
 #include(scheduler.il);

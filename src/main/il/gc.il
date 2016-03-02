@@ -100,11 +100,11 @@ declare gc-allocate0 = function [pointer:gc-class class,] (
 
 	while (not ok) do (
 		declare next;
-		while ({ok} = ((diff = get-size [gc-current,] - size) < 0) && {next} = gc-next [gc-current,]) do (
+		while ({ok} = (({diff} = get-size [gc-current,] - size) < 0) && ({next} = gc-next [gc-current,]) != null) do (
 			{gc-current} = next;
 		);
 		if (not ok) then (
-			gc-gc [];
+			gc-gc [null,];
 		) else ();
 	);
 
@@ -112,15 +112,14 @@ declare gc-allocate0 = function [pointer:gc-class class,] (
 		declare node1 = (gc-current +offset (size + gc-node-size)) as pointer:gc-node;
 		gc-create [node1, class,];
 		ll-insert-next [gc-current, node1,];
-	) else ();
-
-	node;
+		node1;
+	) else null;
 );
 
-declare gc-allocate = function [class,] (
+declare gc-allocate = function [pointer:gc-class class,] (
 	synchronized (& gc-sync) (
 		declare p = (gc-allocate0 [class,]) as int + gc-node-size;
-		zero [p, size,];
+		zero [p, class/*/+size,];
 		p;
 	);
 );
@@ -135,6 +134,6 @@ declare gc-setup0 = function [buffer, size,] (
 
 declare gc-setup = function [] (
 	constant pool = int * 1048576;
-	declare p = (mm-allocate [pool,]) as int;
-	gc-setup0 [p as pointer:gc-node, size-of pool,];
+	declare p = (mm-allocate pool) as int;
+	gc-setup0 [p, size-of pool,];
 );
