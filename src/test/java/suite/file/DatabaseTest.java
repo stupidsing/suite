@@ -11,11 +11,13 @@ import suite.os.FileUtil;
 
 public class DatabaseTest {
 
+	private int nRecords = 65536;
+
 	@Test
 	public void testRollback() throws IOException {
 		try (Database database = new Database(FileUtil.tmp + "/database")) {
 			database.transact(tx -> {
-				for (int i = 0; i < 65536; i++)
+				for (int i = 0; i < nRecords; i++)
 					tx.put(i, "sample");
 				throw new RuntimeException();
 			});
@@ -27,13 +29,13 @@ public class DatabaseTest {
 	public void testUpdate() throws IOException {
 		try (Database database = new Database(FileUtil.tmp + "/database")) {
 			database.transact(tx -> {
-				for (int i = 0; i < 65536; i++)
+				for (int i = 0; i < nRecords; i++)
 					tx.put(i, "sample");
 				return true;
 			});
 
 			database.transact(tx -> {
-				for (int i = 0; i < 65536; i += 2)
+				for (int i = 0; i < nRecords; i += 2)
 					tx.put(i, "updated-" + tx.get(i));
 				return true;
 			});
