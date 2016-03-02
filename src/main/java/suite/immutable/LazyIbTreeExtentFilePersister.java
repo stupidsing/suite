@@ -32,7 +32,7 @@ import suite.util.Serialize.Serializer;
 public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Extent, T> {
 
 	private SerializedPageFile<Integer> nPagesFile;
-	private ExtentFileImpl extentMetadataFile;
+	private ExtentFileImpl extentFile;
 	private Comparator<T> comparator;
 	private Serializer<PersistSlot<T>> serializer;
 
@@ -68,7 +68,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 
 		this.comparator = comparator;
 		nPagesFile = new SerializedPageFileImpl<>(pf0, Serialize.int_);
-		extentMetadataFile = new ExtentFileImpl(pf1);
+		extentFile = new ExtentFileImpl(pf1);
 		nPages = nPagesFile.load(0);
 	}
 
@@ -96,7 +96,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		synchronized (writeLock) {
 			int end = nPages;
 			int start = Math.max(0, end - back);
-			List<Extent> extents = extentMetadataFile.scan(start, end);
+			List<Extent> extents = extentFile.scan(start, end);
 			Set<Extent> isInUse = new HashSet<>();
 
 			Sink<List<Extent>> use = extents_ -> {
@@ -157,14 +157,14 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	private PersistSlot<T> loadSlot(Extent extent) {
-		return Rethrow.ioException(() -> serializer.read(new DataInputStream(extentMetadataFile.load(extent).asInputStream())));
+		return Rethrow.ioException(() -> serializer.read(new DataInputStream(extentFile.load(extent).asInputStream())));
 	}
 
 	private Extent saveSlot(int start, PersistSlot<T> value) {
 		int bs = ExtentFileImpl.blockSize;
 		Bytes bytes = Rethrow.ioException(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
 		Extent extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
-		extentMetadataFile.save(extent, bytes);
+		extentFile.save(extent, bytes);
 		return extent;
 	}
 
