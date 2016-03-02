@@ -100,7 +100,7 @@ declare gc-allocate0 = function [pointer:gc-class class,] (
 
 	while (not ok) do (
 		declare next;
-		while ({ok} = ((diff = get-size [gc-current,] - size) < 0) && ({next} = gc-next [gc-current,]) != null) do (
+		while ({ok} = ((diff = get-size [gc-current,] - size) < 0) && {next} = gc-next [gc-current,]) do (
 			{gc-current} = next;
 		);
 		if (not ok) then (
