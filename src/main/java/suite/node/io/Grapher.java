@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.IdentityKey;
@@ -185,7 +186,7 @@ public class Grapher {
 						&& gn1.terminal instanceof Reference //
 						&& Binder.bind(gn1.terminal, mapi0.get(pair.t0).key, trail))
 					;
-				else if (gn0.type == gn1.type && gn0.terminal == gn1.terminal && gn0.op == gn1.op) {
+				else if (gn0.type == gn1.type && Objects.equals(gn0.terminal, gn1.terminal) && gn0.op == gn1.op) {
 					List<IntPair> children0 = gn0.children;
 					List<IntPair> children1 = gn1.children;
 					int size0 = children0.size();
