@@ -59,6 +59,11 @@ public class Util {
 		return resultSet;
 	}
 
+	public static void assert_(boolean b) {
+		if (!b)
+			throw new AssertionError();
+	}
+
 	public static char charAt(String s, int pos) {
 		if (pos < 0)
 			pos += s.length();

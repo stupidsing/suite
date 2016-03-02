@@ -14,6 +14,7 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
+import suite.util.Util;
 
 public class ExtentFileImpl implements ExtentFile {
 
@@ -63,8 +64,8 @@ public class ExtentFileImpl implements ExtentFile {
 		BytesBuilder bb = new BytesBuilder();
 		for (int pointer = extent.start; pointer < extent.end; pointer++) {
 			Block block = pageFile.load(pointer);
-			assert block.extent.start == extent.start;
-			assert block.extent.end == extent.end;
+			Util.assert_(block.extent.start == extent.start);
+			Util.assert_(block.extent.end == extent.end);
 			bb.append(block.bytes);
 		}
 		return bb.toBytes();
