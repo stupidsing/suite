@@ -1,7 +1,6 @@
 package suite.file;
 
 import java.io.Closeable;
-import java.util.Objects;
 
 import suite.util.Util;
 
@@ -29,7 +28,7 @@ public interface ExtentAllocator extends Closeable {
 		}
 
 		public int hashCode() {
-			return Objects.hashCode(start) ^ Objects.hashCode(end);
+			return start ^ end;
 		}
 	}
 
