@@ -23,7 +23,7 @@ public interface ExtentAllocator extends Closeable {
 		public boolean equals(Object object) {
 			if (Util.clazz(object) == Extent.class) {
 				Extent other = (Extent) object;
-				return Objects.equals(start, other.start) && Objects.equals(end, other.end);
+				return start == other.start && end == other.end;
 			} else
 				return false;
 		}
