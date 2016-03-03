@@ -113,21 +113,25 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 					use.sink(Read.from(loadSlot(extent).pairs).map(Pair::second).toList());
 
 			Map<Extent, Extent> map = new HashMap<>();
-			int pointer = start;
 
-			for (Extent extent0 : extents)
-				if (isInUse.contains(extent0)) {
-					PersistSlot<T> ps0 = loadSlot(extent0);
-					List<Pair<T, Extent>> pairs0 = ps0.pairs;
-					List<Pair<T, Extent>> pairsx = Read.from(pairs0).map(Pair.map1(p -> map.getOrDefault(p, p))).toList();
-					PersistSlot<T> psx = new PersistSlot<>(pairsx);
-					Extent extent1 = saveSlot(pointer, psx);
-					pointer = extent1.end;
-					map.put(extent0, extent1);
-				}
+			if (!extents.isEmpty()) {
+				int pointer = extents.get(0).start;
 
-			nPages = pointer;
-			slotsByExtent.clear();
+				for (Extent extent0 : extents)
+					if (isInUse.contains(extent0)) {
+						PersistSlot<T> ps0 = loadSlot(extent0);
+						List<Pair<T, Extent>> pairs0 = ps0.pairs;
+						List<Pair<T, Extent>> pairsx = Read.from(pairs0).map(Pair.map1(p -> map.getOrDefault(p, p))).toList();
+						PersistSlot<T> psx = new PersistSlot<>(pairsx);
+						Extent extent1 = saveSlot(pointer, psx);
+						pointer = extent1.end;
+						map.put(extent0, extent1);
+					}
+
+				nPages = pointer;
+				slotsByExtent.clear();
+			}
+
 			return map;
 		}
 	}
