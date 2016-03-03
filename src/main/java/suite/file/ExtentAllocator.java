@@ -16,6 +16,10 @@ public interface ExtentAllocator extends Closeable {
 			this.end = end;
 		}
 
+		public String toString() {
+			return start + "-" + end;
+		}
+
 		public boolean equals(Object object) {
 			if (Util.clazz(object) == Extent.class) {
 				Extent other = (Extent) object;
