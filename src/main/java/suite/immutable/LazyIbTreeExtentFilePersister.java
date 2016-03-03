@@ -96,7 +96,6 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		synchronized (writeLock) {
 			int end = nPages;
 			int start = Math.max(0, end - back);
-			List<Extent> extents = extentFile.scan(start, end);
 			Set<Extent> isInUse = new HashSet<>();
 
 			Sink<List<Extent>> use = extents_ -> {
@@ -106,6 +105,8 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 			};
 
 			use.sink(roots);
+
+			List<Extent> extents = extentFile.scan(start, end);
 
 			for (Extent extent : Read.from(extents).reverse())
 				if (isInUse.contains(extent))
