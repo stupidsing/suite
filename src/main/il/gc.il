@@ -104,7 +104,7 @@ declare gc-allocate0 = function [pointer:gc-class class,] (
 			{gc-current} = next;
 		);
 		if (not ok) then (
-			gc-gc [null,];
+			gc-gc [null,]; -- TODO how to find root?
 		) else ();
 	);
 
