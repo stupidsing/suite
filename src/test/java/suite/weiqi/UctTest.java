@@ -134,7 +134,7 @@ public class UctTest {
 
 	@Test
 	public void testUctGame() {
-		System.out.println(new Profiler().profile(() -> {
+		new Profiler().profile(() -> {
 			DecimalFormat df = new DecimalFormat("0.000");
 			int nThreads = Runtime.getRuntime().availableProcessors();
 			int nSimulations = 5000; // 20000
@@ -172,7 +172,7 @@ public class UctTest {
 				gameSet.play(move);
 				UserInterface.display(gameSet);
 			}
-		}));
+		});
 	}
 
 }

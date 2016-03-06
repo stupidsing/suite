@@ -39,14 +39,14 @@ public class PrecompileTest {
 
 	@Test
 	public void testThreeTimes() {
-		System.out.println(new Profiler().profile(() -> {
+		new Profiler().profile(() -> {
 			for (int i = 0; i < 3; i++)
 				LogUtil.duration("", () -> {
 					boolean b = Suite.precompile("STANDARD", new ProverConfig());
 					assertTrue(b);
 					return b;
 				});
-		}));
+		});
 	}
 
 }

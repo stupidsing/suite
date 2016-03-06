@@ -18,6 +18,22 @@ public class EbnfLrParseTest {
 	}
 
 	@Test
+	public void testComplexity() {
+		String e = "e0";
+		StringBuilder sb = new StringBuilder(e + " ::= \"0\" | \"1\"\n");
+		for (int i = 0; i < 6; i++) {
+			String enext = "e" + (i + 1);
+			String op = "op" + i;
+			sb.append(enext + " ::= " + e + " | " + e + " \"" + op + "\" " + enext + "\n");
+			e = enext;
+		}
+
+		System.out.println(sb.toString());
+		EbnfLrParse elp = EbnfLrParse.of(sb.toString(), e);
+		assertNotNull(elp.parse("0 op1 1"));
+	}
+
+	@Test
 	public void testEntity() throws IOException {
 		EbnfLrParse elp = EbnfLrParse.of("" //
 				+ "<digit> ::= \"0\" | \"1\"\n" //
