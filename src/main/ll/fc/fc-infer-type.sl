@@ -21,8 +21,7 @@
 --
 
 fc-infer-type .do .type
-	:- try (once (fc-infer-type-rule .do ()/()/() .tr/() .type)) .ex (fc-error .ex)
-	, fc-resolve-type-rules .tr
+	:- try (once (fc-infer-type-rule .do ()/()/() ()/() .type)) .ex (fc-error .ex)
 #
 
 fc-infer-type-rule .p .env .tr/.tr .type
@@ -91,10 +90,10 @@ fc-infer-type-rule (PRAGMA TYPE-RESOLVE .do) .env .tr/.tr .type
 fc-infer-type-rule (PRAGMA TYPE-SKIP-CHECK _) _ .tr/.tr _
 	:- !
 #
-fc-infer-type-rule (PRAGMA TYPE-SUPER .do) .ue/.ve/.te .tr0/.trx .superType
+fc-infer-type-rule (PRAGMA TYPE-SUPER .do) .ue/.ve/.te .tr .superType
 	:- !
-	, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .subType
-	, .tr1 = (SUB-SUPER-TYPE-PAIR .te .subType .superType, .trx)
+	, fc-infer-type-rule .do .ue/.ve/.te .tr .subType
+	, fc-sub-super-type-pair .te .subType .superType
 #
 fc-infer-type-rule (PRAGMA (TYPE-VERIFY .var .varType) .do) .env .tr0/.trx .type
 	:- !
@@ -170,9 +169,6 @@ fc-resolve-type-rules .tr
 
 fc-resolve-type-rules0 ()
 	:- !
-#
-fc-resolve-type-rules0 (SUB-SUPER-TYPE-PAIR .te .t0 .tx, .tr1)
-	:- !, fc-sub-super-type-pair .te .t0 .tx, fc-resolve-type-rules0 .tr1
 #
 fc-resolve-type-rules0 _
 	:- !, throw "Not enough type information"
