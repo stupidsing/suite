@@ -27,11 +27,11 @@ fc-precompile .lib .do0/($$PRECOMPILE .pc) .preds
 	, !, write "Inferencing types", nl
 	, !, fc-infer-type .do1 NUMBER
 	, !, .pred0 = (
-		fc-infer-type-rule-using-lib .lib .do .ue/.ve/.te .tr1 .type
+		fc-infer-type-rule-using-lib .lib .do .ue/.ve/.te ()/() .type
 			:- fc-dict-union-replace .ue .ues .ue1
 			, fc-dict-union-replace .ve .ves .ve1
 			, append .te .tes .te1
-			, fc-infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
+			, fc-infer-type-rule .do .ue1/.ve1/.te1 .type
 	)
 	, !, write 'Verifying intermediate output', nl
 	, once (not (is.cyclic .do1); fc-error "Cyclic data detected")
@@ -77,7 +77,7 @@ fc-precompile-compile-node .parsed .frame/.ve .c0/.cx/.reg
 fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 
 -- Type inferencer
-fc-infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
+fc-infer-type-rule ($$PRECOMPILE .uvt ()/() _) .uvt NUMBER :- ! #
 
 -- Lazyifier and optimizer
 fc-rewrite ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #

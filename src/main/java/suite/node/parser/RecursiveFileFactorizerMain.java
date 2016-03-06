@@ -22,11 +22,11 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 
 	protected boolean run(String args[]) throws IOException {
 		List<Pair<String, String>> fts = Arrays.asList( //
-				Pair.of("declare .0 as .1", "declare .1 .0") //
+				Pair.of("fc-infer-type-rule .0 .1 .2 .3", "fc-infer-type-rule .0 .1 .3") //
 		);
 
-		FileUtil.findPaths(Paths.get("src/")) //
-				.filter(path -> WildcardUtil.isMatch("*.il", path.getFileName().toString())) //
+		FileUtil.findPaths(Paths.get("src/main/ll/fc/fc-infer-type.sl")) //
+				.filter(path -> WildcardUtil.isMatch("*.sl", path.getFileName().toString())) //
 				.forEach(path -> {
 					try {
 						RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
