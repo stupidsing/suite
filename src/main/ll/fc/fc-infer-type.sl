@@ -82,11 +82,6 @@ fc-infer-type-rule (PRAGMA (TYPE-OF .type1) .do) .env .tr .type
 	, graph.generalize .type1 .type
 	, fc-infer-type-rule .do .env .tr .type
 #
-fc-infer-type-rule (PRAGMA TYPE-RESOLVE .do) .env .tr/.tr .type
-	:- !
-	, fc-infer-type-rule .do .env .tr1/() .type
-	, fc-resolve-type-rules .tr1
-#
 fc-infer-type-rule (PRAGMA TYPE-SKIP-CHECK _) _ .tr/.tr _
 	:- !
 #
@@ -118,10 +113,9 @@ fc-infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 fc-infer-type-rule (USING _ _ .lib .do) .env .tr/.tr .type
 	:- fc-load-precompiled-library .lib (.pred # _ # _ #)
 	, clone .pred (
-		fc-infer-type-rule-using-lib .lib .do .env .tr1/() .type :- .tail
+		fc-infer-type-rule-using-lib .lib .do .env ()/() .type :- .tail
 	)
 	, once .tail
-	, fc-resolve-type-rules .tr1
 #
 fc-infer-type-rule .do .env .tr .type
 	:- (.do = UNWRAP .do1; .do = WRAP .do1)
@@ -160,18 +154,6 @@ fc-find-simple-type (VAR .var) .ue/.ve/_ .type
 		; fc-define-default-fun _ .var _
 		; throw "Undefined variable" .var
 	)
-#
-
-fc-resolve-type-rules .tr
-	:- once (not (is.cyclic .tr); throw "Cyclic types")
-	, once (fc-resolve-type-rules0 .tr; throw "Unmatched types")
-#
-
-fc-resolve-type-rules0 ()
-	:- !
-#
-fc-resolve-type-rules0 _
-	:- !, throw "Not enough type information"
 #
 
 fc-sub-super-type-pair .te .subType .superType

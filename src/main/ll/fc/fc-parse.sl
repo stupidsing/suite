@@ -32,7 +32,7 @@ fc-parse (data .class as .type >> .do) .do1
 	:- !, fc-parse (data .class over some () as .type >> .do) .do1
 #
 fc-parse (define .var := .value >> .do) (
-	PRAGMA DEF-OUTSIDE (DEF-VARS (.var (PRAGMA TYPE-RESOLVE .value1),) .do1)
+	PRAGMA DEF-OUTSIDE (DEF-VARS (.var .value1,) .do1)
 ) :- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var
@@ -59,7 +59,7 @@ fc-parse (if-bind (.v0 := .v1) then .then else .else) .parsed
 	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
 #
 fc-parse (lets (.var := .value # .list) >> .do) (
-	DEF-VARS (.var (PRAGMA TYPE-RESOLVE .value1), .list1) .do1
+	DEF-VARS (.var .value1, .list1) .do1
 ) :- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var
