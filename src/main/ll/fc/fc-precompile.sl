@@ -21,7 +21,7 @@ fc-precompile-lib .lib
 #
 
 fc-precompile .lib .do0/($$PRECOMPILE .pc) .preds
-	:- .pc = .ues/.ves/.tes .trs/.trs .fcs
+	:- .pc = .ues/.ves/.tes .fcs
 	, !, write "Parsing program", nl
 	, !, fc-parse .do0 .do1
 	, !, write "Inferencing types", nl
@@ -63,7 +63,7 @@ fc-precompile-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.r
 	, fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)
 	, once (.mode = EAGER, .pred = .eagerPred; .pred = .lazyPred)
 	, clone .pred (
-		fc-compile-using-lib .mode .lib ($$PRECOMPILE _ _ .frame/.ve1 _) _/() _ :- .tail
+		fc-compile-using-lib .mode .lib ($$PRECOMPILE _ .frame/.ve1 _) _/() _ :- .tail
 	)
 	, once .tail
 	, fc-dict-union-bind .ve .ve1 .ve2
@@ -77,10 +77,10 @@ fc-precompile-compile-node .parsed .frame/.ve .c0/.cx/.reg
 fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 
 -- Type inferencer
-fc-infer-type-rule ($$PRECOMPILE .uvt ()/() _) .uvt NUMBER :- ! #
+fc-infer-type-rule ($$PRECOMPILE .uvt _) .uvt NUMBER :- ! #
 
 -- Lazyifier and optimizer
 fc-rewrite ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
 
 -- Code generator
-fc-compile ($$PRECOMPILE _ _ .fve .cr) .fve .cr :- ! #
+fc-compile ($$PRECOMPILE _ .fve .cr) .fve .cr :- ! #
