@@ -5,7 +5,6 @@
 -- .ue - dictionary of inside variables / their corresponding types
 -- .ve - dictionary of outside variables / their corresponding types, specialized
 -- .te - list of types / their corresponding belonging classes
--- .tr - type deduction rule to be assembled
 --
 -- Inside variables include parent function definitions and parameter variables
 -- that do not need type specialization.
@@ -48,7 +47,7 @@ fc-infer-type-rule (DECONS _ _ .headVar .tailVar .then .else) .ue0/.ve/.te .type
 fc-infer-type-rule (DEF-VARS .vvs .do) .ue/.ve/.te .type
 	:- fc-define-var-types () .vvs .vvts .ue/.ue1
 	, .env1 = .ue1/.ve/.te
-	, fc-infer-var-types .vvts .env1 ()/()
+	, fc-infer-var-types .vvts .env1
 	, fc-infer-type-rule .do .env1 .type
 #
 fc-infer-type-rule ERROR _ _
@@ -67,7 +66,7 @@ fc-infer-type-rule (
 ) .ue/.ve/.te .type
 	:- !
 	, fc-define-var-types () .vvs .vvts .ue/.ue1
-	, fc-infer-var-types .vvts .ue1/.ve/.te ()/()
+	, fc-infer-var-types .vvts .ue1/.ve/.te
 	, fc-define-var-types SP .vvs .vvts .ve/.ve1
 	, fc-infer-type-rule .do .ue/.ve1/.te .type
 #
@@ -113,7 +112,7 @@ fc-infer-type-rule (TREE .oper .left .right) .env .type
 fc-infer-type-rule (USING _ _ .lib .do) .env .type
 	:- fc-load-precompiled-library .lib (.pred # _ # _ #)
 	, clone .pred (
-		fc-infer-type-rule-using-lib .lib .do .env ()/() .type :- .tail
+		fc-infer-type-rule-using-lib .lib .do .env .type :- .tail
 	)
 	, once .tail
 #
@@ -133,12 +132,12 @@ fc-define-var-types .sp (.var .value, .vvs) (.var .value .varType0, .vvts) .ue0/
 fc-define-var-types _ () () .ue/.ue
 #
 
-fc-infer-var-types (.var .value .varType, .vvts) .env .tr0/.trx
+fc-infer-var-types (.var .value .varType, .vvts) .env
 	:- try (fc-infer-type-rule .value .env .varType)
 	.ex (throw .ex "%0Aat variable" .var)
-	, fc-infer-var-types .vvts .env .tr0/.trx
+	, fc-infer-var-types .vvts .env
 #
-fc-infer-var-types () _ .tr/.tr
+fc-infer-var-types () _
 #
 
 fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #
