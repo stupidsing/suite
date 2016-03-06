@@ -31,14 +31,14 @@ public class Profiler implements Service {
 		private int minLineNumber = Integer.MAX_VALUE;
 	}
 
-	public String profile(Runnable runnable) {
+	public void profile(Runnable runnable) {
 		try {
 			start();
 			runnable.run();
 		} finally {
 			stop();
 		}
-		return dump();
+		System.out.println(dump());
 	}
 
 	public void start() {

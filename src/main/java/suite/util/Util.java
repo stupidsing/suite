@@ -276,7 +276,7 @@ public class Util {
 
 			switch (runOption) {
 			case PROFILE:
-				System.out.println(new Profiler().profile(runnable));
+				new Profiler().profile(runnable);
 				break;
 			case RUN____:
 				runnable.run();
