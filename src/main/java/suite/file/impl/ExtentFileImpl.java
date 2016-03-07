@@ -85,7 +85,7 @@ public class ExtentFileImpl implements ExtentFile {
 		int pointer = start;
 		while (pointer < end) {
 			Extent extent = pageFile.load(pointer).extent;
-			if (extent.end <= end)
+			if (start <= extent.start && extent.end <= end)
 				extents.add(extent);
 			pointer = extent.end;
 		}
