@@ -123,9 +123,9 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 						List<Pair<T, Extent>> pairs0 = ps0.pairs;
 						List<Pair<T, Extent>> pairsx = Read.from(pairs0).map(Pair.map1(p -> map.getOrDefault(p, p))).toList();
 						PersistSlot<T> psx = new PersistSlot<>(pairsx);
-						Extent extent1 = saveSlot(pointer, psx);
-						pointer = extent1.end;
-						map.put(extent0, extent1);
+						Extent extentx = saveSlot(pointer, psx);
+						pointer = extentx.end;
+						map.put(extent0, extentx);
 					}
 
 				nPages = pointer;

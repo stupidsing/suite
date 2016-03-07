@@ -200,7 +200,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	private List<Slot<T>> merge(List<Slot<T>> node0, List<Slot<T>> node1) {
 		List<Slot<T>> merged;
 
-		if (maxBranchFactor <= node0.size() + node1.size() ) {
+		if (maxBranchFactor <= node0.size() + node1.size()) {
 			List<Slot<T>> leftSlots, rightSlots;
 
 			if (minBranchFactor < node0.size()) {
