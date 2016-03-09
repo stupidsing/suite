@@ -80,7 +80,7 @@ fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 fc-infer-type0 ($$PRECOMPILE .uvt _) .uvt NUMBER :- ! #
 
 -- Lazyifier and optimizer
-fc-rewrite ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
+fc-rewrite ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) .ts/.ts :- ! #
 
 -- Code generator
 fc-compile ($$PRECOMPILE _ .fve .cr) .fve .cr :- ! #
