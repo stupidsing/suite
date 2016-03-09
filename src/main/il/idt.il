@@ -186,10 +186,10 @@ declare idt-setup = function [] (
 	idt-set-entry [+x20, handle-timer-interrupt, true,];
 
 	(
-		declare-pointer idtr to (int * 2);
-		dw-set [idtr as int + 0, +x7FF,];
-		dw-set [idtr as int + 2, idt-address,];
-		idtr;
+		declare (int * 2) idtr;
+		dw-set [address idtr + 0, +x7FF,];
+		dw-set [address idtr + 2, idt-address,];
+		address idtr;
 
 		asm _ LIDT (`EAX`);
 	);
