@@ -1,8 +1,7 @@
 declare pm-sync = 0;
 declare pm-ref-counts;
-declare pm-stack;
 declare pm-stackx;
-declare pm-stack-pointer = 0;
+declare (stack int) pm-stack;
 
 declare pm-get-number = function [page,] (
 	(page - memory-region-start) ushr 12;
@@ -22,15 +21,13 @@ declare pm-unref = function [page,] (
 
 declare pm-allocate = function [] (
 	synchronized (& pm-sync) (
-		if (pm-stack-pointer != 0) then (
-			pm-stack/*/:(pm-stack-pointer += -1);
-		) else 0;
+		stk-pop [& pm-stack,];
 	);
 );
 
 declare pm-deallocate = function [page,] (
 	synchronized (& pm-sync) (
-		{pm-stack/*/:(pm-stack-pointer =+ 1)} = page;
+		stk-push [& pm-stack, page,];
 	);
 );
 
@@ -46,13 +43,18 @@ declare pm-setup = function [] (
 
 	-- Sets up page allocator
 	declare nPages = pm-get-number [pagex,];
-	{pm-ref-counts} = memory-region-start as pointer:(int * 0);
-	{pm-stack} = (& pm-ref-counts/*/:nPages) as pointer:(int * 0);
-	{pm-stackx} = address pm-stack/*/:nPages;
-	declare page0 = (pm-stackx + 4095) and +xFFFFF000;
+	declare p0 = memory-region-start;
+	declare p1 = p0 + nPages * size-of int;
+	declare px = p1 + nPages * size-of int;
+
+	{pm-ref-counts} = p0 as pointer:(int * 0);
+	{pm-stackx} = px;
+	declare page0 = (px + 4095) and +xFFFFF000;
+
+	stk-setup [& pm-stack, p1 as pointer:(int * 0),];
 
 	while (page0 < pagex) do (
 		{pm-ref-counts/*/:(pm-get-number [pagex += -4096,])} = 0;
-		{pm-stack/*/:(pm-stack-pointer =+ 1)} = pagex;
+		stk-push [& pm-stack, pagex,];
 	);
 );

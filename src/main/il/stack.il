@@ -1,6 +1,6 @@
 constant stack .t = struct (
-| pointer:(.t * 0) +array
 | int +pointer
+| pointer:(.t * 0) +array
 );
 
 constant stack$t = (:t => stack :t);
@@ -15,7 +15,7 @@ declare stk-pop = function [pointer:stack$t stack,] (
 	) else (no-type 0);
 );
 
-declare stk-setup = function [pointer:stack$t stack, array, size,] (
+declare stk-setup = function [pointer:stack$t stack, array,] (
+	{stack/*/+pointer} = 0;
 	{stack/*/+array} = array;
-	{stack/*/+pointer} = size;
 );
