@@ -47,7 +47,7 @@ declare pm-setup = function [] (
 	-- Sets up page allocator
 	declare nPages = pm-get-number [pagex,];
 	{pm-ref-counts} = memory-region-start as pointer:(int * 0);
-	{pm-stack} = (address pm-ref-counts/*/:nPages) as pointer:(int * 0);
+	{pm-stack} = (& pm-ref-counts/*/:nPages) as pointer:(int * 0);
 	{pm-stackx} = address pm-stack/*/:nPages;
 	declare page0 = (pm-stackx + 4095) and +xFFFFF000;
 
