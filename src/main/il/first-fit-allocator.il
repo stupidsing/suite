@@ -8,7 +8,8 @@ declare ffa-region0 = +x50000;
 declare ffa-regionx = +xA0000;
 declare pointer:ffa-node ffa-current;
 
-declare-pointer head to ffa-node;
+declare ffa-node head-node;
+declare head = & head-node;
 
 declare ffa-create = function [pointer:ffa-node node,] (
 	dl-create [node,];

@@ -98,7 +98,7 @@ ic-parse (.do;) .parsed
 	:- ic-parse .do .parsed
 #
 ic-parse (.do0; .do1) (SEQ .parsed0 .parsed1)
-	:- not (.do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _; .do0 = declare-pointer _)
+	:- not (.do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _)
 	, ic-parse .do0 .parsed0
 	, ic-parse .do1 .parsed1
 #
@@ -163,9 +163,6 @@ ic-parse-sugar (address .value) ((& .value) as int)
 ic-parse-sugar (constant .var = .value; .do) .do1
 	:- generalize (.var .value) (.var1 .value1)
 	, rewrite .var1 .value1 .do .do1
-#
-ic-parse-sugar (declare-pointer .var to .type; .do) (declare .type .mem; declare .var = & .mem; .do)
-	:- is.atom .var, temp .mem
 #
 ic-parse-sugar (for (.init; .cond; .step) do .do) (.init; while .cond do (.do; .step))
 #
