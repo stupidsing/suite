@@ -1,7 +1,7 @@
 declare pm-sync = 0;
 declare pm-ref-counts;
 declare pm-stackx;
-declare (stack int) pm-stack;
+declare pm-stack;
 
 declare pm-get-number = function [page,] (
 	(page - memory-region-start) ushr 12;
