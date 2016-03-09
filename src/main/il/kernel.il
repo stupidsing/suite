@@ -76,6 +76,7 @@ declare wrmsr = function [msr, value,] (
 #include(bitmap.il);
 #include(doubly-ll.il);
 #include(singly-ll.il);
+#include(stack.il);
 #include(sync.il);
 
 #include(buddy-allocator.il);
