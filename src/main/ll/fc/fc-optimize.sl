@@ -4,12 +4,12 @@ fc-optimize .do0 .dox
 #
 
 fc-optimize-flow .do0 .dox
-	:- fc-define-var .do0 .var .value .do1 _ _ _ _
+	:- fc-define-var .do0 .var .value .do1 .dox .var .value .do3
 	, .value = .type _
 	, member (ATOM, BOOLEAN, CHARS, NUMBER, VAR,) .type
 	, not (contains (VAR .var) .value)
 	, !, fc-replace-var-by-value .var .value .do1 .do2
-	, fc-optimize-flow .do2 .dox
+	, fc-optimize-flow .do2 .do3
 #
 fc-optimize-flow (APPLY .value (FUN .var .do0)) .dox
 	:- !, fc-optimize-flow (DEF-VARS (.var .value,) .do0) .dox
