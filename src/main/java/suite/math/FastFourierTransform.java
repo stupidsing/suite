@@ -32,14 +32,14 @@ public class FastFourierTransform {
 			Complex f1[] = fft(inputs, new Ind(ind.start + ind.inc, count1, inc1));
 			Complex f[] = new Complex[count];
 
-			for (int i = 0; i < count1; i++) {
-				f[i] = Complex.add(f[i], f0[i]);
-				f[i] = Complex.add(f[i], Complex.mul(f1[i], cis[i]));
+			for (int di = 0; di < count1; di++) {
+				int si = di;
+				f[di] = Complex.add(f0[si], Complex.mul(f1[si], cis[di]));
 			}
 
-			for (int i = count1; i < count; i++) {
-				f[i] = Complex.add(f[i], f0[i - count1]);
-				f[i] = Complex.add(f[i], Complex.mul(f1[i - count1], cis[i]));
+			for (int di = count1; di < count; di++) {
+				int si = di - count1;
+				f[di] = Complex.add(f0[si], Complex.mul(f1[si], cis[di]));
 			}
 
 			return f;
