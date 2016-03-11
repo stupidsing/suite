@@ -29,7 +29,7 @@ public class FastFourierTransform {
 			int count1 = count / 2;
 			int inc1 = ind.inc * 2;
 			Complex f0[] = fft(inputs, new Ind(ind.start, count1, inc1));
-			Complex f1[] = fft(inputs, new Ind(ind.start + 1, count1, inc1));
+			Complex f1[] = fft(inputs, new Ind(ind.start + ind.inc, count1, inc1));
 			Complex f[] = new Complex[count];
 
 			for (int i = 0; i < count1; i++) {
