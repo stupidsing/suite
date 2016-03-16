@@ -15,6 +15,11 @@ public class MatrixTest {
 		Matrix div8 = Matrix.mul(id, 1f / 8f);
 		assertEquals(mul8, Matrix.inverse(div8));
 		assertEquals(div8, Matrix.inverse(mul8));
+
+		Matrix o = new Matrix(2, 2);
+		o.v[0][1] = 1;
+		o.v[1][0] = 1;
+		assertEquals(o, Matrix.inverse(o));
 	}
 
 }
