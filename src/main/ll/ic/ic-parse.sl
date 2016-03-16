@@ -214,6 +214,10 @@ ic-parse-type (fix .tv0 .type0) .typex
 	, ic-parse-type .type0 .type1
 	, graph.replace .tv1 .typex .type1 .typex
 #
+ic-parse-type (.t * .size) (ARRAY-OF _ .type)
+	:- to.string .size "_"
+	, ic-parse-type .t .type
+#
 ic-parse-type (.t * .size) (ARRAY-OF .size .type)
 	:- ic-parse-type .t .type
 #

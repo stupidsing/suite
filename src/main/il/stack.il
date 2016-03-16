@@ -1,6 +1,6 @@
 constant stack .t = struct (
 | int +pointer
-| pointer:(.t * 0) +array
+| pointer:(.t * _) +array
 );
 
 constant stack$t = (:t => stack :t);

@@ -47,11 +47,11 @@ declare pm-setup = function [] (
 	declare p1 = p0 + nPages * size-of int;
 	declare px = p1 + nPages * size-of int;
 
-	{pm-ref-counts} = p0 as pointer:(int * 0);
+	{pm-ref-counts} = p0 as pointer:(int * _);
 	{pm-stackx} = px;
 	declare page0 = (px + 4095) and +xFFFFF000;
 
-	stk-setup [& pm-stack, p1 as pointer:(int * 0),];
+	stk-setup [& pm-stack, p1 as pointer:(int * _),];
 
 	while (page0 < pagex) do (
 		{pm-ref-counts/*/:(pm-get-number [pagex += -4096,])} = 0;
