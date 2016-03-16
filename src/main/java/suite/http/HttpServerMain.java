@@ -33,8 +33,6 @@ public class HttpServerMain {
 	}
 
 	private void run() throws IOException {
-		handler0.getClass();
-		handler1.getClass();
 		new HttpServer().run(handler1);
 	}
 
