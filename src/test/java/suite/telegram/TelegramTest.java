@@ -34,7 +34,6 @@ public class TelegramTest {
 				public void onUpdateReceived(Update update) {
 					if (update.hasMessage()) {
 						Message message = update.getMessage();
-						System.out.println(message.toString());
 
 						SendMessage sendMessage = new SendMessage();
 						sendMessage.setChatId(message.getChat().getId().toString());
