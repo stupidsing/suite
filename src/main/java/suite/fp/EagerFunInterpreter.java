@@ -140,8 +140,13 @@ public class EagerFunInterpreter {
 		df.put("+compare", f2((a, b) -> Int.of(Comparer.comparer.compare(a, b))));
 		df.put("+get%i", f1(a -> new Data<>(Intrinsics.intrinsics.get(((Atom) a).name.split("!")[1]))));
 		df.put("+is-list", f1(a -> b(Tree.decompose(a) != null)));
+		df.put("+is-pair", f1(a -> b(Tree.decompose(a) != null)));
+		df.put("+lcons", f2((a, b) -> Tree.of(TermOp.OR____, a, b)));
 		df.put("+lhead", f1(a -> Tree.decompose(a).getLeft()));
 		df.put("+ltail", f1(a -> Tree.decompose(a).getRight()));
+		df.put("+pcons", f2((a, b) -> Tree.of(TermOp.AND___, a, b)));
+		df.put("+pleft", f1(a -> Tree.decompose(a).getLeft()));
+		df.put("+pright", f1(a -> Tree.decompose(a).getRight()));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Mapping mapping = new Mapping(null);
