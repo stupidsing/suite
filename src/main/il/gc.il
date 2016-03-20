@@ -38,8 +38,6 @@ declare gc-prepare = function [] (
 
 declare gc-mark = function [root,] (
 	declare (pointer:gc-node * 1024) nodes;
-	declare (stack pointer:gc-node) stack;
-	stk-setup [& stack, & nodes,];
 	declare index = 0;
 	{nodes/:(index =+ 1)} = root;
 
