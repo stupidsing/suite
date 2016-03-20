@@ -7,7 +7,7 @@ public class EagerFunInstructionExecutor extends FunInstructionExecutor {
 
 	public EagerFunInstructionExecutor(Node node) {
 		super(node);
-		setIntrinsicCallback(Intrinsics.EagerIntrinsicCallback);
+		setIntrinsicCallback(Intrinsics.eagerIntrinsicCallback);
 	}
 
 }

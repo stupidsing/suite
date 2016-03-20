@@ -29,6 +29,7 @@ public class EagerFunInterpreterTest {
 	@Test
 	public void testUsing() {
 		expect("using source STANDARD >> and {true} {true}", Atom.TRUE);
+		expect("using source STANDARD >> log {1234}", Int.of(1234));
 	}
 
 	private void expect(String expr, Node expect) {

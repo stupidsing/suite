@@ -64,7 +64,7 @@ public class TranslatedRunUtil {
 				}
 			};
 		else
-			return Intrinsics.EagerIntrinsicCallback;
+			return Intrinsics.eagerIntrinsicCallback;
 	}
 
 	public static Node toNode(boolean b) {

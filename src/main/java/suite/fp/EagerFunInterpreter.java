@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import suite.Suite;
 import suite.adt.Pair;
 import suite.fp.intrinsic.Intrinsics;
+import suite.fp.intrinsic.Intrinsics.Intrinsic;
+import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.immutable.IMap;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
@@ -21,11 +23,13 @@ import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
+import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
+import suite.primitive.Chars;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -104,6 +108,16 @@ public class EagerFunInterpreter {
 		Finder finder = new SewingProverBuilder2().build(rs).apply(query);
 		Node parsed = FindUtil.collectSingle(finder, node);
 
+		IntrinsicCallback ic = isLazyify ? new IntrinsicCallback() {
+			public Node enclose(Intrinsic intrinsic, Node node) {
+				return new Wrap_(() -> intrinsic.invoke(this, Arrays.asList(node)));
+			}
+
+			public Node yawn(Node node) {
+				return ((Wrap_) node).source.source();
+			}
+		} : Intrinsics.eagerIntrinsicCallback;
+
 		Map<String, Node> df = new HashMap<>();
 		df.put(TermOp.AND___.getName(), f2((a, b) -> Tree.of(TermOp.AND___, a, b)));
 		df.put(TermOp.EQUAL_.getName(), f2((a, b) -> b(compare(a, b) == 0)));
@@ -117,6 +131,8 @@ public class EagerFunInterpreter {
 		df.put(TermOp.MULT__.getName(), f2((a, b) -> Int.of(i(a) * i(b))));
 		df.put(TermOp.DIVIDE.getName(), f2((a, b) -> Int.of(i(a) / i(b))));
 
+		df.put("+call%i-t1", f2((a, b) -> Data.<Intrinsic> get(a).invoke(ic, Arrays.asList(b))));
+		df.put("+call%i-v1", f2((a, b) -> Data.<Intrinsic> get(a).invoke(ic, Arrays.asList(b))));
 		df.put("+compare", f2((a, b) -> Int.of(Comparer.comparer.compare(a, b))));
 		df.put("+get%i", f1(a -> new Data<>(Intrinsics.intrinsics.get(((Atom) a).name.split("!")[1]))));
 		df.put("+is-list", f1(a -> b(Tree.decompose(a) != null)));
@@ -156,7 +172,10 @@ public class EagerFunInterpreter {
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("BOOLEAN .0").apply(node)) != null)
 			result = immediate(m[0]);
-		else if ((m = Suite.matcher("CONS _ .0 .1").apply(node)) != null) {
+		else if ((m = Suite.matcher("CHARS .0").apply(node)) != null) {
+			Node n = new Data<>(Chars.of(((Str) m[0]).value));
+			result = frame -> n;
+		} else if ((m = Suite.matcher("CONS _ .0 .1").apply(node)) != null) {
 			Fun<Frame, Node> p0_ = eager0(mapping, m[0]);
 			Fun<Frame, Node> p1_ = eager0(mapping, m[1]);
 			result = frame -> pair(p0_.apply(frame), p1_.apply(frame));

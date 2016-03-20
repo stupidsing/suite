@@ -47,7 +47,7 @@ public class Intrinsics {
 
 	public static Map<String, Intrinsic> intrinsics = new HashMap<>();
 
-	public static IntrinsicCallback EagerIntrinsicCallback = new IntrinsicCallback() {
+	public static IntrinsicCallback eagerIntrinsicCallback = new IntrinsicCallback() {
 		public Node enclose(Intrinsic intrinsic, Node node) {
 			return intrinsic.invoke(this, Arrays.asList(node));
 		}

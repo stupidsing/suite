@@ -82,7 +82,7 @@ fc-lazyify-default-fun .n .paramWraps .returnWrap (APPLY .p0 .chain0) (APPLY .px
 	:- let .n1 (.n + 1)
 	, fc-lazyify .p0 .p1
 	, fc-lazyify-default-fun .n1 .paramWrap:.paramWraps .returnWrap .chain0 .chain1
-	, once (.paramWrap = THUNK, .p1 = .px
+	, once (.paramWrap = THUNK, .px = .p1
 		; .paramWrap = VALUE, .px = UNWRAP .p1
 	)
 #
