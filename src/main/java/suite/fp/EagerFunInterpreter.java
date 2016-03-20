@@ -117,8 +117,8 @@ public class EagerFunInterpreter {
 		df.put(TermOp.MULT__.getName(), f2((a, b) -> Int.of(i(a) * i(b))));
 		df.put(TermOp.DIVIDE.getName(), f2((a, b) -> Int.of(i(a) / i(b))));
 
-		df.put("+get%i", f1(a -> new Data<>(Intrinsics.intrinsics.get(((Atom) a).name.split("!")[1]))));
 		df.put("+compare", f2((a, b) -> Int.of(Comparer.comparer.compare(a, b))));
+		df.put("+get%i", f1(a -> new Data<>(Intrinsics.intrinsics.get(((Atom) a).name.split("!")[1]))));
 		df.put("+is-list", f1(a -> b(Tree.decompose(a) != null)));
 		df.put("+lhead", f1(a -> Tree.decompose(a).getLeft()));
 		df.put("+ltail", f1(a -> Tree.decompose(a).getRight()));
