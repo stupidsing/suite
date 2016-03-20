@@ -11,12 +11,14 @@ import java.util.stream.Collectors;
 
 import suite.Suite;
 import suite.adt.Pair;
+import suite.fp.intrinsic.Intrinsics;
 import suite.immutable.IMap;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder2;
 import suite.node.Atom;
+import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
@@ -103,22 +105,23 @@ public class EagerFunInterpreter {
 		Node parsed = FindUtil.collectSingle(finder, node);
 
 		Map<String, Node> df = new HashMap<>();
-		df.put(TermOp.AND___.getName(), binary((a, b) -> Tree.of(TermOp.AND___, a, b)));
-		df.put(TermOp.EQUAL_.getName(), binary((a, b) -> b(compare(a, b) == 0)));
-		df.put(TermOp.NOTEQ_.getName(), binary((a, b) -> b(compare(a, b) != 0)));
-		df.put(TermOp.LE____.getName(), binary((a, b) -> b(compare(a, b) <= 0)));
-		df.put(TermOp.LT____.getName(), binary((a, b) -> b(compare(a, b) < 0)));
-		df.put(TermOp.GE____.getName(), binary((a, b) -> b(compare(a, b) >= 0)));
-		df.put(TermOp.GT____.getName(), binary((a, b) -> b(compare(a, b) > 0)));
-		df.put(TermOp.PLUS__.getName(), binary((a, b) -> Int.of(i(a) + i(b))));
-		df.put(TermOp.MINUS_.getName(), binary((a, b) -> Int.of(i(a) - i(b))));
-		df.put(TermOp.MULT__.getName(), binary((a, b) -> Int.of(i(a) * i(b))));
-		df.put(TermOp.DIVIDE.getName(), binary((a, b) -> Int.of(i(a) / i(b))));
+		df.put(TermOp.AND___.getName(), f2((a, b) -> Tree.of(TermOp.AND___, a, b)));
+		df.put(TermOp.EQUAL_.getName(), f2((a, b) -> b(compare(a, b) == 0)));
+		df.put(TermOp.NOTEQ_.getName(), f2((a, b) -> b(compare(a, b) != 0)));
+		df.put(TermOp.LE____.getName(), f2((a, b) -> b(compare(a, b) <= 0)));
+		df.put(TermOp.LT____.getName(), f2((a, b) -> b(compare(a, b) < 0)));
+		df.put(TermOp.GE____.getName(), f2((a, b) -> b(compare(a, b) >= 0)));
+		df.put(TermOp.GT____.getName(), f2((a, b) -> b(compare(a, b) > 0)));
+		df.put(TermOp.PLUS__.getName(), f2((a, b) -> Int.of(i(a) + i(b))));
+		df.put(TermOp.MINUS_.getName(), f2((a, b) -> Int.of(i(a) - i(b))));
+		df.put(TermOp.MULT__.getName(), f2((a, b) -> Int.of(i(a) * i(b))));
+		df.put(TermOp.DIVIDE.getName(), f2((a, b) -> Int.of(i(a) / i(b))));
 
-		df.put("+compare", binary((a, b) -> Int.of(Comparer.comparer.compare(a, b))));
-		df.put("+is-list", new Fun_(in -> b(Tree.decompose(in) != null)));
-		df.put("+lhead", new Fun_(in -> Tree.decompose(in).getLeft()));
-		df.put("+ltail", new Fun_(in -> Tree.decompose(in).getRight()));
+		df.put("+get%i", f1(a -> new Data<>(Intrinsics.intrinsics.get(((Atom) a).name.split("!")[1]))));
+		df.put("+compare", f2((a, b) -> Int.of(Comparer.comparer.compare(a, b))));
+		df.put("+is-list", f1(a -> b(Tree.decompose(a) != null)));
+		df.put("+lhead", f1(a -> Tree.decompose(a).getLeft()));
+		df.put("+ltail", f1(a -> Tree.decompose(a).getRight()));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Mapping mapping = new Mapping(null);
@@ -271,8 +274,12 @@ public class EagerFunInterpreter {
 		return c;
 	}
 
-	private Node binary(BiFunction<Node, Node, Node> fun) {
+	private Node f2(BiFunction<Node, Node, Node> fun) {
 		return new Fun_(a -> new Fun_(b -> fun.apply(a, b)));
+	}
+
+	private Node f1(Fun<Node, Node> fun) {
+		return new Fun_(fun);
 	}
 
 	private static Node pair(Node left, Node right) {

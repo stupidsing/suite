@@ -19,13 +19,13 @@ public class LazyFunInstructionExecutor extends FunInstructionExecutor {
 		super(node);
 
 		setIntrinsicCallback(new IntrinsicCallback() {
-			public Node yawn(Node node) {
-				return node instanceof Thunk ? yawnThunk((Thunk) node) : node;
-			}
-
 			public Node enclose(Intrinsic intrinsic, Node node) {
 				Frame frame = new Frame(null, new Node[] { node, new Data<>(intrinsic), null, });
 				return new Thunk(frame, invokeJavaEntryPoint);
+			}
+
+			public Node yawn(Node node) {
+				return node instanceof Thunk ? yawnThunk((Thunk) node) : node;
 			}
 		});
 	}

@@ -8,13 +8,13 @@ import org.junit.Test;
 import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.SendMessage;
-import org.telegram.telegrambots.api.objects.Chat;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
 import suite.os.FileUtil;
 import suite.util.Rethrow;
+import suite.util.Util;
 
 public class TelegramTest {
 
@@ -34,10 +34,10 @@ public class TelegramTest {
 				public void onUpdateReceived(Update update) {
 					if (update.hasMessage()) {
 						Message message = update.getMessage();
-						Chat chat = message.getChat();
+						System.out.println(message.toString());
 
 						SendMessage sendMessage = new SendMessage();
-						sendMessage.setChatId(chat.getId().toString());
+						sendMessage.setChatId(message.getChat().getId().toString());
 						sendMessage.setText(message.getText());
 
 						try {
@@ -45,14 +45,15 @@ public class TelegramTest {
 						} catch (TelegramApiException ex) {
 							throw new RuntimeException(ex);
 						}
-
-						System.out.println(message.getText());
 					}
 				}
 			});
 		} catch (TelegramApiException ex) {
 			throw new RuntimeException(ex);
 		}
+
+		while (true)
+			Util.sleepQuietly(10000);
 	}
 
 }

@@ -47,6 +47,13 @@ public class TranslatedRunUtil {
 	public static IntrinsicCallback getIntrinsicCallback(TranslatedRunConfig config, TranslatedRun translatedRun) {
 		if (config.isLazy)
 			return new IntrinsicCallback() {
+				public Node enclose(Intrinsic intrinsic, Node node) {
+					IntrinsicFrame frame = new IntrinsicFrame();
+					frame.intrinsic = intrinsic;
+					frame.node = node;
+					return new Thunk(frame, InstructionTranslator.invokeJavaEntryPoint);
+				}
+
 				public Node yawn(Node node) {
 					if (node instanceof Thunk) {
 						Thunk thunk = (Thunk) node;
@@ -56,22 +63,15 @@ public class TranslatedRunUtil {
 					}
 					return node;
 				}
-
-				public Node enclose(Intrinsic intrinsic, Node node) {
-					IntrinsicFrame frame = new IntrinsicFrame();
-					frame.intrinsic = intrinsic;
-					frame.node = node;
-					return new Thunk(frame, InstructionTranslator.invokeJavaEntryPoint);
-				}
 			};
 		else
 			return new IntrinsicCallback() {
-				public Node yawn(Node node) {
-					return node;
-				}
-
 				public Node enclose(Intrinsic intrinsic, Node node) {
 					return intrinsic.invoke(this, Arrays.asList(node));
+				}
+
+				public Node yawn(Node node) {
+					return node;
 				}
 			};
 	}

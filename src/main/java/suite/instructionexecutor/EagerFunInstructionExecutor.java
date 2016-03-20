@@ -12,12 +12,12 @@ public class EagerFunInstructionExecutor extends FunInstructionExecutor {
 		super(node);
 
 		setIntrinsicCallback(new IntrinsicCallback() {
-			public Node yawn(Node node) {
-				return node;
-			}
-
 			public Node enclose(Intrinsic intrinsic, Node node) {
 				return intrinsic.invoke(this, Arrays.asList(node));
+			}
+
+			public Node yawn(Node node) {
+				return node;
 			}
 		});
 	}
