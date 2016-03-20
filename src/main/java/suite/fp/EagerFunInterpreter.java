@@ -131,8 +131,12 @@ public class EagerFunInterpreter {
 		df.put(TermOp.MULT__.getName(), f2((a, b) -> Int.of(i(a) * i(b))));
 		df.put(TermOp.DIVIDE.getName(), f2((a, b) -> Int.of(i(a) / i(b))));
 
-		df.put("+call%i-t1", f2((a, b) -> Data.<Intrinsic> get(a).invoke(ic, Arrays.asList(b))));
-		df.put("+call%i-v1", f2((a, b) -> Data.<Intrinsic> get(a).invoke(ic, Arrays.asList(b))));
+		df.put("+call%i-t1", f1(i -> fn(1, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
+		df.put("+call%i-t2", f1(i -> fn(2, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
+		df.put("+call%i-t3", f1(i -> fn(3, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
+		df.put("+call%i-v1", f1(i -> fn(1, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
+		df.put("+call%i-v2", f1(i -> fn(2, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
+		df.put("+call%i-v3", f1(i -> fn(3, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+compare", f2((a, b) -> Int.of(Comparer.comparer.compare(a, b))));
 		df.put("+get%i", f1(a -> new Data<>(Intrinsics.intrinsics.get(((Atom) a).name.split("!")[1]))));
 		df.put("+is-list", f1(a -> b(Tree.decompose(a) != null)));
@@ -293,12 +297,27 @@ public class EagerFunInterpreter {
 		return c;
 	}
 
+	private Node f1(Fun<Node, Node> fun) {
+		return new Fun_(fun);
+	}
+
 	private Node f2(BiFunction<Node, Node, Node> fun) {
 		return new Fun_(a -> new Fun_(b -> fun.apply(a, b)));
 	}
 
-	private Node f1(Fun<Node, Node> fun) {
-		return new Fun_(fun);
+	private Node fn(int n, Fun<List<Node>, Node> fun) {
+		return fn(new ArrayList<>(), n, fun);
+	}
+
+	private Node fn(List<Node> ps, int n, Fun<List<Node>, Node> fun) {
+		if (n != 0)
+			return new Fun_(p -> {
+				List<Node> ps1 = new ArrayList<>(ps);
+				ps1.add(p);
+				return fn(ps1, n - 1, fun);
+			});
+		else
+			return fun.apply(ps);
 	}
 
 	private static Node pair(Node left, Node right) {
