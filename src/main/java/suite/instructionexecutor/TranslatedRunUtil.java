@@ -1,7 +1,6 @@
 package suite.instructionexecutor;
 
-import java.util.Arrays;
-
+import suite.fp.intrinsic.Intrinsics;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.lp.kb.RuleSet;
@@ -65,15 +64,7 @@ public class TranslatedRunUtil {
 				}
 			};
 		else
-			return new IntrinsicCallback() {
-				public Node enclose(Intrinsic intrinsic, Node node) {
-					return intrinsic.invoke(this, Arrays.asList(node));
-				}
-
-				public Node yawn(Node node) {
-					return node;
-				}
-			};
+			return Intrinsics.EagerIntrinsicCallback;
 	}
 
 	public static Node toNode(boolean b) {
