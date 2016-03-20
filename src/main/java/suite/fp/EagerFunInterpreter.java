@@ -107,16 +107,7 @@ public class EagerFunInterpreter {
 		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
 		Finder finder = new SewingProverBuilder2().build(rs).apply(query);
 		Node parsed = FindUtil.collectSingle(finder, node);
-
-		IntrinsicCallback ic = isLazyify ? new IntrinsicCallback() {
-			public Node enclose(Intrinsic intrinsic, Node node) {
-				return new Wrap_(() -> intrinsic.invoke(this, Arrays.asList(node)));
-			}
-
-			public Node yawn(Node node) {
-				return ((Wrap_) node).source.source();
-			}
-		} : Intrinsics.eagerIntrinsicCallback;
+		IntrinsicCallback ic = isLazyify ? lazyIntrinsicCallback() : Intrinsics.eagerIntrinsicCallback;
 
 		Map<String, Node> df = new HashMap<>();
 		df.put(TermOp.AND___.getName(), f2((a, b) -> Tree.of(TermOp.AND___, a, b)));
@@ -281,6 +272,18 @@ public class EagerFunInterpreter {
 			throw new RuntimeException("Unrecognized construct " + node);
 
 		return result;
+	}
+
+	private IntrinsicCallback lazyIntrinsicCallback() {
+		return new IntrinsicCallback() {
+			public Node enclose(Intrinsic intrinsic, Node node) {
+				return new Wrap_(() -> intrinsic.invoke(this, Arrays.asList(node)));
+			}
+
+			public Node yawn(Node node) {
+				return ((Wrap_) node).source.source();
+			}
+		};
 	}
 
 	private Fun<Frame, Node> immediate(Node n) {
