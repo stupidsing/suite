@@ -3,13 +3,12 @@ package suite.lp;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.junit.Test;
 
 import suite.Suite;
-import suite.util.To;
+import suite.os.FileUtil;
 
 public class LogicCompilerTest {
 
@@ -23,7 +22,7 @@ public class LogicCompilerTest {
 
 	@Test
 	public void testAuto() throws IOException {
-		String preds = To.string(new FileInputStream("src/main/ll/auto.sl"));
+		String preds = FileUtil.read("src/main/ll/auto.sl");
 		String goal = "(" + preds + ") >> member (a, b, c,) c";
 		assertTrue(Suite.proveLogic(goal));
 	}
