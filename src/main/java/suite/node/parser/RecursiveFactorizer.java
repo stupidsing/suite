@@ -51,7 +51,7 @@ public class RecursiveFactorizer {
 			for (int i = fromOp; i < operators.length; i++) {
 				Operator operator = operators[i];
 				Chars range = operator != TermOp.TUPLE_ ? chars : chars1;
-				Segment ops = ParseUtil.searchPosition(chars.cs, new Segment(range.start, range.end), operator);
+				Segment ops = ParseUtil.searchPosition(chars.cs, Segment.of(range.start, range.end), operator);
 
 				if (ops == null)
 					continue;

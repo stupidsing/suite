@@ -100,7 +100,7 @@ public class ParseUtil {
 	}
 
 	public static Pair<String, String> search(String s, String name, Assoc assoc) {
-		return search(s, new Segment(0, s.length()), name, assoc, true);
+		return search(s, Segment.of(0, s.length()), name, assoc, true);
 	}
 
 	private static Pair<String, String> search(String s, Segment segment, String name, Assoc assoc, boolean isCheckDepth) {
@@ -148,7 +148,7 @@ public class ParseUtil {
 						for (int i = 0; result && i < nameLength; i++)
 							result &= cs[pos + i] == name.charAt(i);
 						if (result)
-							return new Segment(pos, pos + nameLength);
+							return Segment.of(pos, pos + nameLength);
 					}
 				}
 			}

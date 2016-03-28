@@ -12,7 +12,7 @@ public class Preprocess {
 		public final String text;
 
 		public Run(int start, int end) {
-			segment = new Segment(start, end);
+			segment = Segment.of(start, end);
 			text = null;
 		}
 
