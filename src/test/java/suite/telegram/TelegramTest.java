@@ -13,6 +13,7 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
 import suite.os.FileUtil;
+import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -20,6 +21,8 @@ public class TelegramTest {
 
 	@Test
 	public void testBot() {
+		Fun<String, String> fun = s -> s;
+
 		try {
 			new TelegramBotsApi().registerBot(new TelegramLongPollingBot() {
 				public String getBotUsername() {
@@ -37,7 +40,7 @@ public class TelegramTest {
 
 						SendMessage sendMessage = new SendMessage();
 						sendMessage.setChatId(message.getChat().getId().toString());
-						sendMessage.setText(message.getText());
+						sendMessage.setText(fun.apply(message.getText()));
 
 						try {
 							sendMessage(sendMessage);
