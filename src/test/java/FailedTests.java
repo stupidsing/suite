@@ -11,6 +11,9 @@ import suite.fp.FunRbTreeTest;
 import suite.ip.ImperativeCompiler;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
+import suite.node.io.TermOp;
+import suite.node.parser.FactorizeResult;
+import suite.node.parser.RecursiveFactorizer;
 import suite.primitive.Bytes;
 
 public class FailedTests {
@@ -90,6 +93,17 @@ public class FailedTests {
 	// @Test
 	public void testRecursiveType() {
 		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (:t => rb-tree {:t}) of 1");
+	}
+
+	// Prolog comment disappeared
+	@Test
+	public void testRefactorize() {
+		RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
+		FactorizeResult rf = recursiveFactorizer.parse("" //
+				+ "-- comment\n" //
+				+ "0\n");
+		assertTrue(rf.pre.size() > 0);
+		// System.out.println(Dump.object(rf));
 	}
 
 	// Takes 11 seconds to type check
