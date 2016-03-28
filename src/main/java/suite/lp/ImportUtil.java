@@ -52,8 +52,8 @@ public class ImportUtil {
 		return importUrl(rs, new URL(root + path));
 	}
 
-	public boolean importUrl(RuleSet rs, URL url1) throws IOException {
-		return importFrom(rs, Suite.parse(To.string(url1.openStream())));
+	public boolean importUrl(RuleSet rs, URL url) throws IOException {
+		return importFrom(rs, Suite.parse(To.string(url.openStream())));
 	}
 
 	public synchronized boolean importFrom(RuleSet ruleSet, Node node) {
