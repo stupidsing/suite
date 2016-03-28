@@ -38,7 +38,7 @@ public class FailedTests {
 	@Test
 	public void testDataStructure() {
 		String s = "" //
-				+ "constant p = fix :p struct (| pointer::p +next);" //
+				+ "constant p = fix :p struct (() | pointer::p +next);" //
 				+ "declare r = & new p (+next = null,);" //
 				+ "0";
 		Bytes bytes = new ImperativeCompiler().compile(0, s);
