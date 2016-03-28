@@ -38,7 +38,12 @@ public class RecursiveFactorizer {
 		Pair<String, Reverser> pair = Preprocess.transform(PreprocessorFactory.create(operators), s);
 		String in1 = pair.t0;
 		reverser = pair.t1;
-		return parse0(To.chars(in1), 0);
+
+		FactorizeResult parsed = parse0(To.chars(in1), 0);
+
+		// Append possibly missed comments
+		int p = reverser.reverse(0);
+		return new FactorizeResult(Chars.concat(in.subchars(0, p), parsed.pre), parsed.node, parsed.post);
 	}
 
 	private FactorizeResult parse0(Chars chars, int fromOp) {
