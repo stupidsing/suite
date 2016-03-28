@@ -254,6 +254,10 @@ public class Suite {
 		return importUtil.importPath(ruleSet, path);
 	}
 
+	public static boolean importUrl(RuleSet ruleSet, String url) throws IOException {
+		return importUtil.importUrl(ruleSet, new URL(url));
+	}
+
 	public static boolean importResource(RuleSet rs, String classpath) throws IOException {
 		return importUtil.importUrl(rs, new URL("classpath", null, classpath));
 	}

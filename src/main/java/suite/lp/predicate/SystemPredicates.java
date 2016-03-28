@@ -120,7 +120,7 @@ public class SystemPredicates {
 		addPredicate("asserta", ruleSetPredicates.asserta);
 		addPredicate("assertz", ruleSetPredicates.assertz);
 		addPredicate("import", ruleSetPredicates.importPredicate);
-		addPredicate("import.path", ruleSetPredicates.importPath);
+		addPredicate("import.url", ruleSetPredicates.importUrl);
 		addPredicate("list", ruleSetPredicates.list);
 		addPredicate("retract", ruleSetPredicates.retract);
 		addPredicate("retract.all", ruleSetPredicates.retractAll);

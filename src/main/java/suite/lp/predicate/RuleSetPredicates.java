@@ -43,12 +43,12 @@ public class RuleSetPredicates {
 
 	public BuiltinPredicate importPredicate = PredicateUtil.p1((prover, p0) -> Suite.importFrom(prover.ruleSet(), p0));
 
-	public BuiltinPredicate importPath = PredicateUtil.p1((prover, p0) -> {
-		String filename = Formatter.display(p0);
+	public BuiltinPredicate importUrl = PredicateUtil.p1((prover, p0) -> {
+		String url = Formatter.display(p0);
 		try {
-			return Suite.importPath(prover.ruleSet(), filename);
+			return Suite.importUrl(prover.ruleSet(), url);
 		} catch (Exception ex) {
-			throw new RuntimeException("Exception when importing " + filename, ex);
+			throw new RuntimeException("Exception when importing " + url, ex);
 		}
 	});
 
