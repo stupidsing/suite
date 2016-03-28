@@ -15,7 +15,7 @@ declare stk-pop = function [pointer:stack$t stack,] (
 	) else (no-type 0);
 );
 
-declare stk-setup = function [pointer:stack$t stack, array,] (
+declare _ stk-setup = function [pointer:stack$t stack, array,] (
 	{stack/*/+pointer} = 0;
 	{stack/*/+array} = array;
 );
