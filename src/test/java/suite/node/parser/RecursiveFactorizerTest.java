@@ -2,6 +2,7 @@ package suite.node.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -41,6 +42,16 @@ public class RecursiveFactorizerTest {
 		FactorizeResult fr = recursiveFactorizer.parse(s0);
 		String sx = fr.unparse();
 		assertEquals(s0, sx);
+	}
+
+	@Test
+	public void testPrologComments() {
+		RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
+		FactorizeResult rf = recursiveFactorizer.parse("" //
+				+ "-- comment\n" //
+				+ "0\n");
+		assertTrue(rf.pre.size() > 0);
+		// System.out.println(Dump.object(rf));
 	}
 
 	@Test
