@@ -105,10 +105,10 @@ public class RecursiveFactorizer {
 
 	private FactorizeResult term(Chars chars) {
 		Chars chars1 = CharsUtil.trim(chars);
-		int p0 = reverser.reverseEnd(chars.start);
-		int p1 = reverser.reverseEnd(chars1.start);
-		int p2 = reverser.reverseEnd(chars1.end);
-		int px = reverser.reverseEnd(chars.end);
+		int p0 = reverser.reverse(chars.start);
+		int p1 = reverser.reverse(chars1.start);
+		int p2 = reverser.reverse(chars1.end);
+		int px = reverser.reverse(chars.end);
 		return new FactorizeResult(Chars.of(in.cs, p0, p1), new FTerminal(Chars.of(in.cs, p1, p2)), Chars.of(in.cs, p2, px));
 	}
 
