@@ -45,7 +45,7 @@ public class Lccs {
 				rollingSize--;
 			}
 		} else
-			return Pair.of(new Segment(0, 0), new Segment(0, 0));
+			return Pair.of(Segment.of(0, 0), Segment.of(0, 0));
 	}
 
 	private Map<Integer, Segment> createInitialHashes(Bytes bytes, int rollingSize) {
@@ -55,7 +55,7 @@ public class Lccs {
 
 		for (int pos = 0; pos <= size - rollingSize; pos++) {
 			hash = rh.roll(hash, bytes.get(pos + rollingSize - 1));
-			segments.put(hash, new Segment(pos, pos + rollingSize));
+			segments.put(hash, Segment.of(pos, pos + rollingSize));
 			hash = rh.unroll(hash, bytes.get(pos), rollingSize);
 		}
 
@@ -70,10 +70,10 @@ public class Lccs {
 			Segment segment = entry.getValue();
 			int start = segment.start, end = segment.end;
 
-			segments1.put(rh.unroll(hash, bytes.get(start), rollingSize), new Segment(start + 1, end));
+			segments1.put(rh.unroll(hash, bytes.get(start), rollingSize), Segment.of(start + 1, end));
 
 			if (start == 0)
-				segments1.put(rh.unroll(hash, bytes.get(end - 1)), new Segment(start, end - 1));
+				segments1.put(rh.unroll(hash, bytes.get(end - 1)), Segment.of(start, end - 1));
 		}
 
 		return segments1;

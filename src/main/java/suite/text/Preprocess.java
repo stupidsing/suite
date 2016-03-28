@@ -12,7 +12,7 @@ public class Preprocess {
 		public final String text;
 
 		public Run(int start, int end) {
-			segment = new Segment(start, end);
+			segment = Segment.of(start, end);
 			text = null;
 		}
 
@@ -23,37 +23,18 @@ public class Preprocess {
 	}
 
 	public interface Reverser {
-		public int reverseBegin(int position);
-
-		public int reverseEnd(int position);
+		public int reverse(int position);
 	}
 
 	public static Pair<String, Reverser> transform(List<Fun<String, List<Run>>> funs, String in) {
 		String fwd = in;
-
-		Reverser rev = new Reverser() {
-			public int reverseBegin(int position) {
-				return position;
-			}
-
-			public int reverseEnd(int position) {
-				return position;
-			}
-		};
+		Reverser rev = position -> position;
 
 		for (Fun<String, List<Run>> fun : funs) {
 			Reverser rev0 = rev;
 			List<Run> runs = fun.apply(fwd);
 			fwd = forward(fwd, runs);
-			rev = new Reverser() {
-				public int reverseBegin(int position) {
-					return rev0.reverseBegin(reverse(runs, position, false));
-				}
-
-				public int reverseEnd(int position) {
-					return rev0.reverseEnd(reverse(runs, position, true));
-				}
-			};
+			rev = position -> rev0.reverse(reverse(runs, position));
 		}
 
 		return Pair.of(fwd, rev);
@@ -69,20 +50,20 @@ public class Preprocess {
 		return sb.toString();
 	}
 
-	private static int reverse(List<Run> runs, int targetPosition, boolean towardsEnd) {
+	private static int reverse(List<Run> runs, int targetPosition) {
 		int sourcePosition = 0;
 		for (Run run : runs) {
 			Segment segment = run.segment;
 			if (segment != null) {
 				int runLength = segment.end - segment.start;
-				if (towardsEnd && targetPosition == runLength || runLength < targetPosition) {
+				if (runLength <= targetPosition) {
 					sourcePosition = segment.start + runLength;
 					targetPosition -= runLength;
 				} else
 					return segment.start + targetPosition;
 			} else {
 				int runLength = run.text.length();
-				if (towardsEnd && targetPosition == runLength || runLength < targetPosition)
+				if (runLength <= targetPosition)
 					targetPosition -= runLength;
 				else
 					return sourcePosition;

@@ -38,7 +38,12 @@ public class RecursiveFactorizer {
 		Pair<String, Reverser> pair = Preprocess.transform(PreprocessorFactory.create(operators), s);
 		String in1 = pair.t0;
 		reverser = pair.t1;
-		return parse0(To.chars(in1), 0);
+
+		FactorizeResult parsed = parse0(To.chars(in1), 0);
+
+		// Append possibly missed comments
+		int p = reverser.reverse(0);
+		return new FactorizeResult(Chars.concat(in.subchars(0, p), parsed.pre), parsed.node, parsed.post);
 	}
 
 	private FactorizeResult parse0(Chars chars, int fromOp) {
@@ -51,7 +56,7 @@ public class RecursiveFactorizer {
 			for (int i = fromOp; i < operators.length; i++) {
 				Operator operator = operators[i];
 				Chars range = operator != TermOp.TUPLE_ ? chars : chars1;
-				Segment ops = ParseUtil.searchPosition(chars.cs, new Segment(range.start, range.end), operator);
+				Segment ops = ParseUtil.searchPosition(chars.cs, Segment.of(range.start, range.end), operator);
 
 				if (ops == null)
 					continue;
@@ -105,10 +110,10 @@ public class RecursiveFactorizer {
 
 	private FactorizeResult term(Chars chars) {
 		Chars chars1 = CharsUtil.trim(chars);
-		int p0 = reverser.reverseEnd(chars.start);
-		int p1 = reverser.reverseEnd(chars1.start);
-		int p2 = reverser.reverseEnd(chars1.end);
-		int px = reverser.reverseEnd(chars.end);
+		int p0 = reverser.reverse(chars.start);
+		int p1 = reverser.reverse(chars1.start);
+		int p2 = reverser.reverse(chars1.end);
+		int px = reverser.reverse(chars.end);
 		return new FactorizeResult(Chars.of(in.cs, p0, p1), new FTerminal(Chars.of(in.cs, p1, p2)), Chars.of(in.cs, p2, px));
 	}
 
