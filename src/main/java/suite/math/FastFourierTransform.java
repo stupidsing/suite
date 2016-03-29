@@ -1,62 +1,57 @@
 package suite.math;
 
-import java.util.HashMap;
-import java.util.Map;
-
+// https://rosettacode.org/wiki/Fast_Fourier_transform#Java
 public class FastFourierTransform {
 
-	private Map<Integer, Complex[]> cisMap = new HashMap<>();
+	public void fft(Complex buffer[]) {
+		int size = buffer.length;
+		int s = size;
+		int bits = 0;
 
-	public class Ind {
-		public int start;
-		public int count;
-		public int inc;
-
-		public Ind(int start, int count, int inc) {
-			this.start = start;
-			this.count = count;
-			this.inc = inc;
+		while (s > 0) {
+			s >>= 1;
+			bits++;
 		}
-	}
 
-	public Complex[] fft(Complex inputs[], Ind ind) {
-		int count = ind.count;
+		for (int i = 1; i < size / 2; i++) {
+			int j = reverseBits(bits, i);
+			Complex temp = buffer[i];
+			buffer[i] = buffer[j];
+			buffer[j] = temp;
+		}
 
-		if (count == 1)
-			return new Complex[] { inputs[ind.start], };
-		else if (count % 2 == 0) {
-			Complex cis[] = getCis(count);
-			int count1 = count / 2;
-			int inc1 = ind.inc * 2;
-			Complex f0[] = fft(inputs, new Ind(ind.start, count1, inc1));
-			Complex f1[] = fft(inputs, new Ind(ind.start + ind.inc, count1, inc1));
-			Complex f[] = new Complex[count];
+		for (int g = 2; g <= size; g <<= 1) {
+			Complex cis[] = new Complex[g];
 
-			for (int di = 0; di < count1; di++) {
-				int si = di;
-				f[di] = Complex.add(f0[si], Complex.mul(f1[si], cis[di]));
-			}
-
-			for (int di = count1; di < count; di++) {
-				int si = di - count1;
-				f[di] = Complex.add(f0[si], Complex.mul(f1[si], cis[di]));
-			}
-
-			return f;
-		} else
-			throw new RuntimeException("Size is not a power of 2");
-	}
-
-	private Complex[] getCis(int count) {
-		Complex[] cis = cisMap.get(count);
-		if (cis != null) {
-			cisMap.put(count, cis = new Complex[count]);
-			for (int i = 0; i < count; i++) {
-				double angle = 2 * Math.PI * i / count;
+			for (int i = 0; i < g; i++) {
+				double angle = 2 * Math.PI * i / g;
 				cis[i] = new Complex((float) Math.cos(angle), (float) -Math.sin(angle));
 			}
+
+			int step = g / 2;
+
+			for (int i = 0; i < size; i += g)
+				for (int k = 0; k < step; k++) {
+					int ie = i + k;
+					int io = i + k + step;
+
+					Complex ce = buffer[ie];
+					Complex co = buffer[io];
+					Complex exp = Complex.mul(cis[k], co);
+
+					buffer[ie] = Complex.add(ce, exp);
+					buffer[io] = Complex.sub(ce, exp);
+				}
 		}
-		return cis;
+	}
+
+	public static int reverseBits(int bits, int n0) {
+		int n1 = 0;
+		while (bits-- > 0) {
+			n1 = n1 << 1 | n0 & 1;
+			n0 >>= 1;
+		}
+		return n1;
 	}
 
 }
