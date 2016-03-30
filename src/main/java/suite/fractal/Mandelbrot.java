@@ -16,7 +16,7 @@ public class Mandelbrot {
 			for (int y = 0; y < height; y++) {
 				float fx = (x - centreX) * rx;
 				float fy = (y - centreY) * ry;
-				int n = mandelbrot(new Complex(fx, fy));
+				int n = mandelbrot(Complex.of(fx, fy));
 				bufferedImage.setRGB(x, y, new Color(n, n, n).getRGB());
 			}
 	}

@@ -3,29 +3,26 @@ package suite.math;
 // https://rosettacode.org/wiki/Fast_Fourier_transform#Java
 public class FastFourierTransform {
 
-	public void fft(Complex buffer[]) {
-		int size = buffer.length;
+	public Complex[] fft(Complex tds[]) {
+		int size = tds.length;
+		Complex fds[] = new Complex[size];
 		int s = size;
 		int bits = 0;
 
-		while (s > 0) {
+		while (s > 1) {
 			s >>= 1;
 			bits++;
 		}
 
-		for (int i = 1; i < size / 2; i++) {
-			int j = reverseBits(bits, i);
-			Complex temp = buffer[i];
-			buffer[i] = buffer[j];
-			buffer[j] = temp;
-		}
+		for (int i = 0; i < size; i++)
+			fds[reverseBits(bits, i)] = tds[i];
 
 		for (int g = 2; g <= size; g <<= 1) {
 			Complex cis[] = new Complex[g];
 
 			for (int i = 0; i < g; i++) {
 				double angle = 2 * Math.PI * i / g;
-				cis[i] = new Complex((float) Math.cos(angle), (float) -Math.sin(angle));
+				cis[i] = Complex.of((float) Math.cos(angle), (float) -Math.sin(angle));
 			}
 
 			int step = g / 2;
@@ -35,14 +32,16 @@ public class FastFourierTransform {
 					int ie = i + k;
 					int io = i + k + step;
 
-					Complex ce = buffer[ie];
-					Complex co = buffer[io];
+					Complex ce = fds[ie];
+					Complex co = fds[io];
 					Complex exp = Complex.mul(cis[k], co);
 
-					buffer[ie] = Complex.add(ce, exp);
-					buffer[io] = Complex.sub(ce, exp);
+					fds[ie] = Complex.add(ce, exp);
+					fds[io] = Complex.sub(ce, exp);
 				}
 		}
+
+		return fds;
 	}
 
 	public static int reverseBits(int bits, int n0) {

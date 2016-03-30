@@ -53,7 +53,7 @@ public class FastFourierTransform0 {
 			cisMap.put(count, cis = new Complex[count]);
 			for (int i = 0; i < count; i++) {
 				double angle = 2 * Math.PI * i / count;
-				cis[i] = new Complex((float) Math.cos(angle), (float) -Math.sin(angle));
+				cis[i] = Complex.of((float) Math.cos(angle), (float) -Math.sin(angle));
 			}
 		}
 		return cis;
