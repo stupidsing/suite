@@ -44,7 +44,7 @@ public class FastFourierTransform {
 		return fds;
 	}
 
-	public static int reverseBits(int bits, int n0) {
+	private static int reverseBits(int bits, int n0) {
 		int n1 = 0;
 		while (bits-- > 0) {
 			n1 = n1 << 1 | n0 & 1;
