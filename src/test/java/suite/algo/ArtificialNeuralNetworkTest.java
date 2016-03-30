@@ -11,6 +11,7 @@ public class ArtificialNeuralNetworkTest {
 
 	@Test
 	public void test() {
+		boolean[] booleans = new boolean[] { false, true, };
 		Random random = new Random();
 		// random.setSeed(0l);
 
@@ -22,14 +23,14 @@ public class ArtificialNeuralNetworkTest {
 			ann.train(input(b0, b1), new float[] { f(oper(b0, b1)), });
 		}
 
-		for (boolean b0 : new boolean[] { false, true, })
-			for (boolean b1 : new boolean[] { false, true, }) {
+		for (boolean b0 : booleans)
+			for (boolean b1 : booleans) {
 				float f = ann.feed(input(b0, b1))[0];
 				System.out.println(b0 + " ^ " + b1 + " = " + f);
 			}
 
-		for (boolean b0 : new boolean[] { false, true, })
-			for (boolean b1 : new boolean[] { false, true, }) {
+		for (boolean b0 : booleans)
+			for (boolean b1 : booleans) {
 				float f = ann.feed(input(b0, b1))[0];
 				assertEquals(oper(b0, b1), .5f < f);
 			}
