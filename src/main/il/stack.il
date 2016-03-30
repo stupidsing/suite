@@ -5,15 +5,15 @@ constant stack .t = struct (
 
 constant stack$t = (:t => stack :t);
 
-declare stk-is-empty = function [pointer:stack$t stack,] (
+declare _ stk-is-empty = function [pointer:stack$t stack,] (
 	0 < stack/*/+pointer;
 );
 
-declare stk-push = function [pointer:stack$t stack, value,] (
+declare _ stk-push = function [pointer:stack$t stack, value,] (
 	{stack/*/+array/*/:(stack/*/+pointer =+ 1)} = value;
 );
 
-declare stk-pop = function [pointer:stack$t stack,] (
+declare _ stk-pop = function [pointer:stack$t stack,] (
 	if (stack/*/+pointer != 0) then (
 		stack/*/+array/*/:(stack/*/+pointer += -1);
 	) else (no-type 0);
