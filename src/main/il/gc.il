@@ -11,7 +11,7 @@ constant gc-class = fix :gc-class struct (
 | int +size
 | int +number-of-pointers
 | (int * 0) +pointer-offsets
-| (function [pointer:(gc-node_ :gc-class), int, pointer:(pointer:(gc-node_ :gc-class) * 1024),] int) +get-pointers
+| (function [pointer:(stack pointer:(gc-node_ :gc-class)), pointer:(gc-node_ :gc-class),] int) +get-pointers
 );
 
 constant gc-node = gc-node_ gc-class;
@@ -38,17 +38,18 @@ declare gc-prepare = function [] (
 
 declare gc-mark = function [root,] (
 	declare (pointer:gc-node * 1024) nodes;
-	declare index = 0;
-	{nodes/:(index =+ 1)} = root;
+	declare (stack pointer:gc-node) stack;
+	stk-setup [& stack, & nodes,];
+	stk-push [& stack, root,];
 
-	while (0 < index) do (
-		declare node = nodes/:(index += -1);
+	while (not (stk-is-empty [& stack,])) do (
+		declare node = stk-pop [& stack,];
 
 		if (node/*/+current/+flag = gc-allocated) then (
 			{node/*/+current/+flag} = gc-marked;
 			declare class = node/*/+current/+class;
 			if class then (
-				{index} = class/*/+get-pointers [node, index, & nodes,];
+				class/*/+get-pointers [& stack, node,];
 			) else ();
 		) else ();
 	);
