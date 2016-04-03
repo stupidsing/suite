@@ -4,8 +4,7 @@
 fc-precompile-lib-if-required .lib
 	:- fc-library-filename .lib .filename0
 	, fc-precompiled-library-filename .lib .filename1
-	, home.dir .homeDir
-	, concat .homeDir "/target/suite-1.0-jar-with-dependencies.jar" .jar
+	, jar .jar
 	, once (file.exists .jar, file.time .jar .sourceTime0; .sourceTime0 = 0)
 	, once (file.exists .filename0, file.time .filename0 .sourceTime1; .sourceTime1 = 0)
 	, once (file.exists .filename1, file.time .filename1 .targetTime; .targetTime = 0)
