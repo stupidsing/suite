@@ -11,6 +11,19 @@ public class ArtificialNeuralNetwork {
 	private float learningRate = 1f;
 	private int nLayers;
 	private List<float[][]> weightsByLayer = new ArrayList<>();
+	private List<LayerWeight> lws = new ArrayList<>();
+
+	private class LayerWeight {
+		private int nInputs;
+		private int nOutputs;
+		private float weights[][];
+
+		private LayerWeight(int nInputs, int nOutputs, float weights[][]) {
+			this.nInputs = nInputs;
+			this.nOutputs = nOutputs;
+			this.weights = weights;
+		}
+	}
 
 	public ArtificialNeuralNetwork(List<Integer> layerSizes, Random random) {
 		nLayers = layerSizes.size() - 1;
@@ -26,6 +39,18 @@ public class ArtificialNeuralNetwork {
 
 			weightsByLayer.add(weights);
 		}
+
+		for (int layer = 0; layer < nLayers; layer++) {
+			int nInputs = layerSizes.get(layer);
+			int nOutputs = layerSizes.get(layer + 1);
+			float weights[][] = new float[nInputs][nOutputs];
+
+			for (int i = 0; i < nInputs; i++)
+				for (int j = 0; j < nOutputs; j++)
+					weights[i][j] = random.nextFloat();
+
+			lws.add(new LayerWeight(nInputs, nOutputs, weights));
+		}
 	}
 
 	public float[] feed(float inputs[]) {
@@ -40,16 +65,13 @@ public class ArtificialNeuralNetwork {
 		List<float[]> outputs = new ArrayList<>();
 		outputs.add(values);
 
-		for (int layer = 0; layer < nLayers; layer++) {
-			float wij[][] = weightsByLayer.get(layer);
-			int ni = wij.length;
-			int nj = wij[0].length;
+		for (LayerWeight lw : lws) {
+			float wij[][] = lw.weights;
+			float values1[] = new float[lw.nOutputs];
 
-			float values1[] = new float[nj];
-
-			for (int j = 0; j < nj; j++) {
+			for (int j = 0; j < lw.nOutputs; j++) {
 				float sum = 0f;
-				for (int i = 0; i < ni; i++)
+				for (int i = 0; i < lw.nInputs; i++)
 					sum += values[i] * wij[i][j];
 				values1[j] = activationFunction(sum);
 			}
@@ -64,34 +86,31 @@ public class ArtificialNeuralNetwork {
 		float errors[] = null;
 
 		for (int layer = nLayers; 0 < layer; layer--) {
-			float wij[][] = weightsByLayer.get(layer - 1);
-			int ni = wij.length;
-			int nj = wij[0].length;
+			LayerWeight lw0 = lws.get(layer - 1);
+			LayerWeight lw1 = layer < lws.size() ? lws.get(layer) : null;
 
+			int ni = lw0.nInputs;
 			float ins[] = activations.get(layer - 1);
 			float outs[] = activations.get(layer);
-			float diffs[] = new float[nj];
+			float diffs[] = new float[lw0.nOutputs];
 
-			if (layer < nLayers) {
-				float wjk[][] = weightsByLayer.get(layer);
-				int nk = wjk[0].length;
-
-				for (int j = 0; j < nj; j++) {
+			if (lw1 != null)
+				for (int j = 0; j < lw1.nInputs; j++) {
 					float sum = 0f;
-					for (int k = 0; k < nk; k++)
-						sum += errors[k] * wjk[j][k];
+					for (int k = 0; k < lw1.nOutputs; k++)
+						sum += errors[k] * lw1.weights[j][k];
 					diffs[j] = sum;
 				}
-			} else
-				for (int j = 0; j < nj; j++)
+			else
+				for (int j = 0; j < lw0.nOutputs; j++)
 					diffs[j] = expected[j] - outs[j];
 
-			float errors1[] = new float[nj];
+			float errors1[] = new float[lw0.nOutputs];
 
-			for (int j = 0; j < nj; j++) {
+			for (int j = 0; j < lw0.nOutputs; j++) {
 				errors1[j] = diffs[j] * activationFunctionGradient(outs[j]);
 				for (int i = 0; i < ni; i++)
-					wij[i][j] += learningRate * errors1[j] * ins[i];
+					lw0.weights[i][j] += learningRate * errors1[j] * ins[i];
 			}
 
 			errors = errors1;
