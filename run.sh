@@ -22,16 +22,6 @@ getLatestTimestamp() {
 	{ cd ${BASE} && mvn -Dmaven.test.skip=true -T4 install assembly:single; }
 ) &&
 
-(
-	SOURCETIME=$(getLatestTimestamp "${JAR}")
-	TARGETTIME=$(getLatestTimestamp "${BASE}/target/precompiled/STANDARD.node.gz")
-	[ ${SOURCETIME} -le ${TARGETTIME} ] ||
-	[ "${SKIPPRECOMPILE}" ] ||
-	{ echo | ${CMD} precompile STANDARD ||
-		{ rm -f ${BASE}/target/precompiled/STANDARD.node.gz && false; }
-	}
-) &&
-
 if which rlwrap > /dev/null; then
 	rlwrap -D2 -H "${HOME}/.suite_history" --history-no-dupes 2 -i ${FULLCMD}
 else
