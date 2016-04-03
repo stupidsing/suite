@@ -10,7 +10,6 @@ public class ArtificialNeuralNetwork {
 
 	private float learningRate = 1f;
 	private int nLayers;
-	private List<float[][]> weightsByLayer = new ArrayList<>();
 	private List<LayerWeight> lws = new ArrayList<>();
 
 	private class LayerWeight {
@@ -27,18 +26,6 @@ public class ArtificialNeuralNetwork {
 
 	public ArtificialNeuralNetwork(List<Integer> layerSizes, Random random) {
 		nLayers = layerSizes.size() - 1;
-
-		for (int layer = 0; layer < nLayers; layer++) {
-			int nInputs = layerSizes.get(layer);
-			int nOutputs = layerSizes.get(layer + 1);
-			float weights[][] = new float[nInputs][nOutputs];
-
-			for (int i = 0; i < nInputs; i++)
-				for (int j = 0; j < nOutputs; j++)
-					weights[i][j] = random.nextFloat();
-
-			weightsByLayer.add(weights);
-		}
 
 		for (int layer = 0; layer < nLayers; layer++) {
 			int nInputs = layerSizes.get(layer);
