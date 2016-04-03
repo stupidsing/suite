@@ -40,8 +40,8 @@ public class ConvolutionalNeuralNetwork {
 
 		for (int layer = 0; layer < nLayers; layer++) {
 			Pair<Integer, Integer> parameter = parameters.get(layer);
-			int nOutputs = parameter.t0;
-			int nWeights = parameter.t1;
+			int nWeights = parameter.t0;
+			int nOutputs = parameter.t1;
 			float weights[] = new float[nWeights];
 
 			for (int i = 0; i < nWeights; i++)
