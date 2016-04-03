@@ -141,11 +141,7 @@ public class DependencyMain extends ExecutableProgram {
 				.filter(m -> m.getName().startsWith("list") && m.getParameters().length == 0) //
 				.sink(m -> {
 					System.out.println(m.getName() + "()");
-					try {
-						m.invoke(this, new Object[] {});
-					} catch (Exception ex) {
-						throw new RuntimeException(ex);
-					}
+					Rethrow.ex(() -> m.invoke(this, new Object[] {}));
 					System.out.println();
 					System.out.println();
 				});

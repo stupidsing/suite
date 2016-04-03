@@ -16,7 +16,6 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.os.LogUtil;
 import suite.primitive.Chars;
 import suite.util.Rethrow;
 import suite.util.Util;
@@ -105,21 +104,13 @@ public class Intrinsics {
 				, MonadIntrinsics.class //
 				, SeqIntrinsics.class //
 				, SuiteIntrinsics.class)) {
-			Object instance;
-
-			try {
-				instance = clazz.newInstance();
-			} catch (ReflectiveOperationException ex) {
-				throw new RuntimeException(ex);
-			}
+			Object instance = Rethrow.ex(() -> clazz.newInstance());
 
 			for (Field field : clazz.getFields())
-				if (Intrinsic.class.isAssignableFrom(field.getType()))
-					try {
-						intrinsics.put(clazz.getSimpleName() + "." + field.getName(), (Intrinsic) field.get(instance));
-					} catch (Exception ex) {
-						LogUtil.error(ex);
-					}
+				if (Intrinsic.class.isAssignableFrom(field.getType())) {
+					String name = clazz.getSimpleName() + "." + field.getName();
+					Rethrow.ex(() -> intrinsics.put(name, (Intrinsic) field.get(instance)));
+				}
 		}
 	}
 

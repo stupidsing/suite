@@ -105,6 +105,7 @@ public class SystemPredicates {
 		addPredicate("file.read", ioPredicates.fileRead);
 		addPredicate("file.time", ioPredicates.fileTime);
 		addPredicate("file.write", ioPredicates.fileWrite);
+		addPredicate("jar", ioPredicates.jar);
 		addPredicate("home.dir", ioPredicates.homeDir);
 		addPredicate("log", ioPredicates.log);
 		addPredicate("nl", ioPredicates.nl);

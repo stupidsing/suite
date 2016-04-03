@@ -18,6 +18,7 @@ import suite.os.FileUtil;
 import suite.search.DirectedGraph;
 import suite.search.StronglyConnectedComponents;
 import suite.streamlet.Read;
+import suite.util.Rethrow;
 import suite.util.Util;
 
 public class DependencyTest {
@@ -73,13 +74,7 @@ public class DependencyTest {
 		return Read.from(sourceDirs) //
 				.map(sourceDir -> Paths.get(sourceDir + "/" + p)) //
 				.filter(path -> Files.exists(path)) //
-				.concatMap(path -> {
-					try {
-						return Read.from(Files.readAllLines(path));
-					} catch (Exception ex) {
-						throw new RuntimeException(ex);
-					}
-				}) //
+				.concatMap(path -> Rethrow.ex(() -> Read.from(Files.readAllLines(path)))) //
 				.filter(line -> line.startsWith("import ")) //
 				.map(line -> line.split(" ")[1].replace(";", "")) //
 				.toList();

@@ -35,12 +35,11 @@ public class To {
 	private static final Field field;
 
 	static {
-		try {
-			field = String.class.getDeclaredField("value");
-			field.setAccessible(true);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
+		field = Rethrow.ex(() -> {
+			Field field_ = String.class.getDeclaredField("value");
+			field_.setAccessible(true);
+			return field_;
+		});
 	}
 
 	public static Bytes bytes(String s) {
@@ -63,11 +62,7 @@ public class To {
 	 * returned array!
 	 */
 	public static char[] charArray(String s) {
-		try {
-			return (char[]) field.get(s); // s.toCharArray()
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
+		return Rethrow.ex(() -> (char[]) field.get(s)); // s.toCharArray()
 	}
 
 	public static Chars chars(String s) {

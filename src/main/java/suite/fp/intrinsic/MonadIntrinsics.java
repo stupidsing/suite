@@ -43,13 +43,7 @@ public class MonadIntrinsics {
 		return Rethrow.ioException(() -> {
 			Process process = Runtime.getRuntime().exec(list.toArray(new String[list.size()]));
 
-			Node n0 = Intrinsics.enclose(callback, new Suspend(() -> {
-				try {
-					return Int.of(process.waitFor());
-				} catch (Exception ex) {
-					throw new RuntimeException(ex);
-				}
-			}));
+			Node n0 = Intrinsics.enclose(callback, new Suspend(() -> Rethrow.ex(() -> Int.of(process.waitFor()))));
 
 			Node n1 = createReader(callback, process.getInputStream());
 			Node n2 = createReader(callback, process.getErrorStream());

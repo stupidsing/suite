@@ -71,13 +71,11 @@ public class XmlUtil {
 	}
 
 	public Streamlet<XmlPath> parse(InputStream is) throws SAXException {
-		try {
+		return Rethrow.ex(() -> {
 			Document document = documentBuilder.parse(is);
 			Element element = document.getDocumentElement();
 			return traverse(null, element);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		});
 	}
 
 	private Streamlet<XmlPath> traverse(XmlPath parent, Node node) {

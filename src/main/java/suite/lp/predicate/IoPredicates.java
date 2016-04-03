@@ -77,6 +77,8 @@ public class IoPredicates {
 		return true;
 	});
 
+	public BuiltinPredicate jar = PredicateUtil.p1((prover, p0) -> prover.bind(new Str(FileUtil.jarFilename()), p0));
+
 	public BuiltinPredicate homeDir = PredicateUtil.p1((prover, p0) -> prover.bind(new Str(FileUtil.homeDir()), p0));
 
 	public BuiltinPredicate nl = PredicateUtil.run(() -> System.out.println());

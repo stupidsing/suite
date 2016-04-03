@@ -43,9 +43,9 @@ public class FileUtil {
 	}
 
 	public static int getPid() {
-		try {
-			RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
+		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
 
+		return Rethrow.ex(() -> {
 			Field jvm = runtime.getClass().getDeclaredField("jvm");
 			jvm.setAccessible(true);
 
@@ -55,9 +55,11 @@ public class FileUtil {
 			method.setAccessible(true);
 
 			return (Integer) method.invoke(jvm.get(runtime));
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
+		});
+	}
+
+	public static String jarFilename() {
+		return Rethrow.ex(() -> FileUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
 	}
 
 	public static String homeDir() {

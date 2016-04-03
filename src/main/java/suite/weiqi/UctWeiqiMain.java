@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 
 import suite.adt.Pair;
 import suite.os.FileUtil;
+import suite.os.LogUtil;
 import suite.os.TimeUtil;
 import suite.os.TimeUtil.TimedResult;
 import suite.uct.ShuffleUtil;
@@ -103,7 +104,7 @@ public class UctWeiqiMain<Move> {
 					else
 						quit = true;
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					LogUtil.error(ex);
 				}
 		}
 	}

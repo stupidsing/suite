@@ -8,6 +8,14 @@ public class Rethrow {
 		public T source() throws Ex;
 	}
 
+	public static <T> T ex(SourceEx<T, Exception> source) {
+		try {
+			return source.source();
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public static <T> T ioException(SourceEx<T, IOException> source) {
 		try {
 			return source.source();
