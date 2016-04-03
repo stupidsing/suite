@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import suite.lp.doer.Cloner;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
-import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
@@ -101,10 +100,7 @@ public class IoPredicates {
 		return false;
 	});
 
-	public BuiltinPredicate source = PredicateUtil.p1((prover, p0) -> {
-		Node source = prover.config().getSource().source();
-		return prover.bind(p0, source);
-	});
+	public BuiltinPredicate source = PredicateUtil.p1((prover, p0) -> prover.bind(p0, prover.config().getSource().source()));
 
 	public BuiltinPredicate throwPredicate = PredicateUtil.sink(n -> {
 		throw new SuiteException(new Cloner().clone(n));
