@@ -89,7 +89,6 @@ public class ArtificialNeuralNetwork {
 			LayerWeight lw0 = lws.get(layer - 1);
 			LayerWeight lw1 = layer < lws.size() ? lws.get(layer) : null;
 
-			int ni = lw0.nInputs;
 			float ins[] = activations.get(layer - 1);
 			float outs[] = activations.get(layer);
 			float diffs[] = new float[lw0.nOutputs];
@@ -109,7 +108,7 @@ public class ArtificialNeuralNetwork {
 
 			for (int j = 0; j < lw0.nOutputs; j++) {
 				errors1[j] = diffs[j] * activationFunctionGradient(outs[j]);
-				for (int i = 0; i < ni; i++)
+				for (int i = 0; i < lw0.nInputs; i++)
 					lw0.weights[i][j] += learningRate * errors1[j] * ins[i];
 			}
 

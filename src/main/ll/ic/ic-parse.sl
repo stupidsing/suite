@@ -17,15 +17,15 @@ ic-parse false (BOOLEAN 0)
 ic-parse true (BOOLEAN 1)
 #
 ic-parse (declare .t .var = .value; .do) (DECLARE POLY .var .type (SEQ (LET (VAR .var) (IN .var .type .value1)) .do1))
-	:- !
-	, is.atom .var
+	:- is.atom .var
+	, !
 	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
 	, ic-parse .do .do1
 	, ic-parse-type .t .type
 #
 ic-parse (declare .var = .value; .do) (DECLARE MONO .var .type (SEQ (LET (VAR .var) (IN .var .type .value1)) .do1))
-	:- !
-	, is.atom .var
+	:- is.atom .var
+	, !
 	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
 	, ic-parse .do .do1
 #

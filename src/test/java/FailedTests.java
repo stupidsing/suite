@@ -20,7 +20,7 @@ public class FailedTests {
 	// (NUMBER .143093) THIS"
 	@Test
 	public void testAssignWrongSize() {
-		new ImperativeCompiler().compile(0, "declare f as (function [] int) = function [] 0; (f as int && 1);");
+		new ImperativeCompiler().compile(0, "declare (function [] int) f = function [] 0; (f as int && 1);");
 	}
 
 	// Shall we support this?
