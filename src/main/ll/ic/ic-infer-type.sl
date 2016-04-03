@@ -1,8 +1,9 @@
 ic-infer-type .vs .do .typex
-	:- once (
-		ic-infer-type0 .vs .do .type0
-		, graph.bind .type0 .typex
-		; ic-error "Cannot resolve type of" .do "to" .typex
+	:- once (ic-infer-type0 .vs .do .type0
+		; ic-error "Cannot resolve type of" .do
+	)
+	, once (graph.bind .type0 .typex
+		; ic-error "Cannot bind type of" .do "to" .typex
 	)
 #
 
