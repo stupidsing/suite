@@ -66,13 +66,12 @@ public class ArtificialNeuralNetwork {
 		outputs.add(values);
 
 		for (LayerWeight lw : lws) {
-			float wij[][] = lw.weights;
 			float values1[] = new float[lw.nOutputs];
 
 			for (int j = 0; j < lw.nOutputs; j++) {
 				float sum = 0f;
 				for (int i = 0; i < lw.nInputs; i++)
-					sum += values[i] * wij[i][j];
+					sum += values[i] * lw.weights[i][j];
 				values1[j] = activationFunction(sum);
 			}
 
