@@ -16,7 +16,7 @@ import suite.primitive.Bytes;
 public class FailedTests {
 
 	// Cannot understand the error message
-s	// "Cannot resolve type of (IF (TYPE-CAST I32 VAR f) (NUMBER 1) BOOLEAN 0)
+	// "Cannot resolve type of (IF (TYPE-CAST I32 VAR f) (NUMBER 1) BOOLEAN 0)
 	// to .144591"
 	@Test
 	public void testAssignWrongSize() {
