@@ -73,7 +73,7 @@ public class ArtificialNeuralNetwork {
 
 		for (int layer = nLayers; 0 < layer; layer--) {
 			LayerWeight lw0 = lws.get(layer - 1);
-			LayerWeight lw1 = layer < lws.size() ? lws.get(layer) : null;
+			LayerWeight lw1 = layer < nLayers ? lws.get(layer) : null;
 
 			float ins[] = activations.get(layer - 1);
 			float outs[] = activations.get(layer);
