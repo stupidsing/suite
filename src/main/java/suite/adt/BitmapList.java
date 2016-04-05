@@ -1,13 +1,40 @@
 package suite.adt;
 
+import java.util.function.BiFunction;
+
 public class BitmapList<T> {
 
 	private static Object empty[] = new Object[0];
 	private int bitmap;
 	private Object ts[];
 
-	public BitmapList() {
-		this(0, new Object[0]);
+	public static <T> BitmapList<T> merge(BitmapList<T> bl0, BitmapList<T> bl1, BiFunction<T, T, T> merger) {
+		if (bl0 != null) {
+			if (bl1 != null) {
+				int bitmap0 = bl0.bitmap;
+				int bitmap1 = bl1.bitmap;
+				int bitCount = 0;
+				int bitCount0 = 0;
+				int bitCount1 = 0;
+				int bitmap = 0;
+				Object ts[] = new Object[Integer.bitCount(bitmap0 | bitmap1)];
+
+				for (int bit = 1; bit != 0; bit <<= 1) {
+					T t0 = (bitmap0 & bit) != 0 ? bl0.get(bitCount0++) : null;
+					T t1 = (bitmap1 & bit) != 0 ? bl1.get(bitCount1++) : null;
+					T t = t0 != null ? t1 != null ? merger.apply(t0, t1) : t0 : t1;
+
+					if (t != null) {
+						bitmap |= bit;
+						ts[bitCount++] = t;
+					}
+				}
+
+				return new BitmapList<>(bitmap, ts);
+			} else
+				return bl0;
+		} else
+			return bl1;
 	}
 
 	public BitmapList(BitmapList<T> bl, int index, T t) {
@@ -44,27 +71,21 @@ public class BitmapList<T> {
 	}
 
 	public static <T> T get(BitmapList<T> bl, int index) {
-		int bitmap;
-		Object ts[];
-
-		if (bl != null) {
-			bitmap = bl.bitmap;
-			ts = bl.ts;
-		} else {
-			bitmap = 0;
-			ts = empty;
-		}
-
+		int bitmap = bl != null ? bl.bitmap : 0;
 		int bit = 1 << index;
 
 		if ((bitmap & bit) != 0) {
 			int mask = bit - 1;
 			int bitCount = Integer.bitCount(bitmap & mask);
-			@SuppressWarnings("unchecked")
-			T t = (T) ts[bitCount];
-			return t;
+			return bl.get(bitCount);
 		} else
 			return null;
+	}
+
+	private T get(int bitCount) {
+		@SuppressWarnings("unchecked")
+		T t = (T) ts[bitCount];
+		return t;
 	}
 
 }
