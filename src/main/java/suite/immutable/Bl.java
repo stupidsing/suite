@@ -1,14 +1,19 @@
-package suite.adt;
+package suite.immutable;
 
 import java.util.function.BiFunction;
 
-public class BitmapList<T> {
+/**
+ * Bitmap list.
+ * 
+ * @author ywsing
+ */
+public class Bl<T> {
 
 	private static Object empty[] = new Object[0];
 	private int bitmap;
 	private Object ts[];
 
-	public static <T> BitmapList<T> merge(BitmapList<T> bl0, BitmapList<T> bl1, BiFunction<T, T, T> merger) {
+	public static <T> Bl<T> merge(Bl<T> bl0, Bl<T> bl1, BiFunction<T, T, T> merger) {
 		if (bl0 != null) {
 			if (bl1 != null) {
 				int bitmap0 = bl0.bitmap;
@@ -30,14 +35,14 @@ public class BitmapList<T> {
 					}
 				}
 
-				return new BitmapList<>(bitmap, ts);
+				return new Bl<>(bitmap, ts);
 			} else
 				return bl0;
 		} else
 			return bl1;
 	}
 
-	public BitmapList(BitmapList<T> bl, int index, T t) {
+	public static <T> Bl<T> add(Bl<T> bl, int index, T t) {
 		int bitmap0;
 		Object ts0[];
 
@@ -61,16 +66,16 @@ public class BitmapList<T> {
 		ts1[bitCount] = t;
 		for (int i = bitCount + 1; i < ts1.length; i++)
 			ts1[i] = ts0[i - 1];
-		this.bitmap = bitmap1;
-		this.ts = ts1;
+
+		return new Bl<>(bitmap1, ts1);
 	}
 
-	public BitmapList(int bitmap, Object ts[]) {
+	public Bl(int bitmap, Object ts[]) {
 		this.bitmap = bitmap;
 		this.ts = ts;
 	}
 
-	public static <T> T get(BitmapList<T> bl, int index) {
+	public static <T> T get(Bl<T> bl, int index) {
 		int bitmap = bl != null ? bl.bitmap : 0;
 		int bit = 1 << index;
 

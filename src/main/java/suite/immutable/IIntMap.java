@@ -1,58 +1,34 @@
 package suite.immutable;
 
-import suite.adt.BitmapList;
+import java.util.function.BiFunction;
 
 public class IIntMap<V> {
 
-	private Bl0<V> bl0;
+	private Bl<Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>> bl0;
 
-	private static class Bl0<V> extends BitmapList<Bl1<V>> {
-		private Bl0(Bl0<V> Bl_, int index, Bl1<V> child) {
-			super(Bl_, index, child);
-		}
-	}
-
-	private static class Bl1<V> extends BitmapList<Bl2<V>> {
-		private Bl1(Bl1<V> Bl_, int index, Bl2<V> child) {
-			super(Bl_, index, child);
-		}
-	}
-
-	private static class Bl2<V> extends BitmapList<Bl3<V>> {
-		private Bl2(Bl2<V> Bl_, int index, Bl3<V> child) {
-			super(Bl_, index, child);
-		}
-	}
-
-	private static class Bl3<V> extends BitmapList<Bl4<V>> {
-		private Bl3(Bl3<V> Bl_, int index, Bl4<V> child) {
-			super(Bl_, index, child);
-		}
-	}
-
-	private static class Bl4<V> extends BitmapList<Bl5<V>> {
-		private Bl4(Bl4<V> Bl_, int index, Bl5<V> child) {
-			super(Bl_, index, child);
-		}
-	}
-
-	private static class Bl5<V> extends BitmapList<Bl6<V>> {
-		private Bl5(Bl5<V> Bl_, int index, Bl6<V> child) {
-			super(Bl_, index, child);
-		}
-	}
-
-	private static class Bl6<V> extends BitmapList<V> {
-		private Bl6(Bl6<V> Bl_, int index, V child) {
-			super(Bl_, index, child);
-		}
+	public static <V> IIntMap<V> merge(IIntMap<V> map0, IIntMap<V> map1) {
+		BiFunction<V, V, V> f //
+				= (v0, v1) -> v0 != null ? v0 : v1;
+		BiFunction<Bl<V>, Bl<V>, Bl<V>> f6 //
+				= (m0, m1) -> Bl.merge(m0, m1, f);
+		BiFunction<Bl<Bl<V>>, Bl<Bl<V>>, Bl<Bl<V>>> f5 //
+				= (m0, m1) -> Bl.merge(m0, m1, f6);
+		BiFunction<Bl<Bl<Bl<V>>>, Bl<Bl<Bl<V>>>, Bl<Bl<Bl<V>>>> f4 //
+				= (m0, m1) -> Bl.merge(m0, m1, f5);
+		BiFunction<Bl<Bl<Bl<Bl<V>>>>, Bl<Bl<Bl<Bl<V>>>>, Bl<Bl<Bl<Bl<V>>>>> f3 //
+				= (m0, m1) -> Bl.merge(m0, m1, f4);
+		BiFunction<Bl<Bl<Bl<Bl<Bl<V>>>>>, Bl<Bl<Bl<Bl<Bl<V>>>>>, Bl<Bl<Bl<Bl<Bl<V>>>>>> f2 //
+				= (m0, m1) -> Bl.merge(m0, m1, f3);
+		BiFunction<Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>, Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>, Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>> f1 //
+				= (m0, m1) -> Bl.merge(m0, m1, f2);
+		return new IIntMap<>(Bl.merge(map0.bl0, map1.bl0, f1));
 	}
 
 	public IIntMap() {
 		this(null);
 	}
 
-	private IIntMap(Bl0<V> Bl) {
+	private IIntMap(Bl<Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>> Bl) {
 		this.bl0 = Bl;
 	}
 
@@ -64,13 +40,13 @@ public class IIntMap<V> {
 		int k4 = key >> 10 & 31;
 		int k5 = key >> 5 & 31;
 		int k6 = key & 31;
-		Bl1<V> bl1 = BitmapList.get(bl0, k0);
-		Bl2<V> bl2 = BitmapList.get(bl1, k1);
-		Bl3<V> bl3 = BitmapList.get(bl2, k2);
-		Bl4<V> bl4 = BitmapList.get(bl3, k3);
-		Bl5<V> bl5 = BitmapList.get(bl4, k4);
-		Bl6<V> bl6 = BitmapList.get(bl5, k5);
-		return BitmapList.get(bl6, k6);
+		Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> bl1 = Bl.get(bl0, k0);
+		Bl<Bl<Bl<Bl<Bl<V>>>>> bl2 = Bl.get(bl1, k1);
+		Bl<Bl<Bl<Bl<V>>>> bl3 = Bl.get(bl2, k2);
+		Bl<Bl<Bl<V>>> bl4 = Bl.get(bl3, k3);
+		Bl<Bl<V>> bl5 = Bl.get(bl4, k4);
+		Bl<V> bl6 = Bl.get(bl5, k5);
+		return Bl.get(bl6, k6);
 	}
 
 	public IIntMap<V> put(int key, V v) {
@@ -81,19 +57,19 @@ public class IIntMap<V> {
 		int k4 = key >> 10 & 31;
 		int k5 = key >> 5 & 31;
 		int k6 = key & 31;
-		Bl1<V> bl1 = BitmapList.get(bl0, k0);
-		Bl2<V> bl2 = BitmapList.get(bl1, k1);
-		Bl3<V> Bl3 = BitmapList.get(bl2, k2);
-		Bl4<V> bl4 = BitmapList.get(Bl3, k3);
-		Bl5<V> bl5 = BitmapList.get(bl4, k4);
-		Bl6<V> bl6 = BitmapList.get(bl5, k5);
-		Bl6<V> new6 = new Bl6<>(bl6, k6, v);
-		Bl5<V> new5 = new Bl5<>(bl5, k5, new6);
-		Bl4<V> new4 = new Bl4<>(bl4, k4, new5);
-		Bl3<V> new3 = new Bl3<>(Bl3, k3, new4);
-		Bl2<V> new2 = new Bl2<>(bl2, k2, new3);
-		Bl1<V> new1 = new Bl1<>(bl1, k1, new2);
-		Bl0<V> new0 = new Bl0<>(bl0, k0, new1);
+		Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> bl1 = Bl.get(bl0, k0);
+		Bl<Bl<Bl<Bl<Bl<V>>>>> bl2 = Bl.get(bl1, k1);
+		Bl<Bl<Bl<Bl<V>>>> Bl3 = Bl.get(bl2, k2);
+		Bl<Bl<Bl<V>>> bl4 = Bl.get(Bl3, k3);
+		Bl<Bl<V>> bl5 = Bl.get(bl4, k4);
+		Bl<V> bl6 = Bl.get(bl5, k5);
+		Bl<V> new6 = Bl.add(bl6, k6, v);
+		Bl<Bl<V>> new5 = Bl.add(bl5, k5, new6);
+		Bl<Bl<Bl<V>>> new4 = Bl.add(bl4, k4, new5);
+		Bl<Bl<Bl<Bl<V>>>> new3 = Bl.add(Bl3, k3, new4);
+		Bl<Bl<Bl<Bl<Bl<V>>>>> new2 = Bl.add(bl2, k2, new3);
+		Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> new1 = Bl.add(bl1, k1, new2);
+		Bl<Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>> new0 = Bl.add(bl0, k0, new1);
 		return new IIntMap<>(new0);
 	}
 
