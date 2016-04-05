@@ -33,6 +33,7 @@ import suite.node.io.Rewriter.NodeRead;
 import suite.node.io.Rewriter.ReadType;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.util.Util;
 
 /**
  * Converts a node into graph representation. The nodes link to other nodes via
@@ -61,7 +62,7 @@ public class Grapher {
 
 		@Override
 		public boolean equals(Object object) {
-			if (object.getClass() == IntPair.class) {
+			if (Util.clazz(object) == IntPair.class) {
 				IntPair other = (IntPair) object;
 				return t0 == other.t0 && t1 == other.t1;
 			} else

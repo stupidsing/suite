@@ -139,7 +139,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 				} else
 					return false;
 			};
-		} , source2)));
+		}, source2)));
 	}
 
 	public Outlet2<K, V> cons(K key, V value) {
@@ -166,7 +166,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object.getClass() == Outlet2.class) {
+		if (Util.clazz(object) == Outlet2.class) {
 			@SuppressWarnings("unchecked")
 			Outlet2<K, V> outlet = (Outlet2<K, V>) (Outlet2<?, ?>) object;
 			Source2<K, V> source2 = outlet.source2;

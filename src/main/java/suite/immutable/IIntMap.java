@@ -2,6 +2,8 @@ package suite.immutable;
 
 import java.util.function.BiFunction;
 
+import suite.util.FunUtil.Fun;
+
 public class IIntMap<V> {
 
 	private Bl<Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>> bl0;
@@ -49,7 +51,7 @@ public class IIntMap<V> {
 		return Bl.get(bl6, k6);
 	}
 
-	public IIntMap<V> put(int key, V v) {
+	public IIntMap<V> update(int key, Fun<V, V> fun) {
 		int k0 = key >> 30;
 		int k1 = key >> 25 & 31;
 		int k2 = key >> 20 & 31;
@@ -63,13 +65,14 @@ public class IIntMap<V> {
 		Bl<Bl<Bl<V>>> bl4 = Bl.get(Bl3, k3);
 		Bl<Bl<V>> bl5 = Bl.get(bl4, k4);
 		Bl<V> bl6 = Bl.get(bl5, k5);
-		Bl<V> new6 = Bl.add(bl6, k6, v);
-		Bl<Bl<V>> new5 = Bl.add(bl5, k5, new6);
-		Bl<Bl<Bl<V>>> new4 = Bl.add(bl4, k4, new5);
-		Bl<Bl<Bl<Bl<V>>>> new3 = Bl.add(Bl3, k3, new4);
-		Bl<Bl<Bl<Bl<Bl<V>>>>> new2 = Bl.add(bl2, k2, new3);
-		Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> new1 = Bl.add(bl1, k1, new2);
-		Bl<Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>> new0 = Bl.add(bl0, k0, new1);
+		V v = Bl.get(bl6, k6);
+		Bl<V> new6 = Bl.update(bl6, k6, fun.apply(v));
+		Bl<Bl<V>> new5 = Bl.update(bl5, k5, new6);
+		Bl<Bl<Bl<V>>> new4 = Bl.update(bl4, k4, new5);
+		Bl<Bl<Bl<Bl<V>>>> new3 = Bl.update(Bl3, k3, new4);
+		Bl<Bl<Bl<Bl<Bl<V>>>>> new2 = Bl.update(bl2, k2, new3);
+		Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> new1 = Bl.update(bl1, k1, new2);
+		Bl<Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>> new0 = Bl.update(bl0, k0, new1);
 		return new IIntMap<>(new0);
 	}
 

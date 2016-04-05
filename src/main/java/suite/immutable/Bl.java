@@ -2,6 +2,8 @@ package suite.immutable;
 
 import java.util.function.BiFunction;
 
+import suite.util.Copy;
+
 /**
  * Bitmap list.
  * 
@@ -21,18 +23,16 @@ public class Bl<T> {
 				int bitCount = 0;
 				int bitCount0 = 0;
 				int bitCount1 = 0;
-				int bitmap = 0;
-				Object ts[] = new Object[Integer.bitCount(bitmap0 | bitmap1)];
+				int bitmap = bitmap0 | bitmap1;
+				Object ts[] = new Object[Integer.bitCount(bitmap)];
 
 				for (int bit = 1; bit != 0; bit <<= 1) {
 					T t0 = (bitmap0 & bit) != 0 ? bl0.get(bitCount0++) : null;
 					T t1 = (bitmap1 & bit) != 0 ? bl1.get(bitCount1++) : null;
 					T t = t0 != null ? t1 != null ? merger.apply(t0, t1) : t0 : t1;
 
-					if (t != null) {
-						bitmap |= bit;
+					if (t != null)
 						ts[bitCount++] = t;
-					}
 				}
 
 				return new Bl<>(bitmap, ts);
@@ -42,7 +42,7 @@ public class Bl<T> {
 			return bl1;
 	}
 
-	public static <T> Bl<T> add(Bl<T> bl, int index, T t) {
+	public static <T> Bl<T> update(Bl<T> bl, int index, T t) {
 		int bitmap0;
 		Object ts0[];
 
@@ -55,22 +55,29 @@ public class Bl<T> {
 		}
 
 		int bit = 1 << index;
-		int mask = bit - 1;
-		int bits0 = bitmap0 & mask;
-		int bits1 = bitmap0 & ~mask;
-		int bitCount = Integer.bitCount(bits0);
-		int bitmap1 = (bits1 << 1) + bit + bits0;
-		Object ts1[] = new Object[ts0.length + 1];
-		for (int i = 0; i < bitCount; i++)
-			ts1[i] = ts0[i];
-		ts1[bitCount] = t;
-		for (int i = bitCount + 1; i < ts1.length; i++)
-			ts1[i] = ts0[i - 1];
+		int bits0 = bitmap0 & bit - 1;
+		int bits1 = bitmap0 >>> index + 1;
 
-		return new Bl<>(bitmap1, ts1);
+		int diff0 = (bitmap0 & bit) != 0 ? 1 : 0;
+		int diff1 = t != null ? 1 : 0;
+		int diff = diff1 - diff0;
+
+		int bitmap1 = bits0 + (diff1 << index) + bits1;
+
+		if (bitmap1 != 0) {
+			Object ts1[] = new Object[ts0.length + diff];
+			int bitCount0 = Integer.bitCount(bits0);
+			int bitCount1 = Integer.bitCount(bits1);
+			Copy.primitiveArray(ts0, 0, ts1, 0, bitCount0);
+			ts0[bitCount0] = t;
+			Copy.primitiveArray(ts0, bitCount0 + diff0, ts1, bitCount0 + diff1, bitCount1);
+
+			return new Bl<>(bitmap1, ts1);
+		} else
+			return null;
 	}
 
-	public Bl(int bitmap, Object ts[]) {
+	private Bl(int bitmap, Object ts[]) {
 		this.bitmap = bitmap;
 		this.ts = ts;
 	}

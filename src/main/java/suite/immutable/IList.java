@@ -3,6 +3,7 @@ package suite.immutable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.Objects;
 
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
@@ -76,6 +77,14 @@ public class IList<T> implements Iterable<T> {
 			node = node.tail;
 		}
 		return sb.toString();
+	}
+
+	public IList<T> remove(T t) {
+		IList<T> result = end();
+		for (T t_ : reverse())
+			if (!Objects.equals(t, t_))
+				result = IList.cons(t_, result);
+		return result;
 	}
 
 	public Deque<T> reverse() {

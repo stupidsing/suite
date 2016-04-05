@@ -13,6 +13,7 @@ import suite.node.io.Rewriter.NodeHead;
 import suite.node.io.Rewriter.NodeRead;
 import suite.util.FunUtil.Sink;
 import suite.util.HashCodeComparable;
+import suite.util.Util;
 
 /**
  * The Node.hashCode() method would not permit taking hash code of terms with
@@ -83,7 +84,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 		}
 
 		public boolean equals(Object object) {
-			boolean result = object.getClass() == TermLister.class;
+			boolean result = Util.clazz(object) == TermLister.class;
 
 			if (result) {
 				List<Pair<Integer, NodeHead>> list1 = ((TermLister) object).list;
@@ -126,7 +127,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object.getClass() == TermKey.class) {
+		if (Util.clazz(object) == TermKey.class) {
 			Node node1 = ((TermKey) object).node;
 			TermLister tl0 = new TermLister(node);
 			TermLister tl1 = new TermLister(node1);

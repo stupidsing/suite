@@ -1,5 +1,7 @@
 package suite.math;
 
+import suite.util.Util;
+
 public class Complex {
 
 	public final float r, i;
@@ -46,7 +48,7 @@ public class Complex {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object.getClass() == getClass()) {
+		if (Util.clazz(object) == Complex.class) {
 			Complex other = (Complex) object;
 			return r == other.r && i == other.i;
 		} else
