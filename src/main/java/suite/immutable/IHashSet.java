@@ -4,6 +4,10 @@ public class IHashSet<V> {
 
 	private IIntMap<IList<V>> intMap;
 
+	public static <V> IHashSet<V> merge(IHashSet<V> set0, IHashSet<V> set1) {
+		return new IHashSet<>(IIntMap.merge(set0.intMap, set1.intMap));
+	}
+
 	public IHashSet() {
 		this(new IIntMap<>());
 	}

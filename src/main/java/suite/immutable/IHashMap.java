@@ -31,6 +31,10 @@ public class IHashMap<K, V> {
 		}
 	}
 
+	public static <K, V> IHashMap<K, V> merge(IHashMap<K, V> map0, IHashMap<K, V> map1) {
+		return new IHashMap<>(IHashSet.merge(map0.set, map1.set));
+	}
+
 	public IHashMap() {
 		this(new IHashSet<>());
 	}
