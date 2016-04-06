@@ -56,7 +56,7 @@ public class Bl<T> {
 
 		int bit = 1 << index;
 		int bits0 = bitmap0 & bit - 1;
-		int bits1 = bitmap0 >>> index + 1;
+		int bits1 = bitmap0 & 0xFFFFFFFE << index;
 
 		int diff0 = (bitmap0 & bit) != 0 ? 1 : 0;
 		int diff1 = t != null ? 1 : 0;
@@ -69,7 +69,7 @@ public class Bl<T> {
 			int bitCount0 = Integer.bitCount(bits0);
 			int bitCount1 = Integer.bitCount(bits1);
 			Copy.primitiveArray(ts0, 0, ts1, 0, bitCount0);
-			ts0[bitCount0] = t;
+			ts1[bitCount0] = t;
 			Copy.primitiveArray(ts0, bitCount0 + diff0, ts1, bitCount0 + diff1, bitCount1);
 
 			return new Bl<>(bitmap1, ts1);
