@@ -9,21 +9,21 @@ public class IIntMap<V> {
 	private Bl<Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>> bl0;
 
 	public static <V> IIntMap<V> merge(IIntMap<V> map0, IIntMap<V> map1) {
-		BiFunction<V, V, V> f //
+		BiFunction<V, V, V> f6 //
 				= (v0, v1) -> v0 != null ? v0 : v1;
-		BiFunction<Bl<V>, Bl<V>, Bl<V>> f6 //
-				= (m0, m1) -> Bl.merge(m0, m1, f);
-		BiFunction<Bl<Bl<V>>, Bl<Bl<V>>, Bl<Bl<V>>> f5 //
+		BiFunction<Bl<V>, Bl<V>, Bl<V>> f5 //
 				= (m0, m1) -> Bl.merge(m0, m1, f6);
-		BiFunction<Bl<Bl<Bl<V>>>, Bl<Bl<Bl<V>>>, Bl<Bl<Bl<V>>>> f4 //
+		BiFunction<Bl<Bl<V>>, Bl<Bl<V>>, Bl<Bl<V>>> f4 //
 				= (m0, m1) -> Bl.merge(m0, m1, f5);
-		BiFunction<Bl<Bl<Bl<Bl<V>>>>, Bl<Bl<Bl<Bl<V>>>>, Bl<Bl<Bl<Bl<V>>>>> f3 //
+		BiFunction<Bl<Bl<Bl<V>>>, Bl<Bl<Bl<V>>>, Bl<Bl<Bl<V>>>> f3 //
 				= (m0, m1) -> Bl.merge(m0, m1, f4);
-		BiFunction<Bl<Bl<Bl<Bl<Bl<V>>>>>, Bl<Bl<Bl<Bl<Bl<V>>>>>, Bl<Bl<Bl<Bl<Bl<V>>>>>> f2 //
+		BiFunction<Bl<Bl<Bl<Bl<V>>>>, Bl<Bl<Bl<Bl<V>>>>, Bl<Bl<Bl<Bl<V>>>>> f2 //
 				= (m0, m1) -> Bl.merge(m0, m1, f3);
-		BiFunction<Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>, Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>, Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>> f1 //
+		BiFunction<Bl<Bl<Bl<Bl<Bl<V>>>>>, Bl<Bl<Bl<Bl<Bl<V>>>>>, Bl<Bl<Bl<Bl<Bl<V>>>>>> f1 //
 				= (m0, m1) -> Bl.merge(m0, m1, f2);
-		return new IIntMap<>(Bl.merge(map0.bl0, map1.bl0, f1));
+		BiFunction<Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>, Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>, Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>>> f0 //
+				= (m0, m1) -> Bl.merge(m0, m1, f1);
+		return new IIntMap<>(Bl.merge(map0.bl0, map1.bl0, f0));
 	}
 
 	public IIntMap() {
