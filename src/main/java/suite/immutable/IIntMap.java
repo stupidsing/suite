@@ -65,8 +65,9 @@ public class IIntMap<V> {
 		Bl<Bl<Bl<V>>> bl4 = Bl.get(Bl3, k3);
 		Bl<Bl<V>> bl5 = Bl.get(bl4, k4);
 		Bl<V> bl6 = Bl.get(bl5, k5);
-		V v = Bl.get(bl6, k6);
-		Bl<V> new6 = Bl.update(bl6, k6, fun.apply(v));
+		V v0 = Bl.get(bl6, k6);
+		V v1 = fun.apply(v0);
+		Bl<V> new6 = Bl.update(bl6, k6, v1);
 		Bl<Bl<V>> new5 = Bl.update(bl5, k5, new6);
 		Bl<Bl<Bl<V>>> new4 = Bl.update(bl4, k4, new5);
 		Bl<Bl<Bl<Bl<V>>>> new3 = Bl.update(Bl3, k3, new4);
