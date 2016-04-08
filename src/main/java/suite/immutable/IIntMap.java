@@ -35,13 +35,13 @@ public class IIntMap<V> {
 	}
 
 	public V get(int key) {
-		int k0 = key >> 30;
-		int k1 = key >> 25 & 31;
-		int k2 = key >> 20 & 31;
-		int k3 = key >> 15 & 31;
-		int k4 = key >> 10 & 31;
-		int k5 = key >> 5 & 31;
-		int k6 = key & 31;
+		int k0 = key >>> 30 & 31;
+		int k1 = key >>> 25 & 31;
+		int k2 = key >>> 20 & 31;
+		int k3 = key >>> 15 & 31;
+		int k4 = key >>> 10 & 31;
+		int k5 = key >>> 5 & 31;
+		int k6 = key >>> 0 & 31;
 		Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> bl1 = Bl.get(bl0, k0);
 		Bl<Bl<Bl<Bl<Bl<V>>>>> bl2 = Bl.get(bl1, k1);
 		Bl<Bl<Bl<Bl<V>>>> bl3 = Bl.get(bl2, k2);
@@ -52,13 +52,13 @@ public class IIntMap<V> {
 	}
 
 	public IIntMap<V> update(int key, Fun<V, V> fun) {
-		int k0 = key >> 30;
-		int k1 = key >> 25 & 31;
-		int k2 = key >> 20 & 31;
-		int k3 = key >> 15 & 31;
-		int k4 = key >> 10 & 31;
-		int k5 = key >> 5 & 31;
-		int k6 = key & 31;
+		int k0 = key >>> 30 & 31;
+		int k1 = key >>> 25 & 31;
+		int k2 = key >>> 20 & 31;
+		int k3 = key >>> 15 & 31;
+		int k4 = key >>> 10 & 31;
+		int k5 = key >>> 5 & 31;
+		int k6 = key >>> 0 & 31;
 		Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> bl1 = Bl.get(bl0, k0);
 		Bl<Bl<Bl<Bl<Bl<V>>>>> bl2 = Bl.get(bl1, k1);
 		Bl<Bl<Bl<Bl<V>>>> Bl3 = Bl.get(bl2, k2);
