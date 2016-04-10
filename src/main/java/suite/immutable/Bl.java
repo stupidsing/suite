@@ -12,19 +12,19 @@ import suite.util.Copy;
 public class Bl<T> {
 
 	private static Object empty[] = new Object[0];
-	private int bitmap;
+	private long bitmap;
 	private Object ts[];
 
 	public static <T> Bl<T> merge(Bl<T> bl0, Bl<T> bl1, BiFunction<T, T, T> merger) {
 		if (bl0 != null) {
 			if (bl1 != null) {
-				int bitmap0 = bl0.bitmap;
-				int bitmap1 = bl1.bitmap;
+				long bitmap0 = bl0.bitmap;
+				long bitmap1 = bl1.bitmap;
 				int bitCount = 0;
 				int bitCount0 = 0;
 				int bitCount1 = 0;
-				int bitmap = bitmap0 | bitmap1;
-				Object ts[] = new Object[Integer.bitCount(bitmap)];
+				long bitmap = bitmap0 | bitmap1;
+				Object ts[] = new Object[Long.bitCount(bitmap)];
 
 				for (int bit = 1; bit != 0; bit <<= 1) {
 					T t0 = (bitmap0 & bit) != 0 ? bl0.get(bitCount0++) : null;
@@ -43,7 +43,7 @@ public class Bl<T> {
 	}
 
 	public static <T> Bl<T> update(Bl<T> bl, int index, T t) {
-		int bitmap0;
+		long bitmap0;
 		Object ts0[];
 
 		if (bl != null) {
@@ -55,19 +55,19 @@ public class Bl<T> {
 		}
 
 		int bit = 1 << index;
-		int bits0 = bitmap0 & bit - 1;
-		int bits1 = bitmap0 & 0xFFFFFFFE << index;
+		long bits0 = bitmap0 & bit - 1;
+		long bits1 = bitmap0 & 0xFFFFFFFE << index;
 
 		int diff0 = (bitmap0 & bit) != 0 ? 1 : 0;
 		int diff1 = t != null ? 1 : 0;
 		int diff = diff1 - diff0;
 
-		int bitmap1 = bits0 + (diff1 << index) + bits1;
+		long bitmap1 = bits0 + (diff1 << index) + bits1;
 
 		if (bitmap1 != 0) {
 			Object ts1[] = new Object[ts0.length + diff];
-			int bitCount0 = Integer.bitCount(bits0);
-			int bitCount1 = Integer.bitCount(bits1);
+			int bitCount0 = Long.bitCount(bits0);
+			int bitCount1 = Long.bitCount(bits1);
 			Copy.primitiveArray(ts0, 0, ts1, 0, bitCount0);
 			ts1[bitCount0] = t;
 			Copy.primitiveArray(ts0, bitCount0 + diff0, ts1, bitCount0 + diff1, bitCount1);
@@ -77,18 +77,18 @@ public class Bl<T> {
 			return null;
 	}
 
-	private Bl(int bitmap, Object ts[]) {
+	private Bl(long bitmap, Object ts[]) {
 		this.bitmap = bitmap;
 		this.ts = ts;
 	}
 
 	public static <T> T get(Bl<T> bl, int index) {
-		int bitmap = bl != null ? bl.bitmap : 0;
+		long bitmap = bl != null ? bl.bitmap : 0;
 		int bit = 1 << index;
 
 		if ((bitmap & bit) != 0) {
 			int mask = bit - 1;
-			int bitCount = Integer.bitCount(bitmap & mask);
+			int bitCount = Long.bitCount(bitmap & mask);
 			return bl.get(bitCount);
 		} else
 			return null;
