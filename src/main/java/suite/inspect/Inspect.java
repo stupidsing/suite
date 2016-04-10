@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,7 +19,7 @@ import suite.util.Util;
  */
 public class Inspect {
 
-	private ConcurrentHashMap<Class<?>, List<Field>> fieldsByClass = new ConcurrentHashMap<>();
+	private Map<Class<?>, List<Field>> fieldsByClass = new ConcurrentHashMap<>();
 
 	public <T> boolean equals(T o0, T o1) {
 		return o0 == o1 //
