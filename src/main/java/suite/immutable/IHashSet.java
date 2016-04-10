@@ -1,20 +1,30 @@
 package suite.immutable;
 
+import java.util.function.BiFunction;
+
 public class IHashSet<V> {
 
 	private IIntMap<IList<V>> intMap;
 
-	public static <V> IHashSet<V> merge(IHashSet<V> set0, IHashSet<V> set1) {
+	public static <V> IHashSet<V> merge(IHashSet<V> set0, IHashSet<V> set1, BiFunction<V, V, V> f) {
 		return new IHashSet<>(IIntMap.merge(set0.intMap, set1.intMap, (l0, l1) -> {
 			IList<V> list = IList.end();
 			for (V v : l0)
-				if (!list.contains(v))
-					list = IList.cons(v, list);
+				list = mergeElement(list, v, f);
 			for (V v : l1)
-				if (!list.contains(v))
-					list = IList.cons(v, list);
+				list = mergeElement(list, v, f);
 			return list;
 		}));
+	}
+
+	private static <V> IList<V> mergeElement(IList<V> list0, V v0, BiFunction<V, V, V> f) {
+		IList<V> list1 = IList.end();
+		for (V v : list0)
+			if (!v.equals(v0))
+				list1 = IList.cons(v, list1);
+			else
+				v0 = f.apply(v0, v);
+		return IList.cons(v0, list1);
 	}
 
 	public IHashSet() {
