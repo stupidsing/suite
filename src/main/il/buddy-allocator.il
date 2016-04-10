@@ -8,7 +8,6 @@ declare (ba-node * 32) lists;
 
 declare ba-region0 = +x50000;
 declare ba-regionx = +xA0000;
-declare total = ba-regionx - ba-region0;
 
 declare exp2rel = function [l2,] (
 	16 shl l2;
@@ -23,7 +22,7 @@ declare log2rel = function [size,] (
 	result;
 );
 
-declare max-l2 = log2rel [total,];
+declare max-l2 = log2rel [ba-regionx - ba-region0,];
 
 declare ba-parent-of = function [pointer:ba-node block, l2,] (
 	(ba-region0 + (block as int - ba-region0) and (+xFFFFFFFF xor (exp2rel [l2,]))) as pointer:ba-node;
