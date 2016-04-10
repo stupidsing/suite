@@ -6,6 +6,10 @@ public class IHashSet<V> {
 
 	private IIntMap<IList<V>> intMap;
 
+	public static <V> IHashSet<V> merge(IHashSet<V> set0, IHashSet<V> set1) {
+		return merge(set0, set1, (v0, v1) -> v0);
+	}
+
 	public static <V> IHashSet<V> merge(IHashSet<V> set0, IHashSet<V> set1, BiFunction<V, V, V> f) {
 		return new IHashSet<>(IIntMap.merge(set0.intMap, set1.intMap, (l0, l1) -> {
 			IList<V> list = IList.end();
