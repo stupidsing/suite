@@ -29,8 +29,8 @@ public class Read {
 	}
 
 	@SafeVarargs
-	public static <T> Streamlet<T> from(T... col) {
-		return from(Arrays.asList(col));
+	public static <T> Streamlet<T> from(T... ts) {
+		return new Streamlet<>(() -> Outlet.from(ts));
 	}
 
 	public static <T> Streamlet<T> from(Enumeration<T> en) {
@@ -58,8 +58,8 @@ public class Read {
 	}
 
 	@SafeVarargs
-	public static <K, V> Streamlet2<K, V> from2(Pair<K, V>... col) {
-		return from2(Arrays.asList(col));
+	public static <K, V> Streamlet2<K, V> from2(Pair<K, V>... kvs) {
+		return new Streamlet2<>(() -> Outlet2.from(kvs));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Iterable<Pair<K, V>> col) {

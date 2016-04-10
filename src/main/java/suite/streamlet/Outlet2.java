@@ -2,7 +2,6 @@ package suite.streamlet;
 
 import java.io.Closeable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -70,8 +69,20 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	@SafeVarargs
-	public static <K, V> Outlet2<K, V> from(Pair<K, V>... col) {
-		return from(Arrays.asList(col));
+	public static <K, V> Outlet2<K, V> from(Pair<K, V>... kvs) {
+		return from(new Source2<K, V>() {
+			private int i;
+
+			public boolean source2(Pair<K, V> pair) {
+				if (i < kvs.length) {
+					Pair<K, V> kv = kvs[i];
+					pair.t0 = kv.t0;
+					pair.t1 = kv.t1;
+					return true;
+				}
+				return false;
+			}
+		});
 	}
 
 	public static <K, V> Outlet2<K, V> from(Iterable<Pair<K, V>> col) {

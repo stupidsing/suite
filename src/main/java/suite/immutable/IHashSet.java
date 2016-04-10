@@ -2,6 +2,9 @@ package suite.immutable;
 
 import java.util.function.BiFunction;
 
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
+
 public class IHashSet<V> {
 
 	private IIntMap<IList<V>> intMap;
@@ -37,6 +40,10 @@ public class IHashSet<V> {
 
 	private IHashSet(IIntMap<IList<V>> intMap) {
 		this.intMap = intMap;
+	}
+
+	public Streamlet<V> stream() {
+		return intMap.stream().concatMap(Read::from);
 	}
 
 	public IList<V> get(int hashCode) {

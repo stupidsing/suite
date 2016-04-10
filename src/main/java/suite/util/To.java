@@ -137,7 +137,13 @@ public class To {
 
 	@SafeVarargs
 	public static <T> Source<T> source(T... array) {
-		return source(Arrays.asList(array));
+		return new Source<T>() {
+			private int i;
+
+			public T source() {
+				return i < array.length ? array[i++] : null;
+			}
+		};
 	}
 
 	public static <T> Source<T> source(Enumeration<T> en) {

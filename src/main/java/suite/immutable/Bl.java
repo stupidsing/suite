@@ -2,6 +2,8 @@ package suite.immutable;
 
 import java.util.function.BiFunction;
 
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.Copy;
 
 /**
@@ -14,6 +16,17 @@ public class Bl<T> {
 	private static Object empty[] = new Object[0];
 	private long bitmap;
 	private Object ts[];
+
+	public static <T> Streamlet<T> stream(Bl<T> bl) {
+		if (bl != null)
+			return Read.from(bl.ts).map(o -> {
+				@SuppressWarnings("unchecked")
+				T t = (T) o;
+				return t;
+			});
+		else
+			return Read.empty();
+	}
 
 	public static <T> Bl<T> merge(Bl<T> bl0, Bl<T> bl1, BiFunction<T, T, T> f) {
 		if (bl0 != null) {

@@ -2,7 +2,6 @@ package suite.streamlet;
 
 import java.io.Closeable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -49,8 +48,8 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	@SafeVarargs
-	public static <T> Outlet<T> from(T... col) {
-		return from(Arrays.asList(col));
+	public static <T> Outlet<T> from(T... ts) {
+		return from(To.source(ts));
 	}
 
 	public static <T> Outlet<T> from(Enumeration<T> en) {

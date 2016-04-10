@@ -3,6 +3,11 @@ package suite.immutable;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
+import suite.adt.Pair;
+import suite.streamlet.Outlet2;
+import suite.streamlet.Streamlet2;
+import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Source2;
 import suite.util.Util;
 
 public class IHashMap<K, V> {
@@ -41,6 +46,23 @@ public class IHashMap<K, V> {
 
 	public IHashMap(IHashSet<Entry<K, V>> set) {
 		this.set = set;
+	}
+
+	public Streamlet2<K, V> stream() {
+		return new Streamlet2<>(() -> {
+			Source<Entry<K, V>> source = set.stream().source();
+			return new Outlet2<>(new Source2<K, V>() {
+				public boolean source2(Pair<K, V> pair) {
+					Entry<K, V> pair1 = source.source();
+					if (pair1 != null) {
+						pair.t0 = pair1.key;
+						pair.t1 = pair1.value;
+						return true;
+					} else
+						return false;
+				}
+			});
+		});
 	}
 
 	public V get(K key) {

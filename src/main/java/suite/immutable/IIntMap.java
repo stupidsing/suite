@@ -2,6 +2,7 @@ package suite.immutable;
 
 import java.util.function.BiFunction;
 
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 
 public class IIntMap<V> {
@@ -28,6 +29,15 @@ public class IIntMap<V> {
 
 	private IIntMap(Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> Bl) {
 		this.bl0 = Bl;
+	}
+
+	public Streamlet<V> stream() {
+		return Bl.stream(bl0) //
+				.concatMap(Bl::stream) //
+				.concatMap(Bl::stream) //
+				.concatMap(Bl::stream) //
+				.concatMap(Bl::stream) //
+				.concatMap(Bl::stream);
 	}
 
 	public V get(int key) {
