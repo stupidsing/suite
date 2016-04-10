@@ -59,7 +59,7 @@ public class FileUtil {
 	}
 
 	public static String jarFilename() {
-		return Rethrow.ex(() -> FileUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+		return Rethrow.ex(() -> FileUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI().getFragment());
 	}
 
 	public static String homeDir() {
