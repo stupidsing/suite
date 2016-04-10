@@ -5,7 +5,16 @@ public class IHashSet<V> {
 	private IIntMap<IList<V>> intMap;
 
 	public static <V> IHashSet<V> merge(IHashSet<V> set0, IHashSet<V> set1) {
-		return new IHashSet<>(IIntMap.merge(set0.intMap, set1.intMap));
+		return new IHashSet<>(IIntMap.merge(set0.intMap, set1.intMap, (l0, l1) -> {
+			IList<V> list = IList.end();
+			for (V v : l0)
+				if (!list.contains(v))
+					list = IList.cons(v, list);
+			for (V v : l1)
+				if (!list.contains(v))
+					list = IList.cons(v, list);
+			return list;
+		}));
 	}
 
 	public IHashSet() {

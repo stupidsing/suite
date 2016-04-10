@@ -8,11 +8,9 @@ public class IIntMap<V> {
 
 	private Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> bl0;
 
-	public static <V> IIntMap<V> merge(IIntMap<V> map0, IIntMap<V> map1) {
-		BiFunction<V, V, V> f5 //
-				= (v0, v1) -> v0 != null ? v0 : v1;
+	public static <V> IIntMap<V> merge(IIntMap<V> map0, IIntMap<V> map1, BiFunction<V, V, V> f) {
 		BiFunction<Bl<V>, Bl<V>, Bl<V>> f4 //
-				= (m0, m1) -> Bl.merge(m0, m1, f5);
+				= (m0, m1) -> Bl.merge(m0, m1, f);
 		BiFunction<Bl<Bl<V>>, Bl<Bl<V>>, Bl<Bl<V>>> f3 //
 				= (m0, m1) -> Bl.merge(m0, m1, f4);
 		BiFunction<Bl<Bl<Bl<V>>>, Bl<Bl<Bl<V>>>, Bl<Bl<Bl<V>>>> f2 //

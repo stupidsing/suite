@@ -15,7 +15,7 @@ public class Bl<T> {
 	private long bitmap;
 	private Object ts[];
 
-	public static <T> Bl<T> merge(Bl<T> bl0, Bl<T> bl1, BiFunction<T, T, T> merger) {
+	public static <T> Bl<T> merge(Bl<T> bl0, Bl<T> bl1, BiFunction<T, T, T> f) {
 		if (bl0 != null) {
 			if (bl1 != null) {
 				long bitmap0 = bl0.bitmap;
@@ -29,7 +29,7 @@ public class Bl<T> {
 				for (int bit = 1; bit != 0; bit <<= 1) {
 					T t0 = (bitmap0 & bit) != 0 ? bl0.get(bitCount0++) : null;
 					T t1 = (bitmap1 & bit) != 0 ? bl1.get(bitCount1++) : null;
-					T t = t0 != null ? t1 != null ? merger.apply(t0, t1) : t0 : t1;
+					T t = t0 != null ? t1 != null ? f.apply(t0, t1) : t0 : t1;
 
 					if (t != null)
 						ts[bitCount++] = t;
