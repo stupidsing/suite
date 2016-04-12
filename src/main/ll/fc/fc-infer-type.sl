@@ -20,85 +20,85 @@
 --
 
 fc-infer-type .do .type
-	:- try (once (fc-infer-type0 .do ()/()/() .type)) .ex (fc-error .ex)
+	:- try (once (fc-infer-type0 ()/()/() .do .type)) .ex (fc-error .ex)
 #
 
-fc-infer-type0 .p .env .type
+fc-infer-type0 .env .p .type
 	:- fc-find-simple-type .env .p .type
 #
-fc-infer-type0 (APPLY .param .callee) .env .returnType
-	:- fc-infer-type0 .callee .env (FUN-OF .paramType .returnType)
-	, fc-infer-type0 .param .env .paramType
+fc-infer-type0 .env (APPLY .param .callee) .returnType
+	:- fc-infer-type0 .env .callee (FUN-OF .paramType .returnType)
+	, fc-infer-type0 .env .param .paramType
 #
-fc-infer-type0 (CONS L .v0 .v1) .env (FUNCTOR-OF LIST .t)
-	:- fc-infer-type0 .v0 .env .t
-	, fc-infer-type0 .v1 .env (FUNCTOR-OF LIST .t)
+fc-infer-type0 .env (CONS L .v0 .v1) (FUNCTOR-OF LIST .t)
+	:- fc-infer-type0 .env .v0 .t
+	, fc-infer-type0 .env .v1 (FUNCTOR-OF LIST .t)
 #
-fc-infer-type0 (CONS P .v0 .v1) .env (PAIR-OF .t0 .t1)
-	:- fc-infer-type0 .v0 .env .t0
-	, fc-infer-type0 .v1 .env .t1
+fc-infer-type0 .env (CONS P .v0 .v1) (PAIR-OF .t0 .t1)
+	:- fc-infer-type0 .env .v0 .t0
+	, fc-infer-type0 .env .v1 .t1
 #
-fc-infer-type0 (DECONS _ _ .headVar .tailVar .then .else) .ue0/.ve/.te .type
+fc-infer-type0 .ue0/.ve/.te (DECONS _ _ .headVar .tailVar .then .else) .type
 	:- fc-dict-add .headVar/_ .ue0/.ue1
 	, fc-dict-add .tailVar/_ .ue1/.ue2
-	, fc-infer-type0 .then .ue2/.ve/.te .type
-	, fc-infer-type0 .else .ue0/.ve/.te .type
+	, fc-infer-type0 .ue2/.ve/.te .then .type
+	, fc-infer-type0 .ue0/.ve/.te .else .type
 #
-fc-infer-type0 (DEF-VARS .vvs .do) .ue/.ve/.te .type
+fc-infer-type0 .ue/.ve/.te (DEF-VARS .vvs .do) .type
 	:- fc-define-var-types .ue/.ue1 () .vvs .vvts
 	, .env1 = .ue1/.ve/.te
 	, fc-infer-var-types .env1 .vvts
-	, fc-infer-type0 .do .env1 .type
+	, fc-infer-type0 .env1 .do .type
 #
-fc-infer-type0 ERROR _ _
+fc-infer-type0 _ ERROR _
 #
-fc-infer-type0 (FUN .var .do) .ue/.ve/.te (FUN-OF .varType .type)
+fc-infer-type0 .ue/.ve/.te (FUN .var .do) (FUN-OF .varType .type)
 	:- fc-dict-add .var/.varType .ue/.ue1
-	, fc-infer-type0 .do .ue1/.ve/.te .type
+	, fc-infer-type0 .ue1/.ve/.te .do .type
 #
-fc-infer-type0 (IF .if .then .else) .env .type
-	:- fc-infer-type0 .if .env BOOLEAN
-	, fc-infer-type0 .then .env .type
-	, fc-infer-type0 .else .env .type
+fc-infer-type0 .env (IF .if .then .else) .type
+	:- fc-infer-type0 .env .if BOOLEAN
+	, fc-infer-type0 .env .then .type
+	, fc-infer-type0 .env .else .type
 #
-fc-infer-type0 (
+fc-infer-type0 .ue/.ve/.te (
 	PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)
-) .ue/.ve/.te .type
+) .type
 	:- !
 	, fc-define-var-types .ue/.ue1 () .vvs .vvts
 	, fc-infer-var-types .ue1/.ve/.te .vvts
 	, fc-define-var-types .ve/.ve1 SP .vvs .vvts
-	, fc-infer-type0 .do .ue/.ve1/.te .type
+	, fc-infer-type0 .ue/.ve1/.te .do .type
 #
-fc-infer-type0 (
+fc-infer-type0 .ue/.ve/.te (
 	PRAGMA (DEF-TYPE .definedType .class) .do
-) .ue/.ve/.te .type
+) .type
 	:- !
-	, fc-infer-type0 .do .ue/.ve/(.definedType/.class, .te) .type
+	, fc-infer-type0 .ue/.ve/(.definedType/.class, .te) .do .type
 #
-fc-infer-type0 (PRAGMA (TYPE-OF .type1) .do) .env .type
+fc-infer-type0 .env (PRAGMA (TYPE-OF .type1) .do) .type
 	:- !
 	, graph.generalize .type1 .type
-	, fc-infer-type0 .do .env .type
+	, fc-infer-type0 .env .do .type
 #
-fc-infer-type0 (PRAGMA TYPE-SKIP-CHECK _) _ _
+fc-infer-type0 _ (PRAGMA TYPE-SKIP-CHECK _) _
 	:- !
 #
-fc-infer-type0 (PRAGMA TYPE-SUPER .do) .ue/.ve/.te .superType
+fc-infer-type0 .ue/.ve/.te (PRAGMA TYPE-SUPER .do) .superType
 	:- !
-	, fc-infer-type0 .do .ue/.ve/.te .subType
+	, fc-infer-type0 .ue/.ve/.te .do .subType
 	, fc-sub-super-type-pair .te .subType .superType
 #
-fc-infer-type0 (PRAGMA (TYPE-VERIFY .var .varType) .do) .env .type
+fc-infer-type0 .env (PRAGMA (TYPE-VERIFY .var .varType) .do) .type
 	:- !
 	, graph.generalize .varType .varType1
-	, fc-infer-type0 .var .env .varType1
-	, fc-infer-type0 .do .env .type
+	, fc-infer-type0 .env .var .varType1
+	, fc-infer-type0 .env .do .type
 #
-fc-infer-type0 (PRAGMA _ .do) .env .type
-	:- fc-infer-type0 .do .env .type
+fc-infer-type0 .env (PRAGMA _ .do) .type
+	:- fc-infer-type0 .env .do .type
 #
-fc-infer-type0 (TREE .oper .left .right) .env .type
+fc-infer-type0 .env (TREE .oper .left .right) .type
 	:- once (
 		member (' + ', ' - ', ' * ', ' / ', ' %% ',) .oper, !
 		, .inputType = NUMBER
@@ -106,21 +106,21 @@ fc-infer-type0 (TREE .oper .left .right) .env .type
 		; member (' = ', ' != ', ' > ', ' < ', ' >= ', ' <= ',) .oper, !
 		, .type = BOOLEAN
 	)
-	, fc-infer-type0 .left .env .inputType
-	, fc-infer-type0 .right .env .inputType
+	, fc-infer-type0 .env .left .inputType
+	, fc-infer-type0 .env .right .inputType
 #
-fc-infer-type0 (USING _ _ .lib .do) .env .type
+fc-infer-type0 .env (USING _ _ .lib .do) .type
 	:- fc-load-precompiled-library .lib (.pred # _ # _ #)
 	, clone .pred (
 		fc-infer-type0-using-lib .lib .env .do .type :- .tail
 	)
 	, once .tail
 #
-fc-infer-type0 .do .env .type
+fc-infer-type0 .env .do .type
 	:- (.do = UNWRAP .do1; .do = WRAP .do1)
-	, fc-infer-type0 .do1 .env .type
+	, fc-infer-type0 .env .do1 .type
 #
-fc-infer-type0 _ _ _
+fc-infer-type0 .a .b .c
 	:- throw "Unmatched types"
 #
 
@@ -133,7 +133,7 @@ fc-define-var-types .ue/.ue _ () ()
 #
 
 fc-infer-var-types .env (.var .value .varType, .vvts)
-	:- try (fc-infer-type0 .value .env .varType)
+	:- try (fc-infer-type0 .env .value .varType)
 	.ex (throw .ex "%0Aat variable" .var)
 	, fc-infer-var-types .env .vvts
 #

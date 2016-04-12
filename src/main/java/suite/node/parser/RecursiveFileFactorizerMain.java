@@ -22,7 +22,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 
 	protected boolean run(String args[]) throws IOException {
 		List<Pair<String, String>> fts = Arrays.asList( //
-				Pair.of("fc-infer-type0-using-lib .0 .1 .2 .3", "fc-infer-type0-using-lib .0 .2 .1 .3") //
+				Pair.of("fc-infer-type0 .0 .1 .2", "fc-infer-type0 .1 .0 .2") //
 		);
 
 		FileUtil.findPaths(Paths.get("src/main/ll/fc")) //
