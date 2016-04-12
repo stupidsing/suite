@@ -24,7 +24,7 @@ fc-infer-type .do .type
 #
 
 fc-infer-type0 .p .env .type
-	:- fc-find-simple-type .p .env .type
+	:- fc-find-simple-type .env .p .type
 #
 fc-infer-type0 (APPLY .param .callee) .env .returnType
 	:- fc-infer-type0 .callee .env (FUN-OF .paramType .returnType)
@@ -140,13 +140,13 @@ fc-infer-var-types .env (.var .value .varType, .vvts)
 fc-infer-var-types _ ()
 #
 
-fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #
-fc-find-simple-type (BOOLEAN _) _ BOOLEAN #
-fc-find-simple-type (CHARS _) _ (FUNCTOR-OF n PAIR-OF (ATOM-OF Chars) ATOM-OF ()) #
-fc-find-simple-type (DO _) _ (FUNCTOR-OF Do _) #
-fc-find-simple-type NIL _ (FUNCTOR-OF LIST _) :- ! #
-fc-find-simple-type (NUMBER _) _ NUMBER #
-fc-find-simple-type (VAR .var) .ue/.ve/_ .type
+fc-find-simple-type _ (ATOM .a) (ATOM-OF .a) #
+fc-find-simple-type _ (BOOLEAN _) BOOLEAN #
+fc-find-simple-type _ (CHARS _) (FUNCTOR-OF n PAIR-OF (ATOM-OF Chars) ATOM-OF ()) #
+fc-find-simple-type _ (DO _) (FUNCTOR-OF Do _) #
+fc-find-simple-type _ NIL (FUNCTOR-OF LIST _) :- ! #
+fc-find-simple-type _ (NUMBER _) NUMBER #
+fc-find-simple-type .ue/.ve/_ (VAR .var) .type
 	:- once (
 		fc-dict-get .ue .var/.type
 		; fc-dict-get .ve .var/.varType, !, graph.generalize .varType .type

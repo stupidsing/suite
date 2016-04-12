@@ -29,7 +29,7 @@ fc-infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 #
 
 fc-infer-type-rule .p .env .tr/.tr .type
-	:- fc-find-simple-type .p .env .type, !
+	:- fc-find-simple-type .env .p .type, !
 #
 fc-infer-type-rule (APPLY .param .callee) .ue/.ve/.te .tr0/.trx .type
 	:- fc-infer-type-rule .callee .ue/.ve/.te .tr0/.tr1 .funType
@@ -140,13 +140,13 @@ fc-infer-var-types (.var .value .varType, .vvts) .env .tr0/.trx
 fc-infer-var-types () _ .tr/.tr
 #
 
-fc-find-simple-type (ATOM ()) _ (LIST-OF _) :- ! #
-fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #
-fc-find-simple-type (BOOLEAN _) _ BOOLEAN #
-fc-find-simple-type (DO _) _ (FUNCTOR-OF Do _) #
-fc-find-simple-type (NUMBER _) _ NUMBER #
-fc-find-simple-type (PRAGMA TYPE-SKIP-CHECK _) _ _ #
-fc-find-simple-type (VAR .var) .ue/.ve/_ .type
+fc-find-simple-type _ (ATOM ()) (LIST-OF _) :- ! #
+fc-find-simple-type _ (ATOM .a) (ATOM-OF .a) #
+fc-find-simple-type _ (BOOLEAN _) BOOLEAN #
+fc-find-simple-type _ (DO _) (FUNCTOR-OF Do _) #
+fc-find-simple-type _ (NUMBER _) NUMBER #
+fc-find-simple-type _ (PRAGMA TYPE-SKIP-CHECK _) _ #
+fc-find-simple-type .ue/.ve/_ (VAR .var) .type
 	:- once (
 		fc-dict-get .ue .var/.type
 		; fc-dict-get .ve .var/.varType, !, graph.generalize .varType .type
