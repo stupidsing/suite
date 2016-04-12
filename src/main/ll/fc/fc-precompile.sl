@@ -26,7 +26,7 @@ fc-precompile .lib .do0/($$PRECOMPILE .pc) .preds
 	, !, write "Inferencing types", nl
 	, !, fc-infer-type .do1 NUMBER
 	, !, .pred0 = (
-		fc-infer-type0-using-lib .lib .do .ue/.ve/.te .type
+		fc-infer-type0-using-lib .lib .ue/.ve/.te .do .type
 			:- fc-dict-union-replace .ue .ues .ue1
 			, fc-dict-union-replace .ve .ves .ve1
 			, append .te .tes .te1

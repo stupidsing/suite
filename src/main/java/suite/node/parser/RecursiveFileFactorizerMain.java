@@ -22,10 +22,10 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 
 	protected boolean run(String args[]) throws IOException {
 		List<Pair<String, String>> fts = Arrays.asList( //
-				Pair.of("fc-infer-type-rule .0 .1 .2 .3", "fc-infer-type-rule .0 .1 .3") //
+				Pair.of("fc-infer-type0-using-lib .0 .1 .2 .3", "fc-infer-type0-using-lib .0 .2 .1 .3") //
 		);
 
-		FileUtil.findPaths(Paths.get("src/main/ll/fc/fc-infer-type.sl")) //
+		FileUtil.findPaths(Paths.get("src/main/ll/fc")) //
 				.filter(path -> WildcardUtil.isMatch("*.sl", path.getFileName().toString())) //
 				.forEach(path -> {
 					try {
