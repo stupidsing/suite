@@ -47,7 +47,7 @@ fc-infer-type0 (DECONS _ _ .headVar .tailVar .then .else) .ue0/.ve/.te .type
 fc-infer-type0 (DEF-VARS .vvs .do) .ue/.ve/.te .type
 	:- fc-define-var-types .ue/.ue1 () .vvs .vvts
 	, .env1 = .ue1/.ve/.te
-	, fc-infer-var-types .vvts .env1
+	, fc-infer-var-types .env1 .vvts
 	, fc-infer-type0 .do .env1 .type
 #
 fc-infer-type0 ERROR _ _
@@ -66,7 +66,7 @@ fc-infer-type0 (
 ) .ue/.ve/.te .type
 	:- !
 	, fc-define-var-types .ue/.ue1 () .vvs .vvts
-	, fc-infer-var-types .vvts .ue1/.ve/.te
+	, fc-infer-var-types .ue1/.ve/.te .vvts
 	, fc-define-var-types .ve/.ve1 SP .vvs .vvts
 	, fc-infer-type0 .do .ue/.ve1/.te .type
 #
@@ -132,12 +132,12 @@ fc-define-var-types .ue0/.uex .sp (.var .value, .vvs) (.var .value .varType0, .v
 fc-define-var-types .ue/.ue _ () ()
 #
 
-fc-infer-var-types (.var .value .varType, .vvts) .env
+fc-infer-var-types .env (.var .value .varType, .vvts)
 	:- try (fc-infer-type0 .value .env .varType)
 	.ex (throw .ex "%0Aat variable" .var)
-	, fc-infer-var-types .vvts .env
+	, fc-infer-var-types .env .vvts
 #
-fc-infer-var-types () _
+fc-infer-var-types _ ()
 #
 
 fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #
