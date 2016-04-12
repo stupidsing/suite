@@ -45,7 +45,7 @@ fc-infer-type0 (DECONS _ _ .headVar .tailVar .then .else) .ue0/.ve/.te .type
 	, fc-infer-type0 .else .ue0/.ve/.te .type
 #
 fc-infer-type0 (DEF-VARS .vvs .do) .ue/.ve/.te .type
-	:- fc-define-var-types () .vvs .vvts .ue/.ue1
+	:- fc-define-var-types .ue/.ue1 () .vvs .vvts
 	, .env1 = .ue1/.ve/.te
 	, fc-infer-var-types .vvts .env1
 	, fc-infer-type0 .do .env1 .type
@@ -65,9 +65,9 @@ fc-infer-type0 (
 	PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)
 ) .ue/.ve/.te .type
 	:- !
-	, fc-define-var-types () .vvs .vvts .ue/.ue1
+	, fc-define-var-types .ue/.ue1 () .vvs .vvts
 	, fc-infer-var-types .vvts .ue1/.ve/.te
-	, fc-define-var-types SP .vvs .vvts .ve/.ve1
+	, fc-define-var-types .ve/.ve1 SP .vvs .vvts
 	, fc-infer-type0 .do .ue/.ve1/.te .type
 #
 fc-infer-type0 (
@@ -124,12 +124,12 @@ fc-infer-type0 _ _ _
 	:- throw "Unmatched types"
 #
 
-fc-define-var-types .sp (.var .value, .vvs) (.var .value .varType0, .vvts) .ue0/.uex
+fc-define-var-types .ue0/.uex .sp (.var .value, .vvs) (.var .value .varType0, .vvts)
 	:- once (.sp = SP, graph.specialize .varType0 .varType1; .varType0 = .varType1)
 	, fc-dict-add .var/.varType1 .ue0/.ue1
-	, fc-define-var-types .sp .vvs .vvts .ue1/.uex
+	, fc-define-var-types .ue1/.uex .sp .vvs .vvts
 #
-fc-define-var-types _ () () .ue/.ue
+fc-define-var-types .ue/.ue _ () ()
 #
 
 fc-infer-var-types (.var .value .varType, .vvts) .env
