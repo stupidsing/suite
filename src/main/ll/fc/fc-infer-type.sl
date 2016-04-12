@@ -120,7 +120,7 @@ fc-infer-type0 .env .do .type
 	:- (.do = UNWRAP .do1; .do = WRAP .do1)
 	, fc-infer-type0 .env .do1 .type
 #
-fc-infer-type0 .a .b .c
+fc-infer-type0 _ _ _
 	:- throw "Unmatched types"
 #
 
