@@ -39,7 +39,7 @@ public class Bl<T> {
 				long bitmap = bitmap0 | bitmap1;
 				Object ts[] = new Object[Long.bitCount(bitmap)];
 
-				for (int bit = 1; bit != 0; bit <<= 1) {
+				for (long bit = 1; bit != 0; bit <<= 1) {
 					T t0 = (bitmap0 & bit) != 0 ? bl0.get(bitCount0++) : null;
 					T t1 = (bitmap1 & bit) != 0 ? bl1.get(bitCount1++) : null;
 					T t = t0 != null ? t1 != null ? f.apply(t0, t1) : t0 : t1;
@@ -67,15 +67,15 @@ public class Bl<T> {
 			ts0 = empty;
 		}
 
-		int bit = 1 << index;
+		long bit = 1l << index;
 		long bits0 = bitmap0 & bit - 1;
-		long bits1 = bitmap0 & 0xFFFFFFFE << index;
+		long bits1 = bitmap0 & 0xFFFFFFFFFFFFFFFEl << index;
 
 		int diff0 = (bitmap0 & bit) != 0 ? 1 : 0;
 		int diff1 = t != null ? 1 : 0;
 		int diff = diff1 - diff0;
 
-		long bitmap1 = bits0 + (diff1 << index) + bits1;
+		long bitmap1 = bits0 + ((long) diff1 << index) + bits1;
 
 		if (bitmap1 != 0) {
 			Object ts1[] = new Object[ts0.length + diff];
@@ -97,10 +97,10 @@ public class Bl<T> {
 
 	public static <T> T get(Bl<T> bl, int index) {
 		long bitmap = bl != null ? bl.bitmap : 0;
-		int bit = 1 << index;
+		long bit = 1l << index;
 
 		if ((bitmap & bit) != 0) {
-			int mask = bit - 1;
+			long mask = bit - 1;
 			int bitCount = Long.bitCount(bitmap & mask);
 			return bl.get(bitCount);
 		} else
