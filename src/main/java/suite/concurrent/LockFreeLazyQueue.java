@@ -1,10 +1,10 @@
-package suite.adt;
+package suite.concurrent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import suite.concurrent.CasReference;
+import suite.adt.Pair;
 
 public class LockFreeLazyQueue<T> {
 

@@ -1,14 +1,16 @@
-package suite.adt;
+package suite.concurrent;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class LockFreeLazyQueueTest {
+import suite.concurrent.LockFreeQueue;
+
+public class LockFreeQueueTest {
 
 	@Test
 	public void test() {
-		LockFreeLazyQueue<Integer> lfq = new LockFreeLazyQueue<>();
+		LockFreeQueue<Integer> lfq = new LockFreeQueue<>();
 		for (int i = 0; i < 256; i++) {
 			for (int j = 0; j < 256; j++)
 				lfq.enqueue(j);
