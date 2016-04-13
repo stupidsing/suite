@@ -37,8 +37,8 @@ public class IIntMap<V> {
 		return new IIntMap<>(Bl.of(list1.subList(0, list1.size())));
 	}
 
-	private static <T> List<Pair<Integer, Bl<T>>> consolidate(List<Pair<Integer, T>> list0) {
-		List<Pair<Integer, Bl<T>>> list1 = new ArrayList<>();
+	private static <V> List<Pair<Integer, Bl<V>>> consolidate(List<Pair<Integer, V>> list0) {
+		List<Pair<Integer, Bl<V>>> list1 = new ArrayList<>();
 		int size = list0.size(), i0 = 0, prevKey = 0, key;
 		for (int i = 0; i < size; i++) {
 			if (prevKey != (key = list0.get(i).t0 & 63)) {
