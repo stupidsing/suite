@@ -1,7 +1,10 @@
 package suite.immutable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 
+import suite.adt.Pair;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 
@@ -21,6 +24,83 @@ public class IIntMap<V> {
 		BiFunction<Bl<Bl<Bl<Bl<Bl<V>>>>>, Bl<Bl<Bl<Bl<Bl<V>>>>>, Bl<Bl<Bl<Bl<Bl<V>>>>>> f0 //
 				= (m0, m1) -> Bl.merge(m0, m1, f1);
 		return new IIntMap<>(Bl.merge(map0.bl0, map1.bl0, f0));
+	}
+
+	public static <V> IIntMap<V> of(List<Pair<Integer, V>> list) {
+		List<Pair<Integer, V>> list6 = new ArrayList<>(list);
+		list6.sort((p0, p1) -> p0.t0.compareTo(p1.t0));
+
+		List<Pair<Integer, Bl<V>>> list5 = new ArrayList<>();
+		{
+			int i5 = 0, k5 = 0;
+			for (int i = 0; i < list6.size(); i++) {
+				int k5_ = list6.get(i).t0 & 63;
+				if (k5 != k5_) {
+					list5.add(Pair.of(k5 >>> 6, Bl.of(list6.subList(i5, i))));
+					i5 = i;
+					k5 = k5_;
+				}
+			}
+			list5.add(Pair.of(k5 >>> 6, Bl.of(list6.subList(i5, list6.size()))));
+		}
+
+		List<Pair<Integer, Bl<Bl<V>>>> list4 = new ArrayList<>();
+		{
+			int i4 = 0, k4 = 0;
+			for (int i = 0; i < list5.size(); i++) {
+				int k4_ = list5.get(i).t0 & 63;
+				if (k4 != k4_) {
+					list4.add(Pair.of(k4 >>> 6, Bl.of(list5.subList(i4, i))));
+					i4 = i;
+					k4 = k4_;
+				}
+			}
+			list4.add(Pair.of(k4 >>> 6, Bl.of(list5.subList(i4, list5.size()))));
+		}
+
+		List<Pair<Integer, Bl<Bl<Bl<V>>>>> list3 = new ArrayList<>();
+		{
+			int i3 = 0, k3 = 0;
+			for (int i = 0; i < list4.size(); i++) {
+				int k3_ = list4.get(i).t0 & 63;
+				if (k3 != k3_) {
+					list3.add(Pair.of(k3 >>> 6, Bl.of(list4.subList(i3, i))));
+					i3 = i;
+					k3 = k3_;
+				}
+			}
+			list3.add(Pair.of(k3 >>> 6, Bl.of(list4.subList(i3, list4.size()))));
+		}
+
+		List<Pair<Integer, Bl<Bl<Bl<Bl<V>>>>>> list2 = new ArrayList<>();
+		{
+			int i2 = 0, k2 = 0;
+			for (int i = 0; i < list3.size(); i++) {
+				int k2_ = list3.get(i).t0 & 62;
+				if (k2 != k2_) {
+					list2.add(Pair.of(k2 >>> 6, Bl.of(list3.subList(i2, i))));
+					i2 = i;
+					k2 = k2_;
+				}
+			}
+			list2.add(Pair.of(k2 >>> 6, Bl.of(list3.subList(i2, list3.size()))));
+		}
+
+		List<Pair<Integer, Bl<Bl<Bl<Bl<Bl<V>>>>>>> list1 = new ArrayList<>();
+		{
+			int i1 = 0, k1 = 0;
+			for (int i = 0; i < list2.size(); i++) {
+				int k1_ = list2.get(i).t0 & 61;
+				if (k1 != k1_) {
+					list1.add(Pair.of(k1 >>> 6, Bl.of(list2.subList(i1, i))));
+					i1 = i;
+					k1 = k1_;
+				}
+			}
+			list1.add(Pair.of(k1 >>> 6, Bl.of(list2.subList(i1, list2.size()))));
+		}
+
+		return new IIntMap<>(Bl.of(list1.subList(0, list1.size())));
 	}
 
 	public IIntMap() {

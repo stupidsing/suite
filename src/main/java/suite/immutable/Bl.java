@@ -1,7 +1,9 @@
 package suite.immutable;
 
+import java.util.List;
 import java.util.function.BiFunction;
 
+import suite.adt.Pair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Copy;
@@ -86,6 +88,21 @@ public class Bl<T> {
 			Copy.primitiveArray(ts0, bitCount0 + diff0, ts1, bitCount0 + diff1, bitCount1);
 
 			return new Bl<>(bitmap1, ts1);
+		} else
+			return null;
+	}
+
+	public static <T> Bl<T> of(List<Pair<Integer, T>> list) {
+		if (!list.isEmpty()) {
+			int size = list.size();
+			long bitmap = 0;
+			Object ts[] = new Object[size];
+			for (int i = 0; i < size; i++) {
+				Pair<Integer, T> pair = list.get(i);
+				bitmap |= 1l << (pair.t0 & 0xFFFFFC00);
+				ts[i] = pair.t1;
+			}
+			return new Bl<T>(bitmap, ts);
 		} else
 			return null;
 	}
