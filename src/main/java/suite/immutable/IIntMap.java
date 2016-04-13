@@ -29,16 +29,16 @@ public class IIntMap<V> {
 	public static <V> IIntMap<V> of(List<Pair<Integer, V>> list) {
 		List<Pair<Integer, V>> list6 = new ArrayList<>(list);
 		list6.sort((p0, p1) -> p0.t0.compareTo(p1.t0));
+		int k_;
 
 		List<Pair<Integer, Bl<V>>> list5 = new ArrayList<>();
 		{
 			int i5 = 0, k5 = 0;
 			for (int i = 0; i < list6.size(); i++) {
-				int k5_ = list6.get(i).t0 & 63;
-				if (k5 != k5_) {
+				if (k5 != (k_ = list6.get(i).t0 & 63)) {
 					list5.add(Pair.of(k5 >>> 6, Bl.of(list6.subList(i5, i))));
 					i5 = i;
-					k5 = k5_;
+					k5 = k_;
 				}
 			}
 			list5.add(Pair.of(k5 >>> 6, Bl.of(list6.subList(i5, list6.size()))));
@@ -48,11 +48,10 @@ public class IIntMap<V> {
 		{
 			int i4 = 0, k4 = 0;
 			for (int i = 0; i < list5.size(); i++) {
-				int k4_ = list5.get(i).t0 & 63;
-				if (k4 != k4_) {
+				if (k4 != (k_ = list5.get(i).t0 & 63)) {
 					list4.add(Pair.of(k4 >>> 6, Bl.of(list5.subList(i4, i))));
 					i4 = i;
-					k4 = k4_;
+					k4 = k_;
 				}
 			}
 			list4.add(Pair.of(k4 >>> 6, Bl.of(list5.subList(i4, list5.size()))));
@@ -62,11 +61,10 @@ public class IIntMap<V> {
 		{
 			int i3 = 0, k3 = 0;
 			for (int i = 0; i < list4.size(); i++) {
-				int k3_ = list4.get(i).t0 & 63;
-				if (k3 != k3_) {
+				if (k3 != (k_ = list4.get(i).t0 & 63)) {
 					list3.add(Pair.of(k3 >>> 6, Bl.of(list4.subList(i3, i))));
 					i3 = i;
-					k3 = k3_;
+					k3 = k_;
 				}
 			}
 			list3.add(Pair.of(k3 >>> 6, Bl.of(list4.subList(i3, list4.size()))));
@@ -76,11 +74,10 @@ public class IIntMap<V> {
 		{
 			int i2 = 0, k2 = 0;
 			for (int i = 0; i < list3.size(); i++) {
-				int k2_ = list3.get(i).t0 & 62;
-				if (k2 != k2_) {
+				if (k2 != (k_ = list3.get(i).t0 & 63)) {
 					list2.add(Pair.of(k2 >>> 6, Bl.of(list3.subList(i2, i))));
 					i2 = i;
-					k2 = k2_;
+					k2 = k_;
 				}
 			}
 			list2.add(Pair.of(k2 >>> 6, Bl.of(list3.subList(i2, list3.size()))));
@@ -90,11 +87,10 @@ public class IIntMap<V> {
 		{
 			int i1 = 0, k1 = 0;
 			for (int i = 0; i < list2.size(); i++) {
-				int k1_ = list2.get(i).t0 & 61;
-				if (k1 != k1_) {
+				if (k1 != (k_ = list2.get(i).t0 & 63)) {
 					list1.add(Pair.of(k1 >>> 6, Bl.of(list2.subList(i1, i))));
 					i1 = i;
-					k1 = k1_;
+					k1 = k_;
 				}
 			}
 			list1.add(Pair.of(k1 >>> 6, Bl.of(list2.subList(i1, list2.size()))));
