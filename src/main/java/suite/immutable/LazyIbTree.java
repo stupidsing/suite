@@ -14,8 +14,9 @@ import suite.util.Util;
 
 public class LazyIbTree<T> implements ITree<T> {
 
-	private int maxBranchFactor = 32;
-	private int minBranchFactor = maxBranchFactor / 2;
+	private static int maxBranchFactor = 32;
+	private static int minBranchFactor = maxBranchFactor / 2;
+
 	private Comparator<T> comparator;
 	public final List<Slot<T>> root;
 
@@ -51,6 +52,27 @@ public class LazyIbTree<T> implements ITree<T> {
 			while (0 < (c = compare((slot = slots.get(i)).pivot, t)) || isExclusive && c == 0)
 				i--;
 		}
+	}
+
+	public static <T> LazyIbTree<T> of(Comparator<T> comparator, List<T> ts) {
+		List<Slot<T>> list = Read.from(ts) //
+				.cons(null) //
+				.map(t -> new Slot<>(null, t)) //
+				.toList();
+
+		int size;
+
+		while (maxBranchFactor <= (size = list.size())) {
+			List<Slot<T>> list1 = new ArrayList<>();
+			for (int i = 0; i < size;) {
+				int i0 = i;
+				int i1 = i + maxBranchFactor <= size ? i + minBranchFactor : size;
+				list1.add(new Slot<>(() -> list.subList(i0, i1), list.get(i).pivot));
+				i = i1;
+			}
+		}
+
+		return new LazyIbTree<>(comparator, list);
 	}
 
 	public LazyIbTree(Comparator<T> comparator) {
