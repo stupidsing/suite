@@ -78,6 +78,8 @@ public class LazyIbTree<T> implements ITree<T> {
 				throw new RuntimeException("Too many branches");
 
 		for (Slot<T> slot_ : slots) {
+			if (!(comparator.compare(slot.pivot, slot_.pivot) <= 0))
+				throw new RuntimeException("Wrong slot");
 			validate(slot_);
 			if (p != null && !(comparator.compare(p, slot_.pivot) < 0))
 				throw new RuntimeException("Wrong key order");

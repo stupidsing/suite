@@ -62,7 +62,7 @@ public class IbTree<T> implements ITree<T> {
 			List<IbTree<T>.Slot> list1 = new ArrayList<>();
 			for (int i = 0; i < size;) {
 				int i1 = i + maxBranchFactor <= size ? i + minBranchFactor : size;
-				list1.add(ibTree.new Slot(list.subList(i, i1), list.get(i1).pivot));
+				list1.add(ibTree.new Slot(list.subList(i, i1), list.get(i).pivot));
 				i = i1;
 			}
 		}
@@ -98,6 +98,8 @@ public class IbTree<T> implements ITree<T> {
 				throw new RuntimeException("Too many branches");
 
 			for (Slot slot_ : slots) {
+				if (!(comparator.compare(slot.pivot, slot_.pivot) <= 0))
+					throw new RuntimeException("Wrong slot");
 				validate(slot_);
 				if (p != null && !(comparator.compare(p, slot_.pivot) < 0))
 					throw new RuntimeException("Wrong key order");
