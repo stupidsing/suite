@@ -48,7 +48,7 @@ fc-infer-type-rule (CONS P .v0 .v1) .env .tr0/.trx (PAIR-OF .t0 .t1)
 	, fc-infer-type-rule .v1 .env .tr1/.trx .t1
 #
 fc-infer-type-rule (DEF-VARS .vvs .do) .ue/.ve/.te .tr0/.trx .type
-	:- fc-define-var-types .ue/.ue1 () .vvs .vvts
+	:- fc-define-var-types () .vvs .vvts .ue/.ue1
 	, .env1 = .ue1/.ve/.te
 	, fc-infer-var-types .vvts .env1 .tr0/.tr1
 	, fc-infer-type-rule .do .env1 .tr1/.trx .type
@@ -67,9 +67,9 @@ fc-infer-type-rule (
 	PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)
 ) .ue/.ve/.te .tr0/.trx .type
 	:- !
-	, fc-define-var-types .ue/.ue1 () .vvs .vvts
+	, fc-define-var-types () .vvs .vvts .ue/.ue1
 	, fc-infer-var-types .vvts .ue1/.ve/.te .tr0/.tr1
-	, fc-define-var-types .ve/.ve1 SP .vvs .vvts
+	, fc-define-var-types SP .vvs .vvts .ve/.ve1
 	, fc-infer-type-rule .do .ue/.ve1/.te .tr1/.trx .type
 #
 fc-infer-type-rule (
@@ -123,12 +123,12 @@ fc-infer-type-rule .do .env .tr .type
 	, fc-infer-type-rule .do1 .env .tr .type
 #
 
-fc-define-var-types .ue0/.uex .sp (.var .value, .vvs) (.var .value .varType0, .vvts)
+fc-define-var-types .sp (.var .value, .vvs) (.var .value .varType0, .vvts) .ue0/.uex
 	:- once (.sp = SP, graph.specialize .varType0 .varType1; .varType0 = .varType1)
 	, fc-dict-add .var/.varType1 .ue0/.ue1
-	, fc-define-var-types .ue1/.uex .sp .vvs .vvts
+	, fc-define-var-types .sp .vvs .vvts .ue1/.uex
 #
-fc-define-var-types .ue/.ue _ () ()
+fc-define-var-types _ () () .ue/.ue
 #
 
 fc-infer-var-types (.var .value .varType, .vvts) .env .tr0/.trx
