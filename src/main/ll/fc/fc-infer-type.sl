@@ -44,7 +44,7 @@ fc-infer-type0 .ve0/.te (DECONS _ _ .headVar .tailVar .then .else) .type
 	, fc-infer-type0 .ve0/.te .else .type
 #
 fc-infer-type0 .ve/.te (DEF-VARS .vvs .do) .type
-	:- fc-define-var-types () .vvs .vvts .ve/.ve1
+	:- fc-define-var-types MONO .vvs .vvts .ve/.ve1
 	, .env1 = .ve1/.te
 	, fc-infer-var-types .env1 .vvts
 	, fc-infer-type0 .env1 .do .type
@@ -52,7 +52,7 @@ fc-infer-type0 .ve/.te (DEF-VARS .vvs .do) .type
 fc-infer-type0 _ ERROR _
 #
 fc-infer-type0 .ve/.te (FUN .var .do) (FUN-OF .varType .type)
-	:- fc-dict-add .var/(() .varType) .ve/.ve1
+	:- fc-dict-add .var/(MONO .varType) .ve/.ve1
 	, fc-infer-type0 .ve1/.te .do .type
 #
 fc-infer-type0 .env (IF .if .then .else) .type
@@ -64,9 +64,9 @@ fc-infer-type0 .ve/.te (
 	PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)
 ) .type
 	:- !
-	, fc-define-var-types () .vvs .vvts .ve/.vea
+	, fc-define-var-types MONO .vvs .vvts .ve/.vea
 	, fc-infer-var-types .vea/.te .vvts
-	, fc-define-var-types SP .vvs .vvts .ve/.veb
+	, fc-define-var-types POLY .vvs .vvts .ve/.veb
 	, fc-infer-type0 .veb/.te .do .type
 #
 fc-infer-type0 .ve/.te (
@@ -123,10 +123,10 @@ fc-infer-type0 _ _ _
 	:- throw "Unmatched types"
 #
 
-fc-define-var-types .sp (.var .value, .vvs) (.var .value .varType0, .vvts) .ve0/.vex
-	:- once (.sp = SP, graph.specialize .varType0 .varType1; .varType0 = .varType1)
-	, fc-dict-add .var/(.sp .varType1) .ve0/.ve1
-	, fc-define-var-types .sp .vvs .vvts .ve1/.vex
+fc-define-var-types .mp (.var .value, .vvs) (.var .value .varType0, .vvts) .ve0/.vex
+	:- once (.mp = POLY, graph.mpecialize .varType0 .varType1; .varType0 = .varType1)
+	, fc-dict-add .var/(.mp .varType1) .ve0/.ve1
+	, fc-define-var-types .mp .vvs .vvts .ve1/.vex
 #
 fc-define-var-types _ () () .ve/.ve
 #
@@ -147,8 +147,8 @@ fc-find-simple-type _ NIL (FUNCTOR-OF LIST _) :- ! #
 fc-find-simple-type _ (NUMBER _) NUMBER #
 fc-find-simple-type .ve/_ (VAR .var) .type
 	:- once (
-		fc-dict-get .ve .var/(() .type)
-		; fc-dict-get .ve .var/(SP .varType), !, graph.generalize .varType .type
+		fc-dict-get .ve .var/(MONO .type)
+		; fc-dict-get .ve .var/(POLY .varType), !, graph.generalize .varType .type
 		; fc-define-default-fun _ .var _
 		; throw "Undefined variable" .var
 	)
