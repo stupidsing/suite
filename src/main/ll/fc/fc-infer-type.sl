@@ -2,8 +2,7 @@
 -- Type inference predicates
 --
 -- Environment consists of:
--- .ue - dictionary of inside variables / their corresponding types
--- .ve - dictionary of outside variables / their corresponding types, specialized
+-- .ve - dictionary of variables / specialization, and their corresponding types
 -- .te - list of types / their corresponding belonging classes
 --
 -- Inside variables include parent function definitions and parameter variables
@@ -20,7 +19,7 @@
 --
 
 fc-infer-type .do .type
-	:- try (once (fc-infer-type0 ()/()/() .do .type)) .ex (fc-error .ex)
+	:- try (once (fc-infer-type0 ()/() .do .type)) .ex (fc-error .ex)
 #
 
 fc-infer-type0 .env .p .type
@@ -38,43 +37,43 @@ fc-infer-type0 .env (CONS P .v0 .v1) (PAIR-OF .t0 .t1)
 	:- fc-infer-type0 .env .v0 .t0
 	, fc-infer-type0 .env .v1 .t1
 #
-fc-infer-type0 .ue0/.ve/.te (DECONS _ _ .headVar .tailVar .then .else) .type
-	:- fc-dict-add .headVar/_ .ue0/.ue1
-	, fc-dict-add .tailVar/_ .ue1/.ue2
-	, fc-infer-type0 .ue2/.ve/.te .then .type
-	, fc-infer-type0 .ue0/.ve/.te .else .type
+fc-infer-type0 .ve0/.te (DECONS _ _ .headVar .tailVar .then .else) .type
+	:- fc-dict-add .headVar/_ .ve0/.ve1
+	, fc-dict-add .tailVar/_ .ve1/.ve2
+	, fc-infer-type0 .ve2/.te .then .type
+	, fc-infer-type0 .ve0/.te .else .type
 #
-fc-infer-type0 .ue/.ve/.te (DEF-VARS .vvs .do) .type
-	:- fc-define-var-types () .vvs .vvts .ue/.ue1
-	, .env1 = .ue1/.ve/.te
+fc-infer-type0 .ve/.te (DEF-VARS .vvs .do) .type
+	:- fc-define-var-types () .vvs .vvts .ve/.ve1
+	, .env1 = .ve1/.te
 	, fc-infer-var-types .env1 .vvts
 	, fc-infer-type0 .env1 .do .type
 #
 fc-infer-type0 _ ERROR _
 #
-fc-infer-type0 .ue/.ve/.te (FUN .var .do) (FUN-OF .varType .type)
-	:- fc-dict-add .var/.varType .ue/.ue1
-	, fc-infer-type0 .ue1/.ve/.te .do .type
+fc-infer-type0 .ve/.te (FUN .var .do) (FUN-OF .varType .type)
+	:- fc-dict-add .var/(() .varType) .ve/.ve1
+	, fc-infer-type0 .ve1/.te .do .type
 #
 fc-infer-type0 .env (IF .if .then .else) .type
 	:- fc-infer-type0 .env .if BOOLEAN
 	, fc-infer-type0 .env .then .type
 	, fc-infer-type0 .env .else .type
 #
-fc-infer-type0 .ue/.ve/.te (
+fc-infer-type0 .ve/.te (
 	PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)
 ) .type
 	:- !
-	, fc-define-var-types () .vvs .vvts .ue/.ue1
-	, fc-infer-var-types .ue1/.ve/.te .vvts
-	, fc-define-var-types SP .vvs .vvts .ve/.ve1
-	, fc-infer-type0 .ue/.ve1/.te .do .type
+	, fc-define-var-types () .vvs .vvts .ve/.vea
+	, fc-infer-var-types .vea/.te .vvts
+	, fc-define-var-types SP .vvs .vvts .ve/.veb
+	, fc-infer-type0 .veb/.te .do .type
 #
-fc-infer-type0 .ue/.ve/.te (
+fc-infer-type0 .ve/.te (
 	PRAGMA (DEF-TYPE .definedType .class) .do
 ) .type
 	:- !
-	, fc-infer-type0 .ue/.ve/(.definedType/.class, .te) .do .type
+	, fc-infer-type0 .ve/(.definedType/.class, .te) .do .type
 #
 fc-infer-type0 .env (PRAGMA (TYPE-OF .type1) .do) .type
 	:- !
@@ -84,9 +83,9 @@ fc-infer-type0 .env (PRAGMA (TYPE-OF .type1) .do) .type
 fc-infer-type0 _ (PRAGMA TYPE-SKIP-CHECK _) _
 	:- !
 #
-fc-infer-type0 .ue/.ve/.te (PRAGMA TYPE-SUPER .do) .superType
+fc-infer-type0 .ve/.te (PRAGMA TYPE-SUPER .do) .superType
 	:- !
-	, fc-infer-type0 .ue/.ve/.te .do .subType
+	, fc-infer-type0 .ve/.te .do .subType
 	, fc-sub-super-type-pair .te .subType .superType
 #
 fc-infer-type0 .env (PRAGMA (TYPE-VERIFY .var .varType) .do) .type
@@ -124,12 +123,12 @@ fc-infer-type0 _ _ _
 	:- throw "Unmatched types"
 #
 
-fc-define-var-types .sp (.var .value, .vvs) (.var .value .varType0, .vvts) .ue0/.uex
+fc-define-var-types .sp (.var .value, .vvs) (.var .value .varType0, .vvts) .ve0/.vex
 	:- once (.sp = SP, graph.specialize .varType0 .varType1; .varType0 = .varType1)
-	, fc-dict-add .var/.varType1 .ue0/.ue1
-	, fc-define-var-types .sp .vvs .vvts .ue1/.uex
+	, fc-dict-add .var/(.sp .varType1) .ve0/.ve1
+	, fc-define-var-types .sp .vvs .vvts .ve1/.vex
 #
-fc-define-var-types _ () () .ue/.ue
+fc-define-var-types _ () () .ve/.ve
 #
 
 fc-infer-var-types .env (.var .value .varType, .vvts)
@@ -146,10 +145,10 @@ fc-find-simple-type _ (CHARS _) (FUNCTOR-OF n PAIR-OF (ATOM-OF Chars) ATOM-OF ()
 fc-find-simple-type _ (DO _) (FUNCTOR-OF Do _) #
 fc-find-simple-type _ NIL (FUNCTOR-OF LIST _) :- ! #
 fc-find-simple-type _ (NUMBER _) NUMBER #
-fc-find-simple-type .ue/.ve/_ (VAR .var) .type
+fc-find-simple-type .ve/_ (VAR .var) .type
 	:- once (
-		fc-dict-get .ue .var/.type
-		; fc-dict-get .ve .var/.varType, !, graph.generalize .varType .type
+		fc-dict-get .ve .var/(() .type)
+		; fc-dict-get .ve .var/(SP .varType), !, graph.generalize .varType .type
 		; fc-define-default-fun _ .var _
 		; throw "Undefined variable" .var
 	)
