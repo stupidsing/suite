@@ -124,7 +124,7 @@ fc-infer-type0 _ _ _
 #
 
 fc-define-var-types .mp (.var .value, .vvs) (.var .value .varType0, .vvts) .ve0/.vex
-	:- once (.mp = POLY, graph.mpecialize .varType0 .varType1; .varType0 = .varType1)
+	:- once (.mp = POLY, graph.specialize .varType0 .varType1; .varType0 = .varType1)
 	, fc-dict-add .var/(.mp .varType1) .ve0/.ve1
 	, fc-define-var-types .mp .vvs .vvts .ve1/.vex
 #
