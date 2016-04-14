@@ -12,8 +12,8 @@ import suite.util.Util;
 
 public class IbTree<T> implements ITree<T> {
 
-	private int maxBranchFactor = 4;
-	private int minBranchFactor = maxBranchFactor / 2;
+	private static int maxBranchFactor = 4;
+	private static int minBranchFactor = maxBranchFactor / 2;
 
 	private List<Slot> root;
 	private Comparator<T> comparator;
@@ -46,6 +46,29 @@ public class IbTree<T> implements ITree<T> {
 			while (0 < (c = compare((slot = slots.get(i)).pivot, t)) || isExclusive && c == 0)
 				i--;
 		}
+	}
+
+	public static <T> IbTree<T> of(Comparator<T> comparator, List<T> ts) {
+		IbTree<T> ibTree = new IbTree<>(comparator);
+
+		List<IbTree<T>.Slot> list = Read.from(ts) //
+				.cons(null) //
+				.map(t -> ibTree.new Slot(null, t)) //
+				.toList();
+
+		int size;
+
+		while (maxBranchFactor <= (size = list.size())) {
+			List<IbTree<T>.Slot> list1 = new ArrayList<>();
+			for (int i = 0; i < size;) {
+				int i1 = i + maxBranchFactor <= size ? i + minBranchFactor : size;
+				list1.add(ibTree.new Slot(list.subList(i, i1), list.get(i1).pivot));
+				i = i1;
+			}
+		}
+
+		ibTree.root = list;
+		return ibTree;
 	}
 
 	public IbTree(Comparator<T> comparator) {
