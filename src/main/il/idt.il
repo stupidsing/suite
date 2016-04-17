@@ -36,7 +36,7 @@ declare idt-setup = function [] (
 		(+xB8000 as pointer:int)/* =+ 1;
 
 		-- Switch processes
-		{current-process/*/+current/+busy} = true;
+		{sch-current-process/*/+current/+busy} = true;
 		sch-yield [];
 
 		-- Sends end of interrupt signal

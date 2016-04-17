@@ -10,8 +10,8 @@ constant sch-node = dl-node struct (
 | (int * stack-size) +kernel-stack
 );
 
-declare pointer:sch-node current-process = null;
-declare head-process; -- Cyclic doubly-linked list
+declare pointer:sch-node sch-current-process = null;
+declare sch-head-process; -- Cyclic doubly-linked list
 
 declare sch-allocate = function [] (
 	declare process = mm-allocate sch-node;
@@ -27,7 +27,7 @@ declare sch-deallocate = function [e,] (
 );
 
 declare sch-switch = function [] (-- Round robin in action
-	{current-process} = dl-next [current-process,];
+	{sch-current-process} = dl-next [sch-current-process,];
 );
 
 declare sch-yield = function [] (
@@ -35,31 +35,31 @@ declare sch-yield = function [] (
 	asm _ PUSHF ();
 	asm _ CLI ();
 
-	(current-process +f +current) +f +esp;
+	(sch-current-process +f +current) +f +esp;
 	asm _ MOV (EBX, CR3);
 	asm _ FR-PUSH (EBX);
 	asm _ MOV (`EAX`, ESP);
 
-	if (current-process/*/+current/+action = sch-action-exit) then (
-		declare process0 = current-process;
-		{current-process} = dl-prev [current-process,];
+	if (sch-current-process/*/+current/+action = sch-action-exit) then (
+		declare process0 = sch-current-process;
+		{sch-current-process} = dl-prev [sch-current-process,];
 		dl-remove [process0,];
 		sch-deallocate [process0,];
 	) else ();
 
-	if (current-process/*/+current/+action = sch-action-fork) then (
+	if (sch-current-process/*/+current/+action = sch-action-fork) then (
 		declare process1 = sch-allocate [];
-		{process1/*/+current/+kernel-stack} = current-process/*/+current/+kernel-stack;
-		{process1/*/+current/+esp} = current-process/*/+current/+esp - current-process as int + process1 as int;
-		dl-insert-next [head-process, process1,];
-		{current-process/*/+current/+action} = sch-action-none;
+		{process1/*/+current/+kernel-stack} = sch-current-process/*/+current/+kernel-stack;
+		{process1/*/+current/+esp} = sch-current-process/*/+current/+esp - sch-current-process as int + process1 as int;
+		dl-insert-next [sch-head-process, process1,];
+		{sch-current-process/*/+current/+action} = sch-action-none;
 	) else ();
 
 	sch-switch [];
-	dw-set [tss-address + 4, current-process as int + size-of sch-node,]; -- TSS ESP0
-	wrmsr [+x175, current-process as int + size-of sch-node,]; -- SYSENTER ESP
+	dw-set [tss-address + 4, sch-current-process as int + size-of sch-node,]; -- TSS ESP0
+	wrmsr [+x175, sch-current-process as int + size-of sch-node,]; -- SYSENTER ESP
 
-	(current-process +f +current) +f +esp;
+	(sch-current-process +f +current) +f +esp;
 	asm _ MOV (ESP, `EAX`);
 	asm _ FR-POP (EBX);
 	asm _ MOV (CR3, EBX);
@@ -69,15 +69,15 @@ declare sch-yield = function [] (
 );
 
 declare sch-fork = function [] (
-	declare process0 = current-process;
+	declare process0 = sch-current-process;
 	{process0/*/+current/+action} = sch-action-fork;
 	sch-yield [];
-	current-process != process0;
+	sch-current-process != process0;
 );
 
 declare sch-exit = function [] (
-	{current-process/*/+current/+action} = sch-action-exit;
-	if (current-process != head-process) then (
+	{sch-current-process/*/+current/+action} = sch-action-exit;
+	if (sch-current-process != sch-head-process) then (
 		sch-yield [];
 	) else ( -- Initial process should not exit. Halt if this happened.
 		asm _ CLI ();
@@ -86,11 +86,11 @@ declare sch-exit = function [] (
 );
 
 declare sch-setup = function [] (
-	{head-process} = sch-allocate [];
-	{current-process} = head-process;
+	{sch-head-process} = sch-allocate [];
+	{sch-current-process} = sch-head-process;
 
 	-- Uses the process stack
-	declare stack-end = current-process as int + size-of sch-node;
+	declare stack-end = sch-current-process as int + size-of sch-node;
 	copy [stack-end - stack-size * 4, kernel-second-esp - stack-size * 4, stack-size * 4,];
 	stack-end;
 	asm _ SUB (EAX, kernel-second-esp);
@@ -102,5 +102,5 @@ declare sch-setup = function [] (
 );
 
 declare sch-teardown = function [] (
-	sch-deallocate [head-process,];
+	sch-deallocate [sch-head-process,];
 );

@@ -184,9 +184,9 @@ asm _ MOV (ESP, kernel-second-esp);
 		log "From first thread";
 		while true do ( -- Halt CPU if none of the process is busy
 			asm _ CLI ();
-			declare process = head-process;
+			declare process = sch-head-process;
 			declare busy = false;
-			while (({process} = dl-next [process,]) != head-process) do (
+			while (({process} = dl-next [process,]) != sch-head-process) do (
 				{busy} = (busy || process/*/+current/+busy);
 			);
 			asm _ STI ();

@@ -8,8 +8,8 @@ declare ffa-region0 = +x50000;
 declare ffa-regionx = +xA0000;
 declare pointer:ffa-node ffa-current;
 
-declare ffa-node head-node;
-declare head = & head-node;
+declare ffa-node ffa-head-node;
+declare ffa-head = & ffa-head-node;
 
 declare ffa-create = function [pointer:ffa-node node,] (
 	dl-create [node,];
@@ -19,7 +19,7 @@ declare ffa-create = function [pointer:ffa-node node,] (
 declare ffa-allocate0 = function [size,] (
 	declare next-node = function [n,] (
 		declare n1 = dl-next [n,];
-		if n1 then n1 else head;
+		if n1 then n1 else ffa-head;
 	);
 
 	declare get-size = function [pointer:ffa-node node,] (
@@ -75,10 +75,10 @@ declare ffa-deallocate = function [p, int size,] (
 declare ffa-setup = function [] (
 	declare first = ffa-region0 as pointer:ffa-node;
 	declare last = (ffa-regionx - ffa-node-size) as pointer:ffa-node; -- Stopper record
-	ffa-create [head,];
+	ffa-create [ffa-head,];
 	ffa-create [first,];
 	ffa-create [last,];
-	dl-insert-next [head, first,];
+	dl-insert-next [ffa-head, first,];
 	dl-insert-next [first, last,];
-	{ffa-current} = head;
+	{ffa-current} = ffa-head;
 );
