@@ -2,7 +2,7 @@
 
 Library with all sorts of useful code pieces for myself. In particular it has a logic interpreter and a functional code compiler.
 
-### Any pre-requisite?
+### Any pre-requisites?
 
 - Linux, unix, or cygwin
 - JDK 1.8
