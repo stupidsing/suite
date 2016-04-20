@@ -20,13 +20,8 @@ public class LookaheadReader {
 	}
 
 	public class LookaheadSet {
-		public boolean isPassThru;
-		public Set<String> lookaheads;
-
-		private LookaheadSet(boolean isPassThru, Set<String> lookaheads) {
-			this.isPassThru = isPassThru;
-			this.lookaheads = lookaheads;
-		}
+		public boolean isPassThru = false;
+		public Set<String> lookaheads = new HashSet<>();
 
 		private void merge(LookaheadSet ls) {
 			isPassThru |= ls.isPassThru;
@@ -46,7 +41,7 @@ public class LookaheadReader {
 	private LookaheadSet readLookaheadSet(EbnfGrammar eg) {
 		LookaheadSet ls = lookaheadSets.get(eg);
 		if (ls == null) {
-			lookaheadSets.put(eg, ls = new LookaheadSet(false, new HashSet<>()));
+			lookaheadSets.put(eg, ls = new LookaheadSet());
 			mergeLookaheadSet(eg, ls);
 		}
 		return ls;
