@@ -2,114 +2,24 @@ package suite.ebnf.lr;
 
 import java.io.StringReader;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 import suite.adt.Pair;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.EbnfGrammar;
-import suite.ebnf.EbnfGrammar.EbnfGrammarType;
+import suite.ebnf.lr.Lr.Reduce;
+import suite.ebnf.lr.Lr.State;
 import suite.immutable.IList;
 import suite.parser.Lexer;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
 public class EbnfLrParse {
 
-	private int counter;
 	private String rootEntity;
-	private Map<String, EbnfGrammar> grammarByEntity;
-	private LookaheadReader lookaheadReader;
-
-	private Map<Pair<String, Set<String>>, Transition> transitions = new HashMap<>();
-	private Set<Pair<Transition, Transition>> merges = new HashSet<>();
-
-	private State state0;
-	private Map<State, Transition> fsm = new HashMap<>();
-
-	private class BuildLr {
-		private int nTokens;
-		private Transition next;
-
-		private BuildLr(int nTokens, Transition next) {
-			this.nTokens = nTokens;
-			this.next = next;
-		}
-	}
-
-	private class Transition extends HashMap<String, Pair<State, Reduce>> {
-		private static final long serialVersionUID = 1l;
-
-		public int hashCode() {
-			return System.identityHashCode(this);
-		}
-
-		public boolean equals(Object object) {
-			return this == object;
-		}
-
-		private boolean putAll(Transition sourceMap) {
-			boolean b = false;
-			for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
-				b |= put_(e1.getKey(), e1.getValue());
-			return b;
-		}
-
-		// Shift-reduce conflict ends in reduce
-		private boolean put_(String key, Pair<State, Reduce> value1) {
-			Pair<State, Reduce> value0 = get(key);
-			int order0 = order(value0);
-			int order1 = order(value1);
-			if (order0 < order1) {
-				put(key, value1);
-				return true;
-			} else if (order1 < order0 || Objects.equals(value0, value1))
-				return false;
-			else if (value0.t0 != null && value1.t0 != null) {
-
-				// Merge each children if both are shifts
-				Transition transition0 = fsm.get(value0.t0);
-				Transition transition1 = fsm.get(value1.t0);
-				return merges.add(Pair.of(transition0, transition1));
-			} else
-				throw new RuntimeException("Duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
-		}
-
-		private int order(Pair<State, Reduce> pair) {
-			if (pair == null) // Nothing
-				return 0;
-			else if (pair.t1 != null) // Reduce
-				return 1;
-			else
-				return 2;
-		}
-	}
-
-	private class Reduce {
-		private String name;
-		private int n;
-
-		public String toString() {
-			return name + "/" + n;
-		}
-	}
-
-	private class State {
-		private int id = counter++;
-
-		public String toString() {
-			return String.format("S%02d", id);
-		}
-	}
+	private Lr lr;
 
 	public static EbnfLrParse of(String grammar, String rootEntity) {
 		try (StringReader reader = new StringReader(grammar)) {
@@ -118,118 +28,8 @@ public class EbnfLrParse {
 	}
 
 	public EbnfLrParse(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
-		Transition nextx = kv("EOF", new State());
-		this.grammarByEntity = grammarByEntity;
 		this.rootEntity = rootEntity;
-		lookaheadReader = new LookaheadReader(grammarByEntity);
-		state0 = newState(buildLrs(rootEntity, nextx).next);
-	}
-
-	private BuildLr buildLrs(String entity, Transition nextx) {
-		Pair<String, Set<String>> k = Pair.of(entity, nextx.keySet());
-		Set<Pair<String, Set<String>>> keys0 = new HashSet<>();
-		transitions.put(k, new Transition());
-
-		while (keys0.size() < transitions.size()) {
-			Set<Pair<String, Set<String>>> keys1 = new HashSet<>(transitions.keySet());
-			keys1.removeAll(keys0);
-
-			for (Pair<String, Set<String>> pair : keys1) {
-				Transition next_ = transitions.get(pair);
-				Transition nextx_ = newTransition(pair.t1);
-
-				BuildLr buildLr1 = buildLr(pair.t0, nextx_);
-				merges.add(Pair.of(next_, buildLr1.next));
-				keys0.add(pair);
-			}
-		}
-
-		boolean b;
-		do {
-			b = false;
-			for (Pair<Transition, Transition> merge : new ArrayList<>(merges))
-				b |= merge.t0.putAll(merge.t1);
-		} while (b);
-
-		return new BuildLr(1, transitions.get(k));
-	}
-
-	private BuildLr buildLr(String entity, Transition nextx) {
-		return buildLr(IList.end(), grammarByEntity.get(entity), nextx);
-	}
-
-	private BuildLr buildLr(IList<Pair<String, Set<String>>> ps, EbnfGrammar eg, Transition nextx) {
-		Fun<Streamlet2<String, Transition>, BuildLr> mergeAll = st2 -> {
-			Transition next = newTransition(lookaheadReader.readLookaheadSet(eg, nextx.keySet()));
-			State state1 = newState(nextx);
-			st2.sink((egn, next1) -> {
-				next.put_(egn, Pair.of(state1, null));
-				merges.add(Pair.of(next, next1));
-			});
-			return new BuildLr(1, next);
-		};
-
-		Pair<String, Set<String>> k;
-		BuildLr buildLr;
-
-		switch (eg.type) {
-		case AND___:
-			if (!eg.children.isEmpty()) {
-				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
-				BuildLr buildLr1 = buildLr(ps, tail, nextx);
-				BuildLr buildLr0 = buildLr(ps, eg.children.get(0), buildLr1.next);
-				buildLr = new BuildLr(buildLr0.nTokens + buildLr1.nTokens, buildLr0.next);
-			} else
-				buildLr = new BuildLr(0, nextx);
-			break;
-		case ENTITY:
-			k = Pair.of(eg.content, nextx.keySet());
-			Transition next1 = transitions.computeIfAbsent(k, k_ -> new Transition());
-			buildLr = mergeAll.apply(Read.from2(eg.content, next1));
-			break;
-		case NAMED_:
-			Reduce reduce = new Reduce();
-			Transition next = newTransition(nextx.keySet(), Pair.of(null, reduce));
-			BuildLr buildLr1 = buildLr(ps, eg.children.get(0), next);
-			reduce.n = buildLr1.nTokens;
-			reduce.name = eg.content;
-			buildLr = new BuildLr(1, buildLr1.next);
-			break;
-		case OR____:
-			List<Pair<String, Transition>> pairs = new ArrayList<>();
-			for (EbnfGrammar eg1 : Read.from(eg.children)) {
-				String egn = "OR." + System.identityHashCode(eg1);
-				pairs.add(Pair.of(egn, buildLr(ps, new EbnfGrammar(EbnfGrammarType.NAMED_, egn, eg1), nextx).next));
-			}
-			buildLr = mergeAll.apply(Read.from2(pairs));
-			break;
-		case STRING:
-			State state1 = newState(nextx);
-			buildLr = new BuildLr(1, kv(eg.content, state1));
-			break;
-		default:
-			throw new RuntimeException("LR parser cannot recognize " + eg.type);
-		}
-
-		return buildLr;
-	}
-
-	private State newState(Transition nextx) {
-		State state = new State();
-		fsm.put(state, nextx);
-		return state;
-	}
-
-	private Transition newTransition(Set<String> keys) {
-		Pair<State, Reduce> value = null;
-		return newTransition(keys, value);
-	}
-
-	private Transition newTransition(Set<String> keys, Pair<State, Reduce> value) {
-		Transition transition = new Transition();
-		for (String key : keys)
-			transition.put(key, value);
-		return transition;
+		lr = new Lr(grammarByEntity, rootEntity);
 	}
 
 	public Ast check(String in) {
@@ -239,10 +39,10 @@ public class EbnfLrParse {
 	public Ast parse(String in) {
 		Source<Ast> source = Read.from(new Lexer(in).tokens()).map(token -> new Ast(token, 0)).source();
 
-		System.out.println("shifts/reduces = " + list(fsm));
-		System.out.println("Initial state = " + state0);
+		System.out.println("shifts/reduces = " + list(lr.fsm));
+		System.out.println("Initial state = " + lr.state0);
 
-		return parse(source, state0);
+		return parse(source, lr.state0);
 	}
 
 	private Ast parse(Source<Ast> tokens, State state) {
@@ -261,15 +61,15 @@ public class EbnfLrParse {
 				Reduce reduce = sr.t1;
 				IList<Ast> nodes = IList.end();
 
-				for (int i = 0; i < reduce.n; i++) {
+				for (int i = 0; i < reduce.n(); i++) {
 					Pair<Ast, State> ns = stack.pop();
 					nodes = IList.cons(ns.t0, nodes);
 					state = ns.t1;
 				}
 
-				Ast token1 = new Ast(reduce.name, 0, 0, Read.from(nodes).toList());
+				Ast token1 = new Ast(reduce.name(), 0, 0, Read.from(nodes).toList());
 
-				if (rootEntity.equals(reduce.name) && stack.size() == 0 && token == null)
+				if (rootEntity.equals(reduce.name()) && stack.size() == 0 && token == null)
 					return token1;
 
 				// Force shift after reduce
@@ -281,15 +81,9 @@ public class EbnfLrParse {
 
 	private Pair<State, Reduce> shift(Deque<Pair<Ast, State>> stack, State state, String next) {
 		System.out.print("(S=" + state + ", Next=" + next + ", Stack=" + stack.size() + ")");
-		Pair<State, Reduce> sr = fsm.get(state).get(next);
+		Pair<State, Reduce> sr = lr.fsm.get(state).get(next);
 		System.out.println(" => " + sr);
 		return sr;
-	}
-
-	private Transition kv(String k, State v) {
-		Transition transition = new Transition();
-		transition.put(k, Pair.of(v, null));
-		return transition;
 	}
 
 	private <K, V> String list(Map<K, V> map) {

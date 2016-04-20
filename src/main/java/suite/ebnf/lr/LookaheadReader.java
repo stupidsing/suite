@@ -29,11 +29,11 @@ public class LookaheadReader {
 		}
 	}
 
-	public Set<String> readLookaheadSet(EbnfGrammar eg, Set<String> followings) {
+	public Set<String> readLookaheadSet(EbnfGrammar eg, Set<String> follows) {
 		LookaheadSet ls = readLookaheadSet(eg);
 		Set<String> lookaheadSet = new HashSet<>();
 		if (ls.isPassThru)
-			lookaheadSet.addAll(followings);
+			lookaheadSet.addAll(follows);
 		lookaheadSet.addAll(ls.lookaheads);
 		return lookaheadSet;
 	}
