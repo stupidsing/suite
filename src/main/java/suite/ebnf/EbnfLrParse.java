@@ -3,7 +3,6 @@ package suite.ebnf;
 import java.io.StringReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +28,7 @@ public class EbnfLrParse {
 	private String rootEntity;
 	private Map<String, EbnfGrammar> grammarByEntity;
 
+	private Map<EbnfGrammar, LookaheadSet> lookaheadSets = new HashMap<>();
 	private Map<Pair<String, Set<String>>, Transition> transitions = new HashMap<>();
 	private Set<Pair<Transition, Transition>> merges = new HashSet<>();
 
@@ -42,6 +42,11 @@ public class EbnfLrParse {
 		private LookaheadSet(boolean isPassThru, Set<String> lookaheads) {
 			this.isPassThru = isPassThru;
 			this.lookaheads = lookaheads;
+		}
+
+		private void merge(LookaheadSet ls) {
+			isPassThru |= ls.isPassThru;
+			lookaheads.addAll(ls.lookaheads);
 		}
 	}
 
@@ -241,7 +246,7 @@ public class EbnfLrParse {
 	}
 
 	private Set<String> readLookaheadSet(EbnfGrammar eg, Transition nextx) {
-		LookaheadSet ls = readLookaheadSet(IList.end(), eg);
+		LookaheadSet ls = readLookaheadSet(eg);
 		Set<String> lookaheadSet = new HashSet<>();
 		if (ls.isPassThru)
 			lookaheadSet.addAll(nextx.keySet());
@@ -249,47 +254,43 @@ public class EbnfLrParse {
 		return lookaheadSet;
 	}
 
-	// Only return terminal lookaheads
-	private LookaheadSet readLookaheadSet(IList<EbnfGrammar> stack, EbnfGrammar eg) {
-		LookaheadSet ls;
+	private LookaheadSet readLookaheadSet(EbnfGrammar eg) {
+		LookaheadSet ls = lookaheadSets.get(eg);
+		if (ls == null) {
+			lookaheadSets.put(eg, ls = new LookaheadSet(false, new HashSet<>()));
+			mergeLookaheadSet(eg, ls);
+		}
+		return ls;
+	}
 
+	private void mergeLookaheadSet(EbnfGrammar eg, LookaheadSet ls) {
 		switch (eg.type) {
 		case AND___:
 			if (!eg.children.isEmpty()) {
 				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
-				LookaheadSet ls0 = readLookaheadSet(stack, eg.children.get(0));
-				if (ls0.isPassThru) {
-					LookaheadSet ls1 = readLookaheadSet(stack, tail);
-					ls1.lookaheads.addAll(ls0.lookaheads);
-					ls = ls1;
-				} else
-					ls = ls0;
-			} else
-				ls = new LookaheadSet(true, new HashSet<>());
+				LookaheadSet ls0 = readLookaheadSet(eg.children.get(0));
+				ls.lookaheads.addAll(ls0.lookaheads);
+				if (ls0.isPassThru)
+					ls.merge(readLookaheadSet(tail));
+			}
 			break;
 		case ENTITY:
 			EbnfGrammar eg_ = grammarByEntity.get(eg.content);
-			ls = !stack.contains(eg_) ? readLookaheadSet(IList.cons(eg_, stack), eg_) : new LookaheadSet(false, new HashSet<>());
+			ls.merge(readLookaheadSet(eg_));
 			break;
 		case NAMED_:
-			ls = readLookaheadSet(stack, eg.children.get(0));
+			ls.merge(readLookaheadSet(eg.children.get(0)));
 			break;
 		case OR____:
-			ls = new LookaheadSet(false, new HashSet<>());
-			for (EbnfGrammar eg1 : eg.children) {
-				LookaheadSet pair1 = readLookaheadSet(stack, eg1);
-				ls.isPassThru |= pair1.isPassThru;
-				ls.lookaheads.addAll(pair1.lookaheads);
-			}
+			for (EbnfGrammar eg1 : eg.children)
+				ls.merge(readLookaheadSet(eg1));
 			break;
 		case STRING:
-			ls = new LookaheadSet(false, new HashSet<>(Arrays.asList(eg.content)));
+			ls.lookaheads.add(eg.content);
 			break;
 		default:
 			throw new RuntimeException("LR parser cannot recognize " + eg.type);
 		}
-
-		return ls;
 	}
 
 	public Ast check(String in) {
