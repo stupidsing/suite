@@ -6,6 +6,7 @@ import java.io.StringReader;
 import org.junit.Test;
 
 import suite.node.io.Operator.Assoc;
+import suite.ebnf.lr.EbnfLrParse;
 import suite.node.io.TermOp;
 
 public class EbnfOperatorTest {

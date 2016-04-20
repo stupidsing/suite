@@ -1,10 +1,12 @@
-package suite.ebnf;
+package suite.ebnf.lr;
 
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
 import org.junit.Test;
+
+import suite.ebnf.lr.EbnfLrParse;
 
 public class EbnfLrParseTest {
 
