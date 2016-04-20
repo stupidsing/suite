@@ -19,9 +19,9 @@ public class LookaheadReader {
 		this.grammarByEntity = grammarByEntity;
 	}
 
-	public class LookaheadSet {
-		public boolean isPassThru = false;
-		public Set<String> lookaheads = new HashSet<>();
+	private class LookaheadSet {
+		private boolean isPassThru = false;
+		private Set<String> lookaheads = new HashSet<>();
 
 		private void merge(LookaheadSet ls) {
 			isPassThru |= ls.isPassThru;
