@@ -267,16 +267,16 @@ public class EbnfLrParse {
 		switch (eg.type) {
 		case AND___:
 			if (!eg.children.isEmpty()) {
-				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
 				LookaheadSet ls0 = readLookaheadSet(eg.children.get(0));
 				ls.lookaheads.addAll(ls0.lookaheads);
-				if (ls0.isPassThru)
+				if (ls0.isPassThru) {
+					EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
 					ls.merge(readLookaheadSet(tail));
+				}
 			}
 			break;
 		case ENTITY:
-			EbnfGrammar eg_ = grammarByEntity.get(eg.content);
-			ls.merge(readLookaheadSet(eg_));
+			ls.merge(readLookaheadSet(grammarByEntity.get(eg.content)));
 			break;
 		case NAMED_:
 			ls.merge(readLookaheadSet(eg.children.get(0)));
