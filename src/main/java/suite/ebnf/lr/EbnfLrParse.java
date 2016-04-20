@@ -8,8 +8,8 @@ import java.util.Map;
 import suite.adt.Pair;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.EbnfGrammar;
-import suite.ebnf.lr.Lr.Reduce;
-import suite.ebnf.lr.Lr.State;
+import suite.ebnf.lr.LrBuilder.Reduce;
+import suite.ebnf.lr.LrBuilder.State;
 import suite.immutable.IList;
 import suite.parser.Lexer;
 import suite.streamlet.Read;
@@ -19,7 +19,7 @@ import suite.util.Util;
 public class EbnfLrParse {
 
 	private String rootEntity;
-	private Lr lr;
+	private LrBuilder lrBuilder;
 
 	public static EbnfLrParse of(String grammar, String rootEntity) {
 		try (StringReader reader = new StringReader(grammar)) {
@@ -29,7 +29,7 @@ public class EbnfLrParse {
 
 	public EbnfLrParse(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
 		this.rootEntity = rootEntity;
-		lr = new Lr(grammarByEntity, rootEntity);
+		lrBuilder = new LrBuilder(grammarByEntity, rootEntity);
 	}
 
 	public Ast check(String in) {
@@ -39,10 +39,10 @@ public class EbnfLrParse {
 	public Ast parse(String in) {
 		Source<Ast> source = Read.from(new Lexer(in).tokens()).map(token -> new Ast(token, 0)).source();
 
-		System.out.println("shifts/reduces = " + list(lr.fsm));
-		System.out.println("Initial state = " + lr.state0);
+		System.out.println("shifts/reduces = " + list(lrBuilder.fsm));
+		System.out.println("Initial state = " + lrBuilder.state0);
 
-		return parse(source, lr.state0);
+		return parse(source, lrBuilder.state0);
 	}
 
 	private Ast parse(Source<Ast> tokens, State state) {
@@ -81,7 +81,7 @@ public class EbnfLrParse {
 
 	private Pair<State, Reduce> shift(Deque<Pair<Ast, State>> stack, State state, String next) {
 		System.out.print("(S=" + state + ", Next=" + next + ", Stack=" + stack.size() + ")");
-		Pair<State, Reduce> sr = lr.fsm.get(state).get(next);
+		Pair<State, Reduce> sr = lrBuilder.fsm.get(state).get(next);
 		System.out.println(" => " + sr);
 		return sr;
 	}
