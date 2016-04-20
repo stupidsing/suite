@@ -6,7 +6,7 @@ public class TelegramTest {
 
 	@Test
 	public void testBot() {
-		new TelegramBot().bot(s -> s);
+		new TelegramBot().bot((userId, message) -> message);
 	}
 
 }

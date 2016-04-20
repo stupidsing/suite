@@ -3,6 +3,7 @@ package suite.telegram;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.BiFunction;
 
 import org.telegram.telegrambots.TelegramApiException;
 import org.telegram.telegrambots.TelegramBotsApi;
@@ -12,13 +13,12 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
 import suite.os.FileUtil;
-import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 import suite.util.Util;
 
 public class TelegramBot {
 
-	public void bot(Fun<String, String> fun) {
+	public void bot(BiFunction<Integer, String, String> fun) {
 		try {
 			new TelegramBotsApi().registerBot(new TelegramLongPollingBot() {
 				public String getBotUsername() {
@@ -36,7 +36,7 @@ public class TelegramBot {
 
 						SendMessage sendMessage = new SendMessage();
 						sendMessage.setChatId(message.getChat().getId().toString());
-						sendMessage.setText(fun.apply(message.getText()));
+						sendMessage.setText(fun.apply(message.getFrom().getId(), message.getText()));
 
 						try {
 							sendMessage(sendMessage);
