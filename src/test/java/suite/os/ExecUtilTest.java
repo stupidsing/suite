@@ -3,14 +3,12 @@ package suite.os;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
 import org.junit.Test;
 
 public class ExecUtilTest {
 
 	@Test
-	public void test0() throws IOException {
+	public void test0() {
 		ExecUtil exec = new ExecUtil(new String[] { "git", "status", }, "");
 		System.out.println(exec);
 
@@ -20,7 +18,7 @@ public class ExecUtilTest {
 	}
 
 	@Test
-	public void test1() throws IOException {
+	public void test1() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 1024; i++)
 			sb.append("01234567890123456789012345678901234567890123456789012345678901234567890123456789\n");

@@ -2,11 +2,11 @@ package suite.os;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import suite.util.Copy;
+import suite.util.Rethrow;
 
 public class ExecUtil {
 
@@ -15,12 +15,12 @@ public class ExecUtil {
 	public final String err;
 	private Thread threads[];
 
-	public ExecUtil(String command[], String in) throws IOException {
+	public ExecUtil(String command[], String in) {
 		InputStream bis = new ByteArrayInputStream(in.getBytes(FileUtil.charset));
 		ByteArrayOutputStream bos0 = new ByteArrayOutputStream();
 		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
 
-		Process process = Runtime.getRuntime().exec(command);
+		Process process = Rethrow.ioException(() -> Runtime.getRuntime().exec(command));
 
 		try {
 			InputStream pis = process.getInputStream();

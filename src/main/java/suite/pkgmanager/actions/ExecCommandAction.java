@@ -1,7 +1,5 @@
 package suite.pkgmanager.actions;
 
-import java.io.IOException;
-
 import suite.os.ExecUtil;
 
 public class ExecCommandAction implements InstallAction {
@@ -14,18 +12,18 @@ public class ExecCommandAction implements InstallAction {
 		this.uninstallCommand = uninstallCommand;
 	}
 
-	public void act() throws IOException {
+	public void act() {
 		exec(installCommand);
 	}
 
-	public void unact() throws IOException {
+	public void unact() {
 		exec(uninstallCommand);
 	}
 
-	private void exec(String command[]) throws IOException {
+	private void exec(String command[]) {
 		ExecUtil exec = new ExecUtil(command, "");
 		if (exec.code != 0)
-			throw new IOException("Command return code = " + exec.code + ": " + exec.err);
+			throw new RuntimeException("Command return code = " + exec.code + ": " + exec.err);
 	}
 
 }

@@ -99,6 +99,11 @@ public class ParseUtil {
 		return list;
 	}
 
+	public static Pair<String, String> search(String s, String name) {
+		Pair<String, String> pair = search(s, Segment.of(0, s.length()), name, Assoc.RIGHT, true);
+		return pair != null ? pair : Pair.of(s, "");
+	}
+
 	public static Pair<String, String> search(String s, String name, Assoc assoc) {
 		return search(s, Segment.of(0, s.length()), name, assoc, true);
 	}

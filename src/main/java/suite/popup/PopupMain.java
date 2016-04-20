@@ -3,7 +3,6 @@ package suite.popup;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,7 +18,6 @@ import suite.editor.LayoutCalculator.Node;
 import suite.editor.LayoutCalculator.Orientation;
 import suite.editor.Listen;
 import suite.os.ExecUtil;
-import suite.os.LogUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
@@ -62,12 +60,7 @@ public class PopupMain extends ExecutableProgram {
 
 		Fun<String, ExecUtil> volumeControl = (String c) -> {
 			inTextField.requestFocusInWindow();
-			try {
-				return new ExecUtil(new String[] { "/usr/bin/amixer", "set", "PCM", "2" + c, }, "");
-			} catch (IOException ex) {
-				LogUtil.error(ex);
-				return null;
-			}
+			return new ExecUtil(new String[] { "/usr/bin/amixer", "set", "PCM", "2" + c, }, "");
 		};
 
 		JLabel volLabel = new JLabel("Volume");
