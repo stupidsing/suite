@@ -7,7 +7,7 @@ import java.util.Map;
 
 import suite.adt.Pair;
 import suite.ebnf.Ebnf.Ast;
-import suite.ebnf.EbnfGrammar;
+import suite.ebnf.Grammar;
 import suite.ebnf.lr.BuildLr.Reduce;
 import suite.ebnf.lr.BuildLr.State;
 import suite.immutable.IList;
@@ -23,11 +23,11 @@ public class LrParse {
 
 	public static LrParse of(String grammar, String rootEntity) {
 		try (StringReader reader = new StringReader(grammar)) {
-			return new LrParse(EbnfGrammar.parse(reader), rootEntity);
+			return new LrParse(Grammar.parse(reader), rootEntity);
 		}
 	}
 
-	public LrParse(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
+	public LrParse(Map<String, Grammar> grammarByEntity, String rootEntity) {
 		this.rootEntity = rootEntity;
 		lrBuilder = new BuildLr(grammarByEntity, rootEntity);
 	}

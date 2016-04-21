@@ -11,9 +11,9 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Util;
 
-public class EbnfGrammar {
+public class Grammar {
 
-	public enum EbnfGrammarType {
+	public enum GrammarType {
 		AND___, //
 		ENTITY, //
 		EXCEPT, //
@@ -26,12 +26,12 @@ public class EbnfGrammar {
 		STRING, //
 	}
 
-	public final EbnfGrammarType type;
+	public final GrammarType type;
 	public final String content;
-	public final List<EbnfGrammar> children;
+	public final List<Grammar> children;
 
-	public static Map<String, EbnfGrammar> parse(Reader reader) {
-		EbnfBreakdown breakdown = new EbnfBreakdown();
+	public static Map<String, Grammar> parse(Reader reader) {
+		Breakdown breakdown = new Breakdown();
 
 		List<Pair<String, String>> pairs = Read.lines(reader) //
 				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
@@ -42,34 +42,34 @@ public class EbnfGrammar {
 				.filter(lr -> lr != null) //
 				.toList();
 
-		Map<String, EbnfGrammar> grammarByEntity = Read.from(pairs) //
+		Map<String, Grammar> grammarByEntity = Read.from(pairs) //
 				.map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t0, lr.t1))) //
 				.collect(As::map);
 
 		return grammarByEntity;
 	}
 
-	public EbnfGrammar(EbnfGrammarType type) {
+	public Grammar(GrammarType type) {
 		this(type, null, Collections.emptyList());
 	}
 
-	public EbnfGrammar(EbnfGrammarType type, String content) {
+	public Grammar(GrammarType type, String content) {
 		this(type, content, Collections.emptyList());
 	}
 
-	public EbnfGrammar(EbnfGrammarType type, EbnfGrammar child) {
+	public Grammar(GrammarType type, Grammar child) {
 		this(type, null, child);
 	}
 
-	public EbnfGrammar(EbnfGrammarType type, String content, EbnfGrammar child) {
+	public Grammar(GrammarType type, String content, Grammar child) {
 		this(type, content, Arrays.asList(child));
 	}
 
-	public EbnfGrammar(EbnfGrammarType type, List<EbnfGrammar> children) {
+	public Grammar(GrammarType type, List<Grammar> children) {
 		this(type, null, children);
 	}
 
-	public EbnfGrammar(EbnfGrammarType type, String content, List<EbnfGrammar> children) {
+	public Grammar(GrammarType type, String content, List<Grammar> children) {
 		this.type = type;
 		this.content = content;
 		this.children = children;
@@ -77,8 +77,8 @@ public class EbnfGrammar {
 
 	public String describe() {
 		return type + (content != null ? "." + content : "") //
-				+ (type != EbnfGrammarType.NAMED_
-						? "(" + Read.from(children).map(EbnfGrammar::describe).collect(As.joined(",")) + ")" //
+				+ (type != GrammarType.NAMED_
+						? "(" + Read.from(children).map(Grammar::describe).collect(As.joined(",")) + ")" //
 						: "");
 	}
 
@@ -91,7 +91,7 @@ public class EbnfGrammar {
 
 	private void toString(String indent, StringBuilder sb) {
 		sb.append(indent + type + " (" + content + ")\n");
-		for (EbnfGrammar child : children)
+		for (Grammar child : children)
 			child.toString(indent + "| ", sb);
 	}
 

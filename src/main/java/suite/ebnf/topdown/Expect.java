@@ -1,21 +1,21 @@
-package suite.ebnf;
+package suite.ebnf.topdown;
 
 import java.util.Set;
 
 import suite.os.UnicodeData;
 import suite.util.Util;
 
-public class EbnfExpect {
+public class Expect {
 
 	private UnicodeData unicodeData = new UnicodeData();
 
-	public interface Expect {
+	public interface ExpectFun {
 		public int expect(String in, int length, int start);
 	}
 
-	public Expect expectChar = (in, length, start) -> Math.min(start + 1, length);
+	public ExpectFun char_ = (in, length, start) -> Math.min(start + 1, length);
 
-	public Expect expectCharLiteral = (in, length, start) -> {
+	public ExpectFun charLiteral = (in, length, start) -> {
 		int pos = start, end;
 		if (pos < length && in.charAt(pos) == '\'') {
 			pos++;
@@ -33,9 +33,9 @@ public class EbnfExpect {
 		return end;
 	};
 
-	public Expect expectFail = (in, length, start) -> start;
+	public ExpectFun fail = (in, length, start) -> start;
 
-	public Expect expectIdentifier = (in, length, start) -> {
+	public ExpectFun identifier = (in, length, start) -> {
 		int pos = start;
 		if (pos < length && Character.isJavaIdentifierStart(in.charAt(pos))) {
 			pos++;
@@ -45,7 +45,7 @@ public class EbnfExpect {
 		return pos;
 	};
 
-	public Expect expectIntegerLiteral = (in, length, start) -> {
+	public ExpectFun integerLiteral = (in, length, start) -> {
 		int pos = start;
 		while (pos < length && Character.isDigit(in.charAt(pos)))
 			pos++;
@@ -54,19 +54,19 @@ public class EbnfExpect {
 		return pos;
 	};
 
-	public Expect expectRealLiteral = (in, length, start) -> {
+	public ExpectFun realLiteral = (in, length, start) -> {
 		int pos = start;
-		pos = expectIntegerLiteral.expect(in, length, pos);
+		pos = integerLiteral.expect(in, length, pos);
 		if (pos < length && in.charAt(pos) == '.') {
 			pos++;
-			pos = expectIntegerLiteral.expect(in, length, pos);
+			pos = integerLiteral.expect(in, length, pos);
 		}
 		if (pos < length && 0 <= "fd".indexOf(in.charAt(pos)))
 			pos++;
 		return pos;
 	};
 
-	public Expect expectStringLiteral = (in, length, start) -> {
+	public ExpectFun stringLiteral = (in, length, start) -> {
 		int pos = start, end;
 		if (pos < length && in.charAt(pos) == '"') {
 			pos++;
@@ -88,7 +88,7 @@ public class EbnfExpect {
 		return end;
 	};
 
-	public Expect expectCharRange(char s, char e) {
+	public ExpectFun charRange(char s, char e) {
 		return (in, length, start) -> {
 			int end;
 			if (start < length) {
@@ -100,41 +100,7 @@ public class EbnfExpect {
 		};
 	}
 
-	public Expect expectString(String s) {
-		return (in, length, start) -> start + (in.startsWith(s, start) ? s.length() : 0);
-	};
-
-	public Expect expectUnicodeClass(String uc) {
-		Set<Character> chars = unicodeData.getCharsOfClass(uc);
-		return (in, length, start) -> {
-			int end;
-			if (start < length) {
-				char ch = in.charAt(start);
-				end = start + (chars.contains(ch) ? 1 : 0);
-			} else
-				end = start;
-			return end;
-		};
-
-	}
-
-	public int expectWhitespaces(String in, int length, int start) {
-		int pos = start, pos1;
-		while (pos < (pos1 = expectWhitespace(in, length, pos)))
-			pos = pos1;
-		return pos;
-	};
-
-	public int expectWhitespace(String in, int length, int start) {
-		int pos = start;
-		while (pos < length && Character.isWhitespace(in.charAt(pos)))
-			pos++;
-		pos = expectComment(in, length, pos, "/*", "*/");
-		pos = expectComment(in, length, pos, "//", "\n");
-		return pos;
-	}
-
-	public int expectComment(String in, int length, int start, String sm, String em) {
+	public int comment(String in, int length, int start, String sm, String em) {
 		int sl = sm.length(), el = em.length();
 		int pos = start, end;
 		if (pos < length && Util.stringEquals(Util.substr(in, pos, pos + sl), sm)) {
@@ -149,6 +115,40 @@ public class EbnfExpect {
 		} else
 			end = start;
 		return end;
+	}
+
+	public ExpectFun string(String s) {
+		return (in, length, start) -> start + (in.startsWith(s, start) ? s.length() : 0);
+	};
+
+	public ExpectFun unicodeClass(String uc) {
+		Set<Character> chars = unicodeData.getCharsOfClass(uc);
+		return (in, length, start) -> {
+			int end;
+			if (start < length) {
+				char ch = in.charAt(start);
+				end = start + (chars.contains(ch) ? 1 : 0);
+			} else
+				end = start;
+			return end;
+		};
+
+	}
+
+	public int whitespaces(String in, int length, int start) {
+		int pos = start, pos1;
+		while (pos < (pos1 = whitespace(in, length, pos)))
+			pos = pos1;
+		return pos;
+	};
+
+	public int whitespace(String in, int length, int start) {
+		int pos = start;
+		while (pos < length && Character.isWhitespace(in.charAt(pos)))
+			pos++;
+		pos = comment(in, length, pos, "/*", "*/");
+		pos = comment(in, length, pos, "//", "\n");
+		return pos;
 	}
 
 }

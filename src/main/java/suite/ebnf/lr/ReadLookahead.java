@@ -5,16 +5,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import suite.ebnf.EbnfGrammar;
-import suite.ebnf.EbnfGrammar.EbnfGrammarType;
+import suite.ebnf.Grammar;
+import suite.ebnf.Grammar.GrammarType;
 import suite.util.Util;
 
 public class ReadLookahead {
 
-	private Map<String, EbnfGrammar> grammarByEntity;
-	private Map<EbnfGrammar, LookaheadSet> lookaheadSets = new HashMap<>();
+	private Map<String, Grammar> grammarByEntity;
+	private Map<Grammar, LookaheadSet> lookaheadSets = new HashMap<>();
 
-	public ReadLookahead(Map<String, EbnfGrammar> grammarByEntity) {
+	public ReadLookahead(Map<String, Grammar> grammarByEntity) {
 		super();
 		this.grammarByEntity = grammarByEntity;
 	}
@@ -29,7 +29,7 @@ public class ReadLookahead {
 		}
 	}
 
-	public Set<String> readLookahead(EbnfGrammar eg, Set<String> follows) {
+	public Set<String> readLookahead(Grammar eg, Set<String> follows) {
 		LookaheadSet ls = readLookahead(eg);
 		Set<String> lookaheadSet = new HashSet<>();
 		if (ls.isPassThru)
@@ -38,7 +38,7 @@ public class ReadLookahead {
 		return lookaheadSet;
 	}
 
-	private LookaheadSet readLookahead(EbnfGrammar eg) {
+	private LookaheadSet readLookahead(Grammar eg) {
 		LookaheadSet ls = lookaheadSets.get(eg);
 		if (ls == null) {
 			lookaheadSets.put(eg, ls = new LookaheadSet());
@@ -47,14 +47,14 @@ public class ReadLookahead {
 		return ls;
 	}
 
-	private void mergeLookahead(EbnfGrammar eg, LookaheadSet ls) {
+	private void mergeLookahead(Grammar eg, LookaheadSet ls) {
 		switch (eg.type) {
 		case AND___:
 			if (!eg.children.isEmpty()) {
 				LookaheadSet ls0 = readLookahead(eg.children.get(0));
 				ls.lookaheads.addAll(ls0.lookaheads);
 				if (ls0.isPassThru) {
-					EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
+					Grammar tail = new Grammar(GrammarType.AND___, Util.right(eg.children, 1));
 					ls.merge(readLookahead(tail));
 				}
 			}
@@ -66,7 +66,7 @@ public class ReadLookahead {
 			ls.merge(readLookahead(eg.children.get(0)));
 			break;
 		case OR____:
-			for (EbnfGrammar eg1 : eg.children)
+			for (Grammar eg1 : eg.children)
 				ls.merge(readLookahead(eg1));
 			break;
 		case STRING:

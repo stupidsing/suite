@@ -9,8 +9,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.Pair;
-import suite.ebnf.EbnfGrammar;
-import suite.ebnf.EbnfGrammar.EbnfGrammarType;
+import suite.ebnf.Grammar;
+import suite.ebnf.Grammar.GrammarType;
 import suite.immutable.IList;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
@@ -20,7 +20,7 @@ import suite.util.Util;
 public class BuildLr {
 
 	private int counter;
-	private Map<String, EbnfGrammar> grammarByEntity;
+	private Map<String, Grammar> grammarByEntity;
 
 	private ReadLookahead lookaheadReader;
 	private Map<Pair<String, Set<String>>, Transition> transitions = new HashMap<>();
@@ -121,7 +121,7 @@ public class BuildLr {
 		}
 	}
 
-	public BuildLr(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
+	public BuildLr(Map<String, Grammar> grammarByEntity, String rootEntity) {
 		this.grammarByEntity = grammarByEntity;
 		lookaheadReader = new ReadLookahead(grammarByEntity);
 		Transition nextx = kv("EOF", new State());
@@ -161,7 +161,7 @@ public class BuildLr {
 		return build(IList.end(), grammarByEntity.get(entity), nextx);
 	}
 
-	private Blr build(IList<Pair<String, Set<String>>> ps, EbnfGrammar eg, Transition nextx) {
+	private Blr build(IList<Pair<String, Set<String>>> ps, Grammar eg, Transition nextx) {
 		Fun<Streamlet2<String, Transition>, Blr> mergeAll = st2 -> {
 			Transition next = newTransition(lookaheadReader.readLookahead(eg, nextx.keySet()));
 			State state1 = newState(nextx);
@@ -178,7 +178,7 @@ public class BuildLr {
 		switch (eg.type) {
 		case AND___:
 			if (!eg.children.isEmpty()) {
-				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
+				Grammar tail = new Grammar(GrammarType.AND___, Util.right(eg.children, 1));
 				Blr blr1 = build(ps, tail, nextx);
 				Blr blr0 = build(ps, eg.children.get(0), blr1.next);
 				blr = new Blr(blr0.nTokens + blr1.nTokens, blr0.next);
@@ -200,9 +200,9 @@ public class BuildLr {
 			break;
 		case OR____:
 			List<Pair<String, Transition>> pairs = new ArrayList<>();
-			for (EbnfGrammar eg1 : Read.from(eg.children)) {
+			for (Grammar eg1 : Read.from(eg.children)) {
 				String egn = "OR." + System.identityHashCode(eg1);
-				pairs.add(Pair.of(egn, build(ps, new EbnfGrammar(EbnfGrammarType.NAMED_, egn, eg1), nextx).next));
+				pairs.add(Pair.of(egn, build(ps, new Grammar(GrammarType.NAMED_, egn, eg1), nextx).next));
 			}
 			blr = mergeAll.apply(Read.from2(pairs));
 			break;

@@ -1,4 +1,4 @@
-package suite.ebnf;
+package suite.ebnf.topdown;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -7,8 +7,9 @@ import java.util.Map;
 
 import suite.adt.Pair;
 import suite.ebnf.Ebnf.Ast;
-import suite.ebnf.EbnfExpect.Expect;
-import suite.ebnf.EbnfGrammar.EbnfGrammarType;
+import suite.ebnf.Grammar;
+import suite.ebnf.Grammar.GrammarType;
+import suite.ebnf.topdown.Expect.ExpectFun;
 import suite.os.LogUtil;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
@@ -28,12 +29,12 @@ import suite.util.Util;
  *
  * @author ywsing
  */
-public class EbnfTopDownParse {
+public class TopDownParse {
 
 	private static boolean trace = false;
 
 	private Map<String, Parser> parserByEntity;
-	private EbnfExpect expect = new EbnfExpect();
+	private Expect expect = new Expect();
 	private Outlet<State> noResult = Outlet.empty();
 
 	private interface Parser {
@@ -96,7 +97,7 @@ public class EbnfTopDownParse {
 			State state;
 
 			while ((state = o.next()) != null)
-				if (expect.expectWhitespaces(in, length, state.pos) == length) {
+				if (expect.whitespaces(in, length, state.pos) == length) {
 					Deque<State> states = new ArrayDeque<>();
 
 					while (state != null) {
@@ -142,7 +143,7 @@ public class EbnfTopDownParse {
 			return states;
 		}
 
-		private Outlet<State> expect(State state, Expect expect, int pos) {
+		private Outlet<State> expect(State state, ExpectFun expect, int pos) {
 			int end = expect.expect(in, length, pos);
 			return state.pos < end ? Outlet.from(state.pos(end)) : noResult;
 		}
@@ -160,7 +161,7 @@ public class EbnfTopDownParse {
 		}
 	}
 
-	public EbnfTopDownParse(Map<String, EbnfGrammar> grammarByEntity) {
+	public TopDownParse(Map<String, Grammar> grammarByEntity) {
 		parserByEntity = Read.from2(grammarByEntity) //
 				.mapValue(this::build) //
 				.toMap();
@@ -168,7 +169,7 @@ public class EbnfTopDownParse {
 
 	public Ast parse(String entity, String s) {
 		Parse parse = new Parse(s);
-		Ast node = parse.parse(0, build(new EbnfGrammar(EbnfGrammarType.ENTITY, entity)));
+		Ast node = parse.parse(0, build(new Grammar(GrammarType.ENTITY, entity)));
 		if (node != null)
 			return node;
 		else {
@@ -178,10 +179,10 @@ public class EbnfTopDownParse {
 	}
 
 	public Ast check(String entity, String s) {
-		return new Parse(s).parse(0, build(new EbnfGrammar(EbnfGrammarType.ENTITY, entity)));
+		return new Parse(s).parse(0, build(new Grammar(GrammarType.ENTITY, entity)));
 	}
 
-	private Parser build(EbnfGrammar eg) {
+	private Parser build(Grammar eg) {
 		Parser parser;
 		List<Parser> parsers;
 
@@ -227,7 +228,7 @@ public class EbnfTopDownParse {
 			parser = buildRepeat(eg, false);
 			break;
 		case STRING:
-			Expect e = expect.expectString(eg.content);
+			ExpectFun e = expect.string(eg.content);
 			parser = skipWhitespaces((parse, st) -> parse.expect(st, e, st.pos));
 			break;
 		default:
@@ -237,11 +238,11 @@ public class EbnfTopDownParse {
 		return parser;
 	}
 
-	private List<Parser> buildChildren(EbnfGrammar eg) {
+	private List<Parser> buildChildren(Grammar eg) {
 		return Read.from(eg.children).map(this::build).toList();
 	}
 
-	private Parser buildRepeatHeadRecursion(EbnfGrammar eg) {
+	private Parser buildRepeatHeadRecursion(Grammar eg) {
 		Parser gb = build(eg.children.get(0));
 		Parser gc = build(eg.children.get(1));
 
@@ -250,24 +251,24 @@ public class EbnfTopDownParse {
 			return st0.deepen(frame, 1) //
 					.p(parse, gb) //
 					.concatMap(st1 -> Outlet.from(new Source<State>() {
-				private State state_ = st1;
-				private Deque<Outlet<State>> outlets = new ArrayDeque<>();
+						private State state_ = st1;
+						private Deque<Outlet<State>> outlets = new ArrayDeque<>();
 
-				public State source() {
-					if (state_ != null) {
-						State state0 = state_.deepen(frame, -1);
-						outlets.push(state0.pr(parse, gc));
-						while (!outlets.isEmpty() && (state_ = outlets.peek().next()) == null)
-							outlets.pop();
-						return state0;
-					} else
-						return null;
-				}
-			}));
+						public State source() {
+							if (state_ != null) {
+								State state0 = state_.deepen(frame, -1);
+								outlets.push(state0.pr(parse, gc));
+								while (!outlets.isEmpty() && (state_ = outlets.peek().next()) == null)
+									outlets.pop();
+								return state0;
+							} else
+								return null;
+						}
+					}));
 		};
 	}
 
-	private Parser buildRepeat(EbnfGrammar eg, boolean isAllowNone) {
+	private Parser buildRepeat(Grammar eg, boolean isAllowNone) {
 		Parser g = build(eg.children.get(0));
 
 		return (parse, st) -> {
@@ -306,26 +307,26 @@ public class EbnfTopDownParse {
 	}
 
 	private Parser buildLiteral(String entity) {
-		Expect e;
+		ExpectFun e;
 
 		if (Util.stringEquals(entity, "<CHARACTER>"))
-			e = expect.expectChar;
+			e = expect.char_;
 		else if (Util.stringEquals(entity, "<CHARACTER_LITERAL>"))
-			e = expect.expectCharLiteral;
+			e = expect.charLiteral;
 		else if (Util.stringEquals(entity, "<FLOATING_POINT_LITERAL>"))
-			e = expect.expectRealLiteral;
+			e = expect.realLiteral;
 		else if (Util.stringEquals(entity, "<IDENTIFIER>"))
-			e = expect.expectIdentifier;
+			e = expect.identifier;
 		else if (entity.startsWith("<IGNORE:") && entity.endsWith(">"))
-			e = expect.expectFail;
+			e = expect.fail;
 		else if (Util.stringEquals(entity, "<INTEGER_LITERAL>"))
-			e = expect.expectIntegerLiteral;
+			e = expect.integerLiteral;
 		else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
-			e = expect.expectStringLiteral;
+			e = expect.stringLiteral;
 		else if (entity.startsWith("<UNICODE_CLASS:") && entity.endsWith(">"))
-			e = expect.expectUnicodeClass(entity.substring(4, entity.length() - 1));
+			e = expect.unicodeClass(entity.substring(4, entity.length() - 1));
 		else if (entity.length() == 5 && entity.charAt(0) == '[' && entity.charAt(2) == '-' && entity.charAt(4) == ']')
-			e = expect.expectCharRange(entity.charAt(1), entity.charAt(3));
+			e = expect.charRange(entity.charAt(1), entity.charAt(3));
 		else
 			e = null;
 
@@ -334,7 +335,7 @@ public class EbnfTopDownParse {
 
 	private Parser skipWhitespaces(Parser parser) {
 		return (parse, st) -> {
-			int pos1 = expect.expectWhitespaces(parse.in, parse.length, st.pos);
+			int pos1 = expect.whitespaces(parse.in, parse.length, st.pos);
 			return st.pos(pos1).p(parse, parser);
 		};
 	}

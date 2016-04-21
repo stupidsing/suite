@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.ebnf.topdown.ReduceHeadRecursion;
+import suite.ebnf.topdown.TopDownParse;
 import suite.node.parser.FactorizeResult;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.primitive.Chars;
@@ -26,7 +28,7 @@ import suite.primitive.Chars;
  */
 public class Ebnf {
 
-	private EbnfTopDownParse engine;
+	private TopDownParse engine;
 
 	public static class Ast {
 		public int start, end;
@@ -62,14 +64,14 @@ public class Ebnf {
 	}
 
 	public Ebnf(Reader reader) throws IOException {
-		Map<String, EbnfGrammar> grammarByEntity = EbnfGrammar.parse(reader);
+		Map<String, Grammar> grammarByEntity = Grammar.parse(reader);
 
-		EbnfHeadRecursion headRecursion = new EbnfHeadRecursion(grammarByEntity);
+		ReduceHeadRecursion headRecursion = new ReduceHeadRecursion(grammarByEntity);
 
-		for (Entry<String, EbnfGrammar> entry : grammarByEntity.entrySet())
-			entry.setValue(headRecursion.reduceHeadRecursion(entry.getValue()));
+		for (Entry<String, Grammar> entry : grammarByEntity.entrySet())
+			entry.setValue(headRecursion.reduce(entry.getValue()));
 
-		engine = new EbnfTopDownParse(grammarByEntity);
+		engine = new TopDownParse(grammarByEntity);
 	}
 
 	public FactorizeResult parseFNode(String s, String entity) {

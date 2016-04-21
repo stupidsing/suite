@@ -55,7 +55,7 @@ public class EbnfTest {
 	public void testJava() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		String s = FileUtil.read("src/test/java/suite/ebnf/EbnfTest.java");
-		System.out.println(new EbnfDump(ebnf.parse("CompilationUnit", s), s));
+		System.out.println(new Dump(ebnf.parse("CompilationUnit", s), s));
 	}
 
 	@Test

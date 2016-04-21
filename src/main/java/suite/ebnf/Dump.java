@@ -8,12 +8,12 @@ import java.util.List;
 import suite.ebnf.Ebnf.Ast;
 import suite.util.Util;
 
-public class EbnfDump {
+public class Dump {
 
 	private String in;
 	private Writer w = new StringWriter();
 
-	public EbnfDump(Ast ast, String in) {
+	public Dump(Ast ast, String in) {
 		this.in = in;
 		try {
 			prettyPrint(ast, "");
