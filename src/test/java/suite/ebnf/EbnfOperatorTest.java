@@ -6,7 +6,7 @@ import java.io.StringReader;
 import org.junit.Test;
 
 import suite.node.io.Operator.Assoc;
-import suite.ebnf.lr.EbnfLrParse;
+import suite.ebnf.lr.LrParse;
 import suite.node.io.TermOp;
 
 public class EbnfOperatorTest {
@@ -19,7 +19,7 @@ public class EbnfOperatorTest {
 
 	@Test
 	public void testLr() throws IOException {
-		EbnfLrParse elp = EbnfLrParse.of(ebnf(), "e0");
+		LrParse elp = LrParse.of(ebnf(), "e0");
 		System.out.println(elp.parse("1 * 2 + 3"));
 	}
 

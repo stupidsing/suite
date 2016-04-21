@@ -6,17 +6,15 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import suite.ebnf.lr.EbnfLrParse;
-
-public class EbnfLrParseTest {
+public class LrParseTest {
 
 	@Test
 	public void testAnd() throws IOException {
-		EbnfLrParse elp = EbnfLrParse.of("" //
+		LrParse lrParse = LrParse.of("" //
 				+ "<digit> ::= \"0\" \"1\"\n" //
 				, "<digit>");
 
-		assertNotNull(elp.parse("0 1"));
+		assertNotNull(lrParse.parse("0 1"));
 	}
 
 	@Test
@@ -31,85 +29,85 @@ public class EbnfLrParseTest {
 		}
 
 		System.out.println(sb.toString());
-		EbnfLrParse elp = EbnfLrParse.of(sb.toString(), e);
-		assertNotNull(elp.parse("0 op1 1"));
+		LrParse lrParse = LrParse.of(sb.toString(), e);
+		assertNotNull(lrParse.parse("0 op1 1"));
 	}
 
 	@Test
 	public void testEntity() throws IOException {
-		EbnfLrParse elp = EbnfLrParse.of("" //
+		LrParse lrParse = LrParse.of("" //
 				+ "<digit> ::= \"0\" | \"1\"\n" //
 				+ "<digit2> ::= <digit> <digit>\n" //
 				, "<digit2>");
 
-		assertNotNull(elp.parse("0 1"));
+		assertNotNull(lrParse.parse("0 1"));
 	}
 
 	@Test
 	public void testEof() throws IOException {
-		EbnfLrParse elp = EbnfLrParse.of("" //
+		LrParse lrParse = LrParse.of("" //
 				+ "<nil> ::= ()\n" //
 				, "<nil>");
 
-		assertNotNull(elp.parse(""));
+		assertNotNull(lrParse.parse(""));
 	}
 
 	@Test
 	public void testExpression0() throws IOException {
-		EbnfLrParse elp = EbnfLrParse.of("" //
+		LrParse lrParse = LrParse.of("" //
 				+ "<expression> ::= <number> | <number> \"+\" <expression>\n" //
 				+ "<number> ::= <digit> | <digit> <number>\n" //
 				+ "<digit> ::= \"1\" | \"2\" | \"3\"\n" //
 				, "<expression>");
 
-		System.out.println(elp.parse("1 + 2 + 3"));
+		System.out.println(lrParse.parse("1 + 2 + 3"));
 	}
 
 	@Test
 	public void testExpression1() throws IOException {
-		EbnfLrParse elp = EbnfLrParse.of("" //
+		LrParse lrParse = LrParse.of("" //
 				+ "<e> ::= <e> \"*\" <b> | <e> \"+\" <b> | <b>\n" //
 				+ "<b> ::= \"0\" | \"1\"\n" //
 				, "<e>");
 
-		System.out.println(elp.parse("0 * 0 + 1"));
+		System.out.println(lrParse.parse("0 * 0 + 1"));
 	}
 
 	@Test
 	public void testList() throws IOException {
-		EbnfLrParse elp = EbnfLrParse.of("" //
+		LrParse lrParse = LrParse.of("" //
 				+ "<list> ::= () | <list> \"0\"\n" //
 				, "<list>");
 
-		assertNotNull(elp.parse("0"));
+		assertNotNull(lrParse.parse("0"));
 	}
 
 	@Test
 	public void testOr() throws IOException {
-		EbnfLrParse elp = EbnfLrParse.of("" //
+		LrParse lrParse = LrParse.of("" //
 				+ "<digit> ::= \"0\" | \"1\"\n" //
 				, "<digit>");
 
-		assertNotNull(elp.parse("0"));
-		assertNotNull(elp.parse("1"));
+		assertNotNull(lrParse.parse("0"));
+		assertNotNull(lrParse.parse("1"));
 	}
 
 	@Test
 	public void testShiftReduceConflict() throws IOException {
-		EbnfLrParse elp = EbnfLrParse.of("" //
+		LrParse lrParse = LrParse.of("" //
 				+ "<list> ::= () | \"0\" <list>\n" //
 				, "<list>");
 
-		assertNotNull(elp.parse("0 0 0 0 0"));
+		assertNotNull(lrParse.parse("0 0 0 0 0"));
 	}
 
 	@Test
 	public void testToken() throws IOException {
-		EbnfLrParse elp = EbnfLrParse.of("" //
+		LrParse lrParse = LrParse.of("" //
 				+ "<digit> ::= \"0\"\n" //
 				, "<digit>");
 
-		assertNotNull(elp.parse("0"));
+		assertNotNull(lrParse.parse("0"));
 	}
 
 }

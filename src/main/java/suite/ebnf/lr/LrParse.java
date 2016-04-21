@@ -8,28 +8,28 @@ import java.util.Map;
 import suite.adt.Pair;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.EbnfGrammar;
-import suite.ebnf.lr.LrBuilder.Reduce;
-import suite.ebnf.lr.LrBuilder.State;
+import suite.ebnf.lr.BuildLr.Reduce;
+import suite.ebnf.lr.BuildLr.State;
 import suite.immutable.IList;
 import suite.parser.Lexer;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
-public class EbnfLrParse {
+public class LrParse {
 
 	private String rootEntity;
-	private LrBuilder lrBuilder;
+	private BuildLr lrBuilder;
 
-	public static EbnfLrParse of(String grammar, String rootEntity) {
+	public static LrParse of(String grammar, String rootEntity) {
 		try (StringReader reader = new StringReader(grammar)) {
-			return new EbnfLrParse(EbnfGrammar.parse(reader), rootEntity);
+			return new LrParse(EbnfGrammar.parse(reader), rootEntity);
 		}
 	}
 
-	public EbnfLrParse(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
+	public LrParse(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
 		this.rootEntity = rootEntity;
-		lrBuilder = new LrBuilder(grammarByEntity, rootEntity);
+		lrBuilder = new BuildLr(grammarByEntity, rootEntity);
 	}
 
 	public Ast check(String in) {

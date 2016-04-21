@@ -17,23 +17,23 @@ import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Fun;
 import suite.util.Util;
 
-public class LrBuilder {
+public class BuildLr {
 
 	private int counter;
 	private Map<String, EbnfGrammar> grammarByEntity;
 
-	private LookaheadReader lookaheadReader;
+	private ReadLookahead lookaheadReader;
 	private Map<Pair<String, Set<String>>, Transition> transitions = new HashMap<>();
 	private Set<Pair<Transition, Transition>> merges = new HashSet<>();
 
 	public final State state0;
 	public final Map<State, Transition> fsm = new HashMap<>();
 
-	private class BuildLr {
+	private class Blr {
 		private int nTokens;
 		private final Transition next;
 
-		private BuildLr(int nTokens, Transition next) {
+		private Blr(int nTokens, Transition next) {
 			this.nTokens = nTokens;
 			this.next = next;
 		}
@@ -121,14 +121,14 @@ public class LrBuilder {
 		}
 	}
 
-	public LrBuilder(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
+	public BuildLr(Map<String, EbnfGrammar> grammarByEntity, String rootEntity) {
 		this.grammarByEntity = grammarByEntity;
-		lookaheadReader = new LookaheadReader(grammarByEntity);
+		lookaheadReader = new ReadLookahead(grammarByEntity);
 		Transition nextx = kv("EOF", new State());
 		state0 = newState(buildLrs(rootEntity, nextx.keySet()).next);
 	}
 
-	public BuildLr buildLrs(String entity, Set<String> follows) {
+	public Blr buildLrs(String entity, Set<String> follows) {
 		Pair<String, Set<String>> k = Pair.of(entity, follows);
 		Set<Pair<String, Set<String>>> keys0 = new HashSet<>();
 		transitions.put(k, new Transition());
@@ -141,8 +141,8 @@ public class LrBuilder {
 				Transition next_ = transitions.get(pair);
 				Transition nextx_ = newTransition(pair.t1);
 
-				BuildLr buildLr1 = build(pair.t0, nextx_);
-				merges.add(Pair.of(next_, buildLr1.next));
+				Blr blr1 = build(pair.t0, nextx_);
+				merges.add(Pair.of(next_, blr1.next));
 				keys0.add(pair);
 			}
 		}
@@ -154,49 +154,49 @@ public class LrBuilder {
 				b |= merge.t0.putAll(merge.t1);
 		} while (b);
 
-		return new BuildLr(1, transitions.get(k));
+		return new Blr(1, transitions.get(k));
 	}
 
-	private BuildLr build(String entity, Transition nextx) {
+	private Blr build(String entity, Transition nextx) {
 		return build(IList.end(), grammarByEntity.get(entity), nextx);
 	}
 
-	private BuildLr build(IList<Pair<String, Set<String>>> ps, EbnfGrammar eg, Transition nextx) {
-		Fun<Streamlet2<String, Transition>, BuildLr> mergeAll = st2 -> {
-			Transition next = newTransition(lookaheadReader.readLookaheadSet(eg, nextx.keySet()));
+	private Blr build(IList<Pair<String, Set<String>>> ps, EbnfGrammar eg, Transition nextx) {
+		Fun<Streamlet2<String, Transition>, Blr> mergeAll = st2 -> {
+			Transition next = newTransition(lookaheadReader.readLookahead(eg, nextx.keySet()));
 			State state1 = newState(nextx);
 			st2.sink((egn, next1) -> {
 				next.put_(egn, Pair.of(state1, null));
 				merges.add(Pair.of(next, next1));
 			});
-			return new BuildLr(1, next);
+			return new Blr(1, next);
 		};
 
 		Pair<String, Set<String>> k;
-		BuildLr buildLr;
+		Blr blr;
 
 		switch (eg.type) {
 		case AND___:
 			if (!eg.children.isEmpty()) {
 				EbnfGrammar tail = new EbnfGrammar(EbnfGrammarType.AND___, Util.right(eg.children, 1));
-				BuildLr buildLr1 = build(ps, tail, nextx);
-				BuildLr buildLr0 = build(ps, eg.children.get(0), buildLr1.next);
-				buildLr = new BuildLr(buildLr0.nTokens + buildLr1.nTokens, buildLr0.next);
+				Blr blr1 = build(ps, tail, nextx);
+				Blr blr0 = build(ps, eg.children.get(0), blr1.next);
+				blr = new Blr(blr0.nTokens + blr1.nTokens, blr0.next);
 			} else
-				buildLr = new BuildLr(0, nextx);
+				blr = new Blr(0, nextx);
 			break;
 		case ENTITY:
 			k = Pair.of(eg.content, nextx.keySet());
 			Transition next1 = transitions.computeIfAbsent(k, k_ -> new Transition());
-			buildLr = mergeAll.apply(Read.from2(eg.content, next1));
+			blr = mergeAll.apply(Read.from2(eg.content, next1));
 			break;
 		case NAMED_:
 			Reduce reduce = new Reduce();
 			Transition next = newTransition(nextx.keySet(), Pair.of(null, reduce));
-			BuildLr buildLr1 = build(ps, eg.children.get(0), next);
-			reduce.n = buildLr1.nTokens;
+			Blr blr1 = build(ps, eg.children.get(0), next);
+			reduce.n = blr1.nTokens;
 			reduce.name = eg.content;
-			buildLr = new BuildLr(1, buildLr1.next);
+			blr = new Blr(1, blr1.next);
 			break;
 		case OR____:
 			List<Pair<String, Transition>> pairs = new ArrayList<>();
@@ -204,17 +204,17 @@ public class LrBuilder {
 				String egn = "OR." + System.identityHashCode(eg1);
 				pairs.add(Pair.of(egn, build(ps, new EbnfGrammar(EbnfGrammarType.NAMED_, egn, eg1), nextx).next));
 			}
-			buildLr = mergeAll.apply(Read.from2(pairs));
+			blr = mergeAll.apply(Read.from2(pairs));
 			break;
 		case STRING:
 			State state1 = newState(nextx);
-			buildLr = new BuildLr(1, kv(eg.content, state1));
+			blr = new Blr(1, kv(eg.content, state1));
 			break;
 		default:
 			throw new RuntimeException("LR parser cannot recognize " + eg.type);
 		}
 
-		return buildLr;
+		return blr;
 	}
 
 	private State newState(Transition nextx) {
