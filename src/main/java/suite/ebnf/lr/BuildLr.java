@@ -22,7 +22,7 @@ public class BuildLr {
 	private int counter;
 	private Map<String, Grammar> grammarByEntity;
 
-	private ReadLookahead lookaheadReader;
+	private ReadLookahead readLookahead;
 	private Map<Pair<String, Set<String>>, Transition> transitions = new HashMap<>();
 	private Set<Pair<Transition, Transition>> merges = new HashSet<>();
 
@@ -123,7 +123,7 @@ public class BuildLr {
 
 	public BuildLr(Map<String, Grammar> grammarByEntity, String rootEntity) {
 		this.grammarByEntity = grammarByEntity;
-		lookaheadReader = new ReadLookahead(grammarByEntity);
+		readLookahead = new ReadLookahead(grammarByEntity);
 		Transition nextx = kv("EOF", new State());
 		state0 = newState(buildLrs(rootEntity, nextx.keySet()).next);
 	}
@@ -163,7 +163,7 @@ public class BuildLr {
 
 	private Blr build(IList<Pair<String, Set<String>>> ps, Grammar eg, Transition nextx) {
 		Fun<Streamlet2<String, Transition>, Blr> mergeAll = st2 -> {
-			Transition next = newTransition(lookaheadReader.readLookahead(eg, nextx.keySet()));
+			Transition next = newTransition(readLookahead.readLookahead(eg, nextx.keySet()));
 			State state1 = newState(nextx);
 			st2.sink((egn, next1) -> {
 				next.put_(egn, Pair.of(state1, null));

@@ -19,7 +19,7 @@ import suite.util.Util;
 public class LrParse {
 
 	private String rootEntity;
-	private BuildLr lrBuilder;
+	private BuildLr buildLr;
 
 	public static LrParse of(String grammar, String rootEntity) {
 		try (StringReader reader = new StringReader(grammar)) {
@@ -29,7 +29,7 @@ public class LrParse {
 
 	public LrParse(Map<String, Grammar> grammarByEntity, String rootEntity) {
 		this.rootEntity = rootEntity;
-		lrBuilder = new BuildLr(grammarByEntity, rootEntity);
+		buildLr = new BuildLr(grammarByEntity, rootEntity);
 	}
 
 	public Ast check(String in) {
@@ -39,10 +39,10 @@ public class LrParse {
 	public Ast parse(String in) {
 		Source<Ast> source = Read.from(new Lexer(in).tokens()).map(token -> new Ast(token, 0)).source();
 
-		System.out.println("shifts/reduces = " + list(lrBuilder.fsm));
-		System.out.println("Initial state = " + lrBuilder.state0);
+		System.out.println("shifts/reduces = " + list(buildLr.fsm));
+		System.out.println("Initial state = " + buildLr.state0);
 
-		return parse(source, lrBuilder.state0);
+		return parse(source, buildLr.state0);
 	}
 
 	private Ast parse(Source<Ast> tokens, State state) {
@@ -81,7 +81,7 @@ public class LrParse {
 
 	private Pair<State, Reduce> shift(Deque<Pair<Ast, State>> stack, State state, String next) {
 		System.out.print("(S=" + state + ", Next=" + next + ", Stack=" + stack.size() + ")");
-		Pair<State, Reduce> sr = lrBuilder.fsm.get(state).get(next);
+		Pair<State, Reduce> sr = buildLr.fsm.get(state).get(next);
 		System.out.println(" => " + sr);
 		return sr;
 	}
