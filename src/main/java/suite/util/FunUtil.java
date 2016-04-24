@@ -2,6 +2,7 @@ package suite.util;
 
 import java.util.Iterator;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import suite.adt.Pair;
 import suite.os.LogUtil;
@@ -70,10 +71,10 @@ public class FunUtil {
 		};
 	}
 
-	public static <T> Source<T> filter(Fun<T, Boolean> fun, Source<T> source) {
+	public static <T> Source<T> filter(Predicate<T> fun, Source<T> source) {
 		return () -> {
 			T t = null;
-			while ((t = source.source()) != null && !fun.apply(t))
+			while ((t = source.source()) != null && !fun.test(t))
 				;
 			return t;
 		};
@@ -128,11 +129,11 @@ public class FunUtil {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static <T> Source<Source<T>> split(Source<T> source, Fun<T, Boolean> fun) {
+	public static <T> Source<Source<T>> split(Source<T> source, Predicate<T> fun) {
 		return new Source<Source<T>>() {
 			private T t = source.source();
 			private boolean isAvail = t != null;
-			private Source<T> source_ = () -> (isAvail = isAvail && (t = source.source()) != null) && !fun.apply(t) ? t : null;
+			private Source<T> source_ = () -> (isAvail = isAvail && (t = source.source()) != null) && !fun.test(t) ? t : null;
 
 			public Source<T> source() {
 				return isAvail ? cons(t, source_) : null;

@@ -20,20 +20,20 @@ public class SewingProverTest {
 
 		SewingProver sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
-		assertTrue(sp.compile(Suite.parse("yes")).apply(pc));
-		assertTrue(sp.compile(Suite.parse("fail; yes")).apply(pc));
-		assertTrue(sp.compile(Suite.parse("yes; yes")).apply(pc));
-		assertFalse(sp.compile(Suite.parse("yes, fail")).apply(pc));
+		assertTrue(sp.compile(Suite.parse("yes")).test(pc));
+		assertTrue(sp.compile(Suite.parse("fail; yes")).test(pc));
+		assertTrue(sp.compile(Suite.parse("yes; yes")).test(pc));
+		assertFalse(sp.compile(Suite.parse("yes, fail")).test(pc));
 
-		assertFalse(sp.compile(Suite.parse("!, fail; yes")).apply(pc));
+		assertFalse(sp.compile(Suite.parse("!, fail; yes")).test(pc));
 
-		assertTrue(sp.compile(new Generalizer().generalize(Suite.parse("(.v = 1; .v = 2), .v = 2"))).apply(pc));
-		assertFalse(sp.compile(new Generalizer().generalize(Suite.parse("once (.v = 1; .v = 2), .v = 2"))).apply(pc));
+		assertTrue(sp.compile(new Generalizer().generalize(Suite.parse("(.v = 1; .v = 2), .v = 2"))).test(pc));
+		assertFalse(sp.compile(new Generalizer().generalize(Suite.parse("once (.v = 1; .v = 2), .v = 2"))).test(pc));
 
-		assertFalse(sp.compile(Suite.parse("not yes")).apply(pc));
-		assertTrue(sp.compile(Suite.parse("not fail")).apply(pc));
+		assertFalse(sp.compile(Suite.parse("not yes")).test(pc));
+		assertTrue(sp.compile(Suite.parse("not fail")).test(pc));
 
-		assertTrue(sp.compile(new Generalizer().generalize(Suite.parse(".p = yes, .p"))).apply(pc));
+		assertTrue(sp.compile(new Generalizer().generalize(Suite.parse(".p = yes, .p"))).test(pc));
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class SewingProverTest {
 
 		SewingProver sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
-		assertTrue(sp.compile(new Generalizer().generalize(Suite.parse("r .c"))).apply(pc));
+		assertTrue(sp.compile(new Generalizer().generalize(Suite.parse("r .c"))).test(pc));
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class SewingProverTest {
 
 		SewingProver sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
-		assertTrue(sp.compile(Suite.parse("a")).apply(pc));
+		assertTrue(sp.compile(Suite.parse("a")).test(pc));
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class SewingProverTest {
 
 		SewingProver sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
-		assertTrue(sp.compile(Suite.parse("a")).apply(pc));
+		assertTrue(sp.compile(Suite.parse("a")).test(pc));
 	}
 
 	@Test
@@ -77,10 +77,10 @@ public class SewingProverTest {
 		RuleSet rs = Suite.createRuleSet();
 		SewingProver sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
-		assertTrue(sp.compile(Suite.parse("if () () fail")).apply(pc));
-		assertFalse(sp.compile(Suite.parse("if () fail ()")).apply(pc));
-		assertTrue(sp.compile(Suite.parse("if fail fail ()")).apply(pc));
-		assertFalse(sp.compile(Suite.parse("if fail () fail")).apply(pc));
+		assertTrue(sp.compile(Suite.parse("if () () fail")).test(pc));
+		assertFalse(sp.compile(Suite.parse("if () fail ()")).test(pc));
+		assertTrue(sp.compile(Suite.parse("if fail fail ()")).test(pc));
+		assertFalse(sp.compile(Suite.parse("if fail () fail")).test(pc));
 	}
 
 }

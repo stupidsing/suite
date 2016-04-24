@@ -92,11 +92,11 @@ public class PredicateUtil {
 		return (prover, t) -> pred.prove(prover, TreeUtil.getElements(t, TreeUtil.getNumberOfElements(t)));
 	}
 
-	public static boolean tryProve(Prover prover, Fun<Prover, Boolean> source) {
+	public static boolean tryProve(Prover prover, Predicate<Prover> source) {
 		Prover prover1 = new Prover(prover);
 		boolean result = false;
 		try {
-			result = source.apply(prover1);
+			result = source.test(prover1);
 		} finally {
 			if (!result) // Roll back bindings if overall goal is failed
 				prover1.unwindAll();

@@ -97,7 +97,7 @@ public class Streamlet<T> implements Iterable<T> {
 		return Util.clazz(object) == Streamlet.class ? Objects.equals(spawn(), ((Streamlet<?>) object).spawn()) : false;
 	}
 
-	public Streamlet<T> filter(Fun<T, Boolean> fun) {
+	public Streamlet<T> filter(Predicate<T> fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
@@ -156,6 +156,10 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public Outlet<T> outlet() {
 		return spawn();
+	}
+
+	public Pair<Streamlet<T>, Streamlet<T>> partition(Predicate<T> pred) {
+		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
 	}
 
 	public Streamlet<T> reverse() {

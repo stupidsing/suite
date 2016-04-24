@@ -1,5 +1,7 @@
 package suite.lp.search;
 
+import java.util.function.Predicate;
+
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
@@ -28,13 +30,13 @@ public class SewingProverBuilder implements Builder {
 
 		return goal -> {
 			Node goal1 = SewingGeneralizerImpl.generalize(goal);
-			Fun<ProverConfig, Boolean> fun = sewingProver.compile(goal1);
+			Predicate<ProverConfig> pred = sewingProver.compile(goal1);
 
 			return (source, sink) -> {
 				ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
 				proverConfig1.setSource(source);
 				proverConfig1.setSink(sink);
-				fun.apply(proverConfig1);
+				pred.test(proverConfig1);
 			};
 		};
 	}

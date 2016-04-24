@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import suite.Suite;
 import suite.adt.ListMultimap;
@@ -162,7 +163,7 @@ public class SewingProverImpl implements SewingProver {
 			throw new RuntimeException("Must not contain wild rules");
 	}
 
-	public Fun<ProverConfig, Boolean> compile(Node node) {
+	public Predicate<ProverConfig> compile(Node node) {
 		Trampoline tr = cutBegin(compile0(passThru, node));
 
 		return pc -> {

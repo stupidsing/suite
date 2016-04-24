@@ -1,11 +1,12 @@
 package suite.lp.sewing;
 
+import java.util.function.Predicate;
+
 import suite.lp.Configuration.ProverConfig;
 import suite.node.Node;
-import suite.util.FunUtil.Fun;
 
 public interface SewingProver {
 
-	public Fun<ProverConfig, Boolean> compile(Node node);
+	public Predicate<ProverConfig> compile(Node node);
 
 }

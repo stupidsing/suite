@@ -237,7 +237,7 @@ public class Outlet<T> implements Iterable<T> {
 			return null;
 	}
 
-	public Outlet<T> filter(Fun<T, Boolean> fun) {
+	public Outlet<T> filter(Predicate<T> fun) {
 		return from(FunUtil.filter(fun, source));
 	}
 
@@ -269,7 +269,7 @@ public class Outlet<T> implements Iterable<T> {
 		return from(Util.sort(toList(), comparator));
 	}
 
-	public Outlet<Outlet<T>> split(Fun<T, Boolean> fun) {
+	public Outlet<Outlet<T>> split(Predicate<T> fun) {
 		return from(FunUtil.map(Outlet<T>::new, FunUtil.split(source, fun)));
 	}
 

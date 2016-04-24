@@ -3,6 +3,7 @@ package suite.sample;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 
 import suite.Suite;
 import suite.adt.Pair;
@@ -127,7 +128,7 @@ public class Chr {
 
 		Fun<State, Streamlet<State>> fun = state -> {
 			ISet<Node> facts = getFacts(state, prototype);
-			Fun<Node, Boolean> bindFun = bindFun(trail, if_);
+			Predicate<Node> bindFun = bindFun(trail, if_);
 			return facts.stream().filter(bindFun).map(node -> setFacts(state, prototype, facts.remove(node)));
 		};
 
@@ -139,8 +140,8 @@ public class Chr {
 
 		return states.concatMap(state -> {
 			ISet<Node> facts = getFacts(state, prototype);
-			Fun<Node, Boolean> bindFun = bindFun(trail, given);
-			return facts.stream().map(bindFun).isAny(b -> b) ? Read.from(state) : Read.empty();
+			Predicate<Node> bindFun = bindFun(trail, given);
+			return facts.stream().isAny(bindFun) ? Read.from(state) : Read.empty();
 		});
 	}
 
@@ -182,7 +183,7 @@ public class Chr {
 		return states.filter(state -> prover.prove(when));
 	}
 
-	private Fun<Node, Boolean> bindFun(Trail trail, Node node0) {
+	private Predicate<Node> bindFun(Trail trail, Node node0) {
 		int pit = trail.getPointInTime();
 
 		return node1 -> {
