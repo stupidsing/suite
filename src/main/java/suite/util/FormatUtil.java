@@ -5,7 +5,8 @@ import java.util.Locale;
 
 public class FormatUtil {
 
-	public static DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+	public static DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
+	public static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 
 	public static String leftTrim(String s) {
 		int pos = 0;

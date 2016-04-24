@@ -183,7 +183,7 @@ public class To {
 
 	public static String string(long time) {
 		LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
-		return dateTime.format(FormatUtil.fmt);
+		return dateTime.format(FormatUtil.dateFormat);
 	}
 
 	public static String string(InputStream in) throws IOException {
