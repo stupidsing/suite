@@ -32,6 +32,11 @@ public class FileUtil {
 		return Read.from(() -> Rethrow.ioException(() -> Files.walk(path).filter(p -> Files.isRegularFile(p)).iterator()));
 	}
 
+	public static String getFileExtension(Path path) {
+		String filename = path.toString();
+		return filename.substring(filename.lastIndexOf('.') + 1);
+	}
+
 	public static int getPid() {
 		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
 

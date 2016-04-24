@@ -15,7 +15,6 @@ public class FileUtil {
 
 	public static void copyFile(File from, File to) {
 		try (OutputStream fos = new FileOutputStream(to)) {
-			// new FileOutputStream(f2, true); // Append
 			Copy.stream(new FileInputStream(from), fos);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
