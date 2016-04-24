@@ -78,8 +78,12 @@ public class FileUtil {
 	public static void mkdir(Path path) {
 		if (path != null) {
 			mkdir(path.getParent());
-			if (!Files.exists(path))
-				mkdir(path);
+			if (!Files.isDirectory(path))
+				try {
+					Files.createDirectories(path);
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
 		}
 	}
 
@@ -94,10 +98,7 @@ public class FileUtil {
 	}
 
 	public static OutputStream out(String filename) throws IOException {
-		Path parentFile = Paths.get(filename).getParent();
-		if (parentFile != null && !Files.isDirectory(parentFile))
-			Files.createDirectories(parentFile);
-
+		mkdir(Paths.get(filename).getParent());
 		String filename1 = filename + ".new";
 
 		return new FileOutputStream(filename1) {
