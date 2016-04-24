@@ -19,6 +19,7 @@ import suite.adt.Pair;
 import suite.os.FileUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
 import suite.util.Rethrow;
 
@@ -26,6 +27,10 @@ public class Read {
 
 	public static <T> Streamlet<T> empty() {
 		return Streamlet.from(FunUtil.nullSource());
+	}
+
+	public static <K, V> Streamlet2<K, V> empty2() {
+		return Streamlet2.from(FunUtil2.nullSource());
 	}
 
 	@SafeVarargs
