@@ -31,10 +31,12 @@ public class FileUtil {
 	public static String tmp = "/tmp";
 	public static Charset charset = StandardCharsets.UTF_8;
 
-	public static void copyFile(File from, File to) throws IOException {
+	public static void copyFile(File from, File to) {
 		try (OutputStream fos = new FileOutputStream(to)) {
 			// new FileOutputStream(f2, true); // Append
 			Copy.stream(new FileInputStream(from), fos);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -87,7 +89,7 @@ public class FileUtil {
 		}
 	}
 
-	public static void moveFile(File from, File to) throws IOException {
+	public static void moveFile(File from, File to) {
 
 		// Serious problem that renameTo do not work across partitions in Linux!
 		// We fall back to copy the file if renameTo() failed.
