@@ -3,8 +3,6 @@ package suite.os;
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,22 +21,12 @@ import java.util.zip.ZipFile;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Copy;
 import suite.util.Rethrow;
 
 public class FileUtil {
 
 	public static String tmp = "/tmp";
 	public static Charset charset = StandardCharsets.UTF_8;
-
-	public static void copyFile(File from, File to) {
-		try (OutputStream fos = new FileOutputStream(to)) {
-			// new FileOutputStream(f2, true); // Append
-			Copy.stream(new FileInputStream(from), fos);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
 
 	public static Streamlet<Path> findPaths(Path path) {
 		return Read.from(() -> Rethrow.ioException(() -> Files.walk(path).filter(p -> Files.isRegularFile(p)).iterator()));
@@ -86,16 +74,6 @@ public class FileUtil {
 				} catch (IOException ex) {
 					throw new RuntimeException(ex);
 				}
-		}
-	}
-
-	public static void moveFile(File from, File to) {
-
-		// Serious problem that renameTo do not work across partitions in Linux!
-		// We fall back to copy the file if renameTo() failed.
-		if (!from.renameTo(to)) {
-			copyFile(from, to);
-			from.delete();
 		}
 	}
 
