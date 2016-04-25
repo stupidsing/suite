@@ -96,6 +96,10 @@ public class Read {
 		return new Outlet<>(() -> Rethrow.ioException(() -> br.readLine())).closeAtEnd(br);
 	}
 
+	public static Streamlet<Integer> range(int e) {
+		return range(0, e);
+	}
+
 	public static Streamlet<Integer> range(int s, int e) {
 		return new Streamlet<Integer>(() -> {
 			int i[] = new int[] { s };
