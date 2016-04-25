@@ -31,6 +31,7 @@ public class DependencyMain extends ExecutableProgram {
 			, "bochs" //
 			, "build-essential" //
 			, "cifs-utils" //
+			, "chromium" //
 			, "compizconfig-settings-manager" //
 			, "compiz-plugins" //
 			, "deborphan" //
@@ -49,10 +50,10 @@ public class DependencyMain extends ExecutableProgram {
 			, "gnugo" //
 			, "gnumeric" //
 			, "golang" //
-			, "google-chrome-stable" //
 			, "gparted" //
 			, "gpicview" //
 			, "grub-pc" //
+			, "imagemagick" //
 			, "leafpad" //
 			, "less" //
 			, "libreadline-dev" //
@@ -80,8 +81,6 @@ public class DependencyMain extends ExecutableProgram {
 			, "tilda" //
 			, "tint2" //
 			, "torcs" //
-			, "ttf-dejavu" //
-			, "ttf-wqy-zenhei" //
 			, "unetbootin" //
 			, "unzip" //
 			, "usbutils" // lsusb
@@ -100,14 +99,8 @@ public class DependencyMain extends ExecutableProgram {
 	);
 
 	private List<String> debianList = Arrays.asList( //
-			"icedove" //
-			, "iceweasel" //
-	);
-
-	@SuppressWarnings("unused")
-	private List<String> ubuntuList = Arrays.asList( //
-			"firefox" //
-			, "thunderbird" //
+			"icedove" // firefox
+			, "iceweasel" // thunderbird
 	);
 
 	// Not a must, but good to have
