@@ -13,7 +13,6 @@ import java.util.Set;
 import suite.debian.AptUtil.Repo;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.Rethrow;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
@@ -141,14 +140,15 @@ public class DependencyMain extends ExecutableProgram {
 				.filter(m -> m.getName().startsWith("list") && m.getParameters().length == 0) //
 				.sink(m -> {
 					System.out.println(m.getName() + "()");
-					Rethrow.ex(() -> m.invoke(this, new Object[] {}));
+					for (Object object : Rethrow.ex(() -> (List<?>) m.invoke(this, new Object[] {})))
+						System.out.println(object);
 					System.out.println();
 					System.out.println();
 				});
 		return true;
 	}
 
-	public void listDependeesOfDkms() {
+	public List<String> listDependeesOfDkms() {
 		Repo repo = new Repo("http://mirrors.kernel.org/ubuntu" //
 				, "utopic" //
 				, "main" //
@@ -159,33 +159,30 @@ public class DependencyMain extends ExecutableProgram {
 		packages = Rethrow.ioException(() -> aptUtil.readRepoPackages(repo));
 		Set<String> required = new HashSet<>(Arrays.asList(packageName));
 		Set<String> required1 = dpkgUtil.getDependingSet(packages, required);
-		Read.from(required1) //
+		return Read.from(required1) //
 				.map(packageName_ -> aptUtil.getDownloadUrl(repo, packages, packageName_)) //
 				.sort(Util.comparator()) //
-				.forEach(System.out::println);
+				.toList();
 	}
 
-	public void listManuallyInstalled() {
-		Streamlet<String> readManuallyInstalled = aptUtil.readManuallyInstalled();
-		readManuallyInstalled //
-				.forEach(System.out::println);
+	public List<String> listManuallyInstalled() {
+		return aptUtil.readManuallyInstalled().toList();
 	}
 
-	public void listUndependedPackages() {
+	public List<String> listUndependedPackages() {
 		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
 		Map<String, List<String>> dependees = dpkgUtil.getDependers(packages);
 
-		Read.from(packages) //
+		return Read.from(packages) //
 				.filter(pm -> !isEssential(pm)) //
 				.map(pm -> pm.get("Package")) //
 				.filter(packageName -> !dependees.containsKey(packageName)) //
 				.filter(packageName -> !requiredList.contains(packageName)) //
 				.sort(Util.comparator()) //
-				.toList() //
-				.forEach(System.out::println);
+				.toList();
 	}
 
-	public void listUnusedPackages() {
+	public List<String> listUnusedPackages() {
 		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
 		Set<String> required = new HashSet<>(requiredList);
 
@@ -196,27 +193,23 @@ public class DependencyMain extends ExecutableProgram {
 
 		Set<String> required1 = dpkgUtil.getDependingSet(packages, required);
 
-		List<String> unusedPackageNames = Read.from(packages) //
+		return Read.from(packages) //
 				.map(pm -> pm.get("Package")) //
 				.filter(packageName -> !required1.contains(packageName)) //
 				.sort(Util.comparator()) //
 				.toList();
-
-		unusedPackageNames.forEach(System.out::println);
 	}
 
-	public void listUnusedFiles() {
+	public List<String> listUnusedFiles() {
 		Set<String> files = Read.from(dpkgUtil.readInstalledPackages()) //
 				.concatMap(dpkgUtil::readFileList) //
 				.toSet();
 
-		List<String> unusedFiles = Read.from("/etc", "/usr") //
+		return Read.from("/etc", "/usr") //
 				.concatMap(p -> FileUtil.findPaths(Paths.get(p))) //
 				.map(Path::toString) //
 				.filter(p -> !files.contains(p)) //
 				.toList();
-
-		unusedFiles.forEach(System.out::println);
 	}
 
 	private boolean isEssential(Map<String, String> pm) {
