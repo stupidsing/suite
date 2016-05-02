@@ -147,12 +147,12 @@ var frp = function() {
 			arrowy: keyupsignal.append(kbdownsignal), // .fold((a, b) => a + b, 0).last();
 			keypressed: keypressed,
 		},
-		motionsignal: motionsignal,
+		motion: motionsignal,
 		mouse: {
 			click: mouseclicksignal,
 			move: mousemovesignal,
 		},
-		orientationsignal: orientationsignal,
+		orientation: orientationsignal,
 		tick: timeout => {
 			var signal_ = signal();
 			var tick = () => {
