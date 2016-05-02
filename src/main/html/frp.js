@@ -143,10 +143,6 @@ var frp = function() {
 			return signal_;
 		},
 		kb: {
-			arrowdown: keydown,
-			arrowleft: keyleft,
-			arrowright: keyright,
-			arrowup: keyup,
 			arrowx: keyleft.append(keyright), // .fold((a, b) => a + b, 0).last();
 			arrowy: keyup.append(keydown), // .fold((a, b) => a + b, 0).last();
 			keypressed: keypressed,
