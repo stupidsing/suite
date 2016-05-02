@@ -72,20 +72,20 @@ var frp = function() {
 		};
 	};
 
-	var kbkeys = {};
-	var mouseclick = signal();
-	var mousemove = signal();
-	var motion = signal();
-	var orientation = signal();
+	var kbkeysignals = {};
+	var mouseclicksignal = signal();
+	var mousemovesignal = signal();
+	var motionsignal = signal();
+	var orientationsignal = signal();
 
-	var pressed_ = (e, down) => {
-		var signal = kbkeys[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
+	var kbpressed_ = (e, down) => {
+		var signal = kbkeysignals[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
 		if (signal) signal.fire(down);
 	};
 
-	document.onkeydown = e => pressed_(e, true);
-	document.onkeyup = e => pressed_(e, false);
-	document.onmousedown = e => mouseclick.fire(true);
+	document.onkbdownsignal = e => kbpressed_(e, true);
+	document.onkeyupsignal = e => kbpressed_(e, false);
+	document.onmousedown = e => mouseclicksignal.fire(true);
 	document.onmousemove = e => {
 		var e1 = (!e) ? window.event : e;
 		var x;
@@ -97,13 +97,13 @@ var frp = function() {
 			x = e1.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
 			y = e1.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 		}
-		mousemove.fire({ x: x, y: y });
+		mousemovesignal.fire({ x: x, y: y });
 	};
-	document.onmouseup = e => mouseclick.fire(false);
+	document.onmouseup = e => mouseclicksignal.fire(false);
 
 	if (window.DeviceMotionEvent)
 		window.addEventListener("devicemotion", e => {
-			motion.fire({
+			motionsignal.fire({
 				a: e.acceleration,
 				aig: e.accelerationIncludingGravity,
 				rr: e.rotationRate,
@@ -114,7 +114,7 @@ var frp = function() {
 
 	if (window.DeviceOrientationEvent)
 		window.addEventListener("deviceorientation", e => {
-			orientation.fire({
+			orientationsignal.fire({
 				lr: e.gamma, // the left-to-right tilt in degrees, where right is positive
 				fb: e.beta, // the front-to-back tilt in degrees, where front is positive
 				dir: e.alpha, // the compass direction the device is facing in degrees
@@ -124,13 +124,13 @@ var frp = function() {
 
 	var keypressed = keycode => {
 		var signal_;
-		if (!(signal_ = kbkeys[keycode])) signal_ = kbkeys[keycode] = signal();
+		if (!(signal_ = kbkeysignals[keycode])) signal_ = kbkeysignals[keycode] = signal();
 		return signal_;
 	};
-	var keydown = keypressed(40).map(d => d ? 1 : 0);
-	var keyleft = keypressed(37).map(d => d ? -1 : 0);
-	var keyright = keypressed(39).map(d => d ? 1 : 0);
-	var keyup = keypressed(38).map(d => d ? -1 : 0);
+	var kbdownsignal = keypressed(40).map(d => d ? 1 : 0);
+	var kbleftsignal = keypressed(37).map(d => d ? -1 : 0);
+	var keyrightsignal = keypressed(39).map(d => d ? 1 : 0);
+	var keyupsignal = keypressed(38).map(d => d ? -1 : 0);
 
 	return {
 		animframe: () => {
@@ -143,16 +143,16 @@ var frp = function() {
 			return signal_;
 		},
 		kb: {
-			arrowx: keyleft.append(keyright), // .fold((a, b) => a + b, 0).last();
-			arrowy: keyup.append(keydown), // .fold((a, b) => a + b, 0).last();
+			arrowx: kbleftsignal.append(keyrightsignal), // .fold((a, b) => a + b, 0).last();
+			arrowy: keyupsignal.append(kbdownsignal), // .fold((a, b) => a + b, 0).last();
 			keypressed: keypressed,
 		},
-		motion: motion,
+		motionsignal: motionsignal,
 		mouse: {
-			click: mouseclick,
-			move: mousemove,
+			click: mouseclicksignal,
+			move: mousemovesignal,
 		},
-		orientation: orientation,
+		orientationsignal: orientationsignal,
 		tick: timeout => {
 			var signal_ = signal();
 			var tick = () => {
