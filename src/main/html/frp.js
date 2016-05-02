@@ -147,9 +147,9 @@ var frp = function() {
 			arrowleft: keyleft,
 			arrowright: keyright,
 			arrowup: keyup,
-			keypressed: keypressed,
 			arrowx: keyleft.append(keyright), // .fold((a, b) => a + b, 0).last();
 			arrowy: keyup.append(keydown), // .fold((a, b) => a + b, 0).last();
+			keypressed: keypressed,
 		},
 		motion: motion,
 		mouse: {
