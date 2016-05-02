@@ -127,8 +127,8 @@ var frp = function() {
 		if (!(signal_ = kbkeysignals[keycode])) signal_ = kbkeysignals[keycode] = signal();
 		return signal_;
 	};
-	var kbdownsignal = keypressed(40).map(d => d ? 1 : 0);
-	var kbleftsignal = keypressed(37).map(d => d ? -1 : 0);
+	var keydownsignal = keypressed(40).map(d => d ? 1 : 0);
+	var keyleftsignal = keypressed(37).map(d => d ? -1 : 0);
 	var keyrightsignal = keypressed(39).map(d => d ? 1 : 0);
 	var keyupsignal = keypressed(38).map(d => d ? -1 : 0);
 
@@ -143,8 +143,8 @@ var frp = function() {
 			return signal_;
 		},
 		kb: {
-			arrowx: kbleftsignal.append(keyrightsignal), // .fold((a, b) => a + b, 0).last();
-			arrowy: keyupsignal.append(kbdownsignal), // .fold((a, b) => a + b, 0).last();
+			arrowx: keyleftsignal.append(keyrightsignal), // .fold((a, b) => a + b, 0).last();
+			arrowy: keyupsignal.append(keydownsignal), // .fold((a, b) => a + b, 0).last();
 			keypressed: keypressed,
 		},
 		motion: motionsignal,
