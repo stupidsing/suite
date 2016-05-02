@@ -24,8 +24,8 @@
 		var centrex = width / 2, centrey = height / 2;
 		var radius = 250;
 
-		var frame = frpanimframe();
-		var fire = frpkbpressed(32).resample(frame).last();
+		var frame = frp.animframe();
+		var fire = frp.kb.keypressed(32).resample(frame).last();
 
 		var background = {
 			move: function() {

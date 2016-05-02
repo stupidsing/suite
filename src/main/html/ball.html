@@ -32,9 +32,9 @@
 		canvas.width = width;
 		canvas.height = height;
 
-		var frame = frpanimframe();
-		var fx = frpkbarrowx.resample(frame).last();
-		var fy = frpkbarrowy.resample(frame).last();
+		var frame = frp.animframe();
+		var fx = frp.kb.arrowx.resample(frame).last();
+		var fy = frp.kb.arrowy.resample(frame).last();
 
 		var background = {
 			move: () => [background],
@@ -90,8 +90,8 @@
 		var ballx0 = Math.floor(width * Math.random()), bally0 = Math.floor(height * Math.random());
 		var objects = [background, ball_(ballx0, bally0)];
 
-		var clicks = frpmousemove
-			.resample(frpmousebutton.filter(mb => mb))
+		var clicks = frp.mouse.move
+			.resample(frp.mouse.click.filter(mb => mb))
 			.map(xy => { return { x: xy.x - canvas.offsetLeft, y: xy.y - canvas.offsetTop, }; })
 			.read();
 
@@ -109,7 +109,7 @@
 			read(objects).foreach(object => object.draw(context));
 		});
 
-		frpmousemove.register(d => log("mouse " + d.x + "," + d.y));
+		frp.mouse.move.register(d => log("mouse " + d.x + "," + d.y));
 	</script>
 
 </html>
