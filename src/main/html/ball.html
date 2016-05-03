@@ -87,7 +87,8 @@
 			return ball;
 		};
 
-		var ballx0 = Math.floor(width * Math.random()), bally0 = Math.floor(height * Math.random());
+		var ballx0 = Math.floor(width * Math.random());
+		var bally0 = Math.floor(height * Math.random());
 		var objects = [background, ball_(ballx0, bally0)];
 
 		var clicks = frp.mouse.move
