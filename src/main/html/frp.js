@@ -83,8 +83,8 @@ var frp = function() {
 		if (signal) signal.fire(down);
 	};
 
-	document.onkbdownsignal = e => kbpressed_(e, true);
-	document.onkeyupsignal = e => kbpressed_(e, false);
+	document.onkeydown = e => kbpressed_(e, true);
+	document.onkeyup = e => kbpressed_(e, false);
 	document.onmousedown = e => mouseclicksignal.fire(true);
 	document.onmousemove = e => {
 		var e1 = (!e) ? window.event : e;
