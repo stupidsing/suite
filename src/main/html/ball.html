@@ -6,10 +6,6 @@
 			<!-- style="position:fixed; left:10px; top:10px;" -->
 			Your browser does not support HTML5 canvas.
 		</canvas>
-
-		<textarea id="log" rows="10" cols="80">
-			== START ==
-		</textarea>
 	</body>
 
 	<script src="frp.js"></script>
@@ -17,13 +13,6 @@
 
 	<script type="text/javascript">
 		"use strict";
-
-		var log = m => {
-			var text = document.getElementById("log").value + m + "\n";
-			if (256 < text.length) text = text.substring(text.length - 256, text.length);
-			document.getElementById("log").value = text;
-			// alert(m);
-		};
 
 		var width = window.innerWidth;
 		var height = window.innerHeight;
@@ -110,7 +99,7 @@
 			read(objects).foreach(object => object.draw(context));
 		});
 
-		frp.mouse.move.register(d => log("mouse " + d.x + "," + d.y));
+		frp.mouse.move.register(d => console.log("mouse " + d.x + "," + d.y));
 	</script>
 
 </html>
