@@ -71,6 +71,10 @@ ic-rewrite (OFFSET .offset0 .pointer0) (OFFSET .offset1 .pointer1) (.offset0 .of
 #
 ic-rewrite (POST-ADD-NUMBER .var0 .i) (POST-ADD-NUMBER .var1 .i) (.var0 .var1, .ts)/.ts
 #
+ic-rewrite (PRAGMA .pragma0 .do0) (PRAGMA .pragma1 .do1) .ts0/.tsx
+	:- ic-rewrite-pragma .pragma0 .pragma1 .ts0/.ts1
+	, .ts1 = (.do0 .do1, .tsx)
+#
 ic-rewrite (PRE-ADD-NUMBER .var0 .i) (PRE-ADD-NUMBER .var1 .i) (.var0 .var1, .ts)/.ts
 #
 ic-rewrite (REF .var0) (REF .var1) (.var0 .var1, .ts)/.ts
@@ -106,6 +110,9 @@ ic-rewrite-method-parameter .mp0 .mp1
 ic-rewrite-method-parameter .mps0 .mps1
 	:- .mps0 = MPS .var .size
 	, .mps1 = MPS .var .size
+#
+
+ic-rewrite-pragma NEW NEW .ts/.ts
 #
 
 ic-rewrite-type BOOLEAN BOOLEAN
