@@ -1,4 +1,5 @@
-() :- import.path "ic/ic-compile.sl"
+() :- import.path "ic/ic-bind.sl"
+	, import.path "ic/ic-compile.sl"
 	, import.path "ic/ic-erase-type.sl"
 	, import.path "ic/ic-erase-variable.sl"
 	, import.path "ic/ic-infer-type.sl"

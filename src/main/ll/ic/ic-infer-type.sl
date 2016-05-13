@@ -83,6 +83,18 @@ ic-infer-type0 .vs (OFFSET .offset .pointer) (POINTER-OF .type)
 ic-infer-type0 .vs (POST-ADD-NUMBER .pointer _) I32
 	:- ic-infer-type .vs .pointer I32
 #
+ic-infer-type0 _ (PRAGMA TYPE-SKIP-CHECK _) _
+	:- !
+#
+ic-infer-type0 .vs (PRAGMA (TYPE-VERIFY .var .varType) .do) .type
+	:- !
+	, graph.generalize .varType .varType1
+	, ic-infer-type .vs .var .varType1
+	, ic-infer-type .vs .do .type
+#
+ic-infer-type0 .vs (PRAGMA _ .do) .type
+	:- ic-infer-type .vs .do .type
+#
 ic-infer-type0 .vs (PRE-ADD-NUMBER .pointer _) I32
 	:- ic-infer-type .vs .pointer I32
 #

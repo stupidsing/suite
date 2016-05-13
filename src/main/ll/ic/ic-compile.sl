@@ -101,6 +101,9 @@ ic-compile-register0 (METHOD0 _ .do) .e0/.ex
 ic-compile-register0 NOP .e0/.ex
 	:- .e0 = (_ R+, .ex)
 #
+ic-compile-register0 (PRAGMA _ .do) .e0/.ex
+	:- ic-compile-register .do .e0/.ex
+#
 ic-compile-register0 (POST-ADD-NUMBER .memory .i) .e0/.ex
 	:- ic-compile-memory .memory .e0/.e1 4 .pointer
 	, ic-compile-register .pointer .e1/.e2

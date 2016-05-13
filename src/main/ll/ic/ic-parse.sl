@@ -51,6 +51,14 @@ ic-parse (if .if then .then else .else) (IF .if1 .then1 .else1)
 	, ic-parse .then .then1
 	, ic-parse .else .else1
 #
+ic-parse (if-bind (.v0 := .v1) then .then else .else) .parsed
+	:- !
+	, ic-parse .v0 .vp0
+	, ic-parse .v1 .vp1
+	, ic-parse .then .thenp
+	, ic-parse .else .elsep
+	, ic-bind .vp0 .vp1 .thenp .elsep .parsed
+#
 ic-parse .array/:.index (INDEX _ .array1 .index1)
 	:- ic-parse .array .array1
 	, ic-parse .index .index1
@@ -90,6 +98,12 @@ ic-parse .pointer/* (OBJECT _ .pointer1)
 ic-parse (.pointer +offset .offset) (OFFSET .offset1 .pointer1)
 	:- ic-parse .pointer .pointer1
 	, ic-parse .offset .offset1
+#
+ic-parse .v (PRAGMA NEW (VAR .nv))
+	:- to.string .v "_", temp .nv
+#
+ic-parse .v (PRAGMA NEW (VAR .nv))
+	:- ic-parse-bind-variable .v .nv
 #
 ic-parse (& .var) (REF .var1)
 	:- ic-parse .var .var1
@@ -248,4 +262,9 @@ ic-parse-type :.typeVar .typeVar
 #
 ic-parse-type .t _
 	:- ic-error "Unknown type" .t
+#
+
+ic-parse-bind-variable .v .vd
+	:- is.atom .v, to.string .v .s0, substring .s0 0 1 "$"
+	, !, substring .s0 1 0 .s1, to.atom .s1 .vd
 #

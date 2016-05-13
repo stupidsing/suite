@@ -18,6 +18,13 @@ public class ImperativeCompilerTest {
 	}
 
 	@Test
+	public void testBind() {
+		Bytes bytes = imperativeCompiler.compile(0, "if-bind (1 := $a) then a else 0");
+		assertNotNull(bytes);
+		System.out.println(bytes);
+	}
+
+	@Test
 	public void testDataStructure() {
 		String s = "" //
 				+ "constant p = fix :p struct ( | pointer::p +next);" //

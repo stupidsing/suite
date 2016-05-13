@@ -114,6 +114,13 @@ ic-rewrite-method-parameter .mps0 .mps1
 
 ic-rewrite-pragma NEW NEW .ts/.ts
 #
+ic-rewrite-pragma TYPE-SKIP-CHECK TYPE-SKIP-CHECK .ts/.ts
+#
+ic-rewrite-pragma (TYPE-VERIFY .v0 .type0) (TYPE-VERIFY .v1 .type1) .ts0/.tsx
+	:- ic-rewrite .v0 .v1 .ts0/.tsx
+	, ic-rewrite-type .type0 .type1
+	, !
+#
 
 ic-rewrite-type BOOLEAN BOOLEAN
 #
