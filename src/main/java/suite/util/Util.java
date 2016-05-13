@@ -200,6 +200,10 @@ public class Util {
 		return list.subList(0, Math.min(pos, size));
 	}
 
+	public static <T extends Comparable<? super T>> T min(T t0, T t1) {
+		return compare(t0, t1) < 0 ? t0 : t1;
+	}
+
 	public static <T> T[] newArray(Class<T> clazz, int dim) {
 		@SuppressWarnings("unchecked")
 		T[] ts = (T[]) Array.newInstance(clazz, dim);

@@ -47,6 +47,10 @@ public class Ranges<T extends Comparable<? super T>> {
 		return intersects.ranges();
 	}
 
+	public static <T extends Comparable<? super T>> Ranges<T> minus(Ranges<T> ranges0, Ranges<T> ranges1) {
+		return intersect(ranges0, ranges1.negate());
+	}
+
 	public static <T extends Comparable<? super T>> Ranges<T> union(Ranges<T> ranges0, Ranges<T> ranges1) {
 		return intersect(ranges0.negate(), ranges1.negate()).negate();
 	}
