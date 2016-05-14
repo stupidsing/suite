@@ -6,20 +6,17 @@ import java.util.Deque;
 import java.util.List;
 
 import suite.adt.Pair;
+import suite.util.FunUtil.Fun;
 
 public class Alphabeta<State> {
 
-	public interface Traverser<State> {
-		public List<State> generate(State state);
-
-		public int evaluate(State state);
-	}
-
-	private Traverser<State> traverser;
+	private Fun<State, List<State>> generate;
+	private Fun<State, Integer> evaluate;
 	private Deque<State> moves = new ArrayDeque<>();
 
-	public Alphabeta(Traverser<State> game) {
-		this.traverser = game;
+	public Alphabeta(Fun<State, List<State>> generate, Fun<State, Integer> evaluate) {
+		this.generate = generate;
+		this.evaluate = evaluate;
 	}
 
 	public List<State> search(State state, int depth) {
@@ -29,7 +26,7 @@ public class Alphabeta<State> {
 
 	private Pair<Integer, List<State>> search0(State state, int depth, int alpha, int beta) {
 		if (0 < depth) {
-			List<State> states = traverser.generate(state);
+			List<State> states = generate.apply(state);
 
 			if (!states.isEmpty()) {
 				List<State> principalVariation = null;
@@ -56,7 +53,7 @@ public class Alphabeta<State> {
 		}
 
 		List<State> moves1 = new ArrayList<>(moves);
-		return Pair.of(traverser.evaluate(state), moves1);
+		return Pair.of(evaluate.apply(state), moves1);
 	}
 
 }
