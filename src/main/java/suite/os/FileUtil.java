@@ -3,7 +3,6 @@ package suite.os;
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
@@ -83,18 +82,30 @@ public class FileUtil {
 	}
 
 	public static OutputStream out(String filename) throws IOException {
-		mkdir(Paths.get(filename).getParent());
-		String filename1 = filename + ".new";
+		Path path = Paths.get(filename);
+		Path parent = path.getParent();
+		Path path1 = parent.resolve(path.getFileName() + ".new");
 
-		return new FileOutputStream(filename1) {
+		mkdir(parent);
+		OutputStream os = Files.newOutputStream(path1);
+
+		return new OutputStream() {
 			private boolean isClosed = false;
 
 			public void close() throws IOException {
 				if (!isClosed) {
-					super.close();
+					os.close();
 					isClosed = true;
-					Files.move(Paths.get(filename1), Paths.get(filename), ATOMIC_MOVE, REPLACE_EXISTING);
+					Files.move(path1, path, ATOMIC_MOVE, REPLACE_EXISTING);
 				}
+			}
+
+			public void write(int b) throws IOException {
+				os.write(b);
+			}
+
+			public void write(byte bs[], int off, int len) throws IOException {
+				os.write(bs, off, len);
 			}
 		};
 	}
