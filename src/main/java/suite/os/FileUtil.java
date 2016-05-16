@@ -24,7 +24,7 @@ import suite.util.Rethrow;
 
 public class FileUtil {
 
-	public static String tmp = "/tmp";
+	public static Path tmp = Paths.get("/tmp");
 	public static Charset charset = StandardCharsets.UTF_8;
 
 	public static Streamlet<Path> findPaths(Path path) {
@@ -83,6 +83,10 @@ public class FileUtil {
 
 	public static OutputStream out(String filename) throws IOException {
 		Path path = Paths.get(filename);
+		return out(path);
+	}
+
+	public static OutputStream out(Path path) throws IOException {
 		Path parent = path.getParent();
 		Path path1 = parent.resolve(path.getFileName() + ".new");
 

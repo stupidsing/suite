@@ -1,8 +1,9 @@
 package suite.rt;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -199,11 +200,14 @@ public class RayTracerTest {
 	}
 
 	private void rasterize(RayTracer rayTracer) throws IOException {
-		String filename = FileUtil.tmp + "/" + Util.getStackTrace(3).getMethodName() + ".png";
+		Path path = FileUtil.tmp.resolve(Util.getStackTrace(3).getMethodName() + ".png");
 
 		BufferedImage bufferedImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
 		rayTracer.trace(bufferedImage, 640);
-		ImageIO.write(bufferedImage, "png", new File(filename));
+
+		try (OutputStream os = FileUtil.out(path)) {
+			ImageIO.write(bufferedImage, "png", os);
+		}
 	}
 
 	private Material solid(Vector color) {

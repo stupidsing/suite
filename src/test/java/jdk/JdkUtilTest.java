@@ -1,7 +1,7 @@
 package jdk;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.junit.Test;
 
@@ -13,13 +13,12 @@ public class JdkUtilTest {
 
 	@Test
 	public void test() throws IOException, ReflectiveOperationException {
-		String srcDir = FileUtil.tmp + "/src";
-		String binDir = FileUtil.tmp + "/bin";
-
+		Path srcDir = FileUtil.tmp.resolve("/src");
+		Path binDir = FileUtil.tmp.resolve("/bin");
 		String className = "HelloWorld";
 
-		new File(srcDir).mkdirs();
-		new File(binDir).mkdirs();
+		FileUtil.mkdir(srcDir);
+		FileUtil.mkdir(binDir);
 
 		String src = "" //
 				+ "public class " + className + " implements Runnable {" //

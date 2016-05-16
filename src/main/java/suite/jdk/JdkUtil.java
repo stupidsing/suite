@@ -1,8 +1,8 @@
 package suite.jdk;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import javax.tools.JavaCompiler;
@@ -14,40 +14,41 @@ import suite.os.LogUtil;
 
 public class JdkUtil {
 
-	private String srcDir;
-	private String binDir;
+	private Path srcDir;
+	private Path binDir;
 
-	public JdkUtil(String srcDir, String binDir) {
+	public JdkUtil(Path srcDir, Path binDir) {
 		this.srcDir = srcDir;
 		this.binDir = binDir;
 	}
 
-	protected String compile(String canonicalName, String java) throws IOException {
-		String srcFilename = srcDir + "/" + canonicalName.replace('.', '/') + ".java";
-		String binFilename = binDir + "/" + canonicalName.replace('.', '/') + ".class";
+	protected Path compile(String canonicalName, String java) throws IOException {
+		Path srcFilePath = srcDir.resolve(canonicalName.replace('.', '/') + ".java");
+		Path binFilePath = binDir.resolve(canonicalName.replace('.', '/') + ".class");
 
-		LogUtil.info("Writing " + srcFilename);
-		try (OutputStream os = FileUtil.out(srcFilename)) {
+		LogUtil.info("Writing " + srcFilePath);
+		try (OutputStream os = FileUtil.out(srcFilePath)) {
 			os.write(java.getBytes(FileUtil.charset));
 		}
 
 		// Compile the Java, load the class, return an instantiated object
-		LogUtil.info("Compiling " + srcFilename);
-		new File(binDir).mkdirs();
+		LogUtil.info("Compiling " + srcFilePath);
+		FileUtil.mkdir(binDir);
 
 		JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
 
 		try (StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null)) {
-			if (!jc.getTask(null //
-					, null //
-					, null //
-					, Arrays.asList("-d", binDir) //
-					, null //
-					, sjfm.getJavaFileObjects(new File(srcFilename))).call())
+			if (!jc.getTask( //
+					null, //
+					null, //
+					null, //
+					Arrays.asList("-d", binDir.toString()), //
+					null, //
+					sjfm.getJavaFileObjects(srcFilePath.toFile())).call())
 				throw new RuntimeException("Java compilation error");
 		}
 
-		return binFilename;
+		return binFilePath;
 	}
 
 }

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.Random;
 
@@ -38,9 +38,10 @@ public class B_TreeTest {
 	@Test
 	public void testDump() throws IOException {
 		int pageSize = 4096;
-		String filename = FileUtil.tmp + "/b_tree-dump";
+		Path path = FileUtil.tmp.resolve("/b_tree-dump");
+		String filename = path.toString();
 
-		Files.deleteIfExists(Paths.get(filename));
+		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.string(16));
 
 		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
@@ -57,9 +58,10 @@ public class B_TreeTest {
 	@Test
 	public void testAccess() throws IOException {
 		int pageSize = 4096;
-		String filename = FileUtil.tmp + "/b_tree-file";
+		Path path = FileUtil.tmp.resolve("b_tree-file");
+		String filename = path.toString();
 
-		Files.deleteIfExists(Paths.get(filename));
+		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.string(16));
 
 		shuffleNumbers();

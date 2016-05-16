@@ -1,8 +1,8 @@
 package suite.os;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,7 +28,7 @@ public class LogUtil {
 	}
 
 	public static void initLog4j(Level level) {
-		File logDir = new File(FileUtil.tmp, "logs");
+		Path logDir = FileUtil.tmp.resolve("logs");
 
 		PatternLayout layout = new PatternLayout("%d %-5p [%c{1}] %m%n");
 
@@ -37,7 +37,7 @@ public class LogUtil {
 		console.activateOptions();
 
 		DailyRollingFileAppender file = new DailyRollingFileAppender();
-		file.setFile(new File(logDir, "suite.log").toString());
+		file.setFile(logDir.resolve("suite.log").toString());
 		file.setDatePattern("'.'yyyyMMdd");
 		file.setLayout(layout);
 		file.activateOptions();

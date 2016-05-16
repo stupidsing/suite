@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.junit.Test;
 
@@ -110,10 +111,10 @@ public class InstructionTranslatorTest {
 	}
 
 	private <T> T execute(Node code, boolean isLazy, Fun<Fun<Node, Node>, T> fun) throws IOException {
-		String basePathName = FileUtil.tmp + "/" + InstructionTranslator.class.getName();
+		Path basePath = FileUtil.tmp.resolve(InstructionTranslator.class.getName());
 		TranslatedRunConfig config = new TranslatedRunConfig(Suite.createRuleSet(), isLazy);
 
-		try (InstructionTranslator instructionTranslator = new InstructionTranslator(basePathName)) {
+		try (InstructionTranslator instructionTranslator = new InstructionTranslator(basePath)) {
 			TranslatedRun translatedRun = instructionTranslator.translate(code);
 
 			Fun<Node, Node> exec = node -> {

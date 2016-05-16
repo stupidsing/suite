@@ -3,7 +3,7 @@ package suite.os;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,14 +34,14 @@ public class ElfTest {
 		int org = 0x08048000;
 
 		Bytes code = new ImperativeCompiler().compile(org + 84, program1);
-		String filename = FileUtil.tmp + "/a.out";
+		Path path = FileUtil.tmp.resolve("a.out");
 
-		try (OutputStream os = FileUtil.out(filename)) {
+		try (OutputStream os = FileUtil.out(path)) {
 			new ElfWriter().write(org, code, os);
 		}
 
 		try {
-			Files.setPosixFilePermissions(Paths.get(filename),
+			Files.setPosixFilePermissions(path,
 					new HashSet<>(Arrays.asList( //
 							PosixFilePermission.GROUP_EXECUTE, //
 							PosixFilePermission.OTHERS_EXECUTE, //

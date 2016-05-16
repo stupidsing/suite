@@ -2,7 +2,6 @@ package suite.telegram;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.function.BiFunction;
 
 import org.telegram.telegrambots.TelegramApiException;
@@ -26,7 +25,7 @@ public class TelegramBot {
 				}
 
 				public String getBotToken() {
-					Path path = Paths.get(FileUtil.tmp + "/kowloonbot.token");
+					Path path = FileUtil.tmp.resolve("/kowloonbot.token");
 					return Rethrow.ioException(() -> Files.readAllLines(path)).iterator().next();
 				}
 

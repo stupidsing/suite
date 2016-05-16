@@ -1,10 +1,10 @@
 package suite.pkgmanager;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +20,7 @@ import suite.os.FileUtil;
  */
 public class Keeper {
 
-	private String keeperDirectory = FileUtil.tmp + "/keeper";
+	private Path keeperDir = FileUtil.tmp.resolve("keeper");
 
 	private ObjectMapper objectMapper;
 	private Mapify mapify = new Mapify(new Inspect());
@@ -30,7 +30,7 @@ public class Keeper {
 	}
 
 	public PackageMemento loadPackageMemento(String packageName) throws IOException {
-		try (InputStream is = new FileInputStream(keeperDirectory + "/" + packageName)) {
+		try (InputStream is = Files.newInputStream(keeperDir.resolve(packageName))) {
 			return mapify.unmapify(PackageMemento.class, objectMapper.readValue(is, Map.class));
 		}
 	}
@@ -38,13 +38,13 @@ public class Keeper {
 	public void savePackageMemento(PackageMemento packageMemento) throws IOException {
 		String packageName = packageMemento.getPackageManifest().getName();
 
-		try (OutputStream os = FileUtil.out(keeperDirectory + "/" + packageName)) {
+		try (OutputStream os = FileUtil.out(keeperDir.resolve(packageName))) {
 			objectMapper.writeValue(os, mapify.mapify(PackageMemento.class, packageMemento));
 		}
 	}
 
-	public boolean removePackageMemento(String packageName) {
-		return new File(keeperDirectory + "/" + packageName).delete();
+	public void removePackageMemento(String packageName) throws IOException {
+		Files.delete(keeperDir.resolve(packageName));
 	}
 
 }

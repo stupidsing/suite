@@ -3,6 +3,7 @@ package suite.instructionexecutor;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -55,9 +56,9 @@ public class InstructionTranslator implements Closeable {
 
 	private String compare = "comparer.compare(#{reg-node}, #{reg-node})";
 
-	public InstructionTranslator(String basePathName) throws MalformedURLException {
+	public InstructionTranslator(Path basePath) throws MalformedURLException {
 		packageName = getClass().getPackage().getName();
-		jdkLoadClassUtil = new JdkLoadClassUtil(basePathName, basePathName);
+		jdkLoadClassUtil = new JdkLoadClassUtil(basePath, basePath);
 	}
 
 	@Override

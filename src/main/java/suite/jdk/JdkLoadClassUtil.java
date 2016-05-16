@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 
 import suite.os.LogUtil;
 
@@ -12,9 +13,9 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 
 	private URLClassLoader classLoader;
 
-	public JdkLoadClassUtil(String srcDir, String binDir) throws MalformedURLException {
+	public JdkLoadClassUtil(Path srcDir, Path binDir) throws MalformedURLException {
 		super(srcDir, binDir);
-		classLoader = new URLClassLoader(new URL[] { new URL("file://" + binDir + "/"), });
+		classLoader = new URLClassLoader(new URL[] { new URL("file://" + binDir.toUri().toURL() + "/"), });
 
 	}
 
