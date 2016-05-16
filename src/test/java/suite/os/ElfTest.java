@@ -2,6 +2,11 @@ package suite.os;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import org.junit.Test;
 
@@ -14,21 +19,34 @@ public class ElfTest {
 	@Test
 	public void test() throws IOException {
 		String program = "" //
-				+ "asm _ MOV (EBP, ESP);" //
 				+ "declare inc = function [i0, out ix,] ( {ix} = i0 + 1; );" //
 				+ "declare int j;" //
 				+ "inc [41, out j,];" //
-				+ "j;" //
+				+ "j;";
+
+		String program1 = "" //
+				+ "asm _ MOV (EBP, ESP);" //
+				+ program //
 				+ "asm _ MOV (EBX, EAX);" //
 				+ "asm _ MOV (EAX, 1);" //
 				+ "asm _ INT (-128);";
 
 		int org = 0x08048000;
 
-		Bytes code = new ImperativeCompiler().compile(org + 84, program);
+		Bytes code = new ImperativeCompiler().compile(org + 84, program1);
+		String filename = FileUtil.tmp + "/a.out";
 
-		try (OutputStream os = FileUtil.out(FileUtil.tmp + "/a.out")) {
+		try (OutputStream os = FileUtil.out(filename)) {
 			new ElfWriter().write(org, code, os);
+		}
+
+		try {
+			Files.setPosixFilePermissions(Paths.get(filename),
+					new HashSet<>(Arrays.asList( //
+							PosixFilePermission.GROUP_EXECUTE, //
+							PosixFilePermission.OTHERS_EXECUTE, //
+							PosixFilePermission.OWNER_EXECUTE)));
+		} catch (UnsupportedOperationException ex) {
 		}
 	}
 
