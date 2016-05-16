@@ -10,8 +10,8 @@ declare irq-get-isr = function [] (
 	(inb [+xA0,]) shl 8 + inb [+x20,];
 );
 
-declare irq-get-sink = function [irq-number, out irq-sink,] (
-	{irq-sink} = irq-sinks/:irq-number;
+declare irq-get-sink = fn [irq-number,] (
+	return irq-sinks/:irq-number;
 );
 
 declare irq-set-sink = function [irq-number, irq-sink,] (
