@@ -9,6 +9,7 @@ import java.util.List;
 
 import suite.Suite;
 import suite.adt.Pair;
+import suite.fp.EagerFunInterpreter;
 import suite.fp.LazyFunInterpreter;
 import suite.fp.LazyFunInterpreter0;
 import suite.lp.Configuration.ProverConfig;
@@ -53,8 +54,9 @@ public class CommandDispatcher {
 		EVALUATEDO("\\d"), //
 		EVALUATEDOCHARS("\\dc"), //
 		EVALUATEDOSTR("\\ds"), //
-		EVALUATEINTERPRET("\\i"), //
-		EVALUATEINTERPRET1("\\j"), //
+		EVALUATEEFI("\\i"), //
+		EVALUATELFI0("\\j"), //
+		EVALUATELFI("\\k"), //
 		EVALUATESTR("\\s"), //
 		EVALUATETYPE("\\t"), //
 		FACT(""), //
@@ -126,10 +128,15 @@ public class CommandDispatcher {
 			node = Suite.applyPerform(node, Atom.of("string"));
 			printEvaluated(writer, Suite.applyWriter(node));
 			break;
-		case EVALUATEINTERPRET:
+		case EVALUATEEFI:
+			EagerFunInterpreter efi = new EagerFunInterpreter();
+			efi.setLazyify(opt.isLazy());
+			pw.println(efi.eager(node));
+			break;
+		case EVALUATELFI0:
 			pw.println(new LazyFunInterpreter0().lazy(node).get());
 			break;
-		case EVALUATEINTERPRET1:
+		case EVALUATELFI:
 			pw.println(new LazyFunInterpreter().lazy(node).get());
 			break;
 		case EVALUATESTR:

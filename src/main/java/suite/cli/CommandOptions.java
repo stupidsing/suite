@@ -106,6 +106,10 @@ public class CommandOptions {
 		return isDo;
 	}
 
+	public boolean isLazy() {
+		return isLazy;
+	}
+
 	public boolean isQuiet() {
 		return isQuiet;
 	}
