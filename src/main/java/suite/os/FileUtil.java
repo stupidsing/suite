@@ -27,6 +27,10 @@ public class FileUtil {
 	public static Path tmp = Paths.get("/tmp");
 	public static Charset charset = StandardCharsets.UTF_8;
 
+	public static Path ext(Path path, String ext) {
+		return path.resolveSibling(path.getFileName() + ext);
+	}
+
 	public static Streamlet<Path> findPaths(Path path) {
 		return Read.from(() -> Rethrow.ioException(() -> Files.walk(path).filter(p -> Files.isRegularFile(p)).iterator()));
 	}

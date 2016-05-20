@@ -1,5 +1,7 @@
 package suite.file.impl;
 
+import java.nio.file.Path;
+
 import suite.file.PageFile;
 import suite.primitive.Bytes;
 import suite.util.Util;
@@ -9,8 +11,8 @@ public class PageFileImpl implements PageFile {
 	private RandomAccessibleFile file;
 	private int pageSize;
 
-	public PageFileImpl(String filename, int pageSize) {
-		file = new RandomAccessibleFile(filename);
+	public PageFileImpl(Path path, int pageSize) {
+		file = new RandomAccessibleFile(path);
 		this.pageSize = pageSize;
 	}
 

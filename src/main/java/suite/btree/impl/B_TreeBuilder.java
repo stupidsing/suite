@@ -4,7 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Comparator;
 
 import suite.file.PageFile;
@@ -15,6 +15,7 @@ import suite.file.impl.PageFileImpl;
 import suite.file.impl.SerializedPageFileImpl;
 import suite.file.impl.SubPageFileImpl;
 import suite.primitive.Bytes;
+import suite.util.Rethrow;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 import suite.util.Util;
@@ -109,15 +110,11 @@ public class B_TreeBuilder<Key, Value> {
 		this.valueSerializer = valueSerializer;
 	}
 
-	public B_TreeImpl<Key, Value> build(String filename, boolean isNew, Comparator<Key> cmp, int nPages) {
+	public B_TreeImpl<Key, Value> build(Path path, boolean isNew, Comparator<Key> cmp, int nPages) {
 		if (isNew)
-			try {
-				Files.deleteIfExists(Paths.get(filename));
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
+			Rethrow.ioException(() -> Files.deleteIfExists(path));
 
-		PageFile f = new JournalledPageFileImpl(filename, pageSize);
+		PageFile f = new JournalledPageFileImpl(path, pageSize);
 		return build(f, isNew, cmp, nPages);
 	}
 
@@ -132,23 +129,20 @@ public class B_TreeBuilder<Key, Value> {
 				, new SubPageFileImpl(f, p2, p3));
 	}
 
-	public B_TreeImpl<Key, Value> build(String pathName, boolean isNew, Comparator<Key> cmp) {
-		String sbf = pathName + ".superblock";
-		String alf = pathName + ".alloc";
-		String f = pathName + ".pages";
+	public B_TreeImpl<Key, Value> build(Path path, boolean isNew, Comparator<Key> cmp) {
+		Path filename = path.getFileName();
+		Path sbp = path.resolveSibling(filename + ".superblock");
+		Path alp = path.resolveSibling(filename + ".alloc");
+		Path p = path.resolveSibling(filename + ".pages");
 
 		if (isNew)
-			for (String filename : new String[] { sbf, alf, f, })
-				try {
-					Files.deleteIfExists(Paths.get(filename));
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
+			for (Path p_ : new Path[] { sbp, alp, p, })
+				Rethrow.ioException(() -> Files.deleteIfExists(p_));
 
 		return build(isNew, cmp //
-				, new PageFileImpl(alf, pageSize) //
-				, new PageFileImpl(sbf, pageSize) //
-				, new PageFileImpl(f, pageSize));
+				, new PageFileImpl(alp, pageSize) //
+				, new PageFileImpl(sbp, pageSize) //
+				, new PageFileImpl(p, pageSize));
 	}
 
 	private B_TreeImpl<Key, Value> build(boolean isNew, Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {

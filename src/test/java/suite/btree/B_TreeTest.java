@@ -38,13 +38,12 @@ public class B_TreeTest {
 	@Test
 	public void testDump() throws IOException {
 		int pageSize = 4096;
-		Path path = FileUtil.tmp.resolve("/b_tree-dump");
-		String filename = path.toString();
+		Path path = FileUtil.tmp.resolve("b_tree-dump");
 
 		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.string(16));
 
-		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
+		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(path, pageSize);
 				B_Tree<Integer, String> b_tree = builder.build(jpf, true, comparator, pageSize)) {
 			for (int i = 0; i < 32; i++)
 				b_tree.put(i, Integer.toString(i));
@@ -59,26 +58,25 @@ public class B_TreeTest {
 	public void testAccess() throws IOException {
 		int pageSize = 4096;
 		Path path = FileUtil.tmp.resolve("b_tree-file");
-		String filename = path.toString();
 
 		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.string(16));
 
 		shuffleNumbers();
 
-		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
+		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(path, pageSize);
 				B_Tree<Integer, String> b_tree = builder.build(jpf, true, comparator, pageSize)) {
 			testStep0(jpf, b_tree);
 		}
 
 		shuffleNumbers();
 
-		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
+		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(path, pageSize);
 				B_Tree<Integer, String> b_tree = builder.build(jpf, false, comparator, pageSize)) {
 			testStep1(jpf, b_tree);
 		}
 
-		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
+		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(path, pageSize);
 				B_Tree<Integer, String> b_tree = builder.build(jpf, false, comparator, pageSize)) {
 			testStep2(jpf, b_tree);
 		}

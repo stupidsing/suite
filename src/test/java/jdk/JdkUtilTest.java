@@ -13,8 +13,8 @@ public class JdkUtilTest {
 
 	@Test
 	public void test() throws IOException, ReflectiveOperationException {
-		Path srcDir = FileUtil.tmp.resolve("/src");
-		Path binDir = FileUtil.tmp.resolve("/bin");
+		Path srcDir = FileUtil.tmp.resolve("src");
+		Path binDir = FileUtil.tmp.resolve("bin");
 		String className = "HelloWorld";
 
 		FileUtil.mkdir(srcDir);

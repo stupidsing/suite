@@ -25,17 +25,17 @@ public class FileSystemTest {
 
 	@Test
 	public void testB_TreeFileSystem() throws IOException {
-		testB_Tree(FileUtil.tmp + "/b_tree-fs", this::testWriteOneFile);
+		testB_Tree(FileUtil.tmp.resolve("b_tree-fs"), this::testWriteOneFile);
 	}
 
 	@Test
 	public void testB_TreeFileSystem1() throws IOException {
-		testB_Tree(FileUtil.tmp + "/b_tree-fs1", this::testWriteFiles);
-		testB_Tree(FileUtil.tmp + "/b_tree-fs1", this::testReadFile);
+		testB_Tree(FileUtil.tmp.resolve("b_tree-fs1"), this::testWriteFiles);
+		testB_Tree(FileUtil.tmp.resolve("b_tree-fs1"), this::testReadFile);
 	}
 
-	private void testB_Tree(String name, TestCase testCase) throws IOException {
-		try (FileSystem fs = new B_TreeFileSystemImpl(name, 4096)) {
+	private void testB_Tree(Path path, TestCase testCase) throws IOException {
+		try (FileSystem fs = new B_TreeFileSystemImpl(path, 4096)) {
 			testCase.test(fs);
 		}
 	}

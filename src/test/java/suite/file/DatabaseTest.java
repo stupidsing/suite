@@ -15,7 +15,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testRollback() throws IOException {
-		try (Database database = new Database(FileUtil.tmp + "/database")) {
+		try (Database database = new Database(FileUtil.tmp.resolve("database"))) {
 			database.transact(tx -> {
 				for (int i = 0; i < nRecords; i++)
 					tx.put(i, "sample");
@@ -27,7 +27,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testUpdate() throws IOException {
-		try (Database database = new Database(FileUtil.tmp + "/database")) {
+		try (Database database = new Database(FileUtil.tmp.resolve("database"))) {
 			database.transact(tx -> {
 				for (int i = 0; i < nRecords; i++)
 					tx.put(i, "sample");

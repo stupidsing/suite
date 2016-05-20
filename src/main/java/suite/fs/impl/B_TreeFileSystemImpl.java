@@ -1,6 +1,7 @@
 package suite.fs.impl;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import suite.btree.B_Tree;
 import suite.btree.impl.B_TreeBuilder;
@@ -20,8 +21,8 @@ public class B_TreeFileSystemImpl implements FileSystem {
 	private B_Tree<Bytes, Integer> b_tree;
 	private FileSystemMutator mutator;
 
-	public B_TreeFileSystemImpl(String filename, int pageSize) {
-		jpf = new JournalledPageFileImpl(filename, pageSize);
+	public B_TreeFileSystemImpl(Path path, int pageSize) {
+		jpf = new JournalledPageFileImpl(path, pageSize);
 
 		b_tree = new B_TreeBuilder<>(keyUtil.serializer(), Serialize.int_) //
 				.build(jpf, false, Bytes.comparator, pageSize);

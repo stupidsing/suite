@@ -25,7 +25,7 @@ public class TelegramBot {
 				}
 
 				public String getBotToken() {
-					Path path = FileUtil.tmp.resolve("/kowloonbot.token");
+					Path path = FileUtil.tmp.resolve("kowloonbot.token");
 					return Rethrow.ioException(() -> Files.readAllLines(path)).iterator().next();
 				}
 

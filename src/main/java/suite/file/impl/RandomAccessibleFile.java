@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
@@ -16,10 +16,10 @@ public class RandomAccessibleFile implements Closeable {
 	private RandomAccessFile file;
 	private FileChannel channel;
 
-	public RandomAccessibleFile(String filename) {
-		FileUtil.mkdir(Paths.get(filename).getParent());
+	public RandomAccessibleFile(Path path) {
+		FileUtil.mkdir(path.getParent());
 		try {
-			file = new RandomAccessFile(filename, "rw");
+			file = new RandomAccessFile(path.toFile(), "rw");
 		} catch (FileNotFoundException ex) {
 			throw new RuntimeException(ex);
 		}
