@@ -4,7 +4,7 @@ ic-rewrite (ARRAY .type0 ()) (ARRAY .type1 ()) .ts/.ts
 	:- ic-rewrite-type .type0 .type1
 #
 ic-rewrite (ARRAY .type0 (.e0, .array0)) (ARRAY .type1 (.e1, .array1)) (.e0 .e1, .ts0)/.tsx
-	:- ic-rewrite (ARRAY .type0 .array0) (ARRAYS .type1 .array1) .ts0/.tsx
+	:- ic-rewrite (ARRAY .type0 .array0) (ARRAY .type1 .array1) .ts0/.tsx
 #
 ic-rewrite (ARRAYS .size ()) (ARRAYS .size ()) .ts/.ts
 #
@@ -122,6 +122,9 @@ ic-rewrite-pragma (TYPE-VERIFY .v0 .type0) (TYPE-VERIFY .v1 .type1) .ts0/.tsx
 	, !
 #
 
+ic-rewrite-type .free .free
+	:- not bound .free, !
+#
 ic-rewrite-type BOOLEAN BOOLEAN
 #
 ic-rewrite-type I8 I8
