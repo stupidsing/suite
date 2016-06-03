@@ -30,7 +30,7 @@ public class Bl<T> {
 			return Read.empty();
 	}
 
-	public static <T> Bl<T> merge(Bl<T> bl0, Bl<T> bl1, BiFunction<T, T, T> f) {
+	public static <T> Bl<T> meld(Bl<T> bl0, Bl<T> bl1, BiFunction<T, T, T> f) {
 		if (bl0 != null) {
 			if (bl1 != null) {
 				long bitmap0 = bl0.bitmap;

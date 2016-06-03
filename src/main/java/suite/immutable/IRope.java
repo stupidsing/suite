@@ -50,7 +50,7 @@ public class IRope<T> {
 				index = index1;
 				aw = aw1;
 			}
-			return merge(normalize(Util.left(nodes, index)), nodes.get(index).left(weight - w - aw));
+			return meld(normalize(Util.left(nodes, index)), nodes.get(index).left(weight - w - aw));
 		} else
 			return new IRope<>(Util.left(ts, w));
 	}
@@ -63,23 +63,23 @@ public class IRope<T> {
 				index = index1;
 				aw = aw1;
 			}
-			return merge(nodes.get(index).right(w - aw), normalize(Util.right(nodes, index1)));
+			return meld(nodes.get(index).right(w - aw), normalize(Util.right(nodes, index1)));
 		} else
 			return new IRope<>(Util.right(ts, w));
 	}
 
-	public static <T> IRope<T> merge(IRope<T> rope0, IRope<T> rope1) {
-		return normalize(merge0(rope0, rope1));
+	public static <T> IRope<T> meld(IRope<T> rope0, IRope<T> rope1) {
+		return normalize(meld0(rope0, rope1));
 	}
 
-	private static <T> List<IRope<T>> merge0(IRope<T> rope0, IRope<T> rope1) {
+	private static <T> List<IRope<T>> meld0(IRope<T> rope0, IRope<T> rope1) {
 		int depth = Math.max(rope0.depth, rope1.depth);
 		List<IRope<T>> nodes;
 
 		if (rope1.depth < rope0.depth)
-			nodes = Util.add(Util.left(rope0.nodes, -1), merge0(Util.last(rope0.nodes), rope1));
+			nodes = Util.add(Util.left(rope0.nodes, -1), meld0(Util.last(rope0.nodes), rope1));
 		else if (rope0.depth < rope1.depth)
-			nodes = Util.add(merge0(rope0, Util.first(rope1.nodes)), Util.right(rope1.nodes, 1));
+			nodes = Util.add(meld0(rope0, Util.first(rope1.nodes)), Util.right(rope1.nodes, 1));
 		else if (0 < depth)
 			nodes = Util.add(rope0.nodes, rope1.nodes);
 		else {

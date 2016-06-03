@@ -36,8 +36,8 @@ public class IHashMap<K, V> {
 		}
 	}
 
-	public static <K, V> IHashMap<K, V> merge(IHashMap<K, V> map0, IHashMap<K, V> map1, BiFunction<V, V, V> f) {
-		return new IHashMap<>(IHashSet.merge(map0.set, map1.set, (e0, e1) -> new Entry<>(e0.key, f.apply(e0.value, e1.value))));
+	public static <K, V> IHashMap<K, V> meld(IHashMap<K, V> map0, IHashMap<K, V> map1, BiFunction<V, V, V> f) {
+		return new IHashMap<>(IHashSet.meld(map0.set, map1.set, (e0, e1) -> new Entry<>(e0.key, f.apply(e0.value, e1.value))));
 	}
 
 	public IHashMap() {
