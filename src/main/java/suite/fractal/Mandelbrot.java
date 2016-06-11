@@ -3,22 +3,16 @@ package suite.fractal;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+import suite.image.Render;
 import suite.math.Complex;
 
 public class Mandelbrot {
 
-	public void trace(BufferedImage bufferedImage) {
-		int width = bufferedImage.getWidth(), height = bufferedImage.getHeight();
-		int centreX = width / 2, centreY = height / 2;
-		float rx = 4f / width, ry = 4f / height;
-
-		for (int x = 0; x < width; x++)
-			for (int y = 0; y < height; y++) {
-				float fx = (x - centreX) * rx;
-				float fy = (y - centreY) * ry;
-				int n = mandelbrot(Complex.of(fx, fy));
-				bufferedImage.setRGB(x, y, new Color(n, n, n).getRGB());
-			}
+	public BufferedImage trace(int width, int height) {
+		return Render.render(width, height, (fx, fy) -> {
+			int n = mandelbrot(Complex.of(fx * 4, fy * 4));
+			return new Color(n, n, n);
+		});
 	}
 
 	private int mandelbrot(Complex z) {
