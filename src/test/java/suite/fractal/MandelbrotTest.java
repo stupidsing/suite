@@ -17,7 +17,6 @@ public class MandelbrotTest {
 	@Test
 	public void testMandelbrot() throws IOException {
 		Path path = FileUtil.tmp.resolve(Util.getStackTrace(2).getMethodName() + ".png");
-
 		BufferedImage bufferedImage = new Mandelbrot(640, 640).trace();
 
 		try (OutputStream os = FileUtil.out(path)) {

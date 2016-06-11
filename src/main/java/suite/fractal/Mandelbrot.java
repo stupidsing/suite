@@ -1,10 +1,10 @@
 package suite.fractal;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import suite.image.Render;
 import suite.math.Complex;
+import suite.math.Vector;
 
 public class Mandelbrot {
 
@@ -18,8 +18,8 @@ public class Mandelbrot {
 
 	public BufferedImage trace() {
 		return Render.render(width, height, (fx, fy) -> {
-			int n = mandelbrot(Complex.of(fx * 4, fy * 4));
-			return new Color(n, n, n);
+			float n = mandelbrot(Complex.of(fx * 4, fy * 4)) / 256f;
+			return new Vector(n, n, n);
 		});
 	}
 

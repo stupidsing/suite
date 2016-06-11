@@ -1,13 +1,12 @@
 package suite.rt;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
+import suite.image.Render;
 import suite.math.Vector;
-import suite.os.LogUtil;
 
 /**
  * TODO remove Vector.norm() at Ray constructor and fix maths
@@ -22,7 +21,6 @@ public class RayTracer {
 
 	public static float negligibleAdvance = 0.0001f;
 
-	private int nThreads = 4;
 	private int depth = 4;
 
 	private float airRefractiveIndex = 1f;
@@ -103,54 +101,13 @@ public class RayTracer {
 		return traceRay(depth, ray);
 	}
 
-	public void trace(BufferedImage bufferedImage, int viewDistance) {
-		int width = bufferedImage.getWidth(), height = bufferedImage.getHeight();
-		int centreX = width / 2, centreY = height / 2;
-		Vector pixels[][] = new Vector[width][height];
-		int xs[] = new int[nThreads + 1];
+	public BufferedImage trace(int width, int height, int viewDistance) {
+		float ivd = ((float) viewDistance) / width;
 
-		for (int i = 0; i <= nThreads; i++)
-			xs[i] = width * i / nThreads;
-
-		Thread threads[] = new Thread[nThreads];
-
-		for (int i = 0; i < nThreads; i++) {
-			int i1 = i;
-
-			threads[i1] = new Thread(() -> {
-				for (int x = xs[i1]; x < xs[i1 + 1]; x++)
-					for (int y = 0; y < height; y++) {
-						Vector lit;
-
-						try {
-							Vector startPoint = Vector.origin;
-							Vector dir = new Vector(x - centreX, y - centreY, viewDistance);
-							lit = traceRay(depth, new Ray(startPoint, dir));
-						} catch (Exception ex) {
-							LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
-							lit = new Vector(1f, 1f, 1f);
-						}
-
-						pixels[x][y] = lit;
-					}
-			});
-		}
-
-		for (int i = 0; i < nThreads; i++)
-			threads[i].start();
-
-		for (int i = 0; i < nThreads; i++)
-			try {
-				threads[i].join();
-			} catch (InterruptedException ex) {
-				throw new RuntimeException(ex);
-			}
-
-		for (int x = 0; x < width; x++)
-			for (int y = 0; y < height; y++) {
-				Vector pixel = limit(pixels[x][y]);
-				bufferedImage.setRGB(x, y, new Color(pixel.x, pixel.y, pixel.z).getRGB());
-			}
+		return Render.render(width, height, (x, y) -> {
+			Vector dir = new Vector(x, y, ivd);
+			return traceRay(depth, new Ray(Vector.origin, dir));
+		});
 	}
 
 	private Vector traceRay(int depth, Ray ray) {
@@ -269,21 +226,6 @@ public class RayTracer {
 			return -negligibleAdvance;
 		else
 			return 0f;
-	}
-
-	/**
-	 * Limit vector components between 0 and 1.
-	 */
-	private static Vector limit(Vector u) {
-		return new Vector(limit(u.x), limit(u.y), limit(u.z));
-	}
-
-	private static float limit(float f) {
-		return Math.min(1f, Math.max(0f, f));
-	}
-
-	public void setnThreads(int nThreads) {
-		this.nThreads = nThreads;
 	}
 
 	public void setDepth(int depth) {

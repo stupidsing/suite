@@ -201,9 +201,7 @@ public class RayTracerTest {
 
 	private void rasterize(RayTracer rayTracer) throws IOException {
 		Path path = FileUtil.tmp.resolve(Util.getStackTrace(3).getMethodName() + ".png");
-
-		BufferedImage bufferedImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
-		rayTracer.trace(bufferedImage, 640);
+		BufferedImage bufferedImage = rayTracer.trace(640, 480, 640);
 
 		try (OutputStream os = FileUtil.out(path)) {
 			ImageIO.write(bufferedImage, "png", os);
