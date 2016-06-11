@@ -2,10 +2,12 @@ package suite.uct;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.os.LogUtil;
+import suite.streamlet.Read;
 import suite.weiqi.Weiqi;
 
 /**
@@ -55,31 +57,34 @@ public class UctSearch<Move> {
 		}
 
 		root = new UctNode<>();
-		Thread threads[] = new Thread[numberOfThreads];
 		AtomicInteger count = new AtomicInteger();
 		long end = System.currentTimeMillis() + boundedTime;
 
-		for (int i = 0; i < numberOfThreads; i++)
-			(threads[i] = new Thread(() -> {
-				int j = 0;
+		List<Thread> threads = Read.range(numberOfThreads) //
+				.map(i -> new Thread(() -> {
+					int j = 0;
 
-				while (count.getAndIncrement() < numberOfSimulations) {
-					playSimulation(visitor.cloneVisitor(), root, 0);
+					while (count.getAndIncrement() < numberOfSimulations) {
+						playSimulation(visitor.cloneVisitor(), root, 0);
 
-					if (100 < ++j) {
-						j = 0;
-						if (end < System.currentTimeMillis())
-							break;
+						if (100 < ++j) {
+							j = 0;
+							if (end < System.currentTimeMillis())
+								break;
+						}
 					}
-				}
-			})).start();
+				})) //
+				.toList();
 
-		try {
-			for (int i = 0; i < numberOfThreads; i++)
-				threads[i].join();
-		} catch (InterruptedException ex) {
-			LogUtil.error(ex);
-		}
+		for (Thread thread : threads)
+			thread.start();
+
+		for (Thread thread : threads)
+			try {
+				thread.join();
+			} catch (InterruptedException ex) {
+				LogUtil.error(ex);
+			}
 
 		// Finds best node
 		best = root.bestChild;
