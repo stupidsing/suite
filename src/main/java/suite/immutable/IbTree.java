@@ -181,9 +181,9 @@ public class IbTree<T> implements ITree<T> {
 			// Merges with a neighbor if less than minimum number of nodes
 			if (slots1.size() == 1 && (inner = slots1.get(0).slots).size() < minBranchFactor)
 				if (0 < s0)
-					replaceSlots = merge(node0.get(--s0).slots, inner);
+					replaceSlots = meld(node0.get(--s0).slots, inner);
 				else if (s1 < size)
-					replaceSlots = merge(inner, node0.get(s1++).slots);
+					replaceSlots = meld(inner, node0.get(s1++).slots);
 				else
 					replaceSlots = slots1;
 			else
@@ -214,8 +214,8 @@ public class IbTree<T> implements ITree<T> {
 		return node1;
 	}
 
-	private List<Slot> merge(List<Slot> node0, List<Slot> node1) {
-		List<Slot> merged;
+	private List<Slot> meld(List<Slot> node0, List<Slot> node1) {
+		List<Slot> melded;
 
 		if (maxBranchFactor <= node0.size() + node1.size()) {
 			List<Slot> leftSlots, rightSlots;
@@ -231,11 +231,11 @@ public class IbTree<T> implements ITree<T> {
 				rightSlots = node1;
 			}
 
-			merged = Arrays.asList(slot(leftSlots), slot(rightSlots));
+			melded = Arrays.asList(slot(leftSlots), slot(rightSlots));
 		} else
-			merged = Arrays.asList(slot(Util.add(node0, node1)));
+			melded = Arrays.asList(slot(Util.add(node0, node1)));
 
-		return merged;
+		return melded;
 	}
 
 	private List<Slot> createRoot(List<Slot> node) {

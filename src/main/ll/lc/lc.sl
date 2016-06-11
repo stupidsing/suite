@@ -70,7 +70,7 @@ lc-parse .tree (.oper1 .left1 .right1) .nv
 	, member (','/AND, ';'/OR,) .oper/.oper1, !
 	, lc-parse .left .left1 .nv0
 	, lc-parse .right .right1 .nv1
-	, lc-dict-merge .nv0 .nv1 .nv
+	, lc-dict-meld .nv0 .nv1 .nv
 #
 lc-parse .tree (.oper1 .left1 .right1) .nv
 	:- tree .tree .left .oper .right
@@ -80,7 +80,7 @@ lc-parse .tree (.oper1 .left1 .right1) .nv
 	, !
 	, lc-parse-pattern .left .left1 .nv0
 	, lc-parse-pattern .right .right1 .nv1
-	, lc-dict-merge .nv0 .nv1 .nv
+	, lc-dict-meld .nv0 .nv1 .nv
 #
 lc-parse .call .callx .nv
 	:- lc-parse-pattern .call .call1 .nv
@@ -103,7 +103,7 @@ lc-parse-rule (.head :- .tail) (RULE .nv .head1 .tail1)
 	:- !
 	, lc-parse-pattern .head .head1 .nv0
 	, lc-parse .tail .tail1 .nv1
-	, lc-dict-merge .nv0 .nv1 .nv
+	, lc-dict-meld .nv0 .nv1 .nv
 #
 lc-parse-rule .head .parsed :- lc-parse-rule (.head :- ()) .parsed #
 
@@ -111,7 +111,7 @@ lc-parse-pattern .tree (TREE .oper .left1 .right1) .nv
 	:- tree .tree .left .oper .right, !
 	, lc-parse-pattern .left .left1 .nv0
 	, lc-parse-pattern .right .right1 .nv1
-	, lc-dict-merge .nv0 .nv1 .nv
+	, lc-dict-meld .nv0 .nv1 .nv
 #
 lc-parse-pattern .var (VAR .var) .nv
 	:- lc-is-variable .var, !, lc-dict-add .var/_ ()/.nv
@@ -331,4 +331,4 @@ lc-dict-get .v .t :- rbt-get .v .t, ! #
 -- use replace, necessary to redefine already-defined variables
 lc-dict-add .v .t0/.t1 :- rbt-replace .v .t0/.t1, ! #
 
-lc-dict-merge .t0 .t1 .t2 :- rbt-union-bind .t0 .t1 .t2, ! #
+lc-dict-meld .t0 .t1 .t2 :- rbt-union-bind .t0 .t1 .t2, ! #

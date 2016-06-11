@@ -188,9 +188,9 @@ public class LazyIbTree<T> implements ITree<T> {
 			// Merges with a neighbor if less than minimum number of nodes
 			if (slots1.size() == 1 && (inner = slots1.get(0).readSlots()).size() < minBranchFactor)
 				if (0 < s0)
-					slots2 = merge(node0.get(--s0).readSlots(), inner);
+					slots2 = meld(node0.get(--s0).readSlots(), inner);
 				else if (s1 < size)
-					slots2 = merge(inner, node0.get(s1++).readSlots());
+					slots2 = meld(inner, node0.get(s1++).readSlots());
 				else
 					slots2 = slots1;
 			else
@@ -221,8 +221,8 @@ public class LazyIbTree<T> implements ITree<T> {
 		return node1;
 	}
 
-	private List<Slot<T>> merge(List<Slot<T>> node0, List<Slot<T>> node1) {
-		List<Slot<T>> merged;
+	private List<Slot<T>> meld(List<Slot<T>> node0, List<Slot<T>> node1) {
+		List<Slot<T>> melded;
 
 		if (maxBranchFactor <= node0.size() + node1.size()) {
 			List<Slot<T>> leftSlots, rightSlots;
@@ -238,11 +238,11 @@ public class LazyIbTree<T> implements ITree<T> {
 				rightSlots = node1;
 			}
 
-			merged = Arrays.asList(slot(leftSlots), slot(rightSlots));
+			melded = Arrays.asList(slot(leftSlots), slot(rightSlots));
 		} else
-			merged = Arrays.asList(slot(Util.add(node0, node1)));
+			melded = Arrays.asList(slot(Util.add(node0, node1)));
 
-		return merged;
+		return melded;
 	}
 
 	private List<Slot<T>> createRoot(List<Slot<T>> node) {

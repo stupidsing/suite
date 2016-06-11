@@ -9,22 +9,22 @@ public class IHashSet<V> {
 
 	private IIntMap<IList<V>> intMap;
 
-	public static <V> IHashSet<V> merge(IHashSet<V> set0, IHashSet<V> set1) {
-		return merge(set0, set1, (v0, v1) -> v0);
+	public static <V> IHashSet<V> meld(IHashSet<V> set0, IHashSet<V> set1) {
+		return meld(set0, set1, (v0, v1) -> v0);
 	}
 
-	public static <V> IHashSet<V> merge(IHashSet<V> set0, IHashSet<V> set1, BiFunction<V, V, V> f) {
-		return new IHashSet<>(IIntMap.merge(set0.intMap, set1.intMap, (l0, l1) -> {
+	public static <V> IHashSet<V> meld(IHashSet<V> set0, IHashSet<V> set1, BiFunction<V, V, V> f) {
+		return new IHashSet<>(IIntMap.meld(set0.intMap, set1.intMap, (l0, l1) -> {
 			IList<V> list = IList.end();
 			for (V v : l0)
-				list = mergeElement(list, v, f);
+				list = merge(list, v, f);
 			for (V v : l1)
-				list = mergeElement(list, v, f);
+				list = merge(list, v, f);
 			return list;
 		}));
 	}
 
-	private static <V> IList<V> mergeElement(IList<V> list0, V v0, BiFunction<V, V, V> f) {
+	private static <V> IList<V> merge(IList<V> list0, V v0, BiFunction<V, V, V> f) {
 		IList<V> list1 = IList.end();
 		for (V v : list0)
 			if (!v.equals(v0))
