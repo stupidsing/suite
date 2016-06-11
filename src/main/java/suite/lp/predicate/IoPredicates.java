@@ -9,6 +9,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
+import suite.Constants;
 import suite.lp.doer.Cloner;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
@@ -68,7 +69,7 @@ public class IoPredicates {
 		String content = Formatter.display(contents);
 
 		try (OutputStream fos = FileUtil.out(filename)) {
-			fos.write(content.getBytes(FileUtil.charset));
+			fos.write(content.getBytes(Constants.charset));
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -88,7 +89,7 @@ public class IoPredicates {
 			byte b;
 			while (0 <= (b = (byte) System.in.read()) && b != 10)
 				bb.append(b);
-			String s = new String(bb.toBytes().toBytes(), FileUtil.charset);
+			String s = new String(bb.toBytes().toBytes(), Constants.charset);
 			return prover.bind(new Str(s), p0);
 		});
 	});

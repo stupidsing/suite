@@ -9,8 +9,8 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import suite.Constants;
 import suite.adt.Pair;
-import suite.os.FileUtil;
 import suite.util.Util;
 
 public class HttpHeaderUtil {
@@ -29,7 +29,7 @@ public class HttpHeaderUtil {
 
 	public static Map<String, String> getPostedAttrs(InputStream is) throws IOException {
 		int size = 4096;
-		BufferedReader br = new BufferedReader(new InputStreamReader(is, FileUtil.charset));
+		BufferedReader br = new BufferedReader(new InputStreamReader(is, Constants.charset));
 		StringBuilder sb = new StringBuilder();
 		char buffer[] = new char[size];
 		int nCharsRead;

@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import suite.Constants;
 import suite.adt.Pair;
 import suite.file.ExtentAllocator.Extent;
-import suite.os.FileUtil;
 import suite.primitive.Bytes;
 
 /**
@@ -161,11 +161,11 @@ public class Serialize {
 				byte bs[] = new byte[length];
 				int l = dataInput.readInt();
 				dataInput.readFully(bs);
-				return new String(bs, FileUtil.charset).substring(0, l);
+				return new String(bs, Constants.charset).substring(0, l);
 			}
 
 			public void write(DataOutput dataOutput, String value) throws IOException {
-				byte bs[] = Arrays.copyOf(value.getBytes(FileUtil.charset), length);
+				byte bs[] = Arrays.copyOf(value.getBytes(Constants.charset), length);
 				dataOutput.writeInt(value.length());
 				dataOutput.write(bs);
 			}

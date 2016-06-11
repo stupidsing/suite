@@ -13,6 +13,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import suite.Constants;
 import suite.Suite;
 import suite.node.Node;
 import suite.node.io.Formatter;
@@ -156,7 +157,7 @@ public class EditorController {
 
 	public void save() {
 		try (OutputStream os = FileUtil.out(model.getFilename())) {
-			os.write(view.getEditor().getText().getBytes(FileUtil.charset));
+			os.write(view.getEditor().getText().getBytes(Constants.charset));
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -199,7 +200,7 @@ public class EditorController {
 		try {
 			Process process = Runtime.getRuntime().exec(command);
 
-			try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos, FileUtil.charset)) {
+			try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos, Constants.charset)) {
 				writer.write(editor.getText());
 			}
 

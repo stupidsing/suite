@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import suite.Constants;
 import suite.inspect.Inspect;
 import suite.inspect.Mapify;
 import suite.os.FileUtil;
@@ -20,7 +21,7 @@ import suite.os.FileUtil;
  */
 public class Keeper {
 
-	private Path keeperDir = FileUtil.tmp.resolve("keeper");
+	private Path keeperDir = Constants.tmp.resolve("keeper");
 
 	private ObjectMapper objectMapper;
 	private Mapify mapify = new Mapify(new Inspect());

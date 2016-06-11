@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
+import suite.Constants;
 import suite.adt.Pair;
-import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.os.TimeUtil;
 import suite.os.TimeUtil.TimedResult;
@@ -30,10 +30,10 @@ public class UctWeiqiMain<Move> {
 	private static Occupation startingPlayer = Occupation.BLACK;
 
 	public static void main(String args[]) throws IOException {
-		InputStreamReader isr = new InputStreamReader(System.in, FileUtil.charset);
+		InputStreamReader isr = new InputStreamReader(System.in, Constants.charset);
 		BufferedReader br = new BufferedReader(isr);
 		DecimalFormat df = new DecimalFormat("0.000");
-		int nThreads = Runtime.getRuntime().availableProcessors();
+		int nThreads = Constants.nThreads;
 		int nSimulations = 10000 * nThreads;
 		int boundedTime = 30000;
 		Weiqi.adjustSize(7);

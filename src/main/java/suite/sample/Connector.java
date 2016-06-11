@@ -10,13 +10,13 @@ import java.io.Reader;
 import java.net.Socket;
 import java.nio.charset.Charset;
 
-import suite.os.FileUtil;
+import suite.Constants;
 import suite.os.SocketUtil;
 
 public class Connector {
 
 	public void connect() throws IOException {
-		Charset charset = FileUtil.charset;
+		Charset charset = Constants.charset;
 
 		try (Socket socket = new Socket("wwww.google.com", 80);
 				InputStream is = socket.getInputStream();

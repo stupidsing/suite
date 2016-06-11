@@ -5,6 +5,7 @@ import java.nio.file.Path;
 
 import org.junit.Test;
 
+import suite.Constants;
 import suite.jdk.JdkLoadClassUtil;
 import suite.jdk.JdkUnsafeLoadClassUtil;
 import suite.os.FileUtil;
@@ -13,8 +14,8 @@ public class JdkUtilTest {
 
 	@Test
 	public void test() throws IOException, ReflectiveOperationException {
-		Path srcDir = FileUtil.tmp.resolve("src");
-		Path binDir = FileUtil.tmp.resolve("bin");
+		Path srcDir = Constants.tmp.resolve("src");
+		Path binDir = Constants.tmp.resolve("bin");
 		String className = "HelloWorld";
 
 		FileUtil.mkdir(srcDir);

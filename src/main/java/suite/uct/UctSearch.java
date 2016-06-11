@@ -22,9 +22,9 @@ public class UctSearch<Move> {
 	private static boolean rave = true;
 	private static int maxRaveDepth = 4;
 
-	public int numberOfThreads = Runtime.getRuntime().availableProcessors();
-	public int numberOfSimulations = 10000;
-	public int boundedTime = 10000;
+	private int numberOfThreads = 1;
+	private int numberOfSimulations = 10000;
+	private int boundedTime = 10000;
 
 	private UctVisitor<Move> visitor;
 	private UctNode<Move> root, best;

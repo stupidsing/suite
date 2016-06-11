@@ -9,6 +9,7 @@ import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
+import suite.Constants;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 
@@ -28,7 +29,7 @@ public class JdkUtil {
 
 		LogUtil.info("Writing " + srcFilePath);
 		try (OutputStream os = FileUtil.out(srcFilePath)) {
-			os.write(java.getBytes(FileUtil.charset));
+			os.write(java.getBytes(Constants.charset));
 		}
 
 		// Compile the Java, load the class, return an instantiated object

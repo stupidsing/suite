@@ -9,8 +9,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,14 +16,12 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import suite.Constants;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Rethrow;
 
 public class FileUtil {
-
-	public static Path tmp = Paths.get("/tmp");
-	public static Charset charset = StandardCharsets.UTF_8;
 
 	public static Path ext(Path path, String ext) {
 		return path.resolveSibling(path.getFileName() + ext);
@@ -130,9 +126,9 @@ public class FileUtil {
 				&& bytes[2] == (byte) 0xBF;
 
 		if (!isBomExist)
-			return new String(bytes, FileUtil.charset);
+			return new String(bytes, Constants.charset);
 		else
-			return new String(bytes, 3, bytes.length - 3, FileUtil.charset);
+			return new String(bytes, 3, bytes.length - 3, Constants.charset);
 	}
 
 }

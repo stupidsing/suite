@@ -7,8 +7,8 @@ import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Random;
 
+import suite.Constants;
 import suite.http.HttpServer.Handler;
-import suite.os.FileUtil;
 import suite.util.HtmlUtil;
 import suite.util.Util;
 
@@ -113,7 +113,7 @@ public class HttpSessionController {
 		}
 
 		private void showLoginPage(OutputStream os, String redirectPath, boolean isLoginFailed) throws IOException {
-			OutputStreamWriter writer = new OutputStreamWriter(os, FileUtil.charset);
+			OutputStreamWriter writer = new OutputStreamWriter(os, Constants.charset);
 
 			writer.write("<html>" //
 					+ "<head><title>Login</title></head>" //

@@ -20,8 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import suite.Constants;
 import suite.adt.Pair;
-import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Chars;
@@ -43,7 +43,7 @@ public class To {
 	}
 
 	public static Bytes bytes(String s) {
-		return Bytes.of(s.getBytes(FileUtil.charset));
+		return Bytes.of(s.getBytes(Constants.charset));
 	}
 
 	public static Bytes bytes(InputStream is) throws IOException {
@@ -170,7 +170,7 @@ public class To {
 	}
 
 	public static Source<Bytes> source(String data) {
-		return To.source(Arrays.asList(Bytes.of(data.getBytes(FileUtil.charset))));
+		return To.source(Arrays.asList(Bytes.of(data.getBytes(Constants.charset))));
 	}
 
 	public static String string(Bytes bytes) {
@@ -178,7 +178,7 @@ public class To {
 	}
 
 	public static String string(byte bs[]) {
-		return new String(bs, FileUtil.charset);
+		return new String(bs, Constants.charset);
 	}
 
 	public static String string(long time) {
@@ -188,7 +188,7 @@ public class To {
 
 	public static String string(InputStream in) throws IOException {
 		try (InputStream is = in;
-				InputStreamReader isr = new InputStreamReader(is, FileUtil.charset);
+				InputStreamReader isr = new InputStreamReader(is, Constants.charset);
 				BufferedReader br = new BufferedReader(isr)) {
 			return string(br);
 		}

@@ -6,8 +6,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 
+import suite.Constants;
 import suite.http.HttpServer.Handler;
-import suite.os.FileUtil;
 
 public abstract class HttpHandler implements Handler {
 
@@ -21,8 +21,8 @@ public abstract class HttpHandler implements Handler {
 		this.request = request;
 		this.response = response;
 
-		Reader reader = new InputStreamReader(request.inputStream, FileUtil.charset);
-		Writer writer = new OutputStreamWriter(response.outputStream, FileUtil.charset);
+		Reader reader = new InputStreamReader(request.inputStream, Constants.charset);
+		Writer writer = new OutputStreamWriter(response.outputStream, Constants.charset);
 
 		handle(reader, writer);
 

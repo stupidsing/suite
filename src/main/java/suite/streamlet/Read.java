@@ -14,9 +14,9 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 
+import suite.Constants;
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
-import suite.os.FileUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
@@ -87,7 +87,7 @@ public class Read {
 	}
 
 	public static Outlet<String> lines(InputStream is) {
-		Reader reader = new InputStreamReader(is, FileUtil.charset);
+		Reader reader = new InputStreamReader(is, Constants.charset);
 		return lines(reader).closeAtEnd(reader);
 	}
 

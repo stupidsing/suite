@@ -8,6 +8,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
+import suite.Constants;
 import suite.os.TimeUtil;
 import suite.os.TimeUtil.TimedResult;
 import suite.sample.Profiler;
@@ -136,7 +137,6 @@ public class UctTest {
 	public void testUctGame() {
 		new Profiler().profile(() -> {
 			DecimalFormat df = new DecimalFormat("0.000");
-			int nThreads = Runtime.getRuntime().availableProcessors();
 			int nSimulations = 5000; // 20000
 			int boundedTime = 300000;
 			int seed = new Random().nextInt();
@@ -151,7 +151,7 @@ public class UctTest {
 				GameSet gameSet1 = new GameSet(gameSet);
 				UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet1);
 				UctSearch<Coordinate> search = new UctSearch<>(visitor);
-				search.setNumberOfThreads(nThreads);
+				search.setNumberOfThreads(Constants.nThreads);
 				search.setNumberOfSimulations(nSimulations);
 				search.setBoundedTime(boundedTime);
 

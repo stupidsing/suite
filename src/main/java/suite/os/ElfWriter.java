@@ -3,6 +3,7 @@ package suite.os;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import suite.Constants;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 
@@ -45,7 +46,7 @@ public class ElfWriter {
 	public void write(int org, Bytes code, OutputStream os) throws IOException {
 		Bytes header = new Writer_() //
 				.db(0x7F) // e_ident
-				.append("ELF".getBytes(FileUtil.charset)) //
+				.append("ELF".getBytes(Constants.charset)) //
 				.append(new byte[] { 1, 1, 1, 0, }) //
 				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, }) //
 				.dw(2) // e_type

@@ -8,6 +8,7 @@ import java.nio.file.Path;
 
 import org.junit.Test;
 
+import suite.Constants;
 import suite.Suite;
 import suite.instructionexecutor.TranslatedRunUtil.Thunk;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRun;
@@ -21,7 +22,6 @@ import suite.lp.search.SewingProverBuilder2;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
-import suite.os.FileUtil;
 import suite.util.FunUtil.Fun;
 
 public class InstructionTranslatorTest {
@@ -111,7 +111,7 @@ public class InstructionTranslatorTest {
 	}
 
 	private <T> T execute(Node code, boolean isLazy, Fun<Fun<Node, Node>, T> fun) throws IOException {
-		Path basePath = FileUtil.tmp.resolve(InstructionTranslator.class.getName());
+		Path basePath = Constants.tmp.resolve(InstructionTranslator.class.getName());
 		TranslatedRunConfig config = new TranslatedRunConfig(Suite.createRuleSet(), isLazy);
 
 		try (InstructionTranslator instructionTranslator = new InstructionTranslator(basePath)) {

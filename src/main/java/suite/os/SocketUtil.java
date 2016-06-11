@@ -11,6 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import suite.Constants;
 import suite.util.Util;
 
 public class SocketUtil {
@@ -25,7 +26,7 @@ public class SocketUtil {
 
 	public void listenRw(int port, Rw rw) throws IOException {
 		listenIo(port, (is, os) -> {
-			try (Reader reader = new BufferedReader(new InputStreamReader(is, FileUtil.charset));
+			try (Reader reader = new BufferedReader(new InputStreamReader(is, Constants.charset));
 					PrintWriter writer = new PrintWriter(os)) {
 				rw.serve(reader, writer);
 			}

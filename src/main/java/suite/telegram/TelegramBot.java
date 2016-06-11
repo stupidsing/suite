@@ -11,7 +11,7 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
-import suite.os.FileUtil;
+import suite.Constants;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -25,7 +25,7 @@ public class TelegramBot {
 				}
 
 				public String getBotToken() {
-					Path path = FileUtil.tmp.resolve("kowloonbot.token");
+					Path path = Constants.tmp.resolve("kowloonbot.token");
 					return Rethrow.ioException(() -> Files.readAllLines(path)).iterator().next();
 				}
 

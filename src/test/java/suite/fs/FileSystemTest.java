@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import suite.Constants;
 import suite.fs.impl.B_TreeFileSystemImpl;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
@@ -25,13 +26,13 @@ public class FileSystemTest {
 
 	@Test
 	public void testB_TreeFileSystem() throws IOException {
-		testB_Tree(FileUtil.tmp.resolve("b_tree-fs"), this::testWriteOneFile);
+		testB_Tree(Constants.tmp.resolve("b_tree-fs"), this::testWriteOneFile);
 	}
 
 	@Test
 	public void testB_TreeFileSystem1() throws IOException {
-		testB_Tree(FileUtil.tmp.resolve("b_tree-fs1"), this::testWriteFiles);
-		testB_Tree(FileUtil.tmp.resolve("b_tree-fs1"), this::testReadFile);
+		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), this::testWriteFiles);
+		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), this::testReadFile);
 	}
 
 	private void testB_Tree(Path path, TestCase testCase) throws IOException {
@@ -67,7 +68,7 @@ public class FileSystemTest {
 
 		for (Path path : paths) {
 			String filename = path.toString().replace(File.separatorChar, '/');
-			Bytes name = Bytes.of(filename.getBytes(FileUtil.charset));
+			Bytes name = Bytes.of(filename.getBytes(Constants.charset));
 			fsm.replace(name, Bytes.of(Files.readAllBytes(path)));
 		}
 	}
@@ -75,7 +76,7 @@ public class FileSystemTest {
 	private void testReadFile(FileSystem fs) throws IOException {
 		String filename = "src/test/java/suite/fs/FileSystemTest.java";
 		FileSystemMutator fsm = fs.mutate();
-		Bytes name = Bytes.of(filename.getBytes(FileUtil.charset));
+		Bytes name = Bytes.of(filename.getBytes(Constants.charset));
 		Copy.stream(fsm.read(name).asInputStream(), System.out);
 	}
 

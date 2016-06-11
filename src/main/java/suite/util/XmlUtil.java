@@ -19,7 +19,7 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
-import suite.os.FileUtil;
+import suite.Constants;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
@@ -58,9 +58,9 @@ public class XmlUtil {
 	}
 
 	public String format(String xml) throws SAXException {
-		try (InputStream is = new ByteArrayInputStream(xml.getBytes(FileUtil.charset)); Writer writer = new StringWriter()) {
+		try (InputStream is = new ByteArrayInputStream(xml.getBytes(Constants.charset)); Writer writer = new StringWriter()) {
 			LSOutput lso = di.createLSOutput();
-			lso.setEncoding(FileUtil.charset.name());
+			lso.setEncoding(Constants.charset.name());
 			lso.setCharacterStream(writer);
 
 			lss.write(documentBuilder.parse(is), lso);

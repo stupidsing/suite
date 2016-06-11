@@ -8,7 +8,7 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.os.FileUtil;
+import suite.Constants;
 import suite.os.SocketUtil;
 import suite.util.To;
 
@@ -20,7 +20,7 @@ public class SimpleCgiServer {
 
 	public static void main(String args[]) throws IOException {
 		new SimpleCgiServer().run((headers, os) -> {
-			OutputStreamWriter writer = new OutputStreamWriter(os, FileUtil.charset);
+			OutputStreamWriter writer = new OutputStreamWriter(os, Constants.charset);
 			writer.write("<html>" + headers + "</html>");
 		});
 	}
@@ -31,7 +31,7 @@ public class SimpleCgiServer {
 
 			os.write(("Status: 200 OK\r\n" //
 					+ "Content-Type: text/html\r\n" //
-					+ "\r\n").getBytes(FileUtil.charset));
+					+ "\r\n").getBytes(Constants.charset));
 
 			handler.handle(headers, os);
 		});

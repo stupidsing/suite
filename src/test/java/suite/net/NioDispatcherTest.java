@@ -18,9 +18,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
+import suite.Constants;
 import suite.net.channels.BufferedChannel;
 import suite.net.channels.RequestResponseChannel;
-import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -32,7 +32,7 @@ public class NioDispatcherTest {
 	@Test
 	public void testTextExchange() throws IOException {
 		String hello = "HELLO";
-		Charset charset = FileUtil.charset;
+		Charset charset = Constants.charset;
 
 		BufferedChannel channel = new BufferedChannel() {
 			public void onConnected(Sender sender) {
@@ -84,7 +84,7 @@ public class NioDispatcherTest {
 			RequestResponseChannel client = dispatcher.connect(address);
 
 			for (String s : new String[] { "ABC", "WXYZ", "", }) {
-				byte bs[] = s.getBytes(FileUtil.charset);
+				byte bs[] = s.getBytes(Constants.charset);
 				Bytes request = Bytes.of(bs);
 				Bytes response = matcher.requestForResponse(client, request);
 				assertEquals(request, response);

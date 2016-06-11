@@ -5,15 +5,15 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.function.BiFunction;
 
+import suite.Constants;
 import suite.math.Vector;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 
 public class Render {
 
-	private static int nThreads = 4;
-
 	public static BufferedImage render(int width, int height, BiFunction<Float, Float, Vector> f) {
+		int nThreads = Constants.nThreads;
 		int xs[] = new int[nThreads + 1];
 
 		for (int i = 0; i <= nThreads; i++)

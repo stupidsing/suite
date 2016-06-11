@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import suite.Constants;
 import suite.util.Copy;
 import suite.util.Rethrow;
 
@@ -16,7 +17,7 @@ public class ExecUtil {
 	private Thread threads[];
 
 	public ExecUtil(String command[], String in) {
-		InputStream bis = new ByteArrayInputStream(in.getBytes(FileUtil.charset));
+		InputStream bis = new ByteArrayInputStream(in.getBytes(Constants.charset));
 		ByteArrayOutputStream bos0 = new ByteArrayOutputStream();
 		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
 
@@ -45,8 +46,8 @@ public class ExecUtil {
 			process.destroy();
 		}
 
-		out = new String(bos0.toByteArray(), FileUtil.charset);
-		err = new String(bos1.toByteArray(), FileUtil.charset);
+		out = new String(bos0.toByteArray(), Constants.charset);
+		err = new String(bos1.toByteArray(), Constants.charset);
 	}
 
 	@Override

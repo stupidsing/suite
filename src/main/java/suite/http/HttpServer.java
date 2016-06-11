@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.Constants;
 import suite.adt.Pair;
-import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.util.Util;
@@ -97,7 +97,7 @@ public class HttpServer {
 				sb.append(entry.getKey() + ": " + entry.getValue() + "\r\n");
 			sb.append("\r\n");
 
-			os.write(sb.toString().getBytes(FileUtil.charset));
+			os.write(sb.toString().getBytes(Constants.charset));
 			os.write(baos.toByteArray());
 		});
 	}

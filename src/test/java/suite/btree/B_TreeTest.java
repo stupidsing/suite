@@ -12,10 +12,10 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
+import suite.Constants;
 import suite.adt.Pair;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.impl.JournalledPageFileImpl;
-import suite.os.FileUtil;
 import suite.util.Serialize;
 import suite.util.To;
 import suite.util.Util;
@@ -38,7 +38,7 @@ public class B_TreeTest {
 	@Test
 	public void testDump() throws IOException {
 		int pageSize = 4096;
-		Path path = FileUtil.tmp.resolve("b_tree-dump");
+		Path path = Constants.tmp.resolve("b_tree-dump");
 
 		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.string(16));
@@ -57,7 +57,7 @@ public class B_TreeTest {
 	@Test
 	public void testAccess() throws IOException {
 		int pageSize = 4096;
-		Path path = FileUtil.tmp.resolve("b_tree-file");
+		Path path = Constants.tmp.resolve("b_tree-file");
 
 		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.string(16));

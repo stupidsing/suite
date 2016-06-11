@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+import suite.Constants;
 import suite.adt.Pair;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
@@ -33,7 +34,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 						String s = FileUtil.read(path);
 						for (Pair<String, String> ft : fts)
 							s = recursiveFactorizer.rewrite(ft.t0, ft.t1, s);
-						Files.write(path, s.getBytes(FileUtil.charset));
+						Files.write(path, s.getBytes(Constants.charset));
 					} catch (IOException ex) {
 						throw new RuntimeException(ex);
 					}
