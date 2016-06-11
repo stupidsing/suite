@@ -8,7 +8,15 @@ import suite.math.Complex;
 
 public class Mandelbrot {
 
-	public BufferedImage trace(int width, int height) {
+	private int width;
+	private int height;
+
+	public Mandelbrot(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+
+	public BufferedImage trace() {
 		return Render.render(width, height, (fx, fy) -> {
 			int n = mandelbrot(Complex.of(fx * 4, fy * 4));
 			return new Color(n, n, n);
