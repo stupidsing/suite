@@ -50,7 +50,8 @@ define dump := (:t => :t -> string) of skip-type-check (
 	dump0 {false}
 ) >>
 define sh := command => in =>
-	do >>
-	let `0, $out, $err` := in | popen {"sh"; "-c"; command;} | perform >>
-	out | map {cs-to-string} | concat
+	do (
+		let `0, $out, $err` := in | popen {"sh"; "-c"; command;} | perform >>
+		out | map {cs-to-string} | concat
+	)
 >>

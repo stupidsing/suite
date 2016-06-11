@@ -183,7 +183,7 @@ define partition := fun =>
 	} {(), ()}
 >>
 define popen := command => in =>
-	do >> in | popen* {command}
+	do (in | popen* {command})
 >>
 define replicate := flip {e =>
 	unfold-left {i => optional {i != 0} {i - 1, e}}

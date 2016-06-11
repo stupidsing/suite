@@ -170,7 +170,7 @@ fc-parse-sugar (definem .type .mv # .monad) (
 )
 	:- !, temp .atom
 #
-fc-parse-sugar (do >> .do) (
+fc-parse-sugar (do .do) (
 	define fun-to-monad := (:t => (number -> :t) -> Do^:t) of erase-type >>
 	define monad-to-fun := (:t => Do^:t -> (number -> :t)) of erase-type >>
 	fun-to-monad {scope =>
