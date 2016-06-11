@@ -14,8 +14,8 @@ import suite.node.io.TermOp;
 
 public class InternPredicates {
 
-	private static ThreadLocal<Map<IdentityKey<Node>, Node>> internMap = ThreadLocal.withInitial(() -> new HashMap<>());
-	private static ThreadLocal<TreeIntern> treeIntern_ = ThreadLocal.withInitial(() -> new TreeIntern());
+	private static ThreadLocal<Map<IdentityKey<Node>, Node>> internMap = ThreadLocal.withInitial(HashMap::new);
+	private static ThreadLocal<TreeIntern> treeIntern_ = ThreadLocal.withInitial(TreeIntern::new);
 
 	public BuiltinPredicate internMapClear = PredicateUtil.run(() -> {
 		internMap.get().clear();
