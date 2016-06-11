@@ -10,6 +10,7 @@ import java.util.Set;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.util.Copy;
+import suite.util.Util;
 
 public class TelnetServer {
 
@@ -81,12 +82,7 @@ public class TelnetServer {
 					}
 				});
 
-				for (Thread thread : threads)
-					thread.start();
-				for (Thread thread : threads)
-					thread.join();
-			} catch (InterruptedException ex) {
-				LogUtil.error(ex);
+				Util.startJoin(threads);
 			} finally {
 				process.destroy();
 			}

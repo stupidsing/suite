@@ -11,8 +11,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 
-import suite.os.LogUtil;
-
 public class Copy {
 
 	private static int bufferSize = 4096;
@@ -58,12 +56,10 @@ public class Copy {
 	}
 
 	public static Thread streamByThread(InputStream is, OutputStream os) {
-		return new Thread(() -> {
+		return Util.newThread(() -> {
 			try (InputStream is_ = is; OutputStream os_ = os) {
 				stream(is_, os_);
 			} catch (InterruptedIOException ex) {
-			} catch (Exception ex) {
-				LogUtil.error(ex);
 			}
 		});
 	}

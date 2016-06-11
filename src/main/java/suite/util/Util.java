@@ -222,6 +222,18 @@ public class Util {
 		};
 	}
 
+	public static Thread newThread(RunnableEx runnable) {
+		return new Thread() {
+			public void run() {
+				try {
+					runnable.run();
+				} catch (Exception ex) {
+					LogUtil.error(ex);
+				}
+			}
+		};
+	}
+
 	/**
 	 * Reads a line from a stream with a maximum line length limit. Removes
 	 * carriage return if it is DOS-mode line feed (CR-LF). Unknown behaviour
@@ -346,16 +358,20 @@ public class Util {
 		return subsets;
 	}
 
-	public static Thread startThread(RunnableEx runnable) {
-		Thread thread = new Thread() {
-			public void run() {
-				try {
-					runnable.run();
-				} catch (Exception ex) {
-					LogUtil.error(ex);
-				}
+	public static void startJoin(Collection<Thread> threads) {
+		for (Thread thread : threads)
+			thread.start();
+
+		for (Thread thread : threads)
+			try {
+				thread.join();
+			} catch (InterruptedException ex) {
+				LogUtil.error(ex);
 			}
-		};
+	}
+
+	public static Thread startThread(RunnableEx runnable) {
+		Thread thread = newThread(runnable);
 		thread.start();
 		return thread;
 	}
