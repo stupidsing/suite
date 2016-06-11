@@ -29,7 +29,8 @@ public class MonadTest {
 
 	@Test
 	public void testMutable() throws IOException {
-		String fp0 = "do ( \n" //
+		String fp0 = "" //
+				+ "do ( \n" //
 				+ "    definem string v # \n" //
 				+ "    v := \"abc\" # \n" //
 				+ "    getm {v} # \n" //
@@ -39,7 +40,8 @@ public class MonadTest {
 
 	@Test
 	public void testMutableFail() throws IOException {
-		String fp0 = "do ( \n" //
+		String fp0 = "" //
+				+ "do ( \n" //
 				+ "    definem int v # \n" //
 				+ "    v := \"abc\" # \n" //
 				+ ") \n";
