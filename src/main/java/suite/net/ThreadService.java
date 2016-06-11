@@ -34,10 +34,6 @@ public class ThreadService implements Service {
 		thread = null;
 	}
 
-	public boolean isStarted() {
-		return started;
-	}
-
 	public boolean isRunning() {
 		return running;
 	}
