@@ -129,10 +129,11 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 		// LogUtil.info("KEY", dumpKey(key));
 
 		byte buffer[] = new byte[bufferSize];
-		SelectableChannel sc0 = key.channel();
 		Object attachment = key.attachment();
+		SelectableChannel sc0 = key.channel();
+		int ops = key.readyOps();
 
-		if (key.isAcceptable()) {
+		if ((ops & SelectionKey.OP_ACCEPT) != 0) {
 			Channel channel = channelSource.source();
 			ServerSocketChannel ssc = (ServerSocketChannel) sc0;
 			Socket socket = ssc.accept().socket();
@@ -142,17 +143,21 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 			sc.register(selector, SelectionKey.OP_READ, channel);
 
 			channel.onConnected(createSender(sc));
-		} else
+		}
+
+		if ((ops & ~SelectionKey.OP_ACCEPT) != 0)
 			synchronized (attachment) {
 				Channel channel = (Channel) attachment;
 				SocketChannel sc1 = (SocketChannel) sc0;
 
-				if (key.isConnectable()) {
+				if ((ops & SelectionKey.OP_CONNECT) != 0) {
 					sc1.finishConnect();
 
 					key.interestOps(SelectionKey.OP_READ);
 					channel.onConnected(createSender(sc1));
-				} else if (key.isReadable()) {
+				}
+
+				if ((ops & SelectionKey.OP_READ) != 0) {
 					int n = sc1.read(ByteBuffer.wrap(buffer));
 
 					if (0 <= n)
@@ -161,7 +166,9 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 						channel.onClose();
 						sc1.close();
 					}
-				} else if (key.isWritable())
+				}
+
+				if ((ops & SelectionKey.OP_WRITE) != 0)
 					channel.onTrySend();
 			}
 	}
