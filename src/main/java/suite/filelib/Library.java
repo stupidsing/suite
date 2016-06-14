@@ -48,7 +48,7 @@ public class Library extends ExecutableProgram {
 		Pair<Streamlet2<Path, Long>, Streamlet2<Path, Long>> partition = FileUtil.findPaths(Paths.get(inputDir)) //
 				.filter(path -> fileExtensions.contains(FileUtil.getFileExtension(path))) //
 				.map2(path -> path, path -> Rethrow.ioException(() -> Files.size(path))) //
-				.partition((path, size) -> size > 0);
+				.partition((path, size) -> 0 < size);
 
 		// Remove empty files
 		partition.t1.sink((path, size) -> {
