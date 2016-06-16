@@ -3,7 +3,6 @@ package suite.net;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
@@ -134,10 +133,7 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 
 		if ((ops & SelectionKey.OP_ACCEPT) != 0) {
 			Channel channel = channelSource.source();
-			ServerSocketChannel ssc = (ServerSocketChannel) sc0;
-			Socket socket = ssc.accept().socket();
-			SocketChannel sc = socket.getChannel();
-
+			SocketChannel sc = ((ServerSocketChannel) sc0).accept().socket().getChannel();
 			sc.configureBlocking(false);
 			sc.register(selector, SelectionKey.OP_READ, channel);
 			channel.onConnected(createSender(sc));
