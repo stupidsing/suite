@@ -10,7 +10,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
-import java.util.Set;
 
 import suite.net.channels.Channel;
 import suite.net.channels.Channel.Sender;
@@ -42,7 +41,7 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 	}
 
 	/**
-	 * Establishes connection to other host actively.
+	 * Establishes connection to a host actively.
 	 */
 	@Override
 	public C connect(InetSocketAddress address) throws IOException {
@@ -104,8 +103,7 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 				// the behavior as documented in NIO, but anyway.
 				selector.wakeup();
 
-				Set<SelectionKey> selectedKeys = selector.selectedKeys();
-				Iterator<SelectionKey> iter = selectedKeys.iterator();
+				Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
 
 				while (iter.hasNext()) {
 					SelectionKey key = iter.next();
