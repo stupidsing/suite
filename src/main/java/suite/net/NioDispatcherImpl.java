@@ -88,7 +88,6 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 		ssc.register(selector, SelectionKey.OP_ACCEPT);
 
 		wakeUpSelector();
-
 		return () -> Util.closeQuietly(ssc);
 	}
 
@@ -141,7 +140,6 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 
 			sc.configureBlocking(false);
 			sc.register(selector, SelectionKey.OP_READ, channel);
-
 			channel.onConnected(createSender(sc));
 		}
 
@@ -152,14 +150,12 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 
 				if ((ops & SelectionKey.OP_CONNECT) != 0) {
 					sc1.finishConnect();
-
 					key.interestOps(SelectionKey.OP_READ);
 					channel.onConnected(createSender(sc1));
 				}
 
 				if ((ops & SelectionKey.OP_READ) != 0) {
 					int n = sc1.read(ByteBuffer.wrap(buffer));
-
 					if (0 <= n)
 						channel.onReceive(Bytes.of(buffer, 0, n));
 					else {
@@ -180,16 +176,10 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 			// writable event (and send again at that moment).
 			byte bytes[] = in.toBytes();
 			int sent = sc.write(ByteBuffer.wrap(bytes));
-
 			Bytes out = in.subbytes(sent);
-
-			int ops;
-			if (!out.isEmpty())
-				ops = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
-			else
-				ops = SelectionKey.OP_READ;
-
+			int ops = SelectionKey.OP_READ | (!out.isEmpty() ? SelectionKey.OP_WRITE : 0);
 			SelectionKey key = sc.keyFor(selector);
+
 			if (key != null && key.interestOps() != ops)
 				key.interestOps(ops);
 
