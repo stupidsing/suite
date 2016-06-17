@@ -123,34 +123,37 @@ ic-rewrite-pragma (TYPE-VERIFY .v0 .type0) (TYPE-VERIFY .v1 .type1) .ts0/.tsx
 	, !
 #
 
-ic-rewrite-type .free .free
+ic-rewrite-type .type .type
+#
+
+ic-rewrite-type1 .free .free
 	:- not bound .free, !
 #
-ic-rewrite-type BOOLEAN BOOLEAN
+ic-rewrite-type1 BOOLEAN BOOLEAN
 #
-ic-rewrite-type I8 I8
+ic-rewrite-type1 I8 I8
 #
-ic-rewrite-type I32 I32
+ic-rewrite-type1 I32 I32
 #
-ic-rewrite-type (ARRAY-OF .size .type0) (ARRAY-OF .size .type1)
-	:- ic-rewrite-type .type0 .type1
+ic-rewrite-type1 (ARRAY-OF .size .type0) (ARRAY-OF .size .type1)
+	:- ic-rewrite-type1 .type0 .type1
 #
-ic-rewrite-type (METHOD0-OF .pos0 .returnType0) (METHOD0-OF .pos1 .returnType1)
+ic-rewrite-type1 (METHOD0-OF .pos0 .returnType0) (METHOD0-OF .pos1 .returnType1)
 	:- zip .pos0 .pos1 .list
 	, list.query .list (PARAM-OF .io .type0):(PARAM-OF .io .type1) (
-		ic-rewrite-type .type0 .type1
+		ic-rewrite-type1 .type0 .type1
 	)
-	, ic-rewrite-type .returnType0 .returnType1
+	, ic-rewrite-type1 .returnType0 .returnType1
 #
-ic-rewrite-type (METHOD-OF .pos0 .returnType0) (METHOD-OF .pos1 .returnType1)
-	:- ic-rewrite-type (METHOD0-OF .pos0 .returnType0) (METHOD0-OF .pos1 .returnType1)
+ic-rewrite-type1 (METHOD-OF .pos0 .returnType0) (METHOD-OF .pos1 .returnType1)
+	:- ic-rewrite-type1 (METHOD0-OF .pos0 .returnType0) (METHOD0-OF .pos1 .returnType1)
 #
-ic-rewrite-type (POINTER-OF .type0) (POINTER-OF .type1)
-	:- ic-rewrite-type .type0 .type1
+ic-rewrite-type1 (POINTER-OF .type0) (POINTER-OF .type1)
+	:- ic-rewrite-type1 .type0 .type1
 #
-ic-rewrite-type (STRUCT-OF ()) (STRUCT-OF ())
+ic-rewrite-type1 (STRUCT-OF ()) (STRUCT-OF ())
 #
-ic-rewrite-type (STRUCT-OF (.nameTypes0 | .name .type0)) (STRUCT-OF (.nameTypes1 | .name .type1))
-	:- ic-rewrite-type .type0 .type1
-	, ic-rewrite-type (STRUCT-OF .nameTypes0) (STRUCT-OF .nameTypes1)
+ic-rewrite-type1 (STRUCT-OF (.nameTypes0 | .name .type0)) (STRUCT-OF (.nameTypes1 | .name .type1))
+	:- ic-rewrite-type1 .type0 .type1
+	, ic-rewrite-type1 (STRUCT-OF .nameTypes0) (STRUCT-OF .nameTypes1)
 #
