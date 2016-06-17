@@ -103,8 +103,9 @@ ic-rewrite (WHILE .while0 .do0) (WHILE .while1 .do1) (.while0 .while1, .do0 .do1
 #
 
 ic-rewrite-method-parameter .mp0 .mp1
-	:- .mp0 = MP IN .var .type0
-	, .mp1 = MP IN .var .type1
+	:- .mp0 = MP .io .var .type0
+	, .mp1 = MP .io .var .type1
+	, member (IN, OUT,) .io
 	, ic-rewrite-type .type0 .type1
 #
 ic-rewrite-method-parameter .mps0 .mps1
