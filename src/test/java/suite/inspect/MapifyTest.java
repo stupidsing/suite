@@ -9,7 +9,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
+import suite.node.Node;
 
 public class MapifyTest {
 
@@ -64,6 +66,15 @@ public class MapifyTest {
 		assertEquals(B.class, object1.is.get(1).getClass());
 		assertEquals(123, ((A) object1.is.get(0)).i);
 		assertEquals("test", ((B) object1.is.get(1)).s);
+	}
+
+	@Test
+	public void testTree() {
+		Object map = mapify.mapify(Node.class, Suite.parse("v = 1 + 2"));
+		assertNotNull(map);
+		System.out.println(map);
+
+		// Cannot un-mapify since Tree has no default constructor
 	}
 
 }
