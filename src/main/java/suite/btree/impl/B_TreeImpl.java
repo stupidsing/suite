@@ -300,7 +300,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		} else
 			return;
 
-		// Rotates the tree to maintain balance
+		// Rotates nodes around to maintain invariant
 		while (page.pointer != root) {
 			int half = branchFactor / 2;
 			if (page.size() >= half)
