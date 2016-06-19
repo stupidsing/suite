@@ -3,14 +3,11 @@ package suite.net.channels;
 import java.io.IOException;
 
 import suite.primitive.Bytes;
+import suite.util.FunUtil.Fun;
 
 public interface Channel {
 
-	public interface Sender {
-		public Bytes apply(Bytes i) throws IOException;
-	}
-
-	public void onConnected(Sender sender);
+	public void onConnected(Fun<Bytes, Bytes> sender);
 
 	public void onClose();
 

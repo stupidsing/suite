@@ -4,13 +4,14 @@ import java.io.IOException;
 
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
+import suite.util.FunUtil.Fun;
 
 /**
  * Channel with a send buffer.
  */
 public abstract class BufferedChannel implements Channel {
 
-	private Sender sender;
+	private Fun<Bytes, Bytes> sender;
 	private Bytes toSend = Bytes.empty;
 
 	public void send(Bytes message) {
@@ -24,7 +25,7 @@ public abstract class BufferedChannel implements Channel {
 	}
 
 	@Override
-	public void onConnected(Sender sender) {
+	public void onConnected(Fun<Bytes, Bytes> sender) {
 		this.sender = sender;
 	}
 

@@ -47,7 +47,7 @@ public class RequestResponseChannel extends PacketChannel {
 	}
 
 	@Override
-	public void onConnected(Sender sender) {
+	public void onConnected(Fun<Bytes, Bytes> sender) {
 		setConnected(true);
 		super.onConnected(sender);
 	}

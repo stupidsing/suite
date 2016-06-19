@@ -35,7 +35,7 @@ public class NioDispatcherTest {
 		Charset charset = Constants.charset;
 
 		BufferedChannel channel = new BufferedChannel() {
-			public void onConnected(Sender sender) {
+			public void onConnected(Fun<Bytes, Bytes> sender) {
 				super.onConnected(sender);
 				String s = hello + "\n";
 				send(To.bytes(s));

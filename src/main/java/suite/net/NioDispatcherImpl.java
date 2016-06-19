@@ -12,10 +12,11 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
 import suite.net.channels.Channel;
-import suite.net.channels.Channel.Sender;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Rethrow;
 import suite.util.Util;
 
 public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
@@ -163,13 +164,13 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 			}
 	}
 
-	private Sender createSender(SocketChannel sc) {
+	private Fun<Bytes, Bytes> createSender(SocketChannel sc) {
 		return in -> {
 
 			// Try to send immediately. If cannot sent all, wait for the
 			// writable event (and send again at that moment).
 			byte bytes[] = in.toBytes();
-			int sent = sc.write(ByteBuffer.wrap(bytes));
+			int sent = Rethrow.ioException(() -> sc.write(ByteBuffer.wrap(bytes)));
 			Bytes out = in.subbytes(sent);
 			int ops = SelectionKey.OP_READ | (!out.isEmpty() ? SelectionKey.OP_WRITE : 0);
 			SelectionKey key = sc.keyFor(selector);
