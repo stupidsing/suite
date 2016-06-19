@@ -45,9 +45,9 @@ public class NioDispatcherTest {
 				send(request);
 			}
 		};
+
 		Source<BufferedChannel> source = () -> channel;
 		NioDispatcher<BufferedChannel> dispatcher = new NioDispatcherImpl<>(source);
-
 		dispatcher.start();
 
 		try (Closeable closeServer = dispatcher.listen(5151);
