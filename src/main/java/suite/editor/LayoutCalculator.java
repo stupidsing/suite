@@ -144,7 +144,7 @@ public class LayoutCalculator {
 	}
 
 	/**
-	 * Expandable portion.
+	 * Extensible portion.
 	 */
 	public Portion ex(int unit, Node node) {
 		return p(unit, unit << 8, node);
