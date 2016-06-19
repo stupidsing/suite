@@ -2,6 +2,10 @@ ic-erase-stored .do0 .dox
 	:- !, ic-erase-stored0 .do0 .do1 .dox/.do1
 #
 
+ic-erase-stored0 (METHOD0 .mps .m0) (METHOD0 .mps .m1) .e/.e
+	:- !
+	, ic-erase-stored .m0 .m1
+#
 ic-erase-stored0 (SEQ .a0 .b0) (SEQ .a1 .b1) .e/.e
 	:- !
 	, ic-erase-stored .a0 .a1
