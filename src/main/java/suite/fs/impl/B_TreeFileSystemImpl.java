@@ -23,11 +23,9 @@ public class B_TreeFileSystemImpl implements FileSystem {
 
 	public B_TreeFileSystemImpl(Path path, int pageSize) {
 		jpf = new JournalledPageFileImpl(path, pageSize);
+		b_tree = new B_TreeBuilder<>(keyUtil.serializer(), Serialize.int_).build(jpf, false, Bytes.comparator, pageSize);
 
-		b_tree = new B_TreeBuilder<>(keyUtil.serializer(), Serialize.int_) //
-				.build(jpf, false, Bytes.comparator, pageSize);
-
-		KeyDataStoreMutator<Bytes> b_treeMutator = new B_TreeMutator<>(b_tree, jpf::commit);
+		KeyDataStoreMutator<Bytes> b_treeMutator = new B_TreeMutator<>(b_tree, () -> jpf.commit());
 
 		mutator = new FileSystemMutatorImpl(keyUtil, () -> b_treeMutator);
 	}
