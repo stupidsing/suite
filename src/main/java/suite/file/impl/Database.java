@@ -16,12 +16,12 @@ import suite.util.Util;
 public class Database implements Closeable {
 
 	private JournalledPageFile journalledPageFile;
-	private TransactionManager<Integer, String> txm;
+	private TransactionManager<Integer, String> transactionManager;
 
 	public Database(Path path) {
 		journalledPageFile = new JournalledPageFileImpl(path, PageFile.defaultPageSize);
 
-		txm = new TransactionManager<>(() -> LazyIbTreeExtentFileMutator.of( //
+		transactionManager = new TransactionManager<>(() -> LazyIbTreeExtentFileMutator.of( //
 				journalledPageFile, //
 				Util.comparator(), //
 				Serialize.int_, //
@@ -36,7 +36,7 @@ public class Database implements Closeable {
 
 	public <T> T transact(Fun<KeyValueStore<Integer, String>, T> callback) {
 		try {
-			return txm.begin(callback);
+			return transactionManager.begin(callback);
 		} finally {
 			journalledPageFile.commit();
 		}
