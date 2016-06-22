@@ -182,8 +182,7 @@ ic-parse-sugar (for (.init; .cond; .step) do .do) (.init; while .cond do (.do; .
 #
 ic-parse-sugar (for .var in (.start, .end) do .do) (declare .var = .start; while (.var < .end) do (.do; .var += 1))
 #
-ic-parse-sugar (fn [.ps] .do) (function [.ps1] .do)
-	:- append .ps (out result,) .ps1
+ic-parse-sugar (fn [.ps] .do) (function [out result, .ps] .do)
 #
 ic-parse-sugar (new ()) (new (struct ()) ())
 #

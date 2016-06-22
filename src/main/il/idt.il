@@ -60,7 +60,7 @@ declare idt-setup = function [] (
 
 			if (isr and 1 shl irq-number != 0) then (
 				declare irq-sink;
-				irq-get-sink [irq-number, out irq-sink,];
+				irq-get-sink [out irq-sink, irq-number,];
 				if (((& irq-sink) as pointer:int)/* != 0) then (irq-sink [irq-number,]) else ();
 
 				-- Sends end of interrupt signal
