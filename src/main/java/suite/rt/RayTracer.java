@@ -119,8 +119,8 @@ public class RayTracer {
 
 			float dot0 = Vector.dot(ray.dir, normal0);
 			boolean isInside = 0f < dot0;
-			float dot;
 			Vector normal;
+			float dot;
 
 			if (!isInside) {
 				normal = normal0;
