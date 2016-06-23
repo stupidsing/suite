@@ -19,7 +19,7 @@ public class Database implements Closeable {
 	private TransactionManager<Integer, String> transactionManager;
 
 	public Database(Path path) {
-		journalledPageFile = new JournalledPageFileImpl(path, PageFile.defaultPageSize);
+		journalledPageFile = JournalledFileFactory.journalled(path, PageFile.defaultPageSize);
 
 		transactionManager = new TransactionManager<>(() -> LazyIbTreeExtentFileMutator.of( //
 				journalledPageFile, //

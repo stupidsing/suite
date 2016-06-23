@@ -7,7 +7,7 @@ import suite.btree.B_Tree;
 import suite.btree.impl.B_TreeBuilder;
 import suite.btree.impl.B_TreeMutator;
 import suite.file.JournalledPageFile;
-import suite.file.impl.JournalledPageFileImpl;
+import suite.file.impl.JournalledFileFactory;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
 import suite.fs.KeyDataStoreMutator;
@@ -22,7 +22,7 @@ public class B_TreeFileSystemImpl implements FileSystem {
 	private FileSystemMutator mutator;
 
 	public B_TreeFileSystemImpl(Path path, int pageSize) {
-		jpf = new JournalledPageFileImpl(path, pageSize);
+		jpf = JournalledFileFactory.journalled(path, pageSize);
 		b_tree = new B_TreeBuilder<>(keyUtil.serializer(), Serialize.int_).build(jpf, false, Bytes.comparator, pageSize);
 
 		KeyDataStoreMutator<Bytes> b_treeMutator = new B_TreeMutator<>(b_tree, () -> jpf.commit());

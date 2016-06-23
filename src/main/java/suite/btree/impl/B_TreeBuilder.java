@@ -10,8 +10,8 @@ import java.util.Comparator;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.AllocatorImpl;
-import suite.file.impl.JournalledPageFileImpl;
 import suite.file.impl.FileFactory;
+import suite.file.impl.JournalledFileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.primitive.Bytes;
 import suite.util.Rethrow;
@@ -113,7 +113,7 @@ public class B_TreeBuilder<Key, Value> {
 		if (isNew)
 			Rethrow.ioException(() -> Files.deleteIfExists(path));
 
-		PageFile f = new JournalledPageFileImpl(path, pageSize);
+		PageFile f = JournalledFileFactory.journalled(path, pageSize);
 		return build(f, isNew, cmp, nPages);
 	}
 

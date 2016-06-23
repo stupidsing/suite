@@ -15,7 +15,8 @@ import org.junit.Test;
 import suite.Constants;
 import suite.adt.Pair;
 import suite.btree.impl.B_TreeBuilder;
-import suite.file.impl.JournalledPageFileImpl;
+import suite.file.JournalledPageFile;
+import suite.file.impl.JournalledFileFactory;
 import suite.util.Serialize;
 import suite.util.To;
 import suite.util.Util;
@@ -43,7 +44,7 @@ public class B_TreeTest {
 		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.string(16));
 
-		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(path, pageSize);
+		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
 				B_Tree<Integer, String> b_tree = builder.build(jpf, true, comparator, pageSize)) {
 			for (int i = 0; i < 32; i++)
 				b_tree.put(i, Integer.toString(i));
@@ -64,25 +65,25 @@ public class B_TreeTest {
 
 		shuffleNumbers();
 
-		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(path, pageSize);
+		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
 				B_Tree<Integer, String> b_tree = builder.build(jpf, true, comparator, pageSize)) {
 			testStep0(jpf, b_tree);
 		}
 
 		shuffleNumbers();
 
-		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(path, pageSize);
+		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
 				B_Tree<Integer, String> b_tree = builder.build(jpf, false, comparator, pageSize)) {
 			testStep1(jpf, b_tree);
 		}
 
-		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(path, pageSize);
+		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
 				B_Tree<Integer, String> b_tree = builder.build(jpf, false, comparator, pageSize)) {
 			testStep2(jpf, b_tree);
 		}
 	}
 
-	private void testStep0(JournalledPageFileImpl jpf, B_Tree<Integer, String> b_tree) throws IOException {
+	private void testStep0(JournalledPageFile jpf, B_Tree<Integer, String> b_tree) throws IOException {
 		for (int i = 0; i < nKeys; i++)
 			b_tree.put(keys[i], keys[i].toString());
 
@@ -103,7 +104,7 @@ public class B_TreeTest {
 		}
 	}
 
-	private void testStep1(JournalledPageFileImpl jpf, B_Tree<Integer, String> b_tree) throws IOException {
+	private void testStep1(JournalledPageFile jpf, B_Tree<Integer, String> b_tree) throws IOException {
 		for (int i = 0; i < nKeys; i += 2)
 			b_tree.remove(keys[i]);
 
@@ -116,7 +117,7 @@ public class B_TreeTest {
 			assertNull(b_tree.get(keys[i]));
 	}
 
-	private void testStep2(JournalledPageFileImpl jpf, B_Tree<Integer, String> b_tree) throws IOException {
+	private void testStep2(JournalledPageFile jpf, B_Tree<Integer, String> b_tree) throws IOException {
 		for (int i = 1; i < nKeys; i += 2)
 			b_tree.remove(keys[i]);
 
