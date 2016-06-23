@@ -27,11 +27,7 @@ import suite.util.Util;
  */
 public class HttpServer {
 
-	public interface Handler {
-		public void handle(HttpRequest request, HttpResponse response) throws IOException;
-	}
-
-	public void run(Handler handler) throws IOException {
+	public void run(HttpHandler handler) throws IOException {
 		new SocketUtil().listenIo(8051, (is, os) -> {
 			HashMap<String, String> responseHeaders = new HashMap<>();
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();

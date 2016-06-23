@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Random;
 
 import suite.Constants;
-import suite.http.HttpServer.Handler;
 import suite.util.HtmlUtil;
 import suite.util.Util;
 
@@ -50,15 +49,15 @@ public class HttpSessionController {
 		this.authenticator = authenticator;
 	}
 
-	public HttpSessionHandler getSessionHandler(Handler handler) {
+	public HttpSessionHandler getSessionHandler(HttpHandler handler) {
 		return new HttpSessionHandler(handler);
 
 	}
 
-	private class HttpSessionHandler implements Handler {
-		private Handler protectedHandler;
+	private class HttpSessionHandler implements HttpHandler {
+		private HttpHandler protectedHandler;
 
-		public HttpSessionHandler(Handler protectedHandler) {
+		public HttpSessionHandler(HttpHandler protectedHandler) {
 			this.protectedHandler = protectedHandler;
 		}
 

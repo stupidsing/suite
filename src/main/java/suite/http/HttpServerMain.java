@@ -4,17 +4,17 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-import suite.http.HttpServer.Handler;
 import suite.http.HttpSessionController.Authenticator;
 import suite.util.Util;
 
 // java -cp target/suite-1.0-jar-with-dependencies.jar suite.http.HttpServerMain
 public class HttpServerMain {
 
-	private Authenticator authenticator = (username, password) -> Util.stringEquals(username, "user")
+	private Authenticator authenticator = (username, password) -> true //
+			&& Util.stringEquals(username, "user") //
 			&& Util.stringEquals(password, "");
 
-	private Handler handler0 = new HttpHandler() {
+	private HttpHandler handler0 = new HttpIoHandler() {
 		protected void handle(Reader reader, Writer writer) throws IOException {
 			writer.write("<html>" //
 					+ "<br/>method = " + request.method //
@@ -26,7 +26,7 @@ public class HttpServerMain {
 		}
 	};
 
-	private Handler handler1 = new HttpSessionController(authenticator).getSessionHandler(handler0);
+	private HttpHandler handler1 = new HttpSessionController(authenticator).getSessionHandler(handler0);
 
 	public static void main(String args[]) throws IOException {
 		new HttpServerMain().run();
