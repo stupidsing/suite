@@ -11,7 +11,7 @@ import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
 
 /**
- * Channel that will reconnect if failed for any reasons.
+ * Channel that will reconnect if failed for any reason.
  */
 public abstract class PersistentChannel<CL extends Channel> extends RequestResponseChannel implements Service {
 
