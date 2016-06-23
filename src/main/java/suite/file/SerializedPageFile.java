@@ -1,5 +1,13 @@
 package suite.file;
 
-public interface SerializedPageFile<V> extends SerializedFile<Integer, V> {
+import java.io.Closeable;
+
+public interface SerializedPageFile<V> extends Closeable {
+
+	public void sync();
+
+	public V load(int pointer);
+
+	public void save(int pointer, V value);
 
 }

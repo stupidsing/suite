@@ -61,8 +61,8 @@ public class JournalledDataFileImpl<Pointer> implements JournalledDataFile<Point
 			, int pageSize //
 			, Serializer<Pointer> ps) {
 		dataFile = df;
-		journalPageFile = new SerializedPageFileImpl<>(jpf, journalEntrySerializer);
-		pointerPageFile = new SerializedPageFileImpl<>(ppf, Serialize.int_);
+		journalPageFile = SerializedFileFactory.serialized(jpf, journalEntrySerializer);
+		pointerPageFile = SerializedFileFactory.serialized(ppf, Serialize.int_);
 		pointerSerializer = ps;
 		bytesSerializer = Serialize.bytes(pageSize);
 		nCommittedJournalEntries = pointerPageFile.load(0);

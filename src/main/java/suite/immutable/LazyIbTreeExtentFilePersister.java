@@ -19,8 +19,8 @@ import suite.file.ExtentAllocator.Extent;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.ExtentFileImpl;
-import suite.file.impl.SerializedPageFileImpl;
-import suite.file.impl.SubPageFileImpl;
+import suite.file.impl.PageFileFactory;
+import suite.file.impl.SerializedFileFactory;
 import suite.immutable.LazyIbTree.Slot;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
@@ -63,11 +63,11 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 			}
 		};
 
-		PageFile pf0 = new SubPageFileImpl(pf, 0, 1);
-		PageFile pf1 = new SubPageFileImpl(pf, 1, Integer.MAX_VALUE);
+		PageFile pf0 = PageFileFactory.subPageFile(pf, 0, 1);
+		PageFile pf1 = PageFileFactory.subPageFile(pf, 1, Integer.MAX_VALUE);
 
 		this.comparator = comparator;
-		nPagesFile = new SerializedPageFileImpl<>(pf0, Serialize.int_);
+		nPagesFile = SerializedFileFactory.serialized(pf0, Serialize.int_);
 		extentFile = new ExtentFileImpl(pf1);
 		nPages = nPagesFile.load(0);
 	}

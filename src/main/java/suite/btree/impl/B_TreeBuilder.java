@@ -11,9 +11,8 @@ import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.AllocatorImpl;
 import suite.file.impl.JournalledPageFileImpl;
-import suite.file.impl.PageFileImpl;
-import suite.file.impl.SerializedPageFileImpl;
-import suite.file.impl.SubPageFileImpl;
+import suite.file.impl.PageFileFactory;
+import suite.file.impl.SerializedFileFactory;
 import suite.primitive.Bytes;
 import suite.util.Rethrow;
 import suite.util.Serialize;
@@ -124,9 +123,9 @@ public class B_TreeBuilder<Key, Value> {
 		int p0 = 0, p1 = p0 + nAllocatorPages, p2 = p1 + nSuperblockPages, p3 = p2 + nPages;
 
 		return build(isNew, cmp //
-				, new SubPageFileImpl(f, p0, p1) //
-				, new SubPageFileImpl(f, p1, p2) //
-				, new SubPageFileImpl(f, p2, p3));
+				, PageFileFactory.subPageFile(f, p0, p1) //
+				, PageFileFactory.subPageFile(f, p1, p2) //
+				, PageFileFactory.subPageFile(f, p2, p3));
 	}
 
 	public B_TreeImpl<Key, Value> build(Path path, boolean isNew, Comparator<Key> cmp) {
@@ -140,9 +139,9 @@ public class B_TreeBuilder<Key, Value> {
 				Rethrow.ioException(() -> Files.deleteIfExists(p_));
 
 		return build(isNew, cmp //
-				, new PageFileImpl(alp, pageSize) //
-				, new PageFileImpl(sbp, pageSize) //
-				, new PageFileImpl(p, pageSize));
+				, PageFileFactory.pageFile(alp, pageSize) //
+				, PageFileFactory.pageFile(sbp, pageSize) //
+				, PageFileFactory.pageFile(p, pageSize));
 	}
 
 	private B_TreeImpl<Key, Value> build(boolean isNew, Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {
@@ -153,10 +152,10 @@ public class B_TreeBuilder<Key, Value> {
 		Serializer<Bytes> pys = Serialize.bytes(pageSize);
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree);
 
-		SerializedPageFile<Bytes> alf = new SerializedPageFileImpl<>(alf0, als);
-		SerializedPageFile<B_TreeImpl<Key, Value>.Superblock> sbf = new SerializedPageFileImpl<>(sbf0, sbs);
-		SerializedPageFile<Bytes> pyf = new SerializedPageFileImpl<>(pf0, pys);
-		SerializedPageFile<B_TreeImpl<Key, Value>.Page> pf = new SerializedPageFileImpl<>(pf0, ps);
+		SerializedPageFile<Bytes> alf = SerializedFileFactory.serialized(alf0, als);
+		SerializedPageFile<B_TreeImpl<Key, Value>.Superblock> sbf = SerializedFileFactory.serialized(sbf0, sbs);
+		SerializedPageFile<Bytes> pyf = SerializedFileFactory.serialized(pf0, pys);
+		SerializedPageFile<B_TreeImpl<Key, Value>.Page> pf = SerializedFileFactory.serialized(pf0, ps);
 
 		b_tree.setAllocator(new AllocatorImpl(alf));
 		b_tree.setSuperblockPageFile(sbf);

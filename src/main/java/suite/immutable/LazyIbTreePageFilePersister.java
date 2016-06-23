@@ -14,8 +14,8 @@ import suite.adt.IdentityKey;
 import suite.adt.Pair;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
-import suite.file.impl.SerializedPageFileImpl;
-import suite.file.impl.SubPageFileImpl;
+import suite.file.impl.PageFileFactory;
+import suite.file.impl.SerializedFileFactory;
 import suite.immutable.LazyIbTree.Slot;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
@@ -53,12 +53,12 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 			}
 		};
 
-		PageFile pf0 = new SubPageFileImpl(pf, 0, 1);
-		PageFile pf1 = new SubPageFileImpl(pf, 1, Integer.MAX_VALUE);
+		PageFile pf0 = PageFileFactory.subPageFile(pf, 0, 1);
+		PageFile pf1 = PageFileFactory.subPageFile(pf, 1, Integer.MAX_VALUE);
 
 		this.comparator = comparator;
-		nPagesFile = new SerializedPageFileImpl<>(pf0, Serialize.int_);
-		pageFile = new SerializedPageFileImpl<>(pf1, pss);
+		nPagesFile = SerializedFileFactory.serialized(pf0, Serialize.int_);
+		pageFile = SerializedFileFactory.serialized(pf1, pss);
 		nPages = nPagesFile.load(0);
 	}
 

@@ -35,7 +35,7 @@ public class ExtentFileImpl implements ExtentFile {
 	}
 
 	public ExtentFileImpl(PageFile pageFile) {
-		this.pageFile = new SerializedPageFileImpl<>(pageFile, new Serializer<Block>() {
+		this.pageFile = SerializedFileFactory.serialized(pageFile, new Serializer<Block>() {
 			public Block read(DataInput dataInput) throws IOException {
 				Extent extent = extentSerializer.read(dataInput);
 				Bytes bytes = bytesSerializer.read(dataInput);
