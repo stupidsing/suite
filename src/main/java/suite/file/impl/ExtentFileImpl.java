@@ -21,7 +21,7 @@ public class ExtentFileImpl implements ExtentFile {
 	public static int blockSize = defaultPageSize - 12;
 
 	private Serializer<Extent> extentSerializer = Serialize.extent();
-	private Serializer<Bytes> bytesSerializer = Serialize.variableLengthBytes();
+	private Serializer<Bytes> bytesSerializer = Serialize.variableLengthBytes;
 	private SerializedPageFile<Block> pageFile;
 
 	private class Block {

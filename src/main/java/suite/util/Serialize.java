@@ -21,6 +21,30 @@ public class Serialize {
 	public static Serializer<Boolean> boolean_ = boolean_();
 	public static Serializer<Integer> int_ = int_();
 
+	public static Serializer<Bytes> variableLengthBytes = new Serializer<Bytes>() {
+		public Bytes read(DataInput dataInput) throws IOException {
+			int length = dataInput.readInt();
+			byte bs[] = new byte[length];
+			dataInput.readFully(bs);
+			return Bytes.of(bs);
+		}
+
+		public void write(DataOutput dataOutput, Bytes bytes) throws IOException {
+			dataOutput.writeInt(bytes.size());
+			bytes.write(dataOutput);
+		}
+	};
+
+	public static Serializer<String> variableLengthString = new Serializer<String>() {
+		public String read(DataInput dataInput) throws IOException {
+			return dataInput.readUTF();
+		}
+
+		public void write(DataOutput dataOutput, String value) throws IOException {
+			dataOutput.writeUTF(value);
+		}
+	};
+
 	public interface Serializer<V> {
 		public V read(DataInput dataInput) throws IOException;
 
@@ -118,34 +142,6 @@ public class Serialize {
 			public void write(DataOutput dataOutput, Pair<T0, T1> pair) throws IOException {
 				serializer0.write(dataOutput, pair.t0);
 				serializer1.write(dataOutput, pair.t1);
-			}
-		};
-	}
-
-	public static Serializer<Bytes> variableLengthBytes() {
-		return new Serializer<Bytes>() {
-			public Bytes read(DataInput dataInput) throws IOException {
-				int length = dataInput.readInt();
-				byte bs[] = new byte[length];
-				dataInput.readFully(bs);
-				return Bytes.of(bs);
-			}
-
-			public void write(DataOutput dataOutput, Bytes bytes) throws IOException {
-				dataOutput.writeInt(bytes.size());
-				bytes.write(dataOutput);
-			}
-		};
-	}
-
-	public static Serializer<String> variableLengthString() {
-		return new Serializer<String>() {
-			public String read(DataInput dataInput) throws IOException {
-				return dataInput.readUTF();
-			}
-
-			public void write(DataOutput dataOutput, String value) throws IOException {
-				dataOutput.writeUTF(value);
 			}
 		};
 	}

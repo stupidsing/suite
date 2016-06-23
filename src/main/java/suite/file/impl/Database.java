@@ -25,7 +25,7 @@ public class Database implements Closeable {
 				journalledPageFile, //
 				Util.comparator(), //
 				Serialize.int_, //
-				Serialize.variableLengthString()));
+				Serialize.variableLengthString));
 	}
 
 	@Override
