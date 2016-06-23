@@ -10,9 +10,9 @@ public class JournalledPageFileImpl extends JournalledDataFileImpl<Integer> impl
 
 	public JournalledPageFileImpl(Path path, int pageSize) {
 		super( //
-				PageFileFactory.pageFile(path, pageSize), //
-				PageFileFactory.pageFile(FileUtil.ext(path, ".journal"), pageSize + 4), //
-				PageFileFactory.pageFile(FileUtil.ext(path, ".pointer"), 4), //
+				FileFactory.pageFile(path, pageSize), //
+				FileFactory.pageFile(FileUtil.ext(path, ".journal"), pageSize + 4), //
+				FileFactory.pageFile(FileUtil.ext(path, ".pointer"), 4), //
 				pageSize, //
 				Serialize.int_);
 	}

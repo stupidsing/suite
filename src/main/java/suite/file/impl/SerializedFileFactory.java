@@ -34,7 +34,9 @@ public class SerializedFileFactory {
 	}
 
 	public static <V> SerializedPageFile<V> serialized(PageFile pageFile, Serializer<V> serializer) {
-		SerializedPageFile<V> dataFile = serialized(pageFile, serializer);
+		DataFile<Integer> dataFile0 = pageFile;
+
+		SerializedFile<Integer, V> dataFile = serialized(dataFile0, serializer);
 
 		return new SerializedPageFile<V>() {
 			public void close() throws IOException {

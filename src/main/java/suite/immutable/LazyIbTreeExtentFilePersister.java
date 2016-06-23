@@ -16,10 +16,10 @@ import suite.adt.HashBiMap;
 import suite.adt.IdentityKey;
 import suite.adt.Pair;
 import suite.file.ExtentAllocator.Extent;
+import suite.file.ExtentFile;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
-import suite.file.impl.ExtentFileImpl;
-import suite.file.impl.PageFileFactory;
+import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.immutable.LazyIbTree.Slot;
 import suite.primitive.Bytes;
@@ -32,7 +32,7 @@ import suite.util.Serialize.Serializer;
 public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Extent, T> {
 
 	private SerializedPageFile<Integer> nPagesFile;
-	private ExtentFileImpl extentFile;
+	private ExtentFile extentFile;
 	private Comparator<T> comparator;
 	private Serializer<PersistSlot<T>> serializer;
 
@@ -63,12 +63,12 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 			}
 		};
 
-		PageFile pf0 = PageFileFactory.subPageFile(pf, 0, 1);
-		PageFile pf1 = PageFileFactory.subPageFile(pf, 1, Integer.MAX_VALUE);
+		PageFile pf0 = FileFactory.subPageFile(pf, 0, 1);
+		PageFile pf1 = FileFactory.subPageFile(pf, 1, Integer.MAX_VALUE);
 
 		this.comparator = comparator;
 		nPagesFile = SerializedFileFactory.serialized(pf0, Serialize.int_);
-		extentFile = new ExtentFileImpl(pf1);
+		extentFile = FileFactory.extentFile(pf1);
 		nPages = nPagesFile.load(0);
 	}
 
@@ -166,7 +166,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	private Extent saveSlot(int start, PersistSlot<T> value) {
-		int bs = ExtentFileImpl.blockSize;
+		int bs = ExtentFile.blockSize;
 		Bytes bytes = Rethrow.ioException(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
 		Extent extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
 		extentFile.save(extent, bytes);

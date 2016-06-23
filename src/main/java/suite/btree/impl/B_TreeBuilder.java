@@ -11,7 +11,7 @@ import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.AllocatorImpl;
 import suite.file.impl.JournalledPageFileImpl;
-import suite.file.impl.PageFileFactory;
+import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.primitive.Bytes;
 import suite.util.Rethrow;
@@ -123,9 +123,9 @@ public class B_TreeBuilder<Key, Value> {
 		int p0 = 0, p1 = p0 + nAllocatorPages, p2 = p1 + nSuperblockPages, p3 = p2 + nPages;
 
 		return build(isNew, cmp //
-				, PageFileFactory.subPageFile(f, p0, p1) //
-				, PageFileFactory.subPageFile(f, p1, p2) //
-				, PageFileFactory.subPageFile(f, p2, p3));
+				, FileFactory.subPageFile(f, p0, p1) //
+				, FileFactory.subPageFile(f, p1, p2) //
+				, FileFactory.subPageFile(f, p2, p3));
 	}
 
 	public B_TreeImpl<Key, Value> build(Path path, boolean isNew, Comparator<Key> cmp) {
@@ -139,9 +139,9 @@ public class B_TreeBuilder<Key, Value> {
 				Rethrow.ioException(() -> Files.deleteIfExists(p_));
 
 		return build(isNew, cmp //
-				, PageFileFactory.pageFile(alp, pageSize) //
-				, PageFileFactory.pageFile(sbp, pageSize) //
-				, PageFileFactory.pageFile(p, pageSize));
+				, FileFactory.pageFile(alp, pageSize) //
+				, FileFactory.pageFile(sbp, pageSize) //
+				, FileFactory.pageFile(p, pageSize));
 	}
 
 	private B_TreeImpl<Key, Value> build(boolean isNew, Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {
