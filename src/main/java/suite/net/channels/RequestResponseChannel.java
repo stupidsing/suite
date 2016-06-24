@@ -65,7 +65,7 @@ public class RequestResponseChannel extends PacketChannel {
 			Bytes contents = packet.subbytes(5);
 
 			if (type == RESPONSE)
-				matcher.onRespondReceived(token, contents);
+				matcher.onResponseReceived(token, contents);
 			else if (type == REQUEST)
 				executor.execute(() -> send(RESPONSE, token, handler.apply(contents)));
 		}

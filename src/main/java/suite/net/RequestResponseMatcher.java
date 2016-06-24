@@ -36,7 +36,7 @@ public class RequestResponseMatcher {
 		return holder[0];
 	}
 
-	public void onRespondReceived(int token, Bytes respond) {
+	public void onResponseReceived(int token, Bytes respond) {
 		Bytes holder[] = requests.get(token);
 
 		if (holder != null)
