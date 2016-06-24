@@ -17,7 +17,7 @@ public abstract class PersistentChannel<CL extends Channel> extends RequestRespo
 
 	private NioDispatcher<CL> dispatcher;
 	private InetSocketAddress address;
-	boolean isStarted;
+	private boolean isStarted;
 
 	public PersistentChannel(NioDispatcher<CL> dispatcher //
 			, RequestResponseMatcher matcher //
