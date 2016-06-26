@@ -6,14 +6,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import suite.net.NioDispatcher;
 import suite.net.RequestResponseMatcher;
-import suite.net.Service;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
 
 /**
  * Channel that will reconnect if failed for any reason.
  */
-public abstract class PersistentChannel<CL extends Channel> extends RequestResponseChannel implements Service {
+public abstract class PersistentChannel<CL extends Channel> extends RequestResponseChannel implements ServiceChannel {
 
 	private NioDispatcher<CL> dispatcher;
 	private InetSocketAddress address;
@@ -29,11 +28,13 @@ public abstract class PersistentChannel<CL extends Channel> extends RequestRespo
 		this.address = address;
 	}
 
+	@Override
 	public synchronized void start() {
 		isStarted = true;
 		reconnect();
 	}
 
+	@Override
 	public synchronized void stop() {
 		isStarted = false;
 	}

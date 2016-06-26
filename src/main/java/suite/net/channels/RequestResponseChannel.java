@@ -12,7 +12,7 @@ import suite.util.Util;
 /**
  * Channel that exhibits client/server message exchange.
  */
-public class RequestResponseChannel extends PacketChannel {
+public class RequestResponseChannel extends PacketChannel implements ConnectChannel {
 
 	public static char RESPONSE = 'P';
 	public static char REQUEST = 'Q';
@@ -42,6 +42,7 @@ public class RequestResponseChannel extends PacketChannel {
 				.toBytes());
 	}
 
+	@Override
 	public boolean isConnected() {
 		return isConnected;
 	}
