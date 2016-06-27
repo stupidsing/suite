@@ -26,7 +26,7 @@ public class ClusterImpl implements Cluster {
 	private Map<String, InetSocketAddress> peers;
 	private ClusterProbe probe;
 
-	private NioDispatcher<ClusterChannel> nio = new NioDispatcherImpl<>(() -> new ClusterChannel(me));
+	private NioDispatcher<PersistentChannel> nio = new NioDispatcherImpl<>(() -> new ClusterChannel(me));
 
 	private RequestResponseMatcher matcher = new RequestResponseMatcher();
 	private ThreadPoolExecutor executor;
@@ -36,13 +36,13 @@ public class ClusterImpl implements Cluster {
 	/**
 	 * Established channels connecting to peers.
 	 */
-	private Map<String, ClusterChannel> channels = new HashMap<>();
+	private Map<String, PersistentChannel> channels = new HashMap<>();
 
 	private Reactive<String> onJoined;
 	private Reactive<String> onLeft;
 	private Map<Class<?>, Fun<?, ?>> onReceive = new HashMap<>();
 
-	private class ClusterChannel extends PersistentChannel<ClusterChannel> {
+	private class ClusterChannel extends PersistentChannel {
 		private ClusterChannel(String peer) {
 			super(nio, matcher, executor, peers.get(peer), ClusterImpl.this::respondToRequest);
 		}
@@ -64,7 +64,7 @@ public class ClusterImpl implements Cluster {
 		onJoined = probe.getOnJoined();
 
 		onLeft = probe.getOnLeft().map(node -> {
-			ClusterChannel channel = channels.get(node);
+			PersistentChannel channel = channels.get(node);
 			if (channel != null)
 				channel.stop();
 			return node;
@@ -75,7 +75,7 @@ public class ClusterImpl implements Cluster {
 
 	@Override
 	public void stop() {
-		for (ClusterChannel channel : channels.values())
+		for (PersistentChannel channel : channels.values())
 			channel.stop();
 
 		probe.stop();
@@ -95,8 +95,8 @@ public class ClusterImpl implements Cluster {
 			throw new RuntimeException("Peer " + peer + " is not active");
 	}
 
-	private ClusterChannel getChannel(String peer) {
-		ClusterChannel channel = channels.get(peer);
+	private PersistentChannel getChannel(String peer) {
+		PersistentChannel channel = channels.get(peer);
 
 		if (channel == null || !channel.isConnected())
 			try {

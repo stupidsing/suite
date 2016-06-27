@@ -131,7 +131,7 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 		int ops = key.readyOps();
 
 		if ((ops & SelectionKey.OP_ACCEPT) != 0) {
-			Channel channel = channelSource.source();
+			C channel = channelSource.source();
 			SocketChannel sc = ((ServerSocketChannel) sc0).accept().socket().getChannel();
 			sc.configureBlocking(false);
 			sc.register(selector, SelectionKey.OP_READ, channel);

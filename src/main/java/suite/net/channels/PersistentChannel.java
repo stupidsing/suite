@@ -12,13 +12,13 @@ import suite.util.FunUtil.Fun;
 /**
  * Channel that will reconnect if failed for any reason.
  */
-public abstract class PersistentChannel<CL extends Channel> extends RequestResponseChannel implements ServiceChannel {
+public abstract class PersistentChannel extends RequestResponseChannel implements ServiceChannel {
 
-	private NioDispatcher<CL> dispatcher;
+	private NioDispatcher<PersistentChannel> dispatcher;
 	private InetSocketAddress address;
 	private boolean isStarted;
 
-	public PersistentChannel(NioDispatcher<CL> dispatcher //
+	public PersistentChannel(NioDispatcher<PersistentChannel> dispatcher //
 			, RequestResponseMatcher matcher //
 			, ThreadPoolExecutor executor //
 			, InetSocketAddress address //
