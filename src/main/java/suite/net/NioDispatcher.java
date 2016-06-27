@@ -16,7 +16,7 @@ public interface NioDispatcher<C extends Channel> extends Service {
 	/**
 	 * Re-establishes connection using specified listener, if closed or dropped.
 	 */
-	public void reconnect(Channel channel, InetSocketAddress address) throws IOException;
+	public void reconnect(C channel, InetSocketAddress address) throws IOException;
 
 	/**
 	 * Ends connection.

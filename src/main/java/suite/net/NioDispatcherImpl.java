@@ -55,7 +55,7 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 	 * Re-establishes connection using specified listener, if closed or dropped.
 	 */
 	@Override
-	public void reconnect(Channel channel, InetSocketAddress address) throws IOException {
+	public void reconnect(C channel, InetSocketAddress address) throws IOException {
 		SocketChannel sc = SocketChannel.open();
 		sc.configureBlocking(false);
 		sc.connect(address);
