@@ -63,9 +63,9 @@ public class NioDispatcherTest {
 
 			assertEquals(hello, reader.readLine());
 			assertEquals(m, reader.readLine());
+		} finally {
+			dispatcher.stop();
 		}
-
-		dispatcher.stop();
 	}
 
 	@Test
@@ -90,9 +90,10 @@ public class NioDispatcherTest {
 				assertEquals(request, response);
 				System.out.println("Request '" + s + "' is okay");
 			}
+		} finally {
+			dispatcher.stop();
 		}
 
-		dispatcher.stop();
 		executor.awaitTermination(0, TimeUnit.SECONDS);
 	}
 
