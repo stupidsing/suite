@@ -107,6 +107,10 @@ public class Reactive<T> {
 		return redirect((t1, reactive1) -> reactive1.fire(cr.apply(t0 -> fun.apply(t0, t1))));
 	}
 
+	public <U> Reactive<U> map(Fun<T, U> fun) {
+		return redirect((t, reactive1) -> reactive1.fire(fun.apply(t)));
+	}
+
 	public Outlet<T> outlet() {
 		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
 		register(queue::offerQuietly);
@@ -119,14 +123,14 @@ public class Reactive<T> {
 		});
 	}
 
-	public <U> Reactive<U> map(Fun<T, U> fun) {
-		return redirect((t, reactive1) -> reactive1.fire(fun.apply(t)));
-	}
-
 	public <U> Reactive<U> redirect(Redirector<T, U> redirector) {
 		Reactive<U> reactive1 = new Reactive<>();
 		register(t -> redirector.accept(t, reactive1));
 		return reactive1;
+	}
+
+	public void register(Sink<T> receiver) {
+		receivers.add(receiver);
 	}
 
 	public Reactive<T> resample(Reactive<?> event) {
@@ -134,10 +138,6 @@ public class Reactive<T> {
 		ts.add(null);
 		register(t -> ts.set(0, t));
 		return event.redirect((e, reactive1) -> reactive1.fire(ts.get(0)));
-	}
-
-	public void register(Sink<T> receiver) {
-		receivers.add(receiver);
 	}
 
 	public Reactive<T> unique() {
