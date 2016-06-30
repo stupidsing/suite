@@ -123,17 +123,17 @@ public class Reactive<T> {
 		return redirect((t, reactive1) -> reactive1.fire(fun.apply(t)));
 	}
 
+	public <U> Reactive<U> redirect(Redirector<T, U> redirector) {
+		Reactive<U> reactive1 = new Reactive<>();
+		register(t -> redirector.accept(t, reactive1));
+		return reactive1;
+	}
+
 	public Reactive<T> resample(Reactive<?> event) {
 		List<T> ts = new ArrayList<>();
 		ts.add(null);
 		register(t -> ts.set(0, t));
 		return event.redirect((e, reactive1) -> reactive1.fire(ts.get(0)));
-	}
-
-	public <U> Reactive<U> redirect(Redirector<T, U> redirector) {
-		Reactive<U> reactive1 = new Reactive<>();
-		register(t -> redirector.accept(t, reactive1));
-		return reactive1;
 	}
 
 	public void register(Sink<T> receiver) {
