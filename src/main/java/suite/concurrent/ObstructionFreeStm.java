@@ -94,8 +94,9 @@ public class ObstructionFreeStm {
 			if (snapshot1 == null)
 				throw new LostSnapshotException();
 
-			if (lastReadTime[0] < transaction.time
-					&& !memory.asr.compareAndSet(snapshot, snapshot, lastReadTime[0], transaction.time))
+			int t = lastReadTime[0];
+
+			if (t < transaction.time && !memory.asr.compareAndSet(snapshot, snapshot, t, transaction.time))
 				continue;
 
 			return snapshot1.value;
