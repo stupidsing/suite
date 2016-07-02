@@ -40,6 +40,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.node.util.Mutable;
 import suite.node.util.SuiteException;
 import suite.node.util.TreeRewriter;
 import suite.node.util.TreeUtil;
@@ -167,17 +168,17 @@ public class SewingProverImpl implements SewingProver {
 		Trampoline tr = cutBegin(compile0(passThru, node));
 
 		return pc -> {
-			boolean result[] = new boolean[] { false };
+			Mutable<Boolean> result = Mutable.of(false);
 
 			trampoline(new Runtime(pc, rt -> {
 				rt.pushRem(rt_ -> {
-					result[0] = true;
+					result.update(true);
 					return fail;
 				});
 				return tr;
 			}));
 
-			return result[0];
+			return result.get();
 		};
 	}
 
@@ -316,16 +317,16 @@ public class SewingProverImpl implements SewingProver {
 			return rt -> {
 				Node ht[] = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
 				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
-				Node current[] = new Node[] { value0_.apply(rt.env) };
-				rt.pushRem(rt_ -> valuex_.test(rt_, current[0]) ? okay : fail);
+				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
+				rt.pushRem(rt_ -> valuex_.test(rt_, current.get()) ? okay : fail);
 				for (Node elem : Tree.iter(list0_.apply(rt.env))) {
 					Reference result = new Reference();
 					rt.pushRem(rt_ -> {
-						current[0] = result.finalNode();
+						current.update(result.finalNode());
 						return okay;
 					});
 					rt.pushRem(rt_ -> {
-						rt_.query = Tree.of(TermOp.ITEM__, Tree.of(TermOp.ITEM__, elem, current[0]), result);
+						rt_.query = Tree.of(TermOp.ITEM__, Tree.of(TermOp.ITEM__, elem, current.get()), result);
 						return tr1;
 					});
 				}
@@ -340,20 +341,20 @@ public class SewingProverImpl implements SewingProver {
 			Fun<Env, Node> vx_ = sb.compile(m[5]);
 			Trampoline tr1 = compile0(sb, m[6]);
 			return rt -> {
-				Node current[] = new Node[] { value0_.apply(rt.env) };
+				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				Env env0 = rt.env;
 				rt.pushRem(rt_ -> {
 					rt_.env = env0;
-					return valuex_.test(rt_, current[0]) ? okay : fail;
+					return valuex_.test(rt_, current.get()) ? okay : fail;
 				});
 				for (Node elem : Tree.iter(list0_.apply(rt.env))) {
 					rt.pushRem(rt_ -> {
-						current[0] = vx_.apply(rt_.env);
+						current.update(vx_.apply(rt_.env));
 						return okay;
 					});
 					rt.pushRem(rt_ -> {
 						rt_.env = env0.clone();
-						return elem_.test(rt_, elem) && v0_.test(rt_, current[0]) ? tr1 : fail;
+						return elem_.test(rt_, elem) && v0_.test(rt_, current.get()) ? tr1 : fail;
 					});
 				}
 				return okay;

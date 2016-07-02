@@ -8,6 +8,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.node.util.Mutable;
 import suite.util.FunUtil.Fun;
 
 public class LazyFunInterpreter0 {
@@ -76,9 +77,9 @@ public class LazyFunInterpreter0 {
 			Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(m[1]);
 			Fun<IMap<String, Thunk_>, Thunk_> expr = lazy0(m[2]);
 			result = env -> {
-				Thunk_ val[] = new Thunk_[] { null, };
-				IMap<String, Thunk_> env1 = env.put(vk, () -> val[0].get());
-				val[0] = value.apply(env1)::get;
+				Mutable<Thunk_> val = Mutable.nil();
+				IMap<String, Thunk_> env1 = env.put(vk, () -> val.get().get());
+				val.set(value.apply(env1)::get);
 				return expr.apply(env1);
 			};
 		} else if ((m = Suite.matcher("if .0 then .1 else .2").apply(node)) != null) {

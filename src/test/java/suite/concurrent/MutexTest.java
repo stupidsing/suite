@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import suite.concurrent.Concurrent.DeadlockException;
 import suite.concurrent.Mutex.MutexLock;
+import suite.node.util.Mutable;
 import suite.streamlet.Read;
 import suite.util.Util;
 
@@ -65,18 +66,18 @@ public class MutexTest {
 	}
 
 	private boolean isDeadlock(MutexTestRunnable... mtrs) throws InterruptedException {
-		boolean result[] = new boolean[] { false, };
+		Mutable<Boolean> result = Mutable.of(false);
 		List<Thread> threads = Read.from(mtrs) //
 				.map(mtr -> Util.newThread(() -> {
 					try {
 						mtr.run();
 					} catch (DeadlockException ex1) {
-						result[0] = true;
+						result.set(true);
 					}
 				})) //
 				.toList();
 		Util.startJoin(threads);
-		return result[0];
+		return result.get();
 	}
 
 }
