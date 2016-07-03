@@ -9,8 +9,8 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Reactive;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Sink2;
 import suite.util.Util;
 
 public interface NioChannelFactory {
@@ -147,10 +147,11 @@ public interface NioChannelFactory {
 	}
 
 	public static <C extends PacketedNioChannel> C packeted(Source<C> source) {
-		C channel = buffered(source, new Sink2<C, Bytes>() {
+		C channel = buffered(source);
+		channel.onReceive.register(new Sink<Bytes>() {
 			private Bytes received = Bytes.empty;
 
-			public void sink2(C channel, Bytes message) {
+			public void sink(Bytes message) {
 				received = received.append(message);
 				int size = received.size();
 
@@ -168,10 +169,9 @@ public interface NioChannelFactory {
 		return channel;
 	}
 
-	public static <C extends BufferedNioChannel> C buffered(Source<C> source, Sink2<C, Bytes> onReceive) {
+	public static <C extends BufferedNioChannel> C buffered(Source<C> source) {
 		C channel = source.source();
 		channel.onConnected.register(channel::setSender);
-		channel.onReceive.register(in -> onReceive.sink2(channel, in));
 		channel.onTrySend.register(dummy -> channel.trySend());
 		return channel;
 	}

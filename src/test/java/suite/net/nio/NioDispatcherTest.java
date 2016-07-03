@@ -42,8 +42,9 @@ public class NioDispatcherTest {
 				channel.send(To.bytes(s));
 
 			});
+			channel.onReceive.register(channel::send);
 			return channel;
-		}, BufferedNioChannel::send);
+		});
 		NioDispatcher<NioChannel> dispatcher = new NioDispatcherImpl<>(source);
 		dispatcher.start();
 
