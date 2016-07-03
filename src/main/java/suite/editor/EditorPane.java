@@ -50,8 +50,8 @@ public class EditorPane extends JEditorPane {
 
 		bind(KeyEvent.VK_TAB, 0).register(Listen.catchAll(tabize));
 		bind(KeyEvent.VK_TAB, Event.SHIFT_MASK).register(Listen.catchAll(untabize));
-		bind(KeyEvent.VK_Y, Event.CTRL_MASK).register(event -> undoManager.redo());
-		bind(KeyEvent.VK_Z, Event.CTRL_MASK).register(event -> undoManager.undo());
+		bind(KeyEvent.VK_Y, Event.CTRL_MASK).register(undoManager::redo);
+		bind(KeyEvent.VK_Z, Event.CTRL_MASK).register(undoManager::undo);
 
 		document.addUndoableEditListener(event -> undoManager.addEdit(event.getEdit()));
 		Listen.documentChanged(document).register(event -> model.changeModified(true));

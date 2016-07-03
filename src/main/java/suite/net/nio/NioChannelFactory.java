@@ -172,7 +172,7 @@ public interface NioChannelFactory {
 	public static <C extends BufferedNioChannel> C buffered(Source<C> source) {
 		C channel = source.source();
 		channel.onConnected.register(channel::setSender);
-		channel.onTrySend.register(dummy -> channel.trySend());
+		channel.onTrySend.register(channel::trySend);
 		return channel;
 	}
 

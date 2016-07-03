@@ -129,6 +129,10 @@ public class Reactive<T> {
 		return reactive1;
 	}
 
+	public void register(Runnable receiver) {
+		receivers.add(dummy -> receiver.run());
+	}
+
 	public void register(Sink<T> receiver) {
 		receivers.add(receiver);
 	}

@@ -42,7 +42,7 @@ public class EditorController {
 			view.getFilenameTextField().setText(filename);
 			view.repaint();
 		});
-		model.getModifiedChanged().register(isModified -> view.repaint());
+		model.getModifiedChanged().register(view::repaint);
 	}
 
 	public void bottom() {
