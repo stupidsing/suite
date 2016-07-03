@@ -5,12 +5,10 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import suite.net.NetUtil;
-import suite.node.util.Mutable;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Reactive;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Sink2;
 import suite.util.Util;
@@ -78,6 +76,8 @@ public interface NioChannelFactory {
 	}
 
 	public class PacketedNioChannel extends BufferedNioChannel {
+		public final Reactive<Bytes> onReceivePacket = new Reactive<>();
+
 		public void sendPacket(Bytes packet) {
 			send(new BytesBuilder() //
 					.append(NetUtil.intToBytes(packet.size())) //
@@ -125,30 +125,25 @@ public interface NioChannelFactory {
 			RequestResponseMatcher matcher, //
 			ThreadPoolExecutor executor, //
 			Fun<Bytes, Bytes> handler) {
-		Mutable<C> channel_ = Mutable.nil();
-
-		channel_.set(packeted(source, new Sink2<Bytes, Sink<Bytes>>() {
-			public void sink2(Bytes packet, Sink<Bytes> sendPacket) {
-				if (5 <= packet.size()) {
-					char type = (char) packet.get(0);
-					int token = NetUtil.bytesToInt(packet.subbytes(1, 5));
-					Bytes contents = packet.subbytes(5);
-
-					if (type == RESPONSE)
-						matcher.onResponseReceived(token, contents);
-					else if (type == REQUEST)
-						executor.execute(() -> channel_.get().send(RESPONSE, token, handler.apply(contents)));
-				}
-			}
-		}));
-
-		C channel = channel_.get();
+		C channel = packeted(source);
 		channel.onConnected.register(sender -> channel.setConnected(sender != null));
+		channel.onReceivePacket.register(packet -> {
+			if (5 <= packet.size()) {
+				char type = (char) packet.get(0);
+				int token = NetUtil.bytesToInt(packet.subbytes(1, 5));
+				Bytes contents = packet.subbytes(5);
+
+				if (type == RESPONSE)
+					matcher.onResponseReceived(token, contents);
+				else if (type == REQUEST)
+					executor.execute(() -> channel.send(RESPONSE, token, handler.apply(contents)));
+			}
+		});
 		return channel;
 	}
 
-	public static <C extends PacketedNioChannel> C packeted(Source<C> source, Sink2<Bytes, Sink<Bytes>> onReceivePacket) {
-		return buffered(source, new Sink2<C, Bytes>() {
+	public static <C extends PacketedNioChannel> C packeted(Source<C> source) {
+		C channel = buffered(source, new Sink2<C, Bytes>() {
 			private Bytes received = Bytes.empty;
 
 			public void sink2(C channel, Bytes message) {
@@ -161,11 +156,12 @@ public interface NioChannelFactory {
 					if (end <= size) {
 						Bytes in = received.subbytes(4, end);
 						received = received.subbytes(end);
-						onReceivePacket.sink2(in, channel::sendPacket);
+						channel.onReceivePacket.fire(in);
 					}
 				}
 			}
 		});
+		return channel;
 	}
 
 	public static <C extends BufferedNioChannel> C buffered(Source<C> source, Sink2<C, Bytes> onReceive) {

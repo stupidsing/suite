@@ -37,12 +37,12 @@ public class RequestResponseMatcher {
 		return holder.get();
 	}
 
-	public void onResponseReceived(int token, Bytes respond) {
+	public void onResponseReceived(int token, Bytes response) {
 		Mutable<Bytes> holder = requests.get(token);
 
 		if (holder != null)
 			synchronized (holder) {
-				holder.set(respond);
+				holder.set(response);
 				holder.notify();
 			}
 	}
