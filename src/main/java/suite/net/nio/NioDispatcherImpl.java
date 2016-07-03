@@ -12,6 +12,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
 import suite.net.ThreadService;
+import suite.net.nio.NioChannelFactory.NioChannel;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;

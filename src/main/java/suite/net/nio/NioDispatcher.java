@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import suite.net.Service;
+import suite.net.nio.NioChannelFactory.NioChannel;
 
 public interface NioDispatcher<C extends NioChannel> extends Service {
 

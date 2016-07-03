@@ -8,6 +8,7 @@ import suite.net.NetUtil;
 import suite.node.util.Mutable;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.streamlet.Reactive;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -103,6 +104,13 @@ public interface NioChannelFactory {
 			if (sender != null)
 				toSend = sender.apply(toSend);
 		}
+	}
+
+	public class NioChannel {
+		public final Reactive<Fun<Bytes, Bytes>> onConnected = new Reactive<>();
+		public final Reactive<Boolean> onClose = new Reactive<>();
+		public final Reactive<Bytes> onReceive = new Reactive<>();
+		public final Reactive<Boolean> onTrySend = new Reactive<>();
 	}
 
 	public static PersistentNioChannel persistent( //
