@@ -38,7 +38,7 @@ public interface NioChannelFactory {
 		}
 
 		private void reconnect() {
-			if (isStarted && !isConnected)
+			if (isStarted && !isConnected())
 				try {
 					nio.reconnect(this, address);
 				} catch (IOException ex) {
@@ -50,8 +50,8 @@ public interface NioChannelFactory {
 	public class RequestResponseNioChannel extends PacketedNioChannel {
 		public static char RESPONSE = 'P';
 		public static char REQUEST = 'Q';
-		public final Object mutex = new Object();
-		public boolean isConnected;
+		private final Object mutex = new Object();
+		private boolean isConnected;
 
 		public void send(char type, int token, Bytes data) {
 			if (!isConnected)
@@ -73,6 +73,10 @@ public interface NioChannelFactory {
 				mutex.notify();
 			}
 		}
+
+		public boolean isConnected() {
+			return isConnected;
+		}
 	}
 
 	public class PacketedNioChannel extends BufferedNioChannel {
@@ -88,7 +92,7 @@ public interface NioChannelFactory {
 
 	public class BufferedNioChannel extends NioChannel {
 		private Bytes toSend = Bytes.empty;
-		public Fun<Bytes, Bytes> sender;
+		private Fun<Bytes, Bytes> sender;
 
 		public void send(Bytes out) {
 			toSend = toSend.append(out);

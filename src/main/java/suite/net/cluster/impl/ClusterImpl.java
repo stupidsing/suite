@@ -95,7 +95,7 @@ public class ClusterImpl implements Cluster {
 	private PersistentNioChannel getChannel(String peer) {
 		PersistentNioChannel channel = channels.get(peer);
 
-		if (channel == null || !channel.isConnected)
+		if (channel == null || !channel.isConnected())
 			try {
 				if (channel != null)
 					nio.disconnect(channel);
