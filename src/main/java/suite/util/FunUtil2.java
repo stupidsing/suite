@@ -17,6 +17,11 @@ public class FunUtil2 {
 		public boolean source2(Pair<K, V> pair);
 	}
 
+	@FunctionalInterface
+	public interface Sink2<K, V> {
+		public void sink2(K key, V value);
+	}
+
 	public static <K, V> Source<Source2<K, V>> chunk(Source2<K, V> source2, int n) {
 		return new Source<Source2<K, V>>() {
 			private Pair<K, V> pair;

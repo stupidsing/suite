@@ -1,12 +1,12 @@
-package suite.net;
+package suite.net.nio;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import suite.net.channels.Channel;
+import suite.net.Service;
 
-public interface NioDispatcher<C extends Channel> extends Service {
+public interface NioDispatcher<C extends NioChannel> extends Service {
 
 	/**
 	 * Establishes connection to other host actively.

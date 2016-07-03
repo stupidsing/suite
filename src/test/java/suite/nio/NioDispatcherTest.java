@@ -1,4 +1,4 @@
-package suite.net;
+package suite.nio;
 
 import static org.junit.Assert.assertEquals;
 
@@ -19,8 +19,13 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import suite.Constants;
-import suite.net.channels.BufferedChannel;
-import suite.net.channels.RequestResponseChannel;
+import suite.net.nio.NioChannelFactory;
+import suite.net.nio.NioChannel;
+import suite.net.nio.NioDispatcher;
+import suite.net.nio.NioDispatcherImpl;
+import suite.net.nio.RequestResponseMatcher;
+import suite.net.nio.NioChannelFactory.BufferedNioChannel;
+import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -34,20 +39,16 @@ public class NioDispatcherTest {
 		String hello = "HELLO";
 		Charset charset = Constants.charset;
 
-		BufferedChannel channel = new BufferedChannel() {
-			public void onConnected(Fun<Bytes, Bytes> sender) {
-				super.onConnected(sender);
+		Source<NioChannel> source = () -> NioChannelFactory.buffered(() -> {
+			BufferedNioChannel channel = new BufferedNioChannel();
+			channel.onConnected.register(sender -> {
 				String s = hello + "\n";
-				send(To.bytes(s));
-			}
+				channel.send(To.bytes(s));
 
-			public void onReceive(Bytes request) {
-				send(request);
-			}
-		};
-
-		Source<BufferedChannel> source = () -> channel;
-		NioDispatcher<BufferedChannel> dispatcher = new NioDispatcherImpl<>(source);
+			});
+			return channel;
+		}, BufferedNioChannel::send);
+		NioDispatcher<NioChannel> dispatcher = new NioDispatcherImpl<>(source);
 		dispatcher.start();
 
 		try (Closeable closeServer = dispatcher.listen(5151);
@@ -74,14 +75,18 @@ public class NioDispatcherTest {
 		ThreadPoolExecutor executor = Util.createExecutor();
 		Fun<Bytes, Bytes> handler = request -> request;
 
-		Source<RequestResponseChannel> source = () -> new RequestResponseChannel(matcher, executor, handler);
-		NioDispatcher<RequestResponseChannel> dispatcher = new NioDispatcherImpl<>(source);
+		NioDispatcher<RequestResponseNioChannel> dispatcher = new NioDispatcherImpl<>( //
+				() -> NioChannelFactory.requestResponse( //
+						RequestResponseNioChannel::new, //
+						matcher, //
+						executor, //
+						handler));
 		dispatcher.start();
 
 		try (Closeable closeServer = dispatcher.listen(5151)) {
 			InetAddress localHost = InetAddress.getLocalHost();
 			InetSocketAddress address = new InetSocketAddress(localHost, 5151);
-			RequestResponseChannel client = dispatcher.connect(address);
+			RequestResponseNioChannel client = dispatcher.connect(address);
 
 			for (String s : new String[] { "ABC", "WXYZ", "", }) {
 				byte bs[] = s.getBytes(Constants.charset);

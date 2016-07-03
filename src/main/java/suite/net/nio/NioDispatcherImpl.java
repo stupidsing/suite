@@ -1,4 +1,4 @@
-package suite.net;
+package suite.net.nio;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
-import suite.net.channels.Channel;
+import suite.net.ThreadService;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
@@ -19,7 +19,7 @@ import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.Util;
 
-public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
+public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C> {
 
 	private static int bufferSize = 4096;
 
@@ -55,7 +55,7 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 	 * Re-establishes connection using specified listener, if closed or dropped.
 	 */
 	@Override
-	public void reconnect(C channel, InetSocketAddress address) throws IOException {
+	public void reconnect(NioChannel channel, InetSocketAddress address) throws IOException {
 		SocketChannel sc = SocketChannel.open();
 		sc.configureBlocking(false);
 		sc.connect(address);
@@ -68,7 +68,7 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 	 * Ends connection.
 	 */
 	@Override
-	public void disconnect(C channel) throws IOException {
+	public void disconnect(NioChannel channel) throws IOException {
 		for (SelectionKey key : selector.keys())
 			if (key.attachment() == channel)
 				key.channel().close();
@@ -135,32 +135,33 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 			SocketChannel sc = ((ServerSocketChannel) sc0).accept().socket().getChannel();
 			sc.configureBlocking(false);
 			sc.register(selector, SelectionKey.OP_READ, channel);
-			channel.onConnected(createSender(sc));
+			channel.onConnected.fire(createSender(sc));
 		}
 
 		if ((ops & ~SelectionKey.OP_ACCEPT) != 0)
 			synchronized (attachment) {
-				Channel channel = (Channel) attachment;
+				@SuppressWarnings("unchecked")
+				C channel = (C) attachment;
 				SocketChannel sc1 = (SocketChannel) sc0;
 
 				if ((ops & SelectionKey.OP_CONNECT) != 0) {
 					sc1.finishConnect();
 					key.interestOps(SelectionKey.OP_READ);
-					channel.onConnected(createSender(sc1));
+					channel.onConnected.fire(createSender(sc1));
 				}
 
 				if ((ops & SelectionKey.OP_READ) != 0) {
 					int n = sc1.read(ByteBuffer.wrap(buffer));
 					if (0 <= n)
-						channel.onReceive(Bytes.of(buffer, 0, n));
+						channel.onReceive.fire(Bytes.of(buffer, 0, n));
 					else {
-						channel.onClose();
+						channel.onClose.fire(Boolean.TRUE);
 						sc1.close();
 					}
 				}
 
 				if ((ops & SelectionKey.OP_WRITE) != 0)
-					channel.onTrySend();
+					channel.onTrySend.fire(Boolean.TRUE);
 			}
 	}
 
