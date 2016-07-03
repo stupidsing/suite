@@ -19,12 +19,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import suite.Constants;
-import suite.net.nio.NioChannelFactory;
-import suite.net.nio.NioChannel;
-import suite.net.nio.NioDispatcher;
-import suite.net.nio.NioDispatcherImpl;
-import suite.net.nio.RequestResponseMatcher;
 import suite.net.nio.NioChannelFactory.BufferedNioChannel;
+import suite.net.nio.NioChannelFactory.NioChannel;
 import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;

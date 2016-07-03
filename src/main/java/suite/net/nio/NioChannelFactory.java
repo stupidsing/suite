@@ -25,7 +25,7 @@ public interface NioChannelFactory {
 		private InetSocketAddress address;
 		private boolean isStarted;
 
-		private PersistentNioChannel(NioDispatcher<PersistentNioChannel> nio, InetSocketAddress address) {
+		public PersistentNioChannel(NioDispatcher<PersistentNioChannel> nio, InetSocketAddress address) {
 			this.nio = nio;
 			this.address = address;
 		}
@@ -108,18 +108,16 @@ public interface NioChannelFactory {
 
 	public class NioChannel {
 		public final Reactive<Fun<Bytes, Bytes>> onConnected = new Reactive<>();
-		public final Reactive<Boolean> onClose = new Reactive<>();
 		public final Reactive<Bytes> onReceive = new Reactive<>();
 		public final Reactive<Boolean> onTrySend = new Reactive<>();
 	}
 
-	public static PersistentNioChannel persistent( //
-			NioDispatcher<PersistentNioChannel> nio, //
+	public static <C extends PersistentNioChannel> C persistent( //
+			Source<C> source, //
 			RequestResponseMatcher matcher, //
 			ThreadPoolExecutor executor, //
-			InetSocketAddress address, //
 			Fun<Bytes, Bytes> handler) {
-		return requestResponse(() -> new PersistentNioChannel(nio, address), matcher, executor, handler);
+		return requestResponse(source, matcher, executor, handler);
 	}
 
 	public static <C extends RequestResponseNioChannel> C requestResponse( //
@@ -145,8 +143,7 @@ public interface NioChannelFactory {
 		}));
 
 		C channel = channel_.get();
-		channel.onConnected.register(t -> channel.setConnected(true));
-		channel.onClose.register(t -> channel.setConnected(false));
+		channel.onConnected.register(sender -> channel.setConnected(sender != null));
 		return channel;
 	}
 

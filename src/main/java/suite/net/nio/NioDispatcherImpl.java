@@ -156,7 +156,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 					if (0 <= n)
 						channel.onReceive.fire(Bytes.of(buffer, 0, n));
 					else {
-						channel.onClose.fire(Boolean.TRUE);
+						channel.onConnected.fire(null);
 						sc1.close();
 					}
 				}

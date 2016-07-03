@@ -12,10 +12,10 @@ import suite.net.NetUtil;
 import suite.net.cluster.Cluster;
 import suite.net.cluster.ClusterProbe;
 import suite.net.nio.NioChannelFactory;
+import suite.net.nio.NioChannelFactory.PersistentNioChannel;
 import suite.net.nio.NioDispatcher;
 import suite.net.nio.NioDispatcherImpl;
 import suite.net.nio.RequestResponseMatcher;
-import suite.net.nio.NioChannelFactory.PersistentNioChannel;
 import suite.primitive.Bytes;
 import suite.streamlet.Reactive;
 import suite.util.FunUtil.Fun;
@@ -45,8 +45,11 @@ public class ClusterImpl implements Cluster {
 	public ClusterImpl(String me, Map<String, InetSocketAddress> peers) throws IOException {
 		this.me = me;
 		this.peers = peers;
-		this.nio = new NioDispatcherImpl<>(
-				() -> NioChannelFactory.persistent(nio, matcher, executor, peers.get(me), this::respondToRequest));
+		this.nio = new NioDispatcherImpl<>(() -> NioChannelFactory.persistent( //
+				() -> new PersistentNioChannel(nio, peers.get(me)), //
+				matcher, //
+				executor, //
+				this::respondToRequest));
 		probe = new ClusterProbeImpl(me, peers);
 	}
 
