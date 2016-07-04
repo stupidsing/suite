@@ -20,12 +20,11 @@ import org.junit.Test;
 
 import suite.Constants;
 import suite.net.nio.NioChannelFactory;
-import suite.net.nio.NioChannel;
+import suite.net.nio.NioChannelFactory.BufferedNioChannel;
+import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
 import suite.net.nio.NioDispatcher;
 import suite.net.nio.NioDispatcherImpl;
 import suite.net.nio.RequestResponseMatcher;
-import suite.net.nio.NioChannelFactory.BufferedNioChannel;
-import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -39,16 +38,17 @@ public class NioDispatcherTest {
 		String hello = "HELLO";
 		Charset charset = Constants.charset;
 
-		Source<NioChannel> source = () -> NioChannelFactory.buffered(() -> {
+		Source<BufferedNioChannel> source = () -> NioChannelFactory.buffered(() -> {
 			BufferedNioChannel channel = new BufferedNioChannel();
 			channel.onConnected.register(sender -> {
 				String s = hello + "\n";
 				channel.send(To.bytes(s));
 
 			});
+			channel.onReceive.register(channel::send);
 			return channel;
-		}, BufferedNioChannel::send);
-		NioDispatcher<NioChannel> dispatcher = new NioDispatcherImpl<>(source);
+		});
+		NioDispatcher<BufferedNioChannel> dispatcher = new NioDispatcherImpl<>(source);
 		dispatcher.start();
 
 		try (Closeable closeServer = dispatcher.listen(5151);
