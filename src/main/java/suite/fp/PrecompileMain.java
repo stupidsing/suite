@@ -20,10 +20,6 @@ public class PrecompileMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String args[]) {
-		return precompile();
-	}
-
-	public boolean precompile() {
 		return LogUtil.duration(getClass().getSimpleName(), () -> {
 			ProverConfig pc = new ProverConfig();
 			boolean ok = Suite.precompile("STANDARD", pc);
