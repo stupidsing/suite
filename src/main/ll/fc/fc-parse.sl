@@ -14,7 +14,7 @@ fc-parse (.callee {.parameter}) (APPLY .parameter1 .callee1)
 	:- !, fc-parse .callee .callee1
 	, fc-parse .parameter .parameter1
 #
-fc-parse (.type of .value) (PRAGMA (TYPE-OF .type1) .value1)
+fc-parse (.type of .value) (PRAGMA (TYPE-CAST .type1) .value1)
 	:- fc-parse-type .type .type1
 	, !, fc-parse .value .value1
 #

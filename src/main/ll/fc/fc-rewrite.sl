@@ -61,12 +61,12 @@ fc-rewrite-pragma DEF-OUTSIDE DEF-OUTSIDE .ts/.ts
 #
 fc-rewrite-pragma NEW NEW .ts/.ts
 #
+fc-rewrite-pragma (TYPE-CAST .type0) (TYPE-CAST .type1) .ts/.ts
+	:- fc-rewrite-type .type0 .type1
+#
 fc-rewrite-pragma (TYPE-DEF .type0 .class0) (TYPE-DEF .type1 .class1) .ts/.ts
 	:- fc-rewrite-type .type0 .type1
 	, fc-rewrite-type .class0 .class1
-#
-fc-rewrite-pragma (TYPE-OF .type0) (TYPE-OF .type1) .ts/.ts
-	:- fc-rewrite-type .type0 .type1
 #
 fc-rewrite-pragma TYPE-SKIP-CHECK TYPE-SKIP-CHECK .ts/.ts
 #

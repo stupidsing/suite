@@ -67,14 +67,14 @@ fc-infer-type0 .ve/.te (PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)) .type
 	, fc-define-var-types POLY .vvs .vvts .ve/.veb
 	, fc-infer-type0 .veb/.te .do .type
 #
-fc-infer-type0 .ve/.te (PRAGMA (TYPE-DEF .definedType .class) .do) .type
-	:- !
-	, fc-infer-type0 .ve/(.definedType/.class, .te) .do .type
-#
-fc-infer-type0 .env (PRAGMA (TYPE-OF .type1) .do) .type
+fc-infer-type0 .env (PRAGMA (TYPE-CAST .type1) .do) .type
 	:- !
 	, graph.generalize .type1 .type
 	, fc-infer-type0 .env .do .type
+#
+fc-infer-type0 .ve/.te (PRAGMA (TYPE-DEF .definedType .class) .do) .type
+	:- !
+	, fc-infer-type0 .ve/(.definedType/.class, .te) .do .type
 #
 fc-infer-type0 _ (PRAGMA TYPE-SKIP-CHECK _) _
 	:- !
