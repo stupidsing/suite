@@ -67,7 +67,7 @@ fc-infer-type0 .ve/.te (PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)) .type
 	, fc-define-var-types POLY .vvs .vvts .ve/.veb
 	, fc-infer-type0 .veb/.te .do .type
 #
-fc-infer-type0 .ve/.te (PRAGMA (DEF-TYPE .definedType .class) .do) .type
+fc-infer-type0 .ve/.te (PRAGMA (TYPE-DEF .definedType .class) .do) .type
 	:- !
 	, fc-infer-type0 .ve/(.definedType/.class, .te) .do .type
 #

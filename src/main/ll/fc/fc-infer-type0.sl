@@ -72,17 +72,17 @@ fc-infer-type-rule (
 	, fc-define-var-types SP .vvs .vvts .ve/.ve1
 	, fc-infer-type-rule .do .ue/.ve1/.te .tr1/.trx .type
 #
-fc-infer-type-rule (
-	PRAGMA (DEF-TYPE .definedType .class .typeVars) .do
-) .ue/.ve/.te .tr .type
-	:- !
-	, .te1 = (.definedType/.class/.typeVars, .te)
-	, fc-infer-type-rule .do .ue/.ve/.te1 .tr .type
-#
 fc-infer-type-rule (PRAGMA (TYPE-CAST .type) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .type0
 	, .subType = .type0, .superType = .type
 	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
+#
+fc-infer-type-rule (
+	PRAGMA (TYPE-DEF .definedType .class .typeVars) .do
+) .ue/.ve/.te .tr .type
+	:- !
+	, .te1 = (.definedType/.class/.typeVars, .te)
+	, fc-infer-type-rule .do .ue/.ve/.te1 .tr .type
 #
 fc-infer-type-rule (PRAGMA TYPE-CAST-TO-CLASS .pair) .env .tr .classType
 	:- !

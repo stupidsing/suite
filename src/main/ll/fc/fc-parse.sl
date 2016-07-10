@@ -19,7 +19,7 @@ fc-parse (.type of .value) (PRAGMA (TYPE-OF .type1) .value1)
 	, !, fc-parse .value .value1
 #
 fc-parse (data .class over some .typeVars as .type >> .do) (
-	PRAGMA (DEF-TYPE .type2 .class2) .do1
+	PRAGMA (TYPE-DEF .type2 .class2) .do1
 ) :- fc-instantiate .typeVars .type/.class .type1/.class1
 	, fc-parse-type .type1 .type2
 	, fc-parse-type .class1 .class2
