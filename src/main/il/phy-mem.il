@@ -58,3 +58,6 @@ declare pm-setup = function [] (
 		stk-push [& pm-stack, pagex,];
 	);
 );
+
+declare pm-teardown = function [] (
+);

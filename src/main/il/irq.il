@@ -25,3 +25,6 @@ declare irq-setup = function [] (
 
 	--irq-set-sink [7, 0,]; -- Ignore spurious interrupts
 );
+
+declare irq-teardown = function [] (
+);

@@ -71,3 +71,6 @@ declare svc-setup = function [] (
 	--wrmsr [+x175, syscall-stack-address,]; -- Set by scheduler instead
 	wrmsr [+x176, sysenter-sink as int,];
 );
+
+declare svc-teardown = function [] (
+);

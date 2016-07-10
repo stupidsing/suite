@@ -213,8 +213,14 @@ asm _ MOV (ESP, kernel-second-esp);
 
 	pg-deallocate [user-stack-address, 1,];
 	kb-teardown [];
+	svc-teardown [];
 	pg-teardown [];
+	pm-teardown [];
+	idt-teardown [];
 	sch-teardown [];
+	irq-teardown [];
+	ap-teardown [];
+	ba-teardown [];
 
 	log "System halted";
 	asm _ CLI ();

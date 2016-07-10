@@ -131,3 +131,6 @@ declare ap-setup = function [] (
 	log-dword "IO APIC address = " ap-io-apic-address;
 	log-dword "Local APIC address = " ap-local-apic-address;
 );
+
+declare ap-teardown = function [] (
+);

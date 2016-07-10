@@ -194,3 +194,6 @@ declare idt-setup = function [] (
 		asm _ LIDT (`EAX`);
 	);
 );
+
+declare idt-teardown = function [] (
+);

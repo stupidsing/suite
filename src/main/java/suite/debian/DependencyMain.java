@@ -143,7 +143,7 @@ public class DependencyMain extends ExecutableProgram {
 
 	public List<String> listDependeesOfDkms() {
 		Repo repo = new Repo("http://mirrors.kernel.org/ubuntu" //
-				, "utopic" //
+				, "xenial" //
 				, "main" //
 				, "amd64");
 		String packageName = "dkms";

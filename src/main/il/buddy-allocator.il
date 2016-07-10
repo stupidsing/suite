@@ -85,3 +85,6 @@ declare ba-setup = function [] (
 	{first/*/+current/+size} = largest-l2; -- Granularity
 	dl-insert-next [& lists/:largest-l2, first,];
 );
+
+declare ba-teardown = function [] (
+);
