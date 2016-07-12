@@ -91,7 +91,6 @@ public class JournalledFileFactory {
 			 * Makes sure the current snapshot of data is saved and recoverable
 			 * on failure, upon the return of method call.
 			 */
-
 			public synchronized void sync() {
 				journalPageFile.sync();
 				saveJournal();

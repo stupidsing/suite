@@ -45,13 +45,16 @@ public class B_TreeTest {
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.string(16));
 
 		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-				B_Tree<Integer, String> b_tree = builder.build(jpf, true, comparator, pageSize)) {
+				B_Tree<Integer, String> b_tree = builder.build(jpf, comparator, pageSize)) {
+			b_tree.create();
+
 			for (int i = 0; i < 32; i++)
 				b_tree.put(i, Integer.toString(i));
 
 			b_tree.dump(System.out);
 
 			System.out.println(To.list(b_tree.keys(3, 10)));
+			jpf.commit();
 		}
 	}
 
@@ -66,29 +69,34 @@ public class B_TreeTest {
 		shuffleNumbers();
 
 		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-				B_Tree<Integer, String> b_tree = builder.build(jpf, true, comparator, pageSize)) {
-			testStep0(jpf, b_tree);
+				B_Tree<Integer, String> b_tree = builder.build(jpf, comparator, pageSize)) {
+			b_tree.create();
+			testStep0(b_tree);
+			jpf.commit();
+			jpf.sync();
 		}
 
 		shuffleNumbers();
 
 		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-				B_Tree<Integer, String> b_tree = builder.build(jpf, false, comparator, pageSize)) {
-			testStep1(jpf, b_tree);
+				B_Tree<Integer, String> b_tree = builder.build(jpf, comparator, pageSize)) {
+			testStep1(b_tree);
+			jpf.commit();
+			jpf.sync();
 		}
 
 		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-				B_Tree<Integer, String> b_tree = builder.build(jpf, false, comparator, pageSize)) {
-			testStep2(jpf, b_tree);
+				B_Tree<Integer, String> b_tree = builder.build(jpf, comparator, pageSize)) {
+			testStep2(b_tree);
+			jpf.commit();
+			jpf.sync();
+			jpf.applyJournal();
 		}
 	}
 
-	private void testStep0(JournalledPageFile jpf, B_Tree<Integer, String> b_tree) throws IOException {
+	private void testStep0(B_Tree<Integer, String> b_tree) throws IOException {
 		for (int i = 0; i < nKeys; i++)
 			b_tree.put(keys[i], keys[i].toString());
-
-		jpf.commit();
-		jpf.sync();
 
 		for (int i = 0; i < nKeys; i++)
 			assertEquals(Integer.toString(i), b_tree.get(i));
@@ -104,12 +112,9 @@ public class B_TreeTest {
 		}
 	}
 
-	private void testStep1(JournalledPageFile jpf, B_Tree<Integer, String> b_tree) throws IOException {
+	private void testStep1(B_Tree<Integer, String> b_tree) throws IOException {
 		for (int i = 0; i < nKeys; i += 2)
 			b_tree.remove(keys[i]);
-
-		jpf.commit();
-		jpf.sync();
 
 		b_tree.dump(System.out);
 
@@ -117,13 +122,9 @@ public class B_TreeTest {
 			assertNull(b_tree.get(keys[i]));
 	}
 
-	private void testStep2(JournalledPageFile jpf, B_Tree<Integer, String> b_tree) throws IOException {
+	private void testStep2(B_Tree<Integer, String> b_tree) throws IOException {
 		for (int i = 1; i < nKeys; i += 2)
 			b_tree.remove(keys[i]);
-
-		jpf.commit();
-		jpf.sync();
-		jpf.applyJournal();
 
 		b_tree.dump(System.out);
 

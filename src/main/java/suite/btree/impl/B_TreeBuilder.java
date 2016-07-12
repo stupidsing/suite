@@ -116,24 +116,28 @@ public class B_TreeBuilder<Key, Value> {
 			Rethrow.ioException(() -> Files.deleteIfExists(path));
 
 		JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-		B_Tree<Key, Value> b_tree = build(jpf, isNew, cmp, nPages);
-		if (isNew)
+		B_Tree<Key, Value> b_tree = build(jpf, cmp, nPages);
+
+		if (isNew) {
+			b_tree.create();
 			jpf.commit();
+		}
+
 		return b_tree;
 	}
 
-	public B_Tree<Key, Value> build(PageFile f, boolean isNew, Comparator<Key> cmp, int nPages) {
+	public B_Tree<Key, Value> build(PageFile f, Comparator<Key> cmp, int nPages) {
 		int nSuperblockPages = 1;
 		int nAllocatorPages = nPages / pageSize;
 		int p0 = 0, p1 = p0 + nAllocatorPages, p2 = p1 + nSuperblockPages, p3 = p2 + nPages;
 
-		return build(isNew, cmp //
+		return build(cmp //
 				, FileFactory.subPageFile(f, p0, p1) //
 				, FileFactory.subPageFile(f, p1, p2) //
 				, FileFactory.subPageFile(f, p2, p3));
 	}
 
-	public B_Tree<Key, Value> build(Path path, boolean isNew, Comparator<Key> cmp) {
+	public B_Tree<Key, Value> build(boolean isNew, Path path, Comparator<Key> cmp) {
 		Path filename = path.getFileName();
 		Path sbp = path.resolveSibling(filename + ".superblock");
 		Path alp = path.resolveSibling(filename + ".alloc");
@@ -143,13 +147,18 @@ public class B_TreeBuilder<Key, Value> {
 			for (Path p_ : new Path[] { sbp, alp, p, })
 				Rethrow.ioException(() -> Files.deleteIfExists(p_));
 
-		return build(isNew, cmp //
+		B_Tree<Key, Value> b_tree = build(cmp //
 				, FileFactory.pageFile(alp, pageSize) //
 				, FileFactory.pageFile(sbp, pageSize) //
 				, FileFactory.pageFile(p, pageSize));
+
+		if (isNew)
+			b_tree.create();
+
+		return b_tree;
 	}
 
-	private B_Tree<Key, Value> build(boolean isNew, Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {
+	private B_Tree<Key, Value> build(Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {
 		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(Util.nullsFirst(comparator));
 
 		Serializer<Bytes> als = Serialize.bytes(pageSize);
@@ -167,10 +176,6 @@ public class B_TreeBuilder<Key, Value> {
 		b_tree.setPayloadFile(pyf);
 		b_tree.setPageFile(pf);
 		b_tree.setBranchFactor(16);
-
-		if (isNew)
-			b_tree.create();
-
 		return b_tree;
 	}
 
