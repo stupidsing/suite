@@ -1,7 +1,6 @@
 package suite.debian;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +11,7 @@ import suite.adt.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Rethrow;
 
 public class DpkgUtil {
 
@@ -39,11 +39,7 @@ public class DpkgUtil {
 
 		for (File file : files)
 			if (file.exists())
-				try {
-					return Read.lines(file);
-				} catch (FileNotFoundException ex) {
-					throw new RuntimeException(ex);
-				}
+				return Rethrow.ioException(() -> Read.lines(file));
 
 		return null;
 	}
