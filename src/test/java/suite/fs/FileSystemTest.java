@@ -25,8 +25,8 @@ public class FileSystemTest {
 	}
 
 	@Test
-	public void testB_TreeFileSystem() throws IOException {
-		testB_Tree(Constants.tmp.resolve("b_tree-fs"), this::testWriteOneFile);
+	public void testB_TreeFileSystem0() throws IOException {
+		testB_Tree(Constants.tmp.resolve("b_tree-fs0"), this::testWriteOneFile);
 	}
 
 	@Test
