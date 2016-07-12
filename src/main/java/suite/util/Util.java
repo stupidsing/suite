@@ -245,7 +245,7 @@ public class Util {
 
 		while ((c = is.read()) != -1 && c != 10) {
 			sb.append((char) c);
-			if (65536 < sb.length())
+			if (65536 <= sb.length())
 				throw new RuntimeException("Line too long");
 		}
 
