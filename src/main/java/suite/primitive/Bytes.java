@@ -116,6 +116,13 @@ public class Bytes implements Iterable<Byte> {
 		return end <= start;
 	}
 
+	public boolean isZeroes() {
+		boolean result = true;
+		for (int i = start; result && i < end; i++)
+			result &= bs[i] == 0;
+		return result;
+	}
+
 	public Bytes pad(int size) {
 		BytesBuilder bb = new BytesBuilder();
 		bb.append(this);
@@ -178,6 +185,16 @@ public class Bytes implements Iterable<Byte> {
 			return Arrays.copyOfRange(bs, start, end);
 		else
 			return bs;
+	}
+
+	public Bytes trim() {
+		int s = start;
+		int e = end;
+		while (s < e && bs[s] == 0)
+			s++;
+		while (s < e && bs[e - 1] == 0)
+			e--;
+		return Bytes.of(bs, s, e);
 	}
 
 	public void write(DataOutput dataOutput) throws IOException {

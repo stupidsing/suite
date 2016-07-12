@@ -115,6 +115,13 @@ public class Chars implements Iterable<Character> {
 		return end <= start;
 	}
 
+	public boolean isWhitespaces() {
+		boolean result = true;
+		for (int i = start; result && i < end; i++)
+			result &= Character.isWhitespace(cs[i]);
+		return result;
+	}
+
 	public Chars pad(int size) {
 		CharsBuilder cb = new CharsBuilder();
 		cb.append(this);
@@ -177,6 +184,16 @@ public class Chars implements Iterable<Character> {
 			return Arrays.copyOfRange(cs, start, end);
 		else
 			return cs;
+	}
+
+	public Chars trim() {
+		int s = start;
+		int e = end;
+		while (s < e && Character.isWhitespace(cs[s]))
+			s++;
+		while (s < e && Character.isWhitespace(cs[e - 1]))
+			e--;
+		return Chars.of(cs, s, e);
 	}
 
 	public void write(DataOutput dataOutput) throws IOException {

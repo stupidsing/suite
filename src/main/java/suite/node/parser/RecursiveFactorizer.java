@@ -10,7 +10,6 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.primitive.Chars;
-import suite.primitive.CharsUtil;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Reverser;
 import suite.text.Segment;
@@ -47,7 +46,7 @@ public class RecursiveFactorizer {
 	}
 
 	private FactorizeResult parse0(Chars chars, int fromOp) {
-		Chars chars1 = CharsUtil.trim(chars);
+		Chars chars1 = chars.trim();
 
 		if (0 < chars1.size()) {
 			char first = chars1.get(0);
@@ -77,7 +76,7 @@ public class RecursiveFactorizer {
 					ri = 0;
 				} else {
 					if (operator == TermOp.TUPLE_)
-						if (CharsUtil.isWhitespaces(left) || CharsUtil.isWhitespaces(right))
+						if (left.isWhitespaces() || right.isWhitespaces())
 							continue;
 
 					boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
@@ -109,7 +108,7 @@ public class RecursiveFactorizer {
 	}
 
 	private FactorizeResult term(Chars chars) {
-		Chars chars1 = CharsUtil.trim(chars);
+		Chars chars1 = chars.trim();
 		int p0 = reverser.reverse(chars.start);
 		int p1 = reverser.reverse(chars1.start);
 		int p2 = reverser.reverse(chars1.end);

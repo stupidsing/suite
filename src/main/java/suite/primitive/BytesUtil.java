@@ -3,6 +3,7 @@ package suite.primitive;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import suite.concurrent.Condition;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
@@ -89,22 +90,27 @@ public class BytesUtil {
 			bytes.write(os);
 	}
 
-	public static boolean isZeroes(Bytes bytes) {
-		boolean result = true;
-		for (int i = bytes.start; result && i < bytes.end; i++)
-			result &= bytes.bs[i] == 0;
-		return result;
-	}
+	public static Outlet<Bytes> nonBlocking(Outlet<Bytes> o) {
+		BytesBuilder bb = new BytesBuilder();
+		Condition condition = new Condition(() -> bufferSize <= bb.size());
 
-	public static Bytes trim(Bytes bytes) {
-		byte bs[] = bytes.bs;
-		int start = bytes.start;
-		int end = bytes.end;
-		while (start < end && bs[start] == 0)
-			start++;
-		while (start < end && bs[end - 1] == 0)
-			end--;
-		return Bytes.of(bs, start, end);
+		new Thread(() -> {
+			Bytes bytes;
+			while ((bytes = o.source().source()) != null) {
+				Bytes bytes_ = bytes;
+				condition.waitThen(() -> bb.append(bytes_));
+			}
+		}).start();
+
+		return new Outlet<>(new Source<Bytes>() {
+			public Bytes source() {
+				return condition.thenNotify(() -> {
+					Bytes bytes = bb.toBytes();
+					bb.clear();
+					return bytes;
+				});
+			}
+		});
 	}
 
 }

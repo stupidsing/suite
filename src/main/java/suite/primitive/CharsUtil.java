@@ -3,6 +3,7 @@ package suite.primitive;
 import java.io.IOException;
 import java.io.Writer;
 
+import suite.concurrent.Condition;
 import suite.primitive.Chars.CharsBuilder;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
@@ -89,22 +90,27 @@ public class CharsUtil {
 			chars.write(writer);
 	}
 
-	public static boolean isWhitespaces(Chars chars) {
-		boolean result = true;
-		for (int i = chars.start; result && i < chars.end; i++)
-			result &= Character.isWhitespace(chars.cs[i]);
-		return result;
-	}
+	public static Outlet<Chars> nonBlocking(Outlet<Chars> o) {
+		CharsBuilder cb = new CharsBuilder();
+		Condition condition = new Condition(() -> bufferSize <= cb.size());
 
-	public static Chars trim(Chars chars) {
-		char cs[] = chars.cs;
-		int start = chars.start;
-		int end = chars.end;
-		while (start < end && Character.isWhitespace(cs[start]))
-			start++;
-		while (start < end && Character.isWhitespace(cs[end - 1]))
-			end--;
-		return Chars.of(cs, start, end);
+		new Thread(() -> {
+			Chars chars;
+			while ((chars = o.source().source()) != null) {
+				Chars chars_ = chars;
+				condition.waitThen(() -> cb.append(chars_));
+			}
+		}).start();
+
+		return new Outlet<>(new Source<Chars>() {
+			public Chars source() {
+				return condition.thenNotify(() -> {
+					Chars chars = cb.toChars();
+					cb.clear();
+					return chars;
+				});
+			}
+		});
 	}
 
 }
