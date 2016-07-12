@@ -2,9 +2,9 @@ package suite.primitive;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.concurrent.SynchronousQueue;
 
-import suite.concurrent.Condition;
-import suite.node.util.Mutable;
+import suite.os.LogUtil;
 import suite.primitive.Chars.CharsBuilder;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
@@ -92,27 +92,21 @@ public class CharsUtil {
 	}
 
 	public static Outlet<Chars> nonBlocking(Outlet<Chars> o) {
-		CharsBuilder cb = new CharsBuilder();
-		Mutable<Boolean> isEof = Mutable.of(false);
-		Condition condition = new Condition(() -> bufferSize <= cb.size());
+		SynchronousQueue<Chars> queue = new SynchronousQueue<>();
 
 		new Thread(() -> {
+			Source<Chars> source = o.source();
 			Chars chars;
-			while ((chars = o.source().source()) != null) {
-				Chars chars_ = chars;
-				condition.waitThen(() -> cb.append(chars_));
+			try {
+				do
+					queue.put(chars = source.source());
+				while (chars != null);
+			} catch (InterruptedException ex) {
+				LogUtil.error(ex);
 			}
 		}).start();
 
-		return new Outlet<>(new Source<Chars>() {
-			public Chars source() {
-				return condition.thenNotify(() -> {
-					Chars chars = cb.toChars();
-					cb.clear();
-					return 0 < chars.size() || !isEof.get() ? chars : null;
-				});
-			}
-		});
+		return new Outlet<>(queue::poll);
 	}
 
 }

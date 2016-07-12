@@ -2,9 +2,9 @@ package suite.primitive;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.SynchronousQueue;
 
-import suite.concurrent.Condition;
-import suite.node.util.Mutable;
+import suite.os.LogUtil;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
@@ -92,28 +92,21 @@ public class BytesUtil {
 	}
 
 	public static Outlet<Bytes> nonBlocking(Outlet<Bytes> o) {
-		BytesBuilder bb = new BytesBuilder();
-		Mutable<Boolean> isEof = Mutable.of(false);
-		Condition condition = new Condition(() -> bufferSize <= bb.size());
+		SynchronousQueue<Bytes> queue = new SynchronousQueue<>();
 
 		new Thread(() -> {
+			Source<Bytes> source = o.source();
 			Bytes bytes;
-			while ((bytes = o.source().source()) != null) {
-				Bytes bytes_ = bytes;
-				condition.waitThen(() -> bb.append(bytes_));
+			try {
+				do
+					queue.put(bytes = source.source());
+				while (bytes != null);
+			} catch (InterruptedException ex) {
+				LogUtil.error(ex);
 			}
-			isEof.set(true);
 		}).start();
 
-		return new Outlet<>(new Source<Bytes>() {
-			public Bytes source() {
-				return condition.thenNotify(() -> {
-					Bytes bytes = bb.toBytes();
-					bb.clear();
-					return 0 < bytes.size() || !isEof.get() ? bytes : null;
-				});
-			}
-		});
+		return new Outlet<>(queue::poll);
 	}
 
 }
