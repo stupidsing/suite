@@ -168,7 +168,7 @@ public class DependencyMain extends ExecutableProgram {
 		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
 		return Read.from(packages) //
 				.filter(pm -> pm.get("Status").contains("deinstall")) //
-				.map(pm -> "sudo dpkg --purge " + pm.get("Package")) //
+				.map(pm -> "sudo dpkg --purge " + packageName(pm)) //
 				.sort(Util::compare) //
 				.toList();
 	}
@@ -200,7 +200,7 @@ public class DependencyMain extends ExecutableProgram {
 
 		return Read.from(packages) //
 				.filter(pm -> !isEssential(pm)) //
-				.map(pm -> pm.get("Package")) //
+				.map(this::packageName) //
 				.filter(packageName -> !dependees.containsKey(packageName)) //
 				.filter(packageName -> !requiredList.contains(packageName)) //
 				.sort(Util::compare) //
@@ -213,13 +213,13 @@ public class DependencyMain extends ExecutableProgram {
 
 		required.addAll(Read.from(packages) //
 				.filter(this::isEssential) //
-				.map(pm -> pm.get("Package")) //
+				.map(this::packageName) //
 				.toList());
 
 		Set<String> required1 = dpkgUtil.getDependeeSet(packages, required);
 
 		return Read.from(packages) //
-				.map(pm -> pm.get("Package")) //
+				.map(this::packageName) //
 				.filter(packageName -> !required1.contains(packageName)) //
 				.sort(Util::compare) //
 				.toList();
@@ -235,6 +235,10 @@ public class DependencyMain extends ExecutableProgram {
 				.map(Path::toString) //
 				.filter(p -> !files.contains(p)) //
 				.toList();
+	}
+
+	private String packageName(Map<String, String> pm) {
+		return pm.get("Package");
 	}
 
 	private boolean isEssential(Map<String, String> pm) {
