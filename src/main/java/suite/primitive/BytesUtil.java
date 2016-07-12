@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import suite.concurrent.Condition;
+import suite.node.util.Mutable;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
@@ -92,6 +93,7 @@ public class BytesUtil {
 
 	public static Outlet<Bytes> nonBlocking(Outlet<Bytes> o) {
 		BytesBuilder bb = new BytesBuilder();
+		Mutable<Boolean> isEof = Mutable.of(false);
 		Condition condition = new Condition(() -> bufferSize <= bb.size());
 
 		new Thread(() -> {
@@ -100,6 +102,7 @@ public class BytesUtil {
 				Bytes bytes_ = bytes;
 				condition.waitThen(() -> bb.append(bytes_));
 			}
+			isEof.set(true);
 		}).start();
 
 		return new Outlet<>(new Source<Bytes>() {
@@ -107,7 +110,7 @@ public class BytesUtil {
 				return condition.thenNotify(() -> {
 					Bytes bytes = bb.toBytes();
 					bb.clear();
-					return bytes;
+					return 0 < bytes.size() || !isEof.get() ? bytes : null;
 				});
 			}
 		});

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import suite.concurrent.Condition;
+import suite.node.util.Mutable;
 import suite.primitive.Chars.CharsBuilder;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
@@ -92,6 +93,7 @@ public class CharsUtil {
 
 	public static Outlet<Chars> nonBlocking(Outlet<Chars> o) {
 		CharsBuilder cb = new CharsBuilder();
+		Mutable<Boolean> isEof = Mutable.of(false);
 		Condition condition = new Condition(() -> bufferSize <= cb.size());
 
 		new Thread(() -> {
@@ -107,7 +109,7 @@ public class CharsUtil {
 				return condition.thenNotify(() -> {
 					Chars chars = cb.toChars();
 					cb.clear();
-					return chars;
+					return 0 < chars.size() || !isEof.get() ? chars : null;
 				});
 			}
 		});
