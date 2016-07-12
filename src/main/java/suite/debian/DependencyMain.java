@@ -24,83 +24,101 @@ public class DependencyMain extends ExecutableProgram {
 	private AptUtil aptUtil = new AptUtil(debianUtil);
 
 	// Tools
-	private List<String> mainList = Arrays.asList( //
-			"abiword" //
-			, "alsa-utils" //
-			, "asunder" //
-			, "bochs" //
-			, "build-essential" //
+	private List<String> baseList = Arrays.asList( //
+			"acpi" //
 			, "cifs-utils" //
-			, "chromium" //
-			, "compizconfig-settings-manager" //
-			, "compiz-plugins" //
 			, "deborphan" //
-			, "dia" //
-			, "dosbox" //
-			, "flac" //
-			, "fonts-droid" //
-			, "fonts-inconsolata" //
-			, "fonts-umeplus" //
-			, "fontforge" //
-			, "g++" //
-			, "gcin" //
-			, "gconf-editor" //
-			, "git-core" //
-			, "gnome-tweak-tool" //
-			, "gnugo" //
-			, "gnumeric" //
-			, "golang" //
-			, "gparted" //
-			, "gpicview" //
 			, "grub-pc" //
 			, "imagemagick" //
-			, "leafpad" //
 			, "less" //
-			, "libreadline-dev" //
-			, "libreoffice" //
-			, "lightdm" //
-			, "mpg321" //
+			, "linux-headers-686-pae" //
+			, "linux-image-686-pae" //
+			, "manpages" //
 			, "netcat-traditional" //
-			, "obconf" //
-			, "openbox" //
-			, "openjdk-8-jdk" //
-			, "pcmanfm" //
-			, "pidgin" //
-			, "pidgin-hotkeys" //
-			, "rdesktop" //
 			, "rlwrap" //
 			, "rsync" //
-			, "rxvt-unicode" //
-			, "scite" //
 			, "ssh" //
 			, "sshfs" //
 			, "subversion" //
-			, "supertux" //
-			, "terminator" //
-			, "thunderbird" //
-			, "tilda" //
-			, "tint2" //
-			, "torcs" //
-			, "unetbootin" //
 			, "unzip" //
 			, "usbutils" // lsusb
 			, "vim" //
-			, "virtualbox-dkms" //
-			, "virtualbox-qt" //
 			, "w3m" //
-			, "wine" //
-			, "wine32" //
-			, "xchm" //
-			, "xpdf" //
-			, "xscavenger" //
-			, "xserver-xorg" //
-			, "yeahconsole" //
+			, "wpasupplicant" //
 			, "zip" //
 	);
 
 	private List<String> debianList = Arrays.asList( //
 			"icedove" // firefox
 			, "iceweasel" // thunderbird
+	);
+
+	private List<String> devList = Arrays.asList( //
+			"bochs" //
+			, "build-essential" //
+			, "g++" //
+			, "git-core" //
+			, "golang" //
+			, "libreadline-dev" //
+			, "openjdk-8-jdk" //
+	);
+
+	private List<String> gamesList = Arrays.asList( //
+			"frogatto" //
+			, "gnugo" //
+			, "supertux" //
+			, "torcs" //
+			, "xscavenger" //
+	);
+
+	private List<String> guiList = Arrays.asList( //
+			"abiword" //
+			, "virtualbox-dkms" //
+			, "virtualbox-qt" //
+			, "wine" //
+			, "wine32" //
+			, "xchm" //
+			, "xpdf" //
+			, "xserver-xorg" //
+			, "yeahconsole" //
+			, "asunder" //
+			, "chromium" //
+			, "compizconfig-settings-manager" //
+			, "compiz-plugins" //
+			, "dia" //
+			, "dosbox" //
+			, "fonts-droid" //
+			, "fonts-inconsolata" //
+			, "fonts-umeplus" //
+			, "fontforge" //
+			, "gcin" //
+			, "gconf-editor" //
+			, "gnome-tweak-tool" //
+			, "gnumeric" //
+			, "gparted" //
+			, "gpicview" //
+			, "leafpad" //
+			, "libreoffice" //
+			, "lightdm" //
+			, "obconf" //
+			, "openbox" //
+			, "pcmanfm" //
+			, "pidgin" //
+			, "pidgin-hotkeys" //
+			, "rdesktop" //
+			, "rxvt-unicode" //
+			, "scite" //
+			, "terminator" //
+			, "thunderbird" //
+			, "tilda" //
+			, "tint2" //
+			, "unetbootin" //
+	);
+
+	private List<String> mediaList = Arrays.asList( //
+			"alsa-utils" //
+			, "flac" //
+			, "mpg321" //
 	);
 
 	// Not a must, but good to have
@@ -118,10 +136,14 @@ public class DependencyMain extends ExecutableProgram {
 	);
 
 	private Set<String> requiredList = new HashSet<>(Util.add( //
-			mainList //
+			baseList //
 			, debianList //
-			, supplementaryList //
+			, devList //
+			, gamesList //
+			, guiList //
+			, mediaList //
 			, operatingSystemList //
+			, supplementaryList //
 	));
 
 	public static void main(String args[]) {
@@ -180,7 +202,7 @@ public class DependencyMain extends ExecutableProgram {
 		Set<String> required = new HashSet<>(requiredList);
 
 		required.addAll(Read.from(packages) //
-				.filter(pm -> isEssential(pm)) //
+				.filter(this::isEssential) //
 				.map(pm -> pm.get("Package")) //
 				.toList());
 
