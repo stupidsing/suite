@@ -203,7 +203,7 @@ public class DependencyMain extends ExecutableProgram {
 				.map(this::packageName) //
 				.filter(packageName -> !dependees.containsKey(packageName)) //
 				.filter(packageName -> !requiredList.contains(packageName)) //
-				.map(packageName -> "sudo apt remove --purge " + packageName) //
+				.map(packageName -> "sudo apt remove -y --purge " + packageName) //
 				.sort(Util::compare) //
 				.toList();
 	}
