@@ -73,15 +73,8 @@ public class DependencyMain extends ExecutableProgram {
 
 	private List<String> guiList = Arrays.asList( //
 			"abiword" //
-			, "virtualbox-dkms" //
-			, "virtualbox-qt" //
-			, "wine" //
-			, "wine32" //
-			, "xchm" //
-			, "xpdf" //
-			, "xserver-xorg" //
-			, "yeahconsole" //
 			, "asunder" //
+			, "evince" //
 			, "chromium" //
 			, "compizconfig-settings-manager" //
 			, "compiz-plugins" //
@@ -113,6 +106,14 @@ public class DependencyMain extends ExecutableProgram {
 			, "tilda" //
 			, "tint2" //
 			, "unetbootin" //
+			, "virtualbox-dkms" //
+			, "virtualbox-qt" //
+			, "wine" //
+			, "wine32" //
+			, "xchm" //
+			, "xpdf" //
+			, "xserver-xorg" //
+			, "yeahconsole" //
 	);
 
 	private List<String> mediaList = Arrays.asList( //
@@ -176,7 +177,7 @@ public class DependencyMain extends ExecutableProgram {
 		Set<String> required1 = dpkgUtil.getDependingSet(packages, required);
 		return Read.from(required1) //
 				.map(packageName_ -> aptUtil.getDownloadUrl(repo, packages, packageName_)) //
-				.sort(Util.comparator()) //
+				.sort(Util::compare) //
 				.toList();
 	}
 
@@ -193,7 +194,7 @@ public class DependencyMain extends ExecutableProgram {
 				.map(pm -> pm.get("Package")) //
 				.filter(packageName -> !dependees.containsKey(packageName)) //
 				.filter(packageName -> !requiredList.contains(packageName)) //
-				.sort(Util.comparator()) //
+				.sort(Util::compare) //
 				.toList();
 	}
 
@@ -211,7 +212,7 @@ public class DependencyMain extends ExecutableProgram {
 		return Read.from(packages) //
 				.map(pm -> pm.get("Package")) //
 				.filter(packageName -> !required1.contains(packageName)) //
-				.sort(Util.comparator()) //
+				.sort(Util::compare) //
 				.toList();
 	}
 
