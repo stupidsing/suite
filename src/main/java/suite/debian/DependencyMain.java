@@ -164,6 +164,15 @@ public class DependencyMain extends ExecutableProgram {
 		return true;
 	}
 
+	public List<String> listDeinstalledPackages() {
+		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
+		return Read.from(packages) //
+				.filter(pm -> pm.get("Status").contains("deinstall")) //
+				.map(pm -> "sudo dpkg --purge " + pm.get("Package")) //
+				.sort(Util::compare) //
+				.toList();
+	}
+
 	public List<String> listDependeesOfDkms() {
 		Repo repo = new Repo("http://mirrors.kernel.org/ubuntu" //
 				, "xenial" //
@@ -174,7 +183,7 @@ public class DependencyMain extends ExecutableProgram {
 		List<Map<String, String>> packages;
 		packages = Rethrow.ioException(() -> aptUtil.readRepoPackages(repo));
 		Set<String> required = new HashSet<>(Arrays.asList(packageName));
-		Set<String> required1 = dpkgUtil.getDependingSet(packages, required);
+		Set<String> required1 = dpkgUtil.getDependeeSet(packages, required);
 		return Read.from(required1) //
 				.map(packageName_ -> aptUtil.getDownloadUrl(repo, packages, packageName_)) //
 				.sort(Util::compare) //
@@ -187,7 +196,7 @@ public class DependencyMain extends ExecutableProgram {
 
 	public List<String> listUndependedPackages() {
 		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
-		Map<String, List<String>> dependees = dpkgUtil.getDependers(packages);
+		Map<String, List<String>> dependees = dpkgUtil.getDependersOf(packages);
 
 		return Read.from(packages) //
 				.filter(pm -> !isEssential(pm)) //
@@ -207,7 +216,7 @@ public class DependencyMain extends ExecutableProgram {
 				.map(pm -> pm.get("Package")) //
 				.toList());
 
-		Set<String> required1 = dpkgUtil.getDependingSet(packages, required);
+		Set<String> required1 = dpkgUtil.getDependeeSet(packages, required);
 
 		return Read.from(packages) //
 				.map(pm -> pm.get("Package")) //

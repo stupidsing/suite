@@ -48,8 +48,8 @@ public class DpkgUtil {
 		return null;
 	}
 
-	public Set<String> getDependingSet(List<Map<String, String>> packages, Set<String> set0) {
-		Map<String, List<String>> dependees = getDependees(packages);
+	public Set<String> getDependeeSet(List<Map<String, String>> packages, Set<String> set0) {
+		Map<String, List<String>> dependees = getDependeesOf(packages);
 
 		List<String> nl = new ArrayList<>(set0);
 		Set<String> set1 = new HashSet<>(set0);
@@ -67,7 +67,7 @@ public class DpkgUtil {
 		return set1;
 	}
 
-	public Map<String, List<String>> getDependees(List<Map<String, String>> packages) {
+	public Map<String, List<String>> getDependeesOf(List<Map<String, String>> packages) {
 		return Read.from(packages) //
 				.map(pm -> {
 					String line = pm.getOrDefault("Depends", "");
@@ -80,8 +80,8 @@ public class DpkgUtil {
 				.collect(As::map);
 	}
 
-	public Map<String, List<String>> getDependers(List<Map<String, String>> packages) {
-		return Read.multimap(getDependees(packages)) //
+	public Map<String, List<String>> getDependersOf(List<Map<String, String>> packages) {
+		return Read.multimap(getDependeesOf(packages)) //
 				.mapEntry((k, v) -> v, (k, v) -> k) //
 				.toListMap();
 	}
