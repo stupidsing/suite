@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import suite.btree.B_Tree;
+import suite.file.JournalledPageFile;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.AllocatorImpl;
@@ -109,15 +111,18 @@ public class B_TreeBuilder<Key, Value> {
 		this.valueSerializer = valueSerializer;
 	}
 
-	public B_TreeImpl<Key, Value> build(Path path, boolean isNew, Comparator<Key> cmp, int nPages) {
+	public B_Tree<Key, Value> build(Path path, boolean isNew, Comparator<Key> cmp, int nPages) {
 		if (isNew)
 			Rethrow.ioException(() -> Files.deleteIfExists(path));
 
-		PageFile f = JournalledFileFactory.journalled(path, pageSize);
-		return build(f, isNew, cmp, nPages);
+		JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
+		B_Tree<Key, Value> b_tree = build(jpf, isNew, cmp, nPages);
+		if (isNew)
+			jpf.commit();
+		return b_tree;
 	}
 
-	public B_TreeImpl<Key, Value> build(PageFile f, boolean isNew, Comparator<Key> cmp, int nPages) {
+	public B_Tree<Key, Value> build(PageFile f, boolean isNew, Comparator<Key> cmp, int nPages) {
 		int nSuperblockPages = 1;
 		int nAllocatorPages = nPages / pageSize;
 		int p0 = 0, p1 = p0 + nAllocatorPages, p2 = p1 + nSuperblockPages, p3 = p2 + nPages;
@@ -128,7 +133,7 @@ public class B_TreeBuilder<Key, Value> {
 				, FileFactory.subPageFile(f, p2, p3));
 	}
 
-	public B_TreeImpl<Key, Value> build(Path path, boolean isNew, Comparator<Key> cmp) {
+	public B_Tree<Key, Value> build(Path path, boolean isNew, Comparator<Key> cmp) {
 		Path filename = path.getFileName();
 		Path sbp = path.resolveSibling(filename + ".superblock");
 		Path alp = path.resolveSibling(filename + ".alloc");
@@ -144,7 +149,7 @@ public class B_TreeBuilder<Key, Value> {
 				, FileFactory.pageFile(p, pageSize));
 	}
 
-	private B_TreeImpl<Key, Value> build(boolean isNew, Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {
+	private B_Tree<Key, Value> build(boolean isNew, Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {
 		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(Util.nullsFirst(comparator));
 
 		Serializer<Bytes> als = Serialize.bytes(pageSize);
