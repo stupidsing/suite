@@ -113,11 +113,12 @@ public class B_TreeBuilder<Key, Value> {
 			boolean isNew, //
 			Serializer<Key> ks, //
 			Comparator<Key> cmp, //
+			int pageSize, //
 			int nPages) {
 		if (isNew)
 			Rethrow.ioException(() -> Files.deleteIfExists(path));
 
-		JournalledPageFile jpf = JournalledFileFactory.journalled(path, PageFile.defaultPageSize);
+		JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
 		B_Tree<Key, Integer> b_tree = new B_TreeBuilder<>(ks, Serialize.int_).build(jpf, cmp, nPages);
 
 		if (isNew) {

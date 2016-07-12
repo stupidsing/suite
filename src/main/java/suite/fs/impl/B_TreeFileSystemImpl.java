@@ -23,6 +23,7 @@ public class B_TreeFileSystemImpl implements FileSystem {
 				isNew, //
 				keyUtil.serializer(), //
 				Bytes.comparator, //
+				pageSize, //
 				pageSize);
 		b_tree = pair.t0;
 		KeyDataStoreMutator<Bytes> b_treeMutator = pair.t1;
