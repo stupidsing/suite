@@ -25,18 +25,18 @@ public class FileSystemTest {
 	}
 
 	@Test
-	public void testB_TreeFileSystem0() throws IOException {
-		testB_Tree(Constants.tmp.resolve("b_tree-fs0"), this::testWriteOneFile);
+	public void testB_TreeFileSystem() throws IOException {
+		testB_Tree(Constants.tmp.resolve("b_tree-fs"), true, this::testWriteOneFile);
 	}
 
 	@Test
 	public void testB_TreeFileSystem1() throws IOException {
-		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), this::testWriteFiles);
-		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), this::testReadFile);
+		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), true, this::testWriteFiles);
+		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), false, this::testReadFile);
 	}
 
-	private void testB_Tree(Path path, TestCase testCase) throws IOException {
-		try (FileSystem fs = new B_TreeFileSystemImpl(path, 4096)) {
+	private void testB_Tree(Path path, boolean isNew, TestCase testCase) throws IOException {
+		try (FileSystem fs = new B_TreeFileSystemImpl(path, isNew, 4096)) {
 			testCase.test(fs);
 		}
 	}
@@ -44,8 +44,6 @@ public class FileSystemTest {
 	private void testWriteOneFile(FileSystem fs) {
 		Bytes filename = To.bytes("file");
 		Bytes data = To.bytes("data");
-
-		fs.create();
 		FileSystemMutator fsm = fs.mutate();
 
 		fsm.replace(filename, data);
@@ -57,13 +55,7 @@ public class FileSystemTest {
 	}
 
 	private void testWriteFiles(FileSystem fs) throws IOException {
-		testWriteFile(fs, "src/test/java/");
-	}
-
-	private void testWriteFile(FileSystem fs, String pathName) throws IOException {
-		Streamlet<Path> paths = FileUtil.findPaths(Paths.get(pathName));
-
-		fs.create();
+		Streamlet<Path> paths = FileUtil.findPaths(Paths.get("src/test/java/"));
 		FileSystemMutator fsm = fs.mutate();
 
 		for (Path path : paths) {

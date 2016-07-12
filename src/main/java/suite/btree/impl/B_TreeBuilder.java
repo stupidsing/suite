@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import suite.adt.Pair;
 import suite.btree.B_Tree;
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
@@ -15,6 +16,7 @@ import suite.file.impl.AllocatorImpl;
 import suite.file.impl.FileFactory;
 import suite.file.impl.JournalledFileFactory;
 import suite.file.impl.SerializedFileFactory;
+import suite.fs.KeyDataStoreMutator;
 import suite.primitive.Bytes;
 import suite.util.Rethrow;
 import suite.util.Serialize;
@@ -106,24 +108,29 @@ public class B_TreeBuilder<Key, Value> {
 		}
 	}
 
-	public B_TreeBuilder(Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {
-		this.keySerializer = Serialize.nullable(keySerializer);
-		this.valueSerializer = valueSerializer;
-	}
-
-	public B_Tree<Key, Value> build(Path path, boolean isNew, Comparator<Key> cmp, int nPages) {
+	public static <Key> Pair<B_Tree<Key, Integer>, KeyDataStoreMutator<Key>> build( //
+			Path path, //
+			boolean isNew, //
+			Serializer<Key> ks, //
+			Comparator<Key> cmp, //
+			int nPages) {
 		if (isNew)
 			Rethrow.ioException(() -> Files.deleteIfExists(path));
 
-		JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-		B_Tree<Key, Value> b_tree = build(jpf, cmp, nPages);
+		JournalledPageFile jpf = JournalledFileFactory.journalled(path, PageFile.defaultPageSize);
+		B_Tree<Key, Integer> b_tree = new B_TreeBuilder<>(ks, Serialize.int_).build(jpf, cmp, nPages);
 
 		if (isNew) {
 			b_tree.create();
 			jpf.commit();
 		}
 
-		return b_tree;
+		return Pair.of(b_tree, new B_TreeMutator<>(b_tree, jpf::commit));
+	}
+
+	public B_TreeBuilder(Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {
+		this.keySerializer = Serialize.nullable(keySerializer);
+		this.valueSerializer = valueSerializer;
 	}
 
 	public B_Tree<Key, Value> build(PageFile f, Comparator<Key> cmp, int nPages) {
