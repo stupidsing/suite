@@ -1,6 +1,12 @@
 ### What is this?
 
-Library with all sorts of useful code pieces for myself. In particular it has a logic interpreter and a functional code compiler.
+Library with all sorts of useful code pieces and silly attempts by myself (stupidsing). In particular it has...
+
+- a functional interpreter
+- a logic interpreter
+- B-tree implementations
+- some persistent (immutable) data structures
+
 
 ### Any pre-requisites?
 
@@ -8,6 +14,7 @@ Library with all sorts of useful code pieces for myself. In particular it has a 
 - JDK 1.8
 - Apache Maven 3
 - rlwrap if you want more command-line convenience
+
 
 ### How to build and run the project?
 

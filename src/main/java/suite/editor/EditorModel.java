@@ -4,14 +4,13 @@ import suite.streamlet.Reactive;
 
 public class EditorModel {
 
-	private Reactive<Boolean> modifiedChanged = new Reactive<>();
 	private boolean isModified;
-
-	private Reactive<String> filenameChanged = new Reactive<>();
 	private String filename;
-
-	private Reactive<String> searchTextChanged = new Reactive<>();
 	private String searchText;
+
+	private Reactive<Boolean> modifiedChanged = new Reactive<>();
+	private Reactive<String> filenameChanged = new Reactive<>();
+	private Reactive<String> searchTextChanged = new Reactive<>();
 
 	public void changeModified(boolean modified) {
 		setIsModified(modified);
