@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import suite.concurrent.Condition;
 import suite.net.NetUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
@@ -11,7 +12,6 @@ import suite.streamlet.Reactive;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
-import suite.util.Util;
 
 public interface NioChannelFactory {
 
@@ -50,28 +50,25 @@ public interface NioChannelFactory {
 	public class RequestResponseNioChannel extends PacketedNioChannel {
 		public static char RESPONSE = 'P';
 		public static char REQUEST = 'Q';
-		private final Object mutex = new Object();
 		private boolean isConnected;
+		private Condition condition = new Condition(() -> isConnected);
 
 		public void send(char type, int token, Bytes data) {
-			if (!isConnected)
-				synchronized (mutex) {
-					while (!isConnected)
-						Util.wait(mutex);
-				}
-
-			sendPacket(new BytesBuilder() //
+			Bytes packet = new BytesBuilder() //
 					.append((byte) type) //
 					.append(NetUtil.intToBytes(token)) //
 					.append(data) //
-					.toBytes());
+					.toBytes();
+
+			if (!isConnected)
+				condition.waitThen(() -> {
+				}, () -> true);
+
+			sendPacket(packet);
 		}
 
 		public void setConnected(boolean isConnected) {
-			synchronized (mutex) {
-				this.isConnected = isConnected;
-				mutex.notify();
-			}
+			condition.thenNotify(() -> this.isConnected = isConnected);
 		}
 
 		public boolean isConnected() {

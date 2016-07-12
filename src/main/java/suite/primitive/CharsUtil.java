@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.concurrent.SynchronousQueue;
 
+import suite.node.util.Mutable;
 import suite.os.LogUtil;
 import suite.primitive.Chars.CharsBuilder;
 import suite.streamlet.Outlet;
@@ -92,21 +93,24 @@ public class CharsUtil {
 	}
 
 	public static Outlet<Chars> nonBlocking(Outlet<Chars> o) {
-		SynchronousQueue<Chars> queue = new SynchronousQueue<>();
+		SynchronousQueue<Mutable<Chars>> queue = new SynchronousQueue<>();
 
 		new Thread(() -> {
 			Source<Chars> source = o.source();
 			Chars chars;
 			try {
 				do
-					queue.put(chars = source.source());
+					queue.put(Mutable.of(chars = source.source()));
 				while (chars != null);
 			} catch (InterruptedException ex) {
 				LogUtil.error(ex);
 			}
 		}).start();
 
-		return new Outlet<>(queue::poll);
+		return new Outlet<>(() -> {
+			Mutable<Chars> mutable = queue.poll();
+			return mutable != null ? mutable.get() : Chars.empty;
+		});
 	}
 
 }

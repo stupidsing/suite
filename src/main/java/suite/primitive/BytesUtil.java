@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.SynchronousQueue;
 
+import suite.node.util.Mutable;
 import suite.os.LogUtil;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Outlet;
@@ -92,21 +93,24 @@ public class BytesUtil {
 	}
 
 	public static Outlet<Bytes> nonBlocking(Outlet<Bytes> o) {
-		SynchronousQueue<Bytes> queue = new SynchronousQueue<>();
+		SynchronousQueue<Mutable<Bytes>> queue = new SynchronousQueue<>();
 
 		new Thread(() -> {
 			Source<Bytes> source = o.source();
 			Bytes bytes;
 			try {
 				do
-					queue.put(bytes = source.source());
+					queue.put(Mutable.of(bytes = source.source()));
 				while (bytes != null);
 			} catch (InterruptedException ex) {
 				LogUtil.error(ex);
 			}
 		}).start();
 
-		return new Outlet<>(queue::poll);
+		return new Outlet<>(() -> {
+			Mutable<Bytes> mutable = queue.poll();
+			return mutable != null ? mutable.get() : Bytes.empty;
+		});
 	}
 
 }
