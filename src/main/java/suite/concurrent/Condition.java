@@ -14,31 +14,27 @@ public class Condition {
 		this.cond = cond;
 	}
 
-	public synchronized void thenNotify(Runnable runnable) {
-		runnable.run();
+	public synchronized void thenNotify(Runnable before) {
+		before.run();
 		if (verify())
 			notify();
 	}
 
-	public synchronized void thenNotifyAll(Runnable runnable) {
-		runnable.run();
+	public synchronized void thenNotifyAll(Runnable before) {
+		before.run();
 		if (verify())
 			notifyAll();
 	}
 
-	public <T> T waitThen(Runnable before, Source<T> after) {
-		return waitThen(before, 0, after);
-	}
-
-	public synchronized <T> T waitThen(Runnable before, int timeOut, Source<T> source) {
+	public synchronized <T> T waitThen(Runnable before, Source<T> after) {
 		while (!verify()) {
 			before.run();
 			try {
-				wait(timeOut);
+				wait(0);
 			} catch (InterruptedException e) {
 			}
 		}
-		return source.source();
+		return after.source();
 	}
 
 	public boolean verify() {
