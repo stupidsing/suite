@@ -12,19 +12,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.SynchronousQueue;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.node.util.Mutable;
-import suite.os.LogUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
+import suite.util.NullableSynchronousQueue;
 import suite.util.To;
 import suite.util.Util;
 
@@ -248,22 +247,18 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<T> nonBlock(T t0) {
-		SynchronousQueue<Mutable<T>> queue = new SynchronousQueue<>();
+		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
 
 		new Thread(() -> {
 			T t;
-			try {
-				do
-					queue.put(Mutable.of(t = source.source()));
-				while (t != null);
-			} catch (InterruptedException ex) {
-				LogUtil.error(ex);
-			}
+			do
+				queue.offerQuietly(t = source.source());
+			while (t != null);
 		}).start();
 
 		return new Outlet<>(() -> {
-			Mutable<T> mutable = queue.poll();
-			return mutable != null ? mutable.get() : t0;
+			Mutable<T> mutable = Mutable.nil();
+			return queue.poll(mutable) ? mutable.get() : t0;
 		});
 	}
 

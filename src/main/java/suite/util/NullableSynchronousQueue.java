@@ -2,6 +2,8 @@ package suite.util;
 
 import java.util.concurrent.SynchronousQueue;
 
+import suite.node.util.Mutable;
+
 /**
  * The synchronous queue class do not support nulls; in this class, we have to
  * use a special object to denote end of data. Thus the real queue needs to be
@@ -20,6 +22,17 @@ public class NullableSynchronousQueue<T> {
 		} catch (InterruptedException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	public boolean poll(Mutable<T> mutable) {
+		Object object = queue.poll();
+		boolean b = object != nullObject;
+		if (b) {
+			@SuppressWarnings("unchecked")
+			T t = (T) object;
+			mutable.set(t);
+		}
+		return b;
 	}
 
 	public T takeQuietly() {
