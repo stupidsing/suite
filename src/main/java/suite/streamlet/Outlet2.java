@@ -12,12 +12,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.SynchronousQueue;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
+import suite.node.util.Mutable;
+import suite.os.LogUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -277,6 +280,37 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public boolean next(Pair<K, V> pair) {
 		return source2.source2(pair);
+	}
+
+	public Outlet2<K, V> nonBlocking(K k0, V v0) {
+		SynchronousQueue<Mutable<Pair<K, V>>> queue = new SynchronousQueue<>();
+
+		new Thread(() -> {
+			Pair<K, V> pair = Pair.of(null, null);
+			boolean b;
+			try {
+				do {
+					b = source2.source2(pair);
+					queue.put(Mutable.of(pair));
+				} while (b);
+			} catch (InterruptedException ex) {
+				LogUtil.error(ex);
+			}
+		}).start();
+
+		return new Outlet2<>(pair -> {
+			Mutable<Pair<K, V>> mutable = queue.poll();
+			boolean b = mutable != null;
+			if (b) {
+				Pair<K, V> p = mutable.get();
+				pair.t0 = p.t0;
+				pair.t1 = p.t1;
+			} else {
+				pair.t0 = k0;
+				pair.t1 = v0;
+			}
+			return b;
+		});
 	}
 
 	public Outlet<Pair<K, V>> pairs() {

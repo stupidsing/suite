@@ -12,11 +12,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.SynchronousQueue;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
+import suite.node.util.Mutable;
+import suite.os.LogUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -154,6 +157,15 @@ public class Outlet<T> implements Iterable<T> {
 			return false;
 	}
 
+	public Outlet<T> filter(Predicate<T> fun) {
+		return from(FunUtil.filter(fun, source));
+	}
+
+	public <K, V> Outlet<Pair<K, List<V>>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		Map<K, List<V>> map = toListMap(keyFun, valueFun);
+		return from(map.entrySet()).map(e -> Pair.of(e.getKey(), e.getValue()));
+	}
+
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {
 		T t;
 		while ((t = next()) != null)
@@ -167,12 +179,6 @@ public class Outlet<T> implements Iterable<T> {
 		while ((t = next()) != null)
 			r.add(t);
 		return r;
-	}
-
-	public void sink(Sink<T> sink) {
-		T t;
-		while ((t = next()) != null)
-			sink.sink(t);
 	}
 
 	public <R> Outlet<R> index(BiFunction<Integer, T, R> fun) {
@@ -237,21 +243,38 @@ public class Outlet<T> implements Iterable<T> {
 			return null;
 	}
 
-	public Outlet<T> filter(Predicate<T> fun) {
-		return from(FunUtil.filter(fun, source));
-	}
-
-	public <K, V> Outlet<Pair<K, List<V>>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, List<V>> map = toListMap(keyFun, valueFun);
-		return from(map.entrySet()).map(e -> Pair.of(e.getKey(), e.getValue()));
-	}
-
 	public T next() {
 		return source.source();
 	}
 
+	public Outlet<T> nonBlock(T t0) {
+		SynchronousQueue<Mutable<T>> queue = new SynchronousQueue<>();
+
+		new Thread(() -> {
+			T t;
+			try {
+				do
+					queue.put(Mutable.of(t = source.source()));
+				while (t != null);
+			} catch (InterruptedException ex) {
+				LogUtil.error(ex);
+			}
+		}).start();
+
+		return new Outlet<>(() -> {
+			Mutable<T> mutable = queue.poll();
+			return mutable != null ? mutable.get() : t0;
+		});
+	}
+
 	public Outlet<T> reverse() {
 		return from(Util.reverse(toList()));
+	}
+
+	public void sink(Sink<T> sink) {
+		T t;
+		while ((t = next()) != null)
+			sink.sink(t);
 	}
 
 	public Outlet<T> skip(int n) {
