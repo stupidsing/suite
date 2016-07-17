@@ -30,20 +30,18 @@ public class XmlUtil {
 	private DOMImplementationLS di;
 	private LSSerializer lss;
 
-	public class XmlPath {
-		public XmlPath parent;
-		public int nodeType;
-		public String namespaceUri;
-		public String localName;
-		public String text;
+	public interface XmlNode {
+		public int nodeType();
 
-		public XmlPath(XmlPath parent, int nodeType, String namespaceUri, String localName, String text) {
-			this.parent = parent;
-			this.nodeType = nodeType;
-			this.namespaceUri = namespaceUri;
-			this.localName = localName;
-			this.text = text;
-		}
+		public String namespaceUri();
+
+		public String localName();
+
+		public String text();
+
+		public Streamlet<XmlNode> children();
+
+		public Streamlet<XmlNode> children(String tagName);
 	}
 
 	public XmlUtil() throws IOException {
@@ -70,40 +68,50 @@ public class XmlUtil {
 		}
 	}
 
-	public Streamlet<XmlPath> parse(InputStream is) throws SAXException {
-		return Rethrow.ex(() -> {
+	public XmlNode read(InputStream is) throws SAXException {
+		return node(Rethrow.ex(() -> {
 			Document document = documentBuilder.parse(is);
-			Element element = document.getDocumentElement();
-			return traverse(null, element);
-		});
+			document.normalize();
+			return document;
+		}));
 	}
 
-	private Streamlet<XmlPath> traverse(XmlPath parent, Node node) {
-		short nodeType = node.getNodeType();
-		XmlPath xp = createXmlPath(parent, node);
-		if (nodeType != Node.ATTRIBUTE_NODE && nodeType != Node.TEXT_NODE)
-			return Read.from(source(node.getChildNodes())).concatMap(e -> traverse(xp, e));
-		else
-			return Read.from(xp);
-	}
+	private XmlNode node(Node n) {
+		return new XmlNode() {
+			public int nodeType() {
+				return n.getNodeType();
+			}
 
-	private Source<Node> source(NodeList nodeList) {
-		return new Source<Node>() {
-			private int i = 0;
+			public String namespaceUri() {
+				return n.getNamespaceURI();
+			}
 
-			public Node source() {
-				return i < nodeList.getLength() ? nodeList.item(i) : null;
+			public String localName() {
+				return n.getLocalName();
+			}
+
+			public String text() {
+				return n.getTextContent();
+			}
+
+			public Streamlet<XmlNode> children() {
+				return xmlNodes(n.getChildNodes());
+			}
+
+			public Streamlet<XmlNode> children(String tagName) {
+				return xmlNodes(((Element) n).getElementsByTagName(tagName));
+			}
+
+			private Streamlet<XmlNode> xmlNodes(NodeList nodeList) {
+				return Read.from(new Source<XmlNode>() {
+					private int i = 0;
+
+					public XmlNode source() {
+						return i < nodeList.getLength() ? node(nodeList.item(i)) : null;
+					}
+				});
 			}
 		};
-	}
-
-	private XmlPath createXmlPath(XmlPath parent, Node node) {
-		short nodeType = node.getNodeType();
-		return new XmlPath(parent //
-				, nodeType //
-				, node.getNamespaceURI() //
-				, node.getLocalName() //
-				, nodeType == Node.TEXT_NODE ? node.getTextContent() : null);
 	}
 
 }
