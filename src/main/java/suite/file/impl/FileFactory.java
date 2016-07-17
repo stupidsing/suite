@@ -139,8 +139,8 @@ public class FileFactory {
 
 	public static PageFile[] subPageFiles(PageFile parent, int... pointers) {
 		PageFile pageFiles[] = new PageFile[pointers.length - 1];
-		for (int i = 1; i < pointers.length; i++)
-			pageFiles[i] = subPageFile(parent, pointers[i - 1], pointers[i]);
+		for (int i = 0; i < pointers.length - 1; i++)
+			pageFiles[i] = subPageFile(parent, pointers[i], pointers[i + 1]);
 		return pageFiles;
 	}
 
