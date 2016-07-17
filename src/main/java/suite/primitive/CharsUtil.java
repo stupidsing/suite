@@ -83,10 +83,14 @@ public class CharsUtil {
 		});
 	}
 
-	public static void copy(Outlet<Chars> o, Writer writer) throws IOException {
+	public static void copy(Outlet<Chars> o, Writer writer) {
 		Chars chars;
 		while ((chars = o.next()) != null)
-			chars.write(writer);
+			try {
+				chars.write(writer);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 	}
 
 }

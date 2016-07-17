@@ -83,10 +83,14 @@ public class BytesUtil {
 		});
 	}
 
-	public static void copy(Outlet<Bytes> o, OutputStream os) throws IOException {
+	public static void copy(Outlet<Bytes> o, OutputStream os) {
 		Bytes bytes;
 		while ((bytes = o.next()) != null)
-			bytes.write(os);
+			try {
+				bytes.write(os);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 	}
 
 }
