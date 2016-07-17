@@ -138,11 +138,8 @@ public class B_TreeBuilder<Key, Value> {
 		int nSuperblockPages = 1;
 		int nAllocatorPages = nPages / pageSize;
 		int p0 = 0, p1 = p0 + nAllocatorPages, p2 = p1 + nSuperblockPages, p3 = p2 + nPages;
-
-		return build(cmp //
-				, FileFactory.subPageFile(f, p0, p1) //
-				, FileFactory.subPageFile(f, p1, p2) //
-				, FileFactory.subPageFile(f, p2, p3));
+		PageFile[] pfs = FileFactory.subPageFiles(f, p0, p1, p2, p3);
+		return build(cmp, pfs[0], pfs[1], pfs[2]);
 	}
 
 	public B_Tree<Key, Value> build(boolean isNew, Path path, Comparator<Key> cmp) {

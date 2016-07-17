@@ -63,12 +63,11 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 			}
 		};
 
-		PageFile pf0 = FileFactory.subPageFile(pf, 0, 1);
-		PageFile pf1 = FileFactory.subPageFile(pf, 1, Integer.MAX_VALUE);
+		PageFile pfs[] = FileFactory.subPageFiles(pf, 0, 1, Integer.MAX_VALUE);
 
 		this.comparator = comparator;
-		nPagesFile = SerializedFileFactory.serialized(pf0, Serialize.int_);
-		extentFile = FileFactory.extentFile(pf1);
+		nPagesFile = SerializedFileFactory.serialized(pfs[0], Serialize.int_);
+		extentFile = FileFactory.extentFile(pfs[1]);
 		nPages = nPagesFile.load(0);
 	}
 
