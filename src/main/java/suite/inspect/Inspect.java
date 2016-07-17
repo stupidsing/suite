@@ -48,7 +48,7 @@ public class Inspect {
 
 	private List<Field> getFields0(Class<?> clazz) {
 		Class<?> superClass = clazz.getSuperclass();
-		List<Field> parentFields = superClass != null ? fields(superClass) : Collections.<Field> emptyList();
+		List<Field> parentFields = superClass != null ? fields(superClass) : Collections.emptyList();
 		List<Field> childFields = Read.from(clazz.getDeclaredFields()) //
 				.filter(field -> {
 					int modifiers = field.getModifiers();

@@ -23,7 +23,7 @@ import suite.util.Util;
  */
 public class FileSystemKeySet {
 
-	private List<NameKey> emptyKeys = Collections.<NameKey> emptyList();
+	private List<NameKey> emptyKeys = Collections.emptyList();
 	private FileSystemKeyUtil keyUtil;
 	private KeyDataStoreMutator<Bytes> mutator;
 

@@ -24,7 +24,7 @@ public class RayUtil {
 
 	public static List<RayHit> joinRayHits(Collection<RtObject> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
 		List<List<RayHit>> rayHitsList = getRayHitsList(ray, objects);
-		List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : Collections.<RayHit> emptyList();
+		List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : Collections.emptyList();
 		for (int i = 1; i < rayHitsList.size(); i++)
 			rayHits = joinRayHits(rayHits, rayHitsList.get(i), fun);
 		return rayHits;

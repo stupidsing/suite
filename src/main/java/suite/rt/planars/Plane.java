@@ -64,7 +64,7 @@ public class Plane implements RtObject {
 
 			return Arrays.asList(rayHit);
 		} else
-			return Collections.<RayHit> emptyList();
+			return Collections.emptyList();
 	}
 
 }
