@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import suite.Constants;
 import suite.fs.impl.B_TreeFileSystemImpl;
+import suite.fs.impl.LazyIbTreeFileSystemImpl;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Streamlet;
@@ -35,8 +36,25 @@ public class FileSystemTest {
 		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), false, this::testReadFile);
 	}
 
+	@Test
+	public void testLazyIbTreeFileSystem0() throws IOException {
+		testLazyIbTree(Constants.tmp.resolve("lazyIbTree-fs0"), true, this::testWriteOneFile);
+	}
+
+	@Test
+	public void testLazyIbTreeFileSystem1() throws IOException {
+		testLazyIbTree(Constants.tmp.resolve("lazyIbTree-fs1"), true, this::testWriteFiles);
+		testLazyIbTree(Constants.tmp.resolve("lazyIbTree-fs1"), false, this::testReadFile);
+	}
+
 	private void testB_Tree(Path path, boolean isNew, TestCase testCase) throws IOException {
 		try (FileSystem fs = new B_TreeFileSystemImpl(path, isNew, 4096)) {
+			testCase.test(fs);
+		}
+	}
+
+	private void testLazyIbTree(Path path, boolean isNew, TestCase testCase) throws IOException {
+		try (FileSystem fs = new LazyIbTreeFileSystemImpl(path, 4096)) {
 			testCase.test(fs);
 		}
 	}
