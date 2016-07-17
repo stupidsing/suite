@@ -155,7 +155,7 @@ declare user-mode = function [] (
 	while true do (time-yield []);
 );
 
--- Switch stack to keep stack smaller so as to fit in the process stack space.
+-- Switch to a smaller stack so as to fit in the process stack space.
 -- Global scope variables, defined before this point, are kept in the first stack.
 asm _ MOV (ESP, kernel-second-esp);
 
