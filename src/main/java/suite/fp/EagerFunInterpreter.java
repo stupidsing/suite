@@ -69,7 +69,7 @@ public class EagerFunInterpreter {
 		private IMap<Node, Integer> indices;
 
 		private Mapping(Mapping parent) {
-			this(parent, 0, new IMap<>());
+			this(parent, 0, IMap.empty());
 		}
 
 		private Mapping(Mapping parent, int size, IMap<Node, Integer> indices) {

@@ -1,17 +1,17 @@
 package suite.http;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.Constants;
 import suite.adt.Pair;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
+import suite.util.Copy;
+import suite.util.To;
 import suite.util.Util;
 
 /**
@@ -29,9 +29,6 @@ public class HttpServer {
 
 	public void run(HttpHandler handler) throws IOException {
 		new SocketUtil().listenIo(8051, (is, os) -> {
-			HashMap<String, String> responseHeaders = new HashMap<>();
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
 			String line, ls[];
 
 			line = Util.readLine(is);
@@ -72,29 +69,26 @@ public class HttpServer {
 			InputStream cis = sizeLimitedInputStream(is, contentLength);
 
 			HttpRequest request = new HttpRequest(method, server, path2, query, requestHeaders, cis);
-			HttpResponse response = new HttpResponse("200 OK", responseHeaders, baos);
+			HttpResponse response = null;
 
 			try {
-				handler.handle(request, response);
+				response = handler.handle(request);
 			} catch (Exception ex) {
 				LogUtil.error(ex);
-				response.setStatus("500 Internal server error");
+				response = HttpResponse.of(HttpResponse.HTTP500);
 			} finally {
 				LogUtil.info(request.getLogString() + " " + response.getLogString());
 			}
 
-			responseHeaders.put("Content-Length", Integer.toString(baos.size()));
-			responseHeaders.put("Content-Type", "text/html; charset=UTF-8");
-
 			StringBuilder sb = new StringBuilder();
 
-			sb.append("HTTP/1.1 " + response.getStatus() + "\r\n");
-			for (Entry<String, String> entry : responseHeaders.entrySet())
-				sb.append(entry.getKey() + ": " + entry.getValue() + "\r\n");
+			sb.append("HTTP/1.1 " + response.status + "\r\n");
+			for (Pair<String, String> entry : response.headers)
+				sb.append(entry.t0 + ": " + entry.t1 + "\r\n");
 			sb.append("\r\n");
 
 			os.write(sb.toString().getBytes(Constants.charset));
-			os.write(baos.toByteArray());
+			Copy.stream(To.inputStream(response.out), os);
 		});
 	}
 

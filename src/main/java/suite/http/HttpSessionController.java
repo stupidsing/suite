@@ -1,14 +1,12 @@
 package suite.http;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Random;
 
-import suite.Constants;
+import suite.immutable.IMap;
 import suite.util.HtmlUtil;
+import suite.util.To;
 import suite.util.Util;
 
 public class HttpSessionController {
@@ -61,11 +59,12 @@ public class HttpSessionController {
 			this.protectedHandler = protectedHandler;
 		}
 
-		public void handle(HttpRequest request, HttpResponse response) throws IOException {
+		public HttpResponse handle(HttpRequest request) {
 			long current = System.currentTimeMillis();
 			String cookie = request.headers.get("Cookie");
 			String sessionId = cookie != null ? HttpHeaderUtil.getCookieAttrs(cookie).get("session") : null;
 			Session session = sessionId != null ? sessionManager.get(sessionId) : null;
+			HttpResponse response;
 
 			if (Util.stringEquals(request.path, "/login")) {
 				Map<String, String> attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
@@ -90,31 +89,31 @@ public class HttpSessionController {
 							, request.headers //
 							, request.inputStream);
 
-					showProtectedPage(sessionId, request1, response);
+					response = showProtectedPage(request1, sessionId);
 				} else
-					showLoginPage(response.outputStream, path, true);
+					response = showLoginPage(path, true);
 			} else if (Util.stringEquals(request.path, "/logout")) {
 				if (sessionId != null)
 					sessionManager.remove(sessionId);
 
-				showLoginPage(response.outputStream, "/", false);
+				response = showLoginPage("/", false);
 			} else if (session != null && current < session.lastRequestDt + TIMEOUTDURATION) {
 				session.lastRequestDt = current;
-				showProtectedPage(sessionId, request, response);
+				response = showProtectedPage(request, sessionId);
 			} else
-				showLoginPage(response.outputStream, request.path, false);
+				response = showLoginPage(request.path, false);
+
+			return response;
 		}
 
-		private void showProtectedPage(String sessionId, HttpRequest request, HttpResponse response) throws IOException {
-			response.headers.put("Set-Cookie", "session=" + sessionId + "; Path=/");
-
-			protectedHandler.handle(request, response);
+		private HttpResponse showProtectedPage(HttpRequest request, String sessionId) {
+			HttpResponse r = protectedHandler.handle(request);
+			IMap<String, String> headers1 = r.headers.put("Set-Cookie", "session=" + sessionId + "; Path=/");
+			return new HttpResponse(r.status, headers1, r.out);
 		}
 
-		private void showLoginPage(OutputStream os, String redirectPath, boolean isLoginFailed) throws IOException {
-			OutputStreamWriter writer = new OutputStreamWriter(os, Constants.charset);
-
-			writer.write("<html>" //
+		private HttpResponse showLoginPage(String redirectPath, boolean isLoginFailed) {
+			return HttpResponse.of(To.source("<html>" //
 					+ "<head><title>Login</title></head>" //
 					+ "<body>" //
 					+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //
@@ -127,9 +126,7 @@ public class HttpSessionController {
 					+ "</form>" //
 					+ "</font>" //
 					+ "</body>" //
-					+ "</html>");
-
-			writer.flush();
+					+ "</html>"));
 		}
 	}
 

@@ -44,7 +44,7 @@ public class LazyFunInterpreter0 {
 			throw new RuntimeException("Error termination");
 		};
 
-		IMap<String, Thunk_> env = new IMap<>();
+		IMap<String, Thunk_> env = IMap.empty();
 		env = env.put(Atom.TRUE.name, () -> Atom.TRUE);
 		env = env.put(Atom.FALSE.name, () -> Atom.FALSE);
 

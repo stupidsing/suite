@@ -7,9 +7,16 @@ import suite.streamlet.Streamlet;
 
 public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
+	private static IMap<?, ?> empty = new IMap<Integer, Object>();
 	private ITree<Pair<K, V>> tree = new IbTree<>(Pair.<K, V> comparatorByFirst());
 
-	public IMap() {
+	public static <K extends Comparable<K>, V> IMap<K, V> empty() {
+		@SuppressWarnings("unchecked")
+		IMap<K, V> m = (IMap<K, V>) empty;
+		return m;
+	}
+
+	private IMap() {
 	}
 
 	public IMap(ITree<Pair<K, V>> tree) {

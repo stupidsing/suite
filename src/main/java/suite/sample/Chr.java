@@ -80,7 +80,7 @@ public class Chr {
 	}
 
 	public Collection<Node> chr(Collection<Node> facts) {
-		State state = new State(new IMap<>());
+		State state = new State(IMap.empty());
 
 		for (Node fact : facts) {
 			Prototype prototype = Prototype.of(fact);
@@ -157,7 +157,7 @@ public class Chr {
 
 			states = states.map(new Fun<State, State>() {
 				public State apply(State state) {
-					IMap<Prototype, ISet<Node>> factsByPrototype1 = new IMap<>();
+					IMap<Prototype, ISet<Node>> factsByPrototype1 = IMap.empty();
 					for (Pair<Prototype, ISet<Node>> pair : state.factsByPrototype)
 						factsByPrototype1 = factsByPrototype1.put(pair.t0, replace(pair.t1));
 					return new State(factsByPrototype1);
