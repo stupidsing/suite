@@ -22,8 +22,9 @@ public class HttpResponse {
 		return of(HTTP200, IMap.empty(), out);
 	}
 
-	public static HttpResponse of(String status, IMap<String, String> headers, Source<Bytes> out, long length) {
-		return of(status, headers.put("Content-Length", Long.toString(length)), out);
+	public static HttpResponse of(String status, Source<Bytes> out, long length) {
+		IMap<String, String> empty = IMap.empty();
+		return of(status, empty.put("Content-Length", Long.toString(length)), out);
 	}
 
 	public static HttpResponse of(String status, IMap<String, String> headers, Source<Bytes> out) {
