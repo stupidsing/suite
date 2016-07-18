@@ -170,7 +170,7 @@ public class To {
 	}
 
 	public static Source<Bytes> source(String data) {
-		return To.source(Arrays.asList(Bytes.of(data.getBytes(Constants.charset))));
+		return To.source(Arrays.asList(bytes(data)));
 	}
 
 	public static String string(Bytes bytes) {
