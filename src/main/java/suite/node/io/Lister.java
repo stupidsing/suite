@@ -20,11 +20,11 @@ import suite.streamlet.Streamlet;
 public class Lister {
 
 	public String list(Node node) {
-		return leaves(node).map(this::path).collect(As.joined("\n"));
+		return leaves(node).map(this::path).collect(As.conc("\n"));
 	}
 
 	private String path(IList<Node> path) {
-		return Read.from(path).map(Node::toString).reverse().collect(As.joined("."));
+		return Read.from(path).map(Node::toString).reverse().collect(As.conc("."));
 	}
 
 	public Streamlet<IList<Node>> leaves(Node node) {

@@ -62,7 +62,7 @@ public class Profiler implements Service {
 		sb.append(Read.from2(records) //
 				.sort((p0, p1) -> p1.t1.count - p0.t1.count) //
 				.map((name, record) -> String.format("%d\t%s:%d\n", record.count, name, record.minLineNumber)) //
-				.collect(As.joined("")));
+				.collect(As.joined()));
 		return sb.toString();
 	}
 
