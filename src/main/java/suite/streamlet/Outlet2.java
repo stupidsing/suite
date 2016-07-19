@@ -213,6 +213,15 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return Outlet.from(map.entrySet()).map2(Entry::getKey, Entry::getValue);
 	}
 
+	@Override
+	public int hashCode() {
+		int hashCode = 5;
+		Pair<K, V> pair = Pair.of(null, null);
+		while (next(pair))
+			hashCode = hashCode * 31 + pair.hashCode();
+		return hashCode;
+	}
+
 	public boolean isAll(BiPredicate<K, V> pred) {
 		Pair<K, V> pair = Pair.of(null, null);
 		while (next(pair))

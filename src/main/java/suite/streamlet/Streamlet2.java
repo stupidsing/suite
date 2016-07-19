@@ -118,6 +118,11 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return new Streamlet2<>(() -> spawn().groupBy());
 	}
 
+	@Override
+	public int hashCode() {
+		return spawn().hashCode();
+	}
+
 	public boolean isAll(BiPredicate<K, V> pred) {
 		return spawn().isAll(pred);
 	}

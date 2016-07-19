@@ -2,6 +2,7 @@ package suite.immutable;
 
 import java.util.Iterator;
 
+import jersey.repackaged.com.google.common.base.Objects;
 import suite.streamlet.Streamlet;
 import suite.util.Util;
 
@@ -55,6 +56,16 @@ public class ISet<V extends Comparable<V>> implements Iterable<V> {
 
 		sb.append(")");
 		return sb.toString();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return Util.clazz(object) == ISet.class && Objects.equal(stream(), ((ISet<?>) object).stream());
+	}
+
+	@Override
+	public int hashCode() {
+		return tree.stream().hashCode();
 	}
 
 }

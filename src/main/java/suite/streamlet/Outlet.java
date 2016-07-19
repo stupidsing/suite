@@ -180,6 +180,15 @@ public class Outlet<T> implements Iterable<T> {
 		return r;
 	}
 
+	@Override
+	public int hashCode() {
+		int hashCode = 5;
+		T t;
+		while ((t = source.source()) != null)
+			hashCode = hashCode * 31 + Objects.hashCode(t);
+		return hashCode;
+	}
+
 	public <R> Outlet<R> index(BiFunction<Integer, T, R> fun) {
 		return from(new Source<R>() {
 			private int i = 0;

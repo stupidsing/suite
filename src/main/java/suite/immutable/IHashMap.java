@@ -28,7 +28,7 @@ public class IHashMap<K, V> {
 		}
 
 		public boolean equals(Object object) {
-			if (Util.clazz(object) == getClass()) {
+			if (Util.clazz(object) == Entry.class) {
 				Entry<?, ?> entry = (Entry<?, ?>) object;
 				return Objects.equals(key, entry.key);
 			} else

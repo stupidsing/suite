@@ -2,8 +2,10 @@ package suite.immutable;
 
 import java.util.Iterator;
 
+import jersey.repackaged.com.google.common.base.Objects;
 import suite.adt.Pair;
 import suite.streamlet.Streamlet;
+import suite.util.Util;
 
 public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
@@ -58,6 +60,16 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
 		sb.append("}");
 		return sb.toString();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return Util.clazz(object) == IMap.class && Objects.equal(stream(), ((IMap<?, ?>) object).stream());
+	}
+
+	@Override
+	public int hashCode() {
+		return tree.stream().hashCode();
 	}
 
 }

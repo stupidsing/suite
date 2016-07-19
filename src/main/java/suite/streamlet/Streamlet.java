@@ -121,6 +121,11 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().groupBy(keyFun, valueFun));
 	}
 
+	@Override
+	public int hashCode() {
+		return spawn().hashCode();
+	}
+
 	public <R> Streamlet<R> index(BiFunction<Integer, T, R> fun) {
 		return streamlet(() -> spawn().index(fun));
 	}
