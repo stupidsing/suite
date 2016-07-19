@@ -68,17 +68,6 @@ public class IList<T> implements Iterable<T> {
 		});
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		IList<T> node = this;
-		while (!node.isEmpty()) {
-			sb.append(node.head + ", ");
-			node = node.tail;
-		}
-		return sb.toString();
-	}
-
 	public IList<T> remove(T t) {
 		IList<T> result = end();
 		for (T t_ : reverse())
@@ -92,6 +81,41 @@ public class IList<T> implements Iterable<T> {
 		for (T t : this)
 			deque.addFirst(t);
 		return deque;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		IList<T> node = this;
+		while (!node.isEmpty()) {
+			sb.append(node.head + ", ");
+			node = node.tail;
+		}
+		return sb.toString();
+	}
+
+	public int hashCode() {
+		IList<T> list = this;
+		int hashCode = 0;
+		while (!list.isEmpty()) {
+			hashCode = hashCode * 31 + Objects.hashCode(list.head);
+			list = list.tail;
+		}
+		return hashCode;
+	}
+
+	public boolean equals(Object object) {
+		if (object.getClass() == IList.class) {
+			IList<?> list0 = this;
+			IList<?> list1 = (IList<?>) object;
+			boolean e0 = false, e1 = false;
+			while (!(e0 = list0.isEmpty()) && !(e1 = list1.isEmpty()) && Objects.equals(list0.head, list1.head)) {
+				list0 = list0.tail;
+				list1 = list1.tail;
+			}
+			return e0 && e1;
+		} else
+			return false;
 	}
 
 }
