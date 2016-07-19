@@ -4,18 +4,35 @@ import java.io.InputStream;
 import java.util.Map;
 
 import suite.adt.Pair;
-import suite.util.Util;
+import suite.immutable.IList;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 
 public class HttpRequest {
 
 	public final String method;
 	public final String server;
-	public final String path;
+	public final IList<String> path;
 	public final String query;
 	public final Map<String, String> headers;
 	public final InputStream inputStream;
 
-	public HttpRequest(String method, String server, String path, String query, Map<String, String> headers,
+	public HttpRequest( //
+			String method, //
+			String server, //
+			String path, //
+			String query, //
+			Map<String, String> headers, //
+			InputStream inputStream) {
+		this(method, server, HttpHeaderUtil.getPath(path), query, headers, inputStream);
+	}
+
+	public HttpRequest( //
+			String method, //
+			String server, //
+			IList<String> path, //
+			String query, //
+			Map<String, String> headers, //
 			InputStream inputStream) {
 		this.method = method;
 		this.server = server;
@@ -26,12 +43,14 @@ public class HttpRequest {
 	}
 
 	public Pair<String, HttpRequest> split() {
-		Pair<String, String> ps = Util.split2(path, "/");
-		return Pair.of(ps.t0, new HttpRequest(method, server, ps.t1, query, headers, inputStream));
+		if (!path.isEmpty())
+			return Pair.of(path.head, new HttpRequest(method, server, path.tail, query, headers, inputStream));
+		else
+			return Pair.of("", new HttpRequest(method, server, IList.end(), query, headers, inputStream));
 	}
 
 	public String getLogString() {
-		return method + " " + path;
+		return method + " " + Read.from(path).collect(As.joined("/"));
 	}
 
 }

@@ -294,7 +294,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	public String toString() {
 		return Read.from2(lastActiveTimes) //
 				.map((peer, lastActiveTime) -> peer + " (last-active = " + To.string(lastActiveTime) + ")") //
-				.collect(As.joined("\n"));
+				.collect(As.conc("\n"));
 	}
 
 	private void setPeers(Map<String, InetSocketAddress> peers) {

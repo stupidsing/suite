@@ -110,10 +110,15 @@ public class IList<T> implements Iterable<T> {
 		if (object.getClass() == IList.class) {
 			IList<?> list0 = this;
 			IList<?> list1 = (IList<?>) object;
-			boolean e0 = false, e1 = false;
-			while (!(e0 = list0.isEmpty()) && !(e1 = list1.isEmpty()) && Objects.equals(list0.head, list1.head)) {
-				list0 = list0.tail;
-				list1 = list1.tail;
+			boolean e0, e1;
+			while (true) {
+				e0 = list0.isEmpty();
+				e1 = list1.isEmpty();
+				if (!e0 && !e1 && Objects.equals(list0.head, list1.head)) {
+					list0 = list0.tail;
+					list1 = list1.tail;
+				} else
+					break;
 			}
 			return e0 && e1;
 		} else

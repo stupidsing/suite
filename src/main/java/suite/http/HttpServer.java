@@ -27,12 +27,19 @@ import suite.util.Util;
  */
 public class HttpServer {
 
-	public void run(HttpHandler handler) throws IOException {
+	public void run(HttpHandler handler) {
+		try {
+			run_(handler);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	private void run_(HttpHandler handler) throws IOException {
 		new SocketUtil().listenIo(8051, (is, os) -> {
 			String line, ls[];
 
-			line = Util.readLine(is);
-			ls = line.split(" ");
+			ls = Util.readLine(is).split(" ");
 			String method = ls[0], url = ls[1], protocol = ls[2];
 			String server, pqs;
 

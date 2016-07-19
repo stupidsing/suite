@@ -2,12 +2,15 @@ package suite.http;
 
 import java.security.SecureRandom;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
+import suite.immutable.IList;
 import suite.immutable.IMap;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.util.HtmlUtil;
 import suite.util.To;
-import suite.util.Util;
 
 public class HttpSessionController {
 
@@ -66,11 +69,11 @@ public class HttpSessionController {
 			Session session = sessionId != null ? sessionManager.get(sessionId) : null;
 			HttpResponse response;
 
-			if (Util.stringEquals(request.path, "/login")) {
+			if (Objects.equals(request.path, IList.asList("login"))) {
 				Map<String, String> attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
 				String username = attrs.get("username");
 				String password = attrs.get("password");
-				String path = attrs.get("path");
+				IList<String> path = HttpHeaderUtil.getPath(attrs.get("path"));
 
 				if (authenticator.authenticate(username, password)) {
 					sessionId = generateRandomSessionId();
@@ -82,21 +85,21 @@ public class HttpSessionController {
 					sessionManager.put(sessionId, session);
 
 					HttpRequest request1 = new HttpRequest( //
-							request.method //
-							, request.server //
-							, path //
-							, request.query //
-							, request.headers //
-							, request.inputStream);
+							request.method, //
+							request.server, //
+							path, //
+							request.query, //
+							request.headers, //
+							request.inputStream);
 
 					response = showProtectedPage(request1, sessionId);
 				} else
 					response = showLoginPage(path, true);
-			} else if (Util.stringEquals(request.path, "/logout")) {
+			} else if (Objects.equals(request.path, IList.asList("logout"))) {
 				if (sessionId != null)
 					sessionManager.remove(sessionId);
 
-				response = showLoginPage("/", false);
+				response = showLoginPage(IList.end(), false);
 			} else if (session != null && current < session.lastRequestDt + TIMEOUTDURATION) {
 				session.lastRequestDt = current;
 				response = showProtectedPage(request, sessionId);
@@ -108,20 +111,22 @@ public class HttpSessionController {
 
 		private HttpResponse showProtectedPage(HttpRequest request, String sessionId) {
 			HttpResponse r = protectedHandler.handle(request);
-			IMap<String, String> headers1 = r.headers.put("Set-Cookie", "session=" + sessionId + "; Path=/");
+			IMap<String, String> headers1 = r.headers.put("Set-Cookie", "session=" + sessionId + "; Path=/site");
 			return new HttpResponse(r.status, headers1, r.out);
 		}
 
-		private HttpResponse showLoginPage(String redirectPath, boolean isLoginFailed) {
+		private HttpResponse showLoginPage(IList<String> redirectPath, boolean isLoginFailed) {
+			String redirectPath1 = Read.from(redirectPath).map(p -> "/" + p).collect(As.joined());
+
 			return HttpResponse.of(To.source("<html>" //
 					+ "<head><title>Login</title></head>" //
 					+ "<body>" //
 					+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //
 					+ (isLoginFailed ? "<b>LOGIN FAILED</b><p/>" : "") //
-					+ "<form name=\"login\" action=\"/login\" method=\"post\">" //
+					+ "<form name=\"login\" action=\"login\" method=\"post\">" //
 					+ "Username <input type=\"text\" name=\"username\" autofocus /><br/>" //
 					+ "Password <input type=\"password\" name=\"password\" /><br/>" //
-					+ "<input type=\"hidden\" name=\"path\" value=\"" + htmlUtil.encode(redirectPath) + "\" />" //
+					+ "<input type=\"hidden\" name=\"path\" value=\"" + htmlUtil.encode(redirectPath1) + "\" />" //
 					+ "<input type=\"submit\" value=\"Login\">" //
 					+ "</form>" //
 					+ "</font>" //

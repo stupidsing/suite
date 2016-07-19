@@ -1,6 +1,5 @@
 package suite.http;
 
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,29 +19,27 @@ public class HttpServerMain {
 			&& Util.stringEquals(username, "user") //
 			&& Util.stringEquals(password, "");
 
-	private HttpHandler handler0 = request -> {
-		return HttpResponse.of(To.source("" //
-				+ "<html>" //
-				+ "<br/>method = " + request.method //
-				+ "<br/>server = " + request.server //
-				+ "<br/>path = " + request.path //
-				+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query) //
-				+ "<br/>headers = " + request.headers //
-				+ "</html>"));
-	};
-
-	private HttpHandler handlePath = handlePath(Constants.tmp);
-	private HttpHandler handleSite = new HttpSessionController(authenticator).getSessionHandler(handler0);
-
-	public static void main(String args[]) throws IOException {
+	public static void main(String args[]) {
 		new HttpServerMain().run();
 	}
 
-	private void run() throws IOException {
+	private void run() {
 		IMap<String, HttpHandler> empty = IMap.empty();
+
+		HttpHandler handler0 = request -> {
+			return HttpResponse.of(To.source("" //
+					+ "<html>" //
+					+ "<br/>method = " + request.method //
+					+ "<br/>server = " + request.server //
+					+ "<br/>path = " + request.path //
+					+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query) //
+					+ "<br/>headers = " + request.headers //
+					+ "</html>"));
+		};
+
 		new HttpServer().run(dispatch(empty //
-				.put("path", handlePath) //
-				.put("site", handleSite)));
+				.put("path", handlePath(Constants.tmp)) //
+				.put("site", new HttpSessionController(authenticator).getSessionHandler(handler0))));
 	}
 
 	private HttpHandler dispatch(IMap<String, HttpHandler> map) {
@@ -54,11 +51,16 @@ public class HttpServerMain {
 
 	private HttpHandler handlePath(Path root) {
 		return request -> Rethrow.ioException(() -> {
-			Path path = root.resolve(request.path);
+			Path path = root;
 			long size;
+
+			for (String p : request.path)
+				path = path.resolve(p);
+
 			try (RandomAccessFile file = new RandomAccessFile(path.toFile(), "r")) {
 				size = file.getChannel().size();
 			}
+
 			return HttpResponse.of(HttpResponse.HTTP200, To.source(Files.newInputStream(path)), size);
 		});
 	}

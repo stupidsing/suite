@@ -9,10 +9,20 @@ import java.util.Map;
 
 import suite.Constants;
 import suite.adt.Pair;
+import suite.immutable.IList;
 import suite.util.Rethrow;
 import suite.util.Util;
 
 public class HttpHeaderUtil {
+
+	public static IList<String> getPath(String pathString) {
+		String arr[] = pathString.split("/");
+		IList<String> path = IList.end();
+		for (int i = arr.length - 1; i >= 0; i--)
+			if (!arr[i].isEmpty())
+				path = IList.cons(arr[i], path);
+		return path;
+	}
 
 	public static Map<String, String> getCookieAttrs(String query) {
 		String qs[] = query != null ? query.split(";") : new String[0];
@@ -36,7 +46,7 @@ public class HttpHeaderUtil {
 		while (0 <= (nCharsRead = Rethrow.ioException(() -> br.read(buffer))))
 			sb.append(buffer, 0, nCharsRead);
 
-		return HttpHeaderUtil.getAttrs(sb.toString());
+		return getAttrs(sb.toString());
 	}
 
 	public static Map<String, String> getAttrs(String query) {
