@@ -94,6 +94,7 @@ public class IList<T> implements Iterable<T> {
 		return sb.toString();
 	}
 
+	@Override
 	public int hashCode() {
 		IList<T> list = this;
 		int hashCode = 0;
@@ -104,6 +105,7 @@ public class IList<T> implements Iterable<T> {
 		return hashCode;
 	}
 
+	@Override
 	public boolean equals(Object object) {
 		if (object.getClass() == IList.class) {
 			IList<?> list0 = this;
