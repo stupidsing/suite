@@ -24,13 +24,13 @@ public class Data<T> extends Node {
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hashCode(data);
+	public boolean equals(Object object) {
+		return Util.clazz(object) == Data.class && Objects.equals(data, ((Data<?>) object).data);
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		return Util.clazz(object) == Data.class && Objects.equals(data, ((Data<?>) object).data);
+	public int hashCode() {
+		return Objects.hashCode(data);
 	}
 
 }

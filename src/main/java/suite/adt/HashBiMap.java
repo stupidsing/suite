@@ -93,13 +93,13 @@ public class HashBiMap<K, V> implements BiMap<K, V> {
 	}
 
 	@Override
-	public int hashCode() {
-		return map.hashCode();
+	public boolean equals(Object object) {
+		return Util.clazz(object) == HashBiMap.class ? map.equals(((HashBiMap<?, ?>) object).map) : false;
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		return Util.clazz(object) == HashBiMap.class ? map.equals(((HashBiMap<?, ?>) object).map) : false;
+	public int hashCode() {
+		return map.hashCode();
 	}
 
 }

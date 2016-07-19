@@ -80,14 +80,6 @@ public class ClusterProbeImpl implements ClusterProbe {
 		}
 
 		@Override
-		public int hashCode() {
-			int result = 1;
-			result = 31 * result + Arrays.hashCode(ip);
-			result = 31 * result + port;
-			return result;
-		}
-
-		@Override
 		public boolean equals(Object object) {
 			if (Util.clazz(object) == IpPort.class) {
 				IpPort other = (IpPort) object;
@@ -98,6 +90,14 @@ public class ClusterProbeImpl implements ClusterProbe {
 						&& port == other.port;
 			} else
 				return false;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = 1;
+			result = 31 * result + Arrays.hashCode(ip);
+			result = 31 * result + port;
+			return result;
 		}
 
 		@Override

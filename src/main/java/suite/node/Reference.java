@@ -33,19 +33,19 @@ public class Reference extends Node {
 	}
 
 	@Override
-	public int hashCode() {
-		if (node != this)
-			return node.hashCode();
-		else
-			throw new RuntimeException("No hash code for free references");
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (node != this)
 			return node.equals(object);
 		else
 			throw new RuntimeException("No equals for free references");
+	}
+
+	@Override
+	public int hashCode() {
+		if (node != this)
+			return node.hashCode();
+		else
+			throw new RuntimeException("No hash code for free references");
 	}
 
 	public Node getNode() {

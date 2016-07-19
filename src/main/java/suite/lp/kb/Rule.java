@@ -50,19 +50,12 @@ public class Rule {
 		env.getReference(cutIndex).bound(cut);
 
 		return Tree.of(TermOp.AND___ //
-				, Tree.of(TermOp.EQUAL_ //
+				,
+				Tree.of(TermOp.EQUAL_ //
 						, query //
 						, headFun.apply(env)) //
 				, tailFun.apply(env));
 
-	}
-
-	@Override
-	public int hashCode() {
-		int result = 1;
-		result = 31 * result + head.hashCode();
-		result = 31 * result + tail.hashCode();
-		return result;
 	}
 
 	@Override
@@ -72,6 +65,14 @@ public class Rule {
 			return head.equals(other.head) && tail.equals(other.tail);
 		} else
 			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 1;
+		result = 31 * result + head.hashCode();
+		result = 31 * result + tail.hashCode();
+		return result;
 	}
 
 }

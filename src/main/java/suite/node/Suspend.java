@@ -17,13 +17,13 @@ public class Suspend extends Node {
 	}
 
 	@Override
-	public int hashCode() {
-		return target().hashCode();
+	public boolean equals(Object object) {
+		return target().equals(object);
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		return target().equals(object);
+	public int hashCode() {
+		return target().hashCode();
 	}
 
 	private Node target() {

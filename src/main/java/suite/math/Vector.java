@@ -47,8 +47,12 @@ public class Vector {
 	}
 
 	@Override
-	public String toString() {
-		return "(" + x + ", " + y + ", " + z + ")";
+	public boolean equals(Object object) {
+		if (Util.clazz(object) == Vector.class) {
+			Vector vector = (Vector) object;
+			return x == vector.x && y == vector.y && z == vector.z;
+		} else
+			return false;
 	}
 
 	@Override
@@ -61,12 +65,8 @@ public class Vector {
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		if (Util.clazz(object) == Vector.class) {
-			Vector vector = (Vector) object;
-			return x == vector.x && y == vector.y && z == vector.z;
-		} else
-			return false;
+	public String toString() {
+		return "(" + x + ", " + y + ", " + z + ")";
 	}
 
 }

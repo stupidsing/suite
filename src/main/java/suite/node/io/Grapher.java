@@ -56,17 +56,17 @@ public class Grapher {
 		}
 
 		@Override
-		public int hashCode() {
-			return t0 ^ t1;
-		}
-
-		@Override
 		public boolean equals(Object object) {
 			if (Util.clazz(object) == IntPair.class) {
 				IntPair other = (IntPair) object;
 				return t0 == other.t0 && t1 == other.t1;
 			} else
 				return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return t0 ^ t1;
 		}
 	}
 

@@ -78,8 +78,8 @@ public class Coordinate implements Comparable<Coordinate> {
 	}
 
 	@Override
-	public int hashCode() {
-		return index;
+	public int compareTo(Coordinate coord) {
+		return index - coord.index;
 	}
 
 	@Override
@@ -92,8 +92,8 @@ public class Coordinate implements Comparable<Coordinate> {
 	}
 
 	@Override
-	public int compareTo(Coordinate coord) {
-		return index - coord.index;
+	public int hashCode() {
+		return index;
 	}
 
 	@Override

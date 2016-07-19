@@ -31,16 +31,16 @@ public class TreeIntern {
 			this.right = right;
 		}
 
-		public int hashCode() {
-			return hashCode;
-		}
-
 		public boolean equals(Object object) {
 			if (Util.clazz(object) == Key.class) {
 				Key key = (Key) object;
 				return hashCode == key.hashCode && operator == key.operator && left == key.left && right == key.right;
 			} else
 				return false;
+		}
+
+		public int hashCode() {
+			return hashCode;
 		}
 	}
 

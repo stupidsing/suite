@@ -16,13 +16,13 @@ public class IdentityKey<K> extends HashCodeComparable<IdentityKey<K>> {
 	}
 
 	@Override
-	public int hashCode() {
-		return System.identityHashCode(key);
+	public boolean equals(Object object) {
+		return Util.clazz(object) == IdentityKey.class && key == ((IdentityKey<?>) object).key;
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		return Util.clazz(object) == IdentityKey.class && key == ((IdentityKey<?>) object).key;
+	public int hashCode() {
+		return System.identityHashCode(key);
 	}
 
 }

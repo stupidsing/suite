@@ -45,12 +45,12 @@ public class BuildLr {
 		private Transition() {
 		}
 
-		public int hashCode() {
-			return System.identityHashCode(this);
-		}
-
 		public boolean equals(Object object) {
 			return this == object;
+		}
+
+		public int hashCode() {
+			return System.identityHashCode(this);
 		}
 
 		private boolean putAll(Transition sourceMap) {

@@ -96,17 +96,6 @@ public class IList<T> implements Iterable<T> {
 	}
 
 	@Override
-	public int hashCode() {
-		IList<T> list = this;
-		int hashCode = 0;
-		while (!list.isEmpty()) {
-			hashCode = hashCode * 31 + Objects.hashCode(list.head);
-			list = list.tail;
-		}
-		return hashCode;
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == IList.class) {
 			IList<?> list0 = this;
@@ -124,6 +113,17 @@ public class IList<T> implements Iterable<T> {
 			return e0 && e1;
 		} else
 			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		IList<T> list = this;
+		int hashCode = 0;
+		while (!list.isEmpty()) {
+			hashCode = hashCode * 31 + Objects.hashCode(list.head);
+			list = list.tail;
+		}
+		return hashCode;
 	}
 
 }

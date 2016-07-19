@@ -11,17 +11,17 @@ public class Str extends Node {
 	}
 
 	@Override
-	public int hashCode() {
-		return value.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == Str.class) {
 			Str str = (Str) object;
 			return Util.stringEquals(value, str.value);
 		} else
 			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return value.hashCode();
 	}
 
 }

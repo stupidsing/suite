@@ -27,17 +27,17 @@ public class Int extends Node {
 	}
 
 	@Override
-	public int hashCode() {
-		return number;
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == Int.class) {
 			Int i = (Int) object;
 			return number == i.number;
 		} else
 			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return number;
 	}
 
 }

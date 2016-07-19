@@ -79,17 +79,17 @@ public class Prototype implements Comparable<Prototype> {
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hashCode(head);
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == Prototype.class) {
 			Prototype p = (Prototype) object;
 			return Objects.equals(head, p.head);
 		} else
 			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(head);
 	}
 
 	@Override

@@ -60,17 +60,17 @@ public class GameSet1 {
 	}
 
 	@Override
-	public int hashCode() {
-		return board.hashCode() ^ nextPlayer.hashCode() ^ previousStates.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == GameSet1.class) {
 			GameSet1 other = (GameSet1) object;
 			return board.equals(other.board) && nextPlayer == other.nextPlayer && previousStates.equals(other.previousStates);
 		} else
 			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return board.hashCode() ^ nextPlayer.hashCode() ^ previousStates.hashCode();
 	}
 
 }

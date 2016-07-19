@@ -31,12 +31,12 @@ public class FactorizeResult {
 	}
 
 	public static class FNodeImpl implements FNode {
-		public int hashCode() {
-			return inspect.hashCode(this);
-		}
-
 		public boolean equals(Object object) {
 			return inspect.equals(this, object);
+		}
+
+		public int hashCode() {
+			return inspect.hashCode(this);
 		}
 	}
 

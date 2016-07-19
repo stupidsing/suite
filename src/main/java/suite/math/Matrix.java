@@ -214,6 +214,16 @@ public class Matrix {
 	}
 
 	@Override
+	public boolean equals(Object object) {
+		return Util.clazz(object) == Matrix.class && Arrays.deepEquals(v, ((Matrix) object).v);
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.deepHashCode(v);
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
@@ -225,16 +235,6 @@ public class Matrix {
 		}
 
 		return sb.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		return Arrays.deepHashCode(v);
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return Util.clazz(object) == Matrix.class && Arrays.deepEquals(v, ((Matrix) object).v);
 	}
 
 }

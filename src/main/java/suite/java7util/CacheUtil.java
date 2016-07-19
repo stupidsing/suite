@@ -30,14 +30,6 @@ public class CacheUtil {
 			this.arguments = arguments;
 		}
 
-		public int hashCode() {
-			int result = 1;
-			result = 31 * result + System.identityHashCode(bean);
-			result = 31 * result + Objects.hashCode(method);
-			result = 31 * result + Arrays.deepHashCode(arguments);
-			return result;
-		}
-
 		public boolean equals(Object object) {
 			if (Util.clazz(object) == Key.class) {
 				Key other = (Key) object;
@@ -46,6 +38,14 @@ public class CacheUtil {
 						&& Arrays.deepEquals(arguments, other.arguments);
 			} else
 				return false;
+		}
+
+		public int hashCode() {
+			int result = 1;
+			result = 31 * result + System.identityHashCode(bean);
+			result = 31 * result + Objects.hashCode(method);
+			result = 31 * result + Arrays.deepHashCode(arguments);
+			return result;
 		}
 	}
 

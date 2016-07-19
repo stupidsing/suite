@@ -42,17 +42,17 @@ public class Complex {
 	}
 
 	@Override
-	public int hashCode() {
-		return Float.hashCode(r) * 31 + Float.hashCode(i);
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == Complex.class) {
 			Complex other = (Complex) object;
 			return r == other.r && i == other.i;
 		} else
 			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Float.hashCode(r) * 31 + Float.hashCode(i);
 	}
 
 }

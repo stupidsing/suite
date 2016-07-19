@@ -220,14 +220,6 @@ public class Chars implements Iterable<Character> {
 	}
 
 	@Override
-	public int hashCode() {
-		int result = 1;
-		for (int i = start; i < end; i++)
-			result = 31 * result + cs[i];
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == Chars.class) {
 			Chars other = (Chars) object;
@@ -242,6 +234,14 @@ public class Chars implements Iterable<Character> {
 				return false;
 		} else
 			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 1;
+		for (int i = start; i < end; i++)
+			result = 31 * result + cs[i];
+		return result;
 	}
 
 	@Override

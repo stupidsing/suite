@@ -28,19 +28,19 @@ public class LcsBfs<T> {
 			this.pos1 = pos1;
 		}
 
-		public int hashCode() {
-			int result = 1;
-			result = 31 * result + pos0;
-			result = 31 * result + pos1;
-			return result;
-		}
-
 		public boolean equals(Object object) {
 			if (Util.clazz(object) == Node.class) {
 				LcsBfs<?>.Node node = (LcsBfs<?>.Node) object;
 				return pos0 == node.pos0 && pos1 == node.pos1;
 			} else
 				return false;
+		}
+
+		public int hashCode() {
+			int result = 1;
+			result = 31 * result + pos0;
+			result = 31 * result + pos1;
+			return result;
 		}
 	}
 

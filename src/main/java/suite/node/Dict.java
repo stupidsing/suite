@@ -19,16 +19,16 @@ public class Dict extends Node {
 	}
 
 	@Override
+	public boolean equals(Object object) {
+		return Util.clazz(object) == Dict.class ? map.equals(((Dict) object).map) : false;
+	}
+
+	@Override
 	public int hashCode() {
 		int result = 0;
 		for (Entry<Node, Reference> e : map.entrySet())
 			result ^= 31 * e.getKey().hashCode() + e.getValue().hashCode();
 		return result;
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return Util.clazz(object) == Dict.class ? map.equals(((Dict) object).map) : false;
 	}
 
 }

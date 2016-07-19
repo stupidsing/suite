@@ -70,19 +70,6 @@ public class TermKey extends HashCodeComparable<TermKey> {
 			new TermVisitor(i -> list.add(Pair.of(i, null)), nr -> Pair.of(null, nr)).visit(node);
 		}
 
-		public int hashCode() {
-			int result = 1;
-			for (Pair<Integer, NodeHead> pair : list) {
-				result = 31 * result + Objects.hash(pair.t0);
-				if (pair.t1 != null) {
-					result = 31 * result + Objects.hash(pair.t1.type);
-					result = 31 * result + Objects.hash(pair.t1.terminal);
-					result = 31 * result + Objects.hash(pair.t1.op);
-				}
-			}
-			return result;
-		}
-
 		public boolean equals(Object object) {
 			boolean result = Util.clazz(object) == TermLister.class;
 
@@ -112,17 +99,25 @@ public class TermKey extends HashCodeComparable<TermKey> {
 
 			return result;
 		}
+
+		public int hashCode() {
+			int result = 1;
+			for (Pair<Integer, NodeHead> pair : list) {
+				result = 31 * result + Objects.hash(pair.t0);
+				if (pair.t1 != null) {
+					result = 31 * result + Objects.hash(pair.t1.type);
+					result = 31 * result + Objects.hash(pair.t1.terminal);
+					result = 31 * result + Objects.hash(pair.t1.op);
+				}
+			}
+			return result;
+		}
 	}
 
 	public final Node node;
 
 	public TermKey(Node node) {
 		this.node = node;
-	}
-
-	@Override
-	public int hashCode() {
-		return new TermHasher(node).hashCode;
 	}
 
 	@Override
@@ -134,6 +129,11 @@ public class TermKey extends HashCodeComparable<TermKey> {
 			return Objects.equals(tl0, tl1);
 		} else
 			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return new TermHasher(node).hashCode;
 	}
 
 }

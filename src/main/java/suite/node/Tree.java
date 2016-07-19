@@ -66,21 +66,21 @@ public class Tree extends Node {
 	}
 
 	@Override
-	public int hashCode() {
-		int result = 1;
-		result = 31 * result + Objects.hashCode(left);
-		result = 31 * result + Objects.hashCode(operator);
-		result = 31 * result + Objects.hashCode(right);
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == Tree.class) {
 			Tree t = (Tree) object;
 			return operator == t.operator && Objects.equals(left, t.left) && Objects.equals(right, t.right);
 		} else
 			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 1;
+		result = 31 * result + Objects.hashCode(left);
+		result = 31 * result + Objects.hashCode(operator);
+		result = 31 * result + Objects.hashCode(right);
+		return result;
 	}
 
 	// These methods violate the immutable property of the tree. Should only

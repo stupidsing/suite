@@ -221,14 +221,6 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	@Override
-	public int hashCode() {
-		int result = 1;
-		for (int i = start; i < end; i++)
-			result = 31 * result + bs[i];
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == Bytes.class) {
 			Bytes other = (Bytes) object;
@@ -243,6 +235,14 @@ public class Bytes implements Iterable<Byte> {
 				return false;
 		} else
 			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 1;
+		for (int i = start; i < end; i++)
+			result = 31 * result + bs[i];
+		return result;
 	}
 
 	@Override

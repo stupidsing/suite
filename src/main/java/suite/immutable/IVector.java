@@ -122,16 +122,6 @@ public class IVector<T> {
 	}
 
 	@Override
-	public int hashCode() {
-		int result = 1;
-		for (int i = start; i < end; i++) {
-			int h = Objects.hashCode(data.nodes[i]);
-			result = 31 * result + h;
-		}
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		boolean result = false;
 
@@ -145,6 +135,16 @@ public class IVector<T> {
 				result &= Objects.equals(data.nodes[si++], v.data.nodes[di++]);
 		}
 
+		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 1;
+		for (int i = start; i < end; i++) {
+			int h = Objects.hashCode(data.nodes[i]);
+			result = 31 * result + h;
+		}
 		return result;
 	}
 

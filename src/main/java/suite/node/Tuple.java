@@ -18,16 +18,16 @@ public class Tuple extends Node {
 	}
 
 	@Override
+	public boolean equals(Object object) {
+		return Util.clazz(object) == Tuple.class && Objects.equals(nodes, ((Tuple) object).nodes);
+	}
+
+	@Override
 	public int hashCode() {
 		int result = 1;
 		for (Node node : nodes)
 			result = 31 * result + node.hashCode();
 		return result;
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return Util.clazz(object) == Tuple.class && Objects.equals(nodes, ((Tuple) object).nodes);
 	}
 
 }

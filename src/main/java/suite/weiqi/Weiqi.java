@@ -88,17 +88,17 @@ public class Weiqi {
 		}
 
 		@Override
-		public int hashCode() {
-			return Arrays.hashCode(positions);
-		}
-
-		@Override
 		public boolean equals(Object object) {
 			if (Util.clazz(object) == Array.class) {
 				Array<?> array = (Array<?>) object;
 				return Arrays.equals(positions, array.positions);
 			} else
 				return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return Arrays.hashCode(positions);
 		}
 
 		public void set(Coordinate c, T t) {
