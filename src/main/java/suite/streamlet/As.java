@@ -15,6 +15,19 @@ import suite.util.FunUtil.Sink;
 
 public class As {
 
+	public static Fun<Outlet<String>, String> conc(String delimiter) {
+		return outlet -> {
+			StringBuilder sb = new StringBuilder();
+			outlet.sink(new Sink<String>() {
+				public void sink(String s) {
+					sb.append(s);
+					sb.append(delimiter);
+				}
+			});
+			return sb.toString();
+		};
+	}
+
 	public static <T> Streamlet<T> concat(Outlet<Streamlet<T>> outlet) {
 		List<T> list = new ArrayList<>();
 		outlet.sink(st1 -> st1.sink(list::add));
