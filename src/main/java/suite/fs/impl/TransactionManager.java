@@ -67,7 +67,6 @@ public class TransactionManager<Key, Value> {
 		@Override
 		public void end(boolean isComplete) {
 			st.end(isComplete ? TransactionStatus.DONE____ : TransactionStatus.ROLLBACK);
-			mutator.end(isComplete);
 			if (isComplete)
 				flush();
 		}
