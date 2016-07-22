@@ -36,9 +36,10 @@ public class JournalledFileFactory {
 				pageSize);
 	}
 
-	private static JournalledPageFile journalled(PageFile df //
-			, PageFile jpf //
-			, PageFile ppf //
+	private static JournalledPageFile journalled( //
+			PageFile df, //
+			PageFile jpf, //
+			PageFile ppf //
 			, int pageSize) {
 		Serializer<Bytes> bytesSerializer = Serialize.bytes(pageSize);
 
