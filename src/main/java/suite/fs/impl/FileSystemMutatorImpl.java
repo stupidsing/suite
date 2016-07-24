@@ -70,7 +70,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 				fsNameKeySet.remove(name);
 			store.remove(sizeKey);
 			for (int s = 0; s < size; s += pageSize)
-				store.remove(key(hash, DATAID, seq++));
+				dataStore.removePayload(key(hash, DATAID, seq++));
 		}
 
 		if (isCreate) {
@@ -109,7 +109,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		int nPages1 = (size1 + pageSize - 1) / pageSize;
 
 		for (int page = nPages1; page < nPages0; page++)
-			store.remove(key(hash, DATAID, page));
+			dataStore.removePayload(key(hash, DATAID, page));
 		for (int page = nPages0; page < nPages1; page++)
 			dataStore.putPayload(key(hash, DATAID, page), Bytes.empty);
 

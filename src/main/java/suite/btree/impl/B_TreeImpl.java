@@ -283,6 +283,16 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	@Override
+	public void removePayload(Key key) {
+		remove(key);
+	}
+
+	@Override
+	public void removeTerminal(Key key) {
+		remove(key);
+	}
+
+	@Override
 	public void remove(Key key) {
 		int root = getRoot();
 		Traverse t = new Traverse(key);

@@ -102,10 +102,12 @@ public class Util {
 	}
 
 	public static <T extends Comparable<? super T>> int compare(T t0, T t1) {
-		if (t0 == null ^ t1 == null)
-			return t0 != null ? 1 : -1;
+		boolean b0 = t0 != null;
+		boolean b1 = t1 != null;
+		if (b0 && b1)
+			return t0.compareTo(t1);
 		else
-			return t0 != null ? t0.compareTo(t1) : 0;
+			return b0 ? 1 : b1 ? -1 : 0;
 	}
 
 	public static long createDate(int year, int month, int day) {

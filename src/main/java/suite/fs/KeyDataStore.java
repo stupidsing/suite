@@ -1,8 +1,11 @@
 package suite.fs;
 
 import suite.primitive.Bytes;
+import suite.streamlet.Streamlet;
 
 public interface KeyDataStore<Key> {
+
+	public Streamlet<Key> keys(Key start, Key end);
 
 	public Bytes getPayload(Key key);
 
@@ -20,5 +23,9 @@ public interface KeyDataStore<Key> {
 	 * Puts a key only, without any value or payload.
 	 */
 	public void putTerminal(Key key);
+
+	public void removePayload(Key key);
+
+	public void removeTerminal(Key key);
 
 }
