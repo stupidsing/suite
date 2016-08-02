@@ -11,7 +11,6 @@ import suite.fs.KeyValueStore;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FunUtil.Source;
-import suite.util.To;
 
 public class FileSystemMutatorImpl implements FileSystemMutator {
 
@@ -47,7 +46,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 
 	public List<Bytes> list(Bytes start, Bytes end) {
 		KeyDataStoreMutator<Bytes> mutator = mutate.source();
-		return To.list(new FileSystemKeySet(keyUtil, mutator).list(start, end));
+		return new FileSystemKeySet(keyUtil, mutator).list(start, end).toList();
 	}
 
 	public void replace(Bytes name, Bytes bytes) {
