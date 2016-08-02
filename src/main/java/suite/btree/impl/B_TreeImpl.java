@@ -392,7 +392,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			else if (ptr instanceof B_TreeImpl.Payload)
 				w.println(" <Payload>");
 			else if (ptr instanceof B_TreeImpl.Terminal)
-				w.println(" <>");
+				w.println(" <Terminal>");
 		}
 	}
 
