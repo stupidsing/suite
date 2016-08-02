@@ -166,7 +166,10 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		allocator.create();
 		int root = allocator.allocate();
 
-		setRoot(root);
+		Superblock superblock = new Superblock();
+		superblock.root = root;
+		superblockFile.save(0, superblock);
+
 		savePage(new Page(root, Arrays.asList(new KeyPointer(null, new Terminal()))));
 	}
 
@@ -440,13 +443,6 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	private int getRoot() {
 		return superblockFile.load(0).root;
-	}
-
-	private void setRoot(int root) {
-		Superblock superblock = superblockFile.load(0);
-		superblock = superblock != null ? superblock : new Superblock();
-		superblock.root = root;
-		superblockFile.save(0, superblock);
 	}
 
 	public void setBranchFactor(int branchFactor) {
