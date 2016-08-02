@@ -168,6 +168,24 @@ public class Serialize {
 		};
 	}
 
+	public static <T> Serializer<T> verify(Object o, Serializer<T> serializer) {
+		int c = o.hashCode();
+
+		return new Serializer<T>() {
+			public T read(DataInput dataInput) throws IOException {
+				if (dataInput.readInt() == c)
+					return serializer.read(dataInput);
+				else
+					throw new RuntimeException();
+			}
+
+			public void write(DataOutput dataOutput, T value) throws IOException {
+				dataOutput.writeInt(c);
+				serializer.write(dataOutput, value);
+			}
+		};
+	}
+
 	/**
 	 * Serializes a boolean.
 	 *
