@@ -102,7 +102,6 @@ public class B_TreeTest {
 			assertEquals(Integer.toString(i), b_tree.get(i));
 
 		assertEquals(nKeys / 2, To.list(b_tree.keys(0, nKeys / 2)).size());
-
 		int count = 0;
 
 		for (Pair<Integer, String> entry : b_tree.range(0, nKeys)) {

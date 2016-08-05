@@ -206,16 +206,20 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private Streamlet<KeyPointer> stream(Integer pointer, Key start, Key end) {
+		return stream_(pointer, start, end).drop(1);
+	}
+
+	private Streamlet<KeyPointer> stream_(Integer pointer, Key start, Key end) {
 		Page page = pageFile.load(pointer);
-		int i0 = start != null ? findPosition(page, start, true) : 0;
+		int i0 = start != null ? findPosition(page, start, false) : 0;
 		int i1 = end != null ? findPosition(page, end, false) + 1 : page.size();
 
 		if (i0 < i1)
-			return Read.from(page.subList(Math.max(0, i0), i1)).concatMap(kp -> {
+			return Read.from(page.subList(i0, i1)).concatMap(kp -> {
 				if (kp.pointer instanceof B_TreeImpl.Branch)
-					return stream(kp.getBranchPointer(), start, end);
+					return stream_(kp.getBranchPointer(), start, end);
 				else
-					return kp.key != null ? Read.from(kp) : Read.empty();
+					return Read.from(kp);
 			});
 		else
 			return Read.empty();
@@ -420,9 +424,9 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private int findPosition(Page page, Key key, boolean isInclusive) {
-		int i, c;
-		for (i = page.size() - 1; 0 <= i; i--)
-			if ((c = comparator.compare(page.get(i).key, key)) <= 0)
+		int c, i = page.size();
+		while (0 < i)
+			if ((c = comparator.compare(page.get(--i).key, key)) <= 0)
 				if (isInclusive || c < 0)
 					break;
 		return i;

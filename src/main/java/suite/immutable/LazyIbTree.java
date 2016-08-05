@@ -48,8 +48,9 @@ public class LazyIbTree<T> implements ITree<T> {
 		}
 
 		private FindSlot(List<Slot<T>> slots, T t, boolean isInclusive) {
-			for (i = slots.size() - 1; 0 <= i; i--)
-				if ((c = comparator.compare((slot = slots.get(i)).pivot, t)) <= 0)
+			i = slots.size();
+			while (0 < i)
+				if ((c = comparator.compare((slot = slots.get(--i)).pivot, t)) <= 0)
 					if (isInclusive || c < 0)
 						break;
 		}
@@ -120,16 +121,20 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	private Streamlet<T> stream(List<Slot<T>> node, T start, T end) {
-		int i0 = start != null ? new FindSlot(node, start, false).i + 1 : 0;
+		return stream_(node, start, end).drop(1);
+	}
+
+	private Streamlet<T> stream_(List<Slot<T>> node, T start, T end) {
+		int i0 = start != null ? new FindSlot(node, start, false).i : 0;
 		int i1 = end != null ? new FindSlot(node, end, false).i + 1 : node.size();
 
 		if (i0 < i1)
 			return Read.from(node.subList(i0, i1)).concatMap(slot -> {
 				List<Slot<T>> slots = slot.readSlots();
 				if (!slots.isEmpty())
-					return stream(slots, start, end);
+					return stream_(slots, start, end);
 				else
-					return slot.pivot != null ? Read.from(slot.pivot) : Read.empty();
+					return Read.from(slot.pivot);
 			});
 		else
 			return Read.empty();
