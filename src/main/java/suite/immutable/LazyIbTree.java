@@ -113,18 +113,18 @@ public class LazyIbTree<T> implements ITree<T> {
 
 	@Override
 	public Streamlet<T> stream() {
-		return stream(root, null, null);
+		return stream(null, null);
 	}
 
 	public Streamlet<T> stream(T start, T end) {
-		return stream(root, start, end);
+		return stream0(start, end);
 	}
 
-	private Streamlet<T> stream(List<Slot<T>> node, T start, T end) {
-		return stream_(node, start, end).drop(1);
+	private Streamlet<T> stream0(T start, T end) {
+		return stream0(root, start, end).drop(1);
 	}
 
-	private Streamlet<T> stream_(List<Slot<T>> node, T start, T end) {
+	private Streamlet<T> stream0(List<Slot<T>> node, T start, T end) {
 		int i0 = start != null ? new FindSlot(node, start, false).i : 0;
 		int i1 = end != null ? new FindSlot(node, end, false).i + 1 : node.size();
 
@@ -132,7 +132,7 @@ public class LazyIbTree<T> implements ITree<T> {
 			return Read.from(node.subList(i0, i1)).concatMap(slot -> {
 				List<Slot<T>> slots = slot.readSlots();
 				if (!slots.isEmpty())
-					return stream_(slots, start, end);
+					return stream0(slots, start, end);
 				else
 					return Read.from(slot.pivot);
 			});

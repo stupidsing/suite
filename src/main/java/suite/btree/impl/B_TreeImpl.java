@@ -197,19 +197,19 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	@Override
 	public Streamlet<Key> keys(Key key0, Key key1) {
-		return stream(getRoot(), key0, key1).map(kp -> kp != null ? kp.key : null);
+		return stream(key0, key1).map(kp -> kp != null ? kp.key : null);
 	}
 
 	@Override
 	public Streamlet<Pair<Key, Value>> range(Key key0, Key key1) {
-		return stream(getRoot(), key0, key1).map(kp -> kp != null ? Pair.of(kp.key, kp.getLeafValue()) : null);
+		return stream(key0, key1).map(kp -> kp != null ? Pair.of(kp.key, kp.getLeafValue()) : null);
 	}
 
-	private Streamlet<KeyPointer> stream(Integer pointer, Key start, Key end) {
-		return stream_(pointer, start, end).drop(1);
+	private Streamlet<KeyPointer> stream(Key start, Key end) {
+		return stream0(getRoot(), start, end).drop(1);
 	}
 
-	private Streamlet<KeyPointer> stream_(Integer pointer, Key start, Key end) {
+	private Streamlet<KeyPointer> stream0(Integer pointer, Key start, Key end) {
 		Page page = pageFile.load(pointer);
 		int i0 = start != null ? findPosition(page, start, false) : 0;
 		int i1 = end != null ? findPosition(page, end, false) + 1 : page.size();
@@ -217,7 +217,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		if (i0 < i1)
 			return Read.from(page.subList(i0, i1)).concatMap(kp -> {
 				if (kp.pointer instanceof B_TreeImpl.Branch)
-					return stream_(kp.getBranchPointer(), start, end);
+					return stream0(kp.getBranchPointer(), start, end);
 				else
 					return Read.from(kp);
 			});
