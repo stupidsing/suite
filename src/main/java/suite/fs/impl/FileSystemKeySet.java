@@ -14,7 +14,7 @@ import suite.util.Util;
 
 /**
  * Facilitates storage of unlimited length of filenames on the immutable B-tree.
- * This cuts up a full path into chunks of 30 characters and arrange them as a
+ * This cuts up a full path into chunks of 24 characters and arrange them as a
  * trie over the original B-tree, indexed by hash values. Used for implementing
  * file systems.
  *
