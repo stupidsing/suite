@@ -249,7 +249,7 @@ public class LazyIbTree<T> implements ITree<T> {
 
 	private List<Slot<T>> createRoot(List<Slot<T>> node) {
 		List<Slot<T>> node1;
-		return node.size() == 1 && (node1 = node.get(0).readSlots()) != null ? createRoot(node1) : node;
+		return node.size() == 1 && !(node1 = node.get(0).readSlots()).isEmpty() ? createRoot(node1) : node;
 	}
 
 	private Slot<T> slot(List<Slot<T>> slots) {
