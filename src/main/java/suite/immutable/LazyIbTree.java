@@ -117,10 +117,6 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public Streamlet<T> stream(T start, T end) {
-		return stream0(start, end);
-	}
-
-	private Streamlet<T> stream0(T start, T end) {
 		return stream0(root, start, end).drop(1);
 	}
 
