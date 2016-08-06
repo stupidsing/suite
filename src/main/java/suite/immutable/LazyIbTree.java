@@ -78,7 +78,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public LazyIbTree(Comparator<T> comparator) {
-		this(comparator, Arrays.asList(new Slot<>(() -> Collections.emptyList(), null)));
+		this(comparator, Arrays.asList(new Slot<>(Collections::emptyList, null)));
 	}
 
 	public LazyIbTree(Comparator<T> comparator, List<Slot<T>> source) {
@@ -205,7 +205,7 @@ public class LazyIbTree<T> implements ITree<T> {
 			if (fs.c != 0)
 				slots2.add(fs.slot);
 			if (t1 != null)
-				slots2.add(new Slot<>(() -> Collections.emptyList(), t1));
+				slots2.add(new Slot<>(Collections::emptyList, t1));
 		}
 
 		List<Slot<T>> slots3 = Util.add(Util.left(node0, s0), slots2, Util.right(node0, s1));
