@@ -1,10 +1,8 @@
 package suite.immutable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import suite.adt.Pair;
 import suite.fs.KeyValueMutator;
+import suite.node.util.Mutable;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 
@@ -23,12 +21,12 @@ public class LazyIbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 
 	@Override
 	public V get(K key) {
-		List<V> values = new ArrayList<>();
+		Mutable<V> mutable = Mutable.nil();
 		update0(key, pair -> {
-			values.add(pair != null ? pair.t1 : null);
+			mutable.set(pair != null ? pair.t1 : null);
 			return pair;
 		});
-		return values.get(0);
+		return mutable.get();
 	}
 
 	@Override
