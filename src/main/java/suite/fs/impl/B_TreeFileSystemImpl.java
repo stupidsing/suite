@@ -8,7 +8,7 @@ import suite.btree.B_Tree;
 import suite.btree.impl.B_TreeBuilder;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
-import suite.fs.KeyDataStoreMutator;
+import suite.fs.KeyDataStore;
 import suite.primitive.Bytes;
 
 public class B_TreeFileSystemImpl implements FileSystem {
@@ -18,7 +18,7 @@ public class B_TreeFileSystemImpl implements FileSystem {
 	private FileSystemMutator mutator;
 
 	public B_TreeFileSystemImpl(Path path, boolean isNew, int pageSize) {
-		Pair<B_Tree<Bytes, Integer>, KeyDataStoreMutator<Bytes>> pair = B_TreeBuilder.build( //
+		Pair<B_Tree<Bytes, Integer>, KeyDataStore<Bytes>> pair = B_TreeBuilder.build( //
 				path, //
 				isNew, //
 				keyUtil.serializer(), //
@@ -26,7 +26,7 @@ public class B_TreeFileSystemImpl implements FileSystem {
 				pageSize, //
 				pageSize);
 		b_tree = pair.t0;
-		KeyDataStoreMutator<Bytes> b_treeMutator = pair.t1;
+		KeyDataStore<Bytes> b_treeMutator = pair.t1;
 		mutator = new FileSystemMutatorImpl(keyUtil, () -> b_treeMutator);
 	}
 

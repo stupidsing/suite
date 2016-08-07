@@ -16,7 +16,7 @@ import suite.file.impl.AllocatorImpl;
 import suite.file.impl.FileFactory;
 import suite.file.impl.JournalledFileFactory;
 import suite.file.impl.SerializedFileFactory;
-import suite.fs.KeyDataStoreMutator;
+import suite.fs.KeyDataStore;
 import suite.primitive.Bytes;
 import suite.util.Rethrow;
 import suite.util.Serialize;
@@ -108,7 +108,7 @@ public class B_TreeBuilder<Key, Value> {
 		}
 	}
 
-	public static <Key> Pair<B_Tree<Key, Integer>, KeyDataStoreMutator<Key>> build( //
+	public static <Key> Pair<B_Tree<Key, Integer>, KeyDataStore<Key>> build( //
 			Path path, //
 			boolean isNew, //
 			Serializer<Key> ks, //
@@ -126,7 +126,7 @@ public class B_TreeBuilder<Key, Value> {
 			jpf.commit();
 		}
 
-		return Pair.of(b_tree, new B_TreeMutator<>(b_tree, jpf::commit));
+		return Pair.of(b_tree, new B_TreeStore<>(b_tree, jpf::commit));
 	}
 
 	public B_TreeBuilder(Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {

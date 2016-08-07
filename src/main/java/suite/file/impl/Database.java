@@ -6,9 +6,9 @@ import java.nio.file.Path;
 
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
-import suite.fs.KeyValueStore;
+import suite.fs.KeyValueMutator;
 import suite.fs.impl.TransactionManager;
-import suite.immutable.LazyIbTreeMutator;
+import suite.immutable.LazyIbTreeStore;
 import suite.util.FunUtil.Fun;
 import suite.util.Serialize;
 import suite.util.Util;
@@ -21,7 +21,7 @@ public class Database implements Closeable {
 	public Database(Path path) {
 		journalledPageFile = JournalledFileFactory.journalled(path, PageFile.defaultPageSize);
 
-		transactionManager = new TransactionManager<>(() -> LazyIbTreeMutator.ofExtent( //
+		transactionManager = new TransactionManager<>(() -> LazyIbTreeStore.ofExtent( //
 				journalledPageFile, //
 				Util.comparator(), //
 				Serialize.int_, //
@@ -34,7 +34,7 @@ public class Database implements Closeable {
 		journalledPageFile.close();
 	}
 
-	public <T> T transact(Fun<KeyValueStore<Integer, String>, T> callback) {
+	public <T> T transact(Fun<KeyValueMutator<Integer, String>, T> callback) {
 		try {
 			return transactionManager.begin(callback);
 		} finally {

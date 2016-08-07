@@ -4,11 +4,11 @@ import java.io.Closeable;
 import java.io.PrintStream;
 
 import suite.adt.Pair;
-import suite.fs.KeyDataStore;
-import suite.fs.KeyValueStore;
+import suite.fs.KeyDataMutator;
+import suite.fs.KeyValueMutator;
 import suite.streamlet.Streamlet;
 
-public interface B_Tree<Key, Value> extends Closeable, KeyDataStore<Key>, KeyValueStore<Key, Value> {
+public interface B_Tree<Key, Value> extends Closeable, KeyDataMutator<Key>, KeyValueMutator<Key, Value> {
 
 	public void create();
 

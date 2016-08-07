@@ -10,8 +10,8 @@ import suite.concurrent.ObstructionFreeStm;
 import suite.concurrent.ObstructionFreeStm.Memory;
 import suite.concurrent.Stm;
 import suite.concurrent.Stm.TransactionStatus;
+import suite.fs.KeyValueMutator;
 import suite.fs.KeyValueStore;
-import suite.fs.KeyValueStoreMutator;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -25,25 +25,25 @@ import suite.util.FunUtil.Source;
  */
 public class TransactionManager<Key, Value> {
 
-	private Source<KeyValueStoreMutator<Key, Value>> source;
+	private Source<KeyValueStore<Key, Value>> source;
 	private ObstructionFreeStm stm = new ObstructionFreeStm();
 	private Map<Key, Memory<Value>> memoryByKey = new ConcurrentHashMap<>();
 
-	public class Transaction implements KeyValueStoreMutator<Key, Value> {
-		private KeyValueStoreMutator<Key, Value> mutator;
+	public class Transaction implements KeyValueStore<Key, Value> {
+		private KeyValueStore<Key, Value> store;
 		private Stm.Transaction st = stm.begin();
 
-		public Transaction(KeyValueStoreMutator<Key, Value> mutator) {
-			this.mutator = mutator;
+		public Transaction(KeyValueStore<Key, Value> store) {
+			this.store = store;
 		}
 
 		@Override
-		public KeyValueStore<Key, Value> store() {
-			KeyValueStore<Key, Value> store = mutator.store();
+		public KeyValueMutator<Key, Value> mutate() {
+			KeyValueMutator<Key, Value> mutator = store.mutate();
 
-			return new KeyValueStore<Key, Value>() {
+			return new KeyValueMutator<Key, Value>() {
 				public Streamlet<Key> keys(Key start, Key end) {
-					return store.keys(start, end);
+					return mutator.keys(start, end);
 				}
 
 				public Value get(Key key) {
@@ -59,7 +59,7 @@ public class TransactionManager<Key, Value> {
 				}
 
 				private Memory<Value> getMemory(Key key) {
-					return memoryByKey.computeIfAbsent(key, key_ -> stm.create(store.get(key_)));
+					return memoryByKey.computeIfAbsent(key, key_ -> stm.create(mutator.get(key_)));
 				}
 			};
 		}
@@ -72,7 +72,7 @@ public class TransactionManager<Key, Value> {
 		}
 	}
 
-	public TransactionManager(Source<KeyValueStoreMutator<Key, Value>> source) {
+	public TransactionManager(Source<KeyValueStore<Key, Value>> source) {
 		this.source = source;
 	}
 
@@ -91,27 +91,27 @@ public class TransactionManager<Key, Value> {
 		});
 
 		if (ok) {
-			KeyValueStoreMutator<Key, Value> mutator = source.source();
-			KeyValueStore<Key, Value> store = mutator.store();
+			KeyValueStore<Key, Value> store = source.source();
+			KeyValueMutator<Key, Value> mutator = store.mutate();
 			map.forEach((k, v) -> {
 				if (v != null)
-					store.put(k, v);
+					mutator.put(k, v);
 				else
-					store.remove(k);
+					mutator.remove(k);
 			});
-			mutator.end(ok);
+			store.end(ok);
 		}
 	}
 
-	public <T> T begin(Fun<KeyValueStore<Key, Value>, T> fun) {
-		KeyValueStoreMutator<Key, Value> mutator = new Transaction(source.source());
+	public <T> T begin(Fun<KeyValueMutator<Key, Value>, T> fun) {
+		KeyValueStore<Key, Value> store = new Transaction(source.source());
 		boolean ok = false;
 		try {
-			T t = fun.apply(mutator.store());
+			T t = fun.apply(store.mutate());
 			ok = true;
 			return t;
 		} finally {
-			mutator.end(ok);
+			store.end(ok);
 		}
 	}
 

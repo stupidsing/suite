@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
-import suite.fs.KeyDataStoreMutator;
 import suite.fs.impl.FileSystemKeyUtil.NameKey;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
@@ -24,11 +24,11 @@ public class FileSystemKeySet {
 
 	private List<NameKey> emptyKeys = Collections.emptyList();
 	private FileSystemKeyUtil keyUtil;
-	private KeyDataStoreMutator<Bytes> mutator;
+	private KeyDataStore<Bytes> store;
 
-	public FileSystemKeySet(FileSystemKeyUtil keyUtil, KeyDataStoreMutator<Bytes> transaction) {
+	public FileSystemKeySet(FileSystemKeyUtil keyUtil, KeyDataStore<Bytes> store) {
 		this.keyUtil = keyUtil;
-		this.mutator = transaction;
+		this.store = store;
 	}
 
 	public Streamlet<Bytes> list(Bytes bytes0, Bytes bytes1) {
@@ -39,7 +39,7 @@ public class FileSystemKeySet {
 		Bytes hash = keyUtil.hash(keyUtil.toName(prefix));
 		NameKey minKey = keys0 != null && !keys0.isEmpty() ? Util.first(keys0) : boundingKey(hash, 0);
 		NameKey maxKey = keys1 != null && !keys1.isEmpty() ? Util.first(keys1) : boundingKey(hash, 1);
-		Streamlet<Bytes> st = mutator.dataStore().keys(keyUtil.toBytes(minKey), increment(keyUtil.toBytes(maxKey)));
+		Streamlet<Bytes> st = store.mutateData().keys(keyUtil.toBytes(minKey), increment(keyUtil.toBytes(maxKey)));
 
 		return st.concatMap(bytes -> {
 			NameKey key = keyUtil.toNameKey(bytes);
@@ -55,13 +55,13 @@ public class FileSystemKeySet {
 	}
 
 	public void add(Bytes name) {
-		KeyDataStore<Bytes> dataStore = mutator.dataStore();
+		KeyDataMutator<Bytes> mutator = store.mutateData();
 		for (NameKey key : keyUtil.toNameKeys(name))
-			dataStore.putTerminal(keyUtil.toBytes(key));
+			mutator.putTerminal(keyUtil.toBytes(key));
 	}
 
 	public void remove(Bytes name) {
-		KeyDataStore<Bytes> dataStore = mutator.dataStore();
+		KeyDataMutator<Bytes> mutator = store.mutateData();
 		List<NameKey> keys = keyUtil.toNameKeys(name);
 
 		for (int i = keys.size() - 1; 0 <= i; i--) {
@@ -71,10 +71,10 @@ public class FileSystemKeySet {
 				Bytes hash = keyUtil.hash(keyUtil.toName(keys.subList(0, i + 1)));
 				NameKey minKey = boundingKey(hash, 0);
 				NameKey maxKey = boundingKey(hash, 1);
-				if (dataStore.keys(keyUtil.toBytes(minKey), keyUtil.toBytes(maxKey)) == null)
-					dataStore.removeTerminal(keyUtil.toBytes(key));
+				if (mutator.keys(keyUtil.toBytes(minKey), keyUtil.toBytes(maxKey)) == null)
+					mutator.removeTerminal(keyUtil.toBytes(key));
 			} else
-				dataStore.removeTerminal(keyUtil.toBytes(key));
+				mutator.removeTerminal(keyUtil.toBytes(key));
 		}
 	}
 
