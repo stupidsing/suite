@@ -1,7 +1,6 @@
 package suite.lp.sewing.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -198,7 +197,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private void compileAll() {
-		for (Pair<Prototype, Collection<Rule>> entry : rules.listEntries()) {
+		for (Pair<Prototype, List<Rule>> entry : rules.listEntries()) {
 			Prototype prototype = entry.t0;
 			TraceLevel traceLevel = traceLevel(prototype);
 

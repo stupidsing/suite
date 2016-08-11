@@ -1,13 +1,11 @@
 package suite.adt;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 
@@ -47,8 +45,8 @@ public class ListMultimap<K, V> {
 		return true;
 	}
 
-	public Streamlet2<K, Collection<V>> listEntries() {
-		return new Streamlet2<>(() -> Outlet2.from(this));
+	public Streamlet2<K, List<V>> listEntries() {
+		return Read.from2(map);
 	}
 
 	public void put(K k, V v) {
@@ -70,7 +68,7 @@ public class ListMultimap<K, V> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
-		for (Pair<K, Collection<V>> pair : listEntries())
+		for (Pair<K, List<V>> pair : listEntries())
 			sb.append(pair.t0 + "=" + pair.t1 + ", ");
 		sb.append("}");
 		return sb.toString();

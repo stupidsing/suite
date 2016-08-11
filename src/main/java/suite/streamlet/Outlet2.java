@@ -44,11 +44,11 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return from(FunUtil2.nullSource());
 	}
 
-	public static <K, V> Outlet2<K, Collection<V>> from(ListMultimap<K, V> multimap) {
-		Iterator<Pair<K, Collection<V>>> iter = multimap.listEntries().iterator();
+	public static <K, V> Outlet2<K, List<V>> from(ListMultimap<K, V> multimap) {
+		Iterator<Pair<K, List<V>>> iter = multimap.listEntries().iterator();
 		return from(pair -> {
 			if (iter.hasNext()) {
-				Pair<K, Collection<V>> pair1 = iter.next();
+				Pair<K, List<V>> pair1 = iter.next();
 				pair.t0 = pair1.t0;
 				pair.t1 = pair1.t1;
 				return true;
