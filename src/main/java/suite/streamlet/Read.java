@@ -15,7 +15,6 @@ import java.util.Enumeration;
 import java.util.Map;
 
 import suite.Constants;
-import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
@@ -48,10 +47,6 @@ public class Read {
 
 	public static <T> Streamlet<T> from(Source<T> source) {
 		return Streamlet.from(source);
-	}
-
-	public static <K, V> Streamlet2<K, Collection<V>> from2(ListMultimap<K, V> multimap) {
-		return new Streamlet2<>(() -> Outlet2.from(multimap));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Map<K, V> map) {
@@ -109,10 +104,6 @@ public class Read {
 
 	public static <K, V, C extends Collection<V>> Streamlet2<K, V> multimap(Map<K, C> map) {
 		return from2(map).concatMap2((k, l) -> from(l).map2(v -> k, v -> v));
-	}
-
-	public static <K, V> Streamlet2<K, V> from(ListMultimap<K, V> multimap) {
-		return from2(multimap).concatMapValue(Read::from);
 	}
 
 }

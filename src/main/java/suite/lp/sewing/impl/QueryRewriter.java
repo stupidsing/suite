@@ -44,7 +44,7 @@ public class QueryRewriter {
 
 	public QueryRewriter(ListMultimap<Prototype, Rule> rules) {
 		infoByPrototype = Read.from2(rules.listEntries()).mapValue(PrototypeInfo::new).toMap();
-		rules1 = Read.from(rules).mapValue(this::rewriteRule).toMultimap();
+		rules1 = rules.entries().mapValue(this::rewriteRule).toMultimap();
 	}
 
 	private Rule rewriteRule(Rule rule) {
