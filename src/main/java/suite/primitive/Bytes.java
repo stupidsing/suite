@@ -32,8 +32,8 @@ public class Bytes implements Iterable<Byte> {
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			byte b0 = bytes0.bs[start0 + index];
-			byte b1 = bytes1.bs[start1 + index];
+			int b0 = Byte.toUnsignedInt(bytes0.bs[start0 + index]);
+			int b1 = Byte.toUnsignedInt(bytes1.bs[start1 + index]);
 			c = b0 == b1 ? 0 : b0 < b1 ? -1 : 1;
 			index++;
 		}
