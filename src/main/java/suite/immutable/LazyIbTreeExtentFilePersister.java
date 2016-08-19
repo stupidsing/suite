@@ -91,6 +91,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		}
 	}
 
+	@Override
 	public Map<Extent, Extent> gc(List<Extent> roots, int back) {
 		synchronized (writeLock) {
 			int end = nPages;

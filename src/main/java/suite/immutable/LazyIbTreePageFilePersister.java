@@ -80,6 +80,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 		}
 	}
 
+	@Override
 	public Map<Integer, Integer> gc(List<Integer> pointers, int back) {
 		synchronized (writeLock) {
 			int end = nPages;
