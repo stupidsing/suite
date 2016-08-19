@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
@@ -60,8 +61,7 @@ public class FileFactory {
 				BytesBuilder bb = new BytesBuilder();
 				for (int pointer = extent.start; pointer < extent.end; pointer++) {
 					Block block = pageFile.load(pointer);
-					Util.assert_(block.extent.start == extent.start);
-					Util.assert_(block.extent.end == extent.end);
+					Util.assert_(Objects.equals(block.extent, extent));
 					bb.append(block.bytes);
 				}
 				return bb.toBytes();
