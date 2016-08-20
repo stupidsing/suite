@@ -72,7 +72,7 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 	public synchronized void end(boolean isComplete) {
 		if (isComplete) {
 			Pointer pointer1 = persister.save(mutator.get());
-			Pointer pointerx = persister.gc(Arrays.asList(pointer1), 9).get(pointer1);
+			Pointer pointerx = persister.gc(Arrays.asList(pointer1), 9).getOrDefault(pointer1, pointer1);
 			superblockFile.save(0, pointerx);
 		}
 
