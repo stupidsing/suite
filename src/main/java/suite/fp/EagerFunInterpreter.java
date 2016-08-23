@@ -172,10 +172,9 @@ public class EagerFunInterpreter {
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("BOOLEAN .0").apply(node)) != null)
 			result = immediate(m[0]);
-		else if ((m = Suite.matcher("CHARS .0").apply(node)) != null) {
-			Node n = new Data<>(Chars.of(((Str) m[0]).value));
-			result = frame -> n;
-		} else if ((m = Suite.matcher("CONS _ .0 .1").apply(node)) != null) {
+		else if ((m = Suite.matcher("CHARS .0").apply(node)) != null)
+			result = immediate(new Data<>(Chars.of(((Str) m[0]).value)));
+		else if ((m = Suite.matcher("CONS _ .0 .1").apply(node)) != null) {
 			Fun<Frame, Node> p0_ = eager0(mapping, m[0]);
 			Fun<Frame, Node> p1_ = eager0(mapping, m[1]);
 			result = frame -> pair(p0_.apply(frame), p1_.apply(frame));
