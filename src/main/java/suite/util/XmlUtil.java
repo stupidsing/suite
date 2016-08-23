@@ -44,7 +44,7 @@ public class XmlUtil {
 		public Streamlet<XmlNode> children(String tagName);
 	}
 
-	public XmlUtil() throws IOException {
+	public XmlUtil() {
 		try {
 			documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			di = (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS");
