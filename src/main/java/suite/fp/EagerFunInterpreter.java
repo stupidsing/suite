@@ -83,7 +83,7 @@ public class EagerFunInterpreter {
 			return new Mapping(parent, size + 1, indices.put(v, index));
 		}
 
-		private BiConsumer<Frame, Node> setter(Node var) {
+		private BiConsumer<Frame, Node> initialSetter(Node var) {
 			return (frame, value) -> frame.values.add(value);
 		}
 
@@ -93,8 +93,8 @@ public class EagerFunInterpreter {
 				int i = index;
 				return frame -> frame.values.get(i);
 			} else if (parent != null) {
-				Fun<Frame, Node> fun0 = parent.getter(var);
-				return frame -> fun0.apply(frame.parent);
+				Fun<Frame, Node> getter0 = parent.getter(var);
+				return frame -> getter0.apply(frame.parent);
 			} else
 				throw new RuntimeException(var + " not found");
 		}
@@ -146,7 +146,7 @@ public class EagerFunInterpreter {
 		for (String key : keys) {
 			Atom var = Atom.of(key);
 			mapping = mapping.extend(var);
-			mapping.setter(var).accept(frame, df.get(key));
+			mapping.initialSetter(var).accept(frame, df.get(key));
 		}
 
 		return eager0(mapping, parsed).apply(frame);
@@ -181,8 +181,8 @@ public class EagerFunInterpreter {
 		} else if ((m = Suite.matcher("DECONS .0 .1 .2 .3 .4 .5").apply(node)) != null) {
 			Fun<Frame, Node> value_ = eager0(mapping, m[1]);
 			Mapping mapping1 = mapping.extend(m[2]).extend(m[3]);
-			BiConsumer<Frame, Node> left_ = mapping1.setter(m[2]);
-			BiConsumer<Frame, Node> right_ = mapping1.setter(m[3]);
+			BiConsumer<Frame, Node> left_ = mapping1.initialSetter(m[2]);
+			BiConsumer<Frame, Node> right_ = mapping1.initialSetter(m[3]);
 			Fun<Frame, Node> then_ = eager0(mapping1, m[4]);
 			Fun<Frame, Node> else_ = eager0(mapping, m[5]);
 			Operator operator;
@@ -209,7 +209,7 @@ public class EagerFunInterpreter {
 					.map(m1 -> m1[0]) //
 					.fold(mapping, Mapping::extend);
 			List<Pair<BiConsumer<Frame, Node>, Fun<Frame, Node>>> svs = arrays //
-					.map(m1 -> Pair.of(mapping1.setter(m1[0]), eager0(mapping1, m1[1]))) //
+					.map(m1 -> Pair.of(mapping1.initialSetter(m1[0]), eager0(mapping1, m1[1]))) //
 					.toList();
 			Fun<Frame, Node> expr = eager0(mapping1, m[1]);
 
@@ -224,7 +224,7 @@ public class EagerFunInterpreter {
 			};
 		else if ((m = Suite.matcher("FUN .0 .1").apply(node)) != null) {
 			Mapping mapping1 = new Mapping(mapping).extend(m[0]);
-			BiConsumer<Frame, Node> setter = mapping1.setter(m[0]);
+			BiConsumer<Frame, Node> setter = mapping1.initialSetter(m[0]);
 			Fun<Frame, Node> value_ = eager0(mapping1, m[1]);
 			result = frame -> new Fun_(in -> {
 				Frame frame1 = new Frame(frame);
