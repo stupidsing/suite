@@ -63,24 +63,24 @@ public class EagerFunInterpreter {
 		}
 	}
 
-	private static class Mapping {
-		private Mapping parent;
+	private static class FrameDefinition {
+		private FrameDefinition parent;
 		private int size;
 		private IMap<Node, Integer> indices;
 
-		private Mapping(Mapping parent) {
+		private FrameDefinition(FrameDefinition parent) {
 			this(parent, 0, IMap.empty());
 		}
 
-		private Mapping(Mapping parent, int size, IMap<Node, Integer> indices) {
+		private FrameDefinition(FrameDefinition parent, int size, IMap<Node, Integer> indices) {
 			this.parent = parent;
 			this.size = size;
 			this.indices = indices;
 		}
 
-		private Mapping extend(Node v) {
+		private FrameDefinition extend(Node v) {
 			int index = size;
-			return new Mapping(parent, size + 1, indices.put(v, index));
+			return new FrameDefinition(parent, size + 1, indices.put(v, index));
 		}
 
 		private BiConsumer<Frame, Node> initialSetter(Node var) {
@@ -140,29 +140,29 @@ public class EagerFunInterpreter {
 		df.put("+pright", f1(a -> Tree.decompose(a).getRight()));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
-		Mapping mapping = new Mapping(null);
+		FrameDefinition fd = new FrameDefinition(null);
 		Frame frame = new Frame(null);
 
 		for (String key : keys) {
 			Atom var = Atom.of(key);
-			mapping = mapping.extend(var);
-			mapping.initialSetter(var).accept(frame, df.get(key));
+			fd = fd.extend(var);
+			fd.initialSetter(var).accept(frame, df.get(key));
 		}
 
-		return eager0(mapping, parsed).apply(frame);
+		return eager0(fd, parsed).apply(frame);
 	}
 
 	public void setLazyify(boolean isLazyify) {
 		this.isLazyify = isLazyify;
 	}
 
-	private Fun<Frame, Node> eager0(Mapping mapping, Node node) {
+	private Fun<Frame, Node> eager0(FrameDefinition fd, Node node) {
 		Fun<Frame, Node> result;
 		Node m[];
 
 		if ((m = Suite.matcher("APPLY .0 .1").apply(node)) != null) {
-			Fun<Frame, Node> param_ = eager0(mapping, m[0]);
-			Fun<Frame, Node> fun_ = eager0(mapping, m[1]);
+			Fun<Frame, Node> param_ = eager0(fd, m[0]);
+			Fun<Frame, Node> fun_ = eager0(fd, m[1]);
 			result = frame -> {
 				Node fun = fun_.apply(frame);
 				Node param = param_.apply(frame);
@@ -175,16 +175,16 @@ public class EagerFunInterpreter {
 		else if ((m = Suite.matcher("CHARS .0").apply(node)) != null)
 			result = immediate(new Data<>(Chars.of(((Str) m[0]).value)));
 		else if ((m = Suite.matcher("CONS _ .0 .1").apply(node)) != null) {
-			Fun<Frame, Node> p0_ = eager0(mapping, m[0]);
-			Fun<Frame, Node> p1_ = eager0(mapping, m[1]);
+			Fun<Frame, Node> p0_ = eager0(fd, m[0]);
+			Fun<Frame, Node> p1_ = eager0(fd, m[1]);
 			result = frame -> pair(p0_.apply(frame), p1_.apply(frame));
 		} else if ((m = Suite.matcher("DECONS .0 .1 .2 .3 .4 .5").apply(node)) != null) {
-			Fun<Frame, Node> value_ = eager0(mapping, m[1]);
-			Mapping mapping1 = mapping.extend(m[2]).extend(m[3]);
-			BiConsumer<Frame, Node> left_ = mapping1.initialSetter(m[2]);
-			BiConsumer<Frame, Node> right_ = mapping1.initialSetter(m[3]);
-			Fun<Frame, Node> then_ = eager0(mapping1, m[4]);
-			Fun<Frame, Node> else_ = eager0(mapping, m[5]);
+			Fun<Frame, Node> value_ = eager0(fd, m[1]);
+			FrameDefinition fd1 = fd.extend(m[2]).extend(m[3]);
+			BiConsumer<Frame, Node> left_ = fd1.initialSetter(m[2]);
+			BiConsumer<Frame, Node> right_ = fd1.initialSetter(m[3]);
+			Fun<Frame, Node> then_ = eager0(fd1, m[4]);
+			Fun<Frame, Node> else_ = eager0(fd, m[5]);
 			Operator operator;
 
 			if (m[0] == Atom.of("L"))
@@ -205,13 +205,13 @@ public class EagerFunInterpreter {
 			};
 		} else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
 			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(TreeUtil::tuple);
-			Mapping mapping1 = arrays //
+			FrameDefinition fd1 = arrays //
 					.map(m1 -> m1[0]) //
-					.fold(mapping, Mapping::extend);
+					.fold(fd, FrameDefinition::extend);
 			List<Pair<BiConsumer<Frame, Node>, Fun<Frame, Node>>> svs = arrays //
-					.map(m1 -> Pair.of(mapping1.initialSetter(m1[0]), eager0(mapping1, m1[1]))) //
+					.map(m1 -> Pair.of(fd1.initialSetter(m1[0]), eager0(fd1, m1[1]))) //
 					.toList();
-			Fun<Frame, Node> expr = eager0(mapping1, m[1]);
+			Fun<Frame, Node> expr = eager0(fd1, m[1]);
 
 			result = frame -> {
 				for (Pair<BiConsumer<Frame, Node>, Fun<Frame, Node>> sv : svs)
@@ -223,28 +223,28 @@ public class EagerFunInterpreter {
 				throw new RuntimeException("Error termination");
 			};
 		else if ((m = Suite.matcher("FUN .0 .1").apply(node)) != null) {
-			Mapping mapping1 = new Mapping(mapping).extend(m[0]);
-			BiConsumer<Frame, Node> setter = mapping1.initialSetter(m[0]);
-			Fun<Frame, Node> value_ = eager0(mapping1, m[1]);
+			FrameDefinition fd1 = new FrameDefinition(fd).extend(m[0]);
+			BiConsumer<Frame, Node> setter = fd1.initialSetter(m[0]);
+			Fun<Frame, Node> value_ = eager0(fd1, m[1]);
 			result = frame -> new Fun_(in -> {
 				Frame frame1 = new Frame(frame);
 				setter.accept(frame1, in);
 				return value_.apply(frame1);
 			});
 		} else if ((m = Suite.matcher("IF .0 .1 .2").apply(node)) != null) {
-			Fun<Frame, Node> if_ = eager0(mapping, m[0]);
-			Fun<Frame, Node> then_ = eager0(mapping, m[1]);
-			Fun<Frame, Node> else_ = eager0(mapping, m[2]);
+			Fun<Frame, Node> if_ = eager0(fd, m[0]);
+			Fun<Frame, Node> then_ = eager0(fd, m[1]);
+			Fun<Frame, Node> else_ = eager0(fd, m[2]);
 			result = frame -> (if_.apply(frame) == Atom.TRUE ? then_ : else_).apply(frame);
 		} else if ((m = Suite.matcher("NIL").apply(node)) != null)
 			result = immediate(Atom.NIL);
 		else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
-			result = eager0(mapping, m[1]);
+			result = eager0(fd, m[1]);
 		else if ((m = Suite.matcher("TCO .0 .1").apply(node)) != null) {
-			Fun<Frame, Node> iter_ = eager0(mapping, m[0]);
-			Fun<Frame, Node> in_ = eager0(mapping, m[1]);
+			Fun<Frame, Node> iter_ = eager0(fd, m[0]);
+			Fun<Frame, Node> in_ = eager0(fd, m[1]);
 			result = frame -> {
 				Fun_ iter = (Fun_) iter_.apply(frame);
 				Node in = in_.apply(frame);
@@ -258,14 +258,14 @@ public class EagerFunInterpreter {
 				return p1.getRight();
 			};
 		} else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
-			result = eager0(mapping, Suite.substitute("APPLY .2 APPLY .1 (VAR .0)", m[0], m[1], m[2]));
+			result = eager0(fd, Suite.substitute("APPLY .2 APPLY .1 (VAR .0)", m[0], m[1], m[2]));
 		else if ((m = Suite.matcher("UNWRAP .0").apply(node)) != null) {
-			Fun<Frame, Node> value_ = eager0(mapping, m[0]);
+			Fun<Frame, Node> value_ = eager0(fd, m[0]);
 			result = frame -> ((Wrap_) value_.apply(frame)).source.source();
 		} else if ((m = Suite.matcher("VAR .0").apply(node)) != null)
-			result = mapping.getter(m[0]);
+			result = fd.getter(m[0]);
 		else if ((m = Suite.matcher("WRAP .0").apply(node)) != null) {
-			Fun<Frame, Node> value_ = eager0(mapping, m[0]);
+			Fun<Frame, Node> value_ = eager0(fd, m[0]);
 			result = frame -> new Wrap_(() -> value_.apply(frame));
 		} else
 			throw new RuntimeException("Unrecognized construct " + node);
