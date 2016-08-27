@@ -1,18 +1,18 @@
 package suite.util;
 
-import java.util.HashMap;
-import java.util.Map;
+import suite.adt.BiMap;
+import suite.adt.HashBiMap;
 
 public class HtmlUtil {
 
-	private Map<String, String> escapeTokenByChar = new HashMap<>();
-	private Map<String, String> charByEscapeToken = new HashMap<>();
+	private BiMap<String, String> escapeTokenByChar = new HashBiMap<>();
 
 	public HtmlUtil() {
 		initialize();
 	}
 
 	public String decode(String in) {
+		BiMap<String, String> charByEscapeToken = escapeTokenByChar.inverse();
 		String decoded;
 
 		if (in != null) {
@@ -182,7 +182,6 @@ public class HtmlUtil {
 
 	private void putEscapeMap(String ch, String escapeToken) {
 		escapeTokenByChar.put(ch, escapeToken);
-		charByEscapeToken.put(escapeToken, ch);
 	}
 
 }
