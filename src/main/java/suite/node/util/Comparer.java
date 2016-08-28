@@ -14,11 +14,11 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
-import suite.node.TreeAnd;
-import suite.node.TreeOp;
-import suite.node.TreeOr;
-import suite.node.TreeTuple;
 import suite.node.Tuple;
+import suite.node.tree.TreeAnd;
+import suite.node.tree.TreeOp;
+import suite.node.tree.TreeOr;
+import suite.node.tree.TreeTuple;
 import suite.streamlet.Read;
 import suite.util.Util;
 

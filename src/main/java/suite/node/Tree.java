@@ -5,6 +5,10 @@ import java.util.Objects;
 
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.node.tree.TreeAnd;
+import suite.node.tree.TreeOp;
+import suite.node.tree.TreeOr;
+import suite.node.tree.TreeTuple;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
