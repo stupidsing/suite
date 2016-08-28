@@ -22,8 +22,7 @@ public class Tree extends Node {
 	public static Tree decompose(Node node, Operator operator) {
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
-			if (tree.operator == operator)
-				return tree;
+			return tree.operator == operator ? tree : null;
 		}
 		return null;
 	}
