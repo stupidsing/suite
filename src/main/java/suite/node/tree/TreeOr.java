@@ -1,9 +1,12 @@
 package suite.node.tree;
 
+import java.util.Objects;
+
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.util.Util;
 
 public class TreeOr extends Tree {
 
@@ -11,6 +14,24 @@ public class TreeOr extends Tree {
 
 	public TreeOr(Node left, Node right) {
 		super(left, right);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (Util.clazz(object) == TreeOr.class) {
+			TreeOp t = (TreeOp) object;
+			return Objects.equals(getLeft(), t.getLeft()) && Objects.equals(getRight(), t.getRight());
+		} else
+			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 1;
+		result = 31 * result + Objects.hashCode(getLeft());
+		result = 31 * result + Objects.hashCode(operator);
+		result = 31 * result + Objects.hashCode(getRight());
+		return result;
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package suite.node;
 
 import java.util.List;
-import java.util.Objects;
 
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
@@ -70,24 +69,6 @@ public abstract class Tree extends Node {
 	protected Tree(Node left, Node right) {
 		this.left = left;
 		this.right = right;
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (object instanceof Tree) {
-			Tree t = (Tree) object;
-			return getOperator() == t.getOperator() && Objects.equals(left, t.left) && Objects.equals(right, t.right);
-		} else
-			return false;
-	}
-
-	@Override
-	public int hashCode() {
-		int result = 1;
-		result = 31 * result + Objects.hashCode(left);
-		result = 31 * result + Objects.hashCode(getOperator());
-		result = 31 * result + Objects.hashCode(right);
-		return result;
 	}
 
 	// These methods violate the immutable property of the tree. Should only
