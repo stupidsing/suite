@@ -8,11 +8,9 @@ import suite.node.io.TermOp;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
-import suite.util.Util;
 
-public class Tree extends Node {
+public abstract class Tree extends Node {
 
-	private Operator operator;
 	private Node left, right;
 
 	public static Tree decompose(Node node) {
@@ -22,7 +20,7 @@ public class Tree extends Node {
 	public static Tree decompose(Node node, Operator operator) {
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
-			return tree.operator == operator ? tree : null;
+			return tree.getOperator() == operator ? tree : null;
 		}
 		return null;
 	}
@@ -55,20 +53,26 @@ public class Tree extends Node {
 	}
 
 	public static Tree of(Operator operator, Node left, Node right) {
-		return new Tree(operator, left, right);
+		if (operator == TermOp.AND___)
+			return new TreeAnd(left, right);
+		else if (operator == TermOp.OR____)
+			return new TreeOr(left, right);
+		else if (operator == TermOp.TUPLE_)
+			return new TreeTuple(left, right);
+		else
+			return new TreeOp(operator, left, right);
 	}
 
-	private Tree(Operator operator, Node left, Node right) {
-		this.operator = operator;
+	protected Tree(Node left, Node right) {
 		this.left = left;
 		this.right = right;
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Tree.class) {
+		if (object instanceof Tree) {
 			Tree t = (Tree) object;
-			return operator == t.operator && Objects.equals(left, t.left) && Objects.equals(right, t.right);
+			return getOperator() == t.getOperator() && Objects.equals(left, t.left) && Objects.equals(right, t.right);
 		} else
 			return false;
 	}
@@ -77,7 +81,7 @@ public class Tree extends Node {
 	public int hashCode() {
 		int result = 1;
 		result = 31 * result + Objects.hashCode(left);
-		result = 31 * result + Objects.hashCode(operator);
+		result = 31 * result + Objects.hashCode(getOperator());
 		result = 31 * result + Objects.hashCode(right);
 		return result;
 	}
@@ -92,9 +96,7 @@ public class Tree extends Node {
 		tree.right = right;
 	}
 
-	public Operator getOperator() {
-		return operator;
-	}
+	public abstract Operator getOperator();
 
 	public Node getLeft() {
 		return left.finalNode();

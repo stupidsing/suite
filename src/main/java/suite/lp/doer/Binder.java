@@ -35,9 +35,7 @@ public class Binder {
 			return true;
 		}
 
-		if (clazz0 != clazz1)
-			return false;
-		else if (clazz0 == Dict.class) {
+		if (clazz0 == Dict.class && clazz1 == Dict.class) {
 			Map<Node, Reference> map0 = ((Dict) n0).map;
 			Map<Node, Reference> map1 = ((Dict) n1).map;
 			boolean result = true;
@@ -47,17 +45,17 @@ public class Binder {
 				result &= bind(v0, v1, trail);
 			}
 			return result;
-		} else if (clazz0 == Int.class)
+		} else if (clazz0 == Int.class && clazz1 == Int.class)
 			return ((Int) n0).number == ((Int) n1).number;
-		else if (clazz0 == Str.class)
+		else if (clazz0 == Str.class && clazz1 == Str.class)
 			return Objects.equals(((Str) n0).value, ((Str) n1).value);
-		else if (clazz0 == Tree.class) {
+		else if (Tree.class.isAssignableFrom(clazz0) && Tree.class.isAssignableFrom(clazz1)) {
 			Tree t0 = (Tree) n0;
 			Tree t1 = (Tree) n1;
 			return t0.getOperator() == t1.getOperator() //
 					&& bind(t0.getLeft(), t1.getLeft(), trail) //
 					&& bind(t0.getRight(), t1.getRight(), trail);
-		} else if (clazz0 == Tuple.class) {
+		} else if (clazz0 == Tuple.class && clazz1 == Tuple.class) {
 			List<Node> nodes0 = ((Tuple) n0).nodes;
 			List<Node> nodes1 = ((Tuple) n1).nodes;
 			boolean result = nodes0.size() == nodes1.size();

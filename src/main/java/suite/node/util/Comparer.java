@@ -14,6 +14,10 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.TreeAnd;
+import suite.node.TreeOp;
+import suite.node.TreeOr;
+import suite.node.TreeTuple;
 import suite.node.Tuple;
 import suite.streamlet.Read;
 import suite.util.Util;
@@ -28,7 +32,10 @@ public class Comparer implements Comparator<Node> {
 		order.put(Int.class, 10);
 		order.put(Atom.class, 20);
 		order.put(Str.class, 30);
-		order.put(Tree.class, 40);
+		order.put(TreeAnd.class, 40);
+		order.put(TreeOp.class, 40);
+		order.put(TreeOr.class, 40);
+		order.put(TreeTuple.class, 40);
 		order.put(Tuple.class, 50);
 		order.put(Dict.class, 60);
 	}
@@ -39,8 +46,9 @@ public class Comparer implements Comparator<Node> {
 		n1 = n1.finalNode();
 		Class<? extends Node> clazz0 = n0.getClass();
 		Class<? extends Node> clazz1 = n1.getClass();
+		int c = order.get(clazz0) - order.get(clazz1);
 
-		if (clazz0 == clazz1)
+		if (c == 0)
 			if (clazz0 == Atom.class)
 				return ((Atom) n0).name.compareTo(((Atom) n1).name);
 			else if (clazz0 == Dict.class) {
@@ -49,7 +57,6 @@ public class Comparer implements Comparator<Node> {
 				Set<Node> keys = new HashSet<>();
 				keys.addAll(m0.keySet());
 				keys.addAll(m1.keySet());
-				int c = 0;
 				for (Node key : Read.from(keys).sort(this::compare))
 					c = c != 0 ? c : Util.compare(m0.get(key), m1.get(key));
 				return c;
@@ -59,17 +66,16 @@ public class Comparer implements Comparator<Node> {
 				return ((Reference) n0).getId() - ((Reference) n1).getId();
 			else if (clazz0 == Str.class)
 				return ((Str) n0).value.compareTo(((Str) n1).value);
-			else if (clazz0 == Tree.class) {
+			else if (Tree.class.isAssignableFrom(clazz0)) {
 				Tree t0 = (Tree) n0;
 				Tree t1 = (Tree) n1;
-				int c = t0.getOperator().getPrecedence() - t1.getOperator().getPrecedence();
+				c = t0.getOperator().getPrecedence() - t1.getOperator().getPrecedence();
 				c = c != 0 ? c : compare(t0.getLeft(), t1.getLeft());
 				c = c != 0 ? c : compare(t0.getRight(), t1.getRight());
 				return c;
 			} else if (clazz0 == Tuple.class) {
 				Iterator<Node> iter0 = ((Tuple) n0).nodes.iterator();
 				Iterator<Node> iter1 = ((Tuple) n1).nodes.iterator();
-				int c = 0;
 				while (c == 0 && iter0.hasNext() && iter1.hasNext())
 					c = compare(iter0.next(), iter1.next());
 				if (c == 0)
@@ -79,7 +85,7 @@ public class Comparer implements Comparator<Node> {
 			} else
 				return n0.hashCode() - n1.hashCode();
 		else
-			return order.get(clazz0) - order.get(clazz1);
+			return c;
 	}
 
 }
