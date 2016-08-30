@@ -18,8 +18,8 @@ public class CircularProgrammingTest {
 		String fp = "" //
 				+ "data (Binary-tree :t) over :t as Tree (Binary-tree :t, Binary-tree :t) >> \n " //
 				+ "data (Binary-tree :t) over :t as Leaf :t >> \n " //
-				+ "var mintree := t => \n " //
-				+ "    vars ( \n " //
+				+ "let mintree := t => \n " //
+				+ "    lets ( \n " //
 				+ "        mintree1 := \n " //
 				+ "            case \n " //
 				+ "            || `Leaf $n` => (n, Leaf n1) \n " //

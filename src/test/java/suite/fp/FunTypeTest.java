@@ -27,12 +27,12 @@ public class FunTypeTest {
 				+ "data Clazz as Leaf number >> \n";
 
 		String fp0 = data //
-				+ "var f := v => if-bind (v := Leaf 1) then 1 else if-bind (v := Link Leaf 2) then 2 else 3 >> \n" //
+				+ "let f := v => if-bind (v := Leaf 1) then 1 else if-bind (v := Link Leaf 2) then 2 else 3 >> \n" //
 				+ "f {Leaf 1} \n";
 		assertType("number", fp0);
 
 		String fp1 = data //
-				+ "var f := v => \n" //
+				+ "let f := v => \n" //
 				+ "    if (v = `Leaf $i`) then i \n" //
 				+ "    else if (v = `Link Leaf $i`) then i \n" //
 				+ "    else 0 \n" //
@@ -131,7 +131,7 @@ public class FunTypeTest {
 				+ "data (List :t) over :t as Nil >> \n" //
 				+ "data (List :t) over :t as Node (:t, List :t) >> \n" //
 				+ "data (List :t) over :t as Node2 (:t, :t, List :t) >> \n" //
-				;
+		;
 
 		getType(define + "Nil");
 		getType(define + "Node (false, Nil)");

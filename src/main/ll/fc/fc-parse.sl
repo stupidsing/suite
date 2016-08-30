@@ -87,17 +87,6 @@ fc-parse (using external .lib >> .do) (USING EAGER EXTERNAL .lib .do1)
 fc-parse (using .lib >> .do) (USING EAGER BUILTIN .lib .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (vars (.var := .value # .list) >> .do) (
-	DEF-VARS (.var .value1, .list1) .do1
-) :- !
-	, once (fc-parse .value .value1
-		; fc-error "at variable" .var
-	)
-	, fc-parse (vars .list >> .do) (DEF-VARS .list1 .do1)
-#
-fc-parse (vars () >> .do) (DEF-VARS () .do1)
-	:- !, fc-parse .do .do1
-#
 fc-parse (.p0; .p1) (CONS L .parsed0 .parsed1)
 	:- !
 	, fc-parse .p0 .parsed0
@@ -195,8 +184,6 @@ fc-parse-sugar (let `.binds` := .value >> .do) (if-bind (.value := .binds) then 
 fc-parse-sugar (let .var := .value >> .do) (lets (.var := .value #) >> .do) :- !
 #
 fc-parse-sugar (not .b) (not {.b}) :- !
-#
-fc-parse-sugar (var .var := .value >> .do) (vars (.var := .value #) >> .do) :- !
 #
 fc-parse-sugar (.l && .r) ((and {.l} {.r})) :- !
 #
