@@ -107,10 +107,10 @@ public class EagerFunInterpreter {
 		Frame frame = new Frame(null);
 
 		for (String key : keys) {
-			vm = vm.put(Atom.of(key), getter(fs));
+			vm = vm.put(Atom.of(key), getter(fs++));
 			frame.add(df.get(key));
-			fs++;
 		}
+
 		return eager0(fs, vm, parsed).apply(frame);
 	}
 
@@ -166,22 +166,18 @@ public class EagerFunInterpreter {
 			};
 		} else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
 			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(TreeUtil::tuple);
-			List<Pair<Integer, Node>> ivs = new ArrayList<>();
 			IMap<Node, Fun<Frame, Node>> vm1 = vm;
 			int fs1 = fs;
-			for (Node array[] : arrays) {
-				vm1 = vm1.put(array[0], getter(fs1));
-				ivs.add(Pair.of(fs1, array[1]));
-				fs1++;
-			}
-			List<Fun<Frame, Node>> vfs = new ArrayList<>();
-			for (Pair<Integer, Node> pair : ivs)
-				vfs.add(eager0(fs1, vm1, pair.t1));
+			for (Node array[] : arrays)
+				vm1 = vm1.put(array[0], getter(fs1++));
+			List<Fun<Frame, Node>> values_ = new ArrayList<>();
+			for (Node array[] : arrays)
+				values_.add(eager0(fs1, vm1, array[1]));
 			Fun<Frame, Node> expr = eager0(fs1, vm1, m[1]);
 
 			result = frame -> {
-				for (Fun<Frame, Node> vf : vfs)
-					frame.add(vf.apply(frame));
+				for (Fun<Frame, Node> value_ : values_)
+					frame.add(value_.apply(frame));
 				return expr.apply(frame);
 			};
 		} else if ((m = Suite.matcher("ERROR").apply(node)) != null)
@@ -189,14 +185,13 @@ public class EagerFunInterpreter {
 				throw new RuntimeException("Error termination");
 			};
 		else if ((m = Suite.matcher("FUN .0 .1").apply(node)) != null) {
-			int fs1 = 1;
 			IMap<Node, Fun<Frame, Node>> vm1 = IMap.empty();
 			for (Pair<Node, Fun<Frame, Node>> pair : vm) {
 				Fun<Frame, Node> getter0 = pair.t1;
 				vm1 = vm1.put(pair.t0, frame -> getter0.apply(frame.parent));
 			}
 			vm1 = vm1.put(m[0], getter(0));
-			Fun<Frame, Node> value_ = eager0(fs1, vm1, m[1]);
+			Fun<Frame, Node> value_ = eager0(fs + 1, vm1, m[1]);
 			result = frame -> new Fun_(in -> {
 				Frame frame1 = new Frame(frame);
 				frame1.add(in);

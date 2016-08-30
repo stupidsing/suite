@@ -27,6 +27,12 @@ public class EagerFunInterpreterTest {
 	}
 
 	@Test
+	public void testLets() {
+		String expr = "lets (a := b + 2 # b := 1 #) >> a";
+		assertEquals(Int.of(3), new LazyFunInterpreter().lazy(Suite.parse(expr)).get());
+	}
+
+	@Test
 	public void testUsing() {
 		expect("using source STANDARD >> and {true} {true}", Atom.TRUE);
 		expect("using source STANDARD >> log {1234}", Int.of(1234));

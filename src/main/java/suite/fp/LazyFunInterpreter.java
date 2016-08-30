@@ -5,11 +5,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import suite.Suite;
+import suite.adt.Pair;
 import suite.immutable.IMap;
 import suite.lp.doer.Prover;
 import suite.node.Atom;
@@ -56,43 +56,6 @@ public class LazyFunInterpreter {
 		}
 	}
 
-	private static class Mapping {
-		private Mapping parent;
-		private int size;
-		private IMap<Node, Integer> indices;
-
-		private Mapping(Mapping parent) {
-			this(parent, 0, IMap.empty());
-		}
-
-		private Mapping(Mapping parent, int size, IMap<Node, Integer> indices) {
-			this.parent = parent;
-			this.size = size;
-			this.indices = indices;
-		}
-
-		private Mapping extend(Node v) {
-			int index = size;
-			return new Mapping(parent, size + 1, indices.put(v, index));
-		}
-
-		private BiConsumer<Frame, Thunk_> setter(Node v) {
-			return (frame, t) -> frame.add(t);
-		}
-
-		private Fun<Frame, Thunk_> getter(Node v) {
-			Integer index = indices.get(v);
-			if (index != null) {
-				int i = index;
-				return frame -> frame.get(i);
-			} else if (parent != null) {
-				Fun<Frame, Thunk_> fun0 = parent.getter(v);
-				return frame -> fun0.apply(frame.parent);
-			} else
-				throw new RuntimeException(v + " not found");
-		}
-	}
-
 	public Thunk_ lazy(Node node) {
 		Node parsed = parse(node);
 
@@ -114,16 +77,16 @@ public class LazyFunInterpreter {
 		df.put("snd", () -> new Fun_(in -> ((Pair_) in.get()).second));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
-		Mapping mapping = new Mapping(null);
+		IMap<Node, Fun<Frame, Thunk_>> vm = IMap.empty();
+		int fs = 0;
 		Frame frame = new Frame(null);
 
 		for (String key : keys) {
-			Atom var = Atom.of(key);
-			mapping = mapping.extend(var);
-			mapping.setter(var).accept(frame, df.get(key));
+			vm = vm.put(Atom.of(key), getter(fs++));
+			frame.add(df.get(key));
 		}
 
-		return lazy0(mapping, parsed).apply(frame);
+		return lazy0(fs, vm, parsed).apply(frame);
 	}
 
 	private Reference parse(Node node) {
@@ -135,13 +98,13 @@ public class LazyFunInterpreter {
 		return parsed;
 	}
 
-	private Fun<Frame, Thunk_> lazy0(Mapping mapping, Node node) {
+	private Fun<Frame, Thunk_> lazy0(int fs, IMap<Node, Fun<Frame, Thunk_>> vm, Node node) {
 		Fun<Frame, Thunk_> result;
 		Node m[];
 
 		if ((m = Suite.matcher("APPLY .0 .1").apply(node)) != null) {
-			Fun<Frame, Thunk_> param_ = lazy0(mapping, m[0]);
-			Fun<Frame, Thunk_> fun_ = lazy0(mapping, m[1]);
+			Fun<Frame, Thunk_> param_ = lazy0(fs, vm, m[0]);
+			Fun<Frame, Thunk_> fun_ = lazy0(fs, vm, m[1]);
 			result = frame -> {
 				Thunk_ fun = fun_.apply(frame);
 				Thunk_ param = param_.apply(frame);
@@ -152,45 +115,46 @@ public class LazyFunInterpreter {
 		else if ((m = Suite.matcher("BOOLEAN .0").apply(node)) != null)
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("CONS _ .0 .1").apply(node)) != null) {
-			Fun<Frame, Thunk_> p0_ = lazy0(mapping, m[0]);
-			Fun<Frame, Thunk_> p1_ = lazy0(mapping, m[1]);
+			Fun<Frame, Thunk_> p0_ = lazy0(fs, vm, m[0]);
+			Fun<Frame, Thunk_> p1_ = lazy0(fs, vm, m[1]);
 			result = frame -> () -> new Pair_(p0_.apply(frame), p1_.apply(frame));
 		} else if ((m = Suite.matcher("DECONS .0 .1 .2 .3 .4 .5").apply(node)) != null) {
-			Fun<Frame, Thunk_> value_ = lazy0(mapping, m[1]);
-			Mapping mapping1 = mapping.extend(m[2]).extend(m[3]);
-			BiConsumer<Frame, Thunk_> left_ = mapping1.setter(m[2]);
-			BiConsumer<Frame, Thunk_> right_ = mapping1.setter(m[3]);
-			Fun<Frame, Thunk_> then_ = lazy0(mapping1, m[4]);
-			Fun<Frame, Thunk_> else_ = lazy0(mapping, m[5]);
+			Fun<Frame, Thunk_> value_ = lazy0(fs, vm, m[1]);
+			IMap<Node, Fun<Frame, Thunk_>> vm1 = vm.put(m[2], getter(fs)).put(m[3], getter(fs + 1));
+			Fun<Frame, Thunk_> then_ = lazy0(fs + 2, vm1, m[4]);
+			Fun<Frame, Thunk_> else_ = lazy0(fs, vm, m[5]);
 
 			result = frame -> {
 				Node value = value_.apply(frame).get();
 				if (value instanceof Pair_) {
 					Pair_ pair = (Pair_) value;
-					left_.accept(frame, pair.first_);
-					right_.accept(frame, pair.second);
+					frame.add(pair.first_);
+					frame.add(pair.second);
 					return then_.apply(frame);
 				} else
 					return else_.apply(frame);
 			};
 		} else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
 			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(TreeUtil::tuple);
-			Streamlet<Node> vars = arrays.map(m1 -> m1[0]);
-			int size = vars.size();
+			int size = arrays.size();
 
-			Mapping mapping1 = vars.fold(mapping, Mapping::extend);
-			List<BiConsumer<Frame, Thunk_>> setters = vars.map(mapping1::setter).toList();
-			List<Fun<Frame, Thunk_>> values_ = arrays.map(m1 -> lazy0(mapping1, m1[1])).toList();
-			Fun<Frame, Thunk_> expr = lazy0(mapping1, m[1]);
+			IMap<Node, Fun<Frame, Thunk_>> vm1 = vm;
+			int fs1 = fs;
+			for (Node array[] : arrays)
+				vm1 = vm1.put(array[0], getter(fs1++));
+			List<Fun<Frame, Thunk_>> values_ = new ArrayList<>();
+			for (Node array[] : arrays)
+				values_.add(lazy0(fs1, vm1, array[1]));
+			Fun<Frame, Thunk_> expr = lazy0(fs1, vm1, m[1]);
 
 			result = frame -> {
 				List<Thunk_> values = new ArrayList<Thunk_>(size);
 				for (int i = 0; i < size; i++) {
 					int i1 = i;
-					setters.get(i).accept(frame, () -> values.get(i1).get());
+					frame.add(() -> values.get(i1).get());
 				}
-				for (int i = 0; i < size; i++)
-					values.add(values_.get(i).apply(frame)::get);
+				for (Fun<Frame, Thunk_> value_ : values_)
+					values.add(value_.apply(frame)::get);
 				return expr.apply(frame);
 			};
 		} else if ((m = Suite.matcher("ERROR").apply(node)) != null)
@@ -198,25 +162,30 @@ public class LazyFunInterpreter {
 				throw new RuntimeException("Error termination");
 			};
 		else if ((m = Suite.matcher("FUN .0 .1").apply(node)) != null) {
-			Mapping mapping1 = new Mapping(mapping).extend(m[0]);
-			BiConsumer<Frame, Thunk_> setter = mapping1.setter(m[0]);
-			Fun<Frame, Thunk_> value_ = lazy0(mapping1, m[1]);
+			IMap<Node, Fun<Frame, Thunk_>> vm1 = IMap.empty();
+			for (Pair<Node, Fun<Frame, Thunk_>> pair : vm) {
+				Fun<Frame, Thunk_> getter0 = pair.t1;
+				vm1 = vm1.put(pair.t0, frame -> getter0.apply(frame.parent));
+			}
+			vm1 = vm1.put(m[0], getter(0));
+
+			Fun<Frame, Thunk_> value_ = lazy0(1, vm1, m[1]);
 			result = frame -> () -> new Fun_(in -> {
 				Frame frame1 = new Frame(frame);
-				setter.accept(frame1, in);
+				frame1.add(in);
 				return value_.apply(frame1);
 			});
 		} else if ((m = Suite.matcher("IF .0 .1 .2").apply(node)) != null)
-			result = lazy0(mapping, Suite.substitute("APPLY .2 APPLY .1 APPLY .0 VAR if", m[0], m[1], m[2]));
+			result = lazy0(fs, vm, Suite.substitute("APPLY .2 APPLY .1 APPLY .0 VAR if", m[0], m[1], m[2]));
 		else if ((m = Suite.matcher("NIL").apply(node)) != null)
 			result = immediate(Atom.NIL);
 		else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
-			result = lazy0(mapping, m[1]);
+			result = lazy0(fs, vm, m[1]);
 		else if ((m = Suite.matcher("TCO .0 .1").apply(node)) != null) {
-			Fun<Frame, Thunk_> iter_ = lazy0(mapping, m[0]);
-			Fun<Frame, Thunk_> in_ = lazy0(mapping, m[1]);
+			Fun<Frame, Thunk_> iter_ = lazy0(fs, vm, m[0]);
+			Fun<Frame, Thunk_> in_ = lazy0(fs, vm, m[1]);
 			result = frame -> {
 				Fun_ iter = (Fun_) iter_.apply(frame).get();
 				Thunk_ in = in_.apply(frame);
@@ -230,17 +199,21 @@ public class LazyFunInterpreter {
 				return p1.second;
 			};
 		} else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
-			result = lazy0(mapping, Suite.substitute("APPLY .2 APPLY .1 (VAR .0)", m[0], m[1], m[2]));
+			result = lazy0(fs, vm, Suite.substitute("APPLY .2 APPLY .1 (VAR .0)", m[0], m[1], m[2]));
 		else if ((m = Suite.matcher("UNWRAP .0").apply(node)) != null)
-			return lazy0(mapping, m[0]);
+			return lazy0(fs, vm, m[0]);
 		else if ((m = Suite.matcher("VAR .0").apply(node)) != null)
-			result = mapping.getter(m[0]);
+			result = vm.get(m[0]);
 		else if ((m = Suite.matcher("WRAP .0").apply(node)) != null)
-			return lazy0(mapping, m[0]);
+			return lazy0(fs, vm, m[0]);
 		else
 			throw new RuntimeException("Unrecognized construct " + node);
 
 		return result;
+	}
+
+	private Fun<Frame, Thunk_> getter(int p) {
+		return frame -> frame.get(p);
 	}
 
 	private Fun<Frame, Thunk_> immediate(Node n) {
