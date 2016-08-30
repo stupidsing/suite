@@ -54,9 +54,9 @@ public class EagerFunInterpreter {
 		}
 	}
 
-	private static class Frame {
+	private static class Frame extends ArrayList<Node> {
+		private static final long serialVersionUID = 1l;
 		private Frame parent;
-		private List<Node> values = new ArrayList<>();
 
 		private Frame(Frame parent) {
 			this.parent = parent;
@@ -84,14 +84,14 @@ public class EagerFunInterpreter {
 		}
 
 		private BiConsumer<Frame, Node> initialSetter(Node var) {
-			return (frame, value) -> frame.values.add(value);
+			return (frame, value) -> frame.add(value);
 		}
 
 		private Fun<Frame, Node> getter(Node var) {
 			Integer index = indices.get(var);
 			if (index != null) {
 				int i = index;
-				return frame -> frame.values.get(i);
+				return frame -> frame.get(i);
 			} else if (parent != null) {
 				Fun<Frame, Node> getter0 = parent.getter(var);
 				return frame -> getter0.apply(frame.parent);

@@ -47,9 +47,9 @@ public class LazyFunInterpreter {
 		}
 	}
 
-	private static class Frame {
+	private static class Frame extends ArrayList<Thunk_> {
+		private static final long serialVersionUID = 1l;
 		private Frame parent;
-		private List<Thunk_> values = new ArrayList<>();
 
 		private Frame(Frame parent) {
 			this.parent = parent;
@@ -77,14 +77,14 @@ public class LazyFunInterpreter {
 		}
 
 		private BiConsumer<Frame, Thunk_> setter(Node v) {
-			return (frame, t) -> frame.values.add(t);
+			return (frame, t) -> frame.add(t);
 		}
 
 		private Fun<Frame, Thunk_> getter(Node v) {
 			Integer index = indices.get(v);
 			if (index != null) {
 				int i = index;
-				return frame -> frame.values.get(i);
+				return frame -> frame.get(i);
 			} else if (parent != null) {
 				Fun<Frame, Thunk_> fun0 = parent.getter(v);
 				return frame -> fun0.apply(frame.parent);
