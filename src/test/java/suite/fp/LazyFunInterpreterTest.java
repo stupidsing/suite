@@ -18,8 +18,8 @@ public class LazyFunInterpreterTest {
 
 	@Test
 	public void testLets() {
-		String expr = "lets (a := b + 2 # b := 1 #) >> a";
-		expect(expr, Int.of(3));
+		expect("lets (a := b + 2 # b := 1 #) >> a", Int.of(3));
+		expect("lets (b := 1 # a := b + 2 #) >> a", Int.of(3));
 	}
 
 	@Test

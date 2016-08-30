@@ -28,8 +28,8 @@ public class EagerFunInterpreterTest {
 
 	@Test
 	public void testLets() {
-		String expr = "lets (a := b + 2 # b := 1 #) >> a";
-		assertEquals(Int.of(3), new LazyFunInterpreter().lazy(Suite.parse(expr)).get());
+		expect("lets (a := b + 2 # b := 1 #) >> a", Int.of(3));
+		expect("lets (b := 1 # a := b + 2 #) >> a", Int.of(3));
 	}
 
 	@Test
