@@ -168,6 +168,7 @@ public class EagerFunInterpreter {
 			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(TreeUtil::tuple);
 			IMap<Node, Fun<Frame, Node>> vm1 = vm;
 			int fs1 = fs;
+
 			for (Node array[] : arrays)
 				vm1 = vm1.put(array[0], getter(fs1++));
 			List<Fun<Frame, Node>> values_ = new ArrayList<>();

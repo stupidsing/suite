@@ -137,9 +137,9 @@ public class LazyFunInterpreter {
 		} else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
 			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(TreeUtil::tuple);
 			int size = arrays.size();
-
 			IMap<Node, Fun<Frame, Thunk_>> vm1 = vm;
 			int fs1 = fs;
+
 			for (Node array[] : arrays)
 				vm1 = vm1.put(array[0], getter(fs1++));
 			List<Fun<Frame, Thunk_>> values_ = new ArrayList<>();
