@@ -148,7 +148,7 @@ public class LazyFunInterpreter {
 			Fun<Frame, Thunk_> expr = lazy0(fs1, vm1, m[1]);
 
 			result = frame -> {
-				List<Thunk_> values = new ArrayList<Thunk_>(size);
+				List<Thunk_> values = new ArrayList<>(size);
 				for (int i = 0; i < size; i++) {
 					int i1 = i;
 					frame.add(() -> values.get(i1).get());
