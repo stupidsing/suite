@@ -164,16 +164,32 @@ public class EagerFunInterpreter {
 				} else
 					return else_.apply(frame);
 			};
+		} else if ((m = Suite.matcher("DEF-VAR .0 .1 .2").apply(node)) != null) {
+			IMap<Node, Fun<Frame, Node>> vm1 = vm.put(m[0], getter(fs));
+			int fs1 = fs + 1;
+			Fun<Frame, Node> value_ = eager0(fs1, vm1, m[1]);
+			Fun<Frame, Node> expr = eager0(fs1, vm1, m[2]);
+			result = frame -> {
+				frame.add(value_.apply(frame));
+				return expr.apply(frame);
+			};
 		} else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
 			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(TreeUtil::tuple);
+			List<Fun<Frame, Node>> values_ = new ArrayList<>();
 			IMap<Node, Fun<Frame, Node>> vm1 = vm;
 			int fs1 = fs;
 
-			for (Node array[] : arrays)
-				vm1 = vm1.put(array[0], getter(fs1++));
-			List<Fun<Frame, Node>> values_ = new ArrayList<>();
-			for (Node array[] : arrays)
-				values_.add(eager0(fs1, vm1, array[1]));
+			for (Node array[] : arrays) {
+				Fun<Frame, Node> getter = getter(fs1);
+				vm1 = vm1.put(array[0], frame -> ((Fun_) getter.apply(frame)).fun.apply(null));
+				fs1++;
+			}
+
+			for (Node array[] : arrays) {
+				Fun<Frame, Node> value_ = eager0(fs1, vm1, array[1]);
+				values_.add(frame -> new Fun_(n -> value_.apply(frame)));
+			}
+
 			Fun<Frame, Node> expr = eager0(fs1, vm1, m[1]);
 
 			result = frame -> {
