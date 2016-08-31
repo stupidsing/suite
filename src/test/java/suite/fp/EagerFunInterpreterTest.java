@@ -22,11 +22,6 @@ public class EagerFunInterpreterTest {
 	}
 
 	@Test
-	public void testLazy() {
-		expect("define fib := (n => if (1 < n) then (fib {n - 1} + fib {n - 2}) else n) >> fib {12}", Int.of(144));
-	}
-
-	@Test
 	public void testLets() {
 		expect("lets (a := b + 2 # b := 1 #) >> a", Int.of(3));
 		expect("lets (b := 1 # a := b + 2 #) >> a", Int.of(3));
