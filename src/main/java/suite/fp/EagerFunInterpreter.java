@@ -164,7 +164,7 @@ public class EagerFunInterpreter {
 				} else
 					return else_.apply(frame);
 			};
-		} else if ((m = Suite.matcher("DEF-VAR .0 .1 .2").apply(node)) != null) {
+		} else if ((m = Suite.matcher("DEF-VARS (.0 .1,) .2").apply(node)) != null) {
 			IMap<Node, Fun<Frame, Node>> vm1 = vm.put(m[0], getter(fs));
 			int fs1 = fs + 1;
 			Fun<Frame, Node> value_ = eager0(fs1, vm1, m[1]);
