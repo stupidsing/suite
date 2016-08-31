@@ -181,13 +181,13 @@ public class EagerFunInterpreter {
 
 			for (Node array[] : arrays) {
 				Fun<Frame, Node> getter = getter(fs1);
-				vm1 = vm1.put(array[0], frame -> ((Fun_) getter.apply(frame)).fun.apply(null));
+				vm1 = vm1.put(array[0], frame -> ((Wrap_) getter.apply(frame)).source.source());
 				fs1++;
 			}
 
 			for (Node array[] : arrays) {
 				Fun<Frame, Node> value_ = eager0(fs1, vm1, array[1]);
-				values_.add(frame -> new Fun_(n -> value_.apply(frame)));
+				values_.add(frame -> new Wrap_(() -> value_.apply(frame)));
 			}
 
 			Fun<Frame, Node> expr = eager0(fs1, vm1, m[1]);
