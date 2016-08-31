@@ -128,7 +128,7 @@ public class EagerFunInterpreter {
 			result = frame -> {
 				Node fun = fun_.apply(frame);
 				Node param = param_.apply(frame);
-				return ((Fun_) fun).fun.apply(param);
+				return fun(fun).apply(param);
 			};
 		} else if ((m = Suite.matcher("ATOM .0").apply(node)) != null)
 			result = immediate(m[0]);
@@ -181,7 +181,7 @@ public class EagerFunInterpreter {
 
 			for (Node array[] : arrays) {
 				Fun<Frame, Node> getter = getter(fs1);
-				vm1 = vm1.put(array[0], frame -> ((Wrap_) getter.apply(frame)).source.source());
+				vm1 = vm1.put(array[0], frame -> wrap(getter.apply(frame)).source());
 				fs1++;
 			}
 
@@ -229,11 +229,11 @@ public class EagerFunInterpreter {
 			Fun<Frame, Node> iter_ = eager0(fs, vm, m[0]);
 			Fun<Frame, Node> in_ = eager0(fs, vm, m[1]);
 			result = frame -> {
-				Fun_ iter = (Fun_) iter_.apply(frame);
+				Fun<Node, Node> iter = fun(iter_.apply(frame));
 				Node in = in_.apply(frame);
 				Tree p0, p1;
 				do {
-					Node out = iter.fun.apply(in);
+					Node out = iter.apply(in);
 					p0 = Tree.decompose(out, TermOp.AND___);
 					p1 = Tree.decompose(p0.getRight(), TermOp.AND___);
 					in = p1.getLeft();
@@ -244,7 +244,7 @@ public class EagerFunInterpreter {
 			result = eager0(fs, vm, Suite.substitute("APPLY .2 APPLY .1 (VAR .0)", m[0], m[1], m[2]));
 		else if ((m = Suite.matcher("UNWRAP .0").apply(node)) != null) {
 			Fun<Frame, Node> value_ = eager0(fs, vm, m[0]);
-			result = frame -> ((Wrap_) value_.apply(frame)).source.source();
+			result = frame -> wrap(value_.apply(frame)).source();
 		} else if ((m = Suite.matcher("VAR .0").apply(node)) != null)
 			result = vm.get(m[0]);
 		else if ((m = Suite.matcher("WRAP .0").apply(node)) != null) {
@@ -270,6 +270,14 @@ public class EagerFunInterpreter {
 
 	private Fun<Frame, Node> getter(int p) {
 		return frame -> frame.get(p);
+	}
+
+	private Fun<Node, Node> fun(Node n) {
+		return ((Fun_) n).fun;
+	}
+
+	private Source<Node> wrap(Node n) {
+		return ((Wrap_) n).source;
 	}
 
 	private Fun<Frame, Node> immediate(Node n) {

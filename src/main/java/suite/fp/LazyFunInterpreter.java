@@ -109,7 +109,7 @@ public class LazyFunInterpreter {
 			result = frame -> {
 				Thunk_ fun = fun_.apply(frame);
 				Thunk_ param = param_.apply(frame);
-				return () -> ((Fun_) fun.get()).fun.apply(param).get();
+				return () -> fun(fun.get()).apply(param).get();
 			};
 		} else if ((m = Suite.matcher("ATOM .0").apply(node)) != null)
 			result = immediate(m[0]);
@@ -200,11 +200,11 @@ public class LazyFunInterpreter {
 			Fun<Frame, Thunk_> iter_ = lazy0(fs, vm, m[0]);
 			Fun<Frame, Thunk_> in_ = lazy0(fs, vm, m[1]);
 			result = frame -> {
-				Fun_ iter = (Fun_) iter_.apply(frame).get();
+				Fun<Thunk_, Thunk_> iter = fun(iter_.apply(frame).get());
 				Thunk_ in = in_.apply(frame);
 				Pair_ p0, p1;
 				do {
-					Thunk_ out = iter.fun.apply(in);
+					Thunk_ out = iter.apply(in);
 					p0 = (Pair_) out.get();
 					p1 = (Pair_) p0.second.get();
 					in = p1.first_;
@@ -227,6 +227,10 @@ public class LazyFunInterpreter {
 
 	private Fun<Frame, Thunk_> getter(int p) {
 		return frame -> frame.get(p);
+	}
+
+	private Fun<Thunk_, Thunk_> fun(Node n) {
+		return ((Fun_) n).fun;
 	}
 
 	private Fun<Frame, Thunk_> immediate(Node n) {

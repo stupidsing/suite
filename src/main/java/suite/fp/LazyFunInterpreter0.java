@@ -94,15 +94,15 @@ public class LazyFunInterpreter0 {
 		} else if ((m = Suite.matcher(".0 {.1}").apply(node)) != null) {
 			Fun<IMap<String, Thunk_>, Thunk_> fun = lazy0(m[0]);
 			Fun<IMap<String, Thunk_>, Thunk_> param = lazy0(m[1]);
-			result = env -> ((Fun_) fun.apply(env).get()).fun.apply(param.apply(env));
+			result = env -> fun(fun.apply(env).get()).apply(param.apply(env));
 		} else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
 			Fun<IMap<String, Thunk_>, Thunk_> p0 = lazy0(tree.getLeft());
 			Fun<IMap<String, Thunk_>, Thunk_> p1 = lazy0(tree.getRight());
 			result = env -> {
 				Thunk_ r0 = env.get(operator.getName());
-				Thunk_ r1 = ((Fun_) r0.get()).fun.apply(p0.apply(env));
-				Thunk_ r2 = ((Fun_) r1.get()).fun.apply(p1.apply(env));
+				Thunk_ r1 = fun(r0.get()).apply(p0.apply(env));
+				Thunk_ r2 = fun(r1.get()).apply(p1.apply(env));
 				return r2;
 			};
 		} else if (node instanceof Atom) {
@@ -112,6 +112,10 @@ public class LazyFunInterpreter0 {
 			result = env -> () -> node;
 
 		return result;
+	}
+
+	private Fun<Thunk_, Thunk_> fun(Node n) {
+		return ((Fun_) n).fun;
 	}
 
 	private Atom b(boolean b) {
