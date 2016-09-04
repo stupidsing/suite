@@ -212,7 +212,7 @@ public class LazyFunInterpreter {
 				return p1.second;
 			};
 		} else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
-			result = lazy0(fs, vm, Suite.substitute("APPLY .2 APPLY .1 (VAR .0)", m[0], m[1], m[2]));
+			result = lazy0(fs, vm, Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", m[0], m[1], m[2]));
 		else if ((m = Suite.matcher("UNWRAP .0").apply(node)) != null)
 			return lazy0(fs, vm, m[0]);
 		else if ((m = Suite.matcher("VAR .0").apply(node)) != null)

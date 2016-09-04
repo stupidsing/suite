@@ -241,7 +241,7 @@ public class EagerFunInterpreter {
 				return p1.getRight();
 			};
 		} else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
-			result = eager0(fs, vm, Suite.substitute("APPLY .2 APPLY .1 (VAR .0)", m[0], m[1], m[2]));
+			result = eager0(fs, vm, Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", m[0], m[1], m[2]));
 		else if ((m = Suite.matcher("UNWRAP .0").apply(node)) != null) {
 			Fun<Frame, Node> value_ = eager0(fs, vm, m[0]);
 			result = frame -> wrap(value_.apply(frame)).source();
