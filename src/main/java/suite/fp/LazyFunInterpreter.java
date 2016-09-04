@@ -160,9 +160,11 @@ public class LazyFunInterpreter {
 
 				for (Node array[] : arrays)
 					lazy0 = lazy0.put(array[0]);
+
 				List<Fun<Frame, Thunk_>> values_ = new ArrayList<>();
 				for (Node array[] : arrays)
 					values_.add(lazy0.lazy0(array[1]));
+
 				Fun<Frame, Thunk_> expr = lazy0.lazy0(m[1]);
 
 				result = frame -> {
