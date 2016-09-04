@@ -62,6 +62,158 @@ public class EagerFunInterpreter {
 		}
 	}
 
+	private class Eager0 {
+		private int fs;
+		private IMap<Node, Fun<Frame, Node>> vm;
+
+		private Eager0(int fs, IMap<Node, Fun<Frame, Node>> vm) {
+			this.fs = fs;
+			this.vm = vm;
+		}
+
+		private Fun<Frame, Node> eager0(Node node) {
+			Fun<Frame, Node> result;
+			Node m[];
+
+			if ((m = Suite.matcher("APPLY .0 (FUN .1 .2)").apply(node)) != null)
+				result = eager0(Suite.substitute("DEF-VARS (.1 .0) .2", m));
+			else if ((m = Suite.matcher("APPLY .0 .1").apply(node)) != null) {
+				Fun<Frame, Node> param_ = eager0(m[0]);
+				Fun<Frame, Node> fun_ = eager0(m[1]);
+				result = frame -> {
+					Node fun = fun_.apply(frame);
+					Node param = param_.apply(frame);
+					return fun(fun).apply(param);
+				};
+			} else if ((m = Suite.matcher("ATOM .0").apply(node)) != null)
+				result = immediate(m[0]);
+			else if ((m = Suite.matcher("BOOLEAN .0").apply(node)) != null)
+				result = immediate(m[0]);
+			else if ((m = Suite.matcher("CHARS .0").apply(node)) != null)
+				result = immediate(new Data<>(Chars.of(((Str) m[0]).value)));
+			else if ((m = Suite.matcher("CONS _ .0 .1").apply(node)) != null) {
+				Fun<Frame, Node> p0_ = eager0(m[0]);
+				Fun<Frame, Node> p1_ = eager0(m[1]);
+				result = frame -> pair(p0_.apply(frame), p1_.apply(frame));
+			} else if ((m = Suite.matcher("DECONS .0 .1 .2 .3 .4 .5").apply(node)) != null) {
+				Fun<Frame, Node> value_ = eager0(m[1]);
+				Fun<Frame, Node> then_ = put(m[2]).put(m[3]).eager0(m[4]);
+				Fun<Frame, Node> else_ = eager0(m[5]);
+				Operator operator;
+
+				if (m[0] == Atom.of("L"))
+					operator = TermOp.AND___;
+				else if (m[0] == Atom.of("P"))
+					operator = TermOp.OR____;
+				else
+					throw new RuntimeException("Unknown DECONS type");
+
+				result = frame -> {
+					Tree tree = Tree.decompose(value_.apply(frame), operator);
+					if (tree != null) {
+						frame.add(tree.getLeft());
+						frame.add(tree.getRight());
+						return then_.apply(frame);
+					} else
+						return else_.apply(frame);
+				};
+			} else if ((m = Suite.matcher("DEF-VARS (.0 .1,) .2").apply(node)) != null) {
+				Eager0 eager1 = put(m[0]);
+				Fun<Frame, Node> value_ = eager1.eager0(m[1]);
+				Fun<Frame, Node> expr = eager1.eager0(m[2]);
+				result = frame -> {
+					frame.add(value_.apply(frame));
+					return expr.apply(frame);
+				};
+			} else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
+				Streamlet<Node[]> arrays = Tree.iter(m[0]).map(TreeUtil::tuple);
+				List<Fun<Frame, Node>> values_ = new ArrayList<>();
+				IMap<Node, Fun<Frame, Node>> vm1 = vm;
+				int fs1 = fs;
+
+				for (Node array[] : arrays) {
+					Fun<Frame, Node> getter = getter(fs1);
+					vm1 = vm1.put(array[0], frame -> wrap(getter.apply(frame)).source());
+					fs1++;
+				}
+
+				Eager0 e1 = new Eager0(fs1, vm1);
+
+				for (Node array[] : arrays) {
+					Fun<Frame, Node> value_ = e1.eager0(array[1]);
+					values_.add(frame -> new Wrap_(() -> value_.apply(frame)));
+				}
+
+				Fun<Frame, Node> expr = e1.eager0(m[1]);
+
+				result = frame -> {
+					for (Fun<Frame, Node> value_ : values_)
+						frame.add(value_.apply(frame));
+					return expr.apply(frame);
+				};
+			} else if ((m = Suite.matcher("ERROR").apply(node)) != null)
+				result = frame -> {
+					throw new RuntimeException("Error termination");
+				};
+			else if ((m = Suite.matcher("FUN .0 .1").apply(node)) != null) {
+				IMap<Node, Fun<Frame, Node>> vm1 = IMap.empty();
+				for (Pair<Node, Fun<Frame, Node>> pair : vm) {
+					Fun<Frame, Node> getter0 = pair.t1;
+					vm1 = vm1.put(pair.t0, frame -> getter0.apply(frame.parent));
+				}
+				Fun<Frame, Node> value_ = new Eager0(0, vm1).put(m[0]).eager0(m[1]);
+				result = frame -> new Fun_(in -> {
+					Frame frame1 = new Frame(frame);
+					frame1.add(in);
+					return value_.apply(frame1);
+				});
+			} else if ((m = Suite.matcher("IF .0 .1 .2").apply(node)) != null) {
+				Fun<Frame, Node> if_ = eager0(m[0]);
+				Fun<Frame, Node> then_ = eager0(m[1]);
+				Fun<Frame, Node> else_ = eager0(m[2]);
+				result = frame -> (if_.apply(frame) == Atom.TRUE ? then_ : else_).apply(frame);
+			} else if ((m = Suite.matcher("NIL").apply(node)) != null)
+				result = immediate(Atom.NIL);
+			else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
+				result = immediate(m[0]);
+			else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
+				result = eager0(m[1]);
+			else if ((m = Suite.matcher("TCO .0 .1").apply(node)) != null) {
+				Fun<Frame, Node> iter_ = eager0(m[0]);
+				Fun<Frame, Node> in_ = eager0(m[1]);
+				result = frame -> {
+					Fun<Node, Node> iter = fun(iter_.apply(frame));
+					Node in = in_.apply(frame);
+					Tree p0, p1;
+					do {
+						Node out = iter.apply(in);
+						p0 = Tree.decompose(out, TermOp.AND___);
+						p1 = Tree.decompose(p0.getRight(), TermOp.AND___);
+						in = p1.getLeft();
+					} while (p0.getLeft() != Atom.TRUE);
+					return p1.getRight();
+				};
+			} else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
+				result = eager0(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", m[0], m[1], m[2]));
+			else if ((m = Suite.matcher("UNWRAP .0").apply(node)) != null) {
+				Fun<Frame, Node> value_ = eager0(m[0]);
+				result = frame -> wrap(value_.apply(frame)).source();
+			} else if ((m = Suite.matcher("VAR .0").apply(node)) != null)
+				result = vm.get(m[0]);
+			else if ((m = Suite.matcher("WRAP .0").apply(node)) != null) {
+				Fun<Frame, Node> value_ = eager0(m[0]);
+				result = frame -> new Wrap_(() -> value_.apply(frame));
+			} else
+				throw new RuntimeException("Unrecognized construct " + node);
+
+			return result;
+		}
+
+		private Eager0 put(Node node) {
+			return new Eager0(fs + 1, vm.put(node, getter(fs)));
+		}
+	}
+
 	public Node eager(Node node) {
 		Node mode = isLazyify ? Atom.of("LAZY") : Atom.of("EAGER");
 		Node query = Suite.substitute("source .in, fc-process-function .0 .in .out, sink .out", mode);
@@ -102,158 +254,19 @@ public class EagerFunInterpreter {
 		df.put("+pright", f1(a -> Tree.decompose(a).getRight()));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
-		IMap<Node, Fun<Frame, Node>> vm = IMap.empty();
-		int fs = 0;
+		Eager0 eager0 = new Eager0(0, IMap.empty());
 		Frame frame = new Frame(null);
 
 		for (String key : keys) {
-			vm = vm.put(Atom.of(key), getter(fs++));
+			eager0 = eager0.put(Atom.of(key));
 			frame.add(df.get(key));
 		}
 
-		return eager0(fs, vm, parsed).apply(frame);
+		return eager0.eager0(parsed).apply(frame);
 	}
 
 	public void setLazyify(boolean isLazyify) {
 		this.isLazyify = isLazyify;
-	}
-
-	private Fun<Frame, Node> eager0(int fs, IMap<Node, Fun<Frame, Node>> vm, Node node) {
-		Fun<Frame, Node> result;
-		Node m[];
-
-		if ((m = Suite.matcher("APPLY .0 .1").apply(node)) != null) {
-			Fun<Frame, Node> param_ = eager0(fs, vm, m[0]);
-			Fun<Frame, Node> fun_ = eager0(fs, vm, m[1]);
-			result = frame -> {
-				Node fun = fun_.apply(frame);
-				Node param = param_.apply(frame);
-				return fun(fun).apply(param);
-			};
-		} else if ((m = Suite.matcher("ATOM .0").apply(node)) != null)
-			result = immediate(m[0]);
-		else if ((m = Suite.matcher("BOOLEAN .0").apply(node)) != null)
-			result = immediate(m[0]);
-		else if ((m = Suite.matcher("CHARS .0").apply(node)) != null)
-			result = immediate(new Data<>(Chars.of(((Str) m[0]).value)));
-		else if ((m = Suite.matcher("CONS _ .0 .1").apply(node)) != null) {
-			Fun<Frame, Node> p0_ = eager0(fs, vm, m[0]);
-			Fun<Frame, Node> p1_ = eager0(fs, vm, m[1]);
-			result = frame -> pair(p0_.apply(frame), p1_.apply(frame));
-		} else if ((m = Suite.matcher("DECONS .0 .1 .2 .3 .4 .5").apply(node)) != null) {
-			int fs1 = fs + 2;
-			IMap<Node, Fun<Frame, Node>> vm1 = vm.put(m[2], getter(fs)).put(m[3], getter(fs + 1));
-			Fun<Frame, Node> value_ = eager0(fs, vm, m[1]);
-			Fun<Frame, Node> then_ = eager0(fs1, vm1, m[4]);
-			Fun<Frame, Node> else_ = eager0(fs, vm, m[5]);
-			Operator operator;
-
-			if (m[0] == Atom.of("L"))
-				operator = TermOp.AND___;
-			else if (m[0] == Atom.of("P"))
-				operator = TermOp.OR____;
-			else
-				throw new RuntimeException("Unknown DECONS type");
-
-			result = frame -> {
-				Tree tree = Tree.decompose(value_.apply(frame), operator);
-				if (tree != null) {
-					frame.add(tree.getLeft());
-					frame.add(tree.getRight());
-					return then_.apply(frame);
-				} else
-					return else_.apply(frame);
-			};
-		} else if ((m = Suite.matcher("DEF-VARS (.0 .1,) .2").apply(node)) != null) {
-			IMap<Node, Fun<Frame, Node>> vm1 = vm.put(m[0], getter(fs));
-			int fs1 = fs + 1;
-			Fun<Frame, Node> value_ = eager0(fs1, vm1, m[1]);
-			Fun<Frame, Node> expr = eager0(fs1, vm1, m[2]);
-			result = frame -> {
-				frame.add(value_.apply(frame));
-				return expr.apply(frame);
-			};
-		} else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
-			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(TreeUtil::tuple);
-			List<Fun<Frame, Node>> values_ = new ArrayList<>();
-			IMap<Node, Fun<Frame, Node>> vm1 = vm;
-			int fs1 = fs;
-
-			for (Node array[] : arrays) {
-				Fun<Frame, Node> getter = getter(fs1);
-				vm1 = vm1.put(array[0], frame -> wrap(getter.apply(frame)).source());
-				fs1++;
-			}
-
-			for (Node array[] : arrays) {
-				Fun<Frame, Node> value_ = eager0(fs1, vm1, array[1]);
-				values_.add(frame -> new Wrap_(() -> value_.apply(frame)));
-			}
-
-			Fun<Frame, Node> expr = eager0(fs1, vm1, m[1]);
-
-			result = frame -> {
-				for (Fun<Frame, Node> value_ : values_)
-					frame.add(value_.apply(frame));
-				return expr.apply(frame);
-			};
-		} else if ((m = Suite.matcher("ERROR").apply(node)) != null)
-			result = frame -> {
-				throw new RuntimeException("Error termination");
-			};
-		else if ((m = Suite.matcher("FUN .0 .1").apply(node)) != null) {
-			IMap<Node, Fun<Frame, Node>> vm1 = IMap.empty();
-			for (Pair<Node, Fun<Frame, Node>> pair : vm) {
-				Fun<Frame, Node> getter0 = pair.t1;
-				vm1 = vm1.put(pair.t0, frame -> getter0.apply(frame.parent));
-			}
-			vm1 = vm1.put(m[0], getter(0));
-			Fun<Frame, Node> value_ = eager0(fs + 1, vm1, m[1]);
-			result = frame -> new Fun_(in -> {
-				Frame frame1 = new Frame(frame);
-				frame1.add(in);
-				return value_.apply(frame1);
-			});
-		} else if ((m = Suite.matcher("IF .0 .1 .2").apply(node)) != null) {
-			Fun<Frame, Node> if_ = eager0(fs, vm, m[0]);
-			Fun<Frame, Node> then_ = eager0(fs, vm, m[1]);
-			Fun<Frame, Node> else_ = eager0(fs, vm, m[2]);
-			result = frame -> (if_.apply(frame) == Atom.TRUE ? then_ : else_).apply(frame);
-		} else if ((m = Suite.matcher("NIL").apply(node)) != null)
-			result = immediate(Atom.NIL);
-		else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
-			result = immediate(m[0]);
-		else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
-			result = eager0(fs, vm, m[1]);
-		else if ((m = Suite.matcher("TCO .0 .1").apply(node)) != null) {
-			Fun<Frame, Node> iter_ = eager0(fs, vm, m[0]);
-			Fun<Frame, Node> in_ = eager0(fs, vm, m[1]);
-			result = frame -> {
-				Fun<Node, Node> iter = fun(iter_.apply(frame));
-				Node in = in_.apply(frame);
-				Tree p0, p1;
-				do {
-					Node out = iter.apply(in);
-					p0 = Tree.decompose(out, TermOp.AND___);
-					p1 = Tree.decompose(p0.getRight(), TermOp.AND___);
-					in = p1.getLeft();
-				} while (p0.getLeft() != Atom.TRUE);
-				return p1.getRight();
-			};
-		} else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
-			result = eager0(fs, vm, Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", m[0], m[1], m[2]));
-		else if ((m = Suite.matcher("UNWRAP .0").apply(node)) != null) {
-			Fun<Frame, Node> value_ = eager0(fs, vm, m[0]);
-			result = frame -> wrap(value_.apply(frame)).source();
-		} else if ((m = Suite.matcher("VAR .0").apply(node)) != null)
-			result = vm.get(m[0]);
-		else if ((m = Suite.matcher("WRAP .0").apply(node)) != null) {
-			Fun<Frame, Node> value_ = eager0(fs, vm, m[0]);
-			result = frame -> new Wrap_(() -> value_.apply(frame));
-		} else
-			throw new RuntimeException("Unrecognized construct " + node);
-
-		return result;
 	}
 
 	private IntrinsicCallback lazyIntrinsicCallback() {
