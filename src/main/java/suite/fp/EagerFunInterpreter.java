@@ -131,7 +131,7 @@ public class EagerFunInterpreter {
 
 				for (Node array[] : arrays) {
 					Fun<Frame, Node> getter = getter(fs1);
-					vm1 = vm1.put(array[0], frame -> wrap(getter.apply(frame)).source());
+					vm1 = vm1.put(array[0], frame -> unwrap(getter.apply(frame)));
 					fs1++;
 				}
 
@@ -195,7 +195,7 @@ public class EagerFunInterpreter {
 				result = eager0(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", m[0], m[1], m[2]));
 			else if ((m = Suite.matcher("UNWRAP .0").apply(node)) != null) {
 				Fun<Frame, Node> value_ = eager0(m[0]);
-				result = frame -> wrap(value_.apply(frame)).source();
+				result = frame -> unwrap(value_.apply(frame));
 			} else if ((m = Suite.matcher("VAR .0").apply(node)) != null)
 				result = vm.get(m[0]);
 			else if ((m = Suite.matcher("WRAP .0").apply(node)) != null) {
@@ -287,8 +287,8 @@ public class EagerFunInterpreter {
 		return ((Fun_) n).fun;
 	}
 
-	private Source<Node> wrap(Node n) {
-		return ((Wrap_) n).source;
+	private Node unwrap(Node n) {
+		return ((Wrap_) n).source.source();
 	}
 
 	private Fun<Frame, Node> immediate(Node n) {
