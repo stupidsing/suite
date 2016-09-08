@@ -24,8 +24,8 @@ public abstract class Tree extends Node {
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
 			return tree.getOperator() == operator ? tree : null;
-		}
-		return null;
+		} else
+			return null;
 	}
 
 	public static Streamlet<Node> iter(Node node) {
