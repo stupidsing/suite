@@ -75,9 +75,7 @@ public class EagerFunInterpreter {
 			Fun<Frame, Node> result;
 			Node m[];
 
-			if ((m = Suite.matcher("APPLY .0 (FUN .1 .2)").apply(node)) != null)
-				result = eager0(Suite.substitute("DEF-VARS (.1 .0) .2", m));
-			else if ((m = Suite.matcher("APPLY .0 .1").apply(node)) != null) {
+			if ((m = Suite.matcher("APPLY .0 .1").apply(node)) != null) {
 				Fun<Frame, Node> param_ = eager0(m[0]);
 				Fun<Frame, Node> fun_ = eager0(m[1]);
 				result = frame -> {
