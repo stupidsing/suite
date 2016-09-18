@@ -35,7 +35,7 @@ public class NioDispatcherTest {
 		String hello = "HELLO";
 		Charset charset = Constants.charset;
 
-		Source<NioChannel> source = () -> NioChannelFactory.buffered(() -> {
+		Source<NioChannel> source = () -> {
 			BufferedNioChannel channel = new BufferedNioChannel();
 			channel.onConnected.register(sender -> {
 				String s = hello + "\n";
@@ -43,8 +43,8 @@ public class NioDispatcherTest {
 
 			});
 			channel.onReceive.register(channel::send);
-			return channel;
-		});
+			return NioChannelFactory.buffered(channel);
+		};
 		NioDispatcher<NioChannel> dispatcher = new NioDispatcherImpl<>(source);
 		dispatcher.start();
 
@@ -72,12 +72,8 @@ public class NioDispatcherTest {
 		ThreadPoolExecutor executor = Util.createExecutor();
 		Fun<Bytes, Bytes> handler = request -> request;
 
-		NioDispatcher<RequestResponseNioChannel> dispatcher = new NioDispatcherImpl<>( //
-				() -> NioChannelFactory.requestResponse( //
-						RequestResponseNioChannel::new, //
-						matcher, //
-						executor, //
-						handler));
+		NioDispatcher<RequestResponseNioChannel> dispatcher = new NioDispatcherImpl<>(
+				() -> NioChannelFactory.requestResponse(new RequestResponseNioChannel(), matcher, executor, handler));
 		dispatcher.start();
 
 		try (Closeable closeServer = dispatcher.listen(5151)) {

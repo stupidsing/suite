@@ -46,7 +46,7 @@ public class ClusterImpl implements Cluster {
 		this.me = me;
 		this.peers = peers;
 		this.nio = new NioDispatcherImpl<>(() -> NioChannelFactory.persistent( //
-				() -> new PersistentNioChannel(nio, peers.get(me)), //
+				new PersistentNioChannel(nio, peers.get(me)), //
 				matcher, //
 				executor, //
 				this::respondToRequest));

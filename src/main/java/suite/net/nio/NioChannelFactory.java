@@ -11,7 +11,6 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Reactive;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
 
 public interface NioChannelFactory {
 
@@ -114,19 +113,19 @@ public interface NioChannelFactory {
 	}
 
 	public static <C extends PersistentNioChannel> C persistent( //
-			Source<C> source, //
+			C channel0, //
 			RequestResponseMatcher matcher, //
 			ThreadPoolExecutor executor, //
 			Fun<Bytes, Bytes> handler) {
-		return requestResponse(source, matcher, executor, handler);
+		return requestResponse(channel0, matcher, executor, handler);
 	}
 
 	public static <C extends RequestResponseNioChannel> C requestResponse( //
-			Source<C> source, //
+			C channel0, //
 			RequestResponseMatcher matcher, //
 			ThreadPoolExecutor executor, //
 			Fun<Bytes, Bytes> handler) {
-		C channel = packeted(source);
+		C channel = packeted(channel0);
 		channel.onConnected.register(sender -> channel.setConnected(sender != null));
 		channel.onReceivePacket.register(packet -> {
 			if (5 <= packet.size()) {
@@ -143,8 +142,8 @@ public interface NioChannelFactory {
 		return channel;
 	}
 
-	public static <C extends PacketedNioChannel> C packeted(Source<C> source) {
-		C channel = buffered(source);
+	public static <C extends PacketedNioChannel> C packeted(C channel0) {
+		C channel = buffered(channel0);
 		channel.onReceive.register(new Sink<Bytes>() {
 			private Bytes received = Bytes.empty;
 
@@ -166,8 +165,7 @@ public interface NioChannelFactory {
 		return channel;
 	}
 
-	public static <C extends BufferedNioChannel> C buffered(Source<C> source) {
-		C channel = source.source();
+	public static <C extends BufferedNioChannel> C buffered(C channel) {
 		channel.onConnected.register(channel::setSender);
 		channel.onTrySend.register(channel::trySend);
 		return channel;
