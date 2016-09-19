@@ -14,8 +14,8 @@ ic-compile-register .do .e0/.ex
 ic-compile-register .do .e0/.ex
 	:- ic-compile-register-better-option .do .e0/.ex, !
 #
-ic-compile-register .do .e
-	:- ic-compile-register0 .do .e
+ic-compile-register .do .e0/.ex
+	:- ic-compile-register0 .do .e0/.ex
 #
 
 ic-compile-memory (LET .var .value) .e0/.ex .size .pointer
