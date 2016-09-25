@@ -52,8 +52,8 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().iterator();
 	}
 
-	public <K, V> Streamlet<Pair<K, V>> aggregate(Fun<T, K> keyFun, Fun<Streamlet<T>, V> valueFun) {
-		return groupBy(keyFun).map(Pair.map1(list -> valueFun.apply(Read.from(list))));
+	public <K, V> Streamlet2<K, V> aggregate(Fun<T, K> keyFun, Fun<Streamlet<T>, V> valueFun) {
+		return groupBy(keyFun).mapValue(list -> valueFun.apply(Read.from(list)));
 	}
 
 	public Streamlet<T> closeAtEnd(Closeable c) {
@@ -65,7 +65,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <R> R collect(Fun<Outlet<T>, R> fun) {
-		return fun.apply(in.source());
+		return fun.apply(spawn());
 	}
 
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
@@ -113,12 +113,12 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().form(source);
 	}
 
-	public <K, V> Streamlet<Pair<K, List<T>>> groupBy(Fun<T, K> keyFun) {
-		return groupBy(keyFun, value -> value);
+	public <K, V> Streamlet2<K, List<T>> groupBy(Fun<T, K> keyFun) {
+		return new Streamlet2<>(() -> spawn().groupBy(keyFun));
 	}
 
-	public <K, V> Streamlet<Pair<K, List<V>>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return streamlet(() -> spawn().groupBy(keyFun, valueFun));
+	public <K, V> Streamlet2<K, List<V>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		return new Streamlet2<>(() -> spawn().groupBy(keyFun, valueFun));
 	}
 
 	@Override
@@ -200,7 +200,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <K> Map<K, List<T>> toListMap(Fun<T, K> keyFun) {
-		return spawn().toListMap(keyFun, value -> value);
+		return spawn().toListMap(keyFun);
 	}
 
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
@@ -208,7 +208,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <K> Map<K, T> toMap(Fun<T, K> keyFun) {
-		return spawn().toMap(keyFun, value -> value);
+		return spawn().toMap(keyFun);
 	}
 
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {

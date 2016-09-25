@@ -115,6 +115,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return FunUtil2.iterator(source2);
 	}
 
+	public <V1> Outlet2<K, V1> aggregate(Fun<Streamlet<V>, V1> valueFun) {
+		return groupBy().mapValue(list -> valueFun.apply(Read.from(list)));
+	}
+
 	public Outlet<Outlet2<K, V>> chunk(int n) {
 		return Outlet.from(FunUtil.map(Outlet2<K, V>::new, FunUtil2.chunk(source2, n)));
 	}
@@ -322,6 +326,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 			Pair<K, V> pair = Pair.of(null, null);
 			return next(pair) ? pair : null;
 		});
+	}
+
+	public Pair<Outlet2<K, V>, Outlet2<K, V>> partition(BiPredicate<K, V> pred) {
+		return Pair.of(filter(pred), filter((k, v) -> !pred.test(k, v)));
 	}
 
 	public Outlet2<K, V> reverse() {

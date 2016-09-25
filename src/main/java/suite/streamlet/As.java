@@ -34,23 +34,6 @@ public class As {
 		return Read.from(list);
 	}
 
-	public static <K, V> Streamlet<Pair<K, Streamlet<V>>> groups(Outlet<Pair<K, V>> outlet) {
-		Fun<Pair<K, V>, K> fst = p -> p.t0;
-		Fun<Pair<K, V>, V> snd = p -> p.t1;
-		return groups(fst, snd).apply(outlet);
-	}
-
-	public static <T, K> Fun<Outlet<T>, Streamlet<Pair<K, Streamlet<T>>>> groups(Fun<T, K> keyFun) {
-		return groups(keyFun, value -> value);
-	}
-
-	public static <T, K, V> Fun<Outlet<T>, Streamlet<Pair<K, Streamlet<V>>>> groups(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return outlet -> {
-			Fun<List<V>, Streamlet<V>> readFrom = Read::from;
-			return new Streamlet<>(() -> outlet.groupBy(keyFun, valueFun).map(Pair.map1(readFrom)));
-		};
-	}
-
 	public static int[] intArray(Outlet<Integer> st) {
 		List<Integer> list = new ArrayList<>();
 		st.sink(list::add);
@@ -96,16 +79,16 @@ public class As {
 		return map;
 	}
 
-	public static <K, V> Map<K, V> map(Outlet<Pair<K, V>> outlet) {
+	public static <K, V> Map<K, V> map(Outlet2<K, V> outlet) {
 		Map<K, V> map = new HashMap<>();
-		outlet.sink(pair -> {
-			if (map.put(pair.t0, pair.t1) != null)
-				throw new RuntimeException("Duplicate key " + pair.t0);
+		outlet.sink((k, v) -> {
+			if (map.put(k, v) != null)
+				throw new RuntimeException("Duplicate key " + k);
 		});
 		return map;
 	}
 
-	public static <K, V> ListMultimap<K, V> multimap(Outlet<Pair<K, List<V>>> outlet) {
+	public static <K, V> ListMultimap<K, V> multimap(Outlet2<K, List<V>> outlet) {
 		return new ListMultimap<>(map(outlet));
 	}
 

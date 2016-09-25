@@ -103,7 +103,7 @@ public class Rewriter {
 		public NodeWrite(ReadType type, Node terminal, Operator op, List<Pair<Node, Node>> children) {
 			switch (type) {
 			case DICT:
-				node = new Dict(Read.from(children).map(Pair.map1(Reference::of)).collect(As::map));
+				node = new Dict(Read.from2(children).mapValue(Reference::of).collect(As::map));
 				break;
 			case TERM:
 				node = terminal;

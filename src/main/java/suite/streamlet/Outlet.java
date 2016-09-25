@@ -16,7 +16,6 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import suite.adt.ListMultimap;
-import suite.adt.Pair;
 import suite.node.util.Mutable;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -160,11 +159,6 @@ public class Outlet<T> implements Iterable<T> {
 		return from(FunUtil.filter(fun, source));
 	}
 
-	public <K, V> Outlet<Pair<K, List<V>>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, List<V>> map = toListMap(keyFun, valueFun);
-		return from(map.entrySet()).map(e -> Pair.of(e.getKey(), e.getValue()));
-	}
-
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {
 		T t;
 		while ((t = next()) != null)
@@ -178,6 +172,14 @@ public class Outlet<T> implements Iterable<T> {
 		while ((t = next()) != null)
 			r.add(t);
 		return r;
+	}
+
+	public <K, V> Outlet2<K, List<T>> groupBy(Fun<T, K> keyFun) {
+		return groupBy(keyFun, value -> value);
+	}
+
+	public <K, V> Outlet2<K, List<V>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		return map2(keyFun, valueFun).groupBy();
 	}
 
 	@Override
@@ -314,6 +316,10 @@ public class Outlet<T> implements Iterable<T> {
 		return form(ArrayList::new);
 	}
 
+	public <K, V> Map<K, List<T>> toListMap(Fun<T, K> keyFun) {
+		return toListMap(keyFun, value -> value);
+	}
+
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
 		Map<K, List<V>> map = new HashMap<>();
 		T t;
@@ -322,16 +328,20 @@ public class Outlet<T> implements Iterable<T> {
 		return map;
 	}
 
+	public <K, V> Map<K, T> toMap(Fun<T, K> keyFun) {
+		return toMap(keyFun, value -> value);
+	}
+
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return groupBy(keyFun, valueFun).map(Pair.map1(values -> Read.from(values).uniqueResult())).collect(As::map);
+		return map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).uniqueResult()).collect(As::map);
 	}
 
 	public <K, V> ListMultimap<K, T> toMultimap(Fun<T, K> keyFun) {
-		return groupBy(keyFun, value -> value).collect(As::multimap);
+		return toMultimap(keyFun, value -> value);
 	}
 
 	public <K, V> ListMultimap<K, V> toMultimap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return groupBy(keyFun, valueFun).collect(As::multimap);
+		return map2(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
 	public Set<T> toSet() {
@@ -339,7 +349,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return groupBy(keyFun, valueFun).map(Pair.map1(values -> Read.from(values).toSet())).collect(As::map);
+		return map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
 	}
 
 	public T uniqueResult() {

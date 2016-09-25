@@ -43,7 +43,7 @@ public class Grammar {
 				.toList();
 
 		Map<String, Grammar> grammarByEntity = Read.from(pairs) //
-				.map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t0, lr.t1))) //
+				.map2(lr -> lr.t0, lr -> breakdown.breakdown(lr.t0, lr.t1)) //
 				.collect(As::map);
 
 		return grammarByEntity;

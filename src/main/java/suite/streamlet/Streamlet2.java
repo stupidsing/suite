@@ -54,7 +54,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <V1> Streamlet2<K, V1> aggregate(Fun<Streamlet<V>, V1> valueFun) {
-		return groupBy().mapValue(list -> valueFun.apply(Read.from(list)));
+		return new Streamlet2<>(() -> spawn().aggregate(valueFun));
 	}
 
 	public Streamlet2<K, V> closeAtEnd(Closeable c) {
@@ -66,7 +66,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <R> R collect(Fun<Outlet2<K, V>, R> fun) {
-		return fun.apply(in.source());
+		return fun.apply(spawn());
 	}
 
 	public <T> Streamlet<T> concatMap(BiFunction<K, V, Streamlet<T>> fun) {
@@ -145,11 +145,6 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public <V1> Streamlet2<K, V1> mapValue(Fun<V, V1> fun) {
 		return new Streamlet2<>(() -> spawn().mapValue(fun));
-	}
-
-	public Streamlet2<K, V> memoize() {
-		List<Pair<K, V>> list = toList();
-		return streamlet2(() -> Outlet2.from(list));
 	}
 
 	public Pair<K, V> min(Comparator<Pair<K, V>> comparator) {
