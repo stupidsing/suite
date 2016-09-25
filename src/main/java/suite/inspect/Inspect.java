@@ -43,7 +43,10 @@ public class Inspect {
 	}
 
 	public List<Field> fields(Class<?> clazz) {
-		return fieldsByClass.computeIfAbsent(clazz, clazz_ -> getFields0(clazz_));
+		List<Field> fields = fieldsByClass.get(clazz);
+		if (fields == null)
+			fieldsByClass.put(clazz, fields = getFields0(clazz));
+		return fields;
 	}
 
 	private List<Field> getFields0(Class<?> clazz) {
