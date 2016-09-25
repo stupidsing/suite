@@ -5,11 +5,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class ExecUtilTest {
+public class ExecuteTest {
 
 	@Test
 	public void test0() {
-		ExecUtil exec = new ExecUtil(new String[] { "git", "status", }, "");
+		Execute exec = new Execute(new String[] { "git", "status", }, "");
 		System.out.println(exec);
 
 		assertEquals(0, exec.code);
@@ -24,7 +24,7 @@ public class ExecUtilTest {
 			sb.append("01234567890123456789012345678901234567890123456789012345678901234567890123456789\n");
 		String in = sb.toString();
 
-		ExecUtil exec = new ExecUtil(new String[] { "cat", }, in);
+		Execute exec = new Execute(new String[] { "cat", }, in);
 
 		assertEquals(0, exec.code);
 		assertEquals(in, exec.out);

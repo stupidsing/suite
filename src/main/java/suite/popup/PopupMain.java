@@ -17,7 +17,7 @@ import suite.editor.LayoutCalculator;
 import suite.editor.LayoutCalculator.Node;
 import suite.editor.LayoutCalculator.Orientation;
 import suite.editor.Listen;
-import suite.os.ExecUtil;
+import suite.os.Execute;
 import suite.util.FunUtil.Fun;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
@@ -58,9 +58,9 @@ public class PopupMain extends ExecutableProgram {
 		frame.setSize(new Dimension(width, height));
 		frame.setVisible(true);
 
-		Fun<String, ExecUtil> volumeControl = (String c) -> {
+		Fun<String, Execute> volumeControl = (String c) -> {
 			inTextField.requestFocusInWindow();
-			return new ExecUtil(new String[] { "/usr/bin/amixer", "set", "PCM", "2" + c, }, "");
+			return new Execute(new String[] { "/usr/bin/amixer", "set", "PCM", "2" + c, }, "");
 		};
 
 		JLabel volLabel = new JLabel("Volume");

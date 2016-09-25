@@ -9,14 +9,14 @@ import suite.Constants;
 import suite.util.Copy;
 import suite.util.Rethrow;
 
-public class ExecUtil {
+public class Execute {
 
 	public final int code;
 	public final String out;
 	public final String err;
 	private Thread threads[];
 
-	public ExecUtil(String command[], String in) {
+	public Execute(String command[], String in) {
 		InputStream bis = new ByteArrayInputStream(in.getBytes(Constants.charset));
 		ByteArrayOutputStream bos0 = new ByteArrayOutputStream();
 		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
