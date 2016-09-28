@@ -37,7 +37,8 @@ public class Lister {
 
 		if (nr.type == ReadType.TUPLE)
 			st = Read.from(nr.children) //
-					.index((i, p) -> leaves(p.t1, IList.cons(Int.of(i), prefix))) //
+					.index() //
+					.map((i, p) -> leaves(p.t1, IList.cons(Int.of(i), prefix))) //
 					.collect(As::concat);
 		else if (nr.type != ReadType.TERM)
 			st = Read.from(nr.children).concatMap(p -> leaves(p.t1, IList.cons(p.t0, prefix)));

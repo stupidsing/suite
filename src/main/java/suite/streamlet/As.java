@@ -92,8 +92,8 @@ public class As {
 		return new ListMultimap<>(map(outlet));
 	}
 
-	public static <K, V, T> Fun<Outlet<Pair<K, V>>, Streamlet<T>> pairMap(BiFunction<K, V, T> fun) {
-		return outlet -> new Streamlet<>(() -> outlet.map(pair -> fun.apply(pair.t0, pair.t1)));
+	public static <K, V, T> Fun<Outlet2<K, V>, Streamlet<T>> pairMap(BiFunction<K, V, T> fun) {
+		return outlet -> new Streamlet<>(() -> outlet.map(fun::apply));
 	}
 
 	public static <K, V> Map<K, Set<V>> setMap(Outlet<Pair<K, V>> outlet) {

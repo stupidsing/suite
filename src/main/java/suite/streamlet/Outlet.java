@@ -16,12 +16,14 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import suite.adt.ListMultimap;
+import suite.adt.Pair;
 import suite.node.util.Mutable;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
+import suite.util.FunUtil2.Source2;
 import suite.util.NullableSynchronousQueue;
 import suite.util.To;
 import suite.util.Util;
@@ -191,13 +193,18 @@ public class Outlet<T> implements Iterable<T> {
 		return hashCode;
 	}
 
-	public <R> Outlet<R> index(BiFunction<Integer, T, R> fun) {
-		return from(new Source<R>() {
+	public Outlet2<Integer, T> index() {
+		return Outlet2.from(new Source2<Integer, T>() {
 			private int i = 0;
 
-			public R source() {
+			public boolean source2(Pair<Integer, T> pair) {
 				T t = next();
-				return t != null ? fun.apply(i++, t) : null;
+				if (t != null) {
+					pair.t0 = i++;
+					pair.t1 = t;
+					return true;
+				} else
+					return false;
 			}
 		});
 	}

@@ -126,8 +126,8 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().hashCode();
 	}
 
-	public <R> Streamlet<R> index(BiFunction<Integer, T, R> fun) {
-		return streamlet(() -> spawn().index(fun));
+	public Streamlet2<Integer, T> index() {
+		return new Streamlet2<>(() -> spawn().index());
 	}
 
 	public boolean isAll(Predicate<T> pred) {
