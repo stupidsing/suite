@@ -22,7 +22,7 @@ public class FunUtil2 {
 		public void sink2(K key, V value);
 	}
 
-	public static <K, V> Source<Source2<K, V>> chunk(Source2<K, V> source2, int n) {
+	public static <K, V> Source<Source2<K, V>> chunk(int n, Source2<K, V> source2) {
 		return new Source<Source2<K, V>>() {
 			private Pair<K, V> pair;
 			private boolean isAvail;
@@ -172,7 +172,7 @@ public class FunUtil2 {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static <K, V> Source<Source2<K, V>> split(Source2<K, V> source2, BiPredicate<K, V> fun0) {
+	public static <K, V> Source<Source2<K, V>> split(BiPredicate<K, V> fun0, Source2<K, V> source2) {
 		BiPredicate<K, V> fun1 = Rethrow.bipredicate(fun0);
 		return new Source<Source2<K, V>>() {
 			private Pair<K, V> pair = Pair.of(null, null);

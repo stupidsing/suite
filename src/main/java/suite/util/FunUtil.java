@@ -24,7 +24,7 @@ public class FunUtil {
 	public interface Fun<I, O> extends Function<I, O> {
 	}
 
-	public static <T> Source<Source<T>> chunk(Source<T> source, int n) {
+	public static <T> Source<Source<T>> chunk(int n, Source<T> source) {
 		return new Source<Source<T>>() {
 			private T t = source.source();
 			private boolean isAvail = t != null;
@@ -90,7 +90,7 @@ public class FunUtil {
 		return init;
 	}
 
-	public static <T> boolean isAll(Source<T> source, Predicate<T> pred0) {
+	public static <T> boolean isAll(Predicate<T> pred0, Source<T> source) {
 		Predicate<T> pred1 = Rethrow.predicate(pred0);
 		T t;
 		while ((t = source.source()) != null)
@@ -99,7 +99,7 @@ public class FunUtil {
 		return true;
 	}
 
-	public static <T> boolean isAny(Source<T> source, Predicate<T> pred0) {
+	public static <T> boolean isAny(Predicate<T> pred0, Source<T> source) {
 		Predicate<T> pred1 = Rethrow.predicate(pred0);
 		T t;
 		while ((t = source.source()) != null)
@@ -165,7 +165,7 @@ public class FunUtil {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static <T> Source<Source<T>> split(Source<T> source, Predicate<T> fun0) {
+	public static <T> Source<Source<T>> split(Predicate<T> fun0, Source<T> source) {
 		Predicate<T> fun1 = Rethrow.predicate(fun0);
 		return new Source<Source<T>>() {
 			private T t = source.source();

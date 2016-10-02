@@ -77,7 +77,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<Outlet<T>> chunk(int n) {
-		return from(FunUtil.map(Outlet<T>::new, FunUtil.chunk(source, n)));
+		return from(FunUtil.map(Outlet<T>::new, FunUtil.chunk(n, source)));
 	}
 
 	public Outlet<T> closeAtEnd(Closeable c) {
@@ -214,11 +214,11 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public boolean isAll(Predicate<T> pred) {
-		return FunUtil.isAll(source, pred);
+		return FunUtil.isAll(pred, source);
 	}
 
 	public boolean isAny(Predicate<T> pred) {
-		return FunUtil.isAny(source, pred);
+		return FunUtil.isAny(pred, source);
 	}
 
 	public <O> Outlet<O> map(Fun<T, O> fun) {
@@ -294,7 +294,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<Outlet<T>> split(Predicate<T> fun) {
-		return from(FunUtil.map(Outlet<T>::new, FunUtil.split(source, fun)));
+		return from(FunUtil.map(Outlet<T>::new, FunUtil.split(fun, source)));
 	}
 
 	public Outlet<T> take(int n) {

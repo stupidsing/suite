@@ -116,7 +116,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Outlet<Outlet2<K, V>> chunk(int n) {
-		return Outlet.from(FunUtil.map(Outlet2<K, V>::new, FunUtil2.chunk(source2, n)));
+		return Outlet.from(FunUtil.map(Outlet2<K, V>::new, FunUtil2.chunk(n, source2)));
 	}
 
 	public Outlet2<K, V> closeAtEnd(Closeable c) {
@@ -347,7 +347,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Outlet<Outlet2<K, V>> split(BiPredicate<K, V> fun) {
-		return Outlet.from(FunUtil.map(Outlet2<K, V>::new, FunUtil2.split(source2, fun)));
+		return Outlet.from(FunUtil.map(Outlet2<K, V>::new, FunUtil2.split(fun, source2)));
 	}
 
 	public Outlet2<K, V> take(int n) {
