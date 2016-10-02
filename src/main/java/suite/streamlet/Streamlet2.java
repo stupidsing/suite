@@ -52,10 +52,6 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return spawn().iterator();
 	}
 
-	public <V1> Streamlet2<K, V1> aggregate(Fun<Streamlet<V>, V1> valueFun) {
-		return new Streamlet2<>(() -> spawn().aggregate(valueFun));
-	}
-
 	public Streamlet2<K, V> closeAtEnd(Closeable c) {
 		return streamlet2(() -> {
 			Outlet2<K, V> in = spawn();
