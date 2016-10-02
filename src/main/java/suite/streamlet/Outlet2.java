@@ -204,12 +204,9 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return from(FunUtil2.filter(fun, source2));
 	}
 
-	public <R extends Collection<Pair<K, V>>> R form(Source<R> source) {
-		R r = source.source();
-		Pair<K, V> pair;
-		while (next(pair = Pair.of(null, null)))
-			r.add(pair);
-		return r;
+	public Pair<K, V> first() {
+		Pair<K, V> pair = Pair.of(null, null);
+		return next(pair) ? pair : null;
 	}
 
 	public Outlet2<K, List<V>> groupBy() {
@@ -288,10 +285,6 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 			return pair;
 		} else
 			return null;
-	}
-
-	public boolean next(Pair<K, V> pair) {
-		return source2.source2(pair);
 	}
 
 	public Outlet2<K, V> nonBlocking(K k0, V v0) {
@@ -429,6 +422,18 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 				throw new RuntimeException("More than one result");
 		else
 			throw new RuntimeException("No result");
+	}
+
+	private <R extends Collection<Pair<K, V>>> R form(Source<R> source) {
+		R r = source.source();
+		Pair<K, V> pair;
+		while (next(pair = Pair.of(null, null)))
+			r.add(pair);
+		return r;
+	}
+
+	private boolean next(Pair<K, V> pair) {
+		return source2.source2(pair);
 	}
 
 }

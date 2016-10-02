@@ -161,6 +161,10 @@ public class Outlet<T> implements Iterable<T> {
 		return from(FunUtil.filter(fun, source));
 	}
 
+	public T first() {
+		return next();
+	}
+
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {
 		T t;
 		while ((t = next()) != null)

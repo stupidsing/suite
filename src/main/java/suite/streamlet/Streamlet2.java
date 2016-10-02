@@ -2,7 +2,6 @@ package suite.streamlet;
 
 import java.io.Closeable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -106,12 +105,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Pair<K, V> first() {
-		Pair<K, V> pair = Pair.of(null, null);
-		return spawn().next(pair) ? pair : null;
-	}
-
-	public <R extends Collection<Pair<K, V>>> R form(Source<R> source) {
-		return spawn().form(source);
+		return spawn().first();
 	}
 
 	public Streamlet2<K, List<V>> groupBy() {

@@ -102,7 +102,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public T first() {
-		return spawn().next();
+		return spawn().first();
 	}
 
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {
