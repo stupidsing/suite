@@ -220,36 +220,19 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public boolean isAll(BiPredicate<K, V> pred) {
-		Pair<K, V> pair = Pair.of(null, null);
-		while (next(pair))
-			if (!pred.test(pair.t0, pair.t1))
-				return false;
-		return true;
+		return FunUtil2.isAll(pred, source2);
 	}
 
 	public boolean isAny(BiPredicate<K, V> pred) {
-		Pair<K, V> pair = Pair.of(null, null);
-		while (next(pair))
-			if (pred.test(pair.t0, pair.t1))
-				return true;
-		return false;
+		return FunUtil2.isAny(pred, source2);
 	}
 
-	public <T> Outlet<T> map(BiFunction<K, V, T> fun) {
-		Pair<K, V> pair = Pair.of(null, null);
-		return Outlet.from(() -> source2.source2(pair) ? fun.apply(pair.t0, pair.t1) : null);
+	public <T> Outlet<T> map(BiFunction<K, V, T> fun0) {
+		return Outlet.from(FunUtil2.map(fun0, source2));
 	}
 
 	public <K1, V1> Outlet2<K1, V1> mapEntry(BiFunction<K, V, K1> kf, BiFunction<K, V, V1> vf) {
-		Pair<K, V> pair1 = Pair.of(null, null);
-		return from(pair -> {
-			if (source2.source2(pair1)) {
-				pair.t0 = kf.apply(pair1.t0, pair1.t1);
-				pair.t1 = vf.apply(pair1.t0, pair1.t1);
-				return true;
-			} else
-				return false;
-		});
+		return from(FunUtil2.map2(kf, vf, source2));
 	}
 
 	public <K1> Outlet2<K1, V> mapKey(Fun<K, K1> fun) {

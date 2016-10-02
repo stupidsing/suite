@@ -214,35 +214,19 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public boolean isAll(Predicate<T> pred) {
-		T t;
-		while ((t = source.source()) != null)
-			if (!pred.test(t))
-				return false;
-		return true;
+		return FunUtil.isAll(source, pred);
 	}
 
 	public boolean isAny(Predicate<T> pred) {
-		T t;
-		while ((t = source.source()) != null)
-			if (pred.test(t))
-				return true;
-		return false;
+		return FunUtil.isAny(source, pred);
 	}
 
 	public <O> Outlet<O> map(Fun<T, O> fun) {
 		return from(FunUtil.map(fun, source));
 	}
 
-	public <K, V> Outlet2<K, V> map2(Fun<T, K> kf, Fun<T, V> vf) {
-		return Outlet2.from(pair -> {
-			T t;
-			if ((t = source.source()) != null) {
-				pair.t0 = kf.apply(t);
-				pair.t1 = vf.apply(t);
-				return true;
-			} else
-				return false;
-		});
+	public <K, V> Outlet2<K, V> map2(Fun<T, K> kf0, Fun<T, V> vf0) {
+		return Outlet2.from(FunUtil.map2(kf0, vf0, source));
 	}
 
 	public T min(Comparator<T> comparator) {

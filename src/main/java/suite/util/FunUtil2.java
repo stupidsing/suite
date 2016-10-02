@@ -77,20 +77,40 @@ public class FunUtil2 {
 		};
 	}
 
-	public static <K, V> Source2<K, V> filter(BiPredicate<K, V> fun, Source2<K, V> source2) {
+	public static <K, V> Source2<K, V> filter(BiPredicate<K, V> fun0, Source2<K, V> source2) {
+		BiPredicate<K, V> fun1 = Rethrow.bipredicate(fun0);
 		return pair -> {
 			boolean b;
-			while ((b = source2.source2(pair)) && !fun.test(pair.t0, pair.t1))
+			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
 				;
 			return b;
 		};
 	}
 
-	public static <K, V, R> R fold(Fun<Pair<R, Pair<K, V>>, R> fun, R init, Source2<K, V> source2) {
+	public static <K, V, R> R fold(Fun<Pair<R, Pair<K, V>>, R> fun0, R init, Source2<K, V> source2) {
+		Fun<Pair<R, Pair<K, V>>, R> fun1 = Rethrow.fun(fun0);
 		Pair<K, V> pair = Pair.of(null, null);
 		while (source2.source2(pair))
-			init = fun.apply(Pair.of(init, pair));
+			init = fun1.apply(Pair.of(init, pair));
 		return init;
+	}
+
+	public static <K, V> boolean isAll(BiPredicate<K, V> pred0, Source2<K, V> source2) {
+		BiPredicate<K, V> pred1 = Rethrow.bipredicate(pred0);
+		Pair<K, V> pair = Pair.of(null, null);
+		while (source2.source2(pair))
+			if (!pred1.test(pair.t0, pair.t1))
+				return false;
+		return true;
+	}
+
+	public static <K, V> boolean isAny(BiPredicate<K, V> pred0, Source2<K, V> source2) {
+		BiPredicate<K, V> pred1 = Rethrow.bipredicate(pred0);
+		Pair<K, V> pair = Pair.of(null, null);
+		while (source2.source2(pair))
+			if (pred1.test(pair.t0, pair.t1))
+				return true;
+		return false;
 	}
 
 	public static <K, V> Iterator<Pair<K, V>> iterator(Source2<K, V> source2) {
@@ -118,9 +138,25 @@ public class FunUtil2 {
 		return () -> iterator(source2);
 	}
 
-	public static <K, V, T> Source<T> map(BiFunction<K, V, T> fun, Source2<K, V> source2) {
+	public static <K, V, T> Source<T> map(BiFunction<K, V, T> fun0, Source2<K, V> source2) {
+		BiFunction<K, V, T> fun1 = Rethrow.fun2(fun0);
 		Pair<K, V> pair = Pair.of(null, null);
-		return () -> source2.source2(pair) ? fun.apply(pair.t0, pair.t1) : null;
+		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
+	}
+
+	public static <K, V, K1, V1, T> Source2<K1, V1> map2(BiFunction<K, V, K1> kf0, BiFunction<K, V, V1> vf0,
+			Source2<K, V> source2) {
+		BiFunction<K, V, K1> kf1 = Rethrow.fun2(kf0);
+		BiFunction<K, V, V1> vf1 = Rethrow.fun2(vf0);
+		Pair<K, V> pair1 = Pair.of(null, null);
+		return pair -> {
+			if (source2.source2(pair1)) {
+				pair.t0 = kf1.apply(pair1.t0, pair1.t1);
+				pair.t1 = vf1.apply(pair1.t0, pair1.t1);
+				return true;
+			} else
+				return false;
+		};
 	}
 
 	public static <I> Sink<I> nullSink() {
@@ -136,11 +172,12 @@ public class FunUtil2 {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static <K, V> Source<Source2<K, V>> split(Source2<K, V> source2, BiPredicate<K, V> fun) {
+	public static <K, V> Source<Source2<K, V>> split(Source2<K, V> source2, BiPredicate<K, V> fun0) {
+		BiPredicate<K, V> fun1 = Rethrow.bipredicate(fun0);
 		return new Source<Source2<K, V>>() {
 			private Pair<K, V> pair = Pair.of(null, null);
 			private boolean isAvailable;
-			private Source2<K, V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun.test(pair.t0, pair.t1);
+			private Source2<K, V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun1.test(pair.t0, pair.t1);
 
 			{
 				isAvailable = source2.source2(pair);

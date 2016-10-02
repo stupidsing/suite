@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import suite.adt.Pair;
 import suite.os.LogUtil;
+import suite.util.FunUtil2.Source2;
 
 public class FunUtil {
 
@@ -71,20 +72,40 @@ public class FunUtil {
 		};
 	}
 
-	public static <T> Source<T> filter(Predicate<T> fun, Source<T> source) {
+	public static <T> Source<T> filter(Predicate<T> fun0, Source<T> source) {
+		Predicate<T> fun1 = Rethrow.predicate(fun0);
 		return () -> {
 			T t = null;
-			while ((t = source.source()) != null && !fun.test(t))
+			while ((t = source.source()) != null && !fun1.test(t))
 				;
 			return t;
 		};
 	}
 
-	public static <T, R> R fold(Fun<Pair<R, T>, R> fun, R init, Source<T> source) {
+	public static <T, R> R fold(Fun<Pair<R, T>, R> fun0, R init, Source<T> source) {
+		Fun<Pair<R, T>, R> fun1 = Rethrow.fun(fun0);
 		T t;
 		while ((t = source.source()) != null)
-			init = fun.apply(Pair.of(init, t));
+			init = fun1.apply(Pair.of(init, t));
 		return init;
+	}
+
+	public static <T> boolean isAll(Source<T> source, Predicate<T> pred0) {
+		Predicate<T> pred1 = Rethrow.predicate(pred0);
+		T t;
+		while ((t = source.source()) != null)
+			if (!pred1.test(t))
+				return false;
+		return true;
+	}
+
+	public static <T> boolean isAny(Source<T> source, Predicate<T> pred0) {
+		Predicate<T> pred1 = Rethrow.predicate(pred0);
+		T t;
+		while ((t = source.source()) != null)
+			if (pred1.test(t))
+				return true;
+		return false;
 	}
 
 	public static <T> Iterator<T> iterator(Source<T> source) {
@@ -109,10 +130,25 @@ public class FunUtil {
 		return () -> iterator(source);
 	}
 
-	public static <T0, T1> Source<T1> map(Fun<T0, T1> fun, Source<T0> source) {
+	public static <T0, T1> Source<T1> map(Fun<T0, T1> fun0, Source<T0> source) {
+		Fun<T0, T1> fun1 = Rethrow.fun(fun0);
 		return () -> {
 			T0 e = source.source();
-			return e != null ? fun.apply(e) : null;
+			return e != null ? fun1.apply(e) : null;
+		};
+	}
+
+	public static <T, K, V> Source2<K, V> map2(Fun<T, K> kf0, Fun<T, V> vf0, Source<T> source) {
+		Fun<T, K> kf1 = Rethrow.fun(kf0);
+		Fun<T, V> vf1 = Rethrow.fun(vf0);
+		return pair -> {
+			T e = source.source();
+			if (e != null) {
+				pair.t0 = kf1.apply(e);
+				pair.t1 = vf1.apply(e);
+				return true;
+			} else
+				return false;
 		};
 	}
 
@@ -129,11 +165,12 @@ public class FunUtil {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static <T> Source<Source<T>> split(Source<T> source, Predicate<T> fun) {
+	public static <T> Source<Source<T>> split(Source<T> source, Predicate<T> fun0) {
+		Predicate<T> fun1 = Rethrow.predicate(fun0);
 		return new Source<Source<T>>() {
 			private T t = source.source();
 			private boolean isAvail = t != null;
-			private Source<T> source_ = () -> (isAvail = isAvail && (t = source.source()) != null) && !fun.test(t) ? t : null;
+			private Source<T> source_ = () -> (isAvail = isAvail && (t = source.source()) != null) && !fun1.test(t) ? t : null;
 
 			public Source<T> source() {
 				return isAvail ? cons(t, source_) : null;
