@@ -54,7 +54,7 @@ public class Suite {
 			"rbt-get", //
 			"replace"));
 
-	private static BindUtil bindUtil = new BindUtil();
+	private static BindArrayUtil bindArrayUtil = new BindArrayUtil();
 	private static CompileUtil compileUtil = new CompileUtil();
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();
 	private static ImportUtil importUtil = new ImportUtil();
@@ -133,11 +133,11 @@ public class Suite {
 	// Bind utilities
 
 	public static Fun<Node, Node[]> matcher(String s) {
-		return bindUtil.matcher(s);
+		return bindArrayUtil.matcher(s);
 	}
 
 	public static Node substitute(String s, Node... nodes) {
-		return bindUtil.substitute(s, nodes);
+		return bindArrayUtil.substitute(s, nodes);
 	}
 
 	// --------------------------------

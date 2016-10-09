@@ -41,9 +41,6 @@ public class Nodify {
 	private Map<Type, Nodifier> nodifiers = new ConcurrentHashMap<>();
 	private Inspect inspect;
 
-	private Atom NULL = Atom.of("null");
-	private Atom TRUE = Atom.of("true");
-
 	private class FieldInfo {
 		private Field field;
 		private String name;
@@ -97,7 +94,7 @@ public class Nodify {
 			Class<?> clazz = (Class<?>) type;
 
 			if (clazz == boolean.class)
-				nodifier = new Nodifier(object -> Atom.of(object.toString()), node -> node == TRUE);
+				nodifier = new Nodifier(object -> Atom.of(object.toString()), node -> node == Atom.TRUE);
 			else if (clazz == int.class)
 				nodifier = new Nodifier(object -> Int.of((Integer) object), node -> ((Int) node).number);
 			else if (clazz == Chars.class)
@@ -138,7 +135,7 @@ public class Nodify {
 					Class<?> clazz1 = object.getClass();
 					Node n = apply0(getNodifier(clazz1), object);
 					return Tree.of(TermOp.COLON_, Atom.of(clazz1.getName()), n);
-				} , node -> {
+				}, node -> {
 					Tree tree = Tree.decompose(node, TermOp.COLON_);
 					if (tree != null) {
 						Class<?> clazz1;
@@ -167,7 +164,7 @@ public class Nodify {
 						}
 					}
 					return dict;
-				} , node -> {
+				}, node -> {
 					Map<Node, Reference> map = ((Dict) node).map;
 					try {
 						Object object1 = clazz.newInstance();
@@ -198,7 +195,7 @@ public class Nodify {
 					}
 					Tree.forceSetRight(tree, Atom.NIL);
 					return start.getRight();
-				} , node -> {
+				}, node -> {
 					List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)).map(n -> apply0(nodifier1, n)).toList();
 					Collection<Object> object1 = (Collection<Object>) create(clazz);
 					object1.addAll(list);
@@ -212,7 +209,7 @@ public class Nodify {
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
 						dict.map.put(apply0(kn, e.getKey()), Reference.of(apply0(vn, e.getValue())));
 					return dict;
-				} , node -> {
+				}, node -> {
 					Map<Node, Reference> map = ((Dict) node).map;
 					Map<Object, Object> object1 = (Map<Object, Object>) create(clazz);
 					for (Entry<Node, Reference> e : map.entrySet())
@@ -257,11 +254,11 @@ public class Nodify {
 	}
 
 	private Node apply0(Nodifier nodifier, Object object) {
-		return object != null ? nodifier.nodify.apply(object) : NULL;
+		return object != null ? nodifier.nodify.apply(object) : Atom.NULL;
 	}
 
 	private Object apply0(Nodifier nodifier, Node node) {
-		return node != NULL ? nodifier.unnodify.apply(node) : null;
+		return node != Atom.NULL ? nodifier.unnodify.apply(node) : null;
 	}
 
 }

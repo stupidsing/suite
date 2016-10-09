@@ -2,6 +2,7 @@ package suite.lp.doer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import suite.node.Atom;
 import suite.node.Node;
@@ -43,6 +44,10 @@ public class Generalizer {
 
 	public Reference getVariable(Node variable) {
 		return variables.computeIfAbsent(variable, any -> new Reference());
+	}
+
+	public Set<Node> getVariablesNames() {
+		return variables.keySet();
 	}
 
 }

@@ -18,7 +18,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.util.FunUtil.Fun;
 
-public class BindUtil {
+public class BindArrayUtil {
 
 	private Map<String, Fun<Node, Node[]>> matchers = new ConcurrentHashMap<>();
 

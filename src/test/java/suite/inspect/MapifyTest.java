@@ -12,10 +12,11 @@ import org.junit.Test;
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
 import suite.node.Node;
+import suite.node.util.Singleton;
 
 public class MapifyTest {
 
-	private Mapify mapify = new Mapify(new Inspect());
+	private Mapify mapify = Singleton.get().getMapify();
 
 	public interface I {
 	}

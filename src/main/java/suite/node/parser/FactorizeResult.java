@@ -11,6 +11,7 @@ import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Str;
+import suite.node.util.Singleton;
 import suite.node.util.TreeRewriter;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
@@ -20,8 +21,8 @@ import suite.util.Util;
 
 public class FactorizeResult {
 
-	private static Inspect inspect = new Inspect();
-	private static Nodify nodify = new Nodify(inspect);
+	private static Inspect inspect = Singleton.get().getInspect();
+	private static Nodify nodify = Singleton.get().getNodify();
 
 	public final Chars pre;
 	public final FNode node;

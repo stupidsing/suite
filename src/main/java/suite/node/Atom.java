@@ -10,6 +10,7 @@ public class Atom extends Node {
 	public final String name;
 
 	public static Atom NIL = of("");
+	public static Atom NULL = of("null");
 	public static Atom TRUE = of("true");
 	public static Atom FALSE = of("false");
 

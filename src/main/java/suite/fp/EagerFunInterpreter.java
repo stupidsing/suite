@@ -13,6 +13,23 @@ import suite.adt.Pair;
 import suite.fp.intrinsic.Intrinsics;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
+import suite.fp.match.Matcher;
+import suite.fp.match.Matchers.APPLY;
+import suite.fp.match.Matchers.ATOM;
+import suite.fp.match.Matchers.BOOLEAN;
+import suite.fp.match.Matchers.CHARS;
+import suite.fp.match.Matchers.CONS;
+import suite.fp.match.Matchers.DECONS;
+import suite.fp.match.Matchers.DEFVARS;
+import suite.fp.match.Matchers.FUN;
+import suite.fp.match.Matchers.IF;
+import suite.fp.match.Matchers.NUMBER;
+import suite.fp.match.Matchers.PRAGMA;
+import suite.fp.match.Matchers.TCO;
+import suite.fp.match.Matchers.TREE;
+import suite.fp.match.Matchers.UNWRAP;
+import suite.fp.match.Matchers.VAR;
+import suite.fp.match.Matchers.WRAP;
 import suite.immutable.IMap;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
@@ -74,34 +91,50 @@ public class EagerFunInterpreter {
 		private Fun<Frame, Node> eager0(Node node) {
 			Fun<Frame, Node> result;
 			Node m[];
+			APPLY APPLY;
+			ATOM ATOM;
+			BOOLEAN BOOLEAN;
+			CHARS CHARS;
+			CONS CONS;
+			DECONS DECONS;
+			DEFVARS DEFVARS;
+			FUN FUN;
+			IF IF;
+			NUMBER NUMBER;
+			PRAGMA PRAGMA;
+			TCO TCO;
+			TREE TREE;
+			UNWRAP UNWRAP;
+			VAR VAR;
+			WRAP WRAP;
 
-			if ((m = Suite.matcher("APPLY .0 .1").apply(node)) != null) {
-				Fun<Frame, Node> param_ = eager0(m[0]);
-				Fun<Frame, Node> fun_ = eager0(m[1]);
+			if ((APPLY = Matcher.apply.match(node)) != null) {
+				Fun<Frame, Node> param_ = eager0(APPLY.param);
+				Fun<Frame, Node> fun_ = eager0(APPLY.fun);
 				result = frame -> {
 					Node fun = fun_.apply(frame);
 					Node param = param_.apply(frame);
 					return fun(fun).apply(param);
 				};
-			} else if ((m = Suite.matcher("ATOM .0").apply(node)) != null)
-				result = immediate(m[0]);
-			else if ((m = Suite.matcher("BOOLEAN .0").apply(node)) != null)
-				result = immediate(m[0]);
-			else if ((m = Suite.matcher("CHARS .0").apply(node)) != null)
-				result = immediate(new Data<>(Chars.of(((Str) m[0]).value)));
-			else if ((m = Suite.matcher("CONS _ .0 .1").apply(node)) != null) {
-				Fun<Frame, Node> p0_ = eager0(m[0]);
-				Fun<Frame, Node> p1_ = eager0(m[1]);
+			} else if ((ATOM = Matcher.atom.match(node)) != null)
+				result = immediate(ATOM.value);
+			else if ((BOOLEAN = Matcher.boolean_.match(node)) != null)
+				result = immediate(BOOLEAN.value);
+			else if ((CHARS = Matcher.chars.match(node)) != null)
+				result = immediate(new Data<>(Chars.of(((Str) CHARS.value).value)));
+			else if ((CONS = Matcher.cons.match(node)) != null) {
+				Fun<Frame, Node> p0_ = eager0(CONS.head);
+				Fun<Frame, Node> p1_ = eager0(CONS.tail);
 				result = frame -> pair(p0_.apply(frame), p1_.apply(frame));
-			} else if ((m = Suite.matcher("DECONS .0 .1 .2 .3 .4 .5").apply(node)) != null) {
-				Fun<Frame, Node> value_ = eager0(m[1]);
-				Fun<Frame, Node> then_ = put(m[2]).put(m[3]).eager0(m[4]);
-				Fun<Frame, Node> else_ = eager0(m[5]);
+			} else if ((DECONS = Matcher.decons.match(node)) != null) {
+				Fun<Frame, Node> value_ = eager0(DECONS.value);
+				Fun<Frame, Node> then_ = put(DECONS.left).put(DECONS.right).eager0(DECONS.then);
+				Fun<Frame, Node> else_ = eager0(DECONS.else_);
 				Operator operator;
 
-				if (m[0] == Atom.of("L"))
+				if (DECONS.type == Atom.of("L"))
 					operator = TermOp.AND___;
-				else if (m[0] == Atom.of("P"))
+				else if (DECONS.type == Atom.of("P"))
 					operator = TermOp.OR____;
 				else
 					throw new RuntimeException("Unknown DECONS type");
@@ -123,8 +156,8 @@ public class EagerFunInterpreter {
 					frame.add(value_.apply(frame));
 					return expr.apply(frame);
 				};
-			} else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
-				Streamlet<Node[]> arrays = Tree.iter(m[0]).map(TreeUtil::tuple);
+			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
+				Streamlet<Node[]> arrays = Tree.iter(DEFVARS.list).map(TreeUtil::tuple);
 				List<Fun<Frame, Node>> values_ = new ArrayList<>();
 				IMap<Node, Fun<Frame, Node>> vm1 = vm;
 				int fs1 = fs;
@@ -142,43 +175,43 @@ public class EagerFunInterpreter {
 					values_.add(frame -> new Wrap_(() -> value_.apply(frame)));
 				}
 
-				Fun<Frame, Node> expr = e1.eager0(m[1]);
+				Fun<Frame, Node> expr = e1.eager0(DEFVARS.do_);
 
 				result = frame -> {
 					for (Fun<Frame, Node> value_ : values_)
 						frame.add(value_.apply(frame));
 					return expr.apply(frame);
 				};
-			} else if ((m = Suite.matcher("ERROR").apply(node)) != null)
+			} else if (Matcher.error.match(node) != null)
 				result = frame -> {
 					throw new RuntimeException("Error termination");
 				};
-			else if ((m = Suite.matcher("FUN .0 .1").apply(node)) != null) {
+			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Node>> vm1 = IMap.empty();
 				for (Pair<Node, Fun<Frame, Node>> pair : vm) {
 					Fun<Frame, Node> getter0 = pair.t1;
 					vm1 = vm1.put(pair.t0, frame -> getter0.apply(frame.parent));
 				}
-				Fun<Frame, Node> value_ = new Eager0(0, vm1).put(m[0]).eager0(m[1]);
+				Fun<Frame, Node> value_ = new Eager0(0, vm1).put(FUN.param).eager0(FUN.do_);
 				result = frame -> new Fun_(in -> {
 					Frame frame1 = new Frame(frame);
 					frame1.add(in);
 					return value_.apply(frame1);
 				});
-			} else if ((m = Suite.matcher("IF .0 .1 .2").apply(node)) != null) {
-				Fun<Frame, Node> if_ = eager0(m[0]);
-				Fun<Frame, Node> then_ = eager0(m[1]);
-				Fun<Frame, Node> else_ = eager0(m[2]);
+			} else if ((IF = Matcher.if_.match(node)) != null) {
+				Fun<Frame, Node> if_ = eager0(IF.if_);
+				Fun<Frame, Node> then_ = eager0(IF.then_);
+				Fun<Frame, Node> else_ = eager0(IF.else_);
 				result = frame -> (if_.apply(frame) == Atom.TRUE ? then_ : else_).apply(frame);
-			} else if ((m = Suite.matcher("NIL").apply(node)) != null)
+			} else if (Matcher.nil.match(node) != null)
 				result = immediate(Atom.NIL);
-			else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
-				result = immediate(m[0]);
-			else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
-				result = eager0(m[1]);
-			else if ((m = Suite.matcher("TCO .0 .1").apply(node)) != null) {
-				Fun<Frame, Node> iter_ = eager0(m[0]);
-				Fun<Frame, Node> in_ = eager0(m[1]);
+			else if ((NUMBER = Matcher.number.match(node)) != null)
+				result = immediate(NUMBER.value);
+			else if ((PRAGMA = Matcher.pragma.match(node)) != null)
+				result = eager0(PRAGMA.do_);
+			else if ((TCO = Matcher.tco.match(node)) != null) {
+				Fun<Frame, Node> iter_ = eager0(TCO.iter);
+				Fun<Frame, Node> in_ = eager0(TCO.in_);
 				result = frame -> {
 					Fun<Node, Node> iter = fun(iter_.apply(frame));
 					Node in = in_.apply(frame);
@@ -191,15 +224,15 @@ public class EagerFunInterpreter {
 					} while (p0.getLeft() != Atom.TRUE);
 					return p1.getRight();
 				};
-			} else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
-				result = eager0(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", m[0], m[1], m[2]));
-			else if ((m = Suite.matcher("UNWRAP .0").apply(node)) != null) {
-				Fun<Frame, Node> value_ = eager0(m[0]);
+			} else if ((TREE = Matcher.tree.match(node)) != null)
+				result = eager0(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
+			else if ((UNWRAP = Matcher.unwrap.match(node)) != null) {
+				Fun<Frame, Node> value_ = eager0(UNWRAP.do_);
 				result = frame -> unwrap(value_.apply(frame));
-			} else if ((m = Suite.matcher("VAR .0").apply(node)) != null)
-				result = vm.get(m[0]);
-			else if ((m = Suite.matcher("WRAP .0").apply(node)) != null) {
-				Fun<Frame, Node> value_ = eager0(m[0]);
+			} else if ((VAR = Matcher.var.match(node)) != null)
+				result = vm.get(VAR.name);
+			else if ((WRAP = Matcher.wrap.match(node)) != null) {
+				Fun<Frame, Node> value_ = eager0(WRAP.do_);
 				result = frame -> new Wrap_(() -> value_.apply(frame));
 			} else
 				throw new RuntimeException("Unrecognized construct " + node);

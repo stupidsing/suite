@@ -6,10 +6,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.lp.Configuration.ProverConfig;
+import suite.node.util.Singleton;
 
 public class InspectTest {
 
-	private Inspect inspect = new Inspect();
+	private Inspect inspect = Singleton.get().getInspect();
 	private ProverConfig pc0 = new ProverConfig();
 	private ProverConfig pc1 = new ProverConfig();
 

@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.inspect.Inspect;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Node;
@@ -23,6 +22,7 @@ import suite.node.parser.FactorizeResult.FNode;
 import suite.node.parser.FactorizeResult.FPair;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.node.parser.FactorizeResult.FTree;
+import suite.node.util.Singleton;
 import suite.node.util.TreeRewriter;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
@@ -33,7 +33,7 @@ import suite.util.To;
 
 public class RecursiveFactorizerTest {
 
-	private Nodify nodify = new Nodify(new Inspect());
+	private Nodify nodify = Singleton.get().getNodify();
 	private RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 
 	@Test

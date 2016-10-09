@@ -96,6 +96,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return Util.clazz(object) == Streamlet2.class ? Objects.equals(spawn(), ((Streamlet2<?, ?>) object).spawn()) : false;
 	}
 
+	public Streamlet2<K, V> evaluate() {
+		return Read.from2(toList());
+	}
+
 	public Streamlet2<K, V> filter(BiPredicate<K, V> fun) {
 		return streamlet2(() -> spawn().filter(fun));
 	}

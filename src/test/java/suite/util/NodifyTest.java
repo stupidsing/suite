@@ -9,13 +9,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.inspect.Inspect;
 import suite.lp.Configuration.ProverConfig;
 import suite.node.Node;
+import suite.node.util.Singleton;
 
 public class NodifyTest {
 
-	private Nodify nodify = new Nodify(new Inspect());
+	private Nodify nodify = Singleton.get().getNodify();
 
 	public interface I {
 	}

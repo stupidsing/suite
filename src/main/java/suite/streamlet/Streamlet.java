@@ -97,6 +97,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return Util.clazz(object) == Streamlet.class ? Objects.equals(spawn(), ((Streamlet<?>) object).spawn()) : false;
 	}
 
+	public Streamlet<T> evaluate() {
+		return Read.from(toList());
+	}
+
 	public Streamlet<T> filter(Predicate<T> fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
