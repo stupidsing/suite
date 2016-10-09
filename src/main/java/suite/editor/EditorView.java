@@ -60,24 +60,21 @@ public class EditorView {
 		JTextField searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
 		Listen.action(searchTextField).register(event -> controller.searchFiles(model.getSearchText()));
 		Listen.documentChanged(searchTextField).register(event -> model.setSearchText(searchTextField.getText()));
-		Listen.keyPressed(searchTextField).register(event -> {
-			if (event.getKeyCode() == KeyEvent.VK_DOWN)
-				controller.downToSearchList();
-		});
+		Listen.keyPressed(searchTextField) //
+				.filter(event -> event.getKeyCode() == KeyEvent.VK_DOWN) //
+				.register(event -> controller.downToSearchList());
 
 		DefaultListModel<String> listModel = this.listModel = new DefaultListModel<>();
 		listModel.addElement("<Empty>");
 
 		JList<String> searchList = this.searchList = applyDefaults(new JList<>(listModel));
 		searchList.setFont(sansFont);
-		Listen.keyPressed(searchList).register(event -> {
-			if (event.getKeyCode() == KeyEvent.VK_ENTER)
-				controller.selectList(searchList.getSelectedValue());
-		});
-		Listen.mouseClicked(searchList).register(event -> {
-			if (event.getClickCount() == 2)
-				controller.selectList(searchList.getSelectedValue());
-		});
+		Listen.keyPressed(searchList) //
+				.filter(event -> event.getKeyCode() == KeyEvent.VK_ENTER) //
+				.register(event -> controller.selectList(searchList.getSelectedValue()));
+		Listen.mouseClicked(searchList) //
+				.filter(event -> event.getClickCount() == 2) //
+				.register(event -> controller.selectList(searchList.getSelectedValue()));
 
 		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
 		rightLabel.setVisible(false);
