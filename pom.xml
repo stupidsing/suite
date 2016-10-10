@@ -4,21 +4,11 @@
   <groupId>suite</groupId>
   <artifactId>suite</artifactId>
   <version>1.0</version>
-  <repositories>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-  </repositories>
+  <repositories/>
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>LATEST</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.rubenlagus</groupId>
-      <artifactId>TelegramBots</artifactId>
       <version>LATEST</version>
     </dependency>
     <dependency>
@@ -49,6 +39,11 @@
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
+      <version>LATEST</version>
+    </dependency>
+    <dependency>
+      <groupId>org.telegram</groupId>
+      <artifactId>telegrambots</artifactId>
       <version>LATEST</version>
     </dependency>
   </dependencies>
