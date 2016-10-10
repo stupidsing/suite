@@ -43,7 +43,7 @@ public class DatabaseTest {
 			});
 
 			assertEquals("updated-sample", database.transact(tx -> tx.get(0)));
-			assertEquals(null, database.transact(tx -> tx.get(1)));
+			assertEquals((String) null, database.transact(tx -> tx.get(1)));
 			assertEquals("sample", database.transact(tx -> tx.get(2)));
 			assertEquals("sample", database.transact(tx -> tx.get(3)));
 		}
