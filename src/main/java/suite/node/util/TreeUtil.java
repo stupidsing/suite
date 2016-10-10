@@ -38,7 +38,7 @@ public class TreeUtil {
 
 	public static Node[] tuple(Node node) {
 		Tree tree = Tree.decompose(node, TermOp.TUPLE_);
-		return tree != null ? new Node[] { tree.getLeft(), tree.getRight() } : null;
+		return tree != null ? new Node[] { tree.getLeft(), tree.getRight(), } : null;
 	}
 
 	public static boolean isList(Node node, Operator operator) {

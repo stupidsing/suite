@@ -46,7 +46,6 @@ import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
 import suite.primitive.Chars;
-import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
@@ -148,40 +147,43 @@ public class EagerFunInterpreter {
 					} else
 						return else_.apply(frame);
 				};
-			} else if ((m = Suite.matcher("DEF-VARS (.0 .1,) .2").apply(node)) != null) {
-				Eager0 eager1 = put(m[0]);
-				Fun<Frame, Node> value_ = eager1.eager0(m[1]);
-				Fun<Frame, Node> expr = eager1.eager0(m[2]);
-				result = frame -> {
-					frame.add(value_.apply(frame));
-					return expr.apply(frame);
-				};
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
-				Streamlet<Node[]> arrays = Tree.iter(DEFVARS.list).map(TreeUtil::tuple);
-				List<Fun<Frame, Node>> values_ = new ArrayList<>();
-				IMap<Node, Fun<Frame, Node>> vm1 = vm;
-				int fs1 = fs;
-
-				for (Node array[] : arrays) {
-					Fun<Frame, Node> getter = getter(fs1);
-					vm1 = vm1.put(array[0], frame -> unwrap(getter.apply(frame)));
-					fs1++;
-				}
-
-				Eager0 e1 = new Eager0(fs1, vm1);
-
-				for (Node array[] : arrays) {
-					Fun<Frame, Node> value_ = e1.eager0(array[1]);
-					values_.add(frame -> new Wrap_(() -> value_.apply(frame)));
-				}
-
-				Fun<Frame, Node> expr = e1.eager0(DEFVARS.do_);
-
-				result = frame -> {
-					for (Fun<Frame, Node> value_ : values_)
+				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(TreeUtil::tuple).toList();
+				if (arrays.size() == 1) {
+					m = arrays.get(0);
+					Eager0 eager1 = put(m[0]);
+					Fun<Frame, Node> value_ = eager1.eager0(m[1]);
+					Fun<Frame, Node> expr = eager1.eager0(DEFVARS.do_);
+					result = frame -> {
 						frame.add(value_.apply(frame));
-					return expr.apply(frame);
-				};
+						return expr.apply(frame);
+					};
+				} else {
+					List<Fun<Frame, Node>> values_ = new ArrayList<>();
+					IMap<Node, Fun<Frame, Node>> vm1 = vm;
+					int fs1 = fs;
+
+					for (Node array[] : arrays) {
+						Fun<Frame, Node> getter = getter(fs1);
+						vm1 = vm1.put(array[0], frame -> unwrap(getter.apply(frame)));
+						fs1++;
+					}
+
+					Eager0 e1 = new Eager0(fs1, vm1);
+
+					for (Node array[] : arrays) {
+						Fun<Frame, Node> value_ = e1.eager0(array[1]);
+						values_.add(frame -> new Wrap_(() -> value_.apply(frame)));
+					}
+
+					Fun<Frame, Node> expr = e1.eager0(DEFVARS.do_);
+
+					result = frame -> {
+						for (Fun<Frame, Node> value_ : values_)
+							frame.add(value_.apply(frame));
+						return expr.apply(frame);
+					};
+				}
 			} else if (Matcher.error.match(node) != null)
 				result = frame -> {
 					throw new RuntimeException("Error termination");
