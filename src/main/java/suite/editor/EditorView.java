@@ -58,30 +58,18 @@ public class EditorView {
 
 	public JFrame run(EditorController controller, String title) {
 		JTextField searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
-		Listen.action(searchTextField).register(event -> controller.searchFiles(model.getSearchText()));
-		Listen.documentChanged(searchTextField).register(event -> model.setSearchText(searchTextField.getText()));
-		Listen.keyPressed(searchTextField) //
-				.filter(event -> event.getKeyCode() == KeyEvent.VK_DOWN) //
-				.register(event -> controller.downToSearchList());
 
 		DefaultListModel<String> listModel = this.listModel = new DefaultListModel<>();
 		listModel.addElement("<Empty>");
 
 		JList<String> searchList = this.searchList = applyDefaults(new JList<>(listModel));
 		searchList.setFont(sansFont);
-		Listen.keyPressed(searchList) //
-				.filter(event -> event.getKeyCode() == KeyEvent.VK_ENTER) //
-				.register(event -> controller.selectList(searchList.getSelectedValue()));
-		Listen.mouseClicked(searchList) //
-				.filter(event -> event.getClickCount() == 2) //
-				.register(event -> controller.selectList(searchList.getSelectedValue()));
 
 		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
 		rightLabel.setVisible(false);
 
 		JTextField filenameTextField = this.filenameTextField = applyDefaults(new JTextField("pad"));
 		filenameTextField.setVisible(false);
-		Listen.documentChanged(filenameTextField).register(event -> model.setFilename(filenameTextField.getText()));
 
 		JTextArea messageTextArea = this.messageTextArea = applyDefaults(new JTextArea("Bottom"));
 		messageTextArea.setEditable(false);
@@ -102,8 +90,6 @@ public class EditorView {
 		frame.setJMenuBar(createMenuBar(controller));
 		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
-		Listen.componentResized(frame).register(this::refresh);
-		Listen.windowClosing(frame).register(controller::close);
 
 		int u = 64, u3 = u * 3;
 
@@ -125,6 +111,15 @@ public class EditorView {
 												lay.ex(u3, lay.b()))), //
 								lay.ex(u, lay.c(messageScrollPane)))), //
 				lay.ex(u, lay.c(rightLabel)));
+
+		Listen.action(searchTextField).register(event -> controller.searchFiles(model.getSearchText()));
+		Listen.componentResized(frame).register(this::refresh);
+		Listen.documentChanged(filenameTextField).register(event -> model.setFilename(filenameTextField.getText()));
+		Listen.documentChanged(searchTextField).register(event -> model.setSearchText(searchTextField.getText()));
+		Listen.keyPressed(searchTextField, KeyEvent.VK_DOWN).register(event -> controller.downToSearchList());
+		Listen.keyPressed(searchList, KeyEvent.VK_ENTER).register(event -> controller.selectList(searchList.getSelectedValue()));
+		Listen.mouseDoubleClicked(searchList).register(event -> controller.selectList(searchList.getSelectedValue()));
+		Listen.windowClosing(frame).register(controller::close);
 
 		controller.newFile();
 		refresh();

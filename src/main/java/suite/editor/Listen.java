@@ -106,6 +106,10 @@ public class Listen {
 		return reactive;
 	}
 
+	public static Reactive<KeyEvent> keyPressed(Component component, int keyCode) {
+		return keyPressed(component).filter(event -> event.getKeyCode() == keyCode);
+	}
+
 	public static Reactive<MouseEvent> mouseClicked(Component component) {
 		Reactive<MouseEvent> reactive = new Reactive<>();
 		component.addMouseListener(new MouseAdapter() {
@@ -114,6 +118,10 @@ public class Listen {
 			}
 		});
 		return reactive;
+	}
+
+	public static Reactive<MouseEvent> mouseDoubleClicked(Component component) {
+		return mouseClicked(component).filter(event -> event.getClickCount() == 2);
 	}
 
 	public static Reactive<WindowEvent> windowClosing(Window window) {
