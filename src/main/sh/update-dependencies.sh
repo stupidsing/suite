@@ -4,7 +4,7 @@ cut -d' ' -f2 |
 tr -d \; |
 sort |
 uniq |
-sed 's#org.telegram.telegrambots.bots.*#<id>jitpack.io</id><url>https://jitpack.io</url>#g' |
+#sed 's#org.telegram.telegrambots.bots.*#<id>jitpack.io</id><url>https://jitpack.io</url>#g' |
 sort |
 uniq |
 grep '<url>' |
@@ -29,7 +29,7 @@ sed 's#org.apache.commons.logging.*#<groupId>commons-logging</groupId><artifactI
 sed 's#org.apache.log4j.*#<groupId>log4j</groupId><artifactId>log4j</artifactId>#g' |
 sed 's#org.junit.*#<groupId>junit</groupId><artifactId>junit</artifactId>#g' |
 sed 's#org.slf4j.*#<groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId>#g' |
-sed 's#org.telegram.telegrambots.bots.*#<groupId>com.github.rubenlagus</groupId><artifactId>TelegramBots</artifactId>#g' |
+sed 's#org.telegram.telegrambots.bots.*#<groupId>org.telegram</groupId><artifactId>telegrambots</artifactId>#g' |
 sort |
 uniq |
 grep '<artifactId>' |
