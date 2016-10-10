@@ -37,12 +37,6 @@ public class EditorController {
 	public void _init(EditorModel model, EditorView view, EditorController controller) {
 		this.model = model;
 		this.view = view;
-
-		model.getFilenameChanged().register(filename -> {
-			view.getFilenameTextField().setText(filename);
-			view.repaint();
-		});
-		model.getModifiedChanged().register(view::repaint);
 	}
 
 	public void bottom() {

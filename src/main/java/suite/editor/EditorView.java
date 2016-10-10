@@ -121,6 +121,12 @@ public class EditorView {
 		Listen.mouseDoubleClicked(searchList).register(event -> controller.selectList(searchList.getSelectedValue()));
 		Listen.windowClosing(frame).register(controller::close);
 
+		model.getFilenameChanged().register(filename -> {
+			filenameTextField.setText(filename);
+			repaint();
+		});
+		model.getModifiedChanged().register(this::repaint);
+
 		controller.newFile();
 		refresh();
 		editor.requestFocusInWindow();
@@ -338,10 +344,6 @@ public class EditorView {
 
 	public JList<String> getSearchList() {
 		return searchList;
-	}
-
-	public JTextField getFilenameTextField() {
-		return filenameTextField;
 	}
 
 }
