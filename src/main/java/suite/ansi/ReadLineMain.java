@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.sun.jna.Native;
+
 import suite.adt.Pair;
 import suite.adt.Trie;
 import suite.streamlet.Reactive;
@@ -17,6 +19,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar suite.ansi.ReadLineMain
 public class ReadLineMain extends ExecutableProgram {
 
+	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);
 	private Trie<Integer, VK> trie;
 
 	private enum VK {
@@ -42,9 +45,9 @@ public class ReadLineMain extends ExecutableProgram {
 		for (Pair<List<Integer>, VK> pair : pairs)
 			trie.add(pair.t0, pair.t1);
 
-		try (Termios termios = new Termios()) {
+		try (Termios termios = new Termios(libc)) {
 			Source<Character> source0 = () -> {
-				int ch = Libc.getchar();
+				int ch = libc.getchar();
 				return 0 <= ch ? (char) ch : null;
 			};
 

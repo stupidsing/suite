@@ -2,14 +2,22 @@ package suite.ansi;
 
 import java.io.IOException;
 
+import com.sun.jna.Native;
+
 import suite.ansi.Termios.AnsiColor;
 import suite.util.Util;
 
 // mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar suite.ansi.TermiosMain
 public class TermiosMain {
 
+	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);
+
 	public static void main(String args[]) throws IOException {
-		try (Termios termios = new Termios()) {
+		new TermiosMain().run();
+	}
+
+	private void run() {
+		try (Termios termios = new Termios(libc)) {
 			termios.clear();
 			termios.cursor(false);
 
@@ -40,7 +48,7 @@ public class TermiosMain {
 			termios.reportMouse();
 
 			int ch;
-			while ((ch = Libc.getchar()) != -1 && ch != 'q')
+			while ((ch = libc.getchar()) != -1 && ch != 'q')
 				System.out.println(ch);
 		}
 	}

@@ -5,7 +5,7 @@ import org.bridj.Pointer;
 import org.bridj.ann.Library;
 
 @Library("c")
-public class Libc {
+public class LibcBridj {
 
 	static {
 		BridJ.register();

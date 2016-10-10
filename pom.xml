@@ -46,6 +46,11 @@
       <artifactId>log4j</artifactId>
       <version>LATEST</version>
     </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>LATEST</version>
+    </dependency>
   </dependencies>
   <build>
     <resources>
