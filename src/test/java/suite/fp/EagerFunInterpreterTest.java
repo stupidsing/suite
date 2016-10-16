@@ -22,9 +22,19 @@ public class EagerFunInterpreterTest {
 	}
 
 	@Test
+	public void testGroup() {
+		expect("using source STANDARD >> group {1, 2; 2, 3; 1, 3;}", Suite.parse("1, (2; 3;); 2, (3;);"));
+	}
+
+	@Test
 	public void testLets() {
 		expect("lets (a := b + 2 # b := 1 #) >> a", Int.of(3));
 		expect("lets (b := 1 # a := b + 2 #) >> a", Int.of(3));
+	}
+
+	@Test
+	public void testNestedFunction() {
+		expect("define inc := (define inc_ := (x => x + 1) >> inc_) >> inc {3}", Suite.parse("4"));
 	}
 
 	@Test
