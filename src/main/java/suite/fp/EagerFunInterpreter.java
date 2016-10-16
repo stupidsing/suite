@@ -89,7 +89,6 @@ public class EagerFunInterpreter {
 
 		private Fun<Frame, Node> eager0(Node node) {
 			Fun<Frame, Node> result;
-			Node m[];
 			APPLY APPLY;
 			ATOM ATOM;
 			BOOLEAN BOOLEAN;
@@ -150,9 +149,9 @@ public class EagerFunInterpreter {
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
 				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(TreeUtil::tuple).toList();
 				if (arrays.size() == 1) {
-					m = arrays.get(0);
-					Eager0 eager1 = put(m[0]);
-					Fun<Frame, Node> value_ = eager1.eager0(m[1]);
+					Node array[] = arrays.get(0);
+					Eager0 eager1 = put(array[0]);
+					Fun<Frame, Node> value_ = eager1.eager0(array[1]);
 					Fun<Frame, Node> expr = eager1.eager0(DEFVARS.do_);
 					result = frame -> {
 						frame.add(value_.apply(frame));
@@ -169,14 +168,14 @@ public class EagerFunInterpreter {
 						fs1++;
 					}
 
-					Eager0 e1 = new Eager0(fs1, vm1);
+					Eager0 eager1 = new Eager0(fs1, vm1);
 
 					for (Node array[] : arrays) {
-						Fun<Frame, Node> value_ = e1.eager0(array[1]);
+						Fun<Frame, Node> value_ = eager1.eager0(array[1]);
 						values_.add(frame -> new Wrap_(() -> value_.apply(frame)));
 					}
 
-					Fun<Frame, Node> expr = e1.eager0(DEFVARS.do_);
+					Fun<Frame, Node> expr = eager1.eager0(DEFVARS.do_);
 
 					result = frame -> {
 						for (Fun<Frame, Node> value_ : values_)
