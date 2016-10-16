@@ -150,8 +150,9 @@ public class EagerFunInterpreter {
 				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(TreeUtil::tuple).toList();
 				if (arrays.size() == 1) {
 					Node array[] = arrays.get(0);
-					Eager0 eager1 = put(array[0]);
-					Fun<Frame, Node> value_ = eager1.eager0(array[1]);
+					IMap<Node, Fun<Frame, Node>> vm1 = vm.put(array[0], unwrap(getter(fs)));
+					Eager0 eager1 = new Eager0(fs + 1, vm1);
+					Fun<Frame, Node> value_ = wrap(eager1.eager0(array[1]));
 					Fun<Frame, Node> expr = eager1.eager0(DEFVARS.do_);
 					result = frame -> {
 						frame.add(value_.apply(frame));
@@ -164,16 +165,14 @@ public class EagerFunInterpreter {
 
 					for (Node array[] : arrays) {
 						Fun<Frame, Node> getter = getter(fs1);
-						vm1 = vm1.put(array[0], frame -> unwrap(getter.apply(frame)));
+						vm1 = vm1.put(array[0], unwrap(getter));
 						fs1++;
 					}
 
 					Eager0 eager1 = new Eager0(fs1, vm1);
 
-					for (Node array[] : arrays) {
-						Fun<Frame, Node> value_ = eager1.eager0(array[1]);
-						values_.add(frame -> new Wrap_(() -> value_.apply(frame)));
-					}
+					for (Node array[] : arrays)
+						values_.add(wrap(eager1.eager0(array[1])));
 
 					Fun<Frame, Node> expr = eager1.eager0(DEFVARS.do_);
 
@@ -227,15 +226,13 @@ public class EagerFunInterpreter {
 				};
 			} else if ((TREE = Matcher.tree.match(node)) != null)
 				result = eager0(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
-			else if ((UNWRAP = Matcher.unwrap.match(node)) != null) {
-				Fun<Frame, Node> value_ = eager0(UNWRAP.do_);
-				result = frame -> unwrap(value_.apply(frame));
-			} else if ((VAR = Matcher.var.match(node)) != null)
+			else if ((UNWRAP = Matcher.unwrap.match(node)) != null)
+				result = unwrap(eager0(UNWRAP.do_));
+			else if ((VAR = Matcher.var.match(node)) != null)
 				result = vm.get(VAR.name);
-			else if ((WRAP = Matcher.wrap.match(node)) != null) {
-				Fun<Frame, Node> value_ = eager0(WRAP.do_);
-				result = frame -> new Wrap_(() -> value_.apply(frame));
-			} else
+			else if ((WRAP = Matcher.wrap.match(node)) != null)
+				result = wrap(eager0(WRAP.do_));
+			else
 				throw new RuntimeException("Unrecognized construct " + node);
 
 			return result;
@@ -321,8 +318,12 @@ public class EagerFunInterpreter {
 		return ((Fun_) n).fun;
 	}
 
-	private Node unwrap(Node n) {
-		return ((Wrap_) n).source.source();
+	private Fun<Frame, Node> wrap(Fun<Frame, Node> value_) {
+		return frame -> new Wrap_(() -> value_.apply(frame));
+	}
+
+	private Fun<Frame, Node> unwrap(Fun<Frame, Node> getter) {
+		return frame -> ((Wrap_) getter.apply(frame)).source.source();
 	}
 
 	private Fun<Frame, Node> immediate(Node n) {
