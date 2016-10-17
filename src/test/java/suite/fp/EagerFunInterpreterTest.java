@@ -13,7 +13,7 @@ public class EagerFunInterpreterTest {
 
 	@Test
 	public void testDecons() {
-		expect("let l := (1; 3;) >> if (l = `$a; $b;`) then b else error", Int.of(3));
+		expect("let l := (1; 3;) >> if (l = `$a; $b;`) then b else error ()", Int.of(3));
 	}
 
 	@Test
