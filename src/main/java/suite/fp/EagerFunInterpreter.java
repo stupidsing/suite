@@ -21,6 +21,7 @@ import suite.fp.match.Matchers.CHARS;
 import suite.fp.match.Matchers.CONS;
 import suite.fp.match.Matchers.DECONS;
 import suite.fp.match.Matchers.DEFVARS;
+import suite.fp.match.Matchers.ERROR;
 import suite.fp.match.Matchers.FUN;
 import suite.fp.match.Matchers.IF;
 import suite.fp.match.Matchers.NUMBER;
@@ -41,6 +42,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
@@ -96,6 +98,7 @@ public class EagerFunInterpreter {
 			CONS CONS;
 			DECONS DECONS;
 			DEFVARS DEFVARS;
+			ERROR ERROR;
 			FUN FUN;
 			IF IF;
 			NUMBER NUMBER;
@@ -182,9 +185,9 @@ public class EagerFunInterpreter {
 						return expr.apply(frame);
 					};
 				}
-			} else if (Matcher.error.match(node) != null)
+			} else if ((ERROR = Matcher.error.match(node)) != null)
 				result = frame -> {
-					throw new RuntimeException("Error termination");
+					throw new RuntimeException("Error termination " + Formatter.display(ERROR.m));
 				};
 			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Node>> vm1 = IMap.empty();

@@ -9,7 +9,7 @@ fc-reduce-tail-recursion (DEF-VARS (.fun .do0,) .value0) (DEF-VARS (.fun .dox,) 
 	, temp .in
 	, fc-vars-expression .vars .expr0
 	, fc-bind-expression .vars .expr1
-	, fc-bind (VAR .in) .expr1 .iter ERROR .do1
+	, fc-bind (VAR .in) .expr1 .iter (ERROR ()) .do1
 	, fc-reduce-tail-recursion .do1 .do2
 	, fc-vars-fun .vars (TCO (FUN .in .do2) .expr0) .dox
 	, fc-reduce-tail-recursion .value0 .valuex

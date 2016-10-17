@@ -53,7 +53,7 @@ fc-infer-type-rule (DEF-VARS .vvs .do) .ue/.ve/.te .tr0/.trx .type
 	, fc-infer-var-types .vvts .env1 .tr0/.tr1
 	, fc-infer-type-rule .do .env1 .tr1/.trx .type
 #
-fc-infer-type-rule ERROR _ .tr/.tr _
+fc-infer-type-rule (ERROR _) _ .tr/.tr _
 #
 fc-infer-type-rule (FUN .var .do) .ue/.ve/.te .tr (FUN-OF .varType .type)
 	:- fc-dict-add .var/.varType .ue/.ue1

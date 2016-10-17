@@ -23,7 +23,7 @@ fc-rewrite (DEF-VARS (.var .value0, .list0) .do0) (DEF-VARS (.var .value1, .list
 fc-rewrite (DEF-VARS () .do0) (DEF-VARS () .do1) .ts0/.tsx
 	:- .ts0 = (.do0 .do1, .tsx)
 #
-fc-rewrite ERROR ERROR .ts/.ts
+fc-rewrite (ERROR .m) (ERROR .m) .ts/.ts
 #
 fc-rewrite (FUN .var .do0) (FUN .var .do1) .ts0/.tsx
 	:- .ts0 = (.do0 .do1, .tsx)

@@ -18,6 +18,7 @@ import suite.fp.match.Matchers.CHARS;
 import suite.fp.match.Matchers.CONS;
 import suite.fp.match.Matchers.DECONS;
 import suite.fp.match.Matchers.DEFVARS;
+import suite.fp.match.Matchers.ERROR;
 import suite.fp.match.Matchers.FUN;
 import suite.fp.match.Matchers.IF;
 import suite.fp.match.Matchers.NUMBER;
@@ -36,6 +37,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.Mutable;
@@ -137,6 +139,7 @@ public class LazyFunInterpreter {
 			CONS CONS;
 			DECONS DECONS;
 			DEFVARS DEFVARS;
+			ERROR ERROR;
 			FUN FUN;
 			IF IF;
 			NUMBER NUMBER;
@@ -215,9 +218,9 @@ public class LazyFunInterpreter {
 						values.add(value_.apply(frame)::get);
 					return expr.apply(frame);
 				};
-			} else if (Matcher.error.match(node) != null)
+			} else if ((ERROR = Matcher.error.match(node)) != null)
 				result = frame -> () -> {
-					throw new RuntimeException("Error termination");
+					throw new RuntimeException("Error termination " + Formatter.display(ERROR.m));
 				};
 			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Thunk_>> vm1 = IMap.empty();

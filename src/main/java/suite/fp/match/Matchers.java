@@ -40,7 +40,8 @@ public class Matchers {
 	}
 
 	public static class ERROR {
-		public static String matcher = "ERROR";
+		public static String matcher = "ERROR .m";
+		public Node m;
 	}
 
 	public static class FUN {

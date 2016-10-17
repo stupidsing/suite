@@ -39,7 +39,7 @@ fc-parse (define .var := .value >> .do) (
 	)
 	, fc-parse .do .do1
 #
-fc-parse error ERROR
+fc-parse (error .m) (ERROR .m)
 #
 fc-parse (if .if then .then .otherwise) (IF .if1 .then1 .else1)
 	:- !
@@ -179,7 +179,7 @@ fc-parse-sugar (if (.p = `.q`) .thenElse) (if-bind (.p := .q) .thenElse) :- !
 #
 fc-parse-sugar (if (`.p` = .q) .thenElse) (if-bind (.q := .p) .thenElse) :- !
 #
-fc-parse-sugar (let `.binds` := .value >> .do) (if-bind (.value := .binds) then .do else error) :- !
+fc-parse-sugar (let `.binds` := .value >> .do) (if-bind (.value := .binds) then .do else error (`.binds` := .value)) :- !
 #
 fc-parse-sugar (let .var := .value >> .do) (lets (.var := .value #) >> .do) :- !
 #
@@ -205,7 +205,7 @@ fc-parse-sugar (.monad # .monads0) (perform {seqm {.monad} {.monads1}})
 fc-parse-sugar (.var as .type => .do) (.var1 => (define .var :=  .type of .var1 >> .do))
 	:- !, temp .var1
 #
-fc-parse-sugar (`.bind` => .do) (.var => (if-bind (.var := .bind) then .do else error))
+fc-parse-sugar (`.bind` => .do) (.var => (if-bind (.var := .bind) then .do else error (`.bind`)))
 	:- !, temp .var
 #
 fc-parse-sugar .a (.a atom:()) :- fc-is-atom .a, !

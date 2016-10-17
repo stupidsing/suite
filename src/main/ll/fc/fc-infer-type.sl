@@ -49,7 +49,7 @@ fc-infer-type0 .ve/.te (DEF-VARS .vvs .do) .type
 	, fc-infer-var-types .env1 .vvts
 	, fc-infer-type0 .env1 .do .type
 #
-fc-infer-type0 _ ERROR _
+fc-infer-type0 _ (ERROR _) _
 #
 fc-infer-type0 .ve/.te (FUN .var .do) (FUN-OF .varType .type)
 	:- fc-dict-add .var/(MONO .varType) .ve/.ve1
