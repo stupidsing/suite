@@ -126,20 +126,13 @@ public class EagerFunInterpreter {
 			else if ((CONS = Matcher.cons.match(node)) != null) {
 				Fun<Frame, Node> p0_ = eager0(CONS.head);
 				Fun<Frame, Node> p1_ = eager0(CONS.tail);
-				result = frame -> pair(p0_.apply(frame), p1_.apply(frame));
+				Operator operator = oper(CONS.type);
+				result = frame -> Tree.of(operator, p0_.apply(frame), p1_.apply(frame));
 			} else if ((DECONS = Matcher.decons.match(node)) != null) {
 				Fun<Frame, Node> value_ = eager0(DECONS.value);
 				Fun<Frame, Node> then_ = put(DECONS.left).put(DECONS.right).eager0(DECONS.then);
 				Fun<Frame, Node> else_ = eager0(DECONS.else_);
-				Operator operator;
-
-				if (DECONS.type == Atom.of("L"))
-					operator = TermOp.OR____;
-				else if (DECONS.type == Atom.of("P"))
-					operator = TermOp.AND___;
-				else
-					throw new RuntimeException("Unknown DECONS type");
-
+				Operator operator = oper(DECONS.type);
 				result = frame -> {
 					Tree tree = Tree.decompose(value_.apply(frame), operator);
 					if (tree != null) {
@@ -371,8 +364,15 @@ public class EagerFunInterpreter {
 			return fun.apply(ps);
 	}
 
-	private static Node pair(Node left, Node right) {
-		return Tree.of(TermOp.AND___, left, right);
+	private Operator oper(Node type) {
+		Operator operator;
+		if (type == Atom.of("L"))
+			operator = TermOp.OR____;
+		else if (type == Atom.of("P"))
+			operator = TermOp.AND___;
+		else
+			throw new RuntimeException("Unknown CONS type");
+		return operator;
 	}
 
 	private Atom b(boolean b) {

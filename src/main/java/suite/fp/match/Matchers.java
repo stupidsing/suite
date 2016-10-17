@@ -25,8 +25,8 @@ public class Matchers {
 	}
 
 	public static class CONS {
-		public static String matcher = "CONS _ .head .tail";
-		public Node head, tail;
+		public static String matcher = "CONS .type .head .tail";
+		public Node type, head, tail;
 	}
 
 	public static class DECONS {
