@@ -134,9 +134,9 @@ public class EagerFunInterpreter {
 				Operator operator;
 
 				if (DECONS.type == Atom.of("L"))
-					operator = TermOp.AND___;
-				else if (DECONS.type == Atom.of("P"))
 					operator = TermOp.OR____;
+				else if (DECONS.type == Atom.of("P"))
+					operator = TermOp.AND___;
 				else
 					throw new RuntimeException("Unknown DECONS type");
 
