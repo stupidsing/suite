@@ -23,8 +23,8 @@ public class StackAssembler {
 	private Node rsOp1 = Atom.of("$1");
 	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI") };
 
-	private Node FRBGN_ = Atom.of("FR-BEGIN");
-	private Node FREND_ = Atom.of("FR-END");
+	private Fun<Node, Node[]> FRBGN_ = Suite.matcher("FR-BEGIN ()");
+	private Fun<Node, Node[]> FREND_ = Suite.matcher("FR-END ()");
 	private Fun<Node, Node[]> FRGET_ = Suite.matcher("FR-GET .0");
 	private Fun<Node, Node[]> FRPOP_ = Suite.matcher("FR-POP .0");
 	private Fun<Node, Node[]> FRPOPN = Suite.matcher("FR-POPN .0");
@@ -53,12 +53,12 @@ public class StackAssembler {
 			Node node1;
 			Node m[];
 
-			if (node0 == FRBGN_) {
+			if ((m = FRBGN_.apply(node0)) != null) {
 				deque.push(new int[] { fs, rs, });
 				fs = 0;
 				rs = 0;
 				node1 = Atom.NIL;
-			} else if (node0 == FREND_) {
+			} else if ((m = FREND_.apply(node0)) != null) {
 				if (fs != 0)
 					throw new RuntimeException("Unbalanced frame stack in subroutine definition");
 				else if (rs != 0)

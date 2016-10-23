@@ -85,7 +85,7 @@ ic-compile-register0 (LET .var .value) .e0/.ex
 #
 ic-compile-register0 (METHOD0 _ .do) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
-		, .funLabel FR-BEGIN
+		, .funLabel FR-BEGIN ()
 		, _ PUSH (EBP)
 		, _ MOV (EBP, ESP)
 		, .e1)
@@ -93,7 +93,7 @@ ic-compile-register0 (METHOD0 _ .do) .e0/.ex
 	, .e2 = (_ POP (EBP)
 		, _ RET ()
 		, _ R-
-		, _ FR-END
+		, _ FR-END ()
 		, .label R+
 		, _ MOV ($0, .funLabel)
 		, .ex)
@@ -133,11 +133,11 @@ ic-compile-register0 (SEQ .do0 .do1) .e0/.ex
 ic-compile-register0 (SNIPPET .snippet) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .snippetLabel ()
-		, _ FR-BEGIN
+		, _ FR-BEGIN ()
 		, .e1)
 	, ic-compile-register .snippet .e1/.e2
 	, .e2 = (_ R-
-		, _ FR-END
+		, _ FR-END ()
 		, .label R+
 		, _ MOV ($0, .snippetLabel)
 		, .ex)

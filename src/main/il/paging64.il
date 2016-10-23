@@ -172,9 +172,9 @@ declare pg-setup = function [] (
 	asm _ OR (EAX, 32);
 	asm _ MOV (CR4, EAX);
 	asm _ MOV (ECX, +xC0000080); -- Set long mode bit in EFER MSR
-	asm _ RDMSR;
+	asm _ RDMSR ();
 	asm _ OR (EAX, 256);
-	asm _ WRMSR;
+	asm _ WRMSR ();
 	asm _ MOV (EAX, CR0); -- Enable paging
 	asm _ OR (EAX, +x80000000);
 	asm _ MOV (CR0, EAX);
