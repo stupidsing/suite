@@ -63,7 +63,7 @@ public class CommandOptions {
 			isQuiet = on;
 		else if (Util.stringEquals(arg, "--trace"))
 			isTrace = on;
-		else if (Util.stringEquals(arg, "--using") && (arg1 = source.source()) != null)
+		else if (Util.stringEquals(arg, "--use") && (arg1 = source.source()) != null)
 			libraries = Util.add(libraries, Arrays.asList(arg1.split(",")));
 		else
 			throw new RuntimeException("Unknown option " + arg);

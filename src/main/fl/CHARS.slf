@@ -1,4 +1,4 @@
-using external STANDARD >>
+use external STANDARD >>
 define cs-append := (n^Chars -> n^Chars -> n^Chars) of
 	atom:INTRN!CharsIntrinsics.append | get%i | call%i-v2
 >>

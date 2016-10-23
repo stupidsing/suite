@@ -102,13 +102,13 @@ fc-compile (UNWRAP .callee) .env .c0/.cx/.reg
 		, ASSIGN-THUNK-RESULT .reg .thunkReg
 		, .cx)
 #
-fc-compile (USING .mode BUILTIN .lib .do) .fve .cr
+fc-compile (USE .mode BUILTIN .lib .do) .fve .cr
 	:- fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)
 	, once (.mode = EAGER, .pred = .eagerPred; .pred = .lazyPred)
-	, clone .pred (fc-compile-using-lib .mode .lib .do .fve .cr :- .tail)
+	, clone .pred (fc-compile-use-lib .mode .lib .do .fve .cr :- .tail)
 	, once .tail
 #
-fc-compile (USING _ EXTERNAL _ .do) .env .cr
+fc-compile (USE _ EXTERNAL _ .do) .env .cr
 	:- !, fc-compile .do .env .cr
 #
 fc-compile (VAR .var) .frame/.ve .c0/.cx/.reg1

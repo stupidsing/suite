@@ -12,9 +12,9 @@ public class UsingTest {
 
 	@Test
 	public void test() {
-		assertEquals(Int.of(3), eval("using MATH >> gcd {6} {9}"));
-		assertEquals(Int.of(3), eval("define gcd1 := (using MATH >> gcd) >> gcd1 {6} {9}"));
-		assertEquals(Int.of(3), eval("define gcd6 := (using MATH >> gcd {6}) >> gcd6 {9}"));
+		assertEquals(Int.of(3), eval("use MATH >> gcd {6} {9}"));
+		assertEquals(Int.of(3), eval("define gcd1 := (use MATH >> gcd) >> gcd1 {6} {9}"));
+		assertEquals(Int.of(3), eval("define gcd6 := (use MATH >> gcd {6}) >> gcd6 {9}"));
 	}
 
 	private static Node eval(String f) {

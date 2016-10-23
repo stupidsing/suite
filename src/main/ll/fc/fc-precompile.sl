@@ -26,7 +26,7 @@ fc-precompile .lib .do0/($$PRECOMPILE .pc) .preds
 	, !, write "Inferencing types", nl
 	, !, fc-infer-type .do1 NUMBER
 	, !, .pred0 = (
-		fc-infer-type0-using-lib .lib .ve/.te .do .type
+		fc-infer-type0-use-lib .lib .ve/.te .do .type
 			:- fc-dict-union-replace .ve .ves .ve1
 			, append .te .tes .te1
 			, fc-infer-type0 .ve1/.te1 .do .type
@@ -50,18 +50,18 @@ fc-precompile-compile .mode .lib .fcs .parsed .pred
 	, fc-precompile-compile-node .parsed .frame0/() .c0/.cx/.reg
 	, .fcs = .frame1/.ves .cs0/.csx/.regs
 	, .pred = (
-		fc-compile-using-lib .mode .lib .do .frame0/.ve .c0/.cx/.reg
+		fc-compile-use-lib .mode .lib .do .frame0/.ve .c0/.cx/.reg
 			:- fc-dict-union-bind .ve .ves .ve1 -- Import and export symbols
 			, fc-compile .do .frame1/.ve1 .cs0/.csx/.regs
 	)
 #
 
-fc-precompile-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.reg
+fc-precompile-compile-node (USE .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.reg
 	:- !, write 'Loading pre-compiled library' .lib, nl
 	, fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)
 	, once (.mode = EAGER, .pred = .eagerPred; .pred = .lazyPred)
 	, clone .pred (
-		fc-compile-using-lib .mode .lib ($$PRECOMPILE _ .frame/.ve1 _) _/() _ :- .tail
+		fc-compile-use-lib .mode .lib ($$PRECOMPILE _ .frame/.ve1 _) _/() _ :- .tail
 	)
 	, once .tail
 	, fc-dict-union-bind .ve .ve1 .ve2

@@ -122,7 +122,7 @@ public class EvaluateUtil {
 		for (int i = libraries.size() - 1; 0 <= i; i--) {
 			String library = libraries.get(i);
 			if (!Util.isBlank(library))
-				node = Suite.substitute("using .0 >> .1", Atom.of(library), node);
+				node = Suite.substitute("use .0 >> .1", Atom.of(library), node);
 		}
 
 		return node;

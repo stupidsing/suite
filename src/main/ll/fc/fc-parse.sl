@@ -77,14 +77,14 @@ fc-parse (tco .iter .in) (TCO .iter1 .in1)
 	, fc-parse .iter .iter1
 	, fc-parse .in .in1
 #
-fc-parse (using source .lib >> .do) .dox
+fc-parse (use source .lib >> .do) .dox
 	:- !, fc-load-library .lib .do .do1
 	, fc-parse .do1 .dox
 #
-fc-parse (using external .lib >> .do) (USING EAGER EXTERNAL .lib .do1)
+fc-parse (use external .lib >> .do) (USE EAGER EXTERNAL .lib .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (using .lib >> .do) (USING EAGER BUILTIN .lib .do1)
+fc-parse (use .lib >> .do) (USE EAGER BUILTIN .lib .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (.p0; .p1) (CONS L .parsed0 .parsed1)

@@ -79,7 +79,7 @@ public class FunTypeTest {
 				, "(f => f {0}) | 1" //
 				, "define fib := i2 => dummy => 1; fib {i2} >> ()" //
 				, "define f := v => (v;) = v >> f" // Cyclic type
-				, "using STANDARD >> define f := erase-type xyz >> f" //
+				, "use STANDARD >> define f := erase-type xyz >> f" //
 		};
 
 		// There is a problem in deriving type of 1:(fib {i2})...
@@ -115,7 +115,7 @@ public class FunTypeTest {
 	public void testGeneric() {
 		String fp0 = "" //
 				+ "data (Rb-tree :t) over :t as Empty >> \n" //
-				+ "define map := (:a => :b => (:a -> :b) -> [:a] -> [:b]) of error >> \n" //
+				+ "define map := (:a => :b => (:a -> :b) -> [:a] -> [:b]) of error () >> \n" //
 				+ "define add := (:t => :t -> Rb-tree :t) of (v => Empty) >> \n" //
 				+ "1; | map {add} \n";
 		assertType("[Rb-tree number]", fp0);
@@ -157,19 +157,19 @@ public class FunTypeTest {
 
 	@Test
 	public void testRbTree() {
-		String fps = "using RB-TREE >> 0 until 10 | map {dict-insert/ {1}} | apply | {Empty}";
+		String fps = "use RB-TREE >> 0 until 10 | map {dict-insert/ {1}} | apply | {Empty}";
 		assertType("Rb-tree (number, number)", fps);
 	}
 
 	@Test
 	public void testStandard() {
-		checkType("using STANDARD >> ends-with" //
+		checkType("use STANDARD >> ends-with" //
 				, "[T] -> _" //
 				, "[T] -> [T] -> boolean");
-		checkType("using STANDARD >> join" //
+		checkType("use STANDARD >> join" //
 				, "T -> _" //
 				, "T -> [[T]] -> [T]");
-		checkType("using STANDARD >> merge" //
+		checkType("use STANDARD >> merge" //
 				, "([T] -> _) -> _" //
 				, "([T] -> [T] -> [T]) -> [T] -> [T]");
 	}

@@ -1,5 +1,5 @@
-using external STANDARD >>
-using external CHARS >>
+use external STANDARD >>
+use external CHARS >>
 -------------------------------------------------------------------------------
 define lower := ch =>
 	if (65 <= ch && ch <= 90) then (ch + 32) else ch

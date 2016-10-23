@@ -63,7 +63,7 @@ public class MonadTest {
 
 	private String eval(Node node) throws IOException {
 		StringWriter sw = new StringWriter();
-		Node node1 = Suite.substitute("using MONAD >> .0", Suite.applyWriter(node));
+		Node node1 = Suite.substitute("use MONAD >> .0", Suite.applyWriter(node));
 		Suite.evaluateFunToWriter(Suite.fcc(node1, true), sw);
 		return sw.toString();
 	}

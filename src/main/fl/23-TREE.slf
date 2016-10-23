@@ -1,4 +1,4 @@
-using external STANDARD >>
+use external STANDARD >>
 data (B-tree :t) over :t as Empty >>
 data (B-tree :t) over :t as (Tree [:t, B-tree :t]) >>
 
@@ -31,7 +31,7 @@ define find := key => `Tree $slots` =>
 	let `$left, $slot, $right` := find-slot {key} {slots} >>
 	let `$pivot, $child` := slot >>
 	let found := if (child != Empty) then (find {key} {child}) else pivot >>
-	if (key = found) then found else error
+	if (key = found) then found else error ()
 >>
 define insert := key =>
 	define add0 := slots0 =>
@@ -43,7 +43,7 @@ define insert := key =>
 			else-if (key != pivot) then
 				key, Empty; slot;
 			else
-				error
+				error ()
 		>>
 		let slots1 := concat {left; replaceSlots; right;} >>
 		if (max-branches <= length {slots1}) then
@@ -95,7 +95,7 @@ define remove := key =>
 		else-if (key = pivot) then
 			left ++ right
 		else
-			error
+			error ()
 	>>
 	`Tree $slots` =>
 	slots | remove0 | create-root

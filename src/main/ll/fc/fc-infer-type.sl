@@ -104,10 +104,10 @@ fc-infer-type0 .env (TREE .oper .left .right) .type
 	, fc-infer-type0 .env .left .inputType
 	, fc-infer-type0 .env .right .inputType
 #
-fc-infer-type0 .env (USING _ _ .lib .do) .type
+fc-infer-type0 .env (USE _ _ .lib .do) .type
 	:- fc-load-precompiled-library .lib (.pred # _ # _ #)
 	, clone .pred (
-		fc-infer-type0-using-lib .lib .env .do .type :- .tail
+		fc-infer-type0-use-lib .lib .env .do .type :- .tail
 	)
 	, once .tail
 #

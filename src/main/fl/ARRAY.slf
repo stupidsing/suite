@@ -1,4 +1,4 @@
-using external STANDARD >>
+use external STANDARD >>
 define ar-append := (:t => n^Array :t -> n^Array :t -> n^Array :t) of
 	atom:INTRN!ArrayIntrinsics.append | get%i | call%i-v2
 >>

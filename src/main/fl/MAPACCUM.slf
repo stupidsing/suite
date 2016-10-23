@@ -1,4 +1,4 @@
-using external STANDARD >>
+use external STANDARD >>
 define mapaccuml := fun => v0 =>
 	case
 	|| `$i; $is` =>

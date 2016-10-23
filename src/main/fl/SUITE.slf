@@ -1,4 +1,4 @@
-using external STANDARD >>
+use external STANDARD >>
 define suite-match := (n^Chars -> n^Node -> [n^Node]) of
 	atom:INTRN!SuiteIntrinsics.match | get%i | call%i-v2
 >>

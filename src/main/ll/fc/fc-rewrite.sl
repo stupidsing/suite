@@ -45,7 +45,7 @@ fc-rewrite (TCO .iter0 .in0) (TCO .iter1 .in1) .ts0/.tsx
 fc-rewrite (TREE .oper .left0 .right0) (TREE .oper .left1 .right1) .ts0/.tsx
 	:- .ts0 = (.left0 .left1, .right0 .right1, .tsx)
 #
-fc-rewrite (USING .mode .linkOption .m .do0) (USING .mode .linkOption .m .do1) .ts0/.tsx
+fc-rewrite (USE .mode .linkOption .m .do0) (USE .mode .linkOption .m .do1) .ts0/.tsx
 	:- .ts0 = (.do0 .do1, .tsx)
 #
 fc-rewrite (UNWRAP .do0) (UNWRAP .do1) .ts0/.tsx

@@ -110,10 +110,10 @@ fc-infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	, fc-infer-compatible-types .left .right .env .tr0/.trx _
 	, .type = BOOLEAN
 #
-fc-infer-type-rule (USING _ _ .lib .do) .env .tr/.tr .type
+fc-infer-type-rule (USE _ _ .lib .do) .env .tr/.tr .type
 	:- fc-load-precompiled-library .lib (.pred # _ # _ #)
 	, clone .pred (
-		fc-infer-type-rule-using-lib .lib .do .env .tr1/() .type :- .tail
+		fc-infer-type-rule-use-lib .lib .do .env .tr1/() .type :- .tail
 	)
 	, once .tail
 	, fc-resolve-type-rules .tr1

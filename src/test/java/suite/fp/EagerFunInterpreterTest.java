@@ -23,7 +23,7 @@ public class EagerFunInterpreterTest {
 
 	@Test
 	public void testGroup() {
-		expect("using source STANDARD >> group {1, 2; 2, 3; 1, 3;}", Suite.parse("1, (2; 3;); 2, (3;);"));
+		expect("use source STANDARD >> group {1, 2; 2, 3; 1, 3;}", Suite.parse("1, (2; 3;); 2, (3;);"));
 	}
 
 	@Test
@@ -39,8 +39,8 @@ public class EagerFunInterpreterTest {
 
 	@Test
 	public void testUsing() {
-		expect("using source STANDARD >> and {true} {true}", Atom.TRUE);
-		expect("using source STANDARD >> log {1234}", Int.of(1234));
+		expect("use source STANDARD >> and {true} {true}", Atom.TRUE);
+		expect("use source STANDARD >> log {1234}", Int.of(1234));
 	}
 
 	private void expect(String expr, Node expect) {

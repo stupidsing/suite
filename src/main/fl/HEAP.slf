@@ -1,7 +1,7 @@
 -- Pairing heap
 -- http://en.wikipedia.org/wiki/Pairing_heap
 
-using external STANDARD >>
+use external STANDARD >>
 data (Heap :t) over :t as Empty >>
 data (Heap :t) over :t as Tree (:t, [Heap :t]) >>
 
