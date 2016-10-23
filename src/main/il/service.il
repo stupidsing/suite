@@ -67,9 +67,9 @@ declare svc-service = function [p0, p1, p2,] (
 );
 
 declare svc-setup = function [] (
-	wrmsr [+x174, +x8,];
-	--wrmsr [+x175, syscall-stack-address,]; -- Set by scheduler instead
-	wrmsr [+x176, sysenter-sink as int,];
+	wrmsr [+x174, +x8, 0,];
+	--wrmsr [+x175, syscall-stack-address, 0,]; -- Set by scheduler instead
+	wrmsr [+x176, sysenter-sink as int, 0,];
 );
 
 declare svc-teardown = function [] (

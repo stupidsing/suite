@@ -66,10 +66,10 @@ declare outw = function [port, value,] (
 	asm _ OUT (DX, AX);
 );
 
-declare wrmsr = function [msr, value,] (
+declare wrmsr = function [msr, value0, value1,] (
 	asm _ MOV (ECX, `EBP + 12`);
 	asm _ MOV (EAX, `EBP + 16`);
-	asm _ XOR (EDX, EDX);
+	asm _ MOV (EDX, `EBP + 20`);
 	asm _ WRMSR ();
 );
 

@@ -57,7 +57,7 @@ declare sch-yield = function [] (
 
 	sch-switch [];
 	dw-set [tss-address + 4, sch-current-process as int + size-of sch-node,]; -- TSS ESP0
-	wrmsr [+x175, sch-current-process as int + size-of sch-node,]; -- SYSENTER ESP
+	wrmsr [+x175, sch-current-process as int + size-of sch-node, 0,]; -- SYSENTER ESP
 
 	(sch-current-process +f +current) +f +esp;
 	asm _ MOV (ESP, `EAX`);
