@@ -66,6 +66,13 @@ declare outw = function [port, value,] (
 	asm _ OUT (DX, AX);
 );
 
+declare rdmsr = function [msr, out value0, out value1,] (
+	asm _ MOV (ECX, `EBP + 12`);
+	asm _ RDMSR ();
+	asm _ MOV (`EBP + 16`, EAX);
+	asm _ MOV (`EBP + 20`, EDX);
+);
+
 declare wrmsr = function [msr, value0, value1,] (
 	asm _ MOV (ECX, `EBP + 12`);
 	asm _ MOV (EAX, `EBP + 16`);

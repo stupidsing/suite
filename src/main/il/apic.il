@@ -128,8 +128,14 @@ declare ap-setup = function [] (
 		log-byte "Unsupported ACPI version " revision;
 	);
 
+	declare ap-local-apic-address0;
+	declare ap-local-apic-address1;
+	rdmsr [+x1B, out ap-local-apic-address0, out ap-local-apic-address1,];
+
 	log-dword "IO APIC address = " ap-io-apic-address;
-	log-dword "Local APIC address = " ap-local-apic-address;
+	log-dword "Local APIC page address = " ap-local-apic-address;
+	log-dword "Local APIC base address 0 = " ap-local-apic-address0;
+	log-dword "Local APIC base address 1 = " ap-local-apic-address1;
 );
 
 declare ap-teardown = function [] (
