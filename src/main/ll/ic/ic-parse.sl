@@ -29,14 +29,14 @@ ic-parse (declare .var = .value; .do) (DECLARE MONO .var .type (SEQ (LET (VAR .v
 	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
 	, ic-parse .do .do1
 #
-ic-parse (declare .t .var; .do) (DECLARE MONO .var .type .do1)
-	:- is.atom .var
-	, ic-parse .do .do1
-	, ic-parse-type .t .type
-#
 ic-parse (declare .var; .do) (DECLARE MONO .var _ .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
+#
+ic-parse (signature .var = .t; .do) (DECLARE MONO .var .type .do1)
+	:- is.atom .var
+	, ic-parse .do .do1
+	, ic-parse-type .t .type
 #
 ic-parse (extend .do) (EXTEND-SIGNED .do1)
 	:- ic-parse .do .do1
@@ -112,7 +112,7 @@ ic-parse (.do;) .parsed
 	:- ic-parse .do .parsed
 #
 ic-parse (.do0; .do1) (SEQ .parsed0 .parsed1)
-	:- not (.do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _)
+	:- not (.do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _; .do0 = signature _ = _)
 	, ic-parse .do0 .parsed0
 	, ic-parse .do1 .parsed1
 #

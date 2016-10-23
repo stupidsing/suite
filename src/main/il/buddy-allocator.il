@@ -4,7 +4,7 @@ constant ba-node = dl-node struct (
 declare ba-node-size = size-of ba-node;
 
 declare ba-sync = 0;
-declare (ba-node * 32) lists;
+signature lists = ba-node * 32;
 
 declare ba-region0 = +x50000;
 declare ba-regionx = +xA0000;

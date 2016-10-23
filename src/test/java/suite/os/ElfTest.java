@@ -21,7 +21,7 @@ public class ElfTest {
 	public void test() throws IOException {
 		String program = "" //
 				+ "declare inc = function [i0, out ix,] ( {ix} = i0 + 1; );" //
-				+ "declare int j;" //
+				+ "signature j = int;" //
 				+ "inc [41, out j,];" //
 				+ "j;";
 

@@ -6,9 +6,9 @@ declare ffa-node-size = size-of ffa-node;
 declare ffa-sync = 0;
 declare ffa-region0 = +x50000;
 declare ffa-regionx = +xA0000;
-declare pointer:ffa-node ffa-current;
+signature ffa-current = pointer:ffa-node;
 
-declare ffa-node ffa-head-node;
+signature ffa-head-node = ffa-node;
 declare ffa-head = & ffa-head-node;
 
 declare ffa-create = function [pointer:ffa-node node,] (

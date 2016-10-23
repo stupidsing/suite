@@ -4,7 +4,7 @@ constant ne2k-irq-number = 3;
 constant ne2k-mem-base = 16384;
 constant ne2k-mem-size = 16384;
 
-declare (byte * 8) ne2k-mac-address;
+signature ne2k-mac-address = byte * 8;
 declare ne2k-rx-page-start;
 declare ne2k-rx-page-stop;
 declare ne2k-is-arrived;
@@ -51,7 +51,7 @@ declare ne2k-send = function [buffer, len,] (
 	outb [ne2k-io-base + +x00, +x12,];
 
 	for (declare p = 0; p < len; p =+ 2) do (
-		declare int b;
+		signature b = int;
 		copy [address b, buffer + p, 2,];
 		outw [ne2k-io-base + +x10, b,];
 	);
@@ -89,7 +89,7 @@ declare ne2k-setup = function [] (
 		outb [ne2k-io-base + +x00, +x21,];
 		outb [ne2k-io-base + +x0E, +x49,];
 
-		declare (byte * 16) romdata;
+		signature romdata = byte * 16;
 		ne2k-read [0, address romdata, 16,];
 		for p in (0, 6) do (
 			copy [address ne2k-mac-address + p, address romdata + p shl 1, 1,];

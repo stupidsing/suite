@@ -1,4 +1,4 @@
-declare ((function [int,] int) * 16) irq-sinks;
+signature irq-sinks = (function [int,] int) * 16;
 
 declare dump-sink = function [irq-number,] (
 	log-byte "IRQ = " irq-number;

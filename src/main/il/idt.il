@@ -186,7 +186,7 @@ declare idt-setup = function [] (
 	idt-set-entry [+x20, handle-timer-interrupt, true,];
 
 	(
-		declare (int * 2) idtr;
+		signature idtr = int * 2;
 		dw-set [address idtr + 0, +x7FF,];
 		dw-set [address idtr + 2, idt-address,];
 		address idtr;

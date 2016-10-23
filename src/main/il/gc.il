@@ -18,9 +18,9 @@ constant gc-node = gc-node_ gc-class;
 declare gc-node-size = size-of gc-node;
 
 declare gc-sync = 0;
-declare pointer:gc-node gc-current;
-declare pointer:gc-node gc-head;
-declare pointer:gc-node gc-last-allocate;
+signature gc-current = pointer:gc-node;
+signature gc-head = pointer:gc-node;
+signature gc-last-allocate = pointer:gc-node;
 
 declare gc-create = function [pointer:gc-node node, class,] (
 	ll-create [node,];
@@ -38,8 +38,8 @@ declare gc-prepare = function [] (
 );
 
 declare gc-mark = function [root,] (
-	declare (pointer:gc-node * 1024) nodes;
-	declare (stack pointer:gc-node) stack;
+	signature nodes = pointer:gc-node * 1024;
+	signature stack = stack pointer:gc-node;
 	stk-setup [& stack, & nodes,];
 	stk-push [& stack, root,];
 
