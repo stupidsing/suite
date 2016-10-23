@@ -29,8 +29,7 @@ import suite.util.Util.ExecutableProgram;
  *
  * @author ywsing
  */
-// mvn assembly:single &&
-// java -cp target/suite-1.0-jar-with-dependencies.jar suite.popup.PopupMain
+// MAIN=suite.popup.PopupMain ./run.sh
 public class PopupMain extends ExecutableProgram {
 
 	public static void main(String args[]) {

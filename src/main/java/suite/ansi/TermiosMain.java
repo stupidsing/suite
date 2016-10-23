@@ -7,7 +7,7 @@ import com.sun.jna.Native;
 import suite.ansi.Termios.AnsiColor;
 import suite.util.Util;
 
-// mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar suite.ansi.TermiosMain
+// MAIN=suite.ansi.TermiosMain ./run.sh
 public class TermiosMain {
 
 	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);

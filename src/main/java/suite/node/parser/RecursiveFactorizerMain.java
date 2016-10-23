@@ -7,7 +7,7 @@ import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
-// mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar suite.node.parser.RecursiveFactorizerMain
+// MAIN=suite.node.parser.RecursiveFactorizerMain ./run.sh
 public class RecursiveFactorizerMain extends ExecutableProgram {
 
 	public static void main(String args[]) {

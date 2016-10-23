@@ -14,7 +14,7 @@ import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 import suite.wildcard.WildcardUtil;
 
-// mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar suite.node.parser.RecursiveFileFactorizerMain
+// MAIN=suite.node.parser.RecursiveFileFactorizerMain ./run.sh
 public class RecursiveFileFactorizerMain extends ExecutableProgram {
 
 	public static void main(String args[]) {
