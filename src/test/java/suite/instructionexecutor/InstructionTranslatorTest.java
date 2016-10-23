@@ -53,7 +53,7 @@ public class InstructionTranslatorTest {
 
 	@Test
 	public void testError() throws IOException {
-		String program = "error";
+		String program = "error ()";
 		try {
 			assertFunctional(program, false, Int.of(9));
 			assertTrue(false);
