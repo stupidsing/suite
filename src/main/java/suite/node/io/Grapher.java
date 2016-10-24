@@ -230,7 +230,7 @@ public class Grapher {
 					Node node;
 					GN gn1;
 					if (gn.type == ReadType.TERM && (node = gn.terminal) instanceof Reference)
-						gn1 = new GN(Atom.of(ProverConstant.variablePrefix + ((Reference) node).getId()));
+						gn1 = new GN(Atom.of(((Reference) node).name()));
 					else
 						gn1 = gn;
 					return gn1;

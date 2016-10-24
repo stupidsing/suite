@@ -10,7 +10,7 @@ public class Specializer {
 	public Node specialize(Node node) {
 		if (node instanceof Reference) {
 			Reference ref = (Reference) node;
-			node = Atom.of(ProverConstant.variablePrefix + ref.getId());
+			node = Atom.of(ref.name());
 		} else
 			node = Rewriter.map(node, this::specialize);
 		return node;

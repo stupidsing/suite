@@ -137,7 +137,7 @@ public class Formatter {
 		} else if (node instanceof Int)
 			sb.append(((Int) node).number);
 		else if (node instanceof Reference)
-			sb.append(ProverConstant.variablePrefix + ((Reference) node).getId());
+			sb.append(((Reference) node).name());
 		else if (node instanceof Str)
 			sb.append(quoteStringIfRequired(((Str) node).value));
 		else if (node instanceof Tree)

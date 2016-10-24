@@ -2,6 +2,8 @@ package suite.node;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import suite.lp.doer.ProverConstant;
+
 public class Reference extends Node {
 
 	private Node node = this;
@@ -13,6 +15,10 @@ public class Reference extends Node {
 		Reference reference = new Reference();
 		reference.bound(node);
 		return reference;
+	}
+
+	public String name() {
+		return ProverConstant.variablePrefix + id;
 	}
 
 	public boolean isFree() {
