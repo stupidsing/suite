@@ -137,6 +137,10 @@ declare ap-setup = function [] (
 	log-dword "Local APIC base address 0 = " ap-local-apic-address0;
 	log-dword "Local APIC base address 1 = " ap-local-apic-address1;
 
+	-- disable PIC
+	--outb [+x21, +xFF,];
+	--outb [+xA1, +xFF,];
+
 	-- enable APIC
 	--wrmsr [+x1B, ap-local-apic-address0 or 1, 0,];
 	--declare reg = ap-local-apic-address + +xF0;
