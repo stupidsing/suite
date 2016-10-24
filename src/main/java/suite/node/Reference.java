@@ -6,10 +6,10 @@ import suite.lp.doer.ProverConstant;
 
 public class Reference extends Node {
 
+	private static AtomicInteger counter = new AtomicInteger();
+
 	private Node node = this;
 	private int id = counter.getAndIncrement();
-
-	private static AtomicInteger counter = new AtomicInteger();
 
 	public static Reference of(Node node) {
 		Reference reference = new Reference();
