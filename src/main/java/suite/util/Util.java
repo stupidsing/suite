@@ -44,6 +44,25 @@ public class Util {
 	}
 
 	@SafeVarargs
+	public static <T> T[] add(Class<T> clazz, T[]... lists) {
+		int size = 0;
+
+		for (T list[] : lists)
+			size += list.length;
+
+		@SuppressWarnings("unchecked")
+		T result[] = (T[]) Array.newInstance(clazz, size);
+		int i = 0;
+
+		for (T list[] : lists) {
+			int length = list.length;
+			Copy.array(list, 0, result, i, length);
+			i += length;
+		}
+		return result;
+	}
+
+	@SafeVarargs
 	public static <T> List<T> add(List<T>... lists) {
 		List<T> resultList = new ArrayList<>();
 		for (List<T> list : lists)
@@ -115,7 +134,8 @@ public class Util {
 	}
 
 	public static long createDate(int year, int month, int day, int hour, int minute, int second) {
-		return ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneId.systemDefault()).toEpochSecond() * 1000l;
+		return ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneId.systemDefault()).toEpochSecond()
+				* 1000l;
 	}
 
 	public static ThreadPoolExecutor createExecutor() {
