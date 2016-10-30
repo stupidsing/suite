@@ -132,7 +132,10 @@ declare gc-setup0 = function [buffer, size,] (
 );
 
 declare gc-setup = function [] (
-	constant pool = int * 1048576;
+	constant pool = int * 16384;
 	declare p = (mm-allocate pool) as int;
 	gc-setup0 [p, size-of pool,];
+);
+
+declare gc-teardown = function [] (
 );

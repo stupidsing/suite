@@ -177,6 +177,7 @@ asm _ MOV (ESP, kernel-second-esp);
 	idt-setup [];
 	pm-setup [];
 	pg-setup []; -- Sets up paging
+	gc-setup [];
 	svc-setup [];
 	kb-setup [];
 	asm _ STI ();
@@ -221,6 +222,7 @@ asm _ MOV (ESP, kernel-second-esp);
 	pg-deallocate [user-stack-address, 1,];
 	kb-teardown [];
 	svc-teardown [];
+	gc-teardown [];
 	pg-teardown [];
 	pm-teardown [];
 	idt-teardown [];
