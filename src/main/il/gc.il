@@ -9,8 +9,6 @@ constant gc-node_ .gc-class = ll-node struct (
 
 constant gc-class = fix :gc-class struct (
 | int +size
-| int +number-of-pointers
-| (int * 0) +pointer-offsets
 | (function [pointer:(stack pointer:(gc-node_ :gc-class)), pointer:(gc-node_ :gc-class),] int) +get-pointers
 );
 
