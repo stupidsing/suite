@@ -21,11 +21,11 @@ ic-rewrite (EXTEND-SIGNED .do0) (EXTEND-SIGNED .do1) (.do0 .do1, .ts)/.ts
 #
 ic-rewrite (FIELD .type .name .do0) (FIELD .type .name .do1) (.do0 .do1, .ts)/.ts
 #
-ic-rewrite (INDEX .type .array0 .index0) (INDEX .type .array1 .index1) (.array0 .array1, .index0 .index1, .ts)/.ts
-#
 ic-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) (.if0 .if1, .then0 .then1, .else0 .else1, .ts)/.ts
 #
 ic-rewrite (IN .var .type .do0) (IN .var .type .do1) (.do0 .do1, .ts)/.ts
+#
+ic-rewrite (INDEX .type .array0 .index0) (INDEX .type .array1 .index1) (.array0 .array1, .index0 .index1, .ts)/.ts
 #
 ic-rewrite (INVOKE .sub0 ()) (INVOKE .sub1 ()) (.sub0 .sub1, .ts)/.ts
 #
