@@ -1,8 +1,8 @@
 package suite.immutable;
 
 import java.util.Iterator;
+import java.util.Objects;
 
-import jersey.repackaged.com.google.common.base.Objects;
 import suite.streamlet.Streamlet;
 import suite.util.Util;
 
@@ -60,7 +60,7 @@ public class ISet<V extends Comparable<V>> implements Iterable<V> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Util.clazz(object) == ISet.class && Objects.equal(stream(), ((ISet<?>) object).stream());
+		return Util.clazz(object) == ISet.class && Objects.equals(stream(), ((ISet<?>) object).stream());
 	}
 
 	@Override
