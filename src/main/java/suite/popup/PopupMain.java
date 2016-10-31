@@ -29,7 +29,7 @@ import suite.util.Util.ExecutableProgram;
  *
  * @author ywsing
  */
-// MAIN=suite.popup.PopupMain ./run.sh
+// mvn exec:java -Dexec.mainClass=suite.popup.PopupMain
 public class PopupMain extends ExecutableProgram {
 
 	public static void main(String args[]) {

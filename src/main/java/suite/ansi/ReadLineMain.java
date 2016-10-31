@@ -9,7 +9,7 @@ import suite.streamlet.Outlet;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
-// MAIN=suite.ansi.ReadLineMain ./run.sh
+// mvn exec:java -Dexec.mainClass=suite.ansi.ReadLineMain
 public class ReadLineMain extends ExecutableProgram {
 
 	public static void main(String args[]) throws IOException {

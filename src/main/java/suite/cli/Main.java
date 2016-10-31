@@ -28,7 +28,7 @@ import suite.util.Util.ExecutableProgram;
  *
  * @author ywsing
  */
-// MAIN=suite.cli.Main ./run.sh
+// mvn exec:java -Dexec.mainClass=suite.cli.Main
 public class Main extends ExecutableProgram {
 
 	private CommandOptions opt;
