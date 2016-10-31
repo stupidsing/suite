@@ -25,5 +25,5 @@ declare _ ll-insert-next = function [pointer:ll-node$t e, ne,] (
 );
 
 declare _ ll-remove-next = function [pointer:ll-node$t e,] (
-	ll-set-next [e, ll-next [e,],];
+	ll-set-next [e, ll-next [ll-next [e,],],];
 );
