@@ -109,3 +109,6 @@ declare ne2k-setup = function [] (
 		irq-set-sink [ne2k-irq-number, ne2k-irq-sink,];
 	) else ();
 );
+
+declare ne2k-teardown = function [] (
+);

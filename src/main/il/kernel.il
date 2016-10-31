@@ -220,6 +220,7 @@ asm _ MOV (ESP, kernel-second-esp);
 	asm _ IRET ();
 
 	pg-deallocate [user-stack-address, 1,];
+	ne2k-teardown [];
 	kb-teardown [];
 	svc-teardown [];
 	gc-teardown [];
