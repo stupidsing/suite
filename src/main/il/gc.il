@@ -28,11 +28,14 @@ declare gc-create = function [pointer:gc-node node, class,] (
 
 declare gc-prepare = function [] (
 	declare node = gc-head;
-	while ({node} = ll-next [node,]) do (
+	declare node1;
+	while ({node1} = node/*/+next) do (
 		if (node/*/+current/+flag != gc-free) then (
-			{node/*/+current/+flag} = gc-allocated
+			{node/*/+current/+flag} = gc-allocated;
 		) else ();
+		{node} = node1;
 	);
+	{node/*/+current/+flag} = gc-marked;
 );
 
 declare gc-mark = function [root,] (
@@ -56,37 +59,31 @@ declare gc-mark = function [root,] (
 
 declare gc-sweep = function [] (
 	declare node = gc-head;
-	while ({node} = ll-next [node,]) do (
+	declare node1;
+
+	while ({node1} = node/*/+next) do (
 		if (node/*/+current/+flag != gc-marked) then (
 			{node/*/+current/+flag} = gc-free;
+			while ({node1} = node/*/+next && node1/*/+current/+flag != gc-marked) do (
+				ll-remove-next [node,];
+			);
 		) else ();
-	);
-);
-
-declare gc-merge = function [] (
-	declare node = gc-head;
-	while node do (
-		declare node1 = ll-next [node,];
-		if (node1 && node/*/+current/+flag = gc-free && node1/*/+current/+flag = gc-free) then (
-			ll-remove-next [node,];
-		) else (
-			{node} = node1;
-		);
+		{node} = node1;
 	);
 );
 
 declare gc-gc = function [root,] (
+	cs-put [71,];
 	gc-prepare [];
 	gc-mark [root,];
 	gc-sweep [];
-	gc-merge [];
 	{gc-current} = gc-head;
 );
 
 declare gc-allocate0 = function [pointer:gc-class class,] (
 	declare get-size = function [pointer:gc-node node,] (
 		declare next = node/*/+next;
-		if next then (next as int - node as int - gc-node-size) else 0;
+		if (next && node/*/+current/+flag = gc-free) then (next as int - node as int - gc-node-size) else 0;
 	);
 
 	declare size = class/*/+size;
@@ -96,7 +93,7 @@ declare gc-allocate0 = function [pointer:gc-class class,] (
 
 	while (not ok) do (
 		declare next;
-		while (not ({ok} = 0 < ({diff} = get-size [gc-current,] - size)) && ({next} = ll-next [gc-current,]) != null) do (
+		while (not ({ok} = 0 < ({diff} = get-size [gc-current,] - size)) && ({next} = gc-current/*/+next) != null) do (
 			{gc-current} = next;
 		);
 		if (not ok) then (
@@ -127,6 +124,7 @@ declare gc-setup0 = function [buffer, size,] (
 	gc-create [gc-head, null,];
 	gc-create [tail, null,];
 	ll-insert-next [gc-head, tail,];
+	{tail/*/+current/+flag} = gc-marked;
 );
 
 declare gc-setup = function [] (
