@@ -30,7 +30,6 @@ declare gc-prepare = function [] (
 		) else ();
 		{node} = node1;
 	);
-	{node/*/+flag} = gc-marked;
 );
 
 declare gc-mark = function [root,] (
@@ -68,7 +67,6 @@ declare gc-sweep = function [] (
 );
 
 declare gc-gc = function [root,] (
-	cs-put [71,];
 	gc-prepare [];
 	gc-mark [root,];
 	gc-sweep [];
