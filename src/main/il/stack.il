@@ -20,6 +20,5 @@ constant stk-pop = function [pointer:stack$t stack,] (
 );
 
 constant stk-setup = function [pointer:stack$t stack, array,] (
-	{stack/*/+size} = 0;
-	{stack/*/+array} = array;
+	{stack/*} = new stack$t (+size = 0, +array = array,);
 );
