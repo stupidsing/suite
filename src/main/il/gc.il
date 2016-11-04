@@ -59,7 +59,7 @@ declare gc-sweep = function [] (
 		if (node/*/+flag != gc-marked) then (
 			{node/*/+flag} = gc-free;
 			while ({node1} = node/*/+next && node1/*/+flag != gc-marked) do (
-				{node/*/+next} = node/*/+next/*/+next;
+				{node/*/+next} = node1/*/+next;
 			);
 		) else ();
 		{node} = node1;
