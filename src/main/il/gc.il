@@ -97,7 +97,6 @@ declare gc-allocate0 = function [pointer:gc-class class,] (
 	if (gc-node-size + 4 <= diff) then (
 		declare node1 = (gc-current +offset (size + gc-node-size)) as pointer:gc-node;
 		{node1/*} = new gc-node (+next = gc-current/*/+next, +flag = gc-free, +class = null,);
-		{node1/*/+next} = gc-current/*/+next;
 		{gc-current/*/+next} = node1;
 		node1;
 	) else gc-current;
@@ -105,8 +104,7 @@ declare gc-allocate0 = function [pointer:gc-class class,] (
 
 declare gc-allocate = function [pointer:gc-class class,] (
 	synchronized (& gc-sync) (
-		{gc-last-allocate} = gc-allocate0 [class,];
-		declare p = gc-last-allocate as int + gc-node-size;
+		declare p = ({gc-last-allocate} = gc-allocate0 [class,]) as int + gc-node-size;
 		zero [p, class/*/+size,];
 		p;
 	);
