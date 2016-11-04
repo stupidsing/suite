@@ -82,7 +82,6 @@ declare wrmsr = function [msr, value0, value1,] (
 
 #include(bitmap.il);
 #include(doubly-ll.il);
-#include(singly-ll.il);
 #include(stack.il);
 #include(sync.il);
 
@@ -180,6 +179,7 @@ asm _ MOV (ESP, kernel-second-esp);
 	gc-setup [];
 	svc-setup [];
 	kb-setup [];
+
 	asm _ STI ();
 
 	log (if (ne2k-probe []) then "ne2k detected" else "ne2k not found");
