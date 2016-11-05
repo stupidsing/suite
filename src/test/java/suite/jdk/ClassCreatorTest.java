@@ -39,7 +39,8 @@ public class ClassCreatorTest implements Opcodes {
 		}
 
 		{
-			MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, //
+			MethodVisitor mv = cw.visitMethod( //
+					ACC_PUBLIC, //
 					"source", //
 					Type.getMethodDescriptor(Type.getType(Object.class)), //
 					null, //
