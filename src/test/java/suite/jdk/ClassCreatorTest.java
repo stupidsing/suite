@@ -38,7 +38,8 @@ public class ClassCreatorTest implements Opcodes {
 					null);
 
 			mv.visitVarInsn(ALOAD, 0);
-			mv.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(Object.class), "<init>", "()V", false);
+			mv.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(Object.class), "<init>",
+					Type.getConstructorDescriptor(Object.class.getConstructor()), false);
 			mv.visitInsn(RETURN);
 			mv.visitMaxs(1, 1);
 			mv.visitEnd();
