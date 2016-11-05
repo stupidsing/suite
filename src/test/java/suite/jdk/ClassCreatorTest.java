@@ -20,14 +20,18 @@ public class ClassCreatorTest implements Opcodes {
 	}
 
 	private Object create() throws Exception {
+		Class<?> sup = Object.class;
+		@SuppressWarnings("rawtypes")
+		Class<Source> iface = Source.class;
+
 		ClassWriter cw = new ClassWriter(0);
 
 		cw.visit(49, //
 				ACC_PUBLIC + ACC_SUPER, //
 				"HelloSource", //
 				null, //
-				Type.getInternalName(Object.class), //
-				new String[] { Type.getInternalName(Source.class), });
+				Type.getInternalName(sup), //
+				new String[] { Type.getInternalName(iface), });
 
 		{
 			MethodVisitor mv = cw.visitMethod( //
@@ -38,8 +42,8 @@ public class ClassCreatorTest implements Opcodes {
 					null);
 
 			mv.visitVarInsn(ALOAD, 0);
-			mv.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(Object.class), "<init>",
-					Type.getConstructorDescriptor(Object.class.getConstructor()), false);
+			mv.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(sup), "<init>",
+					Type.getConstructorDescriptor(sup.getConstructor()), false);
 			mv.visitInsn(RETURN);
 			mv.visitMaxs(1, 1);
 			mv.visitEnd();
@@ -69,8 +73,7 @@ public class ClassCreatorTest implements Opcodes {
 		byte bytes[] = cw.toByteArray();
 
 		UnsafeUtil unsafeUtil = new UnsafeUtil();
-		Source<?> callable = unsafeUtil.defineClass(Source.class, "HelloSource", bytes).newInstance();
-		return callable.source();
+		return unsafeUtil.defineClass(iface, "HelloSource", bytes).newInstance().source();
 	}
 
 }
