@@ -34,7 +34,7 @@ public class BootMain extends ExecutableProgram {
 
 			System.out.println("cat " + image + " | dd bs=512 count=1 | /opt/udis86-1.7.2/udcli/udcli -16 | less");
 			System.out.println("cat " + image + " | dd bs=512 skip=1 | /opt/udis86-1.7.2/udcli/udcli -32 | less");
-			System.out.println("qemu-system-i386 target/boot.bin");
+			System.out.println("qemu-system-x86_64 target/boot.bin");
 			return true;
 		} else
 			throw new RuntimeException("Size not match");
