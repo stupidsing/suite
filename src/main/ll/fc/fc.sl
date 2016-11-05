@@ -35,13 +35,11 @@ fc-process-function .mode .do0 .dox
 	:- !, fc-parse .do0 .do1
 	, !, fc-infer-type .do1 _
 	, once (not (is.cyclic .do1); fc-error "Cyclic data detected")
-	, !, once (.mode = LAZY, fc-lazyify-fun .do1 .do2
-		; .mode = EAGER, .do1 = .do2
+	, !, once (
+		.mode = LAZY, fc-lazyify-fun .do1 .do2
+		; .mode = EAGER, fc-reduce-tail-recursion .do1 .do2
 	)
-	, !, once (.mode = LAZY, .do2 = .do3
-		; .mode = EAGER, fc-reduce-tail-recursion .do2 .do3
-	)
-	, !, fc-optimize .do3 .dox
+	, !, fc-optimize .do2 .dox
 #
 
 fc-load-precompiled-library .lib .node
