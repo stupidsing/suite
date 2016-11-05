@@ -39,8 +39,12 @@ public class ClassCreatorTest implements Opcodes {
 		}
 
 		{
-			MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "source",
-					Type.getMethodDescriptor(Type.getType(Object.class)), null, null);
+			MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, //
+					"source", //
+					Type.getMethodDescriptor(Type.getType(Object.class)), //
+					null, //
+					null);
+
 			mv.visitFieldInsn(GETSTATIC, Type.getInternalName(System.class), "out",
 					Type.getDescriptor(PrintStream.class));
 			mv.visitLdcInsn("hello world");
