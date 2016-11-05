@@ -30,7 +30,13 @@ public class ClassCreatorTest implements Opcodes {
 				new String[] { Type.getInternalName(Source.class), });
 
 		{
-			MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+			MethodVisitor mv = cw.visitMethod( //
+					ACC_PUBLIC, //
+					"<init>", //
+					Type.getMethodDescriptor(Type.VOID_TYPE), //
+					null, //
+					null);
+
 			mv.visitVarInsn(ALOAD, 0);
 			mv.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(Object.class), "<init>", "()V", false);
 			mv.visitInsn(RETURN);
