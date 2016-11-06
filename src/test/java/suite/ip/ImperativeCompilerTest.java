@@ -27,10 +27,10 @@ public class ImperativeCompilerTest {
 	@Test
 	public void testDataStructure() {
 		String s = "" //
-				+ "constant p = fix :p struct ( | pointer::p +next);" //
-				+ "declare pnext = function [pointer:p e,] e/*/+next;" //
-				+ "declare object = new p (+next = null,);" //
-				+ "{object/+next} = pnext [& object,];" //
+				+ "constant p = fix :p struct ( | pointer::p next);" //
+				+ "declare pnext = function [pointer:p e,] e/*/next;" //
+				+ "declare object = new p (next = null,);" //
+				+ "{object/next} = pnext [& object,];" //
 				+ "0";
 		Bytes bytes = imperativeCompiler.compile(0, s);
 		assertNotNull(bytes);
@@ -40,8 +40,8 @@ public class ImperativeCompilerTest {
 	@Test
 	public void testDataStructureType() {
 		String s = "" //
-				+ "declare object = new (+prev = 0, +next = 1,);" //
-				+ "object/+next";
+				+ "declare object = new (prev = 0, next = 1,);" //
+				+ "object/next";
 		Bytes bytes = imperativeCompiler.compile(0, s);
 		assertNotNull(bytes);
 		System.out.println(bytes);
@@ -63,7 +63,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testField() {
-		Bytes bytes = imperativeCompiler.compile(0, "declare (struct ( | int +i | int +j)) x; x/+j = 3;");
+		Bytes bytes = imperativeCompiler.compile(0, "signature x = struct ( | int i | int j); x/j = 3;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}

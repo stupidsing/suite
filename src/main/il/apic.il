@@ -1,59 +1,59 @@
 constant ap-header = struct (
-| byte +type
-| byte +length
+| byte type
+| byte length
 );
 
 constant ap-local-apic = struct (
-| ap-header +header
-| byte +acpi-processor-id
-| byte +apic-id
-| int +flags
+| ap-header header
+| byte acpi-processor-id
+| byte apic-id
+| int flags
 );
 
 constant ap-io-apic = struct (
-| ap-header +header
-| byte +io-apic-id
-| byte +reserved
-| int +io-apic-address
-| int +global-system-interrupt-base
+| ap-header header
+| byte io-apic-id
+| byte reserved
+| int io-apic-address
+| int global-system-interrupt-base
 );
 
 constant ap-interrupt-override = struct (
-| ap-header +header
-| byte +bus
-| byte +source
-| int +interrupt
-| (byte * 2) +flags
+| ap-header header
+| byte bus
+| byte source
+| int interrupt
+| (byte * 2) flags
 );
 
 constant ap-acpi-header = struct (
-| int +signature
-| int +length
-| byte +revision
-| byte +checksum
-| (byte * 6) +oem
-| (byte * 8) +oem-table-id
-| int +oem-revision
-| int +creator-id
-| int +creator-revision
+| int signature
+| int length
+| byte revision
+| byte checksum
+| (byte * 6) oem
+| (byte * 8) oem-table-id
+| int oem-revision
+| int creator-id
+| int creator-revision
 );
 
 constant ap-acpi-fadt = struct (
-| ap-acpi-header +header
-| int +firmware-control
-| int +dsdt
-| byte +reserved
-| byte +preferred-pm-profile
-| (byte * 2) +sci-interrupt
-| int +smi-command-port
-| byte +acpi-enable
-| byte +acpi-disable
+| ap-acpi-header header
+| int firmware-control
+| int dsdt
+| byte reserved
+| byte preferred-pm-profile
+| (byte * 2) sci-interrupt
+| int smi-command-port
+| byte acpi-enable
+| byte acpi-disable
 );
 
 constant ap-acpi-madt = struct (
-| ap-acpi-header +header
-| int +local-apic-address
-| int +flags
+| ap-acpi-header header
+| int local-apic-address
+| int flags
 );
 
 declare ap-io-apic-address;
@@ -61,37 +61,37 @@ declare ap-local-apic-address;
 
 declare ap-parse-madt = function [pointer:ap-acpi-madt madt,] (
 	declare p = madt as int + size-of ap-acpi-madt;
-	declare px = madt as int + madt/*/+header/+length;
+	declare px = madt as int + madt/*/header/length;
 
-	{ap-local-apic-address} = madt/*/+local-apic-address;
+	{ap-local-apic-address} = madt/*/local-apic-address;
 
 	while (p < px) do (
 		declare header = p as pointer:ap-header;
-		declare type = extend header/*/+type;
+		declare type = extend header/*/type;
 
 		if (type = 0) then ( -- local APIC
 			declare local-apic = p as pointer:ap-local-apic;
 		) else if (type = 1) then ( -- IO APIC
 			declare io-apic = p as pointer:ap-io-apic;
-			{ap-io-apic-address} = io-apic/*/+io-apic-address;
+			{ap-io-apic-address} = io-apic/*/io-apic-address;
 		) else if (type = 2) then ( -- Interrupt override
 			declare intr-override = p as pointer:ap-interrupt-override;
 		) else ();
 
-		p += extend header/*/+length;
+		p += extend header/*/length;
 	);
 );
 
 declare ap-parse-dt = function [pointer:ap-acpi-header header,] (
-	if (header/*/+signature = +x50434146) then (
-	) else if (header/*/+signature = +x43495041) then (
+	if (header/*/signature = +x50434146) then (
+	) else if (header/*/signature = +x43495041) then (
 		ap-parse-madt [header as pointer:ap-acpi-madt,];
 	) else ();
 );
 
 declare ap-parse-rsdt = function [pointer:ap-acpi-header rsdt,] (
 	declare p = rsdt as int + size-of ap-acpi-header;
-	declare px = rsdt as int + rsdt/*/+length;
+	declare px = rsdt as int + rsdt/*/length;
 	while (p < px) do (
 		ap-parse-dt [(dw-get [p =+ 4,]) as pointer:ap-acpi-header,];
 	);

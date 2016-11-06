@@ -195,7 +195,7 @@ asm _ MOV (ESP, kernel-second-esp);
 			declare process = sch-head-process;
 			declare busy = false;
 			while (({process} = dl-next [process,]) != sch-head-process) do (
-				{busy} = (busy || process/*/+current/+busy);
+				{busy} = (busy || process/*/current/+busy);
 			);
 			asm _ STI ();
 			if (not busy) then (asm _ HLT ()) else ();
