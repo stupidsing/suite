@@ -1,6 +1,7 @@
 package suite.jdk;
 
 import java.io.PrintStream;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -8,8 +9,16 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import suite.util.FunUtil.Fun;
+import suite.util.Rethrow;
 
 public class ClassCreator implements Opcodes {
+
+	private AtomicInteger counter = new AtomicInteger();
+
+	public Object create() {
+		return Rethrow.ex(() -> create("Fun" + counter.getAndIncrement()));
+
+	}
 
 	public Object create(String name) throws Exception {
 		Class<?> sup = Object.class;
