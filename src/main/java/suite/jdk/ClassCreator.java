@@ -55,12 +55,11 @@ public class ClassCreator implements Opcodes {
 		private Expression expression;
 	}
 
-	public Object create() {
-		return Rethrow.ex(() -> create("Fun" + counter.getAndIncrement()));
-
+	public Object create(Expression expression) {
+		return Rethrow.ex(() -> create("Fun" + counter.getAndIncrement(), expression));
 	}
 
-	public Object create(String name) throws Exception {
+	private Object create(String name, Expression expression) throws Exception {
 		@SuppressWarnings("rawtypes")
 		Class<Fun> iface = Fun.class;
 		Class<?> sup = Object.class;
@@ -98,7 +97,7 @@ public class ClassCreator implements Opcodes {
 					null, //
 					null);
 
-			visit(mv, input());
+			visit(mv, expression);
 			mv.visitInsn(ARETURN);
 			mv.visitMaxs(2, 2);
 			mv.visitEnd();
