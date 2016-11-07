@@ -8,7 +8,8 @@ import org.objectweb.asm.Opcodes;
 public class ClassCreatorTest implements Opcodes {
 
 	@Test
-	public void testCreateClass() throws Exception {
+	public void testCreateClass() {
 		assertEquals("Hello", new ClassCreator().create());
 	}
+
 }
