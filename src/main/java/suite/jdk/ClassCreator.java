@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -29,6 +30,15 @@ public class ClassCreator implements Opcodes {
 
 	public static class ConstantExpression extends Expression {
 		private Object constant;
+	}
+
+	public static class IfBooleanExpression extends Expression {
+		private Expression if_, then, else_;
+	}
+
+	public static class InstanceOfExpression extends Expression {
+		private Expression object;
+		private Class<?> clazz;
 	}
 
 	public static class InvokeExpression extends Expression {
@@ -123,6 +133,20 @@ public class ClassCreator implements Opcodes {
 		} else if (e instanceof ConstantExpression) {
 			ConstantExpression expr = (ConstantExpression) e;
 			mv.visitLdcInsn(expr.constant);
+		} else if (e instanceof IfBooleanExpression) {
+			IfBooleanExpression expr = (IfBooleanExpression) e;
+			Label l0 = new Label();
+			Label l1 = new Label();
+			visit(mv, expr.if_);
+			mv.visitJumpInsn(IFEQ, l0);
+			visit(mv, expr.then);
+			mv.visitLabel(l0);
+			visit(mv, expr.else_);
+			mv.visitLabel(l1);
+		} else if (e instanceof InstanceOfExpression) {
+			InstanceOfExpression expr = (InstanceOfExpression) e;
+			visit(mv, expr.object);
+			mv.visitTypeInsn(INSTANCEOF, Type.getInternalName(expr.clazz));
 		} else if (e instanceof InvokeExpression) {
 			InvokeExpression expr = (InvokeExpression) e;
 			if (expr.object != null)
