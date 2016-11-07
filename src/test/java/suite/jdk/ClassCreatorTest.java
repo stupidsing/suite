@@ -9,6 +9,6 @@ public class ClassCreatorTest implements Opcodes {
 
 	@Test
 	public void testCreateClass() throws Exception {
-		assertEquals("", new ClassCreator().create());
+		assertEquals("Hello", new ClassCreator().create("HelloFun"));
 	}
 }
