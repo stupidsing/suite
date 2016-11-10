@@ -21,62 +21,101 @@ import suite.util.Rethrow;
 
 public class ClassCreator implements Opcodes {
 
-	public static abstract class Expression {
-		protected Class<?> clazz;
+	public abstract class Expression {
+		protected String clazz; // Type.getDescriptor()
+
+		public Expression field(String field) {
+			FieldExpression expr = new FieldExpression();
+			expr.clazz = fields.get(field);
+			expr.field = field;
+			expr.object = this;
+			return expr;
+		}
+
+		public Expression instanceOf() {
+			InstanceOfExpression expr = new InstanceOfExpression();
+			expr.instanceClazz = boolean.class;
+			expr.object = this;
+			return expr;
+		}
+
+		public Expression invoke(ClassCreator cc, Expression... parameters) {
+			return invoke(cc.methodName, cc.className, parameters);
+		}
+
+		public Expression invoke(String methodName, Class<?> clazz, Expression... parameters) {
+			return invoke(methodName, Type.getDescriptor(clazz), parameters);
+		}
+
+		private Expression invoke(String methodName, String className, Expression... parameters) {
+			InvokeExpression expr = new InvokeExpression();
+			expr.clazz = className;
+			expr.methodName = methodName;
+			expr.object = this;
+			expr.opcode = INVOKEVIRTUAL;
+			expr.parameters = Arrays.asList(parameters);
+			return expr;
+		}
 	}
 
-	public static class BinaryExpression extends Expression {
+	public class BinaryExpression extends Expression {
 		private int opcode;
 		private Expression left, right;
 	}
 
-	public static class ConstantExpression extends Expression {
+	public class ConstantExpression extends Expression {
 		private Object constant;
 	}
 
-	public static class FieldExpression extends Expression {
+	public class FieldExpression extends Expression {
+		private Expression object;
 		private String field;
 	}
 
-	public static class IfBooleanExpression extends Expression {
+	public class IfBooleanExpression extends Expression {
 		private Expression if_, then, else_;
 	}
 
-	public static class InstanceOfExpression extends Expression {
+	public class InstanceOfExpression extends Expression {
 		private Expression object;
-		private Class<?> clazz;
+		private Class<?> instanceClazz;
 	}
 
-	public static class InvokeExpression extends Expression {
+	public class InvokeExpression extends Expression {
 		private int opcode;
 		private String methodName;
 		private Expression object;
 		private List<Expression> parameters;
 	}
 
-	public static class MethodParameterExpression extends Expression {
+	public class MethodParameterExpression extends Expression {
+		private int number;
 	}
 
-	public static class PrintlnExpression extends Expression {
+	public class PrintlnExpression extends Expression {
 		private Expression expression;
 	}
 
+	public class ThisExpression extends Expression {
+	}
+
 	private AtomicInteger counter = new AtomicInteger();
-	private Map<String, Class<?>> fields;
-	private List<Class<?>> parameters;
-	private String name;
+	private Map<String, String> fields;
+	private List<String> parameters;
 
 	@SuppressWarnings("rawtypes")
-	private Class<Fun> iface = Fun.class;
-	private Class<?> sup = Object.class;
+	private Class<Fun> interfaceClass = Fun.class;
+	private Class<?> superClass = Object.class;
+	private String className;
+	private String methodName = "apply";
 
 	public ClassCreator() {
 		fields = new HashMap<>();
-		parameters = Arrays.asList(Object.class);
+		parameters = Arrays.asList(Type.getDescriptor(Object.class));
 	}
 
 	public Object create(Expression expression) {
-		name = "Fun" + counter.getAndIncrement();
+		className = "Fun" + counter.getAndIncrement();
 		return Rethrow.ex(() -> create0(expression));
 	}
 
@@ -88,13 +127,13 @@ public class ClassCreator implements Opcodes {
 
 		cw.visit(V1_8, //
 				ACC_PUBLIC + ACC_SUPER, //
-				name, //
+				className, //
 				null, //
-				Type.getInternalName(sup), //
-				new String[] { Type.getInternalName(iface), });
+				Type.getInternalName(superClass), //
+				new String[] { Type.getInternalName(interfaceClass), });
 
-		for (Entry<String, Class<?>> entry : fields.entrySet())
-			cw.visitField(ACC_PUBLIC, entry.getKey(), Type.getDescriptor(entry.getValue()), null, null).visitEnd();
+		for (Entry<String, String> entry : fields.entrySet())
+			cw.visitField(ACC_PUBLIC, entry.getKey(), entry.getValue(), null, null).visitEnd();
 
 		{
 			MethodVisitor mv = cw.visitMethod( //
@@ -105,8 +144,8 @@ public class ClassCreator implements Opcodes {
 					null);
 
 			mv.visitVarInsn(ALOAD, 0);
-			mv.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(sup), "<init>",
-					Type.getConstructorDescriptor(sup.getConstructor()), false);
+			mv.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(superClass), "<init>",
+					Type.getConstructorDescriptor(superClass.getConstructor()), false);
 			mv.visitInsn(RETURN);
 			mv.visitMaxs(1, 1);
 			mv.visitEnd();
@@ -115,7 +154,7 @@ public class ClassCreator implements Opcodes {
 		{
 			MethodVisitor mv = cw.visitMethod( //
 					ACC_PUBLIC, //
-					"apply", //
+					methodName, //
 					Type.getMethodDescriptor(Type.getType(Object.class), types), //
 					null, //
 					null);
@@ -132,7 +171,7 @@ public class ClassCreator implements Opcodes {
 
 		UnsafeUtil unsafeUtil = new UnsafeUtil();
 		@SuppressWarnings("unchecked")
-		Fun<Object, Object> fun = (Fun<Object, Object>) unsafeUtil.defineClass(iface, name, bytes).newInstance();
+		Fun<Object, Object> fun = (Fun<Object, Object>) unsafeUtil.defineClass(interfaceClass, className, bytes).newInstance();
 		return fun.apply("Hello");
 	}
 
@@ -146,32 +185,20 @@ public class ClassCreator implements Opcodes {
 
 	private Expression constant(Object object, Class<?> clazz) {
 		ConstantExpression expr = new ConstantExpression();
-		expr.clazz = clazz;
+		expr.clazz = Type.getDescriptor(clazz);
 		expr.constant = object;
 		return expr;
 	}
 
-	public Expression field(String field) {
-		FieldExpression expr = new FieldExpression();
-		expr.clazz = fields.get(field);
-		expr.field = field;
-		return expr;
-	}
-
-	public Expression input() {
+	public Expression parameter(int number) { // 0 means this
 		MethodParameterExpression expr = new MethodParameterExpression();
-		expr.clazz = parameters.get(0);
+		expr.clazz = 0 < expr.number ? parameters.get(expr.number - 1) : className;
+		expr.number = number;
 		return expr;
 	}
 
-	public Expression invoke(Expression object, String method, Class<?> clazz, Expression... parameters) {
-		InvokeExpression expr = new InvokeExpression();
-		expr.clazz = clazz;
-		expr.methodName = method;
-		expr.object = object;
-		expr.opcode = INVOKEVIRTUAL;
-		expr.parameters = Arrays.asList(parameters);
-		return expr;
+	public Expression this_() {
+		return parameter(0);
 	}
 
 	private void visit(MethodVisitor mv, Expression e) {
@@ -185,8 +212,8 @@ public class ClassCreator implements Opcodes {
 			mv.visitLdcInsn(expr.constant);
 		} else if (e instanceof FieldExpression) {
 			FieldExpression expr = (FieldExpression) e;
-			mv.visitVarInsn(ALOAD, 0);
-			mv.visitFieldInsn(GETFIELD, name, expr.field, Type.getDescriptor(expr.clazz));
+			visit(mv, expr.object);
+			mv.visitFieldInsn(GETFIELD, className, expr.field, expr.clazz);
 		} else if (e instanceof IfBooleanExpression) {
 			IfBooleanExpression expr = (IfBooleanExpression) e;
 			Label l0 = new Label();
@@ -200,7 +227,7 @@ public class ClassCreator implements Opcodes {
 		} else if (e instanceof InstanceOfExpression) {
 			InstanceOfExpression expr = (InstanceOfExpression) e;
 			visit(mv, expr.object);
-			mv.visitTypeInsn(INSTANCEOF, Type.getInternalName(expr.clazz));
+			mv.visitTypeInsn(INSTANCEOF, Type.getInternalName(expr.instanceClazz));
 		} else if (e instanceof InvokeExpression) {
 			InvokeExpression expr = (InvokeExpression) e;
 			if (expr.object != null)
@@ -211,13 +238,14 @@ public class ClassCreator implements Opcodes {
 			Type array[] = types.toArray(new Type[types.size()]);
 			mv.visitMethodInsn( //
 					expr.opcode, //
-					Type.getInternalName(expr.object.clazz), //
+					expr.object.clazz, //
 					expr.methodName, //
 					Type.getMethodDescriptor(Type.getType(e.clazz), array), //
 					expr.opcode == Opcode.INVOKEINTERFACE);
-		} else if (e instanceof MethodParameterExpression)
-			mv.visitVarInsn(ALOAD, 1);
-		else if (e instanceof PrintlnExpression) {
+		} else if (e instanceof MethodParameterExpression) {
+			MethodParameterExpression expr = (MethodParameterExpression) e;
+			mv.visitVarInsn(ALOAD, expr.number);
+		} else if (e instanceof PrintlnExpression) {
 			PrintlnExpression expr = (PrintlnExpression) e;
 			mv.visitFieldInsn(GETSTATIC, Type.getInternalName(System.class), "out", Type.getDescriptor(PrintStream.class));
 			visit(mv, expr.expression);
