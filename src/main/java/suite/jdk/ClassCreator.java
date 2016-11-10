@@ -1,7 +1,10 @@
 package suite.jdk;
 
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.objectweb.asm.ClassWriter;
@@ -17,10 +20,8 @@ import suite.util.Rethrow;
 
 public class ClassCreator implements Opcodes {
 
-	private AtomicInteger counter = new AtomicInteger();
-
 	public static abstract class Expression {
-		private Class<?> clazz;
+		protected Class<?> clazz;
 	}
 
 	public static class BinaryExpression extends Expression {
@@ -30,6 +31,10 @@ public class ClassCreator implements Opcodes {
 
 	public static class ConstantExpression extends Expression {
 		private Object constant;
+	}
+
+	public static class FieldExpression extends Expression {
+		private String field;
 	}
 
 	public static class IfBooleanExpression extends Expression {
@@ -55,23 +60,35 @@ public class ClassCreator implements Opcodes {
 		private Expression expression;
 	}
 
-	public Object create(Expression expression) {
-		return Rethrow.ex(() -> create("Fun" + counter.getAndIncrement(), expression));
+	private AtomicInteger counter = new AtomicInteger();
+	private Map<String, Class<?>> fields;
+	private String name;
+
+	@SuppressWarnings("rawtypes")
+	private Class<Fun> iface = Fun.class;
+	private Class<?> sup = Object.class;
+
+	public ClassCreator() {
+		fields = new HashMap<>();
 	}
 
-	private Object create(String name, Expression expression) throws Exception {
-		@SuppressWarnings("rawtypes")
-		Class<Fun> iface = Fun.class;
-		Class<?> sup = Object.class;
+	public Object create(Expression expression) {
+		name = "Fun" + counter.getAndIncrement();
+		return Rethrow.ex(() -> create0(expression));
+	}
 
+	private Object create0(Expression expression) throws Exception {
 		ClassWriter cw = new ClassWriter(0);
 
-		cw.visit(49, //
+		cw.visit(V1_8, //
 				ACC_PUBLIC + ACC_SUPER, //
 				name, //
 				null, //
 				Type.getInternalName(sup), //
 				new String[] { Type.getInternalName(iface), });
+
+		for (Entry<String, Class<?>> entry : fields.entrySet())
+			cw.visitField(ACC_PUBLIC, entry.getKey(), Type.getDescriptor(entry.getValue()), null, null).visitEnd();
 
 		{
 			MethodVisitor mv = cw.visitMethod( //
@@ -132,6 +149,10 @@ public class ClassCreator implements Opcodes {
 		} else if (e instanceof ConstantExpression) {
 			ConstantExpression expr = (ConstantExpression) e;
 			mv.visitLdcInsn(expr.constant);
+		} else if (e instanceof FieldExpression) {
+			FieldExpression expr = (FieldExpression) e;
+			mv.visitVarInsn(ALOAD, 0);
+			mv.visitFieldInsn(GETFIELD, name, expr.field, Type.getDescriptor(expr.clazz));
 		} else if (e instanceof IfBooleanExpression) {
 			IfBooleanExpression expr = (IfBooleanExpression) e;
 			Label l0 = new Label();
