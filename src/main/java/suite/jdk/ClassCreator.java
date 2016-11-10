@@ -1,6 +1,7 @@
 package suite.jdk;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,13 +131,41 @@ public class ClassCreator implements Opcodes {
 		return fun.apply("Hello");
 	}
 
-	public Expression input() {
-		return new MethodParameterExpression();
+	public Expression constant(int i) {
+		return constant(i, int.class);
 	}
 
 	public Expression constant(Object object) {
+		return constant(object, object != null ? object.getClass() : Object.class);
+	}
+
+	private Expression constant(Object object, Class<?> clazz) {
 		ConstantExpression expr = new ConstantExpression();
+		expr.clazz = clazz;
 		expr.constant = object;
+		return expr;
+	}
+
+	public Expression field(String field) {
+		FieldExpression expr = new FieldExpression();
+		expr.clazz = fields.get(field);
+		expr.field = field;
+		return expr;
+	}
+
+	public Expression input() {
+		MethodParameterExpression expr = new MethodParameterExpression();
+		expr.clazz = Object.class;
+		return expr;
+	}
+
+	public Expression invoke(Expression object, String method, Class<?> clazz, Expression... parameters) {
+		InvokeExpression expr = new InvokeExpression();
+		expr.clazz = clazz;
+		expr.methodName = method;
+		expr.object = object;
+		expr.opcode = INVOKEVIRTUAL;
+		expr.parameters = Arrays.asList(parameters);
 		return expr;
 	}
 
