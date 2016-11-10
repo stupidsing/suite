@@ -63,6 +63,7 @@ public class ClassCreator implements Opcodes {
 
 	private AtomicInteger counter = new AtomicInteger();
 	private Map<String, Class<?>> fields;
+	private List<Class<?>> parameters;
 	private String name;
 
 	@SuppressWarnings("rawtypes")
@@ -71,6 +72,7 @@ public class ClassCreator implements Opcodes {
 
 	public ClassCreator() {
 		fields = new HashMap<>();
+		parameters = Arrays.asList(Object.class);
 	}
 
 	public Object create(Expression expression) {
@@ -80,6 +82,9 @@ public class ClassCreator implements Opcodes {
 
 	private Object create0(Expression expression) throws Exception {
 		ClassWriter cw = new ClassWriter(0);
+
+		List<Type> typeList = Read.from(parameters).map(Type::getType).toList();
+		Type types[] = typeList.toArray(new Type[typeList.size()]);
 
 		cw.visit(V1_8, //
 				ACC_PUBLIC + ACC_SUPER, //
@@ -111,13 +116,13 @@ public class ClassCreator implements Opcodes {
 			MethodVisitor mv = cw.visitMethod( //
 					ACC_PUBLIC, //
 					"apply", //
-					Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(Object.class)), //
+					Type.getMethodDescriptor(Type.getType(Object.class), types), //
 					null, //
 					null);
 
 			visit(mv, expression);
 			mv.visitInsn(ARETURN);
-			mv.visitMaxs(2, 2);
+			mv.visitMaxs(1 + parameters.size(), 1 + parameters.size());
 			mv.visitEnd();
 		}
 
@@ -155,7 +160,7 @@ public class ClassCreator implements Opcodes {
 
 	public Expression input() {
 		MethodParameterExpression expr = new MethodParameterExpression();
-		expr.clazz = Object.class;
+		expr.clazz = parameters.get(0);
 		return expr;
 	}
 
