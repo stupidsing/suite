@@ -22,11 +22,11 @@ import suite.util.Rethrow;
 public class ClassCreator implements Opcodes {
 
 	public abstract class Expression {
-		protected String clazz; // Type.getDescriptor()
+		protected String type; // Type.getDescriptor()
 
 		public Expression field(String field) {
 			FieldExpression expr = new FieldExpression();
-			expr.clazz = fields.get(field);
+			expr.type = fields.get(field);
 			expr.field = field;
 			expr.object = this;
 			return expr;
@@ -34,7 +34,7 @@ public class ClassCreator implements Opcodes {
 
 		public Expression instanceOf() {
 			InstanceOfExpression expr = new InstanceOfExpression();
-			expr.instanceClazz = boolean.class;
+			expr.instanceType = boolean.class;
 			expr.object = this;
 			return expr;
 		}
@@ -47,9 +47,9 @@ public class ClassCreator implements Opcodes {
 			return invoke(methodName, Type.getDescriptor(clazz), parameters);
 		}
 
-		private Expression invoke(String methodName, String className, Expression... parameters) {
+		private Expression invoke(String methodName, String type, Expression... parameters) {
 			InvokeExpression expr = new InvokeExpression();
-			expr.clazz = className;
+			expr.type = type;
 			expr.methodName = methodName;
 			expr.object = this;
 			expr.opcode = INVOKEVIRTUAL;
@@ -78,7 +78,7 @@ public class ClassCreator implements Opcodes {
 
 	public class InstanceOfExpression extends Expression {
 		private Expression object;
-		private Class<?> instanceClazz;
+		private Class<?> instanceType;
 	}
 
 	public class InvokeExpression extends Expression {
@@ -185,14 +185,14 @@ public class ClassCreator implements Opcodes {
 
 	private Expression constant(Object object, Class<?> clazz) {
 		ConstantExpression expr = new ConstantExpression();
-		expr.clazz = Type.getDescriptor(clazz);
+		expr.type = Type.getDescriptor(clazz);
 		expr.constant = object;
 		return expr;
 	}
 
 	public Expression parameter(int number) { // 0 means this
 		MethodParameterExpression expr = new MethodParameterExpression();
-		expr.clazz = 0 < expr.number ? parameters.get(expr.number - 1) : className;
+		expr.type = 0 < expr.number ? parameters.get(expr.number - 1) : className;
 		expr.number = number;
 		return expr;
 	}
@@ -213,7 +213,7 @@ public class ClassCreator implements Opcodes {
 		} else if (e instanceof FieldExpression) {
 			FieldExpression expr = (FieldExpression) e;
 			visit(mv, expr.object);
-			mv.visitFieldInsn(GETFIELD, className, expr.field, expr.clazz);
+			mv.visitFieldInsn(GETFIELD, className, expr.field, expr.type);
 		} else if (e instanceof IfBooleanExpression) {
 			IfBooleanExpression expr = (IfBooleanExpression) e;
 			Label l0 = new Label();
@@ -227,20 +227,20 @@ public class ClassCreator implements Opcodes {
 		} else if (e instanceof InstanceOfExpression) {
 			InstanceOfExpression expr = (InstanceOfExpression) e;
 			visit(mv, expr.object);
-			mv.visitTypeInsn(INSTANCEOF, Type.getInternalName(expr.instanceClazz));
+			mv.visitTypeInsn(INSTANCEOF, Type.getInternalName(expr.instanceType));
 		} else if (e instanceof InvokeExpression) {
 			InvokeExpression expr = (InvokeExpression) e;
 			if (expr.object != null)
 				visit(mv, expr.object);
 			for (Expression parameter : expr.parameters)
 				visit(mv, parameter);
-			List<Type> types = Read.from(expr.parameters).map(parameter -> Type.getType(parameter.clazz)).toList();
+			List<Type> types = Read.from(expr.parameters).map(parameter -> Type.getType(parameter.type)).toList();
 			Type array[] = types.toArray(new Type[types.size()]);
 			mv.visitMethodInsn( //
 					expr.opcode, //
-					expr.object.clazz, //
+					expr.object.type, //
 					expr.methodName, //
-					Type.getMethodDescriptor(Type.getType(e.clazz), array), //
+					Type.getMethodDescriptor(Type.getType(e.type), array), //
 					expr.opcode == Opcode.INVOKEINTERFACE);
 		} else if (e instanceof MethodParameterExpression) {
 			MethodParameterExpression expr = (MethodParameterExpression) e;
