@@ -110,12 +110,12 @@ public class ClassCreator implements Opcodes {
 	private String methodName = "apply";
 
 	public ClassCreator() {
+		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
 		fields = new HashMap<>();
 		parameters = Arrays.asList(Type.getDescriptor(Object.class));
 	}
 
 	public Object create(Expression expression) {
-		className = "Fun" + counter.getAndIncrement();
 		return Rethrow.ex(() -> create0(expression));
 	}
 
