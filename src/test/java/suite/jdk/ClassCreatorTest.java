@@ -10,7 +10,7 @@ public class ClassCreatorTest implements Opcodes {
 	@Test
 	public void testCreateClass() {
 		ClassCreator classCreator = new ClassCreator();
-		assertEquals("Hello", classCreator.create(classCreator.input()));
+		assertEquals("Hello", classCreator.create(classCreator.parameter(1)));
 	}
 
 }
