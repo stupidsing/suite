@@ -73,7 +73,7 @@ public class SewingProverImpl implements SewingProver {
 
 	private SystemPredicates systemPredicates;
 	private ListMultimap<Prototype, Rule> rules = new ListMultimap<>();
-	private Map<Prototype, Trampoline[]> trampolinesByPrototype = new HashMap<>();
+	private Map<Prototype, Mutable<Trampoline>> trampolinesByPrototype = new HashMap<>();
 
 	private Env emptyEnvironment = new Env(new Reference[0]);
 
@@ -228,7 +228,7 @@ public class SewingProverImpl implements SewingProver {
 			} else
 				tr = tr0;
 
-			getTrampolineByPrototype(prototype)[0] = tr;
+			getTrampolineByPrototype(prototype).set(tr);
 		}
 	}
 
@@ -503,11 +503,11 @@ public class SewingProverImpl implements SewingProver {
 			Prototype prototype = Prototype.of(node);
 			if (rules.containsKey(prototype)) {
 				Fun<Env, Node> f = sb.compile(node);
-				Trampoline trs[] = getTrampolineByPrototype(prototype);
+				Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					rt.query = f.apply(rt.env);
 					// LogUtil.info(Formatter.dump(rt.query));
-					return trs[0]::prove;
+					return mtr.get()::prove;
 				};
 			}
 		}
@@ -719,8 +719,8 @@ public class SewingProverImpl implements SewingProver {
 		list.add(node);
 	}
 
-	private Trampoline[] getTrampolineByPrototype(Prototype prototype) {
-		return trampolinesByPrototype.computeIfAbsent(prototype, k -> new Trampoline[1]);
+	private Mutable<Trampoline> getTrampolineByPrototype(Prototype prototype) {
+		return trampolinesByPrototype.computeIfAbsent(prototype, k -> Mutable.nil());
 	}
 
 	private TraceLevel traceLevel(Prototype prototype) {
