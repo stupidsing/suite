@@ -106,7 +106,7 @@ public class ClassCreator implements Opcodes {
 	private Class<?> interfaceClass;
 	private Class<?> superClass;
 	private String className;
-	private String methodName = "apply";
+	private String methodName;
 
 	public ClassCreator() {
 		this(Fun.class, Object.class, "apply", Arrays.asList(Type.getDescriptor(Object.class)));
