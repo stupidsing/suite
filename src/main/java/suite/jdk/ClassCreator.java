@@ -103,16 +103,22 @@ public class ClassCreator implements Opcodes {
 	private Map<String, String> fields;
 	private List<String> parameters;
 
-	@SuppressWarnings("rawtypes")
-	private Class<Fun> interfaceClass = Fun.class;
-	private Class<?> superClass = Object.class;
+	private Class<?> interfaceClass;
+	private Class<?> superClass;
 	private String className;
 	private String methodName = "apply";
 
 	public ClassCreator() {
+		this(Fun.class, Object.class, "apply", Arrays.asList(Type.getDescriptor(Object.class)));
+	}
+
+	private ClassCreator(Class<?> ic, Class<?> sc, String mn, List<String> parameterTypes) {
+		interfaceClass = ic;
+		superClass = sc;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
+		methodName = mn;
+		parameters = parameterTypes;
 		fields = new HashMap<>();
-		parameters = Arrays.asList(Type.getDescriptor(Object.class));
 	}
 
 	public Object create(Expression expression) {
