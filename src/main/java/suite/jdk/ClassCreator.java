@@ -50,10 +50,10 @@ public class ClassCreator implements Opcodes {
 	}
 
 	public Object create(Expression expression) {
-		return Rethrow.ex(() -> create0(expression));
+		return Rethrow.ex(() -> clazz(expression).newInstance());
 	}
 
-	private Object create0(Expression expression) throws Exception {
+	private Class<?> clazz(Expression expression) throws NoSuchMethodException {
 		ClassWriter cw = new ClassWriter(0);
 
 		List<Type> typeList = Read.from(parameters).map(Type::getType).toList();
@@ -114,8 +114,8 @@ public class ClassCreator implements Opcodes {
 		byte bytes[] = cw.toByteArray();
 
 		UnsafeUtil unsafeUtil = new UnsafeUtil();
-		Object object = unsafeUtil.defineClass(interfaceClass, className, bytes).newInstance();
-		return object;
+		Class<?> clazz = unsafeUtil.defineClass(interfaceClass, className, bytes);
+		return clazz;
 	}
 
 	public Expression constant(int i) {
