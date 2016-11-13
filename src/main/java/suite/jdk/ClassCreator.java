@@ -1,7 +1,6 @@
 package suite.jdk;
 
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,108 +14,39 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import javassist.bytecode.Opcode;
+import suite.jdk.ClassCreatorExpression.BinaryExpression;
+import suite.jdk.ClassCreatorExpression.ConstantExpression;
+import suite.jdk.ClassCreatorExpression.Expression;
+import suite.jdk.ClassCreatorExpression.FieldExpression;
+import suite.jdk.ClassCreatorExpression.IfBooleanExpression;
+import suite.jdk.ClassCreatorExpression.InstanceOfExpression;
+import suite.jdk.ClassCreatorExpression.InvokeExpression;
+import suite.jdk.ClassCreatorExpression.MethodParameterExpression;
+import suite.jdk.ClassCreatorExpression.PrintlnExpression;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.Util;
 
 public class ClassCreator implements Opcodes {
 
-	public abstract class Expression {
-		protected String type; // Type.getDescriptor()
+	private static AtomicInteger counter = new AtomicInteger();
 
-		public Expression field(String field, String type) {
-			FieldExpression expr = new FieldExpression();
-			expr.type = type;
-			expr.field = field;
-			expr.object = this;
-			return expr;
-		}
-
-		public Expression instanceOf() {
-			InstanceOfExpression expr = new InstanceOfExpression();
-			expr.instanceType = boolean.class;
-			expr.object = this;
-			return expr;
-		}
-
-		public Expression invoke(ClassCreator cc, Expression... parameters) {
-			return invoke(cc.methodName, cc.className, parameters);
-		}
-
-		public Expression invoke(String methodName, Class<?> clazz, Expression... parameters) {
-			return invoke(methodName, Type.getDescriptor(clazz), parameters);
-		}
-
-		private Expression invoke(String methodName, String type, Expression... parameters) {
-			InvokeExpression expr = new InvokeExpression();
-			expr.type = type;
-			expr.methodName = methodName;
-			expr.object = this;
-			expr.opcode = INVOKEVIRTUAL;
-			expr.parameters = Arrays.asList(parameters);
-			return expr;
-		}
-	}
-
-	public class BinaryExpression extends Expression {
-		private int opcode;
-		private Expression left, right;
-	}
-
-	public class ConstantExpression extends Expression {
-		private Object constant;
-	}
-
-	public class FieldExpression extends Expression {
-		private Expression object;
-		private String field;
-	}
-
-	public class IfBooleanExpression extends Expression {
-		private Expression if_, then, else_;
-	}
-
-	public class InstanceOfExpression extends Expression {
-		private Expression object;
-		private Class<?> instanceType;
-	}
-
-	public class InvokeExpression extends Expression {
-		private int opcode;
-		private String methodName;
-		private Expression object;
-		private List<Expression> parameters;
-	}
-
-	public class MethodParameterExpression extends Expression {
-		private int number;
-	}
-
-	public class PrintlnExpression extends Expression {
-		private Expression expression;
-	}
-
-	public class ThisExpression extends Expression {
-	}
-
-	private AtomicInteger counter = new AtomicInteger();
-	private Map<String, String> fields;
-	private String returnType;
-	private List<String> parameters;
-
-	private Class<?> interfaceClass;
-	private Class<?> superClass;
-	private String className;
-	private String methodName;
+	public final Class<?> interfaceClass;
+	public final Class<?> superClass;
+	public final String className;
+	public final Map<String, String> fields;
+	public final String methodName;
+	public final String returnType;
+	public final List<String> parameters;
 
 	public ClassCreator(Class<?> ic, String mn, String rt, List<String> parameterTypes) {
 		interfaceClass = ic;
 		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
+		fields = new HashMap<>();
 		methodName = mn;
 		returnType = rt;
 		parameters = parameterTypes;
-		fields = new HashMap<>();
 	}
 
 	public Object create(Expression expression) {
