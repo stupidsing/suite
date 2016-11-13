@@ -257,7 +257,7 @@ public class ClassCreator implements Opcodes {
 					expr.opcode, //
 					expr.object.type, //
 					expr.methodName, //
-					Type.getMethodDescriptor(Type.getType(e.type), array), //
+					Type.getMethodDescriptor(Type.getType(expr.type), array), //
 					expr.opcode == Opcode.INVOKEINTERFACE);
 		} else if (e instanceof MethodParameterExpression) {
 			MethodParameterExpression expr = (MethodParameterExpression) e;
