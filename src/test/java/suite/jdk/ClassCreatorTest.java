@@ -14,6 +14,10 @@ import suite.util.FunUtil.Fun;
 
 public class ClassCreatorTest implements Opcodes {
 
+	public interface IntFun {
+		public int apply(int i);
+	}
+
 	@Test
 	public void testCreateBiPredicate() {
 		@SuppressWarnings("rawtypes")
@@ -38,6 +42,17 @@ public class ClassCreatorTest implements Opcodes {
 		@SuppressWarnings("unchecked")
 		Fun<Object, Object> fun = cc.create(cc.parameter(1));
 		assertEquals("Hello", fun.apply("Hello"));
+	}
+
+	@Test
+	public void testCreateIntFun() {
+		ClassCreator<IntFun> cc = new ClassCreator<>( //
+				IntFun.class, //
+				"apply", //
+				Type.getDescriptor(int.class), //
+				Arrays.asList(Type.getDescriptor(int.class)));
+		IntFun f = cc.create(cc.add(cc.constant(1), cc.parameter(1)));
+		assertEquals(6, f.apply(5));
 	}
 
 }

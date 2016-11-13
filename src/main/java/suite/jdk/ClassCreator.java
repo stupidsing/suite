@@ -21,7 +21,7 @@ import suite.jdk.ClassCreatorExpression.FieldExpression;
 import suite.jdk.ClassCreatorExpression.IfBooleanExpression;
 import suite.jdk.ClassCreatorExpression.InstanceOfExpression;
 import suite.jdk.ClassCreatorExpression.InvokeExpression;
-import suite.jdk.ClassCreatorExpression.MethodParameterExpression;
+import suite.jdk.ClassCreatorExpression.ParameterExpression;
 import suite.jdk.ClassCreatorExpression.PrintlnExpression;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
@@ -119,6 +119,15 @@ public class ClassCreator<I> implements Opcodes {
 		return clazz;
 	}
 
+	public Expression add(Expression e0, Expression e1) {
+		BinaryExpression expr = new BinaryExpression();
+		expr.type = e0.type;
+		expr.opcode = Opcodes.IADD;
+		expr.left = e0;
+		expr.right = e1;
+		return expr;
+	}
+
 	public Expression constant(int i) {
 		return constant(i, int.class);
 	}
@@ -139,8 +148,8 @@ public class ClassCreator<I> implements Opcodes {
 	}
 
 	public Expression parameter(int number) { // 0 means this
-		MethodParameterExpression expr = new MethodParameterExpression();
-		expr.type = 0 < expr.number ? parameters.get(expr.number - 1) : className;
+		ParameterExpression expr = new ParameterExpression();
+		expr.type = 0 < number ? parameters.get(number - 1) : className;
 		expr.number = number;
 		return expr;
 	}
@@ -190,9 +199,19 @@ public class ClassCreator<I> implements Opcodes {
 					expr.methodName, //
 					Type.getMethodDescriptor(Type.getType(expr.type), array), //
 					expr.opcode == Opcode.INVOKEINTERFACE);
-		} else if (e instanceof MethodParameterExpression) {
-			MethodParameterExpression expr = (MethodParameterExpression) e;
-			mv.visitVarInsn(ALOAD, expr.number);
+		} else if (e instanceof ParameterExpression) {
+			ParameterExpression expr = (ParameterExpression) e;
+			if (Util.stringEquals(expr.type, Type.getDescriptor(double.class)))
+				mv.visitInsn(DLOAD);
+			else if (Util.stringEquals(expr.type, Type.getDescriptor(float.class)))
+				mv.visitInsn(FLOAD);
+			else if (Util.stringEquals(expr.type, Type.getDescriptor(boolean.class))
+					|| Util.stringEquals(expr.type, Type.getDescriptor(int.class)))
+				mv.visitVarInsn(ILOAD, expr.number);
+			else if (Util.stringEquals(expr.type, Type.getDescriptor(long.class)))
+				mv.visitInsn(LLOAD);
+			else
+				mv.visitVarInsn(ALOAD, expr.number);
 		} else if (e instanceof PrintlnExpression) {
 			PrintlnExpression expr = (PrintlnExpression) e;
 			mv.visitFieldInsn(GETSTATIC, Type.getInternalName(System.class), "out", Type.getDescriptor(PrintStream.class));

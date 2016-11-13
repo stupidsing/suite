@@ -75,7 +75,7 @@ public class ClassCreatorExpression {
 		public List<Expression> parameters;
 	}
 
-	public static class MethodParameterExpression extends Expression {
+	public static class ParameterExpression extends Expression {
 		public int number;
 	}
 
