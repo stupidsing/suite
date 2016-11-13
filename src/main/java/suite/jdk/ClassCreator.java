@@ -94,17 +94,7 @@ public class ClassCreator<I> implements Opcodes {
 					null);
 
 			visit(mv, expression);
-			if (Util.stringEquals(returnType, Type.getDescriptor(double.class)))
-				mv.visitInsn(DRETURN);
-			else if (Util.stringEquals(returnType, Type.getDescriptor(float.class)))
-				mv.visitInsn(FRETURN);
-			else if (Util.stringEquals(returnType, Type.getDescriptor(boolean.class))
-					|| Util.stringEquals(returnType, Type.getDescriptor(int.class)))
-				mv.visitInsn(IRETURN);
-			else if (Util.stringEquals(returnType, Type.getDescriptor(long.class)))
-				mv.visitInsn(LRETURN);
-			else
-				mv.visitInsn(ARETURN);
+			mv.visitInsn(choose(returnType, ARETURN, DRETURN, FRETURN, IRETURN, LRETURN));
 			mv.visitMaxs(1 + parameters.size(), 1 + parameters.size());
 			mv.visitEnd();
 		}
@@ -201,17 +191,7 @@ public class ClassCreator<I> implements Opcodes {
 					expr.opcode == Opcode.INVOKEINTERFACE);
 		} else if (e instanceof ParameterExpression) {
 			ParameterExpression expr = (ParameterExpression) e;
-			if (Util.stringEquals(expr.type, Type.getDescriptor(double.class)))
-				mv.visitInsn(DLOAD);
-			else if (Util.stringEquals(expr.type, Type.getDescriptor(float.class)))
-				mv.visitInsn(FLOAD);
-			else if (Util.stringEquals(expr.type, Type.getDescriptor(boolean.class))
-					|| Util.stringEquals(expr.type, Type.getDescriptor(int.class)))
-				mv.visitVarInsn(ILOAD, expr.number);
-			else if (Util.stringEquals(expr.type, Type.getDescriptor(long.class)))
-				mv.visitInsn(LLOAD);
-			else
-				mv.visitVarInsn(ALOAD, expr.number);
+			mv.visitVarInsn(choose(expr.type, ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.number);
 		} else if (e instanceof PrintlnExpression) {
 			PrintlnExpression expr = (PrintlnExpression) e;
 			mv.visitFieldInsn(GETSTATIC, Type.getInternalName(System.class), "out", Type.getDescriptor(PrintStream.class));
@@ -220,6 +200,20 @@ public class ClassCreator<I> implements Opcodes {
 					Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String.class)), false);
 		} else
 			throw new RuntimeException("Unknown expression " + e.getClass());
+	}
+
+	private int choose(String type, int a, int d, int f, int i, int l) {
+		if (Util.stringEquals(type, Type.getDescriptor(double.class)))
+			return d;
+		else if (Util.stringEquals(type, Type.getDescriptor(float.class)))
+			return f;
+		else if (Util.stringEquals(type, Type.getDescriptor(boolean.class))
+				|| Util.stringEquals(type, Type.getDescriptor(int.class)))
+			return i;
+		else if (Util.stringEquals(type, Type.getDescriptor(long.class)))
+			return l;
+		else
+			return a;
 	}
 
 }
