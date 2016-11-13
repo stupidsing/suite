@@ -13,6 +13,11 @@ constant gc-class = fix :gc-class struct (
 | (function [pointer:(stack pointer:(gc-node_ :gc-class)), pointer:(gc-node_ :gc-class),] int) +get-pointers
 );
 
+declare gc-class-class = new gc-class (
+	size = size-of gc-class,
+	+get-pointers = function [stack, p,] ( 0; ),
+);
+
 constant gc-node = gc-node_ gc-class;
 declare gc-node-size = size-of gc-node;
 
