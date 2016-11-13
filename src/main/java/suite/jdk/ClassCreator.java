@@ -16,8 +16,8 @@ import org.objectweb.asm.Type;
 
 import javassist.bytecode.Opcode;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
+import suite.util.Util;
 
 public class ClassCreator implements Opcodes {
 
@@ -109,13 +109,9 @@ public class ClassCreator implements Opcodes {
 	private String className;
 	private String methodName;
 
-	public ClassCreator() {
-		this(Fun.class, Object.class, "apply", Type.getDescriptor(Object.class), Arrays.asList(Type.getDescriptor(Object.class)));
-	}
-
-	public ClassCreator(Class<?> ic, Class<?> sc, String mn, String rt, List<String> parameterTypes) {
+	public ClassCreator(Class<?> ic, String mn, String rt, List<String> parameterTypes) {
 		interfaceClass = ic;
-		superClass = sc;
+		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
 		methodName = mn;
 		returnType = rt;
@@ -168,7 +164,17 @@ public class ClassCreator implements Opcodes {
 					null);
 
 			visit(mv, expression);
-			mv.visitInsn(ARETURN);
+			if (Util.stringEquals(returnType, Type.getDescriptor(double.class)))
+				mv.visitInsn(DRETURN);
+			else if (Util.stringEquals(returnType, Type.getDescriptor(float.class)))
+				mv.visitInsn(FRETURN);
+			else if (Util.stringEquals(returnType, Type.getDescriptor(boolean.class))
+					|| Util.stringEquals(returnType, Type.getDescriptor(int.class)))
+				mv.visitInsn(IRETURN);
+			else if (Util.stringEquals(returnType, Type.getDescriptor(long.class)))
+				mv.visitInsn(LRETURN);
+			else
+				mv.visitInsn(ARETURN);
 			mv.visitMaxs(1 + parameters.size(), 1 + parameters.size());
 			mv.visitEnd();
 		}
@@ -190,7 +196,7 @@ public class ClassCreator implements Opcodes {
 		return constant(object, object != null ? object.getClass() : Object.class);
 	}
 
-	public Expression constant(Object object, Class<?> clazz) {
+	private Expression constant(Object object, Class<?> clazz) {
 		ConstantExpression expr = new ConstantExpression();
 		expr.type = Type.getDescriptor(clazz);
 		expr.constant = object;
