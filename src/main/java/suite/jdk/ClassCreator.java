@@ -24,9 +24,9 @@ public class ClassCreator implements Opcodes {
 	public abstract class Expression {
 		protected String type; // Type.getDescriptor()
 
-		public Expression field(String field) {
+		public Expression field(String field, String type) {
 			FieldExpression expr = new FieldExpression();
-			expr.type = fields.get(field);
+			expr.type = type;
 			expr.field = field;
 			expr.object = this;
 			return expr;
@@ -101,6 +101,7 @@ public class ClassCreator implements Opcodes {
 
 	private AtomicInteger counter = new AtomicInteger();
 	private Map<String, String> fields;
+	private String returnType;
 	private List<String> parameters;
 
 	private Class<?> interfaceClass;
@@ -109,14 +110,15 @@ public class ClassCreator implements Opcodes {
 	private String methodName;
 
 	public ClassCreator() {
-		this(Fun.class, Object.class, "apply", Arrays.asList(Type.getDescriptor(Object.class)));
+		this(Fun.class, Object.class, "apply", Type.getDescriptor(Object.class), Arrays.asList(Type.getDescriptor(Object.class)));
 	}
 
-	private ClassCreator(Class<?> ic, Class<?> sc, String mn, List<String> parameterTypes) {
+	public ClassCreator(Class<?> ic, Class<?> sc, String mn, String rt, List<String> parameterTypes) {
 		interfaceClass = ic;
 		superClass = sc;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
 		methodName = mn;
+		returnType = rt;
 		parameters = parameterTypes;
 		fields = new HashMap<>();
 	}
@@ -161,7 +163,7 @@ public class ClassCreator implements Opcodes {
 			MethodVisitor mv = cw.visitMethod( //
 					ACC_PUBLIC, //
 					methodName, //
-					Type.getMethodDescriptor(Type.getType(Object.class), types), //
+					Type.getMethodDescriptor(Type.getType(returnType), types), //
 					null, //
 					null);
 
@@ -176,9 +178,8 @@ public class ClassCreator implements Opcodes {
 		byte bytes[] = cw.toByteArray();
 
 		UnsafeUtil unsafeUtil = new UnsafeUtil();
-		@SuppressWarnings("unchecked")
-		Fun<Object, Object> fun = (Fun<Object, Object>) unsafeUtil.defineClass(interfaceClass, className, bytes).newInstance();
-		return fun.apply("Hello");
+		Object object = unsafeUtil.defineClass(interfaceClass, className, bytes).newInstance();
+		return object;
 	}
 
 	public Expression constant(int i) {
@@ -189,11 +190,15 @@ public class ClassCreator implements Opcodes {
 		return constant(object, object != null ? object.getClass() : Object.class);
 	}
 
-	private Expression constant(Object object, Class<?> clazz) {
+	public Expression constant(Object object, Class<?> clazz) {
 		ConstantExpression expr = new ConstantExpression();
 		expr.type = Type.getDescriptor(clazz);
 		expr.constant = object;
 		return expr;
+	}
+
+	public Expression field(String field) {
+		return this_().field(field, fields.get(field));
 	}
 
 	public Expression parameter(int number) { // 0 means this
