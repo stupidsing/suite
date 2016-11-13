@@ -16,25 +16,27 @@ public class ClassCreatorTest implements Opcodes {
 
 	@Test
 	public void testCreateBiPredicate() {
-		ClassCreator cc = new ClassCreator( //
+		@SuppressWarnings("rawtypes")
+		ClassCreator<BiPredicate> cc = new ClassCreator<>( //
 				BiPredicate.class, //
 				"test", //
 				Type.getDescriptor(boolean.class), //
 				Arrays.asList(Type.getDescriptor(Object.class), Type.getDescriptor(Object.class)));
 		@SuppressWarnings("unchecked")
-		BiPredicate<Object, Object> bp = (BiPredicate<Object, Object>) cc.create(cc.constant(Boolean.TRUE));
+		BiPredicate<Object, Object> bp = cc.create(cc.constant(Boolean.TRUE));
 		assertTrue(bp.test("Hello", "world"));
 	}
 
 	@Test
 	public void testCreateFun() {
-		ClassCreator cc = new ClassCreator( //
+		@SuppressWarnings("rawtypes")
+		ClassCreator<Fun> cc = new ClassCreator<>( //
 				Fun.class, //
 				"apply", //
 				Type.getDescriptor(Object.class), //
 				Arrays.asList(Type.getDescriptor(Object.class)));
 		@SuppressWarnings("unchecked")
-		Fun<Object, Object> fun = (Fun<Object, Object>) cc.create(cc.parameter(1));
+		Fun<Object, Object> fun = cc.create(cc.parameter(1));
 		assertEquals("Hello", fun.apply("Hello"));
 	}
 

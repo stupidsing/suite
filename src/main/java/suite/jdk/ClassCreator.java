@@ -27,11 +27,11 @@ import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.Util;
 
-public class ClassCreator implements Opcodes {
+public class ClassCreator<I> implements Opcodes {
 
 	private static AtomicInteger counter = new AtomicInteger();
 
-	public final Class<?> interfaceClass;
+	public final Class<I> interfaceClass;
 	public final Class<?> superClass;
 	public final String className;
 	public final Map<String, String> fields;
@@ -39,7 +39,7 @@ public class ClassCreator implements Opcodes {
 	public final String returnType;
 	public final List<String> parameters;
 
-	public ClassCreator(Class<?> ic, String mn, String rt, List<String> parameterTypes) {
+	public ClassCreator(Class<I> ic, String mn, String rt, List<String> parameterTypes) {
 		interfaceClass = ic;
 		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
@@ -49,11 +49,11 @@ public class ClassCreator implements Opcodes {
 		parameters = parameterTypes;
 	}
 
-	public Object create(Expression expression) {
+	public I create(Expression expression) {
 		return Rethrow.ex(() -> clazz(expression).newInstance());
 	}
 
-	private Class<?> clazz(Expression expression) throws NoSuchMethodException {
+	private Class<I> clazz(Expression expression) throws NoSuchMethodException {
 		ClassWriter cw = new ClassWriter(0);
 
 		List<Type> typeList = Read.from(parameters).map(Type::getType).toList();
@@ -114,7 +114,8 @@ public class ClassCreator implements Opcodes {
 		byte bytes[] = cw.toByteArray();
 
 		UnsafeUtil unsafeUtil = new UnsafeUtil();
-		Class<?> clazz = unsafeUtil.defineClass(interfaceClass, className, bytes);
+		@SuppressWarnings("unchecked")
+		Class<I> clazz = (Class<I>) unsafeUtil.defineClass(interfaceClass, className, bytes);
 		return clazz;
 	}
 
