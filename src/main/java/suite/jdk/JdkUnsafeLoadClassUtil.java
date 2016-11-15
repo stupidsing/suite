@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import suite.os.LogUtil;
+import suite.util.Rethrow;
 
 public class JdkUnsafeLoadClassUtil extends JdkUtil {
 
@@ -12,11 +13,10 @@ public class JdkUnsafeLoadClassUtil extends JdkUtil {
 		super(srcDir, binDir);
 	}
 
-	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java)
-			throws IOException, ReflectiveOperationException {
+	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) throws IOException {
 		Path path = compile(canonicalName, java);
 		Class<? extends T> clazz = load(interfaceClazz, canonicalName, path);
-		return clazz.newInstance();
+		return Rethrow.reflectiveOperationException(clazz::newInstance);
 	}
 
 	private <T> Class<? extends T> load(Class<T> interfaceClazz, String canonicalName, Path path) throws IOException {

@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.Rethrow;
 import suite.util.Util;
 
 /**
@@ -139,12 +140,8 @@ public class Mapify {
 				}, object -> {
 					if (object instanceof Map) {
 						Map<?, ?> map = (Map<?, ?>) object;
-						Class<?> clazz1;
-						try {
-							clazz1 = Class.forName(map.get("@class").toString());
-						} catch (ClassNotFoundException ex) {
-							throw new RuntimeException(ex);
-						}
+						String className = map.get("@class").toString();
+						Class<?> clazz1 = Rethrow.reflectiveOperationException(() -> Class.forName(className));
 						return apply0(getMapifier(clazz1).unmapify, object);
 					} else
 						// Happens when an enum implements an interface
@@ -152,26 +149,18 @@ public class Mapify {
 				});
 			else {
 				List<FieldInfo> fis = getFieldInfos(clazz);
-				mapifier = new Mapifier(object -> {
+				mapifier = new Mapifier(object -> Rethrow.reflectiveOperationException(() -> {
 					Map<Object, Object> map = newMap();
 					for (FieldInfo fi : fis)
-						try {
-							map.put(fi.name, apply0(fi.mapifier.mapify, fi.field.get(object)));
-						} catch (ReflectiveOperationException ex) {
-							throw new RuntimeException(ex);
-						}
+						map.put(fi.name, apply0(fi.mapifier.mapify, fi.field.get(object)));
 					return map;
-				}, object -> {
+				}), object -> Rethrow.reflectiveOperationException(() -> {
 					Map<?, ?> map = (Map<?, ?>) object;
-					try {
-						Object object1 = clazz.newInstance();
-						for (FieldInfo fi : fis)
-							fi.field.set(object1, apply0(fi.mapifier.unmapify, map.get(fi.name)));
-						return object1;
-					} catch (ReflectiveOperationException ex) {
-						throw new RuntimeException(ex);
-					}
-				});
+					Object object1 = clazz.newInstance();
+					for (FieldInfo fi : fis)
+						fi.field.set(object1, apply0(fi.mapifier.unmapify, map.get(fi.name)));
+					return object1;
+				}));
 			}
 		} else if (type instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) type;
@@ -227,23 +216,19 @@ public class Mapify {
 	}
 
 	private <T> T create(Class<T> clazz) {
-		try {
-			Object object;
-			if (clazz == ArrayList.class || clazz == Collection.class || clazz == List.class)
-				object = new ArrayList<>();
-			else if (clazz == HashSet.class || clazz == Set.class)
-				object = new HashSet<>();
-			else if (clazz == HashMap.class || clazz == Map.class)
-				object = new HashMap<>();
-			else
-				return clazz.newInstance();
+		Object object;
+		if (clazz == ArrayList.class || clazz == Collection.class || clazz == List.class)
+			object = new ArrayList<>();
+		else if (clazz == HashSet.class || clazz == Set.class)
+			object = new HashSet<>();
+		else if (clazz == HashMap.class || clazz == Map.class)
+			object = new HashMap<>();
+		else
+			return Rethrow.reflectiveOperationException(clazz::newInstance);
 
-			@SuppressWarnings("unchecked")
-			T t = (T) object;
-			return t;
-		} catch (ReflectiveOperationException ex) {
-			throw new RuntimeException(ex);
-		}
+		@SuppressWarnings("unchecked")
+		T t = (T) object;
+		return t;
 	}
 
 	private List<FieldInfo> getFieldInfos(Class<?> clazz) {

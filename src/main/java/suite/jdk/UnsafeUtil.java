@@ -2,6 +2,7 @@ package suite.jdk;
 
 import java.lang.reflect.Field;
 
+import suite.util.Rethrow;
 import sun.misc.Unsafe;
 
 public class UnsafeUtil {
@@ -20,13 +21,11 @@ public class UnsafeUtil {
 	}
 
 	public Unsafe getUnsafe() {
-		try {
+		return Rethrow.reflectiveOperationException(() -> {
 			Field f = Unsafe.class.getDeclaredField("theUnsafe");
 			f.setAccessible(true);
 			return (Unsafe) f.get(null);
-		} catch (ReflectiveOperationException ex) {
-			throw new RuntimeException(ex);
-		}
+		});
 	}
 
 }

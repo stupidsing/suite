@@ -1,4 +1,4 @@
-package jdk;
+package suite.jdk;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;

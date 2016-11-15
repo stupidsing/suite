@@ -13,6 +13,20 @@ public class Rethrow {
 		public T source() throws Ex;
 	}
 
+	public interface SourceReflectiveOperationException<T> {
+		public T source() throws ReflectiveOperationException;
+	}
+
+	public static <V, K> BiPredicate<K, V> bipredicate(BiPredicate<K, V> fun0) {
+		return (k, v) -> {
+			try {
+				return fun0.test(k, v);
+			} catch (Exception ex) {
+				throw new RuntimeException("for key " + k, ex);
+			}
+		};
+	}
+
 	public static <T> T ex(SourceEx<T, Exception> source) {
 		try {
 			return source.source();
@@ -59,14 +73,12 @@ public class Rethrow {
 		};
 	}
 
-	public static <V, K> BiPredicate<K, V> bipredicate(BiPredicate<K, V> fun0) {
-		return (k, v) -> {
-			try {
-				return fun0.test(k, v);
-			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
-			}
-		};
+	public static <T> T reflectiveOperationException(SourceReflectiveOperationException<T> source) {
+		try {
+			return source.source();
+		} catch (ReflectiveOperationException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 }

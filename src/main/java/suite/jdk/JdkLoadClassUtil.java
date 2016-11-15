@@ -8,6 +8,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 
 import suite.os.LogUtil;
+import suite.util.Rethrow;
 
 public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 
@@ -24,23 +25,20 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 		classLoader.close();
 	}
 
-	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java)
-			throws IOException, ReflectiveOperationException {
+	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) throws IOException {
 		compile(canonicalName, java);
 		Class<? extends T> clazz = load(canonicalName);
-		return clazz.newInstance();
+		return Rethrow.reflectiveOperationException(clazz::newInstance);
 	}
 
 	private <T> Class<? extends T> load(String canonicalName) {
 		LogUtil.info("Loading class " + canonicalName);
 
-		try {
+		return Rethrow.reflectiveOperationException(() -> {
 			@SuppressWarnings("unchecked")
 			Class<? extends T> clazz = (Class<? extends T>) classLoader.loadClass(canonicalName);
 			return clazz;
-		} catch (ClassNotFoundException ex) {
-			throw new RuntimeException(ex);
-		}
+		});
 	}
 
 }

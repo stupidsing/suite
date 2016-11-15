@@ -152,32 +152,24 @@ public class Nodify {
 			else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
 				List<Pair<Atom, FieldInfo>> pairs = Read.from(fieldInfos).map(f -> Pair.of(Atom.of(f.name), f)).toList();
-				nodifier = new Nodifier(object -> {
+				nodifier = new Nodifier(object -> Rethrow.reflectiveOperationException(() -> {
 					Dict dict = new Dict();
 					for (Pair<Atom, FieldInfo> pair : pairs) {
-						try {
-							FieldInfo fieldInfo = pair.t1;
-							Node value = apply0(fieldInfo.nodifier, fieldInfo.field.get(object));
-							dict.map.put(pair.t0, Reference.of(value));
-						} catch (ReflectiveOperationException ex) {
-							throw new RuntimeException(ex);
-						}
+						FieldInfo fieldInfo = pair.t1;
+						Node value = apply0(fieldInfo.nodifier, fieldInfo.field.get(object));
+						dict.map.put(pair.t0, Reference.of(value));
 					}
 					return dict;
-				}, node -> {
+				}), node -> Rethrow.reflectiveOperationException(() -> {
 					Map<Node, Reference> map = ((Dict) node).map;
-					try {
-						Object object1 = clazz.newInstance();
-						for (Pair<Atom, FieldInfo> pair : pairs) {
-							FieldInfo fieldInfo = pair.t1;
-							Node value = map.get(pair.t0).finalNode();
-							fieldInfo.field.set(object1, apply0(fieldInfo.nodifier, value));
-						}
-						return object1;
-					} catch (ReflectiveOperationException ex) {
-						throw new RuntimeException(ex);
+					Object object1 = clazz.newInstance();
+					for (Pair<Atom, FieldInfo> pair : pairs) {
+						FieldInfo fieldInfo = pair.t1;
+						Node value = map.get(pair.t0).finalNode();
+						fieldInfo.field.set(object1, apply0(fieldInfo.nodifier, value));
 					}
-				});
+					return object1;
+				}));
 			}
 		} else if (type instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) type;
@@ -225,23 +217,19 @@ public class Nodify {
 	}
 
 	private <T> T create(Class<T> clazz) {
-		try {
-			Object object;
-			if (clazz == ArrayList.class || clazz == Collection.class || clazz == List.class)
-				object = new ArrayList<>();
-			else if (clazz == HashSet.class || clazz == Set.class)
-				object = new HashSet<>();
-			else if (clazz == HashMap.class || clazz == Map.class)
-				object = new HashMap<>();
-			else
-				return clazz.newInstance();
+		Object object;
+		if (clazz == ArrayList.class || clazz == Collection.class || clazz == List.class)
+			object = new ArrayList<>();
+		else if (clazz == HashSet.class || clazz == Set.class)
+			object = new HashSet<>();
+		else if (clazz == HashMap.class || clazz == Map.class)
+			object = new HashMap<>();
+		else
+			return Rethrow.reflectiveOperationException(clazz::newInstance);
 
-			@SuppressWarnings("unchecked")
-			T t = (T) object;
-			return t;
-		} catch (ReflectiveOperationException ex) {
-			throw new RuntimeException(ex);
-		}
+		@SuppressWarnings("unchecked")
+		T t = (T) object;
+		return t;
 	}
 
 	private List<FieldInfo> getFieldInfos(Class<?> clazz) {

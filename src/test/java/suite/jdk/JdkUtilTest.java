@@ -1,4 +1,4 @@
-package jdk;
+package suite.jdk;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,7 +13,7 @@ import suite.os.FileUtil;
 public class JdkUtilTest {
 
 	@Test
-	public void test() throws IOException, ReflectiveOperationException {
+	public void test() throws IOException {
 		Path srcDir = Constants.tmp.resolve("src");
 		Path binDir = Constants.tmp.resolve("bin");
 		String className = "HelloWorld";

@@ -1,4 +1,4 @@
-package jdk;
+package suite.jdk;
 
 import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;

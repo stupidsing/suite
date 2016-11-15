@@ -39,21 +39,29 @@ public class ClassCreator<I> implements Opcodes {
 	public final String returnType;
 	public final List<String> parameters;
 
-	public ClassCreator(Class<I> ic, String mn, String rt, List<String> parameterTypes) {
+	public ClassCreator(Class<I> ic, String mn, String rt, List<String> ps) {
+		this(ic, mn, rt, ps, new HashMap<>());
+	}
+
+	public ClassCreator(Class<I> ic, String mn, String rt, List<String> ps, Map<String, String> fs) {
 		interfaceClass = ic;
 		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
-		fields = new HashMap<>();
+		fields = fs;
 		methodName = mn;
 		returnType = rt;
-		parameters = parameterTypes;
+		parameters = ps;
 	}
 
 	public I create(Expression expression) {
 		return Rethrow.ex(() -> clazz(expression).newInstance());
 	}
 
-	private Class<? extends I> clazz(Expression expression) throws NoSuchMethodException {
+	public Class<? extends I> clazz(Expression expression) {
+		return Rethrow.ex(() -> clazz_(expression));
+	}
+
+	private Class<? extends I> clazz_(Expression expression) throws NoSuchMethodException {
 		ClassWriter cw = new ClassWriter(0);
 
 		List<Type> typeList = Read.from(parameters).map(Type::getType).toList();
