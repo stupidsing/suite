@@ -112,7 +112,7 @@ public class ClassCreator<I> implements Opcodes {
 	public Expression add(Expression e0, Expression e1) {
 		BinaryExpression expr = new BinaryExpression();
 		expr.type = e0.type;
-		expr.opcode = Opcodes.IADD;
+		expr.opcode = choose(expr.type, 0, DADD, FADD, IADD, LADD);
 		expr.left = e0;
 		expr.right = e1;
 		return expr;
