@@ -7,12 +7,11 @@ import java.util.Arrays;
 import java.util.function.BiPredicate;
 
 import org.junit.Test;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import suite.util.FunUtil.Fun;
 
-public class ClassCreatorTest implements Opcodes {
+public class ClassCreatorTest {
 
 	public interface IntFun {
 		public int apply(int i);
