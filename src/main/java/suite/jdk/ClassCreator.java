@@ -210,10 +210,11 @@ public class ClassCreator<I> implements Opcodes {
 	private int choose(String type, int a, int d, int f, int i, int l) {
 		if (Util.stringEquals(type, Type.getDescriptor(double.class)))
 			return d;
+		else if (Util.stringEquals(type, Type.getDescriptor(boolean.class)))
+			return i;
 		else if (Util.stringEquals(type, Type.getDescriptor(float.class)))
 			return f;
-		else if (Util.stringEquals(type, Type.getDescriptor(boolean.class))
-				|| Util.stringEquals(type, Type.getDescriptor(int.class)))
+		else if (Util.stringEquals(type, Type.getDescriptor(int.class)))
 			return i;
 		else if (Util.stringEquals(type, Type.getDescriptor(long.class)))
 			return l;
