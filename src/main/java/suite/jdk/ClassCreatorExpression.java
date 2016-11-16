@@ -27,7 +27,7 @@ public class ClassCreatorExpression {
 		}
 
 		public Expression invoke(ClassCreator<?> cc, Expression... parameters) {
-			return invoke(cc.methodName, cc.className, parameters);
+			return invoke(cc.methodName, cc.returnType, parameters);
 		}
 
 		public Expression invoke(String methodName, Class<?> clazz, Expression... parameters) {
