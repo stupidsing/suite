@@ -14,20 +14,20 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import javassist.bytecode.Opcode;
-import suite.jdk.ClassCreatorExpression.BinaryExpression;
-import suite.jdk.ClassCreatorExpression.ConstantExpression;
-import suite.jdk.ClassCreatorExpression.Expression;
-import suite.jdk.ClassCreatorExpression.FieldExpression;
-import suite.jdk.ClassCreatorExpression.IfBooleanExpression;
-import suite.jdk.ClassCreatorExpression.InstanceOfExpression;
-import suite.jdk.ClassCreatorExpression.InvokeExpression;
-import suite.jdk.ClassCreatorExpression.ParameterExpression;
-import suite.jdk.ClassCreatorExpression.PrintlnExpression;
+import suite.jdk.FunExpression.BinaryFunExpr;
+import suite.jdk.FunExpression.ConstantFunExpr;
+import suite.jdk.FunExpression.FieldFunExpr;
+import suite.jdk.FunExpression.FunExpr;
+import suite.jdk.FunExpression.IfBooleanFunExpr;
+import suite.jdk.FunExpression.InstanceOfFunExpr;
+import suite.jdk.FunExpression.InvokeFunExpr;
+import suite.jdk.FunExpression.ParameterFunExpr;
+import suite.jdk.FunExpression.PrintlnFunExpr;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.Util;
 
-public class ClassCreator<I> implements Opcodes {
+public class FunCreator<I> implements Opcodes {
 
 	private static AtomicInteger counter = new AtomicInteger();
 
@@ -39,11 +39,13 @@ public class ClassCreator<I> implements Opcodes {
 	public final String returnType;
 	public final List<String> parameters;
 
-	public ClassCreator(Class<I> ic, String mn, String rt, List<String> ps) {
+	private Class<? extends I> clazz;
+
+	public FunCreator(Class<I> ic, String mn, String rt, List<String> ps) {
 		this(ic, mn, rt, ps, new HashMap<>());
 	}
 
-	public ClassCreator(Class<I> ic, String mn, String rt, List<String> ps, Map<String, String> fs) {
+	public FunCreator(Class<I> ic, String mn, String rt, List<String> ps, Map<String, String> fs) {
 		interfaceClass = ic;
 		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
@@ -53,15 +55,11 @@ public class ClassCreator<I> implements Opcodes {
 		parameters = ps;
 	}
 
-	public I create(Expression expression) {
-		return Rethrow.ex(() -> clazz(expression).newInstance());
+	public void create(FunExpr expression) {
+		clazz = Rethrow.ex(() -> create_(expression));
 	}
 
-	public Class<? extends I> clazz(Expression expression) {
-		return Rethrow.ex(() -> clazz_(expression));
-	}
-
-	private Class<? extends I> clazz_(Expression expression) throws NoSuchMethodException {
+	private Class<? extends I> create_(FunExpr expression) throws NoSuchMethodException {
 		ClassWriter cw = new ClassWriter(0);
 
 		List<Type> typeList = Read.from(parameters).map(Type::getType).toList();
@@ -114,8 +112,8 @@ public class ClassCreator<I> implements Opcodes {
 		return new UnsafeUtil().defineClass(interfaceClass, className, bytes);
 	}
 
-	public Expression add(Expression e0, Expression e1) {
-		BinaryExpression expr = new BinaryExpression();
+	public FunExpr add(FunExpr e0, FunExpr e1) {
+		BinaryFunExpr expr = new BinaryFunExpr();
 		expr.type = e0.type;
 		expr.opcode = choose(expr.type, 0, DADD, FADD, IADD, LADD);
 		expr.left = e0;
@@ -123,51 +121,59 @@ public class ClassCreator<I> implements Opcodes {
 		return expr;
 	}
 
-	public Expression constant(int i) {
+	public FunExpr constant(int i) {
 		return constant(i, int.class);
 	}
 
-	public Expression constant(Object object) {
+	public FunExpr constant(Object object) {
 		return constant(object, object != null ? object.getClass() : Object.class);
 	}
 
-	private Expression constant(Object object, Class<?> clazz) {
-		ConstantExpression expr = new ConstantExpression();
+	private FunExpr constant(Object object, Class<?> clazz) {
+		ConstantFunExpr expr = new ConstantFunExpr();
 		expr.type = Type.getDescriptor(clazz);
 		expr.constant = object;
 		return expr;
 	}
 
-	public Expression field(String field) {
+	public FunExpr field(String field) {
 		return this_().field(field, fields.get(field));
 	}
 
-	public Expression parameter(int number) { // 0 means this
-		ParameterExpression expr = new ParameterExpression();
+	public FunExpr parameter(int number) { // 0 means this
+		ParameterFunExpr expr = new ParameterFunExpr();
 		expr.type = 0 < number ? parameters.get(number - 1) : className;
 		expr.number = number;
 		return expr;
 	}
 
-	public Expression this_() {
+	public FunExpr this_() {
 		return parameter(0);
 	}
 
-	private void visit(MethodVisitor mv, Expression e) {
-		if (e instanceof BinaryExpression) {
-			BinaryExpression expr = (BinaryExpression) e;
+	public I instantiate() {
+		return Rethrow.ex(clazz::newInstance);
+	}
+
+	public Class<? extends I> get() {
+		return clazz;
+	}
+
+	private void visit(MethodVisitor mv, FunExpr e) {
+		if (e instanceof BinaryFunExpr) {
+			BinaryFunExpr expr = (BinaryFunExpr) e;
 			visit(mv, expr.left);
 			visit(mv, expr.right);
 			mv.visitInsn(expr.opcode);
-		} else if (e instanceof ConstantExpression) {
-			ConstantExpression expr = (ConstantExpression) e;
+		} else if (e instanceof ConstantFunExpr) {
+			ConstantFunExpr expr = (ConstantFunExpr) e;
 			mv.visitLdcInsn(expr.constant);
-		} else if (e instanceof FieldExpression) {
-			FieldExpression expr = (FieldExpression) e;
+		} else if (e instanceof FieldFunExpr) {
+			FieldFunExpr expr = (FieldFunExpr) e;
 			visit(mv, expr.object);
 			mv.visitFieldInsn(GETFIELD, className, expr.field, expr.type);
-		} else if (e instanceof IfBooleanExpression) {
-			IfBooleanExpression expr = (IfBooleanExpression) e;
+		} else if (e instanceof IfBooleanFunExpr) {
+			IfBooleanFunExpr expr = (IfBooleanFunExpr) e;
 			Label l0 = new Label();
 			Label l1 = new Label();
 			visit(mv, expr.if_);
@@ -176,15 +182,15 @@ public class ClassCreator<I> implements Opcodes {
 			mv.visitLabel(l0);
 			visit(mv, expr.else_);
 			mv.visitLabel(l1);
-		} else if (e instanceof InstanceOfExpression) {
-			InstanceOfExpression expr = (InstanceOfExpression) e;
+		} else if (e instanceof InstanceOfFunExpr) {
+			InstanceOfFunExpr expr = (InstanceOfFunExpr) e;
 			visit(mv, expr.object);
 			mv.visitTypeInsn(INSTANCEOF, Type.getInternalName(expr.instanceType));
-		} else if (e instanceof InvokeExpression) {
-			InvokeExpression expr = (InvokeExpression) e;
+		} else if (e instanceof InvokeFunExpr) {
+			InvokeFunExpr expr = (InvokeFunExpr) e;
 			if (expr.object != null)
 				visit(mv, expr.object);
-			for (Expression parameter : expr.parameters)
+			for (FunExpr parameter : expr.parameters)
 				visit(mv, parameter);
 			List<Type> types = Read.from(expr.parameters).map(parameter -> Type.getType(parameter.type)).toList();
 			Type array[] = types.toArray(new Type[types.size()]);
@@ -194,11 +200,11 @@ public class ClassCreator<I> implements Opcodes {
 					expr.methodName, //
 					Type.getMethodDescriptor(Type.getType(expr.type), array), //
 					expr.opcode == Opcode.INVOKEINTERFACE);
-		} else if (e instanceof ParameterExpression) {
-			ParameterExpression expr = (ParameterExpression) e;
+		} else if (e instanceof ParameterFunExpr) {
+			ParameterFunExpr expr = (ParameterFunExpr) e;
 			mv.visitVarInsn(choose(expr.type, ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.number);
-		} else if (e instanceof PrintlnExpression) {
-			PrintlnExpression expr = (PrintlnExpression) e;
+		} else if (e instanceof PrintlnFunExpr) {
+			PrintlnFunExpr expr = (PrintlnFunExpr) e;
 			mv.visitFieldInsn(GETSTATIC, Type.getInternalName(System.class), "out", Type.getDescriptor(PrintStream.class));
 			visit(mv, expr.expression);
 			mv.visitMethodInsn(INVOKEVIRTUAL, Type.getInternalName(PrintStream.class), "println",

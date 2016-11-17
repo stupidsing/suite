@@ -13,7 +13,7 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 
-public class ClassCreatorTest {
+public class FunCreatorTest {
 
 	public interface IntFun {
 		public int apply(int i);
@@ -22,20 +22,49 @@ public class ClassCreatorTest {
 	@Test
 	public void testBiPredicate() {
 		@SuppressWarnings("rawtypes")
-		ClassCreator<BiPredicate> cc = new ClassCreator<>( //
+		FunCreator<BiPredicate> fc = new FunCreator<>( //
 				BiPredicate.class, //
 				"test", //
 				Type.getDescriptor(boolean.class), //
 				Arrays.asList(Type.getDescriptor(Object.class), Type.getDescriptor(Object.class)));
+		fc.create(fc.constant(Boolean.TRUE));
 		@SuppressWarnings("unchecked")
-		BiPredicate<Object, Object> bp = cc.create(cc.constant(Boolean.TRUE));
+		BiPredicate<Object, Object> bp = fc.instantiate();
 		assertTrue(bp.test("Hello", "world"));
 	}
 
 	@Test
 	public void testField() {
+		IntFun intFun = createIntFun();
+		assertEquals(6, intFun.apply(5));
+	}
+
+	@Test
+	public void testFun() {
+		@SuppressWarnings("rawtypes")
+		FunCreator<Fun> fc = new FunCreator<>( //
+				Fun.class, //
+				"apply", //
+				Type.getDescriptor(Object.class), //
+				Arrays.asList(Type.getDescriptor(Object.class)));
+		fc.create(fc.parameter(1));
+		@SuppressWarnings("unchecked")
+		Fun<Object, Object> fun = fc.instantiate();
+		assertEquals("Hello", fun.apply("Hello"));
+	}
+
+	private IntFun createIntFun() {
 		String fieldName = "j";
-		ClassCreator<IntFun> cc = new ClassCreator<>( //
+		Class<? extends IntFun> clazz = intFun(fieldName).get();
+		return Rethrow.reflectiveOperationException(() -> {
+			IntFun f = clazz.newInstance();
+			clazz.getDeclaredField(fieldName).set(f, 1);
+			return f;
+		});
+	}
+
+	private FunCreator<IntFun> intFun(String fieldName) {
+		FunCreator<IntFun> fc = new FunCreator<>( //
 				IntFun.class, //
 				"apply", //
 				Type.getDescriptor(int.class), //
@@ -43,26 +72,8 @@ public class ClassCreatorTest {
 				Read.<String, String> empty2() //
 						.cons(fieldName, Type.getDescriptor(int.class)) //
 						.toMap());
-		Class<? extends IntFun> clazz = cc.clazz(cc.add(cc.field(fieldName), cc.parameter(1)));
-		IntFun intFun = Rethrow.reflectiveOperationException(() -> {
-			IntFun f = clazz.newInstance();
-			clazz.getDeclaredField(fieldName).set(f, 1);
-			return f;
-		});
-		assertEquals(6, intFun.apply(5));
-	}
-
-	@Test
-	public void testFun() {
-		@SuppressWarnings("rawtypes")
-		ClassCreator<Fun> cc = new ClassCreator<>( //
-				Fun.class, //
-				"apply", //
-				Type.getDescriptor(Object.class), //
-				Arrays.asList(Type.getDescriptor(Object.class)));
-		@SuppressWarnings("unchecked")
-		Fun<Object, Object> fun = cc.create(cc.parameter(1));
-		assertEquals("Hello", fun.apply("Hello"));
+		fc.create(fc.add(fc.field(fieldName), fc.parameter(1)));
+		return fc;
 	}
 
 }
