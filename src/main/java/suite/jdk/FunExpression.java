@@ -39,7 +39,7 @@ public class FunExpression {
 			expr.type = type;
 			expr.methodName = methodName;
 			expr.object = this;
-			expr.opcode = Opcodes.INVOKEVIRTUAL;
+			expr.opcode = Opcodes.INVOKEINTERFACE;
 			expr.parameters = Arrays.asList(parameters);
 			return expr;
 		}
