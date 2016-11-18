@@ -126,10 +126,11 @@ public class Nodify {
 							return list.toArray();
 					});
 				else
-					nodifier = new Nodifier(forward, node -> {
-						List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)).map(n -> apply0(nodifier1, n)).toList();
-						return list.toArray();
-					});
+					nodifier = new Nodifier(forward,
+							node -> Read.from(Tree.iter(node, TermOp.OR____)) //
+									.map(n -> apply0(nodifier1, n)) //
+									.toList() //
+									.toArray());
 			} else if (clazz.isInterface()) // Polymorphism
 				nodifier = new Nodifier(object -> {
 					Class<?> clazz1 = object.getClass();
