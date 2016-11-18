@@ -36,12 +36,15 @@ public class MonadIntrinsics {
 
 	public Intrinsic popen = (callback, inputs) -> {
 		Fun<Node, Node> yawn = callback::yawn;
-		List<String> list = ThunkUtil.yawnList(yawn, inputs.get(0), false).map(node -> ThunkUtil.yawnString(yawn, node)).toList();
+		String array[] = ThunkUtil.yawnList(yawn, inputs.get(0), false) //
+				.map(node -> ThunkUtil.yawnString(yawn, node)) //
+				.toList() //
+				.toArray(new String[0]);
 
 		Node in = inputs.get(1);
 
 		return Rethrow.ioException(() -> {
-			Process process = Runtime.getRuntime().exec(list.toArray(new String[list.size()]));
+			Process process = Runtime.getRuntime().exec(array);
 
 			Node n0 = Intrinsics.enclose(callback, new Suspend(() -> Rethrow.ex(() -> Int.of(process.waitFor()))));
 

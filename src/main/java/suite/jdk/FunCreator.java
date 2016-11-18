@@ -63,7 +63,7 @@ public class FunCreator<I> implements Opcodes {
 		ClassWriter cw = new ClassWriter(0);
 
 		List<Type> typeList = Read.from(parameters).map(Type::getType).toList();
-		Type types[] = typeList.toArray(new Type[typeList.size()]);
+		Type types[] = typeList.toArray(new Type[0]);
 
 		cw.visit(V1_8, //
 				ACC_PUBLIC + ACC_SUPER, //
@@ -193,7 +193,7 @@ public class FunCreator<I> implements Opcodes {
 			for (FunExpr parameter : expr.parameters)
 				visit(mv, parameter);
 			List<Type> types = Read.from(expr.parameters).map(parameter -> Type.getType(parameter.type)).toList();
-			Type array[] = types.toArray(new Type[types.size()]);
+			Type array[] = types.toArray(new Type[0]);
 			mv.visitMethodInsn( //
 					expr.opcode, //
 					expr.object.type, //

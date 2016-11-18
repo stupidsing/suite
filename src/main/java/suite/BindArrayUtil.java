@@ -56,10 +56,10 @@ public class BindArrayUtil {
 					}
 				};
 				if (pred.test(be, node)) {
-					List<Node> results = new ArrayList<>(size);
+					Node results[] = new Node[size];
 					for (int i = 0; i < size; i++)
-						results.add(env.get(indices[i]));
-					return results.toArray(new Node[size]);
+						results[i] = env.get(indices[i]);
+					return results;
 				} else
 					return null;
 			};

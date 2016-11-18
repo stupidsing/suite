@@ -1,6 +1,5 @@
 package suite.wildcard;
 
-import java.util.Deque;
 import java.util.List;
 
 import suite.adt.Pair;
@@ -39,17 +38,15 @@ public class Matcher {
 	}
 
 	public List<String[]> matches(String pattern, String input) {
-		return applyPattern(pattern, input).filter(State::eof).map(state -> {
-			Deque<String> deque = state.matches.reverse();
-			return deque.toArray(new String[deque.size()]);
-		}).toList();
+		return applyPattern(pattern, input) //
+				.filter(State::eof) //
+				.map(state -> state.matches.reverse().toArray(new String[0])) //
+				.toList();
 	}
 
 	public Pair<String[], String> matchStart(String pattern, String input) {
 		State state = applyPattern(pattern, input).first();
-
-		Deque<String> deque = state.matches.reverse();
-		return Pair.of(deque.toArray(new String[deque.size()]), input.substring(state.pos));
+		return Pair.of(state.matches.reverse().toArray(new String[0]), input.substring(state.pos));
 	}
 
 	private Streamlet<State> applyPattern(String pattern, String input) {
