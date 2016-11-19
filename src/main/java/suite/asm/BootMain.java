@@ -11,7 +11,7 @@ import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 import suite.util.Util.RunOption;
 
-// mvn exec:java -Dexec.mainClass=suite.asm.BootMain && qemu-system-i386 target/boot.bin
+// mvn exec:java -Dexec.mainClass=suite.asm.BootMain && qemu-system-x86_64 target/boot.bin
 public class BootMain extends ExecutableProgram {
 
 	public static void main(String args[]) {
