@@ -20,8 +20,13 @@ public class OtfTest {
 
 		List<String> commands = FileUtil //
 				.findPaths(Paths.get("/home/ywsing/.fonts")) //
-				.map2(Path::toString, path -> {
-					Execute exec = new Execute(new String[] { "otfinfo", "-i", path.toString(), }, "");
+				.map(Path::toString) //
+				.filter(path -> false //
+						|| path.toLowerCase().endsWith(".otf") //
+						|| path.toLowerCase().endsWith(".ttf") //
+				) //
+				.map2(path -> path, path -> {
+					Execute exec = new Execute(new String[] { "otfinfo", "-i", path, }, "");
 					return Read.from(exec.out.split("\n")) //
 							.map(line -> line.split(":")) //
 							.filter(arr -> 2 <= arr.length) //
@@ -29,10 +34,6 @@ public class OtfTest {
 							.filter((k, v) -> keys.contains(k)) //
 							.toMap();
 				}) //
-				.filter((k, m) -> false //
-						|| k.toLowerCase().endsWith(".otf") //
-						|| k.toLowerCase().endsWith(".ttf") //
-				) //
 				.map((k, m) -> {
 					String f = m.get(familyKey);
 					String sf = m.get(subfamilyKey);
