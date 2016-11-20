@@ -22,7 +22,7 @@ public class FunCreatorTest {
 	@Test
 	public void testBiPredicate() {
 		@SuppressWarnings("rawtypes")
-		FunCreator<BiPredicate> fc = new FunCreator<>( //
+		FunCreator<BiPredicate> fc = FunCreator.of( //
 				BiPredicate.class, //
 				"test", //
 				Type.getDescriptor(boolean.class), //
@@ -36,8 +36,10 @@ public class FunCreatorTest {
 	@Test
 	public void testField() {
 		String fieldName = "f";
-		Class<? extends IntFun> clazz = intFun(fieldName).get();
+		FunCreator<IntFun> fc = intFun(fieldName, Type.getDescriptor(int.class));
+		fc.create(fc.add(fc.field(fieldName), fc.parameter(1)));
 		IntFun intFun = Rethrow.reflectiveOperationException(() -> {
+			Class<? extends IntFun> clazz = fc.get();
 			IntFun f = clazz.newInstance();
 			clazz.getDeclaredField(fieldName).set(f, 1);
 			return f;
@@ -48,7 +50,7 @@ public class FunCreatorTest {
 	@Test
 	public void testFun() {
 		@SuppressWarnings("rawtypes")
-		FunCreator<Fun> fc = new FunCreator<>( //
+		FunCreator<Fun> fc = FunCreator.of( //
 				Fun.class, //
 				"apply", //
 				Type.getDescriptor(Object.class), //
@@ -64,15 +66,10 @@ public class FunCreatorTest {
 		String fieldName0 = "f0";
 		String fieldName1 = "f1";
 
-		FunCreator<IntFun> fc0 = intFun(fieldName0);
-		FunCreator<IntFun> fc1 = new FunCreator<>( //
-				IntFun.class, //
-				"apply", //
-				Type.getDescriptor(int.class), //
-				Arrays.asList(Type.getDescriptor(int.class)), //
-				Read.<String, String> empty2() //
-						.cons(fieldName1, Type.getDescriptor(IntFun.class)) //
-						.toMap());
+		FunCreator<IntFun> fc0 = intFun(fieldName0, Type.getDescriptor(int.class));
+		fc0.create(fc0.add(fc0.field(fieldName0), fc0.parameter(1)));
+
+		FunCreator<IntFun> fc1 = intFun(fieldName1, Type.getDescriptor(IntFun.class));
 		fc1.create(fc1.field(fieldName1).invoke(fc0, fc1.constant(3)));
 
 		IntFun intFun = Rethrow.reflectiveOperationException(() -> {
@@ -88,17 +85,15 @@ public class FunCreatorTest {
 		assertEquals(4, intFun.apply(5));
 	}
 
-	private FunCreator<IntFun> intFun(String fieldName) {
-		FunCreator<IntFun> fc = new FunCreator<>( //
+	private FunCreator<IntFun> intFun(String fieldName, String fieldType) {
+		return new FunCreator<>( //
 				IntFun.class, //
 				"apply", //
 				Type.getDescriptor(int.class), //
 				Arrays.asList(Type.getDescriptor(int.class)), //
 				Read.<String, String> empty2() //
-						.cons(fieldName, Type.getDescriptor(int.class)) //
+						.cons(fieldName, fieldType) //
 						.toMap());
-		fc.create(fc.add(fc.field(fieldName), fc.parameter(1)));
-		return fc;
 	}
 
 }
