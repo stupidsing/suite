@@ -1,6 +1,7 @@
 package suite.jdk;
 
 import java.io.PrintStream;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +42,20 @@ public class FunCreator<I> implements Opcodes {
 
 	private Class<? extends I> clazz;
 
-	public static <I> FunCreator<I> of(Class<I> ic, String mn, String rt, List<String> ps) {
-		return new FunCreator<>(ic, mn, rt, ps, new HashMap<>());
+	public static <I> FunCreator<I> of(Class<I> ic, String mn) {
+		HashMap<String, String> fs = new HashMap<>();
+		return of(ic, mn, fs);
 	}
 
-	public FunCreator(Class<I> ic, String mn, String rt, List<String> ps, Map<String, String> fs) {
+	public static <I> FunCreator<I> of(Class<I> ic, String mn, Map<String, String> fs) {
+		Method methods[] = Rethrow.reflectiveOperationException(() -> ic.getMethods());
+		Method method = Read.from(methods).filter(m -> Util.stringEquals(m.getName(), mn)).uniqueResult();
+		String rt = Type.getDescriptor(method.getReturnType());
+		List<String> ps = Read.from(method.getParameterTypes()).map(Type::getDescriptor).toList();
+		return new FunCreator<>(ic, mn, rt, ps, fs);
+	}
+
+	private FunCreator(Class<I> ic, String mn, String rt, List<String> ps, Map<String, String> fs) {
 		interfaceClass = ic;
 		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
