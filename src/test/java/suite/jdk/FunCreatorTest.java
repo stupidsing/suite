@@ -40,9 +40,7 @@ public class FunCreatorTest {
 	@Test
 	public void testFun() {
 		@SuppressWarnings("rawtypes")
-		FunCreator<Fun> fc = FunCreator.of( //
-				Fun.class, //
-				"apply");
+		FunCreator<Fun> fc = FunCreator.of(Fun.class, "apply");
 		fc.create(fc.parameter(1));
 		@SuppressWarnings("unchecked")
 		Fun<Object, Object> fun = fc.instantiate();
