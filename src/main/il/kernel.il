@@ -117,6 +117,8 @@ constant log-dword .s .i = ( cs-puts [.s,]; cs-put-hex4 [.i,]; cs-nl []; );
 
 #include(ne2k.il);
 
+#include(tests.il);
+
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
 (
 	declare d0 = inb [+x21,];
@@ -179,6 +181,8 @@ asm _ MOV (ESP, kernel-second-esp);
 	gc-setup [];
 	svc-setup [];
 	kb-setup [];
+
+	test [];
 
 	asm _ STI ();
 
