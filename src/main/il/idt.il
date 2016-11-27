@@ -46,7 +46,7 @@ declare idt-setup = function [] (
 		asm _ IRET ();
 	);
 
-	snippet (
+	declare handle-irq-interrupt = snippet (
 		asm .irq-handler ();
 		isr-prolog;
 
@@ -74,7 +74,9 @@ declare idt-setup = function [] (
 		isr-epilog;
 		asm _ ADD (ESP, 4);
 		asm _ IRET ();
+	);
 
+	declare handle-fault-interrupt = snippet (
 		asm .fault-handler-0 ();
 		asm _ POP (EAX);
 		asm _ PUSH (0);
