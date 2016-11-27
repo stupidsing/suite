@@ -143,9 +143,13 @@ declare pg-setup = function [] (
 	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2
 	asm _ D8 (+x00);
+
+	pg-map [ap-local-apic-address, ap-local-apic-address,];
 );
 
 declare pg-teardown = function [] (
+	pg-unmap [ap-local-apic-address,];
+
 	signature pt0 = int;
 	& pt0;
 
