@@ -147,9 +147,10 @@ declare ap-setup = function [] (
 	--dw-set [reg, (dw-get [reg,]) or +x100,];
 
 	-- enable APIC timer
-	dw-set [ap-local-apic-address + +x320, +x20020,]; -- timer (periodic)
-	dw-set [ap-local-apic-address + +x3E0, 0x3,]; -- timer divisor
-	dw-set [ap-local-apic-address + +x380, ticksIn10ms,]; -- timer initial count
+	--declare ticksIn10ms = 12000000;
+	--dw-set [ap-local-apic-address + +x320, +x20020,]; -- timer (periodic)
+	--dw-set [ap-local-apic-address + +x3E0, 0x3,]; -- timer divisor
+	--dw-set [ap-local-apic-address + +x380, ticksIn10ms,]; -- timer initial count
 );
 
 declare ap-teardown = function [] (
