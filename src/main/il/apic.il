@@ -149,7 +149,7 @@ declare ap-setup = function [] (
 	-- enable APIC timer
 	--declare ticksIn10ms = 12000000;
 	--dw-set [ap-local-apic-address + +x320, +x20020,]; -- timer (periodic)
-	--dw-set [ap-local-apic-address + +x3E0, 0x3,]; -- timer divisor
+	--dw-set [ap-local-apic-address + +x3E0, +x3,]; -- timer divisor
 	--dw-set [ap-local-apic-address + +x380, ticksIn10ms,]; -- timer initial count
 );
 
