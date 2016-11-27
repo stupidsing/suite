@@ -26,7 +26,7 @@ declare sch-deallocate = function [e,] (
 	mm-deallocate sch-node e;
 );
 
-declare sch-switch = function [] (-- Round robin in action
+declare sch-switch = function [] ( -- Round robin in action
 	{sch-current-process} = dl-next [sch-current-process,];
 );
 
