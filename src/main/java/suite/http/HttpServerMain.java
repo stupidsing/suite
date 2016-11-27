@@ -45,7 +45,11 @@ public class HttpServerMain {
 	private HttpHandler dispatch(IMap<String, HttpHandler> map) {
 		return request -> {
 			Pair<String, HttpRequest> p = request.split();
-			return map.get(p.t0).handle(p.t1);
+			HttpHandler handler = map.get(p.t0);
+			if (handler != null)
+				return handler.handle(p.t1);
+			else
+				throw new RuntimeException("No handler for " + p.t0);
 		};
 	}
 
