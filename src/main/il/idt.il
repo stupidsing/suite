@@ -89,31 +89,36 @@ declare idt-setup = function [] (
 		asm _ MOV (DI, 16);
 		asm _ MOV (DS, DI);
 		asm _ PUSH (`+x40000`);
+		asm _ MOV (ESI, EBP);
 		asm _ MOV (EBP, ESP);
 
 		(
 			declare vector;
 			declare code;
+			declare cr2;
 			declare eip0;
 			declare cs0;
-			declare cr2;
-			asm _ ADD (ESP, 20);
+			declare ebp0;
+			asm _ ADD (ESP, 24);
 			asm _ PUSH (EAX);
 			asm _ PUSH (EBX);
-			asm _ PUSH (ECX);
-			asm _ PUSH (EDX);
 			asm _ MOV (EAX, CR2);
 			asm _ PUSH (EAX);
+			asm _ PUSH (ECX);
+			asm _ PUSH (EDX);
+			asm _ PUSH (ESI);
 
 			log-byte "FAULT INTERRUPT = " vector;
 			log-dword "ERROR CODE = " code;
+			log-dword "CR2 = " cr2;
 			log-word "CS = " cs0;
 			log-dword "EIP = " eip0;
-			log-dword "CR2 = " cr2;
+			log-dword "EBP = " ebp0;
 		);
 
 		sch-exit [];
 	);
+
 
 	for i in (0, 256) do (
 		idt-set-entry [i, handle-general-interrupt, true,];
