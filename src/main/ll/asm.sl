@@ -37,6 +37,7 @@ asis:_s:_a (CLD ()) (+xFC, .e)/.e #
 asis:_s:_a (CLI ()) (+xFA, .e)/.e #
 asis:.s:.a (CMP (.op0, .op1)) .e :- asi-2op:.s:.a .op0 .op1 +x38 +x80 07 .e #
 asis:.s:.a (CMPXCHG (.rm, .reg)) (+x0F, .e1)/.ex :- asi-rm-reg:.s:.a +xB0 .rm .reg .e1/.ex #
+asis:_s:_a (CPUID) (+x0F, +xA2, .e)/.e #
 asis:_s:_a (D8 .imm) .e :- as-emit:8 .imm .e #
 asis:_s:_a (D16 .imm) .e :- as-emit:16 .imm .e #
 asis:_s:_a (D32 .imm) .e :- as-emit:32 .imm .e #
