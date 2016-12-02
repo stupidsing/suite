@@ -27,7 +27,7 @@ public class CircularProgrammingTest {
 				+ "                let `$minl, $l1` := mintree1 {l} >> \n " //
 				+ "                let `$minr, $r1` := mintree1 {r} >> \n " //
 				+ "                lesser {minl} {minr}, Tree (l1, r1) \n " //
-				+ "            || anything => error \n " //
+				+ "            || anything => error () \n " //
 				+ "        # \n " //
 				+ "        n1 := first {mintree1 {t}} # \n " //
 				+ "        t1 := second {mintree1 {t}} # \n " //
