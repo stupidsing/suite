@@ -58,10 +58,6 @@ public class EvalPredicates {
 			return comparer.compare(tree.getLeft(), tree.getRight()) <= 0;
 		case LT____:
 			return comparer.compare(tree.getLeft(), tree.getRight()) < 0;
-		case GE____:
-			return comparer.compare(tree.getLeft(), tree.getRight()) >= 0;
-		case GT____:
-			return comparer.compare(tree.getLeft(), tree.getRight()) > 0;
 		default:
 			throw new RuntimeException("Unknown comparison");
 		}

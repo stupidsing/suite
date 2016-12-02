@@ -9,7 +9,7 @@ public class FastFourierTransform {
 		int s = size;
 		int bits = 0;
 
-		while (s > 1) {
+		while (1 < s) {
 			s >>= 1;
 			bits++;
 		}
@@ -46,7 +46,7 @@ public class FastFourierTransform {
 
 	private static int reverseBits(int bits, int n0) {
 		int n1 = 0;
-		while (bits-- > 0) {
+		while (0 < bits--) {
 			n1 = n1 << 1 | n0 & 1;
 			n0 >>= 1;
 		}

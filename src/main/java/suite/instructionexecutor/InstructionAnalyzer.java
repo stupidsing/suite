@@ -131,8 +131,6 @@ public class InstructionAnalyzer {
 
 			switch (insn.insn) {
 			case EVALEQ________:
-			case EVALGE________:
-			case EVALGT________:
 			case EVALLE________:
 			case EVALLT________:
 			case EVALNE________:

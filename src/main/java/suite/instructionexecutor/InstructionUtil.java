@@ -24,8 +24,6 @@ public class InstructionUtil {
 		evalInsns.put(TermOp.PLUS__, Insn.EVALADD_______);
 		evalInsns.put(TermOp.DIVIDE, Insn.EVALDIV_______);
 		evalInsns.put(TermOp.EQUAL_, Insn.EVALEQ________);
-		evalInsns.put(TermOp.GE____, Insn.EVALGE________);
-		evalInsns.put(TermOp.GT____, Insn.EVALGT________);
 		evalInsns.put(TermOp.LE____, Insn.EVALLE________);
 		evalInsns.put(TermOp.LT____, Insn.EVALLT________);
 		evalInsns.put(TermOp.MULT__, Insn.EVALMUL_______);
@@ -60,8 +58,6 @@ public class InstructionUtil {
 		EVALADD_______("EVAL-ADD"), //
 		EVALDIV_______("EVAL-DIV"), //
 		EVALEQ________("EVAL-EQ"), //
-		EVALGE________("EVAL-GE"), //
-		EVALGT________("EVAL-GT"), //
 		EVALLE________("EVAL-LE"), //
 		EVALLT________("EVAL-LT"), //
 		EVALMOD_______("EVAL-MOD"), //

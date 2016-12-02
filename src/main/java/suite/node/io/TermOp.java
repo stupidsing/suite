@@ -22,8 +22,6 @@ public enum TermOp implements Operator {
 	NOTEQ_(" != ", Assoc.RIGHT), //
 	LE____(" <= ", Assoc.RIGHT), //
 	LT____(" < ", Assoc.RIGHT), //
-	GE____(" >= ", Assoc.RIGHT), //
-	GT____(" > ", Assoc.RIGHT), //
 	PLUS__(" + ", Assoc.RIGHT), //
 	MINUS_(" - ", Assoc.LEFT), //
 	MULT__(" * ", Assoc.RIGHT), //

@@ -43,8 +43,8 @@ public class LogicCompilerTest {
 	public void testEval() {
 		assertTrue(prove("3 < 4"));
 		assertTrue(prove("3 <= 4"));
-		assertFalse(prove("4 > 4"));
-		assertFalse(prove("3 >= 4"));
+		assertFalse(prove("5 < 4"));
+		assertFalse(prove("4 <= 3"));
 	}
 
 	@Test

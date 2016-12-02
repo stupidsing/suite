@@ -141,14 +141,6 @@ public class InstructionExecutor implements AutoCloseable {
 					i = comparer.compare(regs[insn.op1], regs[insn.op2]);
 					regs[insn.op0] = atom(i == 0);
 					break;
-				case EVALGE________:
-					i = comparer.compare(regs[insn.op1], regs[insn.op2]);
-					regs[insn.op0] = atom(i >= 0);
-					break;
-				case EVALGT________:
-					i = comparer.compare(regs[insn.op1], regs[insn.op2]);
-					regs[insn.op0] = atom(i > 0);
-					break;
 				case EVALLE________:
 					i = comparer.compare(regs[insn.op1], regs[insn.op2]);
 					regs[insn.op0] = atom(i <= 0);

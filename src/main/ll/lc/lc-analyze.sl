@@ -5,7 +5,7 @@ lc-deterministic (.a _)
 	:- member (NOT, ONCE, SYSTEM-CALL,) .a, !
 #
 lc-deterministic (.oper _)
-	:- member (EQ, GE, GT, LE, LT, NE,) .oper, !
+	:- member (EQ, LE, LT, NE,) .oper, !
 #
 lc-deterministic (AND .a .b)
 	:- (lc-deterministic .a; lc-cut-choices .b)

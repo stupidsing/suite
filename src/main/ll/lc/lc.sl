@@ -75,7 +75,7 @@ lc-parse .tree (.oper1 .left1 .right1) .nv
 lc-parse .tree (.oper1 .left1 .right1) .nv
 	:- tree .tree .left .oper .right
 	, member (
-		' = '/EQ, ' != '/NE, ' > '/GT, ' < '/LT, ' >= '/GE, ' <= '/LE,
+		' = '/EQ, ' != '/NE, ' < '/LT, ' <= '/LE,
 	) .oper/.oper1
 	, !
 	, lc-parse-pattern .left .left1 .nv0
@@ -213,7 +213,7 @@ lc-compile YES .rem .env .c0/.cx
 	:- lc-compile .rem YES .env .c0/.cx
 #
 lc-compile (.oper .a .b) .rem .pls/.vs/.cut .c0/.cx
-	:- member (GE, GT, LE, LT, NE,) .oper
+	:- member (LE, LT, NE,) .oper
 	, !
 	, to.string .oper .os, concat "EVAL-" .os .is, to.atom .is .inst
 	, lc-create-node .a .vs .c0/.c1/.reg0

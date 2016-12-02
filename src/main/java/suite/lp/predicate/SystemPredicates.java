@@ -44,8 +44,6 @@ public class SystemPredicates {
 		addPredicate(TermOp.LE____, evalPredicates.compare);
 		addPredicate(TermOp.LT____, evalPredicates.compare);
 		addPredicate(TermOp.NOTEQ_, evalPredicates.notEquals);
-		addPredicate(TermOp.GE____, evalPredicates.compare);
-		addPredicate(TermOp.GT____, evalPredicates.compare);
 		addPredicate("generalize", evalPredicates.generalize);
 		addPredicate("graph.bind", evalPredicates.graphBind);
 		addPredicate("graph.generalize", evalPredicates.graphGeneralize);

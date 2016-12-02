@@ -17,14 +17,6 @@ lc-rewrite (EQ .left0 .right0) (EQ .left1 .right1)
 #
 lc-rewrite FAIL FAIL
 #
-lc-rewrite (GE .left0 .right0) (GE .left1 .right1)
-	:- lc-rewrite-node .left0 .left1
-	, lc-rewrite-node .right0 .right1
-#
-lc-rewrite (GT .left0 .right0) (GT .left1 .right1)
-	:- lc-rewrite-node .left0 .left1
-	, lc-rewrite-node .right0 .right1
-#
 lc-rewrite (LE .left0 .right0) (LE .left1 .right1)
 	:- lc-rewrite-node .left0 .left1
 	, lc-rewrite-node .right0 .right1

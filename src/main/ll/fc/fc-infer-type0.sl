@@ -106,7 +106,7 @@ fc-infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	; member (' - ', ' * ', ' / ', ' %% ',) .oper, !
 	, fc-infer-compatible-types .left .right .env .tr0/.trx .type
 	, .type = NUMBER
-	; member (' = ', ' != ', ' > ', ' < ', ' >= ', ' <= ',) .oper, !
+	; member (' = ', ' != ', ' < ', ' <= ',) .oper, !
 	, fc-infer-compatible-types .left .right .env .tr0/.trx _
 	, .type = BOOLEAN
 #

@@ -8,7 +8,7 @@ void fail(char *msg) {
 }
 
 int v(char c) {
-	return c > 'A' ? c - 'A' + 10 : c - '0';
+	return 'A' < c ? c - 'A' + 10 : c - '0';
 }
 
 int main(int argc, char **argv) {

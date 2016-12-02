@@ -296,7 +296,7 @@ fc-instantiate .list .type0 .typex
 fc-operator .oper
 	:- member (' + ', ' - ', ' * ', ' / ', ' %% ',
 		' = ', ' != ',
-		' > ', ' < ', ' >= ', ' <= ',
+		' < ', ' <= ',
 		',', ';',
 		' . ',
 	) .oper

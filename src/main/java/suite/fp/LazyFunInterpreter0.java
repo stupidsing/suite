@@ -53,8 +53,6 @@ public class LazyFunInterpreter0 {
 		env = env.put(TermOp.NOTEQ_.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) != i(b)))));
 		env = env.put(TermOp.LE____.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) <= i(b)))));
 		env = env.put(TermOp.LT____.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) < i(b)))));
-		env = env.put(TermOp.GE____.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) >= i(b)))));
-		env = env.put(TermOp.GT____.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) > i(b)))));
 		env = env.put(TermOp.PLUS__.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) + i(b)))));
 		env = env.put(TermOp.MINUS_.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) - i(b)))));
 		env = env.put(TermOp.MULT__.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) * i(b)))));

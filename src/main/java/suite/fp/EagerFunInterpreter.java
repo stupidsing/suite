@@ -254,8 +254,6 @@ public class EagerFunInterpreter {
 		df.put(TermOp.NOTEQ_.getName(), f2((a, b) -> b(compare(a, b) != 0)));
 		df.put(TermOp.LE____.getName(), f2((a, b) -> b(compare(a, b) <= 0)));
 		df.put(TermOp.LT____.getName(), f2((a, b) -> b(compare(a, b) < 0)));
-		df.put(TermOp.GE____.getName(), f2((a, b) -> b(compare(a, b) >= 0)));
-		df.put(TermOp.GT____.getName(), f2((a, b) -> b(compare(a, b) > 0)));
 		df.put(TermOp.PLUS__.getName(), f2((a, b) -> Int.of(i(a) + i(b))));
 		df.put(TermOp.MINUS_.getName(), f2((a, b) -> Int.of(i(a) - i(b))));
 		df.put(TermOp.MULT__.getName(), f2((a, b) -> Int.of(i(a) * i(b))));

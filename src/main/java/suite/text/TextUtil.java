@@ -91,8 +91,8 @@ public class TextUtil {
 				if (isDetectSameChanges //
 						&& phx.t0 != phx.t1 //
 						&& phy.t0 != phy.t1 //
-						&& (s0 = detectSame(phx.t0, phy.t0)) > 0 //
-						&& (s1 = detectSame(phx.t1, phy.t1)) > 0) {
+						&& 0 < (s0 = detectSame(phx.t0, phy.t0)) //
+						&& 0 < (s1 = detectSame(phx.t1, phy.t1))) {
 					pair = Pair.of(phx.t0.subbytes(0, s0), phx.t1.subbytes(0, s1));
 					pairs = merge( //
 							cons(Pair.of(phx.t0.subbytes(s0), phx.t1.subbytes(s1)), ptx), //

@@ -116,7 +116,7 @@ ic-infer-type0 _ THIS I32
 #
 ic-infer-type0 .vs (TREE .op .value0 .value1) .type
 	:- once (
-		member (' = ', ' != ', ' <= ', ' < ', ' >= ', ' > ',) .op, .type = BOOLEAN
+		member (' = ', ' != ', ' <= ', ' < ',) .op, .type = BOOLEAN
 		; .type = .valueType
 	)
 	, ic-infer-type .vs .value0 .valueType

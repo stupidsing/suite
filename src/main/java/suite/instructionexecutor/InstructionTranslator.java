@@ -281,12 +281,6 @@ public class InstructionTranslator implements Closeable {
 			case EVALEQ________:
 				app("#{reg} = " + compare + " == 0", op0, op1, op2);
 				break;
-			case EVALGE________:
-				app("#{reg} = " + compare + " >= 0", op0, op1, op2);
-				break;
-			case EVALGT________:
-				app("#{reg} = " + compare + " > 0", op0, op1, op2);
-				break;
 			case EVALLE________:
 				app("#{reg} = " + compare + " <= 0", op0, op1, op2);
 				break;

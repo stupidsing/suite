@@ -88,8 +88,6 @@ public class LazyFunInterpreter {
 		df.put(TermOp.NOTEQ_.getName(), binary((a, b) -> b(compare(a.get(), b.get()) != 0)));
 		df.put(TermOp.LE____.getName(), binary((a, b) -> b(compare(a.get(), b.get()) <= 0)));
 		df.put(TermOp.LT____.getName(), binary((a, b) -> b(compare(a.get(), b.get()) < 0)));
-		df.put(TermOp.GE____.getName(), binary((a, b) -> b(compare(a.get(), b.get()) >= 0)));
-		df.put(TermOp.GT____.getName(), binary((a, b) -> b(compare(a.get(), b.get()) > 0)));
 		df.put(TermOp.PLUS__.getName(), binary((a, b) -> Int.of(i(a) + i(b))));
 		df.put(TermOp.MINUS_.getName(), binary((a, b) -> Int.of(i(a) - i(b))));
 		df.put(TermOp.MULT__.getName(), binary((a, b) -> Int.of(i(a) * i(b))));
@@ -191,7 +189,7 @@ public class LazyFunInterpreter {
 				result = frame -> {
 					Mutable<Thunk_> value = Mutable.nil();
 					frame.add(() -> value.get().get());
-					value.set(value_.apply(frame)::get);
+					value.set(() -> value_.apply(frame).get());
 					return expr.apply(frame);
 				};
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {

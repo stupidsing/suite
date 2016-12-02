@@ -98,7 +98,7 @@ fc-infer-type0 .env (TREE .oper .left .right) .type
 		member (' + ', ' - ', ' * ', ' / ', ' %% ',) .oper, !
 		, .inputType = NUMBER
 		, .type = NUMBER
-		; member (' = ', ' != ', ' > ', ' < ', ' >= ', ' <= ',) .oper, !
+		; member (' = ', ' != ', ' < ', ' <= ',) .oper, !
 		, .type = BOOLEAN
 	)
 	, fc-infer-type0 .env .left .inputType

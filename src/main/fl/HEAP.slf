@@ -29,7 +29,7 @@ define delete-min :=
 		case
 		|| `$h0; $h1; $hs` => meld {meld {h0} {h1}} {merge-pairs {hs}}
 		|| `$h;` => h
-		|| anything => error
+		|| anything => error ()
 	>>
 	`Tree ($elem, $heap)` => merge-pairs {heap}
 >>
