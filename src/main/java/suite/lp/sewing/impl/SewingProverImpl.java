@@ -269,10 +269,10 @@ public class SewingProverImpl implements SewingProver {
 			tr = or(Read.from(list).map(n -> compile0(sb, n)));
 		else if ((m = Suite.matcher(".0 = .1").apply(node)) != null) {
 			boolean b = complexity(m[0]) <= complexity(m[1]);
-			Node n0 = b ? m[1] : m[0];
-			Node n1 = b ? m[0] : m[1];
-			BiPredicate<BindEnv, Node> p = sb.compileBind(n0);
-			Fun<Env, Node> f = sb.compile(n1);
+			Node n0 = b ? m[0] : m[1];
+			Node n1 = b ? m[1] : m[0];
+			BiPredicate<BindEnv, Node> p = sb.compileBind(n1);
+			Fun<Env, Node> f = sb.compile(n0);
 			tr = rt -> p.test(rt, f.apply(rt.env)) ? okay : fail;
 		} else if ((m = Suite.matcher("builtin:.0:.1 .2").apply(node)) != null) {
 			String className = ((Atom) m[0]).name;
