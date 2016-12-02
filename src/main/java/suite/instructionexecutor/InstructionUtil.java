@@ -72,8 +72,6 @@ public class InstructionUtil {
 		GETINTRINSIC__("GET-INTRINSIC"), //
 		HEAD__________("HEAD"), //
 		IFFALSE_______("IF-FALSE"), //
-		IFGE__________("IF-GE"), //
-		IFGT__________("IF-GT"), //
 		IFLE__________("IF-LE"), //
 		IFLT__________("IF-LT"), //
 		IFNOTCONS_____("IF-NOT-CONS"), //
