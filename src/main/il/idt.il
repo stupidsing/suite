@@ -30,7 +30,7 @@ declare idt-setup = function [] (
 		asm _ IRET ();
 	);
 
-	declare handle-timer-interrupt = snippet (
+	declare handle-timer-interrupt-pic = snippet (
 		isr-prolog;
 		ticks =+ 1;
 		(+xB8000 as pointer:int)/* =+ 1;
@@ -42,6 +42,30 @@ declare idt-setup = function [] (
 		-- Sends end of interrupt signal
 		outb [+x20, +x20,];
 
+		isr-epilog;
+		asm _ IRET ();
+	);
+
+	declare handle-timer-interrupt-apic = snippet (
+		isr-prolog;
+		(+xB80A0 as pointer:int)/* = 65;
+		-=ticks =+ 1;
+		(+xB8000 as pointer:int)/* =+ 1;
+
+		-- Switch processes
+		{sch-current-process/*/current/+busy} = true;
+		sch-yield [];=-
+
+		-- Sends end of interrupt signal
+		dw-set [ap-local-apic-address + +xB0, 0,]; -- EOI
+
+		isr-epilog;
+		asm _ IRET ();
+	);
+
+	declare handle-spurious-interrupt-apic = snippet (
+		isr-prolog;
+		log "SPURIOUS INTERRUPT";
 		isr-epilog;
 		asm _ IRET ();
 	);
@@ -119,7 +143,6 @@ declare idt-setup = function [] (
 		sch-exit [];
 	);
 
-
 	for i in (0, 256) do (
 		idt-set-entry [i, handle-general-interrupt, true,];
 	);
@@ -190,7 +213,9 @@ declare idt-setup = function [] (
 		set-irq-handler +x2F .irq-handler;
 	);
 
-	idt-set-entry [+x20, handle-timer-interrupt, true,];
+	idt-set-entry [+x20, handle-timer-interrupt-pic, true,];
+	--idt-set-entry [+x20, handle-timer-interrupt-apic, true,];
+	--idt-set-entry [+x27, handle-spurious-interrupt-apic, true,];
 
 	(
 		signature idtr = int * 2;
