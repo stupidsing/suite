@@ -122,7 +122,7 @@ declare pg-deallocate = function [p, nPages,] (
 			declare logical = p + i shl 12;
 			declare physical = pg-get-physical [logical,];
 			pg-unmap [logical,];
-			pm-unref [physical,];
+			pg-release-pt [physical,];
 		);
 	);
 );
