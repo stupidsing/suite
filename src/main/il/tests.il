@@ -13,5 +13,5 @@ declare test = function [] (
 	log-dword "object = " (gc-allocate [& clazz,]);
 	declare root = null;
 	gc-gc [root,];
-	log-dword "object" (gc-allocate [& clazz,]);
+	log-dword "object = " (gc-allocate [& clazz,]);
 );
