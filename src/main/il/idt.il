@@ -48,13 +48,12 @@ declare idt-setup = function [] (
 
 	declare handle-timer-interrupt-apic = snippet (
 		isr-prolog;
-		(+xB80A0 as pointer:int)/* = 65;
-		-=ticks =+ 1;
+		ticks =+ 1;
 		(+xB8000 as pointer:int)/* =+ 1;
 
 		-- Switch processes
 		{sch-current-process/*/current/+busy} = true;
-		sch-yield [];=-
+		sch-yield [];
 
 		-- Sends end of interrupt signal
 		dw-set [ap-local-apic-address + +xB0, 0,]; -- EOI
