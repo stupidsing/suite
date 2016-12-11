@@ -1,5 +1,5 @@
 ic-parse (asm .i) (ASM .i)
-	:- ! -- Assembler might have variables, skip processing
+	:- ! -- assembler might have variables, skip processing
 #
 ic-parse .do0 .parsed
 	:- ic-parse-better-option .do0 .parsed, !
@@ -63,7 +63,7 @@ ic-parse .array/:.index (INDEX _ .array1 .index1)
 	:- ic-parse .array .array1
 	, ic-parse .index .index1
 #
-ic-parse (.sub [.params]) (INVOKE .sub1 .ips) -- Traditional subroutine invocation
+ic-parse (.sub [.params]) (INVOKE .sub1 .ips) -- traditional subroutine invocation
 	:- ic-parse .sub .sub1
 	, zip .params .ips .list
 	, list.query .list .param:.ip (ic-parse-invoke-parameter .param .ip)
@@ -72,12 +72,12 @@ ic-parse ({.var} = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
 	, ic-parse .value .value1
 #
-ic-parse (baseless [.params] .do) (METHOD0 .mps .do1) -- Traditional subroutine definition
+ic-parse (baseless [.params] .do) (METHOD0 .mps .do1) -- traditional subroutine definition
 	:- zip .params .mps .list
 	, list.query .list .param:.mp (ic-parse-method-parameter .param .mp)
 	, ic-parse .do .do1
 #
-ic-parse (function [.params] .do) (METHOD THIS .method) -- Traditional subroutine definition
+ic-parse (function [.params] .do) (METHOD THIS .method) -- traditional subroutine definition
 	:- ic-parse (baseless [.params] .do) .method
 #
 ic-parse (new .type .nvs0) (NEW .type1 .nvs1)

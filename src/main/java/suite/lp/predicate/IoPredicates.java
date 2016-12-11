@@ -33,7 +33,7 @@ public class IoPredicates {
 	public BuiltinPredicate dumpStack = (prover, ps) -> {
 		String date = LocalDateTime.now().toString();
 		String trace = prover.getTracer().getStackTrace();
-		LogUtil.info("-- Stack trace at " + date + " --\n" + trace);
+		LogUtil.info("-- stack trace at " + date + " --\n" + trace);
 		return true;
 	};
 

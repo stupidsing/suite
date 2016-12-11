@@ -1,4 +1,4 @@
--- Assembler. Only supports 32-bit addressing.
+-- assembler. Only supports 32-bit addressing.
 --
 -- as	= assembler
 -- asi	= assemble instruction
@@ -192,11 +192,11 @@ asi-shift:.size:.a .rm .imm8 _ .b0 .n .e0/.ex
 	, (.size = 8, .b1 = .b0; member (16, 32, 64,) .size, .b1 = .b0 + 1)
 #
 
--- Common single-operand instructions, like DEC, NEG
+-- common single-operand instructions, like DEC, NEG
 asi-1op:.size:_a .reg .b _ _ .e :- asi-reg:.size .b .reg .e, member (16, 32, 64,) .size #
 asi-1op:.size:.a .rm _ .b .n .e :- asi-rm:.size:.a .b .rm .n .e #
 
--- Common two-operand instructions, like ADD, OR, XOR
+-- common two-operand instructions, like ADD, OR, XOR
 asi-2op:.size:_a .acc .imm .b0 _ _ .e
 	:- asi-acc-imm:.size .b1 .acc .imm .e
 	, .b1 = .b0 + 4

@@ -22,7 +22,7 @@ fc-optimize-flow .p0 .p1
 	, list.query .ts (.t0 .t1) (fc-optimize-flow .t0 .t1)
 #
 
--- Remove unreferenced variables
+-- remove unreferenced variables
 fc-remove-unref-vars .do0 .dox .rb0/.rbx
 	:- fc-define-var .do0 .var .value0 .do1 .dow .var .value1 .do2
 	, fc-remove-unref-vars .do1 .do2 ()/.rbs
@@ -55,10 +55,10 @@ fc-replace-var-by-value .v0 .value (VAR .v0) .value
 	:- !
 #
 fc-replace-var-by-value .v0 _ (PRAGMA DEF-OUTSIDE (DEF-VARS (.v0 .value,) .do)) (DEF-VARS (.v0 .value,) .do)
-	:- ! -- Variable scope overrode by another one
+	:- ! -- variable scope overrode by another one
 #
 fc-replace-var-by-value .v0 .v1 (DEF-VARS (.v0 .value0,) .do) (DEF-VARS (.v0 .value1,) .do)
-	:- ! -- Variable scope overrode in value field only
+	:- ! -- variable scope overrode in value field only
 	, fc-replace-var-by-value .v0 .v1 .value0 .value1
 #
 fc-replace-var-by-value .v0 .v1 .p0 .p1

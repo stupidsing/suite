@@ -119,14 +119,14 @@ constant log-dword .s .i = ( cs-puts [.s,]; cs-put-hex4 [.i,]; cs-nl []; );
 
 #include(tests.il);
 
--- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
+-- reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
 (
 	declare d0 = inb [+x21,];
 	declare d1 = inb [+xA1,];
-	outb [+x20, +x11,]; -- Initializes and disables ICW4
+	outb [+x20, +x11,]; -- initializes and disables ICW4
 	outb [+xA0, +x11,];
-	outb [+x21, +x20,]; -- Remaps IRQ0-7
-	outb [+xA1, +x28,]; -- Remaps IRQ8-F
+	outb [+x21, +x20,]; -- remaps IRQ0-7
+	outb [+xA1, +x28,]; -- remaps IRQ8-F
 	outb [+x21, +x04,];
 	outb [+xA1, +x02,];
 	outb [+x21, +x01,]; -- 8086/88 (MCS-80/85) mode
@@ -135,17 +135,17 @@ constant log-dword .s .i = ( cs-puts [.s,]; cs-put-hex4 [.i,]; cs-nl []; );
 	outb [+xA1, d1,];
 );
 
--- Sets the 8253 to 100 timer ticks per second, and enables keyboard
+-- sets the 8253 to 100 timer ticks per second, and enables keyboard
 outb [+x43, +x36,];
 outb [+x40, 11932 % 256,];
 outb [+x40, 11932 / 256,];
 outb [+x21, +xFC,];
 
--- Initializes task state segment (TSS)
+-- initializes task state segment (TSS)
 for (declare i = 0; i < 104; i =+ 4) do (
 	dw-set [tss-address + i, 0,];
 );
---dw-set [tss-address + 4, current-process as int + size-of sch-node,]; -- Set by scheduler instead
+--dw-set [tss-address + 4, current-process as int + size-of sch-node,]; -- set by scheduler instead
 dw-set [tss-address + 8, +x10,];
 
 asm _ MOV (AX, +x2B);
@@ -155,7 +155,7 @@ declare user-mode = function [] (
 	asm .user PUSH (`+x40000`);
 	asm _ MOV (EBP, ESP);
 
-	-- Shows OK
+	-- shows OK
 	svc-service [svc-putc_, +x4F, 0,];
 	svc-service [svc-putc_, +x4B, 0,];
 	svc-service [svc-putc_, +x0A, 0,];
@@ -163,8 +163,8 @@ declare user-mode = function [] (
 	while true do (time-yield []);
 );
 
--- Switch to a smaller stack so as to fit in the process stack space.
--- Global scope variables, defined before this point, are kept in the first stack.
+-- switch to a smaller stack so as to fit in the process stack space.
+-- global scope variables, defined before this point, are kept in the first stack.
 asm _ MOV (ESP, kernel-second-esp);
 
 (function [] (
@@ -177,7 +177,7 @@ asm _ MOV (ESP, kernel-second-esp);
 	sch-setup [];
 	idt-setup [];
 	pm-setup [];
-	pg-setup []; -- Sets up paging
+	pg-setup []; -- sets up paging
 	gc-setup [];
 	svc-setup [];
 	kb-setup [];
@@ -194,7 +194,7 @@ asm _ MOV (ESP, kernel-second-esp);
 		log "From another thread";
 	) else (
 		log "From first thread";
-		while true do ( -- Halt CPU if none of the process is busy
+		while true do ( -- halt CPU if none of the process is busy
 			asm _ CLI ();
 			declare process = sch-head-process;
 			declare busy = false;
@@ -206,7 +206,7 @@ asm _ MOV (ESP, kernel-second-esp);
 		);
 	);
 
-	-- Enters user mode
+	-- enters user mode
 	declare user-stack-address = pg-allocate [1,];
 	user-stack-address + 4096;
 	asm _ MOV (EBX, EAX);
@@ -215,12 +215,12 @@ asm _ MOV (ESP, kernel-second-esp);
 	asm _ MOV (ES, AX);
 	asm _ MOV (FS, AX);
 	asm _ MOV (GS, AX);
-	asm _ PUSH (EAX); -- Would be SS
-	asm _ PUSH (EBX); -- Would be ESP
+	asm _ PUSH (EAX); -- would be SS
+	asm _ PUSH (EBX); -- would be ESP
 	asm _ PUSHF ();
-	asm _ PUSH (+x1B); -- Would be CS
+	asm _ PUSH (+x1B); -- would be CS
 	asm _ D8 (+x68);
-	asm _ D32 (.user); -- Would be IP
+	asm _ D32 (.user); -- would be IP
 	asm _ IRET ();
 
 	pg-deallocate [user-stack-address, 1,];

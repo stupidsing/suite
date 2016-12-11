@@ -19,7 +19,7 @@ ic-erase-variable .fv .do0 .dox
 #
 
 -- list.query will not work since the offset values in .fv are waiting to be bound.
--- The cloning effect in the list query predicate would divert the argument.
+-- the cloning effect in the list query predicate would divert the argument.
 ic-erase-variables _ ()
 #
 ic-erase-variables .fv (.do0 .dox, .ts)

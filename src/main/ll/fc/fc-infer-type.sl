@@ -1,15 +1,15 @@
 -------------------------------------------------------------------------------
--- Type inference predicates
+-- type inference predicates
 --
--- Environment consists of:
+-- environment consists of:
 -- .ve - dictionary of variables / specialization, and their corresponding types
 -- .te - list of types / their corresponding belonging classes
 --
--- Inside variables include parent function definitions and parameter variables
+-- inside variables include parent function definitions and parameter variables
 -- that do not need type specialization.
--- Outside variables are local variables that require type specialization.
+-- outside variables are local variables that require type specialization.
 --
--- Notes about generic types:
+-- notes about generic types:
 -- - Generic type class, usually used in abstract data structures.
 --   Written like B-TREE :t.
 --   Resolved by binding the type structures.

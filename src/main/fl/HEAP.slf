@@ -1,4 +1,4 @@
--- Pairing heap
+-- pairing heap
 -- http://en.wikipedia.org/wiki/Pairing_heap
 
 use external STANDARD >>

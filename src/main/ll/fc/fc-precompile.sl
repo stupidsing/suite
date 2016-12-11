@@ -51,7 +51,7 @@ fc-precompile-compile .mode .lib .fcs .parsed .pred
 	, .fcs = .frame1/.ves .cs0/.csx/.regs
 	, .pred = (
 		fc-compile-use-lib .mode .lib .do .frame0/.ve .c0/.cx/.reg
-			:- fc-dict-union-bind .ve .ves .ve1 -- Import and export symbols
+			:- fc-dict-union-bind .ve .ves .ve1 -- import and export symbols
 			, fc-compile .do .frame1/.ve1 .cs0/.csx/.regs
 	)
 #
@@ -71,14 +71,14 @@ fc-precompile-compile-node .parsed .frame/.ve .c0/.cx/.reg
 	:- fc-compile .parsed .frame/.ve .c0/.cx/.reg
 #
 
--- Parser
+-- parser
 fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 
--- Type inferencer
+-- type inferencer
 fc-infer-type0 .uvt ($$PRECOMPILE .uvt _) NUMBER :- ! #
 
--- Lazyifier and optimizer
+-- lazyifier and optimizer
 fc-rewrite ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) .ts/.ts :- ! #
 
--- Code generator
+-- code generator
 fc-compile ($$PRECOMPILE _ .fve .cr) .fve .cr :- ! #

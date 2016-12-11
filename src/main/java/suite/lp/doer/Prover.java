@@ -72,8 +72,8 @@ public class Prover {
 	public boolean prove(Node query) {
 		Thread hook = new Thread(() -> {
 			String d = LocalDateTime.now().toString();
-			LogUtil.info("-- Trace dump at " + d + " --\n" + tracer.getTrace());
-			LogUtil.info("-- Fail dump at " + d + " --\n" + tracer.getFailTrace());
+			LogUtil.info("-- trace dump at " + d + " --\n" + tracer.getTrace());
+			LogUtil.info("-- fail dump at " + d + " --\n" + tracer.getFailTrace());
 		});
 
 		if (config.isTrace())

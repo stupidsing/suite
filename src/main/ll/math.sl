@@ -34,7 +34,7 @@ equate0 (.tree0 = .tree1)
 #
 equate0 (.tree = .value)
 	:- tree .tree .f .op .g
-	, member (' + ',' - ',' * ',) .op -- Only perform exact calculations
+	, member (' + ',' - ',' * ',) .op -- only perform exact calculations
 	, is.int .f, is.int .g
 	, let .value .tree
 #

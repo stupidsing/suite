@@ -83,8 +83,8 @@ cg-opt-stack-usage .li0 .ri0
 cg-opt-stack-usage .insns .insns
 #
 
--- Return instruction would actually perform leave (i.e. frame restoration).
--- We can skip the LEAVE instruction if it obstruct optimizations.
+-- return instruction would actually perform leave (i.e. frame restoration).
+-- we can skip the LEAVE instruction if it obstruct optimizations.
 cg-opt-tail-calls .li0 .ri0
 	:- cg-is-opt-tail-calls
 	, .li0 = (.call .op, .li1)

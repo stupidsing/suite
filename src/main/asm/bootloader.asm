@@ -5,19 +5,19 @@
 .boot
 	CLI  ()
 
-	-- Enables A20 gate by BIOS
+	-- enables A20 gate by BIOS
 	MOV  (AX, +x2401)
 	INT  (+x15)
 
-	-- Loads kernel
+	-- loads kernel
 	AOP  ()
 	MOV  (`.bootDrive`, DL)
 
-	-- Resets disk drive
+	-- resets disk drive
 	XOR  (AH, AH)
 	INT  (+x13)
 
-	-- Load 128 sectors, i.e. 64K data
+	-- load 128 sectors, i.e. 64K data
 	MOV  (EAX, .kernelAddress)
 	SHR  (EAX, 4)
 	MOV  (ES, AX)
@@ -36,9 +36,9 @@
 	ADD  (WORD `.dapMemAddress`, 8192)
 	JNZ  (.readNextSector)
 
-	-- Kernel loaded to ES:[0]
+	-- kernel loaded to ES:[0]
 
-	-- Enters protected mode
+	-- enters protected mode
 	AOP  ()
 	LGDT (`.gdtr`)
 
@@ -54,7 +54,7 @@
 	MOV  (GS, AX)
 	MOV  (SS, AX)
 
-	-- Jumps to the kernel
+	-- jumps to the kernel
 	D8   (+x66)
 	D8   (+x67)
 	D8   (+xEA)
@@ -65,28 +65,28 @@
 	D8   (0)
 
 	ADVANCE (+x7D00)
-.dap -- Disk address packet for LBA BIOS
-	D16  (+x0010) -- Size if this structure
-	D16  (+x0010) -- Number of sectors to transfer
+.dap -- disk address packet for LBA BIOS
+	D16  (+x0010) -- size if this structure
+	D16  (+x0010) -- number of sectors to transfer
 .dapMemAddress
-	D16  (+x0000) -- Memory address
-	D16  (+x4000) -- Memory segment
+	D16  (+x0000) -- memory address
+	D16  (+x4000) -- memory segment
 .dapLba
-	D32  (+x00000001) -- Starting LBA, low 32-bits
-	D32  (+x00000000) -- Starting LBA, high 32-bits
+	D32  (+x00000001) -- starting LBA, low 32-bits
+	D32  (+x00000000) -- starting LBA, high 32-bits
 
 .gdt
 	D32  (0)
 	D32  (0)
-	D32  (+x0000FFFF) -- Supervisor code descriptor
+	D32  (+x0000FFFF) -- supervisor code descriptor
 	D32  (+x00CF9A00)
-	D32  (+x0000FFFF) -- Supervisor data descriptor
+	D32  (+x0000FFFF) -- supervisor data descriptor
 	D32  (+x00CF9200)
-	D32  (+x0000FFFF) -- User code descriptor
+	D32  (+x0000FFFF) -- user code descriptor
 	D32  (+x00CFFA00)
-	D32  (+x0000FFFF) -- User data descriptor
+	D32  (+x0000FFFF) -- user data descriptor
 	D32  (+x00CFF200)
-	D32  (+x08000867) -- Task state segment
+	D32  (+x08000867) -- task state segment
 	D32  (+x00408902)
 .gdtr
 	D16  (+x2F)

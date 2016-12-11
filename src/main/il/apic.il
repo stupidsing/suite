@@ -74,7 +74,7 @@ declare ap-parse-madt = function [pointer:ap-acpi-madt madt,] (
 		) else if (type = 1) then ( -- IO APIC
 			declare io-apic = p as pointer:ap-io-apic;
 			{ap-io-apic-address} = io-apic/*/io-apic-address;
-		) else if (type = 2) then ( -- Interrupt override
+		) else if (type = 2) then ( -- interrupt override
 			declare intr-override = p as pointer:ap-interrupt-override;
 		) else ();
 

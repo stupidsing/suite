@@ -56,7 +56,7 @@ declare ne2k-send = function [buffer, len,] (
 		outw [ne2k-io-base + +x10, b,];
 	);
 
-	while (not ne2k-is-dma-completed) do ( -- Wait for DMA to complete
+	while (not ne2k-is-dma-completed) do ( -- wait for DMA to complete
 		sch-yield [];
 	);
 
@@ -67,7 +67,7 @@ declare ne2k-send = function [buffer, len,] (
 	outb [ne2k-io-base + +x06, padded-len ushr 8,];
 	outb [ne2k-io-base + +x00, +x26,];
 
-	while (not ne2k-is-transmitted) do ( -- Wait for packet to transmit
+	while (not ne2k-is-transmitted) do ( -- wait for packet to transmit
 		sch-yield [];
 	);
 );
@@ -78,7 +78,7 @@ declare ne2k-probe = function [] (
 
 	time-sleep [100,];
 
-	-- Tests for a generic DP8390 NIC
+	-- tests for a generic DP8390 NIC
 	(+x27 and inb [ne2k-io-base + +x00,] = +x21
 		&& +x80 and inb [ne2k-io-base + +x07,] = +x80
 	);

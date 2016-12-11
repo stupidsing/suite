@@ -1,17 +1,17 @@
 -------------------------------------------------------------------------------
--- Type inference predicates
+-- type inference predicates
 --
--- Environment consists of:
+-- environment consists of:
 -- .ue - dictionary of inside variables / their corresponding types
 -- .ve - dictionary of outside variables / their corresponding types, specialized
 -- .te - list of types / their corresponding belonging classes
 -- .tr - type deduction rule to be assembled
 --
--- Inside variables include parent function definitions and parameter variables
+-- inside variables include parent function definitions and parameter variables
 -- that do not need type specialization.
--- Outside variables are local variables that require type specialization.
+-- outside variables are local variables that require type specialization.
 --
--- Notes about generic types:
+-- notes about generic types:
 -- - Generic type class, usually used in abstract data structures.
 --   Written like B-TREE {:t}.
 --   Represented internally as (CLASS (PARAMETERIZED (VAR t) B-TREE)).
@@ -176,7 +176,7 @@ fc-resolve-type-rules0 .tr
 	)
 #
 
--- Sort the resolve type rules by easiness
+-- sort the resolve type rules by easiness
 fc-sort-resolve-type-rules () () () :- !
 #
 fc-sort-resolve-type-rules (.tr, .trs) (.tr, .ps) .nps
@@ -190,7 +190,7 @@ fc-sort-resolve-type-rules (.tr, .trs) .ps (.tr, .nps)
 fc-resolve-easy-type-rule (SUB-SUPER-TYPES _ .t _) :- bound .t #
 fc-resolve-easy-type-rule (TYPE-IN-TYPES _) #
 
--- When resolving types:
+-- when resolving types:
 -- - Try bind equivalent sub-type to super-type relation;
 --   - Do not resolve relation when both types are not clear;
 --   - Try reduce to type classes to resolve;
@@ -231,7 +231,7 @@ fc-sub-super-type-pair .te .type1 .class1 -- reduce to type classes
 #
 fc-sub-super-type-pair .te .t0 .t1 :- bound .t0, fc-sub-super-type-pair0 .te .t0 .t1 #
 
--- Morph children types to their supers
+-- morph children types to their supers
 fc-sub-super-type-pair0 .te (FUN-OF .it0 .ot) (FUN-OF .it1 .ot)
 	:- fc-sub-super-type-pair .te .it1 .it0
 #

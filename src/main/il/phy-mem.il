@@ -34,14 +34,14 @@ declare pm-deallocate = function [page,] (
 declare pm-setup = function [] (
 	declare pagex = memory-region-start;
 
-	-- Detects memory size
+	-- detects memory size
 	while (
 		declare t = (dw-get [pagex,]) xor +xFFFFFFFF;
 		dw-set [pagex, t,];
 		dw-get [pagex =+ 4096,] = t;
 	) do ();
 
-	-- Sets up page allocator
+	-- sets up page allocator
 	declare nPages = pm-get-number [pagex,];
 	declare p0 = memory-region-start;
 	declare p1 = p0 + nPages * size-of int;

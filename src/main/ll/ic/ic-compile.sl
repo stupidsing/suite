@@ -1,12 +1,12 @@
--- Register usage
--- EAX - expression stack
--- EBX - expression stack
--- ECX - scratch; shift counter; divisor
--- EDX - scratch; dividend
--- ESI - expression stack
--- EDI - scratch
--- EBP - stack frame
--- ESP - stack pointer
+-- register usage
+-- eAX - expression stack
+-- eBX - expression stack
+-- eCX - scratch; shift counter; divisor
+-- eDX - scratch; dividend
+-- eSI - expression stack
+-- eDI - scratch
+-- eBP - stack frame
+-- eSP - stack pointer
 ic-compile-register .do .e0/.ex
 	:- ic-compile-operand-better-option .do .e0/.e1 .op
 	, !, .e1 = (_ MOV ($0, .op), .ex)
@@ -34,7 +34,7 @@ ic-compile-operand .do .e $0
 #
 
 ic-compile-register0 (ASM .i) (.i, _ R+, .e)/.e
-	:- ! -- Assembler might have variables, skip processing
+	:- ! -- assembler might have variables, skip processing
 #
 ic-compile-register0 (DECLARES _ .offset .size .do) .e0/.ex
 	:- .e0 = (_ FR-PUSHN (.size)
@@ -163,7 +163,7 @@ ic-compile-register0 (WHILE .while .do) .e0/.ex
 		, .ex)
 #
 
--- Generates smaller code
+-- generates smaller code
 ic-compile-register-better-option (LET .memory .value) .e0/.ex
 	:- ic-compile-register .value .e0/.e1
 	, ic-compile-operand-better-option .memory .e1/.e2 .op
@@ -395,7 +395,7 @@ ic-operator .operator .op
 )/.e
 	:- ic-operator-setcc .operator .setcc
 #
-ic-operator ' * ' .op -- IMUL cannot accept immediate operands
+ic-operator ' * ' .op -- iMUL cannot accept immediate operands
 	(_ MOV ($0, .op)
 	, _ IMUL ($1, $0)
 	, _ R-

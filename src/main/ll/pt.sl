@@ -114,7 +114,7 @@ pt-prove6-extract-ors .pre (.term, .post) .term .corrs
 	:- append .pre .post .corrs
 #
 
--- Basic transform function
+-- basic transform function
 pt-rewrite (IMP .p0 .q0) (IMP .px .qx) (.p0 .px, .q0 .qx,) :- ! #
 pt-rewrite (AND .p0 .q0) (AND .px .qx) (.p0 .px, .q0 .qx,) :- ! #
 pt-rewrite (FOR-ALL .e .p0) (FOR-ALL .e .px) (.p0 .px,) :- ! #

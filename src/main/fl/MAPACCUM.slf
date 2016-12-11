@@ -27,7 +27,7 @@ define mapl := fun => list =>
 define mapr := fun => list =>
 	mapaccumr {v => e => v, fun {e}} {} {list} | second
 >>
-define unfoldl := fun => value => -- Unfolds infinitely
+define unfoldl := fun => value => -- unfolds infinitely
 	mapaccuml {v => e => fun {v}} {value} {} | second
 >>
 define unfoldr := fun => value =>

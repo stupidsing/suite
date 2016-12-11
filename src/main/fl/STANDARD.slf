@@ -1,5 +1,5 @@
--- There are few functions that might have side effects: call%i*
--- Logs are theoretically 'invisible' to the execution environment, so they are
+-- there are few functions that might have side effects: call%i*
+-- logs are theoretically 'invisible' to the execution environment, so they are
 -- still considered pure.
 
 ---------------------------------------------------------------------------

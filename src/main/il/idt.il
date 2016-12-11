@@ -35,11 +35,11 @@ declare idt-setup = function [] (
 		ticks =+ 1;
 		(+xB8000 as pointer:int)/* =+ 1;
 
-		-- Switch processes
+		-- switch processes
 		{sch-current-process/*/current/+busy} = true;
 		sch-yield [];
 
-		-- Sends end of interrupt signal
+		-- sends end of interrupt signal
 		outb [+x20, +x20,];
 
 		isr-epilog;
@@ -51,12 +51,12 @@ declare idt-setup = function [] (
 		ticks =+ 1;
 		(+xB8000 as pointer:int)/* =+ 1;
 
-		-- Switch processes
+		-- switch processes
 		{sch-current-process/*/current/+busy} = true;
 		sch-yield [];
 
-		-- Sends end of interrupt signal
-		dw-set [ap-local-apic-address + +xB0, 0,]; -- EOI
+		-- sends end of interrupt signal
+		dw-set [ap-local-apic-address + +xB0, 0,]; -- eOI
 
 		isr-epilog;
 		asm _ IRET ();
@@ -86,7 +86,7 @@ declare idt-setup = function [] (
 				irq-get-sink [out irq-sink, irq-number,];
 				if (((& irq-sink) as pointer:int)/* != 0) then (irq-sink [irq-number,]) else ();
 
-				-- Sends end of interrupt signal
+				-- sends end of interrupt signal
 				if (8 <= irq-number) then (outb [+xA0, +x20,]) else ();
 				outb [+x20, +x20,];
 			) else (
@@ -105,10 +105,10 @@ declare idt-setup = function [] (
 		asm _ PUSH (0);
 		asm _ PUSH (EAX);
 		asm .fault-handler-e ();
-		asm _ POP (EAX); -- Interrupt vector
-		asm _ POP (EBX); -- Error code
-		asm _ POP (ECX); -- Error EIP
-		asm _ POP (EDX); -- Error CS
+		asm _ POP (EAX); -- interrupt vector
+		asm _ POP (EBX); -- error code
+		asm _ POP (ECX); -- error EIP
+		asm _ POP (EDX); -- error CS
 		asm _ MOV (DI, 16);
 		asm _ MOV (DS, DI);
 		asm _ PUSH (`+x40000`);

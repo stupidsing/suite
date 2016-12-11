@@ -1,10 +1,10 @@
--- Constraint handling rules
+-- constraint handling rules
 
 chr-chain .rules .facts0/.factsx
 	:- chr-deduce .rules .facts0/.facts1
 	, !, chr-chain .rules .facts1/.factsx
 #
-chr-chain _ .facts/.facts -- Termination
+chr-chain _ .facts/.facts -- termination
 #
 
 chr-deduce .rules .facts0/.factsx
@@ -43,7 +43,7 @@ chr-retract .c (.fact, .facts0)/(.fact, .factsx) :- chr-retract .c .facts0/.fact
 
 chr-assert-list () .facts/.facts
 #
-chr-assert-list (.a = .b, .newFacts) .facts0/(.a = .b, .factsx) -- Built-in syntactic equality
+chr-assert-list (.a = .b, .newFacts) .facts0/(.a = .b, .factsx) -- built-in syntactic equality
 	:- !
 	, replace .a .b .facts0 .facts1
 	, chr-assert-list .newFacts .facts1/.factsx

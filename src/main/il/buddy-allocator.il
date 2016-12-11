@@ -39,7 +39,7 @@ declare ba-allocate0 = function [l2,] (
 			declare block0 = (ba-allocate0 [l2 + 1,]) as pointer:ba-node;
 			if (block0 != null) then (
 				declare block1 = block0 +offset (exp2rel [l2,]);
-				{block0/*/current/size} = -1; -- Allocated
+				{block0/*/current/size} = -1; -- allocated
 				{block1/*/current/size} = l2;
 				dl-insert-next [& lists/:l2, block1,];
 				block0;
@@ -82,7 +82,7 @@ declare ba-setup = function [] (
 
 	declare largest-l2 = max-l2 - 1;
 	declare first = ba-region0 as pointer:ba-node;
-	{first/*/current/size} = largest-l2; -- Granularity
+	{first/*/current/size} = largest-l2; -- granularity
 	dl-insert-next [& lists/:largest-l2, first,];
 );
 

@@ -125,11 +125,11 @@ declare pg-setup = function [] (
 			for i1 in (0, 1024) do (
 				declare entry1 = if (0 < physical && physical < phyx1) then (physical + 261) else 0;
 				physical += 4096;
-				dw-set [pt1 + i1 shl 2, entry1,]; -- Global, user, present
+				dw-set [pt1 + i1 shl 2, entry1,]; -- global, user, present
 			);
-			pt1 + 7; -- Maps kernel memory, user, read/write, present
+			pt1 + 7; -- maps kernel memory, user, read/write, present
 		) else if (i0 = 1023) then (
-			pt0 + 1; -- Maps itself
+			pt0 + 1; -- maps itself
 		) else 0;
 		dw-set [pt0 + i0 shl 2, entry0,];
 	);
@@ -137,8 +137,8 @@ declare pg-setup = function [] (
 	& pt0;
 
 	asm _ MOV (EAX, `EAX`);
-	asm _ MOV (CR3, EAX); -- Set page table address
-	asm _ MOV (EAX, CR0); -- Enable paging
+	asm _ MOV (CR3, EAX); -- set page table address
+	asm _ MOV (EAX, CR0); -- enable paging
 	asm _ OR (EAX, +x80000000);
 	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2
@@ -153,9 +153,9 @@ declare pg-teardown = function [] (
 	signature pt0 = int;
 	& pt0;
 
-	asm _ MOV (EBX, CR3); -- Get page table address
+	asm _ MOV (EBX, CR3); -- get page table address
 	asm _ MOV (`EAX`, EBX);
-	asm _ MOV (EAX, CR0); -- Disable paging
+	asm _ MOV (EAX, CR0); -- disable paging
 	asm _ AND (EAX, +x7FFFFFFF);
 	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2

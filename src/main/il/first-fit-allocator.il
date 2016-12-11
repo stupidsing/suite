@@ -74,7 +74,7 @@ declare ffa-deallocate = function [p, int size,] (
 
 declare ffa-setup = function [] (
 	declare first = ffa-region0 as pointer:ffa-node;
-	declare last = (ffa-regionx - ffa-node-size) as pointer:ffa-node; -- Stopper record
+	declare last = (ffa-regionx - ffa-node-size) as pointer:ffa-node; -- stopper record
 	ffa-create [ffa-head,];
 	ffa-create [first,];
 	ffa-create [last,];

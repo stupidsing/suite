@@ -147,19 +147,19 @@ declare pg-setup = function [] (
 							for i3 in (0, 1024) do (
 								declare entry3 = if (0 < physical && physical < phyx3) then (physical + 261) else 0;
 								physical += 4096;
-								qw-set [pt3 + i3 shl 3, entry3,]; -- Global, user, present
+								qw-set [pt3 + i3 shl 3, entry3,]; -- global, user, present
 							);
-							pt3 + 7; -- Maps kernel memory, user, read/write, present
+							pt3 + 7; -- maps kernel memory, user, read/write, present
 						) else 0;
 						qw-set [pt1 + i2 shl 3, entry2,];
 					);
-					pt2 + 7; -- Maps kernel memory, user, read/write, present
+					pt2 + 7; -- maps kernel memory, user, read/write, present
 				) else 0;
 				qw-set [pt0 + i1 shl 3, entry1,];
 			);
-			pt1 + 7; -- Maps kernel memory, user, read/write, present
+			pt1 + 7; -- maps kernel memory, user, read/write, present
 		) else if (i0 = 1023) then (
-			pt0 + 1; -- Maps itself
+			pt0 + 1; -- maps itself
 		) else 0;
 		qw-set [pt0 + i0 shl 3, entry0,];
 	);
@@ -167,15 +167,15 @@ declare pg-setup = function [] (
 	& pt0;
 
 	asm _ MOV (EAX, `EAX`);
-	asm _ MOV (CR3, EAX); -- Set page table address
-	asm _ MOV (EAX, CR4); -- Enable PAE
+	asm _ MOV (CR3, EAX); -- set page table address
+	asm _ MOV (EAX, CR4); -- enable PAE
 	asm _ OR (EAX, 32);
 	asm _ MOV (CR4, EAX);
-	asm _ MOV (ECX, +xC0000080); -- Set long mode bit in EFER MSR
+	asm _ MOV (ECX, +xC0000080); -- set long mode bit in EFER MSR
 	asm _ RDMSR ();
 	asm _ OR (EAX, 256);
 	asm _ WRMSR ();
-	asm _ MOV (EAX, CR0); -- Enable paging
+	asm _ MOV (EAX, CR0); -- enable paging
 	asm _ OR (EAX, +x80000000);
 	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2
@@ -190,9 +190,9 @@ declare pg-teardown = function [] (
 	signature pt0 = int;
 	& pt0;
 
-	asm _ MOV (EBX, CR3); -- Get page table address
+	asm _ MOV (EBX, CR3); -- get page table address
 	asm _ MOV (`EAX`, EBX);
-	asm _ MOV (EAX, CR0); -- Disable paging
+	asm _ MOV (EAX, CR0); -- disable paging
 	asm _ AND (EAX, +x7FFFFFFF);
 	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2

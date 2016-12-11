@@ -11,7 +11,7 @@ constant sch-node = dl-node struct (
 );
 
 declare pointer:sch-node sch-current-process = null;
-declare sch-head-process; -- Cyclic doubly-linked list
+declare sch-head-process; -- cyclic doubly-linked list
 
 declare sch-allocate = function [] (
 	declare process = mm-allocate sch-node;
@@ -26,7 +26,7 @@ declare sch-deallocate = function [e,] (
 	mm-deallocate sch-node e;
 );
 
-declare sch-switch = function [] ( -- Round robin in action
+declare sch-switch = function [] ( -- round robin in action
 	{sch-current-process} = dl-next [sch-current-process,];
 );
 
@@ -79,7 +79,7 @@ declare sch-exit = function [] (
 	{sch-current-process/*/current/action} = sch-action-exit;
 	if (sch-current-process != sch-head-process) then (
 		sch-yield [];
-	) else ( -- Initial process should not exit. Halt if this happened.
+	) else ( -- initial process should not exit. halt if this happened.
 		asm _ CLI ();
 		asm _ HLT ();
 	);
@@ -89,7 +89,7 @@ declare sch-setup = function [] (
 	{sch-head-process} = sch-allocate [];
 	{sch-current-process} = sch-head-process;
 
-	-- Uses the process stack
+	-- uses the process stack
 	declare stack-end = sch-current-process as int + size-of sch-node;
 	copy [stack-end - stack-size * 4, kernel-second-esp - stack-size * 4, stack-size * 4,];
 	stack-end;
@@ -97,7 +97,7 @@ declare sch-setup = function [] (
 	asm _ ADD (EBP, EAX);
 	asm _ ADD (ESP, EAX);
 
-	-- Sets up machine status register for SYSENTER
+	-- sets up machine status register for SYSENTER
 	sch-yield [];
 );
 

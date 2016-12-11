@@ -23,8 +23,8 @@ declare svc-handle-service = function [p0, p1, p2,] (
 );
 
 declare sysenter-sink = baseless [p0, p1, p2,] (
-	asm _ PUSH (EDI); -- Return IP
-	asm _ PUSH (EDX); -- Return ESP
+	asm _ PUSH (EDI); -- return IP
+	asm _ PUSH (EDX); -- return ESP
 	asm _ PUSH (EAX); -- p0
 	asm _ PUSH (EBX); -- p1
 	asm _ PUSH (ECX); -- p2
@@ -68,7 +68,7 @@ declare svc-service = function [p0, p1, p2,] (
 
 declare svc-setup = function [] (
 	wrmsr [+x174, +x8, 0,];
-	--wrmsr [+x175, syscall-stack-address, 0,]; -- Set by scheduler instead
+	--wrmsr [+x175, syscall-stack-address, 0,]; -- set by scheduler instead
 	wrmsr [+x176, sysenter-sink as int, 0,];
 );
 

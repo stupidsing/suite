@@ -11,7 +11,7 @@ declare cs-set-cursor = function [row, col,] (
 
 declare cs-nl0 = function [] (
 	declare p0 = +xB8000;
-	copy [p0, p0 + 160, 3840,]; -- Scrolls up
+	copy [p0, p0 + 160, 3840,]; -- scrolls up
 	zero [p0 + 3840, 160,];
 
 	{cs-column-offset} = 0;
