@@ -57,7 +57,7 @@ public class ThunkUtil {
 			public Node source() {
 				Tree tree;
 
-				// First node is not a thunk, remainings are
+				// first node is not a thunk, remainings are
 				if (!first)
 					node_ = yawn.apply(node_);
 				else

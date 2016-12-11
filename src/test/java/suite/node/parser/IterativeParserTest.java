@@ -100,7 +100,7 @@ public class IterativeParserTest {
 				iterativeParser.parse(in);
 			return true;
 		};
-		test.source(); // Warm-up
+		test.source(); // warm-up
 		LogUtil.duration("parse", test);
 	}
 

@@ -33,7 +33,7 @@ public class Plane implements RtObject {
 		if (MathUtil.epsilon < Math.abs(denum))
 			adv = (originIndex - Vector.dot(normal, ray.startPoint)) / denum;
 		else
-			adv = -1f; // Treats as not-hit
+			adv = -1f; // treats as not-hit
 
 		float advance = adv;
 

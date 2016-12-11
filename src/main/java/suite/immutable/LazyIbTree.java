@@ -175,19 +175,19 @@ public class LazyIbTree<T> implements ITree<T> {
 
 	private List<Slot<T>> update(List<Slot<T>> node0, T t, Fun<T, T> fun) {
 
-		// Finds appropriate slot
+		// finds appropriate slot
 		FindSlot fs = new FindSlot(node0, t);
 		int size = node0.size();
 		int s0 = fs.i, s1 = fs.i + 1;
 		List<Slot<T>> slots0 = fs.slot.readSlots();
 		List<Slot<T>> slots2;
 
-		// Adds the node into it
+		// adds the node into it
 		if (!slots0.isEmpty()) {
 			List<Slot<T>> slots1 = update(slots0, t, fun);
 			List<Slot<T>> inner;
 
-			// Merges with a neighbor if less than minimum number of nodes
+			// merges with a neighbor if less than minimum number of nodes
 			if (slots1.size() == 1 && (inner = slots1.get(0).readSlots()).size() < minBranchFactor)
 				if (0 < s0)
 					slots2 = meld(node0.get(--s0).readSlots(), inner);
@@ -211,10 +211,10 @@ public class LazyIbTree<T> implements ITree<T> {
 		List<Slot<T>> slots3 = Util.add(Util.left(node0, s0), slots2, Util.right(node0, s1));
 		List<Slot<T>> node1;
 
-		// Checks if need to split
+		// checks if need to split
 		if (slots3.size() < maxBranchFactor)
 			node1 = Arrays.asList(slot(slots3));
-		else { // Splits into two if reached maximum number of nodes
+		else { // splits into two if reached maximum number of nodes
 			List<Slot<T>> leftSlots = Util.left(slots3, minBranchFactor);
 			List<Slot<T>> rightSlots = Util.right(slots3, minBranchFactor);
 			node1 = Arrays.asList(slot(leftSlots), slot(rightSlots));

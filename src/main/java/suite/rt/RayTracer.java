@@ -138,12 +138,12 @@ public class RayTracer {
 			if ((reflective || transparency < 0f) && 0 < depth) {
 				float cos = -dot / (float) Math.sqrt(Vector.abs2(ray.dir));
 
-				// Account reflection
+				// account reflection
 				Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * dot));
 				Vector reflectPoint = Vector.add(hitPoint, negligible(normal));
 				Vector reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
-				// Account refraction
+				// account refraction
 				float eta = isInside ? glassRefractiveIndex / airRefractiveIndex : airRefractiveIndex / glassRefractiveIndex;
 				float k = 1 - eta * eta * (1 - cos * cos);
 				Vector refractColor;
@@ -156,13 +156,13 @@ public class RayTracer {
 				} else
 					refractColor = Vector.origin;
 
-				// Accurate Fresnel equation
+				// accurate Fresnel equation
 				// float cos1 = (float) Math.sqrt(k);
 				// float f0 = (eta * cos - cos1) / (eta * cos + cos1);
 				// float f1 = (cos - eta * cos1) / (cos + eta * cos1);
 				// float fresnel = (f0 * f0 + f1 * f1) / 2f;
 
-				// Schlick approximation
+				// schlick approximation
 				boolean isDramaticMix = true;
 				float r = (airRefractiveIndex - glassRefractiveIndex) / (airRefractiveIndex + glassRefractiveIndex);
 				float mix = isDramaticMix ? 0.1f : r * r;
@@ -170,19 +170,19 @@ public class RayTracer {
 				float cos2 = cos1 * cos1;
 				float fresnel = mix + (1 - mix) * cos1 * cos2 * cos2;
 
-				// Fresnel is often too low. Mark it up for visual effect.
+				// fresnel is often too low. Mark it up for visual effect.
 				float fresnel1 = adjustFresnel + fresnel * (1 - adjustFresnel);
 
 				color = Vector.add(Vector.mul(reflectColor, fresnel1), Vector.mul(refractColor, (1f - fresnel1) * transparency));
 			} else {
 				color = Vector.origin;
 
-				// Account light sources
+				// account light sources
 				for (LightSource lightSource : lightSources) {
 					Vector lightDir = Vector.sub(lightSource.source(), hitPoint);
 					float lightDot = Vector.dot(lightDir, normal);
 
-					if (0 < lightDot) { // Facing the light
+					if (0 < lightDot) { // facing the light
 						Vector lightPoint = Vector.add(hitPoint, negligible(normal));
 						RayHit lightRayHit = nearestHit(scene.hit(new Ray(lightPoint, lightDir)));
 

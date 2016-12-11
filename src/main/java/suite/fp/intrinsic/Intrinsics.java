@@ -56,7 +56,7 @@ public class Intrinsics {
 		}
 	};
 
-	// Forces suspended node evaluation
+	// forces suspended node evaluation
 	public static Intrinsic id_ = (callback, inputs) -> inputs.get(0);
 
 	public static <T> Node drain(IntrinsicCallback callback, IntFunction<Node> read, int size) {

@@ -88,7 +88,7 @@ public class Main extends ExecutableProgram {
 
 	private String readScript(String filename) throws IOException {
 		String contents = FileUtil.read(filename);
-		if (contents.startsWith("#")) // Skips first line comment
+		if (contents.startsWith("#")) // skips first line comment
 			contents = contents.substring(contents.indexOf('\n') + 1);
 		return contents;
 	}

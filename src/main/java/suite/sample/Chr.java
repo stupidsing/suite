@@ -151,7 +151,7 @@ public class Chr {
 
 		if (Binder.bind(then, generalizer.generalize(Suite.substitute(".0 = .1", a, b)), new Trail())) {
 
-			// Built-in syntactic equality
+			// built-in syntactic equality
 			Reference from = generalizer.getVariable(a);
 			Reference to = generalizer.getVariable(b);
 

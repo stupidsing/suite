@@ -106,7 +106,7 @@ public class Formatter {
 		Node node = node0.finalNode();
 		Integer objectId = System.identityHashCode(node);
 
-		// Avoids infinite recursion if object is recursive
+		// avoids infinite recursion if object is recursive
 		if (set.add(objectId)) {
 			format0(node, parentPrec);
 			set.remove(objectId);

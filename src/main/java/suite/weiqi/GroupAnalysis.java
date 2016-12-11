@@ -53,7 +53,7 @@ public class GroupAnalysis {
 
 		for (Coordinate c : Coordinate.all()) {
 			Occupation color = board.get(c);
-			Group group = null; // Must be root
+			Group group = null; // must be root
 
 			for (Coordinate c1 : c.leftOrUp)
 				if (board.get(c1) == color) {

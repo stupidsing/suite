@@ -68,7 +68,7 @@ public class EditorPane extends JEditorPane {
 		while (se < length && document.getText(se, 1).charAt(0) != 10)
 			se++;
 
-		// Do not include first and last LFs
+		// do not include first and last LFs
 		int start = document.getText(ss, 1).charAt(0) == 10 ? ss + 1 : ss;
 		int end = se;
 

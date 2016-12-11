@@ -23,7 +23,7 @@ public class DependencyMain extends ExecutableProgram {
 	private DpkgUtil dpkgUtil = new DpkgUtil(debianUtil);
 	private AptUtil aptUtil = new AptUtil(debianUtil);
 
-	// Tools
+	// tools
 	private List<String> baseList = Arrays.asList( //
 			"acpi" //
 			, "cifs-utils" //
@@ -122,7 +122,7 @@ public class DependencyMain extends ExecutableProgram {
 			, "mpg321" //
 	);
 
-	// Not a must, but good to have
+	// not a must, but good to have
 	private List<String> supplementaryList = Arrays.asList( //
 			"btrfs-tools" //
 			, "eject" //

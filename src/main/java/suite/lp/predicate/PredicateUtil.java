@@ -98,7 +98,7 @@ public class PredicateUtil {
 		try {
 			result = source.test(prover1);
 		} finally {
-			if (!result) // Roll back bindings if overall goal is failed
+			if (!result) // roll back bindings if overall goal is failed
 				prover1.unwindAll();
 		}
 		return result;

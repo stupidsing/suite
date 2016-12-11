@@ -116,7 +116,7 @@ public class LogUtil {
 	private static boolean trimStackTrace(Throwable th) {
 		boolean isTrimmed = false;
 
-		// Trims stack trace to appropriate length
+		// trims stack trace to appropriate length
 		while (th != null) {
 			StackTraceElement st0[] = th.getStackTrace();
 

@@ -62,10 +62,10 @@ public class ObstructionFreeStmTest {
 		private void work(List<Memory<Integer>> memories) throws InterruptedException {
 			int order = orders.get(step++);
 
-			if (nMemories * 2 <= order) { // Commit or rollback
+			if (nMemories * 2 <= order) { // commit or rollback
 				System.out.println(this + " COMMIT");
 				transaction.end(TransactionStatus.DONE____);
-			} else if (nMemories <= order) { // Write a memory
+			} else if (nMemories <= order) { // write a memory
 				int mi = order - nMemories;
 				System.out.println(this + " WRITE " + mi);
 
@@ -76,7 +76,7 @@ public class ObstructionFreeStmTest {
 					stm.put(transaction, memory, read + adjustments.get(mi));
 				else
 					throw new RuntimeException("Value changed between reads");
-			} else { // Read a memory
+			} else { // read a memory
 				int mi = order;
 				System.out.println(this + " READ " + mi);
 

@@ -138,7 +138,7 @@ public class ProveTracer {
 	private String log(List<Record> records) {
 		int size = records.size();
 
-		// This method could be invoked in shutdown hook and the prover might
+		// this method could be invoked in shutdown hook and the prover might
 		// still be running. Do not use iterator/for-each loop access, those
 		// would cause ConcurrentModificationException.
 		StringBuilder sb = new StringBuilder();

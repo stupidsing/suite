@@ -15,14 +15,14 @@ import suite.primitive.Bytes;
 
 public class FailedTests {
 
-	// Cannot understand the error message
+	// cannot understand the error message
 	// "Cannot resolve type of (IF (TYPE-CAST I32 VAR f) (NUMBER 1) BOOLEAN 0)"
 	@Test
 	public void testAssignWrongSize() {
 		new ImperativeCompiler().compile(0, "declare (function [] int) f = function [] 0; (f as int && 1);");
 	}
 
-	// Shall we support this?
+	// shall we support this?
 	@Test
 	public void testClassOfClass() {
 		assertEquals(Suite.parse("C2 boolean"),
@@ -33,7 +33,7 @@ public class FailedTests {
 						+ "(C2 boolean) of (A true)"));
 	}
 
-	// Cannot capture reference to a structure
+	// cannot capture reference to a structure
 	@Test
 	public void testDataStructure() {
 		String s = "" //
@@ -45,20 +45,20 @@ public class FailedTests {
 		System.out.println(bytes);
 	}
 
-	// Duplicate symbols. Cannot bind again when using is used in a closure
+	// duplicate symbols. Cannot bind again when using is used in a closure
 	@Test
 	public void testClosureUsing() {
 		Suite.useLibraries(() -> Suite.evaluateFun("use MATH >> (a => (use MATH >> 1)) {0}", true));
 	}
 
-	// NPE. Method not found in concatm due to not importing standard library.
-	// Module dependency checks are necessary
+	// nPE. Method not found in concatm due to not importing standard library.
+	// module dependency checks are necessary
 	@Test
 	public void testEager() {
 		Suite.useLibraries(() -> Suite.evaluateFun("use MONAD >> 0", false));
 	}
 
-	// Unmatched types
+	// unmatched types
 	@Test
 	public void testPrecompile() {
 		assertTrue(Suite.precompile("CHARS", new ProverConfig()));
@@ -74,7 +74,7 @@ public class FailedTests {
 		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
 	}
 
-	// Why returning null pointer?
+	// why returning null pointer?
 	@Test
 	public void testRecursiveCall() {
 		Suite.isInstructionDump = true;
@@ -85,13 +85,13 @@ public class FailedTests {
 		});
 	}
 
-	// Takes forever to type check
+	// takes forever to type check
 	// @Test
 	public void testRecursiveType() {
 		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (:t => rb-tree {:t}) of 1");
 	}
 
-	// Takes 11 seconds to type check
+	// takes 11 seconds to type check
 	@Test
 	public void testTypeCheck() throws IOException {
 		long start = System.currentTimeMillis();

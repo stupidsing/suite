@@ -51,7 +51,7 @@ public class Library extends ExecutableProgram {
 				.map2(path -> path, path -> Rethrow.ioException(() -> Files.size(path))) //
 				.partition((path, size) -> 0 < size);
 
-		// Remove empty files
+		// remove empty files
 		partition.t1.sink((path, size) -> {
 			try {
 				Files.delete(path);
@@ -64,7 +64,7 @@ public class Library extends ExecutableProgram {
 				.mapEntry((path, size) -> path, (path, size) -> {
 					BasicFileAttributes attrs = Rethrow.ioException(() -> Files.readAttributes(path, BasicFileAttributes.class));
 
-					// Get all file information
+					// get all file information
 					List<String> tags = Read.range(path.getNameCount()) //
 							.map(i -> path.getName(i).toString()) //
 							.cons(FormatUtil.dateFormat.format(attrs.lastModifiedTime().toInstant())) //
@@ -76,7 +76,7 @@ public class Library extends ExecutableProgram {
 					return fileInfo;
 				});
 
-		// Construct file listing
+		// construct file listing
 		try (OutputStream os = FileUtil.out(inputDir + ".listing"); PrintWriter pw = new PrintWriter(os)) {
 			for (Pair<Path, FileInfo> path_fileInfo : path_fileInfos)
 				pw.println(path_fileInfo.t0 + path_fileInfo.t1.md5);
@@ -87,7 +87,7 @@ public class Library extends ExecutableProgram {
 		path_fileInfos //
 				.mapEntry((path, fileInfo) -> path, (path, fileInfo) -> {
 
-					// Move file to library, by md5
+					// move file to library, by md5
 					Path path1 = Paths.get(libraryDir, fileInfo.md5.substring(0, 2), fileInfo.md5);
 					FileUtil.mkdir(path1.getParent());
 					Rethrow.ioException(() -> Files.move(path, path1, StandardCopyOption.REPLACE_EXISTING));
@@ -95,7 +95,7 @@ public class Library extends ExecutableProgram {
 				}) //
 				.concatMap((path, fileInfo) -> Read.from(fileInfo.tags).map(tag -> {
 
-					// Add to tag indices
+					// add to tag indices
 					Path path1 = Paths.get(tagsDir, tag, fileInfo.md5);
 					return Rethrow.ioException(() -> {
 						Files.newOutputStream(path1).close();

@@ -19,7 +19,7 @@ public class PrettyPrinter {
 	private int nLines = 0;
 	private int currentLineIndent = 0;
 
-	private static int lineLength = 96; // Estimated
+	private static int lineLength = 96; // estimated
 	private static int squeezeLineLength = 8;
 	private static String indentSpaces = "    ";
 
@@ -50,7 +50,7 @@ public class PrettyPrinter {
 		int x = getX(), y = getY();
 		int length = lengthEstimator.getEstimatedLength(node);
 
-		// Line too long?
+		// line too long?
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
 			Operator op = tree.getOperator();
@@ -83,7 +83,7 @@ public class PrettyPrinter {
 					int es1 = r0 != null ? lengthEstimator.getEstimatedLength(r0) : lineLength;
 					int opLength = op.getName().length();
 
-					// Breaks "a + b + xxx" in the second operator
+					// breaks "a + b + xxx" in the second operator
 					if (assoc == Assoc.RIGHT //
 							&& x + es0 + es1 + opLength < lineLength //
 							&& r0 != preferLineBreakBeforeKeyword) {
@@ -91,7 +91,7 @@ public class PrettyPrinter {
 						OperatorPosition opPos = appendOperator(op);
 						prettyPrint0(right, op, rightPrec);
 						closeBraces(op, opPos);
-					} else { // Breaks after the operator
+					} else { // breaks after the operator
 						boolean isIncRightIndent = op != op0;
 						int indent0 = 0;
 
@@ -126,7 +126,7 @@ public class PrettyPrinter {
 			if (node == lineBreakBeforeKeyword && !isLineBegin())
 				nl();
 
-			append(Formatter.dump(node)); // Space sufficient
+			append(Formatter.dump(node)); // space sufficient
 		}
 	}
 
@@ -155,7 +155,7 @@ public class PrettyPrinter {
 			}
 		}
 
-		// if (node != Atom.nil) // Suppress list termination
+		// if (node != Atom.nil) // suppress list termination
 		prettyPrint0(node, op, prec);
 	}
 
@@ -205,7 +205,7 @@ public class PrettyPrinter {
 		return new OperatorPosition(currentLineIndent, getY());
 	}
 
-	private int incrementIndent() { // Would not jump by two
+	private int incrementIndent() { // would not jump by two
 		int indent0 = indent;
 		indent = Math.min(indent, currentLineIndent) + 1;
 		return indent0;

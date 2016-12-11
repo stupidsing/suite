@@ -40,7 +40,7 @@ public class RecursiveFactorizer {
 
 		FactorizeResult parsed = parse0(To.chars(in1), 0);
 
-		// Append possibly missed comments
+		// append possibly missed comments
 		int p = reverser.reverse(0);
 		return new FactorizeResult(Chars.concat(in.subchars(0, p), parsed.pre), parsed.node, parsed.post);
 	}

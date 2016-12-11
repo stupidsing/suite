@@ -67,7 +67,7 @@ public class TwoPassIndexer {
 	}
 
 	public Streamlet<Reference> search(String searchKey) {
-		dictionary.clear(); // Saves memory
+		dictionary.clear(); // saves memory
 
 		Iterator<String> iter = keys.tailSet(searchKey).iterator();
 

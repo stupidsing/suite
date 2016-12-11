@@ -95,13 +95,13 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 		try (Closeable started = threadService.started()) {
 			while (threadService.isRunning()) {
 
-				// Unfortunately Selector.wakeup() does not work on my Linux
+				// unfortunately Selector.wakeup() does not work on my Linux
 				// machines. Thus we specify a time out to allow the selector
 				// freed out temporarily; otherwise the register() methods in
 				// other threads might block forever.
 				selector.select(500);
 
-				// This seems to allow other threads to gain access. Not exactly
+				// this seems to allow other threads to gain access. Not exactly
 				// the behavior as documented in NIO, but anyway.
 				selector.wakeup();
 
@@ -124,7 +124,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	}
 
 	private void processSelectedKey(SelectionKey key) throws IOException {
-		// LogUtil.info("KEY", dumpKey(key));
+		// logUtil.info("KEY", dumpKey(key));
 
 		byte buffer[] = new byte[bufferSize];
 		Object attachment = key.attachment();
@@ -169,7 +169,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	private Fun<Bytes, Bytes> createSender(SocketChannel sc) {
 		return in -> {
 
-			// Try to send immediately. If cannot sent all, wait for the
+			// try to send immediately. If cannot sent all, wait for the
 			// writable event (and send again at that moment).
 			byte bytes[] = in.toBytes();
 			int sent = Rethrow.ioException(() -> sc.write(ByteBuffer.wrap(bytes)));
@@ -186,7 +186,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	}
 
 	private void wakeUpSelector() {
-		// selector.wakeup(); // Not working in my Linux machines
+		// selector.wakeup(); // not working in my Linux machines
 	}
 
 }

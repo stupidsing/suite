@@ -167,18 +167,18 @@ public class IbTree<T> implements ITree<T> {
 
 	private List<Slot> update(List<Slot> node0, T t, Fun<T, T> fun) {
 
-		// Finds appropriate slot
+		// finds appropriate slot
 		FindSlot fs = new FindSlot(node0, t);
 		int size = node0.size();
 		int s0 = fs.i, s1 = fs.i + 1;
 		List<Slot> replaceSlots;
 
-		// Adds the node into it
+		// adds the node into it
 		if (fs.slot.slots != null) {
 			List<Slot> slots1 = update(fs.slot.slots, t, fun);
 			List<Slot> inner;
 
-			// Merges with a neighbor if less than minimum number of nodes
+			// merges with a neighbor if less than minimum number of nodes
 			if (slots1.size() == 1 && (inner = slots1.get(0).slots).size() < minBranchFactor)
 				if (0 < s0)
 					replaceSlots = meld(node0.get(--s0).slots, inner);
@@ -202,10 +202,10 @@ public class IbTree<T> implements ITree<T> {
 		List<Slot> slots1 = Util.add(Util.left(node0, s0), replaceSlots, Util.right(node0, s1));
 		List<Slot> node1;
 
-		// Checks if need to split
+		// checks if need to split
 		if (slots1.size() < maxBranchFactor)
 			node1 = Arrays.asList(slot(slots1));
-		else { // Splits into two if reached maximum number of nodes
+		else { // splits into two if reached maximum number of nodes
 			List<Slot> leftSlots = Util.left(slots1, minBranchFactor);
 			List<Slot> rightSlots = Util.right(slots1, minBranchFactor);
 			node1 = Arrays.asList(slot(leftSlots), slot(rightSlots));

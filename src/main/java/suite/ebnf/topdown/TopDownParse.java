@@ -287,7 +287,7 @@ public class TopDownParse {
 				}
 			});
 
-			// Skips first if it is a '+'
+			// skips first if it is a '+'
 			return isAllowNone || states.next() != null ? states : noResult;
 		};
 	}

@@ -143,7 +143,7 @@ public class Matrix {
 	 * Calculates matric inverse by Gaussian-Jordan elimination.
 	 */
 	public static Matrix inverse(Matrix m0) {
-		Matrix m = new Matrix(m0); // Do not alter input matrix
+		Matrix m = new Matrix(m0); // do not alter input matrix
 		int size = m.height();
 
 		if (size != m.width())

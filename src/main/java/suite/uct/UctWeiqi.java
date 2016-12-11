@@ -49,8 +49,8 @@ public class UctWeiqi {
 							ShuffleUtil.add(otherMoves, c);
 				}
 
-			// Make capture moves at the head;
-			// UctSearch would put them in first few nodes
+			// make capture moves at the head;
+			// uctSearch would put them in first few nodes
 			captureMoves.addAll(otherMoves);
 			return captureMoves;
 		}
@@ -75,7 +75,7 @@ public class UctWeiqi {
 			Move move, chosenMove;
 			int nPasses = 0;
 
-			// Move until someone cannot move anymore, or maximum number of
+			// move until someone cannot move anymore, or maximum number of
 			// passes is reached between both players
 			while (nPasses < 2) {
 				Iterator<Coordinate> iter = empties.iterator();
@@ -99,7 +99,7 @@ public class UctWeiqi {
 						int i = 0;
 						capturedPositions.clear();
 
-						// Add captured positions back to empty group
+						// add captured positions back to empty group
 						for (Coordinate c1 : chosenMove.position.neighbors) {
 							Occupation neighborColor = chosenMove.neighborColors[i++];
 							if (neighborColor != board.get(c1))
@@ -129,12 +129,12 @@ public class UctWeiqi {
 			Coordinate pos;
 			Move move = null;
 
-			// Move until someone cannot move anymore,
+			// move until someone cannot move anymore,
 			// or maximum iterations reached
 			for (int i = 0; i < 4 * Weiqi.area; i++) {
 				move = null;
 
-				// Try a random empty position, if that position does not work,
+				// try a random empty position, if that position does not work,
 				// calls the heavier possible move method
 				if ((pos = Util.last(empties)) != null)
 					if (gameSet.playIfValid(move = new Move(pos)))
@@ -145,7 +145,7 @@ public class UctWeiqi {
 				if (move == null)
 					move = removePossibleMove(empties.iterator());
 
-				if (move != null) { // Add empty positions back to empty group
+				if (move != null) { // add empty positions back to empty group
 					int j = 0;
 
 					for (Coordinate c1 : move.position.neighbors)
@@ -153,7 +153,7 @@ public class UctWeiqi {
 							for (Coordinate c2 : board.findGroup(c1))
 								ShuffleUtil.add(empties, c2);
 				} else
-					break; // No moves can be played, current player lost
+					break; // no moves can be played, current player lost
 			}
 
 			if (move == null)

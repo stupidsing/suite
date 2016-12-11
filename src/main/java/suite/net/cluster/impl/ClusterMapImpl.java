@@ -24,7 +24,7 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 	public ClusterMapImpl(Cluster cluster) {
 		this.cluster = cluster;
 
-		synchronized (cluster) { // Avoid missed cluster events
+		synchronized (cluster) { // avoid missed cluster events
 			peers.addAll(cluster.getActivePeers());
 			Collections.sort(peers);
 

@@ -57,7 +57,7 @@ public class ParseUtil {
 	public static boolean isParseable(String s, boolean isThrow) {
 		int quote = 0, depth = 0;
 
-		// Shows warning if the atom has mismatched quotes or brackets
+		// shows warning if the atom has mismatched quotes or brackets
 		for (char c : Util.chars(s)) {
 			quote = getQuoteChange(quote, c);
 			if (quote == 0)

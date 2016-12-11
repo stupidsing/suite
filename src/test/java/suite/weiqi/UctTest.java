@@ -40,7 +40,7 @@ public class UctTest {
 				+ ", FAR-AWAY: " + faraway //
 				+ ", CENTER: " + center);
 
-		// The corner move must be the worst
+		// the corner move must be the worst
 		assertTrue(Util.compare(corner, faraway) < 0);
 		assertTrue(Util.compare(faraway, center) < 0);
 	}

@@ -82,7 +82,7 @@ public class Dump {
 
 			sb.append(" [" + clazz.getSimpleName() + "]\n");
 
-			// Some easy classes do not require windy listings
+			// some easy classes do not require windy listings
 			if (isSimpleType(clazz))
 				return;
 
@@ -113,7 +113,7 @@ public class Dump {
 						if (!(o instanceof Class<?>))
 							d(prefix + "." + name + "()", o);
 
-						// Do not display same method of different base
+						// do not display same method of different base
 						// classes
 						displayedMethod.add(name);
 					}

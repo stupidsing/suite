@@ -9,7 +9,7 @@ public class Weiqi {
 	public static int size;
 	public static int area;
 
-	public static int shift; // SIZE <= 2^SHIFT
+	public static int shift; // sIZE <= 2^SHIFT
 
 	static {
 		initialize();

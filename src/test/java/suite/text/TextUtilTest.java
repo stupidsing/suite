@@ -26,7 +26,7 @@ public class TextUtilTest {
 		String orig1 = "abc12def34xyz";
 		String version1_a = "abc567def890xyz";
 
-		// Test diff
+		// test diff
 		List<Pair<Bytes, Bytes>> patch_a = textUtil.diff(To.bytes(orig), To.bytes(version_a));
 		List<Pair<Bytes, Bytes>> patch_b = textUtil.diff(To.bytes(orig), To.bytes(version_b));
 		List<Pair<Bytes, Bytes>> patch_c = textUtil.diff(To.bytes(orig), To.bytes(version_c));
@@ -38,15 +38,15 @@ public class TextUtilTest {
 				+ "ghi";
 		assertEquals(expected, textUtil.toString(patch_a));
 
-		// Test patch
+		// test patch
 		assertEquals(version_a, To.string(textUtil.patch(To.bytes(orig), patch_a)));
 		assertEquals(version1_a, To.string(textUtil.merge(To.bytes(orig), To.bytes(orig1), To.bytes(version_a))));
 
-		// Test merge
+		// test merge
 		List<Pair<Bytes, Bytes>> mergedPatch_ab = textUtil.merge(patch_a, patch_b);
 		assertEquals(merged_ab, To.string(textUtil.patch(To.bytes(orig), mergedPatch_ab)));
 
-		// Test merge that requires agreeing on target content
+		// test merge that requires agreeing on target content
 		System.out.println(textUtil.toString(patch_a));
 		System.out.println(textUtil.toString(patch_c));
 		List<Pair<Bytes, Bytes>> mergedPatch_ac = textUtil.merge(patch_a, patch_c, true);

@@ -14,7 +14,7 @@ import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 import suite.wildcard.WildcardUtil;
 
-// MAIN=suite.node.parser.RecursiveFileFactorizerMain ./run.sh
+// mAIN=suite.node.parser.RecursiveFileFactorizerMain ./run.sh
 public class RecursiveFileFactorizerMain extends ExecutableProgram {
 
 	public static void main(String args[]) {

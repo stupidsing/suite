@@ -17,7 +17,7 @@ public class ObstructionFreeStm {
 
 	public class Memory<V> {
 
-		// Reference points to the latest snapshot; stamp is the last read time
+		// reference points to the latest snapshot; stamp is the last read time
 		private AtomicStampedReference<Snapshot<V>> asr;
 
 		public Memory(V value) {
@@ -85,7 +85,7 @@ public class ObstructionFreeStm {
 			Snapshot<V> snapshot = memory.asr.get(lastReadTime);
 			Snapshot<V> snapshot1 = snapshot;
 
-			// Read committed, repeatable read
+			// read committed, repeatable read
 			while (snapshot1 != null //
 					&& snapshot1.owner != transaction //
 					&& (snapshot1.owner.status != TransactionStatus.DONE____ || transaction.time <= snapshot1.owner.time))
@@ -107,7 +107,7 @@ public class ObstructionFreeStm {
 			int lastReadTime[] = new int[1];
 			Snapshot<V> snapshot = memory.asr.get(lastReadTime);
 
-			// Serializable
+			// serializable
 			if (transaction.time < lastReadTime[0])
 				throw new AbortException();
 

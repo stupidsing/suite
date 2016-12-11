@@ -38,7 +38,7 @@ import suite.util.FunUtil.Source;
 
 public class Suite {
 
-	// Compilation defaults
+	// compilation defaults
 	public static boolean isProverTrace = false;
 	public static boolean isInstructionDump = false;
 	public static boolean isInstructionTrace = false;
@@ -130,7 +130,7 @@ public class Suite {
 	}
 
 	// --------------------------------
-	// Bind utilities
+	// bind utilities
 
 	public static Fun<Node, Node[]> matcher(String s) {
 		return bindArrayUtil.matcher(s);
@@ -141,7 +141,7 @@ public class Suite {
 	}
 
 	// --------------------------------
-	// Compilation utilities
+	// compilation utilities
 
 	public static RuleSet funCompilerRuleSet() {
 		return compileUtil.funCompilerRuleSet();
@@ -160,7 +160,7 @@ public class Suite {
 	}
 
 	// --------------------------------
-	// Evaluation utilities
+	// evaluation utilities
 
 	public static Source<Node> evaluateLogic(Builder builder, RuleSet rs, String lps) {
 		return evaluateUtil.evaluateLogic(builder, rs, parse(lps));
@@ -228,7 +228,7 @@ public class Suite {
 	}
 
 	// --------------------------------
-	// Import utilities
+	// import utilities
 
 	public static Prover createProver(List<String> toImports) {
 		return importUtil.createProver(toImports);
@@ -263,7 +263,7 @@ public class Suite {
 	}
 
 	// --------------------------------
-	// Parse utilities
+	// parse utilities
 
 	public static Node parse(String s) {
 		return parser.parse(s);

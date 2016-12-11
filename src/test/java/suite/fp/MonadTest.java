@@ -49,7 +49,7 @@ public class MonadTest {
 		try {
 			assertEquals("abc", evalMonad(fp0, "any"));
 		} catch (RuntimeException ex) {
-			// Unmatched types
+			// unmatched types
 		}
 	}
 

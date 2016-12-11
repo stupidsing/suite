@@ -76,24 +76,24 @@ public class InstructionAnalyzer {
 
 	public void analyze(List<Instruction> instructions) {
 
-		// Identify frame regions
+		// identify frame regions
 		analyzeFrames(instructions);
 
-		// Discover frame hierarchy
+		// discover frame hierarchy
 		analyzeParentFrames(instructions);
 
-		// Find out register types in each frame
+		// find out register types in each frame
 		analyzeFrameRegisters(instructions);
 
-		// Find out tail call sites possible for optimization
+		// find out tail call sites possible for optimization
 		analyzeFpTailCalls(instructions);
 	}
 
 	private void analyzeFrames(List<Instruction> instructions) {
 		Deque<AnalyzedFrame> analyzedFrames = new ArrayDeque<>();
 
-		// Find out the parent of closures.
-		// Assumes every FRAME-BEGIN has a ASSIGN-THUNK referencing it.
+		// find out the parent of closures.
+		// assumes every FRAME-BEGIN has a ASSIGN-THUNK referencing it.
 		for (int ip = 0; ip < instructions.size(); ip++) {
 			Instruction insn = instructions.get(ip);
 
@@ -112,8 +112,8 @@ public class InstructionAnalyzer {
 		for (int ip = 0; ip < instructions.size(); ip++) {
 			Instruction insn = instructions.get(ip);
 
-			// Recognize frames and their parents.
-			// Assume ASSIGN-THUNK points to the FRAME-BEGIN instruction.
+			// recognize frames and their parents.
+			// assume ASSIGN-THUNK points to the FRAME-BEGIN instruction.
 			if (insn.insn == Insn.ASSIGNTHUNK___)
 				frameByIp.get(insn.op1).parent = frameByIp.get(ip);
 		}
@@ -187,7 +187,7 @@ public class InstructionAnalyzer {
 				if (frame != frame1)
 					op2Register.isAccessedByChildFrames = true;
 
-				// Merge into Node if clashed
+				// merge into Node if clashed
 				if (op0register.clazz != op2Register.clazz)
 					op0register.clazz = op0register.clazz != null ? Node.class : op2Register.clazz;
 				break;

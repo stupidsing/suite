@@ -13,7 +13,7 @@ import suite.lp.search.ProverBuilder.Builder;
 
 public class LogicCompilerLevel2Test {
 
-	// Require tail recursion to work
+	// require tail recursion to work
 	@Test
 	public void test0() {
 		RuleSet rs = Suite.getRuleSet(Suite.parse("" //

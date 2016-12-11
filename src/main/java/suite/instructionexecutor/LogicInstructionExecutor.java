@@ -42,7 +42,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			break;
 		case BIND__________:
 			if (!Binder.bind(regs[insn.op0], regs[insn.op1], trail))
-				current.ip = insn.op2; // Fail
+				current.ip = insn.op2; // fail
 			break;
 		case BINDMARK______:
 			regs[insn.op0] = number(trail.getPointInTime());

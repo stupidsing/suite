@@ -248,7 +248,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 		if (kp != null && Objects.equals(kp.key, key)) {
 			discard(kp);
-			kp.pointer = pointer; // Replace existing value
+			kp.pointer = pointer; // replace existing value
 			savePage(t.page);
 		} else
 			addAndSplit(t.traverse, new KeyPointer(key, pointer));
@@ -257,7 +257,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	private void addAndSplit(Slots slots, KeyPointer toInsert) {
 		boolean done;
 
-		// Traversed to deepest. Inserts key-value pair
+		// traversed to deepest. Inserts key-value pair
 		do {
 			Slot slot = slots.pop();
 			Page page = slot.page;
@@ -266,7 +266,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			int size = page.size();
 			done = size <= branchFactor;
 
-			if (!done) { // Splits list into two pages
+			if (!done) { // splits list into two pages
 				int half = branchFactor / 2;
 				int pointer0 = page.pointer, pointer1 = allocator.allocate();
 				Page p0 = new Page(pointer0, page.subList(0, half));
@@ -274,9 +274,9 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				savePage(p0);
 				savePage(p1);
 
-				toInsert = pointerTo(p1); // Propagates to parent
+				toInsert = pointerTo(p1); // propagates to parent
 
-				if (slots.empty()) { // Have to create a new root
+				if (slots.empty()) { // have to create a new root
 					KeyPointer kp = pointerTo(p0);
 
 					create();
@@ -305,7 +305,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		Traverse t = new Traverse(key);
 		Stack<Slot> slots = t.traverse;
 
-		// Remove the entry
+		// remove the entry
 		Slot slot = slots.pop();
 		Page page = slot.page;
 		int index = slot.index;
@@ -317,7 +317,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		} else
 			return;
 
-		// Rotates nodes around to maintain invariant
+		// rotates nodes around to maintain invariant
 		while (page.pointer != root) {
 			int half = branchFactor / 2;
 			if (page.size() >= half)
@@ -335,7 +335,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			int rsize = rp != null ? rp.size() : 0;
 
 			if (rsize <= lsize && lsize != 0)
-				if (half < lsize) { // Shift
+				if (half < lsize) { // shift
 					KeyPointer out = lp.remove(lsize - 1);
 					mp.add(0, out);
 					savePage(mp);
@@ -344,7 +344,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				} else
 					merge(page, lp, mp, index - 1);
 			else if (lsize <= rsize && rsize != 0)
-				if (half < rsize) { // Shift
+				if (half < rsize) { // shift
 					KeyPointer out = rp.remove(0);
 					mp.add(out);
 					savePage(mp);
@@ -354,7 +354,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 					merge(page, mp, rp, index);
 			else if (slots.size() == 0) {
 
-				// Left/right node empty, should only happen at root node
+				// left/right node empty, should only happen at root node
 				page.clear();
 				page.addAll(mp);
 				savePage(page);

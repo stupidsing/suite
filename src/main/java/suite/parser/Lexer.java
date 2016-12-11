@@ -80,11 +80,11 @@ public class Lexer {
 				while (!eof && Character.isWhitespace(peeked))
 					sb.append(nextChar());
 				return nextToken();
-			} else if (ch == '/' && peeked == '/') { // Single-line comment
+			} else if (ch == '/' && peeked == '/') { // single-line comment
 				while (!eof && nextChar() != '\n')
 					;
 				return nextToken();
-			} else if (ch == '/' && peeked == '*') { // Block comment
+			} else if (ch == '/' && peeked == '*') { // block comment
 				while (!eof && nextChar() != '*' || peeked != '/')
 					;
 				if (!eof)

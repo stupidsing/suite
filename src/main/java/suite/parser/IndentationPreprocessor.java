@@ -40,7 +40,7 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 
 			Segment segment = ParseUtil.searchPosition(in.toCharArray(), Segment.of(pos0, length), "\n", Assoc.RIGHT, false);
 			int pos1 = segment != null ? segment.start : length;
-			int pos2 = segment != null ? segment.end : length; // Includes LF
+			int pos2 = segment != null ? segment.end : length; // includes LF
 
 			String indent = in.substring(pos, pos0);
 			String line = in.substring(pos0, pos1);
@@ -49,11 +49,11 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 			if (!lastIndent.startsWith(indent) && !indent.startsWith(lastIndent))
 				throw new RuntimeException("Indent mismatch");
 
-			if (lineLength != 0) { // Ignore empty lines
+			if (lineLength != 0) { // ignore empty lines
 				int startPos = 0, endPos = lineLength;
 				lastIndent = indent;
 
-				// Find operators at beginning and end of line
+				// find operators at beginning and end of line
 				for (Operator operator : operators) {
 					String name = operator.getName().trim();
 
@@ -67,10 +67,10 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 					}
 				}
 
-				if (endPos < startPos) // When a line has only one operator
+				if (endPos < startPos) // when a line has only one operator
 					startPos = 0;
 
-				// Insert parentheses by line indentation
+				// insert parentheses by line indentation
 				while (nIndents < nLastIndents) {
 					runs.add(new Run(") "));
 					nLastIndents--;

@@ -21,7 +21,7 @@ public class StatisticsCollector {
 		LogUtil.info(ip + "> " + insn);
 		nInstructionsExecuted++;
 
-		if (insn.insn == Insn.EXIT__________) { // Ends collection
+		if (insn.insn == Insn.EXIT__________) { // ends collection
 			log();
 			instance = new StatisticsCollector();
 		}

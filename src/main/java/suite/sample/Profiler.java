@@ -81,7 +81,7 @@ public class Profiler implements Service {
 					&& !Util.stringEquals(threadInfo.getThreadName(), "ReaderThread")) {
 				Set<String> elements = new HashSet<>();
 
-				// Save line numbers as it is important to trace lambdas and
+				// save line numbers as it is important to trace lambdas and
 				// anonymous classes
 				for (StackTraceElement elem : threadInfo.getStackTrace()) {
 					String fileName = elem.getFileName();

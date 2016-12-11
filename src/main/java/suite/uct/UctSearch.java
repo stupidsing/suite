@@ -78,7 +78,7 @@ public class UctSearch<Move> {
 
 		Util.startJoin(threads);
 
-		// Finds best node
+		// finds best node
 		best = root.bestChild;
 		return best != null ? best.move : null;
 	}
@@ -94,7 +94,7 @@ public class UctSearch<Move> {
 
 		if (node.nVisits != 0) {
 
-			// Generate moves, if not done before
+			// generate moves, if not done before
 			synchronized (node) {
 				if (node.child == null) {
 					UctNode<Move> child = null;
@@ -120,7 +120,7 @@ public class UctSearch<Move> {
 			while (child != null) {
 				float uct;
 
-				// Only calculates UCT when required, that is, if all children
+				// only calculates UCT when required, that is, if all children
 				// have been evaluated at least once
 				if (0 < child.nVisits) {
 					if (bestUct < (uct = uct(child, lnPnVisits, lnPnRaveVisits))) {
@@ -140,11 +140,11 @@ public class UctSearch<Move> {
 				visitor.playMove(bestSelected.move);
 				outcome = playSimulation(visitor, bestSelected, depth + 1);
 			} else
-				outcome = true; // No possible move for opponent
+				outcome = true; // no possible move for opponent
 		} else
 			outcome = !visitor.evaluateRandomOutcome();
 
-		// Updates rave statistics
+		// updates rave statistics
 		if (node.move != null && depth < maxRaveDepth) {
 			incrementMoveRave(nRaveVisits, node.move);
 			if (outcome)

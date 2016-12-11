@@ -131,7 +131,7 @@ public class Nodify {
 									.map(n -> apply0(nodifier1, n)) //
 									.toList() //
 									.toArray());
-			} else if (clazz.isInterface()) // Polymorphism
+			} else if (clazz.isInterface()) // polymorphism
 				nodifier = new Nodifier(object -> {
 					Class<?> clazz1 = object.getClass();
 					Node n = apply0(getNodifier(clazz1), object);
@@ -147,7 +147,7 @@ public class Nodify {
 						}
 						return apply0(getNodifier(clazz1), tree.getRight());
 					} else
-						// Happens when an enum implements an interface
+						// happens when an enum implements an interface
 						throw new RuntimeException("Cannot instantiate enum from interfaces");
 				});
 			else {

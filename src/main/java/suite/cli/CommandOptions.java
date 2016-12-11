@@ -24,12 +24,12 @@ import suite.util.Util;
  */
 public class CommandOptions {
 
-	// Program type options
+	// program type options
 	private boolean isChars = false;
 	private boolean isDo = false;
 	private boolean isQuiet = false;
 
-	// Program evaluation options
+	// program evaluation options
 	private boolean isLazy = true;
 	private List<String> imports = Collections.emptyList();
 	private List<String> libraries = new ArrayList<>(Suite.libraries);

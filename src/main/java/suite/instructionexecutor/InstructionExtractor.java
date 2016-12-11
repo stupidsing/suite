@@ -119,9 +119,9 @@ public class InstructionExtractor implements AutoCloseable {
 
 			if (node instanceof Int)
 				return ((Int) node).number;
-			else if (node instanceof Reference) { // Transient register
+			else if (node instanceof Reference) { // transient register
 
-				// Allocates new register in current local frame
+				// allocates new register in current local frame
 				Instruction frameBegin = frameBegins.getFirst();
 				int registerNumber = frameBegin.op0++;
 

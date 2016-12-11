@@ -36,7 +36,7 @@ public class TelnetServer {
 					LogUtil.error(ex);
 				} finally {
 
-					// If we are not being interrupted by another thread, issue
+					// if we are not being interrupted by another thread, issue
 					// interrupt signal to other threads
 					if (!isInterrupted())
 						for (Thread thread : threads)
@@ -64,9 +64,9 @@ public class TelnetServer {
 
 		private void serve(InputStream sis, OutputStream sos) throws IOException {
 
-			// Kills the process if client closes the stream;
+			// kills the process if client closes the stream;
 			// closes the stream if process is terminated/ended output.
-			// Therefore we need the interruption mechanism.
+			// therefore we need the interruption mechanism.
 			Process process = Runtime.getRuntime().exec("bash");
 			InputStream pis = process.getInputStream();
 			InputStream pes = process.getErrorStream();

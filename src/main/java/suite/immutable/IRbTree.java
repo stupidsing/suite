@@ -109,7 +109,7 @@ public class IRbTree<T> implements ITree<T> {
 	private IRbTree<T> add(T t, boolean isReplace) {
 		Node node = root;
 
-		if (node != null && !node.isBlack) // Turns red node into black
+		if (node != null && !node.isBlack) // turns red node into black
 			node = new Node(true, node.pivot, node.left, node.right);
 
 		return new IRbTree<>(comparator, add(node, t, isReplace));

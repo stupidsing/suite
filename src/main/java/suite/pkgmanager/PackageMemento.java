@@ -9,7 +9,7 @@ public class PackageMemento {
 	private PackageManifest packageManifest;
 	private List<InstallAction> installActions;
 
-	public PackageMemento() { // For de-serialization
+	public PackageMemento() { // for de-serialization
 	}
 
 	public PackageMemento(PackageManifest packageManifest, List<InstallAction> installActions) {

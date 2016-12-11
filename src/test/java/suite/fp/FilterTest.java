@@ -29,7 +29,7 @@ public class FilterTest {
 		assertEquals("abc\ndef\nghi", eval("tail . concat . map {cons {10}} . split {32}", "abc def ghi"));
 	}
 
-	// Detects memory usage. Memory leak if there are more than 10000 instances
+	// detects memory usage. Memory leak if there are more than 10000 instances
 	// of Thunk, Frame, Tree or Node exists.
 	@Test
 	public void testMemoryUsage() {
@@ -44,7 +44,7 @@ public class FilterTest {
 			public int read(char buffer[], int pos, int len) {
 				int nBytesRead = Math.min(count, len);
 
-				// Makes sure there are new line characters, otherwise lines
+				// makes sure there are new line characters, otherwise lines
 				// function would blow off the stack
 				if (0 < nBytesRead) {
 					for (int i = 0; i < nBytesRead; i++)

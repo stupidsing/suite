@@ -24,7 +24,7 @@ public class TerminalParser {
 
 			if (ParseUtil.isInteger(s))
 				return Int.of(Integer.parseInt(s));
-			if (s.startsWith("+x")) // Allows +xFFFFFFFF
+			if (s.startsWith("+x")) // allows +xFFFFFFFF
 				return Int.of((int) Long.parseLong(s.substring(2), 16));
 			if (s.startsWith("+'") && s.endsWith("'") && s.length() == 4)
 				return Int.of(s.charAt(2));
@@ -35,7 +35,7 @@ public class TerminalParser {
 			if (first == '\'' && last == '\'')
 				s = Escaper.unescape(Util.substr(s, 1, -1), "'");
 			else {
-				s = s.trim(); // Trim unquoted atoms
+				s = s.trim(); // trim unquoted atoms
 				if (!ParseUtil.isParseable(s))
 					LogUtil.info("Suspicious input when parsing " + s);
 			}

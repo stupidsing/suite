@@ -54,7 +54,7 @@ public class RayUtil {
 				rayHits2.add(isAdvance0 ? rayHit0 : rayHit1);
 		}
 
-		// Eliminate duplicates
+		// eliminate duplicates
 		return eliminateRayHitDuplicates(rayHits2);
 	}
 
@@ -74,7 +74,7 @@ public class RayUtil {
 				if ((rayHit = rayHits0.get(i)) != rayHits0.get(i + 1))
 					rayHits1.add(rayHit);
 				else
-					i++; // Skips same hit
+					i++; // skips same hit
 			else
 				rayHits1.add(rayHits0.get(i));
 

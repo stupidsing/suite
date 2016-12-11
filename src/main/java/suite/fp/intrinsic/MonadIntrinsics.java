@@ -51,10 +51,10 @@ public class MonadIntrinsics {
 			Node n1 = createReader(callback, process.getInputStream());
 			Node n2 = createReader(callback, process.getErrorStream());
 
-			// Use a separate thread to write to the process, so that read
+			// use a separate thread to write to the process, so that read
 			// and write occur at the same time and would not block up.
-			// The input stream is also closed by this thread.
-			// Have to make sure the executors are thread-safe!
+			// the input stream is also closed by this thread.
+			// have to make sure the executors are thread-safe!
 			Util.startThread(() -> {
 				try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
 					ThunkUtil.yawnWriter(yawn, in, writer);

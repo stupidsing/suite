@@ -21,7 +21,7 @@ public class FileSystemKeyUtil {
 	private int keyLength = sizeOffset + 1;
 
 	public class NameKey extends Key {
-		public final Bytes path; // Path characters
+		public final Bytes path; // path characters
 		public final int size; // 0 if this key has children keys
 
 		private NameKey(Bytes hash, int id, Bytes path, int size) {
@@ -41,7 +41,7 @@ public class FileSystemKeyUtil {
 	}
 
 	private class Key {
-		public final Bytes hash; // Path prefix hashed using SHA-256
+		public final Bytes hash; // path prefix hashed using SHA-256
 		public final int id; // 0 - Name key, 1 - comparer, 64 - data, 65 - size
 
 		private Key(Bytes hash, int id) {

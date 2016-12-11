@@ -51,7 +51,7 @@ public class RecursiveFactorizerTest {
 				+ "-- comment\n" //
 				+ "0\n");
 		assertTrue(0 < rf.pre.size());
-		// System.out.println(Dump.object(rf));
+		// system.out.println(Dump.object(rf));
 	}
 
 	@Test

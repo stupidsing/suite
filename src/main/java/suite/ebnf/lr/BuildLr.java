@@ -60,7 +60,7 @@ public class BuildLr {
 			return b;
 		}
 
-		// Shift-reduce conflict ends in reduce
+		// shift-reduce conflict ends in reduce
 		private boolean put_(String key, Pair<State, Reduce> value1) {
 			Pair<State, Reduce> value0 = get(key);
 			int order0 = order(value0);
@@ -72,7 +72,7 @@ public class BuildLr {
 				return false;
 			else if (value0.t0 != null && value1.t0 != null) {
 
-				// Merge each children if both are shifts
+				// merge each children if both are shifts
 				Transition transition0 = fsm.get(value0.t0);
 				Transition transition1 = fsm.get(value1.t0);
 				return merges.add(Pair.of(transition0, transition1));
@@ -81,9 +81,9 @@ public class BuildLr {
 		}
 
 		private int order(Pair<State, Reduce> pair) {
-			if (pair == null) // Nothing
+			if (pair == null) // nothing
 				return 0;
-			else if (pair.t1 != null) // Reduce
+			else if (pair.t1 != null) // reduce
 				return 1;
 			else
 				return 2;

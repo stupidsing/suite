@@ -49,7 +49,7 @@ public class MapifyTest {
 		assertTrue(pc0.hashCode() == pc1.hashCode());
 	}
 
-	// When mapifying a field with interface type, it would automatically embed
+	// when mapifying a field with interface type, it would automatically embed
 	// object type information (i.e. class name), and un-mapify accordingly.
 	@Test
 	public void testPolymorphism() {
@@ -75,7 +75,7 @@ public class MapifyTest {
 		assertNotNull(map);
 		System.out.println(map);
 
-		// Cannot un-mapify since Tree has no default constructor
+		// cannot un-mapify since Tree has no default constructor
 	}
 
 }

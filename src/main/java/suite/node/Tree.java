@@ -71,7 +71,7 @@ public abstract class Tree extends Node {
 		this.right = right;
 	}
 
-	// These methods violate the immutable property of the tree. Should only
+	// these methods violate the immutable property of the tree. Should only
 	// used by cloner for performance purpose.
 	public static void forceSetLeft(Tree tree, Node left) {
 		tree.left = left;

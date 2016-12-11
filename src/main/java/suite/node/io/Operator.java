@@ -2,7 +2,7 @@ package suite.node.io;
 
 public interface Operator {
 
-	public enum Assoc { // Associativity
+	public enum Assoc { // associativity
 		LEFT, RIGHT
 	}
 

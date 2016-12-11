@@ -35,11 +35,11 @@ public class LcsSesMyers<T> {
 			for (i1 = 0; i1 <= d; i1++) {
 				k1 = i1 * 2 - d;
 
-				// Move down or move right?
+				// move down or move right?
 				boolean down = k1 == -d || k1 != d && v0[i1 - 1] < v0[i1];
 				int i0 = i1 + (down ? 0 : -1);
 
-				// Moves like a snake; down or right for 1 step, then
+				// moves like a snake; down or right for 1 step, then
 				// diagonals
 				int x0 = v0[i0];
 				int x1 = x0 + (down ? 0 : 1);
@@ -51,10 +51,10 @@ public class LcsSesMyers<T> {
 					y2++;
 				}
 
-				// Saves end point
+				// saves end point
 				v1[i1] = x2;
 
-				// Solution found?
+				// solution found?
 				if (size0 <= x2 && size1 <= y2)
 					break found;
 			}
@@ -67,16 +67,16 @@ public class LcsSesMyers<T> {
 		for (; 0 < x2 || 0 < y2; d--) {
 			v0 = 0 < d ? vs.get(d - 1) : vdummy;
 
-			// Move down or move right?
+			// move down or move right?
 			boolean down = k1 == -d || k1 != d && v0[i1 - 1] < v0[i1];
 			int i0 = i1 + (down ? 0 : -1);
 
-			// Moves back the snake
+			// moves back the snake
 			int x0 = v0[i0];
 			int x1 = x0 + (down ? 0 : 1);
 			x2 = v1[i1];
 
-			// Saves end point
+			// saves end point
 			while (x1 < x2)
 				deque.addFirst(list0.get(--x2));
 

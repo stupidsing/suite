@@ -15,8 +15,8 @@ import suite.node.Node;
  */
 public class DoubleIndexedRuleSet extends IndexedRuleSet {
 
-	// Index rules by prototypes.
-	// Have to use a multi-map implementation that allow null keys.
+	// index rules by prototypes.
+	// have to use a multi-map implementation that allow null keys.
 	private Map<Prototype, ListMultimap<Prototype, Rule>> index0 = new HashMap<>();
 
 	@Override

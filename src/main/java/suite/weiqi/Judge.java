@@ -32,7 +32,7 @@ public class Judge {
 	public static void checkGroupsLiveness(Board board, Array<Boolean> alives) {
 		GroupAnalysis ga = new GroupAnalysis(board);
 
-		// Judge which groups are eyes, i.e. surrounded by only one colour
+		// judge which groups are eyes, i.e. surrounded by only one colour
 		Map<Group, Boolean> groupIsEye = new HashMap<>();
 
 		for (Group group : ga.getGroups())
@@ -45,7 +45,7 @@ public class Judge {
 						colors.add(color);
 				}
 
-				// Has two colours
+				// has two colours
 				groupIsEye.put(group, colors.size() <= 1);
 			}
 	}

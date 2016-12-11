@@ -16,7 +16,7 @@ public class ISkewedBinPriorityQueue<T> {
 	private class Node {
 		private int rank;
 		private T value;
-		private IList<Node> nodes; // Note that rank(nodes.get(i)) = i
+		private IList<Node> nodes; // note that rank(nodes.get(i)) = i
 
 		private Node(T value) {
 			this(0, value, IList.<Node> end());

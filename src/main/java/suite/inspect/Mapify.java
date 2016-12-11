@@ -126,7 +126,7 @@ public class Mapify {
 							objects[i] = apply0(mapifier1.unmapify, map.get(i++));
 						return objects;
 					});
-			} else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) // Polymorphism
+			} else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) // polymorphism
 				mapifier = new Mapifier(object -> {
 					Class<?> clazz1 = object.getClass();
 					Object m = apply0(getMapifier(clazz1).mapify, object);
@@ -135,7 +135,7 @@ public class Mapify {
 						map.put("@class", clazz1.getName());
 						return map;
 					} else
-						// Happens when an enum implements an interface
+						// happens when an enum implements an interface
 						return m;
 				}, object -> {
 					if (object instanceof Map) {
@@ -144,7 +144,7 @@ public class Mapify {
 						Class<?> clazz1 = Rethrow.reflectiveOperationException(() -> Class.forName(className));
 						return apply0(getMapifier(clazz1).unmapify, object);
 					} else
-						// Happens when an enum implements an interface
+						// happens when an enum implements an interface
 						return object;
 				});
 			else {

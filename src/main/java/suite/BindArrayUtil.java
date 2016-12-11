@@ -23,7 +23,7 @@ public class BindArrayUtil {
 	private Map<String, Fun<Node, Node[]>> matchers = new ConcurrentHashMap<>();
 
 	// --------------------------------
-	// Bind utilities
+	// bind utilities
 
 	public Fun<Node, Node[]> matcher(String pattern) {
 		return matchers.computeIfAbsent(pattern, pattern_ -> {

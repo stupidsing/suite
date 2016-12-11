@@ -9,7 +9,7 @@ import org.objectweb.asm.Type;
 public class FunExpression {
 
 	public static abstract class FunExpr {
-		protected String type; // Type.getDescriptor()
+		protected String type; // type.getDescriptor()
 
 		public FunExpr field(String field, String type) {
 			FieldFunExpr expr = new FieldFunExpr();

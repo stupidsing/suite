@@ -300,7 +300,7 @@ public class InstructionTranslator implements Closeable {
 				app("#{reg} = #{reg-num} - #{reg-num}", op0, op1, op2);
 				break;
 			case EXIT__________:
-				app("return returnValue"); // Grand exit point
+				app("return returnValue"); // grand exit point
 				break;
 			case FORMTREE0_____:
 				insn = instructions.get(ip++);

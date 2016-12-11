@@ -49,7 +49,7 @@ public class SewingClonerImpl extends VariableMapperImpl implements SewingCloner
 					funs.add(env -> Tree.of(operator, f.apply(env), null));
 					node = tree.getRight();
 					continue;
-				} else { // Delay generalizing for performance
+				} else { // delay generalizing for performance
 					Fun<Env, Node> lf = compile(tree.getLeft());
 					Fun<Env, Node> rf = compile(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));

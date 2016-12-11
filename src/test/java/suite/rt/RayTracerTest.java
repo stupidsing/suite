@@ -90,8 +90,8 @@ public class RayTracerTest {
 		RtObject sphere2 = Sphere.c(v(5f, 1f, 15f), 2f, reflective(v(0.9f, 0.76f, 0.46f)));
 		RtObject sphere3 = Sphere.c(v(5f, 0f, 25f), 3f, reflective(v(0.65f, 0.77f, 0.97f)));
 		RtObject sphere4 = Sphere.c(v(-5.5f, 0f, 15f), 3f, reflective(gray(0.9f)));
-		// RtObject sphere5 =
-		// Sphere.c(v(0f, -20f, 30f), 3f, solid(v(0f, 0f, 0f)));
+		// rtObject sphere5 =
+		// sphere.c(v(0f, -20f, 30f), 3f, solid(v(0f, 0f, 0f)));
 
 		Scene scene = new Scene(Arrays.asList(sphere0, sphere1, sphere2, sphere3, sphere4));
 

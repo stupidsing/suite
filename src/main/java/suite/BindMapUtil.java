@@ -26,7 +26,7 @@ public class BindMapUtil {
 	private Map<String, Fun<Node, Map<String, Node>>> matchers = new ConcurrentHashMap<>();
 
 	// --------------------------------
-	// Bind utilities
+	// bind utilities
 
 	public Fun<Node, Map<String, Node>> matcher(String pattern) {
 		return matchers.computeIfAbsent(pattern, pattern_ -> {

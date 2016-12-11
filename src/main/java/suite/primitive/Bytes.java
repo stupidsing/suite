@@ -23,7 +23,7 @@ public class Bytes implements Iterable<Byte> {
 
 	public static Bytes empty = Bytes.of(emptyArray);
 
-	public final byte bs[]; // Immutable
+	public final byte bs[]; // immutable
 	public final int start, end;
 
 	public static Comparator<Bytes> comparator = (bytes0, bytes1) -> {
@@ -256,9 +256,9 @@ public class Bytes implements Iterable<Byte> {
 	private Bytes subbytes0(int start, int end) {
 		Bytes result = Bytes.of(bs, start, end);
 
-		// Avoid small pack of bytes object keeping a large buffer
+		// avoid small pack of bytes object keeping a large buffer
 		if (Boolean.FALSE && reallocSize <= bs.length && end - start < reallocSize / 4)
-			result = empty.append(result); // Do not share reference
+			result = empty.append(result); // do not share reference
 
 		return result;
 	}

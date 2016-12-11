@@ -116,8 +116,8 @@ public class SewingProverImpl implements SewingProver {
 		private Env env = emptyEnvironment;
 		private Node query;
 		private IList<Trampoline> cutPoint;
-		private IList<Trampoline> rems = IList.end(); // Continuations
-		private IList<Trampoline> alts = IList.end(); // Alternatives
+		private IList<Trampoline> rems = IList.end(); // continuations
+		private IList<Trampoline> alts = IList.end(); // alternatives
 		private Trail trail = new Trail();
 		private Prover prover;
 		private Debug debug = new Debug("", IList.end());
@@ -205,7 +205,7 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline tr0 = compileRules(prototype, rules, traceLevel);
 			Trampoline tr;
 
-			// Second-level indexing optimization
+			// second-level indexing optimization
 			if (6 <= rules.size()) {
 				Map<Prototype, List<Rule>> rulesByProto1 = Read.from(rules) //
 						.toListMap(rule -> Prototype.of(rule, 1));
@@ -506,7 +506,7 @@ public class SewingProverImpl implements SewingProver {
 				Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					rt.query = f.apply(rt.env);
-					// LogUtil.info(Formatter.dump(rt.query));
+					// logUtil.info(Formatter.dump(rt.query));
 					return mtr.get()::prove;
 				};
 			}

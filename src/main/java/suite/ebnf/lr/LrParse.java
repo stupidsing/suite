@@ -53,11 +53,11 @@ public class LrParse {
 			String lookahead = token != null ? token.entity : "EOF";
 			Pair<State, Reduce> sr = shift(stack, state, lookahead);
 
-			if (sr.t0 != null) { // Shift
+			if (sr.t0 != null) { // shift
 				stack.push(Pair.of(token, state));
 				state = sr.t0;
 				token = tokens.source();
-			} else { // Reduce
+			} else { // reduce
 				Reduce reduce = sr.t1;
 				IList<Ast> nodes = IList.end();
 
@@ -72,7 +72,7 @@ public class LrParse {
 				if (rootEntity.equals(reduce.name()) && stack.size() == 0 && token == null)
 					return token1;
 
-				// Force shift after reduce
+				// force shift after reduce
 				stack.push(Pair.of(token1, state));
 				state = shift(stack, state, token1.entity).t0;
 			}

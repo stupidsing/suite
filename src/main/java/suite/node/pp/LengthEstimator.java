@@ -32,7 +32,7 @@ public class LengthEstimator {
 				int len1 = estimateLengths(tree.getRight());
 				int opLength = op.getName().length();
 
-				len = len0 + len1 + opLength + 2; // Rough estimation
+				len = len0 + len1 + opLength + 2; // rough estimation
 			} else
 				len = Formatter.dump(node).length();
 
@@ -45,7 +45,7 @@ public class LengthEstimator {
 
 	public int getEstimatedLength(Node node) {
 		Integer length = lengthByIds.get(getKey(node));
-		return length != null ? length : defaultLength; // Maximum if not found
+		return length != null ? length : defaultLength; // maximum if not found
 	}
 
 	private int getKey(Node node) {

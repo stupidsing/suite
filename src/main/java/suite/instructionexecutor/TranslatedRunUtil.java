@@ -75,7 +75,7 @@ public class TranslatedRunUtil {
 		return Int.of(i);
 	}
 
-	// Generic type signature allows passing in Thunk returning Thunk
+	// generic type signature allows passing in Thunk returning Thunk
 	public static <T extends Node> T toNode(T t) {
 		return t;
 	}

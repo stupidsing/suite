@@ -170,12 +170,12 @@ public class EagerFunTest {
 		assertEquals(Int.of(0), eval(fp1));
 	}
 
-	// After replacing call stack with activation chain, this test would not
+	// after replacing call stack with activation chain, this test would not
 	// stack overflow but exhaust all memory. Test case will not be executed.
 	// @Test
 	public void testInfiniteLoop() {
 		try {
-			// This would fail stack over during type check, so skip that
+			// this would fail stack over during type check, so skip that
 			Suite.evaluateFun("skip-type-check (e => e {e}) {e => e {e}}", false);
 			throw new RuntimeException();
 		} catch (Throwable th) {
@@ -308,9 +308,9 @@ public class EagerFunTest {
 		assertNotNull(Tree.decompose(eval("tail {1; 2; 3;}")));
 	}
 
-	// Lazy programs are prone to stack overflow; even a summing program for a
+	// lazy programs are prone to stack overflow; even a summing program for a
 	// long list of numbers produces long enough thunks/de-thunks to blow up.
-	// Eager programs with tail code optimization are more resistant.
+	// eager programs with tail code optimization are more resistant.
 	@Test
 	public void testTailRecursion() {
 		assertEquals(Int.of(65536) //

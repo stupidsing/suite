@@ -29,7 +29,7 @@ public class Reference extends Node {
 		this.node = node;
 	}
 
-	public void unbound() { // Happens during backtracking
+	public void unbound() { // happens during backtracking
 		node = this;
 	}
 

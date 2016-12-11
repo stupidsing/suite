@@ -137,8 +137,8 @@ public class InstructionUtil {
 		}
 	}
 
-	// Indicates a function call with a specified set of framed environment.
-	// Thunk must extend Node in order to be put in a register.
+	// indicates a function call with a specified set of framed environment.
+	// thunk must extend Node in order to be put in a register.
 	protected static class Thunk extends Node {
 		protected Frame frame;
 		protected int ip;

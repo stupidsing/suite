@@ -36,12 +36,12 @@ public class EvaluateUtil {
 				+ "source .in, compile-function .0 .in .out, sink .out", mode));
 	});
 
-	// Using level 1 CompiledProverBuilder would break the test case
-	// FunRbTreeTest. It would blow up the stack in InstructionExecutor
+	// using level 1 CompiledProverBuilder would break the test case
+	// FunRbTreeTest. it would blow up the stack in InstructionExecutor
 	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = Memoize.fun(pair -> {
 		Builder builder = new SewingProverBuilder(pair.t0);
-		// Builder builder = new InterpretedProverBuilder(pair.t0);
-		// Builder builder = new CompiledProverBuilder.level1(pair.t0);
+		// builder builder = new InterpretedProverBuilder(pair.t0);
+		// builder builder = new CompiledProverBuilder.level1(pair.t0);
 		return builder.build(Suite.funCompilerRuleSet()).apply(pair.t1);
 	});
 

@@ -29,7 +29,7 @@ public class LazyFunTest {
 				+ "head {seq {0}} = 0";
 		assertEquals(Atom.TRUE, eval(fp0));
 
-		String fp1 = "" // Real co-recursion!
+		String fp1 = "" // real co-recursion!
 				+ "define fib := i1 => i2 => i2; fib {i2} {i1 + i2} >> \n" //
 				+ "fib {0} {1} | get {10}";
 		assertEquals(Int.of(89), eval(fp1));
@@ -76,7 +76,7 @@ public class LazyFunTest {
 				+ "0 | inf-series | fold-right {`;`} {} | take {5}";
 		assertEquals(Suite.parse("0; 1; 2; 3; 4;"), eval(fp0));
 
-		// On the other hand, same call using fold-left would result in infinite
+		// on the other hand, same call using fold-left would result in infinite
 		// loop, like this:
 		// define is = (n => n; is {n + 1}) >>
 		// 0 | is | fold-left {`;`/} {} | take {5}

@@ -13,7 +13,7 @@ import suite.node.Node;
  */
 public class IndexedRuleSet extends LinearRuleSet {
 
-	// Have to use a multi-map implementation that allow null keys
+	// have to use a multi-map implementation that allow null keys
 	private ListMultimap<Prototype, Rule> index = new ListMultimap<>();
 
 	@Override
@@ -38,7 +38,7 @@ public class IndexedRuleSet extends LinearRuleSet {
 	public List<Rule> searchRule(Node node) {
 		Prototype proto = Prototype.of(node);
 
-		// If the query is "un-prototype-able," or the rule set contains
+		// if the query is "un-prototype-able," or the rule set contains
 		// "un-prototype-able" entries, full traversal is required
 		if (proto != null && !index.containsKey(null))
 			return index.get(proto);

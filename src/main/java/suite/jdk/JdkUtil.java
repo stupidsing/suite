@@ -32,7 +32,7 @@ public class JdkUtil {
 			os.write(java.getBytes(Constants.charset));
 		}
 
-		// Compile the Java, load the class, return an instantiated object
+		// compile the Java, load the class, return an instantiated object
 		LogUtil.info("Compiling " + srcFilePath);
 		FileUtil.mkdir(binDir);
 

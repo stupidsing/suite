@@ -41,7 +41,7 @@ public class SingletonVariableChecker {
 					Atom atom = (Atom) node;
 					String name = atom.name;
 
-					// Check all variables starting with alphabets; ignore
+					// check all variables starting with alphabets; ignore
 					// computer-generated code
 					if (name.startsWith(ProverConstant.variablePrefix) //
 							&& 1 < name.length() //

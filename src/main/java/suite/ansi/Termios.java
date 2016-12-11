@@ -45,7 +45,7 @@ public class Termios implements Closeable {
 	public void close() {
 		Runtime.getRuntime().removeShutdownHook(hook);
 		cursor(true);
-		libc.tcsetattr(0, 1, termios0); // TCSADRAIN
+		libc.tcsetattr(0, 1, termios0); // tCSADRAIN
 	}
 
 	public void clear() {

@@ -15,7 +15,7 @@ public class Evaluator {
 		int score = 0;
 		Occupation opponent = player.opponent();
 
-		// Count territories by counting groups
+		// count territories by counting groups
 		GroupAnalysis ga = new GroupAnalysis(board);
 
 		for (Group group : ga.getGroups()) {
@@ -23,13 +23,13 @@ public class Evaluator {
 			Set<Occupation> colors = new HashSet<>();
 			boolean us = false, theirs = false;
 
-			// Count pieces
+			// count pieces
 			if (color == player)
 				score += pieceScore * group.coords.size();
 			else if (color == opponent)
 				score -= pieceScore * group.coords.size();
 
-			// Count territory
+			// count territory
 			if (color == Occupation.EMPTY) {
 				for (Group neighborGroup : group.touches)
 					colors.add(neighborGroup.color);
@@ -41,7 +41,7 @@ public class Evaluator {
 			else
 				theirs = true;
 
-			if (!us || !theirs) { // Do not count when it is nearby both colours
+			if (!us || !theirs) { // do not count when it is nearby both colours
 				int scoreDelta = territoryScore * group.coords.size();
 				score += !theirs ? scoreDelta : -scoreDelta;
 			}

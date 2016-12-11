@@ -94,7 +94,7 @@ public class Prover {
 		alt = FAIL;
 
 		while (true) {
-			// LogUtil.info(Formatter.dump(query));
+			// logUtil.info(Formatter.dump(query));
 			query = query.finalNode();
 
 			if (query instanceof Tree) {
@@ -130,7 +130,7 @@ public class Prover {
 			if (result != null)
 				query = isSuccess(result);
 
-			// Not handled above
+			// not handled above
 			if (query == OK)
 				if (rem != OK) {
 					query = rem;

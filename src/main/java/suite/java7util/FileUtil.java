@@ -42,8 +42,8 @@ public class FileUtil {
 
 	public static void moveFile(File from, File to) {
 
-		// Serious problem that renameTo do not work across partitions in Linux!
-		// We fall back to copy the file if renameTo() failed.
+		// serious problem that renameTo do not work across partitions in Linux!
+		// we fall back to copy the file if renameTo() failed.
 		if (!from.renameTo(to)) {
 			copyFile(from, to);
 			from.delete();

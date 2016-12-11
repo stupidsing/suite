@@ -48,7 +48,7 @@ public class NodifyTest {
 		assertTrue(pc0.hashCode() == pc1.hashCode());
 	}
 
-	// When mapifying a field with interface type, it would automatically embed
+	// when mapifying a field with interface type, it would automatically embed
 	// object type information (i.e. class name), and un-mapify accordingly.
 	@Test
 	public void testPolymorphism() {

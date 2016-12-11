@@ -42,7 +42,7 @@ public class IoPredicates {
 			try {
 				String cmd = ((Str) p0).value;
 				return Runtime.getRuntime().exec(cmd).waitFor() == 0;
-			} catch (Exception ex) { // IOException or InterruptedException
+			} catch (Exception ex) { // iOException or InterruptedException
 				LogUtil.error(ex);
 			}
 		return false;

@@ -33,7 +33,7 @@ public class LockFreeQueue<T> {
 		cas.apply(fb0 -> {
 			IList<T> back = fb0.back;
 			IList<T> front = fb0.front;
-			if (front.isEmpty()) { // Reverse elements from back to front
+			if (front.isEmpty()) { // reverse elements from back to front
 				for (T t_ : fb0.back)
 					front = IList.cons(t_, front);
 				back = IList.end();

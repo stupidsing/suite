@@ -29,7 +29,7 @@ public class ISparseBinPriorityQueue<T> {
 
 	private class Node {
 		private T value;
-		private IList<Node> nodes; // Note that rank(nodes.get(i)) = i
+		private IList<Node> nodes; // note that rank(nodes.get(i)) = i
 
 		private Node(T value) {
 			this(value, IList.<Node> end());

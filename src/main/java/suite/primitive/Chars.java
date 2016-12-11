@@ -22,7 +22,7 @@ public class Chars implements Iterable<Character> {
 
 	public static Chars empty = Chars.of(emptyArray);
 
-	public final char cs[]; // Immutable
+	public final char cs[]; // immutable
 	public final int start, end;
 
 	public static Comparator<Chars> comparator = (chars0, chars1) -> {
@@ -255,9 +255,9 @@ public class Chars implements Iterable<Character> {
 	private Chars subchars0(int start, int end) {
 		Chars result = new Chars(cs, start, end);
 
-		// Avoid small pack of chars object keeping a large buffer
+		// avoid small pack of chars object keeping a large buffer
 		if (Boolean.FALSE && reallocSize <= cs.length && end - start < reallocSize / 4)
-			result = empty.append(result); // Do not share reference
+			result = empty.append(result); // do not share reference
 
 		return result;
 	}

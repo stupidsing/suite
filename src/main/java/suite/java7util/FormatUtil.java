@@ -11,7 +11,7 @@ public class FormatUtil {
 	private static String ymd = "yyyy-MM-dd";
 	private static String hms = "HH:mm:ss";
 
-	// Dang, the date formats and decimal formats are not thread-safe!! Wrap
+	// dang, the date formats and decimal formats are not thread-safe!! Wrap
 	// them and make the method calls synchronised.
 	public static SyncDateFormat dateFormat = new SyncDateFormat(ymd);
 	public static SyncDateFormat timeFormat = new SyncDateFormat(hms);

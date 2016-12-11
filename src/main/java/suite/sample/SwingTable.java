@@ -48,10 +48,10 @@ public class SwingTable {
 		});
 
 		JButton button = new JButton("Click Me!");
-		button.setMnemonic(KeyEvent.VK_C); // Alt-C as hot key
+		button.setMnemonic(KeyEvent.VK_C); // alt-C as hot key
 		button.addActionListener(event -> System.out.println("GOT " + event));
 
-		// Flow layout allows the components to be their preferred size
+		// flow layout allows the components to be their preferred size
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.add(label);
@@ -64,7 +64,7 @@ public class SwingTable {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// frame.setLocation(200, 200);
-		frame.pack(); // Pack it up for display
+		frame.pack(); // pack it up for display
 		frame.setVisible(true);
 	}
 

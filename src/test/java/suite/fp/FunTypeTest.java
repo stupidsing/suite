@@ -78,12 +78,12 @@ public class FunTypeTest {
 				, "2 = true" //
 				, "(f => f {0}) | 1" //
 				, "define fib := i2 => dummy => 1; fib {i2} >> ()" //
-				, "define f := v => (v;) = v >> f" // Cyclic type
+				, "define f := v => (v;) = v >> f" // cyclic type
 				, "use STANDARD >> define f := erase-type xyz >> f" //
 		};
 
-		// There is a problem in deriving type of 1:(fib {i2})...
-		// Rule specified that right hand side of CONS should be a list,
+		// there is a problem in deriving type of 1:(fib {i2})...
+		// rule specified that right hand side of CONS should be a list,
 		// however fib {i2} is a closure.
 		for (String c : cases)
 			getTypeMustFail(c);
@@ -91,7 +91,7 @@ public class FunTypeTest {
 
 	@Test
 	public void testFix() {
-		// Fix Value Fix None
+		// fix Value Fix None
 		// => Fix Value Fix Optional .t
 		// => Fix Optional Fix Optional .t
 		// => Fix Optional .t (where .t is this type itself)

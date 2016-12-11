@@ -54,7 +54,7 @@ public class InstructionExecutor implements AutoCloseable {
 	public Node yawnThunk(Thunk thunk) {
 		if (thunk.result == null) {
 			thunk.result = yawnThunk0(thunk);
-			thunk.frame = null; // Facilitates garbage collection
+			thunk.frame = null; // facilitates garbage collection
 		}
 		return thunk.result;
 	}
@@ -110,7 +110,7 @@ public class InstructionExecutor implements AutoCloseable {
 				case ASSIGNTHUNKRES:
 					regs[insn.op0] = returnValue;
 					thunk = (Thunk) regs[insn.op1];
-					thunk.frame = null; // Facilitates garbage collection
+					thunk.frame = null; // facilitates garbage collection
 					thunk.result = returnValue;
 					break;
 				case CALL__________:

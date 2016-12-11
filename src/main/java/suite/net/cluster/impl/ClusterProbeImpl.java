@@ -33,14 +33,14 @@ import suite.util.Util;
  */
 public class ClusterProbeImpl implements ClusterProbe {
 
-	private static int bufferSize = 65536; // UDP packet size
+	private static int bufferSize = 65536; // uDP packet size
 	private static int checkAliveDuration = 1500;
 	private static int timeoutDuration = 5000;
 
 	private Selector selector;
 	private DatagramChannel channel = DatagramChannel.open();
 	private ThreadService threadService = new ThreadService(this::serve);
-	private Object lock = new Object(); // Lock data structures
+	private Object lock = new Object(); // lock data structures
 
 	private String me;
 
@@ -146,7 +146,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 		try (Closeable started = threadService.started()) {
 			while (threadService.isRunning()) {
-				selector.select(500); // Handle network events
+				selector.select(500); // handle network events
 
 				synchronized (lock) {
 					long current = System.currentTimeMillis();
@@ -195,7 +195,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			Command data = Command.valueOf(splitted[0]);
 			String remote = splitted[1];
 
-			// Refreshes member time accordingly
+			// refreshes member time accordingly
 			for (int i = 2; i < splitted.length; i += 2) {
 				String node = splitted[i];
 				long newTime = Long.parseLong(splitted[i + 1]);
@@ -203,7 +203,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			}
 
 			if (peers.get(remote) != null)
-				if (data == Command.HELO) // Reply HELO messages
+				if (data == Command.HELO) // reply HELO messages
 					sendMessage(remote, formMessage(Command.FINE));
 				else if (data == Command.BYEE && lastActiveTimes.remove(remote) != null)
 					onLeft.fire(remote);
@@ -225,7 +225,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			Long lastActive = lastActiveTimes.get(remote);
 			Long lastSent = lastSentTimes.get(remote);
 
-			// Sends to those who are nearly forgotten, i.e.:
+			// sends to those who are nearly forgotten, i.e.:
 			// - The node is not active, or node's active time is expired
 			// - The last sent time was long ago (avoid message bombing)
 			if (lastActive == null || lastActive + checkAliveDuration < current)

@@ -110,18 +110,18 @@ public class JournalledFileFactory {
 			 */
 			public synchronized void applyJournal() {
 
-				// Make sure all changes are written to main file
+				// make sure all changes are written to main file
 				dataFile.sync();
 
-				// Clear all committed entries
+				// clear all committed entries
 				journalEntries.subList(0, nCommittedJournalEntries).clear();
 
-				// Reset committed pointer
+				// reset committed pointer
 				nCommittedJournalEntries = 0;
 				pointerPageFile.save(0, nCommittedJournalEntries);
 				pointerPageFile.sync();
 
-				// Write back entries for next commit
+				// write back entries for next commit
 				for (int jp = 0; jp < journalEntries.size(); jp++)
 					journalPageFile.save(jp, journalEntries.get(jp));
 			}

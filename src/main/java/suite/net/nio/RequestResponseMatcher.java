@@ -14,7 +14,7 @@ public class RequestResponseMatcher {
 
 	private static AtomicInteger tokenCounter = new AtomicInteger();
 
-	// TODO clean-up lost requests
+	// tODO clean-up lost requests
 	private Map<Integer, Pair<Mutable<Bytes>, Condition>> requests = new HashMap<>();
 
 	public Bytes requestForResponse(RequestResponseNioChannel channel, Bytes request) {
