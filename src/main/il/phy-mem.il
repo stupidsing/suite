@@ -1,5 +1,7 @@
 declare pm-sync = 0;
 declare pm-ref-counts;
+declare pm-page0;
+declare pm-pagex;
 declare pm-stackx;
 declare pm-stack;
 
@@ -8,15 +10,19 @@ declare pm-get-number = function [page,] (
 );
 
 declare pm-ref = function [page,] (
-	synchronized (& pm-sync) (
-		pm-ref-counts/*/:(pm-get-number [page,]) += 1;
-	);
+	if (pm-page0 <= page && page < pm-pagex) then (
+		synchronized (& pm-sync) (
+			pm-ref-counts/*/:(pm-get-number [page,]) += 1;
+		);
+	) else -1;
 );
 
 declare pm-unref = function [page,] (
-	synchronized (& pm-sync) (
-		pm-ref-counts/*/:(pm-get-number [page,]) += -1;
-	);
+	if (pm-page0 <= page && page < pm-pagex) then (
+		synchronized (& pm-sync) (
+			pm-ref-counts/*/:(pm-get-number [page,]) += -1;
+		);
+	) else -1;
 );
 
 declare pm-allocate = function [] (
@@ -51,6 +57,8 @@ declare pm-setup = function [] (
 	{pm-stackx} = px;
 	declare page0 = (px + 4095) and +xFFFFF000;
 
+	{pm-page0} = page0;
+	{pm-pagex} = pagex;
 	stk-setup [& pm-stack, p1 as pointer:(int * _),];
 
 	while (page0 < pagex) do (
