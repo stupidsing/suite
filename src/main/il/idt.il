@@ -56,7 +56,7 @@ declare idt-setup = function [] (
 		sch-yield [];
 
 		-- sends end of interrupt signal
-		dw-set [ap-local-apic-address + +xB0, 0,]; -- eOI
+		dw-set [ap-local-apic-address + +xB0, 0,]; -- EOI
 
 		isr-epilog;
 		asm _ IRET ();
