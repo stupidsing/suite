@@ -134,6 +134,8 @@ declare pg-setup = function [] (
 		dw-set [pt0 + i0 shl 2, entry0,];
 	);
 
+	pg-map [ap-local-apic-address, ap-local-apic-address,];
+
 	& pt0;
 
 	asm _ MOV (EAX, `EAX`);
@@ -143,13 +145,9 @@ declare pg-setup = function [] (
 	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2
 	asm _ D8 (+x00);
-
-	pg-map [ap-local-apic-address, ap-local-apic-address,];
 );
 
 declare pg-teardown = function [] (
-	pg-unmap [ap-local-apic-address,];
-
 	signature pt0 = int;
 	& pt0;
 
@@ -160,6 +158,8 @@ declare pg-teardown = function [] (
 	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2
 	asm _ D8 (+x00);
+
+	pg-unmap [ap-local-apic-address,];
 
 	for i0 in (0, 1024) do (
 		declare pt1 = (dw-get [pt0 + i0 shl 2,]) and +xFFFFF000;
@@ -173,3 +173,4 @@ declare pg-teardown = function [] (
 	);
 	pg-release-pt [pt0,];
 );
+
