@@ -54,6 +54,10 @@ public class FunExpression {
 		public Object constant;
 	}
 
+	public static class DoFunExpr extends FunExpr {
+		public FunExpr left, right;
+	}
+
 	public static class FieldFunExpr extends FunExpr {
 		public FunExpr object;
 		public String field;

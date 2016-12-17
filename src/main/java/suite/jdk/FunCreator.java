@@ -17,6 +17,7 @@ import org.objectweb.asm.Type;
 import javassist.bytecode.Opcode;
 import suite.jdk.FunExpression.BinaryFunExpr;
 import suite.jdk.FunExpression.ConstantFunExpr;
+import suite.jdk.FunExpression.DoFunExpr;
 import suite.jdk.FunExpression.FieldFunExpr;
 import suite.jdk.FunExpression.FunExpr;
 import suite.jdk.FunExpression.IfBooleanFunExpr;
@@ -178,6 +179,11 @@ public class FunCreator<I> implements Opcodes {
 		} else if (e instanceof ConstantFunExpr) {
 			ConstantFunExpr expr = (ConstantFunExpr) e;
 			mv.visitLdcInsn(expr.constant);
+		} else if (e instanceof DoFunExpr) {
+			DoFunExpr expr = (DoFunExpr) e;
+			visit(mv, expr.left);
+			mv.visitInsn(POP);
+			visit(mv, expr.right);
 		} else if (e instanceof FieldFunExpr) {
 			FieldFunExpr expr = (FieldFunExpr) e;
 			visit(mv, expr.object);
@@ -215,7 +221,8 @@ public class FunCreator<I> implements Opcodes {
 			mv.visitVarInsn(choose(expr.type, ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.number);
 		} else if (e instanceof PrintlnFunExpr) {
 			PrintlnFunExpr expr = (PrintlnFunExpr) e;
-			mv.visitFieldInsn(GETSTATIC, Type.getInternalName(System.class), "out", Type.getDescriptor(PrintStream.class));
+			mv.visitFieldInsn(GETSTATIC, Type.getInternalName(System.class), "out",
+					Type.getDescriptor(PrintStream.class));
 			visit(mv, expr.expression);
 			mv.visitMethodInsn(INVOKEVIRTUAL, Type.getInternalName(PrintStream.class), "println",
 					Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String.class)), false);
