@@ -147,6 +147,14 @@ public class FunCreator<I> implements Opcodes {
 		return expr;
 	}
 
+	public FunExpr do_(FunExpr e0, FunExpr e1) {
+		DoFunExpr expr = new DoFunExpr();
+		expr.type = e0.type;
+		expr.left = e0;
+		expr.right = e1;
+		return expr;
+	}
+
 	public FunExpr field(String field) {
 		return this_().field(field, fields.get(field));
 	}
