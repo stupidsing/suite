@@ -36,7 +36,7 @@ asis:_s:.a (CALL .rm) .e0/.ex :- as-mod-num-rm:32:.a .rm (0 2) .e0/(+xFF, .e1)/.
 asis:_s:_a (CLD ()) (+xFC, .e)/.e #
 asis:_s:_a (CLI ()) (+xFA, .e)/.e #
 asis:.s:.a (CMP (.op0, .op1)) .e :- asi-2op:.s:.a .op0 .op1 +x38 +x80 07 .e #
-asis:.s:.a (CMPXCHG (.rm, .reg)) (+x0F, .e1)/.ex :- asi-rm-reg:.s:.a +xB0 .rm .reg .e1/.ex #
+asis:.s:.a (CMPXCHG (.rm, .reg)) (+x0F, .e1)/.ex :- asi-rm-reg:.s:.a .rm .reg +xB0 .e1/.ex #
 asis:_s:_a (CPUID) (+x0F, +xA2, .e)/.e #
 asis:_s:_a (D8 .imm) .e :- as-emit:8 .imm .e #
 asis:_s:_a (D16 .imm) .e :- as-emit:16 .imm .e #
@@ -89,8 +89,8 @@ asis:.s:.a (LGDT .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 2) .e0/(+x0F, +x01, 
 asis:.s:.a (LIDT .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 3) .e0/(+x0F, +x01, .e1)/.e1/.ex #
 asis:_s:.a (LTR .rm) .e0/.ex :- as-mod-num-rm:16:.a .rm (0 3) .e0/(+x0F, +x00, .e1)/.e1/.ex #
 asis:.s:_a (MOV (.reg, .imm)) .e :- asi-reg-imm:.s +xB0 .reg .imm .e #
-asis:.s:.a (MOV (.rm, .imm)) .e :- asi-rm-imm:.s:.a +xC6 .rm 0 .imm .e #
-asis:.s:.a (MOV (.rm0, .rm1)) .e :- asi-rm-reg2:.s:.a +x88 .rm0 .rm1 .e #
+asis:.s:.a (MOV (.rm, .imm)) .e :- asi-rm-imm:.s:.a .rm .imm +xC6 0 .e #
+asis:.s:.a (MOV (.rm0, .rm1)) .e :- asi-rm-reg2:.s:.a .rm0 .rm1 +x88 .e #
 asis:16:.a (MOV (.rm, .sreg)) .e0/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16:.a .rm (0 .sr) .e0/(+x8C, .e1)/.e1/.ex #
 asis:16:.a (MOV (.sreg, .rm)) .e0/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16:.a .rm (0 .sr) .e0/(+x8E, .e1)/.e1/.ex #
 asis:.s:_a (MOV (.reg, .cr)) (+x0F, +x20, .b, .e)/.e :- as-control-reg .cr .n, as-reg:.s .reg .r, let .b (+xC0 + .n * 8 + .r), .s = 32 #
@@ -148,11 +148,11 @@ asis:.s:.a (SUB (.op0, .op1)) .e :- asi-2op:.s:.a .op0 .op1 +x28 +x80 5 .e #
 asis:_s:_a (SYSENTER ()) (+x0F, +x34, .e)/.e #
 asis:_s:_a (SYSEXIT ()) (+x0F, +x35, .e)/.e #
 asis:.s:_a (TEST (.acc, .imm)) (.b, .e1)/.ex :- as-reg:.s .acc 0, as-verify-emit:.s .imm .e1/.ex, if (.s = 8) (.b = +xA8) (.b = +xA9) #
-asis:.s:.a (TEST (.rm, .imm)) .e :- asi-rm-imm:.s:.a +xF6 .rm 0 .imm .e #
-asis:.s:.a (TEST (.rm, .reg)) .e :- asi-rm-reg:.s:.a +x84 .rm .reg .e #
+asis:.s:.a (TEST (.rm, .imm)) .e :- asi-rm-imm:.s:.a .rm .imm +xF6 0 .e #
+asis:.s:.a (TEST (.rm, .reg)) .e :- asi-rm-reg:.s:.a .rm .reg +x84 .e #
 asis:_s:_a (WRMSR ()) (+x0F, +x30, .e)/.e #
 asis:.s:_a (XCHG (.acc, .reg)) (.b, .e)/.e :- as-reg:.s .acc 0, as-reg:.s .reg .r, let .b (+x90 + .r) #
-asis:.s:.a (XCHG (.rm, .reg)) .e :- asi-rm-reg:.s:.a +x86 .rm .reg .e #
+asis:.s:.a (XCHG (.rm, .reg)) .e :- asi-rm-reg:.s:.a .rm .reg +x86 .e #
 asis:.s:.a (XOR (.op0, .op1)) .e :- asi-2op:.s:.a .op0 .op1 +x30 +x80 6 .e #
 
 asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex
@@ -202,14 +202,14 @@ asi-2op:.size:_a .acc .imm .b0 _ _ .e
 	, .b1 = .b0 + 4
 #
 asi-2op:.size:.a .rm0 .rm1 .b _ _ .e
-	:- asi-rm-reg2:.size:.a .b .rm0 .rm1 .e
+	:- asi-rm-reg2:.size:.a .rm0 .rm1 .b .e
 #
 asi-2op:.size:.a .rm .imm8 _ .b0 .n .e0/.ex
 	:- asi-rm-imm8:.size:.a .rm .imm8 .n .e0/(E8 .b1, .e1)/.e1/.ex
 	, .b1 = .b0 + 3
 #
 asi-2op:.size:.a .rm .imm _ .b .n .e
-	:- asi-rm-imm:.size:.a .b .rm .n .imm .e
+	:- asi-rm-imm:.size:.a .rm .imm .b .n .e
 #
 
 asi-reg-rm-extended:.size:.a .reg .rm .b0 .e0/.ex
@@ -223,7 +223,7 @@ asi-rm-imm8:.size:.a .rm .imm8 .n .e0/.e1/.e2/.ex
 	, as-verify-emit:8 .imm8 .e3/.ex
 #
 
-asi-rm-imm:.size:.a .b0 .rm .num .imm .e0/.ex
+asi-rm-imm:.size:.a .rm .imm .b0 .num .e0/.ex
 	:- as-mod-num-rm:.size:.a .rm (0 .num) .e0/(E8 .b1, .e1)/.e1/.e2
 	, as-verify-emit:.size .imm .e2/.ex
 	, (.size = 8, .b1 = .b0; member (16, 32, 64,) .size, .b1 = .b0 + 1)
@@ -241,15 +241,15 @@ asi-reg-imm:.size .b0 .reg .imm .e0/.ex
 	, (.size = 8, .b1 = .b0; member (16, 32, 64,) .size, .b1 = .b0 + 8)
 #
 
-asi-rm-reg2:.size:.a .b .rm .reg .e
-	:- asi-rm-reg:.size:.a .b .rm .reg .e
+asi-rm-reg2:.size:.a .rm .reg .b .e
+	:- asi-rm-reg:.size:.a .rm .reg .b .e
 #
-asi-rm-reg2:.size:.a .b0 .reg .rm .e
-	:- asi-rm-reg:.size:.a .b1 .rm .reg .e
+asi-rm-reg2:.size:.a .reg .rm .b0 .e
+	:- asi-rm-reg:.size:.a .rm .reg .b1 .e
 	, .b1 = .b0 + 2
 #
 
-asi-rm-reg:.size:.a .b0 .rm .reg .e0/.ex
+asi-rm-reg:.size:.a .rm .reg .b0 .e0/.ex
 	:- as-rm-regwd:.size:.a .rm .reg .e0/(E8 .b1, .e1)/.e1/.ex
 	, (.size = 8, .b1 = .b0; member (16, 32, 64,) .size, .b1 = .b0 + 1)
 #
