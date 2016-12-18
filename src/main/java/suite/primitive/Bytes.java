@@ -56,7 +56,7 @@ public class Bytes implements Iterable<Byte> {
 		return Bytes.of(bytes.bs, bytes.start, bytes.end);
 	}
 
-	public static Bytes of(byte bs[]) {
+	public static Bytes of(byte... bs) {
 		return Bytes.of(bs, 0);
 	}
 

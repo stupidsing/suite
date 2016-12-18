@@ -55,7 +55,7 @@ public class Chars implements Iterable<Character> {
 		return Chars.of(chars.cs, chars.start, chars.end);
 	}
 
-	public static Chars of(char cs[]) {
+	public static Chars of(char... cs) {
 		return Chars.of(cs, 0);
 	}
 
