@@ -141,6 +141,7 @@ public class AssemblerAmd64 {
 				if (op.baseReg < 0 && op.indexReg < 0) { // [0x1234]
 					mod = 0;
 					rm = 5;
+					s = i = b = -1;
 					dispSize = 4;
 				} else if (0 <= op.baseReg && op.indexReg < 0)
 					if ((op.baseReg & 7) != 4) {
@@ -168,7 +169,6 @@ public class AssemblerAmd64 {
 						mod = dispMod(op.dispSize);
 						rm = 4;
 						s = scale(op);
-						;
 						i = op.indexReg;
 						b = op.baseReg;
 						dispSize = op.dispSize;
