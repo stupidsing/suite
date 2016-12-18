@@ -27,6 +27,8 @@ declare pg-get-physical = function [logical,] (
 
 declare pg-set-pt-entry = function [pe0, pt1, pm-alloc,] (
 	declare physical = dw-get [pe0,];
+	log-dword "pe0 " pe0;
+	log-dword "phy " physical;
 	if (physical = 0) then (
 		dw-set [pe0, ({physical} = pm-alloc []) + 7,];
 		pg-invalidate-page [pt1,];
@@ -45,6 +47,8 @@ declare pg-unset-pt-entry = function [pe0, pt1,] (
 );
 
 declare pg-map = function [logical, physical,] (
+	log-dword "pg-map0 " logical;
+	log-dword "pg-map1 " physical;
 	declare pe0 = +xFFFFF000 + (logical ushr 22) shl 2;
 	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
 	declare pt1 = pe1 and +xFFFFF000;
@@ -134,8 +138,6 @@ declare pg-setup = function [] (
 		dw-set [pt0 + i0 shl 2, entry0,];
 	);
 
-	pg-map [ap-local-apic-address, ap-local-apic-address,];
-
 	& pt0;
 
 	asm _ MOV (EAX, `EAX`);
@@ -145,9 +147,13 @@ declare pg-setup = function [] (
 	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2
 	asm _ D8 (+x00);
+
+	pg-map [ap-local-apic-address, ap-local-apic-address,];
 );
 
 declare pg-teardown = function [] (
+	pg-unmap [ap-local-apic-address,];
+
 	signature pt0 = int;
 	& pt0;
 
@@ -158,8 +164,6 @@ declare pg-teardown = function [] (
 	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2
 	asm _ D8 (+x00);
-
-	pg-unmap [ap-local-apic-address,];
 
 	for i0 in (0, 1024) do (
 		declare pt1 = (dw-get [pt0 + i0 shl 2,]) and +xFFFFF000;
