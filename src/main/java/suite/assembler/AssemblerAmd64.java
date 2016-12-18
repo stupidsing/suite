@@ -154,7 +154,7 @@ public class AssemblerAmd64 {
 					} else
 						throw new RuntimeException("Bad operand");
 				else if (op.baseReg < 0 && 0 <= op.indexReg)
-					if ((op.indexReg & 7) != 4) { // [4 * EBX + 0x1234]
+					if ((op.indexReg & 7) != 4) { // [EBX * 4 + 0x1234]
 						mod = 0;
 						rm = 4;
 						s = scale(op);
@@ -165,7 +165,7 @@ public class AssemblerAmd64 {
 						throw new RuntimeException("Bad operand");
 				else if (0 <= op.baseReg && 0 <= op.indexReg)
 					if ((op.baseReg & 7) != 5 && (op.indexReg & 7) != 4) {
-						// [4 * EBX + EAX + 0x1234]
+						// [EBX * 4 + EAX + 0x1234]
 						mod = dispMod(op.dispSize);
 						rm = 4;
 						s = scale(op);
