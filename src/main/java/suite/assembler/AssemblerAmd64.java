@@ -125,11 +125,16 @@ public class AssemblerAmd64 {
 	}
 
 	private class ModRm {
-		private int mod, num, rm, s, i, b, dispSize;
+		private int size;
+		private int mod, num, rm;
+		private int s, i, b;
+		private int dispSize;
 		private long disp;
 
 		private ModRm(Operand operand, int n) {
+			size = operand.size;
 			num = n;
+
 			if (operand instanceof OpReg) { // EAX
 				OpReg op = (OpReg) operand;
 				mod = 3;
@@ -182,8 +187,7 @@ public class AssemblerAmd64 {
 		}
 
 		private byte rex() {
-			int isOpSize64 = 0;
-			int b04 = (isOpSize64 << 3) //
+			int b04 = ((size == 8 ? 1 : 0) << 3) //
 					+ (((num >> 3) & 1) << 2) //
 					+ (((i >> 3) & 1) << 1) //
 					+ (((b >> 3) & 1) << 0);
