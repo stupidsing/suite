@@ -2,43 +2,16 @@ package suite.assembler;
 
 import java.util.List;
 
+import suite.assembler.Amd64.Instruction;
+import suite.assembler.Amd64.OpImm;
+import suite.assembler.Amd64.OpMem;
+import suite.assembler.Amd64.OpNone;
+import suite.assembler.Amd64.OpReg;
+import suite.assembler.Amd64.Operand;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 
-public class AssemblerAmd64 {
-
-	public enum Insn {
-		AAA, ADD,
-	};
-
-	public abstract class Operand {
-		public int size;
-	}
-
-	public class OpImm extends Operand {
-		public long imm;
-	}
-
-	public class OpMem extends Operand {
-		public int scale, indexReg, baseReg, dispSize;
-		public long disp;
-	}
-
-	public class OpNone extends Operand {
-	}
-
-	public class OpReg extends Operand {
-		public int reg;
-	}
-
-	public class OpRegSegment extends Operand {
-		public int sreg;
-	}
-
-	public class Instruction {
-		public Insn insn;
-		public Operand op0, op1, op2;
-	}
+public class Amd64Assembler {
 
 	public Bytes assemble(List<Instruction> instructions) {
 		BytesBuilder bb = new BytesBuilder();
@@ -125,16 +98,11 @@ public class AssemblerAmd64 {
 	}
 
 	private class ModRm {
-		private int size;
-		private int mod, num, rm;
-		private int s, i, b;
-		private int dispSize;
+		private int mod, num, rm, s, i, b, dispSize;
 		private long disp;
 
 		private ModRm(Operand operand, int n) {
-			size = operand.size;
 			num = n;
-
 			if (operand instanceof OpReg) { // EAX
 				OpReg op = (OpReg) operand;
 				mod = 3;
@@ -159,7 +127,7 @@ public class AssemblerAmd64 {
 					} else
 						throw new RuntimeException("Bad operand");
 				else if (op.baseReg < 0 && 0 <= op.indexReg)
-					if ((op.indexReg & 7) != 4) { // [EBX * 4 + 0x1234]
+					if ((op.indexReg & 7) != 4) { // [4 * EBX + 0x1234]
 						mod = 0;
 						rm = 4;
 						s = scale(op);
@@ -170,7 +138,7 @@ public class AssemblerAmd64 {
 						throw new RuntimeException("Bad operand");
 				else if (0 <= op.baseReg && 0 <= op.indexReg)
 					if ((op.baseReg & 7) != 5 && (op.indexReg & 7) != 4) {
-						// [EBX * 4 + EAX + 0x1234]
+						// [4 * EBX + EAX + 0x1234]
 						mod = dispMod(op.dispSize);
 						rm = 4;
 						s = scale(op);
@@ -187,7 +155,8 @@ public class AssemblerAmd64 {
 		}
 
 		private byte rex() {
-			int b04 = ((size == 8 ? 1 : 0) << 3) //
+			int isOpSize64 = 0;
+			int b04 = (isOpSize64 << 3) //
 					+ (((num >> 3) & 1) << 2) //
 					+ (((i >> 3) & 1) << 1) //
 					+ (((b >> 3) & 1) << 0);
