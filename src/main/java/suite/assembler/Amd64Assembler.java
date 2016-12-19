@@ -38,7 +38,9 @@ public class Amd64Assembler {
 			bytes = assembleModRm(0x00, 0x80, 0, instruction);
 			break;
 		case JMP:
-			if (instruction.op0 instanceof OpImm) {
+			if (isRm(instruction.op0))
+				bytes = assembleModRmReg(0xFF, modRm(instruction.op0, 4), 4);
+			else if (instruction.op0 instanceof OpImm) {
 				OpImm op0 = (OpImm) instruction.op0;
 				int b;
 
@@ -77,9 +79,9 @@ public class Amd64Assembler {
 		Bytes bytes;
 		if (instruction.op2 instanceof OpNone)
 			if (isRm(instruction.op0) && instruction.op1 instanceof OpReg)
-				bytes = assembleModRmReg(b_modrm, modRm(instruction.op0, num), (OpReg) instruction.op1);
+				bytes = assembleModRmReg(b_modrm, modRm(instruction.op0, num), instruction.op1.size);
 			else if (instruction.op0 instanceof OpReg && isRm(instruction.op1))
-				bytes = assembleModRmReg(b_modrm + 2, modRm(instruction.op1, num), (OpReg) instruction.op0);
+				bytes = assembleModRmReg(b_modrm + 2, modRm(instruction.op1, num), instruction.op0.size);
 			else if (instruction.op1 instanceof OpImm) {
 				OpImm op1 = (OpImm) instruction.op1;
 				BytesBuilder bb = new BytesBuilder();
@@ -101,14 +103,14 @@ public class Amd64Assembler {
 		return bytes;
 	}
 
-	private Bytes assembleModRmReg(int b0, ModRm modRm, OpReg op1) {
+	private Bytes assembleModRmReg(int b0, ModRm modRm, int size) {
 		BytesBuilder bb = new BytesBuilder();
 		int rex = rex(modRm);
 		int sib = sib(modRm);
 
 		if (0 <= rex(modRm))
 			bb.append((byte) rex);
-		bb.append((byte) (b0 + (1 < op1.size ? 1 : 0)));
+		bb.append((byte) (b0 + (1 < size ? 1 : 0)));
 		bb.append(modNumRm(modRm));
 		if (0 <= sib)
 			bb.append((byte) sib);
