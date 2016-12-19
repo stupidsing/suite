@@ -88,7 +88,7 @@ asis:_s:.a (LOOPZ .target) (+xE1, .e1)/.ex :- asi-jump8 .a .target .e1/.ex #
 asis:.s:.a (LGDT .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 2) .e0/(+x0F, +x01, .e1)/.e1/.ex #
 asis:.s:.a (LIDT .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 3) .e0/(+x0F, +x01, .e1)/.e1/.ex #
 asis:_s:.a (LTR .rm) .e0/.ex :- as-mod-num-rm:16:.a .rm (0 3) .e0/(+x0F, +x00, .e1)/.e1/.ex #
-asis:.s:_a (MOV (.reg, .imm)) .e :- asi-reg-imm:.s +xB0 .reg .imm .e #
+asis:.s:_a (MOV (.reg, .imm)) .e :- asi-reg-imm:.s .reg .imm +xB0 .e #
 asis:.s:.a (MOV (.rm, .imm)) .e :- asi-rm-imm:.s:.a .rm .imm +xC6 0 .e #
 asis:.s:.a (MOV (.rm0, .rm1)) .e :- asi-rm-reg2:.s:.a .rm0 .rm1 +x88 .e #
 asis:16:.a (MOV (.rm, .sreg)) .e0/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16:.a .rm (0 .sr) .e0/(+x8C, .e1)/.e1/.ex #
@@ -235,7 +235,7 @@ asi-acc-imm:.size .b0 .acc .imm (E8 .b1, .e1)/.ex
 	, (.size = 8, .b1 = .b0; member (16, 32, 64,) .size, .b1 = .b0 + 1)
 #
 
-asi-reg-imm:.size .b0 .reg .imm .e0/.ex
+asi-reg-imm:.size .reg .imm .b0 .e0/.ex
 	:- asi-reg:.size .b1 .reg .e0/.e1
 	, as-verify-emit:.size .imm .e1/.ex
 	, (.size = 8, .b1 = .b0; member (16, 32, 64,) .size, .b1 = .b0 + 8)
