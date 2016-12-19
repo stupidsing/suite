@@ -193,7 +193,7 @@ asi-shift:.size:.a .rm .imm8 _ .b0 .n .e0/.ex
 #
 
 -- common single-operand instructions, like DEC, NEG
-asi-1op:.size:_a .reg .b _ _ .e :- asi-reg:.size .b .reg .e, member (16, 32, 64,) .size #
+asi-1op:.size:_a .reg .b _ _ .e :- asi-reg:.size .reg .b .e, member (16, 32, 64,) .size #
 asi-1op:.size:.a .rm _ .b .n .e :- asi-rm:.size:.a .b .rm .n .e #
 
 -- common two-operand instructions, like ADD, OR, XOR
@@ -236,7 +236,7 @@ asi-acc-imm:.size .b0 .acc .imm (E8 .b1, .e1)/.ex
 #
 
 asi-reg-imm:.size .reg .imm .b0 .e0/.ex
-	:- asi-reg:.size .b1 .reg .e0/.e1
+	:- asi-reg:.size .reg .b1 .e0/.e1
 	, as-verify-emit:.size .imm .e1/.ex
 	, (.size = 8, .b1 = .b0; member (16, 32, 64,) .size, .b1 = .b0 + 8)
 #
@@ -259,7 +259,7 @@ asi-rm:.size:.a .b0 .rm .num .e0/.ex
 	, (.size = 8, .b1 = .b0; member (16, 32, 64,) .size, .b1 = .b0 + 1)
 #
 
-asi-reg:.size .b0 .reg (E8 .b1, .e)/.e
+asi-reg:.size .reg .b0 (E8 .b1, .e)/.e
 	:- as-reg:.size .reg .r
 	, .b1 = .b0 + .r
 #
