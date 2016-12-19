@@ -14,7 +14,7 @@ import suite.primitive.Bytes.BytesBuilder;
 public class Amd64Assembler {
 
 	private class ModRm {
-		private int mod, num, rm, s, i, b, dispSize;
+		private int size, mod, num, rm, s, i, b, dispSize;
 		private long disp;
 	}
 
@@ -59,12 +59,27 @@ public class Amd64Assembler {
 				long rel = op0.imm - (offset + b0.size() + op0.size);
 
 				BytesBuilder bb = new BytesBuilder();
+				appendIf(bb, rex(instruction.op0.size));
 				bb.append(b0);
 				appendImm(bb, rel, op0.size);
 				bytes = bb.toBytes();
 			} else
 				throw new RuntimeException("Bad instruction");
 			break;
+		case MOV:
+			if (instruction.op0.size == instruction.op1.size)
+				if (instruction.op0 instanceof OpReg && instruction.op1 instanceof OpImm) {
+					OpReg op0 = (OpReg) instruction.op0;
+					OpImm op1 = (OpImm) instruction.op1;
+					BytesBuilder bb = new BytesBuilder();
+					appendIf(bb, rex(instruction.op0.size));
+					bb.append((byte) (0xB0 + (op0.size <= 1 ? 0 : 8) + op0.reg));
+					appendImm(bb, op1);
+					bytes = bb.toBytes();
+				} else
+					throw new RuntimeException("Bad instruction");
+			else
+				throw new RuntimeException("Bad instruction");
 		default:
 			bytes = null;
 		}
@@ -86,10 +101,10 @@ public class Amd64Assembler {
 				OpImm op1 = (OpImm) instruction.op1;
 				BytesBuilder bb = new BytesBuilder();
 				if (isAcc(instruction.op0))
-					bb.append((byte) (b_imm + 4 + (1 < instruction.op0.size ? 1 : 0)));
+					bb.append((byte) (b_imm + 4 + (instruction.op0.size <= 1 ? 0 : 1)));
 				else if (isRm(instruction.op0)) {
 					ModRm modRm = modRm(instruction.op0, num);
-					int b0 = op1.size == 1 ? 3 : (1 < instruction.op0.size ? 1 : 0);
+					int b0 = op1.size == 1 ? 3 : (instruction.op0.size <= 1 ? 0 : 1);
 					bb.append((byte) (b_imm + b0));
 					bb.append(modNumRm(modRm));
 				} else
@@ -103,27 +118,22 @@ public class Amd64Assembler {
 		return bytes;
 	}
 
-	private Bytes assembleModRmReg(int b0, ModRm modRm, int size) {
-		BytesBuilder bb = new BytesBuilder();
-		int rex = rex(modRm);
-		int sib = sib(modRm);
-
-		if (0 <= rex(modRm))
-			bb.append((byte) rex);
-		bb.append((byte) (b0 + (1 < size ? 1 : 0)));
-		bb.append(modNumRm(modRm));
-		if (0 <= sib)
-			bb.append((byte) sib);
-		appendImm(bb, modRm.disp, modRm.dispSize);
-		return bb.toBytes();
-	}
-
 	private boolean isAcc(Operand operand) {
 		return operand instanceof OpReg && ((OpReg) operand).reg == 0;
 	}
 
 	private boolean isRm(Operand operand) {
 		return operand instanceof OpMem || operand instanceof OpReg;
+	}
+
+	private Bytes assembleModRmReg(int b0, ModRm modRm, int size) {
+		BytesBuilder bb = new BytesBuilder();
+		appendIf(bb, rex(modRm));
+		bb.append((byte) (b0 + (size <= 1 ? 0 : 1)));
+		bb.append(modNumRm(modRm));
+		appendIf(bb, sib(modRm));
+		appendImm(bb, modRm.disp, modRm.dispSize);
+		return bb.toBytes();
 	}
 
 	private ModRm modRm(Operand operand, int num) {
@@ -183,6 +193,7 @@ public class Amd64Assembler {
 			throw new RuntimeException("Bad operand");
 
 		ModRm modRm = new ModRm();
+		modRm.size = operand.size;
 		modRm.mod = mod;
 		modRm.num = num;
 		modRm.rm = rm;
@@ -194,13 +205,20 @@ public class Amd64Assembler {
 		return modRm;
 	}
 
-	private byte rex(ModRm modRm) {
-		int isOpSize64 = 0;
-		int b04 = (isOpSize64 << 3) //
-				+ (((modRm.num >> 3) & 1) << 2) //
-				+ (((modRm.i >> 3) & 1) << 1) //
-				+ (((modRm.b >> 3) & 1) << 0);
-		return b04 != 0 ? (byte) (0x40 + b04) : -1;
+	private int rex(int size) {
+		return rex(size, 0, 0, 0);
+	}
+
+	private int rex(ModRm modRm) {
+		return rex(modRm.size, modRm.num, modRm.i, modRm.b);
+	}
+
+	private int rex(int size, int r, int x, int b) {
+		int b04 = ((size != 8 ? 0 : 1) << 3) //
+				+ (((r >> 3) & 1) << 2) //
+				+ (((x >> 3) & 1) << 1) //
+				+ (((b >> 3) & 1) << 0);
+		return b04 != 0 ? 0x40 + b04 : -1;
 	}
 
 	private byte modNumRm(ModRm modRm) {
@@ -241,6 +259,11 @@ public class Amd64Assembler {
 
 	private byte b(int b03, int b36, int b68) {
 		return (byte) ((b03 & 7) + ((b36 & 7) << 3) + ((b68 & 3) << 6));
+	}
+
+	private void appendIf(BytesBuilder bb, int b) {
+		if (0 <= b)
+			bb.append((byte) b);
 	}
 
 	private void appendImm(BytesBuilder bb, OpImm op) {
