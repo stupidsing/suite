@@ -18,14 +18,17 @@ public class Amd64Assembler {
 		private long disp;
 	}
 
-	public Bytes assemble(List<Instruction> instructions) {
+	public Bytes assemble(long offset, List<Instruction> instructions) {
 		BytesBuilder bb = new BytesBuilder();
-		for (Instruction instruction : instructions)
-			bb.append(assemble(instruction));
+		for (Instruction instruction : instructions) {
+			Bytes bytes = assemble(offset, instruction);
+			bb.append(bytes);
+			offset += bytes.size();
+		}
 		return bb.toBytes();
 	}
 
-	public Bytes assemble(Instruction instruction) {
+	public Bytes assemble(long offset, Instruction instruction) {
 		Bytes bytes;
 		switch (instruction.insn) {
 		case AAA:
@@ -33,6 +36,32 @@ public class Amd64Assembler {
 			break;
 		case ADD:
 			bytes = assembleModRm(0x00, 0x80, 0, instruction);
+			break;
+		case JMP:
+			if (instruction.op0 instanceof OpImm) {
+				OpImm op0 = (OpImm) instruction.op0;
+				int b;
+
+				switch (op0.size) {
+				case 1:
+					b = 0xEB;
+					break;
+				case 4:
+					b = 0xE9;
+					break;
+				default:
+					throw new RuntimeException("Bad instruction");
+				}
+
+				Bytes b0 = Bytes.of(new byte[] { (byte) b, });
+				long rel = op0.imm - (offset + b0.size() + op0.size);
+
+				BytesBuilder bb = new BytesBuilder();
+				bb.append(b0);
+				appendImm(bb, rel, op0.size);
+				bytes = bb.toBytes();
+			} else
+				throw new RuntimeException("Bad instruction");
 			break;
 		default:
 			bytes = null;
@@ -63,20 +92,13 @@ public class Amd64Assembler {
 					bb.append(modNumRm(modRm));
 				} else
 					throw new RuntimeException("Bad instruction");
-				appendImm(bb, op1.imm, op1.size);
+				appendImm(bb, op1);
 				bytes = bb.toBytes();
 			} else
 				throw new RuntimeException("Bad instruction");
 		else
 			throw new RuntimeException("Bad instruction");
 		return bytes;
-	}
-
-	private void appendImm(BytesBuilder bb, long v, int size) {
-		for (int i = 0; i < size; i++) {
-			bb.append((byte) (v & 0xFF));
-			v >>= 8;
-		}
 	}
 
 	private Bytes assembleModRmReg(int b0, ModRm modRm, OpReg op1) {
@@ -184,7 +206,16 @@ public class Amd64Assembler {
 	}
 
 	private int dispMod(int dispSize) {
-		return dispSize == 0 ? 0 : dispSize == 1 ? 1 : 2;
+		switch (dispSize) {
+		case 0:
+			return 0;
+		case 1:
+			return 1;
+		case 4:
+			return 2;
+		default:
+			throw new RuntimeException("Bad displacement");
+		}
 	}
 
 	private int sib(ModRm modRm) {
@@ -192,11 +223,33 @@ public class Amd64Assembler {
 	}
 
 	private int scale(OpMem op) {
-		return op.scale == 1 ? 0 : op.scale == 2 ? 1 : op.scale == 4 ? 2 : 3;
+		switch (op.scale) {
+		case 1:
+			return 0;
+		case 2:
+			return 1;
+		case 4:
+			return 2;
+		case 8:
+			return 3;
+		default:
+			throw new RuntimeException("Bad scale");
+		}
 	}
 
 	private byte b(int b03, int b36, int b68) {
 		return (byte) ((b03 & 7) + ((b36 & 7) << 3) + ((b68 & 3) << 6));
+	}
+
+	private void appendImm(BytesBuilder bb, OpImm op) {
+		appendImm(bb, op.imm, op.size);
+	}
+
+	private void appendImm(BytesBuilder bb, long v, int size) {
+		for (int i = 0; i < size; i++) {
+			bb.append((byte) (v & 0xFF));
+			v >>= 8;
+		}
 	}
 
 }
