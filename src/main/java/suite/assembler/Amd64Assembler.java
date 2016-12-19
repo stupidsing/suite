@@ -59,7 +59,7 @@ public class Amd64Assembler {
 				long rel = op0.imm - (offset + b0.size() + op0.size);
 
 				BytesBuilder bb = new BytesBuilder();
-				appendIf(bb, rex(instruction.op0.size));
+				appendIf(bb, rex(instruction.op0));
 				bb.append(b0);
 				appendImm(bb, rel, op0.size);
 				bytes = bb.toBytes();
@@ -71,8 +71,9 @@ public class Amd64Assembler {
 				if (instruction.op0 instanceof OpReg && instruction.op1 instanceof OpImm) {
 					OpReg op0 = (OpReg) instruction.op0;
 					OpImm op1 = (OpImm) instruction.op1;
+
 					BytesBuilder bb = new BytesBuilder();
-					appendIf(bb, rex(instruction.op0.size));
+					appendIf(bb, rex(instruction.op0));
 					bb.append((byte) (0xB0 + (op0.size <= 1 ? 0 : 8) + op0.reg));
 					appendImm(bb, op1);
 					bytes = bb.toBytes();
@@ -99,12 +100,15 @@ public class Amd64Assembler {
 				bytes = assembleModRmReg(b_modrm + 2, modRm(instruction.op1, num), instruction.op0.size);
 			else if (instruction.op1 instanceof OpImm) {
 				OpImm op1 = (OpImm) instruction.op1;
+
 				BytesBuilder bb = new BytesBuilder();
-				if (isAcc(instruction.op0))
+				if (isAcc(instruction.op0)) {
+					appendIf(bb, rex(instruction.op0));
 					bb.append((byte) (b_imm + 4 + (instruction.op0.size <= 1 ? 0 : 1)));
-				else if (isRm(instruction.op0)) {
+				} else if (isRm(instruction.op0)) {
 					ModRm modRm = modRm(instruction.op0, num);
 					int b0 = op1.size == 1 ? 3 : (instruction.op0.size <= 1 ? 0 : 1);
+					appendIf(bb, rex(modRm));
 					bb.append((byte) (b_imm + b0));
 					bb.append(modNumRm(modRm));
 				} else
@@ -205,8 +209,8 @@ public class Amd64Assembler {
 		return modRm;
 	}
 
-	private int rex(int size) {
-		return rex(size, 0, 0, 0);
+	private int rex(Operand operand) {
+		return rex(operand.size, 0, 0, 0);
 	}
 
 	private int rex(ModRm modRm) {
