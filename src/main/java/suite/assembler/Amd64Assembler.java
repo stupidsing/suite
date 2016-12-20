@@ -48,11 +48,11 @@ public class Amd64Assembler {
 			insnCode.bs = new byte[] { 0x37, };
 			break;
 		case ADD:
-			insnCode = assembleModRm(0x00, 0x80, 0, instruction);
+			insnCode = assembleModRm(instruction, 0x00, 0x80, 0);
 			break;
 		case JMP:
 			if (isRm(instruction.op0))
-				insnCode = assembleModRmReg(0xFF, modRm(instruction.op0, 4), 4);
+				insnCode = assembleModRmReg(4, 0xFF, modRm(instruction.op0, 4));
 			else if (instruction.op0 instanceof OpImm) {
 				OpImm op0 = (OpImm) instruction.op0;
 				int size = op0.size;
@@ -103,13 +103,13 @@ public class Amd64Assembler {
 			throw new RuntimeException("Bad instruction");
 	}
 
-	private InsnCode assembleModRm(int b_modrm, int b_imm, int num, Instruction instruction) {
+	private InsnCode assembleModRm(Instruction instruction, int b_modrm, int b_imm, int num) {
 		InsnCode insnCode;
 		if (instruction.op2 instanceof OpNone)
 			if (isRm(instruction.op0) && instruction.op1 instanceof OpReg)
-				insnCode = assembleModRmReg(b_modrm, modRm(instruction.op0, num), instruction.op1.size);
+				insnCode = assembleModRmReg(instruction.op1.size, b_modrm, modRm(instruction.op0, num));
 			else if (instruction.op0 instanceof OpReg && isRm(instruction.op1))
-				insnCode = assembleModRmReg(b_modrm + 2, modRm(instruction.op1, num), instruction.op0.size);
+				insnCode = assembleModRmReg(instruction.op0.size, b_modrm + 2, modRm(instruction.op1, num));
 			else if (instruction.op1 instanceof OpImm) {
 				OpImm op1 = (OpImm) instruction.op1;
 
@@ -140,7 +140,7 @@ public class Amd64Assembler {
 		return operand instanceof OpMem || operand instanceof OpReg;
 	}
 
-	private InsnCode assembleModRmReg(int b0, ModRm modRm, int size) {
+	private InsnCode assembleModRmReg(int size, int b0, ModRm modRm) {
 		InsnCode insnCode = new InsnCode(size);
 		insnCode.bs = new byte[] { (byte) (b0 + (size <= 1 ? 0 : 1)), };
 		insnCode.modRm = modRm;
@@ -157,9 +157,9 @@ public class Amd64Assembler {
 		if (modRm != null) {
 			bb.append(b(modRm.rm, modRm.num, modRm.mod));
 			appendIf(bb, sib(modRm));
-			appendImm(bb, modRm.disp, modRm.dispSize);
+			appendImm(bb, modRm.dispSize, modRm.disp);
 		}
-		appendImm(bb, insnCode.imm, insnCode.immSize);
+		appendImm(bb, insnCode.immSize, insnCode.imm);
 		return bb.toBytes();
 	}
 
@@ -285,7 +285,7 @@ public class Amd64Assembler {
 			bb.append((byte) b);
 	}
 
-	private void appendImm(BytesBuilder bb, long v, int size) {
+	private void appendImm(BytesBuilder bb, int size, long v) {
 		for (int i = 0; i < size; i++) {
 			bb.append((byte) (v & 0xFF));
 			v >>= 8;
