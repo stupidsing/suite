@@ -48,7 +48,10 @@ public class Amd64Assembler {
 			insnCode.bs = new byte[] { 0x37, };
 			break;
 		case ADD:
-			insnCode = assembleModRm(instruction, 0x00, 0x80, 0);
+			insnCode = assembleRmReg(instruction, 0x00, 0x80, 0);
+			break;
+		case DEC:
+			insnCode = assembleRm(instruction, 0x48, 0xFE, 1);
 			break;
 		case JMP:
 			if (isRm(instruction.op0))
@@ -103,7 +106,20 @@ public class Amd64Assembler {
 			throw new RuntimeException("Bad instruction");
 	}
 
-	private InsnCode assembleModRm(Instruction instruction, int b_modrm, int b_imm, int num) {
+	private InsnCode assembleRm(Instruction instruction, int b_reg, int b_modrm, int num) {
+		InsnCode insnCode;
+		if (instruction.op0 instanceof OpReg && 1 < instruction.op0.size) {
+			OpReg op0 = (OpReg) instruction.op0;
+			insnCode = new InsnCode(instruction.op0.size);
+			insnCode.bs = new byte[] { (byte) (b_reg + op0.reg), };
+		} else if (isRm(instruction.op0))
+			insnCode = assembleModRmReg(instruction.op0.size, b_modrm, modRm(instruction.op0, num));
+		else
+			throw new RuntimeException("Bad instruction");
+		return insnCode;
+	}
+
+	private InsnCode assembleRmReg(Instruction instruction, int b_modrm, int b_imm, int num) {
 		InsnCode insnCode;
 		if (instruction.op2 instanceof OpNone)
 			if (isRm(instruction.op0) && instruction.op1 instanceof OpReg)
@@ -152,6 +168,8 @@ public class Amd64Assembler {
 		int rex = modRm != null ? rex(modRm) : rex(insnCode.size, 0, 0, 0);
 
 		BytesBuilder bb = new BytesBuilder();
+		if (insnCode.size == 2)
+			bb.append((byte) 0x66);
 		appendIf(bb, rex);
 		bb.append(insnCode.bs);
 		if (modRm != null) {
