@@ -54,33 +54,7 @@ public class Amd64Assembler {
 			insnCode = assembleRm(instruction, 0x48, 0xFE, 1);
 			break;
 		case JMP:
-			if (isRm(instruction.op0))
-				insnCode = assembleModRmReg(4, 0xFF, modRm(instruction.op0, 4));
-			else if (instruction.op0 instanceof OpImm) {
-				OpImm op0 = (OpImm) instruction.op0;
-				int size = op0.size;
-				int b;
-
-				switch (size) {
-				case 1:
-					b = 0xEB;
-					break;
-				case 4:
-					b = 0xE9;
-					break;
-				default:
-					throw new RuntimeException("Bad instruction");
-				}
-
-				byte b0[] = new byte[] { (byte) b, };
-				long rel = op0.imm - (offset + b0.length + size);
-
-				insnCode = new InsnCode(size);
-				insnCode.bs = b0;
-				insnCode.immSize = size;
-				insnCode.imm = rel;
-			} else
-				throw new RuntimeException("Bad instruction");
+			insnCode = assembleJump(instruction, offset, 0xEB, 0xE9);
 			break;
 		case MOV:
 			if (instruction.op0.size == instruction.op1.size)
@@ -104,6 +78,38 @@ public class Amd64Assembler {
 			return assemble(insnCode);
 		else
 			throw new RuntimeException("Bad instruction");
+	}
+
+	private InsnCode assembleJump(Instruction instruction, long offset, int b_near, int b_far) {
+		InsnCode insnCode;
+		if (isRm(instruction.op0))
+			insnCode = assembleModRmReg(4, 0xFF, modRm(instruction.op0, 4));
+		else if (instruction.op0 instanceof OpImm) {
+			OpImm op0 = (OpImm) instruction.op0;
+			int size = op0.size;
+			int b;
+
+			switch (size) {
+			case 1:
+				b = b_near;
+				break;
+			case 4:
+				b = b_far;
+				break;
+			default:
+				throw new RuntimeException("Bad instruction");
+			}
+
+			byte b0[] = new byte[] { (byte) b, };
+			long rel = op0.imm - (offset + b0.length + size);
+
+			insnCode = new InsnCode(size);
+			insnCode.bs = b0;
+			insnCode.immSize = size;
+			insnCode.imm = rel;
+		} else
+			throw new RuntimeException("Bad instruction");
+		return insnCode;
 	}
 
 	private InsnCode assembleRm(Instruction instruction, int b_reg, int b_modrm, int num) {
