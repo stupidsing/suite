@@ -3,7 +3,7 @@ package suite.assembler;
 public class Amd64 {
 
 	public enum Insn {
-		AAA, ADD, DEC, JMP, MOV,
+		AAA, ADD, DEC, IN, JMP, MOV, OUT,
 	};
 
 	public class Operand {

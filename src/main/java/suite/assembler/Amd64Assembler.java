@@ -53,8 +53,11 @@ public class Amd64Assembler {
 		case DEC:
 			insnCode = assembleRm(instruction, 0x48, 0xFE, 1);
 			break;
+		case IN:
+			insnCode = assembleInOut(instruction.op1, instruction.op0, 0xE4);
+			break;
 		case JMP:
-			insnCode = assembleJump(instruction, offset, 0xEB, 0xE9);
+			insnCode = assembleJump(instruction, offset, 0xEB, new byte[] { (byte) 0xE9, });
 			break;
 		case MOV:
 			if (instruction.op0.size == instruction.op1.size)
@@ -70,6 +73,9 @@ public class Amd64Assembler {
 					throw new RuntimeException("Bad instruction");
 			else
 				throw new RuntimeException("Bad instruction");
+		case OUT:
+			insnCode = assembleInOut(instruction.op0, instruction.op1, 0xE6);
+			break;
 		default:
 			insnCode = null;
 		}
@@ -80,31 +86,44 @@ public class Amd64Assembler {
 			throw new RuntimeException("Bad instruction");
 	}
 
-	private InsnCode assembleJump(Instruction instruction, long offset, int b_near, int b_far) {
+	private InsnCode assembleInOut(Operand port, Operand acc, int b) {
+		if (isAcc(acc)) {
+			OpImm portImm = port instanceof OpImm ? (OpImm) port : null;
+			InsnCode insnCode = new InsnCode(acc.size);
+			insnCode.bs = new byte[] { (byte) (b + (acc.size == 1 ? 0 : 1) + (portImm != null ? 0 : 8)), };
+			if (portImm != null) {
+				insnCode.immSize = 1;
+				insnCode.imm = portImm.imm;
+			}
+			return insnCode;
+		} else
+			throw new RuntimeException("Bad instruction");
+	}
+
+	private InsnCode assembleJump(Instruction instruction, long offset, int b_near, byte b_far[]) {
 		InsnCode insnCode;
 		if (isRm(instruction.op0))
 			insnCode = assembleModRmReg(4, 0xFF, modRm(instruction.op0, 4));
 		else if (instruction.op0 instanceof OpImm) {
 			OpImm op0 = (OpImm) instruction.op0;
 			int size = op0.size;
-			int b;
+			byte bs0[];
 
 			switch (size) {
 			case 1:
-				b = b_near;
+				bs0 = new byte[] { (byte) b_near, };
 				break;
 			case 4:
-				b = b_far;
+				bs0 = b_far;
 				break;
 			default:
 				throw new RuntimeException("Bad instruction");
 			}
 
-			byte b0[] = new byte[] { (byte) b, };
-			long rel = op0.imm - (offset + b0.length + size);
+			long rel = op0.imm - (offset + bs0.length + size);
 
 			insnCode = new InsnCode(size);
-			insnCode.bs = b0;
+			insnCode.bs = bs0;
 			insnCode.immSize = size;
 			insnCode.imm = rel;
 		} else
