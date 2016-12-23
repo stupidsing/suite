@@ -129,8 +129,8 @@ asis:.s:_a (REPE .i) (+xF3, .e1)/.ex :- asis:.s:_a .i .e1/.ex #
 asis:.s:_a (REPNE .i) (+xF2, .e1)/.ex :- asis:.s:_a .i .e1/.ex #
 asis:_s:_a (RET ()) (+xC3, .e)/.e #
 asis:_s:_a (RET .imm) (+xC2, .e1)/.ex :- as-verify-emit:16 .imm .e1/.ex #
-asis:.s:.a (SAL (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xD0 +xC0 4 .e #
-asis:.s:.a (SAR (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xD0 +xC0 7 .e #
+asis:.s:.a (SAL (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xC0 4 .e #
+asis:.s:.a (SAR (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xC0 7 .e #
 asis:.s:.a (SBB (.op0, .op1)) .e :- asi-2op:.s:.a .op0 .op1 +x18 +x80 3 .e #
 asis:.s:.a (SETG .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x9F, .e1)/.e1/.ex #
 asis:.s:.a (SETGE .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x9D, .e1)/.e1/.ex #
@@ -138,8 +138,8 @@ asis:.s:.a (SETL .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x9C, 
 asis:.s:.a (SETLE .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x9E, .e1)/.e1/.ex #
 asis:.s:.a (SETE .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x94, .e1)/.e1/.ex #
 asis:.s:.a (SETNE .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x95, .e1)/.e1/.ex #
-asis:.s:.a (SHL (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xD0 +xC0 4 .e #
-asis:.s:.a (SHR (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xD0 +xC0 5 .e #
+asis:.s:.a (SHL (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xC0 4 .e #
+asis:.s:.a (SHR (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xC0 5 .e #
 asis:_s:_a (STI ()) (+xFB, .e)/.e #
 asis:8:_a (STOSB ()) (+xAA, .e)/.e #
 asis:32:_a (STOSD ()) (+xAB, .e)/.e #
@@ -183,11 +183,11 @@ asi-in-out:.size .acc .port .b0 (E8 .b2, .e1)/.ex
 	, if (.port = DX) (.e1 = .ex, .b2 = .b1 + 8) (as-verify-emit:8 .port .e1/.ex, .b1 = .b2)
 #
 
-asi-shift:.size:.a .rm .op .b0 _ .n .e
+asi-shift:.size:.a .rm .op .b0 .n .e
 	:- asi-rm:.size:.a .b1 .rm .n .e
-	, (.op = 1, .b1 = .b0; .op = CL, .b1 = .b0 + 2)
+	, (.op = 1, .b1 = .b0 + 16; .op = CL, .b1 = .b0 + 18)
 #
-asi-shift:.size:.a .rm .imm8 _ .b0 .n .e0/.ex
+asi-shift:.size:.a .rm .imm8 .b0 .n .e0/.ex
 	:- asi-rm-imm8:.size:.a .rm .imm8 .n .e0/(E8 .b1, .e1)/.e1/.ex
 	, (.size = 8, .b1 = .b0; member (16, 32, 64,) .size, .b1 = .b0 + 1)
 #
