@@ -76,6 +76,9 @@ public class Amd64Assembler {
 		case OUT:
 			insnCode = assembleInOut(instruction.op0, instruction.op1, 0xE6);
 			break;
+		case SHL:
+			insnCode = assembleShift(instruction, 0xC0, 4);
+			break;
 		default:
 			insnCode = null;
 		}
@@ -88,7 +91,14 @@ public class Amd64Assembler {
 
 	private InsnCode assembleInOut(Operand port, Operand acc, int b) {
 		if (isAcc(acc)) {
-			OpImm portImm = port instanceof OpImm ? (OpImm) port : null;
+			OpImm portImm;
+			if (port instanceof OpImm)
+				portImm = (OpImm) port;
+			else if (port.size == 2 && port instanceof OpReg && ((OpReg) port).reg == 3) // DX
+				portImm = null;
+			else
+				throw new RuntimeException("Bad instruction");
+
 			InsnCode insnCode = new InsnCode(acc.size);
 			insnCode.bs = new byte[] { (byte) (b + (acc.size == 1 ? 0 : 1) + (portImm != null ? 0 : 8)), };
 			if (portImm != null) {
@@ -171,6 +181,35 @@ public class Amd64Assembler {
 		else
 			throw new RuntimeException("Bad instruction");
 		return insnCode;
+	}
+
+	private InsnCode assembleShift(Instruction instruction, int b, int num) {
+		if (isRm(instruction.op0)) {
+			Operand shift = instruction.op1;
+			boolean isShiftImm;
+			OpImm shiftImm;
+			int b1;
+			if (shift instanceof OpImm) {
+				shiftImm = (OpImm) shift;
+				isShiftImm = 1 <= shiftImm.imm;
+				b1 = b + (isShiftImm ? 0 : 16);
+			} else if (shift.size == 1 && shift instanceof OpReg && ((OpReg) shift).reg == 2) { // CL
+				shiftImm = null;
+				isShiftImm = false;
+				b1 = b + 16 + 2;
+			} else
+				throw new RuntimeException("Bad instruction");
+
+			InsnCode insnCode = assembleModRmReg(instruction.op0.size, b1, modRm(instruction.op0, num));
+
+			if (shiftImm != null && !isShiftImm) {
+				insnCode.immSize = 1;
+				insnCode.imm = shiftImm.imm;
+			}
+
+			return insnCode;
+		} else
+			throw new RuntimeException("Bad instruction");
 	}
 
 	private boolean isAcc(Operand operand) {
