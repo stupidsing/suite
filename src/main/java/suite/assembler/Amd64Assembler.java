@@ -76,6 +76,9 @@ public class Amd64Assembler {
 					throw new RuntimeException("Bad instruction");
 			else
 				throw new RuntimeException("Bad instruction");
+		case MUL:
+			insnCode = assembleModRm(instruction.op0, 0xF6, 4);
+			break;
 		case OUT:
 			insnCode = assembleInOut(instruction.op0, instruction.op1, 0xE6);
 			break;
