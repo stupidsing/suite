@@ -19,6 +19,12 @@ public class Amd64Assembler {
 		private int immSize;
 		private long imm;
 
+		private InsnCode(int size, OpImm imm) {
+			this.size = size;
+			this.immSize = imm.size;
+			this.imm = imm.imm;
+		}
+
 		private InsnCode(int size) {
 			this.size = size;
 		}
@@ -64,9 +70,7 @@ public class Amd64Assembler {
 			if (instruction.op0.size == instruction.op1.size)
 				if (instruction.op1 instanceof OpImm) {
 					OpImm op1 = (OpImm) instruction.op1;
-					insnCode = new InsnCode(op1.size);
-					insnCode.immSize = op1.size;
-					insnCode.imm = op1.imm;
+					insnCode = new InsnCode(op1.size, op1);
 
 					if (instruction.op0 instanceof OpReg) {
 						OpReg op0 = (OpReg) instruction.op0;
@@ -225,9 +229,7 @@ public class Amd64Assembler {
 
 	private InsnCode assembleRmImm(Operand op0, OpImm op1, int b_accImm, int b_rmImm, int num) {
 		InsnCode insnCode;
-		insnCode = new InsnCode(op0.size);
-		insnCode.immSize = op1.size;
-		insnCode.imm = op1.imm;
+		insnCode = new InsnCode(op0.size, op1);
 
 		if (isAcc(op0))
 			insnCode.bs = new byte[] { (byte) (b_accImm + (op0.size <= 1 ? 0 : 1)), };
