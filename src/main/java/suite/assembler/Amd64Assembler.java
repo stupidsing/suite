@@ -146,10 +146,13 @@ public class Amd64Assembler {
 				throw new RuntimeException("Bad instruction");
 			break;
 		case XCHG:
-			if (isAcc(instruction.op0) && instruction.op1 instanceof OpReg)
-				insnCode = assemble(instruction, 0x90 + ((OpReg) instruction.op1).reg);
+			if (instruction.op0.size == instruction.op1.size)
+				if (isAcc(instruction.op0) && instruction.op1 instanceof OpReg)
+					insnCode = assemble(instruction, 0x90 + ((OpReg) instruction.op1).reg);
+				else
+					insnCode = assembleRegRm(instruction.op1, instruction.op0, 0x86);
 			else
-				insnCode = assembleRegRm(instruction.op1, instruction.op0, 0x86);
+				throw new RuntimeException("Bad instruction");
 			break;
 		default:
 			insnCode = null;
@@ -166,7 +169,7 @@ public class Amd64Assembler {
 			OpImm portImm;
 			if (port instanceof OpImm)
 				portImm = (OpImm) port;
-			else if (port.size == 2 && port instanceof OpReg && ((OpReg) port).reg == 3) // DX
+			else if (port.size == 2 && port instanceof OpReg && ((OpReg) port).reg == 2) // DX
 				portImm = null;
 			else
 				throw new RuntimeException("Bad instruction");
@@ -252,14 +255,22 @@ public class Amd64Assembler {
 	}
 
 	private InsnCode assembleRmReg(Instruction instruction, int b) {
-		InsnCode insnCode;
-		if (isRm(instruction.op0) && instruction.op1 instanceof OpReg)
-			insnCode = assembleByteFlag(instruction.op0, b, ((OpReg) instruction.op1).reg);
-		else if (instruction.op0 instanceof OpReg && isRm(instruction.op1))
-			insnCode = assembleByteFlag(instruction.op1, b + 2, ((OpReg) instruction.op0).reg);
-		else
-			insnCode = null;
-		return insnCode;
+		Operand rm;
+		OpReg reg;
+		int b1;
+		if (isRm(instruction.op0) && instruction.op1 instanceof OpReg) {
+			rm = instruction.op0;
+			reg = (OpReg) instruction.op1;
+			b1 = b;
+		} else if (instruction.op0 instanceof OpReg && isRm(instruction.op1)) {
+			rm = instruction.op1;
+			reg = (OpReg) instruction.op0;
+			b1 = b + 2;
+		} else {
+			rm = reg = null;
+			b1 = -1;
+		}
+		return 0 <= b1 ? assembleByteFlag(rm, b1, reg.reg) : null;
 	}
 
 	private InsnCode assembleRmImm(Operand op0, OpImm op1, int b_accImm, int b_rmImm, int num) {
@@ -287,7 +298,7 @@ public class Amd64Assembler {
 				shiftImm = (OpImm) shift;
 				isShiftImm = 1 <= shiftImm.imm;
 				b1 = b + (isShiftImm ? 0 : 16);
-			} else if (shift.size == 1 && shift instanceof OpReg && ((OpReg) shift).reg == 2) { // CL
+			} else if (shift.size == 1 && shift instanceof OpReg && ((OpReg) shift).reg == 1) { // CL
 				shiftImm = null;
 				isShiftImm = false;
 				b1 = b + 16 + 2;
