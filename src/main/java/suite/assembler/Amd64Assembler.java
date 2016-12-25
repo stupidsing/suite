@@ -91,7 +91,7 @@ public class Amd64Assembler {
 			break;
 		case CPUID:
 			insnCode = new InsnCode(4);
-			insnCode.bs = new byte[] { (byte) 0x0F, (byte) 0xA2, };
+			insnCode.bs = bs(0x0F, 0xA2);
 			break;
 		case DEC:
 			insnCode = assembleRm(instruction, 0x48, 0xFE, 1);
@@ -116,7 +116,7 @@ public class Amd64Assembler {
 			if (instruction.op1 instanceof OpNone)
 				insnCode = assembleByteFlag(instruction.op0, 0xF6, 5);
 			else if (instruction.op2 instanceof OpNone)
-				insnCode = assembleRegRm(instruction.op0, instruction.op1, new byte[] { (byte) 0x0F, (byte) 0xAF, });
+				insnCode = assembleRegRm(instruction.op0, instruction.op1, bs(0x0F, 0xAF));
 			else
 				throw new RuntimeException("Bad instruction");
 			break;
@@ -503,6 +503,10 @@ public class Amd64Assembler {
 				+ (((x >> 3) & 1) << 1) //
 				+ (((b >> 3) & 1) << 0);
 		return b04 != 0 ? 0x40 + b04 : -1;
+	}
+
+	private byte[] bs(int b0, int b1) {
+		return new byte[] { (byte) b0, (byte) b1, };
 	}
 
 	private byte[] bs(int b) {
