@@ -5,7 +5,6 @@ import java.util.List;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
-import suite.assembler.Amd64.OpNone;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.primitive.Bytes;
@@ -44,8 +43,7 @@ public class Amd64Assembler {
 		InsnCode insnCode;
 		switch (instruction.insn) {
 		case AAA:
-			insnCode = new InsnCode(1);
-			insnCode.bs = new byte[] { 0x37, };
+			insnCode = assemble(instruction, 0x37);
 			break;
 		case ADD:
 			insnCode = assembleRmReg(instruction, 0x00, 0x80, 0);
@@ -77,7 +75,7 @@ public class Amd64Assembler {
 			else
 				throw new RuntimeException("Bad instruction");
 		case MUL:
-			insnCode = assembleModRm(instruction.op0, 0xF6, 4);
+			insnCode = assembleByteFlag(instruction.op0, 0xF6, 4);
 			break;
 		case OUT:
 			insnCode = assembleInOut(instruction.op0, instruction.op1, 0xE6);
@@ -90,7 +88,7 @@ public class Amd64Assembler {
 		}
 
 		if (insnCode != null)
-			return assemble(insnCode);
+			return encode(insnCode);
 		else
 			throw new RuntimeException("Bad instruction");
 	}
@@ -119,7 +117,7 @@ public class Amd64Assembler {
 	private InsnCode assembleJump(Instruction instruction, long offset, int b_near, byte b_far[]) {
 		InsnCode insnCode;
 		if (isRm(instruction.op0) && instruction.op0.size == 4)
-			insnCode = assembleModRm(instruction.op0, 0xFF, 4);
+			insnCode = assembleByteFlag(instruction.op0, 0xFF, 4);
 		else if (instruction.op0 instanceof OpImm) {
 			OpImm op0 = (OpImm) instruction.op0;
 			int size = op0.size;
@@ -150,7 +148,7 @@ public class Amd64Assembler {
 	private InsnCode assembleRegRm(Instruction instruction, int b) {
 		if (instruction.op0 instanceof OpReg && isRm(instruction.op1)) {
 			OpReg op0 = (OpReg) instruction.op0;
-			return assembleModRm_(instruction.op1, b, op0.reg);
+			return assemble(instruction.op1, b, op0.reg);
 		} else
 			throw new RuntimeException("Bad instruction");
 	}
@@ -162,7 +160,7 @@ public class Amd64Assembler {
 			insnCode = new InsnCode(instruction.op0.size);
 			insnCode.bs = new byte[] { (byte) (b_reg + op0.reg), };
 		} else if (isRm(instruction.op0))
-			insnCode = assembleModRm(instruction.op0, b_modrm, num);
+			insnCode = assembleByteFlag(instruction.op0, b_modrm, num);
 		else
 			throw new RuntimeException("Bad instruction");
 		return insnCode;
@@ -170,29 +168,26 @@ public class Amd64Assembler {
 
 	private InsnCode assembleRmReg(Instruction instruction, int b_modrm, int b_imm, int num) {
 		InsnCode insnCode;
-		if (instruction.op2 instanceof OpNone)
-			if (isRm(instruction.op0) && instruction.op1 instanceof OpReg)
-				insnCode = assembleModRm(instruction.op0, b_modrm, num);
-			else if (instruction.op0 instanceof OpReg && isRm(instruction.op1))
-				insnCode = assembleModRm(instruction.op1, b_modrm + 2, num);
-			else if (instruction.op1 instanceof OpImm) {
-				OpImm op1 = (OpImm) instruction.op1;
+		if (isRm(instruction.op0) && instruction.op1 instanceof OpReg)
+			insnCode = assembleByteFlag(instruction.op0, b_modrm, num);
+		else if (instruction.op0 instanceof OpReg && isRm(instruction.op1))
+			insnCode = assembleByteFlag(instruction.op1, b_modrm + 2, num);
+		else if (instruction.op1 instanceof OpImm) {
+			OpImm op1 = (OpImm) instruction.op1;
 
-				insnCode = new InsnCode(instruction.op0.size);
-				insnCode.immSize = op1.size;
-				insnCode.imm = op1.imm;
+			insnCode = new InsnCode(instruction.op0.size);
+			insnCode.immSize = op1.size;
+			insnCode.imm = op1.imm;
 
-				if (isAcc(instruction.op0))
-					insnCode.bs = new byte[] { (byte) (b_imm + 4 + (instruction.op0.size <= 1 ? 0 : 1)), };
-				else if (isRm(instruction.op0)) {
-					int b0 = op1.size == 1 ? 3 : (instruction.op0.size <= 1 ? 0 : 1);
-					insnCode.bs = new byte[] { (byte) (b_imm + b0), };
-					insnCode.modRm = modRm(instruction.op0, num);
-				} else
-					throw new RuntimeException("Bad instruction");
+			if (isAcc(instruction.op0))
+				insnCode.bs = new byte[] { (byte) (b_imm + 4 + (instruction.op0.size <= 1 ? 0 : 1)), };
+			else if (isRm(instruction.op0)) {
+				int b0 = op1.size == 1 ? 3 : (instruction.op0.size <= 1 ? 0 : 1);
+				insnCode.bs = new byte[] { (byte) (b_imm + b0), };
+				insnCode.modRm = modRm(instruction.op0, num);
 			} else
 				throw new RuntimeException("Bad instruction");
-		else
+		} else
 			throw new RuntimeException("Bad instruction");
 		return insnCode;
 	}
@@ -214,7 +209,7 @@ public class Amd64Assembler {
 			} else
 				throw new RuntimeException("Bad instruction");
 
-			InsnCode insnCode = assembleModRm(instruction.op0, b1, num);
+			InsnCode insnCode = assembleByteFlag(instruction.op0, b1, num);
 
 			if (shiftImm != null && !isShiftImm) {
 				insnCode.immSize = 1;
@@ -226,27 +221,26 @@ public class Amd64Assembler {
 			throw new RuntimeException("Bad instruction");
 	}
 
-	private boolean isAcc(Operand operand) {
-		return operand instanceof OpReg && ((OpReg) operand).reg == 0;
-	}
-
-	private boolean isRm(Operand operand) {
-		return operand instanceof OpMem || operand instanceof OpReg;
-	}
-
-	private InsnCode assembleModRm(Operand operand, int b, int num) {
+	private InsnCode assembleByteFlag(Operand operand, int b, int num) {
 		int b1 = b + (operand.size <= 1 ? 0 : 1);
-		return assembleModRm_(operand, b1, num);
+		return assemble(operand, b1, num);
 	}
 
-	private InsnCode assembleModRm_(Operand operand, int b, int num) {
+	private InsnCode assemble(Instruction instruction, int b) {
+		InsnCode insnCode;
+		insnCode = new InsnCode(4);
+		insnCode.bs = new byte[] { (byte) b, };
+		return insnCode;
+	}
+
+	private InsnCode assemble(Operand operand, int b, int num) {
 		InsnCode insnCode = new InsnCode(operand.size);
 		insnCode.bs = new byte[] { (byte) b, };
 		insnCode.modRm = modRm(operand, num);
 		return insnCode;
 	}
 
-	private Bytes assemble(InsnCode insnCode) {
+	private Bytes encode(InsnCode insnCode) {
 		ModRm modRm = insnCode.modRm;
 		int rex = modRm != null ? rex(modRm) : rex(insnCode.size, 0, 0, 0);
 
@@ -262,6 +256,14 @@ public class Amd64Assembler {
 		}
 		appendImm(bb, insnCode.immSize, insnCode.imm);
 		return bb.toBytes();
+	}
+
+	private boolean isAcc(Operand operand) {
+		return operand instanceof OpReg && ((OpReg) operand).reg == 0;
+	}
+
+	private boolean isRm(Operand operand) {
+		return operand instanceof OpMem || operand instanceof OpReg;
 	}
 
 	private ModRm modRm(Operand operand, int num) {
