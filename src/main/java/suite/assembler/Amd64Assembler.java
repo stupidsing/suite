@@ -19,8 +19,13 @@ public class Amd64Assembler {
 		private int immSize;
 		private long imm;
 
+		private InsnCode(int size, byte b) {
+			this(size);
+			this.bs = new byte[] { b, };
+		}
+
 		private InsnCode(int size, OpImm imm) {
-			this.size = size;
+			this(size);
 			this.immSize = imm.size;
 			this.imm = imm.imm;
 		}
@@ -51,11 +56,27 @@ public class Amd64Assembler {
 		case AAA:
 			insnCode = assemble(instruction, 0x37);
 			break;
+		case ADC:
+			insnCode = assembleRmRegImm(instruction, 0x10, 0x80, 2);
+			break;
 		case ADD:
 			insnCode = assembleRmRegImm(instruction, 0x00, 0x80, 0);
 			break;
+		case AND:
+			insnCode = assembleRmRegImm(instruction, 0x20, 0x80, 4);
+			break;
+		case AOP:
+			insnCode = assemble(instruction, 0x67);
+			break;
 		case DEC:
 			insnCode = assembleRm(instruction, 0x48, 0xFE, 1);
+			break;
+		case IMM:
+			if (instruction.op0 instanceof OpImm) {
+				insnCode = new InsnCode(0, (OpImm) instruction.op0);
+				insnCode.bs = new byte[] {};
+			} else
+				throw new RuntimeException("Bad instruction");
 			break;
 		case IN:
 			insnCode = assembleInOut(instruction.op1, instruction.op0, 0xE4);
@@ -138,8 +159,7 @@ public class Amd64Assembler {
 			else
 				throw new RuntimeException("Bad instruction");
 
-			InsnCode insnCode = new InsnCode(acc.size);
-			insnCode.bs = new byte[] { (byte) (b + (acc.size == 1 ? 0 : 1) + (portImm != null ? 0 : 8)), };
+			InsnCode insnCode = new InsnCode(acc.size, (byte) (b + (acc.size == 1 ? 0 : 1) + (portImm != null ? 0 : 8)));
 			if (portImm != null) {
 				insnCode.immSize = 1;
 				insnCode.imm = portImm.imm;
@@ -152,7 +172,7 @@ public class Amd64Assembler {
 	private InsnCode assembleJump(Instruction instruction, long offset, int b_near, byte b_far[]) {
 		InsnCode insnCode;
 		if (isRm(instruction.op0) && instruction.op0.size == 4)
-			insnCode = assembleByteFlag(instruction.op0, 0xFF, 4);
+			insnCode = assemble(instruction.op0, 0xFF, 4);
 		else if (instruction.op0 instanceof OpImm) {
 			OpImm op0 = (OpImm) instruction.op0;
 			int size = op0.size;
@@ -192,8 +212,7 @@ public class Amd64Assembler {
 		InsnCode insnCode;
 		if (instruction.op0 instanceof OpReg && 1 < instruction.op0.size) {
 			OpReg op0 = (OpReg) instruction.op0;
-			insnCode = new InsnCode(instruction.op0.size);
-			insnCode.bs = new byte[] { (byte) (b_reg + op0.reg), };
+			insnCode = new InsnCode(instruction.op0.size, (byte) (b_reg + op0.reg));
 		} else if (isRm(instruction.op0))
 			insnCode = assembleByteFlag(instruction.op0, b_modrm, num);
 		else
@@ -277,15 +296,11 @@ public class Amd64Assembler {
 	}
 
 	private InsnCode assemble(Instruction instruction, int b) {
-		InsnCode insnCode;
-		insnCode = new InsnCode(4);
-		insnCode.bs = new byte[] { (byte) b, };
-		return insnCode;
+		return new InsnCode(4, (byte) b);
 	}
 
 	private InsnCode assemble(Operand operand, int b, int num) {
-		InsnCode insnCode = new InsnCode(operand.size);
-		insnCode.bs = new byte[] { (byte) b, };
+		InsnCode insnCode = new InsnCode(operand.size, (byte) b);
 		insnCode.modRm = modRm(operand, num);
 		return insnCode;
 	}
