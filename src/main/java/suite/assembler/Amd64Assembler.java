@@ -114,13 +114,50 @@ public class Amd64Assembler {
 		case IMUL:
 			if (instruction.op1 instanceof OpNone)
 				insnCode = assembleByteFlag(instruction.op0, 0xF6, 5);
-			else if (instruction.op2 instanceof OpNone)
-				insnCode = assembleRegRm(instruction.op0, instruction.op1, bs(0x0F, 0xAF));
+			else if (instruction.op0.size == instruction.op1.size)
+				if (instruction.op2 instanceof OpNone)
+					insnCode = assembleRegRm(instruction.op0, instruction.op1, bs(0x0F, 0xAF));
+				else if (instruction.op2 instanceof OpImm) {
+					OpImm imm = (OpImm) instruction.op2;
+					if (imm.size <= 1)
+						insnCode = assembleRegRm(instruction.op0, instruction.op1, bs(0x6B));
+					else if (imm.size == instruction.op0.size)
+						insnCode = assembleRegRm(instruction.op0, instruction.op1, bs(0x69));
+					else
+						throw new RuntimeException("Bad instruction");
+					insnCode.immSize = imm.size;
+					insnCode.imm = imm.imm;
+				} else
+					throw new RuntimeException("Bad instruction");
 			else
 				throw new RuntimeException("Bad instruction");
 			break;
 		case IN:
 			insnCode = assembleInOut(instruction.op1, instruction.op0, 0xE4);
+			break;
+		case INC:
+			insnCode = assembleRm(instruction, 0x40, 0xFE, 0);
+			break;
+		case INT:
+			if (instruction.op0 instanceof OpImm) {
+				long iv = ((OpImm) instruction.op0).imm;
+				if (iv != 3) {
+					insnCode = assemble(instruction, 0xCD);
+					insnCode.immSize = 1;
+					insnCode.imm = iv;
+				} else
+					insnCode = assemble(instruction, 0xCC);
+			} else
+				throw new RuntimeException("Bad instruction");
+			break;
+		case INTO:
+			insnCode = assemble(instruction, 0xCE);
+			break;
+		case INVLPG:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x01), 7);
+			break;
+		case IRET:
+			insnCode = assemble(instruction, 0xCF);
 			break;
 		case JMP:
 			insnCode = assembleJump(instruction, offset, 0xEB, bs(0xE9));
