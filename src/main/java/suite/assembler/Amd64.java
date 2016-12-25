@@ -3,7 +3,56 @@ package suite.assembler;
 public class Amd64 {
 
 	public enum Insn {
-		AAA, ADC, ADD, AND, AOP, CALL, CLD, CLI, CMP, CMPXCHG, CPUID, DEC, DIV, HLT, IDIV, IMM, IMUL, IN, INC, INT, INTO, INVLPG, IRET, JMP, LEA, MOV, MUL, OUT, SHL, TEST, XCHG,
+		AAA, //
+		ADC, //
+		ADD, //
+		AND, //
+		AOP, //
+		CALL, //
+		CLD, //
+		CLI, //
+		CMP, //
+		CMPXCHG, //
+		CPUID, //
+		DEC, //
+		DIV, //
+		HLT, //
+		IDIV, //
+		IMM, //
+		IMUL, //
+		IN, //
+		INC, //
+		INT, //
+		INTO, //
+		INVLPG, //
+		IRET, //
+		JA, //
+		JAE, //
+		JB, //
+		JBE, //
+		JE, //
+		JG, //
+		JGE, //
+		JL, //
+		JLE, //
+		JMP, //
+		JNE, //
+		JNO, //
+		JNP, //
+		JNS, //
+		JNZ, //
+		JO, //
+		JP, //
+		JS, //
+		JZ, //
+		LEA, //
+		LOCK, //
+		MOV, //
+		MUL, //
+		OUT, //
+		SHL, //
+		TEST, //
+		XCHG, //
 	};
 
 	public class Operand {

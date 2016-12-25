@@ -159,11 +159,71 @@ public class Amd64Assembler {
 		case IRET:
 			insnCode = assemble(instruction, 0xCF);
 			break;
+		case JA:
+			insnCode = assembleJump(instruction, offset, 0x77, bs(0x0F, 0x87));
+			break;
+		case JAE:
+			insnCode = assembleJump(instruction, offset, 0x73, bs(0x0F, 0x83));
+			break;
+		case JB:
+			insnCode = assembleJump(instruction, offset, 0x72, bs(0x0F, 0x82));
+			break;
+		case JBE:
+			insnCode = assembleJump(instruction, offset, 0x76, bs(0x0F, 0x86));
+			break;
+		case JE:
+			insnCode = assembleJump(instruction, offset, 0x74, bs(0x0F, 0x84));
+			break;
+		case JG:
+			insnCode = assembleJump(instruction, offset, 0x7F, bs(0x0F, 0x8F));
+			break;
+		case JGE:
+			insnCode = assembleJump(instruction, offset, 0x7D, bs(0x0F, 0x8D));
+			break;
+		case JL:
+			insnCode = assembleJump(instruction, offset, 0x7C, bs(0x0F, 0x8C));
+			break;
+		case JLE:
+			insnCode = assembleJump(instruction, offset, 0x7E, bs(0x0F, 0x8E));
+			break;
 		case JMP:
-			insnCode = assembleJump(instruction, offset, 0xEB, bs(0xE9));
+			if (isRm(instruction.op0) && instruction.op0.size == 4)
+				insnCode = assemble(instruction.op0, bs(0xFF), 4);
+			else
+				insnCode = assembleJump(instruction, offset, 0xEB, bs(0xE9));
+			break;
+		case JNE:
+			insnCode = assembleJump(instruction, offset, 0x75, bs(0x0F, 0x85));
+			break;
+		case JNO:
+			insnCode = assembleJump(instruction, offset, 0x71, bs(0x0F, 0x81));
+			break;
+		case JNP:
+			insnCode = assembleJump(instruction, offset, 0x7B, bs(0x0F, 0x8B));
+			break;
+		case JNS:
+			insnCode = assembleJump(instruction, offset, 0x79, bs(0x0F, 0x89));
+			break;
+		case JNZ:
+			insnCode = assembleJump(instruction, offset, 0x75, bs(0x0F, 0x85));
+			break;
+		case JO:
+			insnCode = assembleJump(instruction, offset, 0x70, bs(0x0F, 0x80));
+			break;
+		case JP:
+			insnCode = assembleJump(instruction, offset, 0x7A, bs(0x0F, 0x8A));
+			break;
+		case JS:
+			insnCode = assembleJump(instruction, offset, 0x78, bs(0x0F, 0x88));
+			break;
+		case JZ:
+			insnCode = assembleJump(instruction, offset, 0x74, bs(0x0F, 0x84));
 			break;
 		case LEA:
 			insnCode = assembleRegRm(instruction.op0, instruction.op1, bs(0x8D));
+			break;
+		case LOCK:
+			insnCode = assemble(instruction, 0xF0);
 			break;
 		case MOV:
 			if (instruction.op0.size == instruction.op1.size)
@@ -244,11 +304,9 @@ public class Amd64Assembler {
 
 	private InsnCode assembleJump(Instruction instruction, long offset, int b_near, byte b_far[]) {
 		InsnCode insnCode;
-		if (isRm(instruction.op0) && instruction.op0.size == 4)
-			insnCode = assemble(instruction.op0, bs(0xFF), 4);
-		else if (instruction.op0 instanceof OpImm) {
+		if (instruction.op0 instanceof OpImm)
 			insnCode = assembleJumpImm((OpImm) instruction.op0, offset, b_near, b_far);
-		} else
+		else
 			throw new RuntimeException("Bad instruction");
 		return insnCode;
 	}
