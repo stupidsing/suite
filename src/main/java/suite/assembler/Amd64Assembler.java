@@ -20,15 +20,15 @@ public class Amd64Assembler {
 		private int immSize;
 		private long imm;
 
-		private InsnCode(int size, byte bs[]) {
-			this(size);
-			this.bs = bs;
-		}
-
 		private InsnCode(int size, OpImm imm) {
 			this(size);
 			this.immSize = imm.size;
 			this.imm = imm.imm;
+		}
+
+		private InsnCode(int size, byte bs[]) {
+			this(size);
+			this.bs = bs;
 		}
 
 		private InsnCode(int size) {
@@ -90,8 +90,7 @@ public class Amd64Assembler {
 			insnCode = assembleRegRm(instruction.op1, instruction.op0, bs(0xB0));
 			break;
 		case CPUID:
-			insnCode = new InsnCode(4);
-			insnCode.bs = bs(0x0F, 0xA2);
+			insnCode = new InsnCode(4, bs(0x0F, 0xA2));
 			break;
 		case DEC:
 			insnCode = assembleRm(instruction, 0x48, 0xFE, 1);
@@ -235,8 +234,7 @@ public class Amd64Assembler {
 
 		long rel = op0.imm - (offset + bs0.length + size);
 
-		insnCode = new InsnCode(size);
-		insnCode.bs = bs0;
+		insnCode = new InsnCode(size, bs0);
 		insnCode.immSize = size;
 		insnCode.imm = rel;
 		return insnCode;
