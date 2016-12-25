@@ -7,6 +7,8 @@ import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpNone;
 import suite.assembler.Amd64.OpReg;
+import suite.assembler.Amd64.OpRegControl;
+import suite.assembler.Amd64.OpRegSegment;
 import suite.assembler.Amd64.Operand;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
@@ -240,6 +242,15 @@ public class Amd64Assembler {
 		case LOOPZ:
 			insnCode = assembleJump(instruction, offset, 0xE1, null);
 			break;
+		case LGDT:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x01), 2);
+			break;
+		case LIDT:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x01), 3);
+			break;
+		case LTR:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x00), 3);
+			break;
 		case MOV:
 			if (instruction.op0.size == instruction.op1.size)
 				if (instruction.op1 instanceof OpImm) {
@@ -254,20 +265,39 @@ public class Amd64Assembler {
 						insnCode.modRm = modRm(instruction.op0, 0);
 					} else
 						throw new RuntimeException("Bad instruction");
+				} else if (instruction.op0 instanceof OpRegSegment) {
+					OpRegSegment regSegment = (OpRegSegment) instruction.op0;
+					insnCode = assemble(instruction.op1, bs(0x8E), regSegment.sreg);
+				} else if (instruction.op1 instanceof OpRegSegment) {
+					OpRegSegment regSegment = (OpRegSegment) instruction.op1;
+					insnCode = assemble(instruction.op0, bs(0x8C), regSegment.sreg);
+				} else if (instruction.op0.size == 4 //
+						&& instruction.op0 instanceof OpReg //
+						&& instruction.op1 instanceof OpRegControl) {
+					OpReg reg = (OpReg) instruction.op0;
+					OpRegControl regControl = (OpRegControl) instruction.op1;
+					insnCode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x20, b(reg.reg, regControl.creg, 3), });
+				} else if (instruction.op0.size == 4 //
+						&& instruction.op0 instanceof OpRegControl //
+						&& instruction.op1 instanceof OpReg) {
+					OpRegControl regControl = (OpRegControl) instruction.op0;
+					OpReg reg = (OpReg) instruction.op1;
+					insnCode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x22, b(reg.reg, regControl.creg, 3), });
 				} else if ((insnCode = assembleRmReg(instruction, 0x88)) != null)
 					;
 				else
 					throw new RuntimeException("Bad instruction");
 			else
 				throw new RuntimeException("Bad instruction");
-		case LGDT:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x01), 2);
 			break;
-		case LIDT:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x01), 3);
+		case MOVSB:
+			insnCode = assemble(instruction, 0xA4);
 			break;
-		case LTR:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x00), 3);
+		case MOVSD:
+			insnCode = assemble(instruction, 0xA5);
+			break;
+		case MOVSW:
+			insnCode = assemble(instruction, 0xA5);
 			break;
 		case MUL:
 			insnCode = assembleByteFlag(instruction.op0, 0xF6, 4);

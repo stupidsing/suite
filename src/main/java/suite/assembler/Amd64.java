@@ -56,6 +56,9 @@ public class Amd64 {
 		LIDT, //
 		LTR, //
 		MOV, //
+		MOVSB, //
+		MOVSD, //
+		MOVSW, //
 		MUL, //
 		OUT, //
 		SHL, //
@@ -81,6 +84,10 @@ public class Amd64 {
 
 	public class OpReg extends Operand {
 		public int reg;
+	}
+
+	public class OpRegControl extends Operand {
+		public int creg;
 	}
 
 	public class OpRegSegment extends Operand {
