@@ -138,24 +138,24 @@ declare ap-setup = function [] (
 	log-dword "Local APIC base address 1 = " ap-local-apic-address1;
 
 	-- disable PIC
-	--outb [+x21, +xFF,];
-	--outb [+xA1, +xFF,];
+	outb [+x21, +xFF,];
+	outb [+xA1, +xFF,];
 
 	-- enable APIC
-	--wrmsr [+x1B, ap-local-apic-address0 or +x800, ap-local-apic-address1,];
-	--dw-set [ap-local-apic-address + +xE0, +xFFFFFFFF,]; -- DFR
-	--dw-set [ap-local-apic-address + +xD0, 1 or +xFFFFFF and dw-get [ap-local-apic-address + +xD0,],]; -- LDR
-	--dw-set [ap-local-apic-address + +x340, +x400,]; -- Perf
-	--dw-set [ap-local-apic-address + +x350, +x10000,]; -- disable LINT0
-	--dw-set [ap-local-apic-address + +x360, +x10000,]; -- disable LINT1
-	--dw-set [ap-local-apic-address + +x80, 0,]; -- task prior
-	--dw-set [ap-local-apic-address + +xF0, +x127,]; -- spurious IRQ
+	wrmsr [+x1B, ap-local-apic-address0 or +x800, ap-local-apic-address1,];
+	dw-set [ap-local-apic-address + +xE0, +xFFFFFFFF,]; -- DFR
+	dw-set [ap-local-apic-address + +xD0, 1 or +xFFFFFF and dw-get [ap-local-apic-address + +xD0,],]; -- LDR
+	dw-set [ap-local-apic-address + +x340, +x400,]; -- Perf
+	dw-set [ap-local-apic-address + +x350, +x10000,]; -- disable LINT0
+	dw-set [ap-local-apic-address + +x360, +x10000,]; -- disable LINT1
+	dw-set [ap-local-apic-address + +x80, 0,]; -- task prior
+	dw-set [ap-local-apic-address + +xF0, +x127,]; -- spurious IRQ
 
 	-- enable APIC timer
-	--declare ticksIn10ms = 12000000;
-	--dw-set [ap-local-apic-address + +x3E0, +x3,]; -- timer divisor
-	--dw-set [ap-local-apic-address + +x380, ticksIn10ms,]; -- timer initial count
-	--dw-set [ap-local-apic-address + +x320, +x20020,]; -- timer IRQ (periodic)
+	declare ticksIn10ms = 400000;
+	dw-set [ap-local-apic-address + +x3E0, +x3,]; -- timer divisor
+	dw-set [ap-local-apic-address + +x380, ticksIn10ms,]; -- timer initial count
+	dw-set [ap-local-apic-address + +x320, +x20020,]; -- timer IRQ (periodic)
 );
 
 declare ap-teardown = function [] (

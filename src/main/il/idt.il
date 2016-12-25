@@ -212,9 +212,9 @@ declare idt-setup = function [] (
 		set-irq-handler +x2F .irq-handler;
 	);
 
-	idt-set-entry [+x20, handle-timer-interrupt-pic, true,];
-	--idt-set-entry [+x20, handle-timer-interrupt-apic, true,];
-	--idt-set-entry [+x27, handle-spurious-interrupt-apic, true,];
+	--idt-set-entry [+x20, handle-timer-interrupt-pic, true,];
+	idt-set-entry [+x20, handle-timer-interrupt-apic, true,];
+	idt-set-entry [+x27, handle-spurious-interrupt-apic, true,];
 
 	(
 		signature idtr = int * 2;
