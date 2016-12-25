@@ -225,6 +225,21 @@ public class Amd64Assembler {
 		case LOCK:
 			insnCode = assemble(instruction, 0xF0);
 			break;
+		case LOOP:
+			insnCode = assembleJump(instruction, offset, 0xE2, null);
+			break;
+		case LOOPE:
+			insnCode = assembleJump(instruction, offset, 0xE1, null);
+			break;
+		case LOOPNE:
+			insnCode = assembleJump(instruction, offset, 0xE0, null);
+			break;
+		case LOOPNZ:
+			insnCode = assembleJump(instruction, offset, 0xE0, null);
+			break;
+		case LOOPZ:
+			insnCode = assembleJump(instruction, offset, 0xE1, null);
+			break;
 		case MOV:
 			if (instruction.op0.size == instruction.op1.size)
 				if (instruction.op1 instanceof OpImm) {
@@ -245,6 +260,15 @@ public class Amd64Assembler {
 					throw new RuntimeException("Bad instruction");
 			else
 				throw new RuntimeException("Bad instruction");
+		case LGDT:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x01), 2);
+			break;
+		case LIDT:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x01), 3);
+			break;
+		case LTR:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x00), 3);
+			break;
 		case MUL:
 			insnCode = assembleByteFlag(instruction.op0, 0xF6, 4);
 			break;
@@ -329,10 +353,13 @@ public class Amd64Assembler {
 
 		long rel = op0.imm - (offset + bs0.length + size);
 
-		insnCode = new InsnCode(size, bs0);
-		insnCode.immSize = size;
-		insnCode.imm = rel;
-		return insnCode;
+		if (1 < size || -128 <= rel && rel < 128) {
+			insnCode = new InsnCode(size, bs0);
+			insnCode.immSize = size;
+			insnCode.imm = rel;
+			return insnCode;
+		} else
+			throw new RuntimeException("Jump too far");
 	}
 
 	private InsnCode assembleRegRm(Operand reg, Operand rm, byte bs[]) {

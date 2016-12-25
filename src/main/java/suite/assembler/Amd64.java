@@ -47,6 +47,14 @@ public class Amd64 {
 		JZ, //
 		LEA, //
 		LOCK, //
+		LOOP, //
+		LOOPE, //
+		LOOPNE, //
+		LOOPNZ, //
+		LOOPZ, //
+		LGDT, //
+		LIDT, //
+		LTR, //
 		MOV, //
 		MUL, //
 		OUT, //
