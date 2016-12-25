@@ -25,12 +25,12 @@ declare pg-get-physical = function [logical,] (
 	(dw-get [pe1,]) and +xFFFFF000;
 );
 
-declare pg-set-pt-entry = function [pe0, pt1, pm-alloc,] (
+declare pg-set-pt-entry = function [pe0, pt1, pm-alloc, is-zero,] (
 	declare physical = dw-get [pe0,];
 	if (physical = 0) then (
 		dw-set [pe0, ({physical} = pm-alloc []) + 7,];
 		pg-invalidate-page [pt1,];
-		zero [pt1, 4096,];
+		if is-zero then (zero [pt1, 4096,]) else ();
 	) else ();
 	pm-ref [physical,];
 );
@@ -49,8 +49,8 @@ declare pg-map = function [logical, physical,] (
 	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
 	declare pt1 = pe1 and +xFFFFF000;
 
-	pg-set-pt-entry [pe0, pt1, pm-allocate,];
-	pg-set-pt-entry [pe1, logical, function [] physical,];
+	pg-set-pt-entry [pe0, pt1, pm-allocate, true,];
+	pg-set-pt-entry [pe1, logical, function [] physical, false,];
 );
 
 declare pg-unmap = function [logical,] (
