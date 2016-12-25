@@ -85,6 +85,9 @@ public class Amd64Assembler {
 		case CMP:
 			insnCode = assembleRmRegImm(instruction, 0x38, 0x80, 7);
 			break;
+		case CMPXCHG:
+			insnCode = assembleRegRm(instruction.op1, instruction.op0, 0xB0);
+			break;
 		case DEC:
 			insnCode = assembleRm(instruction, 0x48, 0xFE, 1);
 			break;
@@ -102,7 +105,7 @@ public class Amd64Assembler {
 			insnCode = assembleJump(instruction, offset, 0xEB, new byte[] { (byte) 0xE9, });
 			break;
 		case LEA:
-			insnCode = assembleRegRm(instruction, 0x8D);
+			insnCode = assembleRegRm(instruction.op0, instruction.op1, 0x8D);
 			break;
 		case MOV:
 			if (instruction.op0.size == instruction.op1.size)
@@ -137,23 +140,18 @@ public class Amd64Assembler {
 			if (instruction.op0.size == instruction.op1.size)
 				if (instruction.op1 instanceof OpImm)
 					insnCode = assembleRmImm(instruction.op0, (OpImm) instruction.op1, 0xA8, 0xF6, 0);
-				else if (isRm(instruction.op0) && instruction.op1 instanceof OpReg)
-					insnCode = assembleRegRm(instruction, 0x84);
 				else
-					throw new RuntimeException("Bad instruction");
+					insnCode = assembleRegRm(instruction.op1, instruction.op0, 0x84);
 			else
 				throw new RuntimeException("Bad instruction");
 			break;
 		case XCHG:
-			if (instruction.op1 instanceof OpReg) {
-				OpReg op1 = (OpReg) instruction.op1;
+			if (instruction.op1 instanceof OpReg)
 				if (isAcc(instruction.op0))
-					insnCode = assemble(instruction, 0x90 + op1.reg);
-				else if (isRm(instruction.op0))
-					insnCode = assembleRegRm(instruction, 0x86);
+					insnCode = assemble(instruction, 0x90 + ((OpReg) instruction.op1).reg);
 				else
-					throw new RuntimeException("Bad instruction");
-			} else
+					insnCode = assembleRegRm(instruction.op1, instruction.op0, 0x86);
+			else
 				throw new RuntimeException("Bad instruction");
 			break;
 		default:
@@ -222,11 +220,10 @@ public class Amd64Assembler {
 		return insnCode;
 	}
 
-	private InsnCode assembleRegRm(Instruction instruction, int b) {
-		if (instruction.op0 instanceof OpReg && isRm(instruction.op1)) {
-			OpReg op0 = (OpReg) instruction.op0;
-			return assemble(instruction.op1, b, op0.reg);
-		} else
+	private InsnCode assembleRegRm(Operand reg, Operand rm, int b) {
+		if (reg instanceof OpReg && isRm(rm))
+			return assemble(rm, b, ((OpReg) reg).reg);
+		else
 			throw new RuntimeException("Bad instruction");
 	}
 
