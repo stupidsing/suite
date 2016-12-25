@@ -68,6 +68,23 @@ public class Amd64Assembler {
 		case AOP:
 			insnCode = assemble(instruction, 0x67);
 			break;
+		case CALL:
+			if (instruction.op0 instanceof OpImm && instruction.op0.size == 4)
+				insnCode = assembleJumpImm((OpImm) instruction.op0, offset, -1, new byte[] { (byte) 0xE8, });
+			else if (isRm(instruction.op0))
+				insnCode = assemble(instruction.op0, 0xFF, 2);
+			else
+				throw new RuntimeException("Bad instruction");
+			break;
+		case CLD:
+			insnCode = assemble(instruction, 0xFC);
+			break;
+		case CLI:
+			insnCode = assemble(instruction, 0xFA);
+			break;
+		case CMP:
+			insnCode = assembleRmRegImm(instruction, 0x38, 0x80, 7);
+			break;
 		case DEC:
 			insnCode = assembleRm(instruction, 0x48, 0xFE, 1);
 			break;
@@ -174,29 +191,34 @@ public class Amd64Assembler {
 		if (isRm(instruction.op0) && instruction.op0.size == 4)
 			insnCode = assemble(instruction.op0, 0xFF, 4);
 		else if (instruction.op0 instanceof OpImm) {
-			OpImm op0 = (OpImm) instruction.op0;
-			int size = op0.size;
-			byte bs0[];
-
-			switch (size) {
-			case 1:
-				bs0 = new byte[] { (byte) b_near, };
-				break;
-			case 4:
-				bs0 = b_far;
-				break;
-			default:
-				throw new RuntimeException("Bad instruction");
-			}
-
-			long rel = op0.imm - (offset + bs0.length + size);
-
-			insnCode = new InsnCode(size);
-			insnCode.bs = bs0;
-			insnCode.immSize = size;
-			insnCode.imm = rel;
+			insnCode = assembleJumpImm((OpImm) instruction.op0, offset, b_near, b_far);
 		} else
 			throw new RuntimeException("Bad instruction");
+		return insnCode;
+	}
+
+	private InsnCode assembleJumpImm(OpImm op0, long offset, int b1, byte[] bs4) {
+		InsnCode insnCode;
+		int size = op0.size;
+		byte bs0[];
+
+		switch (size) {
+		case 1:
+			bs0 = new byte[] { (byte) b1, };
+			break;
+		case 4:
+			bs0 = bs4;
+			break;
+		default:
+			throw new RuntimeException("Bad instruction");
+		}
+
+		long rel = op0.imm - (offset + bs0.length + size);
+
+		insnCode = new InsnCode(size);
+		insnCode.bs = bs0;
+		insnCode.immSize = size;
+		insnCode.imm = rel;
 		return insnCode;
 	}
 
