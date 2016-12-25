@@ -146,13 +146,10 @@ public class Amd64Assembler {
 				throw new RuntimeException("Bad instruction");
 			break;
 		case XCHG:
-			if (instruction.op1 instanceof OpReg)
-				if (isAcc(instruction.op0))
-					insnCode = assemble(instruction, 0x90 + ((OpReg) instruction.op1).reg);
-				else
-					insnCode = assembleRegRm(instruction.op1, instruction.op0, 0x86);
+			if (isAcc(instruction.op0) && instruction.op1 instanceof OpReg)
+				insnCode = assemble(instruction, 0x90 + ((OpReg) instruction.op1).reg);
 			else
-				throw new RuntimeException("Bad instruction");
+				insnCode = assembleRegRm(instruction.op1, instruction.op0, 0x86);
 			break;
 		default:
 			insnCode = null;
