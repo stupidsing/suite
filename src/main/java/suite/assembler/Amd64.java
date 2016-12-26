@@ -59,11 +59,49 @@ public class Amd64 {
 		MOVSB, //
 		MOVSD, //
 		MOVSW, //
+		MOVSX, //
+		MOVZX, //
 		MUL, //
+		NOP, //
+		OR, //
 		OUT, //
+		POP, //
+		POPA, //
+		POPF, //
+		PUSH, //
+		PUSHA, //
+		PUSHF, //
+		RDMSR, //
+		REP, //
+		REPE, //
+		REPNE, //
+		RET, //
+		SAL, //
+		SAR, //
+		SBB, //
+		SETA, //
+		SETAE, //
+		SETB, //
+		SETBE, //
+		SETE, //
+		SETG, //
+		SETGE, //
+		SETL, //
+		SETLE, //
+		SETNE, //
 		SHL, //
+		SHR, //
+		STI, //
+		STOSB, //
+		STOSD, //
+		STOSW, //
+		SUB, //
+		SYSENTER, //
+		SYSEXIT, //
+		WRMSR, //
 		TEST, //
 		XCHG, //
+		XOR, //
 	};
 
 	public class Operand {

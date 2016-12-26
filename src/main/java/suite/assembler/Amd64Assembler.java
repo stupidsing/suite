@@ -13,6 +13,8 @@ import suite.assembler.Amd64.Operand;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 
+// TODO validate number of operands
+//TODO validate size of operands
 public class Amd64Assembler {
 
 	private class InsnCode {
@@ -255,16 +257,18 @@ public class Amd64Assembler {
 			if (instruction.op0.size == instruction.op1.size)
 				if (instruction.op1 instanceof OpImm) {
 					OpImm op1 = (OpImm) instruction.op1;
-					insnCode = new InsnCode(op1.size, op1);
 
 					if (instruction.op0 instanceof OpReg) {
+						insnCode = new InsnCode(op1.size, op1);
 						OpReg op0 = (OpReg) instruction.op0;
-						insnCode.bs = bs((0xB0 + (op0.size <= 1 ? 0 : 8) + op0.reg));
-					} else if (isRm(instruction.op0)) {
-						insnCode.bs = bs((0xC6 + (instruction.op0.size <= 1 ? 0 : 1)));
-						insnCode.modRm = modRm(instruction.op0, 0);
-					} else
+						insnCode.bs = bs(0xB0 + (op0.size <= 1 ? 0 : 8) + op0.reg);
+					} else if (isRm(instruction.op0))
+						insnCode = assembleByteFlag(op1, 0xC6, 0);
+					else
 						throw new RuntimeException("Bad instruction");
+
+					insnCode.immSize = op1.size;
+					insnCode.imm = op1.imm;
 				} else if (instruction.op0 instanceof OpRegSegment) {
 					OpRegSegment regSegment = (OpRegSegment) instruction.op0;
 					insnCode = assemble(instruction.op1, bs(0x8E), regSegment.sreg);
@@ -291,22 +295,197 @@ public class Amd64Assembler {
 				throw new RuntimeException("Bad instruction");
 			break;
 		case MOVSB:
-			insnCode = assemble(instruction, 0xA4);
+			insnCode = new InsnCode(1, bs(0xA4));
 			break;
 		case MOVSD:
-			insnCode = assemble(instruction, 0xA5);
+			insnCode = new InsnCode(4, bs(0xA5));
 			break;
 		case MOVSW:
-			insnCode = assemble(instruction, 0xA5);
+			insnCode = new InsnCode(2, bs(0xA5));
+			break;
+		case MOVSX:
+			insnCode = assembleRegRmExtended(instruction, 0x0F, 0xBE);
+			break;
+		case MOVZX:
+			insnCode = assembleRegRmExtended(instruction, 0x0F, 0xB6);
 			break;
 		case MUL:
 			insnCode = assembleByteFlag(instruction.op0, 0xF6, 4);
 			break;
+		case NOP:
+			insnCode = assemble(instruction, 0x90);
+			break;
+		case OR:
+			insnCode = assembleRmRegImm(instruction, 0x08, 0x80, 1);
+			break;
 		case OUT:
 			insnCode = assembleInOut(instruction.op0, instruction.op1, 0xE6);
 			break;
+		case POP:
+			if (1 < instruction.op0.size)
+				if (isRm(instruction.op0))
+					insnCode = assembleRm(instruction, 0x58, 0x8E, 0);
+				else if (instruction.op0 instanceof OpRegSegment) {
+					OpRegSegment sreg = (OpRegSegment) instruction.op0;
+					switch (sreg.sreg) {
+					case 0: // POP ES
+						insnCode = assemble(instruction, 0x07);
+						break;
+					// case 1: // POP CS, no such thing
+					case 2: // POP SS
+						insnCode = assemble(instruction, 0x17);
+						break;
+					case 3: // POP DS
+						insnCode = assemble(instruction, 0x1F);
+						break;
+					case 4: // POP FS
+						insnCode = new InsnCode(sreg.size, bs(0x0F, 0xA1));
+						break;
+					case 5: // POP GS
+						insnCode = new InsnCode(sreg.size, bs(0x0F, 0xA9));
+						break;
+					default:
+						throw new RuntimeException("Bad instruction");
+					}
+				} else
+					throw new RuntimeException("Bad instruction");
+			else
+				throw new RuntimeException("Bad instruction");
+			break;
+		case POPA:
+			insnCode = assemble(instruction, 0x61);
+			break;
+		case POPF:
+			insnCode = assemble(instruction, 0x9D);
+			break;
+		case PUSH:
+			if (instruction.op0 instanceof OpImm) {
+				insnCode = new InsnCode(instruction.op0.size, (OpImm) instruction.op0);
+				insnCode.bs = bs(0x6A + (1 < instruction.op0.size ? 0 : 2));
+			} else if (1 < instruction.op0.size)
+				if (isRm(instruction.op0))
+					insnCode = assembleRm(instruction, 0x50, 0xFE, 6);
+				else if (instruction.op0 instanceof OpRegSegment) {
+					OpRegSegment sreg = (OpRegSegment) instruction.op0;
+					switch (sreg.sreg) {
+					case 0: // PUSH ES
+						insnCode = assemble(instruction, 0x06);
+						break;
+					case 1: // PUSH CS
+						insnCode = assemble(instruction, 0x0E);
+						break;
+					case 2: // PUSH SS
+						insnCode = assemble(instruction, 0x16);
+						break;
+					case 3: // PUSH DS
+						insnCode = assemble(instruction, 0x1E);
+						break;
+					case 4: // PUSH FS
+						insnCode = new InsnCode(sreg.size, bs(0x0F, 0xA0));
+						break;
+					case 5: // PUSH GS
+						insnCode = new InsnCode(sreg.size, bs(0x0F, 0xA8));
+						break;
+					default:
+						throw new RuntimeException("Bad instruction");
+					}
+				} else
+					throw new RuntimeException("Bad instruction");
+			else
+				throw new RuntimeException("Bad instruction");
+			break;
+		case PUSHA:
+			insnCode = assemble(instruction, 0x60);
+			break;
+		case PUSHF:
+			insnCode = assemble(instruction, 0x9C);
+			break;
+		case RDMSR:
+			insnCode = new InsnCode(4, bs(0x0F, 0x32));
+			break;
+		case REP:
+			insnCode = assemble(instruction, 0xF3);
+			break;
+		case REPE:
+			insnCode = assemble(instruction, 0xF3);
+			break;
+		case REPNE:
+			insnCode = assemble(instruction, 0xF2);
+			break;
+		case RET:
+			if (instruction.op0 instanceof OpNone)
+				insnCode = assemble(instruction, 0xC3);
+			else if (instruction.op0 instanceof OpImm && instruction.op0.size == 2) {
+				insnCode = new InsnCode(instruction.op0.size, (OpImm) instruction.op0);
+				insnCode.bs = bs(0xC2);
+			} else
+				throw new RuntimeException("Bad instruction");
+			break;
+		case SAL:
+			insnCode = assembleShift(instruction, 0xC0, 4);
+			break;
+		case SAR:
+			insnCode = assembleShift(instruction, 0xC0, 7);
+			break;
+		case SBB:
+			insnCode = assembleRmRegImm(instruction, 0x18, 0x80, 3);
+			break;
+		case SETA:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x97), 0);
+			break;
+		case SETAE:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x93), 0);
+			break;
+		case SETB:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x92), 0);
+			break;
+		case SETBE:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x96), 0);
+			break;
+		case SETE:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x94), 0);
+			break;
+		case SETG:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x9F), 0);
+			break;
+		case SETGE:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x9D), 0);
+			break;
+		case SETL:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x9C), 0);
+			break;
+		case SETLE:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x9E), 0);
+			break;
+		case SETNE:
+			insnCode = assemble(instruction.op0, bs(0x0F, 0x95), 0);
+			break;
 		case SHL:
 			insnCode = assembleShift(instruction, 0xC0, 4);
+			break;
+		case SHR:
+			insnCode = assembleShift(instruction, 0xC0, 5);
+			break;
+		case STI:
+			insnCode = assemble(instruction, 0xFB);
+			break;
+		case STOSB:
+			insnCode = new InsnCode(1, bs(0xAA));
+			break;
+		case STOSD:
+			insnCode = new InsnCode(4, bs(0xAB));
+			break;
+		case STOSW:
+			insnCode = new InsnCode(2, bs(0xAB));
+			break;
+		case SUB:
+			insnCode = assembleRmRegImm(instruction, 0x28, 0x80, 5);
+			break;
+		case SYSENTER:
+			insnCode = new InsnCode(4, bs(0x0F, 0x34));
+			break;
+		case SYSEXIT:
+			insnCode = new InsnCode(4, bs(0x0F, 0x35));
 			break;
 		case TEST:
 			if (instruction.op0.size == instruction.op1.size)
@@ -325,6 +504,12 @@ public class Amd64Assembler {
 					insnCode = assembleRegRm(instruction.op1, instruction.op0, bs(0x86));
 			else
 				throw new RuntimeException("Bad instruction");
+			break;
+		case WRMSR:
+			insnCode = new InsnCode(4, bs(0x0F, 0x30));
+			break;
+		case XOR:
+			insnCode = assembleRmRegImm(instruction, 0x30, 0x80, 6);
 			break;
 		default:
 			insnCode = null;
@@ -346,7 +531,7 @@ public class Amd64Assembler {
 			else
 				throw new RuntimeException("Bad instruction");
 
-			InsnCode insnCode = new InsnCode(acc.size, bs((b + (acc.size == 1 ? 0 : 1) + (portImm != null ? 0 : 8))));
+			InsnCode insnCode = new InsnCode(acc.size, bs(b + (acc.size == 1 ? 0 : 1) + (portImm != null ? 0 : 8)));
 			if (portImm != null) {
 				insnCode.immSize = 1;
 				insnCode.imm = portImm.imm;
@@ -357,12 +542,10 @@ public class Amd64Assembler {
 	}
 
 	private InsnCode assembleJump(Instruction instruction, long offset, int b_near, byte b_far[]) {
-		InsnCode insnCode;
 		if (instruction.op0 instanceof OpImm)
-			insnCode = assembleJumpImm((OpImm) instruction.op0, offset, b_near, b_far);
+			return assembleJumpImm((OpImm) instruction.op0, offset, b_near, b_far);
 		else
 			throw new RuntimeException("Bad instruction");
-		return insnCode;
 	}
 
 	private InsnCode assembleJumpImm(OpImm op0, long offset, int b1, byte[] bs4) {
@@ -392,6 +575,14 @@ public class Amd64Assembler {
 			throw new RuntimeException("Jump too far");
 	}
 
+	private InsnCode assembleRegRmExtended(Instruction instruction, int b0, int b1) {
+		if (instruction.op0 instanceof OpReg && isRm(instruction.op1)) {
+			OpReg reg = (OpReg) instruction.op0;
+			return assemble(instruction.op1, bs(b0, b1 + (instruction.op1.size <= 1 ? 0 : 1)), reg.reg);
+		} else
+			throw new RuntimeException("Bad instruction");
+	}
+
 	private InsnCode assembleRegRm(Operand reg, Operand rm, byte bs[]) {
 		if (reg instanceof OpReg && isRm(rm))
 			return assemble(rm, bs, ((OpReg) reg).reg);
@@ -403,7 +594,7 @@ public class Amd64Assembler {
 		InsnCode insnCode;
 		if (instruction.op0 instanceof OpReg && 1 < instruction.op0.size) {
 			OpReg op0 = (OpReg) instruction.op0;
-			insnCode = new InsnCode(instruction.op0.size, bs((b_reg + op0.reg)));
+			insnCode = new InsnCode(instruction.op0.size, bs(b_reg + op0.reg));
 		} else if (isRm(instruction.op0))
 			insnCode = assembleByteFlag(instruction.op0, b_modrm, num);
 		else
@@ -450,10 +641,10 @@ public class Amd64Assembler {
 		insnCode = new InsnCode(op0.size, op1);
 
 		if (isAcc(op0))
-			insnCode.bs = bs((b_accImm + (op0.size <= 1 ? 0 : 1)));
+			insnCode.bs = bs(b_accImm + (op0.size <= 1 ? 0 : 1));
 		else if (isRm(op0)) {
 			int b0 = ((1 < op0.size && op1.size <= 1) ? 2 : 0) + (op0.size <= 1 ? 0 : 1);
-			insnCode.bs = bs((b_rmImm + b0));
+			insnCode.bs = bs(b_rmImm + b0);
 			insnCode.modRm = modRm(op0, num);
 		} else
 			throw new RuntimeException("Bad instruction");
