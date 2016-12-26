@@ -59,7 +59,7 @@ public class Cache {
 	}
 
 	public <I> I proxy(Class<I> interface_, I object, Collection<Method> methods) {
-		return ProxyUtil.proxy(interface_, object, invocation -> (m, ps) -> {
+		return Intercept.object(interface_, object, invocation -> (m, ps) -> {
 			Key key = methods.contains(m) ? new Key(object, m, ps) : null;
 			boolean isCached = key != null && results.containsKey(key);
 			Object result;

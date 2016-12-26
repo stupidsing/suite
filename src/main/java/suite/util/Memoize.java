@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import suite.adt.PriorityQueue;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
@@ -18,7 +19,26 @@ public class Memoize {
 		return in -> results.computeIfAbsent(in, in_ -> fun.apply(in_));
 	}
 
-	public static <I, O> Fun<I, O> funLimited(Class<O> clazz, Fun<I, O> fun, int size) {
+	public static <T> Source<T> future(Source<T> source) {
+		return new Source<T>() {
+			private volatile T result;
+
+			public T source() {
+				if (result == null)
+					synchronized (this) {
+						if (result == null) {
+							result = source.source();
+							notifyAll();
+						} else
+							while (result == null)
+								Util.wait(this);
+					}
+				return result;
+			}
+		};
+	}
+
+	public static <I, O> Fun<I, O> limited(Fun<I, O> fun, int size) {
 		return new Fun<I, O>() {
 			class R {
 				State state = State.EMPTY__;
@@ -58,31 +78,47 @@ public class Memoize {
 		};
 	}
 
-	public static <I, O> Fun<I, O> funReentrant(Fun<I, O> fun) {
-		Map<I, Source<O>> results = new ConcurrentHashMap<>();
-		return in -> results.computeIfAbsent(in, in_ -> future(() -> fun.apply(in_))).source();
-	}
+	public static <I, O> Fun<I, O> queued(Fun<I, O> fun, int size) {
+		return new Fun<I, O>() {
+			class R {
+				int age;
+				int index;
+				I input;
+				O output;
+			}
 
-	public static <T> Source<T> future(Source<T> source) {
-		return new Source<T>() {
-			private volatile T result;
+			private int time;
+			private Map<I, R> map = new HashMap<>();
+			private PriorityQueue<R> queue = new PriorityQueue<>(R.class, size, (r0, r1) -> r0.age - r1.age);
 
-			public T source() {
-				if (result == null)
-					synchronized (this) {
-						if (result == null) {
-							result = source.source();
-							notifyAll();
-						} else
-							while (result == null)
-								Util.wait(this);
-					}
-				return result;
+			public O apply(I in) {
+				R r = map.get(in);
+
+				if (r == null) {
+					if (size <= map.size())
+						map.remove(queue.extractMin().input);
+
+					r = new R();
+					r.input = in;
+					r.output = fun.apply(in);
+					map.put(in, r);
+				} else
+					queue.remove(r.index);
+
+				r.age = time++;
+				r.index = queue.insert(r);
+
+				return r.output;
 			}
 		};
 	}
 
-	public static <T> Source<T> memoize(Source<T> source) {
+	public static <I, O> Fun<I, O> reentrant(Fun<I, O> fun) {
+		Map<I, Source<O>> results = new ConcurrentHashMap<>();
+		return in -> results.computeIfAbsent(in, in_ -> future(() -> fun.apply(in_))).source();
+	}
+
+	public static <T> Source<T> source(Source<T> source) {
 		return new Source<T>() {
 			private T result;
 

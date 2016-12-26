@@ -7,13 +7,13 @@ import java.lang.reflect.Proxy;
 
 import suite.util.FunUtil.Fun;
 
-public class ProxyUtil {
+public class Intercept {
 
 	public interface Invocation {
 		public Object invoke(Method method, Object ps[]) throws Exception;
 	}
 
-	public static <I> I proxy(Class<I> interface_, I object, Fun<Invocation, Invocation> fun) {
+	public static <I> I object(Class<I> interface_, I object, Fun<Invocation, Invocation> fun) {
 		@SuppressWarnings("unchecked")
 		Class<I> clazz = (Class<I>) object.getClass();
 		ClassLoader classLoader = clazz.getClassLoader();

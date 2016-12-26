@@ -15,7 +15,7 @@ import org.apache.log4j.PatternLayout;
 import suite.Constants;
 import suite.inspect.Dump;
 import suite.os.TimeUtil.TimedResult;
-import suite.proxy.ProxyUtil;
+import suite.proxy.Intercept;
 import suite.util.Copy;
 import suite.util.FunUtil.Source;
 
@@ -86,7 +86,7 @@ public class LogUtil {
 	public static <I> I proxy(Class<I> interface_, I object) {
 		Log log = LogFactory.getLog(object.getClass());
 
-		return ProxyUtil.proxy(interface_, object, invocation -> (m, ps) -> {
+		return Intercept.object(interface_, object, invocation -> (m, ps) -> {
 			String methodName = m.getName();
 			String prefix = methodName + "()\n";
 			StringBuilder sb = new StringBuilder();

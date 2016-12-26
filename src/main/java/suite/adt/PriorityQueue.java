@@ -21,18 +21,23 @@ public class PriorityQueue<T> {
 		size = 0;
 	}
 
-	public void insert(T t) {
+	public int insert(T t) {
 		int i, p;
 		ts[++size] = t;
 		for (i = size; 1 < i && 0 < compare(ts[p = i / 2], ts[i]); i = p)
 			swap(p, i);
+		return i;
 	}
 
 	public T extractMin() {
-		int i, c;
-		T t = ts[1];
-		ts[1] = ts[size--];
-		for (i = 1; (c = 2 * i) <= size; i = c) {
+		return remove(1);
+	}
+
+	public T remove(int i) {
+		int c;
+		T t = ts[i];
+		ts[i] = ts[size--];
+		for (; (c = 2 * i) <= size; i = c) {
 			if (c + 1 <= size && compare(ts[c + 1], ts[c]) < 0)
 				c++;
 			if (compare(ts[i], ts[c]) <= 0)
