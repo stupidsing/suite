@@ -91,7 +91,7 @@ public class Memoize {
 			private Map<I, R> map = new HashMap<>();
 			private PriorityQueue<R> queue = new PriorityQueue<>(R.class, size, (r0, r1) -> r0.age - r1.age);
 
-			public O apply(I in) {
+			public synchronized O apply(I in) {
 				R r = map.get(in);
 
 				if (r == null) {
