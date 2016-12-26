@@ -1,12 +1,12 @@
 -- register usage
--- eAX - expression stack
--- eBX - expression stack
--- eCX - scratch; shift counter; divisor
--- eDX - scratch; dividend
--- eSI - expression stack
--- eDI - scratch
--- eBP - stack frame
--- eSP - stack pointer
+-- EAX - expression stack
+-- EBX - expression stack
+-- ECX - scratch; shift counter; divisor
+-- EDX - scratch; dividend
+-- ESI - expression stack
+-- EDI - scratch
+-- EBP - stack frame
+-- ESP - stack pointer
 ic-compile-register .do .e0/.ex
 	:- ic-compile-operand-better-option .do .e0/.e1 .op
 	, !, .e1 = (_ MOV ($0, .op), .ex)
