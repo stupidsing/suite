@@ -44,8 +44,7 @@ public class FunCreator<I> implements Opcodes {
 	private Class<? extends I> clazz;
 
 	public static <I> FunCreator<I> of(Class<I> ic, String mn) {
-		HashMap<String, String> fs = new HashMap<>();
-		return of(ic, mn, fs);
+		return of(ic, mn, new HashMap<>());
 	}
 
 	public static <I> FunCreator<I> of(Class<I> ic, String mn, Map<String, String> fs) {
