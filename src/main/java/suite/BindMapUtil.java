@@ -36,7 +36,7 @@ public class BindMapUtil {
 			SewingBinderImpl sb = new SewingBinderImpl(false);
 			BiPredicate<BindEnv, Node> pred = sb.compileBind(toMatch);
 			Streamlet2<String, Integer> indices = Read.from(generalizer.getVariablesNames()) //
-					.map2(name -> Formatter.display(name), name -> sb.getVariableIndex(generalizer.getVariable(name))) //
+					.map2(Formatter::display, name -> sb.getVariableIndex(generalizer.getVariable(name))) //
 					.evaluate();
 
 			return node -> {
