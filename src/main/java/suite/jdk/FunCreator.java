@@ -228,8 +228,7 @@ public class FunCreator<I> implements Opcodes {
 			mv.visitVarInsn(choose(expr.type, ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.number);
 		} else if (e instanceof PrintlnFunExpr) {
 			PrintlnFunExpr expr = (PrintlnFunExpr) e;
-			mv.visitFieldInsn(GETSTATIC, Type.getInternalName(System.class), "out",
-					Type.getDescriptor(PrintStream.class));
+			mv.visitFieldInsn(GETSTATIC, Type.getInternalName(System.class), "out", Type.getDescriptor(PrintStream.class));
 			visit(mv, expr.expression);
 			mv.visitMethodInsn(INVOKEVIRTUAL, Type.getInternalName(PrintStream.class), "println",
 					Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String.class)), false);
