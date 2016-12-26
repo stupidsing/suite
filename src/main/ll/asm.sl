@@ -132,11 +132,15 @@ asis:_s:_a (RET .imm) (+xC2, .e1)/.ex :- as-verify-emit:16 .imm .e1/.ex #
 asis:.s:.a (SAL (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xC0 4 .e #
 asis:.s:.a (SAR (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xC0 7 .e #
 asis:.s:.a (SBB (.op0, .op1)) .e :- asi-2op:.s:.a .op0 .op1 +x18 +x80 3 .e #
+asis:.s:.a (SETA .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x97, .e1)/.e1/.ex #
+asis:.s:.a (SETAE .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x93, .e1)/.e1/.ex #
+asis:.s:.a (SETB .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x92, .e1)/.e1/.ex #
+asis:.s:.a (SETBE .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x96, .e1)/.e1/.ex #
+asis:.s:.a (SETE .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x94, .e1)/.e1/.ex #
 asis:.s:.a (SETG .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x9F, .e1)/.e1/.ex #
 asis:.s:.a (SETGE .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x9D, .e1)/.e1/.ex #
 asis:.s:.a (SETL .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x9C, .e1)/.e1/.ex #
 asis:.s:.a (SETLE .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x9E, .e1)/.e1/.ex #
-asis:.s:.a (SETE .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x94, .e1)/.e1/.ex #
 asis:.s:.a (SETNE .rm) .e0/.ex :- as-mod-num-rm:.s:.a .rm (0 0) .e0/(+x0F, +x95, .e1)/.e1/.ex #
 asis:.s:.a (SHL (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xC0 4 .e #
 asis:.s:.a (SHR (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xC0 5 .e #
