@@ -25,18 +25,14 @@ public class Amd64Assembler {
 		private long imm;
 
 		private InsnCode(int size, OpImm imm) {
-			this(size);
+			this.size = size;
 			this.immSize = imm.size;
 			this.imm = imm.imm;
 		}
 
 		private InsnCode(int size, byte bs[]) {
-			this(size);
-			this.bs = bs;
-		}
-
-		private InsnCode(int size) {
 			this.size = size;
+			this.bs = bs;
 		}
 	}
 
