@@ -22,7 +22,7 @@ public class FunCreatorTest {
 	public void testBiPredicate() {
 		@SuppressWarnings("rawtypes")
 		FunCreator<BiPredicate> fc = FunCreator.of(BiPredicate.class, "test");
-		fc.create(fc.constant(Boolean.TRUE));
+		fc.create(fc.constant(true));
 		@SuppressWarnings("unchecked")
 		BiPredicate<Object, Object> bp = fc.instantiate();
 		assertTrue(bp.test("Hello", "world"));

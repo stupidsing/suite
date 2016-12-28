@@ -15,6 +15,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import javassist.bytecode.Opcode;
+import suite.adt.Pair;
 import suite.jdk.FunExpression.BinaryFunExpr;
 import suite.jdk.FunExpression.ConstantFunExpr;
 import suite.jdk.FunExpression.DoFunExpr;
@@ -37,6 +38,7 @@ public class FunCreator<I> implements Opcodes {
 	public final Class<I> interfaceClass;
 	public final Class<?> superClass;
 	public final String className;
+	public final Map<String, Pair<String, Object>> constants;
 	public final Map<String, String> fields;
 	public final String methodName;
 	public final String returnType;
@@ -60,6 +62,7 @@ public class FunCreator<I> implements Opcodes {
 		interfaceClass = ic;
 		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
+		constants = new HashMap<>();
 		fields = fs;
 		methodName = mn;
 		returnType = rt;
@@ -82,6 +85,9 @@ public class FunCreator<I> implements Opcodes {
 				null, //
 				Type.getInternalName(superClass), //
 				new String[] { Type.getInternalName(interfaceClass), });
+
+		for (Entry<String, Pair<String, Object>> entry : constants.entrySet())
+			cw.visitField(ACC_PUBLIC | ACC_STATIC, entry.getKey(), entry.getValue().t0, null, null).visitEnd();
 
 		for (Entry<String, String> entry : fields.entrySet())
 			cw.visitField(ACC_PUBLIC, entry.getKey(), entry.getValue(), null, null).visitEnd();
@@ -120,7 +126,16 @@ public class FunCreator<I> implements Opcodes {
 
 		byte bytes[] = cw.toByteArray();
 
-		return new UnsafeUtil().defineClass(interfaceClass, className, bytes);
+		Class<? extends I> clazz = new UnsafeUtil().defineClass(interfaceClass, className, bytes);
+
+		for (Entry<String, Pair<String, Object>> entry : constants.entrySet())
+			try {
+				clazz.getField(entry.getKey()).set(null, entry.getValue().t1);
+			} catch (ReflectiveOperationException ex) {
+				throw new RuntimeException(ex);
+			}
+
+		return clazz;
 	}
 
 	public FunExpr add(FunExpr e0, FunExpr e1) {
@@ -132,18 +147,34 @@ public class FunCreator<I> implements Opcodes {
 		return expr;
 	}
 
+	public FunExpr constant(boolean b) {
+		return constant(b, boolean.class);
+	}
+
 	public FunExpr constant(int i) {
 		return constant(i, int.class);
 	}
 
 	public FunExpr constant(Object object) {
-		return constant(object, object != null ? object.getClass() : Object.class);
+		return constantStatic(object, object != null ? object.getClass() : Object.class);
 	}
 
 	private FunExpr constant(Object object, Class<?> clazz) {
 		ConstantFunExpr expr = new ConstantFunExpr();
 		expr.type = Type.getDescriptor(clazz);
 		expr.constant = object;
+		return expr;
+	}
+
+	private FunExpr constantStatic(Object object, Class<?> clazz) {
+		String field = "f" + counter.getAndIncrement();
+		String type = Type.getDescriptor(clazz);
+		constants.put(field, Pair.of(type, object));
+
+		StaticFunExpr expr = new StaticFunExpr();
+		expr.clazzType = className;
+		expr.field = field;
+		expr.type = type;
 		return expr;
 	}
 
