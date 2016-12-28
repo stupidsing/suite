@@ -194,6 +194,15 @@ public class FunCreator<I> implements Opcodes {
 		return this_().field(field, fields.get(field));
 	}
 
+	public FunExpr if_(FunExpr if_, FunExpr then_, FunExpr else_) {
+		IfBooleanFunExpr expr = new IfBooleanFunExpr();
+		expr.type = then_.type;
+		expr.if_ = if_;
+		expr.then = then_;
+		expr.else_ = else_;
+		return expr;
+	}
+
 	public FunExpr local(FunExpr value, Fun<FunExpr, FunExpr> doFun) {
 		int index = 1 + parameters.size() + nLocals++;
 

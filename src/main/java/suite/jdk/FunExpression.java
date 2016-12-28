@@ -19,9 +19,10 @@ public class FunExpression {
 			return expr;
 		}
 
-		public FunExpr instanceOf() {
+		public FunExpr instanceOf(Class<?> clazz) {
 			InstanceOfFunExpr expr = new InstanceOfFunExpr();
-			expr.instanceType = boolean.class;
+			expr.type = Type.getInternalName(boolean.class);
+			expr.instanceType = clazz;
 			expr.object = this;
 			return expr;
 		}
