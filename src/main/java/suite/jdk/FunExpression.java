@@ -79,6 +79,13 @@ public class FunExpression {
 		public List<FunExpr> parameters;
 	}
 
+	public static class LocalFunExpr extends FunExpr {
+		public int number;
+		public FunExpr value;
+		public FunExpr do_;
+
+	}
+
 	public static class ParameterFunExpr extends FunExpr {
 		public int number;
 	}

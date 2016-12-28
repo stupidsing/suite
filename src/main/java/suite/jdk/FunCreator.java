@@ -24,10 +24,12 @@ import suite.jdk.FunExpression.FunExpr;
 import suite.jdk.FunExpression.IfBooleanFunExpr;
 import suite.jdk.FunExpression.InstanceOfFunExpr;
 import suite.jdk.FunExpression.InvokeFunExpr;
+import suite.jdk.FunExpression.LocalFunExpr;
 import suite.jdk.FunExpression.ParameterFunExpr;
 import suite.jdk.FunExpression.PrintlnFunExpr;
 import suite.jdk.FunExpression.StaticFunExpr;
 import suite.streamlet.Read;
+import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -38,13 +40,14 @@ public class FunCreator<I> implements Opcodes {
 	public final Class<I> interfaceClass;
 	public final Class<?> superClass;
 	public final String className;
-	public final Map<String, Pair<String, Object>> constants;
-	public final Map<String, String> fields;
 	public final String methodName;
 	public final String returnType;
 	public final List<String> parameters;
 
 	private Class<? extends I> clazz;
+	private Map<String, Pair<String, Object>> constants;
+	private Map<String, String> fields;
+	private int nLocals;
 
 	public static <I> FunCreator<I> of(Class<I> ic, String mn) {
 		return of(ic, mn, new HashMap<>());
@@ -63,6 +66,7 @@ public class FunCreator<I> implements Opcodes {
 		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
 		constants = new HashMap<>();
+		nLocals = 0;
 		fields = fs;
 		methodName = mn;
 		returnType = rt;
@@ -118,7 +122,7 @@ public class FunCreator<I> implements Opcodes {
 
 			visit(mv, expression);
 			mv.visitInsn(choose(returnType, ARETURN, DRETURN, FRETURN, IRETURN, LRETURN));
-			mv.visitMaxs(1 + parameters.size(), 1 + parameters.size());
+			mv.visitMaxs(1 + parameters.size(), 1 + parameters.size() + nLocals);
 			mv.visitEnd();
 		}
 
@@ -190,6 +194,23 @@ public class FunCreator<I> implements Opcodes {
 		return this_().field(field, fields.get(field));
 	}
 
+	public FunExpr local(FunExpr value, Fun<FunExpr, FunExpr> doFun) {
+		int index = 1 + parameters.size() + nLocals++;
+
+		ParameterFunExpr pe = new ParameterFunExpr();
+		pe.type = value.type;
+		pe.number = index;
+
+		FunExpr do_ = doFun.apply(pe);
+
+		LocalFunExpr expr = new LocalFunExpr();
+		expr.type = do_.type;
+		expr.number = index;
+		expr.value = value;
+		expr.do_ = do_;
+		return expr;
+	}
+
 	public FunExpr parameter(int number) { // 0 means this
 		ParameterFunExpr expr = new ParameterFunExpr();
 		expr.type = 0 < number ? parameters.get(number - 1) : className;
@@ -255,6 +276,11 @@ public class FunCreator<I> implements Opcodes {
 					expr.methodName, //
 					Type.getMethodDescriptor(Type.getType(expr.type), array), //
 					expr.opcode == Opcode.INVOKEINTERFACE);
+		} else if (e instanceof LocalFunExpr) {
+			LocalFunExpr expr = (LocalFunExpr) e;
+			visit(mv, expr.value);
+			mv.visitVarInsn(choose(expr.type, ASTORE, DSTORE, FSTORE, ISTORE, LSTORE), expr.number);
+			visit(mv, expr.do_);
 		} else if (e instanceof ParameterFunExpr) {
 			ParameterFunExpr expr = (ParameterFunExpr) e;
 			mv.visitVarInsn(choose(expr.type, ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.number);

@@ -38,6 +38,14 @@ public class FunCreatorTest {
 	}
 
 	@Test
+	public void testLocal() {
+		FunCreator<IntFun> fc = FunCreator.of(IntFun.class, "apply");
+		fc.create(fc.local(fc.constant(1), l -> fc.add(l, fc.parameter(1))));
+		IntFun fun = fc.instantiate();
+		assertEquals(4, fun.apply(3));
+	}
+
+	@Test
 	public void testFun() {
 		@SuppressWarnings("rawtypes")
 		FunCreator<Fun> fc = FunCreator.of(Fun.class, "apply");
