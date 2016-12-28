@@ -25,6 +25,7 @@ import suite.jdk.FunExpression.InstanceOfFunExpr;
 import suite.jdk.FunExpression.InvokeFunExpr;
 import suite.jdk.FunExpression.ParameterFunExpr;
 import suite.jdk.FunExpression.PrintlnFunExpr;
+import suite.jdk.FunExpression.StaticFunExpr;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.Util;
@@ -232,6 +233,9 @@ public class FunCreator<I> implements Opcodes {
 			visit(mv, expr.expression);
 			mv.visitMethodInsn(INVOKEVIRTUAL, Type.getInternalName(PrintStream.class), "println",
 					Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String.class)), false);
+		} else if (e instanceof StaticFunExpr) {
+			StaticFunExpr expr = (StaticFunExpr) e;
+			mv.visitFieldInsn(GETSTATIC, expr.clazzType, expr.field, expr.type);
 		} else
 			throw new RuntimeException("Unknown expression " + e.getClass());
 	}

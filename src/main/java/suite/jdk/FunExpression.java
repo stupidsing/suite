@@ -51,7 +51,7 @@ public class FunExpression {
 	}
 
 	public static class ConstantFunExpr extends FunExpr {
-		public Object constant;
+		public Object constant; // primitives, class, handles etc.
 	}
 
 	public static class DoFunExpr extends FunExpr {
@@ -85,6 +85,11 @@ public class FunExpression {
 
 	public static class PrintlnFunExpr extends FunExpr {
 		public FunExpr expression;
+	}
+
+	public static class StaticFunExpr extends FunExpr {
+		public String clazzType;
+		public String field;
 	}
 
 	public static class ThisFunExpr extends FunExpr {
