@@ -26,7 +26,7 @@ public class FunExpression {
 		}
 
 		public FunExpr field(String field, Class<?> type) {
-			return field(field, Type.getInternalName(type));
+			return field(field, Type.getDescriptor(type));
 		}
 
 		public FunExpr field(String field, String type) {
