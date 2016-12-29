@@ -11,6 +11,24 @@ public class FunExpression {
 	public static abstract class FunExpr {
 		protected String type; // type.getDescriptor()
 
+		public FunExpr cast(Class<?> clazz) {
+			CastFunExpr expr = new CastFunExpr();
+			expr.type = Type.getInternalName(clazz);
+			expr.expr = this;
+			return expr;
+		}
+
+		public FunExpr checkCast(Class<?> clazz) {
+			CheckCastFunExpr expr = new CheckCastFunExpr();
+			expr.type = Type.getInternalName(clazz);
+			expr.expr = this;
+			return expr;
+		}
+
+		public FunExpr field(String field, Class<?> type) {
+			return field(field, Type.getInternalName(type));
+		}
+
 		public FunExpr field(String field, String type) {
 			FieldFunExpr expr = new FieldFunExpr();
 			expr.type = type;
@@ -28,19 +46,19 @@ public class FunExpression {
 		}
 
 		public FunExpr invoke(FunCreator<?> cc, FunExpr... parameters) {
-			return invoke(cc.methodName, cc.returnType, parameters);
+			return invoke(Opcodes.INVOKEINTERFACE, cc.methodName, cc.returnType, parameters);
 		}
 
 		public FunExpr invoke(String methodName, Class<?> clazz, FunExpr... parameters) {
-			return invoke(methodName, Type.getDescriptor(clazz), parameters);
+			return invoke(Opcodes.INVOKEVIRTUAL, methodName, Type.getDescriptor(clazz), parameters);
 		}
 
-		public FunExpr invoke(String methodName, String type, FunExpr... parameters) {
+		private FunExpr invoke(int opcode, String methodName, String type, FunExpr... parameters) {
 			InvokeFunExpr expr = new InvokeFunExpr();
 			expr.type = type;
 			expr.methodName = methodName;
 			expr.object = this;
-			expr.opcode = Opcodes.INVOKEINTERFACE;
+			expr.opcode = opcode;
 			expr.parameters = Arrays.asList(parameters);
 			return expr;
 		}
@@ -51,11 +69,19 @@ public class FunExpression {
 		public FunExpr left, right;
 	}
 
+	public static class CastFunExpr extends FunExpr {
+		public FunExpr expr;
+	}
+
+	public static class CheckCastFunExpr extends FunExpr {
+		public FunExpr expr;
+	}
+
 	public static class ConstantFunExpr extends FunExpr {
 		public Object constant; // primitives, class, handles etc.
 	}
 
-	public static class DoFunExpr extends FunExpr {
+	public static class SeqFunExpr extends FunExpr {
 		public FunExpr left, right;
 	}
 
@@ -64,8 +90,17 @@ public class FunExpression {
 		public String field;
 	}
 
-	public static class IfBooleanFunExpr extends FunExpr {
-		public FunExpr if_, then, else_;
+	public static class IfFunExpr extends FunExpr {
+		public int ifInsn;
+		public FunExpr then, else_;
+	}
+
+	public static class If1FunExpr extends IfFunExpr {
+		public FunExpr if_;
+	}
+
+	public static class If2FunExpr extends IfFunExpr {
+		public FunExpr left, right;
 	}
 
 	public static class InstanceOfFunExpr extends FunExpr {
@@ -81,14 +116,14 @@ public class FunExpression {
 	}
 
 	public static class LocalFunExpr extends FunExpr {
-		public int number;
+		public int index;
 		public FunExpr value;
 		public FunExpr do_;
 
 	}
 
 	public static class ParameterFunExpr extends FunExpr {
-		public int number;
+		public int index;
 	}
 
 	public static class PrintlnFunExpr extends FunExpr {

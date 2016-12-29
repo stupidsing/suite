@@ -1,7 +1,10 @@
 package suite.jdk;
 
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,20 +16,26 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.util.Textifier;
+import org.objectweb.asm.util.TraceMethodVisitor;
 
 import javassist.bytecode.Opcode;
 import suite.adt.Pair;
 import suite.jdk.FunExpression.BinaryFunExpr;
+import suite.jdk.FunExpression.CastFunExpr;
+import suite.jdk.FunExpression.CheckCastFunExpr;
 import suite.jdk.FunExpression.ConstantFunExpr;
-import suite.jdk.FunExpression.DoFunExpr;
 import suite.jdk.FunExpression.FieldFunExpr;
 import suite.jdk.FunExpression.FunExpr;
-import suite.jdk.FunExpression.IfBooleanFunExpr;
+import suite.jdk.FunExpression.If1FunExpr;
+import suite.jdk.FunExpression.If2FunExpr;
+import suite.jdk.FunExpression.IfFunExpr;
 import suite.jdk.FunExpression.InstanceOfFunExpr;
 import suite.jdk.FunExpression.InvokeFunExpr;
 import suite.jdk.FunExpression.LocalFunExpr;
 import suite.jdk.FunExpression.ParameterFunExpr;
 import suite.jdk.FunExpression.PrintlnFunExpr;
+import suite.jdk.FunExpression.SeqFunExpr;
 import suite.jdk.FunExpression.StaticFunExpr;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
@@ -42,35 +51,37 @@ public class FunCreator<I> implements Opcodes {
 	public final String className;
 	public final String methodName;
 	public final String returnType;
-	public final List<String> parameters;
+	public final List<String> parameterTypes;
+	public final List<String> localTypes;
 
 	private Class<? extends I> clazz;
 	private Map<String, Pair<String, Object>> constants;
 	private Map<String, String> fields;
-	private int nLocals;
 
 	public static <I> FunCreator<I> of(Class<I> ic, String mn) {
 		return of(ic, mn, new HashMap<>());
 	}
 
-	public static <I> FunCreator<I> of(Class<I> ic, String mn, Map<String, String> fs) {
+	public static <I> FunCreator<I> of(Class<I> ic, String mn, Map<String, Class<?>> fs) {
 		Method methods[] = Rethrow.reflectiveOperationException(() -> ic.getMethods());
 		Method method = Read.from(methods).filter(m -> Util.stringEquals(m.getName(), mn)).uniqueResult();
-		String rt = Type.getDescriptor(method.getReturnType());
-		List<String> ps = Read.from(method.getParameterTypes()).map(Type::getDescriptor).toList();
-		return new FunCreator<>(ic, mn, rt, ps, fs);
+		Class<?> rt = method.getReturnType();
+		Class<?> pts[] = method.getParameterTypes();
+		String rt1 = Type.getDescriptor(rt);
+		List<String> ps1 = Read.from(pts).map(Type::getDescriptor).toList();
+		return new FunCreator<>(ic, mn, rt1, ps1, fs);
 	}
 
-	private FunCreator(Class<I> ic, String mn, String rt, List<String> ps, Map<String, String> fs) {
+	private FunCreator(Class<I> ic, String mn, String rt, List<String> ps, Map<String, Class<?>> fs) {
 		interfaceClass = ic;
 		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
-		constants = new HashMap<>();
-		nLocals = 0;
-		fields = fs;
 		methodName = mn;
 		returnType = rt;
-		parameters = ps;
+		parameterTypes = ps;
+		localTypes = new ArrayList<>();
+		constants = new HashMap<>();
+		fields = Read.from2(fs).mapValue(Type::getDescriptor).toMap();
 	}
 
 	public void create(FunExpr expression) {
@@ -79,9 +90,7 @@ public class FunCreator<I> implements Opcodes {
 
 	private Class<? extends I> create_(FunExpr expression) throws NoSuchMethodException {
 		ClassWriter cw = new ClassWriter(0);
-
-		List<Type> typeList = Read.from(parameters).map(Type::getType).toList();
-		Type types[] = typeList.toArray(new Type[0]);
+		Type types[] = Read.from(parameterTypes).map(Type::getType).toList().toArray(new Type[0]);
 
 		cw.visit(V1_8, //
 				ACC_PUBLIC + ACC_SUPER, //
@@ -113,17 +122,30 @@ public class FunCreator<I> implements Opcodes {
 		}
 
 		{
-			MethodVisitor mv = cw.visitMethod( //
+			Textifier textifier = new Textifier();
+			MethodVisitor mv0 = cw.visitMethod( //
 					ACC_PUBLIC, //
 					methodName, //
 					Type.getMethodDescriptor(Type.getType(returnType), types), //
 					null, //
 					null);
+			MethodVisitor mv = new TraceMethodVisitor(mv0, textifier);
 
 			visit(mv, expression);
 			mv.visitInsn(choose(returnType, ARETURN, DRETURN, FRETURN, IRETURN, LRETURN));
-			mv.visitMaxs(1 + parameters.size(), 1 + parameters.size() + nLocals);
+			mv.visitMaxs(1 + parameterTypes.size(), 1 + parameterTypes.size() + localTypes.size());
 			mv.visitEnd();
+
+			String log;
+
+			try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
+				textifier.print(pw);
+				log = sw.toString();
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+
+			System.out.println(log);
 		}
 
 		cw.visitEnd();
@@ -182,39 +204,48 @@ public class FunCreator<I> implements Opcodes {
 		return expr;
 	}
 
-	public FunExpr do_(FunExpr e0, FunExpr e1) {
-		DoFunExpr expr = new DoFunExpr();
-		expr.type = e0.type;
-		expr.left = e0;
-		expr.right = e1;
-		return expr;
-	}
-
 	public FunExpr field(String field) {
 		return this_().field(field, fields.get(field));
 	}
 
 	public FunExpr if_(FunExpr if_, FunExpr then_, FunExpr else_) {
-		IfBooleanFunExpr expr = new IfBooleanFunExpr();
+		int ifInsn = Opcodes.IFEQ;
+
+		If1FunExpr expr = new If1FunExpr();
 		expr.type = then_.type;
+		expr.ifInsn = ifInsn;
 		expr.if_ = if_;
 		expr.then = then_;
 		expr.else_ = else_;
 		return expr;
 	}
 
+	public FunExpr ifne(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
+		int ifInsn = Opcodes.IF_ACMPEQ;
+
+		If2FunExpr expr = new If2FunExpr();
+		expr.type = then_.type;
+		expr.ifInsn = ifInsn;
+		expr.left = left;
+		expr.right = right;
+		expr.then = then_;
+		expr.else_ = else_;
+		return expr;
+	}
+
 	public FunExpr local(FunExpr value, Fun<FunExpr, FunExpr> doFun) {
-		int index = 1 + parameters.size() + nLocals++;
+		int index = 1 + parameterTypes.size() + localTypes.size();
+		localTypes.add(value.type);
 
 		ParameterFunExpr pe = new ParameterFunExpr();
 		pe.type = value.type;
-		pe.number = index;
+		pe.index = index;
 
 		FunExpr do_ = doFun.apply(pe);
 
 		LocalFunExpr expr = new LocalFunExpr();
 		expr.type = do_.type;
-		expr.number = index;
+		expr.index = index;
 		expr.value = value;
 		expr.do_ = do_;
 		return expr;
@@ -222,8 +253,16 @@ public class FunCreator<I> implements Opcodes {
 
 	public FunExpr parameter(int number) { // 0 means this
 		ParameterFunExpr expr = new ParameterFunExpr();
-		expr.type = 0 < number ? parameters.get(number - 1) : className;
-		expr.number = number;
+		expr.type = 0 < number ? parameterTypes.get(number - 1) : className;
+		expr.index = number;
+		return expr;
+	}
+
+	public FunExpr seq(FunExpr e0, FunExpr e1) {
+		SeqFunExpr expr = new SeqFunExpr();
+		expr.type = e0.type;
+		expr.left = e0;
+		expr.right = e1;
 		return expr;
 	}
 
@@ -245,28 +284,29 @@ public class FunCreator<I> implements Opcodes {
 			visit(mv, expr.left);
 			visit(mv, expr.right);
 			mv.visitInsn(expr.opcode);
+		} else if (e instanceof CastFunExpr) {
+			CastFunExpr expr = (CastFunExpr) e;
+			visit(mv, expr.expr);
+		} else if (e instanceof CheckCastFunExpr) {
+			CheckCastFunExpr expr = (CheckCastFunExpr) e;
+			visit(mv, expr.expr);
+			mv.visitTypeInsn(CHECKCAST, expr.type);
 		} else if (e instanceof ConstantFunExpr) {
 			ConstantFunExpr expr = (ConstantFunExpr) e;
 			mv.visitLdcInsn(expr.constant);
-		} else if (e instanceof DoFunExpr) {
-			DoFunExpr expr = (DoFunExpr) e;
-			visit(mv, expr.left);
-			mv.visitInsn(POP);
-			visit(mv, expr.right);
 		} else if (e instanceof FieldFunExpr) {
 			FieldFunExpr expr = (FieldFunExpr) e;
 			visit(mv, expr.object);
 			mv.visitFieldInsn(GETFIELD, className, expr.field, expr.type);
-		} else if (e instanceof IfBooleanFunExpr) {
-			IfBooleanFunExpr expr = (IfBooleanFunExpr) e;
-			Label l0 = new Label();
-			Label l1 = new Label();
+		} else if (e instanceof If1FunExpr) {
+			If1FunExpr expr = (If1FunExpr) e;
 			visit(mv, expr.if_);
-			mv.visitJumpInsn(IFEQ, l0);
-			visit(mv, expr.then);
-			mv.visitLabel(l0);
-			visit(mv, expr.else_);
-			mv.visitLabel(l1);
+			visitIf(mv, expr);
+		} else if (e instanceof If2FunExpr) {
+			If2FunExpr expr = (If2FunExpr) e;
+			visit(mv, expr.left);
+			visit(mv, expr.right);
+			visitIf(mv, expr);
 		} else if (e instanceof InstanceOfFunExpr) {
 			InstanceOfFunExpr expr = (InstanceOfFunExpr) e;
 			visit(mv, expr.object);
@@ -288,22 +328,38 @@ public class FunCreator<I> implements Opcodes {
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
 			visit(mv, expr.value);
-			mv.visitVarInsn(choose(expr.type, ASTORE, DSTORE, FSTORE, ISTORE, LSTORE), expr.number);
+			mv.visitVarInsn(choose(expr.value.type, ASTORE, DSTORE, FSTORE, ISTORE, LSTORE), expr.index);
 			visit(mv, expr.do_);
 		} else if (e instanceof ParameterFunExpr) {
 			ParameterFunExpr expr = (ParameterFunExpr) e;
-			mv.visitVarInsn(choose(expr.type, ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.number);
+			mv.visitVarInsn(choose(expr.type, ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.index);
 		} else if (e instanceof PrintlnFunExpr) {
 			PrintlnFunExpr expr = (PrintlnFunExpr) e;
 			mv.visitFieldInsn(GETSTATIC, Type.getInternalName(System.class), "out", Type.getDescriptor(PrintStream.class));
 			visit(mv, expr.expression);
 			mv.visitMethodInsn(INVOKEVIRTUAL, Type.getInternalName(PrintStream.class), "println",
 					Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String.class)), false);
+		} else if (e instanceof SeqFunExpr) {
+			SeqFunExpr expr = (SeqFunExpr) e;
+			visit(mv, expr.left);
+			mv.visitInsn(POP);
+			visit(mv, expr.right);
 		} else if (e instanceof StaticFunExpr) {
 			StaticFunExpr expr = (StaticFunExpr) e;
 			mv.visitFieldInsn(GETSTATIC, expr.clazzType, expr.field, expr.type);
 		} else
 			throw new RuntimeException("Unknown expression " + e.getClass());
+	}
+
+	private void visitIf(MethodVisitor mv, IfFunExpr expr) {
+		Label l0 = new Label();
+		Label l1 = new Label();
+		mv.visitJumpInsn(expr.ifInsn, l0);
+		visit(mv, expr.then);
+		mv.visitJumpInsn(GOTO, l1);
+		mv.visitLabel(l0);
+		visit(mv, expr.else_);
+		mv.visitLabel(l1);
 	}
 
 	private int choose(String type, int a, int d, int f, int i, int l) {

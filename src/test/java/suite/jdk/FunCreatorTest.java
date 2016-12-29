@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.function.BiPredicate;
 
 import org.junit.Test;
-import org.objectweb.asm.Type;
 
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
@@ -31,7 +30,7 @@ public class FunCreatorTest {
 	@Test
 	public void testField() {
 		String fieldName = "f";
-		FunCreator<IntFun> fc = intFun(fieldName, Type.getDescriptor(int.class));
+		FunCreator<IntFun> fc = intFun(fieldName, int.class);
 		fc.create(fc.add(fc.field(fieldName), fc.parameter(1)));
 		IntFun intFun = instantiate(fc, fieldName, 1);
 		assertEquals(6, intFun.apply(5));
@@ -59,8 +58,8 @@ public class FunCreatorTest {
 	public void testInvoke() {
 		String fieldName0 = "f0";
 		String fieldName1 = "f1";
-		FunCreator<IntFun> fc0 = intFun(fieldName0, Type.getDescriptor(int.class));
-		FunCreator<IntFun> fc1 = intFun(fieldName1, Type.getDescriptor(IntFun.class));
+		FunCreator<IntFun> fc0 = intFun(fieldName0, int.class);
+		FunCreator<IntFun> fc1 = intFun(fieldName1, IntFun.class);
 		fc0.create(fc0.add(fc0.field(fieldName0), fc0.parameter(1)));
 		fc1.create(fc1.field(fieldName1).invoke(fc0, fc1.constant(3)));
 		IntFun f0 = instantiate(fc0, fieldName0, 1);
@@ -68,8 +67,8 @@ public class FunCreatorTest {
 		assertEquals(4, f1.apply(5));
 	}
 
-	private FunCreator<IntFun> intFun(String fieldName, String fieldType) {
-		return FunCreator.of(IntFun.class, "apply", Read.<String, String> empty2().cons(fieldName, fieldType).toMap());
+	private FunCreator<IntFun> intFun(String fieldName, Class<?> fieldType) {
+		return FunCreator.of(IntFun.class, "apply", Read.<String, Class<?>> empty2().cons(fieldName, fieldType).toMap());
 	}
 
 	private IntFun instantiate(FunCreator<IntFun> fc, String fieldName, Object fieldValue) {
