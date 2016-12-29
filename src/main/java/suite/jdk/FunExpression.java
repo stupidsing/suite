@@ -13,14 +13,14 @@ public class FunExpression {
 
 		public FunExpr cast(Class<?> clazz) {
 			CastFunExpr expr = new CastFunExpr();
-			expr.type = Type.getInternalName(clazz);
+			expr.type = Type.getDescriptor(clazz);
 			expr.expr = this;
 			return expr;
 		}
 
 		public FunExpr checkCast(Class<?> clazz) {
 			CheckCastFunExpr expr = new CheckCastFunExpr();
-			expr.type = Type.getInternalName(clazz);
+			expr.type = Type.getDescriptor(clazz);
 			expr.expr = this;
 			return expr;
 		}
@@ -39,7 +39,7 @@ public class FunExpression {
 
 		public FunExpr instanceOf(Class<?> clazz) {
 			InstanceOfFunExpr expr = new InstanceOfFunExpr();
-			expr.type = Type.getInternalName(boolean.class);
+			expr.type = Type.getDescriptor(boolean.class);
 			expr.instanceType = clazz;
 			expr.object = this;
 			return expr;
@@ -50,7 +50,7 @@ public class FunExpression {
 		}
 
 		public FunExpr invoke(String methodName, Class<?> clazz, FunExpr... parameters) {
-			return invoke(Opcodes.INVOKEVIRTUAL, methodName, Type.getDescriptor(clazz), parameters);
+			return invoke(Opcodes.INVOKEVIRTUAL, methodName, Type.getInternalName(clazz), parameters);
 		}
 
 		private FunExpr invoke(int opcode, String methodName, String type, FunExpr... parameters) {
