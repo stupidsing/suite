@@ -346,7 +346,8 @@ public class FunCreator<I> implements Opcodes {
 		} else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;
 			visit(os, expr.left);
-			mv.visitInsn(POP);
+			if (!Util.stringEquals(expr.left.type, Type.getDescriptor(void.class)))
+				mv.visitInsn(POP);
 			visit(os, expr.right);
 		} else if (e instanceof StaticFunExpr) {
 			StaticFunExpr expr = (StaticFunExpr) e;
