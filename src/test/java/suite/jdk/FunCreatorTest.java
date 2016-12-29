@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
-import suite.util.Rethrow;
 
 public class FunCreatorTest {
 
@@ -80,12 +79,7 @@ public class FunCreatorTest {
 	}
 
 	private IntFun instantiate(FunCreator<IntFun> fc, String fieldName, Object fieldValue) {
-		return Rethrow.reflectiveOperationException(() -> {
-			Class<? extends IntFun> clazz = fc.get();
-			IntFun f = clazz.newInstance();
-			clazz.getDeclaredField(fieldName).set(f, fieldValue);
-			return f;
-		});
+		return fc.instantiate(Read.<String, Object> empty2().cons(fieldName, fieldValue).toMap());
 	}
 
 }

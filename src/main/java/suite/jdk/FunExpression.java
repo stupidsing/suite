@@ -49,7 +49,11 @@ public class FunExpression {
 			return invoke(Opcodes.INVOKEINTERFACE, cc.methodName, cc.returnType, parameters);
 		}
 
-		public FunExpr invoke(String methodName, Class<?> clazz, FunExpr... parameters) {
+		public FunExpr invokeInterface(String methodName, Class<?> clazz, FunExpr... parameters) {
+			return invoke(Opcodes.INVOKEINTERFACE, methodName, Type.getDescriptor(clazz), parameters);
+		}
+
+		public FunExpr invokeVirtual(String methodName, Class<?> clazz, FunExpr... parameters) {
 			return invoke(Opcodes.INVOKEVIRTUAL, methodName, Type.getDescriptor(clazz), parameters);
 		}
 

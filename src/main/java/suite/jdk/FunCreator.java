@@ -263,7 +263,17 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public I instantiate() {
-		return Rethrow.ex(clazz::newInstance);
+		return instantiate(new HashMap<>());
+	}
+
+	public I instantiate(Map<String, Object> fields) {
+		return Rethrow.reflectiveOperationException(() -> {
+			I t = clazz.newInstance();
+			for (Entry<String, Object> entry : fields.entrySet()) {
+				clazz.getDeclaredField(entry.getKey()).set(t, entry.getValue());
+			}
+			return t;
+		});
 	}
 
 	public Class<? extends I> get() {
