@@ -202,7 +202,7 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public FunExpr ifeq(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
-		int ifInsn = Opcodes.IF_ACMPNE;
+		int ifInsn = !Util.stringEquals(left.type, Type.getDescriptor(int.class)) ? Opcodes.IF_ACMPNE : Opcodes.IF_ICMPNE;
 
 		If2FunExpr expr = new If2FunExpr();
 		expr.type = then_.type;

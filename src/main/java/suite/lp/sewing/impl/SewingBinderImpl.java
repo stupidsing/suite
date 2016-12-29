@@ -100,7 +100,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindAtom_(String key) {
-		Map<String, Class<?>> fields = Read.<String, Class<?>> empty2().cons(key, Atom.class).toMap();
+		Map<String, Class<?>> fields = Read.<String, Class<?>> empty2().cons(key, Node.class).toMap();
 
 		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
 		FunExpr be = fc.parameter(1);
@@ -111,7 +111,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 				ref -> {
 					FunExpr addBind = be //
 							.invokeInterface("getTrail", Trail.class) //
-							.invokeVirtual("addBind", void.class, ref, a_.cast(Node.class));
+							.invokeVirtual("addBind", void.class, ref, a_);
 					return fc.seq(addBind, fc.true_());
 				}, //
 				fc.ifeq(n_, a_, fc.true_(), fc.false_()))));
