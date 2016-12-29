@@ -21,8 +21,11 @@ import suite.util.FunUtil.Fun;
 
 public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
-	private static String key = "a";
-	private static Fun<Map<String, Object>, BindPredicate> compiledBindAtom = compileBindAtom_(key);
+	private static String key0 = "k0";
+	private static String key1 = "k1";
+	private static Fun<Map<String, Object>, BindPredicate> compiledBindAtom = compileBindAtom_();
+	private static Fun<Map<String, Object>, BindPredicate> compiledBindInt = compileBindInt_();
+	private static Fun<Map<String, Object>, BindPredicate> compiledBindStr = compileBindStr_();
 
 	private boolean isBindTrees;
 
@@ -96,16 +99,26 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private BindPredicate compileBindAtom(Atom a) {
-		return compiledBindAtom.apply(Read.<String, Object> empty2().cons(key, a).toMap());
+		return compiledBindAtom.apply(Read.<String, Object> empty2().cons(key0, a).toMap());
 	}
 
-	private static Fun<Map<String, Object>, BindPredicate> compileBindAtom_(String key) {
-		Map<String, Class<?>> fields = Read.<String, Class<?>> empty2().cons(key, Node.class).toMap();
+	private BindPredicate compileBindInt(Int i) {
+		return compiledBindInt.apply(Read.<String, Object> empty2().cons(key0, i).cons(key1, i.number).toMap());
+	}
+
+	private BindPredicate compileBindStr(Str s) {
+		return compiledBindStr.apply(Read.<String, Object> empty2().cons(key0, s).cons(key1, s.value).toMap());
+	}
+
+	private static Fun<Map<String, Object>, BindPredicate> compileBindAtom_() {
+		Map<String, Class<?>> fields = Read.<String, Class<?>> empty2() //
+				.cons(key0, Node.class) //
+				.toMap();
 
 		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
 		FunExpr be = fc.parameter(1);
 		FunExpr n = fc.parameter(2);
-		FunExpr a_ = fc.field(key);
+		FunExpr a_ = fc.field(key0);
 
 		return fc.create(fc.local(n.invokeVirtual("finalNode", Node.class), n_ -> fc.ifInstance(n_, Reference.class, //
 				ref -> {
@@ -115,6 +128,55 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 					return fc.seq(addBind, fc.true_());
 				}, //
 				fc.ifeq(n_, a_, fc.true_(), fc.false_()))));
+	}
+
+	private static Fun<Map<String, Object>, BindPredicate> compileBindInt_() {
+		Map<String, Class<?>> fields = Read.<String, Class<?>> empty2() //
+				.cons(key0, Node.class) //
+				.cons(key1, int.class) //
+				.toMap();
+
+		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
+		FunExpr be = fc.parameter(1);
+		FunExpr n = fc.parameter(2);
+		FunExpr k0 = fc.field(key0);
+		FunExpr k1 = fc.field(key1);
+
+		return fc.create(fc.local(n.invokeVirtual("finalNode", Node.class), n_ -> fc.ifInstance(n_, Reference.class, //
+				ref -> {
+					FunExpr addBind = be //
+							.invokeInterface("getTrail", Trail.class) //
+							.invokeVirtual("addBind", void.class, ref, k0);
+					return fc.seq(addBind, fc.true_());
+				}, //
+				fc.ifInstance(n, Int.class, //
+						i -> fc.ifeq(i.field("number", int.class), k1, fc.true_(), fc.false_()), //
+						fc.false_()))));
+	}
+
+	private static Fun<Map<String, Object>, BindPredicate> compileBindStr_() {
+		Map<String, Class<?>> fields = Read.<String, Class<?>> empty2() //
+				.cons(key0, Node.class) //
+				.cons(key1, String.class) //
+				.toMap();
+
+		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
+		FunExpr be = fc.parameter(1);
+		FunExpr n = fc.parameter(2);
+		FunExpr k0 = fc.field(key0);
+		FunExpr k1 = fc.field(key1);
+
+		return fc.create(fc.local(n.invokeVirtual("finalNode", Node.class), n_ -> fc.ifInstance(n_, Reference.class, //
+				ref -> {
+					FunExpr addBind = be //
+							.invokeInterface("getTrail", Trail.class) //
+							.invokeVirtual("addBind", void.class, ref, k0);
+					return fc.seq(addBind, fc.true_());
+				}, //
+				fc.ifInstance(n, Str.class, //
+						i -> k1.cast(Object.class) //
+								.invokeVirtual("equals", boolean.class, i.field("value", String.class).cast(Object.class)), //
+						fc.false_()))));
 	}
 
 	private BindPredicate compileBindAtom0(Atom a) {
@@ -128,7 +190,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		};
 	}
 
-	private BindPredicate compileBindInt(Int i_) {
+	private BindPredicate compileBindInt0(Int i_) {
 		int i = i_.number;
 		return (be, n) -> {
 			Node n_ = n.finalNode();
@@ -140,7 +202,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		};
 	}
 
-	private BindPredicate compileBindStr(Str str) {
+	private BindPredicate compileBindStr0(Str str) {
 		String s = str.value;
 		return (be, n) -> {
 			Node n_ = n.finalNode();

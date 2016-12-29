@@ -274,7 +274,7 @@ public class FunCreator<I> implements Opcodes {
 		} else if (e instanceof FieldFunExpr) {
 			FieldFunExpr expr = (FieldFunExpr) e;
 			visit(mv, expr.object);
-			mv.visitFieldInsn(GETFIELD, className, expr.field, expr.type);
+			mv.visitFieldInsn(GETFIELD, expr.object.type, expr.field, expr.type);
 		} else if (e instanceof If1FunExpr) {
 			If1FunExpr expr = (If1FunExpr) e;
 			visit(mv, expr.if_);
