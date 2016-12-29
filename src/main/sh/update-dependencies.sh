@@ -26,7 +26,8 @@ sed 's#import jline.console.*#<groupId>jline</groupId><artifactId>jline</artifac
 sed 's#import org.apache.commons.logging.*#<groupId>commons-logging</groupId><artifactId>commons-logging</artifactId>#g' |
 sed 's#import org.apache.log4j.*#<groupId>log4j</groupId><artifactId>log4j</artifactId>#g' |
 sed 's#import org.junit.*#<groupId>junit</groupId><artifactId>junit</artifactId>#g' |
-sed 's#import org.objectweb.asm.*#<groupId>org.ow2.asm</groupId><artifactId>asm</artifactId>#g' |
+sed 's#import org.objectweb.asm.Opcodes*#<groupId>org.ow2.asm</groupId><artifactId>asm</artifactId>#g' |
+sed 's#import org.objectweb.asm.util.*#<groupId>org.ow2.asm</groupId><artifactId>asm-util</artifactId>#g' |
 sed 's#import org.slf4j.*#<groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId>#g' |
 sed 's#import org.telegram.telegrambots.bots.*#<groupId>org.telegram</groupId><artifactId>telegrambots</artifactId>#g' |
 sort |
@@ -44,4 +45,4 @@ sed "s#<dependencies>.*</dependencies>#<dependencies>${DEPS}</dependencies>#g" |
 tr '@' '\n' |
 xmllint --format - > pom.xml
 
-mvn eclipse:clean eclipse:eclipse dependency:resolve
+mvn -DdownloadJavadocs=true -DdownloadSources=true eclipse:clean eclipse:eclipse dependency:resolve
