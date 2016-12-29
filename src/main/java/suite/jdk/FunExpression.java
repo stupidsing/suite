@@ -50,7 +50,7 @@ public class FunExpression {
 		}
 
 		public FunExpr invoke(String methodName, Class<?> clazz, FunExpr... parameters) {
-			return invoke(Opcodes.INVOKEVIRTUAL, methodName, Type.getInternalName(clazz), parameters);
+			return invoke(Opcodes.INVOKEVIRTUAL, methodName, Type.getDescriptor(clazz), parameters);
 		}
 
 		private FunExpr invoke(int opcode, String methodName, String type, FunExpr... parameters) {

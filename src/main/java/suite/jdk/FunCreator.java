@@ -316,6 +316,7 @@ public class FunCreator<I> implements Opcodes {
 				visit(os, expr.object);
 				os = os.cons(expr.object.type);
 			}
+
 			for (FunExpr parameter : expr.parameters) {
 				visit(os, parameter);
 				os = os.cons(parameter.type);
