@@ -1,9 +1,6 @@
 package suite.jdk;
 
-import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,12 +15,9 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.util.Textifier;
-import org.objectweb.asm.util.TraceMethodVisitor;
 
 import javassist.bytecode.Opcode;
 import suite.adt.Pair;
-import suite.editor.Listen.SinkEx;
 import suite.immutable.IList;
 import suite.jdk.FunExpression.BinaryFunExpr;
 import suite.jdk.FunExpression.CastFunExpr;
@@ -62,6 +56,7 @@ public class FunCreator<I> implements Opcodes {
 	private Class<? extends I> clazz;
 	private Map<String, Pair<String, Object>> constants;
 	private Map<String, String> fields;
+	private MethodCreator mc = new MethodCreator();
 
 	private class OpStack {
 		private MethodVisitor mv;
@@ -122,7 +117,7 @@ public class FunCreator<I> implements Opcodes {
 		for (Entry<String, String> entry : fields.entrySet())
 			cw.visitField(ACC_PUBLIC, entry.getKey(), entry.getValue(), null, null).visitEnd();
 
-		createMethod(cw, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE), false, mv -> {
+		mc.create(cw, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE), false, mv -> {
 			String cd = Type.getConstructorDescriptor(superClass.getConstructor());
 
 			mv.visitVarInsn(ALOAD, 0);
@@ -131,7 +126,7 @@ public class FunCreator<I> implements Opcodes {
 			mv.visitMaxs(1, 1);
 		});
 
-		createMethod(cw, methodName, Type.getMethodDescriptor(Type.getType(returnType), types), true, mv -> {
+		mc.create(cw, methodName, Type.getMethodDescriptor(Type.getType(returnType), types), true, mv -> {
 			OpStack os = new OpStack();
 			os.list = IList.end();
 			os.mv = mv;
@@ -292,7 +287,7 @@ public class FunCreator<I> implements Opcodes {
 			mv.visitTypeInsn(CHECKCAST, expr.type);
 		} else if (e instanceof ConstantFunExpr) {
 			ConstantFunExpr expr = (ConstantFunExpr) e;
-			mv.visitLdcInsn(expr.constant);
+			mc.visitLdc(mv, expr);
 		} else if (e instanceof FieldFunExpr) {
 			FieldFunExpr expr = (FieldFunExpr) e;
 			visit(os, expr.object);
@@ -359,39 +354,6 @@ public class FunCreator<I> implements Opcodes {
 			throw new RuntimeException("Unknown expression " + e.getClass());
 	}
 
-	private void createMethod(ClassWriter cw, String mn, String md, boolean isLog,
-			SinkEx<MethodVisitor, ReflectiveOperationException> sink) {
-		Textifier textifier = isLog ? new Textifier() : null;
-		MethodVisitor mv0 = cw.visitMethod( //
-				Opcodes.ACC_PUBLIC, //
-				mn, //
-				md, //
-				null, //
-				null);
-		MethodVisitor mv = textifier != null ? new TraceMethodVisitor(mv0, textifier) : mv0;
-
-		try {
-			sink.sink(mv);
-		} catch (ReflectiveOperationException ex) {
-			throw new RuntimeException(ex);
-		}
-
-		mv.visitEnd();
-
-		if (textifier != null) {
-			String log;
-
-			try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
-				textifier.print(pw);
-				log = sw.toString();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-
-			System.out.println(log);
-		}
-	}
-
 	private void visitIf(OpStack os, IfFunExpr expr) {
 		MethodVisitor mv = os.mv;
 		Label l0 = new Label();
@@ -410,36 +372,30 @@ public class FunCreator<I> implements Opcodes {
 		Object locals[] = Streamlet
 				.concat( //
 						Read.from(className), //
-						Read.from(parameterTypes).map(Type::getInternalName), //
+						Read.from(parameterTypes).map(Type::getDescriptor), //
 						Read.from(localTypes)) //
-				.map(t -> {
-					System.out.println("t " + t);
-					return choose_(t, t, Opcodes.DOUBLE, Opcodes.FLOAT, Opcodes.INTEGER, Opcodes.LONG);
-				}) //
+				.map(t -> chooseObject(t, t, Opcodes.DOUBLE, Opcodes.FLOAT, Opcodes.INTEGER, Opcodes.LONG)) //
 				.toList() //
 				.toArray(new Object[0]);
 
 		Object stack[] = Read.from(os.list.reverse()) //
-				.map(t -> {
-					System.out.println("t " + t);
-					return choose_(t, t, Opcodes.DOUBLE, Opcodes.FLOAT, Opcodes.INTEGER, Opcodes.LONG);
-				}) //
+				.map(t -> chooseObject(t, t, Opcodes.DOUBLE, Opcodes.FLOAT, Opcodes.INTEGER, Opcodes.LONG)) //
 				.toList() //
 				.toArray(new Object[0]);
 
 		os.mv.visitFrame(Opcodes.F_FULL, locals.length, locals, stack.length, stack);
 	}
 
-	private Object choose_(String type, Object a, Object d, Object f, Object i, Object l) {
-		if (Util.stringEquals(type, Type.getInternalName(double.class)))
+	private Object chooseObject(String type, Object a, Object d, Object f, Object i, Object l) {
+		if (Util.stringEquals(type, Type.getDescriptor(double.class)))
 			return d;
-		else if (Util.stringEquals(type, Type.getInternalName(boolean.class)))
+		else if (Util.stringEquals(type, Type.getDescriptor(boolean.class)))
 			return i;
-		else if (Util.stringEquals(type, Type.getInternalName(float.class)))
+		else if (Util.stringEquals(type, Type.getDescriptor(float.class)))
 			return f;
-		else if (Util.stringEquals(type, Type.getInternalName(int.class)))
+		else if (Util.stringEquals(type, Type.getDescriptor(int.class)))
 			return i;
-		else if (Util.stringEquals(type, Type.getInternalName(long.class)))
+		else if (Util.stringEquals(type, Type.getDescriptor(long.class)))
 			return l;
 		else
 			return a;

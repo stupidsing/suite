@@ -37,6 +37,14 @@ public class FunCreatorTest {
 	}
 
 	@Test
+	public void testIf() {
+		FunCreator<IntFun> fc = FunCreator.of(IntFun.class, "apply");
+		fc.create(fc.if_(fc.true_(), fc.true_(), fc.false_()));
+		IntFun fun = fc.instantiate();
+		assertEquals(1, fun.apply(0));
+	}
+
+	@Test
 	public void testLocal() {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class, "apply");
 		fc.create(fc.local(fc.constant(1), l -> fc.add(l, fc.parameter(1))));
