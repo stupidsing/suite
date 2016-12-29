@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import suite.Suite;
@@ -26,6 +25,7 @@ import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.lp.predicate.SystemPredicates;
 import suite.lp.sewing.SewingBinder;
 import suite.lp.sewing.SewingBinder.BindEnv;
+import suite.lp.sewing.SewingBinder.BindPredicate;
 import suite.lp.sewing.SewingProver;
 import suite.lp.sewing.VariableMapper.Env;
 import suite.lp.sewing.impl.SewingExpressionImpl.Evaluate;
@@ -85,7 +85,7 @@ public class SewingProverImpl implements SewingProver {
 	};
 
 	private SewingBinder passThru = new SewingBinder() {
-		public BiPredicate<BindEnv, Node> compileBind(Node node) {
+		public BindPredicate compileBind(Node node) {
 			return (be, n) -> Binder.bind(node, n, be.getTrail());
 		}
 
@@ -252,7 +252,7 @@ public class SewingProverImpl implements SewingProver {
 
 	private Trampoline compileRule(Node head, Node tail) {
 		SewingBinder sb = new SewingBinderImpl();
-		BiPredicate<BindEnv, Node> p = sb.compileBind(head);
+		BindPredicate p = sb.compileBind(head);
 		Trampoline tr1 = compile0(sb, tail);
 		return newEnv(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
 	}
@@ -271,7 +271,7 @@ public class SewingProverImpl implements SewingProver {
 			boolean b = complexity(m[0]) <= complexity(m[1]);
 			Node n0 = b ? m[0] : m[1];
 			Node n1 = b ? m[1] : m[0];
-			BiPredicate<BindEnv, Node> p = sb.compileBind(n1);
+			BindPredicate p = sb.compileBind(n1);
 			Fun<Env, Node> f = sb.compile(n0);
 			tr = rt -> p.test(rt, f.apply(rt.env)) ? okay : fail;
 		} else if ((m = Suite.matcher("builtin:.0:.1 .2").apply(node)) != null) {
@@ -285,7 +285,7 @@ public class SewingProverImpl implements SewingProver {
 		} else if ((m = Suite.matcher("find.all .0 .1 .2").apply(node)) != null) {
 			Fun<Env, Node> f = sb.compile(m[0]);
 			Trampoline tr1 = compile0(sb, m[1]);
-			BiPredicate<BindEnv, Node> p = sb.compileBind(m[2]);
+			BindPredicate p = sb.compileBind(m[2]);
 			List<Node> vs = new ArrayList<>();
 			return rt -> {
 				Sink<Runtime> restore = save(rt);
@@ -305,13 +305,13 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline tr2 = compile0(sb, m[2]);
 			tr = if_(tr0, tr1, tr2);
 		} else if ((m = Suite.matcher("let .0 .1").apply(node)) != null) {
-			BiPredicate<BindEnv, Node> p = sb.compileBind(m[0]);
+			BindPredicate p = sb.compileBind(m[0]);
 			Evaluate eval = new SewingExpressionImpl(sb).compile(m[1]);
 			tr = rt -> p.test(rt, Int.of(eval.evaluate(rt.env))) ? okay : fail;
 		} else if ((m = Suite.matcher("list.fold .0/.1/.2 .3").apply(node)) != null) {
 			Fun<Env, Node> list0_ = sb.compile(m[0]);
 			Fun<Env, Node> value0_ = sb.compile(m[1]);
-			BiPredicate<BindEnv, Node> valuex_ = sb.compileBind(m[2]);
+			BindPredicate valuex_ = sb.compileBind(m[2]);
 			Fun<Env, Node> ht_ = sb.compile(m[3]);
 			return rt -> {
 				Node ht[] = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
@@ -334,9 +334,9 @@ public class SewingProverImpl implements SewingProver {
 		} else if ((m = Suite.matcher("list.fold.clone .0/.1/.2 .3/.4/.5 .6").apply(node)) != null) {
 			Fun<Env, Node> list0_ = sb.compile(m[0]);
 			Fun<Env, Node> value0_ = sb.compile(m[1]);
-			BiPredicate<BindEnv, Node> valuex_ = sb.compileBind(m[2]);
-			BiPredicate<BindEnv, Node> elem_ = sb.compileBind(m[3]);
-			BiPredicate<BindEnv, Node> v0_ = sb.compileBind(m[4]);
+			BindPredicate valuex_ = sb.compileBind(m[2]);
+			BindPredicate elem_ = sb.compileBind(m[3]);
+			BindPredicate v0_ = sb.compileBind(m[4]);
 			Fun<Env, Node> vx_ = sb.compile(m[5]);
 			Trampoline tr1 = compile0(sb, m[6]);
 			return rt -> {
@@ -373,7 +373,7 @@ public class SewingProverImpl implements SewingProver {
 			};
 		} else if ((m = Suite.matcher("list.query.clone .0 .1 .2").apply(node)) != null) {
 			Fun<Env, Node> f = sb.compile(m[0]);
-			BiPredicate<BindEnv, Node> p = sb.compileBind(m[1]);
+			BindPredicate p = sb.compileBind(m[1]);
 			Trampoline tr1 = compile0(sb, m[2]);
 			return rt -> {
 				Env env0 = rt.env;
@@ -389,10 +389,10 @@ public class SewingProverImpl implements SewingProver {
 				return okay;
 			};
 		} else if ((m = Suite.matcher("member .0 .1").apply(node)) != null && TreeUtil.isList(m[0], TermOp.AND___)) {
-			List<BiPredicate<BindEnv, Node>> elems_ = Read.from(Tree.iter(m[0])).map(sb::compileBind).toList();
+			List<BindPredicate> elems_ = Read.from(Tree.iter(m[0])).map(sb::compileBind).toList();
 			Fun<Env, Node> f = sb.compile(m[1]);
 			return rt -> {
-				Iterator<BiPredicate<BindEnv, Node>> iter = elems_.iterator();
+				Iterator<BindPredicate> iter = elems_.iterator();
 				Trampoline alt[] = new Trampoline[1];
 				Sink<Runtime> restore = save(rt);
 				return alt[0] = rt_ -> {
@@ -455,7 +455,7 @@ public class SewingProverImpl implements SewingProver {
 			};
 		} else if ((m = Suite.matcher("try .0 .1 .2").apply(node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
-			BiPredicate<BindEnv, Node> p = sb.compileBind(m[1]);
+			BindPredicate p = sb.compileBind(m[1]);
 			Trampoline catch0 = compile0(sb, m[2]);
 			tr = rt -> {
 				BindEnv be = rt;

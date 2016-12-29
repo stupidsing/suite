@@ -1,8 +1,11 @@
 package suite.lp.sewing.impl;
 
 import java.util.List;
-import java.util.function.BiPredicate;
+import java.util.Map;
 
+import suite.jdk.FunCreator;
+import suite.jdk.FunExpression.FunExpr;
+import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.sewing.SewingBinder;
 import suite.node.Atom;
@@ -18,6 +21,9 @@ import suite.util.FunUtil.Fun;
 
 public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
+	private static String key = "a";
+	private static FunCreator<BindPredicate> fc = compileBindAtom_(key);
+
 	private boolean isBindTrees;
 
 	public SewingBinderImpl() {
@@ -28,7 +34,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		this.isBindTrees = isBindTrees;
 	}
 
-	public BiPredicate<BindEnv, Node> compileBind(Node node) {
+	public BindPredicate compileBind(Node node) {
 		Tree tree;
 
 		if (node instanceof Atom)
@@ -43,8 +49,8 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
 			Fun<Env, Node> f = compile(node);
-			BiPredicate<BindEnv, Node> c0 = compileBind(tree.getLeft());
-			BiPredicate<BindEnv, Node> c1 = compileBind(tree.getRight());
+			BindPredicate c0 = compileBind(tree.getLeft());
+			BindPredicate c1 = compileBind(tree.getRight());
 			return (be, n) -> {
 				Node n_ = n.finalNode();
 				Tree t;
@@ -61,7 +67,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 			};
 		} else if (node instanceof Tuple) {
 			Fun<Env, Node> f = compile(node);
-			List<BiPredicate<BindEnv, Node>> cs = Read.from(((Tuple) node).nodes).map(this::compileBind).toList();
+			List<BindPredicate> cs = Read.from(((Tuple) node).nodes).map(this::compileBind).toList();
 			int size = cs.size();
 			return (be, n) -> {
 				Node n_ = n.finalNode();
@@ -89,7 +95,31 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		}
 	}
 
-	private BiPredicate<BindEnv, Node> compileBindAtom(Atom a) {
+	private BindPredicate compileBindAtom(Atom a) {
+		return fc.instantiate(Read.<String, Object> empty2().cons(key, a).toMap());
+	}
+
+	private static FunCreator<BindPredicate> compileBindAtom_(String key) {
+		Map<String, Class<?>> fields = Read.<String, Class<?>> empty2().cons(key, Atom.class).toMap();
+
+		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
+		FunExpr be = fc.parameter(1);
+		FunExpr n = fc.parameter(2);
+		FunExpr a_ = fc.field(key);
+
+		fc.create(fc.local(n.invokeVirtual("finalNode", Node.class), n_ -> fc.ifInstance(n_, Reference.class, //
+				ref -> {
+					FunExpr addBind = be //
+							.invokeInterface("getTrail", Trail.class) //
+							.invokeVirtual("addBind", void.class, ref, a_.cast(Node.class));
+					return fc.seq(addBind, fc.true_());
+				}, //
+				fc.ifeq(n_, a_, fc.true_(), fc.false_()))));
+
+		return fc;
+	}
+
+	private BindPredicate compileBindAtom0(Atom a) {
 		return (be, n) -> {
 			Node n_ = n.finalNode();
 			if (n_ instanceof Reference) {
@@ -100,7 +130,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		};
 	}
 
-	private BiPredicate<BindEnv, Node> compileBindInt(Int i_) {
+	private BindPredicate compileBindInt(Int i_) {
 		int i = i_.number;
 		return (be, n) -> {
 			Node n_ = n.finalNode();
@@ -112,7 +142,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		};
 	}
 
-	private BiPredicate<BindEnv, Node> compileBindStr(Str str) {
+	private BindPredicate compileBindStr(Str str) {
 		String s = str.value;
 		return (be, n) -> {
 			Node n_ = n.finalNode();

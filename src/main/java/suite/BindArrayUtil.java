@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiPredicate;
 
 import suite.lp.Trail;
 import suite.lp.doer.Generalizer;
 import suite.lp.sewing.SewingBinder.BindEnv;
+import suite.lp.sewing.SewingBinder.BindPredicate;
 import suite.lp.sewing.VariableMapper.Env;
 import suite.lp.sewing.impl.SewingBinderImpl;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
@@ -31,7 +31,7 @@ public class BindArrayUtil {
 			Node toMatch = generalizer.generalize(Suite.parse(pattern_));
 
 			SewingBinderImpl sb = new SewingBinderImpl(false);
-			BiPredicate<BindEnv, Node> pred = sb.compileBind(toMatch);
+			BindPredicate pred = sb.compileBind(toMatch);
 			List<Integer> indexList = new ArrayList<>();
 			Integer index;
 			int n = 0;

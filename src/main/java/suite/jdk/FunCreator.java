@@ -194,8 +194,8 @@ public class FunCreator<I> implements Opcodes {
 		return expr;
 	}
 
-	public FunExpr ifne(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
-		int ifInsn = Opcodes.IF_ACMPEQ;
+	public FunExpr ifeq(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
+		int ifInsn = Opcodes.IF_ACMPNE;
 
 		If2FunExpr expr = new If2FunExpr();
 		expr.type = then_.type;
@@ -205,6 +205,10 @@ public class FunCreator<I> implements Opcodes {
 		expr.then = then_;
 		expr.else_ = else_;
 		return expr;
+	}
+
+	public FunExpr ifInstance(FunExpr object, Class<?> clazz, Fun<FunExpr, FunExpr> then_, FunExpr else_) {
+		return if_(object.instanceOf(clazz), local(object.checkCast(clazz), o_ -> then_.apply(o_)), else_);
 	}
 
 	public FunExpr local(FunExpr value, Fun<FunExpr, FunExpr> doFun) {
@@ -255,10 +259,6 @@ public class FunCreator<I> implements Opcodes {
 				clazz.getDeclaredField(entry.getKey()).set(t, entry.getValue());
 			return t;
 		});
-	}
-
-	public Class<? extends I> get() {
-		return clazz;
 	}
 
 	private void visit(MethodVisitor mv, FunExpr e) {
