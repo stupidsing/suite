@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class FunCreator<I> implements Opcodes {
 	public final String className;
 	public final String methodName;
 	public final String returnType;
-	public final List<String> parameterTypes;
+	public final List<Class<?>> parameterTypes;
 	public final List<String> localTypes;
 
 	private Class<? extends I> clazz;
@@ -68,11 +69,11 @@ public class FunCreator<I> implements Opcodes {
 		Class<?> rt = method.getReturnType();
 		Class<?> pts[] = method.getParameterTypes();
 		String rt1 = Type.getDescriptor(rt);
-		List<String> ps1 = Read.from(pts).map(Type::getDescriptor).toList();
+		List<Class<?>> ps1 = Arrays.asList(pts);
 		return new FunCreator<>(ic, mn, rt1, ps1, fs);
 	}
 
-	private FunCreator(Class<I> ic, String mn, String rt, List<String> ps, Map<String, Class<?>> fs) {
+	private FunCreator(Class<I> ic, String mn, String rt, List<Class<?>> ps, Map<String, Class<?>> fs) {
 		interfaceClass = ic;
 		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
@@ -253,7 +254,7 @@ public class FunCreator<I> implements Opcodes {
 
 	public FunExpr parameter(int number) { // 0 means this
 		ParameterFunExpr expr = new ParameterFunExpr();
-		expr.type = 0 < number ? parameterTypes.get(number - 1) : className;
+		expr.type = 0 < number ? Type.getDescriptor(parameterTypes.get(number - 1)) : className;
 		expr.index = number;
 		return expr;
 	}
