@@ -51,7 +51,6 @@ public class FunCreator<I> implements Opcodes {
 	public final List<Class<?>> parameterTypes;
 	public final List<String> localTypes;
 
-	private Class<? extends I> clazz;
 	private Map<String, Pair<String, Object>> constants;
 	private Map<String, String> fields;
 	private MethodCreator mc = new MethodCreator();
@@ -82,8 +81,16 @@ public class FunCreator<I> implements Opcodes {
 		fields = Read.from2(fs).mapValue(Type::getDescriptor).toMap();
 	}
 
-	public void create(FunExpr expression) {
-		clazz = Rethrow.ex(() -> create_(expression));
+	public Fun<Map<String, Object>, I> create(FunExpr expression) {
+		Class<? extends I> clazz = Rethrow.ex(() -> create_(expression));
+
+		return fields -> Rethrow.reflectiveOperationException(() -> {
+			I t = clazz.newInstance();
+			for (Entry<String, Object> entry : fields.entrySet())
+				clazz.getDeclaredField(entry.getKey()).set(t, entry.getValue());
+			return t;
+		});
+
 	}
 
 	private Class<? extends I> create_(FunExpr expression) throws NoSuchMethodException {
@@ -246,19 +253,6 @@ public class FunCreator<I> implements Opcodes {
 
 	public FunExpr this_() {
 		return parameter(0);
-	}
-
-	public I instantiate() {
-		return instantiate(new HashMap<>());
-	}
-
-	public I instantiate(Map<String, Object> fields) {
-		return Rethrow.reflectiveOperationException(() -> {
-			I t = clazz.newInstance();
-			for (Entry<String, Object> entry : fields.entrySet())
-				clazz.getDeclaredField(entry.getKey()).set(t, entry.getValue());
-			return t;
-		});
 	}
 
 	private void visit(MethodVisitor mv, FunExpr e) {
