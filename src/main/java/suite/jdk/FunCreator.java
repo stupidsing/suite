@@ -214,7 +214,7 @@ public class FunCreator<I> implements Opcodes {
 		return expr;
 	}
 
-	public FunExpr ifInstance(FunExpr object, Class<?> clazz, Fun<FunExpr, FunExpr> then_, FunExpr else_) {
+	public FunExpr ifInstance(Class<?> clazz, FunExpr object, Fun<FunExpr, FunExpr> then_, FunExpr else_) {
 		return if_(object.instanceOf(clazz), local(object.checkCast(clazz), o_ -> then_.apply(o_)), else_);
 	}
 

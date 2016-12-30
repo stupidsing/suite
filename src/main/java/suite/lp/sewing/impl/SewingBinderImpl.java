@@ -115,16 +115,9 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 				.toMap();
 
 		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
-		FunExpr be = fc.parameter(1);
-		FunExpr n = fc.parameter(2);
-		FunExpr k0 = fc.field(key0);
 
-		return fc.create(fc.local(n.invoke("finalNode"), n_ -> fc.ifInstance(n_, Reference.class, //
-				ref -> {
-					FunExpr addBind = be.invoke("getTrail").invoke("addBind", ref, k0);
-					return fc.seq(addBind, fc.true_());
-				}, //
-				fc.ifeq(n_, k0, fc.true_(), fc.false_()))));
+		return bind(fc, //
+				n_ -> fc.ifeq(n_, fc.field(key0), fc.true_(), fc.false_()));
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindInt_() {
@@ -134,19 +127,11 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 				.toMap();
 
 		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
-		FunExpr be = fc.parameter(1);
-		FunExpr n = fc.parameter(2);
-		FunExpr k0 = fc.field(key0);
-		FunExpr k1 = fc.field(key1);
 
-		return fc.create(fc.local(n.invoke("finalNode"), n_ -> fc.ifInstance(n_, Reference.class, //
-				ref -> {
-					FunExpr addBind = be.invoke("getTrail").invoke("addBind", ref, k0);
-					return fc.seq(addBind, fc.true_());
-				}, //
-				fc.ifInstance(n, Int.class, //
-						i -> fc.ifeq(i.field("number", int.class), k1, fc.true_(), fc.false_()), //
-						fc.false_()))));
+		return bind(fc, //
+				n_ -> fc.ifInstance(Int.class, n_, //
+						i -> fc.ifeq(i.field("number"), fc.field(key1), fc.true_(), fc.false_()), //
+						fc.false_()));
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindStr_() {
@@ -156,20 +141,25 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 				.toMap();
 
 		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
+
+		return bind(fc, //
+				n_ -> fc.ifInstance(Str.class, n_, //
+						i -> fc.field(key1).invoke("equals", i.field("value").cast(Object.class)), //
+						fc.false_()));
+	}
+
+	private static Fun<Map<String, Object>, BindPredicate> bind(FunCreator<BindPredicate> fc, Fun<FunExpr, FunExpr> compare) {
 		FunExpr be = fc.parameter(1);
 		FunExpr n = fc.parameter(2);
 		FunExpr k0 = fc.field(key0);
-		FunExpr k1 = fc.field(key1);
 
-		return fc.create(fc.local(n.invoke("finalNode"), n_ -> fc.ifInstance(n_, Reference.class, //
-				ref -> {
-					FunExpr addBind = be.invoke("getTrail").invoke("addBind", ref, k0);
-					return fc.seq(addBind, fc.true_());
-				}, //
-				fc.ifInstance(n, Str.class, //
-						i -> k1.cast(Object.class) //
-								.invoke("equals", i.field("value", String.class).cast(Object.class)), //
-						fc.false_()))));
+		return fc.create(fc.local(n.invoke("finalNode"), //
+				n_ -> fc.ifInstance(Reference.class, n_, //
+						ref -> {
+							FunExpr addBind = be.invoke("getTrail").invoke("addBind", ref, k0);
+							return fc.seq(addBind, fc.true_());
+						}, //
+						compare.apply(n_))));
 	}
 
 	@SuppressWarnings("unused")

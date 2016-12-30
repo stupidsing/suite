@@ -1,5 +1,6 @@
 package suite.jdk;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,18 +30,17 @@ public class FunExpression {
 			return expr;
 		}
 
-		public FunExpr field(String field) {
-			return field(field, Rethrow.reflectiveOperationException(() -> clazz(type).getField(field)).getType());
+		public FunExpr field(String fieldName) {
+			return Rethrow.reflectiveOperationException(() -> {
+				Field field = clazz(type).getField(fieldName);
+				return cast(field.getDeclaringClass()).field(fieldName, Type.getDescriptor(field.getType()));
+			});
 		}
 
-		public FunExpr field(String field, Class<?> type) {
-			return field(field, Type.getDescriptor(type));
-		}
-
-		public FunExpr field(String field, String type) {
+		public FunExpr field(String fieldName, String type) {
 			FieldFunExpr expr = new FieldFunExpr();
 			expr.type = type;
-			expr.field = field;
+			expr.field = fieldName;
 			expr.object = this;
 			return expr;
 		}
@@ -61,12 +61,13 @@ public class FunExpression {
 				return clazz(type).getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
 			});
 
+			FunExpr cast = cast(method.getDeclaringClass());
 			String returnType = Type.getDescriptor(method.getReturnType());
 
 			if (method.getDeclaringClass().isInterface())
-				return invoke(Opcodes.INVOKEINTERFACE, methodName, returnType, parameters);
+				return cast.invoke(Opcodes.INVOKEINTERFACE, methodName, returnType, parameters);
 			else
-				return invoke(Opcodes.INVOKEVIRTUAL, methodName, returnType, parameters);
+				return cast.invoke(Opcodes.INVOKEVIRTUAL, methodName, returnType, parameters);
 		}
 
 		public FunExpr invoke(FunCreator<?> cc, FunExpr... parameters) {
