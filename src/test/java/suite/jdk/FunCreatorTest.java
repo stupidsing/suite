@@ -3,12 +3,12 @@ package suite.jdk;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.function.BiPredicate;
 
 import org.junit.Test;
 
-import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
 public class FunCreatorTest {
@@ -34,14 +34,14 @@ public class FunCreatorTest {
 		FunCreator<IntFun> fc = intFun(fieldName, int.class);
 		int result = fc //
 				.create(fc.add(fc.field(fieldName), fc.parameter(1))) //
-				.apply(Read.<String, Object> empty2().cons(fieldName, 1).toMap()) //
+				.apply(Collections.singletonMap(fieldName, 1)) //
 				.apply(5);
 		assertEquals(6, result);
 	}
 
 	@Test
 	public void testIf() {
-		FunCreator<IntFun> fc = FunCreator.of(IntFun.class, "apply");
+		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
 				.create(fc.if_(fc.true_(), fc.true_(), fc.false_())) //
 				.apply(new HashMap<>()) //
@@ -51,7 +51,7 @@ public class FunCreatorTest {
 
 	@Test
 	public void testLocal() {
-		FunCreator<IntFun> fc = FunCreator.of(IntFun.class, "apply");
+		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
 				.create(fc.local(fc.constant(1), l -> fc.add(l, fc.parameter(1)))) //
 				.apply(new HashMap<>()) //
@@ -78,15 +78,15 @@ public class FunCreatorTest {
 		FunCreator<IntFun> fc1 = intFun(fieldName1, IntFun.class);
 		IntFun f0 = fc0 //
 				.create(fc0.add(fc0.field(fieldName0), fc0.parameter(1))) //
-				.apply(Read.<String, Object> empty2().cons(fieldName0, 1).toMap());
+				.apply(Collections.singletonMap(fieldName0, 1));
 		IntFun f1 = fc1 //
 				.create(fc1.field(fieldName1).invoke(fc0, fc1.constant(3))) //
-				.apply(Read.<String, Object> empty2().cons(fieldName1, f0).toMap());
+				.apply(Collections.singletonMap(fieldName1, f0));
 		assertEquals(4, f1.apply(5));
 	}
 
 	private FunCreator<IntFun> intFun(String fieldName, Class<?> fieldType) {
-		return FunCreator.of(IntFun.class, "apply", Read.<String, Class<?>> empty2().cons(fieldName, fieldType).toMap());
+		return FunCreator.of(IntFun.class, "apply", Collections.singletonMap(fieldName, fieldType));
 	}
 
 }

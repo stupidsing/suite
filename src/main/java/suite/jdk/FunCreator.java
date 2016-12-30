@@ -55,8 +55,16 @@ public class FunCreator<I> implements Opcodes {
 	private Map<String, String> fields;
 	private MethodCreator mc = new MethodCreator();
 
+	public static <I> FunCreator<I> of(Class<I> ic) {
+		return of(ic, new HashMap<>());
+	}
+
 	public static <I> FunCreator<I> of(Class<I> ic, String mn) {
 		return of(ic, mn, new HashMap<>());
+	}
+
+	public static <I> FunCreator<I> of(Class<I> ic, Map<String, Class<?>> fs) {
+		return of(ic, Read.from(ic.getDeclaredMethods()).uniqueResult().getName(), fs);
 	}
 
 	public static <I> FunCreator<I> of(Class<I> ic, String mn, Map<String, Class<?>> fs) {

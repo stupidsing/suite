@@ -1,5 +1,6 @@
 package suite.lp.sewing.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -98,7 +99,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private BindPredicate compileBindAtom(Atom a) {
-		return compiledBindAtom.apply(Read.<String, Object> empty2().cons(key0, a).toMap());
+		return compiledBindAtom.apply(Collections.singletonMap(key0, a));
 	}
 
 	private BindPredicate compileBindInt(Int i) {
@@ -110,9 +111,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindAtom_() {
-		Map<String, Class<?>> fields = Read.<String, Class<?>> empty2() //
-				.cons(key0, Node.class) //
-				.toMap();
+		Map<String, Class<?>> fields = Collections.singletonMap(key0, Node.class);
 
 		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
 
