@@ -116,7 +116,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
 
 		return bind(fc, //
-				n_ -> fc.ifeq(n_, fc.field(key0), fc.true_(), fc.false_()));
+				n_ -> fc.ifeq(n_, fc.field(key0), fc._true(), fc._false()));
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindInt_() {
@@ -129,8 +129,8 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
 		return bind(fc, //
 				n_ -> fc.ifInstance(Int.class, n_, //
-						i -> fc.ifeq(i.field("number"), fc.field(key1), fc.true_(), fc.false_()), //
-						fc.false_()));
+						i -> fc.ifeq(i.field("number"), fc.field(key1), fc._true(), fc._false()), //
+						fc._false()));
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindStr_() {
@@ -144,7 +144,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		return bind(fc, //
 				n_ -> fc.ifInstance(Str.class, n_, //
 						i -> fc.field(key1).invoke("equals", i.field("value").cast(Object.class)), //
-						fc.false_()));
+						fc._false()));
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> bind(FunCreator<BindPredicate> fc, Fun<FunExpr, FunExpr> compare) {
@@ -156,7 +156,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 				n_ -> fc.ifInstance(Reference.class, n_, //
 						ref -> {
 							FunExpr addBind = be.invoke("getTrail").invoke("addBind", ref, k0);
-							return fc.seq(addBind, fc.true_());
+							return fc.seq(addBind, fc._true());
 						}, //
 						compare.apply(n_))));
 	}

@@ -23,7 +23,7 @@ public class FunCreatorTest {
 		FunCreator<BiPredicate> fc = FunCreator.of(BiPredicate.class, "test");
 		@SuppressWarnings("unchecked")
 		BiPredicate<Object, Object> bp = fc //
-				.create(fc.true_()) //
+				.create(fc._true()) //
 				.apply(new HashMap<>());
 		assertTrue(bp.test("Hello", "world"));
 	}
@@ -43,7 +43,7 @@ public class FunCreatorTest {
 	public void testIf() {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
-				.create(fc.if_(fc.true_(), fc.true_(), fc.false_())) //
+				.create(fc.if_(fc._true(), fc._true(), fc._false())) //
 				.apply(new HashMap<>()) //
 				.apply(0);
 		assertEquals(1, result);

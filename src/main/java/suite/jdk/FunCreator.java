@@ -149,36 +149,36 @@ public class FunCreator<I> implements Opcodes {
 		return clazz;
 	}
 
+	public FunExpr _true() {
+		return constant(1);
+	}
+
+	public FunExpr _false() {
+		return constant(0);
+	}
+
 	public FunExpr add(FunExpr e0, FunExpr e1) {
+		return bi(e0, e1, choose(e0.type, 0, DADD, FADD, IADD, LADD));
+	}
+
+	private FunExpr bi(FunExpr e0, FunExpr e1, int opcode) {
 		BinaryFunExpr expr = new BinaryFunExpr();
 		expr.type = e0.type;
-		expr.opcode = choose(expr.type, 0, DADD, FADD, IADD, LADD);
+		expr.opcode = opcode;
 		expr.left = e0;
 		expr.right = e1;
 		return expr;
 	}
 
-	public FunExpr true_() {
-		return constant(1);
-	}
-
-	public FunExpr false_() {
-		return constant(0);
-	}
-
 	public FunExpr constant(int i) {
-		return constant(i, int.class);
+		ConstantFunExpr expr = new ConstantFunExpr();
+		expr.type = Type.getDescriptor(int.class);
+		expr.constant = i;
+		return expr;
 	}
 
 	public FunExpr constant(Object object) {
 		return constantStatic(object, object != null ? object.getClass() : Object.class);
-	}
-
-	private FunExpr constant(Object object, Class<?> clazz) {
-		ConstantFunExpr expr = new ConstantFunExpr();
-		expr.type = Type.getDescriptor(clazz);
-		expr.constant = object;
-		return expr;
 	}
 
 	private FunExpr constantStatic(Object object, Class<?> clazz) {
