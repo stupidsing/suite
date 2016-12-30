@@ -161,7 +161,7 @@ public class FunCreator<I> implements Opcodes {
 		return bi(e0, e1, choose(e0.type, 0, DADD, FADD, IADD, LADD));
 	}
 
-	private FunExpr bi(FunExpr e0, FunExpr e1, int opcode) {
+	public FunExpr bi(FunExpr e0, FunExpr e1, int opcode) {
 		BinaryFunExpr expr = new BinaryFunExpr();
 		expr.type = e0.type;
 		expr.opcode = opcode;
@@ -179,18 +179,6 @@ public class FunCreator<I> implements Opcodes {
 
 	public FunExpr constant(Object object) {
 		return constantStatic(object, object != null ? object.getClass() : Object.class);
-	}
-
-	private FunExpr constantStatic(Object object, Class<?> clazz) {
-		String field = "f" + counter.getAndIncrement();
-		String type = Type.getDescriptor(clazz);
-		constants.put(field, Pair.of(type, object));
-
-		StaticFunExpr expr = new StaticFunExpr();
-		expr.clazzType = className;
-		expr.field = field;
-		expr.type = type;
-		return expr;
 	}
 
 	public FunExpr field(String field) {
@@ -261,6 +249,18 @@ public class FunCreator<I> implements Opcodes {
 
 	public FunExpr this_() {
 		return parameter(0);
+	}
+
+	private FunExpr constantStatic(Object object, Class<?> clazz) {
+		String field = "f" + counter.getAndIncrement();
+		String type = Type.getDescriptor(clazz);
+		constants.put(field, Pair.of(type, object));
+
+		StaticFunExpr expr = new StaticFunExpr();
+		expr.clazzType = className;
+		expr.field = field;
+		expr.type = type;
+		return expr;
 	}
 
 	private void visit(MethodVisitor mv, FunExpr e) {
