@@ -32,7 +32,7 @@ public class FunExpression {
 
 		public FunExpr field(String fieldName) {
 			return Rethrow.reflectiveOperationException(() -> {
-				Field field = clazz(type).getField(fieldName);
+				Field field = clazz().getField(fieldName);
 				return cast(field.getDeclaringClass()).field(fieldName, Type.getDescriptor(field.getType()));
 			});
 		}
@@ -57,8 +57,8 @@ public class FunExpression {
 			Method method = Rethrow.reflectiveOperationException(() -> {
 				List<Class<?>> parameterTypes = new ArrayList<>();
 				for (FunExpr parameter : parameters)
-					parameterTypes.add(clazz(parameter.type));
-				return clazz(type).getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
+					parameterTypes.add(parameter.clazz());
+				return clazz().getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
 			});
 
 			FunExpr cast = cast(method.getDeclaringClass());
@@ -84,7 +84,7 @@ public class FunExpression {
 			return expr;
 		}
 
-		private Class<?> clazz(String type) throws ClassNotFoundException {
+		private Class<?> clazz() throws ClassNotFoundException {
 			return Class.forName(Type.getType(type).getClassName());
 		}
 	}
