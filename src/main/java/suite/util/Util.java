@@ -134,8 +134,7 @@ public class Util {
 	}
 
 	public static long createDate(int year, int month, int day, int hour, int minute, int second) {
-		return ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneId.systemDefault()).toEpochSecond()
-				* 1000l;
+		return ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneId.systemDefault()).toEpochSecond() * 1000l;
 	}
 
 	public static ThreadPoolExecutor createExecutor() {

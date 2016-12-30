@@ -1,10 +1,14 @@
 package suite.jdk;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+
+import suite.util.Rethrow;
 
 public class FunExpression {
 
@@ -23,6 +27,10 @@ public class FunExpression {
 			expr.type = Type.getDescriptor(clazz);
 			expr.expr = this;
 			return expr;
+		}
+
+		public FunExpr field(String field) {
+			return field(field, Rethrow.reflectiveOperationException(() -> clazz(type).getField(field)).getType());
 		}
 
 		public FunExpr field(String field, Class<?> type) {
@@ -45,26 +53,38 @@ public class FunExpression {
 			return expr;
 		}
 
+		public FunExpr invoke(String methodName, FunExpr... parameters) {
+			Method method = Rethrow.reflectiveOperationException(() -> {
+				List<Class<?>> parameterTypes = new ArrayList<>();
+				for (FunExpr parameter : parameters)
+					parameterTypes.add(clazz(parameter.type));
+				return clazz(type).getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
+			});
+
+			String returnType = Type.getDescriptor(method.getReturnType());
+
+			if (method.getDeclaringClass().isInterface())
+				return invoke(Opcodes.INVOKEINTERFACE, methodName, returnType, parameters);
+			else
+				return invoke(Opcodes.INVOKEVIRTUAL, methodName, returnType, parameters);
+		}
+
 		public FunExpr invoke(FunCreator<?> cc, FunExpr... parameters) {
 			return invoke(Opcodes.INVOKEINTERFACE, cc.methodName, cc.returnType, parameters);
 		}
 
-		public FunExpr invokeInterface(String methodName, Class<?> clazz, FunExpr... parameters) {
-			return invoke(Opcodes.INVOKEINTERFACE, methodName, Type.getDescriptor(clazz), parameters);
-		}
-
-		public FunExpr invokeVirtual(String methodName, Class<?> clazz, FunExpr... parameters) {
-			return invoke(Opcodes.INVOKEVIRTUAL, methodName, Type.getDescriptor(clazz), parameters);
-		}
-
-		private FunExpr invoke(int opcode, String methodName, String type, FunExpr... parameters) {
+		private FunExpr invoke(int opcode, String methodName, String returnType, FunExpr... parameters) {
 			InvokeFunExpr expr = new InvokeFunExpr();
-			expr.type = type;
+			expr.type = returnType;
 			expr.methodName = methodName;
 			expr.object = this;
 			expr.opcode = opcode;
 			expr.parameters = Arrays.asList(parameters);
 			return expr;
+		}
+
+		private Class<?> clazz(String type) throws ClassNotFoundException {
+			return Class.forName(Type.getType(type).getClassName());
 		}
 	}
 

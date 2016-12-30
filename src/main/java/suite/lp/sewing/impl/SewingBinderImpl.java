@@ -5,7 +5,6 @@ import java.util.Map;
 
 import suite.jdk.FunCreator;
 import suite.jdk.FunExpression.FunExpr;
-import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.sewing.SewingBinder;
 import suite.node.Atom;
@@ -118,16 +117,14 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
 		FunExpr be = fc.parameter(1);
 		FunExpr n = fc.parameter(2);
-		FunExpr a_ = fc.field(key0);
+		FunExpr k0 = fc.field(key0);
 
-		return fc.create(fc.local(n.invokeVirtual("finalNode", Node.class), n_ -> fc.ifInstance(n_, Reference.class, //
+		return fc.create(fc.local(n.invoke("finalNode"), n_ -> fc.ifInstance(n_, Reference.class, //
 				ref -> {
-					FunExpr addBind = be //
-							.invokeInterface("getTrail", Trail.class) //
-							.invokeVirtual("addBind", void.class, ref, a_);
+					FunExpr addBind = be.invoke("getTrail").invoke("addBind", ref, k0);
 					return fc.seq(addBind, fc.true_());
 				}, //
-				fc.ifeq(n_, a_, fc.true_(), fc.false_()))));
+				fc.ifeq(n_, k0, fc.true_(), fc.false_()))));
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindInt_() {
@@ -142,11 +139,9 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		FunExpr k0 = fc.field(key0);
 		FunExpr k1 = fc.field(key1);
 
-		return fc.create(fc.local(n.invokeVirtual("finalNode", Node.class), n_ -> fc.ifInstance(n_, Reference.class, //
+		return fc.create(fc.local(n.invoke("finalNode"), n_ -> fc.ifInstance(n_, Reference.class, //
 				ref -> {
-					FunExpr addBind = be //
-							.invokeInterface("getTrail", Trail.class) //
-							.invokeVirtual("addBind", void.class, ref, k0);
+					FunExpr addBind = be.invoke("getTrail").invoke("addBind", ref, k0);
 					return fc.seq(addBind, fc.true_());
 				}, //
 				fc.ifInstance(n, Int.class, //
@@ -166,19 +161,18 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		FunExpr k0 = fc.field(key0);
 		FunExpr k1 = fc.field(key1);
 
-		return fc.create(fc.local(n.invokeVirtual("finalNode", Node.class), n_ -> fc.ifInstance(n_, Reference.class, //
+		return fc.create(fc.local(n.invoke("finalNode"), n_ -> fc.ifInstance(n_, Reference.class, //
 				ref -> {
-					FunExpr addBind = be //
-							.invokeInterface("getTrail", Trail.class) //
-							.invokeVirtual("addBind", void.class, ref, k0);
+					FunExpr addBind = be.invoke("getTrail").invoke("addBind", ref, k0);
 					return fc.seq(addBind, fc.true_());
 				}, //
 				fc.ifInstance(n, Str.class, //
 						i -> k1.cast(Object.class) //
-								.invokeVirtual("equals", boolean.class, i.field("value", String.class).cast(Object.class)), //
+								.invoke("equals", i.field("value", String.class).cast(Object.class)), //
 						fc.false_()))));
 	}
 
+	@SuppressWarnings("unused")
 	private BindPredicate compileBindAtom0(Atom a) {
 		return (be, n) -> {
 			Node n_ = n.finalNode();
@@ -190,6 +184,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		};
 	}
 
+	@SuppressWarnings("unused")
 	private BindPredicate compileBindInt0(Int i_) {
 		int i = i_.number;
 		return (be, n) -> {
@@ -202,6 +197,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		};
 	}
 
+	@SuppressWarnings("unused")
 	private BindPredicate compileBindStr0(Str str) {
 		String s = str.value;
 		return (be, n) -> {
