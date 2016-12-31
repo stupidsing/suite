@@ -242,7 +242,7 @@ public class FunCreator<I> implements Opcodes {
 
 	public FunExpr seq(FunExpr e0, FunExpr e1) {
 		SeqFunExpr expr = new SeqFunExpr();
-		expr.type = e0.type;
+		expr.type = e1.type;
 		expr.left = e0;
 		expr.right = e1;
 		return expr;
