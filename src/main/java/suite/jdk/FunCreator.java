@@ -30,7 +30,7 @@ import suite.jdk.FunExpression.If2FunExpr;
 import suite.jdk.FunExpression.IfFunExpr;
 import suite.jdk.FunExpression.InstanceOfFunExpr;
 import suite.jdk.FunExpression.InvokeFunExpr;
-import suite.jdk.FunExpression.ParameterFunExpr;
+import suite.jdk.FunExpression.LocalFunExpr;
 import suite.jdk.FunExpression.PrintlnFunExpr;
 import suite.jdk.FunExpression.SeqFunExpr;
 import suite.jdk.FunExpression.StaticFunExpr;
@@ -219,11 +219,11 @@ public class FunCreator<I> implements Opcodes {
 		int index = 1 + parameterTypes.size() + localTypes.size();
 		localTypes.add(value.type);
 
-		ParameterFunExpr pe = new ParameterFunExpr();
-		pe.type = value.type;
-		pe.index = index;
+		LocalFunExpr lfe = new LocalFunExpr();
+		lfe.type = value.type;
+		lfe.index = index;
 
-		FunExpr do_ = doFun.apply(pe);
+		FunExpr do_ = doFun.apply(lfe);
 
 		AssignFunExpr expr = new AssignFunExpr();
 		expr.type = do_.type;
@@ -234,7 +234,7 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public FunExpr parameter(int number) { // 0 means this
-		ParameterFunExpr expr = new ParameterFunExpr();
+		LocalFunExpr expr = new LocalFunExpr();
 		expr.type = 0 < number ? Type.getDescriptor(parameterTypes.get(number - 1)) : className;
 		expr.index = number;
 		return expr;
@@ -321,8 +321,8 @@ public class FunCreator<I> implements Opcodes {
 					expr.methodName, //
 					Type.getMethodDescriptor(Type.getType(expr.type), array), //
 					expr.opcode == Opcode.INVOKEINTERFACE);
-		} else if (e instanceof ParameterFunExpr) {
-			ParameterFunExpr expr = (ParameterFunExpr) e;
+		} else if (e instanceof LocalFunExpr) {
+			LocalFunExpr expr = (LocalFunExpr) e;
 			mv.visitVarInsn(choose(expr.type, ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.index);
 		} else if (e instanceof PrintlnFunExpr) {
 			PrintlnFunExpr expr = (PrintlnFunExpr) e;

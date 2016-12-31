@@ -146,7 +146,7 @@ public class FunExpression {
 		public List<FunExpr> parameters;
 	}
 
-	public static class ParameterFunExpr extends FunExpr {
+	public static class LocalFunExpr extends FunExpr {
 		public int index;
 	}
 
