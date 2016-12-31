@@ -89,6 +89,12 @@ public class FunExpression {
 		}
 	}
 
+	public static class AssignFunExpr extends FunExpr {
+		public int index;
+		public FunExpr value;
+		public FunExpr do_;
+	}
+
 	public static class BinaryFunExpr extends FunExpr {
 		public int opcode;
 		public FunExpr left, right;
@@ -138,13 +144,6 @@ public class FunExpression {
 		public String methodName;
 		public FunExpr object;
 		public List<FunExpr> parameters;
-	}
-
-	public static class LocalFunExpr extends FunExpr {
-		public int index;
-		public FunExpr value;
-		public FunExpr do_;
-
 	}
 
 	public static class ParameterFunExpr extends FunExpr {

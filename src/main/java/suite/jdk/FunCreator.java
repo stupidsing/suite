@@ -18,6 +18,7 @@ import org.objectweb.asm.Type;
 
 import javassist.bytecode.Opcode;
 import suite.adt.Pair;
+import suite.jdk.FunExpression.AssignFunExpr;
 import suite.jdk.FunExpression.BinaryFunExpr;
 import suite.jdk.FunExpression.CastFunExpr;
 import suite.jdk.FunExpression.CheckCastFunExpr;
@@ -29,7 +30,6 @@ import suite.jdk.FunExpression.If2FunExpr;
 import suite.jdk.FunExpression.IfFunExpr;
 import suite.jdk.FunExpression.InstanceOfFunExpr;
 import suite.jdk.FunExpression.InvokeFunExpr;
-import suite.jdk.FunExpression.LocalFunExpr;
 import suite.jdk.FunExpression.ParameterFunExpr;
 import suite.jdk.FunExpression.PrintlnFunExpr;
 import suite.jdk.FunExpression.SeqFunExpr;
@@ -198,7 +198,8 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public FunExpr ifeq(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
-		int ifInsn = !Util.stringEquals(left.type, Type.getDescriptor(int.class)) ? Opcodes.IF_ACMPNE : Opcodes.IF_ICMPNE;
+		int ifInsn = !Util.stringEquals(left.type, Type.getDescriptor(int.class)) ? Opcodes.IF_ACMPNE
+				: Opcodes.IF_ICMPNE;
 
 		If2FunExpr expr = new If2FunExpr();
 		expr.type = then_.type;
@@ -224,7 +225,7 @@ public class FunCreator<I> implements Opcodes {
 
 		FunExpr do_ = doFun.apply(pe);
 
-		LocalFunExpr expr = new LocalFunExpr();
+		AssignFunExpr expr = new AssignFunExpr();
 		expr.type = do_.type;
 		expr.index = index;
 		expr.value = value;
@@ -264,7 +265,12 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	private void visit(MethodVisitor mv, FunExpr e) {
-		if (e instanceof BinaryFunExpr) {
+		if (e instanceof AssignFunExpr) {
+			AssignFunExpr expr = (AssignFunExpr) e;
+			visit(mv, expr.value);
+			mv.visitVarInsn(choose(expr.value.type, ASTORE, DSTORE, FSTORE, ISTORE, LSTORE), expr.index);
+			visit(mv, expr.do_);
+		} else if (e instanceof BinaryFunExpr) {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
 			visit(mv, expr.left);
 			visit(mv, expr.right);
@@ -315,11 +321,6 @@ public class FunCreator<I> implements Opcodes {
 					expr.methodName, //
 					Type.getMethodDescriptor(Type.getType(expr.type), array), //
 					expr.opcode == Opcode.INVOKEINTERFACE);
-		} else if (e instanceof LocalFunExpr) {
-			LocalFunExpr expr = (LocalFunExpr) e;
-			visit(mv, expr.value);
-			mv.visitVarInsn(choose(expr.value.type, ASTORE, DSTORE, FSTORE, ISTORE, LSTORE), expr.index);
-			visit(mv, expr.do_);
 		} else if (e instanceof ParameterFunExpr) {
 			ParameterFunExpr expr = (ParameterFunExpr) e;
 			mv.visitVarInsn(choose(expr.type, ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.index);
