@@ -70,7 +70,7 @@ public class SewingExpressionImpl implements SewingExpression {
 									.cons(e0, Evaluate.class) //
 									.cons(e1, Evaluate.class) //
 									.toMap());
-					FunExpr env_ = fc0.parameter(0);
+					FunExpr env_ = fc0.parameter(1);
 					FunExpr v0 = fc0.field(e0).invoke("evaluate", env_);
 					FunExpr v1 = fc0.field(e1).invoke("evaluate", env_);
 					return fc0.create(fc0.bi(v0, v1, opcode));
