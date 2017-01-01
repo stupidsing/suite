@@ -90,9 +90,8 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public Fun<Map<String, Object>, I> create(FunExpr expression) {
-		Class<? extends I> clazz = Rethrow.ex(() -> create_(expression));
-
 		return fields -> Rethrow.reflectiveOperationException(() -> {
+			Class<? extends I> clazz = create_(expression);
 			I t = clazz.newInstance();
 			for (Entry<String, Object> entry : fields.entrySet())
 				clazz.getDeclaredField(entry.getKey()).set(t, entry.getValue());
