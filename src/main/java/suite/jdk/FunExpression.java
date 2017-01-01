@@ -13,9 +13,9 @@ import suite.util.Rethrow;
 
 public class FunExpression {
 
-	public static abstract class FunExpr {
-		protected String type; // type.getDescriptor()
+	private FunCreator<?> fc;
 
+	public abstract class FunExpr {
 		public FunExpr cast(Class<?> clazz) {
 			CastFunExpr expr = new CastFunExpr();
 			expr.type = Type.getDescriptor(clazz);
@@ -47,7 +47,6 @@ public class FunExpression {
 
 		public FunExpr instanceOf(Class<?> clazz) {
 			InstanceOfFunExpr expr = new InstanceOfFunExpr();
-			expr.type = Type.getDescriptor(boolean.class);
 			expr.instanceType = clazz;
 			expr.object = this;
 			return expr;
@@ -85,81 +84,91 @@ public class FunExpression {
 		}
 
 		private Class<?> clazz() throws ClassNotFoundException {
-			return Class.forName(Type.getType(type).getClassName());
+			return Class.forName(Type.getType(fc.type(this)).getClassName());
 		}
 	}
 
-	public static class AssignFunExpr extends FunExpr {
+	public class AssignFunExpr extends FunExpr {
 		public int index;
 		public FunExpr value;
 		public FunExpr do_;
 	}
 
-	public static class BinaryFunExpr extends FunExpr {
+	public class BinaryFunExpr extends FunExpr {
 		public int opcode;
 		public FunExpr left, right;
 	}
 
-	public static class CastFunExpr extends FunExpr {
+	public class CastFunExpr extends FunExpr {
+		public String type;
 		public FunExpr expr;
 	}
 
-	public static class CheckCastFunExpr extends FunExpr {
+	public class CheckCastFunExpr extends FunExpr {
+		public String type;
 		public FunExpr expr;
 	}
 
-	public static class ConstantFunExpr extends FunExpr {
+	public class ConstantFunExpr extends FunExpr {
+		public String type;
 		public Object constant; // primitives, class, handles etc.
 	}
 
-	public static class FieldFunExpr extends FunExpr {
+	public class FieldFunExpr extends FunExpr {
+		public String type;
 		public FunExpr object;
 		public String field;
 	}
 
-	public static class IfFunExpr extends FunExpr {
+	public class IfFunExpr extends FunExpr {
 		public int ifInsn;
 		public FunExpr then, else_;
 	}
 
-	public static class If1FunExpr extends IfFunExpr {
+	public class If1FunExpr extends IfFunExpr {
 		public FunExpr if_;
 	}
 
-	public static class If2FunExpr extends IfFunExpr {
+	public class If2FunExpr extends IfFunExpr {
 		public FunExpr left, right;
 	}
 
-	public static class InstanceOfFunExpr extends FunExpr {
+	public class InstanceOfFunExpr extends FunExpr {
 		public FunExpr object;
 		public Class<?> instanceType;
 	}
 
-	public static class InvokeFunExpr extends FunExpr {
+	public class InvokeFunExpr extends FunExpr {
+		public String type;
 		public int opcode;
 		public String methodName;
 		public FunExpr object;
 		public List<FunExpr> parameters;
 	}
 
-	public static class LocalFunExpr extends FunExpr {
+	public class LocalFunExpr extends FunExpr {
 		public int index;
 	}
 
-	public static class PrintlnFunExpr extends FunExpr {
+	public class PrintlnFunExpr extends FunExpr {
 		public FunExpr expression;
 	}
 
-	public static class SeqFunExpr extends FunExpr {
+	public class SeqFunExpr extends FunExpr {
 		public FunExpr left, right;
 	}
 
-	public static class StaticFunExpr extends FunExpr {
+	public class StaticFunExpr extends FunExpr {
+		public String type;
 		public String clazzType;
 		public String field;
 	}
 
-	public static class ThisFunExpr extends FunExpr {
+	public class ThisFunExpr extends FunExpr {
+	}
+
+	public FunExpression(FunCreator<?> fc) {
+		this.fc = fc;
 	}
 
 }

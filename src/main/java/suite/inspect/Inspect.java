@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import suite.streamlet.Read;
+import suite.util.FunUtil.Fun;
+import suite.util.Rethrow;
 import suite.util.Util;
 
 /**
@@ -40,6 +42,22 @@ public class Inspect {
 					}
 				}) //
 				.toList();
+	}
+
+	public <T> T rewrite(Class<T> baseClass, Fun<T, T> fun, T t) {
+		return Rethrow.reflectiveOperationException(() -> {
+			Class<?> clazz = t.getClass();
+			@SuppressWarnings("unchecked")
+			T expr1 = (T) clazz.newInstance();
+			for (Field field : new Inspect().fields(clazz)) {
+				Object value0 = field.get(t);
+				@SuppressWarnings("unchecked")
+				Object value1 = baseClass.isInstance(value0) ? rewrite(baseClass, fun, (T) value0) : value0;
+				field.set(expr1, value1);
+			}
+			T expr2 = fun.apply(expr1);
+			return expr2 != null ? expr2 : expr1;
+		});
 	}
 
 	public List<Field> fields(Class<?> clazz) {
