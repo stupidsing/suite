@@ -112,10 +112,6 @@ public class FunExpression {
 		public Object constant; // primitives, class, handles etc.
 	}
 
-	public static class SeqFunExpr extends FunExpr {
-		public FunExpr left, right;
-	}
-
 	public static class FieldFunExpr extends FunExpr {
 		public FunExpr object;
 		public String field;
@@ -152,6 +148,10 @@ public class FunExpression {
 
 	public static class PrintlnFunExpr extends FunExpr {
 		public FunExpr expression;
+	}
+
+	public static class SeqFunExpr extends FunExpr {
+		public FunExpr left, right;
 	}
 
 	public static class StaticFunExpr extends FunExpr {
