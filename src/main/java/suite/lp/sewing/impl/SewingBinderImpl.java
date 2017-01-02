@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import suite.jdk.FunCreator;
-import suite.jdk.FunExpression.FunExpr;
+import suite.jdk.gen.FunCreator;
+import suite.jdk.gen.FunExpression.FunExpr;
 import suite.lp.doer.Binder;
 import suite.lp.sewing.SewingBinder;
 import suite.node.Atom;

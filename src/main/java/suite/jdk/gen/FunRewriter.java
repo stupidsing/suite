@@ -1,15 +1,15 @@
-package suite.jdk;
+package suite.jdk.gen;
 
 import org.objectweb.asm.Opcodes;
 
 import suite.inspect.Inspect;
-import suite.jdk.FunExpression.ApplyFunExpr;
-import suite.jdk.FunExpression.AssignFunExpr;
-import suite.jdk.FunExpression.Declare1ParameterFunExpr;
-import suite.jdk.FunExpression.Declare2ParameterFunExpr;
-import suite.jdk.FunExpression.DeclareLocalFunExpr;
-import suite.jdk.FunExpression.FunExpr;
-import suite.jdk.FunExpression.LocalFunExpr;
+import suite.jdk.gen.FunExpression.ApplyFunExpr;
+import suite.jdk.gen.FunExpression.AssignFunExpr;
+import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
+import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
+import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
+import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.FunExpression.LocalFunExpr;
 
 public class FunRewriter {
 

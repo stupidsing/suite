@@ -1,4 +1,4 @@
-package suite.jdk;
+package suite.jdk.gen;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -9,6 +9,7 @@ import java.util.function.BiPredicate;
 
 import org.junit.Test;
 
+import suite.jdk.gen.FunCreator;
 import suite.util.FunUtil.Fun;
 
 public class FunCreatorTest {

@@ -1,4 +1,4 @@
-package suite.jdk;
+package suite.jdk.gen;
 
 import java.io.PrintStream;
 import java.lang.reflect.Method;
@@ -19,27 +19,27 @@ import org.objectweb.asm.Type;
 
 import javassist.bytecode.Opcode;
 import suite.adt.Pair;
-import suite.inspect.Inspect;
-import suite.jdk.FunExpression.AssignFunExpr;
-import suite.jdk.FunExpression.BinaryFunExpr;
-import suite.jdk.FunExpression.CastFunExpr;
-import suite.jdk.FunExpression.CheckCastFunExpr;
-import suite.jdk.FunExpression.ConstantFunExpr;
-import suite.jdk.FunExpression.Declare1ParameterFunExpr;
-import suite.jdk.FunExpression.Declare2ParameterFunExpr;
-import suite.jdk.FunExpression.DeclareLocalFunExpr;
-import suite.jdk.FunExpression.FieldFunExpr;
-import suite.jdk.FunExpression.FunExpr;
-import suite.jdk.FunExpression.If1FunExpr;
-import suite.jdk.FunExpression.If2FunExpr;
-import suite.jdk.FunExpression.IfFunExpr;
-import suite.jdk.FunExpression.InstanceOfFunExpr;
-import suite.jdk.FunExpression.InvokeFunExpr;
-import suite.jdk.FunExpression.LocalFunExpr;
-import suite.jdk.FunExpression.NoOperationFunExpr;
-import suite.jdk.FunExpression.PrintlnFunExpr;
-import suite.jdk.FunExpression.SeqFunExpr;
-import suite.jdk.FunExpression.StaticFunExpr;
+import suite.jdk.UnsafeUtil;
+import suite.jdk.gen.FunExpression.AssignFunExpr;
+import suite.jdk.gen.FunExpression.BinaryFunExpr;
+import suite.jdk.gen.FunExpression.CastFunExpr;
+import suite.jdk.gen.FunExpression.CheckCastFunExpr;
+import suite.jdk.gen.FunExpression.ConstantFunExpr;
+import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
+import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
+import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
+import suite.jdk.gen.FunExpression.FieldFunExpr;
+import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.FunExpression.If1FunExpr;
+import suite.jdk.gen.FunExpression.If2FunExpr;
+import suite.jdk.gen.FunExpression.IfFunExpr;
+import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
+import suite.jdk.gen.FunExpression.InvokeFunExpr;
+import suite.jdk.gen.FunExpression.LocalFunExpr;
+import suite.jdk.gen.FunExpression.NoOperationFunExpr;
+import suite.jdk.gen.FunExpression.PrintlnFunExpr;
+import suite.jdk.gen.FunExpression.SeqFunExpr;
+import suite.jdk.gen.FunExpression.StaticFunExpr;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
@@ -48,7 +48,6 @@ import suite.util.Util;
 public class FunCreator<I> implements Opcodes {
 
 	private static AtomicInteger counter = new AtomicInteger();
-	private static Inspect inspect = new Inspect();
 
 	public final Class<I> interfaceClass;
 	public final Class<?> superClass;
@@ -120,7 +119,7 @@ public class FunCreator<I> implements Opcodes {
 		Type types[] = Read.from(parameterTypes).map(Type::getType).toList().toArray(new Type[0]);
 
 		cw.visit(V1_8, //
-				ACC_PUBLIC + ACC_SUPER, //
+				ACC_PUBLIC | ACC_SUPER, //
 				className, //
 				null, //
 				Type.getInternalName(superClass), //

@@ -1,4 +1,4 @@
-package suite.jdk;
+package suite.jdk.gen;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -18,10 +18,10 @@ public class FunExpression {
 	public final FunCreator<?> fc;
 
 	public abstract class FunExpr {
-		public FunExpr apply(FunCreator<?> fc, FunExpr... parameters) {
+		public FunExpr apply(FunCreator<?> fun, FunExpr... parameters) {
 			ApplyFunExpr expr = new ApplyFunExpr();
 			expr.object = this;
-			expr.fun = fc;
+			expr.fun = fun;
 			expr.parameters = parameters;
 			return expr;
 		}

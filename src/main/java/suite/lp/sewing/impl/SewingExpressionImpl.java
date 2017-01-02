@@ -7,8 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.objectweb.asm.Opcodes;
 
 import suite.Suite;
-import suite.jdk.FunCreator;
-import suite.jdk.FunExpression.FunExpr;
+import suite.jdk.gen.FunCreator;
+import suite.jdk.gen.FunExpression.FunExpr;
 import suite.lp.predicate.EvalPredicates;
 import suite.lp.sewing.SewingCloner;
 import suite.lp.sewing.SewingExpression;

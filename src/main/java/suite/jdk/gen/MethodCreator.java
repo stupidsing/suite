@@ -1,4 +1,4 @@
-package suite.jdk;
+package suite.jdk.gen;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,7 +12,7 @@ import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
 
 import suite.editor.Listen.SinkEx;
-import suite.jdk.FunExpression.ConstantFunExpr;
+import suite.jdk.gen.FunExpression.ConstantFunExpr;
 import suite.util.Util;
 
 public class MethodCreator implements Opcodes {
