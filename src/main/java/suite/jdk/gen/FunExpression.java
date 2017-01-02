@@ -2,7 +2,6 @@ package suite.jdk.gen;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -10,6 +9,8 @@ import java.util.function.BiFunction;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
+import suite.jdk.JdkUtil;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 
@@ -18,10 +19,9 @@ public class FunExpression {
 	public final FunCreator<?> fc;
 
 	public abstract class FunExpr {
-		public FunExpr apply(FunCreator<?> fun, FunExpr... parameters) {
+		public FunExpr apply(FunExpr... parameters) {
 			ApplyFunExpr expr = new ApplyFunExpr();
 			expr.object = this;
-			expr.fun = fun;
 			expr.parameters = parameters;
 			return expr;
 		}
@@ -63,10 +63,9 @@ public class FunExpression {
 		}
 
 		public FunExpr invoke(String methodName, FunExpr... parameters) {
+			@SuppressWarnings("unchecked")
+			List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(parameters).map(FunExpr::clazz).toList();
 			Method method = Rethrow.reflectiveOperationException(() -> {
-				List<Class<?>> parameterTypes = new ArrayList<>();
-				for (FunExpr parameter : parameters)
-					parameterTypes.add(parameter.clazz());
 				return clazz().getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
 			});
 
@@ -89,14 +88,14 @@ public class FunExpression {
 			return expr;
 		}
 
-		private Class<?> clazz() throws ClassNotFoundException {
-			return Class.forName(Type.getType(fc.type(this)).getClassName());
+		protected Class<?> clazz() {
+			Type type = Type.getType(fc.type(this));
+			return JdkUtil.getClassByName(type.getClassName());
 		}
 	}
 
 	public class ApplyFunExpr extends FunExpr {
 		public FunExpr object;
-		public FunCreator<?> fun;
 		public FunExpr parameters[];
 	}
 
@@ -125,11 +124,15 @@ public class FunExpression {
 		public Object constant; // primitives, class, handles etc.
 	}
 
-	public class Declare1ParameterFunExpr extends FunExpr {
+	public class DeclareParameterFunExpr extends FunExpr {
+		public Class<?> interfaceClass;
+	}
+
+	public class Declare1ParameterFunExpr extends DeclareParameterFunExpr {
 		public Fun<FunExpr, FunExpr> doFun;
 	}
 
-	public class Declare2ParameterFunExpr extends FunExpr {
+	public class Declare2ParameterFunExpr extends DeclareParameterFunExpr {
 		public BiFunction<FunExpr, FunExpr, FunExpr> doFun;
 	}
 

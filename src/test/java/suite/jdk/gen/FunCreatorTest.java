@@ -9,7 +9,6 @@ import java.util.function.BiPredicate;
 
 import org.junit.Test;
 
-import suite.jdk.gen.FunCreator;
 import suite.util.FunUtil.Fun;
 
 public class FunCreatorTest {
@@ -28,7 +27,7 @@ public class FunCreatorTest {
 				.create(fc0.parameter(i -> fc0.add(fc0.field(fieldName0), i))) //
 				.apply(Collections.singletonMap(fieldName0, 1));
 		IntFun f1 = fc1 //
-				.create(fc1.field(fieldName1).apply(fc0, fc1.constant(3))) //
+				.create(fc1.field(fieldName1).apply(fc1.constant(3))) //
 				.apply(Collections.singletonMap(fieldName1, f0));
 		assertEquals(4, f1.apply(5));
 	}

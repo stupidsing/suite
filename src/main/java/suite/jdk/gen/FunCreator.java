@@ -19,7 +19,9 @@ import org.objectweb.asm.Type;
 
 import javassist.bytecode.Opcode;
 import suite.adt.Pair;
+import suite.jdk.JdkUtil;
 import suite.jdk.UnsafeUtil;
+import suite.jdk.gen.FunExpression.ApplyFunExpr;
 import suite.jdk.gen.FunExpression.AssignFunExpr;
 import suite.jdk.gen.FunExpression.BinaryFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
@@ -28,6 +30,7 @@ import suite.jdk.gen.FunExpression.ConstantFunExpr;
 import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
+import suite.jdk.gen.FunExpression.DeclareParameterFunExpr;
 import suite.jdk.gen.FunExpression.FieldFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
@@ -255,7 +258,10 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public String type(FunExpr e) {
-		if (e instanceof AssignFunExpr)
+		if (e instanceof ApplyFunExpr) {
+			ApplyFunExpr expr = (ApplyFunExpr) e;
+			return Type.getDescriptor(method(expr.object).getReturnType());
+		} else if (e instanceof AssignFunExpr)
 			return Type.getDescriptor(void.class);
 		else if (e instanceof BinaryFunExpr) {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
@@ -269,6 +275,12 @@ public class FunCreator<I> implements Opcodes {
 		} else if (e instanceof ConstantFunExpr) {
 			ConstantFunExpr expr = (ConstantFunExpr) e;
 			return expr.type;
+		} else if (e instanceof DeclareLocalFunExpr) {
+			DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
+			return type(expr.doFun.apply(expr.value));
+		} else if (e instanceof DeclareParameterFunExpr) {
+			DeclareParameterFunExpr expr = (DeclareParameterFunExpr) e;
+			return Type.getDescriptor(expr.interfaceClass);
 		} else if (e instanceof FieldFunExpr) {
 			FieldFunExpr expr = (FieldFunExpr) e;
 			return expr.type;
@@ -298,6 +310,12 @@ public class FunCreator<I> implements Opcodes {
 			return expr.type;
 		} else
 			throw new RuntimeException("Unknown expression " + e.getClass());
+	}
+
+	public Method method(FunExpr e) {
+		Type type = Type.getType(type(e));
+		Class<?> clazz = JdkUtil.getClassByName(type.getClassName());
+		return Read.from(clazz.getDeclaredMethods()).uniqueResult();
 	}
 
 	private FunExpr constantStatic(Object object, Class<?> clazz) {

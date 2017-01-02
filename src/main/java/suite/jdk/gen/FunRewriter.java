@@ -1,6 +1,9 @@
 package suite.jdk.gen;
 
+import java.lang.reflect.Method;
+
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
@@ -27,7 +30,12 @@ public class FunRewriter {
 		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, e -> {
 			if (e instanceof ApplyFunExpr) {
 				ApplyFunExpr expr = (ApplyFunExpr) e;
-				return expr.object.invoke(Opcodes.INVOKEINTERFACE, expr.fun.methodName, expr.fun.returnType, expr.parameters);
+				Method method = fc.method(expr.object);
+				return expr.object.invoke( //
+						Opcodes.INVOKEINTERFACE, //
+						method.getName(), //
+						Type.getDescriptor(method.getReturnType()), //
+						expr.parameters);
 			} else if (e instanceof Declare1ParameterFunExpr)
 				return fc.seq(fe.new NoOperationFunExpr(), ((Declare1ParameterFunExpr) e).doFun.apply(local(1)));
 			else if (e instanceof Declare2ParameterFunExpr)
