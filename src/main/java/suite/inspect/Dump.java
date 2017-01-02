@@ -12,17 +12,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import suite.util.FunUtil.Sink;
+
 public class Dump {
 
 	private Set<Integer> dumpedIds = new HashSet<>();
-	private StringBuilder sb = new StringBuilder();
+	private Sink<String> sink;
 
-	public Dump() {
-		this(new StringBuilder());
-	}
-
-	public Dump(StringBuilder sb) {
-		this.sb = sb;
+	public Dump(Sink<String> sink) {
+		this.sink = sink;
 	}
 
 	public static String object(Object object) {
@@ -47,7 +45,7 @@ public class Dump {
 	}
 
 	public static void object(StringBuilder sb, String prefix, Object object) {
-		new Dump(sb).d(prefix, object);
+		new Dump(sb::append).d(prefix, object);
 	}
 
 	private void d(String prefix, Object object) {
@@ -58,29 +56,29 @@ public class Dump {
 	}
 
 	private void d(String prefix, Object object, Class<?> clazz) {
-		sb.append(prefix);
-		sb.append(" =");
+		sink.sink(prefix);
+		sink.sink(" =");
 
 		if (object == null) {
-			sb.append(" null\n");
+			sink.sink(" null\n");
 			return;
 		}
 
 		int id = System.identityHashCode(object);
 
 		if (!dumpedIds.add(id)) {
-			sb.append(" <<recursed>>");
+			sink.sink(" <<recursed>>");
 			return;
 		}
 
 		try {
 			if (clazz == String.class)
-				sb.append(" \"" + object + "\"");
+				sink.sink(" \"" + object + "\"");
 
 			if (!Collection.class.isAssignableFrom(clazz))
-				sb.append(" " + object);
+				sink.sink(" " + object);
 
-			sb.append(" [" + clazz.getSimpleName() + "]\n");
+			sink.sink(" [" + clazz.getSimpleName() + "]\n");
 
 			// simple listings for simple classes
 			if (isSimpleType(clazz))
@@ -97,8 +95,8 @@ public class Dump {
 						else
 							d(prefix + "." + name, o);
 					} catch (Throwable ex) {
-						sb.append(prefix + "." + field.getName());
-						sb.append(" caught " + ex + "\n");
+						sink.sink(prefix + "." + field.getName());
+						sink.sink(" caught " + ex + "\n");
 					}
 
 			Set<String> displayedMethod = new HashSet<>();
@@ -118,8 +116,8 @@ public class Dump {
 						displayedMethod.add(name);
 					}
 				} catch (Throwable ex) {
-					sb.append(prefix + "." + name + "()");
-					sb.append(" caught " + ex + "\n");
+					sink.sink(prefix + "." + name + "()");
+					sink.sink(" caught " + ex + "\n");
 				}
 			}
 

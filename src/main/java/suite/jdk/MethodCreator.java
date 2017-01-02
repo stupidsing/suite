@@ -17,6 +17,10 @@ import suite.util.Util;
 
 public class MethodCreator implements Opcodes {
 
+	public void create(ClassWriter cw, String mn, String md, SinkEx<MethodVisitor, ReflectiveOperationException> sink) {
+		create(cw, mn, md, false, sink);
+	}
+
 	public void create(ClassWriter cw, String mn, String md, boolean isLog,
 			SinkEx<MethodVisitor, ReflectiveOperationException> sink) {
 		Textifier textifier = isLog ? new Textifier() : null;

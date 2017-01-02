@@ -118,8 +118,6 @@ public class FunCreator<I> implements Opcodes {
 				return null;
 		}, expr0);
 
-		Util.dump(expr1);
-
 		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create_(expr1));
 
 		return fields -> Rethrow.reflectiveOperationException(() -> {
@@ -148,7 +146,7 @@ public class FunCreator<I> implements Opcodes {
 		for (Entry<String, String> entry : fields.entrySet())
 			cw.visitField(ACC_PUBLIC, entry.getKey(), entry.getValue(), null, null).visitEnd();
 
-		mc.create(cw, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE), false, mv -> {
+		mc.create(cw, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE), mv -> {
 			String cd = Type.getConstructorDescriptor(superClass.getConstructor());
 
 			mv.visitVarInsn(ALOAD, 0);
@@ -157,7 +155,7 @@ public class FunCreator<I> implements Opcodes {
 			mv.visitMaxs(1, 1);
 		});
 
-		mc.create(cw, methodName, Type.getMethodDescriptor(Type.getType(returnType), types), true, mv -> {
+		mc.create(cw, methodName, Type.getMethodDescriptor(Type.getType(returnType), types), mv -> {
 			visit(mv, expression);
 			mv.visitInsn(choose(returnType, ARETURN, DRETURN, FRETURN, IRETURN, LRETURN));
 			mv.visitMaxs(0, localTypes.size());
