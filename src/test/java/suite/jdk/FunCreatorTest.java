@@ -33,7 +33,7 @@ public class FunCreatorTest {
 		String fieldName = "f";
 		FunCreator<IntFun> fc = intFun(fieldName, int.class);
 		int result = fc //
-				.create(fc.add(fc.field(fieldName), fc.parameter(1))) //
+				.create(fc.parameter(i -> fc.add(fc.field(fieldName), i))) //
 				.apply(Collections.singletonMap(fieldName, 1)) //
 				.apply(5);
 		assertEquals(6, result);
@@ -53,7 +53,7 @@ public class FunCreatorTest {
 	public void testLocal() {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
-				.create(fc.local(fc.constant(1), l -> fc.add(l, fc.parameter(1)))) //
+				.create(fc.parameter(p -> fc.declare(fc.constant(1), l -> fc.add(l, p)))) //
 				.apply(new HashMap<>()) //
 				.apply(3);
 		assertEquals(4, result);
@@ -64,9 +64,7 @@ public class FunCreatorTest {
 		@SuppressWarnings("rawtypes")
 		FunCreator<Fun> fc = FunCreator.of(Fun.class, "apply");
 		@SuppressWarnings("unchecked")
-		Fun<Object, Object> fun = fc //
-				.create(fc.parameter(1)) //
-				.apply(new HashMap<>());
+		Fun<Object, Object> fun = fc.create(fc.parameter(o -> o)).apply(new HashMap<>());
 		assertEquals("Hello", fun.apply("Hello"));
 	}
 
@@ -77,7 +75,7 @@ public class FunCreatorTest {
 		FunCreator<IntFun> fc0 = intFun(fieldName0, int.class);
 		FunCreator<IntFun> fc1 = intFun(fieldName1, IntFun.class);
 		IntFun f0 = fc0 //
-				.create(fc0.add(fc0.field(fieldName0), fc0.parameter(1))) //
+				.create(fc0.parameter(i -> fc0.add(fc0.field(fieldName0), i))) //
 				.apply(Collections.singletonMap(fieldName0, 1));
 		IntFun f1 = fc1 //
 				.create(fc1.field(fieldName1).invoke(fc0, fc1.constant(3))) //

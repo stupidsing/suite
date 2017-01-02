@@ -148,17 +148,15 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> bind(FunCreator<BindPredicate> fc, Fun<FunExpr, FunExpr> compare) {
-		FunExpr be = fc.parameter(1);
-		FunExpr n = fc.parameter(2);
 		FunExpr k0 = fc.field(key0);
 
-		return fc.create(fc.local(n.invoke("finalNode"), //
+		return fc.create(fc.parameter2((be, n) -> fc.declare(n.invoke("finalNode"), //
 				n_ -> fc.ifInstance(Reference.class, n_, //
 						ref -> {
 							FunExpr addBind = be.invoke("getTrail").invoke("addBind", ref, k0);
 							return fc.seq(addBind, fc._true());
 						}, //
-						compare.apply(n_))));
+						compare.apply(n_)))));
 	}
 
 	@SuppressWarnings("unused")

@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -114,6 +115,14 @@ public class FunExpression {
 		public Object constant; // primitives, class, handles etc.
 	}
 
+	public class Declare1ParameterFunExpr extends FunExpr {
+		public Fun<FunExpr, FunExpr> doFun;
+	}
+
+	public class Declare2ParameterFunExpr extends FunExpr {
+		public BiFunction<FunExpr, FunExpr, FunExpr> doFun;
+	}
+
 	public class DeclareLocalFunExpr extends FunExpr {
 		public FunExpr value;
 		public Fun<FunExpr, FunExpr> doFun;
@@ -155,6 +164,9 @@ public class FunExpression {
 		public int index;
 	}
 
+	public class NoOperationFunExpr extends FunExpr {
+	}
+
 	public class PrintlnFunExpr extends FunExpr {
 		public FunExpr expression;
 	}
@@ -167,9 +179,6 @@ public class FunExpression {
 		public String type;
 		public String clazzType;
 		public String field;
-	}
-
-	public class ThisFunExpr extends FunExpr {
 	}
 
 	public FunExpression(FunCreator<?> fc) {

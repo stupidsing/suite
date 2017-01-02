@@ -44,6 +44,10 @@ public class Inspect {
 				.toList();
 	}
 
+	public <T> T rewrite(Class<T> baseClass, Fun<T, T> fun, T t0) {
+		return rewrite(baseClass, null, fun, t0);
+	}
+
 	public <T> T rewrite(Class<T> baseClass, Object ctorParameters[], Fun<T, T> fun, T t0) {
 		return Rethrow.reflectiveOperationException(() -> {
 			T t1 = fun.apply(t0);
