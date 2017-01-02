@@ -44,19 +44,20 @@ public class Inspect {
 				.toList();
 	}
 
-	public <T> T rewrite(Class<T> baseClass, Fun<T, T> fun, T t) {
+	public <T> T rewrite(Class<T> baseClass, Object ctorParameters[], Fun<T, T> fun, T t0) {
 		return Rethrow.reflectiveOperationException(() -> {
-			Class<?> clazz = t.getClass();
+			T t1 = fun.apply(t0);
+			T t2 = t1 != null ? t1 : t0;
+			Class<?> clazz = t2.getClass();
 			@SuppressWarnings("unchecked")
-			T expr1 = (T) clazz.newInstance();
-			for (Field field : new Inspect().fields(clazz)) {
-				Object value0 = field.get(t);
+			T t3 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance(ctorParameters);
+			for (Field field : fields(clazz)) {
+				Object value0 = field.get(t2);
 				@SuppressWarnings("unchecked")
-				Object value1 = baseClass.isInstance(value0) ? rewrite(baseClass, fun, (T) value0) : value0;
-				field.set(expr1, value1);
+				Object value1 = baseClass.isInstance(value0) ? rewrite(baseClass, ctorParameters, fun, (T) value0) : value0;
+				field.set(t3, value1);
 			}
-			T expr2 = fun.apply(expr1);
-			return expr2 != null ? expr2 : expr1;
+			return t3;
 		});
 	}
 

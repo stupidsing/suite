@@ -41,9 +41,9 @@ public class Dump {
 	 *            The monster.
 	 */
 	public static String object(String prefix, Object object) {
-		Dump dump = new Dump();
-		dump.d(prefix, object);
-		return dump.sb.toString();
+		StringBuilder sb = new StringBuilder();
+		object(sb, prefix, object);
+		return sb.toString();
 	}
 
 	public static void object(StringBuilder sb, String prefix, Object object) {
@@ -82,7 +82,7 @@ public class Dump {
 
 			sb.append(" [" + clazz.getSimpleName() + "]\n");
 
-			// some easy classes do not require windy listings
+			// simple listings for simple classes
 			if (isSimpleType(clazz))
 				return;
 
@@ -154,7 +154,11 @@ public class Dump {
 	 * Types that do not require per-member dump.
 	 */
 	private static boolean isSimpleType(Class<?> clazz) {
-		return clazz.isPrimitive() || clazz == String.class || clazz == Date.class || clazz == Timestamp.class;
+		return clazz.isPrimitive() //
+				|| clazz == Class.class //
+				|| clazz == Date.class //
+				|| clazz == String.class //
+				|| clazz == Timestamp.class;
 	}
 
 }

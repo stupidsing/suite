@@ -9,6 +9,7 @@ import java.util.List;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
+import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 
 public class FunExpression {
@@ -91,7 +92,6 @@ public class FunExpression {
 	public class AssignFunExpr extends FunExpr {
 		public int index;
 		public FunExpr value;
-		public FunExpr do_;
 	}
 
 	public class BinaryFunExpr extends FunExpr {
@@ -112,6 +112,11 @@ public class FunExpression {
 	public class ConstantFunExpr extends FunExpr {
 		public String type;
 		public Object constant; // primitives, class, handles etc.
+	}
+
+	public class DeclareLocalFunExpr extends FunExpr {
+		public FunExpr value;
+		public Fun<FunExpr, FunExpr> doFun;
 	}
 
 	public class FieldFunExpr extends FunExpr {

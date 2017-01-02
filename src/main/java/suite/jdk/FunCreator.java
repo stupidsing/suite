@@ -18,11 +18,13 @@ import org.objectweb.asm.Type;
 
 import javassist.bytecode.Opcode;
 import suite.adt.Pair;
+import suite.inspect.Inspect;
 import suite.jdk.FunExpression.AssignFunExpr;
 import suite.jdk.FunExpression.BinaryFunExpr;
 import suite.jdk.FunExpression.CastFunExpr;
 import suite.jdk.FunExpression.CheckCastFunExpr;
 import suite.jdk.FunExpression.ConstantFunExpr;
+import suite.jdk.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.FunExpression.FieldFunExpr;
 import suite.jdk.FunExpression.FunExpr;
 import suite.jdk.FunExpression.If1FunExpr;
@@ -96,8 +98,29 @@ public class FunCreator<I> implements Opcodes {
 		fe = new FunExpression(this);
 	}
 
-	public Fun<Map<String, Object>, I> create(FunExpr expression) {
-		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create_(expression));
+	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
+		FunExpr expr1 = new Inspect().rewrite(FunExpr.class, new Object[] { fe, }, e -> {
+			if (e instanceof DeclareLocalFunExpr) {
+				DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
+
+				int index = localTypes.size();
+				localTypes.add(type(expr.value));
+
+				LocalFunExpr lfe = fe.new LocalFunExpr();
+				lfe.index = index;
+
+				AssignFunExpr afe = fe.new AssignFunExpr();
+				afe.index = index;
+				afe.value = expr.value;
+
+				return seq(afe, expr.doFun.apply(lfe));
+			} else
+				return null;
+		}, expr0);
+
+		Util.dump(expr1);
+
+		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create_(expr1));
 
 		return fields -> Rethrow.reflectiveOperationException(() -> {
 			I t = clazz.newInstance();
@@ -219,18 +242,9 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public FunExpr local(FunExpr value, Fun<FunExpr, FunExpr> doFun) {
-		int index = localTypes.size();
-		localTypes.add(type(value));
-
-		LocalFunExpr lfe = fe.new LocalFunExpr();
-		lfe.index = index;
-
-		FunExpr do_ = doFun.apply(lfe);
-
-		AssignFunExpr expr = fe.new AssignFunExpr();
-		expr.index = index;
+		DeclareLocalFunExpr expr = fe.new DeclareLocalFunExpr();
 		expr.value = value;
-		expr.do_ = do_;
+		expr.doFun = doFun;
 		return expr;
 	}
 
@@ -252,10 +266,9 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public String type(FunExpr e) {
-		if (e instanceof AssignFunExpr) {
-			AssignFunExpr expr = (AssignFunExpr) e;
-			return type(expr.do_);
-		} else if (e instanceof BinaryFunExpr) {
+		if (e instanceof AssignFunExpr)
+			return Type.getDescriptor(void.class);
+		else if (e instanceof BinaryFunExpr) {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
 			return type(expr.left);
 		} else if (e instanceof CastFunExpr) {
@@ -313,7 +326,6 @@ public class FunCreator<I> implements Opcodes {
 			AssignFunExpr expr = (AssignFunExpr) e;
 			visit(mv, expr.value);
 			mv.visitVarInsn(choose(type(expr.value), ASTORE, DSTORE, FSTORE, ISTORE, LSTORE), expr.index);
-			visit(mv, expr.do_);
 		} else if (e instanceof BinaryFunExpr) {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
 			visit(mv, expr.left);

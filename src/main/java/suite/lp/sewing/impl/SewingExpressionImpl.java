@@ -20,7 +20,9 @@ import suite.util.FunUtil.Fun;
 
 public class SewingExpressionImpl implements SewingExpression {
 
-	private static Map<Integer, Fun<Map<String, Object>, Evaluate>> funCreatorByOpcode = new ConcurrentHashMap<>();
+	private static String key = "key";
+	private static Fun<Map<String, Object>, Evaluate> compiledNumber = compileNumber(key);
+	private static Map<Integer, Fun<Map<String, Object>, Evaluate>> compiledByOpcode = new ConcurrentHashMap<>();
 	private SewingCloner sc;
 
 	public interface Evaluate {
@@ -50,20 +52,23 @@ public class SewingExpressionImpl implements SewingExpression {
 			return compileOperator(m, Opcodes.ISHL);
 		else if ((m = Suite.matcher(".0 shr .1").apply(node)) != null)
 			return compileOperator(m, Opcodes.ISHR);
-		else if (node instanceof Int) {
-			String i_ = "i";
-			FunCreator<Evaluate> fc = FunCreator.of(Evaluate.class, Collections.singletonMap(i_, int.class));
-			return fc.create(fc.field(i_)).apply(Collections.singletonMap(i_, ((Int) node).number));
-		} else {
+		else if (node instanceof Int)
+			return compiledNumber.apply(Collections.singletonMap(key, ((Int) node).number));
+		else {
 			Fun<Env, Node> f = sc.compile(node);
 			return env -> new EvalPredicates().evaluate(f.apply(env));
 		}
 	}
 
+	private static Fun<Map<String, Object>, Evaluate> compileNumber(String key) {
+		FunCreator<Evaluate> fc = FunCreator.of(Evaluate.class, Collections.singletonMap(key, int.class));
+		return fc.create(fc.field(key));
+	}
+
 	private Evaluate compileOperator(Node m[], int opcode) {
 		String e0 = "e0", e1 = "e1";
 
-		Fun<Map<String, Object>, Evaluate> fc1 = funCreatorByOpcode //
+		Fun<Map<String, Object>, Evaluate> fc1 = compiledByOpcode //
 				.computeIfAbsent(opcode, opcode_ -> {
 					FunCreator<Evaluate> fc0 = FunCreator.of(Evaluate.class,
 							Read.<String, Class<?>> empty2() //
