@@ -104,25 +104,7 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
-		FunExpr expr1 = inspect.rewrite(FunExpr.class, new Object[] { fe, }, e -> {
-			if (e instanceof Declare1ParameterFunExpr)
-				return seq(fe.new NoOperationFunExpr(), ((Declare1ParameterFunExpr) e).doFun.apply(local(1)));
-			else if (e instanceof Declare2ParameterFunExpr)
-				return seq(fe.new NoOperationFunExpr(), ((Declare2ParameterFunExpr) e).doFun.apply(local(1), local(2)));
-			else if (e instanceof DeclareLocalFunExpr) {
-				DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
-				int index = localTypes.size();
-				localTypes.add(type(expr.value));
-
-				AssignFunExpr afe = fe.new AssignFunExpr();
-				afe.index = index;
-				afe.value = expr.value;
-
-				return seq(afe, expr.doFun.apply(local(index)));
-			} else
-				return null;
-		}, expr0);
-
+		FunExpr expr1 = new FunRewriter(fe).rewrite(expr0);
 		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create_(expr1));
 
 		return fields -> Rethrow.reflectiveOperationException(() -> {
@@ -131,7 +113,6 @@ public class FunCreator<I> implements Opcodes {
 				clazz.getDeclaredField(entry.getKey()).set(t, entry.getValue());
 			return t;
 		});
-
 	}
 
 	private Class<? extends I> create_(FunExpr expression) throws NoSuchMethodException {
@@ -249,12 +230,6 @@ public class FunCreator<I> implements Opcodes {
 
 	public FunExpr ifInstance(Class<?> clazz, FunExpr object, Fun<FunExpr, FunExpr> then_, FunExpr else_) {
 		return if_(object.instanceOf(clazz), declare(object.checkCast(clazz), o_ -> then_.apply(o_)), else_);
-	}
-
-	public FunExpr local(int number) { // 0 means this
-		LocalFunExpr expr = fe.new LocalFunExpr();
-		expr.index = number;
-		return expr;
 	}
 
 	public FunExpr parameter(Fun<FunExpr, FunExpr> doFun) {
@@ -428,6 +403,12 @@ public class FunCreator<I> implements Opcodes {
 		mv.visitLabel(l0);
 		visit(mv, expr.else_);
 		mv.visitLabel(l1);
+	}
+
+	private FunExpr local(int number) { // 0 means this
+		LocalFunExpr expr = fe.new LocalFunExpr();
+		expr.index = number;
+		return expr;
 	}
 
 	private int choose(String type, int a, int d, int f, int i, int l) {

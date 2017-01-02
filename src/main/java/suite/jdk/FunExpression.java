@@ -15,9 +15,17 @@ import suite.util.Rethrow;
 
 public class FunExpression {
 
-	private FunCreator<?> fc;
+	public final FunCreator<?> fc;
 
 	public abstract class FunExpr {
+		public FunExpr apply(FunCreator<?> fc, FunExpr... parameters) {
+			ApplyFunExpr expr = new ApplyFunExpr();
+			expr.object = this;
+			expr.fun = fc;
+			expr.parameters = parameters;
+			return expr;
+		}
+
 		public FunExpr cast(Class<?> clazz) {
 			CastFunExpr expr = new CastFunExpr();
 			expr.type = Type.getDescriptor(clazz);
@@ -71,11 +79,7 @@ public class FunExpression {
 				return cast.invoke(Opcodes.INVOKEVIRTUAL, methodName, returnType, parameters);
 		}
 
-		public FunExpr invoke(FunCreator<?> cc, FunExpr... parameters) {
-			return invoke(Opcodes.INVOKEINTERFACE, cc.methodName, cc.returnType, parameters);
-		}
-
-		private FunExpr invoke(int opcode, String methodName, String returnType, FunExpr... parameters) {
+		public FunExpr invoke(int opcode, String methodName, String returnType, FunExpr... parameters) {
 			InvokeFunExpr expr = new InvokeFunExpr();
 			expr.type = returnType;
 			expr.methodName = methodName;
@@ -88,6 +92,12 @@ public class FunExpression {
 		private Class<?> clazz() throws ClassNotFoundException {
 			return Class.forName(Type.getType(fc.type(this)).getClassName());
 		}
+	}
+
+	public class ApplyFunExpr extends FunExpr {
+		public FunExpr object;
+		public FunCreator<?> fun;
+		public FunExpr parameters[];
 	}
 
 	public class AssignFunExpr extends FunExpr {

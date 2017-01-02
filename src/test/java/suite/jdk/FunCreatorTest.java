@@ -18,6 +18,21 @@ public class FunCreatorTest {
 	}
 
 	@Test
+	public void testApply() {
+		String fieldName0 = "f0";
+		String fieldName1 = "f1";
+		FunCreator<IntFun> fc0 = intFun(fieldName0, int.class);
+		FunCreator<IntFun> fc1 = intFun(fieldName1, IntFun.class);
+		IntFun f0 = fc0 //
+				.create(fc0.parameter(i -> fc0.add(fc0.field(fieldName0), i))) //
+				.apply(Collections.singletonMap(fieldName0, 1));
+		IntFun f1 = fc1 //
+				.create(fc1.field(fieldName1).apply(fc0, fc1.constant(3))) //
+				.apply(Collections.singletonMap(fieldName1, f0));
+		assertEquals(4, f1.apply(5));
+	}
+
+	@Test
 	public void testBiPredicate() {
 		@SuppressWarnings("rawtypes")
 		FunCreator<BiPredicate> fc = FunCreator.of(BiPredicate.class, "test");
@@ -66,21 +81,6 @@ public class FunCreatorTest {
 		@SuppressWarnings("unchecked")
 		Fun<Object, Object> fun = fc.create(fc.parameter(o -> o)).apply(new HashMap<>());
 		assertEquals("Hello", fun.apply("Hello"));
-	}
-
-	@Test
-	public void testInvoke() {
-		String fieldName0 = "f0";
-		String fieldName1 = "f1";
-		FunCreator<IntFun> fc0 = intFun(fieldName0, int.class);
-		FunCreator<IntFun> fc1 = intFun(fieldName1, IntFun.class);
-		IntFun f0 = fc0 //
-				.create(fc0.parameter(i -> fc0.add(fc0.field(fieldName0), i))) //
-				.apply(Collections.singletonMap(fieldName0, 1));
-		IntFun f1 = fc1 //
-				.create(fc1.field(fieldName1).invoke(fc0, fc1.constant(3))) //
-				.apply(Collections.singletonMap(fieldName1, f0));
-		assertEquals(4, f1.apply(5));
 	}
 
 	private FunCreator<IntFun> intFun(String fieldName, Class<?> fieldType) {
