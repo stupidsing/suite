@@ -12,7 +12,6 @@ import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.jdk.gen.FunExpression.LocalFunExpr;
 
 public class FunRewriter {
 
@@ -37,9 +36,9 @@ public class FunRewriter {
 						Type.getDescriptor(method.getReturnType()), //
 						expr.parameters);
 			} else if (e instanceof Declare1ParameterFunExpr)
-				return fc.seq(fe.new NoOperationFunExpr(), ((Declare1ParameterFunExpr) e).doFun.apply(local(1)));
+				return fc.seq(fe.new NoOperationFunExpr(), ((Declare1ParameterFunExpr) e).doFun.apply(fc.local(1)));
 			else if (e instanceof Declare2ParameterFunExpr)
-				return fc.seq(fe.new NoOperationFunExpr(), ((Declare2ParameterFunExpr) e).doFun.apply(local(1), local(2)));
+				return fc.seq(fe.new NoOperationFunExpr(), ((Declare2ParameterFunExpr) e).doFun.apply(fc.local(1), fc.local(2)));
 			else if (e instanceof DeclareLocalFunExpr) {
 				DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
 				int index = fc.localTypes.size();
@@ -49,16 +48,10 @@ public class FunRewriter {
 				afe.index = index;
 				afe.value = expr.value;
 
-				return fc.seq(afe, expr.doFun.apply(local(index)));
+				return fc.seq(afe, expr.doFun.apply(fc.local(index)));
 			} else
 				return null;
 		}, expr0);
-	}
-
-	private FunExpr local(int number) { // 0 means this
-		LocalFunExpr expr = fe.new LocalFunExpr();
-		expr.index = number;
-		return expr;
 	}
 
 }

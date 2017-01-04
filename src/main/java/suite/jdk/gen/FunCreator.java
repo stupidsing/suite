@@ -234,6 +234,12 @@ public class FunCreator<I> implements Opcodes {
 		return if_(object.instanceOf(clazz), declare(object.checkCast(clazz), o_ -> then_.apply(o_)), else_);
 	}
 
+	public FunExpr local(int number) { // 0 means this
+		LocalFunExpr expr = fe.new LocalFunExpr();
+		expr.index = number;
+		return expr;
+	}
+
 	public FunExpr parameter(Fun<FunExpr, FunExpr> doFun) {
 		Declare1ParameterFunExpr expr = fe.new Declare1ParameterFunExpr();
 		expr.doFun = doFun;
@@ -420,12 +426,6 @@ public class FunCreator<I> implements Opcodes {
 		mv.visitLabel(l0);
 		visit(mv, expr.else_);
 		mv.visitLabel(l1);
-	}
-
-	private FunExpr local(int number) { // 0 means this
-		LocalFunExpr expr = fe.new LocalFunExpr();
-		expr.index = number;
-		return expr;
 	}
 
 	private int choose(String type, int a, int d, int f, int i, int l) {
