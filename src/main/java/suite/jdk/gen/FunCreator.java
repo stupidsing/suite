@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
@@ -56,12 +57,12 @@ public class FunCreator<I> implements Opcodes {
 	public final Class<?> superClass;
 	public final String className;
 	public final String methodName;
-	public final String returnType;
+	public final Type returnType;
 	public final List<Class<?>> parameterTypes;
-	public final List<String> localTypes;
+	public final List<Type> localTypes;
 
-	private Map<String, Pair<String, Object>> constants;
-	private Map<String, String> fields;
+	private Map<String, Pair<Type, Object>> constants;
+	private Map<String, Type> fields;
 	private MethodCreator mc;
 	private FunExpression fe;
 
@@ -82,12 +83,12 @@ public class FunCreator<I> implements Opcodes {
 		Method method = Read.from(methods).filter(m -> Util.stringEquals(m.getName(), mn)).uniqueResult();
 		Class<?> rt = method.getReturnType();
 		Class<?> pts[] = method.getParameterTypes();
-		String rt1 = Type.getDescriptor(rt);
+		Type rt1 = Type.getType(rt);
 		List<Class<?>> pts1 = Arrays.asList(pts);
 		return new FunCreator<>(ic, mn, rt1, pts1, fs);
 	}
 
-	private FunCreator(Class<I> ic, String mn, String rt, List<Class<?>> ps, Map<String, Class<?>> fs) {
+	private FunCreator(Class<I> ic, String mn, Type rt, List<Class<?>> ps, Map<String, Class<?>> fs) {
 		interfaceClass = ic;
 		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
@@ -96,11 +97,11 @@ public class FunCreator<I> implements Opcodes {
 		parameterTypes = ps;
 
 		localTypes = new ArrayList<>();
-		localTypes.add(className);
-		localTypes.addAll(Read.from(parameterTypes).map(Type::getDescriptor).toList());
+		localTypes.add(Type.getObjectType(className));
+		localTypes.addAll(Read.from(parameterTypes).map(Type::getType).toList());
 
 		constants = new HashMap<>();
-		fields = Read.from2(fs).mapValue(Type::getDescriptor).toMap();
+		fields = Read.from2(fs).mapValue(Type::getType).toMap();
 		mc = new MethodCreator();
 		fe = new FunExpression(this);
 	}
@@ -128,11 +129,11 @@ public class FunCreator<I> implements Opcodes {
 				Type.getInternalName(superClass), //
 				new String[] { Type.getInternalName(interfaceClass), });
 
-		for (Entry<String, Pair<String, Object>> entry : constants.entrySet())
-			cw.visitField(ACC_PUBLIC | ACC_STATIC, entry.getKey(), entry.getValue().t0, null, null).visitEnd();
+		for (Entry<String, Pair<Type, Object>> entry : constants.entrySet())
+			cw.visitField(ACC_PUBLIC | ACC_STATIC, entry.getKey(), entry.getValue().t0.getDescriptor(), null, null).visitEnd();
 
-		for (Entry<String, String> entry : fields.entrySet())
-			cw.visitField(ACC_PUBLIC, entry.getKey(), entry.getValue(), null, null).visitEnd();
+		for (Entry<String, Type> entry : fields.entrySet())
+			cw.visitField(ACC_PUBLIC, entry.getKey(), entry.getValue().getDescriptor(), null, null).visitEnd();
 
 		mc.create(cw, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE), mv -> {
 			String cd = Type.getConstructorDescriptor(superClass.getConstructor());
@@ -143,7 +144,7 @@ public class FunCreator<I> implements Opcodes {
 			mv.visitMaxs(1, 1);
 		});
 
-		mc.create(cw, methodName, Type.getMethodDescriptor(Type.getType(returnType), types), mv -> {
+		mc.create(cw, methodName, Type.getMethodDescriptor(returnType, types), mv -> {
 			visit(mv, expression);
 			mv.visitInsn(choose(returnType, ARETURN, DRETURN, FRETURN, IRETURN, LRETURN));
 			mv.visitMaxs(0, localTypes.size());
@@ -155,7 +156,7 @@ public class FunCreator<I> implements Opcodes {
 
 		Class<? extends I> clazz = new UnsafeUtil().defineClass(interfaceClass, className, bytes);
 
-		for (Entry<String, Pair<String, Object>> entry : constants.entrySet())
+		for (Entry<String, Pair<Type, Object>> entry : constants.entrySet())
 			try {
 				clazz.getField(entry.getKey()).set(null, entry.getValue().t1);
 			} catch (ReflectiveOperationException ex) {
@@ -187,7 +188,7 @@ public class FunCreator<I> implements Opcodes {
 
 	public FunExpr constant(int i) {
 		ConstantFunExpr expr = fe.new ConstantFunExpr();
-		expr.type = Type.getDescriptor(int.class);
+		expr.type = Type.INT_TYPE;
 		expr.constant = i;
 		return expr;
 	}
@@ -219,7 +220,7 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public FunExpr ifeq(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
-		int ifInsn = !Util.stringEquals(type(left), Type.getDescriptor(int.class)) ? Opcodes.IF_ACMPNE : Opcodes.IF_ICMPNE;
+		int ifInsn = !Objects.equals(type(left), Type.INT_TYPE) ? Opcodes.IF_ACMPNE : Opcodes.IF_ICMPNE;
 
 		If2FunExpr expr = fe.new If2FunExpr();
 		expr.ifInsn = ifInsn;
@@ -263,12 +264,12 @@ public class FunCreator<I> implements Opcodes {
 		return local(0);
 	}
 
-	public String type(FunExpr e) {
+	public Type type(FunExpr e) {
 		if (e instanceof ApplyFunExpr) {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
-			return Type.getDescriptor(method(expr.object).getReturnType());
+			return Type.getType(method(expr.object).getReturnType());
 		} else if (e instanceof AssignFunExpr)
-			return Type.getDescriptor(void.class);
+			return Type.getType(void.class);
 		else if (e instanceof BinaryFunExpr) {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
 			return type(expr.left);
@@ -286,7 +287,7 @@ public class FunCreator<I> implements Opcodes {
 			return type(expr.doFun.apply(expr.value));
 		} else if (e instanceof DeclareParameterFunExpr) {
 			DeclareParameterFunExpr expr = (DeclareParameterFunExpr) e;
-			return Type.getDescriptor(expr.interfaceClass);
+			return Type.getType(expr.interfaceClass);
 		} else if (e instanceof FieldFunExpr) {
 			FieldFunExpr expr = (FieldFunExpr) e;
 			return expr.type;
@@ -297,7 +298,7 @@ public class FunCreator<I> implements Opcodes {
 			If2FunExpr expr = (If2FunExpr) e;
 			return type(expr.then);
 		} else if (e instanceof InstanceOfFunExpr)
-			return Type.getDescriptor(boolean.class);
+			return Type.getType(boolean.class);
 		else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
 			return expr.type;
@@ -305,9 +306,9 @@ public class FunCreator<I> implements Opcodes {
 			LocalFunExpr expr = (LocalFunExpr) e;
 			return localTypes.get(expr.index);
 		} else if (e instanceof NoOperationFunExpr)
-			return Type.getDescriptor(void.class);
+			return Type.getType(void.class);
 		else if (e instanceof PrintlnFunExpr)
-			return Type.getDescriptor(void.class);
+			return Type.getType(void.class);
 		else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;
 			return type(expr.right);
@@ -319,14 +320,14 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public Method method(FunExpr e) {
-		Type type = Type.getType(type(e));
+		Type type = type(e);
 		Class<?> clazz = JdkUtil.getClassByName(type.getClassName());
 		return Read.from(clazz.getDeclaredMethods()).uniqueResult();
 	}
 
 	private FunExpr constantStatic(Object object, Class<?> clazz) {
 		String field = "f" + counter.getAndIncrement();
-		String type = Type.getDescriptor(clazz);
+		Type type = Type.getType(clazz);
 		constants.put(field, Pair.of(type, object));
 
 		StaticFunExpr expr = fe.new StaticFunExpr();
@@ -352,14 +353,14 @@ public class FunCreator<I> implements Opcodes {
 		} else if (e instanceof CheckCastFunExpr) {
 			CheckCastFunExpr expr = (CheckCastFunExpr) e;
 			visit(mv, expr.expr);
-			mv.visitTypeInsn(CHECKCAST, expr.type);
+			mv.visitTypeInsn(CHECKCAST, expr.type.getDescriptor());
 		} else if (e instanceof ConstantFunExpr) {
 			ConstantFunExpr expr = (ConstantFunExpr) e;
 			mc.visitLdc(mv, expr);
 		} else if (e instanceof FieldFunExpr) {
 			FieldFunExpr expr = (FieldFunExpr) e;
 			visit(mv, expr.object);
-			mv.visitFieldInsn(GETFIELD, type(expr.object), expr.field, type(expr));
+			mv.visitFieldInsn(GETFIELD, type(expr.object).getDescriptor(), expr.field, type(expr).getDescriptor());
 		} else if (e instanceof If1FunExpr) {
 			If1FunExpr expr = (If1FunExpr) e;
 			visit(mv, expr.if_);
@@ -376,7 +377,7 @@ public class FunCreator<I> implements Opcodes {
 		} else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
 			Type array[] = Read.from(expr.parameters) //
-					.map(parameter -> Type.getType(type(parameter))) //
+					.map(parameter -> type(parameter)) //
 					.toList() //
 					.toArray(new Type[0]);
 
@@ -388,9 +389,9 @@ public class FunCreator<I> implements Opcodes {
 
 			mv.visitMethodInsn( //
 					expr.opcode, //
-					type(expr.object), //
+					type(expr.object).getDescriptor(), //
 					expr.methodName, //
-					Type.getMethodDescriptor(Type.getType(expr.type), array), //
+					Type.getMethodDescriptor(expr.type, array), //
 					expr.opcode == Opcode.INVOKEINTERFACE);
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
@@ -407,12 +408,12 @@ public class FunCreator<I> implements Opcodes {
 		} else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;
 			visit(mv, expr.left);
-			if (!Util.stringEquals(type(expr.left), Type.getDescriptor(void.class)))
+			if (!Objects.equals(type(expr.left), Type.VOID_TYPE))
 				mv.visitInsn(POP);
 			visit(mv, expr.right);
 		} else if (e instanceof StaticFunExpr) {
 			StaticFunExpr expr = (StaticFunExpr) e;
-			mv.visitFieldInsn(GETSTATIC, expr.clazzType, expr.field, expr.type);
+			mv.visitFieldInsn(GETSTATIC, expr.clazzType, expr.field, expr.type.getDescriptor());
 		} else
 			throw new RuntimeException("Unknown expression " + e.getClass());
 	}
@@ -428,16 +429,16 @@ public class FunCreator<I> implements Opcodes {
 		mv.visitLabel(l1);
 	}
 
-	private int choose(String type, int a, int d, int f, int i, int l) {
-		if (Util.stringEquals(type, Type.getDescriptor(double.class)))
+	private int choose(Type type, int a, int d, int f, int i, int l) {
+		if (Objects.equals(type, Type.DOUBLE_TYPE))
 			return d;
-		else if (Util.stringEquals(type, Type.getDescriptor(boolean.class)))
+		else if (Objects.equals(type, Type.BOOLEAN_TYPE))
 			return i;
-		else if (Util.stringEquals(type, Type.getDescriptor(float.class)))
+		else if (Objects.equals(type, Type.FLOAT_TYPE))
 			return f;
-		else if (Util.stringEquals(type, Type.getDescriptor(int.class)))
+		else if (Objects.equals(type, Type.INT_TYPE))
 			return i;
-		else if (Util.stringEquals(type, Type.getDescriptor(long.class)))
+		else if (Objects.equals(type, Type.LONG_TYPE))
 			return l;
 		else
 			return a;

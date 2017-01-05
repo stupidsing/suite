@@ -28,14 +28,14 @@ public class FunExpression {
 
 		public FunExpr cast(Class<?> clazz) {
 			CastFunExpr expr = new CastFunExpr();
-			expr.type = Type.getDescriptor(clazz);
+			expr.type = Type.getType(clazz);
 			expr.expr = this;
 			return expr;
 		}
 
 		public FunExpr checkCast(Class<?> clazz) {
 			CheckCastFunExpr expr = new CheckCastFunExpr();
-			expr.type = Type.getDescriptor(clazz);
+			expr.type = Type.getType(clazz);
 			expr.expr = this;
 			return expr;
 		}
@@ -43,11 +43,11 @@ public class FunExpression {
 		public FunExpr field(String fieldName) {
 			return Rethrow.reflectiveOperationException(() -> {
 				Field field = clazz().getField(fieldName);
-				return cast(field.getDeclaringClass()).field(fieldName, Type.getDescriptor(field.getType()));
+				return cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
 			});
 		}
 
-		public FunExpr field(String fieldName, String type) {
+		public FunExpr field(String fieldName, Type type) {
 			FieldFunExpr expr = new FieldFunExpr();
 			expr.type = type;
 			expr.field = fieldName;
@@ -80,7 +80,7 @@ public class FunExpression {
 
 		public FunExpr invoke(int opcode, String methodName, String returnType, FunExpr... parameters) {
 			InvokeFunExpr expr = new InvokeFunExpr();
-			expr.type = returnType;
+			expr.type = Type.getType(returnType);
 			expr.methodName = methodName;
 			expr.object = this;
 			expr.opcode = opcode;
@@ -89,8 +89,7 @@ public class FunExpression {
 		}
 
 		protected Class<?> clazz() {
-			Type type = Type.getType(fc.type(this));
-			return JdkUtil.getClassByName(type.getClassName());
+			return JdkUtil.getClassByName(fc.type(this).getClassName());
 		}
 	}
 
@@ -110,17 +109,17 @@ public class FunExpression {
 	}
 
 	public class CastFunExpr extends FunExpr {
-		public String type;
+		public Type type;
 		public FunExpr expr;
 	}
 
 	public class CheckCastFunExpr extends FunExpr {
-		public String type;
+		public Type type;
 		public FunExpr expr;
 	}
 
 	public class ConstantFunExpr extends FunExpr {
-		public String type;
+		public Type type;
 		public Object constant; // primitives, class, handles etc.
 	}
 
@@ -142,7 +141,7 @@ public class FunExpression {
 	}
 
 	public class FieldFunExpr extends FunExpr {
-		public String type;
+		public Type type;
 		public FunExpr object;
 		public String field;
 	}
@@ -166,7 +165,7 @@ public class FunExpression {
 	}
 
 	public class InvokeFunExpr extends FunExpr {
-		public String type;
+		public Type type;
 		public int opcode;
 		public String methodName;
 		public FunExpr object;
@@ -189,7 +188,7 @@ public class FunExpression {
 	}
 
 	public class StaticFunExpr extends FunExpr {
-		public String type;
+		public Type type;
 		public String clazzType;
 		public String field;
 	}

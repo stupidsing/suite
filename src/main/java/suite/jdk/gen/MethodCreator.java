@@ -3,6 +3,7 @@ package suite.jdk.gen;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Objects;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -13,7 +14,6 @@ import org.objectweb.asm.util.TraceMethodVisitor;
 
 import suite.editor.Listen.SinkEx;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
-import suite.util.Util;
 
 public class MethodCreator implements Opcodes {
 
@@ -57,7 +57,7 @@ public class MethodCreator implements Opcodes {
 	public void visitLdc(MethodVisitor mv, ConstantFunExpr expr) {
 		if (expr.constant == null)
 			mv.visitInsn(ACONST_NULL);
-		else if (Util.stringEquals(expr.type, Type.getDescriptor(double.class))) {
+		else if (Objects.equals(expr.type, Type.DOUBLE_TYPE)) {
 			double d = ((Number) expr.constant).doubleValue();
 			if (d == 0d)
 				mv.visitInsn(DCONST_0);
@@ -65,7 +65,7 @@ public class MethodCreator implements Opcodes {
 				mv.visitInsn(DCONST_1);
 			else
 				mv.visitLdcInsn(expr.constant);
-		} else if (Util.stringEquals(expr.type, Type.getDescriptor(float.class))) {
+		} else if (Objects.equals(expr.type, Type.FLOAT_TYPE)) {
 			float f = ((Number) expr.constant).floatValue();
 			if (f == 0f)
 				mv.visitInsn(FCONST_0);
@@ -75,7 +75,7 @@ public class MethodCreator implements Opcodes {
 				mv.visitInsn(FCONST_2);
 			else
 				mv.visitLdcInsn(expr.constant);
-		} else if (Util.stringEquals(expr.type, Type.getDescriptor(int.class))) {
+		} else if (Objects.equals(expr.type, Type.INT_TYPE)) {
 			int i = ((Number) expr.constant).intValue();
 			switch (i) {
 			case -1:
@@ -102,7 +102,7 @@ public class MethodCreator implements Opcodes {
 			default:
 				mv.visitLdcInsn(expr.constant);
 			}
-		} else if (Util.stringEquals(expr.type, Type.getDescriptor(long.class))) {
+		} else if (Objects.equals(expr.type, Type.LONG_TYPE)) {
 			long l = ((Number) expr.constant).longValue();
 			if (l == 0l)
 				mv.visitInsn(LCONST_0);
