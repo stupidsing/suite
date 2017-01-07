@@ -172,7 +172,7 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public FunExpr add(FunExpr e0, FunExpr e1) {
-		return bi(e0, e1, choose(FunType.type(e0), 0, DADD, FADD, IADD, LADD));
+		return bi(e0, e1, choose(FunType.typeOf(e0), 0, DADD, FADD, IADD, LADD));
 	}
 
 	public FunExpr bi(FunExpr e0, FunExpr e1, int opcode) {
@@ -217,7 +217,7 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public FunExpr ifeq(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
-		int ifInsn = !Objects.equals(FunType.type(left), Type.INT_TYPE) ? Opcodes.IF_ACMPNE : Opcodes.IF_ICMPNE;
+		int ifInsn = !Objects.equals(FunType.typeOf(left), Type.INT_TYPE) ? Opcodes.IF_ACMPNE : Opcodes.IF_ICMPNE;
 
 		If2FunExpr expr = fe.new If2FunExpr();
 		expr.ifInsn = ifInsn;
@@ -282,7 +282,7 @@ public class FunCreator<I> implements Opcodes {
 		if (e instanceof AssignFunExpr) {
 			AssignFunExpr expr = (AssignFunExpr) e;
 			visit(mv, expr.value);
-			mv.visitVarInsn(choose(FunType.type(expr.value), ASTORE, DSTORE, FSTORE, ISTORE, LSTORE), expr.index);
+			mv.visitVarInsn(choose(FunType.typeOf(expr.value), ASTORE, DSTORE, FSTORE, ISTORE, LSTORE), expr.index);
 		} else if (e instanceof BinaryFunExpr) {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
 			visit(mv, expr.left);
@@ -318,7 +318,7 @@ public class FunCreator<I> implements Opcodes {
 		} else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
 			Type array[] = Read.from(expr.parameters) //
-					.map(FunType::type) //
+					.map(FunType::typeOf) //
 					.toList() //
 					.toArray(new Type[0]);
 
@@ -336,7 +336,7 @@ public class FunCreator<I> implements Opcodes {
 					expr.opcode == Opcode.INVOKEINTERFACE);
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
-			mv.visitVarInsn(choose(FunType.type(expr), ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.index);
+			mv.visitVarInsn(choose(FunType.typeOf(expr), ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.index);
 		} else if (e instanceof NoOperationFunExpr)
 			;
 		else if (e instanceof PrintlnFunExpr) {
@@ -349,7 +349,7 @@ public class FunCreator<I> implements Opcodes {
 		} else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;
 			visit(mv, expr.left);
-			if (!Objects.equals(FunType.type(expr.left), Type.VOID_TYPE))
+			if (!Objects.equals(FunType.typeOf(expr.left), Type.VOID_TYPE))
 				mv.visitInsn(POP);
 			visit(mv, expr.right);
 		} else if (e instanceof StaticFunExpr) {

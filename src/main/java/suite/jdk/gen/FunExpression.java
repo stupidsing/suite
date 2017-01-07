@@ -89,7 +89,7 @@ public class FunExpression {
 		}
 
 		protected Class<?> clazz() {
-			return JdkUtil.getClassByName(FunType.type(this).getClassName());
+			return JdkUtil.getClassByName(FunType.typeOf(this).getClassName());
 		}
 	}
 

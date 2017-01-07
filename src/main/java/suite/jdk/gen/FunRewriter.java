@@ -58,7 +58,7 @@ public class FunRewriter {
 					return null;
 			} else if (e instanceof DeclareLocalFunExpr) {
 				DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
-				Type type = FunType.type(expr.value);
+				Type type = FunType.typeOf(expr.value);
 
 				int index = fc.localTypes.size();
 				fc.localTypes.add(type);

@@ -26,10 +26,10 @@ import suite.jdk.gen.FunExpression.StaticFunExpr;
 public class FunType<I> implements Opcodes {
 
 	public static String typeDesc(FunExpr e) {
-		return type(e).getDescriptor();
+		return typeOf(e).getDescriptor();
 	}
 
-	public static Type type(FunExpr e) {
+	public static Type typeOf(FunExpr e) {
 		if (e instanceof ApplyFunExpr) {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
 			return Type.getType(Helper.instance.method(expr.object).getReturnType());
@@ -37,7 +37,7 @@ public class FunType<I> implements Opcodes {
 			return Type.getType(void.class);
 		else if (e instanceof BinaryFunExpr) {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
-			return type(expr.left);
+			return typeOf(expr.left);
 		} else if (e instanceof CastFunExpr) {
 			CastFunExpr expr = (CastFunExpr) e;
 			return expr.type;
@@ -49,7 +49,7 @@ public class FunType<I> implements Opcodes {
 			return expr.type;
 		} else if (e instanceof DeclareLocalFunExpr) {
 			DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
-			return type(expr.doFun.apply(expr.value));
+			return typeOf(expr.doFun.apply(expr.value));
 		} else if (e instanceof DeclareParameterFunExpr) {
 			DeclareParameterFunExpr expr = (DeclareParameterFunExpr) e;
 			return Type.getType(expr.interfaceClass);
@@ -58,10 +58,10 @@ public class FunType<I> implements Opcodes {
 			return expr.type;
 		} else if (e instanceof If1FunExpr) {
 			If1FunExpr expr = (If1FunExpr) e;
-			return type(expr.then);
+			return typeOf(expr.then);
 		} else if (e instanceof If2FunExpr) {
 			If2FunExpr expr = (If2FunExpr) e;
-			return type(expr.then);
+			return typeOf(expr.then);
 		} else if (e instanceof InstanceOfFunExpr)
 			return Type.getType(boolean.class);
 		else if (e instanceof InvokeFunExpr) {
@@ -76,7 +76,7 @@ public class FunType<I> implements Opcodes {
 			return Type.getType(void.class);
 		else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;
-			return type(expr.right);
+			return typeOf(expr.right);
 		} else if (e instanceof StaticFunExpr) {
 			StaticFunExpr expr = (StaticFunExpr) e;
 			return expr.type;
