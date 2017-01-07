@@ -44,7 +44,7 @@ public class FunRewriter {
 					((DeclareParameterFunExpr) expr).interfaceClass = Helper.instance.clazz(cfe.type);
 					return rewrite(expr);
 				} else
-					return cfe;
+					return null;
 			} else if (e instanceof DeclareParameterFunExpr) {
 				DeclareParameterFunExpr e_ = (DeclareParameterFunExpr) e;
 				Class<?> pts[] = Helper.instance.method(e_.interfaceClass).getParameterTypes();
