@@ -22,11 +22,7 @@ public class Helper {
 	}
 
 	public Method method(FunExpr e) {
-		return method(FunType.type(e));
-	}
-
-	public Method method(Type type) {
-		return method(class_(type));
+		return method(class_(FunType.type(e)));
 	}
 
 	public Method method(Class<?> clazz) {
