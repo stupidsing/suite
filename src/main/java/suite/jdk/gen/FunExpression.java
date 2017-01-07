@@ -89,7 +89,7 @@ public class FunExpression {
 		}
 
 		protected Class<?> clazz() {
-			return JdkUtil.getClassByName(fc.type(this).getClassName());
+			return JdkUtil.getClassByName(FunType.type(this).getClassName());
 		}
 	}
 
@@ -173,6 +173,7 @@ public class FunExpression {
 	}
 
 	public class LocalFunExpr extends FunExpr {
+		public Type type;
 		public int index;
 	}
 
