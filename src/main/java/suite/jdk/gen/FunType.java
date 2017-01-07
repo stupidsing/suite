@@ -1,6 +1,5 @@
 package suite.jdk.gen;
 
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
@@ -23,7 +22,7 @@ import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.gen.FunExpression.StaticFunExpr;
 
-public class FunType<I> implements Opcodes {
+public class FunType<I> {
 
 	public static String typeDesc(FunExpr e) {
 		return typeOf(e).getDescriptor();
