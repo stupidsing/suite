@@ -170,10 +170,10 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public FunExpr add(FunExpr e0, FunExpr e1) {
-		return bi(e0, e1, choose(FunType.typeOf(e0), 0, DADD, FADD, IADD, LADD));
+		return bi(e0, e1, type -> choose(type, 0, DADD, FADD, IADD, LADD));
 	}
 
-	public FunExpr bi(FunExpr e0, FunExpr e1, int opcode) {
+	public FunExpr bi(FunExpr e0, FunExpr e1, Fun<Type, Integer> opcode) {
 		BinaryFunExpr expr = fe.new BinaryFunExpr();
 		expr.opcode = opcode;
 		expr.left = e0;
@@ -285,7 +285,7 @@ public class FunCreator<I> implements Opcodes {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
 			visit(mv, expr.left);
 			visit(mv, expr.right);
-			mv.visitInsn(expr.opcode);
+			mv.visitInsn(expr.opcode.apply(FunType.typeOf(expr.left)));
 		} else if (e instanceof CastFunExpr) {
 			CastFunExpr expr = (CastFunExpr) e;
 			visit(mv, expr.expr);

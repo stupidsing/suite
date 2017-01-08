@@ -79,7 +79,7 @@ public class SewingExpressionImpl implements SewingExpression {
 					return fc.create(fc.parameter(env -> {
 						FunExpr v0 = fc.field(e0).invoke("evaluate", env);
 						FunExpr v1 = fc.field(e1).invoke("evaluate", env);
-						return fc.bi(v0, v1, opcode);
+						return fc.bi(v0, v1, type -> opcode);
 					}));
 				});
 
