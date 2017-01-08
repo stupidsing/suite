@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.function.BiPredicate;
 
 import org.junit.Test;
+import org.objectweb.asm.Type;
 
 import suite.util.FunUtil.Fun;
 
@@ -21,8 +22,8 @@ public class FunCreatorTest {
 	public void testApply() {
 		String fieldName0 = "f0";
 		String fieldName1 = "f1";
-		FunCreator<IntFun> fc0 = intFun(fieldName0, int.class);
-		FunCreator<IntFun> fc1 = intFun(fieldName1, IntFun.class);
+		FunCreator<IntFun> fc0 = intFun(fieldName0, Type.INT_TYPE);
+		FunCreator<IntFun> fc1 = intFun(fieldName1, Type.getType(IntFun.class));
 		IntFun f0 = fc0 //
 				.create(fc0.parameter(i -> fc0.add(fc0.field(fieldName0), i))) //
 				.apply(Collections.singletonMap(fieldName0, 1));
@@ -46,7 +47,7 @@ public class FunCreatorTest {
 	@Test
 	public void testField() {
 		String fieldName = "f";
-		FunCreator<IntFun> fc = intFun(fieldName, int.class);
+		FunCreator<IntFun> fc = intFun(fieldName, Type.INT_TYPE);
 		int result = fc //
 				.create(fc.parameter(i -> fc.add(fc.field(fieldName), i))) //
 				.apply(Collections.singletonMap(fieldName, 1)) //
@@ -83,7 +84,7 @@ public class FunCreatorTest {
 		assertEquals("Hello", fun.apply("Hello"));
 	}
 
-	private FunCreator<IntFun> intFun(String fieldName, Class<?> fieldType) {
+	private FunCreator<IntFun> intFun(String fieldName, Type fieldType) {
 		return FunCreator.of(IntFun.class, "apply", Collections.singletonMap(fieldName, fieldType));
 	}
 

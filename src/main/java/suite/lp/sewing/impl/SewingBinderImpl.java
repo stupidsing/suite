@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.objectweb.asm.Type;
+
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.lp.doer.Binder;
@@ -103,15 +105,15 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private BindPredicate compileBindInt(Int i) {
-		return compiledBindInt.apply(Read.<String, Object> empty2().cons(key0, i).cons(key1, i.number).toMap());
+		return compiledBindInt.apply(Read.<String, Object>empty2().cons(key0, i).cons(key1, i.number).toMap());
 	}
 
 	private BindPredicate compileBindStr(Str s) {
-		return compiledBindStr.apply(Read.<String, Object> empty2().cons(key0, s).cons(key1, s.value).toMap());
+		return compiledBindStr.apply(Read.<String, Object>empty2().cons(key0, s).cons(key1, s.value).toMap());
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindAtom_() {
-		Map<String, Class<?>> fields = Collections.singletonMap(key0, Node.class);
+		Map<String, Type> fields = Collections.singletonMap(key0, Type.getType(Node.class));
 
 		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
 
@@ -120,9 +122,9 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindInt_() {
-		Map<String, Class<?>> fields = Read.<String, Class<?>> empty2() //
-				.cons(key0, Node.class) //
-				.cons(key1, int.class) //
+		Map<String, Type> fields = Read.<String, Type>empty2() //
+				.cons(key0, Type.getType(Node.class)) //
+				.cons(key1, Type.INT_TYPE) //
 				.toMap();
 
 		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
@@ -134,9 +136,9 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindStr_() {
-		Map<String, Class<?>> fields = Read.<String, Class<?>> empty2() //
-				.cons(key0, Node.class) //
-				.cons(key1, String.class) //
+		Map<String, Type> fields = Read.<String, Type>empty2() //
+				.cons(key0, Type.getType(Node.class)) //
+				.cons(key1, Type.getType(String.class)) //
 				.toMap();
 
 		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
@@ -147,7 +149,8 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 						fc._false()));
 	}
 
-	private static Fun<Map<String, Object>, BindPredicate> bind(FunCreator<BindPredicate> fc, Fun<FunExpr, FunExpr> compare) {
+	private static Fun<Map<String, Object>, BindPredicate> bind(FunCreator<BindPredicate> fc,
+			Fun<FunExpr, FunExpr> compare) {
 		FunExpr k0 = fc.field(key0);
 
 		return fc.create(fc.parameter2((be, n) -> fc.declare(n.invoke("finalNode"), //

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 
 import suite.Suite;
 import suite.jdk.gen.FunCreator;
@@ -61,7 +62,7 @@ public class SewingExpressionImpl implements SewingExpression {
 	}
 
 	private static Fun<Map<String, Object>, Evaluate> compileNumber(String key) {
-		FunCreator<Evaluate> fc = FunCreator.of(Evaluate.class, Collections.singletonMap(key, int.class));
+		FunCreator<Evaluate> fc = FunCreator.of(Evaluate.class, Collections.singletonMap(key, Type.INT_TYPE));
 		return fc.create(fc.field(key));
 	}
 
@@ -71,9 +72,9 @@ public class SewingExpressionImpl implements SewingExpression {
 		Fun<Map<String, Object>, Evaluate> fun = compiledByOpcode //
 				.computeIfAbsent(opcode, opcode_ -> {
 					FunCreator<Evaluate> fc = FunCreator.of(Evaluate.class,
-							Read.<String, Class<?>> empty2() //
-									.cons(e0, Evaluate.class) //
-									.cons(e1, Evaluate.class) //
+							Read.<String, Type>empty2() //
+									.cons(e0, Type.getType(Evaluate.class)) //
+									.cons(e1, Type.getType(Evaluate.class)) //
 									.toMap());
 					return fc.create(fc.parameter(env -> {
 						FunExpr v0 = fc.field(e0).invoke("evaluate", env);
@@ -82,7 +83,7 @@ public class SewingExpressionImpl implements SewingExpression {
 					}));
 				});
 
-		return fun.apply(Read.<String, Object> empty2() //
+		return fun.apply(Read.<String, Object>empty2() //
 				.cons(e0, compile(m[0])) //
 				.cons(e1, compile(m[1])) //
 				.toMap());

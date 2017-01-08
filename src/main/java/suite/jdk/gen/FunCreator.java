@@ -70,11 +70,11 @@ public class FunCreator<I> implements Opcodes {
 		return of(ic, mn, new HashMap<>());
 	}
 
-	public static <I> FunCreator<I> of(Class<I> ic, Map<String, Class<?>> fs) {
+	public static <I> FunCreator<I> of(Class<I> ic, Map<String, Type> fs) {
 		return of(ic, Read.from(ic.getDeclaredMethods()).uniqueResult().getName(), fs);
 	}
 
-	public static <I> FunCreator<I> of(Class<I> ic, String mn, Map<String, Class<?>> fs) {
+	public static <I> FunCreator<I> of(Class<I> ic, String mn, Map<String, Type> fs) {
 		Method methods[] = Rethrow.reflectiveOperationException(() -> ic.getMethods());
 		Method method = Read.from(methods).filter(m -> Util.stringEquals(m.getName(), mn)).uniqueResult();
 		Type rt = Type.getType(method.getReturnType());
@@ -82,7 +82,7 @@ public class FunCreator<I> implements Opcodes {
 		return new FunCreator<>(ic, mn, rt, pts, fs);
 	}
 
-	private FunCreator(Class<I> ic, String mn, Type rt, List<Type> ps, Map<String, Class<?>> fs) {
+	private FunCreator(Class<I> ic, String mn, Type rt, List<Type> ps, Map<String, Type> fs) {
 		interfaceClass = ic;
 		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
@@ -95,7 +95,7 @@ public class FunCreator<I> implements Opcodes {
 		localTypes.addAll(parameterTypes);
 
 		constants = new HashMap<>();
-		fields = Read.from2(fs).mapValue(Type::getType).toMap();
+		fields = fs;
 		mc = new MethodCreator();
 		fe = new FunExpression(this);
 	}
