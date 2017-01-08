@@ -3,7 +3,6 @@ package suite.jdk.gen;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,7 @@ public class FunCreator<I> implements Opcodes {
 	public final String className;
 	public final String methodName;
 	public final Type returnType;
-	public final List<Class<?>> parameterTypes;
+	public final List<Type> parameterTypes;
 	public final List<Type> localTypes;
 
 	private Map<String, Pair<Type, Object>> constants;
@@ -78,14 +77,12 @@ public class FunCreator<I> implements Opcodes {
 	public static <I> FunCreator<I> of(Class<I> ic, String mn, Map<String, Class<?>> fs) {
 		Method methods[] = Rethrow.reflectiveOperationException(() -> ic.getMethods());
 		Method method = Read.from(methods).filter(m -> Util.stringEquals(m.getName(), mn)).uniqueResult();
-		Class<?> rt = method.getReturnType();
-		Class<?> pts[] = method.getParameterTypes();
-		Type rt1 = Type.getType(rt);
-		List<Class<?>> pts1 = Arrays.asList(pts);
-		return new FunCreator<>(ic, mn, rt1, pts1, fs);
+		Type rt = Type.getType(method.getReturnType());
+		List<Type> pts = Read.from(method.getParameterTypes()).map(Type::getType).toList();
+		return new FunCreator<>(ic, mn, rt, pts, fs);
 	}
 
-	private FunCreator(Class<I> ic, String mn, Type rt, List<Class<?>> ps, Map<String, Class<?>> fs) {
+	private FunCreator(Class<I> ic, String mn, Type rt, List<Type> ps, Map<String, Class<?>> fs) {
 		interfaceClass = ic;
 		superClass = Object.class;
 		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
@@ -95,7 +92,7 @@ public class FunCreator<I> implements Opcodes {
 
 		localTypes = new ArrayList<>();
 		localTypes.add(Type.getObjectType(className));
-		localTypes.addAll(Read.from(parameterTypes).map(Type::getType).toList());
+		localTypes.addAll(parameterTypes);
 
 		constants = new HashMap<>();
 		fields = Read.from2(fs).mapValue(Type::getType).toMap();
@@ -117,7 +114,7 @@ public class FunCreator<I> implements Opcodes {
 
 	private Class<? extends I> create_(FunExpr expression) throws NoSuchMethodException {
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-		Type types[] = Read.from(parameterTypes).map(Type::getType).toList().toArray(new Type[0]);
+		Type types[] = parameterTypes.toArray(new Type[0]);
 
 		cw.visit(V1_8, //
 				ACC_PUBLIC | ACC_SUPER, //
@@ -127,7 +124,8 @@ public class FunCreator<I> implements Opcodes {
 				new String[] { Type.getInternalName(interfaceClass), });
 
 		for (Entry<String, Pair<Type, Object>> entry : constants.entrySet())
-			cw.visitField(ACC_PUBLIC | ACC_STATIC, entry.getKey(), entry.getValue().t0.getDescriptor(), null, null).visitEnd();
+			cw.visitField(ACC_PUBLIC | ACC_STATIC, entry.getKey(), entry.getValue().t0.getDescriptor(), null, null)
+					.visitEnd();
 
 		for (Entry<String, Type> entry : fields.entrySet())
 			cw.visitField(ACC_PUBLIC, entry.getKey(), entry.getValue().getDescriptor(), null, null).visitEnd();
