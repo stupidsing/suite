@@ -314,6 +314,8 @@ public class FunCreator<I> implements Opcodes {
 					.toList() //
 					.toArray(new Type[0]);
 
+			int opcode = expr.method().getDeclaringClass().isInterface() ? INVOKEINTERFACE : INVOKEVIRTUAL;
+
 			if (expr.object != null)
 				visit(mv, expr.object);
 
@@ -321,11 +323,11 @@ public class FunCreator<I> implements Opcodes {
 				visit(mv, parameter);
 
 			mv.visitMethodInsn( //
-					expr.opcode, //
+					opcode, //
 					FunType.typeDesc(expr.object), //
 					expr.methodName, //
-					Type.getMethodDescriptor(expr.type, array), //
-					expr.opcode == Opcode.INVOKEINTERFACE);
+					Type.getMethodDescriptor(FunType.typeOf(expr), array), //
+					opcode == Opcode.INVOKEINTERFACE);
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
 			mv.visitVarInsn(choose(FunType.typeOf(expr), ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.index);

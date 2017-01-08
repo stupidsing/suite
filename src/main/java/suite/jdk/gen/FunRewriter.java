@@ -2,7 +2,6 @@ package suite.jdk.gen;
 
 import java.lang.reflect.Method;
 
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import suite.inspect.Inspect;
@@ -32,11 +31,7 @@ public class FunRewriter {
 			if (e instanceof ApplyFunExpr) {
 				ApplyFunExpr expr = (ApplyFunExpr) e;
 				Method method = Helper.instance.method(expr.object);
-				return expr.object.invoke( //
-						Opcodes.INVOKEINTERFACE, //
-						method.getName(), //
-						Type.getDescriptor(method.getReturnType()), //
-						expr.parameters);
+				return expr.object.invoke(method.getName(), expr.parameters);
 			} else if (e instanceof CastFunExpr) {
 				CastFunExpr cfe = (CastFunExpr) e;
 				FunExpr expr = cfe.expr;

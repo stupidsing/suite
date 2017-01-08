@@ -65,7 +65,7 @@ public class FunType<I> {
 			return Type.getType(boolean.class);
 		else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
-			return expr.type;
+			return Type.getType(expr.method().getReturnType());
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
 			return expr.type;

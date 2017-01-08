@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import suite.jdk.JdkUtil;
@@ -63,27 +62,9 @@ public class FunExpression {
 		}
 
 		public FunExpr invoke(String methodName, FunExpr... parameters) {
-			@SuppressWarnings("unchecked")
-			List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(parameters).map(FunExpr::clazz).toList();
-			Method method = Rethrow.reflectiveOperationException(() -> {
-				return clazz().getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
-			});
-
-			FunExpr cast = cast(method.getDeclaringClass());
-			String returnType = Type.getDescriptor(method.getReturnType());
-
-			if (method.getDeclaringClass().isInterface())
-				return cast.invoke(Opcodes.INVOKEINTERFACE, methodName, returnType, parameters);
-			else
-				return cast.invoke(Opcodes.INVOKEVIRTUAL, methodName, returnType, parameters);
-		}
-
-		public FunExpr invoke(int opcode, String methodName, String returnType, FunExpr... parameters) {
 			InvokeFunExpr expr = new InvokeFunExpr();
-			expr.type = Type.getType(returnType);
 			expr.methodName = methodName;
 			expr.object = this;
-			expr.opcode = opcode;
 			expr.parameters = Arrays.asList(parameters);
 			return expr;
 		}
@@ -165,11 +146,25 @@ public class FunExpression {
 	}
 
 	public class InvokeFunExpr extends FunExpr {
-		public Type type;
-		public int opcode;
 		public String methodName;
 		public FunExpr object;
 		public List<FunExpr> parameters;
+
+		public Method method() {
+			Type array[] = Read.from(parameters) //
+					.map(FunType::typeOf) //
+					.toList() //
+					.toArray(new Type[0]);
+
+			@SuppressWarnings("unchecked")
+			List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(array) //
+					.map(Helper.instance::clazz) //
+					.toList();
+
+			return Rethrow.reflectiveOperationException(() -> {
+				return object.clazz().getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
+			});
+		}
 	}
 
 	public class LocalFunExpr extends FunExpr {
