@@ -21,7 +21,7 @@ import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.gen.FunExpression.StaticFunExpr;
 
-public class FunType<I> {
+public class FunType {
 
 	public static String typeDesc(FunExpr e) {
 		return typeOf(e).getDescriptor();
