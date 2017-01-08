@@ -12,8 +12,7 @@ import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.DeclareParameterFunExpr;
 import suite.jdk.gen.FunExpression.FieldFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.jdk.gen.FunExpression.If1FunExpr;
-import suite.jdk.gen.FunExpression.If2FunExpr;
+import suite.jdk.gen.FunExpression.IfFunExpr;
 import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
@@ -55,11 +54,8 @@ public class FunType<I> {
 		} else if (e instanceof FieldFunExpr) {
 			FieldFunExpr expr = (FieldFunExpr) e;
 			return expr.type;
-		} else if (e instanceof If1FunExpr) {
-			If1FunExpr expr = (If1FunExpr) e;
-			return typeOf(expr.then);
-		} else if (e instanceof If2FunExpr) {
-			If2FunExpr expr = (If2FunExpr) e;
+		} else if (e instanceof IfFunExpr) {
+			IfFunExpr expr = (IfFunExpr) e;
 			return typeOf(expr.then);
 		} else if (e instanceof InstanceOfFunExpr)
 			return Type.getType(boolean.class);
