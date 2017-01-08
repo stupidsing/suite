@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
+import java.util.function.ToIntFunction;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -37,7 +38,6 @@ import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.NoOperationFunExpr;
-import suite.jdk.gen.FunExpression.OpcodeFun;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.gen.FunExpression.StaticFunExpr;
@@ -173,7 +173,7 @@ public class FunCreator<I> implements Opcodes {
 		return bi(e0, e1, type -> choose(type, 0, DADD, FADD, IADD, LADD));
 	}
 
-	public FunExpr bi(FunExpr e0, FunExpr e1, OpcodeFun opcode) {
+	public FunExpr bi(FunExpr e0, FunExpr e1, ToIntFunction<Type> opcode) {
 		BinaryFunExpr expr = fe.new BinaryFunExpr();
 		expr.opcode = opcode;
 		expr.left = e0;
@@ -280,7 +280,7 @@ public class FunCreator<I> implements Opcodes {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
 			visit(mv, expr.left);
 			visit(mv, expr.right);
-			mv.visitInsn(expr.opcode.apply(FunType.typeOf(expr.left)));
+			mv.visitInsn(expr.opcode.applyAsInt(FunType.typeOf(expr.left)));
 		} else if (e instanceof CastFunExpr) {
 			CastFunExpr expr = (CastFunExpr) e;
 			visit(mv, expr.expr);
@@ -303,7 +303,7 @@ public class FunCreator<I> implements Opcodes {
 			If2FunExpr expr = (If2FunExpr) e;
 			visit(mv, expr.left);
 			visit(mv, expr.right);
-			visitIf(expr.opcode.apply(FunType.typeOf(expr.left)), mv, expr);
+			visitIf(expr.opcode.applyAsInt(FunType.typeOf(expr.left)), mv, expr);
 		} else if (e instanceof InstanceOfFunExpr) {
 			InstanceOfFunExpr expr = (InstanceOfFunExpr) e;
 			visit(mv, expr.object);

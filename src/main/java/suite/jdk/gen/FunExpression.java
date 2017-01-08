@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.ToIntFunction;
 
 import org.objectweb.asm.Type;
 
@@ -15,10 +16,6 @@ import suite.util.Rethrow;
 public class FunExpression {
 
 	public final FunCreator<?> fc;
-
-	public interface OpcodeFun {
-		public int apply(Type type);
-	}
 
 	public abstract class FunExpr {
 		public FunExpr apply(FunExpr... parameters) {
@@ -84,7 +81,7 @@ public class FunExpression {
 	}
 
 	public class BinaryFunExpr extends FunExpr {
-		public OpcodeFun opcode;
+		public ToIntFunction<Type> opcode;
 		public FunExpr left, right;
 	}
 
@@ -135,7 +132,7 @@ public class FunExpression {
 	}
 
 	public class If2FunExpr extends IfFunExpr {
-		public OpcodeFun opcode;
+		public ToIntFunction<Type> opcode;
 		public FunExpr left, right;
 	}
 
