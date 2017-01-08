@@ -64,8 +64,7 @@ public class FunExpression {
 
 		public FunExpr invoke(String methodName, FunExpr... parameters) {
 			@SuppressWarnings("unchecked")
-			List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(parameters).map(FunExpr::clazz)
-					.toList();
+			List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(parameters).map(FunExpr::clazz).toList();
 			Method method = Rethrow.reflectiveOperationException(() -> {
 				return clazz().getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
 			});
@@ -148,7 +147,6 @@ public class FunExpression {
 	}
 
 	public class IfFunExpr extends FunExpr {
-		public int ifInsn;
 		public FunExpr then, else_;
 	}
 
@@ -157,6 +155,7 @@ public class FunExpression {
 	}
 
 	public class If2FunExpr extends IfFunExpr {
+		public Fun<Type, Integer> opcode;
 		public FunExpr left, right;
 	}
 

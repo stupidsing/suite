@@ -124,8 +124,7 @@ public class FunCreator<I> implements Opcodes {
 				new String[] { Type.getInternalName(interfaceClass), });
 
 		for (Entry<String, Pair<Type, Object>> entry : constants.entrySet())
-			cw.visitField(ACC_PUBLIC | ACC_STATIC, entry.getKey(), entry.getValue().t0.getDescriptor(), null, null)
-					.visitEnd();
+			cw.visitField(ACC_PUBLIC | ACC_STATIC, entry.getKey(), entry.getValue().t0.getDescriptor(), null, null).visitEnd();
 
 		for (Entry<String, Type> entry : fields.entrySet())
 			cw.visitField(ACC_PUBLIC, entry.getKey(), entry.getValue().getDescriptor(), null, null).visitEnd();
@@ -204,10 +203,7 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public FunExpr if_(FunExpr if_, FunExpr then_, FunExpr else_) {
-		int ifInsn = Opcodes.IFEQ;
-
 		If1FunExpr expr = fe.new If1FunExpr();
-		expr.ifInsn = ifInsn;
 		expr.if_ = if_;
 		expr.then = then_;
 		expr.else_ = else_;
@@ -215,10 +211,8 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public FunExpr ifeq(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
-		int ifInsn = !Objects.equals(FunType.typeOf(left), Type.INT_TYPE) ? Opcodes.IF_ACMPNE : Opcodes.IF_ICMPNE;
-
 		If2FunExpr expr = fe.new If2FunExpr();
-		expr.ifInsn = ifInsn;
+		expr.opcode = t -> !Objects.equals(t, Type.INT_TYPE) ? Opcodes.IF_ACMPNE : Opcodes.IF_ICMPNE;
 		expr.left = left;
 		expr.right = right;
 		expr.then = then_;
@@ -303,12 +297,12 @@ public class FunCreator<I> implements Opcodes {
 		} else if (e instanceof If1FunExpr) {
 			If1FunExpr expr = (If1FunExpr) e;
 			visit(mv, expr.if_);
-			visitIf(mv, expr);
+			visitIf(IFEQ, mv, expr);
 		} else if (e instanceof If2FunExpr) {
 			If2FunExpr expr = (If2FunExpr) e;
 			visit(mv, expr.left);
 			visit(mv, expr.right);
-			visitIf(mv, expr);
+			visitIf(expr.opcode.apply(FunType.typeOf(expr.left)), mv, expr);
 		} else if (e instanceof InstanceOfFunExpr) {
 			InstanceOfFunExpr expr = (InstanceOfFunExpr) e;
 			visit(mv, expr.object);
@@ -357,10 +351,10 @@ public class FunCreator<I> implements Opcodes {
 			throw new RuntimeException("Unknown expression " + e.getClass());
 	}
 
-	private void visitIf(MethodVisitor mv, IfFunExpr expr) {
+	private void visitIf(int opcode, MethodVisitor mv, IfFunExpr expr) {
 		Label l0 = new Label();
 		Label l1 = new Label();
-		mv.visitJumpInsn(expr.ifInsn, l0);
+		mv.visitJumpInsn(opcode, l0);
 		visit(mv, expr.then);
 		mv.visitJumpInsn(GOTO, l1);
 		mv.visitLabel(l0);
