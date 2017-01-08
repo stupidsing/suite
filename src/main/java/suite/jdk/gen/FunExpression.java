@@ -8,7 +8,6 @@ import java.util.function.BiFunction;
 
 import org.objectweb.asm.Type;
 
-import suite.jdk.JdkUtil;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
@@ -41,7 +40,7 @@ public class FunExpression {
 
 		public FunExpr field(String fieldName) {
 			return Rethrow.reflectiveOperationException(() -> {
-				Field field = clazz().getField(fieldName);
+				Field field = Helper.instance.clazz(this).getField(fieldName);
 				return cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
 			});
 		}
@@ -67,10 +66,6 @@ public class FunExpression {
 			expr.object = this;
 			expr.parameters = Arrays.asList(parameters);
 			return expr;
-		}
-
-		protected Class<?> clazz() {
-			return JdkUtil.getClassByName(FunType.typeOf(this).getClassName());
 		}
 	}
 
@@ -162,7 +157,7 @@ public class FunExpression {
 					.toList();
 
 			return Rethrow.reflectiveOperationException(() -> {
-				return object.clazz().getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
+				return Helper.instance.clazz(object).getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
 			});
 		}
 	}

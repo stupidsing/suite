@@ -17,6 +17,10 @@ public class Helper {
 	private Helper() {
 	}
 
+	public Class<?> clazz(FunExpr e) {
+		return JdkUtil.getClassByName(FunType.typeOf(e).getClassName());
+	}
+
 	public Class<?> clazz(Type type) {
 		return class_(type);
 	}
