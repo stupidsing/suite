@@ -37,6 +37,7 @@ import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.NoOperationFunExpr;
+import suite.jdk.gen.FunExpression.OpcodeFun;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.gen.FunExpression.StaticFunExpr;
@@ -172,7 +173,7 @@ public class FunCreator<I> implements Opcodes {
 		return bi(e0, e1, type -> choose(type, 0, DADD, FADD, IADD, LADD));
 	}
 
-	public FunExpr bi(FunExpr e0, FunExpr e1, Fun<Type, Integer> opcode) {
+	public FunExpr bi(FunExpr e0, FunExpr e1, OpcodeFun opcode) {
 		BinaryFunExpr expr = fe.new BinaryFunExpr();
 		expr.opcode = opcode;
 		expr.left = e0;

@@ -16,6 +16,10 @@ public class FunExpression {
 
 	public final FunCreator<?> fc;
 
+	public interface OpcodeFun {
+		public int apply(Type type);
+	}
+
 	public abstract class FunExpr {
 		public FunExpr apply(FunExpr... parameters) {
 			ApplyFunExpr expr = new ApplyFunExpr();
@@ -80,7 +84,7 @@ public class FunExpression {
 	}
 
 	public class BinaryFunExpr extends FunExpr {
-		public Fun<Type, Integer> opcode;
+		public OpcodeFun opcode;
 		public FunExpr left, right;
 	}
 
@@ -131,7 +135,7 @@ public class FunExpression {
 	}
 
 	public class If2FunExpr extends IfFunExpr {
-		public Fun<Type, Integer> opcode;
+		public OpcodeFun opcode;
 		public FunExpr left, right;
 	}
 
