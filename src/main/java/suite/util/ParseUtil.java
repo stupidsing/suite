@@ -6,7 +6,9 @@ import java.util.List;
 import suite.adt.Pair;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
+import suite.streamlet.Streamlet;
 import suite.text.Segment;
+import suite.util.FunUtil.Source;
 
 public class ParseUtil {
 
@@ -161,4 +163,29 @@ public class ParseUtil {
 
 		return null;
 	}
+
+	public static Streamlet<String> split(String in, String name) {
+		char chars[] = To.charArray(in);
+		int length = chars.length;
+
+		return Streamlet.from(new Source<String>() {
+			private int pos = 0;
+
+			public String source() {
+				if (pos < length) {
+					Segment segment = searchPosition(chars, Segment.of(pos, length), name, Assoc.LEFT, true);
+					int pos0 = pos;
+					int end;
+					if (segment != null) {
+						end = segment.start;
+						pos = segment.end;
+					} else
+						end = pos = length;
+					return new String(chars, pos0, end);
+				} else
+					return null;
+			}
+		});
+	}
+
 }
