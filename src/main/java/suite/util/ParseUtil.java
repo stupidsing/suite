@@ -100,7 +100,7 @@ public class ParseUtil {
 	}
 
 	public static Pair<String, String> search(String s, String name) {
-		Pair<String, String> pair = search(s, Segment.of(0, s.length()), name, Assoc.RIGHT, true);
+		Pair<String, String> pair = search(s, name, Assoc.RIGHT);
 		return pair != null ? pair : Pair.of(s, "");
 	}
 
