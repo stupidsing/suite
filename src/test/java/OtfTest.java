@@ -26,7 +26,7 @@ public class OtfTest {
 						|| path.toLowerCase().endsWith(".ttf") //
 				) //
 				.map2(path -> path, path -> {
-					Execute exec = new Execute(new String[] { "otfinfo", "-i", path, }, "");
+					Execute exec = new Execute(new String[] { "otfinfo", "-i", path, });
 					return Read.from(exec.out.split("\n")) //
 							.map(line -> line.split(":")) //
 							.filter(arr -> 2 <= arr.length) //

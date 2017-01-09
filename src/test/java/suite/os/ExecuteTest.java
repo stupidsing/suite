@@ -9,7 +9,7 @@ public class ExecuteTest {
 
 	@Test
 	public void test0() {
-		Execute exec = new Execute(new String[] { "git", "status", }, "");
+		Execute exec = new Execute(new String[] { "git", "status", });
 		System.out.println(exec);
 
 		assertEquals(0, exec.code);

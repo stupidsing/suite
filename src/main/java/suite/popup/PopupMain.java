@@ -59,7 +59,7 @@ public class PopupMain extends ExecutableProgram {
 
 		Fun<String, Execute> volumeControl = (String c) -> {
 			inTextField.requestFocusInWindow();
-			return new Execute(new String[] { "/usr/bin/amixer", "set", "PCM", "2" + c, }, "");
+			return new Execute(new String[] { "/usr/bin/amixer", "set", "PCM", "2" + c, });
 		};
 
 		JLabel volLabel = new JLabel("Volume");
