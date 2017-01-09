@@ -255,6 +255,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private void addAndSplit(Slots slots, KeyPointer toInsert) {
+		int half = branchFactor / 2;
 		boolean done;
 
 		// traversed to deepest. Inserts key-value pair
@@ -267,7 +268,6 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			done = size <= branchFactor;
 
 			if (!done) { // splits list into two pages
-				int half = branchFactor / 2;
 				int pointer0 = page.pointer, pointer1 = allocator.allocate();
 				Page p0 = new Page(pointer0, page.subList(0, half));
 				Page p1 = new Page(pointer1, page.subList(half, size));
@@ -301,6 +301,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	@Override
 	public void remove(Key key) {
+		int half = branchFactor / 2;
 		int root = getRoot();
 		Traverse t = new Traverse(key);
 		Stack<Slot> slots = t.traverse;
@@ -314,15 +315,10 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		if (kp != null && Objects.equals(kp.key, key)) {
 			discard(kp);
 			page.remove(index);
-		} else
-			return;
+		}
 
 		// rotates nodes around to maintain invariant
-		while (page.pointer != root) {
-			int half = branchFactor / 2;
-			if (page.size() >= half)
-				break;
-
+		while (page.pointer != root && page.size() < half) {
 			Page mp = page;
 
 			slot = slots.pop();
