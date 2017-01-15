@@ -1,6 +1,7 @@
 package suite.jdk.gen;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 import org.objectweb.asm.Type;
 
@@ -15,6 +16,21 @@ public class Helper {
 	public static Helper instance = new Helper();
 
 	private Helper() {
+	}
+
+	public int choose(Type type, int a, int d, int f, int i, int l) {
+		if (Objects.equals(type, Type.DOUBLE_TYPE))
+			return d;
+		else if (Objects.equals(type, Type.BOOLEAN_TYPE))
+			return i;
+		else if (Objects.equals(type, Type.FLOAT_TYPE))
+			return f;
+		else if (Objects.equals(type, Type.INT_TYPE))
+			return i;
+		else if (Objects.equals(type, Type.LONG_TYPE))
+			return l;
+		else
+			return a;
 	}
 
 	public Class<?> clazz(FunExpr e) {
