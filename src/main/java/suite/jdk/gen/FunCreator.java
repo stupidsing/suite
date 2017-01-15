@@ -47,9 +47,9 @@ public class FunCreator<I> implements Opcodes {
 
 	private Map<String, Pair<Type, Object>> constants;
 	private Map<String, Type> fields;
+	private MethodCreator mc;
 	private FunBytecodeGenerator fbg;
 	private FunExpression fe;
-	private MethodCreator mc;
 
 	public static <I> FunCreator<I> of(Class<I> ic) {
 		return of(ic, new HashMap<>());
