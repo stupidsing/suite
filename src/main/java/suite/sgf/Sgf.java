@@ -7,7 +7,6 @@ import java.util.function.IntPredicate;
 import suite.adt.Pair;
 import suite.os.FileUtil;
 import suite.util.Rethrow;
-import suite.util.Util;
 
 // wget -O - http://www.flygo.net/mjxj/WeiQiTianDi/dlxs_sdl.sgf | iconv -c -f CN-GB -t UTF-8
 public class Sgf {
@@ -29,15 +28,13 @@ public class Sgf {
 		public List<Node> variations = new ArrayList<>();
 	}
 
-	public void fromFile(String filename) {
-		String in = Rethrow.ioException(() -> FileUtil.read(filename));
-		from(in);
+	public Node fromFile(String filename) {
+		return from(Rethrow.ioException(() -> FileUtil.read(filename)));
 	}
 
-	public void from(String in0) {
-		String in = in0.replace("\n", "");
+	public Node from(String in) {
 		if (in.charAt(0) == '(')
-			Util.dump(readNode(in, 1).t);
+			return readNode(in, 1).t;
 		else
 			throw new RuntimeException();
 	}
@@ -47,6 +44,9 @@ public class Sgf {
 
 		while (pos < in.length())
 			switch (in.charAt(pos++)) {
+			case '\n':
+			case '\r':
+				break;
 			case ';':
 				PosPair<List<Pair<String, List<String>>>> ipCommands = readCommands(in, pos);
 				pos = ipCommands.pos;
@@ -71,6 +71,10 @@ public class Sgf {
 
 		while (pos < in.length())
 			switch (in.charAt(pos)) {
+			case '\n':
+			case '\r':
+				pos++;
+				break;
 			case ';':
 			case '(':
 			case ')':
@@ -91,6 +95,10 @@ public class Sgf {
 
 		while (pos < in.length())
 			switch (in.charAt(pos)) {
+			case '\n':
+			case '\r':
+				pos++;
+				break;
 			case '[':
 				PosPair<String> ip = readIf(in, pos + 1, ch -> ch != ']');
 				pos = ip.pos + 1;
@@ -103,15 +111,20 @@ public class Sgf {
 		throw new RuntimeException("Unexpected end of input");
 	}
 
-	private PosPair<String> readIf(String in, int pos0, IntPredicate predicate) {
+	private PosPair<String> readIf(String in, int pos, IntPredicate predicate) {
+		int pos0 = pos;
+
+		while (pos0 < in.length() && Character.isWhitespace(in.charAt(pos0)))
+			pos0++;
+
 		int pos1 = pos0;
 
-		while (pos0 < in.length()) {
-			char ch = in.charAt(pos0);
+		while (pos1 < in.length()) {
+			char ch = in.charAt(pos1);
 			if (predicate.test(ch))
-				pos0++;
+				pos1++;
 			else
-				return PosPair.of(pos0, in.substring(pos1, pos0));
+				return PosPair.of(pos1, in.substring(pos0, pos1));
 		}
 
 		throw new RuntimeException("Unexpected end of input");
