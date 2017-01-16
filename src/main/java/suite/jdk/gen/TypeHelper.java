@@ -11,11 +11,11 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 
-public class Helper {
+public class TypeHelper {
 
-	public static Helper instance = new Helper();
+	public static TypeHelper instance = new TypeHelper();
 
-	private Helper() {
+	private TypeHelper() {
 	}
 
 	public int choose(Type type, int a, int d, int f, int i, int l) {

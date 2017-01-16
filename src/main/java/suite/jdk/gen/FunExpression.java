@@ -41,7 +41,7 @@ public class FunExpression {
 
 		public FunExpr field(String fieldName) {
 			return Rethrow.reflectiveOperationException(() -> {
-				Field field = Helper.instance.clazz(this).getField(fieldName);
+				Field field = TypeHelper.instance.clazz(this).getField(fieldName);
 				return cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
 			});
 		}
@@ -154,11 +154,11 @@ public class FunExpression {
 
 			@SuppressWarnings("unchecked")
 			List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(array) //
-					.map(Helper.instance::clazz) //
+					.map(TypeHelper.instance::clazz) //
 					.toList();
 
 			return Rethrow.reflectiveOperationException(() -> {
-				return Helper.instance.clazz(object).getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
+				return TypeHelper.instance.clazz(object).getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
 			});
 		}
 	}

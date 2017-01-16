@@ -130,7 +130,7 @@ public class FunCreator<I> implements Opcodes {
 
 		mc.create(cw, methodName, Type.getMethodDescriptor(returnType, types), mv -> {
 			fbg.visit(mv, expression);
-			mv.visitInsn(Helper.instance.choose(returnType, ARETURN, DRETURN, FRETURN, IRETURN, LRETURN));
+			mv.visitInsn(TypeHelper.instance.choose(returnType, ARETURN, DRETURN, FRETURN, IRETURN, LRETURN));
 			mv.visitMaxs(0, localTypes.size());
 		});
 
@@ -159,7 +159,7 @@ public class FunCreator<I> implements Opcodes {
 	}
 
 	public FunExpr add(FunExpr e0, FunExpr e1) {
-		return bi(e0, e1, type -> Helper.instance.choose(type, 0, DADD, FADD, IADD, LADD));
+		return bi(e0, e1, type -> TypeHelper.instance.choose(type, 0, DADD, FADD, IADD, LADD));
 	}
 
 	public FunExpr bi(FunExpr e0, FunExpr e1, ToIntFunction<Type> opcode) {

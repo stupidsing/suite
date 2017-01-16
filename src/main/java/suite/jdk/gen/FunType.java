@@ -30,7 +30,7 @@ public class FunType {
 	public static Type typeOf(FunExpr e) {
 		if (e instanceof ApplyFunExpr) {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
-			return Type.getType(Helper.instance.method(expr.object).getReturnType());
+			return Type.getType(TypeHelper.instance.method(expr.object).getReturnType());
 		} else if (e instanceof AssignFunExpr)
 			return Type.getType(void.class);
 		else if (e instanceof BinaryFunExpr) {
