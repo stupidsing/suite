@@ -33,19 +33,19 @@ public class TypeHelper {
 			return a;
 	}
 
-	public Class<?> clazz(FunExpr e) {
+	public Class<?> classOf(FunExpr e) {
 		return JdkUtil.getClassByName(FunType.typeOf(e).getClassName());
 	}
 
-	public Class<?> clazz(Type type) {
+	public Class<?> classOf(Type type) {
 		return class_(type);
 	}
 
-	public Method method(FunExpr e) {
-		return method(class_(FunType.typeOf(e)));
+	public Method methodOf(FunExpr e) {
+		return methodOf(class_(FunType.typeOf(e)));
 	}
 
-	public Method method(Class<?> clazz) {
+	public Method methodOf(Class<?> clazz) {
 		if (clazz == Fun.class)
 			return Rethrow.reflectiveOperationException(() -> Fun.class.getMethod("apply", Object.class));
 		else
