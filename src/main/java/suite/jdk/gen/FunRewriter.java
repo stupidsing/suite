@@ -14,7 +14,7 @@ import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.DeclareParameterFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 
-public class FunRewriter {
+public class FunRewriter extends FunConstructor {
 
 	private static Inspect inspect = new Inspect();
 
@@ -48,12 +48,12 @@ public class FunRewriter {
 			Class<?> pts[] = TypeHelper.instance.methodOf(e_.interfaceClass).getParameterTypes();
 			if (e instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr expr = (Declare1ParameterFunExpr) e_;
-				FunExpr f1 = expr.doFun.apply(fc.local(1, pts[0]));
-				return fc.seq(fe.new NoOperationFunExpr(), rewrite(f1));
+				FunExpr f1 = expr.doFun.apply(local(1, pts[0]));
+				return seq(fe.new NoOperationFunExpr(), rewrite(f1));
 			} else if (e instanceof Declare2ParameterFunExpr) {
 				Declare2ParameterFunExpr expr = (Declare2ParameterFunExpr) e_;
-				FunExpr f1 = expr.doFun.apply(fc.local(1, pts[0]), fc.local(2, pts[1]));
-				return fc.seq(fe.new NoOperationFunExpr(), rewrite(f1));
+				FunExpr f1 = expr.doFun.apply(local(1, pts[0]), local(2, pts[1]));
+				return seq(fe.new NoOperationFunExpr(), rewrite(f1));
 			} else
 				return null;
 		} else if (e instanceof DeclareLocalFunExpr) {
@@ -67,7 +67,7 @@ public class FunRewriter {
 			afe.index = index;
 			afe.value = expr.value;
 
-			return fc.seq(afe, rewrite(expr.doFun.apply(fc.local(index, type))));
+			return seq(afe, rewrite(expr.doFun.apply(local(index, type))));
 		} else
 			return null;
 	}
