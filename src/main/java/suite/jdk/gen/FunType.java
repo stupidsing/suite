@@ -58,7 +58,7 @@ public class FunType {
 			IfFunExpr expr = (IfFunExpr) e;
 			return typeOf(expr.then);
 		} else if (e instanceof InstanceOfFunExpr)
-			return Type.getType(boolean.class);
+			return Type.BOOLEAN_TYPE;
 		else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
 			return Type.getType(expr.method().getReturnType());
@@ -66,9 +66,9 @@ public class FunType {
 			LocalFunExpr expr = (LocalFunExpr) e;
 			return expr.type;
 		} else if (e instanceof NoOperationFunExpr)
-			return Type.getType(void.class);
+			return Type.VOID_TYPE;
 		else if (e instanceof PrintlnFunExpr)
-			return Type.getType(void.class);
+			return Type.VOID_TYPE;
 		else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;
 			return typeOf(expr.right);
