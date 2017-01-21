@@ -15,7 +15,7 @@ import suite.util.Rethrow;
 
 public class FunExpression {
 
-	public final FunCreator<?> fc;
+	public final FunConstructor fc;
 
 	public abstract class FunExpr {
 		public FunExpr apply(FunExpr... parameters) {
@@ -158,7 +158,8 @@ public class FunExpression {
 					.toList();
 
 			return Rethrow.reflectiveOperationException(() -> {
-				return TypeHelper.instance.classOf(object).getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
+				return TypeHelper.instance.classOf(object).getMethod(methodName,
+						parameterTypes.toArray(new Class<?>[0]));
 			});
 		}
 	}
@@ -185,7 +186,7 @@ public class FunExpression {
 		public String field;
 	}
 
-	public FunExpression(FunCreator<?> fc) {
+	public FunExpression(FunConstructor fc) {
 		this.fc = fc;
 	}
 

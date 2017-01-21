@@ -18,18 +18,19 @@ public class FunRewriter {
 
 	private static Inspect inspect = new Inspect();
 
+	private FunCreator<?> fc;
 	private FunExpression fe;
 
-	public FunRewriter(FunExpression fe) {
+	public FunRewriter(FunCreator<?> fc, FunExpression fe) {
+		this.fc = fc;
 		this.fe = fe;
 	}
 
 	public FunExpr rewrite(FunExpr expr0) {
-		FunCreator<?> fc = fe.fc;
-		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, e -> rewrite_(fc, e), expr0);
+		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, this::rewrite_, expr0);
 	}
 
-	private FunExpr rewrite_(FunCreator<?> fc, FunExpr e) {
+	private FunExpr rewrite_(FunExpr e) {
 		if (e instanceof ApplyFunExpr) {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
 			Method method = TypeHelper.instance.methodOf(expr.object);
