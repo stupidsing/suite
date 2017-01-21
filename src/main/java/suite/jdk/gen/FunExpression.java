@@ -47,7 +47,7 @@ public class FunExpression {
 		}
 
 		public FunExpr field(String fieldName, Type type) {
-			FieldFunExpr expr = new FieldFunExpr();
+			FieldTypeFunExpr expr = new FieldTypeFunExpr();
 			expr.type = type;
 			expr.field = fieldName;
 			expr.object = this;
@@ -118,9 +118,12 @@ public class FunExpression {
 	}
 
 	public class FieldFunExpr extends FunExpr {
-		public Type type;
 		public FunExpr object;
 		public String field;
+	}
+
+	public class FieldTypeFunExpr extends FieldFunExpr {
+		public Type type;
 	}
 
 	public class IfFunExpr extends FunExpr {

@@ -14,7 +14,7 @@ import suite.jdk.gen.FunExpression.BinaryFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
 import suite.jdk.gen.FunExpression.CheckCastFunExpr;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
-import suite.jdk.gen.FunExpression.FieldFunExpr;
+import suite.jdk.gen.FunExpression.FieldTypeFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.If2FunExpr;
@@ -56,8 +56,8 @@ public class FunBytecodeGenerator implements Opcodes {
 		} else if (e instanceof ConstantFunExpr) {
 			ConstantFunExpr expr = (ConstantFunExpr) e;
 			mc.visitLdc(mv, expr);
-		} else if (e instanceof FieldFunExpr) {
-			FieldFunExpr expr = (FieldFunExpr) e;
+		} else if (e instanceof FieldTypeFunExpr) {
+			FieldTypeFunExpr expr = (FieldTypeFunExpr) e;
 			visit(mv, expr.object);
 			mv.visitFieldInsn(GETFIELD, FunType.typeDesc(expr.object), expr.field, FunType.typeDesc(expr));
 		} else if (e instanceof If1FunExpr) {

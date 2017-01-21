@@ -10,7 +10,7 @@ import suite.jdk.gen.FunExpression.CheckCastFunExpr;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.DeclareParameterFunExpr;
-import suite.jdk.gen.FunExpression.FieldFunExpr;
+import suite.jdk.gen.FunExpression.FieldTypeFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.IfFunExpr;
 import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
@@ -51,8 +51,8 @@ public class FunType {
 		} else if (e instanceof DeclareParameterFunExpr) {
 			DeclareParameterFunExpr expr = (DeclareParameterFunExpr) e;
 			return Type.getType(expr.interfaceClass);
-		} else if (e instanceof FieldFunExpr) {
-			FieldFunExpr expr = (FieldFunExpr) e;
+		} else if (e instanceof FieldTypeFunExpr) {
+			FieldTypeFunExpr expr = (FieldTypeFunExpr) e;
 			return expr.type;
 		} else if (e instanceof IfFunExpr) {
 			IfFunExpr expr = (IfFunExpr) e;
