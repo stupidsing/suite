@@ -13,6 +13,7 @@ import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.DeclareParameterFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
+import suite.streamlet.Read;
 
 public class FunRewriter extends FunConstructor {
 
@@ -33,8 +34,10 @@ public class FunRewriter extends FunConstructor {
 	private FunExpr rewrite_(FunExpr e) {
 		if (e instanceof ApplyFunExpr) {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
-			Method method = TypeHelper.instance.methodOf(expr.object);
-			return expr.object.invoke(method.getName(), expr.parameters);
+			FunExpr object = rewrite(expr.object);
+			Method method = TypeHelper.instance.methodOf(object);
+			FunExpr parameters[] = Read.from(expr.parameters).map(this::rewrite).toList().toArray(new FunExpr[0]);
+			return object.invoke(method.getName(), parameters);
 		} else if (e instanceof CastFunExpr) {
 			CastFunExpr cfe = (CastFunExpr) e;
 			FunExpr expr = cfe.expr;
@@ -58,14 +61,15 @@ public class FunRewriter extends FunConstructor {
 				return null;
 		} else if (e instanceof DeclareLocalFunExpr) {
 			DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
-			Type type = FunType.typeOf(expr.value);
+			FunExpr value = rewrite(expr.value);
+			Type type = FunType.typeOf(value);
 
 			int index = fc.localTypes.size();
 			fc.localTypes.add(type);
 
 			AssignFunExpr afe = fe.new AssignFunExpr();
 			afe.index = index;
-			afe.value = expr.value;
+			afe.value = value;
 
 			return seq(afe, rewrite(expr.doFun.apply(local(index, type))));
 		} else
