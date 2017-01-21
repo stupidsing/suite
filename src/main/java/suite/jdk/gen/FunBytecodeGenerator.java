@@ -22,7 +22,6 @@ import suite.jdk.gen.FunExpression.IfFunExpr;
 import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
-import suite.jdk.gen.FunExpression.NoOperationFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.gen.FunExpression.StaticFunExpr;
@@ -40,7 +39,8 @@ public class FunBytecodeGenerator implements Opcodes {
 		if (e instanceof AssignFunExpr) {
 			AssignFunExpr expr = (AssignFunExpr) e;
 			visit(mv, expr.value);
-			mv.visitVarInsn(TypeHelper.instance.choose(FunType.typeOf(expr.value), ASTORE, DSTORE, FSTORE, ISTORE, LSTORE), expr.index);
+			mv.visitVarInsn(TypeHelper.instance.choose(FunType.typeOf(expr.value), ASTORE, DSTORE, FSTORE, ISTORE, LSTORE),
+					expr.index);
 		} else if (e instanceof BinaryFunExpr) {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
 			visit(mv, expr.left);
@@ -97,9 +97,7 @@ public class FunBytecodeGenerator implements Opcodes {
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
 			mv.visitVarInsn(TypeHelper.instance.choose(FunType.typeOf(expr), ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.index);
-		} else if (e instanceof NoOperationFunExpr)
-			;
-		else if (e instanceof PrintlnFunExpr) {
+		} else if (e instanceof PrintlnFunExpr) {
 			PrintlnFunExpr expr = (PrintlnFunExpr) e;
 			String td = Type.getDescriptor(PrintStream.class);
 			mv.visitFieldInsn(GETSTATIC, Type.getInternalName(System.class), "out", td);

@@ -161,8 +161,7 @@ public class FunExpression {
 					.toList();
 
 			return Rethrow.reflectiveOperationException(() -> {
-				return TypeHelper.instance.classOf(object).getMethod(methodName,
-						parameterTypes.toArray(new Class<?>[0]));
+				return TypeHelper.instance.classOf(object).getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
 			});
 		}
 	}
@@ -170,9 +169,6 @@ public class FunExpression {
 	public class LocalFunExpr extends FunExpr {
 		public Type type;
 		public int index;
-	}
-
-	public class NoOperationFunExpr extends FunExpr {
 	}
 
 	public class PrintlnFunExpr extends FunExpr {

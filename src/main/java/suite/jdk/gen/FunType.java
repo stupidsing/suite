@@ -16,7 +16,6 @@ import suite.jdk.gen.FunExpression.IfFunExpr;
 import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
-import suite.jdk.gen.FunExpression.NoOperationFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.gen.FunExpression.StaticFunExpr;
@@ -65,9 +64,7 @@ public class FunType {
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
 			return expr.type;
-		} else if (e instanceof NoOperationFunExpr)
-			return Type.VOID_TYPE;
-		else if (e instanceof PrintlnFunExpr)
+		} else if (e instanceof PrintlnFunExpr)
 			return Type.VOID_TYPE;
 		else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;

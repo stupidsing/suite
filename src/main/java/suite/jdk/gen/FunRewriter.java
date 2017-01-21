@@ -51,12 +51,10 @@ public class FunRewriter extends FunConstructor {
 			Class<?> pts[] = TypeHelper.instance.methodOf(e_.interfaceClass).getParameterTypes();
 			if (e instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr expr = (Declare1ParameterFunExpr) e_;
-				FunExpr f1 = expr.doFun.apply(local(1, pts[0]));
-				return seq(fe.new NoOperationFunExpr(), rewrite(f1));
+				return rewrite(expr.doFun.apply(local(1, pts[0])));
 			} else if (e instanceof Declare2ParameterFunExpr) {
 				Declare2ParameterFunExpr expr = (Declare2ParameterFunExpr) e_;
-				FunExpr f1 = expr.doFun.apply(local(1, pts[0]), local(2, pts[1]));
-				return seq(fe.new NoOperationFunExpr(), rewrite(f1));
+				return rewrite(expr.doFun.apply(local(1, pts[0]), local(2, pts[1])));
 			} else
 				return null;
 		} else if (e instanceof DeclareLocalFunExpr) {
