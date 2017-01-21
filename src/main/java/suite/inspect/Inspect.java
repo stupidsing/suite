@@ -51,15 +51,20 @@ public class Inspect {
 	public <T> T rewrite(Class<T> baseClass, Object ctorParameters[], Fun<T, T> fun, T t0) {
 		return Rethrow.reflectiveOperationException(() -> {
 			T t1 = fun.apply(t0);
-			T t2 = t1 != null ? t1 : t0;
-			Class<?> clazz = t2.getClass();
-			@SuppressWarnings("unchecked")
-			T t3 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance(ctorParameters);
-			for (Field field : fields(clazz)) {
-				Object value0 = field.get(t2);
+			T t3;
+			if (t1 != null)
+				t3 = t1;
+			else {
+				Class<?> clazz = t0.getClass();
 				@SuppressWarnings("unchecked")
-				Object value1 = baseClass.isInstance(value0) ? rewrite(baseClass, ctorParameters, fun, (T) value0) : value0;
-				field.set(t3, value1);
+				T t2 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance(ctorParameters);
+				t3 = t2;
+				for (Field field : fields(clazz)) {
+					Object v0 = field.get(t0);
+					@SuppressWarnings("unchecked")
+					Object v1 = baseClass.isInstance(v0) ? rewrite(baseClass, ctorParameters, fun, (T) v0) : v0;
+					field.set(t3, v1);
+				}
 			}
 			return t3;
 		});
