@@ -2,6 +2,7 @@ package suite.inspect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class Inspect {
 		return rewrite(baseClass, null, fun, t0);
 	}
 
-	public <T> T rewrite(Class<T> baseClass, Object ctorParameters[], Fun<T, T> fun, T t0) {
+	public <T> T rewrite(Class<T> baseClass, Object cp[], Fun<T, T> fun, T t0) {
 		return Rethrow.reflectiveOperationException(() -> {
 			T t1 = fun.apply(t0);
 			T t3;
@@ -57,17 +58,29 @@ public class Inspect {
 			else {
 				Class<?> clazz = t0.getClass();
 				@SuppressWarnings("unchecked")
-				T t2 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance(ctorParameters);
+				T t2 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance(cp);
 				t3 = t2;
 				for (Field field : fields(clazz)) {
 					Object v0 = field.get(t0);
-					@SuppressWarnings("unchecked")
-					Object v1 = baseClass.isInstance(v0) ? rewrite(baseClass, ctorParameters, fun, (T) v0) : v0;
+					Object v1 = rewriteValue(baseClass, cp, fun, v0);
 					field.set(t3, v1);
 				}
 			}
 			return t3;
 		});
+	}
+
+	private <T> Object rewriteValue(Class<T> baseClass, Object cp[], Fun<T, T> fun, Object t0) {
+		if (baseClass.isInstance(t0)) {
+			@SuppressWarnings("unchecked")
+			T t1 = rewrite(baseClass, cp, fun, (T) t0);
+			return t1;
+		} else if (Collection.class.isInstance(t0))
+			return Read.from((Collection<?>) t0) //
+					.map(e -> rewriteValue(baseClass, cp, fun, e)) //
+					.toList();
+		else
+			return t0;
 	}
 
 	public List<Field> fields(Class<?> clazz) {
