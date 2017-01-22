@@ -13,6 +13,8 @@ import suite.util.Rethrow;
 
 public class TypeHelper {
 
+	private static FunType ft = new FunType();
+
 	public static int choose(Type type, int a, int d, int f, int i, int l) {
 		if (Objects.equals(type, Type.DOUBLE_TYPE))
 			return d;
@@ -29,7 +31,7 @@ public class TypeHelper {
 	}
 
 	public static Class<?> classOf(FunExpr e) {
-		return JdkUtil.getClassByName(FunType.typeOf(e).getClassName());
+		return JdkUtil.getClassByName(ft.typeOf(e).getClassName());
 	}
 
 	public static Class<?> classOf(Type type) {
@@ -37,7 +39,7 @@ public class TypeHelper {
 	}
 
 	public static Method methodOf(FunExpr e) {
-		return methodOf(class_(FunType.typeOf(e)));
+		return methodOf(class_(ft.typeOf(e)));
 	}
 
 	public static Method methodOf(Class<?> clazz) {

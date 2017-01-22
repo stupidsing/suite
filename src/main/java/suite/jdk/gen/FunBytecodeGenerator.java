@@ -29,6 +29,7 @@ import suite.streamlet.Read;
 
 public class FunBytecodeGenerator implements Opcodes {
 
+	private FunType ft = new FunType();
 	private MethodCreator mc;
 
 	public FunBytecodeGenerator(MethodCreator mc) {
@@ -39,12 +40,12 @@ public class FunBytecodeGenerator implements Opcodes {
 		if (e instanceof AssignFunExpr) {
 			AssignFunExpr expr = (AssignFunExpr) e;
 			visit(mv, expr.value);
-			mv.visitVarInsn(TypeHelper.choose(FunType.typeOf(expr.value), ASTORE, DSTORE, FSTORE, ISTORE, LSTORE), expr.index);
+			mv.visitVarInsn(TypeHelper.choose(ft.typeOf(expr.value), ASTORE, DSTORE, FSTORE, ISTORE, LSTORE), expr.index);
 		} else if (e instanceof BinaryFunExpr) {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
 			visit(mv, expr.left);
 			visit(mv, expr.right);
-			mv.visitInsn(expr.opcode.applyAsInt(FunType.typeOf(expr.left)));
+			mv.visitInsn(expr.opcode.applyAsInt(ft.typeOf(expr.left)));
 		} else if (e instanceof CastFunExpr) {
 			CastFunExpr expr = (CastFunExpr) e;
 			visit(mv, expr.expr);
@@ -58,7 +59,7 @@ public class FunBytecodeGenerator implements Opcodes {
 		} else if (e instanceof FieldTypeFunExpr) {
 			FieldTypeFunExpr expr = (FieldTypeFunExpr) e;
 			visit(mv, expr.object);
-			mv.visitFieldInsn(GETFIELD, FunType.typeDescOf(expr.object), expr.field, FunType.typeDescOf(expr));
+			mv.visitFieldInsn(GETFIELD, ft.typeDescOf(expr.object), expr.field, ft.typeDescOf(expr));
 		} else if (e instanceof If1FunExpr) {
 			If1FunExpr expr = (If1FunExpr) e;
 			visit(mv, expr.if_);
@@ -67,7 +68,7 @@ public class FunBytecodeGenerator implements Opcodes {
 			If2FunExpr expr = (If2FunExpr) e;
 			visit(mv, expr.left);
 			visit(mv, expr.right);
-			visitIf(expr.opcode.applyAsInt(FunType.typeOf(expr.left)), mv, expr);
+			visitIf(expr.opcode.applyAsInt(ft.typeOf(expr.left)), mv, expr);
 		} else if (e instanceof InstanceOfFunExpr) {
 			InstanceOfFunExpr expr = (InstanceOfFunExpr) e;
 			visit(mv, expr.object);
@@ -75,7 +76,7 @@ public class FunBytecodeGenerator implements Opcodes {
 		} else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
 			Type array[] = Read.from(expr.parameters) //
-					.map(FunType::typeOf) //
+					.map(ft::typeOf) //
 					.toList() //
 					.toArray(new Type[0]);
 
@@ -89,13 +90,13 @@ public class FunBytecodeGenerator implements Opcodes {
 
 			mv.visitMethodInsn( //
 					opcode, //
-					FunType.typeDescOf(expr.object), //
+					ft.typeDescOf(expr.object), //
 					expr.methodName, //
-					Type.getMethodDescriptor(FunType.typeOf(expr), array), //
+					Type.getMethodDescriptor(ft.typeOf(expr), array), //
 					opcode == Opcode.INVOKEINTERFACE);
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
-			mv.visitVarInsn(TypeHelper.choose(FunType.typeOf(expr), ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.index);
+			mv.visitVarInsn(TypeHelper.choose(ft.typeOf(expr), ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.index);
 		} else if (e instanceof PrintlnFunExpr) {
 			PrintlnFunExpr expr = (PrintlnFunExpr) e;
 			String td = Type.getDescriptor(PrintStream.class);
@@ -106,7 +107,7 @@ public class FunBytecodeGenerator implements Opcodes {
 		} else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;
 			visit(mv, expr.left);
-			if (!Objects.equals(FunType.typeOf(expr.left), Type.VOID_TYPE))
+			if (!Objects.equals(ft.typeOf(expr.left), Type.VOID_TYPE))
 				mv.visitInsn(POP);
 			visit(mv, expr.right);
 		} else if (e instanceof StaticFunExpr) {

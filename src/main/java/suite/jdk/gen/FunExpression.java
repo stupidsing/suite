@@ -14,6 +14,7 @@ import suite.util.Rethrow;
 
 public class FunExpression {
 
+	private FunType ft = new FunType();
 	public final FunConstructor fc;
 
 	public abstract class FunExpr {
@@ -152,7 +153,7 @@ public class FunExpression {
 
 		public Method method() {
 			Type array[] = Read.from(parameters) //
-					.map(FunType::typeOf) //
+					.map(ft::typeOf) //
 					.toList() //
 					.toArray(new Type[0]);
 

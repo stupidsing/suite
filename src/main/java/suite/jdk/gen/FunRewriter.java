@@ -24,6 +24,7 @@ public class FunRewriter extends FunConstructor {
 
 	private FunCreator<?> fc;
 	private FunExpression fe;
+	private FunType ft = new FunType();
 
 	public FunRewriter(FunCreator<?> fc, FunExpression fe) {
 		this.fc = fc;
@@ -63,7 +64,7 @@ public class FunRewriter extends FunConstructor {
 		} else if (e instanceof DeclareLocalFunExpr) {
 			DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
 			FunExpr value = rewrite(expr.value);
-			Type type = FunType.typeOf(value);
+			Type type = ft.typeOf(value);
 
 			int index = fc.localTypes.size();
 			fc.localTypes.add(type);

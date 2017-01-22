@@ -22,11 +22,11 @@ import suite.jdk.gen.FunExpression.StaticFunExpr;
 
 public class FunType {
 
-	public static String typeDescOf(FunExpr e) {
+	public String typeDescOf(FunExpr e) {
 		return typeOf(e).getDescriptor();
 	}
 
-	public static Type typeOf(FunExpr e) {
+	public Type typeOf(FunExpr e) {
 		if (e instanceof ApplyFunExpr) {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
 			return Type.getType(TypeHelper.methodOf(expr.object).getReturnType());
