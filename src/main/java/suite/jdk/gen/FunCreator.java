@@ -117,7 +117,7 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 
 		mc.create(cw, methodName, Type.getMethodDescriptor(returnType, types), mv -> {
 			fbg.visit(mv, expression);
-			mv.visitInsn(TypeHelper.instance.choose(returnType, ARETURN, DRETURN, FRETURN, IRETURN, LRETURN));
+			mv.visitInsn(TypeHelper.choose(returnType, ARETURN, DRETURN, FRETURN, IRETURN, LRETURN));
 			mv.visitMaxs(0, localTypes.size());
 		});
 

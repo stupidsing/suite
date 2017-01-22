@@ -32,7 +32,7 @@ public class FunConstructor implements Opcodes {
 	}
 
 	public FunExpr add(FunExpr e0, FunExpr e1) {
-		return bi(e0, e1, type -> TypeHelper.instance.choose(type, 0, DADD, FADD, IADD, LADD));
+		return bi(e0, e1, type -> TypeHelper.choose(type, 0, DADD, FADD, IADD, LADD));
 	}
 
 	public FunExpr bi(FunExpr e0, FunExpr e1, ToIntFunction<Type> opcode) {

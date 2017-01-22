@@ -13,12 +13,7 @@ import suite.util.Rethrow;
 
 public class TypeHelper {
 
-	public static TypeHelper instance = new TypeHelper();
-
-	private TypeHelper() {
-	}
-
-	public int choose(Type type, int a, int d, int f, int i, int l) {
+	public static int choose(Type type, int a, int d, int f, int i, int l) {
 		if (Objects.equals(type, Type.DOUBLE_TYPE))
 			return d;
 		else if (Objects.equals(type, Type.BOOLEAN_TYPE))
@@ -33,26 +28,26 @@ public class TypeHelper {
 			return a;
 	}
 
-	public Class<?> classOf(FunExpr e) {
+	public static Class<?> classOf(FunExpr e) {
 		return JdkUtil.getClassByName(FunType.typeOf(e).getClassName());
 	}
 
-	public Class<?> classOf(Type type) {
+	public static Class<?> classOf(Type type) {
 		return class_(type);
 	}
 
-	public Method methodOf(FunExpr e) {
+	public static Method methodOf(FunExpr e) {
 		return methodOf(class_(FunType.typeOf(e)));
 	}
 
-	public Method methodOf(Class<?> clazz) {
+	public static Method methodOf(Class<?> clazz) {
 		if (clazz == Fun.class)
 			return Rethrow.reflectiveOperationException(() -> Fun.class.getMethod("apply", Object.class));
 		else
 			return Read.from(clazz.getDeclaredMethods()).uniqueResult();
 	}
 
-	private Class<?> class_(Type type) {
+	private static Class<?> class_(Type type) {
 		return JdkUtil.getClassByName(type.getClassName());
 	}
 

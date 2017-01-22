@@ -39,19 +39,19 @@ public class FunRewriter extends FunConstructor {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
 			FunExpr object = rewrite(expr.object);
 			FunExpr parameters[] = Read.from(expr.parameters).map(this::rewrite).toList().toArray(new FunExpr[0]);
-			Method method = TypeHelper.instance.methodOf(object);
+			Method method = TypeHelper.methodOf(object);
 			return object.invoke(method.getName(), parameters);
 		} else if (e instanceof CastFunExpr) {
 			CastFunExpr cfe = (CastFunExpr) e;
 			FunExpr expr = cfe.expr;
 			if (expr instanceof DeclareParameterFunExpr) {
-				((DeclareParameterFunExpr) expr).interfaceClass = TypeHelper.instance.classOf(cfe.type);
+				((DeclareParameterFunExpr) expr).interfaceClass = TypeHelper.classOf(cfe.type);
 				return rewrite(expr);
 			} else
 				return null;
 		} else if (e instanceof DeclareParameterFunExpr) {
 			DeclareParameterFunExpr e_ = (DeclareParameterFunExpr) e;
-			Class<?> pts[] = TypeHelper.instance.methodOf(e_.interfaceClass).getParameterTypes();
+			Class<?> pts[] = TypeHelper.methodOf(e_.interfaceClass).getParameterTypes();
 			if (e instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr expr = (Declare1ParameterFunExpr) e_;
 				return rewrite(expr.doFun.apply(local(1, pts[0])));
@@ -77,7 +77,7 @@ public class FunRewriter extends FunConstructor {
 			FieldFunExpr expr = (FieldFunExpr) e;
 			FunExpr object = rewrite(expr.object);
 			String fieldName = expr.field;
-			Class<?> clazz = TypeHelper.instance.classOf(object);
+			Class<?> clazz = TypeHelper.classOf(object);
 			Field field = Rethrow.reflectiveOperationException(() -> clazz.getField(fieldName));
 			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
 
