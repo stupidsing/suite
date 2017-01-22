@@ -1,6 +1,7 @@
 package suite.jdk.gen;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.objectweb.asm.Type;
 
@@ -21,11 +22,29 @@ import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.gen.FunExpression.StaticFunExpr;
+import suite.streamlet.Read;
+import suite.util.Rethrow;
 
 public class FunType {
 
 	public String typeDescOf(FunExpr e) {
 		return typeOf(e).getDescriptor();
+	}
+
+	public Method invokeMethodOf(InvokeFunExpr expr) {
+		Type array[] = Read.from(expr.parameters) //
+				.map(this::typeOf) //
+				.toList() //
+				.toArray(new Type[0]);
+
+		@SuppressWarnings("unchecked")
+		List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(array) //
+				.map(TypeHelper::classOf) //
+				.toList();
+
+		return Rethrow.reflectiveOperationException(() -> {
+			return classOf(expr.object).getMethod(expr.methodName, parameterTypes.toArray(new Class<?>[0]));
+		});
 	}
 
 	public Method methodOf(FunExpr e) {
@@ -70,7 +89,7 @@ public class FunType {
 			return Type.BOOLEAN_TYPE;
 		else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
-			return Type.getType(expr.method().getReturnType());
+			return Type.getType(invokeMethodOf(expr).getReturnType());
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
 			return expr.type;

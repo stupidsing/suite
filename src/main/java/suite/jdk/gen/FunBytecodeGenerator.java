@@ -80,7 +80,7 @@ public class FunBytecodeGenerator implements Opcodes {
 					.toList() //
 					.toArray(new Type[0]);
 
-			int opcode = expr.method().getDeclaringClass().isInterface() ? INVOKEINTERFACE : INVOKEVIRTUAL;
+			int opcode = ft.invokeMethodOf(expr).getDeclaringClass().isInterface() ? INVOKEINTERFACE : INVOKEVIRTUAL;
 
 			if (expr.object != null)
 				visit(mv, expr.object);

@@ -1,6 +1,5 @@
 package suite.jdk.gen;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -8,13 +7,10 @@ import java.util.function.ToIntFunction;
 
 import org.objectweb.asm.Type;
 
-import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
-import suite.util.Rethrow;
 
 public class FunExpression {
 
-	private FunType ft = new FunType();
 	public final FunConstructor fc;
 
 	public abstract class FunExpr {
@@ -150,22 +146,6 @@ public class FunExpression {
 		public String methodName;
 		public FunExpr object;
 		public List<FunExpr> parameters;
-
-		public Method method() {
-			Type array[] = Read.from(parameters) //
-					.map(ft::typeOf) //
-					.toList() //
-					.toArray(new Type[0]);
-
-			@SuppressWarnings("unchecked")
-			List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(array) //
-					.map(TypeHelper::classOf) //
-					.toList();
-
-			return Rethrow.reflectiveOperationException(() -> {
-				return ft.classOf(object).getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
-			});
-		}
 	}
 
 	public class LocalFunExpr extends FunExpr {
