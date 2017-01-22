@@ -22,7 +22,7 @@ import suite.jdk.gen.FunExpression.StaticFunExpr;
 
 public class FunType {
 
-	public static String typeDesc(FunExpr e) {
+	public static String typeDescOf(FunExpr e) {
 		return typeOf(e).getDescriptor();
 	}
 
