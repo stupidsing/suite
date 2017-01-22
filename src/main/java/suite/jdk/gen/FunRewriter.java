@@ -2,6 +2,7 @@ package suite.jdk.gen;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.objectweb.asm.Type;
 
@@ -22,12 +23,12 @@ public class FunRewriter extends FunConstructor {
 
 	private static Inspect inspect = new Inspect();
 
-	private FunCreator<?> fc;
+	private List<Type> localTypes;
 	private FunExpression fe;
 	private FunType ft;
 
 	public FunRewriter(FunCreator<?> fc, FunType ft) {
-		this.fc = fc;
+		this.localTypes = fc.localTypes;
 		this.fe = fc.fe;
 		this.ft = ft;
 	}
@@ -65,8 +66,8 @@ public class FunRewriter extends FunConstructor {
 			FunExpr value = rewrite(expr.value);
 			Type type = ft.typeOf(value);
 
-			int index = fc.localTypes.size();
-			fc.localTypes.add(type);
+			int index = localTypes.size();
+			localTypes.add(type);
 
 			AssignFunExpr afe = fe.new AssignFunExpr();
 			afe.index = index;
