@@ -26,9 +26,9 @@ public class FunRewriter extends FunConstructor {
 	private FunExpression fe;
 	private FunType ft = new FunType();
 
-	public FunRewriter(FunCreator<?> fc, FunExpression fe) {
+	public FunRewriter(FunCreator<?> fc) {
 		this.fc = fc;
-		this.fe = fe;
+		this.fe = fc.fe;
 	}
 
 	public FunExpr rewrite(FunExpr expr0) {

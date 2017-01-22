@@ -77,7 +77,7 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 	}
 
 	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
-		FunExpr expr1 = new FunRewriter(this, fe).rewrite(expr0.cast(interfaceClass));
+		FunExpr expr1 = new FunRewriter(this).rewrite(expr0.cast(interfaceClass));
 		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create_(expr1));
 
 		return fields -> Rethrow.reflectiveOperationException(() -> {
