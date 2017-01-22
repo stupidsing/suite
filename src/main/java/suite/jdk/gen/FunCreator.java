@@ -77,8 +77,9 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
 		FunType ft = new FunType();
 		FunBytecodeGenerator fbg = new FunBytecodeGenerator(ft, mc);
+		FunRewriter fr = new FunRewriter(this, ft);
 
-		FunExpr expr1 = new FunRewriter(this, ft).rewrite(expr0.cast(interfaceClass));
+		FunExpr expr1 = fr.rewrite(expr0.cast(interfaceClass));
 		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create(fbg, expr1));
 
 		return fields -> Rethrow.reflectiveOperationException(() -> {
