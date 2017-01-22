@@ -47,11 +47,11 @@ public class FunRewriter extends FunConstructor {
 			CastFunExpr cfe = (CastFunExpr) e;
 			FunExpr expr = cfe.expr;
 			if (expr instanceof DeclareParameterFunExpr)
-				((DeclareParameterFunExpr) expr).interfaceClass = TypeHelper.classOf(cfe.type);
+				ft.interfaceClasses.put((DeclareParameterFunExpr) expr, TypeHelper.classOf(cfe.type));
 			return null;
 		} else if (e instanceof DeclareParameterFunExpr) {
 			DeclareParameterFunExpr e_ = (DeclareParameterFunExpr) e;
-			Class<?> pts[] = TypeHelper.methodOf(e_.interfaceClass).getParameterTypes();
+			Class<?> pts[] = TypeHelper.methodOf(ft.interfaceClasses.get(e_)).getParameterTypes();
 			if (e instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr expr = (Declare1ParameterFunExpr) e_;
 				return rewrite(expr.doFun.apply(local(1, pts[0])));

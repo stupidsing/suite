@@ -1,7 +1,9 @@
 package suite.jdk.gen;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.objectweb.asm.Type;
 
@@ -26,6 +28,8 @@ import suite.streamlet.Read;
 import suite.util.Rethrow;
 
 public class FunType {
+
+	public final Map<DeclareParameterFunExpr, Class<?>> interfaceClasses = new HashMap<>();
 
 	public String typeDescOf(FunExpr e) {
 		return typeOf(e).getDescriptor();
@@ -78,7 +82,7 @@ public class FunType {
 			return typeOf(expr.doFun.apply(expr.value));
 		} else if (e instanceof DeclareParameterFunExpr) {
 			DeclareParameterFunExpr expr = (DeclareParameterFunExpr) e;
-			return Type.getType(expr.interfaceClass);
+			return Type.getType(interfaceClasses.get(expr));
 		} else if (e instanceof FieldTypeFunExpr) {
 			FieldTypeFunExpr expr = (FieldTypeFunExpr) e;
 			return expr.type;

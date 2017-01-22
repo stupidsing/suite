@@ -95,7 +95,6 @@ public class FunExpression {
 	}
 
 	public class DeclareParameterFunExpr extends FunExpr {
-		public Class<?> interfaceClass;
 	}
 
 	public class Declare1ParameterFunExpr extends DeclareParameterFunExpr {
