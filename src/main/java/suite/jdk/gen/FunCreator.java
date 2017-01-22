@@ -73,7 +73,6 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 		constants = new HashMap<>();
 		fields = fs;
 		mc = new MethodCreator();
-		fe = new FunExpression();
 		fbg = new FunBytecodeGenerator(mc);
 	}
 
