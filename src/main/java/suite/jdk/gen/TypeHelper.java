@@ -34,12 +34,8 @@ public class TypeHelper {
 		return JdkUtil.getClassByName(ft.typeOf(e).getClassName());
 	}
 
-	public static Class<?> classOf(Type type) {
-		return class_(type);
-	}
-
 	public static Method methodOf(FunExpr e) {
-		return methodOf(class_(ft.typeOf(e)));
+		return methodOf(classOf(ft.typeOf(e)));
 	}
 
 	public static Method methodOf(Class<?> clazz) {
@@ -49,7 +45,7 @@ public class TypeHelper {
 			return Read.from(clazz.getDeclaredMethods()).uniqueResult();
 	}
 
-	private static Class<?> class_(Type type) {
+	public static Class<?> classOf(Type type) {
 		return JdkUtil.getClassByName(type.getClassName());
 	}
 
