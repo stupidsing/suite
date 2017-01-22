@@ -36,7 +36,6 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 	private Map<String, Pair<Type, Object>> constants;
 	private Map<String, Type> fields;
 	private MethodCreator mc;
-	private FunBytecodeGenerator fbg;
 
 	public static <I> FunCreator<I> of(Class<I> ic) {
 		return of(ic, new HashMap<>());
@@ -73,12 +72,14 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 		constants = new HashMap<>();
 		fields = fs;
 		mc = new MethodCreator();
-		fbg = new FunBytecodeGenerator(mc);
 	}
 
 	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
-		FunExpr expr1 = new FunRewriter(this).rewrite(expr0.cast(interfaceClass));
-		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create_(expr1));
+		FunType ft = new FunType();
+		FunBytecodeGenerator fbg = new FunBytecodeGenerator(ft, mc);
+
+		FunExpr expr1 = new FunRewriter(this, ft).rewrite(expr0.cast(interfaceClass));
+		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create(fbg, expr1));
 
 		return fields -> Rethrow.reflectiveOperationException(() -> {
 			I t = clazz.newInstance();
@@ -88,7 +89,7 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 		});
 	}
 
-	private Class<? extends I> create_(FunExpr expression) throws NoSuchMethodException {
+	private Class<? extends I> create(FunBytecodeGenerator fbg, FunExpr expression) throws NoSuchMethodException {
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 		Type types[] = parameterTypes.toArray(new Type[0]);
 

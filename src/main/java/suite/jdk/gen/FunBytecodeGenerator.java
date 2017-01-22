@@ -29,10 +29,11 @@ import suite.streamlet.Read;
 
 public class FunBytecodeGenerator implements Opcodes {
 
-	private FunType ft = new FunType();
+	private FunType ft;
 	private MethodCreator mc;
 
-	public FunBytecodeGenerator(MethodCreator mc) {
+	public FunBytecodeGenerator(FunType ft, MethodCreator mc) {
+		this.ft = ft;
 		this.mc = mc;
 	}
 
