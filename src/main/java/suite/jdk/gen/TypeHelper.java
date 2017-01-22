@@ -30,12 +30,12 @@ public class TypeHelper {
 			return a;
 	}
 
-	public static Class<?> classOf(FunExpr e) {
-		return classOf(ft.typeOf(e));
+	public static Method methodOf(FunExpr e) {
+		return methodOf(classOf(e));
 	}
 
-	public static Method methodOf(FunExpr e) {
-		return methodOf(classOf(ft.typeOf(e)));
+	public static Class<?> classOf(FunExpr e) {
+		return classOf(ft.typeOf(e));
 	}
 
 	public static Method methodOf(Class<?> clazz) {
