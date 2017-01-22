@@ -11,8 +11,6 @@ import suite.util.FunUtil.Fun;
 
 public class FunExpression {
 
-	public final FunConstructor fc;
-
 	public abstract class FunExpr {
 		public FunExpr apply(FunExpr... parameters) {
 			ApplyFunExpr expr = new ApplyFunExpr();
@@ -165,10 +163,6 @@ public class FunExpression {
 		public Type type;
 		public String clazzType;
 		public String field;
-	}
-
-	public FunExpression(FunConstructor fc) {
-		this.fc = fc;
 	}
 
 }

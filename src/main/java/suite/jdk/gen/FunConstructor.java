@@ -21,7 +21,7 @@ import suite.util.FunUtil.Fun;
 
 public class FunConstructor implements Opcodes {
 
-	protected FunExpression fe = new FunExpression(this);
+	protected FunExpression fe = new FunExpression();
 
 	public FunExpr _true() {
 		return constant(1);
