@@ -31,7 +31,7 @@ public class TypeHelper {
 	}
 
 	public static Class<?> classOf(FunExpr e) {
-		return JdkUtil.getClassByName(ft.typeOf(e).getClassName());
+		return classOf(ft.typeOf(e));
 	}
 
 	public static Method methodOf(FunExpr e) {
