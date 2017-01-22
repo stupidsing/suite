@@ -25,12 +25,10 @@ public class FunRewriter extends FunConstructor {
 	private static Inspect inspect = new Inspect();
 
 	private List<Type> localTypes;
-	private FunExpression fe;
 	private FunType ft;
 
-	public FunRewriter(FunCreator<?> fc, FunType ft) {
-		this.localTypes = new ArrayList<>(fc.localTypes);
-		this.fe = fc.fe;
+	public FunRewriter(FunType ft, List<Type> parameterTypes) {
+		this.localTypes = new ArrayList<>(parameterTypes);
 		this.ft = ft;
 	}
 
