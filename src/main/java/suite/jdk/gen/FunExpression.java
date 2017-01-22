@@ -1,6 +1,5 @@
 package suite.jdk.gen;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +20,7 @@ public class FunExpression {
 		public FunExpr apply(FunExpr... parameters) {
 			ApplyFunExpr expr = new ApplyFunExpr();
 			expr.object = this;
-			expr.parameters = parameters;
+			expr.parameters = Arrays.asList(parameters);
 			return expr;
 		}
 
@@ -40,10 +39,10 @@ public class FunExpression {
 		}
 
 		public FunExpr field(String fieldName) {
-			return Rethrow.reflectiveOperationException(() -> {
-				Field field = TypeHelper.instance.classOf(this).getField(fieldName);
-				return cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
-			});
+			FieldFunExpr expr = new FieldFunExpr();
+			expr.field = fieldName;
+			expr.object = this;
+			return expr;
 		}
 
 		public FunExpr field(String fieldName, Type type) {
@@ -72,7 +71,7 @@ public class FunExpression {
 
 	public class ApplyFunExpr extends FunExpr {
 		public FunExpr object;
-		public FunExpr parameters[];
+		public List<FunExpr> parameters;
 	}
 
 	public class AssignFunExpr extends FunExpr {
@@ -122,8 +121,10 @@ public class FunExpression {
 		public String field;
 	}
 
-	public class FieldTypeFunExpr extends FieldFunExpr {
+	public class FieldTypeFunExpr extends FunExpr {
 		public Type type;
+		public FunExpr object;
+		public String field;
 	}
 
 	public class IfFunExpr extends FunExpr {

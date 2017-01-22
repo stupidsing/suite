@@ -1,5 +1,6 @@
 package suite.jdk.gen;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.objectweb.asm.Type;
@@ -12,8 +13,10 @@ import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.DeclareParameterFunExpr;
+import suite.jdk.gen.FunExpression.FieldFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.streamlet.Read;
+import suite.util.Rethrow;
 
 public class FunRewriter extends FunConstructor {
 
@@ -35,8 +38,8 @@ public class FunRewriter extends FunConstructor {
 		if (e instanceof ApplyFunExpr) {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
 			FunExpr object = rewrite(expr.object);
-			Method method = TypeHelper.instance.methodOf(object);
 			FunExpr parameters[] = Read.from(expr.parameters).map(this::rewrite).toList().toArray(new FunExpr[0]);
+			Method method = TypeHelper.instance.methodOf(object);
 			return object.invoke(method.getName(), parameters);
 		} else if (e instanceof CastFunExpr) {
 			CastFunExpr cfe = (CastFunExpr) e;
@@ -70,6 +73,14 @@ public class FunRewriter extends FunConstructor {
 			afe.value = value;
 
 			return seq(afe, rewrite(expr.doFun.apply(local(index, type))));
+		} else if (e instanceof FieldFunExpr) {
+			FieldFunExpr expr = (FieldFunExpr) e;
+			FunExpr object = rewrite(expr.object);
+			String fieldName = expr.field;
+			Class<?> clazz = TypeHelper.instance.classOf(object);
+			Field field = Rethrow.reflectiveOperationException(() -> clazz.getField(fieldName));
+			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
+
 		} else
 			return null;
 	}

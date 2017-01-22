@@ -101,8 +101,7 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 				new String[] { Type.getInternalName(interfaceClass), });
 
 		for (Entry<String, Pair<Type, Object>> entry : constants.entrySet())
-			cw.visitField(ACC_PUBLIC | ACC_STATIC, entry.getKey(), entry.getValue().t0.getDescriptor(), null, null)
-					.visitEnd();
+			cw.visitField(ACC_PUBLIC | ACC_STATIC, entry.getKey(), entry.getValue().t0.getDescriptor(), null, null).visitEnd();
 
 		for (Entry<String, Type> entry : fields.entrySet())
 			cw.visitField(ACC_PUBLIC, entry.getKey(), entry.getValue().getDescriptor(), null, null).visitEnd();
