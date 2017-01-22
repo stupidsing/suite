@@ -163,7 +163,7 @@ public class FunExpression {
 					.toList();
 
 			return Rethrow.reflectiveOperationException(() -> {
-				return TypeHelper.classOf(object).getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
+				return ft.classOf(object).getMethod(methodName, parameterTypes.toArray(new Class<?>[0]));
 			});
 		}
 	}

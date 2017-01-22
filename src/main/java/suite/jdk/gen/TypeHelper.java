@@ -6,14 +6,11 @@ import java.util.Objects;
 import org.objectweb.asm.Type;
 
 import suite.jdk.JdkUtil;
-import suite.jdk.gen.FunExpression.FunExpr;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 
 public class TypeHelper {
-
-	private static FunType ft = new FunType();
 
 	public static int choose(Type type, int a, int d, int f, int i, int l) {
 		if (Objects.equals(type, Type.DOUBLE_TYPE))
@@ -28,14 +25,6 @@ public class TypeHelper {
 			return l;
 		else
 			return a;
-	}
-
-	public static Method methodOf(FunExpr e) {
-		return methodOf(classOf(e));
-	}
-
-	public static Class<?> classOf(FunExpr e) {
-		return classOf(ft.typeOf(e));
 	}
 
 	public static Method methodOf(Class<?> clazz) {

@@ -1,5 +1,7 @@
 package suite.jdk.gen;
 
+import java.lang.reflect.Method;
+
 import org.objectweb.asm.Type;
 
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
@@ -26,10 +28,18 @@ public class FunType {
 		return typeOf(e).getDescriptor();
 	}
 
+	public Method methodOf(FunExpr e) {
+		return TypeHelper.methodOf(classOf(e));
+	}
+
+	public Class<?> classOf(FunExpr e) {
+		return TypeHelper.classOf(typeOf(e));
+	}
+
 	public Type typeOf(FunExpr e) {
 		if (e instanceof ApplyFunExpr) {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
-			return Type.getType(TypeHelper.methodOf(expr.object).getReturnType());
+			return Type.getType(methodOf(expr.object).getReturnType());
 		} else if (e instanceof AssignFunExpr)
 			return Type.getType(void.class);
 		else if (e instanceof BinaryFunExpr) {

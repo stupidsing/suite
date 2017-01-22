@@ -40,7 +40,7 @@ public class FunRewriter extends FunConstructor {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
 			FunExpr object = rewrite(expr.object);
 			FunExpr parameters[] = Read.from(expr.parameters).map(this::rewrite).toList().toArray(new FunExpr[0]);
-			Method method = TypeHelper.methodOf(object);
+			Method method = ft.methodOf(object);
 			return object.invoke(method.getName(), parameters);
 		} else if (e instanceof CastFunExpr) {
 			CastFunExpr cfe = (CastFunExpr) e;
@@ -78,7 +78,7 @@ public class FunRewriter extends FunConstructor {
 			FieldFunExpr expr = (FieldFunExpr) e;
 			FunExpr object = rewrite(expr.object);
 			String fieldName = expr.field;
-			Class<?> clazz = TypeHelper.classOf(object);
+			Class<?> clazz = ft.classOf(object);
 			Field field = Rethrow.reflectiveOperationException(() -> clazz.getField(fieldName));
 			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
 
