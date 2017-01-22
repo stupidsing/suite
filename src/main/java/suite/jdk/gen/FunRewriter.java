@@ -2,6 +2,7 @@ package suite.jdk.gen;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.objectweb.asm.Type;
@@ -28,7 +29,7 @@ public class FunRewriter extends FunConstructor {
 	private FunType ft;
 
 	public FunRewriter(FunCreator<?> fc, FunType ft) {
-		this.localTypes = fc.localTypes;
+		this.localTypes = new ArrayList<>(fc.localTypes);
 		this.fe = fc.fe;
 		this.ft = ft;
 	}
