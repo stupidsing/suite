@@ -28,8 +28,8 @@ public class FunRewriter extends FunConstructor {
 	private FunType ft;
 
 	public FunRewriter(FunType ft, List<Type> parameterTypes) {
-		this.localTypes = new ArrayList<>(parameterTypes);
 		this.ft = ft;
+		this.localTypes = new ArrayList<>(parameterTypes);
 	}
 
 	public FunExpr rewrite(FunExpr expr0) {
