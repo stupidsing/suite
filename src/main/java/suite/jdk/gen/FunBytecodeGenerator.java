@@ -60,7 +60,11 @@ public class FunBytecodeGenerator implements Opcodes {
 		} else if (e instanceof FieldTypeFunExpr) {
 			FieldTypeFunExpr expr = (FieldTypeFunExpr) e;
 			visit(mv, expr.object);
-			mv.visitFieldInsn(GETFIELD, ft.typeDescOf(expr.object), expr.field, ft.typeDescOf(expr));
+			mv.visitFieldInsn( //
+					GETFIELD, //
+					ft.typeOf(expr.object).getInternalName(), //
+					expr.field, //
+					ft.typeOf(expr).getDescriptor());
 		} else if (e instanceof If1FunExpr) {
 			If1FunExpr expr = (If1FunExpr) e;
 			visit(mv, expr.if_);
@@ -91,7 +95,7 @@ public class FunBytecodeGenerator implements Opcodes {
 
 			mv.visitMethodInsn( //
 					opcode, //
-					ft.typeDescOf(expr.object), //
+					ft.typeOf(expr.object).getInternalName(), //
 					expr.methodName, //
 					Type.getMethodDescriptor(ft.typeOf(expr), array), //
 					opcode == Opcode.INVOKEINTERFACE);

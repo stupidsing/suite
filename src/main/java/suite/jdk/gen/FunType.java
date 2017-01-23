@@ -31,10 +31,6 @@ public class FunType {
 
 	public final Map<DeclareParameterFunExpr, Class<?>> interfaceClasses = new HashMap<>();
 
-	public String typeDescOf(FunExpr e) {
-		return typeOf(e).getDescriptor();
-	}
-
 	public Method invokeMethodOf(InvokeFunExpr expr) {
 		Type array[] = Read.from(expr.parameters) //
 				.map(this::typeOf) //
