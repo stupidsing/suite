@@ -10,7 +10,7 @@ import org.junit.Test;
 public class ArtificialNeuralNetworkTest {
 
 	@Test
-	public void test() {
+	public void testXor() {
 		boolean[] booleans = new boolean[] { false, true, };
 		Random random = new Random();
 		// random.setSeed(0l);
