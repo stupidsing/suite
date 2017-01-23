@@ -41,14 +41,14 @@ public class ArtificialNeuralNetwork {
 	}
 
 	public float[] feed(float inputs[]) {
-		return Util.last(forwardActivations(inputs));
+		return Util.last(activateForward(inputs));
 	}
 
 	public void train(float inputs[], float expected[]) {
-		backwardPropagate(forwardActivations(inputs), expected);
+		propagateBackward(activateForward(inputs), expected);
 	}
 
-	private List<float[]> forwardActivations(float values[]) {
+	private List<float[]> activateForward(float values[]) {
 		List<float[]> outputs = new ArrayList<>();
 		outputs.add(values);
 
@@ -68,7 +68,7 @@ public class ArtificialNeuralNetwork {
 		return outputs;
 	}
 
-	private void backwardPropagate(List<float[]> activations, float expected[]) {
+	private void propagateBackward(List<float[]> activations, float expected[]) {
 		float errors[] = null;
 
 		for (int layer = nLayers; 0 < layer; layer--) {
