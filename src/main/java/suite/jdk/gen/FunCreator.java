@@ -31,7 +31,6 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 	public final String methodName;
 	public final Type returnType;
 	public final List<Type> parameterTypes;
-	public final List<Type> localTypes;
 
 	private Map<String, Pair<Type, Object>> constants;
 	private Map<String, Type> fields;
@@ -65,16 +64,16 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 		returnType = rt;
 		parameterTypes = ps;
 
-		localTypes = new ArrayList<>();
-		localTypes.add(Type.getObjectType(className));
-		localTypes.addAll(parameterTypes);
-
 		constants = new HashMap<>();
 		fields = fs;
 		mc = new Method_();
 	}
 
 	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
+		List<Type> localTypes = new ArrayList<>();
+		localTypes.add(Type.getObjectType(className));
+		localTypes.addAll(parameterTypes);
+
 		FunTypeInformation ft = new FunTypeInformation();
 		FunRewrite fr = new FunRewrite(ft, localTypes);
 		FunGenerateBytecode fgb = new FunGenerateBytecode(ft, mc);
