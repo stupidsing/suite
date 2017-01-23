@@ -1,6 +1,6 @@
 package suite.algo;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -23,17 +23,16 @@ public class ArtificialNeuralNetworkTest {
 			ann.train(input(b0, b1), new float[] { f(oper(b0, b1)), });
 		}
 
-		for (boolean b0 : booleans)
-			for (boolean b1 : booleans) {
-				float f = ann.feed(input(b0, b1))[0];
-				System.out.println(b0 + " ^ " + b1 + " = " + f);
-			}
+		boolean result = true;
 
 		for (boolean b0 : booleans)
 			for (boolean b1 : booleans) {
 				float f = ann.feed(input(b0, b1))[0];
-				assertEquals(oper(b0, b1), .5f < f);
+				System.out.println(b0 + " ^ " + b1 + " = " + f);
+				result &= oper(b0, b1) == .5f < f;
 			}
+
+		assertTrue(result);
 	}
 
 	private boolean oper(boolean b0, boolean b1) {
