@@ -35,7 +35,7 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 
 	private Map<String, Pair<Type, Object>> constants;
 	private Map<String, Type> fields;
-	private MethodCreator mc;
+	private Method_ mc;
 
 	public static <I> FunCreator<I> of(Class<I> ic) {
 		return of(ic, new HashMap<>());
@@ -71,16 +71,16 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 
 		constants = new HashMap<>();
 		fields = fs;
-		mc = new MethodCreator();
+		mc = new Method_();
 	}
 
 	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
-		FunType ft = new FunType();
-		FunRewriter fr = new FunRewriter(ft, localTypes);
-		FunBytecodeGenerator fbg = new FunBytecodeGenerator(ft, mc);
+		FunTypeInformation ft = new FunTypeInformation();
+		FunRewrite fr = new FunRewrite(ft, localTypes);
+		FunGenerateBytecode fgb = new FunGenerateBytecode(ft, mc);
 
 		FunExpr expr1 = fr.rewrite(expr0.cast(interfaceClass));
-		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create(fbg, expr1));
+		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create(fgb, expr1));
 
 		return fields -> Rethrow.reflectiveOperationException(() -> {
 			I t = clazz.newInstance();
@@ -90,7 +90,7 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 		});
 	}
 
-	private Class<? extends I> create(FunBytecodeGenerator fbg, FunExpr expression) throws NoSuchMethodException {
+	private Class<? extends I> create(FunGenerateBytecode fgb, FunExpr expression) throws NoSuchMethodException {
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 		Type types[] = parameterTypes.toArray(new Type[0]);
 
@@ -117,8 +117,8 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 		});
 
 		mc.create(cw, methodName, Type.getMethodDescriptor(returnType, types), mv -> {
-			fbg.visit(mv, expression);
-			mv.visitInsn(TypeHelper.choose(returnType, ARETURN, DRETURN, FRETURN, IRETURN, LRETURN));
+			fgb.visit(mv, expression);
+			mv.visitInsn(Type_.choose(returnType, ARETURN, DRETURN, FRETURN, IRETURN, LRETURN));
 			mv.visitMaxs(0, 0); // localTypes.size()
 		});
 

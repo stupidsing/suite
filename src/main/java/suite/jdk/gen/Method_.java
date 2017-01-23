@@ -15,7 +15,7 @@ import org.objectweb.asm.util.TraceMethodVisitor;
 import suite.editor.Listen.SinkEx;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
 
-public class MethodCreator implements Opcodes {
+public class Method_ implements Opcodes {
 
 	public void create(ClassWriter cw, String mn, String md, SinkEx<MethodVisitor, ReflectiveOperationException> sink) {
 		create(cw, mn, md, false, sink);

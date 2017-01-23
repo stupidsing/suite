@@ -9,7 +9,7 @@ import org.objectweb.asm.Type;
 import suite.jdk.UnsafeUtil;
 import suite.streamlet.Read;
 
-public class InterfaceCreator implements Opcodes {
+public class Interface_ implements Opcodes {
 
 	private static AtomicInteger counter = new AtomicInteger();
 

@@ -20,14 +20,14 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 
-public class FunRewriter extends FunConstructor {
+public class FunRewrite extends FunConstructor {
 
 	private static Inspect inspect = new Inspect();
 
 	private List<Type> localTypes;
-	private FunType ft;
+	private FunTypeInformation ft;
 
-	public FunRewriter(FunType ft, List<Type> parameterTypes) {
+	public FunRewrite(FunTypeInformation ft, List<Type> parameterTypes) {
 		this.ft = ft;
 		this.localTypes = new ArrayList<>(parameterTypes);
 	}
@@ -47,11 +47,11 @@ public class FunRewriter extends FunConstructor {
 			CastFunExpr cfe = (CastFunExpr) e;
 			FunExpr expr = cfe.expr;
 			if (expr instanceof DeclareParameterFunExpr)
-				ft.interfaceClasses.put((DeclareParameterFunExpr) expr, TypeHelper.classOf(cfe.type));
+				ft.interfaceClasses.put((DeclareParameterFunExpr) expr, Type_.classOf(cfe.type));
 			return null;
 		} else if (e instanceof DeclareParameterFunExpr) {
 			DeclareParameterFunExpr e_ = (DeclareParameterFunExpr) e;
-			Class<?> pts[] = TypeHelper.methodOf(ft.interfaceClasses.get(e_)).getParameterTypes();
+			Class<?> pts[] = Type_.methodOf(ft.interfaceClasses.get(e_)).getParameterTypes();
 			if (e instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr expr = (Declare1ParameterFunExpr) e_;
 				return rewrite(expr.doFun.apply(local(1, pts[0])));

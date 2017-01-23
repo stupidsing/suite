@@ -27,7 +27,7 @@ import suite.jdk.gen.FunExpression.StaticFunExpr;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 
-public class FunType {
+public class FunTypeInformation {
 
 	public final Map<DeclareParameterFunExpr, Class<?>> interfaceClasses = new HashMap<>();
 
@@ -39,7 +39,7 @@ public class FunType {
 
 		@SuppressWarnings("unchecked")
 		List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(array) //
-				.map(TypeHelper::classOf) //
+				.map(Type_::classOf) //
 				.toList();
 
 		return Rethrow.reflectiveOperationException(() -> {
@@ -48,11 +48,11 @@ public class FunType {
 	}
 
 	public Method methodOf(FunExpr e) {
-		return TypeHelper.methodOf(classOf(e));
+		return Type_.methodOf(classOf(e));
 	}
 
 	public Class<?> classOf(FunExpr e) {
-		return TypeHelper.classOf(typeOf(e));
+		return Type_.classOf(typeOf(e));
 	}
 
 	public Type typeOf(FunExpr e) {

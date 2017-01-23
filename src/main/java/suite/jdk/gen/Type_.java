@@ -10,7 +10,7 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 
-public class TypeHelper {
+public class Type_ {
 
 	public static int choose(Type type, int a, int d, int f, int i, int l) {
 		if (Objects.equals(type, Type.DOUBLE_TYPE))
