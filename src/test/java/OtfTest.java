@@ -18,8 +18,9 @@ public class OtfTest {
 		String subfamilyKey = "Subfamily";
 		List<String> keys = Arrays.asList(familyKey, subfamilyKey);
 
-		List<String> commands = FileUtil //
-				.findPaths(Paths.get("/home/ywsing/.fonts")) //
+		List<String> commands = Read.<Path> empty() //
+				.cons(Paths.get("/home/ywsing/.fonts")) //
+				.concatMap(path -> FileUtil.findPaths(path)) //
 				.map(Path::toString) //
 				.filter(path -> false //
 						|| path.toLowerCase().endsWith(".otf") //
