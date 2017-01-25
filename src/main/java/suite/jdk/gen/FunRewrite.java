@@ -80,7 +80,6 @@ public class FunRewrite extends FunConstructor {
 			Class<?> clazz = ft.classOf(object);
 			Field field = Rethrow.reflectiveOperationException(() -> clazz.getField(fieldName));
 			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
-
 		} else
 			return null;
 	}
