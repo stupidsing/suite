@@ -15,8 +15,7 @@ import suite.util.Rethrow;
 import suite.util.Util;
 
 /**
- * Retrieve list of fields of a value object, and provide shallow
- * equals()/hashCode() methods.
+ * General manipulation on value objects with public fields.
  *
  * @author ywsing
  */
@@ -24,27 +23,37 @@ public class Inspect {
 
 	private Map<Class<?>, List<Field>> fieldsByClass = new ConcurrentHashMap<>();
 
+	/**
+	 * @return true if both input value objects are of the same class and having
+	 *         all fields equal.
+	 */
 	public <T> boolean equals(T o0, T o1) {
-		return o0 == o1 //
-				|| o0 != null && o1 != null && o0.getClass() == o1.getClass() && Objects.equals(list(o0), list(o1));
+		return o0 == o1 || o0 != null && o1 != null //
+				&& o0.getClass() == o1.getClass() //
+				&& Rethrow.reflectiveOperationException(() -> {
+					boolean result = true;
+					for (Field field : fields(o0.getClass()))
+						result &= Objects.equals(field.get(o0), field.get(o1));
+					return result;
+				});
 	}
 
+	/**
+	 * @return a combined hash code of all fields of the input value object.
+	 */
 	public int hashCode(Object object) {
-		return list(object).hashCode();
+		return Rethrow.reflectiveOperationException(() -> {
+			int hashCode = 0;
+			for (Field field : fields(object.getClass()))
+				hashCode = hashCode * 31 + Objects.hashCode(field.get(object));
+			return hashCode;
+		});
 	}
 
-	private List<Object> list(Object object) {
-		return Read.from(fields(object.getClass())) //
-				.map(field -> {
-					try {
-						return field.get(object);
-					} catch (IllegalAccessException ex) {
-						throw new RuntimeException(ex);
-					}
-				}) //
-				.toList();
-	}
-
+	/**
+	 * @return the input value object recursively rewritten using the input
+	 *         function.
+	 */
 	public <T> T rewrite(Class<T> baseClass, Fun<T, T> fun, T t0) {
 		return rewrite(baseClass, null, fun, t0);
 	}
