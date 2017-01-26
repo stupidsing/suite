@@ -74,12 +74,14 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 		localTypes.add(Type.getObjectType(className));
 		localTypes.addAll(parameterTypes);
 
+		FunExpand fe = new FunExpand();
 		FunTypeInformation ft = new FunTypeInformation();
 		FunRewrite fr = new FunRewrite(ft, localTypes);
 		FunGenerateBytecode fgb = new FunGenerateBytecode(ft, mc);
 
-		FunExpr expr1 = fr.rewrite(expr0.cast(interfaceClass));
-		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create(fgb, expr1));
+		FunExpr expr1 = fe.expand(expr0, 0);
+		FunExpr expr2 = fr.rewrite(expr1.cast(interfaceClass));
+		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create(fgb, expr2));
 
 		return fields -> Rethrow.reflectiveOperationException(() -> {
 			I t = clazz.newInstance();
