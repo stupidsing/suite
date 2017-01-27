@@ -105,11 +105,11 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private BindPredicate compileBindInt(Int i) {
-		return compiledBindInt.apply(Read.<String, Object>empty2().cons(key0, i).cons(key1, i.number).toMap());
+		return compiledBindInt.apply(Read.<String, Object> empty2().cons(key0, i).cons(key1, i.number).toMap());
 	}
 
 	private BindPredicate compileBindStr(Str s) {
-		return compiledBindStr.apply(Read.<String, Object>empty2().cons(key0, s).cons(key1, s.value).toMap());
+		return compiledBindStr.apply(Read.<String, Object> empty2().cons(key0, s).cons(key1, s.value).toMap());
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindAtom_() {
@@ -122,7 +122,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindInt_() {
-		Map<String, Type> fields = Read.<String, Type>empty2() //
+		Map<String, Type> fields = Read.<String, Type> empty2() //
 				.cons(key0, Type.getType(Node.class)) //
 				.cons(key1, Type.INT_TYPE) //
 				.toMap();
@@ -136,7 +136,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindStr_() {
-		Map<String, Type> fields = Read.<String, Type>empty2() //
+		Map<String, Type> fields = Read.<String, Type> empty2() //
 				.cons(key0, Type.getType(Node.class)) //
 				.cons(key1, Type.getType(String.class)) //
 				.toMap();
@@ -149,8 +149,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 						fc._false()));
 	}
 
-	private static Fun<Map<String, Object>, BindPredicate> bind(FunCreator<BindPredicate> fc,
-			Fun<FunExpr, FunExpr> compare) {
+	private static Fun<Map<String, Object>, BindPredicate> bind(FunCreator<BindPredicate> fc, Fun<FunExpr, FunExpr> compare) {
 		FunExpr k0 = fc.field(key0);
 
 		return fc.create(fc.parameter2((be, n) -> fc.declare(n.invoke("finalNode"), //

@@ -72,18 +72,18 @@ public class SewingExpressionImpl implements SewingExpression {
 		Fun<Map<String, Object>, Evaluate> fun = compiledByOpcode //
 				.computeIfAbsent(opcode, opcode_ -> {
 					FunCreator<Evaluate> fc = FunCreator.of(Evaluate.class,
-							Read.<String, Type>empty2() //
+							Read.<String, Type> empty2() //
 									.cons(e0, Type.getType(Evaluate.class)) //
 									.cons(e1, Type.getType(Evaluate.class)) //
 									.toMap());
 					return fc.create(fc.parameter(env -> {
-						FunExpr v0 = fc.field(e0).invoke("evaluate", env);
-						FunExpr v1 = fc.field(e1).invoke("evaluate", env);
+						FunExpr v0 = fc.field(e0).apply(env);
+						FunExpr v1 = fc.field(e1).apply(env);
 						return fc.bi(v0, v1, type -> opcode);
 					}));
 				});
 
-		return fun.apply(Read.<String, Object>empty2() //
+		return fun.apply(Read.<String, Object> empty2() //
 				.cons(e0, compile(m[0])) //
 				.cons(e1, compile(m[1])) //
 				.toMap());
