@@ -145,7 +145,7 @@ declare ap-setup = function [] (
 	wrmsr [+x1B, ap-local-apic-address0 or +x800, ap-local-apic-address1,];
 	dw-set [ap-local-apic-address + +xE0, +xFFFFFFFF,]; -- DFR
 	dw-set [ap-local-apic-address + +xD0, 1 or +xFFFFFF and dw-get [ap-local-apic-address + +xD0,],]; -- LDR
-	dw-set [ap-local-apic-address + +x340, +x400,]; -- Perf
+	dw-set [ap-local-apic-address + +x340, +x400,]; -- perf
 	dw-set [ap-local-apic-address + +x350, +x10000,]; -- disable LINT0
 	dw-set [ap-local-apic-address + +x360, +x10000,]; -- disable LINT1
 	dw-set [ap-local-apic-address + +x80, 0,]; -- task prior
