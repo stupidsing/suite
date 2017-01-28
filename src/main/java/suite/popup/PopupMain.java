@@ -29,7 +29,7 @@ import suite.util.Util.ExecutableProgram;
  *
  * @author ywsing
  */
-// mvn compile && mvn exec:java -Dexec.mainClass=suite.popup.PopupMain
+// mvn compile exec:java -Dexec.mainClass=suite.popup.PopupMain
 public class PopupMain extends ExecutableProgram {
 
 	public static void main(String args[]) {
