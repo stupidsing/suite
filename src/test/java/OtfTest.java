@@ -19,7 +19,7 @@ public class OtfTest {
 		List<String> keys = Arrays.asList(familyKey, subfamilyKey);
 
 		List<String> commands = Read.<Path> empty() //
-				.cons(Paths.get("/home/ywsing/.fonts")) //
+				.cons(Paths.get("/tmp/fonts")) //
 				.concatMap(path -> FileUtil.findPaths(path)) //
 				.map(Path::toString) //
 				.filter(path -> false //
