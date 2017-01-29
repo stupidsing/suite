@@ -177,7 +177,6 @@ declare ap-setup = function [] (
 
 	-- enable IO APIC IRQ 1 - keyboard
 	declare io-apic-id = (ap-ioapic-get [0,]) shr 24 and +x0F;
-	log-dword "io-apic-id " io-apic-id;
 
 	declare irq = 1;
 	declare ioapic-r0 = irq * 2 + +x10;
