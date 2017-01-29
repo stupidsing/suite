@@ -101,6 +101,24 @@ declare ap-parse-xsdt = function [pointer:ap-acpi-header rsdt,] (
 	0;
 );
 
+declare ap-local-apic-get = function [r,] (
+	dw-get [ap-local-apic-address + r,];
+);
+
+declare ap-local-apic-set = function [r, value,] (
+	dw-set [ap-local-apic-address + r, value,];
+);
+
+declare ap-ioapic-get = function [r,] (
+	dw-set [ap-io-apic-address, r,];
+	dw-get [ap-io-apic-address + +x10,];
+);
+
+declare ap-ioapic-set = function [r, value,] (
+	dw-set [ap-io-apic-address, r,];
+	dw-set [ap-io-apic-address + +x10, value,];
+);
+
 declare ap-setup = function [] (
 	declare p1;
 
@@ -143,19 +161,29 @@ declare ap-setup = function [] (
 
 	-- enable APIC
 	wrmsr [+x1B, ap-local-apic-address0 or +x800, ap-local-apic-address1,];
-	dw-set [ap-local-apic-address + +xE0, +xFFFFFFFF,]; -- DFR
-	dw-set [ap-local-apic-address + +xD0, 1 or +xFFFFFF and dw-get [ap-local-apic-address + +xD0,],]; -- LDR
-	dw-set [ap-local-apic-address + +x340, +x400,]; -- perf
-	dw-set [ap-local-apic-address + +x350, +x10000,]; -- disable LINT0
-	dw-set [ap-local-apic-address + +x360, +x10000,]; -- disable LINT1
-	dw-set [ap-local-apic-address + +x80, 0,]; -- task prior
-	dw-set [ap-local-apic-address + +xF0, +x127,]; -- spurious IRQ
+	ap-local-apic-set [+xE0, +xFFFFFFFF,]; -- DFR
+	ap-local-apic-set [+xD0, 1 or +xFFFFFF and dw-get [ap-local-apic-address + +xD0,],]; -- LDR
+	ap-local-apic-set [+x340, +x400,]; -- perf
+	ap-local-apic-set [+x350, +x10000,]; -- disable LINT0
+	ap-local-apic-set [+x360, +x10000,]; -- disable LINT1
+	ap-local-apic-set [+x80, 0,]; -- task prior
+	ap-local-apic-set [+xF0, +x127,]; -- spurious IRQ
 
 	-- enable APIC timer
 	declare ticksIn10ms = 400000;
-	dw-set [ap-local-apic-address + +x3E0, +x3,]; -- timer divisor
-	dw-set [ap-local-apic-address + +x380, ticksIn10ms,]; -- timer initial count
-	dw-set [ap-local-apic-address + +x320, +x20020,]; -- timer IRQ (periodic)
+	ap-local-apic-set [+x3E0, +x3,]; -- timer divisor
+	ap-local-apic-set [+x380, ticksIn10ms,]; -- timer initial count
+	ap-local-apic-set [+x320, +x20020,]; -- timer IRQ (periodic)
+
+	-- enable IO APIC IRQ 1 - keyboard
+	declare io-apic-id = (ap-ioapic-get [0,]) shr 24 and +x0F;
+	log-dword "io-apic-id " io-apic-id;
+
+	declare irq = 1;
+	declare ioapic-r0 = irq * 2 + +x10;
+	declare ioapic-r1 = irq * 2 + +x11;
+	ap-ioapic-set [ioapic-r0, +x00010021 + +xFFFEF000 and ap-ioapic-get [ioapic-r0,],];
+	ap-ioapic-set [ioapic-r1, +x00000000 + +x00FFFFFF and ap-ioapic-get [ioapic-r1,],];
 );
 
 declare ap-teardown = function [] (
