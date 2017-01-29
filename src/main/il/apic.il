@@ -167,7 +167,7 @@ declare ap-setup = function [] (
 	ap-local-apic-set [+x350, +x10000,]; -- disable LINT0
 	ap-local-apic-set [+x360, +x10000,]; -- disable LINT1
 	ap-local-apic-set [+x80, 0,]; -- task prior
-	ap-local-apic-set [+xF0, +x127,]; -- spurious IRQ
+	ap-local-apic-set [+xF0, +x107,]; -- spurious IRQ
 
 	-- enable APIC timer
 	declare ticksIn10ms = 400000;
