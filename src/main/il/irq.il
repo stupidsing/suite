@@ -4,12 +4,6 @@ declare dump-sink = function [irq-number,] (
 	log-byte "IRQ = " irq-number;
 );
 
-declare irq-get-isr = function [] (
-	outb [+x20, +x0B,];
-	outb [+xA0, +x0B,];
-	(inb [+xA0,]) shl 8 + inb [+x20,];
-);
-
 declare irq-get-sink = fn [irq-number,] (
 	return irq-sinks/:irq-number;
 );

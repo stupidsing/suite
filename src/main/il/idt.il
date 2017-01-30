@@ -79,19 +79,14 @@ declare idt-setup = function [] (
 			asm _ PUSH (`EBP + 44`);
 
 			declare irq-number = vector - +x20;
-			declare isr = irq-get-isr [];
+			declare irq-sink;
+			irq-get-sink [out irq-sink, irq-number,];
+			if (((& irq-sink) as pointer:int)/* != 0) then (irq-sink [irq-number,]) else ();
 
-			if (isr and 1 shl irq-number != 0) then (
-				declare irq-sink;
-				irq-get-sink [out irq-sink, irq-number,];
-				if (((& irq-sink) as pointer:int)/* != 0) then (irq-sink [irq-number,]) else ();
-
-				-- sends end of interrupt signal
-				if (8 <= irq-number) then (outb [+xA0, +x20,]) else ();
-				outb [+x20, +x20,];
-			) else (
-				log-byte "SPURIOUS INTERRUPT = " irq-number;
-			);
+			-- sends end of interrupt signal
+			--if (8 <= irq-number) then (outb [+xA0, +x20,]) else ();
+			--outb [+x20, +x20,];
+			ap-local-apic-set [+xB0, 0,];
 		);
 
 		isr-epilog;
