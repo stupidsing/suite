@@ -181,8 +181,8 @@ declare ap-setup = function [] (
 	declare irq = 1;
 	declare ioapic-r0 = irq * 2 + +x10;
 	declare ioapic-r1 = irq * 2 + +x11;
-	ap-ioapic-set [ioapic-r0, +x00000021 + +xFFFEF000 and ap-ioapic-get [ioapic-r0,],];
-	ap-ioapic-set [ioapic-r1, +x00000000 + +x00FFFFFF and ap-ioapic-get [ioapic-r1,],];
+	ap-ioapic-set [ioapic-r0, +x00000021 or +xFFFEF000 and ap-ioapic-get [ioapic-r0,],];
+	ap-ioapic-set [ioapic-r1, +x00000000 or +x00FFFFFF and ap-ioapic-get [ioapic-r1,],];
 );
 
 declare ap-teardown = function [] (
