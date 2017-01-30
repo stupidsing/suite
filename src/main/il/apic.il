@@ -162,7 +162,7 @@ declare ap-setup = function [] (
 	-- enable APIC
 	wrmsr [+x1B, ap-local-apic-address0 or +x800, ap-local-apic-address1,];
 	ap-local-apic-set [+xE0, +xFFFFFFFF,]; -- DFR
-	ap-local-apic-set [+xD0, 1 or +xFFFFFF and dw-get [ap-local-apic-address + +xD0,],]; -- LDR
+	ap-local-apic-set [+xD0, +x01000000 or +xFFFFFF and dw-get [ap-local-apic-address + +xD0,],]; -- LDR
 	ap-local-apic-set [+x340, +x400,]; -- perf
 	ap-local-apic-set [+x350, +x10000,]; -- disable LINT0
 	ap-local-apic-set [+x360, +x10000,]; -- disable LINT1
