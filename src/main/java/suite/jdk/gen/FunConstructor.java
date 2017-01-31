@@ -21,7 +21,7 @@ import suite.util.FunUtil.Fun;
 
 public class FunConstructor implements Opcodes {
 
-	public final FunExpression fe = new FunExpression();
+	public static final FunExpression fe = new FunExpression();
 
 	public FunExpr _true() {
 		return constant(1);
