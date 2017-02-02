@@ -5,8 +5,6 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import suite.jdk.UnsafeUtil;
-
 public class UnsafeTest {
 
 	@Test
