@@ -74,9 +74,9 @@ public class EditorView {
 		JTextArea messageTextArea = this.messageTextArea = applyDefaults(new JTextArea("Bottom"));
 		messageTextArea.setEditable(false);
 		messageTextArea.setRows(12);
-		messageTextArea.setVisible(false);
 
 		JScrollPane messageScrollPane = this.messageScrollPane = createScrollPane(messageTextArea);
+		messageScrollPane.setVisible(false);
 
 		JEditorPane editor = this.editor = applyDefaults(new EditorPane(model));
 
@@ -271,17 +271,17 @@ public class EditorView {
 	}
 
 	public void showMessage(String text) {
-		JTextArea bottomTextArea = messageTextArea;
-		bottomTextArea.setText(text);
-		bottomTextArea.setEnabled(true);
-		bottomTextArea.setVisible(true);
+		JTextArea textArea = messageTextArea;
+		textArea.setText(text);
+		textArea.setEnabled(true);
+		textArea.setVisible(true);
 		refresh();
 	}
 
 	public void showMessageRunning() {
-		JTextArea bottomTextArea = messageTextArea;
-		bottomTextArea.setEnabled(false);
-		bottomTextArea.setText("RUNNING...");
+		JTextArea textArea = messageTextArea;
+		textArea.setEnabled(false);
+		textArea.setText("RUNNING...");
 	}
 
 	public void showSearchFileResult(Streamlet<String> filenames) {
