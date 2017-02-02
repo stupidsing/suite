@@ -12,7 +12,7 @@ public class FunExpand extends FunConstructor {
 	private static Inspect inspect = new Inspect();
 
 	public FunExpr expand(FunExpr expr0, int depth) {
-		if (depth > 0)
+		if (0 < depth)
 			return inspect.rewrite(FunExpr.class, new Object[] { fe, }, expr -> expand_(expr, depth), expr0);
 		else
 			return expr0;
