@@ -241,11 +241,11 @@ public class EditorController {
 		String text = selectedText != null ? selectedText : editor.getText();
 
 		if (runThread == null || !runThread.isAlive())
-			(runThread = Util.startThread(() -> {
+			runThread = Util.startThread(() -> {
 				view.showMessageRunning();
 				view.showMessage(fun.apply(text));
 				view.getEditor().requestFocusInWindow();
-			})).start();
+			});
 		else
 			JOptionPane.showMessageDialog(view.getFrame(), "Previous evaluation in progress");
 	}
