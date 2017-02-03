@@ -11,7 +11,7 @@ import suite.util.FunUtil.Source;
 public class Memoize {
 
 	private enum State {
-		EMPTY__, INUSE_, FLAGGED
+		EMPTY__, INUSE_, FLAGGED,
 	}
 
 	public static <I, O> Fun<I, O> fun(Fun<I, O> fun) {
