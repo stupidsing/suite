@@ -176,7 +176,7 @@ declare ap-setup = function [] (
 	ap-local-apic-set [+x320, +x20020,]; -- timer IRQ (periodic)
 
 	-- enable IO APIC IRQ 1 - keyboard
-	declare io-apic-id = (ap-ioapic-get [0,]) shr 24 and +x0F;
+	--declare io-apic-id = (ap-ioapic-get [0,]) shr 24 and +x0F;
 
 	declare irq = 1;
 	declare ioapic-r0 = irq * 2 + +x10;
