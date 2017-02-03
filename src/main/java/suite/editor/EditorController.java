@@ -221,9 +221,10 @@ public class EditorController {
 	private void confirmSave(Runnable action) {
 		JFrame frame = view.getFrame();
 		if (model.getIsModified())
-			switch (JOptionPane.showConfirmDialog(frame //
-					, "Would you like to save your changes?", "Close" //
-					, JOptionPane.YES_NO_CANCEL_OPTION)) {
+			switch (JOptionPane.showConfirmDialog(frame, //
+					"Would you like to save your changes?" //
+					, "Close", //
+					JOptionPane.YES_NO_CANCEL_OPTION)) {
 			case JOptionPane.YES_OPTION:
 				save();
 			case JOptionPane.NO_OPTION:
