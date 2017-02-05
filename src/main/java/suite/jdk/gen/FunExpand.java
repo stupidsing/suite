@@ -1,11 +1,15 @@
 package suite.jdk.gen;
 
+import org.objectweb.asm.Type;
+
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
+import suite.jdk.gen.FunExpression.ConstantFunExpr;
 import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.FunExpression.If1FunExpr;
 
 public class FunExpand extends FunConstructor {
 
@@ -21,7 +25,17 @@ public class FunExpand extends FunConstructor {
 	private FunExpr expand_(FunExpr e, int depth) {
 		int depth1 = depth - 1;
 
-		if (e instanceof ApplyFunExpr) {
+		if (e instanceof If1FunExpr) {
+			If1FunExpr expr = (If1FunExpr) e;
+			if (expr.if_ instanceof ConstantFunExpr) {
+				ConstantFunExpr cfe = (ConstantFunExpr) expr.if_;
+				if (cfe.type == Type.INT_TYPE)
+					return ((Integer) cfe.constant).intValue() == 1 ? expr.then : expr.else_;
+				else
+					return null;
+			} else
+				return null;
+		} else if (e instanceof ApplyFunExpr) {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
 			FunExpr object = expr.object;
 			if (object instanceof Declare1ParameterFunExpr) {
