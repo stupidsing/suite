@@ -17,6 +17,7 @@ import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Streamlet;
 import suite.util.Copy;
+import suite.util.TempDir;
 import suite.util.To;
 
 public class FileSystemTest {
@@ -27,24 +28,24 @@ public class FileSystemTest {
 
 	@Test
 	public void testB_TreeFileSystem0() throws IOException {
-		testB_Tree(Constants.tmp.resolve("b_tree-fs0"), true, this::testWriteOneFile);
+		testB_Tree(TempDir.resolve("b_tree-fs0"), true, this::testWriteOneFile);
 	}
 
 	@Test
 	public void testB_TreeFileSystem1() throws IOException {
-		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), true, this::testWriteFiles);
-		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), false, this::testReadFile);
+		testB_Tree(TempDir.resolve("b_tree-fs1"), true, this::testWriteFiles);
+		testB_Tree(TempDir.resolve("b_tree-fs1"), false, this::testReadFile);
 	}
 
 	@Test
 	public void testLazyIbTreeFileSystem0() throws IOException {
-		testLazyIbTree(Constants.tmp.resolve("lazyIbTree-fs0"), true, this::testWriteOneFile);
+		testLazyIbTree(TempDir.resolve("lazyIbTree-fs0"), true, this::testWriteOneFile);
 	}
 
 	@Test
 	public void testLazyIbTreeFileSystem1() throws IOException {
-		testLazyIbTree(Constants.tmp.resolve("lazyIbTree-fs1"), true, this::testWriteFiles);
-		testLazyIbTree(Constants.tmp.resolve("lazyIbTree-fs1"), false, this::testReadFile);
+		testLazyIbTree(TempDir.resolve("lazyIbTree-fs1"), true, this::testWriteFiles);
+		testLazyIbTree(TempDir.resolve("lazyIbTree-fs1"), false, this::testReadFile);
 	}
 
 	private void testB_Tree(Path path, boolean isNew, TestCase testCase) throws IOException {

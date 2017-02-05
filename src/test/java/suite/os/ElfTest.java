@@ -10,9 +10,9 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import suite.Constants;
 import suite.ip.ImperativeCompiler;
 import suite.primitive.Bytes;
+import suite.util.TempDir;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest {
@@ -35,7 +35,7 @@ public class ElfTest {
 		int org = 0x08048000;
 
 		Bytes code = new ImperativeCompiler().compile(org + 84, program1);
-		Path path = Constants.tmp.resolve("a.out");
+		Path path = TempDir.resolve("a.out");
 
 		try (OutputStream os = FileUtil.out(path)) {
 			new ElfWriter().write(org, code, os);

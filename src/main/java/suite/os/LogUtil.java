@@ -12,12 +12,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import suite.Constants;
 import suite.inspect.Dump;
 import suite.os.TimeUtil.TimedResult;
 import suite.proxy.Intercept;
 import suite.util.Copy;
 import suite.util.FunUtil.Source;
+import suite.util.TempDir;
 
 public class LogUtil {
 
@@ -29,7 +29,7 @@ public class LogUtil {
 	}
 
 	public static void initLog4j(Level level) {
-		Path logDir = Constants.tmp.resolve("logs");
+		Path logDir = TempDir.resolve("logs");
 
 		PatternLayout layout = new PatternLayout("%d %-5p [%c{1}] %m%n");
 
