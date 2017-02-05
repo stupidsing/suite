@@ -1,6 +1,7 @@
 package suite.editor;
 
 import java.awt.Font;
+import java.awt.Toolkit;
 
 public class FontUtil {
 
@@ -22,8 +23,10 @@ public class FontUtil {
 			sansFontName = "Sans";
 		}
 
-		monoFont = new Font(monoFontName, Font.PLAIN, 12);
-		sansFont = new Font(sansFontName, Font.PLAIN, 12);
+		int size = Toolkit.getDefaultToolkit().getScreenSize().getWidth() > 1920 ? 24 : 12;
+
+		monoFont = new Font(monoFontName, Font.PLAIN, size);
+		sansFont = new Font(sansFontName, Font.PLAIN, size);
 	}
 
 }
