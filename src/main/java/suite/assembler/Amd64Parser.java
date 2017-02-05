@@ -45,37 +45,42 @@ public class Amd64Parser {
 			return operand;
 		else if ((operand = amd64.sregsByName.get(node)) != null)
 			return operand;
-		else if ((m = Suite.matcher("`.0`").apply(node)) != null) {
-			OpMem opMem = amd64.new OpMem();
-			opMem.indexReg = -1;
-			opMem.baseReg = -1;
-			opMem.dispSize = 0;
-
-			for (Node component : scan(m[0], ".0 + .1"))
-				if ((m = Suite.matcher(".0 * .1").apply(component)) != null)
-					if (opMem.indexReg < 0) {
-						opMem.indexReg = amd64.regsByName.get(m[0]).reg;
-						opMem.scale = ((Int) m[1]).number;
-					} else
-						throw new RuntimeException("Bad operand");
-				else if (component instanceof Int)
-					if (opMem.dispSize == 0) {
-						opMem.disp = ((Int) component).number;
-						opMem.dispSize = 4;
-					} else
-						throw new RuntimeException("Bad operand");
-				else if (opMem.baseReg < 0)
-					opMem.baseReg = amd64.regsByName.get(component).reg;
-				else
-					throw new RuntimeException("Bad operand");
-			return opMem;
-		} else if (node instanceof Int) {
+		else if ((m = Suite.matcher("`.0`").apply(node)) != null)
+			return parseOpMem(m, 4);
+		else if (node instanceof Int) {
 			OpImm opImm = amd64.new OpImm();
 			opImm.imm = ((Int) node).number;
 			opImm.size = 4;
 			return opImm;
 		} else
 			throw new RuntimeException("Bad operand");
+	}
+
+	private Operand parseOpMem(Node[] m, int size) {
+		OpMem opMem = amd64.new OpMem();
+		opMem.size = size;
+		opMem.indexReg = -1;
+		opMem.baseReg = -1;
+		opMem.dispSize = 0;
+
+		for (Node component : scan(m[0], ".0 + .1"))
+			if ((m = Suite.matcher(".0 * .1").apply(component)) != null)
+				if (opMem.indexReg < 0) {
+					opMem.indexReg = amd64.regsByName.get(m[0]).reg;
+					opMem.scale = ((Int) m[1]).number;
+				} else
+					throw new RuntimeException("Bad operand");
+			else if (component instanceof Int)
+				if (opMem.dispSize == 0) {
+					opMem.disp = ((Int) component).number;
+					opMem.dispSize = 4;
+				} else
+					throw new RuntimeException("Bad operand");
+			else if (opMem.baseReg < 0)
+				opMem.baseReg = amd64.regsByName.get(component).reg;
+			else
+				throw new RuntimeException("Bad operand");
+		return opMem;
 	}
 
 	private Streamlet<Node> scan(Node ops, String pattern) {
