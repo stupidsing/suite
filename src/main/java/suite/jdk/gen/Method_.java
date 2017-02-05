@@ -12,17 +12,19 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
 
-import suite.editor.Listen.SinkEx;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
 
 public class Method_ implements Opcodes {
 
-	public void create(ClassWriter cw, String mn, String md, SinkEx<MethodVisitor, ReflectiveOperationException> sink) {
+	public interface MethodVisitorSink {
+		public void sink(MethodVisitor mv) throws ReflectiveOperationException;
+	}
+
+	public void create(ClassWriter cw, String mn, String md, MethodVisitorSink sink) {
 		create(cw, mn, md, false, sink);
 	}
 
-	public void create(ClassWriter cw, String mn, String md, boolean isLog,
-			SinkEx<MethodVisitor, ReflectiveOperationException> sink) {
+	public void create(ClassWriter cw, String mn, String md, boolean isLog, MethodVisitorSink sink) {
 		Textifier textifier = isLog ? new Textifier() : null;
 		MethodVisitor mv0 = cw.visitMethod( //
 				ACC_PUBLIC, //
