@@ -12,8 +12,12 @@ public class LazyFunInterpreterTest {
 
 	@Test
 	public void testDecons() {
-		String expr = "let l := (1; 3;) >> if (l = `$a; $b;`) then b else error";
-		expect(expr, Int.of(3));
+		expect("let l := (1; 3;) >> if (l = `$a; $b;`) then b else error ()", Int.of(3));
+	}
+
+	@Test
+	public void testFibonacci() {
+		expect("define fib := (n => if (1 < n) then (fib {n - 1} + fib {n - 2}) else n) >> fib {12}", Int.of(144));
 	}
 
 	@Test
@@ -23,13 +27,18 @@ public class LazyFunInterpreterTest {
 	}
 
 	@Test
-	public void testFibonacci() {
-		String expr = "define fib := (n => if (1 < n) then (fib {n - 1} + fib {n - 2}) else n) >> fib {12}";
-		expect(expr, Int.of(144));
+	public void testNestedFunction() {
+		expect("define inc := (define inc_ := (x => x + 1) >> inc_) >> inc {3}", Suite.parse("4"));
 	}
 
-	private void expect(String expr, Node expect) {
-		assertEquals(expect, new LazyFunInterpreter().lazy(Suite.parse(expr)).get());
+	private void expect(String expr, Node expected) {
+		expect(true, expr, expected);
+		expect(false, expr, expected);
 	}
 
+	private void expect(boolean isLazyify, String expr, Node expected) {
+		EagerFunInterpreter interpreter = new EagerFunInterpreter();
+		interpreter.setLazyify(isLazyify);
+		assertEquals(expected, interpreter.eager(Suite.parse(expr)));
+	}
 }
