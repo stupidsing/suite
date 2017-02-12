@@ -25,18 +25,20 @@ public class FileUtil {
 		Deque<File> stack = new ArrayDeque<>();
 		stack.push(file);
 
-		return () -> {
-			while (!stack.isEmpty()) {
-				File f = stack.pop();
+		return new Source<File>() {
+			public File source() {
+				while (!stack.isEmpty()) {
+					File f = stack.pop();
 
-				if (f.isDirectory())
-					for (File child : f.listFiles())
-						stack.push(child);
-				else
-					return f;
+					if (f.isDirectory())
+						for (File child : f.listFiles())
+							stack.push(child);
+					else
+						return f;
+				}
+
+				return null;
 			}
-
-			return null;
 		};
 	}
 
