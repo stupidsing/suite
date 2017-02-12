@@ -50,7 +50,7 @@ public class Matcher {
 	}
 
 	private Streamlet<State> applyPattern(String pattern, String input) {
-		Streamlet<State> st = Read.from(new State(input));
+		Streamlet<State> st = Read.each(new State(input));
 
 		for (char ch : Util.chars(pattern))
 			switch (ch) {
@@ -69,12 +69,12 @@ public class Matcher {
 				}));
 				break;
 			case '?':
-				st = st.concatMap(state -> !state.eof() ? Read.from(new State(state, 1)) : noResult);
+				st = st.concatMap(state -> !state.eof() ? Read.each(new State(state, 1)) : noResult);
 				break;
 			default:
 				st = st.concatMap(state -> {
 					boolean isMatch = !state.eof() && state.input.charAt(state.pos) == ch;
-					return isMatch ? Read.from(new State(state, 1)) : noResult;
+					return isMatch ? Read.each(new State(state, 1)) : noResult;
 				});
 			}
 

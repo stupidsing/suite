@@ -219,7 +219,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				if (kp.pointer instanceof B_TreeImpl.Branch)
 					return stream0(kp.getBranchPointer(), start, end);
 				else
-					return Read.from(kp);
+					return Read.each(kp);
 			});
 		else
 			return Read.empty();

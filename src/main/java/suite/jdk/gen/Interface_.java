@@ -19,7 +19,7 @@ public class Interface_ implements Opcodes {
 
 		String md = Type.getMethodDescriptor( //
 				Type.getType(returnType), //
-				Read.from(parameterTypes).map(Type::getType).toList().toArray(new Type[0]));
+				Read.each(parameterTypes).map(Type::getType).toList().toArray(new Type[0]));
 
 		ClassWriter cw = new ClassWriter(0);
 

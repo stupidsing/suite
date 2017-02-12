@@ -31,7 +31,7 @@ public class Type_ {
 		if (clazz == Fun.class)
 			return Rethrow.reflectiveOperationException(() -> Fun.class.getMethod("apply", Object.class));
 		else
-			return Read.from(clazz.getDeclaredMethods()).uniqueResult();
+			return Read.each(clazz.getDeclaredMethods()).uniqueResult();
 	}
 
 	public static Class<?> classOf(Type type) {

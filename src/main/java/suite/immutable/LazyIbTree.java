@@ -78,7 +78,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public LazyIbTree(Comparator<T> comparator) {
-		this(comparator, Arrays.asList(new Slot<>(() -> Collections.emptyList(), null)));
+		this(comparator, Arrays.asList(new Slot<T>(() -> Collections.emptyList(), null)));
 	}
 
 	public LazyIbTree(Comparator<T> comparator, List<Slot<T>> source) {
@@ -130,7 +130,7 @@ public class LazyIbTree<T> implements ITree<T> {
 				if (!slots.isEmpty())
 					return stream0(slots, start, end);
 				else
-					return Read.from(slot);
+					return Read.each(slot);
 			});
 		else
 			return Read.empty();

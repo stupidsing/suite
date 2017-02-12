@@ -122,7 +122,7 @@ public class IbTree<T> implements ITree<T> {
 				if (slot.slots != null)
 					return stream(slot.slots, start, end);
 				else
-					return slot.pivot != null ? Read.from(slot.pivot) : Read.empty();
+					return slot.pivot != null ? Read.each(slot.pivot) : Read.empty();
 			});
 		else
 			return Read.empty();

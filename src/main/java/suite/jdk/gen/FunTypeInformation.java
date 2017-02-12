@@ -38,7 +38,7 @@ public class FunTypeInformation {
 				.toArray(new Type[0]);
 
 		@SuppressWarnings("unchecked")
-		List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(array) //
+		List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.each(array) //
 				.map(Type_::classOf) //
 				.toList();
 

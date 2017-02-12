@@ -103,7 +103,7 @@ public class Nodify {
 				nodifier = new Nodifier(object -> new Str(object.toString()), node -> ((Str) node).value);
 			else if (clazz.isEnum())
 				nodifier = new Nodifier(object -> Atom.of(object.toString()),
-						Read.from(clazz.getEnumConstants()).toMap(e -> Atom.of(e.toString()))::get);
+						Read.each(clazz.getEnumConstants()).toMap(e -> Atom.of(e.toString()))::get);
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
 				Nodifier nodifier1 = getNodifier(componentType);

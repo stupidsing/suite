@@ -427,7 +427,7 @@ public class SewingProverImpl implements SewingProver {
 				List<Node> results = new ArrayList<>();
 				Env env = rt.env;
 
-				Trampoline tr_ = and(Read.from(tr0, rt_ -> {
+				Trampoline tr_ = and(Read.each(tr0, rt_ -> {
 					results.add(f1.apply(env));
 					return fail;
 				}));

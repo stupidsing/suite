@@ -21,7 +21,7 @@ public class Bl<T> {
 
 	public static <T> Streamlet<T> stream(Bl<T> bl) {
 		if (bl != null)
-			return Read.from(bl.ts).map(o -> {
+			return Read.each(bl.ts).map(o -> {
 				@SuppressWarnings("unchecked")
 				T t = (T) o;
 				return t;

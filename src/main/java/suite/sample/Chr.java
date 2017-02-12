@@ -107,7 +107,7 @@ public class Chr {
 	private Streamlet<State> chr(State state, Rule rule) {
 		Generalizer generalizer = new Generalizer();
 		Trail trail = new Trail();
-		Streamlet<State> states = Read.from(state);
+		Streamlet<State> states = Read.each(state);
 
 		for (Node if_ : rule.ifs)
 			states = chrIf(states, trail, generalizer.generalize(if_));
@@ -141,7 +141,7 @@ public class Chr {
 		return states.concatMap(state -> {
 			ISet<Node> facts = getFacts(state, prototype);
 			Predicate<Node> bindFun = bindFun(trail, given);
-			return facts.stream().isAny(bindFun) ? Read.from(state) : Read.empty();
+			return facts.stream().isAny(bindFun) ? Read.each(state) : Read.empty();
 		});
 	}
 

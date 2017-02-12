@@ -67,7 +67,7 @@ public class Inspect {
 			else {
 				Class<?> clazz = t0.getClass();
 				@SuppressWarnings("unchecked")
-				T t2 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance(cp);
+				T t2 = (T) Read.each(clazz.getConstructors()).uniqueResult().newInstance(cp);
 				t3 = t2;
 				for (Field field : fields(clazz)) {
 					Object v0 = field.get(t0);
@@ -102,7 +102,7 @@ public class Inspect {
 	private List<Field> getFields0(Class<?> clazz) {
 		Class<?> superClass = clazz.getSuperclass();
 		List<Field> parentFields = superClass != null ? fields(superClass) : Collections.emptyList();
-		List<Field> childFields = Read.from(clazz.getDeclaredFields()) //
+		List<Field> childFields = Read.each(clazz.getDeclaredFields()) //
 				.filter(field -> {
 					int modifiers = field.getModifiers();
 					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers);
