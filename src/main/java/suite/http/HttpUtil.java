@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 import suite.primitive.Bytes;
@@ -36,7 +36,7 @@ public class HttpUtil {
 	}
 
 	public static HttpResult http(String method, URL url, Source<Bytes> in) {
-		return http(method, url, in, new HashMap<>());
+		return http(method, url, in, Collections.emptyMap());
 	}
 
 	public static HttpResult http(String method, URL url, Source<Bytes> in, Map<String, String> headers) {

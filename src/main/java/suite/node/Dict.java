@@ -1,8 +1,7 @@
 package suite.node;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.util.Util;
 
@@ -11,7 +10,7 @@ public class Dict extends Node {
 	public final Map<Node, Reference> map;
 
 	public Dict() {
-		this(new HashMap<>());
+		this(Collections.emptyMap());
 	}
 
 	public Dict(Map<Node, Reference> map) {
@@ -25,10 +24,7 @@ public class Dict extends Node {
 
 	@Override
 	public int hashCode() {
-		int result = 0;
-		for (Entry<Node, Reference> e : map.entrySet())
-			result ^= 31 * e.getKey().hashCode() + e.getValue().hashCode();
-		return result;
+		return map.hashCode();
 	}
 
 }

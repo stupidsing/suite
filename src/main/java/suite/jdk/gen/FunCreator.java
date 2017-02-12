@@ -2,6 +2,7 @@ package suite.jdk.gen;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,11 +38,11 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 	private Method_ mc;
 
 	public static <I> FunCreator<I> of(Class<I> ic) {
-		return of(ic, new HashMap<>());
+		return of(ic, Collections.emptyMap());
 	}
 
 	public static <I> FunCreator<I> of(Class<I> ic, String mn) {
-		return of(ic, mn, new HashMap<>());
+		return of(ic, mn, Collections.emptyMap());
 	}
 
 	public static <I> FunCreator<I> of(Class<I> ic, Map<String, Type> fs) {

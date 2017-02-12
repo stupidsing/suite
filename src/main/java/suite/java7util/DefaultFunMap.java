@@ -1,7 +1,7 @@
 package suite.java7util;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -15,7 +15,7 @@ public class DefaultFunMap<K, V> implements Map<K, V> {
 	private Fun<K, V> fun;
 
 	public DefaultFunMap(Fun<K, V> fun) {
-		this(new HashMap<>(), fun);
+		this(Collections.emptyMap(), fun);
 	}
 
 	public DefaultFunMap(Map<K, V> map, Fun<K, V> fun) {

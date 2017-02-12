@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.function.BiPredicate;
 
 import org.junit.Test;
@@ -40,7 +39,7 @@ public class FunCreatorTest {
 		@SuppressWarnings("unchecked")
 		BiPredicate<Object, Object> bp = fc //
 				.create(fc._true()) //
-				.apply(new HashMap<>());
+				.apply(Collections.emptyMap());
 		assertTrue(bp.test("Hello", "world"));
 	}
 
@@ -60,7 +59,7 @@ public class FunCreatorTest {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
 				.create(fc.if_(fc._true(), fc._true(), fc._false())) //
-				.apply(new HashMap<>()) //
+				.apply(Collections.emptyMap()) //
 				.apply(0);
 		assertEquals(1, result);
 	}
@@ -70,7 +69,7 @@ public class FunCreatorTest {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
 				.create(fc.parameter(p -> fc.declare(fc.constant(1), l -> fc.add(l, p)))) //
-				.apply(new HashMap<>()) //
+				.apply(Collections.emptyMap()) //
 				.apply(3);
 		assertEquals(4, result);
 	}
@@ -80,7 +79,7 @@ public class FunCreatorTest {
 		@SuppressWarnings("rawtypes")
 		FunCreator<Fun> fc = FunCreator.of(Fun.class, "apply");
 		@SuppressWarnings("unchecked")
-		Fun<Object, Object> fun = fc.create(fc.parameter(o -> o)).apply(new HashMap<>());
+		Fun<Object, Object> fun = fc.create(fc.parameter(o -> o)).apply(Collections.emptyMap());
 		assertEquals("Hello", fun.apply("Hello"));
 	}
 
