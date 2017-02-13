@@ -23,6 +23,7 @@ sed 's#import com.nativelibs4java.bridj.*#<groupId>com.nativelibs4java</groupId>
 sed 's#import com.nativelibs4java.opencl.*#<groupId>com.nativelibs4java</groupId><artifactId>javacl</artifactId>#g' |
 sed 's#import com.sun.jna.*#<groupId>net.java.dev.jna</groupId><artifactId>jna</artifactId>#g' |
 sed 's#import jline.console.*#<groupId>jline</groupId><artifactId>jline</artifactId>#g' |
+sed 's#import org.apache.bcel.*#<groupId>org.apache.bcel</groupId><artifactId>bcel</artifactId>#g' |
 sed 's#import org.apache.commons.logging.*#<groupId>commons-logging</groupId><artifactId>commons-logging</artifactId>#g' |
 sed 's#import org.apache.log4j.*#<groupId>log4j</groupId><artifactId>log4j</artifactId>#g' |
 sed 's#import org.junit.*#<groupId>junit</groupId><artifactId>junit</artifactId>#g' |
