@@ -92,9 +92,6 @@ define optional := cond => value =>
 define or := x => y =>
 	if x then true else y
 >>
-define repeat := e =>
-	e; repeat {e}
->>
 define scan-left := fun => init =>
 	case
 	|| `$h; $t` => init; scan-left {fun} {fun {init} {h}} {t}
