@@ -4,8 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
+import org.apache.bcel.generic.Type;
 
 import suite.Suite;
 import suite.jdk.gen.FunCreator;
@@ -23,7 +22,7 @@ public class SewingExpressionImpl implements SewingExpression {
 
 	private static String key = "key";
 	private static Fun<Map<String, Object>, Evaluate> compiledNumber = compileNumber(key);
-	private static Map<Integer, Fun<Map<String, Object>, Evaluate>> compiledByOpcode = new ConcurrentHashMap<>();
+	private static Map<String, Fun<Map<String, Object>, Evaluate>> compiledByOp = new ConcurrentHashMap<>();
 	private SewingCloner sc;
 
 	public interface Evaluate {
@@ -38,21 +37,21 @@ public class SewingExpressionImpl implements SewingExpression {
 		Node m[];
 
 		if ((m = Suite.matcher(".0 + .1").apply(node)) != null)
-			return compileOperator(m, Opcodes.IADD);
+			return compileOperator(m, "+");
 		else if ((m = Suite.matcher(".0 - .1").apply(node)) != null)
-			return compileOperator(m, Opcodes.ISUB);
+			return compileOperator(m, "-");
 		else if ((m = Suite.matcher(".0 * .1").apply(node)) != null)
-			return compileOperator(m, Opcodes.IMUL);
+			return compileOperator(m, "*");
 		else if ((m = Suite.matcher(".0 / .1").apply(node)) != null)
-			return compileOperator(m, Opcodes.IDIV);
+			return compileOperator(m, "/");
 		else if ((m = Suite.matcher(".0 and .1").apply(node)) != null)
-			return compileOperator(m, Opcodes.IAND);
+			return compileOperator(m, "&&");
 		else if ((m = Suite.matcher(".0 or .1").apply(node)) != null)
-			return compileOperator(m, Opcodes.IOR);
+			return compileOperator(m, "||");
 		else if ((m = Suite.matcher(".0 shl .1").apply(node)) != null)
-			return compileOperator(m, Opcodes.ISHL);
+			return compileOperator(m, "<<");
 		else if ((m = Suite.matcher(".0 shr .1").apply(node)) != null)
-			return compileOperator(m, Opcodes.ISHR);
+			return compileOperator(m, ">>");
 		else if (node instanceof Int)
 			return compiledNumber.apply(Collections.singletonMap(key, ((Int) node).number));
 		else {
@@ -62,15 +61,15 @@ public class SewingExpressionImpl implements SewingExpression {
 	}
 
 	private static Fun<Map<String, Object>, Evaluate> compileNumber(String key) {
-		FunCreator<Evaluate> fc = FunCreator.of(Evaluate.class, Collections.singletonMap(key, Type.INT_TYPE));
+		FunCreator<Evaluate> fc = FunCreator.of(Evaluate.class, Collections.singletonMap(key, Type.INT));
 		return fc.create(fc.field(key));
 	}
 
-	private Evaluate compileOperator(Node m[], int opcode) {
+	private Evaluate compileOperator(Node m[], String op) {
 		String e0 = "e0", e1 = "e1";
 
-		Fun<Map<String, Object>, Evaluate> fun = compiledByOpcode //
-				.computeIfAbsent(opcode, opcode_ -> {
+		Fun<Map<String, Object>, Evaluate> fun = compiledByOp //
+				.computeIfAbsent(op, op_ -> {
 					FunCreator<Evaluate> fc = FunCreator.of(Evaluate.class,
 							Read.<String, Type> empty2() //
 									.cons(e0, Type.getType(Evaluate.class)) //
@@ -79,7 +78,7 @@ public class SewingExpressionImpl implements SewingExpression {
 					return fc.create(fc.parameter(env -> {
 						FunExpr v0 = fc.field(e0).apply(env);
 						FunExpr v1 = fc.field(e1).apply(env);
-						return fc.bi(v0, v1, type -> opcode);
+						return fc.bi(op_, v0, v1);
 					}));
 				});
 

@@ -2,10 +2,9 @@ package suite.jdk.gen;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.ToIntFunction;
 
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
+import org.apache.bcel.Const;
+import org.apache.bcel.generic.Type;
 
 import suite.jdk.gen.FunExpression.BinaryFunExpr;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
@@ -19,7 +18,7 @@ import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.util.FunUtil.Fun;
 
-public class FunConstructor implements Opcodes {
+public class FunConstructor {
 
 	public static final FunExpression fe = new FunExpression();
 
@@ -32,12 +31,12 @@ public class FunConstructor implements Opcodes {
 	}
 
 	public FunExpr add(FunExpr e0, FunExpr e1) {
-		return bi(e0, e1, type -> Type_.choose(type, 0, DADD, FADD, IADD, LADD));
+		return bi("+", e0, e1);
 	}
 
-	public FunExpr bi(FunExpr e0, FunExpr e1, ToIntFunction<Type> opcode) {
+	public FunExpr bi(String op, FunExpr e0, FunExpr e1) {
 		BinaryFunExpr expr = fe.new BinaryFunExpr();
-		expr.opcode = opcode;
+		expr.op = op;
 		expr.left = e0;
 		expr.right = e1;
 		return expr;
@@ -45,7 +44,7 @@ public class FunConstructor implements Opcodes {
 
 	public FunExpr constant(int i) {
 		ConstantFunExpr expr = fe.new ConstantFunExpr();
-		expr.type = Type.INT_TYPE;
+		expr.type = Type.INT;
 		expr.constant = i;
 		return expr;
 	}
@@ -67,7 +66,7 @@ public class FunConstructor implements Opcodes {
 
 	public FunExpr ifeq(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
 		If2FunExpr expr = fe.new If2FunExpr();
-		expr.opcode = t -> !Objects.equals(t, Type.INT_TYPE) ? Opcodes.IF_ACMPNE : Opcodes.IF_ICMPNE;
+		expr.opcode = t -> !Objects.equals(t, Type.INT) ? Const.IF_ACMPNE : Const.IF_ICMPNE;
 		expr.left = left;
 		expr.right = right;
 		expr.then = then_;

@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collections;
 import java.util.function.BiPredicate;
 
+import org.apache.bcel.generic.Type;
 import org.junit.Test;
-import org.objectweb.asm.Type;
 
 import suite.util.FunUtil.Fun;
 
@@ -21,7 +21,7 @@ public class FunCreatorTest {
 	public void testApply() {
 		String fieldName0 = "f0";
 		String fieldName1 = "f1";
-		FunCreator<IntFun> fc0 = intFun(fieldName0, Type.INT_TYPE);
+		FunCreator<IntFun> fc0 = intFun(fieldName0, Type.INT);
 		FunCreator<IntFun> fc1 = intFun(fieldName1, Type.getType(IntFun.class));
 		IntFun f0 = fc0 //
 				.create(fc0.parameter(i -> fc0.add(fc0.field(fieldName0), i))) //
@@ -46,7 +46,7 @@ public class FunCreatorTest {
 	@Test
 	public void testField() {
 		String fieldName = "f";
-		FunCreator<IntFun> fc = intFun(fieldName, Type.INT_TYPE);
+		FunCreator<IntFun> fc = intFun(fieldName, Type.INT);
 		int result = fc //
 				.create(fc.parameter(i -> fc.add(fc.field(fieldName), i))) //
 				.apply(Collections.singletonMap(fieldName, 1)) //

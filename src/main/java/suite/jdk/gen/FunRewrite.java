@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.objectweb.asm.Type;
+import org.apache.bcel.generic.Type;
 
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;

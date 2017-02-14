@@ -1,14 +1,24 @@
 package suite.jdk.gen;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
+import org.apache.bcel.Const;
+import org.apache.bcel.generic.BranchInstruction;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionConst;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
 
-import javassist.bytecode.Opcode;
 import suite.jdk.gen.FunExpression.AssignFunExpr;
 import suite.jdk.gen.FunExpression.BinaryFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
@@ -27,57 +37,77 @@ import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.gen.FunExpression.StaticFunExpr;
 import suite.streamlet.Read;
 
-public class FunGenerateBytecode implements Opcodes {
+public class FunGenerateBytecode {
 
 	private FunTypeInformation ft;
-	private Method_ mc;
+	private InstructionFactory factory;
 
-	public FunGenerateBytecode(FunTypeInformation ft, Method_ mc) {
-		this.ft = ft;
-		this.mc = mc;
+	private class Record {
+		private List<Instruction> list = new ArrayList<>();
+		private Map<BranchInstruction, Integer> labels = new HashMap<>();
 	}
 
-	public void visit(MethodVisitor mv, FunExpr e) {
+	public FunGenerateBytecode(FunTypeInformation ft, ConstantPoolGen cpg) {
+		this.ft = ft;
+		this.factory = new InstructionFactory(cpg);
+	}
+
+	public InstructionList visit(FunExpr e, Type returnType) {
+		Record r = new Record();
+		visit0(r, e);
+		r.list.add(InstructionFactory.createReturn(returnType));
+
+		InstructionList il = new InstructionList();
+		List<InstructionHandle> ihs = new ArrayList<>();
+
+		for (Instruction instruction : r.list)
+			ihs.add(instruction instanceof BranchInstruction //
+					? il.append((BranchInstruction) instruction) //
+					: il.append(instruction));
+
+		for (Entry<BranchInstruction, Integer> entry : r.labels.entrySet())
+			entry.getKey().setTarget(ihs.get(entry.getValue()));
+
+		return il;
+	}
+
+	public void visit0(Record r, FunExpr e) {
 		if (e instanceof AssignFunExpr) {
 			AssignFunExpr expr = (AssignFunExpr) e;
-			visit(mv, expr.value);
-			mv.visitVarInsn(Type_.choose(ft.typeOf(expr.value), ASTORE, DSTORE, FSTORE, ISTORE, LSTORE), expr.index);
+			visit0(r, expr.value);
+			r.list.add(InstructionFactory.createStore(ft.typeOf(expr.value), expr.index));
 		} else if (e instanceof BinaryFunExpr) {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
-			visit(mv, expr.left);
-			visit(mv, expr.right);
-			mv.visitInsn(expr.opcode.applyAsInt(ft.typeOf(expr.left)));
+			visit0(r, expr.left);
+			visit0(r, expr.right);
+			r.list.add(InstructionFactory.createBinaryOperation(expr.op, ft.typeOf(expr.left)));
 		} else if (e instanceof CastFunExpr) {
 			CastFunExpr expr = (CastFunExpr) e;
-			visit(mv, expr.expr);
+			visit0(r, expr.expr);
 		} else if (e instanceof CheckCastFunExpr) {
 			CheckCastFunExpr expr = (CheckCastFunExpr) e;
-			visit(mv, expr.expr);
-			mv.visitTypeInsn(CHECKCAST, expr.type.getDescriptor());
+			visit0(r, expr.expr);
+			r.list.add(factory.createCheckCast(expr.type));
 		} else if (e instanceof ConstantFunExpr) {
 			ConstantFunExpr expr = (ConstantFunExpr) e;
-			mc.visitLdc(mv, expr);
+			r.list.add(factory.createConstant(expr.constant));
 		} else if (e instanceof FieldTypeFunExpr) {
 			FieldTypeFunExpr expr = (FieldTypeFunExpr) e;
-			visit(mv, expr.object);
-			mv.visitFieldInsn( //
-					GETFIELD, //
-					ft.typeOf(expr.object).getInternalName(), //
-					expr.field, //
-					ft.typeOf(expr).getDescriptor());
+			visit0(r, expr.object);
+			r.list.add(factory.createGetField(((ObjectType) ft.typeOf(expr.object)).getClassName(), expr.field, ft.typeOf(expr)));
 		} else if (e instanceof If1FunExpr) {
 			If1FunExpr expr = (If1FunExpr) e;
-			visit(mv, expr.if_);
-			visitIf(IFEQ, mv, expr);
+			visit0(r, expr.if_);
+			visitIf(r, Const.IFEQ, expr);
 		} else if (e instanceof If2FunExpr) {
 			If2FunExpr expr = (If2FunExpr) e;
-			visit(mv, expr.left);
-			visit(mv, expr.right);
-			visitIf(expr.opcode.applyAsInt(ft.typeOf(expr.left)), mv, expr);
+			visit0(r, expr.left);
+			visit0(r, expr.right);
+			visitIf(r, (short) expr.opcode.applyAsInt(ft.typeOf(expr.left)), expr);
 		} else if (e instanceof InstanceOfFunExpr) {
 			InstanceOfFunExpr expr = (InstanceOfFunExpr) e;
-			visit(mv, expr.object);
-			mv.visitTypeInsn(INSTANCEOF, Type.getInternalName(expr.instanceType));
+			visit0(r, expr.object);
+			r.list.add(factory.createInstanceOf(expr.instanceType));
 		} else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
 			Type array[] = Read.from(expr.parameters) //
@@ -85,52 +115,51 @@ public class FunGenerateBytecode implements Opcodes {
 					.toList() //
 					.toArray(new Type[0]);
 
-			int opcode = ft.invokeMethodOf(expr).getDeclaringClass().isInterface() ? INVOKEINTERFACE : INVOKEVIRTUAL;
+			short opcode = ft.invokeMethodOf(expr).getDeclaringClass().isInterface() ? Const.INVOKEINTERFACE : Const.INVOKEVIRTUAL;
 
 			if (expr.object != null)
-				visit(mv, expr.object);
+				visit0(r, expr.object);
 
 			for (FunExpr parameter : expr.parameters)
-				visit(mv, parameter);
+				visit0(r, parameter);
 
-			mv.visitMethodInsn( //
-					opcode, //
-					ft.typeOf(expr.object).getInternalName(), //
+			r.list.add(factory.createInvoke( //
+					((ObjectType) ft.typeOf(expr.object)).getClassName(), //
 					expr.methodName, //
-					Type.getMethodDescriptor(ft.typeOf(expr), array), //
-					opcode == Opcode.INVOKEINTERFACE);
+					ft.typeOf(expr), //
+					array, //
+					opcode));
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
-			mv.visitVarInsn(Type_.choose(ft.typeOf(expr), ALOAD, DLOAD, FLOAD, ILOAD, LLOAD), expr.index);
+			r.list.add(InstructionFactory.createLoad(ft.typeOf(expr), expr.index));
 		} else if (e instanceof PrintlnFunExpr) {
 			PrintlnFunExpr expr = (PrintlnFunExpr) e;
-			String td = Type.getDescriptor(PrintStream.class);
-			mv.visitFieldInsn(GETSTATIC, Type.getInternalName(System.class), "out", td);
-			visit(mv, expr.expression);
-			mv.visitMethodInsn(INVOKEVIRTUAL, Type.getInternalName(PrintStream.class), "println",
-					Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(String.class)), false);
+			String sys = System.class.getName();
+			r.list.add(factory.createGetStatic(sys, "out", Type.getType(PrintStream.class)));
+			visit0(r, expr.expression);
+			r.list.add(factory.createInvoke(sys, "println", ft.typeOf(expr), new Type[] { Type.STRING, }, Const.INVOKEVIRTUAL));
 		} else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;
-			visit(mv, expr.left);
-			if (!Objects.equals(ft.typeOf(expr.left), Type.VOID_TYPE))
-				mv.visitInsn(POP);
-			visit(mv, expr.right);
+			visit0(r, expr.left);
+			if (!Objects.equals(ft.typeOf(expr.left), Type.VOID))
+				r.list.add(InstructionConst.POP);
+			visit0(r, expr.right);
 		} else if (e instanceof StaticFunExpr) {
 			StaticFunExpr expr = (StaticFunExpr) e;
-			mv.visitFieldInsn(GETSTATIC, expr.clazzType, expr.field, expr.type.getDescriptor());
+			r.list.add(factory.createGetStatic(expr.clazzType, expr.field, expr.type));
 		} else
 			throw new RuntimeException("Unknown expression " + e.getClass());
 	}
 
-	private void visitIf(int opcode, MethodVisitor mv, IfFunExpr expr) {
-		Label l0 = new Label();
-		Label l1 = new Label();
-		mv.visitJumpInsn(opcode, l0);
-		visit(mv, expr.then);
-		mv.visitJumpInsn(GOTO, l1);
-		mv.visitLabel(l0);
-		visit(mv, expr.else_);
-		mv.visitLabel(l1);
+	private void visitIf(Record r, short opcode, IfFunExpr expr) {
+		BranchInstruction bh0 = InstructionFactory.createBranchInstruction(opcode, null);
+		BranchInstruction bh1 = InstructionFactory.createBranchInstruction(Const.GOTO, null);
+		r.list.add(bh0);
+		visit0(r, expr.then);
+		r.list.add(bh1);
+		r.labels.put(bh0, r.list.size());
+		visit0(r, expr.else_);
+		r.labels.put(bh1, r.list.size());
 	}
 
 }

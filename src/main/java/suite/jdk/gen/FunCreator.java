@@ -1,5 +1,9 @@
 package suite.jdk.gen;
 
+import static org.apache.bcel.Const.ACC_PUBLIC;
+import static org.apache.bcel.Const.ACC_STATIC;
+import static org.apache.bcel.Const.ACC_SUPER;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,9 +13,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
+import org.apache.bcel.Const;
+import org.apache.bcel.generic.ClassGen;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldGen;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.Type;
 
 import suite.adt.Pair;
 import suite.jdk.UnsafeUtil;
@@ -22,7 +32,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 import suite.util.Util;
 
-public class FunCreator<I> extends FunConstructor implements Opcodes {
+public class FunCreator<I> extends FunConstructor {
 
 	private static AtomicInteger counter = new AtomicInteger();
 
@@ -35,7 +45,6 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 
 	private Map<String, Pair<Type, Object>> constants;
 	private Map<String, Type> fields;
-	private Method_ mc;
 
 	public static <I> FunCreator<I> of(Class<I> ic) {
 		return of(ic, Collections.emptyMap());
@@ -67,22 +76,20 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 
 		constants = new HashMap<>();
 		fields = fs;
-		mc = new Method_();
 	}
 
 	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
 		List<Type> localTypes = new ArrayList<>();
-		localTypes.add(Type.getObjectType(className));
+		localTypes.add(ObjectType.getInstance(className));
 		localTypes.addAll(parameterTypes);
 
 		FunExpand fe = new FunExpand();
-		FunTypeInformation ft = new FunTypeInformation();
-		FunRewrite fr = new FunRewrite(ft, localTypes);
-		FunGenerateBytecode fgb = new FunGenerateBytecode(ft, mc);
+		FunTypeInformation fti = new FunTypeInformation();
+		FunRewrite fr = new FunRewrite(fti, localTypes);
 
 		FunExpr expr1 = fe.expand(expr0, 0);
 		FunExpr expr2 = fr.rewrite(expr1.cast(interfaceClass));
-		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create(fgb, expr2));
+		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create0(fti, expr2));
 
 		return fields -> Rethrow.reflectiveOperationException(() -> {
 			I t = clazz.newInstance();
@@ -92,41 +99,54 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 		});
 	}
 
-	private Class<? extends I> create(FunGenerateBytecode fgb, FunExpr expression) throws NoSuchMethodException {
-		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-		Type types[] = parameterTypes.toArray(new Type[0]);
-
-		cw.visit(V1_8, //
-				ACC_PUBLIC | ACC_SUPER, //
-				className, //
-				null, //
-				Type.getInternalName(superClass), //
-				new String[] { Type.getInternalName(interfaceClass), });
+	private Class<? extends I> create0(FunTypeInformation fti, FunExpr expression) throws NoSuchMethodException {
+		String ifs[] = new String[] { interfaceClass.getName(), };
+		ConstantPoolGen cp = new ConstantPoolGen();
+		FunGenerateBytecode fgb = new FunGenerateBytecode(fti, cp);
+		ClassGen cg = new ClassGen(className, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
+		InstructionFactory factory = new InstructionFactory(cg);
+		org.apache.bcel.classfile.Method m0, m1;
 
 		for (Entry<String, Pair<Type, Object>> entry : constants.entrySet())
-			cw.visitField(ACC_PUBLIC | ACC_STATIC, entry.getKey(), entry.getValue().t0.getDescriptor(), null, null).visitEnd();
+			cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, entry.getValue().t0, entry.getKey(), cp).getField());
 
 		for (Entry<String, Type> entry : fields.entrySet())
-			cw.visitField(ACC_PUBLIC, entry.getKey(), entry.getValue().getDescriptor(), null, null).visitEnd();
+			cg.addField(new FieldGen(ACC_PUBLIC, entry.getValue(), entry.getKey(), cp).getField());
 
-		mc.create(cw, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE), mv -> {
-			String cd = Type.getConstructorDescriptor(superClass.getConstructor());
+		{
+			InstructionList il = new InstructionList();
+			try {
+				il.append(InstructionFactory.createLoad(Type.OBJECT, 0));
+				il.append(factory.createInvoke(superClass.getName(), "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
+				il.append(InstructionFactory.createReturn(Type.VOID));
 
-			mv.visitVarInsn(ALOAD, 0);
-			mv.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(superClass), "<init>", cd, false);
-			mv.visitInsn(RETURN);
-			mv.visitMaxs(1, 1);
-		});
+				MethodGen mg0 = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", className, il, cp);
+				mg0.setMaxStack();
+				mg0.setMaxLocals();
+				m0 = mg0.getMethod();
+			} finally {
+				il.dispose();
+			}
+		}
 
-		mc.create(cw, methodName, Type.getMethodDescriptor(returnType, types), mv -> {
-			fgb.visit(mv, expression);
-			mv.visitInsn(Type_.choose(returnType, ARETURN, DRETURN, FRETURN, IRETURN, LRETURN));
-			mv.visitMaxs(0, 0); // localTypes.size()
-		});
+		{
+			InstructionList il = fgb.visit(expression, returnType);
+			Type types[] = parameterTypes.toArray(new Type[0]);
 
-		cw.visitEnd();
+			try {
+				MethodGen mg1 = new MethodGen(ACC_PUBLIC, returnType, types, null, methodName, className, il, cp);
+				mg1.setMaxStack();
+				mg1.setMaxLocals();
+				m1 = mg1.getMethod();
+			} finally {
+				il.dispose();
+			}
+		}
 
-		byte bytes[] = cw.toByteArray();
+		cg.addMethod(m0);
+		cg.addMethod(m1);
+
+		byte bytes[] = cg.getJavaClass().getBytes();
 
 		Class<? extends I> clazz = new UnsafeUtil().defineClass(interfaceClass, className, bytes);
 
@@ -149,7 +169,7 @@ public class FunCreator<I> extends FunConstructor implements Opcodes {
 	}
 
 	public FunExpr this_() {
-		return local(0, Type.getObjectType(className));
+		return local(0, ObjectType.getInstance(className));
 	}
 
 	private FunExpr constantStatic(Object object, Class<?> clazz) {

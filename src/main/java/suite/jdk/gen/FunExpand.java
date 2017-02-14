@@ -1,6 +1,6 @@
 package suite.jdk.gen;
 
-import org.objectweb.asm.Type;
+import org.apache.bcel.generic.Type;
 
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
@@ -29,7 +29,7 @@ public class FunExpand extends FunConstructor {
 			If1FunExpr expr = (If1FunExpr) e;
 			if (expr.if_ instanceof ConstantFunExpr) {
 				ConstantFunExpr cfe = (ConstantFunExpr) expr.if_;
-				if (cfe.type == Type.INT_TYPE)
+				if (cfe.type == Type.INT)
 					return ((Integer) cfe.constant).intValue() == 1 ? expr.then : expr.else_;
 				else
 					return null;

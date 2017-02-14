@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.objectweb.asm.Type;
+import org.apache.bcel.generic.Type;
 
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
 import suite.jdk.gen.FunExpression.AssignFunExpr;
@@ -86,7 +86,7 @@ public class FunTypeInformation {
 			IfFunExpr expr = (IfFunExpr) e;
 			return typeOf(expr.then);
 		} else if (e instanceof InstanceOfFunExpr)
-			return Type.BOOLEAN_TYPE;
+			return Type.BOOLEAN;
 		else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
 			return Type.getType(invokeMethodOf(expr).getReturnType());
@@ -94,7 +94,7 @@ public class FunTypeInformation {
 			LocalFunExpr expr = (LocalFunExpr) e;
 			return expr.type;
 		} else if (e instanceof PrintlnFunExpr)
-			return Type.VOID_TYPE;
+			return Type.VOID;
 		else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;
 			return typeOf(expr.right);

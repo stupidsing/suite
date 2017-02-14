@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.objectweb.asm.Type;
+import org.apache.bcel.generic.Type;
 
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
@@ -124,7 +124,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	private static Fun<Map<String, Object>, BindPredicate> compileBindInt_() {
 		Map<String, Type> fields = Read.<String, Type> empty2() //
 				.cons(key0, Type.getType(Node.class)) //
-				.cons(key1, Type.INT_TYPE) //
+				.cons(key1, Type.INT) //
 				.toMap();
 
 		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);

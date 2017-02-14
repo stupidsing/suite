@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.ToIntFunction;
 
-import org.objectweb.asm.Type;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 import suite.util.FunUtil.Fun;
 
@@ -28,7 +29,7 @@ public class FunExpression {
 
 		public FunExpr checkCast(Class<?> clazz) {
 			CheckCastFunExpr expr = new CheckCastFunExpr();
-			expr.type = Type.getType(clazz);
+			expr.type = (ReferenceType) Type.getType(clazz);
 			expr.expr = this;
 			return expr;
 		}
@@ -50,7 +51,7 @@ public class FunExpression {
 
 		public FunExpr instanceOf(Class<?> clazz) {
 			InstanceOfFunExpr expr = new InstanceOfFunExpr();
-			expr.instanceType = clazz;
+			expr.instanceType = (ReferenceType) Type.getType(clazz);
 			expr.object = this;
 			return expr;
 		}
@@ -75,7 +76,7 @@ public class FunExpression {
 	}
 
 	public class BinaryFunExpr extends FunExpr {
-		public ToIntFunction<Type> opcode;
+		public String op;
 		public FunExpr left, right;
 	}
 
@@ -85,7 +86,7 @@ public class FunExpression {
 	}
 
 	public class CheckCastFunExpr extends FunExpr {
-		public Type type;
+		public ReferenceType type;
 		public FunExpr expr;
 	}
 
@@ -136,7 +137,7 @@ public class FunExpression {
 
 	public class InstanceOfFunExpr extends FunExpr {
 		public FunExpr object;
-		public Class<?> instanceType;
+		public ReferenceType instanceType;
 	}
 
 	public class InvokeFunExpr extends FunExpr {
