@@ -103,15 +103,8 @@ public class FunCreator<I> extends FunFactory {
 		String ifs[] = new String[] { interfaceClass.getName(), };
 		ConstantPoolGen cp = new ConstantPoolGen();
 		FunGenerateBytecode fgb = new FunGenerateBytecode(fti, cp);
-		ClassGen cg = new ClassGen(className, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
-		InstructionFactory factory = new InstructionFactory(cg);
+		InstructionFactory factory = new InstructionFactory(cp);
 		org.apache.bcel.classfile.Method m0, m1;
-
-		for (Entry<String, Pair<Type, Object>> entry : constants.entrySet())
-			cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, entry.getValue().t0, entry.getKey(), cp).getField());
-
-		for (Entry<String, Type> entry : fields.entrySet())
-			cg.addField(new FieldGen(ACC_PUBLIC, entry.getValue(), entry.getKey(), cp).getField());
 
 		{
 			InstructionList il = new InstructionList();
@@ -142,6 +135,14 @@ public class FunCreator<I> extends FunFactory {
 				il.dispose();
 			}
 		}
+
+		ClassGen cg = new ClassGen(className, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
+
+		for (Entry<String, Pair<Type, Object>> entry : constants.entrySet())
+			cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, entry.getValue().t0, entry.getKey(), cp).getField());
+
+		for (Entry<String, Type> entry : fields.entrySet())
+			cg.addField(new FieldGen(ACC_PUBLIC, entry.getValue(), entry.getKey(), cp).getField());
 
 		cg.addMethod(m0);
 		cg.addMethod(m1);
