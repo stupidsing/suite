@@ -170,7 +170,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public LazyIbTree<T> update(T t, Fun<T, T> fun) {
-		return new LazyIbTree<>(comparator, createRoot(update(root, t, fun)));
+		return new LazyIbTree<>(comparator, newRoot(update(root, t, fun)));
 	}
 
 	private List<Slot<T>> update(List<Slot<T>> node0, T t, Fun<T, T> fun) {
@@ -247,9 +247,9 @@ public class LazyIbTree<T> implements ITree<T> {
 		return melded;
 	}
 
-	private List<Slot<T>> createRoot(List<Slot<T>> node) {
+	private List<Slot<T>> newRoot(List<Slot<T>> node) {
 		List<Slot<T>> node1;
-		return node.size() == 1 && !(node1 = node.get(0).readSlots()).isEmpty() ? createRoot(node1) : node;
+		return node.size() == 1 && !(node1 = node.get(0).readSlots()).isEmpty() ? newRoot(node1) : node;
 	}
 
 	private Slot<T> slot(List<Slot<T>> slots) {

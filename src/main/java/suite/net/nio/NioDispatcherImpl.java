@@ -136,7 +136,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 			SocketChannel sc = ((ServerSocketChannel) sc0).accept().socket().getChannel();
 			sc.configureBlocking(false);
 			sc.register(selector, SelectionKey.OP_READ, channel);
-			channel.onConnected.fire(createSender(sc));
+			channel.onConnected.fire(newSender(sc));
 		}
 
 		if ((ops & ~SelectionKey.OP_ACCEPT) != 0)
@@ -148,7 +148,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 				if ((ops & SelectionKey.OP_CONNECT) != 0) {
 					sc1.finishConnect();
 					key.interestOps(SelectionKey.OP_READ);
-					channel.onConnected.fire(createSender(sc1));
+					channel.onConnected.fire(newSender(sc1));
 				}
 
 				if ((ops & SelectionKey.OP_READ) != 0) {
@@ -166,7 +166,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 			}
 	}
 
-	private Fun<Bytes, Bytes> createSender(SocketChannel sc) {
+	private Fun<Bytes, Bytes> newSender(SocketChannel sc) {
 		return in -> {
 
 			// try to send immediately. If cannot sent all, wait for the

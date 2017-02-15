@@ -38,7 +38,7 @@ public class Rule {
 			return head;
 	}
 
-	public synchronized Node createClause(Node query, Node cut) {
+	public synchronized Node newClause(Node query, Node cut) {
 		if (sewingGeneralizer == null) {
 			sewingGeneralizer = new SewingGeneralizerImpl();
 			headFun = sewingGeneralizer.compile(head);

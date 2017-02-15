@@ -14,10 +14,6 @@ public class LinearRuleSet implements RuleSet {
 	protected LinearRuleSet() {
 	}
 
-	public static RuleSet create() {
-		return new IndexedRuleSet();
-	}
-
 	@Override
 	public void addRule(Rule rule) {
 		rule = new Cloner().clone(rule);

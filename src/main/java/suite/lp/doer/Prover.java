@@ -188,7 +188,7 @@ public class Prover {
 	private Node expandClauses(Node query, Node cut, List<Rule> rules) {
 		return new Suspend(() -> {
 			if (!rules.isEmpty()) {
-				Node clause = rules.get(0).createClause(query, cut);
+				Node clause = rules.get(0).newClause(query, cut);
 				return Tree.of(TermOp.OR____, clause, expandClauses(query, cut, Util.right(rules, 1)));
 			} else
 				return FAIL;

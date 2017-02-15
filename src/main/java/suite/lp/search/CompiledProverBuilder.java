@@ -33,7 +33,7 @@ public class CompiledProverBuilder implements Builder {
 	}
 
 	private CompiledProverBuilder(Builder builder, ProverConfig proverConfig) {
-		this.compiler = createCompiler(builder);
+		this.compiler = newCompiler(builder);
 		this.proverConfig = proverConfig;
 	}
 
@@ -60,7 +60,7 @@ public class CompiledProverBuilder implements Builder {
 		return LogUtil.duration("Code compiled", () -> FindUtil.collectSingle(compiler, program));
 	}
 
-	private Finder createCompiler(Builder builder) {
+	private Finder newCompiler(Builder builder) {
 		String compile = "source .in, compile-logic .in .out, sink .out";
 		return builder.build(Suite.logicCompilerRuleSet()).apply(Suite.parse(compile));
 	}
