@@ -51,7 +51,7 @@ public class UctTest {
 
 		for (int i = 0; i < nTotal; i++) {
 			GameSet gameSet = new GameSet(new Board(), player);
-			UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet);
+			UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 			visitor.playMove(move);
 			nWins += visitor.evaluateRandomOutcome() ? 0 : 1;
 		}
@@ -69,7 +69,7 @@ public class UctTest {
 			for (; i < ss[time]; i++)
 				duration = new TimeUtil().time(() -> {
 					GameSet gameSet1 = new GameSet(gameSet);
-					UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet1);
+					UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet1);
 					visitor.evaluateRandomOutcome();
 					return null;
 				}).duration;
@@ -85,7 +85,7 @@ public class UctTest {
 
 		for (int time = 0; time < 2; time++) {
 			GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
-			UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet);
+			UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 			UctSearch<Coordinate> search = new UctSearch<>(visitor);
 			search.setNumberOfSimulations(nSimulations);
 
@@ -101,7 +101,7 @@ public class UctTest {
 		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
 		gameSet.play(Coordinate.c(3, 3));
 
-		UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet);
+		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<>(visitor);
 		search.setNumberOfSimulations(1000);
 		Coordinate bestMove = search.search();
@@ -118,7 +118,7 @@ public class UctTest {
 
 		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
 
-		UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet);
+		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<>(visitor);
 		search.setNumberOfThreads(1);
 		search.setNumberOfSimulations(80000);
@@ -149,7 +149,7 @@ public class UctTest {
 
 			while (true) {
 				GameSet gameSet1 = new GameSet(gameSet);
-				UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet1);
+				UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet1);
 				UctSearch<Coordinate> search = new UctSearch<>(visitor);
 				search.setNumberOfThreads(Constants.nThreads);
 				search.setNumberOfSimulations(nSimulations);

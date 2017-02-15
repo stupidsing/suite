@@ -191,7 +191,7 @@ public class UctWeiqi {
 		}
 	}
 
-	public static Visitor createVisitor(GameSet gameSet) {
+	public static Visitor newVisitor(GameSet gameSet) {
 		return new Visitor(gameSet);
 	}
 

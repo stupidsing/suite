@@ -46,7 +46,7 @@ public class UctWeiqiMain<Move> {
 
 		while (!quit) {
 			GameSet gameSet1 = new GameSet(gameSet);
-			UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet1);
+			UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet1);
 			UctSearch<Coordinate> search = new UctSearch<>(visitor);
 			search.setNumberOfThreads(nThreads);
 			search.setNumberOfSimulations(nSimulations);
@@ -134,7 +134,7 @@ public class UctWeiqiMain<Move> {
 
 		GameSet gameSet = new GameSet(new Board(), startingPlayer);
 
-		UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet);
+		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<>(visitor);
 		search.setNumberOfThreads(1);
 		search.setNumberOfSimulations(80000);

@@ -23,7 +23,7 @@ public class MovesTest {
 		board.set(Coordinate.c(2, 2), Occupation.EMPTY);
 
 		GameSet gameSet = new GameSet(board, Occupation.BLACK);
-		UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet);
+		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 		assertTrue(visitor.elaborateMoves().isEmpty());
 	}
 
@@ -39,7 +39,7 @@ public class MovesTest {
 		board.set(Coordinate.c(9, 8), Occupation.EMPTY);
 
 		GameSet gameSet = new GameSet(board, Occupation.WHITE);
-		UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet);
+		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 		assertEquals(2, visitor.elaborateMoves().size());
 	}
 
@@ -53,7 +53,7 @@ public class MovesTest {
 	@Test
 	public void testRandom() {
 		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
-		UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet);
+		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 		boolean isWon = visitor.evaluateRandomOutcome();
 		UserInterface.display(gameSet);
 		System.out.println(isWon ? "WON" : "LOSS");

@@ -94,7 +94,7 @@ public class UctScenarioTest {
 	}
 
 	private void testScenario(GameSet gameSet, Coordinate bestMove) {
-		UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(new GameSet(gameSet));
+		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(new GameSet(gameSet));
 		UctSearch<Coordinate> search = new UctSearch<>(visitor);
 		search.setNumberOfSimulations(20000);
 		search.setNumberOfThreads(1);
