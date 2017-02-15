@@ -96,7 +96,7 @@ public class ObstructionFreeStmTest {
 	public void test() throws InterruptedException {
 		ObstructionFreeStm stm = new ObstructionFreeStm();
 		List<Memory<Integer>> memories = IntStream.range(0, nMemories) //
-				.mapToObj(i -> stm.create(0)).collect(Collectors.toList());
+				.mapToObj(i -> stm.newMemory(0)).collect(Collectors.toList());
 		List<Worker> workers = IntStream.range(0, nTransactions) //
 				.mapToObj(i -> new Worker(stm)).collect(Collectors.toList());
 

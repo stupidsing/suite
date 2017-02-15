@@ -59,7 +59,7 @@ public class TransactionManager<Key, Value> {
 				}
 
 				private Memory<Value> getMemory(Key key) {
-					return memoryByKey.computeIfAbsent(key, key_ -> stm.create(mutator.get(key_)));
+					return memoryByKey.computeIfAbsent(key, key_ -> stm.newMemory(mutator.get(key_)));
 				}
 			};
 		}

@@ -75,7 +75,7 @@ public class ObstructionFreeStm {
 		return new Transaction();
 	}
 
-	public <V> Memory<V> create(V value) {
+	public <V> Memory<V> newMemory(V value) {
 		return new Memory<>(value);
 	}
 
