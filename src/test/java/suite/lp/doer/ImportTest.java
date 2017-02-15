@@ -14,14 +14,14 @@ public class ImportTest {
 
 	@Test
 	public void testImport() throws IOException {
-		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl"));
+		RuleSet rs = Suite.newRuleSet(Arrays.asList("auto.sl"));
 		assertTrue(Suite.proveLogic(rs, "list"));
 		assertTrue(Suite.proveLogic(rs, "list repeat"));
 	}
 
 	@Test
 	public void testImportFunCompiler() throws IOException {
-		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
+		RuleSet rs = Suite.newRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
 		System.out.println(rs.getRules().size());
 	}
 

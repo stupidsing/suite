@@ -110,7 +110,7 @@ public class LazyFunInterpreter {
 	}
 
 	private Reference parse(Node node) {
-		Prover prover = new Prover(Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl")));
+		Prover prover = new Prover(Suite.newRuleSet(Arrays.asList("auto.sl", "fc/fc.sl")));
 
 		Reference parsed = new Reference();
 		if (!prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)))

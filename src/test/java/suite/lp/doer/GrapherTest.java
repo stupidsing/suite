@@ -22,7 +22,7 @@ public class GrapherTest {
 	}
 
 	private boolean prove(String lp) {
-		RuleSet rs = Suite.createRuleSet();
+		RuleSet rs = Suite.newRuleSet();
 		return Suite.proveLogic(new SewingProverBuilder2(), rs, lp);
 	}
 

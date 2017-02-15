@@ -31,7 +31,7 @@ public class SldResolution {
 	private static Atom not = Atom.of("NOT");
 
 	public List<Node> resolve(Node node) {
-		RuleSet ruleSet = Suite.createRuleSet(Arrays.asList("auto.sl", "pt.sl"));
+		RuleSet ruleSet = Suite.newRuleSet(Arrays.asList("auto.sl", "pt.sl"));
 		CompiledProverBuilder builder = CompiledProverBuilder.level1(new ProverConfig());
 		Finder finder = builder.build(ruleSet).apply(Suite.parse("source .n0" //
 				+ ", pt-prove0 .n0 .n1" //

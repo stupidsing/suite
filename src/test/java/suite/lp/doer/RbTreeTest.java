@@ -17,7 +17,7 @@ public class RbTreeTest {
 
 	@Test
 	public void test() throws IOException {
-		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "rbt.sl"));
+		RuleSet rs = Suite.newRuleSet(Arrays.asList("auto.sl", "rbt.sl"));
 
 		for (Builder builder : Arrays.asList(new InterpretedProverBuilder(), new SewingProverBuilder2()))
 			assertTrue(Suite.proveLogic(builder, rs, "" //

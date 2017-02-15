@@ -33,7 +33,7 @@ import suite.util.To;
 public class Chr {
 
 	private List<Rule> rules = new ArrayList<>();
-	private Prover prover = new Prover(Suite.createRuleSet());
+	private Prover prover = new Prover(Suite.newRuleSet());
 
 	private class Rule {
 		private List<Node> givens = new ArrayList<>();

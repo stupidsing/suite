@@ -81,13 +81,13 @@ public class Nodify {
 		Nodifier nodifier = nodifiers.get(type);
 		if (nodifier == null) {
 			nodifiers.put(type, new Nodifier(object -> apply0(getNodifier(type), object), node -> apply0(getNodifier(type), node)));
-			nodifiers.put(type, nodifier = createNodifier(type));
+			nodifiers.put(type, nodifier = newNodifier(type));
 		}
 		return nodifier;
 	}
 
 	@SuppressWarnings("unchecked")
-	private Nodifier createNodifier(Type type) {
+	private Nodifier newNodifier(Type type) {
 		Nodifier nodifier;
 
 		if (type instanceof Class) {
@@ -190,7 +190,7 @@ public class Nodify {
 					return start.getRight();
 				}, node -> {
 					List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)).map(n -> apply0(nodifier1, n)).toList();
-					Collection<Object> object1 = (Collection<Object>) create(clazz);
+					Collection<Object> object1 = (Collection<Object>) instantiate(clazz);
 					object1.addAll(list);
 					return object1;
 				});
@@ -204,7 +204,7 @@ public class Nodify {
 					return dict;
 				}, node -> {
 					Map<Node, Reference> map = ((Dict) node).map;
-					Map<Object, Object> object1 = (Map<Object, Object>) create(clazz);
+					Map<Object, Object> object1 = (Map<Object, Object>) instantiate(clazz);
 					for (Entry<Node, Reference> e : map.entrySet())
 						object1.put(apply0(kn, e.getKey()), apply0(vn, e.getValue().finalNode()));
 					return object1;
@@ -217,7 +217,7 @@ public class Nodify {
 		return nodifier;
 	}
 
-	private <T> T create(Class<T> clazz) {
+	private <T> T instantiate(Class<T> clazz) {
 		Object object;
 		if (clazz == ArrayList.class || clazz == Collection.class || clazz == List.class)
 			object = new ArrayList<>();

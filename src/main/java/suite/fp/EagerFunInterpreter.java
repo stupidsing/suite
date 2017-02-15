@@ -243,7 +243,7 @@ public class EagerFunInterpreter {
 		Node mode = isLazyify ? Atom.of("LAZY") : Atom.of("EAGER");
 		Node query = Suite.substitute("source .in, fc-process-function .0 .in .out, sink .out", mode);
 
-		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
+		RuleSet rs = Suite.newRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
 		Finder finder = new SewingProverBuilder2().build(rs).apply(query);
 		Node parsed = FindUtil.collectSingle(finder, node);
 		IntrinsicCallback ic = isLazyify ? lazyIntrinsicCallback() : Intrinsics.eagerIntrinsicCallback;

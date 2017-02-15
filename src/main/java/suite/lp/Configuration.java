@@ -20,7 +20,7 @@ public class Configuration {
 		private Sink<Node> sink;
 
 		public ProverConfig() {
-			this(Suite.createRuleSet());
+			this(Suite.newRuleSet());
 		}
 
 		public ProverConfig(RuleSet ruleSet) {

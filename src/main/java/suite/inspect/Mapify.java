@@ -77,13 +77,13 @@ public class Mapify {
 		if (mapifier == null) {
 			mapifiers.put(type, new Mapifier(object -> apply0(getMapifier(type).mapify, object) //
 					, object -> apply0(getMapifier(type).unmapify, object)));
-			mapifiers.put(type, mapifier = createMapifier(type));
+			mapifiers.put(type, mapifier = newMapifier(type));
 		}
 		return mapifier;
 	}
 
 	@SuppressWarnings("unchecked")
-	private Mapifier createMapifier(Type type) {
+	private Mapifier newMapifier(Type type) {
 		Mapifier mapifier;
 
 		if (type instanceof Class) {
@@ -178,7 +178,7 @@ public class Mapify {
 					return map;
 				}, object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
-					Collection<Object> object1 = (Collection<Object>) create(clazz);
+					Collection<Object> object1 = (Collection<Object>) instantiate(clazz);
 					int i = 0;
 					while (map.containsKey(i))
 						object1.add(apply0(mapifier1.unmapify, map.get(i++)));
@@ -194,7 +194,7 @@ public class Mapify {
 					return map;
 				}, object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
-					Map<Object, Object> object1 = (Map<Object, Object>) create(clazz);
+					Map<Object, Object> object1 = (Map<Object, Object>) instantiate(clazz);
 					for (Entry<?, ?> e : map.entrySet())
 						object1.put(apply0(km.unmapify, e.getKey()), apply0(vm.unmapify, e.getValue()));
 					return object1;
@@ -215,7 +215,7 @@ public class Mapify {
 				|| Number.class.isAssignableFrom(clazz);
 	}
 
-	private <T> T create(Class<T> clazz) {
+	private <T> T instantiate(Class<T> clazz) {
 		Object object;
 		if (clazz == ArrayList.class || clazz == Collection.class || clazz == List.class)
 			object = new ArrayList<>();

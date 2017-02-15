@@ -47,7 +47,7 @@ public class EvaluateUtil {
 
 	public boolean proveLogic(Node lp) {
 		Builder builder = CompiledProverBuilder.level1(new ProverConfig());
-		return proveLogic(builder, Suite.createRuleSet(), lp);
+		return proveLogic(builder, Suite.newRuleSet(), lp);
 	}
 
 	public boolean proveLogic(RuleSet rs, Node lp) {

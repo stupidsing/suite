@@ -21,7 +21,7 @@ import suite.streamlet.Read;
 public class SymbolicMathUtil {
 
 	private static Complexity complexity = new Complexity();
-	private static Prover prover = Suite.createProver(Arrays.asList("auto.sl", "math.sl"));
+	private static Prover prover = Suite.newProver(Arrays.asList("auto.sl", "math.sl"));
 
 	private static Comparator<Node> comparator = (n0, n1) -> complexity.complexity(n0) - complexity.complexity(n1);
 

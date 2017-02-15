@@ -31,20 +31,20 @@ public class ImportUtil {
 	private String root = "file:" + FileUtil.homeDir() + "/src/main/ll/";
 	private ThreadLocal<IList<Node>> importing = ThreadLocal.withInitial(() -> IList.end());
 
-	public Prover createProver(List<String> toImports) {
-		return new Prover(createRuleSet(toImports));
+	public Prover newProver(List<String> toImports) {
+		return new Prover(newRuleSet(toImports));
 	}
 
-	public RuleSet createRuleSet(List<String> toImports) {
+	public RuleSet newRuleSet(List<String> toImports) {
 		return Rethrow.ioException(() -> {
-			RuleSet rs = createRuleSet();
+			RuleSet rs = newRuleSet();
 			for (String toImport : toImports)
 				importPath(rs, toImport);
 			return rs;
 		});
 	}
 
-	public RuleSet createRuleSet() {
+	public RuleSet newRuleSet() {
 		return new DoubleIndexedRuleSet();
 	}
 

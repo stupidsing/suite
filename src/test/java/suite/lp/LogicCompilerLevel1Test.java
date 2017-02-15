@@ -26,7 +26,7 @@ public class LogicCompilerLevel1Test {
 	 */
 	@Test
 	public void testCompileFunProgram() {
-		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
+		RuleSet rs = Suite.newRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
 
 		Node goal = new Specializer().specialize(Suite.substitute("" //
 				+ "source .in" //
@@ -43,7 +43,7 @@ public class LogicCompilerLevel1Test {
 
 	@Test
 	public void testMemberOfMember() {
-		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl"));
+		RuleSet rs = Suite.newRuleSet(Arrays.asList("auto.sl"));
 		Node goal = Suite.parse("source .lln, member .lln .ln, member .ln .n, sink .n");
 		Node input = Suite.parse("((1, 2,), (3, 4,),)");
 		List<Node> results = FindUtil.collectList(finder(rs, goal), input);
@@ -58,7 +58,7 @@ public class LogicCompilerLevel1Test {
 	 */
 	@Test
 	public void testTailCalls() {
-		RuleSet rs = Suite.createRuleSet();
+		RuleSet rs = Suite.newRuleSet();
 		Suite.addRule(rs, "ab a");
 		Suite.addRule(rs, "ab b");
 

@@ -97,7 +97,7 @@ public class Suite {
 	}
 
 	public static RuleSet getRuleSet(Node node) {
-		RuleSet rs = createRuleSet();
+		RuleSet rs = newRuleSet();
 		importUtil.importFrom(rs, node);
 		return rs;
 	}
@@ -230,18 +230,6 @@ public class Suite {
 	// --------------------------------
 	// import utilities
 
-	public static Prover createProver(List<String> toImports) {
-		return importUtil.createProver(toImports);
-	}
-
-	public static RuleSet createRuleSet(List<String> toImports) {
-		return importUtil.createRuleSet(toImports);
-	}
-
-	public static RuleSet createRuleSet() {
-		return importUtil.createRuleSet();
-	}
-
 	public static boolean importFile(RuleSet rs, String filename) throws IOException {
 		return importUtil.importUrl(rs, new URL("file", null, filename));
 	}
@@ -260,6 +248,18 @@ public class Suite {
 
 	public static boolean importResource(RuleSet rs, String classpath) throws IOException {
 		return importUtil.importUrl(rs, new URL("classpath", null, classpath));
+	}
+
+	public static Prover newProver(List<String> toImports) {
+		return importUtil.newProver(toImports);
+	}
+
+	public static RuleSet newRuleSet(List<String> toImports) {
+		return importUtil.newRuleSet(toImports);
+	}
+
+	public static RuleSet newRuleSet() {
+		return importUtil.newRuleSet();
 	}
 
 	// --------------------------------

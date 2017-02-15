@@ -72,7 +72,7 @@ public class CommandOptions {
 	}
 
 	public FunCompilerConfig fcc(Node node) {
-		ProverConfig pc = pc(Suite.createRuleSet());
+		ProverConfig pc = pc(Suite.newRuleSet());
 
 		FunCompilerConfig fcc = new FunCompilerConfig(pc, libraries);
 		fcc.setLazy(isLazy);

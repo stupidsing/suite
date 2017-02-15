@@ -46,7 +46,7 @@ public class Assembler {
 	}
 
 	public Assembler(int bits, boolean isLongMode, Fun<List<Pair<Reference, Node>>, List<Pair<Reference, Node>>> preassemble) {
-		ruleSet = Suite.createRuleSet(Arrays.asList("asm.sl", "auto.sl"));
+		ruleSet = Suite.newRuleSet(Arrays.asList("asm.sl", "auto.sl"));
 
 		if (isLongMode)
 			Suite.addRule(ruleSet, "as-long-mode");

@@ -69,7 +69,7 @@ public class FailedTests {
 	// alt = andTree(bt, orTree(andTree(right, rem), alt));
 	@Test
 	public void testRepeat() throws IOException {
-		RuleSet rs = Suite.createRuleSet();
+		RuleSet rs = Suite.newRuleSet();
 		Suite.importPath(rs, "auto.sl");
 		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
 	}

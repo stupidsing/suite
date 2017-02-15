@@ -112,7 +112,7 @@ public class InstructionTranslatorTest {
 
 	private <T> T execute(Node code, boolean isLazy, Fun<Fun<Node, Node>, T> fun) throws IOException {
 		Path basePath = TempDir.resolve(InstructionTranslator.class.getName());
-		TranslatedRunConfig config = new TranslatedRunConfig(Suite.createRuleSet(), isLazy);
+		TranslatedRunConfig config = new TranslatedRunConfig(Suite.newRuleSet(), isLazy);
 
 		try (InstructionTranslator instructionTranslator = new InstructionTranslator(basePath)) {
 			TranslatedRun translatedRun = instructionTranslator.translate(code);

@@ -84,7 +84,7 @@ public class CommandDispatcher {
 
 	public CommandDispatcher(CommandOptions opt) {
 		this.opt = opt;
-		ruleSet = Suite.createRuleSet(opt.getImports());
+		ruleSet = Suite.newRuleSet(opt.getImports());
 	}
 
 	public boolean importFiles(List<String> importFilenames) throws IOException {
@@ -179,7 +179,7 @@ public class CommandDispatcher {
 			elaborate(node, n -> new SewingProverImpl(ruleSet).compile(n).test(new ProverConfig(ruleSet)));
 			break;
 		case RESET:
-			ruleSet = Suite.createRuleSet();
+			ruleSet = Suite.newRuleSet();
 			importFiles(Collections.emptyList());
 		}
 
@@ -233,7 +233,7 @@ public class CommandDispatcher {
 
 	public boolean dispatchProve(List<String> inputs) throws IOException {
 		String in = parseInput(inputs);
-		RuleSet ruleSet = Suite.createRuleSet();
+		RuleSet ruleSet = Suite.newRuleSet();
 		return Suite.importPath(ruleSet, "auto.sl") && Suite.proveLogic(ruleSet, in);
 	}
 

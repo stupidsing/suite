@@ -15,7 +15,7 @@ public class SewingProverTest {
 
 	@Test
 	public void test() {
-		RuleSet rs = Suite.createRuleSet();
+		RuleSet rs = Suite.newRuleSet();
 		Suite.addRule(rs, "yes");
 
 		SewingProver sp = new SewingProverImpl(rs);
@@ -38,7 +38,7 @@ public class SewingProverTest {
 
 	@Test
 	public void testBacktrack() {
-		RuleSet rs = Suite.createRuleSet();
+		RuleSet rs = Suite.newRuleSet();
 		Suite.addRule(rs, "mem (.e, _) .e");
 		Suite.addRule(rs, "mem (_, .tail) .e :- mem .tail .e");
 		Suite.addRule(rs, "q .c .v :- once (mem (0,) .v), .a/.b/.c = 0/0/0; mem (1,) .v, .a/.b/.c = 1/1/1");
@@ -51,7 +51,7 @@ public class SewingProverTest {
 
 	@Test
 	public void testCut() {
-		RuleSet rs = Suite.createRuleSet();
+		RuleSet rs = Suite.newRuleSet();
 		Suite.addRule(rs, "a :- b");
 		Suite.addRule(rs, "a");
 		Suite.addRule(rs, "b :- !, fail");
@@ -63,7 +63,7 @@ public class SewingProverTest {
 
 	@Test
 	public void testEnv() {
-		RuleSet rs = Suite.createRuleSet();
+		RuleSet rs = Suite.newRuleSet();
 		Suite.addRule(rs, "a :- b .a, b .b");
 		Suite.addRule(rs, "b 1");
 
@@ -74,7 +74,7 @@ public class SewingProverTest {
 
 	@Test
 	public void testIf() {
-		RuleSet rs = Suite.createRuleSet();
+		RuleSet rs = Suite.newRuleSet();
 		SewingProver sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
 		assertTrue(sp.compile(Suite.parse("if () () fail")).test(pc));

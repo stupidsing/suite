@@ -12,18 +12,18 @@ import suite.util.Memoize;
 
 public class CompileUtil {
 
-	private Fun<List<String>, RuleSet> createRuleSetFun = Memoize.fun(Suite::createRuleSet);
+	private Fun<List<String>, RuleSet> newRuleSetFun = Memoize.fun(Suite::newRuleSet);
 
 	public synchronized RuleSet funCompilerRuleSet() {
-		return createRuleSetFun.apply(Arrays.asList("auto.sl", "fc/fc.sl"));
+		return newRuleSetFun.apply(Arrays.asList("auto.sl", "fc/fc.sl"));
 	}
 
 	public synchronized RuleSet imperativeCompilerRuleSet() {
-		return createRuleSetFun.apply(Arrays.asList("asm.sl", "auto.sl", "ic/ic.sl"));
+		return newRuleSetFun.apply(Arrays.asList("asm.sl", "auto.sl", "ic/ic.sl"));
 	}
 
 	public synchronized RuleSet logicCompilerRuleSet() {
-		return createRuleSetFun.apply(Arrays.asList("auto.sl", "lc/lc.sl"));
+		return newRuleSetFun.apply(Arrays.asList("auto.sl", "lc/lc.sl"));
 	}
 
 	public boolean precompile(String libraryName, ProverConfig pc) {
