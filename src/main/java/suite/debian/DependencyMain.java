@@ -152,7 +152,7 @@ public class DependencyMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String args[]) throws IOException {
-		Read.each(getClass().getMethods()) //
+		Read.from(getClass().getMethods()) //
 				.filter(m -> m.getName().startsWith("list") && m.getParameters().length == 0) //
 				.sink(m -> {
 					System.out.println(m.getName() + "()");

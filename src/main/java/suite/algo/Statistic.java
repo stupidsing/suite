@@ -45,7 +45,7 @@ public class Statistic {
 			}
 
 			if (iteration++ <= nIterations)
-				kmeans = Read.each(bins).map(bin -> div(bin.sum, bin.count)).toList();
+				kmeans = Read.from(bins).map(bin -> div(bin.sum, bin.count)).toList();
 			else {
 				List<float[]> kmeans0 = kmeans;
 				return Read.from(points).toListMap(point -> findNearest(point, kmeans0)).values();

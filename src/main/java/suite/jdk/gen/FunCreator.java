@@ -55,14 +55,14 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public static <I> FunCreator<I> of(Class<I> ic, Map<String, Type> fs) {
-		return of(ic, Read.each(ic.getDeclaredMethods()).uniqueResult().getName(), fs);
+		return of(ic, Read.from(ic.getDeclaredMethods()).uniqueResult().getName(), fs);
 	}
 
 	public static <I> FunCreator<I> of(Class<I> ic, String mn, Map<String, Type> fs) {
 		Method methods[] = Rethrow.reflectiveOperationException(() -> ic.getMethods());
-		Method method = Read.each(methods).filter(m -> Util.stringEquals(m.getName(), mn)).uniqueResult();
+		Method method = Read.from(methods).filter(m -> Util.stringEquals(m.getName(), mn)).uniqueResult();
 		Type rt = Type.getType(method.getReturnType());
-		List<Type> pts = Read.each(method.getParameterTypes()).map(Type::getType).toList();
+		List<Type> pts = Read.from(method.getParameterTypes()).map(Type::getType).toList();
 		return new FunCreator<>(ic, mn, rt, pts, fs);
 	}
 

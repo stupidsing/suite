@@ -73,7 +73,7 @@ public class TypeChecker {
 				if (name instanceof Atom) {
 					Node node = tree.getRight();
 					Node ps[] = TreeUtil.getElements(node, TreeUtil.getNumberOfElements(node));
-					type = getEnumType(name, Tree.of(TermOp.TUPLE_, Read.each(ps).map(this::getType).toList()));
+					type = getEnumType(name, Tree.of(TermOp.TUPLE_, Read.from(ps).map(this::getType).toList()));
 				} else
 					return new Reference(); // free type
 			} else {

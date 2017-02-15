@@ -36,7 +36,7 @@ public class CommandUtil<Command> {
 	}
 
 	private static <Command> Map<String, Command> getCommandByName(Command commands[]) {
-		return Read.each(commands).toMap(Command::toString);
+		return Read.from(commands).toMap(Command::toString);
 	}
 
 }

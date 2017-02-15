@@ -46,7 +46,7 @@ public class Lexer {
 	public Lexer(Operator operators[], String in) {
 		this.in = in;
 
-		Map<String, Operator> operatorByName = Read.each(operators) //
+		Map<String, Operator> operatorByName = Read.from(operators) //
 				.filter(operator -> operator != TermOp.TUPLE_) //
 				.toMap(Operator::getName);
 

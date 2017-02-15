@@ -29,7 +29,7 @@ public class Rewriter {
 		public byte value;
 
 		public static ReadType of(byte value) {
-			return Read.each(ReadType.values()).filter(rt -> rt.value == value).uniqueResult();
+			return Read.from(ReadType.values()).filter(rt -> rt.value == value).uniqueResult();
 		}
 
 		private ReadType(int value) {

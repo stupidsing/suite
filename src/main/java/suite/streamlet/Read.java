@@ -34,6 +34,10 @@ public class Read {
 
 	@SafeVarargs
 	public static <T> Streamlet<T> each(T... ts) {
+		return from(ts);
+	}
+
+	public static <T> Streamlet<T> from(T ts[]) {
 		return new Streamlet<>(() -> Outlet.from(ts));
 	}
 

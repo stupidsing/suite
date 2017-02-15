@@ -37,7 +37,7 @@ public class CheckerUtil {
 
 		for (Fun<Node, Node[]> matcher : matchers)
 			if ((m = matcher.apply(node)) != null)
-				return Read.each(m).concatMap(this::scan);
+				return Read.from(m).concatMap(this::scan);
 
 		if (Tree.decompose(node, TermOp.TUPLE_) != null || node instanceof Atom)
 			return Read.each(node);
