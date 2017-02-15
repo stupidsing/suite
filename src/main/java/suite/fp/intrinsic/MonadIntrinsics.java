@@ -48,8 +48,8 @@ public class MonadIntrinsics {
 
 			Node n0 = Intrinsics.enclose(callback, new Suspend(() -> Rethrow.ex(() -> Int.of(process.waitFor()))));
 
-			Node n1 = createReader(callback, process.getInputStream());
-			Node n2 = createReader(callback, process.getErrorStream());
+			Node n1 = newReader(callback, process.getInputStream());
+			Node n2 = newReader(callback, process.getErrorStream());
 
 			// use a separate thread to write to the process, so that read
 			// and write occur at the same time and would not block up.
@@ -79,7 +79,7 @@ public class MonadIntrinsics {
 		return mutables.computeIfAbsent(frame, f -> new HashMap<>());
 	}
 
-	private Node createReader(IntrinsicCallback callback, InputStream is) {
+	private Node newReader(IntrinsicCallback callback, InputStream is) {
 		BufferedReader br = new BufferedReader(new InputStreamReader(is, Constants.charset));
 		IPointer<Chars> icrp = Intrinsics.read(br);
 		return callback.enclose(new CharsIntrinsics().drain, new Data<>(icrp));
