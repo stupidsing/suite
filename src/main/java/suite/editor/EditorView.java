@@ -75,19 +75,19 @@ public class EditorView {
 		messageTextArea.setEditable(false);
 		messageTextArea.setRows(12);
 
-		JScrollPane messageScrollPane = this.messageScrollPane = createScrollPane(messageTextArea);
+		JScrollPane messageScrollPane = this.messageScrollPane = newScrollPane(messageTextArea);
 		messageScrollPane.setVisible(false);
 
 		JEditorPane editor = this.editor = applyDefaults(new EditorPane(model));
 
-		JScrollPane editorScrollPane = createScrollPane(editor);
+		JScrollPane editorScrollPane = newScrollPane(editor);
 
 		JButton okButton = applyDefaults(new JButton("OK"));
 		Listen.mouseClicked(okButton).register(controller::evaluate);
 
 		JFrame frame = this.frame = new JFrame(title);
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		frame.setJMenuBar(createMenuBar(controller));
+		frame.setJMenuBar(newMenuBar(controller));
 		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
 
@@ -146,7 +146,7 @@ public class EditorView {
 		frame.repaint();
 	}
 
-	private JMenuBar createMenuBar(EditorController controller) {
+	private JMenuBar newMenuBar(EditorController controller) {
 		JMenuItem newMenuItem = applyDefaults(new JMenuItem("New...", KeyEvent.VK_N));
 		newMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
 		Listen.action(newMenuItem).register(controller::newFile);
@@ -212,19 +212,19 @@ public class EditorView {
 		JMenuItem newWindowMenuItem = applyDefaults(new JMenuItem("New Window", KeyEvent.VK_N));
 		Listen.action(newWindowMenuItem).register(controller::newWindow);
 
-		JMenu fileMenu = createMenu("File", KeyEvent.VK_F, //
+		JMenu fileMenu = newMenu("File", KeyEvent.VK_F, //
 				newMenuItem, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
 
-		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E, //
+		JMenu editMenu = newMenu("Edit", KeyEvent.VK_E, //
 				copyMenuItem, copyAppendMenuItem, pasteMenuItem, formatMenuItem, funFilterMenuItem, unixFilterMenuItem);
 
-		JMenu viewMenu = createMenu("View", KeyEvent.VK_V, //
+		JMenu viewMenu = newMenu("View", KeyEvent.VK_V, //
 				leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
 
-		JMenu projectMenu = createMenu("Project", KeyEvent.VK_P, //
+		JMenu projectMenu = newMenu("Project", KeyEvent.VK_P, //
 				evalMenuItem, evalTypeMenuItem);
 
-		JMenu windowMenu = createMenu("Window", KeyEvent.VK_W, //
+		JMenu windowMenu = newMenu("Window", KeyEvent.VK_W, //
 				newWindowMenuItem, newWindowMenuItem);
 
 		JMenuBar menuBar = new JMenuBar();
@@ -237,7 +237,7 @@ public class EditorView {
 		return menuBar;
 	}
 
-	private JMenu createMenu(String title, int keyEvent, JMenuItem... menuItems) {
+	private JMenu newMenu(String title, int keyEvent, JMenuItem... menuItems) {
 		JMenu menu = applyDefaults(new JMenu(title));
 		menu.setMnemonic(keyEvent);
 
@@ -247,7 +247,7 @@ public class EditorView {
 		return menu;
 	}
 
-	private JScrollPane createScrollPane(Component component) {
+	private JScrollPane newScrollPane(Component component) {
 		return new JScrollPane(component //
 				, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED //
 				, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
