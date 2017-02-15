@@ -18,7 +18,7 @@ import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.util.FunUtil.Fun;
 
-public class FunConstructor {
+public class FunFactory {
 
 	public static final FunExpression fe = new FunExpression();
 

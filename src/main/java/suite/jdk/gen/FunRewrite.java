@@ -20,7 +20,7 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 
-public class FunRewrite extends FunConstructor {
+public class FunRewrite extends FunFactory {
 
 	private static Inspect inspect = new Inspect();
 

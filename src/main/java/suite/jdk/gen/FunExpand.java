@@ -11,7 +11,7 @@ import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
 
-public class FunExpand extends FunConstructor {
+public class FunExpand extends FunFactory {
 
 	private static Inspect inspect = new Inspect();
 

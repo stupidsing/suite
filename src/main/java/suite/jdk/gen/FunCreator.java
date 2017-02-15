@@ -32,7 +32,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 import suite.util.Util;
 
-public class FunCreator<I> extends FunConstructor {
+public class FunCreator<I> extends FunFactory {
 
 	private static AtomicInteger counter = new AtomicInteger();
 
