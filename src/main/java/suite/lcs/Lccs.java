@@ -24,8 +24,8 @@ public class Lccs {
 		int rollingSize = Math.min(bytes0.size(), bytes1.size());
 
 		if (0 < rollingSize) {
-			Map<Integer, Segment> segments0 = createInitialHashes(bytes0, rollingSize);
-			Map<Integer, Segment> segments1 = createInitialHashes(bytes1, rollingSize);
+			Map<Integer, Segment> segments0 = hashSegments(bytes0, rollingSize);
+			Map<Integer, Segment> segments1 = hashSegments(bytes1, rollingSize);
 
 			while (true) {
 				HashSet<Integer> keys = new HashSet<>(segments0.keySet());
@@ -48,7 +48,7 @@ public class Lccs {
 			return Pair.of(Segment.of(0, 0), Segment.of(0, 0));
 	}
 
-	private Map<Integer, Segment> createInitialHashes(Bytes bytes, int rollingSize) {
+	private Map<Integer, Segment> hashSegments(Bytes bytes, int rollingSize) {
 		Map<Integer, Segment> segments = new HashMap<>();
 		int hash = rh.hash(bytes.subbytes(0, rollingSize - 1));
 		int size = bytes.size();
