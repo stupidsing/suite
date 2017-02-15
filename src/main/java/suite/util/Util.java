@@ -129,27 +129,6 @@ public class Util {
 			return b0 ? 1 : b1 ? -1 : 0;
 	}
 
-	public static long createDate(int year, int month, int day) {
-		return createDate(year, month, day, 0, 0, 0);
-	}
-
-	public static long createDate(int year, int month, int day, int hour, int minute, int second) {
-		return ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneId.systemDefault()).toEpochSecond() * 1000l;
-	}
-
-	public static ThreadPoolExecutor createExecutor() {
-		return createExecutor(8, 32);
-	}
-
-	public static ThreadPoolExecutor createExecutorByProcessors() {
-		int nProcessors = Runtime.getRuntime().availableProcessors();
-		return createExecutor(nProcessors, nProcessors);
-	}
-
-	private static ThreadPoolExecutor createExecutor(int corePoolSize, int maxPoolSize) {
-		return new ThreadPoolExecutor(corePoolSize, maxPoolSize, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256));
-	}
-
 	public static Class<?> currentClass() {
 		try {
 			return Class.forName(getStackTrace(3).getClassName());
@@ -229,6 +208,23 @@ public class Util {
 		@SuppressWarnings("unchecked")
 		T[] ts = (T[]) Array.newInstance(clazz, dim);
 		return ts;
+	}
+
+	public static long newDate(int year, int month, int day) {
+		return newDate(year, month, day, 0, 0, 0);
+	}
+
+	public static long newDate(int year, int month, int day, int hour, int minute, int second) {
+		return ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneId.systemDefault()).toEpochSecond() * 1000l;
+	}
+
+	public static ThreadPoolExecutor newExecutor() {
+		return newExecutor(8, 32);
+	}
+
+	public static ThreadPoolExecutor newExecutorByProcessors() {
+		int nProcessors = Runtime.getRuntime().availableProcessors();
+		return newExecutor(nProcessors, nProcessors);
 	}
 
 	public static <T> Comparator<T> nullsFirst(Comparator<T> cmp0) {
@@ -420,6 +416,10 @@ public class Util {
 			object.wait(timeOut);
 		} catch (InterruptedException e) {
 		}
+	}
+
+	private static ThreadPoolExecutor newExecutor(int corePoolSize, int maxPoolSize) {
+		return new ThreadPoolExecutor(corePoolSize, maxPoolSize, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256));
 	}
 
 }

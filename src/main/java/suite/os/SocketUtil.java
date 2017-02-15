@@ -34,7 +34,7 @@ public class SocketUtil {
 	}
 
 	public void listenIo(int port, Io io) throws IOException {
-		ThreadPoolExecutor executor = Util.createExecutor();
+		ThreadPoolExecutor executor = Util.newExecutor();
 
 		try (ServerSocket server = new ServerSocket(port)) {
 			while (true) {

@@ -9,11 +9,11 @@ public class Util {
 		return object != null ? object.getClass() : null;
 	}
 
-	public static long createDate(int year, int month, int day) {
-		return createDate(year, month, day, 0, 0, 0);
+	public static long newDate(int year, int month, int day) {
+		return newDate(year, month, day, 0, 0, 0);
 	}
 
-	public static long createDate(int year, int month, int day, int hour, int minute, int second) {
+	public static long newDate(int year, int month, int day, int hour, int minute, int second) {
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
 		cal.set(year, Calendar.JANUARY + month - 1, day, hour, minute, second);

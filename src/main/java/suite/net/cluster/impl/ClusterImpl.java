@@ -55,7 +55,7 @@ public class ClusterImpl implements Cluster {
 
 	@Override
 	public void start() throws IOException {
-		executor = Util.createExecutor();
+		executor = Util.newExecutor();
 		unlisten = nio.listen(peers.get(me).getPort());
 		nio.start();
 
