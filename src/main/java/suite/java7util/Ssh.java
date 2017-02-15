@@ -26,7 +26,7 @@ public class Ssh {
 		ChannelExec channel = null;
 
 		try {
-			session = createSession("kenchi.no-ip.org", 22, "sing", "abc123");
+			session = newSession("kenchi.no-ip.org", 22, "sing", "abc123");
 
 			channel = (ChannelExec) session.openChannel("exec");
 			channel.setCommand(command);
@@ -50,7 +50,7 @@ public class Ssh {
 		ChannelSftp channel = null;
 
 		try (InputStream fis = new FileInputStream(src)) {
-			session = createSession("kenchi.no-ip.org", 22, "sing", "abc123");
+			session = newSession("kenchi.no-ip.org", 22, "sing", "abc123");
 
 			channel = (ChannelSftp) session.openChannel("sftp");
 			channel.connect();
@@ -60,7 +60,7 @@ public class Ssh {
 		}
 	}
 
-	private Session createSession(String host, int port, String user, String password) throws JSchException {
+	private Session newSession(String host, int port, String user, String password) throws JSchException {
 		JSch jsch = new JSch();
 
 		Properties config = new Properties();

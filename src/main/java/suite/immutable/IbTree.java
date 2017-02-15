@@ -158,11 +158,11 @@ public class IbTree<T> implements ITree<T> {
 	}
 
 	public IbTree<T> remove(T t) {
-		return new IbTree<>(comparator, createRoot(update(root, t, t_ -> null)));
+		return new IbTree<>(comparator, newRoot(update(root, t, t_ -> null)));
 	}
 
 	public IbTree<T> update(T t, Fun<T, T> fun) {
-		return new IbTree<>(comparator, createRoot(update(root, t, fun)));
+		return new IbTree<>(comparator, newRoot(update(root, t, fun)));
 	}
 
 	private List<Slot> update(List<Slot> node0, T t, Fun<T, T> fun) {
@@ -238,9 +238,9 @@ public class IbTree<T> implements ITree<T> {
 		return melded;
 	}
 
-	private List<Slot> createRoot(List<Slot> node) {
+	private List<Slot> newRoot(List<Slot> node) {
 		List<Slot> node1;
-		return node.size() == 1 && (node1 = node.get(0).slots) != null ? createRoot(node1) : node;
+		return node.size() == 1 && (node1 = node.get(0).slots) != null ? newRoot(node1) : node;
 	}
 
 	private Slot slot(List<Slot> slots) {

@@ -142,22 +142,22 @@ public class IRbTree<T> implements ITree<T> {
 			if (ln != null && !ln.isBlack) {
 				Node lln = ln.left, lrn = ln.right;
 				if (lln != null && !lln.isBlack)
-					n = createBalancedNode(lln.left, lln.pivot, lln.right, ln.pivot, lrn, n.pivot, rn);
+					n = newBalancedNode(lln.left, lln.pivot, lln.right, ln.pivot, lrn, n.pivot, rn);
 				else if (lrn != null && !lrn.isBlack)
-					n = createBalancedNode(lln, ln.pivot, lrn.left, lrn.pivot, lrn.right, n.pivot, rn);
+					n = newBalancedNode(lln, ln.pivot, lrn.left, lrn.pivot, lrn.right, n.pivot, rn);
 			} else if (rn != null && !rn.isBlack) {
 				Node rln = rn.left, rrn = rn.right;
 				if (rln != null && !rln.isBlack)
-					n = createBalancedNode(ln, n.pivot, rln.left, rln.pivot, rln.right, rn.pivot, rrn);
+					n = newBalancedNode(ln, n.pivot, rln.left, rln.pivot, rln.right, rn.pivot, rrn);
 				else if (rrn != null && !rrn.isBlack)
-					n = createBalancedNode(ln, n.pivot, rln, rn.pivot, rrn.left, rrn.pivot, rrn.right);
+					n = newBalancedNode(ln, n.pivot, rln, rn.pivot, rrn.left, rrn.pivot, rrn.right);
 			}
 		}
 
 		return n;
 	}
 
-	private Node createBalancedNode(Node n0, T p0, Node n1, T p1, Node n2, T p2, Node n3) {
+	private Node newBalancedNode(Node n0, T p0, Node n1, T p1, Node n2, T p2, Node n3) {
 		return new Node(false, p1, new Node(true, p0, n0, n1), new Node(true, p2, n2, n3));
 	}
 
