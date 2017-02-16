@@ -102,8 +102,8 @@ public class FunCreator<I> extends FunFactory {
 	private Class<? extends I> create0(FunTypeInformation fti, FunExpr expression) throws NoSuchMethodException {
 		String ifs[] = new String[] { interfaceClass.getName(), };
 		ConstantPoolGen cp = new ConstantPoolGen();
-		FunGenerateBytecode fgb = new FunGenerateBytecode(fti, cp);
 		InstructionFactory factory = new InstructionFactory(cp);
+		FunGenerateBytecode fgb = new FunGenerateBytecode(fti, cp);
 		org.apache.bcel.classfile.Method m0, m1;
 
 		{
