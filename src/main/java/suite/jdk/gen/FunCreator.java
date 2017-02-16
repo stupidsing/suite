@@ -79,6 +79,17 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
+		Class<? extends I> clazz = create0(expr0);
+
+		return fields -> Rethrow.reflectiveOperationException(() -> {
+			I t = clazz.newInstance();
+			for (Entry<String, Object> entry : fields.entrySet())
+				clazz.getDeclaredField(entry.getKey()).set(t, entry.getValue());
+			return t;
+		});
+	}
+
+	private Class<? extends I> create0(FunExpr expr0) {
 		List<Type> localTypes = new ArrayList<>();
 		localTypes.add(ObjectType.getInstance(className));
 		localTypes.addAll(parameterTypes);
@@ -89,17 +100,7 @@ public class FunCreator<I> extends FunFactory {
 
 		FunExpr expr1 = fe.expand(expr0, 0);
 		FunExpr expr2 = fr.rewrite(expr1.cast(interfaceClass));
-		Class<? extends I> clazz = Rethrow.reflectiveOperationException(() -> create0(fti, expr2));
 
-		return fields -> Rethrow.reflectiveOperationException(() -> {
-			I t = clazz.newInstance();
-			for (Entry<String, Object> entry : fields.entrySet())
-				clazz.getDeclaredField(entry.getKey()).set(t, entry.getValue());
-			return t;
-		});
-	}
-
-	private Class<? extends I> create0(FunTypeInformation fti, FunExpr expression) throws NoSuchMethodException {
 		String ifs[] = new String[] { interfaceClass.getName(), };
 		ConstantPoolGen cp = new ConstantPoolGen();
 		InstructionFactory factory = new InstructionFactory(cp);
@@ -123,7 +124,7 @@ public class FunCreator<I> extends FunFactory {
 		}
 
 		{
-			InstructionList il = fgb.visit(expression, returnType);
+			InstructionList il = fgb.visit(expr2, returnType);
 			Type types[] = parameterTypes.toArray(new Type[0]);
 
 			try {
