@@ -30,7 +30,7 @@ import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.If2FunExpr;
 import suite.jdk.gen.FunExpression.IfFunExpr;
 import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
-import suite.jdk.gen.FunExpression.InvokeFunExpr;
+import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
@@ -108,8 +108,8 @@ public class FunGenerateBytecode {
 			InstanceOfFunExpr expr = (InstanceOfFunExpr) e;
 			visit0(r, expr.object);
 			r.list.add(factory.createInstanceOf(expr.instanceType));
-		} else if (e instanceof InvokeFunExpr) {
-			InvokeFunExpr expr = (InvokeFunExpr) e;
+		} else if (e instanceof InvokeMethodFunExpr) {
+			InvokeMethodFunExpr expr = (InvokeMethodFunExpr) e;
 			Type array[] = Read.from(expr.parameters) //
 					.map(ft::typeOf) //
 					.toList() //

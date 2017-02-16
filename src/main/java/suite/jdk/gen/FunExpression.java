@@ -57,7 +57,7 @@ public class FunExpression {
 		}
 
 		public FunExpr invoke(String methodName, FunExpr... parameters) {
-			InvokeFunExpr expr = new InvokeFunExpr();
+			InvokeMethodFunExpr expr = new InvokeMethodFunExpr();
 			expr.methodName = methodName;
 			expr.object = this;
 			expr.parameters = Arrays.asList(parameters);
@@ -141,6 +141,12 @@ public class FunExpression {
 	}
 
 	public class InvokeFunExpr extends FunExpr {
+		public String methodName;
+		public FunConfig<?> fun;
+		public List<FunExpr> parameters;
+	}
+
+	public class InvokeMethodFunExpr extends FunExpr {
 		public String methodName;
 		public FunExpr object;
 		public List<FunExpr> parameters;

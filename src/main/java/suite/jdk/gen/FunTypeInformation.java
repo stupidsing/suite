@@ -19,7 +19,7 @@ import suite.jdk.gen.FunExpression.FieldTypeFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.IfFunExpr;
 import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
-import suite.jdk.gen.FunExpression.InvokeFunExpr;
+import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
@@ -31,7 +31,7 @@ public class FunTypeInformation {
 
 	public final Map<DeclareParameterFunExpr, Class<?>> interfaceClasses = new HashMap<>();
 
-	public Method invokeMethodOf(InvokeFunExpr expr) {
+	public Method invokeMethodOf(InvokeMethodFunExpr expr) {
 		Type array[] = Read.from(expr.parameters) //
 				.map(this::typeOf) //
 				.toList() //
@@ -87,8 +87,8 @@ public class FunTypeInformation {
 			return typeOf(expr.then);
 		} else if (e instanceof InstanceOfFunExpr)
 			return Type.BOOLEAN;
-		else if (e instanceof InvokeFunExpr) {
-			InvokeFunExpr expr = (InvokeFunExpr) e;
+		else if (e instanceof InvokeMethodFunExpr) {
+			InvokeMethodFunExpr expr = (InvokeMethodFunExpr) e;
 			return Type.getType(invokeMethodOf(expr).getReturnType());
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
