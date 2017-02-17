@@ -125,11 +125,11 @@ public class FunCreator<I> extends FunFactory {
 		String ifs[] = new String[] { interfaceClass.getName(), };
 		ClassGen cg = new ClassGen(className, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
 
-		for (Entry<String, Pair<Type, Object>> entry : constants.entrySet())
-			cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, entry.getValue().t0, entry.getKey(), cp).getField());
+		for (Entry<String, Pair<Type, Object>> e : constants.entrySet())
+			cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().t0, e.getKey(), cp).getField());
 
-		for (Entry<String, Type> entry : fields.entrySet())
-			cg.addField(new FieldGen(ACC_PUBLIC, entry.getValue(), entry.getKey(), cp).getField());
+		for (Entry<String, Type> e : fields.entrySet())
+			cg.addField(new FieldGen(ACC_PUBLIC, e.getValue(), e.getKey(), cp).getField());
 
 		cg.addMethod(m0);
 		cg.addMethod(m1);
@@ -138,17 +138,17 @@ public class FunCreator<I> extends FunFactory {
 
 		Class<? extends I> clazz = new UnsafeUtil().defineClass(interfaceClass, className, bytes);
 
-		for (Entry<String, Pair<Type, Object>> entry : constants.entrySet())
+		for (Entry<String, Pair<Type, Object>> e : constants.entrySet())
 			try {
-				clazz.getField(entry.getKey()).set(null, entry.getValue().t1);
+				clazz.getField(e.getKey()).set(null, e.getValue().t1);
 			} catch (ReflectiveOperationException ex) {
 				throw new RuntimeException(ex);
 			}
 
 		return fields -> Rethrow.reflectiveOperationException(() -> {
 			I t = clazz.newInstance();
-			for (Entry<String, Object> entry : fields.entrySet())
-				clazz.getDeclaredField(entry.getKey()).set(t, entry.getValue());
+			for (Entry<String, Object> e : fields.entrySet())
+				clazz.getDeclaredField(e.getKey()).set(t, e.getValue());
 			return t;
 		});
 	}
