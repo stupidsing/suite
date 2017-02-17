@@ -110,7 +110,7 @@ public class Suite {
 	public static Node listRules(RuleSet rs, Prototype proto) {
 		List<Node> nodes = Read.from(rs.getRules()) //
 				.filter(rule -> proto == null || proto.equals(Prototype.of(rule))) //
-				.map(Rule::formClause) //
+				.map(Rule::clause) //
 				.toList();
 		return Tree.of(TermOp.NEXT__, nodes);
 	}

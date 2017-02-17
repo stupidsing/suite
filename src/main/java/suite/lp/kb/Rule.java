@@ -30,14 +30,6 @@ public class Rule {
 			return new Rule(node, Atom.NIL);
 	}
 
-	public static Node formClause(Rule rule) {
-		Node head = rule.head, tail = rule.tail;
-		if (tail != Atom.NIL)
-			return Tree.of(TermOp.IS____, head, tail);
-		else
-			return head;
-	}
-
 	public synchronized Node newClause(Node query, Node cut) {
 		if (sewingGeneralizer == null) {
 			sewingGeneralizer = new SewingGeneralizerImpl();
@@ -56,6 +48,13 @@ public class Rule {
 						, headFun.apply(env)) //
 				, tailFun.apply(env));
 
+	}
+
+	public Node clause() {
+		if (tail != Atom.NIL)
+			return Tree.of(TermOp.IS____, head, tail);
+		else
+			return head;
 	}
 
 	@Override
