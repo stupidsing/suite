@@ -21,6 +21,14 @@ public class PriorityQueue<T> {
 		size = 0;
 	}
 
+	public boolean isEmpty() {
+		return size == 0;
+	}
+
+	public int size() {
+		return size;
+	}
+
 	public int insert(T t) {
 		int i, p;
 		ts[++size] = t;
