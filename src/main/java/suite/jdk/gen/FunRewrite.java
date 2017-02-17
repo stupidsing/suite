@@ -25,10 +25,10 @@ public class FunRewrite extends FunFactory {
 	private static Inspect inspect = new Inspect();
 
 	private List<Type> localTypes;
-	private FunTypeInformation ft;
+	private FunTypeInformation fti;
 
-	public FunRewrite(FunTypeInformation ft, List<Type> parameterTypes) {
-		this.ft = ft;
+	public FunRewrite(FunTypeInformation fti, List<Type> parameterTypes) {
+		this.fti = fti;
 		this.localTypes = new ArrayList<>(parameterTypes);
 	}
 
@@ -41,17 +41,17 @@ public class FunRewrite extends FunFactory {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
 			FunExpr object = rewrite(expr.object);
 			FunExpr parameters[] = Read.from(expr.parameters).map(this::rewrite).toList().toArray(new FunExpr[0]);
-			Method method = ft.methodOf(object);
+			Method method = fti.methodOf(object);
 			return object.invoke(method.getName(), parameters);
 		} else if (e instanceof CastFunExpr) {
 			CastFunExpr cfe = (CastFunExpr) e;
 			FunExpr expr = cfe.expr;
 			if (expr instanceof DeclareParameterFunExpr)
-				ft.interfaceClasses.put((DeclareParameterFunExpr) expr, Type_.classOf(cfe.type));
+				fti.interfaceClasses.put((DeclareParameterFunExpr) expr, Type_.classOf(cfe.type));
 			return null;
 		} else if (e instanceof DeclareParameterFunExpr) {
 			DeclareParameterFunExpr e_ = (DeclareParameterFunExpr) e;
-			Class<?> pts[] = Type_.methodOf(ft.interfaceClasses.get(e_)).getParameterTypes();
+			Class<?> pts[] = Type_.methodOf(fti.interfaceClasses.get(e_)).getParameterTypes();
 			if (e instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr expr = (Declare1ParameterFunExpr) e_;
 				return rewrite(expr.doFun.apply(local(1, pts[0])));
@@ -63,7 +63,7 @@ public class FunRewrite extends FunFactory {
 		} else if (e instanceof DeclareLocalFunExpr) {
 			DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
 			FunExpr value = rewrite(expr.value);
-			Type type = ft.typeOf(value);
+			Type type = fti.typeOf(value);
 
 			int index = localTypes.size();
 			localTypes.add(type);
@@ -77,7 +77,7 @@ public class FunRewrite extends FunFactory {
 			FieldFunExpr expr = (FieldFunExpr) e;
 			FunExpr object = rewrite(expr.object);
 			String fieldName = expr.field;
-			Class<?> clazz = ft.classOf(object);
+			Class<?> clazz = fti.classOf(object);
 			Field field = Rethrow.reflectiveOperationException(() -> clazz.getField(fieldName));
 			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
 		} else
