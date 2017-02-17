@@ -79,17 +79,6 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
-		Class<? extends I> clazz = create0(expr0);
-
-		return fields -> Rethrow.reflectiveOperationException(() -> {
-			I t = clazz.newInstance();
-			for (Entry<String, Object> entry : fields.entrySet())
-				clazz.getDeclaredField(entry.getKey()).set(t, entry.getValue());
-			return t;
-		});
-	}
-
-	private Class<? extends I> create0(FunExpr expr0) {
 		List<Type> localTypes = new ArrayList<>();
 		localTypes.add(ObjectType.getInstance(className));
 		localTypes.addAll(parameterTypes);
@@ -159,7 +148,12 @@ public class FunCreator<I> extends FunFactory {
 				throw new RuntimeException(ex);
 			}
 
-		return clazz;
+		return fields -> Rethrow.reflectiveOperationException(() -> {
+			I t = clazz.newInstance();
+			for (Entry<String, Object> entry : fields.entrySet())
+				clazz.getDeclaredField(entry.getKey()).set(t, entry.getValue());
+			return t;
+		});
 	}
 
 	public FunExpr constant(Object object) {
