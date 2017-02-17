@@ -84,7 +84,7 @@ public class FunCreatorTest {
 	}
 
 	private FunCreator<IntFun> intFun(String fieldName, Type fieldType) {
-		return FunCreator.of(IntFun.class, "apply", Collections.singletonMap(fieldName, fieldType));
+		return FunCreator.of(IntFun.class, Collections.singletonMap(fieldName, fieldType));
 	}
 
 }
