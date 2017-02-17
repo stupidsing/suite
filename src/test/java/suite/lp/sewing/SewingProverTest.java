@@ -3,13 +3,23 @@ package suite.lp.sewing;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.function.Predicate;
+
 import org.junit.Test;
 
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Generalizer;
+import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.sewing.impl.SewingProverImpl;
+import suite.node.Atom;
+import suite.node.Int;
+import suite.node.Tree;
+import suite.node.io.TermOp;
+import suite.os.TimeUtil;
+import suite.os.TimeUtil.TimedResult;
+import suite.util.FunUtil.Source;
 
 public class SewingProverTest {
 
@@ -81,6 +91,37 @@ public class SewingProverTest {
 		assertFalse(sp.compile(Suite.parse("if () fail ()")).test(pc));
 		assertTrue(sp.compile(Suite.parse("if fail fail ()")).test(pc));
 		assertFalse(sp.compile(Suite.parse("if fail () fail")).test(pc));
+	}
+
+	@Test
+	public void testPerformance() {
+		RuleSet rs = Suite.newRuleSet();
+		Atom pred = Atom.of("q");
+		Atom tail = Atom.NIL;
+
+		for (int i = 0; i < 65536; i++)
+			rs.addRule(Rule.of(Tree.of(TermOp.IS____, Tree.of(TermOp.TUPLE_, pred, Int.of(i)), tail)));
+
+		SewingProver sp = new SewingProverImpl(rs);
+		ProverConfig pc = new ProverConfig(rs);
+		Predicate<ProverConfig> test = sp.compile(Suite.parse("q 32768"));
+		TimeUtil timeUtil = new TimeUtil();
+
+		Source<TimedResult<Boolean>> trial = () -> timeUtil.time(() -> {
+			boolean isOk = true;
+			for (int i = 0; i < 65536; i++)
+				isOk &= test.test(pc);
+			assertTrue(isOk);
+			return isOk;
+		});
+
+		for (int i = 0; i < 8; i++)
+			trial.source();
+
+		TimedResult<Boolean> timedResult = trial.source();
+
+		System.out.println(timedResult.duration);
+		assertTrue(timedResult.duration < 300);
 	}
 
 }
