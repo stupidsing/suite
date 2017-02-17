@@ -22,7 +22,7 @@ public class Rule {
 		this.tail = tail;
 	}
 
-	public static Rule formRule(Node node) {
+	public static Rule of(Node node) {
 		Tree tree = Tree.decompose(node, TermOp.IS____);
 		if (tree != null)
 			return new Rule(tree.getLeft(), tree.getRight());

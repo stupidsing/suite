@@ -61,7 +61,7 @@ public class Suite {
 	private static IterativeParser parser = new IterativeParser(TermOp.values());
 
 	public static void addRule(RuleSet rs, String rule) {
-		rs.addRule(Rule.formRule(parse(rule)));
+		rs.addRule(Rule.of(parse(rule)));
 	}
 
 	public static Node applyStringReader(Node func, Reader reader) {

@@ -21,12 +21,12 @@ import suite.node.pp.PrettyPrinter;
 public class RuleSetPredicates {
 
 	public BuiltinPredicate asserta = PredicateUtil.p1((prover, p0) -> {
-		prover.ruleSet().addRuleToFront(Rule.formRule(p0));
+		prover.ruleSet().addRuleToFront(Rule.of(p0));
 		return true;
 	});
 
 	public BuiltinPredicate assertz = PredicateUtil.p1((prover, p0) -> {
-		prover.ruleSet().addRule(Rule.formRule(p0));
+		prover.ruleSet().addRule(Rule.of(p0));
 		return true;
 	});
 
@@ -64,12 +64,12 @@ public class RuleSetPredicates {
 	});
 
 	public BuiltinPredicate retract = PredicateUtil.p1((prover, p0) -> {
-		prover.ruleSet().removeRule(Rule.formRule(p0));
+		prover.ruleSet().removeRule(Rule.of(p0));
 		return true;
 	});
 
 	public BuiltinPredicate retractAll = PredicateUtil.p1((prover, p0) -> {
-		Rule rule0 = Rule.formRule(p0);
+		Rule rule0 = Rule.of(p0);
 
 		RuleSet ruleSet = prover.ruleSet();
 		Trail trail = prover.getTrail();

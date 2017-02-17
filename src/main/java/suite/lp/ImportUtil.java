@@ -60,7 +60,7 @@ public class ImportUtil {
 		List<Rule> rules = new ArrayList<>();
 
 		for (Node elem : Tree.iter(node, TermOp.NEXT__))
-			rules.add(Rule.formRule(elem));
+			rules.add(Rule.of(elem));
 
 		Prover prover = new Prover(ruleSet);
 		boolean result = true;

@@ -147,7 +147,7 @@ public class CommandDispatcher {
 			pw.println(Formatter.dump(Suite.evaluateFunType(opt.fcc(node))));
 			break;
 		case FACT:
-			ruleSet.addRule(Rule.formRule(node));
+			ruleSet.addRule(Rule.of(node));
 			break;
 		case OPTION:
 			Source<String> source = To.source(("-" + input).split(" "));
