@@ -83,7 +83,7 @@ public class FunFactory {
 
 	public FunExpr invoke(FunConfig<?> fc, FunExpr parameter) {
 		InvokeFunExpr expr = fe.new InvokeFunExpr();
-		expr.fun = fc;
+		expr.funConfig = fc;
 		expr.parameters = Arrays.asList(parameter);
 		return expr;
 	}

@@ -141,7 +141,7 @@ public class FunExpression {
 	}
 
 	public class InvokeFunExpr extends FunExpr {
-		public FunConfig<?> fun;
+		public FunConfig<?> funConfig;
 		public List<FunExpr> parameters;
 	}
 

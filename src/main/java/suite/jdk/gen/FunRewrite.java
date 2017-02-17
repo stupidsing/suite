@@ -93,7 +93,7 @@ public class FunRewrite extends FunFactory {
 			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
 		} else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
-			FunConfig<?> fun = expr.fun;
+			FunConfig<?> fun = expr.funConfig;
 
 			InvokeMethodFunExpr imfe = fe.new InvokeMethodFunExpr();
 			imfe.methodName = fun.lambdaClass.methodName;
