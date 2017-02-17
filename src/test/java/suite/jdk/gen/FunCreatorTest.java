@@ -14,7 +14,7 @@ import suite.util.FunUtil.Fun;
 
 public class FunCreatorTest {
 
-	private Map<String, Object> noParameters = Collections.emptyMap();
+	private Map<String, Object> void_ = Collections.emptyMap();
 
 	public interface IntFun {
 		public int apply(int i);
@@ -40,10 +40,10 @@ public class FunCreatorTest {
 		FunFactory f = new FunFactory();
 		FunConfig<IntFun> fc0 = FunConfig.of(IntFun.class, //
 				f.parameter(i -> f.add(f.constant(1), i)), //
-				noParameters);
+				void_);
 		FunConfig<IntFun> fc1 = FunConfig.of(IntFun.class, //
 				f.parameter(i -> f.add(f.constant(1), f.invoke(fc0, i))), //
-				noParameters);
+				void_);
 		assertEquals(2, fc1.newFun().apply(0));
 	}
 
@@ -54,7 +54,7 @@ public class FunCreatorTest {
 		@SuppressWarnings("unchecked")
 		BiPredicate<Object, Object> bp = fc //
 				.create(fc._true()) //
-				.apply(noParameters);
+				.apply(void_);
 		assertTrue(bp.test("Hello", "world"));
 	}
 
@@ -74,7 +74,7 @@ public class FunCreatorTest {
 		@SuppressWarnings("rawtypes")
 		FunCreator<Fun> fc = FunCreator.of(Fun.class, "apply");
 		@SuppressWarnings("unchecked")
-		Fun<Object, Object> fun = fc.create(fc.parameter(o -> o)).apply(noParameters);
+		Fun<Object, Object> fun = fc.create(fc.parameter(o -> o)).apply(void_);
 		assertEquals("Hello", fun.apply("Hello"));
 	}
 
@@ -83,7 +83,7 @@ public class FunCreatorTest {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
 				.create(fc.if_(fc._true(), fc._true(), fc._false())) //
-				.apply(noParameters) //
+				.apply(void_) //
 				.apply(0);
 		assertEquals(1, result);
 	}
@@ -93,7 +93,7 @@ public class FunCreatorTest {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
 				.create(fc.parameter(p -> fc.declare(fc.constant(1), l -> fc.add(l, p)))) //
-				.apply(noParameters) //
+				.apply(void_) //
 				.apply(3);
 		assertEquals(4, result);
 	}
@@ -104,7 +104,7 @@ public class FunCreatorTest {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
 				.create(fc.parameter(i -> fc.object(inc, IntFun.class).invoke("apply", i))) //
-				.apply(noParameters) //
+				.apply(void_) //
 				.apply(2);
 		assertEquals(3, result);
 	}
