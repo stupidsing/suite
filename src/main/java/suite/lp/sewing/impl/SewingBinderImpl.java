@@ -8,6 +8,7 @@ import org.apache.bcel.generic.Type;
 
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.LambdaClass;
 import suite.lp.doer.Binder;
 import suite.lp.sewing.SewingBinder;
 import suite.node.Atom;
@@ -23,6 +24,7 @@ import suite.util.FunUtil.Fun;
 
 public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
+	private static LambdaClass<BindPredicate> lambdaClass = LambdaClass.of(BindPredicate.class, "test");
 	private static String key0 = "k0";
 	private static String key1 = "k1";
 	private static Fun<Map<String, Object>, BindPredicate> compiledBindAtom = compileBindAtom_();
@@ -115,7 +117,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	private static Fun<Map<String, Object>, BindPredicate> compileBindAtom_() {
 		Map<String, Type> fields = Collections.singletonMap(key0, Type.getType(Node.class));
 
-		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
+		FunCreator<BindPredicate> fc = FunCreator.of(lambdaClass, fields);
 
 		return bind(fc, //
 				n_ -> fc.ifeq(n_, fc.field(key0), fc._true(), fc._false()));
@@ -127,7 +129,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 				.cons(key1, Type.INT) //
 				.toMap();
 
-		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
+		FunCreator<BindPredicate> fc = FunCreator.of(lambdaClass, fields);
 
 		return bind(fc, //
 				n_ -> fc.ifInstance(Int.class, n_, //
@@ -141,7 +143,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 				.cons(key1, Type.getType(String.class)) //
 				.toMap();
 
-		FunCreator<BindPredicate> fc = FunCreator.of(BindPredicate.class, "test", fields);
+		FunCreator<BindPredicate> fc = FunCreator.of(lambdaClass, fields);
 
 		return bind(fc, //
 				n_ -> fc.ifInstance(Str.class, n_, //

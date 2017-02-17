@@ -14,6 +14,12 @@ import suite.util.FunUtil.Fun;
 
 public class FunCreatorTest {
 
+	@SuppressWarnings("rawtypes")
+	private static LambdaClass<BiPredicate> lambdaClassBiPredicate = LambdaClass.of(BiPredicate.class, "test");
+	@SuppressWarnings("rawtypes")
+	private static LambdaClass<Fun> lambdaClassFun = LambdaClass.of(Fun.class);
+	private static LambdaClass<IntFun> lambdaClassIntFun = LambdaClass.of(IntFun.class);
+
 	private Map<String, Object> void_ = Collections.emptyMap();
 
 	public interface IntFun {
@@ -38,10 +44,10 @@ public class FunCreatorTest {
 	@Test
 	public void testApply1() {
 		FunFactory f = new FunFactory();
-		FunConfig<IntFun> fc0 = FunConfig.of(IntFun.class, //
+		FunConfig<IntFun> fc0 = FunConfig.of(lambdaClassIntFun, //
 				f.parameter(i -> f.add(f.constant(1), i)), //
 				void_);
-		FunConfig<IntFun> fc1 = FunConfig.of(IntFun.class, //
+		FunConfig<IntFun> fc1 = FunConfig.of(lambdaClassIntFun, //
 				f.parameter(i -> f.add(f.constant(1), f.invoke(fc0, i))), //
 				void_);
 		assertEquals(2, fc1.newFun().apply(0));
@@ -50,7 +56,7 @@ public class FunCreatorTest {
 	@Test
 	public void testBiPredicate() {
 		@SuppressWarnings("rawtypes")
-		FunCreator<BiPredicate> fc = FunCreator.of(BiPredicate.class, "test");
+		FunCreator<BiPredicate> fc = FunCreator.of(lambdaClassBiPredicate);
 		@SuppressWarnings("unchecked")
 		BiPredicate<Object, Object> bp = fc //
 				.create(fc._true()) //
@@ -72,7 +78,7 @@ public class FunCreatorTest {
 	@Test
 	public void testFun() {
 		@SuppressWarnings("rawtypes")
-		FunCreator<Fun> fc = FunCreator.of(Fun.class, "apply");
+		FunCreator<Fun> fc = FunCreator.of(lambdaClassFun);
 		@SuppressWarnings("unchecked")
 		Fun<Object, Object> fun = fc.create(fc.parameter(o -> o)).apply(void_);
 		assertEquals("Hello", fun.apply("Hello"));
@@ -80,7 +86,7 @@ public class FunCreatorTest {
 
 	@Test
 	public void testIf() {
-		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
+		FunCreator<IntFun> fc = FunCreator.of(lambdaClassIntFun);
 		int result = fc //
 				.create(fc.if_(fc._true(), fc._true(), fc._false())) //
 				.apply(void_) //
@@ -90,7 +96,7 @@ public class FunCreatorTest {
 
 	@Test
 	public void testLocal() {
-		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
+		FunCreator<IntFun> fc = FunCreator.of(lambdaClassIntFun);
 		int result = fc //
 				.create(fc.parameter(p -> fc.declare(fc.constant(1), l -> fc.add(l, p)))) //
 				.apply(void_) //
@@ -101,7 +107,7 @@ public class FunCreatorTest {
 	@Test
 	public void testObject() {
 		IntFun inc = i -> i + 1;
-		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
+		FunCreator<IntFun> fc = FunCreator.of(lambdaClassIntFun);
 		int result = fc //
 				.create(fc.parameter(i -> fc.object(inc, IntFun.class).invoke("apply", i))) //
 				.apply(void_) //
@@ -110,7 +116,7 @@ public class FunCreatorTest {
 	}
 
 	private FunCreator<IntFun> intFun(String fieldName, Type fieldType) {
-		return FunCreator.of(IntFun.class, Collections.singletonMap(fieldName, fieldType));
+		return FunCreator.of(lambdaClassIntFun, Collections.singletonMap(fieldName, fieldType));
 	}
 
 }

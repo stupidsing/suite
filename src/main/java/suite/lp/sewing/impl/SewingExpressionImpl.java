@@ -9,6 +9,7 @@ import org.apache.bcel.generic.Type;
 import suite.Suite;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.LambdaClass;
 import suite.lp.predicate.EvalPredicates;
 import suite.lp.sewing.SewingCloner;
 import suite.lp.sewing.SewingExpression;
@@ -19,6 +20,8 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
 public class SewingExpressionImpl implements SewingExpression {
+
+	private static LambdaClass<Evaluate> lambdaClass = LambdaClass.of(Evaluate.class);
 
 	private static String key = "key";
 	private static Fun<Map<String, Object>, Evaluate> compiledNumber = compileNumber(key);
@@ -61,7 +64,7 @@ public class SewingExpressionImpl implements SewingExpression {
 	}
 
 	private static Fun<Map<String, Object>, Evaluate> compileNumber(String key) {
-		FunCreator<Evaluate> fc = FunCreator.of(Evaluate.class, Collections.singletonMap(key, Type.INT));
+		FunCreator<Evaluate> fc = FunCreator.of(lambdaClass, Collections.singletonMap(key, Type.INT));
 		return fc.create(fc.field(key));
 	}
 
@@ -70,7 +73,7 @@ public class SewingExpressionImpl implements SewingExpression {
 
 		Fun<Map<String, Object>, Evaluate> fun = compiledByOp //
 				.computeIfAbsent(op, op_ -> {
-					FunCreator<Evaluate> fc = FunCreator.of(Evaluate.class,
+					FunCreator<Evaluate> fc = FunCreator.of(lambdaClass,
 							Read.<String, Type> empty2() //
 									.cons(e0, Type.getType(Evaluate.class)) //
 									.cons(e1, Type.getType(Evaluate.class)) //

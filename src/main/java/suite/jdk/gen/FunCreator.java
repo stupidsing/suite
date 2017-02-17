@@ -33,41 +33,30 @@ import suite.util.Util;
 
 public class FunCreator<I> extends FunFactory {
 
-	public final Class<I> interfaceClass;
+	public final LambdaClass<I> lambdaClass;
 	public final Class<?> superClass;
 	public final String className;
-	public final String methodName;
 	public final Type returnType;
 	public final List<Type> parameterTypes;
 
 	private Map<String, Pair<Type, Object>> constants;
 	private Map<String, Type> fields;
 
-	public static <I> FunCreator<I> of(Class<I> ic) {
-		return of(ic, Collections.emptyMap());
+	public static <I> FunCreator<I> of(LambdaClass<I> lc) {
+		return of(lc, Collections.emptyMap());
 	}
 
-	public static <I> FunCreator<I> of(Class<I> ic, String mn) {
-		return of(ic, mn, Collections.emptyMap());
-	}
-
-	public static <I> FunCreator<I> of(Class<I> ic, Map<String, Type> fs) {
-		return of(ic, Type_.methodOf(ic).getName(), fs);
-	}
-
-	public static <I> FunCreator<I> of(Class<I> ic, String mn, Map<String, Type> fs) {
-		Method methods[] = Rethrow.reflectiveOperationException(() -> ic.getMethods());
-		Method method = Read.from(methods).filter(m -> Util.stringEquals(m.getName(), mn)).uniqueResult();
+	public static <I> FunCreator<I> of(LambdaClass<I> lc, Map<String, Type> fs) {
+		Method method = lc.method();
 		Type rt = Type.getType(method.getReturnType());
 		List<Type> pts = Read.from(method.getParameterTypes()).map(Type::getType).toList();
-		return new FunCreator<>(ic, mn, rt, pts, fs);
+		return new FunCreator<>(lc, rt, pts, fs);
 	}
 
-	private FunCreator(Class<I> ic, String mn, Type rt, List<Type> ps, Map<String, Type> fs) {
-		interfaceClass = ic;
+	private FunCreator(LambdaClass<I> lc, Type rt, List<Type> ps, Map<String, Type> fs) {
+		lambdaClass = lc;
 		superClass = Object.class;
-		className = interfaceClass.getSimpleName() + Util.temp();
-		methodName = mn;
+		className = lc.interfaceClass.getSimpleName() + Util.temp();
 		returnType = rt;
 		parameterTypes = ps;
 
@@ -76,6 +65,9 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
+		Class<I> interfaceClass = lambdaClass.interfaceClass;
+		String methodName = lambdaClass.methodName;
+
 		List<Type> localTypes = new ArrayList<>();
 		localTypes.add(ObjectType.getInstance(className));
 		localTypes.addAll(parameterTypes);
