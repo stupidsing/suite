@@ -26,8 +26,8 @@ public class FunRewrite extends FunFactory {
 
 	public final FunExpr expr;
 
-	private List<Type> localTypes;
 	private FunTypeInformation fti;
+	private List<Type> localTypes;
 
 	public FunRewrite(FunTypeInformation fti, List<Type> parameterTypes, FunExpr expr0) {
 		this.fti = fti;
