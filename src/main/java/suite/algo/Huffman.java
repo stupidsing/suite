@@ -7,9 +7,9 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 import suite.adt.Pair;
+import suite.adt.PriorityQueue;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 import suite.util.To;
@@ -19,57 +19,89 @@ import suite.util.To;
  *
  * @author ywsing
  */
-public class Huffman<Unit> {
+public class Huffman {
 
-	private Node root;
-	private Map<Unit, Node> nodeByUnit = new HashMap<>();
-	private Comparator<Node> comparator = (node0, node1) -> node0.count - node1.count;
+	public <Unit> Pair<List<Unit>, List<Boolean>> encode(List<Unit> input) {
+		Dictionary<Unit> dictionary = build(input);
+		return Pair.of(save(dictionary), To.list(encode(dictionary, To.source(input))));
+	}
 
-	private class Node {
-		private Unit unit;
-		private int count;
-		private Node parent;
-		private Node node0, node1;
+	public <Unit> List<Unit> decode(Pair<List<Unit>, List<Boolean>> input) {
+		Dictionary<Unit> dictionary = load(input);
+		return To.list(decode(dictionary, To.source(input.t1)));
+	}
 
-		private Node(Unit unit, int count) {
-			this.count = count;
-			this.unit = unit;
-			nodeByUnit.put(unit, this);
+	private <Unit> Dictionary<Unit> build(List<Unit> input) {
+		Comparator<Node<Unit>> comparator = (node0, node1) -> node0.size - node1.size;
+
+		@SuppressWarnings("unchecked")
+		Class<Node<Unit>> clazz = (Class<Node<Unit>>) (Class<?>) Node.class;
+
+		List<Node<Unit>> nodes = Read.from2(histogram(input)) //
+				.map(Node<Unit>::new) //
+				.toList();
+
+		PriorityQueue<Node<Unit>> priorityQueue = new PriorityQueue<>(clazz, 0, comparator);
+
+		for (Node<Unit> node : nodes)
+			priorityQueue.insert(node);
+
+		while (1 < priorityQueue.size()) {
+			Node<Unit> node0 = priorityQueue.extractMin();
+			Node<Unit> node1 = priorityQueue.extractMin();
+			priorityQueue.insert(new Node<>(node0, node1));
 		}
 
-		private Node(Node node0, Node node1) {
-			this.count = node0.count + node1.count;
-			this.node0 = node0;
-			this.node1 = node1;
-			node0.parent = node1.parent = this;
-		}
+		Dictionary<Unit> dictionary = new Dictionary<>();
+		dictionary.root = !priorityQueue.isEmpty() ? priorityQueue.extractMin() : null;
+		dictionary.nodeByUnit = Read.from(nodes).toMap(node -> node.unit, node -> node);
+		return dictionary;
 	}
 
-	public static <Unit> Pair<List<Unit>, List<Boolean>> encode(List<Unit> input) {
-		Huffman<Unit> huffman = new Huffman<>();
-		huffman.build(input);
+	private <Unit> Dictionary<Unit> load(Pair<List<Unit>, List<Boolean>> input) {
+		Map<Unit, Node<Unit>> nodeByUnit = new HashMap<>();
+		Deque<Node<Unit>> deque = new ArrayDeque<>();
 
-		return Pair.of(huffman.save(), To.list(huffman.encode(To.source(input))));
+		for (Unit unit : input.t0)
+			if (unit == null) {
+				Node<Unit> node0 = deque.pop();
+				Node<Unit> node1 = deque.pop();
+				deque.push(new Node<>(node0, node1));
+			} else {
+				Node<Unit> node = new Node<>(unit, 0);
+				deque.push(node);
+				nodeByUnit.put(unit, node);
+			}
+
+		Dictionary<Unit> dictionary = new Dictionary<>();
+		dictionary.root = deque.pop();
+		dictionary.nodeByUnit = nodeByUnit;
+		return dictionary;
 	}
 
-	public static <Unit> List<Unit> decode(Pair<List<Unit>, List<Boolean>> input) {
-		Huffman<Unit> huffman = new Huffman<>();
-		huffman.load(input.t0);
-
-		return To.list(huffman.decode(To.source(input.t1)));
+	private <Unit> List<Unit> save(Dictionary<Unit> dictionary) {
+		List<Unit> list = new ArrayList<>();
+		save(list, dictionary.root);
+		return list;
 	}
 
-	private Huffman() {
+	private static <Unit> void save(List<Unit> list, Node<Unit> node) {
+		if (node.node0 != null || node.node1 != null) {
+			save(list, node.node0);
+			save(list, node.node1);
+			list.add(null);
+		} else
+			list.add(node.unit);
 	}
 
-	private Source<Boolean> encode(Source<Unit> source) {
+	private static <Unit> Source<Boolean> encode(Dictionary<Unit> dictionary, Source<Unit> source) {
 		Deque<Boolean> stack = new ArrayDeque<>();
 
 		return () -> {
 			Unit unit;
 
 			while (stack.isEmpty() && (unit = source.source()) != null) {
-				Node node = nodeByUnit.get(unit), parent;
+				Node<Unit> node = dictionary.nodeByUnit.get(unit), parent;
 
 				while ((parent = node.parent) != null) {
 					stack.push(parent.node0 == node ? Boolean.FALSE : Boolean.TRUE);
@@ -81,12 +113,12 @@ public class Huffman<Unit> {
 		};
 	}
 
-	private Source<Unit> decode(Source<Boolean> source) {
+	private static <Unit> Source<Unit> decode(Dictionary<Unit> dictionary, Source<Boolean> source) {
 		return () -> {
 			Boolean b;
 
 			if ((b = source.source()) != null) {
-				Node node = root;
+				Node<Unit> node = dictionary.root;
 
 				while (node.unit == null) {
 					node = b ? node.node0 : node.node1;
@@ -99,53 +131,31 @@ public class Huffman<Unit> {
 		};
 	}
 
-	private void load(List<Unit> units) {
-		Deque<Node> deque = new ArrayDeque<>();
-
-		for (Unit unit : units)
-			if (unit == null) {
-				Node node0 = deque.pop();
-				Node node1 = deque.pop();
-				deque.push(new Node(node0, node1));
-			} else {
-				Node node = new Node(unit, 0);
-				deque.push(node);
-				nodeByUnit.put(unit, node);
-			}
-
-		root = deque.pop();
+	private static class Dictionary<Unit> {
+		private Node<Unit> root;
+		private Map<Unit, Node<Unit>> nodeByUnit;
 	}
 
-	private List<Unit> save() {
-		List<Unit> list = new ArrayList<>();
-		save(list, root);
-		return list;
-	}
+	private static class Node<Unit> {
+		private Unit unit;
+		private int size;
+		private Node<Unit> parent;
+		private Node<Unit> node0, node1;
 
-	private void save(List<Unit> list, Node node) {
-		if (node.node0 != null || node.node1 != null) {
-			save(list, node.node0);
-			save(list, node.node1);
-			list.add(null);
-		} else
-			list.add(node.unit);
-	}
-
-	private void build(List<Unit> input) {
-		PriorityQueue<Node> priorityQueue = Read.from2(histogram(input)) //
-				.map(Node::new) //
-				.form(() -> new PriorityQueue<>(0, comparator));
-
-		while (1 < priorityQueue.size()) {
-			Node node0 = priorityQueue.remove();
-			Node node1 = priorityQueue.remove();
-			priorityQueue.add(new Node(node0, node1));
+		private Node(Unit unit, int size) {
+			this.unit = unit;
+			this.size = size;
 		}
 
-		root = !priorityQueue.isEmpty() ? priorityQueue.remove() : null;
+		private Node(Node<Unit> node0, Node<Unit> node1) {
+			this.size = node0.size + node1.size;
+			this.node0 = node0;
+			this.node1 = node1;
+			node0.parent = node1.parent = this;
+		}
 	}
 
-	private Map<Unit, Integer> histogram(List<Unit> input) {
+	private static <Unit> Map<Unit, Integer> histogram(List<Unit> input) {
 		Map<Unit, Integer> histogram = new HashMap<>();
 		for (Unit unit : input)
 			histogram.put(unit, histogram.getOrDefault(unit, 0) + 1);

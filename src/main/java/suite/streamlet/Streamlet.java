@@ -2,7 +2,6 @@ package suite.streamlet;
 
 import java.io.Closeable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -111,10 +110,6 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {
 		return spawn().fold(init, fun);
-	}
-
-	public <R extends Collection<? super T>> R form(Source<R> source) {
-		return spawn().form(source);
 	}
 
 	public <K, V> Streamlet2<K, List<T>> groupBy(Fun<T, K> keyFun) {

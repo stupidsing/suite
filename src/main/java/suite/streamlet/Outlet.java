@@ -2,7 +2,6 @@ package suite.streamlet;
 
 import java.io.Closeable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -172,14 +171,6 @@ public class Outlet<T> implements Iterable<T> {
 		return init;
 	}
 
-	public <R extends Collection<? super T>> R form(Source<R> source) {
-		R r = source.source();
-		T t;
-		while ((t = next()) != null)
-			r.add(t);
-		return r;
-	}
-
 	public <K, V> Outlet2<K, List<T>> groupBy(Fun<T, K> keyFun) {
 		return groupBy(keyFun, value -> value);
 	}
@@ -308,7 +299,11 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public List<T> toList() {
-		return form(ArrayList::new);
+		List<T> list = new ArrayList<>();
+		T t;
+		while ((t = next()) != null)
+			list.add(t);
+		return list;
 	}
 
 	public <K, V> Map<K, List<T>> toListMap(Fun<T, K> keyFun) {
@@ -340,7 +335,11 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Set<T> toSet() {
-		return form(HashSet::new);
+		Set<T> set = new HashSet<>();
+		T t;
+		while ((t = next()) != null)
+			set.add(t);
+		return set;
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {

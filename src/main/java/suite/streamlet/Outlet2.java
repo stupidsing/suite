@@ -2,7 +2,6 @@ package suite.streamlet;
 
 import java.io.Closeable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -361,7 +360,11 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public List<Pair<K, V>> toList() {
-		return form(ArrayList::new);
+		List<Pair<K, V>> list = new ArrayList<>();
+		Pair<K, V> pair;
+		while (next(pair = Pair.of(null, null)))
+			list.add(pair);
+		return list;
 	}
 
 	public Map<K, List<V>> toListMap() {
@@ -385,7 +388,12 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Set<Pair<K, V>> toSet() {
-		return form(HashSet::new);
+		Set<Pair<K, V>> set = new HashSet<>();
+		Pair<K, V> pair;
+		while (next(pair = Pair.of(null, null)))
+			set.add(pair);
+		return set;
+
 	}
 
 	public Map<K, Set<V>> toSetMap() {
@@ -401,14 +409,6 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 				throw new RuntimeException("More than one result");
 		else
 			throw new RuntimeException("No result");
-	}
-
-	private <R extends Collection<Pair<K, V>>> R form(Source<R> source) {
-		R r = source.source();
-		Pair<K, V> pair;
-		while (next(pair = Pair.of(null, null)))
-			r.add(pair);
-		return r;
 	}
 
 	private boolean next(Pair<K, V> pair) {
