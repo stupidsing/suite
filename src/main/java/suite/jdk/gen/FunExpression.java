@@ -141,7 +141,6 @@ public class FunExpression {
 	}
 
 	public class InvokeFunExpr extends FunExpr {
-		public String methodName;
 		public FunConfig<?> fun;
 		public List<FunExpr> parameters;
 	}
@@ -155,6 +154,11 @@ public class FunExpression {
 	public class LocalFunExpr extends FunExpr {
 		public Type type;
 		public int index;
+	}
+
+	public class ObjectFunExpr extends FunExpr {
+		public Class<?> clazz;
+		public Object object;
 	}
 
 	public class PrintlnFunExpr extends FunExpr {

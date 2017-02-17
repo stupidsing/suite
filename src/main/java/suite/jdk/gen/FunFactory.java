@@ -1,5 +1,6 @@
 package suite.jdk.gen;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
@@ -14,7 +15,9 @@ import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.If2FunExpr;
+import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
+import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.util.FunUtil.Fun;
 
@@ -78,6 +81,13 @@ public class FunFactory {
 		return if_(object.instanceOf(clazz), declare(object.checkCast(clazz), o_ -> then_.apply(o_)), else_);
 	}
 
+	public FunExpr invoke(FunConfig<?> fc, FunExpr parameter) {
+		InvokeFunExpr expr = fe.new InvokeFunExpr();
+		expr.fun = fc;
+		expr.parameters = Arrays.asList(parameter);
+		return expr;
+	}
+
 	public FunExpr local(int number, Class<?> clazz) {
 		return local(number, Type.getType(clazz));
 	}
@@ -86,6 +96,21 @@ public class FunFactory {
 		LocalFunExpr expr = fe.new LocalFunExpr();
 		expr.type = type;
 		expr.index = number;
+		return expr;
+	}
+
+	public FunExpr object(Object object) {
+		return object_(object, object.getClass());
+	}
+
+	public <C, T extends C> FunExpr object(T object, Class<C> clazz) {
+		return object_(object, clazz);
+	}
+
+	public FunExpr object_(Object object, Class<?> clazz) {
+		ObjectFunExpr expr = fe.new ObjectFunExpr();
+		expr.clazz = clazz;
+		expr.object = object;
 		return expr;
 	}
 

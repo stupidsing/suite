@@ -3,10 +3,13 @@ package suite.jdk.gen;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.bcel.generic.Type;
 
+import suite.adt.Pair;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
 import suite.jdk.gen.FunExpression.AssignFunExpr;
@@ -17,14 +20,19 @@ import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.DeclareParameterFunExpr;
 import suite.jdk.gen.FunExpression.FieldFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.FunExpression.InvokeFunExpr;
+import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
+import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
+import suite.util.Util;
 
 public class FunRewrite extends FunFactory {
 
 	private static Inspect inspect = new Inspect();
 
 	public final FunExpr expr;
+	public final Map<String, Pair<Type, Object>> fields = new HashMap<>();
 
 	private FunTypeInformation fti;
 	private List<Type> localTypes;
@@ -83,6 +91,21 @@ public class FunRewrite extends FunFactory {
 			Class<?> clazz = fti.classOf(object);
 			Field field = Rethrow.reflectiveOperationException(() -> clazz.getField(fieldName));
 			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
+		} else if (e instanceof InvokeFunExpr) {
+			InvokeFunExpr expr = (InvokeFunExpr) e;
+			FunConfig<?> fun = expr.fun;
+
+			InvokeMethodFunExpr imfe = fe.new InvokeMethodFunExpr();
+			imfe.methodName = fun.methodName;
+			imfe.object = rewrite(object_(fun.newFun(), fun.interfaceClazz));
+			imfe.parameters = expr.parameters;
+			return rewrite(imfe);
+		} else if (e instanceof ObjectFunExpr) {
+			ObjectFunExpr expr = (ObjectFunExpr) e;
+			String fieldName = "f" + Util.temp();
+			Type type = Type.getType(expr.clazz);
+			fields.put(fieldName, Pair.of(type, expr.object));
+			return rewrite(local(0, localTypes.get(0)).field(fieldName, type));
 		} else
 			return null;
 	}

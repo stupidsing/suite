@@ -85,12 +85,14 @@ public class FunCreator<I> extends FunFactory {
 
 		FunExpand fe = new FunExpand();
 		FunTypeInformation fti = new FunTypeInformation();
+		FunRewrite fr;
 		FunGenerateBytecode fgb = new FunGenerateBytecode(fti, cp);
 
 		FunExpr expr1 = fe.expand(expr0, 0);
-		FunExpr expr2 = new FunRewrite(fti, localTypes, expr1.cast(interfaceClass)).expr;
+		FunExpr expr2 = (fr = new FunRewrite(fti, localTypes, expr1.cast(interfaceClass))).expr;
 
 		org.apache.bcel.classfile.Method m0, m1;
+		Map<String, Pair<Type, Object>> fields1 = fr.fields;
 
 		{
 			InstructionList il = new InstructionList();
@@ -127,9 +129,10 @@ public class FunCreator<I> extends FunFactory {
 
 		for (Entry<String, Pair<Type, Object>> e : constants.entrySet())
 			cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().t0, e.getKey(), cp).getField());
-
 		for (Entry<String, Type> e : fields.entrySet())
 			cg.addField(new FieldGen(ACC_PUBLIC, e.getValue(), e.getKey(), cp).getField());
+		for (Entry<String, Pair<Type, Object>> e : fields1.entrySet())
+			cg.addField(new FieldGen(ACC_PUBLIC, e.getValue().t0, e.getKey(), cp).getField());
 
 		cg.addMethod(m0);
 		cg.addMethod(m1);
@@ -149,6 +152,8 @@ public class FunCreator<I> extends FunFactory {
 			I t = clazz.newInstance();
 			for (Entry<String, Object> e : fields.entrySet())
 				clazz.getDeclaredField(e.getKey()).set(t, e.getValue());
+			for (Entry<String, Pair<Type, Object>> e : fields1.entrySet())
+				clazz.getDeclaredField(e.getKey()).set(t, e.getValue().t1);
 			return t;
 		});
 	}

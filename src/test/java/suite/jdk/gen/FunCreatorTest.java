@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.function.BiPredicate;
 
 import org.apache.bcel.generic.Type;
@@ -13,12 +14,14 @@ import suite.util.FunUtil.Fun;
 
 public class FunCreatorTest {
 
+	private Map<String, Object> noParameters = Collections.emptyMap();
+
 	public interface IntFun {
 		public int apply(int i);
 	}
 
 	@Test
-	public void testApply() {
+	public void testApply0() {
 		String fieldName0 = "f0";
 		String fieldName1 = "f1";
 		FunCreator<IntFun> fc0 = intFun(fieldName0, Type.INT);
@@ -33,13 +36,25 @@ public class FunCreatorTest {
 	}
 
 	@Test
+	public void testApply1() {
+		FunFactory f = new FunFactory();
+		FunConfig<IntFun> fc0 = FunConfig.of(IntFun.class, //
+				f.parameter(i -> f.add(f.constant(1), i)), //
+				noParameters);
+		FunConfig<IntFun> fc1 = FunConfig.of(IntFun.class, //
+				f.parameter(i -> f.add(f.constant(1), f.invoke(fc0, i))), //
+				noParameters);
+		assertEquals(2, fc1.newFun().apply(0));
+	}
+
+	@Test
 	public void testBiPredicate() {
 		@SuppressWarnings("rawtypes")
 		FunCreator<BiPredicate> fc = FunCreator.of(BiPredicate.class, "test");
 		@SuppressWarnings("unchecked")
 		BiPredicate<Object, Object> bp = fc //
 				.create(fc._true()) //
-				.apply(Collections.emptyMap());
+				.apply(noParameters);
 		assertTrue(bp.test("Hello", "world"));
 	}
 
@@ -59,7 +74,7 @@ public class FunCreatorTest {
 		@SuppressWarnings("rawtypes")
 		FunCreator<Fun> fc = FunCreator.of(Fun.class, "apply");
 		@SuppressWarnings("unchecked")
-		Fun<Object, Object> fun = fc.create(fc.parameter(o -> o)).apply(Collections.emptyMap());
+		Fun<Object, Object> fun = fc.create(fc.parameter(o -> o)).apply(noParameters);
 		assertEquals("Hello", fun.apply("Hello"));
 	}
 
@@ -68,7 +83,7 @@ public class FunCreatorTest {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
 				.create(fc.if_(fc._true(), fc._true(), fc._false())) //
-				.apply(Collections.emptyMap()) //
+				.apply(noParameters) //
 				.apply(0);
 		assertEquals(1, result);
 	}
@@ -78,9 +93,20 @@ public class FunCreatorTest {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
 				.create(fc.parameter(p -> fc.declare(fc.constant(1), l -> fc.add(l, p)))) //
-				.apply(Collections.emptyMap()) //
+				.apply(noParameters) //
 				.apply(3);
 		assertEquals(4, result);
+	}
+
+	@Test
+	public void testObject() {
+		IntFun inc = i -> i + 1;
+		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
+		int result = fc //
+				.create(fc.parameter(i -> fc.object(inc, IntFun.class).invoke("apply", i))) //
+				.apply(noParameters) //
+				.apply(2);
+		assertEquals(3, result);
 	}
 
 	private FunCreator<IntFun> intFun(String fieldName, Type fieldType) {
