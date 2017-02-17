@@ -83,15 +83,17 @@ public class FunCreator<I> extends FunFactory {
 		localTypes.add(ObjectType.getInstance(className));
 		localTypes.addAll(parameterTypes);
 
+		ConstantPoolGen cp = new ConstantPoolGen();
+		InstructionFactory factory = new InstructionFactory(cp);
+
 		FunExpand fe = new FunExpand();
 		FunTypeInformation fti = new FunTypeInformation();
 
 		FunExpr expr1 = fe.expand(expr0, 0);
-		FunExpr expr2 = new FunRewrite(fti, localTypes, expr1.cast(interfaceClass)).expr;
+		FunRewrite fr = new FunRewrite(fti, localTypes, expr1.cast(interfaceClass));
+		FunExpr expr2 = fr.expr;
 
 		String ifs[] = new String[] { interfaceClass.getName(), };
-		ConstantPoolGen cp = new ConstantPoolGen();
-		InstructionFactory factory = new InstructionFactory(cp);
 		FunGenerateBytecode fgb = new FunGenerateBytecode(fti, cp);
 		org.apache.bcel.classfile.Method m0, m1;
 
