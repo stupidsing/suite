@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.ClassGen;
@@ -34,8 +33,6 @@ import suite.util.Util;
 
 public class FunCreator<I> extends FunFactory {
 
-	private static AtomicInteger counter = new AtomicInteger();
-
 	public final Class<I> interfaceClass;
 	public final Class<?> superClass;
 	public final String className;
@@ -55,7 +52,7 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public static <I> FunCreator<I> of(Class<I> ic, Map<String, Type> fs) {
-		return of(ic, Read.from(ic.getDeclaredMethods()).uniqueResult().getName(), fs);
+		return of(ic, Type_.methodOf(ic).getName(), fs);
 	}
 
 	public static <I> FunCreator<I> of(Class<I> ic, String mn, Map<String, Type> fs) {
@@ -69,7 +66,7 @@ public class FunCreator<I> extends FunFactory {
 	private FunCreator(Class<I> ic, String mn, Type rt, List<Type> ps, Map<String, Type> fs) {
 		interfaceClass = ic;
 		superClass = Object.class;
-		className = interfaceClass.getSimpleName() + counter.getAndIncrement();
+		className = interfaceClass.getSimpleName() + Util.temp();
 		methodName = mn;
 		returnType = rt;
 		parameterTypes = ps;
@@ -88,13 +85,11 @@ public class FunCreator<I> extends FunFactory {
 
 		FunExpand fe = new FunExpand();
 		FunTypeInformation fti = new FunTypeInformation();
+		FunGenerateBytecode fgb = new FunGenerateBytecode(fti, cp);
 
 		FunExpr expr1 = fe.expand(expr0, 0);
-		FunRewrite fr = new FunRewrite(fti, localTypes, expr1.cast(interfaceClass));
-		FunExpr expr2 = fr.expr;
+		FunExpr expr2 = new FunRewrite(fti, localTypes, expr1.cast(interfaceClass)).expr;
 
-		String ifs[] = new String[] { interfaceClass.getName(), };
-		FunGenerateBytecode fgb = new FunGenerateBytecode(fti, cp);
 		org.apache.bcel.classfile.Method m0, m1;
 
 		{
@@ -127,6 +122,7 @@ public class FunCreator<I> extends FunFactory {
 			}
 		}
 
+		String ifs[] = new String[] { interfaceClass.getName(), };
 		ClassGen cg = new ClassGen(className, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
 
 		for (Entry<String, Pair<Type, Object>> entry : constants.entrySet())
@@ -170,7 +166,7 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	private FunExpr constantStatic(Object object, Class<?> clazz) {
-		String field = "f" + counter.getAndIncrement();
+		String field = "f" + Util.temp();
 		Type type = Type.getType(clazz);
 		constants.put(field, Pair.of(type, object));
 
