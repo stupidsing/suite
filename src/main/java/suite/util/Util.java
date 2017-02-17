@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Level;
 
@@ -27,6 +28,8 @@ import suite.os.LogUtil;
 import suite.sample.Profiler;
 
 public class Util {
+
+	private static AtomicInteger counter = new AtomicInteger();
 
 	public enum RunOption {
 		RUN____, PROFILE, TIME___,
@@ -405,6 +408,10 @@ public class Util {
 			end += length;
 		end = Math.min(length, end);
 		return s.substring(start, end);
+	}
+
+	public static int temp() {
+		return counter.getAndIncrement();
 	}
 
 	public static void wait(Object object) {

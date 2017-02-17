@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.adt.BiMap;
 import suite.adt.HashBiMap;
@@ -26,6 +25,7 @@ import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.parser.Subst;
 import suite.util.FunUtil;
+import suite.util.Util;
 
 /**
  * Possible register types: boolean, thunk, int, node
@@ -34,8 +34,6 @@ import suite.util.FunUtil;
 public class InstructionTranslator implements Closeable {
 
 	public static int invokeJavaEntryPoint = -1;
-
-	private static AtomicInteger counter = new AtomicInteger();
 
 	private BiMap<Integer, Node> constantPool = new HashBiMap<>();
 
@@ -80,7 +78,7 @@ public class InstructionTranslator implements Closeable {
 		analyzer.transform(instructions);
 		translateInstructions(instructions);
 
-		className = "TranslatedRun" + counter.getAndIncrement();
+		className = "TranslatedRun" + Util.temp();
 
 		String java = String.format("" //
 				+ "package " + packageName + "; \n" //
@@ -443,7 +441,7 @@ public class InstructionTranslator implements Closeable {
 	}
 
 	private String defineConstant(Node node) {
-		String result = "const" + counter.getAndIncrement();
+		String result = "const" + Util.temp();
 		String decl = "private static Node #{str} = Suite.parse(\"#{str}\")";
 		app(clazzsec, decl, result, Formatter.dump(node));
 		return result;

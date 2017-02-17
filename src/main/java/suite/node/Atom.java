@@ -1,9 +1,8 @@
 package suite.node;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import suite.node.util.Context;
 import suite.node.util.Singleton;
+import suite.util.Util;
 
 public class Atom extends Node {
 
@@ -13,8 +12,6 @@ public class Atom extends Node {
 	public static Atom NULL = of("null");
 	public static Atom TRUE = of("true");
 	public static Atom FALSE = of("false");
-
-	private static AtomicInteger counter = new AtomicInteger();
 
 	public static Atom of(String name) {
 		return of(Singleton.get().getGrandContext(), name);
@@ -29,7 +26,7 @@ public class Atom extends Node {
 	}
 
 	public static Atom temp() {
-		return Atom.of("temp$$" + counter.getAndIncrement());
+		return Atom.of("temp$$" + Util.temp());
 	}
 
 }

@@ -2,17 +2,15 @@ package suite.net.nio;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.adt.Pair;
 import suite.concurrent.Condition;
 import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
 import suite.node.util.Mutable;
 import suite.primitive.Bytes;
+import suite.util.Util;
 
 public class RequestResponseMatcher {
-
-	private static AtomicInteger tokenCounter = new AtomicInteger();
 
 	// tODO clean-up lost requests
 	private Map<Integer, Pair<Mutable<Bytes>, Condition>> requests = new HashMap<>();
@@ -22,7 +20,7 @@ public class RequestResponseMatcher {
 	}
 
 	public Bytes requestForResponse(RequestResponseNioChannel channel, Bytes request, int timeOut) {
-		Integer token = tokenCounter.getAndIncrement();
+		Integer token = Util.temp();
 		Mutable<Bytes> holder = Mutable.nil();
 		Condition condition = new Condition(() -> holder.get() != null);
 

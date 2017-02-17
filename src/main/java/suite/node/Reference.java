@@ -1,15 +1,12 @@
 package suite.node;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import suite.lp.doer.ProverConstant;
+import suite.util.Util;
 
 public class Reference extends Node {
 
-	private static AtomicInteger counter = new AtomicInteger();
-
 	private Node node = this;
-	private int id = counter.getAndIncrement();
+	private int id = Util.temp();
 
 	public static Reference of(Node node) {
 		Reference reference = new Reference();
