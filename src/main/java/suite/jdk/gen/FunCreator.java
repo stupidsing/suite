@@ -85,10 +85,9 @@ public class FunCreator<I> extends FunFactory {
 
 		FunExpand fe = new FunExpand();
 		FunTypeInformation fti = new FunTypeInformation();
-		FunRewrite fr = new FunRewrite(fti, localTypes);
 
 		FunExpr expr1 = fe.expand(expr0, 0);
-		FunExpr expr2 = fr.rewrite(expr1.cast(interfaceClass));
+		FunExpr expr2 = new FunRewrite(fti, localTypes, expr1.cast(interfaceClass)).expr;
 
 		String ifs[] = new String[] { interfaceClass.getName(), };
 		ConstantPoolGen cp = new ConstantPoolGen();

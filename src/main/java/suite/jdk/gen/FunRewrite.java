@@ -24,15 +24,18 @@ public class FunRewrite extends FunFactory {
 
 	private static Inspect inspect = new Inspect();
 
+	public final FunExpr expr;
+
 	private List<Type> localTypes;
 	private FunTypeInformation fti;
 
-	public FunRewrite(FunTypeInformation fti, List<Type> parameterTypes) {
+	public FunRewrite(FunTypeInformation fti, List<Type> parameterTypes, FunExpr expr0) {
 		this.fti = fti;
 		this.localTypes = new ArrayList<>(parameterTypes);
+		this.expr = rewrite(expr0);
 	}
 
-	public FunExpr rewrite(FunExpr expr0) {
+	private FunExpr rewrite(FunExpr expr0) {
 		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, this::rewrite_, expr0);
 	}
 
