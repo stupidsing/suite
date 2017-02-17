@@ -55,6 +55,15 @@ public class FunCreatorTest {
 	}
 
 	@Test
+	public void testFun() {
+		@SuppressWarnings("rawtypes")
+		FunCreator<Fun> fc = FunCreator.of(Fun.class, "apply");
+		@SuppressWarnings("unchecked")
+		Fun<Object, Object> fun = fc.create(fc.parameter(o -> o)).apply(Collections.emptyMap());
+		assertEquals("Hello", fun.apply("Hello"));
+	}
+
+	@Test
 	public void testIf() {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
@@ -72,15 +81,6 @@ public class FunCreatorTest {
 				.apply(Collections.emptyMap()) //
 				.apply(3);
 		assertEquals(4, result);
-	}
-
-	@Test
-	public void testFun() {
-		@SuppressWarnings("rawtypes")
-		FunCreator<Fun> fc = FunCreator.of(Fun.class, "apply");
-		@SuppressWarnings("unchecked")
-		Fun<Object, Object> fun = fc.create(fc.parameter(o -> o)).apply(Collections.emptyMap());
-		assertEquals("Hello", fun.apply("Hello"));
 	}
 
 	private FunCreator<IntFun> intFun(String fieldName, Type fieldType) {
