@@ -41,7 +41,7 @@ public class FunExpand extends FunFactory {
 			if (object instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr object_ = (Declare1ParameterFunExpr) object;
 				return expand(object_.doFun.apply(expr.parameters.get(0)), depth1);
-			} else if (e instanceof Declare2ParameterFunExpr) {
+			} else if (object instanceof Declare2ParameterFunExpr) {
 				Declare2ParameterFunExpr object_ = (Declare2ParameterFunExpr) object;
 				return expand(object_.doFun.apply(expr.parameters.get(0), expr.parameters.get(1)), depth1);
 			} else
