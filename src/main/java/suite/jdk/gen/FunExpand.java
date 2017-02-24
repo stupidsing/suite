@@ -27,8 +27,9 @@ public class FunExpand extends FunFactory {
 
 		if (e instanceof If1FunExpr) {
 			If1FunExpr expr = (If1FunExpr) e;
-			if (expr.if_ instanceof ConstantFunExpr) {
-				ConstantFunExpr cfe = (ConstantFunExpr) expr.if_;
+			FunExpr if_ = expr.if_;
+			if (if_ instanceof ConstantFunExpr) {
+				ConstantFunExpr cfe = (ConstantFunExpr) if_;
 				if (cfe.type == Type.INT)
 					return ((Integer) cfe.constant).intValue() == 1 ? expr.then : expr.else_;
 				else
@@ -40,10 +41,13 @@ public class FunExpand extends FunFactory {
 			FunExpr object = expr.object;
 			if (object instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr object_ = (Declare1ParameterFunExpr) object;
-				return expand(object_.doFun.apply(expr.parameters.get(0)), depth1);
+				return expand(replace(object_.do_, object_.parameter, expr.parameters.get(0)), depth1);
 			} else if (object instanceof Declare2ParameterFunExpr) {
 				Declare2ParameterFunExpr object_ = (Declare2ParameterFunExpr) object;
-				return expand(object_.doFun.apply(expr.parameters.get(0), expr.parameters.get(1)), depth1);
+				FunExpr do0 = object_.do_;
+				FunExpr do1 = replace(do0, object_.p0, expr.parameters.get(0));
+				FunExpr do2 = replace(do1, object_.p1, expr.parameters.get(1));
+				return expand(do2, depth1);
 			} else
 				return null;
 		} else if (e instanceof DeclareLocalFunExpr) {
@@ -51,6 +55,10 @@ public class FunExpand extends FunFactory {
 			return expand(expr.apply(expr.value), depth1);
 		} else
 			return null;
+	}
+
+	private FunExpr replace(FunExpr expr0, FunExpr from, FunExpr to) {
+		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, e -> e == from ? to : null, expr0);
 	}
 
 }

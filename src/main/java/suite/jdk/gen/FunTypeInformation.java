@@ -21,6 +21,7 @@ import suite.jdk.gen.FunExpression.IfFunExpr;
 import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
 import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
+import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.gen.FunExpression.StaticFunExpr;
@@ -30,6 +31,8 @@ import suite.util.Rethrow;
 public class FunTypeInformation {
 
 	public final Map<DeclareParameterFunExpr, Class<?>> interfaceClasses = new HashMap<>();
+
+	private Map<PlaceholderFunExpr, Type> refs = new HashMap<>();
 
 	public Method invokeMethodOf(InvokeMethodFunExpr expr) {
 		Type array[] = Read.from(expr.parameters) //
@@ -75,7 +78,7 @@ public class FunTypeInformation {
 			return expr.type;
 		} else if (e instanceof DeclareLocalFunExpr) {
 			DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
-			return typeOf(expr.doFun.apply(expr.value));
+			return typeOf(expr.do_);
 		} else if (e instanceof DeclareParameterFunExpr) {
 			DeclareParameterFunExpr expr = (DeclareParameterFunExpr) e;
 			return Type.getType(interfaceClasses.get(expr));
@@ -93,7 +96,9 @@ public class FunTypeInformation {
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
 			return expr.type;
-		} else if (e instanceof PrintlnFunExpr)
+		} else if (e instanceof PlaceholderFunExpr)
+			return refs.get((PlaceholderFunExpr) e);
+		else if (e instanceof PrintlnFunExpr)
 			return Type.VOID;
 		else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;

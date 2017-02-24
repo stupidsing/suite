@@ -2,13 +2,10 @@ package suite.jdk.gen;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.ToIntFunction;
 
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
-
-import suite.util.FunUtil.Fun;
 
 public class FunExpression {
 
@@ -99,16 +96,19 @@ public class FunExpression {
 	}
 
 	public class Declare1ParameterFunExpr extends DeclareParameterFunExpr {
-		public Fun<FunExpr, FunExpr> doFun;
+		public PlaceholderFunExpr parameter;
+		public FunExpr do_;
 	}
 
 	public class Declare2ParameterFunExpr extends DeclareParameterFunExpr {
-		public BiFunction<FunExpr, FunExpr, FunExpr> doFun;
+		public PlaceholderFunExpr p0, p1;
+		public FunExpr do_;
 	}
 
 	public class DeclareLocalFunExpr extends FunExpr {
+		public PlaceholderFunExpr var;
 		public FunExpr value;
-		public Fun<FunExpr, FunExpr> doFun;
+		public FunExpr do_;
 	}
 
 	public class FieldFunExpr extends FunExpr {
@@ -159,6 +159,9 @@ public class FunExpression {
 	public class ObjectFunExpr extends FunExpr {
 		public Class<?> clazz;
 		public Object object;
+	}
+
+	public class PlaceholderFunExpr extends FunExpr {
 	}
 
 	public class PrintlnFunExpr extends FunExpr {

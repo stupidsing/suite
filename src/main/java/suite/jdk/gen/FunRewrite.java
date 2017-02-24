@@ -23,6 +23,7 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
+import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.Util;
@@ -36,6 +37,7 @@ public class FunRewrite extends FunFactory {
 
 	private FunTypeInformation fti;
 	private List<Type> localTypes;
+	private Map<PlaceholderFunExpr, FunExpr> refs = new HashMap<>();
 
 	public FunRewrite(FunTypeInformation fti, List<Type> parameterTypes, FunExpr expr0) {
 		this.fti = fti;
@@ -65,10 +67,13 @@ public class FunRewrite extends FunFactory {
 			Class<?> pts[] = Type_.methodOf(fti.interfaceClasses.get(e_)).getParameterTypes();
 			if (e instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr expr = (Declare1ParameterFunExpr) e_;
-				return rewrite(expr.doFun.apply(local(1, pts[0])));
+				refs.put(expr.parameter, local(1, pts[0]));
+				return rewrite(expr.do_);
 			} else if (e instanceof Declare2ParameterFunExpr) {
 				Declare2ParameterFunExpr expr = (Declare2ParameterFunExpr) e_;
-				return rewrite(expr.doFun.apply(local(1, pts[0]), local(2, pts[1])));
+				refs.put(expr.p0, local(1, pts[0]));
+				refs.put(expr.p1, local(2, pts[1]));
+				return rewrite(expr.do_);
 			} else
 				return null;
 		} else if (e instanceof DeclareLocalFunExpr) {
@@ -83,7 +88,8 @@ public class FunRewrite extends FunFactory {
 			afe.index = index;
 			afe.value = value;
 
-			return seq(afe, rewrite(expr.doFun.apply(local(index, type))));
+			refs.put(expr.var, local(index, type));
+			return seq(afe, rewrite(expr.do_));
 		} else if (e instanceof FieldFunExpr) {
 			FieldFunExpr expr = (FieldFunExpr) e;
 			FunExpr object = rewrite(expr.object);
@@ -106,7 +112,9 @@ public class FunRewrite extends FunFactory {
 			Type type = Type.getType(expr.clazz);
 			fields.put(fieldName, Pair.of(type, expr.object));
 			return rewrite(local(0, localTypes.get(0)).field(fieldName, type));
-		} else
+		} else if (e instanceof PlaceholderFunExpr)
+			return refs.get((PlaceholderFunExpr) e);
+		else
 			return null;
 	}
 

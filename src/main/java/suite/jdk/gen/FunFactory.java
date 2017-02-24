@@ -18,6 +18,7 @@ import suite.jdk.gen.FunExpression.If2FunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
+import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.util.FunUtil.Fun;
 
@@ -53,9 +54,12 @@ public class FunFactory {
 	}
 
 	public FunExpr declare(FunExpr value, Fun<FunExpr, FunExpr> doFun) {
+		PlaceholderFunExpr var = fe.new PlaceholderFunExpr();
+
 		DeclareLocalFunExpr expr = fe.new DeclareLocalFunExpr();
+		expr.var = var;
 		expr.value = value;
-		expr.doFun = doFun;
+		expr.do_ = doFun.apply(var);
 		return expr;
 	}
 
@@ -115,14 +119,21 @@ public class FunFactory {
 	}
 
 	public FunExpr parameter(Fun<FunExpr, FunExpr> doFun) {
+		PlaceholderFunExpr parameter = fe.new PlaceholderFunExpr();
+
 		Declare1ParameterFunExpr expr = fe.new Declare1ParameterFunExpr();
-		expr.doFun = doFun;
+		expr.parameter = parameter;
+		expr.do_ = doFun.apply(expr.parameter);
 		return expr;
 	}
 
 	public FunExpr parameter2(BiFunction<FunExpr, FunExpr, FunExpr> doFun) {
+		PlaceholderFunExpr p0 = fe.new PlaceholderFunExpr();
+		PlaceholderFunExpr p1 = fe.new PlaceholderFunExpr();
 		Declare2ParameterFunExpr expr = fe.new Declare2ParameterFunExpr();
-		expr.doFun = doFun;
+		expr.p0 = p0;
+		expr.p1 = p1;
+		expr.do_ = doFun.apply(p0, p1);
 		return expr;
 	}
 
