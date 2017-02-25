@@ -39,7 +39,7 @@ import suite.streamlet.Read;
 
 public class FunGenerateBytecode {
 
-	private FunTypeInformation ft;
+	private FunTypeInformation fti;
 	private InstructionFactory factory;
 
 	private class Record {
@@ -47,8 +47,8 @@ public class FunGenerateBytecode {
 		private Map<BranchInstruction, Integer> labels = new HashMap<>();
 	}
 
-	public FunGenerateBytecode(FunTypeInformation ft, ConstantPoolGen cpg) {
-		this.ft = ft;
+	public FunGenerateBytecode(FunTypeInformation fti, ConstantPoolGen cpg) {
+		this.fti = fti;
 		this.factory = new InstructionFactory(cpg);
 	}
 
@@ -75,12 +75,12 @@ public class FunGenerateBytecode {
 		if (e instanceof AssignFunExpr) {
 			AssignFunExpr expr = (AssignFunExpr) e;
 			visit0(r, expr.value);
-			r.list.add(InstructionFactory.createStore(ft.typeOf(expr.value), expr.index));
+			r.list.add(InstructionFactory.createStore(fti.typeOf(expr.value), expr.index));
 		} else if (e instanceof BinaryFunExpr) {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
 			visit0(r, expr.left);
 			visit0(r, expr.right);
-			r.list.add(InstructionFactory.createBinaryOperation(expr.op, ft.typeOf(expr.left)));
+			r.list.add(InstructionFactory.createBinaryOperation(expr.op, fti.typeOf(expr.left)));
 		} else if (e instanceof CastFunExpr) {
 			CastFunExpr expr = (CastFunExpr) e;
 			visit0(r, expr.expr);
@@ -94,7 +94,7 @@ public class FunGenerateBytecode {
 		} else if (e instanceof FieldTypeFunExpr) {
 			FieldTypeFunExpr expr = (FieldTypeFunExpr) e;
 			visit0(r, expr.object);
-			r.list.add(factory.createGetField(((ObjectType) ft.typeOf(expr.object)).getClassName(), expr.field, ft.typeOf(expr)));
+			r.list.add(factory.createGetField(((ObjectType) fti.typeOf(expr.object)).getClassName(), expr.field, fti.typeOf(expr)));
 		} else if (e instanceof If1FunExpr) {
 			If1FunExpr expr = (If1FunExpr) e;
 			visit0(r, expr.if_);
@@ -103,7 +103,7 @@ public class FunGenerateBytecode {
 			If2FunExpr expr = (If2FunExpr) e;
 			visit0(r, expr.left);
 			visit0(r, expr.right);
-			visitIf(r, (short) expr.opcode.applyAsInt(ft.typeOf(expr.left)), expr);
+			visitIf(r, (short) expr.opcode.applyAsInt(fti.typeOf(expr.left)), expr);
 		} else if (e instanceof InstanceOfFunExpr) {
 			InstanceOfFunExpr expr = (InstanceOfFunExpr) e;
 			visit0(r, expr.object);
@@ -111,11 +111,11 @@ public class FunGenerateBytecode {
 		} else if (e instanceof InvokeMethodFunExpr) {
 			InvokeMethodFunExpr expr = (InvokeMethodFunExpr) e;
 			Type array[] = Read.from(expr.parameters) //
-					.map(ft::typeOf) //
+					.map(fti::typeOf) //
 					.toList() //
 					.toArray(new Type[0]);
 
-			short opcode = ft.invokeMethodOf(expr).getDeclaringClass().isInterface() ? Const.INVOKEINTERFACE : Const.INVOKEVIRTUAL;
+			short opcode = fti.invokeMethodOf(expr).getDeclaringClass().isInterface() ? Const.INVOKEINTERFACE : Const.INVOKEVIRTUAL;
 
 			if (expr.object != null)
 				visit0(r, expr.object);
@@ -124,24 +124,24 @@ public class FunGenerateBytecode {
 				visit0(r, parameter);
 
 			r.list.add(factory.createInvoke( //
-					((ObjectType) ft.typeOf(expr.object)).getClassName(), //
+					((ObjectType) fti.typeOf(expr.object)).getClassName(), //
 					expr.methodName, //
-					ft.typeOf(expr), //
+					fti.typeOf(expr), //
 					array, //
 					opcode));
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
-			r.list.add(InstructionFactory.createLoad(ft.typeOf(expr), expr.index));
+			r.list.add(InstructionFactory.createLoad(fti.typeOf(expr), expr.index));
 		} else if (e instanceof PrintlnFunExpr) {
 			PrintlnFunExpr expr = (PrintlnFunExpr) e;
 			String sys = System.class.getName();
 			r.list.add(factory.createGetStatic(sys, "out", Type.getType(PrintStream.class)));
 			visit0(r, expr.expression);
-			r.list.add(factory.createInvoke(sys, "println", ft.typeOf(expr), new Type[] { Type.STRING, }, Const.INVOKEVIRTUAL));
+			r.list.add(factory.createInvoke(sys, "println", fti.typeOf(expr), new Type[] { Type.STRING, }, Const.INVOKEVIRTUAL));
 		} else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;
 			visit0(r, expr.left);
-			if (!Objects.equals(ft.typeOf(expr.left), Type.VOID))
+			if (!Objects.equals(fti.typeOf(expr.left), Type.VOID))
 				r.list.add(InstructionConst.POP);
 			visit0(r, expr.right);
 		} else if (e instanceof StaticFunExpr) {
