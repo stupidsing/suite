@@ -93,10 +93,10 @@ public class FunCreator<I> extends FunFactory {
 				il.append(factory.createInvoke(superClass.getName(), "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
 				il.append(InstructionFactory.createReturn(Type.VOID));
 
-				MethodGen mg0 = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", className, il, cp);
-				mg0.setMaxStack();
-				mg0.setMaxLocals();
-				m0 = mg0.getMethod();
+				MethodGen mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", className, il, cp);
+				mg.setMaxStack();
+				mg.setMaxLocals();
+				m0 = mg.getMethod();
 			} finally {
 				il.dispose();
 			}
@@ -107,10 +107,10 @@ public class FunCreator<I> extends FunFactory {
 			Type types[] = parameterTypes.toArray(new Type[0]);
 
 			try {
-				MethodGen mg1 = new MethodGen(ACC_PUBLIC, returnType, types, null, methodName, className, il, cp);
-				mg1.setMaxStack();
-				mg1.setMaxLocals();
-				m1 = mg1.getMethod();
+				MethodGen mg = new MethodGen(ACC_PUBLIC, returnType, types, null, methodName, className, il, cp);
+				mg.setMaxStack();
+				mg.setMaxLocals();
+				m1 = mg.getMethod();
 			} finally {
 				il.dispose();
 			}
