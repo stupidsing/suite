@@ -7,6 +7,8 @@ import java.util.function.ToIntFunction;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import suite.util.Util;
+
 public class FunExpression {
 
 	public abstract class FunExpr {
@@ -166,6 +168,15 @@ public class FunExpression {
 	}
 
 	public class PlaceholderFunExpr extends FunExpr {
+		private int id = Util.temp();
+
+		public boolean equals(Object object) {
+			return object.getClass() == PlaceholderFunExpr.class && id == ((PlaceholderFunExpr) object).id;
+		}
+
+		public int hashCode() {
+			return id;
+		}
 	}
 
 	public class PrintlnFunExpr extends FunExpr {
