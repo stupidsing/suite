@@ -135,6 +135,10 @@ public class FunExpression {
 		public FunExpr left, right;
 	}
 
+	public class InjectFunExpr extends FunExpr {
+		public String field;
+	}
+
 	public class InstanceOfFunExpr extends FunExpr {
 		public FunExpr object;
 		public ReferenceType instanceType;

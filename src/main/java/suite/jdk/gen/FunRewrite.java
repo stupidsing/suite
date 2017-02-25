@@ -20,6 +20,7 @@ import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.DeclareParameterFunExpr;
 import suite.jdk.gen.FunExpression.FieldFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.FunExpression.InjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
@@ -106,16 +107,23 @@ public class FunRewrite extends FunFactory {
 			imfe.object = rewrite(object_(fun.newFun(), fun.lambdaClass.interfaceClass));
 			imfe.parameters = expr.parameters;
 			return rewrite(imfe);
+		} else if (e instanceof InjectFunExpr) {
+			InjectFunExpr expr = (InjectFunExpr) e;
+			return rewrite(this_().field(expr.field));
 		} else if (e instanceof ObjectFunExpr) {
 			ObjectFunExpr expr = (ObjectFunExpr) e;
 			String fieldName = "f" + Util.temp();
 			Type type = Type.getType(expr.clazz);
 			fields.put(fieldName, Pair.of(type, expr.object));
-			return rewrite(local(0, localTypes.get(0)).field(fieldName, type));
+			return rewrite(this_().field(fieldName, type));
 		} else if (e instanceof PlaceholderFunExpr)
 			return refs.get((PlaceholderFunExpr) e);
 		else
 			return null;
+	}
+
+	private FunExpr this_() {
+		return local(0, localTypes.get(0));
 	}
 
 }

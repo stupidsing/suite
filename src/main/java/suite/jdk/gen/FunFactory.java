@@ -15,6 +15,7 @@ import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.If2FunExpr;
+import suite.jdk.gen.FunExpression.InjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
@@ -83,6 +84,12 @@ public class FunFactory {
 
 	public FunExpr ifInstance(Class<?> clazz, FunExpr object, Fun<FunExpr, FunExpr> then_, FunExpr else_) {
 		return if_(object.instanceOf(clazz), declare(object.checkCast(clazz), o_ -> then_.apply(o_)), else_);
+	}
+
+	public FunExpr inject(String field) {
+		InjectFunExpr expr = fe.new InjectFunExpr();
+		expr.field = field;
+		return expr;
 	}
 
 	public FunExpr invoke(FunConfig<?> fc, FunExpr parameter) {
