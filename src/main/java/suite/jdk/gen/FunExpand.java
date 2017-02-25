@@ -50,7 +50,7 @@ public class FunExpand extends FunFactory {
 				return null;
 		} else if (e instanceof DeclareLocalFunExpr) {
 			DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
-			return expand(expr.apply(expr.value), depth);
+			return expand(replace(expr.do_, expr.var, expr.value), depth);
 		} else
 			return null;
 	}
