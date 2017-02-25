@@ -39,8 +39,8 @@ public class FunCreator<I> extends FunFactory {
 	public final Type returnType;
 	public final List<Type> parameterTypes;
 
-	private Map<String, Pair<Type, Object>> constants;
-	private Map<String, Type> fields;
+	private Map<String, Pair<Type, Object>> constantTypeValues;
+	private Map<String, Type> fieldTypes;
 
 	public static <I> FunCreator<I> of(LambdaClass<I> lc) {
 		return of(lc, Collections.emptyMap());
@@ -60,8 +60,8 @@ public class FunCreator<I> extends FunFactory {
 		returnType = rt;
 		parameterTypes = ps;
 
-		constants = new HashMap<>();
-		fields = fs;
+		constantTypeValues = new HashMap<>();
+		fieldTypes = fs;
 	}
 
 	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
@@ -84,7 +84,7 @@ public class FunCreator<I> extends FunFactory {
 		FunExpr expr2 = (fr = new FunRewrite(fti, localTypes, expr1.cast(interfaceClass))).expr;
 
 		org.apache.bcel.classfile.Method m0, m1;
-		Map<String, Pair<Type, Object>> fields1 = fr.fields;
+		Map<String, Pair<Type, Object>> fields1 = fr.fieldTypeValues;
 
 		{
 			InstructionList il = new InstructionList();
@@ -119,9 +119,9 @@ public class FunCreator<I> extends FunFactory {
 		String ifs[] = new String[] { interfaceClass.getName(), };
 		ClassGen cg = new ClassGen(className, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
 
-		for (Entry<String, Pair<Type, Object>> e : constants.entrySet())
+		for (Entry<String, Pair<Type, Object>> e : constantTypeValues.entrySet())
 			cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().t0, e.getKey(), cp).getField());
-		for (Entry<String, Type> e : fields.entrySet())
+		for (Entry<String, Type> e : fieldTypes.entrySet())
 			cg.addField(new FieldGen(ACC_PUBLIC, e.getValue(), e.getKey(), cp).getField());
 		for (Entry<String, Pair<Type, Object>> e : fields1.entrySet())
 			cg.addField(new FieldGen(ACC_PUBLIC, e.getValue().t0, e.getKey(), cp).getField());
@@ -133,7 +133,7 @@ public class FunCreator<I> extends FunFactory {
 
 		Class<? extends I> clazz = new UnsafeUtil().defineClass(interfaceClass, className, bytes);
 
-		for (Entry<String, Pair<Type, Object>> e : constants.entrySet())
+		for (Entry<String, Pair<Type, Object>> e : constantTypeValues.entrySet())
 			try {
 				clazz.getField(e.getKey()).set(null, e.getValue().t1);
 			} catch (ReflectiveOperationException ex) {
@@ -155,7 +155,7 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public FunExpr field(String field) {
-		return this_().field(field, fields.get(field));
+		return this_().field(field, fieldTypes.get(field));
 	}
 
 	public FunExpr this_() {
@@ -165,7 +165,7 @@ public class FunCreator<I> extends FunFactory {
 	private FunExpr constantStatic(Object object, Class<?> clazz) {
 		String field = "f" + Util.temp();
 		Type type = Type.getType(clazz);
-		constants.put(field, Pair.of(type, object));
+		constantTypeValues.put(field, Pair.of(type, object));
 
 		StaticFunExpr expr = fe.new StaticFunExpr();
 		expr.clazzType = className;

@@ -34,7 +34,7 @@ public class FunRewrite extends FunFactory {
 	private static Inspect inspect = new Inspect();
 
 	public final FunExpr expr;
-	public final Map<String, Pair<Type, Object>> fields = new HashMap<>();
+	public final Map<String, Pair<Type, Object>> fieldTypeValues = new HashMap<>();
 
 	private FunTypeInformation fti;
 	private List<Type> localTypes;
@@ -114,7 +114,7 @@ public class FunRewrite extends FunFactory {
 			ObjectFunExpr expr = (ObjectFunExpr) e;
 			String fieldName = "f" + Util.temp();
 			Type type = Type.getType(expr.clazz);
-			fields.put(fieldName, Pair.of(type, expr.object));
+			fieldTypeValues.put(fieldName, Pair.of(type, expr.object));
 			return rewrite(this_().field(fieldName, type));
 		} else if (e instanceof PlaceholderFunExpr)
 			return placeholders.get((PlaceholderFunExpr) e);
