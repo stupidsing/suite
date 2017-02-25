@@ -123,13 +123,14 @@ public class FunFactory {
 
 		Declare1ParameterFunExpr expr = fe.new Declare1ParameterFunExpr();
 		expr.parameter = parameter;
-		expr.do_ = doFun.apply(expr.parameter);
+		expr.do_ = doFun.apply(parameter);
 		return expr;
 	}
 
 	public FunExpr parameter2(BiFunction<FunExpr, FunExpr, FunExpr> doFun) {
 		PlaceholderFunExpr p0 = fe.new PlaceholderFunExpr();
 		PlaceholderFunExpr p1 = fe.new PlaceholderFunExpr();
+
 		Declare2ParameterFunExpr expr = fe.new Declare2ParameterFunExpr();
 		expr.p0 = p0;
 		expr.p1 = p1;
