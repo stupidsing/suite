@@ -120,7 +120,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		FunCreator<BindPredicate> fc = FunCreator.of(lambdaClass, fields);
 
 		return bind(fc, //
-				n_ -> fc.ifeq(n_, fc.field(key0), fc._true(), fc._false()));
+				n_ -> fc.ifeq(n_, fc.inject(key0), fc._true(), fc._false()));
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindInt_() {
@@ -133,7 +133,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
 		return bind(fc, //
 				n_ -> fc.ifInstance(Int.class, n_, //
-						i -> fc.ifeq(i.field("number"), fc.field(key1), fc._true(), fc._false()), //
+						i -> fc.ifeq(i.field("number"), fc.inject(key1), fc._true(), fc._false()), //
 						fc._false()));
 	}
 
@@ -147,12 +147,12 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
 		return bind(fc, //
 				n_ -> fc.ifInstance(Str.class, n_, //
-						i -> fc.field(key1).invoke("equals", i.field("value").cast(Object.class)), //
+						i -> fc.inject(key1).invoke("equals", i.field("value").cast(Object.class)), //
 						fc._false()));
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> bind(FunCreator<BindPredicate> fc, Fun<FunExpr, FunExpr> compare) {
-		FunExpr k0 = fc.field(key0);
+		FunExpr k0 = fc.inject(key0);
 
 		return fc.create(fc.parameter2((be, n) -> fc.declare(n.invoke("finalNode"), //
 				n_ -> fc.ifInstance(Reference.class, n_, //
