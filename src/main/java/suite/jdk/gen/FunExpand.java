@@ -23,8 +23,6 @@ public class FunExpand extends FunFactory {
 	}
 
 	private FunExpr expand_(FunExpr e, int depth) {
-		int depth1 = depth - 1;
-
 		if (e instanceof If1FunExpr) {
 			If1FunExpr expr = (If1FunExpr) e;
 			FunExpr if_ = expr.if_;
@@ -41,18 +39,18 @@ public class FunExpand extends FunFactory {
 			FunExpr object = expr.object;
 			if (object instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr object_ = (Declare1ParameterFunExpr) object;
-				return expand(replace(object_.do_, object_.parameter, expr.parameters.get(0)), depth1);
+				return expand(replace(object_.do_, object_.parameter, expr.parameters.get(0)), depth);
 			} else if (object instanceof Declare2ParameterFunExpr) {
 				Declare2ParameterFunExpr object_ = (Declare2ParameterFunExpr) object;
 				FunExpr do0 = object_.do_;
 				FunExpr do1 = replace(do0, object_.p0, expr.parameters.get(0));
 				FunExpr do2 = replace(do1, object_.p1, expr.parameters.get(1));
-				return expand(do2, depth1);
+				return expand(do2, depth);
 			} else
 				return null;
 		} else if (e instanceof DeclareLocalFunExpr) {
 			DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
-			return expand(expr.apply(expr.value), depth1);
+			return expand(expr.apply(expr.value), depth);
 		} else
 			return null;
 	}
