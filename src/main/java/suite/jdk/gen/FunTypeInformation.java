@@ -34,30 +34,6 @@ public class FunTypeInformation {
 
 	private Map<PlaceholderFunExpr, Type> placeholders = new HashMap<>();
 
-	public Method invokeMethodOf(InvokeMethodFunExpr expr) {
-		Type array[] = Read.from(expr.parameters) //
-				.map(this::typeOf) //
-				.toList() //
-				.toArray(new Type[0]);
-
-		@SuppressWarnings("unchecked")
-		List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(array) //
-				.map(Type_::classOf) //
-				.toList();
-
-		return Rethrow.reflectiveOperationException(() -> {
-			return classOf(expr.object).getMethod(expr.methodName, parameterTypes.toArray(new Class<?>[0]));
-		});
-	}
-
-	public Method methodOf(FunExpr e) {
-		return Type_.methodOf(classOf(e));
-	}
-
-	public Class<?> classOf(FunExpr e) {
-		return Type_.classOf(typeOf(e));
-	}
-
 	public Type typeOf(FunExpr e) {
 		if (e instanceof ApplyFunExpr) {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
@@ -108,6 +84,30 @@ public class FunTypeInformation {
 			return expr.type;
 		} else
 			throw new RuntimeException("Unknown expression " + e.getClass());
+	}
+
+	public Method invokeMethodOf(InvokeMethodFunExpr expr) {
+		Type array[] = Read.from(expr.parameters) //
+				.map(this::typeOf) //
+				.toList() //
+				.toArray(new Type[0]);
+
+		@SuppressWarnings("unchecked")
+		List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(array) //
+				.map(Type_::classOf) //
+				.toList();
+
+		return Rethrow.reflectiveOperationException(() -> {
+			return classOf(expr.object).getMethod(expr.methodName, parameterTypes.toArray(new Class<?>[0]));
+		});
+	}
+
+	public Method methodOf(FunExpr e) {
+		return Type_.methodOf(classOf(e));
+	}
+
+	public Class<?> classOf(FunExpr e) {
+		return Type_.classOf(typeOf(e));
 	}
 
 }
