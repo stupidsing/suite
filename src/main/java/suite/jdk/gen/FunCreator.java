@@ -76,12 +76,10 @@ public class FunCreator<I> extends FunFactory {
 		InstructionFactory factory = new InstructionFactory(cp);
 
 		FunExpand fe = new FunExpand();
-		FunTypeInformation fti = new FunTypeInformation();
 		FunRewrite fr;
-		FunGenerateBytecode fgb = new FunGenerateBytecode(fti, cp);
 
 		FunExpr expr1 = fe.expand(expr0, 0);
-		FunExpr expr2 = (fr = new FunRewrite(fti, localTypes, expr1.cast(interfaceClass))).expr;
+		FunExpr expr2 = (fr = new FunRewrite(fieldTypes, localTypes, expr1.cast(interfaceClass))).expr;
 
 		org.apache.bcel.classfile.Method m0, m1;
 		Map<String, Pair<Type, Object>> fields1 = fr.fieldTypeValues;
@@ -103,7 +101,7 @@ public class FunCreator<I> extends FunFactory {
 		}
 
 		{
-			InstructionList il = fgb.visit(expr2, returnType);
+			InstructionList il = new FunGenerateBytecode(fr.fti, cp).visit(expr2, returnType);
 			Type types[] = parameterTypes.toArray(new Type[0]);
 
 			try {

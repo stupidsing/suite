@@ -35,13 +35,15 @@ public class FunRewrite extends FunFactory {
 
 	public final FunExpr expr;
 	public final Map<String, Pair<Type, Object>> fieldTypeValues = new HashMap<>();
+	public final FunTypeInformation fti;
 
-	private FunTypeInformation fti;
 	private List<Type> localTypes;
+	private Map<String, Type> fieldTypes;
 	private Map<PlaceholderFunExpr, FunExpr> placeholders = new HashMap<>();
 
-	public FunRewrite(FunTypeInformation fti, List<Type> parameterTypes, FunExpr expr0) {
-		this.fti = fti;
+	public FunRewrite(Map<String, Type> fieldTypes, List<Type> parameterTypes, FunExpr expr0) {
+		this.fti = new FunTypeInformation(placeholders::get);
+		this.fieldTypes = fieldTypes;
 		this.localTypes = new ArrayList<>(parameterTypes);
 		this.expr = rewrite(expr0);
 	}
@@ -109,7 +111,7 @@ public class FunRewrite extends FunFactory {
 			return rewrite(imfe);
 		} else if (e instanceof InjectFunExpr) {
 			InjectFunExpr expr = (InjectFunExpr) e;
-			return rewrite(this_().field(expr.field));
+			return rewrite(this_().field(expr.field, fieldTypes.get(expr.field)));
 		} else if (e instanceof ObjectFunExpr) {
 			ObjectFunExpr expr = (ObjectFunExpr) e;
 			String fieldName = "f" + Util.temp();

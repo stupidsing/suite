@@ -26,13 +26,18 @@ import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.gen.FunExpression.StaticFunExpr;
 import suite.streamlet.Read;
+import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 
 public class FunTypeInformation {
 
 	public final Map<DeclareParameterFunExpr, Class<?>> interfaceClasses = new HashMap<>();
 
-	private Map<PlaceholderFunExpr, Type> placeholders = new HashMap<>();
+	private Fun<PlaceholderFunExpr, FunExpr> placeholderResolver;
+
+	public FunTypeInformation(Fun<PlaceholderFunExpr, FunExpr> placeholderResolver) {
+		this.placeholderResolver = placeholderResolver;
+	}
 
 	public Type typeOf(FunExpr e) {
 		if (e instanceof ApplyFunExpr) {
@@ -73,7 +78,7 @@ public class FunTypeInformation {
 			LocalFunExpr expr = (LocalFunExpr) e;
 			return expr.type;
 		} else if (e instanceof PlaceholderFunExpr)
-			return placeholders.get((PlaceholderFunExpr) e);
+			return typeOf(placeholderResolver.apply((PlaceholderFunExpr) e));
 		else if (e instanceof PrintlnFunExpr)
 			return Type.VOID;
 		else if (e instanceof SeqFunExpr) {
