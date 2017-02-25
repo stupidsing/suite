@@ -32,7 +32,7 @@ public class FunTypeInformation {
 
 	public final Map<DeclareParameterFunExpr, Class<?>> interfaceClasses = new HashMap<>();
 
-	private Map<PlaceholderFunExpr, Type> refs = new HashMap<>();
+	private Map<PlaceholderFunExpr, Type> placeholders = new HashMap<>();
 
 	public Method invokeMethodOf(InvokeMethodFunExpr expr) {
 		Type array[] = Read.from(expr.parameters) //
@@ -97,7 +97,7 @@ public class FunTypeInformation {
 			LocalFunExpr expr = (LocalFunExpr) e;
 			return expr.type;
 		} else if (e instanceof PlaceholderFunExpr)
-			return refs.get((PlaceholderFunExpr) e);
+			return placeholders.get((PlaceholderFunExpr) e);
 		else if (e instanceof PrintlnFunExpr)
 			return Type.VOID;
 		else if (e instanceof SeqFunExpr) {
