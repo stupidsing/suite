@@ -6,8 +6,9 @@ import java.util.Map;
 
 import org.apache.bcel.generic.Type;
 
-import suite.jdk.gen.FunCreator;
+import suite.jdk.gen.FunConfig;
 import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.FunFactory;
 import suite.jdk.gen.LambdaClass;
 import suite.lp.doer.Binder;
 import suite.lp.sewing.SewingBinder;
@@ -24,6 +25,7 @@ import suite.util.FunUtil.Fun;
 
 public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
+	private static FunFactory ff = new FunFactory();
 	private static LambdaClass<BindPredicate> lambdaClass = LambdaClass.of(BindPredicate.class, "test");
 	private static String key0 = "k0";
 	private static String key1 = "k1";
@@ -115,52 +117,48 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindAtom_() {
-		Map<String, Type> fields = Collections.singletonMap(key0, Type.getType(Node.class));
+		Map<String, Type> fieldTypes = Collections.singletonMap(key0, Type.getType(Node.class));
 
-		FunCreator<BindPredicate> fc = FunCreator.of(lambdaClass, fields);
-
-		return bind(fc, //
-				n_ -> fc.ifeq(n_, fc.inject(key0), fc._true(), fc._false()));
+		return bind(fieldTypes, //
+				n_ -> ff.ifeq(n_, ff.inject(key0), ff._true(), ff._false()));
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindInt_() {
-		Map<String, Type> fields = Read.<String, Type> empty2() //
+		Map<String, Type> fieldTypes = Read.<String, Type> empty2() //
 				.cons(key0, Type.getType(Node.class)) //
 				.cons(key1, Type.INT) //
 				.toMap();
 
-		FunCreator<BindPredicate> fc = FunCreator.of(lambdaClass, fields);
-
-		return bind(fc, //
-				n_ -> fc.ifInstance(Int.class, n_, //
-						i -> fc.ifeq(i.field("number"), fc.inject(key1), fc._true(), fc._false()), //
-						fc._false()));
+		return bind(fieldTypes, //
+				n_ -> ff.ifInstance(Int.class, n_, //
+						i -> ff.ifeq(i.field("number"), ff.inject(key1), ff._true(), ff._false()), //
+						ff._false()));
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindStr_() {
-		Map<String, Type> fields = Read.<String, Type> empty2() //
+		Map<String, Type> fieldTypes = Read.<String, Type> empty2() //
 				.cons(key0, Type.getType(Node.class)) //
 				.cons(key1, Type.getType(String.class)) //
 				.toMap();
 
-		FunCreator<BindPredicate> fc = FunCreator.of(lambdaClass, fields);
-
-		return bind(fc, //
-				n_ -> fc.ifInstance(Str.class, n_, //
-						i -> fc.inject(key1).invoke("equals", i.field("value").cast(Object.class)), //
-						fc._false()));
+		return bind(fieldTypes, //
+				n_ -> ff.ifInstance(Str.class, n_, //
+						i -> ff.inject(key1).invoke("equals", i.field("value").cast(Object.class)), //
+						ff._false()));
 	}
 
-	private static Fun<Map<String, Object>, BindPredicate> bind(FunCreator<BindPredicate> fc, Fun<FunExpr, FunExpr> compare) {
-		FunExpr k0 = fc.inject(key0);
+	private static Fun<Map<String, Object>, BindPredicate> bind(Map<String, Type> fieldTypes, Fun<FunExpr, FunExpr> compare) {
+		FunExpr k0 = ff.inject(key0);
 
-		return fc.create(fc.parameter2((be, n) -> fc.declare(n.invoke("finalNode"), //
-				n_ -> fc.ifInstance(Reference.class, n_, //
+		FunExpr expr = ff.parameter2((be, n) -> ff.declare(n.invoke("finalNode"), //
+				n_ -> ff.ifInstance(Reference.class, n_, //
 						ref -> {
 							FunExpr addBind = be.invoke("getTrail").invoke("addBind", ref, k0);
-							return fc.seq(addBind, fc._true());
+							return ff.seq(addBind, ff._true());
 						}, //
-						compare.apply(n_)))));
+						compare.apply(n_))));
+
+		return fieldValues -> FunConfig.of(lambdaClass, expr, fieldTypes, fieldValues).newFun();
 	}
 
 	@SuppressWarnings("unused")

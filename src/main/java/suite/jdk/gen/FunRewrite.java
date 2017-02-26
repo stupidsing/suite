@@ -111,7 +111,11 @@ public class FunRewrite extends FunFactory {
 			return rewrite(imfe);
 		} else if (e instanceof InjectFunExpr) {
 			InjectFunExpr expr = (InjectFunExpr) e;
-			return rewrite(this_().field(expr.field, fieldTypes.get(expr.field)));
+			Type type = fieldTypes.get(expr.field);
+			if (type != null)
+				return rewrite(this_().field(expr.field, type));
+			else
+				throw new RuntimeException(expr.field);
 		} else if (e instanceof ObjectFunExpr) {
 			ObjectFunExpr expr = (ObjectFunExpr) e;
 			String fieldName = "f" + Util.temp();

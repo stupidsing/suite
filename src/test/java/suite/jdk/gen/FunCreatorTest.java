@@ -46,9 +46,11 @@ public class FunCreatorTest {
 		FunFactory f = new FunFactory();
 		FunConfig<IntFun> fc0 = FunConfig.of(lambdaClassIntFun, //
 				f.parameter(i -> f.add(f.constant(1), i)), //
+				Collections.emptyMap(), //
 				void_);
 		FunConfig<IntFun> fc1 = FunConfig.of(lambdaClassIntFun, //
 				f.parameter(i -> f.add(f.constant(1), f.invoke(fc0, i))), //
+				Collections.emptyMap(), //
 				void_);
 		assertEquals(2, fc1.newFun().apply(0));
 	}
