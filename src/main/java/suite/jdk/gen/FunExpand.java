@@ -1,5 +1,7 @@
 package suite.jdk.gen;
 
+import java.util.Map.Entry;
+
 import org.apache.bcel.generic.Type;
 
 import suite.inspect.Inspect;
@@ -10,6 +12,9 @@ import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
+import suite.jdk.gen.FunExpression.InjectFunExpr;
+import suite.jdk.gen.FunExpression.InvokeFunExpr;
+import suite.util.Util;
 
 public class FunExpand extends FunFactory {
 
@@ -51,12 +56,28 @@ public class FunExpand extends FunFactory {
 		} else if (e instanceof DeclareLocalFunExpr) {
 			DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
 			return expand(replace(expr.do_, expr.var, expr.value), depth);
+		} else if (e instanceof InvokeFunExpr) {
+			InvokeFunExpr expr = (InvokeFunExpr) e;
+			FunConfig<?> funConfig = expr.funConfig;
+			FunExpr fe = funConfig.expr;
+			for (Entry<String, Object> entry : funConfig.fields.entrySet())
+				fe = replaceInject(fe, entry.getKey(), object(entry.getValue()));
+			return expand(fe.apply(expr.parameters.toArray(new FunExpr[0])), depth - 1);
 		} else
 			return null;
 	}
 
+	private FunExpr replaceInject(FunExpr expr0, String fieldName, FunExpr to) {
+		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, e -> {
+			if (e instanceof InjectFunExpr && Util.stringEquals(((InjectFunExpr) e).field, fieldName))
+				return to;
+			else
+				return null;
+		}, expr0);
+	}
+
 	private FunExpr replace(FunExpr expr0, FunExpr from, FunExpr to) {
-		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, e -> e == from ? to : null, expr0);
+		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, e -> e.equals(from) ? to : null, expr0);
 	}
 
 }
