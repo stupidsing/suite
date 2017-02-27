@@ -63,26 +63,22 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
 			Fun<Env, Node> f = compile(node);
-			LambdaInstance<BindPredicate> lambda0 = compileBind0(tree.getLeft());
-			LambdaInstance<BindPredicate> lambda1 = compileBind0(tree.getRight());
-			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef;
-
-			if (isBindTrees)
-				bindRef = be -> ref -> ff.seq( //
-						be.invoke("getTrail").invoke("addBind", ref, ff.object(f).apply(be.invoke("getEnv"))), //
-						ff._true());
-			else
-				bindRef = be -> ref -> ff._false();
-
-			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTree = be -> n_ -> ff.declare( //
-					ff.invokeStatic(Tree.class, "decompose", n_, ff.object(operator, Operator.class)), //
-					t -> ff.ifNonNull(t, //
-							ff.and( //
-									ff.invoke(lambda0, be, t.invoke("getLeft")), //
-									ff.invoke(lambda1, be, t.invoke("getRight"))),
-							ff._false()));
-
-			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTree));
+			BindPredicate c0 = compileBind(tree.getLeft());
+			BindPredicate c1 = compileBind(tree.getRight());
+			return compileBindPredicate((be, n) -> {
+				Node n_ = n.finalNode();
+				Tree t;
+				if (n_ instanceof Reference)
+					if (isBindTrees) {
+						be.getTrail().addBind((Reference) n_, f.apply(be.getEnv()));
+						return true;
+					} else
+						return false;
+				else
+					return (t = Tree.decompose(n_, operator)) != null //
+							&& c0.test(be, t.getLeft()) //
+							&& c1.test(be, t.getRight());
+			});
 		} else if (node instanceof Tuple) {
 			Fun<Env, Node> f = compile(node);
 			List<BindPredicate> cs = Read.from(((Tuple) node).nodes) //
