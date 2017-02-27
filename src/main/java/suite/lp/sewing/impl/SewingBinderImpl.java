@@ -139,11 +139,11 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private LambdaInstance<BindPredicate> compileBindInt(Int i) {
-		return LambdaInstance.of(compiledBindInt, Read.<String, Object>empty2().cons(key0, i).cons(key1, i.number).toMap());
+		return LambdaInstance.of(compiledBindInt, Read.<String, Object> empty2().cons(key0, i).cons(key1, i.number).toMap());
 	}
 
 	private LambdaInstance<BindPredicate> compileBindStr(Str s) {
-		return LambdaInstance.of(compiledBindStr, Read.<String, Object>empty2().cons(key0, s).cons(key1, s.value).toMap());
+		return LambdaInstance.of(compiledBindStr, Read.<String, Object> empty2().cons(key0, s).cons(key1, s.value).toMap());
 	}
 
 	private static LambdaImplementation<BindPredicate> compileBindAtom_() {
@@ -154,7 +154,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private static LambdaImplementation<BindPredicate> compileBindInt_() {
-		Map<String, Type> fieldTypes = Read.<String, Type>empty2() //
+		Map<String, Type> fieldTypes = Read.<String, Type> empty2() //
 				.cons(key0, Type.getType(Node.class)) //
 				.cons(key1, Type.INT) //
 				.toMap();
@@ -166,7 +166,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private static LambdaImplementation<BindPredicate> compileBindStr_() {
-		Map<String, Type> fieldTypes = Read.<String, Type>empty2() //
+		Map<String, Type> fieldTypes = Read.<String, Type> empty2() //
 				.cons(key0, Type.getType(Node.class)) //
 				.cons(key1, Type.getType(String.class)) //
 				.toMap();
@@ -189,44 +189,6 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 						compare.apply(n_))));
 
 		return LambdaImplementation.of(lambdaClass, fieldTypes, expr);
-	}
-
-	@SuppressWarnings("unused")
-	private BindPredicate compileBindAtom0(Atom a) {
-		return (be, n) -> {
-			Node n_ = n.finalNode();
-			if (n_ instanceof Reference) {
-				be.getTrail().addBind((Reference) n_, a);
-				return true;
-			} else
-				return n_ == a;
-		};
-	}
-
-	@SuppressWarnings("unused")
-	private BindPredicate compileBindInt0(Int i_) {
-		int i = i_.number;
-		return (be, n) -> {
-			Node n_ = n.finalNode();
-			if (n_ instanceof Reference) {
-				be.getTrail().addBind((Reference) n_, i_);
-				return true;
-			} else
-				return n_ instanceof Int && ((Int) n_).number == i;
-		};
-	}
-
-	@SuppressWarnings("unused")
-	private BindPredicate compileBindStr0(Str str) {
-		String s = str.value;
-		return (be, n) -> {
-			Node n_ = n.finalNode();
-			if (n_ instanceof Reference) {
-				be.getTrail().addBind((Reference) n_, str);
-				return true;
-			} else
-				return n_ instanceof Str && s.equals(((Str) n_).value);
-		};
 	}
 
 }
