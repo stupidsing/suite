@@ -147,8 +147,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 						ff._false()));
 	}
 
-	private static Fun<Map<String, Object>, BindPredicate> bind(Map<String, Type> fieldTypes,
-			Fun<FunExpr, FunExpr> compare) {
+	private static Fun<Map<String, Object>, BindPredicate> bind(Map<String, Type> fieldTypes, Fun<FunExpr, FunExpr> compare) {
 		FunExpr k0 = ff.inject(key0);
 
 		FunExpr expr = ff.parameter2((be, n) -> ff.declare(n.invoke("finalNode"), //
@@ -159,9 +158,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 						}, //
 						compare.apply(n_))));
 
-		FunConfig<BindPredicate> funConfig = FunConfig.of(lambdaClass, fieldTypes, expr);
-
-		return fieldValues -> funConfig.newFun(fieldValues);
+		return FunConfig.of(lambdaClass, fieldTypes, expr)::newFun;
 	}
 
 	@SuppressWarnings("unused")
