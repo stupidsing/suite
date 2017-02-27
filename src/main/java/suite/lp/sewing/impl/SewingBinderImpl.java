@@ -109,11 +109,11 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private BindPredicate compileBindInt(Int i) {
-		return compiledBindInt.apply(Read.<String, Object> empty2().cons(key0, i).cons(key1, i.number).toMap());
+		return compiledBindInt.apply(Read.<String, Object>empty2().cons(key0, i).cons(key1, i.number).toMap());
 	}
 
 	private BindPredicate compileBindStr(Str s) {
-		return compiledBindStr.apply(Read.<String, Object> empty2().cons(key0, s).cons(key1, s.value).toMap());
+		return compiledBindStr.apply(Read.<String, Object>empty2().cons(key0, s).cons(key1, s.value).toMap());
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindAtom_() {
@@ -124,7 +124,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindInt_() {
-		Map<String, Type> fieldTypes = Read.<String, Type> empty2() //
+		Map<String, Type> fieldTypes = Read.<String, Type>empty2() //
 				.cons(key0, Type.getType(Node.class)) //
 				.cons(key1, Type.INT) //
 				.toMap();
@@ -136,7 +136,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private static Fun<Map<String, Object>, BindPredicate> compileBindStr_() {
-		Map<String, Type> fieldTypes = Read.<String, Type> empty2() //
+		Map<String, Type> fieldTypes = Read.<String, Type>empty2() //
 				.cons(key0, Type.getType(Node.class)) //
 				.cons(key1, Type.getType(String.class)) //
 				.toMap();
@@ -147,7 +147,8 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 						ff._false()));
 	}
 
-	private static Fun<Map<String, Object>, BindPredicate> bind(Map<String, Type> fieldTypes, Fun<FunExpr, FunExpr> compare) {
+	private static Fun<Map<String, Object>, BindPredicate> bind(Map<String, Type> fieldTypes,
+			Fun<FunExpr, FunExpr> compare) {
 		FunExpr k0 = ff.inject(key0);
 
 		FunExpr expr = ff.parameter2((be, n) -> ff.declare(n.invoke("finalNode"), //
@@ -158,7 +159,9 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 						}, //
 						compare.apply(n_))));
 
-		return fieldValues -> FunConfig.of(lambdaClass, expr, fieldTypes, fieldValues).newFun();
+		FunConfig<BindPredicate> funConfig = FunConfig.of(lambdaClass, fieldTypes, expr);
+
+		return fieldValues -> funConfig.newFun(fieldValues);
 	}
 
 	@SuppressWarnings("unused")

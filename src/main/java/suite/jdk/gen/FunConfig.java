@@ -9,23 +9,20 @@ import suite.jdk.gen.FunExpression.FunExpr;
 public class FunConfig<I> {
 
 	public final LambdaClass<I> lambdaClass;
-	public final FunExpr expr;
 	public final Map<String, Type> fieldTypes;
-	public final Map<String, Object> fieldValues;
+	public final FunExpr expr;
 
-	public static <I> FunConfig<I> of(LambdaClass<I> lambdaClass, FunExpr expr, Map<String, Type> fieldTypes,
-			Map<String, Object> fieldValues) {
-		return new FunConfig<>(lambdaClass, expr, fieldTypes, fieldValues);
+	public static <I> FunConfig<I> of(LambdaClass<I> lambdaClass, Map<String, Type> fieldTypes, FunExpr expr) {
+		return new FunConfig<>(lambdaClass, fieldTypes, expr);
 	}
 
-	private FunConfig(LambdaClass<I> lambdaClass, FunExpr expr, Map<String, Type> fieldTypes, Map<String, Object> fieldValues) {
+	private FunConfig(LambdaClass<I> lambdaClass, Map<String, Type> fieldTypes, FunExpr expr) {
 		this.lambdaClass = lambdaClass;
-		this.expr = expr;
 		this.fieldTypes = fieldTypes;
-		this.fieldValues = fieldValues;
+		this.expr = expr;
 	}
 
-	public I newFun() {
+	public I newFun(Map<String, Object> fieldValues) {
 		return FunCreator.of(lambdaClass, fieldTypes).create(expr).apply(fieldValues);
 	}
 

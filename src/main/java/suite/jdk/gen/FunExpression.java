@@ -2,6 +2,7 @@ package suite.jdk.gen;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.ToIntFunction;
 
 import org.apache.bcel.generic.ReferenceType;
@@ -148,6 +149,7 @@ public class FunExpression {
 
 	public class InvokeFunExpr extends FunExpr {
 		public FunConfig<?> funConfig;
+		public Map<String, Object> fieldValues;
 		public List<FunExpr> parameters;
 	}
 
