@@ -93,9 +93,9 @@ public class FunFactory {
 		return expr;
 	}
 
-	public FunExpr invoke(FunConfig<?> fc, Map<String, Object> fieldValues, FunExpr parameter) {
+	public FunExpr invoke(LambdaImplementation<?> lambda, Map<String, Object> fieldValues, FunExpr parameter) {
 		InvokeFunExpr expr = fe.new InvokeFunExpr();
-		expr.funConfig = fc;
+		expr.lambda = lambda;
 		expr.fieldValues = fieldValues;
 		expr.parameters = Arrays.asList(parameter);
 		return expr;

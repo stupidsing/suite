@@ -148,7 +148,7 @@ public class FunExpression {
 	}
 
 	public class InvokeFunExpr extends FunExpr {
-		public FunConfig<?> funConfig;
+		public LambdaImplementation<?> lambda;
 		public Map<String, Object> fieldValues;
 		public List<FunExpr> parameters;
 	}

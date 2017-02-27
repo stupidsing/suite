@@ -45,15 +45,17 @@ public class FunCreatorTest {
 	public void testApply1() {
 		FunFactory f = new FunFactory();
 
-		LambdaImplementation<IntFun> lambda0 = LambdaImplementation.of(lambdaClassIntFun //
-				, f.parameter(i -> f.add(f.constant(1), i)));
-		FunConfig<IntFun> fc0 = FunConfig.of(lambda0, Collections.emptyMap());
+		LambdaImplementation<IntFun> lambda0 = LambdaImplementation.of( //
+				lambdaClassIntFun, //
+				Collections.emptyMap(), //
+				f.parameter(i -> f.add(f.constant(1), i)));
 
-		LambdaImplementation<IntFun> lambda1 = LambdaImplementation.of(lambdaClassIntFun //
-				, f.parameter(i -> f.add(f.constant(1), f.invoke(fc0, void_, i))));
-		FunConfig<IntFun> fc1 = FunConfig.of(lambda1, Collections.emptyMap());
+		LambdaImplementation<IntFun> lambda1 = LambdaImplementation.of( //
+				lambdaClassIntFun, //
+				Collections.emptyMap(), //
+				f.parameter(i -> f.add(f.constant(1), f.invoke(lambda0, void_, i))));
 
-		assertEquals(2, fc1.newFun(void_).apply(0));
+		assertEquals(2, lambda1.newFun(void_).apply(0));
 	}
 
 	@Test
