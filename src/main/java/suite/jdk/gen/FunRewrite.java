@@ -22,7 +22,6 @@ import suite.jdk.gen.FunExpression.FieldFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.InjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
-import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
 import suite.streamlet.Read;
@@ -105,12 +104,9 @@ public class FunRewrite extends FunFactory {
 			LambdaInstance<?> l_inst = expr.lambda;
 			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
 			LambdaInterface<?> l_iface = l_impl.lambdaInterface;
+			FunExpr object = object_(l_impl.newFun(l_inst.fieldValues), l_iface.interfaceClass);
 
-			InvokeMethodFunExpr imfe = fe.new InvokeMethodFunExpr();
-			imfe.methodName = l_iface.methodName;
-			imfe.object = rewrite(object_(l_impl.newFun(l_inst.fieldValues), l_iface.interfaceClass));
-			imfe.parameters = expr.parameters;
-			return rewrite(imfe);
+			return rewrite(object.invoke(l_iface.methodName, expr.parameters.toArray(new FunExpr[0])));
 		} else if (e instanceof InjectFunExpr) {
 			InjectFunExpr expr = (InjectFunExpr) e;
 			Type type = fieldTypes.get(expr.field);
