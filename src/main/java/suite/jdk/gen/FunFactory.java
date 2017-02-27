@@ -122,10 +122,10 @@ public class FunFactory {
 		return expr;
 	}
 
-	public FunExpr invoke(LambdaInstance<?> lambda, FunExpr parameter) {
+	public FunExpr invoke(LambdaInstance<?> lambda, FunExpr... parameters) {
 		InvokeFunExpr expr = fe.new InvokeFunExpr();
 		expr.lambda = lambda;
-		expr.parameters = Arrays.asList(parameter);
+		expr.parameters = Arrays.asList(parameters);
 		return expr;
 	}
 
@@ -133,7 +133,7 @@ public class FunFactory {
 		InvokeMethodFunExpr expr = fe.new InvokeMethodFunExpr();
 		expr.object = null;
 		expr.methodName = methodName;
-		expr.parameters = Read.from(parameters).toList();
+		expr.parameters = Arrays.asList(parameters);
 		return expr;
 	}
 
