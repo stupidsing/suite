@@ -30,9 +30,9 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	private static LambdaInterface<BindPredicate> lambdaClass = LambdaInterface.of(BindPredicate.class, "test");
 	private static String key0 = "k0";
 	private static String key1 = "k1";
-	private static Fun<Map<String, Object>, BindPredicate> compiledBindAtom = compileBindAtom_();
-	private static Fun<Map<String, Object>, BindPredicate> compiledBindInt = compileBindInt_();
-	private static Fun<Map<String, Object>, BindPredicate> compiledBindStr = compileBindStr_();
+	private static FunConfig<BindPredicate> compiledBindAtom = compileBindAtom_();
+	private static FunConfig<BindPredicate> compiledBindInt = compileBindInt_();
+	private static FunConfig<BindPredicate> compiledBindStr = compileBindStr_();
 
 	private boolean isBindTrees;
 
@@ -106,25 +106,25 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	}
 
 	private BindPredicate compileBindAtom(Atom a) {
-		return compiledBindAtom.apply(Collections.singletonMap(key0, a));
+		return compiledBindAtom.newFun(Collections.singletonMap(key0, a));
 	}
 
 	private BindPredicate compileBindInt(Int i) {
-		return compiledBindInt.apply(Read.<String, Object>empty2().cons(key0, i).cons(key1, i.number).toMap());
+		return compiledBindInt.newFun(Read.<String, Object>empty2().cons(key0, i).cons(key1, i.number).toMap());
 	}
 
 	private BindPredicate compileBindStr(Str s) {
-		return compiledBindStr.apply(Read.<String, Object>empty2().cons(key0, s).cons(key1, s.value).toMap());
+		return compiledBindStr.newFun(Read.<String, Object>empty2().cons(key0, s).cons(key1, s.value).toMap());
 	}
 
-	private static Fun<Map<String, Object>, BindPredicate> compileBindAtom_() {
+	private static FunConfig<BindPredicate> compileBindAtom_() {
 		Map<String, Type> fieldTypes = Collections.singletonMap(key0, Type.getType(Node.class));
 
 		return bind(fieldTypes, //
 				n_ -> ff.ifeq(n_, ff.inject(key0), ff._true(), ff._false()));
 	}
 
-	private static Fun<Map<String, Object>, BindPredicate> compileBindInt_() {
+	private static FunConfig<BindPredicate> compileBindInt_() {
 		Map<String, Type> fieldTypes = Read.<String, Type>empty2() //
 				.cons(key0, Type.getType(Node.class)) //
 				.cons(key1, Type.INT) //
@@ -136,7 +136,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 						ff._false()));
 	}
 
-	private static Fun<Map<String, Object>, BindPredicate> compileBindStr_() {
+	private static FunConfig<BindPredicate> compileBindStr_() {
 		Map<String, Type> fieldTypes = Read.<String, Type>empty2() //
 				.cons(key0, Type.getType(Node.class)) //
 				.cons(key1, Type.getType(String.class)) //
@@ -148,7 +148,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 						ff._false()));
 	}
 
-	private static Fun<Map<String, Object>, BindPredicate> bind(Map<String, Type> fieldTypes, Fun<FunExpr, FunExpr> compare) {
+	private static FunConfig<BindPredicate> bind(Map<String, Type> fieldTypes, Fun<FunExpr, FunExpr> compare) {
 		FunExpr k0 = ff.inject(key0);
 
 		FunExpr expr = ff.parameter2((be, n) -> ff.declare(n.invoke("finalNode"), //
@@ -159,7 +159,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 						}, //
 						compare.apply(n_))));
 
-		return FunConfig.of(LambdaImplementation.of(lambdaClass, expr), fieldTypes)::newFun;
+		return FunConfig.of(LambdaImplementation.of(lambdaClass, expr), fieldTypes);
 	}
 
 	@SuppressWarnings("unused")
