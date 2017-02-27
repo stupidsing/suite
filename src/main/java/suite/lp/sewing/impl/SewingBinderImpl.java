@@ -9,7 +9,8 @@ import org.apache.bcel.generic.Type;
 import suite.jdk.gen.FunConfig;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
-import suite.jdk.gen.LambdaClass;
+import suite.jdk.gen.LambdaImplementation;
+import suite.jdk.gen.LambdaInterface;
 import suite.lp.doer.Binder;
 import suite.lp.sewing.SewingBinder;
 import suite.node.Atom;
@@ -26,7 +27,7 @@ import suite.util.FunUtil.Fun;
 public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
 	private static FunFactory ff = new FunFactory();
-	private static LambdaClass<BindPredicate> lambdaClass = LambdaClass.of(BindPredicate.class, "test");
+	private static LambdaInterface<BindPredicate> lambdaClass = LambdaInterface.of(BindPredicate.class, "test");
 	private static String key0 = "k0";
 	private static String key1 = "k1";
 	private static Fun<Map<String, Object>, BindPredicate> compiledBindAtom = compileBindAtom_();
@@ -158,7 +159,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 						}, //
 						compare.apply(n_))));
 
-		return FunConfig.of(lambdaClass, fieldTypes, expr)::newFun;
+		return FunConfig.of(LambdaImplementation.of(lambdaClass, expr), fieldTypes)::newFun;
 	}
 
 	@SuppressWarnings("unused")

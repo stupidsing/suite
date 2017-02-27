@@ -105,8 +105,8 @@ public class FunRewrite extends FunFactory {
 			FunConfig<?> fun = expr.funConfig;
 
 			InvokeMethodFunExpr imfe = fe.new InvokeMethodFunExpr();
-			imfe.methodName = fun.lambdaClass.methodName;
-			imfe.object = rewrite(object_(fun.newFun(expr.fieldValues), fun.lambdaClass.interfaceClass));
+			imfe.methodName = fun.lambda.lambdaInterface.methodName;
+			imfe.object = rewrite(object_(fun.newFun(expr.fieldValues), fun.lambda.lambdaInterface.interfaceClass));
 			imfe.parameters = expr.parameters;
 			return rewrite(imfe);
 		} else if (e instanceof InjectFunExpr) {

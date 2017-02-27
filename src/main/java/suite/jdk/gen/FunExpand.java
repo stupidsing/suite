@@ -59,7 +59,7 @@ public class FunExpand extends FunFactory {
 		} else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
 			FunConfig<?> funConfig = expr.funConfig;
-			FunExpr fe = funConfig.expr;
+			FunExpr fe = funConfig.lambda.expr;
 			for (Entry<String, Object> entry : expr.fieldValues.entrySet())
 				fe = replaceInject(fe, entry.getKey(), object(entry.getValue()));
 			return expand(fe.apply(expr.parameters.toArray(new FunExpr[0])), depth - 1);

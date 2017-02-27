@@ -4,26 +4,24 @@ import java.util.Map;
 
 import org.apache.bcel.generic.Type;
 
-import suite.jdk.gen.FunExpression.FunExpr;
-
 public class FunConfig<I> {
 
-	public final LambdaClass<I> lambdaClass;
+	public final LambdaImplementation<I> lambda;
 	public final Map<String, Type> fieldTypes;
-	public final FunExpr expr;
 
-	public static <I> FunConfig<I> of(LambdaClass<I> lambdaClass, Map<String, Type> fieldTypes, FunExpr expr) {
-		return new FunConfig<>(lambdaClass, fieldTypes, expr);
+	public static <I> FunConfig<I> of(LambdaImplementation<I> lambda, Map<String, Type> fieldTypes) {
+		return new FunConfig<>(lambda, fieldTypes);
 	}
 
-	private FunConfig(LambdaClass<I> lambdaClass, Map<String, Type> fieldTypes, FunExpr expr) {
-		this.lambdaClass = lambdaClass;
+	private FunConfig(LambdaImplementation<I> lambda, Map<String, Type> fieldTypes) {
+		this.lambda = lambda;
 		this.fieldTypes = fieldTypes;
-		this.expr = expr;
 	}
 
 	public I newFun(Map<String, Object> fieldValues) {
-		return FunCreator.of(lambdaClass, fieldTypes).create(expr).apply(fieldValues);
+		return FunCreator.of(lambda.lambdaInterface, fieldTypes) //
+				.create(lambda.expr) //
+				.apply(fieldValues);
 	}
 
 }

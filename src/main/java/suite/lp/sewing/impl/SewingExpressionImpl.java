@@ -9,7 +9,7 @@ import org.apache.bcel.generic.Type;
 import suite.Suite;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.jdk.gen.LambdaClass;
+import suite.jdk.gen.LambdaInterface;
 import suite.lp.predicate.EvalPredicates;
 import suite.lp.sewing.SewingCloner;
 import suite.lp.sewing.SewingExpression;
@@ -21,7 +21,7 @@ import suite.util.FunUtil.Fun;
 
 public class SewingExpressionImpl implements SewingExpression {
 
-	private static LambdaClass<Evaluate> lambdaClass = LambdaClass.of(Evaluate.class);
+	private static LambdaInterface<Evaluate> lambdaClass = LambdaInterface.of(Evaluate.class);
 
 	private static String key = "key";
 	private static Fun<Map<String, Object>, Evaluate> compiledNumber = compileNumber(key);

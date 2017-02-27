@@ -33,7 +33,7 @@ import suite.util.Util;
 
 public class FunCreator<I> extends FunFactory {
 
-	public final LambdaClass<I> lambdaClass;
+	public final LambdaInterface<I> lambdaClass;
 	public final Class<?> superClass;
 	public final String className;
 	public final Type returnType;
@@ -42,18 +42,18 @@ public class FunCreator<I> extends FunFactory {
 	private Map<String, Pair<Type, Object>> constantTypeValues;
 	private Map<String, Type> fieldTypes;
 
-	public static <I> FunCreator<I> of(LambdaClass<I> lc) {
+	public static <I> FunCreator<I> of(LambdaInterface<I> lc) {
 		return of(lc, Collections.emptyMap());
 	}
 
-	public static <I> FunCreator<I> of(LambdaClass<I> lc, Map<String, Type> fs) {
+	public static <I> FunCreator<I> of(LambdaInterface<I> lc, Map<String, Type> fs) {
 		Method method = lc.method();
 		Type rt = Type.getType(method.getReturnType());
 		List<Type> pts = Read.from(method.getParameterTypes()).map(Type::getType).toList();
 		return new FunCreator<>(lc, rt, pts, fs);
 	}
 
-	private FunCreator(LambdaClass<I> lc, Type rt, List<Type> ps, Map<String, Type> fs) {
+	private FunCreator(LambdaInterface<I> lc, Type rt, List<Type> ps, Map<String, Type> fs) {
 		lambdaClass = lc;
 		superClass = Object.class;
 		className = lc.interfaceClass.getSimpleName() + Util.temp();

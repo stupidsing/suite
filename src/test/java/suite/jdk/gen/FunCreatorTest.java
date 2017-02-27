@@ -15,10 +15,10 @@ import suite.util.FunUtil.Fun;
 public class FunCreatorTest {
 
 	@SuppressWarnings("rawtypes")
-	private static LambdaClass<BiPredicate> lambdaClassBiPredicate = LambdaClass.of(BiPredicate.class, "test");
+	private static LambdaInterface<BiPredicate> lambdaClassBiPredicate = LambdaInterface.of(BiPredicate.class, "test");
 	@SuppressWarnings("rawtypes")
-	private static LambdaClass<Fun> lambdaClassFun = LambdaClass.of(Fun.class);
-	private static LambdaClass<IntFun> lambdaClassIntFun = LambdaClass.of(IntFun.class);
+	private static LambdaInterface<Fun> lambdaClassFun = LambdaInterface.of(Fun.class);
+	private static LambdaInterface<IntFun> lambdaClassIntFun = LambdaInterface.of(IntFun.class);
 
 	private Map<String, Object> void_ = Collections.emptyMap();
 
@@ -44,12 +44,15 @@ public class FunCreatorTest {
 	@Test
 	public void testApply1() {
 		FunFactory f = new FunFactory();
-		FunConfig<IntFun> fc0 = FunConfig.of(lambdaClassIntFun, //
-				Collections.emptyMap(), //
-				f.parameter(i -> f.add(f.constant(1), i)));
-		FunConfig<IntFun> fc1 = FunConfig.of(lambdaClassIntFun, //
-				Collections.emptyMap(), //
-				f.parameter(i -> f.add(f.constant(1), f.invoke(fc0, void_, i))));
+
+		LambdaImplementation<IntFun> lambda0 = LambdaImplementation.of(lambdaClassIntFun //
+				, f.parameter(i -> f.add(f.constant(1), i)));
+		FunConfig<IntFun> fc0 = FunConfig.of(lambda0, Collections.emptyMap());
+
+		LambdaImplementation<IntFun> lambda1 = LambdaImplementation.of(lambdaClassIntFun //
+				, f.parameter(i -> f.add(f.constant(1), f.invoke(fc0, void_, i))));
+		FunConfig<IntFun> fc1 = FunConfig.of(lambda1, Collections.emptyMap());
+
 		assertEquals(2, fc1.newFun(void_).apply(0));
 	}
 
