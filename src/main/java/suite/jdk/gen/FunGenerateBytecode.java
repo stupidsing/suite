@@ -120,7 +120,8 @@ public class FunGenerateBytecode {
 					.toList() //
 					.toArray(new Type[0]);
 
-			String className = expr.object != null ? ((ObjectType) fti.typeOf(expr.object)).getClassName() : expr.clazz.getName();
+			Class<?> clazz = expr.clazz;
+			String className = clazz != null ? clazz.getName() : ((ObjectType) fti.typeOf(expr.object)).getClassName();
 			short opcode;
 
 			if (expr.object == null)
