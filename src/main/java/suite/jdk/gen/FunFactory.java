@@ -1,7 +1,6 @@
 package suite.jdk.gen;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
@@ -93,10 +92,9 @@ public class FunFactory {
 		return expr;
 	}
 
-	public FunExpr invoke(LambdaImplementation<?> lambda, Map<String, Object> fieldValues, FunExpr parameter) {
+	public FunExpr invoke(LambdaInstance<?> lambda, FunExpr parameter) {
 		InvokeFunExpr expr = fe.new InvokeFunExpr();
 		expr.lambda = lambda;
-		expr.fieldValues = fieldValues;
 		expr.parameters = Arrays.asList(parameter);
 		return expr;
 	}

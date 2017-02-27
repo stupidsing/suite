@@ -102,12 +102,13 @@ public class FunRewrite extends FunFactory {
 			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
 		} else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
-			LambdaImplementation<?> lambda = expr.lambda;
-			LambdaInterface<?> lambdaInterface = lambda.lambdaInterface;
+			LambdaInstance<?> l_inst = expr.lambda;
+			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
+			LambdaInterface<?> l_iface = l_impl.lambdaInterface;
 
 			InvokeMethodFunExpr imfe = fe.new InvokeMethodFunExpr();
-			imfe.methodName = lambdaInterface.methodName;
-			imfe.object = rewrite(object_(lambda.newFun(expr.fieldValues), lambda.lambdaInterface.interfaceClass));
+			imfe.methodName = l_iface.methodName;
+			imfe.object = rewrite(object_(l_impl.newFun(l_inst.fieldValues), l_iface.interfaceClass));
 			imfe.parameters = expr.parameters;
 			return rewrite(imfe);
 		} else if (e instanceof InjectFunExpr) {
