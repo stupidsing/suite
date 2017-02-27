@@ -1,6 +1,6 @@
 package suite.node;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import suite.util.Util;
@@ -10,7 +10,7 @@ public class Dict extends Node {
 	public final Map<Node, Reference> map;
 
 	public Dict() {
-		this(Collections.emptyMap());
+		this(new HashMap<>());
 	}
 
 	public Dict(Map<Node, Reference> map) {
