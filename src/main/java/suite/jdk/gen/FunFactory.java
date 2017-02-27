@@ -131,6 +131,7 @@ public class FunFactory {
 
 	public FunExpr invokeStatic(Class<?> clazz, String methodName, FunExpr... parameters) {
 		InvokeMethodFunExpr expr = fe.new InvokeMethodFunExpr();
+		expr.clazz = clazz;
 		expr.object = null;
 		expr.methodName = methodName;
 		expr.parameters = Arrays.asList(parameters);

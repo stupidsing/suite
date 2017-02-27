@@ -103,7 +103,9 @@ public class FunTypeInformation {
 				.toList();
 
 		return Rethrow.reflectiveOperationException(() -> {
-			return classOf(expr.object).getMethod(expr.methodName, parameterTypes.toArray(new Class<?>[0]));
+			Class<?> clazz0 = expr.clazz;
+			Class<?> clazz1 = clazz0 != null ? expr.clazz : classOf(expr.object);
+			return clazz1.getMethod(expr.methodName, parameterTypes.toArray(new Class<?>[0]));
 		});
 	}
 

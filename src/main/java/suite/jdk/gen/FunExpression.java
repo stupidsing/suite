@@ -156,7 +156,7 @@ public class FunExpression {
 	}
 
 	public class InvokeMethodFunExpr extends FunExpr {
-		public String className;
+		public Class<?> clazz;
 		public String methodName;
 		public FunExpr object;
 		public List<FunExpr> parameters;
