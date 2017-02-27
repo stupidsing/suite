@@ -29,6 +29,7 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.If2FunExpr;
 import suite.jdk.gen.FunExpression.IfFunExpr;
+import suite.jdk.gen.FunExpression.IfNonNullFunExpr;
 import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
 import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
@@ -104,6 +105,10 @@ public class FunGenerateBytecode {
 			visit0(r, expr.left);
 			visit0(r, expr.right);
 			visitIf(r, (short) expr.opcode.applyAsInt(fti.typeOf(expr.left)), expr);
+		} else if (e instanceof IfNonNullFunExpr) {
+			IfNonNullFunExpr expr = (IfNonNullFunExpr) e;
+			visit0(r, expr.object);
+			visitIf(r, Const.IFNULL, expr);
 		} else if (e instanceof InstanceOfFunExpr) {
 			InstanceOfFunExpr expr = (InstanceOfFunExpr) e;
 			visit0(r, expr.object);
@@ -115,7 +120,15 @@ public class FunGenerateBytecode {
 					.toList() //
 					.toArray(new Type[0]);
 
-			short opcode = fti.invokeMethodOf(expr).getDeclaringClass().isInterface() ? Const.INVOKEINTERFACE : Const.INVOKEVIRTUAL;
+			String className = expr.object != null ? ((ObjectType) fti.typeOf(expr.object)).getClassName() : expr.className;
+			short opcode;
+
+			if (expr.object == null)
+				opcode = Const.INVOKESTATIC;
+			else if (fti.invokeMethodOf(expr).getDeclaringClass().isInterface())
+				opcode = Const.INVOKEINTERFACE;
+			else
+				opcode = Const.INVOKEVIRTUAL;
 
 			if (expr.object != null)
 				visit0(r, expr.object);
@@ -124,7 +137,7 @@ public class FunGenerateBytecode {
 				visit0(r, parameter);
 
 			r.list.add(factory.createInvoke( //
-					((ObjectType) fti.typeOf(expr.object)).getClassName(), //
+					className, //
 					expr.methodName, //
 					fti.typeOf(expr), //
 					array, //

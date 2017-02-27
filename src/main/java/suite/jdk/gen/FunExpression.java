@@ -137,6 +137,10 @@ public class FunExpression {
 		public FunExpr left, right;
 	}
 
+	public class IfNonNullFunExpr extends IfFunExpr {
+		public FunExpr object;
+	}
+
 	public class InjectFunExpr extends FunExpr {
 		public String field;
 	}
@@ -152,6 +156,7 @@ public class FunExpression {
 	}
 
 	public class InvokeMethodFunExpr extends FunExpr {
+		public String className;
 		public String methodName;
 		public FunExpr object;
 		public List<FunExpr> parameters;

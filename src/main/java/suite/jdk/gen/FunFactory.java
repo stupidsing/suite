@@ -1,6 +1,7 @@
 package suite.jdk.gen;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
@@ -15,28 +16,49 @@ import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.If2FunExpr;
+import suite.jdk.gen.FunExpression.IfNonNullFunExpr;
 import suite.jdk.gen.FunExpression.InjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
+import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
 public class FunFactory {
 
 	public static final FunExpression fe = new FunExpression();
 
-	public FunExpr _true() {
-		return constant(1);
-	}
-
 	public FunExpr _false() {
 		return constant(0);
 	}
 
+	public FunExpr _true() {
+		return constant(1);
+	}
+
+	public FunExpr _null() {
+		ConstantFunExpr expr = fe.new ConstantFunExpr();
+		expr.type = Type.NULL;
+		expr.constant = null;
+		return expr;
+	}
+
 	public FunExpr add(FunExpr e0, FunExpr e1) {
 		return bi("+", e0, e1);
+	}
+
+	public FunExpr and(FunExpr... exprs) {
+		if (0 < exprs.length) {
+			List<FunExpr> list = Read.from(exprs).reverse().toList();
+			FunExpr expr = list.get(0);
+			for (int i = 1; i < exprs.length; i++)
+				expr = if_(list.get(i), expr, _false());
+			return expr;
+		} else
+			return _true();
 	}
 
 	public FunExpr bi(String op, FunExpr e0, FunExpr e1) {
@@ -72,11 +94,19 @@ public class FunFactory {
 		return expr;
 	}
 
-	public FunExpr ifeq(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
+	public FunExpr ifEquals(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
 		If2FunExpr expr = fe.new If2FunExpr();
 		expr.opcode = t -> !Objects.equals(t, Type.INT) ? Const.IF_ACMPNE : Const.IF_ICMPNE;
 		expr.left = left;
 		expr.right = right;
+		expr.then = then_;
+		expr.else_ = else_;
+		return expr;
+	}
+
+	public FunExpr ifNonNull(FunExpr object, FunExpr then_, FunExpr else_) {
+		IfNonNullFunExpr expr = fe.new IfNonNullFunExpr();
+		expr.object = object;
 		expr.then = then_;
 		expr.else_ = else_;
 		return expr;
@@ -96,6 +126,14 @@ public class FunFactory {
 		InvokeFunExpr expr = fe.new InvokeFunExpr();
 		expr.lambda = lambda;
 		expr.parameters = Arrays.asList(parameter);
+		return expr;
+	}
+
+	public FunExpr invokeStatic(Class<?> clazz, String methodName, FunExpr... parameters) {
+		InvokeMethodFunExpr expr = fe.new InvokeMethodFunExpr();
+		expr.object = null;
+		expr.methodName = methodName;
+		expr.parameters = Read.from(parameters).toList();
 		return expr;
 	}
 
