@@ -74,12 +74,12 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 			else
 				bindRef = be -> ref -> ff._false();
 
-			Fun<FunExpr, FunExpr> bindTree = n_ -> ff.declare( //
-					ff.invokeStatic(Tree.class, "decompose", n_, ff.object(operator)), //
+			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTree = be -> n_ -> ff.declare( //
+					ff.invokeStatic(Tree.class, "decompose", n_, ff.object(operator, Operator.class)), //
 					t -> ff.ifNonNull(t, //
 							ff.and( //
-									ff.invoke(lambda0, t.invoke("getLeft")), //
-									ff.invoke(lambda1, t.invoke("getRight"))),
+									ff.invoke(lambda0, be, t.invoke("getLeft")), //
+									ff.invoke(lambda1, be, t.invoke("getRight"))),
 							ff._false()));
 
 			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTree));
@@ -173,13 +173,13 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 				ifRef(be -> ref -> ff.seq( //
 						be.invoke("getTrail").invoke("addBind", ref, ff.inject(key0)), //
 						ff._true()), //
-						compare));
+						be -> compare));
 	}
 
-	private static FunExpr ifRef(Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef, Fun<FunExpr, FunExpr> bindTree) {
+	private static FunExpr ifRef(Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef, Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTree) {
 		return ff.parameter2((be, n) -> ff.declare( //
 				n.invoke("finalNode"), //
-				n_ -> ff.ifInstance(Reference.class, n_, bindRef.apply(be), bindTree.apply(n_))));
+				n_ -> ff.ifInstance(Reference.class, n_, bindRef.apply(be), bindTree.apply(be).apply(n_))));
 	}
 
 }
