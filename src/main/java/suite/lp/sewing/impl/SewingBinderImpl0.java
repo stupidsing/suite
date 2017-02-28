@@ -13,7 +13,6 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.Operator;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
 
 public class SewingBinderImpl0 extends SewingClonerImpl implements SewingBinder {
 
@@ -41,7 +40,7 @@ public class SewingBinderImpl0 extends SewingClonerImpl implements SewingBinder 
 			return compileBindStr((Str) node);
 		else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
-			Fun<Env, Node> f = compile(node);
+			Clone_ f = compile(node);
 			BindPredicate c0 = compileBind(tree.getLeft());
 			BindPredicate c1 = compileBind(tree.getRight());
 			return (be, n) -> {
@@ -59,7 +58,7 @@ public class SewingBinderImpl0 extends SewingClonerImpl implements SewingBinder 
 							&& c1.test(be, t.getRight());
 			};
 		} else if (node instanceof Tuple) {
-			Fun<Env, Node> f = compile(node);
+			Clone_ f = compile(node);
 			List<BindPredicate> cs = Read.from(((Tuple) node).nodes).map(this::compileBind).toList();
 			int size = cs.size();
 			return (be, n) -> {
@@ -83,7 +82,7 @@ public class SewingBinderImpl0 extends SewingClonerImpl implements SewingBinder 
 					return false;
 			};
 		} else {
-			Fun<Env, Node> f = compile(node);
+			Clone_ f = compile(node);
 			return (be, n) -> Binder.bind(n, f.apply(be.getEnv()), be.getTrail());
 		}
 	}

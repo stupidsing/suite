@@ -12,6 +12,7 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.LambdaInterface;
 import suite.lp.predicate.EvalPredicates;
 import suite.lp.sewing.SewingCloner;
+import suite.lp.sewing.SewingCloner.Clone_;
 import suite.lp.sewing.SewingExpression;
 import suite.lp.sewing.VariableMapper.Env;
 import suite.node.Int;
@@ -58,7 +59,7 @@ public class SewingExpressionImpl implements SewingExpression {
 		else if (node instanceof Int)
 			return compiledNumber.apply(Collections.singletonMap(key, ((Int) node).number));
 		else {
-			Fun<Env, Node> f = sc.compile(node);
+			Clone_ f = sc.compile(node);
 			return env -> new EvalPredicates().evaluate(f.apply(env));
 		}
 	}

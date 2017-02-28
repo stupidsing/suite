@@ -16,7 +16,6 @@ import suite.node.io.Rewriter.NodeRead;
 import suite.node.io.Rewriter.NodeWrite;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
 
 public class SewingClonerImpl extends VariableMapperImpl implements SewingCloner {
 
@@ -26,14 +25,14 @@ public class SewingClonerImpl extends VariableMapperImpl implements SewingCloner
 
 	public static Generalization process(Node node) {
 		SewingClonerImpl sc = new SewingClonerImpl();
-		Fun<Env, Node> fun = sc.compile(node);
+		Clone_ fun = sc.compile(node);
 		Env env = sc.env();
 		return sc.new Generalization(fun.apply(env), env);
 	}
 
-	public Fun<Env, Node> compile(Node node) {
-		List<Fun<Env, Node>> funs = new ArrayList<>();
-		Fun<Env, Node> fun;
+	public Clone_ compile(Node node) {
+		List<Clone_> funs = new ArrayList<>();
+		Clone_ fun;
 		NodeRead nr;
 
 		while (true) {
@@ -45,17 +44,17 @@ public class SewingClonerImpl extends VariableMapperImpl implements SewingCloner
 			else if ((tree = Tree.decompose(node0)) != null) {
 				Operator operator = tree.getOperator();
 				if (operator != TermOp.OR____) {
-					Fun<Env, Node> f = compile(tree.getLeft());
+					Clone_ f = compile(tree.getLeft());
 					funs.add(env -> Tree.of(operator, f.apply(env), null));
 					node = tree.getRight();
 					continue;
 				} else { // delay generalizing for performance
-					Fun<Env, Node> lf = compile(tree.getLeft());
-					Fun<Env, Node> rf = compile(tree.getRight());
+					Clone_ lf = compile(tree.getLeft());
+					Clone_ rf = compile(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
 			} else if (0 < (nr = NodeRead.of(node)).children.size()) {
-				List<Pair<Node, Fun<Env, Node>>> ps = Read.from(nr.children) //
+				List<Pair<Node, Clone_>> ps = Read.from(nr.children) //
 						.map(Pair.map1(this::compile)) //
 						.toList();
 				fun = env -> {
@@ -68,11 +67,11 @@ public class SewingClonerImpl extends VariableMapperImpl implements SewingCloner
 				int index = findVariableIndex(node0);
 				fun = env -> env.get(index);
 			} else if (node0 instanceof Tuple) {
-				List<Fun<Env, Node>> ps = Read.from(((Tuple) node0).nodes).map(this::compile).toList();
+				List<Clone_> ps = Read.from(((Tuple) node0).nodes).map(this::compile).toList();
 				int size = ps.size();
 				fun = env -> {
 					List<Node> nodes = new ArrayList<>(size);
-					for (Fun<Env, Node> p : ps)
+					for (Clone_ p : ps)
 						nodes.add(p.apply(env));
 					return Tuple.of(nodes);
 				};
@@ -87,7 +86,7 @@ public class SewingClonerImpl extends VariableMapperImpl implements SewingCloner
 			return env -> {
 				Tree t = Tree.of(null, null, null);
 				Node node_ = t;
-				for (Fun<Env, Node> fun_ : funs) {
+				for (Clone_ fun_ : funs) {
 					Tree t_ = Tree.decompose(node_);
 					Tree.forceSetRight(t_, fun_.apply(env));
 					node_ = t_.getRight();

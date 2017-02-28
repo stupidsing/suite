@@ -26,6 +26,7 @@ import suite.lp.predicate.SystemPredicates;
 import suite.lp.sewing.SewingBinder;
 import suite.lp.sewing.SewingBinder.BindEnv;
 import suite.lp.sewing.SewingBinder.BindPredicate;
+import suite.lp.sewing.SewingCloner.Clone_;
 import suite.lp.sewing.SewingProver;
 import suite.lp.sewing.VariableMapper.Env;
 import suite.lp.sewing.impl.SewingExpressionImpl.Evaluate;
@@ -47,7 +48,6 @@ import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
@@ -89,7 +89,7 @@ public class SewingProverImpl implements SewingProver {
 			return (be, n) -> Binder.bind(node, n, be.getTrail());
 		}
 
-		public Fun<Env, Node> compile(Node node) {
+		public Clone_ compile(Node node) {
 			return env -> node.finalNode();
 		}
 
@@ -272,7 +272,7 @@ public class SewingProverImpl implements SewingProver {
 			Node n0 = b ? m[0] : m[1];
 			Node n1 = b ? m[1] : m[0];
 			BindPredicate p = sb.compileBind(n1);
-			Fun<Env, Node> f = sb.compile(n0);
+			Clone_ f = sb.compile(n0);
 			tr = rt -> p.test(rt, f.apply(rt.env)) ? okay : fail;
 		} else if ((m = Suite.matcher("builtin:.0:.1 .2").apply(node)) != null) {
 			String className = ((Atom) m[0]).name;
@@ -283,7 +283,7 @@ public class SewingProverImpl implements SewingProver {
 			});
 			tr = callPredicate(sb, predicate, m[2]);
 		} else if ((m = Suite.matcher("find.all .0 .1 .2").apply(node)) != null) {
-			Fun<Env, Node> f = sb.compile(m[0]);
+			Clone_ f = sb.compile(m[0]);
 			Trampoline tr1 = compile0(sb, m[1]);
 			BindPredicate p = sb.compileBind(m[2]);
 			List<Node> vs = new ArrayList<>();
@@ -309,10 +309,10 @@ public class SewingProverImpl implements SewingProver {
 			Evaluate eval = new SewingExpressionImpl(sb).compile(m[1]);
 			tr = rt -> p.test(rt, Int.of(eval.evaluate(rt.env))) ? okay : fail;
 		} else if ((m = Suite.matcher("list.fold .0/.1/.2 .3").apply(node)) != null) {
-			Fun<Env, Node> list0_ = sb.compile(m[0]);
-			Fun<Env, Node> value0_ = sb.compile(m[1]);
+			Clone_ list0_ = sb.compile(m[0]);
+			Clone_ value0_ = sb.compile(m[1]);
 			BindPredicate valuex_ = sb.compileBind(m[2]);
-			Fun<Env, Node> ht_ = sb.compile(m[3]);
+			Clone_ ht_ = sb.compile(m[3]);
 			return rt -> {
 				Node ht[] = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
 				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
@@ -332,12 +332,12 @@ public class SewingProverImpl implements SewingProver {
 				return okay;
 			};
 		} else if ((m = Suite.matcher("list.fold.clone .0/.1/.2 .3/.4/.5 .6").apply(node)) != null) {
-			Fun<Env, Node> list0_ = sb.compile(m[0]);
-			Fun<Env, Node> value0_ = sb.compile(m[1]);
+			Clone_ list0_ = sb.compile(m[0]);
+			Clone_ value0_ = sb.compile(m[1]);
 			BindPredicate valuex_ = sb.compileBind(m[2]);
 			BindPredicate elem_ = sb.compileBind(m[3]);
 			BindPredicate v0_ = sb.compileBind(m[4]);
-			Fun<Env, Node> vx_ = sb.compile(m[5]);
+			Clone_ vx_ = sb.compile(m[5]);
 			Trampoline tr1 = compile0(sb, m[6]);
 			return rt -> {
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
@@ -359,8 +359,8 @@ public class SewingProverImpl implements SewingProver {
 				return okay;
 			};
 		} else if ((m = Suite.matcher("list.query .0 .1").apply(node)) != null) {
-			Fun<Env, Node> l_ = sb.compile(m[0]);
-			Fun<Env, Node> ht_ = sb.compile(m[1]);
+			Clone_ l_ = sb.compile(m[0]);
+			Clone_ ht_ = sb.compile(m[1]);
 			return rt -> {
 				Node ht[] = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
 				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
@@ -372,7 +372,7 @@ public class SewingProverImpl implements SewingProver {
 				return okay;
 			};
 		} else if ((m = Suite.matcher("list.query.clone .0 .1 .2").apply(node)) != null) {
-			Fun<Env, Node> f = sb.compile(m[0]);
+			Clone_ f = sb.compile(m[0]);
 			BindPredicate p = sb.compileBind(m[1]);
 			Trampoline tr1 = compile0(sb, m[2]);
 			return rt -> {
@@ -390,7 +390,7 @@ public class SewingProverImpl implements SewingProver {
 			};
 		} else if ((m = Suite.matcher("member .0 .1").apply(node)) != null && TreeUtil.isList(m[0], TermOp.AND___)) {
 			List<BindPredicate> elems_ = Read.from(Tree.iter(m[0])).map(sb::compileBind).toList();
-			Fun<Env, Node> f = sb.compile(m[1]);
+			Clone_ f = sb.compile(m[1]);
 			return rt -> {
 				Iterator<BindPredicate> iter = elems_.iterator();
 				Trampoline alt[] = new Trampoline[1];
@@ -419,8 +419,8 @@ public class SewingProverImpl implements SewingProver {
 				return tr0;
 			};
 		} else if ((m = Suite.matcher("suspend .0 .1 .2").apply(node)) != null) {
-			Fun<Env, Node> f0 = sb.compile(m[0]);
-			Fun<Env, Node> f1 = sb.compile(m[1]);
+			Clone_ f0 = sb.compile(m[0]);
+			Clone_ f1 = sb.compile(m[1]);
 			Trampoline tr0 = compile0(sb, m[2]);
 
 			tr = rt -> {
@@ -448,7 +448,7 @@ public class SewingProverImpl implements SewingProver {
 					return fail;
 			};
 		} else if ((m = Suite.matcher("throw .0").apply(node)) != null) {
-			Fun<Env, Node> f = sb.compile(m[0]);
+			Clone_ f = sb.compile(m[0]);
 			tr = rt -> {
 				rt.handler.sink(new Cloner().clone(f.apply(rt.env)));
 				return okay;
@@ -491,7 +491,7 @@ public class SewingProverImpl implements SewingProver {
 			else
 				tr = callSystemPredicate(sb, name, Atom.NIL);
 		} else if (node instanceof Reference) {
-			Fun<Env, Node> f = sb.compile(node);
+			Clone_ f = sb.compile(node);
 			return rt -> compile0(passThru, f.apply(rt.env));
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).data;
@@ -502,7 +502,7 @@ public class SewingProverImpl implements SewingProver {
 		if (tr == null) {
 			Prototype prototype = Prototype.of(node);
 			if (rules.containsKey(prototype)) {
-				Fun<Env, Node> f = sb.compile(node);
+				Clone_ f = sb.compile(node);
 				Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					rt.query = f.apply(rt.env);
@@ -540,7 +540,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Trampoline callPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass) {
-		Fun<Env, Node> f = sb.compile(pass);
+		Clone_ f = sb.compile(pass);
 		return rt -> predicate.prove(rt.prover, f.apply(rt.env)) ? okay : fail;
 	}
 
