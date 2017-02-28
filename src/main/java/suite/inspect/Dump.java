@@ -56,17 +56,13 @@ public class Dump {
 	}
 
 	private void d(String prefix, Object object, Class<?> clazz) {
+		int id = System.identityHashCode(object);
 		sink.sink(prefix);
 		sink.sink(" =");
 
-		if (object == null) {
+		if (object == null)
 			sink.sink(" null\n");
-			return;
-		}
-
-		int id = System.identityHashCode(object);
-
-		if (dumpedIds.add(id))
+		else if (dumpedIds.add(id))
 			try {
 				if (clazz == String.class)
 					sink.sink(" \"" + object + "\"");
