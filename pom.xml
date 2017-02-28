@@ -47,16 +47,6 @@
       <version>LATEST</version>
     </dependency>
     <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-      <version>LATEST</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-util</artifactId>
-      <version>LATEST</version>
-    </dependency>
-    <dependency>
       <groupId>org.telegram</groupId>
       <artifactId>telegrambots</artifactId>
       <version>LATEST</version>
