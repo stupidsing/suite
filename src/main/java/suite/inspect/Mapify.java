@@ -94,38 +94,22 @@ public class Mapify {
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
 				Mapifier mapifier1 = getMapifier(componentType);
-				if (componentType.isPrimitive())
-					mapifier = new Mapifier(object -> {
-						Map<Object, Object> map = newMap();
-						int length = Array.getLength(object);
-						for (int i = 0; i < length; i++)
-							map.put(i, apply0(mapifier1.mapify, Array.get(object, i)));
-						return map;
-					}, object -> {
-						Map<?, ?> map = (Map<?, ?>) object;
-						Object objects = Array.newInstance(componentType, map.size());
-						int i = 0;
-						while (map.containsKey(i)) {
-							Array.set(objects, i, apply0(mapifier1.unmapify, map.get(i)));
-							i++;
-						}
-						return objects;
-					});
-				else
-					mapifier = new Mapifier(object -> {
-						Map<Object, Object> map = newMap();
-						Object objects[] = (Object[]) object;
-						for (int i = 0; i < objects.length; i++)
-							map.put(i, apply0(mapifier1.mapify, objects[i]));
-						return map;
-					}, object -> {
-						Map<?, ?> map = (Map<?, ?>) object;
-						Object objects[] = new Object[map.size()];
-						int i = 0;
-						while (map.containsKey(i))
-							objects[i] = apply0(mapifier1.unmapify, map.get(i++));
-						return objects;
-					});
+				mapifier = new Mapifier(object -> {
+					Map<Object, Object> map = newMap();
+					int length = Array.getLength(object);
+					for (int i = 0; i < length; i++)
+						map.put(i, apply0(mapifier1.mapify, Array.get(object, i)));
+					return map;
+				}, object -> {
+					Map<?, ?> map = (Map<?, ?>) object;
+					Object objects = Array.newInstance(componentType, map.size());
+					int i = 0;
+					while (map.containsKey(i)) {
+						Array.set(objects, i, apply0(mapifier1.unmapify, map.get(i)));
+						i++;
+					}
+					return objects;
+				});
 			} else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) // polymorphism
 				mapifier = new Mapifier(object -> {
 					Class<?> clazz1 = object.getClass();
