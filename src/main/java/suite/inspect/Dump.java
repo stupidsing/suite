@@ -66,86 +66,84 @@ public class Dump {
 
 		int id = System.identityHashCode(object);
 
-		if (!dumpedIds.add(id)) {
-			sink.sink(" <<recursed>>");
-			return;
-		}
+		if (dumpedIds.add(id))
+			try {
+				if (clazz == String.class)
+					sink.sink(" \"" + object + "\"");
 
-		try {
-			if (clazz == String.class)
-				sink.sink(" \"" + object + "\"");
+				if (!Collection.class.isAssignableFrom(clazz))
+					sink.sink(" " + object);
 
-			if (!Collection.class.isAssignableFrom(clazz))
-				sink.sink(" " + object);
+				sink.sink(" [" + clazz.getSimpleName() + "]\n");
 
-			sink.sink(" [" + clazz.getSimpleName() + "]\n");
+				// simple listings for simple classes
+				if (isSimpleType(clazz))
+					return;
 
-			// simple listings for simple classes
-			if (isSimpleType(clazz))
-				return;
+				for (Field field : clazz.getFields())
+					if (!Modifier.isStatic(field.getModifiers()))
+						try {
+							String name = field.getName();
+							Object o = field.get(object);
+							Class<?> type = field.getType();
+							if (isSimpleType(type))
+								d(prefix + "." + name, o, type);
+							else
+								d(prefix + "." + name, o);
+						} catch (Throwable ex) {
+							sink.sink(prefix + "." + field.getName());
+							sink.sink(" caught " + ex + "\n");
+						}
 
-			for (Field field : clazz.getFields())
-				if (!Modifier.isStatic(field.getModifiers()))
+				Set<String> displayedMethod = new HashSet<>();
+
+				for (Method method : clazz.getMethods()) {
+					String name = method.getName();
 					try {
-						String name = field.getName();
-						Object o = field.get(object);
-						Class<?> type = field.getType();
-						if (isSimpleType(type))
-							d(prefix + "." + name, o, type);
-						else
-							d(prefix + "." + name, o);
+						if (name.startsWith("get") //
+								&& method.getParameterTypes().length == 0 //
+								&& !displayedMethod.contains(name)) {
+							Object o = method.invoke(object);
+							if (!(o instanceof Class<?>))
+								d(prefix + "." + name + "()", o);
+
+							// do not display same method of different base
+							// classes
+							displayedMethod.add(name);
+						}
 					} catch (Throwable ex) {
-						sink.sink(prefix + "." + field.getName());
+						sink.sink(prefix + "." + name + "()");
 						sink.sink(" caught " + ex + "\n");
 					}
-
-			Set<String> displayedMethod = new HashSet<>();
-
-			for (Method method : clazz.getMethods()) {
-				String name = method.getName();
-				try {
-					if (name.startsWith("get") //
-							&& method.getParameterTypes().length == 0 //
-							&& !displayedMethod.contains(name)) {
-						Object o = method.invoke(object);
-						if (!(o instanceof Class<?>))
-							d(prefix + "." + name + "()", o);
-
-						// do not display same method of different base
-						// classes
-						displayedMethod.add(name);
-					}
-				} catch (Throwable ex) {
-					sink.sink(prefix + "." + name + "()");
-					sink.sink(" caught " + ex + "\n");
 				}
-			}
 
-			int count = 0;
+				int count = 0;
 
-			if (clazz.isArray()) {
-				Class<?> componentType = clazz.getComponentType();
-				if (componentType.isPrimitive())
-					for (int i = 0; i < Array.getLength(object); i++)
-						d(prefix + "[" + count++ + "]", Array.get(object, i));
-				else if (Object.class.isAssignableFrom(componentType))
-					for (Object o1 : (Object[]) object)
+				if (clazz.isArray()) {
+					Class<?> componentType = clazz.getComponentType();
+					if (componentType.isPrimitive())
+						for (int i = 0; i < Array.getLength(object); i++)
+							d(prefix + "[" + count++ + "]", Array.get(object, i));
+					else if (Object.class.isAssignableFrom(componentType))
+						for (Object o1 : (Object[]) object)
+							d(prefix + "[" + count++ + "]", o1);
+				}
+
+				if (Collection.class.isAssignableFrom(clazz))
+					for (Object o1 : (Collection<?>) object)
 						d(prefix + "[" + count++ + "]", o1);
+				else if (Map.class.isAssignableFrom(clazz))
+					for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet()) {
+						Object key = entry.getKey(), value = entry.getValue();
+						d(prefix + "[" + count + "].getKey()", key);
+						d(prefix + "[" + count + "].getValue()", value);
+						count++;
+					}
+			} finally {
+				dumpedIds.remove(id);
 			}
-
-			if (Collection.class.isAssignableFrom(clazz))
-				for (Object o1 : (Collection<?>) object)
-					d(prefix + "[" + count++ + "]", o1);
-			else if (Map.class.isAssignableFrom(clazz))
-				for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet()) {
-					Object key = entry.getKey(), value = entry.getValue();
-					d(prefix + "[" + count + "].getKey()", key);
-					d(prefix + "[" + count + "].getValue()", value);
-					count++;
-				}
-		} finally {
-			dumpedIds.remove(id);
-		}
+		else
+			sink.sink(" <<recursed>>");
 	}
 
 	/**
