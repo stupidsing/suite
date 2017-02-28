@@ -108,16 +108,15 @@ public class FunExpression {
 	}
 
 	public class DeclareParameterFunExpr extends FunExpr {
+		public FunExpr do_;
 	}
 
 	public class Declare1ParameterFunExpr extends DeclareParameterFunExpr {
 		public PlaceholderFunExpr parameter;
-		public FunExpr do_;
 	}
 
 	public class Declare2ParameterFunExpr extends DeclareParameterFunExpr {
 		public PlaceholderFunExpr p0, p1;
-		public FunExpr do_;
 	}
 
 	public class DeclareLocalFunExpr extends FunExpr {
