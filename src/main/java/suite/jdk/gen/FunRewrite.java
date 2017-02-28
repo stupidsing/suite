@@ -117,7 +117,7 @@ public class FunRewrite extends FunFactory {
 		} else if (e instanceof ObjectFunExpr) {
 			ObjectFunExpr expr = (ObjectFunExpr) e;
 			String fieldName = "f" + Util.temp();
-			Type type = Type.getType(expr.clazz);
+			Type type = expr.type;
 			fieldTypeValues.put(fieldName, Pair.of(type, expr.object));
 			return rewrite(this_().field(fieldName, type));
 		} else if (e instanceof PlaceholderFunExpr)

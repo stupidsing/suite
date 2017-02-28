@@ -168,7 +168,7 @@ public class FunExpression {
 	}
 
 	public class ObjectFunExpr extends FunExpr {
-		public Class<?> clazz;
+		public Type type;
 		public Object object;
 	}
 

@@ -158,8 +158,10 @@ public class FunFactory {
 	}
 
 	public FunExpr object_(Object object, Class<?> clazz) {
+		Type type = Type.getType(clazz);
+
 		ObjectFunExpr expr = fe.new ObjectFunExpr();
-		expr.clazz = clazz;
+		expr.type = type;
 		expr.object = object;
 		return expr;
 	}
