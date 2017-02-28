@@ -1,7 +1,5 @@
 package suite.jdk.gen;
 
-import java.util.Map.Entry;
-
 import org.apache.bcel.generic.Type;
 
 import suite.inspect.Inspect;
@@ -58,10 +56,11 @@ public class FunExpand extends FunFactory {
 			return expand(replace(expr.do_, expr.var, expr.value), depth);
 		} else if (e instanceof InvokeFunExpr) {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
-			LambdaInstance<?> lambda = expr.lambda;
-			FunExpr fe = lambda.lambdaImplementation.expr;
-			for (Entry<String, Object> entry : lambda.fieldValues.entrySet())
-				fe = replaceInject(fe, entry.getKey(), object(entry.getValue()));
+			LambdaInstance<?> l_inst = expr.lambda;
+			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
+			FunExpr fe = l_impl.expr;
+			for (String fieldName : l_impl.fieldTypes.keySet())
+				fe = replaceInject(fe, fieldName, object(l_inst.fieldValues.get(fieldName), l_impl.fieldTypes.get(fieldName)));
 			return expand(fe.apply(expr.parameters.toArray(new FunExpr[0])), depth - 1);
 		} else
 			return null;
