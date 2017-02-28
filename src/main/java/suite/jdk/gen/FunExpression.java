@@ -56,7 +56,12 @@ public class FunExpression {
 		}
 
 		public FunExpr invoke(String methodName, FunExpr... parameters) {
+			return invoke(null, methodName, parameters);
+		}
+
+		public FunExpr invoke(Class<?> clazz, String methodName, FunExpr... parameters) {
 			InvokeMethodFunExpr expr = new InvokeMethodFunExpr();
+			expr.clazz = clazz;
 			expr.methodName = methodName;
 			expr.object = this;
 			expr.parameters = Arrays.asList(parameters);
