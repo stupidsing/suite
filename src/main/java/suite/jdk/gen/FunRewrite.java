@@ -24,13 +24,14 @@ import suite.jdk.gen.FunExpression.InjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
+import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.Util;
 
 public class FunRewrite extends FunFactory {
 
-	private static Inspect inspect = new Inspect();
+	private static Inspect inspect = Singleton.get().getInspect();
 
 	public final FunExpr expr;
 	public final Map<String, Pair<Type, Object>> fieldTypeValues = new HashMap<>();

@@ -12,11 +12,12 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.InjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
+import suite.node.util.Singleton;
 import suite.util.Util;
 
 public class FunExpand extends FunFactory {
 
-	private static Inspect inspect = new Inspect();
+	private static Inspect inspect = Singleton.get().getInspect();
 
 	public FunExpr expand(FunExpr expr0, int depth) {
 		if (0 < depth)
