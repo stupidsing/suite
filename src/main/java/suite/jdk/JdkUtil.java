@@ -12,8 +12,6 @@ import javax.tools.ToolProvider;
 import suite.Constants;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
-import suite.util.Rethrow;
-import suite.util.Util;
 
 public class JdkUtil {
 
@@ -23,31 +21,6 @@ public class JdkUtil {
 	public JdkUtil(Path srcDir, Path binDir) {
 		this.srcDir = srcDir;
 		this.binDir = binDir;
-	}
-
-	public static Class<?> getClassByName(String className) {
-		return Rethrow.reflectiveOperationException(() -> {
-			if (Util.stringEquals(className, "byte"))
-				return byte.class;
-			else if (Util.stringEquals(className, "char"))
-				return char.class;
-			else if (Util.stringEquals(className, "boolean"))
-				return boolean.class;
-			else if (Util.stringEquals(className, "double"))
-				return double.class;
-			else if (Util.stringEquals(className, "float"))
-				return float.class;
-			else if (Util.stringEquals(className, "int"))
-				return int.class;
-			else if (Util.stringEquals(className, "long"))
-				return long.class;
-			else if (Util.stringEquals(className, "short"))
-				return short.class;
-			else if (Util.stringEquals(className, "void"))
-				return void.class;
-			else
-				return Class.forName(className);
-		});
 	}
 
 	protected Path compile(String canonicalName, String java) throws IOException {

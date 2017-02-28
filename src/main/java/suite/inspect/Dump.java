@@ -4,14 +4,13 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import suite.jdk.gen.Type_;
 import suite.util.FunUtil.Sink;
 
 public class Dump {
@@ -73,7 +72,7 @@ public class Dump {
 				sink.sink(" [" + clazz.getSimpleName() + "]\n");
 
 				// simple listings for simple classes
-				if (isSimpleType(clazz))
+				if (Type_.isSimple(clazz))
 					return;
 
 				for (Field field : clazz.getFields())
@@ -82,7 +81,7 @@ public class Dump {
 							String name = field.getName();
 							Object o = field.get(object);
 							Class<?> type = field.getType();
-							if (isSimpleType(type))
+							if (Type_.isSimple(type))
 								d(prefix + "." + name, o, type);
 							else
 								d(prefix + "." + name, o);
@@ -140,17 +139,6 @@ public class Dump {
 			}
 		else
 			sink.sink(" <<recursed>>");
-	}
-
-	/**
-	 * Types that do not require per-member dump.
-	 */
-	private static boolean isSimpleType(Class<?> clazz) {
-		return clazz.isPrimitive() //
-				|| clazz == Class.class //
-				|| clazz == Date.class //
-				|| clazz == String.class //
-				|| clazz == Timestamp.class;
 	}
 
 }

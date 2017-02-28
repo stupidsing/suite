@@ -4,11 +4,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import suite.jdk.gen.Type_;
 import suite.node.util.Mutable;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
@@ -27,23 +30,36 @@ public class Inspect {
 
 	public String toString(Object object) {
 		StringBuilder sb = new StringBuilder();
+		Set<Integer> ids = new HashSet<>();
 		Mutable<Sink<Object>> sink = Mutable.nil();
+
 		sink.set(o -> {
+			int id = System.identityHashCode(o);
 			Class<?> clazz;
+
 			if (o == null)
 				sb.append("null");
 			else if ((clazz = o.getClass()).isPrimitive())
 				sb.append(o.toString());
-			else {
-				sb.append(clazz.getSimpleName());
-				sb.append("{");
-				for (Field field : fields(clazz)) {
-					sb.append(field.getName() + "=");
-					sink.get().sink(Rethrow.reflectiveOperationException(() -> field.get(o)));
-					sb.append(",");
+			else if (ids.add(id))
+				try {
+					sb.append(clazz.getSimpleName());
+					sb.append("{");
+					for (Field field : fields(clazz)) {
+						sb.append(field.getName() + "=");
+						Object value = Rethrow.reflectiveOperationException(() -> field.get(o));
+						if (Type_.isSimple(field.getType()))
+							sb.append(value);
+						else
+							sink.get().sink(value);
+						sb.append(",");
+					}
+					sb.append("}");
+				} finally {
+					ids.remove(id);
 				}
-				sb.append("}");
-			}
+			else
+				sb.append("<recurse>");
 		});
 
 		sink.get().sink(object);
