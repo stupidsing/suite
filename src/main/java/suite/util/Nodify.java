@@ -113,22 +113,16 @@ public class Nodify {
 						node = Tree.of(TermOp.OR____, apply0(nodifier1, Array.get(object, i)), node);
 					return node;
 				};
-				if (componentType.isPrimitive())
-					nodifier = new Nodifier(forward, node -> {
-						List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)) //
-								.map(n -> apply0(nodifier1, n)) //
-								.toList();
-						int size = list.size();
-						Object objects = Array.newInstance(componentType, size);
-						for (int i = 0; i < size; i++)
-							Array.set(objects, i, list.get(i));
-						return objects;
-					});
-				else
-					nodifier = new Nodifier(forward,
-							node -> Read.from(Tree.iter(node, TermOp.OR____)) //
-									.map(n -> apply0(nodifier1, n)) //
-									.toArray(Object.class));
+				nodifier = new Nodifier(forward, node -> {
+					List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)) //
+							.map(n -> apply0(nodifier1, n)) //
+							.toList();
+					int size = list.size();
+					Object objects = Array.newInstance(componentType, size);
+					for (int i = 0; i < size; i++)
+						Array.set(objects, i, list.get(i));
+					return objects;
+				});
 			} else if (clazz.isInterface()) // polymorphism
 				nodifier = new Nodifier(object -> {
 					Class<?> clazz1 = object.getClass();
@@ -149,7 +143,13 @@ public class Nodify {
 						throw new RuntimeException("Cannot instantiate enum from interfaces");
 				});
 			else {
-				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
+				List<FieldInfo> fieldInfos = Read.from(inspect.fields(clazz)) //
+						.map(field -> {
+							Type type1 = field.getGenericType();
+							return new FieldInfo(field, field.getName(), getNodifier(type1));
+						}) //
+						.toList();
+
 				List<Pair<Atom, FieldInfo>> pairs = Read.from(fieldInfos).map(f -> Pair.of(Atom.of(f.name), f)).toList();
 				nodifier = new Nodifier(object -> Rethrow.reflectiveOperationException(() -> {
 					Dict dict = new Dict();
@@ -229,15 +229,6 @@ public class Nodify {
 		@SuppressWarnings("unchecked")
 		T t = (T) object;
 		return t;
-	}
-
-	private List<FieldInfo> getFieldInfos(Class<?> clazz) {
-		return Read.from(inspect.fields(clazz)) //
-				.map(field -> {
-					Type type = field.getGenericType();
-					return new FieldInfo(field, field.getName(), getNodifier(type));
-				}) //
-				.toList();
 	}
 
 	private Node apply0(Nodifier nodifier, Object object) {

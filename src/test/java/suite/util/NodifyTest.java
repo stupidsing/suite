@@ -22,10 +22,12 @@ public class NodifyTest {
 
 	public static class Container {
 		private List<I> is;
+		private I array[] = new I[] { new A(), new B(), };
 	}
 
 	public static class A implements I {
 		private int i = 123;
+		private int ints[] = new int[] { 0, 1, 2, };
 	}
 
 	public static class B implements I {
@@ -65,7 +67,11 @@ public class NodifyTest {
 		assertEquals(A.class, object1.is.get(0).getClass());
 		assertEquals(B.class, object1.is.get(1).getClass());
 		assertEquals(123, ((A) object1.is.get(0)).i);
+		assertEquals(2, ((A) object1.is.get(0)).ints[2]);
 		assertEquals("test", ((B) object1.is.get(1)).s);
+		assertEquals(123, ((A) object1.array[0]).i);
+		assertEquals(2, ((A) object1.array[0]).ints[2]);
+		assertEquals("test", ((B) object1.array[1]).s);
 	}
 
 }
