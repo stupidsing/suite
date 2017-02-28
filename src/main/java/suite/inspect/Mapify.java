@@ -148,7 +148,13 @@ public class Mapify {
 						return object;
 				});
 			else {
-				List<FieldInfo> fis = getFieldInfos(clazz);
+				List<FieldInfo> fis = Read.from(inspect.fields(clazz)) //
+						.map(field -> {
+							Type type1 = field.getGenericType();
+							return new FieldInfo(field, field.getName(), getMapifier(type1));
+						}) //
+						.toList();
+
 				mapifier = new Mapifier(object -> Rethrow.reflectiveOperationException(() -> {
 					Map<Object, Object> map = newMap();
 					for (FieldInfo fi : fis)
@@ -229,15 +235,6 @@ public class Mapify {
 		@SuppressWarnings("unchecked")
 		T t = (T) object;
 		return t;
-	}
-
-	private List<FieldInfo> getFieldInfos(Class<?> clazz) {
-		return Read.from(inspect.fields(clazz)) //
-				.map(field -> {
-					Type type = field.getGenericType();
-					return new FieldInfo(field, field.getName(), getMapifier(type));
-				}) //
-				.toList();
 	}
 
 	private Object apply0(Fun<Object, Object> fun, Object object) {
