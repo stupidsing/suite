@@ -7,9 +7,13 @@ import java.util.function.ToIntFunction;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import suite.inspect.Inspect;
+import suite.node.util.Singleton;
 import suite.util.Util;
 
 public class FunExpression {
+
+	private static Inspect inspect = Singleton.get().getInspect();
 
 	public abstract class FunExpr {
 		public FunExpr apply(FunExpr... parameters) {
@@ -66,6 +70,10 @@ public class FunExpression {
 			expr.object = this;
 			expr.parameters = Arrays.asList(parameters);
 			return expr;
+		}
+
+		public String toString() {
+			return inspect.toString(this);
 		}
 	}
 
