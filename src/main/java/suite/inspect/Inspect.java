@@ -9,8 +9,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import suite.node.util.Mutable;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -22,6 +24,31 @@ import suite.util.Util;
 public class Inspect {
 
 	private Map<Class<?>, List<Field>> fieldsByClass = new ConcurrentHashMap<>();
+
+	public String toString(Object object) {
+		StringBuilder sb = new StringBuilder();
+		Mutable<Sink<Object>> sink = Mutable.nil();
+		sink.set(o -> {
+			Class<?> clazz;
+			if (o == null)
+				sb.append("null");
+			else if ((clazz = o.getClass()).isPrimitive())
+				sb.append(o.toString());
+			else {
+				sb.append(clazz.getSimpleName());
+				sb.append("{");
+				for (Field field : fields(clazz)) {
+					sb.append(field.getName() + "=");
+					sink.get().sink(Rethrow.reflectiveOperationException(() -> field.get(o)));
+					sb.append(",");
+				}
+				sb.append("}");
+			}
+		});
+
+		sink.get().sink(object);
+		return sb.toString();
+	}
 
 	/**
 	 * @return true if both input value objects are of the same class and having
