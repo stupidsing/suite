@@ -2,7 +2,6 @@ package suite.jdk.gen;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.bcel.generic.Type;
@@ -94,18 +93,17 @@ public class FunTypeInformation {
 	public Method invokeMethodOf(InvokeMethodFunExpr expr) {
 		Type array[] = Read.from(expr.parameters) //
 				.map(this::typeOf) //
-				.toList() //
-				.toArray(new Type[0]);
+				.toArray(Type.class);
 
-		@SuppressWarnings("unchecked")
-		List<Class<?>> parameterTypes = (List<Class<?>>) (List<?>) Read.from(array) //
-				.map(Type_::classOf) //
-				.toList();
+		@SuppressWarnings("rawtypes")
+		Class<?> parameterTypes[] = Read.from(array) //
+				.<Class> map(Type_::classOf) //
+				.toArray(Class.class);
 
 		return Rethrow.reflectiveOperationException(() -> {
 			Class<?> clazz0 = expr.clazz;
 			Class<?> clazz1 = clazz0 != null ? clazz0 : classOf(expr.object);
-			return clazz1.getMethod(expr.methodName, parameterTypes.toArray(new Class<?>[0]));
+			return clazz1.getMethod(expr.methodName, parameterTypes);
 		});
 	}
 

@@ -1,6 +1,7 @@
 package suite.streamlet;
 
 import java.io.Closeable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -357,6 +358,13 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 				return 0 < count-- ? next(pair) : false;
 			}
 		});
+	}
+
+	public Pair<K, V>[] toArray() {
+		List<Pair<K, V>> list = toList();
+		@SuppressWarnings("unchecked")
+		Pair<K, V> array[] = (Pair[]) Array.newInstance(Pair.class, list.size());
+		return list.toArray(array);
 	}
 
 	public List<Pair<K, V>> toList() {

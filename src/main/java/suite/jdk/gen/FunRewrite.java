@@ -56,7 +56,7 @@ public class FunRewrite extends FunFactory {
 		if (e instanceof ApplyFunExpr) {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
 			FunExpr object = rewrite(expr.object);
-			FunExpr parameters[] = Read.from(expr.parameters).map(this::rewrite).toList().toArray(new FunExpr[0]);
+			FunExpr parameters[] = Read.from(expr.parameters).map(this::rewrite).toArray(FunExpr.class);
 			Method method = fti.methodOf(object);
 			return object.invoke(method.getName(), parameters);
 		} else if (e instanceof CastFunExpr) {

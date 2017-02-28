@@ -193,6 +193,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return streamlet2(() -> spawn().take(n));
 	}
 
+	public Pair<K, V>[] toArray() {
+		return spawn().toArray();
+	}
+
 	public List<Pair<K, V>> toList() {
 		return spawn().toList();
 	}

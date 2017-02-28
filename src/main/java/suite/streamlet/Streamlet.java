@@ -194,6 +194,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().take(n));
 	}
 
+	public T[] toArray(Class<T> clazz) {
+		return spawn().toArray(clazz);
+	}
+
 	public List<T> toList() {
 		return spawn().toList();
 	}

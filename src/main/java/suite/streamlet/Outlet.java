@@ -1,6 +1,7 @@
 package suite.streamlet;
 
 import java.io.Closeable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -296,6 +297,13 @@ public class Outlet<T> implements Iterable<T> {
 				return 0 < count-- ? next() : null;
 			}
 		});
+	}
+
+	public T[] toArray(Class<T> clazz) {
+		List<T> list = toList();
+		@SuppressWarnings("unchecked")
+		T array[] = (T[]) Array.newInstance(clazz, list.size());
+		return list.toArray(array);
 	}
 
 	public List<T> toList() {

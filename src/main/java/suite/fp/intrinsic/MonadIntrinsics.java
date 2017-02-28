@@ -38,8 +38,7 @@ public class MonadIntrinsics {
 		Fun<Node, Node> yawn = callback::yawn;
 		String array[] = ThunkUtil.yawnList(yawn, inputs.get(0), false) //
 				.map(node -> ThunkUtil.yawnString(yawn, node)) //
-				.toList() //
-				.toArray(new String[0]);
+				.toArray(String.class);
 
 		Node in = inputs.get(1);
 

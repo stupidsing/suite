@@ -32,8 +32,7 @@ public class SuiteIntrinsics {
 		String s = Data.get(inputs.get(0)).toString();
 		Node array[] = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true) //
 				.map(Data::<Node> get) //
-				.toList() //
-				.toArray(new Node[0]);
+				.toArray(Node.class);
 		return new Data<>(Suite.substitute(s, array));
 	};
 

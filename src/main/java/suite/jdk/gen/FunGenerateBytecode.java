@@ -115,10 +115,7 @@ public class FunGenerateBytecode {
 			r.list.add(factory.createInstanceOf(expr.instanceType));
 		} else if (e instanceof InvokeMethodFunExpr) {
 			InvokeMethodFunExpr expr = (InvokeMethodFunExpr) e;
-			Type array[] = Read.from(expr.parameters) //
-					.map(fti::typeOf) //
-					.toList() //
-					.toArray(new Type[0]);
+			Type array[] = Read.from(expr.parameters).map(fti::typeOf).toArray(Type.class);
 
 			Class<?> clazz = expr.clazz;
 			String className = clazz != null ? clazz.getName() : ((ObjectType) fti.typeOf(expr.object)).getClassName();

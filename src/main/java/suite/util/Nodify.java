@@ -115,22 +115,20 @@ public class Nodify {
 				};
 				if (componentType.isPrimitive())
 					nodifier = new Nodifier(forward, node -> {
-						List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)).map(n -> apply0(nodifier1, n)).toList();
-						if (componentType.isPrimitive()) {
-							int size = list.size();
-							Object objects = Array.newInstance(componentType, size);
-							for (int i = 0; i < size; i++)
-								Array.set(objects, i, list.get(i));
-							return objects;
-						} else
-							return list.toArray();
+						List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)) //
+								.map(n -> apply0(nodifier1, n)) //
+								.toList();
+						int size = list.size();
+						Object objects = Array.newInstance(componentType, size);
+						for (int i = 0; i < size; i++)
+							Array.set(objects, i, list.get(i));
+						return objects;
 					});
 				else
 					nodifier = new Nodifier(forward,
 							node -> Read.from(Tree.iter(node, TermOp.OR____)) //
 									.map(n -> apply0(nodifier1, n)) //
-									.toList() //
-									.toArray());
+									.toArray(Object.class));
 			} else if (clazz.isInterface()) // polymorphism
 				nodifier = new Nodifier(object -> {
 					Class<?> clazz1 = object.getClass();
