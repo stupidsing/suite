@@ -107,7 +107,7 @@ public class FunRewrite extends FunFactory {
 			LambdaInterface<?> l_iface = l_impl.lambdaInterface;
 			FunExpr object = object_(l_impl.newFun(l_inst.fieldValues), l_iface.interfaceClass);
 
-			return rewrite(object.invoke(l_iface.interfaceClass, l_iface.methodName, expr.parameters.toArray(new FunExpr[0])));
+			return rewrite(object.invoke(l_iface.interfaceClass, l_iface.methodName, expr.parameters));
 		} else if (e instanceof InjectFunExpr) {
 			InjectFunExpr expr = (InjectFunExpr) e;
 			Type type = fieldTypes.get(expr.field);
