@@ -4,6 +4,7 @@ import org.apache.bcel.generic.Type;
 
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
+import suite.jdk.gen.FunExpression.CastFunExpr;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
 import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
@@ -40,12 +41,13 @@ public class FunExpand extends FunFactory {
 				return null;
 		} else if (e instanceof ApplyFunExpr) {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
-			FunExpr object = expr.object;
-			if (object instanceof Declare1ParameterFunExpr) {
-				Declare1ParameterFunExpr object_ = (Declare1ParameterFunExpr) object;
+			FunExpr object0 = expr.object;
+			FunExpr object1 = object0 instanceof CastFunExpr ? ((CastFunExpr) object0).expr : object0;
+			if (object1 instanceof Declare1ParameterFunExpr) {
+				Declare1ParameterFunExpr object_ = (Declare1ParameterFunExpr) object1;
 				return expand(replace(object_.do_, object_.parameter, expr.parameters.get(0)), depth);
-			} else if (object instanceof Declare2ParameterFunExpr) {
-				Declare2ParameterFunExpr object_ = (Declare2ParameterFunExpr) object;
+			} else if (object1 instanceof Declare2ParameterFunExpr) {
+				Declare2ParameterFunExpr object_ = (Declare2ParameterFunExpr) object1;
 				FunExpr do0 = object_.do_;
 				FunExpr do1 = replace(do0, object_.p0, expr.parameters.get(0));
 				FunExpr do2 = replace(do1, object_.p1, expr.parameters.get(1));
