@@ -17,9 +17,13 @@ public class FunExpression {
 
 	public abstract class FunExpr {
 		public FunExpr apply(FunExpr... parameters) {
+			return apply(Arrays.asList(parameters));
+		}
+
+		public FunExpr apply(List<FunExpr> list) {
 			ApplyFunExpr expr = new ApplyFunExpr();
 			expr.object = this;
-			expr.parameters = Arrays.asList(parameters);
+			expr.parameters = list;
 			return expr;
 		}
 

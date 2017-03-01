@@ -59,10 +59,11 @@ public class FunExpand extends FunFactory {
 			InvokeFunExpr expr = (InvokeFunExpr) e;
 			LambdaInstance<?> l_inst = expr.lambda;
 			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
+			LambdaInterface<?> l_iface = l_impl.lambdaInterface;
 			FunExpr fe = l_impl.expr;
 			for (String fieldName : l_impl.fieldTypes.keySet())
 				fe = replaceInject(fe, fieldName, object(l_inst.fieldValues.get(fieldName), l_impl.fieldTypes.get(fieldName)));
-			return expand(fe.apply(expr.parameters.toArray(new FunExpr[0])), depth - 1);
+			return expand(fe.cast(l_iface.interfaceClass).apply(expr.parameters), depth - 1);
 		} else
 			return null;
 	}
