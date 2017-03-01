@@ -53,6 +53,10 @@ public class FunGenerateBytecode {
 		this.factory = new InstructionFactory(cpg);
 	}
 
+	/**
+	 * Generate bytecode suitable for method. Caller to dispose the returned
+	 * InstructionList object.
+	 */
 	public InstructionList visit(FunExpr e, Type returnType) {
 		Record r = new Record();
 		visit0(r, e);
