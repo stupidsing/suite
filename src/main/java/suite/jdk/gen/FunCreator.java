@@ -102,10 +102,10 @@ public class FunCreator<I> extends FunFactory {
 
 		{
 			InstructionList il = new FunGenerateBytecode(fr.fti, cp).visit(expr2, returnType);
-			Type types[] = parameterTypes.toArray(new Type[0]);
+			Type paramTypes[] = parameterTypes.toArray(new Type[0]);
 
 			try {
-				MethodGen mg = new MethodGen(ACC_PUBLIC, returnType, types, null, methodName, className, il, cp);
+				MethodGen mg = new MethodGen(ACC_PUBLIC, returnType, paramTypes, null, methodName, className, il, cp);
 				mg.setMaxStack();
 				mg.setMaxLocals();
 				m1 = mg.getMethod();
