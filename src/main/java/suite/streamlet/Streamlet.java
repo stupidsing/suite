@@ -112,6 +112,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().fold(init, fun);
 	}
 
+	public <U, V, W> W forkJoin(Fun<Streamlet<T>, U> fork0, Fun<Streamlet<T>, V> fork1, BiFunction<U, V, W> join) {
+		return join.apply(fork0.apply(this), fork1.apply(this));
+	}
+
 	public <K, V> Streamlet2<K, List<T>> groupBy(Fun<T, K> keyFun) {
 		return new Streamlet2<>(() -> spawn().groupBy(keyFun));
 	}
