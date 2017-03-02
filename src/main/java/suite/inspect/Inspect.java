@@ -1,5 +1,6 @@
 package suite.inspect;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 import suite.jdk.gen.Type_;
 import suite.node.util.Mutable;
@@ -33,28 +35,41 @@ public class Inspect {
 		Set<Integer> ids = new HashSet<>();
 		Mutable<Sink<Object>> sink = Mutable.nil();
 
+		BiConsumer<Class<?>, Object> append = (clazz, object_) -> {
+			if (object_ == null)
+				sb.append("null");
+			else if (Type_.isSimple(clazz))
+				sb.append(object_);
+			else
+				sink.get().sink(object_);
+		};
+
 		sink.set(o -> {
 			int id = System.identityHashCode(o);
-			Class<?> clazz;
+			Class<?> clazz = o.getClass();
 
-			if (o == null)
-				sb.append("null");
-			else if ((clazz = o.getClass()).isPrimitive())
-				sb.append(o.toString());
-			else if (ids.add(id))
+			if (ids.add(id))
 				try {
-					sb.append(clazz.getSimpleName());
-					sb.append("{");
-					for (Field field : fields(clazz)) {
-						sb.append(field.getName() + "=");
-						Object value = Rethrow.reflectiveOperationException(() -> field.get(o));
-						if (Type_.isSimple(field.getType()))
-							sb.append(value);
-						else
-							sink.get().sink(value);
-						sb.append(",");
+					if (clazz.isArray()) {
+						Class<?> type1 = clazz.getComponentType();
+						int length = Array.getLength(o);
+						sb.append("[");
+						for (int i = 0; i < length; i++) {
+							append.accept(type1, Array.get(o, i));
+							sb.append(",");
+						}
+						sb.append("]");
+					} else {
+						sb.append(clazz.getSimpleName());
+						sb.append("{");
+						for (Field field : fields(clazz)) {
+							sb.append(field.getName() + "=");
+							Object value = Rethrow.reflectiveOperationException(() -> field.get(o));
+							append.accept(field.getType(), value);
+							sb.append(",");
+						}
+						sb.append("}");
 					}
-					sb.append("}");
 				} finally {
 					ids.remove(id);
 				}
@@ -62,7 +77,7 @@ public class Inspect {
 				sb.append("<recurse>");
 		});
 
-		sink.get().sink(object);
+		append.accept(Util.clazz(object), object);
 		return sb.toString();
 	}
 
