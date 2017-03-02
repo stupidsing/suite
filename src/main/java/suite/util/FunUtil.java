@@ -133,8 +133,8 @@ public class FunUtil {
 	public static <T0, T1> Source<T1> map(Fun<T0, T1> fun0, Source<T0> source) {
 		Fun<T0, T1> fun1 = Rethrow.fun(fun0);
 		return () -> {
-			T0 e = source.source();
-			return e != null ? fun1.apply(e) : null;
+			T0 t0 = source.source();
+			return t0 != null ? fun1.apply(t0) : null;
 		};
 	}
 
@@ -142,10 +142,10 @@ public class FunUtil {
 		Fun<T, K> kf1 = Rethrow.fun(kf0);
 		Fun<T, V> vf1 = Rethrow.fun(vf0);
 		return pair -> {
-			T e = source.source();
-			if (e != null) {
-				pair.t0 = kf1.apply(e);
-				pair.t1 = vf1.apply(e);
+			T t = source.source();
+			if (t != null) {
+				pair.t0 = kf1.apply(t);
+				pair.t1 = vf1.apply(t);
 				return true;
 			} else
 				return false;
