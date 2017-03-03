@@ -60,7 +60,7 @@ public class Inspect {
 		Sink<Object> app = object_ -> append.accept(Util.clazz(object_), object_);
 
 		sink.set(object_ -> {
-			Extract_ inspect_ = new Extract_(object_);
+			Extract inspect_ = new Extract(object_);
 			String prefix = inspect_.prefix;
 			Class<?> keyClass = inspect_.keyClass;
 			ExtractField iter = inspect_.children;
@@ -90,12 +90,12 @@ public class Inspect {
 		return sb.toString();
 	}
 
-	private class Extract_ {
+	private class Extract {
 		private String prefix;
 		private Class<?> keyClass;
 		private ExtractField children;
 
-		private Extract_(Object object) {
+		private Extract(Object object) {
 			Class<?> clazz = object.getClass();
 
 			if (clazz.isArray()) {
@@ -103,7 +103,7 @@ public class Inspect {
 
 				prefix = "[";
 				keyClass = clazz.getComponentType();
-				children = new InspectCollection() {
+				children = new ExtractCollection() {
 					private int i = -1;
 
 					public boolean next() {
@@ -132,7 +132,7 @@ public class Inspect {
 
 				prefix = "[";
 				keyClass = elementClass_;
-				children = new InspectCollection() {
+				children = new ExtractCollection() {
 					private Object element;
 
 					public boolean next() {
@@ -227,7 +227,7 @@ public class Inspect {
 		}
 	}
 
-	private abstract class InspectCollection implements ExtractField {
+	private abstract class ExtractCollection implements ExtractField {
 		public Class<?> getValueClass() {
 			return null;
 		}
