@@ -117,11 +117,15 @@ public class Inspect {
 			} else if (Collection.class.isAssignableFrom(clazz)) {
 				Class<?> elementClass_ = Object.class;
 				ParameterizedType pt;
+				Type typeArgs[];
+				Type typeArg;
 
 				for (Type genericInterface : clazz.getGenericInterfaces())
 					if (genericInterface instanceof ParameterizedType //
-							&& (pt = (ParameterizedType) genericInterface).getRawType() == Collection.class)
-						elementClass_ = (Class<?>) pt.getActualTypeArguments()[0];
+							&& (pt = (ParameterizedType) genericInterface).getRawType() == Collection.class //
+							&& 1 < (typeArgs = pt.getActualTypeArguments()).length //
+							&& (typeArg = typeArgs[0]) instanceof Class)
+						elementClass_ = (Class<?>) typeArg;
 
 				@SuppressWarnings("unchecked")
 				Iterator<Object> iter = ((Collection<Object>) object).iterator();
@@ -149,16 +153,17 @@ public class Inspect {
 				Class<?> valueClass_ = Object.class;
 				ParameterizedType pt;
 				Type typeArgs[];
+				Type typeArg0, typeArg1;
 
 				for (Type genericInterface : clazz.getGenericInterfaces())
 					if (genericInterface instanceof ParameterizedType //
 							&& (pt = (ParameterizedType) genericInterface).getRawType() == Map.class //
 							&& 1 < (typeArgs = pt.getActualTypeArguments()).length //
-							&& typeArgs[0] instanceof Class //
-							&& typeArgs[1] instanceof Class) {
+							&& (typeArg0 = typeArgs[0]) instanceof Class //
+							&& (typeArg1 = typeArgs[1]) instanceof Class) {
 						typeArgs = pt.getActualTypeArguments();
-						keyClass = (Class<?>) typeArgs[0];
-						valueClass_ = (Class<?>) typeArgs[1];
+						keyClass = (Class<?>) typeArg0;
+						valueClass_ = (Class<?>) typeArg1;
 					}
 
 				@SuppressWarnings("unchecked")
