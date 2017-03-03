@@ -95,11 +95,11 @@ public class Inspect {
 		private Class<?> keyClass;
 		private ExtractField children;
 
-		private Extract_(Object o) {
-			Class<?> clazz = o.getClass();
+		private Extract_(Object object) {
+			Class<?> clazz = object.getClass();
 
 			if (clazz.isArray()) {
-				int length = Array.getLength(o);
+				int length = Array.getLength(object);
 
 				prefix = "[";
 				keyClass = clazz.getComponentType();
@@ -111,7 +111,7 @@ public class Inspect {
 					}
 
 					public Object getKey() {
-						return Array.get(o, i);
+						return Array.get(object, i);
 					}
 				};
 			} else if (Collection.class.isAssignableFrom(clazz)) {
@@ -124,7 +124,7 @@ public class Inspect {
 						elementClass_ = (Class<?>) pt.getActualTypeArguments()[0];
 
 				@SuppressWarnings("unchecked")
-				Iterator<Object> iter = ((Collection<Object>) o).iterator();
+				Iterator<Object> iter = ((Collection<Object>) object).iterator();
 
 				prefix = "[";
 				keyClass = elementClass_;
@@ -162,7 +162,7 @@ public class Inspect {
 					}
 
 				@SuppressWarnings("unchecked")
-				Iterator<Entry<Object, Object>> iter = ((Map<Object, Object>) o).entrySet().iterator();
+				Iterator<Entry<Object, Object>> iter = ((Map<Object, Object>) object).entrySet().iterator();
 				Class<?> valueClass = valueClass_;
 
 				prefix = "{";
@@ -215,7 +215,7 @@ public class Inspect {
 					}
 
 					public Object getValue() {
-						return Rethrow.reflectiveOperationException(() -> field.get(o));
+						return Rethrow.reflectiveOperationException(() -> field.get(object));
 					}
 				};
 			}
