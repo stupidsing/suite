@@ -3,11 +3,15 @@ package suite.inspect;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,28 +48,33 @@ public class Inspect {
 				sink.get().sink(object_);
 		};
 
+		Sink<Object> app = object_ -> append.accept(Util.clazz(object_), object_);
+
 		sink.set(o -> {
 			int id = System.identityHashCode(o);
-			Class<?> clazz = o.getClass();
 
 			if (ids.add(id))
 				try {
-					if (clazz.isArray()) {
-						Class<?> type1 = clazz.getComponentType();
-						int length = Array.getLength(o);
+					Extract_ inspect_ = new Extract_(o.getClass(), object);
+					String prefix = inspect_.prefix;
+					Class<?> keyClass = inspect_.keyClass;
+					ExtractField iter = inspect_.children;
+
+					if (Util.stringEquals(prefix, "[")) {
 						sb.append("[");
-						for (int i = 0; i < length; i++) {
-							append.accept(type1, Array.get(o, i));
+						while (iter.next()) {
+							append.accept(keyClass, iter.getKey());
 							sb.append(",");
 						}
 						sb.append("]");
 					} else {
-						sb.append(clazz.getSimpleName());
-						sb.append("{");
-						for (Field field : fields(clazz)) {
-							sb.append(field.getName() + "=");
-							Object value = Rethrow.reflectiveOperationException(() -> field.get(o));
-							append.accept(field.getType(), value);
+						sb.append(prefix);
+						if (!Util.stringEquals(prefix, "{"))
+							sb.append("{");
+						while (iter.next()) {
+							append.accept(keyClass, iter.getKey());
+							sb.append("=");
+							append.accept(iter.clazz(), iter.getValue());
 							sb.append(",");
 						}
 						sb.append("}");
@@ -77,8 +86,152 @@ public class Inspect {
 				sb.append("<recurse>");
 		});
 
-		append.accept(Util.clazz(object), object);
+		app.sink(object);
 		return sb.toString();
+	}
+
+	private class Extract_ {
+		private String prefix;
+		private Class<?> keyClass;
+		private ExtractField children;
+
+		private Extract_(Class<?> clazz, Object o) {
+			if (clazz.isArray()) {
+				int length = Array.getLength(o);
+
+				prefix = "[";
+				keyClass = clazz.getComponentType();
+				children = new InspectCollection() {
+					private int i = -1;
+
+					public boolean next() {
+						return ++i < length;
+					}
+
+					public Object getKey() {
+						return Array.get(o, i);
+					}
+				};
+			} else if (Collection.class.isAssignableFrom(clazz)) {
+				Class<?> elementClass_ = Object.class;
+				ParameterizedType pt;
+
+				for (Type genericInterface : clazz.getGenericInterfaces())
+					if (genericInterface instanceof ParameterizedType //
+							&& (pt = (ParameterizedType) genericInterface).getRawType() == Collection.class)
+						elementClass_ = (Class<?>) pt.getActualTypeArguments()[0];
+
+				@SuppressWarnings("unchecked")
+				Iterator<Object> iter = ((Collection<Object>) o).iterator();
+
+				prefix = "[";
+				keyClass = elementClass_;
+				children = new InspectCollection() {
+					private Object element;
+
+					public boolean next() {
+						if (iter.hasNext()) {
+							element = iter.next();
+							return true;
+						} else
+							return false;
+					}
+
+					public Object getKey() {
+						return element;
+					}
+				};
+			} else if (Map.class.isAssignableFrom(clazz)) {
+				Class<?> valueClass_ = Object.class;
+				ParameterizedType pt;
+
+				for (Type genericInterface : clazz.getGenericInterfaces())
+					if (genericInterface instanceof ParameterizedType //
+							&& (pt = (ParameterizedType) genericInterface).getRawType() == Map.class) {
+						Type typeArgs[] = pt.getActualTypeArguments();
+						keyClass = (Class<?>) typeArgs[0];
+						valueClass_ = (Class<?>) typeArgs[1];
+					}
+
+				@SuppressWarnings("unchecked")
+				Iterator<Entry<Object, Object>> iter = ((Map<Object, Object>) o).entrySet().iterator();
+				Class<?> valueClass = valueClass_;
+
+				prefix = "{";
+				keyClass = Object.class;
+				children = new ExtractField() {
+					private Entry<Object, Object> entry;
+
+					public boolean next() {
+						if (iter.hasNext()) {
+							entry = iter.next();
+							return true;
+						} else
+							return false;
+					}
+
+					public Class<?> clazz() {
+						return valueClass;
+					}
+
+					public Object getKey() {
+						return entry.getKey();
+					}
+
+					public Object getValue() {
+						return entry.getValue();
+					}
+				};
+			} else {
+				Iterator<Field> iter = fields(clazz).iterator();
+
+				prefix = clazz.getSimpleName();
+				keyClass = String.class;
+				children = new ExtractField() {
+					private Field field;
+
+					public boolean next() {
+						if (iter.hasNext()) {
+							field = iter.next();
+							return true;
+						} else
+							return false;
+					}
+
+					public Class<?> clazz() {
+						return keyClass;
+					}
+
+					public Object getKey() {
+						return field.getName();
+					}
+
+					public Object getValue() {
+						return Rethrow.reflectiveOperationException(() -> field.get(o));
+					}
+				};
+			}
+		}
+	}
+
+	private abstract class InspectCollection implements ExtractField {
+		public Class<?> clazz() {
+			return null;
+		}
+
+		public Object getValue() {
+			return null;
+		}
+	}
+
+	private interface ExtractField {
+		public boolean next();
+
+		public Class<?> clazz();
+
+		public Object getKey();
+
+		public Object getValue();
 	}
 
 	/**
