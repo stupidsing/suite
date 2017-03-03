@@ -79,7 +79,7 @@ public class Inspect {
 				while (iter.next()) {
 					append.accept(keyClass, iter.getKey());
 					sb.append("=");
-					append.accept(iter.clazz(), iter.getValue());
+					append.accept(iter.getValueClass(), iter.getValue());
 					sb.append(",");
 				}
 				sb.append("}");
@@ -178,12 +178,12 @@ public class Inspect {
 							return false;
 					}
 
-					public Class<?> clazz() {
-						return valueClass;
-					}
-
 					public Object getKey() {
 						return entry.getKey();
+					}
+
+					public Class<?> getValueClass() {
+						return valueClass;
 					}
 
 					public Object getValue() {
@@ -206,12 +206,12 @@ public class Inspect {
 							return false;
 					}
 
-					public Class<?> clazz() {
-						return field.getType();
-					}
-
 					public Object getKey() {
 						return field.getName();
+					}
+
+					public Class<?> getValueClass() {
+						return field.getType();
 					}
 
 					public Object getValue() {
@@ -223,7 +223,7 @@ public class Inspect {
 	}
 
 	private abstract class InspectCollection implements ExtractField {
-		public Class<?> clazz() {
+		public Class<?> getValueClass() {
 			return null;
 		}
 
@@ -235,9 +235,9 @@ public class Inspect {
 	private interface ExtractField {
 		public boolean next();
 
-		public Class<?> clazz();
-
 		public Object getKey();
+
+		public Class<?> getValueClass();
 
 		public Object getValue();
 	}
