@@ -44,46 +44,46 @@ public class Inspect {
 				sb.append("null");
 			else if (Type_.isSimple(clazz))
 				sb.append(object_);
-			else
-				sink.get().sink(object_);
+			else {
+				int id = System.identityHashCode(object_);
+				if (ids.add(id))
+					try {
+						sink.get().sink(object_);
+					} finally {
+						ids.remove(id);
+					}
+				else
+					sb.append("<recurse>");
+			}
 		};
 
 		Sink<Object> app = object_ -> append.accept(Util.clazz(object_), object_);
 
-		sink.set(o -> {
-			int id = System.identityHashCode(o);
+		sink.set(object_ -> {
+			Extract_ inspect_ = new Extract_(object_);
+			String prefix = inspect_.prefix;
+			Class<?> keyClass = inspect_.keyClass;
+			ExtractField iter = inspect_.children;
 
-			if (ids.add(id))
-				try {
-					Extract_ inspect_ = new Extract_(o.getClass(), object);
-					String prefix = inspect_.prefix;
-					Class<?> keyClass = inspect_.keyClass;
-					ExtractField iter = inspect_.children;
-
-					if (Util.stringEquals(prefix, "[")) {
-						sb.append("[");
-						while (iter.next()) {
-							append.accept(keyClass, iter.getKey());
-							sb.append(",");
-						}
-						sb.append("]");
-					} else {
-						sb.append(prefix);
-						if (!Util.stringEquals(prefix, "{"))
-							sb.append("{");
-						while (iter.next()) {
-							append.accept(keyClass, iter.getKey());
-							sb.append("=");
-							append.accept(iter.clazz(), iter.getValue());
-							sb.append(",");
-						}
-						sb.append("}");
-					}
-				} finally {
-					ids.remove(id);
+			if (Util.stringEquals(prefix, "[")) {
+				sb.append("[");
+				while (iter.next()) {
+					append.accept(keyClass, iter.getKey());
+					sb.append(",");
 				}
-			else
-				sb.append("<recurse>");
+				sb.append("]");
+			} else {
+				sb.append(prefix);
+				if (!Util.stringEquals(prefix, "{"))
+					sb.append("{");
+				while (iter.next()) {
+					append.accept(keyClass, iter.getKey());
+					sb.append("=");
+					append.accept(iter.clazz(), iter.getValue());
+					sb.append(",");
+				}
+				sb.append("}");
+			}
 		});
 
 		app.sink(object);
@@ -95,7 +95,9 @@ public class Inspect {
 		private Class<?> keyClass;
 		private ExtractField children;
 
-		private Extract_(Class<?> clazz, Object o) {
+		private Extract_(Object o) {
+			Class<?> clazz = o.getClass();
+
 			if (clazz.isArray()) {
 				int length = Array.getLength(o);
 
@@ -141,14 +143,20 @@ public class Inspect {
 						return element;
 					}
 				};
-			} else if (Map.class.isAssignableFrom(clazz)) {
+			} else if (Map.class.isAssignableFrom(clazz))
+
+			{
 				Class<?> valueClass_ = Object.class;
 				ParameterizedType pt;
+				Type typeArgs[];
 
 				for (Type genericInterface : clazz.getGenericInterfaces())
 					if (genericInterface instanceof ParameterizedType //
-							&& (pt = (ParameterizedType) genericInterface).getRawType() == Map.class) {
-						Type typeArgs[] = pt.getActualTypeArguments();
+							&& (pt = (ParameterizedType) genericInterface).getRawType() == Map.class //
+							&& 1 < (typeArgs = pt.getActualTypeArguments()).length //
+							&& typeArgs[0] instanceof Class //
+							&& typeArgs[1] instanceof Class) {
+						typeArgs = pt.getActualTypeArguments();
 						keyClass = (Class<?>) typeArgs[0];
 						valueClass_ = (Class<?>) typeArgs[1];
 					}
@@ -199,7 +207,7 @@ public class Inspect {
 					}
 
 					public Class<?> clazz() {
-						return keyClass;
+						return field.getType();
 					}
 
 					public Object getKey() {
