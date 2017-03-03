@@ -63,6 +63,15 @@ public class FunCreatorTest {
 	}
 
 	@Test
+	public void testConstant() {
+		FunCreator<IntFun> fc = FunCreator.of(lambdaClassIntFun);
+		IntFun f = fc //
+				.create(fc.parameter(i -> fc.constant(1))) //
+				.apply(void_);
+		assertEquals(1, f.apply(0));
+	}
+
+	@Test
 	public void testField() {
 		String fieldName = "f";
 		FunCreator<IntFun> fc = intFun(fieldName, Type.INT);
