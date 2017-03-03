@@ -43,10 +43,8 @@ public class FunGenerateBytecode {
 	private FunTypeInformation fti;
 	private InstructionFactory factory;
 
-	private class Record {
-		private List<Instruction> list = new ArrayList<>();
-		private Map<BranchInstruction, Integer> labels = new HashMap<>();
-	}
+	public final Map<Integer, Integer> jumps = new HashMap<>();
+	private List<Instruction> list = new ArrayList<>();
 
 	public FunGenerateBytecode(FunTypeInformation fti, ConstantPoolGen cpg) {
 		this.fti = fti;
@@ -58,65 +56,64 @@ public class FunGenerateBytecode {
 	 * InstructionList object.
 	 */
 	public InstructionList visit(FunExpr e, Type returnType) {
-		Record r = new Record();
-		visit0(r, e);
-		r.list.add(InstructionFactory.createReturn(returnType));
+		visit0(e);
+		list.add(InstructionFactory.createReturn(returnType));
 
 		InstructionList il = new InstructionList();
 		List<InstructionHandle> ihs = new ArrayList<>();
 
-		for (Instruction instruction : r.list)
+		for (Instruction instruction : list)
 			ihs.add(instruction instanceof BranchInstruction //
 					? il.append((BranchInstruction) instruction) //
 					: il.append(instruction));
 
-		for (Entry<BranchInstruction, Integer> entry : r.labels.entrySet())
-			entry.getKey().setTarget(ihs.get(entry.getValue()));
+		for (Entry<Integer, Integer> entry : jumps.entrySet())
+			((BranchInstruction) ihs.get(entry.getKey()).getInstruction()).setTarget(ihs.get(entry.getValue()));
 
 		return il;
 	}
 
-	public void visit0(Record r, FunExpr e) {
+	public void visit0(FunExpr e) {
 		if (e instanceof AssignFunExpr) {
 			AssignFunExpr expr = (AssignFunExpr) e;
-			visit0(r, expr.value);
-			r.list.add(InstructionFactory.createStore(fti.typeOf(expr.value), expr.index));
+			visit0(expr.value);
+			list.add(InstructionFactory.createStore(fti.typeOf(expr.value), expr.index));
 		} else if (e instanceof BinaryFunExpr) {
 			BinaryFunExpr expr = (BinaryFunExpr) e;
-			visit0(r, expr.left);
-			visit0(r, expr.right);
-			r.list.add(InstructionFactory.createBinaryOperation(expr.op, fti.typeOf(expr.left)));
+			visit0(expr.left);
+			visit0(expr.right);
+			list.add(InstructionFactory.createBinaryOperation(expr.op, fti.typeOf(expr.left)));
 		} else if (e instanceof CastFunExpr) {
 			CastFunExpr expr = (CastFunExpr) e;
-			visit0(r, expr.expr);
+			visit0(expr.expr);
 		} else if (e instanceof CheckCastFunExpr) {
 			CheckCastFunExpr expr = (CheckCastFunExpr) e;
-			visit0(r, expr.expr);
-			r.list.add(factory.createCheckCast(expr.type));
+			visit0(expr.expr);
+			list.add(factory.createCheckCast(expr.type));
 		} else if (e instanceof ConstantFunExpr) {
 			ConstantFunExpr expr = (ConstantFunExpr) e;
-			r.list.add(factory.createConstant(expr.constant));
+			list.add(factory.createConstant(expr.constant));
 		} else if (e instanceof FieldTypeFunExpr) {
 			FieldTypeFunExpr expr = (FieldTypeFunExpr) e;
-			visit0(r, expr.object);
-			r.list.add(factory.createGetField(((ObjectType) fti.typeOf(expr.object)).getClassName(), expr.field, fti.typeOf(expr)));
+			visit0(expr.object);
+			list.add(factory.createGetField(((ObjectType) fti.typeOf(expr.object)).getClassName(), expr.field, fti.typeOf(expr)));
 		} else if (e instanceof If1FunExpr) {
 			If1FunExpr expr = (If1FunExpr) e;
-			visit0(r, expr.if_);
-			visitIf(r, Const.IFEQ, expr);
+			visit0(expr.if_);
+			visitIf(Const.IFEQ, expr);
 		} else if (e instanceof If2FunExpr) {
 			If2FunExpr expr = (If2FunExpr) e;
-			visit0(r, expr.left);
-			visit0(r, expr.right);
-			visitIf(r, (short) expr.opcode.applyAsInt(fti.typeOf(expr.left)), expr);
+			visit0(expr.left);
+			visit0(expr.right);
+			visitIf((short) expr.opcode.applyAsInt(fti.typeOf(expr.left)), expr);
 		} else if (e instanceof IfNonNullFunExpr) {
 			IfNonNullFunExpr expr = (IfNonNullFunExpr) e;
-			visit0(r, expr.object);
-			visitIf(r, Const.IFNULL, expr);
+			visit0(expr.object);
+			visitIf(Const.IFNULL, expr);
 		} else if (e instanceof InstanceOfFunExpr) {
 			InstanceOfFunExpr expr = (InstanceOfFunExpr) e;
-			visit0(r, expr.object);
-			r.list.add(factory.createInstanceOf(expr.instanceType));
+			visit0(expr.object);
+			list.add(factory.createInstanceOf(expr.instanceType));
 		} else if (e instanceof InvokeMethodFunExpr) {
 			InvokeMethodFunExpr expr = (InvokeMethodFunExpr) e;
 			Type array[] = Read.from(expr.parameters).map(fti::typeOf).toArray(Type.class);
@@ -133,12 +130,12 @@ public class FunGenerateBytecode {
 				opcode = Const.INVOKEVIRTUAL;
 
 			if (expr.object != null)
-				visit0(r, expr.object);
+				visit0(expr.object);
 
 			for (FunExpr parameter : expr.parameters)
-				visit0(r, parameter);
+				visit0(parameter);
 
-			r.list.add(factory.createInvoke( //
+			list.add(factory.createInvoke( //
 					className, //
 					expr.methodName, //
 					fti.typeOf(expr), //
@@ -146,35 +143,35 @@ public class FunGenerateBytecode {
 					opcode));
 		} else if (e instanceof LocalFunExpr) {
 			LocalFunExpr expr = (LocalFunExpr) e;
-			r.list.add(InstructionFactory.createLoad(fti.typeOf(expr), expr.index));
+			list.add(InstructionFactory.createLoad(fti.typeOf(expr), expr.index));
 		} else if (e instanceof PrintlnFunExpr) {
 			PrintlnFunExpr expr = (PrintlnFunExpr) e;
 			String sys = System.class.getName();
-			r.list.add(factory.createGetStatic(sys, "out", Type.getType(PrintStream.class)));
-			visit0(r, expr.expression);
-			r.list.add(factory.createInvoke(sys, "println", fti.typeOf(expr), new Type[] { Type.STRING, }, Const.INVOKEVIRTUAL));
+			list.add(factory.createGetStatic(sys, "out", Type.getType(PrintStream.class)));
+			visit0(expr.expression);
+			list.add(factory.createInvoke(sys, "println", fti.typeOf(expr), new Type[] { Type.STRING, }, Const.INVOKEVIRTUAL));
 		} else if (e instanceof SeqFunExpr) {
 			SeqFunExpr expr = (SeqFunExpr) e;
-			visit0(r, expr.left);
+			visit0(expr.left);
 			if (!Objects.equals(fti.typeOf(expr.left), Type.VOID))
-				r.list.add(InstructionConst.POP);
-			visit0(r, expr.right);
+				list.add(InstructionConst.POP);
+			visit0(expr.right);
 		} else if (e instanceof StaticFunExpr) {
 			StaticFunExpr expr = (StaticFunExpr) e;
-			r.list.add(factory.createGetStatic(expr.clazzType, expr.field, expr.type));
+			list.add(factory.createGetStatic(expr.clazzType, expr.field, expr.type));
 		} else
 			throw new RuntimeException("Unknown expression " + e.getClass());
 	}
 
-	private void visitIf(Record r, short opcode, IfFunExpr expr) {
-		BranchInstruction bh0 = InstructionFactory.createBranchInstruction(opcode, null);
-		BranchInstruction bh1 = InstructionFactory.createBranchInstruction(Const.GOTO, null);
-		r.list.add(bh0);
-		visit0(r, expr.then);
-		r.list.add(bh1);
-		r.labels.put(bh0, r.list.size());
-		visit0(r, expr.else_);
-		r.labels.put(bh1, r.list.size());
+	private void visitIf(short opcode, IfFunExpr expr) {
+		int p0 = list.size();
+		list.add(InstructionFactory.createBranchInstruction(opcode, null));
+		visit0(expr.then);
+		int p1 = list.size();
+		list.add(InstructionFactory.createBranchInstruction(Const.GOTO, null));
+		jumps.put(p0, list.size());
+		visit0(expr.else_);
+		jumps.put(p1, list.size());
 	}
 
 }

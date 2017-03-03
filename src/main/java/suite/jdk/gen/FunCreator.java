@@ -13,9 +13,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.generic.BranchInstruction;
+import org.apache.bcel.generic.CPInstruction;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldGen;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
@@ -26,12 +30,15 @@ import suite.adt.Pair;
 import suite.jdk.UnsafeUtil;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.StaticFunExpr;
+import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 import suite.util.Util;
 
 public class FunCreator<I> extends FunFactory {
+
+	private static boolean isLog = false;
 
 	public final LambdaInterface<I> lambdaClass;
 	public final Class<?> superClass;
@@ -77,6 +84,7 @@ public class FunCreator<I> extends FunFactory {
 
 		FunExpand fe = new FunExpand();
 		FunRewrite fr;
+		FunGenerateBytecode fbg;
 
 		FunExpr expr1 = fe.expand(expr0, 3);
 		FunExpr expr2 = (fr = new FunRewrite(fieldTypes, localTypes, expr1.cast(interfaceClass))).expr;
@@ -101,8 +109,30 @@ public class FunCreator<I> extends FunFactory {
 		}
 
 		{
-			InstructionList il = new FunGenerateBytecode(fr.fti, cp).visit(expr2, returnType);
+			InstructionList il = (fbg = new FunGenerateBytecode(fr.fti, cp)).visit(expr2, returnType);
 			Type paramTypes[] = parameterTypes.toArray(new Type[0]);
+
+			if (isLog) {
+				LogUtil.info("expr0 = " + expr0);
+				LogUtil.info("expr1 = " + expr1);
+				LogUtil.info("expr2 = " + expr2);
+				LogUtil.info("interface = " + interfaceClass);
+				ConstantPool constantPool = cp.getConstantPool();
+				Instruction instructions[] = il.getInstructions();
+
+				for (int i = 0; i < instructions.length; i++) {
+					Instruction instruction = instructions[i];
+					String s = instruction.toString(false);
+					String p;
+					if (instruction instanceof BranchInstruction)
+						p = fbg.jumps.get(i).toString();
+					else if (instruction instanceof CPInstruction)
+						p = constantPool.constantToString(constantPool.getConstant(((CPInstruction) instruction).getIndex()));
+					else
+						p = "";
+					LogUtil.info("(" + i + ") " + s + " " + p);
+				}
+			}
 
 			try {
 				MethodGen mg = new MethodGen(ACC_PUBLIC, returnType, paramTypes, null, methodName, className, il, cp);
