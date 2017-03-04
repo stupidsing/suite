@@ -10,6 +10,7 @@ import org.apache.bcel.generic.Type;
 
 import suite.jdk.gen.FunExpression.BinaryFunExpr;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
+import suite.jdk.gen.FunExpression.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
@@ -26,6 +27,7 @@ import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 
 public class FunFactory {
 
@@ -168,7 +170,13 @@ public class FunFactory {
 		return expr;
 	}
 
-	public FunExpr parameter(Fun<FunExpr, FunExpr> doFun) {
+	public FunExpr parameter0(Source<FunExpr> doFun) {
+		Declare0ParameterFunExpr expr = fe.new Declare0ParameterFunExpr();
+		expr.do_ = doFun.source();
+		return expr;
+	}
+
+	public FunExpr parameter1(Fun<FunExpr, FunExpr> doFun) {
 		PlaceholderFunExpr parameter = fe.new PlaceholderFunExpr();
 
 		Declare1ParameterFunExpr expr = fe.new Declare1ParameterFunExpr();

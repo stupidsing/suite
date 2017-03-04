@@ -119,6 +119,9 @@ public class FunExpression {
 		public FunExpr do_;
 	}
 
+	public class Declare0ParameterFunExpr extends DeclareParameterFunExpr {
+	}
+
 	public class Declare1ParameterFunExpr extends DeclareParameterFunExpr {
 		public PlaceholderFunExpr parameter;
 	}

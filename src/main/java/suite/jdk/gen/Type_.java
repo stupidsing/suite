@@ -3,6 +3,10 @@ package suite.jdk.gen;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.BasicType;
@@ -11,6 +15,8 @@ import org.apache.bcel.generic.Type;
 
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
+import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -34,8 +40,18 @@ public class Type_ {
 	}
 
 	public static Method methodOf(Class<?> clazz) {
-		if (clazz == Fun.class)
-			return Rethrow.reflectiveOperationException(() -> Fun.class.getMethod("apply", Object.class));
+		if (clazz == BiFunction.class)
+			return Rethrow.reflectiveOperationException(() -> clazz.getMethod("apply", Object.class, Object.class));
+		else if (clazz == BiPredicate.class)
+			return Rethrow.reflectiveOperationException(() -> clazz.getMethod("test", Object.class, Object.class));
+		else if (clazz == Fun.class || clazz == Function.class)
+			return Rethrow.reflectiveOperationException(() -> clazz.getMethod("apply", Object.class));
+		else if (clazz == Predicate.class)
+			return Rethrow.reflectiveOperationException(() -> clazz.getMethod("test", Object.class));
+		else if (clazz == Sink.class)
+			return Rethrow.reflectiveOperationException(() -> clazz.getMethod("sink", Object.class));
+		else if (clazz == Source.class)
+			return Rethrow.reflectiveOperationException(() -> clazz.getMethod("source"));
 		else
 			return Read.from(clazz.getDeclaredMethods()).uniqueResult();
 	}

@@ -14,6 +14,7 @@ import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
 import suite.jdk.gen.FunExpression.AssignFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
+import suite.jdk.gen.FunExpression.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
@@ -68,7 +69,10 @@ public class FunRewrite extends FunFactory {
 		} else if (e instanceof DeclareParameterFunExpr) {
 			DeclareParameterFunExpr e_ = (DeclareParameterFunExpr) e;
 			Class<?> pts[] = Type_.methodOf(fti.interfaceClasses.get(e_)).getParameterTypes();
-			if (e instanceof Declare1ParameterFunExpr) {
+			if (e instanceof Declare0ParameterFunExpr) {
+				Declare0ParameterFunExpr expr = (Declare0ParameterFunExpr) e_;
+				return rewrite(expr.do_);
+			} else if (e instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr expr = (Declare1ParameterFunExpr) e_;
 				placeholders.put(expr.parameter, local(1, pts[0]));
 				return rewrite(expr.do_);

@@ -79,7 +79,7 @@ public class SewingExpressionImpl implements SewingExpression {
 									.cons(e0, Type.getType(Evaluate.class)) //
 									.cons(e1, Type.getType(Evaluate.class)) //
 									.toMap());
-					return fc.create(fc.parameter(env -> {
+					return fc.create(fc.parameter1(env -> {
 						FunExpr v0 = fc.field(e0).apply(env);
 						FunExpr v1 = fc.field(e1).apply(env);
 						return fc.bi(op_, v0, v1);

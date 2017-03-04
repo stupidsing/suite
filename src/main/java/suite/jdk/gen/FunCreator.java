@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ConstantPool;
@@ -33,6 +34,7 @@ import suite.jdk.gen.FunExpression.StaticFunExpr;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -69,6 +71,18 @@ public class FunCreator<I> extends FunFactory {
 
 		constantTypeValues = new HashMap<>();
 		fieldTypes = fs;
+	}
+
+	public Fun<Map<String, Object>, I> create(Source<FunExpr> expr) {
+		return create(parameter0(expr));
+	}
+
+	public Fun<Map<String, Object>, I> create(Fun<FunExpr, FunExpr> expr) {
+		return create(parameter1(expr));
+	}
+
+	public Fun<Map<String, Object>, I> create(BiFunction<FunExpr, FunExpr, FunExpr> expr) {
+		return create(parameter2(expr));
 	}
 
 	public Fun<Map<String, Object>, I> create(FunExpr expr0) {

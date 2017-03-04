@@ -6,6 +6,7 @@ import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
+import suite.jdk.gen.FunExpression.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
@@ -43,7 +44,10 @@ public class FunExpand extends FunFactory {
 			ApplyFunExpr expr = (ApplyFunExpr) e;
 			FunExpr object0 = expr.object;
 			FunExpr object1 = object0 instanceof CastFunExpr ? ((CastFunExpr) object0).expr : object0;
-			if (object1 instanceof Declare1ParameterFunExpr) {
+			if (object1 instanceof Declare0ParameterFunExpr) {
+				Declare0ParameterFunExpr object_ = (Declare0ParameterFunExpr) object1;
+				return expand(object_.do_, depth);
+			} else if (object1 instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr object_ = (Declare1ParameterFunExpr) object1;
 				return expand(replace(object_.do_, object_.parameter, expr.parameters.get(0)), depth);
 			} else if (object1 instanceof Declare2ParameterFunExpr) {
