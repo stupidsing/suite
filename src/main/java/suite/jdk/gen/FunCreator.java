@@ -44,7 +44,6 @@ public class FunCreator<I> extends FunFactory {
 
 	public final LambdaInterface<I> lambdaClass;
 	public final Class<?> superClass;
-	public final String className;
 	public final Type returnType;
 	public final List<Type> parameterTypes;
 
@@ -65,7 +64,6 @@ public class FunCreator<I> extends FunFactory {
 	private FunCreator(LambdaInterface<I> lc, Type rt, List<Type> ps, Map<String, Type> fs) {
 		lambdaClass = lc;
 		superClass = Object.class;
-		className = lc.interfaceClass.getSimpleName() + Util.temp();
 		returnType = rt;
 		parameterTypes = ps;
 
@@ -85,111 +83,128 @@ public class FunCreator<I> extends FunFactory {
 		return create(parameter2(expr));
 	}
 
-	public Fun<Map<String, Object>, I> create(FunExpr expr0) {
-		Class<I> interfaceClass = lambdaClass.interfaceClass;
-		String methodName = lambdaClass.methodName;
+	public Fun<Map<String, Object>, I> create(FunExpr expr) {
+		return create_(expr)::create;
+	}
 
-		List<Type> localTypes = new ArrayList<>();
-		localTypes.add(ObjectType.getInstance(className));
-		localTypes.addAll(parameterTypes);
+	public CreateClass create_(FunExpr expr) {
+		return new CreateClass(expr);
+	}
 
-		ConstantPoolGen cp = new ConstantPoolGen();
-		InstructionFactory factory = new InstructionFactory(cp);
+	public class CreateClass {
+		public final Map<String, Pair<Type, Object>> fieldTypeValues;
+		public final String className;
+		public final Class<? extends I> clazz;
 
-		FunExpand fe = new FunExpand();
-		FunRewrite fr;
-		FunGenerateBytecode fbg;
+		private CreateClass(FunExpr expr0) {
+			Class<I> interfaceClass = lambdaClass.interfaceClass;
+			className = interfaceClass.getSimpleName() + Util.temp();
+			String methodName = lambdaClass.methodName;
 
-		FunExpr expr1 = fe.expand(expr0, 3);
-		FunExpr expr2 = (fr = new FunRewrite(fieldTypes, localTypes, expr1.cast(interfaceClass))).expr;
+			List<Type> localTypes = new ArrayList<>();
+			localTypes.add(ObjectType.getInstance(className));
+			localTypes.addAll(parameterTypes);
 
-		org.apache.bcel.classfile.Method m0, m1;
-		Map<String, Pair<Type, Object>> fields1 = fr.fieldTypeValues;
+			ConstantPoolGen cp = new ConstantPoolGen();
+			InstructionFactory factory = new InstructionFactory(cp);
 
-		{
-			InstructionList il = new InstructionList();
-			try {
-				il.append(InstructionFactory.createLoad(Type.OBJECT, 0));
-				il.append(factory.createInvoke(superClass.getName(), "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
-				il.append(InstructionFactory.createReturn(Type.VOID));
+			FunExpand fe = new FunExpand();
+			FunRewrite fr;
+			FunGenerateBytecode fbg;
 
-				MethodGen mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", className, il, cp);
-				mg.setMaxStack();
-				mg.setMaxLocals();
-				m0 = mg.getMethod();
-			} finally {
-				il.dispose();
-			}
-		}
+			FunExpr expr1 = fe.expand(expr0, 3);
+			FunExpr expr2 = (fr = new FunRewrite(fieldTypes, localTypes, expr1.cast(interfaceClass))).expr;
 
-		{
-			InstructionList il = (fbg = new FunGenerateBytecode(className, fr.fti, cp)).visit(expr2, returnType);
-			Type paramTypes[] = parameterTypes.toArray(new Type[0]);
+			org.apache.bcel.classfile.Method m0, m1;
+			fieldTypeValues = fr.fieldTypeValues;
 
-			if (isLog) {
-				LogUtil.info("expr0 = " + expr0);
-				LogUtil.info("expr1 = " + expr1);
-				LogUtil.info("expr2 = " + expr2);
-				LogUtil.info("interface = " + interfaceClass);
-				ConstantPool constantPool = cp.getConstantPool();
-				Instruction instructions[] = il.getInstructions();
+			{
+				InstructionList il = new InstructionList();
+				try {
+					il.append(InstructionFactory.createLoad(Type.OBJECT, 0));
+					il.append(factory.createInvoke(superClass.getName(), "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
+					il.append(InstructionFactory.createReturn(Type.VOID));
 
-				for (int i = 0; i < instructions.length; i++) {
-					Instruction instruction = instructions[i];
-					String s = instruction.toString(false);
-					String p;
-					if (instruction instanceof BranchInstruction)
-						p = fbg.jumps.get(i).toString();
-					else if (instruction instanceof CPInstruction)
-						p = constantPool.constantToString(constantPool.getConstant(((CPInstruction) instruction).getIndex()));
-					else
-						p = "";
-					LogUtil.info("(" + i + ") " + s + " " + p);
+					MethodGen mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", className, il, cp);
+					mg.setMaxStack();
+					mg.setMaxLocals();
+					m0 = mg.getMethod();
+				} finally {
+					il.dispose();
 				}
 			}
 
-			try {
-				MethodGen mg = new MethodGen(ACC_PUBLIC, returnType, paramTypes, null, methodName, className, il, cp);
-				mg.setMaxStack();
-				mg.setMaxLocals();
-				m1 = mg.getMethod();
-			} finally {
-				il.dispose();
+			{
+				InstructionList il = (fbg = new FunGenerateBytecode(className, fr.fti, cp)).visit(expr2, returnType);
+				Type paramTypes[] = parameterTypes.toArray(new Type[0]);
+
+				if (isLog) {
+					LogUtil.info("expr0 = " + expr0);
+					LogUtil.info("expr1 = " + expr1);
+					LogUtil.info("expr2 = " + expr2);
+					LogUtil.info("class = " + className + " implements " + interfaceClass.getName());
+					ConstantPool constantPool = cp.getConstantPool();
+					Instruction instructions[] = il.getInstructions();
+
+					for (int i = 0; i < instructions.length; i++) {
+						Instruction instruction = instructions[i];
+						String s = instruction.toString(false);
+						String p;
+						if (instruction instanceof BranchInstruction)
+							p = fbg.jumps.get(i).toString();
+						else if (instruction instanceof CPInstruction)
+							p = constantPool.constantToString(constantPool.getConstant(((CPInstruction) instruction).getIndex()));
+						else
+							p = "";
+						LogUtil.info("(" + i + ") " + s + " " + p);
+					}
+				}
+
+				try {
+					MethodGen mg = new MethodGen(ACC_PUBLIC, returnType, paramTypes, null, methodName, className, il, cp);
+					mg.setMaxStack();
+					mg.setMaxLocals();
+					m1 = mg.getMethod();
+				} finally {
+					il.dispose();
+				}
 			}
+
+			String ifs[] = new String[] { interfaceClass.getName(), };
+			ClassGen cg = new ClassGen(className, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
+
+			for (Entry<String, Pair<Type, Object>> e : constantTypeValues.entrySet())
+				cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().t0, e.getKey(), cp).getField());
+			for (Entry<String, Type> e : fieldTypes.entrySet())
+				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue(), e.getKey(), cp).getField());
+			for (Entry<String, Pair<Type, Object>> e : fieldTypeValues.entrySet())
+				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue().t0, e.getKey(), cp).getField());
+
+			cg.addMethod(m0);
+			cg.addMethod(m1);
+
+			byte bytes[] = cg.getJavaClass().getBytes();
+
+			clazz = new UnsafeUtil().defineClass(interfaceClass, className, bytes);
+
+			for (Entry<String, Pair<Type, Object>> e : constantTypeValues.entrySet())
+				try {
+					clazz.getField(e.getKey()).set(null, e.getValue().t1);
+				} catch (ReflectiveOperationException ex) {
+					throw new RuntimeException(ex);
+				}
 		}
 
-		String ifs[] = new String[] { interfaceClass.getName(), };
-		ClassGen cg = new ClassGen(className, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
-
-		for (Entry<String, Pair<Type, Object>> e : constantTypeValues.entrySet())
-			cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().t0, e.getKey(), cp).getField());
-		for (Entry<String, Type> e : fieldTypes.entrySet())
-			cg.addField(new FieldGen(ACC_PUBLIC, e.getValue(), e.getKey(), cp).getField());
-		for (Entry<String, Pair<Type, Object>> e : fields1.entrySet())
-			cg.addField(new FieldGen(ACC_PUBLIC, e.getValue().t0, e.getKey(), cp).getField());
-
-		cg.addMethod(m0);
-		cg.addMethod(m1);
-
-		byte bytes[] = cg.getJavaClass().getBytes();
-
-		Class<? extends I> clazz = new UnsafeUtil().defineClass(interfaceClass, className, bytes);
-
-		for (Entry<String, Pair<Type, Object>> e : constantTypeValues.entrySet())
-			try {
-				clazz.getField(e.getKey()).set(null, e.getValue().t1);
-			} catch (ReflectiveOperationException ex) {
-				throw new RuntimeException(ex);
-			}
-
-		return fields -> Rethrow.reflectiveOperationException(() -> {
-			I t = clazz.newInstance();
-			for (Entry<String, Object> e : fields.entrySet())
-				clazz.getDeclaredField(e.getKey()).set(t, e.getValue());
-			for (Entry<String, Pair<Type, Object>> e : fields1.entrySet())
-				clazz.getDeclaredField(e.getKey()).set(t, e.getValue().t1);
-			return t;
-		});
+		private I create(Map<String, Object> fields) {
+			return Rethrow.reflectiveOperationException(() -> {
+				I t = clazz.newInstance();
+				for (Entry<String, Object> e : fields.entrySet())
+					clazz.getDeclaredField(e.getKey()).set(t, e.getValue());
+				for (Entry<String, Pair<Type, Object>> e : fieldTypeValues.entrySet())
+					clazz.getDeclaredField(e.getKey()).set(t, e.getValue().t1);
+				return t;
+			});
+		}
 	}
 
 	public FunExpr constant(Object object) {
