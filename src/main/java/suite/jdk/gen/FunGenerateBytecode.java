@@ -40,13 +40,15 @@ import suite.streamlet.Read;
 
 public class FunGenerateBytecode {
 
+	private String className;
 	private FunTypeInformation fti;
 	private InstructionFactory factory;
 
 	public final Map<Integer, Integer> jumps = new HashMap<>();
 	private List<Instruction> list = new ArrayList<>();
 
-	public FunGenerateBytecode(FunTypeInformation fti, ConstantPoolGen cpg) {
+	public FunGenerateBytecode(String className, FunTypeInformation fti, ConstantPoolGen cpg) {
+		this.className = className;
 		this.fti = fti;
 		this.factory = new InstructionFactory(cpg);
 	}
@@ -158,7 +160,7 @@ public class FunGenerateBytecode {
 			visit0(e1.right);
 		} else if (e0 instanceof StaticFunExpr) {
 			StaticFunExpr e1 = (StaticFunExpr) e0;
-			list.add(factory.createGetStatic(e1.clazzType, e1.field, e1.type));
+			list.add(factory.createGetStatic(className, e1.field, e1.type));
 		} else
 			throw new RuntimeException("Unknown expression " + e0.getClass());
 	}

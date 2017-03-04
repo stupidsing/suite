@@ -216,7 +216,6 @@ public class FunExpression {
 
 	public class StaticFunExpr extends FunExpr {
 		public Type type;
-		public String clazzType;
 		public String field;
 	}
 

@@ -123,7 +123,7 @@ public class FunCreator<I> extends FunFactory {
 		}
 
 		{
-			InstructionList il = (fbg = new FunGenerateBytecode(fr.fti, cp)).visit(expr2, returnType);
+			InstructionList il = (fbg = new FunGenerateBytecode(className, fr.fti, cp)).visit(expr2, returnType);
 			Type paramTypes[] = parameterTypes.toArray(new Type[0]);
 
 			if (isLog) {
@@ -198,7 +198,6 @@ public class FunCreator<I> extends FunFactory {
 		constantTypeValues.put(field, Pair.of(type, object));
 
 		StaticFunExpr expr = fe.new StaticFunExpr();
-		expr.clazzType = className;
 		expr.field = field;
 		expr.type = type;
 		return expr;
