@@ -186,7 +186,6 @@ public class FunExpression {
 	}
 
 	public class LocalFunExpr extends FunExpr {
-		public Type type;
 		public int index;
 	}
 

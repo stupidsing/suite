@@ -201,7 +201,7 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public FunExpr this_() {
-		return local(0, ObjectType.getInstance(className));
+		return local(0);
 	}
 
 	private FunExpr constantStatic(Object object, Class<?> clazz) {

@@ -43,9 +43,9 @@ public class FunRewrite extends FunFactory {
 	private Map<PlaceholderFunExpr, FunExpr> placeholders = new HashMap<>();
 
 	public FunRewrite(Map<String, Type> fieldTypes, List<Type> parameterTypes, FunExpr expr0) {
-		this.fti = new FunTypeInformation(placeholders::get);
 		this.fieldTypes = fieldTypes;
 		this.localTypes = new ArrayList<>(parameterTypes);
+		this.fti = new FunTypeInformation(localTypes, placeholders::get);
 		this.expr = rewrite(expr0);
 	}
 
@@ -68,18 +68,17 @@ public class FunRewrite extends FunFactory {
 			return null;
 		} else if (e0 instanceof DeclareParameterFunExpr) {
 			DeclareParameterFunExpr e1 = (DeclareParameterFunExpr) e0;
-			Class<?> pts[] = Type_.methodOf(fti.interfaceClasses.get(e1)).getParameterTypes();
 			if (e0 instanceof Declare0ParameterFunExpr) {
 				Declare0ParameterFunExpr e2 = (Declare0ParameterFunExpr) e1;
 				return rewrite(e2.do_);
 			} else if (e0 instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr e2 = (Declare1ParameterFunExpr) e1;
-				placeholders.put(e2.parameter, local(1, pts[0]));
+				placeholders.put(e2.parameter, local(1));
 				return rewrite(e2.do_);
 			} else if (e0 instanceof Declare2ParameterFunExpr) {
 				Declare2ParameterFunExpr e2 = (Declare2ParameterFunExpr) e1;
-				placeholders.put(e2.p0, local(1, pts[0]));
-				placeholders.put(e2.p1, local(2, pts[1]));
+				placeholders.put(e2.p0, local(1));
+				placeholders.put(e2.p1, local(2));
 				return rewrite(e2.do_);
 			} else
 				return null;
@@ -95,7 +94,7 @@ public class FunRewrite extends FunFactory {
 			afe.index = index;
 			afe.value = value;
 
-			placeholders.put(e1.var, local(index, type));
+			placeholders.put(e1.var, local(index));
 			return seq(afe, rewrite(e1.do_));
 		} else if (e0 instanceof FieldFunExpr) {
 			FieldFunExpr e1 = (FieldFunExpr) e0;
@@ -133,7 +132,7 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr this_() {
-		return local(0, localTypes.get(0));
+		return local(0);
 	}
 
 }

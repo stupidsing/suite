@@ -140,13 +140,8 @@ public class FunFactory {
 		return expr;
 	}
 
-	public FunExpr local(int number, Class<?> clazz) {
-		return local(number, Type.getType(clazz));
-	}
-
-	public FunExpr local(int number, Type type) { // 0 means this
+	public FunExpr local(int number) { // 0 means this
 		LocalFunExpr expr = fe.new LocalFunExpr();
-		expr.type = type;
 		expr.index = number;
 		return expr;
 	}

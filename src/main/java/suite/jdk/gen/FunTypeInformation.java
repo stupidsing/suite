@@ -2,6 +2,7 @@ package suite.jdk.gen;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.bcel.generic.Type;
@@ -32,9 +33,11 @@ public class FunTypeInformation {
 
 	public final Map<DeclareParameterFunExpr, Class<?>> interfaceClasses = new HashMap<>();
 
+	private List<Type> localTypes;
 	private Fun<PlaceholderFunExpr, FunExpr> placeholderResolver;
 
-	public FunTypeInformation(Fun<PlaceholderFunExpr, FunExpr> placeholderResolver) {
+	public FunTypeInformation(List<Type> localTypes, Fun<PlaceholderFunExpr, FunExpr> placeholderResolver) {
+		this.localTypes = localTypes;
 		this.placeholderResolver = placeholderResolver;
 	}
 
@@ -75,7 +78,7 @@ public class FunTypeInformation {
 			return Type.getType(invokeMethodOf(e1).getReturnType());
 		} else if (e0 instanceof LocalFunExpr) {
 			LocalFunExpr e1 = (LocalFunExpr) e0;
-			return e1.type;
+			return localTypes.get(e1.index);
 		} else if (e0 instanceof PlaceholderFunExpr) {
 			PlaceholderFunExpr e1 = (PlaceholderFunExpr) e0;
 			return typeOf(placeholderResolver.apply(e1));
