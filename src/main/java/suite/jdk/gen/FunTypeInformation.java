@@ -38,56 +38,57 @@ public class FunTypeInformation {
 		this.placeholderResolver = placeholderResolver;
 	}
 
-	public Type typeOf(FunExpr e) {
-		if (e instanceof ApplyFunExpr) {
-			ApplyFunExpr expr = (ApplyFunExpr) e;
-			return Type.getType(methodOf(expr.object).getReturnType());
-		} else if (e instanceof AssignFunExpr)
+	public Type typeOf(FunExpr e0) {
+		if (e0 instanceof ApplyFunExpr) {
+			ApplyFunExpr e1 = (ApplyFunExpr) e0;
+			return Type.getType(methodOf(e1.object).getReturnType());
+		} else if (e0 instanceof AssignFunExpr)
 			return Type.getType(void.class);
-		else if (e instanceof BinaryFunExpr) {
-			BinaryFunExpr expr = (BinaryFunExpr) e;
-			return typeOf(expr.left);
-		} else if (e instanceof CastFunExpr) {
-			CastFunExpr expr = (CastFunExpr) e;
-			return expr.type;
-		} else if (e instanceof CheckCastFunExpr) {
-			CheckCastFunExpr expr = (CheckCastFunExpr) e;
-			return expr.type;
-		} else if (e instanceof ConstantFunExpr) {
-			ConstantFunExpr expr = (ConstantFunExpr) e;
-			return expr.type;
-		} else if (e instanceof DeclareLocalFunExpr) {
-			DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
-			return typeOf(expr.do_);
-		} else if (e instanceof DeclareParameterFunExpr) {
-			DeclareParameterFunExpr expr = (DeclareParameterFunExpr) e;
-			return Type.getType(interfaceClasses.get(expr));
-		} else if (e instanceof FieldTypeFunExpr) {
-			FieldTypeFunExpr expr = (FieldTypeFunExpr) e;
-			return expr.type;
-		} else if (e instanceof IfFunExpr) {
-			IfFunExpr expr = (IfFunExpr) e;
-			return typeOf(expr.then);
-		} else if (e instanceof InstanceOfFunExpr)
+		else if (e0 instanceof BinaryFunExpr) {
+			BinaryFunExpr e1 = (BinaryFunExpr) e0;
+			return typeOf(e1.left);
+		} else if (e0 instanceof CastFunExpr) {
+			CastFunExpr e1 = (CastFunExpr) e0;
+			return e1.type;
+		} else if (e0 instanceof CheckCastFunExpr) {
+			CheckCastFunExpr e1 = (CheckCastFunExpr) e0;
+			return e1.type;
+		} else if (e0 instanceof ConstantFunExpr) {
+			ConstantFunExpr e1 = (ConstantFunExpr) e0;
+			return e1.type;
+		} else if (e0 instanceof DeclareLocalFunExpr) {
+			DeclareLocalFunExpr e1 = (DeclareLocalFunExpr) e0;
+			return typeOf(e1.do_);
+		} else if (e0 instanceof DeclareParameterFunExpr) {
+			DeclareParameterFunExpr e1 = (DeclareParameterFunExpr) e0;
+			return Type.getType(interfaceClasses.get(e1));
+		} else if (e0 instanceof FieldTypeFunExpr) {
+			FieldTypeFunExpr e1 = (FieldTypeFunExpr) e0;
+			return e1.type;
+		} else if (e0 instanceof IfFunExpr) {
+			IfFunExpr e1 = (IfFunExpr) e0;
+			return typeOf(e1.then);
+		} else if (e0 instanceof InstanceOfFunExpr)
 			return Type.BOOLEAN;
-		else if (e instanceof InvokeMethodFunExpr) {
-			InvokeMethodFunExpr expr = (InvokeMethodFunExpr) e;
-			return Type.getType(invokeMethodOf(expr).getReturnType());
-		} else if (e instanceof LocalFunExpr) {
-			LocalFunExpr expr = (LocalFunExpr) e;
-			return expr.type;
-		} else if (e instanceof PlaceholderFunExpr)
-			return typeOf(placeholderResolver.apply((PlaceholderFunExpr) e));
-		else if (e instanceof PrintlnFunExpr)
+		else if (e0 instanceof InvokeMethodFunExpr) {
+			InvokeMethodFunExpr e1 = (InvokeMethodFunExpr) e0;
+			return Type.getType(invokeMethodOf(e1).getReturnType());
+		} else if (e0 instanceof LocalFunExpr) {
+			LocalFunExpr e1 = (LocalFunExpr) e0;
+			return e1.type;
+		} else if (e0 instanceof PlaceholderFunExpr) {
+			PlaceholderFunExpr e1 = (PlaceholderFunExpr) e0;
+			return typeOf(placeholderResolver.apply(e1));
+		} else if (e0 instanceof PrintlnFunExpr)
 			return Type.VOID;
-		else if (e instanceof SeqFunExpr) {
-			SeqFunExpr expr = (SeqFunExpr) e;
-			return typeOf(expr.right);
-		} else if (e instanceof StaticFunExpr) {
-			StaticFunExpr expr = (StaticFunExpr) e;
-			return expr.type;
+		else if (e0 instanceof SeqFunExpr) {
+			SeqFunExpr e1 = (SeqFunExpr) e0;
+			return typeOf(e1.right);
+		} else if (e0 instanceof StaticFunExpr) {
+			StaticFunExpr e1 = (StaticFunExpr) e0;
+			return e1.type;
 		} else
-			throw new RuntimeException("Unknown expression " + e.getClass());
+			throw new RuntimeException("Unknown expression " + e0.getClass());
 	}
 
 	public Method invokeMethodOf(InvokeMethodFunExpr expr) {

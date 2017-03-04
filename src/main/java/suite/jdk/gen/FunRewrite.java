@@ -53,39 +53,39 @@ public class FunRewrite extends FunFactory {
 		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, this::rewrite_, expr0);
 	}
 
-	private FunExpr rewrite_(FunExpr e) {
-		if (e instanceof ApplyFunExpr) {
-			ApplyFunExpr expr = (ApplyFunExpr) e;
-			FunExpr object = rewrite(expr.object);
-			FunExpr parameters[] = Read.from(expr.parameters).map(this::rewrite).toArray(FunExpr.class);
+	private FunExpr rewrite_(FunExpr e0) {
+		if (e0 instanceof ApplyFunExpr) {
+			ApplyFunExpr e1 = (ApplyFunExpr) e0;
+			FunExpr object = rewrite(e1.object);
+			FunExpr parameters[] = Read.from(e1.parameters).map(this::rewrite).toArray(FunExpr.class);
 			Method method = fti.methodOf(object);
 			return object.invoke(method.getName(), parameters);
-		} else if (e instanceof CastFunExpr) {
-			CastFunExpr cfe = (CastFunExpr) e;
-			FunExpr expr = cfe.expr;
+		} else if (e0 instanceof CastFunExpr) {
+			CastFunExpr e1 = (CastFunExpr) e0;
+			FunExpr expr = e1.expr;
 			if (expr instanceof DeclareParameterFunExpr)
-				fti.interfaceClasses.put((DeclareParameterFunExpr) expr, Type_.classOf(cfe.type));
+				fti.interfaceClasses.put((DeclareParameterFunExpr) expr, Type_.classOf(e1.type));
 			return null;
-		} else if (e instanceof DeclareParameterFunExpr) {
-			DeclareParameterFunExpr e_ = (DeclareParameterFunExpr) e;
-			Class<?> pts[] = Type_.methodOf(fti.interfaceClasses.get(e_)).getParameterTypes();
-			if (e instanceof Declare0ParameterFunExpr) {
-				Declare0ParameterFunExpr expr = (Declare0ParameterFunExpr) e_;
-				return rewrite(expr.do_);
-			} else if (e instanceof Declare1ParameterFunExpr) {
-				Declare1ParameterFunExpr expr = (Declare1ParameterFunExpr) e_;
-				placeholders.put(expr.parameter, local(1, pts[0]));
-				return rewrite(expr.do_);
-			} else if (e instanceof Declare2ParameterFunExpr) {
-				Declare2ParameterFunExpr expr = (Declare2ParameterFunExpr) e_;
-				placeholders.put(expr.p0, local(1, pts[0]));
-				placeholders.put(expr.p1, local(2, pts[1]));
-				return rewrite(expr.do_);
+		} else if (e0 instanceof DeclareParameterFunExpr) {
+			DeclareParameterFunExpr e1 = (DeclareParameterFunExpr) e0;
+			Class<?> pts[] = Type_.methodOf(fti.interfaceClasses.get(e1)).getParameterTypes();
+			if (e0 instanceof Declare0ParameterFunExpr) {
+				Declare0ParameterFunExpr e2 = (Declare0ParameterFunExpr) e1;
+				return rewrite(e2.do_);
+			} else if (e0 instanceof Declare1ParameterFunExpr) {
+				Declare1ParameterFunExpr e2 = (Declare1ParameterFunExpr) e1;
+				placeholders.put(e2.parameter, local(1, pts[0]));
+				return rewrite(e2.do_);
+			} else if (e0 instanceof Declare2ParameterFunExpr) {
+				Declare2ParameterFunExpr e2 = (Declare2ParameterFunExpr) e1;
+				placeholders.put(e2.p0, local(1, pts[0]));
+				placeholders.put(e2.p1, local(2, pts[1]));
+				return rewrite(e2.do_);
 			} else
 				return null;
-		} else if (e instanceof DeclareLocalFunExpr) {
-			DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
-			FunExpr value = rewrite(expr.value);
+		} else if (e0 instanceof DeclareLocalFunExpr) {
+			DeclareLocalFunExpr e1 = (DeclareLocalFunExpr) e0;
+			FunExpr value = rewrite(e1.value);
 			Type type = fti.typeOf(value);
 
 			int index = localTypes.size();
@@ -95,39 +95,40 @@ public class FunRewrite extends FunFactory {
 			afe.index = index;
 			afe.value = value;
 
-			placeholders.put(expr.var, local(index, type));
-			return seq(afe, rewrite(expr.do_));
-		} else if (e instanceof FieldFunExpr) {
-			FieldFunExpr expr = (FieldFunExpr) e;
-			FunExpr object = rewrite(expr.object);
-			String fieldName = expr.field;
+			placeholders.put(e1.var, local(index, type));
+			return seq(afe, rewrite(e1.do_));
+		} else if (e0 instanceof FieldFunExpr) {
+			FieldFunExpr e1 = (FieldFunExpr) e0;
+			FunExpr object = rewrite(e1.object);
+			String fieldName = e1.field;
 			Class<?> clazz = fti.classOf(object);
 			Field field = Rethrow.reflectiveOperationException(() -> clazz.getField(fieldName));
 			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
-		} else if (e instanceof InvokeFunExpr) {
-			InvokeFunExpr expr = (InvokeFunExpr) e;
-			LambdaInstance<?> l_inst = expr.lambda;
+		} else if (e0 instanceof InvokeFunExpr) {
+			InvokeFunExpr e1 = (InvokeFunExpr) e0;
+			LambdaInstance<?> l_inst = e1.lambda;
 			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
 			LambdaInterface<?> l_iface = l_impl.lambdaInterface;
 			FunExpr object = object_(l_impl.newFun(l_inst.fieldValues), l_iface.interfaceClass);
 
-			return rewrite(object.invoke(l_iface.interfaceClass, l_iface.methodName, expr.parameters));
-		} else if (e instanceof InjectFunExpr) {
-			InjectFunExpr expr = (InjectFunExpr) e;
-			Type type = fieldTypes.get(expr.field);
+			return rewrite(object.invoke(l_iface.interfaceClass, l_iface.methodName, e1.parameters));
+		} else if (e0 instanceof InjectFunExpr) {
+			InjectFunExpr e1 = (InjectFunExpr) e0;
+			Type type = fieldTypes.get(e1.field);
 			if (type != null)
-				return rewrite(this_().field(expr.field, type));
+				return rewrite(this_().field(e1.field, type));
 			else
-				throw new RuntimeException(expr.field);
-		} else if (e instanceof ObjectFunExpr) {
-			ObjectFunExpr expr = (ObjectFunExpr) e;
+				throw new RuntimeException(e1.field);
+		} else if (e0 instanceof ObjectFunExpr) {
+			ObjectFunExpr e1 = (ObjectFunExpr) e0;
 			String fieldName = "f" + Util.temp();
-			Type type = expr.type;
-			fieldTypeValues.put(fieldName, Pair.of(type, expr.object));
+			Type type = e1.type;
+			fieldTypeValues.put(fieldName, Pair.of(type, e1.object));
 			return rewrite(this_().field(fieldName, type));
-		} else if (e instanceof PlaceholderFunExpr)
-			return placeholders.get((PlaceholderFunExpr) e);
-		else
+		} else if (e0 instanceof PlaceholderFunExpr) {
+			PlaceholderFunExpr e1 = (PlaceholderFunExpr) e0;
+			return placeholders.get(e1);
+		} else
 			return null;
 	}
 

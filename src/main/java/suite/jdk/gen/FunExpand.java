@@ -28,48 +28,48 @@ public class FunExpand extends FunFactory {
 			return expr0;
 	}
 
-	private FunExpr expand_(FunExpr e, int depth) {
-		if (e instanceof If1FunExpr) {
-			If1FunExpr expr = (If1FunExpr) e;
-			FunExpr if_ = expr.if_;
+	private FunExpr expand_(FunExpr e0, int depth) {
+		if (e0 instanceof If1FunExpr) {
+			If1FunExpr e1 = (If1FunExpr) e0;
+			FunExpr if_ = e1.if_;
 			if (if_ instanceof ConstantFunExpr) {
-				ConstantFunExpr cfe = (ConstantFunExpr) if_;
-				if (cfe.type == Type.INT)
-					return ((Integer) cfe.constant).intValue() == 1 ? expr.then : expr.else_;
+				ConstantFunExpr e2 = (ConstantFunExpr) if_;
+				if (e2.type == Type.INT)
+					return ((Integer) e2.constant).intValue() == 1 ? e1.then : e1.else_;
 				else
 					return null;
 			} else
 				return null;
-		} else if (e instanceof ApplyFunExpr) {
-			ApplyFunExpr expr = (ApplyFunExpr) e;
-			FunExpr object0 = expr.object;
+		} else if (e0 instanceof ApplyFunExpr) {
+			ApplyFunExpr e1 = (ApplyFunExpr) e0;
+			FunExpr object0 = e1.object;
 			FunExpr object1 = object0 instanceof CastFunExpr ? ((CastFunExpr) object0).expr : object0;
 			if (object1 instanceof Declare0ParameterFunExpr) {
 				Declare0ParameterFunExpr object_ = (Declare0ParameterFunExpr) object1;
 				return expand(object_.do_, depth);
 			} else if (object1 instanceof Declare1ParameterFunExpr) {
 				Declare1ParameterFunExpr object_ = (Declare1ParameterFunExpr) object1;
-				return expand(replace(object_.do_, object_.parameter, expr.parameters.get(0)), depth);
+				return expand(replace(object_.do_, object_.parameter, e1.parameters.get(0)), depth);
 			} else if (object1 instanceof Declare2ParameterFunExpr) {
 				Declare2ParameterFunExpr object_ = (Declare2ParameterFunExpr) object1;
 				FunExpr do0 = object_.do_;
-				FunExpr do1 = replace(do0, object_.p0, expr.parameters.get(0));
-				FunExpr do2 = replace(do1, object_.p1, expr.parameters.get(1));
+				FunExpr do1 = replace(do0, object_.p0, e1.parameters.get(0));
+				FunExpr do2 = replace(do1, object_.p1, e1.parameters.get(1));
 				return expand(do2, depth);
 			} else
 				return null;
-		} else if (e instanceof DeclareLocalFunExpr) {
-			DeclareLocalFunExpr expr = (DeclareLocalFunExpr) e;
-			return expand(replace(expr.do_, expr.var, expr.value), depth);
-		} else if (e instanceof InvokeFunExpr) {
-			InvokeFunExpr expr = (InvokeFunExpr) e;
-			LambdaInstance<?> l_inst = expr.lambda;
+		} else if (e0 instanceof DeclareLocalFunExpr) {
+			DeclareLocalFunExpr e1 = (DeclareLocalFunExpr) e0;
+			return expand(replace(e1.do_, e1.var, e1.value), depth);
+		} else if (e0 instanceof InvokeFunExpr) {
+			InvokeFunExpr e1 = (InvokeFunExpr) e0;
+			LambdaInstance<?> l_inst = e1.lambda;
 			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
 			LambdaInterface<?> l_iface = l_impl.lambdaInterface;
 			FunExpr fe = l_impl.expr;
 			for (String fieldName : l_impl.fieldTypes.keySet())
 				fe = replaceInject(fe, fieldName, object(l_inst.fieldValues.get(fieldName), l_impl.fieldTypes.get(fieldName)));
-			return expand(fe.cast(l_iface.interfaceClass).apply(expr.parameters), depth - 1);
+			return expand(fe.cast(l_iface.interfaceClass).apply(e1.parameters), depth - 1);
 		} else
 			return null;
 	}
