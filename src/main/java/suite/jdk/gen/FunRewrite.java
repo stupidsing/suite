@@ -109,15 +109,18 @@ public class FunRewrite extends FunFactory {
 				throw new RuntimeException(e1.field);
 		} else if (e0 instanceof ObjectFunExpr) {
 			ObjectFunExpr e1 = (ObjectFunExpr) e0;
-			String fieldName = "f" + Util.temp();
-			Type type = e1.type;
-			fieldTypeValues.put(fieldName, Pair.of(type, e1.object));
-			return rewrite(this_().field(fieldName, type));
+			return objectField(e1.object, e1.type);
 		} else if (e0 instanceof PlaceholderFunExpr) {
 			PlaceholderFunExpr e1 = (PlaceholderFunExpr) e0;
 			return placeholders.get(e1);
 		} else
 			return null;
+	}
+
+	private FunExpr objectField(Object object, Type type) {
+		String fieldName = "f" + Util.temp();
+		fieldTypeValues.put(fieldName, Pair.of(type, object));
+		return rewrite(this_().field(fieldName, type));
 	}
 
 	private FunExpr this_() {
