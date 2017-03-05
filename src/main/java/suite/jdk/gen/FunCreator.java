@@ -110,7 +110,7 @@ public class FunCreator<I> extends FunFactory {
 
 			FunExpand fe = new FunExpand();
 			FunRewrite fr;
-			FunGenerateBytecode fbg;
+			FunGenerateBytecode fgb;
 
 			FunExpr expr1 = fe.expand(expr0, 3);
 			FunExpr expr2 = (fr = new FunRewrite(fieldTypes, localTypes, expr1.cast(interfaceClass))).expr;
@@ -135,7 +135,7 @@ public class FunCreator<I> extends FunFactory {
 			}
 
 			{
-				InstructionList il = (fbg = new FunGenerateBytecode(className, fr.fti, cp)).visit(expr2, returnType);
+				InstructionList il = (fgb = new FunGenerateBytecode(className, fr.fti, cp)).visit(expr2, returnType);
 				Type paramTypes[] = parameterTypes.toArray(new Type[0]);
 
 				if (isLog) {
@@ -151,7 +151,7 @@ public class FunCreator<I> extends FunFactory {
 						String s = instruction.toString(false);
 						String p;
 						if (instruction instanceof BranchInstruction)
-							p = fbg.jumps.get(i).toString();
+							p = fgb.jumps.get(i).toString();
 						else if (instruction instanceof CPInstruction)
 							p = constantPool.constantToString(constantPool.getConstant(((CPInstruction) instruction).getIndex()));
 						else
