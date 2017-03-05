@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.bcel.generic.Type;
 
 import suite.adt.Pair;
-import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
 import suite.jdk.gen.FunExpression.AssignFunExpr;
 import suite.jdk.gen.FunExpression.Declare0ParameterFunExpr;
@@ -24,14 +23,11 @@ import suite.jdk.gen.FunExpression.InjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
-import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.Util;
 
 public class FunRewrite extends FunFactory {
-
-	private static Inspect inspect = Singleton.get().getInspect();
 
 	public final FunExpr expr;
 	public final Map<String, Pair<Type, Object>> fieldTypeValues = new HashMap<>();
@@ -49,7 +45,7 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr rewrite(FunExpr expr0) {
-		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, this::rewrite_, expr0);
+		return rewrite(this::rewrite_, expr0);
 	}
 
 	private FunExpr rewrite_(FunExpr e0) {

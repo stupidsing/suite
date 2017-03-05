@@ -2,7 +2,6 @@ package suite.jdk.gen;
 
 import org.apache.bcel.generic.Type;
 
-import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
@@ -14,16 +13,13 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.InjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
-import suite.node.util.Singleton;
 import suite.util.Util;
 
 public class FunExpand extends FunFactory {
 
-	private static Inspect inspect = Singleton.get().getInspect();
-
 	public FunExpr expand(FunExpr expr0, int depth) {
 		if (0 < depth)
-			return inspect.rewrite(FunExpr.class, new Object[] { fe, }, expr -> expand_(expr, depth), expr0);
+			return rewrite(expr -> expand_(expr, depth), expr0);
 		else
 			return expr0;
 	}
@@ -75,16 +71,12 @@ public class FunExpand extends FunFactory {
 	}
 
 	private FunExpr replaceInject(FunExpr expr0, String fieldName, FunExpr to) {
-		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, e -> {
+		return rewrite(e -> {
 			if (e instanceof InjectFunExpr && Util.stringEquals(((InjectFunExpr) e).field, fieldName))
 				return to;
 			else
 				return null;
 		}, expr0);
-	}
-
-	private FunExpr replace(FunExpr expr0, FunExpr from, FunExpr to) {
-		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, e -> e.equals(from) ? to : null, expr0);
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.function.BiFunction;
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.Type;
 
+import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.BinaryFunExpr;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
 import suite.jdk.gen.FunExpression.Declare0ParameterFunExpr;
@@ -25,11 +26,14 @@ import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
+import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
 public class FunFactory {
+
+	private static Inspect inspect = Singleton.get().getInspect();
 
 	public static final FunExpression fe = new FunExpression();
 
@@ -189,6 +193,14 @@ public class FunFactory {
 		expr.p1 = p1;
 		expr.do_ = doFun.apply(p0, p1);
 		return expr;
+	}
+
+	public FunExpr replace(FunExpr expr0, FunExpr from, FunExpr to) {
+		return rewrite(e -> e.equals(from) ? to : null, expr0);
+	}
+
+	public FunExpr rewrite(Fun<FunExpr, FunExpr> fun, FunExpr t0) {
+		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, fun, t0);
 	}
 
 	public FunExpr seq(FunExpr e0, FunExpr e1) {
