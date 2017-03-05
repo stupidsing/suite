@@ -1,9 +1,7 @@
 package suite.jdk.gen;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.bcel.generic.Type;
 
@@ -14,7 +12,6 @@ import suite.jdk.gen.FunExpression.CastFunExpr;
 import suite.jdk.gen.FunExpression.CheckCastFunExpr;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
-import suite.jdk.gen.FunExpression.DeclareParameterFunExpr;
 import suite.jdk.gen.FunExpression.FieldTypeFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.IfFunExpr;
@@ -30,8 +27,6 @@ import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 
 public class FunTypeInformation {
-
-	public final Map<DeclareParameterFunExpr, Class<?>> interfaceClasses = new HashMap<>();
 
 	private List<Type> localTypes;
 	private Fun<PlaceholderFunExpr, FunExpr> placeholderResolver;
@@ -62,9 +57,6 @@ public class FunTypeInformation {
 		} else if (e0 instanceof DeclareLocalFunExpr) {
 			DeclareLocalFunExpr e1 = (DeclareLocalFunExpr) e0;
 			return typeOf(e1.do_);
-		} else if (e0 instanceof DeclareParameterFunExpr) {
-			DeclareParameterFunExpr e1 = (DeclareParameterFunExpr) e0;
-			return Type.getType(interfaceClasses.get(e1));
 		} else if (e0 instanceof FieldTypeFunExpr) {
 			FieldTypeFunExpr e1 = (FieldTypeFunExpr) e0;
 			return e1.type;

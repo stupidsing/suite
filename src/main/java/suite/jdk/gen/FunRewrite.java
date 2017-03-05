@@ -13,7 +13,6 @@ import suite.adt.Pair;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
 import suite.jdk.gen.FunExpression.AssignFunExpr;
-import suite.jdk.gen.FunExpression.CastFunExpr;
 import suite.jdk.gen.FunExpression.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
@@ -60,12 +59,6 @@ public class FunRewrite extends FunFactory {
 			FunExpr parameters[] = Read.from(e1.parameters).map(this::rewrite).toArray(FunExpr.class);
 			Method method = fti.methodOf(object);
 			return object.invoke(method.getName(), parameters);
-		} else if (e0 instanceof CastFunExpr) {
-			CastFunExpr e1 = (CastFunExpr) e0;
-			FunExpr expr = e1.expr;
-			if (expr instanceof DeclareParameterFunExpr)
-				fti.interfaceClasses.put((DeclareParameterFunExpr) expr, Type_.classOf(e1.type));
-			return null;
 		} else if (e0 instanceof DeclareParameterFunExpr) {
 			DeclareParameterFunExpr e1 = (DeclareParameterFunExpr) e0;
 			if (e0 instanceof Declare0ParameterFunExpr) {
