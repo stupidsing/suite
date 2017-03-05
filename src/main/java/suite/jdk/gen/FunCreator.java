@@ -92,17 +92,17 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public class CreateClass {
-		public final Map<String, Pair<Type, Object>> fieldTypeValues;
 		public final String className;
 		public final Class<? extends I> clazz;
+		public final Map<String, Pair<Type, Object>> fieldTypeValues;
 
 		private CreateClass(FunExpr expr0) {
 			Class<I> interfaceClass = lambdaClass.interfaceClass;
-			className = interfaceClass.getSimpleName() + Util.temp();
+			String clsName = interfaceClass.getSimpleName() + Util.temp();
 			String methodName = lambdaClass.methodName;
 
 			List<Type> localTypes = new ArrayList<>();
-			localTypes.add(ObjectType.getInstance(className));
+			localTypes.add(ObjectType.getInstance(clsName));
 			localTypes.addAll(parameterTypes);
 
 			ConstantPoolGen cp = new ConstantPoolGen();
@@ -116,7 +116,7 @@ public class FunCreator<I> extends FunFactory {
 			FunExpr expr2 = (fr = new FunRewrite(fieldTypes, localTypes, expr1.cast(interfaceClass))).expr;
 
 			org.apache.bcel.classfile.Method m0, m1;
-			fieldTypeValues = fr.fieldTypeValues;
+			Map<String, Pair<Type, Object>> ftvs = fr.fieldTypeValues;
 
 			{
 				InstructionList il = new InstructionList();
@@ -125,7 +125,7 @@ public class FunCreator<I> extends FunFactory {
 					il.append(factory.createInvoke(superClass.getName(), "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
 					il.append(InstructionFactory.createReturn(Type.VOID));
 
-					MethodGen mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", className, il, cp);
+					MethodGen mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", clsName, il, cp);
 					mg.setMaxStack();
 					mg.setMaxLocals();
 					m0 = mg.getMethod();
@@ -135,14 +135,14 @@ public class FunCreator<I> extends FunFactory {
 			}
 
 			{
-				InstructionList il = (fgb = new FunGenerateBytecode(className, fr.fti, cp)).visit(expr2, returnType);
+				InstructionList il = (fgb = new FunGenerateBytecode(clsName, fr.fti, cp)).visit(expr2, returnType);
 				Type paramTypes[] = parameterTypes.toArray(new Type[0]);
 
 				if (isLog) {
 					LogUtil.info("expr0 = " + expr0);
 					LogUtil.info("expr1 = " + expr1);
 					LogUtil.info("expr2 = " + expr2);
-					LogUtil.info("class = " + className + " implements " + interfaceClass.getName());
+					LogUtil.info("class = " + clsName + " implements " + interfaceClass.getName());
 					ConstantPool constantPool = cp.getConstantPool();
 					Instruction instructions[] = il.getInstructions();
 
@@ -161,7 +161,7 @@ public class FunCreator<I> extends FunFactory {
 				}
 
 				try {
-					MethodGen mg = new MethodGen(ACC_PUBLIC, returnType, paramTypes, null, methodName, className, il, cp);
+					MethodGen mg = new MethodGen(ACC_PUBLIC, returnType, paramTypes, null, methodName, clsName, il, cp);
 					mg.setMaxStack();
 					mg.setMaxLocals();
 					m1 = mg.getMethod();
@@ -171,13 +171,13 @@ public class FunCreator<I> extends FunFactory {
 			}
 
 			String ifs[] = new String[] { interfaceClass.getName(), };
-			ClassGen cg = new ClassGen(className, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
+			ClassGen cg = new ClassGen(clsName, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
 
 			for (Entry<String, Pair<Type, Object>> e : constantTypeValues.entrySet())
 				cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().t0, e.getKey(), cp).getField());
 			for (Entry<String, Type> e : fieldTypes.entrySet())
 				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue(), e.getKey(), cp).getField());
-			for (Entry<String, Pair<Type, Object>> e : fieldTypeValues.entrySet())
+			for (Entry<String, Pair<Type, Object>> e : ftvs.entrySet())
 				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue().t0, e.getKey(), cp).getField());
 
 			cg.addMethod(m0);
@@ -185,7 +185,9 @@ public class FunCreator<I> extends FunFactory {
 
 			byte bytes[] = cg.getJavaClass().getBytes();
 
-			clazz = new UnsafeUtil().defineClass(interfaceClass, className, bytes);
+			className = clsName;
+			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes);
+			fieldTypeValues = ftvs;
 
 			for (Entry<String, Pair<Type, Object>> e : constantTypeValues.entrySet())
 				try {
