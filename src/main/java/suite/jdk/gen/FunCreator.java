@@ -184,9 +184,10 @@ public class FunCreator<I> extends FunFactory {
 			cg.addMethod(m1);
 
 			byte bytes[] = cg.getJavaClass().getBytes();
+			Object array[] = new Object[cp.getSize()];
 
 			className = clsName;
-			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes);
+			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes, array);
 			fieldTypeValues = ftvs;
 
 			for (Entry<String, Pair<Type, Object>> e : constantTypeValues.entrySet())
