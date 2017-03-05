@@ -22,7 +22,7 @@ import suite.util.FunUtil.Fun;
 
 public class SewingExpressionImpl implements SewingExpression {
 
-	private static LambdaInterface<Evaluate> lambdaClass = LambdaInterface.of(Evaluate.class);
+	private static LambdaInterface<Evaluate> lambdaInterface = LambdaInterface.of(Evaluate.class);
 
 	private static String key = "key";
 	private static Fun<Map<String, Object>, Evaluate> compiledNumber = compileNumber(key);
@@ -65,7 +65,7 @@ public class SewingExpressionImpl implements SewingExpression {
 	}
 
 	private static Fun<Map<String, Object>, Evaluate> compileNumber(String key) {
-		FunCreator<Evaluate> fc = FunCreator.of(lambdaClass, Collections.singletonMap(key, Type.INT));
+		FunCreator<Evaluate> fc = FunCreator.of(lambdaInterface, Collections.singletonMap(key, Type.INT));
 		return fc.create(fc.field(key));
 	}
 
@@ -74,7 +74,7 @@ public class SewingExpressionImpl implements SewingExpression {
 
 		Fun<Map<String, Object>, Evaluate> fun = compiledByOp //
 				.computeIfAbsent(op, op_ -> {
-					FunCreator<Evaluate> fc = FunCreator.of(lambdaClass,
+					FunCreator<Evaluate> fc = FunCreator.of(lambdaInterface,
 							Read.<String, Type> empty2() //
 									.cons(e0, Type.getType(Evaluate.class)) //
 									.cons(e1, Type.getType(Evaluate.class)) //
