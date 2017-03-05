@@ -50,8 +50,8 @@ public class FunCreator<I> extends FunFactory {
 	private Map<String, Pair<Type, Object>> constantTypeValues;
 	private Map<String, Type> fieldTypes;
 
-	public static <I> FunCreator<I> of(LambdaInterface<I> lc) {
-		return of(lc, Collections.emptyMap());
+	public static <I> FunCreator<I> of(Class<I> clazz) {
+		return of(LambdaInterface.of(clazz), Collections.emptyMap());
 	}
 
 	public static <I> FunCreator<I> of(LambdaInterface<I> lc, Map<String, Type> fs) {

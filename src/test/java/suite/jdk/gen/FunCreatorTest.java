@@ -15,12 +15,7 @@ import suite.util.FunUtil.Fun;
 
 public class FunCreatorTest {
 
-	@SuppressWarnings("rawtypes")
-	private static LambdaInterface<BiPredicate> lambdaClassBiPredicate = LambdaInterface.of(BiPredicate.class, "test");
-	@SuppressWarnings("rawtypes")
-	private static LambdaInterface<Fun> lambdaClassFun = LambdaInterface.of(Fun.class);
 	private static LambdaInterface<IntFun> lambdaClassIntFun = LambdaInterface.of(IntFun.class);
-	private static LambdaInterface<IntSupplier> lambdaClassIntSupplier = LambdaInterface.of(IntSupplier.class);
 
 	private Map<String, Object> void_ = Collections.emptyMap();
 
@@ -56,7 +51,7 @@ public class FunCreatorTest {
 	@Test
 	public void testBiPredicate() {
 		@SuppressWarnings("rawtypes")
-		FunCreator<BiPredicate> fc = FunCreator.of(lambdaClassBiPredicate);
+		FunCreator<BiPredicate> fc = FunCreator.of(BiPredicate.class);
 		@SuppressWarnings("unchecked")
 		BiPredicate<Object, Object> bp = fc //
 				.create((p, q) -> fc._true()) //
@@ -66,7 +61,7 @@ public class FunCreatorTest {
 
 	@Test
 	public void testConstant() {
-		FunCreator<IntFun> fc = FunCreator.of(lambdaClassIntFun);
+		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		IntFun f = fc //
 				.create(i -> fc.constant(1)) //
 				.apply(void_);
@@ -87,7 +82,7 @@ public class FunCreatorTest {
 	@Test
 	public void testFun() {
 		@SuppressWarnings("rawtypes")
-		FunCreator<Fun> fc = FunCreator.of(lambdaClassFun);
+		FunCreator<Fun> fc = FunCreator.of(Fun.class);
 		@SuppressWarnings("unchecked")
 		Fun<Object, Object> fun = fc.create(o -> o).apply(void_);
 		assertEquals("Hello", fun.apply("Hello"));
@@ -95,7 +90,7 @@ public class FunCreatorTest {
 
 	@Test
 	public void testIf() {
-		FunCreator<IntSupplier> fc = FunCreator.of(lambdaClassIntSupplier);
+		FunCreator<IntSupplier> fc = FunCreator.of(IntSupplier.class);
 		Object result = fc //
 				.create(() -> fc.if_(fc._true(), fc._true(), fc._false())) //
 				.apply(void_) //
@@ -105,7 +100,7 @@ public class FunCreatorTest {
 
 	@Test
 	public void testLocal() {
-		FunCreator<IntFun> fc = FunCreator.of(lambdaClassIntFun);
+		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
 				.create(p -> fc.declare(fc.constant(1), l -> fc.add(l, p))) //
 				.apply(void_) //
@@ -116,7 +111,7 @@ public class FunCreatorTest {
 	@Test
 	public void testObject() {
 		IntFun inc = i -> i + 1;
-		FunCreator<IntFun> fc = FunCreator.of(lambdaClassIntFun);
+		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //
 				.create(i -> fc.object(inc, IntFun.class).invoke("apply", i)) //
 				.apply(void_) //
