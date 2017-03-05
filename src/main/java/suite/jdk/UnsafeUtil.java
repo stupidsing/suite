@@ -13,9 +13,13 @@ public class UnsafeUtil {
 	}
 
 	public <T> Class<? extends T> defineClass(Class<T> interfaceClazz, String className, byte bytes[]) {
+		return defineClass(interfaceClazz, className, bytes, null);
+	}
+
+	public <T> Class<? extends T> defineClass(Class<T> interfaceClazz, String className, byte bytes[], Object array[]) {
 		Unsafe unsafe = getUnsafe();
 		@SuppressWarnings("unchecked")
-		Class<? extends T> clazz = (Class<? extends T>) unsafe.defineAnonymousClass(interfaceClazz, bytes, null);
+		Class<? extends T> clazz = (Class<? extends T>) unsafe.defineAnonymousClass(interfaceClazz, bytes, array);
 		return clazz;
 	}
 
