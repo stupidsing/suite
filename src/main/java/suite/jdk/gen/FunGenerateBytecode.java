@@ -16,6 +16,7 @@ import org.apache.bcel.generic.InstructionConst;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
@@ -33,6 +34,7 @@ import suite.jdk.gen.FunExpression.IfNonNullFunExpr;
 import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
 import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
+import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.gen.FunExpression.StaticFunExpr;
@@ -42,14 +44,18 @@ public class FunGenerateBytecode {
 
 	private String className;
 	private InstructionFactory factory;
+	private ConstantPoolGen cpg;
 	private FunTypeInformation fti;
 
+	public final Map<Integer, Object> constants = new HashMap<>();
 	public final Map<Integer, Integer> jumps = new HashMap<>();
+
 	private List<Instruction> list = new ArrayList<>();
 
 	public FunGenerateBytecode(String className, FunTypeInformation fti, ConstantPoolGen cpg) {
 		this.className = className;
 		this.fti = fti;
+		this.cpg = cpg;
 		this.factory = new InstructionFactory(cpg);
 	}
 
@@ -146,6 +152,23 @@ public class FunGenerateBytecode {
 		} else if (e0 instanceof LocalFunExpr) {
 			LocalFunExpr e1 = (LocalFunExpr) e0;
 			list.add(InstructionFactory.createLoad(fti.typeOf(e1), e1.index));
+		} else if (e0 instanceof NewFunExpr) {
+			NewFunExpr e1 = (NewFunExpr) e0;
+			Class<?> implClass = e1.implementationClass;
+			String implClassName = e1.className;
+			int classIndex = cpg.addClass(implClassName);
+			list.add(new NEW(classIndex));
+			list.add(InstructionFactory.createDup(0));
+			list.add(factory.createInvoke(implClassName, "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
+
+			for (Entry<String, FunExpr> e : e1.fields.entrySet()) {
+				FunExpr value = e.getValue();
+				list.add(InstructionFactory.createDup(0));
+				visit0(value);
+				list.add(factory.createPutField(implClassName, e.getKey(), fti.typeOf(value)));
+			}
+
+			constants.put(classIndex, implClass);
 		} else if (e0 instanceof PrintlnFunExpr) {
 			PrintlnFunExpr e1 = (PrintlnFunExpr) e0;
 			String sys = System.class.getName();

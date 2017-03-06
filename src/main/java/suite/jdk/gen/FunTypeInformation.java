@@ -18,6 +18,7 @@ import suite.jdk.gen.FunExpression.IfFunExpr;
 import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
 import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
+import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
@@ -71,6 +72,9 @@ public class FunTypeInformation {
 		} else if (e0 instanceof LocalFunExpr) {
 			LocalFunExpr e1 = (LocalFunExpr) e0;
 			return localTypes.get(e1.index);
+		} else if (e0 instanceof NewFunExpr) {
+			NewFunExpr e1 = (NewFunExpr) e0;
+			return Type.getType(e1.interfaceClass);
 		} else if (e0 instanceof PlaceholderFunExpr) {
 			PlaceholderFunExpr e1 = (PlaceholderFunExpr) e0;
 			return typeOf(placeholderResolver.apply(e1));

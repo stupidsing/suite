@@ -2,6 +2,7 @@ package suite.jdk.gen;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.ToIntFunction;
 
 import org.apache.bcel.generic.ReferenceType;
@@ -187,6 +188,12 @@ public class FunExpression {
 
 	public class LocalFunExpr extends FunExpr {
 		public int index;
+	}
+
+	public class NewFunExpr extends FunExpr {
+		public String className;
+		public Map<String, FunExpr> fields;
+		public Class<?> implementationClass, interfaceClass;
 	}
 
 	public class ObjectFunExpr extends FunExpr {
