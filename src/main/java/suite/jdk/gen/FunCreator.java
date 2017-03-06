@@ -209,16 +209,12 @@ public class FunCreator<I> extends FunFactory {
 				for (Field field : clazz.getDeclaredFields()) {
 					String fieldName = field.getName();
 					Pair<Type, Object> typeValue;
-					Object value0, value1;
+					Object value;
 
-					if ((value0 = fieldValues.get(fieldName)) != null)
-						value1 = value0;
+					if ((value = fieldValues.get(fieldName)) != null)
+						field.set(t, value);
 					else if ((typeValue = fieldTypeValues.get(fieldName)) != null)
-						value1 = typeValue.t1;
-					else
-						value1 = null;
-
-					field.set(t, value1);
+						field.set(t, typeValue.t1);
 				}
 				return t;
 			});
