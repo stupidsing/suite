@@ -12,6 +12,7 @@ import org.apache.bcel.generic.Type;
 import suite.adt.Pair;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
 import suite.jdk.gen.FunExpression.AssignFunExpr;
+import suite.jdk.gen.FunExpression.CastFunExpr;
 import suite.jdk.gen.FunExpression.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
@@ -21,9 +22,11 @@ import suite.jdk.gen.FunExpression.FieldFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.InjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
+import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet2;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -41,7 +44,33 @@ public class FunRewrite extends FunFactory {
 		this.fieldTypes = fieldTypes;
 		this.localTypes = new ArrayList<>(parameterTypes);
 		this.fti = new FunTypeInformation(localTypes, placeholders::get);
-		this.expr = rewrite(expr0);
+		this.expr = rewriteFun(expr0);
+	}
+
+	private FunExpr rewriteFun(FunExpr e0) {
+		if (e0 instanceof CastFunExpr) {
+			CastFunExpr e1 = (CastFunExpr) e0;
+			FunExpr e2 = e1.expr;
+			if (e2 instanceof DeclareParameterFunExpr) {
+				DeclareParameterFunExpr e3 = (DeclareParameterFunExpr) e2;
+				if (e3 instanceof Declare0ParameterFunExpr) {
+					Declare0ParameterFunExpr e4 = (Declare0ParameterFunExpr) e3;
+					return rewrite(e4.do_);
+				} else if (e3 instanceof Declare1ParameterFunExpr) {
+					Declare1ParameterFunExpr e4 = (Declare1ParameterFunExpr) e3;
+					placeholders.put(e4.parameter, local(1));
+					return rewrite(e4.do_);
+				} else if (e3 instanceof Declare2ParameterFunExpr) {
+					Declare2ParameterFunExpr e4 = (Declare2ParameterFunExpr) e3;
+					placeholders.put(e4.p0, local(1));
+					placeholders.put(e4.p1, local(2));
+					return rewrite(e4.do_);
+				} else
+					throw new RuntimeException("Cannot rewrite " + e3.getClass());
+			} else
+				throw new RuntimeException("Cannot rewrite " + e2.getClass());
+		} else
+			throw new RuntimeException("Cannot rewrite " + e0.getClass());
 	}
 
 	private FunExpr rewrite(FunExpr expr0) {
@@ -55,20 +84,37 @@ public class FunRewrite extends FunFactory {
 			FunExpr parameters[] = Read.from(e1.parameters).map(this::rewrite).toArray(FunExpr.class);
 			Method method = fti.methodOf(object);
 			return object.invoke(method.getName(), parameters);
-		} else if (e0 instanceof DeclareParameterFunExpr) {
-			DeclareParameterFunExpr e1 = (DeclareParameterFunExpr) e0;
-			if (e0 instanceof Declare0ParameterFunExpr) {
-				Declare0ParameterFunExpr e2 = (Declare0ParameterFunExpr) e1;
-				return rewrite(e2.do_);
-			} else if (e0 instanceof Declare1ParameterFunExpr) {
-				Declare1ParameterFunExpr e2 = (Declare1ParameterFunExpr) e1;
-				placeholders.put(e2.parameter, local(1));
-				return rewrite(e2.do_);
-			} else if (e0 instanceof Declare2ParameterFunExpr) {
-				Declare2ParameterFunExpr e2 = (Declare2ParameterFunExpr) e1;
-				placeholders.put(e2.p0, local(1));
-				placeholders.put(e2.p1, local(2));
-				return rewrite(e2.do_);
+		} else if (e0 instanceof CastFunExpr) {
+			CastFunExpr e1 = (CastFunExpr) e0;
+			FunExpr e2 = e1.expr;
+
+			if (e2 instanceof DeclareParameterFunExpr) {
+				Class<?> interfaceClass = Type_.classOf(e1.type);
+				Map<String, Type> fieldTypes = new HashMap<>();
+				Map<String, FunExpr> fieldValues = new HashMap<>();
+
+				FunExpr e3 = rewrite(e -> {
+					FunExpr value;
+					if (e instanceof PlaceholderFunExpr && (value = placeholders.get(e)) != null) {
+						String fieldName = "k" + Util.temp();
+						Type type = fti.typeOf(value);
+						fieldTypes.put(fieldName, type);
+						fieldValues.put(fieldName, value);
+						return this_().field(fieldName, type);
+					} else
+						return null;
+				}, e2);
+
+				FunCreator<?>.CreateClass cc = FunCreator.of(LambdaInterface.of(interfaceClass), fieldTypes).create_(e3);
+				Streamlet2<String, FunExpr> fieldValues0 = Read.from2(cc.fieldTypeValues).mapValue(tv -> objectField(tv.t1, tv.t0));
+				Streamlet2<String, FunExpr> fieldValues1 = Read.from2(fieldValues);
+
+				NewFunExpr e4 = fe.new NewFunExpr();
+				e4.className = cc.className;
+				e4.fields = Streamlet2.concat(fieldValues0, fieldValues1).toMap();
+				e4.implementationClass = cc.clazz;
+				e4.interfaceClass = interfaceClass;
+				return e4;
 			} else
 				return null;
 		} else if (e0 instanceof DeclareLocalFunExpr) {
