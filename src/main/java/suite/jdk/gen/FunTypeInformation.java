@@ -85,7 +85,7 @@ public class FunTypeInformation {
 			return typeOf(e1.right);
 		} else if (e0 instanceof StaticFunExpr) {
 			StaticFunExpr e1 = (StaticFunExpr) e0;
-			return e1.type;
+			return e1.fieldType;
 		} else
 			throw new RuntimeException("Unknown expression " + e0.getClass());
 	}

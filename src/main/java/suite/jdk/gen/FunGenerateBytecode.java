@@ -104,7 +104,7 @@ public class FunGenerateBytecode {
 		} else if (e0 instanceof FieldTypeFunExpr) {
 			FieldTypeFunExpr e1 = (FieldTypeFunExpr) e0;
 			visit0(e1.object);
-			list.add(factory.createGetField(((ObjectType) fti.typeOf(e1.object)).getClassName(), e1.field, fti.typeOf(e1)));
+			list.add(factory.createGetField(((ObjectType) fti.typeOf(e1.object)).getClassName(), e1.fieldName, fti.typeOf(e1)));
 		} else if (e0 instanceof If1FunExpr) {
 			If1FunExpr e1 = (If1FunExpr) e0;
 			visit0(e1.if_);
@@ -161,7 +161,7 @@ public class FunGenerateBytecode {
 			list.add(InstructionFactory.createDup(0));
 			list.add(factory.createInvoke(implClassName, "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
 
-			for (Entry<String, FunExpr> e : e1.fields.entrySet()) {
+			for (Entry<String, FunExpr> e : e1.fieldValues.entrySet()) {
 				FunExpr value = e.getValue();
 				list.add(InstructionFactory.createDup(0));
 				visit0(value);
@@ -183,7 +183,7 @@ public class FunGenerateBytecode {
 			visit0(e1.right);
 		} else if (e0 instanceof StaticFunExpr) {
 			StaticFunExpr e1 = (StaticFunExpr) e0;
-			list.add(factory.createGetStatic(className, e1.field, e1.type));
+			list.add(factory.createGetStatic(className, e1.fieldName, e1.fieldType));
 		} else
 			throw new RuntimeException("Unknown expression " + e0.getClass());
 	}

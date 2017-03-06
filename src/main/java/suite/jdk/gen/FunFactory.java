@@ -124,7 +124,7 @@ public class FunFactory {
 
 	public FunExpr inject(String field) {
 		InjectFunExpr expr = fe.new InjectFunExpr();
-		expr.field = field;
+		expr.fieldName = field;
 		return expr;
 	}
 

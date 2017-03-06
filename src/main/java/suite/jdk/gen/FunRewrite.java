@@ -111,7 +111,7 @@ public class FunRewrite extends FunFactory {
 
 				NewFunExpr e4 = fe.new NewFunExpr();
 				e4.className = cc.className;
-				e4.fields = Streamlet2.concat(fieldValues0, fieldValues1).toMap();
+				e4.fieldValues = Streamlet2.concat(fieldValues0, fieldValues1).toMap();
 				e4.implementationClass = cc.clazz;
 				e4.interfaceClass = interfaceClass;
 				return e4;
@@ -134,7 +134,7 @@ public class FunRewrite extends FunFactory {
 		} else if (e0 instanceof FieldFunExpr) {
 			FieldFunExpr e1 = (FieldFunExpr) e0;
 			FunExpr object = rewrite(e1.object);
-			String fieldName = e1.field;
+			String fieldName = e1.fieldName;
 			Class<?> clazz = fti.classOf(object);
 			Field field = Rethrow.reflectiveOperationException(() -> clazz.getField(fieldName));
 			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
@@ -148,11 +148,11 @@ public class FunRewrite extends FunFactory {
 			return rewrite(object.invoke(l_iface.interfaceClass, l_iface.methodName, e1.parameters));
 		} else if (e0 instanceof InjectFunExpr) {
 			InjectFunExpr e1 = (InjectFunExpr) e0;
-			Type type = fieldTypes.get(e1.field);
+			Type type = fieldTypes.get(e1.fieldName);
 			if (type != null)
-				return rewrite(this_().field(e1.field, type));
+				return rewrite(this_().field(e1.fieldName, type));
 			else
-				throw new RuntimeException(e1.field);
+				throw new RuntimeException(e1.fieldName);
 		} else if (e0 instanceof ObjectFunExpr) {
 			ObjectFunExpr e1 = (ObjectFunExpr) e0;
 			return objectField(e1.object, e1.type);

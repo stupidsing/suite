@@ -44,7 +44,7 @@ public class FunExpression {
 
 		public FunExpr field(String fieldName) {
 			FieldFunExpr expr = new FieldFunExpr();
-			expr.field = fieldName;
+			expr.fieldName = fieldName;
 			expr.object = this;
 			return expr;
 		}
@@ -52,7 +52,7 @@ public class FunExpression {
 		public FunExpr field(String fieldName, Type type) {
 			FieldTypeFunExpr expr = new FieldTypeFunExpr();
 			expr.type = type;
-			expr.field = fieldName;
+			expr.fieldName = fieldName;
 			expr.object = this;
 			return expr;
 		}
@@ -139,13 +139,13 @@ public class FunExpression {
 
 	public class FieldFunExpr extends FunExpr {
 		public FunExpr object;
-		public String field;
+		public String fieldName;
 	}
 
 	public class FieldTypeFunExpr extends FunExpr {
 		public Type type;
 		public FunExpr object;
-		public String field;
+		public String fieldName;
 	}
 
 	public class IfFunExpr extends FunExpr {
@@ -166,7 +166,7 @@ public class FunExpression {
 	}
 
 	public class InjectFunExpr extends FunExpr {
-		public String field;
+		public String fieldName;
 	}
 
 	public class InstanceOfFunExpr extends FunExpr {
@@ -192,7 +192,7 @@ public class FunExpression {
 
 	public class NewFunExpr extends FunExpr {
 		public String className;
-		public Map<String, FunExpr> fields;
+		public Map<String, FunExpr> fieldValues;
 		public Class<?> implementationClass, interfaceClass;
 	}
 
@@ -222,8 +222,8 @@ public class FunExpression {
 	}
 
 	public class StaticFunExpr extends FunExpr {
-		public Type type;
-		public String field;
+		public String fieldName;
+		public Type fieldType;
 	}
 
 }

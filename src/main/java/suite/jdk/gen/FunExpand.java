@@ -72,7 +72,7 @@ public class FunExpand extends FunFactory {
 
 	private FunExpr replaceInject(FunExpr expr0, String fieldName, FunExpr to) {
 		return rewrite(e -> {
-			if (e instanceof InjectFunExpr && Util.stringEquals(((InjectFunExpr) e).field, fieldName))
+			if (e instanceof InjectFunExpr && Util.stringEquals(((InjectFunExpr) e).fieldName, fieldName))
 				return to;
 			else
 				return null;
