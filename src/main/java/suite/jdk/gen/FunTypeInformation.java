@@ -42,7 +42,7 @@ public class FunTypeInformation {
 			ApplyFunExpr e1 = (ApplyFunExpr) e0;
 			return Type.getType(methodOf(e1.object).getReturnType());
 		} else if (e0 instanceof AssignFunExpr)
-			return Type.getType(void.class);
+			return Type.VOID;
 		else if (e0 instanceof BinaryFunExpr) {
 			BinaryFunExpr e1 = (BinaryFunExpr) e0;
 			return typeOf(e1.left);

@@ -155,7 +155,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	private static LambdaImplementation<BindPredicate> compileBindStr_() {
 		Map<String, Type> fieldTypes = Read.<String, Type> empty2() //
 				.cons(key0, Type.getType(Node.class)) //
-				.cons(key1, Type.getType(String.class)) //
+				.cons(key1, Type.STRING) //
 				.toMap();
 
 		return bind(fieldTypes, //

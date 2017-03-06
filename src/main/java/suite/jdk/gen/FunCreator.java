@@ -216,7 +216,7 @@ public class FunCreator<I> extends FunFactory {
 
 	public FunExpr constant(Object object) {
 		String fieldName = "f" + Util.temp();
-		Type fieldType = Type.getType(object != null ? object.getClass() : Object.class);
+		Type fieldType = object != null ? Type.getType(object.getClass()) : Type.OBJECT;
 		constantTypeValues.put(fieldName, Pair.of(fieldType, object));
 
 		StaticFunExpr expr = fe.new StaticFunExpr();
