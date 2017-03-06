@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.BiPredicate;
-import java.util.function.IntSupplier;
 
 import org.apache.bcel.generic.Type;
 import org.junit.Test;
@@ -21,6 +20,10 @@ public class FunCreatorTest {
 
 	public interface IntFun {
 		public int apply(int i);
+	}
+
+	public interface IntSource {
+		public int source();
 	}
 
 	@Test
@@ -90,11 +93,11 @@ public class FunCreatorTest {
 
 	@Test
 	public void testIf() {
-		FunCreator<IntSupplier> fc = FunCreator.of(IntSupplier.class);
+		FunCreator<IntSource> fc = FunCreator.of(IntSource.class);
 		Object result = fc //
 				.create(() -> fc.if_(fc._true(), fc._true(), fc._false())) //
 				.apply(void_) //
-				.getAsInt();
+				.source();
 		assertEquals(1, result);
 	}
 
