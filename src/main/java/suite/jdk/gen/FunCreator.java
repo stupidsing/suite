@@ -4,6 +4,7 @@ import static org.apache.bcel.Const.ACC_PUBLIC;
 import static org.apache.bcel.Const.ACC_STATIC;
 import static org.apache.bcel.Const.ACC_SUPER;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -202,13 +203,23 @@ public class FunCreator<I> extends FunFactory {
 				}
 		}
 
-		private I create(Map<String, Object> fields) {
+		private I create(Map<String, Object> fieldValues) {
 			return Rethrow.reflectiveOperationException(() -> {
 				I t = clazz.newInstance();
-				for (Entry<String, Object> e : fields.entrySet())
-					clazz.getDeclaredField(e.getKey()).set(t, e.getValue());
-				for (Entry<String, Pair<Type, Object>> e : fieldTypeValues.entrySet())
-					clazz.getDeclaredField(e.getKey()).set(t, e.getValue().t1);
+				for (Field field : clazz.getDeclaredFields()) {
+					String fieldName = field.getName();
+					Pair<Type, Object> typeValue;
+					Object value0, value1;
+
+					if ((value0 = fieldValues.get(fieldName)) != null)
+						value1 = value0;
+					else if ((typeValue = fieldTypeValues.get(fieldName)) != null)
+						value1 = typeValue.t1;
+					else
+						value1 = null;
+
+					field.set(t, value1);
+				}
 				return t;
 			});
 		}
