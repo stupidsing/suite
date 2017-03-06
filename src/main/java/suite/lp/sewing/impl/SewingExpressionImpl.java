@@ -66,7 +66,7 @@ public class SewingExpressionImpl implements SewingExpression {
 
 	private static Fun<Map<String, Object>, Evaluate> compileNumber(String key) {
 		FunCreator<Evaluate> fc = FunCreator.of(lambdaInterface, Collections.singletonMap(key, Type.INT));
-		return fc.create(fc.field(key));
+		return fc.create(() -> fc.field(key));
 	}
 
 	private Evaluate compileOperator(Node m[], String op) {
@@ -79,11 +79,11 @@ public class SewingExpressionImpl implements SewingExpression {
 									.cons(e0, Type.getType(Evaluate.class)) //
 									.cons(e1, Type.getType(Evaluate.class)) //
 									.toMap());
-					return fc.create(fc.parameter1(env -> {
+					return fc.create(env -> {
 						FunExpr v0 = fc.field(e0).apply(env);
 						FunExpr v1 = fc.field(e1).apply(env);
 						return fc.bi(op_, v0, v1);
-					}));
+					});
 				});
 
 		return fun.apply(Read.<String, Object> empty2() //
