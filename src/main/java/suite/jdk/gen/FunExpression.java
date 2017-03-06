@@ -49,10 +49,10 @@ public class FunExpression {
 			return expr;
 		}
 
-		public FunExpr field(String fieldName, Type type) {
+		public FunExpr field(String fieldName, Type fieldType) {
 			FieldTypeFunExpr expr = new FieldTypeFunExpr();
-			expr.type = type;
 			expr.fieldName = fieldName;
+			expr.fieldType = fieldType;
 			expr.object = this;
 			return expr;
 		}
@@ -138,14 +138,14 @@ public class FunExpression {
 	}
 
 	public class FieldFunExpr extends FunExpr {
-		public FunExpr object;
 		public String fieldName;
+		public FunExpr object;
 	}
 
 	public class FieldTypeFunExpr extends FunExpr {
-		public Type type;
-		public FunExpr object;
 		public String fieldName;
+		public Type fieldType;
+		public FunExpr object;
 	}
 
 	public class IfFunExpr extends FunExpr {

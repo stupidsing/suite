@@ -60,7 +60,7 @@ public class FunTypeInformation {
 			return typeOf(e1.do_);
 		} else if (e0 instanceof FieldTypeFunExpr) {
 			FieldTypeFunExpr e1 = (FieldTypeFunExpr) e0;
-			return e1.type;
+			return e1.fieldType;
 		} else if (e0 instanceof IfFunExpr) {
 			IfFunExpr e1 = (IfFunExpr) e0;
 			return typeOf(e1.then);
