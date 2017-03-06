@@ -63,6 +63,17 @@ public class FunCreatorTest {
 	}
 
 	@Test
+	public void testClosure() {
+		FunFactory f = new FunFactory();
+		FunCreator<IntSource> fc = FunCreator.of(IntSource.class);
+		IntSource source = fc //
+				.create(() -> f.declare(f.constant(1),
+						one -> f.parameter1(j -> f.add(one, j)).cast(IntFun.class).apply(f.constant(2)))) //
+				.apply(void_);
+		assertEquals(3, source.source());
+	}
+
+	@Test
 	public void testConstant() {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		IntFun f = fc //
