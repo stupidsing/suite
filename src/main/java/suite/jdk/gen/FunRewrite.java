@@ -94,13 +94,13 @@ public class FunRewrite extends FunFactory {
 				Map<String, FunExpr> fieldValues = new HashMap<>();
 
 				FunExpr e3 = rewrite(e -> {
-					FunExpr value;
-					if (e instanceof PlaceholderFunExpr && (value = placeholders.get(e)) != null) {
+					FunExpr fieldValue;
+					if (e instanceof PlaceholderFunExpr && (fieldValue = placeholders.get(e)) != null) {
 						String fieldName = "k" + Util.temp();
-						Type type = fti.typeOf(value);
-						fieldTypes.put(fieldName, type);
-						fieldValues.put(fieldName, value);
-						return this_().field(fieldName, type);
+						Type fieldType = fti.typeOf(fieldValue);
+						fieldTypes.put(fieldName, fieldType);
+						fieldValues.put(fieldName, fieldValue);
+						return this_().field(fieldName, fieldType);
 					} else
 						return null;
 				}, e2);
