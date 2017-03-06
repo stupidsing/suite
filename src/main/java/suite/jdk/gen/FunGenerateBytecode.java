@@ -41,8 +41,8 @@ import suite.streamlet.Read;
 public class FunGenerateBytecode {
 
 	private String className;
-	private FunTypeInformation fti;
 	private InstructionFactory factory;
+	private FunTypeInformation fti;
 
 	public final Map<Integer, Integer> jumps = new HashMap<>();
 	private List<Instruction> list = new ArrayList<>();
