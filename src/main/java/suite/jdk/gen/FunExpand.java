@@ -12,7 +12,7 @@ import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.FieldInjectFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
-import suite.jdk.gen.FunExpression.InvokeFunExpr;
+import suite.jdk.gen.FunExpression.InvokeLambdaFunExpr;
 import suite.util.Util;
 
 public class FunExpand extends FunFactory {
@@ -57,8 +57,8 @@ public class FunExpand extends FunFactory {
 		} else if (e0 instanceof DeclareLocalFunExpr) {
 			DeclareLocalFunExpr e1 = (DeclareLocalFunExpr) e0;
 			return expand(replace(e1.do_, e1.var, e1.value), depth);
-		} else if (e0 instanceof InvokeFunExpr) {
-			InvokeFunExpr e1 = (InvokeFunExpr) e0;
+		} else if (e0 instanceof InvokeLambdaFunExpr) {
+			InvokeLambdaFunExpr e1 = (InvokeLambdaFunExpr) e0;
 			LambdaInstance<?> l_inst = e1.lambda;
 			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
 			LambdaInterface<?> l_iface = l_impl.lambdaInterface;

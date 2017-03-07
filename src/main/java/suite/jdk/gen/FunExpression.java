@@ -174,7 +174,7 @@ public class FunExpression {
 		public ReferenceType instanceType;
 	}
 
-	public class InvokeFunExpr extends FunExpr {
+	public class InvokeLambdaFunExpr extends FunExpr {
 		public LambdaInstance<?> lambda;
 		public List<FunExpr> parameters;
 	}

@@ -21,7 +21,7 @@ import suite.jdk.gen.FunExpression.DeclareParameterFunExpr;
 import suite.jdk.gen.FunExpression.FieldFunExpr;
 import suite.jdk.gen.FunExpression.FieldInjectFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.jdk.gen.FunExpression.InvokeFunExpr;
+import suite.jdk.gen.FunExpression.InvokeLambdaFunExpr;
 import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
@@ -145,8 +145,8 @@ public class FunRewrite extends FunFactory {
 				return rewrite(this_().field(e1.fieldName, type));
 			else
 				throw new RuntimeException(e1.fieldName);
-		} else if (e0 instanceof InvokeFunExpr) {
-			InvokeFunExpr e1 = (InvokeFunExpr) e0;
+		} else if (e0 instanceof InvokeLambdaFunExpr) {
+			InvokeLambdaFunExpr e1 = (InvokeLambdaFunExpr) e0;
 			LambdaInstance<?> l_inst = e1.lambda;
 			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
 			LambdaInterface<?> l_iface = l_impl.lambdaInterface;

@@ -20,7 +20,7 @@ import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.If2FunExpr;
 import suite.jdk.gen.FunExpression.IfNonNullFunExpr;
 import suite.jdk.gen.FunExpression.FieldInjectFunExpr;
-import suite.jdk.gen.FunExpression.InvokeFunExpr;
+import suite.jdk.gen.FunExpression.InvokeLambdaFunExpr;
 import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
@@ -129,7 +129,7 @@ public class FunFactory {
 	}
 
 	public FunExpr invoke(LambdaInstance<?> lambda, FunExpr... parameters) {
-		InvokeFunExpr expr = fe.new InvokeFunExpr();
+		InvokeLambdaFunExpr expr = fe.new InvokeLambdaFunExpr();
 		expr.lambda = lambda;
 		expr.parameters = Arrays.asList(parameters);
 		return expr;
