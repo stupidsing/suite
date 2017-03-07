@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.ToIntFunction;
 
+import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
@@ -37,7 +38,7 @@ public class FunExpression {
 
 		public FunExpr checkCast(Class<?> clazz) {
 			CheckCastFunExpr expr = new CheckCastFunExpr();
-			expr.type = (ReferenceType) Type.getType(clazz);
+			expr.type = ObjectType.getInstance(clazz.getName());
 			expr.expr = this;
 			return expr;
 		}
