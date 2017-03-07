@@ -104,7 +104,7 @@ public class FunGenerateBytecode {
 		} else if (e0 instanceof FieldTypeFunExpr) {
 			FieldTypeFunExpr e1 = (FieldTypeFunExpr) e0;
 			visit0(e1.object);
-			list.add(factory.createGetField(((ObjectType) fti.typeOf(e1.object)).getClassName(), e1.fieldName, fti.typeOf(e1)));
+			list.add(factory.createGetField(((ObjectType) fti.typeOf(e1.object)).getClassName(), e1.fieldName, e1.fieldType));
 		} else if (e0 instanceof If1FunExpr) {
 			If1FunExpr e1 = (If1FunExpr) e0;
 			visit0(e1.if_);
