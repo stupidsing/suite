@@ -15,11 +15,11 @@ import suite.jdk.gen.FunExpression.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
+import suite.jdk.gen.FunExpression.FieldInjectFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.If2FunExpr;
 import suite.jdk.gen.FunExpression.IfNonNullFunExpr;
-import suite.jdk.gen.FunExpression.FieldInjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeLambdaFunExpr;
 import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
@@ -148,10 +148,6 @@ public class FunFactory {
 		LocalFunExpr expr = fe.new LocalFunExpr();
 		expr.index = number;
 		return expr;
-	}
-
-	public FunExpr object(Object object) {
-		return object_(object, object.getClass());
 	}
 
 	public <C, T extends C> FunExpr object(T object, Class<C> clazz) {
