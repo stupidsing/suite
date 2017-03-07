@@ -147,9 +147,7 @@ public class Inspect {
 						return element;
 					}
 				};
-			} else if (Map.class.isAssignableFrom(clazz))
-
-			{
+			} else if (Map.class.isAssignableFrom(clazz)) {
 				Class<?> valueClass_ = Object.class;
 				ParameterizedType pt;
 				Type typeArgs[];
