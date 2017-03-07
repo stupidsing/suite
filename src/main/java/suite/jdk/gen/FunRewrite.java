@@ -19,8 +19,8 @@ import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.DeclareParameterFunExpr;
 import suite.jdk.gen.FunExpression.FieldFunExpr;
+import suite.jdk.gen.FunExpression.FieldInjectFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.jdk.gen.FunExpression.InjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
@@ -138,6 +138,13 @@ public class FunRewrite extends FunFactory {
 			Class<?> clazz = fti.classOf(object);
 			Field field = Rethrow.reflectiveOperationException(() -> clazz.getField(fieldName));
 			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
+		} else if (e0 instanceof FieldInjectFunExpr) {
+			FieldInjectFunExpr e1 = (FieldInjectFunExpr) e0;
+			Type type = fieldTypes.get(e1.fieldName);
+			if (type != null)
+				return rewrite(this_().field(e1.fieldName, type));
+			else
+				throw new RuntimeException(e1.fieldName);
 		} else if (e0 instanceof InvokeFunExpr) {
 			InvokeFunExpr e1 = (InvokeFunExpr) e0;
 			LambdaInstance<?> l_inst = e1.lambda;
@@ -146,13 +153,6 @@ public class FunRewrite extends FunFactory {
 			FunExpr object = object_(l_impl.newFun(l_inst.fieldValues), l_iface.interfaceClass);
 
 			return rewrite(object.invoke(l_iface.interfaceClass, l_iface.methodName, e1.parameters));
-		} else if (e0 instanceof InjectFunExpr) {
-			InjectFunExpr e1 = (InjectFunExpr) e0;
-			Type type = fieldTypes.get(e1.fieldName);
-			if (type != null)
-				return rewrite(this_().field(e1.fieldName, type));
-			else
-				throw new RuntimeException(e1.fieldName);
 		} else if (e0 instanceof ObjectFunExpr) {
 			ObjectFunExpr e1 = (ObjectFunExpr) e0;
 			return objectField(e1.object, e1.type);

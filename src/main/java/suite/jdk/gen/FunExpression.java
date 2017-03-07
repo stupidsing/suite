@@ -142,6 +142,10 @@ public class FunExpression {
 		public FunExpr object;
 	}
 
+	public class FieldInjectFunExpr extends FunExpr {
+		public String fieldName;
+	}
+
 	public class FieldTypeFunExpr extends FunExpr {
 		public String fieldName;
 		public Type fieldType;
@@ -163,10 +167,6 @@ public class FunExpression {
 
 	public class IfNonNullFunExpr extends IfFunExpr {
 		public FunExpr object;
-	}
-
-	public class InjectFunExpr extends FunExpr {
-		public String fieldName;
 	}
 
 	public class InstanceOfFunExpr extends FunExpr {

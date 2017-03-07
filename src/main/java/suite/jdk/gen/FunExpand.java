@@ -9,9 +9,9 @@ import suite.jdk.gen.FunExpression.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
+import suite.jdk.gen.FunExpression.FieldInjectFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
-import suite.jdk.gen.FunExpression.InjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.util.Util;
 
@@ -64,15 +64,15 @@ public class FunExpand extends FunFactory {
 			LambdaInterface<?> l_iface = l_impl.lambdaInterface;
 			FunExpr fe = l_impl.expr;
 			for (String fieldName : l_impl.fieldTypes.keySet())
-				fe = replaceInject(fe, fieldName, object(l_inst.fieldValues.get(fieldName), l_impl.fieldTypes.get(fieldName)));
+				fe = replaceFieldInject(fe, fieldName, object(l_inst.fieldValues.get(fieldName), l_impl.fieldTypes.get(fieldName)));
 			return expand(fe.cast(l_iface.interfaceClass).apply(e1.parameters), depth - 1);
 		} else
 			return null;
 	}
 
-	private FunExpr replaceInject(FunExpr expr0, String fieldName, FunExpr to) {
+	private FunExpr replaceFieldInject(FunExpr expr0, String fieldName, FunExpr to) {
 		return rewrite(e -> {
-			if (e instanceof InjectFunExpr && Util.stringEquals(((InjectFunExpr) e).fieldName, fieldName))
+			if (e instanceof FieldInjectFunExpr && Util.stringEquals(((FieldInjectFunExpr) e).fieldName, fieldName))
 				return to;
 			else
 				return null;

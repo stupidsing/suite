@@ -19,7 +19,7 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.If2FunExpr;
 import suite.jdk.gen.FunExpression.IfNonNullFunExpr;
-import suite.jdk.gen.FunExpression.InjectFunExpr;
+import suite.jdk.gen.FunExpression.FieldInjectFunExpr;
 import suite.jdk.gen.FunExpression.InvokeFunExpr;
 import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
@@ -123,7 +123,7 @@ public class FunFactory {
 	}
 
 	public FunExpr inject(String field) {
-		InjectFunExpr expr = fe.new InjectFunExpr();
+		FieldInjectFunExpr expr = fe.new FieldInjectFunExpr();
 		expr.fieldName = field;
 		return expr;
 	}
