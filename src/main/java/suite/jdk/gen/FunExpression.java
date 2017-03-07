@@ -206,7 +206,7 @@ public class FunExpression {
 		private int id = Util.temp();
 
 		public boolean equals(Object object) {
-			return object.getClass() == PlaceholderFunExpr.class && id == ((PlaceholderFunExpr) object).id;
+			return Util.clazz(object) == PlaceholderFunExpr.class && id == ((PlaceholderFunExpr) object).id;
 		}
 
 		public int hashCode() {
