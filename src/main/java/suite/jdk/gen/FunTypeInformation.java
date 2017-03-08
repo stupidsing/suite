@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.bcel.generic.Type;
 
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
-import suite.jdk.gen.FunExpression.AssignFunExpr;
+import suite.jdk.gen.FunExpression.AssignLocalFunExpr;
 import suite.jdk.gen.FunExpression.BinaryFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
 import suite.jdk.gen.FunExpression.CheckCastFunExpr;
@@ -41,7 +41,7 @@ public class FunTypeInformation {
 		if (e0 instanceof ApplyFunExpr) {
 			ApplyFunExpr e1 = (ApplyFunExpr) e0;
 			return Type.getType(methodOf(e1.object).getReturnType());
-		} else if (e0 instanceof AssignFunExpr)
+		} else if (e0 instanceof AssignLocalFunExpr)
 			return Type.VOID;
 		else if (e0 instanceof BinaryFunExpr) {
 			BinaryFunExpr e1 = (BinaryFunExpr) e0;

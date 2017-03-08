@@ -20,7 +20,7 @@ import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import suite.jdk.gen.FunExpression.AssignFunExpr;
+import suite.jdk.gen.FunExpression.AssignLocalFunExpr;
 import suite.jdk.gen.FunExpression.BinaryFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
 import suite.jdk.gen.FunExpression.CheckCastFunExpr;
@@ -82,8 +82,8 @@ public class FunGenerateBytecode {
 	}
 
 	public void visit0(FunExpr e0) {
-		if (e0 instanceof AssignFunExpr) {
-			AssignFunExpr e1 = (AssignFunExpr) e0;
+		if (e0 instanceof AssignLocalFunExpr) {
+			AssignLocalFunExpr e1 = (AssignLocalFunExpr) e0;
 			visit0(e1.value);
 			list.add(InstructionFactory.createStore(fti.typeOf(e1.value), e1.index));
 		} else if (e0 instanceof BinaryFunExpr) {

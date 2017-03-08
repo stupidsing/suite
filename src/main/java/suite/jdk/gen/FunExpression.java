@@ -92,7 +92,7 @@ public class FunExpression {
 		public List<FunExpr> parameters;
 	}
 
-	public class AssignFunExpr extends FunExpr {
+	public class AssignLocalFunExpr extends FunExpr {
 		public int index;
 		public FunExpr value;
 	}

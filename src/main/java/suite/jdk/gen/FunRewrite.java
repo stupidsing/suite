@@ -11,7 +11,7 @@ import org.apache.bcel.generic.Type;
 
 import suite.adt.Pair;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
-import suite.jdk.gen.FunExpression.AssignFunExpr;
+import suite.jdk.gen.FunExpression.AssignLocalFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
 import suite.jdk.gen.FunExpression.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
@@ -125,7 +125,7 @@ public class FunRewrite extends FunFactory {
 			int index = localTypes.size();
 			localTypes.add(type);
 
-			AssignFunExpr afe = fe.new AssignFunExpr();
+			AssignLocalFunExpr afe = fe.new AssignLocalFunExpr();
 			afe.index = index;
 			afe.value = value;
 
