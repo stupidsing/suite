@@ -25,6 +25,7 @@ import suite.jdk.gen.FunExpression.BinaryFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
 import suite.jdk.gen.FunExpression.CheckCastFunExpr;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
+import suite.jdk.gen.FunExpression.FieldStaticFunExpr;
 import suite.jdk.gen.FunExpression.FieldTypeFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
@@ -37,7 +38,6 @@ import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
-import suite.jdk.gen.FunExpression.StaticFunExpr;
 import suite.streamlet.Read;
 
 public class FunGenerateBytecode {
@@ -101,6 +101,9 @@ public class FunGenerateBytecode {
 		} else if (e0 instanceof ConstantFunExpr) {
 			ConstantFunExpr e1 = (ConstantFunExpr) e0;
 			list.add(factory.createConstant(e1.constant));
+		} else if (e0 instanceof FieldStaticFunExpr) {
+			FieldStaticFunExpr e1 = (FieldStaticFunExpr) e0;
+			list.add(factory.createGetStatic(className, e1.fieldName, e1.fieldType));
 		} else if (e0 instanceof FieldTypeFunExpr) {
 			FieldTypeFunExpr e1 = (FieldTypeFunExpr) e0;
 			visit0(e1.object);
@@ -181,9 +184,6 @@ public class FunGenerateBytecode {
 			if (!Objects.equals(fti.typeOf(e1.left), Type.VOID))
 				list.add(InstructionConst.POP);
 			visit0(e1.right);
-		} else if (e0 instanceof StaticFunExpr) {
-			StaticFunExpr e1 = (StaticFunExpr) e0;
-			list.add(factory.createGetStatic(className, e1.fieldName, e1.fieldType));
 		} else
 			throw new RuntimeException("Unknown expression " + e0.getClass());
 	}

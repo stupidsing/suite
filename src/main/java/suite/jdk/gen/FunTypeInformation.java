@@ -22,7 +22,7 @@ import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
-import suite.jdk.gen.FunExpression.StaticFunExpr;
+import suite.jdk.gen.FunExpression.FieldStaticFunExpr;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
@@ -83,8 +83,8 @@ public class FunTypeInformation {
 		else if (e0 instanceof SeqFunExpr) {
 			SeqFunExpr e1 = (SeqFunExpr) e0;
 			return typeOf(e1.right);
-		} else if (e0 instanceof StaticFunExpr) {
-			StaticFunExpr e1 = (StaticFunExpr) e0;
+		} else if (e0 instanceof FieldStaticFunExpr) {
+			FieldStaticFunExpr e1 = (FieldStaticFunExpr) e0;
 			return e1.fieldType;
 		} else
 			throw new RuntimeException("Unknown expression " + e0.getClass());

@@ -30,8 +30,8 @@ import org.apache.bcel.generic.Type;
 
 import suite.adt.Pair;
 import suite.jdk.UnsafeUtil;
+import suite.jdk.gen.FunExpression.FieldStaticFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.jdk.gen.FunExpression.StaticFunExpr;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
@@ -48,7 +48,7 @@ public class FunCreator<I> extends FunFactory {
 	public final Type returnType;
 	public final List<Type> parameterTypes;
 
-	private Map<String, Pair<Type, Object>> constantTypeValues;
+	private Map<String, Pair<Type, Object>> fieldStaticTypeValues;
 	private Map<String, Type> fieldTypes;
 
 	public static <I> FunCreator<I> of(Class<I> clazz) {
@@ -68,7 +68,7 @@ public class FunCreator<I> extends FunFactory {
 		returnType = rt;
 		parameterTypes = ps;
 
-		constantTypeValues = new HashMap<>();
+		fieldStaticTypeValues = new HashMap<>();
 		fieldTypes = fs;
 	}
 
@@ -175,7 +175,7 @@ public class FunCreator<I> extends FunFactory {
 			String ifs[] = new String[] { interfaceClass.getName(), };
 			ClassGen cg = new ClassGen(clsName, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
 
-			for (Entry<String, Pair<Type, Object>> e : constantTypeValues.entrySet())
+			for (Entry<String, Pair<Type, Object>> e : fieldStaticTypeValues.entrySet())
 				cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().t0, e.getKey(), cp).getField());
 			for (Entry<String, Type> e : fieldTypes.entrySet())
 				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue(), e.getKey(), cp).getField());
@@ -195,7 +195,7 @@ public class FunCreator<I> extends FunFactory {
 			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes, array);
 			fieldTypeValues = ftvs;
 
-			for (Entry<String, Pair<Type, Object>> e : constantTypeValues.entrySet())
+			for (Entry<String, Pair<Type, Object>> e : fieldStaticTypeValues.entrySet())
 				try {
 					clazz.getField(e.getKey()).set(null, e.getValue().t1);
 				} catch (ReflectiveOperationException ex) {
@@ -224,9 +224,9 @@ public class FunCreator<I> extends FunFactory {
 	public FunExpr constant(Object object) {
 		String fieldName = "f" + Util.temp();
 		Type fieldType = object != null ? Type.getType(object.getClass()) : Type.OBJECT;
-		constantTypeValues.put(fieldName, Pair.of(fieldType, object));
+		fieldStaticTypeValues.put(fieldName, Pair.of(fieldType, object));
 
-		StaticFunExpr expr = fe.new StaticFunExpr();
+		FieldStaticFunExpr expr = fe.new FieldStaticFunExpr();
 		expr.fieldName = fieldName;
 		expr.fieldType = fieldType;
 		return expr;

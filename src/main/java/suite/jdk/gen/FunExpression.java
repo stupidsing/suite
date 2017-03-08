@@ -147,6 +147,11 @@ public class FunExpression {
 		public String fieldName;
 	}
 
+	public class FieldStaticFunExpr extends FunExpr {
+		public String fieldName;
+		public Type fieldType;
+	}
+
 	public class FieldTypeFunExpr extends FunExpr {
 		public String fieldName;
 		public Type fieldType;
@@ -220,11 +225,6 @@ public class FunExpression {
 
 	public class SeqFunExpr extends FunExpr {
 		public FunExpr left, right;
-	}
-
-	public class StaticFunExpr extends FunExpr {
-		public String fieldName;
-		public Type fieldType;
 	}
 
 }
