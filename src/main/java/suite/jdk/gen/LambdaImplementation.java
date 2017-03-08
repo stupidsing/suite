@@ -23,10 +23,11 @@ public class LambdaImplementation<I> {
 		this.lambdaInterface = lambdaInterface;
 		this.fieldTypes = fieldTypes;
 		this.expr = expr;
-		fun = FunCreator.of(lambdaInterface, fieldTypes).create(expr);
 	}
 
 	public I newFun(Map<String, Object> fieldValues) {
+		if (fun == null)
+			fun = FunCreator.of(lambdaInterface, fieldTypes).create(expr);
 		return fun.apply(fieldValues);
 	}
 

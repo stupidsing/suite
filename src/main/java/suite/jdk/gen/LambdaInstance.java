@@ -10,6 +10,8 @@ public class LambdaInstance<I> {
 	public final LambdaImplementation<I> lambdaImplementation;
 	public final Map<String, Object> fieldValues;
 
+	private I fun;
+
 	public static <I> LambdaInstance<I> of(LambdaInterface<I> lambdaInterface, FunExpr expr) {
 		return of(LambdaImplementation.of(lambdaInterface, Collections.emptyMap(), expr), Collections.emptyMap());
 	}
@@ -24,7 +26,9 @@ public class LambdaInstance<I> {
 	}
 
 	public I newFun() {
-		return lambdaImplementation.newFun(fieldValues);
+		if (fun == null)
+			fun = lambdaImplementation.newFun(fieldValues);
+		return fun;
 	}
 
 }

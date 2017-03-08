@@ -11,6 +11,8 @@ public class LambdaInterface<I> {
 	public final Class<I> interfaceClass;
 	public final String methodName;
 
+	private Method method;
+
 	public static <I> LambdaInterface<I> of(Class<I> interfaceClass) {
 		return of(interfaceClass, Type_.methodOf(interfaceClass).getName());
 	}
@@ -25,8 +27,11 @@ public class LambdaInterface<I> {
 	}
 
 	public Method method() {
-		Method methods[] = Rethrow.reflectiveOperationException(() -> interfaceClass.getMethods());
-		return Read.from(methods).filter(m -> Util.stringEquals(m.getName(), methodName)).uniqueResult();
+		if (method == null) {
+			Method methods[] = Rethrow.reflectiveOperationException(() -> interfaceClass.getMethods());
+			method = Read.from(methods).filter(m -> Util.stringEquals(m.getName(), methodName)).uniqueResult();
+		}
+		return method;
 	}
 
 }
