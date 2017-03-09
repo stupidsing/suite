@@ -96,7 +96,7 @@ public class FunRewrite extends FunFactory {
 				FunExpr e3 = rewrite(e -> {
 					FunExpr fieldValue;
 					if (e instanceof PlaceholderFunExpr && (fieldValue = placeholders.get(e)) != null) {
-						String fieldName = "k" + Util.temp();
+						String fieldName = "e" + Util.temp();
 						Type fieldType = fti.typeOf(fieldValue);
 						fieldTypes.put(fieldName, fieldType);
 						fieldValues.put(fieldName, fieldValue);
@@ -164,7 +164,7 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr objectField(Object object, Type type) {
-		String fieldName = "f" + Util.temp();
+		String fieldName = "o" + Util.temp();
 		fieldTypeValues.put(fieldName, Pair.of(type, object));
 		return rewrite(this_().field(fieldName, type));
 	}
