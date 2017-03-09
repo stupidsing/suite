@@ -81,18 +81,18 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 			});
 		} else if (node instanceof Tuple) {
 			Clone_ f = compile(node);
-			List<BindPredicate> cs = Read.from(((Tuple) node).nodes) //
+			BindPredicate cs[] = Read.from(((Tuple) node).nodes) //
 					.map(this::compileBind0) //
 					.map(LambdaInstance::newFun) //
-					.toList();
-			int size = cs.size();
+					.toArray(BindPredicate.class);
+			int size = cs.length;
 			return compileBindPredicate((be, n) -> {
 				Node n_ = n.finalNode();
 				if (n_ instanceof Tuple) {
 					List<Node> nodes = ((Tuple) n_).nodes;
 					if (nodes.size() == size) {
 						for (int i = 0; i < size; i++)
-							if (!cs.get(i).test(be, nodes.get(i)))
+							if (!cs[i].test(be, nodes.get(i)))
 								return false;
 						return true;
 					} else
