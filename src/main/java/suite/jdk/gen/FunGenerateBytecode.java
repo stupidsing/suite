@@ -32,6 +32,7 @@ import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.If2FunExpr;
 import suite.jdk.gen.FunExpression.IfFunExpr;
 import suite.jdk.gen.FunExpression.IfNonNullFunExpr;
+import suite.jdk.gen.FunExpression.IndexFunExpr;
 import suite.jdk.gen.FunExpression.InstanceOfFunExpr;
 import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
@@ -121,6 +122,11 @@ public class FunGenerateBytecode {
 			IfNonNullFunExpr e1 = (IfNonNullFunExpr) e0;
 			visit0(e1.object);
 			visitIf(Const.IFNULL, e1);
+		} else if (e0 instanceof IndexFunExpr) {
+			IndexFunExpr e1 = (IndexFunExpr) e0;
+			visit0(e1.array);
+			visit0(e1.index);
+			list.add(InstructionFactory.createArrayLoad(fti.typeOf(e1)));
 		} else if (e0 instanceof InstanceOfFunExpr) {
 			InstanceOfFunExpr e1 = (InstanceOfFunExpr) e0;
 			visit0(e1.object);

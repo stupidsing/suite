@@ -113,6 +113,17 @@ public class FunCreatorTest {
 	}
 
 	@Test
+	public void testIndex() {
+		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
+		int ints[] = { 0, 1, 4, 9, 16, };
+		IntFun f = fc //
+				.create(i -> fc.object(ints, int[].class).index(i)) //
+				.apply(void_);
+		assertEquals(9, f.apply(3));
+		assertEquals(16, f.apply(4));
+	}
+
+	@Test
 	public void testLocal() {
 		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int result = fc //

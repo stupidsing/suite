@@ -58,6 +58,13 @@ public class FunExpression {
 			return expr;
 		}
 
+		public FunExpr index(FunExpr index) {
+			IndexFunExpr expr = new IndexFunExpr();
+			expr.array = this;
+			expr.index = index;
+			return expr;
+		}
+
 		public FunExpr instanceOf(Class<?> clazz) {
 			InstanceOfFunExpr expr = new InstanceOfFunExpr();
 			expr.instanceType = (ReferenceType) Type.getType(clazz);
@@ -173,6 +180,11 @@ public class FunExpression {
 
 	public class IfNonNullFunExpr extends IfFunExpr {
 		public FunExpr object;
+	}
+
+	public class IndexFunExpr extends FunExpr {
+		public FunExpr array;
+		public FunExpr index;
 	}
 
 	public class InstanceOfFunExpr extends FunExpr {
