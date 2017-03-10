@@ -31,7 +31,7 @@ public class FunExpand extends FunFactory {
 			if (if_ instanceof ConstantFunExpr) {
 				ConstantFunExpr e2 = (ConstantFunExpr) if_;
 				if (e2.type == Type.INT)
-					return ((Integer) e2.constant).intValue() == 1 ? e1.then : e1.else_;
+					return ((Integer) e2.constant).intValue() != 0 ? e1.then : e1.else_;
 				else
 					return null;
 			} else
