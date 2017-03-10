@@ -2,6 +2,7 @@ package suite.inspect;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -17,11 +18,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
+import suite.adt.Pair;
 import suite.jdk.gen.Type_;
 import suite.node.util.Mutable;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
+import suite.util.FunUtil2.Source2;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -96,6 +99,10 @@ public class Inspect {
 		private ExtractField children;
 
 		private Extract(Object object) {
+			this(object, false);
+		}
+
+		private Extract(Object object, boolean isDumpGetters) {
 			Class<?> clazz = object.getClass();
 
 			if (clazz.isArray()) {
@@ -194,33 +201,63 @@ public class Inspect {
 					}
 				};
 			} else {
-				Iterator<Field> iter = fields(clazz).iterator();
-
 				prefix = clazz.getSimpleName();
 				keyClass = String.class;
-				children = new ExtractField() {
-					private Field field;
 
-					public boolean next() {
-						if (iter.hasNext()) {
-							field = iter.next();
-							return true;
-						} else
-							return false;
-					}
+				if (isDumpGetters) {
+					Source2<String, Method> source = Read.from(clazz.getMethods()) //
+							.filter(method -> method.getParameterTypes().length == 0) //
+							.groupBy(Method::getName) //
+							.mapValue(methods -> methods.get(0)) //
+							.filterKey(name -> name.startsWith("get")) //
+							.source();
 
-					public Object getKey() {
-						return field.getName();
-					}
+					children = new ExtractField() {
+						private Pair<String, Method> pair = Pair.of(null, null);
 
-					public Class<?> getValueClass() {
-						return field.getType();
-					}
+						public boolean next() {
+							return source.source2(pair);
+						}
 
-					public Object getValue() {
-						return Rethrow.reflectiveOperationException(() -> field.get(object));
-					}
-				};
+						public Object getKey() {
+							return pair.t0;
+						}
+
+						public Class<?> getValueClass() {
+							return pair.t1.getReturnType();
+						}
+
+						public Object getValue() {
+							return Rethrow.reflectiveOperationException(() -> pair.t1.invoke(object));
+						}
+					};
+				} else {
+					Iterator<Field> iter = fields(clazz).iterator();
+
+					children = new ExtractField() {
+						private Field field;
+
+						public boolean next() {
+							if (iter.hasNext()) {
+								field = iter.next();
+								return true;
+							} else
+								return false;
+						}
+
+						public Object getKey() {
+							return field.getName();
+						}
+
+						public Class<?> getValueClass() {
+							return field.getType();
+						}
+
+						public Object getValue() {
+							return Rethrow.reflectiveOperationException(() -> field.get(object));
+						}
+					};
+				}
 			}
 		}
 	}
