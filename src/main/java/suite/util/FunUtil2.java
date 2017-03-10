@@ -3,6 +3,7 @@ package suite.util;
 import java.util.Iterator;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import suite.adt.Pair;
 import suite.os.LogUtil;
@@ -82,6 +83,16 @@ public class FunUtil2 {
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
+				;
+			return b;
+		};
+	}
+
+	public static <K, V> Source2<K, V> filterKey(Predicate<K> fun0, Source2<K, V> source2) {
+		Predicate<K> fun1 = Rethrow.predicate(fun0);
+		return pair -> {
+			boolean b;
+			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
 				;
 			return b;
 		};

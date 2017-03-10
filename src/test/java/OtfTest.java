@@ -32,7 +32,7 @@ public class OtfTest {
 							.map(line -> line.split(":")) //
 							.filter(arr -> 2 <= arr.length) //
 							.map2(arr -> arr[0].trim(), arr -> arr[1].trim()) //
-							.filter((k, v) -> keys.contains(k)) //
+							.filterKey(keys::contains) //
 							.toMap();
 				}) //
 				.map((k, m) -> {

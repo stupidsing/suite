@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
@@ -198,6 +199,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public Outlet2<K, V> filter(BiPredicate<K, V> fun) {
 		return from(FunUtil2.filter(fun, source2));
+	}
+
+	public Outlet2<K, V> filterKey(Predicate<K> fun) {
+		return from(FunUtil2.filterKey(fun, source2));
 	}
 
 	public Pair<K, V> first() {
