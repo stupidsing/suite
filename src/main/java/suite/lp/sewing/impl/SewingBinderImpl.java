@@ -1,5 +1,6 @@
 package suite.lp.sewing.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -63,49 +64,55 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
 			Clone_ f = compile(node);
-			BindPredicate c0 = compileBind(tree.getLeft());
-			BindPredicate c1 = compileBind(tree.getRight());
-			return compileBindPredicate((be, n) -> {
-				Node n_ = n.finalNode();
-				Tree t;
-				if (n_ instanceof Reference)
-					if (isBindTrees) {
-						be.getTrail().addBind((Reference) n_, f.apply(be.getEnv()));
-						return true;
-					} else
-						return false;
-				else
-					return (t = Tree.decompose(n_, operator)) != null //
-							&& c0.test(be, t.getLeft()) //
-							&& c1.test(be, t.getRight());
-			});
+			LambdaInstance<BindPredicate> lambda0 = compileBind0(tree.getLeft());
+			LambdaInstance<BindPredicate> lambda1 = compileBind0(tree.getRight());
+			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef;
+
+			if (isBindTrees)
+				bindRef = be -> ref -> ff //
+						.seq(be.invoke("getTrail").invoke("addBind", ref, ff.object(f, Clone_.class).apply(be.invoke("getEnv"))),
+								ff._true());
+			else
+				bindRef = be -> ref -> ff._false();
+
+			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTree = be -> n_ -> ff //
+					.declare(ff.invokeStatic(Tree.class, "decompose", n_, ff.object(operator, Operator.class)),
+							t -> ff.ifNonNull(t, //
+									ff.and( //
+											ff.invoke(lambda0, be, t.invoke("getLeft")), //
+											ff.invoke(lambda1, be, t.invoke("getRight"))),
+									ff._false()));
+
+			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTree));
 		} else if (node instanceof Tuple) {
 			Clone_ f = compile(node);
-			BindPredicate cs[] = Read.from(((Tuple) node).nodes) //
+
+			List<LambdaInstance<BindPredicate>> lambdas = Read //
+					.from(((Tuple) node).nodes) //
 					.map(this::compileBind0) //
-					.map(LambdaInstance::newFun) //
-					.toArray(BindPredicate.class);
-			int size = cs.length;
-			return compileBindPredicate((be, n) -> {
-				Node n_ = n.finalNode();
-				if (n_ instanceof Tuple) {
-					List<Node> nodes = ((Tuple) n_).nodes;
-					if (nodes.size() == size) {
-						for (int i = 0; i < size; i++)
-							if (!cs[i].test(be, nodes.get(i)))
-								return false;
-						return true;
-					} else
-						return false;
-				} else if (n_ instanceof Reference)
-					if (isBindTrees) {
-						be.getTrail().addBind((Reference) n_, f.apply(be.getEnv()));
-						return true;
-					} else
-						return false;
-				else
-					return false;
-			});
+					.toList();
+
+			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef;
+
+			if (isBindTrees)
+				bindRef = be -> ref -> ff.seq( //
+						be.invoke("getTrail").invoke("addBind", ref, ff.object(f, Clone_.class).apply(be.invoke("getEnv"))), //
+						ff._true());
+			else
+				bindRef = be -> ref -> ff._false();
+
+			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTuple = be -> n_ -> ff //
+					.ifInstance(Tuple.class, n_, tuple -> ff //
+							.declare(tuple.field("nodes"), nodes -> {
+								List<FunExpr> cond = new ArrayList<>();
+								for (int i = 0; i < lambdas.size(); i++)
+									cond.add(ff.invoke(lambdas.get(i), //
+											be, //
+											nodes.invoke("get", ff.constant(i)).checkCast(Node.class)));
+								return ff.and(cond.toArray(new FunExpr[0]));
+							}), ff._false());
+
+			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTuple));
 		} else {
 			Clone_ f = compile(node);
 			return compileBindPredicate((be, n) -> Binder.bind(n, f.apply(be.getEnv()), be.getTrail()));
