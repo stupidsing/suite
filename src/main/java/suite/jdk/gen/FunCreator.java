@@ -233,11 +233,7 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public FunExpr field(String fieldName) {
-		return this_().field(fieldName, fieldTypes.get(fieldName));
-	}
-
-	public FunExpr this_() {
-		return local(0);
+		return local(0).field(fieldName, fieldTypes.get(fieldName));
 	}
 
 }
