@@ -124,7 +124,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 				LambdaImplementation.of( //
 						lambdaClass, //
 						Collections.singletonMap("pred", Type.getType(BindPredicate.class)), //
-						ff.parameter2((be, n) -> ff.inject("pred").invoke("test", new FunExpr[] { be, n, }))), //
+						ff.parameter2((be, n) -> ff.inject("pred").invoke("test", be, n))), //
 				Collections.singletonMap("pred", pred));
 	}
 
