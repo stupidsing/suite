@@ -22,10 +22,8 @@ public class SewingExpressionImpl implements SewingExpression {
 	private static FunFactory ff = new FunFactory();
 	private static LambdaInterface<Evaluate> lambdaInterface = LambdaInterface.of(Evaluate.class);
 
-	private static String key = "key";
-	private static LambdaImplementation<Evaluate> compiledNumber = compileNumber(key);
-
 	private SewingCloner sc;
+	private EvalPredicates evalPredicates = new EvalPredicates();
 
 	public SewingExpressionImpl(SewingCloner sc) {
 		this.sc = sc;
@@ -58,7 +56,7 @@ public class SewingExpressionImpl implements SewingExpression {
 			return LambdaInstance.of(compiledNumber, Collections.singletonMap(key, ((Int) node).number));
 		else {
 			Clone_ f = sc.compile(node);
-			return compileEvaluate(env -> new EvalPredicates().evaluate(f.apply(env)));
+			return compileEvaluate(env -> evalPredicates.evaluate(f.apply(env)));
 		}
 	}
 
@@ -72,6 +70,9 @@ public class SewingExpressionImpl implements SewingExpression {
 						ff.parameter1(env -> ff.inject(key).invoke("evaluate", env))), //
 				Collections.singletonMap(key, evaluate));
 	}
+
+	private static String key = "key";
+	private static LambdaImplementation<Evaluate> compiledNumber = compileNumber(key);
 
 	private static LambdaImplementation<Evaluate> compileNumber(String key) {
 		FunExpr expr = ff.parameter0(() -> ff.inject(key));

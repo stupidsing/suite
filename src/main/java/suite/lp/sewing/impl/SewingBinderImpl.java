@@ -29,11 +29,6 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
 	private static FunFactory ff = new FunFactory();
 	private static LambdaInterface<BindPredicate> lambdaClass = LambdaInterface.of(BindPredicate.class, "test");
-	private static String key0 = "k0";
-	private static String key1 = "k1";
-	private static LambdaImplementation<BindPredicate> compiledBindAtom = compileBindAtom_();
-	private static LambdaImplementation<BindPredicate> compiledBindInt = compileBindInt_();
-	private static LambdaImplementation<BindPredicate> compiledBindStr = compileBindStr_();
 
 	private boolean isBindTrees;
 
@@ -139,6 +134,12 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	private LambdaInstance<BindPredicate> compileBindStr(Str s) {
 		return LambdaInstance.of(compiledBindStr, Read.<String, Object> empty2().cons(key0, s).cons(key1, s.value).toMap());
 	}
+
+	private static String key0 = "k0";
+	private static String key1 = "k1";
+	private static LambdaImplementation<BindPredicate> compiledBindAtom = compileBindAtom_();
+	private static LambdaImplementation<BindPredicate> compiledBindInt = compileBindInt_();
+	private static LambdaImplementation<BindPredicate> compiledBindStr = compileBindStr_();
 
 	private static LambdaImplementation<BindPredicate> compileBindAtom_() {
 		Map<String, Type> fieldTypes = Collections.singletonMap(key0, Type.getType(Node.class));
