@@ -14,7 +14,6 @@ import suite.lp.predicate.EvalPredicates;
 import suite.lp.sewing.SewingCloner;
 import suite.lp.sewing.SewingCloner.Clone_;
 import suite.lp.sewing.SewingExpression;
-import suite.lp.sewing.VariableMapper.Env;
 import suite.node.Int;
 import suite.node.Node;
 
@@ -27,10 +26,6 @@ public class SewingExpressionImpl implements SewingExpression {
 	private static LambdaImplementation<Evaluate> compiledNumber = compileNumber(key);
 
 	private SewingCloner sc;
-
-	public interface Evaluate {
-		public int evaluate(Env env);
-	}
 
 	public SewingExpressionImpl(SewingCloner sc) {
 		this.sc = sc;
