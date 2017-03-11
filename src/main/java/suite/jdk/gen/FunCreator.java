@@ -113,7 +113,7 @@ public class FunCreator<I> extends FunFactory {
 			FunRewrite fr;
 			FunGenerateBytecode fgb;
 
-			FunExpr expr1 = fe.expand(expr0, 3);
+			FunExpr expr1 = fe.expand(expr0, 0);
 			FunExpr expr2 = (fr = new FunRewrite(fieldTypes, localTypes, expr1.cast(interfaceClass))).expr;
 
 			org.apache.bcel.classfile.Method m0, m1;
