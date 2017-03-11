@@ -20,6 +20,7 @@ import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.DeclareParameterFunExpr;
 import suite.jdk.gen.FunExpression.FieldFunExpr;
 import suite.jdk.gen.FunExpression.FieldInjectFunExpr;
+import suite.jdk.gen.FunExpression.FieldStaticFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.InvokeLambdaFunExpr;
 import suite.jdk.gen.FunExpression.NewFunExpr;
@@ -95,7 +96,14 @@ public class FunRewrite extends FunFactory {
 
 				FunExpr e3 = rewrite(e -> {
 					FunExpr fieldValue;
-					if (e instanceof PlaceholderFunExpr && (fieldValue = placeholders.get(e)) != null) {
+					if (e instanceof FieldStaticFunExpr) {
+						FieldStaticFunExpr e_ = (FieldStaticFunExpr) e;
+						String fieldName = e_.fieldName;
+						Type fieldType = fieldTypes.get(fieldName);
+						fieldTypes.put(fieldName, fieldType);
+						fieldValues.put(fieldName, e_);
+						return e;
+					} else if (e instanceof PlaceholderFunExpr && (fieldValue = placeholders.get(e)) != null) {
 						String fieldName = "e" + Util.temp();
 						Type fieldType = fti.typeOf(fieldValue);
 						fieldTypes.put(fieldName, fieldType);
