@@ -1,14 +1,14 @@
 package suite.lp.sewing.impl;
 
 import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.bcel.generic.Type;
 
 import suite.Suite;
-import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.FunFactory;
+import suite.jdk.gen.LambdaImplementation;
+import suite.jdk.gen.LambdaInstance;
 import suite.jdk.gen.LambdaInterface;
 import suite.lp.predicate.EvalPredicates;
 import suite.lp.sewing.SewingCloner;
@@ -17,16 +17,15 @@ import suite.lp.sewing.SewingExpression;
 import suite.lp.sewing.VariableMapper.Env;
 import suite.node.Int;
 import suite.node.Node;
-import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
 
 public class SewingExpressionImpl implements SewingExpression {
 
+	private static FunFactory ff = new FunFactory();
 	private static LambdaInterface<Evaluate> lambdaInterface = LambdaInterface.of(Evaluate.class);
 
 	private static String key = "key";
-	private static Fun<Map<String, Object>, Evaluate> compiledNumber = compileNumber(key);
-	private static Map<String, Fun<Map<String, Object>, Evaluate>> compiledByOp = new ConcurrentHashMap<>();
+	private static LambdaImplementation<Evaluate> compiledNumber = compileNumber(key);
+
 	private SewingCloner sc;
 
 	public interface Evaluate {
@@ -38,6 +37,10 @@ public class SewingExpressionImpl implements SewingExpression {
 	}
 
 	public Evaluate compile(Node node) {
+		return compile0(node).newFun();
+	}
+
+	private LambdaInstance<Evaluate> compile0(Node node) {
 		Node m[];
 
 		if ((m = Suite.matcher(".0 + .1").apply(node)) != null)
@@ -57,39 +60,38 @@ public class SewingExpressionImpl implements SewingExpression {
 		else if ((m = Suite.matcher(".0 shr .1").apply(node)) != null)
 			return compileOperator(m, ">>");
 		else if (node instanceof Int)
-			return compiledNumber.apply(Collections.singletonMap(key, ((Int) node).number));
+			return LambdaInstance.of(compiledNumber, Collections.singletonMap(key, ((Int) node).number));
 		else {
 			Clone_ f = sc.compile(node);
-			return env -> new EvalPredicates().evaluate(f.apply(env));
+			return compileEvaluate(env -> new EvalPredicates().evaluate(f.apply(env)));
 		}
 	}
 
-	private static Fun<Map<String, Object>, Evaluate> compileNumber(String key) {
-		FunCreator<Evaluate> fc = FunCreator.of(lambdaInterface, Collections.singletonMap(key, Type.INT));
-		return fc.create(() -> fc.field(key));
+	private LambdaInstance<Evaluate> compileEvaluate(Evaluate evaluate) {
+		String key = "eval";
+
+		return LambdaInstance.of(
+				LambdaImplementation.of( //
+						lambdaInterface, //
+						Collections.singletonMap(key, Type.getType(Evaluate.class)), //
+						ff.parameter1(env -> ff.inject(key).invoke("evaluate", env))), //
+				Collections.singletonMap(key, evaluate));
 	}
 
-	private Evaluate compileOperator(Node m[], String op) {
-		String e0 = "e0", e1 = "e1";
+	private static LambdaImplementation<Evaluate> compileNumber(String key) {
+		FunExpr expr = ff.parameter0(() -> ff.inject(key));
+		return LambdaImplementation.of(lambdaInterface, Collections.singletonMap(key, Type.INT), expr);
+	}
 
-		Fun<Map<String, Object>, Evaluate> fun = compiledByOp //
-				.computeIfAbsent(op, op_ -> {
-					FunCreator<Evaluate> fc = FunCreator.of(lambdaInterface,
-							Read.<String, Type> empty2() //
-									.cons(e0, Type.getType(Evaluate.class)) //
-									.cons(e1, Type.getType(Evaluate.class)) //
-									.toMap());
-					return fc.create(env -> {
-						FunExpr v0 = fc.field(e0).apply(env);
-						FunExpr v1 = fc.field(e1).apply(env);
-						return fc.bi(op_, v0, v1);
-					});
-				});
+	private LambdaInstance<Evaluate> compileOperator(Node m[], String op) {
+		LambdaInstance<Evaluate> lambda0 = compile0(m[0]);
+		LambdaInstance<Evaluate> lambda1 = compile0(m[1]);
 
-		return fun.apply(Read.<String, Object> empty2() //
-				.cons(e0, compile(m[0])) //
-				.cons(e1, compile(m[1])) //
-				.toMap());
+		return LambdaInstance.of(lambdaInterface, ff.parameter1(env -> {
+			FunExpr v0 = ff.invoke(lambda0, env);
+			FunExpr v1 = ff.invoke(lambda1, env);
+			return ff.bi(op, v0, v1);
+		}));
 	}
 
 }
