@@ -1,4 +1,4 @@
-package suite.jdk.gen;
+package suite.jdk.gen.pass;
 
 import java.io.PrintStream;
 import java.util.ArrayList;

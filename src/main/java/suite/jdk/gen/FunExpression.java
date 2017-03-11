@@ -10,6 +10,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import suite.inspect.Inspect;
+import suite.jdk.lambda.LambdaInstance;
 import suite.node.util.Singleton;
 import suite.util.Util;
 

@@ -26,6 +26,7 @@ import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
+import suite.jdk.lambda.LambdaInstance;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;

@@ -1,9 +1,10 @@
-package suite.jdk.gen;
+package suite.jdk.lambda;
 
 import java.util.Map;
 
 import org.apache.bcel.generic.Type;
 
+import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.util.FunUtil.Fun;
 

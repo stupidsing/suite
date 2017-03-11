@@ -1,4 +1,4 @@
-package suite.jdk.gen;
+package suite.jdk.gen.pass;
 
 import org.apache.bcel.generic.Type;
 
@@ -13,6 +13,10 @@ import suite.jdk.gen.FunExpression.FieldInjectFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.InvokeLambdaFunExpr;
+import suite.jdk.gen.FunFactory;
+import suite.jdk.lambda.LambdaImplementation;
+import suite.jdk.lambda.LambdaInstance;
+import suite.jdk.lambda.LambdaInterface;
 import suite.util.Util;
 
 public class FunExpand extends FunFactory {

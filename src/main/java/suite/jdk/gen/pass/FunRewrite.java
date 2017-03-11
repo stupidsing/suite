@@ -1,4 +1,4 @@
-package suite.jdk.gen;
+package suite.jdk.gen.pass;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.bcel.generic.Type;
 
 import suite.adt.Pair;
+import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
 import suite.jdk.gen.FunExpression.AssignLocalFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
@@ -26,6 +27,11 @@ import suite.jdk.gen.FunExpression.InvokeLambdaFunExpr;
 import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
+import suite.jdk.gen.FunFactory;
+import suite.jdk.gen.Type_;
+import suite.jdk.lambda.LambdaImplementation;
+import suite.jdk.lambda.LambdaInstance;
+import suite.jdk.lambda.LambdaInterface;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.Rethrow;

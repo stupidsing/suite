@@ -9,9 +9,9 @@ import org.apache.bcel.generic.Type;
 
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
-import suite.jdk.gen.LambdaImplementation;
-import suite.jdk.gen.LambdaInstance;
-import suite.jdk.gen.LambdaInterface;
+import suite.jdk.lambda.LambdaImplementation;
+import suite.jdk.lambda.LambdaInstance;
+import suite.jdk.lambda.LambdaInterface;
 import suite.lp.doer.Binder;
 import suite.lp.sewing.SewingBinder;
 import suite.node.Atom;

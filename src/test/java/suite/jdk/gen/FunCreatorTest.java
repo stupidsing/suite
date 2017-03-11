@@ -10,6 +10,8 @@ import java.util.function.BiPredicate;
 import org.apache.bcel.generic.Type;
 import org.junit.Test;
 
+import suite.jdk.lambda.LambdaInstance;
+import suite.jdk.lambda.LambdaInterface;
 import suite.util.FunUtil.Fun;
 
 public class FunCreatorTest {

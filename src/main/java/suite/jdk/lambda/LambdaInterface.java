@@ -1,7 +1,8 @@
-package suite.jdk.gen;
+package suite.jdk.lambda;
 
 import java.lang.reflect.Method;
 
+import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.Util;

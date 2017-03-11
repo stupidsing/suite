@@ -1,4 +1,4 @@
-package suite.jdk.gen;
+package suite.jdk.lambda;
 
 import java.util.Collections;
 import java.util.Map;
