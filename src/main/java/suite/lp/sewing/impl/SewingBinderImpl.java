@@ -85,7 +85,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 								for (int i = 0; i < lambdas.size(); i++)
 									cond.add(ff.invoke(lambdas.get(i), //
 											be, //
-											nodes.invoke("get", ff.constant(i)).checkCast(Node.class)));
+											nodes.invoke("get", ff.int_(i)).checkCast(Node.class)));
 								return ff.and(cond.toArray(new FunExpr[0]));
 							}));
 

@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
 import suite.inspect.Inspect;
@@ -39,11 +40,11 @@ public class FunFactory {
 	public static final FunExpression fe = new FunExpression();
 
 	public FunExpr _false() {
-		return constant(0);
+		return int_(0);
 	}
 
 	public FunExpr _true() {
-		return constant(1);
+		return int_(1);
 	}
 
 	public FunExpr _null() {
@@ -76,10 +77,10 @@ public class FunFactory {
 		return expr;
 	}
 
-	public FunExpr constant(int i) {
+	private FunExpr constant(Object constant, BasicType type) {
 		ConstantFunExpr expr = fe.new ConstantFunExpr();
-		expr.type = Type.INT;
-		expr.constant = i;
+		expr.type = type;
+		expr.constant = constant;
 		return expr;
 	}
 
@@ -135,6 +136,10 @@ public class FunFactory {
 		FieldInjectFunExpr expr = fe.new FieldInjectFunExpr();
 		expr.fieldName = field;
 		return expr;
+	}
+
+	public FunExpr int_(int i) {
+		return constant(i, Type.INT);
 	}
 
 	public FunExpr invoke(LambdaInstance<?> lambda, FunExpr... parameters) {
