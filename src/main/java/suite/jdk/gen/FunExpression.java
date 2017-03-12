@@ -90,6 +90,17 @@ public class FunExpression {
 			return expr;
 		}
 
+		@Override
+		public boolean equals(Object object) {
+			return Util.clazz(object) == getClass() && inspect.equals(this, object);
+		}
+
+		@Override
+		public int hashCode() {
+			return inspect.hashCode(this);
+		}
+
+		@Override
 		public String toString() {
 			return inspect.toString(this);
 		}
@@ -222,15 +233,7 @@ public class FunExpression {
 	}
 
 	public class PlaceholderFunExpr extends FunExpr {
-		private int id = Util.temp();
-
-		public boolean equals(Object object) {
-			return Util.clazz(object) == PlaceholderFunExpr.class && id == ((PlaceholderFunExpr) object).id;
-		}
-
-		public int hashCode() {
-			return id;
-		}
+		public int id = Util.temp();
 	}
 
 	public class PrintlnFunExpr extends FunExpr {
