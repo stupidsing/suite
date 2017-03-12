@@ -194,6 +194,7 @@ public class FunExpression {
 	}
 
 	public class InvokeLambdaFunExpr extends FunExpr {
+		public boolean isExpand;
 		public LambdaInstance<?> lambda;
 		public List<FunExpr> parameters;
 	}
