@@ -79,11 +79,11 @@ public class SewingExpressionImpl implements SewingExpression {
 		LambdaInstance<Evaluate> lambda0 = compile0(m[0]);
 		LambdaInstance<Evaluate> lambda1 = compile0(m[1]);
 
-		return LambdaInstance.of(lambdaInterface, ff.parameter1(env -> {
+		return LambdaInstance.of(Evaluate.class, env -> {
 			FunExpr v0 = ff.invoke(lambda0, env);
 			FunExpr v1 = ff.invoke(lambda1, env);
 			return ff.bi(op, v0, v1);
-		}));
+		});
 	}
 
 }

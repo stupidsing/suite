@@ -10,9 +10,11 @@ import java.util.function.BiPredicate;
 import org.apache.bcel.generic.Type;
 import org.junit.Test;
 
+import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 import suite.util.To;
 
 public class FunCreatorTest {
@@ -47,10 +49,8 @@ public class FunCreatorTest {
 
 	@Test
 	public void testApply1() {
-		LambdaInstance<IntFun> lambda0 = LambdaInstance.of(lambdaClassIntFun, //
-				f.parameter1(i -> f.add(f.int_(1), i)));
-		LambdaInstance<IntFun> lambda1 = LambdaInstance.of(lambdaClassIntFun, //
-				f.parameter1(i -> f.add(f.int_(1), f.invoke(lambda0, i))));
+		LambdaInstance<IntFun> lambda0 = LambdaInstance.of(IntFun.class, i -> f.add(f.int_(1), i));
+		LambdaInstance<IntFun> lambda1 = LambdaInstance.of(IntFun.class, i -> f.add(f.int_(1), f.invoke(lambda0, i)));
 		assertEquals(2, lambda1.newFun().apply(0));
 	}
 
@@ -65,18 +65,15 @@ public class FunCreatorTest {
 
 	@Test
 	public void testClosure() {
-		FunCreator<IntSource> fc = FunCreator.of(IntSource.class);
-		IntSource source = fc //
-				.create(() -> f.declare(f.int_(1), one -> f.parameter1(j -> f.add(one, j)).cast(IntFun.class).apply(f.int_(2)))) //
-				.apply(void_);
-		assertEquals(3, source.source());
+		Source<FunExpr> fun = () -> f.declare(f.int_(1),
+				one -> f.parameter1(j -> f.add(one, j)).cast(IntFun.class).apply(f.int_(2)));
+		assertEquals(3, LambdaInstance.of(IntSource.class, fun).newFun().source());
 	}
 
 	@Test
 	public void testConstant() {
-		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
-		IntFun fun = fc.create(i -> f.int_(1)).apply(void_);
-		assertEquals(1, fun.apply(0));
+		Fun<FunExpr, FunExpr> fun = i -> f.int_(1);
+		assertEquals(1, LambdaInstance.of(IntSource.class, fun).newFun().source());
 	}
 
 	@Test
@@ -101,44 +98,29 @@ public class FunCreatorTest {
 
 	@Test
 	public void testIf() {
-		FunCreator<IntSource> fc = FunCreator.of(IntSource.class);
-		Object result = fc //
-				.create(() -> f.if_(f._true(), f._true(), f._false())) //
-				.apply(void_) //
-				.source();
-		assertEquals(1, result);
+		Source<FunExpr> fun = () -> f.if_(f._true(), f._true(), f._false());
+		assertEquals(1, LambdaInstance.of(IntSource.class, fun).newFun().source());
 	}
 
 	@Test
 	public void testIndex() {
-		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
 		int ints[] = { 0, 1, 4, 9, 16, };
-		IntFun fun = fc //
-				.create(i -> f.object(ints, int[].class).index(i)) //
-				.apply(void_);
+		IntFun fun = LambdaInstance.of(IntFun.class, i -> f.object(ints, int[].class).index(i)).newFun();
 		assertEquals(9, fun.apply(3));
 		assertEquals(16, fun.apply(4));
 	}
 
 	@Test
 	public void testLocal() {
-		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
-		int result = fc //
-				.create(p -> f.declare(f.int_(1), l -> f.add(l, p))) //
-				.apply(void_) //
-				.apply(3);
-		assertEquals(4, result);
+		Fun<FunExpr, FunExpr> fun = p -> f.declare(f.int_(1), l -> f.add(l, p));
+		assertEquals(4, LambdaInstance.of(IntFun.class, fun).newFun().apply(3));
 	}
 
 	@Test
 	public void testObject() {
 		IntFun inc = i -> i + 1;
-		FunCreator<IntFun> fc = FunCreator.of(IntFun.class);
-		int result = fc //
-				.create(i -> f.object(inc, IntFun.class).invoke("apply", i)) //
-				.apply(void_) //
-				.apply(2);
-		assertEquals(3, result);
+		Fun<FunExpr, FunExpr> fun = i -> f.object(inc, IntFun.class).invoke("apply", i);
+		assertEquals(3, LambdaInstance.of(IntFun.class, fun).newFun().apply(2));
 	}
 
 	private FunCreator<IntFun> intFun(String fieldName, Type fieldType) {
