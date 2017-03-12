@@ -52,22 +52,23 @@ public class SewingExpressionImpl implements SewingExpression {
 		else if ((m = Suite.matcher(".0 shr .1").apply(node)) != null)
 			return compileOperator(m, ">>");
 		else if (node instanceof Int)
-			return LambdaInstance.of(compiledNumber, To.map(key, ((Int) node).number));
+			return LambdaInstance.of(compiledNumber, To.map(keyNumber, ((Int) node).number));
 		else {
 			Clone_ f = sc.compile(node);
-			String key1 = "eval";
-
-			return LambdaInstance.of(
-					LambdaImplementation.of( //
-							lambdaInterface, //
-							To.map(key1, Type.getType(Evaluate.class)), //
-							ff.parameter1(env1 -> ff.inject(key1).invoke("evaluate", env1))), //
-					To.map(key1, (Evaluate) env -> evalPredicates.evaluate(f.apply(env))));
+			Evaluate evaluate = env -> evalPredicates.evaluate(f.apply(env));
+			return LambdaInstance.of(compiledEval, To.map(keyEval, evaluate));
 		}
 	}
 
-	private static String key = "key";
-	private static LambdaImplementation<Evaluate> compiledNumber = compileNumber(key);
+	private static String keyEval = "eval";
+	private static String keyNumber = "key";
+	private static LambdaImplementation<Evaluate> compiledEval = compileEval(keyEval);
+	private static LambdaImplementation<Evaluate> compiledNumber = compileNumber(keyNumber);
+
+	private static LambdaImplementation<Evaluate> compileEval(String key) {
+		FunExpr expr = ff.parameter1(env -> ff.inject(keyEval).invoke("evaluate", env));
+		return LambdaImplementation.of(lambdaInterface, To.map(key, Type.getType(Evaluate.class)), expr);
+	}
 
 	private static LambdaImplementation<Evaluate> compileNumber(String key) {
 		FunExpr expr = ff.parameter0(() -> ff.inject(key));
