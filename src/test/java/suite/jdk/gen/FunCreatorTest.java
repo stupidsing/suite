@@ -13,6 +13,7 @@ import org.junit.Test;
 import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
 import suite.util.FunUtil.Fun;
+import suite.util.To;
 
 public class FunCreatorTest {
 
@@ -36,10 +37,10 @@ public class FunCreatorTest {
 		FunCreator<IntFun> fc1 = intFun(fieldName1, Type.getType(IntFun.class));
 		IntFun f0 = fc0 //
 				.create((i -> fc0.add(fc0.field(fieldName0), i))) //
-				.apply(Collections.singletonMap(fieldName0, 1));
+				.apply(To.map(fieldName0, 1));
 		IntFun f1 = fc1 //
 				.create(i -> fc1.field(fieldName1).apply(fc1.constant(3))) //
-				.apply(Collections.singletonMap(fieldName1, f0));
+				.apply(To.map(fieldName1, f0));
 		assertEquals(4, f1.apply(5));
 	}
 
@@ -90,7 +91,7 @@ public class FunCreatorTest {
 		FunCreator<IntFun> fc = intFun(fieldName, Type.INT);
 		int result = fc //
 				.create(i -> fc.add(fc.field(fieldName), i)) //
-				.apply(Collections.singletonMap(fieldName, 1)) //
+				.apply(To.map(fieldName, 1)) //
 				.apply(5);
 		assertEquals(6, result);
 	}
@@ -147,7 +148,7 @@ public class FunCreatorTest {
 	}
 
 	private FunCreator<IntFun> intFun(String fieldName, Type fieldType) {
-		return FunCreator.of(lambdaClassIntFun, Collections.singletonMap(fieldName, fieldType));
+		return FunCreator.of(lambdaClassIntFun, To.map(fieldName, fieldType));
 	}
 
 }

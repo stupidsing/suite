@@ -1,7 +1,5 @@
 package suite.lp.sewing.impl;
 
-import java.util.Collections;
-
 import org.apache.bcel.generic.Type;
 
 import suite.Suite;
@@ -16,6 +14,7 @@ import suite.lp.sewing.SewingCloner.Clone_;
 import suite.lp.sewing.SewingExpression;
 import suite.node.Int;
 import suite.node.Node;
+import suite.util.To;
 
 public class SewingExpressionImpl implements SewingExpression {
 
@@ -53,7 +52,7 @@ public class SewingExpressionImpl implements SewingExpression {
 		else if ((m = Suite.matcher(".0 shr .1").apply(node)) != null)
 			return compileOperator(m, ">>");
 		else if (node instanceof Int)
-			return LambdaInstance.of(compiledNumber, Collections.singletonMap(key, ((Int) node).number));
+			return LambdaInstance.of(compiledNumber, To.map(key, ((Int) node).number));
 		else {
 			Clone_ f = sc.compile(node);
 			String key1 = "eval";
@@ -61,9 +60,9 @@ public class SewingExpressionImpl implements SewingExpression {
 			return LambdaInstance.of(
 					LambdaImplementation.of( //
 							lambdaInterface, //
-							Collections.singletonMap(key1, Type.getType(Evaluate.class)), //
+							To.map(key1, Type.getType(Evaluate.class)), //
 							ff.parameter1(env1 -> ff.inject(key1).invoke("evaluate", env1))), //
-					Collections.singletonMap(key1, (Evaluate) env -> evalPredicates.evaluate(f.apply(env))));
+					To.map(key1, (Evaluate) env -> evalPredicates.evaluate(f.apply(env))));
 		}
 	}
 
@@ -72,7 +71,7 @@ public class SewingExpressionImpl implements SewingExpression {
 
 	private static LambdaImplementation<Evaluate> compileNumber(String key) {
 		FunExpr expr = ff.parameter0(() -> ff.inject(key));
-		return LambdaImplementation.of(lambdaInterface, Collections.singletonMap(key, Type.INT), expr);
+		return LambdaImplementation.of(lambdaInterface, To.map(key, Type.INT), expr);
 	}
 
 	private LambdaInstance<Evaluate> compileOperator(Node m[], String op) {
