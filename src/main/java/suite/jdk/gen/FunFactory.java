@@ -111,12 +111,20 @@ public class FunFactory {
 		return expr;
 	}
 
+	public FunExpr ifNonNullAnd(FunExpr object, FunExpr then_) {
+		return ifNonNull(object, then_, _false());
+	}
+
 	public FunExpr ifNonNull(FunExpr object, FunExpr then_, FunExpr else_) {
 		IfNonNullFunExpr expr = fe.new IfNonNullFunExpr();
 		expr.object = object;
 		expr.then = then_;
 		expr.else_ = else_;
 		return expr;
+	}
+
+	public FunExpr ifInstanceAnd(Class<?> clazz, FunExpr object, Fun<FunExpr, FunExpr> then_) {
+		return ifInstance(clazz, object, then_, _false());
 	}
 
 	public FunExpr ifInstance(Class<?> clazz, FunExpr object, Fun<FunExpr, FunExpr> then_, FunExpr else_) {

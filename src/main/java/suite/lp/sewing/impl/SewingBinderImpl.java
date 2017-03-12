@@ -64,11 +64,10 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
 			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTree = be -> n_ -> ff //
 					.declare(ff.invokeStatic(Tree.class, "decompose", n_, ff.object(operator, Operator.class)),
-							t -> ff.ifNonNull(t, //
+							t -> ff.ifNonNullAnd(t, //
 									ff.and( //
 											ff.invoke(lambda0, be, t.invoke("getLeft")), //
-											ff.invoke(lambda1, be, t.invoke("getRight"))),
-									ff._false()));
+											ff.invoke(lambda1, be, t.invoke("getRight")))));
 
 			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTree));
 		} else if (node instanceof Tuple) {
@@ -80,7 +79,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef = bindRef(compile(node));
 
 			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTuple = be -> n_ -> ff //
-					.ifInstance(Tuple.class, n_, tuple -> ff //
+					.ifInstanceAnd(Tuple.class, n_, tuple -> ff //
 							.declare(tuple.field("nodes"), nodes -> {
 								List<FunExpr> cond = new ArrayList<>();
 								for (int i = 0; i < lambdas.size(); i++)
@@ -88,7 +87,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 											be, //
 											nodes.invoke("get", ff.constant(i)).checkCast(Node.class)));
 								return ff.and(cond.toArray(new FunExpr[0]));
-							}), ff._false());
+							}));
 
 			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTuple));
 		} else {
@@ -126,27 +125,24 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
 	private static LambdaImplementation<BindPredicate> compileBindAtom_() {
 		Map<String, Type> fieldTypes = To.map(key0, Type.getType(Node.class));
-
-		return bind(fieldTypes, //
-				n_ -> ff.ifEquals(n_, ff.inject(key0), ff._true(), ff._false()));
+		Fun<FunExpr, FunExpr> expr = n_ -> ff.ifEquals(n_, ff.inject(key0), ff._true(), ff._false());
+		return bind(fieldTypes, expr);
 	}
 
 	private static LambdaImplementation<BindPredicate> compileBindInt_() {
 		Map<String, Type> fieldTypes = To.map(key0, Type.getType(Node.class), key1, Type.INT);
-
-		return bind(fieldTypes, //
-				n_ -> ff.ifInstance(Int.class, n_, //
-						i -> ff.ifEquals(i.field("number"), ff.inject(key1), ff._true(), ff._false()), //
-						ff._false()));
+		Fun<FunExpr, FunExpr> expr = n_ -> ff.ifInstanceAnd( //
+				Int.class, n_, //
+				i -> ff.ifEquals(i.field("number"), ff.inject(key1), ff._true(), ff._false()));
+		return bind(fieldTypes, expr);
 	}
 
 	private static LambdaImplementation<BindPredicate> compileBindStr_() {
 		Map<String, Type> fieldTypes = To.map(key0, Type.getType(Node.class), key1, Type.STRING);
-
-		return bind(fieldTypes, //
-				n_ -> ff.ifInstance(Str.class, n_, //
-						i -> ff.inject(key1).invoke("equals", i.field("value").cast(Object.class)), //
-						ff._false()));
+		Fun<FunExpr, FunExpr> expr = n_ -> ff.ifInstanceAnd( //
+				Str.class, n_, //
+				i -> ff.inject(key1).invoke("equals", i.field("value").cast(Object.class)));
+		return bind(fieldTypes, expr);
 	}
 
 	private static LambdaImplementation<BindPredicate> bind(Map<String, Type> fieldTypes, Fun<FunExpr, FunExpr> compare) {
