@@ -58,17 +58,9 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 			return compileBindStr((Str) node);
 		else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
-			Clone_ f = compile(node);
 			LambdaInstance<BindPredicate> lambda0 = compileBind0(tree.getLeft());
 			LambdaInstance<BindPredicate> lambda1 = compileBind0(tree.getRight());
-			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef;
-
-			if (isBindTrees)
-				bindRef = be -> ref -> ff //
-						.seq(be.invoke("getTrail").invoke("addBind", ref, ff.object(f, Clone_.class).apply(be.invoke("getEnv"))),
-								ff._true());
-			else
-				bindRef = be -> ref -> ff._false();
+			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef = bindRef(compile(node));
 
 			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTree = be -> n_ -> ff //
 					.declare(ff.invokeStatic(Tree.class, "decompose", n_, ff.object(operator, Operator.class)),
@@ -80,21 +72,12 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
 			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTree));
 		} else if (node instanceof Tuple) {
-			Clone_ f = compile(node);
-
 			List<LambdaInstance<BindPredicate>> lambdas = Read //
 					.from(((Tuple) node).nodes) //
 					.map(this::compileBind0) //
 					.toList();
 
-			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef;
-
-			if (isBindTrees)
-				bindRef = be -> ref -> ff.seq( //
-						be.invoke("getTrail").invoke("addBind", ref, ff.object(f, Clone_.class).apply(be.invoke("getEnv"))), //
-						ff._true());
-			else
-				bindRef = be -> ref -> ff._false();
+			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef = bindRef(compile(node));
 
 			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTuple = be -> n_ -> ff //
 					.ifInstance(Tuple.class, n_, tuple -> ff //
@@ -174,10 +157,20 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
 	private static LambdaImplementation<BindPredicate> bind(Map<String, Type> fieldTypes, Fun<FunExpr, FunExpr> compare) {
 		return LambdaImplementation.of(lambdaClass, fieldTypes,
-				ifRef(be -> ref -> ff.seq( //
-						be.invoke("getTrail").invoke("addBind", ref, ff.inject(key0)), //
-						ff._true()), //
-						be -> compare));
+				ifRef(be -> ref -> bindRef(be, ref, ff.inject(key0)), be -> compare));
+	}
+
+	private Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef(Clone_ f) {
+		Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef;
+		if (isBindTrees)
+			bindRef = be -> ref -> bindRef(be, ref, ff.object(f, Clone_.class).apply(be.invoke("getEnv")));
+		else
+			bindRef = be -> ref -> ff._false();
+		return bindRef;
+	}
+
+	private static FunExpr bindRef(FunExpr bindEnv, FunExpr ref, FunExpr n1) {
+		return ff.seq(bindEnv.invoke("getTrail").invoke("addBind", ref, n1), ff._true());
 	}
 
 	private static FunExpr ifRef(Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef, Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTree) {

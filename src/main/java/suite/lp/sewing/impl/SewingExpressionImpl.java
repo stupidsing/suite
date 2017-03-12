@@ -56,19 +56,15 @@ public class SewingExpressionImpl implements SewingExpression {
 			return LambdaInstance.of(compiledNumber, Collections.singletonMap(key, ((Int) node).number));
 		else {
 			Clone_ f = sc.compile(node);
-			return compileEvaluate(env -> evalPredicates.evaluate(f.apply(env)));
+			String key1 = "eval";
+
+			return LambdaInstance.of(
+					LambdaImplementation.of( //
+							lambdaInterface, //
+							Collections.singletonMap(key1, Type.getType(Evaluate.class)), //
+							ff.parameter1(env1 -> ff.inject(key1).invoke("evaluate", env1))), //
+					Collections.singletonMap(key1, (Evaluate) env -> evalPredicates.evaluate(f.apply(env))));
 		}
-	}
-
-	private LambdaInstance<Evaluate> compileEvaluate(Evaluate evaluate) {
-		String key = "eval";
-
-		return LambdaInstance.of(
-				LambdaImplementation.of( //
-						lambdaInterface, //
-						Collections.singletonMap(key, Type.getType(Evaluate.class)), //
-						ff.parameter1(env -> ff.inject(key).invoke("evaluate", env))), //
-				Collections.singletonMap(key, evaluate));
 	}
 
 	private static String key = "key";
