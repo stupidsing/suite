@@ -172,7 +172,11 @@ public class FunRewrite extends FunFactory {
 			return objectField(e1.object, e1.type);
 		} else if (e0 instanceof PlaceholderFunExpr) {
 			PlaceholderFunExpr e1 = (PlaceholderFunExpr) e0;
-			return placeholders.get(e1);
+			FunExpr e2 = placeholders.get(e1);
+			if (e2 != null)
+				return e2;
+			else
+				throw new RuntimeException("Cannot resolve placeholder");
 		} else
 			return null;
 	}
