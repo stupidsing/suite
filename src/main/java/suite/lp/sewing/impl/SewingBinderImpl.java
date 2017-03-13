@@ -63,7 +63,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef = bindRef(compile(node));
 
 			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTree = be -> n_ -> ff //
-					.declare(ff.invokeStatic(Tree.class, "decompose", n_, ff.object(operator, Operator.class)),
+					.declare(ff.invokeStatic(Tree.class, "decompose", n_, ff.object(operator)),
 							t -> ff.ifNonNullAnd(t, //
 									ff.and( //
 											ff.invoke(lambda0, be, t.invoke("getLeft")), //
@@ -153,7 +153,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 	private Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef(Clone_ f) {
 		Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef;
 		if (isBindTrees)
-			bindRef = be -> ref -> bindRef(be, ref, ff.object(f, Clone_.class).apply(be.invoke("getEnv")));
+			bindRef = be -> ref -> bindRef(be, ref, ff.object(f).apply(be.invoke("getEnv")));
 		else
 			bindRef = be -> ref -> ff._false();
 		return bindRef;

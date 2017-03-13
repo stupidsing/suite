@@ -105,7 +105,7 @@ public class FunCreatorTest {
 	@Test
 	public void testIndex() {
 		int ints[] = { 0, 1, 4, 9, 16, };
-		IntFun fun = LambdaInstance.of(IntFun.class, i -> f.object(ints, int[].class).index(i)).newFun();
+		IntFun fun = LambdaInstance.of(IntFun.class, i -> f.object(ints).index(i)).newFun();
 		assertEquals(9, fun.apply(3));
 		assertEquals(16, fun.apply(4));
 	}
@@ -119,7 +119,7 @@ public class FunCreatorTest {
 	@Test
 	public void testObject() {
 		IntFun inc = i -> i + 1;
-		Fun<FunExpr, FunExpr> fun = i -> f.object(inc, IntFun.class).invoke("apply", i);
+		Fun<FunExpr, FunExpr> fun = i -> f.object(inc).invoke("apply", i);
 		assertEquals(3, LambdaInstance.of(IntFun.class, fun).newFun().apply(2));
 	}
 

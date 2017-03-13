@@ -164,8 +164,10 @@ public class FunFactory {
 		return expr;
 	}
 
-	public <C, T extends C> FunExpr object(T object, Class<C> clazz) {
-		return object_(object, clazz);
+	public <T> FunExpr object(T object) {
+		Class<? extends Object> clazz = object.getClass();
+		Class<?>[] interfaces = clazz.getInterfaces();
+		return object_(object, interfaces.length == 1 ? interfaces[0] : clazz);
 	}
 
 	public FunExpr object_(Object object, Class<?> clazz) {
