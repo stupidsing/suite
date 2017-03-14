@@ -18,7 +18,7 @@ import suite.util.To;
 
 public class SewingExpressionImpl implements SewingExpression {
 
-	private static FunFactory ff = new FunFactory();
+	private static FunFactory f = new FunFactory();
 	private static LambdaInterface<Evaluate> lambdaInterface = LambdaInterface.of(Evaluate.class);
 
 	private SewingCloner sc;
@@ -54,8 +54,8 @@ public class SewingExpressionImpl implements SewingExpression {
 		else if (node instanceof Int)
 			return LambdaInstance.of(compiledNumber, To.map(keyNumber, ((Int) node).number));
 		else {
-			Clone_ f = sc.compile(node);
-			Evaluate evaluate = env -> evalPredicates.evaluate(f.apply(env));
+			Clone_ n_ = sc.compile(node);
+			Evaluate evaluate = env -> evalPredicates.evaluate(n_.apply(env));
 			return LambdaInstance.of(compiledEval, To.map(keyEval, evaluate));
 		}
 	}
@@ -66,12 +66,12 @@ public class SewingExpressionImpl implements SewingExpression {
 	private static LambdaImplementation<Evaluate> compiledNumber = compileNumber(keyNumber);
 
 	private static LambdaImplementation<Evaluate> compileEval(String key) {
-		FunExpr expr = ff.parameter1(env -> ff.inject(keyEval).invoke("evaluate", env));
+		FunExpr expr = f.parameter1(env -> f.inject(keyEval).invoke("evaluate", env));
 		return LambdaImplementation.of(lambdaInterface, To.map(key, Type.getType(Evaluate.class)), expr);
 	}
 
 	private static LambdaImplementation<Evaluate> compileNumber(String key) {
-		FunExpr expr = ff.parameter0(() -> ff.inject(key));
+		FunExpr expr = f.parameter0(() -> f.inject(key));
 		return LambdaImplementation.of(lambdaInterface, To.map(key, Type.INT), expr);
 	}
 
@@ -80,9 +80,9 @@ public class SewingExpressionImpl implements SewingExpression {
 		LambdaInstance<Evaluate> lambda1 = compile0(m[1]);
 
 		return LambdaInstance.of(Evaluate.class, env -> {
-			FunExpr v0 = ff.invoke(lambda0, env);
-			FunExpr v1 = ff.invoke(lambda1, env);
-			return ff.bi(op, v0, v1);
+			FunExpr v0 = f.invoke(lambda0, env);
+			FunExpr v1 = f.invoke(lambda1, env);
+			return f.bi(op, v0, v1);
 		});
 	}
 
