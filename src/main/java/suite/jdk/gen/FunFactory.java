@@ -144,6 +144,7 @@ public class FunFactory {
 
 	public FunExpr invoke(LambdaInstance<?> lambda, FunExpr... parameters) {
 		InvokeLambdaFunExpr expr = fe.new InvokeLambdaFunExpr();
+		expr.isExpand = false;
 		expr.lambda = lambda;
 		expr.parameters = Arrays.asList(parameters);
 		return expr;
