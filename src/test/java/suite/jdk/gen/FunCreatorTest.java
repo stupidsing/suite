@@ -50,7 +50,7 @@ public class FunCreatorTest {
 	@Test
 	public void testApply1() {
 		LambdaInstance<IntFun> lambda0 = LambdaInstance.of(IntFun.class, i -> f.add(f.int_(1), i));
-		LambdaInstance<IntFun> lambda1 = LambdaInstance.of(IntFun.class, i -> f.add(f.int_(1), f.invoke(lambda0, i)));
+		LambdaInstance<IntFun> lambda1 = LambdaInstance.of(IntFun.class, i -> f.add(f.int_(1), lambda0.invoke(i)));
 		assertEquals(2, lambda1.newFun().apply(0));
 	}
 

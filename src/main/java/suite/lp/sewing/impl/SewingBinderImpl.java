@@ -66,8 +66,8 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 					.declare(f.invokeStatic(Tree.class, "decompose", n_, f.object(operator)),
 							t -> f.ifNonNullAnd(t, //
 									f.and( //
-											f.invoke(lambda0, be, t.invoke("getLeft")), //
-											f.invoke(lambda1, be, t.invoke("getRight")))));
+											lambda0.invoke(be, t.invoke("getLeft")), //
+											lambda1.invoke(be, t.invoke("getRight")))));
 
 			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTree));
 		} else if (node instanceof Tuple) {
@@ -82,10 +82,11 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 					.ifInstanceAnd(Tuple.class, n_, tuple -> f //
 							.declare(tuple.field("nodes"), nodes -> {
 								List<FunExpr> cond = new ArrayList<>();
-								for (int i = 0; i < lambdas.size(); i++)
-									cond.add(f.invoke(lambdas.get(i), //
-											be, //
-											nodes.invoke("get", f.int_(i)).checkCast(Node.class)));
+								for (int i = 0; i < lambdas.size(); i++) {
+									LambdaInstance<BindPredicate> lambda = lambdas.get(i);
+									FunExpr ni = nodes.invoke("get", f.int_(i));
+									cond.add(lambda.invoke(be, ni.checkCast(Node.class)));
+								}
 								return f.and(cond.toArray(new FunExpr[0]));
 							}));
 

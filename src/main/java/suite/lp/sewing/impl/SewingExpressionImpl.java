@@ -80,8 +80,8 @@ public class SewingExpressionImpl implements SewingExpression {
 		LambdaInstance<Evaluate> lambda1 = compile0(m[1]);
 
 		return LambdaInstance.of(Evaluate.class, env -> {
-			FunExpr v0 = f.invoke(lambda0, env);
-			FunExpr v1 = f.invoke(lambda1, env);
+			FunExpr v0 = lambda0.invoke(env);
+			FunExpr v1 = lambda1.invoke(env);
 			return f.bi(op, v0, v1);
 		});
 	}

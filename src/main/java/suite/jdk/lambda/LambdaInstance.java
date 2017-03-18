@@ -43,6 +43,10 @@ public class LambdaInstance<I> {
 		this.fieldValues = fieldValues;
 	}
 
+	public FunExpr invoke(FunExpr... parameters) {
+		return f.invoke(this, parameters);
+	}
+
 	public I newFun() {
 		if (fun == null)
 			fun = lambdaImplementation.newFun(fieldValues);
