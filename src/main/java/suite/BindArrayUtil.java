@@ -28,6 +28,7 @@ public class BindArrayUtil {
 		List<Integer> indexList = new ArrayList<>();
 		Integer index;
 		int n = 0;
+
 		while ((index = sb.getVariableIndex(generalizer.getVariable(Atom.of("." + n++)))) != null)
 			indexList.add(index);
 
