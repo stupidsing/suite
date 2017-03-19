@@ -1,5 +1,6 @@
 package suite.lp.kb;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -65,9 +66,9 @@ public class Prototype implements Comparable<Prototype> {
 		if ((tree = Tree.decompose(node)) != null)
 			return tree;
 		else if (node instanceof Tuple) {
-			List<Node> nodes = ((Tuple) node).nodes;
-			if (!nodes.isEmpty())
-				return Tree.of(TermOp.TUPLE_, nodes.get(0), Tuple.of(Util.right(nodes, 1)));
+			Node nodes[] = ((Tuple) node).nodes;
+			if (nodes.length > 0)
+				return Tree.of(TermOp.TUPLE_, nodes[0], Tuple.of(Arrays.copyOfRange(nodes, 1, nodes.length, Node[].class)));
 			else
 				return null;
 		} else

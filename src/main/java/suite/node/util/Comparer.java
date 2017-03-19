@@ -3,7 +3,6 @@ package suite.node.util;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -74,12 +73,13 @@ public class Comparer implements Comparator<Node> {
 				c = c != 0 ? c : compare(t0.getRight(), t1.getRight());
 				return c;
 			} else if (clazz0 == Tuple.class) {
-				Iterator<Node> iter0 = ((Tuple) n0).nodes.iterator();
-				Iterator<Node> iter1 = ((Tuple) n1).nodes.iterator();
-				while (c == 0 && iter0.hasNext() && iter1.hasNext())
-					c = compare(iter0.next(), iter1.next());
+				Node nodes0[] = ((Tuple) n0).nodes;
+				Node nodes1[] = ((Tuple) n1).nodes;
+				int i = 0, l = Math.min(nodes0.length, nodes1.length);
+				while (c == 0 && i < l)
+					c = compare(nodes0[i], nodes1[i]);
 				if (c == 0)
-					c = iter0.hasNext() ? 1 : -1;
+					c = Integer.compare(nodes0.length, nodes1.length);
 				return c;
 
 			} else

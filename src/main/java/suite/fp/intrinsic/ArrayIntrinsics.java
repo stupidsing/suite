@@ -1,40 +1,43 @@
 package suite.fp.intrinsic;
 
-import java.util.List;
+import java.util.Arrays;
 
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tuple;
-import suite.util.Util;
+import suite.util.Copy;
 
 public class ArrayIntrinsics {
 
 	public Intrinsic append = (callback, inputs) -> {
-		List<Node> array0 = ((Tuple) inputs.get(0)).nodes;
-		List<Node> array1 = ((Tuple) inputs.get(1)).nodes;
-		return Tuple.of(Util.add(array0, array1));
+		Node array0[] = ((Tuple) inputs.get(0)).nodes;
+		Node array1[] = ((Tuple) inputs.get(1)).nodes;
+		Node array[] = new Node[array0.length + array1.length];
+		Copy.array(array0, 0, array, 0, array0.length);
+		Copy.array(array1, 0, array, array0.length, array1.length);
+		return Tuple.of(array);
 	};
 
 	public Intrinsic arrayList = (callback, inputs) -> {
-		List<Node> array = ((Tuple) inputs.get(0)).nodes;
-		return Intrinsics.drain(callback, array::get, array.size());
+		Node array[] = ((Tuple) inputs.get(0)).nodes;
+		return Intrinsics.drain(callback, i -> array[i], array.length);
 	};
 
 	public Intrinsic listArray = (callback, inputs) -> {
-		return Tuple.of(ThunkUtil.yawnList(callback::yawn, inputs.get(0), true).toList());
+		return Tuple.of(ThunkUtil.yawnList(callback::yawn, inputs.get(0), true).toArray(Node.class));
 	};
 
 	public Intrinsic slice = (callback, inputs) -> {
 		int s = ((Int) inputs.get(0)).number;
 		int e = ((Int) inputs.get(1)).number;
-		List<Node> array = ((Tuple) inputs.get(2)).nodes;
+		Node array[] = ((Tuple) inputs.get(2)).nodes;
 		if (s < 0)
-			s += array.size();
+			s += array.length;
 		if (e < s)
-			e += array.size();
-		return Tuple.of(array.subList(s, e));
+			e += array.length;
+		return Tuple.of(Arrays.copyOfRange(array, s, e, Node[].class));
 	};
 
 }

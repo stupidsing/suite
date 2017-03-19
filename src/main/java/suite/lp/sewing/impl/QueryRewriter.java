@@ -16,7 +16,6 @@ import suite.node.Tuple;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
-import suite.util.Util;
 
 /**
  * Converts query to tuple syntax for better performance.
@@ -97,9 +96,9 @@ public class QueryRewriter {
 			if (length <= 0)
 				nodex = node0;
 			else {
-				List<Node> ps = Arrays.asList(TreeUtil.getElements(node0, length));
+				Node ps[] = TreeUtil.getElements(node0, length);
 				if (pi.isSkipFirst)
-					ps = Util.right(ps, 1);
+					ps = Arrays.copyOfRange(ps, 1, ps.length, Node[].class);
 				nodex = Tuple.of(ps);
 			}
 		} else

@@ -114,20 +114,22 @@ public class Grapher {
 	private Node ungraph0(int id) {
 		int size = gns.size();
 
-		List<Node> nodes = Read.from(gns).map(gn -> {
-			switch (gn.type) {
-			case DICT:
-				return new Dict();
-			case TERM:
-				return gn.terminal;
-			case TREE:
-				return Tree.of(gn.op, null, null);
-			case TUPLE:
-				return Tuple.of(new ArrayList<>(gn.children.size()));
-			default:
-				throw new RuntimeException();
-			}
-		}).toList();
+		List<Node> nodes = Read.from(gns) //
+				.map(gn -> {
+					switch (gn.type) {
+					case DICT:
+						return new Dict();
+					case TERM:
+						return gn.terminal;
+					case TREE:
+						return Tree.of(gn.op, null, null);
+					case TUPLE:
+						return Tuple.of(new Node[gn.children.size()]);
+					default:
+						throw new RuntimeException();
+					}
+				}) //
+				.toList();
 
 		for (int i = 0; i < size; i++) {
 			GN gn = gns.get(i);
@@ -146,8 +148,9 @@ public class Grapher {
 				Tree.forceSetRight(tree, children.get(1).t1);
 				break;
 			case TUPLE:
-				List<Node> list = ((Tuple) node).nodes;
-				list.addAll(Read.from(children).map(p -> p.t1).toList());
+				Node list[] = ((Tuple) node).nodes;
+				for (int j = 0; j < children.size(); j++)
+					list[j] = children.get(j).t1;
 			}
 		}
 

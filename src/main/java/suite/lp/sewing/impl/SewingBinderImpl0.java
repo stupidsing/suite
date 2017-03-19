@@ -64,10 +64,10 @@ public class SewingBinderImpl0 extends SewingClonerImpl implements SewingBinder 
 			return (be, n) -> {
 				Node n_ = n.finalNode();
 				if (n_ instanceof Tuple) {
-					List<Node> nodes = ((Tuple) n_).nodes;
-					if (nodes.size() == size) {
+					Node nodes[] = ((Tuple) n_).nodes;
+					if (nodes.length == size) {
 						for (int i = 0; i < size; i++)
-							if (!cs.get(i).test(be, nodes.get(i)))
+							if (!cs.get(i).test(be, nodes[i]))
 								return false;
 						return true;
 					} else

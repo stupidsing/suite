@@ -1,7 +1,5 @@
 package suite.lp.doer;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -56,14 +54,12 @@ public class Binder {
 					&& bind(t0.getLeft(), t1.getLeft(), trail) //
 					&& bind(t0.getRight(), t1.getRight(), trail);
 		} else if (clazz0 == Tuple.class && clazz1 == Tuple.class) {
-			List<Node> nodes0 = ((Tuple) n0).nodes;
-			List<Node> nodes1 = ((Tuple) n1).nodes;
-			boolean result = nodes0.size() == nodes1.size();
+			Node nodes0[] = ((Tuple) n0).nodes;
+			Node nodes1[] = ((Tuple) n1).nodes;
+			boolean result = nodes0.length == nodes1.length;
 			if (result) {
-				Iterator<Node> iter0 = nodes0.iterator();
-				Iterator<Node> iter1 = nodes1.iterator();
-				while (result && iter0.hasNext())
-					result &= bind(iter0.next(), iter1.next(), trail);
+				for (int i = 0; i < nodes0.length; i++)
+					result &= bind(nodes0[i], nodes1[i], trail);
 			}
 			return result;
 		} else

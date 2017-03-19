@@ -1,19 +1,18 @@
 package suite.node;
 
-import java.util.List;
 import java.util.Objects;
 
 import suite.util.Util;
 
 public class Tuple extends Node {
 
-	public final List<Node> nodes;
+	public final Node nodes[];
 
-	public static Tuple of(List<Node> nodes) {
+	public static Tuple of(Node nodes[]) {
 		return new Tuple(nodes);
 	}
 
-	private Tuple(List<Node> nodes) {
+	private Tuple(Node nodes[]) {
 		this.nodes = nodes;
 	}
 
