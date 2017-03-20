@@ -11,11 +11,13 @@ import org.apache.bcel.generic.Type;
 import org.junit.Test;
 
 import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.FunExpression.ProfileFunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.To;
+import suite.util.Util;
 
 public class FunCreatorTest {
 
@@ -121,6 +123,14 @@ public class FunCreatorTest {
 		IntFun inc = i -> i + 1;
 		Fun<FunExpr, FunExpr> fun = i -> f.object(inc).invoke("apply", i);
 		assertEquals(3, LambdaInstance.of(IntFun.class, fun).newFun().apply(2));
+	}
+
+	@Test
+	public void testProfile() {
+		Fun<FunExpr, FunExpr> fun = i -> (ProfileFunExpr) f.profile(f.int_(1));
+		IntSource instance = LambdaInstance.of(IntSource.class, fun).newFun();
+		assertEquals(1, instance.source());
+		Util.dump(instance);
 	}
 
 	private FunCreator<IntFun> intFun(String fieldName, Type fieldType) {

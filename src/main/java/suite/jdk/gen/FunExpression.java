@@ -240,6 +240,11 @@ public class FunExpression {
 		public FunExpr expression;
 	}
 
+	public class ProfileFunExpr extends FunExpr {
+		public String counterFieldName = "p" + Util.temp();
+		public FunExpr do_;
+	}
+
 	public class SeqFunExpr extends FunExpr {
 		public FunExpr left, right;
 	}

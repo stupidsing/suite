@@ -24,6 +24,7 @@ import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
+import suite.jdk.gen.FunExpression.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
@@ -86,7 +87,10 @@ public class FunTypeInformation {
 			return typeOf(placeholderResolver.apply(e1));
 		} else if (e0 instanceof PrintlnFunExpr)
 			return Type.VOID;
-		else if (e0 instanceof SeqFunExpr) {
+		else if (e0 instanceof ProfileFunExpr) {
+			ProfileFunExpr e1 = (ProfileFunExpr) e0;
+			return typeOf(e1.do_);
+		} else if (e0 instanceof SeqFunExpr) {
 			SeqFunExpr e1 = (SeqFunExpr) e0;
 			return typeOf(e1.right);
 		} else if (e0 instanceof FieldStaticFunExpr) {

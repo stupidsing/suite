@@ -26,6 +26,7 @@ import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
+import suite.jdk.gen.FunExpression.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.node.util.Singleton;
@@ -205,6 +206,12 @@ public class FunFactory {
 		expr.p0 = p0;
 		expr.p1 = p1;
 		expr.do_ = doFun.apply(p0, p1);
+		return expr;
+	}
+
+	public FunExpr profile(FunExpr do_) {
+		ProfileFunExpr expr = fe.new ProfileFunExpr();
+		expr.do_ = do_;
 		return expr;
 	}
 

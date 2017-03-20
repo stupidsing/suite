@@ -27,6 +27,7 @@ import suite.jdk.gen.FunExpression.InvokeLambdaFunExpr;
 import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.ObjectFunExpr;
 import suite.jdk.gen.FunExpression.PlaceholderFunExpr;
+import suite.jdk.gen.FunExpression.ProfileFunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.jdk.gen.Type_;
 import suite.jdk.lambda.LambdaImplementation;
@@ -177,6 +178,10 @@ public class FunRewrite extends FunFactory {
 				return e2;
 			else
 				throw new RuntimeException("Cannot resolve placeholder");
+		} else if (e0 instanceof ProfileFunExpr) {
+			ProfileFunExpr e1 = (ProfileFunExpr) e0;
+			fieldTypeValues.put(e1.counterFieldName, Pair.of(Type.INT, 0));
+			return null;
 		} else
 			return null;
 	}

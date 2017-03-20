@@ -38,6 +38,7 @@ import suite.jdk.gen.FunExpression.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExpression.LocalFunExpr;
 import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
+import suite.jdk.gen.FunExpression.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
 import suite.streamlet.Read;
 
@@ -184,6 +185,15 @@ public class FunGenerateBytecode {
 			list.add(factory.createGetStatic(sys, "out", Type.getType(PrintStream.class)));
 			visit0(e1.expression);
 			list.add(factory.createInvoke(sys, "println", fti.typeOf(e1), new Type[] { Type.STRING, }, Const.INVOKEVIRTUAL));
+		} else if (e0 instanceof ProfileFunExpr) {
+			ProfileFunExpr e1 = (ProfileFunExpr) e0;
+			list.add(InstructionFactory.createLoad(Type.OBJECT, 0));
+			list.add(InstructionFactory.createDup(0));
+			list.add(factory.createGetField(className, e1.counterFieldName, Type.INT));
+			list.add(factory.createConstant(1));
+			list.add(InstructionFactory.createBinaryOperation("+", Type.INT));
+			list.add(factory.createPutField(className, e1.counterFieldName, Type.INT));
+			visit0(e1.do_);
 		} else if (e0 instanceof SeqFunExpr) {
 			SeqFunExpr e1 = (SeqFunExpr) e0;
 			visit0(e1.left);
