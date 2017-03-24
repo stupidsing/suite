@@ -235,7 +235,7 @@ public class SewingProverImpl implements SewingProver {
 	private Trampoline compileRules(Prototype prototype, List<Rule> rules, TraceLevel traceLevel) {
 		boolean hasCut = Read.from(rules) //
 				.map(rule -> new TreeRewriter().contains(ProverConstant.cut, rule.tail)) //
-				.fold(false, (b0, b1) -> b0 || b1);
+				.isAny(b -> b);
 
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
 			Generalizer generalizer = new Generalizer();

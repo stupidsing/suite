@@ -19,7 +19,7 @@ public class TreeRewriter {
 				boolean result;
 				if (!eq(node, from)) {
 					NodeRead nr = NodeRead.of(node);
-					result = Read.from(nr.children).fold(false, (r, p) -> r || apply(p.t1));
+					result = Read.from(nr.children).isAny(p -> apply(p.t1));
 				} else
 					result = true;
 				return result;
@@ -35,7 +35,7 @@ public class TreeRewriter {
 		return rewrite(() -> {
 			Cloner cloner = new Cloner();
 			return new Node[] { cloner.clone(from), cloner.clone(to), };
-		} , node0);
+		}, node0);
 	}
 
 	public Node rewrite(Source<Node[]> source, Node node) {
@@ -56,7 +56,7 @@ public class TreeRewriter {
 			} else
 				node1 = node0;
 			return node1;
-		} , node);
+		}, node);
 	}
 
 	public Node rewrite(Fun<Node, Node> fun, Node node0) {

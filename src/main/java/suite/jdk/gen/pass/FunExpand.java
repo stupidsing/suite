@@ -2,6 +2,7 @@ package suite.jdk.gen.pass;
 
 import org.apache.bcel.generic.Type;
 
+import suite.inspect.Inspect;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
 import suite.jdk.gen.FunExpression.ConstantFunExpr;
@@ -17,9 +18,15 @@ import suite.jdk.gen.FunFactory;
 import suite.jdk.lambda.LambdaImplementation;
 import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
+import suite.node.util.Singleton;
+import suite.streamlet.As;
+import suite.streamlet.Read;
+import suite.util.Rethrow;
 import suite.util.Util;
 
 public class FunExpand extends FunFactory {
+
+	private static Inspect inspect = Singleton.get().getInspect();
 
 	public FunExpr expand(FunExpr expr0, int depth) {
 		if (0 < depth)
@@ -63,9 +70,9 @@ public class FunExpand extends FunFactory {
 			return expand(replace(e1.do_, e1.var, e1.value), depth);
 		} else if (e0 instanceof InvokeLambdaFunExpr) {
 			InvokeLambdaFunExpr e1 = (InvokeLambdaFunExpr) e0;
-			if (e1.isExpand) {
-				LambdaInstance<?> l_inst = e1.lambda;
-				LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
+			LambdaInstance<?> l_inst = e1.lambda;
+			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
+			if (e1.isExpand || weight(l_impl.expr) <= 5) {
 				LambdaInterface<?> l_iface = l_impl.lambdaInterface;
 				FunExpr fe = l_impl.expr;
 				for (String fieldName : l_impl.fieldTypes.keySet())
@@ -85,6 +92,31 @@ public class FunExpand extends FunFactory {
 			else
 				return null;
 		}, expr0);
+	}
+
+	private int weight(FunExpr e0) {
+		if (e0 instanceof CastFunExpr) {
+			CastFunExpr e1 = (CastFunExpr) e0;
+			return weight(e1.expr);
+		} else
+			return Read.from(inspect.fields(e0.getClass())) //
+					.collect(As.sum(field -> {
+						Object e1 = Rethrow.reflectiveOperationException(() -> field.get(e0));
+						if (e1 instanceof FunExpr)
+							return weight_(e1);
+						else if (e1 instanceof Iterable<?>) {
+							Iterable<?> iter = (Iterable<?>) e1;
+							int sum = 0;
+							for (Object e2 : iter)
+								sum += weight_(e2);
+							return sum;
+						} else
+							return 0;
+					})) + 1;
+	}
+
+	private int weight_(Object object) {
+		return object instanceof FunExpr ? weight((FunExpr) object) : 0;
 	}
 
 }

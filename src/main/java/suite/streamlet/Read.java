@@ -24,12 +24,19 @@ import suite.util.Rethrow;
 
 public class Read {
 
+	private static Streamlet<?> empty = Streamlet.from(FunUtil.nullSource());
+	private static Streamlet2<?, ?> empty2 = Streamlet2.from(FunUtil2.nullSource());
+
 	public static <T> Streamlet<T> empty() {
-		return Streamlet.from(FunUtil.nullSource());
+		@SuppressWarnings("unchecked")
+		Streamlet<T> st = (Streamlet<T>) empty;
+		return st;
 	}
 
 	public static <K, V> Streamlet2<K, V> empty2() {
-		return Streamlet2.from(FunUtil2.nullSource());
+		@SuppressWarnings("unchecked")
+		Streamlet2<K, V> st = (Streamlet2<K, V>) empty2;
+		return st;
 	}
 
 	@SafeVarargs
