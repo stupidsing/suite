@@ -15,6 +15,7 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 
 /**
@@ -32,9 +33,7 @@ public class QueryRewriter {
 		private int length;
 
 		private PrototypeInfo(Collection<Rule> rules) {
-			int n = Read.from(rules) //
-					.map(rule -> TreeUtil.getNumberOfElements(rule.head)) //
-					.min(Integer::compare);
+			int n = Read.from(rules).collect(As.min(rule -> TreeUtil.getNumberOfElements(rule.head)));
 			isSkipFirst = 0 < n
 					&& Read.from(rules).map(rule -> rule.head).isAll(head -> TreeUtil.getElements(head, 1)[0] instanceof Atom);
 			length = n - (isSkipFirst ? 1 : 0);
