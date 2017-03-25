@@ -21,57 +21,57 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 	public T9 t9;
 
 	public static Fixie<D_, D_, D_, D_, D_, D_, D_, D_, D_, D_> //
-	of() {
+			of() {
 		return of(D);
 	}
 
 	public static <T0> Fixie<T0, D_, D_, D_, D_, D_, D_, D_, D_, D_> //
-	of(T0 t0) {
+			of(T0 t0) {
 		return of(t0, D);
 	}
 
 	public static <T0, T1> Fixie<T0, T1, D_, D_, D_, D_, D_, D_, D_, D_> //
-	of(T0 t0, T1 t1) {
+			of(T0 t0, T1 t1) {
 		return of(t0, t1, D);
 	}
 
 	public static <T0, T1, T2> Fixie<T0, T1, T2, D_, D_, D_, D_, D_, D_, D_> //
-	of(T0 t0, T1 t1, T2 t2) {
+			of(T0 t0, T1 t1, T2 t2) {
 		return of(t0, t1, t2, D);
 	}
 
 	public static <T0, T1, T2, T3> Fixie<T0, T1, T2, T3, D_, D_, D_, D_, D_, D_> //
-	of(T0 t0, T1 t1, T2 t2, T3 t3) {
+			of(T0 t0, T1 t1, T2 t2, T3 t3) {
 		return of(t0, t1, t2, t3, D);
 	}
 
 	public static <T0, T1, T2, T3, T4> Fixie<T0, T1, T2, T3, T4, D_, D_, D_, D_, D_> //
-	of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4) {
+			of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4) {
 		return of(t0, t1, t2, t3, t4, D);
 	}
 
 	public static <T0, T1, T2, T3, T4, T5> Fixie<T0, T1, T2, T3, T4, T5, D_, D_, D_, D_> //
-	of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
+			of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
 		return of(t0, t1, t2, t3, t4, t5, D);
 	}
 
 	public static <T0, T1, T2, T3, T4, T5, T6> Fixie<T0, T1, T2, T3, T4, T5, T6, D_, D_, D_> //
-	of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
+			of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
 		return of(t0, t1, t2, t3, t4, t5, t6, D);
 	}
 
 	public static <T0, T1, T2, T3, T4, T5, T6, T7> Fixie<T0, T1, T2, T3, T4, T5, T6, T7, D_, D_> //
-	of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
+			of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
 		return of(t0, t1, t2, t3, t4, t5, t6, t7, D);
 	}
 
 	public static <T0, T1, T2, T3, T4, T5, T6, T7, T8> Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, D_> //
-	of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
+			of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
 		return of(t0, t1, t2, t3, t4, t5, t6, t7, t8, D);
 	}
 
 	public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> //
-	of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) {
+			of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) {
 		return new Fixie<>(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9);
 	}
 
@@ -93,15 +93,15 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 
 	public static //
 	<T0 extends Comparable<? super T0> //
-	, T1 extends Comparable<? super T1> //
-	, T2 extends Comparable<? super T2> //
-	, T3 extends Comparable<? super T3> //
-	, T4 extends Comparable<? super T4> //
-	, T5 extends Comparable<? super T5> //
-	, T6 extends Comparable<? super T6> //
-	, T7 extends Comparable<? super T7> //
-	, T8 extends Comparable<? super T8> //
-	, T9 extends Comparable<? super T9> //
+			, T1 extends Comparable<? super T1> //
+			, T2 extends Comparable<? super T2> //
+			, T3 extends Comparable<? super T3> //
+			, T4 extends Comparable<? super T4> //
+			, T5 extends Comparable<? super T5> //
+			, T6 extends Comparable<? super T6> //
+			, T7 extends Comparable<? super T7> //
+			, T8 extends Comparable<? super T8> //
+			, T9 extends Comparable<? super T9> //
 	> Comparator<Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>> comparator() {
 		return (fixie0, fixie1) -> {
 			int c = 0;
@@ -134,7 +134,7 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 					&& Objects.equals(t7, other.t7) //
 					&& Objects.equals(t8, other.t8) //
 					&& Objects.equals(t9, other.t9) //
-					;
+			;
 		} else
 			return false;
 	}
@@ -156,16 +156,29 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 
 	@Override
 	public String toString() {
-		return t0.toString() //
-				+ ":" + t1.toString() //
-				+ ":" + t2.toString() //
-				+ ":" + t3.toString() //
-				+ ":" + t4.toString() //
-				+ ":" + t5.toString() //
-				+ ":" + t6.toString() //
-				+ ":" + t7.toString() //
-				+ ":" + t8.toString() //
-				+ ":" + t9.toString();
+		StringBuilder sb = new StringBuilder();
+		boolean cont = true;
+		if (cont &= t0 != D)
+			sb.append(t0.toString());
+		if (cont &= t1 != D)
+			sb.append(":" + t1.toString());
+		if (cont &= t2 != D)
+			sb.append(":" + t2.toString());
+		if (cont &= t3 != D)
+			sb.append(":" + t3.toString());
+		if (cont &= t4 != D)
+			sb.append(":" + t4.toString());
+		if (cont &= t5 != D)
+			sb.append(":" + t5.toString());
+		if (cont &= t6 != D)
+			sb.append(":" + t6.toString());
+		if (cont &= t7 != D)
+			sb.append(":" + t7.toString());
+		if (cont &= t8 != D)
+			sb.append(":" + t8.toString());
+		if (cont &= t9 != D)
+			sb.append(":" + t9.toString());
+		return sb.toString();
 	}
 
 }
