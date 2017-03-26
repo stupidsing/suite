@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
 public class BytesUtil {
@@ -37,10 +38,20 @@ public class BytesUtil {
 		});
 	}
 
-	public static Outlet<Bytes> concatSplit(Outlet<Bytes> o, Bytes delim) {
+	public static void copy(Outlet<Bytes> o, OutputStream os) {
+		Bytes bytes;
+		while ((bytes = o.next()) != null)
+			try {
+				bytes.write(os);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+	}
+
+	public static Fun<Outlet<Bytes>, Outlet<Bytes>> split(Bytes delim) {
 		int ds = delim.size();
 
-		return new Outlet<>(new Source<Bytes>() {
+		return o -> new Outlet<>(new Source<Bytes>() {
 			private Bytes buffer = Bytes.empty;
 			private boolean isArriving;
 			private int p;
@@ -81,16 +92,6 @@ public class BytesUtil {
 				return isMatched;
 			}
 		});
-	}
-
-	public static void copy(Outlet<Bytes> o, OutputStream os) {
-		Bytes bytes;
-		while ((bytes = o.next()) != null)
-			try {
-				bytes.write(os);
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
 	}
 
 }

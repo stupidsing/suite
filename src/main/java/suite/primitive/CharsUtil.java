@@ -5,6 +5,7 @@ import java.io.Writer;
 
 import suite.primitive.Chars.CharsBuilder;
 import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
 public class CharsUtil {
@@ -37,10 +38,20 @@ public class CharsUtil {
 		});
 	}
 
-	public static Outlet<Chars> concatSplit(Outlet<Chars> o, Chars delim) {
+	public static void copy(Outlet<Chars> o, Writer writer) {
+		Chars chars;
+		while ((chars = o.next()) != null)
+			try {
+				chars.write(writer);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+	}
+
+	public static Fun<Outlet<Chars>, Outlet<Chars>> split(Chars delim) {
 		int ds = delim.size();
 
-		return new Outlet<>(new Source<Chars>() {
+		return o -> new Outlet<>(new Source<Chars>() {
 			private Chars buffer = Chars.empty;
 			private boolean isArriving;
 			private int p;
@@ -81,16 +92,6 @@ public class CharsUtil {
 				return isMatched;
 			}
 		});
-	}
-
-	public static void copy(Outlet<Chars> o, Writer writer) {
-		Chars chars;
-		while ((chars = o.next()) != null)
-			try {
-				chars.write(writer);
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
 	}
 
 }
