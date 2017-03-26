@@ -19,7 +19,7 @@ import suite.util.To;
 
 public class StoreCache {
 
-	private static Path dir = TempDir.resolve("/");
+	private static Path dir = TempDir.resolve("store-cache");
 
 	public Bytes get(Bytes key, Source<Bytes> source) {
 		Outlet<Bytes> outlet = getOutlet(key, () -> new Outlet<>(source));
