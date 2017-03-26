@@ -84,6 +84,10 @@ public class To {
 		return hex2(i >>> 8 & 0xFF) + hex2(i & 0xFF);
 	}
 
+	public static String hex8(int i) {
+		return hex4(i >>> 16 & 0xFFFF) + hex4(i & 0xFFFF);
+	}
+
 	public static InputStream inputStream(Source<Bytes> source) {
 		return new InputStream() {
 			private InputStream is;
