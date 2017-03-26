@@ -11,11 +11,27 @@ import java.util.function.ToIntFunction;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
+import suite.primitive.Bytes;
+import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.Chars;
+import suite.primitive.Chars.CharsBuilder;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 
 public class As {
+
+	public static Bytes bytes(Outlet<Bytes> outlet) {
+		BytesBuilder bb = new BytesBuilder();
+		outlet.forEach(bb::append);
+		return bb.toBytes();
+	}
+
+	public static Chars chars(Outlet<Chars> outlet) {
+		CharsBuilder cb = new CharsBuilder();
+		outlet.forEach(cb::append);
+		return cb.toChars();
+	}
 
 	public static Fun<Outlet<String>, String> conc(String delimiter) {
 		return outlet -> {

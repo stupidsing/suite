@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 import suite.Constants;
 import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
+import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
@@ -23,11 +23,7 @@ public class StoreCache {
 
 	public Bytes get(Bytes key, Source<Bytes> source) {
 		Outlet<Bytes> outlet = getOutlet(key, () -> new Outlet<>(source));
-		BytesBuilder bb = new BytesBuilder();
-		Bytes bytes;
-		while ((bytes = outlet.next()) != null)
-			bb.append(bytes);
-		return bb.toBytes();
+		return outlet.collect(As::bytes);
 	}
 
 	@SuppressWarnings("resource")
