@@ -35,7 +35,7 @@ public class CharsIntrinsics {
 		Chars delim = Data.get(inputs.get(0));
 		Outlet<Node> s0 = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true);
 		Outlet<Chars> s1 = s0.map(n -> Data.<Chars> get(callback.yawn(n)));
-		Outlet<Chars> s2 = CharsUtil.split(s1, delim);
+		Outlet<Chars> s2 = CharsUtil.split(delim).apply(s1);
 		Outlet<Node> s3 = s2.map(Data<Chars>::new);
 		IPointer<Node> p = IndexedSourceReader.of(s3.source());
 		return Intrinsics.drain(callback, p);
