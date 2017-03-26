@@ -73,7 +73,7 @@ public class StoreCache {
 			dos.write(keySize);
 			dos.write(key.toBytes());
 
-			return new Outlet<Bytes>(() -> Rethrow.ioException(() -> {
+			return new Outlet<>(() -> Rethrow.ioException(() -> {
 				Bytes value = outlet.next();
 				if (value != null)
 					dos.write(value.toBytes());
