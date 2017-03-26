@@ -250,7 +250,10 @@ public class SewingProverImpl implements SewingProver {
 		return log(tr2, traceLevel);
 	}
 
+	private static int c = 0;
+
 	private Trampoline compileRule(Node head, Node tail) {
+		System.out.println(c++ + " " + head);
 		SewingBinder sb = new SewingBinderImpl();
 		BindPredicate p = sb.compileBind(head);
 		Trampoline tr1 = compile0(sb, tail);

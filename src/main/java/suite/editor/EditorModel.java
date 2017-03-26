@@ -1,6 +1,6 @@
 package suite.editor;
 
-import suite.streamlet.Reactive;
+import suite.streamlet.Nerve;
 
 public class EditorModel {
 
@@ -8,9 +8,9 @@ public class EditorModel {
 	private String filename;
 	private String searchText;
 
-	private Reactive<Boolean> modifiedChanged = new Reactive<>();
-	private Reactive<String> filenameChanged = new Reactive<>();
-	private Reactive<String> searchTextChanged = new Reactive<>();
+	private Nerve<Boolean> modifiedChanged = new Nerve<>();
+	private Nerve<String> filenameChanged = new Nerve<>();
+	private Nerve<String> searchTextChanged = new Nerve<>();
 
 	public void changeModified(boolean modified) {
 		setIsModified(modified);
@@ -27,15 +27,15 @@ public class EditorModel {
 		searchTextChanged.fire(searchText);
 	}
 
-	public Reactive<Boolean> getModifiedChanged() {
+	public Nerve<Boolean> getModifiedChanged() {
 		return modifiedChanged;
 	}
 
-	public Reactive<String> getFilenameChanged() {
+	public Nerve<String> getFilenameChanged() {
 		return filenameChanged;
 	}
 
-	public Reactive<String> getSearchTextChanged() {
+	public Nerve<String> getSearchTextChanged() {
 		return searchTextChanged;
 	}
 

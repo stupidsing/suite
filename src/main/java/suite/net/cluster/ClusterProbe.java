@@ -3,7 +3,7 @@ package suite.net.cluster;
 import java.util.Set;
 
 import suite.net.Service;
-import suite.streamlet.Reactive;
+import suite.streamlet.Nerve;
 
 public interface ClusterProbe extends Service {
 
@@ -11,8 +11,8 @@ public interface ClusterProbe extends Service {
 
 	public Set<String> getActivePeers();
 
-	public Reactive<String> getOnJoined();
+	public Nerve<String> getOnJoined();
 
-	public Reactive<String> getOnLeft();
+	public Nerve<String> getOnLeft();
 
 }

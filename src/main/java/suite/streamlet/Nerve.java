@@ -23,48 +23,48 @@ import suite.util.NullableSynchronousQueue;
  * 
  * @author ywsing
  */
-public class Reactive<T> {
+public class Nerve<T> {
 
 	private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(8);
 
 	private Bag<Sink<T>> receivers;
 
 	public interface Redirector<T0, T1> {
-		public void accept(T0 t0, Reactive<T1> reactive);
+		public void accept(T0 t0, Nerve<T1> nerve);
 	}
 
-	public static <T> Reactive<T> append(Reactive<T> r0, Reactive<T> r1) {
-		Reactive<T> reactive1 = new Reactive<>();
-		Sink<T> sink = reactive1::fire;
+	public static <T> Nerve<T> append(Nerve<T> r0, Nerve<T> r1) {
+		Nerve<T> nerve1 = new Nerve<>();
+		Sink<T> sink = nerve1::fire;
 		r0.register(sink);
 		r1.register(sink);
-		return reactive1;
+		return nerve1;
 	}
 
-	public static <T> Reactive<T> from(Source<T> source) {
-		Reactive<T> reactive1 = new Reactive<>();
+	public static <T> Nerve<T> from(Source<T> source) {
+		Nerve<T> nerve1 = new Nerve<>();
 		executor.submit(() -> {
 			T t;
 			while ((t = source.source()) != null)
-				reactive1.fire(t);
+				nerve1.fire(t);
 		});
-		return reactive1;
+		return nerve1;
 	}
 
-	public static <T, U, V> Reactive<V> merge(Reactive<T> r0, Reactive<U> r1, BiFunction<T, U, V> fun) {
-		Reactive<V> reactive1 = new Reactive<>();
+	public static <T, U, V> Nerve<V> merge(Nerve<T> r0, Nerve<U> r1, BiFunction<T, U, V> fun) {
+		Nerve<V> nerve1 = new Nerve<>();
 		CasReference<Pair<T, U>> cr = new CasReference<>(Pair.of(null, null));
-		Sink<Pair<T, U>> recalc = pair -> reactive1.fire(fun.apply(pair.t0, pair.t1));
+		Sink<Pair<T, U>> recalc = pair -> nerve1.fire(fun.apply(pair.t0, pair.t1));
 		r0.register(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
 		r1.register(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
-		return reactive1;
+		return nerve1;
 	}
 
-	public Reactive() {
+	public Nerve() {
 		this(new Bag<>());
 	}
 
-	private Reactive(Bag<Sink<T>> receivers) {
+	private Nerve(Bag<Sink<T>> receivers) {
 		this.receivers = receivers;
 	}
 
@@ -72,29 +72,29 @@ public class Reactive<T> {
 		receivers = new Bag<>();
 	}
 
-	public <U> Reactive<U> concatMap(Fun<T, Reactive<U>> fun) {
-		return redirect((t, reactive1) -> fun.apply(t).register(reactive1::fire));
+	public <U> Nerve<U> concatMap(Fun<T, Nerve<U>> fun) {
+		return redirect((t, nerve1) -> fun.apply(t).register(nerve1::fire));
 	}
 
-	public Reactive<T> delay(int milliseconds) {
-		return redirect((t, reactive1) -> executor.schedule(() -> reactive1.fire(t), milliseconds, TimeUnit.MILLISECONDS));
+	public Nerve<T> delay(int milliseconds) {
+		return redirect((t, nerve1) -> executor.schedule(() -> nerve1.fire(t), milliseconds, TimeUnit.MILLISECONDS));
 	}
 
-	public Reactive<T> edge() {
+	public Nerve<T> edge() {
 		return redirect(new Redirector<T, T>() {
 			private T previous = null;
 
-			public void accept(T t, Reactive<T> reactive1) {
+			public void accept(T t, Nerve<T> nerve1) {
 				if (previous == null || !previous.equals(t))
-					reactive1.fire(t);
+					nerve1.fire(t);
 			}
 		});
 	}
 
-	public Reactive<T> filter(Predicate<T> pred) {
-		return redirect((t, reactive1) -> {
+	public Nerve<T> filter(Predicate<T> pred) {
+		return redirect((t, nerve1) -> {
 			if (pred.test(t))
-				reactive1.fire(t);
+				nerve1.fire(t);
 		});
 	}
 
@@ -102,13 +102,13 @@ public class Reactive<T> {
 		receivers.forEach(sink -> sink.sink(t));
 	}
 
-	public <U> Reactive<U> fold(U init, BiFunction<U, T, U> fun) {
+	public <U> Nerve<U> fold(U init, BiFunction<U, T, U> fun) {
 		CasReference<U> cr = new CasReference<>(init);
-		return redirect((t1, reactive1) -> reactive1.fire(cr.apply(t0 -> fun.apply(t0, t1))));
+		return redirect((t1, nerve1) -> nerve1.fire(cr.apply(t0 -> fun.apply(t0, t1))));
 	}
 
-	public <U> Reactive<U> map(Fun<T, U> fun) {
-		return redirect((t, reactive1) -> reactive1.fire(fun.apply(t)));
+	public <U> Nerve<U> map(Fun<T, U> fun) {
+		return redirect((t, nerve1) -> nerve1.fire(fun.apply(t)));
 	}
 
 	public Outlet<T> outlet() {
@@ -123,10 +123,10 @@ public class Reactive<T> {
 		});
 	}
 
-	public <U> Reactive<U> redirect(Redirector<T, U> redirector) {
-		Reactive<U> reactive1 = new Reactive<>();
-		register(t -> redirector.accept(t, reactive1));
-		return reactive1;
+	public <U> Nerve<U> redirect(Redirector<T, U> redirector) {
+		Nerve<U> nerve1 = new Nerve<>();
+		register(t -> redirector.accept(t, nerve1));
+		return nerve1;
 	}
 
 	public void register(Runnable receiver) {
@@ -137,18 +137,18 @@ public class Reactive<T> {
 		receivers.add(receiver);
 	}
 
-	public Reactive<T> resample(Reactive<?> event) {
+	public Nerve<T> resample(Nerve<?> event) {
 		List<T> ts = new ArrayList<>();
 		ts.add(null);
 		register(t -> ts.set(0, t));
-		return event.redirect((e, reactive1) -> reactive1.fire(ts.get(0)));
+		return event.redirect((e, nerve1) -> nerve1.fire(ts.get(0)));
 	}
 
-	public Reactive<T> unique() {
+	public Nerve<T> unique() {
 		Set<T> set = new HashSet<>();
-		return redirect((t, reactive1) -> {
+		return redirect((t, nerve1) -> {
 			if (set.add(t))
-				reactive1.fire(t);
+				nerve1.fire(t);
 		});
 	}
 

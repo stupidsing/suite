@@ -13,7 +13,7 @@ import javax.swing.undo.UndoManager;
 
 import suite.adt.Pair;
 import suite.editor.Listen.SinkEx;
-import suite.streamlet.Reactive;
+import suite.streamlet.Nerve;
 import suite.util.FunUtil.Fun;
 import suite.util.Util;
 
@@ -75,7 +75,7 @@ public class EditorPane extends JEditorPane {
 		replace(document, start, end, fun);
 	}
 
-	private Reactive<ActionEvent> bind(int keyCode, int modifiers) {
+	private Nerve<ActionEvent> bind(int keyCode, int modifiers) {
 		KeyStroke keyStroke = KeyStroke.getKeyStroke(keyCode, modifiers);
 		Object key = Pair.of(keyCode, modifiers);
 		getInputMap().put(keyStroke, key);
