@@ -37,10 +37,9 @@ public class HttpHeaderUtil {
 	}
 
 	public static Map<String, String> getPostedAttrs(InputStream is) {
-		int size = 4096;
 		BufferedReader br = new BufferedReader(new InputStreamReader(is, Constants.charset));
 		StringBuilder sb = new StringBuilder();
-		char buffer[] = new char[size];
+		char buffer[] = new char[Constants.bufferSize];
 		int nCharsRead;
 
 		while (0 <= (nCharsRead = Rethrow.ioException(() -> br.read(buffer))))

@@ -7,15 +7,14 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import suite.Constants;
 import suite.util.FunUtil;
 
 public class LexerTest {
 
-	private int bufferSize = 4096;
-
 	@Test
 	public void test() throws IOException {
-		char buffer[] = new char[bufferSize];
+		char buffer[] = new char[Constants.bufferSize];
 		StringBuilder sb = new StringBuilder();
 		int nCharsRead;
 

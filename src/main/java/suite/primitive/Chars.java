@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import suite.Constants;
 import suite.util.Copy;
 import suite.util.To;
 import suite.util.Util;
@@ -316,7 +317,7 @@ public class Chars implements Iterable<Character> {
 			if (capacity0 < capacity1) {
 				int capacity = Math.max(capacity0, 4);
 				while (capacity < capacity1)
-					capacity = capacity < 4096 ? capacity << 1 : capacity * 3 / 2;
+					capacity = capacity < Constants.bufferSize ? capacity << 1 : capacity * 3 / 2;
 
 				char chars1[] = new char[capacity];
 				Copy.primitiveArray(cs, 0, chars1, 0, size);

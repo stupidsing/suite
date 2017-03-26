@@ -11,9 +11,9 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 
-public class Copy {
+import suite.Constants;
 
-	private static int bufferSize = 4096;
+public class Copy {
 
 	public static <T> void array(T from[], int fromIndex, T to[], int toIndex, int size) {
 		if (0 < size)
@@ -32,7 +32,7 @@ public class Copy {
 	public static void readerToWriter(Reader in, Writer out) throws IOException {
 		try (Reader in_ = in) {
 			int len;
-			char buffer[] = new char[bufferSize];
+			char buffer[] = new char[Constants.bufferSize];
 			while (0 <= (len = in_.read(buffer)))
 				out.write(buffer, 0, len);
 		}
@@ -67,7 +67,7 @@ public class Copy {
 	public static void stream(InputStream in, OutputStream out) throws IOException {
 		try (InputStream in_ = in) {
 			int len;
-			byte buffer[] = new byte[bufferSize];
+			byte buffer[] = new byte[Constants.bufferSize];
 			while (0 <= (len = in_.read(buffer))) {
 				out.write(buffer, 0, len);
 				out.flush();

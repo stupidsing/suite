@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
+import suite.Constants;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Outlet;
@@ -47,7 +48,7 @@ public class StoreCache {
 					dis.readFully(kb);
 					if (Arrays.equals(key.toBytes(), kb))
 						return new Outlet<>(() -> Rethrow.ioException(() -> {
-							byte vb[] = new byte[4096];
+							byte vb[] = new byte[Constants.bufferSize];
 							int n, nBytesRead = 0;
 							while (nBytesRead < vb.length)
 								if (0 <= (n = dis.read(vb, nBytesRead, vb.length - nBytesRead)))

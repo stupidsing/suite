@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import suite.Constants;
 import suite.util.Copy;
 import suite.util.To;
 import suite.util.Util;
@@ -317,7 +318,7 @@ public class Bytes implements Iterable<Byte> {
 			if (capacity0 < capacity1) {
 				int capacity = Math.max(capacity0, 4);
 				while (capacity < capacity1)
-					capacity = capacity < 4096 ? capacity << 1 : capacity * 3 / 2;
+					capacity = capacity < Constants.bufferSize ? capacity << 1 : capacity * 3 / 2;
 
 				byte bytes1[] = new byte[capacity];
 				Copy.primitiveArray(bs, 0, bytes1, 0, size);

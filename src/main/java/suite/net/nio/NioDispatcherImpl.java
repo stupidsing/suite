@@ -11,6 +11,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
+import suite.Constants;
 import suite.net.ThreadService;
 import suite.net.nio.NioChannelFactory.NioChannel;
 import suite.os.LogUtil;
@@ -21,8 +22,6 @@ import suite.util.Rethrow;
 import suite.util.Util;
 
 public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C> {
-
-	private static int bufferSize = 4096;
 
 	private Source<C> channelSource;
 	private Selector selector = Selector.open();
@@ -126,7 +125,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	private void processSelectedKey(SelectionKey key) throws IOException {
 		// logUtil.info("KEY", dumpKey(key));
 
-		byte buffer[] = new byte[bufferSize];
+		byte buffer[] = new byte[Constants.bufferSize];
 		Object attachment = key.attachment();
 		SelectableChannel sc0 = key.channel();
 		int ops = key.readyOps();

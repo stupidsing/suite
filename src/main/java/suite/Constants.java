@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 
 public class Constants {
 
+	public static int bufferSize = 4096;
 	public static Charset charset = StandardCharsets.UTF_8;
 	public static int nThreads = Runtime.getRuntime().availableProcessors();
 	public static Path tmp = Paths.get("/tmp");

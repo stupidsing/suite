@@ -30,7 +30,6 @@ import suite.util.FunUtil.Source;
 
 public class To {
 
-	private static int bufferSize = 4096;
 	private static String hexDigits = "0123456789ABCDEF";
 
 	private static final Field field;
@@ -173,7 +172,7 @@ public class To {
 
 	public static Source<Bytes> source(InputStream is) {
 		return () -> {
-			byte bs[] = new byte[bufferSize];
+			byte bs[] = new byte[Constants.bufferSize];
 			int nBytesRead = Rethrow.ioException(() -> is.read(bs));
 
 			if (0 <= nBytesRead)
@@ -212,7 +211,7 @@ public class To {
 
 	public static String string(Reader reader) throws IOException {
 		try (Reader reader_ = reader) {
-			char buffer[] = new char[bufferSize];
+			char buffer[] = new char[Constants.bufferSize];
 			StringBuilder sb = new StringBuilder();
 
 			while (reader_.ready()) {

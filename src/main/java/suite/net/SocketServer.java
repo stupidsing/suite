@@ -3,6 +3,7 @@ package suite.net;
 import java.io.IOException;
 import java.io.InputStream;
 
+import suite.Constants;
 import suite.os.SocketUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
@@ -25,7 +26,7 @@ public class SocketServer {
 
 	private Bytes read(InputStream is, int max) throws IOException {
 		BytesBuilder bb = new BytesBuilder();
-		byte buffer[] = new byte[4096];
+		byte buffer[] = new byte[Constants.bufferSize];
 		int nBytesRead;
 
 		while ((nBytesRead = is.read(buffer, 0, Math.min(max - bb.size(), buffer.length))) != -1) {

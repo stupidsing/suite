@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.IntFunction;
 
+import suite.Constants;
 import suite.immutable.IPointer;
 import suite.instructionexecutor.thunk.IndexedReader;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
@@ -22,8 +23,6 @@ import suite.util.Rethrow;
 import suite.util.Util;
 
 public class Intrinsics {
-
-	private static int bufferSize = 4096;
 
 	public interface Intrinsic {
 		public Node invoke(IntrinsicCallback callback, List<Node> inputs);
@@ -86,7 +85,7 @@ public class Intrinsics {
 
 	public static IPointer<Chars> read(Reader reader) {
 		return IndexedSourceReader.of(() -> Rethrow.ioException(() -> {
-			char buffer[] = new char[bufferSize];
+			char buffer[] = new char[Constants.bufferSize];
 			int nCharsRead = reader.read(buffer);
 			if (0 <= nCharsRead)
 				return Chars.of(buffer, 0, nCharsRead);
