@@ -33,11 +33,11 @@ public class Nerve<T> {
 		public void accept(T0 t0, Nerve<T1> nerve);
 	}
 
-	public static <T> Nerve<T> append(Nerve<T> r0, Nerve<T> r1) {
+	public static <T> Nerve<T> append(Nerve<T> n0, Nerve<T> n1) {
 		Nerve<T> nerve1 = new Nerve<>();
 		Sink<T> sink = nerve1::fire;
-		r0.register(sink);
-		r1.register(sink);
+		n0.register(sink);
+		n1.register(sink);
 		return nerve1;
 	}
 
@@ -51,12 +51,12 @@ public class Nerve<T> {
 		return nerve1;
 	}
 
-	public static <T, U, V> Nerve<V> merge(Nerve<T> r0, Nerve<U> r1, BiFunction<T, U, V> fun) {
+	public static <T, U, V> Nerve<V> merge(Nerve<T> n0, Nerve<U> n1, BiFunction<T, U, V> fun) {
 		Nerve<V> nerve1 = new Nerve<>();
 		CasReference<Pair<T, U>> cr = new CasReference<>(Pair.of(null, null));
 		Sink<Pair<T, U>> recalc = pair -> nerve1.fire(fun.apply(pair.t0, pair.t1));
-		r0.register(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
-		r1.register(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
+		n0.register(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
+		n1.register(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
 		return nerve1;
 	}
 
