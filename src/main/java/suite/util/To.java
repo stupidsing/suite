@@ -13,7 +13,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -106,11 +105,6 @@ public class To {
 		};
 	}
 
-	public static Outlet<String> linesOutlet(Reader reader) {
-		BufferedReader br = new BufferedReader(reader);
-		return new Outlet<>(() -> Rethrow.ioException(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
-	}
-
 	public static <T> List<T> list(Iterable<T> iter) {
 		return list(iter.iterator());
 	}
@@ -150,14 +144,6 @@ public class To {
 		return map;
 	}
 
-	public static Outlet<Bytes> outlet(InputStream is) {
-		return Outlet.from(source(is));
-	}
-
-	public static Outlet<Bytes> outlet(String data) {
-		return Outlet.from(source(data));
-	}
-
 	@SafeVarargs
 	public static <T> Source<T> source(T... array) {
 		return new Source<T>() {
@@ -190,10 +176,6 @@ public class To {
 				return null;
 			}
 		};
-	}
-
-	public static Source<Bytes> source(String data) {
-		return To.source(Arrays.asList(bytes(data)));
 	}
 
 	public static String string(Bytes bytes) {

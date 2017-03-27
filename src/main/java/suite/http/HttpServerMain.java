@@ -1,5 +1,6 @@
 package suite.http;
 
+import java.io.ByteArrayInputStream;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,7 +11,6 @@ import suite.http.HttpSessionController.Authenticator;
 import suite.immutable.IMap;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
-import suite.util.To;
 import suite.util.Util;
 
 // java -cp target/suite-1.0-jar-with-dependencies.jar suite.http.HttpServerMain
@@ -28,14 +28,15 @@ public class HttpServerMain {
 		IMap<String, HttpHandler> empty = IMap.empty();
 
 		HttpHandler handler0 = request -> {
-			return HttpResponse.of(To.outlet("" //
+			return HttpResponse.of(Read.bytes(new ByteArrayInputStream(("" //
 					+ "<html>" //
 					+ "<br/>method = " + request.method //
 					+ "<br/>server = " + request.server //
 					+ "<br/>path = " + request.path //
 					+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query) //
 					+ "<br/>headers = " + request.headers //
-					+ "</html>"));
+					+ "</html>" //
+			).getBytes(Constants.charset))));
 		};
 
 		new HttpServer().run(dispatch(empty //

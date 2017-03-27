@@ -2,6 +2,7 @@ package suite.streamlet;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -37,6 +38,10 @@ public class Read {
 			InputStream is = Rethrow.ioException(() -> new FileInputStream(file));
 			return bytes(is).closeAtEnd(is);
 		});
+	}
+
+	public static Outlet<Bytes> bytes(String data) {
+		return bytes(new ByteArrayInputStream(data.getBytes(Constants.charset)));
 	}
 
 	public static Outlet<Bytes> bytes(InputStream is) {
