@@ -48,7 +48,7 @@ public class To {
 	}
 
 	public static Bytes bytes(InputStream is) {
-		return To.bytesOutlet(is).collect(As::bytes);
+		return bytesOutlet(is).collect(As::bytes);
 	}
 
 	public static Outlet<Bytes> bytesOutlet(InputStream is) {
