@@ -46,15 +46,17 @@ public class To {
 		return Bytes.of(s.getBytes(Constants.charset));
 	}
 
-	public static Bytes bytes(InputStream is) throws IOException {
-		BytesBuilder bb = new BytesBuilder();
-		byte buffer[] = new byte[4096];
-		int nBytesRead;
+	public static Bytes bytes(InputStream is) {
+		return Rethrow.ioException(() -> {
+			BytesBuilder bb = new BytesBuilder();
+			byte buffer[] = new byte[4096];
+			int nBytesRead;
 
-		while ((nBytesRead = is.read(buffer)) != -1)
-			bb.append(buffer, 0, nBytesRead);
+			while ((nBytesRead = is.read(buffer)) != -1)
+				bb.append(buffer, 0, nBytesRead);
 
-		return bb.toBytes();
+			return bb.toBytes();
+		});
 	}
 
 	/**
@@ -201,15 +203,17 @@ public class To {
 		return dateTime.format(FormatUtil.dateFormat);
 	}
 
-	public static String string(InputStream in) throws IOException {
+	public static String string(InputStream in) {
 		try (InputStream is = in;
 				InputStreamReader isr = new InputStreamReader(is, Constants.charset);
 				BufferedReader br = new BufferedReader(isr)) {
 			return string(br);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
-	public static String string(Reader reader) throws IOException {
+	public static String string(Reader reader) {
 		try (Reader reader_ = reader) {
 			char buffer[] = new char[Constants.bufferSize];
 			StringBuilder sb = new StringBuilder();
@@ -220,6 +224,8 @@ public class To {
 			}
 
 			return sb.toString();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
