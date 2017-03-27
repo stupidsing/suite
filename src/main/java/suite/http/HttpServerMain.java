@@ -8,6 +8,7 @@ import suite.Constants;
 import suite.adt.Pair;
 import suite.http.HttpSessionController.Authenticator;
 import suite.immutable.IMap;
+import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.Util;
@@ -65,7 +66,7 @@ public class HttpServerMain {
 				size = file.getChannel().size();
 			}
 
-			return HttpResponse.of(HttpResponse.HTTP200, To.bytesOutlet(Files.newInputStream(path)), size);
+			return HttpResponse.of(HttpResponse.HTTP200, Read.bytes(Files.newInputStream(path)), size);
 		});
 	}
 

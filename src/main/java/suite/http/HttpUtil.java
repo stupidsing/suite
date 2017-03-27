@@ -10,9 +10,9 @@ import java.util.Map;
 import suite.primitive.Bytes;
 import suite.primitive.BytesUtil;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
 import suite.util.FunUtil;
 import suite.util.Rethrow;
-import suite.util.To;
 
 public class HttpUtil {
 
@@ -52,7 +52,7 @@ public class HttpUtil {
 
 			int responseCode = conn.getResponseCode();
 			if (responseCode == 200)
-				return new HttpResult(responseCode, To.bytesOutlet(conn.getInputStream()));
+				return new HttpResult(responseCode, Read.bytes(conn.getInputStream()));
 			else
 				throw new IOException("HTTP returned " + responseCode + ":" + url);
 		});

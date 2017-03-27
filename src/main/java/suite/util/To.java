@@ -27,6 +27,7 @@ import suite.primitive.Bytes;
 import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 
 public class To {
@@ -48,15 +49,7 @@ public class To {
 	}
 
 	public static Bytes bytes(InputStream is) {
-		return bytesOutlet(is).collect(As::bytes);
-	}
-
-	public static Outlet<Bytes> bytesOutlet(InputStream is) {
-		return Outlet.from(() -> {
-			byte bs[] = new byte[Constants.bufferSize];
-			int nBytesRead = Rethrow.ioException(() -> is.read(bs));
-			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
-		}).closeAtEnd(is);
+		return Read.bytes(is).collect(As::bytes);
 	}
 
 	/**
@@ -111,6 +104,11 @@ public class To {
 				return nBytesRead;
 			}
 		};
+	}
+
+	public static Outlet<String> linesOutlet(Reader reader) {
+		BufferedReader br = new BufferedReader(reader);
+		return new Outlet<>(() -> Rethrow.ioException(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
 	}
 
 	public static <T> List<T> list(Iterable<T> iter) {

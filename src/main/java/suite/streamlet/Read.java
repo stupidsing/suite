@@ -1,5 +1,6 @@
 package suite.streamlet;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 import suite.Constants;
 import suite.adt.Pair;
+import suite.primitive.Bytes;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
@@ -25,6 +27,26 @@ public class Read {
 
 	private static Streamlet<?> empty = Streamlet.from(FunUtil.nullSource());
 	private static Streamlet2<?, ?> empty2 = Streamlet2.from(FunUtil2.nullSource());
+
+	public static Streamlet<Bytes> bytes(Path path) {
+		return bytes(path.toFile());
+	}
+
+	public static Streamlet<Bytes> bytes(File file) {
+		return new Streamlet<>(() -> {
+			InputStream is = Rethrow.ioException(() -> new FileInputStream(file));
+			return bytes(is).closeAtEnd(is);
+		});
+	}
+
+	public static Outlet<Bytes> bytes(InputStream is) {
+		BufferedInputStream bis = new BufferedInputStream(is);
+		return new Outlet<>(() -> Rethrow.ioException(() -> {
+			byte bs[] = new byte[Constants.bufferSize];
+			int nBytesRead = Rethrow.ioException(() -> bis.read(bs));
+			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
+		})).closeAtEnd(bis);
+	}
 
 	public static <T> Streamlet<T> empty() {
 		@SuppressWarnings("unchecked")
