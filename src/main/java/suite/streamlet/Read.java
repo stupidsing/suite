@@ -107,20 +107,16 @@ public class Read {
 	}
 
 	public static Streamlet<String> lines(File file) {
-		return new Streamlet<>(() -> {
-			InputStream is = Rethrow.ioException(() -> new FileInputStream(file));
-			return lines(is).closeAtEnd(is);
-		});
+		return new Streamlet<String>(() -> lines(Rethrow.ioException(() -> new FileInputStream(file))));
 	}
 
 	public static Outlet<String> lines(InputStream is) {
-		Reader reader = new InputStreamReader(is, Constants.charset);
-		return lines(reader).closeAtEnd(reader);
+		return lines(new InputStreamReader(is, Constants.charset)).closeAtEnd(is);
 	}
 
 	public static Outlet<String> lines(Reader reader) {
 		BufferedReader br = new BufferedReader(reader);
-		return new Outlet<>(() -> Rethrow.ioException(() -> Util.readLine(br))).closeAtEnd(br);
+		return new Outlet<>(() -> Rethrow.ioException(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
 	}
 
 	public static Streamlet<Integer> range(int e) {
