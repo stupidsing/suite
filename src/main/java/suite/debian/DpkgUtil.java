@@ -11,7 +11,6 @@ import suite.adt.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Rethrow;
 
 public class DpkgUtil {
 
@@ -39,7 +38,7 @@ public class DpkgUtil {
 
 		for (File file : files)
 			if (file.exists())
-				return Rethrow.ioException(() -> Read.lines(file));
+				return Read.lines(file);
 
 		return null;
 	}

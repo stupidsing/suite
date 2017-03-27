@@ -3,8 +3,6 @@ package suite.streamlet;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -81,11 +79,11 @@ public class Read {
 		return Streamlet2.from(source);
 	}
 
-	public static Streamlet<String> lines(Path path) throws IOException {
+	public static Streamlet<String> lines(Path path) {
 		return lines(path.toFile());
 	}
 
-	public static Streamlet<String> lines(File file) throws FileNotFoundException {
+	public static Streamlet<String> lines(File file) {
 		return new Streamlet<>(() -> {
 			InputStream is = Rethrow.ioException(() -> new FileInputStream(file));
 			return lines(is).closeAtEnd(is);
