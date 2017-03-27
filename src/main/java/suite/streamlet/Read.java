@@ -19,6 +19,7 @@ import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
 import suite.util.Rethrow;
+import suite.util.Util;
 
 public class Read {
 
@@ -97,7 +98,7 @@ public class Read {
 
 	public static Outlet<String> lines(Reader reader) {
 		BufferedReader br = new BufferedReader(reader);
-		return new Outlet<>(() -> Rethrow.ioException(() -> br.readLine())).closeAtEnd(br);
+		return new Outlet<>(() -> Rethrow.ioException(() -> Util.readLine(br))).closeAtEnd(br);
 	}
 
 	public static Streamlet<Integer> range(int e) {

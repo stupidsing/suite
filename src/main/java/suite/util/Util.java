@@ -3,6 +3,7 @@ package suite.util;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.lang.reflect.Array;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -259,22 +260,30 @@ public class Util {
 	 * carriage return if it is DOS-mode line feed (CR-LF). Unknown behaviour
 	 * when dealing with non-ASCII encoding characters.
 	 */
-	public static String readLine(InputStream is) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		int c;
+	public static String readLine(InputStream is) {
+		return Rethrow.ioException(() -> {
+			StringBuilder sb = new StringBuilder();
+			int c;
+			while ((c = is.read()) != -1 && c != 10) {
+				sb.append((char) c);
+				if (65536 <= sb.length())
+					throw new RuntimeException("Line too long");
+			}
+			return strip(sb);
+		});
+	}
 
-		while ((c = is.read()) != -1 && c != 10) {
-			sb.append((char) c);
-			if (65536 <= sb.length())
-				throw new RuntimeException("Line too long");
-		}
-
-		int length = sb.length();
-
-		if (sb.charAt(length - 1) == 13)
-			sb.deleteCharAt(length - 1);
-
-		return sb.toString();
+	public static String readLine(Reader reader) {
+		return Rethrow.ioException(() -> {
+			StringBuilder sb = new StringBuilder();
+			int c;
+			while ((c = reader.read()) != -1 && c != 10) {
+				sb.append((char) c);
+				if (65536 <= sb.length())
+					throw new RuntimeException("Line too long");
+			}
+			return strip(sb);
+		});
 	}
 
 	public static <T> List<T> reverse(List<T> list0) {
@@ -423,6 +432,13 @@ public class Util {
 			object.wait(timeOut);
 		} catch (InterruptedException e) {
 		}
+	}
+
+	private static String strip(StringBuilder sb) {
+		int length = sb.length();
+		if (sb.charAt(length - 1) == 13)
+			sb.deleteCharAt(length - 1);
+		return sb.toString();
 	}
 
 	private static ThreadPoolExecutor newExecutor(int corePoolSize, int maxPoolSize) {
