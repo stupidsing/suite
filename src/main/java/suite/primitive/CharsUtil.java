@@ -53,7 +53,7 @@ public class CharsUtil {
 
 		return o -> new Outlet<>(new Source<Chars>() {
 			private Chars buffer = Chars.empty;
-			private boolean isArriving;
+			private boolean isEof;
 			private int p;
 
 			public Chars source() {
@@ -63,17 +63,21 @@ public class CharsUtil {
 
 				p = 0;
 
-				while (isArriving && !search(delim) && (isArriving = (chars = o.next()) != null)) {
+				while (!search(delim) && !(isEof |= (chars = o.next()) == null)) {
 					cb.append(chars);
 					buffer = cb.toChars();
 				}
 
-				if (isArriving) {
+				if (!isEof) {
 					Chars head = buffer.subchars(0, p);
 					buffer = buffer.subchars(p + ds);
 					return head;
+				} else if (!buffer.isEmpty()) {
+					Chars chars_ = buffer;
+					buffer = Chars.empty;
+					return chars_;
 				} else
-					return !buffer.isEmpty() ? buffer : null;
+					return null;
 			}
 
 			private boolean search(Chars delim) {

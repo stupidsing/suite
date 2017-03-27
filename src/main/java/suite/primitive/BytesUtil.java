@@ -63,7 +63,7 @@ public class BytesUtil {
 
 				p = 0;
 
-				while (!isEof && !search(delim) && !(isEof = (bytes = o.next()) == null)) {
+				while (!search(delim) && !(isEof |= (bytes = o.next()) == null)) {
 					bb.append(bytes);
 					buffer = bb.toBytes();
 				}
@@ -72,8 +72,12 @@ public class BytesUtil {
 					Bytes head = buffer.subbytes(0, p);
 					buffer = buffer.subbytes(p + ds);
 					return head;
+				} else if (!buffer.isEmpty()) {
+					Bytes bytes_ = buffer;
+					buffer = Bytes.empty;
+					return bytes_;
 				} else
-					return !buffer.isEmpty() ? buffer : null;
+					return null;
 			}
 
 			private boolean search(Bytes delim) {
