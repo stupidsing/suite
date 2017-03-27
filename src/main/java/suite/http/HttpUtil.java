@@ -47,12 +47,12 @@ public class HttpUtil {
 			headers.entrySet().forEach(e -> conn.setRequestProperty(e.getKey(), e.getValue()));
 
 			try (OutputStream os = conn.getOutputStream()) {
-				BytesUtil.copy(Outlet.from(in), os);
+				BytesUtil.copy(in, os);
 			}
 
 			int responseCode = conn.getResponseCode();
 			if (responseCode == 200)
-				return new HttpResult(responseCode, To.outlet(conn.getInputStream()));
+				return new HttpResult(responseCode, To.bytesOutlet(conn.getInputStream()));
 			else
 				throw new IOException("HTTP returned " + responseCode + ":" + url);
 		});
