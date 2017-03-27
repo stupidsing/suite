@@ -24,8 +24,8 @@ import java.util.Map;
 import suite.Constants;
 import suite.adt.Pair;
 import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Chars;
+import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
 
@@ -48,16 +48,15 @@ public class To {
 	}
 
 	public static Bytes bytes(InputStream is) {
-		return Rethrow.ioException(() -> {
-			BytesBuilder bb = new BytesBuilder();
-			byte buffer[] = new byte[4096];
-			int nBytesRead;
+		return To.bytesOutlet(is).collect(As::bytes);
+	}
 
-			while ((nBytesRead = is.read(buffer)) != -1)
-				bb.append(buffer, 0, nBytesRead);
-
-			return bb.toBytes();
-		});
+	public static Outlet<Bytes> bytesOutlet(InputStream is) {
+		return Outlet.from(() -> {
+			byte bs[] = new byte[Constants.bufferSize];
+			int nBytesRead = Rethrow.ioException(() -> is.read(bs));
+			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
+		}).closeAtEnd(is);
 	}
 
 	/**
