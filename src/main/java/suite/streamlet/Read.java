@@ -40,12 +40,12 @@ public class Read {
 	}
 
 	public static Outlet<Bytes> bytes(InputStream is) {
-		BufferedInputStream bis = new BufferedInputStream(is);
-		return new Outlet<>(() -> Rethrow.ioException(() -> {
+		InputStream bis = new BufferedInputStream(is);
+		return new Outlet<>(() -> {
 			byte bs[] = new byte[Constants.bufferSize];
 			int nBytesRead = Rethrow.ioException(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
-		})).closeAtEnd(bis);
+		}).closeAtEnd(bis).closeAtEnd(is);
 	}
 
 	public static <T> Streamlet<T> empty() {
