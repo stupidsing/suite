@@ -65,7 +65,7 @@ public class HttpServerMain {
 				size = file.getChannel().size();
 			}
 
-			return HttpResponse.of(HttpResponse.HTTP200, To.outlet(Files.newInputStream(path)), size);
+			return HttpResponse.of(HttpResponse.HTTP200, To.bytesOutlet(Files.newInputStream(path)), size);
 		});
 	}
 
