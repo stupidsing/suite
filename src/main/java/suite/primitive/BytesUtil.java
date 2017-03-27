@@ -53,7 +53,7 @@ public class BytesUtil {
 
 		return o -> new Outlet<>(new Source<Bytes>() {
 			private Bytes buffer = Bytes.empty;
-			private boolean isArriving;
+			private boolean isEof;
 			private int p;
 
 			public Bytes source() {
@@ -63,12 +63,12 @@ public class BytesUtil {
 
 				p = 0;
 
-				while (isArriving && !search(delim) && (isArriving = (bytes = o.next()) != null)) {
+				while (!isEof && !search(delim) && !(isEof = (bytes = o.next()) == null)) {
 					bb.append(bytes);
 					buffer = bb.toBytes();
 				}
 
-				if (isArriving) {
+				if (!isEof) {
 					Bytes head = buffer.subbytes(0, p);
 					buffer = buffer.subbytes(p + ds);
 					return head;
