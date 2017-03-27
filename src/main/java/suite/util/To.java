@@ -26,6 +26,7 @@ import suite.adt.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Chars;
+import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
 
 public class To {
@@ -89,7 +90,7 @@ public class To {
 		return hex4(i >>> 16 & 0xFFFF) + hex4(i & 0xFFFF);
 	}
 
-	public static InputStream inputStream(Source<Bytes> source) {
+	public static InputStream inputStream(Outlet<Bytes> outlet) {
 		return new InputStream() {
 			private InputStream is;
 
@@ -102,7 +103,7 @@ public class To {
 			public int read(byte bs[], int offset, int length) throws IOException {
 				int nBytesRead = -1;
 				while (is == null || (nBytesRead = is.read(bs, offset, length)) < 0) {
-					Bytes bytes = source.source();
+					Bytes bytes = outlet.next();
 					if (bytes != null)
 						is = bytes.asInputStream();
 					else
@@ -150,6 +151,14 @@ public class To {
 			if (pair != null)
 				map.put(pair.t0, pair.t1);
 		return map;
+	}
+
+	public static Outlet<Bytes> outlet(InputStream is) {
+		return Outlet.from(source(is));
+	}
+
+	public static Outlet<Bytes> outlet(String data) {
+		return Outlet.from(source(data));
 	}
 
 	@SafeVarargs

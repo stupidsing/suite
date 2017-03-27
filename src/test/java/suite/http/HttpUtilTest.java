@@ -14,7 +14,7 @@ public class HttpUtilTest {
 
 	@Test
 	public void test() throws IOException {
-		HttpResult result = HttpUtil.http("GET", new URL("http://feu.no-ip.info/"), To.source("{\"key\": \"value\"}"));
+		HttpResult result = HttpUtil.http("GET", new URL("http://feu.no-ip.info/"), To.outlet("{\"key\": \"value\"}"));
 		System.out.println(result.responseCode);
 		BytesUtil.copy(Outlet.from(result.out), System.out);
 	}

@@ -2,7 +2,7 @@ package suite.http;
 
 import suite.immutable.IMap;
 import suite.primitive.Bytes;
-import suite.util.FunUtil.Source;
+import suite.streamlet.Outlet;
 
 public class HttpResponse {
 
@@ -12,26 +12,26 @@ public class HttpResponse {
 
 	public final String status;
 	public final IMap<String, String> headers;
-	public final Source<Bytes> out;
+	public final Outlet<Bytes> out;
 
 	public static HttpResponse of(String status) {
-		return of(() -> null);
+		return of(Outlet.from(() -> null));
 	}
 
-	public static HttpResponse of(Source<Bytes> out) {
+	public static HttpResponse of(Outlet<Bytes> out) {
 		return of(HTTP200, IMap.empty(), out);
 	}
 
-	public static HttpResponse of(String status, Source<Bytes> out, long length) {
+	public static HttpResponse of(String status, Outlet<Bytes> out, long length) {
 		IMap<String, String> empty = IMap.empty();
 		return of(status, empty.put("Content-Length", Long.toString(length)), out);
 	}
 
-	public static HttpResponse of(String status, IMap<String, String> headers, Source<Bytes> out) {
+	public static HttpResponse of(String status, IMap<String, String> headers, Outlet<Bytes> out) {
 		return new HttpResponse(status, headers.put("Content-Type", "text/html; charset=UTF-8"), out);
 	}
 
-	public HttpResponse(String status, IMap<String, String> headers, Source<Bytes> out) {
+	public HttpResponse(String status, IMap<String, String> headers, Outlet<Bytes> out) {
 		this.status = status;
 		this.headers = headers;
 		this.out = out;

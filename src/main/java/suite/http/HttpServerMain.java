@@ -27,14 +27,14 @@ public class HttpServerMain {
 		IMap<String, HttpHandler> empty = IMap.empty();
 
 		HttpHandler handler0 = request -> {
-			return HttpResponse.of(To.source("" //
+			return HttpResponse.of((To.outlet("" //
 					+ "<html>" //
 					+ "<br/>method = " + request.method //
 					+ "<br/>server = " + request.server //
 					+ "<br/>path = " + request.path //
 					+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query) //
 					+ "<br/>headers = " + request.headers //
-					+ "</html>"));
+					+ "</html>")));
 		};
 
 		new HttpServer().run(dispatch(empty //
@@ -65,7 +65,7 @@ public class HttpServerMain {
 				size = file.getChannel().size();
 			}
 
-			return HttpResponse.of(HttpResponse.HTTP200, To.source(Files.newInputStream(path)), size);
+			return HttpResponse.of(HttpResponse.HTTP200, To.outlet(Files.newInputStream(path)), size);
 		});
 	}
 
