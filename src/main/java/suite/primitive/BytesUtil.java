@@ -15,13 +15,7 @@ public class BytesUtil {
 	public static Outlet<Bytes> buffer(Outlet<Bytes> o) {
 		return Outlet.from(new BufferedSource(o) {
 			protected boolean search() {
-				int size = buffer.size();
-				if (size < bufferSize)
-					return false;
-				else {
-					p0 = p1 = size;
-					return true;
-				}
+				return bufferSize <= (p0 = p1 = buffer.size());
 			}
 		});
 	}
