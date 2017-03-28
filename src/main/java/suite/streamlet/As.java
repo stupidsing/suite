@@ -1,12 +1,14 @@
 package suite.streamlet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 
 import suite.adt.ListMultimap;
@@ -23,6 +25,44 @@ public class As {
 
 	public interface Seq<I, O> {
 		public O apply(int index, I i);
+	}
+
+	public static <T> Fun<Outlet<T>, double[]> arrayOfDoubles(ToDoubleFunction<T> fun) {
+		return new Fun<Outlet<T>, double[]>() {
+			public double[] apply(Outlet<T> outlet) {
+				double results[] = new double[16];
+				int size = 0;
+				T t;
+
+				while (true) {
+					while (size < results.length)
+						if ((t = outlet.next()) != null)
+							results[size++] = fun.applyAsDouble(t);
+						else
+							return Arrays.copyOf(results, size);
+					results = Arrays.copyOf(results, results.length * 2);
+				}
+			}
+		};
+	}
+
+	public static <T> Fun<Outlet<T>, int[]> arrayOfInts(ToIntFunction<T> fun) {
+		return new Fun<Outlet<T>, int[]>() {
+			public int[] apply(Outlet<T> outlet) {
+				int results[] = new int[16];
+				int size = 0;
+				T t;
+
+				while (true) {
+					while (size < results.length)
+						if ((t = outlet.next()) != null)
+							results[size++] = fun.applyAsInt(t);
+						else
+							return Arrays.copyOf(results, size);
+					results = Arrays.copyOf(results, results.length * 2);
+				}
+			}
+		};
 	}
 
 	public static Bytes bytes(Outlet<Bytes> outlet) {
@@ -54,17 +94,6 @@ public class As {
 		List<T> list = new ArrayList<>();
 		outlet.sink(st1 -> st1.sink(list::add));
 		return Read.from(list);
-	}
-
-	public static int[] intArray(Outlet<Integer> st) {
-		List<Integer> list = new ArrayList<>();
-		st.sink(list::add);
-
-		int size = list.size();
-		int results[] = new int[size];
-		for (int i = 0; i < size; i++)
-			results[i] = list.get(i);
-		return results;
 	}
 
 	public static Fun<Outlet<String>, String> joined() {
