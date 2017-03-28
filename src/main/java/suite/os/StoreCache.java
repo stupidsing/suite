@@ -62,11 +62,10 @@ public class StoreCache {
 			}
 
 			Outlet<Bytes> outlet = source.source();
-
 			OutputStream os = FileUtil.out(path);
 			DataOutputStream dos = new DataOutputStream(os);
 
-			dos.write(keySize);
+			dos.writeInt(keySize);
 			dos.write(key.toBytes());
 
 			return new Outlet<>(() -> Rethrow.ioException(() -> {
