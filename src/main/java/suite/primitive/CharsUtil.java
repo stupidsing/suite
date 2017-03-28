@@ -80,7 +80,7 @@ public class CharsUtil {
 				return null;
 		}
 
-		protected abstract boolean search();
+		protected abstract boolean search(); // should set p0, p1
 	}
 
 }
