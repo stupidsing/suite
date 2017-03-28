@@ -15,25 +15,24 @@ public class BytesUtil {
 	public static Outlet<Bytes> buffer(Outlet<Bytes> o) {
 		return new Outlet<>(new Source<Bytes>() {
 			protected Bytes buffer = Bytes.empty;
-			protected boolean isEof = false;
+			protected boolean cont = true;
 
 			public Bytes source() {
 				BytesBuilder bb = new BytesBuilder();
 				bb.append(buffer);
 
 				Bytes in;
-				while (!isEof && bb.size() < bufferSize)
-					if ((in = o.next()) != null)
-						bb.append(in);
-					else
-						isEof = true;
+				while (bb.size() < bufferSize && (cont &= (in = o.next()) != null))
+					bb.append(in);
 
-				Bytes bytes = bb.toBytes();
-				int n = Math.min(bytes.size(), bufferSize);
-				Bytes head = bytes.subbytes(0, n);
-				buffer = bytes.subbytes(n);
-
-				return head;
+				if (cont || 0 < buffer.size()) {
+					Bytes bytes = bb.toBytes();
+					int n = Math.min(bytes.size(), bufferSize);
+					Bytes head = bytes.subbytes(0, n);
+					buffer = bytes.subbytes(n);
+					return head;
+				} else
+					return null;
 			}
 		});
 	}
@@ -53,7 +52,7 @@ public class BytesUtil {
 
 		return o -> new Outlet<>(new Source<Bytes>() {
 			private Bytes buffer = Bytes.empty;
-			private boolean isEof;
+			private boolean cont = true;
 			private int p;
 
 			public Bytes source() {
@@ -63,19 +62,16 @@ public class BytesUtil {
 
 				p = 0;
 
-				while (!search(delim) && !(isEof |= (bytes = o.next()) == null)) {
+				while (!search(delim) && (cont &= (bytes = o.next()) != null)) {
 					bb.append(bytes);
 					buffer = bb.toBytes();
 				}
 
-				if (!isEof) {
+				if (cont || 0 < buffer.size()) {
+					p = 0 < p ? p : buffer.size();
 					Bytes head = buffer.subbytes(0, p);
 					buffer = buffer.subbytes(p + ds);
 					return head;
-				} else if (!buffer.isEmpty()) {
-					Bytes bytes_ = buffer;
-					buffer = Bytes.empty;
-					return bytes_;
 				} else
 					return null;
 			}
@@ -83,10 +79,11 @@ public class BytesUtil {
 			private boolean search(Bytes delim) {
 				boolean isMatched = false;
 
-				while (!isMatched && p + ds <= buffer.size()) {
+				while (!isMatched && p < buffer.size()) {
 					boolean isMatched_ = true;
 					for (int i = 0; isMatched_ && i < ds; i++)
-						isMatched_ = buffer.get(p + i) == delim.get(i);
+						if (p + i <= buffer.size())
+							isMatched_ = buffer.get(p + i) == delim.get(i);
 					if (isMatched_)
 						isMatched = true;
 					else

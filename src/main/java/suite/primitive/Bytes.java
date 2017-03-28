@@ -163,7 +163,7 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public Bytes subbytes(int s) {
-		return subbytes0(start + s, end);
+		return subbytes(s, size());
 	}
 
 	public Bytes subbytes(int s, int e) {

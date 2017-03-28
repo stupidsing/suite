@@ -44,21 +44,30 @@ public class StoreCache {
 					byte kb[] = new byte[keySize];
 					dis.readFully(kb);
 					if (Arrays.equals(key.toBytes(), kb))
-						return new Outlet<>(() -> Rethrow.ioException(() -> {
-							byte vb[] = new byte[Constants.bufferSize];
-							int n, nBytesRead = 0;
-							while (nBytesRead < vb.length)
-								if (0 <= (n = dis.read(vb, nBytesRead, vb.length - nBytesRead)))
-									nBytesRead += n;
-								else {
-									dis.close();
-									is.close();
-									return null;
-								}
-							return Bytes.of(vb);
-						}));
+						return new Outlet<>(new Source<Bytes>() {
+							private boolean cont = true;
+
+							public Bytes source() {
+								return Rethrow.ioException(() -> {
+									if (cont) {
+										byte vb[] = new byte[Constants.bufferSize];
+										int n, nBytesRead = 0;
+										while (nBytesRead < vb.length
+												&& (cont &= 0 <= (n = dis.read(vb, nBytesRead, vb.length - nBytesRead))))
+											nBytesRead += n;
+										return Bytes.of(vb, 0, nBytesRead);
+									} else {
+										dis.close();
+										is.close();
+										return null;
+									}
+								});
+							}
+						});
 				}
 
+				dis.close();
+				is.close();
 				i++;
 			}
 

@@ -162,7 +162,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public Chars subchars(int s) {
-		return subchars0(start + s, end);
+		return subchars(s, size());
 	}
 
 	public Chars subchars(int s, int e) {
