@@ -13,26 +13,15 @@ public class BytesUtil {
 	private static final int bufferSize = 65536;
 
 	public static Outlet<Bytes> buffer(Outlet<Bytes> o) {
-		return Outlet.from(new Source<Bytes>() {
-			protected Bytes buffer = Bytes.empty;
-			protected boolean cont = true;
-
-			public Bytes source() {
-				Bytes in;
-				BytesBuilder bb = new BytesBuilder();
-				bb.append(buffer);
-
-				while (bb.size() < bufferSize && (cont &= (in = o.next()) != null))
-					bb.append(in);
-
-				if (cont || 0 < buffer.size()) {
-					Bytes bytes = bb.toBytes();
-					int n = Math.min(bytes.size(), bufferSize);
-					Bytes head = bytes.subbytes(0, n);
-					buffer = bytes.subbytes(n);
-					return head;
-				} else
-					return null;
+		return Outlet.from(new BufferedSource(o) {
+			protected boolean search() {
+				int size = buffer.size();
+				if (size < bufferSize)
+					return false;
+				else {
+					p0 = p1 = size;
+					return true;
+				}
 			}
 		});
 	}
@@ -50,48 +39,54 @@ public class BytesUtil {
 	public static Fun<Outlet<Bytes>, Outlet<Bytes>> split(Bytes delim) {
 		int ds = delim.size();
 
-		return o -> Outlet.from(new Source<Bytes>() {
-			private Bytes buffer = Bytes.empty;
-			private boolean cont = true;
-			private int p;
-
-			public Bytes source() {
-				Bytes in;
-				BytesBuilder bb = new BytesBuilder();
-				bb.append(buffer);
-
-				p = 0;
-
-				while (!search(delim) && (cont &= (in = o.next()) != null)) {
-					bb.append(in);
-					buffer = bb.toBytes();
-				}
-
-				if (cont || 0 < buffer.size()) {
-					p = 0 < p ? p : buffer.size();
-					Bytes head = buffer.subbytes(0, p);
-					buffer = buffer.subbytes(p + ds);
-					return head;
-				} else
-					return null;
-			}
-
-			private boolean search(Bytes delim) {
-				boolean isMatched = false;
-
-				while (!isMatched && p < buffer.size()) {
-					boolean isMatched_ = p + ds <= buffer.size();
-					for (int i = 0; isMatched_ && i < ds; i++)
-						isMatched_ = buffer.get(p + i) == delim.get(i);
-					if (isMatched_)
-						isMatched = true;
+		return o -> Outlet.from(new BufferedSource(o) {
+			protected boolean search() {
+				int size = buffer.size();
+				while ((p1 = p0 + ds) <= size)
+					if (!delim.equals(buffer.subbytes(p0, p1)))
+						p0++;
 					else
-						p++;
-				}
-
-				return isMatched;
+						return true;
+				if (!cont) {
+					p0 = p1 = buffer.size();
+					return true;
+				} else
+					return false;
 			}
 		});
+	}
+
+	public static abstract class BufferedSource implements Source<Bytes> {
+		protected Outlet<Bytes> outlet;
+		protected Bytes buffer = Bytes.empty;
+		protected boolean cont = true;
+		protected int p0, p1;
+
+		public BufferedSource(Outlet<Bytes> outlet) {
+			this.outlet = outlet;
+		}
+
+		public Bytes source() {
+			Bytes in;
+			BytesBuilder bb = new BytesBuilder();
+			bb.append(buffer);
+
+			p0 = 0;
+
+			while (!search() && (cont &= (in = outlet.next()) != null)) {
+				bb.append(in);
+				buffer = bb.toBytes();
+			}
+
+			if (cont && 0 < p0) {
+				Bytes head = buffer.subbytes(0, p0);
+				buffer = buffer.subbytes(p1);
+				return head;
+			} else
+				return null;
+		}
+
+		protected abstract boolean search();
 	}
 
 }
