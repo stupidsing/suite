@@ -1,6 +1,7 @@
 package suite.trade;
 
 import java.net.URL;
+import java.time.LocalDate;
 
 import org.junit.Test;
 
@@ -16,15 +17,20 @@ import suite.util.Rethrow;
 public class TradeTest {
 
 	@Test
-	public void test() {
+	public void backTest() {
 		double threshold = 0.15;
 		int nPastDays = 64;
 		int nFutureDays = 8;
-		String stockCode = "0005";
+		String stockCode = "0293";
 		String market = "HK";
+		LocalDate frDate = LocalDate.of(2012, 2, 26);
+		LocalDate toDate = LocalDate.of(2017, 2, 26);
+
 		String url = "http://chart.finance.yahoo.com/table.csv" //
 				+ "?s=" + stockCode + "." + market //
-				+ "&a=2&b=26&c=2012&d=2&e=26&f=2017&g=d&ignore=.csv";
+				+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
+				+ "&d=" + toDate.getMonthValue() + "&e=" + toDate.getDayOfMonth() + "&f=" + toDate.getYear() //
+				+ "&g=d&ignore=.csv";
 
 		Bytes keyBytes = Bytes.of(url.getBytes(Constants.charset));
 		StoreCache sc = new StoreCache();
@@ -52,6 +58,7 @@ public class TradeTest {
 			double ratio = (estimated - price0) / price0;
 
 			// buy if ratio is positive; sell if ratio is negative
+			// sell nFutureDays after
 			if (ratio < -threshold || threshold < ratio) {
 				int signal = ratio < 0 ? -1 : 1;
 				nLots += signal;
