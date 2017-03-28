@@ -21,7 +21,7 @@ public class TradeTest {
 		double threshold = 0.15;
 		int nPastDays = 64;
 		int nFutureDays = 8;
-		String stockCode = "0293";
+		String stockCode = "0005";
 		String market = "HK";
 		LocalDate frDate = LocalDate.of(2012, 2, 26);
 		LocalDate toDate = LocalDate.of(2017, 2, 26);
@@ -50,6 +50,7 @@ public class TradeTest {
 
 		int nLots = 0;
 		double totalNetGain = 0;
+		int signals[] = new int[prices.length];
 
 		for (int d = nPastDays; d + nFutureDays < prices.length; d++) {
 			double price0 = prices[d];
@@ -60,8 +61,9 @@ public class TradeTest {
 			// buy if ratio is positive; sell if ratio is negative
 			// sell nFutureDays after
 			if (ratio < -threshold || threshold < ratio) {
-				int signal = ratio < 0 ? -1 : 1;
+				int signal = signals[d] = ratio < 0 ? -1 : 1;
 				nLots += signal;
+				nLots -= signals[d - nFutureDays];
 				double netGain = (actual - price0) * Math.signum(ratio);
 				System.out.println("d = " + d //
 						+ ", price = " + price0 //
