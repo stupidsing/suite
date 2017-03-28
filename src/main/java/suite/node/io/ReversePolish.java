@@ -51,11 +51,11 @@ public class ReversePolish {
 					Node value = deque.pop();
 					children.add(Pair.of(key, value));
 				}
-				n = new NodeWrite(ReadType.valueOf(a[0]), //
+				n = new NodeWrite( //
+						ReadType.valueOf(a[0]), //
 						!Util.stringEquals(a[1], "null") ? Suite.parse(a[1]) : null, //
 						TermOp.valueOf(a[2]), //
-						children) //
-						.node;
+						children).node;
 				// n = Suite.parse(s);
 			} else if (type == 'i')
 				n = Int.of(Integer.parseInt(s));

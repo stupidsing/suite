@@ -57,10 +57,11 @@ public class EagerFunTest {
 	public void testCross() {
 		String fp0 = "" //
 				+ "cross {a => b => a; b;} {7; 8; 9;} {1; 2;}";
-		assertEquals(Suite.parse("" //
-				+ "((7; 1;); (7; 2;);); " //
-				+ "((8; 1;); (8; 2;);); " //
-				+ "((9; 1;); (9; 2;););") //
+		assertEquals(
+				Suite.parse("" //
+						+ "((7; 1;); (7; 2;);); " //
+						+ "((8; 1;); (8; 2;);); " //
+						+ "((9; 1;); (9; 2;););") //
 				, eval(fp0));
 
 		String fp1 = "" //
@@ -314,10 +315,10 @@ public class EagerFunTest {
 	@Test
 	public void testTailRecursion() {
 		assertEquals(Int.of(65536) //
-		, eval("10 | replicate {65536} | reverse | length"));
+				, eval("10 | replicate {65536} | reverse | length"));
 
 		assertEquals(Int.of((1 + 16384) * 16384 / 2) //
-		, eval("define sum := n => s => if (0 < n) then (sum {n - 1} {s + n}) else s >> sum {16384} {0}"));
+				, eval("define sum := n => s => if (0 < n) then (sum {n - 1} {s + n}) else s >> sum {16384} {0}"));
 	}
 
 	@Test

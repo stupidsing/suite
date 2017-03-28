@@ -27,13 +27,12 @@ public class LogicCompilerLevel1Test {
 	@Test
 	public void testCompileFunProgram() {
 		RuleSet rs = Suite.newRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
-
-		Node goal = new Specializer().specialize(Suite.substitute("" //
+		String gs = "" //
 				+ "source .in" //
 				+ ", compile-function .0 .in .out" //
-				+ ", sink .out" //
-		, Atom.of("LAZY")));
+				+ ", sink .out";
 
+		Node goal = new Specializer().specialize(Suite.substitute(gs, Atom.of("LAZY")));
 		Node input = Suite.parse("1 + 2");
 		Node result = FindUtil.collectSingle(finder(rs, goal), input);
 

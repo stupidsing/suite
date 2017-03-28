@@ -33,15 +33,16 @@ public class SldResolution {
 	public List<Node> resolve(Node node) {
 		RuleSet ruleSet = Suite.newRuleSet(Arrays.asList("auto.sl", "pt.sl"));
 		CompiledProverBuilder builder = CompiledProverBuilder.level1(new ProverConfig());
-		Finder finder = builder.build(ruleSet).apply(Suite.parse("source .n0" //
-				+ ", pt-prove0 .n0 .n1" //
-				+ ", pt-prove1 .n1 .n2" //
-				+ ", pt-prove2 .n2 .n3" //
-				+ ", pt-prove3 .n3 .n4" //
-				+ ", pt-prove4 .n4 .n5" //
-				+ ", pt-prove5 .n5 ()/.n6" //
-				+ ", sink .n6" //
-		));
+		Finder finder = builder.build(ruleSet)
+				.apply(Suite.parse("" //
+						+ "source .n0" //
+						+ ", pt-prove0 .n0 .n1" //
+						+ ", pt-prove1 .n1 .n2" //
+						+ ", pt-prove2 .n2 .n3" //
+						+ ", pt-prove3 .n3 .n4" //
+						+ ", pt-prove4 .n4 .n5" //
+						+ ", pt-prove5 .n5 ()/.n6" //
+						+ ", sink .n6"));
 
 		Node n0 = FindUtil.collectSingle(finder, node);
 		Map<Node, Source<List<Node>>> orsMap = new HashMap<>();

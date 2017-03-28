@@ -19,8 +19,8 @@ import suite.util.Util;
  * The Node.hashCode() method would not permit taking hash code of terms with
  * free references.
  *
- * This method allows such thing by giving aliases, thus "a + .123" and
- * "a + .456" will have same hashes.
+ * This method allows such thing by giving aliases, thus "a + .123" and "a +
+ * .456" will have same hash keys.
  *
  * @author ywsing
  */

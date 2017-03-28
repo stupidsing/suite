@@ -93,7 +93,8 @@ public class PackageManager {
 	}
 
 	private PackageManifest getPackageManifest(String packageFilename) throws IOException {
-		try (ZipFile zipFile = new ZipFile(packageFilename); InputStream fis = zipFile.getInputStream(zipFile.getEntry("pm.json"))) {
+		try (ZipFile zipFile = new ZipFile(packageFilename);
+				InputStream fis = zipFile.getInputStream(zipFile.getEntry("pm.json"))) {
 			return objectMapper.readValue(fis, PackageManifest.class);
 		}
 	}

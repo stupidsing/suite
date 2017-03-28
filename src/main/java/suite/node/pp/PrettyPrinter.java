@@ -64,7 +64,7 @@ public class PrettyPrinter {
 				append("(");
 			}
 
-			if (lineLength<x + length )
+			if (lineLength < x + length)
 				if (isLookingLikeList(op, node))
 					prettyPrintList(op, node);
 				else {

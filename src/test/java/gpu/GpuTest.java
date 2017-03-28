@@ -20,7 +20,7 @@ public class GpuTest {
 				+ "    int i = get_global_id(0); \n" //
 				+ "    if (i < n) o[i] = a[i] * a[i] + b[i] * b[i]; \n" //
 				+ "} \n" //
-				;
+		;
 
 		CLContext context = JavaCL.createBestContext();
 		CLQueue queue = context.createDefaultQueue();

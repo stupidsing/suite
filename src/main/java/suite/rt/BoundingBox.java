@@ -52,12 +52,14 @@ public class BoundingBox implements RtObject {
 				&& isIntersect(startX, dirX, minX, maxX, startY, dirY, minY, maxY) //
 				&& isIntersect(startY, dirY, minY, maxY, startZ, dirZ, minZ, maxZ) //
 				&& isIntersect(startZ, dirZ, minZ, maxZ, startX, dirX, minX, maxX) //
-				;
+		;
 
 		return isIntersect ? object.hit(ray) : Collections.<RayHit> emptyList();
 	}
 
-	private boolean isIntersect(float startX, float dirX, float minX, float maxX, float startY, float dirY, float minY, float maxY) {
+	private boolean isIntersect( //
+			float startX, float dirX, float minX, float maxX, //
+			float startY, float dirY, float minY, float maxY) {
 		boolean isIntersect;
 
 		if (MathUtil.epsilon < Math.abs(dirX)) {

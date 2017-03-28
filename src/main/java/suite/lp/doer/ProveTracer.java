@@ -39,7 +39,7 @@ public class ProveTracer {
 			TraceLevel traceLevel = Suite.traceLevel;
 
 			if (traceLevel == TraceLevel.SIMPLE)
-				sb.append(String.format("[%4s:%-2d]  ", 0<nOkays ? "OK__" : "FAIL", depth));
+				sb.append(String.format("[%4s:%-2d]  ", 0 < nOkays ? "OK__" : "FAIL", depth));
 			else if (traceLevel == TraceLevel.DETAIL)
 				sb.append(String.format("%-4d[up=%-4d|oks=%-2d|end=%-4s]  " //
 						, start //

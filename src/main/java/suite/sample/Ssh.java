@@ -46,8 +46,8 @@ public class Ssh {
 		}));
 	}
 
-	private <T> T channelExec(Session session, String command, SshFun<ChannelExec, T> fun) throws IOException, SftpException,
-			JSchException {
+	private <T> T channelExec(Session session, String command, SshFun<ChannelExec, T> fun)
+			throws IOException, SftpException, JSchException {
 		ChannelExec channel = (ChannelExec) session.openChannel("exec");
 		channel.setCommand(command);
 		channel.connect();
@@ -68,8 +68,8 @@ public class Ssh {
 		}
 	}
 
-	private <T> T session(String host, int port, String user, String password, SshFun<Session, T> fun) throws IOException,
-			SftpException, JSchException {
+	private <T> T session(String host, int port, String user, String password, SshFun<Session, T> fun)
+			throws IOException, SftpException, JSchException {
 		JSch jsch = new JSch();
 
 		Properties config = new Properties();
