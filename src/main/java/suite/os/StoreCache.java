@@ -1,6 +1,7 @@
 package suite.os;
 
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -52,7 +53,7 @@ public class StoreCache {
 								else {
 									dis.close();
 									is.close();
-									break;
+									return null;
 								}
 							return Bytes.of(vb);
 						}));
@@ -64,14 +65,15 @@ public class StoreCache {
 			Outlet<Bytes> outlet = source.source();
 			OutputStream os = FileUtil.out(path);
 			DataOutputStream dos = new DataOutputStream(os);
+			DataOutput do_ = dos;
 
-			dos.writeInt(keySize);
-			dos.write(key.toBytes());
+			do_.writeInt(keySize);
+			do_.write(key.toBytes());
 
 			return new Outlet<>(() -> Rethrow.ioException(() -> {
 				Bytes value = outlet.next();
 				if (value != null)
-					dos.write(value.toBytes());
+					value.write(do_);
 				else {
 					dos.close();
 					os.close();
