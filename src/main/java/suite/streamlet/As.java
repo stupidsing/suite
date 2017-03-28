@@ -21,6 +21,10 @@ import suite.util.FunUtil.Source;
 
 public class As {
 
+	public interface Seq<I, O> {
+		public O apply(int index, I i);
+	}
+
 	public static Bytes bytes(Outlet<Bytes> outlet) {
 		BytesBuilder bb = new BytesBuilder();
 		outlet.forEach(bb::append);
@@ -128,6 +132,17 @@ public class As {
 
 	public static <K, V, T> Fun<Outlet2<K, V>, Streamlet<T>> pairMap(BiFunction<K, V, T> fun) {
 		return outlet -> new Streamlet<>(() -> outlet.map(fun::apply));
+	}
+
+	public static <I, O> Fun<Outlet<I>, Outlet<O>> sequenced(Seq<I, O> seq) {
+		return outlet -> Outlet.from(new Source<O>() {
+			private int index;
+
+			public O source() {
+				I i = outlet.next();
+				return i != null ? seq.apply(index++, i) : null;
+			}
+		});
 	}
 
 	public static <K, V> Map<K, Set<V>> setMap(Outlet<Pair<K, V>> outlet) {
