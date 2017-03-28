@@ -114,7 +114,7 @@ public class Nerve<T> {
 	public Outlet<T> outlet() {
 		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
 		register(queue::offerQuietly);
-		return new Outlet<>(() -> {
+		return Outlet.from(() -> {
 			try {
 				return queue.take();
 			} catch (InterruptedException ex) {

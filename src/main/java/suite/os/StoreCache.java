@@ -23,7 +23,7 @@ public class StoreCache {
 	private static Path dir = TempDir.resolve("store-cache");
 
 	public Bytes get(Bytes key, Source<Bytes> source) {
-		Outlet<Bytes> outlet = getOutlet(key, () -> new Outlet<>(source));
+		Outlet<Bytes> outlet = getOutlet(key, () -> Outlet.from(source));
 		return outlet.collect(As::bytes);
 	}
 
@@ -44,7 +44,7 @@ public class StoreCache {
 					byte kb[] = new byte[keySize];
 					dis.readFully(kb);
 					if (Arrays.equals(key.toBytes(), kb))
-						return new Outlet<>(new Source<Bytes>() {
+						return Outlet.from(new Source<Bytes>() {
 							private boolean cont = true;
 
 							public Bytes source() {
@@ -79,7 +79,7 @@ public class StoreCache {
 			do_.writeInt(keySize);
 			do_.write(key.toBytes());
 
-			return new Outlet<>(() -> Rethrow.ioException(() -> {
+			return Outlet.from(() -> Rethrow.ioException(() -> {
 				Bytes value = outlet.next();
 				if (value != null)
 					value.write(do_);

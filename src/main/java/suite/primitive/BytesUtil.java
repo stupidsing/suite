@@ -13,7 +13,7 @@ public class BytesUtil {
 	private static final int bufferSize = 65536;
 
 	public static Outlet<Bytes> buffer(Outlet<Bytes> o) {
-		return new Outlet<>(new Source<Bytes>() {
+		return Outlet.from(new Source<Bytes>() {
 			protected Bytes buffer = Bytes.empty;
 			protected boolean cont = true;
 
@@ -50,7 +50,7 @@ public class BytesUtil {
 	public static Fun<Outlet<Bytes>, Outlet<Bytes>> split(Bytes delim) {
 		int ds = delim.size();
 
-		return o -> new Outlet<>(new Source<Bytes>() {
+		return o -> Outlet.from(new Source<Bytes>() {
 			private Bytes buffer = Bytes.empty;
 			private boolean cont = true;
 			private int p;

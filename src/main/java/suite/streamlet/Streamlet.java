@@ -30,12 +30,12 @@ public class Streamlet<T> implements Iterable<T> {
 			List<Source<T>> sources = new ArrayList<>();
 			for (Streamlet<T> streamlet : streamlets)
 				sources.add(streamlet.in.source().source());
-			return new Outlet<>(FunUtil.concat(To.source(sources)));
+			return Outlet.from(FunUtil.concat(To.source(sources)));
 		});
 	}
 
 	public static <T> Streamlet<T> from(Source<T> source) {
-		return streamlet(() -> new Outlet<>(source));
+		return streamlet(() -> Outlet.from(source));
 	}
 
 	private static <T> Streamlet<T> streamlet(Source<Outlet<T>> in) {

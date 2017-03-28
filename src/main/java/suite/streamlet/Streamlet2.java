@@ -32,12 +32,12 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 			List<Source2<K, V>> sources = new ArrayList<>();
 			for (Streamlet2<K, V> streamlet : streamlets)
 				sources.add(streamlet.in.source().source2());
-			return new Outlet2<>(FunUtil2.concat(To.source(sources)));
+			return Outlet2.from(FunUtil2.concat(To.source(sources)));
 		});
 	}
 
 	public static <K, V> Streamlet2<K, V> from(Source2<K, V> source) {
-		return streamlet2(() -> new Outlet2<>(source));
+		return streamlet2(() -> Outlet2.from(source));
 	}
 
 	private static <K, V> Streamlet2<K, V> streamlet2(Source<Outlet2<K, V>> in) {

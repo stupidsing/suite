@@ -50,7 +50,7 @@ public class ThunkUtil {
 	}
 
 	public static Outlet<Node> yawnList(Fun<Node, Node> yawn, Node node, boolean isFacilitateGc) {
-		return new Outlet<>(new Source<Node>() {
+		return Outlet.from(new Source<Node>() {
 			private Node node_ = node;
 			private boolean first = true;
 

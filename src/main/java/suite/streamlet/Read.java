@@ -46,7 +46,7 @@ public class Read {
 
 	public static Outlet<Bytes> bytes(InputStream is) {
 		InputStream bis = new BufferedInputStream(is);
-		return new Outlet<>(() -> {
+		return Outlet.from(() -> {
 			byte bs[] = new byte[Constants.bufferSize];
 			int nBytesRead = Rethrow.ioException(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
@@ -121,7 +121,7 @@ public class Read {
 
 	public static Outlet<String> lines(Reader reader) {
 		BufferedReader br = new BufferedReader(reader);
-		return new Outlet<>(() -> Rethrow.ioException(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
+		return Outlet.from(() -> Rethrow.ioException(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
 	}
 
 	public static Streamlet<Integer> range(int e) {

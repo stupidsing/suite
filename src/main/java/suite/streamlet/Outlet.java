@@ -67,7 +67,7 @@ public class Outlet<T> implements Iterable<T> {
 		return new Outlet<>(source);
 	}
 
-	public Outlet(Source<T> source) {
+	private Outlet(Source<T> source) {
 		this.source = source;
 	}
 

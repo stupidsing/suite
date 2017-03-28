@@ -107,7 +107,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return new Outlet2<>(source);
 	}
 
-	public Outlet2(Source2<K, V> source) {
+	private Outlet2(Source2<K, V> source) {
 		this.source2 = source;
 	}
 

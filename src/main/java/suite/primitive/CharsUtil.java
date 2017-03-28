@@ -13,7 +13,7 @@ public class CharsUtil {
 	private static final int bufferSize = 65536;
 
 	public static Outlet<Chars> buffer(Outlet<Chars> o) {
-		return new Outlet<>(new Source<Chars>() {
+		return Outlet.from(new Source<Chars>() {
 			protected Chars buffer = Chars.empty;
 			private boolean cont = true;
 
@@ -50,7 +50,7 @@ public class CharsUtil {
 	public static Fun<Outlet<Chars>, Outlet<Chars>> split(Chars delim) {
 		int ds = delim.size();
 
-		return o -> new Outlet<>(new Source<Chars>() {
+		return o -> Outlet.from(new Source<Chars>() {
 			private Chars buffer = Chars.empty;
 			private boolean cont = true;
 			private int p;
