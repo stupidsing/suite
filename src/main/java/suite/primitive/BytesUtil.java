@@ -12,17 +12,17 @@ public class BytesUtil {
 
 	private static final int bufferSize = 65536;
 
-	public static Outlet<Bytes> buffer(Outlet<Bytes> o) {
-		return Outlet.from(new BufferedSource(o) {
+	public static Outlet<Bytes> buffer(Outlet<Bytes> outlet) {
+		return Outlet.from(new BufferedSource(outlet) {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
 		});
 	}
 
-	public static void copy(Outlet<Bytes> o, OutputStream os) {
+	public static void copy(Outlet<Bytes> outlet, OutputStream os) {
 		Bytes bytes;
-		while ((bytes = o.next()) != null)
+		while ((bytes = outlet.next()) != null)
 			try {
 				bytes.write(os);
 			} catch (IOException ex) {
@@ -33,7 +33,7 @@ public class BytesUtil {
 	public static Fun<Outlet<Bytes>, Outlet<Bytes>> split(Bytes delim) {
 		int ds = delim.size();
 
-		return o -> Outlet.from(new BufferedSource(o) {
+		return outlet -> Outlet.from(new BufferedSource(outlet) {
 			protected boolean search() {
 				int size = buffer.size();
 				while ((p1 = p0 + ds) <= size)

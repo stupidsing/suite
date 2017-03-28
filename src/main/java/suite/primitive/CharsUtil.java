@@ -12,17 +12,17 @@ public class CharsUtil {
 
 	private static final int bufferSize = 65536;
 
-	public static Outlet<Chars> buffer(Outlet<Chars> o) {
-		return Outlet.from(new BufferedSource(o) {
+	public static Outlet<Chars> buffer(Outlet<Chars> outlet) {
+		return Outlet.from(new BufferedSource(outlet) {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
 		});
 	}
 
-	public static void copy(Outlet<Chars> o, Writer writer) {
+	public static void copy(Outlet<Chars> outlet, Writer writer) {
 		Chars chars;
-		while ((chars = o.next()) != null)
+		while ((chars = outlet.next()) != null)
 			try {
 				chars.write(writer);
 			} catch (IOException ex) {
@@ -33,7 +33,7 @@ public class CharsUtil {
 	public static Fun<Outlet<Chars>, Outlet<Chars>> split(Chars delim) {
 		int ds = delim.size();
 
-		return o -> Outlet.from(new BufferedSource(o) {
+		return outlet -> Outlet.from(new BufferedSource(outlet) {
 			protected boolean search() {
 				int size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
