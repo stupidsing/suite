@@ -25,7 +25,7 @@ public class Execute {
 		ByteArrayOutputStream bos0 = new ByteArrayOutputStream();
 		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
 
-		Process process = Rethrow.ioException(() -> Runtime.getRuntime().exec(command));
+		Process process = Rethrow.ex(() -> Runtime.getRuntime().exec(command));
 
 		try {
 			InputStream pis = process.getInputStream();

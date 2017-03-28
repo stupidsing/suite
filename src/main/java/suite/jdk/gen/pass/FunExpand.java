@@ -101,7 +101,7 @@ public class FunExpand extends FunFactory {
 		} else
 			return Read.from(inspect.fields(e0.getClass())) //
 					.collect(As.sum(field -> {
-						Object e1 = Rethrow.reflectiveOperationException(() -> field.get(e0));
+						Object e1 = Rethrow.ex(() -> field.get(e0));
 						if (e1 instanceof FunExpr)
 							return weight_(e1);
 						else if (e1 instanceof Iterable<?>) {

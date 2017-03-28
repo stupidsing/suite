@@ -35,7 +35,7 @@ public class Read {
 
 	public static Streamlet<Bytes> bytes(File file) {
 		return new Streamlet<>(() -> {
-			InputStream is = Rethrow.ioException(() -> new FileInputStream(file));
+			InputStream is = Rethrow.ex(() -> new FileInputStream(file));
 			return bytes(is).closeAtEnd(is);
 		});
 	}
@@ -48,7 +48,7 @@ public class Read {
 		InputStream bis = new BufferedInputStream(is);
 		return Outlet.from(() -> {
 			byte bs[] = new byte[Constants.bufferSize];
-			int nBytesRead = Rethrow.ioException(() -> bis.read(bs));
+			int nBytesRead = Rethrow.ex(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
 		}).closeAtEnd(bis).closeAtEnd(is);
 	}
@@ -112,7 +112,7 @@ public class Read {
 	}
 
 	public static Streamlet<String> lines(File file) {
-		return new Streamlet<String>(() -> lines(Rethrow.ioException(() -> new FileInputStream(file))));
+		return new Streamlet<String>(() -> lines(Rethrow.ex(() -> new FileInputStream(file))));
 	}
 
 	public static Outlet<String> lines(InputStream is) {
@@ -121,7 +121,7 @@ public class Read {
 
 	public static Outlet<String> lines(Reader reader) {
 		BufferedReader br = new BufferedReader(reader);
-		return Outlet.from(() -> Rethrow.ioException(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
+		return Outlet.from(() -> Rethrow.ex(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
 	}
 
 	public static Streamlet<Integer> range(int e) {

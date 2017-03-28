@@ -28,7 +28,7 @@ public class FileUtil {
 	}
 
 	public static Streamlet<Path> findPaths(Path path) {
-		return Read.from(() -> Rethrow.ioException(() -> Files.walk(path).filter(p -> Files.isRegularFile(p)).iterator()));
+		return Read.from(() -> Rethrow.ex(() -> Files.walk(path).filter(p -> Files.isRegularFile(p)).iterator()));
 	}
 
 	public static String getFileExtension(Path path) {

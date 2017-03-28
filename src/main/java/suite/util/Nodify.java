@@ -151,7 +151,7 @@ public class Nodify {
 						.toList();
 
 				List<Pair<Atom, FieldInfo>> pairs = Read.from(fieldInfos).map(f -> Pair.of(Atom.of(f.name), f)).toList();
-				nodifier = new Nodifier(object -> Rethrow.reflectiveOperationException(() -> {
+				nodifier = new Nodifier(object -> Rethrow.ex(() -> {
 					Dict dict = new Dict();
 					for (Pair<Atom, FieldInfo> pair : pairs) {
 						FieldInfo fieldInfo = pair.t1;
@@ -159,7 +159,7 @@ public class Nodify {
 						dict.map.put(pair.t0, Reference.of(value));
 					}
 					return dict;
-				}), node -> Rethrow.reflectiveOperationException(() -> {
+				}), node -> Rethrow.ex(() -> {
 					Map<Node, Reference> map = ((Dict) node).map;
 					Object object1 = clazz.newInstance();
 					for (Pair<Atom, FieldInfo> pair : pairs) {
@@ -224,7 +224,7 @@ public class Nodify {
 		else if (clazz == HashMap.class || clazz == Map.class)
 			object = new HashMap<>();
 		else
-			return Rethrow.reflectiveOperationException(clazz::newInstance);
+			return Rethrow.ex(clazz::newInstance);
 
 		@SuppressWarnings("unchecked")
 		T t = (T) object;

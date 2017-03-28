@@ -16,7 +16,7 @@ public class JdkUnsafeLoadClassUtil extends JdkUtil {
 	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) throws IOException {
 		Path path = compile(canonicalName, java);
 		Class<? extends T> clazz = load(interfaceClazz, canonicalName, path);
-		return Rethrow.reflectiveOperationException(clazz::newInstance);
+		return Rethrow.ex(clazz::newInstance);
 	}
 
 	private <T> Class<? extends T> load(Class<T> interfaceClazz, String canonicalName, Path path) throws IOException {

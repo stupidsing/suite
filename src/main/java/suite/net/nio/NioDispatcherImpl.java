@@ -171,7 +171,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 			// try to send immediately. If cannot sent all, wait for the
 			// writable event (and send again at that moment).
 			byte bytes[] = in.toBytes();
-			int sent = Rethrow.ioException(() -> sc.write(ByteBuffer.wrap(bytes)));
+			int sent = Rethrow.ex(() -> sc.write(ByteBuffer.wrap(bytes)));
 			Bytes out = in.subbytes(sent);
 			int ops = SelectionKey.OP_READ | (!out.isEmpty() ? SelectionKey.OP_WRITE : 0);
 			SelectionKey key = sc.keyFor(selector);

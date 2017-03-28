@@ -29,7 +29,7 @@ public class StoreCache {
 
 	@SuppressWarnings("resource")
 	public Outlet<Bytes> getOutlet(Bytes key, Source<Outlet<Bytes>> source) {
-		return Rethrow.ioException(() -> {
+		return Rethrow.ex(() -> {
 			int keySize = key.size();
 			String hex8 = To.hex8(key.hashCode());
 			Path dir1 = dir.resolve(hex8.substring(0, 2));
@@ -48,7 +48,7 @@ public class StoreCache {
 							private boolean cont = true;
 
 							public Bytes source() {
-								return Rethrow.ioException(() -> {
+								return Rethrow.ex(() -> {
 									if (cont) {
 										byte vb[] = new byte[Constants.bufferSize];
 										int n, nBytesRead = 0;
@@ -79,7 +79,7 @@ public class StoreCache {
 			do_.writeInt(keySize);
 			do_.write(key.toBytes());
 
-			return Outlet.from(() -> Rethrow.ioException(() -> {
+			return Outlet.from(() -> Rethrow.ex(() -> {
 				Bytes value = outlet.next();
 				if (value != null)
 					value.write(do_);

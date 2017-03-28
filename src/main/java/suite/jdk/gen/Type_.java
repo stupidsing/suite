@@ -41,23 +41,23 @@ public class Type_ {
 
 	public static Method methodOf(Class<?> clazz) {
 		if (clazz == BiFunction.class)
-			return Rethrow.reflectiveOperationException(() -> clazz.getMethod("apply", Object.class, Object.class));
+			return Rethrow.ex(() -> clazz.getMethod("apply", Object.class, Object.class));
 		else if (clazz == BiPredicate.class)
-			return Rethrow.reflectiveOperationException(() -> clazz.getMethod("test", Object.class, Object.class));
+			return Rethrow.ex(() -> clazz.getMethod("test", Object.class, Object.class));
 		else if (clazz == Fun.class || clazz == Function.class)
-			return Rethrow.reflectiveOperationException(() -> clazz.getMethod("apply", Object.class));
+			return Rethrow.ex(() -> clazz.getMethod("apply", Object.class));
 		else if (clazz == Predicate.class)
-			return Rethrow.reflectiveOperationException(() -> clazz.getMethod("test", Object.class));
+			return Rethrow.ex(() -> clazz.getMethod("test", Object.class));
 		else if (clazz == Sink.class)
-			return Rethrow.reflectiveOperationException(() -> clazz.getMethod("sink", Object.class));
+			return Rethrow.ex(() -> clazz.getMethod("sink", Object.class));
 		else if (clazz == Source.class)
-			return Rethrow.reflectiveOperationException(() -> clazz.getMethod("source"));
+			return Rethrow.ex(() -> clazz.getMethod("source"));
 		else
 			return Read.from(clazz.getDeclaredMethods()).uniqueResult();
 	}
 
 	private static Class<?> getClassByName(String className) {
-		return Rethrow.reflectiveOperationException(() -> {
+		return Rethrow.ex(() -> {
 			if (Util.stringEquals(className, "byte"))
 				return byte.class;
 			else if (Util.stringEquals(className, "char"))

@@ -110,7 +110,7 @@ public class FunTypeInformation {
 				.<Class> map(Type_::classOf) //
 				.toArray(Class.class);
 
-		return Rethrow.reflectiveOperationException(() -> {
+		return Rethrow.ex(() -> {
 			Class<?> clazz0 = expr.clazz;
 			Class<?> clazz1 = clazz0 != null ? clazz0 : classOf(expr.object);
 			return clazz1.getMethod(expr.methodName, parameterTypes);

@@ -116,7 +116,7 @@ public class B_TreeBuilder<Key, Value> {
 			int pageSize, //
 			int nPages) {
 		if (isNew)
-			Rethrow.ioException(() -> Files.deleteIfExists(path));
+			Rethrow.ex(() -> Files.deleteIfExists(path));
 
 		JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
 		B_Tree<Key, Integer> b_tree = new B_TreeBuilder<>(ks, Serialize.int_).build(jpf, cmp, nPages);
@@ -150,7 +150,7 @@ public class B_TreeBuilder<Key, Value> {
 
 		if (isNew)
 			for (Path p_ : new Path[] { sbp, alp, p, })
-				Rethrow.ioException(() -> Files.deleteIfExists(p_));
+				Rethrow.ex(() -> Files.deleteIfExists(p_));
 
 		B_Tree<Key, Value> b_tree = build(cmp //
 				, FileFactory.pageFile(alp, pageSize) //

@@ -1,6 +1,5 @@
 package suite.util;
 
-import java.io.IOException;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -11,10 +10,6 @@ public class Rethrow {
 
 	public interface SourceEx<T, Ex extends Throwable> {
 		public T source() throws Ex;
-	}
-
-	public interface SourceReflectiveOperationException<T> {
-		public T source() throws ReflectiveOperationException;
 	}
 
 	public static <V, K> BiPredicate<K, V> bipredicate(BiPredicate<K, V> fun0) {
@@ -31,7 +26,10 @@ public class Rethrow {
 		try {
 			return source.source();
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			if (ex instanceof RuntimeException)
+				throw (RuntimeException) ex;
+			else
+				throw new RuntimeException(ex);
 		}
 	}
 
@@ -55,14 +53,6 @@ public class Rethrow {
 		};
 	}
 
-	public static <T> T ioException(SourceEx<T, IOException> source) {
-		try {
-			return source.source();
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-
 	public static <T> Predicate<T> predicate(Predicate<T> predicate) {
 		return t -> {
 			try {
@@ -71,14 +61,6 @@ public class Rethrow {
 				throw new RuntimeException("for " + t, ex);
 			}
 		};
-	}
-
-	public static <T> T reflectiveOperationException(SourceReflectiveOperationException<T> source) {
-		try {
-			return source.source();
-		} catch (ReflectiveOperationException ex) {
-			throw new RuntimeException(ex);
-		}
 	}
 
 }

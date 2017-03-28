@@ -27,7 +27,7 @@ import suite.util.Util;
 public class ReversePolish {
 
 	public Node fromRpn(String s) {
-		return Rethrow.ioException(() -> fromRpn(new StringReader(s)));
+		return Rethrow.ex(() -> fromRpn(new StringReader(s)));
 	}
 
 	public Node fromRpn(Reader reader) throws IOException {

@@ -125,7 +125,7 @@ public class Mapify {
 					if (object instanceof Map) {
 						Map<?, ?> map = (Map<?, ?>) object;
 						String className = map.get("@class").toString();
-						Class<?> clazz1 = Rethrow.reflectiveOperationException(() -> Class.forName(className));
+						Class<?> clazz1 = Rethrow.ex(() -> Class.forName(className));
 						return apply0(getMapifier(clazz1).unmapify, object);
 					} else
 						// happens when an enum implements an interface
@@ -139,12 +139,12 @@ public class Mapify {
 						}) //
 						.toList();
 
-				mapifier = new Mapifier(object -> Rethrow.reflectiveOperationException(() -> {
+				mapifier = new Mapifier(object -> Rethrow.ex(() -> {
 					Map<Object, Object> map = newMap();
 					for (FieldInfo fi : fis)
 						map.put(fi.name, apply0(fi.mapifier.mapify, fi.field.get(object)));
 					return map;
-				}), object -> Rethrow.reflectiveOperationException(() -> {
+				}), object -> Rethrow.ex(() -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					Object object1 = clazz.newInstance();
 					for (FieldInfo fi : fis)
@@ -214,7 +214,7 @@ public class Mapify {
 		else if (clazz == HashMap.class || clazz == Map.class)
 			object = new HashMap<>();
 		else
-			return Rethrow.reflectiveOperationException(clazz::newInstance);
+			return Rethrow.ex(clazz::newInstance);
 
 		@SuppressWarnings("unchecked")
 		T t = (T) object;

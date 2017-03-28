@@ -22,11 +22,11 @@ public class SerializedFileFactory {
 			}
 
 			public V load(int pointer) {
-				return Rethrow.ioException(() -> serializer.read(new DataInputStream(pageFile.load(pointer).asInputStream())));
+				return Rethrow.ex(() -> serializer.read(new DataInputStream(pageFile.load(pointer).asInputStream())));
 			}
 
 			public void save(int pointer, V value) {
-				pageFile.save(pointer, Rethrow.ioException(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value))));
+				pageFile.save(pointer, Rethrow.ex(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value))));
 			}
 		};
 	}

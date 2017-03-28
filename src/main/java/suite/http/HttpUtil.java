@@ -39,7 +39,7 @@ public class HttpUtil {
 	}
 
 	public static HttpResult http(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) {
-		return Rethrow.ioException(() -> {
+		return Rethrow.ex(() -> {
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
 			conn.setRequestMethod(method);

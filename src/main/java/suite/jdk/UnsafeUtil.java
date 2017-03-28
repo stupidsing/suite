@@ -24,7 +24,7 @@ public class UnsafeUtil {
 	}
 
 	public Unsafe getUnsafe() {
-		return Rethrow.reflectiveOperationException(() -> {
+		return Rethrow.ex(() -> {
 			Field f = Unsafe.class.getDeclaredField("theUnsafe");
 			f.setAccessible(true);
 			return (Unsafe) f.get(null);

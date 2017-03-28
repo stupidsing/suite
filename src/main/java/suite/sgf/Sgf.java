@@ -29,7 +29,7 @@ public class Sgf {
 	}
 
 	public Node fromFile(String filename) {
-		return from(Rethrow.ioException(() -> FileUtil.read(filename)));
+		return from(Rethrow.ex(() -> FileUtil.read(filename)));
 	}
 
 	public Node from(String in) {

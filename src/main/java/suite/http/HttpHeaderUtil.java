@@ -42,7 +42,7 @@ public class HttpHeaderUtil {
 		char buffer[] = new char[Constants.bufferSize];
 		int nCharsRead;
 
-		while (0 <= (nCharsRead = Rethrow.ioException(() -> br.read(buffer))))
+		while (0 <= (nCharsRead = Rethrow.ex(() -> br.read(buffer))))
 			sb.append(buffer, 0, nCharsRead);
 
 		return getAttrs(sb.toString());
@@ -61,7 +61,7 @@ public class HttpHeaderUtil {
 	}
 
 	private static String decode(String s) {
-		return Rethrow.ioException(() -> URLDecoder.decode(s, "UTF-8"));
+		return Rethrow.ex(() -> URLDecoder.decode(s, "UTF-8"));
 	}
 
 }

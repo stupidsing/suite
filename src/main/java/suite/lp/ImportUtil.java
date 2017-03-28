@@ -36,7 +36,7 @@ public class ImportUtil {
 	}
 
 	public RuleSet newRuleSet(List<String> toImports) {
-		return Rethrow.ioException(() -> {
+		return Rethrow.ex(() -> {
 			RuleSet rs = newRuleSet();
 			for (String toImport : toImports)
 				importPath(rs, toImport);

@@ -48,7 +48,7 @@ public class Library extends ExecutableProgram {
 	protected boolean run(String args[]) {
 		Pair<Streamlet2<Path, Long>, Streamlet2<Path, Long>> partition = FileUtil.findPaths(Paths.get(inputDir)) //
 				.filter(path -> fileExtensions.contains(FileUtil.getFileExtension(path))) //
-				.map2(path -> path, path -> Rethrow.ioException(() -> Files.size(path))) //
+				.map2(path -> path, path -> Rethrow.ex(() -> Files.size(path))) //
 				.partition((path, size) -> 0 < size);
 
 		// remove empty files
@@ -62,7 +62,7 @@ public class Library extends ExecutableProgram {
 
 		Streamlet2<Path, FileInfo> path_fileInfos = partition.t0 //
 				.mapEntry((path, size) -> path, (path, size) -> {
-					BasicFileAttributes attrs = Rethrow.ioException(() -> Files.readAttributes(path, BasicFileAttributes.class));
+					BasicFileAttributes attrs = Rethrow.ex(() -> Files.readAttributes(path, BasicFileAttributes.class));
 
 					// get all file information
 					List<String> tags = Read.range(path.getNameCount()) //
@@ -71,7 +71,7 @@ public class Library extends ExecutableProgram {
 							.toList();
 
 					FileInfo fileInfo = new FileInfo();
-					fileInfo.md5 = Rethrow.ioException(() -> Md5Crypt.md5Crypt(Files.readAllBytes(path)));
+					fileInfo.md5 = Rethrow.ex(() -> Md5Crypt.md5Crypt(Files.readAllBytes(path)));
 					fileInfo.tags = tags;
 					return fileInfo;
 				});
@@ -90,14 +90,14 @@ public class Library extends ExecutableProgram {
 					// move file to library, by md5
 					Path path1 = Paths.get(libraryDir, fileInfo.md5.substring(0, 2), fileInfo.md5);
 					FileUtil.mkdir(path1.getParent());
-					Rethrow.ioException(() -> Files.move(path, path1, StandardCopyOption.REPLACE_EXISTING));
+					Rethrow.ex(() -> Files.move(path, path1, StandardCopyOption.REPLACE_EXISTING));
 					return fileInfo;
 				}) //
 				.concatMap((path, fileInfo) -> Read.from(fileInfo.tags).map(tag -> {
 
 					// add to tag indices
 					Path path1 = Paths.get(tagsDir, tag, fileInfo.md5);
-					return Rethrow.ioException(() -> {
+					return Rethrow.ex(() -> {
 						Files.newOutputStream(path1).close();
 						return Pair.of(tag, fileInfo);
 					});

@@ -228,7 +228,7 @@ public class Inspect {
 						}
 
 						public Object getValue() {
-							return Rethrow.reflectiveOperationException(() -> pair.t1.invoke(object));
+							return Rethrow.ex(() -> pair.t1.invoke(object));
 						}
 					};
 				} else {
@@ -254,7 +254,7 @@ public class Inspect {
 						}
 
 						public Object getValue() {
-							return Rethrow.reflectiveOperationException(() -> field.get(object));
+							return Rethrow.ex(() -> field.get(object));
 						}
 					};
 				}
@@ -289,7 +289,7 @@ public class Inspect {
 	public <T> boolean equals(T o0, T o1) {
 		return o0 == o1 || o0 != null && o1 != null //
 				&& o0.getClass() == o1.getClass() //
-				&& Rethrow.reflectiveOperationException(() -> {
+				&& Rethrow.ex(() -> {
 					boolean result = true;
 					for (Field field : fields(o0.getClass()))
 						result &= Objects.equals(field.get(o0), field.get(o1));
@@ -301,7 +301,7 @@ public class Inspect {
 	 * @return a combined hash code of all fields of the input value object.
 	 */
 	public int hashCode(Object object) {
-		return Rethrow.reflectiveOperationException(() -> {
+		return Rethrow.ex(() -> {
 			int hashCode = 0;
 			for (Field field : fields(object.getClass()))
 				hashCode = hashCode * 31 + Objects.hashCode(field.get(object));
@@ -314,7 +314,7 @@ public class Inspect {
 	 *         function.
 	 */
 	public <T> T rewrite(Class<T> baseClass, Object cp[], Fun<T, T> fun, T t0) {
-		return Rethrow.reflectiveOperationException(() -> {
+		return Rethrow.ex(() -> {
 			T t1 = fun.apply(t0);
 			T t3;
 			if (t1 != null)

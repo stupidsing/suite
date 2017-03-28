@@ -167,7 +167,7 @@ public class To {
 	public static Source<Bytes> source(InputStream is) {
 		return () -> {
 			byte bs[] = new byte[Constants.bufferSize];
-			int nBytesRead = Rethrow.ioException(() -> is.read(bs));
+			int nBytesRead = Rethrow.ex(() -> is.read(bs));
 
 			if (0 <= nBytesRead)
 				return Bytes.of(bs, 0, nBytesRead);

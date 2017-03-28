@@ -207,7 +207,7 @@ public class EditorController {
 	}
 
 	private void load(String filename) {
-		String text = Rethrow.ioException(() -> FileUtil.read(filename));
+		String text = Rethrow.ex(() -> FileUtil.read(filename));
 
 		JEditorPane editor = view.getEditor();
 		editor.setText(text);

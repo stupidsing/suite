@@ -28,13 +28,13 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) throws IOException {
 		compile(canonicalName, java);
 		Class<? extends T> clazz = load(canonicalName);
-		return Rethrow.reflectiveOperationException(clazz::newInstance);
+		return Rethrow.ex(clazz::newInstance);
 	}
 
 	private <T> Class<? extends T> load(String canonicalName) {
 		LogUtil.info("Loading class " + canonicalName);
 
-		return Rethrow.reflectiveOperationException(() -> {
+		return Rethrow.ex(() -> {
 			@SuppressWarnings("unchecked")
 			Class<? extends T> clazz = (Class<? extends T>) classLoader.loadClass(canonicalName);
 			return clazz;

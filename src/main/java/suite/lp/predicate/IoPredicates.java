@@ -54,11 +54,11 @@ public class IoPredicates {
 
 	public BuiltinPredicate fileRead = PredicateUtil.fun(n -> {
 		String filename = Formatter.display(n);
-		return Rethrow.ioException(() -> new Str(FileUtil.read(filename)));
+		return Rethrow.ex(() -> new Str(FileUtil.read(filename)));
 	});
 
 	public BuiltinPredicate fileTime = PredicateUtil.fun(n -> {
-		return Rethrow.ioException(() -> {
+		return Rethrow.ex(() -> {
 			FileTime lastModifiedTime = Files.getLastModifiedTime(Paths.get(Formatter.display(n)));
 			return Int.of((int) lastModifiedTime.to(TimeUnit.SECONDS));
 		});
@@ -84,7 +84,7 @@ public class IoPredicates {
 	public BuiltinPredicate nl = PredicateUtil.run(() -> System.out.println());
 
 	public BuiltinPredicate readLine = PredicateUtil.p1((prover, p0) -> {
-		return Rethrow.ioException(() -> {
+		return Rethrow.ex(() -> {
 			BytesBuilder bb = new BytesBuilder();
 			byte b;
 			while (0 <= (b = (byte) System.in.read()) && b != 10)

@@ -181,7 +181,7 @@ public class DependencyMain extends ExecutableProgram {
 		String packageName = "dkms";
 
 		List<Map<String, String>> packages;
-		packages = Rethrow.ioException(() -> aptUtil.readRepoPackages(repo));
+		packages = Rethrow.ex(() -> aptUtil.readRepoPackages(repo));
 		Set<String> required = new HashSet<>(Arrays.asList(packageName));
 		Set<String> required1 = dpkgUtil.getDependeeSet(packages, required);
 		return Read.from(required1) //

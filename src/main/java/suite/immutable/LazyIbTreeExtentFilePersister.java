@@ -162,12 +162,12 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	private PersistSlot<T> loadSlot(Extent extent) {
-		return Rethrow.ioException(() -> serializer.read(new DataInputStream(extentFile.load(extent).asInputStream())));
+		return Rethrow.ex(() -> serializer.read(new DataInputStream(extentFile.load(extent).asInputStream())));
 	}
 
 	private Extent saveSlot(int start, PersistSlot<T> value) {
 		int bs = ExtentFile.blockSize;
-		Bytes bytes = Rethrow.ioException(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
+		Bytes bytes = Rethrow.ex(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
 		Extent extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
 		extentFile.save(extent, bytes);
 		return extent;

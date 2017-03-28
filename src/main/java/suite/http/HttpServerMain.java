@@ -56,7 +56,7 @@ public class HttpServerMain {
 	}
 
 	private HttpHandler handlePath(Path root) {
-		return request -> Rethrow.ioException(() -> {
+		return request -> Rethrow.ex(() -> {
 			Path path = root;
 			long size;
 

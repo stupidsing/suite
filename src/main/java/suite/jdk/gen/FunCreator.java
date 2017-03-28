@@ -208,7 +208,7 @@ public class FunCreator<I> extends FunFactory {
 		}
 
 		private I create(Map<String, Object> fieldValues) {
-			return Rethrow.reflectiveOperationException(() -> {
+			return Rethrow.ex(() -> {
 				I t = clazz.newInstance();
 				for (Field field : clazz.getDeclaredFields()) {
 					String fieldName = field.getName();

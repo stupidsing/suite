@@ -30,7 +30,7 @@ public class NetUtil {
 
 	public static Bytes serialize(Object o) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		return Rethrow.ioException(() -> {
+		return Rethrow.ex(() -> {
 			ObjectOutputStream out = new ObjectOutputStream(baos);
 			out.writeObject(o);
 			out.flush();

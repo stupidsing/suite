@@ -261,7 +261,7 @@ public class Util {
 	 * when dealing with non-ASCII encoding characters.
 	 */
 	public static String readLine(InputStream is) {
-		return Rethrow.ioException(() -> {
+		return Rethrow.ex(() -> {
 			StringBuilder sb = new StringBuilder();
 			int c;
 			while ((c = is.read()) != -1 && c != 10) {
@@ -274,7 +274,7 @@ public class Util {
 	}
 
 	public static String readLine(Reader reader) {
-		return Rethrow.ioException(() -> {
+		return Rethrow.ex(() -> {
 			StringBuilder sb = new StringBuilder();
 			int c;
 			while ((c = reader.read()) != -1 && c != 10) {

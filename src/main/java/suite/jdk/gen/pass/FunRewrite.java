@@ -151,7 +151,7 @@ public class FunRewrite extends FunFactory {
 			FunExpr object = rewrite(e1.object);
 			String fieldName = e1.fieldName;
 			Class<?> clazz = fti.classOf(object);
-			Field field = Rethrow.reflectiveOperationException(() -> clazz.getField(fieldName));
+			Field field = Rethrow.ex(() -> clazz.getField(fieldName));
 			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
 		} else if (e0 instanceof FieldInjectFunExpr) {
 			FieldInjectFunExpr e1 = (FieldInjectFunExpr) e0;
