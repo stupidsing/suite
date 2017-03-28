@@ -18,10 +18,10 @@ public class CharsUtil {
 			private boolean cont = true;
 
 			public Chars source() {
+				Chars in;
 				CharsBuilder cb = new CharsBuilder();
 				cb.append(buffer);
 
-				Chars in;
 				while (cb.size() < bufferSize && (cont &= (in = o.next()) != null))
 					cb.append(in);
 
@@ -56,14 +56,14 @@ public class CharsUtil {
 			private int p;
 
 			public Chars source() {
-				Chars chars;
+				Chars in;
 				CharsBuilder cb = new CharsBuilder();
 				cb.append(buffer);
 
 				p = 0;
 
-				while (!search(delim) && (cont &= (chars = o.next()) != null)) {
-					cb.append(chars);
+				while (!search(delim) && (cont &= (in = o.next()) != null)) {
+					cb.append(in);
 					buffer = cb.toChars();
 				}
 
@@ -79,11 +79,10 @@ public class CharsUtil {
 			private boolean search(Chars delim) {
 				boolean isMatched = false;
 
-				while (!isMatched && p <= buffer.size()) {
-					boolean isMatched_ = true;
+				while (!isMatched && p < buffer.size()) {
+					boolean isMatched_ = p + ds <= buffer.size();
 					for (int i = 0; isMatched_ && i < ds; i++)
-						if (p + i <= buffer.size())
-							isMatched_ = buffer.get(p + i) == delim.get(i);
+						isMatched_ = buffer.get(p + i) == delim.get(i);
 					if (isMatched_)
 						isMatched = true;
 					else

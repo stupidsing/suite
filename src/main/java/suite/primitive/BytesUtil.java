@@ -18,10 +18,10 @@ public class BytesUtil {
 			protected boolean cont = true;
 
 			public Bytes source() {
+				Bytes in;
 				BytesBuilder bb = new BytesBuilder();
 				bb.append(buffer);
 
-				Bytes in;
 				while (bb.size() < bufferSize && (cont &= (in = o.next()) != null))
 					bb.append(in);
 
@@ -56,14 +56,14 @@ public class BytesUtil {
 			private int p;
 
 			public Bytes source() {
-				Bytes bytes;
+				Bytes in;
 				BytesBuilder bb = new BytesBuilder();
 				bb.append(buffer);
 
 				p = 0;
 
-				while (!search(delim) && (cont &= (bytes = o.next()) != null)) {
-					bb.append(bytes);
+				while (!search(delim) && (cont &= (in = o.next()) != null)) {
+					bb.append(in);
 					buffer = bb.toBytes();
 				}
 
@@ -80,10 +80,9 @@ public class BytesUtil {
 				boolean isMatched = false;
 
 				while (!isMatched && p < buffer.size()) {
-					boolean isMatched_ = true;
+					boolean isMatched_ = p + ds <= buffer.size();
 					for (int i = 0; isMatched_ && i < ds; i++)
-						if (p + i <= buffer.size())
-							isMatched_ = buffer.get(p + i) == delim.get(i);
+						isMatched_ = buffer.get(p + i) == delim.get(i);
 					if (isMatched_)
 						isMatched = true;
 					else
