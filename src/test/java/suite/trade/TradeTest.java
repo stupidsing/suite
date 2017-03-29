@@ -24,16 +24,6 @@ public class TradeTest {
 	private LocalDate frDate = LocalDate.of(2012, 2, 26);
 	private LocalDate toDate = LocalDate.of(2017, 2, 26);
 
-	private interface Strategy {
-
-		// 1 = buy, 0 = no change, -1 = sell
-		public GetBuySell analyze(double prices[]);
-	}
-
-	private interface GetBuySell {
-		public int get(int d);
-	}
-
 	@Test
 	public void backTest() {
 		String urlString = "http://chart.finance.yahoo.com/table.csv" //
@@ -166,5 +156,15 @@ public class TradeTest {
 			return signal0 + signal1;
 		};
 	};
+
+	private interface Strategy {
+
+		// 1 = buy, 0 = no change, -1 = sell
+		public GetBuySell analyze(double prices[]);
+	}
+
+	private interface GetBuySell {
+		public int get(int d);
+	}
 
 }
