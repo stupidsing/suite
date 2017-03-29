@@ -59,12 +59,12 @@ public class TradeTest {
 
 		validatePrices(prices);
 
-		for (Strategy strategy : Arrays.asList(movingAverageMeanReverting)) {
+		for (Strategy strategy : Arrays.asList(longHold, movingAverageMeanReverting)) {
 			GetSignal getSignal = strategy.analyze(prices);
 
 			int nLots = 0;
 			int nTransactions = 0;
-			double totalNetGain = 0;
+			double cash = 0;
 			int signals[] = new int[prices.length];
 
 			for (int d = 0; d < prices.length; d++) {
@@ -78,22 +78,30 @@ public class TradeTest {
 
 				nLots += buySell;
 				nTransactions += Math.abs(buySell);
-				totalNetGain += -buySell * price;
+				cash += -buySell * price;
 
 				if (buySell != 0)
 					System.out.println("d = " + d //
 							+ ", price = " + price //
 							+ ", buy/sell = " + buySell //
 							+ ", nLots = " + nLots);
+
+				if (Boolean.FALSE) // do not validate yet
+					if (cash < 0 || nLots < 0)
+						throw new RuntimeException("invalid condition");
 			}
 
 			// sell all stocks at the end
-			totalNetGain += -nLots * prices[prices.length - 1];
+			if (nLots != 0)
+				nTransactions++;
+			cash += -nLots * prices[prices.length - 1];
 
 			System.out.println("number of transactions = " + nTransactions);
-			System.out.println("total net gain = " + totalNetGain);
+			System.out.println("total net gain = " + cash);
 		}
 	}
+
+	private Strategy longHold = prices -> d -> d != 0 ? 0 : 1;
 
 	private Strategy movingAverageMeanReverting = prices -> {
 		int nDaysMovingAverage = 64;
