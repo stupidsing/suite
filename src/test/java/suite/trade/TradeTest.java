@@ -158,11 +158,10 @@ public class TradeTest {
 	};
 
 	private interface Strategy {
-
-		// 1 = buy, 0 = no change, -1 = sell
 		public GetBuySell analyze(double prices[]);
 	}
 
+	// 1 = buy, 0 = no change, -1 = sell
 	private interface GetBuySell {
 		public int get(int d);
 	}
