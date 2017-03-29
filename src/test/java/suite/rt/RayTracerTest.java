@@ -17,11 +17,11 @@ import suite.os.FileUtil;
 import suite.rt.RayTracer.LightSource;
 import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.RtObject;
-import suite.rt.composites.Intersect;
-import suite.rt.composites.Minus;
-import suite.rt.composites.Union;
-import suite.rt.planars.Plane;
-import suite.rt.planars.Triangle;
+import suite.rt.composite.Intersect;
+import suite.rt.composite.Minus;
+import suite.rt.composite.Union;
+import suite.rt.planar.Plane;
+import suite.rt.planar.Triangle;
 import suite.util.TempDir;
 import suite.util.Util;
 

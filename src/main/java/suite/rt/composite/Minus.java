@@ -1,4 +1,4 @@
-package suite.rt.composites;
+package suite.rt.composite;
 
 import java.util.List;
 

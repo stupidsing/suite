@@ -1,4 +1,4 @@
-package suite.rt.planars;
+package suite.rt.planar;
 
 import java.util.ArrayList;
 import java.util.List;

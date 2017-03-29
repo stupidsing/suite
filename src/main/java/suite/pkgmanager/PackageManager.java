@@ -13,9 +13,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import suite.adt.Pair;
 import suite.os.FileUtil;
-import suite.pkgmanager.actions.ExecCommandAction;
-import suite.pkgmanager.actions.ExtractFileAction;
-import suite.pkgmanager.actions.InstallAction;
+import suite.pkgmanager.action.ExecCommandAction;
+import suite.pkgmanager.action.ExtractFileAction;
+import suite.pkgmanager.action.InstallAction;
 import suite.streamlet.Read;
 import suite.wildcard.WildcardUtil;
 

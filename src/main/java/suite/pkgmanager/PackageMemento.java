@@ -2,7 +2,7 @@ package suite.pkgmanager;
 
 import java.util.List;
 
-import suite.pkgmanager.actions.InstallAction;
+import suite.pkgmanager.action.InstallAction;
 
 public class PackageMemento {
 

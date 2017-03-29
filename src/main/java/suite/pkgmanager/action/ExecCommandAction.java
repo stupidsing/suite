@@ -1,4 +1,4 @@
-package suite.pkgmanager.actions;
+package suite.pkgmanager.action;
 
 import suite.os.Execute;
 
