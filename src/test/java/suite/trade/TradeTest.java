@@ -53,14 +53,14 @@ public class TradeTest {
 			GetBuySell getBuySell = strategy.analyze(prices);
 			Account account = new Account();
 
-			for (int d = 0; d < prices.length; d++) {
-				int buySell = getBuySell.get(d);
-				double price = prices[d];
+			for (int day = 0; day < prices.length; day++) {
+				int buySell = getBuySell.get(day);
+				double price = prices[day];
 
 				account.buySell(buySell, price);
 
 				if (buySell != 0)
-					System.out.println("d = " + d //
+					System.out.println("day = " + day //
 							+ ", price = " + price //
 							+ ", buy/sell = " + buySell //
 							+ ", nLots = " + account.nLots);
@@ -112,19 +112,19 @@ public class TradeTest {
 		}
 	}
 
-	private Strategy longHold = prices -> d -> d != 0 ? 0 : 1;
+	private Strategy longHold = prices -> day -> day != 0 ? 0 : 1;
 
 	private Strategy movingAverageMeanReverting = prices -> {
 		int nDaysMovingAverage = nPastDays;
 		double movingAverages[] = new double[prices.length];
 		double movingSum = 0;
 
-		for (int d = 0; d < prices.length; d++) {
-			if (nDaysMovingAverage <= d) {
-				movingAverages[d] = movingSum / nDaysMovingAverage;
-				movingSum -= prices[d - nDaysMovingAverage];
+		for (int day = 0; day < prices.length; day++) {
+			if (nDaysMovingAverage <= day) {
+				movingAverages[day] = movingSum / nDaysMovingAverage;
+				movingSum -= prices[day - nDaysMovingAverage];
 			}
-			movingSum += prices[d];
+			movingSum += prices[day];
 		}
 
 		int signals[] = new int[prices.length];
