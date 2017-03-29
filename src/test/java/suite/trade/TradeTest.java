@@ -59,10 +59,9 @@ public class TradeTest {
 			// sell nFutureDays after
 			double price = prices[d];
 			int signal0 = nFutureDays < d ? -signals[d - nFutureDays] : 0;
-			int signal1 = getSignal(prices, d);
-			int buySell = signal1 + signal0;
+			int signal1 = signals[d] = getSignal(prices, d);
+			int buySell = signal0 + signal1;
 
-			signals[d] = signal1;
 			nLots += buySell;
 			nTransactions += Math.abs(buySell);
 			totalNetGain += -buySell * price;
