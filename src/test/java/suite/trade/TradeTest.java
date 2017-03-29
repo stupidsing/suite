@@ -3,6 +3,7 @@ package suite.trade;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -12,6 +13,7 @@ import suite.os.StoreCache;
 import suite.primitive.Bytes;
 import suite.primitive.BytesUtil;
 import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.util.Rethrow;
 
 public class TradeTest {
@@ -21,8 +23,8 @@ public class TradeTest {
 	private int nFutureDays = 8;
 	private String stockCode = "0005";
 	private String market = "HK";
-	private LocalDate frDate = LocalDate.of(2012, 2, 26);
-	private LocalDate toDate = LocalDate.of(2017, 2, 26);
+	private LocalDate frDate = LocalDate.of(2013, 1, 1);
+	private LocalDate toDate = LocalDate.of(2018, 1, 1);
 
 	@Test
 	public void backTest() {
@@ -37,12 +39,19 @@ public class TradeTest {
 		URL url = Rethrow.ex(() -> new URL(urlString));
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
-		double prices[] = storeCache //
+		List<String[]> arrays = storeCache //
 				.getOutlet(keyBytes, () -> HttpUtil.http("GET", url).out) //
 				.collect(BytesUtil.split(Bytes.of((byte) 10))) //
 				.skip(1) //
 				.map(bytes -> new String(bytes.toBytes(), Constants.charset).split(",")) //
 				.sort((a0, a1) -> a0[0].compareTo(a1[0])) //
+				.toList();
+
+		String dates[] = Read.from(arrays) //
+				.map(array -> array[0]) //
+				.toArray(String.class);
+
+		double prices[] = Read.from(arrays) //
 				.collect(As.arrayOfDoubles(array -> Double.parseDouble(array[1])));
 
 		// a.collect(As.sequenced((index, array) -> index + "," +
@@ -61,7 +70,7 @@ public class TradeTest {
 				account.buySell(buySell, price);
 
 				if (buySell != 0)
-					System.out.println("day = " + day //
+					System.out.println("day = " + dates[day] //
 							+ ", price = " + price //
 							+ ", buy/sell = " + buySell //
 							+ ", nLots = " + account.nLots);
