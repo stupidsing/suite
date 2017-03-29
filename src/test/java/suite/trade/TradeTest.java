@@ -106,14 +106,14 @@ public class TradeTest {
 	}
 
 	private class Account {
+		private double cash = 0;
 		private int nLots = 0;
 		private int nTransactions = 0;
-		private double cash = 0;
 
 		private void buySell(int buySell, double price) {
+			cash -= buySell * price;
 			nLots += buySell;
 			nTransactions += Math.abs(buySell);
-			cash += -buySell * price;
 		}
 
 		private void validate() {
