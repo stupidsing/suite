@@ -2,6 +2,7 @@ package suite.trade;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -22,6 +23,16 @@ public class TradeTest {
 	private String market = "HK";
 	private LocalDate frDate = LocalDate.of(2012, 2, 26);
 	private LocalDate toDate = LocalDate.of(2017, 2, 26);
+
+	private interface Strategy {
+
+		// 1 = buy, 0 = no change, -1 = sell
+		public GetSignal analyze(double prices[]);
+	}
+
+	private interface GetSignal {
+		public int signalByDay(int d);
+	}
 
 	@Test
 	public void backTest() {
@@ -48,68 +59,75 @@ public class TradeTest {
 
 		validatePrices(prices);
 
-		int nLots = 0;
-		int nTransactions = 0;
-		double totalNetGain = 0;
-		int signals[] = new int[prices.length];
+		for (Strategy strategy : Arrays.asList(movingAverageMeanReverting)) {
+			GetSignal getSignal = strategy.analyze(prices);
+
+			int nLots = 0;
+			int nTransactions = 0;
+			double totalNetGain = 0;
+			int signals[] = new int[prices.length];
+
+			for (int d = 0; d < prices.length; d++) {
+
+				// buy if ratio is positive; sell if ratio is negative
+				// sell nFutureDays after
+				double price = prices[d];
+				int signal0 = nFutureDays < d ? -signals[d - nFutureDays] : 0;
+				int signal1 = signals[d] = getSignal.signalByDay(d);
+				int buySell = signal0 + signal1;
+
+				nLots += buySell;
+				nTransactions += Math.abs(buySell);
+				totalNetGain += -buySell * price;
+
+				if (buySell != 0)
+					System.out.println("d = " + d //
+							+ ", price = " + price //
+							+ ", buy/sell = " + buySell //
+							+ ", nLots = " + nLots);
+			}
+
+			// sell all stocks at the end
+			totalNetGain += -nLots * prices[prices.length - 1];
+
+			System.out.println("number of transactions = " + nTransactions);
+			System.out.println("total net gain = " + totalNetGain);
+		}
+	}
+
+	private Strategy movingAverageMeanReverting = prices -> {
+		int nDaysMovingAverage = 64;
+		double movingAverages[] = new double[prices.length];
+		double movingSum = 0;
 
 		for (int d = 0; d < prices.length; d++) {
-
-			// buy if ratio is positive; sell if ratio is negative
-			// sell nFutureDays after
-			double price = prices[d];
-			int signal0 = nFutureDays < d ? -signals[d - nFutureDays] : 0;
-			int signal1 = signals[d] = getSignal(prices, d);
-			int buySell = signal0 + signal1;
-
-			nLots += buySell;
-			nTransactions += Math.abs(buySell);
-			totalNetGain += -buySell * price;
-
-			if (buySell != 0)
-				System.out.println("d = " + d //
-						+ ", price = " + price //
-						+ ", buy/sell = " + buySell //
-						+ ", nLots = " + nLots);
+			if (nDaysMovingAverage <= d) {
+				movingAverages[d] = movingSum / nDaysMovingAverage;
+				movingSum -= prices[d - nDaysMovingAverage];
+			}
+			movingSum += prices[d];
 		}
 
-		// sell all stocks at the end
-		totalNetGain += -nLots * prices[prices.length - 1];
+		return day -> {
+			int signal;
 
-		System.out.println("number of transactions = " + nTransactions);
-		System.out.println("total net gain = " + totalNetGain);
-	}
+			if (nPastDays < day && day + nFutureDays < prices.length) {
+				double price0 = prices[day];
+				double predict = movingAverages[day];
+				double ratio = (predict - price0) / price0;
 
-	// 1 = buy, 0 = no change, -1 = sell
-	private int getSignal(double prices[], int d) {
-		int signal;
-
-		if (nPastDays < d && d + nFutureDays < prices.length) {
-			double price0 = prices[d];
-			double predict = predictEightDaysAfter(prices, d);
-			double ratio = (predict - price0) / price0;
-
-			if (ratio < -threshold)
-				signal = -1;
-			else if (threshold < ratio)
-				signal = 1;
-			else
+				if (ratio < -threshold)
+					signal = -1;
+				else if (threshold < ratio)
+					signal = 1;
+				else
+					signal = 0;
+			} else
 				signal = 0;
-		} else
-			signal = 0;
 
-		return signal;
-	}
-
-	// input: prices between (d - 64) and d days
-	// output: estimated price on (d + 8) day
-	private double predictEightDaysAfter(double prices[], int d) {
-		int nDaysMovingAverage = 64;
-		double sum = 0;
-		for (int i = d - nDaysMovingAverage; i < d; i++)
-			sum += prices[i];
-		return sum / nDaysMovingAverage;
-	}
+			return signal;
+		};
+	};
 
 	private void validatePrices(double prices[]) {
 		double price0 = prices[0];
