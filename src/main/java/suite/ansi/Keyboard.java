@@ -9,9 +9,9 @@ import com.sun.jna.Native;
 
 import suite.adt.Pair;
 import suite.adt.Trie;
-import suite.streamlet.Outlet;
 import suite.streamlet.Nerve;
 import suite.streamlet.Nerve.Redirector;
+import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 
