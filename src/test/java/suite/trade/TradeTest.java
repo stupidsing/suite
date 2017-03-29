@@ -33,11 +33,12 @@ public class TradeTest {
 				+ "&g=d&ignore=.csv";
 
 		Bytes keyBytes = Bytes.of(urlString.getBytes(Constants.charset));
-		StoreCache sc = new StoreCache();
+		StoreCache storeCache = new StoreCache();
 		URL url = Rethrow.ex(() -> new URL(urlString));
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
-		double prices[] = sc.getOutlet(keyBytes, () -> HttpUtil.http("GET", url).out) //
+		double prices[] = storeCache //
+				.getOutlet(keyBytes, () -> HttpUtil.http("GET", url).out) //
 				.collect(BytesUtil.split(Bytes.of((byte) 10))) //
 				.skip(1) //
 				.map(bytes -> new String(bytes.toBytes(), Constants.charset).split(",")) //
