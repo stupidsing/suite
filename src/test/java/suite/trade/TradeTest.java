@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import suite.os.LogUtil;
 import suite.trade.Strategy.GetBuySell;
 
 public class TradeTest {
@@ -34,7 +35,7 @@ public class TradeTest {
 				account.buySell(buySell, price);
 
 				if (buySell != 0)
-					System.out.println("" //
+					LogUtil.info("" //
 							+ "date = " + source.dates[day] //
 							+ ", price = " + price //
 							+ ", buy/sell = " + buySell //
@@ -47,8 +48,8 @@ public class TradeTest {
 			// sell all stocks at the end
 			account.buySell(-account.nLots(), prices[prices.length - 1]);
 
-			System.out.println("number of transactions = " + account.nTransactions());
-			System.out.println("total net gain = " + account.cash());
+			LogUtil.info("number of transactions = " + account.nTransactions());
+			LogUtil.info("total net gain = " + account.cash());
 		}
 	}
 
