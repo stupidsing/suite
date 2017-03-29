@@ -73,6 +73,9 @@ public class TradeTest {
 						+ ", nLots = " + nLots);
 		}
 
+		// sell all stocks at the end
+		totalNetGain += -nLots * prices[prices.length - 1];
+
 		System.out.println("number of transactions = " + nTransactions);
 		System.out.println("total net gain = " + totalNetGain);
 	}
@@ -113,11 +116,14 @@ public class TradeTest {
 			double price;
 
 			if ((price = prices[i]) == 0)
-				throw new RuntimeException("Price is zero on day " + i);
+				throw new RuntimeException("Price is zero: " + price + "/" + i);
+
+			if (!Double.isFinite(price))
+				throw new RuntimeException("Price is not finite: " + price + "/" + i);
 
 			double ratio = (price - price0) / price0;
 			if (ratio < -0.8 || 0.8 < ratio)
-				throw new RuntimeException("Price varied too much on day " + i);
+				throw new RuntimeException("Price varied too much: " + price + "/" + i);
 		}
 	}
 
