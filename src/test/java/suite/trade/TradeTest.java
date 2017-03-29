@@ -82,11 +82,12 @@ public class TradeTest {
 
 	// 1 = buy, 0 = no change, -1 = sell
 	private int getSignal(double prices[], int d) {
+		int signal;
+
 		if (nPastDays < d && d + nFutureDays < prices.length) {
 			double price0 = prices[d];
 			double predict = predictEightDaysAfter(prices, d);
 			double ratio = (predict - price0) / price0;
-			int signal;
 
 			if (ratio < -threshold)
 				signal = -1;
@@ -94,9 +95,10 @@ public class TradeTest {
 				signal = 1;
 			else
 				signal = 0;
-			return signal;
 		} else
-			return 0;
+			signal = 0;
+
+		return signal;
 	}
 
 	// input: prices between (d - 64) and d days
