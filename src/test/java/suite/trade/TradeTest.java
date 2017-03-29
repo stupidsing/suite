@@ -16,16 +16,16 @@ import suite.util.Rethrow;
 
 public class TradeTest {
 
+	private double threshold = 0.15;
+	private int nPastDays = 64;
+	private int nFutureDays = 8;
+	private String stockCode = "0005";
+	private String market = "HK";
+	private LocalDate frDate = LocalDate.of(2012, 2, 26);
+	private LocalDate toDate = LocalDate.of(2017, 2, 26);
+
 	@Test
 	public void backTest() {
-		double threshold = 0.15;
-		int nPastDays = 64;
-		int nFutureDays = 8;
-		String stockCode = "0005";
-		String market = "HK";
-		LocalDate frDate = LocalDate.of(2012, 2, 26);
-		LocalDate toDate = LocalDate.of(2017, 2, 26);
-
 		String url = "http://chart.finance.yahoo.com/table.csv" //
 				+ "?s=" + stockCode + "." + market //
 				+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
@@ -49,33 +49,52 @@ public class TradeTest {
 		// Date, Open, High, Low, Close, Volume, Adj Close
 
 		int nLots = 0;
+		int nTransactions = 0;
 		double totalNetGain = 0;
 		int signals[] = new int[prices.length];
 
-		for (int d = nPastDays; d + nFutureDays < prices.length; d++) {
-			double price0 = prices[d];
-			double actual = prices[d + nFutureDays];
-			double estimated = predictEightDaysAfter(prices, d);
-			double ratio = (estimated - price0) / price0;
+		for (int d = 0; d < prices.length; d++) {
 
 			// buy if ratio is positive; sell if ratio is negative
 			// sell nFutureDays after
-			if (ratio < -threshold || threshold < ratio) {
-				int signal = signals[d] = ratio < 0 ? -1 : 1;
-				nLots += signal;
-				nLots -= signals[d - nFutureDays];
-				double netGain = (actual - price0) * Math.signum(ratio);
+			double price = prices[d];
+			int signal = getSignal(prices, d);
+			int signal0 = nFutureDays < d ? signals[d - nFutureDays] : 0;
+			int buySell = signal - signal0;
+
+			signals[d] = signal;
+			nLots += buySell;
+			nTransactions += Math.abs(buySell);
+			totalNetGain += -buySell * price;
+
+			if (signal != 0)
 				System.out.println("d = " + d //
-						+ ", price = " + price0 //
-						+ ", signal = " + (signal < 0 ? "SELL" : "BUY") //
-						+ ", nLots = " + nLots //
-						+ ", ratio = " + ratio //
-						+ ", net gain = " + netGain);
-				totalNetGain += netGain;
-			}
+						+ ", price = " + price //
+						+ ", signal = " + signal //
+						+ ", nLots = " + nLots);
 		}
 
+		System.out.println("number of transactions = " + nTransactions);
 		System.out.println("total net gain = " + totalNetGain);
+	}
+
+	// 1 = buy, 0 = no change, -1 = sell
+	private int getSignal(double prices[], int d) {
+		if (nPastDays < d && d + nFutureDays < prices.length) {
+			double price0 = prices[d];
+			double predict = predictEightDaysAfter(prices, d);
+			double ratio = (predict - price0) / price0;
+			int signal;
+
+			if (ratio < -threshold)
+				signal = -1;
+			else if (threshold < ratio)
+				signal = 1;
+			else
+				signal = 0;
+			return signal;
+		} else
+			return 0;
 	}
 
 	// input: prices between (d - 64) and d days
