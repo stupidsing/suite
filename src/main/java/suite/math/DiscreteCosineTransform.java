@@ -1,6 +1,5 @@
 package suite.math;
 
-// https://rosettacode.org/wiki/Fast_Fourier_transform#Java
 public class DiscreteCosineTransform {
 
 	public float[] dft(float fs0[]) {
