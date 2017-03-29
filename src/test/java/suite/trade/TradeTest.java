@@ -27,11 +27,11 @@ public class TradeTest {
 	private interface Strategy {
 
 		// 1 = buy, 0 = no change, -1 = sell
-		public GetSignal analyze(double prices[]);
+		public GetBuySell analyze(double prices[]);
 	}
 
-	private interface GetSignal {
-		public int signalByDay(int d);
+	private interface GetBuySell {
+		public int get(int d);
 	}
 
 	@Test
@@ -60,82 +60,32 @@ public class TradeTest {
 		validatePrices(prices);
 
 		for (Strategy strategy : Arrays.asList(longHold, movingAverageMeanReverting)) {
-			GetSignal getSignal = strategy.analyze(prices);
-
-			int nLots = 0;
-			int nTransactions = 0;
-			double cash = 0;
-			int signals[] = new int[prices.length];
+			GetBuySell getBuySell = strategy.analyze(prices);
+			Account account = new Account();
 
 			for (int d = 0; d < prices.length; d++) {
-
-				// buy if ratio is positive; sell if ratio is negative
-				// sell nFutureDays after
+				int buySell = getBuySell.get(d);
 				double price = prices[d];
-				int signal0 = nFutureDays < d ? -signals[d - nFutureDays] : 0;
-				int signal1 = signals[d] = getSignal.signalByDay(d);
-				int buySell = signal0 + signal1;
 
-				nLots += buySell;
-				nTransactions += Math.abs(buySell);
-				cash += -buySell * price;
+				account.buySell(buySell, price);
 
 				if (buySell != 0)
 					System.out.println("d = " + d //
 							+ ", price = " + price //
 							+ ", buy/sell = " + buySell //
-							+ ", nLots = " + nLots);
+							+ ", nLots = " + account.nLots);
 
 				if (Boolean.FALSE) // do not validate yet
-					if (cash < 0 || nLots < 0)
-						throw new RuntimeException("invalid condition");
+					account.validate();
 			}
 
 			// sell all stocks at the end
-			if (nLots != 0)
-				nTransactions++;
-			cash += -nLots * prices[prices.length - 1];
+			account.buySell(-account.nLots, prices[prices.length - 1]);
 
-			System.out.println("number of transactions = " + nTransactions);
-			System.out.println("total net gain = " + cash);
+			System.out.println("number of transactions = " + account.nTransactions);
+			System.out.println("total net gain = " + account.cash);
 		}
 	}
-
-	private Strategy longHold = prices -> d -> d != 0 ? 0 : 1;
-
-	private Strategy movingAverageMeanReverting = prices -> {
-		int nDaysMovingAverage = 64;
-		double movingAverages[] = new double[prices.length];
-		double movingSum = 0;
-
-		for (int d = 0; d < prices.length; d++) {
-			if (nDaysMovingAverage <= d) {
-				movingAverages[d] = movingSum / nDaysMovingAverage;
-				movingSum -= prices[d - nDaysMovingAverage];
-			}
-			movingSum += prices[d];
-		}
-
-		return day -> {
-			int signal;
-
-			if (nPastDays < day && day + nFutureDays < prices.length) {
-				double price0 = prices[day];
-				double predict = movingAverages[day];
-				double ratio = (predict - price0) / price0;
-
-				if (ratio < -threshold)
-					signal = -1;
-				else if (threshold < ratio)
-					signal = 1;
-				else
-					signal = 0;
-			} else
-				signal = 0;
-
-			return signal;
-		};
-	};
 
 	private void validatePrices(double prices[]) {
 		double price0 = prices[0];
@@ -154,5 +104,67 @@ public class TradeTest {
 				throw new RuntimeException("Price varied too much: " + price + "/" + i);
 		}
 	}
+
+	private class Account {
+		private int nLots = 0;
+		private int nTransactions = 0;
+		private double cash = 0;
+
+		private void buySell(int buySell, double price) {
+			nLots += buySell;
+			nTransactions += Math.abs(buySell);
+			cash += -buySell * price;
+		}
+
+		private void validate() {
+			if (cash < 0 || nLots < 0)
+				throw new RuntimeException("invalid condition");
+		}
+	}
+
+	private Strategy longHold = prices -> d -> d != 0 ? 0 : 1;
+
+	private Strategy movingAverageMeanReverting = prices -> {
+		int nDaysMovingAverage = nPastDays;
+		double movingAverages[] = new double[prices.length];
+		double movingSum = 0;
+
+		for (int d = 0; d < prices.length; d++) {
+			if (nDaysMovingAverage <= d) {
+				movingAverages[d] = movingSum / nDaysMovingAverage;
+				movingSum -= prices[d - nDaysMovingAverage];
+			}
+			movingSum += prices[d];
+		}
+
+		int signals[] = new int[prices.length];
+
+		for (int day = 0; day < prices.length; day++) {
+			int signal;
+
+			if (nPastDays < day && day + nFutureDays < prices.length) {
+				double price0 = prices[day];
+				double predict = movingAverages[day];
+				double ratio = (predict - price0) / price0;
+
+				if (ratio < -threshold)
+					signal = -1;
+				else if (threshold < ratio)
+					signal = 1;
+				else
+					signal = 0;
+			} else
+				signal = 0;
+
+			signals[day] = signal;
+		}
+
+		// buy/sell if ratio is positive/negative; sell nFutureDays after
+		return day -> {
+			int signal0 = nFutureDays < day ? -signals[day - nFutureDays] : 0;
+			int signal1 = signals[day];
+			return signal0 + signal1;
+		};
+	};
 
 }
