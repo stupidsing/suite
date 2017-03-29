@@ -27,6 +27,10 @@ public class As {
 		public O apply(int index, I i);
 	}
 
+	public interface ToFloatFunction<T> {
+		public float applyAsFloat(T t);
+	}
+
 	public static <T> Fun<Outlet<T>, double[]> arrayOfDoubles(ToDoubleFunction<T> fun) {
 		return new Fun<Outlet<T>, double[]>() {
 			public double[] apply(Outlet<T> outlet) {
@@ -38,6 +42,25 @@ public class As {
 					while (size < results.length)
 						if ((t = outlet.next()) != null)
 							results[size++] = fun.applyAsDouble(t);
+						else
+							return Arrays.copyOf(results, size);
+					results = Arrays.copyOf(results, results.length * 2);
+				}
+			}
+		};
+	}
+
+	public static <T> Fun<Outlet<T>, float[]> arrayOfFloats(ToFloatFunction<T> fun) {
+		return new Fun<Outlet<T>, float[]>() {
+			public float[] apply(Outlet<T> outlet) {
+				float results[] = new float[16];
+				int size = 0;
+				T t;
+
+				while (true) {
+					while (size < results.length)
+						if ((t = outlet.next()) != null)
+							results[size++] = fun.applyAsFloat(t);
 						else
 							return Arrays.copyOf(results, size);
 					results = Arrays.copyOf(results, results.length * 2);

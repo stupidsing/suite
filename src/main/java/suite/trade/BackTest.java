@@ -8,7 +8,7 @@ public class BackTest {
 	public final Account account = new Account();
 
 	public BackTest(DataSource source, Strategy strategy) {
-		double prices[] = source.prices;
+		float prices[] = source.prices;
 
 		GetBuySell getBuySell = strategy.analyze(prices);
 

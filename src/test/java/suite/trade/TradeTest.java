@@ -9,7 +9,7 @@ import suite.os.LogUtil;
 
 public class TradeTest {
 
-	private double threshold = 0.15;
+	private float threshold = 0.15f;
 	private int nPastDays = 64;
 	private int nFutureDays = 8;
 	private String stockCode = "0005.HK"; // "JPY%3DX"
@@ -34,8 +34,8 @@ public class TradeTest {
 
 	private Strategy movingAverageMeanReverting = prices -> {
 		int nDaysMovingAverage = nPastDays;
-		double movingAverages[] = new double[prices.length];
-		double movingSum = 0;
+		float movingAverages[] = new float[prices.length];
+		float movingSum = 0;
 
 		for (int day = 0; day < prices.length; day++) {
 			if (nDaysMovingAverage <= day) {
@@ -51,9 +51,9 @@ public class TradeTest {
 			int signal;
 
 			if (nPastDays < day && day + nFutureDays < prices.length) {
-				double price0 = prices[day];
-				double predict = movingAverages[day];
-				double ratio = (predict - price0) / price0;
+				float price0 = prices[day];
+				float predict = movingAverages[day];
+				float ratio = (predict - price0) / price0;
 
 				if (ratio < -threshold)
 					signal = -1;

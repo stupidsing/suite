@@ -13,7 +13,7 @@ import suite.streamlet.Read;
 public class DataSource {
 
 	public final String dates[];
-	public final double prices[];
+	public final float prices[];
 
 	public static DataSource yahoo(String stockCode, LocalDate frDate, LocalDate toDate) {
 		String urlString = "http://chart.finance.yahoo.com/table.csv" //
@@ -35,30 +35,30 @@ public class DataSource {
 				.map(array -> array[0]) //
 				.toArray(String.class);
 
-		double prices[] = Read.from(arrays) //
-				.collect(As.arrayOfDoubles(array -> Double.parseDouble(array[1])));
+		float prices[] = Read.from(arrays) //
+				.collect(As.arrayOfFloats(array -> Float.parseFloat(array[1])));
 
 		return new DataSource(dates, prices);
 	}
 
-	private DataSource(String dates[], double prices[]) {
+	private DataSource(String dates[], float prices[]) {
 		this.dates = dates;
 		this.prices = prices;
 	}
 
 	public void validate() {
-		double price0 = prices[0];
+		float price0 = prices[0];
 
 		for (int i = 1; i < prices.length; i++) {
-			double price;
+			float price;
 
 			if ((price = prices[i]) == 0)
 				throw new RuntimeException("Price is zero: " + price + "/" + i);
 
-			if (!Double.isFinite(price))
+			if (!Float.isFinite(price))
 				throw new RuntimeException("Price is not finite: " + price + "/" + i);
 
-			double ratio = (price - price0) / price0;
+			float ratio = (price - price0) / price0;
 			if (ratio < -0.8 || 0.8 < ratio)
 				throw new RuntimeException("Price varied too much: " + price + "/" + i);
 		}
