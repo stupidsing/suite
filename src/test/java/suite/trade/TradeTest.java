@@ -1,6 +1,5 @@
 package suite.trade;
 
-import java.net.URL;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -8,54 +7,25 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Constants;
-import suite.http.HttpUtil;
 import suite.os.StoreCache;
 import suite.primitive.Bytes;
 import suite.primitive.BytesUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.Rethrow;
 
 public class TradeTest {
 
 	private double threshold = 0.15;
 	private int nPastDays = 64;
 	private int nFutureDays = 8;
-	private String stockCode = "0005";
-	private String market = "HK";
+	private String stockCode = "0005.HK"; // "JPY%3DX"
 	private LocalDate frDate = LocalDate.of(2013, 1, 1);
 	private LocalDate toDate = LocalDate.of(2018, 1, 1);
 
 	@Test
 	public void backTest() {
-		String urlString = "http://chart.finance.yahoo.com/table.csv" //
-				+ "?s=" + stockCode + "." + market //
-				+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
-				+ "&d=" + toDate.getMonthValue() + "&e=" + toDate.getDayOfMonth() + "&f=" + toDate.getYear() //
-				+ "&g=d&ignore=.csv";
-
-		Bytes keyBytes = Bytes.of(urlString.getBytes(Constants.charset));
-		StoreCache storeCache = new StoreCache();
-		URL url = Rethrow.ex(() -> new URL(urlString));
-
-		// Date, Open, High, Low, Close, Volume, Adj Close
-		List<String[]> arrays = storeCache //
-				.getOutlet(keyBytes, () -> HttpUtil.http("GET", url).out) //
-				.collect(BytesUtil.split(Bytes.of((byte) 10))) //
-				.skip(1) //
-				.map(bytes -> new String(bytes.toBytes(), Constants.charset).split(",")) //
-				.sort((a0, a1) -> a0[0].compareTo(a1[0])) //
-				.toList();
-
-		String dates[] = Read.from(arrays) //
-				.map(array -> array[0]) //
-				.toArray(String.class);
-
-		double prices[] = Read.from(arrays) //
-				.collect(As.arrayOfDoubles(array -> Double.parseDouble(array[1])));
-
-		// a.collect(As.sequenced((index, array) -> index + "," +
-		// String.join(",", array))) .collect(As.joined("\n"));
+		DataSource source = yahoo(stockCode, frDate, toDate);
+		double prices[] = source.prices;
 
 		validatePrices(prices);
 
@@ -70,7 +40,8 @@ public class TradeTest {
 				account.buySell(buySell, price);
 
 				if (buySell != 0)
-					System.out.println("day = " + dates[day] //
+					System.out.println("" //
+							+ "date = " + source.dates[day] //
 							+ ", price = " + price //
 							+ ", buy/sell = " + buySell //
 							+ ", nLots = " + account.nLots);
@@ -85,6 +56,41 @@ public class TradeTest {
 			System.out.println("number of transactions = " + account.nTransactions);
 			System.out.println("total net gain = " + account.cash);
 		}
+	}
+
+	private DataSource yahoo(String stockCode, LocalDate frDate, LocalDate toDate) {
+		String urlString = "http://chart.finance.yahoo.com/table.csv" //
+				+ "?s=" + stockCode //
+				+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
+				+ "&d=" + toDate.getMonthValue() + "&e=" + toDate.getDayOfMonth() + "&f=" + toDate.getYear() //
+				+ "&g=d&ignore=.csv";
+
+		// Date, Open, High, Low, Close, Volume, Adj Close
+		List<String[]> arrays = new StoreCache() //
+				.http(urlString) //
+				.collect(BytesUtil.split(Bytes.of((byte) 10))) //
+				.skip(1) //
+				.map(bytes -> new String(bytes.toBytes(), Constants.charset).split(",")) //
+				.sort((a0, a1) -> a0[0].compareTo(a1[0])) //
+				.toList();
+
+		String dates[] = Read.from(arrays) //
+				.map(array -> array[0]) //
+				.toArray(String.class);
+
+		double prices[] = Read.from(arrays) //
+				.collect(As.arrayOfDoubles(array -> Double.parseDouble(array[1])));
+
+		DataSource dataSource = new DataSource();
+		dataSource.dates = dates;
+		dataSource.prices = prices;
+
+		return dataSource;
+	}
+
+	private class DataSource {
+		private String dates[];
+		private double prices[];
 	}
 
 	private void validatePrices(double prices[]) {

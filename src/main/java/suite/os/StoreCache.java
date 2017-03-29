@@ -5,11 +5,13 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
 import suite.Constants;
+import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
@@ -21,6 +23,12 @@ import suite.util.To;
 public class StoreCache {
 
 	private static Path dir = TempDir.resolve("store-cache");
+
+	public Outlet<Bytes> http(String urlString) {
+		Bytes keyBytes = Bytes.of(urlString.getBytes(Constants.charset));
+		URL url = Rethrow.ex(() -> new URL(urlString));
+		return getOutlet(keyBytes, () -> HttpUtil.http("GET", url).out);
+	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {
 		Outlet<Bytes> outlet = getOutlet(key, () -> Outlet.from(source));
