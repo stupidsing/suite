@@ -6,7 +6,6 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import suite.os.LogUtil;
-import suite.trade.Strategy.GetBuySell;
 
 public class TradeTest {
 
@@ -20,54 +19,14 @@ public class TradeTest {
 	@Test
 	public void backTest() {
 		DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
-		double prices[] = source.prices;
 
-		validatePrices(prices);
+		source.validate();
 
 		for (Strategy strategy : Arrays.asList(longHold, movingAverageMeanReverting)) {
-			GetBuySell getBuySell = strategy.analyze(prices);
-			Account account = new Account();
-
-			for (int day = 0; day < prices.length; day++) {
-				int buySell = getBuySell.get(day);
-				double price = prices[day];
-
-				account.buySell(buySell, price);
-
-				if (buySell != 0)
-					LogUtil.info("" //
-							+ "date = " + source.dates[day] //
-							+ ", price = " + price //
-							+ ", buy/sell = " + buySell //
-							+ ", nLots = " + account.nLots());
-
-				if (Boolean.FALSE) // do not validate yet
-					account.validate();
-			}
-
-			// sell all stocks at the end
-			account.buySell(-account.nLots(), prices[prices.length - 1]);
-
+			BackTest backTest = new BackTest(source, strategy);
+			Account account = backTest.account;
 			LogUtil.info("number of transactions = " + account.nTransactions());
 			LogUtil.info("total net gain = " + account.cash());
-		}
-	}
-
-	private void validatePrices(double prices[]) {
-		double price0 = prices[0];
-
-		for (int i = 1; i < prices.length; i++) {
-			double price;
-
-			if ((price = prices[i]) == 0)
-				throw new RuntimeException("Price is zero: " + price + "/" + i);
-
-			if (!Double.isFinite(price))
-				throw new RuntimeException("Price is not finite: " + price + "/" + i);
-
-			double ratio = (price - price0) / price0;
-			if (ratio < -0.8 || 0.8 < ratio)
-				throw new RuntimeException("Price varied too much: " + price + "/" + i);
 		}
 	}
 

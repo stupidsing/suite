@@ -46,4 +46,22 @@ public class DataSource {
 		this.prices = prices;
 	}
 
+	public void validate() {
+		double price0 = prices[0];
+
+		for (int i = 1; i < prices.length; i++) {
+			double price;
+
+			if ((price = prices[i]) == 0)
+				throw new RuntimeException("Price is zero: " + price + "/" + i);
+
+			if (!Double.isFinite(price))
+				throw new RuntimeException("Price is not finite: " + price + "/" + i);
+
+			double ratio = (price - price0) / price0;
+			if (ratio < -0.8 || 0.8 < ratio)
+				throw new RuntimeException("Price varied too much: " + price + "/" + i);
+		}
+	}
+
 }
