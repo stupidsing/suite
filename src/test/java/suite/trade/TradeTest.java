@@ -35,6 +35,7 @@ public class TradeTest {
 		StoreCache sc = new StoreCache();
 		URL url = Rethrow.ex(() -> new URL(urlString));
 
+		// Date, Open, High, Low, Close, Volume, Adj Close
 		double prices[] = sc.getOutlet(keyBytes, () -> HttpUtil.http("GET", url).out) //
 				.collect(BytesUtil.split(Bytes.of((byte) 10))) //
 				.skip(1) //
@@ -45,7 +46,7 @@ public class TradeTest {
 		// a.collect(As.sequenced((index, array) -> index + "," +
 		// String.join(",", array))) .collect(As.joined("\n"));
 
-		// Date, Open, High, Low, Close, Volume, Adj Close
+		validatePrices(prices);
 
 		int nLots = 0;
 		int nTransactions = 0;
@@ -57,19 +58,19 @@ public class TradeTest {
 			// buy if ratio is positive; sell if ratio is negative
 			// sell nFutureDays after
 			double price = prices[d];
-			int signal = getSignal(prices, d);
-			int signal0 = nFutureDays < d ? signals[d - nFutureDays] : 0;
-			int buySell = signal - signal0;
+			int signal0 = nFutureDays < d ? -signals[d - nFutureDays] : 0;
+			int signal1 = getSignal(prices, d);
+			int buySell = signal1 + signal0;
 
-			signals[d] = signal;
+			signals[d] = signal1;
 			nLots += buySell;
 			nTransactions += Math.abs(buySell);
 			totalNetGain += -buySell * price;
 
-			if (signal != 0)
+			if (buySell != 0)
 				System.out.println("d = " + d //
 						+ ", price = " + price //
-						+ ", signal = " + signal //
+						+ ", buy/sell = " + buySell //
 						+ ", nLots = " + nLots);
 		}
 
@@ -99,10 +100,26 @@ public class TradeTest {
 	// input: prices between (d - 64) and d days
 	// output: estimated price on (d + 8) day
 	private double predictEightDaysAfter(double prices[], int d) {
+		int nDaysMovingAverage = 64;
 		double sum = 0;
-		for (int i = d - 64; i < d; i++)
+		for (int i = d - nDaysMovingAverage; i < d; i++)
 			sum += prices[i];
-		return sum / 64;
+		return sum / nDaysMovingAverage;
+	}
+
+	private void validatePrices(double prices[]) {
+		double price0 = prices[0];
+
+		for (int i = 1; i < prices.length; i++) {
+			double price;
+
+			if ((price = prices[i]) == 0)
+				throw new RuntimeException("Price is zero on day " + i);
+
+			double ratio = (price - price0) / price0;
+			if (ratio < -0.8 || 0.8 < ratio)
+				throw new RuntimeException("Price varied too much on day " + i);
+		}
 	}
 
 }
