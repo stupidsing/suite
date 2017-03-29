@@ -1,4 +1,4 @@
-package gpu;
+package suite.gpu;
 
 import java.nio.ByteOrder;
 
