@@ -2,16 +2,10 @@ package suite.trade;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
-import suite.Constants;
-import suite.os.StoreCache;
-import suite.primitive.Bytes;
-import suite.primitive.BytesUtil;
-import suite.streamlet.As;
-import suite.streamlet.Read;
+import suite.trade.Strategy.GetBuySell;
 
 public class TradeTest {
 
@@ -24,7 +18,7 @@ public class TradeTest {
 
 	@Test
 	public void backTest() {
-		DataSource source = yahoo(stockCode, frDate, toDate);
+		DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
 		double prices[] = source.prices;
 
 		validatePrices(prices);
@@ -44,53 +38,18 @@ public class TradeTest {
 							+ "date = " + source.dates[day] //
 							+ ", price = " + price //
 							+ ", buy/sell = " + buySell //
-							+ ", nLots = " + account.nLots);
+							+ ", nLots = " + account.nLots());
 
 				if (Boolean.FALSE) // do not validate yet
 					account.validate();
 			}
 
 			// sell all stocks at the end
-			account.buySell(-account.nLots, prices[prices.length - 1]);
+			account.buySell(-account.nLots(), prices[prices.length - 1]);
 
-			System.out.println("number of transactions = " + account.nTransactions);
-			System.out.println("total net gain = " + account.cash);
+			System.out.println("number of transactions = " + account.nTransactions());
+			System.out.println("total net gain = " + account.cash());
 		}
-	}
-
-	private DataSource yahoo(String stockCode, LocalDate frDate, LocalDate toDate) {
-		String urlString = "http://chart.finance.yahoo.com/table.csv" //
-				+ "?s=" + stockCode //
-				+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
-				+ "&d=" + toDate.getMonthValue() + "&e=" + toDate.getDayOfMonth() + "&f=" + toDate.getYear() //
-				+ "&g=d&ignore=.csv";
-
-		// Date, Open, High, Low, Close, Volume, Adj Close
-		List<String[]> arrays = new StoreCache() //
-				.http(urlString) //
-				.collect(BytesUtil.split(Bytes.of((byte) 10))) //
-				.skip(1) //
-				.map(bytes -> new String(bytes.toBytes(), Constants.charset).split(",")) //
-				.sort((a0, a1) -> a0[0].compareTo(a1[0])) //
-				.toList();
-
-		String dates[] = Read.from(arrays) //
-				.map(array -> array[0]) //
-				.toArray(String.class);
-
-		double prices[] = Read.from(arrays) //
-				.collect(As.arrayOfDoubles(array -> Double.parseDouble(array[1])));
-
-		DataSource dataSource = new DataSource();
-		dataSource.dates = dates;
-		dataSource.prices = prices;
-
-		return dataSource;
-	}
-
-	private class DataSource {
-		private String dates[];
-		private double prices[];
 	}
 
 	private void validatePrices(double prices[]) {
@@ -108,23 +67,6 @@ public class TradeTest {
 			double ratio = (price - price0) / price0;
 			if (ratio < -0.8 || 0.8 < ratio)
 				throw new RuntimeException("Price varied too much: " + price + "/" + i);
-		}
-	}
-
-	private class Account {
-		private double cash = 0;
-		private int nLots = 0;
-		private int nTransactions = 0;
-
-		private void buySell(int buySell, double price) {
-			cash -= buySell * price;
-			nLots += buySell;
-			nTransactions += Math.abs(buySell);
-		}
-
-		private void validate() {
-			if (cash < 0 || nLots < 0)
-				throw new RuntimeException("invalid condition");
 		}
 	}
 
@@ -172,14 +114,5 @@ public class TradeTest {
 			return signal0 + signal1;
 		};
 	};
-
-	private interface Strategy {
-		public GetBuySell analyze(double prices[]);
-	}
-
-	// 1 = buy, 0 = no change, -1 = sell
-	private interface GetBuySell {
-		public int get(int d);
-	}
 
 }
