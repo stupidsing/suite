@@ -50,7 +50,7 @@ public class TradeTest {
 		for (int day = 0; day < prices.length; day++) {
 			int signal;
 
-			if (nPastDays < day && day + nFutureDays < prices.length) {
+			if (nPastDays <= day) {
 				float price0 = prices[day];
 				float predict = movingAverages[day];
 				float ratio = (predict - price0) / price0;
