@@ -1,7 +1,5 @@
 package suite.math;
 
-import java.util.Arrays;
-
 public class DiscreteCosineTransform {
 
 	private FastFourierTransform fft = new FastFourierTransform();
@@ -9,7 +7,7 @@ public class DiscreteCosineTransform {
 	// http://dsp.stackexchange.com/questions/2807/fast-cosine-transform-via-fft
 	public float[] dct(float fs0[]) {
 		int size = fs0.length;
-		int size21 = 2 * size - 1;
+		int size21 = size * 2 - 1;
 		float fs1[] = new float[size * 8];
 
 		// signal [a, b, c, d] becomes
@@ -26,7 +24,10 @@ public class DiscreteCosineTransform {
 		float fs2[] = fft.fft(fs1);
 
 		// throw away everything but the first [A, B, C, D]
-		float fs3[] = Arrays.copyOf(fs2, size);
+		float fs3[] = new float[size];
+
+		for (int i = 0; i < size; i++)
+			fs3[i] = fs2[i * 2];
 
 		// and you are done
 		return fs3;
@@ -50,7 +51,7 @@ public class DiscreteCosineTransform {
 			}
 		}
 
-		float fs1[] = fft.fft(fs2);
+		float fs1[] = fft.ifft(fs2);
 		float fs0[] = new float[size];
 
 		for (int i = 0; i < size; i++)
