@@ -2,7 +2,7 @@ package suite.math;
 
 public class DiscreteCosineTransform {
 
-	public float[] dft(float fs0[]) {
+	public float[] dct(float fs0[]) {
 		int size = fs0.length;
 		int size1 = size - 1;
 		float fs1[] = new float[size * 4];
