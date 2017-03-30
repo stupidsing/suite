@@ -43,7 +43,7 @@ public class DiscreteCosineTransform {
 			int i2 = i * 2;
 			float v = fs3[i];
 			fs2[size0 + i2] = v;
-			fs2[size4 + i2] = v;
+			fs2[size4 + i2] = -v;
 			if (0 < i) {
 				int j2 = size4 - i2;
 				fs2[size0 + j2] = -v;
