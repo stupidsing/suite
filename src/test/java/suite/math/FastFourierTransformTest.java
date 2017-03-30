@@ -6,60 +6,65 @@ import org.junit.Test;
 
 public class FastFourierTransformTest {
 
+	private FastFourierTransform fft = new FastFourierTransform();
+
 	@Test
 	public void testFft() {
 		Complex zero = Complex.of(0, 0);
 		Complex one = Complex.of(1, 0);
-		Complex fs[] = new FastFourierTransform().fft(new Complex[] { one, one, one, one, zero, zero, zero, zero, });
+		Complex fs0[] = { one, one, one, one, zero, zero, zero, zero, };
+		Complex fs1[] = fft.fft(fs0);
+		Complex fs2[] = fft.ifft(fs1);
 
-		for (Complex f : fs)
-			System.out.println(f);
+		assertEquals(fs1[0], Complex.of(4f, 0f));
+		assertEquals(fs1[1], Complex.of(1f, -2.4f));
+		assertEquals(fs1[2], Complex.of(0f, 0f));
+		assertEquals(fs1[3], Complex.of(1f, -0.4f));
+		assertEquals(fs1[4], Complex.of(0f, 0f));
+		assertEquals(fs1[5], Complex.of(1f, 0.4f));
+		assertEquals(fs1[6], Complex.of(0f, 0f));
+		assertEquals(fs1[7], Complex.of(1f, 2.4f));
 
-		assertTrue(equals(fs[0].r, 4f));
-		assertTrue(equals(fs[0].i, 0f));
-		assertTrue(equals(fs[1].r, 1f));
-		assertTrue(equals(fs[1].i, -2.4f));
-		assertTrue(equals(fs[2].r, 0f));
-		assertTrue(equals(fs[2].i, 0f));
-		assertTrue(equals(fs[3].r, 1f));
-		assertTrue(equals(fs[3].i, -0.4f));
-		assertTrue(equals(fs[4].r, 0f));
-		assertTrue(equals(fs[4].i, 0f));
-		assertTrue(equals(fs[5].r, 1f));
-		assertTrue(equals(fs[5].i, 0.4f));
-		assertTrue(equals(fs[6].r, 0f));
-		assertTrue(equals(fs[6].i, 0f));
-		assertTrue(equals(fs[7].r, 1f));
-		assertTrue(equals(fs[7].i, 2.4f));
+		for (int i = 0; i < fs0.length; i++) {
+			assertEquals(fs0[i].r, fs2[i].r);
+			assertEquals(fs0[i].i, fs2[i].i);
+		}
 	}
 
 	@Test
 	public void testFftFloat() {
-		float fs[] = new FastFourierTransform().fft(new float[] { 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, });
+		float fs0[] = { 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
+		float fs1[] = fft.fft(fs0);
+		float fs2[] = fft.ifft(fs1);
 
-		for (float f : fs)
-			System.out.println(f);
+		assertEquals(fs1[0], 4f);
+		assertEquals(fs1[1], 0f);
+		assertEquals(fs1[2], 1f);
+		assertEquals(fs1[3], -2.4f);
+		assertEquals(fs1[4], 0f);
+		assertEquals(fs1[5], 0f);
+		assertEquals(fs1[6], 1f);
+		assertEquals(fs1[7], -0.4f);
+		assertEquals(fs1[8], 0f);
+		assertEquals(fs1[9], 0f);
+		assertEquals(fs1[10], 1f);
+		assertEquals(fs1[11], 0.4f);
+		assertEquals(fs1[12], 0f);
+		assertEquals(fs1[13], 0f);
+		assertEquals(fs1[14], 1f);
+		assertEquals(fs1[15], 2.4f);
 
-		assertTrue(equals(fs[0], 4f));
-		assertTrue(equals(fs[1], 0f));
-		assertTrue(equals(fs[2], 1f));
-		assertTrue(equals(fs[3], -2.4f));
-		assertTrue(equals(fs[4], 0f));
-		assertTrue(equals(fs[5], 0f));
-		assertTrue(equals(fs[6], 1f));
-		assertTrue(equals(fs[7], -0.4f));
-		assertTrue(equals(fs[8], 0f));
-		assertTrue(equals(fs[9], 0f));
-		assertTrue(equals(fs[10], 1f));
-		assertTrue(equals(fs[11], 0.4f));
-		assertTrue(equals(fs[12], 0f));
-		assertTrue(equals(fs[13], 0f));
-		assertTrue(equals(fs[14], 1f));
-		assertTrue(equals(fs[15], 2.4f));
+		for (int i = 0; i < fs0.length; i++)
+			assertEquals(fs0[i], fs2[i]);
 	}
 
-	private boolean equals(float a, float b) {
-		return Math.abs(a - b) < .1;
+	private void assertEquals(Complex a, Complex b) {
+		assertEquals(a.r, b.r);
+		assertEquals(a.i, b.i);
+	}
+
+	private void assertEquals(float a, float b) {
+		assertTrue(Math.abs(a - b) < .1);
 	}
 
 }
