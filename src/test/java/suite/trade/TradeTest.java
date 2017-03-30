@@ -17,13 +17,13 @@ public class TradeTest {
 	private LocalDate toDate = LocalDate.of(2018, 1, 1);
 
 	@Test
-	public void backTest() {
+	public void testBackTest() {
 		DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
 
 		source.validate();
 
 		for (Strategy strategy : Arrays.asList(longHold, movingAverageMeanReverting)) {
-			BackTest backTest = new BackTest(source, strategy);
+			BackTest backTest = BackTest.test(source, strategy);
 			Account account = backTest.account;
 			LogUtil.info("number of transactions = " + account.nTransactions());
 			LogUtil.info("total net gain = " + account.cash());
