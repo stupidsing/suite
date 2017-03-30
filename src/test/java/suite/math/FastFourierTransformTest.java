@@ -25,10 +25,8 @@ public class FastFourierTransformTest {
 		assertEquals(fs1[6], Complex.of(0f, 0f));
 		assertEquals(fs1[7], Complex.of(1f, 2.4f));
 
-		for (int i = 0; i < fs0.length; i++) {
-			assertEquals(fs0[i].r, fs2[i].r);
-			assertEquals(fs0[i].i, fs2[i].i);
-		}
+		for (int i = 0; i < fs0.length; i++)
+			assertEquals(fs0[i], fs2[i]);
 	}
 
 	@Test
