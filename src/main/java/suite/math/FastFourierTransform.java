@@ -3,6 +3,22 @@ package suite.math;
 // https://rosettacode.org/wiki/Fast_Fourier_transform#Java
 public class FastFourierTransform {
 
+	public Complex[] ifft(Complex cs0[]) {
+		int size = cs0.length;
+		Complex cs1[] = new Complex[size];
+
+		for (int i = 0; i < size; i++)
+			cs1[i] = cs0[i].conjugate();
+
+		Complex cs2[] = fft(cs1);
+		float inv = 1.0f / size;
+
+		for (int i = 0; i < size; i++)
+			cs2[i] = cs2[i].conjugate().scale(inv);
+
+		return cs2;
+	}
+
 	public Complex[] fft(Complex tds[]) {
 		int size = tds.length;
 		Complex fds[] = new Complex[size];
@@ -42,6 +58,26 @@ public class FastFourierTransform {
 		}
 
 		return fds;
+	}
+
+	public float[] ifft(float fs0[]) {
+		int size = fs0.length / 2;
+		float fs1[] = new float[size * 2];
+
+		for (int i = 0; i < size; i++) {
+			fs1[i * 2 + 0] = fs0[i * 2 + 0];
+			fs1[i * 2 + 1] = -fs0[i * 2 + 1];
+		}
+
+		float fs2[] = fft(fs1);
+		float inv = 1.0f / size;
+
+		for (int i = 0; i < size; i++) {
+			fs2[i * 2 + 0] = fs2[i * 2 + 0] * inv;
+			fs2[i * 2 + 1] = -fs2[i * 2 + 1] * inv;
+		}
+
+		return fs2;
 	}
 
 	public float[] fft(float tds[]) {

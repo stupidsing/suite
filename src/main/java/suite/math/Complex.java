@@ -18,11 +18,6 @@ public class Complex {
 		return of(u.r * v.r - u.i * v.i, u.r * v.i + u.i * v.r);
 	}
 
-	public Complex inverse() {
-		float f = abs2();
-		return of(r / f, -i / f);
-	}
-
 	public static Complex of(float r, float i) {
 		return new Complex(r, i);
 	}
@@ -33,6 +28,23 @@ public class Complex {
 	}
 
 	public float abs2() {
+		return abs2_();
+	}
+
+	public Complex conjugate() {
+		return Complex.of(r, -i);
+	}
+
+	public Complex inverse() {
+		float iabs2 = 1 / abs2_();
+		return of(r * iabs2, -i * iabs2);
+	}
+
+	public Complex scale(float v) {
+		return of(r * v, i * v);
+	}
+
+	private float abs2_() {
 		return r * r + i * i;
 	}
 
