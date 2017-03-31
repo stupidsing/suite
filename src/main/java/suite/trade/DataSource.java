@@ -38,7 +38,10 @@ public class DataSource {
 		float prices[] = Read.from(arrays) //
 				.collect(As.arrayOfFloats(array -> Float.parseFloat(array[1])));
 
-		return new DataSource(dates, prices);
+		DataSource dataSource = new DataSource(dates, prices);
+		dataSource.validate();
+
+		return dataSource;
 	}
 
 	private DataSource(String dates[], float prices[]) {

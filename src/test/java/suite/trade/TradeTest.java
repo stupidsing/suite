@@ -11,22 +11,40 @@ import suite.os.LogUtil;
 
 public class TradeTest {
 
+	private LocalDate frDate = LocalDate.of(2013, 1, 1);
+	private LocalDate toDate = LocalDate.of(2018, 1, 1);
+
 	@Test
 	public void testBackTest() {
 		for (Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_> stock : new Hkex().hkex)
 			try {
 				// String stockCode = "0066.HK"; // "JPY%3DX";
 				String stockCode = stock.t0 + ".HK";
-				LocalDate frDate = LocalDate.of(2013, 1, 1);
-				LocalDate toDate = LocalDate.of(2018, 1, 1);
-
 				DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
-				source.validate();
 
 				LogUtil.info(stockCode + " " + stock.t1);
 				backTest(source, "LowPassMeanReverting", lowPassFilterPrediction(128, 8, 8, 0.02f));
 				backTest(source, "LongHold", longHold);
 				backTest(source, "MovingAverageMeanReverting", movingAverageMeanReverting(128, 8, 0.15f));
+			} catch (Exception ex) {
+				LogUtil.warn(ex.getMessage());
+			}
+	}
+
+	@Test
+	public void testToday() {
+		Strategy strategy = movingAverageMeanReverting(128, 8, 0.15f);
+
+		for (Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_> stock : new Hkex().hkex)
+			try {
+				// String stockCode = "0066.HK"; // "JPY%3DX";
+				String stockCode = stock.t0 + ".HK";
+				DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
+				float prices[] = source.prices;
+
+				int signal = strategy.analyze(prices).get(prices.length - 1);
+				if (signal != 0)
+					LogUtil.info("equity " + stockCode + " " + stock.t1 + " has signal " + signal);
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage());
 			}
@@ -75,14 +93,13 @@ public class TradeTest {
 
 	private Strategy movingAverageMeanReverting(int nPastDays, int nFutureDays, float threshold) {
 		return prices -> {
-			int nDaysMovingWindow = nPastDays;
 			float movingAverages[] = new float[prices.length];
 			float movingSum = 0;
 
 			for (int day = 0; day < prices.length; day++) {
-				if (nDaysMovingWindow <= day) {
-					movingAverages[day] = movingSum / nDaysMovingWindow;
-					movingSum -= prices[day - nDaysMovingWindow];
+				if (nPastDays <= day) {
+					movingAverages[day] = movingSum / nPastDays;
+					movingSum -= prices[day - nPastDays];
 				}
 				movingSum += prices[day];
 			}
