@@ -2,11 +2,11 @@ package suite.trade;
 
 public class Account {
 
-	private double cash = 0;
+	private float cash = 0;
 	private int nLots = 0;
 	private int nTransactions = 0;
 
-	public void buySell(int buySell, double price) {
+	public void buySell(int buySell, float price) {
 		cash -= buySell * price;
 		nLots += buySell;
 		nTransactions += Math.abs(buySell);
@@ -17,7 +17,7 @@ public class Account {
 			throw new RuntimeException("invalid condition");
 	}
 
-	public double cash() {
+	public float cash() {
 		return cash;
 	}
 
