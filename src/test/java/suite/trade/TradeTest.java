@@ -41,7 +41,7 @@ public class TradeTest {
 
 		return day -> {
 			if (nHistoryDays <= day) {
-				float fs0[] = new float[nDaysMovingWindow]; // moving window
+				float fs0[] = new float[nDaysMovingWindow];
 				float price0 = prices[day];
 				int i = 0;
 
