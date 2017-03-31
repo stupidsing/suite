@@ -18,7 +18,7 @@ public class TradeTest {
 		DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
 		source.validate();
 
-		backTest(source, "LowPassMeanReverting", lowPassFilterPrediction(64, 8, 0.02f));
+		backTest(source, "LowPassMeanReverting", lowPassFilterPrediction(64, 8, 4, 0.02f));
 		backTest(source, "LongHold", longHold);
 		backTest(source, "MovingAverageMeanReverting", movingAverageMeanReverting(64, 8, 0.15f));
 	}
@@ -31,7 +31,7 @@ public class TradeTest {
 		LogUtil.info("total net gain = " + account.cash());
 	}
 
-	private Strategy lowPassFilterPrediction(int windowSize, int nFutureDays, float threshold) {
+	private Strategy lowPassFilterPrediction(int windowSize, int nFutureDays, int nLowPass, float threshold) {
 		DiscreteCosineTransform dct = new DiscreteCosineTransform();
 		int nPastDays = windowSize - nFutureDays;
 
@@ -49,7 +49,7 @@ public class TradeTest {
 				float fs1[] = dct.dct(fs0);
 				float fs2[] = new float[windowSize];
 
-				for (int j = 0; j < 4; j++)
+				for (int j = 0; j < nLowPass; j++)
 					fs2[j] = fs1[j];
 
 				float fs3[] = dct.idct(fs2);
