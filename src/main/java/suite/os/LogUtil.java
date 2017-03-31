@@ -64,9 +64,17 @@ public class LogUtil {
 		suiteLog.warn(message);
 	}
 
+	public static void error(String message) {
+		suiteLog.error(message);
+	}
+
 	public static void error(Throwable th) {
 		boolean isTrimmed = trimStackTrace(th);
 		suiteLog.error(isTrimmed ? "(Trimmed)" : "", th);
+	}
+
+	public static void fatal(String message) {
+		suiteLog.fatal(message);
 	}
 
 	public static void fatal(Throwable th) {
