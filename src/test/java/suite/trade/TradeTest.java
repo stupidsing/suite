@@ -95,7 +95,7 @@ public class TradeTest {
 			signals[day] = signal;
 		}
 
-		// buy/sell if ratio is positive/negative; sell nFutureDays after
+		// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
 		return day -> {
 			int signal0 = nFutureDays < day ? -signals[day - nFutureDays] : 0;
 			int signal1 = signals[day];
