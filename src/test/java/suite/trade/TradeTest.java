@@ -32,34 +32,32 @@ public class TradeTest {
 	}
 
 	private Strategy lowPassFilterPrediction(int windowSize, int nFutureDays, float threshold) {
-		return prices -> {
-			DiscreteCosineTransform dct = new DiscreteCosineTransform();
-			int nPastDays = windowSize - nFutureDays;
+		DiscreteCosineTransform dct = new DiscreteCosineTransform();
+		int nPastDays = windowSize - nFutureDays;
 
-			return day -> {
-				if (nPastDays <= day) {
-					float fs0[] = new float[windowSize]; // moving window
-					float price0 = prices[day];
-					int i = 0;
+		return prices -> day -> {
+			if (nPastDays <= day) {
+				float fs0[] = new float[windowSize]; // moving window
+				float price0 = prices[day];
+				int i = 0;
 
-					for (; i < nPastDays; i++)
-						fs0[i] = prices[day - nPastDays + i];
-					for (; i < windowSize; i++)
-						fs0[i] = price0;
+				for (; i < nPastDays; i++)
+					fs0[i] = prices[day - nPastDays + i];
+				for (; i < windowSize; i++)
+					fs0[i] = price0;
 
-					float fs1[] = dct.dct(fs0);
-					float fs2[] = new float[windowSize];
+				float fs1[] = dct.dct(fs0);
+				float fs2[] = new float[windowSize];
 
-					for (int j = 0; j < 4; j++)
-						fs2[j] = fs1[j];
+				for (int j = 0; j < 4; j++)
+					fs2[j] = fs1[j];
 
-					float fs3[] = dct.idct(fs2);
+				float fs3[] = dct.idct(fs2);
 
-					float predict = fs3[fs3.length - 1];
-					return getSignal(price0, predict, threshold);
-				} else
-					return 0;
-			};
+				float predict = fs3[fs3.length - 1];
+				return getSignal(price0, predict, threshold);
+			} else
+				return 0;
 		};
 	}
 
@@ -105,13 +103,13 @@ public class TradeTest {
 	}
 
 	// get buy/sell signal according to predicted price move direction
-	private int getSignal(float price0, float price1, float thr) {
+	private int getSignal(float price0, float price1, float threshold) {
 		float ratio = (price1 - price0) / price0;
 		int signal;
 
-		if (ratio < -thr)
+		if (ratio < -threshold)
 			signal = -1;
-		else if (thr < ratio)
+		else if (threshold < ratio)
 			signal = 1;
 		else
 			signal = 0;
