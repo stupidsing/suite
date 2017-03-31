@@ -22,10 +22,10 @@ public class TradeTest {
 				String stockCode = stock.t0 + ".HK";
 				DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
 
-				LogUtil.info(stockCode + " " + stock.t1);
-				backTest(source, "LowPassMeanReverting", lowPassFilterPrediction(128, 8, 8, 0.02f));
-				backTest(source, "LongHold", longHold);
-				backTest(source, "MovingAverageMeanReverting", movingAverageMeanReverting(128, 8, 0.15f));
+				String prefix = stockCode + " " + stock.t1;
+				backTest(source, prefix + ", strategy = LowPassMeanReverting", lowPassFilterPrediction(128, 8, 8, 0.02f));
+				backTest(source, prefix + ", strategy = LongHold", longHold);
+				backTest(source, prefix + ", strategy = MovingAverageMeanReverting", movingAverageMeanReverting(128, 8, 0.15f));
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage());
 			}
@@ -50,11 +50,10 @@ public class TradeTest {
 			}
 	}
 
-	private void backTest(DataSource source, String name, Strategy strategy) {
+	private void backTest(DataSource source, String prefix, Strategy strategy) {
 		BackTest backTest = BackTest.test(source, strategy);
 		Account account = backTest.account;
-		LogUtil.info("" //
-				+ "strategy = " + name //
+		LogUtil.info(prefix //
 				+ ", number of transactions = " + account.nTransactions() //
 				+ ", net gain = " + String.format("%.2f", account.cash()));
 	}
