@@ -4,31 +4,41 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
+import suite.adt.Fixie;
+import suite.adt.Fixie.D_;
 import suite.math.DiscreteCosineTransform;
 import suite.os.LogUtil;
 
 public class TradeTest {
 
-	private String stockCode = "0005.HK"; // "JPY%3DX"
-	private LocalDate frDate = LocalDate.of(2013, 1, 1);
-	private LocalDate toDate = LocalDate.of(2018, 1, 1);
-
 	@Test
 	public void testBackTest() {
-		DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
-		source.validate();
+		for (Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_> stock : new Hkex().hkex)
+			try {
+				// String stockCode = "0066.HK"; // "JPY%3DX";
+				String stockCode = stock.t0 + ".HK";
+				LocalDate frDate = LocalDate.of(2013, 1, 1);
+				LocalDate toDate = LocalDate.of(2018, 1, 1);
 
-		backTest(source, "LowPassMeanReverting", lowPassFilterPrediction(64, 8, 4, 0.02f));
-		backTest(source, "LongHold", longHold);
-		backTest(source, "MovingAverageMeanReverting", movingAverageMeanReverting(64, 8, 0.15f));
+				DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
+				source.validate();
+
+				LogUtil.info(stockCode + " " + stock.t1);
+				backTest(source, "LowPassMeanReverting", lowPassFilterPrediction(128, 8, 8, 0.02f));
+				backTest(source, "LongHold", longHold);
+				backTest(source, "MovingAverageMeanReverting", movingAverageMeanReverting(128, 8, 0.15f));
+			} catch (Exception ex) {
+				LogUtil.warn(ex.getMessage());
+			}
 	}
 
 	private void backTest(DataSource source, String name, Strategy strategy) {
 		BackTest backTest = BackTest.test(source, strategy);
 		Account account = backTest.account;
-		LogUtil.info("strategy = " + name);
-		LogUtil.info("number of transactions = " + account.nTransactions());
-		LogUtil.info("total net gain = " + account.cash());
+		LogUtil.info("" //
+				+ "strategy = " + name //
+				+ ", number of transactions = " + account.nTransactions() //
+				+ ", net gain = " + String.format("%.2f", account.cash()));
 	}
 
 	private Strategy lowPassFilterPrediction(int windowSize, int nFutureDays, int nLowPass, float threshold) {
