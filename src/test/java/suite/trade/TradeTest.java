@@ -19,19 +19,17 @@ public class TradeTest {
 
 	@Test
 	public void testBackTest() {
-		for (Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_> stock : new Hkex().hkex)
-			try {
-				// String stockCode = "0066.HK"; // "JPY%3DX";
-				String stockCode = stock.t0 + ".HK";
-				DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
+		for (Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_> stock : new Hkex().hkex) {
+			// String stockCode = "0066.HK"; // "JPY%3DX";
+			String stockCode = stock.t0 + ".HK";
+			String stockName = stock.t1;
+			backTestStock(stockCode, stockName);
+		}
+	}
 
-				String prefix = stockCode + " " + stock.t1;
-				backTest(source, prefix + ", strategy = LowPassMeanReverting", lowPassFilterPrediction(128, 8, 8, 0.02f));
-				backTest(source, prefix + ", strategy = LongHold", longHold);
-				backTest(source, prefix + ", strategy = MovingAverageMeanReverting", movingAverageMeanReverting(128, 8, 0.15f));
-			} catch (Exception ex) {
-				LogUtil.warn(ex.getMessage());
-			}
+	@Test
+	public void testBackTest5() {
+		backTestStock("0066.HK", "HSBC"); // "JPY%3DX";
 	}
 
 	@Test
@@ -51,6 +49,20 @@ public class TradeTest {
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage());
 			}
+	}
+
+	private void backTestStock(String stockCode, String stockName) {
+		String prefix = stockCode + " " + stockName;
+
+		try {
+			DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
+
+			backTest(source, prefix + ", strategy = LowPassMeanReverting", lowPassFilterPrediction(128, 8, 8, 0.02f));
+			backTest(source, prefix + ", strategy = LongHold", longHold);
+			backTest(source, prefix + ", strategy = MovingAverageMeanReverting", movingAverageMeanReverting(128, 8, 0.15f));
+		} catch (Exception ex) {
+			LogUtil.warn(ex.getMessage() + " in " + prefix);
+		}
 	}
 
 	private void backTest(DataSource source, String prefix, Strategy strategy) {
