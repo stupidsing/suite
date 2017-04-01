@@ -1,16 +1,3 @@
-REPOS=$(find src/ -name \*.java |
-xargs grep -h ^import |
-tr -d \; |
-sort |
-uniq |
-#sed 's#import org.telegram.telegrambots.bots.*#<id>jitpack.io</id><url>https://jitpack.io</url>#g' |
-sort |
-uniq |
-grep '<url>' |
-while read REPO; do
-  echo -n "<repository>${REPO}</repository>"
-done) &&
-
 DEPS=$(find src/ -name \*.java |
 xargs grep -h ^import |
 tr -d \; |
@@ -22,6 +9,7 @@ sed 's#import com.jcraft.jsch.*#<groupId>com.jcraft</groupId><artifactId>jsch</a
 sed 's#import com.nativelibs4java.bridj.*#<groupId>com.nativelibs4java</groupId><artifactId>bridj</artifactId>#g' |
 sed 's#import com.nativelibs4java.opencl.*#<groupId>com.nativelibs4java</groupId><artifactId>javacl</artifactId>#g' |
 sed 's#import com.sun.jna.*#<groupId>net.java.dev.jna</groupId><artifactId>jna</artifactId>#g' |
+sed 's#import javax.mail.*#<groupId>javax.mail</groupId><artifactId>mail</artifactId>#g' |
 sed 's#import jline.console.*#<groupId>jline</groupId><artifactId>jline</artifactId>#g' |
 sed 's#import org.apache.bcel.*#<groupId>org.apache.bcel</groupId><artifactId>bcel</artifactId>#g' |
 sed 's#import org.apache.commons.logging.*#<groupId>commons-logging</groupId><artifactId>commons-logging</artifactId>#g' |
@@ -41,7 +29,6 @@ done) &&
 mv pom.xml pom0.xml &&
 cat pom0.xml |
 tr '\n' '@' |
-sed "s#<repositories>.*</repositories>#<repositories>${REPOS}</repositories>#g" |
 sed "s#<dependencies>.*</dependencies>#<dependencies>${DEPS}</dependencies>#g" |
 tr '@' '\n' |
 xmllint --format - > pom.xml
