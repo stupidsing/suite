@@ -26,7 +26,7 @@ public class SmtpSslGmail {
 		Reference ref1 = new Reference();
 		String username, password;
 
-		RuleSet rs = Suite.newRuleSet(Arrays.asList("secrets.sl"));
+		RuleSet rs = Suite.newRuleSet(Arrays.asList(System.getenv("HOME") + "/private/secrets.sl"));
 		Prover prover = new Prover(rs);
 
 		if (prover.prove(Suite.substitute("gmail .0 .1", ref0, ref1))) {
