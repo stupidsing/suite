@@ -1,6 +1,8 @@
 package suite;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import suite.adt.Fixie;
 import suite.adt.Fixie.D_;
@@ -23,9 +25,10 @@ public class DailyMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) throws Exception {
 		Strategy strategy = new Strategos().movingAvgMeanReverting(128, 8, 0.15f);
-		LocalDate frDate = LocalDate.of(2013, 1, 1);
-		LocalDate toDate = LocalDate.of(2018, 1, 1);
-		StringBuilder sb = new StringBuilder();
+		LocalDate today = LocalDate.now();
+		LocalDate frDate = today.minusDays(128);
+		LocalDate toDate = today;
+		List<String> results = new ArrayList<>();
 
 		for (Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_> stock : new Hkex().hkex) {
 			String stockCode = stock.t0 + ".HK";
@@ -38,7 +41,7 @@ public class DailyMain extends ExecutableProgram {
 
 				int signal = strategy.analyze(prices).get(prices.length - 1);
 				if (signal != 0)
-					sb.append("equity " + stockCode + " " + stock.t1 + " has signal " + signal);
+					results.add("\nequity " + stockCode + " " + stock.t1 + " has signal " + signal);
 
 				Util.sleepQuietly(2000);
 			} catch (Exception ex) {
@@ -46,8 +49,12 @@ public class DailyMain extends ExecutableProgram {
 			}
 		}
 
-		if (0 < sb.length())
-			new SmtpSslGmail().send(null, getClass().getName(), sb.toString());
+		SmtpSslGmail smtp = new SmtpSslGmail();
+
+		for (String result : results) {
+			LogUtil.info(result);
+			smtp.send(null, getClass().getName(), result);
+		}
 
 		return true;
 	}
