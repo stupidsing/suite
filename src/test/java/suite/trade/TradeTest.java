@@ -1,6 +1,7 @@
 package suite.trade;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -8,6 +9,8 @@ import suite.adt.Fixie;
 import suite.adt.Fixie.D_;
 import suite.math.DiscreteCosineTransform;
 import suite.os.LogUtil;
+import suite.trade.Strategy.GetBuySell;
+import suite.util.Copy;
 
 public class TradeTest {
 
@@ -62,29 +65,36 @@ public class TradeTest {
 		DiscreteCosineTransform dct = new DiscreteCosineTransform();
 		int nPastDays = windowSize - nFutureDays;
 
-		return prices -> day -> {
-			if (nPastDays <= day) {
-				float fs0[] = new float[windowSize]; // moving window
-				float price0 = prices[day];
-				int i = 0;
+		return prices -> {
+			int buySells[] = new int[prices.length];
 
-				for (; i < nPastDays; i++)
-					fs0[i] = prices[day - nPastDays + i];
-				for (; i < windowSize; i++)
-					fs0[i] = price0;
+			for (int day = 0; day < prices.length; day++) {
+				int buySell;
 
-				float fs1[] = dct.dct(fs0);
-				float fs2[] = new float[windowSize];
+				if (nPastDays <= day) {
+					float fs0[] = new float[windowSize]; // moving window
+					float price0 = prices[day];
 
-				for (int j = 0; j < nLowPass; j++)
-					fs2[j] = fs1[j];
+					Copy.primitiveArray(prices, day - nPastDays, fs0, 0, nPastDays);
+					Arrays.fill(fs0, nPastDays, windowSize, price0);
 
-				float fs3[] = dct.idct(fs2);
+					float fs1[] = dct.dct(fs0);
+					float fs2[] = new float[windowSize];
 
-				float predict = fs3[fs3.length - 1];
-				return getSignal(price0, predict, threshold);
-			} else
-				return 0;
+					for (int j = 0; j < nLowPass; j++)
+						fs2[j] = fs1[j];
+
+					float fs3[] = dct.idct(fs2);
+
+					float predict = fs3[fs3.length - 1];
+					buySell = getSignal(price0, predict, threshold);
+				} else
+					buySell = 0;
+
+				buySells[day] = buySell;
+			}
+
+			return holdFixedDays(nFutureDays, buySells);
 		};
 	}
 
@@ -103,28 +113,31 @@ public class TradeTest {
 				movingSum += prices[day];
 			}
 
-			int signals[] = new int[prices.length];
+			int buySells[] = new int[prices.length];
 
 			for (int day = 0; day < prices.length; day++) {
-				int signal;
+				int buySell;
 
 				if (nPastDays <= day) {
 					float price0 = prices[day];
 					float predict = movingAverages[day];
-					signal = getSignal(price0, predict, threshold);
+					buySell = getSignal(price0, predict, threshold);
 				} else
-					signal = 0;
+					buySell = 0;
 
-				signals[day] = signal;
+				buySells[day] = buySell;
 			}
 
-			// buy/sell if ratio is positive/negative; sell/buy nFutureDays
-			// after
-			return day -> {
-				int signal0 = nFutureDays < day ? -signals[day - nFutureDays] : 0;
-				int signal1 = signals[day];
-				return signal0 + signal1;
-			};
+			return holdFixedDays(nFutureDays, buySells);
+		};
+	}
+
+	// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
+	private GetBuySell holdFixedDays(int nFutureDays, int buySells[]) {
+		return day -> {
+			int buySell0 = nFutureDays < day ? -buySells[day - nFutureDays] : 0;
+			int buySell1 = buySells[day];
+			return buySell0 + buySell1;
 		};
 	}
 
