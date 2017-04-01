@@ -28,6 +28,7 @@ public class SmtpSslGmail {
 
 		RuleSet rs = Suite.newRuleSet(Arrays.asList("secrets.sl"));
 		Prover prover = new Prover(rs);
+
 		if (prover.prove(Suite.substitute("gmail .0 .1", ref0, ref1))) {
 			username = ((Str) ref0.finalNode()).value;
 			password = ((Str) ref1.finalNode()).value;
@@ -48,9 +49,11 @@ public class SmtpSslGmail {
 		});
 
 		try {
+			String sender = username + "@gmail.com";
+
 			Message message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(username + "@gmail.com"));
-			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+			message.setFrom(new InternetAddress(sender));
+			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to != null ? to : sender));
 			message.setSubject(subject);
 			message.setText(body);
 
