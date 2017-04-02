@@ -49,17 +49,7 @@ public class Strategos {
 
 	public Strategy movingAvgMeanReverting(int nPastDays, int nFutureDays, float threshold) {
 		return prices -> {
-			float movingAverages[] = new float[prices.length];
-			float movingSum = 0;
-
-			for (int day = 0; day < prices.length; day++) {
-				if (nPastDays <= day) {
-					movingAverages[day] = movingSum / nPastDays;
-					movingSum -= prices[day - nPastDays];
-				}
-				movingSum += prices[day];
-			}
-
+			float movingAverages[] = movingAverage(prices, nPastDays);
 			int buySells[] = new int[prices.length];
 
 			for (int day = 0; day < prices.length; day++) {
@@ -77,6 +67,21 @@ public class Strategos {
 
 			return holdFixedDays(nFutureDays, buySells);
 		};
+	}
+
+	private float[] movingAverage(float prices[], int windowSize) {
+		float movingAverages[] = new float[prices.length];
+		float movingSum = 0;
+
+		for (int day = 0; day < prices.length; day++) {
+			if (windowSize <= day) {
+				movingAverages[day] = movingSum / windowSize;
+				movingSum -= prices[day - windowSize];
+			}
+			movingSum += prices[day];
+		}
+
+		return movingAverages;
 	}
 
 	// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
