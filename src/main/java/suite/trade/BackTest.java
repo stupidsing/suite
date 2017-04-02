@@ -34,12 +34,12 @@ public class BackTest {
 		account.buySell(buySell, price);
 
 		if (buySell != 0) {
-			float asset = account.cash() + account.nLots() * price;
+			float valuation = account.cash() + account.nLots() * price;
 
 			LogUtil.info("" //
 					+ "date = " + source.dates[day] //
 					+ ", price = " + String.format("%.2f", price) //
-					+ ", asset = " + String.format("%.2f", asset) //
+					+ ", valuation = " + String.format("%.2f", valuation) //
 					+ ", buy/sell = " + buySell //
 					+ ", nLots = " + account.nLots());
 		}
