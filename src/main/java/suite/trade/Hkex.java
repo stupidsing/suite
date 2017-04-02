@@ -87,10 +87,15 @@ public class Hkex {
 
 			public int id;
 			public List<Content> content;
+			public String remark;
 		}
 
 		public String IndexName;
 		public List<Data> data;
+		public String PageNo;
+		public int PageSize;
+		public int TotalCount;
+		public String LastUpdateDate;
 	}
 
 	public List<Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_>> list() {
@@ -118,7 +123,7 @@ public class Hkex {
 		JsonNode json;
 
 		if (Boolean.TRUE) {
-			Execute execute = new Execute(new String[] { "curl", "'" + url + "'", " -H", "'" + referer + "'", });
+			Execute execute = new Execute(new String[] { "curl", url, " -H", referer, });
 			json = Rethrow.ex(() -> mapper.readTree(execute.out));
 		} else {
 			Map<String, String> headers = To.map("Referer", referer);
@@ -134,8 +139,8 @@ public class Hkex {
 				.concatMap(table -> Read.from(table.tr)) //
 				.filter(tr -> !tr.thead) //
 				.concatMap(tr -> Read.from(tr.td)) //
-				.map(list -> Fixie.of(list.get(2), list.get(3),
-						Integer.parseInt(list.get(4).substring(4).replace("\n", "").replace(",", "")))) //
+				.map(list -> Fixie.of(list.get(1), list.get(2),
+						Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "")))) //
 				.toList();
 	}
 
