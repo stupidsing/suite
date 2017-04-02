@@ -105,6 +105,35 @@ public class Matrix {
 			throw new RuntimeException("Wrong matrix size");
 	}
 
+	// calculate mT * n
+	public static Matrix transposeMul(Matrix m, Matrix n) {
+		int ks = m.height();
+
+		if (ks == n.height()) {
+			int height = m.width();
+			int width = n.width();
+			Matrix o = new Matrix(height, width);
+			int i1, j1, k1;
+
+			for (int i0 = 0; i0 < height; i0 = i1) {
+				i1 = Math.min(i0 + 64, height);
+				for (int j0 = 0; j0 < width; j0 = j1) {
+					j1 = Math.min(j0 + 64, width);
+					for (int k0 = 0; k0 < ks; k0 = k1) {
+						k1 = Math.min(k0 + 64, ks);
+						for (int i = i0; i < j1; i++)
+							for (int j = j0; j < j1; j++)
+								for (int k = k0; k < k1; k++)
+									o.v[i][j] += m.v[k][i] * n.v[k][j];
+					}
+				}
+			}
+
+			return o;
+		} else
+			throw new RuntimeException("Wrong matrix sizes");
+	}
+
 	public static Matrix mul(Matrix m, Matrix n) {
 		int ks = m.width();
 
