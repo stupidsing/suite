@@ -1,12 +1,25 @@
 package suite.trade;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import suite.adt.Fixie;
 import suite.adt.Fixie.D_;
+import suite.http.HttpUtil;
+import suite.os.Execute;
+import suite.streamlet.Read;
+import suite.util.Rethrow;
+import suite.util.To;
 
 public class Hkex {
+
+	private ObjectMapper mapper = new ObjectMapper();
 
 	// https://www.hkex.com.hk/eng/csm/result.htm?location=companySearch&SearchMethod=2&mkt=hk&LangCode=en&StockType=MB&Ranking=ByMC&x=42&y=9
 	// stock code, stock name, market capitalisation (million)
@@ -51,5 +64,79 @@ public class Hkex {
 			Fixie.of("0006", "Power Assets Holdings Ltd.", 142782), //
 			Fixie.of("0020", "Wheelock and Co. Ltd.", 127739), //
 			Fixie.of("0857", "PetroChina Co. Ltd. - H Shares", 121530));
+
+	public static class CompanySearch {
+		public static class Data {
+			public static class Content {
+				public static class Table {
+					public static class Tr {
+						public boolean thead;
+						public List<List<String>> td;
+						public String link;
+					}
+
+					public String classname;
+					public List<String> colAlign;
+					public List<Tr> tr;
+				}
+
+				public int style;
+				public String classname;
+				public List<Table> table;
+			}
+
+			public int id;
+			public List<Content> content;
+		}
+
+		public String IndexName;
+		public List<Data> data;
+	}
+
+	public List<Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_>> list() {
+		String referer = "https://www.hkex.com.hk/eng/csm/result.htm?location=companySearch";
+
+		String url = "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
+				+ "?location=companySearch" //
+				+ "&SearchMethod=2" //
+				+ "&LangCode=en" //
+				+ "&StockCode=" //
+				+ "&StockName=" //
+				+ "&Ranking=ByMC" //
+				+ "&StockType=MB" //
+				+ "&mkt=hk" //
+				+ "&PageNo=1" //
+				+ "&ATypeSHEx=" //
+				+ "&AType=" //
+				+ "&FDD=" //
+				+ "&FMM=" //
+				+ "&FYYYY=" //
+				+ "&TDD=" //
+				+ "&TMM=" //
+				+ "&TYYYY=";
+
+		JsonNode json;
+
+		if (Boolean.TRUE) {
+			Execute execute = new Execute(new String[] { "curl", "'" + url + "'", " -H", "'" + referer + "'", });
+			json = Rethrow.ex(() -> mapper.readTree(execute.out));
+		} else {
+			Map<String, String> headers = To.map("Referer", referer);
+			InputStream is = HttpUtil.http("GET", Rethrow.ex(() -> new URL(url)), headers).out.collect(To::inputStream);
+			json = Rethrow.ex(() -> mapper.readTree(is));
+		}
+
+		CompanySearch companySearch = mapper.convertValue(json, CompanySearch.class);
+
+		return Read.from(companySearch.data) //
+				.concatMap(data -> Read.from(data.content)) //
+				.concatMap(content -> Read.from(content.table)) //
+				.concatMap(table -> Read.from(table.tr)) //
+				.filter(tr -> !tr.thead) //
+				.concatMap(tr -> Read.from(tr.td)) //
+				.map(list -> Fixie.of(list.get(2), list.get(3),
+						Integer.parseInt(list.get(4).substring(4).replace("\n", "").replace(",", "")))) //
+				.toList();
+	}
 
 }
