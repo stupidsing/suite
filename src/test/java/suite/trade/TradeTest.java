@@ -21,7 +21,7 @@ public class TradeTest {
 			String stockName = stock.t1;
 			String disp = stockCode + " " + stockName;
 			try {
-				backTestEquity(stockCode, disp);
+				backTest_(stockCode, disp);
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage() + " in " + disp);
 			}
@@ -30,23 +30,28 @@ public class TradeTest {
 
 	@Test
 	public void testBackTestHkex0005() {
-		backTestEquity("0066.HK", "HSBC"); // "JPY%3DX";
+		backTest("0005.HK", "HSBC"); // "JPY%3DX";
 	}
 
 	@Test
 	public void testBackTestJpy() {
-		backTestEquity("JPY%3DX", "JPY");
+		backTest("JPY%3DX", "JPY");
 	}
 
-	private void backTestEquity(String stockCode, String disp) {
+	private void backTest(String stockCode, String stockName) {
+		backTest_(stockCode, stockCode + " " + stockName);
+
+	}
+
+	private void backTest_(String stockCode, String disp) {
 		Strategos sr = new Strategos();
 		DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
-		backTest(source, disp + ", strategy = lowPassPrediction", sr.lowPassPrediction(128, 8, 8, 0.02f));
-		backTest(source, disp + ", strategy = LongHold", sr.longHold);
-		backTest(source, disp + ", strategy = MovingAvgMeanReverting", sr.movingAvgMeanReverting(64, 8, 0.15f));
+		backTest_(source, disp + ", strategy = lowPassPrediction", sr.lowPassPrediction(128, 8, 8, 0.02f));
+		backTest_(source, disp + ", strategy = LongHold", sr.longHold);
+		backTest_(source, disp + ", strategy = MovingAvgMeanReverting", sr.movingAvgMeanReverting(64, 8, 0.15f));
 	}
 
-	private void backTest(DataSource source, String prefix, Strategy strategy) {
+	private void backTest_(DataSource source, String prefix, Strategy strategy) {
 		BackTest backTest = BackTest.test(source, strategy);
 		Account account = backTest.account;
 		LogUtil.info(prefix //
