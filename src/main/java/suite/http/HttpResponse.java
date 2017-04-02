@@ -15,7 +15,7 @@ public class HttpResponse {
 	public final Outlet<Bytes> out;
 
 	public static HttpResponse of(String status) {
-		return of(Outlet.from(() -> null));
+		return of(Outlet.empty());
 	}
 
 	public static HttpResponse of(Outlet<Bytes> out) {

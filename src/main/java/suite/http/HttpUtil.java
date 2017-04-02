@@ -11,7 +11,6 @@ import suite.primitive.Bytes;
 import suite.primitive.BytesUtil;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.FunUtil;
 import suite.util.Rethrow;
 
 public class HttpUtil {
@@ -31,11 +30,15 @@ public class HttpUtil {
 	}
 
 	public static HttpResult http(String method, URL url) {
-		return http(method, url, Outlet.from(FunUtil.nullSource()));
+		return http(method, url, Outlet.empty());
 	}
 
 	public static HttpResult http(String method, URL url, Outlet<Bytes> in) {
 		return http(method, url, in, Collections.emptyMap());
+	}
+
+	public static HttpResult http(String method, URL url, Map<String, String> headers) {
+		return http(method, url, Outlet.empty(), headers);
 	}
 
 	public static HttpResult http(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) {
