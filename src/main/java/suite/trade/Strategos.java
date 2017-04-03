@@ -47,26 +47,20 @@ public class Strategos {
 
 	public Strategy longHold = prices -> day -> day != 0 ? 0 : 1;
 
-	// trendy; alpha0 < alpha1
-	public Strategy movingAvgConvDiv(float alpha0, float alpha1, float macdAlpha, float threshold) {
+	public Strategy movingAvgConvDivSignalLineCrossover(float alpha0, float alpha1, float macdAlpha) {
 		return prices -> {
-			float emas0[] = exponentialMovingAvg(prices, alpha0); // long-term
-			float emas1[] = exponentialMovingAvg(prices, alpha1); // short-term
-			float macd[] = new float[prices.length];
-
-			for (int i = 0; i < prices.length; i++)
-				macd[i] = emas1[i] - emas0[i];
-
+			float macd[] = macd(prices, alpha0, alpha1);
 			float macdEmas[] = exponentialMovingAvg(macd, macdAlpha);
+			float diff[] = subtract(macd, macdEmas);
+			return crossover(diff);
+		};
+	}
 
-			return day -> { // zero crossover
-				if (0 < day) {
-					int signum0 = signum(macd[day - 1]);
-					int signum1 = signum(macd[day]);
-					return signum0 != signum1 ? signum1 : 0;
-				} else
-					return 0;
-			};
+	// trendy; alpha0 < alpha1
+	public Strategy movingAvgConvDivZeroCrossover(float alpha0, float alpha1, float macdAlpha) {
+		return prices -> {
+			float macd[] = macd(prices, alpha0, alpha1);
+			return crossover(macd);
 		};
 	}
 
@@ -90,6 +84,12 @@ public class Strategos {
 
 			return holdFixedDays(nFutureDays, buySells);
 		};
+	}
+
+	private float[] macd(float[] prices, float alpha0, float alpha1) {
+		float emas0[] = exponentialMovingAvg(prices, alpha0); // long-term
+		float emas1[] = exponentialMovingAvg(prices, alpha1); // short-term
+		return subtract(emas1, emas0);
 	}
 
 	private float[] movingAvg(float prices[], int windowSize) {
@@ -137,6 +137,24 @@ public class Strategos {
 			signal = 0;
 
 		return signal;
+	}
+
+	private GetBuySell crossover(float diff[]) {
+		return day -> {
+			if (0 < day) {
+				int signum0 = signum(diff[day - 1]);
+				int signum1 = signum(diff[day]);
+				return signum0 != signum1 ? signum1 : 0;
+			} else
+				return 0;
+		};
+	}
+
+	private float[] subtract(float a[], float b[]) {
+		float c[] = new float[a.length];
+		for (int i = 0; i < a.length; i++)
+			c[i] = a[i] - b[i];
+		return c;
 	}
 
 	private int signum(float f) {
