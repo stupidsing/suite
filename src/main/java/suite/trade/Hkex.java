@@ -139,8 +139,10 @@ public class Hkex {
 				.concatMap(table -> Read.from(table.tr)) //
 				.filter(tr -> !tr.thead) //
 				.concatMap(tr -> Read.from(tr.td)) //
-				.map(list -> Fixie.of(list.get(1), list.get(2),
-						Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "")))) //
+				.map(list -> Fixie.of( //
+						list.get(1).trim(), //
+						list.get(2).trim(), //
+						Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
 				.toList();
 	}
 
