@@ -47,6 +47,29 @@ public class Strategos {
 
 	public Strategy longHold = prices -> day -> day != 0 ? 0 : 1;
 
+	// trendy; alpha0 < alpha1
+	public Strategy movingAvgConvDiv(float alpha0, float alpha1, float macdAlpha, float threshold) {
+		return prices -> {
+			float emas0[] = exponentialMovingAverage(prices, alpha0);
+			float emas1[] = exponentialMovingAverage(prices, alpha1);
+			float emasDiff[] = new float[prices.length];
+
+			for (int i = 0; i < prices.length; i++)
+				emasDiff[i] = emas0[i] - emas1[i];
+
+			float macdEmas[] = exponentialMovingAverage(emasDiff, macdAlpha);
+
+			return day -> { // zero crossover
+				if (0 < day) {
+					int signum0 = signum(macdEmas[day - 1]);
+					int signum1 = signum(macdEmas[day]);
+					return signum0 != signum1 ? signum1 : 0;
+				} else
+					return 0;
+			};
+		};
+	}
+
 	public Strategy movingAvgMeanReverting(int nPastDays, int nFutureDays, float threshold) {
 		return prices -> {
 			float movingAverages[] = movingAverage(prices, nPastDays);
@@ -84,6 +107,14 @@ public class Strategos {
 		return movingAverages;
 	}
 
+	private float[] exponentialMovingAverage(float prices[], float alpha) {
+		float emas[] = new float[prices.length];
+		float ema = prices[0];
+		for (int day = 0; day < prices.length; day++)
+			emas[day] = ema += alpha * (prices[day] - ema);
+		return emas;
+	}
+
 	// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
 	private GetBuySell holdFixedDays(int nFutureDays, int buySells[]) {
 		return day -> {
@@ -106,6 +137,15 @@ public class Strategos {
 			signal = 0;
 
 		return signal;
+	}
+
+	private int signum(float f) {
+		if (f < 0)
+			return -1;
+		else if (0 < f)
+			return 1;
+		else
+			return 0;
 	}
 
 }
