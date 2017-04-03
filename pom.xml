@@ -17,13 +17,13 @@
       <version>LATEST</version>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
+      <groupId>com.nativelibs4java</groupId>
+      <artifactId>javacl</artifactId>
       <version>LATEST</version>
     </dependency>
     <dependency>
-      <groupId>com.nativelibs4java</groupId>
-      <artifactId>javacl</artifactId>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
       <version>LATEST</version>
     </dependency>
     <dependency>
