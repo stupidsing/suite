@@ -24,7 +24,7 @@ public class DailyMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String args[]) throws Exception {
-		Strategy strategy = new Strategos().movingAvgMeanReverting(128, 8, 0.15f);
+		Strategy strategy = new Strategos().movingAvgMeanReverting(128, 8, .15f);
 		LocalDate today = LocalDate.now();
 		LocalDate frDate = today.minusDays(128);
 		LocalDate toDate = today;

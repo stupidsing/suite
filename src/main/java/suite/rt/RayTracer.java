@@ -17,7 +17,7 @@ import suite.math.Vector;
  */
 public class RayTracer {
 
-	public static float negligibleAdvance = 0.0001f;
+	public static float negligibleAdvance = .0001f;
 
 	private int depth = 4;
 
@@ -165,7 +165,7 @@ public class RayTracer {
 				// schlick approximation
 				boolean isDramaticMix = true;
 				float r = (airRefractiveIndex - glassRefractiveIndex) / (airRefractiveIndex + glassRefractiveIndex);
-				float mix = isDramaticMix ? 0.1f : r * r;
+				float mix = isDramaticMix ? .1f : r * r;
 				float cos1 = 1 - cos;
 				float cos2 = cos1 * cos1;
 				float fresnel = mix + (1 - mix) * cos1 * cos2 * cos2;

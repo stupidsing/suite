@@ -57,7 +57,7 @@ public class Strategos {
 	}
 
 	// trendy; alpha0 < alpha1
-	public Strategy movingAvgConvDivZeroCrossover(float alpha0, float alpha1, float macdAlpha) {
+	public Strategy movingAvgConvDivZeroCrossover(float alpha0, float alpha1) {
 		return prices -> {
 			float macd[] = macd(prices, alpha0, alpha1);
 			return crossover(macd);

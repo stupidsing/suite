@@ -19,9 +19,9 @@ public class FastFourierTransformTest {
 		assertEquals(fs1[0], Complex.of(4f, 0f));
 		assertEquals(fs1[1], Complex.of(1f, -2.4f));
 		assertEquals(fs1[2], Complex.of(0f, 0f));
-		assertEquals(fs1[3], Complex.of(1f, -0.4f));
+		assertEquals(fs1[3], Complex.of(1f, -.4f));
 		assertEquals(fs1[4], Complex.of(0f, 0f));
-		assertEquals(fs1[5], Complex.of(1f, 0.4f));
+		assertEquals(fs1[5], Complex.of(1f, .4f));
 		assertEquals(fs1[6], Complex.of(0f, 0f));
 		assertEquals(fs1[7], Complex.of(1f, 2.4f));
 
@@ -42,11 +42,11 @@ public class FastFourierTransformTest {
 		assertEquals(fs1[4], 0f);
 		assertEquals(fs1[5], 0f);
 		assertEquals(fs1[6], 1f);
-		assertEquals(fs1[7], -0.4f);
+		assertEquals(fs1[7], -.4f);
 		assertEquals(fs1[8], 0f);
 		assertEquals(fs1[9], 0f);
 		assertEquals(fs1[10], 1f);
-		assertEquals(fs1[11], 0.4f);
+		assertEquals(fs1[11], .4f);
 		assertEquals(fs1[12], 0f);
 		assertEquals(fs1[13], 0f);
 		assertEquals(fs1[14], 1f);

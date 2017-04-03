@@ -46,9 +46,11 @@ public class TradeTest {
 	private void backTest_(String stockCode, String disp) {
 		Strategos sr = new Strategos();
 		DataSource source = DataSource.yahoo(stockCode, frDate, toDate);
-		backTest_(source, disp + ", strategy = lowPassPrediction", sr.lowPassPrediction(128, 8, 8, 0.02f));
+		backTest_(source, disp + ", strategy = lowPassPrediction", sr.lowPassPrediction(128, 8, 8, .02f));
 		backTest_(source, disp + ", strategy = LongHold", sr.longHold);
-		backTest_(source, disp + ", strategy = MovingAvgMeanReverting", sr.movingAvgMeanReverting(64, 8, 0.15f));
+		backTest_(source, disp + ", strategy = MovingAvgMeanReverting", sr.movingAvgMeanReverting(64, 8, .15f));
+		backTest_(source, disp + ", strategy = macdSignalLineX", sr.movingAvgConvDivSignalLineCrossover(.8f, .9f, .85f));
+		backTest_(source, disp + ", strategy = macdZeroLineX", sr.movingAvgConvDivZeroCrossover(.8f, .9f));
 	}
 
 	private void backTest_(DataSource source, String prefix, Strategy strategy) {

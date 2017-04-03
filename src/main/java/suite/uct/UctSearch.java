@@ -19,7 +19,7 @@ public class UctSearch<Move> {
 	 * Larger values give uniform search; smaller values give very selective
 	 * search.
 	 */
-	private static float explorationFactor = 0.4f;
+	private static float explorationFactor = .4f;
 	private static float raveFactor = 5f;
 	private static boolean rave = true;
 	private static int maxRaveDepth = 4;

@@ -62,7 +62,7 @@ public class DataSource {
 				throw new RuntimeException("Price is not finite: " + price + "/" + i);
 
 			float ratio = (price - price0) / price0;
-			if (ratio < -0.8 || 0.8 < ratio)
+			if (ratio < -.8f || .8f < ratio)
 				throw new RuntimeException("Price varied too much: " + price + "/" + i);
 		}
 	}
