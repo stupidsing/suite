@@ -50,19 +50,19 @@ public class Strategos {
 	// trendy; alpha0 < alpha1
 	public Strategy movingAvgConvDiv(float alpha0, float alpha1, float macdAlpha, float threshold) {
 		return prices -> {
-			float emas0[] = exponentialMovingAverage(prices, alpha0);
-			float emas1[] = exponentialMovingAverage(prices, alpha1);
-			float emasDiff[] = new float[prices.length];
+			float emas0[] = exponentialMovingAvg(prices, alpha0); // long-term
+			float emas1[] = exponentialMovingAvg(prices, alpha1); // short-term
+			float macd[] = new float[prices.length];
 
 			for (int i = 0; i < prices.length; i++)
-				emasDiff[i] = emas0[i] - emas1[i];
+				macd[i] = emas1[i] - emas0[i];
 
-			float macdEmas[] = exponentialMovingAverage(emasDiff, macdAlpha);
+			float macdEmas[] = exponentialMovingAvg(macd, macdAlpha);
 
 			return day -> { // zero crossover
 				if (0 < day) {
-					int signum0 = signum(macdEmas[day - 1]);
-					int signum1 = signum(macdEmas[day]);
+					int signum0 = signum(macd[day - 1]);
+					int signum1 = signum(macd[day]);
 					return signum0 != signum1 ? signum1 : 0;
 				} else
 					return 0;
@@ -72,7 +72,7 @@ public class Strategos {
 
 	public Strategy movingAvgMeanReverting(int nPastDays, int nFutureDays, float threshold) {
 		return prices -> {
-			float movingAverages[] = movingAverage(prices, nPastDays);
+			float movingAvgs[] = movingAvg(prices, nPastDays);
 			int buySells[] = new int[prices.length];
 
 			for (int day = 0; day < prices.length; day++) {
@@ -80,7 +80,7 @@ public class Strategos {
 
 				if (nPastDays <= day) {
 					float price0 = prices[day];
-					float predict = movingAverages[day];
+					float predict = movingAvgs[day];
 					buySell = getSignal(price0, predict, threshold);
 				} else
 					buySell = 0;
@@ -92,22 +92,22 @@ public class Strategos {
 		};
 	}
 
-	private float[] movingAverage(float prices[], int windowSize) {
-		float movingAverages[] = new float[prices.length];
+	private float[] movingAvg(float prices[], int windowSize) {
+		float movingAvgs[] = new float[prices.length];
 		float movingSum = 0;
 
 		for (int day = 0; day < prices.length; day++) {
 			if (windowSize <= day) {
-				movingAverages[day] = movingSum / windowSize;
+				movingAvgs[day] = movingSum / windowSize;
 				movingSum -= prices[day - windowSize];
 			}
 			movingSum += prices[day];
 		}
 
-		return movingAverages;
+		return movingAvgs;
 	}
 
-	private float[] exponentialMovingAverage(float prices[], float alpha) {
+	private float[] exponentialMovingAvg(float prices[], float alpha) {
 		float emas[] = new float[prices.length];
 		float ema = prices[0];
 		for (int day = 0; day < prices.length; day++)
