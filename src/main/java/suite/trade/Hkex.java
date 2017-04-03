@@ -99,8 +99,6 @@ public class Hkex {
 	}
 
 	public List<Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_>> list() {
-		String referer = "https://www.hkex.com.hk/eng/csm/result.htm?location=companySearch";
-
 		String url = "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
 				+ "?location=companySearch" //
 				+ "&SearchMethod=2" //
@@ -123,9 +121,10 @@ public class Hkex {
 		JsonNode json;
 
 		if (Boolean.TRUE) {
-			Execute execute = new Execute(new String[] { "curl", url, " -H", referer, });
+			Execute execute = new Execute(new String[] { "curl", url, });
 			json = Rethrow.ex(() -> mapper.readTree(execute.out));
 		} else {
+			String referer = "https://www.hkex.com.hk/eng/csm/result.htm?location=companySearch";
 			Map<String, String> headers = To.map("Referer", referer);
 			InputStream is = HttpUtil.http("GET", Rethrow.ex(() -> new URL(url)), headers).out.collect(To::inputStream);
 			json = Rethrow.ex(() -> mapper.readTree(is));
