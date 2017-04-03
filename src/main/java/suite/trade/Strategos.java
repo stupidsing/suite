@@ -94,7 +94,7 @@ public class Strategos {
 
 	private float[] movingAvg(float prices[], int windowSize) {
 		float movingAvgs[] = new float[prices.length];
-		float movingSum = 0;
+		float movingSum = 0f;
 
 		for (int day = 0; day < prices.length; day++) {
 			if (windowSize <= day) {

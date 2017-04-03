@@ -18,7 +18,7 @@ public class Mandelbrot {
 
 	public BufferedImage trace() {
 		return Render.render(width, height, (fx, fy) -> {
-			float n = mandelbrot(Complex.of(fx * 4, fy * 4)) / 256f;
+			float n = mandelbrot(Complex.of(fx * 4f, fy * 4f)) / 256f;
 			return new Vector(n, n, n);
 		});
 	}

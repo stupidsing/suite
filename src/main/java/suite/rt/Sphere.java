@@ -34,14 +34,14 @@ public class Sphere implements RtObject {
 	public List<RayHit> hit(Ray ray) {
 		Vector start0 = Vector.sub(ray.startPoint, centre);
 		float a = Vector.abs2(ray.dir);
-		float b = 2 * Vector.dot(start0, ray.dir);
+		float b = 2f * Vector.dot(start0, ray.dir);
 		float c = Vector.abs2(start0) - radius * radius;
-		float discriminant = b * b - 4 * a * c;
+		float discriminant = b * b - 4f * a * c;
 		List<RayHit> rayHits;
 
 		if (0 < discriminant) { // hit?
 			float sqrt = (float) Math.sqrt(discriminant);
-			float denom = 1 / (2f * a);
+			float denom = 1f / (2f * a);
 			rayHits = Arrays.asList(rayHit(ray, (-b - sqrt) * denom), rayHit(ray, (-b + sqrt) * denom));
 		} else
 			rayHits = Collections.emptyList();

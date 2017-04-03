@@ -145,7 +145,7 @@ public class RayTracer {
 
 				// account refraction
 				float eta = isInside ? glassRefractiveIndex / airRefractiveIndex : airRefractiveIndex / glassRefractiveIndex;
-				float k = 1 - eta * eta * (1 - cos * cos);
+				float k = 1f - eta * eta * (1f - cos * cos);
 				Vector refractColor;
 
 				if (0 <= k) {
@@ -166,12 +166,12 @@ public class RayTracer {
 				boolean isDramaticMix = true;
 				float r = (airRefractiveIndex - glassRefractiveIndex) / (airRefractiveIndex + glassRefractiveIndex);
 				float mix = isDramaticMix ? .1f : r * r;
-				float cos1 = 1 - cos;
+				float cos1 = 1f - cos;
 				float cos2 = cos1 * cos1;
-				float fresnel = mix + (1 - mix) * cos1 * cos2 * cos2;
+				float fresnel = mix + (1f - mix) * cos1 * cos2 * cos2;
 
 				// fresnel is often too low. Mark it up for visual effect.
-				float fresnel1 = adjustFresnel + fresnel * (1 - adjustFresnel);
+				float fresnel1 = adjustFresnel + fresnel * (1f - adjustFresnel);
 
 				color = Vector.add(Vector.mul(reflectColor, fresnel1), Vector.mul(refractColor, (1f - fresnel1) * transparency));
 			} else {
@@ -182,7 +182,7 @@ public class RayTracer {
 					Vector lightDir = Vector.sub(lightSource.source(), hitPoint);
 					float lightDot = Vector.dot(lightDir, normal);
 
-					if (0 < lightDot) { // facing the light
+					if (0f < lightDot) { // facing the light
 						Vector lightPoint = Vector.add(hitPoint, negligible(normal));
 						RayHit lightRayHit = nearestHit(scene.hit(new Ray(lightPoint, lightDir)));
 

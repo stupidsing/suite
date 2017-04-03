@@ -10,8 +10,8 @@ public class FastFourierTransformTest {
 
 	@Test
 	public void testFft() {
-		Complex zero = Complex.of(0, 0);
-		Complex one = Complex.of(1, 0);
+		Complex zero = Complex.of(0f, 0f);
+		Complex one = Complex.of(1f, 0f);
 		Complex fs0[] = { one, one, one, one, zero, zero, zero, zero, };
 		Complex fs1[] = fft.fft(fs0);
 		Complex fs2[] = fft.ifft(fs1);
@@ -31,7 +31,7 @@ public class FastFourierTransformTest {
 
 	@Test
 	public void testFftFloat() {
-		float fs0[] = { 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
+		float fs0[] = { 1f, 0f, 1f, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, };
 		float fs1[] = fft.fft(fs0);
 		float fs2[] = fft.ifft(fs1);
 

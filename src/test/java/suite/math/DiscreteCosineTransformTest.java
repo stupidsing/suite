@@ -10,7 +10,7 @@ public class DiscreteCosineTransformTest {
 
 	@Test
 	public void testDct() {
-		float fs0[] = { 0, 1, 2, 3, 4, 5, 6, 7, };
+		float fs0[] = { 0f, 1f, 2f, 3f, 4f, 5f, 6f, 7f, };
 		float fs1[] = dct.dct(fs0);
 		float fs2[] = dct.idct(fs1);
 		for (int i = 0; i < fs0.length; i++)
@@ -18,7 +18,7 @@ public class DiscreteCosineTransformTest {
 	}
 
 	private void assertEquals(float a, float b) {
-		assertTrue(Math.abs(a - b) < .1);
+		assertTrue(Math.abs(a - b) < .1f);
 	}
 
 }

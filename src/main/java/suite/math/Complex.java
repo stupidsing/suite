@@ -36,7 +36,7 @@ public class Complex {
 	}
 
 	public Complex inverse() {
-		float iabs2 = 1 / abs2_();
+		float iabs2 = 1f / abs2_();
 		return of(r * iabs2, -i * iabs2);
 	}
 
