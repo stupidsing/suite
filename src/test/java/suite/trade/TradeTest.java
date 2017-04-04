@@ -1,6 +1,7 @@
 package suite.trade;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.Test;
@@ -31,8 +32,8 @@ public class TradeTest {
 
 	@Test
 	public void testBackTestForex() {
-		String ccy = "JPY";
-		backTest(ccy + "%3DX", ccy);
+		for (String ccy : Arrays.asList("AUD", "CAD", "EUR", "JPY"))
+			backTest_(ccy + "%3DX", ccy);
 	}
 
 	@Test
