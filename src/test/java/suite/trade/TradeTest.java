@@ -4,9 +4,8 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
-import suite.adt.Fixie;
-import suite.adt.Fixie.D_;
 import suite.os.LogUtil;
+import suite.trade.Hkex.Company;
 
 public class TradeTest {
 
@@ -15,10 +14,10 @@ public class TradeTest {
 
 	@Test
 	public void testBackTest() {
-		for (Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_> stock : new Hkex().hkex) {
+		for (Company stock : new Hkex().hkex) {
 			// String stockCode = "0066.HK"; // "JPY%3DX";
-			String stockCode = stock.t0 + ".HK";
-			String stockName = stock.t1;
+			String stockCode = stock.code + ".HK";
+			String stockName = stock.name;
 			String disp = stockCode + " " + stockName;
 			try {
 				backTest_(stockCode, disp);
@@ -26,6 +25,11 @@ public class TradeTest {
 				LogUtil.warn(ex.getMessage() + " in " + disp);
 			}
 		}
+	}
+
+	@Test
+	public void testBackTestHkex0004() {
+		backTest("0004.HK", "-");
 	}
 
 	@Test

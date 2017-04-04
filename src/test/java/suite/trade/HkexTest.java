@@ -17,7 +17,13 @@ public class HkexTest {
 	public void test() {
 		List<Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_>> fixies = new Hkex().list();
 		System.out.println(fixies);
-		String code = Read.from(fixies).filter(fixie -> Util.stringEquals(fixie.t0, "5")).uniqueResult().t1;
+
+		for (Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_> fixie : fixies)
+			System.out.println("Fixie.of(\"" + fixie.t0 + "\", \"" + fixie.t1 + "\", " + fixie.t2 + "), //");
+
+		String code = Read.from(fixies) //
+				.filter(fixie -> Util.stringEquals(fixie.t0, "5")) //
+				.uniqueResult().t1;
 		assertTrue(code.equals("HSBC Holdings plc"));
 	}
 

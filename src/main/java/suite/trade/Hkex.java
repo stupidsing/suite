@@ -2,7 +2,6 @@ package suite.trade;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,47 +22,107 @@ public class Hkex {
 
 	// https://www.hkex.com.hk/eng/csm/result.htm?location=companySearch&SearchMethod=2&mkt=hk&LangCode=en&StockType=MB&Ranking=ByMC&x=42&y=9
 	// stock code, stock name, market capitalisation (million)
-	public List<Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_>> hkex = Arrays.asList( //
-			Fixie.of("0700", "Tencent Holdings Ltd.", 2134276), //
-			Fixie.of("0941", "China Mobile Ltd.", 1754749), //
-			Fixie.of("0939", "China Construction Bank Corporation - H Shares", 1521842), //
-			Fixie.of("0005", "HSBC Holdings plc", 1281059), //
-			Fixie.of("1299", "AIA Group Ltd.", 598097), //
-			Fixie.of("1398", "Industrial and Commercial Bank of China Ltd. - H Shares", 444386), //
-			Fixie.of("2378", "Prudential plc", 417660), //
-			Fixie.of("0883", "CNOOC Ltd.", 417007), //
-			Fixie.of("0805", "Glencore plc", 399229), //
-			Fixie.of("0001", "Hutchison Holdings Ltd.", 373230), //
-			Fixie.of("2388", "BOC Hong Kong (Holdings) Ltd.", 339386), //
-			Fixie.of("0016", "Sun Hung Kai Properties Ltd.", 332980), //
-			Fixie.of("2318", "Ping An Insurance (Group) Co. of ChinaLtd. - H Shares", 328066), //
-			Fixie.of("3988", "Bank of China Ltd. - H Shares", 326127), //
-			Fixie.of("0267", "CITIC Ltd.", 322902), //
-			Fixie.of("0011", "Hang Seng Bank Ltd.", 303792), //
-			Fixie.of("1928", "Sands China Ltd.", 293805), //
-			Fixie.of("0945", "Manulife Financial Corporation", 271862), //
-			Fixie.of("0066", "MTR Corporation Ltd.", 259849), //
-			Fixie.of("0762", "China Unicom (Hong Kong) Ltd.", 251444), //
-			Fixie.of("0688", "China Overseas Land & Investment Ltd.", 243228), //
-			Fixie.of("2888", "Standard Chartered PLC", 238713), //
-			Fixie.of("0388", "Hong Kong Exchanges and Clearing Ltd.", 238008), //
-			Fixie.of("3328", "Bank of Communications Co.Ltd. - H Shares", 212172), //
-			Fixie.of("0002", "CLP Holdings Ltd.", 207043), //
-			Fixie.of("0004", "Wharf (Holdings) Ltd., The", 205157), //
-			Fixie.of("1113", "Cheung Kong Property Holdings Ltd.", 199320), //
-			Fixie.of("0003", "Hong Kong and China Gas Co. Ltd., The", 197623), //
-			Fixie.of("0027", "Galaxy Entertainment Group Ltd.", 184276), //
-			Fixie.of("2628", "China Life Insurance Co. Ltd. - H Shares", 178216), //
-			Fixie.of("0012", "Henderson Land Development Co. Ltd.", 175869), //
-			Fixie.of("0566", "Hanergy Thin Film Power Group Ltd.", 163669), //
-			Fixie.of("1038", "Cheung Kong Infrastructure Holdings Ltd.", 163149), //
-			Fixie.of("0386", "China Petroleum & Chemical Corporation - H Shares", 162265), //
-			Fixie.of("2007", "Country Garden Holdings Co. Ltd.", 149690), //
-			Fixie.of("1109", "China Resources Land Ltd.", 146936), //
-			Fixie.of("1972", "Swire Properties Ltd.", 145665), //
-			Fixie.of("0006", "Power Assets Holdings Ltd.", 142782), //
-			Fixie.of("0020", "Wheelock and Co. Ltd.", 127739), //
-			Fixie.of("0857", "PetroChina Co. Ltd. - H Shares", 121530));
+	private String lines = "" //
+			+ "\n0700|Tencent Holdings Ltd.|2134276" //
+			+ "\n0941|China Mobile Ltd.|1754749" //
+			+ "\n0939|China Construction Bank Corporation - H Shares|1521842" //
+			+ "\n0005|HSBC Holdings plc|1281059" //
+			+ "\n1299|AIA Group Ltd.|598097" //
+			+ "\n1398|Industrial and Commercial Bank of China Ltd. - H Shares|444386" //
+			+ "\n2378|Prudential plc|417660" //
+			+ "\n0883|CNOOC Ltd.|417007" //
+			+ "\n0805|Glencore plc|399229" //
+			+ "\n0001|Hutchison Holdings Ltd.|373230" //
+			+ "\n2388|BOC Hong Kong (Holdings) Ltd.|339386" //
+			+ "\n0016|Sun Hung Kai Properties Ltd.|332980" //
+			+ "\n2318|Ping An Insurance (Group) Co. of ChinaLtd. - H Shares|328066" //
+			+ "\n3988|Bank of China Ltd. - H Shares|326127" //
+			+ "\n0267|CITIC Ltd.|322902" //
+			+ "\n0011|Hang Seng Bank Ltd.|303792" //
+			+ "\n1928|Sands China Ltd.|293805" //
+			+ "\n0945|Manulife Financial Corporation|271862" //
+			+ "\n0066|MTR Corporation Ltd.|259849" //
+			+ "\n0762|China Unicom (Hong Kong) Ltd.|251444" //
+			+ "\n0688|China Overseas Land & Investment Ltd.|243228" //
+			+ "\n2888|Standard Chartered PLC|238713" //
+			+ "\n0388|Hong Kong Exchanges and Clearing Ltd.|238008" //
+			+ "\n3328|Bank of Communications Co.Ltd. - H Shares|212172" //
+			+ "\n0002|CLP Holdings Ltd.|207043" //
+			+ "\n0004|Wharf (Holdings) Ltd., The|205157" //
+			+ "\n1113|Cheung Kong Property Holdings Ltd.|199320" //
+			+ "\n0003|Hong Kong and China Gas Co. Ltd., The|197623" //
+			+ "\n0027|Galaxy Entertainment Group Ltd.|184276" //
+			+ "\n2628|China Life Insurance Co. Ltd. - H Shares|178216" //
+			+ "\n0012|Henderson Land Development Co. Ltd.|175869" //
+			+ "\n0566|Hanergy Thin Film Power Group Ltd.|163669" //
+			+ "\n1038|Cheung Kong Infrastructure Holdings Ltd.|163149" //
+			+ "\n0386|China Petroleum & Chemical Corporation - H Shares|162265" //
+			+ "\n2007|Country Garden Holdings Co. Ltd.|149690" //
+			+ "\n1109|China Resources Land Ltd.|146936" //
+			+ "\n1972|Swire Properties Ltd.|145665" //
+			+ "\n0006|Power Assets Holdings Ltd.|142782" //
+			+ "\n0020|Wheelock and Co. Ltd.|127739" //
+			+ "\n0857|PetroChina Co. Ltd. - H Shares|121530" //
+			+ "\n2018|AAC Technologies Holdings Inc.|113222" //
+			+ "\n1288|Agricultural Bank of China Ltd. - H Shares|110660" //
+			+ "\n0175|Geely Automobile Holdings Ltd.|107777" //
+			+ "\n0656|Fosun International Ltd.|101370" //
+			+ "\n3333|China Evergrande Group|100450" //
+			+ "\n0288|WH Group Ltd.|99041" //
+			+ "\n1658|Postal Savings Bank of China Co., Ltd. - H Shares|95310" //
+			+ "\n3968|China Merchants Bank Co., Ltd. - H Shares|94573" //
+			+ "\n0017|New World Development Co. Ltd.|93677" //
+			+ "\n0101|Hang Lung Properties Ltd.|89232" //
+			+ "\n0023|Bank of East Asia, Ltd., The|88512" //
+			+ "\n1913|PRADA S.p.A.|85976" //
+			+ "\n0083|Sino Land Co. Ltd.|85651" //
+			+ "\n1128|Wynn Macau, Ltd.|83232" //
+			+ "\n2799|China Huarong Asset Management Co., Ltd. - H Shares|81893" //
+			+ "\n2601 *|China Pacific Insurance (Group) Co., Ltd. - H Shares|78819" //
+			+ "\n0998|China CITIC Bank Corporation Ltd. - H Shares|77090" //
+			+ "\n6823|HKT Trust and HKT Ltd. - SS|76020" //
+			+ "\n0960|Longfor Properties Co. Ltd.|75159" //
+			+ "\n1929|Chow Tai Fook Jewellery Group Ltd.|75000" //
+			+ "\n0270|Guangdong Investment Ltd.|72673" //
+			+ "\n0019|Swire Pacific Ltd. 'A'|71285" //
+			+ "\n6808|Sun Art Retail Group Ltd.|70689" //
+			+ "\n1044|Hengan International Group Co. Ltd.|69522" //
+			+ "\n2313|Shenzhou International Group Holdings Ltd.|68971" //
+			+ "\n0607|Fullshare Holdings Ltd.|68263" //
+			+ "\n1114|Brilliance China Automotive Holdings Ltd.|68240" //
+			+ "\n0836|China Resources Power Holdings Co. Ltd.|67897" //
+			+ "\n0966|China Taiping Insurance Holdings Co. Ltd.|67208" //
+			+ "\n0151|Want Want China Holdings Ltd.|67201" //
+			+ "\n0384|China Gas Holdings Ltd.|63626" //
+			+ "\n3311|China State Construction International Holdings Ltd.|63462" //
+			+ "\n2638|HK Electric Investments and HK Electric Investments Ltd. -SS|63356" //
+			+ "\n0135|Kunlun Energy Co. Ltd.|62400" //
+			+ "\n1093|CSPC Pharmaceutical Group Ltd.|62356" //
+			+ "\n1193|China Resources Gas Group Ltd.|62161" //
+			+ "\n1088|China Shenhua Energy Co. Ltd. - H Shares|62126" //
+			+ "\n2382|Sunny Optical Technology (Group) Co. Ltd.|61816" //
+			+ "\n2319|China Mengniu Dairy Co. Ltd.|61780" //
+			+ "\n2282|MGM China Holdings Ltd.|61408" //
+	;
+
+	public List<Company> hkex = Read //
+			.from(lines.split("\n")) //
+			.filter(line -> !line.isEmpty()) //
+			.map(line -> line.split("\\|")) //
+			.map(array -> new Company(array[0], array[1], Integer.parseInt(array[2]))) //
+			.toList();
+
+	public class Company {
+		public final String code;
+		public final String name;
+		public final int marketCap; // HKD million
+
+		private Company(String code, String name, int marketCap) {
+			this.code = code;
+			this.name = name;
+			this.marketCap = marketCap;
+		}
+	}
 
 	public static class CompanySearch {
 		public static class Data {
@@ -108,7 +167,7 @@ public class Hkex {
 				+ "&Ranking=ByMC" //
 				+ "&StockType=MB" //
 				+ "&mkt=hk" //
-				+ "&PageNo=1" //
+				+ "&PageNo=2" //
 				+ "&ATypeSHEx=" //
 				+ "&AType=" //
 				+ "&FDD=" //
