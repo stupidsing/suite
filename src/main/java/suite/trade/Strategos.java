@@ -8,46 +8,36 @@ import suite.util.Copy;
 
 public class Strategos {
 
+	public Strategy longHold = prices -> day -> day != 0 ? 0 : 1;
+
 	public Strategy lowPassPrediction(int windowSize, int nFutureDays, int nLowPass, float threshold) {
 		DiscreteCosineTransform dct = new DiscreteCosineTransform();
 		int nPastDays = windowSize - nFutureDays;
 
-		return prices -> {
-			int buySells[] = new int[prices.length];
+		return prices -> holdFixedDays(nFutureDays, prices.length, day -> {
+			if (nPastDays <= day) {
+				float fs0[] = new float[windowSize]; // moving window
+				float price0 = prices[day];
 
-			for (int day = 0; day < prices.length; day++) {
-				int buySell;
+				Copy.primitiveArray(prices, day - nPastDays, fs0, 0, nPastDays);
+				Arrays.fill(fs0, nPastDays, windowSize, price0);
 
-				if (nPastDays <= day) {
-					float fs0[] = new float[windowSize]; // moving window
-					float price0 = prices[day];
+				float fs1[] = dct.dct(fs0);
+				float fs2[] = new float[windowSize];
 
-					Copy.primitiveArray(prices, day - nPastDays, fs0, 0, nPastDays);
-					Arrays.fill(fs0, nPastDays, windowSize, price0);
+				for (int j = 0; j < nLowPass; j++)
+					fs2[j] = fs1[j];
 
-					float fs1[] = dct.dct(fs0);
-					float fs2[] = new float[windowSize];
+				float fs3[] = dct.idct(fs2);
 
-					for (int j = 0; j < nLowPass; j++)
-						fs2[j] = fs1[j];
-
-					float fs3[] = dct.idct(fs2);
-
-					float predict = fs3[fs3.length - 1];
-					buySell = getSignal(price0, predict, threshold);
-				} else
-					buySell = 0;
-
-				buySells[day] = buySell;
-			}
-
-			return holdFixedDays(nFutureDays, buySells);
-		};
+				float predict = fs3[fs3.length - 1];
+				return getSignal(price0, predict, threshold);
+			} else
+				return 0;
+		});
 	}
 
-	public Strategy longHold = prices -> day -> day != 0 ? 0 : 1;
-
-	public Strategy movingAvgConvDivSignalLineCrossover(float alpha0, float alpha1, float macdAlpha) {
+	public Strategy macdSignalLineX(float alpha0, float alpha1, float macdAlpha) {
 		return prices -> {
 			float macd[] = macd(prices, alpha0, alpha1);
 			float macdEmas[] = exponentialMovingAvg(macd, macdAlpha);
@@ -57,32 +47,22 @@ public class Strategos {
 	}
 
 	// trendy; alpha0 < alpha1
-	public Strategy movingAvgConvDivZeroCrossover(float alpha0, float alpha1) {
-		return prices -> {
-			float macd[] = macd(prices, alpha0, alpha1);
-			return crossover(macd);
-		};
+	public Strategy macdZeroLineX(float alpha0, float alpha1) {
+		return prices -> crossover(macd(prices, alpha0, alpha1));
 	}
 
 	public Strategy movingAvgMeanReverting(int nPastDays, int nFutureDays, float threshold) {
 		return prices -> {
 			float movingAvgs[] = movingAvg(prices, nPastDays);
-			int buySells[] = new int[prices.length];
 
-			for (int day = 0; day < prices.length; day++) {
-				int buySell;
-
+			return holdFixedDays(prices.length, nFutureDays, day -> {
 				if (nPastDays <= day) {
 					float price0 = prices[day];
 					float predict = movingAvgs[day];
-					buySell = getSignal(price0, predict, threshold);
+					return getSignal(price0, predict, threshold);
 				} else
-					buySell = 0;
-
-				buySells[day] = buySell;
-			}
-
-			return holdFixedDays(nFutureDays, buySells);
+					return 0;
+			});
 		};
 	}
 
@@ -90,6 +70,14 @@ public class Strategos {
 		float emas0[] = exponentialMovingAvg(prices, alpha0); // long-term
 		float emas1[] = exponentialMovingAvg(prices, alpha1); // short-term
 		return subtract(emas1, emas0);
+	}
+
+	private float[] exponentialMovingAvg(float prices[], float alpha) {
+		float emas[] = new float[prices.length];
+		float ema = prices[0];
+		for (int day = 0; day < prices.length; day++)
+			emas[day] = ema += alpha * (prices[day] - ema);
+		return emas;
 	}
 
 	private float[] movingAvg(float prices[], int windowSize) {
@@ -107,12 +95,11 @@ public class Strategos {
 		return movingAvgs;
 	}
 
-	private float[] exponentialMovingAvg(float prices[], float alpha) {
-		float emas[] = new float[prices.length];
-		float ema = prices[0];
-		for (int day = 0; day < prices.length; day++)
-			emas[day] = ema += alpha * (prices[day] - ema);
-		return emas;
+	private GetBuySell holdFixedDays(int nDays, int nFutureDays, GetBuySell gbs) {
+		int buySells[] = new int[nDays];
+		for (int day = 0; day < nDays; day++)
+			buySells[day] = gbs.get(day);
+		return holdFixedDays(nFutureDays, buySells);
 	}
 
 	// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
