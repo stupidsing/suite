@@ -15,15 +15,17 @@ public class TradeTest {
 	private LocalDate frDate = LocalDate.of(2013, 1, 1);
 	private LocalDate toDate = LocalDate.of(2018, 1, 1);
 
+	private Hkex hkex = new Hkex();
+
 	@Test
 	public void testBackTest() {
-		for (Company stock : new Hkex().hkex) {
+		for (Company stock : hkex.companies) {
 			// String stockCode = "0066.HK"; // "JPY%3DX";
 			String stockCode = stock.code + ".HK";
 			String stockName = stock.name;
 			String disp = stockCode + " " + stockName;
 			try {
-				backTest_(stockCode, disp);
+				backTest(stockCode, disp);
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage() + " in " + disp);
 			}
@@ -33,30 +35,37 @@ public class TradeTest {
 	@Test
 	public void testBackTestForex() {
 		for (String ccy : Arrays.asList("AUD", "CAD", "EUR", "JPY"))
-			backTest_(ccy + "%3DX", ccy);
+			backTest(ccy + "%3DX", ccy);
+	}
+
+	@Test
+	public void testBackTestHkex() {
+		for (String code : Arrays.asList("0004", "0005"))
+			backTest(code + ".HK", code);
 	}
 
 	@Test
 	public void testBackTestHkex0004() {
-		backTest("0004.HK", "-");
+		backTest(hkex.getCompany("0004")); // Wharf (Holdings) Ltd., The
 	}
 
 	@Test
 	public void testBackTestHkex0005() {
-		backTest("0005.HK", "HSBC"); // "JPY%3DX";
+		backTest(hkex.getCompany("0005")); // HSBC Holdings Plc
 	}
 
-	private void backTest(String stockCode, String stockName) {
-		backTest_(stockCode, stockCode + " " + stockName) //
+	private void backTest(Company company) {
+		String disp = company.code + " " + company.name;
+		backTest(company.code + ".HK", disp) //
 				.forEach((sn, backTest) -> {
 					LogUtil.info("strategy = " + sn);
 					LogUtil.info(backTest.log.toString());
 				});
 	}
 
-	private Map<String, BackTest> backTest_(String stockCode, String disp) {
+	private Map<String, BackTest> backTest(String code, String disp) {
 		Strategos sr = new Strategos();
-		DataSource ds = DataSource.yahoo(stockCode, frDate, toDate);
+		DataSource ds = DataSource.yahoo(code, frDate, toDate);
 
 		return Read //
 				.<String, Strategy> empty2() //

@@ -144,12 +144,14 @@ public class Hkex {
 			+ "\n1910|Samsonite International S.A.|39802" //
 	;
 
-	public List<Company> hkex = Read //
+	public List<Company> companies = Read //
 			.from(lines.split("\n")) //
 			.filter(line -> !line.isEmpty()) //
 			.map(line -> line.split("\\|")) //
 			.map(array -> new Company(array[0], array[1], Integer.parseInt(array[2]))) //
 			.toList();
+
+	private Map<String, Company> companyByCode = Read.from(companies).toMap(company -> company.code);
 
 	public class Company {
 		public final String code;
@@ -194,6 +196,10 @@ public class Hkex {
 		public int PageSize;
 		public int TotalCount;
 		public String LastUpdateDate;
+	}
+
+	public Company getCompany(String code) {
+		return companyByCode.get(code);
 	}
 
 	public List<Company> list() {

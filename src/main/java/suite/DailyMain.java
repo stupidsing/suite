@@ -24,14 +24,14 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	@Override
-	protected boolean run(String args[]) throws Exception {
-		Strategy strategy = new Strategos().movingAvgMeanReverting(128, 8, .15f);
+	protected boolean run(String args[]) {
+		Strategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
 		LocalDate today = LocalDate.now();
 		LocalDate frDate = today.minusDays(128);
 		LocalDate toDate = today;
 		List<String> messages = new ArrayList<>();
 
-		for (Company company : new Hkex().hkex) {
+		for (Company company : new Hkex().companies) {
 			String stockCode = company.code + ".HK";
 			String stockName = company.name;
 			String prefix = stockCode + " " + stockName;
@@ -42,7 +42,7 @@ public class DailyMain extends ExecutableProgram {
 
 				int signal = strategy.analyze(prices).get(prices.length - 1);
 				if (signal != 0)
-					messages.add("\nequity " + stockCode + " " + company.name + " has signal " + signal);
+					messages.add("equity " + stockCode + " " + company.name + " has signal " + signal);
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage() + " in " + prefix);
 			}
@@ -51,9 +51,9 @@ public class DailyMain extends ExecutableProgram {
 		}
 
 		String result = Read.from(messages).collect(As.joined("\n"));
+		LogUtil.info(result);
 
 		SmtpSslGmail smtp = new SmtpSslGmail();
-		LogUtil.info(result);
 		smtp.send(null, getClass().getName(), result);
 
 		return true;

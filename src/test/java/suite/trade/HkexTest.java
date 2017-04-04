@@ -23,6 +23,7 @@ public class HkexTest {
 		String name = Read.from(companies) //
 				.filter(fixie -> Util.stringEquals(fixie.code, "0005")) //
 				.uniqueResult().name;
+
 		assertTrue(name.equals("HSBC Holdings plc"));
 	}
 
