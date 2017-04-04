@@ -6,25 +6,24 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.adt.Fixie;
-import suite.adt.Fixie.D_;
 import suite.streamlet.Read;
+import suite.trade.Hkex.Company;
 import suite.util.Util;
 
 public class HkexTest {
 
 	@Test
 	public void test() {
-		List<Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_>> fixies = new Hkex().list();
-		System.out.println(fixies);
+		List<Company> companies = new Hkex().list();
+		System.out.println(companies);
 
-		for (Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_> fixie : fixies)
-			System.out.println("Fixie.of(\"" + fixie.t0 + "\", \"" + fixie.t1 + "\", " + fixie.t2 + "), //");
+		for (Company company : companies)
+			System.out.println("+ \"\\n" + company.code + "|" + company.name + "|" + company.marketCap + "\" //");
 
-		String code = Read.from(fixies) //
-				.filter(fixie -> Util.stringEquals(fixie.t0, "5")) //
-				.uniqueResult().t1;
-		assertTrue(code.equals("HSBC Holdings plc"));
+		String name = Read.from(companies) //
+				.filter(fixie -> Util.stringEquals(fixie.code, "0005")) //
+				.uniqueResult().name;
+		assertTrue(name.equals("HSBC Holdings plc"));
 	}
 
 }

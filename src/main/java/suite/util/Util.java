@@ -300,6 +300,13 @@ public class Util {
 		return list.subList(Math.min(pos, size), size);
 	}
 
+	public static String right(String s, int pos) {
+		int size = s.length();
+		if (pos < 0)
+			pos += size;
+		return s.substring(pos);
+	}
+
 	public static void run(Class<? extends ExecutableProgram> clazz, String args[]) {
 		run(clazz, args, RunOption.RUN____);
 	}

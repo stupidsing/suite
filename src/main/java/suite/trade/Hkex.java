@@ -8,13 +8,12 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import suite.adt.Fixie;
-import suite.adt.Fixie.D_;
 import suite.http.HttpUtil;
 import suite.os.Execute;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.To;
+import suite.util.Util;
 
 public class Hkex {
 
@@ -103,6 +102,46 @@ public class Hkex {
 			+ "\n2382|Sunny Optical Technology (Group) Co. Ltd.|61816" //
 			+ "\n2319|China Mengniu Dairy Co. Ltd.|61780" //
 			+ "\n2282|MGM China Holdings Ltd.|61408" //
+			+ "\n3799|Dali Foods Group Co. Ltd.|61076" //
+			+ "\n0486|United Company RUSAL Plc|60924" //
+			+ "\n0144|China Merchants Port Holdings Co. Ltd.|59342" //
+			+ "\n0669|Techtronic Industries Co. Ltd.|58459" //
+			+ "\n0291|China Resources Beer (Holdings) Co. Ltd.|58265" //
+			+ "\n0992|Lenovo Group Ltd.|57987" //
+			+ "\n1988|China Minsheng Banking Corp., Ltd. - H Shares|57618" //
+			+ "\n3320|China Resources Pharmaceutical Group Ltd.|56875" //
+			+ "\n1357|Meitu, Inc.|55490" //
+			+ "\n2020|ANTA Sports Products Ltd.|55054" //
+			+ "\n0322|Tingyi (Cayman Islands) Holding Corp.|54980" //
+			+ "\n2328|PICC Property and Casualty Co. Ltd. - H Shares|54918" //
+			+ "\n0659|NWS Holdings Ltd.|54774" //
+			+ "\n0392|Beijing Enterprises Holdings Ltd.|53452" //
+			+ "\n0371|Beijing Enterprises Water Group Ltd.|53400" //
+			+ "\n0728|China Telecom Corporation Ltd. - H Shares|52595" //
+			+ "\n1378|China Hongqiao Group Ltd.|51181" //
+			+ "\n0551|Yue Yuen Industrial (Holdings) Ltd.|50705" //
+			+ "\n1169|Haier Electronics Group Co., Ltd.|49699" //
+			+ "\n1800|China Communications Construction Co. Ltd. - H Shares|49234" //
+			+ "\n2098|Zall Group Ltd.|49000" //
+			+ "\n2688|ENN Energy Holdings Ltd.|48822" //
+			+ "\n0257|China Everbright International Ltd.|47337" //
+			+ "\n1177|Sino Biopharmaceutical Ltd.|47290" //
+			+ "\n0010|Hang Lung Group Ltd.|45274" //
+			+ "\n0981|Semiconductor Manufacturing International Corporation|45123" //
+			+ "\n6837|Haitong Securities Co., Ltd. - H Shares|44734" //
+			+ "\n0293|Cathay Pacific Airways Ltd.|44688" //
+			+ "\n1099|Sinopharm Group Co. Ltd. - H Shares|43359" //
+			+ "\n1880|Belle International Holdings Ltd.|42846" //
+			+ "\n0522|ASM Pacific Technology Ltd.|42661" //
+			+ "\n0813|Shimao Property Holdings Ltd.|42202" //
+			+ "\n0069|Shangri-La Asia Ltd.|41958" //
+			+ "\n1359|China Cinda Asset Management Co., Ltd. - H Shares|41110" //
+			+ "\n1918|Sunac China Holdings Ltd.|40932" //
+			+ "\n0247|Tsim Sha Tsui Properties Ltd.|40777" //
+			+ "\n0087|Swire Pacific Ltd. 'B'|40615" //
+			+ "\n0683|Kerry Properties Ltd.|39975" //
+			+ "\n1211|BYD Co. Ltd. - H Shares|39940" //
+			+ "\n1910|Samsonite International S.A.|39802" //
 	;
 
 	public List<Company> hkex = Read //
@@ -157,7 +196,11 @@ public class Hkex {
 		public String LastUpdateDate;
 	}
 
-	public List<Fixie<String, String, Integer, D_, D_, D_, D_, D_, D_, D_>> list() {
+	public List<Company> list() {
+		return list(0);
+	}
+
+	public List<Company> list(int pageNo) {
 		String url = "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
 				+ "?location=companySearch" //
 				+ "&SearchMethod=2" //
@@ -167,7 +210,7 @@ public class Hkex {
 				+ "&Ranking=ByMC" //
 				+ "&StockType=MB" //
 				+ "&mkt=hk" //
-				+ "&PageNo=1" //
+				+ "&PageNo=" + (pageNo + 1) //
 				+ "&ATypeSHEx=" //
 				+ "&AType=" //
 				+ "&FDD=" //
@@ -197,8 +240,8 @@ public class Hkex {
 				.concatMap(table -> Read.from(table.tr)) //
 				.filter(tr -> !tr.thead) //
 				.concatMap(tr -> Read.from(tr.td)) //
-				.map(list -> Fixie.of( //
-						list.get(1).replace("*", "").trim(), //
+				.map(list -> new Company( //
+						Util.right("0000" + list.get(1).replace("*", "").trim(), -4), //
 						list.get(2).trim(), //
 						Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
 				.toList();
