@@ -6,6 +6,8 @@ import java.util.List;
 
 import suite.os.LogUtil;
 import suite.smtp.SmtpSslGmail;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.trade.DataSource;
 import suite.trade.Hkex;
 import suite.trade.Hkex.Company;
@@ -27,7 +29,7 @@ public class DailyMain extends ExecutableProgram {
 		LocalDate today = LocalDate.now();
 		LocalDate frDate = today.minusDays(128);
 		LocalDate toDate = today;
-		List<String> results = new ArrayList<>();
+		List<String> messages = new ArrayList<>();
 
 		for (Company company : new Hkex().hkex) {
 			String stockCode = company.code + ".HK";
@@ -40,7 +42,7 @@ public class DailyMain extends ExecutableProgram {
 
 				int signal = strategy.analyze(prices).get(prices.length - 1);
 				if (signal != 0)
-					results.add("\nequity " + stockCode + " " + company.name + " has signal " + signal);
+					messages.add("\nequity " + stockCode + " " + company.name + " has signal " + signal);
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage() + " in " + prefix);
 			}
@@ -48,12 +50,11 @@ public class DailyMain extends ExecutableProgram {
 			Util.sleepQuietly(2000);
 		}
 
-		SmtpSslGmail smtp = new SmtpSslGmail();
+		String result = Read.from(messages).collect(As.joined("\n"));
 
-		for (String result : results) {
-			LogUtil.info(result);
-			smtp.send(null, getClass().getName(), result);
-		}
+		SmtpSslGmail smtp = new SmtpSslGmail();
+		LogUtil.info(result);
+		smtp.send(null, getClass().getName(), result);
 
 		return true;
 	}
