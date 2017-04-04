@@ -66,7 +66,7 @@ public class Strategos {
 		};
 	}
 
-	private float[] macd(float[] prices, float alpha0, float alpha1) {
+	private float[] macd(float prices[], float alpha0, float alpha1) {
 		float emas0[] = exponentialMovingAvg(prices, alpha0); // long-term
 		float emas1[] = exponentialMovingAvg(prices, alpha1); // short-term
 		return subtract(emas1, emas0);
