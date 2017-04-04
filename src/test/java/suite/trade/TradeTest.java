@@ -57,10 +57,10 @@ public class TradeTest {
 		backTest_(source, disp + ", strategy = macdZeroLineX", sr.movingAvgConvDivZeroCrossover(.8f, .9f));
 	}
 
-	private void backTest_(DataSource source, String prefix, Strategy strategy) {
+	private void backTest_(DataSource source, String disp, Strategy strategy) {
 		BackTest backTest = BackTest.test(source, strategy);
 		Account account = backTest.account;
-		LogUtil.info(prefix //
+		LogUtil.info(disp //
 				+ ", number of transactions = " + account.nTransactions() //
 				+ ", net gain = " + String.format("%.2f", account.cash()));
 	}
