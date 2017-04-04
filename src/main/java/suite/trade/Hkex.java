@@ -78,7 +78,7 @@ public class Hkex {
 			+ "\n0083|Sino Land Co. Ltd.|85651" //
 			+ "\n1128|Wynn Macau, Ltd.|83232" //
 			+ "\n2799|China Huarong Asset Management Co., Ltd. - H Shares|81893" //
-			+ "\n2601 *|China Pacific Insurance (Group) Co., Ltd. - H Shares|78819" //
+			+ "\n2601|China Pacific Insurance (Group) Co., Ltd. - H Shares|78819" //
 			+ "\n0998|China CITIC Bank Corporation Ltd. - H Shares|77090" //
 			+ "\n6823|HKT Trust and HKT Ltd. - SS|76020" //
 			+ "\n0960|Longfor Properties Co. Ltd.|75159" //
@@ -167,7 +167,7 @@ public class Hkex {
 				+ "&Ranking=ByMC" //
 				+ "&StockType=MB" //
 				+ "&mkt=hk" //
-				+ "&PageNo=2" //
+				+ "&PageNo=1" //
 				+ "&ATypeSHEx=" //
 				+ "&AType=" //
 				+ "&FDD=" //
@@ -198,7 +198,7 @@ public class Hkex {
 				.filter(tr -> !tr.thead) //
 				.concatMap(tr -> Read.from(tr.td)) //
 				.map(list -> Fixie.of( //
-						list.get(1).trim(), //
+						list.get(1).replace("*", "").trim(), //
 						list.get(2).trim(), //
 						Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
 				.toList();
