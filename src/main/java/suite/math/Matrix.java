@@ -182,6 +182,7 @@ public class Matrix {
 			throw new RuntimeException("Wrong matrix sizes");
 	}
 
+	// calculate m * nT
 	public static float[][] mul_mnT(float m[][], float n[][]) {
 		int ks = w(m);
 
