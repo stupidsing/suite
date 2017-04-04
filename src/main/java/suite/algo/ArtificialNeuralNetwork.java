@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import suite.math.Matrix;
 import suite.math.Sigmoid;
 import suite.util.Util;
 
@@ -54,11 +55,7 @@ public class ArtificialNeuralNetwork {
 		outputs.add(values);
 
 		for (LayerWeight lw : lws) {
-			float values1[] = new float[lw.nOutputs];
-
-			for (int j = 0; j < lw.nOutputs; j++)
-				for (int i = 0; i < lw.nInputs; i++)
-					values1[j] += values[i] * lw.weights[i][j];
+			float values1[] = Matrix.mul(values, lw.weights);
 
 			for (int j = 0; j < lw.nOutputs; j++)
 				values1[j] = activationFunction(values1[j]);
@@ -78,23 +75,22 @@ public class ArtificialNeuralNetwork {
 
 			float ins[] = activations.get(layer - 1);
 			float outs[] = activations.get(layer);
-			float diffs[] = new float[lw0.nOutputs];
+			float errors1[];
 
 			if (lw1 != null)
-				for (int j = 0; j < lw1.nInputs; j++)
-					for (int k = 0; k < lw1.nOutputs; k++)
-						diffs[j] += errors[k] * lw1.weights[j][k];
-			else
+				errors1 = Matrix.mul(lw1.weights, errors);
+			else {
+				errors1 = new float[lw0.nOutputs];
 				for (int j = 0; j < lw0.nOutputs; j++)
-					diffs[j] = expected[j] - outs[j];
-
-			float errors1[] = new float[lw0.nOutputs];
-
-			for (int j = 0; j < lw0.nOutputs; j++) {
-				errors1[j] = diffs[j] * activationFunctionGradient(outs[j]);
-				for (int i = 0; i < lw0.nInputs; i++)
-					lw0.weights[i][j] += learningRate * errors1[j] * ins[i];
+					errors1[j] = expected[j] - outs[j];
 			}
+
+			for (int j = 0; j < lw0.nOutputs; j++)
+				errors1[j] *= activationFunctionGradient(outs[j]);
+
+			for (int j = 0; j < lw0.nOutputs; j++)
+				for (int i = 0; i < lw0.nInputs; i++)
+					lw0.weights[i][j] += learningRate * ins[i] * errors1[j];
 
 			errors = errors1;
 		}

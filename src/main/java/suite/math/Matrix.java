@@ -2,117 +2,165 @@ package suite.math;
 
 import java.util.Arrays;
 
-import suite.util.Util;
-
 public class Matrix {
 
-	public final float v[][];
-
-	public Matrix(Matrix m) {
-		this(m.height(), m.width());
-		for (int i = 0; i < height(); i++)
-			for (int j = 0; j < width(); j++)
-				v[i][j] = m.v[i][j];
+	public static int height(float m[][]) {
+		return h(m);
 	}
 
-	public Matrix(int height, int width) {
-		this(new float[height][width]);
+	public static int width(float m[][]) {
+		return w(m);
 	}
 
-	public Matrix(float v[][]) {
-		this.v = v;
+	public static float[][] of(float m0[][]) {
+		int height = h(m0);
+		int width = w(m0);
+		float m1[][] = of(height, width);
+		for (int i = 0; i < height; i++)
+			for (int j = 0; j < width; j++)
+				m1[i][j] = m0[i][j];
+		return m1;
 	}
 
-	public static Matrix rotate(float angle) {
+	public static float[][] of(int height, int width) {
+		return new float[height][width];
+	}
+
+	public static float[][] rotate(float angle) {
 		float sin = (float) Math.sin(angle);
 		float cos = (float) Math.cos(angle);
-		return new Matrix(new float[][] { { cos, -sin, }, { sin, cos, }, });
+		return new float[][] { { cos, -sin, }, { sin, cos, }, };
 	}
 
-	public static Matrix rotateX(float angle) {
+	public static float[][] rotateX(float angle) {
 		float sin = (float) Math.sin(angle);
 		float cos = (float) Math.cos(angle);
-		return new Matrix(new float[][] { { 0f, 0f, 0f, }, { 0f, cos, -sin, }, { 0f, sin, cos, }, });
+		return new float[][] { { 0f, 0f, 0f, }, { 0f, cos, -sin, }, { 0f, sin, cos, }, };
 	}
 
-	public static Matrix rotateY(float angle) {
+	public static float[][] rotateY(float angle) {
 		float sin = (float) Math.sin(angle);
 		float cos = (float) Math.cos(angle);
-		return new Matrix(new float[][] { { cos, 0f, -sin, }, { 0f, 0f, 0f, }, { sin, 0f, cos, }, });
+		return new float[][] { { cos, 0f, -sin, }, { 0f, 0f, 0f, }, { sin, 0f, cos, }, };
 	}
 
-	public static Matrix rotateZ(float angle) {
+	public static float[][] rotateZ(float angle) {
 		float sin = (float) Math.sin(angle);
 		float cos = (float) Math.cos(angle);
-		return new Matrix(new float[][] { { cos, -sin, 0f, }, { sin, cos, 0f, }, { 0f, 0f, 0f, }, });
+		return new float[][] { { cos, -sin, 0f, }, { sin, cos, 0f, }, { 0f, 0f, 0f, }, };
 	}
 
-	public static Matrix add(Matrix m, Matrix n) {
-		int height = m.height(), width = m.width();
-
-		if (height == n.height() && width == n.width()) {
-			Matrix o = new Matrix(height, width);
-
+	public static float[][] add(float m[][], float n[][]) {
+		int height = h(m), width = w(m);
+		if (height == h(n) && width == w(n)) {
+			float o[][] = of(height, width);
 			for (int i = 0; i < height; i++)
 				for (int j = 0; j < width; j++)
-					o.v[i][j] = m.v[i][j] + n.v[i][j];
-
+					o[i][j] = m[i][j] + n[i][j];
 			return o;
 		} else
 			throw new RuntimeException("Wrong matrix sizes");
 	}
 
-	public static Matrix neg(Matrix m) {
-		int height = m.height(), width = m.width();
-		Matrix o = new Matrix(height, width);
-
+	public static float[][] neg(float m[][]) {
+		int height = h(m), width = w(m);
+		float o[][] = of(height, width);
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
-				o.v[i][j] = -m.v[i][j];
-
+				o[i][j] = -m[i][j];
 		return o;
 	}
 
-	public static Matrix transpose(Matrix m) {
-		int height = m.height(), width = m.width();
-		Matrix o = new Matrix(width, height);
-
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
-				o.v[j][i] = m.v[i][j];
-
+	public static float[][] transpose(float m[][]) {
+		int height = h(m), width = w(m);
+		float o[][] = of(width, height);
+		int i1, j1;
+		for (int i0 = 0; i0 < height; i0 = i1) {
+			i1 = Math.min(i0 + 64, height);
+			for (int j0 = 0; j0 < width; j0 = j1) {
+				j1 = Math.min(j0 + 64, width);
+				for (int i = i0; i < i1; i++)
+					for (int j = j0; j < j1; j++)
+						o[j][i] = m[i][j];
+			}
+		}
 		return o;
 	}
 
-	public static Matrix mul(Matrix m, float f) {
-		int height = m.height(), width = m.width();
-		Matrix m1 = new Matrix(height, width);
-
+	public static float[][] mul(float m0[][], float f) {
+		int height = h(m0), width = w(m0);
+		float m1[][] = of(height, width);
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
-				m1.v[i][j] = m.v[i][j] * f;
-
+				m1[i][j] = m0[i][j] * f;
 		return m1;
 	}
 
-	public static Vector mul(Matrix m, Vector v) {
-		if (m.height() == 3 && m.width() == 3) {
-			float x1 = m.v[0][0] * v.x + m.v[0][1] * v.y + m.v[0][2] * v.z;
-			float y1 = m.v[1][0] * v.x + m.v[1][1] * v.y + m.v[1][2] * v.z;
-			float z1 = m.v[2][0] * v.x + m.v[2][1] * v.y + m.v[2][2] * v.z;
+	public static Vector mul(float m[][], Vector v) {
+		if (h(m) == 3 && w(m) == 3) {
+			float x1 = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z;
+			float y1 = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z;
+			float z1 = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z;
 			return new Vector(x1, y1, z1);
 		} else
 			throw new RuntimeException("Wrong matrix size");
 	}
 
+	public static float[] mul(float m[], float n[][]) {
+		int ks = m.length;
+
+		if (ks == h(n)) {
+			int width = w(n);
+			float o[] = new float[width];
+			int j1, k1;
+
+			for (int j0 = 0; j0 < width; j0 = j1) {
+				j1 = Math.min(j0 + 64, width);
+				for (int k0 = 0; k0 < ks; k0 = k1) {
+					k1 = Math.min(k0 + 64, ks);
+					for (int j = j0; j < j1; j++)
+						for (int k = k0; k < k1; k++)
+							o[j] += m[k] * n[k][j];
+				}
+			}
+
+			return o;
+		} else
+			throw new RuntimeException("Wrong matrix sizes");
+	}
+
+	// nT is column vector
+	public static float[] mul(float m[][], float nT[]) {
+		int ks = w(m);
+
+		if (ks == nT.length) {
+			int height = h(m);
+			float o[] = new float[height];
+			int i1, k1;
+
+			for (int i0 = 0; i0 < height; i0 = i1) {
+				i1 = Math.min(i0 + 64, height);
+				for (int k0 = 0; k0 < ks; k0 = k1) {
+					k1 = Math.min(k0 + 64, ks);
+					for (int i = i0; i < i1; i++)
+						for (int k = k0; k < k1; k++)
+							o[i] += m[i][k] * nT[k];
+				}
+			}
+
+			return o;
+		} else
+			throw new RuntimeException("Wrong matrix sizes");
+	}
+
 	// calculate mT * n
-	public static Matrix transposeMul(Matrix m, Matrix n) {
-		int ks = m.height();
+	public static float[][] mul_mTn(float m[][], float n[][]) {
+		int ks = h(m);
 
-		if (ks == n.height()) {
-			int height = m.width();
-			int width = n.width();
-			Matrix o = new Matrix(height, width);
+		if (ks == h(n)) {
+			int height = w(m);
+			int width = w(n);
+			float o[][] = of(height, width);
 			int i1, j1, k1;
 
 			for (int i0 = 0; i0 < height; i0 = i1) {
@@ -121,10 +169,10 @@ public class Matrix {
 					j1 = Math.min(j0 + 64, width);
 					for (int k0 = 0; k0 < ks; k0 = k1) {
 						k1 = Math.min(k0 + 64, ks);
-						for (int i = i0; i < j1; i++)
+						for (int i = i0; i < i1; i++)
 							for (int j = j0; j < j1; j++)
 								for (int k = k0; k < k1; k++)
-									o.v[i][j] += m.v[k][i] * n.v[k][j];
+									o[i][j] += m[k][i] * n[k][j];
 					}
 				}
 			}
@@ -134,13 +182,13 @@ public class Matrix {
 			throw new RuntimeException("Wrong matrix sizes");
 	}
 
-	public static Matrix mul(Matrix m, Matrix n) {
-		int ks = m.width();
+	public static float[][] mul_mnT(float m[][], float n[][]) {
+		int ks = w(m);
 
-		if (ks == n.height()) {
-			int height = m.height();
-			int width = n.width();
-			Matrix o = new Matrix(height, width);
+		if (ks == w(n)) {
+			int height = h(m);
+			int width = h(n);
+			float o[][] = of(height, width);
 			int i1, j1, k1;
 
 			for (int i0 = 0; i0 < height; i0 = i1) {
@@ -149,10 +197,10 @@ public class Matrix {
 					j1 = Math.min(j0 + 64, width);
 					for (int k0 = 0; k0 < ks; k0 = k1) {
 						k1 = Math.min(k0 + 64, ks);
-						for (int i = i0; i < j1; i++)
+						for (int i = i0; i < i1; i++)
 							for (int j = j0; j < j1; j++)
 								for (int k = k0; k < k1; k++)
-									o.v[i][j] += m.v[i][k] * n.v[k][j];
+									o[i][j] += m[i][k] * n[j][k];
 					}
 				}
 			}
@@ -162,41 +210,64 @@ public class Matrix {
 			throw new RuntimeException("Wrong matrix sizes");
 	}
 
-	public static Matrix convolute(Matrix m, Matrix k) {
-		int kh = k.height(), kw = k.width();
-		int h1 = m.height() - kh + 1;
-		int w1 = m.width() - kw + 1;
-		Matrix o = new Matrix(h1, w1);
+	public static float[][] mul(float m[][], float n[][]) {
+		int ks = w(m);
 
+		if (ks == h(n)) {
+			int height = h(m);
+			int width = w(n);
+			float o[][] = of(height, width);
+			int i1, j1, k1;
+
+			for (int i0 = 0; i0 < height; i0 = i1) {
+				i1 = Math.min(i0 + 64, height);
+				for (int j0 = 0; j0 < width; j0 = j1) {
+					j1 = Math.min(j0 + 64, width);
+					for (int k0 = 0; k0 < ks; k0 = k1) {
+						k1 = Math.min(k0 + 64, ks);
+						for (int i = i0; i < i1; i++)
+							for (int j = j0; j < j1; j++)
+								for (int k = k0; k < k1; k++)
+									o[i][j] += m[i][k] * n[k][j];
+					}
+				}
+			}
+
+			return o;
+		} else
+			throw new RuntimeException("Wrong matrix sizes");
+	}
+
+	public static float[][] convolute(float m[][], float k[][]) {
+		int kh = h(k), kw = w(k);
+		int h1 = h(m) - kh + 1;
+		int w1 = w(m) - kw + 1;
+		float o[][] = of(h1, w1);
 		for (int i = 0; i < h1; i++)
-			for (int j = 0; j < w1; j++) {
-				float sum = 0f;
+			for (int j = 0; j < w1; j++)
 				for (int di = 0; di < kh; di++)
 					for (int dj = 0; dj < kw; dj++)
-						sum += m.v[i + di][j + dj] * k.v[di][dj];
-				o.v[i][j] = sum;
-			}
-
+						o[i][j] += m[i + di][j + dj] * k[di][dj];
 		return o;
 	}
 
 	/**
 	 * Calculates matric inverse by Gaussian-Jordan elimination.
 	 */
-	public static Matrix inverse(Matrix m0) {
-		Matrix m = new Matrix(m0); // do not alter input matrix
-		int size = m.height();
+	public static float[][] inverse(float m0[][]) {
+		float m[][] = of(m0); // do not alter input matrix
+		int size = h(m);
 
-		if (size != m.width())
+		if (size != w(m))
 			throw new RuntimeException("Wrong matrix size");
 
-		Matrix n = identity(size);
+		float n[][] = identity(size);
 
 		for (int r = 0; r < size; r++) {
 			int c = r;
 
 			for (; c < size; c++)
-				if (m.v[c][r] != 0f)
+				if (m[c][r] != 0f)
 					break;
 
 			if (c == size)
@@ -207,13 +278,13 @@ public class Matrix {
 				swapRows(n, r, c);
 			}
 
-			float factor = 1f / m.v[r][r];
+			float factor = 1f / m[r][r];
 			mulRow(m, r, factor);
 			mulRow(n, r, factor);
 
 			for (int r1 = 0; r1 < size; r1++)
 				if (r != r1) {
-					float factor1 = -m.v[r1][r];
+					float factor1 = -m[r1][r];
 					addMultipliedRow(m, r, factor1, r1);
 					addMultipliedRow(n, r, factor1, r1);
 				}
@@ -222,53 +293,53 @@ public class Matrix {
 		return n;
 	}
 
-	private static void swapRows(Matrix m, int row0, int row1) {
-		float temp[] = m.v[row0];
-		m.v[row0] = m.v[row1];
-		m.v[row1] = temp;
+	private static void swapRows(float m[][], int row0, int row1) {
+		float temp[] = m[row0];
+		m[row0] = m[row1];
+		m[row1] = temp;
 	}
 
-	private static void mulRow(Matrix m, int row, float factor) {
-		for (int col = 0; col < m.width(); col++)
-			m.v[row][col] *= factor;
+	private static void mulRow(float m[][], int row, float factor) {
+		for (int col = 0; col < w(m); col++)
+			m[row][col] *= factor;
 	}
 
-	private static void addMultipliedRow(Matrix m, int sourceRow, float factor, int targetRow) {
-		for (int col = 0; col < m.width(); col++)
-			m.v[targetRow][col] = m.v[targetRow][col] + factor * m.v[sourceRow][col];
+	private static void addMultipliedRow(float m[][], int sourceRow, float factor, int targetRow) {
+		for (int col = 0; col < w(m); col++)
+			m[targetRow][col] = m[targetRow][col] + factor * m[sourceRow][col];
 	}
 
-	public static Matrix identity(int size) {
-		Matrix n = new Matrix(size, size);
-
+	public static float[][] identity(int size) {
+		float m[][] = of(size, size);
 		for (int r = 0; r < size; r++)
-			n.v[r][r] = 1f;
-		return n;
+			m[r][r] = 1f;
+		return m;
 	}
 
-	public int height() {
-		return v.length;
+	public static int hashCode(float m[][]) {
+		int hashCode = 0;
+		for (float row[] : m)
+			hashCode = hashCode * 31 + Arrays.hashCode(row);
+		return hashCode;
 	}
 
-	public int width() {
-		return v[0].length;
+	public static boolean equals(float m[][], float n[][]) {
+		int h = h(m);
+		int w = w(m);
+		if (h == h(n) && w == w(n)) {
+			for (int i = 0; i < h; i++)
+				for (int j = 0; j < w; j++)
+					if (m[i][j] != n[i][j])
+						return false;
+			return true;
+		} else
+			return false;
 	}
 
-	@Override
-	public boolean equals(Object object) {
-		return Util.clazz(object) == Matrix.class && Arrays.deepEquals(v, ((Matrix) object).v);
-	}
-
-	@Override
-	public int hashCode() {
-		return Arrays.deepHashCode(v);
-	}
-
-	@Override
-	public String toString() {
+	public static String toString(float m[][]) {
 		StringBuilder sb = new StringBuilder();
 
-		for (float row[] : v) {
+		for (float row[] : m) {
 			sb.append("[");
 			for (float f : row)
 				sb.append(f + " ");
@@ -276,6 +347,14 @@ public class Matrix {
 		}
 
 		return sb.toString();
+	}
+
+	private static int h(float m[][]) {
+		return m.length;
+	}
+
+	private static int w(float m[][]) {
+		return 0 < m.length ? m[0].length : 0;
 	}
 
 }
