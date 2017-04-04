@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import suite.math.Sigmoid;
 import suite.util.Util;
 
 public class ArtificialNeuralNetwork {
@@ -55,12 +56,12 @@ public class ArtificialNeuralNetwork {
 		for (LayerWeight lw : lws) {
 			float values1[] = new float[lw.nOutputs];
 
-			for (int j = 0; j < lw.nOutputs; j++) {
-				float sum = 0f;
+			for (int j = 0; j < lw.nOutputs; j++)
 				for (int i = 0; i < lw.nInputs; i++)
-					sum += values[i] * lw.weights[i][j];
-				values1[j] = activationFunction(sum);
-			}
+					values1[j] += values[i] * lw.weights[i][j];
+
+			for (int j = 0; j < lw.nOutputs; j++)
+				values1[j] = activationFunction(values1[j]);
 
 			outputs.add(values = values1);
 		}
@@ -80,12 +81,9 @@ public class ArtificialNeuralNetwork {
 			float diffs[] = new float[lw0.nOutputs];
 
 			if (lw1 != null)
-				for (int j = 0; j < lw1.nInputs; j++) {
-					float sum = 0f;
+				for (int j = 0; j < lw1.nInputs; j++)
 					for (int k = 0; k < lw1.nOutputs; k++)
-						sum += errors[k] * lw1.weights[j][k];
-					diffs[j] = sum;
-				}
+						diffs[j] += errors[k] * lw1.weights[j][k];
 			else
 				for (int j = 0; j < lw0.nOutputs; j++)
 					diffs[j] = expected[j] - outs[j];
@@ -103,11 +101,11 @@ public class ArtificialNeuralNetwork {
 	}
 
 	private float activationFunction(float value) {
-		return 1f / (1f + (float) Math.exp(-value));
+		return Sigmoid.sigmoid(value);
 	}
 
 	private float activationFunctionGradient(float value) {
-		return value * (1f - value);
+		return Sigmoid.sigmoidGradient(value);
 	}
 
 }
