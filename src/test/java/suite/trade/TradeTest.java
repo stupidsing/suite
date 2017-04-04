@@ -1,10 +1,12 @@
 package suite.trade;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import org.junit.Test;
 
 import suite.os.LogUtil;
+import suite.streamlet.Read;
 import suite.trade.Hkex.Company;
 
 public class TradeTest {
@@ -28,6 +30,12 @@ public class TradeTest {
 	}
 
 	@Test
+	public void testBackTestForex() {
+		String ccy = "JPY";
+		backTest(ccy + "%3DX", ccy);
+	}
+
+	@Test
 	public void testBackTestHkex0004() {
 		backTest("0004.HK", "-");
 	}
@@ -37,23 +45,27 @@ public class TradeTest {
 		backTest("0005.HK", "HSBC"); // "JPY%3DX";
 	}
 
-	@Test
-	public void testBackTestJpy() {
-		backTest("JPY%3DX", "JPY");
-	}
-
 	private void backTest(String stockCode, String stockName) {
-		backTest_(stockCode, stockCode + " " + stockName);
+		backTest_(stockCode, stockCode + " " + stockName) //
+				.forEach((sn, backTest) -> {
+					LogUtil.info("strategy = " + sn);
+					LogUtil.info(backTest.log.toString());
+				});
 	}
 
-	private void backTest_(String stockCode, String disp) {
+	private Map<String, BackTest> backTest_(String stockCode, String disp) {
 		Strategos sr = new Strategos();
 		DataSource ds = DataSource.yahoo(stockCode, frDate, toDate);
-		backTest_(ds, disp + ", strategy = longHold", sr.longHold);
-		backTest_(ds, disp + ", strategy = lowPassPrediction", sr.lowPassPrediction(128, 8, 8, .02f));
-		backTest_(ds, disp + ", strategy = movingAvgMeanReverting", sr.movingAvgMeanReverting(64, 8, .15f));
-		backTest_(ds, disp + ", strategy = macdSignalLineX", sr.macdSignalLineX(.8f, .9f, .85f));
-		backTest_(ds, disp + ", strategy = macdZeroLineX", sr.macdZeroLineX(.8f, .9f));
+
+		return Read //
+				.<String, Strategy> empty2() //
+				.cons("longHold", sr.longHold) //
+				.cons("lowPassPrediction", sr.lowPassPrediction(128, 8, 8, .02f)) //
+				.cons("movingAvgMeanReverting", sr.movingAvgMeanReverting(64, 8, .15f)) //
+				.cons("macdSignalLineX", sr.macdSignalLineX(.8f, .9f, .85f)) //
+				.cons("macdZeroLineX", sr.macdZeroLineX(.8f, .9f)) //
+				.mapEntry((sn, strategy) -> sn, (sn, strategy) -> backTest_(ds, disp + ", strategy = " + sn, strategy)) //
+				.toMap();
 	}
 
 	private BackTest backTest_(DataSource ds, String disp, Strategy strategy) {

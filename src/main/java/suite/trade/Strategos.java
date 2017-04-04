@@ -14,7 +14,7 @@ public class Strategos {
 		DiscreteCosineTransform dct = new DiscreteCosineTransform();
 		int nPastDays = windowSize - nFutureDays;
 
-		return prices -> holdFixedDays(nFutureDays, prices.length, day -> {
+		return prices -> holdFixedDays(prices.length, nFutureDays, day -> {
 			if (nPastDays <= day) {
 				float fs0[] = new float[windowSize]; // moving window
 				float price0 = prices[day];
@@ -95,15 +95,13 @@ public class Strategos {
 		return movingAvgs;
 	}
 
+	// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
 	private GetBuySell holdFixedDays(int nDays, int nFutureDays, GetBuySell gbs) {
 		int buySells[] = new int[nDays];
+
 		for (int day = 0; day < nDays; day++)
 			buySells[day] = gbs.get(day);
-		return holdFixedDays(nFutureDays, buySells);
-	}
 
-	// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
-	private GetBuySell holdFixedDays(int nFutureDays, int buySells[]) {
 		return day -> {
 			int buySell0 = nFutureDays < day ? -buySells[day - nFutureDays] : 0;
 			int buySell1 = buySells[day];
