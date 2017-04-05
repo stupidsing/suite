@@ -66,6 +66,7 @@ public class Strategos {
 		};
 	}
 
+	// moving average convergence/divergence
 	private float[] macd(float prices[], float alpha0, float alpha1) {
 		float emas0[] = exponentialMovingAvg(prices, alpha0); // long-term
 		float emas1[] = exponentialMovingAvg(prices, alpha1); // short-term
