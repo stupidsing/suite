@@ -41,8 +41,10 @@ public class DailyMain extends ExecutableProgram {
 				float prices[] = ds.prices;
 
 				int signal = strategy.analyze(prices).get(prices.length - 1);
+				String message = "equity " + stockCode + " " + company.name + " has signal " + signal;
+				LogUtil.info(message);
 				if (signal != 0)
-					messages.add("equity " + stockCode + " " + company.name + " has signal " + signal);
+					messages.add(message);
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage() + " in " + prefix);
 			}
@@ -51,7 +53,6 @@ public class DailyMain extends ExecutableProgram {
 		}
 
 		String result = Read.from(messages).collect(As.joined("\n"));
-		LogUtil.info(result);
 
 		SmtpSslGmail smtp = new SmtpSslGmail();
 		smtp.send(null, getClass().getName(), result);
