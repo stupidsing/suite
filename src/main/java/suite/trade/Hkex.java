@@ -34,7 +34,7 @@ public class Hkex {
 			+ "\n0001|Hutchison Holdings Ltd.|373230" //
 			+ "\n2388|BOC Hong Kong (Holdings) Ltd.|339386" //
 			+ "\n0016|Sun Hung Kai Properties Ltd.|332980" //
-			+ "\n2318|Ping An Insurance (Group) Co. of ChinaLtd. - H Shares|328066" //
+			+ "\n2318|Ping An Insurance (Group) Co. of China, Ltd. - H Shares|328066" //
 			+ "\n3988|Bank of China Ltd. - H Shares|326127" //
 			+ "\n0267|CITIC Ltd.|322902" //
 			+ "\n0011|Hang Seng Bank Ltd.|303792" //
