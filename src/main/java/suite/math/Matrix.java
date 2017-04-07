@@ -5,10 +5,10 @@ import java.util.Arrays;
 public class Matrix {
 
 	public static float[] add(float m[], float n[]) {
-		int l = m.length;
-		if (l == n.length) {
-			float o[] = new float[l];
-			for (int i = 0; i < l; i++)
+		int length = m.length;
+		if (length == n.length) {
+			float o[] = new float[length];
+			for (int i = 0; i < length; i++)
 				o[i] = m[i] + n[i];
 			return o;
 		} else
@@ -38,6 +38,17 @@ public class Matrix {
 					for (int dj = 0; dj < kw; dj++)
 						o[i][j] += m[i + di][j + dj] * k[di][dj];
 		return o;
+	}
+
+	public static float dot(float m[], float n[]) {
+		int length = m.length;
+		if (length == n.length) {
+			float sum = 0;
+			for (int i = 0; i < length; i++)
+				sum += m[i] * n[i];
+			return sum;
+		} else
+			throw new RuntimeException("Wrong matrix sizes");
 	}
 
 	public static boolean equals(float m[][], float n[][]) {
@@ -114,9 +125,9 @@ public class Matrix {
 	}
 
 	public static float[] mul(float m0[], float f) {
-		int l = m0.length;
-		float m1[] = new float[l];
-		for (int i = 0; i < l; i++)
+		int length = m0.length;
+		float m1[] = new float[length];
+		for (int i = 0; i < length; i++)
 			m1[i] = m0[i] * f;
 		return m1;
 	}
@@ -318,6 +329,17 @@ public class Matrix {
 		float sin = (float) Math.sin(angle);
 		float cos = (float) Math.cos(angle);
 		return new float[][] { { cos, -sin, 0f, }, { sin, cos, 0f, }, { 0f, 0f, 0f, }, };
+	}
+
+	public static float[] sub(float m[], float n[]) {
+		int length = m.length;
+		if (length == n.length) {
+			float o[] = new float[length];
+			for (int i = 0; i < length; i++)
+				o[i] = m[i] - n[i];
+			return o;
+		} else
+			throw new RuntimeException("Wrong matrix sizes");
 	}
 
 	private static void swapRows(float m[][], int row0, int row1) {
