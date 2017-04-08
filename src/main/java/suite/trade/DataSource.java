@@ -51,21 +51,20 @@ public class DataSource {
 
 	public void validate() {
 		float price0 = prices[0];
+		float price1;
 
 		for (int i = 1; i < prices.length; i++) {
-			float price;
+			if ((price1 = prices[i]) == 0f)
+				throw new RuntimeException("Price is zero: " + price1 + "/" + dates[i]);
 
-			if ((price = prices[i]) == 0)
-				throw new RuntimeException("Price is zero: " + price + "/" + i);
+			if (!Float.isFinite(price1))
+				throw new RuntimeException("Price is not finite: " + price1 + "/" + dates[i]);
 
-			if (!Float.isFinite(price))
-				throw new RuntimeException("Price is not finite: " + price + "/" + i);
-
-			float ratio = price / price0;
+			float ratio = price1 / price0;
 			if (ratio < .8f || 1.25f < ratio)
-				throw new RuntimeException("Price varied too much: " + price + "/" + price0 + "/" + i);
+				throw new RuntimeException("Price varied too much: " + price1 + "/" + dates[i]);
 
-			price0 = price;
+			price0 = price1;
 		}
 	}
 
