@@ -28,42 +28,43 @@ public class LongShortTermMemoryNetwork {
 			Copy.primitiveArray(input, 0, io0, 0, inputLength);
 			Copy.primitiveArray(output0, 0, io0, inputLength, outputLength);
 
-			float fs[] = sigmoid(Matrix.add(Matrix.mul(wf, io0), bf));
-			float is[] = sigmoid(Matrix.add(Matrix.mul(wi, io0), bi));
-			float cs[] = tanh(Matrix.add(Matrix.mul(wc, io0), bc));
-			float os[] = sigmoid(Matrix.add(Matrix.mul(wo, io0), bo));
-			float memory1[] = Matrix.add(forget(memory, fs), forget(cs, is));
-			float output1[] = forget(os, tanh(memory1));
+			float fs[] = sigmoidOn(Matrix.addOn(Matrix.mul(wf, io0), bf));
+			float is[] = sigmoidOn(Matrix.addOn(Matrix.mul(wi, io0), bi));
+			float cs[] = tanhOn(Matrix.addOn(Matrix.mul(wc, io0), bc));
+			float os[] = sigmoidOn(Matrix.addOn(Matrix.mul(wo, io0), bo));
+			float memory1[] = Matrix.addOn(forgetOn(memory, fs), forgetOn(cs, is));
+			float output1[] = forgetOn(os, tanh(memory1));
 
 			memory = memory1;
 			return output0 = output1;
 		}
 
-		private float[] forget(float m[], float n[]) {
+		private float[] forgetOn(float m[], float n[]) {
 			int length = m.length;
 			if (length == n.length) {
-				float fs1[] = new float[length];
 				for (int i = 0; i < length; i++)
-					fs1[i] = m[i] * n[i];
-				return fs1;
+					m[i] *= n[i];
+				return m;
 			} else
 				throw new RuntimeException("Wrong matrix sizes");
 		}
 
-		private float[] sigmoid(float fs0[]) {
-			int length = fs0.length;
-			float fs1[] = new float[length];
+		private float[] sigmoidOn(float fs[]) {
+			int length = fs.length;
 			for (int i = 0; i < length; i++)
-				fs1[i] = Sigmoid.sigmoid(fs0[i]);
-			return fs1;
+				fs[i] = Sigmoid.sigmoid(fs[i]);
+			return fs;
 		}
 
-		private float[] tanh(float fs0[]) {
-			int length = fs0.length;
-			float fs1[] = new float[length];
+		private float[] tanh(float fs[]) {
+			return tanhOn(Matrix.of(fs));
+		}
+
+		private float[] tanhOn(float fs[]) {
+			int length = fs.length;
 			for (int i = 0; i < length; i++)
-				fs1[i] = (float) Math.tanh(fs0[i]);
-			return fs1;
+				fs[i] = (float) Math.tanh(fs[i]);
+			return fs;
 		}
 	}
 
