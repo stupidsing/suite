@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntFunction;
 
 import suite.Constants;
 import suite.adt.Pair;
@@ -49,6 +51,14 @@ public class To {
 			field_.setAccessible(true);
 			return field_;
 		});
+	}
+
+	public static <T> T[] array(Class<T> clazz, int length, IntFunction<T> f) {
+		@SuppressWarnings("unchecked")
+		T ts[] = (T[]) Array.newInstance(clazz, length);
+		for (int i = 0; i < length; i++)
+			ts[i] = f.apply(i);
+		return ts;
 	}
 
 	public static Bytes bytes(String s) {

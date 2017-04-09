@@ -1,13 +1,14 @@
 package suite.algo;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import suite.math.Matrix;
 import suite.streamlet.Read;
+import suite.util.To;
 import suite.util.Util;
 
 public class Statistic {
@@ -33,14 +34,11 @@ public class Statistic {
 		int iteration = 0;
 
 		while (true) {
-			KmeansBin bins[] = new KmeansBin[k];
-
-			for (int j = 0; j < k; j++)
-				bins[j] = new KmeansBin();
+			KmeansBin bins[] = To.array(KmeansBin.class, k, j -> new KmeansBin());
 
 			for (float point[] : points) {
 				KmeansBin bin = bins[findNearest(point, kmeans)];
-				bin.sum = add(point, bin.sum);
+				bin.sum = Matrix.add(point, bin.sum);
 				bin.count++;
 			}
 
@@ -54,13 +52,15 @@ public class Statistic {
 	}
 
 	public int kNearestNeighbor(List<float[]> points, float point0[]) {
-		List<KnnBin> bins = new ArrayList<>();
-
-		for (int i = 0; i < points.size(); i++) {
-			KnnBin bin = new KnnBin();
-			bin.category = i;
-			bin.sqdist = sqdist(point0, points.get(i));
-		}
+		List<KnnBin> bins = Read.from(points) //
+				.index() //
+				.map((i, point) -> {
+					KnnBin bin = new KnnBin();
+					bin.category = i;
+					bin.sqdist = sqdist(point0, point);
+					return bin;
+				}) //
+				.toList();
 
 		Map<Integer, AtomicInteger> map = new HashMap<>();
 
@@ -86,36 +86,12 @@ public class Statistic {
 	}
 
 	private float sqdist(float a[], float b[]) {
-		float d[] = sub(a, b);
-		return dot(d, d);
-	}
-
-	private float[] add(float a[], float b[]) {
-		float fs[] = new float[dimension];
-		for (int i = 0; i < dimension; i++)
-			fs[i] = a[i] + b[i];
-		return fs;
-	}
-
-	private float[] sub(float a[], float b[]) {
-		float fs[] = new float[dimension];
-		for (int i = 0; i < dimension; i++)
-			fs[i] = a[i] - b[i];
-		return fs;
+		float d[] = Matrix.sub(a, b);
+		return Matrix.dot(d, d);
 	}
 
 	private float[] div(float a[], float b) {
-		float fs[] = new float[dimension];
-		for (int i = 0; i < dimension; i++)
-			fs[i] = a[i] / b;
-		return fs;
-	}
-
-	private float dot(float a[], float b[]) {
-		float dot = 0f;
-		for (int i = 0; i < dimension; i++)
-			dot += a[i] * b[i];
-		return dot;
+		return Matrix.scale(a, 1f / b);
 	}
 
 }

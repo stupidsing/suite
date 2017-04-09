@@ -9,16 +9,14 @@ import suite.Constants;
 import suite.math.Vector;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
+import suite.util.To;
 import suite.util.Util;
 
 public class Render {
 
 	public static BufferedImage render(int width, int height, BiFunction<Float, Float, Vector> f) {
 		int nThreads = Constants.nThreads;
-		int xs[] = new int[nThreads + 1];
-
-		for (int i = 0; i <= nThreads; i++)
-			xs[i] = width * i / nThreads;
+		int xs[] = To.intArray(nThreads + 1, i -> width * i / nThreads);
 
 		Vector pixels[][] = new Vector[width][height];
 		float scale = 1f / Math.max(width, height);

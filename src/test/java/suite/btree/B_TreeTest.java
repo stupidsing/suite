@@ -24,7 +24,7 @@ import suite.util.Util;
 public class B_TreeTest {
 
 	private static int nKeys = 1024;
-	private int keys[] = new int[nKeys];
+	private int keys[];
 
 	private Random random = new Random();
 

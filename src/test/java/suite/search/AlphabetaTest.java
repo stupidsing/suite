@@ -13,7 +13,8 @@ public class AlphabetaTest {
 		char grid[] = new char[9];
 
 		public String toString() {
-			return "\n" + c(grid[0]) + "|" + c(grid[1]) + "|" + c(grid[2]) //
+			return "" //
+					+ "\n" + c(grid[0]) + "|" + c(grid[1]) + "|" + c(grid[2]) //
 					+ "\n" + c(grid[3]) + "|" + c(grid[4]) + "|" + c(grid[5]) //
 					+ "\n" + c(grid[6]) + "|" + c(grid[7]) + "|" + c(grid[8]) //
 					+ "\n";

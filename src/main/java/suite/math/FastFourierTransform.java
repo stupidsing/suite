@@ -1,15 +1,13 @@
 package suite.math;
 
+import suite.util.To;
+
 // https://rosettacode.org/wiki/Fast_Fourier_transform#Java
 public class FastFourierTransform {
 
 	public Complex[] ifft(Complex cs0[]) {
 		int size = cs0.length;
-		Complex cs1[] = new Complex[size];
-
-		for (int i = 0; i < size; i++)
-			cs1[i] = cs0[i].conjugate();
-
+		Complex cs1[] = To.array(Complex.class, size, i -> cs0[i].conjugate());
 		Complex cs2[] = fft(cs1);
 		float inv = 1.0f / size;
 

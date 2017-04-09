@@ -16,6 +16,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
+import suite.util.To;
 
 public class BindArrayUtil {
 
@@ -33,9 +34,7 @@ public class BindArrayUtil {
 			indexList.add(index);
 
 		int size = indexList.size();
-		int indices[] = new int[size];
-		for (int i = 0; i < size; i++)
-			indices[i] = indexList.get(i);
+		int indices[] = To.intArray(size, indexList::get);
 
 		return node -> {
 			Env env = sb.env();
@@ -49,12 +48,9 @@ public class BindArrayUtil {
 					return trail;
 				}
 			};
-			if (pred.test(be, node)) {
-				Node results[] = new Node[size];
-				for (int i = 0; i < size; i++)
-					results[i] = env.get(indices[i]);
-				return results;
-			} else
+			if (pred.test(be, node))
+				return To.array(Node.class, size, i -> env.get(indices[i]));
+			else
 				return null;
 		};
 	});

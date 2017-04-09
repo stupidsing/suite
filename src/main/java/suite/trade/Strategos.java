@@ -5,6 +5,7 @@ import java.util.Arrays;
 import suite.math.DiscreteCosineTransform;
 import suite.trade.Strategy.GetBuySell;
 import suite.util.Copy;
+import suite.util.To;
 
 public class Strategos {
 
@@ -23,11 +24,7 @@ public class Strategos {
 				Arrays.fill(fs0, nPastDays, windowSize, price0);
 
 				float fs1[] = dct.dct(fs0);
-				float fs2[] = new float[windowSize];
-
-				for (int j = 0; j < nLowPass; j++)
-					fs2[j] = fs1[j];
-
+				float fs2[] = To.floatArray(windowSize, j -> j < nLowPass ? fs1[j] : 0f);
 				float fs3[] = dct.idct(fs2);
 
 				float predict = fs3[fs3.length - 1];
@@ -98,10 +95,7 @@ public class Strategos {
 
 	// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
 	private GetBuySell holdFixedDays(int nDays, int nFutureDays, GetBuySell gbs) {
-		int buySells[] = new int[nDays];
-
-		for (int day = 0; day < nDays; day++)
-			buySells[day] = gbs.get(day);
+		int buySells[] = To.intArray(nDays, day -> gbs.get(day));
 
 		return day -> {
 			int buySell0 = nFutureDays < day ? -buySells[day - nFutureDays] : 0;
@@ -137,10 +131,7 @@ public class Strategos {
 	}
 
 	private float[] subtract(float a[], float b[]) {
-		float c[] = new float[a.length];
-		for (int i = 0; i < a.length; i++)
-			c[i] = a[i] - b[i];
-		return c;
+		return To.floatArray(a.length, i -> a[i] - b[i]);
 	}
 
 	private int signum(float f) {
