@@ -5,24 +5,40 @@ import java.util.Arrays;
 public class Matrix {
 
 	public static float[] add(float m[], float n[]) {
+		return addOn(clone(m), n);
+	}
+
+	public static float[][] add(float m[][], float n[][]) {
+		return addOn(clone(m), n);
+	}
+
+	public static float[] addOn(float m[], float n[]) {
 		int length = m.length;
 		if (length == n.length) {
-			float o[] = new float[length];
 			for (int i = 0; i < length; i++)
-				o[i] = m[i] + n[i];
-			return o;
+				m[i] += n[i];
+			return m;
 		} else
 			throw new RuntimeException("Wrong matrix sizes");
 	}
 
-	public static float[][] add(float m[][], float n[][]) {
+	public static float[][] addOn(float m[][], float n[][]) {
 		int height = h(m), width = w(m);
 		if (height == h(n) && width == w(n)) {
-			float o[][] = of(height, width);
 			for (int i = 0; i < height; i++)
 				for (int j = 0; j < width; j++)
-					o[i][j] = m[i][j] + n[i][j];
-			return o;
+					m[i][j] += n[i][j];
+			return m;
+		} else
+			throw new RuntimeException("Wrong matrix sizes");
+	}
+
+	public static float[] addScaleOn(float m[], float n[], float f) {
+		int length = m.length;
+		if (length == n.length) {
+			for (int i = 0; i < length; i++)
+				m[i] += n[i] * f;
+			return m;
 		} else
 			throw new RuntimeException("Wrong matrix sizes");
 	}
@@ -268,22 +284,23 @@ public class Matrix {
 	}
 
 	public static float[][] neg(float m[][]) {
-		int height = h(m), width = w(m);
-		float o[][] = of(height, width);
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
-				o[i][j] = -m[i][j];
-		return o;
+		return negOn(clone(m));
 	}
 
-	public static float[][] of(float m0[][]) {
-		int height = h(m0);
-		int width = w(m0);
-		float m1[][] = of(height, width);
+	public static float[][] negOn(float m[][]) {
+		int height = h(m), width = w(m);
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
-				m1[i][j] = m0[i][j];
-		return m1;
+				m[i][j] = -m[i][j];
+		return m;
+	}
+
+	public static float[] of(float m[]) {
+		return clone(m);
+	}
+
+	public static float[][] of(float m[][]) {
+		return clone(m);
 	}
 
 	public static float[][] of(int height, int width) {
@@ -314,38 +331,50 @@ public class Matrix {
 		return new float[][] { { cos, -sin, 0f, }, { sin, cos, 0f, }, { 0f, 0f, 0f, }, };
 	}
 
-	public static float[] scale(float m0[], double d) {
-		int length = m0.length;
-		float m1[] = new float[length];
-		for (int i = 0; i < length; i++)
-			m1[i] = (float) (m0[i] * d);
-		return m1;
+	public static float[] scale(float m[], double d) {
+		return scaleOn(clone(m), d);
 	}
 
-	public static float[] scale(float m0[], float f) {
-		int length = m0.length;
-		float m1[] = new float[length];
-		for (int i = 0; i < length; i++)
-			m1[i] = m0[i] * f;
-		return m1;
+	public static float[] scale(float m[], float f) {
+		return scaleOn(clone(m), f);
 	}
 
-	public static float[][] scale(float m0[][], float f) {
-		int height = h(m0), width = w(m0);
-		float m1[][] = of(height, width);
+	public static float[][] scale(float m[][], float f) {
+		return scaleOn(clone(m), f);
+	}
+
+	public static float[] scaleOn(float m[], double d) {
+		int length = m.length;
+		for (int i = 0; i < length; i++)
+			m[i] = (float) (m[i] * d);
+		return m;
+	}
+
+	public static float[] scaleOn(float m[], float f) {
+		int length = m.length;
+		for (int i = 0; i < length; i++)
+			m[i] *= f;
+		return m;
+	}
+
+	public static float[][] scaleOn(float m[][], float f) {
+		int height = h(m), width = w(m);
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
-				m1[i][j] = m0[i][j] * f;
-		return m1;
+				m[i][j] *= f;
+		return m;
 	}
 
 	public static float[] sub(float m[], float n[]) {
+		return subOn(clone(m), n);
+	}
+
+	public static float[] subOn(float m[], float n[]) {
 		int length = m.length;
 		if (length == n.length) {
-			float o[] = new float[length];
 			for (int i = 0; i < length; i++)
-				o[i] = m[i] - n[i];
-			return o;
+				m[i] -= n[i];
+			return m;
 		} else
 			throw new RuntimeException("Wrong matrix sizes");
 	}
@@ -405,6 +434,20 @@ public class Matrix {
 	private static void addMultipliedRow(float m[][], int sourceRow, float factor, int targetRow) {
 		for (int col = 0; col < w(m); col++)
 			m[targetRow][col] = m[targetRow][col] + factor * m[sourceRow][col];
+	}
+
+	private static float[] clone(float m[]) {
+		return Arrays.copyOf(m, m.length);
+	}
+
+	private static float[][] clone(float m0[][]) {
+		int height = h(m0);
+		int width = w(m0);
+		float m1[][] = of(height, width);
+		for (int i = 0; i < height; i++)
+			for (int j = 0; j < width; j++)
+				m1[i][j] = m0[i][j];
+		return m1;
 	}
 
 	private static int h(float m[][]) {

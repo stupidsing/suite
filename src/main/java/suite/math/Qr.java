@@ -12,32 +12,31 @@ public class Qr {
 	/**
 	 * Perform QR decomposition by Gram-Schmidt process.
 	 */
-	public static float[][][] decompose_mT_T(float m0[][]) { // a
-		int length = Matrix.width(m0);
+	public static float[][][] decompose_mT_T(float m[][]) { // a
+		int length = Matrix.width(m);
 
-		if (length == Matrix.height(m0)) {
-			float m1[][] = new float[length][]; // u
-			float m2[][] = new float[length][]; // e, Q
+		if (length == Matrix.height(m)) {
+			float q[][] = new float[length][]; // e
 
 			for (int i = 0; i < length; i++) {
-				float a[] = m0[i];
-				float u1[] = a;
+				float a[] = m[i];
+				float u1[] = Matrix.of(a);
 
-				for (int j = 0; j < i; j++)
-					u1 = Matrix.sub(u1, Matrix.scale(m2[j], Matrix.dot(m2[j], a)));
+				for (int j = 0; j < i; j++) {
+					float u[] = q[j];
+					Matrix.addScaleOn(u1, u, -Matrix.dot(u, a));
+				}
 
-				float u1u1 = 1f / Matrix.dot(u1, u1);
-				m1[i] = u1;
-				m2[i] = Matrix.scale(u1, Math.sqrt(u1u1));
+				q[i] = Matrix.scaleOn(u1, Math.sqrt(1f / Matrix.dot(u1, u1)));
 			}
 
 			float r[][] = new float[length][length];
 
 			for (int i = 0; i < length; i++)
 				for (int j = 0; j <= i; j++)
-					r[i][j] = Matrix.dot(m2[j], m0[i]);
+					r[i][j] = Matrix.dot(q[j], m[i]);
 
-			return new float[][][] { m2, r, };
+			return new float[][][] { q, r, };
 		} else
 			throw new RuntimeException("Wrong matrix sizes");
 	}
