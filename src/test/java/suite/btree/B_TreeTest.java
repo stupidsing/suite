@@ -16,6 +16,7 @@ import suite.adt.Pair;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.JournalledPageFile;
 import suite.file.impl.JournalledFileFactory;
+import suite.primitive.Bytes;
 import suite.util.Serialize;
 import suite.util.TempDir;
 import suite.util.To;
@@ -90,6 +91,35 @@ public class B_TreeTest {
 			jpf.commit();
 			jpf.sync();
 			jpf.applyJournal();
+		}
+	}
+
+	@Test
+	public void testInsertPerformance() throws IOException {
+		int nKeys = 16384;
+		keys = To.intArray(nKeys, i -> i);
+		int pageSize = 4096;
+		Path path = TempDir.resolve("b_tree-file");
+
+		for (int i = 0; i < nKeys; i++) {
+			int j = random.nextInt(nKeys);
+			Integer temp = keys[i];
+			keys[i] = keys[j];
+			keys[j] = temp;
+		}
+
+		Files.deleteIfExists(path);
+		B_TreeBuilder<Integer, Bytes> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.bytes(64));
+
+		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
+				B_Tree<Integer, Bytes> b_tree = builder.build(jpf, comparator, 9999)) {
+			b_tree.create();
+			for (int i = 0; i < nKeys; i++) {
+				int key = keys[i];
+				b_tree.put(key, To.bytes(Integer.toString(key)));
+			}
+			jpf.commit();
+			jpf.sync();
 		}
 	}
 
