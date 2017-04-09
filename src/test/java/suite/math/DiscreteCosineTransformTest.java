@@ -18,7 +18,7 @@ public class DiscreteCosineTransformTest {
 	}
 
 	private void assertEquals(float a, float b) {
-		assertTrue(Math.abs(a - b) < .1f);
+		assertTrue(Math.abs(a - b) < MathUtil.epsilon);
 	}
 
 }
