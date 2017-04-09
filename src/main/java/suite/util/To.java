@@ -31,6 +31,14 @@ import suite.util.FunUtil.Source;
 
 public class To {
 
+	public interface IntToFloatFunction {
+		public float apply(int i);
+	}
+
+	public interface IntToIntFunction {
+		public int apply(int i);
+	}
+
 	private static String hexDigits = "0123456789ABCDEF";
 
 	private static final Field field;
@@ -61,6 +69,13 @@ public class To {
 
 	public static Chars chars(String s) {
 		return Chars.of(charArray(s));
+	}
+
+	public static float[] floatArray(int length, IntToFloatFunction f) {
+		float floats[] = new float[length];
+		for (int i = 0; i < length; i++)
+			floats[i] = f.apply(i);
+		return floats;
 	}
 
 	public static String hex(int i) {
@@ -103,6 +118,13 @@ public class To {
 				return nBytesRead;
 			}
 		};
+	}
+
+	public static int[] intArray(int length, IntToIntFunction f) {
+		int ints[] = new int[length];
+		for (int i = 0; i < length; i++)
+			ints[i] = f.apply(i);
+		return ints;
 	}
 
 	public static <T> List<T> list(Iterable<T> iter) {

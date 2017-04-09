@@ -32,8 +32,7 @@ public class B_TreeTest {
 
 	@Before
 	public void before() {
-		for (int i = 0; i < nKeys; i++)
-			keys[i] = i;
+		keys = To.intArray(nKeys, i -> i);
 	}
 
 	@Test
