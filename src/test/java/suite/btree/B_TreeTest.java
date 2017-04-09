@@ -24,7 +24,7 @@ import suite.util.Util;
 public class B_TreeTest {
 
 	private static int nKeys = 1024;
-	private Integer keys[] = new Integer[nKeys];
+	private int keys[] = new int[nKeys];
 
 	private Random random = new Random();
 
@@ -96,7 +96,7 @@ public class B_TreeTest {
 
 	private void testStep0(B_Tree<Integer, String> b_tree) {
 		for (int i = 0; i < nKeys; i++)
-			b_tree.put(keys[i], keys[i].toString());
+			b_tree.put(keys[i], Integer.toString(keys[i]));
 
 		for (int i = 0; i < nKeys; i++)
 			assertEquals(Integer.toString(i), b_tree.get(i));
