@@ -94,7 +94,7 @@ public class B_TreeTest {
 		}
 	}
 
-	private void testStep0(B_Tree<Integer, String> b_tree) throws IOException {
+	private void testStep0(B_Tree<Integer, String> b_tree) {
 		for (int i = 0; i < nKeys; i++)
 			b_tree.put(keys[i], keys[i].toString());
 
@@ -111,7 +111,7 @@ public class B_TreeTest {
 		}
 	}
 
-	private void testStep1(B_Tree<Integer, String> b_tree) throws IOException {
+	private void testStep1(B_Tree<Integer, String> b_tree) {
 		for (int i = 0; i < nKeys; i += 2)
 			b_tree.remove(keys[i]);
 
@@ -121,7 +121,7 @@ public class B_TreeTest {
 			assertNull(b_tree.get(keys[i]));
 	}
 
-	private void testStep2(B_Tree<Integer, String> b_tree) throws IOException {
+	private void testStep2(B_Tree<Integer, String> b_tree) {
 		for (int i = 1; i < nKeys; i += 2)
 			b_tree.remove(keys[i]);
 
