@@ -1,7 +1,5 @@
 package suite.math;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 
 public class DiscreteCosineTransformTest {
@@ -14,11 +12,7 @@ public class DiscreteCosineTransformTest {
 		float fs1[] = dct.dct(fs0);
 		float fs2[] = dct.idct(fs1);
 		for (int i = 0; i < fs0.length; i++)
-			assertEquals(fs0[i], fs2[i]);
-	}
-
-	private void assertEquals(float a, float b) {
-		assertTrue(Math.abs(a - b) < MathUtil.epsilon);
+			MathUtil.verifyEquals(fs0[i], fs2[i]);
 	}
 
 }

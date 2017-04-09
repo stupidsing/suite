@@ -1,7 +1,5 @@
 package suite.math;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 
 public class FastFourierTransformTest {
@@ -16,17 +14,17 @@ public class FastFourierTransformTest {
 		Complex fs1[] = fft.fft(fs0);
 		Complex fs2[] = fft.ifft(fs1);
 
-		assertEquals(fs1[0], Complex.of(4f, 0f));
-		assertEquals(fs1[1], Complex.of(1f, -2.414214f));
-		assertEquals(fs1[2], Complex.of(0f, 0f));
-		assertEquals(fs1[3], Complex.of(1f, -.414214f));
-		assertEquals(fs1[4], Complex.of(0f, 0f));
-		assertEquals(fs1[5], Complex.of(1f, .414214f));
-		assertEquals(fs1[6], Complex.of(0f, 0f));
-		assertEquals(fs1[7], Complex.of(1f, 2.414214f));
+		Complex.verifyEquals(fs1[0], Complex.of(4f, 0f));
+		Complex.verifyEquals(fs1[1], Complex.of(1f, -2.414214f));
+		Complex.verifyEquals(fs1[2], Complex.of(0f, 0f));
+		Complex.verifyEquals(fs1[3], Complex.of(1f, -.414214f));
+		Complex.verifyEquals(fs1[4], Complex.of(0f, 0f));
+		Complex.verifyEquals(fs1[5], Complex.of(1f, .414214f));
+		Complex.verifyEquals(fs1[6], Complex.of(0f, 0f));
+		Complex.verifyEquals(fs1[7], Complex.of(1f, 2.414214f));
 
 		for (int i = 0; i < fs0.length; i++)
-			assertEquals(fs0[i], fs2[i]);
+			Complex.verifyEquals(fs0[i], fs2[i]);
 	}
 
 	@Test
@@ -35,34 +33,25 @@ public class FastFourierTransformTest {
 		float fs1[] = fft.fft(fs0);
 		float fs2[] = fft.ifft(fs1);
 
-		assertEquals(fs1[0], 4f);
-		assertEquals(fs1[1], 0f);
-		assertEquals(fs1[2], 1f);
-		assertEquals(fs1[3], -2.414214f);
-		assertEquals(fs1[4], 0f);
-		assertEquals(fs1[5], 0f);
-		assertEquals(fs1[6], 1f);
-		assertEquals(fs1[7], -.414214f);
-		assertEquals(fs1[8], 0f);
-		assertEquals(fs1[9], 0f);
-		assertEquals(fs1[10], 1f);
-		assertEquals(fs1[11], .414214f);
-		assertEquals(fs1[12], 0f);
-		assertEquals(fs1[13], 0f);
-		assertEquals(fs1[14], 1f);
-		assertEquals(fs1[15], 2.414214f);
+		MathUtil.verifyEquals(fs1[0], 4f);
+		MathUtil.verifyEquals(fs1[1], 0f);
+		MathUtil.verifyEquals(fs1[2], 1f);
+		MathUtil.verifyEquals(fs1[3], -2.414214f);
+		MathUtil.verifyEquals(fs1[4], 0f);
+		MathUtil.verifyEquals(fs1[5], 0f);
+		MathUtil.verifyEquals(fs1[6], 1f);
+		MathUtil.verifyEquals(fs1[7], -.414214f);
+		MathUtil.verifyEquals(fs1[8], 0f);
+		MathUtil.verifyEquals(fs1[9], 0f);
+		MathUtil.verifyEquals(fs1[10], 1f);
+		MathUtil.verifyEquals(fs1[11], .414214f);
+		MathUtil.verifyEquals(fs1[12], 0f);
+		MathUtil.verifyEquals(fs1[13], 0f);
+		MathUtil.verifyEquals(fs1[14], 1f);
+		MathUtil.verifyEquals(fs1[15], 2.414214f);
 
 		for (int i = 0; i < fs0.length; i++)
-			assertEquals(fs0[i], fs2[i]);
-	}
-
-	private void assertEquals(Complex a, Complex b) {
-		assertEquals(a.r, b.r);
-		assertEquals(a.i, b.i);
-	}
-
-	private void assertEquals(float a, float b) {
-		assertTrue(Math.abs(a - b) < MathUtil.epsilon);
+			MathUtil.verifyEquals(fs0[i], fs2[i]);
 	}
 
 }

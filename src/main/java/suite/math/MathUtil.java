@@ -4,6 +4,12 @@ public class MathUtil {
 
 	public static float epsilon = .00001f;
 
+	public static void verifyEquals(float f0, float f1) {
+		float diff = Math.abs(f0 - f1);
+		if (epsilon < diff)
+			throw new RuntimeException("f0 = " + f0 + ", f1 = " + f1 + ", diff = " + diff);
+	}
+
 	public static int steinGcd(int n0, int n1) {
 		int shift = 0;
 

@@ -22,6 +22,11 @@ public class Complex {
 		return new Complex(r, i);
 	}
 
+	public static void verifyEquals(Complex u, Complex v) {
+		MathUtil.verifyEquals(u.r, v.r);
+		MathUtil.verifyEquals(u.i, v.i);
+	}
+
 	private Complex(float r, float i) {
 		this.r = r;
 		this.i = i;

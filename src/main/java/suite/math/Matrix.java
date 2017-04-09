@@ -124,23 +124,6 @@ public class Matrix {
 		return n;
 	}
 
-	public static float[] mul(float m0[], float f) {
-		int length = m0.length;
-		float m1[] = new float[length];
-		for (int i = 0; i < length; i++)
-			m1[i] = m0[i] * f;
-		return m1;
-	}
-
-	public static float[][] mul(float m0[][], float f) {
-		int height = h(m0), width = w(m0);
-		float m1[][] = of(height, width);
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
-				m1[i][j] = m0[i][j] * f;
-		return m1;
-	}
-
 	public static float[] mul(float m[], float n[][]) {
 		int ks = m.length;
 
@@ -331,6 +314,31 @@ public class Matrix {
 		return new float[][] { { cos, -sin, 0f, }, { sin, cos, 0f, }, { 0f, 0f, 0f, }, };
 	}
 
+	public static float[] scale(float m0[], double d) {
+		int length = m0.length;
+		float m1[] = new float[length];
+		for (int i = 0; i < length; i++)
+			m1[i] = (float) (m0[i] * d);
+		return m1;
+	}
+
+	public static float[] scale(float m0[], float f) {
+		int length = m0.length;
+		float m1[] = new float[length];
+		for (int i = 0; i < length; i++)
+			m1[i] = m0[i] * f;
+		return m1;
+	}
+
+	public static float[][] scale(float m0[][], float f) {
+		int height = h(m0), width = w(m0);
+		float m1[][] = of(height, width);
+		for (int i = 0; i < height; i++)
+			for (int j = 0; j < width; j++)
+				m1[i][j] = m0[i][j] * f;
+		return m1;
+	}
+
 	public static float[] sub(float m[], float n[]) {
 		int length = m.length;
 		if (length == n.length) {
@@ -340,6 +348,14 @@ public class Matrix {
 			return o;
 		} else
 			throw new RuntimeException("Wrong matrix sizes");
+	}
+
+	public static void verifyEquals(float m0[][], float m1[][]) {
+		int height = h(m0);
+		int width = w(m0);
+		for (int i = 0; i < height; i++)
+			for (int j = 0; j < width; j++)
+				MathUtil.verifyEquals(m0[i][j], m1[i][j]);
 	}
 
 	private static void swapRows(float m[][], int row0, int row1) {

@@ -18,27 +18,23 @@ public class Qr {
 		if (length == Matrix.height(m0)) {
 			float m1[][] = new float[length][]; // u
 			float m2[][] = new float[length][]; // e, Q
-			float iuu[] = new float[length];
 
 			for (int i = 0; i < length; i++) {
 				float a[] = m0[i];
 				float u1[] = a;
 
-				for (int j = 0; j < i; i++) {
-					float e[] = m1[j];
-					u1 = Matrix.sub(u1, Matrix.mul(m2[j], Matrix.dot(e, a) * iuu[j]));
-				}
+				for (int j = 0; j < i; j++)
+					u1 = Matrix.sub(u1, Matrix.scale(m2[j], Matrix.dot(m2[j], a)));
 
 				float u1u1 = 1f / Matrix.dot(u1, u1);
-				iuu[i] = u1u1;
 				m1[i] = u1;
-				m2[i] = Matrix.mul(u1, (float) Math.sqrt(iuu[i]));
+				m2[i] = Matrix.scale(u1, Math.sqrt(u1u1));
 			}
 
 			float r[][] = new float[length][length];
 
 			for (int i = 0; i < length; i++)
-				for (int j = 0; j < i; i++)
+				for (int j = 0; j <= i; j++)
 					r[i][j] = Matrix.dot(m2[j], m0[i]);
 
 			return new float[][][] { m2, r, };
