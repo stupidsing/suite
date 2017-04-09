@@ -14,33 +14,34 @@ public class Matrix {
 
 	public static float[] addOn(float m[], float n[]) {
 		int length = m.length;
-		if (length == n.length) {
+		if (length == n.length)
 			for (int i = 0; i < length; i++)
 				m[i] += n[i];
-			return m;
-		} else
+		else
 			throw new RuntimeException("Wrong matrix sizes");
+		return m;
 	}
 
 	public static float[][] addOn(float m[][], float n[][]) {
-		int height = h(m), width = w(m);
-		if (height == h(n) && width == w(n)) {
+		int height = h(m);
+		int width = w(m);
+		if (height == h(n) && width == w(n))
 			for (int i = 0; i < height; i++)
 				for (int j = 0; j < width; j++)
 					m[i][j] += n[i][j];
-			return m;
-		} else
+		else
 			throw new RuntimeException("Wrong matrix sizes");
+		return m;
 	}
 
 	public static float[] addScaleOn(float m[], float n[], float f) {
 		int length = m.length;
-		if (length == n.length) {
+		if (length == n.length)
 			for (int i = 0; i < length; i++)
 				m[i] += n[i] * f;
-			return m;
-		} else
+		else
 			throw new RuntimeException("Wrong matrix sizes");
+		return m;
 	}
 
 	public static float[][] convolute(float m[][], float k[][]) {
@@ -58,13 +59,13 @@ public class Matrix {
 
 	public static float dot(float m[], float n[]) {
 		int length = m.length;
-		if (length == n.length) {
-			float sum = 0;
+		float sum = 0;
+		if (length == n.length)
 			for (int i = 0; i < length; i++)
 				sum += m[i] * n[i];
-			return sum;
-		} else
+		else
 			throw new RuntimeException("Wrong matrix sizes");
+		return sum;
 	}
 
 	public static boolean equals(float m[][], float n[][]) {
@@ -142,12 +143,10 @@ public class Matrix {
 
 	public static float[] mul(float m[], float n[][]) {
 		int ks = m.length;
-
-		if (ks == h(n)) {
-			int width = w(n);
-			float o[] = new float[width];
-			int j1, k1;
-
+		int width = w(n);
+		float o[] = new float[width];
+		int j1, k1;
+		if (ks == h(n))
 			for (int j0 = 0; j0 < width; j0 = j1) {
 				j1 = Math.min(j0 + 64, width);
 				for (int k0 = 0; k0 < ks; k0 = k1) {
@@ -157,21 +156,18 @@ public class Matrix {
 							o[j] += m[k] * n[k][j];
 				}
 			}
-
-			return o;
-		} else
+		else
 			throw new RuntimeException("Wrong matrix sizes");
+		return o;
 	}
 
 	// nT is column vector
 	public static float[] mul(float m[][], float nT[]) {
 		int ks = w(m);
-
-		if (ks == nT.length) {
-			int height = h(m);
-			float o[] = new float[height];
-			int i1, k1;
-
+		int height = h(m);
+		float o[] = new float[height];
+		int i1, k1;
+		if (ks == nT.length)
 			for (int i0 = 0; i0 < height; i0 = i1) {
 				i1 = Math.min(i0 + 64, height);
 				for (int k0 = 0; k0 < ks; k0 = k1) {
@@ -181,21 +177,18 @@ public class Matrix {
 							o[i] += m[i][k] * nT[k];
 				}
 			}
-
-			return o;
-		} else
+		else
 			throw new RuntimeException("Wrong matrix sizes");
+		return o;
 	}
 
 	public static float[][] mul(float m[][], float n[][]) {
 		int ks = w(m);
-
-		if (ks == h(n)) {
-			int height = h(m);
-			int width = w(n);
-			float o[][] = of(height, width);
-			int i1, j1, k1;
-
+		int height = h(m);
+		int width = w(n);
+		float o[][] = of(height, width);
+		int i1, j1, k1;
+		if (ks == h(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
 				i1 = Math.min(i0 + 64, height);
 				for (int j0 = 0; j0 < width; j0 = j1) {
@@ -209,10 +202,10 @@ public class Matrix {
 					}
 				}
 			}
-
-			return o;
-		} else
+		else
 			throw new RuntimeException("Wrong matrix sizes");
+
+		return o;
 	}
 
 	public static Vector mul(float m[][], Vector v) {
@@ -228,13 +221,11 @@ public class Matrix {
 	// calculate m * nT
 	public static float[][] mul_mnT(float m[][], float n[][]) {
 		int ks = w(m);
-
-		if (ks == w(n)) {
-			int height = h(m);
-			int width = h(n);
-			float o[][] = of(height, width);
-			int i1, j1, k1;
-
+		int height = h(m);
+		int width = h(n);
+		float o[][] = of(height, width);
+		int i1, j1, k1;
+		if (ks == w(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
 				i1 = Math.min(i0 + 64, height);
 				for (int j0 = 0; j0 < width; j0 = j1) {
@@ -248,22 +239,20 @@ public class Matrix {
 					}
 				}
 			}
-
-			return o;
-		} else
+		else
 			throw new RuntimeException("Wrong matrix sizes");
+		return o;
 	}
 
 	// calculate mT * n
 	public static float[][] mul_mTn(float m[][], float n[][]) {
 		int ks = h(m);
+		int height = w(m);
+		int width = w(n);
+		float o[][] = of(height, width);
+		int i1, j1, k1;
 
-		if (ks == h(n)) {
-			int height = w(m);
-			int width = w(n);
-			float o[][] = of(height, width);
-			int i1, j1, k1;
-
+		if (ks == h(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
 				i1 = Math.min(i0 + 64, height);
 				for (int j0 = 0; j0 < width; j0 = j1) {
@@ -277,10 +266,10 @@ public class Matrix {
 					}
 				}
 			}
-
-			return o;
-		} else
+		else
 			throw new RuntimeException("Wrong matrix sizes");
+
+		return o;
 	}
 
 	public static float[][] neg(float m[][]) {
@@ -288,7 +277,8 @@ public class Matrix {
 	}
 
 	public static float[][] negOn(float m[][]) {
-		int height = h(m), width = w(m);
+		int height = h(m);
+		int width = w(m);
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
 				m[i][j] = -m[i][j];
@@ -358,7 +348,8 @@ public class Matrix {
 	}
 
 	public static float[][] scaleOn(float m[][], float f) {
-		int height = h(m), width = w(m);
+		int height = h(m);
+		int width = w(m);
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
 				m[i][j] *= f;
@@ -371,12 +362,12 @@ public class Matrix {
 
 	public static float[] subOn(float m[], float n[]) {
 		int length = m.length;
-		if (length == n.length) {
+		if (length == n.length)
 			for (int i = 0; i < length; i++)
 				m[i] -= n[i];
-			return m;
-		} else
+		else
 			throw new RuntimeException("Wrong matrix sizes");
+		return m;
 	}
 
 	public static void verifyEquals(float m0[][], float m1[][]) {
@@ -407,7 +398,8 @@ public class Matrix {
 	}
 
 	public static float[][] transpose(float m[][]) {
-		int height = h(m), width = w(m);
+		int height = h(m);
+		int width = w(m);
 		float o[][] = of(width, height);
 		int i1, j1;
 		for (int i0 = 0; i0 < height; i0 = i1) {
