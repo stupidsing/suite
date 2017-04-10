@@ -54,15 +54,17 @@ public class DataSource {
 		float price1;
 
 		for (int i = 1; i < prices.length; i++) {
+			String date = dates[i];
+
 			if ((price1 = prices[i]) == 0f)
-				throw new RuntimeException("Price is zero: " + price1 + "/" + dates[i]);
+				throw new RuntimeException("Price is zero: " + price1 + "/" + date);
 
 			if (!Float.isFinite(price1))
-				throw new RuntimeException("Price is not finite: " + price1 + "/" + dates[i]);
+				throw new RuntimeException("Price is not finite: " + price1 + "/" + date);
 
 			float ratio = price1 / price0;
 			if (ratio < .8f || 1.25f < ratio)
-				throw new RuntimeException("Price varied too much: " + price1 + "/" + dates[i]);
+				throw new RuntimeException("Price varied too much: " + price1 + "/" + date);
 
 			price0 = price1;
 		}
