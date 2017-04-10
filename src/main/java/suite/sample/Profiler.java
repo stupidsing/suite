@@ -25,10 +25,15 @@ public class Profiler implements Service {
 	private Timer timer;
 	private AtomicInteger count = new AtomicInteger();
 	private Map<String, Record> records = new HashMap<>();
+	private Call callRoot = new Call();
 
 	private static class Record {
 		private int count;
-		private int minLineNumber = Integer.MAX_VALUE;
+	}
+
+	private static class Call {
+		private int count;
+		private Map<String, Call> callees = new HashMap<>();
 	}
 
 	public void profile(Runnable runnable) {
@@ -42,8 +47,7 @@ public class Profiler implements Service {
 	}
 
 	public void start() {
-		timer = new Timer();
-		timer.schedule(new TimerTask() {
+		(timer = new Timer()).schedule(new TimerTask() {
 			public void run() {
 				recordStats();
 			}
@@ -57,13 +61,32 @@ public class Profiler implements Service {
 
 	public String dump() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("PROFILING RESULT\n");
-		sb.append("TOTAL SAMPLES = " + count.get() + "\n\n");
+
+		sb.append("PROFILING RESULT\n\n");
+		sb.append("TOTAL SAMPLES = " + count.get() + "\n");
+		sb.append("\n\n");
+
+		sb.append("METHODS\n\n");
 		sb.append(Read.from2(records) //
 				.sort((p0, p1) -> p1.t1.count - p0.t1.count) //
-				.map((name, record) -> String.format("%d\t%s:%d\n", record.count, name, record.minLineNumber)) //
+				.map((name, record) -> String.format("%d\t%s\n", record.count, name)) //
 				.collect(As.joined()));
+		sb.append("\n\n");
+
+		sb.append("CALLS\n\n");
+		dumpCalls(sb, "", callRoot);
+
 		return sb.toString();
+	}
+
+	private void dumpCalls(StringBuilder sb, String indent, Call call) {
+		if (call != null)
+			Read.from2(call.callees) //
+					.sort((e0, e1) -> -Integer.compare(e0.t1.count, e1.t1.count)) //
+					.sink((callee, call1) -> {
+						sb.append(String.format("%d\t%s%s\n", call1.count, indent, callee));
+						dumpCalls(sb, indent + "| ", call1);
+					});
 	}
 
 	private void recordStats() {
@@ -79,22 +102,28 @@ public class Profiler implements Service {
 					&& threadInfo.getThreadId() != currentThreadId //
 					&& threadInfo.getThreadState() == State.RUNNABLE //
 					&& !Util.stringEquals(threadInfo.getThreadName(), "ReaderThread")) {
+				StackTraceElement stackTrace[] = threadInfo.getStackTrace();
 				Set<String> elements = new HashSet<>();
+				int i = stackTrace.length;
+				Call call = callRoot;
 
 				// save line numbers as it is important to trace lambdas and
 				// anonymous classes
-				for (StackTraceElement elem : threadInfo.getStackTrace()) {
-					String fileName = elem.getFileName();
-					String name = elem.getClassName() //
-							+ "." + elem.getMethodName() //
-							+ " " + (fileName != null ? fileName : "<unknown>");
-					if (elements.add(name)) {
-						Record record = records.computeIfAbsent(name, any -> new Record());
-						record.count++;
-						record.minLineNumber = Math.min(record.minLineNumber, elem.getLineNumber());
-					}
+				while (0 < i) {
+					String name = toString(stackTrace[--i]);
+					(call = call.callees.computeIfAbsent(name, any -> new Call())).count++;
+					if (elements.add(name))
+						records.computeIfAbsent(name, any -> new Record()).count++;
 				}
 			}
+	}
+
+	private String toString(StackTraceElement elem) {
+		String fileName = elem.getFileName();
+		int lineNumber = elem.getLineNumber();
+		return elem.getClassName() //
+				+ "." + elem.getMethodName() //
+				+ (fileName != null ? " " + fileName + (1 < lineNumber ? ":" + lineNumber : "") : "<unknown>");
 	}
 
 }
