@@ -17,6 +17,7 @@ import suite.btree.impl.B_TreeBuilder;
 import suite.file.JournalledPageFile;
 import suite.file.impl.JournalledFileFactory;
 import suite.primitive.Bytes;
+import suite.sample.Profiler;
 import suite.util.Serialize;
 import suite.util.TempDir;
 import suite.util.To;
@@ -25,11 +26,10 @@ import suite.util.Util;
 public class B_TreeTest {
 
 	private static int nKeys = 1024;
-	private int keys[];
-
-	private Random random = new Random();
 
 	private Comparator<Integer> comparator = Util.comparator();
+	private Random random = new Random();
+	private int keys[];
 
 	@Before
 	public void before() {
@@ -113,13 +113,15 @@ public class B_TreeTest {
 
 		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
 				B_Tree<Integer, Bytes> b_tree = builder.build(jpf, comparator, 9999)) {
-			b_tree.create();
-			for (int i = 0; i < nKeys; i++) {
-				int key = keys[i];
-				b_tree.put(key, To.bytes(Integer.toString(key)));
-			}
-			jpf.commit();
-			jpf.sync();
+			new Profiler().profile(() -> {
+				b_tree.create();
+				for (int i = 0; i < nKeys; i++) {
+					int key = keys[i];
+					b_tree.put(key, To.bytes(Integer.toString(key)));
+				}
+				jpf.commit();
+				jpf.sync();
+			});
 		}
 	}
 
