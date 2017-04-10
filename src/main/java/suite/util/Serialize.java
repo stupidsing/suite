@@ -18,6 +18,8 @@ import suite.primitive.Bytes;
  */
 public class Serialize {
 
+	private static byte zeroes[] = new byte[4096];
+
 	public static Serializer<Boolean> boolean_ = boolean_();
 	public static Serializer<Integer> int_ = int_();
 
@@ -66,8 +68,12 @@ public class Serialize {
 
 			public void write(DataOutput dataOutput, Bytes bytes) throws IOException {
 				bytes.write(dataOutput);
-				for (int i = bytes.size(); i < length; i++)
-					dataOutput.write(0);
+				int i = bytes.size();
+				while (i < length) {
+					int i1 = Math.min(i + zeroes.length, length);
+					dataOutput.write(zeroes, 0, i1 - i);
+					i = i1;
+				}
 			}
 		};
 	}
