@@ -110,20 +110,18 @@ public class Profiler implements Service {
 				// save line numbers as it is important to trace lambdas and
 				// anonymous classes
 				while (0 < i) {
-					String name = toString(stackTrace[--i]);
-					(call = call.callees.computeIfAbsent(name, any -> new Call())).count++;
+					StackTraceElement elem = stackTrace[--i];
+					String fileName = elem.getFileName();
+					int lineNumber = elem.getLineNumber();
+					String mn = elem.getClassName() + "." + elem.getMethodName();
+					String fn = fileName != null ? " " + fileName + (1 < lineNumber ? ":" + lineNumber : "") : "<unknown>";
+					String name = mn + fn;
+
+					(call = call.callees.computeIfAbsent(mn, any -> new Call())).count++;
 					if (elements.add(name))
 						records.computeIfAbsent(name, any -> new Record()).count++;
 				}
 			}
-	}
-
-	private String toString(StackTraceElement elem) {
-		String fileName = elem.getFileName();
-		int lineNumber = elem.getLineNumber();
-		return elem.getClassName() //
-				+ "." + elem.getMethodName() //
-				+ (fileName != null ? " " + fileName + (1 < lineNumber ? ":" + lineNumber : "") : "<unknown>");
 	}
 
 }
