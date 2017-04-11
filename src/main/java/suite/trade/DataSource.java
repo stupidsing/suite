@@ -87,8 +87,7 @@ public class DataSource {
 
 	private boolean isValid(float price0, float price1) {
 		float ratio = price1 / price0;
-		boolean valid = .8f < ratio && ratio < 1.25f;
-		return valid;
+		return .8f < ratio && ratio < 1.25f;
 	}
 
 }
