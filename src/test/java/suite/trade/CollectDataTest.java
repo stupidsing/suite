@@ -33,10 +33,11 @@ public class CollectDataTest {
 					+ "&g=d&ignore=.csv";
 
 			System.out.println(urlString);
-
 			URL url = Rethrow.ex(() -> new URL(urlString));
-			Copy.stream(To.inputStream(HttpUtil.http("GET", url).out),
-					new FileOutputStream("/data/storey/stocks/" + code + ".csv"));
+
+			try (FileOutputStream fos = new FileOutputStream("/data/storey/markets/" + code + ".csv")) {
+				Copy.stream(To.inputStream(HttpUtil.http("GET", url).out), fos);
+			}
 
 			Util.sleepQuietly(2000);
 		}
