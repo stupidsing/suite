@@ -18,16 +18,6 @@ import suite.util.Serialize.Serializer;
 
 public class JournalledFileFactory {
 
-	private static class JournalEntry {
-		private int pointer;
-		private Bytes bytes;
-
-		private JournalEntry(int pointer, Bytes bytes) {
-			this.pointer = pointer;
-			this.bytes = bytes;
-		}
-	}
-
 	public static JournalledPageFile journalled(Path path, int pageSize) {
 		return journalled( //
 				FileFactory.pageFile(path, pageSize), //
@@ -163,6 +153,16 @@ public class JournalledFileFactory {
 				return jp1;
 			}
 		};
+	}
+
+	private static class JournalEntry {
+		private int pointer;
+		private Bytes bytes;
+
+		private JournalEntry(int pointer, Bytes bytes) {
+			this.pointer = pointer;
+			this.bytes = bytes;
+		}
 	}
 
 }
