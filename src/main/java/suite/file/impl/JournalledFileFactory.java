@@ -79,12 +79,12 @@ public class JournalledFileFactory {
 				int jp;
 				JournalEntry journalEntry;
 
-				if (pair == null) {
-					jp = journalEntries.size();
-					journalEntries.add(journalEntry = new JournalEntry(pointer, null));
-				} else {
+				if (pair != null) {
 					jp = pair.t0;
 					journalEntry = pair.t1;
+				} else {
+					jp = journalEntries.size();
+					journalEntries.add(journalEntry = new JournalEntry(pointer, null));
 				}
 
 				journalEntry.bytes = bytes;
