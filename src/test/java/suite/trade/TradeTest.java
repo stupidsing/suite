@@ -34,8 +34,7 @@ public class TradeTest {
 
 	@Test
 	public void testBackTestForex() {
-		for (String ccy : Arrays.asList("AUD", "CAD", "EUR", "JPY"))
-			backTest(ccy + "%3DX", ccy);
+		new Forex().invertedCurrencies.sink(this::backTest);
 	}
 
 	@Test
