@@ -205,6 +205,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return from(FunUtil2.filterKey(fun, source2));
 	}
 
+	public Outlet2<K, V> filterValue(Predicate<V> fun) {
+		return from(FunUtil2.filterValue(fun, source2));
+	}
+
 	public Pair<K, V> first() {
 		Pair<K, V> pair = Pair.of(null, null);
 		return next(pair) ? pair : null;
@@ -230,6 +234,16 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public boolean isAny(BiPredicate<K, V> pred) {
 		return FunUtil2.isAny(pred, source2);
+	}
+
+	public Pair<K, V> last() {
+		Pair<K, V> pair = Pair.of(null, null);
+		if (next(pair))
+			while (next(pair))
+				;
+		else
+			pair = null;
+		return pair;
 	}
 
 	public <T> Outlet<T> map(BiFunction<K, V, T> fun0) {

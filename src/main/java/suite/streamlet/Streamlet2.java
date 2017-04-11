@@ -109,6 +109,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return streamlet2(() -> spawn().filterKey(fun));
 	}
 
+	public Streamlet2<K, V> filterValue(Predicate<V> fun) {
+		return streamlet2(() -> spawn().filterValue(fun));
+	}
+
 	public Pair<K, V> first() {
 		return spawn().first();
 	}
@@ -128,6 +132,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public boolean isAny(BiPredicate<K, V> pred) {
 		return spawn().isAny(pred);
+	}
+
+	public Pair<K, V> last() {
+		return spawn().last();
 	}
 
 	public <T> Streamlet<T> map(BiFunction<K, V, T> fun) {

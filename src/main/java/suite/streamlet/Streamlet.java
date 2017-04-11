@@ -149,6 +149,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
 	}
 
+	public T last() {
+		return spawn().last();
+	}
+
 	public Streamlet<T> memoize() {
 		List<T> list = toList();
 		return streamlet(() -> Outlet.from(list));

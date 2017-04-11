@@ -213,6 +213,13 @@ public class Outlet<T> implements Iterable<T> {
 		return FunUtil.isAny(pred, source);
 	}
 
+	public T last() {
+		T t, t1 = null;
+		while ((t = next()) != null)
+			t1 = t;
+		return t1;
+	}
+
 	public <O> Outlet<O> map(Fun<T, O> fun) {
 		return from(FunUtil.map(fun, source));
 	}

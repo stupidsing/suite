@@ -98,6 +98,16 @@ public class FunUtil2 {
 		};
 	}
 
+	public static <K, V> Source2<K, V> filterValue(Predicate<V> fun0, Source2<K, V> source2) {
+		Predicate<V> fun1 = Rethrow.predicate(fun0);
+		return pair -> {
+			boolean b;
+			while ((b = source2.source2(pair)) && !fun1.test(pair.t1))
+				;
+			return b;
+		};
+	}
+
 	public static <K, V, R> R fold(Fun<Pair<R, Pair<K, V>>, R> fun0, R init, Source2<K, V> source2) {
 		Fun<Pair<R, Pair<K, V>>, R> fun1 = Rethrow.fun(fun0);
 		Pair<K, V> pair = Pair.of(null, null);
