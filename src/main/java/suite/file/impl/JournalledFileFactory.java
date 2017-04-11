@@ -41,7 +41,7 @@ public class JournalledFileFactory {
 			}
 
 			public void write(DataOutput dataOutput, JournalEntry journalEntry) throws IOException {
-				dataOutput.writeInt(pageSize);
+				dataOutput.writeInt(journalEntry.pointer);
 				bytesSerializer.write(dataOutput, journalEntry.bytes);
 			}
 		};
