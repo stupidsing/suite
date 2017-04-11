@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import suite.adt.Pair;
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
@@ -65,6 +66,31 @@ public class JournalledFileFactory {
 				pointerPageFile.close();
 			}
 
+			public synchronized Bytes load(int pointer) {
+				Pair<Integer, JournalEntry> pair = findPageInJournal(pointer);
+				if (pair != null)
+					return pair.t1.bytes;
+				else
+					return dataFile.load(pointer);
+			}
+
+			public synchronized void save(int pointer, Bytes bytes) {
+				Pair<Integer, JournalEntry> pair = findDirtyPageInJournal(pointer);
+				int jp;
+				JournalEntry journalEntry;
+
+				if (pair == null) {
+					jp = journalEntries.size();
+					journalEntries.add(journalEntry = new JournalEntry(pointer, null));
+				} else {
+					jp = pair.t0;
+					journalEntry = pair.t1;
+				}
+
+				journalEntry.bytes = bytes;
+				journalPageFile.save(jp, journalEntry);
+			}
+
 			/**
 			 * Marks a snapshot that data can be recovered to.
 			 */
@@ -116,41 +142,22 @@ public class JournalledFileFactory {
 					journalPageFile.save(jp, journalEntries.get(jp));
 			}
 
-			public synchronized Bytes load(int pointer) {
-				int jp = findPageInJournal(pointer);
-				if (jp < 0)
-					return dataFile.load(pointer);
-				else
-					return journalEntries.get(jp).bytes;
-			}
-
-			public synchronized void save(int pointer, Bytes bytes) {
-				int jp = findDirtyPageInJournal(pointer);
-
-				if (jp < 0) {
-					jp = journalEntries.size();
-					journalEntries.add(new JournalEntry(pointer, null));
-				}
-
-				JournalEntry journalEntry = journalEntries.get(jp);
-				journalEntry.bytes = bytes;
-				journalPageFile.save(jp, journalEntry);
-			}
-
-			private int findPageInJournal(int pointer) {
+			private Pair<Integer, JournalEntry> findPageInJournal(int pointer) {
 				return findPageInJournal(pointer, 0);
 			}
 
-			private int findDirtyPageInJournal(int pointer) {
+			private Pair<Integer, JournalEntry> findDirtyPageInJournal(int pointer) {
 				return findPageInJournal(pointer, nCommittedJournalEntries);
 			}
 
-			private int findPageInJournal(int pointer, int start) {
-				int jp1 = -1;
-				for (int jp = start; jp < journalEntries.size(); jp++)
-					if (Objects.equals(journalEntries.get(jp).pointer, pointer))
-						jp1 = jp;
-				return jp1;
+			private Pair<Integer, JournalEntry> findPageInJournal(int pointer, int start) {
+				Pair<Integer, JournalEntry> pair = null;
+				for (int jp = start; jp < journalEntries.size(); jp++) {
+					JournalEntry journalEntry = journalEntries.get(jp);
+					if (Objects.equals(journalEntry.pointer, pointer))
+						pair = Pair.of(jp, journalEntry);
+				}
+				return pair;
 			}
 		};
 	}
