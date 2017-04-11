@@ -10,7 +10,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import suite.http.HttpUtil;
 import suite.os.Execute;
+import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.Util;
@@ -144,12 +146,12 @@ public class Hkex {
 			+ "\n1910|Samsonite International S.A.|39802" //
 	;
 
-	public List<Company> companies = Read //
+	public Streamlet<Company> companies = Read //
 			.from(lines.split("\n")) //
 			.filter(line -> !line.isEmpty()) //
 			.map(line -> line.split("\\|")) //
 			.map(array -> new Company(array[0], array[1], Integer.parseInt(array[2]))) //
-			.toList();
+			.collect(As::streamlet);
 
 	private Map<String, Company> companyByCode = Read.from(companies).toMap(company -> company.code);
 
