@@ -203,6 +203,14 @@ public class As {
 		return map;
 	}
 
+	public static <T> Streamlet<T> streamlet(Outlet<T> outlet) {
+		return Read.from(outlet.toList());
+	}
+
+	public static <K, V> Streamlet2<K, V> streamlet2(Outlet2<K, V> outlet) {
+		return Read.from2(outlet.toList());
+	}
+
 	public static <T> Fun<Outlet<T>, Integer> sum(ToIntFunction<T> fun) {
 		return outlet -> {
 			Source<T> source = outlet.source();
