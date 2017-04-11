@@ -39,6 +39,7 @@ public class DataSource {
 				.collect(As.arrayOfFloats(array -> Float.parseFloat(array[1])));
 
 		DataSource dataSource = new DataSource(dates, prices);
+		dataSource.cleanse();
 		dataSource.validate();
 
 		return dataSource;
@@ -49,25 +50,45 @@ public class DataSource {
 		this.prices = prices;
 	}
 
+	public void cleanse() {
+
+		// ignore price sparks caused by data source bugs
+		for (int i = 2; i < prices.length; i++) {
+			float price0 = prices[i - 2];
+			float price1 = prices[i - 1];
+			float price2 = prices[i - 0];
+			if (isValid(price0, price2) && !isValid(price0, price1) && !isValid(price1, price2))
+				price1 = price0;
+		}
+	}
+
 	public void validate() {
 		float price0 = prices[0];
 		float price1;
+		String date0 = null;
 
 		for (int i = 1; i < prices.length; i++) {
-			String date = dates[i];
+			String date1 = dates[i];
 
 			if ((price1 = prices[i]) == 0f)
-				throw new RuntimeException("Price is zero: " + price1 + "/" + date);
+				throw new RuntimeException("Price is zero: " + price1 + "/" + date1);
 
 			if (!Float.isFinite(price1))
-				throw new RuntimeException("Price is not finite: " + price1 + "/" + date);
+				throw new RuntimeException("Price is not finite: " + price1 + "/" + date1);
 
-			float ratio = price1 / price0;
-			if (ratio < .8f || 1.25f < ratio)
-				throw new RuntimeException("Price varied too much: " + price1 + "/" + date);
+			boolean valid = isValid(price0, price1);
+			if (!valid)
+				throw new RuntimeException(
+						"Price varied too much: (" + price0 + " => " + price1 + ") / (" + date0 + " => " + date1 + ")");
 
 			price0 = price1;
 		}
+	}
+
+	private boolean isValid(float price0, float price1) {
+		float ratio = price1 / price0;
+		boolean valid = .8f < ratio && ratio < 1.25f;
+		return valid;
 	}
 
 }
