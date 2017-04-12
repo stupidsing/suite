@@ -133,8 +133,7 @@ public class JournalledFileFactory {
 				journalEntries.subList(0, nCommittedJournalEntries).clear();
 
 				// reset committed pointer
-				nCommittedJournalEntries = 0;
-				pointerPageFile.save(0, nCommittedJournalEntries);
+				pointerPageFile.save(0, nCommittedJournalEntries = 0);
 				pointerPageFile.sync();
 
 				// write back entries for next commit
