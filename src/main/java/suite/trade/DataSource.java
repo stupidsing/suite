@@ -51,6 +51,13 @@ public class DataSource {
 	}
 
 	public void cleanse() {
+		int n = 0;
+
+		for (int i = 1; i < prices.length; i++)
+			if (dates[i] != null)
+				n = 0;
+			else
+				dates[i] = dates[i - 1] + ("A" + n++);
 
 		// ignore price sparks caused by data source bugs
 		for (int i = 2; i < prices.length; i++) {
