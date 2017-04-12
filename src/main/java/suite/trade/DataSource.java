@@ -50,7 +50,7 @@ public class DataSource {
 		this.prices = prices;
 	}
 
-	public void cleanse() {
+	private void cleanse() {
 		int n = 0;
 
 		for (int i = 1; i < prices.length; i++)
@@ -69,7 +69,7 @@ public class DataSource {
 		}
 	}
 
-	public void validate() {
+	private void validate() {
 		float price0 = prices[0];
 		float price1;
 		String date0 = null;
