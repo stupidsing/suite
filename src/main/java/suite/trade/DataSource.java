@@ -9,6 +9,7 @@ import suite.primitive.Bytes;
 import suite.primitive.BytesUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.util.Util;
 
 public class DataSource {
 
@@ -24,7 +25,7 @@ public class DataSource {
 				.collect(BytesUtil.split(Bytes.of((byte) 10))) //
 				.skip(1) //
 				.map(bytes -> new String(bytes.toBytes(), Constants.charset).split(",")) //
-				.sort((a0, a1) -> a0[0].compareTo(a1[0])) //
+				.sort((a0, a1) -> Util.compare(a0[0], a1[0])) //
 				.toList();
 
 		String dates[] = Read.from(arrays) //
