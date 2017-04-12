@@ -264,12 +264,12 @@ public class Util {
 		return Rethrow.ex(() -> {
 			StringBuilder sb = new StringBuilder();
 			int c;
-			while ((c = is.read()) != -1 && c != 10) {
+			while (0 <= (c = is.read()) && c != 10) {
 				sb.append((char) c);
 				if (65536 <= sb.length())
 					throw new RuntimeException("Line too long");
 			}
-			return strip(sb);
+			return 0 <= c ? strip(sb) : null;
 		});
 	}
 
@@ -277,12 +277,12 @@ public class Util {
 		return Rethrow.ex(() -> {
 			StringBuilder sb = new StringBuilder();
 			int c;
-			while ((c = reader.read()) != -1 && c != 10) {
+			while (0 <= (c = reader.read()) && c != 10) {
 				sb.append((char) c);
 				if (65536 <= sb.length())
 					throw new RuntimeException("Line too long");
 			}
-			return strip(sb);
+			return 0 <= c ? strip(sb) : null;
 		});
 	}
 
@@ -443,7 +443,7 @@ public class Util {
 
 	private static String strip(StringBuilder sb) {
 		int length = sb.length();
-		if (sb.charAt(length - 1) == 13)
+		if (0 < length && sb.charAt(length - 1) == 13)
 			sb.deleteCharAt(length - 1);
 		return sb.toString();
 	}
