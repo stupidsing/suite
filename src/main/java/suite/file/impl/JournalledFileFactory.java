@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import suite.adt.Pair;
 import suite.file.JournalledPageFile;
@@ -153,7 +152,7 @@ public class JournalledFileFactory {
 				Pair<Integer, JournalEntry> pair = null;
 				for (int jp = start; jp < journalEntries.size(); jp++) {
 					JournalEntry journalEntry = journalEntries.get(jp);
-					if (Objects.equals(journalEntry.pointer, pointer))
+					if (journalEntry.pointer == pointer)
 						pair = Pair.of(jp, journalEntry);
 				}
 				return pair;
