@@ -16,11 +16,7 @@ public class DataSource {
 	public final float prices[];
 
 	public static DataSource yahoo(String stockCode, LocalDate frDate, LocalDate toDate) {
-		String urlString = "http://chart.finance.yahoo.com/table.csv" //
-				+ "?s=" + stockCode //
-				+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
-				+ "&d=" + toDate.getMonthValue() + "&e=" + toDate.getDayOfMonth() + "&f=" + toDate.getYear() //
-				+ "&g=d&ignore=.csv";
+		String urlString = yahooUrl(stockCode, frDate, toDate);
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
 		List<String[]> arrays = new StoreCache() //
@@ -43,6 +39,14 @@ public class DataSource {
 		dataSource.validate();
 
 		return dataSource;
+	}
+
+	public static String yahooUrl(String stockCode, LocalDate frDate, LocalDate toDate) {
+		return "http://chart.finance.yahoo.com/table.csv" //
+				+ "?s=" + stockCode //
+				+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
+				+ "&d=" + toDate.getMonthValue() + "&e=" + toDate.getDayOfMonth() + "&f=" + toDate.getYear() //
+				+ "&g=d&ignore=.csv";
 	}
 
 	private DataSource(String dates[], float prices[]) {

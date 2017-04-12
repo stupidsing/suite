@@ -26,11 +26,7 @@ public class CollectDataTest {
 				new Forex().invertedCurrencies.map((ccy, name) -> ccy));
 
 		for (String code : equities) {
-			String urlString = "http://chart.finance.yahoo.com/table.csv" //
-					+ "?s=" + code //
-					+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
-					+ "&d=" + toDate.getMonthValue() + "&e=" + toDate.getDayOfMonth() + "&f=" + toDate.getYear() //
-					+ "&g=d&ignore=.csv";
+			String urlString = DataSource.yahooUrl(code, frDate, toDate);
 
 			System.out.println(urlString);
 			URL url = Rethrow.ex(() -> new URL(urlString));
