@@ -33,7 +33,7 @@ public abstract class Tree extends Node {
 	}
 
 	public static Streamlet<Node> iter(Node node0, Operator operator) {
-		return new Streamlet<>(() -> Outlet.from(new Source<Node>() {
+		return new Streamlet<>(() -> Outlet.of(new Source<Node>() {
 			private Node node = node0;
 
 			public Node source() {

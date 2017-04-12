@@ -187,7 +187,7 @@ public class As {
 	}
 
 	public static <I, O> Fun<Outlet<I>, Outlet<O>> sequenced(Seq<I, O> seq) {
-		return outlet -> Outlet.from(new Source<O>() {
+		return outlet -> Outlet.of(new Source<O>() {
 			private int index;
 
 			public O source() {

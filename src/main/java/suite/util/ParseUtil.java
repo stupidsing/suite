@@ -168,7 +168,7 @@ public class ParseUtil {
 		char chars[] = To.charArray(in);
 		int length = chars.length;
 
-		return Streamlet.from(new Source<String>() {
+		return Streamlet.of(new Source<String>() {
 			private int pos = 0;
 
 			public String source() {

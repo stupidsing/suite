@@ -26,8 +26,8 @@ import suite.util.Util;
 
 public class Read {
 
-	private static Streamlet<?> empty = Streamlet.from(FunUtil.nullSource());
-	private static Streamlet2<?, ?> empty2 = Streamlet2.from(FunUtil2.nullSource());
+	private static Streamlet<?> empty = Streamlet.of(FunUtil.nullSource());
+	private static Streamlet2<?, ?> empty2 = Streamlet2.of(FunUtil2.nullSource());
 
 	public static Streamlet<Bytes> bytes(Path path) {
 		return bytes(path.toFile());
@@ -46,7 +46,7 @@ public class Read {
 
 	public static Outlet<Bytes> bytes(InputStream is) {
 		InputStream bis = new BufferedInputStream(is);
-		return Outlet.from(() -> {
+		return Outlet.of(() -> {
 			byte bs[] = new byte[Constants.bufferSize];
 			int nBytesRead = Rethrow.ex(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
@@ -71,23 +71,23 @@ public class Read {
 	}
 
 	public static <T> Streamlet<T> from(T ts[]) {
-		return new Streamlet<>(() -> Outlet.from(ts));
+		return new Streamlet<>(() -> Outlet.of(ts));
 	}
 
 	public static <T> Streamlet<T> from(Enumeration<T> en) {
-		return new Streamlet<>(() -> Outlet.from(en));
+		return new Streamlet<>(() -> Outlet.of(en));
 	}
 
 	public static <T> Streamlet<T> from(Iterable<T> col) {
-		return new Streamlet<>(() -> Outlet.from(col));
+		return new Streamlet<>(() -> Outlet.of(col));
 	}
 
 	public static <T> Streamlet<T> from(Source<T> source) {
-		return Streamlet.from(source);
+		return Streamlet.of(source);
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Map<K, V> map) {
-		return new Streamlet2<>(() -> Outlet2.from(map));
+		return new Streamlet2<>(() -> Outlet2.of(map));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(K k, V v) {
@@ -96,15 +96,15 @@ public class Read {
 
 	@SafeVarargs
 	public static <K, V> Streamlet2<K, V> from2(Pair<K, V>... kvs) {
-		return new Streamlet2<>(() -> Outlet2.from(kvs));
+		return new Streamlet2<>(() -> Outlet2.of(kvs));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Iterable<Pair<K, V>> col) {
-		return new Streamlet2<>(() -> Outlet2.from(col));
+		return new Streamlet2<>(() -> Outlet2.of(col));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Source2<K, V> source) {
-		return Streamlet2.from(source);
+		return Streamlet2.of(source);
 	}
 
 	public static Streamlet<String> lines(Path path) {
@@ -121,7 +121,7 @@ public class Read {
 
 	public static Outlet<String> lines(Reader reader) {
 		BufferedReader br = new BufferedReader(reader);
-		return Outlet.from(() -> Rethrow.ex(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
+		return Outlet.of(() -> Rethrow.ex(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
 	}
 
 	public static Streamlet<Integer> range(int e) {
@@ -131,7 +131,7 @@ public class Read {
 	public static Streamlet<Integer> range(int s, int e) {
 		return new Streamlet<Integer>(() -> {
 			int i[] = new int[] { s, };
-			return Outlet.from(() -> i[0] < e ? i[0]++ : null);
+			return Outlet.of(() -> i[0] < e ? i[0]++ : null);
 		});
 	}
 

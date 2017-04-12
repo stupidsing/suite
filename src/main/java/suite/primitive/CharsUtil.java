@@ -13,7 +13,7 @@ public class CharsUtil {
 	private static final int bufferSize = 65536;
 
 	public static Outlet<Chars> buffer(Outlet<Chars> outlet) {
-		return Outlet.from(new BufferedSource(outlet) {
+		return Outlet.of(new BufferedSource(outlet) {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
@@ -33,7 +33,7 @@ public class CharsUtil {
 	public static Fun<Outlet<Chars>, Outlet<Chars>> split(Chars delim) {
 		int ds = delim.size();
 
-		return outlet -> Outlet.from(new BufferedSource(outlet) {
+		return outlet -> Outlet.of(new BufferedSource(outlet) {
 			protected boolean search() {
 				int size = buffer.size();
 				while ((p1 = p0 + ds) <= size)

@@ -43,27 +43,27 @@ public class Outlet<T> implements Iterable<T> {
 		List<Source<T>> sources = new ArrayList<>();
 		for (Outlet<T> outlet : outlets)
 			sources.add(outlet.source);
-		return from(FunUtil.concat(To.source(sources)));
+		return of(FunUtil.concat(To.source(sources)));
 	}
 
 	public static <T> Outlet<T> empty() {
-		return from(FunUtil.nullSource());
+		return of(FunUtil.nullSource());
 	}
 
 	@SafeVarargs
-	public static <T> Outlet<T> from(T... ts) {
-		return from(To.source(ts));
+	public static <T> Outlet<T> of(T... ts) {
+		return of(To.source(ts));
 	}
 
-	public static <T> Outlet<T> from(Enumeration<T> en) {
-		return from(To.source(en));
+	public static <T> Outlet<T> of(Enumeration<T> en) {
+		return of(To.source(en));
 	}
 
-	public static <T> Outlet<T> from(Iterable<T> col) {
-		return from(To.source(col));
+	public static <T> Outlet<T> of(Iterable<T> col) {
+		return of(To.source(col));
 	}
 
-	public static <T> Outlet<T> from(Source<T> source) {
+	public static <T> Outlet<T> of(Source<T> source) {
 		return new Outlet<>(source);
 	}
 
@@ -77,11 +77,11 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<Outlet<T>> chunk(int n) {
-		return from(FunUtil.map(Outlet<T>::new, FunUtil.chunk(n, source)));
+		return of(FunUtil.map(Outlet<T>::new, FunUtil.chunk(n, source)));
 	}
 
 	public Outlet<T> closeAtEnd(Closeable c) {
-		return from(() -> {
+		return of(() -> {
 			T next = next();
 			if (next == null)
 				Util.closeQuietly(c);
@@ -94,15 +94,15 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <O> Outlet<O> concatMap(Fun<T, Outlet<O>> fun) {
-		return from(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
+		return of(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
 	public <K, V> Outlet2<K, V> concatMap2(Fun<T, Outlet2<K, V>> fun) {
-		return Outlet2.from(FunUtil2.concat(FunUtil.map(t -> fun.apply(t).source2(), source)));
+		return Outlet2.of(FunUtil2.concat(FunUtil.map(t -> fun.apply(t).source2(), source)));
 	}
 
 	public Outlet<T> cons(T t) {
-		return from(FunUtil.cons(t, source));
+		return of(FunUtil.cons(t, source));
 	}
 
 	public int count() {
@@ -113,7 +113,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <U, R> Outlet<R> cross(List<U> list, BiFunction<T, U, R> fun) {
-		return from(new Source<R>() {
+		return of(new Source<R>() {
 			private T t;
 			private int index = list.size();
 
@@ -129,7 +129,7 @@ public class Outlet<T> implements Iterable<T> {
 
 	public Outlet<T> distinct() {
 		Set<T> set = new HashSet<>();
-		return from(() -> {
+		return of(() -> {
 			T t;
 			while ((t = next()) != null && !set.add(t))
 				;
@@ -141,7 +141,7 @@ public class Outlet<T> implements Iterable<T> {
 		boolean isAvailable = true;
 		while (0 < n && (isAvailable &= next() != null))
 			n--;
-		return isAvailable ? this : Outlet.empty();
+		return isAvailable ? this : empty();
 	}
 
 	@Override
@@ -158,7 +158,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<T> filter(Predicate<T> fun) {
-		return from(FunUtil.filter(fun, source));
+		return of(FunUtil.filter(fun, source));
 	}
 
 	public T first() {
@@ -190,7 +190,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet2<Integer, T> index() {
-		return Outlet2.from(new Source2<Integer, T>() {
+		return Outlet2.of(new Source2<Integer, T>() {
 			private int i = 0;
 
 			public boolean source2(Pair<Integer, T> pair) {
@@ -221,11 +221,11 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <O> Outlet<O> map(Fun<T, O> fun) {
-		return from(FunUtil.map(fun, source));
+		return of(FunUtil.map(fun, source));
 	}
 
 	public <K, V> Outlet2<K, V> map2(Fun<T, K> kf0, Fun<T, V> vf0) {
-		return Outlet2.from(FunUtil.map2(kf0, vf0, source));
+		return Outlet2.of(FunUtil.map2(kf0, vf0, source));
 	}
 
 	public T min(Comparator<T> comparator) {
@@ -268,7 +268,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<T> reverse() {
-		return from(Util.reverse(toList()));
+		return of(Util.reverse(toList()));
 	}
 
 	public void sink(Sink<T> sink) {
@@ -281,7 +281,7 @@ public class Outlet<T> implements Iterable<T> {
 		boolean end = false;
 		for (int i = 0; !end && i < n; i++)
 			end = next() == null;
-		return !end ? from(source) : empty();
+		return !end ? of(source) : empty();
 	}
 
 	public Source<T> source() {
@@ -289,15 +289,15 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<T> sort(Comparator<T> comparator) {
-		return from(Util.sort(toList(), comparator));
+		return of(Util.sort(toList(), comparator));
 	}
 
 	public Outlet<Outlet<T>> split(Predicate<T> fun) {
-		return from(FunUtil.map(Outlet<T>::new, FunUtil.split(fun, source)));
+		return of(FunUtil.map(Outlet<T>::new, FunUtil.split(fun, source)));
 	}
 
 	public Outlet<T> take(int n) {
-		return from(new Source<T>() {
+		return of(new Source<T>() {
 			private int count = n;
 
 			public T source() {

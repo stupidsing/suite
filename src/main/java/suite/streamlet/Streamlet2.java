@@ -32,12 +32,12 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 			List<Source2<K, V>> sources = new ArrayList<>();
 			for (Streamlet2<K, V> streamlet : streamlets)
 				sources.add(streamlet.in.source().source2());
-			return Outlet2.from(FunUtil2.concat(To.source(sources)));
+			return Outlet2.of(FunUtil2.concat(To.source(sources)));
 		});
 	}
 
-	public static <K, V> Streamlet2<K, V> from(Source2<K, V> source) {
-		return streamlet2(() -> Outlet2.from(source));
+	public static <K, V> Streamlet2<K, V> of(Source2<K, V> source) {
+		return streamlet2(() -> Outlet2.of(source));
 	}
 
 	private static <K, V> Streamlet2<K, V> streamlet2(Source<Outlet2<K, V>> in) {
@@ -67,17 +67,17 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public <T> Streamlet<T> concatMap(BiFunction<K, V, Streamlet<T>> fun) {
 		BiFunction<K, V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return new Streamlet<>(() -> Outlet.from(spawn().concatMap(bf)));
+		return new Streamlet<>(() -> Outlet.of(spawn().concatMap(bf)));
 	}
 
 	public <K1, V1> Streamlet2<K1, V1> concatMap2(BiFunction<K, V, Streamlet2<K1, V1>> fun) {
 		BiFunction<K, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet2();
-		return streamlet2(() -> Outlet2.from(spawn().concatMap2(bf)));
+		return streamlet2(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 
 	public <V1> Streamlet2<K, V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
 		Fun<V, Outlet<V1>> f = v -> fun.apply(v).outlet();
-		return streamlet2(() -> Outlet2.from(spawn().concatMapValue(f)));
+		return streamlet2(() -> Outlet2.of(spawn().concatMapValue(f)));
 	}
 
 	public Streamlet2<K, V> cons(K key, V value) {

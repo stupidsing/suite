@@ -145,7 +145,7 @@ public class TopDownParse {
 
 		private Outlet<State> expect(State state, ExpectFun expect, int pos) {
 			int end = expect.expect(in, length, pos);
-			return state.pos < end ? Outlet.from(state.pos(end)) : noResult;
+			return state.pos < end ? Outlet.of(state.pos(end)) : noResult;
 		}
 
 		private Pair<Integer, Integer> findPosition(int position) {
@@ -190,7 +190,7 @@ public class TopDownParse {
 		case AND___:
 			parsers = buildChildren(eg);
 			parser = (parse, st) -> {
-				Outlet<State> o = Outlet.from(st);
+				Outlet<State> o = Outlet.of(st);
 				for (Parser g : parsers)
 					o = o.concatMap(st_ -> st_.pr(parse, g));
 				return o;
@@ -216,7 +216,7 @@ public class TopDownParse {
 			break;
 		case OR____:
 			parsers = buildChildren(eg);
-			parser = (parse, st) -> Outlet.from(parsers).concatMap(g_ -> st.pr(parse, g_));
+			parser = (parse, st) -> Outlet.of(parsers).concatMap(g_ -> st.pr(parse, g_));
 			break;
 		case REPT0_:
 			parser = buildRepeat(eg, true);
@@ -250,7 +250,7 @@ public class TopDownParse {
 			Frame frame = new Frame(eg.content);
 			return st0.deepen(frame, 1) //
 					.p(parse, gb) //
-					.concatMap(st1 -> Outlet.from(new Source<State>() {
+					.concatMap(st1 -> Outlet.of(new Source<State>() {
 						private State state_ = st1;
 						private Deque<Outlet<State>> outlets = new ArrayDeque<>();
 
@@ -272,7 +272,7 @@ public class TopDownParse {
 		Parser g = build(eg.children.get(0));
 
 		return (parse, st) -> {
-			Outlet<State> states = Outlet.from(new Source<State>() {
+			Outlet<State> states = Outlet.of(new Source<State>() {
 				private State state_ = st;
 				private Deque<Outlet<State>> outlets = new ArrayDeque<>();
 

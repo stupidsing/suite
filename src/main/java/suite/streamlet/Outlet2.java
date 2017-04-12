@@ -38,16 +38,16 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		List<Source2<K, V>> sources = new ArrayList<>();
 		for (Outlet2<K, V> outlet : outlets)
 			sources.add(outlet.source2);
-		return from(FunUtil2.concat(To.source(sources)));
+		return of(FunUtil2.concat(To.source(sources)));
 	}
 
 	public static <K, V> Outlet2<K, V> empty() {
-		return from(FunUtil2.nullSource());
+		return of(FunUtil2.nullSource());
 	}
 
-	public static <K, V> Outlet2<K, List<V>> from(ListMultimap<K, V> multimap) {
+	public static <K, V> Outlet2<K, List<V>> of(ListMultimap<K, V> multimap) {
 		Iterator<Pair<K, List<V>>> iter = multimap.listEntries().iterator();
-		return from(pair -> {
+		return of(pair -> {
 			boolean b = iter.hasNext();
 			if (b) {
 				Pair<K, List<V>> pair1 = iter.next();
@@ -58,9 +58,9 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		});
 	}
 
-	public static <K, V> Outlet2<K, V> from(Map<K, V> map) {
+	public static <K, V> Outlet2<K, V> of(Map<K, V> map) {
 		Iterator<Entry<K, V>> iter = map.entrySet().iterator();
-		return from(pair -> {
+		return of(pair -> {
 			boolean b = iter.hasNext();
 			if (b) {
 				Entry<K, V> pair1 = iter.next();
@@ -73,8 +73,8 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	@SafeVarargs
-	public static <K, V> Outlet2<K, V> from(Pair<K, V>... kvs) {
-		return from(new Source2<K, V>() {
+	public static <K, V> Outlet2<K, V> of(Pair<K, V>... kvs) {
+		return of(new Source2<K, V>() {
 			private int i;
 
 			public boolean source2(Pair<K, V> pair) {
@@ -90,9 +90,9 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		});
 	}
 
-	public static <K, V> Outlet2<K, V> from(Iterable<Pair<K, V>> col) {
+	public static <K, V> Outlet2<K, V> of(Iterable<Pair<K, V>> col) {
 		Iterator<Pair<K, V>> iter = col.iterator();
-		return from(new Source2<K, V>() {
+		return of(new Source2<K, V>() {
 			public boolean source2(Pair<K, V> pair) {
 				boolean b = iter.hasNext();
 				if (b) {
@@ -105,7 +105,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		});
 	}
 
-	public static <K, V> Outlet2<K, V> from(Source2<K, V> source) {
+	public static <K, V> Outlet2<K, V> of(Source2<K, V> source) {
 		return new Outlet2<>(source);
 	}
 
@@ -119,11 +119,11 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Outlet<Outlet2<K, V>> chunk(int n) {
-		return Outlet.from(FunUtil.map(Outlet2<K, V>::new, FunUtil2.chunk(n, source2)));
+		return Outlet.of(FunUtil.map(Outlet2<K, V>::new, FunUtil2.chunk(n, source2)));
 	}
 
 	public Outlet2<K, V> closeAtEnd(Closeable c) {
-		return from(pair -> {
+		return of(pair -> {
 			boolean b = next(pair);
 			if (!b)
 				Util.closeQuietly(c);
@@ -136,15 +136,15 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <T> Outlet<T> concatMap(BiFunction<K, V, Outlet<T>> fun) {
-		return Outlet.from(FunUtil.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source(), source2)));
+		return Outlet.of(FunUtil.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source(), source2)));
 	}
 
 	public <K1, V1> Outlet2<K1, V1> concatMap2(BiFunction<K, V, Outlet2<K1, V1>> fun) {
-		return Outlet2.from(FunUtil2.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source2, source2)));
+		return of(FunUtil2.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source2, source2)));
 	}
 
 	public <V1> Outlet2<K, V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
-		return Outlet2.from(FunUtil2.concat(FunUtil2.map((k, v) -> {
+		return of(FunUtil2.concat(FunUtil2.map((k, v) -> {
 			Source<V1> source = fun.apply(v).source();
 			return pair -> {
 				V1 value1 = source.source();
@@ -159,12 +159,12 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Outlet2<K, V> cons(K key, V value) {
-		return from(FunUtil2.cons(key, value, source2));
+		return of(FunUtil2.cons(key, value, source2));
 	}
 
 	public Outlet2<K, V> distinct() {
 		Set<Pair<K, V>> set = new HashSet<>();
-		return from(pair -> {
+		return of(pair -> {
 			boolean b;
 			while ((b = next(pair)) && !set.add(Pair.of(pair.t0, pair.t1)))
 				;
@@ -177,7 +177,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		boolean isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
 			n--;
-		return isAvailable ? this : Outlet2.empty();
+		return isAvailable ? this : empty();
 	}
 
 	@Override
@@ -200,15 +200,15 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Outlet2<K, V> filter(BiPredicate<K, V> fun) {
-		return from(FunUtil2.filter(fun, source2));
+		return of(FunUtil2.filter(fun, source2));
 	}
 
 	public Outlet2<K, V> filterKey(Predicate<K> fun) {
-		return from(FunUtil2.filterKey(fun, source2));
+		return of(FunUtil2.filterKey(fun, source2));
 	}
 
 	public Outlet2<K, V> filterValue(Predicate<V> fun) {
-		return from(FunUtil2.filterValue(fun, source2));
+		return of(FunUtil2.filterValue(fun, source2));
 	}
 
 	public Pair<K, V> first() {
@@ -218,7 +218,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public Outlet2<K, List<V>> groupBy() {
 		Map<K, List<V>> map = toListMap();
-		return Outlet.from(map.entrySet()).map2(Entry::getKey, Entry::getValue);
+		return Outlet.of(map.entrySet()).map2(Entry::getKey, Entry::getValue);
 	}
 
 	@Override
@@ -249,11 +249,11 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <T> Outlet<T> map(BiFunction<K, V, T> fun0) {
-		return Outlet.from(FunUtil2.map(fun0, source2));
+		return Outlet.of(FunUtil2.map(fun0, source2));
 	}
 
 	public <K1, V1> Outlet2<K1, V1> mapEntry(BiFunction<K, V, K1> kf, BiFunction<K, V, V1> vf) {
-		return from(FunUtil2.map2(kf, vf, source2));
+		return of(FunUtil2.map2(kf, vf, source2));
 	}
 
 	public <K1> Outlet2<K1, V> mapKey(Fun<K, K1> fun) {
@@ -315,7 +315,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Outlet<Pair<K, V>> pairs() {
-		return Outlet.from(() -> {
+		return Outlet.of(() -> {
 			Pair<K, V> pair = Pair.of(null, null);
 			return next(pair) ? pair : null;
 		});
@@ -326,7 +326,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Outlet2<K, V> reverse() {
-		return from(Util.reverse(toList()));
+		return of(Util.reverse(toList()));
 	}
 
 	public void sink(BiConsumer<K, V> sink) {
@@ -348,7 +348,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		boolean end = false;
 		for (int i = 0; !end && i < n; i++)
 			end = next(pair);
-		return !end ? from(source2) : empty();
+		return !end ? of(source2) : empty();
 	}
 
 	public Outlet2<K, V> sort(Comparator<Pair<K, V>> comparator) {
@@ -356,7 +356,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		Pair<K, V> pair;
 		while (next(pair = Pair.of(null, null)))
 			list.add(pair);
-		return from(Util.sort(list, comparator));
+		return of(Util.sort(list, comparator));
 	}
 
 	public Outlet2<K, V> sortByKey(Comparator<K> comparator) {
@@ -368,11 +368,11 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Outlet<Outlet2<K, V>> split(BiPredicate<K, V> fun) {
-		return Outlet.from(FunUtil.map(Outlet2<K, V>::new, FunUtil2.split(fun, source2)));
+		return Outlet.of(FunUtil.map(Outlet2<K, V>::new, FunUtil2.split(fun, source2)));
 	}
 
 	public Outlet2<K, V> take(int n) {
-		return from(new Source2<K, V>() {
+		return of(new Source2<K, V>() {
 			private int count = n;
 
 			public boolean source2(Pair<K, V> pair) {
@@ -412,7 +412,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public ListMultimap<K, V> toMultimap() {
 		ListMultimap<K, V> map = new ListMultimap<>();
-		groupBy().concatMapValue(Outlet::from).sink(map::put);
+		groupBy().concatMapValue(Outlet::of).sink(map::put);
 		return map;
 	}
 

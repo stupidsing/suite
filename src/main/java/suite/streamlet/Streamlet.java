@@ -30,12 +30,12 @@ public class Streamlet<T> implements Iterable<T> {
 			List<Source<T>> sources = new ArrayList<>();
 			for (Streamlet<T> streamlet : streamlets)
 				sources.add(streamlet.in.source().source());
-			return Outlet.from(FunUtil.concat(To.source(sources)));
+			return Outlet.of(FunUtil.concat(To.source(sources)));
 		});
 	}
 
-	public static <T> Streamlet<T> from(Source<T> source) {
-		return streamlet(() -> Outlet.from(source));
+	public static <T> Streamlet<T> of(Source<T> source) {
+		return streamlet(() -> Outlet.of(source));
 	}
 
 	private static <T> Streamlet<T> streamlet(Source<Outlet<T>> in) {
@@ -155,7 +155,7 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public Streamlet<T> memoize() {
 		List<T> list = toList();
-		return streamlet(() -> Outlet.from(list));
+		return streamlet(() -> Outlet.of(list));
 	}
 
 	public T min(Comparator<T> comparator) {
