@@ -48,26 +48,27 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	public static <K, V> Outlet2<K, List<V>> from(ListMultimap<K, V> multimap) {
 		Iterator<Pair<K, List<V>>> iter = multimap.listEntries().iterator();
 		return from(pair -> {
-			if (iter.hasNext()) {
+			boolean b = iter.hasNext();
+			if (b) {
 				Pair<K, List<V>> pair1 = iter.next();
 				pair.t0 = pair1.t0;
 				pair.t1 = pair1.t1;
-				return true;
-			} else
-				return false;
+			}
+			return b;
 		});
 	}
 
 	public static <K, V> Outlet2<K, V> from(Map<K, V> map) {
 		Iterator<Entry<K, V>> iter = map.entrySet().iterator();
 		return from(pair -> {
-			if (iter.hasNext()) {
+			boolean b = iter.hasNext();
+			if (b) {
 				Entry<K, V> pair1 = iter.next();
 				pair.t0 = pair1.getKey();
 				pair.t1 = pair1.getValue();
-				return true;
-			} else
-				return false;
+			}
+			return b;
+
 		});
 	}
 
@@ -77,13 +78,14 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 			private int i;
 
 			public boolean source2(Pair<K, V> pair) {
-				if (i < kvs.length) {
+				boolean b = i < kvs.length;
+				if (b) {
 					Pair<K, V> kv = kvs[i];
 					pair.t0 = kv.t0;
 					pair.t1 = kv.t1;
-					return true;
 				}
-				return false;
+				return b;
+
 			}
 		});
 	}
@@ -92,13 +94,13 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		Iterator<Pair<K, V>> iter = col.iterator();
 		return from(new Source2<K, V>() {
 			public boolean source2(Pair<K, V> pair) {
-				if (iter.hasNext()) {
+				boolean b = iter.hasNext();
+				if (b) {
 					Pair<K, V> pair1 = iter.next();
 					pair.t0 = pair1.t0;
 					pair.t1 = pair1.t1;
-					return true;
-				} else
-					return false;
+				}
+				return b;
 			}
 		});
 	}
@@ -146,12 +148,12 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 			Source<V1> source = fun.apply(v).source();
 			return pair -> {
 				V1 value1 = source.source();
-				if (value1 != null) {
+				boolean b = value1 != null;
+				if (b) {
 					pair.t0 = k;
 					pair.t1 = value1;
-					return true;
-				} else
-					return false;
+				}
+				return b;
 			};
 		}, source2)));
 	}

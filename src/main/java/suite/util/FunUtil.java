@@ -143,12 +143,12 @@ public class FunUtil {
 		Fun<T, V> vf1 = Rethrow.fun(vf0);
 		return pair -> {
 			T t = source.source();
-			if (t != null) {
+			boolean b = t != null;
+			if (b) {
 				pair.t0 = kf1.apply(t);
 				pair.t1 = vf1.apply(t);
-				return true;
-			} else
-				return false;
+			}
+			return b;
 		};
 	}
 

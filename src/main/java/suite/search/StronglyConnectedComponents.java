@@ -43,7 +43,7 @@ public class StronglyConnectedComponents<V> {
 		this.dg = dg;
 
 		Map<V, Scc> sccs = Read.from(dg.vertices).map2(v -> v, v -> new Scc(v)).toMap();
-		forwards = dg.forwards.listEntries().mapEntry((u, v) -> sccs.get(u), (u, v) -> sccs.get(v)).toMultimap();
+		forwards = dg.forwards.entries().mapEntry((u, v) -> sccs.get(u), (u, v) -> sccs.get(v)).toMultimap();
 
 		for (Scc vscc : sccs.values())
 			if (!vscc.isVisited)

@@ -171,12 +171,12 @@ public class FunUtil2 {
 		BiFunction<K, V, V1> vf1 = Rethrow.fun2(vf0);
 		Pair<K, V> pair1 = Pair.of(null, null);
 		return pair -> {
-			if (source2.source2(pair1)) {
+			boolean b = source2.source2(pair1);
+			if (b) {
 				pair.t0 = kf1.apply(pair1.t0, pair1.t1);
 				pair.t1 = vf1.apply(pair1.t0, pair1.t1);
-				return true;
-			} else
-				return false;
+			}
+			return b;
 		};
 	}
 
@@ -228,12 +228,12 @@ public class FunUtil2 {
 		return pair -> {
 			try {
 				Pair<K, V> p = queue.take();
-				if (p != null) {
+				boolean b = p != null;
+				if (b) {
 					pair.t0 = p.t0;
 					pair.t1 = p.t1;
-					return true;
-				} else
-					return false;
+				}
+				return b;
 			} catch (InterruptedException ex) {
 				thread.interrupt();
 				throw new RuntimeException(ex);
