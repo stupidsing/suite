@@ -55,13 +55,6 @@ public class DataSource {
 	}
 
 	private void cleanse() {
-		int n = 0;
-
-		for (int i = 1; i < prices.length; i++)
-			if (dates[i] != null)
-				n = 0;
-			else
-				dates[i] = dates[i - 1] + ("A" + n++);
 
 		// ignore price sparks caused by data source bugs
 		for (int i = 2; i < prices.length; i++) {
@@ -92,13 +85,14 @@ public class DataSource {
 				throw new RuntimeException(
 						"Price varied too much: (" + price0 + " => " + price1 + ") / (" + date0 + " => " + date1 + ")");
 
+			date0 = date1;
 			price0 = price1;
 		}
 	}
 
 	private boolean isValid(float price0, float price1) {
 		float ratio = price1 / price0;
-		return .8f < ratio && ratio < 1.25f;
+		return 3f / 4f < ratio && ratio < 4f / 3f;
 	}
 
 }
