@@ -9,7 +9,7 @@ public class LongShortTermMemoryNetwork {
 	private int memoryLength = 8;
 	private int inputLength = 8;
 	private int outputLength = 8;
-	private int ll = inputLength + outputLength;
+	private int ll = inputLength + outputLength + 1;
 
 	public class Unit {
 		private float memory[] = new float[memoryLength];
@@ -18,20 +18,17 @@ public class LongShortTermMemoryNetwork {
 		private float wi[][] = new float[memoryLength][ll];
 		private float wc[][] = new float[memoryLength][ll];
 		private float wo[][] = new float[memoryLength][ll];
-		private float bf[] = new float[memoryLength];
-		private float bi[] = new float[memoryLength];
-		private float bc[] = new float[memoryLength];
-		private float bo[] = new float[memoryLength];
 
 		public float[] activateForward(float input[]) {
 			float io0[] = new float[ll];
 			Copy.primitiveArray(input, 0, io0, 0, inputLength);
 			Copy.primitiveArray(output0, 0, io0, inputLength, outputLength);
+			io0[inputLength + outputLength] = 1f;
 
-			float fs[] = sigmoidOn(Matrix.addOn(Matrix.mul(wf, io0), bf));
-			float is[] = sigmoidOn(Matrix.addOn(Matrix.mul(wi, io0), bi));
-			float cs[] = tanhOn(Matrix.addOn(Matrix.mul(wc, io0), bc));
-			float os[] = sigmoidOn(Matrix.addOn(Matrix.mul(wo, io0), bo));
+			float fs[] = sigmoidOn(Matrix.mul(wf, io0));
+			float is[] = sigmoidOn(Matrix.mul(wi, io0));
+			float cs[] = tanhOn(Matrix.mul(wc, io0));
+			float os[] = sigmoidOn(Matrix.mul(wo, io0));
 			float memory1[] = Matrix.addOn(forgetOn(memory, fs), forgetOn(cs, is));
 			float output1[] = forgetOn(os, tanh(memory1));
 
