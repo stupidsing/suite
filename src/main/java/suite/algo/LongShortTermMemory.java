@@ -1,16 +1,34 @@
 package suite.algo;
 
+import java.util.Random;
+
 import suite.math.Matrix;
 import suite.math.Sigmoid;
 import suite.util.Copy;
 
 public class LongShortTermMemory {
 
-	private float learningRate = 1f;
-	private int memoryLength = 8;
-	private int inputLength = 8;
-	private int outputLength = 8;
-	private int ll = inputLength + outputLength + 1;
+	private float learningRate;
+	private int memoryLength;
+	private int inputLength;
+	private int outputLength;
+	private int ll;
+
+	public LongShortTermMemory() {
+		this(1f, 8, 8, 8);
+	}
+
+	public LongShortTermMemory(float learningRate, int memoryLength, int inputLength, int outputLength) {
+		this.learningRate = learningRate;
+		this.memoryLength = memoryLength;
+		this.inputLength = inputLength;
+		this.outputLength = outputLength;
+		ll = inputLength + outputLength + 1;
+	}
+
+	public Unit unit() {
+		return new Unit();
+	}
 
 	public class Unit {
 		private float[] memory = new float[memoryLength];
@@ -20,6 +38,21 @@ public class LongShortTermMemory {
 		private float[][] wc = new float[memoryLength][ll];
 		private float[][] wo = new float[memoryLength][ll];
 
+		public Unit() {
+			Random random = new Random();
+			for (int i = 0; i < memoryLength; i++) {
+				memory[i] = random.nextFloat();
+				for (int j = 0; j < ll; j++) {
+					wf[i][j] = random.nextFloat();
+					wi[i][j] = random.nextFloat();
+					wc[i][j] = random.nextFloat();
+					wo[i][j] = random.nextFloat();
+				}
+			}
+			for (int i = 0; i < outputLength; i++)
+				output[i] = random.nextFloat();
+		}
+
 		public float[] activateForward(float[] input) {
 			return activate_(input, null);
 		}
@@ -28,7 +61,7 @@ public class LongShortTermMemory {
 			activate_(input, expected);
 		}
 
-		public float[] activate_(float[] input, float[] expected) {
+		private float[] activate_(float[] input, float[] expected) {
 			float[] memory0 = memory;
 			float[] output0 = output;
 
@@ -70,45 +103,45 @@ public class LongShortTermMemory {
 
 			return output1;
 		}
+	}
 
-		private float[] forget(float[] fs, float[] n) {
-			return forgetOn(Matrix.of(fs), n);
-		}
+	private float[] forget(float[] fs, float[] n) {
+		return forgetOn(Matrix.of(fs), n);
+	}
 
-		private float[] forgetOn(float[] m, float[] n) {
-			int length = m.length;
-			if (length == n.length) {
-				for (int i = 0; i < length; i++)
-					m[i] *= n[i];
-				return m;
-			} else
-				throw new RuntimeException("Wrong matrix sizes");
-		}
-
-		private float[] sigmoidOn(float[] fs) {
-			int length = fs.length;
+	private float[] forgetOn(float[] m, float[] n) {
+		int length = m.length;
+		if (length == n.length) {
 			for (int i = 0; i < length; i++)
-				fs[i] = Sigmoid.sigmoid(fs[i]);
-			return fs;
-		}
+				m[i] *= n[i];
+			return m;
+		} else
+			throw new RuntimeException("Wrong matrix sizes");
+	}
 
-		private float[] sigmoidGradientOn(float[] fs) {
-			int length = fs.length;
-			for (int i = 0; i < length; i++)
-				fs[i] = Sigmoid.sigmoidGradient(fs[i]);
-			return fs;
-		}
+	private float[] sigmoidOn(float[] fs) {
+		int length = fs.length;
+		for (int i = 0; i < length; i++)
+			fs[i] = Sigmoid.sigmoid(fs[i]);
+		return fs;
+	}
 
-		private float[] tanh(float[] fs) {
-			return tanhOn(Matrix.of(fs));
-		}
+	private float[] sigmoidGradientOn(float[] fs) {
+		int length = fs.length;
+		for (int i = 0; i < length; i++)
+			fs[i] = Sigmoid.sigmoidGradient(fs[i]);
+		return fs;
+	}
 
-		private float[] tanhOn(float[] fs) {
-			int length = fs.length;
-			for (int i = 0; i < length; i++)
-				fs[i] = (float) Math.tanh(fs[i]);
-			return fs;
-		}
+	private float[] tanh(float[] fs) {
+		return tanhOn(Matrix.of(fs));
+	}
+
+	private float[] tanhOn(float[] fs) {
+		int length = fs.length;
+		for (int i = 0; i < length; i++)
+			fs[i] = (float) Math.tanh(fs[i]);
+		return fs;
 	}
 
 	private float[] tanhGradientOn(float[] fs) {
