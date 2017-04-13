@@ -75,12 +75,7 @@ public class ArtificialNeuralNetwork {
 
 			float[] ins = activations.get(layer - 1);
 			float[] outs = activations.get(layer);
-			float[] errors1;
-
-			if (lw1 != null)
-				errors1 = Matrix.mul(lw1.weights, errors);
-			else
-				errors1 = Matrix.sub(expected, outs);
+			float[] errors1 = lw1 != null ? Matrix.mul(lw1.weights, errors) : Matrix.sub(expected, outs);
 
 			for (int j = 0; j < lw0.nOutputs; j++)
 				errors1[j] *= activationFunctionGradient(outs[j]);
