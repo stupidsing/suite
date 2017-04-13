@@ -319,9 +319,7 @@ public class Chars implements Iterable<Character> {
 				while (capacity < capacity1)
 					capacity = capacity < Constants.bufferSize ? capacity << 1 : capacity * 3 / 2;
 
-				char chars1[] = new char[capacity];
-				Copy.primitiveArray(cs, 0, chars1, 0, size);
-				cs = chars1;
+				cs = Arrays.copyOf(cs, capacity);
 			}
 		}
 	}

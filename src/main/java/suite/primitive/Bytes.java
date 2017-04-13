@@ -320,9 +320,7 @@ public class Bytes implements Iterable<Byte> {
 				while (capacity < capacity1)
 					capacity = capacity < Constants.bufferSize ? capacity << 1 : capacity * 3 / 2;
 
-				byte bytes1[] = new byte[capacity];
-				Copy.primitiveArray(bs, 0, bytes1, 0, size);
-				bs = bytes1;
+				bs = Arrays.copyOf(bs, capacity);
 			}
 		}
 	}
