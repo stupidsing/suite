@@ -11,19 +11,17 @@ public class LongShortTermMemory {
 	private float learningRate;
 	private int memoryLength;
 	private int inputLength;
-	private int outputLength;
 	private int ll;
 
 	public LongShortTermMemory() {
-		this(1f, 8, 8, 8);
+		this(1f, 8, 8);
 	}
 
-	public LongShortTermMemory(float learningRate, int memoryLength, int inputLength, int outputLength) {
+	public LongShortTermMemory(float learningRate, int memoryLength, int inputLength) {
 		this.learningRate = learningRate;
 		this.memoryLength = memoryLength;
 		this.inputLength = inputLength;
-		this.outputLength = outputLength;
-		ll = inputLength + outputLength + 1;
+		ll = inputLength + memoryLength + 1;
 	}
 
 	public Unit unit() {
@@ -32,7 +30,7 @@ public class LongShortTermMemory {
 
 	public class Unit {
 		private float[] memory = new float[memoryLength];
-		private float[] output = new float[outputLength];
+		private float[] output = new float[memoryLength];
 		private float[][] wf = new float[memoryLength][ll];
 		private float[][] wi = new float[memoryLength][ll];
 		private float[][] wc = new float[memoryLength][ll];
@@ -42,6 +40,7 @@ public class LongShortTermMemory {
 			Random random = new Random();
 			for (int i = 0; i < memoryLength; i++) {
 				memory[i] = random.nextFloat();
+				output[i] = random.nextFloat();
 				for (int j = 0; j < ll; j++) {
 					wf[i][j] = random.nextFloat();
 					wi[i][j] = random.nextFloat();
@@ -49,8 +48,6 @@ public class LongShortTermMemory {
 					wo[i][j] = random.nextFloat();
 				}
 			}
-			for (int i = 0; i < outputLength; i++)
-				output[i] = random.nextFloat();
 		}
 
 		public float[] activateForward(float[] input) {
@@ -67,8 +64,8 @@ public class LongShortTermMemory {
 
 			float[] io0 = new float[ll];
 			Copy.primitiveArray(input, 0, io0, 0, inputLength);
-			Copy.primitiveArray(output0, 0, io0, inputLength, outputLength);
-			io0[inputLength + outputLength] = 1f;
+			Copy.primitiveArray(output0, 0, io0, inputLength, memoryLength);
+			io0[inputLength + memoryLength] = 1f;
 
 			float[] fs = sigmoidOn(Matrix.mul(wf, io0));
 			float[] is = sigmoidOn(Matrix.mul(wi, io0));
@@ -91,13 +88,13 @@ public class LongShortTermMemory {
 				float[] e_wi = sigmoidGradientOn(e_is);
 				float[] e_wf = sigmoidGradientOn(e_fs);
 
-				for (int j = 0; j < outputLength; j++)
-					for (int i = 0; i < ll; i++) {
-						float d = learningRate * io0[i];
-						wo[i][j] += d * e_wo[j];
-						wc[i][j] += d * e_wc[j];
-						wi[i][j] += d * e_wi[j];
-						wf[i][j] += d * e_wf[j];
+				for (int i = 0; i < memoryLength; i++)
+					for (int j = 0; j < ll; j++) {
+						float d = learningRate * io0[j];
+						wo[i][j] += d * e_wo[i];
+						wc[i][j] += d * e_wc[i];
+						wi[i][j] += d * e_wi[i];
+						wf[i][j] += d * e_wf[i];
 					}
 			}
 
