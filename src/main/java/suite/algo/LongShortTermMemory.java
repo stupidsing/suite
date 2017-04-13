@@ -4,7 +4,7 @@ import suite.math.Matrix;
 import suite.math.Sigmoid;
 import suite.util.Copy;
 
-public class LongShortTermMemoryNetwork {
+public class LongShortTermMemory {
 
 	private float learningRate = 1f;
 	private int memoryLength = 8;
