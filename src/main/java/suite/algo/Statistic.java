@@ -16,7 +16,7 @@ public class Statistic {
 	private int dimension;
 
 	private class KmeansBin {
-		private float sum[] = new float[dimension];
+		private float[] sum = new float[dimension];
 		private int count;
 	}
 
@@ -36,7 +36,7 @@ public class Statistic {
 		while (true) {
 			KmeansBin bins[] = To.array(KmeansBin.class, k, j -> new KmeansBin());
 
-			for (float point[] : points) {
+			for (float[] point : points) {
 				KmeansBin bin = bins[findNearest(point, kmeans)];
 				bin.sum = Matrix.add(point, bin.sum);
 				bin.count++;
@@ -51,7 +51,7 @@ public class Statistic {
 		}
 	}
 
-	public int kNearestNeighbor(List<float[]> points, float point0[]) {
+	public int kNearestNeighbor(List<float[]> points, float[] point0) {
 		List<KnnBin> bins = Read.from(points) //
 				.index() //
 				.map((i, point) -> {
@@ -72,7 +72,7 @@ public class Statistic {
 		return Read.from2(map).min((k, v) -> -v.t1.get()).t0;
 	}
 
-	private int findNearest(float point[], List<float[]> points) {
+	private int findNearest(float[] point, List<float[]> points) {
 		float minDist = Float.MAX_VALUE;
 		int minj = 0;
 		for (int j = 0; j < points.size(); j++) {
@@ -85,12 +85,12 @@ public class Statistic {
 		return minj;
 	}
 
-	private float sqdist(float a[], float b[]) {
-		float d[] = Matrix.sub(a, b);
+	private float sqdist(float[] a, float[] b) {
+		float[] d = Matrix.sub(a, b);
 		return Matrix.dot(d, d);
 	}
 
-	private float[] div(float a[], float b) {
+	private float[] div(float[] a, float b) {
 		return Matrix.scale(a, 1f / b);
 	}
 

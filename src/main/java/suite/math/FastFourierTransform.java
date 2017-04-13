@@ -59,17 +59,17 @@ public class FastFourierTransform {
 		return fds;
 	}
 
-	public float[] ifft(float fs0[]) {
+	public float[] ifft(float[] fs0) {
 		int size2 = fs0.length;
 		int size = size2 / 2;
-		float fs1[] = new float[size2];
+		float[] fs1 = new float[size2];
 
 		for (int i2 = 0; i2 < size2; i2 += 2) {
 			fs1[i2 + 0] = fs0[i2 + 0];
 			fs1[i2 + 1] = -fs0[i2 + 1];
 		}
 
-		float fs2[] = fft(fs1);
+		float[] fs2 = fft(fs1);
 		float inv = 1.0f / size;
 
 		for (int i2 = 0; i2 < size2; i2 += 2) {
@@ -80,10 +80,10 @@ public class FastFourierTransform {
 		return fs2;
 	}
 
-	public float[] fft(float tds[]) {
+	public float[] fft(float[] tds) {
 		int size2 = tds.length;
 		int size = size2 / 2;
-		float fds[] = new float[size2];
+		float[] fds = new float[size2];
 		int s = size;
 		int bits = 0;
 
@@ -100,7 +100,7 @@ public class FastFourierTransform {
 
 		for (int g = 2; g <= size; g <<= 1) {
 			int g2 = g * 2;
-			float cis[] = new float[g2];
+			float[] cis = new float[g2];
 			double angleDiff = Math.PI / g;
 
 			for (int i2 = 0; i2 < g2; i2 += 2) {

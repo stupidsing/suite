@@ -17,9 +17,9 @@ public class ArtificialNeuralNetwork {
 	private class LayerWeight {
 		private int nInputs;
 		private int nOutputs;
-		private float weights[][];
+		private float[][] weights;
 
-		private LayerWeight(int nInputs, int nOutputs, float weights[][]) {
+		private LayerWeight(int nInputs, int nOutputs, float[][] weights) {
 			this.nInputs = nInputs;
 			this.nOutputs = nOutputs;
 			this.weights = weights;
@@ -32,7 +32,7 @@ public class ArtificialNeuralNetwork {
 		for (int layer = 0; layer < nLayers; layer++) {
 			int nInputs = layerSizes.get(layer);
 			int nOutputs = layerSizes.get(layer + 1);
-			float weights[][] = new float[nInputs][nOutputs];
+			float[][] weights = new float[nInputs][nOutputs];
 
 			for (int i = 0; i < nInputs; i++)
 				for (int j = 0; j < nOutputs; j++)
@@ -42,20 +42,20 @@ public class ArtificialNeuralNetwork {
 		}
 	}
 
-	public float[] feed(float inputs[]) {
+	public float[] feed(float[] inputs) {
 		return Util.last(activateForward(inputs));
 	}
 
-	public void train(float inputs[], float expected[]) {
+	public void train(float[] inputs, float[] expected) {
 		propagateBackward(activateForward(inputs), expected);
 	}
 
-	private List<float[]> activateForward(float values[]) {
+	private List<float[]> activateForward(float[] values) {
 		List<float[]> outputs = new ArrayList<>();
 		outputs.add(values);
 
 		for (LayerWeight lw : lws) {
-			float values1[] = Matrix.mul(values, lw.weights);
+			float[] values1 = Matrix.mul(values, lw.weights);
 
 			for (int j = 0; j < lw.nOutputs; j++)
 				values1[j] = activationFunction(values1[j]);
@@ -66,16 +66,16 @@ public class ArtificialNeuralNetwork {
 		return outputs;
 	}
 
-	private void propagateBackward(List<float[]> activations, float expected[]) {
-		float errors[] = null;
+	private void propagateBackward(List<float[]> activations, float[] expected) {
+		float[] errors = null;
 
 		for (int layer = nLayers; 0 < layer; layer--) {
 			LayerWeight lw0 = lws.get(layer - 1);
 			LayerWeight lw1 = layer < nLayers ? lws.get(layer) : null;
 
-			float ins[] = activations.get(layer - 1);
-			float outs[] = activations.get(layer);
-			float errors1[];
+			float[] ins = activations.get(layer - 1);
+			float[] outs = activations.get(layer);
+			float[] errors1;
 
 			if (lw1 != null)
 				errors1 = Matrix.mul(lw1.weights, errors);

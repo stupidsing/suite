@@ -38,7 +38,7 @@ public class DailyMain extends ExecutableProgram {
 
 			try {
 				DataSource ds = DataSource.yahoo(stockCode, frDate, toDate);
-				float prices[] = ds.prices;
+				float[] prices = ds.prices;
 
 				int signal = strategy.analyze(prices).get(prices.length - 1);
 				String message = "equity " + stockCode + " " + company.name + " has signal " + signal;

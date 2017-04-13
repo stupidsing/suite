@@ -20,9 +20,9 @@ public class ConvolutionalNeuralNetwork {
 		private int inputStride;
 		private int nInputs;
 		private int nOutputs;
-		private float weights[];
+		private float[] weights;
 
-		private LayerWeight(int nInputs, int nOutputs, float weights[]) {
+		private LayerWeight(int nInputs, int nOutputs, float[] weights) {
 			this.nInputs = nInputs;
 			this.nOutputs = nOutputs;
 			this.weights = weights;
@@ -43,26 +43,26 @@ public class ConvolutionalNeuralNetwork {
 			Pair<Integer, Integer> parameter = parameters.get(layer);
 			int nWeights = parameter.t0;
 			int nOutputs = parameter.t1;
-			float weights[] = To.floatArray(nWeights, i -> random.nextFloat());
+			float[] weights = To.floatArray(nWeights, i -> random.nextFloat());
 			lws.add(new LayerWeight(nInputs, nOutputs, weights));
 			nInputs = nOutputs;
 		}
 	}
 
-	public float[] feed(float inputs[]) {
+	public float[] feed(float[] inputs) {
 		return Util.last(forwardActivations(inputs));
 	}
 
-	public void train(float inputs[], float expected[]) {
+	public void train(float[] inputs, float[] expected) {
 		backwardPropagate(forwardActivations(inputs), expected);
 	}
 
-	private List<float[]> forwardActivations(float values[]) {
+	private List<float[]> forwardActivations(float[] values) {
 		List<float[]> outputs = new ArrayList<>();
 		outputs.add(values);
 
 		for (LayerWeight lw : lws) {
-			float values1[] = new float[lw.nOutputs];
+			float[] values1 = new float[lw.nOutputs];
 
 			for (int i = lw.inputStart, j = 0; i < lw.inputEnd; i += lw.inputStride, j++) {
 				float sum = 0f;
@@ -77,16 +77,16 @@ public class ConvolutionalNeuralNetwork {
 		return outputs;
 	}
 
-	private void backwardPropagate(List<float[]> activations, float expected[]) {
-		float errors[] = null;
+	private void backwardPropagate(List<float[]> activations, float[] expected) {
+		float[] errors = null;
 
 		for (int layer = nLayers; 0 < layer; layer--) {
 			LayerWeight lw0 = lws.get(layer - 1);
 			LayerWeight lw1 = layer < nLayers ? lws.get(layer) : null;
 
-			float ins[] = activations.get(layer - 1);
-			float outs[] = activations.get(layer);
-			float diffs[] = new float[lw0.nOutputs];
+			float[] ins = activations.get(layer - 1);
+			float[] outs = activations.get(layer);
+			float[] diffs = new float[lw0.nOutputs];
 
 			if (lw1 != null)
 				for (int j = lw1.inputStart, k = 0; j < lw1.inputEnd; j += lw1.inputStride, k++) {
@@ -99,7 +99,7 @@ public class ConvolutionalNeuralNetwork {
 				for (int j = 0; j < lw0.nOutputs; j++)
 					diffs[j] = expected[j] - outs[j];
 
-			float errors1[] = new float[lw0.nOutputs];
+			float[] errors1 = new float[lw0.nOutputs];
 
 			for (int i = lw0.inputStart, j = 0; i < lw0.inputEnd; i += lw0.inputStride, j++) {
 				errors1[j] = diffs[j] * activationFunctionGradient(outs[j]);

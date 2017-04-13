@@ -82,7 +82,7 @@ public class To {
 	}
 
 	public static float[] floatArray(int length, IntToFloatFunction f) {
-		float floats[] = new float[length];
+		float[] floats = new float[length];
 		for (int i = 0; i < length; i++)
 			floats[i] = f.apply(i);
 		return floats;

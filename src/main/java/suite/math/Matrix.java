@@ -4,15 +4,15 @@ import java.util.Arrays;
 
 public class Matrix {
 
-	public static float[] add(float m[], float n[]) {
+	public static float[] add(float[] m, float[] n) {
 		return addOn(clone(m), n);
 	}
 
-	public static float[][] add(float m[][], float n[][]) {
+	public static float[][] add(float[][] m, float[][] n) {
 		return addOn(clone(m), n);
 	}
 
-	public static float[] addOn(float m[], float n[]) {
+	public static float[] addOn(float[] m, float[] n) {
 		int length = m.length;
 		if (length == n.length)
 			for (int i = 0; i < length; i++)
@@ -22,7 +22,7 @@ public class Matrix {
 		return m;
 	}
 
-	public static float[][] addOn(float m[][], float n[][]) {
+	public static float[][] addOn(float[][] m, float[][] n) {
 		int height = h(m);
 		int width = w(m);
 		if (height == h(n) && width == w(n))
@@ -34,7 +34,7 @@ public class Matrix {
 		return m;
 	}
 
-	public static float[] addScaleOn(float m[], float n[], float f) {
+	public static float[] addScaleOn(float[] m, float[] n, float f) {
 		int length = m.length;
 		if (length == n.length)
 			for (int i = 0; i < length; i++)
@@ -44,11 +44,11 @@ public class Matrix {
 		return m;
 	}
 
-	public static float[][] convolute(float m[][], float k[][]) {
+	public static float[][] convolute(float[][] m, float[][] k) {
 		int kh = h(k), kw = w(k);
 		int h1 = h(m) - kh + 1;
 		int w1 = w(m) - kw + 1;
-		float o[][] = of(h1, w1);
+		float[][] o = of(h1, w1);
 		for (int i = 0; i < h1; i++)
 			for (int j = 0; j < w1; j++)
 				for (int di = 0; di < kh; di++)
@@ -57,7 +57,7 @@ public class Matrix {
 		return o;
 	}
 
-	public static float dot(float m[], float n[]) {
+	public static float dot(float[] m, float[] n) {
 		int length = m.length;
 		float sum = 0;
 		if (length == n.length)
@@ -68,7 +68,7 @@ public class Matrix {
 		return sum;
 	}
 
-	public static boolean equals(float m[][], float n[][]) {
+	public static boolean equals(float[][] m, float[][] n) {
 		int h = h(m);
 		int w = w(m);
 		if (h == h(n) && w == w(n)) {
@@ -81,19 +81,19 @@ public class Matrix {
 			return false;
 	}
 
-	public static int hashCode(float m[][]) {
+	public static int hashCode(float[][] m) {
 		int hashCode = 0;
-		for (float row[] : m)
+		for (float[] row : m)
 			hashCode = hashCode * 31 + Arrays.hashCode(row);
 		return hashCode;
 	}
 
-	public static int height(float m[][]) {
+	public static int height(float[][] m) {
 		return h(m);
 	}
 
 	public static float[][] identity(int size) {
-		float m[][] = of(size, size);
+		float[][] m = of(size, size);
 		for (int r = 0; r < size; r++)
 			m[r][r] = 1f;
 		return m;
@@ -102,14 +102,14 @@ public class Matrix {
 	/**
 	 * Calculates matric inverse by Gaussian-Jordan elimination.
 	 */
-	public static float[][] inverse(float m0[][]) {
-		float m[][] = of(m0); // do not alter input matrix
+	public static float[][] inverse(float[][] m0) {
+		float[][] m = of(m0); // do not alter input matrix
 		int size = h(m);
 
 		if (size != w(m))
 			throw new RuntimeException("Wrong matrix size");
 
-		float n[][] = identity(size);
+		float[][] n = identity(size);
 
 		for (int r = 0; r < size; r++) {
 			int c = r;
@@ -141,10 +141,10 @@ public class Matrix {
 		return n;
 	}
 
-	public static float[] mul(float m[], float n[][]) {
+	public static float[] mul(float[] m, float[][] n) {
 		int ks = m.length;
 		int width = w(n);
-		float o[] = new float[width];
+		float[] o = new float[width];
 		int j1, k1;
 		if (ks == h(n))
 			for (int j0 = 0; j0 < width; j0 = j1) {
@@ -162,10 +162,10 @@ public class Matrix {
 	}
 
 	// nT is column vector
-	public static float[] mul(float m[][], float nT[]) {
+	public static float[] mul(float[][] m, float[] nT) {
 		int ks = w(m);
 		int height = h(m);
-		float o[] = new float[height];
+		float[] o = new float[height];
 		int i1, k1;
 		if (ks == nT.length)
 			for (int i0 = 0; i0 < height; i0 = i1) {
@@ -182,11 +182,11 @@ public class Matrix {
 		return o;
 	}
 
-	public static float[][] mul(float m[][], float n[][]) {
+	public static float[][] mul(float[][] m, float[][] n) {
 		int ks = w(m);
 		int height = h(m);
 		int width = w(n);
-		float o[][] = of(height, width);
+		float[][] o = of(height, width);
 		int i1, j1, k1;
 		if (ks == h(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
@@ -208,7 +208,7 @@ public class Matrix {
 		return o;
 	}
 
-	public static Vector mul(float m[][], Vector v) {
+	public static Vector mul(float[][] m, Vector v) {
 		if (h(m) == 3 && w(m) == 3) {
 			float x1 = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z;
 			float y1 = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z;
@@ -219,11 +219,11 @@ public class Matrix {
 	}
 
 	// calculate m * nT
-	public static float[][] mul_mnT(float m[][], float n[][]) {
+	public static float[][] mul_mnT(float[][] m, float[][] n) {
 		int ks = w(m);
 		int height = h(m);
 		int width = h(n);
-		float o[][] = of(height, width);
+		float[][] o = of(height, width);
 		int i1, j1, k1;
 		if (ks == w(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
@@ -245,11 +245,11 @@ public class Matrix {
 	}
 
 	// calculate mT * n
-	public static float[][] mul_mTn(float m[][], float n[][]) {
+	public static float[][] mul_mTn(float[][] m, float[][] n) {
 		int ks = h(m);
 		int height = w(m);
 		int width = w(n);
-		float o[][] = of(height, width);
+		float[][] o = of(height, width);
 		int i1, j1, k1;
 
 		if (ks == h(n))
@@ -272,11 +272,11 @@ public class Matrix {
 		return o;
 	}
 
-	public static float[][] neg(float m[][]) {
+	public static float[][] neg(float[][] m) {
 		return negOn(clone(m));
 	}
 
-	public static float[][] negOn(float m[][]) {
+	public static float[][] negOn(float[][] m) {
 		int height = h(m);
 		int width = w(m);
 		for (int i = 0; i < height; i++)
@@ -285,11 +285,11 @@ public class Matrix {
 		return m;
 	}
 
-	public static float[] of(float m[]) {
+	public static float[] of(float[] m) {
 		return clone(m);
 	}
 
-	public static float[][] of(float m[][]) {
+	public static float[][] of(float[][] m) {
 		return clone(m);
 	}
 
@@ -321,33 +321,33 @@ public class Matrix {
 		return new float[][] { { cos, -sin, 0f, }, { sin, cos, 0f, }, { 0f, 0f, 0f, }, };
 	}
 
-	public static float[] scale(float m[], double d) {
+	public static float[] scale(float[] m, double d) {
 		return scaleOn(clone(m), d);
 	}
 
-	public static float[] scale(float m[], float f) {
+	public static float[] scale(float[] m, float f) {
 		return scaleOn(clone(m), f);
 	}
 
-	public static float[][] scale(float m[][], float f) {
+	public static float[][] scale(float[][] m, float f) {
 		return scaleOn(clone(m), f);
 	}
 
-	public static float[] scaleOn(float m[], double d) {
+	public static float[] scaleOn(float[] m, double d) {
 		int length = m.length;
 		for (int i = 0; i < length; i++)
 			m[i] = (float) (m[i] * d);
 		return m;
 	}
 
-	public static float[] scaleOn(float m[], float f) {
+	public static float[] scaleOn(float[] m, float f) {
 		int length = m.length;
 		for (int i = 0; i < length; i++)
 			m[i] *= f;
 		return m;
 	}
 
-	public static float[][] scaleOn(float m[][], float f) {
+	public static float[][] scaleOn(float[][] m, float f) {
 		int height = h(m);
 		int width = w(m);
 		for (int i = 0; i < height; i++)
@@ -356,11 +356,11 @@ public class Matrix {
 		return m;
 	}
 
-	public static float[] sub(float m[], float n[]) {
+	public static float[] sub(float[] m, float[] n) {
 		return subOn(clone(m), n);
 	}
 
-	public static float[] subOn(float m[], float n[]) {
+	public static float[] subOn(float[] m, float[] n) {
 		int length = m.length;
 		if (length == n.length)
 			for (int i = 0; i < length; i++)
@@ -370,7 +370,7 @@ public class Matrix {
 		return m;
 	}
 
-	public static void verifyEquals(float m0[][], float m1[][]) {
+	public static void verifyEquals(float[][] m0, float[][] m1) {
 		int height = h(m0);
 		int width = w(m0);
 		for (int i = 0; i < height; i++)
@@ -378,16 +378,16 @@ public class Matrix {
 				MathUtil.verifyEquals(m0[i][j], m1[i][j]);
 	}
 
-	private static void swapRows(float m[][], int row0, int row1) {
-		float temp[] = m[row0];
+	private static void swapRows(float[][] m, int row0, int row1) {
+		float[] temp = m[row0];
 		m[row0] = m[row1];
 		m[row1] = temp;
 	}
 
-	public static String toString(float m[][]) {
+	public static String toString(float[][] m) {
 		StringBuilder sb = new StringBuilder();
 
-		for (float row[] : m) {
+		for (float[] row : m) {
 			sb.append("[");
 			for (float f : row)
 				sb.append(f + " ");
@@ -397,10 +397,10 @@ public class Matrix {
 		return sb.toString();
 	}
 
-	public static float[][] transpose(float m[][]) {
+	public static float[][] transpose(float[][] m) {
 		int height = h(m);
 		int width = w(m);
-		float o[][] = of(width, height);
+		float[][] o = of(width, height);
 		int i1, j1;
 		for (int i0 = 0; i0 < height; i0 = i1) {
 			i1 = Math.min(i0 + 64, height);
@@ -414,39 +414,39 @@ public class Matrix {
 		return o;
 	}
 
-	public static int width(float m[][]) {
+	public static int width(float[][] m) {
 		return w(m);
 	}
 
-	private static void mulRow(float m[][], int row, float factor) {
+	private static void mulRow(float[][] m, int row, float factor) {
 		for (int col = 0; col < w(m); col++)
 			m[row][col] *= factor;
 	}
 
-	private static void addMultipliedRow(float m[][], int sourceRow, float factor, int targetRow) {
+	private static void addMultipliedRow(float[][] m, int sourceRow, float factor, int targetRow) {
 		for (int col = 0; col < w(m); col++)
 			m[targetRow][col] = m[targetRow][col] + factor * m[sourceRow][col];
 	}
 
-	private static float[] clone(float m[]) {
+	private static float[] clone(float[] m) {
 		return Arrays.copyOf(m, m.length);
 	}
 
-	private static float[][] clone(float m0[][]) {
+	private static float[][] clone(float[][] m0) {
 		int height = h(m0);
 		int width = w(m0);
-		float m1[][] = of(height, width);
+		float[][] m1 = of(height, width);
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
 				m1[i][j] = m0[i][j];
 		return m1;
 	}
 
-	private static int h(float m[][]) {
+	private static int h(float[][] m) {
 		return m.length;
 	}
 
-	private static int w(float m[][]) {
+	private static int w(float[][] m) {
 		return 0 < m.length ? m[0].length : 0;
 	}
 

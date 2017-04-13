@@ -17,15 +17,15 @@ public class Strategos {
 
 		return prices -> holdFixedDays(prices.length, nFutureDays, day -> {
 			if (nPastDays <= day) {
-				float fs0[] = new float[windowSize]; // moving window
+				float[] fs0 = new float[windowSize]; // moving window
 				float price0 = prices[day];
 
 				Copy.primitiveArray(prices, day - nPastDays, fs0, 0, nPastDays);
 				Arrays.fill(fs0, nPastDays, windowSize, price0);
 
-				float fs1[] = dct.dct(fs0);
-				float fs2[] = To.floatArray(windowSize, j -> j < nLowPass ? fs1[j] : 0f);
-				float fs3[] = dct.idct(fs2);
+				float[] fs1 = dct.dct(fs0);
+				float[] fs2 = To.floatArray(windowSize, j -> j < nLowPass ? fs1[j] : 0f);
+				float[] fs3 = dct.idct(fs2);
 
 				float predict = fs3[fs3.length - 1];
 				return getSignal(price0, predict, threshold);
@@ -36,9 +36,9 @@ public class Strategos {
 
 	public Strategy macdSignalLineX(float alpha0, float alpha1, float macdAlpha) {
 		return prices -> {
-			float macd[] = macd(prices, alpha0, alpha1);
-			float macdEmas[] = exponentialMovingAvg(macd, macdAlpha);
-			float diff[] = subtract(macd, macdEmas);
+			float[] macd = macd(prices, alpha0, alpha1);
+			float[] macdEmas = exponentialMovingAvg(macd, macdAlpha);
+			float[] diff = subtract(macd, macdEmas);
 			return crossover(diff);
 		};
 	}
@@ -50,7 +50,7 @@ public class Strategos {
 
 	public Strategy movingAvgMeanReverting(int nPastDays, int nFutureDays, float threshold) {
 		return prices -> {
-			float movingAvgs[] = movingAvg(prices, nPastDays);
+			float[] movingAvgs = movingAvg(prices, nPastDays);
 
 			return holdFixedDays(prices.length, nFutureDays, day -> {
 				if (nPastDays <= day) {
@@ -64,22 +64,22 @@ public class Strategos {
 	}
 
 	// moving average convergence/divergence
-	private float[] macd(float prices[], float alpha0, float alpha1) {
-		float emas0[] = exponentialMovingAvg(prices, alpha0); // long-term
-		float emas1[] = exponentialMovingAvg(prices, alpha1); // short-term
+	private float[] macd(float[] prices, float alpha0, float alpha1) {
+		float[] emas0 = exponentialMovingAvg(prices, alpha0); // long-term
+		float[] emas1 = exponentialMovingAvg(prices, alpha1); // short-term
 		return subtract(emas1, emas0);
 	}
 
-	private float[] exponentialMovingAvg(float prices[], float alpha) {
-		float emas[] = new float[prices.length];
+	private float[] exponentialMovingAvg(float[] prices, float alpha) {
+		float[] emas = new float[prices.length];
 		float ema = prices[0];
 		for (int day = 0; day < prices.length; day++)
 			emas[day] = ema += alpha * (prices[day] - ema);
 		return emas;
 	}
 
-	private float[] movingAvg(float prices[], int windowSize) {
-		float movingAvgs[] = new float[prices.length];
+	private float[] movingAvg(float[] prices, int windowSize) {
+		float[] movingAvgs = new float[prices.length];
 		float movingSum = 0f;
 
 		for (int day = 0; day < prices.length; day++) {
@@ -119,7 +119,7 @@ public class Strategos {
 		return signal;
 	}
 
-	private GetBuySell crossover(float diff[]) {
+	private GetBuySell crossover(float[] diff) {
 		return day -> {
 			if (0 < day) {
 				int signum0 = signum(diff[day - 1]);
@@ -130,7 +130,7 @@ public class Strategos {
 		};
 	}
 
-	private float[] subtract(float a[], float b[]) {
+	private float[] subtract(float[] a, float[] b) {
 		return To.floatArray(a.length, i -> a[i] - b[i]);
 	}
 

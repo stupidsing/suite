@@ -12,7 +12,7 @@ public class BackTest {
 	}
 
 	private BackTest(DataSource ds, Strategy strategy) {
-		float prices[] = ds.prices;
+		float[] prices = ds.prices;
 
 		GetBuySell getBuySell = strategy.analyze(prices);
 

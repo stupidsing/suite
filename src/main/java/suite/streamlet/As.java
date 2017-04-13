@@ -53,7 +53,7 @@ public class As {
 	public static <T> Fun<Outlet<T>, float[]> arrayOfFloats(ToFloatFunction<T> fun) {
 		return new Fun<Outlet<T>, float[]>() {
 			public float[] apply(Outlet<T> outlet) {
-				float results[] = new float[16];
+				float[] results = new float[16];
 				int size = 0;
 				T t;
 

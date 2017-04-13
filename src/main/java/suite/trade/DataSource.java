@@ -14,7 +14,7 @@ import suite.util.Util;
 public class DataSource {
 
 	public final String dates[];
-	public final float prices[];
+	public final float[] prices;
 
 	public static DataSource yahoo(String stockCode, LocalDate frDate, LocalDate toDate) {
 		String urlString = yahooUrl(stockCode, frDate, toDate);
@@ -32,7 +32,7 @@ public class DataSource {
 				.map(array -> array[0]) //
 				.toArray(String.class);
 
-		float prices[] = Read.from(arrays) //
+		float[] prices = Read.from(arrays) //
 				.collect(As.arrayOfFloats(array -> Float.parseFloat(array[1])));
 
 		DataSource dataSource = new DataSource(dates, prices);
@@ -50,7 +50,7 @@ public class DataSource {
 				+ "&g=d&ignore=.csv";
 	}
 
-	private DataSource(String dates[], float prices[]) {
+	private DataSource(String dates[], float[] prices) {
 		this.dates = dates;
 		this.prices = prices;
 	}
