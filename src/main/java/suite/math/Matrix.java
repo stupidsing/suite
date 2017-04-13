@@ -370,12 +370,24 @@ public class Matrix {
 		return m;
 	}
 
+	public static void verifyEquals(float[] m0, float[] m1) {
+		int length = m0.length;
+		if (length == m1.length)
+			for (int i = 0; i < length; i++)
+				MathUtil.verifyEquals(m0[i], m1[i]);
+		else
+			throw new RuntimeException("Wrong matrix sizes");
+	}
+
 	public static void verifyEquals(float[][] m0, float[][] m1) {
 		int height = h(m0);
 		int width = w(m0);
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
-				MathUtil.verifyEquals(m0[i][j], m1[i][j]);
+		if (height == h(m1) && width == w(m1))
+			for (int i = 0; i < height; i++)
+				for (int j = 0; j < width; j++)
+					MathUtil.verifyEquals(m0[i][j], m1[i][j]);
+		else
+			throw new RuntimeException("Wrong matrix sizes");
 	}
 
 	private static void swapRows(float[][] m, int row0, int row1) {
