@@ -83,8 +83,7 @@ public class DataSource {
 
 			boolean valid = isValid(price0, price1);
 			if (!valid)
-				throw new RuntimeException(
-						"Price varied too much: (" + price0 + " => " + price1 + ") / (" + date0 + " => " + date1 + ")");
+				throw new RuntimeException("Price varied too much: " + price0 + "/" + date0 + " => " + price1 + "/" + date1);
 
 			date0 = date1;
 			price0 = price1;
