@@ -12,16 +12,6 @@ public class LongShortTermMemoryNetwork {
 	private int outputLength = 8;
 	private int ll = inputLength + outputLength + 1;
 
-	public class Result {
-		private float[] memory0;
-		private float[] io0;
-		private float[] is;
-		private float[] cs;
-		private float[] os;
-		private float[] tanh_memory1;
-		private float[] output1;
-	}
-
 	public class Unit {
 		private float[] memory = new float[memoryLength];
 		private float[] output = new float[outputLength];
@@ -30,7 +20,15 @@ public class LongShortTermMemoryNetwork {
 		private float[][] wc = new float[memoryLength][ll];
 		private float[][] wo = new float[memoryLength][ll];
 
-		public Result activateForward(float[] input) {
+		public float[] activateForward(float[] input) {
+			return activate_(input, null);
+		}
+
+		public void propagateBackward(float[] input, float[] expected) {
+			activate_(input, expected);
+		}
+
+		public float[] activate_(float[] input, float[] expected) {
 			float[] memory0 = memory;
 			float[] output0 = output;
 
@@ -47,39 +45,30 @@ public class LongShortTermMemoryNetwork {
 			float[] tanh_memory1 = tanh(memory1);
 			float[] output1 = output = forget(os, tanh_memory1);
 
-			Result r = new Result();
-			r.memory0 = memory0;
-			r.io0 = io0;
-			r.is = is;
-			r.cs = cs;
-			r.os = os;
-			r.tanh_memory1 = tanh_memory1;
-			r.output1 = output1;
+			if (expected != null) {
+				float[] e_output1 = Matrix.sub(expected, output1);
+				float[] e_tanh_memory1 = forgetOn(os, e_output1);
+				float[] e_memory1 = tanhGradientOn(e_tanh_memory1);
+				float[] e_os = forgetOn(tanh_memory1, e_output1);
+				float[] e_cs = forget(e_memory1, is);
+				float[] e_is = forget(e_memory1, cs);
+				float[] e_fs = forget(e_memory1, memory0);
+				float[] e_wo = sigmoidGradientOn(e_os);
+				float[] e_wc = tanhGradientOn(e_cs);
+				float[] e_wi = sigmoidGradientOn(e_is);
+				float[] e_wf = sigmoidGradientOn(e_fs);
 
-			return r;
-		}
+				for (int j = 0; j < outputLength; j++)
+					for (int i = 0; i < ll; i++) {
+						float d = learningRate * io0[i];
+						wo[i][j] += d * e_wo[j];
+						wc[i][j] += d * e_wc[j];
+						wi[i][j] += d * e_wi[j];
+						wf[i][j] += d * e_wf[j];
+					}
+			}
 
-		public void propagateBackward(float[] expected, Result r) {
-			float[] e_output1 = Matrix.sub(expected, r.output1);
-			float[] e_tanh_memory1 = forgetOn(r.os, e_output1);
-			float[] e_memory1 = tanhGradientOn(e_tanh_memory1);
-			float[] e_os = forgetOn(r.tanh_memory1, e_output1);
-			float[] e_cs = forget(e_memory1, r.is);
-			float[] e_is = forget(e_memory1, r.cs);
-			float[] e_fs = forget(e_memory1, r.memory0);
-			float[] e_wo = sigmoidGradientOn(e_os);
-			float[] e_wc = tanhGradientOn(e_cs);
-			float[] e_wi = sigmoidGradientOn(e_is);
-			float[] e_wf = sigmoidGradientOn(e_fs);
-
-			for (int j = 0; j < outputLength; j++)
-				for (int i = 0; i < ll; i++) {
-					float d = learningRate * r.io0[i];
-					wo[i][j] += d * e_wo[j];
-					wc[i][j] += d * e_wc[j];
-					wi[i][j] += d * e_wi[j];
-					wf[i][j] += d * e_wf[j];
-				}
+			return output1;
 		}
 
 		private float[] forget(float[] fs, float[] n) {
