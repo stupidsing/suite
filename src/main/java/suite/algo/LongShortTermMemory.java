@@ -111,12 +111,12 @@ public class LongShortTermMemory {
 
 	private float[] forgetOn(float[] m, float[] n) {
 		int length = m.length;
-		if (length == n.length) {
+		if (length == n.length)
 			for (int i = 0; i < length; i++)
 				m[i] *= n[i];
-			return m;
-		} else
+		else
 			throw new RuntimeException("Wrong matrix sizes");
+		return m;
 	}
 
 	private float[] sigmoidOn(float[] fs) {
