@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.BiFunction;
 
+import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
@@ -18,6 +19,8 @@ import suite.util.Util;
 public class TelegramBot {
 
 	public void bot(BiFunction<Integer, String, String> fun) {
+		ApiContextInitializer.init();
+
 		try {
 			new TelegramBotsApi().registerBot(new TelegramLongPollingBot() {
 				public String getBotUsername() {
