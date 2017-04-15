@@ -9,8 +9,8 @@ import suite.util.Copy;
 public class LongShortTermMemory {
 
 	private float learningRate;
-	private int memoryLength;
 	private int inputLength;
+	private int memoryLength;
 	private int ll;
 
 	public LongShortTermMemory() {
@@ -19,8 +19,8 @@ public class LongShortTermMemory {
 
 	public LongShortTermMemory(float learningRate, int memoryLength, int inputLength) {
 		this.learningRate = learningRate;
-		this.memoryLength = memoryLength;
 		this.inputLength = inputLength;
+		this.memoryLength = memoryLength;
 		ll = inputLength + memoryLength + 1;
 	}
 
