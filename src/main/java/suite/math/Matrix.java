@@ -4,23 +4,23 @@ import java.util.Arrays;
 
 public class Matrix {
 
-	public interface Ctor1 {
+	public static interface Ctor1 {
 		public float get(int i);
 	}
 
-	public interface Ctor2 {
+	public static interface Ctor2 {
 		public float get(int i, int j);
 	}
 
-	public static float[] add(float[] m, float[] n) {
+	public float[] add(float[] m, float[] n) {
 		return addOn(clone(m), n);
 	}
 
-	public static float[][] add(float[][] m, float[][] n) {
+	public float[][] add(float[][] m, float[][] n) {
 		return addOn(clone(m), n);
 	}
 
-	public static float[] addOn(float[] m, float[] n) {
+	public float[] addOn(float[] m, float[] n) {
 		int length = m.length;
 		if (length == n.length)
 			for (int i = 0; i < length; i++)
@@ -30,7 +30,7 @@ public class Matrix {
 		return m;
 	}
 
-	public static float[][] addOn(float[][] m, float[][] n) {
+	public float[][] addOn(float[][] m, float[][] n) {
 		int height = h(m);
 		int width = w(m);
 		if (height == h(n) && width == w(n))
@@ -42,7 +42,7 @@ public class Matrix {
 		return m;
 	}
 
-	public static float[] addScaleOn(float[] m, float[] n, float f) {
+	public float[] addScaleOn(float[] m, float[] n, float f) {
 		int length = m.length;
 		if (length == n.length)
 			for (int i = 0; i < length; i++)
@@ -52,7 +52,7 @@ public class Matrix {
 		return m;
 	}
 
-	public static float[][] convolute(float[][] m, float[][] k) {
+	public float[][] convolute(float[][] m, float[][] k) {
 		int kh = h(k), kw = w(k);
 		int h1 = h(m) - kh + 1;
 		int w1 = w(m) - kw + 1;
@@ -65,7 +65,7 @@ public class Matrix {
 		return o;
 	}
 
-	public static float dot(float[] m, float[] n) {
+	public float dot(float[] m, float[] n) {
 		int length = m.length;
 		float sum = 0;
 		if (length == n.length)
@@ -76,7 +76,7 @@ public class Matrix {
 		return sum;
 	}
 
-	public static boolean equals(float[][] m, float[][] n) {
+	public boolean equals(float[][] m, float[][] n) {
 		int h = h(m);
 		int w = w(m);
 		if (h == h(n) && w == w(n)) {
@@ -89,18 +89,18 @@ public class Matrix {
 			return false;
 	}
 
-	public static int hashCode(float[][] m) {
+	public int hashCode(float[][] m) {
 		int hashCode = 0;
 		for (float[] row : m)
 			hashCode = hashCode * 31 + Arrays.hashCode(row);
 		return hashCode;
 	}
 
-	public static int height(float[][] m) {
+	public int height(float[][] m) {
 		return h(m);
 	}
 
-	public static float[][] identity(int size) {
+	public float[][] identity(int size) {
 		float[][] m = of(size, size);
 		for (int r = 0; r < size; r++)
 			m[r][r] = 1f;
@@ -110,7 +110,7 @@ public class Matrix {
 	/**
 	 * Calculates matric inverse by Gaussian-Jordan elimination.
 	 */
-	public static float[][] inverse(float[][] m0) {
+	public float[][] inverse(float[][] m0) {
 		float[][] m = of(m0); // do not alter input matrix
 		int size = h(m);
 
@@ -149,7 +149,7 @@ public class Matrix {
 		return n;
 	}
 
-	public static float[] mul(float[] m, float[][] n) {
+	public float[] mul(float[] m, float[][] n) {
 		int ks = m.length;
 		int width = w(n);
 		float[] o = new float[width];
@@ -170,7 +170,7 @@ public class Matrix {
 	}
 
 	// nT is column vector
-	public static float[] mul(float[][] m, float[] nT) {
+	public float[] mul(float[][] m, float[] nT) {
 		int ks = w(m);
 		int height = h(m);
 		float[] o = new float[height];
@@ -190,7 +190,7 @@ public class Matrix {
 		return o;
 	}
 
-	public static float[][] mul(float[][] m, float[][] n) {
+	public float[][] mul(float[][] m, float[][] n) {
 		int ks = w(m);
 		int height = h(m);
 		int width = w(n);
@@ -216,7 +216,7 @@ public class Matrix {
 		return o;
 	}
 
-	public static Vector mul(float[][] m, Vector v) {
+	public Vector mul(float[][] m, Vector v) {
 		if (h(m) == 3 && w(m) == 3) {
 			float x1 = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z;
 			float y1 = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z;
@@ -227,7 +227,7 @@ public class Matrix {
 	}
 
 	// calculate m * nT
-	public static float[][] mul_mnT(float[][] m, float[][] n) {
+	public float[][] mul_mnT(float[][] m, float[][] n) {
 		int ks = w(m);
 		int height = h(m);
 		int width = h(n);
@@ -253,7 +253,7 @@ public class Matrix {
 	}
 
 	// calculate mT * n
-	public static float[][] mul_mTn(float[][] m, float[][] n) {
+	public float[][] mul_mTn(float[][] m, float[][] n) {
 		int ks = h(m);
 		int height = w(m);
 		int width = w(n);
@@ -280,11 +280,11 @@ public class Matrix {
 		return o;
 	}
 
-	public static float[][] neg(float[][] m) {
+	public float[][] neg(float[][] m) {
 		return negOn(clone(m));
 	}
 
-	public static float[][] negOn(float[][] m) {
+	public float[][] negOn(float[][] m) {
 		int height = h(m);
 		int width = w(m);
 		for (int i = 0; i < height; i++)
@@ -293,14 +293,14 @@ public class Matrix {
 		return m;
 	}
 
-	public static float[] of(int length, Ctor1 ctor) {
+	public float[] of(int length, Ctor1 ctor) {
 		float[] m = new float[length];
 		for (int i = 0; i < length; i++)
 			m[i] = ctor.get(i);
 		return m;
 	}
 
-	public static float[][] of(int height, int width, Ctor2 ctor) {
+	public float[][] of(int height, int width, Ctor2 ctor) {
 		float[][] m = of(height, width);
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
@@ -308,69 +308,69 @@ public class Matrix {
 		return m;
 	}
 
-	public static float[] of(float[] m) {
+	public float[] of(float[] m) {
 		return clone(m);
 	}
 
-	public static float[][] of(float[][] m) {
+	public float[][] of(float[][] m) {
 		return clone(m);
 	}
 
-	public static float[][] of(int height, int width) {
+	public float[][] of(int height, int width) {
 		return new float[height][width];
 	}
 
-	public static float[][] rotate(float angle) {
+	public float[][] rotate(float angle) {
 		float sin = (float) Math.sin(angle);
 		float cos = (float) Math.cos(angle);
 		return new float[][] { { cos, -sin, }, { sin, cos, }, };
 	}
 
-	public static float[][] rotateX(float angle) {
+	public float[][] rotateX(float angle) {
 		float sin = (float) Math.sin(angle);
 		float cos = (float) Math.cos(angle);
 		return new float[][] { { 0f, 0f, 0f, }, { 0f, cos, -sin, }, { 0f, sin, cos, }, };
 	}
 
-	public static float[][] rotateY(float angle) {
+	public float[][] rotateY(float angle) {
 		float sin = (float) Math.sin(angle);
 		float cos = (float) Math.cos(angle);
 		return new float[][] { { cos, 0f, -sin, }, { 0f, 0f, 0f, }, { sin, 0f, cos, }, };
 	}
 
-	public static float[][] rotateZ(float angle) {
+	public float[][] rotateZ(float angle) {
 		float sin = (float) Math.sin(angle);
 		float cos = (float) Math.cos(angle);
 		return new float[][] { { cos, -sin, 0f, }, { sin, cos, 0f, }, { 0f, 0f, 0f, }, };
 	}
 
-	public static float[] scale(float[] m, double d) {
+	public float[] scale(float[] m, double d) {
 		return scaleOn(clone(m), d);
 	}
 
-	public static float[] scale(float[] m, float f) {
+	public float[] scale(float[] m, float f) {
 		return scaleOn(clone(m), f);
 	}
 
-	public static float[][] scale(float[][] m, float f) {
+	public float[][] scale(float[][] m, float f) {
 		return scaleOn(clone(m), f);
 	}
 
-	public static float[] scaleOn(float[] m, double d) {
+	public float[] scaleOn(float[] m, double d) {
 		int length = m.length;
 		for (int i = 0; i < length; i++)
 			m[i] = (float) (m[i] * d);
 		return m;
 	}
 
-	public static float[] scaleOn(float[] m, float f) {
+	public float[] scaleOn(float[] m, float f) {
 		int length = m.length;
 		for (int i = 0; i < length; i++)
 			m[i] *= f;
 		return m;
 	}
 
-	public static float[][] scaleOn(float[][] m, float f) {
+	public float[][] scaleOn(float[][] m, float f) {
 		int height = h(m);
 		int width = w(m);
 		for (int i = 0; i < height; i++)
@@ -379,11 +379,11 @@ public class Matrix {
 		return m;
 	}
 
-	public static float[] sub(float[] m, float[] n) {
+	public float[] sub(float[] m, float[] n) {
 		return subOn(clone(m), n);
 	}
 
-	public static float[] subOn(float[] m, float[] n) {
+	public float[] subOn(float[] m, float[] n) {
 		int length = m.length;
 		if (length == n.length)
 			for (int i = 0; i < length; i++)
@@ -393,7 +393,7 @@ public class Matrix {
 		return m;
 	}
 
-	public static void verifyEquals(float[] m0, float[] m1) {
+	public void verifyEquals(float[] m0, float[] m1) {
 		int length = m0.length;
 		if (length == m1.length)
 			for (int i = 0; i < length; i++)
@@ -402,7 +402,7 @@ public class Matrix {
 			throw new RuntimeException("Wrong matrix sizes");
 	}
 
-	public static void verifyEquals(float[][] m0, float[][] m1) {
+	public void verifyEquals(float[][] m0, float[][] m1) {
 		int height = h(m0);
 		int width = w(m0);
 		if (height == h(m1) && width == w(m1))
@@ -413,25 +413,25 @@ public class Matrix {
 			throw new RuntimeException("Wrong matrix sizes");
 	}
 
-	private static void swapRows(float[][] m, int row0, int row1) {
+	private void swapRows(float[][] m, int row0, int row1) {
 		float[] temp = m[row0];
 		m[row0] = m[row1];
 		m[row1] = temp;
 	}
 
-	public static String toString(float[] m) {
+	public String toString(float[] m) {
 		StringBuilder sb = new StringBuilder();
 		dump(sb, m);
 		return sb.toString();
 	}
 
-	public static String toString(float[][] m) {
+	public String toString(float[][] m) {
 		StringBuilder sb = new StringBuilder();
 		dump(sb, m);
 		return sb.toString();
 	}
 
-	public static float[][] transpose(float[][] m) {
+	public float[][] transpose(float[][] m) {
 		int height = h(m);
 		int width = w(m);
 		float[][] o = of(width, height);
@@ -448,25 +448,25 @@ public class Matrix {
 		return o;
 	}
 
-	public static int width(float[][] m) {
+	public int width(float[][] m) {
 		return w(m);
 	}
 
-	private static void mulRow(float[][] m, int row, float factor) {
+	private void mulRow(float[][] m, int row, float factor) {
 		for (int col = 0; col < w(m); col++)
 			m[row][col] *= factor;
 	}
 
-	private static void addMultipliedRow(float[][] m, int sourceRow, float factor, int targetRow) {
+	private void addMultipliedRow(float[][] m, int sourceRow, float factor, int targetRow) {
 		for (int col = 0; col < w(m); col++)
 			m[targetRow][col] = m[targetRow][col] + factor * m[sourceRow][col];
 	}
 
-	private static float[] clone(float[] m) {
+	private float[] clone(float[] m) {
 		return Arrays.copyOf(m, m.length);
 	}
 
-	private static float[][] clone(float[][] m0) {
+	private float[][] clone(float[][] m0) {
 		int height = h(m0);
 		int width = w(m0);
 		float[][] m1 = of(height, width);
@@ -476,25 +476,25 @@ public class Matrix {
 		return m1;
 	}
 
-	private static void dump(StringBuilder sb, float[][] m) {
+	private void dump(StringBuilder sb, float[][] m) {
 		for (float[] row : m) {
 			dump(sb, row);
 			sb.append("\n");
 		}
 	}
 
-	private static void dump(StringBuilder sb, float[] m) {
+	private void dump(StringBuilder sb, float[] m) {
 		sb.append("[");
 		for (float f : m)
 			sb.append(f + " ");
 		sb.append("]");
 	}
 
-	private static int h(float[][] m) {
+	private int h(float[][] m) {
 		return m.length;
 	}
 
-	private static int w(float[][] m) {
+	private int w(float[][] m) {
 		return 0 < m.length ? m[0].length : 0;
 	}
 

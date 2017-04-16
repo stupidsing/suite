@@ -4,6 +4,8 @@ import org.junit.Test;
 
 public class QrTest {
 
+	private static Matrix mtx = new Matrix();
+
 	@Test
 	public void testGramSchmidt() {
 		float[][] m0 = new float[][] { //
@@ -15,7 +17,7 @@ public class QrTest {
 		float[][][] qr = Qr.decompose(m0);
 		float[][] q = qr[0];
 		float[][] r = qr[1];
-		float[][] m1 = Matrix.mul(q, r);
+		float[][] m1 = mtx.mul(q, r);
 
 		float[][] expectedq = new float[][] { //
 				{ 6f / 7f, -69f / 175f, -58f / 175f, }, //
@@ -29,9 +31,9 @@ public class QrTest {
 				{ 0f, 0f, 35f, }, //
 		};
 
-		Matrix.verifyEquals(m0, m1);
-		Matrix.verifyEquals(q, expectedq);
-		Matrix.verifyEquals(r, expectedr);
+		mtx.verifyEquals(m0, m1);
+		mtx.verifyEquals(q, expectedq);
+		mtx.verifyEquals(r, expectedr);
 	}
 
 }

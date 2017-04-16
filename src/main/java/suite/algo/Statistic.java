@@ -13,6 +13,8 @@ import suite.util.Util;
 
 public class Statistic {
 
+	private static Matrix mtx = new Matrix();
+
 	private int dimension;
 
 	private class KmeansBin {
@@ -38,7 +40,7 @@ public class Statistic {
 
 			for (float[] point : points) {
 				KmeansBin bin = bins[findNearest(point, kmeans)];
-				bin.sum = Matrix.add(point, bin.sum);
+				bin.sum = mtx.add(point, bin.sum);
 				bin.count++;
 			}
 
@@ -86,12 +88,12 @@ public class Statistic {
 	}
 
 	private float sqdist(float[] a, float[] b) {
-		float[] d = Matrix.sub(a, b);
-		return Matrix.dot(d, d);
+		float[] d = mtx.sub(a, b);
+		return mtx.dot(d, d);
 	}
 
 	private float[] div(float[] a, float b) {
-		return Matrix.scale(a, 1f / b);
+		return mtx.scale(a, 1f / b);
 	}
 
 }

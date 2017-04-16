@@ -8,10 +8,13 @@ import suite.util.Copy;
 
 public class LongShortTermMemory {
 
+	private static Matrix mtx = new Matrix();
+
 	private float learningRate;
 	private int inputLength;
 	private int memoryLength;
 	private int ll;
+	private int ll1;
 
 	public LongShortTermMemory() {
 		this(1f, 8, 8);
@@ -21,7 +24,8 @@ public class LongShortTermMemory {
 		this.learningRate = learningRate;
 		this.inputLength = inputLength;
 		this.memoryLength = memoryLength;
-		ll = inputLength + memoryLength + 1;
+		ll = inputLength + memoryLength;
+		ll1 = ll + 1;
 	}
 
 	public Unit unit() {
@@ -31,23 +35,25 @@ public class LongShortTermMemory {
 	public class Unit {
 		private float[] memory = new float[memoryLength];
 		private float[] output = new float[memoryLength];
-		private float[][] wf = new float[memoryLength][ll];
-		private float[][] wi = new float[memoryLength][ll];
-		private float[][] wc = new float[memoryLength][ll];
-		private float[][] wo = new float[memoryLength][ll];
+		private float[][] wf = new float[memoryLength][ll1];
+		private float[][] wi = new float[memoryLength][ll1];
+		private float[][] wm = new float[memoryLength][ll1];
+		private float[][] wo = new float[memoryLength][ll1];
 
 		public Unit() {
 			Random random = new Random();
-			for (int i = 0; i < memoryLength; i++) {
-				memory[i] = random.nextFloat();
-				output[i] = random.nextFloat();
-				for (int j = 0; j < ll; j++) {
-					wf[i][j] = random.nextFloat();
-					wi[i][j] = random.nextFloat();
-					wc[i][j] = random.nextFloat();
-					wo[i][j] = random.nextFloat();
+			double isll = 1f / Math.sqrt(ll);
+			for (int i = 0; i < memoryLength; i++)
+				for (int j = 0; j < ll; j++) { // random weights, bias 0
+
+					// forget previous lifes
+					wf[i][j] = 3f;
+
+					// Xavier initialization
+					wi[i][j] = (float) (random.nextGaussian() * isll);
+					wm[i][j] = (float) (random.nextGaussian() * isll);
+					wo[i][j] = (float) (random.nextGaussian() * isll);
 				}
-			}
 		}
 
 		public float[] activateForward(float[] input) {
@@ -61,38 +67,38 @@ public class LongShortTermMemory {
 		private float[] activate_(float[] input, float[] expected) {
 			float[] memory0 = memory;
 			float[] output0 = output;
+			float[] io0 = new float[ll1];
 
-			float[] io0 = new float[ll];
 			Copy.primitiveArray(input, 0, io0, 0, inputLength);
 			Copy.primitiveArray(output0, 0, io0, inputLength, memoryLength);
 			io0[inputLength + memoryLength] = 1f;
 
-			float[] fs = sigmoidOn(Matrix.mul(wf, io0));
-			float[] is = sigmoidOn(Matrix.mul(wi, io0));
-			float[] cs = tanhOn(Matrix.mul(wc, io0));
-			float[] os = sigmoidOn(Matrix.mul(wo, io0));
-			float[] memory1 = memory = Matrix.addOn(forget(memory0, fs), forget(cs, is));
-			float[] tanh_memory1 = tanh(memory1);
+			float[] fs = sigmoidOn(copy(mtx.mul(wf, io0)));
+			float[] is = sigmoidOn(copy(mtx.mul(wi, io0)));
+			float[] ms = tanhOn(copy(mtx.mul(wm, io0)));
+			float[] os = sigmoidOn(copy(mtx.mul(wo, io0)));
+			float[] memory1 = mtx.of(memory = mtx.addOn(forget(memory0, fs), forget(ms, is)));
+			float[] tanh_memory1 = tanhOn(memory1);
 			float[] output1 = output = forget(os, tanh_memory1);
 
 			if (expected != null) {
-				float[] e_output1 = Matrix.sub(expected, output1);
+				float[] e_output1 = mtx.sub(expected, output1);
 				float[] e_tanh_memory1 = forgetOn(os, e_output1);
-				float[] e_memory1 = tanhGradientOn(e_tanh_memory1);
-				float[] e_os = forgetOn(tanh_memory1, e_output1);
-				float[] e_cs = forget(e_memory1, is);
-				float[] e_is = forget(e_memory1, cs);
-				float[] e_fs = forget(e_memory1, memory0);
-				float[] e_wo = sigmoidGradientOn(e_os);
-				float[] e_wc = tanhGradientOn(e_cs);
-				float[] e_wi = sigmoidGradientOn(e_is);
-				float[] e_wf = sigmoidGradientOn(e_fs);
+				float[] e_memory1 = mtx.of(memoryLength, i -> tanhGradient(tanh_memory1[i]) * e_tanh_memory1[i]);
+				float[] e_os = forgetOn(e_output1, tanh_memory1);
+				float[] e_ms = forgetOn(is, e_memory1);
+				float[] e_is = forgetOn(ms, e_memory1);
+				float[] e_fs = forgetOn(memory0, e_memory1);
+				float[] e_wo = forgetOn(e_os, sigmoidGradientOn(os));
+				float[] e_wm = forgetOn(e_ms, tanhGradientOn(ms));
+				float[] e_wi = forgetOn(e_is, sigmoidGradientOn(is));
+				float[] e_wf = forgetOn(e_fs, sigmoidGradientOn(fs));
 
 				for (int i = 0; i < memoryLength; i++)
-					for (int j = 0; j < ll; j++) {
+					for (int j = 0; j < ll1; j++) {
 						float d = learningRate * io0[j];
 						wo[i][j] += d * e_wo[i];
-						wc[i][j] += d * e_wc[i];
+						wm[i][j] += d * e_wm[i];
 						wi[i][j] += d * e_wi[i];
 						wf[i][j] += d * e_wf[i];
 					}
@@ -103,7 +109,7 @@ public class LongShortTermMemory {
 	}
 
 	private float[] forget(float[] fs, float[] n) {
-		return forgetOn(Matrix.of(fs), n);
+		return forgetOn(copy(fs), n);
 	}
 
 	private float[] forgetOn(float[] m, float[] n) {
@@ -130,10 +136,6 @@ public class LongShortTermMemory {
 		return fs;
 	}
 
-	private float[] tanh(float[] fs) {
-		return tanhOn(Matrix.of(fs));
-	}
-
 	private float[] tanhOn(float[] fs) {
 		int length = fs.length;
 		for (int i = 0; i < length; i++)
@@ -143,11 +145,17 @@ public class LongShortTermMemory {
 
 	private float[] tanhGradientOn(float[] fs) {
 		int length = fs.length;
-		for (int i = 0; i < length; i++) {
-			float f = fs[i];
-			fs[i] = 1 - f * f;
-		}
+		for (int i = 0; i < length; i++)
+			fs[i] = tanhGradient(fs[i]);
 		return fs;
+	}
+
+	private float tanhGradient(float f) {
+		return 1f - f * f;
+	}
+
+	private float[] copy(float[] m) {
+		return mtx.of(m);
 	}
 
 }

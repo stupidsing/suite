@@ -6,7 +6,7 @@ public class MathUtil {
 
 	public static void verifyEquals(float f0, float f1) {
 		float diff = Math.abs(f0 - f1);
-		if (epsilon < diff)
+		if (!Float.isFinite(diff) || epsilon < diff)
 			throw new RuntimeException("f0 = " + f0 + ", f1 = " + f1 + ", diff = " + diff);
 	}
 

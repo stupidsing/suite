@@ -10,6 +10,8 @@ import suite.util.Util;
 
 public class ArtificialNeuralNetwork {
 
+	private static Matrix mtx = new Matrix();
+
 	private float learningRate = 1f;
 	private int nLayers;
 	private List<LayerWeight> lws = new ArrayList<>();
@@ -55,7 +57,7 @@ public class ArtificialNeuralNetwork {
 		outputs.add(values);
 
 		for (LayerWeight lw : lws) {
-			float[] values1 = Matrix.mul(values, lw.weights);
+			float[] values1 = mtx.mul(values, lw.weights);
 
 			for (int j = 0; j < lw.nOutputs; j++)
 				values1[j] = activationFunction(values1[j]);
@@ -75,7 +77,7 @@ public class ArtificialNeuralNetwork {
 
 			float[] ins = activations.get(layer - 1);
 			float[] outs = activations.get(layer);
-			float[] errors1 = lw1 != null ? Matrix.mul(lw1.weights, errors) : Matrix.sub(expected, outs);
+			float[] errors1 = lw1 != null ? mtx.mul(lw1.weights, errors) : mtx.sub(expected, outs);
 
 			for (int j = 0; j < lw0.nOutputs; j++)
 				errors1[j] *= activationFunctionGradient(outs[j]);
