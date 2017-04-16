@@ -13,11 +13,11 @@ public class Matrix {
 	}
 
 	public float[] add(float[] m, float[] n) {
-		return addOn(clone(m), n);
+		return addOn(copy(m), n);
 	}
 
 	public float[][] add(float[][] m, float[][] n) {
-		return addOn(clone(m), n);
+		return addOn(copy(m), n);
 	}
 
 	public float[] addOn(float[] m, float[] n) {
@@ -281,7 +281,7 @@ public class Matrix {
 	}
 
 	public float[][] neg(float[][] m) {
-		return negOn(clone(m));
+		return negOn(copy(m));
 	}
 
 	public float[][] negOn(float[][] m) {
@@ -309,11 +309,11 @@ public class Matrix {
 	}
 
 	public float[] of(float[] m) {
-		return clone(m);
+		return copy(m);
 	}
 
 	public float[][] of(float[][] m) {
-		return clone(m);
+		return copy(m);
 	}
 
 	public float[][] of(int height, int width) {
@@ -345,15 +345,15 @@ public class Matrix {
 	}
 
 	public float[] scale(float[] m, double d) {
-		return scaleOn(clone(m), d);
+		return scaleOn(copy(m), d);
 	}
 
 	public float[] scale(float[] m, float f) {
-		return scaleOn(clone(m), f);
+		return scaleOn(copy(m), f);
 	}
 
 	public float[][] scale(float[][] m, float f) {
-		return scaleOn(clone(m), f);
+		return scaleOn(copy(m), f);
 	}
 
 	public float[] scaleOn(float[] m, double d) {
@@ -380,7 +380,7 @@ public class Matrix {
 	}
 
 	public float[] sub(float[] m, float[] n) {
-		return subOn(clone(m), n);
+		return subOn(copy(m), n);
 	}
 
 	public float[] subOn(float[] m, float[] n) {
@@ -462,11 +462,11 @@ public class Matrix {
 			m[targetRow][col] = m[targetRow][col] + factor * m[sourceRow][col];
 	}
 
-	private float[] clone(float[] m) {
+	private float[] copy(float[] m) {
 		return Arrays.copyOf(m, m.length);
 	}
 
-	private float[][] clone(float[][] m0) {
+	private float[][] copy(float[][] m0) {
 		int height = h(m0);
 		int width = w(m0);
 		float[][] m1 = of(height, width);
