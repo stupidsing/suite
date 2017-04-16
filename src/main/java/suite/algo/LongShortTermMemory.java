@@ -3,7 +3,6 @@ package suite.algo;
 import java.util.Random;
 
 import suite.math.Matrix;
-import suite.math.Matrix.Ctor1;
 import suite.math.Sigmoid;
 import suite.util.Copy;
 
@@ -85,7 +84,7 @@ public class LongShortTermMemory {
 			if (expected != null) {
 				float[] e_output1 = mtx.sub(expected, output1);
 				float[] e_tanh_memory1 = forgetOn(sig_os, e_output1);
-				float[] e_memory1 = newVector(i -> e_tanh_memory1[i] * tanhGradient(tanh_memory1[i]));
+				float[] e_memory1 = forgetOn(e_tanh_memory1, tanhGradientOn(copy(tanh_memory1)));
 				float[] e_sig_os = forget(e_output1, tanh_memory1);
 				float[] e_tanh_ms = forget(e_memory1, sig_is);
 				float[] e_sig_is = forget(e_memory1, tanh_ms);
@@ -107,10 +106,6 @@ public class LongShortTermMemory {
 
 			return output1;
 		}
-	}
-
-	private float[] newVector(Ctor1 ctor1) {
-		return mtx.of(memoryLength, ctor1);
 	}
 
 	private float[] forget(float[] fs, float[] n) {
