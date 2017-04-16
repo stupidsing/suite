@@ -5,6 +5,10 @@ public class MathUtil {
 	public static float epsilon = .00001f;
 
 	public static void verifyEquals(float f0, float f1) {
+		verifyEquals(f0, f1, epsilon);
+	}
+
+	public static void verifyEquals(float f0, float f1, float epsilon) {
 		float diff = Math.abs(f0 - f1);
 		if (!Float.isFinite(diff) || epsilon < diff)
 			throw new RuntimeException("Values differ" //
