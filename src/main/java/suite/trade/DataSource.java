@@ -63,7 +63,7 @@ public class DataSource {
 			float price1 = prices[i - 1];
 			float price2 = prices[i - 0];
 			if (isValid(price0, price2) && !isValid(price0, price1) && !isValid(price1, price2))
-				price1 = price0;
+				prices[i - 1] = price0;
 		}
 	}
 
