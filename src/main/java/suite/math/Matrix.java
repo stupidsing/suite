@@ -419,16 +419,15 @@ public class Matrix {
 		m[row1] = temp;
 	}
 
+	public static String toString(float[] m) {
+		StringBuilder sb = new StringBuilder();
+		dump(sb, m);
+		return sb.toString();
+	}
+
 	public static String toString(float[][] m) {
 		StringBuilder sb = new StringBuilder();
-
-		for (float[] row : m) {
-			sb.append("[");
-			for (float f : row)
-				sb.append(f + " ");
-			sb.append("]\n");
-		}
-
+		dump(sb, m);
 		return sb.toString();
 	}
 
@@ -475,6 +474,20 @@ public class Matrix {
 			for (int j = 0; j < width; j++)
 				m1[i][j] = m0[i][j];
 		return m1;
+	}
+
+	private static void dump(StringBuilder sb, float[][] m) {
+		for (float[] row : m) {
+			dump(sb, row);
+			sb.append("\n");
+		}
+	}
+
+	private static void dump(StringBuilder sb, float[] m) {
+		sb.append("[");
+		for (float f : m)
+			sb.append(f + " ");
+		sb.append("]");
 	}
 
 	private static int h(float[][] m) {
