@@ -86,10 +86,14 @@ public class LongShortTermMemory {
 				float[] e_output1 = mtx.sub(expected, output1);
 				float[] e_tanh_memory1 = forgetOn(sig_os, e_output1);
 				float[] e_memory1 = newVector(i -> e_tanh_memory1[i] * tanhGradient(tanh_memory1[i]));
-				float[] e_wo = newVector(i -> e_output1[i] * tanh_memory1[i] * sigmoidGradient(sig_os[i]));
-				float[] e_wm = newVector(i -> e_memory1[i] * sig_is[i] * tanhGradient(tanh_ms[i]));
-				float[] e_wi = newVector(i -> e_memory1[i] * tanh_ms[i] * sigmoidGradient(sig_is[i]));
-				float[] e_wf = newVector(i -> e_memory1[i] * memory0[i] * sigmoidGradient(sig_fs[i]));
+				float[] e_sig_os = forget(e_output1, tanh_memory1);
+				float[] e_tanh_ms = forget(e_memory1, sig_is);
+				float[] e_sig_is = forget(e_memory1, tanh_ms);
+				float[] e_sig_fs = forget(e_memory1, memory0);
+				float[] e_wo = forgetOn(e_sig_os, sigmoidGradientOn(sig_os));
+				float[] e_wm = forgetOn(e_tanh_ms, tanhGradientOn(tanh_ms));
+				float[] e_wi = forgetOn(e_sig_is, sigmoidGradientOn(sig_is));
+				float[] e_wf = forgetOn(e_sig_fs, sigmoidGradientOn(sig_fs));
 
 				for (int i = 0; i < memoryLength; i++)
 					for (int j = 0; j < ll1; j++) {
@@ -126,19 +130,41 @@ public class LongShortTermMemory {
 	private float[] sigmoidOn(float[] fs) {
 		int length = fs.length;
 		for (int i = 0; i < length; i++)
-			fs[i] = Sigmoid.sigmoid(fs[i]);
+			fs[i] = sigmoid(fs[i]);
+		return fs;
+	}
+
+	private float[] sigmoidGradientOn(float[] fs) {
+		int length = fs.length;
+		for (int i = 0; i < length; i++)
+			fs[i] = sigmoidGradient(fs[i]);
 		return fs;
 	}
 
 	private float[] tanhOn(float[] fs) {
 		int length = fs.length;
 		for (int i = 0; i < length; i++)
-			fs[i] = (float) Math.tanh(fs[i]);
+			fs[i] = (float) tanh(fs[i]);
 		return fs;
+	}
+
+	private float[] tanhGradientOn(float[] fs) {
+		int length = fs.length;
+		for (int i = 0; i < length; i++)
+			fs[i] = tanhGradient(fs[i]);
+		return fs;
+	}
+
+	private float sigmoid(float f) {
+		return Sigmoid.sigmoid(f);
 	}
 
 	private float sigmoidGradient(float f) {
 		return Sigmoid.sigmoidGradient(f);
+	}
+
+	private float tanh(float f) {
+		return (float) Math.tanh(f);
 	}
 
 	private float tanhGradient(float f) {
