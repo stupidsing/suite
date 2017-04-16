@@ -39,7 +39,19 @@ public class TradeTest {
 
 	@Test
 	public void testBackTestHkex() {
-		for (String code : Arrays.asList("0004", "0005"))
+		for (String code : Arrays.asList( //
+				"0002", //
+				"0004", //
+				"0005", //
+				"0045", //
+				"0066", //
+				"0083", //
+				"0175", //
+				"0267", //
+				"0293", //
+				"1169", //
+				"1357", //
+				"2018"))
 			backTest(code + ".HK", code);
 	}
 
