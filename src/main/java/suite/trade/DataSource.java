@@ -92,7 +92,7 @@ public class DataSource {
 
 	private boolean isValid(float price0, float price1) {
 		float ratio = price1 / price0;
-		return 3f / 4f < ratio && ratio < 4f / 3f;
+		return 1f / 2f < ratio && ratio < 2f / 1f;
 	}
 
 }
