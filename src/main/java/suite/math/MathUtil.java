@@ -7,7 +7,10 @@ public class MathUtil {
 	public static void verifyEquals(float f0, float f1) {
 		float diff = Math.abs(f0 - f1);
 		if (!Float.isFinite(diff) || epsilon < diff)
-			throw new RuntimeException("f0 = " + f0 + ", f1 = " + f1 + ", diff = " + diff);
+			throw new RuntimeException("Values differ" //
+					+ ": f0 = " + String.format("%.3f", f0) //
+					+ ", f1 = " + String.format("%.3f", f1) //
+					+ ", diff = " + String.format("%.3f", diff));
 	}
 
 	public static int steinGcd(int n0, int n1) {

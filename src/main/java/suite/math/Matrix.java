@@ -150,18 +150,18 @@ public class Matrix {
 	}
 
 	public float[] mul(float[] m, float[][] n) {
-		int ks = m.length;
-		int width = w(n);
-		float[] o = new float[width];
-		int j1, k1;
-		if (ks == h(n))
-			for (int j0 = 0; j0 < width; j0 = j1) {
-				j1 = Math.min(j0 + 64, width);
-				for (int k0 = 0; k0 < ks; k0 = k1) {
-					k1 = Math.min(k0 + 64, ks);
-					for (int j = j0; j < j1; j++)
-						for (int k = k0; k < k1; k++)
-							o[j] += m[k] * n[k][j];
+		int ix = m.length;
+		int jx = w(n);
+		float[] o = new float[jx];
+		int i1, j1;
+		if (ix == h(n))
+			for (int i0 = 0; i0 < ix; i0 = i1) {
+				i1 = Math.min(i0 + 64, ix);
+				for (int j0 = 0; j0 < jx; j0 = j1) {
+					j1 = Math.min(j0 + 64, jx);
+					for (int i = i0; i < i1; i++)
+						for (int j = j0; j < j1; j++)
+							o[j] += m[i] * n[i][j];
 				}
 			}
 		else
@@ -171,18 +171,18 @@ public class Matrix {
 
 	// nT is column vector
 	public float[] mul(float[][] m, float[] nT) {
-		int ks = w(m);
-		int height = h(m);
-		float[] o = new float[height];
-		int i1, k1;
-		if (ks == nT.length)
-			for (int i0 = 0; i0 < height; i0 = i1) {
-				i1 = Math.min(i0 + 64, height);
-				for (int k0 = 0; k0 < ks; k0 = k1) {
-					k1 = Math.min(k0 + 64, ks);
+		int ix = h(m);
+		int jx = w(m);
+		float[] o = new float[ix];
+		int i1, j1;
+		if (jx == nT.length)
+			for (int i0 = 0; i0 < ix; i0 = i1) {
+				i1 = Math.min(i0 + 64, ix);
+				for (int j0 = 0; j0 < jx; j0 = j1) {
+					j1 = Math.min(j0 + 64, jx);
 					for (int i = i0; i < i1; i++)
-						for (int k = k0; k < k1; k++)
-							o[i] += m[i][k] * nT[k];
+						for (int j = j0; j < j1; j++)
+							o[i] += m[i][j] * nT[j];
 				}
 			}
 		else
@@ -486,7 +486,7 @@ public class Matrix {
 	private void dump(StringBuilder sb, float[] m) {
 		sb.append("[");
 		for (float f : m)
-			sb.append(f + " ");
+			sb.append(String.format("%.3f", f) + " ");
 		sb.append("]");
 	}
 
