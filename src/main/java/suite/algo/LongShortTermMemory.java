@@ -3,6 +3,7 @@ package suite.algo;
 import java.util.Random;
 
 import suite.math.Matrix;
+import suite.math.Matrix.Ctor1;
 import suite.math.Sigmoid;
 import suite.util.Copy;
 
@@ -71,28 +72,24 @@ public class LongShortTermMemory {
 
 			Copy.primitiveArray(input, 0, io0, 0, inputLength);
 			Copy.primitiveArray(output0, 0, io0, inputLength, memoryLength);
-			io0[inputLength + memoryLength] = 1f;
+			io0[ll] = 1f;
 
-			float[] fs = sigmoidOn(copy(mtx.mul(wf, io0)));
-			float[] is = sigmoidOn(copy(mtx.mul(wi, io0)));
-			float[] ms = tanhOn(copy(mtx.mul(wm, io0)));
-			float[] os = sigmoidOn(copy(mtx.mul(wo, io0)));
-			float[] memory1 = mtx.of(memory = mtx.addOn(forget(memory0, fs), forget(ms, is)));
+			float[] sig_fs = sigmoidOn(mtx.mul(wf, io0));
+			float[] sig_is = sigmoidOn(mtx.mul(wi, io0));
+			float[] tanh_ms = tanhOn(mtx.mul(wm, io0));
+			float[] sig_os = sigmoidOn(mtx.mul(wo, io0));
+			float[] memory1 = copy(memory = mtx.addOn(forget(memory0, sig_fs), forget(tanh_ms, sig_is)));
 			float[] tanh_memory1 = tanhOn(memory1);
-			float[] output1 = output = forget(os, tanh_memory1);
+			float[] output1 = output = forget(sig_os, tanh_memory1);
 
 			if (expected != null) {
 				float[] e_output1 = mtx.sub(expected, output1);
-				float[] e_tanh_memory1 = forgetOn(os, e_output1);
-				float[] e_memory1 = mtx.of(memoryLength, i -> tanhGradient(tanh_memory1[i]) * e_tanh_memory1[i]);
-				float[] e_os = forgetOn(e_output1, tanh_memory1);
-				float[] e_ms = forgetOn(is, e_memory1);
-				float[] e_is = forgetOn(ms, e_memory1);
-				float[] e_fs = forgetOn(memory0, e_memory1);
-				float[] e_wo = forgetOn(e_os, sigmoidGradientOn(os));
-				float[] e_wm = forgetOn(e_ms, tanhGradientOn(ms));
-				float[] e_wi = forgetOn(e_is, sigmoidGradientOn(is));
-				float[] e_wf = forgetOn(e_fs, sigmoidGradientOn(fs));
+				float[] e_tanh_memory1 = forgetOn(sig_os, e_output1);
+				float[] e_memory1 = newVector(i -> e_tanh_memory1[i] * tanhGradient(tanh_memory1[i]));
+				float[] e_wo = newVector(i -> e_output1[i] * tanh_memory1[i] * sigmoidGradient(sig_os[i]));
+				float[] e_wm = newVector(i -> e_memory1[i] * sig_is[i] * tanhGradient(tanh_ms[i]));
+				float[] e_wi = newVector(i -> e_memory1[i] * tanh_ms[i] * sigmoidGradient(sig_is[i]));
+				float[] e_wf = newVector(i -> e_memory1[i] * memory0[i] * sigmoidGradient(sig_fs[i]));
 
 				for (int i = 0; i < memoryLength; i++)
 					for (int j = 0; j < ll1; j++) {
@@ -106,6 +103,10 @@ public class LongShortTermMemory {
 
 			return output1;
 		}
+	}
+
+	private float[] newVector(Ctor1 ctor1) {
+		return mtx.of(memoryLength, ctor1);
 	}
 
 	private float[] forget(float[] fs, float[] n) {
@@ -129,13 +130,6 @@ public class LongShortTermMemory {
 		return fs;
 	}
 
-	private float[] sigmoidGradientOn(float[] fs) {
-		int length = fs.length;
-		for (int i = 0; i < length; i++)
-			fs[i] = Sigmoid.sigmoidGradient(fs[i]);
-		return fs;
-	}
-
 	private float[] tanhOn(float[] fs) {
 		int length = fs.length;
 		for (int i = 0; i < length; i++)
@@ -143,11 +137,8 @@ public class LongShortTermMemory {
 		return fs;
 	}
 
-	private float[] tanhGradientOn(float[] fs) {
-		int length = fs.length;
-		for (int i = 0; i < length; i++)
-			fs[i] = tanhGradient(fs[i]);
-		return fs;
+	private float sigmoidGradient(float f) {
+		return Sigmoid.sigmoidGradient(f);
 	}
 
 	private float tanhGradient(float f) {
