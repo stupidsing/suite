@@ -24,12 +24,14 @@ public class QrTest {
 		int length = mtx.height(m0);
 		float[][][] qr = fun.apply(m0);
 
+		@SuppressWarnings("unused")
 		float[][] expectedq = { //
 				{ 6f / 7f, -69f / 175f, -58f / 175f, }, //
 				{ 3f / 7f, 158f / 175f, 6f / 175f, }, //
 				{ -2f / 7f, 6f / 35f, -33f / 35f, }, //
 		};
 
+		@SuppressWarnings("unused")
 		float[][] expectedr = { //
 				{ 14f, 21f, -14f, }, //
 				{ 0f, 175f, -70f, }, //
