@@ -17,7 +17,7 @@ public class LongShortTermMemory {
 		this(1f, 8, 8);
 	}
 
-	public LongShortTermMemory(float learningRate, int memoryLength, int inputLength) {
+	public LongShortTermMemory(float learningRate, int inputLength, int memoryLength) {
 		this.learningRate = learningRate;
 		this.inputLength = inputLength;
 		this.memoryLength = memoryLength;
