@@ -43,17 +43,19 @@ public class LongShortTermMemory {
 		public Unit() {
 			Random random = new Random();
 			double isll = 1f / Math.sqrt(ll);
-			for (int i = 0; i < memoryLength; i++)
-				for (int j = 0; j < ll; j++) { // random weights, bias 0
 
-					// forget previous lifes
-					wf[i][j] = 3f;
+			for (int i = 0; i < memoryLength; i++) {
+				for (int j = 0; j < ll; j++) { // random weights, bias 0
 
 					// Xavier initialization
 					wi[i][j] = (float) (random.nextGaussian() * isll);
 					wm[i][j] = (float) (random.nextGaussian() * isll);
 					wo[i][j] = (float) (random.nextGaussian() * isll);
 				}
+
+				// forget previous lifes
+				wf[i][ll] = 3f;
+			}
 		}
 
 		public float[] activateForward(float[] input) {
@@ -62,6 +64,18 @@ public class LongShortTermMemory {
 
 		public void propagateBackward(float[] input, float[] expected) {
 			activate_(input, expected);
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("wf = " + mtx.toString(wf));
+			sb.append("wi = " + mtx.toString(wi));
+			sb.append("wm = " + mtx.toString(wm));
+			sb.append("wo = " + mtx.toString(wo));
+			sb.append("memory = " + mtx.toString(memory) + "\n");
+			sb.append("output = " + mtx.toString(output) + "\n");
+			return sb.toString();
 		}
 
 		private float[] activate_(float[] input, float[] expected) {
