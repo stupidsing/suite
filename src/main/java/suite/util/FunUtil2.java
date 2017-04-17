@@ -5,8 +5,11 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
+import suite.adt.IntObjPair;
 import suite.adt.Pair;
 import suite.os.LogUtil;
+import suite.primitive.PrimitiveFun.IntObj_Obj;
+import suite.primitive.PrimitiveSource.IntObjSource2;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -163,6 +166,20 @@ public class FunUtil2 {
 		BiFunction<K, V, T> fun1 = Rethrow.fun2(fun0);
 		Pair<K, V> pair = Pair.of(null, null);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
+	}
+
+	public static <V, K1, V1, T> Source2<K1, V1> map2(IntObj_Obj<V, K1> kf0, IntObj_Obj<V, V1> vf0, IntObjSource2<V> source2) {
+		IntObj_Obj<V, K1> kf1 = Rethrow.fun2(kf0);
+		IntObj_Obj<V, V1> vf1 = Rethrow.fun2(vf0);
+		IntObjPair<V> pair1 = IntObjPair.of(0, null);
+		return pair -> {
+			boolean b = source2.source2(pair1);
+			if (b) {
+				pair.t0 = kf1.apply(pair1.t0, pair1.t1);
+				pair.t1 = vf1.apply(pair1.t0, pair1.t1);
+			}
+			return b;
+		};
 	}
 
 	public static <K, V, K1, V1, T> Source2<K1, V1> map2(BiFunction<K, V, K1> kf0, BiFunction<K, V, V1> vf0,

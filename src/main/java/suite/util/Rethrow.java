@@ -2,8 +2,12 @@ package suite.util;
 
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
+import suite.primitive.PrimitiveFun.IntObj_Int;
+import suite.primitive.PrimitiveFun.IntObj_Obj;
+import suite.primitive.PrimitivePredicate.IntObjPredicate2;
 import suite.util.FunUtil.Fun;
 
 public class Rethrow {
@@ -12,7 +16,7 @@ public class Rethrow {
 		public T source() throws Ex;
 	}
 
-	public static <V, K> BiPredicate<K, V> bipredicate(BiPredicate<K, V> fun0) {
+	public static <K, V> BiPredicate<K, V> bipredicate(BiPredicate<K, V> fun0) {
 		return (k, v) -> {
 			try {
 				return fun0.test(k, v);
@@ -47,6 +51,46 @@ public class Rethrow {
 		return (k, v) -> {
 			try {
 				return fun.apply(k, v);
+			} catch (Exception ex) {
+				throw new RuntimeException("for key " + k, ex);
+			}
+		};
+	}
+
+	public static <V> IntObj_Int<V> fun2(IntObj_Int<V> fun) {
+		return (k, v) -> {
+			try {
+				return fun.apply(k, v);
+			} catch (Exception ex) {
+				throw new RuntimeException("for key " + k, ex);
+			}
+		};
+	}
+
+	public static <V, T> IntObj_Obj<V, T> fun2(IntObj_Obj<V, T> fun) {
+		return (k, v) -> {
+			try {
+				return fun.apply(k, v);
+			} catch (Exception ex) {
+				throw new RuntimeException("for key " + k, ex);
+			}
+		};
+	}
+
+	public static IntPredicate predicate(IntPredicate predicate) {
+		return t -> {
+			try {
+				return predicate.test(t);
+			} catch (Exception ex) {
+				throw new RuntimeException("for " + t, ex);
+			}
+		};
+	}
+
+	public static <V> IntObjPredicate2<V> bipredicate(IntObjPredicate2<V> fun0) {
+		return (k, v) -> {
+			try {
+				return fun0.test(k, v);
 			} catch (Exception ex) {
 				throw new RuntimeException("for key " + k, ex);
 			}

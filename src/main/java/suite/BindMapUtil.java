@@ -16,6 +16,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Fun;
@@ -31,7 +32,7 @@ public class BindMapUtil {
 		BindPredicate pred = sb.compileBind(toMatch);
 		Streamlet2<String, Integer> indices = Read.from(generalizer.getVariablesNames()) //
 				.map2(Formatter::display, name -> sb.getVariableIndex(generalizer.getVariable(name))) //
-				.evaluate();
+				.collect(As::streamlet2);
 
 		return node -> {
 			Env env = sb.env();

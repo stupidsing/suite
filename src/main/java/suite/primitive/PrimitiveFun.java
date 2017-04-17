@@ -25,6 +25,11 @@ public class PrimitiveFun {
 	}
 
 	@FunctionalInterface
+	public interface IntObj_Int<T> {
+		public int apply(int i, T t);
+	}
+
+	@FunctionalInterface
 	public interface IntObj_Obj<X, Y> {
 		public Y apply(int i, X x);
 	}
