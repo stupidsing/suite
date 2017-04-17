@@ -16,6 +16,12 @@ public class DataSource {
 	public final String dates[];
 	public final float[] prices;
 
+	public static DataSource yahoo(String stockCode) {
+		LocalDate frDate = LocalDate.of(1980, 1, 1);
+		LocalDate toDate = LocalDate.of(2020, 1, 1);
+		return yahoo(stockCode, frDate, toDate);
+	}
+
 	public static DataSource yahoo(String stockCode, LocalDate frDate, LocalDate toDate) {
 		String urlString = yahooUrl(stockCode, frDate, toDate);
 
