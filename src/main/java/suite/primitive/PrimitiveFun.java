@@ -43,4 +43,9 @@ public class PrimitiveFun {
 	public interface Obj_Int<T> extends ToIntFunction<T> {
 	}
 
+	@FunctionalInterface
+	public interface ObjObj_Int<X, Y> {
+		public int apply(X x, Y y);
+	}
+
 }

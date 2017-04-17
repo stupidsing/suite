@@ -20,6 +20,7 @@ import java.util.function.Predicate;
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.node.util.Mutable;
+import suite.primitive.PrimitiveFun.ObjObj_Int;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -254,6 +255,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public <K1, V1> Outlet2<K1, V1> map2(BiFunction<K, V, K1> kf, BiFunction<K, V, V1> vf) {
 		return of(FunUtil2.map2(kf, vf, source2));
+	}
+
+	public <V1> IntObjOutlet<V1> mapIntObj(ObjObj_Int<K, V> kf, BiFunction<K, V, V1> vf) {
+		return IntObjOutlet.of(FunUtil2.mapIntObj(kf, vf, source2));
 	}
 
 	public <K1> Outlet2<K1, V> mapKey(Fun<K, K1> fun) {

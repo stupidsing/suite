@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
+import suite.primitive.PrimitiveFun.ObjObj_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
@@ -140,6 +141,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public <K1, V1> Streamlet2<K1, V1> map2(BiFunction<K, V, K1> kf, BiFunction<K, V, V1> vf) {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
+	}
+
+	public <V1> IntObjStreamlet<V1> mapIntObj(ObjObj_Int<K, V> kf, BiFunction<K, V, V1> vf) {
+		return new IntObjStreamlet<>(() -> spawn().mapIntObj(kf, vf));
 	}
 
 	public <K1> Streamlet2<K1, V> mapKey(Fun<K, K1> fun) {

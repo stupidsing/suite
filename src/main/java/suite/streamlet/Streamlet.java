@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
+import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -143,6 +144,10 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public <K, V> Streamlet2<K, V> map2(Fun<T, K> kf, Fun<T, V> vf) {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
+	}
+
+	public <V1> IntObjStreamlet<V1> mapIntObj(Obj_Int<T> kf, Fun<T, V1> vf) {
+		return new IntObjStreamlet<>(() -> spawn().mapIntObj(kf, vf));
 	}
 
 	public T last() {

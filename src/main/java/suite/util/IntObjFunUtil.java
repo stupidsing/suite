@@ -14,6 +14,7 @@ import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Source2;
 
 public class IntObjFunUtil {
 
@@ -159,7 +160,21 @@ public class IntObjFunUtil {
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
-	public static <V, V1, T> IntObjSource<V1> map2(IntObj_Int<V> kf0, IntObj_Obj<V, V1> vf0, IntObjSource<V> source2) {
+	public static <V, K1, V1, T> Source2<K1, V1> map2(IntObj_Obj<V, K1> kf0, IntObj_Obj<V, V1> vf0, IntObjSource<V> source2) {
+		IntObj_Obj<V, K1> kf1 = Rethrow.fun2(kf0);
+		IntObj_Obj<V, V1> vf1 = Rethrow.fun2(vf0);
+		IntObjPair<V> pair1 = IntObjPair.of(0, null);
+		return pair -> {
+			boolean b = source2.source2(pair1);
+			if (b) {
+				pair.t0 = kf1.apply(pair1.t0, pair1.t1);
+				pair.t1 = vf1.apply(pair1.t0, pair1.t1);
+			}
+			return b;
+		};
+	}
+
+	public static <V, V1, T> IntObjSource<V1> mapIntObj(IntObj_Int<V> kf0, IntObj_Obj<V, V1> vf0, IntObjSource<V> source2) {
 		IntObj_Int<V> kf1 = Rethrow.fun2(kf0);
 		IntObj_Obj<V, V1> vf1 = Rethrow.fun2(vf0);
 		IntObjPair<V> pair1 = IntObjPair.of(0, null);

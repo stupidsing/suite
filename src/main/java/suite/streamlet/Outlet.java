@@ -18,6 +18,7 @@ import java.util.function.Predicate;
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.node.util.Mutable;
+import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -226,6 +227,10 @@ public class Outlet<T> implements Iterable<T> {
 
 	public <K, V> Outlet2<K, V> map2(Fun<T, K> kf0, Fun<T, V> vf0) {
 		return Outlet2.of(FunUtil.map2(kf0, vf0, source));
+	}
+
+	public <V1> IntObjOutlet<V1> mapIntObj(Obj_Int<T> kf, Fun<T, V1> vf) {
+		return IntObjOutlet.of(FunUtil.mapIntObj(kf, vf, source));
 	}
 
 	public T min(Comparator<T> comparator) {

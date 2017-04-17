@@ -6,6 +6,8 @@ import java.util.function.Predicate;
 
 import suite.adt.Pair;
 import suite.os.LogUtil;
+import suite.primitive.PrimitiveFun.Obj_Int;
+import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil2.Source2;
 
 public class FunUtil {
@@ -146,6 +148,20 @@ public class FunUtil {
 			boolean b = t != null;
 			if (b) {
 				pair.t0 = kf1.apply(t);
+				pair.t1 = vf1.apply(t);
+			}
+			return b;
+		};
+	}
+
+	public static <T, V> IntObjSource<V> mapIntObj(Obj_Int<T> kf0, Fun<T, V> vf0, Source<T> source) {
+		Obj_Int<T> kf1 = Rethrow.fun(kf0);
+		Fun<T, V> vf1 = Rethrow.fun(vf0);
+		return pair -> {
+			T t = source.source();
+			boolean b = t != null;
+			if (b) {
+				pair.t0 = kf1.applyAsInt(t);
 				pair.t1 = vf1.apply(t);
 			}
 			return b;

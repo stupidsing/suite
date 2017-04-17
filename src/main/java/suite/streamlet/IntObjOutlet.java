@@ -29,7 +29,6 @@ import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.FunUtil2;
 import suite.util.IntObjFunUtil;
 import suite.util.NullableSynchronousQueue;
 import suite.util.To;
@@ -259,11 +258,11 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public <K1, V1> Outlet2<K1, V1> map2(IntObj_Obj<V, K1> kf, IntObj_Obj<V, V1> vf) {
-		return Outlet2.of(FunUtil2.map2(kf, vf, source2));
+		return Outlet2.of(IntObjFunUtil.map2(kf, vf, source2));
 	}
 
 	public <V1> IntObjOutlet<V1> mapIntObj(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
-		return of(IntObjFunUtil.map2(kf, vf, source2));
+		return of(IntObjFunUtil.mapIntObj(kf, vf, source2));
 	}
 
 	public IntObjOutlet<V> mapKey(Int_Int fun) {
