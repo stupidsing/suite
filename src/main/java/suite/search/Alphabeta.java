@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import suite.adt.Pair;
+import suite.adt.IntObjPair;
 import suite.util.FunUtil.Fun;
 
 public class Alphabeta<State> {
@@ -24,7 +24,7 @@ public class Alphabeta<State> {
 		return search0(state, depth, 1 + Integer.MIN_VALUE, Integer.MAX_VALUE).t1;
 	}
 
-	private Pair<Integer, List<State>> search0(State state, int depth, int alpha, int beta) {
+	private IntObjPair<List<State>> search0(State state, int depth, int alpha, int beta) {
 		if (0 < depth) {
 			List<State> states = generate.apply(state);
 
@@ -34,7 +34,7 @@ public class Alphabeta<State> {
 				for (State state1 : states) {
 					moves.push(state1);
 
-					Pair<Integer, List<State>> result = search0(state1, depth - 1, -beta, -alpha);
+					IntObjPair<List<State>> result = search0(state1, depth - 1, -beta, -alpha);
 					int score = -result.t0;
 
 					if (alpha < score) {
@@ -48,12 +48,12 @@ public class Alphabeta<State> {
 						break;
 				}
 
-				return Pair.of(alpha, principalVariation);
+				return IntObjPair.of(alpha, principalVariation);
 			}
 		}
 
 		List<State> moves1 = new ArrayList<>(moves);
-		return Pair.of(evaluate.apply(state), moves1);
+		return IntObjPair.of(evaluate.apply(state), moves1);
 	}
 
 }

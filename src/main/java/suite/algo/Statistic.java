@@ -1,12 +1,10 @@
 package suite.algo;
 
-import java.util.List;
-
 import suite.adt.IntObjMap;
-import suite.adt.Pair;
+import suite.adt.IntObjPair;
 import suite.math.Matrix;
-import suite.primitive.PrimitiveFun.T_Int;
-import suite.streamlet.Read;
+import suite.primitive.PrimitiveFun.Obj_Int;
+import suite.primitive.PrimitiveFun.Source2_IntObj;
 
 public class Statistic {
 
@@ -56,7 +54,7 @@ public class Statistic {
 		return mtx.mul(mtx.inverse(xtx), mtx.mul(xt, y));
 	}
 
-	public T_Int<int[]> naiveBayes(int[][] x, int[] y) {
+	public Obj_Int<int[]> naiveBayes(int[][] x, int[] y) {
 		IntObjMap<int[]> counts = new IntObjMap<>();
 		int ix = x.length; // number of samples
 		int jx = x[0].length; // number of features
@@ -65,11 +63,12 @@ public class Statistic {
 			counts.compileIfAbsent(i, i_ -> new int[] { 0, })[0]++;
 
 		return ins -> {
-			List<Pair<Integer, int[]>> pairs = Read.from2(counts.source()).toList();
+			IntObjPair<int[]> pair = IntObjPair.of(0, null);
+			Source2_IntObj<int[]> source2 = counts.source();
 			int result = 0;
 			double maxp = Double.MIN_VALUE;
 
-			for (Pair<Integer, int[]> pair : pairs) {
+			while (source2.source2(pair)) {
 				double p = ((double) pair.t1[0]) / ix;
 				for (int j = 0; j < jx; j++) {
 					int count = 0;

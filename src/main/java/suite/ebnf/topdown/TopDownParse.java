@@ -5,7 +5,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.Pair;
+import suite.adt.IntIntPair;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
@@ -148,7 +148,7 @@ public class TopDownParse {
 			return state.pos < end ? Outlet.of(state.pos(end)) : noResult;
 		}
 
-		private Pair<Integer, Integer> findPosition(int position) {
+		private IntIntPair findPosition(int position) {
 			int row = 1, col = 1;
 			for (int i = 0; i < position; i++) {
 				col++;
@@ -157,7 +157,7 @@ public class TopDownParse {
 					col = 1;
 				}
 			}
-			return Pair.of(row, col);
+			return IntIntPair.of(row, col);
 		}
 	}
 
@@ -173,7 +173,7 @@ public class TopDownParse {
 		if (node != null)
 			return node;
 		else {
-			Pair<Integer, Integer> pos = parse.findPosition(parse.errorPosition);
+			IntIntPair pos = parse.findPosition(parse.errorPosition);
 			throw new RuntimeException("Syntax error for entity " + parse.errorEntity + " at " + pos);
 		}
 	}

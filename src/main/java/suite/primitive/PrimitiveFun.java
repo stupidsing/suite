@@ -2,6 +2,8 @@ package suite.primitive;
 
 import java.util.function.ToIntFunction;
 
+import suite.adt.IntObjPair;
+
 public class PrimitiveFun {
 
 	@FunctionalInterface
@@ -20,17 +22,22 @@ public class PrimitiveFun {
 	}
 
 	@FunctionalInterface
-	public interface Int_T<T> {
+	public interface Int_Obj<T> {
 		public T apply(int i);
 	}
 
 	@FunctionalInterface
-	public interface T_Int<T> extends ToIntFunction<T> {
+	public interface Obj_Int<T> extends ToIntFunction<T> {
 	}
 
 	@FunctionalInterface
 	public interface Source_Int {
 		public int source();
+	}
+
+	@FunctionalInterface
+	public interface Source2_IntObj<T> {
+		public boolean source2(IntObjPair<T> pair);
 	}
 
 }

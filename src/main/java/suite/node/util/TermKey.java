@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import suite.adt.IntObjPair;
 import suite.adt.Pair;
 import suite.node.Node;
 import suite.node.Reference;
@@ -64,25 +65,25 @@ public class TermKey extends HashCodeComparable<TermKey> {
 	}
 
 	private class TermLister {
-		private List<Pair<Integer, NodeHead>> list = new ArrayList<>();
+		private List<IntObjPair<NodeHead>> list = new ArrayList<>();
 
 		public TermLister(Node node) {
-			new TermVisitor(i -> list.add(Pair.of(i, null)), nr -> Pair.of(null, nr)).visit(node);
+			new TermVisitor(i -> list.add(IntObjPair.of(i, null)), nr -> Pair.of(null, nr)).visit(node);
 		}
 
 		public boolean equals(Object object) {
 			boolean result = Util.clazz(object) == TermLister.class;
 
 			if (result) {
-				List<Pair<Integer, NodeHead>> list1 = ((TermLister) object).list;
+				List<IntObjPair<NodeHead>> list1 = ((TermLister) object).list;
 				int size0 = list.size();
 				int size1 = list1.size();
 				result &= size0 == size1;
 
 				if (result)
 					for (int i = 0; result && i < size0; i++) {
-						Pair<Integer, NodeHead> p0 = list.get(i);
-						Pair<Integer, NodeHead> p1 = list1.get(i);
+						IntObjPair<NodeHead> p0 = list.get(i);
+						IntObjPair<NodeHead> p1 = list1.get(i);
 						result &= Objects.equals(p0.t0, p1.t0);
 
 						NodeHead nh0 = p0.t1;
@@ -102,7 +103,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 
 		public int hashCode() {
 			int result = 1;
-			for (Pair<Integer, NodeHead> pair : list) {
+			for (IntObjPair<NodeHead> pair : list) {
 				result = 31 * result + Objects.hash(pair.t0);
 				if (pair.t1 != null) {
 					result = 31 * result + Objects.hash(pair.t1.type);

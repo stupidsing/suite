@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.adt.Pair;
+import suite.adt.IntObjPair;
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
@@ -66,7 +66,7 @@ public class JournalledFileFactory {
 			}
 
 			public synchronized Bytes load(int pointer) {
-				Pair<Integer, JournalEntry> pair = findPageInJournal(pointer);
+				IntObjPair<JournalEntry> pair = findPageInJournal(pointer);
 				if (pair != null)
 					return pair.t1.bytes;
 				else
@@ -74,7 +74,7 @@ public class JournalledFileFactory {
 			}
 
 			public synchronized void save(int pointer, Bytes bytes) {
-				Pair<Integer, JournalEntry> pair = findDirtyPageInJournal(pointer);
+				IntObjPair<JournalEntry> pair = findDirtyPageInJournal(pointer);
 				int jp;
 				JournalEntry journalEntry;
 
@@ -140,20 +140,20 @@ public class JournalledFileFactory {
 					journalPageFile.save(jp, journalEntries.get(jp));
 			}
 
-			private Pair<Integer, JournalEntry> findPageInJournal(int pointer) {
+			private IntObjPair<JournalEntry> findPageInJournal(int pointer) {
 				return findPageInJournal(pointer, 0);
 			}
 
-			private Pair<Integer, JournalEntry> findDirtyPageInJournal(int pointer) {
+			private IntObjPair<JournalEntry> findDirtyPageInJournal(int pointer) {
 				return findPageInJournal(pointer, nCommittedJournalEntries);
 			}
 
-			private Pair<Integer, JournalEntry> findPageInJournal(int pointer, int start) {
-				Pair<Integer, JournalEntry> pair = null;
+			private IntObjPair<JournalEntry> findPageInJournal(int pointer, int start) {
+				IntObjPair<JournalEntry> pair = null;
 				for (int jp = start; jp < journalEntries.size(); jp++) {
 					JournalEntry journalEntry = journalEntries.get(jp);
 					if (journalEntry.pointer == pointer)
-						pair = Pair.of(jp, journalEntry);
+						pair = IntObjPair.of(jp, journalEntry);
 				}
 				return pair;
 			}

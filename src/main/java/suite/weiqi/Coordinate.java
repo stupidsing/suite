@@ -3,7 +3,7 @@ package suite.weiqi;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.adt.Pair;
+import suite.adt.IntIntPair;
 import suite.util.Util;
 
 public class Coordinate implements Comparable<Coordinate> {
@@ -71,12 +71,6 @@ public class Coordinate implements Comparable<Coordinate> {
 		return getLocation().t1;
 	}
 
-	private Pair<Integer, Integer> getLocation() {
-		int x = index >> Weiqi.shift;
-		int y = index & (1 << Weiqi.shift) - 1;
-		return Pair.of(x, y);
-	}
-
 	@Override
 	public int compareTo(Coordinate coord) {
 		return index - coord.index;
@@ -98,12 +92,18 @@ public class Coordinate implements Comparable<Coordinate> {
 
 	@Override
 	public String toString() {
-		Pair<Integer, Integer> location = getLocation();
+		IntIntPair location = getLocation();
 		return String.format("%d,%d", location.t0, location.t1);
 	}
 
 	public int index() {
 		return index;
+	}
+
+	private IntIntPair getLocation() {
+		int x = index >> Weiqi.shift;
+		int y = index & (1 << Weiqi.shift) - 1;
+		return IntIntPair.of(x, y);
 	}
 
 }

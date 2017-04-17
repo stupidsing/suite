@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import suite.adt.Pair;
+import suite.adt.IntIntPair;
 import suite.util.To;
 import suite.util.Util;
 
@@ -36,11 +36,11 @@ public class ConvolutionalNeuralNetwork {
 		}
 	}
 
-	public ConvolutionalNeuralNetwork(int nInputs, List<Pair<Integer, Integer>> parameters, Random random) {
+	public ConvolutionalNeuralNetwork(int nInputs, List<IntIntPair> parameters, Random random) {
 		nLayers = parameters.size() - 1;
 
 		for (int layer = 0; layer < nLayers; layer++) {
-			Pair<Integer, Integer> parameter = parameters.get(layer);
+			IntIntPair parameter = parameters.get(layer);
 			int nWeights = parameter.t0;
 			int nOutputs = parameter.t1;
 			float[] weights = To.floatArray(nWeights, i -> random.nextFloat());

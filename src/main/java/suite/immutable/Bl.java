@@ -3,7 +3,7 @@ package suite.immutable;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import suite.adt.Pair;
+import suite.adt.IntObjPair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Copy;
@@ -92,13 +92,13 @@ public class Bl<T> {
 			return null;
 	}
 
-	public static <T> Bl<T> of(List<Pair<Integer, T>> list) {
+	public static <T> Bl<T> of(List<IntObjPair<T>> list) {
 		if (!list.isEmpty()) {
 			int size = list.size();
 			long bitmap = 0;
 			Object ts[] = new Object[size];
 			for (int i = 0; i < size; i++) {
-				Pair<Integer, T> pair = list.get(i);
+				IntObjPair<T> pair = list.get(i);
 				bitmap |= 1l << (pair.t0 & 0xFFFFFC00);
 				ts[i] = pair.t1;
 			}

@@ -1,7 +1,7 @@
 package suite.adt;
 
-import suite.primitive.PrimitiveFun.Int_T;
-import suite.util.FunUtil2.Source2;
+import suite.primitive.PrimitiveFun.Int_Obj;
+import suite.primitive.PrimitiveFun.Source2_IntObj;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -23,7 +23,7 @@ public class IntObjMap<V> {
 		allocate(capacity);
 	}
 
-	public V compileIfAbsent(int key, Int_T<V> fun) {
+	public V compileIfAbsent(int key, Int_Obj<V> fun) {
 		V v = get(key);
 		if (v == null)
 			put(key, v = fun.apply(key));
@@ -55,12 +55,12 @@ public class IntObjMap<V> {
 		return cast(o);
 	}
 
-	public Source2<Integer, V> source() {
+	public Source2_IntObj<V> source() {
 		int capacity = ks.length;
-		return new Source2<Integer, V>() {
+		return new Source2_IntObj<V>() {
 			private int index = 0;
 
-			public boolean source2(Pair<Integer, V> pair) {
+			public boolean source2(IntObjPair<V> pair) {
 				boolean b = index < capacity;
 				if (b) {
 					pair.t0 = ks[index];

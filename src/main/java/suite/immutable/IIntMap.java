@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import suite.adt.Pair;
+import suite.adt.IntObjPair;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 
@@ -26,28 +26,28 @@ public class IIntMap<V> {
 		return new IIntMap<>(Bl.meld(map0.bl0, map1.bl0, f0));
 	}
 
-	public static <V> IIntMap<V> of(List<Pair<Integer, V>> list) {
-		List<Pair<Integer, V>> list6 = new ArrayList<>(list);
-		list6.sort((p0, p1) -> p0.t0.compareTo(p1.t0));
-		List<Pair<Integer, Bl<V>>> list5 = consolidate(list6);
-		List<Pair<Integer, Bl<Bl<V>>>> list4 = consolidate(list5);
-		List<Pair<Integer, Bl<Bl<Bl<V>>>>> list3 = consolidate(list4);
-		List<Pair<Integer, Bl<Bl<Bl<Bl<V>>>>>> list2 = consolidate(list3);
-		List<Pair<Integer, Bl<Bl<Bl<Bl<Bl<V>>>>>>> list1 = consolidate(list2);
+	public static <V> IIntMap<V> of(List<IntObjPair<V>> list) {
+		List<IntObjPair<V>> list6 = new ArrayList<>(list);
+		list6.sort((p0, p1) -> Integer.compare(p0.t0, p1.t0));
+		List<IntObjPair<Bl<V>>> list5 = consolidate(list6);
+		List<IntObjPair<Bl<Bl<V>>>> list4 = consolidate(list5);
+		List<IntObjPair<Bl<Bl<Bl<V>>>>> list3 = consolidate(list4);
+		List<IntObjPair<Bl<Bl<Bl<Bl<V>>>>>> list2 = consolidate(list3);
+		List<IntObjPair<Bl<Bl<Bl<Bl<Bl<V>>>>>>> list1 = consolidate(list2);
 		return new IIntMap<>(Bl.of(list1.subList(0, list1.size())));
 	}
 
-	private static <V> List<Pair<Integer, Bl<V>>> consolidate(List<Pair<Integer, V>> list0) {
-		List<Pair<Integer, Bl<V>>> list1 = new ArrayList<>();
+	private static <V> List<IntObjPair<Bl<V>>> consolidate(List<IntObjPair<V>> list0) {
+		List<IntObjPair<Bl<V>>> list1 = new ArrayList<>();
 		int size = list0.size(), i0 = 0, prevKey = 0, key;
 		for (int i = 0; i < size; i++) {
 			if (prevKey != (key = list0.get(i).t0 & 63)) {
-				list1.add(Pair.of(prevKey >>> 6, Bl.of(list0.subList(i0, i))));
+				list1.add(IntObjPair.of(prevKey >>> 6, Bl.of(list0.subList(i0, i))));
 				i0 = i;
 				prevKey = key;
 			}
 		}
-		list1.add(Pair.of(prevKey >>> 6, Bl.of(list0.subList(i0, size))));
+		list1.add(IntObjPair.of(prevKey >>> 6, Bl.of(list0.subList(i0, size))));
 		return list1;
 	}
 
