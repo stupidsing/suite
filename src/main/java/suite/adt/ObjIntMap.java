@@ -2,15 +2,11 @@ package suite.adt;
 
 import java.util.Arrays;
 
-import suite.primitive.PrimitiveFun.IntObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSink.IntObjSink2;
 import suite.primitive.PrimitiveSource.IntObjSource2;
-import suite.streamlet.Outlet2;
-import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
-import suite.util.FunUtil2.Source2;
+import suite.streamlet.IntObjOutlet2;
+import suite.streamlet.IntObjStreamlet2;
 
 /**
  * Map with generic object key and integer object value. Integer.MIN_VALUE is
@@ -58,12 +54,6 @@ public class ObjIntMap<K> {
 		return v_;
 	}
 
-	public <T> Streamlet<T> map(IntObj_Obj<K, T> fun) {
-		IntObjPair<K> pair = IntObjPair.of(0, null);
-		IntObjSource2<K> source = source_();
-		return Read.from(() -> source.source2(pair) ? fun.apply(pair.t0, pair.t1) : null);
-	}
-
 	public int put(K key, int v) {
 		return put_(key, v);
 
@@ -73,17 +63,17 @@ public class ObjIntMap<K> {
 		return source_();
 	}
 
-	public Streamlet2<K, Integer> stream() {
-		return new Streamlet2<>(() -> {
-			IntObjSource2<K> source = source_();
-			return Outlet2.of(new Source2<K, Integer>() {
+	public IntObjStreamlet2<K> stream() {
+		return new IntObjStreamlet2<>(() -> {
+			return IntObjOutlet2.of(new IntObjSource2<K>() {
+				private IntObjSource2<K> source = source_();
 				private IntObjPair<K> pair0 = IntObjPair.of(0, null);
 
-				public boolean source2(Pair<K, Integer> pair) {
+				public boolean source2(IntObjPair<K> pair) {
 					boolean b = source.source2(pair0);
 					if (b) {
-						pair.t1 = pair0.t0;
-						pair.t0 = pair0.t1;
+						pair.t0 = pair0.t0;
+						pair.t1 = pair0.t1;
 					}
 					return b;
 				}
