@@ -1,8 +1,12 @@
 package suite.algo;
 
+import suite.math.Matrix;
+
 public class Statistic {
 
-	public static float correlation(float[] xs, float[] ys) {
+	private Matrix mtx = new Matrix();
+
+	public float correlation(float[] xs, float[] ys) {
 		int length = xs.length;
 		double sumx = 0d, sumy = 0d;
 		double sumx2 = 0d, sumy2 = 0d;
@@ -22,7 +26,7 @@ public class Statistic {
 				/ Math.sqrt((length * sumx2 - sumx * sumx) * (length * sumy2 - sumy * sumy)));
 	}
 
-	public static float covariance(float[] xs, float[] ys) {
+	public float covariance(float[] xs, float[] ys) {
 		int length = xs.length;
 		double sumx = 0d, sumy = 0d;
 		double sumxy = 0d;
@@ -39,20 +43,27 @@ public class Statistic {
 		return (float) ((sumxy - sumx * sumy * il) * il);
 	}
 
-	public static float mean(float[] fs) {
+	// ordinary least squares
+	public float[] linearRegression(float[][] x, float[] y) {
+		float[][] xt = mtx.transpose(x);
+		float[][] xtx = mtx.mul(xt, x);
+		return mtx.mul(mtx.inverse(xtx), mtx.mul(xt, y));
+	}
+
+	public float mean(float[] fs) {
 		double mean = mean_(fs);
 		return (float) mean;
 	}
 
-	public static float standardDeviation(float[] fs) {
+	public float standardDeviation(float[] fs) {
 		return (float) Math.sqrt(var(fs));
 	}
 
-	public static float variance(float[] fs) {
+	public float variance(float[] fs) {
 		return (float) var(fs);
 	}
 
-	private static double var(float[] fs) {
+	private double var(float[] fs) {
 		int length = fs.length;
 		double mean = mean_(fs);
 		double sum = 0f;
@@ -64,7 +75,7 @@ public class Statistic {
 		return var;
 	}
 
-	private static double mean_(float[] fs) {
+	private double mean_(float[] fs) {
 		int length = fs.length;
 		double sum = 0f;
 		for (int i = 0; i < length; i++)
