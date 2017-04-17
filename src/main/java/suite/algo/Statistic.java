@@ -1,6 +1,12 @@
 package suite.algo;
 
+import java.util.List;
+
+import suite.adt.IntObjMap;
+import suite.adt.Pair;
 import suite.math.Matrix;
+import suite.primitive.PrimitiveFun.T_Int;
+import suite.streamlet.Read;
 
 public class Statistic {
 
@@ -48,6 +54,39 @@ public class Statistic {
 		float[][] xt = mtx.transpose(x);
 		float[][] xtx = mtx.mul(xt, x);
 		return mtx.mul(mtx.inverse(xtx), mtx.mul(xt, y));
+	}
+
+	public T_Int<int[]> naiveBayes(int[][] x, int[] y) {
+		IntObjMap<int[]> counts = new IntObjMap<>();
+		int ix = x.length; // number of samples
+		int jx = x[0].length; // number of features
+
+		for (int i = 0; i < ix; i++)
+			counts.compileIfAbsent(i, i_ -> new int[] { 0, })[0]++;
+
+		return ins -> {
+			List<Pair<Integer, int[]>> pairs = Read.from2(counts.source()).toList();
+			int result = 0;
+			double maxp = Double.MIN_VALUE;
+
+			for (Pair<Integer, int[]> pair : pairs) {
+				double p = ((double) pair.t1[0]) / ix;
+				for (int j = 0; j < jx; j++) {
+					int count = 0;
+					for (int i = 0; i < ix; i++)
+						if (x[i][j] == ins[j])
+							count++;
+					p *= ((double) count) / jx;
+				}
+
+				if (maxp < p) {
+					result = pair.t0;
+					maxp = p;
+				}
+			}
+
+			return result;
+		};
 	}
 
 	public float mean(float[] fs) {
