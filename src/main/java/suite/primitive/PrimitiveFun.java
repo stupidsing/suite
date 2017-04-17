@@ -25,7 +25,7 @@ public class PrimitiveFun {
 	}
 
 	@FunctionalInterface
-	public interface Obj_Int<T> extends ToIntFunction<T> {
+	public interface T_Int<T> extends ToIntFunction<T> {
 	}
 
 	@FunctionalInterface
