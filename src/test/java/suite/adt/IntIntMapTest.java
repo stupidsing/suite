@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import suite.primitive.PrimitiveSource.IntIntSource2;
+import suite.primitive.PrimitiveSource.IntIntSource;
 
 public class IntIntMapTest {
 
@@ -28,9 +28,9 @@ public class IntIntMapTest {
 
 		Set<String> actual = new HashSet<>();
 
-		IntIntSource2 source = map.source();
+		IntIntSource source = map.source();
 		IntIntPair pair = IntIntPair.of(0, 0);
-		while (source.source2(pair))
+		while (source.source(pair))
 			actual.add(pair.t0 + ":" + pair.t1);
 		assertEquals(expected, actual);
 	}

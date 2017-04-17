@@ -24,34 +24,34 @@ import suite.node.util.Mutable;
 import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitiveFun.IntObj_Obj;
 import suite.primitive.PrimitiveFun.Int_Int;
-import suite.primitive.PrimitivePredicate.IntObjPredicate2;
-import suite.primitive.PrimitiveSource.IntObjSource2;
+import suite.primitive.PrimitivePredicate.IntObjPredicate;
+import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
-import suite.util.IntObjFunUtil2;
+import suite.util.IntObjFunUtil;
 import suite.util.NullableSynchronousQueue;
 import suite.util.To;
 import suite.util.Util;
 
-public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
+public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 
-	private IntObjSource2<V> source2;
+	private IntObjSource<V> source2;
 
 	@SafeVarargs
-	public static <V> IntObjOutlet2<V> concat(IntObjOutlet2<V>... outlets) {
-		List<IntObjSource2<V>> sources = new ArrayList<>();
-		for (IntObjOutlet2<V> outlet : outlets)
+	public static <V> IntObjOutlet<V> concat(IntObjOutlet<V>... outlets) {
+		List<IntObjSource<V>> sources = new ArrayList<>();
+		for (IntObjOutlet<V> outlet : outlets)
 			sources.add(outlet.source2);
-		return of(IntObjFunUtil2.concat(To.source(sources)));
+		return of(IntObjFunUtil.concat(To.source(sources)));
 	}
 
-	public static <V> IntObjOutlet2<V> empty() {
-		return of(IntObjFunUtil2.nullSource());
+	public static <V> IntObjOutlet<V> empty() {
+		return of(IntObjFunUtil.nullSource());
 	}
 
-	public static <V> IntObjOutlet2<List<V>> of(ListMultimap<Integer, V> multimap) {
+	public static <V> IntObjOutlet<List<V>> of(ListMultimap<Integer, V> multimap) {
 		Iterator<Pair<Integer, List<V>>> iter = multimap.listEntries().iterator();
 		return of(pair -> {
 			boolean b = iter.hasNext();
@@ -64,7 +64,7 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 		});
 	}
 
-	public static <V> IntObjOutlet2<V> of(Map<Integer, V> map) {
+	public static <V> IntObjOutlet<V> of(Map<Integer, V> map) {
 		Iterator<Entry<Integer, V>> iter = map.entrySet().iterator();
 		return of(pair -> {
 			boolean b = iter.hasNext();
@@ -79,8 +79,8 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	@SafeVarargs
-	public static <V> IntObjOutlet2<V> of(IntObjPair<V>... kvs) {
-		return of(new IntObjSource2<V>() {
+	public static <V> IntObjOutlet<V> of(IntObjPair<V>... kvs) {
+		return of(new IntObjSource<V>() {
 			private int i;
 
 			public boolean source2(IntObjPair<V> pair) {
@@ -96,9 +96,9 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 		});
 	}
 
-	public static <V> IntObjOutlet2<V> of(Iterable<IntObjPair<V>> col) {
+	public static <V> IntObjOutlet<V> of(Iterable<IntObjPair<V>> col) {
 		Iterator<IntObjPair<V>> iter = col.iterator();
-		return of(new IntObjSource2<V>() {
+		return of(new IntObjSource<V>() {
 			public boolean source2(IntObjPair<V> pair) {
 				boolean b = iter.hasNext();
 				if (b) {
@@ -111,24 +111,24 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 		});
 	}
 
-	public static <V> IntObjOutlet2<V> of(IntObjSource2<V> source) {
-		return new IntObjOutlet2<>(source);
+	public static <V> IntObjOutlet<V> of(IntObjSource<V> source) {
+		return new IntObjOutlet<>(source);
 	}
 
-	private IntObjOutlet2(IntObjSource2<V> source) {
+	private IntObjOutlet(IntObjSource<V> source) {
 		this.source2 = source;
 	}
 
 	@Override
 	public Iterator<IntObjPair<V>> iterator() {
-		return IntObjFunUtil2.iterator(source2);
+		return IntObjFunUtil.iterator(source2);
 	}
 
-	public Outlet<IntObjOutlet2<V>> chunk(int n) {
-		return Outlet.of(FunUtil.map(IntObjOutlet2<V>::new, IntObjFunUtil2.chunk(n, source2)));
+	public Outlet<IntObjOutlet<V>> chunk(int n) {
+		return Outlet.of(FunUtil.map(IntObjOutlet<V>::new, IntObjFunUtil.chunk(n, source2)));
 	}
 
-	public IntObjOutlet2<V> closeAtEnd(Closeable c) {
+	public IntObjOutlet<V> closeAtEnd(Closeable c) {
 		return of(pair -> {
 			boolean b = next(pair);
 			if (!b)
@@ -137,20 +137,20 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 		});
 	}
 
-	public <R> R collect(Fun<IntObjOutlet2<V>, R> fun) {
+	public <R> R collect(Fun<IntObjOutlet<V>, R> fun) {
 		return fun.apply(this);
 	}
 
 	public <T> Outlet<T> concatMap(BiFunction<Integer, V, Outlet<T>> fun) {
-		return Outlet.of(FunUtil.concat(IntObjFunUtil2.map((k, v) -> fun.apply(k, v).source(), source2)));
+		return Outlet.of(FunUtil.concat(IntObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source2)));
 	}
 
-	public <V1> IntObjOutlet2<V1> concatMap2(BiFunction<Integer, V, IntObjOutlet2<V1>> fun) {
-		return of(IntObjFunUtil2.concat(IntObjFunUtil2.map((k, v) -> fun.apply(k, v).source2, source2)));
+	public <V1> IntObjOutlet<V1> concatMap2(BiFunction<Integer, V, IntObjOutlet<V1>> fun) {
+		return of(IntObjFunUtil.concat(IntObjFunUtil.map((k, v) -> fun.apply(k, v).source2, source2)));
 	}
 
-	public <V1> IntObjOutlet2<V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
-		return of(IntObjFunUtil2.concat(IntObjFunUtil2.map((k, v) -> {
+	public <V1> IntObjOutlet<V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
+		return of(IntObjFunUtil.concat(IntObjFunUtil.map((k, v) -> {
 			Source<V1> source = fun.apply(v).source();
 			return pair -> {
 				V1 value1 = source.source();
@@ -164,11 +164,11 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 		}, source2)));
 	}
 
-	public IntObjOutlet2<V> cons(Integer key, V value) {
-		return of(IntObjFunUtil2.cons(key, value, source2));
+	public IntObjOutlet<V> cons(Integer key, V value) {
+		return of(IntObjFunUtil.cons(key, value, source2));
 	}
 
-	public IntObjOutlet2<V> distinct() {
+	public IntObjOutlet<V> distinct() {
 		Set<IntObjPair<V>> set = new HashSet<>();
 		return of(pair -> {
 			boolean b;
@@ -178,7 +178,7 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 		});
 	}
 
-	public IntObjOutlet2<V> drop(int n) {
+	public IntObjOutlet<V> drop(int n) {
 		IntObjPair<V> pair = IntObjPair.of(0, null);
 		boolean isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
@@ -188,10 +188,10 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == IntObjOutlet2.class) {
+		if (Util.clazz(object) == IntObjOutlet.class) {
 			@SuppressWarnings("unchecked")
-			IntObjOutlet2<V> outlet = (IntObjOutlet2<V>) (IntObjOutlet2<?>) object;
-			IntObjSource2<V> source2 = outlet.source2;
+			IntObjOutlet<V> outlet = (IntObjOutlet<V>) (IntObjOutlet<?>) object;
+			IntObjSource<V> source2 = outlet.source2;
 			boolean b, b0, b1;
 			IntObjPair<V> pair0 = IntObjPair.of(0, null);
 			IntObjPair<V> pair1 = IntObjPair.of(0, null);
@@ -205,16 +205,16 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 			return false;
 	}
 
-	public IntObjOutlet2<V> filter(IntObjPredicate2<V> fun) {
-		return of(IntObjFunUtil2.filter(fun, source2));
+	public IntObjOutlet<V> filter(IntObjPredicate<V> fun) {
+		return of(IntObjFunUtil.filter(fun, source2));
 	}
 
-	public IntObjOutlet2<V> filterKey(IntPredicate fun) {
-		return of(IntObjFunUtil2.filterKey(fun, source2));
+	public IntObjOutlet<V> filterKey(IntPredicate fun) {
+		return of(IntObjFunUtil.filterKey(fun, source2));
 	}
 
-	public IntObjOutlet2<V> filterValue(Predicate<V> fun) {
-		return of(IntObjFunUtil2.filterValue(fun, source2));
+	public IntObjOutlet<V> filterValue(Predicate<V> fun) {
+		return of(IntObjFunUtil.filterValue(fun, source2));
 	}
 
 	public IntObjPair<V> first() {
@@ -236,12 +236,12 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 		return hashCode;
 	}
 
-	public boolean isAll(IntObjPredicate2<V> pred) {
-		return IntObjFunUtil2.isAll(pred, source2);
+	public boolean isAll(IntObjPredicate<V> pred) {
+		return IntObjFunUtil.isAll(pred, source2);
 	}
 
-	public boolean isAny(IntObjPredicate2<V> pred) {
-		return IntObjFunUtil2.isAny(pred, source2);
+	public boolean isAny(IntObjPredicate<V> pred) {
+		return IntObjFunUtil.isAny(pred, source2);
 	}
 
 	public IntObjPair<V> last() {
@@ -255,22 +255,22 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public <T> Outlet<T> map(IntObj_Obj<V, T> fun0) {
-		return Outlet.of(IntObjFunUtil2.map(fun0, source2));
+		return Outlet.of(IntObjFunUtil.map(fun0, source2));
 	}
 
 	public <K1, V1> Outlet2<K1, V1> mapEntry(IntObj_Obj<V, K1> kf, IntObj_Obj<V, V1> vf) {
 		return Outlet2.of(FunUtil2.map2(kf, vf, source2));
 	}
 
-	public <V1> IntObjOutlet2<V1> mapIntObj(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
-		return of(IntObjFunUtil2.map2(kf, vf, source2));
+	public <V1> IntObjOutlet<V1> mapIntObj(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
+		return of(IntObjFunUtil.map2(kf, vf, source2));
 	}
 
-	public IntObjOutlet2<V> mapKey(Int_Int fun) {
+	public IntObjOutlet<V> mapKey(Int_Int fun) {
 		return mapIntObj((k, v) -> fun.apply(k), (k, v) -> v);
 	}
 
-	public <V1> IntObjOutlet2<V1> mapValue(Fun<V, V1> fun) {
+	public <V1> IntObjOutlet<V1> mapValue(Fun<V, V1> fun) {
 		return mapIntObj((k, v) -> k, (k, v) -> fun.apply(v));
 	}
 
@@ -297,7 +297,7 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 			return null;
 	}
 
-	public IntObjOutlet2<V> nonBlocking(Integer k0, V v0) {
+	public IntObjOutlet<V> nonBlocking(Integer k0, V v0) {
 		NullableSynchronousQueue<IntObjPair<V>> queue = new NullableSynchronousQueue<>();
 
 		new Thread(() -> {
@@ -309,7 +309,7 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 			} while (b);
 		}).start();
 
-		return new IntObjOutlet2<>(pair -> {
+		return new IntObjOutlet<>(pair -> {
 			Mutable<IntObjPair<V>> mutable = Mutable.nil();
 			boolean b = queue.poll(mutable);
 			if (b) {
@@ -331,11 +331,11 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 		});
 	}
 
-	public Pair<IntObjOutlet2<V>, IntObjOutlet2<V>> partition(IntObjPredicate2<V> pred) {
+	public Pair<IntObjOutlet<V>, IntObjOutlet<V>> partition(IntObjPredicate<V> pred) {
 		return Pair.of(filter(pred), filter((k, v) -> !pred.test(k, v)));
 	}
 
-	public IntObjOutlet2<V> reverse() {
+	public IntObjOutlet<V> reverse() {
 		return of(Util.reverse(toList()));
 	}
 
@@ -353,7 +353,7 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 		return i;
 	}
 
-	public IntObjOutlet2<V> skip(int n) {
+	public IntObjOutlet<V> skip(int n) {
 		IntObjPair<V> pair = IntObjPair.of(0, null);
 		boolean end = false;
 		for (int i = 0; !end && i < n; i++)
@@ -361,7 +361,7 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 		return !end ? of(source2) : empty();
 	}
 
-	public IntObjOutlet2<V> sort(Comparator<IntObjPair<V>> comparator) {
+	public IntObjOutlet<V> sort(Comparator<IntObjPair<V>> comparator) {
 		List<IntObjPair<V>> list = new ArrayList<>();
 		IntObjPair<V> pair;
 		while (next(pair = IntObjPair.of(0, null)))
@@ -369,20 +369,20 @@ public class IntObjOutlet2<V> implements Iterable<IntObjPair<V>> {
 		return of(Util.sort(list, comparator));
 	}
 
-	public IntObjOutlet2<V> sortByKey(Comparator<Integer> comparator) {
+	public IntObjOutlet<V> sortByKey(Comparator<Integer> comparator) {
 		return sort((p0, p1) -> comparator.compare(p0.t0, p1.t0));
 	}
 
-	public IntObjSource2<V> source2() {
+	public IntObjSource<V> source2() {
 		return source2;
 	}
 
-	public Outlet<IntObjOutlet2<V>> split(IntObjPredicate2<V> fun) {
-		return Outlet.of(FunUtil.map(IntObjOutlet2<V>::new, IntObjFunUtil2.split(fun, source2)));
+	public Outlet<IntObjOutlet<V>> split(IntObjPredicate<V> fun) {
+		return Outlet.of(FunUtil.map(IntObjOutlet<V>::new, IntObjFunUtil.split(fun, source2)));
 	}
 
-	public IntObjOutlet2<V> take(int n) {
-		return of(new IntObjSource2<V>() {
+	public IntObjOutlet<V> take(int n) {
+		return of(new IntObjSource<V>() {
 			private int count = n;
 
 			public boolean source2(IntObjPair<V> pair) {

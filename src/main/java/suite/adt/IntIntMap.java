@@ -3,11 +3,11 @@ package suite.adt;
 import java.util.Arrays;
 
 import suite.primitive.PrimitiveFun.Int_Int;
-import suite.primitive.PrimitiveSink.IntIntSink2;
-import suite.primitive.PrimitiveSource.IntIntSource2;
-import suite.primitive.PrimitiveSource.IntObjSource2;
-import suite.streamlet.IntObjOutlet2;
-import suite.streamlet.IntObjStreamlet2;
+import suite.primitive.PrimitiveSink.IntIntSink;
+import suite.primitive.PrimitiveSource.IntIntSource;
+import suite.primitive.PrimitiveSource.IntObjSource;
+import suite.streamlet.IntObjOutlet;
+import suite.streamlet.IntObjStreamlet;
 
 /**
  * Map with integer key and integer object value. Integer.MIN_VALUE is not
@@ -36,11 +36,11 @@ public class IntIntMap {
 		return v;
 	}
 
-	public void forEach(IntIntSink2 sink) {
+	public void forEach(IntIntSink sink) {
 		IntIntPair pair = IntIntPair.of(0, 0);
-		IntIntSource2 source = source_();
-		while (source.source2(pair))
-			sink.sink2(pair.t0, pair.t1);
+		IntIntSource source = source_();
+		while (source.source(pair))
+			sink.sink(pair.t0, pair.t1);
 	}
 
 	public int get(int key) {
@@ -60,18 +60,18 @@ public class IntIntMap {
 
 	}
 
-	public IntIntSource2 source() {
+	public IntIntSource source() {
 		return source_();
 	}
 
-	public IntObjStreamlet2<Integer> stream() {
-		return new IntObjStreamlet2<>(() -> {
-			return IntObjOutlet2.of(new IntObjSource2<Integer>() {
-				private IntIntSource2 source = source_();
+	public IntObjStreamlet<Integer> stream() {
+		return new IntObjStreamlet<>(() -> {
+			return IntObjOutlet.of(new IntObjSource<Integer>() {
+				private IntIntSource source = source_();
 				private IntIntPair pair0 = IntIntPair.of(0, 0);
 
 				public boolean source2(IntObjPair<Integer> pair) {
-					boolean b = source.source2(pair0);
+					boolean b = source.source(pair0);
 					if (b) {
 						pair.t0 = pair0.t0;
 						pair.t1 = pair0.t1;
@@ -112,12 +112,12 @@ public class IntIntMap {
 		return v0;
 	}
 
-	private IntIntSource2 source_() {
+	private IntIntSource source_() {
 		int capacity = ks.length;
-		return new IntIntSource2() {
+		return new IntIntSource() {
 			private int index = 0;
 
-			public boolean source2(IntIntPair pair) {
+			public boolean source(IntIntPair pair) {
 				boolean b;
 				int v_ = Integer.MIN_VALUE;
 				while ((b = index < capacity) && (v_ = vs[index]) == Integer.MIN_VALUE)

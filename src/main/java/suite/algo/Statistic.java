@@ -4,7 +4,7 @@ import suite.adt.IntObjMap;
 import suite.adt.IntObjPair;
 import suite.math.Matrix;
 import suite.primitive.PrimitiveFun.Obj_Int;
-import suite.primitive.PrimitiveSource.IntObjSource2;
+import suite.primitive.PrimitiveSource.IntObjSource;
 
 public class Statistic {
 
@@ -64,7 +64,7 @@ public class Statistic {
 
 		return ins -> {
 			IntObjPair<int[]> pair = IntObjPair.of(0, null);
-			IntObjSource2<int[]> source2 = counts.source();
+			IntObjSource<int[]> source2 = counts.source();
 			int result = 0;
 			double maxp = Double.MIN_VALUE;
 

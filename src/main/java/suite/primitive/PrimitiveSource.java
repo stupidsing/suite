@@ -11,12 +11,12 @@ public class PrimitiveSource {
 	}
 
 	@FunctionalInterface
-	public interface IntIntSource2 {
-		public boolean source2(IntIntPair pair);
+	public interface IntIntSource {
+		public boolean source(IntIntPair pair);
 	}
 
 	@FunctionalInterface
-	public interface IntObjSource2<T> {
+	public interface IntObjSource<T> {
 		public boolean source2(IntObjPair<T> pair);
 	}
 

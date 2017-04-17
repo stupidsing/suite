@@ -3,10 +3,10 @@ package suite.adt;
 import java.util.Arrays;
 
 import suite.primitive.PrimitiveFun.Obj_Int;
-import suite.primitive.PrimitiveSink.IntObjSink2;
-import suite.primitive.PrimitiveSource.IntObjSource2;
-import suite.streamlet.IntObjOutlet2;
-import suite.streamlet.IntObjStreamlet2;
+import suite.primitive.PrimitiveSink.IntObjSink;
+import suite.primitive.PrimitiveSource.IntObjSource;
+import suite.streamlet.IntObjOutlet;
+import suite.streamlet.IntObjStreamlet;
 
 /**
  * Map with generic object key and integer object value. Integer.MIN_VALUE is
@@ -35,11 +35,11 @@ public class ObjIntMap<K> {
 		return v;
 	}
 
-	public void forEach(IntObjSink2<K> sink) {
+	public void forEach(IntObjSink<K> sink) {
 		IntObjPair<K> pair = IntObjPair.of(0, null);
-		IntObjSource2<K> source = source_();
+		IntObjSource<K> source = source_();
 		while (source.source2(pair))
-			sink.sink2(pair.t0, pair.t1);
+			sink.sink(pair.t0, pair.t1);
 	}
 
 	public int get(K key) {
@@ -59,14 +59,14 @@ public class ObjIntMap<K> {
 
 	}
 
-	public IntObjSource2<K> source() {
+	public IntObjSource<K> source() {
 		return source_();
 	}
 
-	public IntObjStreamlet2<K> stream() {
-		return new IntObjStreamlet2<>(() -> {
-			return IntObjOutlet2.of(new IntObjSource2<K>() {
-				private IntObjSource2<K> source = source_();
+	public IntObjStreamlet<K> stream() {
+		return new IntObjStreamlet<>(() -> {
+			return IntObjOutlet.of(new IntObjSource<K>() {
+				private IntObjSource<K> source = source_();
 				private IntObjPair<K> pair0 = IntObjPair.of(0, null);
 
 				public boolean source2(IntObjPair<K> pair) {
@@ -111,9 +111,9 @@ public class ObjIntMap<K> {
 		return v0;
 	}
 
-	private IntObjSource2<K> source_() {
+	private IntObjSource<K> source_() {
 		int capacity = ks.length;
-		return new IntObjSource2<K>() {
+		return new IntObjSource<K>() {
 			private int index = 0;
 
 			public boolean source2(IntObjPair<K> pair) {

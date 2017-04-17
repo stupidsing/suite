@@ -17,7 +17,7 @@ import java.util.Map;
 import suite.Constants;
 import suite.adt.Pair;
 import suite.primitive.Bytes;
-import suite.primitive.PrimitiveSource.IntObjSource2;
+import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
@@ -104,8 +104,8 @@ public class Read {
 		return new Streamlet2<>(() -> Outlet2.of(col));
 	}
 
-	public static <V> IntObjStreamlet2<V> from2(IntObjSource2<V> source) {
-		return IntObjStreamlet2.of(source);
+	public static <V> IntObjStreamlet<V> from2(IntObjSource<V> source) {
+		return IntObjStreamlet.of(source);
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Source2<K, V> source) {

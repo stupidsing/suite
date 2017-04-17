@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 
 import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitiveFun.IntObj_Obj;
-import suite.primitive.PrimitivePredicate.IntObjPredicate2;
+import suite.primitive.PrimitivePredicate.IntObjPredicate;
 import suite.util.FunUtil.Fun;
 
 public class Rethrow {
@@ -87,7 +87,7 @@ public class Rethrow {
 		};
 	}
 
-	public static <V> IntObjPredicate2<V> bipredicate(IntObjPredicate2<V> fun0) {
+	public static <V> IntObjPredicate<V> bipredicate(IntObjPredicate<V> fun0) {
 		return (k, v) -> {
 			try {
 				return fun0.test(k, v);

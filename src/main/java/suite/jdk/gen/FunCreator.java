@@ -38,7 +38,7 @@ import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
 import suite.os.LogUtil;
-import suite.primitive.PrimitiveSource.IntObjSource2;
+import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -193,7 +193,7 @@ public class FunCreator<I> extends FunFactory {
 
 			byte bytes[] = cg.getJavaClass().getBytes();
 			Object array[] = new Object[cp.getSize()];
-			IntObjSource2<Object> source = fgb.constants.source();
+			IntObjSource<Object> source = fgb.constants.source();
 			IntObjPair<Object> pair = IntObjPair.of(0, null);
 
 			while (source.source2(pair))
