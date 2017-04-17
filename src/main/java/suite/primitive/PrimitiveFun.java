@@ -2,10 +2,6 @@ package suite.primitive;
 
 import java.util.function.ToIntFunction;
 
-import suite.adt.IntIntPair;
-import suite.adt.IntObjPair;
-import suite.adt.ObjIntPair;
-
 public class PrimitiveFun {
 
 	@FunctionalInterface
@@ -45,41 +41,6 @@ public class PrimitiveFun {
 	@FunctionalInterface
 	public interface ObjInt_Obj<X, Y> {
 		public Y apply(X x, int i);
-	}
-
-	@FunctionalInterface
-	public interface Sink2_IntInt {
-		public void sink2(int i, int j);
-	}
-
-	@FunctionalInterface
-	public interface Sink2_IntObj<T> {
-		public void sink2(int i, T t);
-	}
-
-	@FunctionalInterface
-	public interface Sink2_ObjInt<T> {
-		public void sink2(T t, int i);
-	}
-
-	@FunctionalInterface
-	public interface Source_Int {
-		public int source();
-	}
-
-	@FunctionalInterface
-	public interface Source2_IntInt {
-		public boolean source2(IntIntPair pair);
-	}
-
-	@FunctionalInterface
-	public interface Source2_IntObj<T> {
-		public boolean source2(IntObjPair<T> pair);
-	}
-
-	@FunctionalInterface
-	public interface Source2_ObjInt<T> {
-		public boolean source2(ObjIntPair<T> pair);
 	}
 
 }

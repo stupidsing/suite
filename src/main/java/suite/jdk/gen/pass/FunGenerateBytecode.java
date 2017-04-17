@@ -41,7 +41,7 @@ import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
-import suite.primitive.PrimitiveFun.Source2_IntInt;
+import suite.primitive.PrimitiveSource.IntIntSource2;
 import suite.streamlet.Read;
 
 public class FunGenerateBytecode {
@@ -79,7 +79,7 @@ public class FunGenerateBytecode {
 					? il.append((BranchInstruction) instruction) //
 					: il.append(instruction));
 
-		Source2_IntInt source = jumps.source();
+		IntIntSource2 source = jumps.source();
 		IntIntPair entry = IntIntPair.of(0, 0);
 		while (source.source2(entry))
 			((BranchInstruction) ihs.get(entry.t0).getInstruction()).setTarget(ihs.get(entry.t1));

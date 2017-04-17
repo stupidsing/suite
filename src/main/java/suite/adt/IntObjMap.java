@@ -2,8 +2,8 @@ package suite.adt;
 
 import suite.primitive.PrimitiveFun.IntObj_Obj;
 import suite.primitive.PrimitiveFun.Int_Obj;
-import suite.primitive.PrimitiveFun.Sink2_IntObj;
-import suite.primitive.PrimitiveFun.Source2_IntObj;
+import suite.primitive.PrimitiveSink.IntObjSink2;
+import suite.primitive.PrimitiveSource.IntObjSource2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
@@ -34,9 +34,9 @@ public class IntObjMap<V> {
 		return v;
 	}
 
-	public void forEach(Sink2_IntObj<V> sink) {
+	public void forEach(IntObjSink2<V> sink) {
 		IntObjPair<V> pair = IntObjPair.of(0, null);
-		Source2_IntObj<V> source = source_();
+		IntObjSource2<V> source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -55,7 +55,7 @@ public class IntObjMap<V> {
 
 	public <T> Streamlet<T> map(IntObj_Obj<V, T> fun) {
 		IntObjPair<V> pair = IntObjPair.of(0, null);
-		Source2_IntObj<V> source = source_();
+		IntObjSource2<V> source = source_();
 		return Read.from(() -> source.source2(pair) ? fun.apply(pair.t0, pair.t1) : null);
 	}
 
@@ -64,7 +64,7 @@ public class IntObjMap<V> {
 
 	}
 
-	public Source2_IntObj<V> source() {
+	public IntObjSource2<V> source() {
 		return source_();
 	}
 
@@ -98,9 +98,9 @@ public class IntObjMap<V> {
 		return v0;
 	}
 
-	private Source2_IntObj<V> source_() {
+	private IntObjSource2<V> source_() {
 		int capacity = ks.length;
-		return new Source2_IntObj<V>() {
+		return new IntObjSource2<V>() {
 			private int index = 0;
 
 			public boolean source2(IntObjPair<V> pair) {

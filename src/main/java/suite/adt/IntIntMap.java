@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import suite.primitive.PrimitiveFun.IntInt_Obj;
 import suite.primitive.PrimitiveFun.Int_Int;
-import suite.primitive.PrimitiveFun.Sink2_IntInt;
-import suite.primitive.PrimitiveFun.Source2_IntInt;
+import suite.primitive.PrimitiveSink.IntIntSink2;
+import suite.primitive.PrimitiveSource.IntIntSource2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
@@ -36,9 +36,9 @@ public class IntIntMap {
 		return v;
 	}
 
-	public void forEach(Sink2_IntInt sink) {
+	public void forEach(IntIntSink2 sink) {
 		IntIntPair pair = IntIntPair.of(0, 0);
-		Source2_IntInt source = source_();
+		IntIntSource2 source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -57,7 +57,7 @@ public class IntIntMap {
 
 	public <T> Streamlet<T> map(IntInt_Obj<T> fun) {
 		IntIntPair pair = IntIntPair.of(0, 0);
-		Source2_IntInt source = source_();
+		IntIntSource2 source = source_();
 		return Read.from(() -> source.source2(pair) ? fun.apply(pair.t0, pair.t1) : null);
 	}
 
@@ -66,7 +66,7 @@ public class IntIntMap {
 
 	}
 
-	public Source2_IntInt source() {
+	public IntIntSource2 source() {
 		return source_();
 	}
 
@@ -100,9 +100,9 @@ public class IntIntMap {
 		return v0;
 	}
 
-	private Source2_IntInt source_() {
+	private IntIntSource2 source_() {
 		int capacity = ks.length;
-		return new Source2_IntInt() {
+		return new IntIntSource2() {
 			private int index = 0;
 
 			public boolean source2(IntIntPair pair) {
