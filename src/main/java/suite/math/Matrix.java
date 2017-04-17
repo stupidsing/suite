@@ -4,14 +4,6 @@ import java.util.Arrays;
 
 public class Matrix {
 
-	public static interface Ctor1 {
-		public float get(int i);
-	}
-
-	public static interface Ctor2 {
-		public float get(int i, int j);
-	}
-
 	public float[] add(float[] m, float[] n) {
 		return addOn(copy(m), n);
 	}
@@ -290,21 +282,6 @@ public class Matrix {
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
 				m[i][j] = -m[i][j];
-		return m;
-	}
-
-	public float[] of(int length, Ctor1 ctor) {
-		float[] m = new float[length];
-		for (int i = 0; i < length; i++)
-			m[i] = ctor.get(i);
-		return m;
-	}
-
-	public float[][] of(int height, int width, Ctor2 ctor) {
-		float[][] m = of(height, width);
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
-				m[i][j] = ctor.get(i, j);
 		return m;
 	}
 
