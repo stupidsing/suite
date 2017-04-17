@@ -1,5 +1,6 @@
 package suite.adt;
 
+import suite.primitive.PrimitiveFun.Int_T;
 import suite.util.FunUtil2.Source2;
 
 /**
@@ -20,6 +21,13 @@ public class IntObjMap<V> {
 
 	public IntObjMap(int capacity) {
 		allocate(capacity);
+	}
+
+	public V compileIfAbsent(int key, Int_T<V> fun) {
+		V v = get(key);
+		if (v == null)
+			put(key, v = fun.apply(key));
+		return v;
 	}
 
 	public V get(int key) {
