@@ -82,16 +82,16 @@ public class LongShortTermMemory {
 		private float[] activate_(float[] input, float[] expected) {
 			float[] memory0 = memory;
 			float[] output0 = output;
-			float[] io0 = new float[ll1];
+			float[] iv = new float[ll1];
 
-			Copy.primitiveArray(input, 0, io0, 0, inputLength);
-			Copy.primitiveArray(output0, 0, io0, inputLength, memoryLength);
-			io0[ll] = 1f;
+			Copy.primitiveArray(input, 0, iv, 0, inputLength);
+			Copy.primitiveArray(output0, 0, iv, inputLength, memoryLength);
+			iv[ll] = 1f;
 
-			float[] sig_fs = sigmoidOn(mtx.mul(wf, io0));
-			float[] sig_is = sigmoidOn(mtx.mul(wi, io0));
-			float[] tanh_ms = tanhOn(mtx.mul(wm, io0));
-			float[] sig_os = sigmoidOn(mtx.mul(wo, io0));
+			float[] sig_fs = sigmoidOn(mtx.mul(wf, iv));
+			float[] sig_is = sigmoidOn(mtx.mul(wi, iv));
+			float[] tanh_ms = tanhOn(mtx.mul(wm, iv));
+			float[] sig_os = sigmoidOn(mtx.mul(wo, iv));
 			float[] memory1 = copy(memory = mtx.addOn(forget(memory0, sig_fs), forget(tanh_ms, sig_is)));
 			float[] tanh_memory1 = tanhOn(memory1);
 			float[] output1 = output = forget(sig_os, tanh_memory1);
@@ -111,7 +111,7 @@ public class LongShortTermMemory {
 
 				for (int i = 0; i < memoryLength; i++)
 					for (int j = 0; j < ll1; j++) {
-						float d = learningRate * io0[j];
+						float d = learningRate * iv[j];
 						wo[i][j] += d * e_wo[i];
 						wm[i][j] += d * e_wm[i];
 						wi[i][j] += d * e_wi[i];
