@@ -8,13 +8,8 @@ public class PrimitiveSink {
 	}
 
 	@FunctionalInterface
-	public interface IntObjSink2<T> {
+	public interface IntObjSink2<T> { // extends ObjIntConsumer<T>
 		public void sink2(int i, T t);
-	}
-
-	@FunctionalInterface
-	public interface ObjIntSink2<T> {
-		public void sink2(T t, int i);
 	}
 
 }

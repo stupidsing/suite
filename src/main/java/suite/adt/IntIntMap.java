@@ -73,7 +73,7 @@ public class IntIntMap {
 		return source_();
 	}
 
-	public Streamlet2<Integer, Integer> of() {
+	public Streamlet2<Integer, Integer> stream() {
 		return new Streamlet2<>(() -> {
 			IntIntSource2 source = source_();
 			return Outlet2.of(new Source2<Integer, Integer>() {

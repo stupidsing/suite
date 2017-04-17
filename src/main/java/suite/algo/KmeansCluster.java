@@ -1,11 +1,10 @@
 package suite.algo;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import suite.adt.IntObjMap;
 import suite.math.Matrix;
 import suite.streamlet.Read;
 import suite.util.To;
@@ -64,14 +63,14 @@ public class KmeansCluster {
 				}) //
 				.toList();
 
-		Map<Integer, AtomicInteger> map = new HashMap<>();
+		IntObjMap<AtomicInteger> map = new IntObjMap<>();
 
 		Read.from(bins) //
 				.sort((b0, b1) -> Float.compare(b0.sqdist, b1.sqdist)) //
 				.take(points.size()) //
 				.forEach(bin -> map.computeIfAbsent(bin.category, c -> new AtomicInteger()).incrementAndGet());
 
-		return Read.from2(map).min((k, v) -> -v.t1.get()).t0;
+		return map.stream().min((k, v) -> -v.t1.get()).t0;
 	}
 
 	private int findNearest(float[] point, List<float[]> points) {

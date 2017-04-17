@@ -2,7 +2,6 @@ package suite.primitive;
 
 import suite.adt.IntIntPair;
 import suite.adt.IntObjPair;
-import suite.adt.ObjIntPair;
 
 public class PrimitiveSource {
 
@@ -19,11 +18,6 @@ public class PrimitiveSource {
 	@FunctionalInterface
 	public interface IntObjSource2<T> {
 		public boolean source2(IntObjPair<T> pair);
-	}
-
-	@FunctionalInterface
-	public interface ObjIntSource2<T> {
-		public boolean source2(ObjIntPair<T> pair);
 	}
 
 }

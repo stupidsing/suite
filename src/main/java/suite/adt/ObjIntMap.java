@@ -2,10 +2,10 @@ package suite.adt;
 
 import java.util.Arrays;
 
-import suite.primitive.PrimitiveFun.ObjInt_Obj;
+import suite.primitive.PrimitiveFun.IntObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Int;
-import suite.primitive.PrimitiveSink.ObjIntSink2;
-import suite.primitive.PrimitiveSource.ObjIntSource2;
+import suite.primitive.PrimitiveSink.IntObjSink2;
+import suite.primitive.PrimitiveSource.IntObjSource2;
 import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -39,9 +39,9 @@ public class ObjIntMap<K> {
 		return v;
 	}
 
-	public void forEach(ObjIntSink2<K> sink) {
-		ObjIntPair<K> pair = ObjIntPair.of(null, 0);
-		ObjIntSource2<K> source = source_();
+	public void forEach(IntObjSink2<K> sink) {
+		IntObjPair<K> pair = IntObjPair.of(0, null);
+		IntObjSource2<K> source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -58,9 +58,9 @@ public class ObjIntMap<K> {
 		return v_;
 	}
 
-	public <T> Streamlet<T> map(ObjInt_Obj<K, T> fun) {
-		ObjIntPair<K> pair = ObjIntPair.of(null, 0);
-		ObjIntSource2<K> source = source_();
+	public <T> Streamlet<T> map(IntObj_Obj<K, T> fun) {
+		IntObjPair<K> pair = IntObjPair.of(0, null);
+		IntObjSource2<K> source = source_();
 		return Read.from(() -> source.source2(pair) ? fun.apply(pair.t0, pair.t1) : null);
 	}
 
@@ -69,21 +69,21 @@ public class ObjIntMap<K> {
 
 	}
 
-	public ObjIntSource2<K> source() {
+	public IntObjSource2<K> source() {
 		return source_();
 	}
 
-	public Streamlet2<K, Integer> of() {
+	public Streamlet2<K, Integer> stream() {
 		return new Streamlet2<>(() -> {
-			ObjIntSource2<K> source = source();
+			IntObjSource2<K> source = source_();
 			return Outlet2.of(new Source2<K, Integer>() {
-				private ObjIntPair<K> pair0 = ObjIntPair.of(null, 0);
+				private IntObjPair<K> pair0 = IntObjPair.of(0, null);
 
 				public boolean source2(Pair<K, Integer> pair) {
 					boolean b = source.source2(pair0);
 					if (b) {
-						pair.t0 = pair0.t0;
-						pair.t1 = pair0.t1;
+						pair.t1 = pair0.t0;
+						pair.t0 = pair0.t1;
 					}
 					return b;
 				}
@@ -121,19 +121,19 @@ public class ObjIntMap<K> {
 		return v0;
 	}
 
-	private ObjIntSource2<K> source_() {
+	private IntObjSource2<K> source_() {
 		int capacity = ks.length;
-		return new ObjIntSource2<K>() {
+		return new IntObjSource2<K>() {
 			private int index = 0;
 
-			public boolean source2(ObjIntPair<K> pair) {
+			public boolean source2(IntObjPair<K> pair) {
 				boolean b;
 				int v_ = Integer.MIN_VALUE;
 				while ((b = index < capacity) && (v_ = vs[index]) == Integer.MIN_VALUE)
 					index++;
 				if (b) {
-					pair.t0 = cast(ks[index++]);
-					pair.t1 = v_;
+					pair.t1 = cast(ks[index++]);
+					pair.t0 = v_;
 				}
 				return b;
 			}
