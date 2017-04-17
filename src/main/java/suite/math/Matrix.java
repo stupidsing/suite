@@ -18,7 +18,7 @@ public class Matrix {
 			for (int i = 0; i < length; i++)
 				m[i] += n[i];
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong input sizes");
 		return m;
 	}
 
@@ -30,7 +30,7 @@ public class Matrix {
 				for (int j = 0; j < width; j++)
 					m[i][j] += n[i][j];
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong input sizes");
 		return m;
 	}
 
@@ -40,7 +40,7 @@ public class Matrix {
 			for (int i = 0; i < length; i++)
 				m[i] += n[i] * f;
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong input sizes");
 		return m;
 	}
 
@@ -64,7 +64,7 @@ public class Matrix {
 			for (int i = 0; i < length; i++)
 				sum += m[i] * n[i];
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong input sizes");
 		return sum;
 	}
 
@@ -157,7 +157,7 @@ public class Matrix {
 				}
 			}
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong input sizes");
 		return o;
 	}
 
@@ -178,7 +178,7 @@ public class Matrix {
 				}
 			}
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong input sizes");
 		return o;
 	}
 
@@ -203,7 +203,7 @@ public class Matrix {
 				}
 			}
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong input sizes");
 
 		return o;
 	}
@@ -240,7 +240,7 @@ public class Matrix {
 				}
 			}
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong input sizes");
 		return o;
 	}
 
@@ -267,7 +267,7 @@ public class Matrix {
 				}
 			}
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong input sizes");
 
 		return o;
 	}
@@ -366,7 +366,7 @@ public class Matrix {
 			for (int i = 0; i < length; i++)
 				m[i] -= n[i];
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong input sizes");
 		return m;
 	}
 
@@ -376,7 +376,7 @@ public class Matrix {
 			for (int i = 0; i < length; i++)
 				MathUtil.verifyEquals(m0[i], m1[i]);
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong input sizes");
 	}
 
 	public void verifyEquals(float[][] m0, float[][] m1) {
@@ -387,7 +387,7 @@ public class Matrix {
 				for (int j = 0; j < width; j++)
 					MathUtil.verifyEquals(m0[i][j], m1[i][j]);
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong input sizes");
 	}
 
 	private void swapRows(float[][] m, int row0, int row1) {

@@ -2,6 +2,26 @@ package suite.algo;
 
 public class Statistic {
 
+	public static float correlation(float[] xs, float[] ys) {
+		int length = xs.length;
+		double sumx = 0d, sumy = 0d;
+		double sumx2 = 0d, sumy2 = 0d;
+		double sumxy = 0d;
+		if (length == ys.length)
+			for (int i = 0; i < length; i++) {
+				double x = xs[i], y = ys[i];
+				sumx += x;
+				sumy += y;
+				sumx2 += x * x;
+				sumy2 += y * y;
+				sumxy += x * y;
+			}
+		else
+			throw new RuntimeException("Wrong input sizes");
+		return (float) ((length * sumxy - sumx * sumy)
+				/ Math.sqrt((length * sumx2 - sumx * sumx) * (length * sumy2 - sumy * sumy)));
+	}
+
 	public static float mean(float[] fs) {
 		double mean = mean_(fs);
 		return (float) mean;
