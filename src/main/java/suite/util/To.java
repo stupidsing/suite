@@ -26,6 +26,9 @@ import suite.Constants;
 import suite.adt.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
+import suite.primitive.PrimitiveFun.IntFloatFun;
+import suite.primitive.PrimitiveFun.IntIntFloatFun;
+import suite.primitive.PrimitiveFun.IntIntFun;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
@@ -33,16 +36,7 @@ import suite.util.FunUtil.Source;
 
 public class To {
 
-	public interface IntToFloatFunction {
-		public float apply(int i);
-	}
-
-	public interface IntToIntFunction {
-		public int apply(int i);
-	}
-
 	private static String hexDigits = "0123456789ABCDEF";
-
 	private static final Field field;
 
 	static {
@@ -81,11 +75,19 @@ public class To {
 		return Chars.of(charArray(s));
 	}
 
-	public static float[] floatArray(int length, IntToFloatFunction f) {
+	public static float[] floatArray(int length, IntFloatFun fun) {
 		float[] floats = new float[length];
 		for (int i = 0; i < length; i++)
-			floats[i] = f.apply(i);
+			floats[i] = fun.apply(i);
 		return floats;
+	}
+
+	public float[][] floatArray(int height, int width, IntIntFloatFun fun) {
+		float[][] m = new float[height][width];
+		for (int i = 0; i < height; i++)
+			for (int j = 0; j < width; j++)
+				m[i][j] = fun.apply(i, j);
+		return m;
 	}
 
 	public static String hex(int i) {
@@ -130,7 +132,7 @@ public class To {
 		};
 	}
 
-	public static int[] intArray(int length, IntToIntFunction f) {
+	public static int[] intArray(int length, IntIntFun f) {
 		int ints[] = new int[length];
 		for (int i = 0; i < length; i++)
 			ints[i] = f.apply(i);
