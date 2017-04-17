@@ -165,6 +165,10 @@ public class Hkex {
 			this.name = name;
 			this.marketCap = marketCap;
 		}
+
+		public String toString() {
+			return code + ".HK" + " " + name;
+		}
 	}
 
 	public static class CompanySearch {
