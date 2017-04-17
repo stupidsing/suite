@@ -22,6 +22,23 @@ public class Statistic {
 				/ Math.sqrt((length * sumx2 - sumx * sumx) * (length * sumy2 - sumy * sumy)));
 	}
 
+	public static float covariance(float[] xs, float[] ys) {
+		int length = xs.length;
+		double sumx = 0d, sumy = 0d;
+		double sumxy = 0d;
+		if (length == ys.length)
+			for (int i = 0; i < length; i++) {
+				double x = xs[i], y = ys[i];
+				sumx += x;
+				sumy += y;
+				sumxy += x * y;
+			}
+		else
+			throw new RuntimeException("Wrong input sizes");
+		double il = 1d / length;
+		return (float) ((sumxy - sumx * sumy * il) * il);
+	}
+
 	public static float mean(float[] fs) {
 		double mean = mean_(fs);
 		return (float) mean;
