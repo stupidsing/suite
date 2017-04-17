@@ -60,7 +60,7 @@ public class Statistic {
 		int jx = x[0].length; // number of features
 
 		for (int i = 0; i < ix; i++)
-			counts.compileIfAbsent(i, i_ -> new int[] { 0, })[0]++;
+			counts.computeIfAbsent(i, i_ -> new int[] { 0, })[0]++;
 
 		return ins -> {
 			IntObjPair<int[]> pair = IntObjPair.of(0, null);
