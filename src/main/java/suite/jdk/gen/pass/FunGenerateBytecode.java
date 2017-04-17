@@ -19,7 +19,6 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
 import suite.adt.IntIntMap;
-import suite.adt.IntIntPair;
 import suite.adt.IntObjMap;
 import suite.jdk.gen.FunExpression.AssignLocalFunExpr;
 import suite.jdk.gen.FunExpression.BinaryFunExpr;
@@ -41,7 +40,6 @@ import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
-import suite.primitive.PrimitiveSource.IntIntSource2;
 import suite.streamlet.Read;
 
 public class FunGenerateBytecode {
@@ -79,10 +77,7 @@ public class FunGenerateBytecode {
 					? il.append((BranchInstruction) instruction) //
 					: il.append(instruction));
 
-		IntIntSource2 source = jumps.source();
-		IntIntPair entry = IntIntPair.of(0, 0);
-		while (source.source2(entry))
-			((BranchInstruction) ihs.get(entry.t0).getInstruction()).setTarget(ihs.get(entry.t1));
+		jumps.forEach((src, tgt) -> ((BranchInstruction) ihs.get(src).getInstruction()).setTarget(ihs.get(tgt)));
 
 		return il;
 	}
