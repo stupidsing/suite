@@ -1,7 +1,11 @@
 package suite.adt;
 
+import suite.primitive.PrimitiveFun.IntObj_Obj;
 import suite.primitive.PrimitiveFun.Int_Obj;
+import suite.primitive.PrimitiveFun.Sink2_IntObj;
 import suite.primitive.PrimitiveFun.Source2_IntObj;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -30,16 +34,29 @@ public class IntObjMap<V> {
 		return v;
 	}
 
+	public void forEach(Sink2_IntObj<V> sink) {
+		IntObjPair<V> pair = IntObjPair.of(0, null);
+		Source2_IntObj<V> source = source_();
+		while (source.source2(pair))
+			sink.sink2(pair.t0, pair.t1);
+	}
+
 	public V get(int key) {
 		int mask = ks.length - 1;
 		int index = key & mask;
-		Object o;
-		while ((o = vs[index]) != null)
+		Object v_;
+		while ((v_ = vs[index]) != null)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
-		return cast(o);
+		return cast(v_);
+	}
+
+	public <T> Streamlet<T> map(IntObj_Obj<V, T> fun) {
+		IntObjPair<V> pair = IntObjPair.of(0, null);
+		Source2_IntObj<V> source = source_();
+		return Read.from(() -> source.source2(pair) ? fun.apply(pair.t0, pair.t1) : null);
 	}
 
 	public V put(int key, V v) {
@@ -48,25 +65,10 @@ public class IntObjMap<V> {
 	}
 
 	public Source2_IntObj<V> source() {
-		int capacity = ks.length;
-		return new Source2_IntObj<V>() {
-			private int index = 0;
-
-			public boolean source2(IntObjPair<V> pair) {
-				boolean b;
-				Object o = null;
-				while ((b = index < capacity) && (o = vs[index]) == null)
-					index++;
-				if (b) {
-					pair.t0 = ks[index++];
-					pair.t1 = cast(o);
-				}
-				return b;
-			}
-		};
+		return source_();
 	}
 
-	private Object put_(int key, Object v) {
+	private Object put_(int key, Object v1) {
 		int capacity = ks.length;
 		size++;
 
@@ -85,15 +87,34 @@ public class IntObjMap<V> {
 
 		int mask = capacity - 1;
 		int index = key & mask;
-		Object o;
-		while ((o = vs[index]) != null)
+		Object v0;
+		while ((v0 = vs[index]) != null)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
 		ks[index] = key;
-		vs[index] = v;
-		return o;
+		vs[index] = v1;
+		return v0;
+	}
+
+	private Source2_IntObj<V> source_() {
+		int capacity = ks.length;
+		return new Source2_IntObj<V>() {
+			private int index = 0;
+
+			public boolean source2(IntObjPair<V> pair) {
+				boolean b;
+				Object v_ = null;
+				while ((b = index < capacity) && (v_ = vs[index]) == null)
+					index++;
+				if (b) {
+					pair.t0 = ks[index++];
+					pair.t1 = cast(v_);
+				}
+				return b;
+			}
+		};
 	}
 
 	private void allocate(int capacity) {

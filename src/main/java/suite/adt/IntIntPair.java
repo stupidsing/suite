@@ -32,29 +32,29 @@ public class IntIntPair {
 	public static Comparator<IntIntPair> comparator() {
 		return (pair0, pair1) -> {
 			int c = 0;
-			c = c == 0 ? Util.compare(first_(pair0), first_(pair1)) : c;
-			c = c == 0 ? Util.compare(second(pair0), second(pair1)) : c;
+			c = c == 0 ? Integer.compare(first_(pair0), first_(pair1)) : c;
+			c = c == 0 ? Integer.compare(second(pair0), second(pair1)) : c;
 			return c;
 		};
 	}
 
 	public static Comparator<IntIntPair> comparatorByFirst() {
-		return (pair0, pair1) -> Util.compare(first_(pair0), first_(pair1));
+		return (pair0, pair1) -> Integer.compare(first_(pair0), first_(pair1));
 	}
 
 	public static int first_(IntIntPair pair) {
-		return pair != null ? pair.t0 : null;
+		return pair.t0;
 	}
 
 	public static int second(IntIntPair pair) {
-		return pair != null ? pair.t1 : null;
+		return pair.t1;
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == IntIntPair.class) {
 			IntIntPair other = (IntIntPair) object;
-			return Objects.equals(t0, other.t0) && Objects.equals(t1, other.t1);
+			return t0 == other.t0 && t1 == other.t1;
 		} else
 			return false;
 	}

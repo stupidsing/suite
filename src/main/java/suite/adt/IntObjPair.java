@@ -32,14 +32,14 @@ public class IntObjPair<T> {
 	public static <T extends Comparable<? super T>> Comparator<IntObjPair<T>> comparator() {
 		return (pair0, pair1) -> {
 			int c = 0;
-			c = c == 0 ? Util.compare(first_(pair0), first_(pair1)) : c;
+			c = c == 0 ? Integer.compare(first_(pair0), first_(pair1)) : c;
 			c = c == 0 ? Util.compare(second(pair0), second(pair1)) : c;
 			return c;
 		};
 	}
 
 	public static <T> Comparator<IntObjPair<T>> comparatorByFirst() {
-		return (pair0, pair1) -> Util.compare(first_(pair0), first_(pair1));
+		return (pair0, pair1) -> Integer.compare(first_(pair0), first_(pair1));
 	}
 
 	public static int first_(IntObjPair<?> pair) {
@@ -54,7 +54,7 @@ public class IntObjPair<T> {
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == IntObjPair.class) {
 			IntObjPair<?> other = (IntObjPair<?>) object;
-			return Objects.equals(t0, other.t0) && Objects.equals(t1, other.t1);
+			return t0 == other.t0 && Objects.equals(t1, other.t1);
 		} else
 			return false;
 	}

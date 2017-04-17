@@ -2,81 +2,81 @@ package suite.adt;
 
 import java.util.Arrays;
 
-import suite.primitive.PrimitiveFun.IntInt_Obj;
-import suite.primitive.PrimitiveFun.Int_Int;
-import suite.primitive.PrimitiveFun.Sink2_IntInt;
-import suite.primitive.PrimitiveFun.Source2_IntInt;
+import suite.primitive.PrimitiveFun.ObjInt_Obj;
+import suite.primitive.PrimitiveFun.Obj_Int;
+import suite.primitive.PrimitiveFun.Sink2_ObjInt;
+import suite.primitive.PrimitiveFun.Source2_ObjInt;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
 /**
- * Map with integer key and integer object value. Integer.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with generic object key and integer object value. Integer.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  * 
  * @author ywsing
  */
-public class IntIntMap {
+public class ObjIntMap<K> {
 
 	private int size;
-	private int ks[];
+	private Object ks[];
 	private int vs[];
 
-	public IntIntMap() {
+	public ObjIntMap() {
 		this(8);
 	}
 
-	public IntIntMap(int capacity) {
+	public ObjIntMap(int capacity) {
 		allocate(capacity);
 	}
 
-	public int compileIfAbsent(int key, Int_Int fun) {
+	public int compileIfAbsent(K key, Obj_Int<K> fun) {
 		int v = get(key);
 		if (v == Integer.MIN_VALUE)
-			put(key, v = fun.apply(key));
+			put(key, v = fun.applyAsInt(key));
 		return v;
 	}
 
-	public void forEach(Sink2_IntInt sink) {
-		IntIntPair pair = IntIntPair.of(0, 0);
-		Source2_IntInt source = source_();
+	public void forEach(Sink2_ObjInt<K> sink) {
+		ObjIntPair<K> pair = ObjIntPair.of(null, 0);
+		Source2_ObjInt<K> source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
 
-	public int get(int key) {
+	public int get(K key) {
 		int mask = ks.length - 1;
-		int index = key & mask;
+		int index = key.hashCode() & mask;
 		int v_;
 		while ((v_ = vs[index]) != Integer.MIN_VALUE)
-			if (ks[index] != key)
+			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
 				break;
 		return v_;
 	}
 
-	public <T> Streamlet<T> map(IntInt_Obj<T> fun) {
-		IntIntPair pair = IntIntPair.of(0, 0);
-		Source2_IntInt source = source_();
+	public <T> Streamlet<T> map(ObjInt_Obj<K, T> fun) {
+		ObjIntPair<K> pair = ObjIntPair.of(null, 0);
+		Source2_ObjInt<K> source = source_();
 		return Read.from(() -> source.source2(pair) ? fun.apply(pair.t0, pair.t1) : null);
 	}
 
-	public int put(int key, int v) {
+	public int put(K key, int v) {
 		return put_(key, v);
 
 	}
 
-	public Source2_IntInt source() {
+	public Source2_ObjInt<K> source() {
 		return source_();
 	}
 
-	private int put_(int key, int v1) {
+	private int put_(Object key, int v1) {
 		int capacity = ks.length;
 		size++;
 
 		if (capacity * 3 / 4 < size) {
 			int capacity1 = capacity * 2;
-			int ks0[] = ks;
+			Object ks0[] = ks;
 			int vs0[] = vs;
 			allocate(capacity1);
 
@@ -88,10 +88,10 @@ public class IntIntMap {
 		}
 
 		int mask = capacity - 1;
-		int index = key & mask;
+		int index = key.hashCode() & mask;
 		int v0;
 		while ((v0 = vs[index]) != Integer.MIN_VALUE)
-			if (ks[index] != key)
+			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
 				break;
@@ -100,18 +100,18 @@ public class IntIntMap {
 		return v0;
 	}
 
-	private Source2_IntInt source_() {
+	private Source2_ObjInt<K> source_() {
 		int capacity = ks.length;
-		return new Source2_IntInt() {
+		return new Source2_ObjInt<K>() {
 			private int index = 0;
 
-			public boolean source2(IntIntPair pair) {
+			public boolean source2(ObjIntPair<K> pair) {
 				boolean b;
 				int v_ = Integer.MIN_VALUE;
 				while ((b = index < capacity) && (v_ = vs[index]) == Integer.MIN_VALUE)
 					index++;
 				if (b) {
-					pair.t0 = ks[index++];
+					pair.t0 = cast(ks[index++]);
 					pair.t1 = v_;
 				}
 				return b;
@@ -120,9 +120,15 @@ public class IntIntMap {
 	}
 
 	private void allocate(int capacity) {
-		ks = new int[capacity];
+		ks = new Object[capacity];
 		vs = new int[capacity];
 		Arrays.fill(vs, Integer.MIN_VALUE);
+	}
+
+	private K cast(Object o) {
+		@SuppressWarnings("unchecked")
+		K k = (K) o;
+		return k;
 	}
 
 }
