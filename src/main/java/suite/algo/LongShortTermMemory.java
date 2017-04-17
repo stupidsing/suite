@@ -4,6 +4,7 @@ import java.util.Random;
 
 import suite.math.Matrix;
 import suite.math.Sigmoid;
+import suite.math.Tanh;
 import suite.util.Copy;
 
 public class LongShortTermMemory {
@@ -139,45 +140,29 @@ public class LongShortTermMemory {
 	private float[] sigmoidOn(float[] fs) {
 		int length = fs.length;
 		for (int i = 0; i < length; i++)
-			fs[i] = sigmoid(fs[i]);
+			fs[i] = Sigmoid.sigmoid(fs[i]);
 		return fs;
 	}
 
 	private float[] sigmoidGradientOn(float[] fs) {
 		int length = fs.length;
 		for (int i = 0; i < length; i++)
-			fs[i] = sigmoidGradient(fs[i]);
+			fs[i] = Sigmoid.sigmoidGradient(fs[i]);
 		return fs;
 	}
 
 	private float[] tanhOn(float[] fs) {
 		int length = fs.length;
 		for (int i = 0; i < length; i++)
-			fs[i] = (float) tanh(fs[i]);
+			fs[i] = Tanh.tanh(fs[i]);
 		return fs;
 	}
 
 	private float[] tanhGradientOn(float[] fs) {
 		int length = fs.length;
 		for (int i = 0; i < length; i++)
-			fs[i] = tanhGradient(fs[i]);
+			fs[i] = Tanh.tanhGradient(fs[i]);
 		return fs;
-	}
-
-	private float sigmoid(float f) {
-		return Sigmoid.sigmoid(f);
-	}
-
-	private float sigmoidGradient(float f) {
-		return Sigmoid.sigmoidGradient(f);
-	}
-
-	private float tanh(float f) {
-		return (float) Math.tanh(f);
-	}
-
-	private float tanhGradient(float f) {
-		return 1f - f * f;
 	}
 
 	private float[] copy(float[] m) {
