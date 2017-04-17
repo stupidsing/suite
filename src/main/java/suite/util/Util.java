@@ -356,11 +356,12 @@ public class Util {
 	}
 
 	public static void sleepQuietly(long time) {
-		try {
-			Thread.sleep(time);
-		} catch (InterruptedException ex) {
-			LogUtil.error(ex);
-		}
+		if (0 < time)
+			try {
+				Thread.sleep(time);
+			} catch (InterruptedException ex) {
+				LogUtil.error(ex);
+			}
 	}
 
 	public static <T extends Comparable<? super T>> List<T> sort(Collection<T> list) {
