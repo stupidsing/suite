@@ -38,7 +38,7 @@ public class PeriodTest {
 				float[] prices1 = Arrays.copyOf(prices0, size);
 				float[] fs = dct.dct(prices1);
 				int maxIndex = minPeriod;
-				float maxValue = fs[minPeriod];
+				float maxValue = Math.abs(fs[minPeriod]);
 
 				for (int i = minPeriod; i < size; i++) {
 					float f = Math.abs(fs[i]);
