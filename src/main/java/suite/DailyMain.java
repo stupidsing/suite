@@ -33,8 +33,7 @@ public class DailyMain extends ExecutableProgram {
 
 		for (Company company : new Hkex().companies) {
 			String stockCode = company.code + ".HK";
-			String stockName = company.name;
-			String prefix = stockCode + " " + stockName;
+			String prefix = company.toString();
 
 			try {
 				DataSource ds = DataSource.yahoo(stockCode, frDate, toDate);
@@ -48,8 +47,6 @@ public class DailyMain extends ExecutableProgram {
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage() + " in " + prefix);
 			}
-
-			Util.sleepQuietly(2000);
 		}
 
 		String result = Read.from(messages).collect(As.joined("\n"));
