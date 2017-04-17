@@ -56,21 +56,18 @@ public class TradeTest {
 	}
 
 	@Test
-	public void testBackTestHkex0004() {
-		backTest(hkex.getCompany("0004")); // Wharf (Holdings) Ltd., The
-	}
-
-	@Test
-	public void testBackTestHkex0005() {
-		backTest(hkex.getCompany("0005")); // HSBC Holdings Plc
+	public void testBackTestHkexDetails() {
+		backTest(hkex.getCompany("0066"));
 	}
 
 	private void backTest(Company company) {
 		String disp = company.code + " " + company.name;
 		backTest(company.code + ".HK", disp) //
 				.forEach((sn, backTest) -> {
-					LogUtil.info("strategy = " + sn);
-					LogUtil.info(backTest.log.toString());
+					String conclusion = backTest.concludeLog.toString();
+					LogUtil.info("BEGIN strategy = " + sn + conclusion);
+					LogUtil.info(backTest.tradeLog.toString());
+					LogUtil.info("END__ strategy = " + sn + conclusion);
 				});
 	}
 
@@ -91,10 +88,7 @@ public class TradeTest {
 
 	private BackTest backTest_(DataSource ds, String disp, Strategy strategy) {
 		BackTest backTest = BackTest.test(ds, strategy);
-		Account account = backTest.account;
-		LogUtil.info(disp //
-				+ ", number of transactions = " + account.nTransactions() //
-				+ ", net gain = " + String.format("%.2f", account.cash()));
+		LogUtil.info(disp + backTest.concludeLog);
 		return backTest;
 	}
 

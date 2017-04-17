@@ -5,7 +5,8 @@ import suite.trade.Strategy.GetBuySell;
 public class BackTest {
 
 	public final Account account = new Account();
-	public final StringBuilder log = new StringBuilder();
+	public final StringBuilder tradeLog = new StringBuilder();
+	public final StringBuilder concludeLog = new StringBuilder();
 
 	public static BackTest test(DataSource ds, Strategy strategy) {
 		return new BackTest(ds, strategy);
@@ -27,6 +28,10 @@ public class BackTest {
 
 		// sell all stocks at the end
 		buySell(ds, prices.length - 1, -account.nLots());
+
+		concludeLog.append("" //
+				+ ", number of transactions = " + account.nTransactions() //
+				+ ", net gain = " + String.format("%.2f", account.cash()));
 	}
 
 	private void buySell(DataSource ds, int day, int buySell) {
@@ -36,7 +41,7 @@ public class BackTest {
 		if (day == 0 || buySell != 0) {
 			float valuation = account.cash() + account.nLots() * price;
 
-			log.append("\n" //
+			tradeLog.append("\n" //
 					+ "date = " + ds.dates[day] //
 					+ ", buy/sell = " + buySell //
 					+ ", price = " + String.format("%.2f", price) //
