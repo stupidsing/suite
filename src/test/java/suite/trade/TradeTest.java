@@ -61,8 +61,7 @@ public class TradeTest {
 	}
 
 	private void backTest(Company company) {
-		String disp = company.code + " " + company.name;
-		backTest(company.code + ".HK", disp) //
+		backTest(company.code + ".HK", company.toString()) //
 				.forEach((sn, backTest) -> {
 					String conclusion = backTest.concludeLog.toString();
 					LogUtil.info("BEGIN strategy = " + sn + conclusion);
