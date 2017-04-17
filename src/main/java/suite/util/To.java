@@ -26,9 +26,9 @@ import suite.Constants;
 import suite.adt.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
-import suite.primitive.PrimitiveFun.IntFloatFun;
-import suite.primitive.PrimitiveFun.IntIntFloatFun;
-import suite.primitive.PrimitiveFun.IntIntFun;
+import suite.primitive.PrimitiveFun.IntInt_Float;
+import suite.primitive.PrimitiveFun.Int_Float;
+import suite.primitive.PrimitiveFun.Int_Int;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
@@ -75,14 +75,14 @@ public class To {
 		return Chars.of(charArray(s));
 	}
 
-	public static float[] floatArray(int length, IntFloatFun fun) {
+	public static float[] floatArray(int length, Int_Float fun) {
 		float[] floats = new float[length];
 		for (int i = 0; i < length; i++)
 			floats[i] = fun.apply(i);
 		return floats;
 	}
 
-	public float[][] floatArray(int height, int width, IntIntFloatFun fun) {
+	public float[][] floatArray(int height, int width, IntInt_Float fun) {
 		float[][] m = new float[height][width];
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
@@ -132,7 +132,7 @@ public class To {
 		};
 	}
 
-	public static int[] intArray(int length, IntIntFun f) {
+	public static int[] intArray(int length, Int_Int f) {
 		int ints[] = new int[length];
 		for (int i = 0; i < length; i++)
 			ints[i] = f.apply(i);

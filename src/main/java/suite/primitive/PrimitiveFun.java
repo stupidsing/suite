@@ -5,32 +5,32 @@ import java.util.function.ToIntFunction;
 public class PrimitiveFun {
 
 	@FunctionalInterface
-	public interface IntFloatFun {
+	public interface Int_Float {
 		public float apply(int i);
 	}
 
 	@FunctionalInterface
-	public interface IntIntFun {
+	public interface Int_Int {
 		public int apply(int i);
 	}
 
 	@FunctionalInterface
-	public interface IntIntFloatFun {
+	public interface IntInt_Float {
 		public float apply(int i, int j);
 	}
 
 	@FunctionalInterface
-	public interface IntObjFun<T> {
+	public interface Int_T<T> {
 		public T apply(int i);
 	}
 
 	@FunctionalInterface
-	public interface IntSource {
-		public int source();
+	public interface Obj_Int<T> extends ToIntFunction<T> {
 	}
 
 	@FunctionalInterface
-	public interface ObjIntFun<T> extends ToIntFunction<T> {
+	public interface Source_Int {
+		public int source();
 	}
 
 }
