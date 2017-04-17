@@ -8,7 +8,7 @@ import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.util.FunUtil.Fun;
+import suite.primitive.PrimitiveFun.Int_Obj;
 
 /**
  * Manage B-tree pages on disk.
@@ -70,11 +70,11 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 	}
 
 	private int findFreeExtentPages(int count) {
-		Fun<Integer, Byte> read = new Fun<Integer, Byte>() {
+		Int_Obj<Byte> read = new Int_Obj<Byte>() {
 			private int start, end;
 			private Bytes bytes;
 
-			public Byte apply(Integer pointer) {
+			public Byte apply(int pointer) {
 				if (bytes == null || pointer < start || end <= pointer) {
 					int p = pointer / pageSize;
 					start = p * pageSize;
@@ -126,14 +126,14 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 		}
 	}
 
-	private int checkEmptyExtent(Fun<Integer, Byte> read, int pos, int max) {
+	private int checkEmptyExtent(Int_Obj<Byte> read, int pos, int max) {
 		int end = Math.min(size, pos + max);
 		while (pos < end && read.apply(pos) == 0)
 			pos++;
 		return pos;
 	}
 
-	private int checkNextEmptyExtent(Fun<Integer, Byte> read, int pos) {
+	private int checkNextEmptyExtent(Int_Obj<Byte> read, int pos) {
 		while (pos < size && read.apply(pos) == 1)
 			pos++;
 		return pos;

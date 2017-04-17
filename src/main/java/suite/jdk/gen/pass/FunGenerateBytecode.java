@@ -2,9 +2,7 @@ package suite.jdk.gen.pass;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
@@ -20,6 +18,9 @@ import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import suite.adt.IntIntMap;
+import suite.adt.IntIntPair;
+import suite.adt.IntObjMap;
 import suite.jdk.gen.FunExpression.AssignLocalFunExpr;
 import suite.jdk.gen.FunExpression.BinaryFunExpr;
 import suite.jdk.gen.FunExpression.CastFunExpr;
@@ -40,6 +41,7 @@ import suite.jdk.gen.FunExpression.NewFunExpr;
 import suite.jdk.gen.FunExpression.PrintlnFunExpr;
 import suite.jdk.gen.FunExpression.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.SeqFunExpr;
+import suite.primitive.PrimitiveFun.Source2_IntInt;
 import suite.streamlet.Read;
 
 public class FunGenerateBytecode {
@@ -49,8 +51,8 @@ public class FunGenerateBytecode {
 	private ConstantPoolGen cpg;
 	private FunTypeInformation fti;
 
-	public final Map<Integer, Object> constants = new HashMap<>();
-	public final Map<Integer, Integer> jumps = new HashMap<>();
+	public final IntObjMap<Object> constants = new IntObjMap<>();
+	public final IntIntMap jumps = new IntIntMap();
 
 	private List<Instruction> list = new ArrayList<>();
 
@@ -77,8 +79,10 @@ public class FunGenerateBytecode {
 					? il.append((BranchInstruction) instruction) //
 					: il.append(instruction));
 
-		for (Entry<Integer, Integer> entry : jumps.entrySet())
-			((BranchInstruction) ihs.get(entry.getKey()).getInstruction()).setTarget(ihs.get(entry.getValue()));
+		Source2_IntInt source = jumps.source();
+		IntIntPair entry = IntIntPair.of(0, 0);
+		while (source.source2(entry))
+			((BranchInstruction) ihs.get(entry.t0).getInstruction()).setTarget(ihs.get(entry.t1));
 
 		return il;
 	}

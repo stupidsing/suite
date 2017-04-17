@@ -28,6 +28,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import suite.adt.IntObjPair;
 import suite.adt.Pair;
 import suite.jdk.UnsafeUtil;
 import suite.jdk.gen.FunExpression.FieldStaticFunExpr;
@@ -37,6 +38,7 @@ import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
 import suite.os.LogUtil;
+import suite.primitive.PrimitiveFun.Source2_IntObj;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -157,7 +159,7 @@ public class FunCreator<I> extends FunFactory {
 						String s = instruction.toString(false);
 						String p;
 						if (instruction instanceof BranchInstruction)
-							p = fgb.jumps.get(i).toString();
+							p = Integer.toString(fgb.jumps.get(i));
 						else if (instruction instanceof CPInstruction)
 							p = constantPool.constantToString(constantPool.getConstant(((CPInstruction) instruction).getIndex()));
 						else
@@ -191,9 +193,11 @@ public class FunCreator<I> extends FunFactory {
 
 			byte bytes[] = cg.getJavaClass().getBytes();
 			Object array[] = new Object[cp.getSize()];
+			Source2_IntObj<Object> source = fgb.constants.source();
+			IntObjPair<Object> pair = IntObjPair.of(0, null);
 
-			for (Entry<Integer, Object> e : fgb.constants.entrySet())
-				array[e.getKey()] = e.getValue();
+			while (source.source2(pair))
+				array[pair.t0] = pair.t1;
 
 			className = clsName;
 			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes, array);

@@ -2,6 +2,7 @@ package suite.primitive;
 
 import java.util.function.ToIntFunction;
 
+import suite.adt.IntIntPair;
 import suite.adt.IntObjPair;
 
 public class PrimitiveFun {
@@ -33,6 +34,11 @@ public class PrimitiveFun {
 	@FunctionalInterface
 	public interface Source_Int {
 		public int source();
+	}
+
+	@FunctionalInterface
+	public interface Source2_IntInt {
+		public boolean source2(IntIntPair pair);
 	}
 
 	@FunctionalInterface
