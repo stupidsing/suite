@@ -29,7 +29,7 @@ public class IntIntMap {
 		allocate(capacity);
 	}
 
-	public int compileIfAbsent(int key, Int_Int fun) {
+	public int computeIfAbsent(int key, Int_Int fun) {
 		int v = get(key);
 		if (v == Integer.MIN_VALUE)
 			put(key, v = fun.apply(key));

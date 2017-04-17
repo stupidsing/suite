@@ -29,7 +29,7 @@ public class ObjIntMap<K> {
 		allocate(capacity);
 	}
 
-	public int compileIfAbsent(K key, Obj_Int<K> fun) {
+	public int computeIfAbsent(K key, Obj_Int<K> fun) {
 		int v = get(key);
 		if (v == Integer.MIN_VALUE)
 			put(key, v = fun.applyAsInt(key));

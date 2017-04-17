@@ -27,7 +27,7 @@ public class IntObjMap<V> {
 		allocate(capacity);
 	}
 
-	public V compileIfAbsent(int key, Int_Obj<V> fun) {
+	public V computeIfAbsent(int key, Int_Obj<V> fun) {
 		V v = get(key);
 		if (v == null)
 			put(key, v = fun.apply(key));
