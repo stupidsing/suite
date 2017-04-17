@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.IdentityKey;
+import suite.adt.IntIntPair;
 import suite.adt.Pair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -33,7 +34,6 @@ import suite.node.io.Rewriter.NodeRead;
 import suite.node.io.Rewriter.ReadType;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.Util;
 
 /**
  * Converts a node into graph representation. The nodes link to other nodes via
@@ -44,40 +44,14 @@ public class Grapher {
 	private List<GN> gns = new ArrayList<>();
 	private int id;
 
-	private static class IntPair {
-		private int t0;
-		private int t1;
-
-		private static IntPair of(int t0, int t1) {
-			IntPair pair = new IntPair();
-			pair.t0 = t0;
-			pair.t1 = t1;
-			return pair;
-		}
-
-		@Override
-		public boolean equals(Object object) {
-			if (Util.clazz(object) == IntPair.class) {
-				IntPair other = (IntPair) object;
-				return t0 == other.t0 && t1 == other.t1;
-			} else
-				return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return t0 ^ t1;
-		}
-	}
-
 	private class GN extends NodeHead {
-		private List<IntPair> children;
+		private List<IntIntPair> children;
 
 		private GN(Node terminal) {
 			this(ReadType.TERM, terminal, null, Collections.emptyList());
 		}
 
-		private GN(ReadType type, Node terminal, Operator op, List<IntPair> children) {
+		private GN(ReadType type, Node terminal, Operator op, List<IntIntPair> children) {
 			super(type, terminal, op);
 			this.children = children;
 		}
@@ -101,8 +75,8 @@ public class Grapher {
 
 			NodeRead nr = NodeRead.of(node);
 
-			List<IntPair> children = Read.from(nr.children) //
-					.map(p -> IntPair.of(graph0(ids, p.t0), graph0(ids, p.t1))) //
+			List<IntIntPair> children = Read.from(nr.children) //
+					.map(p -> IntIntPair.of(graph0(ids, p.t0), graph0(ids, p.t1))) //
 					.toList();
 
 			gns.set(id, new GN(nr.type, nr.terminal, nr.op, children));
@@ -172,10 +146,10 @@ public class Grapher {
 		for (Entry<IdentityKey<Node>, Integer> e : mapn1.entrySet())
 			mapi1.put(e.getValue(), e.getKey());
 
-		Set<IntPair> set = new HashSet<>();
-		Deque<IntPair> deque = new ArrayDeque<>();
-		deque.add(IntPair.of(g0.id, g1.id));
-		IntPair pair;
+		Set<IntIntPair> set = new HashSet<>();
+		Deque<IntIntPair> deque = new ArrayDeque<>();
+		deque.add(IntIntPair.of(g0.id, g1.id));
+		IntIntPair pair;
 
 		while ((pair = deque.pollLast()) != null)
 			if (set.add(pair)) {
@@ -191,16 +165,16 @@ public class Grapher {
 						&& Binder.bind(gn1.terminal, mapi0.get(pair.t0).key, trail))
 					;
 				else if (gn0.type == gn1.type && Objects.equals(gn0.terminal, gn1.terminal) && gn0.op == gn1.op) {
-					List<IntPair> children0 = gn0.children;
-					List<IntPair> children1 = gn1.children;
+					List<IntIntPair> children0 = gn0.children;
+					List<IntIntPair> children1 = gn1.children;
 					int size0 = children0.size();
 					int size1 = children1.size();
 					if (size0 == size1)
 						for (int i = 0; i < size0; i++) {
-							IntPair p0 = children0.get(i);
-							IntPair p1 = children1.get(i);
-							deque.addLast(IntPair.of(p0.t0, p1.t0));
-							deque.addLast(IntPair.of(p0.t1, p1.t1));
+							IntIntPair p0 = children0.get(i);
+							IntIntPair p1 = children1.get(i);
+							deque.addLast(IntIntPair.of(p0.t0, p1.t0));
+							deque.addLast(IntIntPair.of(p0.t1, p1.t1));
 						}
 					else
 						return false;
@@ -261,7 +235,7 @@ public class Grapher {
 			ReadType type = ReadType.of(dis.readByte());
 			Node terminal;
 			Operator op;
-			List<IntPair> children = new ArrayList<>();
+			List<IntIntPair> children = new ArrayList<>();
 
 			if (type == ReadType.TERM) {
 				char ch = (char) dis.readByte();
@@ -287,8 +261,8 @@ public class Grapher {
 
 			if (type == ReadType.TREE) {
 				op = TermOp.find(dis.readUTF());
-				children.add(IntPair.of(0, dis.readInt() + index));
-				children.add(IntPair.of(0, dis.readInt() + index));
+				children.add(IntIntPair.of(0, dis.readInt() + index));
+				children.add(IntIntPair.of(0, dis.readInt() + index));
 			} else
 				op = null;
 
@@ -297,7 +271,7 @@ public class Grapher {
 				for (int i = 0; i < size1; i++) {
 					int i0 = type != ReadType.DICT ? 0 : dis.readInt() + index;
 					int i1 = dis.readInt() + index;
-					children.add(IntPair.of(i0, i1));
+					children.add(IntIntPair.of(i0, i1));
 				}
 			}
 
@@ -313,7 +287,7 @@ public class Grapher {
 		for (int index = 0; index < size; index++) {
 			GN gn = gns.get(index);
 			ReadType type = gn.type;
-			List<IntPair> children = gn.children;
+			List<IntIntPair> children = gn.children;
 
 			dos.writeByte(type.value);
 
@@ -344,7 +318,7 @@ public class Grapher {
 			if (type == ReadType.DICT || type == ReadType.TUPLE) {
 				dos.writeInt(children.size());
 
-				for (IntPair child : children) {
+				for (IntIntPair child : children) {
 					if (type == ReadType.DICT)
 						dos.writeInt(child.t0 - index);
 					dos.writeInt(child.t1 - index);
