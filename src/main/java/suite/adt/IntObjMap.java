@@ -34,8 +34,11 @@ public class IntObjMap<V> {
 		int mask = ks.length - 1;
 		int index = key & mask;
 		Object o;
-		while (ks[index] != key || (o = vs[index]) != null)
-			index = index + 1 & mask;
+		while ((o = vs[index]) != null)
+			if (ks[index] != key)
+				index = index + 1 & mask;
+			else
+				break;
 		return cast(o);
 	}
 
@@ -44,28 +47,19 @@ public class IntObjMap<V> {
 
 	}
 
-	public V remove(int key) {
-		int mask = ks.length - 1;
-		int index = key & mask;
-		Object o;
-		while (ks[index] != key || (o = vs[index]) != null)
-			index = index + 1 & mask;
-		ks[index] = key;
-		vs[index] = null;
-		return cast(o);
-	}
-
 	public Source2_IntObj<V> source() {
 		int capacity = ks.length;
 		return new Source2_IntObj<V>() {
 			private int index = 0;
 
 			public boolean source2(IntObjPair<V> pair) {
-				boolean b = index < capacity;
-				if (b) {
-					pair.t0 = ks[index];
-					pair.t1 = cast(vs[index]);
+				boolean b;
+				Object o = null;
+				while ((b = index < capacity) && (o = vs[index]) == null)
 					index++;
+				if (b) {
+					pair.t0 = ks[index++];
+					pair.t1 = cast(o);
 				}
 				return b;
 			}
@@ -92,8 +86,11 @@ public class IntObjMap<V> {
 		int mask = capacity - 1;
 		int index = key & mask;
 		Object o;
-		while (ks[index] != key || (o = vs[index]) != null)
-			index = index + 1 & mask;
+		while ((o = vs[index]) != null)
+			if (ks[index] != key)
+				index = index + 1 & mask;
+			else
+				break;
 		ks[index] = key;
 		vs[index] = v;
 		return o;
