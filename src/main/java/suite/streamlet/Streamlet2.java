@@ -138,8 +138,8 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return new Streamlet<>(() -> spawn().map(fun));
 	}
 
-	public <K1, V1> Streamlet2<K1, V1> mapEntry(BiFunction<K, V, K1> kf, BiFunction<K, V, V1> vf) {
-		return new Streamlet2<>(() -> spawn().mapEntry(kf, vf));
+	public <K1, V1> Streamlet2<K1, V1> map2(BiFunction<K, V, K1> kf, BiFunction<K, V, V1> vf) {
+		return new Streamlet2<>(() -> spawn().map2(kf, vf));
 	}
 
 	public <K1> Streamlet2<K1, V> mapKey(Fun<K, K1> fun) {

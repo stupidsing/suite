@@ -81,7 +81,7 @@ public class TradeTest {
 				.cons("movingAvgMeanReverting", sr.movingAvgMeanReverting(64, 8, .15f)) //
 				.cons("macdSignalLineX", sr.macdSignalLineX(.8f, .9f, .85f)) //
 				.cons("macdZeroLineX", sr.macdZeroLineX(.8f, .9f)) //
-				.mapEntry((sn, strategy) -> sn, (sn, strategy) -> backTest_(ds, disp + ", strategy = " + sn, strategy)) //
+				.map2((sn, strategy) -> sn, (sn, strategy) -> backTest_(ds, disp + ", strategy = " + sn, strategy)) //
 				.toMap();
 	}
 

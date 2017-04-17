@@ -258,7 +258,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return Outlet.of(IntObjFunUtil.map(fun0, source2));
 	}
 
-	public <K1, V1> Outlet2<K1, V1> mapEntry(IntObj_Obj<V, K1> kf, IntObj_Obj<V, V1> vf) {
+	public <K1, V1> Outlet2<K1, V1> map2(IntObj_Obj<V, K1> kf, IntObj_Obj<V, V1> vf) {
 		return Outlet2.of(FunUtil2.map2(kf, vf, source2));
 	}
 

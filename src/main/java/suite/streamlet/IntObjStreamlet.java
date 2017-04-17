@@ -143,8 +143,8 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return new Streamlet<>(() -> spawn().map(fun));
 	}
 
-	public <K1, V1> Streamlet2<K1, V1> mapEntry(IntObj_Obj<V, K1> kf, IntObj_Obj<V, V1> vf) {
-		return new Streamlet2<>(() -> spawn().mapEntry(kf, vf));
+	public <K1, V1> Streamlet2<K1, V1> map2(IntObj_Obj<V, K1> kf, IntObj_Obj<V, V1> vf) {
+		return new Streamlet2<>(() -> spawn().map2(kf, vf));
 	}
 
 	public <V1> IntObjStreamlet<V1> mapIntObj(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {

@@ -252,16 +252,16 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return Outlet.of(FunUtil2.map(fun0, source2));
 	}
 
-	public <K1, V1> Outlet2<K1, V1> mapEntry(BiFunction<K, V, K1> kf, BiFunction<K, V, V1> vf) {
+	public <K1, V1> Outlet2<K1, V1> map2(BiFunction<K, V, K1> kf, BiFunction<K, V, V1> vf) {
 		return of(FunUtil2.map2(kf, vf, source2));
 	}
 
 	public <K1> Outlet2<K1, V> mapKey(Fun<K, K1> fun) {
-		return mapEntry((k, v) -> fun.apply(k), (k, v) -> v);
+		return map2((k, v) -> fun.apply(k), (k, v) -> v);
 	}
 
 	public <V1> Outlet2<K, V1> mapValue(Fun<V, V1> fun) {
-		return mapEntry((k, v) -> k, (k, v) -> fun.apply(v));
+		return map2((k, v) -> k, (k, v) -> fun.apply(v));
 	}
 
 	public Pair<K, V> min(Comparator<Pair<K, V>> comparator) {
