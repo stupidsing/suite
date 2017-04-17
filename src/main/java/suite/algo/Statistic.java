@@ -55,28 +55,28 @@ public class Statistic {
 	}
 
 	public Obj_Int<int[]> naiveBayes(int[][] x, int[] y) {
-		IntObjMap<int[]> counts = new IntObjMap<>();
+		IntObjMap<int[]> xcounts = new IntObjMap<>();
+		IntObjMap<int[]> ycounts = new IntObjMap<>();
 		int ix = x.length; // number of samples
 		int jx = x[0].length; // number of features
 
-		for (int i = 0; i < ix; i++)
-			counts.computeIfAbsent(i, i_ -> new int[] { 0, })[0]++;
+		for (int i = 0; i < ix; i++) {
+			ycounts.computeIfAbsent(y[i], y_ -> new int[] { 0, })[0]++;
+			for (int j = 0; j < jx; j++)
+				xcounts.computeIfAbsent(x[i][j], x_ -> new int[] { 0, })[0]++;
+		}
 
 		return ins -> {
 			IntObjPair<int[]> pair = IntObjPair.of(0, null);
-			IntObjSource<int[]> source2 = counts.source();
+			IntObjSource<int[]> source2 = ycounts.source();
 			int result = 0;
 			double maxp = Double.MIN_VALUE;
 
 			while (source2.source2(pair)) {
 				double p = ((double) pair.t1[0]) / ix;
-				for (int j = 0; j < jx; j++) {
-					int count = 0;
-					for (int i = 0; i < ix; i++)
-						if (x[i][j] == ins[j])
-							count++;
-					p *= ((double) count) / jx;
-				}
+
+				for (int j = 0; j < jx; j++)
+					p *= xcounts.computeIfAbsent(ins[j], x_ -> new int[] { 0, })[0] / (double) jx;
 
 				if (maxp < p) {
 					result = pair.t0;
