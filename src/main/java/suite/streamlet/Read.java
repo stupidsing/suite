@@ -15,9 +15,6 @@ import java.util.Enumeration;
 import java.util.Map;
 
 import suite.Constants;
-import suite.adt.IntIntMap;
-import suite.adt.IntObjMap;
-import suite.adt.ObjIntMap;
 import suite.adt.Pair;
 import suite.primitive.Bytes;
 import suite.util.FunUtil;
@@ -87,18 +84,6 @@ public class Read {
 
 	public static <T> Streamlet<T> from(Source<T> source) {
 		return Streamlet.of(source);
-	}
-
-	public static Streamlet2<Integer, Integer> from2(IntIntMap map) {
-		return new Streamlet2<>(() -> Outlet2.of(map));
-	}
-
-	public static <K, V> Streamlet2<Integer, V> from2(IntObjMap<V> map) {
-		return new Streamlet2<>(() -> Outlet2.of(map));
-	}
-
-	public static <K> Streamlet2<K, Integer> from2(ObjIntMap<K> map) {
-		return new Streamlet2<>(() -> Outlet2.of(map));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Map<K, V> map) {

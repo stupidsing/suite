@@ -6,8 +6,11 @@ import suite.primitive.PrimitiveFun.ObjInt_Obj;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSink.ObjIntSink2;
 import suite.primitive.PrimitiveSource.ObjIntSource2;
+import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
+import suite.util.FunUtil2.Source2;
 
 /**
  * Map with generic object key and integer object value. Integer.MIN_VALUE is
@@ -68,6 +71,24 @@ public class ObjIntMap<K> {
 
 	public ObjIntSource2<K> source() {
 		return source_();
+	}
+
+	public Streamlet2<K, Integer> of() {
+		return new Streamlet2<>(() -> {
+			ObjIntSource2<K> source = source();
+			return Outlet2.of(new Source2<K, Integer>() {
+				private ObjIntPair<K> pair0 = ObjIntPair.of(null, 0);
+
+				public boolean source2(Pair<K, Integer> pair) {
+					boolean b = source.source2(pair0);
+					if (b) {
+						pair.t0 = pair0.t0;
+						pair.t1 = pair0.t1;
+					}
+					return b;
+				}
+			});
+		});
 	}
 
 	private int put_(Object key, int v1) {

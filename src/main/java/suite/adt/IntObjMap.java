@@ -4,8 +4,11 @@ import suite.primitive.PrimitiveFun.IntObj_Obj;
 import suite.primitive.PrimitiveFun.Int_Obj;
 import suite.primitive.PrimitiveSink.IntObjSink2;
 import suite.primitive.PrimitiveSource.IntObjSource2;
+import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
+import suite.util.FunUtil2.Source2;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -66,6 +69,24 @@ public class IntObjMap<V> {
 
 	public IntObjSource2<V> source() {
 		return source_();
+	}
+
+	public Streamlet2<Integer, V> stream() {
+		return new Streamlet2<>(() -> {
+			IntObjSource2<V> source = source_();
+			return Outlet2.of(new Source2<Integer, V>() {
+				private IntObjPair<V> pair0 = IntObjPair.of(0, null);
+
+				public boolean source2(Pair<Integer, V> pair) {
+					boolean b = source.source2(pair0);
+					if (b) {
+						pair.t0 = pair0.t0;
+						pair.t1 = pair0.t1;
+					}
+					return b;
+				}
+			});
+		});
 	}
 
 	private Object put_(int key, Object v1) {

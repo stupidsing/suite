@@ -17,18 +17,9 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import suite.adt.IntIntMap;
-import suite.adt.IntIntPair;
-import suite.adt.IntObjMap;
-import suite.adt.IntObjPair;
 import suite.adt.ListMultimap;
-import suite.adt.ObjIntMap;
-import suite.adt.ObjIntPair;
 import suite.adt.Pair;
 import suite.node.util.Mutable;
-import suite.primitive.PrimitiveSource.IntIntSource2;
-import suite.primitive.PrimitiveSource.IntObjSource2;
-import suite.primitive.PrimitiveSource.ObjIntSource2;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -64,51 +55,6 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 				pair.t1 = pair1.t1;
 			}
 			return b;
-		});
-	}
-
-	public static Outlet2<Integer, Integer> of(IntIntMap map) {
-		IntIntSource2 source = map.source();
-		return Outlet2.of(new Source2<Integer, Integer>() {
-			public boolean source2(Pair<Integer, Integer> pair) {
-				IntIntPair pair0 = IntIntPair.of(0, 0);
-				boolean b = source.source2(pair0);
-				if (b) {
-					pair.t0 = pair0.t0;
-					pair.t1 = pair0.t1;
-				}
-				return b;
-			}
-		});
-	}
-
-	public static <V> Outlet2<Integer, V> of(IntObjMap<V> map) {
-		IntObjSource2<V> source = map.source();
-		return Outlet2.of(new Source2<Integer, V>() {
-			public boolean source2(Pair<Integer, V> pair) {
-				IntObjPair<V> pair0 = IntObjPair.of(0, null);
-				boolean b = source.source2(pair0);
-				if (b) {
-					pair.t0 = pair0.t0;
-					pair.t1 = pair0.t1;
-				}
-				return b;
-			}
-		});
-	}
-
-	public static <K> Outlet2<K, Integer> of(ObjIntMap<K> map) {
-		ObjIntSource2<K> source = map.source();
-		return Outlet2.of(new Source2<K, Integer>() {
-			public boolean source2(Pair<K, Integer> pair) {
-				ObjIntPair<K> pair0 = ObjIntPair.of(null, 0);
-				boolean b = source.source2(pair0);
-				if (b) {
-					pair.t0 = pair0.t0;
-					pair.t1 = pair0.t1;
-				}
-				return b;
-			}
 		});
 	}
 

@@ -6,8 +6,11 @@ import suite.primitive.PrimitiveFun.IntInt_Obj;
 import suite.primitive.PrimitiveFun.Int_Int;
 import suite.primitive.PrimitiveSink.IntIntSink2;
 import suite.primitive.PrimitiveSource.IntIntSource2;
+import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
+import suite.util.FunUtil2.Source2;
 
 /**
  * Map with integer key and integer object value. Integer.MIN_VALUE is not
@@ -68,6 +71,24 @@ public class IntIntMap {
 
 	public IntIntSource2 source() {
 		return source_();
+	}
+
+	public Streamlet2<Integer, Integer> of() {
+		return new Streamlet2<>(() -> {
+			IntIntSource2 source = source_();
+			return Outlet2.of(new Source2<Integer, Integer>() {
+				private IntIntPair pair0 = IntIntPair.of(0, 0);
+
+				public boolean source2(Pair<Integer, Integer> pair) {
+					boolean b = source.source2(pair0);
+					if (b) {
+						pair.t0 = pair0.t0;
+						pair.t1 = pair0.t1;
+					}
+					return b;
+				}
+			});
+		});
 	}
 
 	private int put_(int key, int v1) {
