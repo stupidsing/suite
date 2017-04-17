@@ -461,7 +461,7 @@ public class Matrix {
 	}
 
 	private void dump(StringBuilder sb, float[] m) {
-		sb.append("[");
+		sb.append("[ ");
 		for (float f : m)
 			sb.append(String.format("%.3f", f) + " ");
 		sb.append("]");
