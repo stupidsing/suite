@@ -105,7 +105,7 @@ public class ObjIntMap<K> {
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
-				break;
+				throw new RuntimeException("Duplicate key");
 		ks[index] = key;
 		vs[index] = v1;
 		return v0;

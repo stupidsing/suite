@@ -106,7 +106,7 @@ public class IntIntMap {
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
-				break;
+				throw new RuntimeException("Duplicate key");
 		ks[index] = key;
 		vs[index] = v1;
 		return v0;
