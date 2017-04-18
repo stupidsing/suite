@@ -1,0 +1,105 @@
+package suite.algo;
+
+import java.util.Random;
+
+import suite.math.Matrix;
+import suite.math.Tanh;
+import suite.util.Copy;
+
+public class RecurrentNeuralNetwork {
+
+	private static Matrix mtx = new Matrix();
+
+	private float learningRate;
+	private int inputLength;
+	private int memoryLength;
+	private int ll;
+	private int ll1;
+
+	public RecurrentNeuralNetwork() {
+		this(1f, 8, 8);
+	}
+
+	public RecurrentNeuralNetwork(float learningRate, int inputLength, int memoryLength) {
+		this.learningRate = learningRate;
+		this.inputLength = inputLength;
+		this.memoryLength = memoryLength;
+		ll = inputLength + memoryLength;
+		ll1 = ll + 1;
+	}
+
+	public Unit unit() {
+		return new Unit();
+	}
+
+	public class Unit {
+		private float[] memory = new float[memoryLength];
+		private float[][] weights = new float[memoryLength][ll1];
+
+		public Unit() {
+			Random random = new Random();
+			double isll = 1f / Math.sqrt(ll);
+
+			for (int i = 0; i < memoryLength; i++) {
+				for (int j = 0; j < ll; j++) { // random weights, bias 0
+
+					// Xavier initialization
+					weights[i][j] = (float) (random.nextGaussian() * isll);
+				}
+			}
+		}
+
+		public float[] activateForward(float[] input) {
+			return activate_(input, null);
+		}
+
+		public void propagateBackward(float[] input, float[] expected) {
+			activate_(input, expected);
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("weights = " + mtx.toString(weights));
+			sb.append("memory = " + mtx.toString(memory) + "\n");
+			return sb.toString();
+		}
+
+		private float[] activate_(float[] input, float[] expected) {
+			float[] memory0 = memory;
+			float[] iv = new float[ll1];
+
+			Copy.primitiveArray(input, 0, iv, 0, inputLength);
+			Copy.primitiveArray(memory0, 0, iv, inputLength, memoryLength);
+			iv[ll] = 1f;
+
+			float[] memory1 = memory = Tanh.tanhOn(mtx.mul(weights, iv));
+
+			if (expected != null) {
+				float[] e_memory1 = mtx.sub(expected, memory1);
+				float[] e_weights = forgetOn(e_memory1, Tanh.tanhGradientOn(copy(memory1)));
+
+				for (int i = 0; i < memoryLength; i++)
+					for (int j = 0; j < ll1; j++)
+						weights[i][j] += learningRate * e_weights[i] * iv[j];
+			}
+
+			return memory1;
+		}
+	}
+
+	private float[] forgetOn(float[] m, float[] n) {
+		int length = m.length;
+		if (length == n.length)
+			for (int i = 0; i < length; i++)
+				m[i] *= n[i];
+		else
+			throw new RuntimeException("Wrong matrix sizes");
+		return m;
+	}
+
+	private float[] copy(float[] m) {
+		return mtx.of(m);
+	}
+
+}

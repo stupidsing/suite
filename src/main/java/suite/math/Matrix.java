@@ -371,21 +371,29 @@ public class Matrix {
 	}
 
 	public void verifyEquals(float[] m0, float[] m1) {
+		verifyEquals(m0, m1, MathUtil.epsilon);
+	}
+
+	public void verifyEquals(float[][] m0, float[][] m1) {
+		verifyEquals(m0, m1, MathUtil.epsilon);
+	}
+
+	public void verifyEquals(float[] m0, float[] m1, float epsilon) {
 		int length = m0.length;
 		if (length == m1.length)
 			for (int i = 0; i < length; i++)
-				MathUtil.verifyEquals(m0[i], m1[i]);
+				MathUtil.verifyEquals(m0[i], m1[i], epsilon);
 		else
 			throw new RuntimeException("Wrong input sizes");
 	}
 
-	public void verifyEquals(float[][] m0, float[][] m1) {
+	public void verifyEquals(float[][] m0, float[][] m1, float epsilon) {
 		int height = h(m0);
 		int width = w(m0);
 		if (height == h(m1) && width == w(m1))
 			for (int i = 0; i < height; i++)
 				for (int j = 0; j < width; j++)
-					MathUtil.verifyEquals(m0[i][j], m1[i][j]);
+					MathUtil.verifyEquals(m0[i][j], m1[i][j], epsilon);
 		else
 			throw new RuntimeException("Wrong input sizes");
 	}
