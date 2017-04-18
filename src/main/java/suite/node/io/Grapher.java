@@ -17,6 +17,7 @@ import java.util.Set;
 
 import suite.adt.IdentityKey;
 import suite.adt.IntIntPair;
+import suite.adt.IntObjMap;
 import suite.adt.Pair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -139,8 +140,8 @@ public class Grapher {
 		g0.id = g0.graph0(mapn0, n0);
 		g1.id = g1.graph0(mapn1, n1);
 
-		Map<Integer, IdentityKey<Node>> mapi0 = new HashMap<>();
-		Map<Integer, IdentityKey<Node>> mapi1 = new HashMap<>();
+		IntObjMap<IdentityKey<Node>> mapi0 = new IntObjMap<>();
+		IntObjMap<IdentityKey<Node>> mapi1 = new IntObjMap<>();
 		for (Entry<IdentityKey<Node>, Integer> e : mapn0.entrySet())
 			mapi0.put(e.getValue(), e.getKey());
 		for (Entry<IdentityKey<Node>, Integer> e : mapn1.entrySet())
