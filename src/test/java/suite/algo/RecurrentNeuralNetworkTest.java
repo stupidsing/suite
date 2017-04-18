@@ -18,12 +18,10 @@ public class RecurrentNeuralNetworkTest {
 		for (int i = 0; i < 16; i++) {
 			System.out.print(lstm);
 			lstm.propagateBackward(inputs, expected);
-			float[] outputs = lstm.activateForward(inputs);
-			System.out.println("actual = " + mtx.toString(outputs));
-			System.out.println();
 		}
 
 		float[] outputs = lstm.activateForward(inputs);
+		System.out.println("actual = " + mtx.toString(outputs));
 		System.out.println("expected = " + mtx.toString(expected));
 
 		mtx.verifyEquals(expected, outputs, .1f);
