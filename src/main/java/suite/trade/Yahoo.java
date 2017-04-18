@@ -63,7 +63,7 @@ public class Yahoo {
 	}
 
 	private String quoteUrl(Streamlet<String> stockCodes) {
-		return "https://finance.yahoo.com/d/quotes.csv" //
+		return "https://download.finance.yahoo.com/d/quotes.csv" //
 				+ "?s=" + stockCodes.collect(As.joined("+")) //
 				+ "&f=so";
 	}
