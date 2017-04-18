@@ -69,7 +69,6 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 				pair.t1 = pair1.getValue();
 			}
 			return b;
-
 		});
 	}
 
@@ -86,7 +85,6 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 					pair.t1 = kv.t1;
 				}
 				return b;
-
 			}
 		});
 	}
@@ -220,6 +218,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	public Outlet2<K, List<V>> groupBy() {
 		Map<K, List<V>> map = toListMap();
 		return Outlet.of(map.entrySet()).map2(Entry::getKey, Entry::getValue);
+	}
+
+	public <V1> Outlet2<K, V1> groupBy(Fun<Streamlet<V>, V1> fun) {
+		return groupBy().mapValue(list -> fun.apply(Read.from(list)));
 	}
 
 	@Override

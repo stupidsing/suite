@@ -118,6 +118,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return new Streamlet2<>(() -> spawn().groupBy());
 	}
 
+	public <V1> Streamlet2<K, V1> groupBy(Fun<Streamlet<V>, V1> fun) {
+		return new Streamlet2<>(() -> spawn().groupBy(fun));
+	}
+
 	@Override
 	public int hashCode() {
 		return spawn().hashCode();

@@ -174,11 +174,11 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Outlet2<K, List<T>> groupBy(Fun<T, K> keyFun) {
-		return groupBy(keyFun, value -> value);
+		return map2(keyFun, value -> value).groupBy();
 	}
 
-	public <K, V> Outlet2<K, List<V>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return map2(keyFun, valueFun).groupBy();
+	public <K, V1> Outlet2<K, V1> groupBy(Fun<T, K> keyFun, Fun<Streamlet<T>, V1> fun) {
+		return groupBy(keyFun).mapValue(list -> fun.apply(Read.from(list)));
 	}
 
 	@Override

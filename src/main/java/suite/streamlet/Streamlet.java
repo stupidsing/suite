@@ -117,8 +117,8 @@ public class Streamlet<T> implements Iterable<T> {
 		return new Streamlet2<>(() -> spawn().groupBy(keyFun));
 	}
 
-	public <K, V> Streamlet2<K, List<V>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return new Streamlet2<>(() -> spawn().groupBy(keyFun, valueFun));
+	public <K, V1> Streamlet2<K, V1> groupBy(Fun<T, K> keyFun, Fun<Streamlet<T>, V1> fun) {
+		return new Streamlet2<>(() -> spawn().groupBy(keyFun, fun));
 	}
 
 	@Override

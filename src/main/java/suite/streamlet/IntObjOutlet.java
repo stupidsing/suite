@@ -4,12 +4,9 @@ import java.io.Closeable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -17,6 +14,7 @@ import java.util.function.BiFunction;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
+import suite.adt.IntObjMap;
 import suite.adt.IntObjPair;
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
@@ -63,18 +61,8 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		});
 	}
 
-	public static <V> IntObjOutlet<V> of(Map<Integer, V> map) {
-		Iterator<Entry<Integer, V>> iter = map.entrySet().iterator();
-		return of(pair -> {
-			boolean b = iter.hasNext();
-			if (b) {
-				Entry<Integer, V> pair1 = iter.next();
-				pair.t0 = pair1.getKey();
-				pair.t1 = pair1.getValue();
-			}
-			return b;
-
-		});
+	public static <V> IntObjOutlet<V> of(IntObjMap<V> map) {
+		return of(map.source());
 	}
 
 	@SafeVarargs
@@ -221,9 +209,12 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return next(pair) ? pair : null;
 	}
 
-	public Outlet2<Integer, List<V>> groupBy() {
-		Map<Integer, List<V>> map = toListMap();
-		return Outlet.of(map.entrySet()).map2(Entry::getKey, Entry::getValue);
+	public IntObjOutlet<List<V>> groupBy() {
+		return of(toListMap().source());
+	}
+
+	public <V1> IntObjOutlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
+		return groupBy().mapValue(list -> fun.apply(Read.from(list)));
 	}
 
 	@Override
@@ -405,16 +396,16 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return list;
 	}
 
-	public Map<Integer, List<V>> toListMap() {
-		Map<Integer, List<V>> map = new HashMap<>();
+	public IntObjMap<List<V>> toListMap() {
+		IntObjMap<List<V>> map = new IntObjMap<>();
 		IntObjPair<V> pair = IntObjPair.of(0, null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
 	}
 
-	public Map<Integer, V> toMap() {
-		Map<Integer, V> map = new HashMap<>();
+	public IntObjMap<V> toMap() {
+		IntObjMap<V> map = new IntObjMap<>();
 		groupBy().mapValue(values -> Read.from(values).uniqueResult()).sink(map::put);
 		return map;
 	}
@@ -434,7 +425,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 
 	}
 
-	public Map<Integer, Set<V>> toSetMap() {
+	public IntObjMap<Set<V>> toSetMap() {
 		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 

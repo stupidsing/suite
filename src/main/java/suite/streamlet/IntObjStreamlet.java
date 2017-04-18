@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -13,6 +12,7 @@ import java.util.function.BiFunction;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
+import suite.adt.IntObjMap;
 import suite.adt.IntObjPair;
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
@@ -118,8 +118,12 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return spawn().first();
 	}
 
-	public Streamlet2<Integer, List<V>> groupBy() {
-		return new Streamlet2<>(() -> spawn().groupBy());
+	public IntObjStreamlet<List<V>> groupBy() {
+		return new IntObjStreamlet<>(() -> spawn().groupBy());
+	}
+
+	public <V1> IntObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
+		return new IntObjStreamlet<>(() -> spawn().groupBy(fun));
 	}
 
 	@Override
@@ -219,11 +223,11 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return spawn().toList();
 	}
 
-	public Map<Integer, List<V>> toListMap() {
+	public IntObjMap<List<V>> toListMap() {
 		return spawn().toListMap();
 	}
 
-	public Map<Integer, V> toMap() {
+	public IntObjMap<V> toMap() {
 		return spawn().toMap();
 	}
 
@@ -235,7 +239,7 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return spawn().toSet();
 	}
 
-	public Map<Integer, Set<V>> toSetMap() {
+	public IntObjMap<Set<V>> toSetMap() {
 		return spawn().toSetMap();
 	}
 
