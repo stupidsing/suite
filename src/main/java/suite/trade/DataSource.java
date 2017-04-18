@@ -1,68 +1,16 @@
 package suite.trade;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import suite.Constants;
-import suite.node.util.Singleton;
-import suite.primitive.Bytes;
-import suite.primitive.BytesUtil;
-import suite.streamlet.As;
-import suite.streamlet.Read;
-import suite.util.Util;
-
 public class DataSource {
 
 	public final String[] dates;
 	public final float[] prices;
 
-	public static DataSource yahoo(String stockCode) {
-		LocalDate frDate = LocalDate.of(1980, 1, 1);
-		LocalDate toDate = LocalDate.of(2020, 1, 1);
-		return yahoo(stockCode, frDate, toDate);
-	}
-
-	public static DataSource yahoo(String stockCode, LocalDate frDate, LocalDate toDate) {
-		String urlString = yahooUrl(stockCode, frDate, toDate);
-
-		// Date, Open, High, Low, Close, Volume, Adj Close
-		List<String[]> arrays = Singleton.get() //
-				.getStoreCache() //
-				.http(urlString) //
-				.collect(BytesUtil.split(Bytes.of((byte) 10))) //
-				.skip(1) //
-				.map(bytes -> new String(bytes.toBytes(), Constants.charset).split(",")) //
-				.sort((a0, a1) -> Util.compare(a0[0], a1[0])) //
-				.toList();
-
-		String[] dates = Read.from(arrays) //
-				.map(array -> array[0]) //
-				.toArray(String.class);
-
-		float[] prices = Read.from(arrays) //
-				.collect(As.arrayOfFloats(array -> Float.parseFloat(array[1])));
-
-		DataSource dataSource = new DataSource(dates, prices);
-		dataSource.cleanse();
-		dataSource.validate();
-
-		return dataSource;
-	}
-
-	public static String yahooUrl(String stockCode, LocalDate frDate, LocalDate toDate) {
-		return "http://chart.finance.yahoo.com/table.csv" //
-				+ "?s=" + stockCode //
-				+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
-				+ "&d=" + toDate.getMonthValue() + "&e=" + toDate.getDayOfMonth() + "&f=" + toDate.getYear() //
-				+ "&g=d&ignore=.csv";
-	}
-
-	private DataSource(String[] dates, float[] prices) {
+	public DataSource(String[] dates, float[] prices) {
 		this.dates = dates;
 		this.prices = prices;
 	}
 
-	private void cleanse() {
+	public void cleanse() {
 
 		// ignore price sparks caused by data source bugs
 		for (int i = 2; i < prices.length; i++) {
@@ -74,7 +22,7 @@ public class DataSource {
 		}
 	}
 
-	private void validate() {
+	public void validate() {
 		float price0 = prices[0];
 		float price1;
 		String date0 = null;
