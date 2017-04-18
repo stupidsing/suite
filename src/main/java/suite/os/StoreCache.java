@@ -16,13 +16,13 @@ import suite.primitive.Bytes;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
+import suite.util.HomeDir;
 import suite.util.Rethrow;
-import suite.util.TempDir;
 import suite.util.To;
 
 public class StoreCache {
 
-	private Path dir = TempDir.resolve("store-cache");
+	private Path dir = HomeDir.resolve("store-cache");
 
 	public Outlet<Bytes> http(String urlString) {
 		URL url = Rethrow.ex(() -> new URL(urlString));
