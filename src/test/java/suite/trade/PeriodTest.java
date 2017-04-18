@@ -25,7 +25,6 @@ public class PeriodTest {
 
 		for (Company stock : hkex.companies.take(40)) {
 			String stockCode = stock.code + ".HK";
-			String disp = stock.toString();
 
 			try {
 				DataSource ds = DataSource.yahoo(stockCode);
@@ -48,9 +47,9 @@ public class PeriodTest {
 					}
 				}
 
-				LogUtil.info(disp + " has period " + maxIndex);
+				LogUtil.info(stock + " has period " + maxIndex);
 			} catch (Exception ex) {
-				LogUtil.warn(ex.getMessage() + " in " + disp);
+				LogUtil.warn(ex.getMessage() + " in " + stock);
 			}
 		}
 	}
