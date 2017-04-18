@@ -22,8 +22,7 @@ public class TradeTest {
 		for (Company stock : hkex.companies) {
 			// String stockCode = "0066.HK"; // "JPY%3DX";
 			String stockCode = stock.code + ".HK";
-			String stockName = stock.name;
-			String disp = stockCode + " " + stockName;
+			String disp = stock.toString();
 			try {
 				backTest(stockCode, disp);
 			} catch (Exception ex) {
