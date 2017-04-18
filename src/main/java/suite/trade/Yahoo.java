@@ -2,8 +2,10 @@ package suite.trade;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
@@ -40,6 +42,8 @@ public class Yahoo {
 		float[] prices = Read.from(arrays) //
 				.collect(As.arrayOfFloats(array -> Float.parseFloat(array[1])));
 
+		adjust(stockCode, dates, prices);
+
 		DataSource dataSource = new DataSource(dates, prices);
 		dataSource.cleanse();
 		dataSource.validate();
@@ -74,6 +78,17 @@ public class Yahoo {
 				+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
 				+ "&d=" + toDate.getMonthValue() + "&e=" + toDate.getDayOfMonth() + "&f=" + toDate.getYear() //
 				+ "&g=d&ignore=.csv";
+	}
+
+	private void adjust(String stockCode, String[] dates, float[] prices) {
+		Map<String, BiFunction<String, Float, Float>> adjusters = new HashMap<>();
+		adjusters.put("0700.HK", (d, p) -> d.compareTo("2014-05-14") <= 0 ? p * .2f : p);
+		adjusters.put("2318.HK", (d, p) -> d.compareTo("2014-03-23") <= 0 ? p * .5f : p);
+
+		BiFunction<String, Float, Float> adjuster = adjusters.get(stockCode);
+		if (adjuster != null)
+			for (int d = 0; d < prices.length; d++)
+				prices[d] = adjuster.apply(dates[d], prices[d]);
 	}
 
 }
