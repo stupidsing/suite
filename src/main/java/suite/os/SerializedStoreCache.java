@@ -33,10 +33,10 @@ public class SerializedStoreCache<K, V> {
 	}
 
 	public V get(K key, Source<V> source) {
-		return Rethrow.ex(() -> {
-			Bytes keyBytes = serialize(keySerializer, key);
-			Bytes valueBytes = storeCache.get(keyBytes, () -> serialize(valueSerializer, source.source()));
+		Bytes keyBytes = serialize(keySerializer, key);
+		Bytes valueBytes = storeCache.get(keyBytes, () -> serialize(valueSerializer, source.source()));
 
+		return Rethrow.ex(() -> {
 			try (ByteArrayInputStream bais = new ByteArrayInputStream(valueBytes.toBytes());
 					DataInputStream dis = new DataInputStream(bais)) {
 				return valueSerializer.read(dis);

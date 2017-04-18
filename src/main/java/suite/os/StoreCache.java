@@ -30,7 +30,7 @@ public class StoreCache {
 	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {
-		Outlet<Bytes> outlet = getOutlet(key, () -> Outlet.of(source));
+		Outlet<Bytes> outlet = getOutlet(key, () -> Outlet.<Bytes> of(source.source()));
 		return outlet.collect(As::bytes);
 	}
 
@@ -91,16 +91,15 @@ public class StoreCache {
 			do_.writeInt(keySize);
 			do_.write(key.toBytes());
 
-			return Outlet.of(() -> Rethrow.ex(() -> {
-				Bytes value = outlet.next();
-				if (value != null)
-					value.write(do_);
-				else {
-					dos.close();
-					os.close();
-				}
-				return value;
-			}));
+			return Outlet //
+					.of(() -> Rethrow.ex(() -> {
+						Bytes value = outlet.next();
+						if (value != null)
+							value.write(do_);
+						return value;
+					})) //
+					.closeAtEnd(dos) //
+					.closeAtEnd(os);
 		});
 	}
 
