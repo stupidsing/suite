@@ -11,10 +11,12 @@ import java.util.function.BiFunction;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 
+import suite.Constants;
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.BytesUtil;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.util.FunUtil.Fun;
@@ -119,6 +121,12 @@ public class As {
 		return Read.from(list);
 	}
 
+	public static Streamlet<String[]> csv(Outlet<Bytes> outlet) {
+		return outlet.collect(BytesUtil.split(Bytes.of((byte) 10))) //
+				.map(As::csvLine) //
+				.collect(As::streamlet);
+	}
+
 	public static Fun<Outlet<String>, String> joined() {
 		return joined("");
 	}
@@ -220,6 +228,38 @@ public class As {
 				result += fun.applyAsInt(t);
 			return result;
 		};
+	}
+
+	private static String[] csvLine(Bytes bytes) {
+		return csvLine(new String(bytes.toBytes(), Constants.charset));
+	}
+
+	private static String[] csvLine(String line) {
+		List<String> list = new ArrayList<String>();
+		StringBuilder sb = new StringBuilder();
+		int length = line.length();
+		int p = 0;
+		if (0 < length) {
+			while (p < length) {
+				char ch = line.charAt(p++);
+				if (ch == '"')
+					while (p < length)
+						if ((ch = line.charAt(p++)) == '"' && p < length && line.charAt(p) == '"') {
+							sb.append(ch);
+							p++;
+						} else if (ch != '"')
+							sb.append(ch);
+						else
+							break;
+				else if (ch == ',') {
+					list.add(sb.toString());
+					sb.setLength(0);
+				} else
+					sb.append(ch);
+			}
+			list.add(sb.toString());
+		}
+		return list.toArray(new String[0]);
 	}
 
 }
