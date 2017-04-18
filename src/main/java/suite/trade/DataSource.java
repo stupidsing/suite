@@ -13,7 +13,7 @@ import suite.util.Util;
 
 public class DataSource {
 
-	public final String dates[];
+	public final String[] dates;
 	public final float[] prices;
 
 	public static DataSource yahoo(String stockCode) {
@@ -35,7 +35,7 @@ public class DataSource {
 				.sort((a0, a1) -> Util.compare(a0[0], a1[0])) //
 				.toList();
 
-		String dates[] = Read.from(arrays) //
+		String[] dates = Read.from(arrays) //
 				.map(array -> array[0]) //
 				.toArray(String.class);
 
@@ -57,7 +57,7 @@ public class DataSource {
 				+ "&g=d&ignore=.csv";
 	}
 
-	private DataSource(String dates[], float[] prices) {
+	private DataSource(String[] dates, float[] prices) {
 		this.dates = dates;
 		this.prices = prices;
 	}
