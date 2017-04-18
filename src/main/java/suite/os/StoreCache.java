@@ -25,14 +25,18 @@ public class StoreCache {
 	private static Path dir = TempDir.resolve("store-cache");
 
 	public Outlet<Bytes> http(String urlString) {
-		Bytes keyBytes = Bytes.of(urlString.getBytes(Constants.charset));
 		URL url = Rethrow.ex(() -> new URL(urlString));
-		return getOutlet(keyBytes, () -> HttpUtil.http("GET", url).out);
+		return getOutlet(urlString, () -> HttpUtil.http("GET", url).out);
 	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {
 		Outlet<Bytes> outlet = getOutlet(key, () -> Outlet.of(source));
 		return outlet.collect(As::bytes);
+	}
+
+	public Outlet<Bytes> getOutlet(String key, Source<Outlet<Bytes>> source) {
+		Bytes keyBytes = Bytes.of(key.getBytes(Constants.charset));
+		return getOutlet(keyBytes, source);
 	}
 
 	@SuppressWarnings("resource")
