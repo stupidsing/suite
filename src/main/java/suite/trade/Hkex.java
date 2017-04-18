@@ -167,7 +167,7 @@ public class Hkex {
 		}
 
 		public String toString() {
-			return code + ".HK" + " " + name;
+			return code + ".HK " + name;
 		}
 	}
 
