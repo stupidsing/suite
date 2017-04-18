@@ -40,13 +40,10 @@ public class RecurrentNeuralNetwork {
 			Random random = new Random();
 			double isll = 1f / Math.sqrt(ll);
 
-			for (int i = 0; i < memoryLength; i++) {
-				for (int j = 0; j < ll; j++) { // random weights, bias 0
-
-					// Xavier initialization
+			// random weights, bias 0; Xavier initialization
+			for (int i = 0; i < memoryLength; i++)
+				for (int j = 0; j < ll; j++)
 					weights[i][j] = (float) (random.nextGaussian() * isll);
-				}
-			}
 		}
 
 		public float[] activateForward(float[] input) {
