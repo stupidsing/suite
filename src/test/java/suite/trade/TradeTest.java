@@ -70,8 +70,9 @@ public class TradeTest {
 	}
 
 	private Map<String, BackTest> backTest(String code, String disp) {
+		Yahoo yahoo = new Yahoo();
 		Strategos sr = new Strategos();
-		DataSource ds = DataSource.yahoo(code, frDate, toDate);
+		DataSource ds = yahoo.dataSource(code, frDate, toDate);
 
 		return Read //
 				.<String, Strategy> empty2() //

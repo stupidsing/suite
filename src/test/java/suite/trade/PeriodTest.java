@@ -22,12 +22,13 @@ public class PeriodTest {
 	@Test
 	public void test() {
 		DiscreteCosineTransform dct = new DiscreteCosineTransform();
+		Yahoo yahoo = new Yahoo();
 
 		for (Company stock : hkex.companies.take(40)) {
 			String stockCode = stock.code + ".HK";
 
 			try {
-				DataSource ds = DataSource.yahoo(stockCode);
+				DataSource ds = yahoo.dataSource(stockCode);
 				float[] prices0 = ds.prices;
 				int size = 1, size1;
 
