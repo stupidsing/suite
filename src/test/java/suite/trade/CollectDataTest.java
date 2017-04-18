@@ -22,7 +22,7 @@ public class CollectDataTest {
 		LocalDate toDate = LocalDate.of(2020, 1, 1);
 
 		Streamlet<String> equities = Streamlet.concat( //
-				new Hkex().companies.map(company -> company.code + ".HK"), //
+				new Hkex().companies.map(company -> company.code), //
 				new Forex().invertedCurrencies.map((ccy, name) -> ccy));
 
 		for (String code : equities) {

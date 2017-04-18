@@ -39,9 +39,8 @@ public class DailyMain extends ExecutableProgram {
 				.of(Serialize.mapOfString(Serialize.boolean_)) //
 				.get("backTestByStockCode", () -> companies //
 						.map2(stock -> stock.code, stock -> {
-							String stockCode = stock.code + ".HK";
 							try {
-								DataSource ds = yahoo.dataSource(stockCode);
+								DataSource ds = yahoo.dataSource(stock.code);
 								BackTest backTest = BackTest.test(ds, strategy);
 								return 0f < backTest.account.cash();
 							} catch (Exception ex) {
@@ -56,9 +55,10 @@ public class DailyMain extends ExecutableProgram {
 		LocalDate toDate = today;
 		List<String> messages = new ArrayList<>();
 
-		for (Company company : companies)
-			if (backTestByStockCode.get(company.code)) {
-				String stockCode = company.code + ".HK";
+		for (Company company : companies) {
+			String stockCode = company.code;
+
+			if (backTestByStockCode.get(stockCode)) {
 				String prefix = company.toString();
 
 				try {
@@ -74,6 +74,7 @@ public class DailyMain extends ExecutableProgram {
 					LogUtil.warn(ex.getMessage() + " in " + prefix);
 				}
 			}
+		}
 
 		String result = Read.from(messages).collect(As.joined("\n"));
 

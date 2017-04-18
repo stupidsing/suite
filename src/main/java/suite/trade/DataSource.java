@@ -1,5 +1,11 @@
 package suite.trade;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import suite.os.LogUtil;
+import suite.util.Util;
+
 public class DataSource {
 
 	public final String[] dates;
@@ -43,6 +49,9 @@ public class DataSource {
 			date0 = date1;
 			price0 = price1;
 		}
+
+		if (!Util.stringEquals(date0, DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now())))
+			LogUtil.warn("outdated date range: " + date0);
 	}
 
 	private boolean isValid(float price0, float price1) {

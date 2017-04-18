@@ -21,10 +21,9 @@ public class TradeTest {
 	public void testBackTest() {
 		for (Company stock : hkex.companies) {
 			// String stockCode = "0066.HK"; // "JPY%3DX";
-			String stockCode = stock.code + ".HK";
 			String disp = stock.toString();
 			try {
-				backTest(stockCode, disp);
+				backTest(stock.code, disp);
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage() + " in " + disp);
 			}
@@ -39,28 +38,19 @@ public class TradeTest {
 	@Test
 	public void testBackTestHkex() {
 		for (String code : Arrays.asList( //
-				"0002", //
-				"0004", //
-				"0005", //
-				"0045", //
-				"0066", //
-				"0083", //
-				"0175", //
-				"0267", //
-				"0293", //
+				"0322", //
 				"1169", //
-				"1357", //
-				"2018"))
+				"1357"))
 			backTest(code + ".HK", code);
 	}
 
 	@Test
 	public void testBackTestHkexDetails() {
-		backTest(hkex.getCompany("0066"));
+		backTest(hkex.getCompany("0066.HK"));
 	}
 
 	private void backTest(Company company) {
-		backTest(company.code + ".HK", company.toString()) //
+		backTest(company.code, company.toString()) //
 				.forEach((sn, backTest) -> {
 					String conclusion = backTest.concludeLog.toString();
 					LogUtil.info("BEGIN strategy = " + sn + conclusion);

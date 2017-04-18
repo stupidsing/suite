@@ -150,7 +150,7 @@ public class Hkex {
 			.from(lines.split("\n")) //
 			.filter(line -> !line.isEmpty()) //
 			.map(line -> line.split("\\|")) //
-			.map(array -> new Company(array[0], array[1], Integer.parseInt(array[2]))) //
+			.map(array -> new Company(array[0] + ".HK", array[1], Integer.parseInt(array[2]))) //
 			.collect(As::streamlet);
 
 	private Map<String, Company> companyByCode = Read.from(companies).toMap(company -> company.code);
@@ -167,7 +167,7 @@ public class Hkex {
 		}
 
 		public String toString() {
-			return code + ".HK " + name;
+			return code + " " + name;
 		}
 	}
 

@@ -25,7 +25,7 @@ public class PeriodTest {
 		Yahoo yahoo = new Yahoo();
 
 		for (Company stock : hkex.companies.take(40)) {
-			String stockCode = stock.code + ".HK";
+			String stockCode = stock.code;
 
 			try {
 				DataSource ds = yahoo.dataSource(stockCode);
