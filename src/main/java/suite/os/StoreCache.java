@@ -22,7 +22,7 @@ import suite.util.To;
 
 public class StoreCache {
 
-	private static Path dir = TempDir.resolve("store-cache");
+	private Path dir = TempDir.resolve("store-cache");
 
 	public Outlet<Bytes> http(String urlString) {
 		URL url = Rethrow.ex(() -> new URL(urlString));

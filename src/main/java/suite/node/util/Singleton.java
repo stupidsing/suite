@@ -2,6 +2,7 @@ package suite.node.util;
 
 import suite.inspect.Inspect;
 import suite.inspect.Mapify;
+import suite.os.StoreCache;
 import suite.util.Nodify;
 
 public class Singleton {
@@ -12,6 +13,7 @@ public class Singleton {
 	private Inspect inspect = new Inspect();
 	private Mapify mapify = new Mapify(inspect);
 	private Nodify nodify = new Nodify(inspect);
+	private StoreCache storeCache = new StoreCache();
 
 	public static Singleton get() {
 		return instance;
@@ -34,6 +36,10 @@ public class Singleton {
 
 	public Nodify getNodify() {
 		return nodify;
+	}
+
+	public StoreCache getStoreCache() {
+		return storeCache;
 	}
 
 }

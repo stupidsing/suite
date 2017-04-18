@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import suite.Constants;
-import suite.os.StoreCache;
+import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.primitive.BytesUtil;
 import suite.streamlet.As;
@@ -26,7 +26,8 @@ public class DataSource {
 		String urlString = yahooUrl(stockCode, frDate, toDate);
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
-		List<String[]> arrays = new StoreCache() //
+		List<String[]> arrays = Singleton.get() //
+				.getStoreCache() //
 				.http(urlString) //
 				.collect(BytesUtil.split(Bytes.of((byte) 10))) //
 				.skip(1) //

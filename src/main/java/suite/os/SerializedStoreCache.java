@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
@@ -15,7 +16,7 @@ public class SerializedStoreCache<K, V> {
 
 	private Serializer<K> keySerializer;
 	private Serializer<V> valueSerializer;
-	private StoreCache storeCache = new StoreCache();
+	private StoreCache storeCache = Singleton.get().getStoreCache();
 
 	public SerializedStoreCache(Serializer<K> keySerializer, Serializer<V> valueSerializer) {
 		this.keySerializer = keySerializer;
