@@ -5,7 +5,10 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import suite.Constants;
 import suite.adt.Pair;
@@ -114,6 +117,33 @@ public class Serialize {
 					serializer.write(dataOutput, t);
 			}
 		};
+	}
+
+	public static <K, V> Serializer<Map<K, V>> map(Serializer<K> ks, Serializer<V> vs) {
+		return new Serializer<Map<K, V>>() {
+			public Map<K, V> read(DataInput dataInput) throws IOException {
+				int size = Serialize.int_.read(dataInput);
+				Map<K, V> map = new HashMap<>();
+				for (int i = 0; i < size; i++) {
+					K k = ks.read(dataInput);
+					V v = vs.read(dataInput);
+					map.put(k, v);
+				}
+				return map;
+			}
+
+			public void write(DataOutput dataOutput, Map<K, V> map) throws IOException {
+				Serialize.int_.write(dataOutput, map.size());
+				for (Entry<K, V> entry : map.entrySet()) {
+					ks.write(dataOutput, entry.getKey());
+					vs.write(dataOutput, entry.getValue());
+				}
+			}
+		};
+	}
+
+	public static <V> Serializer<Map<String, V>> mapOfString(Serializer<V> vs) {
+		return map(variableLengthString, vs);
 	}
 
 	/**
