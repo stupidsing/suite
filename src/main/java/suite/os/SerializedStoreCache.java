@@ -10,6 +10,7 @@ import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
+import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
 public class SerializedStoreCache<K, V> {
@@ -18,7 +19,15 @@ public class SerializedStoreCache<K, V> {
 	private Serializer<V> valueSerializer;
 	private StoreCache storeCache = Singleton.get().getStoreCache();
 
-	public SerializedStoreCache(Serializer<K> keySerializer, Serializer<V> valueSerializer) {
+	public static <V> SerializedStoreCache<String, V> of(Serializer<V> valueSerializer) {
+		return of(Serialize.variableLengthString, valueSerializer);
+	}
+
+	public static <K, V> SerializedStoreCache<K, V> of(Serializer<K> keySerializer, Serializer<V> valueSerializer) {
+		return new SerializedStoreCache<>(keySerializer, valueSerializer);
+	}
+
+	private SerializedStoreCache(Serializer<K> keySerializer, Serializer<V> valueSerializer) {
 		this.keySerializer = keySerializer;
 		this.valueSerializer = valueSerializer;
 	}
