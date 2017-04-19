@@ -3,6 +3,11 @@ package suite.primitive;
 public class PrimitiveSink {
 
 	@FunctionalInterface
+	public interface IntSink {
+		public void sink(int i);
+	}
+
+	@FunctionalInterface
 	public interface IntIntSink {
 		public void sink(int i, int j);
 	}

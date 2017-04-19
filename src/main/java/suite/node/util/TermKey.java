@@ -1,17 +1,17 @@
 package suite.node.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
+import suite.adt.IntObjMap;
 import suite.adt.IntObjPair;
 import suite.adt.Pair;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewriter.NodeHead;
 import suite.node.io.Rewriter.NodeRead;
+import suite.primitive.PrimitiveSink.IntSink;
 import suite.util.FunUtil.Sink;
 import suite.util.HashCodeComparable;
 import suite.util.Util;
@@ -29,11 +29,11 @@ public class TermKey extends HashCodeComparable<TermKey> {
 
 	public class TermVisitor {
 		private int nAliases = 0;
-		private Map<Integer, Integer> aliases = new HashMap<>();
-		private Sink<Integer> referenceSink;
+		private IntObjMap<Integer> aliases = new IntObjMap<>();
+		private IntSink referenceSink;
 		private Sink<NodeRead> nrSink;
 
-		public TermVisitor(Sink<Integer> referenceSink, Sink<NodeRead> nrSink) {
+		public TermVisitor(IntSink referenceSink, Sink<NodeRead> nrSink) {
 			this.referenceSink = referenceSink;
 			this.nrSink = nrSink;
 		}
