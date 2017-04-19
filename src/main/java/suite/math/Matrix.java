@@ -107,7 +107,7 @@ public class Matrix {
 		int size = h(m);
 
 		if (size != w(m))
-			throw new RuntimeException("Wrong matrix size");
+			throw new RuntimeException("Wrong input sizes");
 
 		float[][] n = identity(size);
 
@@ -215,7 +215,7 @@ public class Matrix {
 			float z1 = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z;
 			return new Vector(x1, y1, z1);
 		} else
-			throw new RuntimeException("Wrong matrix size");
+			throw new RuntimeException("Wrong input sizes");
 	}
 
 	// calculate m * nT
