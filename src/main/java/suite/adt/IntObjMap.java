@@ -53,7 +53,7 @@ public class IntObjMap<V> {
 	}
 
 	public V put(int key, V v) {
-		return cast(put_(key, v));
+		return cast(putResize(key, v));
 
 	}
 
@@ -79,7 +79,7 @@ public class IntObjMap<V> {
 		});
 	}
 
-	private Object put_(int key, Object v1) {
+	private Object putResize(int key, Object v1) {
 		int capacity = ks.length;
 		size++;
 
@@ -96,6 +96,11 @@ public class IntObjMap<V> {
 			}
 		}
 
+		return put_(key, v1);
+	}
+
+	private Object put_(int key, Object v1) {
+		int capacity = ks.length;
 		int mask = capacity - 1;
 		int index = key & mask;
 		Object v0;

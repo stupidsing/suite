@@ -56,7 +56,7 @@ public class IntIntMap {
 	}
 
 	public int put(int key, int v) {
-		return put_(key, v);
+		return putResize(key, v);
 
 	}
 
@@ -82,7 +82,7 @@ public class IntIntMap {
 		});
 	}
 
-	private int put_(int key, int v1) {
+	private int putResize(int key, int v1) {
 		int capacity = ks.length;
 		size++;
 
@@ -99,6 +99,11 @@ public class IntIntMap {
 			}
 		}
 
+		return put_(key, v1);
+	}
+
+	private int put_(int key, int v1) {
+		int capacity = ks.length;
 		int mask = capacity - 1;
 		int index = key & mask;
 		int v0;

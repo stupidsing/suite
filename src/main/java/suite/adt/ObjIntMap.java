@@ -55,7 +55,7 @@ public class ObjIntMap<K> {
 	}
 
 	public int put(K key, int v) {
-		return put_(key, v);
+		return putResize(key, v);
 
 	}
 
@@ -81,7 +81,7 @@ public class ObjIntMap<K> {
 		});
 	}
 
-	private int put_(Object key, int v1) {
+	private int putResize(Object key, int v1) {
 		int capacity = ks.length;
 		size++;
 
@@ -98,6 +98,11 @@ public class ObjIntMap<K> {
 			}
 		}
 
+		return put_(key, v1);
+	}
+
+	private int put_(Object key, int v1) {
+		int capacity = ks.length;
 		int mask = capacity - 1;
 		int index = key.hashCode() & mask;
 		int v0;
