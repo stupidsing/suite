@@ -313,7 +313,7 @@ public class Inspect {
 	 * @return the input value object recursively rewritten using the input
 	 *         function.
 	 */
-	public <T> T rewrite(Class<T> baseClass, Object cp[], Fun<T, T> fun, T t0) {
+	public <T> T rewrite(Class<T> baseClass, Fun<T, T> fun, T t0) {
 		return Rethrow.ex(() -> {
 			T t1 = fun.apply(t0);
 			T t3;
@@ -322,11 +322,11 @@ public class Inspect {
 			else {
 				Class<?> clazz = t0.getClass();
 				@SuppressWarnings("unchecked")
-				T t2 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance(cp);
+				T t2 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
 				t3 = t2;
 				for (Field field : fields(clazz)) {
 					Object v0 = field.get(t0);
-					Object v1 = rewriteValue(baseClass, cp, fun, v0);
+					Object v1 = rewriteValue(baseClass, fun, v0);
 					field.set(t3, v1);
 				}
 			}
@@ -334,14 +334,14 @@ public class Inspect {
 		});
 	}
 
-	private <T> Object rewriteValue(Class<T> baseClass, Object cp[], Fun<T, T> fun, Object t0) {
+	private <T> Object rewriteValue(Class<T> baseClass, Fun<T, T> fun, Object t0) {
 		if (baseClass.isInstance(t0)) {
 			@SuppressWarnings("unchecked")
-			T t1 = rewrite(baseClass, cp, fun, (T) t0);
+			T t1 = rewrite(baseClass, fun, (T) t0);
 			return t1;
 		} else if (Collection.class.isInstance(t0))
 			return Read.from((Collection<?>) t0) //
-					.map(e -> rewriteValue(baseClass, cp, fun, e)) //
+					.map(e -> rewriteValue(baseClass, fun, e)) //
 					.toList();
 		else
 			return t0;

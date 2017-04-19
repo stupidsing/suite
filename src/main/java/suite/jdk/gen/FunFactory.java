@@ -38,8 +38,6 @@ public class FunFactory {
 
 	private static Inspect inspect = Singleton.get().getInspect();
 
-	public static final FunExpression fe = new FunExpression();
-
 	public FunExpr _false() {
 		return int_(0);
 	}
@@ -49,7 +47,7 @@ public class FunFactory {
 	}
 
 	public FunExpr _null() {
-		ConstantFunExpr expr = fe.new ConstantFunExpr();
+		ConstantFunExpr expr = new ConstantFunExpr();
 		expr.type = Type.NULL;
 		expr.constant = null;
 		return expr;
@@ -71,7 +69,7 @@ public class FunFactory {
 	}
 
 	public FunExpr bi(String op, FunExpr e0, FunExpr e1) {
-		BinaryFunExpr expr = fe.new BinaryFunExpr();
+		BinaryFunExpr expr = new BinaryFunExpr();
 		expr.op = op;
 		expr.left = e0;
 		expr.right = e1;
@@ -79,16 +77,16 @@ public class FunFactory {
 	}
 
 	private FunExpr constant(Object constant, BasicType type) {
-		ConstantFunExpr expr = fe.new ConstantFunExpr();
+		ConstantFunExpr expr = new ConstantFunExpr();
 		expr.type = type;
 		expr.constant = constant;
 		return expr;
 	}
 
 	public FunExpr declare(FunExpr value, Fun<FunExpr, FunExpr> doFun) {
-		PlaceholderFunExpr var = fe.new PlaceholderFunExpr();
+		PlaceholderFunExpr var = new PlaceholderFunExpr();
 
-		DeclareLocalFunExpr expr = fe.new DeclareLocalFunExpr();
+		DeclareLocalFunExpr expr = new DeclareLocalFunExpr();
 		expr.var = var;
 		expr.value = value;
 		expr.do_ = doFun.apply(var);
@@ -96,7 +94,7 @@ public class FunFactory {
 	}
 
 	public FunExpr if_(FunExpr if_, FunExpr then_, FunExpr else_) {
-		If1FunExpr expr = fe.new If1FunExpr();
+		If1FunExpr expr = new If1FunExpr();
 		expr.if_ = if_;
 		expr.then = then_;
 		expr.else_ = else_;
@@ -104,7 +102,7 @@ public class FunFactory {
 	}
 
 	public FunExpr ifEquals(FunExpr left, FunExpr right, FunExpr then_, FunExpr else_) {
-		If2FunExpr expr = fe.new If2FunExpr();
+		If2FunExpr expr = new If2FunExpr();
 		expr.opcode = t -> !Objects.equals(t, Type.INT) ? Const.IF_ACMPNE : Const.IF_ICMPNE;
 		expr.left = left;
 		expr.right = right;
@@ -118,7 +116,7 @@ public class FunFactory {
 	}
 
 	public FunExpr ifNonNull(FunExpr object, FunExpr then_, FunExpr else_) {
-		IfNonNullFunExpr expr = fe.new IfNonNullFunExpr();
+		IfNonNullFunExpr expr = new IfNonNullFunExpr();
 		expr.object = object;
 		expr.then = then_;
 		expr.else_ = else_;
@@ -134,7 +132,7 @@ public class FunFactory {
 	}
 
 	public FunExpr inject(String field) {
-		FieldInjectFunExpr expr = fe.new FieldInjectFunExpr();
+		FieldInjectFunExpr expr = new FieldInjectFunExpr();
 		expr.fieldName = field;
 		return expr;
 	}
@@ -144,7 +142,7 @@ public class FunFactory {
 	}
 
 	public FunExpr invoke(LambdaInstance<?> lambda, FunExpr... parameters) {
-		InvokeLambdaFunExpr expr = fe.new InvokeLambdaFunExpr();
+		InvokeLambdaFunExpr expr = new InvokeLambdaFunExpr();
 		expr.isExpand = false;
 		expr.lambda = lambda;
 		expr.parameters = Arrays.asList(parameters);
@@ -152,7 +150,7 @@ public class FunFactory {
 	}
 
 	public FunExpr invokeStatic(Class<?> clazz, String methodName, FunExpr... parameters) {
-		InvokeMethodFunExpr expr = fe.new InvokeMethodFunExpr();
+		InvokeMethodFunExpr expr = new InvokeMethodFunExpr();
 		expr.clazz = clazz;
 		expr.methodName = methodName;
 		expr.object = null;
@@ -161,7 +159,7 @@ public class FunFactory {
 	}
 
 	public FunExpr local(int number) { // 0 means this
-		LocalFunExpr expr = fe.new LocalFunExpr();
+		LocalFunExpr expr = new LocalFunExpr();
 		expr.index = number;
 		return expr;
 	}
@@ -177,32 +175,32 @@ public class FunFactory {
 	}
 
 	public FunExpr object(Object object, Type type) {
-		ObjectFunExpr expr = fe.new ObjectFunExpr();
+		ObjectFunExpr expr = new ObjectFunExpr();
 		expr.type = type;
 		expr.object = object;
 		return expr;
 	}
 
 	public FunExpr parameter0(Source<FunExpr> doFun) {
-		Declare0ParameterFunExpr expr = fe.new Declare0ParameterFunExpr();
+		Declare0ParameterFunExpr expr = new Declare0ParameterFunExpr();
 		expr.do_ = doFun.source();
 		return expr;
 	}
 
 	public FunExpr parameter1(Fun<FunExpr, FunExpr> doFun) {
-		PlaceholderFunExpr parameter = fe.new PlaceholderFunExpr();
+		PlaceholderFunExpr parameter = new PlaceholderFunExpr();
 
-		Declare1ParameterFunExpr expr = fe.new Declare1ParameterFunExpr();
+		Declare1ParameterFunExpr expr = new Declare1ParameterFunExpr();
 		expr.parameter = parameter;
 		expr.do_ = doFun.apply(parameter);
 		return expr;
 	}
 
 	public FunExpr parameter2(BiFunction<FunExpr, FunExpr, FunExpr> doFun) {
-		PlaceholderFunExpr p0 = fe.new PlaceholderFunExpr();
-		PlaceholderFunExpr p1 = fe.new PlaceholderFunExpr();
+		PlaceholderFunExpr p0 = new PlaceholderFunExpr();
+		PlaceholderFunExpr p1 = new PlaceholderFunExpr();
 
-		Declare2ParameterFunExpr expr = fe.new Declare2ParameterFunExpr();
+		Declare2ParameterFunExpr expr = new Declare2ParameterFunExpr();
 		expr.p0 = p0;
 		expr.p1 = p1;
 		expr.do_ = doFun.apply(p0, p1);
@@ -210,7 +208,7 @@ public class FunFactory {
 	}
 
 	public FunExpr profile(FunExpr do_) {
-		ProfileFunExpr expr = fe.new ProfileFunExpr();
+		ProfileFunExpr expr = new ProfileFunExpr();
 		expr.do_ = do_;
 		return expr;
 	}
@@ -220,11 +218,11 @@ public class FunFactory {
 	}
 
 	public FunExpr rewrite(Fun<FunExpr, FunExpr> fun, FunExpr t0) {
-		return inspect.rewrite(FunExpr.class, new Object[] { fe, }, fun, t0);
+		return inspect.rewrite(FunExpr.class, fun, t0);
 	}
 
 	public FunExpr seq(FunExpr e0, FunExpr e1) {
-		SeqFunExpr expr = fe.new SeqFunExpr();
+		SeqFunExpr expr = new SeqFunExpr();
 		expr.left = e0;
 		expr.right = e1;
 		return expr;

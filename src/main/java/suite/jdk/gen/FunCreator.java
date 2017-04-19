@@ -234,7 +234,7 @@ public class FunCreator<I> extends FunFactory {
 		Type fieldType = object != null ? Type.getType(object.getClass()) : Type.OBJECT;
 		fieldStaticTypeValues.put(fieldName, Pair.of(fieldType, object));
 
-		FieldStaticFunExpr expr = fe.new FieldStaticFunExpr();
+		FieldStaticFunExpr expr = new FieldStaticFunExpr();
 		expr.fieldName = fieldName;
 		expr.fieldType = fieldType;
 		return expr;

@@ -124,7 +124,7 @@ public class FunRewrite extends FunFactory {
 				Streamlet2<String, FunExpr> fieldValues0 = Read.from2(cc.fieldTypeValues).mapValue(tv -> objectField(tv.t1, tv.t0));
 				Streamlet2<String, FunExpr> fieldValues1 = Read.from2(fieldValues);
 
-				NewFunExpr e4 = fe.new NewFunExpr();
+				NewFunExpr e4 = new NewFunExpr();
 				e4.className = cc.className;
 				e4.fieldValues = Streamlet2.concat(fieldValues0, fieldValues1).toMap();
 				e4.implementationClass = cc.clazz;
@@ -140,7 +140,7 @@ public class FunRewrite extends FunFactory {
 			int index = localTypes.size();
 			localTypes.add(type);
 
-			AssignLocalFunExpr afe = fe.new AssignLocalFunExpr();
+			AssignLocalFunExpr afe = new AssignLocalFunExpr();
 			afe.index = index;
 			afe.value = value;
 
