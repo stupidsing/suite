@@ -20,7 +20,6 @@ public class TradeTest {
 	@Test
 	public void testBackTest() {
 		for (Company stock : hkex.companies) {
-			// String stockCode = "0066.HK"; // "JPY%3DX";
 			String disp = stock.toString();
 			try {
 				backTest(stock.code, disp);
