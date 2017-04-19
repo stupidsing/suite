@@ -2,6 +2,7 @@ package suite.algo;
 
 import java.util.Random;
 
+import suite.math.Forget;
 import suite.math.Matrix;
 import suite.math.Sigmoid;
 import suite.math.Tanh;
@@ -92,22 +93,22 @@ public class LongShortTermMemory {
 			float[] sig_is = Sigmoid.sigmoidOn(mtx.mul(wi, iv));
 			float[] tanh_ms = Tanh.tanhOn(mtx.mul(wm, iv));
 			float[] sig_os = Sigmoid.sigmoidOn(mtx.mul(wo, iv));
-			float[] memory1 = copy(memory = mtx.addOn(forget(memory0, sig_fs), forget(tanh_ms, sig_is)));
+			float[] memory1 = copy(memory = mtx.addOn(Forget.forget(memory0, sig_fs), Forget.forget(tanh_ms, sig_is)));
 			float[] tanh_memory1 = Tanh.tanhOn(memory1);
-			float[] output1 = output = forget(sig_os, tanh_memory1);
+			float[] output1 = output = Forget.forget(sig_os, tanh_memory1);
 
 			if (expected != null) {
 				float[] e_output1 = mtx.sub(expected, output1);
-				float[] e_tanh_memory1 = forgetOn(sig_os, e_output1);
-				float[] e_memory1 = forgetOn(e_tanh_memory1, Tanh.tanhGradientOn(copy(tanh_memory1)));
-				float[] e_sig_os = forget(e_output1, tanh_memory1);
-				float[] e_tanh_ms = forget(e_memory1, sig_is);
-				float[] e_sig_is = forget(e_memory1, tanh_ms);
-				float[] e_sig_fs = forget(e_memory1, memory0);
-				float[] e_wo = forgetOn(e_sig_os, Sigmoid.sigmoidGradientOn(sig_os));
-				float[] e_wm = forgetOn(e_tanh_ms, Tanh.tanhGradientOn(tanh_ms));
-				float[] e_wi = forgetOn(e_sig_is, Sigmoid.sigmoidGradientOn(sig_is));
-				float[] e_wf = forgetOn(e_sig_fs, Sigmoid.sigmoidGradientOn(sig_fs));
+				float[] e_tanh_memory1 = Forget.forgetOn(sig_os, e_output1);
+				float[] e_memory1 = Forget.forgetOn(e_tanh_memory1, Tanh.tanhGradientOn(copy(tanh_memory1)));
+				float[] e_sig_os = Forget.forget(e_output1, tanh_memory1);
+				float[] e_tanh_ms = Forget.forget(e_memory1, sig_is);
+				float[] e_sig_is = Forget.forget(e_memory1, tanh_ms);
+				float[] e_sig_fs = Forget.forget(e_memory1, memory0);
+				float[] e_wo = Forget.forgetOn(e_sig_os, Sigmoid.sigmoidGradientOn(sig_os));
+				float[] e_wm = Forget.forgetOn(e_tanh_ms, Tanh.tanhGradientOn(tanh_ms));
+				float[] e_wi = Forget.forgetOn(e_sig_is, Sigmoid.sigmoidGradientOn(sig_is));
+				float[] e_wf = Forget.forgetOn(e_sig_fs, Sigmoid.sigmoidGradientOn(sig_fs));
 
 				for (int i = 0; i < memoryLength; i++)
 					for (int j = 0; j < ll1; j++) {
@@ -121,20 +122,6 @@ public class LongShortTermMemory {
 
 			return output1;
 		}
-	}
-
-	private float[] forget(float[] fs, float[] n) {
-		return forgetOn(copy(fs), n);
-	}
-
-	private float[] forgetOn(float[] m, float[] n) {
-		int length = m.length;
-		if (length == n.length)
-			for (int i = 0; i < length; i++)
-				m[i] *= n[i];
-		else
-			throw new RuntimeException("Wrong matrix sizes");
-		return m;
 	}
 
 	private float[] copy(float[] m) {
