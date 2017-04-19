@@ -57,7 +57,7 @@ public class Yahoo {
 	 * @return quotes of many stock at once.
 	 */
 	public Map<String, Float> quote(Streamlet<String> stockCodes) {
-		String urlString = quoteUrl(stockCodes);
+		String urlString = quoteUrl(stockCodes, "l1"); // last price
 
 		URL url = Rethrow.ex(() -> new URL(urlString));
 
@@ -66,10 +66,20 @@ public class Yahoo {
 				.toMap(array -> array[0], array -> Float.parseFloat(array[1]));
 	}
 
-	private String quoteUrl(Streamlet<String> stockCodes) {
+	public Map<String, Float> quoteOpenPrice(Streamlet<String> stockCodes) {
+		String urlString = quoteUrl(stockCodes, "o");
+
+		URL url = Rethrow.ex(() -> new URL(urlString));
+
+		return HttpUtil.http("GET", url).out //
+				.collect(As::csv) //
+				.toMap(array -> array[0], array -> Float.parseFloat(array[1]));
+	}
+
+	private String quoteUrl(Streamlet<String> stockCodes, String field) {
 		return "https://download.finance.yahoo.com/d/quotes.csv" //
 				+ "?s=" + stockCodes.collect(As.joined("+")) //
-				+ "&f=so";
+				+ "&f=s" + field;
 	}
 
 	public String tableUrl(String stockCode, LocalDate frDate, LocalDate toDate) {
