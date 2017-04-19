@@ -23,7 +23,7 @@ public class Rethrow {
 			try {
 				return fun0.test(k, v);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
+				throw new RuntimeException("For key " + k, ex);
 			}
 		};
 	}
@@ -44,7 +44,7 @@ public class Rethrow {
 			try {
 				return fun.apply(i);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + i, ex);
+				throw new RuntimeException("For " + i, ex);
 			}
 		};
 	}
@@ -54,7 +54,7 @@ public class Rethrow {
 			try {
 				return fun.apply(k, v);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
+				throw new RuntimeException("For key " + k, ex);
 			}
 		};
 	}
@@ -64,7 +64,7 @@ public class Rethrow {
 			try {
 				return fun.apply(k, v);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
+				throw new RuntimeException("For key " + k, ex);
 			}
 		};
 	}
@@ -74,7 +74,7 @@ public class Rethrow {
 			try {
 				return fun.apply(k, v);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
+				throw new RuntimeException("For key " + k, ex);
 			}
 		};
 	}
@@ -84,7 +84,7 @@ public class Rethrow {
 			try {
 				return fun.applyAsInt(t);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + t, ex);
+				throw new RuntimeException("For " + t, ex);
 			}
 		};
 	}
@@ -94,7 +94,7 @@ public class Rethrow {
 			try {
 				return fun.apply(k, v);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
+				throw new RuntimeException("For key " + k, ex);
 			}
 		};
 	}
@@ -104,7 +104,7 @@ public class Rethrow {
 			try {
 				return predicate.test(t);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + t, ex);
+				throw new RuntimeException("For " + t, ex);
 			}
 		};
 	}
@@ -114,7 +114,7 @@ public class Rethrow {
 			try {
 				return fun0.test(k, v);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
+				throw new RuntimeException("For key " + k, ex);
 			}
 		};
 	}
@@ -124,7 +124,7 @@ public class Rethrow {
 			try {
 				return predicate.test(t);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + t, ex);
+				throw new RuntimeException("For " + t, ex);
 			}
 		};
 	}
