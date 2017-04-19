@@ -2,6 +2,7 @@ package suite.algo;
 
 import java.util.Random;
 
+import suite.math.Forget;
 import suite.math.Matrix;
 import suite.math.Tanh;
 import suite.util.Copy;
@@ -74,7 +75,7 @@ public class RecurrentNeuralNetwork {
 
 			if (expected != null) {
 				float[] e_memory1 = mtx.sub(expected, memory1);
-				float[] e_weights = forgetOn(e_memory1, Tanh.tanhGradientOn(memory1));
+				float[] e_weights = Forget.forgetOn(e_memory1, Tanh.tanhGradientOn(memory1));
 
 				for (int i = 0; i < memoryLength; i++)
 					for (int j = 0; j < ll1; j++)
@@ -83,16 +84,6 @@ public class RecurrentNeuralNetwork {
 
 			return memory1;
 		}
-	}
-
-	private float[] forgetOn(float[] m, float[] n) {
-		int length = m.length;
-		if (length == n.length)
-			for (int i = 0; i < length; i++)
-				m[i] *= n[i];
-		else
-			throw new RuntimeException("Wrong matrix sizes");
-		return m;
 	}
 
 	private float[] copy(float[] m) {
