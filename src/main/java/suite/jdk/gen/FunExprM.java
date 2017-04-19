@@ -10,6 +10,11 @@ import org.apache.bcel.generic.Type;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.util.Util;
 
+/**
+ * Functional expressions that can be handled by FunGenerateBytecode.java.
+ *
+ * @author ywsing
+ */
 public class FunExprM {
 
 	public static class AssignLocalFunExpr extends FunExpr {

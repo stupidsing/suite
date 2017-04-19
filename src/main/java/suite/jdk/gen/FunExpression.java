@@ -8,13 +8,14 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import suite.inspect.Inspect;
+import suite.jdk.gen.FunExprL.ApplyFunExpr;
+import suite.jdk.gen.FunExprL.FieldFunExpr;
 import suite.jdk.gen.FunExprM.CastFunExpr;
 import suite.jdk.gen.FunExprM.CheckCastFunExpr;
 import suite.jdk.gen.FunExprM.FieldTypeFunExpr;
 import suite.jdk.gen.FunExprM.IndexFunExpr;
 import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
-import suite.jdk.lambda.LambdaInstance;
 import suite.node.util.Singleton;
 import suite.util.Util;
 
@@ -108,56 +109,6 @@ public class FunExpression {
 		public String toString() {
 			return inspect.toString(this);
 		}
-	}
-
-	public static class ApplyFunExpr extends FunExpr {
-		public FunExpr object;
-		public List<FunExpr> parameters;
-	}
-
-	public static class DeclareParameterFunExpr extends FunExpr {
-		public FunExpr do_;
-	}
-
-	public static class Declare0ParameterFunExpr extends DeclareParameterFunExpr {
-	}
-
-	public static class Declare1ParameterFunExpr extends DeclareParameterFunExpr {
-		public PlaceholderFunExpr parameter;
-	}
-
-	public static class Declare2ParameterFunExpr extends DeclareParameterFunExpr {
-		public PlaceholderFunExpr p0, p1;
-	}
-
-	public static class DeclareLocalFunExpr extends FunExpr {
-		public PlaceholderFunExpr var;
-		public FunExpr value;
-		public FunExpr do_;
-	}
-
-	public static class FieldFunExpr extends FunExpr {
-		public String fieldName;
-		public FunExpr object;
-	}
-
-	public static class FieldInjectFunExpr extends FunExpr {
-		public String fieldName;
-	}
-
-	public static class InvokeLambdaFunExpr extends FunExpr {
-		public boolean isExpand;
-		public LambdaInstance<?> lambda;
-		public List<FunExpr> parameters;
-	}
-
-	public static class ObjectFunExpr extends FunExpr {
-		public Type type;
-		public Object object;
-	}
-
-	public static class PlaceholderFunExpr extends FunExpr {
-		public int id = Util.temp();
 	}
 
 }
