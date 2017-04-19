@@ -20,14 +20,14 @@ public class QuoteTest {
 		public int buySell;
 		public String stockCode;
 		public float price;
-		public String remark;
+		public String strategy;
 
-		public Record(String[] records) {
-			this.date = records[0];
-			this.buySell = Integer.parseInt(records[1]);
-			this.stockCode = records[2];
-			this.price = Float.parseFloat(records[3]);
-			this.remark = 4 < records.length ? records[4] : null;
+		public Record(String[] array) {
+			this.date = array[0];
+			this.buySell = Integer.parseInt(array[1]);
+			this.stockCode = array[2];
+			this.price = Float.parseFloat(array[3]);
+			this.strategy = array[4];
 		}
 	}
 
@@ -54,6 +54,7 @@ public class QuoteTest {
 		List<Record> table = Read.bytes(TempDir.resolve("stock.txt")) //
 				.collect(As::table) //
 				.map(Record::new) //
+				.filter(record -> record.strategy.equals("mamr")) //
 				.toList();
 
 		Map<String, Integer> sizeByStockCodes = Read.from(table) //
