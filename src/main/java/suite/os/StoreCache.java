@@ -55,7 +55,7 @@ public class StoreCache {
 				if (dis.readInt() == keySize) {
 					byte kb[] = new byte[keySize];
 					dis.readFully(kb);
-					if (Arrays.equals(key.toBytes(), kb))
+					if (Arrays.equals(key.toByteArray(), kb))
 						return Outlet.of(new Source<Bytes>() {
 							private boolean cont = true;
 
@@ -89,7 +89,7 @@ public class StoreCache {
 			DataOutput do_ = dos;
 
 			do_.writeInt(keySize);
-			do_.write(key.toBytes());
+			do_.write(key.toByteArray());
 
 			return Outlet //
 					.of(() -> Rethrow.ex(() -> {

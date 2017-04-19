@@ -176,15 +176,15 @@ public class Chars implements Iterable<Character> {
 		return subchars0(start + s, start + e);
 	}
 
-	public CharBuffer toCharBuffer() {
-		return CharBuffer.wrap(cs, start, end - start);
-	}
-
-	public char[] toChars() {
+	public char[] toCharArray() {
 		if (start != 0 || end != cs.length)
 			return Arrays.copyOfRange(cs, start, end);
 		else
 			return cs;
+	}
+
+	public CharBuffer toCharBuffer() {
+		return CharBuffer.wrap(cs, start, end - start);
 	}
 
 	public Chars trim() {
@@ -198,7 +198,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeChars(new String(toChars()));
+		dataOutput.writeChars(new String(toCharArray()));
 	}
 
 	public void write(Writer writer) throws IOException {

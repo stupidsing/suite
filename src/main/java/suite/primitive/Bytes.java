@@ -177,15 +177,15 @@ public class Bytes implements Iterable<Byte> {
 		return subbytes0(start + s, start + e);
 	}
 
-	public ByteBuffer toByteBuffer() {
-		return ByteBuffer.wrap(bs, start, end - start);
-	}
-
-	public byte[] toBytes() {
+	public byte[] toByteArray() {
 		if (start != 0 || end != bs.length)
 			return Arrays.copyOfRange(bs, start, end);
 		else
 			return bs;
+	}
+
+	public ByteBuffer toByteBuffer() {
+		return ByteBuffer.wrap(bs, start, end - start);
 	}
 
 	public Bytes trim() {

@@ -89,7 +89,7 @@ public class IoPredicates {
 			byte b;
 			while (0 <= (b = (byte) System.in.read()) && b != 10)
 				bb.append(b);
-			String s = new String(bb.toBytes().toBytes(), Constants.charset);
+			String s = new String(bb.toBytes().toByteArray(), Constants.charset);
 			return prover.bind(new Str(s), p0);
 		});
 	});

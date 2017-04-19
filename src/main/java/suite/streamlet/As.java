@@ -232,12 +232,12 @@ public class As {
 
 	public static Streamlet<String[]> table(Outlet<Bytes> outlet) {
 		return outlet.collect(BytesUtil.split(Bytes.of((byte) 10))) //
-				.map(bytes -> new String(bytes.toBytes(), Constants.charset).split("\t")) //
+				.map(bytes -> new String(bytes.toByteArray(), Constants.charset).split("\t")) //
 				.collect(As::streamlet);
 	}
 
 	private static String[] csvLine(Bytes bytes) {
-		return csvLine(new String(bytes.toBytes(), Constants.charset));
+		return csvLine(new String(bytes.toByteArray(), Constants.charset));
 	}
 
 	private static String[] csvLine(String line) {

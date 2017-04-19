@@ -40,7 +40,7 @@ public class NetUtil {
 	}
 
 	public static <T> T deserialize(Bytes s) {
-		byte bytes[] = s.toBytes();
+		byte bytes[] = s.toByteArray();
 		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 
 		try {

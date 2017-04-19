@@ -118,7 +118,7 @@ public class FileSystemKeyUtil {
 			throw new RuntimeException(ex);
 		}
 
-		md.update(bytes.toBytes());
+		md.update(bytes.toByteArray());
 		return Bytes.of(md.digest());
 	}
 

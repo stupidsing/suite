@@ -213,7 +213,7 @@ public class To {
 	}
 
 	public static String string(Bytes bytes) {
-		return string(bytes.toBytes());
+		return string(bytes.toByteArray());
 	}
 
 	public static String string(byte bs[]) {
