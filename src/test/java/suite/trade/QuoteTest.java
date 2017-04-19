@@ -70,7 +70,9 @@ public class QuoteTest {
 				.map((stockCode, size) -> priceByStockCodes.get(stockCode) * size) //
 				.collect(this::sum);
 
-		priceByStockCodes.forEach((stockCode, price) -> System.out.println(stockCode + " := " + price));
+		Read.from2(priceByStockCodes) //
+				.map((stockCode, price) -> stockCode + " := " + price) //
+				.forEach(System.out::println);
 
 		System.out.println("AMOUNT0 = " + amount0);
 		System.out.println("AMOUNT1 = " + amount1);
