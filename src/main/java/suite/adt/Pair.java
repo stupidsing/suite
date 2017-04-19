@@ -30,9 +30,9 @@ public class Pair<T0, T1> {
 
 	public static <T0 extends Comparable<? super T0>, T1 extends Comparable<? super T1>> Comparator<Pair<T0, T1>> comparator() {
 		return (pair0, pair1) -> {
-			int c = 0;
-			c = c == 0 ? Util.compare(first_(pair0), first_(pair1)) : c;
-			c = c == 0 ? Util.compare(second(pair0), second(pair1)) : c;
+			int c = Boolean.compare(pair0 != null, pair1 != null);
+			c = c == 0 ? Util.compare(pair0.t0, pair1.t0) : c;
+			c = c == 0 ? Util.compare(pair0.t1, pair1.t1) : c;
 			return c;
 		};
 	}

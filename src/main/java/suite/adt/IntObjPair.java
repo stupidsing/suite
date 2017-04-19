@@ -31,19 +31,23 @@ public class IntObjPair<T> {
 
 	public static <T extends Comparable<? super T>> Comparator<IntObjPair<T>> comparator() {
 		return (pair0, pair1) -> {
-			int c = 0;
-			c = c == 0 ? Integer.compare(first_(pair0), first_(pair1)) : c;
-			c = c == 0 ? Util.compare(second(pair0), second(pair1)) : c;
+			int c = Boolean.compare(pair0 != null, pair1 != null);
+			c = c == 0 ? Integer.compare(pair0.t0, pair1.t0) : c;
+			c = c == 0 ? Util.compare(pair0.t1, pair1.t1) : c;
 			return c;
 		};
 	}
 
 	public static <T> Comparator<IntObjPair<T>> comparatorByFirst() {
-		return (pair0, pair1) -> Integer.compare(first_(pair0), first_(pair1));
+		return (pair0, pair1) -> {
+			int c = Boolean.compare(pair0 != null, pair1 != null);
+			c = c == 0 ? Integer.compare(pair0.t0, pair1.t0) : c;
+			return c;
+		};
 	}
 
 	public static int first_(IntObjPair<?> pair) {
-		return pair != null ? pair.t0 : null;
+		return pair.t0;
 	}
 
 	public static <T> T second(IntObjPair<T> pair) {
