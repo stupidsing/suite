@@ -287,7 +287,7 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline tr1 = compile0(sb, m[1]);
 			BindPredicate p = sb.compileBind(m[2]);
 			List<Node> vs = new ArrayList<>();
-			return rt -> {
+			tr = rt -> {
 				Sink<Runtime> restore = save(rt);
 				rt.pushRem(rt_ -> {
 					vs.add(new Cloner().clone(f.apply(rt_.env)));
@@ -313,7 +313,7 @@ public class SewingProverImpl implements SewingProver {
 			Clone_ value0_ = sb.compile(m[1]);
 			BindPredicate valuex_ = sb.compileBind(m[2]);
 			Clone_ ht_ = sb.compile(m[3]);
-			return rt -> {
+			tr = rt -> {
 				Node ht[] = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
 				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
@@ -339,7 +339,7 @@ public class SewingProverImpl implements SewingProver {
 			BindPredicate v0_ = sb.compileBind(m[4]);
 			Clone_ vx_ = sb.compile(m[5]);
 			Trampoline tr1 = compile0(sb, m[6]);
-			return rt -> {
+			tr = rt -> {
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				Env env0 = rt.env;
 				rt.pushRem(rt_ -> {
@@ -361,7 +361,7 @@ public class SewingProverImpl implements SewingProver {
 		} else if ((m = Suite.matcher("list.query .0 .1").apply(node)) != null) {
 			Clone_ l_ = sb.compile(m[0]);
 			Clone_ ht_ = sb.compile(m[1]);
-			return rt -> {
+			tr = rt -> {
 				Node ht[] = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
 				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
 				for (Node n : Tree.iter(l_.apply(rt.env)))
@@ -375,7 +375,7 @@ public class SewingProverImpl implements SewingProver {
 			Clone_ f = sb.compile(m[0]);
 			BindPredicate p = sb.compileBind(m[1]);
 			Trampoline tr1 = compile0(sb, m[2]);
-			return rt -> {
+			tr = rt -> {
 				Env env0 = rt.env;
 				rt.pushRem(rt_ -> {
 					rt_.env = env0;
@@ -391,7 +391,7 @@ public class SewingProverImpl implements SewingProver {
 		} else if ((m = Suite.matcher("member .0 .1").apply(node)) != null && TreeUtil.isList(m[0], TermOp.AND___)) {
 			List<BindPredicate> elems_ = Read.from(Tree.iter(m[0])).map(sb::compileBind).toList();
 			Clone_ f = sb.compile(m[1]);
-			return rt -> {
+			tr = rt -> {
 				Iterator<BindPredicate> iter = elems_.iterator();
 				Trampoline alt[] = new Trampoline[1];
 				Sink<Runtime> restore = save(rt);
@@ -492,7 +492,7 @@ public class SewingProverImpl implements SewingProver {
 				tr = callSystemPredicate(sb, name, Atom.NIL);
 		} else if (node instanceof Reference) {
 			Clone_ f = sb.compile(node);
-			return rt -> compile0(passThru, f.apply(rt.env));
+			tr = rt -> compile0(passThru, f.apply(rt.env));
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)
