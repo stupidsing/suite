@@ -13,6 +13,8 @@ import suite.util.TempDir;
 
 public class QuoteTest {
 
+	private Yahoo yahoo = new Yahoo();
+
 	public class Record {
 		public String date;
 		public int buySell;
@@ -31,8 +33,24 @@ public class QuoteTest {
 
 	@Test
 	public void testQuote() {
-		Yahoo yahoo = new Yahoo();
+		System.out.println(yahoo.quote(Read.each( //
+				"0002.HK", //
+				"0004.HK", //
+				"0005.HK", //
+				"0045.HK", //
+				"0066.HK", //
+				"0083.HK", //
+				"0175.HK", //
+				"0267.HK", //
+				"0293.HK", //
+				"0322.HK", //
+				"1169.HK", //
+				"1357.HK", //
+				"2018.HK")));
+	}
 
+	@Test
+	public void testQuoteManyStocks() {
 		List<Record> table = Read.bytes(TempDir.resolve("stock.txt")) //
 				.collect(As::table) //
 				.map(Record::new) //
