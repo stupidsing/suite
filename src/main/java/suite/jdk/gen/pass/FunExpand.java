@@ -3,16 +3,16 @@ package suite.jdk.gen.pass;
 import org.apache.bcel.generic.Type;
 
 import suite.inspect.Inspect;
+import suite.jdk.gen.FunExprM.CastFunExpr;
+import suite.jdk.gen.FunExprM.ConstantFunExpr;
+import suite.jdk.gen.FunExprM.If1FunExpr;
 import suite.jdk.gen.FunExpression.ApplyFunExpr;
-import suite.jdk.gen.FunExpression.CastFunExpr;
-import suite.jdk.gen.FunExpression.ConstantFunExpr;
 import suite.jdk.gen.FunExpression.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare1ParameterFunExpr;
 import suite.jdk.gen.FunExpression.Declare2ParameterFunExpr;
 import suite.jdk.gen.FunExpression.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExpression.FieldInjectFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.jdk.gen.FunExpression.If1FunExpr;
 import suite.jdk.gen.FunExpression.InvokeLambdaFunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.jdk.lambda.LambdaImplementation;
@@ -68,7 +68,7 @@ public class FunExpand extends FunFactory {
 		} else if (e0 instanceof DeclareLocalFunExpr) {
 			DeclareLocalFunExpr e1 = (DeclareLocalFunExpr) e0;
 			return expand(replace(e1.do_, e1.var, e1.value), depth);
-		} else if (e0 instanceof InvokeLambdaFunExpr) {
+		} else if (e0 instanceof InvokeLambdaFunExpr && Boolean.FALSE) {
 			InvokeLambdaFunExpr e1 = (InvokeLambdaFunExpr) e0;
 			LambdaInstance<?> l_inst = e1.lambda;
 			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;

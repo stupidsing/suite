@@ -10,8 +10,8 @@ import java.util.function.BiPredicate;
 import org.apache.bcel.generic.Type;
 import org.junit.Test;
 
+import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.jdk.gen.FunExpression.ProfileFunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
 import suite.primitive.PrimitiveFun.Int_Int;

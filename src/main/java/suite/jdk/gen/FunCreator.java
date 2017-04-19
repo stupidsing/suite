@@ -31,7 +31,7 @@ import org.apache.bcel.generic.Type;
 import suite.adt.IntObjPair;
 import suite.adt.Pair;
 import suite.jdk.UnsafeUtil;
-import suite.jdk.gen.FunExpression.FieldStaticFunExpr;
+import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.pass.FunExpand;
 import suite.jdk.gen.pass.FunGenerateBytecode;
