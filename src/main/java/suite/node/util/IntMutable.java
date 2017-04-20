@@ -8,11 +8,17 @@ package suite.node.util;
  */
 public class IntMutable {
 
+	private static int falseValue = 0;
 	private static int trueValue = 1;
+
 	private int value;
 
 	public static IntMutable false_() {
-		return of(0);
+		return of(falseValue);
+	}
+
+	public static IntMutable true_() {
+		return of(trueValue);
 	}
 
 	public static IntMutable nil() {
@@ -27,6 +33,10 @@ public class IntMutable {
 
 	public boolean isTrue() {
 		return value == trueValue;
+	}
+
+	public void setFalse() {
+		set(falseValue);
 	}
 
 	public void setTrue() {

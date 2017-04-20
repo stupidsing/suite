@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.node.util.Mutable;
+import suite.node.util.IntMutable;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.os.SocketUtil.Io;
@@ -30,10 +30,10 @@ public class LoadBalancer {
 	}
 
 	public void run() throws IOException {
-		Mutable<Boolean> running = Mutable.of(true);
+		IntMutable running = IntMutable.true_();
 
 		Thread probe = new Thread(() -> {
-			while (running.get())
+			while (running.isTrue())
 				try {
 					List<String> alives1 = new ArrayList<>();
 
@@ -69,7 +69,7 @@ public class LoadBalancer {
 			probe.start();
 			new SocketUtil().listenIo(port, io);
 		} finally {
-			running.set(false);
+			running.setFalse();
 		}
 	}
 
