@@ -40,7 +40,9 @@ public class DailyMain extends ExecutableProgram {
 				.get("backTestByStockCode", () -> companies //
 						.map2(stock -> stock.code, stock -> {
 							try {
-								DataSource ds = yahoo.dataSource(stock.code);
+								LocalDate frDate = LocalDate.of(2013, 1, 1);
+								LocalDate toDate = LocalDate.of(2018, 1, 1);
+								DataSource ds = yahoo.dataSource(stock.code, frDate, toDate);
 								BackTest backTest = BackTest.test(ds, strategy);
 								return 0f < backTest.account.cash();
 							} catch (Exception ex) {
@@ -64,12 +66,14 @@ public class DailyMain extends ExecutableProgram {
 				try {
 					DataSource ds = yahoo.dataSource(stockCode, frDate, toDate);
 					float[] prices = ds.prices;
+					int last = prices.length - 1;
+					int signal = strategy.analyze(prices).get(last);
+					String message = company + " has signal " + signal + " for price " + prices[last];
 
-					int signal = strategy.analyze(prices).get(prices.length - 1);
-					String message = "equity " + stockCode + " " + company.name + " has signal " + signal;
-					LogUtil.info(message);
-					if (signal != 0)
+					if (signal != 0) {
+						LogUtil.info(message);
 						messages.add(message);
+					}
 				} catch (Exception ex) {
 					LogUtil.warn(ex.getMessage() + " in " + prefix);
 				}
