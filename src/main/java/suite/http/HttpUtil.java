@@ -78,15 +78,18 @@ public class HttpUtil {
 
 	private static HttpResult httpApache(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) throws IOException {
 		CloseableHttpClient client = HttpClients.createDefault();
+
 		HttpRequestBase request = new HttpRequestBase() {
+			{
+				setURI(URI.create(url.toString()));
+				headers.entrySet().forEach(e -> addHeader(e.getKey(), e.getValue()));
+			}
+
 			public String getMethod() {
 				return method;
 			}
 		};
 
-		request.setURI(URI.create(url.toString()));
-
-		headers.entrySet().forEach(e -> request.addHeader(e.getKey(), e.getValue()));
 		CloseableHttpResponse response = client.execute(request);
 
 		StatusLine statusLine = response.getStatusLine();
