@@ -8,6 +8,7 @@ import org.junit.Test;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 
 public class QuoteTest {
@@ -22,11 +23,15 @@ public class QuoteTest {
 		public String strategy;
 
 		public Record(String[] array) {
-			this.date = array[0];
-			this.buySell = Integer.parseInt(array[1]);
-			this.stockCode = array[2];
-			this.price = Float.parseFloat(array[3]);
-			this.strategy = array[4];
+			this(array[0], Integer.parseInt(array[1]), array[2], Float.parseFloat(array[3]), array[4]);
+		}
+
+		public Record(String date, int buySell, String stockCode, float price, String strategy) {
+			this.date = date;
+			this.buySell = buySell;
+			this.stockCode = stockCode;
+			this.price = price;
+			this.strategy = strategy;
 		}
 	}
 
@@ -50,25 +55,30 @@ public class QuoteTest {
 
 	@Test
 	public void testQuoteManyStocks() {
-		List<Record> table = Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt") //
+		List<Record> table0 = Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt") //
 				.collect(As::table) //
 				.map(Record::new) //
-				.filter(record -> record.strategy.equals("mamr")) //
+				.filter(r -> r.strategy.startsWith("mamr")) //
 				.toList();
 
-		Map<String, Integer> sizeByStockCodes = Read.from(table) //
-				.map2(record -> record.stockCode, record -> record.buySell) //
+		Map<String, Integer> sizeByStockCodes = Read.from(table0) //
+				.map2(r -> r.stockCode, r -> r.buySell) //
 				.groupBy(sizes -> sizes.fold(0, (size0, size1) -> size0 + size1)) //
 				.toMap();
 
 		Map<String, Float> priceByStockCodes = yahoo.quote(Read.from(sizeByStockCodes.keySet()));
 
-		float amount0 = Read.from(table) //
-				.map(record -> record.buySell * record.price) //
-				.collect(this::sum);
-		float amount1 = Read.from2(sizeByStockCodes) //
-				.map((stockCode, size) -> priceByStockCodes.get(stockCode) * size) //
-				.collect(this::sum);
+		List<Record> sellAll = Read.from2(sizeByStockCodes) //
+				.map((stockCode, size) -> {
+					float price = priceByStockCodes.get(stockCode);
+					return new Record("-", -size, stockCode, price, "-");
+				}) //
+				.toList();
+
+		List<Record> table1 = Streamlet.concat(Read.from(table0), Read.from(sellAll)).toList();
+
+		float amount0 = Read.from(table0).map(r -> -r.buySell * r.price).collect(this::sum);
+		float amount1 = Read.from(table1).map(r -> -r.buySell * r.price).collect(this::sum);
 
 		Read.from2(priceByStockCodes) //
 				.map((stockCode, price) -> stockCode + " := " + price) //
@@ -80,8 +90,8 @@ public class QuoteTest {
 
 	private float sum(Outlet<Float> outlet) {
 		Source<Float> source = outlet.source();
-		Float f = source.source();
 		float result = 0f;
+		Float f;
 		while ((f = source.source()) != null)
 			result += f;
 		return result;
