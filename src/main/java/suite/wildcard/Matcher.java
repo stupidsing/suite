@@ -11,8 +11,6 @@ import suite.util.Util;
 
 public class Matcher {
 
-	private Streamlet<State> noResult = Read.empty();
-
 	private class State {
 		private String input;
 		private int pos;
@@ -69,12 +67,12 @@ public class Matcher {
 				}));
 				break;
 			case '?':
-				st = st.concatMap(state -> !state.eof() ? Read.each(new State(state, 1)) : noResult);
+				st = st.mapNonNull(state -> !state.eof() ? new State(state, 1) : null);
 				break;
 			default:
-				st = st.concatMap(state -> {
+				st = st.mapNonNull(state -> {
 					boolean isMatch = !state.eof() && state.input.charAt(state.pos) == ch;
-					return isMatch ? Read.each(new State(state, 1)) : noResult;
+					return isMatch ? new State(state, 1) : null;
 				});
 			}
 

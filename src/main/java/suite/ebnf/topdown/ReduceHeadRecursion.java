@@ -83,8 +83,8 @@ public class ReduceHeadRecursion {
 			hrf = new HeadRecursionForm(empty, Arrays.asList(new Grammar(GrammarType.AND___)));
 		else if (en.type == GrammarType.OR____) {
 			List<HeadRecursionForm> hrfs = Read.from(en.children).map(en_ -> getHeadRecursionForm(en_, entity)).toList();
-			List<Grammar> listb = Read.from(hrfs).concatMap(hrf_ -> Read.from(hrf_.listb)).toList();
-			List<Grammar> listc = Read.from(hrfs).concatMap(hrf_ -> Read.from(hrf_.listc)).toList();
+			List<Grammar> listb = Read.from(hrfs).flatMap(hrf_ -> hrf_.listb).toList();
+			List<Grammar> listc = Read.from(hrfs).flatMap(hrf_ -> hrf_.listc).toList();
 			hrf = new HeadRecursionForm(listb, listc);
 		} else
 			hrf = new HeadRecursionForm(Arrays.asList(en), empty);

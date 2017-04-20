@@ -50,7 +50,7 @@ public class FileSystemKeySet {
 				List<NameKey> tailKeys1 = key == maxKey ? !keys1.isEmpty() ? Util.right(keys1, 1) : emptyKeys : null;
 				return list(prefix1, tailKeys0, tailKeys1);
 			} else
-				return Read.from(Arrays.asList(keyUtil.toName(prefix1)));
+				return Read.each(keyUtil.toName(prefix1));
 		});
 	}
 

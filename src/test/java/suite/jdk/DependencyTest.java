@@ -28,7 +28,7 @@ public class DependencyTest {
 
 	@Test
 	public void testDependency() {
-		dumpDependencies(new ISet<>(), "", "suite.jdk.DependencyTest");
+		dumpDependencies(new ISet<>(), "", "suite.util.Rethrow");
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class DependencyTest {
 		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(vertices, edges));
 
 		for (Set<Set<String>> layer : scc.group().layers()) {
-			Read.from(layer).concatMap(Read::from).sort(Util::compare).forEach(System.out::println);
+			Read.from(layer).flatMap(iterable -> iterable).sort(Util::compare).forEach(System.out::println);
 			System.out.println();
 		}
 	}

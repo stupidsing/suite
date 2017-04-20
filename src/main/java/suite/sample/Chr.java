@@ -138,10 +138,10 @@ public class Chr {
 	private Streamlet<State> chrGiven(Streamlet<State> states, Trail trail, Node given) {
 		Prototype prototype = Prototype.of(given);
 
-		return states.concatMap(state -> {
+		return states.mapNonNull(state -> {
 			ISet<Node> facts = getFacts(state, prototype);
 			Predicate<Node> bindFun = bindFun(trail, given);
-			return facts.stream().isAny(bindFun) ? Read.each(state) : Read.empty();
+			return facts.stream().isAny(bindFun) ? state : null;
 		});
 	}
 
