@@ -14,6 +14,7 @@ sed 's#import jline.console.*#<groupId>jline</groupId><artifactId>jline</artifac
 sed 's#import org.apache.bcel.*#<groupId>org.apache.bcel</groupId><artifactId>bcel</artifactId>#g' |
 sed 's#import org.apache.commons.logging.*#<groupId>commons-logging</groupId><artifactId>commons-logging</artifactId>#g' |
 sed 's#import org.apache.log4j.*#<groupId>log4j</groupId><artifactId>log4j</artifactId>#g' |
+sed 's#import org.apache.http.client.*#<groupId>org.apache.httpcomponents</groupId><artifactId>httpclient</artifactId>#g' |
 sed 's#import org.junit.*#<groupId>junit</groupId><artifactId>junit</artifactId>#g' |
 sed 's#import org.objectweb.asm.Opcodes*#<groupId>org.ow2.asm</groupId><artifactId>asm</artifactId>#g' |
 sed 's#import org.objectweb.asm.util.*#<groupId>org.ow2.asm</groupId><artifactId>asm-util</artifactId>#g' |

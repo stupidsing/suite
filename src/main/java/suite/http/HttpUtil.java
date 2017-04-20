@@ -1,14 +1,22 @@
 package suite.http;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 import suite.concurrent.Backoff;
 import suite.primitive.Bytes;
@@ -64,37 +72,70 @@ public class HttpUtil {
 
 		Util.sleepQuietly(start - current);
 
-		return Rethrow.ex(() -> {
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setDoOutput(true);
-			conn.setRequestMethod(method);
+		return Rethrow.ex(() -> httpApache(method, url, in, headers));
+		// return Rethrow.ex(() -> httpJre(method, url, in, headers));
+	}
 
-			headers.entrySet().forEach(e -> conn.setRequestProperty(e.getKey(), e.getValue()));
-
-			try (OutputStream os = conn.getOutputStream()) {
-				BytesUtil.copy(in, os);
+	private static HttpResult httpApache(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) throws IOException {
+		CloseableHttpClient client = HttpClients.createDefault();
+		HttpRequestBase request = new HttpRequestBase() {
+			public String getMethod() {
+				return method;
 			}
+		};
 
-			int responseCode = conn.getResponseCode();
-			Outlet<Bytes> out = To.outlet(conn.getInputStream());
+		request.setURI(URI.create(url.toString()));
 
-			if (responseCode == HttpURLConnection.HTTP_MOVED_PERM //
-					|| responseCode == HttpURLConnection.HTTP_MOVED_TEMP //
-					|| responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
-				String cookies1 = conn.getHeaderField("Set-Cookie");
-				URL url1 = Rethrow.ex(() -> new URL(conn.getHeaderField("Location")));
+		headers.entrySet().forEach(e -> request.addHeader(e.getKey(), e.getValue()));
+		CloseableHttpResponse response = client.execute(request);
 
-				Map<String, String> headers1 = new HashMap<>(headers);
-				if (cookies1 != null)
-					headers1.put("Cookie", cookies1);
+		StatusLine statusLine = response.getStatusLine();
+		int statusCode = statusLine.getStatusCode();
+		InputStream inputStream = response.getEntity().getContent();
+		Outlet<Bytes> out = To.outlet(inputStream).closeAtEnd(inputStream).closeAtEnd(response).closeAtEnd(client);
 
-				return http(method, url1, in, headers1);
-			} else if (responseCode == HttpURLConnection.HTTP_OK)
-				return new HttpResult(responseCode, out);
-			else
-				throw new IOException("HTTP returned " + responseCode + ": " + url + ": " + conn.getResponseMessage() + ": "
-						+ out.collect(As::string));
-		});
+		if (statusCode == HttpURLConnection.HTTP_OK)
+			return new HttpResult(statusCode, out);
+		else
+			throw new IOException("HTTP returned " + statusCode //
+					+ ": " + url //
+					+ ": " + statusLine.getReasonPhrase() //
+					+ ": " + out.collect(As::string));
+	}
+
+	@SuppressWarnings("unused")
+	private static HttpResult httpJre(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) throws IOException {
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setDoOutput(true);
+		conn.setRequestMethod(method);
+
+		headers.entrySet().forEach(e -> conn.setRequestProperty(e.getKey(), e.getValue()));
+
+		try (OutputStream os = conn.getOutputStream()) {
+			BytesUtil.copy(in, os);
+		}
+
+		int responseCode = conn.getResponseCode();
+		Outlet<Bytes> out = To.outlet(conn.getInputStream());
+
+		if (responseCode == HttpURLConnection.HTTP_MOVED_PERM //
+				|| responseCode == HttpURLConnection.HTTP_MOVED_TEMP //
+				|| responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
+			String cookies1 = conn.getHeaderField("Set-Cookie");
+			URL url1 = Rethrow.ex(() -> new URL(conn.getHeaderField("Location")));
+
+			Map<String, String> headers1 = new HashMap<>(headers);
+			if (cookies1 != null)
+				headers1.put("Cookie", cookies1);
+
+			return http(method, url1, in, headers1);
+		} else if (responseCode == HttpURLConnection.HTTP_OK)
+			return new HttpResult(responseCode, out);
+		else
+			throw new IOException("HTTP returned " + responseCode //
+					+ ": " + url //
+					+ ": " + conn.getResponseMessage() //
+					+ ": " + out.collect(As::string));
 	}
 
 }
