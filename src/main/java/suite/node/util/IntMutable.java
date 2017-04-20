@@ -36,11 +36,11 @@ public class IntMutable {
 	}
 
 	public void setFalse() {
-		set(falseValue);
+		update(falseValue);
 	}
 
 	public void setTrue() {
-		set(trueValue);
+		update(trueValue);
 	}
 
 	public void set(int t) {
