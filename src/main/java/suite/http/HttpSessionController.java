@@ -10,6 +10,7 @@ import suite.immutable.IMap;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.HtmlUtil;
+import suite.util.To;
 
 public class HttpSessionController {
 
@@ -117,7 +118,7 @@ public class HttpSessionController {
 		private HttpResponse showLoginPage(IList<String> redirectPath, boolean isLoginFailed) {
 			String redirectPath1 = Read.from(redirectPath).map(p -> "/" + p).collect(As.joined());
 
-			return HttpResponse.of(Read.bytes("<html>" //
+			return HttpResponse.of(To.outlet("<html>" //
 					+ "<head><title>Login</title></head>" //
 					+ "<body>" //
 					+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //

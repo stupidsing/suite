@@ -1,13 +1,12 @@
 package suite.streamlet;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,6 +15,7 @@ import java.util.Map;
 
 import suite.Constants;
 import suite.adt.Pair;
+import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil;
@@ -23,6 +23,7 @@ import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
 import suite.util.Rethrow;
+import suite.util.To;
 import suite.util.Util;
 
 public class Read {
@@ -37,21 +38,16 @@ public class Read {
 	public static Streamlet<Bytes> bytes(File file) {
 		return new Streamlet<>(() -> {
 			InputStream is = Rethrow.ex(() -> new FileInputStream(file));
-			return bytes(is).closeAtEnd(is);
+			return To.outlet(is).closeAtEnd(is);
 		});
 	}
 
-	public static Outlet<Bytes> bytes(String data) {
-		return bytes(new ByteArrayInputStream(data.getBytes(Constants.charset)));
+	public static Streamlet<Bytes> bytes(String data) {
+		return new Streamlet<>(() -> To.outlet(data));
 	}
 
-	public static Outlet<Bytes> bytes(InputStream is) {
-		InputStream bis = new BufferedInputStream(is);
-		return Outlet.of(() -> {
-			byte bs[] = new byte[Constants.bufferSize];
-			int nBytesRead = Rethrow.ex(() -> bis.read(bs));
-			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
-		}).closeAtEnd(bis).closeAtEnd(is);
+	public static Streamlet<Bytes> bytes(InputStream is) {
+		return new Streamlet<>(() -> To.outlet(is));
 	}
 
 	public static <T> Streamlet<T> empty() {
@@ -138,6 +134,11 @@ public class Read {
 			int i[] = new int[] { s, };
 			return Outlet.of(() -> i[0] < e ? i[0]++ : null);
 		});
+	}
+
+	public static Streamlet<Bytes> url(String urlString) {
+		URL url = Rethrow.ex(() -> new URL(urlString));
+		return new Streamlet<>(() -> HttpUtil.http("GET", url).out);
 	}
 
 	public static <K, V, C extends Collection<V>> Streamlet2<K, V> multimap(Map<K, C> map) {

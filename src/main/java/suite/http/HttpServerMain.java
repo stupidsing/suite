@@ -1,6 +1,5 @@
 package suite.http;
 
-import java.io.ByteArrayInputStream;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,8 +8,8 @@ import suite.Constants;
 import suite.adt.Pair;
 import suite.http.HttpSessionController.Authenticator;
 import suite.immutable.IMap;
-import suite.streamlet.Read;
 import suite.util.Rethrow;
+import suite.util.To;
 import suite.util.Util;
 
 // java -cp target/suite-1.0-jar-with-dependencies.jar suite.http.HttpServerMain
@@ -28,7 +27,7 @@ public class HttpServerMain {
 		IMap<String, HttpHandler> empty = IMap.empty();
 
 		HttpHandler handler0 = request -> {
-			return HttpResponse.of(Read.bytes(new ByteArrayInputStream(("" //
+			return HttpResponse.of(To.outlet("" //
 					+ "<html>" //
 					+ "<br/>method = " + request.method //
 					+ "<br/>server = " + request.server //
@@ -36,7 +35,7 @@ public class HttpServerMain {
 					+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query) //
 					+ "<br/>headers = " + request.headers //
 					+ "</html>" //
-			).getBytes(Constants.charset))));
+			));
 		};
 
 		new HttpServer().run(dispatch(empty //
@@ -67,7 +66,7 @@ public class HttpServerMain {
 				size = file.getChannel().size();
 			}
 
-			return HttpResponse.of(HttpResponse.HTTP200, Read.bytes(Files.newInputStream(path)), size);
+			return HttpResponse.of(HttpResponse.HTTP200, To.outlet(Files.newInputStream(path)), size);
 		});
 	}
 

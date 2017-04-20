@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -12,9 +13,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import suite.concurrent.Backoff;
 import suite.primitive.Bytes;
 import suite.primitive.BytesUtil;
+import suite.streamlet.As;
 import suite.streamlet.Outlet;
-import suite.streamlet.Read;
 import suite.util.Rethrow;
+import suite.util.To;
 import suite.util.Util;
 
 public class HttpUtil {
@@ -74,10 +76,24 @@ public class HttpUtil {
 			}
 
 			int responseCode = conn.getResponseCode();
-			if (responseCode == 200)
-				return new HttpResult(responseCode, Read.bytes(conn.getInputStream()));
+			Outlet<Bytes> out = To.outlet(conn.getInputStream());
+
+			if (responseCode == HttpURLConnection.HTTP_MOVED_PERM //
+					|| responseCode == HttpURLConnection.HTTP_MOVED_TEMP //
+					|| responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
+				String cookies1 = conn.getHeaderField("Set-Cookie");
+				URL url1 = Rethrow.ex(() -> new URL(conn.getHeaderField("Location")));
+
+				Map<String, String> headers1 = new HashMap<>(headers);
+				if (cookies1 != null)
+					headers1.put("Cookie", cookies1);
+
+				return http(method, url1, in, headers1);
+			} else if (responseCode == HttpURLConnection.HTTP_OK)
+				return new HttpResult(responseCode, out);
 			else
-				throw new IOException("HTTP returned " + responseCode + ":" + url);
+				throw new IOException("HTTP returned " + responseCode + ": " + url + ": " + conn.getResponseMessage() + ": "
+						+ out.collect(As::string));
 		});
 	}
 
