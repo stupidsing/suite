@@ -9,7 +9,6 @@ import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
-import suite.util.TempDir;
 
 public class QuoteTest {
 
@@ -51,7 +50,7 @@ public class QuoteTest {
 
 	@Test
 	public void testQuoteManyStocks() {
-		List<Record> table = Read.bytes(TempDir.resolve("stock.txt")) //
+		List<Record> table = Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt") //
 				.collect(As::table) //
 				.map(Record::new) //
 				.filter(record -> record.strategy.equals("mamr")) //
