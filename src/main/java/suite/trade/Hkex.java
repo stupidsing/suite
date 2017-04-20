@@ -247,11 +247,11 @@ public class Hkex {
 		CompanySearch companySearch = mapper.convertValue(json, CompanySearch.class);
 
 		return Read.from(companySearch.data) //
-				.concatMap(data -> Read.from(data.content)) //
-				.concatMap(content -> Read.from(content.table)) //
-				.concatMap(table -> Read.from(table.tr)) //
+				.flatMap(data -> data.content) //
+				.flatMap(content -> content.table) //
+				.flatMap(table -> table.tr) //
 				.filter(tr -> !tr.thead) //
-				.concatMap(tr -> Read.from(tr.td)) //
+				.flatMap(tr -> tr.td) //
 				.map(list -> new Company( //
 						Util.right("0000" + list.get(1).replace("*", "").trim(), -4), //
 						list.get(2).trim(), //
