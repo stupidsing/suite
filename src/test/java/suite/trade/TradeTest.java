@@ -37,7 +37,9 @@ public class TradeTest {
 	@Test
 	public void testBackTestHkex() {
 		for (String code : Arrays.asList( //
+				"0020", //
 				"0322", //
+				"1128", //
 				"1169", //
 				"1357"))
 			backTest(code + ".HK", code);
@@ -45,7 +47,7 @@ public class TradeTest {
 
 	@Test
 	public void testBackTestHkexDetails() {
-		backTest(hkex.getCompany("0066.HK"));
+		backTest(hkex.getCompany("0069.HK"));
 	}
 
 	private void backTest(Company company) {
