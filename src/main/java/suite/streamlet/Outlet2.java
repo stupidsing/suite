@@ -215,7 +215,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return next(pair) ? pair : null;
 	}
 
-	public <O> Outlet<O> flatMap(BiFunction<K, V, List<O>> fun) {
+	public <O> Outlet<O> flatMap(BiFunction<K, V, Iterable<O>> fun) {
 		return Outlet.of(FunUtil.flatten(FunUtil2.map(fun, source2)));
 	}
 
@@ -269,6 +269,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public <K1> Outlet2<K1, V> mapKey(Fun<K, K1> fun) {
 		return map2((k, v) -> fun.apply(k), (k, v) -> v);
+	}
+
+	public <O> Outlet<O> mapNonNull(BiFunction<K, V, O> fun) {
+		return Outlet.of(FunUtil2.mapNonNull(fun, source2));
 	}
 
 	public <V1> Outlet2<K, V1> mapValue(Fun<V, V1> fun) {

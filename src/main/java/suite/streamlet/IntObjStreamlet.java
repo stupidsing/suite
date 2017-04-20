@@ -118,7 +118,7 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return spawn().first();
 	}
 
-	public <O> Streamlet<O> flatMap(IntObj_Obj<V, List<O>> fun) {
+	public <O> Streamlet<O> flatMap(IntObj_Obj<V, Iterable<O>> fun) {
 		return new Streamlet<>(() -> spawn().flatMap(fun));
 	}
 
@@ -161,6 +161,10 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 
 	public IntObjStreamlet<V> mapKey(Int_Int fun) {
 		return new IntObjStreamlet<>(() -> spawn().mapKey(fun));
+	}
+
+	public <O> Streamlet<O> mapNonNull(IntObj_Obj<V, O> fun) {
+		return new Streamlet<>(() -> spawn().mapNonNull(fun));
 	}
 
 	public <V1> IntObjStreamlet<V1> mapValue(Fun<V, V1> fun) {

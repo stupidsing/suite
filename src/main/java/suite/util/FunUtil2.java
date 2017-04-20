@@ -196,6 +196,19 @@ public class FunUtil2 {
 		};
 	}
 
+	public static <K, V, T1> Source<T1> mapNonNull(BiFunction<K, V, T1> fun, Source2<K, V> source) {
+		return new Source<T1>() {
+			public T1 source() {
+				Pair<K, V> pair = Pair.of(null, null);
+				T1 t1 = null;
+				while (source.source2(pair))
+					if ((t1 = fun.apply(pair.t0, pair.t1)) != null)
+						return t1;
+				return null;
+			}
+		};
+	}
+
 	public static <I> Sink<I> nullSink() {
 		return i -> {
 		};

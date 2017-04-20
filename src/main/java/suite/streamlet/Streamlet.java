@@ -105,7 +105,7 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().first();
 	}
 
-	public <O> Streamlet<O> flatMap(Fun<T, List<O>> fun) {
+	public <O> Streamlet<O> flatMap(Fun<T, Iterable<O>> fun) {
 		return streamlet(() -> spawn().flatMap(fun));
 	}
 
@@ -152,6 +152,10 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public <V1> IntObjStreamlet<V1> mapIntObj(Obj_Int<T> kf, Fun<T, V1> vf) {
 		return new IntObjStreamlet<>(() -> spawn().mapIntObj(kf, vf));
+	}
+
+	public <O> Streamlet<O> mapNonNull(Fun<T, O> fun) {
+		return new Streamlet<>(() -> spawn().mapNonNull(fun));
 	}
 
 	public T last() {

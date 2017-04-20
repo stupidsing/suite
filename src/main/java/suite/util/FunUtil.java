@@ -2,7 +2,6 @@ package suite.util;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -86,18 +85,18 @@ public class FunUtil {
 		};
 	}
 
-	public static <T> Source<T> flatten(Source<List<T>> source) {
+	public static <T> Source<T> flatten(Source<Iterable<T>> source) {
 		return new Source<T>() {
-			private int index;
-			private List<T> list0 = Collections.emptyList();
+			private Iterator<T> iter = Collections.emptyIterator();
 
 			public T source() {
-				while (list0.size() <= index)
-					if ((list0 = source.source()) != null)
-						index = 0;
+				Iterable<T> iterable;
+				while (!iter.hasNext())
+					if ((iterable = source.source()) != null)
+						iter = iterable.iterator();
 					else
 						return null;
-				return list0.get(index++);
+				return iter.next();
 			}
 		};
 	}
@@ -172,17 +171,30 @@ public class FunUtil {
 		};
 	}
 
-	public static <T, V> IntObjSource<V> mapIntObj(Obj_Int<T> kf0, Fun<T, V> vf0, Source<T> source) {
-		Obj_Int<T> kf1 = Rethrow.fun(kf0);
-		Fun<T, V> vf1 = Rethrow.fun(vf0);
+	public static <T0, T1> IntObjSource<T1> mapIntObj(Obj_Int<T0> kf0, Fun<T0, T1> vf0, Source<T0> source) {
+		Obj_Int<T0> kf1 = Rethrow.fun(kf0);
+		Fun<T0, T1> vf1 = Rethrow.fun(vf0);
 		return pair -> {
-			T t = source.source();
+			T0 t = source.source();
 			boolean b = t != null;
 			if (b) {
 				pair.t0 = kf1.applyAsInt(t);
 				pair.t1 = vf1.apply(t);
 			}
 			return b;
+		};
+	}
+
+	public static <T0, T1> Source<T1> mapNonNull(Fun<T0, T1> fun, Source<T0> source) {
+		return new Source<T1>() {
+			public T1 source() {
+				T0 t0;
+				T1 t1;
+				while ((t0 = source.source()) != null)
+					if ((t1 = fun.apply(t0)) != null)
+						return t1;
+				return null;
+			}
 		};
 	}
 

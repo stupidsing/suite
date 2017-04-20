@@ -166,7 +166,7 @@ public class Outlet<T> implements Iterable<T> {
 		return next();
 	}
 
-	public <O> Outlet<O> flatMap(Fun<T, List<O>> fun) {
+	public <O> Outlet<O> flatMap(Fun<T, Iterable<O>> fun) {
 		return of(FunUtil.flatten(FunUtil.map(fun, source)));
 	}
 
@@ -235,6 +235,10 @@ public class Outlet<T> implements Iterable<T> {
 
 	public <V1> IntObjOutlet<V1> mapIntObj(Obj_Int<T> kf, Fun<T, V1> vf) {
 		return IntObjOutlet.of(FunUtil.mapIntObj(kf, vf, source));
+	}
+
+	public <O> Outlet<O> mapNonNull(Fun<T, O> fun) {
+		return of(FunUtil.mapNonNull(fun, source));
 	}
 
 	public T min(Comparator<T> comparator) {

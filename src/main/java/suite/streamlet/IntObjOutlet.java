@@ -209,7 +209,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return next(pair) ? pair : null;
 	}
 
-	public <O> Outlet<O> flatMap(IntObj_Obj<V, List<O>> fun) {
+	public <O> Outlet<O> flatMap(IntObj_Obj<V, Iterable<O>> fun) {
 		return Outlet.of(FunUtil.flatten(IntObjFunUtil.map(fun, source2)));
 	}
 
@@ -262,6 +262,10 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 
 	public IntObjOutlet<V> mapKey(Int_Int fun) {
 		return mapIntObj((k, v) -> fun.apply(k), (k, v) -> v);
+	}
+
+	public <O> Outlet<O> mapNonNull(IntObj_Obj<V, O> fun) {
+		return Outlet.of(IntObjFunUtil.mapNonNull(fun, source2));
 	}
 
 	public <V1> IntObjOutlet<V1> mapValue(Fun<V, V1> fun) {
