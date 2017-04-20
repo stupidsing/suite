@@ -1,6 +1,8 @@
 package suite.util;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,7 +33,6 @@ import suite.primitive.PrimitiveFun.Int_Float;
 import suite.primitive.PrimitiveFun.Int_Int;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
-import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 
 public class To {
@@ -60,7 +61,7 @@ public class To {
 	}
 
 	public static Bytes bytes(InputStream is) {
-		return Read.bytes(is).collect(As::bytes);
+		return outlet(is).collect(As::bytes);
 	}
 
 	/**
@@ -176,6 +177,19 @@ public class To {
 			if (pair != null)
 				map.put(pair.t0, pair.t1);
 		return map;
+	}
+
+	public static Outlet<Bytes> outlet(String data) {
+		return outlet(new ByteArrayInputStream(data.getBytes(Constants.charset)));
+	}
+
+	public static Outlet<Bytes> outlet(InputStream is) {
+		InputStream bis = new BufferedInputStream(is);
+		return Outlet.of(() -> {
+			byte bs[] = new byte[Constants.bufferSize];
+			int nBytesRead = Rethrow.ex(() -> bis.read(bs));
+			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
+		}).closeAtEnd(bis).closeAtEnd(is);
 	}
 
 	@SafeVarargs
