@@ -22,6 +22,7 @@ import suite.primitive.Chars.CharsBuilder;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.To;
 
 public class As {
 
@@ -217,6 +218,10 @@ public class As {
 
 	public static <K, V> Streamlet2<K, V> streamlet2(Outlet2<K, V> outlet) {
 		return Read.from2(outlet.toList());
+	}
+
+	public static String string(Outlet<Bytes> outlet) {
+		return To.string(bytes(outlet));
 	}
 
 	public static <T> Fun<Outlet<T>, Integer> sum(ToIntFunction<T> fun) {
