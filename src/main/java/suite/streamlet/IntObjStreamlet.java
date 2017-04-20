@@ -118,6 +118,10 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return spawn().first();
 	}
 
+	public <O> Streamlet<O> flatMap(IntObj_Obj<V, List<O>> fun) {
+		return new Streamlet<>(() -> spawn().flatMap(fun));
+	}
+
 	public IntObjStreamlet<List<V>> groupBy() {
 		return new IntObjStreamlet<>(() -> spawn().groupBy());
 	}

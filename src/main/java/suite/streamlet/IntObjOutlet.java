@@ -209,6 +209,10 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return next(pair) ? pair : null;
 	}
 
+	public <O> Outlet<O> flatMap(IntObj_Obj<V, List<O>> fun) {
+		return Outlet.of(FunUtil.flatten(IntObjFunUtil.map(fun, source2)));
+	}
+
 	public IntObjOutlet<List<V>> groupBy() {
 		return of(toListMap().source());
 	}

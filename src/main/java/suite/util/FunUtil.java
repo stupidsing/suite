@@ -1,6 +1,8 @@
 package suite.util;
 
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -81,6 +83,22 @@ public class FunUtil {
 			while ((t = source.source()) != null && !fun1.test(t))
 				;
 			return t;
+		};
+	}
+
+	public static <T> Source<T> flatten(Source<List<T>> source) {
+		return new Source<T>() {
+			private int index;
+			private List<T> list0 = Collections.emptyList();
+
+			public T source() {
+				while (list0.size() <= index)
+					if ((list0 = source.source()) != null)
+						index = 0;
+					else
+						return null;
+				return list0.get(index++);
+			}
 		};
 	}
 

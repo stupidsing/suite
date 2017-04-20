@@ -114,6 +114,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return spawn().first();
 	}
 
+	public <O> Streamlet<O> flatMap(BiFunction<K, V, List<O>> fun) {
+		return new Streamlet<>(() -> spawn().flatMap(fun));
+	}
+
 	public Streamlet2<K, List<V>> groupBy() {
 		return new Streamlet2<>(() -> spawn().groupBy());
 	}

@@ -166,6 +166,10 @@ public class Outlet<T> implements Iterable<T> {
 		return next();
 	}
 
+	public <O> Outlet<O> flatMap(Fun<T, List<O>> fun) {
+		return of(FunUtil.flatten(FunUtil.map(fun, source)));
+	}
+
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {
 		T t;
 		while ((t = next()) != null)

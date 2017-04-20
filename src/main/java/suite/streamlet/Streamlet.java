@@ -105,6 +105,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().first();
 	}
 
+	public <O> Streamlet<O> flatMap(Fun<T, List<O>> fun) {
+		return streamlet(() -> spawn().flatMap(fun));
+	}
+
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {
 		return spawn().fold(init, fun);
 	}

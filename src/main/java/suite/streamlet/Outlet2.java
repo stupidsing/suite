@@ -215,6 +215,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return next(pair) ? pair : null;
 	}
 
+	public <O> Outlet<O> flatMap(BiFunction<K, V, List<O>> fun) {
+		return Outlet.of(FunUtil.flatten(FunUtil2.map(fun, source2)));
+	}
+
 	public Outlet2<K, List<V>> groupBy() {
 		Map<K, List<V>> map = toListMap();
 		return Outlet.of(map.entrySet()).map2(Entry::getKey, Entry::getValue);
