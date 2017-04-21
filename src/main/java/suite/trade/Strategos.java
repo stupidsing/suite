@@ -3,11 +3,15 @@ package suite.trade;
 import java.util.Arrays;
 
 import suite.math.DiscreteCosineTransform;
+import suite.math.Matrix;
 import suite.trade.Strategy.GetBuySell;
 import suite.util.Copy;
 import suite.util.To;
 
 public class Strategos {
+
+	private Matrix mtx = new Matrix();
+	private MovingAverage ma = new MovingAverage();
 
 	public Strategy longHold = prices -> day -> day != 0 ? 0 : 1;
 
@@ -36,21 +40,21 @@ public class Strategos {
 
 	public Strategy macdSignalLineX(float alpha0, float alpha1, float macdAlpha) {
 		return prices -> {
-			float[] macd = macd(prices, alpha0, alpha1);
-			float[] macdEmas = MovingAverage.exponentialMovingAvg(macd, macdAlpha);
-			float[] diff = subtract(macd, macdEmas);
+			float[] macd = ma.macd(prices, alpha0, alpha1);
+			float[] macdEmas = ma.exponentialMovingAvg(macd, macdAlpha);
+			float[] diff = mtx.sub(macd, macdEmas);
 			return crossover(diff);
 		};
 	}
 
 	// trendy; alpha0 < alpha1
 	public Strategy macdZeroLineX(float alpha0, float alpha1) {
-		return prices -> crossover(macd(prices, alpha0, alpha1));
+		return prices -> crossover(ma.macd(prices, alpha0, alpha1));
 	}
 
 	public Strategy movingAvgMeanReverting(int nPastDays, int nFutureDays, float threshold) {
 		return prices -> {
-			float[] movingAvgs = MovingAverage.movingAvg(prices, nPastDays);
+			float[] movingAvgs = ma.movingAvg(prices, nPastDays);
 
 			return holdFixedDays(prices.length, nFutureDays, day -> {
 				if (nPastDays <= day) {
@@ -61,13 +65,6 @@ public class Strategos {
 					return 0;
 			});
 		};
-	}
-
-	// moving average convergence/divergence
-	private float[] macd(float[] prices, float alpha0, float alpha1) {
-		float[] emas0 = MovingAverage.exponentialMovingAvg(prices, alpha0); // long-term
-		float[] emas1 = MovingAverage.exponentialMovingAvg(prices, alpha1); // short-term
-		return subtract(emas1, emas0);
 	}
 
 	// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
@@ -105,10 +102,6 @@ public class Strategos {
 			} else
 				return 0;
 		};
-	}
-
-	private float[] subtract(float[] a, float[] b) {
-		return To.floatArray(a.length, i -> a[i] - b[i]);
 	}
 
 	private int signum(float f) {

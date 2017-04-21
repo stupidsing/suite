@@ -1,8 +1,19 @@
 package suite.trade;
 
+import suite.math.Matrix;
+
 public class MovingAverage {
 
-	public static float[] exponentialMovingAvg(float[] prices, float alpha) {
+	private Matrix mtx = new Matrix();
+
+	// moving average convergence/divergence
+	public float[] macd(float[] prices, float alpha0, float alpha1) {
+		float[] emas0 = exponentialMovingAvg(prices, alpha0); // long-term
+		float[] emas1 = exponentialMovingAvg(prices, alpha1); // short-term
+		return mtx.sub(emas1, emas0);
+	}
+
+	public float[] exponentialMovingAvg(float[] prices, float alpha) {
 		float[] emas = new float[prices.length];
 		float ema = prices[0];
 		for (int day = 0; day < prices.length; day++)
@@ -10,7 +21,7 @@ public class MovingAverage {
 		return emas;
 	}
 
-	public static float[] movingAvg(float[] prices, int windowSize) {
+	public float[] movingAvg(float[] prices, int windowSize) {
 		float[] movingAvgs = new float[prices.length];
 		float movingSum = 0f;
 
