@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import suite.os.LogUtil;
-import suite.util.Util;
 
 public class DataSource {
 
@@ -29,9 +28,10 @@ public class DataSource {
 	}
 
 	public void validate() {
+		String threeDaysAgo = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now().plusDays(-3));
+		String date0 = null;
 		float price0 = prices[0];
 		float price1;
-		String date0 = null;
 
 		for (int i = 1; i < prices.length; i++) {
 			String date1 = dates[i];
@@ -50,7 +50,7 @@ public class DataSource {
 			price0 = price1;
 		}
 
-		if (!Util.stringEquals(date0, DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now())))
+		if (date0.compareTo(threeDaysAgo) < 0)
 			LogUtil.warn("outdated date range: " + date0);
 	}
 
