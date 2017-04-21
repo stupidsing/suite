@@ -292,7 +292,7 @@ public class Hkex {
 
 	public int queryBoardLot(String stockCode0) {
 		if (Util.stringEquals(stockCode0, "0700.HK"))
-			return 100;
+			return 100; // server return some unexpected errors, handle manually
 		else {
 			String stockCode = "" + Integer.parseInt(stockCode0.replace(".HK", ""));
 			return queryBoardLot0(stockCode);
