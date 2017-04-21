@@ -32,8 +32,8 @@ public class HkexTest {
 
 	@Test
 	public void testQueryBoardLot() {
-		assertEquals(400, hkex.queryBoardLot("5"));
-		assertEquals(100, hkex.queryBoardLot("700"));
+		assertEquals(400, hkex.queryBoardLot("0005.HK"));
+		assertEquals(100, hkex.queryBoardLot("0700.HK"));
 	}
 
 }
