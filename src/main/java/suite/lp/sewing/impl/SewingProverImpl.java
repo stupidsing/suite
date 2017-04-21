@@ -122,6 +122,21 @@ public class SewingProverImpl implements SewingProver {
 		private Prover prover;
 		private Debug debug = new Debug("", IList.end());
 
+		private void trampoline() {
+			while (!alts.isEmpty()) {
+				rems = IList.cons(alts.head, IList.end());
+				alts = alts.tail;
+
+				Trampoline rem;
+				while ((rem = rems.head) != fail) {
+					rems = rems.tail;
+					pushRem(rem.prove(this));
+				}
+			}
+
+			trail.unwindAll();
+		}
+
 		private Sink<Node> handler = node -> {
 			throw new SuiteException(node, Read.from(debug.stack).map(Object::toString).collect(As.conc("\n")));
 		};
@@ -169,31 +184,17 @@ public class SewingProverImpl implements SewingProver {
 		return pc -> {
 			Mutable<Boolean> result = Mutable.of(false);
 
-			trampoline(new Runtime(pc, rt -> {
+			new Runtime(pc, rt -> {
 				rt.pushRem(rt_ -> {
 					result.update(true);
 					return fail;
 				});
 				return tr;
-			}));
+			}).trampoline();
+			;
 
 			return result.get();
 		};
-	}
-
-	private void trampoline(Runtime rt) {
-		while (!rt.alts.isEmpty()) {
-			rt.rems = IList.cons(rt.alts.head, IList.end());
-			rt.alts = rt.alts.tail;
-
-			Trampoline rem;
-			while ((rem = rt.rems.head) != fail) {
-				rt.rems = rt.rems.tail;
-				rt.pushRem(rem.prove(rt));
-			}
-		}
-
-		rt.trail.unwindAll();
 	}
 
 	private void compileAll() {
@@ -437,7 +438,7 @@ public class SewingProverImpl implements SewingProver {
 				Suspend suspend = new Suspend(() -> {
 					Runtime rt_ = new Runtime(rt.prover.config(), tr_);
 					rt_.env = env;
-					trampoline(rt_);
+					rt_.trampoline();
 					return Read.from(results).uniqueResult();
 				});
 
