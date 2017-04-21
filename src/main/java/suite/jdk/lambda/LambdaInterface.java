@@ -29,7 +29,7 @@ public class LambdaInterface<I> {
 
 	public Method method() {
 		if (method == null) {
-			Method methods[] = Rethrow.ex(() -> interfaceClass.getMethods());
+			Method[] methods = Rethrow.ex(() -> interfaceClass.getMethods());
 			method = Read.from(methods).filter(m -> Util.stringEquals(m.getName(), methodName)).uniqueResult();
 		}
 		return method;
