@@ -22,7 +22,7 @@ public class Bytes implements Iterable<Byte> {
 	private static byte[] emptyArray = new byte[0];
 	private static int reallocSize = 65536;
 
-	public static Bytes empty = Bytes.of(emptyArray);
+	public static Bytes empty = of(emptyArray);
 
 	public final byte[] bs; // immutable
 	public final int start, end;
@@ -45,24 +45,24 @@ public class Bytes implements Iterable<Byte> {
 	public static Bytes of(IoSink<DataOutput> ioSink) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ioSink.sink(new DataOutputStream(baos));
-		return Bytes.of(baos.toByteArray());
+		return of(baos.toByteArray());
 	}
 
 	public static Bytes of(ByteBuffer bb) {
 		int offset = bb.arrayOffset();
-		return Bytes.of(bb.array(), offset, offset + bb.limit());
+		return of(bb.array(), offset, offset + bb.limit());
 	}
 
 	public static Bytes of(Bytes bytes) {
-		return Bytes.of(bytes.bs, bytes.start, bytes.end);
+		return of(bytes.bs, bytes.start, bytes.end);
 	}
 
 	public static Bytes of(byte... bs) {
-		return Bytes.of(bs, 0);
+		return of(bs, 0);
 	}
 
 	public static Bytes of(byte[] bs, int start) {
-		return Bytes.of(bs, start, bs.length);
+		return of(bs, start, bs.length);
 	}
 
 	public static Bytes of(byte[] bs, int start, int end) {
@@ -80,11 +80,11 @@ public class Bytes implements Iterable<Byte> {
 		byte[] nb = new byte[newSize];
 		System.arraycopy(bs, start, nb, 0, size0);
 		System.arraycopy(a.bs, a.start, nb, size0, size1);
-		return Bytes.of(nb);
+		return of(nb);
 	}
 
 	public static Bytes asList(byte... in) {
-		return Bytes.of(in);
+		return of(in);
 	}
 
 	public static Bytes concat(Bytes... array) {
@@ -195,7 +195,7 @@ public class Bytes implements Iterable<Byte> {
 			s++;
 		while (s < e && bs[e - 1] == 0)
 			e--;
-		return Bytes.of(bs, s, e);
+		return of(bs, s, e);
 	}
 
 	public void write(DataOutput dataOutput) throws IOException {
@@ -255,7 +255,7 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	private Bytes subbytes0(int start, int end) {
-		Bytes result = Bytes.of(bs, start, end);
+		Bytes result = of(bs, start, end);
 
 		// avoid small pack of bytes object keeping a large buffer
 		if (Boolean.FALSE && reallocSize <= bs.length && end - start < reallocSize / 4)
@@ -309,7 +309,7 @@ public class Bytes implements Iterable<Byte> {
 		}
 
 		public Bytes toBytes() {
-			return Bytes.of(bs, 0, size);
+			return of(bs, 0, size);
 		}
 
 		private void extendBuffer(int capacity1) {

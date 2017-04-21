@@ -21,7 +21,7 @@ public class Chars implements Iterable<Character> {
 	private static char[] emptyArray = new char[0];
 	private static int reallocSize = 65536;
 
-	public static Chars empty = Chars.of(emptyArray);
+	public static Chars empty = of(emptyArray);
 
 	public final char[] cs; // immutable
 	public final int start, end;
@@ -44,24 +44,24 @@ public class Chars implements Iterable<Character> {
 	public static Chars of(IoSink<Writer> ioSink) throws IOException {
 		Writer writer = new StringWriter();
 		ioSink.sink(writer);
-		return Chars.of(writer.toString());
+		return of(writer.toString());
 	}
 
 	public static Chars of(String s) {
 		char[] a = To.charArray(s);
-		return Chars.of(a);
+		return of(a);
 	}
 
 	public static Chars of(Chars chars) {
-		return Chars.of(chars.cs, chars.start, chars.end);
+		return of(chars.cs, chars.start, chars.end);
 	}
 
 	public static Chars of(char... cs) {
-		return Chars.of(cs, 0);
+		return of(cs, 0);
 	}
 
 	public static Chars of(char[] cs, int start) {
-		return Chars.of(cs, start, cs.length);
+		return of(cs, start, cs.length);
 	}
 
 	public static Chars of(char[] cs, int start, int end) {
@@ -79,11 +79,11 @@ public class Chars implements Iterable<Character> {
 		char[] nb = new char[newSize];
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
-		return Chars.of(nb);
+		return of(nb);
 	}
 
 	public static Chars asList(char... in) {
-		return Chars.of(in);
+		return of(in);
 	}
 
 	public static Chars concat(Chars... array) {
@@ -194,7 +194,7 @@ public class Chars implements Iterable<Character> {
 			s++;
 		while (s < e && Character.isWhitespace(cs[e - 1]))
 			e--;
-		return Chars.of(cs, s, e);
+		return of(cs, s, e);
 	}
 
 	public void write(DataOutput dataOutput) throws IOException {
