@@ -37,7 +37,7 @@ public class Strategos {
 	public Strategy macdSignalLineX(float alpha0, float alpha1, float macdAlpha) {
 		return prices -> {
 			float[] macd = macd(prices, alpha0, alpha1);
-			float[] macdEmas = exponentialMovingAvg(macd, macdAlpha);
+			float[] macdEmas = MovingAverage.exponentialMovingAvg(macd, macdAlpha);
 			float[] diff = subtract(macd, macdEmas);
 			return crossover(diff);
 		};
@@ -50,7 +50,7 @@ public class Strategos {
 
 	public Strategy movingAvgMeanReverting(int nPastDays, int nFutureDays, float threshold) {
 		return prices -> {
-			float[] movingAvgs = movingAvg(prices, nPastDays);
+			float[] movingAvgs = MovingAverage.movingAvg(prices, nPastDays);
 
 			return holdFixedDays(prices.length, nFutureDays, day -> {
 				if (nPastDays <= day) {
@@ -65,32 +65,9 @@ public class Strategos {
 
 	// moving average convergence/divergence
 	private float[] macd(float[] prices, float alpha0, float alpha1) {
-		float[] emas0 = exponentialMovingAvg(prices, alpha0); // long-term
-		float[] emas1 = exponentialMovingAvg(prices, alpha1); // short-term
+		float[] emas0 = MovingAverage.exponentialMovingAvg(prices, alpha0); // long-term
+		float[] emas1 = MovingAverage.exponentialMovingAvg(prices, alpha1); // short-term
 		return subtract(emas1, emas0);
-	}
-
-	private float[] exponentialMovingAvg(float[] prices, float alpha) {
-		float[] emas = new float[prices.length];
-		float ema = prices[0];
-		for (int day = 0; day < prices.length; day++)
-			emas[day] = ema += alpha * (prices[day] - ema);
-		return emas;
-	}
-
-	private float[] movingAvg(float[] prices, int windowSize) {
-		float[] movingAvgs = new float[prices.length];
-		float movingSum = 0f;
-
-		for (int day = 0; day < prices.length; day++) {
-			if (windowSize <= day) {
-				movingAvgs[day] = movingSum / windowSize;
-				movingSum -= prices[day - windowSize];
-			}
-			movingSum += prices[day];
-		}
-
-		return movingAvgs;
 	}
 
 	// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
