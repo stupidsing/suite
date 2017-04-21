@@ -145,7 +145,7 @@ public class EagerFunInterpreter {
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
 				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(TreeUtil::tuple).toList();
 				if (arrays.size() == 1) {
-					Node array[] = arrays.get(0);
+					Node[] array = arrays.get(0);
 					IMap<Node, Fun<Frame, Node>> vm1 = vm.put(array[0], unwrap(getter(fs)));
 					Eager0 eager1 = new Eager0(fs + 1, vm1);
 					Fun<Frame, Node> value_ = wrap(eager1.eager0(array[1]));
@@ -159,7 +159,7 @@ public class EagerFunInterpreter {
 					IMap<Node, Fun<Frame, Node>> vm1 = vm;
 					int fs1 = fs;
 
-					for (Node array[] : arrays) {
+					for (Node[] array : arrays) {
 						Fun<Frame, Node> getter = getter(fs1);
 						vm1 = vm1.put(array[0], unwrap(getter));
 						fs1++;
@@ -167,7 +167,7 @@ public class EagerFunInterpreter {
 
 					Eager0 eager1 = new Eager0(fs1, vm1);
 
-					for (Node array[] : arrays)
+					for (Node[] array : arrays)
 						values_.add(wrap(eager1.eager0(array[1])));
 
 					Fun<Frame, Node> expr = eager1.eager0(DEFVARS.do_);

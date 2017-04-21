@@ -75,7 +75,7 @@ public class QueryRewriter {
 	}
 
 	private Node rewriteClause(String s, List<Integer> indices, Node node0) {
-		Node m[];
+		Node[] m;
 		if ((m = Suite.matcher(s).apply(node0)) != null) {
 			for (int i : indices)
 				m[i] = rewriteClause(m[i]);
@@ -95,7 +95,7 @@ public class QueryRewriter {
 			if (length <= 0)
 				nodex = node0;
 			else {
-				Node ps[] = TreeUtil.getElements(node0, length);
+				Node[] ps = TreeUtil.getElements(node0, length);
 				if (pi.isSkipFirst)
 					ps = Arrays.copyOfRange(ps, 1, ps.length, Node[].class);
 				nodex = Tuple.of(ps);

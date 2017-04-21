@@ -76,7 +76,7 @@ public class Rewriter {
 				op = tree.getOperator();
 				children = Arrays.asList(p0, p1);
 			} else if (node instanceof Tuple) {
-				Node nodes[] = ((Tuple) node).nodes;
+				Node[] nodes = ((Tuple) node).nodes;
 				type = ReadType.TUPLE;
 				terminal = null;
 				op = null;

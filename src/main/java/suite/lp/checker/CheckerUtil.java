@@ -33,7 +33,7 @@ public class CheckerUtil {
 			Suite.matcher("try .0 _ .1"));
 
 	public Streamlet<Node> scan(Node node) {
-		Node m[] = null;
+		Node[] m = null;
 
 		for (Fun<Node, Node[]> matcher : matchers)
 			if ((m = matcher.apply(node)) != null)

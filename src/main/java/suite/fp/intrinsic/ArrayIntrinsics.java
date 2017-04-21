@@ -12,16 +12,16 @@ import suite.util.Copy;
 public class ArrayIntrinsics {
 
 	public Intrinsic append = (callback, inputs) -> {
-		Node array0[] = ((Tuple) inputs.get(0)).nodes;
-		Node array1[] = ((Tuple) inputs.get(1)).nodes;
-		Node array[] = new Node[array0.length + array1.length];
+		Node[] array0 = ((Tuple) inputs.get(0)).nodes;
+		Node[] array1 = ((Tuple) inputs.get(1)).nodes;
+		Node[] array = new Node[array0.length + array1.length];
 		Copy.array(array0, 0, array, 0, array0.length);
 		Copy.array(array1, 0, array, array0.length, array1.length);
 		return Tuple.of(array);
 	};
 
 	public Intrinsic arrayList = (callback, inputs) -> {
-		Node array[] = ((Tuple) inputs.get(0)).nodes;
+		Node[] array = ((Tuple) inputs.get(0)).nodes;
 		return Intrinsics.drain(callback, i -> array[i], array.length);
 	};
 
@@ -32,7 +32,7 @@ public class ArrayIntrinsics {
 	public Intrinsic slice = (callback, inputs) -> {
 		int s = ((Int) inputs.get(0)).number;
 		int e = ((Int) inputs.get(1)).number;
-		Node array[] = ((Tuple) inputs.get(2)).nodes;
+		Node[] array = ((Tuple) inputs.get(2)).nodes;
 		if (s < 0)
 			s += array.length;
 		if (e < s)

@@ -68,7 +68,7 @@ public class LazyFunInterpreter0 {
 	private Fun<IMap<String, Thunk_>, Thunk_> lazy0(Node node) {
 		Fun<IMap<String, Thunk_>, Thunk_> result;
 		Tree tree;
-		Node m[];
+		Node[] m;
 
 		if ((m = Suite.matcher("define .0 := .1 >> .2").apply(node)) != null) {
 			String vk = v(m[0]);

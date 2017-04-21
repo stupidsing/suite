@@ -17,7 +17,7 @@ public class SewingExpressionImpl0 implements SewingExpression {
 	}
 
 	public Evaluate compile(Node node) {
-		Node m[];
+		Node[] m;
 
 		if ((m = Suite.matcher(".0 + .1").apply(node)) != null) {
 			Evaluate e0 = compile(m[0]);

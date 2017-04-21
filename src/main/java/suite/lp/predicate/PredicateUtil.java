@@ -33,7 +33,7 @@ public class PredicateUtil {
 	}
 
 	public interface PredicatePs {
-		public boolean prove(Prover prover, Node ps[]);
+		public boolean prove(Prover prover, Node[] ps);
 	}
 
 	public static BuiltinPredicate run(Runnable runnable) {

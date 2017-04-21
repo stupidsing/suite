@@ -29,7 +29,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	protected void handle(Exec exec, Instruction insn) {
 		Activation current = exec.current;
 		Frame frame = current.frame;
-		Node regs[] = frame != null ? frame.registers : null;
+		Node[] regs = frame != null ? frame.registers : null;
 		Trail trail = prover.getTrail();
 		Instruction insn1;
 

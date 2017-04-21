@@ -123,7 +123,7 @@ public class Grapher {
 				Tree.forceSetRight(tree, children.get(1).t1);
 				break;
 			case TUPLE:
-				Node list[] = ((Tuple) node).nodes;
+				Node[] list = ((Tuple) node).nodes;
 				for (int j = 0; j < children.size(); j++)
 					list[j] = children.get(j).t1;
 			}

@@ -6,13 +6,13 @@ import suite.util.Util;
 
 public class Tuple extends Node {
 
-	public final Node nodes[];
+	public final Node[] nodes;
 
-	public static Tuple of(Node nodes[]) {
+	public static Tuple of(Node[] nodes) {
 		return new Tuple(nodes);
 	}
 
-	private Tuple(Node nodes[]) {
+	private Tuple(Node[] nodes) {
 		this.nodes = nodes;
 	}
 

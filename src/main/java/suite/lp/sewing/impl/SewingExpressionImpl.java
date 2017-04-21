@@ -33,7 +33,7 @@ public class SewingExpressionImpl implements SewingExpression {
 	}
 
 	private LambdaInstance<Evaluate> compile0(Node node) {
-		Node m[];
+		Node[] m;
 
 		if ((m = Suite.matcher(".0 + .1").apply(node)) != null)
 			return compileOperator(m, "+");
@@ -75,7 +75,7 @@ public class SewingExpressionImpl implements SewingExpression {
 		return LambdaImplementation.of(lambdaInterface, To.map(key, Type.INT), expr);
 	}
 
-	private LambdaInstance<Evaluate> compileOperator(Node m[], String op) {
+	private LambdaInstance<Evaluate> compileOperator(Node[] m, String op) {
 		LambdaInstance<Evaluate> lambda0 = compile0(m[0]);
 		LambdaInstance<Evaluate> lambda1 = compile0(m[1]);
 

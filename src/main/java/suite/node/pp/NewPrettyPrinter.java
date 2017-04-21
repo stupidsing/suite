@@ -53,7 +53,7 @@ public class NewPrettyPrinter {
 			int prec = operator.getPrecedence();
 			boolean isParenthesesRequired = operator != null ? prec <= parentPrec : false;
 			String indent1 = indent + ind;
-			Node m[];
+			Node[] m;
 
 			if (isParenthesesRequired) {
 				format0(node, 0, indent, concatWithSpace(prefix, "("));

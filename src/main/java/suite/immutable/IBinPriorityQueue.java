@@ -22,7 +22,7 @@ public class IBinPriorityQueue<T> {
 	 *
 	 * Note that trees[rank].nodes.size = rank if trees[rank] is not null.
 	 */
-	private Node trees[];
+	private Node[] trees;
 
 	private class Node {
 		private List<Node> nodes; // note that rank(nodes.get(i)) = i
@@ -60,8 +60,8 @@ public class IBinPriorityQueue<T> {
 		private IBinPriorityQueue<T> deleteMin() {
 			findMin();
 
-			Node forest0[] = newForest();
-			Node forest1[] = newForest();
+			Node[] forest0 = newForest();
+			Node[] forest1 = newForest();
 
 			for (int rank = 0; rank < maxRank; rank++)
 				forest0[rank] = trees[rank];
@@ -83,7 +83,7 @@ public class IBinPriorityQueue<T> {
 		this(comparator, (Node[]) Array.newInstance(Node.class, maxRank));
 	}
 
-	public IBinPriorityQueue(Comparator<T> comparator, Node trees[]) {
+	public IBinPriorityQueue(Comparator<T> comparator, Node[] trees) {
 		this.comparator = comparator;
 		this.trees = trees;
 	}
@@ -97,13 +97,13 @@ public class IBinPriorityQueue<T> {
 	}
 
 	public IBinPriorityQueue<T> add(T value) {
-		Node forest[] = newForest();
+		Node[] forest = newForest();
 		forest[0] = new Node(value);
 		return meld(new IBinPriorityQueue<>(comparator, forest));
 	}
 
 	public IBinPriorityQueue<T> meld(IBinPriorityQueue<T> pq) {
-		Node forest[] = newForest();
+		Node[] forest = newForest();
 		Node tree = null;
 
 		for (int rank = 0; rank < maxRank; rank++) {
@@ -147,7 +147,7 @@ public class IBinPriorityQueue<T> {
 
 	private Node[] newForest() {
 		@SuppressWarnings("unchecked")
-		Node forest[] = (Node[]) Array.newInstance(Node.class, maxRank);
+		Node[] forest = (Node[]) Array.newInstance(Node.class, maxRank);
 		return forest;
 	}
 

@@ -37,7 +37,7 @@ public class Amd64Parser {
 
 	private Operand parseOperand(Node node) {
 		Operand operand;
-		Node m[];
+		Node[] m;
 
 		if ((operand = amd64.regsByName.get(node)) != null)
 			return operand;

@@ -23,7 +23,7 @@ public class PeepholeOptimizer {
 		for (Pair<Reference, Node> lni0 : lnis0) {
 			Node node0 = lni0.t1;
 			Node node1;
-			Node m[];
+			Node[] m;
 
 			if ((m = ADDI__.apply(node0)) != null) {
 				Node m0 = m[0];

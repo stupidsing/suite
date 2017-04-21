@@ -65,7 +65,7 @@ public class InstructionExecutor implements AutoCloseable {
 
 		Activation current = new Activation(f0, yawnEntryPoint, null);
 
-		Node stack[] = new Node[Suite.stackSize];
+		Node[] stack = new Node[Suite.stackSize];
 		int ip = 0, sp = 0;
 		Node returnValue = null;
 
@@ -78,7 +78,7 @@ public class InstructionExecutor implements AutoCloseable {
 		while (true)
 			try {
 				Frame frame = current.frame;
-				Node regs[] = frame != null ? frame.registers : null;
+				Node[] regs = frame != null ? frame.registers : null;
 				Instruction insn = instructions[ip = current.ip++];
 
 				Thunk thunk;

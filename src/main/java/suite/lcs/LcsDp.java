@@ -40,7 +40,7 @@ public class LcsDp<T> {
 		int size0 = l0.size(), size1 = l1.size();
 
 		@SuppressWarnings("unchecked")
-		Node dp[][] = (Node[][]) Array.newInstance(Node.class, size0, size1);
+		Node[] dp[] = (Node[][]) Array.newInstance(Node.class, size0, size1);
 
 		for (int i0 = 0; i0 < size0; i0++)
 			for (int i1 = 0; i1 < size1; i1++) {

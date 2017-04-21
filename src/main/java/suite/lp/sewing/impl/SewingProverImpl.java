@@ -261,7 +261,7 @@ public class SewingProverImpl implements SewingProver {
 		Trampoline tr = null;
 		List<Node> list;
 		Tree tree;
-		Node m[];
+		Node[] m;
 
 		if (1 < (list = breakdown(TermOp.AND___, node)).size())
 			tr = and(Read.from(list).map(n -> compile0(sb, n)));
@@ -314,7 +314,7 @@ public class SewingProverImpl implements SewingProver {
 			BindPredicate valuex_ = sb.compileBind(m[2]);
 			Clone_ ht_ = sb.compile(m[3]);
 			tr = rt -> {
-				Node ht[] = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
+				Node[] ht = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
 				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				rt.pushRem(rt_ -> valuex_.test(rt_, current.get()) ? okay : fail);
@@ -362,7 +362,7 @@ public class SewingProverImpl implements SewingProver {
 			Clone_ l_ = sb.compile(m[0]);
 			Clone_ ht_ = sb.compile(m[1]);
 			tr = rt -> {
-				Node ht[] = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
+				Node[] ht = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
 				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
 				for (Node n : Tree.iter(l_.apply(rt.env)))
 					rt.pushRem(rt_ -> {

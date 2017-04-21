@@ -21,7 +21,7 @@ public class StackAssembler {
 
 	private Node rsOp0 = Atom.of("$0");
 	private Node rsOp1 = Atom.of("$1");
-	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI") };
+	private Node[] registers = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI") };
 
 	private Fun<Node, Node[]> FRBGN_ = Suite.matcher("FR-BEGIN ()");
 	private Fun<Node, Node[]> FREND_ = Suite.matcher("FR-END ()");
@@ -51,7 +51,7 @@ public class StackAssembler {
 		for (Pair<Reference, Node> lni0 : lnis0) {
 			Node node0 = lni0.t1;
 			Node node1;
-			Node m[];
+			Node[] m;
 
 			if ((m = FRBGN_.apply(node0)) != null) {
 				deque.push(new int[] { fs, rs, });

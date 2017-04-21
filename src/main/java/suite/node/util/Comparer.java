@@ -73,8 +73,8 @@ public class Comparer implements Comparator<Node> {
 				c = c != 0 ? c : compare(t0.getRight(), t1.getRight());
 				return c;
 			} else if (clazz0 == Tuple.class) {
-				Node nodes0[] = ((Tuple) n0).nodes;
-				Node nodes1[] = ((Tuple) n1).nodes;
+				Node[] nodes0 = ((Tuple) n0).nodes;
+				Node[] nodes1 = ((Tuple) n1).nodes;
 				int i = 0, l = Math.min(nodes0.length, nodes1.length);
 				while (c == 0 && i < l)
 					c = compare(nodes0[i], nodes1[i]);

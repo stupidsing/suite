@@ -16,7 +16,7 @@ public class SuiteIntrinsics {
 	public Intrinsic match = (callback, inputs) -> {
 		String s = Data.get(inputs.get(0)).toString();
 		Node n = Data.get(inputs.get(1));
-		Node m[] = Suite.matcher(s.toString()).apply(n);
+		Node[] m = Suite.matcher(s.toString()).apply(n);
 		if (m != null)
 			return Intrinsics.drain(callback, p -> new Data<>(m[p]), m.length);
 		else
@@ -30,7 +30,7 @@ public class SuiteIntrinsics {
 
 	public Intrinsic substitute = (callback, inputs) -> {
 		String s = Data.get(inputs.get(0)).toString();
-		Node array[] = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true) //
+		Node[] array = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true) //
 				.map(Data::<Node> get) //
 				.toArray(Node.class);
 		return new Data<>(Suite.substitute(s, array));

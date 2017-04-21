@@ -21,7 +21,7 @@ public class TreeUtil {
 	}
 
 	public static Node[] getElements(Node node0, int n) {
-		Node params[] = new Node[n];
+		Node[] params = new Node[n];
 		Node node = node0;
 		Tree tree;
 
