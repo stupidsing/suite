@@ -301,8 +301,8 @@ public class Hkex {
 				+ "&StockCode=" + stockCode //
 				+ "&StockName=" //
 				+ "&mkt=hk" //
-				+ "&x=35" //
-				+ "&y=12");
+				+ "&x=" //
+				+ "&y=");
 
 		CompanyInfo companyInfo = mapper.convertValue(json, CompanyInfo.class);
 
