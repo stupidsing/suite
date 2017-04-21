@@ -234,11 +234,11 @@ public class Hkex {
 		return companyByCode.get(code);
 	}
 
-	public List<Company> list() {
-		return list(0);
+	public List<Company> queryCompanies() {
+		return queryCompanies(0);
 	}
 
-	public List<Company> list(int pageNo) {
+	public List<Company> queryCompanies(int pageNo) {
 		JsonNode json = query("" //
 				+ "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
 				+ "?location=companySearch" //
@@ -290,7 +290,9 @@ public class Hkex {
 					.toList();
 	}
 
-	public int queryBoardLot(String stockCode) {
+	public int queryBoardLot(String stockCode0) {
+		String stockCode = "" + Integer.parseInt(stockCode0.replace(".HK", ""));
+
 		JsonNode json = query("" //
 				+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
 				+ "?location=companySearch" //
