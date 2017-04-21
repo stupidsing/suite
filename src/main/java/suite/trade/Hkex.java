@@ -332,13 +332,13 @@ public class Hkex {
 		JsonNode json;
 
 		if (Boolean.TRUE) {
-			Execute execute = new Execute(new String[] { "curl", url, });
-			json = Rethrow.ex(() -> mapper.readTree(execute.out));
-		} else {
 			String referer = "https://www.hkex.com.hk/eng/csm/result.htm?location=companySearch";
 			Map<String, String> headers = To.map("Referer", referer);
 			InputStream is = HttpUtil.http("GET", Rethrow.ex(() -> new URL(url)), headers).out.collect(To::inputStream);
 			json = Rethrow.ex(() -> mapper.readTree(is));
+		} else {
+			Execute execute = new Execute(new String[] { "curl", url, });
+			json = Rethrow.ex(() -> mapper.readTree(execute.out));
 		}
 
 		return json;
