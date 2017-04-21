@@ -283,11 +283,11 @@ public class Bytes implements Iterable<Byte> {
 			return this;
 		}
 
-		public BytesBuilder append(byte bs_[]) {
+		public BytesBuilder append(byte[] bs_) {
 			return append(bs_, 0, bs_.length);
 		}
 
-		public BytesBuilder append(byte bs_[], int start, int end) {
+		public BytesBuilder append(byte[] bs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
 			Copy.primitiveArray(bs_, start, bs, size, inc);

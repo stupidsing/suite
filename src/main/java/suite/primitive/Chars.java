@@ -282,11 +282,11 @@ public class Chars implements Iterable<Character> {
 			return this;
 		}
 
-		public CharsBuilder append(char cs_[]) {
+		public CharsBuilder append(char[] cs_) {
 			return append(cs, 0, cs.length);
 		}
 
-		public CharsBuilder append(char cs_[], int start, int end) {
+		public CharsBuilder append(char[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
 			Copy.primitiveArray(cs_, start, cs, size, inc);

@@ -4,7 +4,7 @@ import com.sun.jna.Library;
 
 public interface LibcJna extends Library {
 
-	public int cfmakeraw(byte termios_p[]);
+	public int cfmakeraw(byte[] termios_p);
 
 	public int getchar();
 
@@ -12,8 +12,8 @@ public interface LibcJna extends Library {
 
 	public int putchar(int ch);
 
-	public int tcgetattr(int fd, byte termios_p[]);
+	public int tcgetattr(int fd, byte[] termios_p);
 
-	public int tcsetattr(int fd, int optional_actions, byte termios_p[]);
+	public int tcsetattr(int fd, int optional_actions, byte[] termios_p);
 
 }

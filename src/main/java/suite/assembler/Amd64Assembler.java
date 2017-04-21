@@ -537,7 +537,7 @@ public class Amd64Assembler {
 			throw new RuntimeException("Bad instruction");
 	}
 
-	private InsnCode assembleJump(Instruction instruction, long offset, int b_near, byte b_far[]) {
+	private InsnCode assembleJump(Instruction instruction, long offset, int b_near, byte[] b_far) {
 		if (instruction.op0 instanceof OpImm)
 			return assembleJumpImm((OpImm) instruction.op0, offset, b_near, b_far);
 		else
