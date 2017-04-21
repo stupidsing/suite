@@ -291,8 +291,15 @@ public class Hkex {
 	}
 
 	public int queryBoardLot(String stockCode0) {
-		String stockCode = "" + Integer.parseInt(stockCode0.replace(".HK", ""));
+		if (Util.stringEquals(stockCode0, "0700.HK"))
+			return 100;
+		else {
+			String stockCode = "" + Integer.parseInt(stockCode0.replace(".HK", ""));
+			return queryBoardLot0(stockCode);
+		}
+	}
 
+	private int queryBoardLot0(String stockCode) {
 		JsonNode json = query("" //
 				+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
 				+ "?location=companySearch" //
@@ -315,7 +322,8 @@ public class Hkex {
 				.flatMap(tr -> tr.td) //
 				.filter(td -> Util.stringEquals(td.get(0), "Board lot")) //
 				.uniqueResult() //
-				.get(1);
+				.get(1) //
+				.replace(",", "");
 
 		return Integer.parseInt(boardLotStr);
 	}
