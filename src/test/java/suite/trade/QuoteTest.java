@@ -80,8 +80,10 @@ public class QuoteTest {
 		float amount0 = Read.from(table0).map(r -> -r.buySell * r.price).collect(this::sum);
 		float amount1 = Read.from(table1).map(r -> -r.buySell * r.price).collect(this::sum);
 
-		Read.from2(priceByStockCodes) //
-				.map((stockCode, price) -> stockCode + " := " + price) //
+		System.out.println("CONSTITUENTS:");
+
+		Read.from2(sizeByStockCodes) //
+				.map((stockCode, size) -> stockCode + " := " + size + " * " + priceByStockCodes.get(stockCode)) //
 				.forEach(System.out::println);
 
 		System.out.println("AMOUNT0 = " + amount0);
