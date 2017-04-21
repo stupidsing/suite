@@ -10,9 +10,9 @@ public class FastFourierTransformTest {
 	public void testFft() {
 		Complex zero = Complex.of(0f, 0f);
 		Complex one = Complex.of(1f, 0f);
-		Complex fs0[] = { one, one, one, one, zero, zero, zero, zero, };
-		Complex fs1[] = fft.fft(fs0);
-		Complex fs2[] = fft.ifft(fs1);
+		Complex[] fs0 = { one, one, one, one, zero, zero, zero, zero, };
+		Complex[] fs1 = fft.fft(fs0);
+		Complex[] fs2 = fft.ifft(fs1);
 
 		Complex.verifyEquals(fs1[0], Complex.of(4f, 0f));
 		Complex.verifyEquals(fs1[1], Complex.of(1f, -2.414214f));

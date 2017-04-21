@@ -5,10 +5,10 @@ import suite.util.To;
 // https://rosettacode.org/wiki/Fast_Fourier_transform#Java
 public class FastFourierTransform {
 
-	public Complex[] ifft(Complex cs0[]) {
+	public Complex[] ifft(Complex[] cs0) {
 		int size = cs0.length;
-		Complex cs1[] = To.array(Complex.class, size, i -> cs0[i].conjugate());
-		Complex cs2[] = fft(cs1);
+		Complex[] cs1 = To.array(Complex.class, size, i -> cs0[i].conjugate());
+		Complex[] cs2 = fft(cs1);
 		float inv = 1.0f / size;
 
 		for (int i = 0; i < size; i++)
@@ -17,9 +17,9 @@ public class FastFourierTransform {
 		return cs2;
 	}
 
-	public Complex[] fft(Complex tds[]) {
+	public Complex[] fft(Complex[] tds) {
 		int size = tds.length;
-		Complex fds[] = new Complex[size];
+		Complex[] fds = new Complex[size];
 		int s = size;
 		int bits = 0;
 
@@ -33,7 +33,7 @@ public class FastFourierTransform {
 
 		for (int g = 2; g <= size; g <<= 1) {
 			double angleDiff = 2 * Math.PI / g;
-			Complex cis[] = new Complex[g];
+			Complex[] cis = new Complex[g];
 
 			for (int i = 0; i < g; i++) {
 				double angle = angleDiff * i;

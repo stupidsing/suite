@@ -19,18 +19,18 @@ public class FastFourierTransform0 {
 		}
 	}
 
-	public Complex[] fft(Complex inputs[], Ind ind) {
+	public Complex[] fft(Complex[] inputs, Ind ind) {
 		int count = ind.count;
 
 		if (count == 1)
 			return new Complex[] { inputs[ind.start], };
 		else if (count % 2 == 0) {
-			Complex cis[] = getCis(count);
+			Complex[] cis = getCis(count);
 			int count1 = count / 2;
 			int inc1 = ind.inc * 2;
-			Complex f0[] = fft(inputs, new Ind(ind.start, count1, inc1));
-			Complex f1[] = fft(inputs, new Ind(ind.start + ind.inc, count1, inc1));
-			Complex f[] = new Complex[count];
+			Complex[] f0 = fft(inputs, new Ind(ind.start, count1, inc1));
+			Complex[] f1 = fft(inputs, new Ind(ind.start + ind.inc, count1, inc1));
+			Complex[] f = new Complex[count];
 
 			for (int di = 0; di < count1; di++) {
 				int si = di;

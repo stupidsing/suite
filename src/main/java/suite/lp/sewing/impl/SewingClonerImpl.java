@@ -67,7 +67,7 @@ public class SewingClonerImpl extends VariableMapperImpl implements SewingCloner
 				int index = findVariableIndex(node0);
 				fun = env -> env.get(index);
 			} else if (node0 instanceof Tuple) {
-				Clone_ ps[] = Read.from(((Tuple) node0).nodes).map(this::compile).toArray(Clone_.class);
+				Clone_[] ps = Read.from(((Tuple) node0).nodes).map(this::compile).toArray(Clone_.class);
 				int size = ps.length;
 				fun = env -> {
 					Node[] nodes = new Node[size];
