@@ -10,7 +10,7 @@ public class CommandUtil<Command> {
 	private Map<String, Command> commandByName;
 	private int maxLength;
 
-	public CommandUtil(Command commands[]) {
+	public CommandUtil(Command[] commands) {
 		this(getCommandByName(commands));
 	}
 
@@ -35,7 +35,7 @@ public class CommandUtil<Command> {
 		return null;
 	}
 
-	private static <Command> Map<String, Command> getCommandByName(Command commands[]) {
+	private static <Command> Map<String, Command> getCommandByName(Command[] commands) {
 		return Read.from(commands).toMap(Command::toString);
 	}
 
