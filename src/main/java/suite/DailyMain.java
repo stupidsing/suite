@@ -74,7 +74,7 @@ public class DailyMain extends ExecutableProgram {
 					float[] prices = ds.prices;
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
-					String message = company + " has signal " + signal * lotSize + " for price " + prices[last];
+					String message = company + " has signal " + signal * lotSize + " * " + prices[last];
 
 					if (signal != 0) {
 						LogUtil.info(message);
