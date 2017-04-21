@@ -229,6 +229,10 @@ public class Outlet<T> implements Iterable<T> {
 		return of(FunUtil.map(fun, source));
 	}
 
+	public <V> Outlet2<T, V> map2(Fun<T, V> vf0) {
+		return Outlet2.of(FunUtil.map2(k -> k, vf0, source));
+	}
+
 	public <K, V> Outlet2<K, V> map2(Fun<T, K> kf0, Fun<T, V> vf0) {
 		return Outlet2.of(FunUtil.map2(kf0, vf0, source));
 	}
