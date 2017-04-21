@@ -1,6 +1,5 @@
 package suite.trade;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -12,8 +11,7 @@ import suite.trade.Hkex.Company;
 
 public class TradeTest {
 
-	private LocalDate frDate = LocalDate.of(2013, 1, 1);
-	private LocalDate toDate = LocalDate.of(2018, 1, 1);
+	private Period period = Period.fiveYears();
 
 	private Hkex hkex = new Hkex();
 
@@ -63,7 +61,7 @@ public class TradeTest {
 	private Map<String, BackTest> backTest(String code, String disp) {
 		Yahoo yahoo = new Yahoo();
 		Strategos sr = new Strategos();
-		DataSource ds = yahoo.dataSource(code, frDate, toDate);
+		DataSource ds = yahoo.dataSource(code, period);
 
 		return Read //
 				.<String, Strategy> empty2() //

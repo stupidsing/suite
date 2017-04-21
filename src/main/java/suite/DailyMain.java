@@ -1,6 +1,5 @@
 package suite;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import suite.trade.BackTest;
 import suite.trade.DataSource;
 import suite.trade.Hkex;
 import suite.trade.Hkex.Company;
+import suite.trade.Period;
 import suite.trade.Strategos;
 import suite.trade.Strategy;
 import suite.trade.Yahoo;
@@ -31,8 +31,9 @@ public class DailyMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
+		Hkex hkex = new Hkex();
 		Yahoo yahoo = new Yahoo();
-		Streamlet<Company> companies = new Hkex().companies;
+		Streamlet<Company> companies = hkex.companies;
 		Strategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
 
 		Map<String, Boolean> backTestByStockCode = SerializedStoreCache //
@@ -40,9 +41,7 @@ public class DailyMain extends ExecutableProgram {
 				.get("backTestByStockCode", () -> companies //
 						.map2(stock -> stock.code, stock -> {
 							try {
-								LocalDate frDate = LocalDate.of(2013, 1, 1);
-								LocalDate toDate = LocalDate.of(2018, 1, 1);
-								DataSource ds = yahoo.dataSource(stock.code, frDate, toDate);
+								DataSource ds = yahoo.dataSource(stock.code, Period.fiveYears());
 								BackTest backTest = BackTest.test(ds, strategy);
 								return 0f < backTest.account.cash();
 							} catch (Exception ex) {
@@ -52,9 +51,7 @@ public class DailyMain extends ExecutableProgram {
 						}) //
 						.toMap());
 
-		LocalDate today = LocalDate.now();
-		LocalDate frDate = today.minusDays(128);
-		LocalDate toDate = today;
+		Period period = Period.beforeToday(128);
 		List<String> messages = new ArrayList<>();
 
 		for (Company company : companies) {
@@ -64,7 +61,7 @@ public class DailyMain extends ExecutableProgram {
 				String prefix = company.toString();
 
 				try {
-					DataSource ds = yahoo.dataSource(stockCode, frDate, toDate);
+					DataSource ds = yahoo.dataSource(stockCode, period);
 					float[] prices = ds.prices;
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);

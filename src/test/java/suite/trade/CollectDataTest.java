@@ -3,7 +3,6 @@ package suite.trade;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
 
 import org.junit.Test;
 
@@ -18,15 +17,12 @@ public class CollectDataTest {
 
 	@Test
 	public void test() throws IOException {
-		LocalDate frDate = LocalDate.of(1900, 1, 1);
-		LocalDate toDate = LocalDate.of(2020, 1, 1);
-
 		Streamlet<String> equities = Streamlet.concat( //
 				new Hkex().companies.map(company -> company.code), //
 				new Forex().invertedCurrencies.map((ccy, name) -> ccy));
 
 		for (String code : equities) {
-			String urlString = new Yahoo().tableUrl(code, frDate, toDate);
+			String urlString = new Yahoo().tableUrl(code, Period.ages());
 
 			System.out.println(urlString);
 			URL url = Rethrow.ex(() -> new URL(urlString));

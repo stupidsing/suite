@@ -18,13 +18,11 @@ import suite.util.Util;
 public class Yahoo {
 
 	public DataSource dataSource(String stockCode) {
-		LocalDate frDate = LocalDate.of(1980, 1, 1);
-		LocalDate toDate = LocalDate.of(2020, 1, 1);
-		return dataSource(stockCode, frDate, toDate);
+		return dataSource(stockCode, Period.ages());
 	}
 
-	public DataSource dataSource(String stockCode, LocalDate frDate, LocalDate toDate) {
-		String urlString = tableUrl(stockCode, frDate, toDate);
+	public DataSource dataSource(String stockCode, Period period) {
+		String urlString = tableUrl(stockCode, period);
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
 		List<String[]> arrays = Singleton.get() //
@@ -82,7 +80,9 @@ public class Yahoo {
 				+ "&f=s" + field;
 	}
 
-	public String tableUrl(String stockCode, LocalDate frDate, LocalDate toDate) {
+	public String tableUrl(String stockCode, Period period) {
+		LocalDate frDate = period.frDate;
+		LocalDate toDate = period.toDate;
 		return "https://chart.finance.yahoo.com/table.csv" //
 				+ "?s=" + stockCode //
 				+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
