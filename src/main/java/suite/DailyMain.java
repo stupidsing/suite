@@ -51,6 +51,14 @@ public class DailyMain extends ExecutableProgram {
 						}) //
 						.toMap());
 
+		Map<String, Integer> lotSizeByStockCode = SerializedStoreCache //
+				.of(Serialize.mapOfString(Serialize.int_)) //
+				.get("lotSizeByStockCode",
+						() -> companies //
+								.map(stock -> stock.code) //
+								.map2(stockCode -> hkex.queryBoardLot(stockCode)) //
+								.toMap());
+
 		Period period = Period.beforeToday(128);
 		List<String> messages = new ArrayList<>();
 
@@ -59,13 +67,14 @@ public class DailyMain extends ExecutableProgram {
 
 			if (backTestByStockCode.get(stockCode)) {
 				String prefix = company.toString();
+				int lotSize = lotSizeByStockCode.get(stockCode);
 
 				try {
 					DataSource ds = yahoo.dataSource(stockCode, period);
 					float[] prices = ds.prices;
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
-					String message = company + " has signal " + signal + " for price " + prices[last];
+					String message = company + " has signal " + signal * lotSize + " for price " + prices[last];
 
 					if (signal != 0) {
 						LogUtil.info(message);
