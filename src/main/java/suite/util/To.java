@@ -114,12 +114,12 @@ public class To {
 			private InputStream is;
 
 			public int read() throws IOException {
-				byte b[] = new byte[1];
+				byte[] b = new byte[1];
 				int nBytesRead = read(b, 0, 1);
 				return 0 < nBytesRead ? b[0] : nBytesRead;
 			}
 
-			public int read(byte bs[], int offset, int length) throws IOException {
+			public int read(byte[] bs, int offset, int length) throws IOException {
 				int nBytesRead = -1;
 				while (is == null || (nBytesRead = is.read(bs, offset, length)) < 0) {
 					Bytes bytes = outlet.next();
@@ -134,7 +134,7 @@ public class To {
 	}
 
 	public static int[] intArray(int length, Int_Int f) {
-		int ints[] = new int[length];
+		int[] ints = new int[length];
 		for (int i = 0; i < length; i++)
 			ints[i] = f.apply(i);
 		return ints;
@@ -186,7 +186,7 @@ public class To {
 	public static Outlet<Bytes> outlet(InputStream is) {
 		InputStream bis = new BufferedInputStream(is);
 		return Outlet.of(() -> {
-			byte bs[] = new byte[Constants.bufferSize];
+			byte[] bs = new byte[Constants.bufferSize];
 			int nBytesRead = Rethrow.ex(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
 		}).closeAtEnd(bis).closeAtEnd(is);
@@ -214,7 +214,7 @@ public class To {
 
 	public static Source<Bytes> source(InputStream is) {
 		return () -> {
-			byte bs[] = new byte[Constants.bufferSize];
+			byte[] bs = new byte[Constants.bufferSize];
 			int nBytesRead = Rethrow.ex(() -> is.read(bs));
 
 			if (0 <= nBytesRead)
@@ -230,7 +230,7 @@ public class To {
 		return string(bytes.toByteArray());
 	}
 
-	public static String string(byte bs[]) {
+	public static String string(byte[] bs) {
 		return new String(bs, Constants.charset);
 	}
 

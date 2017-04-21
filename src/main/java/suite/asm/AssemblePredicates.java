@@ -19,7 +19,7 @@ public class AssemblePredicates {
 	private BuiltinPredicate emitBytes(int n) {
 		return PredicateUtil.p3((prover, n0, p0, px) -> {
 			int i = isPass2 ? new EvalPredicates().evaluate(n0) : 0;
-			byte bytes[] = new byte[n];
+			byte[] bytes = new byte[n];
 			Node p = px;
 
 			for (int j = 0; j < n; j++) {

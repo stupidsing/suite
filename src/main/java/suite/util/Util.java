@@ -314,7 +314,7 @@ public class Util {
 	public static void run(Class<? extends ExecutableProgram> clazz, String args[], RunOption runOption) {
 		LogUtil.initLog4j(Level.INFO);
 		Runnable runnable;
-		int code[] = new int[1];
+		int[] code = new int[1];
 
 		try (ExecutableProgram main_ = clazz.newInstance()) {
 			runnable = () -> {

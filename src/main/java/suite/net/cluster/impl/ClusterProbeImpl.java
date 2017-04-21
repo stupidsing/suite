@@ -67,7 +67,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private static class IpPort {
-		private byte ip[];
+		private byte[] ip;
 		private int port;
 
 		private IpPort(InetSocketAddress isa) {
@@ -187,7 +187,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			dc.receive(buffer);
 			buffer.flip();
 
-			byte bytes[] = new byte[buffer.remaining()];
+			byte[] bytes = new byte[buffer.remaining()];
 			buffer.get(bytes);
 			buffer.rewind();
 
@@ -219,7 +219,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private void keepAlive(long current) {
-		byte bytes[] = formMessage(Command.HELO);
+		byte[] bytes = formMessage(Command.HELO);
 
 		for (String remote : peers.keySet()) {
 			Long lastActive = lastActiveTimes.get(remote);
@@ -255,14 +255,14 @@ public class ClusterProbeImpl implements ClusterProbe {
 	 * TODO this is costly and un-scalable.
 	 */
 	private void broadcast(Command data) {
-		byte bytes[] = formMessage(data);
+		byte[] bytes = formMessage(data);
 
 		for (String remote : peers.keySet())
 			if (!Util.stringEquals(remote, me))
 				sendMessage(remote, bytes);
 	}
 
-	private void sendMessage(String remote, byte bytes[]) {
+	private void sendMessage(String remote, byte[] bytes) {
 		try {
 			channel.send(ByteBuffer.wrap(bytes), peers.get(remote).get());
 			lastSentTimes.put(remote, System.currentTimeMillis());

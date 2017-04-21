@@ -124,7 +124,7 @@ public class Inspect {
 			} else if (Collection.class.isAssignableFrom(clazz)) {
 				Class<?> elementClass_ = Object.class;
 				ParameterizedType pt;
-				Type typeArgs[];
+				Type[] typeArgs;
 				Type typeArg;
 
 				for (Type genericInterface : clazz.getGenericInterfaces())
@@ -157,7 +157,7 @@ public class Inspect {
 			} else if (Map.class.isAssignableFrom(clazz)) {
 				Class<?> valueClass_ = Object.class;
 				ParameterizedType pt;
-				Type typeArgs[];
+				Type[] typeArgs;
 				Type typeArg0, typeArg1;
 
 				for (Type genericInterface : clazz.getGenericInterfaces())

@@ -12,7 +12,7 @@ public class UnsafeTest {
 	@Test
 	public void test() throws Exception {
 		String className = "suite.cli.Main";
-		byte bytes[] = Files.readAllBytes(Paths.get("target/classes/" + className.replace(".", "/") + ".class"));
+		byte[] bytes = Files.readAllBytes(Paths.get("target/classes/" + className.replace(".", "/") + ".class"));
 		Class<? extends AutoCloseable> clazz = new UnsafeUtil().defineClass(ExecutableProgram.class, className, bytes);
 		clazz.newInstance().close();
 	}

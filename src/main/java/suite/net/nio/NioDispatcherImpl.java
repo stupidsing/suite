@@ -125,7 +125,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	private void processSelectedKey(SelectionKey key) throws IOException {
 		// logUtil.info("KEY", dumpKey(key));
 
-		byte buffer[] = new byte[Constants.bufferSize];
+		byte[] buffer = new byte[Constants.bufferSize];
 		Object attachment = key.attachment();
 		SelectableChannel sc0 = key.channel();
 		int ops = key.readyOps();
@@ -170,7 +170,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 
 			// try to send immediately. If cannot sent all, wait for the
 			// writable event (and send again at that moment).
-			byte bytes[] = in.toByteArray();
+			byte[] bytes = in.toByteArray();
 			int sent = Rethrow.ex(() -> sc.write(ByteBuffer.wrap(bytes)));
 			Bytes out = in.subbytes(sent);
 			int ops = SelectionKey.OP_READ | (!out.isEmpty() ? SelectionKey.OP_WRITE : 0);

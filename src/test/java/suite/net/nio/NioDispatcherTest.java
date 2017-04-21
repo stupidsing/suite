@@ -82,7 +82,7 @@ public class NioDispatcherTest {
 			RequestResponseNioChannel client = dispatcher.connect(address);
 
 			for (String s : new String[] { "ABC", "WXYZ", "", }) {
-				byte bs[] = s.getBytes(Constants.charset);
+				byte[] bs = s.getBytes(Constants.charset);
 				Bytes request = Bytes.of(bs);
 				Bytes response = matcher.requestForResponse(client, request);
 				assertEquals(request, response);

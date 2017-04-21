@@ -107,7 +107,7 @@ public class HttpServer {
 				return 0 < remaining-- ? is.read() : -1;
 			}
 
-			public int read(byte bytes[], int offset, int length) throws IOException {
+			public int read(byte[] bytes, int offset, int length) throws IOException {
 				int result;
 
 				if (0 < remaining) {

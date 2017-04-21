@@ -20,9 +20,9 @@ public class Cache {
 	private class Key {
 		private Object bean;
 		private Method method;
-		private Object arguments[];
+		private Object[] arguments;
 
-		public Key(Object bean, Method method, Object arguments[]) {
+		public Key(Object bean, Method method, Object[] arguments) {
 			this.bean = bean;
 			this.method = method;
 			this.arguments = arguments;

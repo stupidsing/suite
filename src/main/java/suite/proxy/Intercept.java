@@ -10,7 +10,7 @@ import suite.util.FunUtil.Fun;
 public class Intercept {
 
 	public interface Invocation {
-		public Object invoke(Method method, Object ps[]) throws Exception;
+		public Object invoke(Method method, Object[] ps) throws Exception;
 	}
 
 	public static <I> I object(Class<I> interface_, I object, Fun<Invocation, Invocation> fun) {

@@ -173,7 +173,7 @@ public class Nodify {
 		} else if (type instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) type;
 			Type rawType = pt.getRawType();
-			Type typeArguments[] = pt.getActualTypeArguments();
+			Type[] typeArguments = pt.getActualTypeArguments();
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {

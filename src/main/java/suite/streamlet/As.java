@@ -75,7 +75,7 @@ public class As {
 	public static <T> Fun<Outlet<T>, int[]> arrayOfInts(ToIntFunction<T> fun) {
 		return new Fun<Outlet<T>, int[]>() {
 			public int[] apply(Outlet<T> outlet) {
-				int results[] = new int[16];
+				int[] results = new int[16];
 				int size = 0;
 				T t;
 

@@ -100,7 +100,7 @@ public class FunCreatorTest {
 
 	@Test
 	public void testIndex() {
-		int ints[] = { 0, 1, 4, 9, 16, };
+		int[] ints = { 0, 1, 4, 9, 16, };
 		Int_Int fun = LambdaInstance.of(Int_Int.class, i -> f.object(ints).index(i)).newFun();
 		assertEquals(9, fun.apply(3));
 		assertEquals(16, fun.apply(4));

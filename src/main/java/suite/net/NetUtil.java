@@ -20,7 +20,7 @@ public class NetUtil {
 	}
 
 	public static Bytes intToBytes(int value) {
-		byte bytes[] = new byte[4];
+		byte[] bytes = new byte[4];
 		for (int i = 0; i < 4; i++) {
 			bytes[i] = (byte) (value & 0xFF);
 			value >>>= 8;
@@ -40,7 +40,7 @@ public class NetUtil {
 	}
 
 	public static <T> T deserialize(Bytes s) {
-		byte bytes[] = s.toByteArray();
+		byte[] bytes = s.toByteArray();
 		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 
 		try {

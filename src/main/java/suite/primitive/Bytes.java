@@ -19,12 +19,12 @@ import suite.util.Util;
 
 public class Bytes implements Iterable<Byte> {
 
-	private static byte emptyArray[] = new byte[0];
+	private static byte[] emptyArray = new byte[0];
 	private static int reallocSize = 65536;
 
 	public static Bytes empty = Bytes.of(emptyArray);
 
-	public final byte bs[]; // immutable
+	public final byte[] bs; // immutable
 	public final int start, end;
 
 	public static Comparator<Bytes> comparator = (bytes0, bytes1) -> {
@@ -61,15 +61,15 @@ public class Bytes implements Iterable<Byte> {
 		return Bytes.of(bs, 0);
 	}
 
-	public static Bytes of(byte bs[], int start) {
+	public static Bytes of(byte[] bs, int start) {
 		return Bytes.of(bs, start, bs.length);
 	}
 
-	public static Bytes of(byte bs[], int start, int end) {
+	public static Bytes of(byte[] bs, int start, int end) {
 		return new Bytes(bs, start, end);
 	}
 
-	private Bytes(byte bs[], int start, int end) {
+	private Bytes(byte[] bs, int start, int end) {
 		this.bs = bs;
 		this.start = start;
 		this.end = end;
@@ -77,7 +77,7 @@ public class Bytes implements Iterable<Byte> {
 
 	public Bytes append(Bytes a) {
 		int size0 = size(), size1 = a.size(), newSize = size0 + size1;
-		byte nb[] = new byte[newSize];
+		byte[] nb = new byte[newSize];
 		System.arraycopy(bs, start, nb, 0, size0);
 		System.arraycopy(a.bs, a.start, nb, size0, size1);
 		return Bytes.of(nb);
@@ -270,7 +270,7 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public static class BytesBuilder {
-		private byte bs[] = emptyArray;
+		private byte[] bs = emptyArray;
 		private int size;
 
 		public BytesBuilder append(Bytes bytes) {

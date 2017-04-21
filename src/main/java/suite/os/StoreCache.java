@@ -53,7 +53,7 @@ public class StoreCache {
 				DataInputStream dis = new DataInputStream(is);
 
 				if (dis.readInt() == keySize) {
-					byte kb[] = new byte[keySize];
+					byte[] kb = new byte[keySize];
 					dis.readFully(kb);
 					if (Arrays.equals(key.toByteArray(), kb))
 						return Outlet.of(new Source<Bytes>() {
@@ -62,7 +62,7 @@ public class StoreCache {
 							public Bytes source() {
 								return Rethrow.ex(() -> {
 									if (cont) {
-										byte vb[] = new byte[Constants.bufferSize];
+										byte[] vb = new byte[Constants.bufferSize];
 										int n, nBytesRead = 0;
 										while (nBytesRead < vb.length
 												&& (cont &= 0 <= (n = dis.read(vb, nBytesRead, vb.length - nBytesRead))))

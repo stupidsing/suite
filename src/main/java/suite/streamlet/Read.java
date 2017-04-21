@@ -131,7 +131,7 @@ public class Read {
 
 	public static Streamlet<Integer> range(int s, int e) {
 		return new Streamlet<Integer>(() -> {
-			int i[] = new int[] { s, };
+			int[] i = new int[] { s, };
 			return Outlet.of(() -> i[0] < e ? i[0]++ : null);
 		});
 	}

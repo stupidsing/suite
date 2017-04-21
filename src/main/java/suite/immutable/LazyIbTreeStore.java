@@ -36,7 +36,7 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 		};
 		Serializer<Pair<K, V>> ps = Serialize.pair(ks, vs);
 		Serializer<Extent> xs = Serialize.nullable(Serialize.extent());
-		PageFile pfs[] = FileFactory.subPageFiles(pageFile, 0, 1, Integer.MAX_VALUE);
+		PageFile[] pfs = FileFactory.subPageFiles(pageFile, 0, 1, Integer.MAX_VALUE);
 		SerializedPageFile<Extent> superblockFile = SerializedFileFactory.serialized(pfs[0], xs);
 		LazyIbTreePersister<Extent, Pair<K, V>> persister = new LazyIbTreeExtentFilePersister<>(pfs[1], pc, ps);
 		return new LazyIbTreeStore<>(superblockFile, persister, kc);
@@ -49,7 +49,7 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 			Serializer<V> vs) {
 		Comparator<Pair<K, V>> pc = (p0, p1) -> kc.compare(p0.t0, p1.t0);
 		Serializer<Pair<K, V>> ps = Serialize.pair(ks, vs);
-		PageFile pfs[] = FileFactory.subPageFiles(pageFile, 0, 1, Integer.MAX_VALUE);
+		PageFile[] pfs = FileFactory.subPageFiles(pageFile, 0, 1, Integer.MAX_VALUE);
 		SerializedPageFile<Integer> superblockFile = SerializedFileFactory.serialized(pfs[0], Serialize.nullable(Serialize.int_));
 		LazyIbTreePersister<Integer, Pair<K, V>> persister = new LazyIbTreePageFilePersister<>(pfs[1], pc, ps);
 		return new LazyIbTreeStore<>(superblockFile, persister, kc);

@@ -19,7 +19,7 @@ public class Amd64Assembler {
 
 	private class InsnCode {
 		private int size;
-		private byte bs[];
+		private byte[] bs;
 		private ModRm modRm;
 		private int immSize;
 		private long imm;
@@ -30,7 +30,7 @@ public class Amd64Assembler {
 			this.imm = imm.imm;
 		}
 
-		private InsnCode(int size, byte bs[]) {
+		private InsnCode(int size, byte[] bs) {
 			this.size = size;
 			this.bs = bs;
 		}
@@ -547,7 +547,7 @@ public class Amd64Assembler {
 	private InsnCode assembleJumpImm(OpImm op0, long offset, int b1, byte[] bs4) {
 		InsnCode insnCode;
 		int size = op0.size;
-		byte bs0[];
+		byte[] bs0;
 
 		switch (size) {
 		case 1:
@@ -579,7 +579,7 @@ public class Amd64Assembler {
 			throw new RuntimeException("Bad instruction");
 	}
 
-	private InsnCode assembleRegRm(Operand reg, Operand rm, byte bs[]) {
+	private InsnCode assembleRegRm(Operand reg, Operand rm, byte[] bs) {
 		if (reg instanceof OpReg && isRm(rm))
 			return assemble(rm, bs, ((OpReg) reg).reg);
 		else
@@ -685,7 +685,7 @@ public class Amd64Assembler {
 		return new InsnCode(4, bs(b));
 	}
 
-	private InsnCode assemble(Operand operand, byte bs[], int num) {
+	private InsnCode assemble(Operand operand, byte[] bs, int num) {
 		InsnCode insnCode = new InsnCode(operand.size, bs);
 		insnCode.modRm = modRm(operand, num);
 		return insnCode;

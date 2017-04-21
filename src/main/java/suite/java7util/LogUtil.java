@@ -47,7 +47,7 @@ public class LogUtil {
 		};
 
 		ClassLoader classLoader = clazz.getClassLoader();
-		Class<?> classes[] = { interface_ };
+		Class<?>[] classes = { interface_ };
 
 		@SuppressWarnings("unchecked")
 		I proxied = (I) Proxy.newProxyInstance(classLoader, classes, handler);
@@ -59,10 +59,10 @@ public class LogUtil {
 
 		// trims stack trace to appropriate length
 		while (th != null) {
-			StackTraceElement st0[] = th.getStackTrace();
+			StackTraceElement[] st0 = th.getStackTrace();
 
 			if (maxStackTraceLength < st0.length) {
-				StackTraceElement st1[] = new StackTraceElement[maxStackTraceLength];
+				StackTraceElement[] st1 = new StackTraceElement[maxStackTraceLength];
 				Copy.array(st0, 0, st1, 0, maxStackTraceLength);
 				th.setStackTrace(st1);
 

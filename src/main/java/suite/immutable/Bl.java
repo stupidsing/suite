@@ -15,9 +15,9 @@ import suite.util.Copy;
  */
 public class Bl<T> {
 
-	private static Object empty[] = new Object[0];
+	private static Object[] empty = new Object[0];
 	private long bitmap;
-	private Object ts[];
+	private Object[] ts;
 
 	public static <T> Streamlet<T> stream(Bl<T> bl) {
 		if (bl != null)
@@ -39,7 +39,7 @@ public class Bl<T> {
 				int bitCount0 = 0;
 				int bitCount1 = 0;
 				long bitmap = bitmap0 | bitmap1;
-				Object ts[] = new Object[Long.bitCount(bitmap)];
+				Object[] ts = new Object[Long.bitCount(bitmap)];
 
 				for (long bit = 1; bit != 0; bit <<= 1) {
 					T t0 = (bitmap0 & bit) != 0 ? bl0.get(bitCount0++) : null;
@@ -59,7 +59,7 @@ public class Bl<T> {
 
 	public static <T> Bl<T> update(Bl<T> bl, int index, T t) {
 		long bitmap0;
-		Object ts0[];
+		Object[] ts0;
 
 		if (bl != null) {
 			bitmap0 = bl.bitmap;
@@ -80,7 +80,7 @@ public class Bl<T> {
 		long bitmap1 = bits0 + ((long) diff1 << index) + bits1;
 
 		if (bitmap1 != 0) {
-			Object ts1[] = new Object[ts0.length + diff];
+			Object[] ts1 = new Object[ts0.length + diff];
 			int bitCount0 = Long.bitCount(bits0);
 			int bitCount1 = Long.bitCount(bits1);
 			Copy.primitiveArray(ts0, 0, ts1, 0, bitCount0);
@@ -96,7 +96,7 @@ public class Bl<T> {
 		if (!list.isEmpty()) {
 			int size = list.size();
 			long bitmap = 0;
-			Object ts[] = new Object[size];
+			Object[] ts = new Object[size];
 			for (int i = 0; i < size; i++) {
 				IntObjPair<T> pair = list.get(i);
 				bitmap |= 1l << (pair.t0 & 0xFFFFFC00);
@@ -107,7 +107,7 @@ public class Bl<T> {
 			return null;
 	}
 
-	private Bl(long bitmap, Object ts[]) {
+	private Bl(long bitmap, Object[] ts) {
 		this.bitmap = bitmap;
 		this.ts = ts;
 	}

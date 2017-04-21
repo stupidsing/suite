@@ -67,7 +67,7 @@ public class Copy {
 	public static void stream(InputStream in, OutputStream out) throws IOException {
 		try (InputStream in_ = in) {
 			int len;
-			byte buffer[] = new byte[Constants.bufferSize];
+			byte[] buffer = new byte[Constants.bufferSize];
 			while (0 <= (len = in_.read(buffer))) {
 				out.write(buffer, 0, len);
 				out.flush();

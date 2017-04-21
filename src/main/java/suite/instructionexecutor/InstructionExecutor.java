@@ -250,7 +250,7 @@ public class InstructionExecutor implements AutoCloseable {
 
 	protected class Exec {
 		protected Activation current;
-		protected Object stack[];
+		protected Object[] stack;
 		protected int sp;
 	}
 

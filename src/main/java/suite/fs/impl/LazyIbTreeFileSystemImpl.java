@@ -26,7 +26,7 @@ public class LazyIbTreeFileSystemImpl implements FileSystem {
 
 	public LazyIbTreeFileSystemImpl(Path path, int pageSize) {
 		jpf = JournalledFileFactory.journalled(path, pageSize);
-		PageFile pfs[] = FileFactory.subPageFiles(jpf, 0, 10240, 20480, 30720);
+		PageFile[] pfs = FileFactory.subPageFiles(jpf, 0, 10240, 20480, 30720);
 
 		mutator = new FileSystemMutatorImpl(keyUtil, () -> new KeyDataStore<Bytes>() {
 			private KeyValueStore<Bytes, Bytes> kvss = LazyIbTreeStore.ofExtent( //

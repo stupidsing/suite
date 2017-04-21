@@ -8,7 +8,7 @@ public interface LibcJna extends Library {
 
 	public int getchar();
 
-	public int ioctl(int d, int request, byte data[]);
+	public int ioctl(int d, int request, byte[] data);
 
 	public int putchar(int ch);
 

@@ -15,8 +15,8 @@ import suite.streamlet.IntObjStreamlet;
 public class IntObjMap<V> {
 
 	private int size;
-	private int ks[];
-	private Object vs[];
+	private int[] ks;
+	private Object[] vs;
 
 	public IntObjMap() {
 		this(8);
@@ -85,8 +85,8 @@ public class IntObjMap<V> {
 
 		if (capacity * 3 / 4 < size) {
 			int capacity1 = capacity * 2;
-			int ks0[] = ks;
-			Object vs0[] = vs;
+			int[] ks0 = ks;
+			Object[] vs0 = vs;
 			allocate(capacity1);
 
 			for (int i = 0; i < capacity; i++) {

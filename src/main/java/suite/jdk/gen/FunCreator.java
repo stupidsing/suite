@@ -143,7 +143,7 @@ public class FunCreator<I> extends FunFactory {
 
 			{
 				InstructionList il = (fgb = new FunGenerateBytecode(clsName, fr.fti, cp)).visit(expr2, returnType);
-				Type paramTypes[] = parameterTypes.toArray(new Type[0]);
+				Type[] paramTypes = parameterTypes.toArray(new Type[0]);
 
 				if (isLog) {
 					LogUtil.info("expr0 = " + expr0);
@@ -191,8 +191,8 @@ public class FunCreator<I> extends FunFactory {
 			cg.addMethod(m0);
 			cg.addMethod(m1);
 
-			byte bytes[] = cg.getJavaClass().getBytes();
-			Object array[] = new Object[cp.getSize()];
+			byte[] bytes = cg.getJavaClass().getBytes();
+			Object[] array = new Object[cp.getSize()];
 			IntObjSource<Object> source = fgb.constants.source();
 			IntObjPair<Object> pair = IntObjPair.of(0, null);
 

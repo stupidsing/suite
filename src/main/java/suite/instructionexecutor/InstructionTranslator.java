@@ -113,9 +113,9 @@ public class InstructionTranslator implements Closeable {
 				+ "Frame frame = thunk.frame; \n" //
 				+ "int ip = thunk.ip; \n" //
 				+ "Node returnValue = null; \n" //
-				+ "int cs[] = new int[stackSize]; \n" //
+				+ "int[] cs = new int[stackSize]; \n" //
 				+ "Node[] ds = new Node[stackSize]; \n" //
-				+ "Object fs[] = new Object[stackSize]; \n" //
+				+ "Object[] fs = new Object[stackSize]; \n" //
 				+ "int csp = 0, dsp = 0, cpsp = 0; \n" //
 				+ "int n; \n" //
 				+ "Node node, n0, n1, var; \n" //

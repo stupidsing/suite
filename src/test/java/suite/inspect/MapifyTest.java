@@ -28,7 +28,7 @@ public class MapifyTest {
 
 	public static class A implements I {
 		private int i = 123;
-		private int ints[] = new int[] { 0, 1, 2, };
+		private int[] ints = new int[] { 0, 1, 2, };
 	}
 
 	public static class B implements I {

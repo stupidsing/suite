@@ -78,7 +78,7 @@ public class SimpleCgiServer {
 			throw new RuntimeException("Netstring length not ended with ':'");
 
 		int nBytesRead = 0;
-		byte bytes[] = new byte[length];
+		byte[] bytes = new byte[length];
 		while (nBytesRead < length)
 			nBytesRead += sis.read(bytes);
 

@@ -95,7 +95,7 @@ public class Strategos {
 
 	// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
 	private GetBuySell holdFixedDays(int nDays, int nFutureDays, GetBuySell gbs) {
-		int buySells[] = To.intArray(nDays, day -> gbs.get(day));
+		int[] buySells = To.intArray(nDays, day -> gbs.get(day));
 
 		return day -> {
 			int buySell0 = nFutureDays < day ? -buySells[day - nFutureDays] : 0;

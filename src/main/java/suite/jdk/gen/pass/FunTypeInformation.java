@@ -101,7 +101,7 @@ public class FunTypeInformation {
 	}
 
 	public Method invokeMethodOf(InvokeMethodFunExpr expr) {
-		Type array[] = Read.from(expr.parameters) //
+		Type[] array = Read.from(expr.parameters) //
 				.map(this::typeOf) //
 				.toArray(Type.class);
 

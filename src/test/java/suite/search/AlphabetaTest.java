@@ -25,7 +25,7 @@ public class AlphabetaTest {
 		}
 	}
 
-	private int lines[][] = new int[][] { //
+	private int[] lines[] = new int[][] { //
 			{ 0, 1, 2, }, //
 			{ 3, 4, 5, }, //
 			{ 6, 7, 8, }, //
@@ -36,7 +36,7 @@ public class AlphabetaTest {
 			{ 2, 4, 6, }, //
 	};
 
-	private int scores[] = new int[] { 0, 1, 10, 10000, };
+	private int[] scores = new int[] { 0, 1, 10, 10000, };
 
 	private List<TicTacToe> generate(TicTacToe state) {
 		List<TicTacToe> states = new ArrayList<>();
@@ -55,7 +55,7 @@ public class AlphabetaTest {
 	}
 
 	private boolean isEnd(TicTacToe state) {
-		for (int line[] : lines) {
+		for (int[] line : lines) {
 			char c0 = state.grid[line[0]];
 			char c1 = state.grid[line[1]];
 			char c2 = state.grid[line[2]];
@@ -69,12 +69,12 @@ public class AlphabetaTest {
 
 	private int evaluate(TicTacToe state) {
 		int score = 0;
-		for (int line[] : lines)
+		for (int[] line : lines)
 			score += evaluateLine(state, line);
 		return score;
 	}
 
-	private int evaluateLine(TicTacToe state, int line[]) {
+	private int evaluateLine(TicTacToe state, int[] line) {
 		int no = 0, nx = 0;
 
 		for (int c = 0; c < 3; c++)

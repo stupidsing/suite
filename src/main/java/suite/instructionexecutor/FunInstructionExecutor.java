@@ -45,9 +45,9 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	protected void handle(Exec exec, Instruction insn) {
 		Activation current = exec.current;
 		Frame frame = current.frame;
-		Object regs[] = frame != null ? frame.registers : null;
+		Object[] regs = frame != null ? frame.registers : null;
 
-		Object ds[] = exec.stack;
+		Object[] ds = exec.stack;
 		int dsp = exec.sp;
 
 		Node n0, n1, result;

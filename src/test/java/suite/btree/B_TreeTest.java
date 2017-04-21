@@ -29,7 +29,7 @@ public class B_TreeTest {
 
 	private Comparator<Integer> comparator = Util.comparator();
 	private Random random = new Random();
-	private int keys[];
+	private int[] keys;
 
 	@Before
 	public void before() {

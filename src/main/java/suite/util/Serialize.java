@@ -21,7 +21,7 @@ import suite.primitive.Bytes;
  */
 public class Serialize {
 
-	private static byte zeroes[] = new byte[4096];
+	private static byte[] zeroes = new byte[4096];
 
 	public static Serializer<Boolean> boolean_ = boolean_();
 	public static Serializer<Integer> int_ = int_();
@@ -29,7 +29,7 @@ public class Serialize {
 	public static Serializer<Bytes> variableLengthBytes = new Serializer<Bytes>() {
 		public Bytes read(DataInput dataInput) throws IOException {
 			int length = dataInput.readInt();
-			byte bs[] = new byte[length];
+			byte[] bs = new byte[length];
 			dataInput.readFully(bs);
 			return Bytes.of(bs);
 		}
@@ -64,7 +64,7 @@ public class Serialize {
 	public static Serializer<Bytes> bytes(int length) {
 		return new Serializer<Bytes>() {
 			public Bytes read(DataInput dataInput) throws IOException {
-				byte bs[] = new byte[length];
+				byte[] bs = new byte[length];
 				dataInput.readFully(bs);
 				return Bytes.of(bs);
 			}
@@ -190,14 +190,14 @@ public class Serialize {
 	public static Serializer<String> string(int length) {
 		return new Serializer<String>() {
 			public String read(DataInput dataInput) throws IOException {
-				byte bs[] = new byte[length];
+				byte[] bs = new byte[length];
 				int l = dataInput.readInt();
 				dataInput.readFully(bs);
 				return new String(bs, Constants.charset).substring(0, l);
 			}
 
 			public void write(DataOutput dataOutput, String value) throws IOException {
-				byte bs[] = Arrays.copyOf(value.getBytes(Constants.charset), length);
+				byte[] bs = Arrays.copyOf(value.getBytes(Constants.charset), length);
 				dataOutput.writeInt(value.length());
 				dataOutput.write(bs);
 			}

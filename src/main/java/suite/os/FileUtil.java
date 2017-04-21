@@ -108,7 +108,7 @@ public class FileUtil {
 				os.write(b);
 			}
 
-			public void write(byte bs[], int off, int len) throws IOException {
+			public void write(byte[] bs, int off, int len) throws IOException {
 				os.write(bs, off, len);
 			}
 		};
@@ -119,7 +119,7 @@ public class FileUtil {
 	}
 
 	public static String read(Path path) throws IOException {
-		byte bytes[] = Files.readAllBytes(path);
+		byte[] bytes = Files.readAllBytes(path);
 		boolean isBomExist = 3 <= bytes.length //
 				&& bytes[0] == (byte) 0xEF //
 				&& bytes[1] == (byte) 0xBB //

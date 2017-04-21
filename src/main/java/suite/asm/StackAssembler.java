@@ -64,7 +64,7 @@ public class StackAssembler {
 				else if (rs != 0)
 					throw new RuntimeException("Unbalanced register stack in subroutine definition");
 				else {
-					int arr[] = deque.pop();
+					int[] arr = deque.pop();
 					fs = arr[0];
 					rs = arr[1];
 				}

@@ -25,7 +25,7 @@ public class ElfWriter {
 			return d(4, i);
 		}
 
-		public Writer_ append(byte bs[]) {
+		public Writer_ append(byte[] bs) {
 			bb.append(bs);
 			return this;
 		}

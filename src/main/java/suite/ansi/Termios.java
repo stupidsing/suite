@@ -9,7 +9,7 @@ public class Termios implements Closeable {
 
 	private LibcJna libc;
 	private char esc = (char) 27;
-	private byte termios0[] = new byte[Constants.bufferSize];
+	private byte[] termios0 = new byte[Constants.bufferSize];
 
 	private Thread hook = new Thread(this::close);
 
@@ -34,7 +34,7 @@ public class Termios implements Closeable {
 	public Termios(LibcJna libc) {
 		this.libc = libc;
 
-		byte termios1[] = new byte[Constants.bufferSize];
+		byte[] termios1 = new byte[Constants.bufferSize];
 		libc.tcgetattr(0, termios0);
 		libc.tcgetattr(0, termios1);
 		libc.cfmakeraw(termios1);
