@@ -1,5 +1,6 @@
 package suite.trade;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import suite.util.Util;
 public class HkexTest {
 
 	@Test
-	public void test() {
+	public void testList() {
 		List<Company> companies = new Hkex().list();
 		System.out.println(companies);
 
@@ -25,6 +26,11 @@ public class HkexTest {
 				.uniqueResult().name;
 
 		assertTrue(name.equals("HSBC Holdings plc"));
+	}
+
+	@Test
+	public void testQueryBoardLot() {
+		assertEquals(400, new Hkex().queryBoardLot("5"));
 	}
 
 }

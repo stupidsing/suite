@@ -2,9 +2,11 @@ package suite.trade;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,7 +21,8 @@ import suite.util.Util;
 
 public class Hkex {
 
-	private ObjectMapper mapper = new ObjectMapper();
+	// .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	private static ObjectMapper mapper = new ObjectMapper();
 
 	// https://www.hkex.com.hk/eng/csm/result.htm?location=companySearch&SearchMethod=2&mkt=hk&LangCode=en&StockType=MB&Ranking=ByMC&x=42&y=9
 	// stock code, stock name, market capitalisation (million)
@@ -171,37 +174,60 @@ public class Hkex {
 		}
 	}
 
-	public static class CompanySearch {
-		public static class Data {
-			public static class Content {
-				public static class Table {
-					public static class Tr {
-						public boolean thead;
-						public List<List<String>> td;
-						public String link;
-					}
-
-					public String classname;
-					public List<String> colAlign;
-					public List<Tr> tr;
+	public static class Data {
+		public static class Content {
+			@JsonIgnoreProperties(ignoreUnknown = true)
+			public static class Table {
+				public static class Tr {
+					public boolean thead;
+					public List<List<String>> td;
+					public String link;
 				}
 
-				public int style;
 				public String classname;
-				public List<Table> table;
+				public String title;
+				public List<String> colWidth;
+				public List<String> colAlign;
+				public List<Tr> tr;
 			}
 
-			public int id;
-			public List<Content> content;
-			public String remark;
+			public int style;
+			public String classname;
+			public JsonNode table;
+			private List<Table> tables_;
+
+			private List<Table> getTables() {
+				return tables_ != null ? tables_ : (tables_ = tables_());
+			}
+
+			private List<Table> tables_() {
+				if (table.isArray())
+					return Read.from(table).map(json -> mapper.convertValue(json, Table.class)).toList();
+				else
+					return Arrays.asList(mapper.convertValue(table, Table.class));
+			}
 		}
 
+		public int id;
+		public String tabName;
+		public String title;
+		public List<Content> content;
+		public String remark;
+	}
+
+	public static class CompanySearch {
 		public String IndexName;
 		public List<Data> data;
 		public String PageNo;
 		public int PageSize;
 		public int TotalCount;
 		public String LastUpdateDate;
+	}
+
+	public static class CompanyInfo {
+		public String stockName;
+		public String stockCode;
+		public List<Data> data;
 	}
 
 	public Company getCompany(String code) {
@@ -213,7 +239,8 @@ public class Hkex {
 	}
 
 	public List<Company> list(int pageNo) {
-		String url = "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
+		JsonNode json = query("" //
+				+ "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
 				+ "?location=companySearch" //
 				+ "&SearchMethod=2" //
 				+ "&LangCode=en" //
@@ -230,8 +257,68 @@ public class Hkex {
 				+ "&FYYYY=" //
 				+ "&TDD=" //
 				+ "&TMM=" //
-				+ "&TYYYY=";
+				+ "&TYYYY=");
 
+		CompanySearch companySearch = mapper.convertValue(json, CompanySearch.class);
+
+		if (Boolean.TRUE)
+			return Read.each(companySearch) //
+					.flatMap(cs -> cs.data) //
+					.flatMap(data -> data.content) //
+					.flatMap(content -> content.getTables()) //
+					.flatMap(table -> table.tr) //
+					.filter(tr -> !tr.thead) //
+					.flatMap(tr -> tr.td) //
+					.map(list -> new Company( //
+							Util.right("0000" + list.get(1).replace("*", "").trim(), -4), //
+							list.get(2).trim(), //
+							Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
+					.toList();
+		else
+			return Read.each(json) //
+					.flatMap(json_ -> json_.get("data")) //
+					.flatMap(json_ -> json_.get("content")) //
+					.flatMap(json_ -> json_.get("table")) //
+					.flatMap(json_ -> json_.get("tr")) //
+					.filter(json_ -> !json_.get("thead").asBoolean()) //
+					.flatMap(json_ -> json_.get("td")) //
+					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList()) //
+					.map(list -> new Company( //
+							Util.right("0000" + list.get(1).replace("*", "").trim(), -4), //
+							list.get(2).trim(), //
+							Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
+					.toList();
+	}
+
+	public int queryBoardLot(String stockCode) {
+		JsonNode json = query("" //
+				+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
+				+ "?location=companySearch" //
+				+ "&SearchMethod=1" //
+				+ "&LangCode=en" //
+				+ "&StockCode=" + stockCode //
+				+ "&StockName=" //
+				+ "&mkt=hk" //
+				+ "&x=35" //
+				+ "&y=12");
+
+		CompanyInfo companyInfo = mapper.convertValue(json, CompanyInfo.class);
+
+		String boardLotStr = Read.each(companyInfo) //
+				.flatMap(ci -> ci.data) //
+				.flatMap(data -> data.content) //
+				.flatMap(content -> content.getTables()) //
+				.flatMap(table -> table.tr) //
+				.filter(tr -> !tr.thead) //
+				.flatMap(tr -> tr.td) //
+				.filter(td -> Util.stringEquals(td.get(0), "Board lot")) //
+				.uniqueResult() //
+				.get(1);
+
+		return Integer.parseInt(boardLotStr);
+	}
+
+	private JsonNode query(String url) {
 		JsonNode json;
 
 		if (Boolean.TRUE) {
@@ -244,19 +331,7 @@ public class Hkex {
 			json = Rethrow.ex(() -> mapper.readTree(is));
 		}
 
-		CompanySearch companySearch = mapper.convertValue(json, CompanySearch.class);
-
-		return Read.from(companySearch.data) //
-				.flatMap(data -> data.content) //
-				.flatMap(content -> content.table) //
-				.flatMap(table -> table.tr) //
-				.filter(tr -> !tr.thead) //
-				.flatMap(tr -> tr.td) //
-				.map(list -> new Company( //
-						Util.right("0000" + list.get(1).replace("*", "").trim(), -4), //
-						list.get(2).trim(), //
-						Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
-				.toList();
+		return json;
 	}
 
 }
