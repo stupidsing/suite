@@ -13,7 +13,7 @@ public class Coordinate implements Comparable<Coordinate> {
 
 	private int index;
 
-	private static Coordinate coords[][];
+	private static Coordinate[][] coords;
 	private static List<Coordinate> all = new ArrayList<>();
 
 	static {
