@@ -47,7 +47,7 @@ public class Memoize {
 			}
 
 			private Map<I, R> map = new HashMap<>();
-			private R array[] = new R[size];
+			private R[] array = new R[size];
 			private int p = 0;
 
 			{

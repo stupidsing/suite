@@ -85,7 +85,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 		synchronized (writeLock) {
 			int end = nPages;
 			int start = Math.max(0, end - back);
-			boolean isInUse[] = new boolean[end - start];
+			boolean[] isInUse = new boolean[end - start];
 
 			Sink<List<Integer>> use = pointers_ -> {
 				for (int pointer : pointers_)

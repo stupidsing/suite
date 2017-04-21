@@ -5,7 +5,7 @@ import suite.util.Util;
 public class ConwayGameOfLife {
 
 	private static int size = 16;
-	private boolean game[][];
+	private boolean[][] game;
 
 	public ConwayGameOfLife(String s) {
 		this(new boolean[size][size]);
@@ -18,7 +18,7 @@ public class ConwayGameOfLife {
 		}
 	}
 
-	public ConwayGameOfLife(boolean game[][]) {
+	public ConwayGameOfLife(boolean[][] game) {
 		this.game = game;
 	}
 
@@ -32,8 +32,8 @@ public class ConwayGameOfLife {
 	}
 
 	public ConwayGameOfLife evolve(ConwayGameOfLife cgol) {
-		boolean game0[][] = cgol.game;
-		boolean game1[][] = new boolean[size][size];
+		boolean[][] game0 = cgol.game;
+		boolean[][] game1 = new boolean[size][size];
 
 		for (int x = 1; x < size - 1; x++)
 			for (int y = 1; y < size - 1; y++) {

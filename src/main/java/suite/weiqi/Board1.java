@@ -17,7 +17,7 @@ import suite.weiqi.Weiqi.Occupation;
  */
 public class Board1 {
 
-	private Group board[] = new Group[Weiqi.size << Weiqi.shift];
+	private Group[] board = new Group[Weiqi.size << Weiqi.shift];
 	private int hashCode;
 
 	private class Group {
