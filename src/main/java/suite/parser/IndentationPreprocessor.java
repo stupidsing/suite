@@ -18,7 +18,7 @@ import suite.util.Util;
  */
 public class IndentationPreprocessor implements Fun<String, List<Run>> {
 
-	private Operator operators[];
+	private Operator[] operators;
 
 	public IndentationPreprocessor(Operator[] operators) {
 		this.operators = operators;

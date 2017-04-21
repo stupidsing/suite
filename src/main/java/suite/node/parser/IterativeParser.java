@@ -24,13 +24,13 @@ import suite.util.Util;
 public class IterativeParser {
 
 	private TerminalParser terminalParser;
-	private Operator operators[];
+	private Operator[] operators;
 
-	public IterativeParser(Operator operators[]) {
+	public IterativeParser(Operator[] operators) {
 		this(Singleton.get().getGrandContext(), operators);
 	}
 
-	private IterativeParser(Context context, Operator operators[]) {
+	private IterativeParser(Context context, Operator[] operators) {
 		this.operators = operators;
 		terminalParser = new TerminalParser(context);
 	}

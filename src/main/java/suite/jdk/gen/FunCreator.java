@@ -152,7 +152,7 @@ public class FunCreator<I> extends FunFactory {
 					LogUtil.info("class = " + clsName + " implements " + interfaceClass.getName());
 					LogUtil.info("fields = " + fieldTypes);
 					ConstantPool constantPool = cp.getConstantPool();
-					Instruction instructions[] = il.getInstructions();
+					Instruction[] instructions = il.getInstructions();
 
 					for (int i = 0; i < instructions.length; i++) {
 						Instruction instruction = instructions[i];

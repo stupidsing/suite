@@ -46,7 +46,7 @@ public class VariableMapperImpl implements VariableMapper {
 	}
 
 	public Env env() {
-		Reference refs[] = new Reference[nVariables];
+		Reference[] refs = new Reference[nVariables];
 		for (int i = 0; i < nVariables; i++)
 			refs[i] = new Reference();
 		return new Env(refs);

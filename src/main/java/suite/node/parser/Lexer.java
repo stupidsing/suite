@@ -43,7 +43,7 @@ public class Lexer {
 		}
 	}
 
-	public Lexer(Operator operators[], String in) {
+	public Lexer(Operator[] operators, String in) {
 		this.in = in;
 
 		Map<String, Operator> operatorByName = Read.from(operators) //

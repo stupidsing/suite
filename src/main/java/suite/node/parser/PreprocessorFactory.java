@@ -16,7 +16,7 @@ public class PreprocessorFactory {
 
 	private static Set<Character> whitespaces = Util.set('\t', '\r', '\n');
 
-	public static List<Fun<String, List<Run>>> create(Operator operators[]) {
+	public static List<Fun<String, List<Run>>> create(Operator[] operators) {
 		Fun<String, List<Run>> gct = CommentPreprocessor.groupCommentPreprocessor(whitespaces);
 		Fun<String, List<Run>> lct = CommentPreprocessor.lineCommentPreprocessor(whitespaces);
 		Fun<String, List<Run>> it = new IndentationPreprocessor(operators);

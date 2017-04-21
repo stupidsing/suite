@@ -13,7 +13,7 @@ import suite.os.FileUtil;
 
 public class ParserCompareTest {
 
-	private Operator operators[] = TermOp.values();
+	private Operator[] operators = TermOp.values();
 	private IterativeParser iterativeParser = new IterativeParser(operators);
 	private RecursiveParser recursiveParser = new RecursiveParser(operators);
 

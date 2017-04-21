@@ -392,7 +392,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	public IntObjPair<V>[] toArray() {
 		List<IntObjPair<V>> list = toList();
 		@SuppressWarnings("unchecked")
-		IntObjPair<V> array[] = (IntObjPair[]) Array.newInstance(Pair.class, list.size());
+		IntObjPair<V>[] array = (IntObjPair[]) Array.newInstance(Pair.class, list.size());
 		return list.toArray(array);
 	}
 

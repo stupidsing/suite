@@ -18,11 +18,11 @@ import suite.util.To;
 
 public class RecursiveFactorizer {
 
-	private Operator operators[];
+	private Operator[] operators;
 	private Chars in;
 	private Reverser reverser;
 
-	public RecursiveFactorizer(Operator operators[]) {
+	public RecursiveFactorizer(Operator[] operators) {
 		this.operators = operators;
 	}
 

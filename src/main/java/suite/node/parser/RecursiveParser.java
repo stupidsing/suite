@@ -20,10 +20,10 @@ import suite.node.util.Singleton;
  */
 public class RecursiveParser {
 
-	private Operator operators[];
+	private Operator[] operators;
 	private TerminalParser terminalParser = new TerminalParser(Singleton.get().getGrandContext());
 
-	public RecursiveParser(Operator operators[]) {
+	public RecursiveParser(Operator[] operators) {
 		this.operators = operators;
 	}
 

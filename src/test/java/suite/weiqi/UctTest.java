@@ -62,7 +62,7 @@ public class UctTest {
 	@Test
 	public void testRandomEvaluationTime() {
 		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
-		int i = 0, ss[] = { 1000, 10000 };
+		int i = 0, ss[] = { 1000, 10000, };
 		float duration = 0f;
 
 		for (int time = 0; time < 2; time++)

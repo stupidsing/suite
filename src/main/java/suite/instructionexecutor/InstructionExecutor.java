@@ -23,7 +23,7 @@ import suite.os.LogUtil;
 
 public class InstructionExecutor implements AutoCloseable {
 
-	private Instruction instructions[];
+	private Instruction[] instructions;
 	private int yawnEntryPoint;
 
 	protected BiMap<Integer, Node> constantPool = new HashBiMap<>();

@@ -7,15 +7,15 @@ import suite.node.Reference;
 public interface VariableMapper {
 
 	public static class Env {
-		public final Reference refs[];
+		public final Reference[] refs;
 
-		public Env(Reference refs[]) {
+		public Env(Reference[] refs) {
 			this.refs = refs;
 		}
 
 		public Env clone() {
 			Cloner cloner = new Cloner();
-			Reference refs1[] = new Reference[refs.length];
+			Reference[] refs1 = new Reference[refs.length];
 			for (int i = 0; i < refs.length; i++)
 				refs1[i] = Reference.of(cloner.clone(refs[i]));
 			return new Env(refs1);
