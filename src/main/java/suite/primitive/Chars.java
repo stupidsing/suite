@@ -18,12 +18,12 @@ import suite.util.Util;
 
 public class Chars implements Iterable<Character> {
 
-	private static char emptyArray[] = new char[0];
+	private static char[] emptyArray = new char[0];
 	private static int reallocSize = 65536;
 
 	public static Chars empty = Chars.of(emptyArray);
 
-	public final char cs[]; // immutable
+	public final char[] cs; // immutable
 	public final int start, end;
 
 	public static Comparator<Chars> comparator = (chars0, chars1) -> {
@@ -60,15 +60,15 @@ public class Chars implements Iterable<Character> {
 		return Chars.of(cs, 0);
 	}
 
-	public static Chars of(char cs[], int start) {
+	public static Chars of(char[] cs, int start) {
 		return Chars.of(cs, start, cs.length);
 	}
 
-	public static Chars of(char cs[], int start, int end) {
+	public static Chars of(char[] cs, int start, int end) {
 		return new Chars(cs, start, end);
 	}
 
-	public Chars(char cs[], int start, int end) {
+	public Chars(char[] cs, int start, int end) {
 		this.cs = cs;
 		this.start = start;
 		this.end = end;
@@ -76,7 +76,7 @@ public class Chars implements Iterable<Character> {
 
 	public Chars append(Chars a) {
 		int size0 = size(), size1 = a.size(), newSize = size0 + size1;
-		char nb[] = new char[newSize];
+		char[] nb = new char[newSize];
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
 		return Chars.of(nb);
@@ -269,7 +269,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public static class CharsBuilder {
-		private char cs[] = emptyArray;
+		private char[] cs = emptyArray;
 		private int size;
 
 		public CharsBuilder append(Chars chars) {

@@ -251,7 +251,7 @@ public class To {
 
 	public static String string(Reader reader) {
 		try (Reader reader_ = reader) {
-			char buffer[] = new char[Constants.bufferSize];
+			char[] buffer = new char[Constants.bufferSize];
 			StringBuilder sb = new StringBuilder();
 
 			while (reader_.ready()) {

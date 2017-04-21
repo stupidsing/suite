@@ -12,7 +12,7 @@ public class TermiosMain {
 
 	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);
 
-	public static void main(String args[]) throws IOException {
+	public static void main(String[] args) throws IOException {
 		new TermiosMain().run();
 	}
 

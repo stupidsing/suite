@@ -29,7 +29,7 @@ public class UctWeiqiMain<Move> {
 
 	private static Occupation startingPlayer = Occupation.BLACK;
 
-	public static void main(String args[]) throws IOException {
+	public static void main(String[] args) throws IOException {
 		InputStreamReader isr = new InputStreamReader(System.in, Constants.charset);
 		BufferedReader br = new BufferedReader(isr);
 		DecimalFormat df = new DecimalFormat("0.000");

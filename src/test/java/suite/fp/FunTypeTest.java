@@ -74,7 +74,7 @@ public class FunTypeTest {
 
 	@Test
 	public void testFail() {
-		String cases[] = { "1 + \"abc\"" //
+		String[] cases = { "1 + \"abc\"" //
 				, "2 = true" //
 				, "(f => f {0}) | 1" //
 				, "define fib := i2 => dummy => 1; fib {i2} >> ()" //

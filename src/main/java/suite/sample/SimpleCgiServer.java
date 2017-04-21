@@ -18,7 +18,7 @@ public class SimpleCgiServer {
 		public void handle(Map<String, String> headers, OutputStream os) throws IOException;
 	}
 
-	public static void main(String args[]) throws IOException {
+	public static void main(String[] args) throws IOException {
 		new SimpleCgiServer().run((headers, os) -> {
 			OutputStreamWriter writer = new OutputStreamWriter(os, Constants.charset);
 			writer.write("<html>" + headers + "</html>");

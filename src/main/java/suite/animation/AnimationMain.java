@@ -21,11 +21,11 @@ public class AnimationMain extends ExecutableProgram {
 		private int i;
 	}
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Util.run(AnimationMain.class, args);
 	}
 
-	protected boolean run(String args[]) throws InterruptedException {
+	protected boolean run(String[] args) throws InterruptedException {
 		JFrame frame = new JFrame("Animation");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setSize(new Dimension(1024, 768));

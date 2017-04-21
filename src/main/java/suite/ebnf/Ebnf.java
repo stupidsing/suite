@@ -79,7 +79,7 @@ public class Ebnf {
 		return toFactorizeResult(cs, 0, cs.length, parse(entity, s));
 	}
 
-	private FactorizeResult toFactorizeResult(char cs[], int p0, int px, Ast ast) {
+	private FactorizeResult toFactorizeResult(char[] cs, int p0, int px, Ast ast) {
 		List<Ast> children = ast.children;
 		int size = children.size();
 

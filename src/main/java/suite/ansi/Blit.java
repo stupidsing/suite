@@ -5,9 +5,9 @@ public class Blit {
 	public class Buffer {
 		private int width;
 		private int height;
-		private char buffer[][];
+		private char[][] buffer;
 
-		public Buffer(int width, int height, char buffer[][]) {
+		public Buffer(int width, int height, char[][] buffer) {
 			this.width = width;
 			this.height = height;
 			this.buffer = buffer;

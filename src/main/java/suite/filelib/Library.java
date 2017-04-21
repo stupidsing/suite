@@ -41,11 +41,11 @@ public class Library extends ExecutableProgram {
 		private List<String> tags;
 	}
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Util.run(Library.class, args);
 	}
 
-	protected boolean run(String args[]) {
+	protected boolean run(String[] args) {
 		Pair<Streamlet2<Path, Long>, Streamlet2<Path, Long>> partition = FileUtil.findPaths(Paths.get(inputDir)) //
 				.filter(path -> fileExtensions.contains(FileUtil.getFileExtension(path))) //
 				.map2(path -> path, path -> Rethrow.ex(() -> Files.size(path))) //

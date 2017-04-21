@@ -10,7 +10,7 @@ public class AlphabetaTest {
 
 	private static class TicTacToe {
 		char player = 'O';
-		char grid[] = new char[9];
+		char[] grid = new char[9];
 
 		public String toString() {
 			return "" //

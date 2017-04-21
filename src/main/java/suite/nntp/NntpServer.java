@@ -24,7 +24,7 @@ public class NntpServer {
 
 	private Nntp nntp;
 
-	public static void main(String args[]) throws IOException {
+	public static void main(String[] args) throws IOException {
 		new NntpServer().run();
 	}
 

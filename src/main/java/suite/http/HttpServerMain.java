@@ -19,7 +19,7 @@ public class HttpServerMain {
 			&& Util.stringEquals(username, "user") //
 			&& Util.stringEquals(password, "");
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		new HttpServerMain().run();
 	}
 

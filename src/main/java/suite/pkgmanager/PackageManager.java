@@ -39,7 +39,7 @@ public class PackageManager {
 					.map(filename0 -> {
 						String filename1 = filename0;
 						for (Pair<String, String> filenameMapping : filenameMappings) {
-							String match[];
+							String[] match;
 							if ((match = WildcardUtil.match(filenameMapping.t0, filename1)) != null) {
 								filename1 = WildcardUtil.apply(filenameMapping.t1, match);
 								break;

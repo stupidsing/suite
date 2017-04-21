@@ -13,7 +13,7 @@ public class WildcardUtilTest {
 
 	@Test
 	public void test0() {
-		String match[] = WildcardUtil.match("*def*jkl*", "abcdefghijklmno");
+		String[] match = WildcardUtil.match("*def*jkl*", "abcdefghijklmno");
 		System.out.println(Arrays.toString(match));
 		assertTrue(Arrays.equals(match, new String[] { "abc", "ghi", "mno", }));
 		assertEquals("abcpqrghixyzmno", WildcardUtil.apply("*pqr*xyz*", match));

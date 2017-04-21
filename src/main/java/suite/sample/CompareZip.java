@@ -22,12 +22,12 @@ public class CompareZip extends ExecutableProgram {
 
 	private TextUtil textUtil = new TextUtil();
 
-	public static void main(String args[]) throws IOException {
+	public static void main(String[] args) throws IOException {
 		Util.run(CompareZip.class, args);
 	}
 
 	@Override
-	protected boolean run(String args[]) throws IOException {
+	protected boolean run(String[] args) throws IOException {
 		String filename0 = "/tmp/a";
 		String filename1 = "/tmp/b";
 		ZipFile zf0 = new ZipFile(filename0);

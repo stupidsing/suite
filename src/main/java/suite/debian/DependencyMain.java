@@ -147,11 +147,11 @@ public class DependencyMain extends ExecutableProgram {
 			, supplementaryList //
 	));
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Util.run(DependencyMain.class, args);
 	}
 
-	protected boolean run(String args[]) throws IOException {
+	protected boolean run(String[] args) throws IOException {
 		Read.from(getClass().getMethods()) //
 				.filter(m -> m.getName().startsWith("list") && m.getParameters().length == 0) //
 				.sink(m -> {

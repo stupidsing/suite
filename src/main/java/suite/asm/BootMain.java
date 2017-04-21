@@ -14,12 +14,12 @@ import suite.util.Util.RunOption;
 // mvn compile exec:java -Dexec.mainClass=suite.asm.BootMain && qemu-system-x86_64 target/boot.bin
 public class BootMain extends ExecutableProgram {
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Util.run(BootMain.class, args, RunOption.TIME___);
 	}
 
 	@Override
-	protected boolean run(String args[]) throws IOException {
+	protected boolean run(String[] args) throws IOException {
 		Bytes bootLoader = new Assembler(16).assemble(FileUtil.read("src/main/asm/bootloader.asm"));
 		Bytes kernel = new ImperativeCompiler().compile(0x40000, Paths.get("src/main/il/kernel.il"));
 

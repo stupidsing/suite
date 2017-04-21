@@ -41,7 +41,7 @@ public class Util {
 	}
 
 	public static abstract class ExecutableProgram implements AutoCloseable {
-		protected abstract boolean run(String args[]) throws Exception;
+		protected abstract boolean run(String[] args) throws Exception;
 
 		public void close() {
 		}
@@ -307,11 +307,11 @@ public class Util {
 		return s.substring(pos);
 	}
 
-	public static void run(Class<? extends ExecutableProgram> clazz, String args[]) {
+	public static void run(Class<? extends ExecutableProgram> clazz, String[] args) {
 		run(clazz, args, RunOption.RUN____);
 	}
 
-	public static void run(Class<? extends ExecutableProgram> clazz, String args[], RunOption runOption) {
+	public static void run(Class<? extends ExecutableProgram> clazz, String[] args, RunOption runOption) {
 		LogUtil.initLog4j(Level.INFO);
 		Runnable runnable;
 		int[] code = new int[1];

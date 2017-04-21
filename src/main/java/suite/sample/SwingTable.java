@@ -17,7 +17,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class SwingTable {
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		JLabel label = new JLabel("Hello World~~~");
 
 		JTextPane editor = new JTextPane();

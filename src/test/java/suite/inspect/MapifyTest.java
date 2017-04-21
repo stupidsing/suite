@@ -23,7 +23,7 @@ public class MapifyTest {
 
 	public static class Container {
 		private List<I> is;
-		private I array[] = new I[] { new A(), new B(), };
+		private I[] array = new I[] { new A(), new B(), };
 	}
 
 	public static class A implements I {

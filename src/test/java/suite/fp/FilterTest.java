@@ -41,7 +41,7 @@ public class FilterTest {
 			public void close() {
 			}
 
-			public int read(char buffer[], int pos, int len) {
+			public int read(char[] buffer, int pos, int len) {
 				int nBytesRead = Math.min(count, len);
 
 				// makes sure there are new line characters, otherwise lines
@@ -59,7 +59,7 @@ public class FilterTest {
 		Writer writer = new Writer() {
 			private int count = 0;
 
-			public void write(char buffer[], int pos, int len) {
+			public void write(char[] buffer, int pos, int len) {
 				count += len;
 				if (count == size) {
 					Suite.proveLogic("find.all.memoized.clear, intern.map.clear");

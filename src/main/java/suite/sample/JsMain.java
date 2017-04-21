@@ -25,11 +25,11 @@ public class JsMain extends ExecutableProgram {
 
 	private ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Util.run(JsMain.class, args);
 	}
 
-	protected synchronized boolean run(String args[]) throws IOException, ScriptException {
+	protected synchronized boolean run(String[] args) throws IOException, ScriptException {
 		List<String> filenames = new ArrayList<>();
 
 		for (String arg : args)

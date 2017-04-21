@@ -17,11 +17,11 @@ import suite.wildcard.WildcardUtil;
 // mAIN=suite.node.parser.RecursiveFileFactorizerMain ./run.sh
 public class RecursiveFileFactorizerMain extends ExecutableProgram {
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Util.run(RecursiveFileFactorizerMain.class, args);
 	}
 
-	protected boolean run(String args[]) throws IOException {
+	protected boolean run(String[] args) throws IOException {
 		List<Pair<String, String>> fts = Arrays.asList( //
 				Pair.of("fc-define-var-types .0 .1 .2 .3", "fc-define-var-types .1 .2 .3 .0") //
 		);

@@ -25,12 +25,12 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain extends ExecutableProgram {
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Util.run(DailyMain.class, args);
 	}
 
 	@Override
-	protected boolean run(String args[]) {
+	protected boolean run(String[] args) {
 		Yahoo yahoo = new Yahoo();
 		Streamlet<Company> companies = new Hkex().companies;
 		Strategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);

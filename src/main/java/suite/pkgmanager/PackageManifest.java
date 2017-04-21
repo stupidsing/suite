@@ -11,8 +11,8 @@ public class PackageManifest {
 	private List<Command> commands;
 
 	public static class Command {
-		private String installCommand[];
-		private String uninstallCommand[];
+		private String[] installCommand;
+		private String[] uninstallCommand;
 
 		public String[] getInstallCommand() {
 			return installCommand;

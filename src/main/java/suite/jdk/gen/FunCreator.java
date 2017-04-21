@@ -178,7 +178,7 @@ public class FunCreator<I> extends FunFactory {
 				}
 			}
 
-			String ifs[] = new String[] { interfaceClass.getName(), };
+			String[] ifs = new String[] { interfaceClass.getName(), };
 			ClassGen cg = new ClassGen(clsName, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
 
 			for (Entry<String, Pair<Type, Object>> e : fieldStaticTypeValues.entrySet())

@@ -121,11 +121,11 @@ public class ParseUtil {
 			return null;
 	}
 
-	public static Segment searchPosition(char cs[], Segment segment, Operator operator) {
+	public static Segment searchPosition(char[] cs, Segment segment, Operator operator) {
 		return searchPosition(cs, segment, operator.getName(), operator.getAssoc(), true);
 	}
 
-	public static Segment searchPosition(char cs[], Segment segment, String name, Assoc assoc, boolean isCheckDepth) {
+	public static Segment searchPosition(char[] cs, Segment segment, String name, Assoc assoc, boolean isCheckDepth) {
 		int nameLength = name.length();
 		int start1 = segment.start, end1 = segment.end - 1;
 		int quote = 0, depth = 0;
@@ -165,7 +165,7 @@ public class ParseUtil {
 	}
 
 	public static Streamlet<String> split(String in, String name) {
-		char chars[] = To.charArray(in);
+		char[] chars = To.charArray(in);
 		int length = chars.length;
 
 		return Streamlet.of(new Source<String>() {

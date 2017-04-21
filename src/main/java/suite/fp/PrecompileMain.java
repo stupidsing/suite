@@ -15,11 +15,11 @@ import suite.util.Util.ExecutableProgram;
  */
 public class PrecompileMain extends ExecutableProgram {
 
-	public static void main(String args[]) throws IOException {
+	public static void main(String[] args) throws IOException {
 		Util.run(PrecompileMain.class, args);
 	}
 
-	protected boolean run(String args[]) {
+	protected boolean run(String[] args) {
 		return LogUtil.duration(getClass().getSimpleName(), () -> {
 			ProverConfig pc = new ProverConfig();
 			boolean ok = Suite.precompile("STANDARD", pc);

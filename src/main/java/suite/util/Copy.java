@@ -32,7 +32,7 @@ public class Copy {
 	public static void readerToWriter(Reader in, Writer out) throws IOException {
 		try (Reader in_ = in) {
 			int len;
-			char buffer[] = new char[Constants.bufferSize];
+			char[] buffer = new char[Constants.bufferSize];
 			while (0 <= (len = in_.read(buffer)))
 				out.write(buffer, 0, len);
 		}

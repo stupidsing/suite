@@ -37,11 +37,11 @@ public class Main extends ExecutableProgram {
 	private Reader reader = new BufferedReader(new InputStreamReader(System.in, Constants.charset));
 	private Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, Constants.charset));
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Util.run(Main.class, args);
 	}
 
-	protected boolean run(String args[]) throws IOException {
+	protected boolean run(String[] args) throws IOException {
 		opt = new CommandOptions();
 
 		boolean result = true;

@@ -14,7 +14,7 @@ import suite.util.Util;
 
 public class TelnetServer {
 
-	public static void main(String args[]) throws IOException {
+	public static void main(String[] args) throws IOException {
 		new TelnetServer().run();
 	}
 

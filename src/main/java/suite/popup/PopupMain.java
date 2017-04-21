@@ -32,12 +32,12 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.popup.PopupMain
 public class PopupMain extends ExecutableProgram {
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Util.run(PopupMain.class, args);
 	}
 
 	@Override
-	protected boolean run(String args[]) throws Exception {
+	protected boolean run(String[] args) throws Exception {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int centreX = screenSize.width / 2, centreY = screenSize.height / 2;
 		int width = screenSize.width / 2, height = screenSize.height / 8;
