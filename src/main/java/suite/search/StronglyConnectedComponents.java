@@ -42,7 +42,7 @@ public class StronglyConnectedComponents<V> {
 	public StronglyConnectedComponents(DirectedGraph<V> dg) {
 		this.dg = dg;
 
-		Map<V, Scc> sccs = Read.from(dg.vertices).map2(v -> v, v -> new Scc(v)).toMap();
+		Map<V, Scc> sccs = Read.from(dg.vertices).map2(v -> new Scc(v)).toMap();
 		forwards = dg.forwards.entries().map2((u, v) -> sccs.get(u), (u, v) -> sccs.get(v)).toMultimap();
 
 		for (Scc vscc : sccs.values())
@@ -74,7 +74,7 @@ public class StronglyConnectedComponents<V> {
 	}
 
 	public DirectedGraph<Set<V>> group() {
-		Map<V, Set<V>> map = Read.from(components).concatMap2(vs -> Read.from(vs).map2(v -> v, v -> vs)).toMap();
+		Map<V, Set<V>> map = Read.from(components).concatMap2(vs -> Read.from(vs).map2(v -> vs)).toMap();
 		Set<Set<V>> vertices = Read.from(components).toSet();
 		Set<Pair<Set<V>, Set<V>>> edges = new HashSet<>();
 
