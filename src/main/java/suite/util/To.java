@@ -50,7 +50,7 @@ public class To {
 
 	public static <T> T[] array(Class<T> clazz, int length, IntFunction<T> f) {
 		@SuppressWarnings("unchecked")
-		T ts[] = (T[]) Array.newInstance(clazz, length);
+		T[] ts = (T[]) Array.newInstance(clazz, length);
 		for (int i = 0; i < length; i++)
 			ts[i] = f.apply(i);
 		return ts;

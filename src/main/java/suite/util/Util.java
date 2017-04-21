@@ -51,14 +51,14 @@ public class Util {
 	public static <T> T[] add(Class<T> clazz, T[]... lists) {
 		int size = 0;
 
-		for (T list[] : lists)
+		for (T[] list : lists)
 			size += list.length;
 
 		@SuppressWarnings("unchecked")
-		T result[] = (T[]) Array.newInstance(clazz, size);
+		T[] result = (T[]) Array.newInstance(clazz, size);
 		int i = 0;
 
-		for (T list[] : lists) {
+		for (T[] list : lists) {
 			int length = list.length;
 			Copy.array(list, 0, result, i, length);
 			i += length;

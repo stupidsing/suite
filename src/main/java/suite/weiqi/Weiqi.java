@@ -63,7 +63,7 @@ public class Weiqi {
 	 */
 	public static class Array<T> {
 		@SuppressWarnings("unchecked")
-		private T positions[] = (T[]) new Object[size << shift];
+		private T[] positions = (T[]) new Object[size << shift];
 
 		public Array() {
 		}

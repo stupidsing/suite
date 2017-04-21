@@ -15,7 +15,7 @@ import suite.Constants;
 
 public class Copy {
 
-	public static <T> void array(T from[], int fromIndex, T to[], int toIndex, int size) {
+	public static <T> void array(T[] from, int fromIndex, T[] to, int toIndex, int size) {
 		if (0 < size)
 			System.arraycopy(from, fromIndex, to, toIndex, size);
 		else if (size < 0)

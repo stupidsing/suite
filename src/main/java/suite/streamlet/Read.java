@@ -67,7 +67,7 @@ public class Read {
 		return from(ts);
 	}
 
-	public static <T> Streamlet<T> from(T ts[]) {
+	public static <T> Streamlet<T> from(T[] ts) {
 		return new Streamlet<>(() -> Outlet.of(ts));
 	}
 

@@ -17,7 +17,7 @@ public class IVector<T> {
 	private int start, end;
 
 	private static class Data<T> {
-		private T nodes[];
+		private T[] nodes;
 		private int startUsed, endUsed;
 
 		private Data() {
@@ -43,13 +43,13 @@ public class IVector<T> {
 			nodes[++endUsed] = n;
 		}
 
-		private void insertBefore(T n[], int s, int e) {
+		private void insertBefore(T[] n, int s, int e) {
 			int l1 = e - s;
 			startUsed -= l1;
 			System.arraycopy(n, s, nodes, startUsed, l1);
 		}
 
-		private void insertAfter(T n[], int s, int e) {
+		private void insertAfter(T[] n, int s, int e) {
 			int l1 = e - s;
 			System.arraycopy(n, s, nodes, endUsed, l1);
 			endUsed += l1;
@@ -61,7 +61,7 @@ public class IVector<T> {
 		data.insertBefore(node);
 	}
 
-	public IVector(T nodes[]) {
+	public IVector(T[] nodes) {
 		this.data = new Data<>();
 		data.insertBefore(nodes, 0, nodes.length);
 	}

@@ -322,7 +322,7 @@ public class Outlet<T> implements Iterable<T> {
 	public T[] toArray(Class<T> clazz) {
 		List<T> list = toList();
 		@SuppressWarnings("unchecked")
-		T array[] = (T[]) Array.newInstance(clazz, list.size());
+		T[] array = (T[]) Array.newInstance(clazz, list.size());
 		return list.toArray(array);
 	}
 
