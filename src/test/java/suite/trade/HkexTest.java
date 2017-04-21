@@ -13,9 +13,11 @@ import suite.util.Util;
 
 public class HkexTest {
 
+	Hkex hkex = new Hkex();
+
 	@Test
 	public void testList() {
-		List<Company> companies = new Hkex().queryCompanies();
+		List<Company> companies = hkex.queryCompanies();
 		System.out.println(companies);
 
 		for (Company company : companies)
@@ -30,7 +32,7 @@ public class HkexTest {
 
 	@Test
 	public void testQueryBoardLot() {
-		assertEquals(400, new Hkex().queryBoardLot("5"));
+		assertEquals(400, hkex.queryBoardLot("5"));
 	}
 
 }
