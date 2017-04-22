@@ -83,7 +83,7 @@ public class To {
 		return floats;
 	}
 
-	public float[][] floatArray(int height, int width, IntInt_Float fun) {
+	public static float[][] floatArray(int height, int width, IntInt_Float fun) {
 		float[][] m = new float[height][width];
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
