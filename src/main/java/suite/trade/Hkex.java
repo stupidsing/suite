@@ -1,7 +1,6 @@
 package suite.trade;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import suite.http.HttpUtil;
+import suite.node.util.Singleton;
 import suite.os.Execute;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -332,9 +331,7 @@ public class Hkex {
 		JsonNode json;
 
 		if (Boolean.TRUE) {
-			String referer = "https://www.hkex.com.hk/eng/csm/result.htm?location=companySearch";
-			Map<String, String> headers = To.map("Referer", referer);
-			InputStream is = HttpUtil.http("GET", Rethrow.ex(() -> new URL(url)), headers).out.collect(To::inputStream);
+			InputStream is = Singleton.get().getStoreCache().http(url).collect(To::inputStream);
 			json = Rethrow.ex(() -> mapper.readTree(is));
 		} else {
 			Execute execute = new Execute(new String[] { "curl", url, });
