@@ -2,7 +2,11 @@ package suite.math;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Random;
+
 import org.junit.Test;
+
+import suite.util.To;
 
 public class MatrixTest {
 
@@ -22,6 +26,16 @@ public class MatrixTest {
 		o[0][1] = 1;
 		o[1][0] = 1;
 		assertTrue(mtx.equals(o, mtx.inverse(o)));
+	}
+
+	@Test
+	public void testInversePerformance() {
+		Random random = new Random();
+		float[][] large0 = To.floatArray(128, 128, (i, j) -> random.nextFloat());
+		float[][] large1 = mtx.inverse(large0);
+		float[][] actual = mtx.mul(large0, large1);
+		float[][] expect = mtx.identity(128);
+		mtx.verifyEquals(expect, actual, .05f);
 	}
 
 }
