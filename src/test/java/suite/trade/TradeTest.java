@@ -14,6 +14,7 @@ public class TradeTest {
 	private Period period = Period.fiveYears();
 
 	private Hkex hkex = new Hkex();
+	private Yahoo yahoo = new Yahoo();
 
 	@Test
 	public void testBackTest() {
@@ -59,7 +60,6 @@ public class TradeTest {
 	}
 
 	private Map<String, BackTest> backTest(String code, String disp) {
-		Yahoo yahoo = new Yahoo();
 		Strategos sr = new Strategos();
 		DataSource ds = yahoo.dataSource(code, period);
 
