@@ -6,6 +6,7 @@ import java.util.List;
 import suite.adt.Pair;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
+import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.text.Segment;
 import suite.util.FunUtil.Source;
@@ -168,7 +169,7 @@ public class ParseUtil {
 		char[] chars = To.charArray(in);
 		int length = chars.length;
 
-		return Streamlet.of(new Source<String>() {
+		return new Streamlet<>(() -> Outlet.of(new Source<String>() {
 			private int pos = 0;
 
 			public String source() {
@@ -185,7 +186,7 @@ public class ParseUtil {
 				} else
 					return null;
 			}
-		});
+		}));
 	}
 
 }

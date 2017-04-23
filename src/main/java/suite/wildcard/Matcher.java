@@ -53,7 +53,7 @@ public class Matcher {
 		for (char ch : Util.chars(pattern))
 			switch (ch) {
 			case '*':
-				st = st.concatMap(state -> Read.from(new Source<State>() {
+				st = st.concatMap(state -> Read.from(() -> new Source<State>() {
 					private int start = state.pos;
 					private int end = state.pos;
 

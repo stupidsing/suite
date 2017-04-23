@@ -43,7 +43,7 @@ public class IRbTree<T> implements ITree<T> {
 
 	@Override
 	public Streamlet<T> stream() {
-		return Read.from(new Source<T>() {
+		return Read.from(() -> new Source<T>() {
 			private Deque<Node> nodes = new ArrayDeque<>();
 
 			{

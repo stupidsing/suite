@@ -76,7 +76,7 @@ public class TwoPassIndexer {
 			return key != null && key.startsWith(searchKey) ? key : null;
 		};
 
-		return Read.from(source).concatMap(key -> Read.from(getReferencesByWord(key)));
+		return Read.from(() -> source).flatMap(this::getReferencesByWord);
 	}
 
 	public List<Reference> getReferencesByWord(String word) {

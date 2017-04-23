@@ -28,8 +28,8 @@ import suite.util.Util;
 
 public class Read {
 
-	private static Streamlet<?> empty = Streamlet.of(FunUtil.nullSource());
-	private static Streamlet2<?, ?> empty2 = Streamlet2.of(FunUtil2.nullSource());
+	private static Streamlet<?> empty = from(() -> FunUtil.nullSource());
+	private static Streamlet2<?, ?> empty2 = from2(() -> FunUtil2.nullSource());
 
 	public static Streamlet<Bytes> bytes(Path path) {
 		return bytes(path.toFile());
@@ -79,8 +79,8 @@ public class Read {
 		return new Streamlet<>(() -> Outlet.of(col));
 	}
 
-	public static <T> Streamlet<T> from(Source<T> source) {
-		return Streamlet.of(source);
+	public static <T> Streamlet<T> from(Source<Source<T>> source) {
+		return new Streamlet<>(() -> Outlet.of(source.source()));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Map<K, V> map) {
@@ -100,12 +100,12 @@ public class Read {
 		return new Streamlet2<>(() -> Outlet2.of(col));
 	}
 
-	public static <V> IntObjStreamlet<V> from2(IntObjSource<V> source) {
-		return IntObjStreamlet.of(source);
+	public static <K, V> Streamlet2<K, V> from2(Source<Source2<K, V>> source) {
+		return new Streamlet2<>(() -> Outlet2.of(source.source()));
 	}
 
-	public static <K, V> Streamlet2<K, V> from2(Source2<K, V> source) {
-		return Streamlet2.of(source);
+	public static <V> IntObjStreamlet<V> fromIntObj(Source<IntObjSource<V>> source) {
+		return new IntObjStreamlet<>(() -> IntObjOutlet.of(source.source()));
 	}
 
 	public static Streamlet<String> lines(Path path) {

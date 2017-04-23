@@ -37,10 +37,6 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		});
 	}
 
-	public static <K, V> Streamlet2<K, V> of(Source2<K, V> source) {
-		return streamlet2(() -> Outlet2.of(source));
-	}
-
 	private static <K, V> Streamlet2<K, V> streamlet2(Source<Outlet2<K, V>> in) {
 		return new Streamlet2<>(in);
 	}

@@ -103,7 +103,7 @@ public class XmlUtil {
 			}
 
 			private Streamlet<XmlNode> xmlNodes(NodeList nodeList) {
-				return Read.from(new Source<XmlNode>() {
+				return Read.from(() -> new Source<XmlNode>() {
 					private int i = 0;
 
 					public XmlNode source() {

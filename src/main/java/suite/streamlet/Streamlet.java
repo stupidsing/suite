@@ -35,10 +35,6 @@ public class Streamlet<T> implements Iterable<T> {
 		});
 	}
 
-	public static <T> Streamlet<T> of(Source<T> source) {
-		return streamlet(() -> Outlet.of(source));
-	}
-
 	private static <T> Streamlet<T> streamlet(Source<Outlet<T>> in) {
 		return new Streamlet<>(in);
 	}
