@@ -24,6 +24,7 @@ public class Serialize {
 	private static byte[] zeroes = new byte[4096];
 
 	public static Serializer<Boolean> boolean_ = boolean_();
+	public static Serializer<Float> float_ = float_();
 	public static Serializer<Integer> int_ = int_();
 
 	public static Serializer<Bytes> variableLengthBytes = new Serializer<Bytes>() {
@@ -235,6 +236,23 @@ public class Serialize {
 
 			public void write(DataOutput dataOutput, Boolean value) throws IOException {
 				dataOutput.writeByte(value ? -1 : 0);
+			}
+		};
+	}
+
+	/**
+	 * Serializes an float.
+	 *
+	 * Size = 4
+	 */
+	private static Serializer<Float> float_() {
+		return new Serializer<Float>() {
+			public Float read(DataInput dataInput) throws IOException {
+				return dataInput.readFloat();
+			}
+
+			public void write(DataOutput dataOutput, Float value) throws IOException {
+				dataOutput.writeFloat(value);
 			}
 		};
 	}
