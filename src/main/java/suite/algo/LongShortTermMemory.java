@@ -1,5 +1,6 @@
 package suite.algo;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import suite.math.Forget;
@@ -10,7 +11,7 @@ import suite.util.Copy;
 
 public class LongShortTermMemory {
 
-	private static Matrix mtx = new Matrix();
+	private Matrix mtx = new Matrix();
 
 	private float learningRate;
 	private int inputLength;
@@ -43,6 +44,7 @@ public class LongShortTermMemory {
 		private float[][] wo = new float[memoryLength][ll1];
 
 		public Unit() {
+			Arrays.fill(memory, 1f);
 			Random random = new Random();
 			double isll = 1f / Math.sqrt(ll);
 
