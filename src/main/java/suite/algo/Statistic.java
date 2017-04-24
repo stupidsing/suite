@@ -7,6 +7,7 @@ import suite.math.MathUtil;
 import suite.math.Matrix;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSource.IntObjSource;
+import suite.util.To;
 
 public class Statistic {
 
@@ -51,9 +52,37 @@ public class Statistic {
 
 	// ordinary least squares
 	public float[] linearRegression(float[][] x, float[] y) {
-		float[][] xt = mtx.transpose(x);
-		float[][] xtx = mtx.mul(xt, x);
-		return new Cholesky().inverseMul(xtx).apply(mtx.mul(xt, y));
+		return new Regression(x, y).estimates;
+	}
+
+	public class Regression {
+		public final float[] estimates;
+		public final double r2;
+		public final double standardError;
+
+		private Regression(float[][] x, float[] y) {
+			int n = y.length;
+			float[][] xt = mtx.transpose(x);
+			float[][] xtx = mtx.mul(xt, x);
+			float[] lr = new Cholesky().inverseMul(xtx).apply(mtx.mul(xt, y));
+			float[] estimatedy = To.floatArray(n, i -> mtx.dot(lr, x[i]));
+			float meany = mean(y);
+
+			double sst = 0f; // total sum of squares
+			double sse = 0f; // estimated sum of squares
+			for (int i = 0; i < n; i++) {
+				float d0 = y[i] - meany;
+				float d1 = estimatedy[i] - meany;
+				sst += d0 * d0;
+				sse += d1 * d1;
+			}
+
+			double ssr = sst - sse; // sum of squared residuals
+
+			estimates = lr;
+			r2 = ssr / sst; // 0 -> not accurate, 1 -> totally accurate
+			standardError = Math.sqrt(ssr / (n - 2));
+		}
 	}
 
 	public Obj_Int<int[]> naiveBayes(int[][] x, int[] y) {
