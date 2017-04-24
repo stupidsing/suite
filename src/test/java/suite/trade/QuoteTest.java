@@ -63,7 +63,7 @@ public class QuoteTest {
 
 		Map<String, Integer> sizeByStockCodes = Read.from(table0) //
 				.map2(r -> r.stockCode, r -> r.buySell) //
-				.groupBy(sizes -> sizes.fold(0, (size0, size1) -> size0 + size1)) //
+				.groupBy(sizes -> sizes.collect(As.sum(size -> size))) //
 				.toMap();
 
 		Map<String, Float> priceByStockCodes = yahoo.quote(Read.from(sizeByStockCodes.keySet()));
