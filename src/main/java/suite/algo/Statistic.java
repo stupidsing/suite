@@ -2,6 +2,7 @@ package suite.algo;
 
 import suite.adt.IntObjMap;
 import suite.adt.IntObjPair;
+import suite.math.Cholesky;
 import suite.math.Matrix;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSource.IntObjSource;
@@ -51,7 +52,7 @@ public class Statistic {
 	public float[] linearRegression(float[][] x, float[] y) {
 		float[][] xt = mtx.transpose(x);
 		float[][] xtx = mtx.mul(xt, x);
-		return mtx.mul(mtx.inverse(xtx), mtx.mul(xt, y));
+		return new Cholesky().inverseMul(xtx).apply(mtx.mul(xt, y));
 	}
 
 	public Obj_Int<int[]> naiveBayes(int[][] x, int[] y) {
