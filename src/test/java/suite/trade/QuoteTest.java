@@ -83,7 +83,10 @@ public class QuoteTest {
 		System.out.println("CONSTITUENTS:");
 
 		Read.from2(sizeByStockCodes) //
-				.map((stockCode, size) -> stockCode + " := " + size + " * " + priceByStockCodes.get(stockCode)) //
+				.map((stockCode, size) -> {
+					float price = priceByStockCodes.get(stockCode);
+					return stockCode + " := " + size + " * " + price + " == " + size * price;
+				}) //
 				.forEach(System.out::println);
 
 		System.out.println("AMOUNT0 = " + amount0);
