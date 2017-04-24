@@ -32,22 +32,22 @@ public class CholeskyTest {
 
 	@Test
 	public void testLdlt() {
-		float[][] expectL = { //
+		float[][] expectl = { //
 				{ 1f, 0f, 0f, }, //
 				{ 3f, 1f, 0f, }, //
 				{ -4f, 5f, 1f, }, //
 		};
 
-		float[] expectD = { 4f, 1f, 9f, };
+		float[] expectd = { 4f, 1f, 9f, };
 
 		Pair<float[][], float[]> ldlt = cholesky.ldlt(mtx.of(m0));
-		float[][] actualL = ldlt.t0;
-		float[] actualD = ldlt.t1;
-		mtx.verifyEquals(actualL, expectL);
-		mtx.verifyEquals(actualD, expectD);
+		float[][] actuall = ldlt.t0;
+		float[] actuald = ldlt.t1;
+		mtx.verifyEquals(actuall, expectl);
+		mtx.verifyEquals(actuald, expectd);
 
-		float[][] matrixD = To.floatArray(actualD.length, actualD.length, (i, j) -> i == j ? actualD[i] : 0f);
-		float[][] m1 = mtx.mul(mtx.mul(actualL, matrixD), mtx.transpose(actualL));
+		float[][] matrixd = To.floatArray(actuald.length, actuald.length, (i, j) -> i == j ? actuald[i] : 0f);
+		float[][] m1 = mtx.mul(mtx.mul(actuall, matrixd), mtx.transpose(actuall));
 		mtx.verifyEquals(m0, m1);
 	}
 
