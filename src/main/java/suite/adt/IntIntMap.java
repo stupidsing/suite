@@ -91,9 +91,10 @@ public class IntIntMap {
 			allocate(capacity1);
 
 			for (int i = 0; i < capacity; i++) {
-				int v = v(kvs0[i]);
+				long kv0 = kvs0[i];
+				int v = v(kv0);
 				if (v != Integer.MIN_VALUE)
-					put_(k(kvs0[i]), v);
+					put_(k(kv0), v);
 			}
 		}
 
