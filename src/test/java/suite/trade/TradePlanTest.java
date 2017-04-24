@@ -31,6 +31,11 @@ public class TradePlanTest {
 	}
 
 	@Test
+	public void testStats() {
+		Util.dump(new MeanReversionStats(yahoo.dataSource("0005.HK")));
+	}
+
+	@Test
 	public void testTradePlan() {
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
 
@@ -66,7 +71,8 @@ public class TradePlanTest {
 		});
 		float[][] deps = To.array(float[].class, vr.length, i -> new float[] { vr[i], 1f, });
 		float[] n = To.floatArray(vr.length, i -> i);
-		return stat.linearRegression(deps, n)[0] / 2f;
+		float[] ps = stat.linearRegression(deps, n);
+		return ps[0] / 2f;
 	}
 
 	private float varianceRatio(DataSource dataSource) {
@@ -82,8 +88,8 @@ public class TradePlanTest {
 		float[] prices = dataSource.prices;
 		float[][] deps = To.array(float[].class, prices.length - 1, i -> new float[] { prices[i], 1f, });
 		float[] diffs1 = differences(prices, 1);
-
-		float beta = stat.linearRegression(deps, diffs1)[0];
+		float[] ps = stat.linearRegression(deps, diffs1);
+		float beta = ps[0];
 		return (float) (-Math.log(2) / Math.log(beta));
 	}
 
