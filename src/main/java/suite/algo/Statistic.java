@@ -52,15 +52,19 @@ public class Statistic {
 
 	// ordinary least squares
 	public float[] linearRegression(float[][] x, float[] y) {
-		return new Regression(x, y).estimates;
+		return new LinearRegression(x, y).estimates;
 	}
 
-	public class Regression {
+	public LinearRegression linearRegression_(float[][] x, float[] y) {
+		return new LinearRegression(x, y);
+	}
+
+	public class LinearRegression {
 		public final float[] estimates;
 		public final double r2;
 		public final double standardError;
 
-		private Regression(float[][] x, float[] y) {
+		private LinearRegression(float[][] x, float[] y) {
 			int n = y.length;
 			float[][] xt = mtx.transpose(x);
 			float[][] xtx = mtx.mul(xt, x);
@@ -69,19 +73,19 @@ public class Statistic {
 			float meany = mean(y);
 
 			double sst = 0f; // total sum of squares
-			double sse = 0f; // estimated sum of squares
+			double ssr = 0f; // estimated sum of squares
 			for (int i = 0; i < n; i++) {
 				float d0 = y[i] - meany;
 				float d1 = estimatedy[i] - meany;
 				sst += d0 * d0;
-				sse += d1 * d1;
+				ssr += d1 * d1;
 			}
 
-			double ssr = sst - sse; // sum of squared residuals
+			// double sse = sst - ssr; // sum of squared residuals
 
 			estimates = lr;
 			r2 = ssr / sst; // 0 -> not accurate, 1 -> totally accurate
-			standardError = Math.sqrt(ssr / (n - 2));
+			standardError = Math.sqrt(ssr / (n - mtx.width(x) - 1));
 		}
 	}
 
