@@ -21,9 +21,9 @@ public class StatisticTest {
 		float[] expect = To.floatArray(m, j -> random.nextFloat());
 		float[][] xs = To.floatArray(n, m, (i, j) -> random.nextFloat());
 		float[] ys = To.floatArray(n, i -> (float) (mtx.dot(expect, xs[i]) + random.nextGaussian() * .01f));
-		LinearRegression lr = statistic.linearRegression_(xs, ys);
+		LinearRegression lr = statistic.linearRegression(xs, ys);
 		Util.dump(lr);
-		float[] actual = lr.estimates;
+		float[] actual = lr.betas;
 		mtx.verifyEquals(expect, actual, .1f);
 	}
 

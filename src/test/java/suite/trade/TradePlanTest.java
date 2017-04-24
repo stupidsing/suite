@@ -6,6 +6,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import suite.algo.Statistic;
+import suite.algo.Statistic.LinearRegression;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.trade.Hkex.Company;
@@ -61,7 +62,7 @@ public class TradePlanTest {
 	}
 
 	private float hurst(DataSource dataSource) {
-		int tor = 1;
+		int tor = 16;
 		float[] prices = dataSource.prices;
 		float[] logs = To.floatArray(prices.length, i -> (float) Math.log(prices[i]));
 		float[] diffsTor = differences(logs, tor);
@@ -71,12 +72,13 @@ public class TradePlanTest {
 		});
 		float[][] deps = To.array(float[].class, vr.length, i -> new float[] { vr[i], 1f, });
 		float[] n = To.floatArray(vr.length, i -> i);
-		float[] ps = stat.linearRegression(deps, n);
+		LinearRegression lr = stat.linearRegression(deps, n);
+		float[] ps = lr.betas;
 		return ps[0] / 2f;
 	}
 
 	private float varianceRatio(DataSource dataSource) {
-		int tor = 1;
+		int tor = 16;
 		float[] prices = dataSource.prices;
 		float[] logs = To.floatArray(prices.length, i -> (float) Math.log(prices[i]));
 		float[] diffsTor = differences(logs, tor);
@@ -85,10 +87,12 @@ public class TradePlanTest {
 	}
 
 	private float halfLife(DataSource dataSource) {
+		int tor = 1;
 		float[] prices = dataSource.prices;
-		float[][] deps = To.array(float[].class, prices.length - 1, i -> new float[] { prices[i], 1f, });
-		float[] diffs1 = differences(prices, 1);
-		float[] ps = stat.linearRegression(deps, diffs1);
+		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { prices[i], 1f, });
+		float[] diffs1 = differences(prices, tor);
+		LinearRegression lr = stat.linearRegression(deps, diffs1);
+		float[] ps = lr.betas;
 		float beta = ps[0];
 		return (float) (-Math.log(2) / Math.log(beta));
 	}

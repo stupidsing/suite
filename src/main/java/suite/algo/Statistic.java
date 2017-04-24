@@ -51,16 +51,12 @@ public class Statistic {
 	}
 
 	// ordinary least squares
-	public float[] linearRegression(float[][] x, float[] y) {
-		return new LinearRegression(x, y).estimates;
-	}
-
-	public LinearRegression linearRegression_(float[][] x, float[] y) {
+	public LinearRegression linearRegression(float[][] x, float[] y) {
 		return new LinearRegression(x, y);
 	}
 
 	public class LinearRegression {
-		public final float[] estimates;
+		public final float[] betas;
 		public final double r2;
 		public final double standardError;
 
@@ -83,7 +79,7 @@ public class Statistic {
 
 			// double sse = sst - ssr; // sum of squared residuals
 
-			estimates = lr;
+			betas = lr;
 			r2 = ssr / sst; // 0 -> not accurate, 1 -> totally accurate
 			standardError = Math.sqrt(ssr / (n - mtx.width(x) - 1));
 		}
