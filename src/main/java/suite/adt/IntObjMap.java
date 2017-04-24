@@ -43,13 +43,13 @@ public class IntObjMap<V> {
 	public V get(int key) {
 		int mask = ks.length - 1;
 		int index = key & mask;
-		Object v_;
-		while ((v_ = vs[index]) != null)
+		Object v;
+		while ((v = vs[index]) != null)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
-		return cast(v_);
+		return cast(v);
 	}
 
 	public V put(int key, V v) {
@@ -121,12 +121,12 @@ public class IntObjMap<V> {
 
 			public boolean source2(IntObjPair<V> pair) {
 				boolean b;
-				Object v_ = null;
-				while ((b = index < capacity) && (v_ = vs[index]) == null)
+				Object v = null;
+				while ((b = index < capacity) && (v = vs[index]) == null)
 					index++;
 				if (b) {
 					pair.t0 = ks[index++];
-					pair.t1 = cast(v_);
+					pair.t1 = cast(v);
 				}
 				return b;
 			}

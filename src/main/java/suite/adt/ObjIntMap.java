@@ -45,13 +45,13 @@ public class ObjIntMap<K> {
 	public int get(K key) {
 		int mask = ks.length - 1;
 		int index = key.hashCode() & mask;
-		int v_;
-		while ((v_ = vs[index]) != Integer.MIN_VALUE)
+		int v;
+		while ((v = vs[index]) != Integer.MIN_VALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
 				break;
-		return v_;
+		return v;
 	}
 
 	public int put(K key, int v) {
@@ -92,9 +92,9 @@ public class ObjIntMap<K> {
 			allocate(capacity1);
 
 			for (int i = 0; i < capacity; i++) {
-				int v_ = vs0[i];
-				if (v_ != Integer.MIN_VALUE)
-					put_(ks0[i], v_);
+				int v = vs0[i];
+				if (v != Integer.MIN_VALUE)
+					put_(ks0[i], v);
 			}
 		}
 
@@ -123,12 +123,12 @@ public class ObjIntMap<K> {
 
 			public boolean source2(IntObjPair<K> pair) {
 				boolean b;
-				int v_ = Integer.MIN_VALUE;
-				while ((b = index < capacity) && (v_ = vs[index]) == Integer.MIN_VALUE)
+				int v = Integer.MIN_VALUE;
+				while ((b = index < capacity) && (v = vs[index]) == Integer.MIN_VALUE)
 					index++;
 				if (b) {
 					pair.t1 = cast(ks[index++]);
-					pair.t0 = v_;
+					pair.t0 = v;
 				}
 				return b;
 			}

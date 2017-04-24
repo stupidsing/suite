@@ -46,13 +46,13 @@ public class IntIntMap {
 	public int get(int key) {
 		int mask = ks.length - 1;
 		int index = key & mask;
-		int v_;
-		while ((v_ = vs[index]) != Integer.MIN_VALUE)
+		int v;
+		while ((v = vs[index]) != Integer.MIN_VALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
-		return v_;
+		return v;
 	}
 
 	public int put(int key, int v) {
@@ -93,9 +93,9 @@ public class IntIntMap {
 			allocate(capacity1);
 
 			for (int i = 0; i < capacity; i++) {
-				int v_ = vs0[i];
-				if (v_ != Integer.MIN_VALUE)
-					put_(ks0[i], v_);
+				int v = vs0[i];
+				if (v != Integer.MIN_VALUE)
+					put_(ks0[i], v);
 			}
 		}
 
@@ -124,12 +124,12 @@ public class IntIntMap {
 
 			public boolean source(IntIntPair pair) {
 				boolean b;
-				int v_ = Integer.MIN_VALUE;
-				while ((b = index < capacity) && (v_ = vs[index]) == Integer.MIN_VALUE)
+				int v = Integer.MIN_VALUE;
+				while ((b = index < capacity) && (v = vs[index]) == Integer.MIN_VALUE)
 					index++;
 				if (b) {
 					pair.t0 = ks[index++];
-					pair.t1 = v_;
+					pair.t1 = v;
 				}
 				return b;
 			}
