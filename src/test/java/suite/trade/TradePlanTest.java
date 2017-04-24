@@ -57,7 +57,8 @@ public class TradePlanTest {
 
 	private float hurst(DataSource dataSource) {
 		int tor = 1;
-		float[] logs = To.floatArray(dataSource.prices.length, i -> (float) Math.log(dataSource.prices[i]));
+		float[] prices = dataSource.prices;
+		float[] logs = To.floatArray(prices.length, i -> (float) Math.log(prices[i]));
 		float[] diffsTor = differences(logs, tor);
 		float[] vr = To.floatArray(diffsTor.length, i -> {
 			float diff = diffsTor[i];
@@ -70,7 +71,8 @@ public class TradePlanTest {
 
 	private float varianceRatio(DataSource dataSource) {
 		int tor = 1;
-		float[] logs = To.floatArray(dataSource.prices.length, i -> (float) Math.log(dataSource.prices[i]));
+		float[] prices = dataSource.prices;
+		float[] logs = To.floatArray(prices.length, i -> (float) Math.log(prices[i]));
 		float[] diffsTor = differences(logs, tor);
 		float[] diffs1 = differences(logs, 1);
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));
