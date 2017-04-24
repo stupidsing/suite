@@ -14,7 +14,7 @@ public class MathUtil {
 			throw new RuntimeException("Values differ" //
 					+ ": f0 = " + String.format("%.3f", f0) //
 					+ ", f1 = " + String.format("%.3f", f1) //
-					+ ", diff = " + String.format("%.3f", diff));
+					+ ", diff = " + diff);
 	}
 
 	public static int steinGcd(int n0, int n1) {
