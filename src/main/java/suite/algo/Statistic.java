@@ -90,8 +90,7 @@ public class Statistic {
 	}
 
 	public float mean(float[] fs) {
-		double mean = mean_(fs);
-		return (float) mean;
+		return (float) mean_(fs);
 	}
 
 	public float standardDeviation(float[] fs) {
