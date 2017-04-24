@@ -52,20 +52,7 @@ public class IntObjMap<V> {
 		return cast(v);
 	}
 
-	public V put(int key, V v) {
-		return cast(putResize(key, v));
-
-	}
-
-	public IntObjSource<V> source() {
-		return source_();
-	}
-
-	public IntObjStreamlet<V> stream() {
-		return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
-	}
-
-	private Object putResize(int key, Object v1) {
+	public V put(int key, V v1) {
 		int capacity = ks.length;
 		size++;
 
@@ -82,7 +69,16 @@ public class IntObjMap<V> {
 			}
 		}
 
-		return put_(key, v1);
+		return cast(put_(key, v1));
+
+	}
+
+	public IntObjSource<V> source() {
+		return source_();
+	}
+
+	public IntObjStreamlet<V> stream() {
+		return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
 	}
 
 	private Object put_(int key, Object v1) {

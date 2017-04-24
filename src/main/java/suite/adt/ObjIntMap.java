@@ -55,19 +55,6 @@ public class ObjIntMap<K> {
 	}
 
 	public int put(K key, int v) {
-		return putResize(key, v);
-
-	}
-
-	public IntObjSource<K> source() {
-		return source_();
-	}
-
-	public IntObjStreamlet<K> stream() {
-		return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
-	}
-
-	private int putResize(Object key, int v1) {
 		int capacity = ks.length;
 		size++;
 
@@ -78,13 +65,22 @@ public class ObjIntMap<K> {
 			allocate(capacity1);
 
 			for (int i = 0; i < capacity; i++) {
-				int v = vs0[i];
-				if (v != Integer.MIN_VALUE)
-					put_(ks0[i], v);
+				int v_ = vs0[i];
+				if (v_ != Integer.MIN_VALUE)
+					put_(ks0[i], v_);
 			}
 		}
 
-		return put_(key, v1);
+		return put_(key, v);
+
+	}
+
+	public IntObjSource<K> source() {
+		return source_();
+	}
+
+	public IntObjStreamlet<K> stream() {
+		return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
 	}
 
 	private int put_(Object key, int v1) {

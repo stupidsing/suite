@@ -56,7 +56,23 @@ public class IntIntMap {
 	}
 
 	public int put(int key, int v) {
-		return putResize(key, v);
+		int capacity = ks.length;
+		size++;
+
+		if (capacity * 3 / 4 < size) {
+			int capacity1 = capacity * 2;
+			int[] ks0 = ks;
+			int[] vs0 = vs;
+			allocate(capacity1);
+
+			for (int i = 0; i < capacity; i++) {
+				int v_ = vs0[i];
+				if (v_ != Integer.MIN_VALUE)
+					put_(ks0[i], v_);
+			}
+		}
+
+		return put_(key, v);
 
 	}
 
@@ -80,26 +96,6 @@ public class IntIntMap {
 				}
 			});
 		});
-	}
-
-	private int putResize(int key, int v1) {
-		int capacity = ks.length;
-		size++;
-
-		if (capacity * 3 / 4 < size) {
-			int capacity1 = capacity * 2;
-			int[] ks0 = ks;
-			int[] vs0 = vs;
-			allocate(capacity1);
-
-			for (int i = 0; i < capacity; i++) {
-				int v_ = vs0[i];
-				if (v_ != Integer.MIN_VALUE)
-					put_(ks0[i], v_);
-			}
-		}
-
-		return put_(key, v1);
 	}
 
 	private int put_(int key, int v1) {
