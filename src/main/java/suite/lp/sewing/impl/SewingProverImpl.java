@@ -234,7 +234,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Trampoline compileRules(Prototype prototype, List<Rule> rules, TraceLevel traceLevel) {
-		boolean hasCut = Read.from(rules) //
+		boolean isHasCut = Read.from(rules) //
 				.map(rule -> new TreeRewriter().contains(ProverConstant.cut, rule.tail)) //
 				.isAny(b -> b);
 
@@ -246,7 +246,7 @@ public class SewingProverImpl implements SewingProver {
 		});
 
 		Trampoline tr0 = or(trs);
-		Trampoline tr1 = hasCut ? cutBegin(tr0) : tr0;
+		Trampoline tr1 = isHasCut ? cutBegin(tr0) : tr0;
 		Trampoline tr2 = saveEnv(tr1);
 		return log(tr2, traceLevel);
 	}
