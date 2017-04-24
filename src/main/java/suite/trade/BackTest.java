@@ -1,5 +1,6 @@
 package suite.trade;
 
+import suite.math.MathUtil;
 import suite.trade.Strategy.GetBuySell;
 
 public class BackTest {
@@ -31,7 +32,7 @@ public class BackTest {
 
 		concludeLog.append("" //
 				+ ", number of transactions = " + account.nTransactions() //
-				+ ", net gain = " + String.format("%.2f", account.cash()));
+				+ ", net gain = " + MathUtil.format(account.cash()));
 	}
 
 	private void buySell(DataSource ds, int day, int buySell) {
@@ -44,9 +45,9 @@ public class BackTest {
 			tradeLog.append("\n" //
 					+ "date = " + ds.dates[day] //
 					+ ", buy/sell = " + buySell //
-					+ ", price = " + String.format("%.2f", price) //
+					+ ", price = " + MathUtil.format(price) //
 					+ ", nLots = " + account.nLots() //
-					+ ", valuation = " + String.format("%.2f", valuation));
+					+ ", valuation = " + MathUtil.format(valuation));
 		}
 	}
 

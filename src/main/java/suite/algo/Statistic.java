@@ -3,6 +3,7 @@ package suite.algo;
 import suite.adt.IntObjMap;
 import suite.adt.IntObjPair;
 import suite.math.Cholesky;
+import suite.math.MathUtil;
 import suite.math.Matrix;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSource.IntObjSource;
@@ -97,26 +98,58 @@ public class Statistic {
 		return (float) Math.sqrt(var(fs));
 	}
 
+	public String stats(float[] fs) {
+		int length = fs.length;
+		if (0 < length) {
+			float first = fs[0];
+			double min = first, max = first;
+			double sum = first, sumsq = first * first;
+
+			for (int i = 1; i < length; i++) {
+				float f = fs[i];
+				min = Double.min(min, f);
+				max = Double.max(max, f);
+				sum += f;
+				sumsq += f * f;
+			}
+
+			double il = 1d / length;
+			double mean = sum * il;
+			double var = sumsq * il - mean * mean;
+
+			return "(size = " + length //
+					+ ", mean = " + MathUtil.format(mean) //
+					+ ", range = " + MathUtil.format(min) + "~" + MathUtil.format(max) //
+					+ ", sd = " + MathUtil.format(Math.sqrt(var)) //
+					+ ")";
+		} else
+			return "size = 0";
+	}
+
 	public float variance(float[] fs) {
 		return (float) var(fs);
 	}
 
 	private double var(float[] fs) {
 		int length = fs.length;
-		double mean = mean_(fs);
-		double sum = 0f;
-		for (int i = 0; i < length; i++) {
-			double diff = fs[i] - mean;
-			sum += diff * diff;
+		double sum = 0d;
+		double sumsq = 0d;
+
+		for (float f : fs) {
+			sum += f;
+			sumsq += f * f;
 		}
-		return sum / length;
+
+		double il = 1d / length;
+		double mean = sum * il;
+		return sumsq * il - mean * mean;
 	}
 
 	private double mean_(float[] fs) {
 		int length = fs.length;
 		double sum = 0f;
-		for (int i = 0; i < length; i++)
-			sum += fs[i];
+		for (float f : fs)
+			sum += f;
 		return sum / length;
 	}
 

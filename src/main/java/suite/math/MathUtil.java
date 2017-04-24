@@ -12,9 +12,13 @@ public class MathUtil {
 		float diff = Math.abs(f0 - f1);
 		if (!Float.isFinite(diff) || epsilon < diff)
 			throw new RuntimeException("Values differ" //
-					+ ": f0 = " + String.format("%.3f", f0) //
-					+ ", f1 = " + String.format("%.3f", f1) //
+					+ ": f0 = " + format(f0) //
+					+ ", f1 = " + format(f1) //
 					+ ", diff = " + diff);
+	}
+
+	public static String format(double d) {
+		return String.format("%.3f", d);
 	}
 
 	public static int steinGcd(int n0, int n1) {
