@@ -1,6 +1,5 @@
 package suite.algo;
 
-import java.util.Arrays;
 import java.util.Random;
 
 import suite.math.Forget;
@@ -44,7 +43,6 @@ public class LongShortTermMemory {
 		private float[][] wo = new float[memoryLength][ll1];
 
 		public Unit() {
-			Arrays.fill(memory, 1f);
 			Random random = new Random();
 			double isll = 1f / Math.sqrt(ll);
 
