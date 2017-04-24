@@ -109,8 +109,7 @@ public class Statistic {
 			double diff = fs[i] - mean;
 			sum += diff * diff;
 		}
-		double var = sum / length;
-		return var;
+		return sum / length;
 	}
 
 	private double mean_(float[] fs) {
