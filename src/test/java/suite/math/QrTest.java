@@ -6,7 +6,7 @@ import suite.util.FunUtil.Fun;
 
 public class QrTest {
 
-	private static Matrix mtx = new Matrix();
+	private Matrix mtx = new Matrix();
 
 	@Test
 	public void test() {
