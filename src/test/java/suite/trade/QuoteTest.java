@@ -9,10 +9,12 @@ import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.trade.Hkex.Company;
 import suite.util.FunUtil.Source;
 
 public class QuoteTest {
 
+	private Hkex hkex = new Hkex();
 	private Yahoo yahoo = new Yahoo();
 
 	public class Record {
@@ -84,8 +86,9 @@ public class QuoteTest {
 
 		Read.from2(sizeByStockCodes) //
 				.map((stockCode, size) -> {
+					Company company = hkex.getCompany(stockCode);
 					float price = priceByStockCodes.get(stockCode);
-					return stockCode + " := " + size + " * " + price + " == " + size * price;
+					return stockCode + " (" + company.shortName() + ") := " + size + " * " + price + " == " + size * price;
 				}) //
 				.forEach(System.out::println);
 

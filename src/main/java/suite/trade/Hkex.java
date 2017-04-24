@@ -168,6 +168,10 @@ public class Hkex {
 			this.marketCap = marketCap;
 		}
 
+		public String shortName() {
+			return name.split(" ")[0];
+		}
+
 		public String toString() {
 			return code + " " + name;
 		}
