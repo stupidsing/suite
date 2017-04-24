@@ -227,7 +227,7 @@ public class As {
 	public static <T> Fun<Outlet<T>, Integer> sum(ToIntFunction<T> fun) {
 		return outlet -> {
 			Source<T> source = outlet.source();
-			T t = source.source();
+			T t;
 			int result = 0;
 			while ((t = source.source()) != null)
 				result += fun.applyAsInt(t);
