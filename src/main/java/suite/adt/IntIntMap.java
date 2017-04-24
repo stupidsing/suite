@@ -18,8 +18,7 @@ import suite.streamlet.IntObjStreamlet;
 public class IntIntMap {
 
 	private int size;
-	private int[] ks;
-	private int[] vs;
+	private long[] kvs;
 
 	public IntIntMap() {
 		this(8);
@@ -44,11 +43,12 @@ public class IntIntMap {
 	}
 
 	public int get(int key) {
-		int mask = ks.length - 1;
+		int mask = kvs.length - 1;
 		int index = key & mask;
+		long kv;
 		int v;
-		while ((v = vs[index]) != Integer.MIN_VALUE)
-			if (ks[index] != key)
+		while ((v = v(kv = kvs[index])) != Integer.MIN_VALUE)
+			if (k(kv) != key)
 				index = index + 1 & mask;
 			else
 				break;
@@ -66,10 +66,9 @@ public class IntIntMap {
 
 	public IntObjStreamlet<Integer> stream() {
 		return new IntObjStreamlet<>(() -> {
+			IntIntSource source = source_();
+			IntIntPair pair0 = IntIntPair.of(0, 0);
 			return IntObjOutlet.of(new IntObjSource<Integer>() {
-				private IntIntSource source = source_();
-				private IntIntPair pair0 = IntIntPair.of(0, 0);
-
 				public boolean source2(IntObjPair<Integer> pair) {
 					boolean b = source.source(pair0);
 					if (b) {
@@ -83,19 +82,18 @@ public class IntIntMap {
 	}
 
 	private int putResize(int key, int v1) {
-		int capacity = ks.length;
+		int capacity = kvs.length;
 		size++;
 
 		if (capacity * 3 / 4 < size) {
 			int capacity1 = capacity * 2;
-			int[] ks0 = ks;
-			int[] vs0 = vs;
+			long[] kvs0 = kvs;
 			allocate(capacity1);
 
 			for (int i = 0; i < capacity; i++) {
-				int v = vs0[i];
+				int v = v(kvs0[i]);
 				if (v != Integer.MIN_VALUE)
-					put_(ks0[i], v);
+					put_(k(kvs0[i]), v);
 			}
 		}
 
@@ -103,33 +101,35 @@ public class IntIntMap {
 	}
 
 	private int put_(int key, int v1) {
-		int capacity = ks.length;
+		int capacity = kvs.length;
 		int mask = capacity - 1;
 		int index = key & mask;
+		long kv;
 		int v0;
-		while ((v0 = vs[index]) != Integer.MIN_VALUE)
-			if (ks[index] != key)
+		while ((v0 = v(kv = kvs[index])) != Integer.MIN_VALUE)
+			if (k(kv) != key)
 				index = index + 1 & mask;
 			else
 				throw new RuntimeException("Duplicate key");
-		ks[index] = key;
-		vs[index] = v1;
+		kvs[index] = kv(key, v1);
 		return v0;
 	}
 
 	private IntIntSource source_() {
-		int capacity = ks.length;
 		return new IntIntSource() {
+			private int capacity = kvs.length;
 			private int index = 0;
 
 			public boolean source(IntIntPair pair) {
 				boolean b;
+				long kv = 0;
 				int v = Integer.MIN_VALUE;
-				while ((b = index < capacity) && (v = vs[index]) == Integer.MIN_VALUE)
+				while ((b = index < capacity) && (v = v(kv = kvs[index])) == Integer.MIN_VALUE)
 					index++;
 				if (b) {
-					pair.t0 = ks[index++];
+					pair.t0 = k(kv);
 					pair.t1 = v;
+					index++;
 				}
 				return b;
 			}
@@ -137,9 +137,20 @@ public class IntIntMap {
 	}
 
 	private void allocate(int capacity) {
-		ks = new int[capacity];
-		vs = new int[capacity];
-		Arrays.fill(vs, Integer.MIN_VALUE);
+		kvs = new long[capacity];
+		Arrays.fill(kvs, kv(0, Integer.MIN_VALUE));
+	}
+
+	private long kv(int k, int v) {
+		return Integer.toUnsignedLong(k) + (Integer.toUnsignedLong(v) << 32);
+	}
+
+	private int k(long kv) {
+		return (int) (kv & 0xFFFFFFFF);
+	}
+
+	private int v(long kv) {
+		return (int) (kv >> 32);
 	}
 
 }

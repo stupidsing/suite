@@ -64,21 +64,7 @@ public class ObjIntMap<K> {
 	}
 
 	public IntObjStreamlet<K> stream() {
-		return new IntObjStreamlet<>(() -> {
-			return IntObjOutlet.of(new IntObjSource<K>() {
-				private IntObjSource<K> source = source_();
-				private IntObjPair<K> pair0 = IntObjPair.of(0, null);
-
-				public boolean source2(IntObjPair<K> pair) {
-					boolean b = source.source2(pair0);
-					if (b) {
-						pair.t0 = pair0.t0;
-						pair.t1 = pair0.t1;
-					}
-					return b;
-				}
-			});
-		});
+		return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
 	}
 
 	private int putResize(Object key, int v1) {
@@ -117,8 +103,8 @@ public class ObjIntMap<K> {
 	}
 
 	private IntObjSource<K> source_() {
-		int capacity = ks.length;
 		return new IntObjSource<K>() {
+			private int capacity = ks.length;
 			private int index = 0;
 
 			public boolean source2(IntObjPair<K> pair) {
