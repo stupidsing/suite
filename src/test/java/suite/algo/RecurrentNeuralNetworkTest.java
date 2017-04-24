@@ -7,7 +7,7 @@ import suite.math.Matrix;
 
 public class RecurrentNeuralNetworkTest {
 
-	private static Matrix mtx = new Matrix();
+	private Matrix mtx = new Matrix();
 
 	@Test
 	public void testNoInput() {

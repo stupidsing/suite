@@ -10,7 +10,7 @@ import suite.util.Util;
 
 public class ArtificialNeuralNetwork {
 
-	private static Matrix mtx = new Matrix();
+	private Matrix mtx = new Matrix();
 
 	private float learningRate = 1f;
 	private int nLayers;

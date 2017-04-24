@@ -9,7 +9,7 @@ import suite.util.Copy;
 
 public class RecurrentNeuralNetwork {
 
-	private static Matrix mtx = new Matrix();
+	private Matrix mtx = new Matrix();
 
 	private float learningRate;
 	private int inputLength;

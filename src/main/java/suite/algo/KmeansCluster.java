@@ -12,7 +12,7 @@ import suite.util.Util;
 
 public class KmeansCluster {
 
-	private static Matrix mtx = new Matrix();
+	private Matrix mtx = new Matrix();
 
 	private int dimension;
 
