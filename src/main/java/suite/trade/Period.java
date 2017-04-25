@@ -20,9 +20,17 @@ public class Period {
 		return of(frDate, toDate);
 	}
 
+	public static Period threeYears() {
+		return yearsBefore(-3);
+	}
+
 	public static Period fiveYears() {
+		return yearsBefore(-5);
+	}
+
+	private static Period yearsBefore(int n) {
 		LocalDate toDate = LocalDate.now().withDayOfMonth(1);
-		LocalDate frDate = toDate.plusYears(-5);
+		LocalDate frDate = toDate.plusYears(n);
 		return of(frDate, toDate);
 	}
 
