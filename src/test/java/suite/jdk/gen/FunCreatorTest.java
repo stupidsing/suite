@@ -10,6 +10,7 @@ import java.util.function.BiPredicate;
 import org.apache.bcel.generic.Type;
 import org.junit.Test;
 
+import suite.inspect.Dump;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
@@ -19,7 +20,6 @@ import suite.primitive.PrimitiveSource.IntSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.To;
-import suite.util.Util;
 
 public class FunCreatorTest {
 
@@ -124,7 +124,7 @@ public class FunCreatorTest {
 		Fun<FunExpr, FunExpr> fun = i -> (ProfileFunExpr) f.profile(f.int_(1));
 		IntSource instance = LambdaInstance.of(IntSource.class, fun).newFun();
 		assertEquals(1, instance.source());
-		Util.dump(instance);
+		Dump.out(instance);
 	}
 
 	private FunCreator<Int_Int> intFun(String fieldName, Type fieldType) {

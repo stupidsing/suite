@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Level;
 
 import suite.adt.Pair;
-import suite.inspect.Dump;
 import suite.os.LogUtil;
 import suite.sample.Profiler;
 
@@ -150,27 +149,6 @@ public class Util {
 		String cls = getStackTrace(3).getClassName();
 		int pos = cls.lastIndexOf(".");
 		return cls.substring(0, pos);
-	}
-
-	/**
-	 * Dumps object content (public data and getters) through Reflection to a
-	 * log4j.
-	 */
-	public static void dump(Object object) {
-		StackTraceElement trace = getStackTrace(3);
-		dump(trace.getClassName() + "." + trace.getMethodName(), object);
-	}
-
-	/**
-	 * Dumps object content (public data and getters) through Reflection to a
-	 * log4j, with a descriptive name which you gave.
-	 */
-	public static void dump(String name, Object object) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Dumping ");
-		sb.append(name);
-		Dump.object(sb, "", object);
-		LogUtil.info(sb.toString());
 	}
 
 	public static <T> T first(Collection<T> c) {

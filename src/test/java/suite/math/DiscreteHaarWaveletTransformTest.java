@@ -8,7 +8,6 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.util.To;
-import suite.util.Util;
 
 public class DiscreteHaarWaveletTransformTest {
 
@@ -29,8 +28,6 @@ public class DiscreteHaarWaveletTransformTest {
 		data = dhwt.dhwt(data);
 		data = dhwt.idhwt(data);
 
-		Util.dump("actual", data);
-		Util.dump("expect", expect);
 		assertTrue(Arrays.equals(data, expect));
 	}
 

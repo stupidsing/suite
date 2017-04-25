@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import suite.Suite;
+import suite.inspect.Dump;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
@@ -23,7 +24,7 @@ public class FormatterTest {
 		testDisplay("a - b - c");
 		testDisplay("a - (b - c)");
 		testDisplay("(a, b) = (c, d)");
-		Util.dump(Util.currentMethod(), Formatter.display(new Reference()));
+		Dump.out(Util.currentMethod(), Formatter.display(new Reference()));
 	}
 
 	@Test

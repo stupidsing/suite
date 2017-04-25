@@ -8,13 +8,13 @@ import org.junit.Test;
 
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
+import suite.inspect.Dump;
 import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.trade.Hkex.Company;
 import suite.util.To;
-import suite.util.Util;
 
 public class TradePlanTest {
 
@@ -40,7 +40,7 @@ public class TradePlanTest {
 
 	@Test
 	public void testStats() {
-		Util.dump(new MeanReversionStats(yahoo.dataSource("0005.HK")));
+		Dump.out(new MeanReversionStats(yahoo.dataSource("0005.HK")));
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class TradePlanTest {
 		// ensure 0f < variable ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
 
-		Util.dump(meanReversionStatsByStockCode);
+		Dump.out(meanReversionStatsByStockCode);
 	}
 
 	// Augmented Dickey-Fuller test
