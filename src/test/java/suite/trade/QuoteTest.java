@@ -87,8 +87,9 @@ public class QuoteTest {
 		Read.from2(sizeByStockCodes) //
 				.map((stockCode, size) -> {
 					Company company = hkex.getCompany(stockCode);
+					String shortName = company != null ? company.shortName() : null;
 					float price = priceByStockCodes.get(stockCode);
-					return stockCode + " (" + company.shortName() + ") := " + size + " * " + price + " == " + size * price;
+					return stockCode + " (" + shortName + ") := " + size + " * " + price + " == " + size * price;
 				}) //
 				.forEach(System.out::println);
 
