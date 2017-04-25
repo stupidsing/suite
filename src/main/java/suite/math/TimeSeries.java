@@ -31,7 +31,7 @@ public class TimeSeries {
 	}
 
 	private float[] differences_(float[] fs, int tor) {
-		return differencesOn(mtx.of(fs), tor);
+		return differencesOn_(mtx.of(fs), tor);
 	}
 
 	private float[] differencesOn_(float[] fs, int tor) {
