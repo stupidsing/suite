@@ -66,7 +66,7 @@ public class TradePlanTest {
 		Util.dump(meanReversionStatsByStockCode);
 	}
 
-	// Augmented Dickey-Fuller
+	// Augmented Dickey-Fuller test
 	private float adf(DataSource dataSource) {
 		int tor = 16;
 		float[] prices = dataSource.prices;
@@ -85,12 +85,9 @@ public class TradePlanTest {
 	private float hurst(DataSource dataSource) {
 		int tor = 16;
 		float[] prices = dataSource.prices;
-		float[] logs = To.floatArray(prices.length, i -> (float) Math.log(prices[i]));
+		float[] logs = To.floatArray(prices, price -> (float) Math.log(price));
 		float[] diffsTor = dropDiff(logs, tor);
-		float[] vr = To.floatArray(diffsTor.length, i -> {
-			float diff = diffsTor[i];
-			return diff * diff;
-		});
+		float[] vr = To.floatArray(diffsTor, diff -> diff * diff);
 		float[][] deps = To.array(float[].class, vr.length, i -> new float[] { vr[i], 1f, });
 		float[] n = To.floatArray(vr.length, i -> i);
 		LinearRegression lr = stat.linearRegression(deps, n);
@@ -101,7 +98,7 @@ public class TradePlanTest {
 	private float varianceRatio(DataSource dataSource) {
 		int tor = 16;
 		float[] prices = dataSource.prices;
-		float[] logs = To.floatArray(prices.length, i -> (float) Math.log(prices[i]));
+		float[] logs = To.floatArray(prices, price -> (float) Math.log(price));
 		float[] diffsTor = dropDiff(logs, tor);
 		float[] diffs1 = dropDiff(logs, 1);
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));

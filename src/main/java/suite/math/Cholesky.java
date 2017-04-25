@@ -17,7 +17,7 @@ public class Cholesky {
 		Pair<float[][], float[]> ldlt = ldlt(m);
 		float[][] l = ldlt.t0;
 		float[] d = ldlt.t1;
-		float[] reciprocalsD = To.floatArray(d.length, i -> 1f / d[i]);
+		float[] reciprocalsD = To.floatArray(d, f -> 1f / f);
 		return fs0 -> {
 			int height = mtx.height(m);
 			int width = mtx.width(m);
