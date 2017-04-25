@@ -5,6 +5,11 @@ import java.util.function.ToIntFunction;
 public class PrimitiveFun {
 
 	@FunctionalInterface
+	public interface Float_Float {
+		public float apply(float f);
+	}
+
+	@FunctionalInterface
 	public interface Int_Float {
 		public float apply(int i);
 	}

@@ -28,6 +28,7 @@ import suite.Constants;
 import suite.adt.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
+import suite.primitive.PrimitiveFun.Float_Float;
 import suite.primitive.PrimitiveFun.IntInt_Float;
 import suite.primitive.PrimitiveFun.Int_Float;
 import suite.primitive.PrimitiveFun.Int_Int;
@@ -74,6 +75,10 @@ public class To {
 
 	public static Chars chars(String s) {
 		return Chars.of(charArray(s));
+	}
+
+	public static float[] floatArray(float[] fs, Float_Float fun) {
+		return floatArray(fs.length, i -> fun.apply(fs[i]));
 	}
 
 	public static float[] floatArray(int length, Int_Float fun) {
