@@ -43,7 +43,7 @@ public class DailyMain extends ExecutableProgram {
 				.get("backTestByStockCode", () -> companies //
 						.map2(stock -> stock.code, stock -> {
 							try {
-								Period period = Period.fiveYears();
+								Period period = Period.threeYears();
 								DataSource ds0 = yahoo.dataSource(stock.code, period);
 								DataSource ds1 = ds0.limit(period);
 								float[] prices = ds1.prices;
