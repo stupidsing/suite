@@ -278,7 +278,7 @@ public class Hkex {
 					.flatMap(cs -> cs.data) //
 					.concatMap(Data::tableEntries) //
 					.map(list -> new Company( //
-							Util.right("0000" + list.get(1).replace("*", "").trim(), -4), //
+							Util.right("0000" + list.get(1).replace("*", "").trim(), -4) + ".HK", //
 							list.get(2).trim(), //
 							Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
 					.toList();
@@ -292,7 +292,7 @@ public class Hkex {
 					.flatMap(json_ -> json_.get("td")) //
 					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList()) //
 					.map(list -> new Company( //
-							Util.right("0000" + list.get(1).replace("*", "").trim(), -4), //
+							Util.right("0000" + list.get(1).replace("*", "").trim(), -4) + ".HK", //
 							list.get(2).trim(), //
 							Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
 					.toList();
