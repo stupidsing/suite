@@ -9,6 +9,7 @@ import org.junit.Test;
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
 import suite.math.Matrix;
+import suite.math.TimeSeries;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.trade.Hkex.Company;
@@ -21,6 +22,7 @@ public class TradePlanTest {
 	private Hkex hkex = new Hkex();
 	private Yahoo yahoo = new Yahoo();
 	private Statistic stat = new Statistic();
+	private TimeSeries ts = new TimeSeries();
 
 	public class MeanReversionStats {
 		public final float adf;
@@ -70,13 +72,13 @@ public class TradePlanTest {
 	private float adf(DataSource dataSource) {
 		int tor = 16;
 		float[] prices = dataSource.prices;
-		float[] diffs = differences(prices, 1);
+		float[] diffs = ts.differences(prices, 1);
 		float[][] deps = new float[prices.length][];
 		for (int i = tor; i < deps.length; i++)
 			// i - drift term, necessary?
 			deps[i] = mtx.concat(new float[] { prices[i - 1], 1f, i, }, Arrays.copyOfRange(diffs, i - tor, i));
-		float[][] deps1 = drop(deps, tor);
-		float[] diffs1 = drop(diffs, tor);
+		float[][] deps1 = ts.drop(deps, tor);
+		float[] diffs1 = ts.drop(diffs, tor);
 		LinearRegression lr = stat.linearRegression(deps1, diffs1);
 		float lambda = lr.betas[0];
 		return (float) (lambda / lr.standardError);
@@ -86,7 +88,7 @@ public class TradePlanTest {
 		int tor = 16;
 		float[] prices = dataSource.prices;
 		float[] logs = To.floatArray(prices, price -> (float) Math.log(price));
-		float[] diffsTor = dropDiff(logs, tor);
+		float[] diffsTor = ts.dropDiff(logs, tor);
 		float[] vr = To.floatArray(diffsTor, diff -> diff * diff);
 		float[][] deps = To.array(float[].class, vr.length, i -> new float[] { vr[i], 1f, });
 		float[] n = To.floatArray(vr.length, i -> i);
@@ -99,8 +101,8 @@ public class TradePlanTest {
 		int tor = 16;
 		float[] prices = dataSource.prices;
 		float[] logs = To.floatArray(prices, price -> (float) Math.log(price));
-		float[] diffsTor = dropDiff(logs, tor);
-		float[] diffs1 = dropDiff(logs, 1);
+		float[] diffsTor = ts.dropDiff(logs, tor);
+		float[] diffs1 = ts.dropDiff(logs, 1);
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));
 	}
 
@@ -108,36 +110,11 @@ public class TradePlanTest {
 		int tor = 1;
 		float[] prices = dataSource.prices;
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { prices[i], 1f, });
-		float[] diffs1 = dropDiff(prices, tor);
+		float[] diffs1 = ts.dropDiff(prices, tor);
 		LinearRegression lr = stat.linearRegression(deps, diffs1);
 		float[] ps = lr.betas;
 		float beta = ps[0];
 		return (float) (-Math.log(2) / Math.log(beta));
-	}
-
-	private float[] dropDiff(float[] logs, int tor) {
-		return drop(differences(logs, tor), tor);
-	}
-
-	private float[] differences(float[] fs, int tor) {
-		return differencesOn(mtx.of(fs), tor);
-	}
-
-	private float[] differencesOn(float[] fs, int tor) {
-		int i = fs.length;
-		while (tor <= --i)
-			fs[i] -= fs[i - tor];
-		while (0 <= --i)
-			fs[i] = 0f;
-		return fs;
-	}
-
-	private float[] drop(float[] fs, int tor) {
-		return Arrays.copyOfRange(fs, tor, fs.length);
-	}
-
-	private float[][] drop(float[][] fs, int tor) {
-		return Arrays.copyOfRange(fs, tor, fs.length);
 	}
 
 }
