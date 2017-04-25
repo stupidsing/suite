@@ -33,7 +33,7 @@ public class DailyMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 		Hkex hkex = new Hkex();
 		Yahoo yahoo = new Yahoo();
-		Streamlet<Company> companies = hkex.queryCompanies();
+		Streamlet<Company> companies = hkex.getCompanies();
 		Strategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
 
 		Map<String, Boolean> backTestByStockCode = SerializedStoreCache //
@@ -74,7 +74,7 @@ public class DailyMain extends ExecutableProgram {
 					float[] prices = ds.prices;
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
-					String message = company + " has signal " + signal * lotSize + " * " + prices[last];
+					String message = company + " has signal " + prices[last] + " * " + signal * lotSize;
 
 					if (signal != 0) {
 						LogUtil.info(message);

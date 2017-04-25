@@ -245,6 +245,10 @@ public class Hkex {
 		return companyByCode.get(code);
 	}
 
+	public Streamlet<Company> getCompanies() {
+		return companies;
+	}
+
 	public Streamlet<Company> queryCompanies() {
 		return Read.each(queryCompanies(0), queryCompanies(1), queryCompanies(2)) //
 				.flatMap(list -> list);
