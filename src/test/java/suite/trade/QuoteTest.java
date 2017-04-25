@@ -66,6 +66,7 @@ public class QuoteTest {
 		Map<String, Integer> sizeByStockCodes = Read.from(table0) //
 				.map2(r -> r.stockCode, r -> r.buySell) //
 				.groupBy(sizes -> sizes.collect(As.sum(size -> size))) //
+				.filterValue(size -> size != 0) //
 				.toMap();
 
 		Map<String, Float> priceByStockCodes = yahoo.quote(Read.from(sizeByStockCodes.keySet()));
@@ -89,7 +90,7 @@ public class QuoteTest {
 					Company company = hkex.getCompany(stockCode);
 					String shortName = company != null ? company.shortName() : null;
 					float price = priceByStockCodes.get(stockCode);
-					return stockCode + " (" + shortName + ") := " + size + " * " + price + " == " + size * price;
+					return stockCode + " (" + shortName + ") := " + price + " * " + size + " == " + size * price;
 				}) //
 				.forEach(System.out::println);
 
