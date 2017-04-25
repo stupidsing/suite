@@ -60,10 +60,10 @@ public class TradePlanTest {
 				.toMap();
 
 		// make sure all time-series are mean-reversions:
-		// calculate ADF < 0f to make sure data is not random walk
-		// calculate Hurst exponent < .5f
-		// calculate 0f < variable ratio
-		// calculate 0 < half-life
+		// ensure ADF < 0f: price is not random walk
+		// ensure Hurst exponent < .5f: price is weakly mean reverting
+		// ensure 0f < variable ratio: statistic is significant
+		// ensure 0 < half-life: determine investment period
 
 		Util.dump(meanReversionStatsByStockCode);
 	}
