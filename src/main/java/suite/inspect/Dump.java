@@ -11,12 +11,35 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.jdk.gen.Type_;
+import suite.os.LogUtil;
 import suite.util.FunUtil.Sink;
+import suite.util.Util;
 
 public class Dump {
 
 	private Set<Integer> dumpedIds = new HashSet<>();
 	private Sink<String> sink;
+
+	/**
+	 * Dumps object content (public data and getters) through Reflection to a
+	 * log4j.
+	 */
+	public static void out(Object object) {
+		StackTraceElement trace = Util.getStackTrace(3);
+		out(trace.getClassName() + "." + trace.getMethodName(), object);
+	}
+
+	/**
+	 * Dumps object content (public data and getters) through Reflection to a
+	 * log4j, with a descriptive name which you gave.
+	 */
+	public static void out(String name, Object object) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Dumping ");
+		sb.append(name);
+		Dump.object(sb, "", object);
+		LogUtil.info(sb.toString());
+	}
 
 	public static String object(Object object) {
 		return object("", object);
