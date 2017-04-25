@@ -93,7 +93,6 @@ public class TradePlanTest {
 			float[] diffs2 = To.floatArray(diffs, diff -> diff * diff);
 			return (float) Math.log(stat.variance(diffs2));
 		});
-		System.out.println(mtx.toString(logVrs));
 		float[][] deps = To.array(float[].class, logVrs.length, i -> new float[] { logVrs[i], 1f, });
 		float[] n = To.floatArray(logVrs.length, i -> (float) Math.log(i + 1));
 		LinearRegression lr = stat.linearRegression(deps, n);
