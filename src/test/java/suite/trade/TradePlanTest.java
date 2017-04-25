@@ -88,13 +88,14 @@ public class TradePlanTest {
 		int tor = 16;
 		float[] prices = dataSource.prices;
 		float[] logPrices = To.floatArray(prices, price -> (float) Math.log(price));
+		int[] tors = To.intArray(tor, t -> t + 1);
 		float[] logVrs = To.floatArray(tor, t -> {
-			float[] diffs = ts.dropDiff(logPrices, t + 1);
+			float[] diffs = ts.dropDiff(logPrices, tors[t]);
 			float[] diffs2 = To.floatArray(diffs, diff -> diff * diff);
 			return (float) Math.log(stat.variance(diffs2));
 		});
 		float[][] deps = To.array(float[].class, logVrs.length, i -> new float[] { logVrs[i], 1f, });
-		float[] n = To.floatArray(logVrs.length, i -> (float) Math.log(i + 1));
+		float[] n = To.floatArray(logVrs.length, i -> (float) Math.log(tors[i]));
 		LinearRegression lr = stat.linearRegression(deps, n);
 		float[] ps = lr.betas;
 		float beta = ps[0];
