@@ -87,14 +87,18 @@ public class TradePlanTest {
 	private float hurst(DataSource dataSource) {
 		int tor = 16;
 		float[] prices = dataSource.prices;
-		float[] logs = To.floatArray(prices, price -> (float) Math.log(price));
-		float[] diffsTor = ts.dropDiff(logs, tor);
-		float[] vr = To.floatArray(diffsTor, diff -> diff * diff);
-		float[][] deps = To.array(float[].class, vr.length, i -> new float[] { vr[i], 1f, });
-		float[] n = To.floatArray(vr.length, i -> i);
+		float[] logPrices = To.floatArray(prices, price -> (float) Math.log(price));
+		float[] logVrs = To.floatArray(tor, t -> {
+			float[] diffs = ts.dropDiff(logPrices, t + 1);
+			float[] diffs2 = To.floatArray(diffs, diff -> diff * diff);
+			return (float) Math.log(stat.variance(diffs2));
+		});
+		float[][] deps = To.array(float[].class, logVrs.length, i -> new float[] { logVrs[i], 1f, });
+		float[] n = To.floatArray(logVrs.length, i -> i);
 		LinearRegression lr = stat.linearRegression(deps, n);
 		float[] ps = lr.betas;
-		return ps[0] / 2f;
+		float beta = ps[0];
+		return beta / 2f;
 	}
 
 	private float varianceRatio(DataSource dataSource) {
