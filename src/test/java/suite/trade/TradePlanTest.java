@@ -72,13 +72,13 @@ public class TradePlanTest {
 	private float adf(DataSource dataSource) {
 		int tor = 16;
 		float[] prices = dataSource.prices;
-		float[] diffs = ts.differences(prices, 1);
+		float[] diffs = ts.differences(1, prices);
 		float[][] deps = new float[prices.length][];
 		for (int i = tor; i < deps.length; i++)
 			// i - drift term, necessary?
 			deps[i] = mtx.concat(new float[] { prices[i - 1], 1f, i, }, Arrays.copyOfRange(diffs, i - tor, i));
-		float[][] deps1 = ts.drop(deps, tor);
-		float[] diffs1 = ts.drop(diffs, tor);
+		float[][] deps1 = ts.drop(tor, deps);
+		float[] diffs1 = ts.drop(tor, diffs);
 		LinearRegression lr = stat.linearRegression(deps1, diffs1);
 		float lambda = lr.betas[0];
 		return (float) (lambda / lr.standardError);
@@ -90,7 +90,7 @@ public class TradePlanTest {
 		float[] logPrices = To.floatArray(prices, price -> (float) Math.log(price));
 		int[] tors = To.intArray(tor, t -> t + 1);
 		float[] logVrs = To.floatArray(tor, t -> {
-			float[] diffs = ts.dropDiff(logPrices, tors[t]);
+			float[] diffs = ts.dropDiff(tors[t], logPrices);
 			float[] diffs2 = To.floatArray(diffs, diff -> diff * diff);
 			return (float) Math.log(stat.variance(diffs2));
 		});
@@ -106,8 +106,8 @@ public class TradePlanTest {
 		int tor = 16;
 		float[] prices = dataSource.prices;
 		float[] logs = To.floatArray(prices, price -> (float) Math.log(price));
-		float[] diffsTor = ts.dropDiff(logs, tor);
-		float[] diffs1 = ts.dropDiff(logs, 1);
+		float[] diffsTor = ts.dropDiff(tor, logs);
+		float[] diffs1 = ts.dropDiff(1, logs);
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));
 	}
 
@@ -115,7 +115,7 @@ public class TradePlanTest {
 		int tor = 1;
 		float[] prices = dataSource.prices;
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { prices[i], 1f, });
-		float[] diffs1 = ts.dropDiff(prices, tor);
+		float[] diffs1 = ts.dropDiff(tor, prices);
 		LinearRegression lr = stat.linearRegression(deps, diffs1);
 		float[] ps = lr.betas;
 		float beta = ps[0];

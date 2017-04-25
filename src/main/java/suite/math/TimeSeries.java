@@ -6,35 +6,35 @@ public class TimeSeries {
 
 	private Matrix mtx = new Matrix();
 
-	public float[] differences(float[] fs, int tor) {
-		return differences_(fs, tor);
+	public float[] differences(int tor, float[] fs) {
+		return differences_(tor, fs);
 	}
 
-	public float[] differencesOn(float[] fs, int tor) {
-		return differencesOn_(fs, tor);
+	public float[] differencesOn(int tor, float[] fs) {
+		return differencesOn_(tor, fs);
 	}
 
-	public float[] drop(float[] fs, int tor) {
-		return drop_(fs, tor);
+	public float[] drop(int tor, float[] fs) {
+		return drop_(tor, fs);
 	}
 
-	public float[][] drop(float[][] fs, int tor) {
+	public float[][] drop(int tor, float[][] fs) {
 		return Arrays.copyOfRange(fs, tor, fs.length);
 	}
 
-	public float[] dropDiff(float[] logs, int tor) {
-		return drop_(differences_(logs, tor), tor);
+	public float[] dropDiff(int tor, float[] logs) {
+		return drop_(tor, differences_(tor, logs));
 	}
 
-	private float[] drop_(float[] fs, int tor) {
+	private float[] drop_(int tor, float[] fs) {
 		return Arrays.copyOfRange(fs, tor, fs.length);
 	}
 
-	private float[] differences_(float[] fs, int tor) {
-		return differencesOn_(mtx.of(fs), tor);
+	private float[] differences_(int tor, float[] fs) {
+		return differencesOn_(tor, mtx.of(fs));
 	}
 
-	private float[] differencesOn_(float[] fs, int tor) {
+	private float[] differencesOn_(int tor, float[] fs) {
 		int i = fs.length;
 		while (tor <= --i)
 			fs[i] -= fs[i - tor];
