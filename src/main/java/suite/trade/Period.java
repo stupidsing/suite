@@ -13,7 +13,7 @@ public class Period {
 		return of(frDate, toDate);
 	}
 
-	public static Period beforeToday(int nDays) {
+	public static Period daysBefore(int nDays) {
 		LocalDate today = LocalDate.now();
 		LocalDate frDate = today.minusDays(128);
 		LocalDate toDate = today;

@@ -1,9 +1,9 @@
 package suite.trade;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
-import suite.os.LogUtil;
+import suite.util.FormatUtil;
+import suite.util.Util;
 
 public class DataSource {
 
@@ -27,13 +27,33 @@ public class DataSource {
 		}
 	}
 
+	public DataSource limit(Period period) {
+		String s0 = FormatUtil.dateFormat.format(period.frDate);
+		String sx = FormatUtil.dateFormat.format(period.toDate);
+
+		String[] dates1 = new String[dates.length];
+		float[] prices1 = new float[prices.length];
+		int j = 0;
+		for (int i = 0; i < prices.length; i++) {
+			String date = dates[i];
+			float price = prices[i];
+			if (Util.compare(s0, date) <= 0 && Util.compare(date, sx) < 0) {
+				dates1[j] = date;
+				prices1[j] = price;
+				j++;
+			}
+		}
+
+		return new DataSource(Arrays.copyOf(dates1, j), Arrays.copyOf(prices, j));
+	}
+
 	public void validate() {
-		String threeDaysAgo = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now().plusDays(-3));
+		int length = prices.length;
 		String date0 = null;
 		float price0 = prices[0];
 		float price1;
 
-		for (int i = 1; i < prices.length; i++) {
+		for (int i = 1; i < length; i++) {
 			String date1 = dates[i];
 
 			if ((price1 = prices[i]) == 0f)
@@ -49,9 +69,6 @@ public class DataSource {
 			date0 = date1;
 			price0 = price1;
 		}
-
-		if (date0.compareTo(threeDaysAgo) < 0)
-			LogUtil.warn("outdated date range: " + date0);
 	}
 
 	private boolean isValid(float price0, float price1) {

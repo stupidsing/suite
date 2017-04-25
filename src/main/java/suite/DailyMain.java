@@ -1,5 +1,6 @@
 package suite;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import suite.trade.Period;
 import suite.trade.Strategos;
 import suite.trade.Strategy;
 import suite.trade.Yahoo;
+import suite.util.FormatUtil;
 import suite.util.Serialize;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
@@ -41,11 +43,21 @@ public class DailyMain extends ExecutableProgram {
 				.get("backTestByStockCode", () -> companies //
 						.map2(stock -> stock.code, stock -> {
 							try {
-								DataSource ds = yahoo.dataSource(stock.code, Period.fiveYears());
-								BackTest backTest = BackTest.test(ds, strategy);
+								Period period = Period.fiveYears();
+								DataSource ds0 = yahoo.dataSource(stock.code, period);
+								DataSource ds1 = ds0.limit(period);
+								float[] prices = ds1.prices;
+
+								// at least approximately 2 years of data
+								if (2 * 240 <= prices.length)
+									ds1.validate();
+								else
+									throw new RuntimeException("Not enough data");
+
+								BackTest backTest = BackTest.test(ds1, strategy);
 								return 0f < backTest.account.cash();
 							} catch (Exception ex) {
-								LogUtil.warn(ex.getMessage() + " in " + stock);
+								LogUtil.warn(ex.getMessage() + " for " + stock);
 								return false;
 							}
 						}) //
@@ -59,7 +71,8 @@ public class DailyMain extends ExecutableProgram {
 								.map2(stockCode -> hkex.queryBoardLot(stockCode)) //
 								.toMap());
 
-		Period period = Period.beforeToday(128);
+		Period period = Period.daysBefore(128);
+		String sevenDaysAgo = FormatUtil.dateFormat.format(LocalDate.now().plusDays(-7));
 		List<String> messages = new ArrayList<>();
 
 		for (Company company : companies) {
@@ -71,7 +84,15 @@ public class DailyMain extends ExecutableProgram {
 
 				try {
 					DataSource ds = yahoo.dataSource(stockCode, period);
+					String[] dates = ds.dates;
 					float[] prices = ds.prices;
+					String endDate = dates[dates.length - 1];
+
+					if (0 <= endDate.compareTo(sevenDaysAgo))
+						ds.validate();
+					else
+						throw new RuntimeException("ancient data: " + endDate);
+
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
 					String message = company + " has signal " + prices[last] + " * " + signal * lotSize;

@@ -44,7 +44,6 @@ public class Yahoo {
 
 		DataSource dataSource = new DataSource(dates, prices);
 		dataSource.cleanse();
-		dataSource.validate();
 
 		return dataSource;
 	}
