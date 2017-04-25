@@ -18,10 +18,6 @@ public class Dump {
 	private Set<Integer> dumpedIds = new HashSet<>();
 	private Sink<String> sink;
 
-	public Dump(Sink<String> sink) {
-		this.sink = sink;
-	}
-
 	public static String object(Object object) {
 		return object("", object);
 	}
@@ -45,6 +41,10 @@ public class Dump {
 
 	public static void object(StringBuilder sb, String prefix, Object object) {
 		new Dump(sb::append).d(prefix, object);
+	}
+
+	public Dump(Sink<String> sink) {
+		this.sink = sink;
 	}
 
 	private void d(String prefix, Object object) {
