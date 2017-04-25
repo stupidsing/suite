@@ -24,7 +24,7 @@ public class PeriodTest {
 		DiscreteCosineTransform dct = new DiscreteCosineTransform();
 		Yahoo yahoo = new Yahoo();
 
-		for (Company stock : hkex.companies.take(40)) {
+		for (Company stock : hkex.queryCompanies().take(40)) {
 			String stockCode = stock.code;
 
 			try {

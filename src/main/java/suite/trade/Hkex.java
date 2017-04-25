@@ -148,7 +148,7 @@ public class Hkex {
 			+ "\n1910.HK|Samsonite International S.A.|39802" //
 	;
 
-	public Streamlet<Company> companies = Read //
+	private Streamlet<Company> companies = Read //
 			.from(lines.split("\n")) //
 			.filter(line -> !line.isEmpty()) //
 			.map(line -> line.split("\\|")) //
@@ -216,6 +216,14 @@ public class Hkex {
 		public String title;
 		public List<Content> content;
 		public String remark;
+
+		private Streamlet<List<String>> tableEntries() {
+			return Read.from(content) //
+					.flatMap(Content::getTables) //
+					.flatMap(table -> table.tr) //
+					.filter(tr -> !tr.thead) //
+					.flatMap(tr -> tr.td);
+		}
 	}
 
 	public static class CompanySearch {
@@ -237,11 +245,12 @@ public class Hkex {
 		return companyByCode.get(code);
 	}
 
-	public List<Company> queryCompanies() {
-		return queryCompanies(0);
+	public Streamlet<Company> queryCompanies() {
+		return Read.each(queryCompanies(0), queryCompanies(1), queryCompanies(2)) //
+				.flatMap(list -> list);
 	}
 
-	public List<Company> queryCompanies(int pageNo) {
+	private List<Company> queryCompanies(int pageNo) {
 		JsonNode json = query("" //
 				+ "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
 				+ "?location=companySearch" //
@@ -267,11 +276,7 @@ public class Hkex {
 		if (Boolean.TRUE)
 			return Read.each(companySearch) //
 					.flatMap(cs -> cs.data) //
-					.flatMap(data -> data.content) //
-					.flatMap(content -> content.getTables()) //
-					.flatMap(table -> table.tr) //
-					.filter(tr -> !tr.thead) //
-					.flatMap(tr -> tr.td) //
+					.concatMap(Data::tableEntries) //
 					.map(list -> new Company( //
 							Util.right("0000" + list.get(1).replace("*", "").trim(), -4), //
 							list.get(2).trim(), //
@@ -318,11 +323,7 @@ public class Hkex {
 
 		String boardLotStr = Read.each(companyInfo) //
 				.flatMap(ci -> ci.data) //
-				.flatMap(data -> data.content) //
-				.flatMap(content -> content.getTables()) //
-				.flatMap(table -> table.tr) //
-				.filter(tr -> !tr.thead) //
-				.flatMap(tr -> tr.td) //
+				.concatMap(Data::tableEntries) //
 				.filter(td -> Util.stringEquals(td.get(0), "Board lot")) //
 				.uniqueResult() //
 				.get(1) //

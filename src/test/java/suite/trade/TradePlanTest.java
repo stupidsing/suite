@@ -40,7 +40,7 @@ public class TradePlanTest {
 	public void testTradePlan() {
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
 
-		for (Company stock : hkex.companies.take(5))
+		for (Company stock : hkex.queryCompanies().take(5))
 			try {
 				String stockCode = stock.code;
 				dataSourceByStockCode.put(stockCode, yahoo.dataSource(stockCode));

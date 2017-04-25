@@ -33,7 +33,7 @@ public class DailyMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 		Hkex hkex = new Hkex();
 		Yahoo yahoo = new Yahoo();
-		Streamlet<Company> companies = hkex.companies;
+		Streamlet<Company> companies = hkex.queryCompanies();
 		Strategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
 
 		Map<String, Boolean> backTestByStockCode = SerializedStoreCache //

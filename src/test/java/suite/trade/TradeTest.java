@@ -18,7 +18,7 @@ public class TradeTest {
 
 	@Test
 	public void testBackTest() {
-		for (Company stock : hkex.companies) {
+		for (Company stock : hkex.queryCompanies()) {
 			String disp = stock.toString();
 			try {
 				backTest(stock.code, disp);

@@ -17,7 +17,7 @@ public class HkexTest {
 
 	@Test
 	public void testList() {
-		List<Company> companies = hkex.queryCompanies();
+		List<Company> companies = hkex.queryCompanies().toList();
 		System.out.println(companies);
 
 		for (Company company : companies)
