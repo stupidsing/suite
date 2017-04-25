@@ -2,6 +2,8 @@ package suite.math;
 
 import java.util.Arrays;
 
+import suite.util.Copy;
+
 public class Matrix {
 
 	public float[] add(float[] m, float[] n) {
@@ -42,6 +44,19 @@ public class Matrix {
 		else
 			throw new RuntimeException("Wrong input sizes");
 		return m;
+	}
+
+	public float[] concat(float[]... array) {
+		int length = 0;
+		for (float[] fs : array)
+			length += fs.length;
+		float[] fs1 = new float[length];
+		int i = 0;
+		for (float[] fs : array) {
+			Copy.primitiveArray(fs, 0, fs1, i, fs.length);
+			i += fs.length;
+		}
+		return fs1;
 	}
 
 	public float[][] convolute(float[][] m, float[][] k) {

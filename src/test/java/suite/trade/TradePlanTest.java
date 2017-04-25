@@ -12,7 +12,6 @@ import suite.math.Matrix;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.trade.Hkex.Company;
-import suite.util.Copy;
 import suite.util.To;
 import suite.util.Util;
 
@@ -73,14 +72,9 @@ public class TradePlanTest {
 		float[] prices = dataSource.prices;
 		float[] diffs = differences(prices, 1);
 		float[][] deps = new float[prices.length][];
-		for (int i = tor; i < deps.length; i++) {
-			float[] fs = Arrays.copyOf(diffs, tor + 3);
-			fs[0] = prices[i - 1];
-			fs[1] = 1f;
-			fs[2] = i; // drift term, necessary?
-			Copy.primitiveArray(diffs, i - tor, fs, 3, tor);
-			deps[i] = fs;
-		}
+		for (int i = tor; i < deps.length; i++)
+			// i - drift term, necessary?
+			deps[i] = mtx.concat(new float[] { prices[i - 1], 1f, i, }, Arrays.copyOfRange(diffs, i - tor, i));
 		float[][] deps1 = drop(deps, tor);
 		float[] diffs1 = drop(diffs, tor);
 		LinearRegression lr = stat.linearRegression(deps1, diffs1);
