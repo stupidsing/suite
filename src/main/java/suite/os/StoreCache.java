@@ -42,45 +42,50 @@ public class StoreCache {
 	@SuppressWarnings("resource")
 	public Outlet<Bytes> getOutlet(Bytes key, Source<Outlet<Bytes>> source) {
 		return Rethrow.ex(() -> {
+			long current = System.currentTimeMillis();
 			int keySize = key.size();
 			String hex8 = To.hex8(key.hashCode());
 			Path dir1 = dir.resolve(hex8.substring(0, 2));
 			int i = 0;
 			Path path;
 
-			while (Files.exists(path = dir1.resolve(hex8 + "." + i))) {
-				InputStream is = Files.newInputStream(path);
-				DataInputStream dis = new DataInputStream(is);
+			while (Files.exists(path = dir1.resolve(hex8 + "." + i++))) {
+				long lastModified = Files.getLastModifiedTime(path).toMillis();
 
-				if (dis.readInt() == keySize) {
-					byte[] kb = new byte[keySize];
-					dis.readFully(kb);
-					if (Arrays.equals(key.toByteArray(), kb))
-						return Outlet.of(new Source<Bytes>() {
-							private boolean cont = true;
+				if (current - lastModified < 1000 * 86400 * 30) {
+					InputStream is = Files.newInputStream(path);
+					DataInputStream dis = new DataInputStream(is);
 
-							public Bytes source() {
-								return Rethrow.ex(() -> {
-									if (cont) {
-										byte[] vb = new byte[Constants.bufferSize];
-										int n, nBytesRead = 0;
-										while (nBytesRead < vb.length
-												&& (cont &= 0 <= (n = dis.read(vb, nBytesRead, vb.length - nBytesRead))))
-											nBytesRead += n;
-										return Bytes.of(vb, 0, nBytesRead);
-									} else {
-										dis.close();
-										is.close();
-										return null;
-									}
-								});
-							}
-						});
-				}
+					if (dis.readInt() == keySize) {
+						byte[] kb = new byte[keySize];
+						dis.readFully(kb);
+						if (Arrays.equals(key.toByteArray(), kb))
+							return Outlet.of(new Source<Bytes>() {
+								private boolean cont = true;
 
-				dis.close();
-				is.close();
-				i++;
+								public Bytes source() {
+									return Rethrow.ex(() -> {
+										if (cont) {
+											byte[] vb = new byte[Constants.bufferSize];
+											int n, nBytesRead = 0;
+											while (nBytesRead < vb.length
+													&& (cont &= 0 <= (n = dis.read(vb, nBytesRead, vb.length - nBytesRead))))
+												nBytesRead += n;
+											return Bytes.of(vb, 0, nBytesRead);
+										} else {
+											dis.close();
+											is.close();
+											return null;
+										}
+									});
+								}
+							});
+					}
+
+					dis.close();
+					is.close();
+				} else
+					Files.delete(path);
 			}
 
 			Outlet<Bytes> outlet = source.source();
