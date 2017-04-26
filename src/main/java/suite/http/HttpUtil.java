@@ -19,6 +19,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import suite.concurrent.Backoff;
+import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.BytesUtil;
 import suite.streamlet.As;
@@ -77,6 +78,7 @@ public class HttpUtil {
 	}
 
 	private static HttpResult httpApache(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) throws IOException {
+		LogUtil.info("START " + method + " " + url);
 		CloseableHttpClient client = HttpClients.createDefault();
 
 		HttpRequestBase request = new HttpRequestBase() {
@@ -95,7 +97,11 @@ public class HttpUtil {
 		StatusLine statusLine = response.getStatusLine();
 		int statusCode = statusLine.getStatusCode();
 		InputStream inputStream = response.getEntity().getContent();
-		Outlet<Bytes> out = To.outlet(inputStream).closeAtEnd(inputStream).closeAtEnd(response).closeAtEnd(client);
+		Outlet<Bytes> out = To.outlet(inputStream) //
+				.closeAtEnd(inputStream) //
+				.closeAtEnd(response) //
+				.closeAtEnd(client) //
+				.closeAtEnd(() -> LogUtil.info("END " + method + " " + url));
 
 		if (statusCode == HttpURLConnection.HTTP_OK)
 			return new HttpResult(statusCode, out);
