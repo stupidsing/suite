@@ -1,5 +1,6 @@
 package suite.trade;
 
+import suite.algo.Statistic;
 import suite.math.MathUtil;
 import suite.trade.Strategy.GetBuySell;
 
@@ -15,13 +16,13 @@ public class BackTest {
 
 	private BackTest(DataSource ds, Strategy strategy) {
 		float[] prices = ds.prices;
+		float[] valuations = new float[prices.length];
 
 		GetBuySell getBuySell = strategy.analyze(prices);
 
 		for (int day = 0; day < prices.length; day++) {
 			int buySell = getBuySell.get(day);
-
-			buySell(ds, day, buySell);
+			valuations[day] = buySell(ds, day, buySell);
 
 			if (Boolean.FALSE) // do not validate yet
 				account.validate();
@@ -30,25 +31,29 @@ public class BackTest {
 		// sell all stocks at the end
 		buySell(ds, prices.length - 1, -account.nLots());
 
+		float return_ = account.cash();
+		float sharpe = return_ / new Statistic().standardDeviation(valuations);
+
 		concludeLog.append("" //
 				+ ", number of transactions = " + account.nTransactions() //
-				+ ", net gain = " + MathUtil.format(account.cash()));
+				+ ", return = " + MathUtil.format(return_) //
+				+ ", sharpe = " + MathUtil.format(sharpe));
 	}
 
-	private void buySell(DataSource ds, int day, int buySell) {
+	private float buySell(DataSource ds, int day, int buySell) {
 		float price = ds.prices[day];
 		account.buySell(buySell, price);
+		float valuation = account.cash() + account.nLots() * price;
 
-		if (day == 0 || buySell != 0) {
-			float valuation = account.cash() + account.nLots() * price;
-
+		if (day == 0 || buySell != 0)
 			tradeLog.append("\n" //
 					+ "date = " + ds.dates[day] //
 					+ ", buy/sell = " + buySell //
 					+ ", price = " + MathUtil.format(price) //
 					+ ", nLots = " + account.nLots() //
 					+ ", valuation = " + MathUtil.format(valuation));
-		}
+
+		return valuation;
 	}
 
 }
