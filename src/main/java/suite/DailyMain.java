@@ -38,7 +38,9 @@ public class DailyMain extends ExecutableProgram {
 		Streamlet<Company> companies = hkex.getCompanies();
 		Strategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
 
-		// perform a brief test to identify stocks that are mean-reverting
+		LogUtil.info("S1 perform back test");
+
+		// identify stocks that are mean-reverting
 		Map<String, Boolean> backTestByStockCode = SerializedStoreCache //
 				.of(Serialize.mapOfString(Serialize.boolean_)) //
 				.get("backTestByStockCode", () -> companies //
@@ -64,7 +66,8 @@ public class DailyMain extends ExecutableProgram {
 						}) //
 						.toMap());
 
-		// get all lot sizes
+		LogUtil.info("S2 query lot sizes");
+
 		Map<String, Integer> lotSizeByStockCode = SerializedStoreCache //
 				.of(Serialize.mapOfString(Serialize.int_)) //
 				.get("lotSizeByStockCode",
@@ -77,7 +80,8 @@ public class DailyMain extends ExecutableProgram {
 		String sevenDaysAgo = FormatUtil.dateFormat.format(LocalDate.now().plusDays(-7));
 		List<String> messages = new ArrayList<>();
 
-		// capture signals
+		LogUtil.info("S3 capture signals");
+
 		for (Company company : companies) {
 			String stockCode = company.code;
 
