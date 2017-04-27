@@ -1,8 +1,11 @@
 package suite.trade;
 
+import java.time.LocalDate;
+
 import suite.algo.Statistic;
 import suite.math.MathUtil;
 import suite.trade.Strategy.GetBuySell;
+import suite.util.FormatUtil;
 
 public class BackTest {
 
@@ -16,11 +19,12 @@ public class BackTest {
 
 	private BackTest(DataSource ds, Strategy strategy) {
 		float[] prices = ds.prices;
-		float[] valuations = new float[prices.length];
+		int length = prices.length;
+		float[] valuations = new float[length];
 
 		GetBuySell getBuySell = strategy.analyze(prices);
 
-		for (int day = 0; day < prices.length; day++) {
+		for (int day = 0; day < length; day++) {
 			int buySell = getBuySell.get(day);
 			valuations[day] = buySell(ds, day, buySell);
 
@@ -29,10 +33,13 @@ public class BackTest {
 		}
 
 		// sell all stocks at the end
-		buySell(ds, prices.length - 1, -account.nLots());
+		buySell(ds, length - 1, -account.nLots());
 
 		float return_ = account.cash();
-		float sharpe = return_ / new Statistic().standardDeviation(valuations);
+		LocalDate dateStart = LocalDate.parse(ds.dates[0], FormatUtil.dateFormat);
+		LocalDate dateEnd = LocalDate.parse(ds.dates[length - 1], FormatUtil.dateFormat);
+		long nApproxYears = (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365l;
+		double sharpe = return_ / (Math.sqrt(nApproxYears) * new Statistic().standardDeviation(valuations));
 
 		concludeLog.append("" //
 				+ ", number of transactions = " + account.nTransactions() //
