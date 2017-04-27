@@ -40,7 +40,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.node.util.IntMutable;
 import suite.node.util.Mutable;
 import suite.node.util.SuiteException;
 import suite.node.util.TreeRewriter;
@@ -98,10 +97,6 @@ public class SewingProverImpl implements SewingProver {
 			return emptyEnvironment;
 		}
 	};
-
-	public interface Cps { // Continuation passing style
-		public void cont(Runtime rt);
-	}
 
 	public interface Trampoline {
 		public Trampoline prove(Runtime rt);
@@ -187,18 +182,18 @@ public class SewingProverImpl implements SewingProver {
 		Trampoline tr = cutBegin(compile0(passThru, node));
 
 		return pc -> {
-			IntMutable result = IntMutable.false_();
+			Mutable<Boolean> result = Mutable.of(false);
 
 			new Runtime(pc, rt -> {
 				rt.pushRem(rt_ -> {
-					result.setTrue();
+					result.update(true);
 					return fail;
 				});
 				return tr;
 			}).trampoline();
 			;
 
-			return result.isTrue();
+			return result.get();
 		};
 	}
 
@@ -247,7 +242,7 @@ public class SewingProverImpl implements SewingProver {
 			Generalizer generalizer = new Generalizer();
 			Node head = generalizer.generalize(rule.head);
 			Node tail = generalizer.generalize(rule.tail);
-			return compileRule(head, tail, isHasCut);
+			return compileRule(head, tail);
 		});
 
 		Trampoline tr0 = or(trs);
@@ -256,56 +251,11 @@ public class SewingProverImpl implements SewingProver {
 		return log(tr2, traceLevel);
 	}
 
-	private Trampoline compileRule(Node head, Node tail, boolean isHasCut) {
+	private Trampoline compileRule(Node head, Node tail) {
 		SewingBinder sb = new SewingBinderImpl();
 		BindPredicate p = sb.compileBind(head);
-		Trampoline tr1 = isHasCut ? compile0(sb, tail) : compileNoCut0(sb, tail);
+		Trampoline tr1 = compile0(sb, tail);
 		return newEnv(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
-	}
-
-	private Trampoline compileNoCut0(SewingBinder sb, Node node) {
-		Cps cpsx = rt_ -> new Runtime(rt_.prover.config(), rt1 -> {
-			rt1.rems = rt_.rems;
-			return okay;
-		}).trampoline();
-
-		Cps cps = compileNoCutPredicate(sb, node, cpsx);
-
-		return rt -> {
-			cps.cont(rt);
-			return fail;
-		};
-	}
-
-	private Cps compileNoCutPredicate(SewingBinder sb, Node node, Cps cpsx) {
-		List<Node> list;
-		Cps cps;
-
-		if (1 < (list = breakdown(TermOp.AND___, node)).size()) {
-			cps = cpsx;
-			for (Node node1 : Util.reverse(list))
-				cps = compileNoCutPredicate(sb, node1, cps);
-		} else if (1 < (list = breakdown(TermOp.OR____, node)).size()) {
-			Cps[] cpsArray = Read.from(list).map(node1 -> compileNoCutPredicate(sb, node1, cpsx)).toArray(Cps.class);
-			cps = rt -> {
-				Sink<Runtime> restore = save(rt);
-				for (Cps cps1 : cpsArray) {
-					cps1.cont(rt);
-					restore.sink(rt);
-				}
-			};
-		} else {
-			Trampoline tr = compile0(sb, node);
-			cps = rt -> new Runtime(rt.prover.config(), rt1 -> {
-				rt1.pushRem(rt_ -> {
-					cpsx.cont(rt);
-					return fail;
-				});
-				return tr;
-			}).trampoline();
-		}
-
-		return cps;
 	}
 
 	private Trampoline compile0(SewingBinder sb, Node node) {
@@ -366,7 +316,7 @@ public class SewingProverImpl implements SewingProver {
 			Clone_ ht_ = sb.compile(m[3]);
 			tr = rt -> {
 				Node[] ht = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
-				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1], true));
+				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				rt.pushRem(rt_ -> valuex_.test(rt_, current.get()) ? okay : fail);
 				for (Node elem : Tree.iter(list0_.apply(rt.env))) {
@@ -414,7 +364,7 @@ public class SewingProverImpl implements SewingProver {
 			Clone_ ht_ = sb.compile(m[1]);
 			tr = rt -> {
 				Node[] ht = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
-				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1], true));
+				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
 				for (Node n : Tree.iter(l_.apply(rt.env)))
 					rt.pushRem(rt_ -> {
 						rt_.query = n;
