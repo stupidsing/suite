@@ -50,13 +50,15 @@ public class LongShortTermMemory {
 				for (int j = 0; j < ll; j++) { // random weights, bias 0
 
 					// Xavier initialization
-					wi[i][j] = (float) (random.nextGaussian() * isll);
-					wm[i][j] = (float) (random.nextGaussian() * isll);
-					wo[i][j] = (float) (random.nextGaussian() * isll);
+					// wi[i][j] = (float) (random.nextGaussian() * isll);
+					// wm[i][j] = (float) (random.nextGaussian() * isll);
+					// wo[i][j] = (float) (random.nextGaussian() * isll);
 				}
 
 				// forget previous lifes
-				wf[i][ll] = 3f;
+				// wf[i][ll] = 3f;
+
+				// Arrays.fill(wf[i], 1f);
 			}
 		}
 
@@ -110,13 +112,22 @@ public class LongShortTermMemory {
 				float[] e_wi = Forget.forgetOn(e_sig_is, Sigmoid.sigmoidGradientOn(sig_is));
 				float[] e_wf = Forget.forgetOn(e_sig_fs, Sigmoid.sigmoidGradientOn(sig_fs));
 
+				System.out.println("LSTM " //
+						+ "{ sig_os = " + mtx.toString(sig_os) //
+						+ ", e_output1 = " + mtx.toString(e_output1) //
+						+ ", memory1 = " + mtx.toString(tanh_memory1) //
+						+ ", tanh_memory1 = " + mtx.toString(tanh_memory1) //
+						+ ", e_sig_os = " + mtx.toString(e_sig_os) //
+						+ ", e_wo = " + mtx.toString(e_wo) //
+						+ ", }");
+
 				for (int i = 0; i < memoryLength; i++)
 					for (int j = 0; j < ll1; j++) {
 						float d = learningRate * iv[j];
 						wo[i][j] += d * e_wo[i];
 						wm[i][j] += d * e_wm[i];
-						wi[i][j] += d * e_wi[i];
-						wf[i][j] += d * e_wf[i];
+						// wi[i][j] += d * e_wi[i];
+						// wf[i][j] += d * e_wf[i];
 					}
 			}
 
