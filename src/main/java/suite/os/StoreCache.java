@@ -52,7 +52,7 @@ public class StoreCache {
 			while (Files.exists(path = dir1.resolve(hex8 + "." + i++))) {
 				long lastModified = Files.getLastModifiedTime(path).toMillis();
 
-				if (current - lastModified < 1000 * 86400 * 30) {
+				if (current - lastModified < 1000l * 86400 * 30) {
 					InputStream is = Files.newInputStream(path);
 					DataInputStream dis = new DataInputStream(is);
 
@@ -84,8 +84,10 @@ public class StoreCache {
 
 					dis.close();
 					is.close();
-				} else
+				} else {
 					Files.delete(path);
+					break;
+				}
 			}
 
 			Outlet<Bytes> outlet = source.source();
