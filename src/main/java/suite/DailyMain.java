@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import suite.math.MathUtil;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
 import suite.smtp.SmtpSslGmail;
@@ -58,7 +59,7 @@ public class DailyMain extends ExecutableProgram {
 									throw new RuntimeException("Not enough data");
 
 								BackTest backTest = BackTest.test(ds1, strategy);
-								return 0f < backTest.account.cash();
+								return MathUtil.isPositive(backTest.account.cash());
 							} catch (Exception ex) {
 								LogUtil.warn(ex.getMessage() + " for " + stock);
 								return false;

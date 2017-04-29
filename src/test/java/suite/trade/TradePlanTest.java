@@ -10,6 +10,7 @@ import org.junit.Test;
 import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
+import suite.math.MathUtil;
 import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.os.LogUtil;
@@ -30,7 +31,7 @@ public class TradePlanTest {
 
 	@Test
 	public void testStats() {
-		System.out.println(new MeanReversionStats(yahoo.dataSource("1128.HK")));
+		System.out.println(new MeanReversionStats(yahoo.dataSource("1113.HK")));
 	}
 
 	@Test
@@ -56,16 +57,16 @@ public class TradePlanTest {
 		// ensure Hurst exponent < .5f: price is weakly mean reverting
 		// ensure 0f < variable ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
-		List<Pair<String, Float>> potentialByStockCode = Read.from2(meanReversionStatsByStockCode) //
+		List<Pair<String, String>> potentialByStockCode = Read.from2(meanReversionStatsByStockCode) //
 				.filterValue(mr -> mr.adf < 0f //
-						&& mr.hurst < .5f //
-						&& 0f < mr.varianceRatio //
-						&& Float.isFinite(mr.halfLife) && 0f < mr.halfLife) //
+						// && mr.hurst < .5f //
+						&& 0f < mr.varianceRatio) //
 				.map2((stockCode, meanReversionStat) -> stockCode, (stockCode, meanReversionStat) -> {
 					float price = latestPriceByStockCode.get(stockCode);
-					float[] movingAvg = meanReversionStat.movingAverage;
-					return (movingAvg[movingAvg.length - 1] - price) * meanReversionStat.movingAverageMeanRevertRatio;
+					return (meanReversionStat.latestMovingAverage() / price - 1f) * meanReversionStat.movingAverageMeanRevertRatio;
 				}) //
+				.sortBy((stockCode, potential) -> -potential) //
+				.mapValue(MathUtil::format) //
 				.toList();
 
 		System.out.println(potentialByStockCode);
@@ -107,12 +108,17 @@ public class TradePlanTest {
 			movingAvgHalfLife = (float) (neglog2 / Math.log(1 + movingAverageMeanRevertRatio));
 		}
 
+		public float latestMovingAverage() {
+			return movingAverage[movingAverage.length - 1];
+		}
+
 		public String toString() {
 			return "adf = " + adf //
 					+ ", hurst = " + hurst //
 					+ ", varianceRatio = " + varianceRatio //
 					+ ", halfLife = " + halfLife //
-					+ ", movingAvgHalfLife = " + movingAvgHalfLife;
+					+ ", movingAvgHalfLife = " + movingAvgHalfLife //
+					+ ", latestMovingAverage = " + latestMovingAverage();
 		}
 	}
 

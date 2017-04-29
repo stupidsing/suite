@@ -21,6 +21,10 @@ public class MathUtil {
 		return String.format("%.3f", d);
 	}
 
+	public static boolean isPositive(double d) {
+		return Double.isFinite(d) && 0d <= d;
+	}
+
 	public static int steinGcd(int n0, int n1) {
 		int shift = 0;
 
