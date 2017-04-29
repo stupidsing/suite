@@ -6,6 +6,28 @@ public class TimeSeries {
 
 	private Matrix mtx = new Matrix();
 
+	public float[] logReturns(float[] fs) {
+		float[] logReturns = new float[fs.length - 1];
+		double ln0 = Math.log(fs[0]);
+		for (int i = 0; i < logReturns.length; i++) {
+			double ln = Math.log(fs[i + 1]);
+			logReturns[i] = (float) (ln - ln0);
+			ln0 = ln;
+		}
+		return logReturns;
+	}
+
+	public float[] returns(float[] fs) {
+		float[] returns = new float[fs.length - 1];
+		float price0 = returns[0];
+		for (int i = 0; i < returns.length; i++) {
+			float price = fs[i + 1];
+			returns[i] = (price - price0) / price0;
+			price0 = price;
+		}
+		return returns;
+	}
+
 	public float[] differences(int tor, float[] fs) {
 		return differences_(tor, fs);
 	}
