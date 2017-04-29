@@ -309,6 +309,10 @@ public class Outlet<T> implements Iterable<T> {
 		return of(Util.sort(toList(), comparator));
 	}
 
+	public <O extends Comparable<? super O>> Outlet<T> sortBy(Fun<T, O> fun) {
+		return sort((e0, e1) -> Util.compare(fun.apply(e0), fun.apply(e1)));
+	}
+
 	public Outlet<Outlet<T>> split(Predicate<T> fun) {
 		return of(FunUtil.map(Outlet<T>::new, FunUtil.split(fun, source)));
 	}

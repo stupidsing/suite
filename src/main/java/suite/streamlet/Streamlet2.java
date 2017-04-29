@@ -207,6 +207,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return streamlet2(() -> spawn().sortByKey(comparator));
 	}
 
+	public Streamlet2<K, V> sortByValue(Comparator<V> comparator) {
+		return streamlet2(() -> spawn().sortByValue(comparator));
+	}
+
 	public Source2<K, V> source() {
 		return spawn().source2();
 	}
