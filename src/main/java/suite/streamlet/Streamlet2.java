@@ -203,6 +203,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return streamlet2(() -> spawn().sort(comparator));
 	}
 
+	public <O extends Comparable<? super O>> Streamlet2<K, V> sortBy(BiFunction<K, V, O> fun) {
+		return streamlet2(() -> spawn().sortBy(fun));
+	}
+
 	public Streamlet2<K, V> sortByKey(Comparator<K> comparator) {
 		return streamlet2(() -> spawn().sortByKey(comparator));
 	}

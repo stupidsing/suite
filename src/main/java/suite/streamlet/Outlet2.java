@@ -374,16 +374,16 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return of(Util.sort(list, comparator));
 	}
 
-	public <O extends Comparable<? super O>> Outlet2<K, V> sortBy(Fun<Pair<K, V>, O> fun) {
-		return sort((e0, e1) -> Util.compare(fun.apply(e0), fun.apply(e1)));
+	public <O extends Comparable<? super O>> Outlet2<K, V> sortBy(BiFunction<K, V, O> fun) {
+		return sort((e0, e1) -> Util.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
 	}
 
 	public Outlet2<K, V> sortByKey(Comparator<K> comparator) {
-		return sortBy(p -> p.t0);
+		return sortBy((t0, t1) -> t0);
 	}
 
 	public Outlet2<K, V> sortByValue(Comparator<V> comparator) {
-		return sortBy(p -> p.t1);
+		return sortBy((t0, t1) -> t1);
 	}
 
 	public Source2<K, V> source2() {

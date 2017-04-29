@@ -207,8 +207,16 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return intObjStreamlet(() -> spawn().sort(comparator));
 	}
 
+	public <O extends Comparable<? super O>> IntObjStreamlet<V> sortBy(IntObj_Obj<V, O> fun) {
+		return intObjStreamlet(() -> spawn().sortBy(fun));
+	}
+
 	public IntObjStreamlet<V> sortByKey(Comparator<Integer> comparator) {
 		return intObjStreamlet(() -> spawn().sortByKey(comparator));
+	}
+
+	public IntObjStreamlet<V> sortByValue(Comparator<V> comparator) {
+		return intObjStreamlet(() -> spawn().sortByValue(comparator));
 	}
 
 	public IntObjSource<V> source() {

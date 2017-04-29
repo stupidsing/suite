@@ -367,12 +367,16 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return of(Util.sort(list, comparator));
 	}
 
-	public <O extends Comparable<? super O>> IntObjOutlet<V> sortBy(Fun<IntObjPair<V>, O> fun) {
-		return sort((e0, e1) -> Util.compare(fun.apply(e0), fun.apply(e1)));
+	public <O extends Comparable<? super O>> IntObjOutlet<V> sortBy(IntObj_Obj<V, O> fun) {
+		return sort((e0, e1) -> Util.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
 	}
 
 	public IntObjOutlet<V> sortByKey(Comparator<Integer> comparator) {
-		return sortBy(p -> p.t0);
+		return sortBy((t0, t1) -> t0);
+	}
+
+	public IntObjOutlet<V> sortByValue(Comparator<V> comparator) {
+		return sortBy((t0, t1) -> t1);
 	}
 
 	public IntObjSource<V> source2() {

@@ -203,6 +203,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().sort(comparator));
 	}
 
+	public <O extends Comparable<? super O>> Streamlet<T> sortBy(Fun<T, O> fun) {
+		return streamlet(() -> spawn().sortBy(fun));
+	}
+
 	public Source<T> source() {
 		return spawn().source();
 	}
