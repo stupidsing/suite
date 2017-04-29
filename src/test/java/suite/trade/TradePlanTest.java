@@ -2,10 +2,12 @@ package suite.trade;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 
+import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
 import suite.inspect.Dump;
@@ -15,6 +17,7 @@ import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.trade.Hkex.Company;
 import suite.util.To;
+import suite.util.Util;
 
 public class TradePlanTest {
 
@@ -52,7 +55,7 @@ public class TradePlanTest {
 	public void testTradePlan() {
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
 
-		for (Company stock : hkex.queryCompanies().take(5))
+		for (Company stock : hkex.queryCompanies().take(40))
 			try {
 				String stockCode = stock.code;
 				dataSourceByStockCode.put(stockCode, yahoo.dataSource(stockCode));
@@ -60,7 +63,7 @@ public class TradePlanTest {
 				LogUtil.warn(ex.getMessage() + " in " + stock);
 			}
 
-		Map<String, MeanReversionStats> meanReversionStatsByStockCode0 = Read.from2(dataSourceByStockCode) //
+		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(dataSourceByStockCode) //
 				.mapValue(MeanReversionStats::new) //
 				.toMap();
 
@@ -69,14 +72,15 @@ public class TradePlanTest {
 		// ensure Hurst exponent < .5f: price is weakly mean reverting
 		// ensure 0f < variable ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
-		Map<String, MeanReversionStats> meanReversionStatsByStockCode1 = Read.from2(meanReversionStatsByStockCode0) //
+		List<Pair<String, MeanReversionStats>> stockCodeMeanReversionStats = Read.from2(meanReversionStatsByStockCode) //
 				.filterValue(mr -> mr.adf < 0f //
 						&& mr.hurst < .5f //
 						&& 0f < mr.varianceRatio //
-						&& 0f < mr.halfLife) //
-				.toMap();
+						&& Float.isFinite(mr.halfLife) && 0f < mr.halfLife) //
+				.sortByValue((mr0, mr1) -> Util.compare(mr0.halfLife, mr1.halfLife)) //
+				.toList();
 
-		Dump.out(meanReversionStatsByStockCode1);
+		Dump.out(stockCodeMeanReversionStats);
 
 		// filter away equities without enough price histories
 		// trim the data sources to fixed sizes (128 days)?
@@ -151,7 +155,7 @@ public class TradePlanTest {
 		float[] diffs1 = ts.dropDiff(tor, prices);
 		LinearRegression lr = stat.linearRegression(deps, diffs1);
 		float beta0 = lr.betas[0];
-		return (float) (neglog2 / Math.log(beta0));
+		return (float) (neglog2 / Math.log(1 + beta0));
 	}
 
 }
