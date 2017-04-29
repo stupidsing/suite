@@ -1,5 +1,6 @@
 package suite.trade;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 
 import suite.util.FormatUtil;
@@ -69,6 +70,12 @@ public class DataSource {
 			date0 = date1;
 			price0 = price1;
 		}
+	}
+
+	public float nYears() { // approximately
+		LocalDate dateStart = LocalDate.parse(dates[0], FormatUtil.dateFormat);
+		LocalDate dateEnd = LocalDate.parse(dates[prices.length - 1], FormatUtil.dateFormat);
+		return (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365f;
 	}
 
 	private boolean isValid(float price0, float price1) {

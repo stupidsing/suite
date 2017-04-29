@@ -39,7 +39,7 @@ public class BackTest {
 		LocalDate dateStart = LocalDate.parse(ds.dates[0], FormatUtil.dateFormat);
 		LocalDate dateEnd = LocalDate.parse(ds.dates[length - 1], FormatUtil.dateFormat);
 		long nApproxYears = (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365l;
-		double sharpe = return_ / (Math.sqrt(nApproxYears) * new Statistic().standardDeviation(valuations));
+		double sharpe = return_ / (Math.sqrt(ds.nYears()) * new Statistic().standardDeviation(valuations));
 
 		concludeLog.append("" //
 				+ ", number of transactions = " + account.nTransactions() //
