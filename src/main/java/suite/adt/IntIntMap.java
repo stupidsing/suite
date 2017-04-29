@@ -10,13 +10,14 @@ import suite.streamlet.IntObjOutlet;
 import suite.streamlet.IntObjStreamlet;
 
 /**
- * Map with integer key and integer object value. Integer.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with integer key and integer object value. EMPTYVALUE is not allowed in
+ * values. Not thread-safe.
  * 
  * @author ywsing
  */
 public class IntIntMap {
 
+	private static int EMPTYVALUE = Integer.MIN_VALUE;
 	private int size;
 	private int[] ks;
 	private int[] vs;
@@ -31,7 +32,7 @@ public class IntIntMap {
 
 	public int computeIfAbsent(int key, Int_Int fun) {
 		int v = get(key);
-		if (v == Integer.MIN_VALUE)
+		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -47,7 +48,7 @@ public class IntIntMap {
 		int mask = ks.length - 1;
 		int index = key & mask;
 		int v_;
-		while ((v_ = vs[index]) != Integer.MIN_VALUE)
+		while ((v_ = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -67,7 +68,7 @@ public class IntIntMap {
 
 			for (int i = 0; i < capacity; i++) {
 				int v_ = vs0[i];
-				if (v_ != Integer.MIN_VALUE)
+				if (v_ != EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -103,7 +104,7 @@ public class IntIntMap {
 		int mask = capacity - 1;
 		int index = key & mask;
 		int v0;
-		while ((v0 = vs[index]) != Integer.MIN_VALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -120,8 +121,8 @@ public class IntIntMap {
 
 			public boolean source(IntIntPair pair) {
 				boolean b;
-				int v_ = Integer.MIN_VALUE;
-				while ((b = index < capacity) && (v_ = vs[index]) == Integer.MIN_VALUE)
+				int v_ = EMPTYVALUE;
+				while ((b = index < capacity) && (v_ = vs[index]) == EMPTYVALUE)
 					index++;
 				if (b) {
 					pair.t0 = ks[index++];
@@ -135,7 +136,7 @@ public class IntIntMap {
 	private void allocate(int capacity) {
 		ks = new int[capacity];
 		vs = new int[capacity];
-		Arrays.fill(vs, Integer.MIN_VALUE);
+		Arrays.fill(vs, EMPTYVALUE);
 	}
 
 }
