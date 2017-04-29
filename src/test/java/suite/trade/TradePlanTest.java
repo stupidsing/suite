@@ -45,7 +45,7 @@ public class TradePlanTest {
 
 	@Test
 	public void testStats() {
-		Dump.out(new MeanReversionStats(yahoo.dataSource("0005.HK")));
+		Dump.out(new MeanReversionStats(yahoo.dataSource("1128.HK")));
 	}
 
 	@Test
@@ -140,7 +140,7 @@ public class TradePlanTest {
 		float[] diffs1 = ts.dropDiff(tor, prices);
 		LinearRegression lr = stat.linearRegression(deps, diffs1);
 		float beta0 = lr.betas[0];
-		return (float) (neglog2 / Math.log(beta0));
+		return (float) (neglog2 / Math.log(1 + beta0));
 	}
 
 	private float movingAverageHalfLife(DataSource dataSource) {
