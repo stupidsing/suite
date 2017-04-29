@@ -10,14 +10,12 @@ import org.junit.Test;
 import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
-import suite.inspect.Dump;
 import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.trade.Hkex.Company;
 import suite.util.To;
-import suite.util.Util;
 
 public class TradePlanTest {
 
@@ -30,25 +28,9 @@ public class TradePlanTest {
 	private MovingAverage movingAvg = new MovingAverage();
 	private TimeSeries ts = new TimeSeries();
 
-	public class MeanReversionStats {
-		public final float adf;
-		public final float hurst;
-		public final float varianceRatio;
-		public final float halfLife;
-		public final float movingAvgHalfLife;
-
-		private MeanReversionStats(DataSource dataSource) {
-			adf = adf(dataSource);
-			hurst = hurst(dataSource);
-			varianceRatio = varianceRatio(dataSource);
-			halfLife = halfLife(dataSource);
-			movingAvgHalfLife = movingAverageHalfLife(dataSource);
-		}
-	}
-
 	@Test
 	public void testStats() {
-		Dump.out(new MeanReversionStats(yahoo.dataSource("1128.HK")));
+		System.out.println(new MeanReversionStats(yahoo.dataSource("1128.HK")));
 	}
 
 	@Test
@@ -67,20 +49,26 @@ public class TradePlanTest {
 				.mapValue(MeanReversionStats::new) //
 				.toMap();
 
+		Map<String, Float> latestPriceByStockCode = yahoo.quote(Read.from(dataSourceByStockCode.keySet()));
+
 		// make sure all time-series are mean-reversions:
 		// ensure ADF < 0f: price is not random walk
 		// ensure Hurst exponent < .5f: price is weakly mean reverting
 		// ensure 0f < variable ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
-		List<Pair<String, MeanReversionStats>> stockCodeMeanReversionStats = Read.from2(meanReversionStatsByStockCode) //
+		List<Pair<String, Float>> potentialByStockCode = Read.from2(meanReversionStatsByStockCode) //
 				.filterValue(mr -> mr.adf < 0f //
 						&& mr.hurst < .5f //
 						&& 0f < mr.varianceRatio //
 						&& Float.isFinite(mr.halfLife) && 0f < mr.halfLife) //
-				.sortByValue((mr0, mr1) -> Util.compare(mr0.halfLife, mr1.halfLife)) //
+				.map2((stockCode, meanReversionStat) -> stockCode, (stockCode, meanReversionStat) -> {
+					float price = latestPriceByStockCode.get(stockCode);
+					float[] movingAvg = meanReversionStat.movingAverage;
+					return (movingAvg[movingAvg.length - 1] - price) * meanReversionStat.movingAverageMeanRevertRatio;
+				}) //
 				.toList();
 
-		Dump.out(stockCodeMeanReversionStats);
+		System.out.println(potentialByStockCode);
 
 		// filter away equities without enough price histories
 		// trim the data sources to fixed sizes (128 days)?
@@ -95,9 +83,41 @@ public class TradePlanTest {
 		// transaction costs? Sharpe ratio? etc.
 	}
 
+	public class MeanReversionStats {
+		public final float[] movingAverage;
+		public final float adf;
+		public final float hurst;
+		public final float varianceRatio;
+		public final float meanRevertRatio;
+		public final float movingAverageMeanRevertRatio;
+		public final float halfLife;
+		public final float movingAvgHalfLife;
+
+		private MeanReversionStats(DataSource dataSource) {
+			float[] prices = dataSource.prices;
+			int tor = 16;
+
+			movingAverage = movingAvg.movingAvg(prices, tor);
+			adf = adf(dataSource, tor);
+			hurst = hurst(dataSource, tor);
+			varianceRatio = varianceRatio(dataSource, tor);
+			meanRevertRatio = meanRevertRatio(dataSource, 1);
+			movingAverageMeanRevertRatio = movingAverageMeanRevertRatio(dataSource, movingAverage, tor);
+			halfLife = (float) (neglog2 / Math.log(1 + meanRevertRatio));
+			movingAvgHalfLife = (float) (neglog2 / Math.log(1 + movingAverageMeanRevertRatio));
+		}
+
+		public String toString() {
+			return "adf = " + adf //
+					+ ", hurst = " + hurst //
+					+ ", varianceRatio = " + varianceRatio //
+					+ ", halfLife = " + halfLife //
+					+ ", movingAvgHalfLife = " + movingAvgHalfLife;
+		}
+	}
+
 	// Augmented Dickey-Fuller test
-	private float adf(DataSource dataSource) {
-		int tor = 16;
+	private float adf(DataSource dataSource, int tor) {
 		float[] prices = dataSource.prices;
 		float[] diffs = ts.differences(1, prices);
 		float[][] deps = new float[prices.length][];
@@ -111,8 +131,7 @@ public class TradePlanTest {
 		return (float) (lambda / lr.standardError);
 	}
 
-	private float hurst(DataSource dataSource) {
-		int tor = 16;
+	private float hurst(DataSource dataSource, int tor) {
 		float[] prices = dataSource.prices;
 		float[] logPrices = To.floatArray(prices, price -> (float) Math.log(price));
 		int[] tors = To.intArray(tor, t -> t + 1);
@@ -128,8 +147,7 @@ public class TradePlanTest {
 		return beta0 / 2f;
 	}
 
-	private float varianceRatio(DataSource dataSource) {
-		int tor = 16;
+	private float varianceRatio(DataSource dataSource, int tor) {
 		float[] prices = dataSource.prices;
 		float[] logs = To.floatArray(prices, price -> (float) Math.log(price));
 		float[] diffsTor = ts.dropDiff(tor, logs);
@@ -137,25 +155,23 @@ public class TradePlanTest {
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));
 	}
 
-	private float halfLife(DataSource dataSource) {
-		int tor = 1;
+	private float meanRevertRatio(DataSource dataSource, int tor) {
 		float[] prices = dataSource.prices;
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { prices[i], 1f, });
 		float[] diffs1 = ts.dropDiff(tor, prices);
 		LinearRegression lr = stat.linearRegression(deps, diffs1);
 		float beta0 = lr.betas[0];
-		return (float) (neglog2 / Math.log(1 + beta0));
+		return beta0;
 	}
 
-	private float movingAverageHalfLife(DataSource dataSource) {
-		int tor = 16;
+	private float movingAverageMeanRevertRatio(DataSource dataSource, float[] movingAvg, int tor) {
 		float[] prices = dataSource.prices;
-		float[] ma = ts.drop(tor, movingAvg.movingAvg(prices, tor));
+		float[] ma = ts.drop(tor, movingAvg);
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { ma[i], 1f, });
 		float[] diffs1 = ts.dropDiff(tor, prices);
 		LinearRegression lr = stat.linearRegression(deps, diffs1);
 		float beta0 = lr.betas[0];
-		return (float) (neglog2 / Math.log(1 + beta0));
+		return beta0;
 	}
 
 }

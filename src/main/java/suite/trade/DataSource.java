@@ -3,10 +3,13 @@ package suite.trade;
 import java.time.LocalDate;
 import java.util.Arrays;
 
+import suite.math.Matrix;
 import suite.util.FormatUtil;
 import suite.util.Util;
 
 public class DataSource {
+
+	public static Matrix mtx = new Matrix();
 
 	public final String[] dates;
 	public final float[] prices;
@@ -14,6 +17,17 @@ public class DataSource {
 	public DataSource(String[] dates, float[] prices) {
 		this.dates = dates;
 		this.prices = prices;
+	}
+
+	public DataSource cons(String date, float price) {
+		String[] dates1 = Util.add(String.class, dates, new String[] { date, });
+		float[] prices1 = mtx.concat(prices, new float[] { price, });
+		return new DataSource(dates1, prices1);
+
+	}
+
+	public String latestDate() {
+		return dates[prices.length - 1];
 	}
 
 	public void cleanse() {
@@ -50,21 +64,23 @@ public class DataSource {
 
 	public void validate() {
 		int length = prices.length;
-		String date0 = null;
+		String date0 = dates[0];
 		float price0 = prices[0];
-		float price1;
 
 		for (int i = 1; i < length; i++) {
 			String date1 = dates[i];
+			float price1 = prices[i];
 
-			if ((price1 = prices[i]) == 0f)
+			if (0 <= date0.compareTo(date1))
+				throw new RuntimeException("Wrong date order: " + date0 + "/" + date1);
+
+			if (price1 == 0f)
 				throw new RuntimeException("Price is zero: " + price1 + "/" + date1);
 
 			if (!Float.isFinite(price1))
 				throw new RuntimeException("Price is not finite: " + price1 + "/" + date1);
 
-			boolean valid = isValid(price0, price1);
-			if (!valid)
+			if (!isValid(price0, price1))
 				throw new RuntimeException("Price varied too much: " + price0 + "/" + date0 + " => " + price1 + "/" + date1);
 
 			date0 = date1;

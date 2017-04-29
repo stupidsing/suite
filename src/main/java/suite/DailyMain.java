@@ -90,15 +90,20 @@ public class DailyMain extends ExecutableProgram {
 				int lotSize = lotSizeByStockCode.get(stockCode);
 
 				try {
-					DataSource ds = yahoo.dataSource(stockCode, period);
-					String[] dates = ds.dates;
-					float[] prices = ds.prices;
-					String endDate = dates[dates.length - 1];
+					DataSource ds0 = yahoo.dataSource(stockCode, period);
+					String datex = ds0.latestDate();
 
-					if (0 <= endDate.compareTo(sevenDaysAgo))
-						ds.validate();
+					if (0 <= datex.compareTo(sevenDaysAgo))
+						ds0.validate();
 					else
-						throw new RuntimeException("ancient data: " + endDate);
+						throw new RuntimeException("ancient data: " + datex);
+
+					Map<String, Float> latest = yahoo.quote(Read.each(stockCode));
+					String latestDate = FormatUtil.dateFormat.format(LocalDate.now());
+					float latestPrice = latest.values().iterator().next();
+
+					DataSource ds1 = ds0.cons(latestDate, latestPrice);
+					float[] prices = ds1.prices;
 
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
