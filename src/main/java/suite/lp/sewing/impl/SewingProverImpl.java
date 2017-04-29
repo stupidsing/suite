@@ -102,6 +102,10 @@ public class SewingProverImpl implements SewingProver {
 		public Trampoline prove(Runtime rt);
 	}
 
+	private interface Restore {
+		public void restore(Runtime rt);
+	}
+
 	private class Debug {
 		private String indent = "";
 		private IList<Node> stack = IList.end();
@@ -289,13 +293,13 @@ public class SewingProverImpl implements SewingProver {
 			BindPredicate p = sb.compileBind(m[2]);
 			List<Node> vs = new ArrayList<>();
 			tr = rt -> {
-				Sink<Runtime> restore = save(rt);
+				Restore restore = save(rt);
 				rt.pushRem(rt_ -> {
 					vs.add(new Cloner().clone(f.apply(rt_.env)));
 					return fail;
 				});
 				rt.pushAlt(rt_ -> {
-					restore.sink(rt_);
+					restore.restore(rt_);
 					return p.test(rt, Tree.of(TermOp.AND___, vs)) ? okay : fail;
 				});
 				return tr1;
@@ -395,10 +399,10 @@ public class SewingProverImpl implements SewingProver {
 			tr = rt -> {
 				Iterator<BindPredicate> iter = elems_.iterator();
 				Trampoline alt[] = new Trampoline[1];
-				Sink<Runtime> restore = save(rt);
+				Restore restore = save(rt);
 				return alt[0] = rt_ -> {
 					while (iter.hasNext()) {
-						restore.sink(rt);
+						restore.restore(rt);
 						if (iter.next().test(rt_, f.apply(rt.env))) {
 							rt_.pushAlt(alt[0]);
 							return okay;
@@ -460,11 +464,11 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline catch0 = compile0(sb, m[2]);
 			tr = rt -> {
 				BindEnv be = rt;
-				Sink<Runtime> restore = save(rt);
+				Restore restore = save(rt);
 				IList<Trampoline> alts0 = rt.alts;
 				Sink<Node> handler0 = rt.handler;
 				rt.handler = node_ -> {
-					restore.sink(rt);
+					restore.restore(rt);
 					if (p.test(be, node_)) {
 						rt.alts = alts0;
 						rt.pushRem(catch0);
@@ -521,14 +525,14 @@ public class SewingProverImpl implements SewingProver {
 
 	private Trampoline if_(Trampoline tr0, Trampoline tr1, Trampoline tr2) {
 		return rt -> {
-			Sink<Runtime> restore = save(rt);
+			Restore restore = save(rt);
 			IList<Trampoline> alts0 = rt.alts;
 			rt.pushRem(rt_ -> {
 				rt_.alts = alts0;
 				return tr1;
 			});
 			rt.pushAlt(rt_ -> {
-				restore.sink(rt_);
+				restore.restore(rt_);
 				return tr2;
 			});
 			return tr0;
@@ -658,9 +662,9 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline tr0 = trs_.get(0);
 			Trampoline tr1 = trs_.get(1);
 			return rt -> {
-				Sink<Runtime> restore = save(rt);
+				Restore restore = save(rt);
 				rt.pushAlt(rt_ -> {
-					restore.sink(rt_);
+					restore.restore(rt_);
 					return tr1;
 				});
 				return tr0;
@@ -669,10 +673,10 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline trh = trs_.get(0);
 			List<Trampoline> trt = Util.reverse(Util.right(trs_, 1));
 			return rt -> {
-				Sink<Runtime> restore = save(rt);
+				Restore restore = save(rt);
 				for (Trampoline tr_ : trt)
 					rt.pushAlt(rt_ -> {
-						restore.sink(rt_);
+						restore.restore(rt_);
 						return tr_;
 					});
 				return trh;
@@ -680,7 +684,7 @@ public class SewingProverImpl implements SewingProver {
 		}
 	}
 
-	private Sink<Runtime> save(Runtime rt) {
+	private Restore save(Runtime rt) {
 		Env env0 = rt.env;
 		Node query0 = rt.query;
 		IList<Trampoline> cutPoint0 = rt.cutPoint;
