@@ -22,6 +22,7 @@ import suite.util.To;
 
 public class StoreCache {
 
+	private int documentAge = 30;
 	private Path dir = HomeDir.resolve("store-cache");
 
 	public Outlet<Bytes> http(String urlString) {
@@ -52,7 +53,7 @@ public class StoreCache {
 			while (Files.exists(path = dir1.resolve(hex8 + "." + i++))) {
 				long lastModified = Files.getLastModifiedTime(path).toMillis();
 
-				if (current - lastModified < 1000l * 86400 * 30) {
+				if (current - lastModified < 1000l * 86400 * documentAge) {
 					InputStream is = Files.newInputStream(path);
 					DataInputStream dis = new DataInputStream(is);
 
