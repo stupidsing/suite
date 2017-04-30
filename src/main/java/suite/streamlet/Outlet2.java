@@ -379,11 +379,11 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Outlet2<K, V> sortByKey(Comparator<K> comparator) {
-		return sortBy((t0, t1) -> t0);
+		return sort((e0, e1) -> comparator.compare(e0.t0, e1.t0));
 	}
 
 	public Outlet2<K, V> sortByValue(Comparator<V> comparator) {
-		return sortBy((t0, t1) -> t1);
+		return sort((e0, e1) -> comparator.compare(e0.t1, e1.t1));
 	}
 
 	public Source2<K, V> source2() {

@@ -372,11 +372,11 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjOutlet<V> sortByKey(Comparator<Integer> comparator) {
-		return sortBy((t0, t1) -> t0);
+		return sort((e0, e1) -> comparator.compare(e0.t0, e1.t0));
 	}
 
 	public IntObjOutlet<V> sortByValue(Comparator<V> comparator) {
-		return sortBy((t0, t1) -> t1);
+		return sort((e0, e1) -> comparator.compare(e0.t1, e1.t1));
 	}
 
 	public IntObjSource<V> source2() {
