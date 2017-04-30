@@ -1,5 +1,6 @@
 package suite.trade;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -339,10 +340,13 @@ public class Hkex {
 	private JsonNode query(String url) {
 		JsonNode json;
 
-		if (Boolean.TRUE) {
-			InputStream is = Singleton.get().getStoreCache().http(url).collect(To::inputStream);
-			json = Rethrow.ex(() -> mapper.readTree(is));
-		} else {
+		if (Boolean.TRUE)
+			try (InputStream is = Singleton.get().getStoreCache().http(url).collect(To::inputStream)) {
+				json = Rethrow.ex(() -> mapper.readTree(is));
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		else {
 			Execute execute = new Execute(new String[] { "curl", url, });
 			json = Rethrow.ex(() -> mapper.readTree(execute.out));
 		}
