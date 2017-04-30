@@ -1,6 +1,7 @@
 package suite.trade;
 
 import suite.math.Matrix;
+import suite.util.To;
 
 public class MovingAverage {
 
@@ -21,13 +22,22 @@ public class MovingAverage {
 		return emas;
 	}
 
+	public float[] movingGeometricAvg(float[] prices, int windowSize) {
+		float[] logPrices = To.floatArray(prices, price -> (float) Math.log(price));
+		float[] movingAvgs = movingAvg(logPrices, windowSize);
+		for (int i = 0; i < movingAvgs.length; i++)
+			movingAvgs[i] = (float) Math.exp(movingAvgs[i]);
+		return movingAvgs;
+	}
+
 	public float[] movingAvg(float[] prices, int windowSize) {
 		float[] movingAvgs = new float[prices.length];
+		float div = 1f / windowSize;
 		float movingSum = 0f;
 
 		for (int day = 0; day < prices.length; day++) {
 			if (windowSize <= day) {
-				movingAvgs[day] = movingSum / windowSize;
+				movingAvgs[day] = movingSum * div;
 				movingSum -= prices[day - windowSize];
 			}
 			movingSum += prices[day];
