@@ -9,7 +9,7 @@ import suite.lp.doer.Generalizer;
 import suite.lp.sewing.SewingBinder.BindEnv;
 import suite.lp.sewing.SewingBinder.BindPredicate;
 import suite.lp.sewing.VariableMapper.Env;
-import suite.lp.sewing.impl.SewingBinderImpl;
+import suite.lp.sewing.impl.SewingBinderImpl0;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.lp.sewing.impl.VariableMapperImpl.Generalization;
 import suite.node.Atom;
@@ -28,7 +28,7 @@ public class BindMapUtil {
 		Generalizer generalizer = new Generalizer();
 		Node toMatch = generalizer.generalize(Suite.parse(pattern_));
 
-		SewingBinderImpl sb = new SewingBinderImpl(false);
+		SewingBinderImpl0 sb = new SewingBinderImpl0(false);
 		BindPredicate pred = sb.compileBind(toMatch);
 		Streamlet2<String, Integer> indices = Read.from(generalizer.getVariablesNames()) //
 				.map2(Formatter::display, name -> sb.getVariableIndex(generalizer.getVariable(name))) //
