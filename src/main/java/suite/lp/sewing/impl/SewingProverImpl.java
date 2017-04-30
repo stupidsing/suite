@@ -256,7 +256,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Trampoline compileRule(Node head, Node tail) {
-		SewingBinder sb = new SewingBinderImpl();
+		SewingBinder sb = new SewingBinderImpl0();
 		BindPredicate p = sb.compileBind(head);
 		Trampoline tr1 = compile0(sb, tail);
 		return newEnv(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
@@ -311,7 +311,7 @@ public class SewingProverImpl implements SewingProver {
 			tr = if_(tr0, tr1, tr2);
 		} else if ((m = Suite.matcher("let .0 .1").apply(node)) != null) {
 			BindPredicate p = sb.compileBind(m[0]);
-			Evaluate eval = new SewingExpressionImpl(sb).compile(m[1]);
+			Evaluate eval = new SewingExpressionImpl0(sb).compile(m[1]);
 			tr = rt -> p.test(rt, Int.of(eval.evaluate(rt.env))) ? okay : fail;
 		} else if ((m = Suite.matcher("list.fold .0/.1/.2 .3").apply(node)) != null) {
 			Clone_ list0_ = sb.compile(m[0]);
