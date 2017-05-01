@@ -245,6 +245,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return FunUtil2.isAny(pred, source2);
 	}
 
+	public Outlet<K> keys() {
+		return map((k, v) -> k);
+	}
+
 	public Pair<K, V> last() {
 		Pair<K, V> pair = Pair.of(null, null);
 		if (next(pair))
@@ -461,6 +465,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 				throw new RuntimeException("More than one result");
 		else
 			throw new RuntimeException("No result");
+	}
+
+	public Outlet<V> values() {
+		return map((k, v) -> v);
 	}
 
 	private boolean next(Pair<K, V> pair) {

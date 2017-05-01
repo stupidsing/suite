@@ -135,6 +135,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return spawn().isAny(pred);
 	}
 
+	public Streamlet<K> keys() {
+		return new Streamlet<>(() -> spawn().keys());
+	}
+
 	public Pair<K, V> last() {
 		return spawn().last();
 	}
@@ -253,6 +257,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public Pair<K, V> uniqueResult() {
 		return spawn().uniqueResult();
+	}
+
+	public Streamlet<V> values() {
+		return new Streamlet<>(() -> spawn().values());
 	}
 
 	private Outlet2<K, V> spawn() {

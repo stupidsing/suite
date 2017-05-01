@@ -139,6 +139,10 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return spawn().isAny(pred);
 	}
 
+	public Streamlet<Integer> keys() {
+		return new Streamlet<>(() -> spawn().keys());
+	}
+
 	public IntObjPair<V> last() {
 		return spawn().last();
 	}
@@ -257,6 +261,10 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 
 	public IntObjPair<V> uniqueResult() {
 		return spawn().uniqueResult();
+	}
+
+	public Streamlet<V> values() {
+		return new Streamlet<>(() -> spawn().values());
 	}
 
 	private IntObjOutlet<V> spawn() {

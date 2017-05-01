@@ -238,6 +238,10 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return IntObjFunUtil.isAny(pred, source2);
 	}
 
+	public Outlet<Integer> keys() {
+		return map((k, v) -> k);
+	}
+
 	public IntObjPair<V> last() {
 		IntObjPair<V> pair = IntObjPair.of(0, null);
 		if (next(pair))
@@ -454,6 +458,10 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 				throw new RuntimeException("More than one result");
 		else
 			throw new RuntimeException("No result");
+	}
+
+	public Outlet<V> values() {
+		return map((k, v) -> v);
 	}
 
 	private boolean next(IntObjPair<V> pair) {
