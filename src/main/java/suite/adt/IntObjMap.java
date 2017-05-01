@@ -42,7 +42,7 @@ public class IntObjMap<V> {
 	}
 
 	public V get(int key) {
-		int mask = ks.length - 1;
+		int mask = vs.length - 1;
 		int index = key & mask;
 		Object v;
 		while ((v = vs[index]) != null)
@@ -54,7 +54,7 @@ public class IntObjMap<V> {
 	}
 
 	public V put(int key, V v1) {
-		int capacity = ks.length;
+		int capacity = vs.length;
 		size++;
 
 		if (capacity * 3 / 4 < size) {
@@ -74,15 +74,16 @@ public class IntObjMap<V> {
 	}
 
 	public void update(int key, Obj_Int<V> fun) {
-		int mask = ks.length - 1;
+		int mask = vs.length - 1;
 		int index = key & mask;
 		Object v;
 		while ((v = vs[index]) != null)
 			if (ks[index] != key)
 				index = index + 1 & mask;
-			else
+			else {
+				vs[index] = fun.applyAsInt(cast(v));
 				break;
-		vs[index] = fun.applyAsInt(cast(v));
+			}
 	}
 
 	public IntObjSource<V> source() {
@@ -94,8 +95,7 @@ public class IntObjMap<V> {
 	}
 
 	private Object put_(int key, Object v1) {
-		int capacity = ks.length;
-		int mask = capacity - 1;
+		int mask = vs.length - 1;
 		int index = key & mask;
 		Object v0;
 		while ((v0 = vs[index]) != null)
@@ -110,7 +110,7 @@ public class IntObjMap<V> {
 
 	private IntObjSource<V> source_() {
 		return new IntObjSource<V>() {
-			private int capacity = ks.length;
+			private int capacity = vs.length;
 			private int index = 0;
 
 			public boolean source2(IntObjPair<V> pair) {

@@ -85,9 +85,10 @@ public class IntIntMap {
 		while ((v = v(kv = kvs[index])) != EMPTYVALUE)
 			if (k(kv) != key)
 				index = index + 1 & mask;
-			else
+			else {
+				kvs[index] = fun.apply(v);
 				break;
-		kvs[index] = fun.apply(v);
+			}
 	}
 
 	public IntIntSource source() {

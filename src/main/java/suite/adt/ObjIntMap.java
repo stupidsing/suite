@@ -46,7 +46,7 @@ public class ObjIntMap<K> {
 	}
 
 	public int get(K key) {
-		int mask = ks.length - 1;
+		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		int v;
 		while ((v = vs[index]) != EMPTYVALUE)
@@ -58,7 +58,7 @@ public class ObjIntMap<K> {
 	}
 
 	public int put(K key, int v) {
-		int capacity = ks.length;
+		int capacity = vs.length;
 		size++;
 
 		if (capacity * 3 / 4 < size) {
@@ -84,9 +84,10 @@ public class ObjIntMap<K> {
 		while ((v = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
-			else
+			else {
+				vs[index] = fun.apply(v);
 				break;
-		vs[index] = fun.apply(v);
+			}
 	}
 
 	public IntObjSource<K> source() {
@@ -98,8 +99,7 @@ public class ObjIntMap<K> {
 	}
 
 	private int put_(Object key, int v1) {
-		int capacity = ks.length;
-		int mask = capacity - 1;
+		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		int v0;
 		while ((v0 = vs[index]) != EMPTYVALUE)
@@ -114,7 +114,7 @@ public class ObjIntMap<K> {
 
 	private IntObjSource<K> source_() {
 		return new IntObjSource<K>() {
-			private int capacity = ks.length;
+			private int capacity = vs.length;
 			private int index = 0;
 
 			public boolean source2(IntObjPair<K> pair) {
