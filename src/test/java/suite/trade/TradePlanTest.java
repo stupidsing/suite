@@ -41,7 +41,11 @@ public class TradePlanTest {
 		for (Company stock : hkex.queryCompanies().take(40))
 			try {
 				String stockCode = stock.code;
-				dataSourceByStockCode.put(stockCode, yahoo.dataSource(stockCode));
+				DataSource dataSource = yahoo.dataSource(stockCode);
+				if (2 * 240 <= dataSource.prices.length) {
+					dataSource.validate();
+					dataSourceByStockCode.put(stockCode, dataSource);
+				}
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage() + " in " + stock);
 			}
@@ -76,7 +80,8 @@ public class TradePlanTest {
 		System.out.println(potentialByStockCode);
 
 		// filter away equities without enough price histories
-		// trim the data sources to fixed sizes (128 days)?
+		// conclude the trading dates
+		// align and trim data source dates (128 days?)
 		// make sure prices are not random walks
 		// make sure prices are weakly reverting
 		// make sure statistic is significant?
