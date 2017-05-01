@@ -58,9 +58,10 @@ public class TradePlanTest {
 		// ensure 0f < variable ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
 		List<Pair<String, String>> potentialByStockCode = Read.from2(meanReversionStatsByStockCode) //
-				.filterValue(mr -> mr.adf < 0f //
-						// && mr.hurst < .5f //
-						&& 0f < mr.varianceRatio) //
+				.filterValue(mrs -> mrs.adf < 0f //
+						&& mrs.hurst < .5f //
+						&& 0f < mrs.varianceRatio //
+						&& 0 < mrs.movingAverageMeanRevertRatio) //
 				.map2((stockCode, mrs) -> stockCode, (stockCode, mrs) -> {
 					float price = latestPriceByStockCode.get(stockCode);
 					if (0 < mrs.movingAverageMeanRevertRatio)
