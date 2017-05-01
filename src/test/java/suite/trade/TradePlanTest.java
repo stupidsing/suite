@@ -17,7 +17,9 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Hkex.Company;
+import suite.util.FormatUtil;
 import suite.util.To;
+import suite.util.Util;
 
 public class TradePlanTest {
 
@@ -57,6 +59,12 @@ public class TradePlanTest {
 				.distinct() //
 				.toList();
 
+		long oneYearAgo = FormatUtil.date(Util.last(tradeDates)).minusYears(-1).toEpochDay();
+
+		int nTradeDaysInYear = Read.from(tradeDates) //
+				.filter(tradeDate -> oneYearAgo < FormatUtil.date(tradeDate).toEpochDay()) //
+				.size();
+
 		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(dataSourceByStockCode) //
 				.mapValue(MeanReversionStats::new) //
 				.toMap();
@@ -72,14 +80,17 @@ public class TradePlanTest {
 				.filterValue(mrs -> mrs.adf < 0f //
 						&& mrs.hurst < .5f //
 						&& 0f < mrs.varianceRatio //
-						&& 0 < mrs.movingAverageMeanRevertRatio) //
+						&& 0 < mrs.movingAvgMeanReversionRatio) //
 				.map2((stockCode, mrs) -> stockCode, (stockCode, mrs) -> {
-					float price = latestPriceByStockCode.get(stockCode);
-					System.out.println(stockCode //
-							+ ", " + mrs.movingAverageMeanRevertRatio //
-							+ ", " + price + " => " + mrs.latestMovingAverage() //
-							+ ", " + (mrs.latestMovingAverage() / price - 1f) * mrs.movingAverageMeanRevertRatio);
-					return 1E4 * (mrs.latestMovingAverage() / price - 1f) * mrs.movingAverageMeanRevertRatio;
+					double price = latestPriceByStockCode.get(stockCode);
+					double lma = mrs.latestMovingAverage();
+					double potential = 1E4 * (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
+					Math.pow(1 + potential, 365);
+					System.out.println(hkex.getCompany(stockCode) //
+							+ ", movingAvgMeanReversionRatio = " + mrs.movingAvgMeanReversionRatio //
+							+ ", " + MathUtil.format(price) + " => " + MathUtil.format(lma) //
+							+ ", potential = " + MathUtil.format(Math.pow(1 + potential, nTradeDaysInYear)));
+					return potential;
 				}) //
 				.sortBy((stockCode, potential) -> -potential);
 
@@ -117,8 +128,8 @@ public class TradePlanTest {
 		public final float adf;
 		public final float hurst;
 		public final float varianceRatio;
-		public final float meanRevertRatio;
-		public final float movingAverageMeanRevertRatio;
+		public final float meanReversionRatio;
+		public final float movingAvgMeanReversionRatio;
 		public final float halfLife;
 		public final float movingAvgHalfLife;
 
@@ -130,10 +141,10 @@ public class TradePlanTest {
 			adf = adf(dataSource, tor);
 			hurst = hurst(dataSource, tor);
 			varianceRatio = varianceRatio(dataSource, tor);
-			meanRevertRatio = meanRevertRatio(dataSource, 1);
-			movingAverageMeanRevertRatio = movingAverageMeanRevertRatio(dataSource, movingAverage, tor);
-			halfLife = (float) (neglog2 / Math.log1p(meanRevertRatio));
-			movingAvgHalfLife = (float) (neglog2 / Math.log1p(movingAverageMeanRevertRatio));
+			meanReversionRatio = meanReversionRatio(dataSource, 1);
+			movingAvgMeanReversionRatio = movingAvgMeanReversionRatio(dataSource, movingAverage, tor);
+			halfLife = (float) (neglog2 / Math.log1p(meanReversionRatio));
+			movingAvgHalfLife = (float) (neglog2 / Math.log1p(movingAvgMeanReversionRatio));
 		}
 
 		public float latestMovingAverage() {
@@ -189,7 +200,7 @@ public class TradePlanTest {
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));
 	}
 
-	private float meanRevertRatio(DataSource dataSource, int tor) {
+	private float meanReversionRatio(DataSource dataSource, int tor) {
 		float[] prices = dataSource.prices;
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { prices[i], 1f, });
 		float[] diffs1 = ts.dropDiff(tor, prices);
@@ -198,7 +209,7 @@ public class TradePlanTest {
 		return beta0;
 	}
 
-	private float movingAverageMeanRevertRatio(DataSource dataSource, float[] movingAvg, int tor) {
+	private float movingAvgMeanReversionRatio(DataSource dataSource, float[] movingAvg, int tor) {
 		float[] prices = dataSource.prices;
 		float[] ma = ts.drop(tor, movingAvg);
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { ma[i], 1f, });

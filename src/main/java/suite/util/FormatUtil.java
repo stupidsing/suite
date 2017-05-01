@@ -1,12 +1,31 @@
 package suite.util;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
 
 public class FormatUtil {
 
-	public static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
-	public static DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+	private static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
+	private static DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+
+	public static LocalDate date(String s) {
+		return LocalDate.parse(s, dateFormat);
+	}
+
+	public static LocalDateTime dateTime(String s) {
+		return LocalDateTime.parse(s, dateTimeFormat);
+	}
+
+	public static String formatDate(TemporalAccessor date) {
+		return dateFormat.format(date);
+	}
+
+	public static String formatDateTime(TemporalAccessor dateTime) {
+		return dateTimeFormat.format(dateTime);
+	}
 
 	public static String leftTrim(String s) {
 		int pos = 0;

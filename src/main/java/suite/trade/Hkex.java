@@ -3,8 +3,10 @@ package suite.trade;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -160,6 +162,9 @@ public class Hkex {
 
 	private Map<String, Company> companyByCode = Read.from(companies).toMap(company -> company.code);
 
+	private static final Set<String> commonFirstNames = new HashSet<>(
+			Arrays.asList("", "China", "Guangdong", "Hang", "HK", "Standard"));
+
 	public class Company {
 		public final String code;
 		public final String name;
@@ -171,12 +176,17 @@ public class Hkex {
 			this.marketCap = marketCap;
 		}
 
-		public String shortName() {
-			return name.split(" ")[0];
+		public String toString() {
+			return code + " " + shortName();
 		}
 
-		public String toString() {
-			return code + " " + name;
+		public String shortName() {
+			String[] array = name.split(" ");
+			int i = 0;
+			String s = "", name = "";
+			while (commonFirstNames.contains(s) && i < array.length)
+				name += s = array[i++];
+			return name;
 		}
 	}
 

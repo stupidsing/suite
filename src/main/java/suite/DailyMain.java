@@ -66,7 +66,7 @@ public class DailyMain extends ExecutableProgram {
 		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(companies);
 
 		Period period = Period.daysBefore(128);
-		String sevenDaysAgo = FormatUtil.dateFormat.format(LocalDate.now().plusDays(-7));
+		String sevenDaysAgo = FormatUtil.formatDate(LocalDate.now().plusDays(-7));
 		List<String> messages = new ArrayList<>();
 
 		LogUtil.info("S3 capture signals");
@@ -88,7 +88,7 @@ public class DailyMain extends ExecutableProgram {
 						throw new RuntimeException("ancient data: " + datex);
 
 					Map<String, Float> latest = yahoo.quote(Read.each(stockCode));
-					String latestDate = FormatUtil.dateFormat.format(LocalDate.now());
+					String latestDate = FormatUtil.formatDate(LocalDate.now());
 					float latestPrice = latest.values().iterator().next();
 
 					DataSource ds1 = ds0.cons(latestDate, latestPrice);

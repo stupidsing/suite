@@ -49,8 +49,8 @@ public class DataSource {
 	}
 
 	public DataSource limit(Period period) {
-		String s0 = FormatUtil.dateFormat.format(period.frDate);
-		String sx = FormatUtil.dateFormat.format(period.toDate);
+		String s0 = FormatUtil.formatDate(period.frDate);
+		String sx = FormatUtil.formatDate(period.toDate);
 		String[] dates1 = new String[dates.length];
 		float[] prices1 = new float[prices.length];
 		int j = 0;
@@ -103,8 +103,8 @@ public class DataSource {
 	}
 
 	public float nYears() { // approximately
-		LocalDate dateStart = LocalDate.parse(dates[0], FormatUtil.dateFormat);
-		LocalDate dateEnd = LocalDate.parse(dates[prices.length - 1], FormatUtil.dateFormat);
+		LocalDate dateStart = FormatUtil.date(get(0).date);
+		LocalDate dateEnd = FormatUtil.date(get(-1).date);
 		return (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365f;
 	}
 

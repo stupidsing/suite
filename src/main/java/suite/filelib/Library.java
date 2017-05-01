@@ -67,7 +67,7 @@ public class Library extends ExecutableProgram {
 					// get all file information
 					List<String> tags = Read.range(path.getNameCount()) //
 							.map(i -> path.getName(i).toString()) //
-							.cons(FormatUtil.dateFormat.format(attrs.lastModifiedTime().toInstant())) //
+							.cons(FormatUtil.formatDateTime(attrs.lastModifiedTime().toInstant())) //
 							.toList();
 
 					FileInfo fileInfo = new FileInfo();

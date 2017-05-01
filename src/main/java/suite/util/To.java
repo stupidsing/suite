@@ -240,8 +240,7 @@ public class To {
 	}
 
 	public static String string(long time) {
-		LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
-		return dateTime.format(FormatUtil.dateFormat);
+		return FormatUtil.formatDateTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
 	}
 
 	public static String string(InputStream in) {
