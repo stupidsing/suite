@@ -12,10 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import suite.node.util.Singleton;
 import suite.os.Execute;
+import suite.os.SerializedStoreCache;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Rethrow;
+import suite.util.Serialize;
 import suite.util.To;
 import suite.util.Util;
 
@@ -301,6 +303,16 @@ public class Hkex {
 							list.get(2).trim(), //
 							Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
 					.toList();
+	}
+
+	public Map<String, Integer> queryLotSizeByStockCode(Streamlet<Company> companies) {
+		return SerializedStoreCache //
+				.of(Serialize.mapOfString(Serialize.int_)) //
+				.get("lotSizeByStockCode",
+						() -> companies //
+								.map(stock -> stock.code) //
+								.map2(stockCode -> queryBoardLot(stockCode)) //
+								.toMap());
 	}
 
 	public int queryBoardLot(String stockCode0) {
