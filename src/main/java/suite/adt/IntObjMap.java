@@ -102,15 +102,14 @@ public class IntObjMap<V> {
 			private int index = 0;
 
 			public boolean source2(IntObjPair<V> pair) {
-				boolean b;
 				Object v = null;
-				while ((b = index < capacity) && (v = vs[index]) == null)
-					index++;
-				if (b) {
-					pair.t0 = ks[index++];
-					pair.t1 = cast(v);
-				}
-				return b;
+				while (index < capacity)
+					if ((v = vs[index]) != null) {
+						pair.t0 = ks[index++];
+						pair.t1 = cast(v);
+						return true;
+					}
+				return false;
 			}
 		};
 	}

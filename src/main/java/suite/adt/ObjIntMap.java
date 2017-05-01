@@ -106,15 +106,14 @@ public class ObjIntMap<K> {
 			private int index = 0;
 
 			public boolean source2(IntObjPair<K> pair) {
-				boolean b;
 				int v = EMPTYVALUE;
-				while ((b = index < capacity) && (v = vs[index]) == EMPTYVALUE)
-					index++;
-				if (b) {
-					pair.t1 = cast(ks[index++]);
-					pair.t0 = v;
-				}
-				return b;
+				while (index < capacity)
+					if ((v = vs[index]) != EMPTYVALUE) {
+						pair.t1 = cast(ks[index++]);
+						pair.t0 = v;
+						return true;
+					}
+				return false;
 			}
 		};
 	}
