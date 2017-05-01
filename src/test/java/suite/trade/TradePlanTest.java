@@ -61,9 +61,12 @@ public class TradePlanTest {
 				.filterValue(mr -> mr.adf < 0f //
 						// && mr.hurst < .5f //
 						&& 0f < mr.varianceRatio) //
-				.map2((stockCode, meanReversionStat) -> stockCode, (stockCode, meanReversionStat) -> {
+				.map2((stockCode, mrs) -> stockCode, (stockCode, mrs) -> {
 					float price = latestPriceByStockCode.get(stockCode);
-					return (meanReversionStat.latestMovingAverage() / price - 1f) * meanReversionStat.movingAverageMeanRevertRatio;
+					if (0 < mrs.movingAverageMeanRevertRatio)
+						return (mrs.latestMovingAverage() / price - 1f) * mrs.movingAverageMeanRevertRatio;
+					else
+						return -9999f;
 				}) //
 				.sortBy((stockCode, potential) -> -potential) //
 				.mapValue(MathUtil::format) //
@@ -98,14 +101,14 @@ public class TradePlanTest {
 			float[] prices = dataSource.prices;
 			int tor = 16;
 
-			movingAverage = movingAvg.movingAvg(prices, tor);
+			movingAverage = movingAvg.movingGeometricAvg(prices, tor);
 			adf = adf(dataSource, tor);
 			hurst = hurst(dataSource, tor);
 			varianceRatio = varianceRatio(dataSource, tor);
 			meanRevertRatio = meanRevertRatio(dataSource, 1);
 			movingAverageMeanRevertRatio = movingAverageMeanRevertRatio(dataSource, movingAverage, tor);
-			halfLife = (float) (neglog2 / Math.log(1 + meanRevertRatio));
-			movingAvgHalfLife = (float) (neglog2 / Math.log(1 + movingAverageMeanRevertRatio));
+			halfLife = (float) (neglog2 / Math.log1p(meanRevertRatio));
+			movingAvgHalfLife = (float) (neglog2 / Math.log1p(movingAverageMeanRevertRatio));
 		}
 
 		public float latestMovingAverage() {
