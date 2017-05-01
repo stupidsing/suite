@@ -16,6 +16,8 @@ import suite.streamlet.IntObjStreamlet;
  */
 public class ObjIntMap<K> {
 
+	private static int EMPTYVALUE = Integer.MIN_VALUE;
+
 	private int size;
 	private Object[] ks;
 	private int[] vs;
@@ -30,7 +32,7 @@ public class ObjIntMap<K> {
 
 	public int computeIfAbsent(K key, Obj_Int<K> fun) {
 		int v = get(key);
-		if (v == Integer.MIN_VALUE)
+		if (v == EMPTYVALUE)
 			put(key, v = fun.applyAsInt(key));
 		return v;
 	}
@@ -46,7 +48,7 @@ public class ObjIntMap<K> {
 		int mask = ks.length - 1;
 		int index = key.hashCode() & mask;
 		int v;
-		while ((v = vs[index]) != Integer.MIN_VALUE)
+		while ((v = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -66,7 +68,7 @@ public class ObjIntMap<K> {
 
 			for (int i = 0; i < capacity; i++) {
 				int v_ = vs0[i];
-				if (v_ != Integer.MIN_VALUE)
+				if (v_ != EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -88,7 +90,7 @@ public class ObjIntMap<K> {
 		int mask = capacity - 1;
 		int index = key.hashCode() & mask;
 		int v0;
-		while ((v0 = vs[index]) != Integer.MIN_VALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -105,8 +107,8 @@ public class ObjIntMap<K> {
 
 			public boolean source2(IntObjPair<K> pair) {
 				boolean b;
-				int v = Integer.MIN_VALUE;
-				while ((b = index < capacity) && (v = vs[index]) == Integer.MIN_VALUE)
+				int v = EMPTYVALUE;
+				while ((b = index < capacity) && (v = vs[index]) == EMPTYVALUE)
 					index++;
 				if (b) {
 					pair.t1 = cast(ks[index++]);
@@ -120,7 +122,7 @@ public class ObjIntMap<K> {
 	private void allocate(int capacity) {
 		ks = new Object[capacity];
 		vs = new int[capacity];
-		Arrays.fill(vs, Integer.MIN_VALUE);
+		Arrays.fill(vs, EMPTYVALUE);
 	}
 
 	private K cast(Object o) {
