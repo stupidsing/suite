@@ -14,20 +14,24 @@ public class MovingAverage {
 		return mtx.sub(emas1, emas0);
 	}
 
+	public float[] exponentialMovingGeometricAvg(float[] prices, int windowSize) {
+		float[] logPrices = To.floatArray(prices, price -> (float) Math.log(price));
+		float[] movingAvgs = exponentialMovingAvg(logPrices, windowSize);
+		return To.floatArray(movingAvgs, lma -> (float) Math.exp(lma));
+	}
+
+	public float[] movingGeometricAvg(float[] prices, int windowSize) {
+		float[] logPrices = To.floatArray(prices, price -> (float) Math.log(price));
+		float[] movingAvgs = movingAvg(logPrices, windowSize);
+		return To.floatArray(movingAvgs, lma -> (float) Math.exp(lma));
+	}
+
 	public float[] exponentialMovingAvg(float[] prices, float alpha) {
 		float[] emas = new float[prices.length];
 		float ema = prices[0];
 		for (int day = 0; day < prices.length; day++)
 			emas[day] = ema += alpha * (prices[day] - ema);
 		return emas;
-	}
-
-	public float[] movingGeometricAvg(float[] prices, int windowSize) {
-		float[] logPrices = To.floatArray(prices, price -> (float) Math.log(price));
-		float[] movingAvgs = movingAvg(logPrices, windowSize);
-		for (int i = 0; i < movingAvgs.length; i++)
-			movingAvgs[i] = (float) Math.exp(movingAvgs[i]);
-		return movingAvgs;
 	}
 
 	public float[] movingAvg(float[] prices, int windowSize) {
