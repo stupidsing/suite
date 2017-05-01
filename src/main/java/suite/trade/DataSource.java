@@ -3,7 +3,6 @@ package suite.trade;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import suite.adt.Pair;
 import suite.math.Matrix;
 import suite.util.FormatUtil;
 import suite.util.Util;
@@ -14,6 +13,16 @@ public class DataSource {
 
 	public final String[] dates;
 	public final float[] prices;
+
+	public class Datum {
+		public final String date;
+		public final float price;
+
+		private Datum(String date, float price) {
+			this.date = date;
+			this.price = price;
+		}
+	}
 
 	public DataSource(String[] dates, float[] prices) {
 		this.dates = dates;
@@ -59,6 +68,14 @@ public class DataSource {
 		return new DataSource(Arrays.copyOf(dates1, j), Arrays.copyOf(prices, j));
 	}
 
+	// at least approximately 2 years of data
+	public void validateTwoYears() {
+		if (2 * 240 <= prices.length)
+			validate();
+		else
+			throw new RuntimeException("Not enough data");
+	}
+
 	public void validate() {
 		int length = prices.length;
 		String date0 = dates[0];
@@ -91,10 +108,10 @@ public class DataSource {
 		return (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365f;
 	}
 
-	public Pair<String, Float> get(int pos) {
+	public Datum get(int pos) {
 		if (pos < 0)
 			pos += prices.length;
-		return Pair.of(dates[pos], prices[pos]);
+		return new Datum(dates[pos], prices[pos]);
 	}
 
 	private boolean isValid(float price0, float price1) {

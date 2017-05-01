@@ -50,14 +50,8 @@ public class DailyMain extends ExecutableProgram {
 								Period period = Period.threeYears();
 								DataSource ds0 = yahoo.dataSource(stock.code, period);
 								DataSource ds1 = ds0.limit(period);
-								float[] prices = ds1.prices;
 
-								// at least approximately 2 years of data
-								if (2 * 240 <= prices.length)
-									ds1.validate();
-								else
-									throw new RuntimeException("Not enough data");
-
+								ds1.validateTwoYears();
 								BackTest backTest = BackTest.test(ds1, strategy);
 								return MathUtil.isPositive(backTest.account.cash());
 							} catch (Exception ex) {
@@ -69,13 +63,7 @@ public class DailyMain extends ExecutableProgram {
 
 		LogUtil.info("S2 query lot sizes");
 
-		Map<String, Integer> lotSizeByStockCode = SerializedStoreCache //
-				.of(Serialize.mapOfString(Serialize.int_)) //
-				.get("lotSizeByStockCode",
-						() -> companies //
-								.map(stock -> stock.code) //
-								.map2(stockCode -> hkex.queryBoardLot(stockCode)) //
-								.toMap());
+		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(companies);
 
 		Period period = Period.daysBefore(128);
 		String sevenDaysAgo = FormatUtil.dateFormat.format(LocalDate.now().plusDays(-7));
@@ -92,7 +80,7 @@ public class DailyMain extends ExecutableProgram {
 
 				try {
 					DataSource ds0 = yahoo.dataSource(stockCode, period);
-					String datex = ds0.get(-1).t0;
+					String datex = ds0.get(-1).date;
 
 					if (0 <= datex.compareTo(sevenDaysAgo))
 						ds0.validate();
