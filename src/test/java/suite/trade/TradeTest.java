@@ -49,7 +49,7 @@ public class TradeTest {
 
 	@Test
 	public void testBackTestHkexDetails() {
-		backTest(hkex.getCompany("0069.HK"));
+		backTest(hkex.getCompany("0005.HK"));
 	}
 
 	private void backTest(Company company) {
