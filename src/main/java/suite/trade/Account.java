@@ -1,6 +1,13 @@
 package suite.trade;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import suite.adt.ObjIntMap;
+import suite.adt.Pair;
+import suite.streamlet.IntObjStreamlet;
+import suite.streamlet.Read;
 
 public class Account {
 
@@ -9,6 +16,25 @@ public class Account {
 	private float cash = 0;
 	private ObjIntMap<String> nLots = new ObjIntMap<>();
 	private int nTransactions = 0;
+
+	public void portfolio(ObjIntMap<String> nLots1, Map<String, Float> prices) {
+		Set<String> stockCodes = IntObjStreamlet.concat(nLots.stream(), nLots1.stream()) //
+				.map((nLots, stockCode) -> stockCode) //
+				.toSet();
+
+		List<Pair<String, Integer>> buySells = Read.from(stockCodes) //
+				.map2(stockCode -> {
+					int n0 = nLots.computeIfAbsent(stockCode, s -> 0);
+					int n1 = nLots1.computeIfAbsent(stockCode, s -> 0);
+					return n1 - n0;
+				}) //
+				.toList();
+
+		for (Pair<String, Integer> buySell : buySells) {
+			String stockCode = buySell.t0;
+			buySell(stockCode, buySell.t1, prices.get(stockCode));
+		}
+	}
 
 	public void buySell(int buySell, float price) {
 		buySell(defaultStockCode, buySell, price);
@@ -39,7 +65,7 @@ public class Account {
 	}
 
 	public int nLots(String stockCode) {
-		return nLots.get(stockCode);
+		return nLots.computeIfAbsent(stockCode, s -> 0);
 	}
 
 	public int nTransactions() {
