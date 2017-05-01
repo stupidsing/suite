@@ -77,6 +77,19 @@ public class IntIntMap {
 		return put_(key, v);
 	}
 
+	public void update(int key, Int_Int fun) {
+		int mask = kvs.length - 1;
+		int index = key & mask;
+		long kv;
+		int v;
+		while ((v = v(kv = kvs[index])) != EMPTYVALUE)
+			if (k(kv) != key)
+				index = index + 1 & mask;
+			else
+				break;
+		kvs[index] = fun.apply(v);
+	}
+
 	public IntIntSource source() {
 		return source_();
 	}

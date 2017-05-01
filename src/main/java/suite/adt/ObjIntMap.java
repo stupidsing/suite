@@ -2,6 +2,7 @@ package suite.adt;
 
 import java.util.Arrays;
 
+import suite.primitive.PrimitiveFun.Int_Int;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSink.IntObjSink;
 import suite.primitive.PrimitiveSource.IntObjSource;
@@ -74,7 +75,18 @@ public class ObjIntMap<K> {
 		}
 
 		return put_(key, v);
+	}
 
+	public void update(K key, Int_Int fun) {
+		int mask = vs.length - 1;
+		int index = key.hashCode() & mask;
+		int v;
+		while ((v = vs[index]) != EMPTYVALUE)
+			if (!ks[index].equals(key))
+				index = index + 1 & mask;
+			else
+				break;
+		vs[index] = fun.apply(v);
 	}
 
 	public IntObjSource<K> source() {

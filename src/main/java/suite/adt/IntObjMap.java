@@ -1,6 +1,7 @@
 package suite.adt;
 
 import suite.primitive.PrimitiveFun.Int_Obj;
+import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSink.IntObjSink;
 import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.streamlet.IntObjOutlet;
@@ -70,7 +71,18 @@ public class IntObjMap<V> {
 		}
 
 		return cast(put_(key, v1));
+	}
 
+	public void update(int key, Obj_Int<V> fun) {
+		int mask = ks.length - 1;
+		int index = key & mask;
+		Object v;
+		while ((v = vs[index]) != null)
+			if (ks[index] != key)
+				index = index + 1 & mask;
+			else
+				break;
+		vs[index] = fun.applyAsInt(cast(v));
 	}
 
 	public IntObjSource<V> source() {
