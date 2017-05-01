@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
 import suite.math.MathUtil;
@@ -15,6 +14,8 @@ import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.trade.Hkex.Company;
 import suite.util.To;
 
@@ -37,18 +38,24 @@ public class TradePlanTest {
 	@Test
 	public void testTradePlan() {
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
+		Streamlet<Company> companies = hkex.queryCompanies();
 
-		for (Company stock : hkex.queryCompanies().take(40))
+		for (Company stock : companies)
 			try {
 				String stockCode = stock.code;
 				DataSource dataSource = yahoo.dataSource(stockCode);
-				if (2 * 240 <= dataSource.prices.length) {
-					dataSource.validate();
-					dataSourceByStockCode.put(stockCode, dataSource);
-				}
+				dataSource.validateTwoYears();
+				dataSourceByStockCode.put(stockCode, dataSource);
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage() + " in " + stock);
 			}
+
+		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(companies);
+
+		List<String> tradeDates = Read.from2(dataSourceByStockCode) //
+				.concatMap((stockCode, dataSource) -> Read.from(dataSource.dates)) //
+				.distinct() //
+				.toList();
 
 		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(dataSourceByStockCode) //
 				.mapValue(MeanReversionStats::new) //
@@ -61,23 +68,35 @@ public class TradePlanTest {
 		// ensure Hurst exponent < .5f: price is weakly mean reverting
 		// ensure 0f < variable ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
-		List<Pair<String, String>> potentialByStockCode = Read.from2(meanReversionStatsByStockCode) //
+		Streamlet2<String, Double> potentialByStockCode = Read.from2(meanReversionStatsByStockCode) //
 				.filterValue(mrs -> mrs.adf < 0f //
 						&& mrs.hurst < .5f //
 						&& 0f < mrs.varianceRatio //
 						&& 0 < mrs.movingAverageMeanRevertRatio) //
 				.map2((stockCode, mrs) -> stockCode, (stockCode, mrs) -> {
 					float price = latestPriceByStockCode.get(stockCode);
-					if (0 < mrs.movingAverageMeanRevertRatio)
-						return (mrs.latestMovingAverage() / price - 1f) * mrs.movingAverageMeanRevertRatio;
-					else
-						return -9999f;
+					System.out.println(stockCode //
+							+ ", " + mrs.movingAverageMeanRevertRatio //
+							+ ", " + price + " => " + mrs.latestMovingAverage() //
+							+ ", " + (mrs.latestMovingAverage() / price - 1f) * mrs.movingAverageMeanRevertRatio);
+					return 1E4 * (mrs.latestMovingAverage() / price - 1f) * mrs.movingAverageMeanRevertRatio;
 				}) //
-				.sortBy((stockCode, potential) -> -potential) //
-				.mapValue(MathUtil::format) //
+				.sortBy((stockCode, potential) -> -potential);
+
+		System.out.println(potentialByStockCode.mapValue(MathUtil::format).toList());
+
+		List<String> topTen = potentialByStockCode //
+				.filterValue(potential -> 0f < potential) //
+				.take(10) //
+				.keys() //
 				.toList();
 
-		System.out.println(potentialByStockCode);
+		System.out.println(topTen);
+
+		Account account = new Account();
+
+		for (String stockCode : topTen)
+			account.buySell(stockCode, lotSizeByStockCode.get(stockCode), dataSourceByStockCode.get(stockCode).get(-1).price);
 
 		// filter away equities without enough price histories
 		// conclude the trading dates
