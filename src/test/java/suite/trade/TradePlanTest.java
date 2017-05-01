@@ -39,6 +39,9 @@ public class TradePlanTest {
 
 	@Test
 	public void testTradePlan() {
+		float riskFreeInterestRate = 1.05f;
+		int top = 10;
+
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
 		Streamlet<Company> companies = hkex.queryCompanies();
 
@@ -95,17 +98,17 @@ public class TradePlanTest {
 
 		System.out.println(potentialByStockCode.mapValue(MathUtil::format).toList());
 
-		List<String> topTen = potentialByStockCode //
-				.filterValue(potential -> 0f < potential) //
-				.take(10) //
+		List<String> tops = potentialByStockCode //
+				.filterValue(potential -> riskFreeInterestRate < potential) //
+				.take(top) //
 				.keys() //
 				.toList();
 
-		System.out.println(topTen);
+		System.out.println(tops);
 
 		Account account = new Account();
 
-		for (String stockCode : topTen)
+		for (String stockCode : tops)
 			account.buySell(stockCode, lotSizeByStockCode.get(stockCode), dataSourceByStockCode.get(stockCode).get(-1).price);
 
 		// filter away equities without enough price histories
