@@ -3,6 +3,7 @@ package suite.trade;
 import java.time.LocalDate;
 import java.util.Arrays;
 
+import suite.adt.Pair;
 import suite.math.Matrix;
 import suite.util.FormatUtil;
 import suite.util.Util;
@@ -26,10 +27,6 @@ public class DataSource {
 
 	}
 
-	public String latestDate() {
-		return dates[prices.length - 1];
-	}
-
 	public void cleanse() {
 
 		// ignore price sparks caused by data source bugs
@@ -45,10 +42,10 @@ public class DataSource {
 	public DataSource limit(Period period) {
 		String s0 = FormatUtil.dateFormat.format(period.frDate);
 		String sx = FormatUtil.dateFormat.format(period.toDate);
-
 		String[] dates1 = new String[dates.length];
 		float[] prices1 = new float[prices.length];
 		int j = 0;
+
 		for (int i = 0; i < prices.length; i++) {
 			String date = dates[i];
 			float price = prices[i];
@@ -92,6 +89,12 @@ public class DataSource {
 		LocalDate dateStart = LocalDate.parse(dates[0], FormatUtil.dateFormat);
 		LocalDate dateEnd = LocalDate.parse(dates[prices.length - 1], FormatUtil.dateFormat);
 		return (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365f;
+	}
+
+	public Pair<String, Float> get(int pos) {
+		if (pos < 0)
+			pos += prices.length;
+		return Pair.of(dates[pos], prices[pos]);
 	}
 
 	private boolean isValid(float price0, float price1) {
