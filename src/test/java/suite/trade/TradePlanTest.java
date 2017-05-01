@@ -84,12 +84,11 @@ public class TradePlanTest {
 				.map2((stockCode, mrs) -> stockCode, (stockCode, mrs) -> {
 					double price = latestPriceByStockCode.get(stockCode);
 					double lma = mrs.latestMovingAverage();
-					double potential = 1E4 * (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
-					Math.pow(1 + potential, 365);
+					double potential = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
 					System.out.println(hkex.getCompany(stockCode) //
 							+ ", movingAvgMeanReversionRatio = " + mrs.movingAvgMeanReversionRatio //
 							+ ", " + MathUtil.format(price) + " => " + MathUtil.format(lma) //
-							+ ", potential = " + MathUtil.format(Math.pow(1 + potential, nTradeDaysInYear)));
+							+ ", potential = " + MathUtil.format(Math.pow(1d + potential, nTradeDaysInYear)));
 					return potential;
 				}) //
 				.sortBy((stockCode, potential) -> -potential);
