@@ -17,7 +17,7 @@ import suite.streamlet.IntObjStreamlet;
  */
 public class ObjIntMap<K> {
 
-	private static int EMPTYVALUE = Integer.MIN_VALUE;
+	public final static int EMPTYVALUE = Integer.MIN_VALUE;
 
 	private int size;
 	private Object[] ks;
@@ -84,10 +84,9 @@ public class ObjIntMap<K> {
 		while ((v = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
-			else {
-				vs[index] = fun.apply(v);
+			else
 				break;
-			}
+		vs[index] = fun.apply(v);
 	}
 
 	public IntObjSource<K> source() {

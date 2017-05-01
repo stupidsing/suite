@@ -80,10 +80,9 @@ public class IntObjMap<V> {
 		while ((v = vs[index]) != null)
 			if (ks[index] != key)
 				index = index + 1 & mask;
-			else {
-				vs[index] = fun.applyAsInt(cast(v));
+			else
 				break;
-			}
+		vs[index] = fun.applyAsInt(cast(v));
 	}
 
 	public IntObjSource<V> source() {
