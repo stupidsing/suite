@@ -13,6 +13,15 @@ public class Period {
 		return of(frDate, toDate);
 	}
 
+	public static Period backTestDaysBefore(int alignment, int nDays) {
+
+		// align date range boundaries to reduce number of web queries
+		long todayEpochDay = LocalDate.now().toEpochDay();
+		long endEpochDate = todayEpochDay - todayEpochDay % alignment;
+		long startEpochDate = endEpochDate - nDays;
+		return of(LocalDate.ofEpochDay(startEpochDate), LocalDate.ofEpochDay(endEpochDate));
+	}
+
 	public static Period daysBefore(int nDays) {
 		LocalDate today = LocalDate.now();
 		LocalDate frDate = today.minusDays(128);
