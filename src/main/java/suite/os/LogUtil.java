@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import suite.inspect.Dump;
-import suite.os.TimeUtil.TimedResult;
 import suite.proxy.Intercept;
 import suite.util.Copy;
 import suite.util.FunUtil.Source;
@@ -51,7 +50,7 @@ public class LogUtil {
 	}
 
 	public static <T> T duration(String m, Source<T> source) {
-		TimedResult<T> tr = new TimeUtil().time(source);
+		Stopwatch<T> tr = Stopwatch.of(source);
 		LogUtil.info(m + " in " + tr.duration + "ms, GC occurred " + tr.nGcs + " times in " + tr.gcDuration + " ms");
 		return tr.result;
 	}

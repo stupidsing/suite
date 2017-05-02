@@ -8,8 +8,7 @@ import java.text.DecimalFormat;
 import suite.Constants;
 import suite.adt.Pair;
 import suite.os.LogUtil;
-import suite.os.TimeUtil;
-import suite.os.TimeUtil.TimedResult;
+import suite.os.Stopwatch;
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctVisitor;
@@ -55,14 +54,14 @@ public class UctWeiqiMain<Move> {
 			if (auto || gameSet.getNextPlayer() == computerPlayer) {
 				System.out.println("THINKING...");
 
-				TimedResult<Coordinate> timed = new TimeUtil().time(search::search);
-				Coordinate coord = timed.result;
+				Stopwatch<Coordinate> sw = Stopwatch.of(search::search);
+				Coordinate coord = sw.result;
 
 				if (coord != null) {
 					status = gameSet.getNextPlayer() //
 							+ " " + coord //
 							+ " " + df.format(search.getWinningChance()) //
-							+ " " + timed.duration + "ms";
+							+ " " + sw.duration + "ms";
 
 					gameSet.play(coord);
 

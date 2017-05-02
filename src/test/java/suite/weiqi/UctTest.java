@@ -9,8 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import suite.Constants;
-import suite.os.TimeUtil;
-import suite.os.TimeUtil.TimedResult;
+import suite.os.Stopwatch;
 import suite.sample.Profiler;
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
@@ -67,7 +66,7 @@ public class UctTest {
 
 		for (int time = 0; time < 2; time++)
 			for (; i < ss[time]; i++)
-				duration = new TimeUtil().time(() -> {
+				duration = Stopwatch.of(() -> {
 					GameSet gameSet1 = new GameSet(gameSet);
 					UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet1);
 					visitor.evaluateRandomOutcome();
@@ -89,7 +88,7 @@ public class UctTest {
 			UctSearch<Coordinate> search = new UctSearch<>(visitor);
 			search.setNumberOfSimulations(nSimulations);
 
-			duration = new TimeUtil().time(search::search).duration;
+			duration = Stopwatch.of(search::search).duration;
 		}
 
 		float ms = duration / nSimulations;
@@ -155,7 +154,7 @@ public class UctTest {
 				search.setNumberOfSimulations(nSimulations);
 				search.setBoundedTime(boundedTime);
 
-				TimedResult<Coordinate> timed = new TimeUtil().time(search::search);
+				Stopwatch<Coordinate> timed = Stopwatch.of(search::search);
 				Coordinate move = timed.result;
 
 				if (move == null)

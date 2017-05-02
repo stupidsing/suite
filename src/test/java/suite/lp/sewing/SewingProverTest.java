@@ -17,8 +17,7 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.os.TimeUtil;
-import suite.os.TimeUtil.TimedResult;
+import suite.os.Stopwatch;
 import suite.util.FunUtil.Source;
 
 public class SewingProverTest {
@@ -105,9 +104,8 @@ public class SewingProverTest {
 		SewingProver sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
 		Predicate<ProverConfig> test = sp.compile(Suite.parse("q 32768"));
-		TimeUtil timeUtil = new TimeUtil();
 
-		Source<TimedResult<Boolean>> trial = () -> timeUtil.time(() -> {
+		Source<Stopwatch<Boolean>> trial = () -> Stopwatch.of(() -> {
 			boolean isOk = true;
 			for (int i = 0; i < 65536; i++)
 				isOk &= test.test(pc);
@@ -118,10 +116,10 @@ public class SewingProverTest {
 		for (int i = 0; i < 8; i++)
 			trial.source();
 
-		TimedResult<Boolean> timedResult = trial.source();
+		Stopwatch<Boolean> sw = trial.source();
 
-		System.out.println(timedResult.duration);
-		assertTrue(timedResult.duration < 300);
+		System.out.println(sw.duration);
+		assertTrue(sw.duration < 300);
 	}
 
 }
