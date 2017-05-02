@@ -134,13 +134,13 @@ public class IntIntMap {
 			public boolean source(IntIntPair pair) {
 				long kv;
 				int v;
-				while (index < capacity)
-					if ((v = v(kv = kvs[index++])) != EMPTYVALUE) {
-						pair.t0 = k(kv);
-						pair.t1 = v;
-						return true;
-					}
-				return false;
+				while ((v = v(kv = kvs[index])) == EMPTYVALUE)
+					if (capacity <= ++index)
+						return false;
+				pair.t0 = k(kv);
+				pair.t1 = v;
+				index++;
+				return true;
 			}
 		};
 	}
