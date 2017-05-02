@@ -2,6 +2,7 @@ package suite.trade;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.junit.Test;
 
@@ -11,6 +12,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Hkex.Company;
 import suite.util.FunUtil.Source;
+import suite.util.Util;
 
 public class QuoteTest {
 
@@ -56,11 +58,25 @@ public class QuoteTest {
 	}
 
 	@Test
-	public void testQuoteManyStocks() {
+	public void testQuotes() {
+		summarize(r -> true);
+	}
+
+	@Test
+	public void testQuotesByStock() {
+		summarize(r -> Util.stringEquals(r.stockCode, "0005.HK"));
+	}
+
+	@Test
+	public void testQuotesByStrategy() {
+		summarize(r -> r.strategy.startsWith("mamr"));
+	}
+
+	private void summarize(Predicate<Record> pred) {
 		List<Record> table0 = Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt") //
 				.collect(As::table) //
 				.map(Record::new) //
-				.filter(r -> r.strategy.startsWith("mamr")) //
+				.filter(pred) //
 				.toList();
 
 		Map<String, Integer> sizeByStockCodes = Read.from(table0) //
@@ -94,8 +110,8 @@ public class QuoteTest {
 				}) //
 				.forEach(System.out::println);
 
-		System.out.println("AMOUNT0 = " + amount0);
-		System.out.println("AMOUNT1 = " + amount1);
+		System.out.println("OWN = " + amount0);
+		System.out.println("P/L = " + amount1);
 	}
 
 	private float sum(Outlet<Float> outlet) {
