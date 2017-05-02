@@ -195,7 +195,6 @@ public class SewingProverImpl implements SewingProver {
 				});
 				return tr;
 			}).trampoline();
-			;
 
 			return result.get();
 		};
