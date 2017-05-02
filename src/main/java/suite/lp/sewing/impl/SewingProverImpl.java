@@ -298,7 +298,7 @@ public class SewingProverImpl implements SewingProver {
 					return fail;
 				});
 				rt.pushAlt(rt_ -> {
-					restore.restore(rt_);
+					restore.restore(rt);
 					return p.test(rt, Tree.of(TermOp.AND___, vs)) ? okay : fail;
 				});
 				return tr1;
@@ -527,11 +527,11 @@ public class SewingProverImpl implements SewingProver {
 			Restore restore = save(rt);
 			IList<Trampoline> alts0 = rt.alts;
 			rt.pushRem(rt_ -> {
-				rt_.alts = alts0;
+				rt.alts = alts0;
 				return tr1;
 			});
 			rt.pushAlt(rt_ -> {
-				restore.restore(rt_);
+				restore.restore(rt);
 				return tr2;
 			});
 			return tr0;
@@ -663,7 +663,7 @@ public class SewingProverImpl implements SewingProver {
 			return rt -> {
 				Restore restore = save(rt);
 				rt.pushAlt(rt_ -> {
-					restore.restore(rt_);
+					restore.restore(rt);
 					return tr1;
 				});
 				return tr0;
@@ -675,7 +675,7 @@ public class SewingProverImpl implements SewingProver {
 				Restore restore = save(rt);
 				for (Trampoline tr_ : trt)
 					rt.pushAlt(rt_ -> {
-						restore.restore(rt_);
+						restore.restore(rt);
 						return tr_;
 					});
 				return trh;
