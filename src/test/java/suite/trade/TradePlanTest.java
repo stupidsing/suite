@@ -207,8 +207,7 @@ public class TradePlanTest {
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { prices[i], 1f, });
 		float[] diffs1 = ts.dropDiff(tor, prices);
 		LinearRegression lr = stat.linearRegression(deps, diffs1);
-		float beta0 = lr.betas[0];
-		return beta0;
+		return lr.betas[0];
 	}
 
 	private float movingAvgMeanReversionRatio(DataSource dataSource, float[] movingAvg, int tor) {
@@ -217,8 +216,7 @@ public class TradePlanTest {
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { ma[i], 1f, });
 		float[] diffs1 = ts.dropDiff(tor, prices);
 		LinearRegression lr = stat.linearRegression(deps, diffs1);
-		float beta0 = lr.betas[0];
-		return beta0;
+		return lr.betas[0];
 	}
 
 }
