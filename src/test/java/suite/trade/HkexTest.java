@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.streamlet.Read;
-import suite.trade.Hkex.Company;
 import suite.util.Util;
 
 public class HkexTest {
@@ -17,10 +16,10 @@ public class HkexTest {
 
 	@Test
 	public void testList() {
-		List<Company> companies = hkex.queryCompanies().toList();
+		List<Asset> companies = hkex.queryCompanies().toList();
 		System.out.println(companies);
 
-		for (Company company : companies)
+		for (Asset company : companies)
 			System.out.println("+ \"\\n" + company.code + "|" + company.name + "|" + company.marketCap + "\" //");
 
 		String name = Read.from(companies) //

@@ -10,7 +10,6 @@ import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.Hkex.Company;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
@@ -103,8 +102,8 @@ public class QuoteTest {
 
 		Read.from2(sizeByStockCodes) //
 				.map((stockCode, size) -> {
-					Company company = hkex.getCompany(stockCode);
-					String shortName = company != null ? company.shortName() : null;
+					Asset asset = hkex.getCompany(stockCode);
+					String shortName = asset != null ? asset.shortName() : null;
 					float price = priceByStockCodes.get(stockCode);
 					return stockCode + " (" + shortName + ") := " + price + " * " + size + " == " + size * price;
 				}) //

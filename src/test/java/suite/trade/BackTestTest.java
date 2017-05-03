@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import suite.os.LogUtil;
 import suite.streamlet.Read;
-import suite.trade.Hkex.Company;
 
 public class BackTestTest {
 
@@ -18,7 +17,7 @@ public class BackTestTest {
 
 	@Test
 	public void testBackTest() {
-		for (Company stock : hkex.queryCompanies()) {
+		for (Asset stock : hkex.queryCompanies()) {
 			String disp = stock.toString();
 			try {
 				backTest(stock.code, disp);
@@ -52,8 +51,8 @@ public class BackTestTest {
 		backTest(hkex.getCompany("0005.HK"));
 	}
 
-	private void backTest(Company company) {
-		backTest(company.code, company.toString()) //
+	private void backTest(Asset asset) {
+		backTest(asset.code, asset.toString()) //
 				.forEach((sn, backTest) -> {
 					String conclusion = backTest.concludeLog.toString();
 					LogUtil.info("BEGIN strategy = " + sn + conclusion);

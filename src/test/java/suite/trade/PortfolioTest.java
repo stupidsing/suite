@@ -16,7 +16,6 @@ import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.trade.Hkex.Company;
 import suite.util.FormatUtil;
 import suite.util.To;
 import suite.util.Util;
@@ -39,23 +38,23 @@ public class PortfolioTest {
 
 	@Test
 	public void testPortfolio() {
-		float riskFreeInterestRate = 1.05f;
-		int top = 10;
-
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
-		Streamlet<Company> companies = hkex.queryCompanies();
+		Streamlet<Asset> assets = hkex.queryCompanies();
 
-		for (Company stock : companies)
+		for (Asset asset : assets)
 			try {
-				String stockCode = stock.code;
+				String stockCode = asset.code;
 				DataSource dataSource = yahoo.dataSource(stockCode);
 				dataSource.validateTwoYears();
 				dataSourceByStockCode.put(stockCode, dataSource);
 			} catch (Exception ex) {
-				LogUtil.warn(ex.getMessage() + " in " + stock);
+				LogUtil.warn(ex.getMessage() + " in " + asset);
 			}
 
-		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(companies);
+		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
+
+		float riskFreeInterestRate = 1.05f;
+		int top = 10;
 
 		List<String> tradeDates = Read.from2(dataSourceByStockCode) //
 				.concatMap((stockCode, dataSource) -> Read.from(dataSource.dates)) //
@@ -89,7 +88,7 @@ public class PortfolioTest {
 					double lma = mrs.latestMovingAverage();
 					double potential = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
 					System.out.println(hkex.getCompany(stockCode) //
-							+ ", movingAvgMeanReversionRatio = " + mrs.movingAvgMeanReversionRatio //
+							+ ", mamrRatio = " + mrs.movingAvgMeanReversionRatio //
 							+ ", " + MathUtil.format(price) + " => " + MathUtil.format(lma) //
 							+ ", potential = " + MathUtil.format(Math.pow(1d + potential, nTradeDaysInYear)));
 					return potential;

@@ -1,6 +1,27 @@
 package suite.trade;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import suite.util.Serialize.Serializer;
+
 public class Asset {
+
+	public static Serializer<Asset> serializer = new Serializer<Asset>() {
+		public Asset read(DataInput dataInput) throws IOException {
+			String code = dataInput.readUTF();
+			String name = dataInput.readUTF();
+			int marketCap = dataInput.readInt();
+			return new Asset(code, name, marketCap);
+		}
+
+		public void write(DataOutput dataOutput, Asset asset) throws IOException {
+			dataOutput.writeUTF(asset.code);
+			dataOutput.writeUTF(asset.name);
+			dataOutput.writeInt(asset.marketCap);
+		}
+	};
 
 	public final String code;
 	public final String name;

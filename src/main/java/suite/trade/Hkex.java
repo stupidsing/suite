@@ -153,42 +153,16 @@ public class Hkex {
 			+ "\n1910.HK|Samsonite International S.A.|39802" //
 	;
 
-	private Streamlet<Company> companies = Read //
+	private Streamlet<Asset> companies = Read //
 			.from(lines.split("\n")) //
 			.filter(line -> !line.isEmpty()) //
 			.map(line -> line.split("\\|")) //
-			.map(array -> new Company(array[0], array[1], Integer.parseInt(array[2]))) //
+			.map(array -> new Asset(array[0], array[1], Integer.parseInt(array[2]))) //
 			.collect(As::streamlet);
 
-	private Map<String, Company> companyByCode = Read.from(companies).toMap(company -> company.code);
+	private Map<String, Asset> companyByCode = Read.from(companies).toMap(company -> company.code);
 
-	private static final Set<String> commonFirstNames = new HashSet<>(
-			Arrays.asList("", "China", "Guangdong", "Hang", "HK", "Standard"));
-
-	public class Company {
-		public final String code;
-		public final String name;
-		public final int marketCap; // HKD million
-
-		private Company(String code, String name, int marketCap) {
-			this.code = code;
-			this.name = name;
-			this.marketCap = marketCap;
-		}
-
-		public String toString() {
-			return code + " " + shortName();
-		}
-
-		public String shortName() {
-			String[] array = name.split(" ");
-			int i = 0;
-			String s = "", name = "";
-			while (commonFirstNames.contains(s) && i < array.length)
-				name += s = array[i++];
-			return name;
-		}
-	}
+	static final Set<String> commonFirstNames = new HashSet<>(Arrays.asList("", "China", "Guangdong", "Hang", "HK", "Standard"));
 
 	public static class Data {
 		public static class Content {
@@ -254,20 +228,20 @@ public class Hkex {
 		public List<Data> data;
 	}
 
-	public Company getCompany(String code) {
+	public Asset getCompany(String code) {
 		return companyByCode.get(code);
 	}
 
-	public Streamlet<Company> getCompanies() {
+	public Streamlet<Asset> getCompanies() {
 		return companies;
 	}
 
-	public Streamlet<Company> queryCompanies() {
+	public Streamlet<Asset> queryCompanies() {
 		return Read.each(queryCompanies(0), queryCompanies(1), queryCompanies(2)) //
 				.flatMap(list -> list);
 	}
 
-	private List<Company> queryCompanies(int pageNo) {
+	private List<Asset> queryCompanies(int pageNo) {
 		JsonNode json = query("" //
 				+ "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
 				+ "?location=companySearch" //
@@ -294,7 +268,7 @@ public class Hkex {
 			return Read.each(companySearch) //
 					.flatMap(cs -> cs.data) //
 					.concatMap(Data::tableEntries) //
-					.map(list -> new Company( //
+					.map(list -> new Asset( //
 							Util.right("0000" + list.get(1).replace("*", "").trim(), -4) + ".HK", //
 							list.get(2).trim(), //
 							Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
@@ -308,14 +282,14 @@ public class Hkex {
 					.filter(json_ -> !json_.get("thead").asBoolean()) //
 					.flatMap(json_ -> json_.get("td")) //
 					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList()) //
-					.map(list -> new Company( //
+					.map(list -> new Asset( //
 							Util.right("0000" + list.get(1).replace("*", "").trim(), -4) + ".HK", //
 							list.get(2).trim(), //
 							Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
 					.toList();
 	}
 
-	public Map<String, Integer> queryLotSizeByStockCode(Streamlet<Company> companies) {
+	public Map<String, Integer> queryLotSizeByStockCode(Streamlet<Asset> companies) {
 		return SerializedStoreCache //
 				.of(Serialize.mapOfString(Serialize.int_)) //
 				.get("lotSizeByStockCode",

@@ -12,10 +12,10 @@ import suite.smtp.SmtpSslGmail;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.trade.Asset;
 import suite.trade.BackTest;
 import suite.trade.DataSource;
 import suite.trade.Hkex;
-import suite.trade.Hkex.Company;
 import suite.trade.Period;
 import suite.trade.Strategos;
 import suite.trade.Strategy;
@@ -36,7 +36,7 @@ public class DailyMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 		Hkex hkex = new Hkex();
 		Yahoo yahoo = new Yahoo();
-		Streamlet<Company> companies = hkex.getCompanies();
+		Streamlet<Asset> assets = hkex.getCompanies();
 		Strategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
 
 		LogUtil.info("S1 perform back test");
@@ -44,7 +44,7 @@ public class DailyMain extends ExecutableProgram {
 		// identify stocks that are mean-reverting
 		Map<String, Boolean> backTestByStockCode = SerializedStoreCache //
 				.of(Serialize.mapOfString(Serialize.boolean_)) //
-				.get("backTestByStockCode", () -> companies //
+				.get("backTestByStockCode", () -> assets //
 						.map2(stock -> stock.code, stock -> {
 							try {
 								Period period = Period.threeYears();
@@ -63,7 +63,7 @@ public class DailyMain extends ExecutableProgram {
 
 		LogUtil.info("S2 query lot sizes");
 
-		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(companies);
+		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
 
 		Period period = Period.daysBefore(128);
 		String sevenDaysAgo = FormatUtil.formatDate(LocalDate.now().plusDays(-7));
@@ -71,11 +71,11 @@ public class DailyMain extends ExecutableProgram {
 
 		LogUtil.info("S3 capture signals");
 
-		for (Company company : companies) {
-			String stockCode = company.code;
+		for (Asset asset : assets) {
+			String stockCode = asset.code;
 
 			if (backTestByStockCode.get(stockCode)) {
-				String prefix = company.toString();
+				String prefix = asset.toString();
 				int lotSize = lotSizeByStockCode.get(stockCode);
 
 				try {
@@ -96,7 +96,7 @@ public class DailyMain extends ExecutableProgram {
 
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
-					String message = company + " has signal " + prices[last] + " * " + signal * lotSize;
+					String message = asset + " has signal " + prices[last] + " * " + signal * lotSize;
 
 					if (signal != 0) {
 						LogUtil.info(message);
