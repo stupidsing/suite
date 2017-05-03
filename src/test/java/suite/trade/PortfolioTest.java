@@ -16,7 +16,6 @@ import suite.math.TimeSeries;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 import suite.util.FormatUtil;
 import suite.util.To;
 import suite.util.Util;
@@ -45,6 +44,7 @@ public class PortfolioTest {
 	public void testPortfolio() {
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
 		Streamlet<Asset> assets = hkex2012.queryLeadingCompaniesByMarketCapitalisation();
+		// hkex.getCompanies();
 
 		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
 
@@ -63,17 +63,15 @@ public class PortfolioTest {
 				.mapValue(dataSource -> dataSource.get(-1).price) //
 				.toMap();
 
-		List<String> tradeDates = Read.from2(dataSourceByStockCode) //
+		List<Long> tradeEpochDays = Read.from2(dataSourceByStockCode) //
 				.concatMap((stockCode, dataSource) -> Read.from(dataSource.dates)) //
 				.distinct() //
+				.map(tradeDate -> FormatUtil.date(tradeDate).toEpochDay()) //
 				.sort(Util::compare) //
 				.toList();
 
-		long oneYearAgo = FormatUtil.date(Util.last(tradeDates)).minusYears(-1).toEpochDay();
-
-		int nTradeDaysInYear = Read.from(tradeDates) //
-				.filter(tradeDate -> oneYearAgo < FormatUtil.date(tradeDate).toEpochDay()) //
-				.size();
+		long oneYearAgo = Util.last(tradeEpochDays) - 365l;
+		int nTradeDaysInYear = Read.from(tradeEpochDays).filter(epochDay -> oneYearAgo < epochDay).size();
 
 		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(dataSourceByStockCode) //
 				.mapValue(MeanReversionStats::new) //
@@ -84,27 +82,28 @@ public class PortfolioTest {
 		// ensure Hurst exponent < .5f: price is weakly mean reverting
 		// ensure 0f < variable ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
-		Streamlet2<String, Double> potentialByStockCode = Read.from2(meanReversionStatsByStockCode) //
+		Map<String, Double> potentialByStockCode = Read.from2(meanReversionStatsByStockCode) //
 				.filterValue(mrs -> mrs.adf < 0f //
 						&& mrs.hurst < .5f //
 						&& 0f < mrs.varianceRatio //
-						&& 0 < mrs.movingAvgMeanReversionRatio) //
+						&& 0f < mrs.movingAvgMeanReversionRatio) //
 				.map2((stockCode, mrs) -> stockCode, (stockCode, mrs) -> {
 					double price = latestPriceByStockCode.get(stockCode);
 					double lma = mrs.latestMovingAverage();
 					double potential = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
+					double yearReturn = Math.exp(Math.log1p(potential) * nTradeDaysInYear);
 					System.out.println(hkex.getCompany(stockCode) //
 							+ ", mamrRatio = " + mrs.movingAvgMeanReversionRatio //
 							+ ", " + MathUtil.format(price) + " => " + MathUtil.format(lma) //
-							+ ", potential = " + MathUtil.format(Math.pow(1d + potential, nTradeDaysInYear)));
+							+ ", potential = " + MathUtil.format(potential) //
+							+ ", yearReturn = " + MathUtil.format(yearReturn));
 					return potential;
 				}) //
-				.sortBy((stockCode, potential) -> -potential);
+				.toMap();
 
-		System.out.println(potentialByStockCode.mapValue(MathUtil::format).toList());
-
-		Map<String, Integer> tops = potentialByStockCode //
+		Map<String, Integer> tops = Read.from2(potentialByStockCode) //
 				.filterValue(potential -> riskFreeInterestRate < potential) //
+				.sortBy((stockCode, potential) -> -potential) //
 				.take(top) //
 				.keys() //
 				.map2(stockCode -> stockCode, stockCode -> {
