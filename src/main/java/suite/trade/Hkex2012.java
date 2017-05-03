@@ -15,21 +15,21 @@ import suite.util.Util;
 public class Hkex2012 {
 
 	public static void main(String[] args) {
-		System.out.println(new Hkex2012().queryLeadingCompaniesByMarketCapitalisation().toList());
+		System.out.println(new Hkex2012().queryLeadingCompaniesByMarketCap().toList());
 	}
 
-	public Streamlet<Asset> queryLeadingCompaniesByMarketCapitalisation() {
-		return queryLeadingCompaniesByMarketCapitalisation("2012");
+	public Streamlet<Asset> queryLeadingCompaniesByMarketCap() {
+		return queryLeadingCompaniesByMarketCap("2012");
 	}
 
-	private Streamlet<Asset> queryLeadingCompaniesByMarketCapitalisation(String year) {
+	private Streamlet<Asset> queryLeadingCompaniesByMarketCap(String year) {
 		return Read.from(SerializedStoreCache //
 				.of(Serialize.list(Asset.serializer)) //
-				.get(getClass().getSimpleName() + ".queryLeadingCompaniesByMarketCapitalisation(" + year + ")",
-						() -> queryLeadingCompaniesByMarketCapitalisation0(year)));
+				.get(getClass().getSimpleName() + ".queryLeadingCompaniesByMarketCap(" + year + ")",
+						() -> queryLeadingCompaniesByMarketCap0(year)));
 	}
 
-	private List<Asset> queryLeadingCompaniesByMarketCapitalisation0(String year) {
+	private List<Asset> queryLeadingCompaniesByMarketCap0(String year) {
 		String url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook" + year + "/Documents/06.pdf";
 
 		String cmd = "" //

@@ -41,7 +41,7 @@ public class Portfolio {
 	public float simulate(float valuation0, Predicate<LocalDate> datePred) {
 		float valuation = valuation0;
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
-		Streamlet<Asset> assets = hkex2012.queryLeadingCompaniesByMarketCapitalisation();
+		Streamlet<Asset> assets = hkex2012.queryLeadingCompaniesByMarketCap();
 		// hkex.getCompanies();
 
 		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
