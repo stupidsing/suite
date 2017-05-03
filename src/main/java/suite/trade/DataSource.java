@@ -1,15 +1,36 @@
 package suite.trade;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
 
 import suite.math.Matrix;
 import suite.util.FormatUtil;
+import suite.util.Serialize;
+import suite.util.Serialize.Serializer;
 import suite.util.Util;
 
 public class DataSource {
 
 	public static Matrix mtx = new Matrix();
+
+	public static Serializer<DataSource> serializer = new Serializer<DataSource>() {
+		private Serializer<String[]> sas = Serialize.array(String.class, Serialize.string(10));
+		private Serializer<float[]> fas = Serialize.floatArray;
+
+		public DataSource read(DataInput dataInput) throws IOException {
+			String[] dates = sas.read(dataInput);
+			float[] prices = fas.read(dataInput);
+			return new DataSource(dates, prices);
+		}
+
+		public void write(DataOutput dataOutput, DataSource dataSource) throws IOException {
+			sas.write(dataOutput, dataSource.dates);
+			fas.write(dataOutput, dataSource.prices);
+		}
+	};
 
 	public final String[] dates;
 	public final float[] prices;
