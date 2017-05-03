@@ -3,6 +3,7 @@ package suite.util;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,6 +27,22 @@ public class Serialize {
 	public static Serializer<Boolean> boolean_ = boolean_();
 	public static Serializer<Float> float_ = float_();
 	public static Serializer<Integer> int_ = int_();
+
+	public static Serializer<float[]> floatArray = new Serializer<float[]>() {
+		public float[] read(DataInput dataInput) throws IOException {
+			int size = Serialize.int_.read(dataInput);
+			float[] array = new float[size];
+			for (int i = 0; i < size; i++)
+				array[i] = dataInput.readFloat();
+			return array;
+		}
+
+		public void write(DataOutput dataOutput, float[] array) throws IOException {
+			Serialize.int_.write(dataOutput, array.length);
+			for (float t : array)
+				dataOutput.writeFloat(t);
+		}
+	};
 
 	public static Serializer<Bytes> variableLengthBytes = new Serializer<Bytes>() {
 		public Bytes read(DataInput dataInput) throws IOException {
@@ -55,6 +72,25 @@ public class Serialize {
 		public V read(DataInput dataInput) throws IOException;
 
 		public void write(DataOutput dataOutput, V value) throws IOException;
+	}
+
+	public static <T> Serializer<T[]> array(Class<T> clazz, Serializer<T> serializer) {
+		return new Serializer<T[]>() {
+			public T[] read(DataInput dataInput) throws IOException {
+				int size = Serialize.int_.read(dataInput);
+				@SuppressWarnings("unchecked")
+				T[] array = (T[]) Array.newInstance(clazz, size);
+				for (int i = 0; i < size; i++)
+					array[i] = serializer.read(dataInput);
+				return array;
+			}
+
+			public void write(DataOutput dataOutput, T[] array) throws IOException {
+				Serialize.int_.write(dataOutput, array.length);
+				for (T t : array)
+					serializer.write(dataOutput, t);
+			}
+		};
 	}
 
 	/**
