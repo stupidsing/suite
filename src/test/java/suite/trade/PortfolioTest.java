@@ -26,6 +26,7 @@ public class PortfolioTest {
 
 	private Matrix mtx = new Matrix();
 	private Hkex hkex = new Hkex();
+	private Hkex2012 hkex2012 = new Hkex2012();
 	private Yahoo yahoo = new Yahoo();
 	private Statistic stat = new Statistic();
 	private MovingAverage movingAvg = new MovingAverage();
@@ -39,7 +40,7 @@ public class PortfolioTest {
 	@Test
 	public void testPortfolio() {
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
-		Streamlet<Asset> assets = hkex.queryCompanies();
+		Streamlet<Asset> assets = hkex2012.queryLeadingCompaniesByMarketCapitalisation();
 
 		for (Asset asset : assets)
 			try {
