@@ -37,8 +37,9 @@ public class ScheduleMain extends ExecutableProgram {
 					.map(schedule -> schedule.nextRunDateTime) //
 					.min(Util::compare);
 
-			long ms = Duration.between(now, nextWakeUpDateTime).toMillis();
-			Util.sleepQuietly(ms);
+			Duration duration = Duration.between(now, nextWakeUpDateTime);
+
+			Util.sleepQuietly(duration.toMillis());
 		}
 	}
 
