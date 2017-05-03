@@ -19,14 +19,18 @@ public class Hkex2012 {
 	}
 
 	public Streamlet<Asset> queryLeadingCompaniesByMarketCapitalisation() {
-		return Read.from(SerializedStoreCache //
-				.of(Serialize.list(Asset.serializer)) //
-				.get(getClass().getSimpleName() + ".queryLeadingCompaniesByMarketCapitalisation()",
-						() -> queryLeadingCompaniesByMarketCapitalisation0()));
+		return queryLeadingCompaniesByMarketCapitalisation("2012");
 	}
 
-	private List<Asset> queryLeadingCompaniesByMarketCapitalisation0() {
-		String url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/Documents/06.pdf";
+	private Streamlet<Asset> queryLeadingCompaniesByMarketCapitalisation(String year) {
+		return Read.from(SerializedStoreCache //
+				.of(Serialize.list(Asset.serializer)) //
+				.get(getClass().getSimpleName() + ".queryLeadingCompaniesByMarketCapitalisation(" + year + ")",
+						() -> queryLeadingCompaniesByMarketCapitalisation0(year)));
+	}
+
+	private List<Asset> queryLeadingCompaniesByMarketCapitalisation0(String year) {
+		String url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook" + year + "/Documents/06.pdf";
 
 		String cmd = "" //
 				+ "wget -q -O - '" + url + "'" //
