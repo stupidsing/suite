@@ -10,7 +10,7 @@ import suite.streamlet.Read;
 
 public class BackTestTest {
 
-	private Period period = Period.fiveYears();
+	private DatePeriod period = DatePeriod.fiveYears();
 
 	private Hkex hkex = new Hkex();
 	private Yahoo yahoo = new Yahoo();

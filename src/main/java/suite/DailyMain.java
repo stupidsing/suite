@@ -16,7 +16,7 @@ import suite.trade.Asset;
 import suite.trade.BackTest;
 import suite.trade.DataSource;
 import suite.trade.Hkex;
-import suite.trade.Period;
+import suite.trade.DatePeriod;
 import suite.trade.Strategos;
 import suite.trade.Strategy;
 import suite.trade.Yahoo;
@@ -47,7 +47,7 @@ public class DailyMain extends ExecutableProgram {
 				.get("backTestByStockCode", () -> assets //
 						.map2(stock -> stock.code, stock -> {
 							try {
-								Period period = Period.threeYears();
+								DatePeriod period = DatePeriod.threeYears();
 								DataSource ds0 = yahoo.dataSource(stock.code, period);
 								DataSource ds1 = ds0.limit(period);
 
@@ -65,7 +65,7 @@ public class DailyMain extends ExecutableProgram {
 
 		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
 
-		Period period = Period.daysBefore(128);
+		DatePeriod period = DatePeriod.daysBefore(128);
 		String sevenDaysAgo = FormatUtil.formatDate(LocalDate.now().plusDays(-7));
 		List<String> messages = new ArrayList<>();
 

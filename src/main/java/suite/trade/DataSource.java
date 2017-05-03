@@ -48,9 +48,9 @@ public class DataSource {
 		}
 	}
 
-	public DataSource limit(Period period) {
-		String s0 = FormatUtil.formatDate(period.frDate);
-		String sx = FormatUtil.formatDate(period.toDate);
+	public DataSource limit(DatePeriod period) {
+		String s0 = FormatUtil.formatDate(period.from);
+		String sx = FormatUtil.formatDate(period.to);
 		String[] dates1 = new String[dates.length];
 		float[] prices1 = new float[prices.length];
 		int j = 0;

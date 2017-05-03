@@ -22,7 +22,7 @@ public class CollectDataTest {
 				new Forex().invertedCurrencies.map((ccy, name) -> ccy));
 
 		for (String code : equities) {
-			String urlString = new Yahoo().tableUrl(code, Period.ages());
+			String urlString = new Yahoo().tableUrl(code, DatePeriod.ages());
 
 			System.out.println(urlString);
 			URL url = Rethrow.ex(() -> new URL(urlString));

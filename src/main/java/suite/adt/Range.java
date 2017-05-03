@@ -8,10 +8,10 @@ public class Range<T extends Comparable<? super T>> {
 	public final T to;
 
 	public static <T extends Comparable<? super T>> Range<T> of(T from, T to) {
-		return new Range<T>(from, to);
+		return new Range<>(from, to);
 	}
 
-	private Range(T from, T to) {
+	protected Range(T from, T to) {
 		this.from = from;
 		this.to = to;
 	}
