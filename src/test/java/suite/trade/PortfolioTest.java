@@ -46,17 +46,18 @@ public class PortfolioTest {
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
 		Streamlet<Asset> assets = hkex2012.queryLeadingCompaniesByMarketCapitalisation();
 
-		for (Asset asset : assets)
-			try {
-				String stockCode = asset.code;
-				DataSource dataSource = yahoo.dataSourceWithLatestQuote(stockCode);
-				dataSource.validateTwoYears();
-				dataSourceByStockCode.put(stockCode, dataSource);
-			} catch (Exception ex) {
-				LogUtil.warn(ex.getMessage() + " in " + asset);
-			}
-
 		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
+
+		for (Asset asset : assets)
+			if (lotSizeByStockCode.containsKey(asset.code))
+				try {
+					String stockCode = asset.code;
+					DataSource dataSource = yahoo.dataSourceWithLatestQuote(stockCode);
+					dataSource.validateTwoYears();
+					dataSourceByStockCode.put(stockCode, dataSource);
+				} catch (Exception ex) {
+					LogUtil.warn(ex.getMessage() + " in " + asset);
+				}
 
 		Map<String, Float> latestPriceByStockCode = Read.from2(dataSourceByStockCode) //
 				.mapValue(dataSource -> dataSource.get(-1).price) //

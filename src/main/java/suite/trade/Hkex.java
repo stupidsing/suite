@@ -18,6 +18,7 @@ import suite.os.SerializedStoreCache;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.Serialize;
 import suite.util.To;
@@ -290,13 +291,22 @@ public class Hkex {
 	}
 
 	public Map<String, Integer> queryLotSizeByStockCode(Streamlet<Asset> companies) {
+		Source<Map<String, Integer>> fun = () -> companies //
+				.map(stock -> stock.code) //
+				.map2(stockCode -> {
+					try {
+						return queryBoardLot(stockCode);
+					} catch (Exception ex) {
+						// e.g. 0013 de-listed; cannot query stock code
+						return null;
+					}
+				}) //
+				.filterValue(boardLot -> boardLot != null) //
+				.toMap();
+
 		return SerializedStoreCache //
 				.of(Serialize.mapOfString(Serialize.int_)) //
-				.get(getClass().getSimpleName() + ".queryLotSizeByStockCode(" + companies.toList().toString() + ")",
-						() -> companies //
-								.map(stock -> stock.code) //
-								.map2(stockCode -> queryBoardLot(stockCode)) //
-								.toMap());
+				.get(getClass().getSimpleName() + ".queryLotSizeByStockCode(" + companies.toList() + ")", fun);
 	}
 
 	public int queryBoardLot(String stockCode0) {
