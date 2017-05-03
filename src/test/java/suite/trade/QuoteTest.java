@@ -78,15 +78,15 @@ public class QuoteTest {
 				.filter(pred) //
 				.toList();
 
-		Map<String, Integer> sizeByStockCodes = Read.from(table0) //
+		Map<String, Integer> nSharesByStockCodes = Read.from(table0) //
 				.map2(r -> r.stockCode, r -> r.buySell) //
 				.groupBy(sizes -> sizes.collect(As.sumOfInts(size -> size))) //
 				.filterValue(size -> size != 0) //
 				.toMap();
 
-		Map<String, Float> priceByStockCodes = yahoo.quote(Read.from(sizeByStockCodes.keySet()));
+		Map<String, Float> priceByStockCodes = yahoo.quote(Read.from(nSharesByStockCodes.keySet()));
 
-		List<Record> sellAll = Read.from2(sizeByStockCodes) //
+		List<Record> sellAll = Read.from2(nSharesByStockCodes) //
 				.map((stockCode, size) -> {
 					float price = priceByStockCodes.get(stockCode);
 					return new Record("-", -size, stockCode, price, "-");
@@ -100,12 +100,12 @@ public class QuoteTest {
 
 		System.out.println("CONSTITUENTS:");
 
-		Read.from2(sizeByStockCodes) //
-				.map((stockCode, size) -> {
+		Read.from2(nSharesByStockCodes) //
+				.map((stockCode, nShares) -> {
 					Asset asset = hkex.getCompany(stockCode);
 					String shortName = asset != null ? asset.shortName() : null;
 					float price = priceByStockCodes.get(stockCode);
-					return stockCode + " (" + shortName + ") := " + price + " * " + size + " == " + size * price;
+					return stockCode + " (" + shortName + ") := " + price + " * " + nShares + " == " + nShares * price;
 				}) //
 				.forEach(System.out::println);
 
