@@ -223,7 +223,18 @@ public class As {
 		return To.string(bytes(outlet));
 	}
 
-	public static <T> Fun<Outlet<T>, Integer> sum(ToIntFunction<T> fun) {
+	public static <T> ToFloatFunction<Outlet<T>> sumOfFloats(ToFloatFunction<T> fun) {
+		return outlet -> {
+			Source<T> source = outlet.source();
+			T t;
+			float result = 0;
+			while ((t = source.source()) != null)
+				result += fun.applyAsFloat(t);
+			return result;
+		};
+	}
+
+	public static <T> ToIntFunction<Outlet<T>> sumOfInts(ToIntFunction<T> fun) {
 		return outlet -> {
 			Source<T> source = outlet.source();
 			T t;

@@ -12,10 +12,12 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.primitive.PrimitiveFun.ObjObj_Int;
+import suite.streamlet.As.ToFloatFunction;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
@@ -56,6 +58,14 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 			in.closeAtEnd(c);
 			return in;
 		});
+	}
+
+	public float collect(ToFloatFunction<Outlet2<K, V>> fun) {
+		return fun.applyAsFloat(spawn());
+	}
+
+	public int collect(ToIntFunction<Outlet2<K, V>> fun) {
+		return fun.applyAsInt(spawn());
 	}
 
 	public <R> R collect(Fun<Outlet2<K, V>, R> fun) {
