@@ -80,7 +80,7 @@ public class QuoteTest {
 
 		Map<String, Integer> sizeByStockCodes = Read.from(table0) //
 				.map2(r -> r.stockCode, r -> r.buySell) //
-				.groupBy(sizes -> sizes.collect(As.sum(size -> size))) //
+				.groupBy(sizes -> sizes.collect(As.sumOfInts(size -> size))) //
 				.filterValue(size -> size != 0) //
 				.toMap();
 

@@ -30,7 +30,7 @@ public class BackTest {
 		}
 
 		// sell all stocks at the end
-		buySell(ds, length - 1, -account.nLots());
+		buySell(ds, length - 1, -account.nShares());
 
 		float return_ = account.cash();
 		float nApproxYears = ds.nYears();
@@ -46,14 +46,14 @@ public class BackTest {
 	private float buySell(DataSource ds, int day, int buySell) {
 		float price = ds.prices[day];
 		account.buySell(buySell, price);
-		float valuation = account.cash() + account.nLots() * price;
+		float valuation = account.cash() + account.nShares() * price;
 
 		if (day == 0 || buySell != 0)
 			tradeLog.append("\n" //
 					+ "date = " + ds.dates[day] //
 					+ ", buy/sell = " + buySell //
 					+ ", price = " + MathUtil.format(price) //
-					+ ", nLots = " + account.nLots() //
+					+ ", nShares = " + account.nShares() //
 					+ ", valuation = " + MathUtil.format(valuation));
 
 		return valuation;

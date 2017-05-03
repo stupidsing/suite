@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.junit.Test;
 
@@ -15,6 +14,7 @@ import suite.math.MathUtil;
 import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.os.LogUtil;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FormatUtil;
@@ -25,6 +25,7 @@ public class PortfolioTest {
 
 	private float riskFreeInterestRate = 1.05f;
 	private int top = 10;
+	private int tor = 16;
 
 	private double neglog2 = -Math.log(2d);
 
@@ -44,9 +45,8 @@ public class PortfolioTest {
 	@Test
 	public void testPortfolio() {
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
-		// Streamlet<Asset> assets =
-		// hkex2012.queryLeadingCompaniesByMarketCapitalisation();
-		Streamlet<Asset> assets = hkex.getCompanies();
+		Streamlet<Asset> assets = hkex2012.queryLeadingCompaniesByMarketCapitalisation();
+		// hkex.getCompanies();
 
 		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
 
@@ -68,20 +68,57 @@ public class PortfolioTest {
 				.sort(Util::compare) //
 				.toList();
 
-		long latestEpochDay = Util.last(tradeEpochDays);
-		long oneYearAgo = latestEpochDay - 365l;
-		int nTradeDaysInYear = Read.from(tradeEpochDays).filter(epochDay -> oneYearAgo < epochDay).size();
-		DatePeriod backTestPeriod = DatePeriod.of(DatePeriod.ages().from, LocalDate.ofEpochDay(latestEpochDay + 1));
+		long toEpochDay = Util.last(tradeEpochDays);
+		long frEpochDay = toEpochDay - 8 * 365; // Util.first(tradeEpochDays);
+		float valuation0 = 1000000f;
+		Account account = new Account(valuation0);
 
-		Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
-				.mapValue(dataSource -> dataSource.limit(backTestPeriod)) //
-				.toMap();
+		for (long backTestEpochDay = frEpochDay; backTestEpochDay < toEpochDay; backTestEpochDay++) {
+			LocalDate historyWindowFrom = LocalDate.ofEpochDay(backTestEpochDay - 1024);
+			LocalDate historyWindowTo = LocalDate.ofEpochDay(backTestEpochDay);
+			DatePeriod historyPeriod = DatePeriod.of(historyWindowFrom, historyWindowTo);
 
-		Map<String, Float> latestPriceByStockCode = Read.from2(backTestDataSourceByStockCode) //
-				.mapValue(dataSource -> dataSource.get(-1).price) //
-				.toMap();
+			Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
+					.mapValue(dataSource -> dataSource.limit(historyPeriod)) //
+					.filterValue(dataSource -> 128 <= dataSource.dates.length) //
+					.toMap();
 
-		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(backTestDataSourceByStockCode) //
+			Map<String, Integer> portfolio = formPortfolio( //
+					backTestDataSourceByStockCode, //
+					lotSizeByStockCode, //
+					tradeEpochDays, //
+					backTestEpochDay, //
+					valuation0);
+
+			Map<String, Float> latestPriceByStockCode = Read.from2(backTestDataSourceByStockCode) //
+					.mapValue(dataSource -> dataSource.get(-1).price) //
+					.toMap();
+
+			account.portfolio(portfolio, latestPriceByStockCode);
+
+			float v0 = account.cash();
+			float v1 = Read.from2(account.assets()) //
+					.collect(As.<String, Integer> sumOfFloats((stockCode, n) -> latestPriceByStockCode.get(stockCode) * n));
+
+			System.out.println(FormatUtil.formatDate(LocalDate.ofEpochDay(backTestEpochDay)) //
+					+ ", valuation = " + (v0 + v1) //
+					+ ", portfolio = " + portfolio);
+		}
+	}
+
+	private Map<String, Integer> formPortfolio( //
+			Map<String, DataSource> dataSourceByStockCode, //
+			Map<String, Integer> lotSizeByStockCode, //
+			List<Long> tradeEpochDays, //
+			long backTestEpochDay, //
+			float valuation0) {
+		long oneYearAgo = backTestEpochDay - 365l;
+
+		int nTradeDaysInYear = Read.from(tradeEpochDays) //
+				.filter(epochDay -> oneYearAgo <= epochDay && epochDay < backTestEpochDay) //
+				.size();
+
+		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(dataSourceByStockCode) //
 				.mapValue(MeanReversionStats::new) //
 				.toMap();
 
@@ -90,13 +127,13 @@ public class PortfolioTest {
 		// ensure Hurst exponent < .5f: price is weakly mean reverting
 		// ensure 0f < variable ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
-		Map<String, Double> yearReturnByStockCode = Read.from2(meanReversionStatsByStockCode) //
+		return Read.from2(meanReversionStatsByStockCode) //
 				.filterValue(mrs -> mrs.adf < 0f //
 						&& mrs.hurst < .5f //
 						&& 0f < mrs.varianceRatio //
 						&& 0f < mrs.movingAvgMeanReversionRatio) //
 				.map2((stockCode, mrs) -> stockCode, (stockCode, mrs) -> {
-					double price = latestPriceByStockCode.get(stockCode);
+					double price = dataSourceByStockCode.get(stockCode).get(-1).price;
 					double lma = mrs.latestMovingAverage();
 					double potential = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
 					double yearReturn = Math.exp(Math.log1p(potential) * nTradeDaysInYear);
@@ -107,42 +144,16 @@ public class PortfolioTest {
 							+ ", yearReturn = " + MathUtil.format(yearReturn));
 					return yearReturn;
 				}) //
-				.toMap();
-
-		Map<String, Integer> tops = Read.from2(yearReturnByStockCode) //
 				.filterValue(yearReturn -> riskFreeInterestRate < yearReturn) //
 				.sortBy((stockCode, potential) -> -potential) //
 				.take(top) //
 				.keys() //
 				.map2(stockCode -> stockCode, stockCode -> {
 					int lotSize = lotSizeByStockCode.get(stockCode);
-					float price = latestPriceByStockCode.get(stockCode);
-					return lotSize * (int) Math.round(50000d / (lotSize * price));
+					float price = dataSourceByStockCode.get(stockCode).get(-1).price;
+					return lotSize * (int) Math.round(valuation0 / (top * lotSize * price));
 				}) //
 				.toMap();
-
-		System.out.println(tops);
-
-		Account account = new Account();
-
-		for (Entry<String, Integer> e : tops.entrySet()) {
-			String stockCode = e.getKey();
-			int n = e.getValue();
-			account.buySell(stockCode, n, latestPriceByStockCode.get(stockCode));
-		}
-
-		// filter away equities without enough price histories
-		// conclude the trading dates
-		// align and trim data source dates (128 days?)
-		// make sure prices are not random walks
-		// make sure prices are weakly reverting
-		// make sure statistic is significant?
-		// calculate moving averages
-		// calculate potential return = deviation from mean * mean rev factor
-		// add cash with epsilon potential return
-		// find the equities with top 9 potential returns
-		// TODO how to distribute your money???
-		// transaction costs? Sharpe ratio? etc.
 	}
 
 	public class MeanReversionStats {
@@ -157,7 +168,6 @@ public class PortfolioTest {
 
 		private MeanReversionStats(DataSource dataSource) {
 			float[] prices = dataSource.prices;
-			int tor = 16;
 
 			movingAverage = movingAvg.movingGeometricAvg(prices, tor);
 			adf = adf(dataSource, tor);
