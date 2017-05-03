@@ -15,8 +15,8 @@ import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.BackTest;
 import suite.trade.DataSource;
-import suite.trade.Hkex;
 import suite.trade.DatePeriod;
+import suite.trade.Hkex;
 import suite.trade.Strategos;
 import suite.trade.Strategy;
 import suite.trade.Yahoo;
@@ -44,7 +44,7 @@ public class DailyMain extends ExecutableProgram {
 		// identify stocks that are mean-reverting
 		Map<String, Boolean> backTestByStockCode = SerializedStoreCache //
 				.of(Serialize.mapOfString(Serialize.boolean_)) //
-				.get("backTestByStockCode", () -> assets //
+				.get(getClass().getSimpleName() + ".backTestByStockCode", () -> assets //
 						.map2(stock -> stock.code, stock -> {
 							try {
 								DatePeriod period = DatePeriod.threeYears();

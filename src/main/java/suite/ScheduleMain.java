@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
@@ -31,7 +32,11 @@ public class ScheduleMain extends ExecutableProgram {
 					.toList();
 
 			for (Schedule schedule : toRuns)
-				schedules.addAll(schedule.run.source());
+				try {
+					schedules.addAll(schedule.run.source());
+				} catch (Exception ex) {
+					LogUtil.error(ex);
+				}
 
 			LocalDateTime nextWakeUpDateTime = Read.from(schedules) //
 					.map(schedule -> schedule.nextRunDateTime) //
