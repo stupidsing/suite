@@ -8,6 +8,7 @@ import suite.os.SerializedStoreCache;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Serialize;
+import suite.util.Util;
 
 // extract from HKEx fact book
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
@@ -52,7 +53,7 @@ public class Hkex2012 {
 							s = p + 1;
 						}
 						list.add(line.substring(s));
-						return new Asset(list.get(1), list.get(2));
+						return new Asset(Util.right("0000" + list.get(1).replace("*", "").trim(), -4) + ".HK", list.get(2));
 					} else
 						return null;
 				}) //
