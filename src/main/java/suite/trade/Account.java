@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.adt.Pair;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 
@@ -25,7 +26,7 @@ public class Account {
 		this.cash = cash;
 	}
 
-	public void portfolio(Map<String, Integer> assets1, Map<String, Float> prices) {
+	public String portfolio(Map<String, Integer> assets1, Map<String, Float> prices) {
 		Map<String, Integer> assets0 = assets;
 
 		Set<String> stockCodes = Streamlet2.concat(Read.from2(assets0), Read.from2(assets1)) //
@@ -44,6 +45,11 @@ public class Account {
 			String stockCode = buySell.t0;
 			buySell(stockCode, buySell.t1, prices.get(stockCode));
 		}
+
+		return Read.from2(buySells) //
+				.filterValue(n -> n != 0) //
+				.map((stockCode, n) -> "" + stockCode + " :: " + prices.get(stockCode) + " * " + n) //
+				.collect(As.joined("\n"));
 	}
 
 	public void buySell(int buySell, float price) {
@@ -66,7 +72,7 @@ public class Account {
 			throw new RuntimeException("invalid condition");
 		assets.forEach((stockCode, buySell) -> {
 			if (buySell < 0)
-				throw new RuntimeException("invalid condition");
+				throw new RuntimeException("no short-selling");
 		});
 	}
 
