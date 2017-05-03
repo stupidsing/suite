@@ -53,7 +53,6 @@ public class PortfolioTest {
 				dataSource.validateTwoYears();
 				dataSourceByStockCode.put(stockCode, dataSource);
 			} catch (Exception ex) {
-				LogUtil.error(ex);
 				LogUtil.warn(ex.getMessage() + " in " + asset);
 			}
 
