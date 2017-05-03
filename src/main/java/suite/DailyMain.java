@@ -17,6 +17,7 @@ import suite.trade.BackTest;
 import suite.trade.DataSource;
 import suite.trade.DatePeriod;
 import suite.trade.Hkex;
+import suite.trade.Portfolio;
 import suite.trade.Strategos;
 import suite.trade.Strategy;
 import suite.trade.Yahoo;
@@ -34,6 +35,21 @@ public class DailyMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
+		String result = mamrp();
+
+		SmtpSslGmail smtp = new SmtpSslGmail();
+		smtp.send(null, getClass().getName(), result);
+
+		return true;
+	}
+
+	private String mamrp() {
+		new Portfolio().simulate(1000000f, date -> LocalDate.now().equals(date));
+		return "";
+	}
+
+	@SuppressWarnings("unused")
+	private String mamr() {
 		Hkex hkex = new Hkex();
 		Yahoo yahoo = new Yahoo();
 		Streamlet<Asset> assets = hkex.getCompanies();
@@ -109,11 +125,7 @@ public class DailyMain extends ExecutableProgram {
 		}
 
 		String result = Read.from(messages).collect(As.joined("\n"));
-
-		SmtpSslGmail smtp = new SmtpSslGmail();
-		smtp.send(null, getClass().getName(), result);
-
-		return true;
+		return result;
 	}
 
 }

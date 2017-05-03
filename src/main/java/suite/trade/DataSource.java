@@ -86,7 +86,7 @@ public class DataSource {
 			}
 		}
 
-		return new DataSource(Arrays.copyOf(dates1, j), Arrays.copyOf(prices, j));
+		return new DataSource(Arrays.copyOf(dates1, j), Arrays.copyOf(prices1, j));
 	}
 
 	// at least approximately 2 years of data
