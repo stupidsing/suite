@@ -25,6 +25,7 @@ public class Portfolio {
 	private float riskFreeInterestRate = 1.05f;
 	private int top = 10;
 	private int tor = 16;
+	private int historyWindow = 1024;
 
 	private double neglog2 = -Math.log(2d);
 
@@ -69,7 +70,7 @@ public class Portfolio {
 
 		for (long backTestEpochDay = frEpochDay; backTestEpochDay < toEpochDay; backTestEpochDay++)
 			if (datePred.test(LocalDate.ofEpochDay(backTestEpochDay))) {
-				LocalDate historyWindowFrom = LocalDate.ofEpochDay(backTestEpochDay - 1024);
+				LocalDate historyWindowFrom = LocalDate.ofEpochDay(backTestEpochDay - historyWindow);
 				LocalDate historyWindowTo = LocalDate.ofEpochDay(backTestEpochDay);
 				DatePeriod historyPeriod = DatePeriod.of(historyWindowFrom, historyWindowTo);
 
