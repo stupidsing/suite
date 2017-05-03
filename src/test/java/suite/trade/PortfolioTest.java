@@ -43,8 +43,9 @@ public class PortfolioTest {
 	@Test
 	public void testPortfolio() {
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
-		Streamlet<Asset> assets = hkex2012.queryLeadingCompaniesByMarketCapitalisation();
-		// hkex.getCompanies();
+		// Streamlet<Asset> assets =
+		// hkex2012.queryLeadingCompaniesByMarketCapitalisation();
+		Streamlet<Asset> assets = hkex.getCompanies();
 
 		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
 
@@ -82,7 +83,7 @@ public class PortfolioTest {
 		// ensure Hurst exponent < .5f: price is weakly mean reverting
 		// ensure 0f < variable ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
-		Map<String, Double> potentialByStockCode = Read.from2(meanReversionStatsByStockCode) //
+		Map<String, Double> yearReturnByStockCode = Read.from2(meanReversionStatsByStockCode) //
 				.filterValue(mrs -> mrs.adf < 0f //
 						&& mrs.hurst < .5f //
 						&& 0f < mrs.varianceRatio //
@@ -97,12 +98,12 @@ public class PortfolioTest {
 							+ ", " + MathUtil.format(price) + " => " + MathUtil.format(lma) //
 							+ ", potential = " + MathUtil.format(potential) //
 							+ ", yearReturn = " + MathUtil.format(yearReturn));
-					return potential;
+					return yearReturn;
 				}) //
 				.toMap();
 
-		Map<String, Integer> tops = Read.from2(potentialByStockCode) //
-				.filterValue(potential -> riskFreeInterestRate < potential) //
+		Map<String, Integer> tops = Read.from2(yearReturnByStockCode) //
+				.filterValue(yearReturn -> riskFreeInterestRate < yearReturn) //
 				.sortBy((stockCode, potential) -> -potential) //
 				.take(top) //
 				.keys() //
