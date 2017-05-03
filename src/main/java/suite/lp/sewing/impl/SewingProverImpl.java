@@ -98,6 +98,10 @@ public class SewingProverImpl implements SewingProver {
 		}
 	};
 
+	public interface Cps {
+		public void cont(Runtime rt);
+	}
+
 	public interface Trampoline {
 		public Trampoline prove(Runtime rt);
 	}
@@ -144,6 +148,11 @@ public class SewingProverImpl implements SewingProver {
 		private Sink<Node> handler = node -> {
 			throw new SuiteException(node, Read.from(debug.stack).map(Object::toString).collect(As.conc("\n")));
 		};
+
+		private Runtime(Runtime rt, Trampoline tr) {
+			this(rt.prover.config(), tr);
+			env = rt.env;
+		}
 
 		private Runtime(ProverConfig pc, Trampoline tr) {
 			pushAlt(tr);
@@ -245,7 +254,7 @@ public class SewingProverImpl implements SewingProver {
 			Generalizer generalizer = new Generalizer();
 			Node head = generalizer.generalize(rule.head);
 			Node tail = generalizer.generalize(rule.tail);
-			return compileRule(head, tail);
+			return compileRule(head, tail, isHasCut);
 		});
 
 		Trampoline tr0 = or(trs);
@@ -254,11 +263,63 @@ public class SewingProverImpl implements SewingProver {
 		return log(tr2, traceLevel);
 	}
 
-	private Trampoline compileRule(Node head, Node tail) {
+	private Trampoline compileRule(Node head, Node tail, boolean isHasCut) {
 		SewingBinder sb = new SewingBinderImpl0();
 		BindPredicate p = sb.compileBind(head);
-		Trampoline tr1 = compile0(sb, tail);
+		Trampoline tr1 = isHasCut || Boolean.TRUE ? compile0(sb, tail) : compileNoCut0(sb, tail);
 		return newEnv(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
+	}
+
+	private Trampoline compileNoCut0(SewingBinder sb, Node node) {
+		Cps cps = compileNoCutPredicate0(sb, node, rt -> {
+			IList<Trampoline> rems = rt.rems;
+			rt.rems = IList.cons(fail, IList.end());
+			new Runtime(rt, rt_ -> {
+				rt_.rems = rems;
+				return okay;
+			}).trampoline();
+		});
+		return rt -> {
+			cps.cont(rt);
+			return fail;
+		};
+	}
+
+	private Cps compileNoCutPredicate0(SewingBinder sb, Node node, Cps cpsx) {
+		List<Node> list;
+		Cps cps;
+
+		if (1 < (list = breakdown(TermOp.AND___, node)).size()) {
+			cps = cpsx;
+			for (Node n : Util.reverse(list))
+				cps = compileNoCutPredicate0(sb, n, cps);
+		} else if (1 < (list = breakdown(TermOp.OR____, node)).size()) {
+			Cps[] cpsArray = Read.from(list).map(n -> compileNoCutPredicate0(sb, n, cpsx)).toArray(Cps.class);
+			cps = rt -> {
+				Restore restore = save(rt);
+				for (Cps cps1 : cpsArray) {
+					cps1.cont(rt);
+					restore.restore(rt);
+				}
+			};
+		} else {
+			Trampoline tr = compile0(sb, node);
+			Trampoline rem = rt -> {
+				cpsx.cont(rt);
+				return fail;
+			};
+			cps = rt -> {
+				IList<Trampoline> rems = rt.rems;
+				rt.rems = IList.cons(fail, IList.end());
+				new Runtime(rt, rt_ -> {
+					rt_.rems = rems;
+					rt_.pushRem(rem);
+					return tr;
+				}).trampoline();
+			};
+		}
+
+		return cps;
 	}
 
 	private Trampoline compile0(SewingBinder sb, Node node) {
@@ -319,7 +380,7 @@ public class SewingProverImpl implements SewingProver {
 			Clone_ ht_ = sb.compile(m[3]);
 			tr = rt -> {
 				Node[] ht = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
-				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
+				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1], true));
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				rt.pushRem(rt_ -> valuex_.test(rt_, current.get()) ? okay : fail);
 				for (Node elem : Tree.iter(list0_.apply(rt.env))) {
@@ -367,7 +428,7 @@ public class SewingProverImpl implements SewingProver {
 			Clone_ ht_ = sb.compile(m[1]);
 			tr = rt -> {
 				Node[] ht = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
-				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
+				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1], true));
 				for (Node n : Tree.iter(l_.apply(rt.env)))
 					rt.pushRem(rt_ -> {
 						rt_.query = n;
@@ -439,8 +500,7 @@ public class SewingProverImpl implements SewingProver {
 				Node n0 = f0.apply(rt.env);
 
 				Suspend suspend = new Suspend(() -> {
-					Runtime rt_ = new Runtime(rt.prover.config(), tr_);
-					rt_.env = env;
+					Runtime rt_ = new Runtime(rt, tr_);
 					rt_.trampoline();
 					return Read.from(results).uniqueResult();
 				});
