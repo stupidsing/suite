@@ -20,7 +20,8 @@ public class Hkex2012 {
 	public Streamlet<Asset> queryLeadingCompaniesByMarketCapitalisation() {
 		return Read.from(SerializedStoreCache //
 				.of(Serialize.list(Asset.serializer)) //
-				.get("Hkex2012.queryLeadingCompaniesByMarketCapitalisation", () -> queryLeadingCompaniesByMarketCapitalisation0()));
+				.get(getClass().getSimpleName() + ".queryLeadingCompaniesByMarketCapitalisation()",
+						() -> queryLeadingCompaniesByMarketCapitalisation0()));
 	}
 
 	private List<Asset> queryLeadingCompaniesByMarketCapitalisation0() {

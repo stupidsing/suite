@@ -292,7 +292,7 @@ public class Hkex {
 	public Map<String, Integer> queryLotSizeByStockCode(Streamlet<Asset> companies) {
 		return SerializedStoreCache //
 				.of(Serialize.mapOfString(Serialize.int_)) //
-				.get("lotSizeByStockCode",
+				.get(getClass().getSimpleName() + ".queryLotSizeByStockCode(" + companies.toList().toString() + ")",
 						() -> companies //
 								.map(stock -> stock.code) //
 								.map2(stockCode -> queryBoardLot(stockCode)) //
