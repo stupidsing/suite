@@ -71,7 +71,7 @@ public class PortfolioTest {
 		long latestEpochDay = Util.last(tradeEpochDays);
 		long oneYearAgo = latestEpochDay - 365l;
 		int nTradeDaysInYear = Read.from(tradeEpochDays).filter(epochDay -> oneYearAgo < epochDay).size();
-		DatePeriod backTestPeriod = DatePeriod.of(DatePeriod.ages().from, LocalDate.ofEpochDay(latestEpochDay));
+		DatePeriod backTestPeriod = DatePeriod.of(DatePeriod.ages().from, LocalDate.ofEpochDay(latestEpochDay + 1));
 
 		Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
 				.mapValue(dataSource -> dataSource.limit(backTestPeriod)) //
