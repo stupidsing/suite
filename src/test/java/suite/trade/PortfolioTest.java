@@ -1,5 +1,6 @@
 package suite.trade;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -60,10 +61,6 @@ public class PortfolioTest {
 					LogUtil.warn(ex.getMessage() + " in " + asset);
 				}
 
-		Map<String, Float> latestPriceByStockCode = Read.from2(dataSourceByStockCode) //
-				.mapValue(dataSource -> dataSource.get(-1).price) //
-				.toMap();
-
 		List<Long> tradeEpochDays = Read.from2(dataSourceByStockCode) //
 				.concatMap((stockCode, dataSource) -> Read.from(dataSource.dates)) //
 				.distinct() //
@@ -71,10 +68,20 @@ public class PortfolioTest {
 				.sort(Util::compare) //
 				.toList();
 
-		long oneYearAgo = Util.last(tradeEpochDays) - 365l;
+		long latestEpochDay = Util.last(tradeEpochDays);
+		long oneYearAgo = latestEpochDay - 365l;
 		int nTradeDaysInYear = Read.from(tradeEpochDays).filter(epochDay -> oneYearAgo < epochDay).size();
+		DatePeriod backTestPeriod = DatePeriod.of(DatePeriod.ages().from, LocalDate.ofEpochDay(latestEpochDay));
 
-		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(dataSourceByStockCode) //
+		Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
+				.mapValue(dataSource -> dataSource.limit(backTestPeriod)) //
+				.toMap();
+
+		Map<String, Float> latestPriceByStockCode = Read.from2(backTestDataSourceByStockCode) //
+				.mapValue(dataSource -> dataSource.get(-1).price) //
+				.toMap();
+
+		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(backTestDataSourceByStockCode) //
 				.mapValue(MeanReversionStats::new) //
 				.toMap();
 
