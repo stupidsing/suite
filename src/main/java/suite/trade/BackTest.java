@@ -37,6 +37,7 @@ public class BackTest {
 		double sharpe = return_ / (Math.sqrt(nApproxYears) * new Statistic().standardDeviation(valuations));
 
 		concludeLog.append("" //
+				+ ", nYears = " + MathUtil.format(nApproxYears) //
 				+ ", number of transactions = " + account.nTransactions() //
 				+ ", return = " + MathUtil.format(return_) //
 				+ ", sharpe = " + MathUtil.format(sharpe));
