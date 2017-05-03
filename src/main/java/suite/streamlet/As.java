@@ -11,7 +11,6 @@ import java.util.function.BiFunction;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 
-import suite.Constants;
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.primitive.Bytes;
@@ -237,12 +236,12 @@ public class As {
 
 	public static Streamlet<String[]> table(Outlet<Bytes> outlet) {
 		return outlet.collect(BytesUtil.split(Bytes.of((byte) 10))) //
-				.map(bytes -> new String(bytes.toByteArray(), Constants.charset).split("\t")) //
+				.map(bytes -> To.string(bytes).split("\t")) //
 				.collect(As::streamlet);
 	}
 
 	private static String[] csvLine(Bytes bytes) {
-		return csvLine(new String(bytes.toByteArray(), Constants.charset));
+		return csvLine(To.string(bytes));
 	}
 
 	private static String[] csvLine(String line) {

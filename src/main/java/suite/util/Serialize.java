@@ -194,7 +194,7 @@ public class Serialize {
 				byte[] bs = new byte[length];
 				int l = dataInput.readInt();
 				dataInput.readFully(bs);
-				return new String(bs, Constants.charset).substring(0, l);
+				return To.string(bs).substring(0, l);
 			}
 
 			public void write(DataOutput dataOutput, String value) throws IOException {

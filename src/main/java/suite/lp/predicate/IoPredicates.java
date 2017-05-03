@@ -22,6 +22,7 @@ import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.Rethrow;
+import suite.util.To;
 
 public class IoPredicates {
 
@@ -89,7 +90,7 @@ public class IoPredicates {
 			byte b;
 			while (0 <= (b = (byte) System.in.read()) && b != 10)
 				bb.append(b);
-			String s = new String(bb.toBytes().toByteArray(), Constants.charset);
+			String s = To.string(bb.toBytes());
 			return prover.bind(new Str(s), p0);
 		});
 	});

@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import suite.Constants;
 import suite.util.Copy;
 import suite.util.Rethrow;
+import suite.util.To;
 
 public class Execute {
 
@@ -15,6 +16,14 @@ public class Execute {
 	public final String out;
 	public final String err;
 	private Thread threads[];
+
+	public static String shell(String sh) {
+		Execute execute = new Execute(new String[] { "/bin/sh", }, sh);
+		if (execute.code == 0)
+			return execute.out;
+		else
+			throw new RuntimeException(execute.toString());
+	}
 
 	public Execute(String[] command) {
 		this(command, "");
@@ -50,8 +59,8 @@ public class Execute {
 			process.destroy();
 		}
 
-		out = new String(bos0.toByteArray(), Constants.charset);
-		err = new String(bos1.toByteArray(), Constants.charset);
+		out = To.string(bos0.toByteArray());
+		err = To.string(bos1.toByteArray());
 	}
 
 	@Override

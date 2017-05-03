@@ -20,6 +20,7 @@ import suite.Constants;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Rethrow;
+import suite.util.To;
 
 public class FileUtil {
 
@@ -126,7 +127,7 @@ public class FileUtil {
 				&& bytes[2] == (byte) 0xBF;
 
 		if (!isBomExist)
-			return new String(bytes, Constants.charset);
+			return To.string(bytes);
 		else
 			return new String(bytes, 3, bytes.length - 3, Constants.charset);
 	}
