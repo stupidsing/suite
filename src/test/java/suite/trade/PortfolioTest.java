@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.Test;
 
@@ -21,6 +22,9 @@ import suite.util.To;
 import suite.util.Util;
 
 public class PortfolioTest {
+
+	private float riskFreeInterestRate = 1.05f;
+	private int top = 10;
 
 	private double neglog2 = -Math.log(2d);
 
@@ -45,21 +49,24 @@ public class PortfolioTest {
 		for (Asset asset : assets)
 			try {
 				String stockCode = asset.code;
-				DataSource dataSource = yahoo.dataSource(stockCode);
+				DataSource dataSource = yahoo.dataSourceWithLatestQuote(stockCode);
 				dataSource.validateTwoYears();
 				dataSourceByStockCode.put(stockCode, dataSource);
 			} catch (Exception ex) {
+				LogUtil.error(ex);
 				LogUtil.warn(ex.getMessage() + " in " + asset);
 			}
 
 		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
 
-		float riskFreeInterestRate = 1.05f;
-		int top = 10;
+		Map<String, Float> latestPriceByStockCode = Read.from2(dataSourceByStockCode) //
+				.mapValue(dataSource -> dataSource.get(-1).price) //
+				.toMap();
 
 		List<String> tradeDates = Read.from2(dataSourceByStockCode) //
 				.concatMap((stockCode, dataSource) -> Read.from(dataSource.dates)) //
 				.distinct() //
+				.sort(Util::compare) //
 				.toList();
 
 		long oneYearAgo = FormatUtil.date(Util.last(tradeDates)).minusYears(-1).toEpochDay();
@@ -71,8 +78,6 @@ public class PortfolioTest {
 		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(dataSourceByStockCode) //
 				.mapValue(MeanReversionStats::new) //
 				.toMap();
-
-		Map<String, Float> latestPriceByStockCode = yahoo.quote(Read.from(dataSourceByStockCode.keySet()));
 
 		// make sure all time-series are mean-reversions:
 		// ensure ADF < 0f: price is not random walk
@@ -98,18 +103,26 @@ public class PortfolioTest {
 
 		System.out.println(potentialByStockCode.mapValue(MathUtil::format).toList());
 
-		List<String> tops = potentialByStockCode //
+		Map<String, Integer> tops = potentialByStockCode //
 				.filterValue(potential -> riskFreeInterestRate < potential) //
 				.take(top) //
 				.keys() //
-				.toList();
+				.map2(stockCode -> stockCode, stockCode -> {
+					int lotSize = lotSizeByStockCode.get(stockCode);
+					float price = latestPriceByStockCode.get(stockCode);
+					return lotSize * (int) Math.round(50000d / (lotSize * price));
+				}) //
+				.toMap();
 
 		System.out.println(tops);
 
 		Account account = new Account();
 
-		for (String stockCode : tops)
-			account.buySell(stockCode, lotSizeByStockCode.get(stockCode), dataSourceByStockCode.get(stockCode).get(-1).price);
+		for (Entry<String, Integer> e : tops.entrySet()) {
+			String stockCode = e.getKey();
+			int n = e.getValue();
+			account.buySell(stockCode, n, latestPriceByStockCode.get(stockCode));
+		}
 
 		// filter away equities without enough price histories
 		// conclude the trading dates
