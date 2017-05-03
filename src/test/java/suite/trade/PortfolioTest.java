@@ -21,7 +21,7 @@ import suite.util.FormatUtil;
 import suite.util.To;
 import suite.util.Util;
 
-public class TradePlanTest {
+public class PortfolioTest {
 
 	private double neglog2 = -Math.log(2d);
 
@@ -38,7 +38,7 @@ public class TradePlanTest {
 	}
 
 	@Test
-	public void testTradePlan() {
+	public void testPortfolio() {
 		float riskFreeInterestRate = 1.05f;
 		int top = 10;
 
