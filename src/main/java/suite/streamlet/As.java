@@ -9,8 +9,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.ToDoubleFunction;
+import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 
+import suite.adt.IntObjPair;
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.primitive.Bytes;
@@ -18,9 +20,14 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.BytesUtil;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
+import suite.primitive.PrimitiveFun.IntObj_Float;
+import suite.primitive.PrimitiveFun.IntObj_Int;
+import suite.primitive.PrimitiveFun.ObjObj_Float;
+import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Source2;
 import suite.util.To;
 
 public class As {
@@ -227,9 +234,31 @@ public class As {
 		return outlet -> {
 			Source<T> source = outlet.source();
 			T t;
-			float result = 0;
+			float result = 0f;
 			while ((t = source.source()) != null)
 				result += fun.applyAsFloat(t);
+			return result;
+		};
+	}
+
+	public static <T> ToFloatFunction<IntObjOutlet<T>> sumOfFloats(IntObj_Float<T> fun) {
+		return outlet -> {
+			IntObjPair<T> pair = IntObjPair.of(0, null);
+			IntObjSource<T> source = outlet.source2();
+			float result = 0f;
+			while (source.source2(pair))
+				result += fun.apply(pair.t0, pair.t1);
+			return result;
+		};
+	}
+
+	public static <K, V> ToFloatFunction<Outlet2<K, V>> sumOfFloats(ObjObj_Float<K, V> fun) {
+		return outlet -> {
+			Pair<K, V> pair = Pair.of(null, null);
+			Source2<K, V> source = outlet.source2();
+			float result = 0f;
+			while (source.source2(pair))
+				result += fun.apply(pair.t0, pair.t1);
 			return result;
 		};
 	}
@@ -241,6 +270,28 @@ public class As {
 			int result = 0;
 			while ((t = source.source()) != null)
 				result += fun.applyAsInt(t);
+			return result;
+		};
+	}
+
+	public static <T> ToIntFunction<IntObjOutlet<T>> sumOfInts(IntObj_Int<T> fun) {
+		return outlet -> {
+			IntObjPair<T> pair = IntObjPair.of(0, null);
+			IntObjSource<T> source = outlet.source2();
+			int result = 0;
+			while (source.source2(pair))
+				result += fun.apply(pair.t0, pair.t1);
+			return result;
+		};
+	}
+
+	public static <K, V> ToIntFunction<Outlet2<K, V>> sumOfInts(ToIntBiFunction<K, V> fun) {
+		return outlet -> {
+			Pair<K, V> pair = Pair.of(null, null);
+			Source2<K, V> source = outlet.source2();
+			int result = 0;
+			while (source.source2(pair))
+				result += fun.applyAsInt(pair.t0, pair.t1);
 			return result;
 		};
 	}
