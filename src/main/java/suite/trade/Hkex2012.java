@@ -5,7 +5,6 @@ import java.util.List;
 
 import suite.os.Execute;
 import suite.os.SerializedStoreCache;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Serialize;
@@ -15,8 +14,7 @@ import suite.util.Serialize;
 public class Hkex2012 {
 
 	public static void main(String[] args) {
-		List<Asset> assets = new Hkex2012().queryLeadingCompaniesByMarketCapitalisation().toList();
-		System.out.println(assets);
+		System.out.println(new Hkex2012().queryLeadingCompaniesByMarketCapitalisation().toList());
 	}
 
 	public Streamlet<Asset> queryLeadingCompaniesByMarketCapitalisation() {
@@ -38,8 +36,6 @@ public class Hkex2012 {
 
 		String out = Execute.shell(cmd);
 
-		System.out.println(out);
-
 		return Read.from(out.split("\n")) //
 				.map(line -> {
 					int p0 = line.indexOf(" ", 0);
@@ -60,7 +56,7 @@ public class Hkex2012 {
 						return null;
 				}) //
 				.filter(asset -> asset != null) //
-				.collect(As::streamlet);
+				.toList();
 	}
 
 }
