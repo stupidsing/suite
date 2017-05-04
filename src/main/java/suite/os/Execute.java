@@ -28,7 +28,9 @@ public class Execute {
 				command = new String[] { s, };
 
 		if (command != null) {
+			LogUtil.info("START " + sh);
 			Execute execute = new Execute(command, sh);
+			LogUtil.info("END__ " + sh);
 			if (execute.code == 0)
 				return execute.out;
 			else
