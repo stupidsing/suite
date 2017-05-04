@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 
 import suite.adt.ListMultimap;
@@ -60,6 +61,10 @@ public class Streamlet<T> implements Iterable<T> {
 			in.closeAtEnd(c);
 			return in;
 		});
+	}
+
+	public double collect(ToDoubleFunction<Outlet<T>> fun) {
+		return fun.applyAsDouble(spawn());
 	}
 
 	public float collect(ToFloatFunction<Outlet<T>> fun) {

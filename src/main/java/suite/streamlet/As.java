@@ -20,9 +20,9 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.BytesUtil;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
-import suite.primitive.PrimitiveFun.IntObj_Float;
+import suite.primitive.PrimitiveFun.IntObj_Double;
 import suite.primitive.PrimitiveFun.IntObj_Int;
-import suite.primitive.PrimitiveFun.ObjObj_Float;
+import suite.primitive.PrimitiveFun.ObjObj_Double;
 import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -230,33 +230,33 @@ public class As {
 		return To.string(bytes(outlet));
 	}
 
-	public static <T> ToFloatFunction<Outlet<T>> sumOfFloats(ToFloatFunction<T> fun) {
+	public static <T> ToDoubleFunction<Outlet<T>> sumOfDoubles(ToDoubleFunction<T> fun) {
 		return outlet -> {
 			Source<T> source = outlet.source();
 			T t;
-			float result = 0f;
+			double result = 0d;
 			while ((t = source.source()) != null)
-				result += fun.applyAsFloat(t);
+				result += fun.applyAsDouble(t);
 			return result;
 		};
 	}
 
-	public static <T> ToFloatFunction<IntObjOutlet<T>> sumOfFloats(IntObj_Float<T> fun) {
+	public static <T> ToDoubleFunction<IntObjOutlet<T>> sumOfDoubles(IntObj_Double<T> fun) {
 		return outlet -> {
 			IntObjPair<T> pair = IntObjPair.of(0, null);
 			IntObjSource<T> source = outlet.source2();
-			float result = 0f;
+			double result = 0d;
 			while (source.source2(pair))
 				result += fun.apply(pair.t0, pair.t1);
 			return result;
 		};
 	}
 
-	public static <K, V> ToFloatFunction<Outlet2<K, V>> sumOfFloats(ObjObj_Float<K, V> fun) {
+	public static <K, V> ToDoubleFunction<Outlet2<K, V>> sumOfDoubles(ObjObj_Double<K, V> fun) {
 		return outlet -> {
 			Pair<K, V> pair = Pair.of(null, null);
 			Source2<K, V> source = outlet.source2();
-			float result = 0f;
+			double result = 0d;
 			while (source.source2(pair))
 				result += fun.apply(pair.t0, pair.t1);
 			return result;

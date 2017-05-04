@@ -30,8 +30,8 @@ public class PrimitiveFun {
 	}
 
 	@FunctionalInterface
-	public interface IntObj_Float<T> {
-		public float apply(int i, T t);
+	public interface IntObj_Double<T> {
+		public double apply(int i, T t);
 	}
 
 	@FunctionalInterface
@@ -54,8 +54,8 @@ public class PrimitiveFun {
 	}
 
 	@FunctionalInterface
-	public interface ObjObj_Float<X, Y> {
-		public float apply(X x, Y y);
+	public interface ObjObj_Double<X, Y> {
+		public double apply(X x, Y y);
 	}
 
 	@FunctionalInterface

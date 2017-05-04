@@ -12,6 +12,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 
 import suite.adt.ListMultimap;
@@ -58,6 +59,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 			in.closeAtEnd(c);
 			return in;
 		});
+	}
+
+	public double collect(ToDoubleFunction<Outlet2<K, V>> fun) {
+		return fun.applyAsDouble(spawn());
 	}
 
 	public float collect(ToFloatFunction<Outlet2<K, V>> fun) {

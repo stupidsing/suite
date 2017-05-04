@@ -44,8 +44,8 @@ public class Account {
 	public float valuation(Map<String, Float> prices0) {
 		Map<String, Float> prices1 = new HashMap<>(prices0);
 		prices1.put(cashCode, 1f);
-		return Read.from2(assets()) //
-				.collect(As.<String, Integer> sumOfFloats((stockCode, n) -> prices1.get(stockCode) * n));
+		return (float) Read.from2(assets()) //
+				.collect(As.<String, Integer> sumOfDoubles((stockCode, n) -> prices1.get(stockCode) * n));
 	}
 
 	public String portfolio(Map<String, Integer> assets1, Map<String, Float> prices) {

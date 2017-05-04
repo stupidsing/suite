@@ -120,7 +120,7 @@ public class Portfolio {
 				String actions = account.portfolio(portfolio, latestPriceByStockCode);
 				account.validate();
 
-				float valuation1 = valuations[i] = account.valuation(latestPriceByStockCode);
+				double valuation1 = valuations[i] = account.valuation(latestPriceByStockCode);
 
 				log.sink(FormatUtil.formatDate(date) //
 						+ ", valuation = " + valuation1 //

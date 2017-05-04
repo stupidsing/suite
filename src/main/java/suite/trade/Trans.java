@@ -50,8 +50,8 @@ public class Trans {
 	}
 
 	// Profit & loss
-	public static float returns(List<Record> records) {
-		return Read.from(records).collect(As.sumOfFloats(r -> -r.buySell * r.price));
+	public static double returns(List<Record> records) {
+		return Read.from(records).collect(As.sumOfDoubles(r -> -r.buySell * r.price));
 	}
 
 	public static List<Pair<String, Integer>> diff(Map<String, Integer> assets0, Map<String, Integer> assets1) {
