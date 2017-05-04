@@ -156,7 +156,6 @@ public class Portfolio {
 					log.sink(hkex.getCompany(stockCode) //
 							+ ", mamrRatio = " + mrs.movingAvgMeanReversionRatio //
 							+ ", " + MathUtil.format(price) + " => " + MathUtil.format(lma) //
-							+ ", potential = " + MathUtil.format(potential) //
 							+ ", yearReturn = " + MathUtil.format(yearReturn));
 					return yearReturn;
 				}) //
