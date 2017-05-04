@@ -45,21 +45,15 @@ public class QuoteTest {
 	}
 
 	@Test
-	public void testQuotesByMamr() {
-		summarize(r -> r.strategy.startsWith("mamr"));
+	public void testQuotesByStrategies() {
+		Map<String, Double> profitAndLossByStrategy = Read.each("mamr", "manual", "pmamr") //
+				.map2(strategy -> summarize(r -> r.strategy.startsWith(strategy))) //
+				.toMap();
+
+		System.out.println(profitAndLossByStrategy);
 	}
 
-	@Test
-	public void testQuotesByManual() {
-		summarize(r -> r.strategy.startsWith("manual"));
-	}
-
-	@Test
-	public void testQuotesByPmamr() {
-		summarize(r -> r.strategy.startsWith("pmamr"));
-	}
-
-	private void summarize(Predicate<Record> pred) {
+	private double summarize(Predicate<Record> pred) {
 		List<Record> table0 = Trans.fromHistory(pred);
 		Map<String, Integer> nSharesByStockCodes = Trans.portfolio(table0);
 		Map<String, Float> priceByStockCodes = yahoo.quote(Read.from(nSharesByStockCodes.keySet()));
@@ -73,8 +67,8 @@ public class QuoteTest {
 
 		List<Record> table1 = Streamlet.concat(Read.from(table0), Read.from(sellAll)).toList();
 
-		float amount0 = Trans.returns(table0);
-		float amount1 = Trans.returns(table1);
+		double amount0 = Trans.returns(table0);
+		double amount1 = Trans.returns(table1);
 
 		Streamlet<String> constituents = Read.from2(nSharesByStockCodes) //
 				.map((stockCode, nShares) -> {
@@ -88,6 +82,8 @@ public class QuoteTest {
 		constituents.forEach(System.out::println);
 		System.out.println("OWN = " + amount0);
 		System.out.println("P/L = " + amount1);
+
+		return amount1;
 	}
 
 }
