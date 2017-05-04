@@ -49,18 +49,16 @@ public class Portfolio {
 	}
 
 	public float simulateLatest(float fund0) {
-		return simulate(fund0, dates -> Arrays.asList(Util.last(dates)));
+		return simulate(fund0, LocalDate.now(), dates -> Arrays.asList(Util.last(dates)));
 	}
 
 	public float simulateFrom(float fund0, LocalDate from) {
-		return simulate(fund0,
-				dates0 -> Read.from(dates0) //
-						.filter(epochDay -> from.isBefore(epochDay)) //
-						.toList());
+		return simulate(fund0, from, dates -> Read.from(dates).filter(date -> from.isBefore(date)).toList());
 	}
 
-	public float simulate(float fund0, Fun<List<LocalDate>, List<LocalDate>> epochDaysPred) {
+	private float simulate(float fund0, LocalDate from, Fun<List<LocalDate>, List<LocalDate>> epochDaysPred) {
 		float valuation = fund0;
+		LocalDate historyFromDate = from.minusYears(1);
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
 		Streamlet<Asset> assets = hkexFactBook.queryLeadingCompaniesByMarketCap();
 		// hkex.getCompanies();
@@ -71,7 +69,7 @@ public class Portfolio {
 			String stockCode = asset.code;
 			if (lotSizeByStockCode.containsKey(stockCode))
 				try {
-					DataSource dataSource = yahoo.dataSourceWithLatestQuote(stockCode);
+					DataSource dataSource = yahoo.dataSourceWithLatestQuote(stockCode).limitAfter(historyFromDate);
 					dataSource.validate();
 					dataSourceByStockCode.put(stockCode, dataSource);
 				} catch (Exception ex) {
@@ -90,10 +88,10 @@ public class Portfolio {
 		Account account = Account.fromCash(fund0);
 
 		for (LocalDate date : dates) {
-			DatePeriod historyPeriod = DatePeriod.of(date.minusDays(historyWindow), date);
+			DatePeriod historyWindowPeriod = DatePeriod.of(date.minusDays(historyWindow), date);
 
 			Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
-					.mapValue(dataSource -> dataSource.limit(historyPeriod)) //
+					.mapValue(dataSource -> dataSource.limit(historyWindowPeriod)) //
 					.filterValue(dataSource -> 128 <= dataSource.dates.length) //
 					.toMap();
 
