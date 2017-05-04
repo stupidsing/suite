@@ -1,7 +1,6 @@
 package suite.streamlet;
 
 import java.io.Closeable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -404,7 +403,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	public IntObjPair<V>[] toArray() {
 		List<IntObjPair<V>> list = toList();
 		@SuppressWarnings("unchecked")
-		IntObjPair<V>[] array = (IntObjPair[]) Array.newInstance(Pair.class, list.size());
+		IntObjPair<V>[] array = Util.newArray(IntObjPair.class, list.size());
 		return list.toArray(array);
 	}
 

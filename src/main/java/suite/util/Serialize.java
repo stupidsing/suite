@@ -3,7 +3,6 @@ package suite.util;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -78,8 +77,7 @@ public class Serialize {
 		return new Serializer<T[]>() {
 			public T[] read(DataInput dataInput) throws IOException {
 				int size = Serialize.int_.read(dataInput);
-				@SuppressWarnings("unchecked")
-				T[] array = (T[]) Array.newInstance(clazz, size);
+				T[] array = Util.newArray(clazz, size);
 				for (int i = 0; i < size; i++)
 					array[i] = serializer.read(dataInput);
 				return array;
