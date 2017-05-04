@@ -18,8 +18,7 @@ public class PortfolioTest {
 
 	@Test
 	public void testPortfolio() {
-		float return_ = portfolio.simulate(1000000f, date -> LocalDate.of(2013, 1, 1).isBefore(date));
-		assertTrue(1.05f < return_);
+		assertTrue(1.05f < portfolio.simulateFrom(1000000f, LocalDate.of(2013, 1, 1)));
 	}
 
 }

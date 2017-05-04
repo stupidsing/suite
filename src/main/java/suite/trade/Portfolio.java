@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
@@ -49,13 +48,19 @@ public class Portfolio {
 		this.log = log;
 	}
 
-	public float simulate(float valuation0, Predicate<LocalDate> datePred) {
-		return simulateDays(valuation0,
-				dates0 -> Read.from(dates0).filter(epochDay -> datePred.test(LocalDate.ofEpochDay(epochDay))).toList());
+	public float simulateLatest(float fund0) {
+		return simulate(fund0, dates -> Arrays.asList(Util.last(dates)));
 	}
 
-	public float simulateDays(float valuation0, Fun<List<Long>, List<Long>> epochDaysPred) {
-		float valuation = valuation0;
+	public float simulateFrom(float fund0, LocalDate from) {
+		return simulate(fund0,
+				dates0 -> Read.from(dates0) //
+						.filter(epochDay -> from.isBefore(epochDay)) //
+						.toList());
+	}
+
+	public float simulate(float fund0, Fun<List<LocalDate>, List<LocalDate>> epochDaysPred) {
+		float valuation = fund0;
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
 		Streamlet<Asset> assets = hkexFactBook.queryLeadingCompaniesByMarketCap();
 		// hkex.getCompanies();
@@ -74,20 +79,18 @@ public class Portfolio {
 				}
 		}
 
-		List<Long> tradeEpochDays = Read.from2(dataSourceByStockCode) //
+		List<LocalDate> tradeDates = Read.from2(dataSourceByStockCode) //
 				.concatMap((stockCode, dataSource) -> Read.from(dataSource.dates)) //
 				.distinct() //
-				.map(tradeDate -> FormatUtil.date(tradeDate).toEpochDay()) //
+				.map(tradeDate -> FormatUtil.date(tradeDate)) //
 				.sort(Util::compare) //
 				.toList();
 
-		List<Long> epochDays = epochDaysPred.apply(tradeEpochDays);
-		Account account = Account.fromCash(valuation0);
+		List<LocalDate> dates = epochDaysPred.apply(tradeDates);
+		Account account = Account.fromCash(fund0);
 
-		for (long epochDay : epochDays) {
-			LocalDate historyWindowFrom = LocalDate.ofEpochDay(epochDay - historyWindow);
-			LocalDate historyWindowTo = LocalDate.ofEpochDay(epochDay);
-			DatePeriod historyPeriod = DatePeriod.of(historyWindowFrom, historyWindowTo);
+		for (LocalDate date : dates) {
+			DatePeriod historyPeriod = DatePeriod.of(date.minusDays(historyWindow), date);
 
 			Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
 					.mapValue(dataSource -> dataSource.limit(historyPeriod)) //
@@ -97,9 +100,9 @@ public class Portfolio {
 			Map<String, Integer> portfolio = formPortfolio( //
 					backTestDataSourceByStockCode, //
 					lotSizeByStockCode, //
-					tradeEpochDays, //
-					epochDay, //
-					valuation0);
+					tradeDates, //
+					date, //
+					fund0);
 
 			Map<String, Float> latestPriceByStockCode = Read.from2(backTestDataSourceByStockCode) //
 					.mapValue(dataSource -> dataSource.get(-1).price) //
@@ -110,7 +113,7 @@ public class Portfolio {
 
 			float valuation1 = valuation = account.valuation(latestPriceByStockCode);
 
-			log.sink(FormatUtil.formatDate(LocalDate.ofEpochDay(epochDay)) //
+			log.sink(FormatUtil.formatDate(date) //
 					+ ", valuation = " + valuation1 //
 					+ ", portfolio = " + portfolio //
 					+ ", actions = " + actions);
@@ -122,13 +125,13 @@ public class Portfolio {
 	private Map<String, Integer> formPortfolio( //
 			Map<String, DataSource> dataSourceByStockCode, //
 			Map<String, Integer> lotSizeByStockCode, //
-			List<Long> tradeEpochDays, //
-			long backTestEpochDay, //
+			List<LocalDate> tradeDates, //
+			LocalDate backTestDate, //
 			float valuation0) {
-		long oneYearAgo = backTestEpochDay - 365l;
+		LocalDate oneYearAgo = backTestDate.minusYears(1);
 
-		int nTradeDaysInYear = Read.from(tradeEpochDays) //
-				.filter(epochDay -> oneYearAgo <= epochDay && epochDay < backTestEpochDay) //
+		int nTradeDaysInYear = Read.from(tradeDates) //
+				.filter(tradeDate -> oneYearAgo.compareTo(tradeDate) <= 0 && tradeDate.compareTo(backTestDate) < 0) //
 				.size();
 
 		log.sink(dataSourceByStockCode.size() + " assets in data source");
