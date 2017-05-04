@@ -8,6 +8,8 @@ import suite.util.Serialize.Serializer;
 
 public class Asset {
 
+	public static Asset cash = new Asset("HKD", "Hong Kong Dollar");
+
 	public static Serializer<Asset> serializer = new Serializer<Asset>() {
 		public Asset read(DataInput dataInput) throws IOException {
 			String code = dataInput.readUTF();
