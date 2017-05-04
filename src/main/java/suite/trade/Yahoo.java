@@ -22,7 +22,7 @@ public class Yahoo {
 
 	public DataSource dataSourceWithLatestQuote(String stockCode) {
 
-		// count as tomorrow open if market is close (after 4pm)
+		// count as tomorrow open if market is closed (after 4pm)
 		LocalDate tradeDate = LocalDateTime.now().plusHours(8).toLocalDate();
 		String date = FormatUtil.formatDate(tradeDate);
 
