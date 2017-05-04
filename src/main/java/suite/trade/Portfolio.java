@@ -52,16 +52,22 @@ public class Portfolio {
 		return new Simulate(fund0, LocalDate.now(), dates -> Arrays.asList(Util.last(dates)));
 	}
 
-	public float simulateFrom(float fund0, LocalDate from) {
-		return new Simulate(fund0, from, dates -> Read.from(dates).filter(date -> from.isBefore(date)).toList()).valuation;
+	public float simulateFromTo(float fund0, LocalDate from, LocalDate to) {
+		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Read.from(dates) //
+				.filter(date -> from.compareTo(date) <= 0 && date.compareTo(to) < 0) //
+				.toList();
+		Simulate sim = new Simulate(fund0, from, datesPred);
+		float[] valuations = sim.valuations;
+		return valuations[valuations.length - 1];
 	}
 
 	public class Simulate {
-		private float valuation;
-		private Account account;
+		public final Account account;
+		public final float[] valuations;
+		public final double sharpe;
 
-		private Simulate(float fund0, LocalDate from, Fun<List<LocalDate>, List<LocalDate>> epochDaysPred) {
-			account = Account.fromCash(valuation = fund0);
+		private Simulate(float fund0, LocalDate from, Fun<List<LocalDate>, List<LocalDate>> datesPred) {
+			account = Account.fromCash(fund0);
 
 			LocalDate historyFromDate = from.minusYears(1);
 			Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
@@ -89,9 +95,11 @@ public class Portfolio {
 					.sort(Util::compare) //
 					.toList();
 
-			List<LocalDate> dates = epochDaysPred.apply(tradeDates);
+			List<LocalDate> dates = datesPred.apply(tradeDates);
+			valuations = new float[dates.size()];
 
-			for (LocalDate date : dates) {
+			for (int i = 0; i < dates.size(); i++) {
+				LocalDate date = dates.get(i);
 				DatePeriod historyWindowPeriod = DatePeriod.of(date.minusDays(historyWindow), date);
 
 				Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
@@ -113,17 +121,21 @@ public class Portfolio {
 				String actions = account.portfolio(portfolio, latestPriceByStockCode);
 				account.validate();
 
-				float valuation1 = valuation = account.valuation(latestPriceByStockCode);
+				float valuation1 = valuations[i] = account.valuation(latestPriceByStockCode);
 
 				log.sink(FormatUtil.formatDate(date) //
 						+ ", valuation = " + valuation1 //
 						+ ", portfolio = " + portfolio //
 						+ ", actions = " + actions);
 			}
-		}
 
-		public Account getAccount() {
-			return account;
+			LocalDate dateStart = Util.first(dates);
+			LocalDate dateEnd = Util.last(dates);
+			float nYears = (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365f;
+			float[] returns = ts.returns(valuations);
+			sharpe = stat.mean(returns) / Math.sqrt(nYears * stat.variance(returns));
+
+			log.sink("sharpe = " + MathUtil.format(sharpe));
 		}
 	}
 
@@ -180,13 +192,13 @@ public class Portfolio {
 
 	public class MeanReversionStats {
 		public final float[] movingAverage;
-		public final float adf;
-		public final float hurst;
-		public final float varianceRatio;
-		public final float meanReversionRatio;
-		public final float movingAvgMeanReversionRatio;
-		public final float halfLife;
-		public final float movingAvgHalfLife;
+		public final double adf;
+		public final double hurst;
+		public final double varianceRatio;
+		public final double meanReversionRatio;
+		public final double movingAvgMeanReversionRatio;
+		public final double halfLife;
+		public final double movingAvgHalfLife;
 
 		public MeanReversionStats(DataSource dataSource) {
 			float[] prices = dataSource.prices;
@@ -216,7 +228,7 @@ public class Portfolio {
 	}
 
 	// Augmented Dickey-Fuller test
-	private float adf(DataSource dataSource, int tor) {
+	private double adf(DataSource dataSource, int tor) {
 		float[] prices = dataSource.prices;
 		float[] diffs = ts.differences(1, prices);
 		float[][] deps = new float[prices.length][];
@@ -227,10 +239,10 @@ public class Portfolio {
 		float[] diffs1 = ts.drop(tor, diffs);
 		LinearRegression lr = stat.linearRegression(deps1, diffs1);
 		float lambda = lr.betas[0];
-		return (float) (lambda / lr.standardError);
+		return lambda / lr.standardError;
 	}
 
-	private float hurst(DataSource dataSource, int tor) {
+	private double hurst(DataSource dataSource, int tor) {
 		float[] prices = dataSource.prices;
 		float[] logPrices = To.floatArray(prices, price -> (float) Math.log(price));
 		int[] tors = To.intArray(tor, t -> t + 1);
@@ -243,10 +255,10 @@ public class Portfolio {
 		float[] n = To.floatArray(logVrs.length, i -> (float) Math.log(tors[i]));
 		LinearRegression lr = stat.linearRegression(deps, n);
 		float beta0 = lr.betas[0];
-		return beta0 / 2f;
+		return beta0 / 2d;
 	}
 
-	private float varianceRatio(DataSource dataSource, int tor) {
+	private double varianceRatio(DataSource dataSource, int tor) {
 		float[] prices = dataSource.prices;
 		float[] logs = To.floatArray(prices, price -> (float) Math.log(price));
 		float[] diffsTor = ts.dropDiff(tor, logs);
@@ -254,7 +266,7 @@ public class Portfolio {
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));
 	}
 
-	private float meanReversionRatio(DataSource dataSource, int tor) {
+	private double meanReversionRatio(DataSource dataSource, int tor) {
 		float[] prices = dataSource.prices;
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { prices[i], 1f, });
 		float[] diffs1 = ts.dropDiff(tor, prices);
@@ -262,7 +274,7 @@ public class Portfolio {
 		return lr.betas[0];
 	}
 
-	private float movingAvgMeanReversionRatio(DataSource dataSource, float[] movingAvg, int tor) {
+	private double movingAvgMeanReversionRatio(DataSource dataSource, float[] movingAvg, int tor) {
 		float[] prices = dataSource.prices;
 		float[] ma = ts.drop(tor, movingAvg);
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { ma[i], 1f, });

@@ -39,7 +39,7 @@ public class BackTest {
 
 		float return_ = account.cash();
 		float nApproxYears = ds.nYears();
-		double sharpe = return_ / (Math.sqrt(nApproxYears) * new Statistic().standardDeviation(valuations));
+		double sharpe = return_ / (Math.sqrt(nApproxYears * new Statistic().variance(valuations)));
 
 		concludeLogSink.sink("" //
 				+ ", nYears = " + MathUtil.format(nApproxYears) //

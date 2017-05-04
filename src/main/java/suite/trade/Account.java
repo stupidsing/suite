@@ -50,7 +50,6 @@ public class Account {
 
 	public String portfolio(Map<String, Integer> assets1, Map<String, Float> prices) {
 		Map<String, Integer> assets0 = assets;
-
 		List<Pair<String, Integer>> buySells = Trans.diff(assets0, assets1);
 
 		for (Pair<String, Integer> buySell : buySells) {

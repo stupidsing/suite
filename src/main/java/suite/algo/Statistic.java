@@ -13,7 +13,7 @@ public class Statistic {
 
 	private Matrix mtx = new Matrix();
 
-	public float correlation(float[] xs, float[] ys) {
+	public double correlation(float[] xs, float[] ys) {
 		int length = xs.length;
 		double sumx = 0d, sumy = 0d;
 		double sumx2 = 0d, sumy2 = 0d;
@@ -29,11 +29,10 @@ public class Statistic {
 			}
 		else
 			throw new RuntimeException("Wrong input sizes");
-		return (float) ((length * sumxy - sumx * sumy)
-				/ Math.sqrt((length * sumx2 - sumx * sumx) * (length * sumy2 - sumy * sumy)));
+		return (length * sumxy - sumx * sumy) / Math.sqrt((length * sumx2 - sumx * sumx) * (length * sumy2 - sumy * sumy));
 	}
 
-	public float covariance(float[] xs, float[] ys) {
+	public double covariance(float[] xs, float[] ys) {
 		int length = xs.length;
 		double sumx = 0d, sumy = 0d;
 		double sumxy = 0d;
@@ -47,7 +46,7 @@ public class Statistic {
 		else
 			throw new RuntimeException("Wrong input sizes");
 		double il = 1d / length;
-		return (float) ((sumxy - sumx * sumy * il) * il);
+		return (sumxy - sumx * sumy * il) * il;
 	}
 
 	// ordinary least squares
@@ -66,13 +65,13 @@ public class Statistic {
 			float[][] xtx = mtx.mul(xt, x);
 			float[] lr = new Cholesky().inverseMul(xtx).apply(mtx.mul(xt, y));
 			float[] estimatedy = To.floatArray(n, i -> mtx.dot(lr, x[i]));
-			float meany = mean(y);
+			double meany = mean(y);
 
 			double sst = 0f; // total sum of squares
 			double ssr = 0f; // estimated sum of squares
 			for (int i = 0; i < n; i++) {
-				float d0 = y[i] - meany;
-				float d1 = estimatedy[i] - meany;
+				double d0 = y[i] - meany;
+				double d1 = estimatedy[i] - meany;
 				sst += d0 * d0;
 				ssr += d1 * d1;
 			}
@@ -119,12 +118,12 @@ public class Statistic {
 		};
 	}
 
-	public float mean(float[] fs) {
-		return (float) mean_(fs);
+	public double mean(float[] fs) {
+		return mean_(fs);
 	}
 
-	public float standardDeviation(float[] fs) {
-		return (float) Math.sqrt(var(fs));
+	public double standardDeviation(float[] fs) {
+		return Math.sqrt(variance(fs));
 	}
 
 	public String stats(float[] fs) {
@@ -155,11 +154,7 @@ public class Statistic {
 			return "size = 0";
 	}
 
-	public float variance(float[] fs) {
-		return (float) var(fs);
-	}
-
-	private double var(float[] fs) {
+	public double variance(float[] fs) {
 		int length = fs.length;
 		double sum = 0d;
 		double sumsq = 0d;

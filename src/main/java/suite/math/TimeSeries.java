@@ -19,7 +19,7 @@ public class TimeSeries {
 
 	public float[] returns(float[] fs) {
 		float[] returns = new float[fs.length - 1];
-		float price0 = returns[0];
+		float price0 = fs[0];
 		for (int i = 0; i < returns.length; i++) {
 			float price = fs[i + 1];
 			returns[i] = (price - price0) / price0;

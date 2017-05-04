@@ -54,7 +54,7 @@ public class DailyMain extends ExecutableProgram {
 		StringBuilder sb = new StringBuilder();
 		Portfolio portfolio = new Portfolio(To.sink(sb));
 		Account account0 = Account.fromHistory(Trans.fromHistory(r -> Util.stringEquals(r.strategy, "pmamr")));
-		Account account1 = portfolio.simulateLatest(1000000f).getAccount();
+		Account account1 = portfolio.simulateLatest(1000000f).account;
 
 		for (Pair<String, Integer> pair : Trans.diff(account0.assets(), account1.assets()))
 			sb.append("\nsignal " + pair.t0 + " " + pair.t1);
