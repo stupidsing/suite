@@ -23,6 +23,7 @@ import suite.trade.Strategy;
 import suite.trade.Yahoo;
 import suite.util.FormatUtil;
 import suite.util.Serialize;
+import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
@@ -44,8 +45,10 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private String mamrp() {
-		new Portfolio().simulate(1000000f, date -> LocalDate.now().equals(date));
-		return "";
+		StringBuilder sb = new StringBuilder();
+		Portfolio portfolio = new Portfolio(To.sink(sb));
+		portfolio.simulate(1000000f, date -> LocalDate.now().equals(date));
+		return sb.toString();
 	}
 
 	@SuppressWarnings("unused")
