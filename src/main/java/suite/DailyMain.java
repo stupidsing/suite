@@ -36,7 +36,9 @@ public class DailyMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		String result = mamrp();
+		String result = pmamr();
+
+		LogUtil.info("OUTPUT:" + result);
 
 		SmtpSslGmail smtp = new SmtpSslGmail();
 		smtp.send(null, getClass().getName(), result);
@@ -44,13 +46,15 @@ public class DailyMain extends ExecutableProgram {
 		return true;
 	}
 
-	private String mamrp() {
+	// portfolio-based moving average mean reversion
+	private String pmamr() {
 		StringBuilder sb = new StringBuilder();
 		Portfolio portfolio = new Portfolio(To.sink(sb));
 		portfolio.simulate(1000000f, date -> LocalDate.now().equals(date));
 		return sb.toString();
 	}
 
+	// moving average mean reversion
 	@SuppressWarnings("unused")
 	private String mamr() {
 		Hkex hkex = new Hkex();
@@ -117,18 +121,15 @@ public class DailyMain extends ExecutableProgram {
 					int signal = strategy.analyze(prices).get(last);
 					String message = asset + " has signal " + prices[last] + " * " + signal * lotSize;
 
-					if (signal != 0) {
-						LogUtil.info(message);
+					if (signal != 0)
 						messages.add(message);
-					}
 				} catch (Exception ex) {
 					LogUtil.warn(ex.getMessage() + " in " + prefix);
 				}
 			}
 		}
 
-		String result = Read.from(messages).collect(As.joined("\n"));
-		return result;
+		return Read.from(messages).collect(As.joined("\n"));
 	}
 
 }
