@@ -13,10 +13,10 @@ import suite.math.MathUtil;
 import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.os.LogUtil;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FormatUtil;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 import suite.util.Util;
@@ -50,6 +50,11 @@ public class Portfolio {
 	}
 
 	public float simulate(float valuation0, Predicate<LocalDate> datePred) {
+		return simulateDays(valuation0,
+				dates0 -> Read.from(dates0).filter(epochDay -> datePred.test(LocalDate.ofEpochDay(epochDay))).toList());
+	}
+
+	public float simulateDays(float valuation0, Fun<List<Long>, List<Long>> epochDaysPred) {
 		float valuation = valuation0;
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
 		Streamlet<Asset> assets = hkexFactBook.queryLeadingCompaniesByMarketCap();
@@ -57,16 +62,17 @@ public class Portfolio {
 
 		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
 
-		for (Asset asset : assets)
-			if (lotSizeByStockCode.containsKey(asset.code))
+		for (Asset asset : assets) {
+			String stockCode = asset.code;
+			if (lotSizeByStockCode.containsKey(stockCode))
 				try {
-					String stockCode = asset.code;
 					DataSource dataSource = yahoo.dataSourceWithLatestQuote(stockCode);
 					dataSource.validate();
 					dataSourceByStockCode.put(stockCode, dataSource);
 				} catch (Exception ex) {
 					LogUtil.warn(ex.getMessage() + " in " + asset);
 				}
+		}
 
 		List<Long> tradeEpochDays = Read.from2(dataSourceByStockCode) //
 				.concatMap((stockCode, dataSource) -> Read.from(dataSource.dates)) //
@@ -75,51 +81,41 @@ public class Portfolio {
 				.sort(Util::compare) //
 				.toList();
 
-		long frEpochDay = Util.first(tradeEpochDays);
-		long toEpochDay = Util.last(tradeEpochDays);
-		Account account = new Account(valuation0);
+		List<Long> epochDays = epochDaysPred.apply(tradeEpochDays);
+		Account account = Account.fromCash(valuation0);
 
-		for (long backTestEpochDay = frEpochDay; backTestEpochDay < toEpochDay; backTestEpochDay++)
-			if (datePred.test(LocalDate.ofEpochDay(backTestEpochDay))) {
-				LocalDate historyWindowFrom = LocalDate.ofEpochDay(backTestEpochDay - historyWindow);
-				LocalDate historyWindowTo = LocalDate.ofEpochDay(backTestEpochDay);
-				DatePeriod historyPeriod = DatePeriod.of(historyWindowFrom, historyWindowTo);
+		for (long epochDay : epochDays) {
+			LocalDate historyWindowFrom = LocalDate.ofEpochDay(epochDay - historyWindow);
+			LocalDate historyWindowTo = LocalDate.ofEpochDay(epochDay);
+			DatePeriod historyPeriod = DatePeriod.of(historyWindowFrom, historyWindowTo);
 
-				Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
-						.mapValue(dataSource -> dataSource.limit(historyPeriod)) //
-						.filterValue(dataSource -> 128 <= dataSource.dates.length) //
-						.toMap();
+			Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
+					.mapValue(dataSource -> dataSource.limit(historyPeriod)) //
+					.filterValue(dataSource -> 128 <= dataSource.dates.length) //
+					.toMap();
 
-				Map<String, Integer> portfolio = formPortfolio( //
-						backTestDataSourceByStockCode, //
-						lotSizeByStockCode, //
-						tradeEpochDays, //
-						backTestEpochDay, //
-						valuation0);
+			Map<String, Integer> portfolio = formPortfolio( //
+					backTestDataSourceByStockCode, //
+					lotSizeByStockCode, //
+					tradeEpochDays, //
+					epochDay, //
+					valuation0);
 
-				Map<String, Float> latestPriceByStockCode = Read.from2(backTestDataSourceByStockCode) //
-						.mapValue(dataSource -> dataSource.get(-1).price) //
-						.toMap();
+			Map<String, Float> latestPriceByStockCode = Read.from2(backTestDataSourceByStockCode) //
+					.mapValue(dataSource -> dataSource.get(-1).price) //
+					.toMap();
 
-				String actions = account.portfolio(portfolio, latestPriceByStockCode);
-				account.validate();
+			String actions = account.portfolio(portfolio, latestPriceByStockCode);
+			account.validate();
 
-				float valuation1 = valuation = valuation(account, latestPriceByStockCode);
+			float valuation1 = valuation = account.valuation(latestPriceByStockCode);
 
-				log.sink(FormatUtil.formatDate(LocalDate.ofEpochDay(backTestEpochDay)) //
-						+ ", valuation = " + valuation1 //
-						+ ", portfolio = " + portfolio //
-						+ ", actions = " + actions);
-			}
+			log.sink(FormatUtil.formatDate(LocalDate.ofEpochDay(epochDay)) //
+					+ ", valuation = " + valuation1 //
+					+ ", portfolio = " + portfolio //
+					+ ", actions = " + actions);
+		}
 
-		return valuation;
-	}
-
-	private float valuation(Account account, Map<String, Float> latestPriceByStockCode) {
-		float v0 = account.cash();
-		float v1 = Read.from2(account.assets()) //
-				.collect(As.<String, Integer> sumOfFloats((stockCode, n) -> latestPriceByStockCode.get(stockCode) * n));
-		float valuation = v0 + v1;
 		return valuation;
 	}
 
@@ -135,6 +131,8 @@ public class Portfolio {
 				.filter(epochDay -> oneYearAgo <= epochDay && epochDay < backTestEpochDay) //
 				.size();
 
+		log.sink(dataSourceByStockCode.size() + " assets in data source");
+
 		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(dataSourceByStockCode) //
 				.mapValue(MeanReversionStats::new) //
 				.toMap();
@@ -142,7 +140,7 @@ public class Portfolio {
 		// make sure all time-series are mean-reversions:
 		// ensure ADF < 0f: price is not random walk
 		// ensure Hurst exponent < .5f: price is weakly mean reverting
-		// ensure 0f < variable ratio: statistic is significant
+		// ensure 0f < variance ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
 		return Read.from2(meanReversionStatsByStockCode) //
 				.filterValue(mrs -> mrs.adf < 0f //

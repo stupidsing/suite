@@ -51,7 +51,7 @@ public class BackTest {
 	private float buySell(DataSource ds, int day, int buySell) {
 		float price = ds.prices[day];
 		account.buySell(buySell, price);
-		float valuation = account.cash() + account.nShares() * price;
+		float valuation = account.valuation(To.map(Account.defaultStockCode, price));
 
 		if (day == 0 || buySell != 0)
 			tradeLogSink.sink("\n" //
