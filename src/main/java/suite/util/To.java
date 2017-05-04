@@ -34,6 +34,7 @@ import suite.primitive.PrimitiveFun.Int_Float;
 import suite.primitive.PrimitiveFun.Int_Int;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
+import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 
 public class To {
@@ -195,6 +196,13 @@ public class To {
 			int nBytesRead = Rethrow.ex(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
 		}).closeAtEnd(bis).closeAtEnd(is);
+	}
+
+	public static Sink<String> sink(StringBuilder sb) {
+		return s -> {
+			sb.append(s);
+			sb.append("\n");
+		};
 	}
 
 	@SafeVarargs
