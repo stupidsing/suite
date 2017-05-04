@@ -134,9 +134,8 @@ public class Portfolio {
 			double vx = valuations[valuations.length - 1];
 
 			double nYears = (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365d;
-			float[] returns = ts.returns(valuations);
 			double annualReturn = Math.exp(Math.log(vx / v0) / nYears);
-			double sharpe = stat.mean(returns) / Math.sqrt(nYears * stat.variance(returns));
+			double sharpe = ts.sharpeRatio(valuations, nYears);
 
 			log.sink("annual return = " + MathUtil.format(annualReturn) + ", sharpe = " + MathUtil.format(sharpe));
 		}
@@ -171,14 +170,20 @@ public class Portfolio {
 						&& 0f < mrs.varianceRatio //
 						&& 0f < mrs.movingAvgMeanReversionRatio) //
 				.map2((stockCode, mrs) -> stockCode, (stockCode, mrs) -> {
-					double price = dataSourceByStockCode.get(stockCode).get(-1).price;
+					DataSource dataSource = dataSourceByStockCode.get(stockCode);
+					long ed0 = FormatUtil.date(dataSource.get(0).date).toEpochDay();
+					long edx = FormatUtil.date(dataSource.get(-1).date).toEpochDay();
+					double price = dataSource.get(-1).price;
+
 					double lma = mrs.latestMovingAverage();
 					double potential = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
 					double yearReturn = Math.exp(Math.log1p(potential) * nTradeDaysInYear);
+					double sharpe = ts.sharpeRatio(dataSource.prices, (edx - ed0) / 365d);
 					log.sink(hkex.getCompany(stockCode) //
 							+ ", mamrRatio = " + mrs.movingAvgMeanReversionRatio //
 							+ ", " + MathUtil.format(price) + " => " + MathUtil.format(lma) //
-							+ ", yearReturn = " + MathUtil.format(yearReturn));
+							+ ", yearReturn = " + MathUtil.format(yearReturn) //
+							+ ", sharpe = " + MathUtil.format(sharpe));
 					return yearReturn;
 				}) //
 				.filterValue(yearReturn -> riskFreeInterestRate < yearReturn) //

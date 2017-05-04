@@ -2,9 +2,17 @@ package suite.math;
 
 import java.util.Arrays;
 
+import suite.algo.Statistic;
+
 public class TimeSeries {
 
 	private Matrix mtx = new Matrix();
+	private Statistic stat = new Statistic();
+
+	public double sharpeRatio(float[] fs, double nYears) {
+		float[] returns = returns(fs);
+		return stat.mean(returns) / Math.sqrt(nYears * stat.variance(returns));
+	}
 
 	public float[] logReturns(float[] fs) {
 		float[] logReturns = new float[fs.length - 1];
