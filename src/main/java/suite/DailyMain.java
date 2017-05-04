@@ -33,6 +33,8 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain extends ExecutableProgram {
 
+	private Yahoo yahoo = new Yahoo();
+
 	public static void main(String[] args) {
 		Util.run(DailyMain.class, args);
 	}
@@ -56,8 +58,14 @@ public class DailyMain extends ExecutableProgram {
 		Account account0 = Account.fromHistory(Trans.fromHistory(r -> Util.stringEquals(r.strategy, "pmamr")));
 		Account account1 = portfolio.simulateLatest(1000000f).account;
 
-		for (Pair<String, Integer> pair : Trans.diff(account0.assets(), account1.assets()))
-			sb.append("\nsignal " + pair.t0 + " " + pair.t1);
+		List<Pair<String, Integer>> diffs = Trans.diff(account0.assets(), account1.assets());
+		Map<String, Float> priceByStockCode = yahoo.quote(Read.from(diffs).map(pair -> pair.t0));
+
+		for (Pair<String, Integer> pair : diffs) {
+			String stockCode = pair.t0;
+			Float price = priceByStockCode.get(stockCode);
+			sb.append("\n" + stockCode + " has signal " + price + " * " + pair.t1);
+		}
 
 		return sb.toString();
 	}
