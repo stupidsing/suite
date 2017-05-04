@@ -11,7 +11,6 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Trans.Record;
-import suite.util.To;
 import suite.util.Util;
 
 public class Account {
@@ -31,7 +30,9 @@ public class Account {
 	}
 
 	public static Account fromCash(float cash) {
-		return new Account(To.map(cashCode, (int) cash));
+		Map<String, Integer> assets = new HashMap<>();
+		assets.put(cashCode, (int) cash);
+		return new Account(assets);
 	}
 
 	public Account() {
