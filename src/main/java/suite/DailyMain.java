@@ -2,7 +2,6 @@ package suite;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +50,7 @@ public class DailyMain extends ExecutableProgram {
 	private String pmamr() {
 		StringBuilder sb = new StringBuilder();
 		Portfolio portfolio = new Portfolio(To.sink(sb));
-		portfolio.simulateDays(1000000f, dates -> Arrays.asList(Util.last(dates)));
+		portfolio.simulateLatest(1000000f);
 		return sb.toString();
 	}
 
