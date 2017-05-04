@@ -131,11 +131,14 @@ public class Portfolio {
 
 			LocalDate dateStart = Util.first(dates);
 			LocalDate dateEnd = Util.last(dates);
-			float nYears = (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365f;
+			double nYears = (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365d;
 			float[] returns = ts.returns(valuations);
+			double valuationx = valuations[valuations.length - 1];
+			double valuation0 = valuations[0];
+			double annualReturn = Math.exp(Math.log1p((valuationx - valuation0) / valuation0) / nYears);
 			sharpe = stat.mean(returns) / Math.sqrt(nYears * stat.variance(returns));
 
-			log.sink("sharpe = " + MathUtil.format(sharpe));
+			log.sink("annual return = " + MathUtil.format(annualReturn) + ", sharpe = " + MathUtil.format(sharpe));
 		}
 	}
 
