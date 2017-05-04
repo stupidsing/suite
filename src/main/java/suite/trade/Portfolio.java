@@ -17,6 +17,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FormatUtil;
+import suite.util.FunUtil.Sink;
 import suite.util.To;
 import suite.util.Util;
 
@@ -37,6 +38,16 @@ public class Portfolio {
 	private Hkex hkex = new Hkex();
 	private Hkex2012 hkex2012 = new Hkex2012();
 	private Yahoo yahoo = new Yahoo();
+
+	private Sink<String> log;
+
+	public Portfolio() {
+		log = System.out::println;
+	}
+
+	public Portfolio(Sink<String> log) {
+		this.log = log;
+	}
 
 	public float simulate(float valuation0, Predicate<LocalDate> datePred) {
 		float valuation = valuation0;
@@ -95,7 +106,7 @@ public class Portfolio {
 
 				float valuation1 = valuation = valuation(account, latestPriceByStockCode);
 
-				System.out.println(FormatUtil.formatDate(LocalDate.ofEpochDay(backTestEpochDay)) //
+				log.sink(FormatUtil.formatDate(LocalDate.ofEpochDay(backTestEpochDay)) //
 						+ ", valuation = " + valuation1 //
 						+ ", portfolio = " + portfolio //
 						+ ", actions = " + actions);
@@ -143,7 +154,7 @@ public class Portfolio {
 					double lma = mrs.latestMovingAverage();
 					double potential = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
 					double yearReturn = Math.exp(Math.log1p(potential) * nTradeDaysInYear);
-					System.out.println(hkex.getCompany(stockCode) //
+					log.sink(hkex.getCompany(stockCode) //
 							+ ", mamrRatio = " + mrs.movingAvgMeanReversionRatio //
 							+ ", " + MathUtil.format(price) + " => " + MathUtil.format(lma) //
 							+ ", potential = " + MathUtil.format(potential) //

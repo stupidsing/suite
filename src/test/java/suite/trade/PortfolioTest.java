@@ -1,5 +1,7 @@
 package suite.trade;
 
+import static org.junit.Assert.assertTrue;
+
 import java.time.LocalDate;
 
 import org.junit.Test;
@@ -15,7 +17,8 @@ public class PortfolioTest {
 
 	@Test
 	public void testPortfolio() {
-		new Portfolio().simulate(1000000f, date -> LocalDate.of(2013, 1, 1).isBefore(date));
+		float return_ = new Portfolio().simulate(1000000f, date -> LocalDate.of(2013, 1, 1).isBefore(date));
+		assertTrue(1.05f < return_);
 	}
 
 }
