@@ -2,10 +2,14 @@ package suite.trade;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
+import suite.adt.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet2;
+import suite.util.Util;
 
 public class Trans {
 
@@ -48,6 +52,21 @@ public class Trans {
 	// Profit & loss
 	public static float returns(List<Record> records) {
 		return Read.from(records).collect(As.sumOfFloats(r -> -r.buySell * r.price));
+	}
+
+	public static List<Pair<String, Integer>> diff(Map<String, Integer> assets0, Map<String, Integer> assets1) {
+		Set<String> stockCodes = Streamlet2.concat(Read.from2(assets0), Read.from2(assets1)) //
+				.map((stockCode, nShares) -> stockCode) //
+				.toSet();
+
+		return Read.from(stockCodes) //
+				.map2(stockCode -> {
+					int n0 = assets0.computeIfAbsent(stockCode, s -> 0);
+					int n1 = assets1.computeIfAbsent(stockCode, s -> 0);
+					return n1 - n0;
+				}) //
+				.filter((stockCode, n) -> !Util.stringEquals(stockCode, Asset.cash.code)) //
+				.toList();
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import suite.adt.Pair;
 import suite.math.MathUtil;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
@@ -12,6 +13,7 @@ import suite.smtp.SmtpSslGmail;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.BackTest;
 import suite.trade.DataSource;
@@ -20,6 +22,7 @@ import suite.trade.Hkex;
 import suite.trade.Portfolio;
 import suite.trade.Strategos;
 import suite.trade.Strategy;
+import suite.trade.Trans;
 import suite.trade.Yahoo;
 import suite.util.FormatUtil;
 import suite.util.Serialize;
@@ -49,7 +52,13 @@ public class DailyMain extends ExecutableProgram {
 	// portfolio-based moving average mean reversion
 	private String pmamr() {
 		StringBuilder sb = new StringBuilder();
-		new Portfolio(To.sink(sb)).simulateLatest(1000000f);
+		Portfolio portfolio = new Portfolio(To.sink(sb));
+		Account account0 = Account.fromHistory(Trans.fromHistory(r -> Util.stringEquals(r.strategy, "pmamr")));
+		Account account1 = portfolio.simulateLatest(1000000f).getAccount();
+
+		for (Pair<String, Integer> pair : Trans.diff(account0.assets(), account1.assets()))
+			sb.append("\nsignal " + pair.t0 + " " + pair.t1);
+
 		return sb.toString();
 	}
 

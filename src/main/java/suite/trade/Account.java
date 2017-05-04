@@ -3,13 +3,11 @@ package suite.trade;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 
 import suite.adt.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 import suite.trade.Trans.Record;
 import suite.util.Util;
 
@@ -53,18 +51,7 @@ public class Account {
 	public String portfolio(Map<String, Integer> assets1, Map<String, Float> prices) {
 		Map<String, Integer> assets0 = assets;
 
-		Set<String> stockCodes = Streamlet2.concat(Read.from2(assets0), Read.from2(assets1)) //
-				.map((stockCode, nShares) -> stockCode) //
-				.toSet();
-
-		List<Pair<String, Integer>> buySells = Read.from(stockCodes) //
-				.map2(stockCode -> {
-					int n0 = assets0.computeIfAbsent(stockCode, s -> 0);
-					int n1 = assets1.computeIfAbsent(stockCode, s -> 0);
-					return n1 - n0;
-				}) //
-				.filter((stockCode, n) -> !Util.stringEquals(stockCode, cashCode)) //
-				.toList();
+		List<Pair<String, Integer>> buySells = Trans.diff(assets0, assets1);
 
 		for (Pair<String, Integer> buySell : buySells) {
 			String stockCode = buySell.t0;
@@ -73,8 +60,8 @@ public class Account {
 
 		return Read.from2(buySells) //
 				.filterValue(n -> n != 0) //
-				.map((stockCode, n) -> "" + stockCode + " :: " + prices.get(stockCode) + " * " + n) //
-				.collect(As.joined("\n"));
+				.map((stockCode, n) -> "" + stockCode + ":" + prices.get(stockCode) + "*" + n + ",") //
+				.collect(As.joined());
 	}
 
 	public void buySell(int buySell, float price) {
