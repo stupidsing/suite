@@ -36,7 +36,7 @@ public class Portfolio {
 	private TimeSeries ts = new TimeSeries();
 
 	private Hkex hkex = new Hkex();
-	private Hkex2012 hkex2012 = new Hkex2012();
+	private HkexFactBook hkexFactBook = new HkexFactBook();
 	private Yahoo yahoo = new Yahoo();
 
 	private Sink<String> log;
@@ -52,7 +52,7 @@ public class Portfolio {
 	public float simulate(float valuation0, Predicate<LocalDate> datePred) {
 		float valuation = valuation0;
 		Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
-		Streamlet<Asset> assets = hkex2012.queryLeadingCompaniesByMarketCap();
+		Streamlet<Asset> assets = hkexFactBook.queryLeadingCompaniesByMarketCap();
 		// hkex.getCompanies();
 
 		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);

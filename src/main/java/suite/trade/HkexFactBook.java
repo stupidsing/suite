@@ -10,12 +10,11 @@ import suite.streamlet.Streamlet;
 import suite.util.Serialize;
 import suite.util.Util;
 
-// extract from HKEx fact book
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
-public class Hkex2012 {
+public class HkexFactBook {
 
 	public static void main(String[] args) {
-		System.out.println(new Hkex2012().queryLeadingCompaniesByMarketCap().toList());
+		System.out.println(new HkexFactBook().queryLeadingCompaniesByMarketCap().toList());
 	}
 
 	public Streamlet<Asset> queryLeadingCompaniesByMarketCap() {
@@ -46,8 +45,6 @@ public class Hkex2012 {
 				.map(line -> {
 					int p0 = line.indexOf(" ", 0);
 					int p1 = 0 <= p0 ? line.indexOf(" ", p0 + 1) : -1;
-					System.out.println(p0);
-					System.out.println(p1);
 					if (0 <= p1) {
 						List<String> list = new ArrayList<>();
 						int[] ps = { p0, p1, };
