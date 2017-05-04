@@ -63,7 +63,8 @@ public class Account {
 					int n1 = assets1.computeIfAbsent(stockCode, s -> 0);
 					return n1 - n0;
 				}) //
-				.filter((stockCode, n) -> !Util.stringEquals(stockCode, cashCode)).toList();
+				.filter((stockCode, n) -> !Util.stringEquals(stockCode, cashCode)) //
+				.toList();
 
 		for (Pair<String, Integer> buySell : buySells) {
 			String stockCode = buySell.t0;

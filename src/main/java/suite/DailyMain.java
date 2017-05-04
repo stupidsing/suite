@@ -49,8 +49,7 @@ public class DailyMain extends ExecutableProgram {
 	// portfolio-based moving average mean reversion
 	private String pmamr() {
 		StringBuilder sb = new StringBuilder();
-		Portfolio portfolio = new Portfolio(To.sink(sb));
-		portfolio.simulateLatest(1000000f);
+		new Portfolio(To.sink(sb)).simulateLatest(1000000f);
 		return sb.toString();
 	}
 

@@ -95,16 +95,16 @@ public class Portfolio {
 					.filterValue(dataSource -> 128 <= dataSource.dates.length) //
 					.toMap();
 
+			Map<String, Float> latestPriceByStockCode = Read.from2(backTestDataSourceByStockCode) //
+					.mapValue(dataSource -> dataSource.get(-1).price) //
+					.toMap();
+
 			Map<String, Integer> portfolio = formPortfolio( //
 					backTestDataSourceByStockCode, //
 					lotSizeByStockCode, //
 					tradeDates, //
 					date, //
 					fund0);
-
-			Map<String, Float> latestPriceByStockCode = Read.from2(backTestDataSourceByStockCode) //
-					.mapValue(dataSource -> dataSource.get(-1).price) //
-					.toMap();
 
 			String actions = account.portfolio(portfolio, latestPriceByStockCode);
 			account.validate();
