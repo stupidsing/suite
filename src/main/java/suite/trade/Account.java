@@ -98,9 +98,9 @@ public class Account {
 	}
 
 	public void validate() {
-		assets.forEach((stockCode, buySell) -> {
-			if (buySell < 0)
-				throw new RuntimeException("no short-selling");
+		assets.forEach((stockCode, nShares) -> {
+			if (nShares < 0)
+				throw new RuntimeException("no short-selling " + nShares + " shares for " + stockCode);
 		});
 	}
 
