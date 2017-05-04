@@ -47,7 +47,7 @@ public class QuoteTest {
 	@Test
 	public void testQuotesByStrategies() {
 		Map<String, Double> profitAndLossByStrategy = Read.each("mamr", "manual", "pmamr") //
-				.map2(strategy -> summarize(r -> r.strategy.startsWith(strategy))) //
+				.map2(strategy -> summarize(r -> Util.stringEquals(r.strategy, strategy))) //
 				.toMap();
 
 		System.out.println(profitAndLossByStrategy);
