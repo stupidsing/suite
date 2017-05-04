@@ -134,12 +134,6 @@ public class To {
 				}
 				return nBytesRead;
 			}
-
-			public void close() throws IOException {
-				while (outlet.next() != null)
-					;
-				super.close();
-			}
 		};
 	}
 

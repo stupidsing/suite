@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import suite.node.util.Singleton;
 import suite.os.Execute;
+import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -298,6 +299,7 @@ public class Hkex {
 						return queryBoardLot(stockCode);
 					} catch (Exception ex) {
 						// e.g. 0013 de-listed; cannot query stock code
+						LogUtil.warn("cannot query lot size of " + stockCode);
 						return null;
 					}
 				}) //
