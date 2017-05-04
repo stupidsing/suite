@@ -135,7 +135,7 @@ public class Portfolio {
 
 			double nYears = (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365d;
 			float[] returns = ts.returns(valuations);
-			double annualReturn = Math.exp(Math.log1p((vx - v0) / v0) / nYears);
+			double annualReturn = Math.exp(Math.log(vx / v0) / nYears);
 			double sharpe = stat.mean(returns) / Math.sqrt(nYears * stat.variance(returns));
 
 			log.sink("annual return = " + MathUtil.format(annualReturn) + ", sharpe = " + MathUtil.format(sharpe));
