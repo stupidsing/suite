@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Array;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -184,8 +185,9 @@ public class Util {
 		return compare(t0, t1) < 0 ? t0 : t1;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> T[] newArray(Class<T> clazz, int dim) {
-		return Util.newArray(clazz, dim);
+		return (T[]) Array.newInstance(clazz, dim);
 	}
 
 	public static long newDate(int year, int month, int day) {
