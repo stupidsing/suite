@@ -64,7 +64,6 @@ public class Portfolio {
 	public class Simulate {
 		public final Account account;
 		public final float[] valuations;
-		public final double sharpe;
 
 		private Simulate(float fund0, LocalDate from, Fun<List<LocalDate>, List<LocalDate>> datesPred) {
 			account = Account.fromCash(fund0);
@@ -131,12 +130,13 @@ public class Portfolio {
 
 			LocalDate dateStart = Util.first(dates);
 			LocalDate dateEnd = Util.last(dates);
+			double v0 = valuations[0];
+			double vx = valuations[valuations.length - 1];
+
 			double nYears = (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365d;
 			float[] returns = ts.returns(valuations);
-			double valuationx = valuations[valuations.length - 1];
-			double valuation0 = valuations[0];
-			double annualReturn = Math.exp(Math.log1p((valuationx - valuation0) / valuation0) / nYears);
-			sharpe = stat.mean(returns) / Math.sqrt(nYears * stat.variance(returns));
+			double annualReturn = Math.exp(Math.log1p((vx - v0) / v0) / nYears);
+			double sharpe = stat.mean(returns) / Math.sqrt(nYears * stat.variance(returns));
 
 			log.sink("annual return = " + MathUtil.format(annualReturn) + ", sharpe = " + MathUtil.format(sharpe));
 		}
