@@ -204,8 +204,8 @@ public class To {
 
 	public static Sink<String> sink(StringBuilder sb) {
 		return s -> {
-			sb.append(s);
 			sb.append("\n");
+			sb.append(s);
 		};
 	}
 
