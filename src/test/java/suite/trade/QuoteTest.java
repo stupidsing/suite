@@ -73,8 +73,8 @@ public class QuoteTest {
 
 		List<Record> table1 = Streamlet.concat(Read.from(table0), Read.from(sellAll)).toList();
 
-		float amount0 = Trans.valuation(table0);
-		float amount1 = Trans.valuation(table1);
+		float amount0 = Trans.returns(table0);
+		float amount1 = Trans.returns(table1);
 
 		Streamlet<String> constituents = Read.from2(nSharesByStockCodes) //
 				.map((stockCode, nShares) -> {

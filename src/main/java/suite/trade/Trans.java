@@ -45,7 +45,8 @@ public class Trans {
 				.toMap();
 	}
 
-	public static float valuation(List<Record> records) {
+	// Profit & loss
+	public static float returns(List<Record> records) {
 		return Read.from(records).collect(As.sumOfFloats(r -> -r.buySell * r.price));
 	}
 
