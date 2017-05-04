@@ -13,22 +13,14 @@ import suite.util.Util;
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
 public class HkexFactBook {
 
-	public static void main(String[] args) {
-		System.out.println(new HkexFactBook().queryLeadingCompaniesByMarketCap().toList());
-	}
-
-	public Streamlet<Asset> queryLeadingCompaniesByMarketCap() {
-		return queryLeadingCompaniesByMarketCap("2012");
-	}
-
-	private Streamlet<Asset> queryLeadingCompaniesByMarketCap(String year) {
+	public Streamlet<Asset> queryLeadingCompaniesByMarketCap(int year) {
 		return Read.from(SerializedStoreCache //
 				.of(Serialize.list(Asset.serializer)) //
 				.get(getClass().getSimpleName() + ".queryLeadingCompaniesByMarketCap(" + year + ")",
 						() -> queryLeadingCompaniesByMarketCap0(year)));
 	}
 
-	private List<Asset> queryLeadingCompaniesByMarketCap0(String year) {
+	private List<Asset> queryLeadingCompaniesByMarketCap0(int year) {
 		String url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook" + year + "/Documents/06.pdf";
 
 		String cmd = "" //

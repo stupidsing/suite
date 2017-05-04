@@ -12,7 +12,7 @@ import suite.util.Util;
 
 public class HkexTest {
 
-	Hkex hkex = new Hkex();
+	private Hkex hkex = new Hkex();
 
 	@Test
 	public void testList() {

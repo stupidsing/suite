@@ -18,7 +18,7 @@ public class PortfolioTest {
 
 	@Test
 	public void testPortfolio() {
-		LocalDate frDate = LocalDate.of(2013, 1, 1);
+		LocalDate frDate = LocalDate.of(2017, 1, 1);
 		LocalDate toDate = LocalDate.of(2020, 1, 1);
 		assertTrue(1.05f < portfolio.simulateFromTo(1000000f, frDate, toDate));
 	}

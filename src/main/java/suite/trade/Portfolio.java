@@ -71,7 +71,7 @@ public class Portfolio {
 
 			LocalDate historyFromDate = from.minusYears(1);
 			Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
-			Streamlet<Asset> assets = hkexFactBook.queryLeadingCompaniesByMarketCap();
+			Streamlet<Asset> assets = hkexFactBook.queryLeadingCompaniesByMarketCap(from.getYear() - 1);
 			// hkex.getCompanies();
 
 			Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
