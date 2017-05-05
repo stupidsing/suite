@@ -89,7 +89,7 @@ public class PredicateUtil {
 	}
 
 	public static BuiltinPredicate ps(PredicatePs pred) {
-		return (prover, t) -> pred.prove(prover, TreeUtil.getElements(t, TreeUtil.getNumberOfElements(t)));
+		return (prover, t) -> pred.prove(prover, TreeUtil.elements(t, TreeUtil.nElements(t)));
 	}
 
 	public static boolean tryProve(Prover prover, Predicate<Prover> source) {

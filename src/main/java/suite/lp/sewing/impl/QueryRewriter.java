@@ -33,9 +33,9 @@ public class QueryRewriter {
 		private int length;
 
 		private PrototypeInfo(Collection<Rule> rules) {
-			int n = Read.from(rules).collect(As.min(rule -> TreeUtil.getNumberOfElements(rule.head)));
+			int n = Read.from(rules).collect(As.min(rule -> TreeUtil.nElements(rule.head)));
 			isSkipFirst = 0 < n
-					&& Read.from(rules).map(rule -> rule.head).isAll(head -> TreeUtil.getElements(head, 1)[0] instanceof Atom);
+					&& Read.from(rules).map(rule -> rule.head).isAll(head -> TreeUtil.elements(head, 1)[0] instanceof Atom);
 			length = n - (isSkipFirst ? 1 : 0);
 		}
 	}
@@ -95,7 +95,7 @@ public class QueryRewriter {
 			if (length <= 0)
 				nodex = node0;
 			else {
-				Node[] ps = TreeUtil.getElements(node0, length);
+				Node[] ps = TreeUtil.elements(node0, length);
 				if (pi.isSkipFirst)
 					ps = Arrays.copyOfRange(ps, 1, ps.length, Node[].class);
 				nodex = Tuple.of(ps);

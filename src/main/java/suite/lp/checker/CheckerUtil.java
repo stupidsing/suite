@@ -50,7 +50,7 @@ public class CheckerUtil {
 	}
 
 	private Integer getNumberOfElements(Streamlet<Rule> rules) {
-		return rules.collect(As.min(rule -> TreeUtil.getNumberOfElements(rule.head)));
+		return rules.collect(As.min(rule -> TreeUtil.nElements(rule.head)));
 	}
 
 }

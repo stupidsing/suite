@@ -8,19 +8,7 @@ import suite.node.io.TermOp;
 
 public class TreeUtil {
 
-	public static int getNumberOfElements(Node node) {
-		int n = 1;
-		Tree tree;
-
-		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
-			node = tree.getRight();
-			n++;
-		}
-
-		return n;
-	}
-
-	public static Node[] getElements(Node node0, int n) {
+	public static Node[] elements(Node node0, int n) {
 		Node[] params = new Node[n];
 		Node node = node0;
 		Tree tree;
@@ -34,6 +22,18 @@ public class TreeUtil {
 
 		params[n - 1] = node;
 		return params;
+	}
+
+	public static int nElements(Node node) {
+		int n = 1;
+		Tree tree;
+
+		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
+			node = tree.getRight();
+			n++;
+		}
+
+		return n;
 	}
 
 	public static boolean isList(Node node, Operator operator) {
