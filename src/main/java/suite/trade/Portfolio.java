@@ -52,13 +52,11 @@ public class Portfolio {
 		return new Simulate(fund0, LocalDate.now(), dates -> Arrays.asList(Util.last(dates)));
 	}
 
-	public float simulateFromTo(float fund0, LocalDate from, LocalDate to) {
+	public Simulate simulateFromTo(float fund0, LocalDate from, LocalDate to) {
 		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Read.from(dates) //
 				.filter(date -> from.compareTo(date) <= 0 && date.compareTo(to) < 0) //
 				.toList();
-		Simulate sim = new Simulate(fund0, from, datesPred);
-		float[] valuations = sim.valuations;
-		return valuations[valuations.length - 1];
+		return new Simulate(fund0, from, datesPred);
 	}
 
 	public class Simulate {
