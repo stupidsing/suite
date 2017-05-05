@@ -19,9 +19,11 @@ import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
+import suite.util.Memoize;
 import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.Util;
@@ -137,6 +139,12 @@ public class Read {
 	}
 
 	public static Streamlet<Bytes> url(String urlString) {
+		return memoizeUrl.apply(urlString);
+	}
+
+	private static Fun<String, Streamlet<Bytes>> memoizeUrl = Memoize.limited(Read::url0, 256);
+
+	private static Streamlet<Bytes> url0(String urlString) {
 		URL url = Rethrow.ex(() -> new URL(urlString));
 		return new Streamlet<>(() -> HttpUtil.http("GET", url).out);
 	}

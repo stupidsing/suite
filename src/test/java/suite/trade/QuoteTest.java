@@ -80,7 +80,7 @@ public class QuoteTest {
 
 		System.out.println("CONSTITUENTS:");
 		constituents.forEach(System.out::println);
-		System.out.println("OWN = " + amount0);
+		System.out.println("OWN = " + -amount0);
 		System.out.println("P/L = " + amount1);
 
 		return amount1;

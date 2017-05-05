@@ -14,6 +14,9 @@ public class Memoize {
 		EMPTY__, INUSE_, FLAGGED,
 	}
 
+	/**
+	 * Cache results of a function call, no clean-up.
+	 */
 	public static <I, O> Fun<I, O> fun(Fun<I, O> fun) {
 		Map<I, O> results = new ConcurrentHashMap<>();
 		return in -> results.computeIfAbsent(in, in_ -> fun.apply(in_));
@@ -38,6 +41,10 @@ public class Memoize {
 		};
 	}
 
+	/**
+	 * Cache results of a function call, clean-up using clock algorithm as cache
+	 * exceeded the given size.
+	 */
 	public static <I, O> Fun<I, O> limited(Fun<I, O> fun, int size) {
 		return new Fun<I, O>() {
 			class R {
@@ -78,6 +85,10 @@ public class Memoize {
 		};
 	}
 
+	/**
+	 * Cache results of a function call, removes the least recently used result
+	 * as cache exceeded the given size.
+	 */
 	public static <I, O> Fun<I, O> queued(Fun<I, O> fun, int size) {
 		return new Fun<I, O>() {
 			class R {
@@ -113,11 +124,18 @@ public class Memoize {
 		};
 	}
 
+	/**
+	 * Thread-safe caching of function call results. Guarantee only one dispatch
+	 * for an input parameter. No clean-up.
+	 */
 	public static <I, O> Fun<I, O> reentrant(Fun<I, O> fun) {
 		Map<I, Source<O>> results = new ConcurrentHashMap<>();
 		return in -> results.computeIfAbsent(in, in_ -> future(() -> fun.apply(in_))).source();
 	}
 
+	/**
+	 * Simplest memoizer for a parameterless function.
+	 */
 	public static <T> Source<T> source(Source<T> source) {
 		return new Source<T>() {
 			private T result;
@@ -128,6 +146,9 @@ public class Memoize {
 		};
 	}
 
+	/**
+	 * Time-bounded memoizer for a parameterless function.
+	 */
 	public static <T> Source<T> timed(Source<T> source, long duration) {
 		return new Source<T>() {
 			private long timestamp = 0;

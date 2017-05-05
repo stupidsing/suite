@@ -43,7 +43,7 @@ public class HttpUtil {
 		}
 	}
 
-	public static HttpResult http(URL url) {
+	public static HttpResult get(URL url) {
 		return http("GET", url);
 	}
 

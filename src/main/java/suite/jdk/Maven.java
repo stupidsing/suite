@@ -18,7 +18,7 @@ public class Maven {
 			URL url = new URL(m2repo + groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml");
 
 			return new XmlUtil() //
-					.read(To.inputStream(HttpUtil.http(url).out)) //
+					.read(To.inputStream(HttpUtil.get(url).out)) //
 					.children("metadata") //
 					.uniqueResult() //
 					.children("versioning") //

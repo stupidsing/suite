@@ -15,6 +15,8 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FormatUtil;
+import suite.util.FunUtil.Fun;
+import suite.util.Memoize;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -72,27 +74,28 @@ public class Yahoo {
 	 */
 	public Map<String, Float> quote(Streamlet<String> stockCodes) {
 		String urlString = quoteUrl(stockCodes, "l1"); // last price
-
-		URL url = Rethrow.ex(() -> new URL(urlString));
-
-		return HttpUtil.http("GET", url).out //
-				.collect(As::csv) //
-				.toMap(array -> array[0], array -> Float.parseFloat(array[1]));
+		return getCsv(urlString).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
 	}
 
 	public Map<String, Float> quoteOpenPrice(Streamlet<String> stockCodes) {
 		String urlString = quoteUrl(stockCodes, "o");
+		return getCsv(urlString).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
+	}
 
+	private Streamlet<String[]> getCsv(String urlString) {
+		return Read.from(memoizeGetCsv.apply(urlString));
+	}
+
+	private static Fun<String, List<String[]>> memoizeGetCsv = Memoize.limited(Yahoo::getCsv0, 256);
+
+	private static List<String[]> getCsv0(String urlString) {
 		URL url = Rethrow.ex(() -> new URL(urlString));
-
-		return HttpUtil.http("GET", url).out //
-				.collect(As::csv) //
-				.toMap(array -> array[0], array -> Float.parseFloat(array[1]));
+		return HttpUtil.http("GET", url).out.collect(As::csv).toList();
 	}
 
 	private String quoteUrl(Streamlet<String> stockCodes, String field) {
 		return "https://download.finance.yahoo.com/d/quotes.csv" //
-				+ "?s=" + stockCodes.collect(As.joined("+")) //
+				+ "?s=" + stockCodes.sort(Util::compare).collect(As.joined("+")) //
 				+ "&f=s" + field;
 	}
 
