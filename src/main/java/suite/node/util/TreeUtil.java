@@ -33,14 +33,12 @@ public class TreeUtil {
 		Node[] params = new Node[n];
 		Node node = node0;
 		Tree tree;
-
 		for (int i = 0; i < n - 1; i++)
 			if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
 				params[i] = tree.getLeft();
 				node = tree.getRight();
 			} else
 				throw new RuntimeException("Not enough parameters in " + node0);
-
 		params[n - 1] = node;
 		return params;
 	}
@@ -48,12 +46,10 @@ public class TreeUtil {
 	public static int nElements(Node node) {
 		int n = 1;
 		Tree tree;
-
 		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
 			node = tree.getRight();
 			n++;
 		}
-
 		return n;
 	}
 
