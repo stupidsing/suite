@@ -46,7 +46,6 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
-import suite.node.util.TreeUtil;
 import suite.primitive.Chars;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -143,7 +142,8 @@ public class EagerFunInterpreter {
 						return else_.apply(frame);
 				};
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
-				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(TreeUtil::tuple).toList();
+				Fun<Node, Node[]> tuple = Suite.matcher(".0 .1");
+				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple).toList();
 				if (arrays.size() == 1) {
 					Node[] array = arrays.get(0);
 					IMap<Node, Fun<Frame, Node>> vm1 = vm.put(array[0], unwrap(getter(fs)));

@@ -540,7 +540,7 @@ public class SewingProverImpl implements SewingProver {
 				});
 				return tr0;
 			};
-		} else if ((m = TreeUtil.tuple(node)) != null && m[0] instanceof Atom)
+		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
 			tr = callSystemPredicate(sb, ((Atom) m[0]).name, m[1]);
 		else if ((tree = Tree.decompose(node)) != null)
 			tr = callSystemPredicate(sb, tree.getOperator().getName(), node);

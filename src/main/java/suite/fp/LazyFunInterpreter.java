@@ -41,7 +41,6 @@ import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.Mutable;
-import suite.node.util.TreeUtil;
 import suite.primitive.Chars;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
@@ -193,7 +192,8 @@ public class LazyFunInterpreter {
 					return expr.apply(frame);
 				};
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
-				Streamlet<Node[]> arrays = Tree.iter(DEFVARS.list).map(TreeUtil::tuple);
+				Fun<Node, Node[]> tuple = Suite.matcher(".0 .1");
+				Streamlet<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple);
 				int size = arrays.size();
 				Lazy0 lazy0 = this;
 
