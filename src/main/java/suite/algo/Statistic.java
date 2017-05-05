@@ -12,6 +12,8 @@ public class Statistic {
 
 	private Matrix mtx = new Matrix();
 
+	public final float riskFreeInterestRate = .04f;
+
 	public double correlation(float[] xs, float[] ys) {
 		int length = xs.length;
 		double sumx = 0d, sumy = 0d;

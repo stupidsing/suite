@@ -3,7 +3,6 @@ package suite.inspect;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.jdk.gen.Type_;
+import suite.node.util.Singleton;
 import suite.os.LogUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.Util;
@@ -98,24 +98,23 @@ public class Dump {
 				if (Type_.isSimple(clazz))
 					return;
 
-				for (Field field : clazz.getFields())
-					if (!Modifier.isStatic(field.getModifiers()))
-						try {
-							String name = field.getName();
-							Object o = field.get(object);
-							Class<?> type = field.getType();
-							if (Type_.isSimple(type))
-								d(prefix + "." + name, o, type);
-							else
-								d(prefix + "." + name, o);
-						} catch (Throwable ex) {
-							sink.sink(prefix + "." + field.getName());
-							sink.sink(" caught " + ex + "\n");
-						}
+				for (Field field : Singleton.get().getInspect().fields(clazz))
+					try {
+						String name = field.getName();
+						Object o = field.get(object);
+						Class<?> type = field.getType();
+						if (Type_.isSimple(type))
+							d(prefix + "." + name, o, type);
+						else
+							d(prefix + "." + name, o);
+					} catch (Throwable ex) {
+						sink.sink(prefix + "." + field.getName());
+						sink.sink(" caught " + ex + "\n");
+					}
 
 				Set<String> displayedMethod = new HashSet<>();
 
-				for (Method method : clazz.getMethods()) {
+				for (Method method : Singleton.get().getInspect().methods(clazz)) {
 					String name = method.getName();
 					try {
 						if (name.startsWith("get") //
@@ -145,9 +144,7 @@ public class Dump {
 					else if (Object.class.isAssignableFrom(componentType))
 						for (Object o1 : (Object[]) object)
 							d(prefix + "[" + count++ + "]", o1);
-				}
-
-				if (Collection.class.isAssignableFrom(clazz))
+				} else if (Collection.class.isAssignableFrom(clazz))
 					for (Object o1 : (Collection<?>) object)
 						d(prefix + "[" + count++ + "]", o1);
 				else if (Map.class.isAssignableFrom(clazz))

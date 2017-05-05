@@ -36,6 +36,7 @@ import suite.util.Util;
 public class Inspect {
 
 	private Map<Class<?>, List<Field>> fieldsByClass = new ConcurrentHashMap<>();
+	private Map<Class<?>, List<Method>> methodsByClass = new ConcurrentHashMap<>();
 
 	public String toString(Object object) {
 		StringBuilder sb = new StringBuilder();
@@ -366,6 +367,27 @@ public class Inspect {
 		List<Field> fields = Util.add(parentFields, childFields);
 		Read.from(fields).forEach(field -> field.setAccessible(true));
 		return fields;
+	}
+
+	public List<Method> methods(Class<?> clazz) {
+		List<Method> Methods = methodsByClass.get(clazz);
+		if (Methods == null)
+			methodsByClass.put(clazz, Methods = getMethods0(clazz));
+		return Methods;
+	}
+
+	private List<Method> getMethods0(Class<?> clazz) {
+		Class<?> superClass = clazz.getSuperclass();
+		List<Method> parentMethods = superClass != null ? methods(superClass) : Collections.emptyList();
+		List<Method> childMethods = Read.from(clazz.getDeclaredMethods()) //
+				.filter(method -> {
+					int modifiers = method.getModifiers();
+					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers);
+				}).toList();
+
+		List<Method> methods = Util.add(parentMethods, childMethods);
+		Read.from(methods).forEach(method -> method.setAccessible(true));
+		return methods;
 	}
 
 }
