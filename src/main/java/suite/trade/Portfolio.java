@@ -179,16 +179,16 @@ public class Portfolio {
 
 					double lma = mrs.latestMovingAverage();
 					double potential = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
-					double yearReturn = Math.exp(Math.log1p(potential) * nTradeDaysInYear);
+					double annualReturn = Math.exp(Math.log1p(potential) * nTradeDaysInYear);
 					double sharpe = ts.sharpeRatio(dataSource.prices, (edx - ed0) / 365d);
 					log.sink(hkex.getCompany(stockCode) //
 							+ ", mamrRatio = " + mrs.movingAvgMeanReversionRatio //
 							+ ", " + To.string(price) + " => " + To.string(lma) //
-							+ ", yearReturn = " + To.string(yearReturn) //
+							+ ", annualReturn = " + To.string(annualReturn) //
 							+ ", sharpe = " + To.string(sharpe));
-					return yearReturn;
+					return annualReturn;
 				}) //
-				.filterValue(yearReturn -> riskFreeInterestRate < yearReturn) //
+				.filterValue(annualReturn -> riskFreeInterestRate < annualReturn) //
 				.sortBy((stockCode, potential) -> -potential) //
 				.take(top) //
 				.keys() //
