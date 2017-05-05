@@ -24,7 +24,7 @@ public class Portfolio {
 
 	private float riskFreeInterestRate = 1.05f;
 	private int top = 10;
-	private int tor = 16;
+	private int tor = 64;
 	private int historyWindow = 1024;
 
 	private double neglog2 = -Math.log(2d);
