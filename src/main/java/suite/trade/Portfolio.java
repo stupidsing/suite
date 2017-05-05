@@ -23,7 +23,7 @@ import suite.util.Util;
 public class Portfolio {
 
 	private float riskFreeInterestRate = 1.05f;
-	private int top = 10;
+	private int top = 5;
 	private int tor = 64;
 	private int historyWindow = 1024;
 
@@ -54,7 +54,9 @@ public class Portfolio {
 
 	public Simulate simulateFromTo(float fund0, LocalDate from, LocalDate to) {
 		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Read.from(dates) //
-				.filter(date -> from.compareTo(date) <= 0 && date.compareTo(to) < 0) //
+				.filter(date -> true //
+						&& from.compareTo(date) <= 0 //
+						&& date.compareTo(to) < 0) //
 				.toList();
 		return new Simulate(fund0, from, datesPred);
 	}
@@ -122,7 +124,7 @@ public class Portfolio {
 
 				log.sink(FormatUtil.formatDate(date) //
 						+ ", valuation = " + valuation1 //
-						+ ", portfolio = " + portfolio //
+						+ ", portfolio = " + Trans.format(portfolio) //
 						+ ", actions = " + actions);
 			}
 

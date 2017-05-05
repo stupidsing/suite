@@ -36,6 +36,13 @@ public class Trans {
 		}
 	}
 
+	public static String format(Map<String, Integer> portfolio) {
+		return Read.from2(portfolio) //
+				.sortBy((code, i) -> !Util.stringEquals(code, Asset.cash.code) ? code : "") //
+				.map((code, i) -> code + ":" + i + ",") //
+				.collect(As.joined());
+	}
+
 	public static List<Record> fromHistory(Predicate<Record> pred) {
 		return memoizeHistoryRecords.source().filter(pred).toList();
 	}
