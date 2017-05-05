@@ -180,7 +180,7 @@ public class Portfolio {
 					double annualReturn = Math.exp(Math.log1p(potential) * nTradeDaysInYear);
 					double sharpe = ts.sharpeRatio(dataSource.prices, (edx - ed0) / 365d);
 					log.sink(hkex.getCompany(stockCode) //
-							+ ", mamrRatio = " + mrs.movingAvgMeanReversionRatio //
+							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
 							+ ", " + To.string(price) + " => " + To.string(lma) //
 							+ ", annualReturn = " + To.string(annualReturn) //
 							+ ", sharpe = " + To.string(sharpe));

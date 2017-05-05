@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 import suite.trade.Portfolio.Simulate;
+import suite.util.To;
 
 public class PortfolioTest {
 
@@ -26,7 +27,7 @@ public class PortfolioTest {
 		Simulate sim = portfolio.simulateFromTo(initial, frDate, toDate);
 
 		System.out.println("nTransactions = " + sim.account.nTransactions());
-		System.out.println("nTransactionAmount = " + sim.account.nTransactionAmount());
+		System.out.println("nTransactionAmount = " + To.string(sim.account.nTransactionAmount()));
 
 		float[] valuations = sim.valuations;
 		assertTrue(initial * 1.05f < valuations[valuations.length - 1]);
