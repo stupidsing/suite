@@ -102,6 +102,9 @@ public class Portfolio {
 				LocalDate date = dates.get(i);
 				DatePeriod historyWindowPeriod = DatePeriod.of(date.minusDays(historyWindow), date);
 
+				// pre-fetch quotes
+				yahoo.quote(dataSourceByStockCode.keySet());
+
 				Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
 						.mapValue(dataSource -> dataSource.limit(historyWindowPeriod)) //
 						.filterValue(dataSource -> 128 <= dataSource.dates.length) //

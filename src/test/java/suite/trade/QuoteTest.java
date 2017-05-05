@@ -1,5 +1,7 @@
 package suite.trade;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -19,7 +21,7 @@ public class QuoteTest {
 
 	@Test
 	public void testQuote() {
-		System.out.println(yahoo.quote(Read.each( //
+		System.out.println(yahoo.quote(new HashSet<>(Arrays.asList( //
 				"0002.HK", //
 				"0004.HK", //
 				"0005.HK", //
@@ -32,7 +34,7 @@ public class QuoteTest {
 				"0322.HK", //
 				"1169.HK", //
 				"1357.HK", //
-				"2018.HK")));
+				"2018.HK"))));
 	}
 
 	@Test
@@ -65,7 +67,7 @@ public class QuoteTest {
 	private double summarize(Predicate<Trade> pred, Consumer<String> log) {
 		List<Trade> table0 = TradeUtil.fromHistory(pred);
 		Map<String, Integer> nSharesByStockCodes = TradeUtil.portfolio(table0);
-		Map<String, Float> priceByStockCodes = yahoo.quote(Read.from(nSharesByStockCodes.keySet()));
+		Map<String, Float> priceByStockCodes = yahoo.quote(nSharesByStockCodes.keySet());
 
 		List<Trade> sellAll = Read.from2(nSharesByStockCodes) //
 				.map((stockCode, size) -> {

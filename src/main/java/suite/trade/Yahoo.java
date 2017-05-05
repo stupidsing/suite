@@ -3,6 +3,7 @@ package suite.trade;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class Yahoo {
 		return SerializedStoreCache //
 				.of(DataSource.serializer) //
 				.get(getClass().getSimpleName() + ".dataSourceWithLatestQuote(" + stockCode + ", " + date + ")", () -> {
-					float price = quote(Read.each(stockCode)).get(stockCode);
+					float price = quote(Collections.singleton(stockCode)).get(stockCode);
 					return dataSource(stockCode, DatePeriod.ages()).cons(date, price);
 				});
 	}
@@ -71,17 +72,16 @@ public class Yahoo {
 	 * 
 	 * @return quotes of many stock at once.
 	 */
-	public synchronized Map<String, Float> quote(Streamlet<String> stockCodes) {
+	public synchronized Map<String, Float> quote(Set<String> stockCodes) {
 		return quote(stockCodes, "l1"); // last price
 	}
 
-	public synchronized Map<String, Float> quoteOpenPrice(Streamlet<String> stockCodes) {
+	public synchronized Map<String, Float> quoteOpenPrice(Set<String> stockCodes) {
 		return quote(stockCodes, "o");
 	}
 
-	private Map<String, Float> quote(Streamlet<String> stockCodes0, String field) {
+	private Map<String, Float> quote(Set<String> stockCodes, String field) {
 		Map<String, Float> quotes = quotesByField.computeIfAbsent(field, f -> new HashMap<>());
-		List<String> stockCodes = stockCodes0.toList();
 
 		Set<String> queryStockCodes = Read.from(stockCodes) //
 				.filter(stockCode -> !quotes.containsKey(stockCode)) //

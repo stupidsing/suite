@@ -2,6 +2,7 @@ package suite;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +60,7 @@ public class DailyMain extends ExecutableProgram {
 		Account account1 = portfolio.simulateLatest(1000000f).account;
 
 		List<Pair<String, Integer>> diffs = TradeUtil.diff(account0.assets(), account1.assets());
-		Map<String, Float> priceByStockCode = yahoo.quote(Read.from(diffs).map(pair -> pair.t0));
+		Map<String, Float> priceByStockCode = yahoo.quote(Read.from(diffs).map(pair -> pair.t0).toSet());
 
 		for (Pair<String, Integer> pair : diffs) {
 			String stockCode = pair.t0;
@@ -126,7 +127,7 @@ public class DailyMain extends ExecutableProgram {
 					else
 						throw new RuntimeException("ancient data: " + datex);
 
-					Map<String, Float> latest = yahoo.quote(Read.each(stockCode));
+					Map<String, Float> latest = yahoo.quote(Collections.singleton(stockCode));
 					String latestDate = FormatUtil.formatDate(LocalDate.now());
 					float latestPrice = latest.values().iterator().next();
 
