@@ -21,7 +21,20 @@ public class HkexFactBook {
 	}
 
 	private List<Asset> queryLeadingCompaniesByMarketCap0(int year) {
-		String url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook" + year + "/Documents/06.pdf";
+		String url;
+
+		if (2009 <= year)
+			url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook" + year + "/Documents/06.pdf";
+		else if (2004 <= year)
+			url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook" + year + "/e/06.pdf";
+		else if (2003 <= year)
+			url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook/documents/06.pdf";
+		else if (2001 <= year)
+			url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook" + year + "/documents/06.pdf";
+		else if (2000 <= year)
+			url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook" + year + "/documents/04c_Market%20Capitalisation.pdf";
+		else
+			throw new RuntimeException("Record not exist");
 
 		String cmd = "" //
 				+ "wget -q -O - '" + url + "'" //
