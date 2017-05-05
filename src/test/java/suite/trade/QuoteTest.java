@@ -2,6 +2,7 @@ package suite.trade;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.junit.Test;
@@ -36,7 +37,8 @@ public class QuoteTest {
 
 	@Test
 	public void testQuotes() {
-		summarize(r -> true);
+		System.out.println("P/L = " + summarize(r -> true, s -> {
+		}));
 	}
 
 	@Test
@@ -46,14 +48,21 @@ public class QuoteTest {
 
 	@Test
 	public void testQuotesByStrategies() {
+		Consumer<String> silent = s -> {
+		};
+
 		Map<String, Double> profitAndLossByStrategy = Read.each("mamr", "manual", "pmamr") //
-				.map2(strategy -> summarize(r -> Util.stringEquals(r.strategy, strategy))) //
+				.map2(strategy -> summarize(r -> Util.stringEquals(r.strategy, strategy), silent)) //
 				.toMap();
 
 		System.out.println(profitAndLossByStrategy);
 	}
 
 	private double summarize(Predicate<Record> pred) {
+		return summarize(pred, System.out::println);
+	}
+
+	private double summarize(Predicate<Record> pred, Consumer<String> log) {
 		List<Record> table0 = Trans.fromHistory(pred);
 		Map<String, Integer> nSharesByStockCodes = Trans.portfolio(table0);
 		Map<String, Float> priceByStockCodes = yahoo.quote(Read.from(nSharesByStockCodes.keySet()));
@@ -78,10 +87,10 @@ public class QuoteTest {
 					return stockCode + " (" + shortName + ") := " + price + " * " + nShares + " == " + nShares * price;
 				});
 
-		System.out.println("CONSTITUENTS:");
-		constituents.forEach(System.out::println);
-		System.out.println("OWN = " + -amount0);
-		System.out.println("P/L = " + amount1);
+		log.accept("CONSTITUENTS:");
+		constituents.forEach(log);
+		log.accept("OWN = " + -amount0);
+		log.accept("P/L = " + amount1);
 
 		return amount1;
 	}
