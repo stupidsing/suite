@@ -112,22 +112,12 @@ public class Dump {
 						sink.sink(" caught " + ex + "\n");
 					}
 
-				Set<String> displayedMethod = new HashSet<>();
-
-				for (Method method : Singleton.get().getInspect().methods(clazz)) {
+				for (Method method : Singleton.get().getInspect().getters(clazz)) {
 					String name = method.getName();
 					try {
-						if (name.startsWith("get") //
-								&& method.getParameterTypes().length == 0 //
-								&& !displayedMethod.contains(name)) {
-							Object o = method.invoke(object);
-							if (!(o instanceof Class<?>))
-								d(prefix + "." + name + "()", o);
-
-							// do not display same method of different base
-							// classes
-							displayedMethod.add(name);
-						}
+						Object o = method.invoke(object);
+						if (!(o instanceof Class<?>))
+							d(prefix + "." + name + "()", o);
 					} catch (Throwable ex) {
 						sink.sink(prefix + "." + name + "()");
 						sink.sink(" caught " + ex + "\n");

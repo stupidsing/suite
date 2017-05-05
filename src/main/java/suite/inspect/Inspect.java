@@ -36,7 +36,15 @@ import suite.util.Util;
 public class Inspect {
 
 	private Map<Class<?>, List<Field>> fieldsByClass = new ConcurrentHashMap<>();
+	private Map<Class<?>, List<Method>> gettersByClass = new ConcurrentHashMap<>();
 	private Map<Class<?>, List<Method>> methodsByClass = new ConcurrentHashMap<>();
+	private Map<Class<?>, List<Property>> propertiesByClass = new ConcurrentHashMap<>();
+
+	public interface Property {
+		public Object get(Object object);
+
+		public void set(Object object, Object value);
+	}
 
 	public String toString(Object object) {
 		StringBuilder sb = new StringBuilder();
@@ -357,16 +365,36 @@ public class Inspect {
 
 	private List<Field> getFields0(Class<?> clazz) {
 		Class<?> superClass = clazz.getSuperclass();
+
+		// do not display same field of different base classes
+		Set<String> names = new HashSet<>();
 		List<Field> parentFields = superClass != null ? fields(superClass) : Collections.emptyList();
 		List<Field> childFields = Read.from(clazz.getDeclaredFields()) //
 				.filter(field -> {
 					int modifiers = field.getModifiers();
-					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers);
-				}).toList();
+					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && names.add(field.getName());
+				}) //
+				.toList();
 
 		List<Field> fields = Util.add(parentFields, childFields);
-		Read.from(fields).forEach(field -> field.setAccessible(true));
+		fields.forEach(field -> field.setAccessible(true));
 		return fields;
+	}
+
+	public List<Method> getters(Class<?> clazz) {
+		List<Method> getters = gettersByClass.get(clazz);
+		if (getters == null)
+			gettersByClass.put(clazz, getters = getGetters0(clazz));
+		return getters;
+	}
+
+	private List<Method> getGetters0(Class<?> clazz) {
+		return Read.from(methods(clazz)) //
+				.filter(getter -> {
+					String name = getter.getName();
+					return name.startsWith("get") && getter.getParameterTypes().length == 0;
+				}) //
+				.toList();
 	}
 
 	public List<Method> methods(Class<?> clazz) {
@@ -378,16 +406,66 @@ public class Inspect {
 
 	private List<Method> getMethods0(Class<?> clazz) {
 		Class<?> superClass = clazz.getSuperclass();
+
+		// do not display same method of different base classes
+		Set<String> names = new HashSet<>();
 		List<Method> parentMethods = superClass != null ? methods(superClass) : Collections.emptyList();
 		List<Method> childMethods = Read.from(clazz.getDeclaredMethods()) //
 				.filter(method -> {
 					int modifiers = method.getModifiers();
-					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers);
-				}).toList();
+					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && names.add(method.getName());
+				}) //
+				.toList();
 
 		List<Method> methods = Util.add(parentMethods, childMethods);
-		Read.from(methods).forEach(method -> method.setAccessible(true));
+		methods.forEach(method -> method.setAccessible(true));
 		return methods;
+	}
+
+	public List<Property> properties(Class<?> clazz) {
+		List<Property> properties = propertiesByClass.get(clazz);
+		if (properties == null)
+			propertiesByClass.put(clazz, properties = getProperties0(clazz));
+		return properties;
+	}
+
+	private List<Property> getProperties0(Class<?> clazz) {
+		List<Method> methods = methods(clazz);
+
+		Map<String, Method> getMethods = Read.from(methods) //
+				.filter(getter -> {
+					String name = getter.getName();
+					return name.startsWith("get") && getter.getParameterTypes().length == 0;
+				}) //
+				.map2(getter -> getter.getName().substring(3), getter -> getter) //
+				.toMap();
+
+		Map<String, Method> setMethods = Read.from(methods) //
+				.filter(setter -> {
+					String name = setter.getName();
+					return name.startsWith("set") && setter.getParameterTypes().length == 1;
+				}) //
+				.map2(setter -> setter.getName().substring(3), setter -> setter) //
+				.toMap();
+
+		Set<String> propertyNames = new HashSet<>(getMethods.keySet());
+		propertyNames.retainAll(setMethods.keySet());
+
+		return Read.from(propertyNames) //
+				.<Property> map(propertyName -> {
+					Method getMethod = getMethods.get(propertyName);
+					Method setMethod = setMethods.get(propertyName);
+					return new Property() {
+						public Object get(Object object) {
+							return Rethrow.ex(() -> getMethod.invoke(object));
+						}
+
+						public void set(Object object, Object value) {
+							Rethrow.ex(() -> setMethod.invoke(object, value));
+						}
+					};
+				}) //
+				.toList();
 	}
 
 }
