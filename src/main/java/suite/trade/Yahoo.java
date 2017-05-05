@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 
 import suite.http.HttpUtil;
@@ -15,8 +16,6 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FormatUtil;
-import suite.util.FunUtil.Fun;
-import suite.util.Memoize;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -72,25 +71,33 @@ public class Yahoo {
 	 * 
 	 * @return quotes of many stock at once.
 	 */
-	public Map<String, Float> quote(Streamlet<String> stockCodes) {
-		String urlString = quoteUrl(stockCodes, "l1"); // last price
-		return getCsv(urlString).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
+	public synchronized Map<String, Float> quote(Streamlet<String> stockCodes) {
+		return quote(stockCodes, "l1"); // last price
 	}
 
-	public Map<String, Float> quoteOpenPrice(Streamlet<String> stockCodes) {
-		String urlString = quoteUrl(stockCodes, "o");
-		return getCsv(urlString).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
+	public synchronized Map<String, Float> quoteOpenPrice(Streamlet<String> stockCodes) {
+		return quote(stockCodes, "o");
 	}
 
-	private Streamlet<String[]> getCsv(String urlString) {
-		return Read.from(memoizeGetCsv.apply(urlString));
+	private Map<String, Float> quote(Streamlet<String> stockCodes0, String field) {
+		Map<String, Float> quotes = quotesByField.computeIfAbsent(field, f -> new HashMap<>());
+		List<String> stockCodes = stockCodes0.toList();
+
+		Set<String> queryStockCodes = Read.from(stockCodes) //
+				.filter(stockCode -> !quotes.containsKey(stockCode)) //
+				.toSet();
+
+		quotes.putAll(quote0(Read.from(queryStockCodes), field));
+
+		return Read.from(stockCodes).map2(quotes::get).toMap();
 	}
 
-	private static Fun<String, List<String[]>> memoizeGetCsv = Memoize.limited(Yahoo::getCsv0, 256);
+	private static Map<String, Map<String, Float>> quotesByField = new HashMap<>();
 
-	private static List<String[]> getCsv0(String urlString) {
+	private Map<String, Float> quote0(Streamlet<String> stockCodes, String field) {
+		String urlString = quoteUrl(stockCodes, field);
 		URL url = Rethrow.ex(() -> new URL(urlString));
-		return HttpUtil.http("GET", url).out.collect(As::csv).toList();
+		return HttpUtil.http("GET", url).out.collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
 	}
 
 	private String quoteUrl(Streamlet<String> stockCodes, String field) {
