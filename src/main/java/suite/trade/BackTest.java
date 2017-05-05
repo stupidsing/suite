@@ -1,7 +1,6 @@
 package suite.trade;
 
 import suite.algo.Statistic;
-import suite.math.MathUtil;
 import suite.trade.Strategy.GetBuySell;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
@@ -43,10 +42,10 @@ public class BackTest {
 		// new TimeSeries().sharpeRatio(valuations, nApproxYears);
 
 		concludeLogSink.sink("" //
-				+ ", nYears = " + MathUtil.format(nApproxYears) //
+				+ ", nYears = " + To.string(nApproxYears) //
 				+ ", number of transactions = " + account.nTransactions() //
-				+ ", return = " + MathUtil.format(return_) //
-				+ ", sharpe = " + MathUtil.format(sharpe));
+				+ ", return = " + To.string(return_) //
+				+ ", sharpe = " + To.string(sharpe));
 	}
 
 	private float buySell(DataSource ds, int day, int buySell) {
@@ -58,9 +57,9 @@ public class BackTest {
 			tradeLogSink.sink("" //
 					+ "> date = " + ds.dates[day] //
 					+ ", buy/sell = " + buySell //
-					+ ", price = " + MathUtil.format(price) //
+					+ ", price = " + To.string(price) //
 					+ ", nShares = " + account.nShares() //
-					+ ", valuation = " + MathUtil.format(valuation));
+					+ ", valuation = " + To.string(valuation));
 
 		return valuation;
 	}

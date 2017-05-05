@@ -8,7 +8,6 @@ import java.util.Map;
 
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
-import suite.math.MathUtil;
 import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.os.LogUtil;
@@ -138,7 +137,7 @@ public class Portfolio {
 			double annualReturn = Math.exp(Math.log(vx / v0) / nYears);
 			double sharpe = ts.sharpeRatio(valuations, nYears);
 
-			log.sink("annual return = " + MathUtil.format(annualReturn) + ", sharpe = " + MathUtil.format(sharpe));
+			log.sink("annual return = " + To.string(annualReturn) + ", sharpe = " + To.string(sharpe));
 		}
 	}
 
@@ -184,9 +183,9 @@ public class Portfolio {
 					double sharpe = ts.sharpeRatio(dataSource.prices, (edx - ed0) / 365d);
 					log.sink(hkex.getCompany(stockCode) //
 							+ ", mamrRatio = " + mrs.movingAvgMeanReversionRatio //
-							+ ", " + MathUtil.format(price) + " => " + MathUtil.format(lma) //
-							+ ", yearReturn = " + MathUtil.format(yearReturn) //
-							+ ", sharpe = " + MathUtil.format(sharpe));
+							+ ", " + To.string(price) + " => " + To.string(lma) //
+							+ ", yearReturn = " + To.string(yearReturn) //
+							+ ", sharpe = " + To.string(sharpe));
 					return yearReturn;
 				}) //
 				.filterValue(yearReturn -> riskFreeInterestRate < yearReturn) //

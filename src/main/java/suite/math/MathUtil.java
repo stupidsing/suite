@@ -1,5 +1,7 @@
 package suite.math;
 
+import suite.util.To;
+
 public class MathUtil {
 
 	public static float epsilon = .00001f;
@@ -12,13 +14,9 @@ public class MathUtil {
 		float diff = Math.abs(f0 - f1);
 		if (!Float.isFinite(diff) || epsilon < diff)
 			throw new RuntimeException("Values differ" //
-					+ ": f0 = " + format(f0) //
-					+ ", f1 = " + format(f1) //
+					+ ": f0 = " + To.string(f0) //
+					+ ", f1 = " + To.string(f1) //
 					+ ", diff = " + diff);
-	}
-
-	public static String format(double d) {
-		return String.format("%.3f", d);
 	}
 
 	public static boolean isPositive(double d) {

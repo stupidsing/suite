@@ -3,6 +3,7 @@ package suite.math;
 import java.util.Arrays;
 
 import suite.util.Copy;
+import suite.util.To;
 
 public class Matrix {
 
@@ -486,7 +487,7 @@ public class Matrix {
 	private void dump(StringBuilder sb, float[] m) {
 		sb.append("[ ");
 		for (float f : m)
-			sb.append(MathUtil.format(f) + " ");
+			sb.append(To.string(f) + " ");
 		sb.append("]");
 	}
 

@@ -245,6 +245,10 @@ public class To {
 		return new String(bs, Constants.charset);
 	}
 
+	public static String string(double d) {
+		return String.format("%.3f", d);
+	}
+
 	public static String string(long time) {
 		return FormatUtil.formatDateTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
 	}

@@ -3,7 +3,6 @@ package suite.algo;
 import suite.adt.IntObjMap;
 import suite.adt.IntObjPair;
 import suite.math.Cholesky;
-import suite.math.MathUtil;
 import suite.math.Matrix;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSource.IntObjSource;
@@ -146,9 +145,9 @@ public class Statistic {
 			double var = sumsq * il - mean * mean;
 
 			return "(size = " + length //
-					+ ", mean = " + MathUtil.format(mean) //
-					+ ", range = " + MathUtil.format(min) + "~" + MathUtil.format(max) //
-					+ ", sd = " + MathUtil.format(Math.sqrt(var)) //
+					+ ", mean = " + To.string(mean) //
+					+ ", range = " + To.string(min) + "~" + To.string(max) //
+					+ ", sd = " + To.string(Math.sqrt(var)) //
 					+ ")";
 		} else
 			return "size = 0";
