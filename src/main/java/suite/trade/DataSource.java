@@ -128,12 +128,20 @@ public class DataSource {
 	}
 
 	public float nYears() { // approximately
-		LocalDate dateStart = FormatUtil.date(get(0).date);
-		LocalDate dateEnd = FormatUtil.date(get(-1).date);
+		LocalDate dateStart = FormatUtil.date(first().date);
+		LocalDate dateEnd = FormatUtil.date(last().date);
 		return (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365f;
 	}
 
-	public Datum get(int pos) {
+	public Datum first() {
+		return get(0);
+	}
+
+	public Datum last() {
+		return get(-1);
+	}
+
+	private Datum get(int pos) {
 		if (pos < 0)
 			pos += prices.length;
 		return new Datum(dates[pos], prices[pos]);

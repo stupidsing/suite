@@ -119,7 +119,7 @@ public class DailyMain extends ExecutableProgram {
 
 				try {
 					DataSource ds0 = yahoo.dataSource(stockCode, period);
-					String datex = ds0.get(-1).date;
+					String datex = ds0.last().date;
 
 					if (0 <= datex.compareTo(sevenDaysAgo))
 						ds0.validate();

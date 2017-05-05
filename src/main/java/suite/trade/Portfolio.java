@@ -14,6 +14,7 @@ import suite.math.TimeSeries;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.trade.DataSource.Datum;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -107,7 +108,7 @@ public class Portfolio {
 						.toMap();
 
 				Map<String, Float> latestPriceByStockCode = Read.from2(backTestDataSourceByStockCode) //
-						.mapValue(dataSource -> dataSource.get(-1).price) //
+						.mapValue(dataSource -> dataSource.last().price) //
 						.toMap();
 
 				Map<String, Integer> portfolio = formPortfolio( //
@@ -171,9 +172,11 @@ public class Portfolio {
 						&& 0f < mrs.movingAvgMeanReversionRatio) //
 				.map2((stockCode, mrs) -> stockCode, (stockCode, mrs) -> {
 					DataSource dataSource = dataSourceByStockCode.get(stockCode);
-					long ed0 = FormatUtil.date(dataSource.get(0).date).toEpochDay();
-					long edx = FormatUtil.date(dataSource.get(-1).date).toEpochDay();
-					double price = dataSource.get(-1).price;
+					Datum first = dataSource.first();
+					Datum last = dataSource.last();
+					long ed0 = FormatUtil.date(first.date).toEpochDay();
+					long edx = FormatUtil.date(last.date).toEpochDay();
+					double price = last.price;
 
 					double lma = mrs.latestMovingAverage();
 					double potential = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
@@ -192,7 +195,7 @@ public class Portfolio {
 				.keys() //
 				.map2(stockCode -> stockCode, stockCode -> {
 					int lotSize = lotSizeByStockCode.get(stockCode);
-					float price = dataSourceByStockCode.get(stockCode).get(-1).price;
+					float price = dataSourceByStockCode.get(stockCode).last().price;
 					return lotSize * (int) Math.round(valuation0 / (top * lotSize * price));
 				}) //
 				.toMap();
