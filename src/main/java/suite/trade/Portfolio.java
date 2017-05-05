@@ -23,6 +23,7 @@ import suite.util.Util;
 public class Portfolio {
 
 	private float riskFreeInterestRate = 1.05f;
+	private int tradeFrequency = 1;
 	private int top = 5;
 	private int tor = 64;
 	private int historyWindow = 1024;
@@ -56,7 +57,8 @@ public class Portfolio {
 		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Read.from(dates) //
 				.filter(date -> true //
 						&& from.compareTo(date) <= 0 //
-						&& date.compareTo(to) < 0) //
+						&& date.compareTo(to) < 0 //
+						&& date.toEpochDay() % tradeFrequency == 0) //
 				.toList();
 		return new Simulate(fund0, from, datesPred);
 	}
