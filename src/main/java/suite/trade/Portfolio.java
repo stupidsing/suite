@@ -22,7 +22,6 @@ import suite.util.Util;
 
 public class Portfolio {
 
-	private float riskFreeInterestRate = 1.05f;
 	private int tradeFrequency = 1;
 	private int top = 2;
 	private int tor = 64;
@@ -190,7 +189,7 @@ public class Portfolio {
 							+ ", sharpe = " + To.string(sharpe));
 					return annualReturn;
 				}) //
-				.filterValue(annualReturn -> riskFreeInterestRate < annualReturn) //
+				.filterValue(annualReturn -> 1d + stat.riskFreeInterestRate < annualReturn) //
 				.sortBy((stockCode, potential) -> -potential) //
 				.take(top) //
 				.keys() //
