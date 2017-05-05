@@ -13,7 +13,7 @@ public class BackTest {
 	public final StringBuilder concludeLog = new StringBuilder();
 
 	private Sink<String> tradeLogSink = To.sink(tradeLog);
-	private Sink<String> concludeLogSink = To.sink(concludeLog);
+	private Sink<String> concludeLogSink = concludeLog::append;
 
 	public static BackTest test(DataSource ds, Strategy strategy) {
 		return new BackTest(ds, strategy);
@@ -40,6 +40,7 @@ public class BackTest {
 		float return_ = account.cash();
 		float nApproxYears = ds.nYears();
 		double sharpe = return_ / (Math.sqrt(nApproxYears * new Statistic().variance(valuations)));
+		// new TimeSeries().sharpeRatio(valuations, nApproxYears);
 
 		concludeLogSink.sink("" //
 				+ ", nYears = " + MathUtil.format(nApproxYears) //
@@ -54,8 +55,8 @@ public class BackTest {
 		float valuation = account.valuation(To.map(Account.defaultStockCode, price));
 
 		if (day == 0 || buySell != 0)
-			tradeLogSink.sink("\n" //
-					+ "date = " + ds.dates[day] //
+			tradeLogSink.sink("" //
+					+ "> date = " + ds.dates[day] //
 					+ ", buy/sell = " + buySell //
 					+ ", price = " + MathUtil.format(price) //
 					+ ", nShares = " + account.nShares() //
