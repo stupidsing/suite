@@ -20,11 +20,55 @@ public class ElfTest {
 	@Test
 	public void test() throws IOException {
 		String program = "" //
-				+ "declare inc = function [i0, out ix,] ( {ix} = i0 + 1; );" //
-				+ "signature j = int;" //
-				+ "inc [41, out j,];" //
-				+ "j;";
+				+ "declare inc = function [i0, out ix,] ( {ix} = i0 + 1; ); \n" //
+				+ "signature j = int; \n" //
+				+ "inc [41, out j,]; \n" //
+				+ "j; \n" //
+		;
 
+		compileElf(program);
+	}
+
+	@Test
+	public void testCat() throws IOException {
+		String program = "" //
+				+ "declare linux-read = function [pointer:(byte * 256) buffer, int length,] ( \n" //
+				+ "    buffer; \n" //
+				+ "    asm _ MOV (ECX, EAX); \n" //
+				+ "    length; \n" //
+				+ "    asm _ MOV (EDX, EAX); \n" //
+				+ "    asm _ MOV (EAX, 3); \n" //
+				+ "    asm _ XOR (EBX, EBX); \n" //
+				+ "    asm _ INT (-128); \n" //
+				+ "    -- length in EAX \n" //
+				+ "); \n" //
+				+ "\n" //
+				+ "\n" //
+				+ "declare linux-write = function [pointer:(byte * 256) buffer, int length,] ( \n" //
+				+ "    buffer; \n" //
+				+ "    asm _ MOV (ECX, EAX); \n" //
+				+ "    length; \n" //
+				+ "    asm _ MOV (EDX, EAX); \n" //
+				+ "    asm _ MOV (EAX, 4); \n" //
+				+ "    asm _ XOR (EBX, EBX); \n" //
+				+ "    asm _ INT (-128); \n" //
+				+ "    -- length in EAX \n" //
+				+ "); \n" //
+				+ "\n" //
+				+ "signature buffer = byte * 256; \n" //
+				+ "declare nBytesRead = 1; \n" //
+				+ "\n" //
+				+ "while (nBytesRead != 0) do ( \n" //
+				+ "    {nBytesRead} = linux-read [& buffer, 256,]; \n" //
+				+ "    linux-write [& buffer, nBytesRead,]; \n" //
+				+ "); \n" //
+				+ "0; \n" //
+		;
+
+		compileElf(program);
+	}
+
+	private void compileElf(String program) throws IOException {
 		String program1 = "" //
 				+ "asm _ MOV (EBP, ESP);" //
 				+ program //
