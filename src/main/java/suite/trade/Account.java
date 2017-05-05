@@ -18,6 +18,7 @@ public class Account {
 
 	private Map<String, Integer> assets = new HashMap<>();
 	private int nTransactions = 0;
+	private float nTransactionAmount = 0f;
 
 	public static Account fromHistory(Predicate<Record> pred) {
 		return fromHistory(Trans.fromHistory(pred));
@@ -59,7 +60,7 @@ public class Account {
 
 		return Read.from2(buySells) //
 				.filterValue(n -> n != 0) //
-				.map((stockCode, n) -> "" + stockCode + ":" + prices.get(stockCode) + "*" + n + ",") //
+				.map((stockCode, n) -> "|" + stockCode + ":" + prices.get(stockCode) + "*" + n) //
 				.collect(As.joined());
 	}
 
@@ -69,12 +70,15 @@ public class Account {
 
 	public void buySell(String stockCode, int buySell, float price) {
 		int cash0 = cash();
-		int cash1 = (int) (cash0 - buySell * price);
+		float cost = buySell * price;
+		int cash1 = (int) (cash0 - cost);
 		int nShares0 = nShares(stockCode);
 		int nShares1 = nShares0 + buySell;
 		update(cashCode, cash1);
 		update(stockCode, nShares1);
-		nTransactions += Math.abs(buySell);
+		if (buySell != 0)
+			nTransactions++;
+		nTransactionAmount += Math.abs(cost);
 	}
 
 	private void update(String code, int amount) {
@@ -113,6 +117,10 @@ public class Account {
 
 	public int nTransactions() {
 		return nTransactions;
+	}
+
+	public float nTransactionAmount() {
+		return nTransactionAmount;
 	}
 
 }

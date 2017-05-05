@@ -24,6 +24,10 @@ public class PortfolioTest {
 		LocalDate frDate = LocalDate.of(2017, 1, 1);
 		LocalDate toDate = LocalDate.of(2020, 1, 1);
 		Simulate sim = portfolio.simulateFromTo(initial, frDate, toDate);
+
+		System.out.println("nTransactions = " + sim.account.nTransactions());
+		System.out.println("nTransactionAmount = " + sim.account.nTransactionAmount());
+
 		float[] valuations = sim.valuations;
 		assertTrue(initial * 1.05f < valuations[valuations.length - 1]);
 	}
