@@ -38,7 +38,6 @@ import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Mutable;
 import suite.node.util.SuiteException;
@@ -289,11 +288,11 @@ public class SewingProverImpl implements SewingProver {
 		List<Node> list;
 		Cps cps;
 
-		if (1 < (list = breakdown(TermOp.AND___, node)).size()) {
+		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size()) {
 			cps = cpsx;
 			for (Node n : Util.reverse(list))
 				cps = compileNoCutPredicate0(sb, n, cps);
-		} else if (1 < (list = breakdown(TermOp.OR____, node)).size()) {
+		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size()) {
 			Cps[] cpsArray = Read.from(list).map(n -> compileNoCutPredicate0(sb, n, cpsx)).toArray(Cps.class);
 			cps = rt -> {
 				Restore restore = save(rt);
@@ -328,9 +327,9 @@ public class SewingProverImpl implements SewingProver {
 		Tree tree;
 		Node[] m;
 
-		if (1 < (list = breakdown(TermOp.AND___, node)).size())
+		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size())
 			tr = and(Read.from(list).map(n -> compile0(sb, n)));
-		else if (1 < (list = breakdown(TermOp.OR____, node)).size())
+		else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
 			tr = or(Read.from(list).map(n -> compile0(sb, n)));
 		else if ((m = Suite.matcher(".0 = .1").apply(node)) != null) {
 			boolean b = complexity(m[0]) <= complexity(m[1]);
@@ -766,23 +765,6 @@ public class SewingProverImpl implements SewingProver {
 			return 1 + Math.max(complexity(tree.getLeft()), complexity(tree.getRight()));
 		else
 			return node instanceof Atom && SewingGeneralizerImpl.isVariable(((Atom) node).name) ? 0 : 1;
-	}
-
-	private List<Node> breakdown(Operator operator, Node node) {
-		List<Node> list = new ArrayList<>();
-		Mutable<Sink<Node>> mutableSink = Mutable.nil();
-		Sink<Node> sink;
-		mutableSink.set(sink = node_ -> {
-			Tree tree;
-			if ((tree = Tree.decompose(node_, operator)) != null) {
-				Sink<Node> sink_ = mutableSink.get();
-				sink_.sink(tree.getLeft());
-				sink_.sink(tree.getRight());
-			} else
-				list.add(node_);
-		});
-		sink.sink(node);
-		return list;
 	}
 
 	private Mutable<Trampoline> getTrampolineByPrototype(Prototype prototype) {
