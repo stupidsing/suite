@@ -22,7 +22,7 @@ import suite.trade.Hkex;
 import suite.trade.Portfolio;
 import suite.trade.Strategos;
 import suite.trade.Strategy;
-import suite.trade.Trans;
+import suite.trade.TradeUtil;
 import suite.trade.Yahoo;
 import suite.util.FormatUtil;
 import suite.util.Serialize;
@@ -55,10 +55,10 @@ public class DailyMain extends ExecutableProgram {
 	private String pmamr() {
 		StringBuilder sb = new StringBuilder();
 		Portfolio portfolio = new Portfolio(To.sink(sb));
-		Account account0 = Account.fromHistory(Trans.fromHistory(r -> Util.stringEquals(r.strategy, "pmamr")));
+		Account account0 = Account.fromHistory(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, "pmamr")));
 		Account account1 = portfolio.simulateLatest(1000000f).account;
 
-		List<Pair<String, Integer>> diffs = Trans.diff(account0.assets(), account1.assets());
+		List<Pair<String, Integer>> diffs = TradeUtil.diff(account0.assets(), account1.assets());
 		Map<String, Float> priceByStockCode = yahoo.quote(Read.from(diffs).map(pair -> pair.t0));
 
 		for (Pair<String, Integer> pair : diffs) {

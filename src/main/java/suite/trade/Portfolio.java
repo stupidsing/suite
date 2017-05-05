@@ -124,7 +124,7 @@ public class Portfolio {
 
 				log.sink(FormatUtil.formatDate(date) //
 						+ ", valuation = " + valuation1 //
-						+ ", portfolio = " + Trans.format(portfolio) //
+						+ ", portfolio = " + TradeUtil.format(portfolio) //
 						+ ", actions = " + actions);
 			}
 

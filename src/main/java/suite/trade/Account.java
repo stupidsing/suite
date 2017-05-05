@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 import suite.adt.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.trade.Trans.Record;
+import suite.trade.TradeUtil.Trade;
 import suite.util.Util;
 
 public class Account {
@@ -20,12 +20,12 @@ public class Account {
 	private int nTransactions = 0;
 	private float nTransactionAmount = 0f;
 
-	public static Account fromHistory(Predicate<Record> pred) {
-		return fromHistory(Trans.fromHistory(pred));
+	public static Account fromHistory(Predicate<Trade> pred) {
+		return fromHistory(TradeUtil.fromHistory(pred));
 	}
 
-	public static Account fromHistory(List<Record> table) {
-		return new Account(Trans.portfolio(table));
+	public static Account fromHistory(List<Trade> table) {
+		return new Account(TradeUtil.portfolio(table));
 	}
 
 	public static Account fromCash(float cash) {
@@ -51,7 +51,7 @@ public class Account {
 
 	public String portfolio(Map<String, Integer> assets1, Map<String, Float> prices) {
 		Map<String, Integer> assets0 = assets;
-		List<Pair<String, Integer>> buySells = Trans.diff(assets0, assets1);
+		List<Pair<String, Integer>> buySells = TradeUtil.diff(assets0, assets1);
 
 		for (Pair<String, Integer> buySell : buySells) {
 			String stockCode = buySell.t0;

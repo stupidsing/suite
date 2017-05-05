@@ -14,20 +14,20 @@ import suite.util.FunUtil.Source;
 import suite.util.Memoize;
 import suite.util.Util;
 
-public class Trans {
+public class TradeUtil {
 
-	public static class Record {
+	public static class Trade {
 		public String date;
 		public int buySell;
 		public String stockCode;
 		public float price;
 		public String strategy;
 
-		public Record(String[] array) {
+		public Trade(String[] array) {
 			this(array[0], Integer.parseInt(array[1]), array[2], Float.parseFloat(array[3]), array[4]);
 		}
 
-		public Record(String date, int buySell, String stockCode, float price, String strategy) {
+		public Trade(String date, int buySell, String stockCode, float price, String strategy) {
 			this.date = date;
 			this.buySell = buySell;
 			this.stockCode = stockCode;
@@ -43,21 +43,21 @@ public class Trans {
 				.collect(As.joined());
 	}
 
-	public static List<Record> fromHistory(Predicate<Record> pred) {
+	public static List<Trade> fromHistory(Predicate<Trade> pred) {
 		return memoizeHistoryRecords.source().filter(pred).toList();
 	}
 
-	private static Source<Streamlet<Record>> memoizeHistoryRecords = Memoize.source(Trans::historyRecords);
+	private static Source<Streamlet<Trade>> memoizeHistoryRecords = Memoize.source(TradeUtil::historyRecords);
 
-	private static Streamlet<Record> historyRecords() {
+	private static Streamlet<Trade> historyRecords() {
 		return Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt") //
 				.collect(As::table) //
-				.map(Record::new) //
+				.map(Trade::new) //
 				.collect(As::streamlet);
 	}
 
-	public static Map<String, Integer> portfolio(List<Record> records) {
-		return Read.from(records) //
+	public static Map<String, Integer> portfolio(List<Trade> trades) {
+		return Read.from(trades) //
 				.map2(r -> r.stockCode, r -> r.buySell) //
 				.groupBy(sizes -> sizes.collect(As.sumOfInts(size -> size))) //
 				.filterValue(size -> size != 0) //
@@ -65,8 +65,8 @@ public class Trans {
 	}
 
 	// Profit & loss
-	public static double returns(List<Record> records) {
-		return Read.from(records).collect(As.sumOfDoubles(r -> -r.buySell * r.price));
+	public static double returns(List<Trade> trades) {
+		return Read.from(trades).collect(As.sumOfDoubles(r -> -r.buySell * r.price));
 	}
 
 	public static List<Pair<String, Integer>> diff(Map<String, Integer> assets0, Map<String, Integer> assets1) {

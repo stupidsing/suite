@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.Trans.Record;
+import suite.trade.TradeUtil.Trade;
 import suite.util.Util;
 
 public class QuoteTest {
@@ -58,26 +58,26 @@ public class QuoteTest {
 		System.out.println(profitAndLossByStrategy);
 	}
 
-	private double summarize(Predicate<Record> pred) {
+	private double summarize(Predicate<Trade> pred) {
 		return summarize(pred, System.out::println);
 	}
 
-	private double summarize(Predicate<Record> pred, Consumer<String> log) {
-		List<Record> table0 = Trans.fromHistory(pred);
-		Map<String, Integer> nSharesByStockCodes = Trans.portfolio(table0);
+	private double summarize(Predicate<Trade> pred, Consumer<String> log) {
+		List<Trade> table0 = TradeUtil.fromHistory(pred);
+		Map<String, Integer> nSharesByStockCodes = TradeUtil.portfolio(table0);
 		Map<String, Float> priceByStockCodes = yahoo.quote(Read.from(nSharesByStockCodes.keySet()));
 
-		List<Record> sellAll = Read.from2(nSharesByStockCodes) //
+		List<Trade> sellAll = Read.from2(nSharesByStockCodes) //
 				.map((stockCode, size) -> {
 					float price = priceByStockCodes.get(stockCode);
-					return new Record("-", -size, stockCode, price, "-");
+					return new Trade("-", -size, stockCode, price, "-");
 				}) //
 				.toList();
 
-		List<Record> table1 = Streamlet.concat(Read.from(table0), Read.from(sellAll)).toList();
+		List<Trade> table1 = Streamlet.concat(Read.from(table0), Read.from(sellAll)).toList();
 
-		double amount0 = Trans.returns(table0);
-		double amount1 = Trans.returns(table1);
+		double amount0 = TradeUtil.returns(table0);
+		double amount1 = TradeUtil.returns(table1);
 
 		Streamlet<String> constituents = Read.from2(nSharesByStockCodes) //
 				.map((stockCode, nShares) -> {
