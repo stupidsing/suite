@@ -24,7 +24,7 @@ public class Portfolio {
 
 	private float riskFreeInterestRate = 1.05f;
 	private int tradeFrequency = 1;
-	private int top = 5;
+	private int top = 2;
 	private int tor = 64;
 	private int historyWindow = 1024;
 
