@@ -8,7 +8,10 @@ import java.util.function.Predicate;
 import suite.adt.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.util.FunUtil.Source;
+import suite.util.Memoize;
 import suite.util.Util;
 
 public class Trans {
@@ -34,11 +37,16 @@ public class Trans {
 	}
 
 	public static List<Record> fromHistory(Predicate<Record> pred) {
+		return memoizeHistoryRecords.source().filter(pred).toList();
+	}
+
+	private static Source<Streamlet<Record>> memoizeHistoryRecords = Memoize.source(Trans::historyRecords);
+
+	private static Streamlet<Record> historyRecords() {
 		return Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt") //
 				.collect(As::table) //
 				.map(Record::new) //
-				.filter(pred) //
-				.toList();
+				.collect(As::streamlet);
 	}
 
 	public static Map<String, Integer> portfolio(List<Record> records) {
