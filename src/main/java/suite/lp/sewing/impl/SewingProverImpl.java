@@ -770,17 +770,19 @@ public class SewingProverImpl implements SewingProver {
 
 	private List<Node> breakdown(Operator operator, Node node) {
 		List<Node> list = new ArrayList<>();
-		breakdown0(operator, node, list);
+		Mutable<Sink<Node>> mutableSink = Mutable.nil();
+		Sink<Node> sink;
+		mutableSink.set(sink = node_ -> {
+			Tree tree;
+			if ((tree = Tree.decompose(node_, operator)) != null) {
+				Sink<Node> sink_ = mutableSink.get();
+				sink_.sink(tree.getLeft());
+				sink_.sink(tree.getRight());
+			} else
+				list.add(node_);
+		});
+		sink.sink(node);
 		return list;
-	}
-
-	private void breakdown0(Operator operator, Node node, List<Node> list) {
-		Tree tree;
-		while ((tree = Tree.decompose(node, operator)) != null) {
-			breakdown0(operator, tree.getLeft(), list);
-			node = tree.getRight();
-		}
-		list.add(node);
 	}
 
 	private Mutable<Trampoline> getTrampolineByPrototype(Prototype prototype) {
