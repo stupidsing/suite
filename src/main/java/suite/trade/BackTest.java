@@ -37,7 +37,7 @@ public class BackTest {
 		buySell(ds, length - 1, -account.nShares());
 
 		float return_ = account.cash();
-		float nApproxYears = ds.nYears();
+		double nApproxYears = ds.nYears();
 		double sharpe = return_ / (Math.sqrt(nApproxYears * new Statistic().variance(valuations)));
 		// new TimeSeries().sharpeRatio(valuations, nApproxYears);
 

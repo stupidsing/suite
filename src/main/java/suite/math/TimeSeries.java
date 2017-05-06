@@ -12,7 +12,7 @@ public class TimeSeries {
 	// 4% risk-free interest rate
 	public double sharpeRatio(float[] fs, double nYears) {
 		float[] returns = returns(fs);
-		double r0 = Math.exp(Math.log1p(stat.riskFreeInterestRate) * nYears / returns.length) - 1d;
+		double r0 = Math.expm1(Math.log1p(stat.riskFreeInterestRate) * nYears / returns.length);
 		return (stat.mean(returns) - r0) / Math.sqrt(nYears * stat.variance(returns));
 	}
 

@@ -50,4 +50,8 @@ public class DatePeriod extends Range<LocalDate> {
 		super(from, to);
 	}
 
+	public double nYears() {
+		return (to.toEpochDay() - from.toEpochDay()) / 365f;
+	}
+
 }

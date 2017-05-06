@@ -127,10 +127,10 @@ public class DataSource {
 		}
 	}
 
-	public float nYears() { // approximately
+	public double nYears() { // approximately
 		LocalDate dateStart = FormatUtil.date(first().date);
 		LocalDate dateEnd = FormatUtil.date(last().date);
-		return (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365f;
+		return DatePeriod.of(dateStart, dateEnd).nYears();
 	}
 
 	public Datum first() {

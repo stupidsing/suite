@@ -138,7 +138,7 @@ public class Portfolio {
 			double vx = valuations[valuations.length - 1];
 
 			double nYears = (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365d;
-			double annualReturn = Math.exp(Math.log(vx / v0) / nYears);
+			double annualReturn = Math.expm1(Math.log(vx / v0) / nYears);
 			double sharpe = ts.sharpeRatio(valuations, nYears);
 			double skewness = stat.skewness(valuations);
 
@@ -189,7 +189,7 @@ public class Portfolio {
 
 					double lma = mrs.latestMovingAverage();
 					double potential = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
-					double annualReturn = Math.exp(Math.log1p(potential) * nTradeDaysInYear);
+					double annualReturn = Math.expm1(Math.log1p(potential) * nTradeDaysInYear);
 					double sharpe = ts.sharpeRatio(dataSource.prices, (edx - ed0) / 365d);
 					log.sink(hkex.getCompany(stockCode) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
@@ -198,7 +198,7 @@ public class Portfolio {
 							+ ", sharpe = " + To.string(sharpe));
 					return annualReturn;
 				}) //
-				.filterValue(annualReturn -> 1d + stat.riskFreeInterestRate < annualReturn) //
+				.filterValue(annualReturn -> stat.riskFreeInterestRate < annualReturn) //
 				.sortBy((stockCode, potential) -> -potential) //
 				.take(top) //
 				.keys() //
