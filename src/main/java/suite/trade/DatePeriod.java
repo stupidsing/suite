@@ -12,10 +12,10 @@ public class DatePeriod extends Range<LocalDate> {
 		return of(from, to);
 	}
 
-	public static DatePeriod backTestDaysBefore(int alignment, int nDays) {
+	public static DatePeriod backTestDaysBefore(LocalDate date, int nDays, int alignment) {
 
 		// align date range boundaries to reduce number of web queries
-		long todayEpochDay = LocalDate.now().toEpochDay();
+		long todayEpochDay = date.toEpochDay();
 		long endEpochDate = todayEpochDay - todayEpochDay % alignment;
 		long startEpochDate = endEpochDate - nDays;
 		return of(LocalDate.ofEpochDay(startEpochDate), LocalDate.ofEpochDay(endEpochDate));
