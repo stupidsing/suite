@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
 import suite.math.Matrix;
@@ -160,7 +162,10 @@ public class Portfolio {
 		log.sink(dataSourceByStockCode.size() + " assets in data source");
 
 		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(dataSourceByStockCode) //
-				.mapValue(MeanReversionStats::new) //
+				.map2((stockCode, dataSource) -> stockCode, (stockCode, dataSource) -> {
+					DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 512, 32);
+					return meanReversionStats(stockCode, dataSource, mrsPeriod);
+				}) //
 				.toMap();
 
 		// make sure all time-series are mean-reversions:
@@ -204,6 +209,12 @@ public class Portfolio {
 				.toMap();
 	}
 
+	private MeanReversionStats meanReversionStats(String stockCode, DataSource dataSource, DatePeriod period) {
+		Map<Pair<String, DatePeriod>, MeanReversionStats> memoizeMeanReversionStats = new ConcurrentHashMap<>();
+		Pair<String, DatePeriod> key = Pair.of(stockCode, period);
+		return memoizeMeanReversionStats.computeIfAbsent(key, p -> new MeanReversionStats(dataSource, period));
+	}
+
 	public class MeanReversionStats {
 		public final float[] movingAverage;
 		public final double adf;
@@ -214,7 +225,8 @@ public class Portfolio {
 		public final double halfLife;
 		public final double movingAvgHalfLife;
 
-		public MeanReversionStats(DataSource dataSource) {
+		public MeanReversionStats(DataSource dataSource0, DatePeriod mrsPeriod) {
+			DataSource dataSource = dataSource0.limit(mrsPeriod);
 			float[] prices = dataSource.prices;
 
 			movingAverage = movingAvg.movingGeometricAvg(prices, tor);

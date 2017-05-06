@@ -19,6 +19,9 @@ public class QuoteTest {
 	private Hkex hkex = new Hkex();
 	private Yahoo yahoo = new Yahoo();
 
+	private Consumer<String> silent = s -> {
+	};
+
 	@Test
 	public void testQuote() {
 		System.out.println(yahoo.quote(new HashSet<>(Arrays.asList( //
@@ -39,8 +42,12 @@ public class QuoteTest {
 
 	@Test
 	public void testQuotes() {
-		System.out.println("P/L = " + summarize(r -> true, s -> {
-		}));
+		System.out.println("P/L = " + summarize(r -> true, silent));
+	}
+
+	@Test
+	public void testQuotesDetail() {
+		summarize(r -> true);
 	}
 
 	@Test
@@ -50,9 +57,6 @@ public class QuoteTest {
 
 	@Test
 	public void testQuotesByStrategies() {
-		Consumer<String> silent = s -> {
-		};
-
 		Map<String, Double> profitAndLossByStrategy = Read.each("mamr", "manual", "pmamr") //
 				.map2(strategy -> summarize(r -> Util.stringEquals(r.strategy, strategy), silent)) //
 				.toMap();
