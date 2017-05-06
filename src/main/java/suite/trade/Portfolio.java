@@ -77,6 +77,7 @@ public class Portfolio {
 			// hkex.getCompanies();
 
 			Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
+			yahoo.quote(lotSizeByStockCode.keySet()); // pre-fetch quotes
 
 			for (Asset asset : assets) {
 				String stockCode = asset.code;
@@ -103,9 +104,6 @@ public class Portfolio {
 			for (int i = 0; i < dates.size(); i++) {
 				LocalDate date = dates.get(i);
 				DatePeriod historyWindowPeriod = DatePeriod.of(date.minusDays(historyWindow), date);
-
-				// pre-fetch quotes
-				yahoo.quote(dataSourceByStockCode.keySet());
 
 				Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
 						.mapValue(dataSource -> dataSource.limit(historyWindowPeriod)) //
@@ -142,8 +140,11 @@ public class Portfolio {
 			double nYears = (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365d;
 			double annualReturn = Math.exp(Math.log(vx / v0) / nYears);
 			double sharpe = ts.sharpeRatio(valuations, nYears);
+			double skewness = stat.skewness(valuations);
 
-			log.sink("annual return = " + To.string(annualReturn) + ", sharpe = " + To.string(sharpe));
+			log.sink("annual return = " + To.string(annualReturn) //
+					+ ", sharpe = " + To.string(sharpe) //
+					+ ", skewness = " + To.string(skewness));
 		}
 	}
 

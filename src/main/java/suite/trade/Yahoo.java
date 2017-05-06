@@ -82,22 +82,20 @@ public class Yahoo {
 
 	private Map<String, Float> quote(Set<String> stockCodes, String field) {
 		Map<String, Float> quotes = quotesByField.computeIfAbsent(field, f -> new HashMap<>());
-
-		Set<String> queryStockCodes = Read.from(stockCodes) //
-				.filter(stockCode -> !quotes.containsKey(stockCode)) //
-				.toSet();
-
+		Set<String> queryStockCodes = Read.from(stockCodes).filter(stockCode -> !quotes.containsKey(stockCode)).toSet();
 		quotes.putAll(quote0(Read.from(queryStockCodes), field));
-
 		return Read.from(stockCodes).map2(quotes::get).toMap();
 	}
 
 	private static Map<String, Map<String, Float>> quotesByField = new HashMap<>();
 
 	private Map<String, Float> quote0(Streamlet<String> stockCodes, String field) {
-		String urlString = quoteUrl(stockCodes, field);
-		URL url = Rethrow.ex(() -> new URL(urlString));
-		return HttpUtil.http("GET", url).out.collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
+		if (0 < stockCodes.size()) {
+			String urlString = quoteUrl(stockCodes, field);
+			URL url = Rethrow.ex(() -> new URL(urlString));
+			return HttpUtil.http("GET", url).out.collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
+		} else
+			return new HashMap<>();
 	}
 
 	private String quoteUrl(Streamlet<String> stockCodes, String field) {
