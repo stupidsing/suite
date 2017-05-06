@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import suite.adt.IntIntPair;
+import suite.math.Sigmoid;
 import suite.util.To;
 import suite.util.Util;
 
@@ -112,11 +113,11 @@ public class ConvolutionalNeuralNetwork {
 	}
 
 	private float activationFunction(float value) {
-		return 1f / (1f + (float) Math.exp(-value));
+		return Sigmoid.sigmoid(value);
 	}
 
 	private float activationFunctionGradient(float value) {
-		return value * (1f - value);
+		return Sigmoid.sigmoidGradient(value);
 	}
 
 }
