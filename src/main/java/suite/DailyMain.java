@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import suite.adt.Pair;
 import suite.math.MathUtil;
@@ -24,6 +25,7 @@ import suite.trade.Portfolio;
 import suite.trade.Strategos;
 import suite.trade.Strategy;
 import suite.trade.TradeUtil;
+import suite.trade.TradeUtil.Trade;
 import suite.trade.Yahoo;
 import suite.util.FormatUtil;
 import suite.util.Serialize;
@@ -42,42 +44,32 @@ public class DailyMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		String result = pmamr();
+		List<Pair<String, String>> outputs = new ArrayList<>();
+		outputs.add(Pair.of("mamr", mamr()));
+		outputs.add(Pair.of("pmamr", pmamr()));
+		outputs.add(Pair.of("tlo", tlo()));
 
-		LogUtil.info("OUTPUT:" + result);
+		StringBuilder sb = new StringBuilder();
+		for (Pair<String, String> output : outputs)
+			sb.append("OUTPUT (" + output.t0 + "):" + output.t1);
+
+		String result = sb.toString();
+		LogUtil.info(result);
 
 		SmtpSslGmail smtp = new SmtpSslGmail();
 		smtp.send(null, getClass().getName(), result);
-
 		return true;
 	}
 
-	// portfolio-based moving average mean reversion
-	private String pmamr() {
-		StringBuilder sb = new StringBuilder();
-		Portfolio portfolio = new Portfolio(To.sink(sb));
-		Account account0 = Account.fromHistory(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, "pmamr")));
-		Account account1 = portfolio.simulateLatest(1000000f).account;
-
-		List<Pair<String, Integer>> diffs = TradeUtil.diff(account0.assets(), account1.assets());
-		Map<String, Float> priceByStockCode = yahoo.quote(Read.from(diffs).map(pair -> pair.t0).toSet());
-
-		for (Pair<String, Integer> pair : diffs) {
-			String stockCode = pair.t0;
-			Float price = priceByStockCode.get(stockCode);
-			sb.append("\n" + stockCode + " has signal " + price + " * " + pair.t1);
-		}
-
-		return sb.toString();
-	}
-
 	// moving average mean reversion
-	@SuppressWarnings("unused")
 	private String mamr() {
 		Hkex hkex = new Hkex();
 		Yahoo yahoo = new Yahoo();
 		Streamlet<Asset> assets = hkex.getCompanies();
 		Strategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
+
+		LogUtil.info("S0 pre-fetch quotes");
+		yahoo.quote(assets.map(asset -> asset.code).toSet());
 
 		LogUtil.info("S1 perform back test");
 
@@ -136,7 +128,7 @@ public class DailyMain extends ExecutableProgram {
 
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
-					String message = asset + " has signal " + prices[last] + " * " + signal * lotSize;
+					String message = "\n" + asset + " has signal " + prices[last] + " * " + signal * lotSize;
 
 					if (signal != 0)
 						messages.add(message);
@@ -146,7 +138,46 @@ public class DailyMain extends ExecutableProgram {
 			}
 		}
 
-		return Read.from(messages).collect(As.joined("\n"));
+		return Read.from(messages).collect(As.joined());
+	}
+
+	// portfolio-based moving average mean reversion
+	private String pmamr() {
+		StringBuilder sb = new StringBuilder();
+		Portfolio portfolio = new Portfolio(To.sink(sb));
+		Account account0 = Account.fromHistory(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, "pmamr")));
+		Account account1 = portfolio.simulateLatest(1000000f).account;
+
+		List<Pair<String, Integer>> diffs = TradeUtil.diff(account0.assets(), account1.assets());
+		Map<String, Float> priceByStockCode = yahoo.quote(Read.from(diffs).map(pair -> pair.t0).toSet());
+
+		for (Pair<String, Integer> pair : diffs) {
+			String stockCode = pair.t0;
+			Float price = priceByStockCode.get(stockCode);
+			sb.append("\n" + stockCode + " has signal " + price + " * " + pair.t1);
+		}
+
+		return sb.toString();
+	}
+
+	// try limit orders, "human pride" strategy
+	private String tlo() {
+		StringBuilder sb = new StringBuilder();
+		List<Trade> history = TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, "tlo"));
+		Account account = Account.fromHistory(history);
+
+		Map<String, Float> faceValueByStockCodes = Read.from(history) //
+				.groupBy(record -> record.stockCode, //
+						rs -> (float) (Read.from(rs).collect(As.sumOfDoubles(r -> r.buySell * r.price))))
+				.toMap();
+
+		for (Entry<String, Integer> e : account.assets().entrySet()) {
+			String stockCode = e.getKey();
+			String targetPrice = To.string(1.1d * faceValueByStockCodes.get(stockCode) / e.getValue());
+			sb.append("\n" + stockCode + " has signal " + targetPrice + " * " + e.getValue());
+		}
+
+		return sb.toString();
 	}
 
 }
