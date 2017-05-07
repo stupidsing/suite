@@ -39,7 +39,6 @@ public class AllocateAsset {
 
 	public List<Pair<String, Double>> allocate( //
 			Map<String, DataSource> dataSourceByStockCode, //
-			Map<String, Integer> lotSizeByStockCode, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
 		LocalDate oneYearAgo = backTestDate.minusYears(1);

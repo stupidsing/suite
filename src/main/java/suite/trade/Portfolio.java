@@ -108,7 +108,6 @@ public class Portfolio {
 
 				List<Pair<String, Double>> potentialStatsByStockCode = new AllocateAsset(log).allocate( //
 						backTestDataSourceByStockCode, //
-						lotSizeByStockCode, //
 						tradeDates, //
 						date);
 
