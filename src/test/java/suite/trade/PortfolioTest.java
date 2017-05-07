@@ -16,8 +16,8 @@ public class PortfolioTest {
 
 	@Test
 	public void testStats() {
-		System.out.println(portfolio.new MeanReversionStats(yahoo.dataSource("1113.HK"),
-				DatePeriod.backTestDaysBefore(LocalDate.now(), 512, 32)));
+		DatePeriod period = DatePeriod.backTestDaysBefore(LocalDate.now(), 512, 32);
+		System.out.println(portfolio.new MeanReversionStats(yahoo.dataSource("1113.HK"), period));
 	}
 
 	@Test

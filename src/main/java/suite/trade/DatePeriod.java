@@ -14,11 +14,11 @@ public class DatePeriod extends Range<LocalDate> {
 
 	public static DatePeriod backTestDaysBefore(LocalDate date, int nDays, int alignment) {
 
-		// align date range boundaries to reduce number of web queries
-		long todayEpochDay = date.toEpochDay();
-		long endEpochDate = todayEpochDay - todayEpochDay % alignment;
-		long startEpochDate = endEpochDate - nDays;
-		return of(LocalDate.ofEpochDay(startEpochDate), LocalDate.ofEpochDay(endEpochDate));
+		// align date range boundaries to reduce number of web queries (and
+		// calculations)
+		LocalDate toDate = date.minusDays(date.toEpochDay() % alignment);
+		LocalDate frDate = toDate.minusDays(nDays);
+		return of(frDate, toDate);
 	}
 
 	public static DatePeriod daysBefore(int nDays) {

@@ -181,16 +181,16 @@ public class Portfolio {
 						&& 0f < mrs.movingAvgMeanReversionRatio) //
 				.map2((stockCode, mrs) -> stockCode, (stockCode, mrs) -> {
 					DataSource dataSource = dataSourceByStockCode.get(stockCode);
-					Datum first = dataSource.first();
-					Datum last = dataSource.last();
-					long ed0 = FormatUtil.date(first.date).toEpochDay();
-					long edx = FormatUtil.date(last.date).toEpochDay();
-					double price = last.price;
+					Datum datum0 = dataSource.first();
+					Datum datumx = dataSource.last();
+					LocalDate date0 = FormatUtil.date(datum0.date);
+					LocalDate datex = FormatUtil.date(datumx.date);
+					double price = datumx.price;
 
 					double lma = mrs.latestMovingAverage();
 					double potential = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
 					double annualReturn = Math.expm1(Math.log1p(potential) * nTradeDaysInYear);
-					double sharpe = ts.sharpeRatio(dataSource.prices, (edx - ed0) / 365d);
+					double sharpe = ts.sharpeRatio(dataSource.prices, DatePeriod.of(date0, datex).nYears());
 					log.sink(hkex.getCompany(stockCode) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
 							+ ", " + To.string(price) + " => " + To.string(lma) //

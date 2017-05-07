@@ -18,7 +18,7 @@ public class TimeSeriesTest {
 		DataSource ds = new Yahoo().dataSource("0002.HK").limit(period);
 		double sharpe = new TimeSeries().sharpeRatio(ds.prices, period.nYears());
 		System.out.println("sharpe = " + sharpe);
-		assertTrue(0.4d < sharpe);
+		assertTrue(.04d < sharpe);
 	}
 
 }
