@@ -121,7 +121,7 @@ public class Portfolio {
 						date, //
 						fund0);
 
-				String actions = account.portfolio(portfolio, latestPriceByStockCode);
+				String actions = account.switchPortfolio(portfolio, latestPriceByStockCode);
 				account.validate();
 
 				double valuation1 = valuations[i] = account.valuation(latestPriceByStockCode);

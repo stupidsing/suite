@@ -49,7 +49,7 @@ public class Account {
 				.collect(As.<String, Integer> sumOfDoubles((stockCode, n) -> prices1.get(stockCode) * n));
 	}
 
-	public String portfolio(Map<String, Integer> assets1, Map<String, Float> prices) {
+	public String switchPortfolio(Map<String, Integer> assets1, Map<String, Float> prices) {
 		Map<String, Integer> assets0 = assets;
 		List<Pair<String, Integer>> buySells = TradeUtil.diff(assets0, assets1);
 
