@@ -132,12 +132,12 @@ public class Portfolio {
 						+ ", actions = " + actions);
 			}
 
-			LocalDate dateStart = Util.first(dates);
-			LocalDate dateEnd = Util.last(dates);
+			LocalDate date0 = Util.first(dates);
+			LocalDate datex = Util.last(dates);
 			double v0 = valuations[0];
 			double vx = valuations[valuations.length - 1];
 
-			double nYears = (dateEnd.toEpochDay() - dateStart.toEpochDay()) / 365d;
+			double nYears = DatePeriod.of(date0, datex).nYears();
 			double annualReturn = Math.expm1(Math.log(vx / v0) / nYears);
 			double sharpe = ts.sharpeRatio(valuations, nYears);
 			double skewness = stat.skewness(valuations);
