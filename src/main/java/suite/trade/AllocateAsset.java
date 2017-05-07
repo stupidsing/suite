@@ -41,8 +41,7 @@ public class AllocateAsset {
 			Map<String, DataSource> dataSourceByStockCode, //
 			Map<String, Integer> lotSizeByStockCode, //
 			List<LocalDate> tradeDates, //
-			LocalDate backTestDate, //
-			float valuation0) {
+			LocalDate backTestDate) {
 		LocalDate oneYearAgo = backTestDate.minusYears(1);
 
 		int nTradeDaysInYear = Read.from(tradeDates) //

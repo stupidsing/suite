@@ -110,8 +110,7 @@ public class Portfolio {
 						backTestDataSourceByStockCode, //
 						lotSizeByStockCode, //
 						tradeDates, //
-						date, //
-						fund0);
+						date);
 
 				double totalPotential = Read.from2(potentialStatsByStockCode) //
 						.collect(As.<String, Double> sumOfDoubles((stockCode, potential) -> potential));
