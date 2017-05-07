@@ -103,7 +103,7 @@ public class AllocateAsset {
 		public PotentialStats(double annualReturn, double sharpe) {
 			this.annualReturn = annualReturn;
 			this.sharpe = sharpe;
-			if (Boolean.TRUE) // kelly's
+			if (Boolean.TRUE) // Kelly's
 				this.potential = annualReturn * sharpe;
 			else // even allocation
 				this.potential = 1d;
