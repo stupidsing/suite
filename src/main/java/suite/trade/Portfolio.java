@@ -32,6 +32,7 @@ public class Portfolio {
 	private Yahoo yahoo = new Yahoo();
 
 	private Sink<String> log;
+	private AssetAllocator allocator = new AllocateAssetMovingAvgMeanReversion(log);
 
 	public interface AssetAllocator {
 		public List<Pair<String, Double>> allocate( //
@@ -67,7 +68,6 @@ public class Portfolio {
 		public final float[] valuations;
 
 		private Simulate(float fund0, LocalDate from, Fun<List<LocalDate>, List<LocalDate>> datesPred) {
-			AllocateAssetMovingAvgMeanReversion allocator = new AllocateAssetMovingAvgMeanReversion(log);
 			Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
 			LocalDate historyFromDate = from.minusYears(1);
 			double valuation = fund0;
