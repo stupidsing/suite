@@ -33,7 +33,7 @@ public class Portfolio {
 
 	private Sink<String> log;
 
-	public interface Allocator {
+	public interface AssetAllocator {
 		public List<Pair<String, Double>> allocate( //
 				Map<String, DataSource> dataSourceByStockCode, //
 				List<LocalDate> tradeDates, //
@@ -126,12 +126,11 @@ public class Portfolio {
 
 				Map<String, Integer> portfolio = Read.from2(potentialStatsByStockCode) //
 						.map2((stockCode, potential) -> stockCode, (stockCode, potential) -> {
-							float price = dataSourceByStockCode.get(stockCode).last().price;
+							float price = backTestDataSourceByStockCode.get(stockCode).last().price;
 							int lotSize = lotSizeByStockCode.get(stockCode);
 							double lots = valuation_ * potential / (totalPotential * price * lotSize);
 							return lotSize * (int) lots; // truncate
-							// return lotSize * (int) Math.round(lots);
-
+							// return lotSize * Math.round(lots);
 						}) //
 						.toMap();
 

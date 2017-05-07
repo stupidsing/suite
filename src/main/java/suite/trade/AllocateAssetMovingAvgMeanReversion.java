@@ -13,12 +13,12 @@ import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.streamlet.Read;
 import suite.trade.DataSource.Datum;
-import suite.trade.Portfolio.Allocator;
+import suite.trade.Portfolio.AssetAllocator;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
-public class AllocateAssetMovingAvgMeanReversion implements Allocator {
+public class AllocateAssetMovingAvgMeanReversion implements AssetAllocator {
 
 	private int top = 5;
 	private int tor = 64;
