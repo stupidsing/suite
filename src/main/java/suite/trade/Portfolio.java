@@ -99,9 +99,10 @@ public class Portfolio {
 					.toList();
 
 			List<LocalDate> dates = datesPred.apply(tradeDates);
-			valuations = new float[dates.size()];
+			int size = dates.size();
+			valuations = new float[size];
 
-			for (int i = 0; i < dates.size(); i++) {
+			for (int i = 0; i < size; i++) {
 				LocalDate date = dates.get(i);
 				DatePeriod historyWindowPeriod = DatePeriod.of(date.minusDays(historyWindow), date);
 
