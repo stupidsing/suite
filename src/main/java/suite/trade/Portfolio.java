@@ -94,7 +94,7 @@ public class Portfolio {
 			List<LocalDate> tradeDates = Read.from2(dataSourceByStockCode) //
 					.concatMap((stockCode, dataSource) -> Read.from(dataSource.dates)) //
 					.distinct() //
-					.map(tradeDate -> FormatUtil.date(tradeDate)) //
+					.map(FormatUtil::date) //
 					.sort(Util::compare) //
 					.toList();
 
