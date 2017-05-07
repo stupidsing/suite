@@ -3,17 +3,28 @@ package suite.util;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import suite.Constants;
 import suite.adt.Pair;
 import suite.file.ExtentAllocator.Extent;
+import suite.inspect.Inspect;
+import suite.node.util.Singleton;
 import suite.primitive.Bytes;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Defines interface for reading/writing byte buffer. The operation within the
@@ -24,8 +35,115 @@ public class Serialize {
 	private static byte[] zeroes = new byte[4096];
 
 	public static Serializer<Boolean> boolean_ = boolean_();
+	public static Serializer<Double> double_ = double_();
 	public static Serializer<Float> float_ = float_();
 	public static Serializer<Integer> int_ = int_();
+
+	public static <T> Serializer<T> auto(Class<T> clazz) {
+		Serializer<?> serializer0 = memoizeAutoSerializers.apply(clazz);
+		@SuppressWarnings("unchecked")
+		Serializer<T> serializer = (Serializer<T>) serializer0;
+		return serializer;
+	}
+
+	private static Fun<Type, Serializer<?>> memoizeAutoSerializers = Memoize.fun(Serialize::auto0);
+
+	// do not handle nulls
+	private static <T> Serializer<?> auto0(Type type) {
+		Serializer<?> serializer;
+		if (type instanceof Class) {
+			Class<?> clazz = (Class<?>) type;
+			if (Objects.equals(clazz, boolean.class) || Objects.equals(clazz, Boolean.class))
+				serializer = boolean_;
+			else if (Objects.equals(clazz, Bytes.class))
+				serializer = variableLengthBytes;
+			else if (Objects.equals(clazz, double.class) || Objects.equals(clazz, Double.class))
+				serializer = double_;
+			else if (Objects.equals(clazz, float.class) || Objects.equals(clazz, Float.class))
+				serializer = float_;
+			else if (Objects.equals(clazz, float[].class))
+				serializer = floatArray;
+			else if (Objects.equals(clazz, int.class) || Objects.equals(clazz, Integer.class))
+				serializer = int_;
+			else if (Objects.equals(clazz, String.class))
+				serializer = variableLengthString;
+			else if (clazz.isArray()) {
+				@SuppressWarnings("unchecked")
+				Class<Object> c1 = (Class<Object>) clazz.getComponentType();
+				@SuppressWarnings("unchecked")
+				Serializer<Object> serializer1 = (Serializer<Object>) auto0(c1);
+				serializer = array(c1, serializer1);
+			} else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))
+				serializer = poly(clazz);
+			else
+				serializer = autoFields(clazz);
+		} else if (type instanceof ParameterizedType) {
+			ParameterizedType pt = (ParameterizedType) type;
+			Type rawType = pt.getRawType();
+			Type[] typeArguments = pt.getActualTypeArguments();
+			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
+
+			if (List.class.isAssignableFrom(clazz))
+				serializer = list(auto0(typeArguments[0]));
+			else if (Map.class.isAssignableFrom(clazz))
+				serializer = map(auto0(typeArguments[0]), auto0(typeArguments[1]));
+			else if (Pair.class.isAssignableFrom(clazz))
+				serializer = pair(auto0(typeArguments[0]), auto0(typeArguments[1]));
+			else
+				throw new RuntimeException();
+		} else
+			throw new RuntimeException();
+		return serializer;
+	}
+
+	public static <T> Serializer<T> autoFields(Class<T> clazz) {
+		Inspect inspect = Singleton.get().getInspect();
+
+		Pair<Field, ?>[] pairs = Read.from(inspect.fields(clazz)) //
+				.map2(field -> auto0(field.getGenericType())) //
+				.toArray();
+
+		Streamlet<Constructor<?>> ctors = Read.from(clazz.getConstructors());
+		boolean isDefaultCtor = 0 < ctors.filter(ctor -> ctor.getParameterCount() == 0).size();
+		Constructor<?> immutableCtor = ctors.min((c0, c1) -> -Integer.compare(c0.getParameterCount(), c1.getParameterCount()));
+
+		Serializer<?> serializer0 = new Serializer<T>() {
+			public T read(DataInput dataInput) throws IOException {
+				try {
+					Object object;
+					if (isDefaultCtor) {
+						object = clazz.newInstance();
+						for (Pair<Field, ?> pair : pairs)
+							pair.t0.set(object, ((Serializer<?>) pair.t1).read(dataInput));
+					} else {
+						Object[] ps = new Object[immutableCtor.getParameterCount()];
+						for (int i = 0; i < ps.length; i++) {
+							Pair<Field, ?> pair = pairs[i];
+							ps[i] = ((Serializer<?>) pair.t1).read(dataInput);
+						}
+						object = immutableCtor.newInstance(ps);
+					}
+					@SuppressWarnings("unchecked")
+					T t = (T) object;
+					return t;
+				} catch (ReflectiveOperationException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+
+			public void write(DataOutput dataOutput, T t) throws IOException {
+				for (Pair<Field, ?> pair : pairs) {
+					@SuppressWarnings("unchecked")
+					Serializer<Object> serializer1 = (Serializer<Object>) pair.t1;
+					serializer1.write(dataOutput, Rethrow.ex(() -> pair.t0.get(t)));
+				}
+
+			}
+		};
+		@SuppressWarnings("unchecked")
+		Serializer<T> serializer = (Serializer<T>) serializer0;
+		return serializer;
+	}
 
 	public static Serializer<float[]> floatArray = new Serializer<float[]>() {
 		public float[] read(DataInput dataInput) throws IOException {
@@ -155,30 +273,11 @@ public class Serialize {
 	}
 
 	public static <K, V> Serializer<Map<K, V>> map(Serializer<K> ks, Serializer<V> vs) {
-		return new Serializer<Map<K, V>>() {
-			public Map<K, V> read(DataInput dataInput) throws IOException {
-				int size = Serialize.int_.read(dataInput);
-				Map<K, V> map = new HashMap<>();
-				for (int i = 0; i < size; i++) {
-					K k = ks.read(dataInput);
-					V v = vs.read(dataInput);
-					map.put(k, v);
-				}
-				return map;
-			}
-
-			public void write(DataOutput dataOutput, Map<K, V> map) throws IOException {
-				Serialize.int_.write(dataOutput, map.size());
-				for (Entry<K, V> entry : map.entrySet()) {
-					ks.write(dataOutput, entry.getKey());
-					vs.write(dataOutput, entry.getValue());
-				}
-			}
-		};
+		return map_(ks, vs);
 	}
 
 	public static <V> Serializer<Map<String, V>> mapOfString(Serializer<V> vs) {
-		return map(variableLengthString, vs);
+		return map_(variableLengthString, vs);
 	}
 
 	/**
@@ -275,6 +374,23 @@ public class Serialize {
 	}
 
 	/**
+	 * Serializes an double.
+	 *
+	 * Size = 8
+	 */
+	private static Serializer<Double> double_() {
+		return new Serializer<Double>() {
+			public Double read(DataInput dataInput) throws IOException {
+				return dataInput.readDouble();
+			}
+
+			public void write(DataOutput dataOutput, Double value) throws IOException {
+				dataOutput.writeDouble(value);
+			}
+		};
+	}
+
+	/**
 	 * Serializes an float.
 	 *
 	 * Size = 4
@@ -304,6 +420,54 @@ public class Serialize {
 
 			public void write(DataOutput dataOutput, Integer value) throws IOException {
 				dataOutput.writeInt(value);
+			}
+		};
+	}
+
+	private static <K, V> Serializer<Map<K, V>> map_(Serializer<K> ks, Serializer<V> vs) {
+		return new Serializer<Map<K, V>>() {
+			public Map<K, V> read(DataInput dataInput) throws IOException {
+				int size = Serialize.int_.read(dataInput);
+				Map<K, V> map = new HashMap<>();
+				for (int i = 0; i < size; i++) {
+					K k = ks.read(dataInput);
+					V v = vs.read(dataInput);
+					map.put(k, v);
+				}
+				return map;
+			}
+
+			public void write(DataOutput dataOutput, Map<K, V> map) throws IOException {
+				Serialize.int_.write(dataOutput, map.size());
+				for (Entry<K, V> entry : map.entrySet()) {
+					ks.write(dataOutput, entry.getKey());
+					vs.write(dataOutput, entry.getValue());
+				}
+			}
+		};
+	}
+
+	private static <T> Serializer<T> poly(Class<T> interface_) {
+		return new Serializer<T>() {
+			public T read(DataInput dataInput) throws IOException {
+				Class<?> c = Rethrow.ex(() -> Class.forName(dataInput.readUTF()));
+				if (interface_.isAssignableFrom(c)) {
+					@SuppressWarnings("unchecked")
+					T t = (T) auto(c).read(dataInput);
+					return t;
+				} else
+					throw new RuntimeException(c.getSimpleName() + " does not implement " + interface_.getSimpleName());
+			}
+
+			public void write(DataOutput dataOutput, T t) throws IOException {
+				@SuppressWarnings("unchecked")
+				Class<Object> c = (Class<Object>) t.getClass();
+				if (interface_.isAssignableFrom(c)) {
+					dataOutput.writeUTF(c.getName());
+					auto(c).write(dataOutput, t);
+				} else
+					throw new RuntimeException(c.getSimpleName() + " does not implement " + interface_.getSimpleName());
+
 			}
 		};
 	}
