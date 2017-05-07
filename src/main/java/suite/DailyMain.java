@@ -50,8 +50,10 @@ public class DailyMain extends ExecutableProgram {
 		outputs.add(Pair.of("tlo", tlo()));
 
 		StringBuilder sb = new StringBuilder();
-		for (Pair<String, String> output : outputs)
-			sb.append("OUTPUT (" + output.t0 + "):" + output.t1);
+		for (Pair<String, String> output : outputs) {
+			sb.append("--------------------------------------------------------------------------------\n");
+			sb.append("OUTPUT (" + output.t0 + "):" + output.t1 + "\n\n");
+		}
 
 		String result = sb.toString();
 		LogUtil.info(result);
