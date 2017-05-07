@@ -32,7 +32,7 @@ public class Portfolio {
 	private Yahoo yahoo = new Yahoo();
 
 	private Sink<String> log;
-	private AssetAllocator allocator = new AllocateAssetMovingAvgMeanReversion(log);
+	private AssetAllocator allocator;
 
 	public interface AssetAllocator {
 		public List<Pair<String, Double>> allocate( //
@@ -42,11 +42,12 @@ public class Portfolio {
 	}
 
 	public Portfolio() {
-		log = System.out::println;
+		this(System.out::println);
 	}
 
 	public Portfolio(Sink<String> log) {
 		this.log = log;
+		this.allocator = new AllocateAssetMovingAvgMeanReversion(log);
 	}
 
 	public Simulate simulateLatest(float fund0) {
