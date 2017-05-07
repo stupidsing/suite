@@ -13,13 +13,14 @@ import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.streamlet.Read;
 import suite.trade.DataSource.Datum;
+import suite.trade.Portfolio.Allocator;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
-public class AllocateAsset {
+public class AllocateAssetMovingAvgMeanReversion implements Allocator {
 
-	private int top = 2;
+	private int top = 5;
 	private int tor = 64;
 
 	private double neglog2 = -Math.log(2d);
@@ -33,7 +34,7 @@ public class AllocateAsset {
 
 	private Sink<String> log;
 
-	public AllocateAsset(Sink<String> log) {
+	public AllocateAssetMovingAvgMeanReversion(Sink<String> log) {
 		this.log = log;
 	}
 
@@ -103,7 +104,7 @@ public class AllocateAsset {
 		public PotentialStats(double annualReturn, double sharpe) {
 			this.annualReturn = annualReturn;
 			this.sharpe = sharpe;
-			if (Boolean.TRUE) // Kelly's
+			if (Boolean.FALSE) // Kelly's
 				this.potential = annualReturn * sharpe;
 			else // even allocation
 				this.potential = 1d;

@@ -33,6 +33,13 @@ public class Portfolio {
 
 	private Sink<String> log;
 
+	public interface Allocator {
+		public List<Pair<String, Double>> allocate( //
+				Map<String, DataSource> dataSourceByStockCode, //
+				List<LocalDate> tradeDates, //
+				LocalDate backTestDate);
+	}
+
 	public Portfolio() {
 		log = System.out::println;
 	}
@@ -60,13 +67,14 @@ public class Portfolio {
 		public final float[] valuations;
 
 		private Simulate(float fund0, LocalDate from, Fun<List<LocalDate>, List<LocalDate>> datesPred) {
-			account = Account.fromCash(fund0);
-
-			double valuation = fund0;
-			LocalDate historyFromDate = from.minusYears(1);
+			AllocateAssetMovingAvgMeanReversion allocator = new AllocateAssetMovingAvgMeanReversion(log);
 			Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
+			LocalDate historyFromDate = from.minusYears(1);
+			double valuation = fund0;
 			Streamlet<Asset> assets = hkexFactBook.queryLeadingCompaniesByMarketCap(from.getYear() - 1);
 			// hkex.getCompanies();
+
+			account = Account.fromCash(fund0);
 
 			Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
 			yahoo.quote(lotSizeByStockCode.keySet()); // pre-fetch quotes
@@ -106,7 +114,7 @@ public class Portfolio {
 						.mapValue(dataSource -> dataSource.last().price) //
 						.toMap();
 
-				List<Pair<String, Double>> potentialStatsByStockCode = new AllocateAsset(log).allocate( //
+				List<Pair<String, Double>> potentialStatsByStockCode = allocator.allocate( //
 						backTestDataSourceByStockCode, //
 						tradeDates, //
 						date);
@@ -120,8 +128,7 @@ public class Portfolio {
 						.map2((stockCode, potential) -> stockCode, (stockCode, potential) -> {
 							float price = dataSourceByStockCode.get(stockCode).last().price;
 							int lotSize = lotSizeByStockCode.get(stockCode);
-							float lotPrice = price * lotSize;
-							double lots = valuation_ * potential / (totalPotential * lotPrice);
+							double lots = valuation_ * potential / (totalPotential * price * lotSize);
 							return lotSize * (int) lots; // truncate
 							// return lotSize * (int) Math.round(lots);
 
