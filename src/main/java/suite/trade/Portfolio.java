@@ -24,7 +24,7 @@ import suite.util.Util;
 
 public class Portfolio {
 
-	private int tradeFrequency = 1;
+	private int tradeFrequency = 3;
 	private int top = 2;
 	private int tor = 64;
 	private int historyWindow = 1024;
@@ -162,17 +162,17 @@ public class Portfolio {
 
 		log.sink(dataSourceByStockCode.size() + " assets in data source");
 
+		DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
+
 		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(dataSourceByStockCode) //
-				.map2((stockCode, dataSource) -> stockCode, (stockCode, dataSource) -> {
-					DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 512, 32);
-					return meanReversionStats(stockCode, dataSource, mrsPeriod);
-				}) //
+				.map2((stockCode, dataSource) -> stockCode,
+						(stockCode, dataSource) -> meanReversionStats(stockCode, dataSource, mrsPeriod)) //
 				.toMap();
 
 		// make sure all time-series are mean-reversions:
-		// ensure ADF < 0f: price is not random walk
-		// ensure Hurst exponent < .5f: price is weakly mean reverting
-		// ensure 0f < variance ratio: statistic is significant
+		// ensure ADF < 0d: price is not random walk
+		// ensure Hurst exponent < .5d: price is weakly mean reverting
+		// ensure 0d < variance ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
 		return Read.from2(meanReversionStatsByStockCode) //
 				.filterValue(mrs -> mrs.adf < 0f //
@@ -231,13 +231,18 @@ public class Portfolio {
 			float[] prices = dataSource.prices;
 
 			movingAverage = movingAvg.movingGeometricAvg(prices, tor);
-			adf = adf(dataSource, tor);
-			hurst = hurst(dataSource, tor);
-			varianceRatio = varianceRatio(dataSource, tor);
-			meanReversionRatio = meanReversionRatio(dataSource, 1);
-			movingAvgMeanReversionRatio = movingAvgMeanReversionRatio(dataSource, movingAverage, tor);
-			halfLife = (float) (neglog2 / Math.log1p(meanReversionRatio));
-			movingAvgHalfLife = (float) (neglog2 / Math.log1p(movingAvgMeanReversionRatio));
+
+			if (tor <= prices.length) {
+				adf = adf(dataSource, tor);
+				hurst = hurst(dataSource, tor);
+				varianceRatio = varianceRatio(dataSource, tor);
+				meanReversionRatio = meanReversionRatio(dataSource, 1);
+				movingAvgMeanReversionRatio = movingAvgMeanReversionRatio(dataSource, movingAverage, tor);
+			} else
+				adf = hurst = varianceRatio = meanReversionRatio = movingAvgMeanReversionRatio = 0d;
+
+			halfLife = neglog2 / Math.log1p(meanReversionRatio);
+			movingAvgHalfLife = neglog2 / Math.log1p(movingAvgMeanReversionRatio);
 		}
 
 		public float latestMovingAverage() {
