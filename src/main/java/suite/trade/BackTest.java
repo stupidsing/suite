@@ -7,7 +7,7 @@ import suite.util.To;
 
 public class BackTest {
 
-	public final Account account = new Account();
+	public final Account account = Account.fromCash(0f);
 	public final StringBuilder tradeLog = new StringBuilder();
 	public final StringBuilder concludeLog = new StringBuilder();
 

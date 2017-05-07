@@ -34,7 +34,7 @@ public class Account {
 		return new Account(assets);
 	}
 
-	public Account() {
+	private Account() {
 		this(new HashMap<>());
 	}
 
@@ -69,11 +69,19 @@ public class Account {
 	}
 
 	public void buySell(String stockCode, int buySell, float price) {
+		play(new Trade("-", buySell, stockCode, price, "-"));
+	}
+
+	public void play(Trade trade) {
+		int buySell = trade.buySell;
+		String stockCode = trade.stockCode;
+		float cost = buySell * trade.price;
+
 		int cash0 = cash();
-		float cost = buySell * price;
 		int cash1 = (int) (cash0 - cost);
 		int nShares0 = nShares(stockCode);
 		int nShares1 = nShares0 + buySell;
+
 		update(cashCode, cash1);
 		update(stockCode, nShares1);
 		if (buySell != 0)
