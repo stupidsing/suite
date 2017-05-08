@@ -19,7 +19,7 @@ public class DataSource {
 
 	public static Serializer<DataSource> serializer = new Serializer<DataSource>() {
 		private Serializer<String[]> sas = Serialize.array(String.class, Serialize.string(10));
-		private Serializer<float[]> fas = Serialize.floatArray;
+		private Serializer<float[]> fas = Serialize.arrayOfFloats;
 
 		public DataSource read(DataInput dataInput) throws IOException {
 			String[] dates = sas.read(dataInput);
