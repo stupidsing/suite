@@ -32,6 +32,7 @@ import suite.util.FunUtil.Fun;
  */
 public class Serialize {
 
+	private static Inspect inspect = Singleton.get().getInspect();
 	private static byte[] zeroes = new byte[4096];
 
 	public static Serializer<Boolean> boolean_ = boolean_();
@@ -97,8 +98,6 @@ public class Serialize {
 	}
 
 	public static <T> Serializer<T> autoFields(Class<T> clazz) {
-		Inspect inspect = Singleton.get().getInspect();
-
 		Pair<Field, ?>[] pairs = Read.from(inspect.fields(clazz)) //
 				.map2(field -> auto0(field.getGenericType())) //
 				.toArray();

@@ -265,7 +265,7 @@ public class SewingProverImpl implements SewingProver {
 	private Trampoline compileRule(Node head, Node tail, boolean isHasCut) {
 		SewingBinder sb = new SewingBinderImpl0();
 		BindPredicate p = sb.compileBind(head);
-		Trampoline tr1 = isHasCut || Boolean.TRUE ? compile0(sb, tail) : compileNoCut0(sb, tail);
+		Trampoline tr1 = isHasCut ? compile0(sb, tail) : compileNoCut0(sb, tail);
 		return newEnv(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
 	}
 
