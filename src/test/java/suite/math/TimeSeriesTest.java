@@ -6,9 +6,9 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
-import suite.trade.DataSource;
 import suite.trade.DatePeriod;
-import suite.trade.Yahoo;
+import suite.trade.data.DataSource;
+import suite.trade.data.Yahoo;
 
 public class TimeSeriesTest {
 
