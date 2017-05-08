@@ -18,6 +18,10 @@ public class Range<T extends Comparable<? super T>> {
 		this.to = to;
 	}
 
+	public boolean contains(T t) {
+		return from.compareTo(t) <= 0 && t.compareTo(to) < 0;
+	}
+
 	public boolean isEmpty() {
 		return Util.compare(from, to) < 0;
 	}
