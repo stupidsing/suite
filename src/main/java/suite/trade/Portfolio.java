@@ -101,6 +101,8 @@ public class Portfolio {
 
 			List<LocalDate> dates = datesPred.apply(tradeDates);
 			int size = dates.size();
+			String actions;
+
 			valuations = new float[size];
 
 			for (int i = 0; i < size; i++) {
@@ -121,29 +123,33 @@ public class Portfolio {
 						tradeDates, //
 						date);
 
-				double totalPotential = Read.from2(potentialStatsByStockCode) //
-						.collect(As.<String, Double> sumOfDoubles((stockCode, potential) -> potential));
+				if (potentialStatsByStockCode != null) {
+					double totalPotential = Read.from2(potentialStatsByStockCode) //
+							.collect(As.<String, Double> sumOfDoubles((stockCode, potential) -> potential));
 
-				double valuation_ = valuation;
+					double valuation_ = valuation;
 
-				Map<String, Integer> portfolio = Read.from2(potentialStatsByStockCode) //
-						.map2((stockCode, potential) -> stockCode, (stockCode, potential) -> {
-							float price = backTestDataSourceByStockCode.get(stockCode).last().price;
-							int lotSize = lotSizeByStockCode.get(stockCode);
-							double lots = valuation_ * potential / (totalPotential * price * lotSize);
-							return lotSize * (int) lots; // truncate
-							// return lotSize * Math.round(lots);
-						}) //
-						.toMap();
+					Map<String, Integer> portfolio = Read.from2(potentialStatsByStockCode) //
+							.map2((stockCode, potential) -> stockCode, (stockCode, potential) -> {
+								float price = backTestDataSourceByStockCode.get(stockCode).last().price;
+								int lotSize = lotSizeByStockCode.get(stockCode);
+								double lots = valuation_ * potential / (totalPotential * price * lotSize);
+								return lotSize * (int) lots; // truncate
+								// return lotSize * Math.round(lots);
+							}) //
+							.toMap();
 
-				String actions = account.switchPortfolio(portfolio, latestPriceByStockCode);
+					actions = account.switchPortfolio(portfolio, latestPriceByStockCode);
+				} else
+					actions = null;
+
 				account.validate();
 
 				valuations[i] = (float) (valuation = account.valuation(latestPriceByStockCode));
 
 				log.sink(FormatUtil.formatDate(date) //
 						+ ", valuation = " + valuation //
-						+ ", portfolio = " + TradeUtil.format(portfolio) //
+						+ ", portfolio = " + account //
 						+ ", actions = " + actions);
 			}
 
