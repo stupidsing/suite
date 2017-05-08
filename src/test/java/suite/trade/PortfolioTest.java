@@ -28,7 +28,7 @@ public class PortfolioTest {
 		float initial = 1000000f;
 		LocalDate frDate = LocalDate.of(2017, 1, 1);
 		LocalDate toDate = LocalDate.of(2020, 1, 1);
-		Simulate sim = portfolio.simulateFromTo(initial, frDate, toDate);
+		Simulate sim = portfolio.simulateFromTo(initial, DatePeriod.of(frDate, toDate));
 
 		System.out.println("nTransactions = " + sim.account.nTransactions());
 		System.out.println("nTransactionAmount = " + To.string(sim.account.nTransactionAmount()));

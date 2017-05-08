@@ -59,14 +59,11 @@ public class Portfolio {
 		return new Simulate(fund0, LocalDate.now(), dates -> Arrays.asList(Util.last(dates)));
 	}
 
-	public Simulate simulateFromTo(float fund0, LocalDate from, LocalDate to) {
+	public Simulate simulateFromTo(float fund0, DatePeriod period) {
 		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Read.from(dates) //
-				.filter(date -> true //
-						&& from.compareTo(date) <= 0 //
-						&& date.compareTo(to) < 0 //
-						&& date.toEpochDay() % tradeFrequency == 0) //
+				.filter(date -> period.contains(date) && date.toEpochDay() % tradeFrequency == 0) //
 				.toList();
-		return new Simulate(fund0, from, datesPred);
+		return new Simulate(fund0, period.from, datesPred);
 	}
 
 	public class Simulate {
