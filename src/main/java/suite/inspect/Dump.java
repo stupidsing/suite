@@ -17,6 +17,8 @@ import suite.util.Util;
 
 public class Dump {
 
+	private static Inspect inspect = Singleton.get().getInspect();
+
 	private Set<Integer> dumpedIds = new HashSet<>();
 	private Sink<String> sink;
 
@@ -98,7 +100,7 @@ public class Dump {
 				if (Type_.isSimple(clazz))
 					return;
 
-				for (Field field : Singleton.get().getInspect().fields(clazz))
+				for (Field field : inspect.fields(clazz))
 					try {
 						String name = field.getName();
 						Object o = field.get(object);
@@ -112,7 +114,7 @@ public class Dump {
 						sink.sink(" caught " + ex + "\n");
 					}
 
-				for (Method method : Singleton.get().getInspect().getters(clazz)) {
+				for (Method method : inspect.getters(clazz)) {
 					String name = method.getName();
 					try {
 						Object o = method.invoke(object);
@@ -126,15 +128,10 @@ public class Dump {
 
 				int count = 0;
 
-				if (clazz.isArray()) {
-					Class<?> componentType = clazz.getComponentType();
-					if (componentType.isPrimitive())
-						for (int i = 0; i < Array.getLength(object); i++)
-							d(prefix + "[" + count++ + "]", Array.get(object, i));
-					else if (Object.class.isAssignableFrom(componentType))
-						for (Object o1 : (Object[]) object)
-							d(prefix + "[" + count++ + "]", o1);
-				} else if (Collection.class.isAssignableFrom(clazz))
+				if (clazz.isArray())
+					for (int i = 0; i < Array.getLength(object); i++)
+						d(prefix + "[" + count++ + "]", Array.get(object, i));
+				else if (Collection.class.isAssignableFrom(clazz))
 					for (Object o1 : (Collection<?>) object)
 						d(prefix + "[" + count++ + "]", o1);
 				else if (Map.class.isAssignableFrom(clazz))
