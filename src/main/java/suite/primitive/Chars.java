@@ -135,11 +135,11 @@ public class Chars implements Iterable<Character> {
 		CharsBuilder cb = new CharsBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
-			cb.append(subchars(i0, i));
+			cb.append(range_(i0, i));
 			cb.append(to);
 			i0 = i + from.size();
 		}
-		cb.append(subchars(i0));
+		cb.append(range_(i0));
 		return cb.toChars();
 	}
 
@@ -148,32 +148,19 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public boolean startsWith(Chars chars) {
-		return startsWith(chars, 0);
+		return startsWith_(chars, 0);
 	}
 
 	public boolean startsWith(Chars chars, int s) {
-		if (s + chars.size() <= size()) {
-			boolean result = true;
-			for (int i = 0; result && i < chars.size(); i++)
-				result &= get(s + i) == chars.get(i);
-			return result;
-		} else
-			return false;
+		return startsWith_(chars, s);
 	}
 
 	public Chars subchars(int s) {
-		return subchars(s, size());
+		return range_(s);
 	}
 
 	public Chars subchars(int s, int e) {
-		int size = size();
-		if (s < 0)
-			s += size;
-		if (e < 0)
-			e += size;
-		s = Math.min(size, s);
-		e = Math.min(size, e);
-		return subchars0(start + s, start + e);
+		return range_(s, e);
 	}
 
 	public char[] toCharArray() {
@@ -253,11 +240,32 @@ public class Chars implements Iterable<Character> {
 		return sb.toString();
 	}
 
-	private Chars subchars0(int start, int end) {
-		Chars result = new Chars(cs, start, end);
+	private boolean startsWith_(Chars chars, int s) {
+		if (s + chars.size() <= size()) {
+			boolean result = true;
+			for (int i = 0; result && i < chars.size(); i++)
+				result &= get(s + i) == chars.get(i);
+			return result;
+		} else
+			return false;
+	}
+
+	private Chars range_(int s) {
+		return range_(s, size());
+	}
+
+	private Chars range_(int s, int e) {
+		int size = size();
+		if (s < 0)
+			s += size;
+		if (e < 0)
+			e += size;
+		int start_ = start + Math.min(size, s);
+		int end_ = start + Math.min(size, e);
+		Chars result = of(cs, start_, end_);
 
 		// avoid small pack of chars object keeping a large buffer
-		if (Boolean.FALSE && reallocSize <= cs.length && end - start < reallocSize / 4)
+		if (Boolean.FALSE && reallocSize <= cs.length && end_ - start_ < reallocSize / 4)
 			result = empty.append(result); // do not share reference
 
 		return result;

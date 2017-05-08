@@ -136,11 +136,11 @@ public class Bytes implements Iterable<Byte> {
 		BytesBuilder bb = new BytesBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
-			bb.append(subbytes(i0, i));
+			bb.append(range_(i0, i));
 			bb.append(to);
 			i0 = i + from.size();
 		}
-		bb.append(subbytes(i0));
+		bb.append(range_(i0));
 		return bb.toBytes();
 	}
 
@@ -149,32 +149,19 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public boolean startsWith(Bytes bytes) {
-		return startsWith(bytes, 0);
+		return startsWith_(bytes, 0);
 	}
 
 	public boolean startsWith(Bytes bytes, int s) {
-		if (s + bytes.size() <= size()) {
-			boolean result = true;
-			for (int i = 0; result && i < bytes.size(); i++)
-				result &= get(s + i) == bytes.get(i);
-			return result;
-		} else
-			return false;
+		return startsWith_(bytes, s);
 	}
 
 	public Bytes subbytes(int s) {
-		return subbytes(s, size());
+		return range_(s);
 	}
 
 	public Bytes subbytes(int s, int e) {
-		int size = size();
-		if (s < 0)
-			s += size;
-		if (e < 0)
-			e += size;
-		s = Math.min(size, s);
-		e = Math.min(size, e);
-		return subbytes0(start + s, start + e);
+		return range_(s, e);
 	}
 
 	public byte[] toByteArray() {
@@ -254,11 +241,34 @@ public class Bytes implements Iterable<Byte> {
 		return sb.toString();
 	}
 
-	private Bytes subbytes0(int start, int end) {
-		Bytes result = of(bs, start, end);
+	private boolean startsWith_(Bytes bytes, int s) {
+		if (s + bytes.size() <= size()) {
+			boolean result = true;
+			for (int i = 0; result && i < bytes.size(); i++)
+				result &= get(s + i) == bytes.get(i);
+			return result;
+		} else
+			return false;
+	}
+
+	private Bytes range_(int s) {
+		return range_(s, size());
+	}
+
+	private Bytes range_(int s, int e) {
+		int size = size();
+		if (s < 0)
+			s += size;
+		if (e < 0)
+			e += size;
+		s = Math.min(size, s);
+		e = Math.min(size, e);
+		int start_ = start + Math.min(size, s);
+		int end_ = start + Math.min(size, e);
+		Bytes result = of(bs, start_, end_);
 
 		// avoid small pack of bytes object keeping a large buffer
-		if (Boolean.FALSE && reallocSize <= bs.length && end - start < reallocSize / 4)
+		if (Boolean.FALSE && reallocSize <= bs.length && end_ - start_ < reallocSize / 4)
 			result = empty.append(result); // do not share reference
 
 		return result;
