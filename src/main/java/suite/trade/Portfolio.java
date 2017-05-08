@@ -78,7 +78,7 @@ public class Portfolio {
 				String stockCode = asset.code;
 				if (lotSizeByStockCode.containsKey(stockCode))
 					try {
-						DataSource dataSource = yahoo.dataSourceWithLatestQuote(stockCode).limitAfter(historyFromDate);
+						DataSource dataSource = yahoo.dataSourceWithLatestQuote(stockCode).after(historyFromDate);
 						dataSource.validate();
 						dataSourceByStockCode.put(stockCode, dataSource);
 					} catch (Exception ex) {
@@ -104,7 +104,7 @@ public class Portfolio {
 				DatePeriod historyWindowPeriod = DatePeriod.of(date.minusDays(historyWindow), date);
 
 				Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
-						.mapValue(dataSource -> dataSource.limit(historyWindowPeriod)) //
+						.mapValue(dataSource -> dataSource.range(historyWindowPeriod)) //
 						.filterValue(dataSource -> 128 <= dataSource.dates.length) //
 						.toMap();
 

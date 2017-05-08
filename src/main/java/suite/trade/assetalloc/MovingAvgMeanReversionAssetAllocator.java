@@ -136,7 +136,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		public final double movingAvgHalfLife;
 
 		public MeanReversionStats(DataSource dataSource0, DatePeriod mrsPeriod) {
-			DataSource dataSource = dataSource0.limit(mrsPeriod);
+			DataSource dataSource = dataSource0.range(mrsPeriod);
 			float[] prices = dataSource.prices;
 
 			movingAverage = movingAvg.movingGeometricAvg(prices, tor);

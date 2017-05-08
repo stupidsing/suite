@@ -70,11 +70,11 @@ public class DataSource {
 		}
 	}
 
-	public DataSource limitAfter(LocalDate date) {
-		return limit(DatePeriod.of(date, DatePeriod.ages().to));
+	public DataSource after(LocalDate date) {
+		return range(DatePeriod.of(date, DatePeriod.ages().to));
 	}
 
-	public DataSource limit(DatePeriod period) {
+	public DataSource range(DatePeriod period) {
 		String s0 = FormatUtil.formatDate(period.from);
 		String sx = FormatUtil.formatDate(period.to);
 		String[] dates1 = new String[dates.length];

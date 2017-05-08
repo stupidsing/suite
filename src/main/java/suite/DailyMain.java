@@ -85,7 +85,7 @@ public class DailyMain extends ExecutableProgram {
 							try {
 								DatePeriod period = DatePeriod.threeYears();
 								DataSource ds0 = yahoo.dataSource(stock.code, period);
-								DataSource ds1 = ds0.limit(period);
+								DataSource ds1 = ds0.range(period);
 
 								ds1.validateTwoYears();
 								BackTest backTest = BackTest.test(ds1, strategy);
