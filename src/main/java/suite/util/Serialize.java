@@ -81,15 +81,15 @@ public class Serialize {
 		} else if (type instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) type;
 			Type rawType = pt.getRawType();
-			Type[] typeArguments = pt.getActualTypeArguments();
+			Type[] typeArgs = pt.getActualTypeArguments();
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (List.class.isAssignableFrom(clazz))
-				serializer = list(auto0(typeArguments[0]));
+				serializer = list(auto0(typeArgs[0]));
 			else if (Map.class.isAssignableFrom(clazz))
-				serializer = map(auto0(typeArguments[0]), auto0(typeArguments[1]));
+				serializer = map(auto0(typeArgs[0]), auto0(typeArgs[1]));
 			else if (Pair.class.isAssignableFrom(clazz))
-				serializer = pair(auto0(typeArguments[0]), auto0(typeArguments[1]));
+				serializer = pair(auto0(typeArgs[0]), auto0(typeArgs[1]));
 			else
 				throw new RuntimeException();
 		} else

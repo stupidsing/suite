@@ -173,11 +173,11 @@ public class Nodify {
 		} else if (type instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) type;
 			Type rawType = pt.getRawType();
-			Type[] typeArguments = pt.getActualTypeArguments();
+			Type[] typeArgs = pt.getActualTypeArguments();
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {
-				Nodifier nodifier1 = getNodifier(typeArguments[0]);
+				Nodifier nodifier1 = getNodifier(typeArgs[0]);
 				nodifier = new Nodifier(object -> {
 					Tree start = Tree.of(null, null, null), tree = start;
 					for (Object o : (Collection<?>) object) {
@@ -193,8 +193,8 @@ public class Nodify {
 					return object1;
 				});
 			} else if (mapClasses.contains(clazz)) {
-				Nodifier kn = getNodifier(typeArguments[0]);
-				Nodifier vn = getNodifier(typeArguments[1]);
+				Nodifier kn = getNodifier(typeArgs[0]);
+				Nodifier vn = getNodifier(typeArgs[1]);
 				nodifier = new Nodifier(object -> {
 					Dict dict = new Dict();
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())

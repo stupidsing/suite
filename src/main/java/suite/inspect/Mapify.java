@@ -155,11 +155,11 @@ public class Mapify {
 		} else if (type instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) type;
 			Type rawType = pt.getRawType();
-			Type[] typeArguments = pt.getActualTypeArguments();
+			Type[] typeArgs = pt.getActualTypeArguments();
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {
-				Mapifier mapifier1 = getMapifier(typeArguments[0]);
+				Mapifier mapifier1 = getMapifier(typeArgs[0]);
 				mapifier = new Mapifier(object -> {
 					Map<Object, Object> map = newMap();
 					int i = 0;
@@ -175,8 +175,8 @@ public class Mapify {
 					return object1;
 				});
 			} else if (mapClasses.contains(clazz)) {
-				Mapifier km = getMapifier(typeArguments[0]);
-				Mapifier vm = getMapifier(typeArguments[1]);
+				Mapifier km = getMapifier(typeArgs[0]);
+				Mapifier vm = getMapifier(typeArgs[1]);
 				mapifier = new Mapifier(object -> {
 					Map<Object, Object> map = newMap();
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
