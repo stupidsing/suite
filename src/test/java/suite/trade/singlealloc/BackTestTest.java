@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.singlealloc;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -7,6 +7,12 @@ import org.junit.Test;
 
 import suite.os.LogUtil;
 import suite.streamlet.Read;
+import suite.trade.Asset;
+import suite.trade.DatePeriod;
+import suite.trade.Forex;
+import suite.trade.data.DataSource;
+import suite.trade.data.Hkex;
+import suite.trade.data.Yahoo;
 
 public class BackTestTest {
 

@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.assetalloc;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -12,8 +12,11 @@ import suite.algo.Statistic.LinearRegression;
 import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.streamlet.Read;
-import suite.trade.DataSource.Datum;
-import suite.trade.Portfolio.AssetAllocator;
+import suite.trade.DatePeriod;
+import suite.trade.MovingAverage;
+import suite.trade.data.DataSource;
+import suite.trade.data.DataSource.Datum;
+import suite.trade.data.Hkex;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.To;

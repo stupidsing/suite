@@ -6,6 +6,9 @@ import org.junit.Test;
 
 import suite.math.DiscreteCosineTransform;
 import suite.os.LogUtil;
+import suite.trade.data.DataSource;
+import suite.trade.data.Hkex;
+import suite.trade.data.Yahoo;
 
 /**
  * Finds the period of various stocks using FFT.

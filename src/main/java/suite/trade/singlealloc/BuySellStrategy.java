@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.singlealloc;
 
 /**
  * Strategy that advise you to buy or sell on one specific stock.

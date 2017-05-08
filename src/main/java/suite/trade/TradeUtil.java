@@ -16,26 +16,6 @@ import suite.util.Util;
 
 public class TradeUtil {
 
-	public static class Trade {
-		public String date;
-		public int buySell;
-		public String stockCode;
-		public float price;
-		public String strategy;
-
-		public Trade(String[] array) {
-			this(array[0], Integer.parseInt(array[1]), array[2], Float.parseFloat(array[3]), array[4]);
-		}
-
-		public Trade(String date, int buySell, String stockCode, float price, String strategy) {
-			this.date = date;
-			this.buySell = buySell;
-			this.stockCode = stockCode;
-			this.price = price;
-			this.strategy = strategy;
-		}
-	}
-
 	public static String format(Map<String, Integer> portfolio) {
 		return Read.from2(portfolio) //
 				.sortBy((code, i) -> !Util.stringEquals(code, Asset.cash.code) ? code : "") //

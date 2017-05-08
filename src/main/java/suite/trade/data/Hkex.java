@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.data;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +19,7 @@ import suite.os.SerializedStoreCache;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.trade.Asset;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.Serialize;
@@ -164,7 +165,8 @@ public class Hkex {
 
 	private Map<String, Asset> companyByCode = Read.from(companies).toMap(company -> company.code);
 
-	static final Set<String> commonFirstNames = new HashSet<>(Arrays.asList("", "China", "Guangdong", "Hang", "HK", "Standard"));
+	public static final Set<String> commonFirstNames = new HashSet<>(
+			Arrays.asList("", "China", "Guangdong", "Hang", "HK", "Standard"));
 
 	public static class Data {
 		public static class Content {

@@ -1,5 +1,6 @@
 package suite.trade;
 
+import suite.trade.data.Hkex;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 

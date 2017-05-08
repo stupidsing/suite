@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.data;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,6 +8,8 @@ import org.junit.Test;
 
 import suite.http.HttpUtil;
 import suite.streamlet.Streamlet;
+import suite.trade.DatePeriod;
+import suite.trade.Forex;
 import suite.util.Copy;
 import suite.util.Rethrow;
 import suite.util.To;

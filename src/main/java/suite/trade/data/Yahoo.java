@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.data;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -16,6 +16,7 @@ import suite.os.SerializedStoreCache;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.trade.DatePeriod;
 import suite.util.FormatUtil;
 import suite.util.Rethrow;
 import suite.util.Util;

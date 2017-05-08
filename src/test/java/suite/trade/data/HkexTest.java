@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.streamlet.Read;
+import suite.trade.Asset;
 import suite.util.Util;
 
 public class HkexTest {

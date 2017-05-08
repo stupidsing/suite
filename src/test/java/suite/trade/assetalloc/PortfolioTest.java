@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.assetalloc;
 
 import static org.junit.Assert.assertTrue;
 
@@ -6,7 +6,10 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
+import suite.trade.DatePeriod;
+import suite.trade.Portfolio;
 import suite.trade.Portfolio.Simulate;
+import suite.trade.data.Yahoo;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 

@@ -1,7 +1,9 @@
-package suite.trade;
+package suite.trade.singlealloc;
 
 import suite.algo.Statistic;
-import suite.trade.BuySellStrategy.GetBuySell;
+import suite.trade.Account;
+import suite.trade.data.DataSource;
+import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 

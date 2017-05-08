@@ -13,6 +13,11 @@ import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.trade.assetalloc.AssetAllocator;
+import suite.trade.data.DataSource;
+import suite.trade.data.Hkex;
+import suite.trade.data.HkexFactBook;
+import suite.trade.data.Yahoo;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -32,18 +37,6 @@ public class Portfolio {
 
 	private AssetAllocator assetAllocator;
 	private Sink<String> log;
-
-	/**
-	 * @return a portfolio consisting of list of stock codes and potential
-	 *         values, or null if the strategy do not want to trade on that
-	 *         date.
-	 */
-	public interface AssetAllocator {
-		public List<Pair<String, Double>> allocate( //
-				Map<String, DataSource> dataSourceByStockCode, //
-				List<LocalDate> tradeDates, //
-				LocalDate backTestDate);
-	}
 
 	public Portfolio(AssetAllocator assetAllocator) {
 		this(assetAllocator, System.out::println);

@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.data;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 
 import suite.math.Matrix;
+import suite.trade.DatePeriod;
 import suite.util.FormatUtil;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;

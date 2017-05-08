@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.data;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -11,7 +11,9 @@ import org.junit.Test;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.TradeUtil.Trade;
+import suite.trade.Asset;
+import suite.trade.Trade;
+import suite.trade.TradeUtil;
 import suite.util.Util;
 
 public class QuoteTest {

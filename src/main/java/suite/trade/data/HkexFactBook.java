@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ import suite.os.Execute;
 import suite.os.SerializedStoreCache;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.trade.Asset;
 import suite.util.Serialize;
 import suite.util.Util;
 

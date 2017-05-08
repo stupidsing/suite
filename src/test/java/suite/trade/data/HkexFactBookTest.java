@@ -1,10 +1,11 @@
-package suite.trade;
+package suite.trade.data;
 
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import suite.streamlet.Streamlet;
+import suite.trade.Asset;
 import suite.util.Util;
 
 public class HkexFactBookTest {
