@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import suite.math.DiscreteCosineTransform;
 import suite.math.Matrix;
-import suite.trade.Strategy.GetBuySell;
+import suite.trade.BuySellStrategy.GetBuySell;
 import suite.util.Copy;
 import suite.util.To;
 
@@ -13,9 +13,9 @@ public class Strategos {
 	private Matrix mtx = new Matrix();
 	private MovingAverage ma = new MovingAverage();
 
-	public Strategy longHold = prices -> day -> day != 0 ? 0 : 1;
+	public BuySellStrategy longHold = prices -> day -> day != 0 ? 0 : 1;
 
-	public Strategy lowPassPrediction(int windowSize, int nFutureDays, int nLowPass, float threshold) {
+	public BuySellStrategy lowPassPrediction(int windowSize, int nFutureDays, int nLowPass, float threshold) {
 		DiscreteCosineTransform dct = new DiscreteCosineTransform();
 		int nPastDays = windowSize - nFutureDays;
 
@@ -38,7 +38,7 @@ public class Strategos {
 		});
 	}
 
-	public Strategy macdSignalLineX(float alpha0, float alpha1, float macdAlpha) {
+	public BuySellStrategy macdSignalLineX(float alpha0, float alpha1, float macdAlpha) {
 		return prices -> {
 			float[] macd = ma.macd(prices, alpha0, alpha1);
 			float[] macdEmas = ma.exponentialMovingAvg(macd, macdAlpha);
@@ -48,11 +48,11 @@ public class Strategos {
 	}
 
 	// trendy; alpha0 < alpha1
-	public Strategy macdZeroLineX(float alpha0, float alpha1) {
+	public BuySellStrategy macdZeroLineX(float alpha0, float alpha1) {
 		return prices -> crossover(ma.macd(prices, alpha0, alpha1));
 	}
 
-	public Strategy movingAvgMeanReverting(int nPastDays, int nFutureDays, float threshold) {
+	public BuySellStrategy movingAvgMeanReverting(int nPastDays, int nFutureDays, float threshold) {
 		return prices -> {
 			float[] movingAvgs = ma.movingAvg(prices, nPastDays);
 

@@ -23,7 +23,7 @@ import suite.trade.DatePeriod;
 import suite.trade.Hkex;
 import suite.trade.Portfolio;
 import suite.trade.Strategos;
-import suite.trade.Strategy;
+import suite.trade.BuySellStrategy;
 import suite.trade.TradeUtil;
 import suite.trade.TradeUtil.Trade;
 import suite.trade.Yahoo;
@@ -68,7 +68,7 @@ public class DailyMain extends ExecutableProgram {
 		Hkex hkex = new Hkex();
 		Yahoo yahoo = new Yahoo();
 		Streamlet<Asset> assets = hkex.getCompanies();
-		Strategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
+		BuySellStrategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
 
 		LogUtil.info("S0 pre-fetch quotes");
 		yahoo.quote(assets.map(asset -> asset.code).toSet());

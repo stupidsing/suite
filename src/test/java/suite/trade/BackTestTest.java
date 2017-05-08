@@ -66,7 +66,7 @@ public class BackTestTest {
 		DataSource ds = yahoo.dataSource(code, period);
 
 		return Read //
-				.<String, Strategy> empty2() //
+				.<String, BuySellStrategy> empty2() //
 				.cons("longHold", sr.longHold) //
 				.cons("lowPassPrediction", sr.lowPassPrediction(128, 8, 8, .02f)) //
 				.cons("movingAvgMeanReverting", sr.movingAvgMeanReverting(64, 8, .15f)) //
@@ -76,7 +76,7 @@ public class BackTestTest {
 				.toMap();
 	}
 
-	private BackTest backTest_(DataSource ds, String disp, Strategy strategy) {
+	private BackTest backTest_(DataSource ds, String disp, BuySellStrategy strategy) {
 		BackTest backTest = BackTest.test(ds, strategy);
 		LogUtil.info(disp + backTest.concludeLog);
 		return backTest;

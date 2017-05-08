@@ -1,6 +1,6 @@
 package suite.trade;
 
-public interface Strategy {
+public interface BuySellStrategy {
 
 	public GetBuySell analyze(float[] prices);
 

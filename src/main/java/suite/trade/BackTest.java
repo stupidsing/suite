@@ -1,7 +1,7 @@
 package suite.trade;
 
 import suite.algo.Statistic;
-import suite.trade.Strategy.GetBuySell;
+import suite.trade.BuySellStrategy.GetBuySell;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
@@ -14,11 +14,11 @@ public class BackTest {
 	private Sink<String> tradeLogSink = To.sink(tradeLog);
 	private Sink<String> concludeLogSink = concludeLog::append;
 
-	public static BackTest test(DataSource ds, Strategy strategy) {
+	public static BackTest test(DataSource ds, BuySellStrategy strategy) {
 		return new BackTest(ds, strategy);
 	}
 
-	private BackTest(DataSource ds, Strategy strategy) {
+	private BackTest(DataSource ds, BuySellStrategy strategy) {
 		float[] prices = ds.prices;
 		int length = prices.length;
 		float[] valuations = new float[length];
