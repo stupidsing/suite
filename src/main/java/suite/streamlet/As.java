@@ -129,7 +129,7 @@ public class As {
 	}
 
 	public static Streamlet<String[]> csv(Outlet<Bytes> outlet) {
-		return outlet.collect(BytesUtil.split(Bytes.of((byte) 10))) //
+		return outlet.collect(As::lines_) //
 				.map(As::csvLine) //
 				.collect(As::streamlet);
 	}
@@ -160,6 +160,10 @@ public class As {
 			sb.append(after);
 			return sb.toString();
 		};
+	}
+
+	public static Outlet<Bytes> lines(Outlet<Bytes> outlet) {
+		return lines_(outlet);
 	}
 
 	public static <K, V> Map<K, List<V>> listMap(Outlet<Pair<K, V>> outlet) {
@@ -297,9 +301,78 @@ public class As {
 	}
 
 	public static Streamlet<String[]> table(Outlet<Bytes> outlet) {
-		return outlet.collect(BytesUtil.split(Bytes.of((byte) 10))) //
+		return outlet.collect(As::lines_) //
 				.map(bytes -> To.string(bytes).split("\t")) //
 				.collect(As::streamlet);
+	}
+
+	public static Outlet<Chars> utf8(Outlet<Bytes> bytesOutlet) {
+		Source<Bytes> source = bytesOutlet.source();
+
+		return Outlet.of(new Source<Chars>() {
+			private BytesBuilder bb = new BytesBuilder();
+
+			public Chars source() {
+				Chars chars;
+				while ((chars = decode()).size() == 0) {
+					Bytes bytes = source.source();
+					if (bytes != null)
+						bb.append(bytes);
+					else if (bb.size() == 0)
+						return null;
+					else
+						throw new RuntimeException();
+				}
+				return chars;
+			}
+
+			private Chars decode() {
+				Bytes bytes = bb.toBytes();
+				CharsBuilder cb = new CharsBuilder();
+				int s = 0;
+
+				while (s < bytes.size()) {
+					int b0 = Byte.toUnsignedInt(bytes.get(s++));
+					int ch, e;
+					if (b0 < 0x80) {
+						ch = b0;
+						e = s;
+					} else if (b0 < 0xE0) {
+						ch = b0 & 0x1F;
+						e = s + 1;
+					} else if (b0 < 0xF0) {
+						ch = b0 & 0x0F;
+						e = s + 2;
+					} else if (b0 < 0xF8) {
+						ch = b0 & 0x07;
+						e = s + 3;
+					} else if (b0 < 0xFC) {
+						ch = b0 & 0x03;
+						e = s + 4;
+					} else if (b0 < 0xFE) {
+						ch = b0 & 0x01;
+						e = s + 5;
+					} else
+						throw new RuntimeException();
+					if (e <= bytes.size()) {
+						while (s < e) {
+							int b = Byte.toUnsignedInt(bytes.get(s++));
+							if ((b & 0xC0) == 0x80)
+								ch = (ch << 6) + (b & 0x3F);
+							else
+								throw new RuntimeException();
+						}
+						cb.append((char) ch);
+					} else
+						break;
+				}
+
+				bb = new BytesBuilder();
+				bb.append(bytes.range(s));
+
+				return cb.toChars();
+			}
+		});
 	}
 
 	private static String[] csvLine(Bytes bytes) {
@@ -332,6 +405,10 @@ public class As {
 			list.add(sb.toString());
 		}
 		return list.toArray(new String[0]);
+	}
+
+	private static Outlet<Bytes> lines_(Outlet<Bytes> outlet) {
+		return BytesUtil.split(Bytes.of((byte) 10)).apply(outlet);
 	}
 
 }
