@@ -119,6 +119,11 @@ public class Account {
 		return assets().computeIfAbsent(code, s -> 0);
 	}
 
+	@Override
+	public String toString() {
+		return TradeUtil.format(assets());
+	}
+
 	public Map<String, Integer> assets() {
 		return assets;
 	}
