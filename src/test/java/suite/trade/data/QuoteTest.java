@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -53,7 +54,7 @@ public class QuoteTest {
 
 	@Test
 	public void testQuotesByStock() {
-		summarize(r -> r.stockCode);
+		System.out.println(summarize(r -> r.stockCode));
 	}
 
 	@Test
@@ -69,6 +70,8 @@ public class QuoteTest {
 		List<Trade> table0 = TradeUtil.fromHistory(trade -> true);
 		Map<String, Integer> nSharesByStockCodes = TradeUtil.portfolio(table0);
 		Map<String, Float> priceByStockCodes = yahoo.quote(nSharesByStockCodes.keySet());
+		int nTransactions = table0.size();
+		double transactionAmount = Read.from(table0).collect(As.sumOfDoubles(trade -> trade.price * Math.abs(trade.buySell)));
 
 		List<Trade> sellAll = Read.from(table0) //
 				.groupBy(trade -> trade.strategy, st -> TradeUtil.portfolio(st.toList())) //
@@ -97,6 +100,8 @@ public class QuoteTest {
 		constituents.forEach(log);
 		log.accept("OWN = " + -amount0);
 		log.accept("P/L = " + amount1);
+		log.accept("nTransactions = " + nTransactions);
+		log.accept("transactionAmount = " + transactionAmount);
 
 		return Read.from(table1) //
 				.groupBy(fun, st -> TradeUtil.returns(st.toList())) //
