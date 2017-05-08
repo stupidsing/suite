@@ -62,7 +62,7 @@ public class Serialize {
 			else if (Objects.equals(clazz, float.class) || Objects.equals(clazz, Float.class))
 				serializer = float_;
 			else if (Objects.equals(clazz, float[].class))
-				serializer = floatArray;
+				serializer = arrayOfFloats;
 			else if (Objects.equals(clazz, int.class) || Objects.equals(clazz, Integer.class))
 				serializer = int_;
 			else if (Objects.equals(clazz, String.class))
@@ -145,22 +145,6 @@ public class Serialize {
 		return serializer;
 	}
 
-	public static Serializer<float[]> floatArray = new Serializer<float[]>() {
-		public float[] read(DataInput dataInput) throws IOException {
-			int size = Serialize.int_.read(dataInput);
-			float[] array = new float[size];
-			for (int i = 0; i < size; i++)
-				array[i] = dataInput.readFloat();
-			return array;
-		}
-
-		public void write(DataOutput dataOutput, float[] array) throws IOException {
-			Serialize.int_.write(dataOutput, array.length);
-			for (float t : array)
-				dataOutput.writeFloat(t);
-		}
-	};
-
 	public static Serializer<Bytes> variableLengthBytes = new Serializer<Bytes>() {
 		public Bytes read(DataInput dataInput) throws IOException {
 			int length = dataInput.readInt();
@@ -208,6 +192,22 @@ public class Serialize {
 			}
 		};
 	}
+
+	public static Serializer<float[]> arrayOfFloats = new Serializer<float[]>() {
+		public float[] read(DataInput dataInput) throws IOException {
+			int size = Serialize.int_.read(dataInput);
+			float[] array = new float[size];
+			for (int i = 0; i < size; i++)
+				array[i] = dataInput.readFloat();
+			return array;
+		}
+
+		public void write(DataOutput dataOutput, float[] array) throws IOException {
+			Serialize.int_.write(dataOutput, array.length);
+			for (float t : array)
+				dataOutput.writeFloat(t);
+		}
+	};
 
 	/**
 	 * Serialize bytes.
