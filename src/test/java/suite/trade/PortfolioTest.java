@@ -26,7 +26,7 @@ public class PortfolioTest {
 	@Test
 	public void testPortfolio() {
 		float initial = 1000000f;
-		LocalDate frDate = LocalDate.of(2017, 1, 1);
+		LocalDate frDate = LocalDate.of(2016, 1, 1);
 		LocalDate toDate = LocalDate.of(2020, 1, 1);
 		Simulate sim = portfolio.simulateFromTo(initial, DatePeriod.of(frDate, toDate));
 
