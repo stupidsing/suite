@@ -42,13 +42,13 @@ public class KellyAssetAllocator implements AssetAllocator {
 		String[] stockCodes = returnsByStockCode.keySet().toArray(new String[0]);
 		int nStockCodes = stockCodes.length;
 
-		float[][] cov = To.floatArray(nStockCodes, nStockCodes, (i0, i1) -> {
+		float[][] cov = To.arrayOfFloats(nStockCodes, nStockCodes, (i0, i1) -> {
 			float[] returns0 = returnsByStockCode.get(stockCodes[i0]);
 			float[] returns1 = returnsByStockCode.get(stockCodes[i1]);
 			return (float) stat.covariance(returns0, returns1);
 		});
 
-		float[] returns = To.floatArray(nStockCodes, i -> excessReturnByStockCode.get(stockCodes[i]).floatValue());
+		float[] returns = To.arrayOfFloats(nStockCodes, i -> excessReturnByStockCode.get(stockCodes[i]).floatValue());
 
 		float[] allocations = new Cholesky().inverseMul(cov).apply(returns);
 

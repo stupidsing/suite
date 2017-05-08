@@ -18,9 +18,9 @@ public class StatisticTest {
 	public void testLinearRegression() {
 		int m = 7, n = 9;
 		Random random = new Random();
-		float[] expect = To.floatArray(m, j -> random.nextFloat());
-		float[][] xs = To.floatArray(n, m, (i, j) -> random.nextFloat());
-		float[] ys = To.floatArray(n, i -> (float) (mtx.dot(expect, xs[i]) + random.nextGaussian() * .01f));
+		float[] expect = To.arrayOfFloats(m, j -> random.nextFloat());
+		float[][] xs = To.arrayOfFloats(n, m, (i, j) -> random.nextFloat());
+		float[] ys = To.arrayOfFloats(n, i -> (float) (mtx.dot(expect, xs[i]) + random.nextGaussian() * .01f));
 		LinearRegression lr = statistic.linearRegression(xs, ys);
 		Dump.out(lr);
 		float[] actual = lr.betas;

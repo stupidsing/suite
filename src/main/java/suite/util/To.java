@@ -56,6 +56,40 @@ public class To {
 		return ts;
 	}
 
+	/**
+	 * Get characters in a string without copying overhead. Do not modify the
+	 * returned array!
+	 */
+	public static char[] arrayOfChars(String s) {
+		return Rethrow.ex(() -> (char[]) field.get(s)); // s.toCharArray()
+	}
+
+	public static float[] arrayOfFloats(float[] fs, Float_Float fun) {
+		return arrayOfFloats(fs.length, i -> fun.apply(fs[i]));
+	}
+
+	public static float[] arrayOfFloats(int length, Int_Float fun) {
+		float[] floats = new float[length];
+		for (int i = 0; i < length; i++)
+			floats[i] = fun.apply(i);
+		return floats;
+	}
+
+	public static float[][] arrayOfFloats(int height, int width, IntInt_Float fun) {
+		float[][] m = new float[height][width];
+		for (int i = 0; i < height; i++)
+			for (int j = 0; j < width; j++)
+				m[i][j] = fun.apply(i, j);
+		return m;
+	}
+
+	public static int[] arrayOfInts(int length, Int_Int f) {
+		int[] ints = new int[length];
+		for (int i = 0; i < length; i++)
+			ints[i] = f.apply(i);
+		return ints;
+	}
+
 	public static Bytes bytes(String s) {
 		return Bytes.of(s.getBytes(Constants.charset));
 	}
@@ -64,35 +98,8 @@ public class To {
 		return outlet(is).collect(As::bytes);
 	}
 
-	/**
-	 * Get characters in a string without copying overhead. Do not modify the
-	 * returned array!
-	 */
-	public static char[] charArray(String s) {
-		return Rethrow.ex(() -> (char[]) field.get(s)); // s.toCharArray()
-	}
-
 	public static Chars chars(String s) {
-		return Chars.of(charArray(s));
-	}
-
-	public static float[] floatArray(float[] fs, Float_Float fun) {
-		return floatArray(fs.length, i -> fun.apply(fs[i]));
-	}
-
-	public static float[] floatArray(int length, Int_Float fun) {
-		float[] floats = new float[length];
-		for (int i = 0; i < length; i++)
-			floats[i] = fun.apply(i);
-		return floats;
-	}
-
-	public static float[][] floatArray(int height, int width, IntInt_Float fun) {
-		float[][] m = new float[height][width];
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
-				m[i][j] = fun.apply(i, j);
-		return m;
+		return Chars.of(arrayOfChars(s));
 	}
 
 	public static String hex(int i) {
@@ -135,13 +142,6 @@ public class To {
 				return nBytesRead;
 			}
 		};
-	}
-
-	public static int[] intArray(int length, Int_Int f) {
-		int[] ints = new int[length];
-		for (int i = 0; i < length; i++)
-			ints[i] = f.apply(i);
-		return ints;
 	}
 
 	public static <T> List<T> list(Iterable<T> iter) {

@@ -48,7 +48,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public static Chars of(String s) {
-		char[] a = To.charArray(s);
+		char[] a = To.arrayOfChars(s);
 		return of(a);
 	}
 

@@ -29,7 +29,7 @@ public class Strategos {
 				Arrays.fill(fs0, nPastDays, windowSize, price0);
 
 				float[] fs1 = dct.dct(fs0);
-				float[] fs2 = To.floatArray(windowSize, j -> j < nLowPass ? fs1[j] : 0f);
+				float[] fs2 = To.arrayOfFloats(windowSize, j -> j < nLowPass ? fs1[j] : 0f);
 				float[] fs3 = dct.idct(fs2);
 
 				float predict = fs3[fs3.length - 1];
@@ -70,7 +70,7 @@ public class Strategos {
 
 	// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
 	private GetBuySell holdFixedDays(int nDays, int nFutureDays, GetBuySell gbs) {
-		int[] buySells = To.intArray(nDays, day -> gbs.get(day));
+		int[] buySells = To.arrayOfInts(nDays, day -> gbs.get(day));
 
 		return day -> {
 			int buySell0 = nFutureDays < day ? -buySells[day - nFutureDays] : 0;

@@ -67,7 +67,7 @@ public class Statistic {
 			float[] lr = new Cholesky().inverseMul(xtx).apply(mtx.mul(xt, y));
 			betas = lr;
 
-			float[] estimatedy = To.floatArray(n, i -> predict(x[i]));
+			float[] estimatedy = To.arrayOfFloats(n, i -> predict(x[i]));
 			double meany = mean(y);
 
 			double sst = 0f; // total sum of squares

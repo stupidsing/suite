@@ -17,7 +17,7 @@ public class Cholesky {
 		Pair<float[][], float[]> ldlt = ldlt(m);
 		float[][] l = ldlt.t0;
 		float[] d = ldlt.t1;
-		float[] reciprocalsD = To.floatArray(d, f -> 1f / f);
+		float[] reciprocalsD = To.arrayOfFloats(d, f -> 1f / f);
 		return fs0 -> {
 			int height = mtx.height(m);
 			int width = mtx.width(m);
@@ -31,7 +31,7 @@ public class Cholesky {
 			}
 
 			// will be inverse(D) * fs1
-			float[] fs2 = To.floatArray(fs1.length, i -> fs1[i] * reciprocalsD[i]);
+			float[] fs2 = To.arrayOfFloats(fs1.length, i -> fs1[i] * reciprocalsD[i]);
 			float[] fs3 = new float[width]; // will be inverse(L*) * fs2
 
 			for (int i = width - 1; 0 <= i; i--) {

@@ -16,7 +16,7 @@ public class Render {
 
 	public static BufferedImage render(int width, int height, BiFunction<Float, Float, Vector> f) {
 		int nThreads = Constants.nThreads;
-		int[] xs = To.intArray(nThreads + 1, i -> width * i / nThreads);
+		int[] xs = To.arrayOfInts(nThreads + 1, i -> width * i / nThreads);
 
 		Vector pixels[][] = new Vector[width][height];
 		float scale = 1f / Math.max(width, height);

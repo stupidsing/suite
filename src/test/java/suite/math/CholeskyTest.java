@@ -22,7 +22,7 @@ public class CholeskyTest {
 	@Test
 	public void testInverseMul() {
 		Random random = new Random();
-		float[] fs = To.floatArray(3, i -> random.nextFloat());
+		float[] fs = To.arrayOfFloats(3, i -> random.nextFloat());
 		Fun<float[], float[]> invm0 = cholesky.inverseMul(mtx.of(m0));
 		float[] actual0 = mtx.mul(m0, invm0.apply(fs));
 		float[] actual1 = invm0.apply(mtx.mul(m0, fs));
@@ -46,7 +46,7 @@ public class CholeskyTest {
 		mtx.verifyEquals(actuall, expectl);
 		mtx.verifyEquals(actuald, expectd);
 
-		float[][] matrixd = To.floatArray(actuald.length, actuald.length, (i, j) -> i == j ? actuald[i] : 0f);
+		float[][] matrixd = To.arrayOfFloats(actuald.length, actuald.length, (i, j) -> i == j ? actuald[i] : 0f);
 		float[][] m1 = mtx.mul(mtx.mul(actuall, matrixd), mtx.transpose(actuall));
 		mtx.verifyEquals(m0, m1);
 	}

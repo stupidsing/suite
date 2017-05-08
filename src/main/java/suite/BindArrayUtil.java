@@ -34,7 +34,7 @@ public class BindArrayUtil {
 			indexList.add(index);
 
 		int size = indexList.size();
-		int[] indices = To.intArray(size, indexList::get);
+		int[] indices = To.arrayOfInts(size, indexList::get);
 
 		return node -> {
 			Env env = sb.env();

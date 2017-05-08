@@ -33,7 +33,7 @@ public class B_TreeTest {
 
 	@Before
 	public void before() {
-		keys = To.intArray(nKeys, i -> i);
+		keys = To.arrayOfInts(nKeys, i -> i);
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class B_TreeTest {
 	@Test
 	public void testInsertPerformance() throws IOException {
 		int nKeys = 16384;
-		keys = To.intArray(nKeys, i -> i);
+		keys = To.arrayOfInts(nKeys, i -> i);
 		int pageSize = 4096;
 		Path path = TempDir.resolve("b_tree-file");
 

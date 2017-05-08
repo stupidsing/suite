@@ -44,7 +44,7 @@ public class ConvolutionalNeuralNetwork {
 			IntIntPair parameter = parameters.get(layer);
 			int nWeights = parameter.t0;
 			int nOutputs = parameter.t1;
-			float[] weights = To.floatArray(nWeights, i -> random.nextFloat());
+			float[] weights = To.arrayOfFloats(nWeights, i -> random.nextFloat());
 			lws.add(new LayerWeight(nInputs, nOutputs, weights));
 			nInputs = nOutputs;
 		}

@@ -43,8 +43,8 @@ public class Ols3AssetAllocator implements AssetAllocator {
 	private float[] inputs(float[] prices, int i) {
 		float[] powers0 = new float[] { 1f, };
 		float[] powers1 = Arrays.copyOfRange(prices, i - tor, i);
-		float[] powers2 = To.floatArray(powers1, x_ -> x_ * x_);
-		float[] powers3 = To.floatArray(powers1.length, i_ -> powers1[i_] * powers2[i_]);
+		float[] powers2 = To.arrayOfFloats(powers1, x_ -> x_ * x_);
+		float[] powers3 = To.arrayOfFloats(powers1.length, i_ -> powers1[i_] * powers2[i_]);
 		return mtx.concat(powers0, powers1, powers2, powers3);
 	}
 

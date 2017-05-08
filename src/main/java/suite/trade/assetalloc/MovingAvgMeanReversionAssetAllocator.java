@@ -183,22 +183,22 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	}
 
 	private double hurst(float[] prices, int tor) {
-		float[] logPrices = To.floatArray(prices, price -> (float) Math.log(price));
-		int[] tors = To.intArray(tor, t -> t + 1);
-		float[] logVrs = To.floatArray(tor, t -> {
+		float[] logPrices = To.arrayOfFloats(prices, price -> (float) Math.log(price));
+		int[] tors = To.arrayOfInts(tor, t -> t + 1);
+		float[] logVrs = To.arrayOfFloats(tor, t -> {
 			float[] diffs = ts.dropDiff(tors[t], logPrices);
-			float[] diffs2 = To.floatArray(diffs, diff -> diff * diff);
+			float[] diffs2 = To.arrayOfFloats(diffs, diff -> diff * diff);
 			return (float) Math.log(stat.variance(diffs2));
 		});
 		float[][] deps = To.array(float[].class, logVrs.length, i -> new float[] { logVrs[i], 1f, });
-		float[] n = To.floatArray(logVrs.length, i -> (float) Math.log(tors[i]));
+		float[] n = To.arrayOfFloats(logVrs.length, i -> (float) Math.log(tors[i]));
 		LinearRegression lr = stat.linearRegression(deps, n);
 		float beta0 = lr.betas[0];
 		return beta0 / 2d;
 	}
 
 	private double varianceRatio(float[] prices, int tor) {
-		float[] logs = To.floatArray(prices, price -> (float) Math.log(price));
+		float[] logs = To.arrayOfFloats(prices, price -> (float) Math.log(price));
 		float[] diffsTor = ts.dropDiff(tor, logs);
 		float[] diffs1 = ts.dropDiff(1, logs);
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));

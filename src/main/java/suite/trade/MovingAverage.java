@@ -15,15 +15,15 @@ public class MovingAverage {
 	}
 
 	public float[] exponentialMovingGeometricAvg(float[] prices, int windowSize) {
-		float[] logPrices = To.floatArray(prices, price -> (float) Math.log(price));
+		float[] logPrices = To.arrayOfFloats(prices, price -> (float) Math.log(price));
 		float[] movingAvgs = exponentialMovingAvg(logPrices, windowSize);
-		return To.floatArray(movingAvgs, lma -> (float) Math.exp(lma));
+		return To.arrayOfFloats(movingAvgs, lma -> (float) Math.exp(lma));
 	}
 
 	public float[] movingGeometricAvg(float[] prices, int windowSize) {
-		float[] logPrices = To.floatArray(prices, price -> (float) Math.log(price));
+		float[] logPrices = To.arrayOfFloats(prices, price -> (float) Math.log(price));
 		float[] movingAvgs = movingAvg(logPrices, windowSize);
-		return To.floatArray(movingAvgs, lma -> (float) Math.exp(lma));
+		return To.arrayOfFloats(movingAvgs, lma -> (float) Math.exp(lma));
 	}
 
 	public float[] exponentialMovingAvg(float[] prices, float alpha) {
