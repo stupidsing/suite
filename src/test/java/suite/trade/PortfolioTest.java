@@ -17,7 +17,7 @@ public class PortfolioTest {
 	@Test
 	public void testStats() {
 		DatePeriod period = DatePeriod.backTestDaysBefore(LocalDate.now(), 512, 32);
-		System.out.println(new AllocateAssetMovingAvgMeanReversion(s -> {
+		System.out.println(new MovingAvgMeanReversionAssetAllocator(s -> {
 		}).new MeanReversionStats(yahoo.dataSource("1113.HK"), period));
 	}
 

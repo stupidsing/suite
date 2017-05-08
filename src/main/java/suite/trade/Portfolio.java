@@ -47,7 +47,7 @@ public class Portfolio {
 
 	public Portfolio(Sink<String> log) {
 		this.log = log;
-		this.allocator = new AllocateAssetMovingAvgMeanReversion(log);
+		this.allocator = new MovingAvgMeanReversionAssetAllocator(log);
 	}
 
 	public Simulate simulateLatest(float fund0) {

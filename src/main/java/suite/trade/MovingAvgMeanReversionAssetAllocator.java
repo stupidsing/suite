@@ -18,7 +18,7 @@ import suite.util.FormatUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
-public class AllocateAssetMovingAvgMeanReversion implements AssetAllocator {
+public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 
 	private int top = 5;
 	private int tor = 64;
@@ -34,7 +34,7 @@ public class AllocateAssetMovingAvgMeanReversion implements AssetAllocator {
 
 	private Sink<String> log;
 
-	public AllocateAssetMovingAvgMeanReversion(Sink<String> log) {
+	public MovingAvgMeanReversionAssetAllocator(Sink<String> log) {
 		this.log = log;
 	}
 
