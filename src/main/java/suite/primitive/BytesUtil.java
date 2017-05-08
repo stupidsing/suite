@@ -50,7 +50,7 @@ public class BytesUtil {
 		});
 	}
 
-	public static abstract class BufferedSource implements Source<Bytes> {
+	private static abstract class BufferedSource implements Source<Bytes> {
 		protected Outlet<Bytes> outlet;
 		protected Bytes buffer = Bytes.empty;
 		protected boolean cont = true;

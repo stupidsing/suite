@@ -50,7 +50,7 @@ public class CharsUtil {
 		});
 	}
 
-	public static abstract class BufferedSource implements Source<Chars> {
+	private static abstract class BufferedSource implements Source<Chars> {
 		protected Outlet<Chars> outlet;
 		protected Chars buffer = Chars.empty;
 		protected boolean cont = true;
