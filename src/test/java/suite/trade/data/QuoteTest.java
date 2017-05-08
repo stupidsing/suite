@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import org.junit.Test;
 
@@ -14,7 +13,7 @@ import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.Trade;
 import suite.trade.TradeUtil;
-import suite.util.Util;
+import suite.util.FunUtil.Fun;
 
 public class QuoteTest {
 
@@ -44,42 +43,41 @@ public class QuoteTest {
 
 	@Test
 	public void testQuotes() {
-		System.out.println("P/L = " + summarize(r -> true, silent));
+		System.out.println("P/L = " + summarize(r -> "HKEX", silent));
 	}
 
 	@Test
 	public void testQuotesDetail() {
-		summarize(r -> true);
+		summarize(r -> "HKEX");
 	}
 
 	@Test
 	public void testQuotesByStock() {
-		summarize(r -> Util.stringEquals(r.stockCode, "0005.HK"));
+		summarize(r -> r.stockCode);
 	}
 
 	@Test
 	public void testQuotesByStrategies() {
-		Map<String, Double> profitAndLossByStrategy = Read.each("mamr", "manual", "pmamr") //
-				.map2(strategy -> summarize(r -> Util.stringEquals(r.strategy, strategy), silent)) //
-				.toMap();
-
-		System.out.println(profitAndLossByStrategy);
+		System.out.println(summarize(r -> r.strategy, silent));
 	}
 
-	private double summarize(Predicate<Trade> pred) {
-		return summarize(pred, System.out::println);
+	private Map<String, Double> summarize(Fun<Trade, String> fun) {
+		return summarize(fun, System.out::println);
 	}
 
-	private double summarize(Predicate<Trade> pred, Consumer<String> log) {
-		List<Trade> table0 = TradeUtil.fromHistory(pred);
+	private Map<String, Double> summarize(Fun<Trade, String> fun, Consumer<String> log) {
+		List<Trade> table0 = TradeUtil.fromHistory(trade -> true);
 		Map<String, Integer> nSharesByStockCodes = TradeUtil.portfolio(table0);
 		Map<String, Float> priceByStockCodes = yahoo.quote(nSharesByStockCodes.keySet());
 
-		List<Trade> sellAll = Read.from2(nSharesByStockCodes) //
-				.map((stockCode, size) -> {
-					float price = priceByStockCodes.get(stockCode);
-					return new Trade("-", -size, stockCode, price, "-");
-				}) //
+		List<Trade> sellAll = Read.from(table0) //
+				.groupBy(trade -> trade.strategy, st -> TradeUtil.portfolio(st.toList())) //
+				.concatMap((strategy, nSharesByStockCode) -> Read //
+						.from2(nSharesByStockCode) //
+						.map((stockCode, size) -> {
+							float price = priceByStockCodes.get(stockCode);
+							return new Trade("-", -size, stockCode, price, strategy);
+						})) //
 				.toList();
 
 		List<Trade> table1 = Streamlet.concat(Read.from(table0), Read.from(sellAll)).toList();
@@ -92,7 +90,7 @@ public class QuoteTest {
 					Asset asset = hkex.getCompany(stockCode);
 					String shortName = asset != null ? asset.shortName() : null;
 					float price = priceByStockCodes.get(stockCode);
-					return stockCode + " (" + shortName + ") := " + price + " * " + nShares + " == " + nShares * price;
+					return stockCode + " (" + shortName + "): " + price + " * " + nShares + " = " + nShares * price;
 				});
 
 		log.accept("CONSTITUENTS:");
@@ -100,7 +98,9 @@ public class QuoteTest {
 		log.accept("OWN = " + -amount0);
 		log.accept("P/L = " + amount1);
 
-		return amount1;
+		return Read.from(table1) //
+				.groupBy(fun, st -> TradeUtil.returns(st.toList())) //
+				.toMap();
 	}
 
 }

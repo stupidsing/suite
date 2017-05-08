@@ -47,9 +47,9 @@ public class DailyMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) {
 		List<Pair<String, String>> outputs = new ArrayList<>();
-		outputs.add(Pair.of("mamr", mamr()));
-		outputs.add(Pair.of("pmamr", pmamr()));
-		outputs.add(Pair.of("tlo", tlo()));
+		outputs.add(mamr());
+		outputs.add(pmamr());
+		outputs.add(bug());
 
 		StringBuilder sb = new StringBuilder();
 		for (Pair<String, String> output : outputs) {
@@ -65,8 +65,30 @@ public class DailyMain extends ExecutableProgram {
 		return true;
 	}
 
+	// some orders caused by stupid bugs. need to sell those at suitable times.
+	private Pair<String, String> bug() {
+		String tag = "bug";
+		StringBuilder sb = new StringBuilder();
+		List<Trade> history = TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, "bug"));
+		Account account = Account.fromHistory(history);
+
+		Map<String, Float> faceValueByStockCodes = Read.from(history) //
+				.groupBy(record -> record.stockCode, //
+						rs -> (float) (Read.from(rs).collect(As.sumOfDoubles(r -> r.buySell * r.price))))
+				.toMap();
+
+		for (Entry<String, Integer> e : account.assets().entrySet()) {
+			String stockCode = e.getKey();
+			String targetPrice = To.string(-1.05d * faceValueByStockCodes.get(stockCode) / e.getValue());
+			sb.append("\n" + stockCode + " has signal " + targetPrice + " * " + e.getValue());
+		}
+
+		return Pair.of(tag, sb.toString());
+	}
+
 	// moving average mean reversion
-	private String mamr() {
+	private Pair<String, String> mamr() {
+		String tag = "mamr";
 		Hkex hkex = new Hkex();
 		Yahoo yahoo = new Yahoo();
 		Streamlet<Asset> assets = hkex.getCompanies();
@@ -142,15 +164,16 @@ public class DailyMain extends ExecutableProgram {
 			}
 		}
 
-		return Read.from(messages).collect(As.joined());
+		return Pair.of(tag, Read.from(messages).collect(As.joined()));
 	}
 
 	// portfolio-based moving average mean reversion
-	private String pmamr() {
+	private Pair<String, String> pmamr() {
+		String tag = "pmamr";
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = To.sink(sb);
 		Portfolio portfolio = new Portfolio(new MovingAvgMeanReversionAssetAllocator(log), log);
-		Account account0 = Account.fromHistory(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, "pmamr")));
+		Account account0 = Account.fromHistory(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
 		Account account1 = portfolio.simulateLatest(1000000f).account;
 
 		List<Pair<String, Integer>> diffs = TradeUtil.diff(account0.assets(), account1.assets());
@@ -162,27 +185,7 @@ public class DailyMain extends ExecutableProgram {
 			sb.append("\n" + stockCode + " has signal " + price + " * " + pair.t1);
 		}
 
-		return sb.toString();
-	}
-
-	// try limit orders, "human pride" strategy
-	private String tlo() {
-		StringBuilder sb = new StringBuilder();
-		List<Trade> history = TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, "tlo"));
-		Account account = Account.fromHistory(history);
-
-		Map<String, Float> faceValueByStockCodes = Read.from(history) //
-				.groupBy(record -> record.stockCode, //
-						rs -> (float) (Read.from(rs).collect(As.sumOfDoubles(r -> r.buySell * r.price))))
-				.toMap();
-
-		for (Entry<String, Integer> e : account.assets().entrySet()) {
-			String stockCode = e.getKey();
-			String targetPrice = To.string(1.1d * faceValueByStockCodes.get(stockCode) / e.getValue());
-			sb.append("\n" + stockCode + " has signal " + targetPrice + " * " + e.getValue());
-		}
-
-		return sb.toString();
+		return Pair.of(tag, sb.toString());
 	}
 
 }

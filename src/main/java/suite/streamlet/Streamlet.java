@@ -51,10 +51,6 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().iterator();
 	}
 
-	public <K, V> Streamlet2<K, V> aggregate(Fun<T, K> keyFun, Fun<Streamlet<T>, V> valueFun) {
-		return groupBy(keyFun).mapValue(list -> valueFun.apply(Read.from(list)));
-	}
-
 	public Streamlet<T> closeAtEnd(Closeable c) {
 		return streamlet(() -> {
 			Outlet<T> in = spawn();

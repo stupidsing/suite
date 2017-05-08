@@ -46,7 +46,7 @@ public class CheckerUtil {
 	}
 
 	public Map<Prototype, Integer> getNumberOfElements(List<Rule> rules) {
-		return Read.from(rules).aggregate(rule -> Prototype.of(rule.head), this::getNumberOfElements).collect(As::map);
+		return Read.from(rules).groupBy(rule -> Prototype.of(rule.head), this::getNumberOfElements).collect(As::map);
 	}
 
 	private Integer getNumberOfElements(Streamlet<Rule> rules) {
