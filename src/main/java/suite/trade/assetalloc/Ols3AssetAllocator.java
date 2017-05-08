@@ -13,6 +13,11 @@ import suite.streamlet.Read;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
+/**
+ * Strategy based on ordinary least square linear regression.
+ *
+ * @author ywsing
+ */
 public class Ols3AssetAllocator implements AssetAllocator {
 
 	private int tor = 64;
