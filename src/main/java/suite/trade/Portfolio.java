@@ -34,6 +34,11 @@ public class Portfolio {
 	private AssetAllocator assetAllocator;
 	private Sink<String> log;
 
+	/**
+	 * @return a portfolio consisting of list of stock codes and potential
+	 *         values, or null if the strategy do not want to trade on that
+	 *         date.
+	 */
 	public interface AssetAllocator {
 		public List<Pair<String, Double>> allocate( //
 				Map<String, DataSource> dataSourceByStockCode, //
