@@ -15,9 +15,7 @@ import suite.streamlet.Read;
 import suite.trade.DatePeriod;
 import suite.trade.MovingAverage;
 import suite.trade.data.DataSource;
-import suite.trade.data.DataSource.Datum;
 import suite.trade.data.Hkex;
-import suite.util.FormatUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
@@ -84,16 +82,12 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 						&& 0f < mrs.movingAvgMeanReversionRatio) //
 				.map2((stockCode, mrs) -> stockCode, (stockCode, mrs) -> {
 					DataSource dataSource = dataSourceByStockCode.get(stockCode);
-					Datum datum0 = dataSource.first();
-					Datum datumx = dataSource.last();
-					LocalDate date0 = FormatUtil.date(datum0.date);
-					LocalDate datex = FormatUtil.date(datumx.date);
-					double price = datumx.price;
+					double price = dataSource.last().price;
 
 					double lma = mrs.latestMovingAverage();
 					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
 					double annualReturn = Math.expm1(Math.log1p(dailyReturn) * nTradeDaysInYear);
-					double sharpe = ts.sharpeRatio(dataSource.prices, DatePeriod.of(date0, datex).nYears());
+					double sharpe = ts.sharpeRatio(dataSource.prices, dataSource.nYears());
 					log.sink(hkex.getCompany(stockCode) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
 							+ ", " + To.string(price) + " => " + To.string(lma) //

@@ -129,9 +129,9 @@ public class DataSource {
 	}
 
 	public double nYears() { // approximately
-		LocalDate dateStart = FormatUtil.date(first().date);
-		LocalDate dateEnd = FormatUtil.date(last().date);
-		return DatePeriod.of(dateStart, dateEnd).nYears();
+		LocalDate date0 = FormatUtil.date(first().date);
+		LocalDate datex = FormatUtil.date(last().date);
+		return DatePeriod.of(date0, datex).nYears();
 	}
 
 	public Datum first() {
