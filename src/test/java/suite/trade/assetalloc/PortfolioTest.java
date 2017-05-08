@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
+import suite.trade.Account;
 import suite.trade.DatePeriod;
 import suite.trade.Portfolio;
 import suite.trade.Portfolio.Simulate;
@@ -33,8 +34,9 @@ public class PortfolioTest {
 		LocalDate toDate = LocalDate.of(2020, 1, 1);
 		Simulate sim = portfolio.simulateFromTo(initial, DatePeriod.of(frDate, toDate));
 
-		System.out.println("nTransactions = " + sim.account.nTransactions());
-		System.out.println("nTransactionAmount = " + To.string(sim.account.nTransactionAmount()));
+		Account account = sim.account;
+		System.out.println("nTransactions = " + account.nTransactions());
+		System.out.println("nTransactionAmount = " + To.string(account.nTransactionAmount()));
 
 		float[] valuations = sim.valuations;
 		assertTrue(initial * 1.05f < valuations[valuations.length - 1]);
