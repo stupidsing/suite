@@ -18,16 +18,18 @@ import suite.streamlet.Streamlet;
 import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.BackTest;
+import suite.trade.BuySellStrategy;
 import suite.trade.DataSource;
 import suite.trade.DatePeriod;
 import suite.trade.Hkex;
+import suite.trade.MovingAvgMeanReversionAssetAllocator;
 import suite.trade.Portfolio;
 import suite.trade.Strategos;
-import suite.trade.BuySellStrategy;
 import suite.trade.TradeUtil;
 import suite.trade.TradeUtil.Trade;
 import suite.trade.Yahoo;
 import suite.util.FormatUtil;
+import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
 import suite.util.To;
 import suite.util.Util;
@@ -146,7 +148,8 @@ public class DailyMain extends ExecutableProgram {
 	// portfolio-based moving average mean reversion
 	private String pmamr() {
 		StringBuilder sb = new StringBuilder();
-		Portfolio portfolio = new Portfolio(To.sink(sb));
+		Sink<String> log = To.sink(sb);
+		Portfolio portfolio = new Portfolio(new MovingAvgMeanReversionAssetAllocator(log), log);
 		Account account0 = Account.fromHistory(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, "pmamr")));
 		Account account1 = portfolio.simulateLatest(1000000f).account;
 

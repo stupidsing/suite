@@ -31,8 +31,8 @@ public class Portfolio {
 	private HkexFactBook hkexFactBook = new HkexFactBook();
 	private Yahoo yahoo = new Yahoo();
 
+	private AssetAllocator assetAllocator;
 	private Sink<String> log;
-	private AssetAllocator allocator;
 
 	public interface AssetAllocator {
 		public List<Pair<String, Double>> allocate( //
@@ -41,13 +41,13 @@ public class Portfolio {
 				LocalDate backTestDate);
 	}
 
-	public Portfolio() {
-		this(System.out::println);
+	public Portfolio(AssetAllocator assetAllocator) {
+		this(assetAllocator, System.out::println);
 	}
 
-	public Portfolio(Sink<String> log) {
+	public Portfolio(AssetAllocator assetAllocator, Sink<String> log) {
+		this.assetAllocator = assetAllocator;
 		this.log = log;
-		this.allocator = new MovingAvgMeanReversionAssetAllocator(log);
 	}
 
 	public Simulate simulateLatest(float fund0) {
@@ -116,7 +116,7 @@ public class Portfolio {
 						.mapValue(dataSource -> dataSource.last().price) //
 						.toMap();
 
-				List<Pair<String, Double>> potentialStatsByStockCode = allocator.allocate( //
+				List<Pair<String, Double>> potentialStatsByStockCode = assetAllocator.allocate( //
 						backTestDataSourceByStockCode, //
 						tradeDates, //
 						date);
