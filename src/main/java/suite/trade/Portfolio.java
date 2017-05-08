@@ -21,7 +21,6 @@ import suite.util.Util;
 
 public class Portfolio {
 
-	private int tradeFrequency = 3;
 	private int historyWindow = 1024;
 
 	private Statistic stat = new Statistic();
@@ -61,7 +60,7 @@ public class Portfolio {
 
 	public Simulate simulateFromTo(float fund0, DatePeriod period) {
 		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Read.from(dates) //
-				.filter(date -> period.contains(date) && date.toEpochDay() % tradeFrequency == 0) //
+				.filter(period::contains) //
 				.toList();
 		return new Simulate(fund0, period.from, datesPred);
 	}

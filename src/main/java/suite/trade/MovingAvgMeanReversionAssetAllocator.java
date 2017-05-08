@@ -22,6 +22,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 
 	private int top = 5;
 	private int tor = 64;
+	private int tradeFrequency = 3;
 
 	private double neglog2 = -Math.log(2d);
 
@@ -39,6 +40,16 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	}
 
 	public List<Pair<String, Double>> allocate( //
+			Map<String, DataSource> dataSourceByStockCode, //
+			List<LocalDate> tradeDates, //
+			LocalDate backTestDate) {
+		if (backTestDate.toEpochDay() % tradeFrequency == 0)
+			return allocate0(dataSourceByStockCode, tradeDates, backTestDate);
+		else
+			return null;
+	}
+
+	public List<Pair<String, Double>> allocate0( //
 			Map<String, DataSource> dataSourceByStockCode, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
