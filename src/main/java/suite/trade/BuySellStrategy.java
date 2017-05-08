@@ -1,5 +1,10 @@
 package suite.trade;
 
+/**
+ * Strategy that advise you to buy or sell on one specific stock.
+ *
+ * @author ywsing
+ */
 public interface BuySellStrategy {
 
 	public GetBuySell analyze(float[] prices);
