@@ -37,7 +37,7 @@ public class BytesUtil {
 			protected boolean search() {
 				int size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
-					if (!delim.equals(buffer.subbytes(p0, p1)))
+					if (!delim.equals(buffer.range(p0, p1)))
 						p0++;
 					else
 						return true;
@@ -73,8 +73,8 @@ public class BytesUtil {
 			}
 
 			if (cont && 0 < p0) {
-				Bytes head = buffer.subbytes(0, p0);
-				buffer = buffer.subbytes(p1);
+				Bytes head = buffer.range(0, p0);
+				buffer = buffer.range(p1);
 				return head;
 			} else
 				return null;

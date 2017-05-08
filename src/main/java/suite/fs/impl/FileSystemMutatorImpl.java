@@ -39,7 +39,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 			BytesBuilder bb = new BytesBuilder();
 			for (int s = 0; s < size; s += pageSize)
 				bb.append(kdm.getPayload(key(hash, DATAID, seq++)));
-			return bb.toBytes().subbytes(0, size);
+			return bb.toBytes().range(0, size);
 		} else
 			return null;
 	}
@@ -77,7 +77,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 
 			while (pos < size) {
 				int pos1 = Math.min(pos + pageSize, size);
-				kdm.putPayload(key(hash, DATAID, seq++), bytes.subbytes(pos, pos1));
+				kdm.putPayload(key(hash, DATAID, seq++), bytes.range(pos, pos1));
 				pos = pos1;
 			}
 			kvm.put(sizeKey, size);

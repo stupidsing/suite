@@ -131,6 +131,14 @@ public class Chars implements Iterable<Character> {
 		return cb.toChars();
 	}
 
+	public Chars range(int s) {
+		return range_(s);
+	}
+
+	public Chars range(int s, int e) {
+		return range_(s, e);
+	}
+
 	public Chars replace(Chars from, Chars to) {
 		CharsBuilder cb = new CharsBuilder();
 		int i0 = 0, i;
@@ -153,14 +161,6 @@ public class Chars implements Iterable<Character> {
 
 	public boolean startsWith(Chars chars, int s) {
 		return startsWith_(chars, s);
-	}
-
-	public Chars subchars(int s) {
-		return range_(s);
-	}
-
-	public Chars subchars(int s, int e) {
-		return range_(s, e);
 	}
 
 	public char[] toCharArray() {

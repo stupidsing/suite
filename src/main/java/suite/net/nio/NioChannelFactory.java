@@ -130,8 +130,8 @@ public interface NioChannelFactory {
 		channel.onReceivePacket.register(packet -> {
 			if (5 <= packet.size()) {
 				char type = (char) packet.get(0);
-				int token = NetUtil.bytesToInt(packet.subbytes(1, 5));
-				Bytes contents = packet.subbytes(5);
+				int token = NetUtil.bytesToInt(packet.range(1, 5));
+				Bytes contents = packet.range(5);
 
 				if (type == RESPONSE)
 					matcher.onResponseReceived(token, contents);
@@ -152,11 +152,11 @@ public interface NioChannelFactory {
 				int size = received.size();
 
 				if (4 <= size) {
-					int end = 4 + NetUtil.bytesToInt(received.subbytes(0, 4));
+					int end = 4 + NetUtil.bytesToInt(received.range(0, 4));
 
 					if (end <= size) {
-						Bytes in = received.subbytes(4, end);
-						received = received.subbytes(end);
+						Bytes in = received.range(4, end);
+						received = received.range(end);
 						channel.onReceivePacket.fire(in);
 					}
 				}

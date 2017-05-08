@@ -57,7 +57,7 @@ public class CharsIntrinsics {
 		int start = ((Int) inputs.get(0)).number;
 		int end = ((Int) inputs.get(1)).number;
 		Chars chars = Data.get(inputs.get(2));
-		return new Data<>(chars.subchars(start, end));
+		return new Data<>(chars.range(start, end));
 	};
 
 }

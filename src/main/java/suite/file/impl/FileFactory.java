@@ -70,7 +70,7 @@ public class FileFactory {
 			public void save(Extent extent, Bytes bytes) {
 				for (int pointer = extent.start, p = 0; pointer < extent.end; pointer++) {
 					int p1 = p + blockSize;
-					pageFile.save(pointer, new Block(extent, bytes.subbytes(p, p1)));
+					pageFile.save(pointer, new Block(extent, bytes.range(p, p1)));
 					p = p1;
 				}
 			}

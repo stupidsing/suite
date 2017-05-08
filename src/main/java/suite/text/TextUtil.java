@@ -35,13 +35,13 @@ public class TextUtil {
 		Segment sx = diff.t0, sy = diff.t1;
 		int x0 = 0, x1 = sx.start, x2 = sx.end, xx = bytesx.size();
 		int y0 = 0, y1 = sy.start, y2 = sy.end, yx = bytesy.size();
-		Bytes common = bytesx.subbytes(x1, x2);
+		Bytes common = bytesx.range(x1, x2);
 
 		if (!sx.isEmpty() && !sy.isEmpty()) {
 			List<Pair<Bytes, Bytes>> patch = new ArrayList<>();
-			patch.addAll(diff(bytesx.subbytes(x0, x1), bytesy.subbytes(y0, y1)));
+			patch.addAll(diff(bytesx.range(x0, x1), bytesy.range(y0, y1)));
 			patch.add(Pair.of(common, common));
-			patch.addAll(diff(bytesx.subbytes(x2, xx), bytesy.subbytes(y2, yx)));
+			patch.addAll(diff(bytesx.range(x2, xx), bytesy.range(y2, yx)));
 			return patch;
 		} else if (!bytesx.isEmpty() || !bytesy.isEmpty())
 			return Arrays.asList(Pair.of(bytesx, bytesy));
@@ -54,7 +54,7 @@ public class TextUtil {
 		int p = 0;
 		for (Pair<Bytes, Bytes> pair : pairs) {
 			int p1 = p + pair.t0.size();
-			if (Objects.equals(bytes.subbytes(p, p1), pair.t0))
+			if (Objects.equals(bytes.range(p, p1), pair.t0))
 				bb.append(pair.t1);
 			else
 				throw new ConflictException();
@@ -80,8 +80,8 @@ public class TextUtil {
 			List<Pair<Bytes, Bytes>> pty = !isEmptyy ? Util.right(pairsy, 1) : pairsy;
 
 			int c = Math.min(phx.t0.size(), phy.t0.size());
-			Bytes commonx = phx.t0.subbytes(0, c);
-			Bytes commony = phy.t0.subbytes(0, c);
+			Bytes commonx = phx.t0.range(0, c);
+			Bytes commony = phy.t0.range(0, c);
 
 			if (Objects.equals(commonx, commony)) {
 				int s0, s1;
@@ -93,10 +93,10 @@ public class TextUtil {
 						&& phy.t0 != phy.t1 //
 						&& 0 < (s0 = detectSame(phx.t0, phy.t0)) //
 						&& 0 < (s1 = detectSame(phx.t1, phy.t1))) {
-					pair = Pair.of(phx.t0.subbytes(0, s0), phx.t1.subbytes(0, s1));
+					pair = Pair.of(phx.t0.range(0, s0), phx.t1.range(0, s1));
 					pairs = merge( //
-							cons(Pair.of(phx.t0.subbytes(s0), phx.t1.subbytes(s1)), ptx), //
-							cons(Pair.of(phy.t0.subbytes(s0), phy.t1.subbytes(s1)), pty), //
+							cons(Pair.of(phx.t0.range(s0), phx.t1.range(s1)), ptx), //
+							cons(Pair.of(phy.t0.range(s0), phy.t1.range(s1)), pty), //
 							isDetectSameChanges);
 				} else if (phx.t0 != phx.t1) {
 					pair = phx;
@@ -143,7 +143,7 @@ public class TextUtil {
 
 	private Pair<Bytes, Bytes> skip(Pair<Bytes, Bytes> pair, int c) throws ConflictException {
 		if (pair.t0 == pair.t1 && c <= pair.t0.size()) {
-			Bytes bytes = pair.t0.subbytes(c);
+			Bytes bytes = pair.t0.range(c);
 			return Pair.of(bytes, bytes);
 		} else
 			throw new ConflictException();

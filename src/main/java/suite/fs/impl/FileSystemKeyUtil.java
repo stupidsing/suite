@@ -67,7 +67,7 @@ public class FileSystemKeyUtil {
 		BytesBuilder bb = new BytesBuilder();
 		for (NameKey key : keys)
 			if (0 < key.size)
-				bb.append(key.path.subbytes(0, key.size));
+				bb.append(key.path.range(0, key.size));
 			else
 				bb.append(key.path);
 		return bb.toBytes();
@@ -82,9 +82,9 @@ public class FileSystemKeyUtil {
 				int pathLength = sizeOffset - pathOffset;
 				int pos1 = Math.min(pos + pathLength, size);
 				keys.add(toNameKey( //
-						hash(name.subbytes(0, pos)), //
+						hash(name.range(0, pos)), //
 						0, //
-						name.subbytes(pos, pos1).pad(pathLength), //
+						name.range(pos, pos1).pad(pathLength), //
 						pos1 == size ? pos1 - pos : 0));
 				pos = pos1;
 			}
@@ -96,9 +96,9 @@ public class FileSystemKeyUtil {
 
 	public NameKey toNameKey(Bytes bytes) {
 		return new NameKey( //
-				bytes.subbytes(hashOffset, idOffset), //
+				bytes.range(hashOffset, idOffset), //
 				bytes.get(idOffset), //
-				bytes.subbytes(pathOffset, sizeOffset), //
+				bytes.range(pathOffset, sizeOffset), //
 				bytes.get(sizeOffset));
 	}
 

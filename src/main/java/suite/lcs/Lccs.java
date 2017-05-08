@@ -34,8 +34,8 @@ public class Lccs {
 				for (int key : keys) {
 					Segment segment0 = segments0.get(key);
 					Segment segment1 = segments1.get(key);
-					Bytes b0 = bytes0.subbytes(segment0.start, segment0.end);
-					Bytes b1 = bytes1.subbytes(segment1.start, segment1.end);
+					Bytes b0 = bytes0.range(segment0.start, segment0.end);
+					Bytes b1 = bytes1.range(segment1.start, segment1.end);
 					if (Objects.equals(b0, b1))
 						return Pair.of(segment0, segment1);
 				}
@@ -50,7 +50,7 @@ public class Lccs {
 
 	private Map<Integer, Segment> hashSegments(Bytes bytes, int rollingSize) {
 		Map<Integer, Segment> segments = new HashMap<>();
-		int hash = rh.hash(bytes.subbytes(0, rollingSize - 1));
+		int hash = rh.hash(bytes.range(0, rollingSize - 1));
 		int size = bytes.size();
 
 		for (int pos = 0; pos <= size - rollingSize; pos++) {

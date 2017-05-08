@@ -37,7 +37,7 @@ public class CharsUtil {
 			protected boolean search() {
 				int size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
-					if (!delim.equals(buffer.subchars(p0, p1)))
+					if (!delim.equals(buffer.range(p0, p1)))
 						p0++;
 					else
 						return true;
@@ -73,8 +73,8 @@ public class CharsUtil {
 			}
 
 			if (cont && 0 < p0) {
-				Chars head = buffer.subchars(0, p0);
-				buffer = buffer.subchars(p1);
+				Chars head = buffer.range(0, p0);
+				buffer = buffer.range(p1);
 				return head;
 			} else
 				return null;

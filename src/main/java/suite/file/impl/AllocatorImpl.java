@@ -116,10 +116,10 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 			Bytes bytes = allocMapFile.load(p);
 
 			BytesBuilder bb = new BytesBuilder();
-			bb.append(bytes.subbytes(p0, p1));
+			bb.append(bytes.range(p0, p1));
 			for (int i = p1; i < p2; i++)
 				bb.append(b);
-			bb.append(bytes.subbytes(p2, p3));
+			bb.append(bytes.range(p2, p3));
 
 			allocMapFile.save(p, bb.toBytes());
 			start = end_;

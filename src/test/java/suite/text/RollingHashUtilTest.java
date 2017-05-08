@@ -42,14 +42,14 @@ public class RollingHashUtilTest {
 		Bytes bytes = To.bytes("0123456789abcdef");
 		int size = bytes.size();
 
-		int rollingHash = rollingHashUtil.hash(bytes.subbytes(0, 10));
+		int rollingHash = rollingHashUtil.hash(bytes.range(0, 10));
 
 		for (int pos = 10; pos < size; pos++) {
 			rollingHash = rollingHashUtil.unroll(rollingHash, bytes.get(pos - 10), 10);
 			rollingHash = rollingHashUtil.roll(rollingHash, bytes.get(pos));
 		}
 
-		assertEquals(rollingHashUtil.hash(bytes.subbytes(size - 10)), rollingHash);
+		assertEquals(rollingHashUtil.hash(bytes.range(size - 10)), rollingHash);
 	}
 
 }

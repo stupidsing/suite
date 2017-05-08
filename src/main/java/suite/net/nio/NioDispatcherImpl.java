@@ -172,7 +172,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 			// writable event (and send again at that moment).
 			byte[] bytes = in.toByteArray();
 			int sent = Rethrow.ex(() -> sc.write(ByteBuffer.wrap(bytes)));
-			Bytes out = in.subbytes(sent);
+			Bytes out = in.range(sent);
 			int ops = SelectionKey.OP_READ | (!out.isEmpty() ? SelectionKey.OP_WRITE : 0);
 			SelectionKey key = sc.keyFor(selector);
 

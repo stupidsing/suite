@@ -132,6 +132,14 @@ public class Bytes implements Iterable<Byte> {
 		return bb.toBytes();
 	}
 
+	public Bytes range(int s) {
+		return range_(s);
+	}
+
+	public Bytes range(int s, int e) {
+		return range_(s, e);
+	}
+
 	public Bytes replace(Bytes from, Bytes to) {
 		BytesBuilder bb = new BytesBuilder();
 		int i0 = 0, i;
@@ -154,14 +162,6 @@ public class Bytes implements Iterable<Byte> {
 
 	public boolean startsWith(Bytes bytes, int s) {
 		return startsWith_(bytes, s);
-	}
-
-	public Bytes subbytes(int s) {
-		return range_(s);
-	}
-
-	public Bytes subbytes(int s, int e) {
-		return range_(s, e);
 	}
 
 	public byte[] toByteArray() {
