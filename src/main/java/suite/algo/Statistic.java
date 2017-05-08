@@ -65,7 +65,9 @@ public class Statistic {
 			float[][] xt = mtx.transpose(x);
 			float[][] xtx = mtx.mul(xt, x);
 			float[] lr = new Cholesky().inverseMul(xtx).apply(mtx.mul(xt, y));
-			float[] estimatedy = To.floatArray(n, i -> mtx.dot(lr, x[i]));
+			betas = lr;
+
+			float[] estimatedy = To.floatArray(n, i -> predict(x[i]));
 			double meany = mean(y);
 
 			double sst = 0f; // total sum of squares
@@ -79,9 +81,12 @@ public class Statistic {
 
 			// double sse = sst - ssr; // sum of squared residuals
 
-			betas = lr;
 			r2 = ssr / sst; // 0 -> not accurate, 1 -> totally accurate
 			standardError = Math.sqrt(ssr / (n - mtx.width(x) - 1));
+		}
+
+		public float predict(float[] x) {
+			return mtx.dot(betas, x);
 		}
 	}
 
