@@ -74,8 +74,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		// ensure Hurst exponent < .5d: price is weakly mean reverting
 		// ensure 0d < variance ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
-		return Read //
-				.from2(meanReversionStatsByStockCode) //
+		return Read.from2(meanReversionStatsByStockCode) //
 				.filterValue(mrs -> mrs.adf < 0f //
 						&& mrs.hurst < .5f //
 						&& 0f < mrs.varianceRatio //
