@@ -22,7 +22,7 @@ public class Summarize {
 		this.configuration = configuration;
 	}
 
-	public Map<String, Double> summarize(Fun<Trade, String> fun, Consumer<String> log) {
+	public <K> Map<K, Double> summarize(Fun<Trade, K> fun, Consumer<String> log) {
 		List<Trade> table0 = TradeUtil.fromHistory(trade -> true);
 		Map<String, Integer> nSharesBySymbols = TradeUtil.portfolio(table0);
 		Set<String> symbols = nSharesBySymbols.keySet();

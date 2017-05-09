@@ -50,6 +50,7 @@ public class QuoteTest {
 	@Test
 	public void testQuotesByStock() {
 		System.out.println(Read.from2(summarize(r -> r.symbol)) //
+				.sortBy((symbol, gain) -> -gain) //
 				.map((symbol, gain) -> symbol + " " + To.string(gain) + "\n") //
 				.collect(As.joined()));
 	}
