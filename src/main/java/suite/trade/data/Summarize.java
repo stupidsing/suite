@@ -11,27 +11,22 @@ import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.Trade;
 import suite.trade.TradeUtil;
-import suite.trade.data.Broker.Hsbc;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
 public class Summarize {
 
-	private Fun<Set<String>, Map<String, Float>> quoteFun;
-	private Fun<String, Asset> getAssetFun;
+	private Configuration configuration;
 
-	private Broker broker = new Hsbc();
-
-	public Summarize(Fun<Set<String>, Map<String, Float>> quoteFun, Fun<String, Asset> getAssetFun) {
-		this.quoteFun = quoteFun;
-		this.getAssetFun = getAssetFun;
+	public Summarize(Configuration configuration) {
+		this.configuration = configuration;
 	}
 
 	public Map<String, Double> summarize(Fun<Trade, String> fun, Consumer<String> log) {
 		List<Trade> table0 = TradeUtil.fromHistory(trade -> true);
 		Map<String, Integer> nSharesByStockCodes = TradeUtil.portfolio(table0);
 		Set<String> stockCodes = nSharesByStockCodes.keySet();
-		Map<String, Float> priceByStockCodes = quoteFun.apply(stockCodes);
+		Map<String, Float> priceByStockCodes = configuration.quote(stockCodes);
 
 		List<Trade> sellAll = Read.from(table0) //
 				.groupBy(trade -> trade.strategy, st -> TradeUtil.portfolio(st.toList())) //
@@ -52,7 +47,7 @@ public class Summarize {
 
 		Streamlet<String> constituents = Read.from2(nSharesByStockCodes) //
 				.map((stockCode, nShares) -> {
-					Asset asset = getAssetFun.apply(stockCode);
+					Asset asset = configuration.getCompany(stockCode);
 					float price = priceByStockCodes.get(stockCode);
 					return asset + ": " + price + " * " + nShares + " = " + nShares * price;
 				});
@@ -66,7 +61,7 @@ public class Summarize {
 		log.accept("P/L = " + amount1);
 		log.accept("nTransactions = " + nTransactions);
 		log.accept("transactionAmount = " + transactionAmount);
-		log.accept("transactionFee = " + To.string(broker.transactionFee(transactionAmount)));
+		log.accept("transactionFee = " + To.string(configuration.transactionFee(transactionAmount)));
 
 		return Read.from(table1) //
 				.groupBy(fun, st -> returns(st.toList())) //

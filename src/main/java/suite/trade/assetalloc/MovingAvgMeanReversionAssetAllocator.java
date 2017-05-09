@@ -14,8 +14,8 @@ import suite.math.TimeSeries;
 import suite.streamlet.Read;
 import suite.trade.DatePeriod;
 import suite.trade.MovingAverage;
+import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
-import suite.trade.data.Hkex;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
@@ -32,11 +32,11 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	private MovingAverage movingAvg = new MovingAverage();
 	private TimeSeries ts = new TimeSeries();
 
-	private Hkex hkex = new Hkex();
-
+	private Configuration configuration;
 	private Sink<String> log;
 
-	public MovingAvgMeanReversionAssetAllocator(Sink<String> log) {
+	public MovingAvgMeanReversionAssetAllocator(Configuration configuration, Sink<String> log) {
+		this.configuration = configuration;
 		this.log = log;
 	}
 
@@ -87,7 +87,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
 					double annualReturn = Math.expm1(Math.log1p(dailyReturn) * nTradeDaysInYear);
 					double sharpe = ts.sharpeRatio(dataSource.prices, dataSource.nYears());
-					log.sink(hkex.getCompany(stockCode) //
+					log.sink(configuration.getCompany(stockCode) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
 							+ ", " + To.string(price) + " => " + To.string(lma) //
 							+ ", annualReturn = " + To.string(annualReturn) //
@@ -97,7 +97,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 				}) //
 				.filterValue(ps -> stat.riskFreeInterestRate < ps.annualReturn) //
 				.filterValue(ps -> 0d < ps.sharpe) //
-				// .cons(Asset.cash.code, new
+				// .cons(Asset.cashCode, new
 				// PotentialStats(stat.riskFreeInterestRate, 3d)) //
 				.mapValue(ps -> ps.potential) //
 				.sortBy((stockCode, potential) -> -potential) //

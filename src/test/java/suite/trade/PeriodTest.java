@@ -6,9 +6,8 @@ import org.junit.Test;
 
 import suite.math.DiscreteCosineTransform;
 import suite.os.LogUtil;
+import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
-import suite.trade.data.Hkex;
-import suite.trade.data.Yahoo;
 
 /**
  * Finds the period of various stocks using FFT.
@@ -17,20 +16,19 @@ import suite.trade.data.Yahoo;
  */
 public class PeriodTest {
 
-	private Hkex hkex = new Hkex();
+	private Configuration configuration = new Configuration();
 
 	private int minPeriod = 8;
 
 	@Test
 	public void test() {
 		DiscreteCosineTransform dct = new DiscreteCosineTransform();
-		Yahoo yahoo = new Yahoo();
 
-		for (Asset stock : hkex.queryCompanies().take(40)) {
+		for (Asset stock : configuration.queryCompanies().take(40)) {
 			String stockCode = stock.code;
 
 			try {
-				DataSource ds = yahoo.dataSource(stockCode);
+				DataSource ds = configuration.dataSource(stockCode);
 				float[] prices0 = ds.prices;
 				int size = 1, size1;
 

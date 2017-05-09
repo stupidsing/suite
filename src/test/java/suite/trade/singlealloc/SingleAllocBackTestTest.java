@@ -10,20 +10,17 @@ import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.Forex;
+import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
-import suite.trade.data.Hkex;
-import suite.trade.data.Yahoo;
 
 public class SingleAllocBackTestTest {
 
 	private DatePeriod period = DatePeriod.fiveYears();
-
-	private Hkex hkex = new Hkex();
-	private Yahoo yahoo = new Yahoo();
+	private Configuration configuration = new Configuration();
 
 	@Test
 	public void testBackTest() {
-		for (Asset stock : hkex.queryCompanies()) {
+		for (Asset stock : configuration.queryCompanies()) {
 			String disp = stock.toString();
 			try {
 				backTest(stock.code, disp);
@@ -54,7 +51,7 @@ public class SingleAllocBackTestTest {
 
 	@Test
 	public void testBackTestHkexDetails() {
-		backTest(hkex.getCompany("0005.HK"));
+		backTest(configuration.getCompany("0005.HK"));
 	}
 
 	private void backTest(Asset asset) {
@@ -69,7 +66,7 @@ public class SingleAllocBackTestTest {
 
 	private Map<String, SingleAllocBackTest> backTest(String code, String disp) {
 		Strategos sr = new Strategos();
-		DataSource ds = yahoo.dataSource(code, period);
+		DataSource ds = configuration.dataSource(code, period);
 
 		return Read //
 				.<String, BuySellStrategy> empty2() //

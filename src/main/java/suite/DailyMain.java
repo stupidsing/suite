@@ -24,11 +24,9 @@ import suite.trade.Trade;
 import suite.trade.TradeUtil;
 import suite.trade.assetalloc.AssetAllocBackTest;
 import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator;
+import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
-import suite.trade.data.Hkex;
-import suite.trade.data.HkexFactBook;
 import suite.trade.data.QuoteDatabase;
-import suite.trade.data.Yahoo;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
@@ -42,8 +40,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain extends ExecutableProgram {
 
-	private HkexFactBook hkexFactBook = new HkexFactBook();
-	private Yahoo yahoo = new Yahoo();
+	private Configuration configuration = new Configuration();
 
 	public static void main(String[] args) {
 		Util.run(DailyMain.class, args);
@@ -53,10 +50,10 @@ public class DailyMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 
 		// fetch Yahoo historical data
-		Map<String, DataSource> dataSourceByStockCode = hkexFactBook //
+		Map<String, DataSource> dataSourceByStockCode = configuration //
 				.queryLeadingCompaniesByMarketCap(LocalDate.now().getYear() - 1) //
 				.map(asset -> asset.code) //
-				.map2(stockCode -> yahoo.dataSource(stockCode)) //
+				.map2(configuration::dataSource) //
 				.toMap();
 
 		new QuoteDatabase().merge("o", dataSourceByStockCode);
@@ -103,13 +100,12 @@ public class DailyMain extends ExecutableProgram {
 	// moving average mean reversion
 	private Pair<String, String> mamr() {
 		String tag = "mamr";
-		Hkex hkex = new Hkex();
-		Yahoo yahoo = new Yahoo();
-		Streamlet<Asset> assets = hkex.getCompanies();
+		Streamlet<Asset> assets = configuration.getCompanies();
 		BuySellStrategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
 
 		LogUtil.info("S0 pre-fetch quotes");
-		yahoo.quote(assets.map(asset -> asset.code).toSet());
+
+		configuration.quote(assets.map(asset -> asset.code).toSet());
 
 		LogUtil.info("S1 perform back test");
 
@@ -120,7 +116,7 @@ public class DailyMain extends ExecutableProgram {
 						.map2(stock -> stock.code, stock -> {
 							try {
 								DatePeriod period = DatePeriod.threeYears();
-								DataSource ds0 = yahoo.dataSource(stock.code, period);
+								DataSource ds0 = configuration.dataSource(stock.code, period);
 								DataSource ds1 = ds0.range(period);
 
 								ds1.validateTwoYears();
@@ -135,7 +131,7 @@ public class DailyMain extends ExecutableProgram {
 
 		LogUtil.info("S2 query lot sizes");
 
-		Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
+		Map<String, Integer> lotSizeByStockCode = configuration.queryLotSizeByStockCode(assets);
 
 		DatePeriod period = DatePeriod.daysBefore(128);
 		String sevenDaysAgo = FormatUtil.formatDate(LocalDate.now().plusDays(-7));
@@ -151,7 +147,7 @@ public class DailyMain extends ExecutableProgram {
 				int lotSize = lotSizeByStockCode.get(stockCode);
 
 				try {
-					DataSource ds0 = yahoo.dataSource(stockCode, period);
+					DataSource ds0 = configuration.dataSource(stockCode, period);
 					String datex = ds0.last().date;
 
 					if (0 <= datex.compareTo(sevenDaysAgo))
@@ -159,7 +155,7 @@ public class DailyMain extends ExecutableProgram {
 					else
 						throw new RuntimeException("ancient data: " + datex);
 
-					Map<String, Float> latest = yahoo.quote(Collections.singleton(stockCode));
+					Map<String, Float> latest = configuration.quote(Collections.singleton(stockCode));
 					String latestDate = FormatUtil.formatDate(LocalDate.now());
 					float latestPrice = latest.values().iterator().next();
 
@@ -186,12 +182,12 @@ public class DailyMain extends ExecutableProgram {
 		String tag = "pmamr";
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = To.sink(sb);
-		AssetAllocBackTest backTest = new AssetAllocBackTest(new MovingAvgMeanReversionAssetAllocator(log), log);
+		AssetAllocBackTest backTest = new AssetAllocBackTest(new MovingAvgMeanReversionAssetAllocator(configuration, log), log);
 		Account account0 = Account.fromPortfolio(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
 		Account account1 = backTest.simulateLatest(1000000f).account;
 
 		Set<String> stockCodes = To.set(account0.assets().keySet(), account1.assets().keySet());
-		Map<String, Float> priceByStockCode = yahoo.quote(stockCodes);
+		Map<String, Float> priceByStockCode = configuration.quote(stockCodes);
 		List<Trade> trades = TradeUtil.diff(account0.assets(), account1.assets(), priceByStockCode);
 
 		sb.append(Read.from(trades).map(trade -> "\nSIGNAL" + trade).collect(As.joined()));

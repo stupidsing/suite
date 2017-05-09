@@ -1,30 +1,25 @@
 package suite.trade.data;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import org.junit.Test;
 
 import suite.streamlet.Read;
-import suite.trade.Asset;
 import suite.trade.Trade;
 import suite.util.FunUtil.Fun;
 
 public class QuoteTest {
 
-	private Hkex hkex = new Hkex();
-	private Yahoo yahoo = new Yahoo();
-	private Fun<Set<String>, Map<String, Float>> quoteFun = yahoo::quote;
-	private Fun<String, Asset> getAssetFun = hkex::getCompany;
-	private Summarize summarize = new Summarize(quoteFun, getAssetFun);
+	private Configuration configuration = new Configuration();
+	private Summarize summarize = new Summarize(configuration);
 
 	private Consumer<String> silent = s -> {
 	};
 
 	@Test
 	public void testQuote() {
-		System.out.println(quoteFun.apply(Read.each( //
+		System.out.println(configuration.quote(Read.each( //
 				"0002.HK", //
 				"0004.HK", //
 				"0005.HK", //

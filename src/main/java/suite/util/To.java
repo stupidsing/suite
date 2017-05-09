@@ -194,6 +194,14 @@ public class To {
 		return map;
 	}
 
+	@SafeVarargs
+	public static <K, V> Map<K, V> map_(Map<K, V>... maps) {
+		Map<K, V> map = new HashMap<>();
+		for (Map<K, V> m : maps)
+			map.putAll(m);
+		return map;
+	}
+
 	public static Outlet<Bytes> outlet(String data) {
 		return outlet(new ByteArrayInputStream(data.getBytes(Constants.charset)));
 	}

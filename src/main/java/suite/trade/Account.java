@@ -11,7 +11,7 @@ import suite.util.Util;
 
 public class Account {
 
-	public static final String cashCode = Asset.cash.code;
+	public static final String cashCode = Asset.cashCode;
 
 	private Map<String, Integer> assets = new HashMap<>();
 	private int nTransactions = 0;

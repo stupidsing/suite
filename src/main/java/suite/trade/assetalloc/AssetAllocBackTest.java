@@ -16,10 +16,8 @@ import suite.streamlet.Streamlet;
 import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
+import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
-import suite.trade.data.Hkex;
-import suite.trade.data.HkexFactBook;
-import suite.trade.data.Yahoo;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -30,12 +28,9 @@ public class AssetAllocBackTest {
 
 	private int historyWindow = 1024;
 
+	private Configuration configuration = new Configuration();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
-
-	private Hkex hkex = new Hkex();
-	private HkexFactBook hkexFactBook = new HkexFactBook();
-	private Yahoo yahoo = new Yahoo();
 
 	private AssetAllocator assetAllocator;
 	private Sink<String> log;
@@ -68,19 +63,21 @@ public class AssetAllocBackTest {
 			Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
 			LocalDate historyFromDate = from.minusYears(1);
 			double valuation = fund0;
-			Streamlet<Asset> assets = hkexFactBook.queryLeadingCompaniesByMarketCap(from.getYear() - 1);
+			Streamlet<Asset> assets = configuration.queryLeadingCompaniesByMarketCap(from.getYear() - 1);
 			// hkex.getCompanies();
 
 			account = Account.fromCash(fund0);
 
-			Map<String, Integer> lotSizeByStockCode = hkex.queryLotSizeByStockCode(assets);
-			yahoo.quote(lotSizeByStockCode.keySet()); // pre-fetch quotes
+			Map<String, Integer> lotSizeByStockCode = configuration.queryLotSizeByStockCode(assets);
+
+			// pre-fetch quotes
+			configuration.quote(lotSizeByStockCode.keySet());
 
 			for (Asset asset : assets) {
 				String stockCode = asset.code;
 				if (lotSizeByStockCode.containsKey(stockCode))
 					try {
-						DataSource dataSource = yahoo.dataSourceWithLatestQuote(stockCode).after(historyFromDate);
+						DataSource dataSource = configuration.dataSourceWithLatestQuote(stockCode).after(historyFromDate);
 						dataSource.validate();
 						dataSourceByStockCode.put(stockCode, dataSource);
 					} catch (Exception ex) {
@@ -126,7 +123,7 @@ public class AssetAllocBackTest {
 					double valuation_ = valuation;
 
 					Map<String, Integer> portfolio = Read.from2(potentialStatsByStockCode) //
-							.filterKey(stockCode -> !Util.stringEquals(stockCode, Asset.cash.code)) //
+							.filterKey(stockCode -> !Util.stringEquals(stockCode, Asset.cashCode)) //
 							.map2((stockCode, potential) -> stockCode, (stockCode, potential) -> {
 								float price = backTestDataSourceByStockCode.get(stockCode).last().price;
 								int lotSize = lotSizeByStockCode.get(stockCode);

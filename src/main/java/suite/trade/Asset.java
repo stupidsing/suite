@@ -6,7 +6,8 @@ import suite.util.Serialize.Serializer;
 
 public class Asset {
 
-	public static Asset cash = new Asset("HKD", "Hong Kong Dollar");
+	public static String cashCode = "HKD";
+	public static Asset cash = new Asset(cashCode, "Hong Kong Dollar");
 
 	public static Serializer<Asset> serializer = Serialize.auto(Asset.class);
 

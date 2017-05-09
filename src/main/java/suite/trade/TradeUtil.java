@@ -17,7 +17,7 @@ public class TradeUtil {
 
 	public static String format(Map<String, Integer> portfolio) {
 		return Read.from2(portfolio) //
-				.sortBy((code, i) -> !Util.stringEquals(code, Asset.cash.code) ? code : "") //
+				.sortBy((code, i) -> !Util.stringEquals(code, Asset.cashCode) ? code : "") //
 				.map((code, i) -> code + ":" + i + ",") //
 				.collect(As.joined());
 	}
@@ -54,7 +54,7 @@ public class TradeUtil {
 					int n1 = assets1.computeIfAbsent(stockCode, s -> 0);
 					return n1 - n0;
 				}) //
-				.filter((stockCode, buySell) -> !Util.stringEquals(stockCode, Asset.cash.code)) //
+				.filter((stockCode, buySell) -> !Util.stringEquals(stockCode, Asset.cashCode)) //
 				.map((stockCode, buySell) -> new Trade(buySell, stockCode, prices.get(stockCode))) //
 				.toList();
 	}
