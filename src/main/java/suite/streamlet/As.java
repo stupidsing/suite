@@ -306,7 +306,7 @@ public class As {
 				.collect(As::streamlet);
 	}
 
-	public static Outlet<Chars> utf8(Outlet<Bytes> bytesOutlet) {
+	public static Outlet<Chars> decodeUtf8(Outlet<Bytes> bytesOutlet) {
 		Source<Bytes> source = bytesOutlet.source();
 
 		return Outlet.of(new Source<Chars>() {
@@ -371,6 +371,39 @@ public class As {
 				bb.append(bytes.range(s));
 
 				return cb.toChars();
+			}
+		});
+	}
+
+	public static Outlet<Bytes> encodeUtf8(Outlet<Chars> charsOutlet) {
+		Source<Chars> source = charsOutlet.source();
+
+		return Outlet.of(new Source<Bytes>() {
+			public Bytes source() {
+				Chars chars = source.source();
+				if (chars != null) {
+					BytesBuilder bb = new BytesBuilder();
+					for (int i = 0; i < chars.size(); i++) {
+						char ch = chars.get(i);
+						if (ch < 0x80)
+							bb.append((byte) ch);
+						else if (ch < 0x800) {
+							bb.append((byte) (0xC0 + ((ch >> 6) & 0x1F)));
+							bb.append((byte) (0x80 + ((ch >> 0) & 0x3F)));
+						} else if (ch < 0x10000) {
+							bb.append((byte) (0xE0 + ((ch >> 12) & 0x0F)));
+							bb.append((byte) (0x80 + ((ch >> 6) & 0x3F)));
+							bb.append((byte) (0x80 + ((ch >> 0) & 0x3F)));
+						} else {
+							bb.append((byte) (0xF0 + ((ch >> 18) & 0x07)));
+							bb.append((byte) (0x80 + ((ch >> 12) & 0x3F)));
+							bb.append((byte) (0x80 + ((ch >> 6) & 0x3F)));
+							bb.append((byte) (0x80 + ((ch >> 0) & 0x3F)));
+						}
+					}
+					return bb.toBytes();
+				} else
+					return null;
 			}
 		});
 	}
