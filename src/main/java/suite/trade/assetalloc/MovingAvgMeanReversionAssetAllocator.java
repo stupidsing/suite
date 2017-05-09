@@ -12,7 +12,6 @@ import suite.algo.Statistic.LinearRegression;
 import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.streamlet.Read;
-import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.MovingAverage;
 import suite.trade.data.DataSource;
@@ -98,7 +97,8 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 				}) //
 				.filterValue(ps -> stat.riskFreeInterestRate < ps.annualReturn) //
 				.filterValue(ps -> 0d < ps.sharpe) //
-				.cons(Asset.cash.code, new PotentialStats(stat.riskFreeInterestRate, 3d)) //
+				// .cons(Asset.cash.code, new
+				// PotentialStats(stat.riskFreeInterestRate, 3d)) //
 				.mapValue(ps -> ps.potential) //
 				.sortBy((stockCode, potential) -> -potential) //
 				.take(top) //
