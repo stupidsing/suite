@@ -1,6 +1,7 @@
 package suite.trade.data;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.SortedSet;
 
 import suite.streamlet.Read;
@@ -29,11 +30,14 @@ public class QuoteDatabase {
 		return new DataSource(dates, prices);
 	}
 
-	public void merge(String stockCode, String field, DataSource dataSource) {
-		String[] dates = dataSource.dates;
-		float[] prices = dataSource.prices;
-		int length = prices.length;
-		textDatabase.merge(Read.range(length).map(i -> datum(stockCode, field, dates[i], prices[i])));
+	public void merge(String field, Map<String, DataSource> dataSourceByStockCode) {
+		textDatabase.merge(Read.from2(dataSourceByStockCode) //
+				.concatMap((stockCode, dataSource) -> {
+					String[] dates = dataSource.dates;
+					float[] prices = dataSource.prices;
+					int length = prices.length;
+					return Read.range(length).map(i -> datum(stockCode, field, dates[i], prices[i]));
+				}));
 	}
 
 	private Datum datum(String stockCode, String field, String date, float price) {

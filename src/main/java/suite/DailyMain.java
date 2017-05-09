@@ -25,6 +25,8 @@ import suite.trade.TradeUtil;
 import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.Hkex;
+import suite.trade.data.HkexFactBook;
+import suite.trade.data.QuoteDatabase;
 import suite.trade.data.Yahoo;
 import suite.trade.singlealloc.BackTest;
 import suite.trade.singlealloc.BuySellStrategy;
@@ -39,6 +41,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain extends ExecutableProgram {
 
+	private HkexFactBook hkexFactBook = new HkexFactBook();
 	private Yahoo yahoo = new Yahoo();
 
 	public static void main(String[] args) {
@@ -47,6 +50,17 @@ public class DailyMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
+
+		// fetch Yahoo historical data
+		Map<String, DataSource> dataSourceByStockCode = hkexFactBook //
+				.queryLeadingCompaniesByMarketCap(LocalDate.now().getYear() - 1) //
+				.map(asset -> asset.code) //
+				.map2(stockCode -> yahoo.dataSource(stockCode)) //
+				.toMap();
+
+		new QuoteDatabase().merge("o", dataSourceByStockCode);
+
+		// perform systematic trading
 		List<Pair<String, String>> outputs = Arrays.asList(bug(), mamr(), pmamr());
 		StringBuilder sb = new StringBuilder();
 
