@@ -43,7 +43,7 @@ public class Summarize {
 						})) //
 				.toList();
 
-		List<Trade> table1 = Streamlet.concat(Read.from(table0), Read.from(sellAll)).toList();
+		List<Trade> table1 = To.list(table0, sellAll);
 
 		Account account0 = Account.fromHistory(table0);
 		Account account1 = Account.fromHistory(table1);

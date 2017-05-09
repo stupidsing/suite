@@ -83,7 +83,7 @@ public class DailyMain extends ExecutableProgram {
 		String tag = "bug";
 		StringBuilder sb = new StringBuilder();
 		List<Trade> history = TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, "bug"));
-		Account account = Account.fromHistory(history);
+		Account account = Account.fromPortfolio(history);
 
 		Map<String, Float> faceValueByStockCodes = Read.from(history) //
 				.groupBy(record -> record.stockCode, //
@@ -92,8 +92,9 @@ public class DailyMain extends ExecutableProgram {
 
 		for (Entry<String, Integer> e : account.assets().entrySet()) {
 			String stockCode = e.getKey();
-			String targetPrice = To.string(-1.05d * faceValueByStockCodes.get(stockCode) / e.getValue());
-			sb.append("\n" + stockCode + " has signal " + targetPrice + " * " + e.getValue());
+			int sell = e.getValue();
+			double targetPrice = -1.05d * faceValueByStockCodes.get(stockCode) / sell;
+			sb.append("\nSIGNAL" + new Trade(-sell, stockCode, (float) targetPrice));
 		}
 
 		return Pair.of(tag, sb.toString());
@@ -167,7 +168,7 @@ public class DailyMain extends ExecutableProgram {
 
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
-					String message = "\n" + asset + " has signal " + prices[last] + " * " + signal * lotSize;
+					String message = "\nSIGNAL" + new Trade(signal * lotSize, stockCode, latestPrice);
 
 					if (signal != 0)
 						messages.add(message);
@@ -186,19 +187,14 @@ public class DailyMain extends ExecutableProgram {
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = To.sink(sb);
 		AssetAllocBackTest backTest = new AssetAllocBackTest(new MovingAvgMeanReversionAssetAllocator(log), log);
-		Account account0 = Account.fromHistory(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
+		Account account0 = Account.fromPortfolio(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
 		Account account1 = backTest.simulateLatest(1000000f).account;
 
 		Set<String> stockCodes = To.set(account0.assets().keySet(), account1.assets().keySet());
 		Map<String, Float> priceByStockCode = yahoo.quote(stockCodes);
 		List<Trade> trades = TradeUtil.diff(account0.assets(), account1.assets(), priceByStockCode);
 
-		for (Trade trade : trades) {
-			String stockCode = trade.stockCode;
-			Float price = priceByStockCode.get(stockCode);
-			sb.append("\n" + stockCode + " has signal " + price + " * " + trade.buySell);
-		}
-
+		sb.append(Read.from(trades).map(trade -> "\nSIGNAL" + trade).collect(As.joined()));
 		return Pair.of(tag, sb.toString());
 	}
 

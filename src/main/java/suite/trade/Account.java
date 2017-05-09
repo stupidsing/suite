@@ -17,11 +17,18 @@ public class Account {
 	private int nTransactions = 0;
 	private float nTransactionAmount = 0f;
 
-	public static Account fromHistory(Predicate<Trade> pred) {
-		return fromHistory(TradeUtil.fromHistory(pred));
+	public static Account fromHistory(List<Trade> trades) {
+		Account account = new Account();
+		for (Trade trade : trades)
+			account.play(trade);
+		return account;
 	}
 
-	public static Account fromHistory(List<Trade> trades) {
+	public static Account fromPortfolio(Predicate<Trade> pred) {
+		return fromPortfolio(TradeUtil.fromHistory(pred));
+	}
+
+	public static Account fromPortfolio(List<Trade> trades) {
 		return new Account(TradeUtil.portfolio(trades));
 	}
 
