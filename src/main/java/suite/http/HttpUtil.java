@@ -64,12 +64,9 @@ public class HttpUtil {
 		Backoff backoff = new Backoff();
 		long current, last, start, next;
 
-		do {
-			last = al.get();
-			current = System.currentTimeMillis();
-			start = Math.max(last, current);
-			next = start + 2000;
-		} while (!al.compareAndSet(last, next) || backoff.exponentially());
+		do
+			next = 2000l + (start = Math.max(last = al.get(), current = System.currentTimeMillis()));
+		while (!al.compareAndSet(last, next) || backoff.exponentially());
 
 		Util.sleepQuietly(start - current);
 
