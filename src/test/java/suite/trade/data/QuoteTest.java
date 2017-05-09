@@ -1,13 +1,12 @@
 package suite.trade.data;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import org.junit.Test;
 
+import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.Trade;
 import suite.util.FunUtil.Fun;
@@ -25,7 +24,7 @@ public class QuoteTest {
 
 	@Test
 	public void testQuote() {
-		System.out.println(quoteFun.apply(new HashSet<>(Arrays.asList( //
+		System.out.println(quoteFun.apply(Read.each( //
 				"0002.HK", //
 				"0004.HK", //
 				"0005.HK", //
@@ -38,7 +37,7 @@ public class QuoteTest {
 				"0322.HK", //
 				"1169.HK", //
 				"1357.HK", //
-				"2018.HK"))));
+				"2018.HK").toSet()));
 	}
 
 	@Test
