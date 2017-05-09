@@ -26,7 +26,7 @@ public class Summarize {
 		List<Trade> trades = TradeUtil.fromHistory(trade -> true);
 		Map<String, Float> priceBySymbol = cfg.quote(Read.from(trades).map(trade -> trade.symbol).toSet());
 
-		Map<K, List<String>> messagesByKey = Read.from(trades) //
+		Map<K, String> summaryByKey = Read.from(trades) //
 				.groupBy(fun) //
 				.mapValue(trades_ -> {
 					List<Trade> trades0 = trades_;
@@ -48,14 +48,15 @@ public class Summarize {
 							.append("nTransactions = " + account0.nTransactions()) //
 							.append("transactionAmount = " + transactionAmount) //
 							.append("transactionFee = " + To.string(cfg.transactionFee(transactionAmount))) //
-							.toList();
+							.map(m -> "\n" + m) //
+							.collect(As.joined());
 				}) //
 				.toMap();
 
-		for (Entry<K, List<String>> e : messagesByKey.entrySet()) {
+		for (Entry<K, String> e : summaryByKey.entrySet()) {
 			K key = e.getKey();
-			List<String> messages = e.getValue();
-			log.accept("For strategy " + key + ":" + Read.from(messages).collect(As.conc("\n")));
+			String summary = e.getValue();
+			log.accept("For strategy " + key + ":" + summary + "\n");
 		}
 
 		return Read.from(sellAll(trades, priceBySymbol)).groupBy(fun, this::returns).toMap();
