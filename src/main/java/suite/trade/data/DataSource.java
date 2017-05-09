@@ -107,6 +107,9 @@ public class DataSource {
 		String date0 = dates[0];
 		float price0 = prices[0];
 
+		if (length != dates.length)
+			throw new RuntimeException("Mismatched dates and prices");
+
 		for (int i = 1; i < length; i++) {
 			String date1 = dates[i];
 			float price1 = prices[i];
