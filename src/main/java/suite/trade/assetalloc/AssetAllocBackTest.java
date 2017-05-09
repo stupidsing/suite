@@ -126,6 +126,7 @@ public class AssetAllocBackTest {
 					double valuation_ = valuation;
 
 					Map<String, Integer> portfolio = Read.from2(potentialStatsByStockCode) //
+							.filterKey(stockCode -> !Util.stringEquals(stockCode, Asset.cash.code)) //
 							.map2((stockCode, potential) -> stockCode, (stockCode, potential) -> {
 								float price = backTestDataSourceByStockCode.get(stockCode).last().price;
 								int lotSize = lotSizeByStockCode.get(stockCode);
