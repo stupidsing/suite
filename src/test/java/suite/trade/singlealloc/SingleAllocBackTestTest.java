@@ -14,7 +14,7 @@ import suite.trade.data.DataSource;
 import suite.trade.data.Hkex;
 import suite.trade.data.Yahoo;
 
-public class BackTestTest {
+public class SingleAllocBackTestTest {
 
 	private DatePeriod period = DatePeriod.fiveYears();
 
@@ -67,7 +67,7 @@ public class BackTestTest {
 				});
 	}
 
-	private Map<String, BackTest> backTest(String code, String disp) {
+	private Map<String, SingleAllocBackTest> backTest(String code, String disp) {
 		Strategos sr = new Strategos();
 		DataSource ds = yahoo.dataSource(code, period);
 
@@ -82,8 +82,8 @@ public class BackTestTest {
 				.toMap();
 	}
 
-	private BackTest backTest_(DataSource ds, String disp, BuySellStrategy strategy) {
-		BackTest backTest = BackTest.test(ds, strategy);
+	private SingleAllocBackTest backTest_(DataSource ds, String disp, BuySellStrategy strategy) {
+		SingleAllocBackTest backTest = SingleAllocBackTest.test(ds, strategy);
 		LogUtil.info(disp + backTest.concludeLog);
 		return backTest;
 	}

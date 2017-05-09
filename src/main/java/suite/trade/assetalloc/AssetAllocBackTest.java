@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.assetalloc;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -13,7 +13,9 @@ import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.assetalloc.AssetAllocator;
+import suite.trade.Account;
+import suite.trade.Asset;
+import suite.trade.DatePeriod;
 import suite.trade.data.DataSource;
 import suite.trade.data.Hkex;
 import suite.trade.data.HkexFactBook;
@@ -24,7 +26,7 @@ import suite.util.FunUtil.Sink;
 import suite.util.To;
 import suite.util.Util;
 
-public class Portfolio {
+public class AssetAllocBackTest {
 
 	private int historyWindow = 1024;
 
@@ -38,11 +40,11 @@ public class Portfolio {
 	private AssetAllocator assetAllocator;
 	private Sink<String> log;
 
-	public Portfolio(AssetAllocator assetAllocator) {
+	public AssetAllocBackTest(AssetAllocator assetAllocator) {
 		this(assetAllocator, System.out::println);
 	}
 
-	public Portfolio(AssetAllocator assetAllocator, Sink<String> log) {
+	public AssetAllocBackTest(AssetAllocator assetAllocator, Sink<String> log) {
 		this.assetAllocator = assetAllocator;
 		this.log = log;
 	}

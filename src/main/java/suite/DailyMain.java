@@ -19,17 +19,17 @@ import suite.streamlet.Streamlet;
 import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
-import suite.trade.Portfolio;
 import suite.trade.Trade;
 import suite.trade.TradeUtil;
+import suite.trade.assetalloc.AssetAllocBackTest;
 import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.Hkex;
 import suite.trade.data.HkexFactBook;
 import suite.trade.data.QuoteDatabase;
 import suite.trade.data.Yahoo;
-import suite.trade.singlealloc.BackTest;
 import suite.trade.singlealloc.BuySellStrategy;
+import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Sink;
@@ -122,7 +122,7 @@ public class DailyMain extends ExecutableProgram {
 								DataSource ds1 = ds0.range(period);
 
 								ds1.validateTwoYears();
-								BackTest backTest = BackTest.test(ds1, strategy);
+								SingleAllocBackTest backTest = SingleAllocBackTest.test(ds1, strategy);
 								return MathUtil.isPositive(backTest.account.cash());
 							} catch (Exception ex) {
 								LogUtil.warn(ex.getMessage() + " for " + stock);
@@ -184,9 +184,9 @@ public class DailyMain extends ExecutableProgram {
 		String tag = "pmamr";
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = To.sink(sb);
-		Portfolio portfolio = new Portfolio(new MovingAvgMeanReversionAssetAllocator(log), log);
+		AssetAllocBackTest backTest = new AssetAllocBackTest(new MovingAvgMeanReversionAssetAllocator(log), log);
 		Account account0 = Account.fromHistory(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
-		Account account1 = portfolio.simulateLatest(1000000f).account;
+		Account account1 = backTest.simulateLatest(1000000f).account;
 
 		List<Pair<String, Integer>> diffs = TradeUtil.diff(account0.assets(), account1.assets());
 		Map<String, Float> priceByStockCode = yahoo.quote(Read.from(diffs).map(pair -> pair.t0).toSet());

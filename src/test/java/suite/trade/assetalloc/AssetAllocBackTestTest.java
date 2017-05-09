@@ -8,17 +8,16 @@ import org.junit.Test;
 
 import suite.trade.Account;
 import suite.trade.DatePeriod;
-import suite.trade.Portfolio;
-import suite.trade.Portfolio.Simulate;
+import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.data.Yahoo;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
-public class PortfolioTest {
+public class AssetAllocBackTestTest {
 
 	private Sink<String> log = System.out::println;
 	private MovingAvgMeanReversionAssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(log);
-	private Portfolio portfolio = new Portfolio(assetAllocator);
+	private AssetAllocBackTest backTest = new AssetAllocBackTest(assetAllocator);
 	private Yahoo yahoo = new Yahoo();
 
 	@Test
@@ -32,7 +31,7 @@ public class PortfolioTest {
 		float initial = 1000000f;
 		LocalDate frDate = LocalDate.of(2016, 1, 1);
 		LocalDate toDate = LocalDate.of(2020, 1, 1);
-		Simulate sim = portfolio.simulateFromTo(initial, DatePeriod.of(frDate, toDate));
+		Simulate sim = backTest.simulateFromTo(initial, DatePeriod.of(frDate, toDate));
 
 		Account account = sim.account;
 		System.out.println("nTransactions = " + account.nTransactions());

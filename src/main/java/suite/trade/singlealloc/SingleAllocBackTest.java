@@ -7,7 +7,7 @@ import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
-public class BackTest {
+public class SingleAllocBackTest {
 
 	public final Account account = Account.fromCash(0f);
 	public final StringBuilder tradeLog = new StringBuilder();
@@ -16,11 +16,11 @@ public class BackTest {
 	private Sink<String> tradeLogSink = To.sink(tradeLog);
 	private Sink<String> concludeLogSink = concludeLog::append;
 
-	public static BackTest test(DataSource ds, BuySellStrategy strategy) {
-		return new BackTest(ds, strategy);
+	public static SingleAllocBackTest test(DataSource ds, BuySellStrategy strategy) {
+		return new SingleAllocBackTest(ds, strategy);
 	}
 
-	private BackTest(DataSource ds, BuySellStrategy strategy) {
+	private SingleAllocBackTest(DataSource ds, BuySellStrategy strategy) {
 		float[] prices = ds.prices;
 		int length = prices.length;
 		float[] valuations = new float[length];
