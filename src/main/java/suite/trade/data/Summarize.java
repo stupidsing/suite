@@ -12,11 +12,14 @@ import suite.trade.Asset;
 import suite.trade.Trade;
 import suite.trade.TradeUtil;
 import suite.util.FunUtil.Fun;
+import suite.util.To;
 
 public class Summarize {
 
 	private Fun<Set<String>, Map<String, Float>> quoteFun;
 	private Fun<String, Asset> getAssetFun;
+
+	private Hsbc broker = new Hsbc();
 
 	public Summarize(Fun<Set<String>, Map<String, Float>> quoteFun, Fun<String, Asset> getAssetFun) {
 		this.quoteFun = quoteFun;
@@ -59,6 +62,7 @@ public class Summarize {
 		log.accept("P/L = " + amount1);
 		log.accept("nTransactions = " + nTransactions);
 		log.accept("transactionAmount = " + transactionAmount);
+		log.accept("transactionFee = " + To.string(broker.transactionFee(transactionAmount)));
 
 		return Read.from(table1) //
 				.groupBy(fun, st -> TradeUtil.returns(st.toList())) //

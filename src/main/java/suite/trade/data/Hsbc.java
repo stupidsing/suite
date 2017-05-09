@@ -3,7 +3,7 @@ package suite.trade.data;
 // https://www.personal.hsbc.com.hk/1/2/hk/investments/stocks/detail
 public class Hsbc {
 
-	public float transactionFee(double transactionAmount) {
+	public double transactionFee(double transactionAmount) {
 		double hsbcInternetBanking = Math.min(transactionAmount * .01d * .25d, 100d);
 
 		double stampDuty = transactionAmount * .01d * .1d;
@@ -16,7 +16,7 @@ public class Hsbc {
 		// HKD200/RMB200), waived if the same stocks are purchased and then sold
 		// on the same trading day or the subsequent trading day (T or T+1)
 
-		return (float) (hsbcInternetBanking + stampDuty + sfcTxLevy + 0d * sfcInvestorLevy + hkex);
+		return hsbcInternetBanking + stampDuty + sfcTxLevy + 0d * sfcInvestorLevy + hkex;
 	}
 
 }
