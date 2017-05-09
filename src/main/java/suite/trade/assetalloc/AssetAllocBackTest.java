@@ -28,7 +28,7 @@ public class AssetAllocBackTest {
 
 	private int historyWindow = 1024;
 
-	private Configuration configuration = new Configuration();
+	private Configuration cfg = new Configuration();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
@@ -63,21 +63,21 @@ public class AssetAllocBackTest {
 			Map<String, DataSource> dataSourceBySymbol = new HashMap<>();
 			LocalDate historyFromDate = from.minusYears(1);
 			double valuation = fund0;
-			Streamlet<Asset> assets = configuration.queryLeadingCompaniesByMarketCap(from.getYear() - 1);
+			Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(from.getYear() - 1);
 			// hkex.getCompanies();
 
 			account = Account.fromCash(fund0);
 
-			Map<String, Integer> lotSizeBySymbol = configuration.queryLotSizeBySymbol(assets);
+			Map<String, Integer> lotSizeBySymbol = cfg.queryLotSizeBySymbol(assets);
 
 			// pre-fetch quotes
-			configuration.quote(lotSizeBySymbol.keySet());
+			cfg.quote(lotSizeBySymbol.keySet());
 
 			for (Asset asset : assets) {
 				String symbol = asset.code;
 				if (lotSizeBySymbol.containsKey(symbol))
 					try {
-						DataSource dataSource = configuration.dataSourceWithLatestQuote(symbol).after(historyFromDate);
+						DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
 						dataSource.validate();
 						dataSourceBySymbol.put(symbol, dataSource);
 					} catch (Exception ex) {

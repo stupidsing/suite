@@ -13,15 +13,15 @@ import suite.util.To;
 
 public class QuoteTest {
 
-	private Configuration configuration = new Configuration();
-	private Summarize summarize = new Summarize(configuration);
+	private Configuration cfg = new Configuration();
+	private Summarize summarize = new Summarize(cfg);
 
 	private Consumer<String> silent = s -> {
 	};
 
 	@Test
 	public void testQuote() {
-		System.out.println(configuration.quote(Read.each( //
+		System.out.println(cfg.quote(Read.each( //
 				"0002.HK", //
 				"0004.HK", //
 				"0005.HK", //
@@ -57,7 +57,7 @@ public class QuoteTest {
 
 	@Test
 	public void testQuotesByStrategies() {
-		System.out.println(summarize(r -> r.strategy, silent));
+		System.out.println(summarize(r -> r.strategy));
 	}
 
 	private Map<String, Double> summarize(Fun<Trade, String> fun) {

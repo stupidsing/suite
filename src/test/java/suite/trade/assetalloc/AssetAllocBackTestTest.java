@@ -16,8 +16,8 @@ import suite.util.To;
 public class AssetAllocBackTestTest {
 
 	private Sink<String> log = System.out::println;
-	private Configuration configuration = new Configuration();
-	private AssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(configuration, log);
+	private Configuration cfg = new Configuration();
+	private AssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(cfg, log);
 	private AssetAllocBackTest backTest = new AssetAllocBackTest(assetAllocator);
 
 	@Test
@@ -31,7 +31,7 @@ public class AssetAllocBackTestTest {
 		float transactionAmount = account.transactionAmount();
 		System.out.println("nTransactions = " + account.nTransactions());
 		System.out.println("nTransactionAmount = " + To.string(transactionAmount));
-		System.out.println("transactionFee = " + To.string(configuration.transactionFee(transactionAmount)));
+		System.out.println("transactionFee = " + To.string(cfg.transactionFee(transactionAmount)));
 
 		float[] valuations = sim.valuations;
 		assertTrue(initial * 1.05f < valuations[valuations.length - 1]);

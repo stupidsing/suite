@@ -16,7 +16,7 @@ import suite.trade.data.DataSource;
  */
 public class PeriodTest {
 
-	private Configuration configuration = new Configuration();
+	private Configuration cfg = new Configuration();
 
 	private int minPeriod = 8;
 
@@ -24,11 +24,11 @@ public class PeriodTest {
 	public void test() {
 		DiscreteCosineTransform dct = new DiscreteCosineTransform();
 
-		for (Asset stock : configuration.queryCompanies().take(40)) {
+		for (Asset stock : cfg.queryCompanies().take(40)) {
 			String symbol = stock.code;
 
 			try {
-				DataSource ds = configuration.dataSource(symbol);
+				DataSource ds = cfg.dataSource(symbol);
 				float[] prices0 = ds.prices;
 				int size = 1, size1;
 

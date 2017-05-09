@@ -8,7 +8,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.StatusMain
 public class StatusMain extends ExecutableProgram {
 
-	private Configuration configuration = new Configuration();
+	private Configuration cfg = new Configuration();
 
 	public static void main(String[] args) {
 		Util.run(StatusMain.class, args);
@@ -16,7 +16,7 @@ public class StatusMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		Summarize summarize = new Summarize(configuration);
+		Summarize summarize = new Summarize(cfg);
 		System.out.println(summarize.summarize(r -> r.strategy, System.out::println));
 		return true;
 	}

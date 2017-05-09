@@ -35,7 +35,7 @@ public class TradeUtil {
 				.collect(As::streamlet);
 	}
 
-	public static Map<String, Integer> portfolio(List<Trade> trades) {
+	public static Map<String, Integer> portfolio(Iterable<Trade> trades) {
 		return Read.from(trades) //
 				.map2(r -> r.symbol, r -> r.buySell) //
 				.groupBy(sizes -> sizes.collect(As.sumOfInts(size -> size))) //

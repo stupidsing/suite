@@ -41,7 +41,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain extends ExecutableProgram {
 
-	private Configuration configuration = new Configuration();
+	private Configuration cfg = new Configuration();
 	private Statistic stat = new Statistic();
 
 	public static void main(String[] args) {
@@ -52,10 +52,10 @@ public class DailyMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 
 		// fetch Yahoo historical data
-		Map<String, DataSource> dataSourceBySymbol = configuration //
+		Map<String, DataSource> dataSourceBySymbol = cfg //
 				.queryLeadingCompaniesByMarketCap(LocalDate.now().getYear() - 1) //
 				.map(asset -> asset.code) //
-				.map2(configuration::dataSource) //
+				.map2(cfg::dataSource) //
 				.toMap();
 
 		new QuoteDatabase().merge("o", dataSourceBySymbol);
@@ -84,7 +84,7 @@ public class DailyMain extends ExecutableProgram {
 		List<Trade> history = TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag));
 		Account account = Account.fromPortfolio(history);
 
-		Map<String, Float> faceValueBySymbols = Read.from(history) //
+		Map<String, Float> faceValueBySymbol = Read.from(history) //
 				.groupBy(record -> record.symbol, //
 						rs -> (float) (Read.from(rs).collect(As.sumOfDoubles(r -> r.buySell * r.price))))
 				.toMap();
@@ -92,7 +92,7 @@ public class DailyMain extends ExecutableProgram {
 		for (Entry<String, Integer> e : account.assets().entrySet()) {
 			String symbol = e.getKey();
 			int sell = e.getValue();
-			double targetPrice = -stat.riskFreeInterestRate * faceValueBySymbols.get(symbol) / sell;
+			double targetPrice = -stat.riskFreeInterestRate * faceValueBySymbol.get(symbol) / sell;
 			sb.append("\nSIGNAL" + new Trade(-sell, symbol, (float) targetPrice));
 		}
 
@@ -102,12 +102,12 @@ public class DailyMain extends ExecutableProgram {
 	// moving average mean reversion
 	private Pair<String, String> mamr() {
 		String tag = "mamr";
-		Streamlet<Asset> assets = configuration.getCompanies();
+		Streamlet<Asset> assets = cfg.getCompanies();
 		BuySellStrategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
 
 		LogUtil.info("S0 pre-fetch quotes");
 
-		configuration.quote(assets.map(asset -> asset.code).toSet());
+		cfg.quote(assets.map(asset -> asset.code).toSet());
 
 		LogUtil.info("S1 perform back test");
 
@@ -118,7 +118,7 @@ public class DailyMain extends ExecutableProgram {
 						.map2(stock -> stock.code, stock -> {
 							try {
 								DatePeriod period = DatePeriod.threeYears();
-								DataSource ds0 = configuration.dataSource(stock.code, period);
+								DataSource ds0 = cfg.dataSource(stock.code, period);
 								DataSource ds1 = ds0.range(period);
 
 								ds1.validateTwoYears();
@@ -133,7 +133,7 @@ public class DailyMain extends ExecutableProgram {
 
 		LogUtil.info("S2 query lot sizes");
 
-		Map<String, Integer> lotSizeBySymbol = configuration.queryLotSizeBySymbol(assets);
+		Map<String, Integer> lotSizeBySymbol = cfg.queryLotSizeBySymbol(assets);
 
 		DatePeriod period = DatePeriod.daysBefore(128);
 		String sevenDaysAgo = FormatUtil.formatDate(LocalDate.now().plusDays(-7));
@@ -149,7 +149,7 @@ public class DailyMain extends ExecutableProgram {
 				int lotSize = lotSizeBySymbol.get(symbol);
 
 				try {
-					DataSource ds0 = configuration.dataSource(symbol, period);
+					DataSource ds0 = cfg.dataSource(symbol, period);
 					String datex = ds0.last().date;
 
 					if (0 <= datex.compareTo(sevenDaysAgo))
@@ -157,7 +157,7 @@ public class DailyMain extends ExecutableProgram {
 					else
 						throw new RuntimeException("ancient data: " + datex);
 
-					Map<String, Float> latest = configuration.quote(Collections.singleton(symbol));
+					Map<String, Float> latest = cfg.quote(Collections.singleton(symbol));
 					String latestDate = FormatUtil.formatDate(LocalDate.now());
 					float latestPrice = latest.values().iterator().next();
 
@@ -184,12 +184,12 @@ public class DailyMain extends ExecutableProgram {
 		String tag = "pmamr";
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = To.sink(sb);
-		AssetAllocBackTest backTest = new AssetAllocBackTest(new MovingAvgMeanReversionAssetAllocator(configuration, log), log);
+		AssetAllocBackTest backTest = new AssetAllocBackTest(new MovingAvgMeanReversionAssetAllocator(cfg, log), log);
 		Account account0 = Account.fromPortfolio(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
 		Account account1 = backTest.simulateLatest(500000f).account;
 
 		Set<String> symbols = To.set(account0.assets().keySet(), account1.assets().keySet());
-		Map<String, Float> priceBySymbol = configuration.quote(symbols);
+		Map<String, Float> priceBySymbol = cfg.quote(symbols);
 		List<Trade> trades = TradeUtil.diff(account0.assets(), account1.assets(), priceBySymbol);
 
 		sb.append(Read.from(trades).map(trade -> "\nSIGNAL" + trade).collect(As.joined()));

@@ -32,11 +32,11 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	private MovingAverage movingAvg = new MovingAverage();
 	private TimeSeries ts = new TimeSeries();
 
-	private Configuration configuration;
+	private Configuration cfg;
 	private Sink<String> log;
 
-	public MovingAvgMeanReversionAssetAllocator(Configuration configuration, Sink<String> log) {
-		this.configuration = configuration;
+	public MovingAvgMeanReversionAssetAllocator(Configuration cfg, Sink<String> log) {
+		this.cfg = cfg;
 		this.log = log;
 	}
 
@@ -86,7 +86,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
 					double annualReturn = Math.expm1(Math.log1p(dailyReturn) * nTradeDaysInYear);
 					double sharpe = ts.sharpeRatio(dataSource.prices, dataSource.nYears());
-					log.sink(configuration.getCompany(symbol) //
+					log.sink(cfg.getCompany(symbol) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
 							+ ", " + To.string(price) + " => " + To.string(lma) //
 							+ ", annualReturn = " + To.string(annualReturn) //

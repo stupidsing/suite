@@ -17,10 +17,9 @@ public class Account {
 	private int nTransactions = 0;
 	private float nTransactionAmount = 0f;
 
-	public static Account fromHistory(List<Trade> trades) {
+	public static Account fromHistory(Iterable<Trade> trades) {
 		Account account = new Account();
-		for (Trade trade : trades)
-			account.play(trade);
+		account.play(trades);
 		return account;
 	}
 
@@ -28,7 +27,7 @@ public class Account {
 		return fromPortfolio(TradeUtil.fromHistory(pred));
 	}
 
-	public static Account fromPortfolio(List<Trade> trades) {
+	public static Account fromPortfolio(Iterable<Trade> trades) {
 		return new Account(TradeUtil.portfolio(trades));
 	}
 
@@ -57,8 +56,7 @@ public class Account {
 		Map<String, Integer> assets0 = assets;
 		List<Trade> trades = TradeUtil.diff(assets0, assets1, prices);
 
-		for (Trade trade : trades)
-			play(trade);
+		play(trades);
 
 		return Read.from(trades) //
 				.filter(trade -> trade.buySell != 0) //
@@ -66,14 +64,19 @@ public class Account {
 				.collect(As.joined());
 	}
 
+	private void play(Iterable<Trade> trades) {
+		for (Trade trade : trades)
+			play(trade);
+	}
+
 	public void play(Trade trade) {
 		int buySell = trade.buySell;
 		String symbol = trade.symbol;
 		float cost = buySell * trade.price;
 
-		int cash0 = cash();
+		int cash0 = get(cashCode);
 		int cash1 = (int) (cash0 - cost);
-		int nShares0 = nShares(symbol);
+		int nShares0 = get(symbol);
 		int nShares1 = nShares0 + buySell;
 
 		update(cashCode, cash1);

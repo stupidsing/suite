@@ -16,11 +16,11 @@ import suite.trade.data.DataSource;
 public class SingleAllocBackTestTest {
 
 	private DatePeriod period = DatePeriod.fiveYears();
-	private Configuration configuration = new Configuration();
+	private Configuration cfg = new Configuration();
 
 	@Test
 	public void testBackTest() {
-		for (Asset stock : configuration.queryCompanies()) {
+		for (Asset stock : cfg.queryCompanies()) {
 			String disp = stock.toString();
 			try {
 				backTest(stock.code, disp);
@@ -51,7 +51,7 @@ public class SingleAllocBackTestTest {
 
 	@Test
 	public void testBackTestHkexDetails() {
-		backTest(configuration.getCompany("0005.HK"));
+		backTest(cfg.getCompany("0005.HK"));
 	}
 
 	private void backTest(Asset asset) {
@@ -66,7 +66,7 @@ public class SingleAllocBackTestTest {
 
 	private Map<String, SingleAllocBackTest> backTest(String code, String disp) {
 		Strategos sr = new Strategos();
-		DataSource ds = configuration.dataSource(code, period);
+		DataSource ds = cfg.dataSource(code, period);
 
 		return Read //
 				.<String, BuySellStrategy> empty2() //
