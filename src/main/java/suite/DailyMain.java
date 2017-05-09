@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.adt.Pair;
+import suite.algo.Statistic;
 import suite.math.MathUtil;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
@@ -41,6 +42,7 @@ import suite.util.Util.ExecutableProgram;
 public class DailyMain extends ExecutableProgram {
 
 	private Configuration configuration = new Configuration();
+	private Statistic stat = new Statistic();
 
 	public static void main(String[] args) {
 		Util.run(DailyMain.class, args);
@@ -63,8 +65,8 @@ public class DailyMain extends ExecutableProgram {
 		StringBuilder sb = new StringBuilder();
 
 		for (Pair<String, String> output : outputs) {
-			sb.append("--------------------------------------------------------------------------------\n");
-			sb.append("OUTPUT (" + output.t0 + "):" + output.t1 + "\n\n");
+			sb.append("\n--------------------------------------------------------------------------------");
+			sb.append("\nOUTPUT (" + output.t0 + "):" + output.t1 + "\n");
 		}
 
 		String result = sb.toString();
@@ -79,7 +81,7 @@ public class DailyMain extends ExecutableProgram {
 	private Pair<String, String> bug() {
 		String tag = "bug";
 		StringBuilder sb = new StringBuilder();
-		List<Trade> history = TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, "bug"));
+		List<Trade> history = TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag));
 		Account account = Account.fromPortfolio(history);
 
 		Map<String, Float> faceValueByStockCodes = Read.from(history) //
@@ -90,7 +92,7 @@ public class DailyMain extends ExecutableProgram {
 		for (Entry<String, Integer> e : account.assets().entrySet()) {
 			String stockCode = e.getKey();
 			int sell = e.getValue();
-			double targetPrice = -1.05d * faceValueByStockCodes.get(stockCode) / sell;
+			double targetPrice = -stat.riskFreeInterestRate * faceValueByStockCodes.get(stockCode) / sell;
 			sb.append("\nSIGNAL" + new Trade(-sell, stockCode, (float) targetPrice));
 		}
 
@@ -184,7 +186,7 @@ public class DailyMain extends ExecutableProgram {
 		Sink<String> log = To.sink(sb);
 		AssetAllocBackTest backTest = new AssetAllocBackTest(new MovingAvgMeanReversionAssetAllocator(configuration, log), log);
 		Account account0 = Account.fromPortfolio(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
-		Account account1 = backTest.simulateLatest(1000000f).account;
+		Account account1 = backTest.simulateLatest(500000f).account;
 
 		Set<String> stockCodes = To.set(account0.assets().keySet(), account1.assets().keySet());
 		Map<String, Float> priceByStockCode = configuration.quote(stockCodes);

@@ -17,8 +17,7 @@ public class StatusMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) {
 		Summarize summarize = new Summarize(configuration);
-		System.out.println(summarize.summarize(r -> r.strategy, s -> {
-		}));
+		System.out.println(summarize.summarize(r -> r.strategy, System.out::println));
 		return true;
 	}
 
