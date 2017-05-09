@@ -10,7 +10,7 @@ import suite.util.FunUtil.Source;
 
 public class CharsUtil {
 
-	private static final int bufferSize = 65536;
+	private static int bufferSize = 65536;
 
 	public static Outlet<Chars> buffer(Outlet<Chars> outlet) {
 		return Outlet.of(new BufferedSource(outlet) {

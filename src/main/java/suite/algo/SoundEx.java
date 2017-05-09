@@ -5,13 +5,13 @@ import suite.util.Util;
 
 public class SoundEx {
 
-	private static final String CHARS0 = "AEIOUYHW";
-	private static final String CHARS1 = "BFPV";
-	private static final String CHARS2 = "CGJKQSXZ";
-	private static final String CHARS3 = "DT";
-	private static final String CHARS4 = "L";
-	private static final String CHARS5 = "MN";
-	private static final String CHARS6 = "R";
+	private static String CHARS0 = "AEIOUYHW";
+	private static String CHARS1 = "BFPV";
+	private static String CHARS2 = "CGJKQSXZ";
+	private static String CHARS3 = "DT";
+	private static String CHARS4 = "L";
+	private static String CHARS5 = "MN";
+	private static String CHARS6 = "R";
 
 	public String american(String word) {
 		word = word.toUpperCase();

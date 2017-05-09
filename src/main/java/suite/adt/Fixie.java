@@ -7,7 +7,7 @@ import suite.util.Util;
 
 public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 
-	private static final D_ D = new D_();
+	private static D_ D = new D_();
 
 	public T0 t0;
 	public T1 t1;

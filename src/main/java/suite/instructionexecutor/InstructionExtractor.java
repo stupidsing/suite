@@ -31,10 +31,10 @@ public class InstructionExtractor implements AutoCloseable {
 	private BiMap<Integer, Node> constantPool;
 	private Trail trail = new Trail();
 
-	private static final Atom KEYC = Atom.of("c");
-	private static final Atom KEYL = Atom.of("l");
-	private static final Atom KEYR = Atom.of("r");
-	private static final Atom FRAME = Atom.of("FRAME");
+	private static Atom KEYC = Atom.of("c");
+	private static Atom KEYL = Atom.of("l");
+	private static Atom KEYR = Atom.of("r");
+	private static Atom FRAME = Atom.of("FRAME");
 
 	public InstructionExtractor(BiMap<Integer, Node> constantPool) {
 		this.constantPool = constantPool;

@@ -25,6 +25,11 @@ import suite.util.Util;
 
 public class B_TreeBuilder<Key, Value> {
 
+	private static char BRANCH = 'I';
+	private static char LEAF = 'L';
+	private static char PAYLOAD = 'P';
+	private static char TERMINAL = 'T';
+
 	private int pageSize = PageFile.defaultPageSize;
 
 	private Serializer<Key> keySerializer;
@@ -50,11 +55,6 @@ public class B_TreeBuilder<Key, Value> {
 
 	private class B_TreePageSerializer implements Serializer<B_TreeImpl<Key, Value>.Page> {
 		private B_TreeImpl<Key, Value> b_tree;
-
-		private static final char BRANCH = 'I';
-		private static final char LEAF = 'L';
-		private static final char PAYLOAD = 'P';
-		private static final char TERMINAL = 'T';
 
 		public B_TreePageSerializer(B_TreeImpl<Key, Value> b_tree) {
 			this.b_tree = b_tree;

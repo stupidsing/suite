@@ -10,7 +10,7 @@ import suite.util.FunUtil.Source;
 
 public class BytesUtil {
 
-	private static final int bufferSize = 65536;
+	private static int bufferSize = 65536;
 
 	public static Outlet<Bytes> buffer(Outlet<Bytes> outlet) {
 		return Outlet.of(new BufferedSource(outlet) {

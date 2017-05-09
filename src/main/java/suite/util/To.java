@@ -39,7 +39,7 @@ import suite.util.FunUtil.Source;
 public class To {
 
 	private static String hexDigits = "0123456789ABCDEF";
-	private static final Field field;
+	private static Field field;
 
 	static {
 		field = Rethrow.ex(() -> {
