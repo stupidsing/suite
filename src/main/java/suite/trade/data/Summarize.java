@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.Trade;
 import suite.trade.TradeUtil;
@@ -46,8 +47,8 @@ public class Summarize {
 
 		List<Trade> table1 = Streamlet.concat(Read.from(table0), Read.from(sellAll)).toList();
 
-		double amount0 = TradeUtil.returns(table0);
-		double amount1 = TradeUtil.returns(table1);
+		double amount0 = returns(table0);
+		double amount1 = returns(table1);
 
 		Streamlet<String> constituents = Read.from2(nSharesByStockCodes) //
 				.map((stockCode, nShares) -> {
@@ -65,8 +66,13 @@ public class Summarize {
 		log.accept("transactionFee = " + To.string(broker.transactionFee(transactionAmount)));
 
 		return Read.from(table1) //
-				.groupBy(fun, st -> TradeUtil.returns(st.toList())) //
+				.groupBy(fun, st -> returns(st.toList())) //
 				.toMap();
+	}
+
+	// Profit & loss
+	private double returns(List<Trade> trades) {
+		return Account.fromHistory(trades).cash();
 	}
 
 }

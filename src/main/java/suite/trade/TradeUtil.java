@@ -44,11 +44,6 @@ public class TradeUtil {
 				.toMap();
 	}
 
-	// Profit & loss
-	public static double returns(List<Trade> trades) {
-		return Read.from(trades).collect(As.sumOfDoubles(r -> -r.buySell * r.price));
-	}
-
 	public static List<Pair<String, Integer>> diff(Map<String, Integer> assets0, Map<String, Integer> assets1) {
 		Set<String> stockCodes = Streamlet2.concat(Read.from2(assets0), Read.from2(assets1)) //
 				.map((stockCode, nShares) -> stockCode) //

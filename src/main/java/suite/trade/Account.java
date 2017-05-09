@@ -22,8 +22,8 @@ public class Account {
 		return fromHistory(TradeUtil.fromHistory(pred));
 	}
 
-	public static Account fromHistory(List<Trade> table) {
-		return new Account(TradeUtil.portfolio(table));
+	public static Account fromHistory(List<Trade> trades) {
+		return new Account(TradeUtil.portfolio(trades));
 	}
 
 	public static Account fromCash(float cash) {
@@ -122,7 +122,7 @@ public class Account {
 		return nTransactions;
 	}
 
-	public float nTransactionAmount() {
+	public float transactionAmount() {
 		return nTransactionAmount;
 	}
 
