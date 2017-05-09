@@ -9,10 +9,10 @@ import suite.util.Util;
 
 public class Hkd {
 
-	public Map<String, Float> quote(Set<String> stockCodes) {
-		return Read.from(stockCodes) //
-				.map2(stockCode -> {
-					if (Util.stringEquals(stockCode, Asset.cashCode))
+	public Map<String, Float> quote(Set<String> symbols) {
+		return Read.from(symbols) //
+				.map2(symbol -> {
+					if (Util.stringEquals(symbol, Asset.cashCode))
 						return 1f;
 					else
 						throw new RuntimeException();

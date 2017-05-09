@@ -18,17 +18,17 @@ public class KellyAssetAllocator implements AssetAllocator {
 	private TimeSeries timeSeries = new TimeSeries();
 
 	public List<Pair<String, Double>> allocate( //
-			Map<String, DataSource> dataSourceByStockCode, //
+			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
 		// TODO this should be the expected returns, not past returns!
-		Map<String, DataSource> predictedReturnsByStockCode = dataSourceByStockCode;
+		Map<String, DataSource> predictedReturnsBySymbol = dataSourceBySymbol;
 
-		Map<String, float[]> returnsByStockCode = Read.from2(predictedReturnsByStockCode) //
+		Map<String, float[]> returnsBySymbol = Read.from2(predictedReturnsBySymbol) //
 				.mapValue(dataSource -> timeSeries.returns(dataSource.prices)) //
 				.toMap();
 
-		Map<String, Double> excessReturnByStockCode = Read.from2(predictedReturnsByStockCode) //
+		Map<String, Double> excessReturnBySymbol = Read.from2(predictedReturnsBySymbol) //
 				.mapValue(dataSource -> {
 					double price0 = dataSource.first().price;
 					double pricex = dataSource.last().price;
@@ -39,21 +39,21 @@ public class KellyAssetAllocator implements AssetAllocator {
 				}) //
 				.toMap();
 
-		String[] stockCodes = returnsByStockCode.keySet().toArray(new String[0]);
-		int nStockCodes = stockCodes.length;
+		String[] symbols = returnsBySymbol.keySet().toArray(new String[0]);
+		int nSymbols = symbols.length;
 
-		float[][] cov = To.arrayOfFloats(nStockCodes, nStockCodes, (i0, i1) -> {
-			float[] returns0 = returnsByStockCode.get(stockCodes[i0]);
-			float[] returns1 = returnsByStockCode.get(stockCodes[i1]);
+		float[][] cov = To.arrayOfFloats(nSymbols, nSymbols, (i0, i1) -> {
+			float[] returns0 = returnsBySymbol.get(symbols[i0]);
+			float[] returns1 = returnsBySymbol.get(symbols[i1]);
 			return (float) stat.covariance(returns0, returns1);
 		});
 
-		float[] returns = To.arrayOfFloats(nStockCodes, i -> excessReturnByStockCode.get(stockCodes[i]).floatValue());
+		float[] returns = To.arrayOfFloats(nSymbols, i -> excessReturnBySymbol.get(symbols[i]).floatValue());
 
 		float[] allocations = new Cholesky().inverseMul(cov).apply(returns);
 
-		return Read.range(nStockCodes) //
-				.map2(i -> stockCodes[i], i -> (double) allocations[i]) //
+		return Read.range(nSymbols) //
+				.map2(i -> symbols[i], i -> (double) allocations[i]) //
 				.filterValue(potential -> 0d < potential) //
 				.toList();
 	}

@@ -228,7 +228,7 @@ public class Hkex {
 
 	public static class CompanyInfo {
 		public String stockName;
-		public String stockCode;
+		public String symbol;
 		public List<Data> data;
 	}
 
@@ -251,7 +251,7 @@ public class Hkex {
 				+ "?location=companySearch" //
 				+ "&SearchMethod=2" //
 				+ "&LangCode=en" //
-				+ "&StockCode=" //
+				+ "&Symbol=" //
 				+ "&StockName=" //
 				+ "&Ranking=ByMC" //
 				+ "&StockType=MB" //
@@ -293,15 +293,15 @@ public class Hkex {
 					.toList();
 	}
 
-	public Map<String, Integer> queryLotSizeByStockCode(Streamlet<Asset> companies) {
+	public Map<String, Integer> queryLotSizeBySymbol(Streamlet<Asset> companies) {
 		Source<Map<String, Integer>> fun = () -> companies //
 				.map(stock -> stock.code) //
-				.map2(stockCode -> {
+				.map2(symbol -> {
 					try {
-						return queryBoardLot(stockCode);
+						return queryBoardLot(symbol);
 					} catch (Exception ex) {
 						// e.g. 0013 de-listed; cannot query stock code
-						LogUtil.warn("cannot query lot size of " + stockCode);
+						LogUtil.warn("cannot query lot size of " + symbol);
 						return null;
 					}
 				}) //
@@ -310,25 +310,25 @@ public class Hkex {
 
 		return SerializedStoreCache //
 				.of(Serialize.mapOfString(Serialize.int_)) //
-				.get(getClass().getSimpleName() + ".queryLotSizeByStockCode(" + companies.toList() + ")", fun);
+				.get(getClass().getSimpleName() + ".queryLotSizeBySymbol(" + companies.toList() + ")", fun);
 	}
 
-	public int queryBoardLot(String stockCode0) {
-		if (Util.stringEquals(stockCode0, "0700.HK"))
+	public int queryBoardLot(String symbol0) {
+		if (Util.stringEquals(symbol0, "0700.HK"))
 			return 100; // server return some unexpected errors, handle manually
 		else {
-			String stockCode = "" + Integer.parseInt(stockCode0.replace(".HK", ""));
-			return queryBoardLot0(stockCode);
+			String symbol = "" + Integer.parseInt(symbol0.replace(".HK", ""));
+			return queryBoardLot0(symbol);
 		}
 	}
 
-	private int queryBoardLot0(String stockCode) {
+	private int queryBoardLot0(String symbol) {
 		JsonNode json = query("" //
 				+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
 				+ "?location=companySearch" //
 				+ "&SearchMethod=1" //
 				+ "&LangCode=en" //
-				+ "&StockCode=" + stockCode //
+				+ "&Symbol=" + symbol //
 				+ "&StockName=" //
 				+ "&mkt=hk" //
 				+ "&x=" //

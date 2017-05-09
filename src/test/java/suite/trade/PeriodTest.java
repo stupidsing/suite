@@ -25,10 +25,10 @@ public class PeriodTest {
 		DiscreteCosineTransform dct = new DiscreteCosineTransform();
 
 		for (Asset stock : configuration.queryCompanies().take(40)) {
-			String stockCode = stock.code;
+			String symbol = stock.code;
 
 			try {
-				DataSource ds = configuration.dataSource(stockCode);
+				DataSource ds = configuration.dataSource(symbol);
 				float[] prices0 = ds.prices;
 				int size = 1, size1;
 

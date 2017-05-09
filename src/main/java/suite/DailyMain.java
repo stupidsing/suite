@@ -52,13 +52,13 @@ public class DailyMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 
 		// fetch Yahoo historical data
-		Map<String, DataSource> dataSourceByStockCode = configuration //
+		Map<String, DataSource> dataSourceBySymbol = configuration //
 				.queryLeadingCompaniesByMarketCap(LocalDate.now().getYear() - 1) //
 				.map(asset -> asset.code) //
 				.map2(configuration::dataSource) //
 				.toMap();
 
-		new QuoteDatabase().merge("o", dataSourceByStockCode);
+		new QuoteDatabase().merge("o", dataSourceBySymbol);
 
 		// perform systematic trading
 		List<Pair<String, String>> outputs = Arrays.asList(bug(), mamr(), pmamr());
@@ -84,16 +84,16 @@ public class DailyMain extends ExecutableProgram {
 		List<Trade> history = TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag));
 		Account account = Account.fromPortfolio(history);
 
-		Map<String, Float> faceValueByStockCodes = Read.from(history) //
-				.groupBy(record -> record.stockCode, //
+		Map<String, Float> faceValueBySymbols = Read.from(history) //
+				.groupBy(record -> record.symbol, //
 						rs -> (float) (Read.from(rs).collect(As.sumOfDoubles(r -> r.buySell * r.price))))
 				.toMap();
 
 		for (Entry<String, Integer> e : account.assets().entrySet()) {
-			String stockCode = e.getKey();
+			String symbol = e.getKey();
 			int sell = e.getValue();
-			double targetPrice = -stat.riskFreeInterestRate * faceValueByStockCodes.get(stockCode) / sell;
-			sb.append("\nSIGNAL" + new Trade(-sell, stockCode, (float) targetPrice));
+			double targetPrice = -stat.riskFreeInterestRate * faceValueBySymbols.get(symbol) / sell;
+			sb.append("\nSIGNAL" + new Trade(-sell, symbol, (float) targetPrice));
 		}
 
 		return Pair.of(tag, sb.toString());
@@ -112,9 +112,9 @@ public class DailyMain extends ExecutableProgram {
 		LogUtil.info("S1 perform back test");
 
 		// identify stocks that are mean-reverting
-		Map<String, Boolean> backTestByStockCode = SerializedStoreCache //
+		Map<String, Boolean> backTestBySymbol = SerializedStoreCache //
 				.of(Serialize.mapOfString(Serialize.boolean_)) //
-				.get(getClass().getSimpleName() + ".backTestByStockCode", () -> assets //
+				.get(getClass().getSimpleName() + ".backTestBySymbol", () -> assets //
 						.map2(stock -> stock.code, stock -> {
 							try {
 								DatePeriod period = DatePeriod.threeYears();
@@ -133,7 +133,7 @@ public class DailyMain extends ExecutableProgram {
 
 		LogUtil.info("S2 query lot sizes");
 
-		Map<String, Integer> lotSizeByStockCode = configuration.queryLotSizeByStockCode(assets);
+		Map<String, Integer> lotSizeBySymbol = configuration.queryLotSizeBySymbol(assets);
 
 		DatePeriod period = DatePeriod.daysBefore(128);
 		String sevenDaysAgo = FormatUtil.formatDate(LocalDate.now().plusDays(-7));
@@ -142,14 +142,14 @@ public class DailyMain extends ExecutableProgram {
 		LogUtil.info("S3 capture signals");
 
 		for (Asset asset : assets) {
-			String stockCode = asset.code;
+			String symbol = asset.code;
 
-			if (backTestByStockCode.get(stockCode)) {
+			if (backTestBySymbol.get(symbol)) {
 				String prefix = asset.toString();
-				int lotSize = lotSizeByStockCode.get(stockCode);
+				int lotSize = lotSizeBySymbol.get(symbol);
 
 				try {
-					DataSource ds0 = configuration.dataSource(stockCode, period);
+					DataSource ds0 = configuration.dataSource(symbol, period);
 					String datex = ds0.last().date;
 
 					if (0 <= datex.compareTo(sevenDaysAgo))
@@ -157,7 +157,7 @@ public class DailyMain extends ExecutableProgram {
 					else
 						throw new RuntimeException("ancient data: " + datex);
 
-					Map<String, Float> latest = configuration.quote(Collections.singleton(stockCode));
+					Map<String, Float> latest = configuration.quote(Collections.singleton(symbol));
 					String latestDate = FormatUtil.formatDate(LocalDate.now());
 					float latestPrice = latest.values().iterator().next();
 
@@ -166,7 +166,7 @@ public class DailyMain extends ExecutableProgram {
 
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
-					String message = "\nSIGNAL" + new Trade(signal * lotSize, stockCode, latestPrice);
+					String message = "\nSIGNAL" + new Trade(signal * lotSize, symbol, latestPrice);
 
 					if (signal != 0)
 						messages.add(message);
@@ -188,9 +188,9 @@ public class DailyMain extends ExecutableProgram {
 		Account account0 = Account.fromPortfolio(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
 		Account account1 = backTest.simulateLatest(500000f).account;
 
-		Set<String> stockCodes = To.set(account0.assets().keySet(), account1.assets().keySet());
-		Map<String, Float> priceByStockCode = configuration.quote(stockCodes);
-		List<Trade> trades = TradeUtil.diff(account0.assets(), account1.assets(), priceByStockCode);
+		Set<String> symbols = To.set(account0.assets().keySet(), account1.assets().keySet());
+		Map<String, Float> priceBySymbol = configuration.quote(symbols);
+		List<Trade> trades = TradeUtil.diff(account0.assets(), account1.assets(), priceBySymbol);
 
 		sb.append(Read.from(trades).map(trade -> "\nSIGNAL" + trade).collect(As.joined()));
 		return Pair.of(tag, sb.toString());

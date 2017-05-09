@@ -23,7 +23,7 @@ import suite.util.Util;
 
 public class Yahoo {
 
-	public DataSource dataSourceWithLatestQuote(String stockCode) {
+	public DataSource dataSourceWithLatestQuote(String symbol) {
 
 		// count as tomorrow open if market is closed (after 4pm)
 		LocalDate tradeDate = LocalDateTime.now().plusHours(8).toLocalDate();
@@ -31,18 +31,18 @@ public class Yahoo {
 
 		return SerializedStoreCache //
 				.of(DataSource.serializer) //
-				.get(getClass().getSimpleName() + ".dataSourceWithLatestQuote(" + stockCode + ", " + date + ")", () -> {
-					float price = quote(Collections.singleton(stockCode)).get(stockCode);
-					return dataSource(stockCode, DatePeriod.ages()).cons(date, price);
+				.get(getClass().getSimpleName() + ".dataSourceWithLatestQuote(" + symbol + ", " + date + ")", () -> {
+					float price = quote(Collections.singleton(symbol)).get(symbol);
+					return dataSource(symbol, DatePeriod.ages()).cons(date, price);
 				});
 	}
 
-	public DataSource dataSource(String stockCode) {
-		return dataSource(stockCode, DatePeriod.ages());
+	public DataSource dataSource(String symbol) {
+		return dataSource(symbol, DatePeriod.ages());
 	}
 
-	public DataSource dataSource(String stockCode, DatePeriod period) {
-		String urlString = tableUrl(stockCode, period);
+	public DataSource dataSource(String symbol, DatePeriod period) {
+		String urlString = tableUrl(symbol, period);
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
 		List<String[]> arrays = Singleton.get() //
@@ -60,7 +60,7 @@ public class Yahoo {
 		float[] prices = Read.from(arrays) //
 				.collect(As.arrayOfFloats(array -> Float.parseFloat(array[1])));
 
-		adjust(stockCode, dates, prices);
+		adjust(symbol, dates, prices);
 
 		DataSource dataSource = new DataSource(dates, prices);
 		dataSource.cleanse();
@@ -73,54 +73,54 @@ public class Yahoo {
 	 * 
 	 * @return quotes of many stock at once.
 	 */
-	public synchronized Map<String, Float> quote(Set<String> stockCodes) {
-		return quote(stockCodes, "l1"); // last price
+	public synchronized Map<String, Float> quote(Set<String> symbols) {
+		return quote(symbols, "l1"); // last price
 	}
 
-	public synchronized Map<String, Float> quoteOpenPrice(Set<String> stockCodes) {
-		return quote(stockCodes, "o");
+	public synchronized Map<String, Float> quoteOpenPrice(Set<String> symbols) {
+		return quote(symbols, "o");
 	}
 
-	private Map<String, Float> quote(Set<String> stockCodes, String field) {
+	private Map<String, Float> quote(Set<String> symbols, String field) {
 		Map<String, Float> quotes = quotesByField.computeIfAbsent(field, f -> new HashMap<>());
-		Set<String> queryStockCodes = Read.from(stockCodes).filter(stockCode -> !quotes.containsKey(stockCode)).toSet();
-		quotes.putAll(quote0(Read.from(queryStockCodes), field));
-		return Read.from(stockCodes).map2(quotes::get).toMap();
+		Set<String> querySymbols = Read.from(symbols).filter(symbol -> !quotes.containsKey(symbol)).toSet();
+		quotes.putAll(quote0(Read.from(querySymbols), field));
+		return Read.from(symbols).map2(quotes::get).toMap();
 	}
 
 	private static Map<String, Map<String, Float>> quotesByField = new HashMap<>();
 
-	private Map<String, Float> quote0(Streamlet<String> stockCodes, String field) {
-		if (0 < stockCodes.size()) {
-			String urlString = quoteUrl(stockCodes, field);
+	private Map<String, Float> quote0(Streamlet<String> symbols, String field) {
+		if (0 < symbols.size()) {
+			String urlString = quoteUrl(symbols, field);
 			URL url = Rethrow.ex(() -> new URL(urlString));
 			return HttpUtil.http("GET", url).out.collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
 		} else
 			return new HashMap<>();
 	}
 
-	private String quoteUrl(Streamlet<String> stockCodes, String field) {
+	private String quoteUrl(Streamlet<String> symbols, String field) {
 		return "https://download.finance.yahoo.com/d/quotes.csv" //
-				+ "?s=" + stockCodes.sort(Util::compare).collect(As.joined("+")) //
+				+ "?s=" + symbols.sort(Util::compare).collect(As.joined("+")) //
 				+ "&f=s" + field;
 	}
 
-	public String tableUrl(String stockCode, DatePeriod period) {
+	public String tableUrl(String symbol, DatePeriod period) {
 		LocalDate frDate = period.from;
 		LocalDate toDate = period.to;
 		return "https://chart.finance.yahoo.com/table.csv" //
-				+ "?s=" + stockCode //
+				+ "?s=" + symbol //
 				+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
 				+ "&d=" + toDate.getMonthValue() + "&e=" + toDate.getDayOfMonth() + "&f=" + toDate.getYear() //
 				+ "&g=d&ignore=.csv";
 	}
 
-	private void adjust(String stockCode, String[] dates, float[] prices) {
+	private void adjust(String symbol, String[] dates, float[] prices) {
 		Map<String, BiFunction<String, Float, Float>> adjusters = new HashMap<>();
 		adjusters.put("0700.HK", (d, p) -> d.compareTo("2014-05-14") <= 0 ? p * .2f : p);
 		adjusters.put("2318.HK", (d, p) -> d.compareTo("2014-03-23") <= 0 ? p * .5f : p);
 
-		BiFunction<String, Float, Float> adjuster = adjusters.get(stockCode);
+		BiFunction<String, Float, Float> adjuster = adjusters.get(symbol);
 		if (adjuster != null)
 			for (int d = 0; d < prices.length; d++)
 				prices[d] = adjuster.apply(dates[d], prices[d]);

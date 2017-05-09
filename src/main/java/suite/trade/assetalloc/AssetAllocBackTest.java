@@ -60,7 +60,7 @@ public class AssetAllocBackTest {
 		public final float[] valuations;
 
 		private Simulate(float fund0, LocalDate from, Fun<List<LocalDate>, List<LocalDate>> datesPred) {
-			Map<String, DataSource> dataSourceByStockCode = new HashMap<>();
+			Map<String, DataSource> dataSourceBySymbol = new HashMap<>();
 			LocalDate historyFromDate = from.minusYears(1);
 			double valuation = fund0;
 			Streamlet<Asset> assets = configuration.queryLeadingCompaniesByMarketCap(from.getYear() - 1);
@@ -68,25 +68,25 @@ public class AssetAllocBackTest {
 
 			account = Account.fromCash(fund0);
 
-			Map<String, Integer> lotSizeByStockCode = configuration.queryLotSizeByStockCode(assets);
+			Map<String, Integer> lotSizeBySymbol = configuration.queryLotSizeBySymbol(assets);
 
 			// pre-fetch quotes
-			configuration.quote(lotSizeByStockCode.keySet());
+			configuration.quote(lotSizeBySymbol.keySet());
 
 			for (Asset asset : assets) {
-				String stockCode = asset.code;
-				if (lotSizeByStockCode.containsKey(stockCode))
+				String symbol = asset.code;
+				if (lotSizeBySymbol.containsKey(symbol))
 					try {
-						DataSource dataSource = configuration.dataSourceWithLatestQuote(stockCode).after(historyFromDate);
+						DataSource dataSource = configuration.dataSourceWithLatestQuote(symbol).after(historyFromDate);
 						dataSource.validate();
-						dataSourceByStockCode.put(stockCode, dataSource);
+						dataSourceBySymbol.put(symbol, dataSource);
 					} catch (Exception ex) {
 						LogUtil.warn(ex.getMessage() + " in " + asset);
 					}
 			}
 
-			List<LocalDate> tradeDates = Read.from2(dataSourceByStockCode) //
-					.concatMap((stockCode, dataSource) -> Read.from(dataSource.dates)) //
+			List<LocalDate> tradeDates = Read.from2(dataSourceBySymbol) //
+					.concatMap((symbol, dataSource) -> Read.from(dataSource.dates)) //
 					.distinct() //
 					.map(FormatUtil::date) //
 					.sort(Util::compare) //
@@ -102,44 +102,44 @@ public class AssetAllocBackTest {
 				LocalDate date = dates.get(i);
 				DatePeriod historyWindowPeriod = DatePeriod.of(date.minusDays(historyWindow), date);
 
-				Map<String, DataSource> backTestDataSourceByStockCode = Read.from2(dataSourceByStockCode) //
+				Map<String, DataSource> backTestDataSourceBySymbol = Read.from2(dataSourceBySymbol) //
 						.mapValue(dataSource -> dataSource.range(historyWindowPeriod)) //
 						.filterValue(dataSource -> 128 <= dataSource.dates.length) //
 						.toMap();
 
-				Map<String, Float> latestPriceByStockCode = Read.from2(backTestDataSourceByStockCode) //
+				Map<String, Float> latestPriceBySymbol = Read.from2(backTestDataSourceBySymbol) //
 						.mapValue(dataSource -> dataSource.last().price) //
 						.toMap();
 
-				List<Pair<String, Double>> potentialStatsByStockCode = assetAllocator.allocate( //
-						backTestDataSourceByStockCode, //
+				List<Pair<String, Double>> potentialStatsBySymbol = assetAllocator.allocate( //
+						backTestDataSourceBySymbol, //
 						tradeDates, //
 						date);
 
-				if (potentialStatsByStockCode != null) {
-					double totalPotential = Read.from2(potentialStatsByStockCode) //
-							.collect(As.<String, Double> sumOfDoubles((stockCode, potential) -> potential));
+				if (potentialStatsBySymbol != null) {
+					double totalPotential = Read.from2(potentialStatsBySymbol) //
+							.collect(As.<String, Double> sumOfDoubles((symbol, potential) -> potential));
 
 					double valuation_ = valuation;
 
-					Map<String, Integer> portfolio = Read.from2(potentialStatsByStockCode) //
-							.filterKey(stockCode -> !Util.stringEquals(stockCode, Asset.cashCode)) //
-							.map2((stockCode, potential) -> stockCode, (stockCode, potential) -> {
-								float price = backTestDataSourceByStockCode.get(stockCode).last().price;
-								int lotSize = lotSizeByStockCode.get(stockCode);
+					Map<String, Integer> portfolio = Read.from2(potentialStatsBySymbol) //
+							.filterKey(symbol -> !Util.stringEquals(symbol, Asset.cashCode)) //
+							.map2((symbol, potential) -> symbol, (symbol, potential) -> {
+								float price = backTestDataSourceBySymbol.get(symbol).last().price;
+								int lotSize = lotSizeBySymbol.get(symbol);
 								double lots = valuation_ * potential / (totalPotential * price * lotSize);
 								return lotSize * (int) lots; // truncate
 								// return lotSize * Math.round(lots);
 							}) //
 							.toMap();
 
-					actions = account.switchPortfolio(portfolio, latestPriceByStockCode);
+					actions = account.switchPortfolio(portfolio, latestPriceBySymbol);
 				} else
 					actions = null;
 
 				account.validate();
 
-				valuations[i] = (float) (valuation = account.valuation(latestPriceByStockCode));
+				valuations[i] = (float) (valuation = account.valuation(latestPriceBySymbol));
 
 				log.sink(FormatUtil.formatDate(date) //
 						+ ", valuation = " + valuation //

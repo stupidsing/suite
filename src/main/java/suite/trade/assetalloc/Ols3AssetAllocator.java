@@ -26,10 +26,10 @@ public class Ols3AssetAllocator implements AssetAllocator {
 	private Statistic stat = new Statistic();
 
 	public List<Pair<String, Double>> allocate( //
-			Map<String, DataSource> dataSourceByStockCode, //
+			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
-		return Read.from2(dataSourceByStockCode) //
+		return Read.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {
 					float[] prices = dataSource.prices;
 					int length = prices.length;

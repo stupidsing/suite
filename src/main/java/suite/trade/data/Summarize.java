@@ -24,17 +24,17 @@ public class Summarize {
 
 	public Map<String, Double> summarize(Fun<Trade, String> fun, Consumer<String> log) {
 		List<Trade> table0 = TradeUtil.fromHistory(trade -> true);
-		Map<String, Integer> nSharesByStockCodes = TradeUtil.portfolio(table0);
-		Set<String> stockCodes = nSharesByStockCodes.keySet();
-		Map<String, Float> priceByStockCodes = configuration.quote(stockCodes);
+		Map<String, Integer> nSharesBySymbols = TradeUtil.portfolio(table0);
+		Set<String> symbols = nSharesBySymbols.keySet();
+		Map<String, Float> priceBySymbols = configuration.quote(symbols);
 
 		List<Trade> sellAll = Read.from(table0) //
 				.groupBy(trade -> trade.strategy, st -> TradeUtil.portfolio(st.toList())) //
-				.concatMap((strategy, nSharesByStockCode) -> Read //
-						.from2(nSharesByStockCode) //
-						.map((stockCode, size) -> {
-							float price = priceByStockCodes.get(stockCode);
-							return new Trade(-size, stockCode, price, strategy);
+				.concatMap((strategy, nSharesBySymbol) -> Read //
+						.from2(nSharesBySymbol) //
+						.map((symbol, size) -> {
+							float price = priceBySymbols.get(symbol);
+							return new Trade(-size, symbol, price, strategy);
 						})) //
 				.toList();
 
@@ -45,10 +45,10 @@ public class Summarize {
 		double amount0 = account0.cash();
 		double amount1 = account1.cash();
 
-		Streamlet<String> constituents = Read.from2(nSharesByStockCodes) //
-				.map((stockCode, nShares) -> {
-					Asset asset = configuration.getCompany(stockCode);
-					float price = priceByStockCodes.get(stockCode);
+		Streamlet<String> constituents = Read.from2(nSharesBySymbols) //
+				.map((symbol, nShares) -> {
+					Asset asset = configuration.getCompany(symbol);
+					float price = priceBySymbols.get(symbol);
 					return asset + ": " + price + " * " + nShares + " = " + nShares * price;
 				});
 

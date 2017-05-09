@@ -4,7 +4,7 @@ public class Trade {
 
 	public final String date;
 	public final int buySell;
-	public final String stockCode;
+	public final String symbol;
 	public final float price;
 	public final String strategy;
 
@@ -12,25 +12,25 @@ public class Trade {
 		this(array[0], Integer.parseInt(array[1]), array[2], Float.parseFloat(array[3]), array[4]);
 	}
 
-	public Trade(int buySell, String stockCode, float price) {
-		this(buySell, stockCode, price, "-");
+	public Trade(int buySell, String symbol, float price) {
+		this(buySell, symbol, price, "-");
 	}
 
-	public Trade(int buySell, String stockCode, float price, String strategy) {
-		this("-", buySell, stockCode, price, strategy);
+	public Trade(int buySell, String symbol, float price, String strategy) {
+		this("-", buySell, symbol, price, strategy);
 	}
 
-	public Trade(String date, int buySell, String stockCode, float price, String strategy) {
+	public Trade(String date, int buySell, String symbol, float price, String strategy) {
 		this.date = date;
 		this.buySell = buySell;
-		this.stockCode = stockCode;
+		this.symbol = symbol;
 		this.price = price;
 		this.strategy = strategy;
 	}
 
 	@Override
 	public String toString() {
-		return "|" + stockCode + ":" + price + "*" + buySell;
+		return "|" + symbol + ":" + price + "*" + buySell;
 	}
 
 }

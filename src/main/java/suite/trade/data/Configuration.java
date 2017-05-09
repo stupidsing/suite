@@ -19,16 +19,16 @@ public class Configuration {
 	private HkexFactBook hkexFactBook = new HkexFactBook();
 	private Yahoo yahoo = new Yahoo();
 
-	public DataSource dataSource(String stockCode) {
-		return yahoo.dataSource(stockCode);
+	public DataSource dataSource(String symbol) {
+		return yahoo.dataSource(symbol);
 	}
 
-	public DataSource dataSource(String stockCode, DatePeriod period) {
-		return yahoo.dataSource(stockCode, period);
+	public DataSource dataSource(String symbol, DatePeriod period) {
+		return yahoo.dataSource(symbol, period);
 	}
 
-	public DataSource dataSourceWithLatestQuote(String stockCode) {
-		return yahoo.dataSourceWithLatestQuote(stockCode);
+	public DataSource dataSourceWithLatestQuote(String symbol) {
+		return yahoo.dataSourceWithLatestQuote(symbol);
 	}
 
 	public Asset getCompany(String code) {
@@ -47,24 +47,24 @@ public class Configuration {
 		return hkexFactBook.queryLeadingCompaniesByMarketCap(year);
 	}
 
-	public Map<String, Integer> queryLotSizeByStockCode(Streamlet<Asset> assets) {
-		return hkex.queryLotSizeByStockCode(assets);
+	public Map<String, Integer> queryLotSizeBySymbol(Streamlet<Asset> assets) {
+		return hkex.queryLotSizeBySymbol(assets);
 	}
 
-	public Map<String, Float> quote(Set<String> stockCodes) {
+	public Map<String, Float> quote(Set<String> symbols) {
 		Set<String> hkdCodes = new HashSet<>();
-		Set<String> yahooStockCodes = new HashSet<>();
+		Set<String> yahooSymbols = new HashSet<>();
 
-		for (String stockCode : stockCodes) {
+		for (String symbol : symbols) {
 			Set<String> set;
-			if (Util.stringEquals(stockCode, Asset.cashCode))
+			if (Util.stringEquals(symbol, Asset.cashCode))
 				set = hkdCodes;
 			else
-				set = yahooStockCodes;
-			set.add(stockCode);
+				set = yahooSymbols;
+			set.add(symbol);
 		}
 
-		return To.map_(hkd.quote(hkdCodes), yahoo.quote(yahooStockCodes));
+		return To.map_(hkd.quote(hkdCodes), yahoo.quote(yahooSymbols));
 	}
 
 	public double transactionFee(double transactionAmount) {

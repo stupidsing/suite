@@ -12,9 +12,9 @@ public class QuoteDatabase {
 
 	private TextDatabase textDatabase = new TextDatabase(HomeDir.resolve("quote-database.csv"));
 
-	public DataSource get(String stockCode, String field) {
-		Datum datum0 = datum(stockCode, field, "", 0f);
-		Datum datumx = datum(stockCode, field, "~", 0f);
+	public DataSource get(String symbol, String field) {
+		Datum datum0 = datum(symbol, field, "", 0f);
+		Datum datumx = datum(symbol, field, "~", 0f);
 		SortedSet<Datum> set = textDatabase.range(datum0, datumx);
 		Iterator<Datum> iter = set.iterator();
 		int size = set.size();
@@ -30,22 +30,22 @@ public class QuoteDatabase {
 		return new DataSource(dates, prices);
 	}
 
-	public void merge(String field, Map<String, DataSource> dataSourceByStockCode) {
-		textDatabase.merge(Read.from2(dataSourceByStockCode) //
-				.concatMap((stockCode, dataSource) -> {
+	public void merge(String field, Map<String, DataSource> dataSourceBySymbol) {
+		textDatabase.merge(Read.from2(dataSourceBySymbol) //
+				.concatMap((symbol, dataSource) -> {
 					String[] dates = dataSource.dates;
 					float[] prices = dataSource.prices;
 					int length = prices.length;
-					return Read.range(length).map(i -> datum(stockCode, field, dates[i], prices[i]));
+					return Read.range(length).map(i -> datum(symbol, field, dates[i], prices[i]));
 				}));
 	}
 
-	private Datum datum(String stockCode, String field, String date, float price) {
-		return textDatabase.datum(toKey(stockCode, field, date), price);
+	private Datum datum(String symbol, String field, String date, float price) {
+		return textDatabase.datum(toKey(symbol, field, date), price);
 	}
 
-	public String toKey(String stockCode, String field, String date) {
-		return stockCode + "/" + field + "/" + date;
+	public String toKey(String symbol, String field, String date) {
+		return symbol + "/" + field + "/" + date;
 	}
 
 	public String[] fromKey(String key) {

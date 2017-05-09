@@ -10,7 +10,7 @@ import suite.util.To;
 
 public class SingleAllocBackTest {
 
-	private String stockCode = "-";
+	private String symbol = "-";
 
 	public final Account account = Account.fromCash(0f);
 	public final StringBuilder tradeLog = new StringBuilder();
@@ -39,7 +39,7 @@ public class SingleAllocBackTest {
 		}
 
 		// sell all stocks at the end
-		buySell(ds, length - 1, -account.nShares(stockCode));
+		buySell(ds, length - 1, -account.nShares(symbol));
 
 		float return_ = account.cash();
 		double nApproxYears = ds.nYears();
@@ -55,15 +55,15 @@ public class SingleAllocBackTest {
 
 	private float buySell(DataSource ds, int day, int buySell) {
 		float price = ds.prices[day];
-		account.play(new Trade(buySell, stockCode, price));
-		float valuation = account.valuation(To.map(stockCode, price));
+		account.play(new Trade(buySell, symbol, price));
+		float valuation = account.valuation(To.map(symbol, price));
 
 		if (day == 0 || buySell != 0)
 			tradeLogSink.sink("" //
 					+ "> date = " + ds.dates[day] //
 					+ ", buy/sell = " + buySell //
 					+ ", price = " + To.string(price) //
-					+ ", nShares = " + account.nShares(stockCode) //
+					+ ", nShares = " + account.nShares(symbol) //
 					+ ", valuation = " + To.string(valuation));
 
 		return valuation;

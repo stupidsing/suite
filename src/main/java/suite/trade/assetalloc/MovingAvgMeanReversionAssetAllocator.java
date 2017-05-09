@@ -41,17 +41,17 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	}
 
 	public List<Pair<String, Double>> allocate( //
-			Map<String, DataSource> dataSourceByStockCode, //
+			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
 		if (backTestDate.toEpochDay() % tradeFrequency == 0)
-			return allocate0(dataSourceByStockCode, tradeDates, backTestDate);
+			return allocate0(dataSourceBySymbol, tradeDates, backTestDate);
 		else
 			return null;
 	}
 
 	public List<Pair<String, Double>> allocate0( //
-			Map<String, DataSource> dataSourceByStockCode, //
+			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
 		LocalDate oneYearAgo = backTestDate.minusYears(1);
@@ -60,13 +60,12 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 				.filter(tradeDate -> oneYearAgo.compareTo(tradeDate) <= 0 && tradeDate.compareTo(backTestDate) < 0) //
 				.size();
 
-		log.sink(dataSourceByStockCode.size() + " assets in data source");
+		log.sink(dataSourceBySymbol.size() + " assets in data source");
 
 		DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
 
-		Map<String, MeanReversionStats> meanReversionStatsByStockCode = Read.from2(dataSourceByStockCode) //
-				.map2((stockCode, dataSource) -> stockCode,
-						(stockCode, dataSource) -> meanReversionStats(stockCode, dataSource, mrsPeriod)) //
+		Map<String, MeanReversionStats> meanReversionStatsBySymbol = Read.from2(dataSourceBySymbol) //
+				.map2((symbol, dataSource) -> symbol, (symbol, dataSource) -> meanReversionStats(symbol, dataSource, mrsPeriod)) //
 				.toMap();
 
 		// make sure all time-series are mean-reversions:
@@ -74,20 +73,20 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		// ensure Hurst exponent < .5d: price is weakly mean reverting
 		// ensure 0d < variance ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
-		return Read.from2(meanReversionStatsByStockCode) //
+		return Read.from2(meanReversionStatsBySymbol) //
 				.filterValue(mrs -> mrs.adf < 0f //
 						&& mrs.hurst < .5f //
 						&& 0f < mrs.varianceRatio //
 						&& 0f < mrs.movingAvgMeanReversionRatio) //
-				.map2((stockCode, mrs) -> stockCode, (stockCode, mrs) -> {
-					DataSource dataSource = dataSourceByStockCode.get(stockCode);
+				.map2((symbol, mrs) -> symbol, (symbol, mrs) -> {
+					DataSource dataSource = dataSourceBySymbol.get(symbol);
 					double price = dataSource.last().price;
 
 					double lma = mrs.latestMovingAverage();
 					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
 					double annualReturn = Math.expm1(Math.log1p(dailyReturn) * nTradeDaysInYear);
 					double sharpe = ts.sharpeRatio(dataSource.prices, dataSource.nYears());
-					log.sink(configuration.getCompany(stockCode) //
+					log.sink(configuration.getCompany(symbol) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
 							+ ", " + To.string(price) + " => " + To.string(lma) //
 							+ ", annualReturn = " + To.string(annualReturn) //
@@ -100,7 +99,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 				// .cons(Asset.cashCode, new
 				// PotentialStats(stat.riskFreeInterestRate, 3d)) //
 				.mapValue(ps -> ps.potential) //
-				.sortBy((stockCode, potential) -> -potential) //
+				.sortBy((symbol, potential) -> -potential) //
 				.take(top) //
 				.toList();
 	}
@@ -120,9 +119,9 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		}
 	}
 
-	private MeanReversionStats meanReversionStats(String stockCode, DataSource dataSource, DatePeriod period) {
+	private MeanReversionStats meanReversionStats(String symbol, DataSource dataSource, DatePeriod period) {
 		Map<Pair<String, DatePeriod>, MeanReversionStats> memoizeMeanReversionStats = new ConcurrentHashMap<>();
-		Pair<String, DatePeriod> key = Pair.of(stockCode, period);
+		Pair<String, DatePeriod> key = Pair.of(symbol, period);
 		return memoizeMeanReversionStats.computeIfAbsent(key, p -> new MeanReversionStats(dataSource, period));
 	}
 

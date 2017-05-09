@@ -37,25 +37,25 @@ public class TradeUtil {
 
 	public static Map<String, Integer> portfolio(List<Trade> trades) {
 		return Read.from(trades) //
-				.map2(r -> r.stockCode, r -> r.buySell) //
+				.map2(r -> r.symbol, r -> r.buySell) //
 				.groupBy(sizes -> sizes.collect(As.sumOfInts(size -> size))) //
 				.filterValue(size -> size != 0) //
 				.toMap();
 	}
 
 	public static List<Trade> diff(Map<String, Integer> assets0, Map<String, Integer> assets1, Map<String, Float> prices) {
-		Set<String> stockCodes = Streamlet2.concat(Read.from2(assets0), Read.from2(assets1)) //
-				.map((stockCode, nShares) -> stockCode) //
+		Set<String> symbols = Streamlet2.concat(Read.from2(assets0), Read.from2(assets1)) //
+				.map((symbol, nShares) -> symbol) //
 				.toSet();
 
-		return Read.from(stockCodes) //
-				.map2(stockCode -> {
-					int n0 = assets0.computeIfAbsent(stockCode, s -> 0);
-					int n1 = assets1.computeIfAbsent(stockCode, s -> 0);
+		return Read.from(symbols) //
+				.map2(symbol -> {
+					int n0 = assets0.computeIfAbsent(symbol, s -> 0);
+					int n1 = assets1.computeIfAbsent(symbol, s -> 0);
 					return n1 - n0;
 				}) //
-				.filter((stockCode, buySell) -> !Util.stringEquals(stockCode, Asset.cashCode)) //
-				.map((stockCode, buySell) -> new Trade(buySell, stockCode, prices.get(stockCode))) //
+				.filter((symbol, buySell) -> !Util.stringEquals(symbol, Asset.cashCode)) //
+				.map((symbol, buySell) -> new Trade(buySell, symbol, prices.get(symbol))) //
 				.toList();
 	}
 

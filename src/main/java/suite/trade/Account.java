@@ -50,7 +50,7 @@ public class Account {
 		Map<String, Float> prices1 = new HashMap<>(prices0);
 		prices1.put(cashCode, 1f);
 		return (float) Read.from2(assets()) //
-				.collect(As.<String, Integer> sumOfDoubles((stockCode, n) -> prices1.get(stockCode) * n));
+				.collect(As.<String, Integer> sumOfDoubles((symbol, n) -> prices1.get(symbol) * n));
 	}
 
 	public String switchPortfolio(Map<String, Integer> assets1, Map<String, Float> prices) {
@@ -68,16 +68,16 @@ public class Account {
 
 	public void play(Trade trade) {
 		int buySell = trade.buySell;
-		String stockCode = trade.stockCode;
+		String symbol = trade.symbol;
 		float cost = buySell * trade.price;
 
 		int cash0 = cash();
 		int cash1 = (int) (cash0 - cost);
-		int nShares0 = nShares(stockCode);
+		int nShares0 = nShares(symbol);
 		int nShares1 = nShares0 + buySell;
 
 		update(cashCode, cash1);
-		update(stockCode, nShares1);
+		update(symbol, nShares1);
 		if (buySell != 0)
 			nTransactions++;
 		nTransactionAmount += Math.abs(cost);
@@ -101,8 +101,8 @@ public class Account {
 		return get(cashCode);
 	}
 
-	public int nShares(String stockCode) {
-		return get(stockCode);
+	public int nShares(String symbol) {
+		return get(symbol);
 	}
 
 	private int get(String code) {
