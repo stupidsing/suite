@@ -2,6 +2,7 @@ package suite;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -46,12 +47,9 @@ public class DailyMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		List<Pair<String, String>> outputs = new ArrayList<>();
-		outputs.add(mamr());
-		outputs.add(pmamr());
-		outputs.add(bug());
-
+		List<Pair<String, String>> outputs = Arrays.asList(bug(), mamr(), pmamr());
 		StringBuilder sb = new StringBuilder();
+
 		for (Pair<String, String> output : outputs) {
 			sb.append("--------------------------------------------------------------------------------\n");
 			sb.append("OUTPUT (" + output.t0 + "):" + output.t1 + "\n\n");
