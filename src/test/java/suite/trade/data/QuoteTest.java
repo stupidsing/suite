@@ -5,9 +5,11 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Trade;
 import suite.util.FunUtil.Fun;
+import suite.util.To;
 
 public class QuoteTest {
 
@@ -47,7 +49,9 @@ public class QuoteTest {
 
 	@Test
 	public void testQuotesByStock() {
-		System.out.println(summarize(r -> r.stockCode));
+		System.out.println(Read.from2(summarize(r -> r.stockCode)) //
+				.map((stockCode, gain) -> stockCode + " " + To.string(gain) + "\n") //
+				.collect(As.joined()));
 	}
 
 	@Test
