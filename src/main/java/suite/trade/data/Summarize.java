@@ -23,11 +23,11 @@ public class Summarize {
 	}
 
 	public <K> Map<K, Double> summarize(Fun<Trade, K> fun, Consumer<String> log) {
-		List<Trade> table0 = TradeUtil.fromHistory(trade -> true);
-		Map<String, Float> priceBySymbol = cfg.quote(Read.from(table0).map(trade -> trade.symbol).toSet());
-		List<Trade> table1 = To.list(table0, sellAll(table0, priceBySymbol));
+		List<Trade> trades0 = TradeUtil.fromHistory(trade -> true);
+		Map<String, Float> priceBySymbol = cfg.quote(Read.from(trades0).map(trade -> trade.symbol).toSet());
+		List<Trade> trades1 = To.list(trades0, sellAll(trades0, priceBySymbol));
 
-		Map<K, String> constituentsByStrategy = Read.from(table0) //
+		Map<K, List<String>> messagesByKey = Read.from(trades0) //
 				.groupBy(fun) //
 				.mapValue(table -> Read.from2(TradeUtil.portfolio(table)) //
 						.map((symbol, nShares) -> {
@@ -35,25 +35,28 @@ public class Summarize {
 							float price = priceBySymbol.get(symbol);
 							return "\n" + asset + ": " + price + " * " + nShares + " = " + nShares * price;
 						}) //
-						.collect(As.joined())) //
+						.toList()) //
 				.toMap();
 
-		Account account0 = Account.fromHistory(table0);
-		Account account1 = Account.fromHistory(table1);
+		Account account0 = Account.fromHistory(trades0);
+		Account account1 = Account.fromHistory(trades1);
 
 		double amount0 = account0.cash();
 		double amount1 = account1.cash();
 		double transactionAmount = account0.transactionAmount();
 
-		for (Entry<K, String> e : constituentsByStrategy.entrySet())
-			log.accept("CONSTITUENTS (" + e.getKey() + "):" + e.getValue());
+		for (Entry<K, List<String>> e : messagesByKey.entrySet()) {
+			K key = e.getKey();
+			List<String> messages = e.getValue();
+			log.accept("For strategy " + key + ":" + Read.from(messages).collect(As.joined()));
+		}
 		log.accept("OWN = " + -amount0);
 		log.accept("P/L = " + amount1);
 		log.accept("nTransactions = " + account0.nTransactions());
 		log.accept("transactionAmount = " + transactionAmount);
 		log.accept("transactionFee = " + To.string(cfg.transactionFee(transactionAmount)));
 
-		return Read.from(table1).groupBy(fun, this::returns).toMap();
+		return Read.from(trades1).groupBy(fun, this::returns).toMap();
 	}
 
 	private List<Trade> sellAll(List<Trade> table0, Map<String, Float> priceBySymbol) {
