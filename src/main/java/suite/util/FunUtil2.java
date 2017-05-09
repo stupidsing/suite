@@ -25,6 +25,25 @@ public class FunUtil2 {
 		public void sink2(K key, V value);
 	}
 
+	public static <K, V> Source2<K, V> append(K key, V value, Source2<K, V> source) {
+		return new Source2<K, V>() {
+			private boolean isAppended = false;
+
+			public boolean source2(Pair<K, V> pair) {
+				if (!isAppended) {
+					boolean b = source.source2(pair);
+					if (!b) {
+						pair.t0 = key;
+						pair.t1 = value;
+						isAppended = true;
+					}
+					return b;
+				} else
+					return false;
+			}
+		};
+	}
+
 	public static <K, V> Source<Source2<K, V>> chunk(int n, Source2<K, V> source2) {
 		return new Source<Source2<K, V>>() {
 			private Pair<K, V> pair;

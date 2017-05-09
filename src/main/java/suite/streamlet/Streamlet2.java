@@ -53,6 +53,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return spawn().iterator();
 	}
 
+	public Streamlet2<K, V> append(K key, V value) {
+		return streamlet2(() -> spawn().append(key, value));
+	}
+
 	public Streamlet2<K, V> closeAtEnd(Closeable c) {
 		return streamlet2(() -> {
 			Outlet2<K, V> in = spawn();

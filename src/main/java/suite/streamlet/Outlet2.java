@@ -116,6 +116,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return FunUtil2.iterator(source2);
 	}
 
+	public Outlet2<K, V> append(K key, V value) {
+		return of(FunUtil2.append(key, value, source2));
+	}
+
 	public Outlet<Outlet2<K, V>> chunk(int n) {
 		return Outlet.of(FunUtil.map(Outlet2<K, V>::new, FunUtil2.chunk(n, source2)));
 	}

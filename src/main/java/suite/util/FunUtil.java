@@ -27,6 +27,25 @@ public class FunUtil {
 	public interface Fun<I, O> extends Function<I, O> {
 	}
 
+	public static <T> Source<T> append(T t, Source<T> source) {
+		return new Source<T>() {
+			private boolean isAppended = false;
+
+			public T source() {
+				if (!isAppended) {
+					T t_ = source.source();
+					if (t_ != null)
+						return t_;
+					else {
+						isAppended = true;
+						return t;
+					}
+				} else
+					return null;
+			}
+		};
+	}
+
 	public static <T> Source<Source<T>> chunk(int n, Source<T> source) {
 		return new Source<Source<T>>() {
 			private T t = source.source();

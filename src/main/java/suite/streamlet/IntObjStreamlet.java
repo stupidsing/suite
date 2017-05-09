@@ -56,6 +56,10 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return spawn().iterator();
 	}
 
+	public IntObjStreamlet<V> append(int key, V value) {
+		return intObjStreamlet(() -> spawn().append(key, value));
+	}
+
 	public IntObjStreamlet<V> closeAtEnd(Closeable c) {
 		return intObjStreamlet(() -> {
 			IntObjOutlet<V> in = spawn();
@@ -91,7 +95,7 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return intObjStreamlet(() -> IntObjOutlet.of(spawn().concatMapValue(f)));
 	}
 
-	public IntObjStreamlet<V> cons(Integer key, V value) {
+	public IntObjStreamlet<V> cons(int key, V value) {
 		return intObjStreamlet(() -> spawn().cons(key, value));
 	}
 

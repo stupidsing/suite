@@ -110,6 +110,10 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return IntObjFunUtil.iterator(source2);
 	}
 
+	public IntObjOutlet<V> append(Integer key, V value) {
+		return of(IntObjFunUtil.append(key, value, source2));
+	}
+
 	public Outlet<IntObjOutlet<V>> chunk(int n) {
 		return Outlet.of(FunUtil.map(IntObjOutlet<V>::new, IntObjFunUtil.chunk(n, source2)));
 	}

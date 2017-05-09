@@ -18,6 +18,25 @@ import suite.util.FunUtil2.Source2;
 
 public class IntObjFunUtil {
 
+	public static <V> IntObjSource<V> append(int key, V value, IntObjSource<V> source) {
+		return new IntObjSource<V>() {
+			private boolean isAppended = false;
+
+			public boolean source2(IntObjPair<V> pair) {
+				if (!isAppended) {
+					boolean b = source.source2(pair);
+					if (!b) {
+						pair.t0 = key;
+						pair.t1 = value;
+						isAppended = true;
+					}
+					return b;
+				} else
+					return false;
+			}
+		};
+	}
+
 	public static <V> Source<IntObjSource<V>> chunk(int n, IntObjSource<V> source) {
 		return new Source<IntObjSource<V>>() {
 			private IntObjPair<V> pair;

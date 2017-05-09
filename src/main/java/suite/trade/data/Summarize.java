@@ -23,50 +23,53 @@ public class Summarize {
 	}
 
 	public <K> Map<K, Double> summarize(Fun<Trade, K> fun, Consumer<String> log) {
-		List<Trade> trades0 = TradeUtil.fromHistory(trade -> true);
-		Map<String, Float> priceBySymbol = cfg.quote(Read.from(trades0).map(trade -> trade.symbol).toSet());
-		List<Trade> trades1 = To.list(trades0, sellAll(trades0, priceBySymbol));
+		List<Trade> trades = TradeUtil.fromHistory(trade -> true);
+		Map<String, Float> priceBySymbol = cfg.quote(Read.from(trades).map(trade -> trade.symbol).toSet());
 
-		Map<K, List<String>> messagesByKey = Read.from(trades0) //
+		Map<K, List<String>> messagesByKey = Read.from(trades) //
 				.groupBy(fun) //
-				.mapValue(table -> Read.from2(TradeUtil.portfolio(table)) //
-						.map((symbol, nShares) -> {
-							Asset asset = cfg.getCompany(symbol);
-							float price = priceBySymbol.get(symbol);
-							return "\n" + asset + ": " + price + " * " + nShares + " = " + nShares * price;
-						}) //
-						.toList()) //
+				.mapValue(trades_ -> {
+					List<Trade> trades0 = trades_;
+					List<Trade> trades1 = sellAll(trades0, priceBySymbol);
+					Account account0 = Account.fromHistory(trades0);
+					Account account1 = Account.fromHistory(trades1);
+					double amount0 = account0.cash();
+					double amount1 = account1.cash();
+					double transactionAmount = account0.transactionAmount();
+
+					return Read.from2(TradeUtil.portfolio(trades0)) //
+							.map((symbol, nShares) -> {
+								Asset asset = cfg.getCompany(symbol);
+								float price = priceBySymbol.get(symbol);
+								return asset + ": " + price + " * " + nShares + " = " + nShares * price;
+							}) //
+							.append("OWN = " + -amount0) //
+							.append("P/L = " + amount1) //
+							.append("nTransactions = " + account0.nTransactions()) //
+							.append("transactionAmount = " + transactionAmount) //
+							.append("transactionFee = " + To.string(cfg.transactionFee(transactionAmount))) //
+							.toList();
+				}) //
 				.toMap();
-
-		Account account0 = Account.fromHistory(trades0);
-		Account account1 = Account.fromHistory(trades1);
-
-		double amount0 = account0.cash();
-		double amount1 = account1.cash();
-		double transactionAmount = account0.transactionAmount();
 
 		for (Entry<K, List<String>> e : messagesByKey.entrySet()) {
 			K key = e.getKey();
 			List<String> messages = e.getValue();
-			log.accept("For strategy " + key + ":" + Read.from(messages).collect(As.joined()));
+			log.accept("For strategy " + key + ":" + Read.from(messages).collect(As.conc("\n")));
 		}
-		log.accept("OWN = " + -amount0);
-		log.accept("P/L = " + amount1);
-		log.accept("nTransactions = " + account0.nTransactions());
-		log.accept("transactionAmount = " + transactionAmount);
-		log.accept("transactionFee = " + To.string(cfg.transactionFee(transactionAmount)));
 
-		return Read.from(trades1).groupBy(fun, this::returns).toMap();
+		return Read.from(sellAll(trades, priceBySymbol)).groupBy(fun, this::returns).toMap();
 	}
 
-	private List<Trade> sellAll(List<Trade> table0, Map<String, Float> priceBySymbol) {
-		List<Trade> sellAll = Read.from(table0) //
+	private List<Trade> sellAll(List<Trade> trades, Map<String, Float> priceBySymbol) {
+		List<Trade> sellAll = Read.from(trades) //
 				.groupBy(trade -> trade.strategy, TradeUtil::portfolio) //
 				.concatMap((strategy, nSharesBySymbol) -> Read //
 						.from2(nSharesBySymbol) //
 						.map((symbol, size) -> new Trade(-size, symbol, priceBySymbol.get(symbol), strategy))) //
 				.toList();
-		return sellAll;
+
+		return To.list(trades, sellAll);
 	}
 
 	// Profit & loss
