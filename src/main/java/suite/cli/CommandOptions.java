@@ -15,6 +15,7 @@ import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
 import suite.util.FunUtil.Source;
+import suite.util.To;
 import suite.util.Util;
 
 /**
@@ -64,7 +65,7 @@ public class CommandOptions {
 		else if (Util.stringEquals(arg, "--trace"))
 			isTrace = on;
 		else if (Util.stringEquals(arg, "--use") && (arg1 = source.source()) != null)
-			libraries = Util.add(libraries, Arrays.asList(arg1.split(",")));
+			libraries = To.list(libraries, Arrays.asList(arg1.split(",")));
 		else
 			throw new RuntimeException("Unknown option " + arg);
 

@@ -136,7 +136,7 @@ public class TextUtil {
 
 	private List<Pair<Bytes, Bytes>> cons(Pair<Bytes, Bytes> ph, List<Pair<Bytes, Bytes>> pt) {
 		if (!ph.t0.isEmpty() || !ph.t1.isEmpty())
-			return Util.add(Arrays.asList(ph), pt);
+			return To.list(Arrays.asList(ph), pt);
 		else
 			return pt;
 	}

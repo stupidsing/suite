@@ -19,7 +19,6 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.util.FunUtil.Source;
 import suite.util.To;
-import suite.util.Util;
 
 /**
  * Selective linear definite clause resolution.
@@ -53,7 +52,7 @@ public class SldResolution {
 			for (int i = 0; i < ors.size(); i++) {
 				int index = i;
 
-				orsMap.put(ors.get(index), () -> Util.add(ors.subList(0, index), ors.subList(index + 1, ors.size())));
+				orsMap.put(ors.get(index), () -> To.list(ors.subList(0, index), ors.subList(index + 1, ors.size())));
 			}
 		}
 
@@ -64,7 +63,7 @@ public class SldResolution {
 			Source<List<Node>> value1 = orsMap.get(negate(entry.getKey()));
 
 			if (value1 != null)
-				results.add(Tree.of(TermOp.AND___, Util.add(value0.source(), value1.source())));
+				results.add(Tree.of(TermOp.AND___, To.list(value0.source(), value1.source())));
 		}
 
 		return results;

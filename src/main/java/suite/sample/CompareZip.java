@@ -2,7 +2,6 @@ package suite.sample;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -33,9 +32,7 @@ public class CompareZip extends ExecutableProgram {
 		ZipFile zf0 = new ZipFile(filename0);
 		ZipFile zf1 = new ZipFile(filename1);
 
-		Set<String> names = new TreeSet<>();
-		names.addAll(FileUtil.listZip(zf0));
-		names.addAll(FileUtil.listZip(zf1));
+		Set<String> names = To.set(FileUtil.listZip(zf0), FileUtil.listZip(zf1));
 
 		boolean isChanged = false;
 

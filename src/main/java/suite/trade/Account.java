@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import suite.adt.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Util;
@@ -49,24 +48,18 @@ public class Account {
 
 	public String switchPortfolio(Map<String, Integer> assets1, Map<String, Float> prices) {
 		Map<String, Integer> assets0 = assets;
-		List<Pair<String, Integer>> buySells = TradeUtil.diff(assets0, assets1);
+		List<Trade> trades = TradeUtil.diff(assets0, assets1, prices);
 
-		for (Pair<String, Integer> buySell : buySells) {
-			String stockCode = buySell.t0;
-			buySell(stockCode, buySell.t1, prices.get(stockCode));
-		}
+		for (Trade trade : trades)
+			play(trade);
 
-		return Read.from2(buySells) //
-				.filterValue(n -> n != 0) //
-				.map((stockCode, n) -> "|" + stockCode + ":" + prices.get(stockCode) + "*" + n) //
+		return Read.from(trades) //
+				.filter(trade -> trade.buySell != 0) //
+				.map(Trade::toString) //
 				.collect(As.joined());
 	}
 
-	public void buySell(String stockCode, int buySell, float price) {
-		play(new Trade("-", buySell, stockCode, price, "-"));
-	}
-
-	private void play(Trade trade) {
+	public void play(Trade trade) {
 		int buySell = trade.buySell;
 		String stockCode = trade.stockCode;
 		float cost = buySell * trade.price;

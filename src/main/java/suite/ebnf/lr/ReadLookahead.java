@@ -31,10 +31,9 @@ public class ReadLookahead {
 
 	public Set<String> readLookahead(Grammar eg, Set<String> follows) {
 		LookaheadSet ls = readLookahead(eg);
-		Set<String> lookaheadSet = new HashSet<>();
+		Set<String> lookaheadSet = new HashSet<>(ls.lookaheads);
 		if (ls.isPassThru)
 			lookaheadSet.addAll(follows);
-		lookaheadSet.addAll(ls.lookaheads);
 		return lookaheadSet;
 	}
 

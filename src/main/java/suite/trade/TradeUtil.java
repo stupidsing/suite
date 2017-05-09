@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import suite.adt.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -44,7 +43,7 @@ public class TradeUtil {
 				.toMap();
 	}
 
-	public static List<Pair<String, Integer>> diff(Map<String, Integer> assets0, Map<String, Integer> assets1) {
+	public static List<Trade> diff(Map<String, Integer> assets0, Map<String, Integer> assets1, Map<String, Float> prices) {
 		Set<String> stockCodes = Streamlet2.concat(Read.from2(assets0), Read.from2(assets1)) //
 				.map((stockCode, nShares) -> stockCode) //
 				.toSet();
@@ -55,7 +54,8 @@ public class TradeUtil {
 					int n1 = assets1.computeIfAbsent(stockCode, s -> 0);
 					return n1 - n0;
 				}) //
-				.filter((stockCode, n) -> !Util.stringEquals(stockCode, Asset.cash.code)) //
+				.filter((stockCode, buySell) -> !Util.stringEquals(stockCode, Asset.cash.code)) //
+				.map((stockCode, buySell) -> new Trade(buySell, stockCode, prices.get(stockCode))) //
 				.toList();
 	}
 

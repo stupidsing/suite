@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import suite.adt.Pair;
 import suite.math.MathUtil;
@@ -188,13 +189,14 @@ public class DailyMain extends ExecutableProgram {
 		Account account0 = Account.fromHistory(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
 		Account account1 = backTest.simulateLatest(1000000f).account;
 
-		List<Pair<String, Integer>> diffs = TradeUtil.diff(account0.assets(), account1.assets());
-		Map<String, Float> priceByStockCode = yahoo.quote(Read.from(diffs).map(pair -> pair.t0).toSet());
+		Set<String> stockCodes = To.set(account0.assets().keySet(), account1.assets().keySet());
+		Map<String, Float> priceByStockCode = yahoo.quote(stockCodes);
+		List<Trade> trades = TradeUtil.diff(account0.assets(), account1.assets(), priceByStockCode);
 
-		for (Pair<String, Integer> pair : diffs) {
-			String stockCode = pair.t0;
+		for (Trade trade : trades) {
+			String stockCode = trade.stockCode;
 			Float price = priceByStockCode.get(stockCode);
-			sb.append("\n" + stockCode + " has signal " + price + " * " + pair.t1);
+			sb.append("\n" + stockCode + " has signal " + price + " * " + trade.buySell);
 		}
 
 		return Pair.of(tag, sb.toString());

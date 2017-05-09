@@ -3,6 +3,7 @@ package suite.immutable;
 import java.util.Arrays;
 import java.util.List;
 
+import suite.util.To;
 import suite.util.Util;
 
 public class IRope<T> {
@@ -77,13 +78,13 @@ public class IRope<T> {
 		List<IRope<T>> nodes;
 
 		if (rope1.depth < rope0.depth)
-			nodes = Util.add(Util.left(rope0.nodes, -1), meld0(Util.last(rope0.nodes), rope1));
+			nodes = To.list(Util.left(rope0.nodes, -1), meld0(Util.last(rope0.nodes), rope1));
 		else if (rope0.depth < rope1.depth)
-			nodes = Util.add(meld0(rope0, Util.first(rope1.nodes)), Util.right(rope1.nodes, 1));
+			nodes = To.list(meld0(rope0, Util.first(rope1.nodes)), Util.right(rope1.nodes, 1));
 		else if (0 < depth)
-			nodes = Util.add(rope0.nodes, rope1.nodes);
+			nodes = To.list(rope0.nodes, rope1.nodes);
 		else {
-			List<T> ts = Util.add(rope0.ts, rope1.ts);
+			List<T> ts = To.list(rope0.ts, rope1.ts);
 			if (maxBranchFactor <= ts.size()) {
 				List<T> left = Util.left(ts, minBranchFactor);
 				List<T> right = Util.right(ts, minBranchFactor);

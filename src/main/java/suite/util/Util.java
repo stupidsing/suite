@@ -64,22 +64,6 @@ public class Util {
 		return result;
 	}
 
-	@SafeVarargs
-	public static <T> List<T> add(List<T>... lists) {
-		List<T> resultList = new ArrayList<>();
-		for (List<T> list : lists)
-			resultList.addAll(list);
-		return resultList;
-	}
-
-	@SafeVarargs
-	public static <T> Set<T> add(Set<T>... sets) {
-		Set<T> resultSet = new HashSet<>();
-		for (Set<T> set : sets)
-			resultSet.addAll(set);
-		return resultSet;
-	}
-
 	public static void assert_(boolean b) {
 		if (!b)
 			throw new AssertionError();

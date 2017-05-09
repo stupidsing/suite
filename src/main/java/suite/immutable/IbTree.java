@@ -8,6 +8,7 @@ import java.util.List;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
+import suite.util.To;
 import suite.util.Util;
 
 public class IbTree<T> implements ITree<T> {
@@ -199,7 +200,7 @@ public class IbTree<T> implements ITree<T> {
 				replaceSlots.add(new Slot(null, t1));
 		}
 
-		List<Slot> slots1 = Util.add(Util.left(node0, s0), replaceSlots, Util.right(node0, s1));
+		List<Slot> slots1 = To.list(Util.left(node0, s0), replaceSlots, Util.right(node0, s1));
 		List<Slot> node1;
 
 		// checks if need to split
@@ -222,9 +223,9 @@ public class IbTree<T> implements ITree<T> {
 
 			if (minBranchFactor < node0.size()) {
 				leftSlots = Util.left(node0, -1);
-				rightSlots = Util.add(Arrays.asList(Util.last(node0)), node1);
+				rightSlots = To.list(Arrays.asList(Util.last(node0)), node1);
 			} else if (minBranchFactor < node1.size()) {
-				leftSlots = Util.add(node0, Arrays.asList(Util.first(node1)));
+				leftSlots = To.list(node0, Arrays.asList(Util.first(node1)));
 				rightSlots = Util.right(node1, 1);
 			} else {
 				leftSlots = node0;
@@ -233,7 +234,7 @@ public class IbTree<T> implements ITree<T> {
 
 			melded = Arrays.asList(slot(leftSlots), slot(rightSlots));
 		} else
-			melded = Arrays.asList(slot(Util.add(node0, node1)));
+			melded = Arrays.asList(slot(To.list(node0, node1)));
 
 		return melded;
 	}

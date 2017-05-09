@@ -15,12 +15,15 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.IntFunction;
 
 import suite.Constants;
@@ -144,6 +147,14 @@ public class To {
 		};
 	}
 
+	@SafeVarargs
+	public static <T> List<T> list(Collection<T>... collections) {
+		List<T> list = new ArrayList<>();
+		for (Collection<T> collection : collections)
+			list.addAll(collection);
+		return list;
+	}
+
 	public static <T> List<T> list(Iterable<T> iter) {
 		return list(iter.iterator());
 	}
@@ -194,6 +205,14 @@ public class To {
 			int nBytesRead = Rethrow.ex(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
 		}).closeAtEnd(bis).closeAtEnd(is);
+	}
+
+	@SafeVarargs
+	public static <T> Set<T> set(Collection<T>... collections) {
+		Set<T> set = new HashSet<>();
+		for (Collection<T> collection : collections)
+			set.addAll(collection);
+		return set;
 	}
 
 	public static Sink<String> sink(StringBuilder sb) {

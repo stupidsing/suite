@@ -10,6 +10,7 @@ import suite.fs.impl.FileSystemKeyUtil.NameKey;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.To;
 import suite.util.Util;
 
 /**
@@ -43,7 +44,7 @@ public class FileSystemKeySet {
 
 		return st.concatMap(bytes -> {
 			NameKey key = keyUtil.toNameKey(bytes);
-			List<NameKey> prefix1 = Util.add(prefix, Arrays.asList(key));
+			List<NameKey> prefix1 = To.list(prefix, Arrays.asList(key));
 
 			if (key.size == 0) {
 				List<NameKey> tailKeys0 = key == minKey ? !keys0.isEmpty() ? Util.right(keys0, 1) : emptyKeys : null;

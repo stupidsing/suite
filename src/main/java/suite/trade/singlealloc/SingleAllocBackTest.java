@@ -2,6 +2,7 @@ package suite.trade.singlealloc;
 
 import suite.algo.Statistic;
 import suite.trade.Account;
+import suite.trade.Trade;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.util.FunUtil.Sink;
@@ -54,7 +55,7 @@ public class SingleAllocBackTest {
 
 	private float buySell(DataSource ds, int day, int buySell) {
 		float price = ds.prices[day];
-		account.buySell(stockCode, buySell, price);
+		account.play(new Trade(buySell, stockCode, price));
 		float valuation = account.valuation(To.map(stockCode, price));
 
 		if (day == 0 || buySell != 0)

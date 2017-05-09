@@ -14,6 +14,7 @@ import suite.debian.AptUtil.Repo;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
+import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
@@ -136,7 +137,7 @@ public class DependencyMain extends ExecutableProgram {
 			, "ibritish" //
 	);
 
-	private Set<String> requiredList = new HashSet<>(Util.add( //
+	private Set<String> requiredList = To.set( //
 			baseList //
 			, debianList //
 			, devList //
@@ -145,7 +146,7 @@ public class DependencyMain extends ExecutableProgram {
 			, mediaList //
 			, operatingSystemList //
 			, supplementaryList //
-	));
+	);
 
 	public static void main(String[] args) {
 		Util.run(DependencyMain.class, args);

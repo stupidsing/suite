@@ -26,6 +26,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Source2;
 import suite.util.Rethrow;
+import suite.util.To;
 import suite.util.Util;
 
 /**
@@ -376,7 +377,7 @@ public class Inspect {
 				}) //
 				.toList();
 
-		List<Field> fields = Util.add(parentFields, childFields);
+		List<Field> fields = To.list(parentFields, childFields);
 		fields.forEach(field -> field.setAccessible(true));
 		return fields;
 	}
@@ -417,7 +418,7 @@ public class Inspect {
 				}) //
 				.toList();
 
-		List<Method> methods = Util.add(parentMethods, childMethods);
+		List<Method> methods = To.list(parentMethods, childMethods);
 		methods.forEach(method -> method.setAccessible(true));
 		return methods;
 	}

@@ -9,6 +9,8 @@ import org.junit.Test;
 import suite.trade.Account;
 import suite.trade.DatePeriod;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
+import suite.trade.data.Broker;
+import suite.trade.data.Broker.Hsbc;
 import suite.trade.data.Yahoo;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
@@ -18,6 +20,7 @@ public class AssetAllocBackTestTest {
 	private Sink<String> log = System.out::println;
 	private MovingAvgMeanReversionAssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(log);
 	private AssetAllocBackTest backTest = new AssetAllocBackTest(assetAllocator);
+	private Broker broker = new Hsbc();
 	private Yahoo yahoo = new Yahoo();
 
 	@Test
@@ -34,8 +37,10 @@ public class AssetAllocBackTestTest {
 		Simulate sim = backTest.simulateFromTo(initial, DatePeriod.of(frDate, toDate));
 
 		Account account = sim.account;
+		float transactionAmount = account.transactionAmount();
 		System.out.println("nTransactions = " + account.nTransactions());
-		System.out.println("nTransactionAmount = " + To.string(account.nTransactionAmount()));
+		System.out.println("nTransactionAmount = " + To.string(transactionAmount));
+		System.out.println("transactionFee = " + To.string(broker.transactionFee(transactionAmount)));
 
 		float[] valuations = sim.valuations;
 		assertTrue(initial * 1.05f < valuations[valuations.length - 1]);
