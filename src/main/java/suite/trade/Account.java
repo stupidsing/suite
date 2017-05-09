@@ -13,7 +13,6 @@ import suite.util.Util;
 public class Account {
 
 	public static final String cashCode = Asset.cash.code;
-	public static final String defaultStockCode = "-";
 
 	private Map<String, Integer> assets = new HashMap<>();
 	private int nTransactions = 0;
@@ -63,15 +62,11 @@ public class Account {
 				.collect(As.joined());
 	}
 
-	public void buySell(int buySell, float price) {
-		buySell(defaultStockCode, buySell, price);
-	}
-
 	public void buySell(String stockCode, int buySell, float price) {
 		play(new Trade("-", buySell, stockCode, price, "-"));
 	}
 
-	public void play(Trade trade) {
+	private void play(Trade trade) {
 		int buySell = trade.buySell;
 		String stockCode = trade.stockCode;
 		float cost = buySell * trade.price;
@@ -104,10 +99,6 @@ public class Account {
 
 	public int cash() {
 		return get(cashCode);
-	}
-
-	public int nShares() {
-		return nShares(defaultStockCode);
 	}
 
 	public int nShares(String stockCode) {

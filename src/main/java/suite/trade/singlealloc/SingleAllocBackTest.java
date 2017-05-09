@@ -9,6 +9,8 @@ import suite.util.To;
 
 public class SingleAllocBackTest {
 
+	private String stockCode = "-";
+
 	public final Account account = Account.fromCash(0f);
 	public final StringBuilder tradeLog = new StringBuilder();
 	public final StringBuilder concludeLog = new StringBuilder();
@@ -36,7 +38,7 @@ public class SingleAllocBackTest {
 		}
 
 		// sell all stocks at the end
-		buySell(ds, length - 1, -account.nShares());
+		buySell(ds, length - 1, -account.nShares(stockCode));
 
 		float return_ = account.cash();
 		double nApproxYears = ds.nYears();
@@ -52,15 +54,15 @@ public class SingleAllocBackTest {
 
 	private float buySell(DataSource ds, int day, int buySell) {
 		float price = ds.prices[day];
-		account.buySell(buySell, price);
-		float valuation = account.valuation(To.map(Account.defaultStockCode, price));
+		account.buySell(stockCode, buySell, price);
+		float valuation = account.valuation(To.map(stockCode, price));
 
 		if (day == 0 || buySell != 0)
 			tradeLogSink.sink("" //
 					+ "> date = " + ds.dates[day] //
 					+ ", buy/sell = " + buySell //
 					+ ", price = " + To.string(price) //
-					+ ", nShares = " + account.nShares() //
+					+ ", nShares = " + account.nShares(stockCode) //
 					+ ", valuation = " + To.string(valuation));
 
 		return valuation;
