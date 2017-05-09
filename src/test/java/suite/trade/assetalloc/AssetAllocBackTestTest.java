@@ -17,14 +17,8 @@ public class AssetAllocBackTestTest {
 
 	private Sink<String> log = System.out::println;
 	private Configuration configuration = new Configuration();
-	private MovingAvgMeanReversionAssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(configuration, log);
+	private AssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(configuration, log);
 	private AssetAllocBackTest backTest = new AssetAllocBackTest(assetAllocator);
-
-	@Test
-	public void testStats() {
-		DatePeriod period = DatePeriod.backTestDaysBefore(LocalDate.now(), 512, 32);
-		System.out.println(assetAllocator.new MeanReversionStats(configuration.dataSource("1113.HK"), period));
-	}
 
 	@Test
 	public void testBackTest() {
