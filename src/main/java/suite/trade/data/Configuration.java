@@ -1,13 +1,18 @@
 package suite.trade.data;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import suite.os.SerializedStoreCache;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.data.Broker.Hsbc;
+import suite.util.FormatUtil;
 import suite.util.To;
 import suite.util.Util;
 
@@ -28,7 +33,17 @@ public class Configuration {
 	}
 
 	public DataSource dataSourceWithLatestQuote(String symbol) {
-		return yahoo.dataSourceWithLatestQuote(symbol);
+
+		// count as tomorrow open if market is closed (after 4pm)
+		LocalDate tradeDate = LocalDateTime.now().plusHours(8).toLocalDate();
+		String date = FormatUtil.formatDate(tradeDate);
+
+		return SerializedStoreCache //
+				.of(DataSource.serializer) //
+				.get(getClass().getSimpleName() + ".dataSourceWithLatestQuote(" + symbol + ", " + date + ")", () -> {
+					float price = quote(Collections.singleton(symbol)).get(symbol);
+					return dataSource(symbol, DatePeriod.ages()).cons(date, price);
+				});
 	}
 
 	public Asset getCompany(String code) {

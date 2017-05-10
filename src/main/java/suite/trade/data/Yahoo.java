@@ -2,8 +2,6 @@ package suite.trade.data;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,30 +10,14 @@ import java.util.function.BiFunction;
 
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
-import suite.os.SerializedStoreCache;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.DatePeriod;
-import suite.util.FormatUtil;
 import suite.util.Rethrow;
 import suite.util.Util;
 
 public class Yahoo {
-
-	public DataSource dataSourceWithLatestQuote(String symbol) {
-
-		// count as tomorrow open if market is closed (after 4pm)
-		LocalDate tradeDate = LocalDateTime.now().plusHours(8).toLocalDate();
-		String date = FormatUtil.formatDate(tradeDate);
-
-		return SerializedStoreCache //
-				.of(DataSource.serializer) //
-				.get(getClass().getSimpleName() + ".dataSourceWithLatestQuote(" + symbol + ", " + date + ")", () -> {
-					float price = quote(Collections.singleton(symbol)).get(symbol);
-					return dataSource(symbol, DatePeriod.ages()).cons(date, price);
-				});
-	}
 
 	public DataSource dataSource(String symbol) {
 		return dataSource(symbol, DatePeriod.ages());

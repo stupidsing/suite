@@ -228,7 +228,7 @@ public class Hkex {
 
 	public static class CompanyInfo {
 		public String stockName;
-		public String symbol;
+		public String stockCode;
 		public List<Data> data;
 	}
 
@@ -251,7 +251,7 @@ public class Hkex {
 				+ "?location=companySearch" //
 				+ "&SearchMethod=2" //
 				+ "&LangCode=en" //
-				+ "&Symbol=" //
+				+ "&StockCode=" //
 				+ "&StockName=" //
 				+ "&Ranking=ByMC" //
 				+ "&StockType=MB" //
@@ -301,6 +301,7 @@ public class Hkex {
 						return queryBoardLot(symbol);
 					} catch (Exception ex) {
 						// e.g. 0013 de-listed; cannot query stock code
+						LogUtil.error(ex);
 						LogUtil.warn("cannot query lot size of " + symbol);
 						return null;
 					}
@@ -328,7 +329,7 @@ public class Hkex {
 				+ "?location=companySearch" //
 				+ "&SearchMethod=1" //
 				+ "&LangCode=en" //
-				+ "&Symbol=" + symbol //
+				+ "&StockCode=" + symbol //
 				+ "&StockName=" //
 				+ "&mkt=hk" //
 				+ "&x=" //
