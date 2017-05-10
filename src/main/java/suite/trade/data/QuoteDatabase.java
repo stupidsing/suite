@@ -7,6 +7,7 @@ import java.util.SortedSet;
 import suite.streamlet.Read;
 import suite.trade.data.TextDatabase.Datum;
 import suite.util.HomeDir;
+import suite.util.To;
 
 public class QuoteDatabase {
 
@@ -24,10 +25,14 @@ public class QuoteDatabase {
 		for (int i = 0; i < size; i++) {
 			Datum datum = iter.next();
 			dates[i] = fromKey(datum.key)[2];
-			prices[i] = datum.value;
+			prices[i] = Float.parseFloat(datum.value);
 		}
 
 		return new DataSource(dates, prices);
+	}
+
+	public void join() {
+		textDatabase.join();
 	}
 
 	public void merge(String field, Map<String, DataSource> dataSourceBySymbol) {
@@ -41,7 +46,7 @@ public class QuoteDatabase {
 	}
 
 	private Datum datum(String symbol, String field, String date, float price) {
-		return textDatabase.datum(toKey(symbol, field, date), price);
+		return textDatabase.datum(toKey(symbol, field, date), To.string(price));
 	}
 
 	public String toKey(String symbol, String field, String date) {

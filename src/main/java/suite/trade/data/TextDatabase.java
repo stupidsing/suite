@@ -24,11 +24,21 @@ public class TextDatabase {
 	private Path path = HomeDir.resolve("quote-database.csv");
 	private TreeSet<Datum> data = new TreeSet<>();
 	private long saveTime;
-	private Thread saveThread;
+	private volatile Thread saveThread;
 
 	public TextDatabase(Path path) {
 		this.path = path;
 		load();
+	}
+
+	public void join() {
+		Thread thread = saveThread;
+		if (thread != null)
+			try {
+				thread.join();
+			} catch (InterruptedException ex) {
+				throw new RuntimeException(ex);
+			}
 	}
 
 	public synchronized SortedSet<Datum> range(Datum start, Datum end) {
@@ -36,22 +46,25 @@ public class TextDatabase {
 	}
 
 	public synchronized void merge(Streamlet<Datum> data_) {
-		for (Datum datum : data)
+		for (Datum datum : data_)
 			merge(datum);
 
 		// save 30 seconds later
 		saveTime = System.currentTimeMillis() + 30 * 1000l;
 
-		if (saveThread == null)
-			(saveThread = new Thread(() -> {
+		if (saveThread == null) {
+			saveThread = new Thread(() -> {
 				long now;
 				while ((now = System.currentTimeMillis()) < saveTime)
-					Util.sleepQuietly(now - saveTime);
+					Util.sleepQuietly(saveTime - now);
 				synchronized (TextDatabase.this) {
 					save();
 					saveThread = null;
 				}
-			})).start();
+			});
+			saveThread.setDaemon(false);
+			saveThread.start();
+		}
 	}
 
 	private void load() {
@@ -85,22 +98,22 @@ public class TextDatabase {
 
 	private Datum toDatum(Bytes bytes) {
 		String[] array = To.string(bytes).split(",");
-		return datum(array[0], Float.parseFloat(array[1]));
+		return datum(array[0], array[1]);
 	}
 
 	private Bytes toBytes(Datum datum) {
 		return To.bytes(datum.key + "," + datum.value + "\n");
 	}
 
-	public Datum datum(String key, float value) {
+	public Datum datum(String key, String value) {
 		return new Datum(key, value);
 	}
 
 	public class Datum implements Comparable<Datum> {
 		public final String key;
-		public final float value;
+		public final String value;
 
-		private Datum(String key, float value) {
+		private Datum(String key, String value) {
 			this.key = key;
 			this.value = value;
 		}

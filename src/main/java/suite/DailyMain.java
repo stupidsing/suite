@@ -58,7 +58,12 @@ public class DailyMain extends ExecutableProgram {
 				.map2(cfg::dataSource) //
 				.toMap();
 
-		new QuoteDatabase().merge("o", dataSourceBySymbol);
+		QuoteDatabase quoteDatabase = new QuoteDatabase();
+		quoteDatabase.merge("o", dataSourceBySymbol);
+		quoteDatabase.join();
+
+		if (Boolean.TRUE)
+			return true;
 
 		// perform systematic trading
 		List<Pair<String, String>> outputs = Arrays.asList(bug(), mamr(), pmamr());
