@@ -14,6 +14,7 @@ import suite.util.To;
 
 public class KellyAssetAllocator implements AssetAllocator {
 
+	private Cholesky cholesky = new Cholesky();
 	private Statistic stat = new Statistic();
 	private TimeSeries timeSeries = new TimeSeries();
 
@@ -21,6 +22,7 @@ public class KellyAssetAllocator implements AssetAllocator {
 			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
+
 		// TODO this should be the expected returns, not past returns!
 		Map<String, DataSource> predictedReturnsBySymbol = dataSourceBySymbol;
 
@@ -50,7 +52,7 @@ public class KellyAssetAllocator implements AssetAllocator {
 
 		float[] returns = To.arrayOfFloats(nSymbols, i -> excessReturnBySymbol.get(symbols[i]).floatValue());
 
-		float[] allocations = new Cholesky().inverseMul(cov).apply(returns);
+		float[] allocations = cholesky.inverseMul(cov).apply(returns);
 
 		return Read.range(nSymbols) //
 				.map2(i -> symbols[i], i -> (double) allocations[i]) //
