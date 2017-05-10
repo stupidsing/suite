@@ -242,6 +242,27 @@ public class Hkex {
 		return companies;
 	}
 
+	public Asset queryCompany(String symbol) {
+		URL url = Rethrow.ex(() -> new URL("" //
+				+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
+				+ "?location=companySearch" //
+				+ "&SearchMethod=1" //
+				+ "&LangCode=en" //
+				+ "&StockCode=" + toStockCode(symbol) //
+				+ "&StockName=" //
+				+ "&mkt=hk" //
+				+ "&x=" //
+				+ "&y="));
+
+		try (InputStream is = HttpUtil.get(url).out.collect(To::inputStream)) {
+			JsonNode json = mapper.readTree(is);
+			CompanyInfo companyInfo = mapper.convertValue(json, CompanyInfo.class);
+			return new Asset(toSymbol(companyInfo.stockCode), companyInfo.stockName.split("\\[")[0].trim());
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public Streamlet<Asset> queryCompanies() {
 		return Read.each(queryCompanies(0), queryCompanies(1), queryCompanies(2)) //
 				.flatMap(list -> list);
@@ -269,24 +290,23 @@ public class Hkex {
 				+ "&TYYYY=");
 
 		CompanySearch companySearch = mapper.convertValue(json, CompanySearch.class);
+		Streamlet<List<String>> data;
 
 		if (Boolean.TRUE)
-			return Read.each(companySearch) //
+			data = Read.each(companySearch) //
 					.flatMap(cs -> cs.data) //
-					.concatMap(Data::tableEntries) //
-					.map(this::toAsset) //
-					.toList();
+					.concatMap(Data::tableEntries);
 		else
-			return Read.each(json) //
+			data = Read.each(json) //
 					.flatMap(json_ -> json_.get("data")) //
 					.flatMap(json_ -> json_.get("content")) //
 					.flatMap(json_ -> json_.get("table")) //
 					.flatMap(json_ -> json_.get("tr")) //
 					.filter(json_ -> !json_.get("thead").asBoolean()) //
 					.flatMap(json_ -> json_.get("td")) //
-					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList()) //
-					.map(this::toAsset) //
-					.toList();
+					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList());
+
+		return data.map(this::toAsset).toList();
 	}
 
 	public Map<String, Integer> queryLotSizeBySymbol(Streamlet<Asset> companies) {
@@ -297,7 +317,6 @@ public class Hkex {
 						return queryBoardLot(symbol);
 					} catch (Exception ex) {
 						// e.g. 0013 de-listed; cannot query stock code
-						LogUtil.error(ex);
 						LogUtil.warn("cannot query lot size of " + symbol);
 						return null;
 					}

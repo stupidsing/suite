@@ -37,6 +37,11 @@ public class HkexTest {
 	}
 
 	@Test
+	public void testQueryCompany() {
+		assertEquals("HSBC Holdings plc", hkex.queryCompany("0005.HK").name);
+	}
+
+	@Test
 	public void testQueryPreviousClose() {
 		assertTrue(60f < hkex.queryPreviousClose("0005.HK"));
 	}
