@@ -357,6 +357,22 @@ public class Hkex {
 		return Integer.parseInt(boardLotStr);
 	}
 
+	public float queryHangSengIndex() {
+		String url = "https://www.hkex.com.hk/eng/csm/ws/IndexMove.asmx/GetData?LangCode=en";
+
+		try (InputStream is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
+			return Read.each(mapper.readTree(is)) //
+					.flatMap(json_ -> json_.get("data")) //
+					.filter(json_ -> Util.stringEquals(json_.get("title").textValue(), "Hong Kong")) //
+					.flatMap(json_ -> json_.get("content")) //
+					.filter(json_ -> Util.stringEquals(json_.get(0).textValue(), "Hang Seng Index")) //
+					.map(json_ -> Float.parseFloat(json_.get(1).textValue().split(" ")[0].replace(",", ""))) //
+					.uniqueResult();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public float queryPreviousClose(String symbol) {
 		String url = "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
 				+ "?LangCode=en" //
