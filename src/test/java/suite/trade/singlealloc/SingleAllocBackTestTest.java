@@ -51,7 +51,7 @@ public class SingleAllocBackTestTest {
 
 	@Test
 	public void testBackTestHkexDetails() {
-		backTest(cfg.getCompany("0005.HK"));
+		backTest(cfg.queryCompany("0005.HK"));
 	}
 
 	private void backTest(Asset asset) {

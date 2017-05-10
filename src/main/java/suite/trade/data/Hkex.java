@@ -2,7 +2,6 @@ package suite.trade.data;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -234,33 +233,30 @@ public class Hkex {
 		public List<Data> data;
 	}
 
-	public Asset getCompany(String code) {
-		return companyBySymbol.get(code);
-	}
-
 	public Streamlet<Asset> getCompanies() {
 		return companies;
 	}
 
 	public Asset queryCompany(String symbol) {
-		URL url = To.url("" //
-				+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
-				+ "?location=companySearch" //
-				+ "&SearchMethod=1" //
-				+ "&LangCode=en" //
-				+ "&StockCode=" + toStockCode(symbol) //
-				+ "&StockName=" //
-				+ "&mkt=hk" //
-				+ "&x=" //
-				+ "&y=");
+		Asset asset = companyBySymbol.get(symbol);
 
-		try (InputStream is = HttpUtil.get(url).out.collect(To::inputStream)) {
-			JsonNode json = mapper.readTree(is);
+		if (asset == null) {
+			JsonNode json = query("" //
+					+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
+					+ "?location=companySearch" //
+					+ "&SearchMethod=1" //
+					+ "&LangCode=en" //
+					+ "&StockCode=" + toStockCode(symbol) //
+					+ "&StockName=" //
+					+ "&mkt=hk" //
+					+ "&x=" //
+					+ "&y=");
+
 			CompanyInfo companyInfo = mapper.convertValue(json, CompanyInfo.class);
-			return new Asset(toSymbol(companyInfo.stockCode), companyInfo.stockName.split("\\[")[0].trim());
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			asset = new Asset(toSymbol(companyInfo.stockCode), companyInfo.stockName.split("\\[")[0].trim());
 		}
+
+		return asset;
 	}
 
 	public Streamlet<Asset> queryCompanies() {

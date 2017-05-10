@@ -86,7 +86,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
 					double annualReturn = Math.expm1(Math.log1p(dailyReturn) * nTradeDaysInYear);
 					double sharpe = ts.sharpeRatio(dataSource.prices, dataSource.nYears());
-					log.sink(cfg.getCompany(symbol) //
+					log.sink(cfg.queryCompany(symbol) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
 							+ ", " + To.string(price) + " => " + To.string(lma) //
 							+ ", annualReturn = " + To.string(annualReturn) //

@@ -57,7 +57,7 @@ public class Summarize {
 
 		return Read.from2(TradeUtil.portfolio(trades0)) //
 				.map((symbol, nShares) -> {
-					Asset asset = cfg.getCompany(symbol);
+					Asset asset = cfg.queryCompany(symbol);
 					float price = priceBySymbol.get(symbol);
 					return asset + ": " + price + " * " + nShares + " = " + nShares * price;
 				}) //

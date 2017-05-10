@@ -46,12 +46,12 @@ public class Configuration {
 				});
 	}
 
-	public Asset getCompany(String symbol) {
-		return hkex.getCompany(symbol);
-	}
-
 	public Streamlet<Asset> getCompanies() {
 		return hkex.getCompanies();
+	}
+
+	public Asset queryCompany(String symbol) {
+		return hkex.queryCompany(symbol);
 	}
 
 	public Streamlet<Asset> queryCompanies() {
