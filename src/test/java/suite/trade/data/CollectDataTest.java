@@ -11,7 +11,6 @@ import suite.streamlet.Streamlet;
 import suite.trade.DatePeriod;
 import suite.trade.Forex;
 import suite.util.Copy;
-import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.Util;
 
@@ -20,17 +19,15 @@ public class CollectDataTest {
 	@Test
 	public void test() throws IOException {
 		Streamlet<String> equities = Streamlet.concat( //
-				new Hkex().queryCompanies().map(company -> company.code), //
+				new Hkex().queryCompanies().map(company -> company.symbol), //
 				new Forex().invertedCurrencies.map((ccy, name) -> ccy));
 
 		for (String code : equities) {
 			String urlString = new Yahoo().tableUrl(code, DatePeriod.ages());
-
-			System.out.println(urlString);
-			URL url = Rethrow.ex(() -> new URL(urlString));
+			URL url = To.url(urlString);
 
 			try (FileOutputStream fos = new FileOutputStream("/data/storey/markets/" + code + ".csv")) {
-				Copy.stream(To.inputStream(HttpUtil.http("GET", url).out), fos);
+				Copy.stream(To.inputStream(HttpUtil.get(url).out), fos);
 			}
 
 			Util.sleepQuietly(2000);

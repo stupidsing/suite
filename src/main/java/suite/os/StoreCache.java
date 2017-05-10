@@ -26,8 +26,8 @@ public class StoreCache {
 	private Path dir = HomeDir.resolve("store-cache");
 
 	public Outlet<Bytes> http(String urlString) {
-		URL url = Rethrow.ex(() -> new URL(urlString));
-		return getOutlet(urlString, () -> HttpUtil.http("GET", url).out);
+		URL url = To.url(urlString);
+		return getOutlet(urlString, () -> HttpUtil.get(url).out);
 	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {

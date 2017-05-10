@@ -9,6 +9,7 @@ import java.nio.file.Path;
 
 import suite.os.LogUtil;
 import suite.util.Rethrow;
+import suite.util.To;
 
 public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 
@@ -16,7 +17,7 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 
 	public JdkLoadClassUtil(Path srcDir, Path binDir) throws MalformedURLException {
 		super(srcDir, binDir);
-		classLoader = new URLClassLoader(new URL[] { new URL("file://" + binDir.toUri().toURL() + "/"), });
+		classLoader = new URLClassLoader(new URL[] { To.url("file://" + binDir.toUri().toURL() + "/"), });
 
 	}
 

@@ -128,7 +128,7 @@ public class HttpUtil {
 				|| responseCode == HttpURLConnection.HTTP_MOVED_TEMP //
 				|| responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
 			String cookies1 = conn.getHeaderField("Set-Cookie");
-			URL url1 = Rethrow.ex(() -> new URL(conn.getHeaderField("Location")));
+			URL url1 = To.url(conn.getHeaderField("Location"));
 
 			Map<String, String> headers1 = new HashMap<>(headers);
 			if (cookies1 != null)

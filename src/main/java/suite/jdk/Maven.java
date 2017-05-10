@@ -14,9 +14,9 @@ public class Maven {
 	}
 
 	public String getLatestUrl(String m2repo, String groupId, String artifactId) {
-		String version = Rethrow.ex(() -> {
-			URL url = new URL(m2repo + groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml");
+		URL url = To.url(m2repo + groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml");
 
+		String version = Rethrow.ex(() -> {
 			return new XmlUtil() //
 					.read(To.inputStream(HttpUtil.get(url).out)) //
 					.children("metadata") //

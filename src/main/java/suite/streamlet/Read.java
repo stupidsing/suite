@@ -132,8 +132,8 @@ public class Read {
 	}
 
 	public static Streamlet<Bytes> url(String urlString) {
-		URL url = Rethrow.ex(() -> new URL(urlString));
-		return new Streamlet<>(() -> HttpUtil.http("GET", url).out);
+		URL url = To.url(urlString);
+		return new Streamlet<>(() -> HttpUtil.get(url).out);
 	}
 
 	public static <K, V, C extends Collection<V>> Streamlet2<K, V> multimap(Map<K, C> map) {

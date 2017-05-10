@@ -23,7 +23,7 @@ public class SingleAllocBackTestTest {
 		for (Asset stock : cfg.queryCompanies()) {
 			String disp = stock.toString();
 			try {
-				backTest(stock.code, disp);
+				backTest(stock.symbol, disp);
 			} catch (Exception ex) {
 				LogUtil.warn(ex.getMessage() + " in " + disp);
 			}
@@ -55,7 +55,7 @@ public class SingleAllocBackTestTest {
 	}
 
 	private void backTest(Asset asset) {
-		backTest(asset.code, asset.toString()) //
+		backTest(asset.symbol, asset.toString()) //
 				.forEach((sn, backTest) -> {
 					String conclusion = backTest.concludeLog.toString();
 					LogUtil.info("BEGIN strategy = " + sn + conclusion);

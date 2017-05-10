@@ -16,7 +16,7 @@ public class HkexFactBookTest {
 	public void test() {
 		Streamlet<Asset> companies = hkexFactBook.queryLeadingCompaniesByMarketCap(2012);
 		System.out.println(companies.toList());
-		assertTrue(companies.isAny(asset -> Util.stringEquals(asset.code, "0005.HK")));
+		assertTrue(companies.isAny(asset -> Util.stringEquals(asset.symbol, "0005.HK")));
 	}
 
 }

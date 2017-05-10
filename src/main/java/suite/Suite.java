@@ -35,6 +35,7 @@ import suite.primitive.IoSink;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.To;
 
 public class Suite {
 
@@ -243,7 +244,7 @@ public class Suite {
 	}
 
 	public static boolean importUrl(RuleSet ruleSet, String url) throws IOException {
-		return importUtil.importUrl(ruleSet, new URL(url));
+		return importUtil.importUrl(ruleSet, To.url(url));
 	}
 
 	public static boolean importResource(RuleSet rs, String classpath) throws IOException {

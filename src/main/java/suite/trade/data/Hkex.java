@@ -243,7 +243,7 @@ public class Hkex {
 	}
 
 	public Asset queryCompany(String symbol) {
-		URL url = Rethrow.ex(() -> new URL("" //
+		URL url = To.url("" //
 				+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
 				+ "?location=companySearch" //
 				+ "&SearchMethod=1" //
@@ -252,7 +252,7 @@ public class Hkex {
 				+ "&StockName=" //
 				+ "&mkt=hk" //
 				+ "&x=" //
-				+ "&y="));
+				+ "&y=");
 
 		try (InputStream is = HttpUtil.get(url).out.collect(To::inputStream)) {
 			JsonNode json = mapper.readTree(is);
@@ -381,7 +381,7 @@ public class Hkex {
 				+ "&TMM=" //
 				+ "&TYYYY=";
 
-		try (InputStream is = HttpUtil.get(new URL(url)).out.collect(To::inputStream)) {
+		try (InputStream is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
 			return Read.each(mapper.readTree(is)) //
 					.flatMap(json_ -> json_.get("data")) //
 					.filter(json_ -> Util.stringEquals(json_.get("title").textValue(), "Stock price HKD")) //

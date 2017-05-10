@@ -14,7 +14,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.DatePeriod;
-import suite.util.Rethrow;
+import suite.util.To;
 import suite.util.Util;
 
 public class Yahoo {
@@ -75,8 +75,8 @@ public class Yahoo {
 	private Map<String, Float> quote0(Streamlet<String> symbols, String field) {
 		if (0 < symbols.size()) {
 			String urlString = quoteUrl(symbols, field);
-			URL url = Rethrow.ex(() -> new URL(urlString));
-			return HttpUtil.http("GET", url).out.collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
+			URL url = To.url(urlString);
+			return HttpUtil.get(url).out.collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
 		} else
 			return new HashMap<>();
 	}

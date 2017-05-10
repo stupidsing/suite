@@ -25,7 +25,7 @@ public class PeriodTest {
 		DiscreteCosineTransform dct = new DiscreteCosineTransform();
 
 		for (Asset stock : cfg.queryCompanies().take(40)) {
-			String symbol = stock.code;
+			String symbol = stock.symbol;
 
 			try {
 				DataSource ds = cfg.dataSource(symbol);

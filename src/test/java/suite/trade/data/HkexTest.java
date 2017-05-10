@@ -21,10 +21,10 @@ public class HkexTest {
 		System.out.println(companies);
 
 		for (Asset company : companies)
-			System.out.println("+ \"\\n" + company.code + "|" + company.name + "|" + company.marketCap + "\" //");
+			System.out.println("+ \"\\n" + company.symbol + "|" + company.name + "|" + company.marketCap + "\" //");
 
 		String name = Read.from(companies) //
-				.filter(fixie -> Util.stringEquals(fixie.code, "0005.HK")) //
+				.filter(fixie -> Util.stringEquals(fixie.symbol, "0005.HK")) //
 				.uniqueResult().name;
 
 		assertTrue(name.equals("HSBC Holdings plc"));

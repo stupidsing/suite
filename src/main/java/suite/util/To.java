@@ -11,6 +11,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -324,6 +325,10 @@ public class To {
 		}
 
 		return sw.toString();
+	}
+
+	public static URL url(String s) {
+		return Rethrow.ex(() -> new URL(s));
 	}
 
 }

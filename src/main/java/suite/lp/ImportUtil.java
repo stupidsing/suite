@@ -49,7 +49,7 @@ public class ImportUtil {
 	}
 
 	public boolean importPath(RuleSet rs, String path) throws IOException {
-		return importUrl(rs, new URL(root + path));
+		return importUrl(rs, To.url(root + path));
 	}
 
 	public boolean importUrl(RuleSet rs, URL url) throws IOException {
