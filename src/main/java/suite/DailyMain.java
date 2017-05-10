@@ -94,7 +94,7 @@ public class DailyMain extends ExecutableProgram {
 		for (Entry<String, Integer> e : account.assets().entrySet()) {
 			String symbol = e.getKey();
 			int sell = e.getValue();
-			double targetPrice = -stat.riskFreeInterestRate * faceValueBySymbol.get(symbol) / sell;
+			double targetPrice = (1d + stat.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
 			sb.append("\nSIGNAL" + new Trade(-sell, symbol, (float) targetPrice));
 		}
 
@@ -188,7 +188,7 @@ public class DailyMain extends ExecutableProgram {
 		Sink<String> log = To.sink(sb);
 		AssetAllocBackTest backTest = new AssetAllocBackTest(new MovingAvgMeanReversionAssetAllocator(cfg, log), log);
 		Account account0 = Account.fromPortfolio(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
-		Account account1 = backTest.simulateLatest(500000f).account;
+		Account account1 = backTest.simulateLatest(300000f).account;
 
 		Set<String> symbols = To.set(account0.assets().keySet(), account1.assets().keySet());
 		Map<String, Float> priceBySymbol = cfg.quote(symbols);
