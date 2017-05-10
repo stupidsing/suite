@@ -26,6 +26,7 @@ import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
 import suite.util.NullableSynchronousQueue;
+import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.Util;
 
@@ -351,10 +352,11 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return of(Util.reverse(toList()));
 	}
 
-	public void sink(BiConsumer<K, V> sink) {
+	public void sink(BiConsumer<K, V> sink0) {
+		BiConsumer<K, V> sink1 = Rethrow.biConsumer(sink0);
 		Pair<K, V> pair = Pair.of(null, null);
 		while (next(pair))
-			sink.accept(pair.t0, pair.t1);
+			sink1.accept(pair.t0, pair.t1);
 	}
 
 	public int size() {

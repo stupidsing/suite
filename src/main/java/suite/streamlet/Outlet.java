@@ -25,6 +25,7 @@ import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
 import suite.util.NullableSynchronousQueue;
+import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.Util;
 
@@ -291,10 +292,11 @@ public class Outlet<T> implements Iterable<T> {
 		return of(Util.reverse(toList()));
 	}
 
-	public void sink(Sink<T> sink) {
+	public void sink(Sink<T> sink0) {
+		Sink<T> sink1 = Rethrow.sink(sink0);
 		T t;
 		while ((t = next()) != null)
-			sink.sink(t);
+			sink1.sink(t);
 	}
 
 	public Outlet<T> skip(int n) {

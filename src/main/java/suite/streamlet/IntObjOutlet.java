@@ -28,6 +28,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.IntObjFunUtil;
 import suite.util.NullableSynchronousQueue;
+import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.Util;
 
@@ -344,10 +345,11 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return of(Util.reverse(toList()));
 	}
 
-	public void sink(BiConsumer<Integer, V> sink) {
+	public void sink(BiConsumer<Integer, V> sink0) {
+		BiConsumer<Integer, V> sink1 = Rethrow.biConsumer(sink0);
 		IntObjPair<V> pair = IntObjPair.of(0, null);
 		while (next(pair))
-			sink.accept(pair.t0, pair.t1);
+			sink1.accept(pair.t0, pair.t1);
 	}
 
 	public int size() {

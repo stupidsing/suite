@@ -100,7 +100,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> Source2<K, V> filter(BiPredicate<K, V> fun0, Source2<K, V> source2) {
-		BiPredicate<K, V> fun1 = Rethrow.bipredicate(fun0);
+		BiPredicate<K, V> fun1 = Rethrow.biPredicate(fun0);
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -138,7 +138,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> boolean isAll(BiPredicate<K, V> pred0, Source2<K, V> source2) {
-		BiPredicate<K, V> pred1 = Rethrow.bipredicate(pred0);
+		BiPredicate<K, V> pred1 = Rethrow.biPredicate(pred0);
 		Pair<K, V> pair = Pair.of(null, null);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -147,7 +147,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> boolean isAny(BiPredicate<K, V> pred0, Source2<K, V> source2) {
-		BiPredicate<K, V> pred1 = Rethrow.bipredicate(pred0);
+		BiPredicate<K, V> pred1 = Rethrow.biPredicate(pred0);
 		Pair<K, V> pair = Pair.of(null, null);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -242,7 +242,7 @@ public class FunUtil2 {
 	 * not be skipped.
 	 */
 	public static <K, V> Source<Source2<K, V>> split(BiPredicate<K, V> fun0, Source2<K, V> source2) {
-		BiPredicate<K, V> fun1 = Rethrow.bipredicate(fun0);
+		BiPredicate<K, V> fun1 = Rethrow.biPredicate(fun0);
 		return new Source<Source2<K, V>>() {
 			private Pair<K, V> pair = Pair.of(null, null);
 			private boolean isAvailable;

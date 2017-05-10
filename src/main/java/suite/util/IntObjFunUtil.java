@@ -93,7 +93,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> IntObjSource<V> filter(IntObjPredicate<V> fun0, IntObjSource<V> source2) {
-		IntObjPredicate<V> fun1 = Rethrow.bipredicate(fun0);
+		IntObjPredicate<V> fun1 = Rethrow.intObjPredicate(fun0);
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -131,7 +131,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> boolean isAll(IntObjPredicate<V> pred0, IntObjSource<V> source2) {
-		IntObjPredicate<V> pred1 = Rethrow.bipredicate(pred0);
+		IntObjPredicate<V> pred1 = Rethrow.intObjPredicate(pred0);
 		IntObjPair<V> pair = IntObjPair.of(0, null);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -140,7 +140,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> boolean isAny(IntObjPredicate<V> pred0, IntObjSource<V> source2) {
-		IntObjPredicate<V> pred1 = Rethrow.bipredicate(pred0);
+		IntObjPredicate<V> pred1 = Rethrow.intObjPredicate(pred0);
 		IntObjPair<V> pair = IntObjPair.of(0, null);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -234,7 +234,7 @@ public class IntObjFunUtil {
 	 * not be skipped.
 	 */
 	public static <V> Source<IntObjSource<V>> split(IntObjPredicate<V> fun0, IntObjSource<V> source2) {
-		IntObjPredicate<V> fun1 = Rethrow.bipredicate(fun0);
+		IntObjPredicate<V> fun1 = Rethrow.intObjPredicate(fun0);
 		return new Source<IntObjSource<V>>() {
 			private IntObjPair<V> pair = IntObjPair.of(0, null);
 			private boolean isAvailable;

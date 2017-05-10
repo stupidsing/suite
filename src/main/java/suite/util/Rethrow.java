@@ -1,5 +1,6 @@
 package suite.util;
 
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.IntPredicate;
@@ -11,6 +12,7 @@ import suite.primitive.PrimitiveFun.ObjObj_Int;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitivePredicate.IntObjPredicate;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 
 public class Rethrow {
 
@@ -18,7 +20,17 @@ public class Rethrow {
 		public T source() throws Ex;
 	}
 
-	public static <K, V> BiPredicate<K, V> bipredicate(BiPredicate<K, V> fun0) {
+	public static <K, V> BiConsumer<K, V> biConsumer(BiConsumer<K, V> fun0) {
+		return (k, v) -> {
+			try {
+				fun0.accept(k, v);
+			} catch (Exception ex) {
+				throw new RuntimeException("For key " + k, ex);
+			}
+		};
+	}
+
+	public static <K, V> BiPredicate<K, V> biPredicate(BiPredicate<K, V> fun0) {
 		return (k, v) -> {
 			try {
 				return fun0.test(k, v);
@@ -99,6 +111,16 @@ public class Rethrow {
 		};
 	}
 
+	public static <V> IntObjPredicate<V> intObjPredicate(IntObjPredicate<V> fun0) {
+		return (k, v) -> {
+			try {
+				return fun0.test(k, v);
+			} catch (Exception ex) {
+				throw new RuntimeException("For key " + k, ex);
+			}
+		};
+	}
+
 	public static IntPredicate predicate(IntPredicate predicate) {
 		return t -> {
 			try {
@@ -109,20 +131,20 @@ public class Rethrow {
 		};
 	}
 
-	public static <V> IntObjPredicate<V> bipredicate(IntObjPredicate<V> fun0) {
-		return (k, v) -> {
-			try {
-				return fun0.test(k, v);
-			} catch (Exception ex) {
-				throw new RuntimeException("For key " + k, ex);
-			}
-		};
-	}
-
 	public static <T> Predicate<T> predicate(Predicate<T> predicate) {
 		return t -> {
 			try {
 				return predicate.test(t);
+			} catch (Exception ex) {
+				throw new RuntimeException("For " + t, ex);
+			}
+		};
+	}
+
+	public static <T> Sink<T> sink(Sink<T> sink) {
+		return t -> {
+			try {
+				sink.sink(t);
 			} catch (Exception ex) {
 				throw new RuntimeException("For " + t, ex);
 			}
