@@ -92,8 +92,8 @@ public class TextDatabase {
 		Datum datum0 = data.ceiling(datum);
 		if (datum0 == null || !Objects.equals(datum, datum0))
 			data.add(datum);
-		else if (datum.value != datum0.value)
-			throw new RuntimeException("value mismatch for key " + datum.key + ": " + datum0.value + " <> " + datum.value);
+		else if (!Objects.equals(datum0.value, datum.value))
+			throw new RuntimeException("value mismatch for key " + datum.key + ": " + datum0.value + " != " + datum.value);
 	}
 
 	private Datum toDatum(Bytes bytes) {
