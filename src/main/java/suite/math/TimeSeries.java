@@ -17,9 +17,9 @@ public class TimeSeries {
 		float[] returns = returns(fs);
 		double r0 = Math.expm1(Math.log1p(stat.riskFreeInterestRate) * nYears / returns.length);
 		double mean = stat.mean(returns) - r0;
-		double variance = stat.variance(returns);
-		double sharpe = mean / Math.sqrt(nYears * variance);
-		double kelly = mean / (Math.sqrt(nYears) * variance);
+		double nYearsVariance = nYears * stat.variance(returns);
+		double sharpe = mean / Math.sqrt(nYearsVariance);
+		double kelly = mean / nYearsVariance;
 		return new double[] { sharpe, kelly, };
 	}
 
