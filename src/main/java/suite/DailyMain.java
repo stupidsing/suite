@@ -65,7 +65,7 @@ public class DailyMain extends ExecutableProgram {
 		StringBuilder sb = new StringBuilder();
 
 		for (Pair<String, String> output : outputs) {
-			sb.append("\n--------------------------------------------------------------------------------");
+			sb.append("\n" + Constants.separator);
 			sb.append("\nOUTPUT (" + output.t0 + "):" + output.t1 + "\n");
 		}
 

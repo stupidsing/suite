@@ -10,6 +10,7 @@ public class Constants {
 	public static int bufferSize = 4096;
 	public static Charset charset = StandardCharsets.UTF_8;
 	public static int nThreads = Runtime.getRuntime().availableProcessors();
+	public static String separator = "________________________________________________________________________________\n";
 	public static Path tmp = Paths.get("/tmp");
 
 }
