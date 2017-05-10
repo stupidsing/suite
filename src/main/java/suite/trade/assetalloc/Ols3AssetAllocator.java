@@ -20,7 +20,7 @@ import suite.util.To;
  */
 public class Ols3AssetAllocator implements AssetAllocator {
 
-	private int tor = 64;
+	private int tor = 16;
 
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();

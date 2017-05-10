@@ -48,7 +48,7 @@ public class SingleAllocBackTest {
 
 		concludeLogSink.sink("" //
 				+ ", nYears = " + To.string(nApproxYears) //
-				+ ", number of transactions = " + account.nTransactions() //
+				+ ", transactions = " + account.transactionSummary(a -> 0d) //
 				+ ", return = " + To.string(return_) //
 				+ ", sharpe = " + To.string(sharpe));
 	}

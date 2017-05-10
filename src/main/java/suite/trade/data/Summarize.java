@@ -54,7 +54,6 @@ public class Summarize {
 		Account account1 = Account.fromHistory(trades1);
 		double amount0 = account0.cash();
 		double amount1 = account1.cash();
-		double transactionAmount = account0.transactionAmount();
 
 		return Read.from2(TradeUtil.portfolio(trades0)) //
 				.map((symbol, nShares) -> {
@@ -64,9 +63,7 @@ public class Summarize {
 				}) //
 				.append("OWN = " + -amount0) //
 				.append("P/L = " + amount1) //
-				.append("nTransactions = " + account0.nTransactions()) //
-				.append("transactionAmount = " + transactionAmount) //
-				.append("transactionFee = " + To.string(cfg.transactionFee(transactionAmount))) //
+				.append(account0.transactionSummary(cfg::transactionFee)) //
 				.map(m -> "\n" + m) //
 				.collect(As.joined());
 	}

@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import suite.primitive.PrimitiveFun.Double_Double;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.util.To;
 import suite.util.Util;
 
 public class Account {
@@ -15,7 +17,7 @@ public class Account {
 
 	private Map<String, Integer> assets = new HashMap<>();
 	private int nTransactions = 0;
-	private float nTransactionAmount = 0f;
+	private float transactionAmount = 0f;
 
 	public static Account fromHistory(Iterable<Trade> trades) {
 		Account account = new Account();
@@ -83,7 +85,7 @@ public class Account {
 		update(symbol, nShares1);
 		if (buySell != 0)
 			nTransactions++;
-		nTransactionAmount += Math.abs(cost);
+		transactionAmount += Math.abs(cost);
 	}
 
 	private void update(String code, int amount) {
@@ -112,6 +114,11 @@ public class Account {
 		return assets().computeIfAbsent(code, s -> 0);
 	}
 
+	public String transactionSummary(Double_Double transactionFeeFun) {
+		double fee = transactionFeeFun.apply(transactionAmount);
+		return "transactions = " + To.string(transactionAmount) + "/" + nTransactions + ", fee = " + To.string(fee);
+	}
+
 	@Override
 	public String toString() {
 		return TradeUtil.format(assets());
@@ -121,12 +128,8 @@ public class Account {
 		return assets;
 	}
 
-	public int nTransactions() {
-		return nTransactions;
-	}
-
 	public float transactionAmount() {
-		return nTransactionAmount;
+		return transactionAmount;
 	}
 
 }

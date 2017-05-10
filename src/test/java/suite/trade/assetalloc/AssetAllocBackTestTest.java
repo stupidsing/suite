@@ -11,7 +11,6 @@ import suite.trade.DatePeriod;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.data.Configuration;
 import suite.util.FunUtil.Sink;
-import suite.util.To;
 
 public class AssetAllocBackTestTest {
 
@@ -28,10 +27,7 @@ public class AssetAllocBackTestTest {
 		Simulate sim = backTest.simulateFromTo(initial, DatePeriod.of(frDate, toDate));
 
 		Account account = sim.account;
-		float transactionAmount = account.transactionAmount();
-		System.out.println("nTransactions = " + account.nTransactions());
-		System.out.println("nTransactionAmount = " + To.string(transactionAmount));
-		System.out.println("transactionFee = " + To.string(cfg.transactionFee(transactionAmount)));
+		System.out.println(account.transactionSummary(cfg::transactionFee));
 
 		float[] valuations = sim.valuations;
 		assertTrue(initial * 1.05f < valuations[valuations.length - 1]);
