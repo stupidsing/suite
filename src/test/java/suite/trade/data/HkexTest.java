@@ -36,4 +36,9 @@ public class HkexTest {
 		assertEquals(100, hkex.queryBoardLot("0700.HK"));
 	}
 
+	@Test
+	public void testQueryPreviousClose() {
+		assertTrue(60f < hkex.queryPreviousClose("0005.HK"));
+	}
+
 }

@@ -2,6 +2,7 @@ package suite.trade.data;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.os.Execute;
 import suite.os.LogUtil;
@@ -272,10 +274,7 @@ public class Hkex {
 			return Read.each(companySearch) //
 					.flatMap(cs -> cs.data) //
 					.concatMap(Data::tableEntries) //
-					.map(list -> new Asset( //
-							Util.right("0000" + list.get(1).replace("*", "").trim(), -4) + ".HK", //
-							list.get(2).trim(), //
-							Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
+					.map(this::toAsset) //
 					.toList();
 		else
 			return Read.each(json) //
@@ -286,10 +285,7 @@ public class Hkex {
 					.filter(json_ -> !json_.get("thead").asBoolean()) //
 					.flatMap(json_ -> json_.get("td")) //
 					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList()) //
-					.map(list -> new Asset( //
-							Util.right("0000" + list.get(1).replace("*", "").trim(), -4) + ".HK", //
-							list.get(2).trim(), //
-							Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()))) //
+					.map(this::toAsset) //
 					.toList();
 	}
 
@@ -314,13 +310,11 @@ public class Hkex {
 				.get(getClass().getSimpleName() + ".queryLotSizeBySymbol(" + companies.toList() + ")", fun);
 	}
 
-	public int queryBoardLot(String symbol0) {
-		if (Util.stringEquals(symbol0, "0700.HK"))
+	public int queryBoardLot(String symbol) {
+		if (Util.stringEquals(symbol, "0700.HK"))
 			return 100; // server return some unexpected errors, handle manually
-		else {
-			String symbol = "" + Integer.parseInt(symbol0.replace(".HK", ""));
-			return queryBoardLot0(symbol);
-		}
+		else
+			return queryBoardLot0(toStockCode(symbol));
 	}
 
 	private int queryBoardLot0(String symbol) {
@@ -348,12 +342,45 @@ public class Hkex {
 		return Integer.parseInt(boardLotStr);
 	}
 
+	public float queryPreviousClose(String symbol) {
+		String url = "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
+				+ "?LangCode=en" //
+				+ "&StockCode=" + toStockCode(symbol) //
+				+ "&mkt=hk" //
+				+ "&location=priceMoveSearch" //
+				+ "&ATypeSHEx=" //
+				+ "&AType=" //
+				+ "&PageNo=" //
+				+ "&SearchMethod=1" //
+				+ "&StockName=" //
+				+ "&StockType=" //
+				+ "&Ranking=" //
+				+ "&FDD=" //
+				+ "&FMM=" //
+				+ "&FYYYY=" //
+				+ "&TDD=" //
+				+ "&TMM=" //
+				+ "&TYYYY=";
+
+		try (InputStream is = HttpUtil.get(new URL(url)).out.collect(To::inputStream)) {
+			return Read.each(mapper.readTree(is)) //
+					.flatMap(json_ -> json_.get("data")) //
+					.filter(json_ -> Util.stringEquals(json_.get("title").textValue(), "Stock price HKD")) //
+					.flatMap(json_ -> json_.get("content")) //
+					.filter(json_ -> Util.stringEquals(json_.get(0).textValue(), "Previous<br>day close")) //
+					.map(json_ -> Float.parseFloat(json_.get(1).textValue().split(" ")[0])) //
+					.uniqueResult();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	private JsonNode query(String url) {
 		JsonNode json;
 
 		if (Boolean.TRUE)
 			try (InputStream is = Singleton.get().getStoreCache().http(url).collect(To::inputStream)) {
-				json = Rethrow.ex(() -> mapper.readTree(is));
+				json = mapper.readTree(is);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
@@ -363,6 +390,21 @@ public class Hkex {
 		}
 
 		return json;
+	}
+
+	private Asset toAsset(List<String> list) {
+		return new Asset( //
+				toSymbol(list.get(1).replace("*", "")), //
+				list.get(2).trim(), //
+				Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()));
+	}
+
+	private String toStockCode(String symbol) {
+		return "" + Integer.parseInt(symbol.replace(".HK", ""));
+	}
+
+	private String toSymbol(String stockCode) {
+		return Util.right("0000" + stockCode.trim(), -4) + ".HK";
 	}
 
 }
