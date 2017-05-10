@@ -9,11 +9,18 @@ public class TimeSeries {
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 
-	// 4% risk-free interest rate
 	public double sharpeRatio(float[] fs, double nYears) {
+		return sharpeRatioKellyCriterion(fs, nYears)[0];
+	}
+
+	public double[] sharpeRatioKellyCriterion(float[] fs, double nYears) {
 		float[] returns = returns(fs);
 		double r0 = Math.expm1(Math.log1p(stat.riskFreeInterestRate) * nYears / returns.length);
-		return (stat.mean(returns) - r0) / Math.sqrt(nYears * stat.variance(returns));
+		double mean = stat.mean(returns) - r0;
+		double variance = stat.variance(returns);
+		double sharpe = mean / Math.sqrt(nYears * variance);
+		double kelly = mean / (Math.sqrt(nYears) * variance);
+		return new double[] { sharpe, kelly, };
 	}
 
 	public float[] logReturns(float[] fs) {

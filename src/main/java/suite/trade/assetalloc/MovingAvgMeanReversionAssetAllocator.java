@@ -85,14 +85,24 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 					double lma = mrs.latestMovingAverage();
 					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
 					double annualReturn = Math.expm1(Math.log1p(dailyReturn) * nTradeDaysInYear);
-					double sharpe = ts.sharpeRatio(dataSource.prices, dataSource.nYears());
+					double[] ds = ts.sharpeRatioKellyCriterion(dataSource.prices, dataSource.nYears());
+					double sharpe = ds[0];
+					double kelly = ds[1];
+					double potential;
+
 					log.sink(cfg.queryCompany(symbol) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
 							+ ", " + To.string(price) + " => " + To.string(lma) //
 							+ ", annualReturn = " + To.string(annualReturn) //
-							+ ", sharpe = " + To.string(sharpe));
+							+ ", sharpe = " + To.string(sharpe) //
+							+ ", kelly = " + To.string(kelly));
 
-					return new PotentialStats(annualReturn, sharpe);
+					if (Boolean.TRUE) // Kelly's criterion allocation
+						potential = kelly;
+					else // even allocation
+						potential = 1d;
+
+					return new PotentialStats(annualReturn, sharpe, potential);
 				}) //
 				.filterValue(ps -> stat.riskFreeInterestRate < ps.annualReturn) //
 				.filterValue(ps -> 0d < ps.sharpe) //
@@ -109,13 +119,10 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		public final double sharpe;
 		public final double potential;
 
-		public PotentialStats(double annualReturn, double sharpe) {
+		public PotentialStats(double annualReturn, double sharpe, double potential) {
 			this.annualReturn = annualReturn;
 			this.sharpe = sharpe;
-			if (Boolean.FALSE) // Kelly's
-				this.potential = annualReturn * sharpe;
-			else // even allocation
-				this.potential = 1d;
+			this.potential = potential;
 		}
 	}
 
