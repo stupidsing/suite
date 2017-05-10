@@ -165,7 +165,7 @@ public class Hkex {
 			.map(array -> new Asset(array[0], array[1], Integer.parseInt(array[2]))) //
 			.collect(As::streamlet);
 
-	private Map<String, Asset> companyByCode = Read.from(companies).toMap(company -> company.code);
+	private Map<String, Asset> companyBySymbol = Read.from(companies).toMap(company -> company.symbol);
 
 	public static final Set<String> commonFirstNames = new HashSet<>(
 			Arrays.asList("", "China", "Guangdong", "Hang", "HK", "Standard"));
@@ -235,7 +235,7 @@ public class Hkex {
 	}
 
 	public Asset getCompany(String code) {
-		return companyByCode.get(code);
+		return companyBySymbol.get(code);
 	}
 
 	public Streamlet<Asset> getCompanies() {
@@ -311,7 +311,7 @@ public class Hkex {
 
 	public Map<String, Integer> queryLotSizeBySymbol(Streamlet<Asset> companies) {
 		Source<Map<String, Integer>> fun = () -> companies //
-				.map(stock -> stock.code) //
+				.map(stock -> stock.symbol) //
 				.map2(symbol -> {
 					try {
 						return queryBoardLot(symbol);

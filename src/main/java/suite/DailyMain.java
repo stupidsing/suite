@@ -54,7 +54,7 @@ public class DailyMain extends ExecutableProgram {
 		// fetch Yahoo historical data
 		Map<String, DataSource> dataSourceBySymbol = cfg //
 				.queryLeadingCompaniesByMarketCap(LocalDate.now().getYear() - 1) //
-				.map(asset -> asset.code) //
+				.map(asset -> asset.symbol) //
 				.map2(cfg::dataSource) //
 				.toMap();
 
@@ -107,7 +107,7 @@ public class DailyMain extends ExecutableProgram {
 
 		LogUtil.info("S0 pre-fetch quotes");
 
-		cfg.quote(assets.map(asset -> asset.code).toSet());
+		cfg.quote(assets.map(asset -> asset.symbol).toSet());
 
 		LogUtil.info("S1 perform back test");
 
@@ -115,10 +115,10 @@ public class DailyMain extends ExecutableProgram {
 		Map<String, Boolean> backTestBySymbol = SerializedStoreCache //
 				.of(Serialize.mapOfString(Serialize.boolean_)) //
 				.get(getClass().getSimpleName() + ".backTestBySymbol", () -> assets //
-						.map2(stock -> stock.code, stock -> {
+						.map2(stock -> stock.symbol, stock -> {
 							try {
 								DatePeriod period = DatePeriod.threeYears();
-								DataSource ds0 = cfg.dataSource(stock.code, period);
+								DataSource ds0 = cfg.dataSource(stock.symbol, period);
 								DataSource ds1 = ds0.range(period);
 
 								ds1.validateTwoYears();
@@ -142,7 +142,7 @@ public class DailyMain extends ExecutableProgram {
 		LogUtil.info("S3 capture signals");
 
 		for (Asset asset : assets) {
-			String symbol = asset.code;
+			String symbol = asset.symbol;
 
 			if (backTestBySymbol.get(symbol)) {
 				String prefix = asset.toString();

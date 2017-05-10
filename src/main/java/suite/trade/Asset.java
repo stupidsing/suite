@@ -11,7 +11,7 @@ public class Asset {
 
 	public static Serializer<Asset> serializer = Serialize.auto(Asset.class);
 
-	public final String code;
+	public final String symbol;
 	public final String name;
 	public final int marketCap; // HKD million
 
@@ -19,14 +19,14 @@ public class Asset {
 		this(code, name, 0);
 	}
 
-	public Asset(String code, String name, int marketCap) {
-		this.code = code;
+	public Asset(String symbol, String name, int marketCap) {
+		this.symbol = symbol;
 		this.name = name;
 		this.marketCap = marketCap;
 	}
 
 	public String toString() {
-		return code + " " + shortName();
+		return symbol + " " + shortName();
 	}
 
 	public String shortName() {

@@ -74,7 +74,7 @@ public class AssetAllocBackTest {
 			cfg.quote(lotSizeBySymbol.keySet());
 
 			for (Asset asset : assets) {
-				String symbol = asset.code;
+				String symbol = asset.symbol;
 				if (lotSizeBySymbol.containsKey(symbol))
 					try {
 						DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
