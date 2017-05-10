@@ -126,6 +126,7 @@ public class To {
 	public static InputStream inputStream(Outlet<Bytes> outlet) {
 		return new InputStream() {
 			private InputStream is;
+			private boolean isOpen = true;
 
 			public int read() throws IOException {
 				byte[] b = new byte[1];
@@ -137,12 +138,20 @@ public class To {
 				int nBytesRead = -1;
 				while (is == null || (nBytesRead = is.read(bs, offset, length)) < 0) {
 					Bytes bytes = outlet.next();
-					if (bytes != null)
+					if (isOpen = (bytes != null))
 						is = bytes.asInputStream();
 					else
 						break;
 				}
 				return nBytesRead;
+			}
+
+			public void close() throws IOException {
+				if (isOpen) {
+					byte[] bs = new byte[Constants.bufferSize];
+					while (0 <= read(bs, 0, bs.length))
+						;
+				}
 			}
 		};
 	}
