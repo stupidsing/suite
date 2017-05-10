@@ -62,9 +62,6 @@ public class DailyMain extends ExecutableProgram {
 		quoteDatabase.merge("o", dataSourceBySymbol);
 		quoteDatabase.join();
 
-		if (Boolean.TRUE)
-			return true;
-
 		// perform systematic trading
 		List<Pair<String, String>> outputs = Arrays.asList(bug(), mamr(), pmamr());
 		StringBuilder sb = new StringBuilder();
