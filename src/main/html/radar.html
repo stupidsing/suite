@@ -81,7 +81,7 @@
 			};
 		})();
 
-		var enemy0 = () => {
+		var enemy_ = () => {
 			var angle = 2 * Math.PI * Math.random();
 			var x = centrex + radius * Math.sin(angle);
 			var y = centrey + radius * Math.cos(angle);
@@ -109,7 +109,7 @@
 		};
 
 		var objects = [background, gun];
-		for (var i = 0; i < 10; i++) objects.push(enemy0());
+		for (var i = 0; i < 10; i++) objects.push(enemy_());
 
 		frame.register(data => {
 
