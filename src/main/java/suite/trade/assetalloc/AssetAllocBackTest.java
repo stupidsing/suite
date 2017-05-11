@@ -12,7 +12,6 @@ import suite.math.TimeSeries;
 import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
@@ -66,25 +65,24 @@ public class AssetAllocBackTest {
 			Map<String, DataSource> dataSourceBySymbol = new HashMap<>();
 			LocalDate historyFromDate = from.minusYears(1);
 			double valuation = fund0;
-			Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(from.getYear() - 1); // hkex.getCompanies();
-			Map<String, Integer> lotSizeBySymbol = assets.map2(asset -> asset.symbol, asset -> asset.lotSize).toMap();
+
+			Map<String, Asset> assetBySymbol = cfg //
+					.queryLeadingCompaniesByMarketCap(from.getYear() - 1) // hkex.getCompanies()
+					.toMap(asset -> asset.symbol);
 
 			account = Account.fromCash(fund0);
 
 			// pre-fetch quotes
-			cfg.quote(lotSizeBySymbol.keySet());
+			cfg.quote(assetBySymbol.keySet());
 
-			for (Asset asset : assets) {
-				String symbol = asset.symbol;
-				if (lotSizeBySymbol.containsKey(symbol))
-					try {
-						DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
-						dataSource.validate();
-						dataSourceBySymbol.put(symbol, dataSource);
-					} catch (Exception ex) {
-						LogUtil.warn(ex.getMessage() + " in " + asset);
-					}
-			}
+			for (String symbol : assetBySymbol.keySet())
+				try {
+					DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
+					dataSource.validate();
+					dataSourceBySymbol.put(symbol, dataSource);
+				} catch (Exception ex) {
+					LogUtil.warn(ex.getMessage() + " in " + assetBySymbol.get(symbol));
+				}
 
 			List<LocalDate> tradeDates = Read.from2(dataSourceBySymbol) //
 					.concatMap((symbol, dataSource) -> Read.from(dataSource.dates)) //
@@ -127,7 +125,7 @@ public class AssetAllocBackTest {
 							.filterKey(symbol -> !Util.stringEquals(symbol, Asset.cashCode)) //
 							.map2((symbol, potential) -> symbol, (symbol, potential) -> {
 								float price = backTestDataSourceBySymbol.get(symbol).last().price;
-								int lotSize = lotSizeBySymbol.get(symbol);
+								int lotSize = assetBySymbol.get(symbol).lotSize;
 								double lots = valuation_ * potential / (totalPotential * price * lotSize);
 								return lotSize * (int) lots; // truncate
 								// return lotSize * Math.round(lots);
