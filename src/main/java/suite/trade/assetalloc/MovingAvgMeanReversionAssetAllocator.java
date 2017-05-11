@@ -64,8 +64,8 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 
 		DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
 
-		Map<String, MeanReversionStats> meanReversionStatsBySymbol = Read.from2(dataSourceBySymbol) //
-				.map2((symbol, dataSource) -> symbol, (symbol, dataSource) -> meanReversionStats(symbol, dataSource, mrsPeriod)) //
+		Map<String, MeanReversionStat> meanReversionStatBySymbol = Read.from2(dataSourceBySymbol) //
+				.map2((symbol, dataSource) -> symbol, (symbol, dataSource) -> meanReversionStat(symbol, dataSource, mrsPeriod)) //
 				.toMap();
 
 		// make sure all time-series are mean-reversions:
@@ -73,7 +73,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		// ensure Hurst exponent < .5d: price is weakly mean reverting
 		// ensure 0d < variance ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
-		return Read.from2(meanReversionStatsBySymbol) //
+		return Read.from2(meanReversionStatBySymbol) //
 				.filterValue(mrs -> mrs.adf < 0f //
 						&& mrs.hurst < .5f //
 						&& 0f < mrs.varianceRatio //
@@ -104,7 +104,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 					else // even allocation
 						potential = 1d;
 
-					return new PotentialStats(annualReturn, sharpe, potential);
+					return new PotentialStat(annualReturn, sharpe, potential);
 				}) //
 				.filterValue(ps -> stat.riskFreeInterestRate < ps.annualReturn) //
 				.filterValue(ps -> 0d < ps.sharpe) //
@@ -116,25 +116,25 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 				.toList();
 	}
 
-	private class PotentialStats {
+	private class PotentialStat {
 		public final double annualReturn;
 		public final double sharpe;
 		public final double potential;
 
-		public PotentialStats(double annualReturn, double sharpe, double potential) {
+		public PotentialStat(double annualReturn, double sharpe, double potential) {
 			this.annualReturn = annualReturn;
 			this.sharpe = sharpe;
 			this.potential = potential;
 		}
 	}
 
-	private MeanReversionStats meanReversionStats(String symbol, DataSource dataSource, DatePeriod period) {
-		Map<Pair<String, DatePeriod>, MeanReversionStats> memoizeMeanReversionStats = new ConcurrentHashMap<>();
+	private MeanReversionStat meanReversionStat(String symbol, DataSource dataSource, DatePeriod period) {
+		Map<Pair<String, DatePeriod>, MeanReversionStat> memoizeMeanReversionStats = new ConcurrentHashMap<>();
 		Pair<String, DatePeriod> key = Pair.of(symbol, period);
-		return memoizeMeanReversionStats.computeIfAbsent(key, p -> new MeanReversionStats(dataSource, period));
+		return memoizeMeanReversionStats.computeIfAbsent(key, p -> new MeanReversionStat(dataSource, period));
 	}
 
-	public class MeanReversionStats {
+	public class MeanReversionStat {
 		public final float[] movingAverage;
 		public final double adf;
 		public final double hurst;
@@ -144,7 +144,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		public final double halfLife;
 		public final double movingAvgHalfLife;
 
-		public MeanReversionStats(DataSource dataSource0, DatePeriod mrsPeriod) {
+		public MeanReversionStat(DataSource dataSource0, DatePeriod mrsPeriod) {
 			DataSource dataSource = dataSource0.range(mrsPeriod);
 			float[] prices = dataSource.prices;
 

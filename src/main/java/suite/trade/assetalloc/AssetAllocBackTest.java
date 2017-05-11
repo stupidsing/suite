@@ -110,18 +110,18 @@ public class AssetAllocBackTest {
 						.mapValue(dataSource -> dataSource.last().price) //
 						.toMap();
 
-				List<Pair<String, Double>> potentialStatsBySymbol = assetAllocator.allocate( //
+				List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate( //
 						backTestDataSourceBySymbol, //
 						tradeDates, //
 						date);
 
-				if (potentialStatsBySymbol != null) {
-					double totalPotential = Read.from2(potentialStatsBySymbol) //
+				if (potentialBySymbol != null) {
+					double totalPotential = Read.from2(potentialBySymbol) //
 							.collect(As.<String, Double> sumOfDoubles((symbol, potential) -> potential));
 
 					double valuation_ = valuation;
 
-					Map<String, Integer> portfolio = Read.from2(potentialStatsBySymbol) //
+					Map<String, Integer> portfolio = Read.from2(potentialBySymbol) //
 							.filterKey(symbol -> !Util.stringEquals(symbol, Asset.cashCode)) //
 							.map2((symbol, potential) -> symbol, (symbol, potential) -> {
 								float price = backTestDataSourceBySymbol.get(symbol).last().price;
