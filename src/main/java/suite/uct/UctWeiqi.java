@@ -123,7 +123,7 @@ public class UctWeiqi {
 		/**
 		 * The "play till any player cannot move" version of Monte Carlo.
 		 */
-		public boolean evaluateRandomOutcome0() {
+		public boolean evaluateRandomOutcome_() {
 			Occupation me = gameSet.getNextPlayer();
 			List<Coordinate> empties = findAllEmptyPositions();
 			Coordinate pos;

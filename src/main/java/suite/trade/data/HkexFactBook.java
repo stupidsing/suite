@@ -16,10 +16,10 @@ public class HkexFactBook {
 		return Read.from(SerializedStoreCache //
 				.of(Serialize.list(Serialize.variableLengthString)) //
 				.get(getClass().getSimpleName() + ".queryLeadingCompaniesByMarketCap(" + year + ")",
-						() -> queryLeadingCompaniesByMarketCap0(year)));
+						() -> queryLeadingCompaniesByMarketCap_(year)));
 	}
 
-	private List<String> queryLeadingCompaniesByMarketCap0(int year) {
+	private List<String> queryLeadingCompaniesByMarketCap_(int year) {
 		String url;
 
 		if (2009 <= year)

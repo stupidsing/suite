@@ -26,11 +26,11 @@ public class TelnetServer {
 		private Set<Thread> threads = new HashSet<>();
 
 		private abstract class InterruptibleThread extends Thread {
-			protected abstract void run0() throws Exception;
+			protected abstract void run_() throws Exception;
 
 			public void run() {
 				try {
-					run0();
+					run_();
 				} catch (InterruptedException | InterruptedIOException ex) {
 				} catch (Exception ex) {
 					LogUtil.error(ex);
@@ -55,7 +55,7 @@ public class TelnetServer {
 				this.os = os;
 			}
 
-			protected void run0() throws IOException {
+			protected void run_() throws IOException {
 				try (InputStream is_ = is; OutputStream os_ = os) {
 					Copy.stream(is_, os_);
 				}
@@ -77,7 +77,7 @@ public class TelnetServer {
 				threads.add(new CopyThread(pes, sos));
 				threads.add(new CopyThread(sis, pos));
 				threads.add(new InterruptibleThread() {
-					protected void run0() throws InterruptedException {
+					protected void run_() throws InterruptedException {
 						process.waitFor();
 					}
 				});

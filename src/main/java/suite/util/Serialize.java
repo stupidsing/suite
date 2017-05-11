@@ -47,10 +47,10 @@ public class Serialize {
 		return serializer;
 	}
 
-	private static Fun<Type, Serializer<?>> memoizeAutoSerializers = Memoize.fun(Serialize::auto0);
+	private static Fun<Type, Serializer<?>> memoizeAutoSerializers = Memoize.fun(Serialize::auto_);
 
 	// do not handle nulls
-	private static <T> Serializer<?> auto0(Type type) {
+	private static <T> Serializer<?> auto_(Type type) {
 		Serializer<?> serializer;
 		if (type instanceof Class) {
 			Class<?> clazz = (Class<?>) type;
@@ -72,7 +72,7 @@ public class Serialize {
 				@SuppressWarnings("unchecked")
 				Class<Object> c1 = (Class<Object>) clazz.getComponentType();
 				@SuppressWarnings("unchecked")
-				Serializer<Object> serializer1 = (Serializer<Object>) auto0(c1);
+				Serializer<Object> serializer1 = (Serializer<Object>) auto_(c1);
 				serializer = array(c1, serializer1);
 			} else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))
 				serializer = poly(clazz);
@@ -85,11 +85,11 @@ public class Serialize {
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (List.class.isAssignableFrom(clazz))
-				serializer = list(auto0(typeArgs[0]));
+				serializer = list(auto_(typeArgs[0]));
 			else if (Map.class.isAssignableFrom(clazz))
-				serializer = map(auto0(typeArgs[0]), auto0(typeArgs[1]));
+				serializer = map(auto_(typeArgs[0]), auto_(typeArgs[1]));
 			else if (Pair.class.isAssignableFrom(clazz))
-				serializer = pair(auto0(typeArgs[0]), auto0(typeArgs[1]));
+				serializer = pair(auto_(typeArgs[0]), auto_(typeArgs[1]));
 			else
 				throw new RuntimeException();
 		} else
@@ -99,7 +99,7 @@ public class Serialize {
 
 	public static <T> Serializer<T> autoFields(Class<T> clazz) {
 		Pair<Field, ?>[] pairs = Read.from(inspect.fields(clazz)) //
-				.map2(field -> auto0(field.getGenericType())) //
+				.map2(field -> auto_(field.getGenericType())) //
 				.toArray();
 
 		Streamlet<Constructor<?>> ctors = Read.from(clazz.getConstructors());

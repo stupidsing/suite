@@ -306,12 +306,12 @@ public class Hkex {
 					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList());
 
 		Streamlet<List<String>> data1 = data0.collect(As::streamlet);
-		Map<String, Integer> lotSizeBySymbol = queryLotSizeBySymbol0(data1.map(this::toSymbol));
+		Map<String, Integer> lotSizeBySymbol = queryLotSizeBySymbol_(data1.map(this::toSymbol));
 		return data1.map(datum -> toAsset(datum, lotSizeBySymbol)).toList();
 	}
 
 	public int queryBoardLot(String symbol) {
-		return queryBoardLot0(symbol);
+		return queryBoardLot_(symbol);
 	}
 
 	public float queryHangSengIndex() {
@@ -389,7 +389,7 @@ public class Hkex {
 				Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()));
 	}
 
-	private Map<String, Integer> queryLotSizeBySymbol0(Streamlet<String> symbols) {
+	private Map<String, Integer> queryLotSizeBySymbol_(Streamlet<String> symbols) {
 		Source<Map<String, Integer>> fun = () -> symbols //
 				.map2(symbol -> {
 					try {
@@ -408,7 +408,7 @@ public class Hkex {
 				.get(getClass().getSimpleName() + ".queryLotSizeBySymbol(" + symbols.collect(As.conc(",")) + ")", fun);
 	}
 
-	private int queryBoardLot0(String symbol) {
+	private int queryBoardLot_(String symbol) {
 		if (Util.stringEquals(symbol, "0700.HK"))
 			return 100;
 		else {
