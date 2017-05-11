@@ -23,6 +23,7 @@ public class TextDatabase {
 
 	private Path path = HomeDir.resolve("quote-database.csv");
 	private TreeSet<Datum> data = new TreeSet<>();
+	private long lastSaveTime;
 	private long saveTime;
 	private volatile Thread saveThread;
 
@@ -49,8 +50,8 @@ public class TextDatabase {
 		for (Datum datum : data_)
 			merge(datum);
 
-		// save 30 seconds later
-		saveTime = System.currentTimeMillis() + 30 * 1000l;
+		// 30 seconds between every save
+		saveTime = Math.max(lastSaveTime + 30 * 1000l, System.currentTimeMillis());
 
 		if (saveThread == null) {
 			saveThread = new Thread(() -> {
@@ -64,6 +65,7 @@ public class TextDatabase {
 			});
 			saveThread.setDaemon(false);
 			saveThread.start();
+			lastSaveTime = saveTime;
 		}
 	}
 

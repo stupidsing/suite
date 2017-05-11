@@ -96,7 +96,7 @@ public class DailyMain extends ExecutableProgram {
 		for (Entry<String, Integer> e : account.assets().entrySet()) {
 			String symbol = e.getKey();
 			int sell = e.getValue();
-			double targetPrice = -stat.riskFreeInterestRate * faceValueBySymbol.get(symbol) / sell;
+			double targetPrice = (1d + stat.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
 			sb.append("\nSIGNAL" + new Trade(-sell, symbol, (float) targetPrice));
 		}
 
