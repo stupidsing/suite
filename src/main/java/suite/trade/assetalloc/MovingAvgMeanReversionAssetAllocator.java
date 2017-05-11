@@ -91,8 +91,10 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 					double potential;
 
 					log.sink(cfg.queryCompany(symbol) //
+							+ ", mrRatio = " + To.string(mrs.meanReversionRatio) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
 							+ ", " + To.string(price) + " => " + To.string(lma) //
+							+ ", dailyReturn = " + To.string(dailyReturn) //
 							+ ", annualReturn = " + To.string(annualReturn) //
 							+ ", sharpe = " + To.string(sharpe) //
 							+ ", kelly = " + To.string(kelly));

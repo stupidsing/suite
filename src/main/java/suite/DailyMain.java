@@ -24,6 +24,8 @@ import suite.trade.DatePeriod;
 import suite.trade.Trade;
 import suite.trade.TradeUtil;
 import suite.trade.assetalloc.AssetAllocBackTest;
+import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
+import suite.trade.assetalloc.AssetAllocator;
 import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
@@ -186,15 +188,19 @@ public class DailyMain extends ExecutableProgram {
 		String tag = "pmamr";
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = To.sink(sb);
-		AssetAllocBackTest backTest = new AssetAllocBackTest(new MovingAvgMeanReversionAssetAllocator(cfg, log), log);
+		AssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(cfg, log);
+		Simulate sim = new AssetAllocBackTest(assetAllocator, log).simulateLatest(500000f);
+
 		Account account0 = Account.fromPortfolio(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
-		Account account1 = backTest.simulateLatest(500000f).account;
+		Account account1 = sim.account;
 
 		Set<String> symbols = To.set(account0.assets().keySet(), account1.assets().keySet());
 		Map<String, Float> priceBySymbol = cfg.quote(symbols);
 		List<Trade> trades = TradeUtil.diff(account0.assets(), account1.assets(), priceBySymbol);
 
+		sb.append(sim.conclusion());
 		sb.append(Read.from(trades).map(trade -> "\nSIGNAL" + trade).collect(As.joined()));
+
 		return Pair.of(tag, sb.toString());
 	}
 

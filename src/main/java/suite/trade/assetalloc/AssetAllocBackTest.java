@@ -58,6 +58,9 @@ public class AssetAllocBackTest {
 	public class Simulate {
 		public final Account account;
 		public final float[] valuations;
+		public final double annualReturn;
+		public final double sharpe;
+		public final double skewness;
 
 		private Simulate(float fund0, LocalDate from, Fun<List<LocalDate>, List<LocalDate>> datesPred) {
 			Map<String, DataSource> dataSourceBySymbol = new HashMap<>();
@@ -151,15 +154,17 @@ public class AssetAllocBackTest {
 			LocalDate datex = Util.last(dates);
 			double v0 = valuations[0];
 			double vx = valuations[valuations.length - 1];
-
 			double nYears = DatePeriod.of(date0, datex).nYears();
-			double annualReturn = Math.expm1(Math.log(vx / v0) / nYears);
-			double sharpe = ts.sharpeRatio(valuations, nYears);
-			double skewness = stat.skewness(valuations);
 
-			log.sink("annual return = " + To.string(annualReturn) //
+			annualReturn = Math.expm1(Math.log(vx / v0) / nYears);
+			sharpe = ts.sharpeRatio(valuations, nYears);
+			skewness = stat.skewness(valuations);
+		}
+
+		public String conclusion() {
+			return "annual return = " + To.string(annualReturn) //
 					+ ", sharpe = " + To.string(sharpe) //
-					+ ", skewness = " + To.string(skewness));
+					+ ", skewness = " + To.string(skewness);
 		}
 	}
 
