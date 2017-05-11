@@ -73,6 +73,7 @@ public class Statistic {
 
 			double sst = 0f; // total sum of squares
 			double ssr = 0f; // estimated sum of squares
+
 			for (int i = 0; i < n; i++) {
 				double d0 = y[i] - meany;
 				double d1 = estimatedy[i] - meany;
