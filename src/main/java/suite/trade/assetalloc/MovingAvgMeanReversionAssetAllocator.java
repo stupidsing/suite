@@ -109,7 +109,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 				.filterValue(ps -> stat.riskFreeInterestRate < ps.annualReturn) //
 				.filterValue(ps -> 0d < ps.sharpe) //
 				// .cons(Asset.cashCode, new
-				// PotentialStats(stat.riskFreeInterestRate, 3d)) //
+				// PotentialStat(stat.riskFreeInterestRate, 3d)) //
 				.mapValue(ps -> ps.potential) //
 				.sortBy((symbol, potential) -> -potential) //
 				.take(top) //
@@ -129,9 +129,9 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	}
 
 	private MeanReversionStat meanReversionStat(String symbol, DataSource dataSource, DatePeriod period) {
-		Map<Pair<String, DatePeriod>, MeanReversionStat> memoizeMeanReversionStats = new ConcurrentHashMap<>();
+		Map<Pair<String, DatePeriod>, MeanReversionStat> memoizeMeanReversionStat = new ConcurrentHashMap<>();
 		Pair<String, DatePeriod> key = Pair.of(symbol, period);
-		return memoizeMeanReversionStats.computeIfAbsent(key, p -> new MeanReversionStat(dataSource, period));
+		return memoizeMeanReversionStat.computeIfAbsent(key, p -> new MeanReversionStat(dataSource, period));
 	}
 
 	public class MeanReversionStat {
