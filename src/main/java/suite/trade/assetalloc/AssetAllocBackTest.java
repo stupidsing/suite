@@ -66,12 +66,10 @@ public class AssetAllocBackTest {
 			Map<String, DataSource> dataSourceBySymbol = new HashMap<>();
 			LocalDate historyFromDate = from.minusYears(1);
 			double valuation = fund0;
-			Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(from.getYear() - 1);
-			// hkex.getCompanies();
+			Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(from.getYear() - 1); // hkex.getCompanies();
+			Map<String, Integer> lotSizeBySymbol = assets.map2(asset -> asset.symbol, asset -> asset.lotSize).toMap();
 
 			account = Account.fromCash(fund0);
-
-			Map<String, Integer> lotSizeBySymbol = cfg.queryLotSizeByAsset(assets);
 
 			// pre-fetch quotes
 			cfg.quote(lotSizeBySymbol.keySet());

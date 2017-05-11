@@ -8,21 +8,23 @@ import suite.util.Util;
 public class Asset {
 
 	public static String cashCode = "HKD";
-	public static Asset cash = new Asset(cashCode, "Hong Kong Dollar");
+	public static Asset cash = new Asset(cashCode, "Hong Kong Dollar", 1);
 
 	public static Serializer<Asset> serializer = Serialize.auto(Asset.class);
 
 	public final String symbol;
 	public final String name;
+	public final int lotSize;
 	public final int marketCap; // HKD million
 
-	public Asset(String code, String name) {
-		this(code, name, 0);
+	public Asset(String code, String name, int lotSize) {
+		this(code, name, lotSize, 0);
 	}
 
-	public Asset(String symbol, String name, int marketCap) {
+	public Asset(String symbol, String name, int lotSize, int marketCap) {
 		this.symbol = symbol;
 		this.name = name;
+		this.lotSize = lotSize;
 		this.marketCap = marketCap;
 	}
 

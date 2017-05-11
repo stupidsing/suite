@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.os.SerializedStoreCache;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
@@ -59,11 +60,7 @@ public class Configuration {
 	}
 
 	public Streamlet<Asset> queryLeadingCompaniesByMarketCap(int year) {
-		return hkexFactBook.queryLeadingCompaniesByMarketCap(year);
-	}
-
-	public Map<String, Integer> queryLotSizeByAsset(Streamlet<Asset> assets) {
-		return hkex.queryLotSizeByAsset(assets);
+		return Read.from(hkexFactBook.queryLeadingCompaniesByMarketCap(year)).map(this::queryCompany);
 	}
 
 	public Map<String, Float> quote(Set<String> symbols) {

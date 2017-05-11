@@ -310,10 +310,6 @@ public class Hkex {
 		return data1.map(datum -> toAsset(datum, lotSizeBySymbol)).toList();
 	}
 
-	public Map<String, Integer> queryLotSizeByAsset(Streamlet<Asset> companies) {
-		return queryLotSizeBySymbol0(companies.map(stock -> stock.symbol));
-	}
-
 	public int queryBoardLot(String symbol) {
 		return queryBoardLot0(symbol);
 	}

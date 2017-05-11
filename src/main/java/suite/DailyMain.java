@@ -137,8 +137,6 @@ public class DailyMain extends ExecutableProgram {
 
 		LogUtil.info("S2 query lot sizes");
 
-		Map<String, Integer> lotSizeBySymbol = cfg.queryLotSizeByAsset(assets);
-
 		DatePeriod period = DatePeriod.daysBefore(128);
 		String sevenDaysAgo = FormatUtil.formatDate(LocalDate.now().plusDays(-7));
 		List<String> messages = new ArrayList<>();
@@ -150,7 +148,6 @@ public class DailyMain extends ExecutableProgram {
 
 			if (backTestBySymbol.get(symbol)) {
 				String prefix = asset.toString();
-				int lotSize = lotSizeBySymbol.get(symbol);
 
 				try {
 					DataSource ds0 = cfg.dataSource(symbol, period);
@@ -170,7 +167,7 @@ public class DailyMain extends ExecutableProgram {
 
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
-					String message = "\nSIGNAL" + new Trade(signal * lotSize, symbol, latestPrice);
+					String message = "\nSIGNAL" + new Trade(signal * asset.lotSize, symbol, latestPrice);
 
 					if (signal != 0)
 						messages.add(message);
@@ -198,7 +195,7 @@ public class DailyMain extends ExecutableProgram {
 		Map<String, Float> priceBySymbol = cfg.quote(symbols);
 		List<Trade> trades = TradeUtil.diff(account0.assets(), account1.assets(), priceBySymbol);
 
-		sb.append(sim.conclusion());
+		sb.append("\n" + sim.conclusion());
 		sb.append(Read.from(trades).map(trade -> "\nSIGNAL" + trade).collect(As.joined()));
 
 		return Pair.of(tag, sb.toString());
