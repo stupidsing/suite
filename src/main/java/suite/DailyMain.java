@@ -109,8 +109,9 @@ public class DailyMain extends ExecutableProgram {
 	// moving average mean reversion
 	private Pair<String, String> mamr() {
 		String tag = "mamr";
+		int nHoldDays = 8;
 		Streamlet<Asset> assets = cfg.getCompanies();
-		BuySellStrategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
+		BuySellStrategy strategy = new Strategos().movingAvgMeanReverting(64, nHoldDays, .15f);
 
 		// pre-fetch quotes
 		cfg.quote(assets.map(asset -> asset.symbol).toSet());
@@ -164,7 +165,8 @@ public class DailyMain extends ExecutableProgram {
 
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
-					String message = "\nSIGNAL" + new Trade(signal * asset.lotSize, symbol, latestPrice);
+					int nShares = signal * asset.lotSize * Math.round(100000f / nHoldDays / (asset.lotSize * latestPrice));
+					String message = "\nSIGNAL" + new Trade(nShares, symbol, latestPrice);
 
 					if (signal != 0)
 						messages.add(message);
