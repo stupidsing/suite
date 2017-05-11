@@ -15,7 +15,7 @@ public class TimeSeries {
 
 	public double[] sharpeRatioKellyCriterion(float[] fs, double nYears) {
 		float[] returns = returns(fs);
-		double r0 = Math.expm1(Math.log1p(stat.riskFreeInterestRate) * nYears / returns.length);
+		double r0 = Math.expm1(stat.logRiskFreeInterestRate * nYears / returns.length);
 		double mean = stat.mean(returns) - r0;
 		double nYearsVariance = nYears * stat.variance(returns);
 		double sharpe = mean / Math.sqrt(nYearsVariance);

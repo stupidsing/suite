@@ -41,12 +41,12 @@ public class PrettyPrinter {
 
 	public String prettyPrint(Node node) {
 		lengthEstimator.estimateLengths(node);
-		prettyPrint0(node, null, 0);
+		prettyPrint_(node, null, 0);
 		return sb.toString();
 	}
 
 	// op0 for avoiding unnecessary indenting; prec0 for parenthesizing
-	private void prettyPrint0(Node node, Operator op0, int prec0) {
+	private void prettyPrint_(Node node, Operator op0, int prec0) {
 		int x = getX(), y = getY();
 		int length = lengthEstimator.getEstimatedLength(node);
 
@@ -87,15 +87,15 @@ public class PrettyPrinter {
 					if (assoc == Assoc.RIGHT //
 							&& x + es0 + es1 + opLength < lineLength //
 							&& r0 != preferLineBreakBeforeKeyword) {
-						prettyPrint0(left, op, leftPrec);
+						prettyPrint_(left, op, leftPrec);
 						OperatorPosition opPos = appendOperator(op);
-						prettyPrint0(right, op, rightPrec);
+						prettyPrint_(right, op, rightPrec);
 						closeBraces(op, opPos);
 					} else { // breaks after the operator
 						boolean isIncRightIndent = op != op0;
 						int indent0 = 0;
 
-						prettyPrint0(left, op, leftPrec);
+						prettyPrint_(left, op, leftPrec);
 
 						if (isIncRightIndent)
 							indent0 = incrementIndent();
@@ -106,7 +106,7 @@ public class PrettyPrinter {
 						else
 							opPos = appendOperatorLineFeed(op);
 
-						prettyPrint0(right, op, rightPrec);
+						prettyPrint_(right, op, rightPrec);
 						closeBraces(op, opPos);
 
 						if (isIncRightIndent)
@@ -156,12 +156,12 @@ public class PrettyPrinter {
 		}
 
 		// if (node != Atom.nil) // suppress list termination
-		prettyPrint0(node, op, prec);
+		prettyPrint_(node, op, prec);
 	}
 
 	private void prettyPrintIndented(Node left, int prec) {
 		int indent0 = incrementIndent();
-		prettyPrint0(left, null, prec);
+		prettyPrint_(left, null, prec);
 		revertIndent(indent0);
 	}
 

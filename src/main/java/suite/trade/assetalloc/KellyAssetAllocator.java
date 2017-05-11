@@ -36,7 +36,7 @@ public class KellyAssetAllocator implements AssetAllocator {
 					double pricex = dataSource.last().price;
 					double nYears = dataSource.nYears();
 					int nDays = dataSource.dates.length;
-					double dailyInterestRate = Math.exp(Math.log1p(stat.riskFreeInterestRate) * nYears / nDays);
+					double dailyInterestRate = Math.exp(stat.logRiskFreeInterestRate * nYears / nDays);
 					return pricex / price0 - dailyInterestRate;
 				}) //
 				.toMap();

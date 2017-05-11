@@ -62,18 +62,18 @@ public class LazyFunInterpreter0 {
 		env = env.put(FST__.name, () -> new Fun_(in -> ((Pair_) in.get()).first));
 		env = env.put(SND__.name, () -> new Fun_(in -> ((Pair_) in.get()).second));
 
-		return lazy0(node).apply(env);
+		return lazy_(node).apply(env);
 	}
 
-	private Fun<IMap<String, Thunk_>, Thunk_> lazy0(Node node) {
+	private Fun<IMap<String, Thunk_>, Thunk_> lazy_(Node node) {
 		Fun<IMap<String, Thunk_>, Thunk_> result;
 		Tree tree;
 		Node[] m;
 
 		if ((m = Suite.matcher("define .0 := .1 >> .2").apply(node)) != null) {
 			String vk = v(m[0]);
-			Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(m[1]);
-			Fun<IMap<String, Thunk_>, Thunk_> expr = lazy0(m[2]);
+			Fun<IMap<String, Thunk_>, Thunk_> value = lazy_(m[1]);
+			Fun<IMap<String, Thunk_>, Thunk_> expr = lazy_(m[2]);
 			result = env -> {
 				Mutable<Thunk_> val = Mutable.nil();
 				IMap<String, Thunk_> env1 = env.put(vk, () -> val.get().get());
@@ -81,22 +81,22 @@ public class LazyFunInterpreter0 {
 				return expr.apply(env1);
 			};
 		} else if ((m = Suite.matcher("if .0 then .1 else .2").apply(node)) != null) {
-			Fun<IMap<String, Thunk_>, Thunk_> if_ = lazy0(m[0]);
-			Fun<IMap<String, Thunk_>, Thunk_> then_ = lazy0(m[1]);
-			Fun<IMap<String, Thunk_>, Thunk_> else_ = lazy0(m[2]);
+			Fun<IMap<String, Thunk_>, Thunk_> if_ = lazy_(m[0]);
+			Fun<IMap<String, Thunk_>, Thunk_> then_ = lazy_(m[1]);
+			Fun<IMap<String, Thunk_>, Thunk_> else_ = lazy_(m[2]);
 			result = env -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env);
 		} else if ((m = Suite.matcher(".0 => .1").apply(node)) != null) {
 			String vk = v(m[0]);
-			Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(m[1]);
+			Fun<IMap<String, Thunk_>, Thunk_> value = lazy_(m[1]);
 			result = env -> () -> new Fun_(in -> value.apply(env.put(vk, in)));
 		} else if ((m = Suite.matcher(".0 {.1}").apply(node)) != null) {
-			Fun<IMap<String, Thunk_>, Thunk_> fun = lazy0(m[0]);
-			Fun<IMap<String, Thunk_>, Thunk_> param = lazy0(m[1]);
+			Fun<IMap<String, Thunk_>, Thunk_> fun = lazy_(m[0]);
+			Fun<IMap<String, Thunk_>, Thunk_> param = lazy_(m[1]);
 			result = env -> fun(fun.apply(env).get()).apply(param.apply(env));
 		} else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
-			Fun<IMap<String, Thunk_>, Thunk_> p0 = lazy0(tree.getLeft());
-			Fun<IMap<String, Thunk_>, Thunk_> p1 = lazy0(tree.getRight());
+			Fun<IMap<String, Thunk_>, Thunk_> p0 = lazy_(tree.getLeft());
+			Fun<IMap<String, Thunk_>, Thunk_> p1 = lazy_(tree.getRight());
 			result = env -> {
 				Thunk_ r0 = env.get(operator.getName());
 				Thunk_ r1 = fun(r0.get()).apply(p0.apply(env));

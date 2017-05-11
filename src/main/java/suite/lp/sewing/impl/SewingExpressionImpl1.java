@@ -29,10 +29,10 @@ public class SewingExpressionImpl1 implements SewingExpression {
 	}
 
 	public Evaluate compile(Node node) {
-		return compile0(node).newFun();
+		return compile_(node).newFun();
 	}
 
-	private LambdaInstance<Evaluate> compile0(Node node) {
+	private LambdaInstance<Evaluate> compile_(Node node) {
 		Node[] m;
 
 		if ((m = Suite.matcher(".0 + .1").apply(node)) != null)
@@ -76,8 +76,8 @@ public class SewingExpressionImpl1 implements SewingExpression {
 	}
 
 	private LambdaInstance<Evaluate> compileOperator(Node[] m, String op) {
-		LambdaInstance<Evaluate> lambda0 = compile0(m[0]);
-		LambdaInstance<Evaluate> lambda1 = compile0(m[1]);
+		LambdaInstance<Evaluate> lambda0 = compile_(m[0]);
+		LambdaInstance<Evaluate> lambda1 = compile_(m[1]);
 
 		return LambdaInstance.of(Evaluate.class, env -> {
 			FunExpr v0 = lambda0.invoke(env);

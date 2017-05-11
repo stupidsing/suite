@@ -42,7 +42,7 @@ public class Range<T extends Comparable<? super T>> {
 
 	@Override
 	public String toString() {
-		return from + ".." + to;
+		return from + "~" + to;
 	}
 
 }

@@ -96,10 +96,10 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchCommand(String input, Writer writer) throws IOException {
-		return Util.isBlank(input) || dispatchCommand0(input, writer);
+		return Util.isBlank(input) || dispatchCommand_(input, writer);
 	}
 
-	private boolean dispatchCommand0(String input, Writer writer) throws IOException {
+	private boolean dispatchCommand_(String input, Writer writer) throws IOException {
 		PrintWriter pw = new PrintWriter(writer);
 		boolean code = true;
 

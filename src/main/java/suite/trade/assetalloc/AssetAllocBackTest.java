@@ -32,58 +32,77 @@ public class AssetAllocBackTest {
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
+	private Streamlet<Asset> assets;
 	private AssetAllocator assetAllocator;
+	private LocalDate historyFromDate;
+	private Fun<List<LocalDate>, List<LocalDate>> datesPred;
 	private Sink<String> log;
 
-	public AssetAllocBackTest(AssetAllocator assetAllocator) {
-		this(assetAllocator, System.out::println);
+	public static AssetAllocBackTest of( //
+			Configuration cfg, //
+			Streamlet<Asset> assets, //
+			AssetAllocator assetAllocator, //
+			Sink<String> log) {
+		LocalDate historyFromDate = LocalDate.now();
+		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Arrays.asList(Util.last(dates));
+		return new AssetAllocBackTest(cfg, assets, assetAllocator, historyFromDate, datesPred, log);
 	}
 
-	public AssetAllocBackTest(AssetAllocator assetAllocator, Sink<String> log) {
+	public static AssetAllocBackTest ofFromTo( //
+			Configuration cfg, //
+			Streamlet<Asset> assets, //
+			AssetAllocator assetAllocator, //
+			DatePeriod period, //
+			Sink<String> log) {
+		LocalDate historyFromDate = period.from;
+		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Read.from(dates).filter(period::contains).toList();
+		return new AssetAllocBackTest(cfg, assets, assetAllocator, historyFromDate, datesPred, log);
+	}
+
+	public AssetAllocBackTest( //
+			Configuration cfg, //
+			Streamlet<Asset> assets, //
+			AssetAllocator assetAllocator, //
+			LocalDate from, //
+			Fun<List<LocalDate>, List<LocalDate>> datesPred, //
+			Sink<String> log) {
+		this.cfg = cfg;
+		this.assets = assets;
+		this.historyFromDate = from.minusYears(1);
 		this.assetAllocator = assetAllocator;
+		this.datesPred = datesPred;
 		this.log = log;
 	}
 
-	public Simulate simulateLatest(float fund0) {
-		return new Simulate(fund0, LocalDate.now(), dates -> Arrays.asList(Util.last(dates)));
-	}
-
-	public Simulate simulateFromTo(float fund0, DatePeriod period) {
-		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Read.from(dates) //
-				.filter(period::contains) //
-				.toList();
-		return new Simulate(fund0, period.from, datesPred);
+	public Simulate simulate(float fund0) {
+		return new Simulate(fund0);
 	}
 
 	public class Simulate {
 		public final Account account;
 		public final float[] valuations;
+		public final double annualReturn;
+		public final double sharpe;
+		public final double skewness;
 
-		private Simulate(float fund0, LocalDate from, Fun<List<LocalDate>, List<LocalDate>> datesPred) {
+		private Simulate(float fund0) {
+			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
 			Map<String, DataSource> dataSourceBySymbol = new HashMap<>();
-			LocalDate historyFromDate = from.minusYears(1);
 			double valuation = fund0;
-			Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(from.getYear() - 1);
-			// hkex.getCompanies();
 
 			account = Account.fromCash(fund0);
 
-			Map<String, Integer> lotSizeBySymbol = cfg.queryLotSizeBySymbol(assets);
-
 			// pre-fetch quotes
-			cfg.quote(lotSizeBySymbol.keySet());
+			cfg.quote(assetBySymbol.keySet());
 
-			for (Asset asset : assets) {
-				String symbol = asset.symbol;
-				if (lotSizeBySymbol.containsKey(symbol))
-					try {
-						DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
-						dataSource.validate();
-						dataSourceBySymbol.put(symbol, dataSource);
-					} catch (Exception ex) {
-						LogUtil.warn(ex.getMessage() + " in " + asset);
-					}
-			}
+			for (String symbol : assetBySymbol.keySet())
+				try {
+					DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
+					dataSource.validate();
+					dataSourceBySymbol.put(symbol, dataSource);
+				} catch (Exception ex) {
+					LogUtil.warn(ex.getMessage() + " in " + assetBySymbol.get(symbol));
+				}
 
 			List<LocalDate> tradeDates = Read.from2(dataSourceBySymbol) //
 					.concatMap((symbol, dataSource) -> Read.from(dataSource.dates)) //
@@ -111,22 +130,22 @@ public class AssetAllocBackTest {
 						.mapValue(dataSource -> dataSource.last().price) //
 						.toMap();
 
-				List<Pair<String, Double>> potentialStatsBySymbol = assetAllocator.allocate( //
+				List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate( //
 						backTestDataSourceBySymbol, //
 						tradeDates, //
 						date);
 
-				if (potentialStatsBySymbol != null) {
-					double totalPotential = Read.from2(potentialStatsBySymbol) //
+				if (potentialBySymbol != null) {
+					double totalPotential = Read.from2(potentialBySymbol) //
 							.collect(As.<String, Double> sumOfDoubles((symbol, potential) -> potential));
 
 					double valuation_ = valuation;
 
-					Map<String, Integer> portfolio = Read.from2(potentialStatsBySymbol) //
+					Map<String, Integer> portfolio = Read.from2(potentialBySymbol) //
 							.filterKey(symbol -> !Util.stringEquals(symbol, Asset.cashCode)) //
 							.map2((symbol, potential) -> symbol, (symbol, potential) -> {
 								float price = backTestDataSourceBySymbol.get(symbol).last().price;
-								int lotSize = lotSizeBySymbol.get(symbol);
+								int lotSize = assetBySymbol.get(symbol).lotSize;
 								double lots = valuation_ * potential / (totalPotential * price * lotSize);
 								return lotSize * (int) lots; // truncate
 								// return lotSize * Math.round(lots);
@@ -151,15 +170,17 @@ public class AssetAllocBackTest {
 			LocalDate datex = Util.last(dates);
 			double v0 = valuations[0];
 			double vx = valuations[valuations.length - 1];
-
 			double nYears = DatePeriod.of(date0, datex).nYears();
-			double annualReturn = Math.expm1(Math.log(vx / v0) / nYears);
-			double sharpe = ts.sharpeRatio(valuations, nYears);
-			double skewness = stat.skewness(valuations);
 
-			log.sink("annual return = " + To.string(annualReturn) //
+			annualReturn = Math.expm1(Math.log(vx / v0) / nYears);
+			sharpe = ts.sharpeRatio(valuations, nYears);
+			skewness = stat.skewness(valuations);
+		}
+
+		public String conclusion() {
+			return "annual return = " + To.string(annualReturn) //
 					+ ", sharpe = " + To.string(sharpe) //
-					+ ", skewness = " + To.string(skewness));
+					+ ", skewness = " + To.string(skewness);
 		}
 	}
 

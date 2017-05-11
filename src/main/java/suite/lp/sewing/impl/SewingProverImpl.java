@@ -191,7 +191,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	public Predicate<ProverConfig> compile(Node node) {
-		Trampoline tr = cutBegin(compile0(passThru, node));
+		Trampoline tr = cutBegin(compile_(passThru, node));
 
 		return pc -> {
 			Mutable<Boolean> result = Mutable.of(false);
@@ -265,12 +265,12 @@ public class SewingProverImpl implements SewingProver {
 	private Trampoline compileRule(Node head, Node tail, boolean isHasCut) {
 		SewingBinder sb = new SewingBinderImpl0();
 		BindPredicate p = sb.compileBind(head);
-		Trampoline tr1 = isHasCut ? compile0(sb, tail) : compileNoCut0(sb, tail);
+		Trampoline tr1 = isHasCut ? compile_(sb, tail) : compileNoCut_(sb, tail);
 		return newEnv(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
 	}
 
-	private Trampoline compileNoCut0(SewingBinder sb, Node node) {
-		Cps cps = compileNoCutPredicate0(sb, node, rt -> {
+	private Trampoline compileNoCut_(SewingBinder sb, Node node) {
+		Cps cps = compileNoCutPredicate_(sb, node, rt -> {
 			IList<Trampoline> rems = rt.rems;
 			rt.rems = IList.cons(fail, IList.end());
 			new Runtime(rt, rt_ -> {
@@ -284,16 +284,16 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Cps compileNoCutPredicate0(SewingBinder sb, Node node, Cps cpsx) {
+	private Cps compileNoCutPredicate_(SewingBinder sb, Node node, Cps cpsx) {
 		List<Node> list;
 		Cps cps;
 
 		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size()) {
 			cps = cpsx;
 			for (Node n : Util.reverse(list))
-				cps = compileNoCutPredicate0(sb, n, cps);
+				cps = compileNoCutPredicate_(sb, n, cps);
 		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size()) {
-			Cps[] cpsArray = Read.from(list).map(n -> compileNoCutPredicate0(sb, n, cpsx)).toArray(Cps.class);
+			Cps[] cpsArray = Read.from(list).map(n -> compileNoCutPredicate_(sb, n, cpsx)).toArray(Cps.class);
 			cps = rt -> {
 				Restore restore = save(rt);
 				for (Cps cps1 : cpsArray) {
@@ -302,7 +302,7 @@ public class SewingProverImpl implements SewingProver {
 				}
 			};
 		} else {
-			Trampoline tr = compile0(sb, node);
+			Trampoline tr = compile_(sb, node);
 			Trampoline rem = rt -> {
 				cpsx.cont(rt);
 				return fail;
@@ -321,16 +321,16 @@ public class SewingProverImpl implements SewingProver {
 		return cps;
 	}
 
-	private Trampoline compile0(SewingBinder sb, Node node) {
+	private Trampoline compile_(SewingBinder sb, Node node) {
 		Trampoline tr = null;
 		List<Node> list;
 		Tree tree;
 		Node[] m;
 
 		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size())
-			tr = and(Read.from(list).map(n -> compile0(sb, n)));
+			tr = and(Read.from(list).map(n -> compile_(sb, n)));
 		else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
-			tr = or(Read.from(list).map(n -> compile0(sb, n)));
+			tr = or(Read.from(list).map(n -> compile_(sb, n)));
 		else if ((m = Suite.matcher(".0 = .1").apply(node)) != null) {
 			boolean b = complexity(m[0]) <= complexity(m[1]);
 			Node n0 = b ? m[0] : m[1];
@@ -348,7 +348,7 @@ public class SewingProverImpl implements SewingProver {
 			tr = callPredicate(sb, predicate, m[2]);
 		} else if ((m = Suite.matcher("find.all .0 .1 .2").apply(node)) != null) {
 			Clone_ f = sb.compile(m[0]);
-			Trampoline tr1 = compile0(sb, m[1]);
+			Trampoline tr1 = compile_(sb, m[1]);
 			BindPredicate p = sb.compileBind(m[2]);
 			List<Node> vs = new ArrayList<>();
 			tr = rt -> {
@@ -364,9 +364,9 @@ public class SewingProverImpl implements SewingProver {
 				return tr1;
 			};
 		} else if ((m = Suite.matcher("if .0 .1 .2").apply(node)) != null) {
-			Trampoline tr0 = compile0(sb, m[0]);
-			Trampoline tr1 = compile0(sb, m[1]);
-			Trampoline tr2 = compile0(sb, m[2]);
+			Trampoline tr0 = compile_(sb, m[0]);
+			Trampoline tr1 = compile_(sb, m[1]);
+			Trampoline tr2 = compile_(sb, m[2]);
 			tr = if_(tr0, tr1, tr2);
 		} else if ((m = Suite.matcher("let .0 .1").apply(node)) != null) {
 			BindPredicate p = sb.compileBind(m[0]);
@@ -402,7 +402,7 @@ public class SewingProverImpl implements SewingProver {
 			BindPredicate elem_ = sb.compileBind(m[3]);
 			BindPredicate v0_ = sb.compileBind(m[4]);
 			Clone_ vx_ = sb.compile(m[5]);
-			Trampoline tr1 = compile0(sb, m[6]);
+			Trampoline tr1 = compile_(sb, m[6]);
 			tr = rt -> {
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				Env env0 = rt.env;
@@ -438,7 +438,7 @@ public class SewingProverImpl implements SewingProver {
 		} else if ((m = Suite.matcher("list.query.clone .0 .1 .2").apply(node)) != null) {
 			Clone_ f = sb.compile(m[0]);
 			BindPredicate p = sb.compileBind(m[1]);
-			Trampoline tr1 = compile0(sb, m[2]);
+			Trampoline tr1 = compile_(sb, m[2]);
 			tr = rt -> {
 				Env env0 = rt.env;
 				rt.pushRem(rt_ -> {
@@ -471,9 +471,9 @@ public class SewingProverImpl implements SewingProver {
 				};
 			};
 		} else if ((m = Suite.matcher("not .0").apply(node)) != null)
-			tr = if_(compile0(sb, m[0]), fail, okay);
+			tr = if_(compile_(sb, m[0]), fail, okay);
 		else if ((m = Suite.matcher("once .0").apply(node)) != null) {
-			Trampoline tr0 = compile0(sb, m[0]);
+			Trampoline tr0 = compile_(sb, m[0]);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
 				rt.pushRem(rt_ -> {
@@ -485,7 +485,7 @@ public class SewingProverImpl implements SewingProver {
 		} else if ((m = Suite.matcher("suspend .0 .1 .2").apply(node)) != null) {
 			Clone_ f0 = sb.compile(m[0]);
 			Clone_ f1 = sb.compile(m[1]);
-			Trampoline tr0 = compile0(sb, m[2]);
+			Trampoline tr0 = compile_(sb, m[2]);
 
 			tr = rt -> {
 				List<Node> results = new ArrayList<>();
@@ -517,9 +517,9 @@ public class SewingProverImpl implements SewingProver {
 				return okay;
 			};
 		} else if ((m = Suite.matcher("try .0 .1 .2").apply(node)) != null) {
-			Trampoline tr0 = compile0(sb, m[0]);
+			Trampoline tr0 = compile_(sb, m[0]);
 			BindPredicate p = sb.compileBind(m[1]);
-			Trampoline catch0 = compile0(sb, m[2]);
+			Trampoline catch0 = compile_(sb, m[2]);
 			tr = rt -> {
 				BindEnv be = rt;
 				Restore restore = save(rt);
@@ -555,7 +555,7 @@ public class SewingProverImpl implements SewingProver {
 				tr = callSystemPredicate(sb, name, Atom.NIL);
 		} else if (node instanceof Reference) {
 			Clone_ f = sb.compile(node);
-			tr = rt -> compile0(passThru, f.apply(rt.env));
+			tr = rt -> compile_(passThru, f.apply(rt.env));
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)

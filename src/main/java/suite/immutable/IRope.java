@@ -70,17 +70,17 @@ public class IRope<T> {
 	}
 
 	public static <T> IRope<T> meld(IRope<T> rope0, IRope<T> rope1) {
-		return normalize(meld0(rope0, rope1));
+		return normalize(meld_(rope0, rope1));
 	}
 
-	private static <T> List<IRope<T>> meld0(IRope<T> rope0, IRope<T> rope1) {
+	private static <T> List<IRope<T>> meld_(IRope<T> rope0, IRope<T> rope1) {
 		int depth = Math.max(rope0.depth, rope1.depth);
 		List<IRope<T>> nodes;
 
 		if (rope1.depth < rope0.depth)
-			nodes = To.list(Util.left(rope0.nodes, -1), meld0(Util.last(rope0.nodes), rope1));
+			nodes = To.list(Util.left(rope0.nodes, -1), meld_(Util.last(rope0.nodes), rope1));
 		else if (rope0.depth < rope1.depth)
-			nodes = To.list(meld0(rope0, Util.first(rope1.nodes)), Util.right(rope1.nodes, 1));
+			nodes = To.list(meld_(rope0, Util.first(rope1.nodes)), Util.right(rope1.nodes, 1));
 		else if (0 < depth)
 			nodes = To.list(rope0.nodes, rope1.nodes);
 		else {

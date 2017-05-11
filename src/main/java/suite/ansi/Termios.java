@@ -88,13 +88,13 @@ public class Termios implements Closeable {
 
 	public void scroll(int dir) {
 		puts(esc + "[r");
-		scroll0(dir);
+		scroll_(dir);
 	}
 
 	// dir = 1 for scrolling down
 	public void scroll(int row0, int row1, int dir) {
 		puts(esc + "[" + row0 + ";" + row1 + "r");
-		scroll0(dir);
+		scroll_(dir);
 	}
 
 	public void puts(String s) {
@@ -102,7 +102,7 @@ public class Termios implements Closeable {
 			libc.putchar(ch);
 	}
 
-	private void scroll0(int dir) {
+	private void scroll_(int dir) {
 		while (dir < 0) {
 			puts(esc + "M");
 			dir++;

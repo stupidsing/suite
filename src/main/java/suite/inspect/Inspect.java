@@ -360,11 +360,32 @@ public class Inspect {
 	public List<Field> fields(Class<?> clazz) {
 		List<Field> fields = fieldsByClass.get(clazz);
 		if (fields == null)
-			fieldsByClass.put(clazz, fields = getFields0(clazz));
+			fieldsByClass.put(clazz, fields = getFields_(clazz));
 		return fields;
 	}
 
-	private List<Field> getFields0(Class<?> clazz) {
+	public List<Method> getters(Class<?> clazz) {
+		List<Method> getters = gettersByClass.get(clazz);
+		if (getters == null)
+			gettersByClass.put(clazz, getters = getGetters_(clazz));
+		return getters;
+	}
+
+	public List<Method> methods(Class<?> clazz) {
+		List<Method> Methods = methodsByClass.get(clazz);
+		if (Methods == null)
+			methodsByClass.put(clazz, Methods = getMethods_(clazz));
+		return Methods;
+	}
+
+	public List<Property> properties(Class<?> clazz) {
+		List<Property> properties = propertiesByClass.get(clazz);
+		if (properties == null)
+			propertiesByClass.put(clazz, properties = getProperties_(clazz));
+		return properties;
+	}
+
+	private List<Field> getFields_(Class<?> clazz) {
 		Class<?> superClass = clazz.getSuperclass();
 
 		// do not display same field of different base classes
@@ -382,14 +403,7 @@ public class Inspect {
 		return fields;
 	}
 
-	public List<Method> getters(Class<?> clazz) {
-		List<Method> getters = gettersByClass.get(clazz);
-		if (getters == null)
-			gettersByClass.put(clazz, getters = getGetters0(clazz));
-		return getters;
-	}
-
-	private List<Method> getGetters0(Class<?> clazz) {
+	private List<Method> getGetters_(Class<?> clazz) {
 		return Read.from(methods(clazz)) //
 				.filter(getter -> {
 					String name = getter.getName();
@@ -398,14 +412,7 @@ public class Inspect {
 				.toList();
 	}
 
-	public List<Method> methods(Class<?> clazz) {
-		List<Method> Methods = methodsByClass.get(clazz);
-		if (Methods == null)
-			methodsByClass.put(clazz, Methods = getMethods0(clazz));
-		return Methods;
-	}
-
-	private List<Method> getMethods0(Class<?> clazz) {
+	private List<Method> getMethods_(Class<?> clazz) {
 		Class<?> superClass = clazz.getSuperclass();
 
 		// do not display same method of different base classes
@@ -423,14 +430,7 @@ public class Inspect {
 		return methods;
 	}
 
-	public List<Property> properties(Class<?> clazz) {
-		List<Property> properties = propertiesByClass.get(clazz);
-		if (properties == null)
-			propertiesByClass.put(clazz, properties = getProperties0(clazz));
-		return properties;
-	}
-
-	private List<Property> getProperties0(Class<?> clazz) {
+	private List<Property> getProperties_(Class<?> clazz) {
 		List<Method> methods = methods(clazz);
 
 		Map<String, Method> getMethods = Read.from(methods) //

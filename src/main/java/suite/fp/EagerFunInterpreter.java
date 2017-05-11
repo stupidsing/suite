@@ -79,16 +79,16 @@ public class EagerFunInterpreter {
 		}
 	}
 
-	private class Eager0 {
+	private class Eager_ {
 		private int fs;
 		private IMap<Node, Fun<Frame, Node>> vm;
 
-		private Eager0(int fs, IMap<Node, Fun<Frame, Node>> vm) {
+		private Eager_(int fs, IMap<Node, Fun<Frame, Node>> vm) {
 			this.fs = fs;
 			this.vm = vm;
 		}
 
-		private Fun<Frame, Node> eager0(Node node) {
+		private Fun<Frame, Node> eager_(Node node) {
 			Fun<Frame, Node> result;
 			APPLY APPLY;
 			ATOM ATOM;
@@ -109,8 +109,8 @@ public class EagerFunInterpreter {
 			WRAP WRAP;
 
 			if ((APPLY = Matcher.apply.match(node)) != null) {
-				Fun<Frame, Node> param_ = eager0(APPLY.param);
-				Fun<Frame, Node> fun_ = eager0(APPLY.fun);
+				Fun<Frame, Node> param_ = eager_(APPLY.param);
+				Fun<Frame, Node> fun_ = eager_(APPLY.fun);
 				result = frame -> {
 					Node fun = fun_.apply(frame);
 					Node param = param_.apply(frame);
@@ -123,14 +123,14 @@ public class EagerFunInterpreter {
 			else if ((CHARS = Matcher.chars.match(node)) != null)
 				result = immediate(new Data<>(Chars.of(((Str) CHARS.value).value)));
 			else if ((CONS = Matcher.cons.match(node)) != null) {
-				Fun<Frame, Node> p0_ = eager0(CONS.head);
-				Fun<Frame, Node> p1_ = eager0(CONS.tail);
+				Fun<Frame, Node> p0_ = eager_(CONS.head);
+				Fun<Frame, Node> p1_ = eager_(CONS.tail);
 				Operator operator = oper(CONS.type);
 				result = frame -> Tree.of(operator, p0_.apply(frame), p1_.apply(frame));
 			} else if ((DECONS = Matcher.decons.match(node)) != null) {
-				Fun<Frame, Node> value_ = eager0(DECONS.value);
-				Fun<Frame, Node> then_ = put(DECONS.left).put(DECONS.right).eager0(DECONS.then);
-				Fun<Frame, Node> else_ = eager0(DECONS.else_);
+				Fun<Frame, Node> value_ = eager_(DECONS.value);
+				Fun<Frame, Node> then_ = put(DECONS.left).put(DECONS.right).eager_(DECONS.then);
+				Fun<Frame, Node> else_ = eager_(DECONS.else_);
 				Operator operator = oper(DECONS.type);
 				result = frame -> {
 					Tree tree = Tree.decompose(value_.apply(frame), operator);
@@ -147,9 +147,9 @@ public class EagerFunInterpreter {
 				if (arrays.size() == 1) {
 					Node[] array = arrays.get(0);
 					IMap<Node, Fun<Frame, Node>> vm1 = vm.put(array[0], unwrap(getter(fs)));
-					Eager0 eager1 = new Eager0(fs + 1, vm1);
-					Fun<Frame, Node> value_ = wrap(eager1.eager0(array[1]));
-					Fun<Frame, Node> expr = eager1.eager0(DEFVARS.do_);
+					Eager_ eager1 = new Eager_(fs + 1, vm1);
+					Fun<Frame, Node> value_ = wrap(eager1.eager_(array[1]));
+					Fun<Frame, Node> expr = eager1.eager_(DEFVARS.do_);
 					result = frame -> {
 						frame.add(value_.apply(frame));
 						return expr.apply(frame);
@@ -165,12 +165,12 @@ public class EagerFunInterpreter {
 						fs1++;
 					}
 
-					Eager0 eager1 = new Eager0(fs1, vm1);
+					Eager_ eager1 = new Eager_(fs1, vm1);
 
 					for (Node[] array : arrays)
-						values_.add(wrap(eager1.eager0(array[1])));
+						values_.add(wrap(eager1.eager_(array[1])));
 
-					Fun<Frame, Node> expr = eager1.eager0(DEFVARS.do_);
+					Fun<Frame, Node> expr = eager1.eager_(DEFVARS.do_);
 
 					result = frame -> {
 						for (Fun<Frame, Node> value_ : values_)
@@ -188,26 +188,26 @@ public class EagerFunInterpreter {
 					Fun<Frame, Node> getter0 = pair.t1;
 					vm1 = vm1.put(pair.t0, frame -> getter0.apply(frame.parent));
 				}
-				Fun<Frame, Node> value_ = new Eager0(0, vm1).put(FUN.param).eager0(FUN.do_);
+				Fun<Frame, Node> value_ = new Eager_(0, vm1).put(FUN.param).eager_(FUN.do_);
 				result = frame -> new Fun_(in -> {
 					Frame frame1 = new Frame(frame);
 					frame1.add(in);
 					return value_.apply(frame1);
 				});
 			} else if ((IF = Matcher.if_.match(node)) != null) {
-				Fun<Frame, Node> if_ = eager0(IF.if_);
-				Fun<Frame, Node> then_ = eager0(IF.then_);
-				Fun<Frame, Node> else_ = eager0(IF.else_);
+				Fun<Frame, Node> if_ = eager_(IF.if_);
+				Fun<Frame, Node> then_ = eager_(IF.then_);
+				Fun<Frame, Node> else_ = eager_(IF.else_);
 				result = frame -> (if_.apply(frame) == Atom.TRUE ? then_ : else_).apply(frame);
 			} else if (Matcher.nil.match(node) != null)
 				result = immediate(Atom.NIL);
 			else if ((NUMBER = Matcher.number.match(node)) != null)
 				result = immediate(NUMBER.value);
 			else if ((PRAGMA = Matcher.pragma.match(node)) != null)
-				result = eager0(PRAGMA.do_);
+				result = eager_(PRAGMA.do_);
 			else if ((TCO = Matcher.tco.match(node)) != null) {
-				Fun<Frame, Node> iter_ = eager0(TCO.iter);
-				Fun<Frame, Node> in_ = eager0(TCO.in_);
+				Fun<Frame, Node> iter_ = eager_(TCO.iter);
+				Fun<Frame, Node> in_ = eager_(TCO.in_);
 				result = frame -> {
 					Fun<Node, Node> iter = fun(iter_.apply(frame));
 					Node in = in_.apply(frame);
@@ -221,21 +221,21 @@ public class EagerFunInterpreter {
 					return p1.getRight();
 				};
 			} else if ((TREE = Matcher.tree.match(node)) != null)
-				result = eager0(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
+				result = eager_(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
 			else if ((UNWRAP = Matcher.unwrap.match(node)) != null)
-				result = unwrap(eager0(UNWRAP.do_));
+				result = unwrap(eager_(UNWRAP.do_));
 			else if ((VAR = Matcher.var.match(node)) != null)
 				result = vm.get(VAR.name);
 			else if ((WRAP = Matcher.wrap.match(node)) != null)
-				result = wrap(eager0(WRAP.do_));
+				result = wrap(eager_(WRAP.do_));
 			else
 				throw new RuntimeException("Unrecognized construct " + node);
 
 			return result;
 		}
 
-		private Eager0 put(Node node) {
-			return new Eager0(fs + 1, vm.put(node, getter(fs)));
+		private Eager_ put(Node node) {
+			return new Eager_(fs + 1, vm.put(node, getter(fs)));
 		}
 	}
 
@@ -277,7 +277,7 @@ public class EagerFunInterpreter {
 		df.put("+pright", f1(a -> Tree.decompose(a).getRight()));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
-		Eager0 eager0 = new Eager0(0, IMap.empty());
+		Eager_ eager0 = new Eager_(0, IMap.empty());
 		Frame frame = new Frame(null);
 
 		for (String key : keys) {
@@ -285,7 +285,7 @@ public class EagerFunInterpreter {
 			frame.add(df.get(key));
 		}
 
-		return eager0.eager0(parsed).apply(frame);
+		return eager0.eager_(parsed).apply(frame);
 	}
 
 	public void setLazyify(boolean isLazyify) {

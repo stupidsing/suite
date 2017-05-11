@@ -51,15 +51,15 @@ public class FileSystemKeyUtil {
 	}
 
 	public Bytes toBytes(NameKey key) {
-		return Bytes.concat(toBytes0(key), key.path, Bytes.asList((byte) key.size)).pad(keyLength);
+		return Bytes.concat(toBytes_(key), key.path, Bytes.asList((byte) key.size)).pad(keyLength);
 	}
 
 	public Bytes toBytes(DataKey key) {
 		byte[] bs = ByteBuffer.allocate(4).putInt(Integer.reverseBytes(key.seq)).array();
-		return Bytes.concat(toBytes0(key), Bytes.of(bs)).pad(keyLength);
+		return Bytes.concat(toBytes_(key), Bytes.of(bs)).pad(keyLength);
 	}
 
-	private Bytes toBytes0(Key key) {
+	private Bytes toBytes_(Key key) {
 		return Bytes.concat(key.hash, Bytes.asList((byte) key.id));
 	}
 

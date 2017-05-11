@@ -68,19 +68,19 @@ public class Nodify {
 	}
 
 	public <T> Node nodify(Class<T> clazz, T t) {
-		return apply0(getNodifier(clazz), t);
+		return apply_(getNodifier(clazz), t);
 	}
 
 	public <T> T unnodify(Class<T> clazz, Node node) {
 		@SuppressWarnings("unchecked")
-		T t = (T) apply0(getNodifier(clazz), node);
+		T t = (T) apply_(getNodifier(clazz), node);
 		return t;
 	}
 
 	private Nodifier getNodifier(Type type) {
 		Nodifier nodifier = nodifiers.get(type);
 		if (nodifier == null) {
-			nodifiers.put(type, new Nodifier(object -> apply0(getNodifier(type), object), node -> apply0(getNodifier(type), node)));
+			nodifiers.put(type, new Nodifier(object -> apply_(getNodifier(type), object), node -> apply_(getNodifier(type), node)));
 			nodifiers.put(type, nodifier = newNodifier(type));
 		}
 		return nodifier;
@@ -110,12 +110,12 @@ public class Nodify {
 				Fun<Object, Node> forward = object -> {
 					Node node = Atom.NIL;
 					for (int i = Array.getLength(object) - 1; 0 <= i; i--)
-						node = Tree.of(TermOp.OR____, apply0(nodifier1, Array.get(object, i)), node);
+						node = Tree.of(TermOp.OR____, apply_(nodifier1, Array.get(object, i)), node);
 					return node;
 				};
 				nodifier = new Nodifier(forward, node -> {
 					List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)) //
-							.map(n -> apply0(nodifier1, n)) //
+							.map(n -> apply_(nodifier1, n)) //
 							.toList();
 					int size = list.size();
 					Object objects = Array.newInstance(componentType, size);
@@ -126,7 +126,7 @@ public class Nodify {
 			} else if (clazz.isInterface()) // polymorphism
 				nodifier = new Nodifier(object -> {
 					Class<?> clazz1 = object.getClass();
-					Node n = apply0(getNodifier(clazz1), object);
+					Node n = apply_(getNodifier(clazz1), object);
 					return Tree.of(TermOp.COLON_, Atom.of(clazz1.getName()), n);
 				}, node -> {
 					Tree tree = Tree.decompose(node, TermOp.COLON_);
@@ -137,7 +137,7 @@ public class Nodify {
 						} catch (ClassNotFoundException ex) {
 							throw new RuntimeException(ex);
 						}
-						return apply0(getNodifier(clazz1), tree.getRight());
+						return apply_(getNodifier(clazz1), tree.getRight());
 					} else
 						// happens when an enum implements an interface
 						throw new RuntimeException("Cannot instantiate enum from interfaces");
@@ -155,7 +155,7 @@ public class Nodify {
 					Dict dict = new Dict();
 					for (Pair<Atom, FieldInfo> pair : pairs) {
 						FieldInfo fieldInfo = pair.t1;
-						Node value = apply0(fieldInfo.nodifier, fieldInfo.field.get(object));
+						Node value = apply_(fieldInfo.nodifier, fieldInfo.field.get(object));
 						dict.map.put(pair.t0, Reference.of(value));
 					}
 					return dict;
@@ -165,7 +165,7 @@ public class Nodify {
 					for (Pair<Atom, FieldInfo> pair : pairs) {
 						FieldInfo fieldInfo = pair.t1;
 						Node value = map.get(pair.t0).finalNode();
-						fieldInfo.field.set(object1, apply0(fieldInfo.nodifier, value));
+						fieldInfo.field.set(object1, apply_(fieldInfo.nodifier, value));
 					}
 					return object1;
 				}));
@@ -182,12 +182,12 @@ public class Nodify {
 					Tree start = Tree.of(null, null, null), tree = start;
 					for (Object o : (Collection<?>) object) {
 						Tree tree0 = tree;
-						Tree.forceSetRight(tree0, tree = Tree.of(TermOp.OR____, apply0(nodifier1, o), null));
+						Tree.forceSetRight(tree0, tree = Tree.of(TermOp.OR____, apply_(nodifier1, o), null));
 					}
 					Tree.forceSetRight(tree, Atom.NIL);
 					return start.getRight();
 				}, node -> {
-					List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)).map(n -> apply0(nodifier1, n)).toList();
+					List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)).map(n -> apply_(nodifier1, n)).toList();
 					Collection<Object> object1 = (Collection<Object>) instantiate(clazz);
 					object1.addAll(list);
 					return object1;
@@ -198,13 +198,13 @@ public class Nodify {
 				nodifier = new Nodifier(object -> {
 					Dict dict = new Dict();
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
-						dict.map.put(apply0(kn, e.getKey()), Reference.of(apply0(vn, e.getValue())));
+						dict.map.put(apply_(kn, e.getKey()), Reference.of(apply_(vn, e.getValue())));
 					return dict;
 				}, node -> {
 					Map<Node, Reference> map = ((Dict) node).map;
 					Map<Object, Object> object1 = (Map<Object, Object>) instantiate(clazz);
 					for (Entry<Node, Reference> e : map.entrySet())
-						object1.put(apply0(kn, e.getKey()), apply0(vn, e.getValue().finalNode()));
+						object1.put(apply_(kn, e.getKey()), apply_(vn, e.getValue().finalNode()));
 					return object1;
 				});
 			} else
@@ -231,11 +231,11 @@ public class Nodify {
 		return t;
 	}
 
-	private Node apply0(Nodifier nodifier, Object object) {
+	private Node apply_(Nodifier nodifier, Object object) {
 		return object != null ? nodifier.nodify.apply(object) : Atom.NULL;
 	}
 
-	private Object apply0(Nodifier nodifier, Node node) {
+	private Object apply_(Nodifier nodifier, Node node) {
 		return node != Atom.NULL ? nodifier.unnodify.apply(node) : null;
 	}
 

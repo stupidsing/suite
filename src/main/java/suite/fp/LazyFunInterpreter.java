@@ -97,7 +97,7 @@ public class LazyFunInterpreter {
 		df.put("snd", () -> new Fun_(in -> ((Pair_) in.get()).second));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
-		Lazy0 lazy0 = new Lazy0(0, IMap.empty());
+		Lazy_ lazy0 = new Lazy_(0, IMap.empty());
 		Frame frame = new Frame(null);
 
 		for (String key : keys) {
@@ -105,7 +105,7 @@ public class LazyFunInterpreter {
 			frame.add(df.get(key));
 		}
 
-		return lazy0.lazy0(parsed).apply(frame);
+		return lazy0.lazy_(parsed).apply(frame);
 	}
 
 	private Reference parse(Node node) {
@@ -117,16 +117,16 @@ public class LazyFunInterpreter {
 		return parsed;
 	}
 
-	private class Lazy0 {
+	private class Lazy_ {
 		private int fs;
 		private IMap<Node, Fun<Frame, Thunk_>> vm;
 
-		private Lazy0(int fs, IMap<Node, Fun<Frame, Thunk_>> vm) {
+		private Lazy_(int fs, IMap<Node, Fun<Frame, Thunk_>> vm) {
 			this.fs = fs;
 			this.vm = vm;
 		}
 
-		private Fun<Frame, Thunk_> lazy0(Node node) {
+		private Fun<Frame, Thunk_> lazy_(Node node) {
 			Fun<Frame, Thunk_> result;
 			Node[] m;
 			APPLY APPLY;
@@ -148,8 +148,8 @@ public class LazyFunInterpreter {
 			WRAP WRAP;
 
 			if ((APPLY = Matcher.apply.match(node)) != null) {
-				Fun<Frame, Thunk_> param_ = lazy0(APPLY.param);
-				Fun<Frame, Thunk_> fun_ = lazy0(APPLY.fun);
+				Fun<Frame, Thunk_> param_ = lazy_(APPLY.param);
+				Fun<Frame, Thunk_> fun_ = lazy_(APPLY.fun);
 				result = frame -> {
 					Thunk_ fun = fun_.apply(frame);
 					Thunk_ param = param_.apply(frame);
@@ -162,13 +162,13 @@ public class LazyFunInterpreter {
 			else if ((CHARS = Matcher.chars.match(node)) != null)
 				result = immediate(new Data<>(Chars.of(((Str) CHARS.value).value)));
 			else if ((CONS = Matcher.cons.match(node)) != null) {
-				Fun<Frame, Thunk_> p0_ = lazy0(CONS.head);
-				Fun<Frame, Thunk_> p1_ = lazy0(CONS.tail);
+				Fun<Frame, Thunk_> p0_ = lazy_(CONS.head);
+				Fun<Frame, Thunk_> p1_ = lazy_(CONS.tail);
 				result = frame -> () -> new Pair_(p0_.apply(frame), p1_.apply(frame));
 			} else if ((DECONS = Matcher.decons.match(node)) != null) {
-				Fun<Frame, Thunk_> value_ = lazy0(DECONS.value);
-				Fun<Frame, Thunk_> then_ = put(DECONS.left).put(DECONS.right).lazy0(DECONS.then);
-				Fun<Frame, Thunk_> else_ = lazy0(DECONS.else_);
+				Fun<Frame, Thunk_> value_ = lazy_(DECONS.value);
+				Fun<Frame, Thunk_> then_ = put(DECONS.left).put(DECONS.right).lazy_(DECONS.then);
+				Fun<Frame, Thunk_> else_ = lazy_(DECONS.else_);
 
 				result = frame -> {
 					Node value = value_.apply(frame).get();
@@ -181,9 +181,9 @@ public class LazyFunInterpreter {
 						return else_.apply(frame);
 				};
 			} else if ((m = Suite.matcher("DEF-VARS (.0 .1,) .2").apply(node)) != null) {
-				Lazy0 lazy1 = put(m[0]);
-				Fun<Frame, Thunk_> value_ = lazy1.lazy0(m[1]);
-				Fun<Frame, Thunk_> expr = lazy1.lazy0(m[2]);
+				Lazy_ lazy1 = put(m[0]);
+				Fun<Frame, Thunk_> value_ = lazy1.lazy_(m[1]);
+				Fun<Frame, Thunk_> expr = lazy1.lazy_(m[2]);
 
 				result = frame -> {
 					Mutable<Thunk_> value = Mutable.nil();
@@ -195,16 +195,16 @@ public class LazyFunInterpreter {
 				Fun<Node, Node[]> tuple = Suite.matcher(".0 .1");
 				Streamlet<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple);
 				int size = arrays.size();
-				Lazy0 lazy0 = this;
+				Lazy_ lazy0 = this;
 
 				for (Node[] array : arrays)
 					lazy0 = lazy0.put(array[0]);
 
 				List<Fun<Frame, Thunk_>> values_ = new ArrayList<>();
 				for (Node[] array : arrays)
-					values_.add(lazy0.lazy0(array[1]));
+					values_.add(lazy0.lazy_(array[1]));
 
-				Fun<Frame, Thunk_> expr = lazy0.lazy0(DEFVARS.do_);
+				Fun<Frame, Thunk_> expr = lazy0.lazy_(DEFVARS.do_);
 
 				result = frame -> {
 					List<Thunk_> values = new ArrayList<>(size);
@@ -227,23 +227,23 @@ public class LazyFunInterpreter {
 					vm1 = vm1.put(pair.t0, frame -> getter0.apply(frame.parent));
 				}
 
-				Fun<Frame, Thunk_> value_ = new Lazy0(0, vm1).put(FUN.param).lazy0(FUN.do_);
+				Fun<Frame, Thunk_> value_ = new Lazy_(0, vm1).put(FUN.param).lazy_(FUN.do_);
 				result = frame -> () -> new Fun_(in -> {
 					Frame frame1 = new Frame(frame);
 					frame1.add(in);
 					return value_.apply(frame1);
 				});
 			} else if ((IF = Matcher.if_.match(node)) != null)
-				result = lazy0(Suite.substitute("APPLY .2 APPLY .1 APPLY .0 VAR if", IF.if_, IF.then_, IF.else_));
+				result = lazy_(Suite.substitute("APPLY .2 APPLY .1 APPLY .0 VAR if", IF.if_, IF.then_, IF.else_));
 			else if (Matcher.nil.match(node) != null)
 				result = immediate(Atom.NIL);
 			else if ((NUMBER = Matcher.number.match(node)) != null)
 				result = immediate(NUMBER.value);
 			else if ((PRAGMA = Matcher.pragma.match(node)) != null)
-				result = lazy0(PRAGMA.do_);
+				result = lazy_(PRAGMA.do_);
 			else if ((TCO = Matcher.tco.match(node)) != null) {
-				Fun<Frame, Thunk_> iter_ = lazy0(TCO.iter);
-				Fun<Frame, Thunk_> in_ = lazy0(TCO.in_);
+				Fun<Frame, Thunk_> iter_ = lazy_(TCO.iter);
+				Fun<Frame, Thunk_> in_ = lazy_(TCO.in_);
 				result = frame -> {
 					Fun<Thunk_, Thunk_> iter = fun(iter_.apply(frame).get());
 					Thunk_ in = in_.apply(frame);
@@ -257,21 +257,21 @@ public class LazyFunInterpreter {
 					return p1.second;
 				};
 			} else if ((TREE = Matcher.tree.match(node)) != null)
-				result = lazy0(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
+				result = lazy_(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
 			else if ((UNWRAP = Matcher.unwrap.match(node)) != null)
-				result = lazy0(UNWRAP.do_);
+				result = lazy_(UNWRAP.do_);
 			else if ((VAR = Matcher.var.match(node)) != null)
 				result = vm.get(VAR.name);
 			else if ((WRAP = Matcher.wrap.match(node)) != null)
-				result = lazy0(WRAP.do_);
+				result = lazy_(WRAP.do_);
 			else
 				throw new RuntimeException("Unrecognized construct " + node);
 
 			return result;
 		}
 
-		private Lazy0 put(Node node) {
-			return new Lazy0(fs + 1, vm.put(node, getter(fs)));
+		private Lazy_ put(Node node) {
+			return new Lazy_(fs + 1, vm.put(node, getter(fs)));
 		}
 	}
 

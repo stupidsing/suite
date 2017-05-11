@@ -22,7 +22,7 @@ public class LazyIbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 	@Override
 	public V get(K key) {
 		Mutable<V> mutable = Mutable.nil();
-		update0(key, pair -> {
+		update_(key, pair -> {
 			mutable.set(pair != null ? pair.t1 : null);
 			return pair;
 		});
@@ -44,10 +44,10 @@ public class LazyIbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 	}
 
 	private synchronized void update(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
-		tree = update0(key, fun);
+		tree = update_(key, fun);
 	}
 
-	private LazyIbTree<Pair<K, V>> update0(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
+	private LazyIbTree<Pair<K, V>> update_(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
 		return tree.update(node(key), fun);
 	}
 

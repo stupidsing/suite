@@ -38,14 +38,14 @@ public class RecursiveFactorizer {
 		String in1 = pair.t0;
 		reverser = pair.t1;
 
-		FactorizeResult parsed = parse0(To.chars(in1), 0);
+		FactorizeResult parsed = parse_(To.chars(in1), 0);
 
 		// append possibly missed comments
 		int p = reverser.reverse(0);
 		return new FactorizeResult(Chars.concat(in.range(0, p), parsed.pre), parsed.node, parsed.post);
 	}
 
-	private FactorizeResult parse0(Chars chars, int fromOp) {
+	private FactorizeResult parse_(Chars chars, int fromOp) {
 		Chars chars1 = chars.trim();
 
 		if (0 < chars1.size()) {
@@ -85,9 +85,9 @@ public class RecursiveFactorizer {
 				}
 
 				List<FactorizeResult> list = new ArrayList<>(4);
-				list.add(parse0(left, li));
+				list.add(parse_(left, li));
 				list.add(term(middle));
-				list.add(parse0(right, ri));
+				list.add(parse_(right, ri));
 				if (post != null)
 					list.add(term(post));
 
@@ -100,7 +100,7 @@ public class RecursiveFactorizer {
 				Chars left = Chars.of(chars.cs, chars.start, chars1.start + 1);
 				Chars middle = Chars.of(chars.cs, chars1.start + 1, chars1.end - 1);
 				Chars right = Chars.of(chars.cs, chars1.end - 1, chars.end);
-				return FactorizeResult.merge("" + first, Arrays.asList(term(left), parse0(middle, 0), term(right)));
+				return FactorizeResult.merge("" + first, Arrays.asList(term(left), parse_(middle, 0), term(right)));
 			}
 		}
 

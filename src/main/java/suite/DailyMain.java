@@ -24,10 +24,13 @@ import suite.trade.DatePeriod;
 import suite.trade.Trade;
 import suite.trade.TradeUtil;
 import suite.trade.assetalloc.AssetAllocBackTest;
+import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
+import suite.trade.assetalloc.AssetAllocator;
 import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.QuoteDatabase;
+import suite.trade.data.Summarize;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
@@ -53,7 +56,7 @@ public class DailyMain extends ExecutableProgram {
 
 		// fetch Yahoo historical data
 		Map<String, DataSource> dataSourceBySymbol = cfg //
-				.queryLeadingCompaniesByMarketCap(LocalDate.now().getYear() - 1) //
+				.queryLeadingCompaniesByMarketCap(LocalDate.now()) //
 				.map(asset -> asset.symbol) //
 				.map2(cfg::dataSource) //
 				.toMap();
@@ -65,6 +68,8 @@ public class DailyMain extends ExecutableProgram {
 		// perform systematic trading
 		List<Pair<String, String>> outputs = Arrays.asList(bug(), mamr(), pmamr());
 		StringBuilder sb = new StringBuilder();
+
+		sb.append("\n" + new Summarize(cfg).summarize(To.sink(sb)));
 
 		for (Pair<String, String> output : outputs) {
 			sb.append("\n" + Constants.separator);
@@ -135,8 +140,6 @@ public class DailyMain extends ExecutableProgram {
 
 		LogUtil.info("S2 query lot sizes");
 
-		Map<String, Integer> lotSizeBySymbol = cfg.queryLotSizeBySymbol(assets);
-
 		DatePeriod period = DatePeriod.daysBefore(128);
 		String sevenDaysAgo = FormatUtil.formatDate(LocalDate.now().plusDays(-7));
 		List<String> messages = new ArrayList<>();
@@ -148,7 +151,6 @@ public class DailyMain extends ExecutableProgram {
 
 			if (backTestBySymbol.get(symbol)) {
 				String prefix = asset.toString();
-				int lotSize = lotSizeBySymbol.get(symbol);
 
 				try {
 					DataSource ds0 = cfg.dataSource(symbol, period);
@@ -168,7 +170,7 @@ public class DailyMain extends ExecutableProgram {
 
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
-					String message = "\nSIGNAL" + new Trade(signal * lotSize, symbol, latestPrice);
+					String message = "\nSIGNAL" + new Trade(signal * asset.lotSize, symbol, latestPrice);
 
 					if (signal != 0)
 						messages.add(message);
@@ -186,15 +188,20 @@ public class DailyMain extends ExecutableProgram {
 		String tag = "pmamr";
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = To.sink(sb);
-		AssetAllocBackTest backTest = new AssetAllocBackTest(new MovingAvgMeanReversionAssetAllocator(cfg, log), log);
+		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(LocalDate.now()); // hkex.getCompanies()
+		AssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(cfg, log);
+		Simulate sim = AssetAllocBackTest.of(cfg, assets, assetAllocator, log).simulate(300000f);
+
 		Account account0 = Account.fromPortfolio(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
-		Account account1 = backTest.simulateLatest(300000f).account;
+		Account account1 = sim.account;
 
 		Set<String> symbols = To.set(account0.assets().keySet(), account1.assets().keySet());
 		Map<String, Float> priceBySymbol = cfg.quote(symbols);
 		List<Trade> trades = TradeUtil.diff(account0.assets(), account1.assets(), priceBySymbol);
 
+		sb.append("\n" + sim.conclusion());
 		sb.append(Read.from(trades).map(trade -> "\nSIGNAL" + trade).collect(As.joined()));
+
 		return Pair.of(tag, sb.toString());
 	}
 

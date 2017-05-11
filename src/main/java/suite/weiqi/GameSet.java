@@ -98,7 +98,7 @@ public class GameSet {
 				nextPlayer = opponent;
 				previousStates.add(newHashCode);
 			} else
-				unplay0(move);
+				unplay_(move);
 		}
 
 		return success;
@@ -113,10 +113,10 @@ public class GameSet {
 	 */
 	public void unplay(Move move) {
 		previousStates.remove(board.hashCode());
-		unplay0(move);
+		unplay_(move);
 	}
 
-	private void unplay0(Move move) {
+	private void unplay_(Move move) {
 		Occupation opponent = nextPlayer.opponent();
 
 		if (move.type == MoveType.CAPTURE) {

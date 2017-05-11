@@ -63,20 +63,20 @@ public class Mapify {
 	}
 
 	public <T> Object mapify(Class<T> clazz, T t) {
-		return apply0(getMapifier(clazz).mapify, t);
+		return apply_(getMapifier(clazz).mapify, t);
 	}
 
 	public <T> T unmapify(Class<T> clazz, Object object) {
 		@SuppressWarnings("unchecked")
-		T t = (T) apply0(getMapifier(clazz).unmapify, object);
+		T t = (T) apply_(getMapifier(clazz).unmapify, object);
 		return t;
 	}
 
 	private Mapifier getMapifier(Type type) {
 		Mapifier mapifier = mapifiers.get(type);
 		if (mapifier == null) {
-			mapifiers.put(type, new Mapifier(object -> apply0(getMapifier(type).mapify, object) //
-					, object -> apply0(getMapifier(type).unmapify, object)));
+			mapifiers.put(type, new Mapifier(object -> apply_(getMapifier(type).mapify, object) //
+					, object -> apply_(getMapifier(type).unmapify, object)));
 			mapifiers.put(type, mapifier = newMapifier(type));
 		}
 		return mapifier;
@@ -98,14 +98,14 @@ public class Mapify {
 					Map<Object, Object> map = newMap();
 					int length = Array.getLength(object);
 					for (int i = 0; i < length; i++)
-						map.put(i, apply0(mapifier1.mapify, Array.get(object, i)));
+						map.put(i, apply_(mapifier1.mapify, Array.get(object, i)));
 					return map;
 				}, object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					Object objects = Array.newInstance(componentType, map.size());
 					int i = 0;
 					while (map.containsKey(i)) {
-						Array.set(objects, i, apply0(mapifier1.unmapify, map.get(i)));
+						Array.set(objects, i, apply_(mapifier1.unmapify, map.get(i)));
 						i++;
 					}
 					return objects;
@@ -113,7 +113,7 @@ public class Mapify {
 			} else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) // polymorphism
 				mapifier = new Mapifier(object -> {
 					Class<?> clazz1 = object.getClass();
-					Object m = apply0(getMapifier(clazz1).mapify, object);
+					Object m = apply_(getMapifier(clazz1).mapify, object);
 					if (m instanceof Map) {
 						Map<String, String> map = (Map<String, String>) m;
 						map.put("@class", clazz1.getName());
@@ -126,7 +126,7 @@ public class Mapify {
 						Map<?, ?> map = (Map<?, ?>) object;
 						String className = map.get("@class").toString();
 						Class<?> clazz1 = Rethrow.ex(() -> Class.forName(className));
-						return apply0(getMapifier(clazz1).unmapify, object);
+						return apply_(getMapifier(clazz1).unmapify, object);
 					} else
 						// happens when an enum implements an interface
 						return object;
@@ -142,13 +142,13 @@ public class Mapify {
 				mapifier = new Mapifier(object -> Rethrow.ex(() -> {
 					Map<Object, Object> map = newMap();
 					for (FieldInfo fi : fis)
-						map.put(fi.name, apply0(fi.mapifier.mapify, fi.field.get(object)));
+						map.put(fi.name, apply_(fi.mapifier.mapify, fi.field.get(object)));
 					return map;
 				}), object -> Rethrow.ex(() -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					Object object1 = clazz.newInstance();
 					for (FieldInfo fi : fis)
-						fi.field.set(object1, apply0(fi.mapifier.unmapify, map.get(fi.name)));
+						fi.field.set(object1, apply_(fi.mapifier.unmapify, map.get(fi.name)));
 					return object1;
 				}));
 			}
@@ -164,14 +164,14 @@ public class Mapify {
 					Map<Object, Object> map = newMap();
 					int i = 0;
 					for (Object o : (Collection<?>) object)
-						map.put(i++, apply0(mapifier1.mapify, o));
+						map.put(i++, apply_(mapifier1.mapify, o));
 					return map;
 				}, object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					Collection<Object> object1 = (Collection<Object>) instantiate(clazz);
 					int i = 0;
 					while (map.containsKey(i))
-						object1.add(apply0(mapifier1.unmapify, map.get(i++)));
+						object1.add(apply_(mapifier1.unmapify, map.get(i++)));
 					return object1;
 				});
 			} else if (mapClasses.contains(clazz)) {
@@ -180,13 +180,13 @@ public class Mapify {
 				mapifier = new Mapifier(object -> {
 					Map<Object, Object> map = newMap();
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
-						map.put(apply0(km.mapify, e.getKey()), apply0(vm.mapify, e.getValue()));
+						map.put(apply_(km.mapify, e.getKey()), apply_(vm.mapify, e.getValue()));
 					return map;
 				}, object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					Map<Object, Object> object1 = (Map<Object, Object>) instantiate(clazz);
 					for (Entry<?, ?> e : map.entrySet())
-						object1.put(apply0(km.unmapify, e.getKey()), apply0(vm.unmapify, e.getValue()));
+						object1.put(apply_(km.unmapify, e.getKey()), apply_(vm.unmapify, e.getValue()));
 					return object1;
 				});
 			} else
@@ -221,7 +221,7 @@ public class Mapify {
 		return t;
 	}
 
-	private Object apply0(Fun<Object, Object> fun, Object object) {
+	private Object apply_(Fun<Object, Object> fun, Object object) {
 		return object != null ? fun.apply(object) : null;
 	}
 

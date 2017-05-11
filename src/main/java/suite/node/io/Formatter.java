@@ -108,13 +108,13 @@ public class Formatter {
 
 		// avoids infinite recursion if object is recursive
 		if (set.add(objectId)) {
-			format0(node, parentPrec);
+			format_(node, parentPrec);
 			set.remove(objectId);
 		} else
 			sb.append("<<recurse>>");
 	}
 
-	private void format0(Node node, int parentPrec) {
+	private void format_(Node node, int parentPrec) {
 		if (node instanceof Atom)
 			sb.append(quoteAtomIfRequired(((Atom) node).name));
 		else if (node instanceof Data) {
@@ -159,10 +159,10 @@ public class Formatter {
 			format(tree.getRight(), 0);
 			sb.append("]");
 		} else
-			formatTree0(tree, parentPrec);
+			formatTree_(tree, parentPrec);
 	}
 
-	private void formatTree0(Tree tree, int parentPrec) {
+	private void formatTree_(Tree tree, int parentPrec) {
 		if (tree != null && tree.getOperator().getPrecedence() <= parentPrec) {
 			sb.append("(");
 			formatTree(tree);
@@ -179,10 +179,10 @@ public class Formatter {
 			format(m[1], 0);
 			sb.append("}");
 		} else
-			formatTree0(tree);
+			formatTree_(tree);
 	}
 
-	private void formatTree0(Tree tree) {
+	private void formatTree_(Tree tree) {
 		Operator operator = tree.getOperator();
 		Node left = tree.getLeft();
 		Node right = tree.getRight();

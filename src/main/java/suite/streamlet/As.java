@@ -129,9 +129,7 @@ public class As {
 	}
 
 	public static Streamlet<String[]> csv(Outlet<Bytes> outlet) {
-		return outlet.collect(As::lines_) //
-				.map(As::csvLine) //
-				.collect(As::streamlet);
+		return outlet.collect(As::lines_).map(As::csvLine).collect(As::streamlet);
 	}
 
 	public static Fun<Outlet<String>, String> joined() {

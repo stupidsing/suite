@@ -66,7 +66,7 @@ public class FunGenerateBytecode {
 	 * InstructionList object.
 	 */
 	public InstructionList visit(FunExpr e, Type returnType) {
-		visit0(e);
+		visit_(e);
 		list.add(InstructionFactory.createReturn(returnType));
 
 		InstructionList il = new InstructionList();
@@ -82,22 +82,22 @@ public class FunGenerateBytecode {
 		return il;
 	}
 
-	public void visit0(FunExpr e0) {
+	public void visit_(FunExpr e0) {
 		if (e0 instanceof AssignLocalFunExpr) {
 			AssignLocalFunExpr e1 = (AssignLocalFunExpr) e0;
-			visit0(e1.value);
+			visit_(e1.value);
 			list.add(InstructionFactory.createStore(fti.typeOf(e1.value), e1.index));
 		} else if (e0 instanceof BinaryFunExpr) {
 			BinaryFunExpr e1 = (BinaryFunExpr) e0;
-			visit0(e1.left);
-			visit0(e1.right);
+			visit_(e1.left);
+			visit_(e1.right);
 			list.add(InstructionFactory.createBinaryOperation(e1.op, fti.typeOf(e1.left)));
 		} else if (e0 instanceof CastFunExpr) {
 			CastFunExpr e1 = (CastFunExpr) e0;
-			visit0(e1.expr);
+			visit_(e1.expr);
 		} else if (e0 instanceof CheckCastFunExpr) {
 			CheckCastFunExpr e1 = (CheckCastFunExpr) e0;
-			visit0(e1.expr);
+			visit_(e1.expr);
 			list.add(factory.createCheckCast(e1.type));
 		} else if (e0 instanceof ConstantFunExpr) {
 			ConstantFunExpr e1 = (ConstantFunExpr) e0;
@@ -107,29 +107,29 @@ public class FunGenerateBytecode {
 			list.add(factory.createGetStatic(className, e1.fieldName, e1.fieldType));
 		} else if (e0 instanceof FieldTypeFunExpr) {
 			FieldTypeFunExpr e1 = (FieldTypeFunExpr) e0;
-			visit0(e1.object);
+			visit_(e1.object);
 			list.add(factory.createGetField(((ObjectType) fti.typeOf(e1.object)).getClassName(), e1.fieldName, e1.fieldType));
 		} else if (e0 instanceof If1FunExpr) {
 			If1FunExpr e1 = (If1FunExpr) e0;
-			visit0(e1.if_);
+			visit_(e1.if_);
 			visitIf(Const.IFEQ, e1);
 		} else if (e0 instanceof If2FunExpr) {
 			If2FunExpr e1 = (If2FunExpr) e0;
-			visit0(e1.left);
-			visit0(e1.right);
+			visit_(e1.left);
+			visit_(e1.right);
 			visitIf((short) e1.opcode.applyAsInt(fti.typeOf(e1.left)), e1);
 		} else if (e0 instanceof IfNonNullFunExpr) {
 			IfNonNullFunExpr e1 = (IfNonNullFunExpr) e0;
-			visit0(e1.object);
+			visit_(e1.object);
 			visitIf(Const.IFNULL, e1);
 		} else if (e0 instanceof IndexFunExpr) {
 			IndexFunExpr e1 = (IndexFunExpr) e0;
-			visit0(e1.array);
-			visit0(e1.index);
+			visit_(e1.array);
+			visit_(e1.index);
 			list.add(InstructionFactory.createArrayLoad(fti.typeOf(e1)));
 		} else if (e0 instanceof InstanceOfFunExpr) {
 			InstanceOfFunExpr e1 = (InstanceOfFunExpr) e0;
-			visit0(e1.object);
+			visit_(e1.object);
 			list.add(factory.createInstanceOf(e1.instanceType));
 		} else if (e0 instanceof InvokeMethodFunExpr) {
 			InvokeMethodFunExpr e1 = (InvokeMethodFunExpr) e0;
@@ -147,10 +147,10 @@ public class FunGenerateBytecode {
 				opcode = Const.INVOKEVIRTUAL;
 
 			if (e1.object != null)
-				visit0(e1.object);
+				visit_(e1.object);
 
 			for (FunExpr parameter : e1.parameters)
-				visit0(parameter);
+				visit_(parameter);
 
 			list.add(factory.createInvoke( //
 					className, //
@@ -173,7 +173,7 @@ public class FunGenerateBytecode {
 			for (Entry<String, FunExpr> e : e1.fieldValues.entrySet()) {
 				FunExpr value = e.getValue();
 				list.add(InstructionFactory.createDup(0));
-				visit0(value);
+				visit_(value);
 				list.add(factory.createPutField(implClassName, e.getKey(), fti.typeOf(value)));
 			}
 
@@ -182,7 +182,7 @@ public class FunGenerateBytecode {
 			PrintlnFunExpr e1 = (PrintlnFunExpr) e0;
 			String sys = System.class.getName();
 			list.add(factory.createGetStatic(sys, "out", Type.getType(PrintStream.class)));
-			visit0(e1.expression);
+			visit_(e1.expression);
 			list.add(factory.createInvoke(sys, "println", fti.typeOf(e1), new Type[] { Type.STRING, }, Const.INVOKEVIRTUAL));
 		} else if (e0 instanceof ProfileFunExpr) {
 			ProfileFunExpr e1 = (ProfileFunExpr) e0;
@@ -192,13 +192,13 @@ public class FunGenerateBytecode {
 			list.add(factory.createConstant(1));
 			list.add(InstructionFactory.createBinaryOperation("+", Type.INT));
 			list.add(factory.createPutField(className, e1.counterFieldName, Type.INT));
-			visit0(e1.do_);
+			visit_(e1.do_);
 		} else if (e0 instanceof SeqFunExpr) {
 			SeqFunExpr e1 = (SeqFunExpr) e0;
-			visit0(e1.left);
+			visit_(e1.left);
 			if (!Objects.equals(fti.typeOf(e1.left), Type.VOID))
 				list.add(InstructionConst.POP);
-			visit0(e1.right);
+			visit_(e1.right);
 		} else
 			throw new RuntimeException("Unknown expression " + e0.getClass());
 	}
@@ -206,11 +206,11 @@ public class FunGenerateBytecode {
 	private void visitIf(short opcode, IfFunExpr expr) {
 		int p0 = list.size();
 		list.add(InstructionFactory.createBranchInstruction(opcode, null));
-		visit0(expr.then);
+		visit_(expr.then);
 		int p1 = list.size();
 		list.add(InstructionFactory.createBranchInstruction(Const.GOTO, null));
 		jumps.put(p0, list.size());
-		visit0(expr.else_);
+		visit_(expr.else_);
 		jumps.put(p1, list.size());
 	}
 
