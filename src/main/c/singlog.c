@@ -55,7 +55,7 @@ int compare(struct Node *node0, struct Node *node1) {
 	return c;
 }
 
-struct Node *clone0(struct Node *node, struct Hashtab *hashtab) {
+struct Node *clone_(struct Node *node, struct Hashtab *hashtab) {
 	struct Tree *tree;
 	node = final(node);
 
@@ -70,8 +70,8 @@ struct Node *clone0(struct Node *node, struct Hashtab *hashtab) {
 	case TREE:
 		tree = node->u.tree;
 		return newTree(tree->operator
-			, clone0(tree->left, hashtab)
-			, clone0(tree->right, hashtab));
+			, clone_(tree->left, hashtab)
+			, clone_(tree->right, hashtab));
 	default: return node;
 	}
 }
@@ -79,12 +79,12 @@ struct Node *clone0(struct Node *node, struct Hashtab *hashtab) {
 struct Node *clone(struct Node *node) {
 	struct Hashtab hashtab;
 	htnew(&hashtab, genHashSize);
-	struct Node *cloned = clone0(node, &hashtab);
+	struct Node *cloned = clone_(node, &hashtab);
 	htdelete(hashtab);
 	return cloned;
 }
 
-struct Node *generalize0(struct Node *node, struct Hashtab *hashtab) {
+struct Node *generalize_(struct Node *node, struct Hashtab *hashtab) {
 	struct Tree *tree;
 	struct Node *l, *r;
 	char first;
@@ -101,8 +101,8 @@ struct Node *generalize0(struct Node *node, struct Hashtab *hashtab) {
 		else return node;
 	case TREE:
 		tree = node->u.tree;
-		l = generalize0(tree->left, hashtab);
-		r = generalize0(tree->right, hashtab);
+		l = generalize_(tree->left, hashtab);
+		r = generalize_(tree->right, hashtab);
 		if(l != tree->left || r != tree->right) return newTree(tree->operator, l, r);
 	default: return node;
 	}
@@ -112,7 +112,7 @@ struct Node *generalizeWithCut(struct Node *node, struct Node *cut) {
 	struct Hashtab hashtab;
 	htnew(&hashtab, genHashSize);
 	htput(&hashtab, cutAtom, cut);
-	struct Node *generalized = generalize0(node, &hashtab);
+	struct Node *generalized = generalize_(node, &hashtab);
 	htdelete(hashtab);
 	return generalized;
 }
@@ -120,7 +120,7 @@ struct Node *generalizeWithCut(struct Node *node, struct Node *cut) {
 struct Node *generalize(struct Node *node) {
 	struct Hashtab hashtab;
 	htnew(&hashtab, genHashSize);
-	struct Node *generalized = generalize0(node, &hashtab);
+	struct Node *generalized = generalize_(node, &hashtab);
 	htdelete(hashtab);
 	return generalized;
 }
@@ -141,7 +141,7 @@ void rollback(struct Node ***trail, struct Node **to) {
 
 int bind(struct Node *node0, struct Node *node1, struct Node ***ptrail);
 
-int bind0(struct Node *node0, struct Node *node1, struct Node ***ptrail) {
+int bind_(struct Node *node0, struct Node *node1, struct Node ***ptrail) {
 	node0 = final(node0);
 	node1 = final(node1);
 
@@ -178,7 +178,7 @@ int bind0(struct Node *node0, struct Node *node1, struct Node ***ptrail) {
 
 int bind(struct Node *node0, struct Node *node1, struct Node ***ptrail) {
 	struct Node **ptrail0 = *ptrail;
-	int result = bind0(node0, node1, ptrail);
+	int result = bind_(node0, node1, ptrail);
 	if(!result) rollback(ptrail, ptrail0);
 	return result;
 }
@@ -229,7 +229,7 @@ void trace(char *type, struct Node *query) {
 	}
 }
 
-int prove0(struct Node *goal, struct Node ***ptrail) {
+int prove_(struct Node *goal, struct Node ***ptrail) {
 	struct Node *finally = newInternal(BT__, failAtom, *ptrail);
 
 	// final result = goal && remaining || alternative
@@ -332,7 +332,7 @@ done:
 int prove(struct Node *goal) {
 	int tracedepth0 = tracedepth;
 	struct Node *trailStack[trailSize], **trail = trailStack;
-	int result = prove0(goal, &trail);
+	int result = prove_(goal, &trail);
 	while(trailStack < trail) unref(*--trail);
 	if(enabletrace) tracedepth = tracedepth0;
 	return result;
@@ -403,7 +403,7 @@ void process(char *buffer) {
 		htput(&genHashtab, cutAtom, cut = ref(newInternal(CUT_, failAtom, 0)));
 
 		node = ref(parse(buffer + 1));
-		generalized = ref(generalize0(node, &genHashtab));
+		generalized = ref(generalize_(node, &genHashtab));
 
 		if(elab) {
 			struct Node *inv = newInternal(INV_, nilAtom, &handleelaborate);
@@ -683,7 +683,7 @@ int handlenl(struct Node *query, struct Node ***ptrail, struct Node **prem, stru
 
 int handlenot(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
 	struct Node **trail0 = *ptrail;
-	int result = prove0(query->u.tree->right, ptrail);
+	int result = prove_(query->u.tree->right, ptrail);
 	if(result) rollback(ptrail, trail0); // rolls back anyway
 	return !result;
 }

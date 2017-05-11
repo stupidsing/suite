@@ -6,7 +6,7 @@ int atomHashSize; // must be power of 2
 
 struct Node **intNodes;
 
-int getAtomHashPos0(char *start, char *end) {
+int getAtomHashPos_(char *start, char *end) {
 	struct Node *atom;
 	int i = hashstr(start, end);
 
@@ -22,11 +22,11 @@ int getAtomHashPos0(char *start, char *end) {
 }
 
 int getAtomHashPos(char *name) {
-	return getAtomHashPos0(name, name + strlen(name));
+	return getAtomHashPos_(name, name + strlen(name));
 }
 
-struct Node *getAtom0(char *start, char *end) {
-	int i = getAtomHashPos0(start, end), j;
+struct Node *getAtom_(char *start, char *end) {
+	int i = getAtomHashPos_(start, end), j;
 
 	if(!atomHashes[i]) {
 		if(atomHashSize * 3 / 4 <= nAtomHashes) { // rehash if looks full
@@ -42,7 +42,7 @@ struct Node *getAtom0(char *start, char *end) {
 			}
 
 			memfree(atomHashes0);
-			i = getAtomHashPos0(start, end);
+			i = getAtomHashPos_(start, end);
 		}
 
 		nAtomHashes++;
@@ -53,7 +53,7 @@ struct Node *getAtom0(char *start, char *end) {
 }
 
 struct Node *getAtom(char *name) {
-	return getAtom0(name, name + strlen(name));
+	return getAtom_(name, name + strlen(name));
 }
 
 struct Node *getInt(int value) {
@@ -155,7 +155,7 @@ char *unescape(char *s) {
 	return s1;
 }
 
-struct Node *parse0(char *start, char *end) {
+struct Node *parse_(char *start, char *end) {
 	struct Node *node = 0;
 	char *last = end - 1;
 	int depth = 0, quote = 0, op;
@@ -188,7 +188,7 @@ struct Node *parse0(char *start, char *end) {
 				if(!depth && !quote && match) {
 					while(start < s && isspace(s[-1])) s--; // trims space before/after
 					while(p0 < end && isspace(*p0)) p0++;
-					node = newTree(operator, parse0(start, s), parse0(p0, end));
+					node = newTree(operator, parse_(start, s), parse_(p0, end));
 					goto done;
 				}
 
@@ -202,10 +202,10 @@ struct Node *parse0(char *start, char *end) {
 		if(*start == '(' && *last == ')'
 				|| *start == '[' && *last == ']'
 				|| *start == '{' && *last == '}')
-			node = parse0(start + 1, last);
+			node = parse_(start + 1, last);
 
 	if(!node && *start == *last)
-		if(*start == '\'') node = getAtom0(start + 1, last);
+		if(*start == '\'') node = getAtom_(start + 1, last);
 		else if(*start == '"') node = newString(unescape(substr(start + 1, last)));
 
 	if(!node && start != end) {
@@ -220,7 +220,7 @@ struct Node *parse0(char *start, char *end) {
 		}
 	}
 
-	if(!node) node = getAtom0(start, end);
+	if(!node) node = getAtom_(start, end);
 
 done:
 	return node;
@@ -252,7 +252,7 @@ retry:
 	while(start < end && isspace(*start)) start++;
 	while(start < end && isspace(end[-1])) end--;
 
-	struct Node *node = parse0(start, end);
+	struct Node *node = parse_(start, end);
 	memfree(s1);
 	return node;
 }
