@@ -29,16 +29,16 @@ public class DatePeriod extends Range<LocalDate> {
 	}
 
 	public static DatePeriod threeYears() {
-		return yearsBefore(-3);
+		return yearsBefore(3);
 	}
 
 	public static DatePeriod fiveYears() {
-		return yearsBefore(-5);
+		return yearsBefore(5);
 	}
 
 	private static DatePeriod yearsBefore(int n) {
 		LocalDate to = LocalDate.now().withDayOfMonth(1);
-		LocalDate from = to.plusYears(n);
+		LocalDate from = to.minusYears(n);
 		return of(from, to);
 	}
 
