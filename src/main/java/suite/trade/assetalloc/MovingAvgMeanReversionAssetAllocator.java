@@ -44,13 +44,10 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
-		if (backTestDate.toEpochDay() % tradeFrequency == 0)
-			return allocate0(dataSourceBySymbol, tradeDates, backTestDate);
-		else
-			return null;
+		return backTestDate.toEpochDay() % tradeFrequency == 0 ? allocate_(dataSourceBySymbol, tradeDates, backTestDate) : null;
 	}
 
-	public List<Pair<String, Double>> allocate0( //
+	public List<Pair<String, Double>> allocate_( //
 			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
