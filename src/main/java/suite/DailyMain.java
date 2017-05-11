@@ -55,7 +55,7 @@ public class DailyMain extends ExecutableProgram {
 
 		// fetch Yahoo historical data
 		Map<String, DataSource> dataSourceBySymbol = cfg //
-				.queryLeadingCompaniesByMarketCap(LocalDate.now().getYear() - 1) //
+				.queryLeadingCompaniesByMarketCap(LocalDate.now()) //
 				.map(asset -> asset.symbol) //
 				.map2(cfg::dataSource) //
 				.toMap();
@@ -185,8 +185,9 @@ public class DailyMain extends ExecutableProgram {
 		String tag = "pmamr";
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = To.sink(sb);
+		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(LocalDate.now()); // hkex.getCompanies()
 		AssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(cfg, log);
-		Simulate sim = new AssetAllocBackTest(assetAllocator, log).simulateLatest(500000f);
+		Simulate sim = AssetAllocBackTest.of(cfg, assets, assetAllocator, log).simulate(500000f);
 
 		Account account0 = Account.fromPortfolio(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
 		Account account1 = sim.account;

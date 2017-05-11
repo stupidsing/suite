@@ -59,7 +59,8 @@ public class Configuration {
 		return hkex.queryCompanies();
 	}
 
-	public Streamlet<Asset> queryLeadingCompaniesByMarketCap(int year) {
+	public Streamlet<Asset> queryLeadingCompaniesByMarketCap(LocalDate date) {
+		int year = date.getYear() - 1;
 		return Read.from(hkexFactBook.queryLeadingCompaniesByMarketCap(year)).map(this::queryCompany);
 	}
 

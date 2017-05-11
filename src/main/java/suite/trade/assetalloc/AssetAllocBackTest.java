@@ -12,6 +12,7 @@ import suite.math.TimeSeries;
 import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
@@ -31,27 +32,50 @@ public class AssetAllocBackTest {
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
+	private Streamlet<Asset> assets;
 	private AssetAllocator assetAllocator;
+	private LocalDate historyFromDate;
+	private Fun<List<LocalDate>, List<LocalDate>> datesPred;
 	private Sink<String> log;
 
-	public AssetAllocBackTest(AssetAllocator assetAllocator) {
-		this(assetAllocator, System.out::println);
+	public static AssetAllocBackTest of( //
+			Configuration cfg, //
+			Streamlet<Asset> assets, //
+			AssetAllocator assetAllocator, //
+			Sink<String> log) {
+		LocalDate historyFromDate = LocalDate.now();
+		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Arrays.asList(Util.last(dates));
+		return new AssetAllocBackTest(cfg, assets, assetAllocator, historyFromDate, datesPred, log);
 	}
 
-	public AssetAllocBackTest(AssetAllocator assetAllocator, Sink<String> log) {
+	public static AssetAllocBackTest ofFromTo( //
+			Configuration cfg, //
+			Streamlet<Asset> assets, //
+			AssetAllocator assetAllocator, //
+			DatePeriod period, //
+			Sink<String> log) {
+		LocalDate historyFromDate = period.from;
+		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Read.from(dates).filter(period::contains).toList();
+		return new AssetAllocBackTest(cfg, assets, assetAllocator, historyFromDate, datesPred, log);
+	}
+
+	public AssetAllocBackTest( //
+			Configuration cfg, //
+			Streamlet<Asset> assets, //
+			AssetAllocator assetAllocator, //
+			LocalDate from, //
+			Fun<List<LocalDate>, List<LocalDate>> datesPred, //
+			Sink<String> log) {
+		this.cfg = cfg;
+		this.assets = assets;
+		this.historyFromDate = from.minusYears(1);
 		this.assetAllocator = assetAllocator;
+		this.datesPred = datesPred;
 		this.log = log;
 	}
 
-	public Simulate simulateLatest(float fund0) {
-		return new Simulate(fund0, LocalDate.now(), dates -> Arrays.asList(Util.last(dates)));
-	}
-
-	public Simulate simulateFromTo(float fund0, DatePeriod period) {
-		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Read.from(dates) //
-				.filter(period::contains) //
-				.toList();
-		return new Simulate(fund0, period.from, datesPred);
+	public Simulate simulate(float fund0) {
+		return new Simulate(fund0);
 	}
 
 	public class Simulate {
@@ -61,14 +85,10 @@ public class AssetAllocBackTest {
 		public final double sharpe;
 		public final double skewness;
 
-		private Simulate(float fund0, LocalDate from, Fun<List<LocalDate>, List<LocalDate>> datesPred) {
+		private Simulate(float fund0) {
+			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
 			Map<String, DataSource> dataSourceBySymbol = new HashMap<>();
-			LocalDate historyFromDate = from.minusYears(1);
 			double valuation = fund0;
-
-			Map<String, Asset> assetBySymbol = cfg //
-					.queryLeadingCompaniesByMarketCap(from.getYear() - 1) // hkex.getCompanies()
-					.toMap(asset -> asset.symbol);
 
 			account = Account.fromCash(fund0);
 
