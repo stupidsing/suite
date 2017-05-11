@@ -112,11 +112,8 @@ public class DailyMain extends ExecutableProgram {
 		Streamlet<Asset> assets = cfg.getCompanies();
 		BuySellStrategy strategy = new Strategos().movingAvgMeanReverting(64, 8, .15f);
 
-		LogUtil.info("S0 pre-fetch quotes");
-
+		// pre-fetch quotes
 		cfg.quote(assets.map(asset -> asset.symbol).toSet());
-
-		LogUtil.info("S1 perform back test");
 
 		// identify stocks that are mean-reverting
 		Map<String, Boolean> backTestBySymbol = SerializedStoreCache //
@@ -128,7 +125,7 @@ public class DailyMain extends ExecutableProgram {
 								DataSource ds0 = cfg.dataSource(stock.symbol, period);
 								DataSource ds1 = ds0.range(period);
 
-								ds1.validateTwoYears();
+								ds1.validate();
 								SingleAllocBackTest backTest = SingleAllocBackTest.test(ds1, strategy);
 								return MathUtil.isPositive(backTest.account.cash());
 							} catch (Exception ex) {
@@ -138,14 +135,11 @@ public class DailyMain extends ExecutableProgram {
 						}) //
 						.toMap());
 
-		LogUtil.info("S2 query lot sizes");
-
 		DatePeriod period = DatePeriod.daysBefore(128);
 		String sevenDaysAgo = FormatUtil.formatDate(LocalDate.now().plusDays(-7));
 		List<String> messages = new ArrayList<>();
 
-		LogUtil.info("S3 capture signals");
-
+		// capture signals
 		for (Asset asset : assets) {
 			String symbol = asset.symbol;
 

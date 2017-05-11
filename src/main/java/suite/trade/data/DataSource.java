@@ -94,14 +94,6 @@ public class DataSource {
 		return new DataSource(Arrays.copyOf(dates1, j), Arrays.copyOf(prices1, j));
 	}
 
-	// at least approximately 2 years of data
-	public void validateTwoYears() {
-		if (2 * 240 <= prices.length)
-			validate();
-		else
-			throw new RuntimeException("Not enough data");
-	}
-
 	public void validate() {
 		int length = prices.length;
 		String date0 = dates[0];
