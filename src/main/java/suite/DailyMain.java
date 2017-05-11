@@ -137,7 +137,7 @@ public class DailyMain extends ExecutableProgram {
 
 		LogUtil.info("S2 query lot sizes");
 
-		Map<String, Integer> lotSizeBySymbol = cfg.queryLotSizeBySymbol(assets);
+		Map<String, Integer> lotSizeBySymbol = cfg.queryLotSizeByAsset(assets);
 
 		DatePeriod period = DatePeriod.daysBefore(128);
 		String sevenDaysAgo = FormatUtil.formatDate(LocalDate.now().plusDays(-7));

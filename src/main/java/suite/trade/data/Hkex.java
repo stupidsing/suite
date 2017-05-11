@@ -305,7 +305,7 @@ public class Hkex {
 		return data.map(this::toAsset).toList();
 	}
 
-	public Map<String, Integer> queryLotSizeBySymbol(Streamlet<Asset> companies) {
+	public Map<String, Integer> queryLotSizeByAsset(Streamlet<Asset> companies) {
 		Source<Map<String, Integer>> fun = () -> companies //
 				.map(stock -> stock.symbol) //
 				.map2(symbol -> {

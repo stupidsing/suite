@@ -71,7 +71,7 @@ public class AssetAllocBackTest {
 
 			account = Account.fromCash(fund0);
 
-			Map<String, Integer> lotSizeBySymbol = cfg.queryLotSizeBySymbol(assets);
+			Map<String, Integer> lotSizeBySymbol = cfg.queryLotSizeByAsset(assets);
 
 			// pre-fetch quotes
 			cfg.quote(lotSizeBySymbol.keySet());

@@ -62,8 +62,8 @@ public class Configuration {
 		return hkexFactBook.queryLeadingCompaniesByMarketCap(year);
 	}
 
-	public Map<String, Integer> queryLotSizeBySymbol(Streamlet<Asset> assets) {
-		return hkex.queryLotSizeBySymbol(assets);
+	public Map<String, Integer> queryLotSizeByAsset(Streamlet<Asset> assets) {
+		return hkex.queryLotSizeByAsset(assets);
 	}
 
 	public Map<String, Float> quote(Set<String> symbols) {
