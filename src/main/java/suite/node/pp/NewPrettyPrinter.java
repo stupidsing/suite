@@ -35,17 +35,17 @@ public class NewPrettyPrinter {
 
 		// avoids infinite recursion if object is recursive
 		if (set.add(objectId)) {
-			format0(node, parentPrec, indent);
+			format_(node, parentPrec, indent);
 			set.remove(objectId);
 		} else
 			sb.append("<<recurse>>");
 	}
 
-	private void format0(Node node, int parentPrec, String indent) {
-		format0(node, parentPrec, indent, "");
+	private void format_(Node node, int parentPrec, String indent) {
+		format_(node, parentPrec, indent, "");
 	}
 
-	private void format0(Node node, int parentPrec, String indent, String prefix) {
+	private void format_(Node node, int parentPrec, String indent, String prefix) {
 		Tree tree;
 
 		if ((tree = Tree.decompose(node)) != null) {
@@ -56,44 +56,44 @@ public class NewPrettyPrinter {
 			Node[] m;
 
 			if (isParenthesesRequired) {
-				format0(node, 0, indent, concatWithSpace(prefix, "("));
+				format_(node, 0, indent, concatWithSpace(prefix, "("));
 				sb.append(indent + ")");
 			} else if (operator == TermOp.NEXT__) {
-				format0(tree.getLeft(), TermOp.getLeftPrec(operator), indent, prefix);
+				format_(tree.getLeft(), TermOp.getLeftPrec(operator), indent, prefix);
 				sb.append(indent + "#\n");
-				format0(tree.getRight(), TermOp.getRightPrec(operator), indent, "");
+				format_(tree.getRight(), TermOp.getRightPrec(operator), indent, "");
 			} else if (operator == TermOp.IS____) {
-				format0(tree.getLeft(), TermOp.getLeftPrec(operator), indent, prefix);
-				format0(tree.getRight(), TermOp.getRightPrec(operator), indent1, operator.getName());
+				format_(tree.getLeft(), TermOp.getLeftPrec(operator), indent, prefix);
+				format_(tree.getRight(), TermOp.getRightPrec(operator), indent1, operator.getName());
 			} else if (operator == TermOp.BIGAND || operator == TermOp.BIGOR_) {
-				format0(tree.getLeft(), TermOp.getLeftPrec(operator), indent, prefix);
-				format0(tree.getRight(), TermOp.getRightPrec(operator), indent, operator.getName());
+				format_(tree.getLeft(), TermOp.getLeftPrec(operator), indent, prefix);
+				format_(tree.getRight(), TermOp.getRightPrec(operator), indent, operator.getName());
 			} else if (operator == TermOp.AND___ || operator == TermOp.OR____) {
-				format0(tree.getLeft(), prec, indent, prefix);
+				format_(tree.getLeft(), prec, indent, prefix);
 				node = tree.getRight();
 				while ((tree = Tree.decompose(node)) != null && tree.getOperator() == operator) {
-					format0(tree.getLeft(), prec, indent1, operator.getName());
+					format_(tree.getLeft(), prec, indent1, operator.getName());
 					node = tree.getRight();
 				}
-				format0(node, prec, indent1, operator.getName());
+				format_(node, prec, indent1, operator.getName());
 			} else if ((m = Suite.matcher("if .0 then .1 else .2").apply(node)) != null //
 					&& lineLength < lengthEstimator.getEstimatedLength(node)) {
-				format0(m[0], prec, indent, concatWithSpace(prefix, "if"));
-				format0(m[1], prec, indent, "then");
-				format0(m[2], prec, indent, "else");
+				format_(m[0], prec, indent, concatWithSpace(prefix, "if"));
+				format_(m[1], prec, indent, "then");
+				format_(m[2], prec, indent, "else");
 			} else if ((m = Suite.matcher("not .0").apply(node)) != null //
 					&& lineLength < lengthEstimator.getEstimatedLength(node))
-				format0(m[0], prec, indent, concatWithSpace(prefix, "not"));
+				format_(m[0], prec, indent, concatWithSpace(prefix, "not"));
 			else if ((m = Suite.matcher("once .0").apply(node)) != null //
 					&& lineLength < lengthEstimator.getEstimatedLength(node))
-				format0(m[0], prec, indent, concatWithSpace(prefix, "once"));
+				format_(m[0], prec, indent, concatWithSpace(prefix, "once"));
 			else
-				format0(node, indent, prefix);
+				format_(node, indent, prefix);
 		} else
-			format0(node, indent, prefix);
+			format_(node, indent, prefix);
 	}
 
-	private void format0(Node node, String indent, String prefix) {
+	private void format_(Node node, String indent, String prefix) {
 		sb.append(indent + prefix.trim());
 		if (!prefix.isEmpty())
 			sb.append(" ");

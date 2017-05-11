@@ -41,10 +41,10 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 	}
 
 	public BindPredicate compileBind(Node node) {
-		return compileBind0(node).newFun();
+		return compileBind_(node).newFun();
 	}
 
-	private LambdaInstance<BindPredicate> compileBind0(Node node) {
+	private LambdaInstance<BindPredicate> compileBind_(Node node) {
 		Tree tree;
 
 		if (node instanceof Atom)
@@ -58,8 +58,8 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 			return compileBindStr((Str) node);
 		else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
-			LambdaInstance<BindPredicate> lambda0 = compileBind0(tree.getLeft());
-			LambdaInstance<BindPredicate> lambda1 = compileBind0(tree.getRight());
+			LambdaInstance<BindPredicate> lambda0 = compileBind_(tree.getLeft());
+			LambdaInstance<BindPredicate> lambda1 = compileBind_(tree.getRight());
 			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef = bindRef(compile(node));
 
 			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTree = be -> n_ -> f //
@@ -73,7 +73,7 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 		} else if (node instanceof Tuple) {
 			List<LambdaInstance<BindPredicate>> lambdas = Read //
 					.from(((Tuple) node).nodes) //
-					.map(this::compileBind0) //
+					.map(this::compileBind_) //
 					.toList();
 
 			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef = bindRef(compile(node));

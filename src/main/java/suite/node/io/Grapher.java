@@ -59,14 +59,14 @@ public class Grapher {
 	}
 
 	public void graph(Node node) {
-		id = graph0(new HashMap<>(), node);
+		id = graph_(new HashMap<>(), node);
 	}
 
 	public Node ungraph() {
-		return ungraph0(id);
+		return ungraph_(id);
 	}
 
-	private int graph0(Map<IdentityKey<Node>, Integer> ids, Node node) {
+	private int graph_(Map<IdentityKey<Node>, Integer> ids, Node node) {
 		IdentityKey<Node> key = IdentityKey.of(node);
 		Integer id = ids.get(key);
 
@@ -77,7 +77,7 @@ public class Grapher {
 			NodeRead nr = NodeRead.of(node);
 
 			List<IntIntPair> children = Read.from(nr.children) //
-					.map(p -> IntIntPair.of(graph0(ids, p.t0), graph0(ids, p.t1))) //
+					.map(p -> IntIntPair.of(graph_(ids, p.t0), graph_(ids, p.t1))) //
 					.toList();
 
 			gns.set(id, new GN(nr.type, nr.terminal, nr.op, children));
@@ -86,7 +86,7 @@ public class Grapher {
 		return id;
 	}
 
-	private Node ungraph0(int id) {
+	private Node ungraph_(int id) {
 		int size = gns.size();
 
 		List<Node> nodes = Read.from(gns) //
@@ -137,8 +137,8 @@ public class Grapher {
 		Map<IdentityKey<Node>, Integer> mapn1 = new HashMap<>();
 		Grapher g0 = new Grapher();
 		Grapher g1 = new Grapher();
-		g0.id = g0.graph0(mapn0, n0);
-		g1.id = g1.graph0(mapn1, n1);
+		g0.id = g0.graph_(mapn0, n0);
+		g1.id = g1.graph_(mapn1, n1);
 
 		IntObjMap<IdentityKey<Node>> mapi0 = new IntObjMap<>();
 		IntObjMap<IdentityKey<Node>> mapi1 = new IntObjMap<>();
@@ -220,12 +220,12 @@ public class Grapher {
 		HashMap<IdentityKey<Node>, Integer> ids = new HashMap<>();
 
 		Grapher grapher = new Grapher();
-		int n0 = grapher.graph0(ids, from);
-		int nx = grapher.graph0(ids, to);
-		int id = grapher.graph0(ids, node);
+		int n0 = grapher.graph_(ids, from);
+		int nx = grapher.graph_(ids, to);
+		int id = grapher.graph_(ids, node);
 
 		grapher.gns.set(n0, grapher.gns.get(nx));
-		return grapher.ungraph0(id);
+		return grapher.ungraph_(id);
 	}
 
 	public void load(DataInputStream dis) throws IOException {

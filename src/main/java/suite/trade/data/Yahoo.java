@@ -69,13 +69,13 @@ public class Yahoo {
 	private Map<String, Float> quote(Set<String> symbols, String field) {
 		Map<String, Float> quotes = quotesByField.computeIfAbsent(field, f -> new HashMap<>());
 		Streamlet<String> querySymbols = Read.from(symbols).filter(symbol -> !quotes.containsKey(symbol)).distinct();
-		quotes.putAll(quote0(querySymbols, field));
+		quotes.putAll(quote_(querySymbols, field));
 		return Read.from(symbols).map2(quotes::get).toMap();
 	}
 
 	private static Map<String, Map<String, Float>> quotesByField = new HashMap<>();
 
-	private Map<String, Float> quote0(Streamlet<String> symbols, String field) {
+	private Map<String, Float> quote_(Streamlet<String> symbols, String field) {
 		if (0 < symbols.size()) {
 			String urlString = "https://download.finance.yahoo.com/d/quotes.csv" //
 					+ "?s=" + symbols.sort(Util::compare).map(this::encode).collect(As.joined("+")) //

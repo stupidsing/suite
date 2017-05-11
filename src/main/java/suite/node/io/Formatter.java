@@ -108,13 +108,13 @@ public class Formatter {
 
 		// avoids infinite recursion if object is recursive
 		if (set.add(objectId)) {
-			format0(node, parentPrec);
+			format_(node, parentPrec);
 			set.remove(objectId);
 		} else
 			sb.append("<<recurse>>");
 	}
 
-	private void format0(Node node, int parentPrec) {
+	private void format_(Node node, int parentPrec) {
 		if (node instanceof Atom)
 			sb.append(quoteAtomIfRequired(((Atom) node).name));
 		else if (node instanceof Data) {

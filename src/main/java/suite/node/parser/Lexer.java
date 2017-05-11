@@ -54,10 +54,10 @@ public class Lexer {
 	}
 
 	public Token lex() {
-		return token0 = lex0();
+		return token0 = lex_();
 	}
 
-	private Token lex0() {
+	private Token lex_() {
 		if (pos < in.length()) {
 			int start = pos;
 			Token token = detect();
@@ -98,7 +98,7 @@ public class Lexer {
 					token = new Token(LexType.OPER_, TermOp.TUPLE_);
 					token.data = data;
 				} else
-					token = lex0();
+					token = lex_();
 			} else
 				token.data = data;
 
