@@ -29,6 +29,13 @@ public class AssetAllocBackTestTest {
 		assertGrowth(valuations);
 	}
 
+	@Test
+	public void testBackTestHsi() {
+		AssetAllocator assetAllocator = new SingleAssetAllocator("HSI");
+		float[] valuations = backTest(assetAllocator).valuations;
+		assertGrowth(valuations);
+	}
+
 	private Simulate backTest(AssetAllocator assetAllocator) {
 		AssetAllocBackTest backTest = new AssetAllocBackTest(assetAllocator, System.out::println);
 		Simulate sim = backTest.simulateFromTo(initial, DatePeriod.of(frDate, toDate));

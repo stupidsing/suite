@@ -21,7 +21,11 @@ public class HkexTest {
 		System.out.println(companies);
 
 		for (Asset company : companies)
-			System.out.println("+ \"\\n" + company.symbol + "|" + company.name + "|" + company.marketCap + "\" //");
+			System.out.println("+ \"\\n" + company.symbol //
+					+ "|" + company.name //
+					+ "|" + company.lotSize //
+					+ "|" + company.marketCap //
+					+ "\" //");
 
 		String name = Read.from(companies) //
 				.filter(fixie -> Util.stringEquals(fixie.symbol, "0005.HK")) //
