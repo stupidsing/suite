@@ -80,16 +80,16 @@ public class Prover {
 			try {
 				Runtime.getRuntime().addShutdownHook(hook);
 				tracer = new ProveTracer();
-				return prove_(query);
+				return prove0(query);
 			} finally {
 				hook.run();
 				Runtime.getRuntime().removeShutdownHook(hook);
 			}
 		else
-			return prove_(query);
+			return prove0(query);
 	}
 
-	public boolean prove_(Node query) {
+	public boolean prove0(Node query) {
 		rem = OK;
 		alt = FAIL;
 

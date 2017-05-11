@@ -35,7 +35,7 @@ public class TwoPassIndexer {
 		}
 	}
 
-	public void pass_(String id, String text) {
+	public void pass0(String id, String text) {
 		int length = text.length();
 
 		for (int start = 0; start < length; start++) {
