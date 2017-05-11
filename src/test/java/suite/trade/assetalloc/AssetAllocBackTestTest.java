@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
+import suite.algo.Statistic;
 import suite.trade.DatePeriod;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.data.Configuration;
@@ -19,12 +20,13 @@ public class AssetAllocBackTestTest {
 
 	private Sink<String> log = System.out::println;
 	private Configuration cfg = new Configuration();
+	private Statistic stat = new Statistic();
 
 	@Test
 	public void testBackTest() {
 		AssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(cfg, log);
 		float[] valuations = backTest(assetAllocator).valuations;
-		assertTrue(initial * 1.05f < valuations[valuations.length - 1]);
+		assertGrowth(valuations);
 	}
 
 	private Simulate backTest(AssetAllocator assetAllocator) {
@@ -34,6 +36,11 @@ public class AssetAllocBackTestTest {
 		System.out.println(sim.conclusion());
 		System.out.println(sim.account.transactionSummary(cfg::transactionFee));
 		return sim;
+	}
+
+	private void assertGrowth(float[] valuations) {
+		double r = Math.expm1(stat.logRiskFreeInterestRate * DatePeriod.of(frDate, toDate).nYears());
+		assertTrue(initial * r < valuations[valuations.length - 1]);
 	}
 
 }
