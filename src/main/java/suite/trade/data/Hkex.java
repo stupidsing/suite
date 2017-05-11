@@ -326,35 +326,7 @@ public class Hkex {
 	}
 
 	public int queryBoardLot(String symbol) {
-		if (Util.stringEquals(symbol, "0700.HK"))
-			return 100; // server return some unexpected errors, handle manually
-		else
-			return queryBoardLot0(toStockCode(symbol));
-	}
-
-	private int queryBoardLot0(String symbol) {
-		JsonNode json = query("" //
-				+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
-				+ "?location=companySearch" //
-				+ "&SearchMethod=1" //
-				+ "&LangCode=en" //
-				+ "&StockCode=" + symbol //
-				+ "&StockName=" //
-				+ "&mkt=hk" //
-				+ "&x=" //
-				+ "&y=");
-
-		CompanyInfo companyInfo = mapper.convertValue(json, CompanyInfo.class);
-
-		String boardLotStr = Read.each(companyInfo) //
-				.flatMap(ci -> ci.data) //
-				.concatMap(Data::tableEntries) //
-				.filter(td -> Util.stringEquals(td.get(0), "Board lot")) //
-				.uniqueResult() //
-				.get(1) //
-				.replace(",", "");
-
-		return Integer.parseInt(boardLotStr);
+		return queryBoardLot0(symbol);
 	}
 
 	public float queryHangSengIndex() {
@@ -428,6 +400,34 @@ public class Hkex {
 				toSymbol(list.get(1).replace("*", "")), //
 				list.get(2).trim(), //
 				Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()));
+	}
+
+	private int queryBoardLot0(String symbol) {
+		if (Util.stringEquals(symbol, "0700.HK"))
+			return 100;
+		else {
+			JsonNode json = query("" //
+					+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
+					+ "?location=companySearch" //
+					+ "&SearchMethod=1" //
+					+ "&LangCode=en" //
+					+ "&StockCode=" + toStockCode(symbol) + "&StockName=" //
+					+ "&mkt=hk" //
+					+ "&x=" //
+					+ "&y=");
+
+			CompanyInfo companyInfo = mapper.convertValue(json, CompanyInfo.class);
+
+			String boardLotStr = Read.each(companyInfo) //
+					.flatMap(ci -> ci.data) //
+					.concatMap(Data::tableEntries) //
+					.filter(td -> Util.stringEquals(td.get(0), "Board lot")) //
+					.uniqueResult() //
+					.get(1) //
+					.replace(",", "");
+
+			return Integer.parseInt(boardLotStr);
+		}
 	}
 
 	private String toStockCode(String symbol) {
