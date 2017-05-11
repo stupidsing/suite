@@ -17,8 +17,8 @@ public class UnionFind<T> {
 	private Map<T, Record> nodes = new HashMap<>();
 
 	public void union(T t0, T t1) {
-		Record pair0 = find0(t0);
-		Record pair1 = find0(t1);
+		Record pair0 = find_(t0);
+		Record pair1 = find_(t1);
 
 		if (pair0 != pair1)
 			if (pair0.rank < pair1.rank)
@@ -32,13 +32,13 @@ public class UnionFind<T> {
 	}
 
 	public T find(T t) {
-		return find0(t).parent;
+		return find_(t).parent;
 	}
 
-	private Record find0(T t) {
+	private Record find_(T t) {
 		Record record = getRecord(t);
 		if (!t.equals(record.parent)) {
-			Record parentRecord = find0(record.parent);
+			Record parentRecord = find_(record.parent);
 			record.parent = parentRecord.parent;
 			return parentRecord;
 		} else
