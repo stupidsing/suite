@@ -13,6 +13,7 @@ public class Statistic {
 	private Matrix mtx = new Matrix();
 
 	public final double riskFreeInterestRate = .04d;
+	public final double logRiskFreeInterestRate = Math.log1p(riskFreeInterestRate);
 
 	public double correlation(float[] xs, float[] ys) {
 		int length = xs.length;
