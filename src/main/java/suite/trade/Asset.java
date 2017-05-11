@@ -3,6 +3,7 @@ package suite.trade;
 import suite.trade.data.Hkex;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
+import suite.util.Util;
 
 public class Asset {
 
@@ -25,11 +26,30 @@ public class Asset {
 		this.marketCap = marketCap;
 	}
 
+	public String shortName() {
+		return shortName_();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object.getClass() == Asset.class) {
+			Asset other = (Asset) object;
+			return Util.stringEquals(symbol, other.symbol);
+		} else
+			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return symbol.hashCode();
+	}
+
+	@Override
 	public String toString() {
 		return symbol + " " + shortName();
 	}
 
-	public String shortName() {
+	private String shortName_() {
 		String[] array = name.split(" ");
 		int i = 0;
 		String s = "", name = "";
