@@ -19,7 +19,7 @@ public class AssetAllocBackTestTest {
 
 	private float initial = 1000000f;
 	private LocalDate frDate = LocalDate.of(2016, 1, 1);
-	private LocalDate toDate = LocalDate.of(2016, 7, 1);
+	private LocalDate toDate = LocalDate.of(2017, 7, 1);
 
 	private Sink<String> log = System.out::println;
 	private Configuration cfg = new Configuration();

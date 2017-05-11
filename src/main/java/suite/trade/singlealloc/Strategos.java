@@ -53,11 +53,11 @@ public class Strategos {
 		return prices -> crossover(ma.macd(prices, alpha0, alpha1));
 	}
 
-	public BuySellStrategy movingAvgMeanReverting(int nPastDays, int nFutureDays, float threshold) {
+	public BuySellStrategy movingAvgMeanReverting(int nPastDays, int nHoldDays, float threshold) {
 		return prices -> {
 			float[] movingAvgs = ma.movingAvg(prices, nPastDays);
 
-			return holdFixedDays(prices.length, nFutureDays, day -> {
+			return holdFixedDays(prices.length, nHoldDays, day -> {
 				if (nPastDays <= day) {
 					float price0 = prices[day];
 					float predict = movingAvgs[day];
@@ -68,12 +68,12 @@ public class Strategos {
 		};
 	}
 
-	// buy/sell if ratio is positive/negative; sell/buy nFutureDays after
-	private GetBuySell holdFixedDays(int nDays, int nFutureDays, GetBuySell gbs) {
+	// buy/sell if ratio is positive/negative; sell/buy nHoldDays after
+	private GetBuySell holdFixedDays(int nDays, int nHoldDays, GetBuySell gbs) {
 		int[] buySells = To.arrayOfInts(nDays, day -> gbs.get(day));
 
 		return day -> {
-			int buySell0 = nFutureDays < day ? -buySells[day - nFutureDays] : 0;
+			int buySell0 = nHoldDays < day ? -buySells[day - nHoldDays] : 0;
 			int buySell1 = buySells[day];
 			return buySell0 + buySell1;
 		};
