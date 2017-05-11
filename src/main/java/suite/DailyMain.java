@@ -30,6 +30,7 @@ import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.QuoteDatabase;
+import suite.trade.data.Summarize;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
@@ -67,6 +68,8 @@ public class DailyMain extends ExecutableProgram {
 		// perform systematic trading
 		List<Pair<String, String>> outputs = Arrays.asList(bug(), mamr(), pmamr());
 		StringBuilder sb = new StringBuilder();
+
+		sb.append("\n" + new Summarize(cfg).summarize(To.sink(sb)));
 
 		for (Pair<String, String> output : outputs) {
 			sb.append("\n" + Constants.separator);
@@ -187,7 +190,7 @@ public class DailyMain extends ExecutableProgram {
 		Sink<String> log = To.sink(sb);
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(LocalDate.now()); // hkex.getCompanies()
 		AssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(cfg, log);
-		Simulate sim = AssetAllocBackTest.of(cfg, assets, assetAllocator, log).simulate(500000f);
+		Simulate sim = AssetAllocBackTest.of(cfg, assets, assetAllocator, log).simulate(300000f);
 
 		Account account0 = Account.fromPortfolio(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
 		Account account1 = sim.account;

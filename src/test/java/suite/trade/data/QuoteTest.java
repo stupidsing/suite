@@ -1,14 +1,15 @@
 package suite.trade.data;
 
 import java.util.Map;
-import java.util.function.Consumer;
 
 import org.junit.Test;
 
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Trade;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class QuoteTest {
@@ -16,8 +17,7 @@ public class QuoteTest {
 	private Configuration cfg = new Configuration();
 	private Summarize summarize = new Summarize(cfg);
 
-	private Consumer<String> silent = s -> {
-	};
+	private Sink<String> silent = FunUtil.nullSink();
 
 	@Test
 	public void testQuote() {
@@ -64,7 +64,7 @@ public class QuoteTest {
 		return summarize(fun, System.out::println);
 	}
 
-	private Map<String, Double> summarize(Fun<Trade, String> fun, Consumer<String> log) {
+	private Map<String, Double> summarize(Fun<Trade, String> fun, Sink<String> log) {
 		return summarize.summarize(fun, log);
 	}
 

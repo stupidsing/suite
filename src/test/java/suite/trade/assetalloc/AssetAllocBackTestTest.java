@@ -7,6 +7,9 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 import suite.algo.Statistic;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
+import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.data.Configuration;
@@ -16,7 +19,7 @@ public class AssetAllocBackTestTest {
 
 	private float initial = 1000000f;
 	private LocalDate frDate = LocalDate.of(2016, 1, 1);
-	private LocalDate toDate = LocalDate.of(2020, 1, 1);
+	private LocalDate toDate = LocalDate.of(2016, 7, 1);
 
 	private Sink<String> log = System.out::println;
 	private Configuration cfg = new Configuration();
@@ -31,14 +34,27 @@ public class AssetAllocBackTestTest {
 
 	@Test
 	public void testBackTestHsi() {
-		AssetAllocator assetAllocator = new SingleAssetAllocator("HSI");
-		float[] valuations = backTest(assetAllocator).valuations;
+		String symbol = "^HSI";
+		Asset asset = new Asset(symbol, "Hang Seng Index", 1);
+		AssetAllocator assetAllocator = new SingleAssetAllocator(symbol);
+		float[] valuations = backTest(assetAllocator, Read.each(asset)).valuations;
 		assertGrowth(valuations);
 	}
 
 	private Simulate backTest(AssetAllocator assetAllocator) {
-		AssetAllocBackTest backTest = new AssetAllocBackTest(assetAllocator, System.out::println);
-		Simulate sim = backTest.simulateFromTo(initial, DatePeriod.of(frDate, toDate));
+		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(frDate); // hkex.getCompanies()
+		return backTest(assetAllocator, assets);
+	}
+
+	private Simulate backTest(AssetAllocator assetAllocator, Streamlet<Asset> assets) {
+		AssetAllocBackTest backTest = AssetAllocBackTest.ofFromTo( //
+				cfg, //
+				assets, //
+				assetAllocator, //
+				DatePeriod.of(frDate, toDate), //
+				System.out::println);
+
+		Simulate sim = backTest.simulate(initial);
 
 		System.out.println(sim.conclusion());
 		System.out.println(sim.account.transactionSummary(cfg::transactionFee));

@@ -3,7 +3,6 @@ package suite.trade.data;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
 
 import suite.Constants;
 import suite.streamlet.As;
@@ -13,6 +12,7 @@ import suite.trade.Asset;
 import suite.trade.Trade;
 import suite.trade.TradeUtil;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class Summarize {
@@ -23,24 +23,29 @@ public class Summarize {
 		this.cfg = cfg;
 	}
 
-	public <K> Map<K, Double> summarize(Fun<Trade, K> fun, Consumer<String> log) {
+	public <K> Map<K, Double> summarize(Sink<String> log) {
+		return summarize(trade -> null, log);
+	}
+
+	public <K> Map<K, Double> summarize(Fun<Trade, K> fun, Sink<String> log) {
 		List<Trade> trades = TradeUtil.fromHistory(trade -> true);
 		Map<String, Float> priceBySymbol = cfg.quote(Read.from(trades).map(trade -> trade.symbol).toSet());
 
 		Map<K, String> summaryByKey = Read.from(trades) //
 				.groupBy(fun) //
+				.filterKey(key -> key != null) //
 				.mapValue(trades_ -> summarize(trades_, priceBySymbol)) //
 				.toMap();
 
 		for (Entry<K, String> e : summaryByKey.entrySet()) {
 			K key = e.getKey();
 			String summary = e.getValue();
-			log.accept(Constants.separator);
-			log.accept("For strategy " + key + ":" + summary);
+			log.sink(Constants.separator);
+			log.sink("For strategy " + key + ":" + summary);
 		}
 
-		log.accept(Constants.separator);
-		log.accept("Overall:" + summarize(trades, priceBySymbol));
+		log.sink(Constants.separator);
+		log.sink("Overall:" + summarize(trades, priceBySymbol));
 
 		return Read.from(sellAll(trades, priceBySymbol)) // profit & loss
 				.groupBy(fun, t -> (double) Account.fromHistory(t).cash()) //
