@@ -70,8 +70,8 @@ ic-erase-type_ (REF (OBJECT _ .pointer0)) .pointerx
 ic-erase-type_ (SIZE-OF .type) (NUMBER .size)
 	:- ic-type-size .type .size
 #
-ic-erase-type_ (TAG _ _ .do0) (MEMORY .size (TREE ' + ' (NUMBER .offset) .dox))
-	:- ic-type-size I32 .offset
+ic-erase-type_ (TAG _ _ .do0) (MEMORY .size (TREE ' + ' (NUMBER 4) .dox))
+	:- ic-type-size I32 .size
 	, ic-erase-type (REF .do0) .dox
 #
 ic-erase-type_ (TYPE-CAST _ .do0) .dox
