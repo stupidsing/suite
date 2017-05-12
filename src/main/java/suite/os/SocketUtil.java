@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import suite.Constants;
 import suite.util.Object_;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class SocketUtil {
 
@@ -35,7 +35,7 @@ public class SocketUtil {
 	}
 
 	public void listenIo(int port, Io io) throws IOException {
-		ThreadPoolExecutor executor = Util.newExecutor();
+		ThreadPoolExecutor executor = Thread_.newExecutor();
 
 		try (ServerSocket server = new ServerSocket(port)) {
 			while (true) {

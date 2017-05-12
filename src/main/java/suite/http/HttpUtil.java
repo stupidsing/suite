@@ -25,8 +25,8 @@ import suite.primitive.BytesUtil;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.Rethrow;
+import suite.util.Thread_;
 import suite.util.To;
-import suite.util.Util;
 
 public class HttpUtil {
 
@@ -68,7 +68,7 @@ public class HttpUtil {
 			next = 2000l + (start = Math.max(last = al.get(), current = System.currentTimeMillis()));
 		while (!al.compareAndSet(last, next) || backoff.exponentially());
 
-		Util.sleepQuietly(start - current);
+		Thread_.sleepQuietly(start - current);
 
 		return Rethrow.ex(() -> httpApache(method, url, in, headers));
 		// return Rethrow.ex(() -> httpJre(method, url, in, headers));

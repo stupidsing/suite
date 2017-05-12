@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import suite.net.cluster.impl.ClusterImpl;
 import suite.net.cluster.impl.ClusterMapImpl;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class ClusterMapTest {
 
@@ -43,7 +43,7 @@ public class ClusterMapTest {
 			clMap.put(name, new ClusterMapImpl<>(cluster));
 		}
 
-		Util.sleepQuietly(5 * 1000);
+		Thread_.sleepQuietly(5 * 1000);
 
 		System.out.println("=== CLUSTER FORMED (" + LocalDateTime.now() + ") ===\n");
 

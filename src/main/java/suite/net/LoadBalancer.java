@@ -15,7 +15,7 @@ import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.os.SocketUtil.Io;
 import suite.util.Copy;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class LoadBalancer {
 
@@ -61,7 +61,7 @@ public class LoadBalancer {
 				OutputStream sos = socket.getOutputStream();
 				List<Thread> threads = Arrays.asList(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));
 
-				Util.startJoin(threads);
+				Thread_.startJoin(threads);
 			}
 		};
 

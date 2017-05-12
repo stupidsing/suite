@@ -250,7 +250,7 @@ public class FunUtil {
 		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
 		Sink<T> enqueue = t -> enqueue(queue, t);
 
-		Thread thread = Util.startThread(() -> {
+		Thread thread = Thread_.startThread(() -> {
 			try {
 				fun.sink(enqueue);
 			} finally {

@@ -23,7 +23,7 @@ import suite.rt.composite.Union;
 import suite.rt.planar.Plane;
 import suite.rt.planar.Triangle;
 import suite.util.TempDir;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class RayTracerTest {
 
@@ -201,7 +201,7 @@ public class RayTracerTest {
 	}
 
 	private void rasterize(RayTracer rayTracer) throws IOException {
-		Path path = TempDir.resolve(Util.getStackTrace(3).getMethodName() + ".png");
+		Path path = TempDir.resolve(Thread_.getStackTrace(3).getMethodName() + ".png");
 		BufferedImage bufferedImage = rayTracer.trace(640, 480, 640);
 
 		try (OutputStream os = FileUtil.out(path)) {

@@ -25,8 +25,8 @@ import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Thread_;
 import suite.util.To;
-import suite.util.Util;
 
 public class NioDispatcherTest {
 
@@ -69,7 +69,7 @@ public class NioDispatcherTest {
 	@Test
 	public void testRequestResponse() throws IOException, InterruptedException {
 		RequestResponseMatcher matcher = new RequestResponseMatcher();
-		ThreadPoolExecutor executor = Util.newExecutor();
+		ThreadPoolExecutor executor = Thread_.newExecutor();
 		Fun<Bytes, Bytes> handler = request -> request;
 
 		NioDispatcher<RequestResponseNioChannel> dispatcher = new NioDispatcherImpl<>(

@@ -265,7 +265,7 @@ public class FunUtil2 {
 		NullableSynchronousQueue<Pair<K, V>> queue = new NullableSynchronousQueue<>();
 		Sink<Pair<K, V>> enqueue = pair -> enqueue(queue, pair);
 
-		Thread thread = Util.startThread(() -> {
+		Thread thread = Thread_.startThread(() -> {
 			try {
 				fun.sink(enqueue);
 			} finally {

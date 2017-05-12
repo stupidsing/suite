@@ -3,8 +3,8 @@ package suite.net;
 import java.io.Closeable;
 
 import suite.util.Object_;
-import suite.util.Util;
-import suite.util.Util.RunnableEx;
+import suite.util.Thread_;
+import suite.util.Thread_.RunnableEx;
 
 public class ThreadService implements Service {
 
@@ -19,7 +19,7 @@ public class ThreadService implements Service {
 
 	public synchronized void start() {
 		running = true;
-		thread = Util.startThread(serve);
+		thread = Thread_.startThread(serve);
 
 		while (!started)
 			Object_.wait(this);

@@ -257,7 +257,7 @@ public class IntObjFunUtil {
 		NullableSynchronousQueue<IntObjPair<V>> queue = new NullableSynchronousQueue<>();
 		Sink<IntObjPair<V>> enqueue = pair -> enqueue(queue, pair);
 
-		Thread thread = Util.startThread(() -> {
+		Thread thread = Thread_.startThread(() -> {
 			try {
 				fun.sink(enqueue);
 			} finally {

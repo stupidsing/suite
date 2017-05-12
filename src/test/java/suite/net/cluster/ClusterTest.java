@@ -12,8 +12,8 @@ import org.junit.Test;
 
 import suite.adt.Pair;
 import suite.net.cluster.impl.ClusterImpl;
+import suite.util.Thread_;
 import suite.util.To;
-import suite.util.Util;
 
 public class ClusterTest {
 
@@ -33,7 +33,7 @@ public class ClusterTest {
 		cluster0.start();
 		cluster1.start();
 
-		Util.sleepQuietly(2 * 1000);
+		Thread_.sleepQuietly(2 * 1000);
 
 		System.out.println("=== CLUSTER FORMED (" + LocalDateTime.now() + ") ===\n");
 

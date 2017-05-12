@@ -3,14 +3,6 @@ package suite.util;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Array;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Level;
@@ -25,10 +17,6 @@ public class Util {
 	public enum RunOption {
 		RUN____, PROFILE, TIME___,
 	};
-
-	public interface RunnableEx {
-		public void run() throws Exception;
-	}
 
 	public static abstract class ExecutableProgram implements AutoCloseable {
 		protected abstract boolean run(String[] args) throws Exception;
@@ -60,61 +48,9 @@ public class Util {
 			throw new AssertionError();
 	}
 
-	public static Class<?> currentClass() {
-		try {
-			return Class.forName(getStackTrace(3).getClassName());
-		} catch (ClassNotFoundException ex) {
-			ex.printStackTrace();
-			return null;
-		}
-	}
-
-	public static String currentMethod() {
-		return getStackTrace(3).getMethodName();
-	}
-
-	public static String currentPackage() {
-		String cls = getStackTrace(3).getClassName();
-		int pos = cls.lastIndexOf(".");
-		return cls.substring(0, pos);
-	}
-
-	public static StackTraceElement getStackTrace(int n) {
-		return Thread.currentThread().getStackTrace()[n];
-	}
-
 	@SuppressWarnings("unchecked")
 	public static <T> T[] newArray(Class<T> clazz, int dim) {
 		return (T[]) Array.newInstance(clazz, dim);
-	}
-
-	public static long newDate(int year, int month, int day) {
-		return newDate(year, month, day, 0, 0, 0);
-	}
-
-	public static long newDate(int year, int month, int day, int hour, int minute, int second) {
-		return ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneId.systemDefault()).toEpochSecond() * 1000l;
-	}
-
-	public static ThreadPoolExecutor newExecutor() {
-		return newExecutor(8, 32);
-	}
-
-	public static ThreadPoolExecutor newExecutorByProcessors() {
-		int nProcessors = Runtime.getRuntime().availableProcessors();
-		return newExecutor(nProcessors, nProcessors);
-	}
-
-	public static Thread newThread(RunnableEx runnable) {
-		return new Thread() {
-			public void run() {
-				try {
-					runnable.run();
-				} catch (Exception ex) {
-					LogUtil.error(ex);
-				}
-			}
-		};
 	}
 
 	/**
@@ -188,41 +124,6 @@ public class Util {
 		System.exit(code[0]);
 	}
 
-	@SafeVarargs
-	public static <T> Set<T> set(T... ts) {
-		Set<T> set = new HashSet<>();
-		for (T t : ts)
-			set.add(t);
-		return set;
-	}
-
-	public static void sleepQuietly(long time) {
-		if (0 < time)
-			try {
-				Thread.sleep(time);
-			} catch (InterruptedException ex) {
-				LogUtil.error(ex);
-			}
-	}
-
-	public static void startJoin(Collection<Thread> threads) {
-		for (Thread thread : threads)
-			thread.start();
-
-		for (Thread thread : threads)
-			try {
-				thread.join();
-			} catch (InterruptedException ex) {
-				LogUtil.error(ex);
-			}
-	}
-
-	public static Thread startThread(RunnableEx runnable) {
-		Thread thread = newThread(runnable);
-		thread.start();
-		return thread;
-	}
-
 	public static int temp() {
 		return counter.getAndIncrement();
 	}
@@ -232,10 +133,6 @@ public class Util {
 		if (0 < length && sb.charAt(length - 1) == 13)
 			sb.deleteCharAt(length - 1);
 		return sb.toString();
-	}
-
-	private static ThreadPoolExecutor newExecutor(int corePoolSize, int maxPoolSize) {
-		return new ThreadPoolExecutor(corePoolSize, maxPoolSize, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256));
 	}
 
 }

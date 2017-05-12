@@ -7,13 +7,13 @@ import org.junit.Test;
 
 import suite.adt.Pair;
 import suite.streamlet.Read;
-import suite.util.Util;
+import suite.util.Set_;
 
 public class StronglyConnectedComponentsTest {
 
 	@Test
 	public void test() {
-		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(Util.set( //
+		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(Set_.set( //
 				Pair.of("a", "b") //
 				, Pair.of("b", "c") //
 				, Pair.of("b", "e") //
@@ -31,9 +31,9 @@ public class StronglyConnectedComponentsTest {
 		)));
 
 		assertEquals(3, scc.components.size());
-		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Util.set("a", "b", "e"))));
-		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Util.set("c", "d", "h"))));
-		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Util.set("f", "g"))));
+		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Set_.set("a", "b", "e"))));
+		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Set_.set("c", "d", "h"))));
+		assertTrue(Read.from(scc.components).isAny(c -> c.equals(Set_.set("f", "g"))));
 	}
 
 }

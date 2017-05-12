@@ -20,7 +20,7 @@ import suite.primitive.Bytes;
 import suite.streamlet.Nerve;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class ClusterImpl implements Cluster {
 
@@ -56,7 +56,7 @@ public class ClusterImpl implements Cluster {
 
 	@Override
 	public void start() throws IOException {
-		executor = Util.newExecutor();
+		executor = Thread_.newExecutor();
 		unlisten = nio.listen(peers.get(me).getPort());
 		nio.start();
 

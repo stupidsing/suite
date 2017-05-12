@@ -9,8 +9,8 @@ import suite.Constants;
 import suite.math.Vector;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
+import suite.util.Thread_;
 import suite.util.To;
-import suite.util.Util;
 
 public class Render {
 
@@ -23,7 +23,7 @@ public class Render {
 		int centreX = width / 2, centreY = height / 2;
 
 		List<Thread> threads = Read.range(nThreads) //
-				.map(t -> Util.newThread(() -> {
+				.map(t -> Thread_.newThread(() -> {
 					for (int x = xs[t]; x < xs[t + 1]; x++)
 						for (int y = 0; y < height; y++) {
 							Vector color;
@@ -38,7 +38,7 @@ public class Render {
 				})) //
 				.toList();
 
-		Util.startJoin(threads);
+		Thread_.startJoin(threads);
 
 		BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 

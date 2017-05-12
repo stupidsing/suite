@@ -10,7 +10,7 @@ import java.util.Set;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.util.Copy;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class TelnetServer {
 
@@ -82,7 +82,7 @@ public class TelnetServer {
 					}
 				});
 
-				Util.startJoin(threads);
+				Thread_.startJoin(threads);
 			} finally {
 				process.destroy();
 			}

@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.streamlet.Read;
-import suite.util.Util;
+import suite.util.Thread_;
 import suite.weiqi.Weiqi;
 
 /**
@@ -61,7 +61,7 @@ public class UctSearch<Move> {
 		long end = System.currentTimeMillis() + boundedTime;
 
 		List<Thread> threads = Read.range(numberOfThreads) //
-				.map(i -> Util.newThread(() -> {
+				.map(i -> Thread_.newThread(() -> {
 					int j = 0;
 
 					while (count.getAndIncrement() < numberOfSimulations) {
@@ -76,7 +76,7 @@ public class UctSearch<Move> {
 				})) //
 				.toList();
 
-		Util.startJoin(threads);
+		Thread_.startJoin(threads);
 
 		// finds best node
 		best = root.bestChild;

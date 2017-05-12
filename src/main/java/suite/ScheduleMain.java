@@ -13,6 +13,7 @@ import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
+import suite.util.Thread_;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
@@ -49,7 +50,7 @@ public class ScheduleMain extends ExecutableProgram {
 
 			Duration duration = Duration.between(now, nextWakeUpDateTime);
 
-			Util.sleepQuietly(duration.toMillis());
+			Thread_.sleepQuietly(duration.toMillis());
 		}
 	}
 

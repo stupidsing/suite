@@ -9,7 +9,7 @@ import suite.inspect.Dump;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class FormatterTest {
 
@@ -24,7 +24,7 @@ public class FormatterTest {
 		testDisplay("a - b - c");
 		testDisplay("a - (b - c)");
 		testDisplay("(a, b) = (c, d)");
-		Dump.out(Util.currentMethod(), Formatter.display(new Reference()));
+		Dump.out(Thread_.currentMethod(), Formatter.display(new Reference()));
 	}
 
 	@Test

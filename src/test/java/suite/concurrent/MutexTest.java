@@ -11,7 +11,7 @@ import suite.concurrent.Concurrent.DeadlockException;
 import suite.concurrent.Mutex.MutexLock;
 import suite.node.util.IntMutable;
 import suite.streamlet.Read;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class MutexTest {
 
@@ -26,14 +26,14 @@ public class MutexTest {
 
 		MutexTestRunnable ra = () -> {
 			try (MutexLock mla = new MutexLock(a)) {
-				Util.sleepQuietly(500);
+				Thread_.sleepQuietly(500);
 				try (MutexLock mlb = new MutexLock(b)) {
 				}
 			}
 		};
 		MutexTestRunnable rb = () -> {
 			try (MutexLock mlb = new MutexLock(b)) {
-				Util.sleepQuietly(500);
+				Thread_.sleepQuietly(500);
 				try (MutexLock mla = new MutexLock(a)) {
 				}
 			}
@@ -49,14 +49,14 @@ public class MutexTest {
 
 		MutexTestRunnable ra = () -> {
 			try (MutexLock mla = new MutexLock(a)) {
-				Util.sleepQuietly(500);
+				Thread_.sleepQuietly(500);
 				try (MutexLock mlb = new MutexLock(b)) {
 				}
 			}
 		};
 		MutexTestRunnable rb = () -> {
 			try (MutexLock mla = new MutexLock(a)) {
-				Util.sleepQuietly(500);
+				Thread_.sleepQuietly(500);
 				try (MutexLock mlb = new MutexLock(b)) {
 				}
 			}
@@ -68,7 +68,7 @@ public class MutexTest {
 	private boolean isDeadlock(MutexTestRunnable... mtrs) throws InterruptedException {
 		IntMutable result = IntMutable.false_();
 		List<Thread> threads = Read.from(mtrs) //
-				.map(mtr -> Util.newThread(() -> {
+				.map(mtr -> Thread_.newThread(() -> {
 					try {
 						mtr.run();
 					} catch (DeadlockException ex1) {
@@ -76,7 +76,7 @@ public class MutexTest {
 					}
 				})) //
 				.toList();
-		Util.startJoin(threads);
+		Thread_.startJoin(threads);
 		return result.isTrue();
 	}
 

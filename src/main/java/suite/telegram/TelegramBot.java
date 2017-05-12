@@ -14,7 +14,7 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import suite.util.Rethrow;
 import suite.util.TempDir;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class TelegramBot {
 
@@ -53,6 +53,6 @@ public class TelegramBot {
 		}
 
 		while (true)
-			Util.sleepQuietly(10000);
+			Thread_.sleepQuietly(10000);
 	}
 }

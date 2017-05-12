@@ -26,7 +26,7 @@ import suite.node.io.TermOp;
 import suite.primitive.Chars;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class MonadIntrinsics {
 
@@ -54,7 +54,7 @@ public class MonadIntrinsics {
 			// and write occur at the same time and would not block up.
 			// the input stream is also closed by this thread.
 			// have to make sure the executors are thread-safe!
-			Util.startThread(() -> {
+			Thread_.startThread(() -> {
 				try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
 					ThunkUtil.yawnWriter(yawn, in, writer);
 				}

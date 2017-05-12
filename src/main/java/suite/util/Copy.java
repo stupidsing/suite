@@ -56,7 +56,7 @@ public class Copy {
 	}
 
 	public static Thread streamByThread(InputStream is, OutputStream os) {
-		return Util.newThread(() -> {
+		return Thread_.newThread(() -> {
 			try (InputStream is_ = is; OutputStream os_ = os) {
 				stream(is_, os_);
 			} catch (InterruptedIOException ex) {

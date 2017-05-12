@@ -11,8 +11,8 @@ import suite.streamlet.Streamlet;
 import suite.trade.DatePeriod;
 import suite.trade.Forex;
 import suite.util.Copy;
+import suite.util.Thread_;
 import suite.util.To;
-import suite.util.Util;
 
 public class CollectDataTest {
 
@@ -30,7 +30,7 @@ public class CollectDataTest {
 				Copy.stream(To.inputStream(HttpUtil.get(url).out), fos);
 			}
 
-			Util.sleepQuietly(2000);
+			Thread_.sleepQuietly(2000);
 		}
 	}
 

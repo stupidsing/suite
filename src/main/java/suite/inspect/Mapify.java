@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
-import suite.util.Util;
+import suite.util.Set_;
 
 /**
  * Convert (supposedly) any Java structures to recursive maps.
@@ -27,8 +27,8 @@ import suite.util.Util;
  */
 public class Mapify {
 
-	private Set<Type> collectionClasses = Util.set(ArrayList.class, Collection.class, HashSet.class, List.class, Set.class);
-	private Set<Type> mapClasses = Util.set(HashMap.class, Map.class);
+	private Set<Type> collectionClasses = Set_.set(ArrayList.class, Collection.class, HashSet.class, List.class, Set.class);
+	private Set<Type> mapClasses = Set_.set(HashMap.class, Map.class);
 
 	private Fun<Object, Object> id = object -> object;
 

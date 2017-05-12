@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import org.junit.Test;
 
 import suite.net.cluster.impl.ClusterProbeImpl;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class ClusterProbeTest {
 
@@ -33,7 +33,7 @@ public class ClusterProbeTest {
 			probe.start();
 		}
 
-		Util.sleepQuietly(10 * 1000);
+		Thread_.sleepQuietly(10 * 1000);
 
 		System.out.println("=== CLUSTER FORMED (" + LocalDateTime.now() + ") ===\n");
 		dumpActivePeers(probes);
@@ -42,7 +42,7 @@ public class ClusterProbeTest {
 		for (ClusterProbe probe : probes.values())
 			probe.stop();
 
-		Util.sleepQuietly(5 * 1000);
+		Thread_.sleepQuietly(5 * 1000);
 
 		System.out.println("=== CLUSTER STOPPED (" + LocalDateTime.now() + ") ===\n");
 		dumpActivePeers(probes);

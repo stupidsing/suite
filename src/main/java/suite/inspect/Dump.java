@@ -13,7 +13,7 @@ import suite.jdk.gen.Type_;
 import suite.node.util.Singleton;
 import suite.os.LogUtil;
 import suite.util.FunUtil.Sink;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class Dump {
 
@@ -27,7 +27,7 @@ public class Dump {
 	 * log4j.
 	 */
 	public static void out(Object object) {
-		StackTraceElement trace = Util.getStackTrace(3);
+		StackTraceElement trace = Thread_.getStackTrace(3);
 		out(trace.getClassName() + "." + trace.getMethodName(), object);
 	}
 

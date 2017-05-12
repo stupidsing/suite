@@ -10,7 +10,7 @@ import org.junit.Test;
 import suite.Suite;
 import suite.os.FileUtil;
 import suite.util.TempDir;
-import suite.util.Util;
+import suite.util.Thread_;
 
 public class FilterTest {
 
@@ -71,7 +71,7 @@ public class FilterTest {
 							+ "jmap -histo " + FileUtil.getPid() //
 							+ " | tee " + TempDir.resolve("jmap") //
 							+ " | less");
-					Util.sleepQuietly(10 * 1000l);
+					Thread_.sleepQuietly(10 * 1000l);
 				}
 			}
 

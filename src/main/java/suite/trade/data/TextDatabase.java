@@ -18,8 +18,8 @@ import suite.streamlet.Streamlet;
 import suite.util.HomeDir;
 import suite.util.Object_;
 import suite.util.String_;
+import suite.util.Thread_;
 import suite.util.To;
-import suite.util.Util;
 
 public class TextDatabase {
 
@@ -59,7 +59,7 @@ public class TextDatabase {
 			saveThread = new Thread(() -> {
 				long now;
 				while ((now = System.currentTimeMillis()) < saveTime)
-					Util.sleepQuietly(saveTime - now);
+					Thread_.sleepQuietly(saveTime - now);
 				synchronized (TextDatabase.this) {
 					save();
 					saveThread = null;

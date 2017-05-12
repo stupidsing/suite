@@ -22,8 +22,8 @@ import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
+import suite.util.Thread_;
 import suite.util.To;
-import suite.util.Util;
 
 public class EditorController {
 
@@ -242,7 +242,7 @@ public class EditorController {
 		String text = selectedText != null ? selectedText : editor.getText();
 
 		if (runThread == null || !runThread.isAlive())
-			runThread = Util.startThread(() -> {
+			runThread = Thread_.startThread(() -> {
 				view.showMessageRunning();
 				view.showMessage(fun.apply(text));
 				view.getEditor().requestFocusInWindow();

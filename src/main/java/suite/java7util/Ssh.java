@@ -16,7 +16,7 @@ import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.UserInfo;
 
 import suite.util.Copy;
-import suite.util.Util;
+import suite.util.Thread_;
 
 @Deprecated
 public class Ssh {
@@ -33,7 +33,7 @@ public class Ssh {
 			channel.connect();
 
 			while (!channel.isClosed())
-				Util.sleepQuietly(100);
+				Thread_.sleepQuietly(100);
 
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			Copy.stream(channel.getInputStream(), baos);
