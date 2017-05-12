@@ -90,20 +90,20 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 					double kelly = returns.kellyCriterion();
 					double potential;
 
-					log.sink(cfg.queryCompany(symbol) //
-							+ ", mrRatio = " + To.string(mrs.meanReversionRatio) //
-							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
-							+ ", " + To.string(price) + " => " + To.string(lma) //
-							+ ", dailyReturn = " + To.string(dailyReturn) //
-							+ ", sharpe = " + To.string(sharpe) //
-							+ ", kelly = " + To.string(kelly));
-
 					if (Boolean.TRUE) // Kelly's criterion allocation
 						potential = kelly;
 					else // even allocation
 						potential = 1d;
 
-					return new PotentialStat(dailyReturn, sharpe, potential);
+					PotentialStat potentialStat = new PotentialStat(dailyReturn, sharpe, potential);
+
+					log.sink(cfg.queryCompany(symbol) //
+							+ ", mrRatio = " + To.string(mrs.meanReversionRatio) //
+							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
+							+ ", " + To.string(price) + " => " + To.string(lma) //
+							+ ", " + potentialStat);
+
+					return potentialStat;
 				}) //
 				.filterValue(ps -> dailyRiskFreeInterestRate < ps.dailyReturn) //
 				.filterValue(ps -> 0d < ps.sharpe) //
@@ -123,6 +123,12 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 			this.dailyReturn = dailyReturn;
 			this.sharpe = sharpe;
 			this.potential = potential;
+		}
+
+		public String toString() {
+			return "dailyReturn = " + To.string(dailyReturn) //
+					+ ", sharpe = " + To.string(sharpe) //
+					+ ", potential = " + To.string(potential);
 		}
 	}
 
