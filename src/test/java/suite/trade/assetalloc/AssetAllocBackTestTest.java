@@ -27,18 +27,16 @@ public class AssetAllocBackTestTest {
 
 	@Test
 	public void testBackTest() {
-		AssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(cfg, log);
-		float[] valuations = backTest(assetAllocator).valuations;
-		assertGrowth(valuations);
+		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of(cfg, log);
+		assertGrowth(backTest(assetAllocator));
 	}
 
 	@Test
 	public void testBackTestHsi() {
 		String symbol = "^HSI";
-		Asset asset = new Asset(symbol, "Hang Seng Index", 1);
+		Asset asset = Asset.of(symbol, "Hang Seng Index", 1);
 		AssetAllocator assetAllocator = new SingleAssetAllocator(symbol);
-		float[] valuations = backTest(assetAllocator, Read.each(asset)).valuations;
-		assertGrowth(valuations);
+		assertGrowth(backTest(assetAllocator, Read.each(asset)));
 	}
 
 	private Simulate backTest(AssetAllocator assetAllocator) {
@@ -61,7 +59,8 @@ public class AssetAllocBackTestTest {
 		return sim;
 	}
 
-	private void assertGrowth(float[] valuations) {
+	private void assertGrowth(Simulate sim) {
+		float[] valuations = sim.valuations;
 		double r = Math.expm1(stat.logRiskFreeInterestRate * DatePeriod.of(frDate, toDate).nYears());
 		assertTrue(initial * r < valuations[valuations.length - 1]);
 	}

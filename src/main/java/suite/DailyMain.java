@@ -185,7 +185,7 @@ public class DailyMain extends ExecutableProgram {
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = To.sink(sb);
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(LocalDate.now()); // hkex.getCompanies()
-		AssetAllocator assetAllocator = new MovingAvgMeanReversionAssetAllocator(cfg, log);
+		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of(cfg, log);
 		Simulate sim = AssetAllocBackTest.of(cfg, assets, assetAllocator, log).simulate(300000f);
 
 		Account account0 = Account.fromPortfolio(TradeUtil.fromHistory(r -> Util.stringEquals(r.strategy, tag)));
