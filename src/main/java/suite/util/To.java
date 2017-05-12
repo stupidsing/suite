@@ -36,6 +36,7 @@ import suite.primitive.PrimitiveFun.IntInt_Float;
 import suite.primitive.PrimitiveFun.Int_Float;
 import suite.primitive.PrimitiveFun.Int_Int;
 import suite.streamlet.As;
+import suite.streamlet.As.ToFloatFunction;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -70,6 +71,10 @@ public class To {
 
 	public static float[] arrayOfFloats(float[] fs, Float_Float fun) {
 		return arrayOfFloats(fs.length, i -> fun.apply(fs[i]));
+	}
+
+	public static <T> float[] arrayOfFloats(T[] ts, ToFloatFunction<T> fun) {
+		return arrayOfFloats(ts.length, i -> fun.applyAsFloat(ts[i]));
 	}
 
 	public static float[] arrayOfFloats(int length, Int_Float fun) {

@@ -50,7 +50,7 @@ public class KellyAssetAllocator implements AssetAllocator {
 			return (float) stat.covariance(returns0, returns1);
 		});
 
-		float[] returns = To.arrayOfFloats(nSymbols, i -> excessReturnBySymbol.get(symbols[i]).floatValue());
+		float[] returns = To.arrayOfFloats(symbols, symbol -> excessReturnBySymbol.get(symbol).floatValue());
 
 		float[] allocations = cholesky.inverseMul(cov).apply(returns);
 

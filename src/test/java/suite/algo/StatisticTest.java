@@ -20,7 +20,7 @@ public class StatisticTest {
 		Random random = new Random();
 		float[] expect = To.arrayOfFloats(m, j -> random.nextFloat());
 		float[][] xs = To.arrayOfFloats(n, m, (i, j) -> random.nextFloat());
-		float[] ys = To.arrayOfFloats(n, i -> (float) (mtx.dot(expect, xs[i]) + random.nextGaussian() * .01f));
+		float[] ys = To.arrayOfFloats(xs, x -> (float) (mtx.dot(expect, x) + random.nextGaussian() * .01f));
 		LinearRegression lr = statistic.linearRegression(xs, ys);
 		Dump.out(lr);
 		float[] actual = lr.betas;
