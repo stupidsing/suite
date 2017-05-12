@@ -38,7 +38,7 @@ public class TradeUtil {
 					return n1 - n0;
 				}) //
 				.filter((symbol, buySell) -> !String_.equals(symbol, Asset.cashCode)) //
-				.map((symbol, buySell) -> new Trade(buySell, symbol, prices.get(symbol))) //
+				.map((symbol, buySell) -> Trade.of(buySell, symbol, prices.get(symbol))) //
 				.toList();
 	}
 

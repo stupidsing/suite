@@ -78,7 +78,7 @@ public class Summarize {
 				.groupBy(trade -> trade.strategy, TradeUtil::portfolio) //
 				.concatMap((strategy, nSharesBySymbol) -> Read //
 						.from2(nSharesBySymbol) //
-						.map((symbol, size) -> new Trade(-size, symbol, priceBySymbol.get(symbol), strategy))) //
+						.map((symbol, size) -> Trade.of(-size, symbol, priceBySymbol.get(symbol), strategy))) //
 				.toList();
 
 		return To.list(trades, sellAll);

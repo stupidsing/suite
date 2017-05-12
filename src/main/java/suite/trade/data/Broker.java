@@ -27,7 +27,7 @@ public interface Broker {
 		private static Streamlet<Trade> historyRecords() {
 			return Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt") //
 					.collect(As::table) //
-					.map(Trade::new) //
+					.map(Trade::of) //
 					.collect(As::streamlet);
 		}
 

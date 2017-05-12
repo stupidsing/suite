@@ -8,19 +8,19 @@ public class Trade {
 	public final float price;
 	public final String strategy;
 
-	public Trade(String[] array) {
-		this(array[0], Integer.parseInt(array[1]), array[2], Float.parseFloat(array[3]), array[4]);
+	public static Trade of(String[] array) {
+		return new Trade(array[0], Integer.parseInt(array[1]), array[2], Float.parseFloat(array[3]), array[4]);
 	}
 
-	public Trade(int buySell, String symbol, float price) {
-		this(buySell, symbol, price, "-");
+	public static Trade of(int buySell, String symbol, float price) {
+		return of(buySell, symbol, price, "-");
 	}
 
-	public Trade(int buySell, String symbol, float price, String strategy) {
-		this("-", buySell, symbol, price, strategy);
+	public static Trade of(int buySell, String symbol, float price, String strategy) {
+		return new Trade("-", buySell, symbol, price, strategy);
 	}
 
-	public Trade(String date, int buySell, String symbol, float price, String strategy) {
+	private Trade(String date, int buySell, String symbol, float price, String strategy) {
 		this.date = date;
 		this.buySell = buySell;
 		this.symbol = symbol;

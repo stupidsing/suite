@@ -101,7 +101,7 @@ public class DailyMain extends ExecutableProgram {
 			String symbol = e.getKey();
 			int sell = e.getValue();
 			double targetPrice = (1d + stat.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
-			sb.append("\nSIGNAL" + new Trade(-sell, symbol, (float) targetPrice));
+			sb.append("\nSIGNAL" + Trade.of(-sell, symbol, (float) targetPrice));
 		}
 
 		return Pair.of(tag, sb.toString());
@@ -167,7 +167,7 @@ public class DailyMain extends ExecutableProgram {
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
 					int nShares = signal * asset.lotSize * Math.round(100000f / nHoldDays / (asset.lotSize * latestPrice));
-					String message = "\nSIGNAL" + new Trade(nShares, symbol, latestPrice);
+					String message = "\nSIGNAL" + Trade.of(nShares, symbol, latestPrice);
 
 					if (signal != 0)
 						messages.add(message);
