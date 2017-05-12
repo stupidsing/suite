@@ -4,14 +4,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import suite.os.SerializedStoreCache;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
+import suite.trade.Trade;
 import suite.trade.data.Broker.Hsbc;
 import suite.util.FormatUtil;
 import suite.util.To;
@@ -57,6 +60,10 @@ public class Configuration {
 
 	public Streamlet<Asset> queryCompanies() {
 		return hkex.queryCompanies();
+	}
+
+	public List<Trade> queryHistory(Predicate<Trade> pred) {
+		return broker.queryHistory(pred);
 	}
 
 	public Streamlet<Asset> queryLeadingCompaniesByMarketCap(LocalDate date) {

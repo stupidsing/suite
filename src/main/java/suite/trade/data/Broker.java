@@ -1,11 +1,36 @@
 package suite.trade.data;
 
+import java.util.List;
+import java.util.function.Predicate;
+
+import suite.streamlet.As;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
+import suite.trade.Trade;
+import suite.util.FunUtil.Source;
+import suite.util.Memoize;
+
 public interface Broker {
+
+	public List<Trade> queryHistory(Predicate<Trade> pred);
 
 	public double transactionFee(double transactionAmount);
 
 	// https://www.personal.hsbc.com.hk/1/2/hk/investments/stocks/detail
 	public class Hsbc implements Broker {
+		public List<Trade> queryHistory(Predicate<Trade> pred) {
+			return memoizeHistoryRecords.source().filter(pred).toList();
+		}
+
+		private static Source<Streamlet<Trade>> memoizeHistoryRecords = Memoize.source(Hsbc::historyRecords);
+
+		private static Streamlet<Trade> historyRecords() {
+			return Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt") //
+					.collect(As::table) //
+					.map(Trade::new) //
+					.collect(As::streamlet);
+		}
+
 		public double transactionFee(double transactionAmount) {
 
 			// .15d during promotion period

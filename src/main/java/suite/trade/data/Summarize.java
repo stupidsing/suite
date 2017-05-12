@@ -28,7 +28,7 @@ public class Summarize {
 	}
 
 	public <K> Map<K, Double> summarize(Fun<Trade, K> fun, Sink<String> log) {
-		List<Trade> trades = TradeUtil.fromHistory(trade -> true);
+		List<Trade> trades = cfg.queryHistory(trade -> true);
 		Map<String, Float> priceBySymbol = cfg.quote(Read.from(trades).map(trade -> trade.symbol).toSet());
 
 		Map<K, String> summaryByKey = Read.from(trades) //

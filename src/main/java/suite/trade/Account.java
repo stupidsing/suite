@@ -3,7 +3,6 @@ package suite.trade;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 import suite.primitive.PrimitiveFun.Double_Double;
 import suite.streamlet.As;
@@ -23,10 +22,6 @@ public class Account {
 		Account account = new Account();
 		account.play(trades);
 		return account;
-	}
-
-	public static Account fromPortfolio(Predicate<Trade> pred) {
-		return fromPortfolio(TradeUtil.fromHistory(pred));
 	}
 
 	public static Account fromPortfolio(Iterable<Trade> trades) {

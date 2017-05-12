@@ -3,14 +3,10 @@ package suite.trade;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.util.FunUtil.Source;
-import suite.util.Memoize;
 import suite.util.Util;
 
 public class TradeUtil {
@@ -20,19 +16,6 @@ public class TradeUtil {
 				.sortBy((code, i) -> !Util.stringEquals(code, Asset.cashCode) ? code : "") //
 				.map((code, i) -> code + ":" + i + ",") //
 				.collect(As.joined());
-	}
-
-	public static List<Trade> fromHistory(Predicate<Trade> pred) {
-		return memoizeHistoryRecords.source().filter(pred).toList();
-	}
-
-	private static Source<Streamlet<Trade>> memoizeHistoryRecords = Memoize.source(TradeUtil::historyRecords);
-
-	private static Streamlet<Trade> historyRecords() {
-		return Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt") //
-				.collect(As::table) //
-				.map(Trade::new) //
-				.collect(As::streamlet);
 	}
 
 	public static Map<String, Integer> portfolio(Iterable<Trade> trades) {
