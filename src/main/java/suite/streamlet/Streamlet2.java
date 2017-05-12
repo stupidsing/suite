@@ -23,8 +23,8 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
+import suite.util.Object_;
 import suite.util.To;
-import suite.util.Util;
 
 public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 
@@ -110,7 +110,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Util.clazz(object) == Streamlet2.class ? Objects.equals(spawn(), ((Streamlet2<?, ?>) object).spawn()) : false;
+		return Object_.clazz(object) == Streamlet2.class ? Objects.equals(spawn(), ((Streamlet2<?, ?>) object).spawn()) : false;
 	}
 
 	public Streamlet2<K, V> filter(BiPredicate<K, V> fun) {

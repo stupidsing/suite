@@ -1,7 +1,7 @@
 package suite.node;
 
+import suite.util.Object_;
 import suite.util.String_;
-import suite.util.Util;
 
 public class Str extends Node {
 
@@ -13,7 +13,7 @@ public class Str extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Str.class) {
+		if (Object_.clazz(object) == Str.class) {
 			Str str = (Str) object;
 			return String_.equals(value, str.value);
 		} else

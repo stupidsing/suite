@@ -2,7 +2,7 @@ package suite.node;
 
 import java.util.Objects;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Tuple extends Node {
 
@@ -18,7 +18,7 @@ public class Tuple extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		return Util.clazz(object) == Tuple.class && Objects.equals(nodes, ((Tuple) object).nodes);
+		return Object_.clazz(object) == Tuple.class && Objects.equals(nodes, ((Tuple) object).nodes);
 	}
 
 	@Override

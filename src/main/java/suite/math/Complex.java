@@ -1,6 +1,6 @@
 package suite.math;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Complex {
 
@@ -60,7 +60,7 @@ public class Complex {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Complex.class) {
+		if (Object_.clazz(object) == Complex.class) {
 			Complex other = (Complex) object;
 			return r == other.r && i == other.i;
 		} else

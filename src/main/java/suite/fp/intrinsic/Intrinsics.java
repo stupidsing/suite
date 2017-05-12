@@ -19,8 +19,8 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Mutable;
 import suite.primitive.Chars;
+import suite.util.Object_;
 import suite.util.Rethrow;
-import suite.util.Util;
 
 public class Intrinsics {
 
@@ -90,7 +90,7 @@ public class Intrinsics {
 			if (0 <= nCharsRead)
 				return Chars.of(buffer, 0, nCharsRead);
 			else {
-				Util.closeQuietly(reader);
+				Object_.closeQuietly(reader);
 				return null;
 			}
 		}));

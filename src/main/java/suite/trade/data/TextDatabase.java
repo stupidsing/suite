@@ -16,6 +16,7 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.HomeDir;
+import suite.util.Object_;
 import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
@@ -122,7 +123,7 @@ public class TextDatabase {
 		}
 
 		public int compareTo(Datum other) {
-			return Util.compare(key, other.key);
+			return Object_.compare(key, other.key);
 		}
 
 		public boolean equals(Object object) {

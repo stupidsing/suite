@@ -2,7 +2,7 @@ package suite.node;
 
 import java.util.Objects;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Data<T> extends Node {
 
@@ -25,7 +25,7 @@ public class Data<T> extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		return Util.clazz(object) == Data.class && Objects.equals(data, ((Data<?>) object).data);
+		return Object_.clazz(object) == Data.class && Objects.equals(data, ((Data<?>) object).data);
 	}
 
 	@Override

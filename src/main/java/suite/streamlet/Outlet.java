@@ -26,6 +26,7 @@ import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
 import suite.util.List_;
 import suite.util.NullableSynchronousQueue;
+import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.Util;
@@ -90,7 +91,7 @@ public class Outlet<T> implements Iterable<T> {
 		return of(() -> {
 			T next = next();
 			if (next == null)
-				Util.closeQuietly(c);
+				Object_.closeQuietly(c);
 			return next;
 		});
 	}
@@ -152,7 +153,7 @@ public class Outlet<T> implements Iterable<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Outlet.class) {
+		if (Object_.clazz(object) == Outlet.class) {
 			Source<?> source1 = ((Outlet<?>) object).source;
 			Object o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
@@ -316,7 +317,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <O extends Comparable<? super O>> Outlet<T> sortBy(Fun<T, O> fun) {
-		return sort((e0, e1) -> Util.compare(fun.apply(e0), fun.apply(e1)));
+		return sort((e0, e1) -> Object_.compare(fun.apply(e0), fun.apply(e1)));
 	}
 
 	public Outlet<Outlet<T>> split(Predicate<T> fun) {

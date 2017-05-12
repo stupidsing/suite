@@ -15,7 +15,7 @@ import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
-import suite.util.Util;
+import suite.util.Object_;
 import suite.weiqi.Weiqi.Occupation;
 
 public class UctTest {
@@ -40,8 +40,8 @@ public class UctTest {
 				+ ", CENTER: " + center);
 
 		// the corner move must be the worst
-		assertTrue(Util.compare(corner, faraway) < 0);
-		assertTrue(Util.compare(faraway, center) < 0);
+		assertTrue(Object_.compare(corner, faraway) < 0);
+		assertTrue(Object_.compare(faraway, center) < 0);
 	}
 
 	private String evaluateRandomOutcome(Coordinate move) {

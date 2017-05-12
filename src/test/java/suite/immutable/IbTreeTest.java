@@ -9,13 +9,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class IbTreeTest {
 
 	private int max = 32;
 
-	private Comparator<Integer> comparator = Util.<Integer> comparator();
+	private Comparator<Integer> comparator = Object_.<Integer> comparator();
 
 	@Test
 	public void test0() {

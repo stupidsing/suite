@@ -20,8 +20,8 @@ import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.Object_;
 import suite.util.To;
-import suite.util.Util;
 
 public class Streamlet<T> implements Iterable<T> {
 
@@ -104,7 +104,7 @@ public class Streamlet<T> implements Iterable<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Util.clazz(object) == Streamlet.class ? Objects.equals(spawn(), ((Streamlet<?>) object).spawn()) : false;
+		return Object_.clazz(object) == Streamlet.class ? Objects.equals(spawn(), ((Streamlet<?>) object).spawn()) : false;
 	}
 
 	public Streamlet<T> filter(Predicate<T> fun) {

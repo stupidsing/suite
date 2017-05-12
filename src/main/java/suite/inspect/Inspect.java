@@ -25,10 +25,10 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Source2;
+import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
 
 /**
  * General manipulation on value objects with public fields.
@@ -71,7 +71,7 @@ public class Inspect {
 			}
 		};
 
-		Sink<Object> app = object_ -> append.accept(Util.clazz(object_), object_);
+		Sink<Object> app = object_ -> append.accept(Object_.clazz(object_), object_);
 
 		sink.set(object_ -> {
 			Extract inspect_ = new Extract(object_);

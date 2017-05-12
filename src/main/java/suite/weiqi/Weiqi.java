@@ -2,7 +2,7 @@ package suite.weiqi;
 
 import java.util.Arrays;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Weiqi {
 
@@ -89,7 +89,7 @@ public class Weiqi {
 
 		@Override
 		public boolean equals(Object object) {
-			if (Util.clazz(object) == Array.class) {
+			if (Object_.clazz(object) == Array.class) {
 				Array<?> array = (Array<?>) object;
 				return Arrays.equals(positions, array.positions);
 			} else

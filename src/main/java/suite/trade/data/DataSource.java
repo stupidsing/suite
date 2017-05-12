@@ -9,6 +9,7 @@ import java.util.Arrays;
 import suite.math.Matrix;
 import suite.trade.DatePeriod;
 import suite.util.FormatUtil;
+import suite.util.Object_;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 import suite.util.Util;
@@ -84,7 +85,7 @@ public class DataSource {
 		for (int i = 0; i < prices.length; i++) {
 			String date = dates[i];
 			float price = prices[i];
-			if (Util.compare(s0, date) <= 0 && Util.compare(date, sx) < 0) {
+			if (Object_.compare(s0, date) <= 0 && Object_.compare(date, sx) < 0) {
 				dates1[j] = date;
 				prices1[j] = price;
 				j++;

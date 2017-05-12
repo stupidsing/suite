@@ -3,7 +3,7 @@ package suite.node;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Dict extends Node {
 
@@ -19,7 +19,7 @@ public class Dict extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		return Util.clazz(object) == Dict.class ? map.equals(((Dict) object).map) : false;
+		return Object_.clazz(object) == Dict.class ? map.equals(((Dict) object).map) : false;
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package suite.immutable;
 
 import java.util.Objects;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 /**
  * A list of nodes that can be easily expanded in left or right direction.
@@ -125,7 +125,7 @@ public class IVector<T> {
 	public boolean equals(Object object) {
 		boolean result = false;
 
-		if (Util.clazz(object) == IVector.class) {
+		if (Object_.clazz(object) == IVector.class) {
 			@SuppressWarnings("unchecked")
 			IVector<T> v = (IVector<T>) object;
 			result = end - start == v.end - v.start;

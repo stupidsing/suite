@@ -1,7 +1,7 @@
 package suite.adt;
 
 import suite.util.HashCodeComparable;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class IdentityKey<K> extends HashCodeComparable<IdentityKey<K>> {
 
@@ -17,7 +17,7 @@ public class IdentityKey<K> extends HashCodeComparable<IdentityKey<K>> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Util.clazz(object) == IdentityKey.class && key == ((IdentityKey<?>) object).key;
+		return Object_.clazz(object) == IdentityKey.class && key == ((IdentityKey<?>) object).key;
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 
-import suite.util.Util;
+import suite.util.Object_;
 import suite.weiqi.Weiqi.Occupation;
 
 public class GameSet1 {
@@ -61,7 +61,7 @@ public class GameSet1 {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == GameSet1.class) {
+		if (Object_.clazz(object) == GameSet1.class) {
 			GameSet1 other = (GameSet1) object;
 			return board.equals(other.board) && nextPlayer == other.nextPlayer && previousStates.equals(other.previousStates);
 		} else

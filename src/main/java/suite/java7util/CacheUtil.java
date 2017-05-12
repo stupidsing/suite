@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import suite.util.FunUtil.Fun;
+import suite.util.Object_;
 
 @Deprecated
 public class CacheUtil {
@@ -31,7 +32,7 @@ public class CacheUtil {
 		}
 
 		public boolean equals(Object object) {
-			if (Util.clazz(object) == Key.class) {
+			if (Object_.clazz(object) == Key.class) {
 				Key other = (Key) object;
 				return bean == other.bean //
 						&& Objects.equals(method, other.method) //

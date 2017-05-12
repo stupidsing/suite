@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.util.FunUtil.Source;
+import suite.util.Object_;
 import suite.util.To;
-import suite.util.Util;
 
 public class Ranges<T extends Comparable<? super T>> {
 
@@ -41,7 +41,7 @@ public class Ranges<T extends Comparable<? super T>> {
 				range1 = source1.source();
 			}
 
-			intersects.add(Range.of(Util.min(range0.from, range0.from), to));
+			intersects.add(Range.of(Object_.min(range0.from, range0.from), to));
 		}
 
 		return intersects.ranges();

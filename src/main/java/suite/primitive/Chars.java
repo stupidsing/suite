@@ -13,8 +13,8 @@ import java.util.Iterator;
 
 import suite.Constants;
 import suite.util.Copy;
+import suite.util.Object_;
 import suite.util.To;
-import suite.util.Util;
 
 public class Chars implements Iterable<Character> {
 
@@ -209,7 +209,7 @@ public class Chars implements Iterable<Character> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Chars.class) {
+		if (Object_.clazz(object) == Chars.class) {
 			Chars other = (Chars) object;
 
 			if (size() == other.size()) {

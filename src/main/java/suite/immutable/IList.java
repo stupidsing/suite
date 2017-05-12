@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
-import suite.util.Util;
+import suite.util.Object_;
 
 /**
  * Immutable linked list.
@@ -97,7 +97,7 @@ public class IList<T> implements Iterable<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == IList.class) {
+		if (Object_.clazz(object) == IList.class) {
 			IList<?> list0 = this;
 			IList<?> list1 = (IList<?>) object;
 			boolean e0, e1;

@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import suite.adt.Pair;
 import suite.streamlet.Streamlet;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
@@ -64,7 +64,7 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Util.clazz(object) == IMap.class && Objects.equals(stream(), ((IMap<?, ?>) object).stream());
+		return Object_.clazz(object) == IMap.class && Objects.equals(stream(), ((IMap<?, ?>) object).stream());
 	}
 
 	@Override

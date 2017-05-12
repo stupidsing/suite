@@ -6,7 +6,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import suite.concurrent.Concurrent.DeadlockException;
-import suite.util.Util;
+import suite.util.Object_;
 
 /**
  * Mutual exclusion lock with deadlock detection.
@@ -50,7 +50,7 @@ public class Mutex {
 							throw new DeadlockException();
 					}
 
-					Util.wait(bigLock);
+					Object_.wait(bigLock);
 				}
 
 				depth++;

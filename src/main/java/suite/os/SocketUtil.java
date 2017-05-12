@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import suite.Constants;
+import suite.util.Object_;
 import suite.util.Util;
 
 public class SocketUtil {
@@ -46,7 +47,7 @@ public class SocketUtil {
 					} catch (Exception ex) {
 						LogUtil.error(ex);
 					} finally {
-						Util.closeQuietly(socket);
+						Object_.closeQuietly(socket);
 					}
 				});
 			}

@@ -19,7 +19,7 @@ import suite.node.tree.TreeOp;
 import suite.node.tree.TreeOr;
 import suite.node.tree.TreeTuple;
 import suite.streamlet.Read;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Comparer implements Comparator<Node> {
 
@@ -57,7 +57,7 @@ public class Comparer implements Comparator<Node> {
 				keys.addAll(m0.keySet());
 				keys.addAll(m1.keySet());
 				for (Node key : Read.from(keys).sort(this::compare))
-					c = c != 0 ? c : Util.compare(m0.get(key), m1.get(key));
+					c = c != 0 ? c : Object_.compare(m0.get(key), m1.get(key));
 				return c;
 			} else if (clazz0 == Int.class)
 				return ((Int) n0).number - ((Int) n1).number;

@@ -18,6 +18,7 @@ import suite.node.Node;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.util.FunUtil.Source;
+import suite.util.Object_;
 import suite.util.ParseUtil;
 import suite.util.String_;
 import suite.util.To;
@@ -135,8 +136,8 @@ public class Main extends ExecutableProgram {
 
 	@Override
 	public void close() {
-		Util.closeQuietly(reader);
-		Util.closeQuietly(writer);
+		Object_.closeQuietly(reader);
+		Object_.closeQuietly(writer);
 	}
 
 }

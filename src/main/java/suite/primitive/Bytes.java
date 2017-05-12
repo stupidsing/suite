@@ -14,8 +14,8 @@ import java.util.Iterator;
 
 import suite.Constants;
 import suite.util.Copy;
+import suite.util.Object_;
 import suite.util.To;
-import suite.util.Util;
 
 public class Bytes implements Iterable<Byte> {
 
@@ -210,7 +210,7 @@ public class Bytes implements Iterable<Byte> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Bytes.class) {
+		if (Object_.clazz(object) == Bytes.class) {
 			Bytes other = (Bytes) object;
 
 			if (end - start == other.end - other.start) {

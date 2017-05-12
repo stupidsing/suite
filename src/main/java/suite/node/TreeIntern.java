@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import suite.node.io.Operator;
-import suite.util.Util;
+import suite.util.Object_;
 
 /**
  * Tree that only have a single copy. Saves memory footprint.
@@ -32,7 +32,7 @@ public class TreeIntern {
 		}
 
 		public boolean equals(Object object) {
-			if (Util.clazz(object) == Key.class) {
+			if (Object_.clazz(object) == Key.class) {
 				Key key = (Key) object;
 				return hashCode == key.hashCode && operator == key.operator && left == key.left && right == key.right;
 			} else

@@ -3,7 +3,7 @@ package suite.adt;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 
@@ -105,23 +105,23 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 	> Comparator<Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>> comparator() {
 		return (fixie0, fixie1) -> {
 			int c = 0;
-			c = c == 0 ? Util.compare(fixie0.t0, fixie1.t0) : c;
-			c = c == 0 ? Util.compare(fixie0.t1, fixie1.t1) : c;
-			c = c == 0 ? Util.compare(fixie0.t2, fixie1.t2) : c;
-			c = c == 0 ? Util.compare(fixie0.t3, fixie1.t3) : c;
-			c = c == 0 ? Util.compare(fixie0.t4, fixie1.t4) : c;
-			c = c == 0 ? Util.compare(fixie0.t5, fixie1.t5) : c;
-			c = c == 0 ? Util.compare(fixie0.t6, fixie1.t6) : c;
-			c = c == 0 ? Util.compare(fixie0.t7, fixie1.t7) : c;
-			c = c == 0 ? Util.compare(fixie0.t8, fixie1.t8) : c;
-			c = c == 0 ? Util.compare(fixie0.t9, fixie1.t9) : c;
+			c = c == 0 ? Object_.compare(fixie0.t0, fixie1.t0) : c;
+			c = c == 0 ? Object_.compare(fixie0.t1, fixie1.t1) : c;
+			c = c == 0 ? Object_.compare(fixie0.t2, fixie1.t2) : c;
+			c = c == 0 ? Object_.compare(fixie0.t3, fixie1.t3) : c;
+			c = c == 0 ? Object_.compare(fixie0.t4, fixie1.t4) : c;
+			c = c == 0 ? Object_.compare(fixie0.t5, fixie1.t5) : c;
+			c = c == 0 ? Object_.compare(fixie0.t6, fixie1.t6) : c;
+			c = c == 0 ? Object_.compare(fixie0.t7, fixie1.t7) : c;
+			c = c == 0 ? Object_.compare(fixie0.t8, fixie1.t8) : c;
+			c = c == 0 ? Object_.compare(fixie0.t9, fixie1.t9) : c;
 			return c;
 		};
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Fixie.class) {
+		if (Object_.clazz(object) == Fixie.class) {
 			Fixie<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> other = (Fixie<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) object;
 			return true //
 					&& Objects.equals(t0, other.t0) //

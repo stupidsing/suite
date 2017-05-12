@@ -2,7 +2,7 @@ package suite.weiqi;
 
 import java.util.HashSet;
 
-import suite.util.Util;
+import suite.util.Object_;
 import suite.weiqi.Board.MoveType;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -137,7 +137,7 @@ public class GameSet {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == GameSet.class) {
+		if (Object_.clazz(object) == GameSet.class) {
 			GameSet other = (GameSet) object;
 			return board.equals(other.board) && nextPlayer == other.nextPlayer && previousStates.equals(other.previousStates);
 		} else

@@ -24,9 +24,9 @@ import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Nerve;
 import suite.streamlet.Read;
+import suite.util.Object_;
 import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
 
 /**
  * Probes existence of other nodes in a cluster, using the un-reliable UDP
@@ -82,7 +82,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 		@Override
 		public boolean equals(Object object) {
-			if (Util.clazz(object) == IpPort.class) {
+			if (Object_.clazz(object) == IpPort.class) {
 				IpPort other = (IpPort) object;
 				return ip[0] == other.ip[0] //
 						&& ip[1] == other.ip[1] //

@@ -16,9 +16,9 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.DatePeriod;
+import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
-import suite.util.Util;
 
 public class Yahoo {
 
@@ -35,7 +35,7 @@ public class Yahoo {
 				.http(urlString) //
 				.collect(As::csv) //
 				.skip(1) //
-				.sort((a0, a1) -> Util.compare(a0[0], a1[0])) //
+				.sort((a0, a1) -> Object_.compare(a0[0], a1[0])) //
 				.toList();
 
 		String[] dates = Read.from(arrays) //
@@ -78,7 +78,7 @@ public class Yahoo {
 	private Map<String, Float> quote_(Streamlet<String> symbols, String field) {
 		if (0 < symbols.size()) {
 			String urlString = "https://download.finance.yahoo.com/d/quotes.csv" //
-					+ "?s=" + symbols.sort(Util::compare).map(this::encode).collect(As.joined("+")) //
+					+ "?s=" + symbols.sort(Object_::compare).map(this::encode).collect(As.joined("+")) //
 					+ "&f=s" + field;
 
 			URL url = To.url(urlString);

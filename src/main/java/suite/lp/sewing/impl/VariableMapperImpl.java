@@ -10,7 +10,7 @@ import suite.node.Reference;
 import suite.node.io.Formatter;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class VariableMapperImpl implements VariableMapper {
 
@@ -29,7 +29,7 @@ public class VariableMapperImpl implements VariableMapper {
 		public String dumpVariables() {
 			Streamlet<String> kvs = Read.from2(variableIndices) //
 					.map2((k, index) -> k.key, (k, index) -> env.refs[index].finalNode()) //
-					.sortByKey(Util::compare) //
+					.sortByKey(Object_::compare) //
 					.map((k, v) -> Formatter.display(k) + " = " + Formatter.dump(v));
 			StringBuilder sb = new StringBuilder();
 			for (String kv : kvs) {

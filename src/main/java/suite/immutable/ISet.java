@@ -4,11 +4,11 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import suite.streamlet.Streamlet;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class ISet<V extends Comparable<V>> implements Iterable<V> {
 
-	private ITree<V> tree = new IbTree<V>(Util.comparator());
+	private ITree<V> tree = new IbTree<V>(Object_.comparator());
 
 	public ISet() {
 	}
@@ -60,7 +60,7 @@ public class ISet<V extends Comparable<V>> implements Iterable<V> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Util.clazz(object) == ISet.class && Objects.equals(stream(), ((ISet<?>) object).stream());
+		return Object_.clazz(object) == ISet.class && Objects.equals(stream(), ((ISet<?>) object).stream());
 	}
 
 	@Override

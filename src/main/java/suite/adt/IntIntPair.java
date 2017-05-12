@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import suite.primitive.PrimitiveFun.Int_Int;
 import suite.util.FunUtil.Fun;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class IntIntPair {
 
@@ -56,7 +56,7 @@ public class IntIntPair {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == IntIntPair.class) {
+		if (Object_.clazz(object) == IntIntPair.class) {
 			IntIntPair other = (IntIntPair) object;
 			return t0 == other.t0 && t1 == other.t1;
 		} else

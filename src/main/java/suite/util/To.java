@@ -273,7 +273,7 @@ public class To {
 			if (0 <= nBytesRead)
 				return Bytes.of(bs, 0, nBytesRead);
 			else {
-				Util.closeQuietly(is);
+				Object_.closeQuietly(is);
 				return null;
 			}
 		};

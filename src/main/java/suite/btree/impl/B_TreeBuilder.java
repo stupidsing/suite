@@ -18,10 +18,10 @@ import suite.file.impl.JournalledFileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyDataStore;
 import suite.primitive.Bytes;
+import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
-import suite.util.Util;
 
 public class B_TreeBuilder<Key, Value> {
 
@@ -164,7 +164,7 @@ public class B_TreeBuilder<Key, Value> {
 	}
 
 	private B_Tree<Key, Value> build(Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {
-		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(Util.nullsFirst(comparator));
+		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(Object_.nullsFirst(comparator));
 
 		Serializer<Bytes> als = Serialize.bytes(pageSize);
 		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);

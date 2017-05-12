@@ -29,6 +29,7 @@ import suite.util.FunUtil.Source;
 import suite.util.IntObjFunUtil;
 import suite.util.List_;
 import suite.util.NullableSynchronousQueue;
+import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.Util;
@@ -124,7 +125,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return of(pair -> {
 			boolean b = next(pair);
 			if (!b)
-				Util.closeQuietly(c);
+				Object_.closeQuietly(c);
 			return b;
 		});
 	}
@@ -180,7 +181,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == IntObjOutlet.class) {
+		if (Object_.clazz(object) == IntObjOutlet.class) {
 			@SuppressWarnings("unchecked")
 			IntObjOutlet<V> outlet = (IntObjOutlet<V>) (IntObjOutlet<?>) object;
 			IntObjSource<V> source2 = outlet.source2;
@@ -378,7 +379,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public <O extends Comparable<? super O>> IntObjOutlet<V> sortBy(IntObj_Obj<V, O> fun) {
-		return sort((e0, e1) -> Util.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
+		return sort((e0, e1) -> Object_.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
 	}
 
 	public IntObjOutlet<V> sortByKey(Comparator<Integer> comparator) {

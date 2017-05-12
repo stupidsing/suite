@@ -8,7 +8,7 @@ import java.util.Objects;
 
 import suite.search.Search;
 import suite.search.Search.Traverser;
-import suite.util.Util;
+import suite.util.Object_;
 
 /**
  * Longest common subsequence using breadth-first search.
@@ -29,7 +29,7 @@ public class LcsBfs<T> {
 		}
 
 		public boolean equals(Object object) {
-			if (Util.clazz(object) == Node.class) {
+			if (Object_.clazz(object) == Node.class) {
 				LcsBfs<?>.Node node = (LcsBfs<?>.Node) object;
 				return pos0 == node.pos0 && pos1 == node.pos1;
 			} else

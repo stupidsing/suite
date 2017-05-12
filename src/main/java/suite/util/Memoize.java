@@ -34,7 +34,7 @@ public class Memoize {
 							notifyAll();
 						} else
 							while (result == null)
-								Util.wait(this);
+								Object_.wait(this);
 					}
 				return result;
 			}

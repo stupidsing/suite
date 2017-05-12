@@ -10,8 +10,8 @@ import suite.fs.KeyValueMutator;
 import suite.fs.impl.TransactionManager;
 import suite.immutable.LazyIbTreeStore;
 import suite.util.FunUtil.Fun;
+import suite.util.Object_;
 import suite.util.Serialize;
-import suite.util.Util;
 
 public class Database implements Closeable {
 
@@ -23,7 +23,7 @@ public class Database implements Closeable {
 
 		transactionManager = new TransactionManager<>(() -> LazyIbTreeStore.ofExtent( //
 				journalledPageFile, //
-				Util.comparator(), //
+				Object_.comparator(), //
 				Serialize.int_, //
 				Serialize.variableLengthString));
 	}

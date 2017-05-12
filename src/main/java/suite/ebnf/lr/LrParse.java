@@ -14,7 +14,7 @@ import suite.immutable.IList;
 import suite.parser.Lexer;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class LrParse {
 
@@ -91,7 +91,7 @@ public class LrParse {
 		sb.append("{\n");
 		Read.from2(map) //
 				.mapKey(Object::toString) //
-				.sortByKey(Util::compare) //
+				.sortByKey(Object_::compare) //
 				.sink((k, v) -> sb.append(k + " = " + v + "\n"));
 		sb.append("}\n");
 		return sb.toString();

@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class IBinPriorityQueueTest {
 
@@ -21,7 +21,7 @@ public class IBinPriorityQueueTest {
 			list.add(i);
 		Collections.shuffle(list);
 
-		IBinPriorityQueue<Integer> pq = new IBinPriorityQueue<>(Util.<Integer> comparator());
+		IBinPriorityQueue<Integer> pq = new IBinPriorityQueue<>(Object_.<Integer> comparator());
 
 		for (int i : list)
 			pq = pq.add(i);

@@ -13,6 +13,7 @@ import java.util.Set;
 import suite.debian.AptUtil.Repo;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
+import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.Util;
@@ -170,7 +171,7 @@ public class DependencyMain extends ExecutableProgram {
 		return Read.from(packages) //
 				.filter(pm -> pm.get("Status").contains("deinstall")) //
 				.map(pm -> "sudo dpkg --purge " + packageName(pm)) //
-				.sort(Util::compare) //
+				.sort(Object_::compare) //
 				.toList();
 	}
 
@@ -187,7 +188,7 @@ public class DependencyMain extends ExecutableProgram {
 		Set<String> required1 = dpkgUtil.getDependeeSet(packages, required);
 		return Read.from(required1) //
 				.map(packageName_ -> aptUtil.getDownloadUrl(repo, packages, packageName_)) //
-				.sort(Util::compare) //
+				.sort(Object_::compare) //
 				.toList();
 	}
 
@@ -205,7 +206,7 @@ public class DependencyMain extends ExecutableProgram {
 				.filter(packageName -> !dependees.containsKey(packageName)) //
 				.filter(packageName -> !requiredList.contains(packageName)) //
 				.map(packageName -> "sudo apt remove -y --purge " + packageName) //
-				.sort(Util::compare) //
+				.sort(Object_::compare) //
 				.toList();
 	}
 
@@ -223,7 +224,7 @@ public class DependencyMain extends ExecutableProgram {
 		return Read.from(packages) //
 				.map(this::packageName) //
 				.filter(packageName -> !required1.contains(packageName)) //
-				.sort(Util::compare) //
+				.sort(Object_::compare) //
 				.toList();
 	}
 

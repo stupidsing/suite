@@ -17,7 +17,7 @@ import suite.jdk.gen.FunExprM.IndexFunExpr;
 import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
 import suite.node.util.Singleton;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class FunExpression {
 
@@ -97,7 +97,7 @@ public class FunExpression {
 
 		@Override
 		public boolean equals(Object object) {
-			return Util.clazz(object) == getClass() && inspect.equals(this, object);
+			return Object_.clazz(object) == getClass() && inspect.equals(this, object);
 		}
 
 		@Override

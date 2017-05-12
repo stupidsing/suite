@@ -18,16 +18,16 @@ import suite.file.JournalledPageFile;
 import suite.file.impl.JournalledFileFactory;
 import suite.primitive.Bytes;
 import suite.sample.Profiler;
+import suite.util.Object_;
 import suite.util.Serialize;
 import suite.util.TempDir;
 import suite.util.To;
-import suite.util.Util;
 
 public class B_TreeTest {
 
 	private static int nKeys = 1024;
 
-	private Comparator<Integer> comparator = Util.comparator();
+	private Comparator<Integer> comparator = Object_.comparator();
 	private Random random = new Random();
 	private int[] keys;
 

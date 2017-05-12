@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import suite.util.FunUtil.Fun;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Pair<T0, T1> {
 
@@ -31,14 +31,14 @@ public class Pair<T0, T1> {
 	public static <T0 extends Comparable<? super T0>, T1 extends Comparable<? super T1>> Comparator<Pair<T0, T1>> comparator() {
 		return (pair0, pair1) -> {
 			int c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Util.compare(pair0.t0, pair1.t0) : c;
-			c = c == 0 ? Util.compare(pair0.t1, pair1.t1) : c;
+			c = c == 0 ? Object_.compare(pair0.t0, pair1.t0) : c;
+			c = c == 0 ? Object_.compare(pair0.t1, pair1.t1) : c;
 			return c;
 		};
 	}
 
 	public static <T0 extends Comparable<? super T0>, T1> Comparator<Pair<T0, T1>> comparatorByFirst() {
-		return (pair0, pair1) -> Util.compare(first_(pair0), first_(pair1));
+		return (pair0, pair1) -> Object_.compare(first_(pair0), first_(pair1));
 	}
 
 	public static <T0> T0 first_(Pair<T0, ?> pair) {
@@ -51,7 +51,7 @@ public class Pair<T0, T1> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Pair.class) {
+		if (Object_.clazz(object) == Pair.class) {
 			Pair<?, ?> other = (Pair<?, ?>) object;
 			return Objects.equals(t0, other.t0) && Objects.equals(t1, other.t1);
 		} else

@@ -18,8 +18,8 @@ import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Object_;
 import suite.util.Rethrow;
-import suite.util.Util;
 
 public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C> {
 
@@ -87,7 +87,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 		ssc.register(selector, SelectionKey.OP_ACCEPT);
 
 		wakeUpSelector();
-		return () -> Util.closeQuietly(ssc);
+		return () -> Object_.closeQuietly(ssc);
 	}
 
 	private void serve() throws IOException {

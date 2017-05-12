@@ -12,6 +12,7 @@ import suite.node.util.Mutable;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
+import suite.util.Object_;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
@@ -44,7 +45,7 @@ public class ScheduleMain extends ExecutableProgram {
 
 			LocalDateTime nextWakeUpDateTime = Read.from(schedules) //
 					.map(schedule -> schedule.nextRunDateTime) //
-					.min(Util::compare);
+					.min(Object_::compare);
 
 			Duration duration = Duration.between(now, nextWakeUpDateTime);
 

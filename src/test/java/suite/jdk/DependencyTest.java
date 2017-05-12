@@ -18,8 +18,8 @@ import suite.os.FileUtil;
 import suite.search.DirectedGraph;
 import suite.search.StronglyConnectedComponents;
 import suite.streamlet.Read;
+import suite.util.Object_;
 import suite.util.Rethrow;
-import suite.util.Util;
 
 public class DependencyTest {
 
@@ -54,7 +54,7 @@ public class DependencyTest {
 		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(vertices, edges));
 
 		for (Set<Set<String>> layer : scc.group().layers()) {
-			Read.from(layer).flatMap(iterable -> iterable).sort(Util::compare).forEach(System.out::println);
+			Read.from(layer).flatMap(iterable -> iterable).sort(Object_::compare).forEach(System.out::println);
 			System.out.println();
 		}
 	}

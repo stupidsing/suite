@@ -27,6 +27,7 @@ import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
 import suite.util.List_;
 import suite.util.NullableSynchronousQueue;
+import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.Util;
@@ -130,7 +131,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return of(pair -> {
 			boolean b = next(pair);
 			if (!b)
-				Util.closeQuietly(c);
+				Object_.closeQuietly(c);
 			return b;
 		});
 	}
@@ -186,7 +187,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Outlet2.class) {
+		if (Object_.clazz(object) == Outlet2.class) {
 			@SuppressWarnings("unchecked")
 			Outlet2<K, V> outlet = (Outlet2<K, V>) (Outlet2<?, ?>) object;
 			Source2<K, V> source2 = outlet.source2;
@@ -385,7 +386,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <O extends Comparable<? super O>> Outlet2<K, V> sortBy(BiFunction<K, V, O> fun) {
-		return sort((e0, e1) -> Util.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
+		return sort((e0, e1) -> Object_.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
 	}
 
 	public Outlet2<K, V> sortByKey(Comparator<K> comparator) {

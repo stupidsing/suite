@@ -1,6 +1,6 @@
 package suite.math;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Vector {
 
@@ -48,7 +48,7 @@ public class Vector {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Vector.class) {
+		if (Object_.clazz(object) == Vector.class) {
 			Vector vector = (Vector) object;
 			return x == vector.x && y == vector.y && z == vector.z;
 		} else

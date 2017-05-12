@@ -26,8 +26,8 @@ import suite.streamlet.As.Obj_Float;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.IntObjFunUtil;
+import suite.util.Object_;
 import suite.util.To;
-import suite.util.Util;
 
 public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 
@@ -109,7 +109,8 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Util.clazz(object) == IntObjStreamlet.class ? Objects.equals(spawn(), ((IntObjStreamlet<?>) object).spawn()) : false;
+		return Object_.clazz(object) == IntObjStreamlet.class ? Objects.equals(spawn(), ((IntObjStreamlet<?>) object).spawn())
+				: false;
 	}
 
 	public IntObjStreamlet<V> filter(IntObjPredicate<V> fun) {

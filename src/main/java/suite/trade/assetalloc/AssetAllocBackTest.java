@@ -22,9 +22,9 @@ import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.List_;
+import suite.util.Object_;
 import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
 
 public class AssetAllocBackTest {
 
@@ -110,7 +110,7 @@ public class AssetAllocBackTest {
 					.concatMap((symbol, dataSource) -> Read.from(dataSource.dates)) //
 					.distinct() //
 					.map(FormatUtil::date) //
-					.sort(Util::compare) //
+					.sort(Object_::compare) //
 					.toList();
 
 			List<LocalDate> dates = datesPred.apply(tradeDates);

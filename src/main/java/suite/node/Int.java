@@ -1,6 +1,6 @@
 package suite.node;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Int extends Node {
 
@@ -28,7 +28,7 @@ public class Int extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Int.class) {
+		if (Object_.clazz(object) == Int.class) {
 			Int i = (Int) object;
 			return number == i.number;
 		} else

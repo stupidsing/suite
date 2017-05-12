@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class ISparseBinPriorityQueueTest {
 
@@ -21,7 +21,7 @@ public class ISparseBinPriorityQueueTest {
 			list.add(i);
 		Collections.shuffle(list);
 
-		ISparseBinPriorityQueue<Integer> pq = new ISparseBinPriorityQueue<>(Util.<Integer> comparator());
+		ISparseBinPriorityQueue<Integer> pq = new ISparseBinPriorityQueue<>(Object_.<Integer> comparator());
 
 		for (int i : list)
 			pq = pq.add(i);

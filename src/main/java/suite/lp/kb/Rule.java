@@ -8,7 +8,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.util.FunUtil.Fun;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Rule {
 
@@ -59,7 +59,7 @@ public class Rule {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Rule.class) {
+		if (Object_.clazz(object) == Rule.class) {
 			Rule other = (Rule) object;
 			return head.equals(other.head) && tail.equals(other.tail);
 		} else

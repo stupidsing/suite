@@ -5,7 +5,7 @@ import java.util.Objects;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class TreeOp extends Tree {
 
@@ -18,7 +18,7 @@ public class TreeOp extends Tree {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == TreeOp.class) {
+		if (Object_.clazz(object) == TreeOp.class) {
 			TreeOp t = (TreeOp) object;
 			return operator == t.operator //
 					&& Objects.equals(getLeft(), t.getLeft()) //

@@ -19,6 +19,7 @@ import suite.net.nio.RequestResponseMatcher;
 import suite.primitive.Bytes;
 import suite.streamlet.Nerve;
 import suite.util.FunUtil.Fun;
+import suite.util.Object_;
 import suite.util.Util;
 
 public class ClusterImpl implements Cluster {
@@ -78,7 +79,7 @@ public class ClusterImpl implements Cluster {
 
 		probe.stop();
 		nio.stop();
-		Util.closeQuietly(unlisten);
+		Object_.closeQuietly(unlisten);
 		executor.shutdown();
 	}
 

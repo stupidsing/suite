@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import suite.streamlet.Read;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Cache {
 
@@ -29,7 +29,7 @@ public class Cache {
 		}
 
 		public boolean equals(Object object) {
-			if (Util.clazz(object) == Key.class) {
+			if (Object_.clazz(object) == Key.class) {
 				Key other = (Key) object;
 				return bean == other.bean //
 						&& Objects.equals(method, other.method) //

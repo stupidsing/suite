@@ -13,7 +13,7 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
-import suite.util.Util;
+import suite.util.Object_;
 
 /**
  * Index rules by the first atom in their heads.
@@ -81,7 +81,7 @@ public class Prototype implements Comparable<Prototype> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Prototype.class) {
+		if (Object_.clazz(object) == Prototype.class) {
 			Prototype p = (Prototype) object;
 			return Objects.equals(head, p.head);
 		} else

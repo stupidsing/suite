@@ -10,7 +10,7 @@ import org.junit.Test;
 import suite.os.Execute;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class OtfTest {
 
@@ -45,7 +45,7 @@ public class OtfTest {
 
 					return "mkdir -p '" + dir + "'; mv '" + k + "' '" + dir + f + " " + sf + "." + ext + "'";
 				}) //
-				.sort(Util::compare) //
+				.sort(Object_::compare) //
 				.toList();
 
 		for (String command : commands)

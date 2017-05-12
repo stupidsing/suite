@@ -2,7 +2,7 @@ package suite.adt;
 
 import java.util.Objects;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class Range<T extends Comparable<? super T>> {
 
@@ -23,12 +23,12 @@ public class Range<T extends Comparable<? super T>> {
 	}
 
 	public boolean isEmpty() {
-		return Util.compare(from, to) < 0;
+		return Object_.compare(from, to) < 0;
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == Pair.class) {
+		if (Object_.clazz(object) == Pair.class) {
 			Range<?> other = (Range<?>) object;
 			return Objects.equals(from, other.from) && Objects.equals(to, other.to);
 		} else

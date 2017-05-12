@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import suite.primitive.PrimitiveFun.Int_Int;
 import suite.util.FunUtil.Fun;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class IntObjPair<T> {
 
@@ -33,7 +33,7 @@ public class IntObjPair<T> {
 		return (pair0, pair1) -> {
 			int c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Integer.compare(pair0.t0, pair1.t0) : c;
-			c = c == 0 ? Util.compare(pair0.t1, pair1.t1) : c;
+			c = c == 0 ? Object_.compare(pair0.t1, pair1.t1) : c;
 			return c;
 		};
 	}
@@ -56,7 +56,7 @@ public class IntObjPair<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == IntObjPair.class) {
+		if (Object_.clazz(object) == IntObjPair.class) {
 			IntObjPair<?> other = (IntObjPair<?>) object;
 			return t0 == other.t0 && Objects.equals(t1, other.t1);
 		} else

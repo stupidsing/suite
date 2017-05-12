@@ -6,7 +6,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.util.Util;
+import suite.util.Object_;
 
 public class TreeOr extends Tree {
 
@@ -18,7 +18,7 @@ public class TreeOr extends Tree {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Util.clazz(object) == TreeOr.class) {
+		if (Object_.clazz(object) == TreeOr.class) {
 			TreeOr t = (TreeOr) object;
 			return Objects.equals(getLeft(), t.getLeft()) && Objects.equals(getRight(), t.getRight());
 		} else
