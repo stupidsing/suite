@@ -14,6 +14,13 @@ ic-bind0 .v0 (PRAGMA _ .v1) .then .else .parsed
 	:- !
 	, ic-bind0 .v0 .v1 .then .else .parsed
 #
+ic-bind0 (ARRAY .type ()) (ARRAY .type ()) .then _ .then
+#
+ic-bind0 (ARRAY .type (.head0, tail0)) (ARRAY .type (.head1, .tail1)) .then .else .parsed
+	:- .array0 = ARRAY .type .tail0
+	, .array1 = ARRAY .type .tail1
+	, ic-bind-pair .head0 .head1 .array0 .array1 .then .else .parsed
+#
 ic-bind0 (NEW _ ()) (NEW _ ()) .then _ .then
 #
 ic-bind0 (NEW .structType (.name = .value0, .nvs0)) (NEW .structType (.name = .value1, .nvs1)) .then .else .parsed
