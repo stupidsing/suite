@@ -11,6 +11,7 @@ import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
 import suite.math.Matrix;
 import suite.math.TimeSeries;
+import suite.math.TimeSeries.Returns;
 import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
@@ -66,6 +67,8 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 				.map2((symbol, dataSource) -> symbol, (symbol, dataSource) -> meanReversionStat(symbol, dataSource, mrsPeriod)) //
 				.toMap();
 
+		double dailyRiskFreeInterestRate = Math.expm1(stat.logRiskFreeInterestRate / nTradeDaysInYear);
+
 		// make sure all time-series are mean-reversions:
 		// ensure ADF < 0d: price is not random walk
 		// ensure Hurst exponent < .5d: price is weakly mean reverting
@@ -82,10 +85,9 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 
 					double lma = mrs.latestMovingAverage();
 					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
-					double annualReturn = Math.expm1(Math.log1p(dailyReturn) * nTradeDaysInYear);
-					double[] ds = ts.sharpeRatioKellyCriterion(dataSource.prices, dataSource.nYears());
-					double sharpe = ds[0];
-					double kelly = ds[1];
+					Returns returns = ts.returns(dataSource.prices, dataSource.nYears());
+					double sharpe = returns.sharpeRatio();
+					double kelly = returns.kellyCriterion();
 					double potential;
 
 					log.sink(cfg.queryCompany(symbol) //
@@ -93,7 +95,6 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
 							+ ", " + To.string(price) + " => " + To.string(lma) //
 							+ ", dailyReturn = " + To.string(dailyReturn) //
-							+ ", annualReturn = " + To.string(annualReturn) //
 							+ ", sharpe = " + To.string(sharpe) //
 							+ ", kelly = " + To.string(kelly));
 
@@ -102,9 +103,9 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 					else // even allocation
 						potential = 1d;
 
-					return new PotentialStat(annualReturn, sharpe, potential);
+					return new PotentialStat(dailyReturn, sharpe, potential);
 				}) //
-				.filterValue(ps -> stat.riskFreeInterestRate < ps.annualReturn) //
+				.filterValue(ps -> dailyRiskFreeInterestRate < ps.dailyReturn) //
 				.filterValue(ps -> 0d < ps.sharpe) //
 				.cons(Asset.cashCode, new PotentialStat(stat.riskFreeInterestRate, 1d, 0d)) //
 				.mapValue(ps -> ps.potential) //
@@ -114,12 +115,12 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	}
 
 	private class PotentialStat {
-		public final double annualReturn;
+		public final double dailyReturn;
 		public final double sharpe;
 		public final double potential;
 
-		public PotentialStat(double annualReturn, double sharpe, double potential) {
-			this.annualReturn = annualReturn;
+		public PotentialStat(double dailyReturn, double sharpe, double potential) {
+			this.dailyReturn = dailyReturn;
 			this.sharpe = sharpe;
 			this.potential = potential;
 		}

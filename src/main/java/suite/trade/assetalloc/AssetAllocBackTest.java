@@ -173,7 +173,7 @@ public class AssetAllocBackTest {
 			double nYears = DatePeriod.of(date0, datex).nYears();
 
 			annualReturn = Math.expm1(Math.log(vx / v0) / nYears);
-			sharpe = ts.sharpeRatio(valuations, nYears);
+			sharpe = ts.returns(valuations, nYears).sharpeRatio();
 			skewness = stat.skewness(valuations);
 		}
 

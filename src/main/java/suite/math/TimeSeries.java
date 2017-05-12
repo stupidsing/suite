@@ -9,18 +9,28 @@ public class TimeSeries {
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 
-	public double sharpeRatio(float[] fs, double nYears) {
-		return sharpeRatioKellyCriterion(fs, nYears)[0];
+	public Returns returns(float[] prices, double nYears) {
+		return new Returns(prices, nYears);
 	}
 
-	public double[] sharpeRatioKellyCriterion(float[] fs, double nYears) {
-		float[] returns = returns(fs);
-		double r0 = Math.expm1(stat.logRiskFreeInterestRate * nYears / returns.length);
-		double mean = stat.mean(returns) - r0;
-		double nYearsVariance = nYears * stat.variance(returns);
-		double sharpe = mean / Math.sqrt(nYearsVariance);
-		double kelly = mean / nYearsVariance;
-		return new double[] { sharpe, kelly, };
+	public class Returns {
+		private double mean;
+		private double nYearsVariance;
+
+		private Returns(float[] prices, double nYears) {
+			float[] returns = returns(prices);
+			double r0 = Math.expm1(stat.logRiskFreeInterestRate * nYears / returns.length);
+			mean = stat.mean(returns) - r0;
+			nYearsVariance = nYears * stat.variance(returns);
+		}
+
+		public double sharpeRatio() {
+			return mean / Math.sqrt(nYearsVariance);
+		}
+
+		public double kellyCriterion() {
+			return mean / nYearsVariance;
+		}
 	}
 
 	public float[] logReturns(float[] fs) {
