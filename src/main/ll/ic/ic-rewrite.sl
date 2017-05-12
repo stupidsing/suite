@@ -108,7 +108,7 @@ ic-rewrite-method-parameter .mps0 .mps1
 	, .mps1 = MPS .var .size
 #
 
-ic-rewrite-pragma NEW-STRUCT NEW-STRUCT .ts/.ts
+ic-rewrite-pragma NEW NEW .ts/.ts
 #
 ic-rewrite-pragma TYPE-SKIP-CHECK TYPE-SKIP-CHECK .ts/.ts
 #
