@@ -20,6 +20,7 @@ import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.node.util.Mutable;
 import suite.primitive.PrimitiveFun.ObjObj_Int;
+import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -30,7 +31,6 @@ import suite.util.NullableSynchronousQueue;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
-import suite.util.Util;
 
 public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
@@ -418,7 +418,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	public Pair<K, V>[] toArray() {
 		List<Pair<K, V>> list = toList();
 		@SuppressWarnings("unchecked")
-		Pair<K, V>[] array = Util.newArray(Pair.class, list.size());
+		Pair<K, V>[] array = Array_.newArray(Pair.class, list.size());
 		return list.toArray(array);
 	}
 

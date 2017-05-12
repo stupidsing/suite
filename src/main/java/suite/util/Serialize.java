@@ -178,7 +178,7 @@ public class Serialize {
 		return new Serializer<T[]>() {
 			public T[] read(DataInput dataInput) throws IOException {
 				int size = Serialize.int_.read(dataInput);
-				T[] array = Util.newArray(clazz, size);
+				T[] array = Array_.newArray(clazz, size);
 				for (int i = 0; i < size; i++)
 					array[i] = serializer.read(dataInput);
 				return array;

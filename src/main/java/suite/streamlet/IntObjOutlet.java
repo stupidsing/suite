@@ -23,6 +23,7 @@ import suite.primitive.PrimitiveFun.IntObj_Obj;
 import suite.primitive.PrimitiveFun.Int_Int;
 import suite.primitive.PrimitivePredicate.IntObjPredicate;
 import suite.primitive.PrimitiveSource.IntObjSource;
+import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -32,7 +33,6 @@ import suite.util.NullableSynchronousQueue;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
-import suite.util.Util;
 
 public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 
@@ -411,7 +411,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	public IntObjPair<V>[] toArray() {
 		List<IntObjPair<V>> list = toList();
 		@SuppressWarnings("unchecked")
-		IntObjPair<V>[] array = Util.newArray(IntObjPair.class, list.size());
+		IntObjPair<V>[] array = Array_.newArray(IntObjPair.class, list.size());
 		return list.toArray(array);
 	}
 

@@ -18,6 +18,7 @@ import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.node.util.Mutable;
 import suite.primitive.PrimitiveFun.Obj_Int;
+import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -29,7 +30,6 @@ import suite.util.NullableSynchronousQueue;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
-import suite.util.Util;
 
 /**
  * Implement functional structures using class methods (instead of static
@@ -336,7 +336,7 @@ public class Outlet<T> implements Iterable<T> {
 
 	public T[] toArray(Class<T> clazz) {
 		List<T> list = toList();
-		T[] array = Util.newArray(clazz, list.size());
+		T[] array = Array_.newArray(clazz, list.size());
 		return list.toArray(array);
 	}
 

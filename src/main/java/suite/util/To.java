@@ -55,7 +55,7 @@ public class To {
 	}
 
 	public static <T> T[] array(Class<T> clazz, int length, IntFunction<T> f) {
-		T[] ts = Util.newArray(clazz, length);
+		T[] ts = Array_.newArray(clazz, length);
 		for (int i = 0; i < length; i++)
 			ts[i] = f.apply(i);
 		return ts;

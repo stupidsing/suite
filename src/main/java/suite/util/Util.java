@@ -2,7 +2,6 @@ package suite.util;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Level;
@@ -32,7 +31,7 @@ public class Util {
 		for (T[] list : lists)
 			size += list.length;
 
-		T[] result = Util.newArray(clazz, size);
+		T[] result = Array_.newArray(clazz, size);
 		int i = 0;
 
 		for (T[] list : lists) {
@@ -46,11 +45,6 @@ public class Util {
 	public static void assert_(boolean b) {
 		if (!b)
 			throw new AssertionError();
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T[] newArray(Class<T> clazz, int dim) {
-		return (T[]) Array.newInstance(clazz, dim);
 	}
 
 	/**

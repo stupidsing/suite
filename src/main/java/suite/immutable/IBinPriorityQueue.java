@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import suite.util.Util;
+import suite.util.Array_;
 
 /**
  * Immutable binomial priority queue, implemented using dense-list of trees.
@@ -81,7 +81,7 @@ public class IBinPriorityQueue<T> {
 
 	@SuppressWarnings("unchecked")
 	public IBinPriorityQueue(Comparator<T> comparator) {
-		this(comparator, Util.newArray(Node.class, maxRank));
+		this(comparator, Array_.newArray(Node.class, maxRank));
 	}
 
 	public IBinPriorityQueue(Comparator<T> comparator, Node[] trees) {
@@ -148,7 +148,7 @@ public class IBinPriorityQueue<T> {
 
 	private Node[] newForest() {
 		@SuppressWarnings("unchecked")
-		Node[] forest = Util.newArray(Node.class, maxRank);
+		Node[] forest = Array_.newArray(Node.class, maxRank);
 		return forest;
 	}
 
