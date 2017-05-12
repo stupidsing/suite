@@ -16,7 +16,7 @@ public class StatusMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		Summarize summarize = new Summarize(cfg);
+		Summarize summarize = Summarize.of(cfg);
 		System.out.println(summarize.out(System.out::println, r -> r.strategy));
 		return true;
 	}

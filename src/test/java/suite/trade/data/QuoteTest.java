@@ -15,7 +15,7 @@ import suite.util.To;
 public class QuoteTest {
 
 	private Configuration cfg = new Configuration();
-	private Summarize summarize = new Summarize(cfg);
+	private Summarize summarize = Summarize.of(cfg);
 
 	private Sink<String> silent = FunUtil.nullSink();
 

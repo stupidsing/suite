@@ -18,9 +18,19 @@ import suite.util.To;
 public class Summarize {
 
 	private Configuration cfg;
+	private List<Trade> trades;
+	private Map<String, Float> priceBySymbol;
 
-	public Summarize(Configuration cfg) {
+	public static Summarize of(Configuration cfg) {
+		List<Trade> trades = cfg.queryHistory(trade -> true);
+		Map<String, Float> priceBySymbol = cfg.quote(Read.from(trades).map(trade -> trade.symbol).toSet());
+		return new Summarize(cfg, trades, priceBySymbol);
+	}
+
+	private Summarize(Configuration cfg, List<Trade> trades, Map<String, Float> priceBySymbol) {
 		this.cfg = cfg;
+		this.trades = trades;
+		this.priceBySymbol = priceBySymbol;
 	}
 
 	public <K> Map<K, Double> out(Sink<String> log) {
@@ -28,9 +38,6 @@ public class Summarize {
 	}
 
 	public <K> Map<K, Double> out(Sink<String> log, Fun<Trade, K> fun) {
-		List<Trade> trades = cfg.queryHistory(trade -> true);
-		Map<String, Float> priceBySymbol = cfg.quote(Read.from(trades).map(trade -> trade.symbol).toSet());
-
 		Map<K, String> summaryByKey = Read.from(trades) //
 				.groupBy(fun) //
 				.filterKey(key -> key != null) //

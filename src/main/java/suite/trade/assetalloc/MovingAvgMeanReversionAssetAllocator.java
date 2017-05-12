@@ -133,10 +133,11 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	}
 
 	private MeanReversionStat meanReversionStat(String symbol, DataSource dataSource, DatePeriod period) {
-		Map<Pair<String, DatePeriod>, MeanReversionStat> memoizeMeanReversionStat = new ConcurrentHashMap<>();
 		Pair<String, DatePeriod> key = Pair.of(symbol, period);
 		return memoizeMeanReversionStat.computeIfAbsent(key, p -> new MeanReversionStat(dataSource, period));
 	}
+
+	private static Map<Pair<String, DatePeriod>, MeanReversionStat> memoizeMeanReversionStat = new ConcurrentHashMap<>();
 
 	public class MeanReversionStat {
 		public final float[] movingAverage;
