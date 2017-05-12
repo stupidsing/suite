@@ -19,6 +19,7 @@ import suite.adt.Pair;
 import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitiveFun.IntObj_Obj;
 import suite.primitive.PrimitiveFun.Int_Int;
+import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitivePredicate.IntObjPredicate;
 import suite.primitive.PrimitiveSource.IntObjSource;
@@ -68,11 +69,15 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		});
 	}
 
-	public float collect(Obj_Float<IntObjOutlet<V>> fun) {
+	public double collectAsDouble(Obj_Double<IntObjOutlet<V>> fun) {
+		return fun.applyAsDouble(spawn());
+	}
+
+	public float collectAsFloat(Obj_Float<IntObjOutlet<V>> fun) {
 		return fun.applyAsFloat(spawn());
 	}
 
-	public int collect(Obj_Int<IntObjOutlet<V>> fun) {
+	public int collectAsInt(Obj_Int<IntObjOutlet<V>> fun) {
 		return fun.applyAsInt(spawn());
 	}
 

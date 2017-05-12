@@ -139,7 +139,7 @@ public class AssetAllocBackTest {
 
 				if (potentialBySymbol != null) {
 					double totalPotential = Read.from2(potentialBySymbol) //
-							.collect(As.<String, Double> sumOfDoubles((symbol, potential) -> potential));
+							.collectAsDouble(As.<String, Double> sumOfDoubles((symbol, potential) -> potential));
 
 					double valuation_ = valuation;
 

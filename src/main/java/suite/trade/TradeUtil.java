@@ -21,7 +21,7 @@ public class TradeUtil {
 	public static Map<String, Integer> portfolio(Iterable<Trade> trades) {
 		return Read.from(trades) //
 				.map2(r -> r.symbol, r -> r.buySell) //
-				.groupBy(sizes -> sizes.collect(As.sumOfInts(size -> size))) //
+				.groupBy(sizes -> sizes.collectAsInt(As.sumOfInts(size -> size))) //
 				.filterValue(size -> size != 0) //
 				.toMap();
 	}

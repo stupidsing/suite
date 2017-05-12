@@ -100,7 +100,7 @@ public class FunExpand extends FunFactory {
 			return weight(e1.expr);
 		} else
 			return Read.from(inspect.fields(e0.getClass())) //
-					.collect(As.sumOfInts(field -> {
+					.collectAsInt(As.sumOfInts(field -> {
 						Object e1 = Rethrow.ex(() -> field.get(e0));
 						if (e1 instanceof FunExpr)
 							return weight_(e1);

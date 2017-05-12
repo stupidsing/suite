@@ -94,7 +94,7 @@ public class DailyMain extends ExecutableProgram {
 
 		Map<String, Float> faceValueBySymbol = history //
 				.groupBy(record -> record.symbol, //
-						rs -> (float) (Read.from(rs).collect(As.sumOfDoubles(r -> r.buySell * r.price))))
+						rs -> (float) (Read.from(rs).collectAsDouble(As.sumOfDoubles(r -> r.buySell * r.price))))
 				.toMap();
 
 		for (Entry<String, Integer> e : account.assets().entrySet()) {

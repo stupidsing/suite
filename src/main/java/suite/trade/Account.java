@@ -46,7 +46,7 @@ public class Account {
 		Map<String, Float> prices1 = new HashMap<>(prices0);
 		prices1.put(cashCode, 1f);
 		return (float) Read.from2(assets()) //
-				.collect(As.<String, Integer> sumOfDoubles((symbol, n) -> prices1.get(symbol) * n));
+				.collectAsDouble(As.<String, Integer> sumOfDoubles((symbol, n) -> prices1.get(symbol) * n));
 	}
 
 	public String switchPortfolio(Map<String, Integer> assets1, Map<String, Float> prices) {

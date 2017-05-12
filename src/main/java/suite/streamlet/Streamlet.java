@@ -62,15 +62,15 @@ public class Streamlet<T> implements Iterable<T> {
 		});
 	}
 
-	public double collect(Obj_Double<Outlet<T>> fun) {
+	public double collectAsDouble(Obj_Double<Outlet<T>> fun) {
 		return fun.applyAsDouble(spawn());
 	}
 
-	public float collect(Obj_Float<Outlet<T>> fun) {
+	public float collectAsFloat(Obj_Float<Outlet<T>> fun) {
 		return fun.applyAsFloat(spawn());
 	}
 
-	public int collect(Obj_Int<Outlet<T>> fun) {
+	public int collectAsInt(Obj_Int<Outlet<T>> fun) {
 		return fun.applyAsInt(spawn());
 	}
 

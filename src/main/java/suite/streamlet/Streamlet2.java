@@ -65,15 +65,15 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		});
 	}
 
-	public double collect(Obj_Double<Outlet2<K, V>> fun) {
+	public double collectAsDouble(Obj_Double<Outlet2<K, V>> fun) {
 		return fun.applyAsDouble(spawn());
 	}
 
-	public float collect(Obj_Float<Outlet2<K, V>> fun) {
+	public float collectAsFloat(Obj_Float<Outlet2<K, V>> fun) {
 		return fun.applyAsFloat(spawn());
 	}
 
-	public int collect(Obj_Int<Outlet2<K, V>> fun) {
+	public int collectAsInt(Obj_Int<Outlet2<K, V>> fun) {
 		return fun.applyAsInt(spawn());
 	}
 
