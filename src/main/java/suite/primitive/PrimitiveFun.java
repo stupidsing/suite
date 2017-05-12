@@ -1,5 +1,6 @@
 package suite.primitive;
 
+import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 
 public class PrimitiveFun {
@@ -52,6 +53,15 @@ public class PrimitiveFun {
 	@FunctionalInterface
 	public interface Int_Obj<T> {
 		public T apply(int i);
+	}
+
+	@FunctionalInterface
+	public interface Obj_Double<T> extends ToDoubleFunction<T> {
+	}
+
+	@FunctionalInterface
+	public interface Obj_Float<T> {
+		public float apply(T t);
 	}
 
 	@FunctionalInterface

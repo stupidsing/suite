@@ -10,13 +10,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntFunction;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
+import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.primitive.PrimitiveFun.Obj_Int;
-import suite.streamlet.As.ToFloatFunction;
+import suite.streamlet.As.Obj_Float;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -63,15 +62,15 @@ public class Streamlet<T> implements Iterable<T> {
 		});
 	}
 
-	public double collect(ToDoubleFunction<Outlet<T>> fun) {
+	public double collect(Obj_Double<Outlet<T>> fun) {
 		return fun.applyAsDouble(spawn());
 	}
 
-	public float collect(ToFloatFunction<Outlet<T>> fun) {
+	public float collect(Obj_Float<Outlet<T>> fun) {
 		return fun.applyAsFloat(spawn());
 	}
 
-	public int collect(ToIntFunction<Outlet<T>> fun) {
+	public int collect(Obj_Int<Outlet<T>> fun) {
 		return fun.applyAsInt(spawn());
 	}
 

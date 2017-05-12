@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntBiFunction;
-import java.util.function.ToIntFunction;
 
 import suite.adt.IntObjPair;
 import suite.adt.ListMultimap;
@@ -23,6 +21,8 @@ import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.PrimitiveFun.IntObj_Double;
 import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Double;
+import suite.primitive.PrimitiveFun.Obj_Double;
+import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -36,11 +36,11 @@ public class As {
 		public O apply(int index, I i);
 	}
 
-	public interface ToFloatFunction<T> {
+	public interface Obj_Float<T> {
 		public float applyAsFloat(T t);
 	}
 
-	public static <T> Fun<Outlet<T>, double[]> arrayOfDoubles(ToDoubleFunction<T> fun) {
+	public static <T> Fun<Outlet<T>, double[]> arrayOfDoubles(Obj_Double<T> fun) {
 		return new Fun<Outlet<T>, double[]>() {
 			public double[] apply(Outlet<T> outlet) {
 				double results[] = new double[16];
@@ -59,7 +59,7 @@ public class As {
 		};
 	}
 
-	public static <T> Fun<Outlet<T>, float[]> arrayOfFloats(ToFloatFunction<T> fun) {
+	public static <T> Fun<Outlet<T>, float[]> arrayOfFloats(Obj_Float<T> fun) {
 		return new Fun<Outlet<T>, float[]>() {
 			public float[] apply(Outlet<T> outlet) {
 				float[] results = new float[16];
@@ -78,7 +78,7 @@ public class As {
 		};
 	}
 
-	public static <T> Fun<Outlet<T>, int[]> arrayOfInts(ToIntFunction<T> fun) {
+	public static <T> Fun<Outlet<T>, int[]> arrayOfInts(Obj_Int<T> fun) {
 		return new Fun<Outlet<T>, int[]>() {
 			public int[] apply(Outlet<T> outlet) {
 				int[] results = new int[16];
@@ -179,7 +179,7 @@ public class As {
 		return map;
 	}
 
-	public static <T> Fun<Outlet<T>, Integer> min(ToIntFunction<T> fun) {
+	public static <T> Fun<Outlet<T>, Integer> min(Obj_Int<T> fun) {
 		return outlet -> {
 			Source<T> source = outlet.source();
 			T t = source.source();
@@ -232,7 +232,7 @@ public class As {
 		return To.string(bytes(outlet));
 	}
 
-	public static <T> ToDoubleFunction<Outlet<T>> sumOfDoubles(ToDoubleFunction<T> fun) {
+	public static <T> Obj_Double<Outlet<T>> sumOfDoubles(Obj_Double<T> fun) {
 		return outlet -> {
 			Source<T> source = outlet.source();
 			T t;
@@ -243,7 +243,7 @@ public class As {
 		};
 	}
 
-	public static <T> ToDoubleFunction<IntObjOutlet<T>> sumOfDoubles(IntObj_Double<T> fun) {
+	public static <T> Obj_Double<IntObjOutlet<T>> sumOfDoubles(IntObj_Double<T> fun) {
 		return outlet -> {
 			IntObjPair<T> pair = IntObjPair.of(0, null);
 			IntObjSource<T> source = outlet.source2();
@@ -254,7 +254,7 @@ public class As {
 		};
 	}
 
-	public static <K, V> ToDoubleFunction<Outlet2<K, V>> sumOfDoubles(ObjObj_Double<K, V> fun) {
+	public static <K, V> Obj_Double<Outlet2<K, V>> sumOfDoubles(ObjObj_Double<K, V> fun) {
 		return outlet -> {
 			Pair<K, V> pair = Pair.of(null, null);
 			Source2<K, V> source = outlet.source2();
@@ -265,7 +265,7 @@ public class As {
 		};
 	}
 
-	public static <T> ToIntFunction<Outlet<T>> sumOfInts(ToIntFunction<T> fun) {
+	public static <T> Obj_Int<Outlet<T>> sumOfInts(Obj_Int<T> fun) {
 		return outlet -> {
 			Source<T> source = outlet.source();
 			T t;
@@ -276,7 +276,7 @@ public class As {
 		};
 	}
 
-	public static <T> ToIntFunction<IntObjOutlet<T>> sumOfInts(IntObj_Int<T> fun) {
+	public static <T> Obj_Int<IntObjOutlet<T>> sumOfInts(IntObj_Int<T> fun) {
 		return outlet -> {
 			IntObjPair<T> pair = IntObjPair.of(0, null);
 			IntObjSource<T> source = outlet.source2();
@@ -287,7 +287,7 @@ public class As {
 		};
 	}
 
-	public static <K, V> ToIntFunction<Outlet2<K, V>> sumOfInts(ToIntBiFunction<K, V> fun) {
+	public static <K, V> Obj_Int<Outlet2<K, V>> sumOfInts(ToIntBiFunction<K, V> fun) {
 		return outlet -> {
 			Pair<K, V> pair = Pair.of(null, null);
 			Source2<K, V> source = outlet.source2();

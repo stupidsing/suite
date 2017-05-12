@@ -2,12 +2,12 @@ package suite.jdk.gen;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.ToIntFunction;
 
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import suite.jdk.gen.FunExpression.FunExpr;
+import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.util.Util;
 
 /**
@@ -62,7 +62,7 @@ public class FunExprM {
 	}
 
 	public static class If2FunExpr extends IfFunExpr {
-		public ToIntFunction<Type> opcode;
+		public Obj_Int<Type> opcode;
 		public FunExpr left, right;
 	}
 

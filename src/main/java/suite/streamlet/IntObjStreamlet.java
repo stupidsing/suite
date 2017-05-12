@@ -11,7 +11,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
 
 import suite.adt.IntObjMap;
 import suite.adt.IntObjPair;
@@ -20,9 +19,10 @@ import suite.adt.Pair;
 import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitiveFun.IntObj_Obj;
 import suite.primitive.PrimitiveFun.Int_Int;
+import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitivePredicate.IntObjPredicate;
 import suite.primitive.PrimitiveSource.IntObjSource;
-import suite.streamlet.As.ToFloatFunction;
+import suite.streamlet.As.Obj_Float;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.IntObjFunUtil;
@@ -68,11 +68,11 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		});
 	}
 
-	public float collect(ToFloatFunction<IntObjOutlet<V>> fun) {
+	public float collect(Obj_Float<IntObjOutlet<V>> fun) {
 		return fun.applyAsFloat(spawn());
 	}
 
-	public int collect(ToIntFunction<IntObjOutlet<V>> fun) {
+	public int collect(Obj_Int<IntObjOutlet<V>> fun) {
 		return fun.applyAsInt(spawn());
 	}
 
