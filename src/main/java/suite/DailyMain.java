@@ -70,7 +70,7 @@ public class DailyMain extends ExecutableProgram {
 		List<Pair<String, String>> outputs = Arrays.asList(bug(), mamr(), pmamr());
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("\n" + new Summarize(cfg).summarize(To.sink(sb)) + "\n");
+		sb.append("\n" + new Summarize(cfg).out(To.sink(sb)) + "\n");
 
 		for (Pair<String, String> output : outputs) {
 			sb.append("\n" + Constants.separator);

@@ -23,11 +23,11 @@ public class Summarize {
 		this.cfg = cfg;
 	}
 
-	public <K> Map<K, Double> summarize(Sink<String> log) {
-		return summarize(log, trade -> null);
+	public <K> Map<K, Double> out(Sink<String> log) {
+		return out(log, trade -> null);
 	}
 
-	public <K> Map<K, Double> summarize(Sink<String> log, Fun<Trade, K> fun) {
+	public <K> Map<K, Double> out(Sink<String> log, Fun<Trade, K> fun) {
 		List<Trade> trades = cfg.queryHistory(trade -> true);
 		Map<String, Float> priceBySymbol = cfg.quote(Read.from(trades).map(trade -> trade.symbol).toSet());
 

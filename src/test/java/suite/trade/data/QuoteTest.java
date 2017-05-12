@@ -65,7 +65,7 @@ public class QuoteTest {
 	}
 
 	private Map<String, Double> summarize(Fun<Trade, String> fun, Sink<String> log) {
-		return summarize.summarize(log, fun);
+		return summarize.out(log, fun);
 	}
 
 }
