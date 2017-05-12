@@ -64,7 +64,7 @@ public class Summarize {
 				.map((symbol, nShares) -> {
 					Asset asset = cfg.queryCompany(symbol);
 					float price = priceBySymbol.get(symbol);
-					return asset + ": " + price + " * " + nShares + " = " + nShares * price;
+					return asset + ": " + price + " * " + nShares + " = " + To.string(nShares * price);
 				}) //
 				.append("OWN = " + -amount0) //
 				.append("P/L = " + amount1) //
