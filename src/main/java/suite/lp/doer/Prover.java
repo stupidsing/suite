@@ -19,7 +19,7 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.os.LogUtil;
 import suite.util.FunUtil.Source;
-import suite.util.Util;
+import suite.util.List_;
 
 public class Prover {
 
@@ -189,7 +189,7 @@ public class Prover {
 		return new Suspend(() -> {
 			if (!rules.isEmpty()) {
 				Node clause = rules.get(0).newClause(query, cut);
-				return Tree.of(TermOp.OR____, clause, expandClauses(query, cut, Util.right(rules, 1)));
+				return Tree.of(TermOp.OR____, clause, expandClauses(query, cut, List_.right(rules, 1)));
 			} else
 				return FAIL;
 		});

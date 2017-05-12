@@ -6,8 +6,8 @@ import java.util.Random;
 
 import suite.adt.IntIntPair;
 import suite.math.Sigmoid;
+import suite.util.List_;
 import suite.util.To;
-import suite.util.Util;
 
 public class ConvolutionalNeuralNetwork {
 
@@ -51,7 +51,7 @@ public class ConvolutionalNeuralNetwork {
 	}
 
 	public float[] feed(float[] inputs) {
-		return Util.last(forwardActivations(inputs));
+		return List_.last(forwardActivations(inputs));
 	}
 
 	public void train(float[] inputs, float[] expected) {

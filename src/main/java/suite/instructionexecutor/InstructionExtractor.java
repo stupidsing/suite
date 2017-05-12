@@ -22,7 +22,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
-import suite.util.Util;
+import suite.util.List_;
 
 public class InstructionExtractor implements AutoCloseable {
 
@@ -75,7 +75,7 @@ public class InstructionExtractor implements AutoCloseable {
 							throw new RuntimeException("Bad frame definition");
 					else {
 						rsList.add(rs);
-						for (Node op : Util.right(rs, 1))
+						for (Node op : List_.right(rs, 1))
 							if ((value = label(op)) != null)
 								deque.push(value);
 						deque.push(tree.getRight());

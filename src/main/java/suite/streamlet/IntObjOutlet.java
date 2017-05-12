@@ -27,6 +27,7 @@ import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.IntObjFunUtil;
+import suite.util.List_;
 import suite.util.NullableSynchronousQueue;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -342,7 +343,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjOutlet<V> reverse() {
-		return of(Util.reverse(toList()));
+		return of(List_.reverse(toList()));
 	}
 
 	public void sink(BiConsumer<Integer, V> sink0) {
@@ -373,7 +374,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		IntObjPair<V> pair;
 		while (next(pair = IntObjPair.of(0, null)))
 			list.add(pair);
-		return of(Util.sort(list, comparator));
+		return of(List_.sort(list, comparator));
 	}
 
 	public <O extends Comparable<? super O>> IntObjOutlet<V> sortBy(IntObj_Obj<V, O> fun) {

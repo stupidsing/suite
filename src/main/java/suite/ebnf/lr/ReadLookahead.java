@@ -7,7 +7,7 @@ import java.util.Set;
 
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
-import suite.util.Util;
+import suite.util.List_;
 
 public class ReadLookahead {
 
@@ -53,7 +53,7 @@ public class ReadLookahead {
 				LookaheadSet ls0 = readLookahead(eg.children.get(0));
 				ls.lookaheads.addAll(ls0.lookaheads);
 				if (ls0.isPassThru) {
-					Grammar tail = new Grammar(GrammarType.AND___, Util.right(eg.children, 1));
+					Grammar tail = new Grammar(GrammarType.AND___, List_.right(eg.children, 1));
 					ls.merge(readLookahead(tail));
 				}
 			}

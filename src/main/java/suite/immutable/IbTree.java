@@ -8,8 +8,8 @@ import java.util.List;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
+import suite.util.List_;
 import suite.util.To;
-import suite.util.Util;
 
 public class IbTree<T> implements ITree<T> {
 
@@ -200,15 +200,15 @@ public class IbTree<T> implements ITree<T> {
 				replaceSlots.add(new Slot(null, t1));
 		}
 
-		List<Slot> slots1 = To.list(Util.left(node0, s0), replaceSlots, Util.right(node0, s1));
+		List<Slot> slots1 = To.list(List_.left(node0, s0), replaceSlots, List_.right(node0, s1));
 		List<Slot> node1;
 
 		// checks if need to split
 		if (slots1.size() < maxBranchFactor)
 			node1 = Arrays.asList(slot(slots1));
 		else { // splits into two if reached maximum number of nodes
-			List<Slot> leftSlots = Util.left(slots1, minBranchFactor);
-			List<Slot> rightSlots = Util.right(slots1, minBranchFactor);
+			List<Slot> leftSlots = List_.left(slots1, minBranchFactor);
+			List<Slot> rightSlots = List_.right(slots1, minBranchFactor);
 			node1 = Arrays.asList(slot(leftSlots), slot(rightSlots));
 		}
 
@@ -222,11 +222,11 @@ public class IbTree<T> implements ITree<T> {
 			List<Slot> leftSlots, rightSlots;
 
 			if (minBranchFactor < node0.size()) {
-				leftSlots = Util.left(node0, -1);
-				rightSlots = To.list(Arrays.asList(Util.last(node0)), node1);
+				leftSlots = List_.left(node0, -1);
+				rightSlots = To.list(Arrays.asList(List_.last(node0)), node1);
 			} else if (minBranchFactor < node1.size()) {
-				leftSlots = To.list(node0, Arrays.asList(Util.first(node1)));
-				rightSlots = Util.right(node1, 1);
+				leftSlots = To.list(node0, Arrays.asList(List_.first(node1)));
+				rightSlots = List_.right(node1, 1);
 			} else {
 				leftSlots = node0;
 				rightSlots = node1;
@@ -245,7 +245,7 @@ public class IbTree<T> implements ITree<T> {
 	}
 
 	private Slot slot(List<Slot> slots) {
-		return new Slot(slots, Util.first(slots).pivot);
+		return new Slot(slots, List_.first(slots).pivot);
 	}
 
 	private int compare(T t0, T t1) {

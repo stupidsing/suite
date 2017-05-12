@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import suite.adt.IntObjMap;
 import suite.math.Matrix;
 import suite.streamlet.Read;
+import suite.util.List_;
 import suite.util.To;
-import suite.util.Util;
 
 public class KmeansCluster {
 
@@ -31,7 +31,7 @@ public class KmeansCluster {
 	}
 
 	public Collection<List<float[]>> kmeansCluster(List<float[]> points, int k, int nIterations) {
-		List<float[]> kmeans = Util.left(points, k);
+		List<float[]> kmeans = List_.left(points, k);
 		int iteration = 0;
 
 		while (true) {

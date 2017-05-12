@@ -24,6 +24,7 @@ import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
+import suite.util.List_;
 import suite.util.NullableSynchronousQueue;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -289,7 +290,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<T> reverse() {
-		return of(Util.reverse(toList()));
+		return of(List_.reverse(toList()));
 	}
 
 	public void sink(Sink<T> sink0) {
@@ -311,7 +312,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<T> sort(Comparator<T> comparator) {
-		return of(Util.sort(toList(), comparator));
+		return of(List_.sort(toList(), comparator));
 	}
 
 	public <O extends Comparable<? super O>> Outlet<T> sortBy(Fun<T, O> fun) {

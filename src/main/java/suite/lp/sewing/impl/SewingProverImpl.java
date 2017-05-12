@@ -49,9 +49,9 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.List_;
 import suite.util.Rethrow;
 import suite.util.String_;
-import suite.util.Util;
 
 /**
  * Compile logical rules into lambda-sews and run them. Supposed to be faster
@@ -291,7 +291,7 @@ public class SewingProverImpl implements SewingProver {
 
 		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size()) {
 			cps = cpsx;
-			for (Node n : Util.reverse(list))
+			for (Node n : List_.reverse(list))
 				cps = compileNoCutPredicate_(sb, n, cps);
 		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size()) {
 			Cps[] cpsArray = Read.from(list).map(n -> compileNoCutPredicate_(sb, n, cpsx)).toArray(Cps.class);
@@ -702,7 +702,7 @@ public class SewingProverImpl implements SewingProver {
 			};
 		} else {
 			Trampoline trh = trs_.get(0);
-			List<Trampoline> trt = Util.reverse(Util.right(trs_, 1));
+			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
 			return rt -> {
 				for (Trampoline tr_ : trt)
 					rt.pushRem(tr_);
@@ -730,7 +730,7 @@ public class SewingProverImpl implements SewingProver {
 			};
 		} else {
 			Trampoline trh = trs_.get(0);
-			List<Trampoline> trt = Util.reverse(Util.right(trs_, 1));
+			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
 			return rt -> {
 				Restore restore = save(rt);
 				for (Trampoline tr_ : trt)

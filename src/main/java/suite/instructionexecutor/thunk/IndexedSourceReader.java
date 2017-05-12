@@ -5,7 +5,7 @@ import java.util.List;
 
 import suite.immutable.IPointer;
 import suite.util.FunUtil.Source;
-import suite.util.Util;
+import suite.util.List_;
 
 public class IndexedSourceReader<T> {
 
@@ -35,7 +35,7 @@ public class IndexedSourceReader<T> {
 
 							if (maxBuffers < size1) {
 								int shift = size1 - maxBuffers / 2;
-								queue = new ArrayList<>(Util.right(queue, shift));
+								queue = new ArrayList<>(List_.right(queue, shift));
 								offset += shift;
 							}
 

@@ -10,8 +10,8 @@ import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.List_;
 import suite.util.String_;
-import suite.util.Util;
 
 /**
  * Transform head-recursion rule as follows:
@@ -70,7 +70,7 @@ public class ReduceHeadRecursion {
 			hrf = new HeadRecursionForm(empty, empty);
 		else if (en.type == GrammarType.AND___) {
 			HeadRecursionForm hrf0 = getHeadRecursionForm(en.children.get(0), entity);
-			List<Grammar> tail = Util.right(en.children, 1);
+			List<Grammar> tail = List_.right(en.children, 1);
 
 			Fun<List<Grammar>, List<Grammar>> fun = list -> Read.from(list).map(en_ -> {
 				List<Grammar> ens1 = new ArrayList<>();

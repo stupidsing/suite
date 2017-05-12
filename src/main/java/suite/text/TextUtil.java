@@ -10,8 +10,8 @@ import suite.lcs.Lccs;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Read;
+import suite.util.List_;
 import suite.util.To;
-import suite.util.Util;
 
 public class TextUtil {
 
@@ -76,8 +76,8 @@ public class TextUtil {
 		if (!isEmptyx || !isEmptyy) {
 			Pair<Bytes, Bytes> phx = !isEmptyx ? pairsx.get(0) : Pair.of(Bytes.empty, Bytes.empty);
 			Pair<Bytes, Bytes> phy = !isEmptyy ? pairsy.get(0) : Pair.of(Bytes.empty, Bytes.empty);
-			List<Pair<Bytes, Bytes>> ptx = !isEmptyx ? Util.right(pairsx, 1) : pairsx;
-			List<Pair<Bytes, Bytes>> pty = !isEmptyy ? Util.right(pairsy, 1) : pairsy;
+			List<Pair<Bytes, Bytes>> ptx = !isEmptyx ? List_.right(pairsx, 1) : pairsx;
+			List<Pair<Bytes, Bytes>> pty = !isEmptyy ? List_.right(pairsy, 1) : pairsy;
 
 			int c = Math.min(phx.t0.size(), phy.t0.size());
 			Bytes commonx = phx.t0.range(0, c);

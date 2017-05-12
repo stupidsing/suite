@@ -10,8 +10,8 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.List_;
 import suite.util.To;
-import suite.util.Util;
 
 public class LazyIbTree<T> implements ITree<T> {
 
@@ -209,15 +209,15 @@ public class LazyIbTree<T> implements ITree<T> {
 				slots2.add(new Slot<>(() -> Collections.emptyList(), t1));
 		}
 
-		List<Slot<T>> slots3 = To.list(Util.left(node0, s0), slots2, Util.right(node0, s1));
+		List<Slot<T>> slots3 = To.list(List_.left(node0, s0), slots2, List_.right(node0, s1));
 		List<Slot<T>> node1;
 
 		// checks if need to split
 		if (slots3.size() < maxBranchFactor)
 			node1 = Arrays.asList(slot(slots3));
 		else { // splits into two if reached maximum number of nodes
-			List<Slot<T>> leftSlots = Util.left(slots3, minBranchFactor);
-			List<Slot<T>> rightSlots = Util.right(slots3, minBranchFactor);
+			List<Slot<T>> leftSlots = List_.left(slots3, minBranchFactor);
+			List<Slot<T>> rightSlots = List_.right(slots3, minBranchFactor);
 			node1 = Arrays.asList(slot(leftSlots), slot(rightSlots));
 		}
 
@@ -231,11 +231,11 @@ public class LazyIbTree<T> implements ITree<T> {
 			List<Slot<T>> leftSlots, rightSlots;
 
 			if (minBranchFactor < node0.size()) {
-				leftSlots = Util.left(node0, -1);
-				rightSlots = To.list(Arrays.asList(Util.last(node0)), node1);
+				leftSlots = List_.left(node0, -1);
+				rightSlots = To.list(Arrays.asList(List_.last(node0)), node1);
 			} else if (minBranchFactor < node1.size()) {
-				leftSlots = To.list(node0, Arrays.asList(Util.first(node1)));
-				rightSlots = Util.right(node1, 1);
+				leftSlots = To.list(node0, Arrays.asList(List_.first(node1)));
+				rightSlots = List_.right(node1, 1);
 			} else {
 				leftSlots = node0;
 				rightSlots = node1;
@@ -254,7 +254,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	private Slot<T> slot(List<Slot<T>> slots) {
-		return new Slot<>(() -> slots, Util.first(slots).pivot);
+		return new Slot<>(() -> slots, List_.first(slots).pivot);
 	}
 
 	@Override

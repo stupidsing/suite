@@ -16,8 +16,8 @@ import suite.node.util.TreeRewriter;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.util.FunUtil.Fun;
+import suite.util.List_;
 import suite.util.Nodify;
-import suite.util.Util;
 
 public class FactorizeResult {
 
@@ -82,8 +82,8 @@ public class FactorizeResult {
 	}
 
 	public static FactorizeResult merge(String name, List<FactorizeResult> list) {
-		Chars pre = Util.first(list).pre;
-		Chars post = Util.last(list).post;
+		Chars pre = List_.first(list).pre;
+		Chars post = List_.last(list).post;
 		List<FPair> pairs = new ArrayList<>();
 
 		for (int i = 0; i < list.size(); i++) {

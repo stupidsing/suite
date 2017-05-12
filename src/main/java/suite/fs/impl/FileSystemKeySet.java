@@ -10,8 +10,8 @@ import suite.fs.impl.FileSystemKeyUtil.NameKey;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.List_;
 import suite.util.To;
-import suite.util.Util;
 
 /**
  * Facilitates storage of unlimited length of filenames on the immutable B-tree.
@@ -38,8 +38,8 @@ public class FileSystemKeySet {
 
 	private Streamlet<Bytes> list(List<NameKey> prefix, List<NameKey> keys0, List<NameKey> keys1) {
 		Bytes hash = keyUtil.hash(keyUtil.toName(prefix));
-		NameKey minKey = keys0 != null && !keys0.isEmpty() ? Util.first(keys0) : boundingKey(hash, 0);
-		NameKey maxKey = keys1 != null && !keys1.isEmpty() ? Util.first(keys1) : boundingKey(hash, 1);
+		NameKey minKey = keys0 != null && !keys0.isEmpty() ? List_.first(keys0) : boundingKey(hash, 0);
+		NameKey maxKey = keys1 != null && !keys1.isEmpty() ? List_.first(keys1) : boundingKey(hash, 1);
 		Streamlet<Bytes> st = store.mutateData().keys(keyUtil.toBytes(minKey), increment(keyUtil.toBytes(maxKey)));
 
 		return st.concatMap(bytes -> {
@@ -47,8 +47,8 @@ public class FileSystemKeySet {
 			List<NameKey> prefix1 = To.list(prefix, Arrays.asList(key));
 
 			if (key.size == 0) {
-				List<NameKey> tailKeys0 = key == minKey ? !keys0.isEmpty() ? Util.right(keys0, 1) : emptyKeys : null;
-				List<NameKey> tailKeys1 = key == maxKey ? !keys1.isEmpty() ? Util.right(keys1, 1) : emptyKeys : null;
+				List<NameKey> tailKeys0 = key == minKey ? !keys0.isEmpty() ? List_.right(keys0, 1) : emptyKeys : null;
+				List<NameKey> tailKeys1 = key == maxKey ? !keys1.isEmpty() ? List_.right(keys1, 1) : emptyKeys : null;
 				return list(prefix1, tailKeys0, tailKeys1);
 			} else
 				return Read.each(keyUtil.toName(prefix1));

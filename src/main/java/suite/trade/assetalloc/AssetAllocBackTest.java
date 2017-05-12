@@ -21,6 +21,7 @@ import suite.trade.data.DataSource;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
+import suite.util.List_;
 import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
@@ -45,7 +46,7 @@ public class AssetAllocBackTest {
 			AssetAllocator assetAllocator, //
 			Sink<String> log) {
 		LocalDate historyFromDate = LocalDate.now();
-		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Arrays.asList(Util.last(dates));
+		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Arrays.asList(List_.last(dates));
 		return new AssetAllocBackTest(cfg, assets, assetAllocator, historyFromDate, datesPred, log);
 	}
 
@@ -167,8 +168,8 @@ public class AssetAllocBackTest {
 						+ ", actions = " + actions);
 			}
 
-			LocalDate date0 = Util.first(dates);
-			LocalDate datex = Util.last(dates);
+			LocalDate date0 = List_.first(dates);
+			LocalDate datex = List_.last(dates);
 			double v0 = valuations[0];
 			double vx = valuations[valuations.length - 1];
 			double nYears = DatePeriod.of(date0, datex).nYears();

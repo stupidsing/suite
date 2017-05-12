@@ -27,9 +27,9 @@ import suite.streamlet.Read;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
+import suite.util.List_;
 import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
 
 public class Assembler {
 
@@ -79,7 +79,7 @@ public class Assembler {
 			start++;
 		}
 
-		List<Pair<Reference, Node>> lnis = Read.from(Util.right(lines, start)) //
+		List<Pair<Reference, Node>> lnis = Read.from(List_.right(lines, start)) //
 				.map(line -> {
 					Pair<String, String> pt = String_.split2(line, "\t");
 					String label = pt.t0;

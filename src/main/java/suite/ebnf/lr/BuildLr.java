@@ -15,7 +15,7 @@ import suite.immutable.IList;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Fun;
-import suite.util.Util;
+import suite.util.List_;
 
 public class BuildLr {
 
@@ -178,7 +178,7 @@ public class BuildLr {
 		switch (eg.type) {
 		case AND___:
 			if (!eg.children.isEmpty()) {
-				Grammar tail = new Grammar(GrammarType.AND___, Util.right(eg.children, 1));
+				Grammar tail = new Grammar(GrammarType.AND___, List_.right(eg.children, 1));
 				Blr blr1 = build(ps, tail, nextx);
 				Blr blr0 = build(ps, eg.children.get(0), blr1.next);
 				blr = new Blr(blr0.nTokens + blr1.nTokens, blr0.next);

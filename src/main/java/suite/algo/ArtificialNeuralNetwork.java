@@ -6,7 +6,7 @@ import java.util.Random;
 
 import suite.math.Matrix;
 import suite.math.Sigmoid;
-import suite.util.Util;
+import suite.util.List_;
 
 public class ArtificialNeuralNetwork {
 
@@ -45,7 +45,7 @@ public class ArtificialNeuralNetwork {
 	}
 
 	public float[] feed(float[] inputs) {
-		return Util.last(activateForward(inputs));
+		return List_.last(activateForward(inputs));
 	}
 
 	public void train(float[] inputs, float[] expected) {

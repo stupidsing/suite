@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import suite.os.FileUtil;
 import suite.text.TwoPassIndexer.Reference;
-import suite.util.Util;
+import suite.util.List_;
 
 public class TwoPassIndexerTest {
 
@@ -33,7 +33,7 @@ public class TwoPassIndexerTest {
 
 		Map<String, List<Reference>> map = indexer.getReferencesByWord();
 
-		List<Entry<String, List<Reference>>> entries = Util.sort(map.entrySet() //
+		List<Entry<String, List<Reference>>> entries = List_.sort(map.entrySet() //
 				, (e0, e1) -> e1.getValue().size() - e0.getValue().size());
 
 		System.out.println("Most popular key words:");
