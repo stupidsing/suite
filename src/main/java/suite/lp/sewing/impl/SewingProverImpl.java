@@ -99,7 +99,7 @@ public class SewingProverImpl implements SewingProver {
 	};
 
 	public interface Cps {
-		public void cont(Runtime rt);
+		public Cps cont(Runtime rt);
 	}
 
 	public interface Trampoline {
@@ -278,9 +278,10 @@ public class SewingProverImpl implements SewingProver {
 				rt_.rems = rems;
 				return okay;
 			}).trampoline();
+			return null;
 		});
 		return rt -> {
-			cps.cont(rt);
+			cont(cps, rt);
 			return fail;
 		};
 	}
@@ -294,18 +295,21 @@ public class SewingProverImpl implements SewingProver {
 			for (Node n : List_.reverse(list))
 				cps = compileNoCutPredicate_(sb, n, cps);
 		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size()) {
-			Cps[] cpsArray = Read.from(list).map(n -> compileNoCutPredicate_(sb, n, cpsx)).toArray(Cps.class);
+			List<Cps> cpsList = Read.from(list).map(n -> compileNoCutPredicate_(sb, n, cpsx)).toList();
+			Cps[] cpsArray = List_.left(cpsList, -1).toArray(new Cps[0]);
+			Cps cps_ = List_.last(cpsList);
 			cps = rt -> {
 				Restore restore = save(rt);
 				for (Cps cps1 : cpsArray) {
-					cps1.cont(rt);
+					cont(cps1, rt);
 					restore.restore(rt);
 				}
+				return cps_;
 			};
 		} else {
 			Trampoline tr = compile_(sb, node);
 			Trampoline rem = rt -> {
-				cpsx.cont(rt);
+				cont(cpsx, rt);
 				return fail;
 			};
 			cps = rt -> {
@@ -316,10 +320,16 @@ public class SewingProverImpl implements SewingProver {
 					rt_.pushRem(rem);
 					return tr;
 				}).trampoline();
+				return null;
 			};
 		}
 
 		return cps;
+	}
+
+	private void cont(Cps cps, Runtime rt) {
+		while (cps != null)
+			cps = cps.cont(rt);
 	}
 
 	private Trampoline compile_(SewingBinder sb, Node node) {
