@@ -71,9 +71,9 @@ public class Chr {
 				else if (key == Atom.of("when"))
 					rule.when = value;
 				else
-					throw new RuntimeException("Invalid key " + key);
+					throw new RuntimeException("invalid key " + key);
 			} else
-				throw new RuntimeException("Invalid rule " + node);
+				throw new RuntimeException("invalid rule " + node);
 		}
 
 		rules.add(rule);

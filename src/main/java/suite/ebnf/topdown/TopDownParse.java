@@ -174,7 +174,7 @@ public class TopDownParse {
 			return node;
 		else {
 			IntIntPair pos = parse.findPosition(parse.errorPosition);
-			throw new RuntimeException("Syntax error for entity " + parse.errorEntity + " at " + pos);
+			throw new RuntimeException("syntax error for entity " + parse.errorEntity + " at " + pos);
 		}
 	}
 
@@ -300,7 +300,7 @@ public class TopDownParse {
 				if (parser != null)
 					return st.p(parse, parser);
 				else
-					throw new RuntimeException("Entity " + entity + " not found");
+					throw new RuntimeException("entity " + entity + " not found");
 			};
 
 		return parser1;

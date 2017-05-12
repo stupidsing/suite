@@ -90,7 +90,7 @@ public class ClusterImpl implements Cluster {
 			Bytes resp = matcher.requestForResponse(getChannel(peer), req);
 			return NetUtil.deserialize(resp);
 		} else
-			throw new RuntimeException("Peer " + peer + " is not active");
+			throw new RuntimeException("peer " + peer + " is not active");
 	}
 
 	private PersistentNioChannel getChannel(String peer) {

@@ -38,7 +38,7 @@ public class TreeUtil {
 				params[i] = tree.getLeft();
 				node = tree.getRight();
 			} else
-				throw new RuntimeException("Not enough parameters in " + node0);
+				throw new RuntimeException("not enough parameters in " + node0);
 		params[n - 1] = node;
 		return params;
 	}

@@ -140,7 +140,7 @@ public class Nodify {
 						return apply_(getNodifier(clazz1), tree.getRight());
 					} else
 						// happens when an enum implements an interface
-						throw new RuntimeException("Cannot instantiate enum from interfaces");
+						throw new RuntimeException("cannot instantiate enum from interfaces");
 				});
 			else {
 				List<FieldInfo> fieldInfos = Read.from(inspect.fields(clazz)) //
@@ -210,7 +210,7 @@ public class Nodify {
 			} else
 				nodifier = getNodifier(rawType);
 		} else
-			throw new RuntimeException("Unrecognized type " + type);
+			throw new RuntimeException("unrecognized type " + type);
 
 		return nodifier;
 	}

@@ -255,7 +255,7 @@ public class Grapher {
 					terminal = new Str(dis.readUTF());
 					break;
 				default:
-					throw new RuntimeException("Unknown type " + ch);
+					throw new RuntimeException("unknown type " + ch);
 				}
 			} else
 				terminal = null;
@@ -307,7 +307,7 @@ public class Grapher {
 					dos.writeByte((byte) 's');
 					dos.writeUTF(((Str) terminal).value);
 				} else
-					throw new RuntimeException("Cannot persist " + terminal);
+					throw new RuntimeException("cannot persist " + terminal);
 			}
 
 			if (type == ReadType.TREE) {

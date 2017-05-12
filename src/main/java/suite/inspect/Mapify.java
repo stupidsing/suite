@@ -192,7 +192,7 @@ public class Mapify {
 			} else
 				mapifier = getMapifier(rawType);
 		} else
-			throw new RuntimeException("Unrecognized type " + type);
+			throw new RuntimeException("unrecognized type " + type);
 
 		return mapifier;
 	}

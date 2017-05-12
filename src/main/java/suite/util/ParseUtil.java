@@ -70,7 +70,7 @@ public class ParseUtil {
 		if (!isThrow || 0 <= depth)
 			return quote == 0 && depth == 0;
 		else
-			throw new RuntimeException("Parse error");
+			throw new RuntimeException("parse error");
 	}
 
 	public static int search(String s, int start, String toMatch) {

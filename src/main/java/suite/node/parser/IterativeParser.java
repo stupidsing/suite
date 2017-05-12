@@ -75,7 +75,7 @@ public class IterativeParser {
 							node = Tree.of(TermOp.TUPLE_, Atom.of("["), node);
 						add(node);
 					} else
-						throw new RuntimeException("Cannot parse " + in);
+						throw new RuntimeException("cannot parse " + in);
 				} else if (ch == '`')
 					if (stack.peek().kind == ch) {
 						Node node = stack.pop().unwind(null).getRight();
@@ -90,7 +90,7 @@ public class IterativeParser {
 			if (stack.size() == 1)
 				return stack.pop().unwind(null).getRight();
 			else
-				throw new RuntimeException("Cannot parse " + in);
+				throw new RuntimeException("cannot parse " + in);
 		}
 
 		private void add(Node node) {

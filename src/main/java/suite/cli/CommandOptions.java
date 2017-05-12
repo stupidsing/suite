@@ -67,7 +67,7 @@ public class CommandOptions {
 		else if (String_.equals(arg, "--use") && (arg1 = source.source()) != null)
 			libraries = To.list(libraries, Arrays.asList(arg1.split(",")));
 		else
-			throw new RuntimeException("Unknown option " + arg);
+			throw new RuntimeException("unknown option " + arg);
 
 		return result;
 	}

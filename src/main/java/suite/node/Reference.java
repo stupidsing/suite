@@ -40,7 +40,7 @@ public class Reference extends Node {
 		if (node != this)
 			return node.equals(object);
 		else
-			throw new RuntimeException("No equals for free references");
+			throw new RuntimeException("no equals for free references");
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class Reference extends Node {
 		if (node != this)
 			return node.hashCode();
 		else
-			throw new RuntimeException("No hash code for free references");
+			throw new RuntimeException("no hash code for free references");
 	}
 
 	public Node getNode() {

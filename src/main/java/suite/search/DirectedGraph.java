@@ -53,7 +53,7 @@ public class DirectedGraph<V> {
 		if (set.size() == vertices.size())
 			return results;
 		else
-			throw new RuntimeException("Cyclic graph");
+			throw new RuntimeException("cyclic graph");
 	}
 
 	public DirectedGraph<V> reverse() {

@@ -66,7 +66,7 @@ public class Mutex {
 				if (owner.compareAndSet(Thread.currentThread(), null))
 					bigLock.notifyAll();
 				else
-					throw new RuntimeException("Lock unlocked by wrong thread");
+					throw new RuntimeException("lock unlocked by wrong thread");
 		}
 	}
 

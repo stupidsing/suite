@@ -13,7 +13,7 @@ public class MathUtil {
 	public static void verifyEquals(float f0, float f1, float epsilon) {
 		float diff = Math.abs(f0 - f1);
 		if (!Float.isFinite(diff) || epsilon < diff)
-			throw new RuntimeException("Values differ" //
+			throw new RuntimeException("values differ" //
 					+ ": f0 = " + To.string(f0) //
 					+ ", f1 = " + To.string(f1) //
 					+ ", diff = " + diff);

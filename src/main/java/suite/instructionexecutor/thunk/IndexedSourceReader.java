@@ -51,7 +51,7 @@ public class IndexedSourceReader<T> {
 					if (0 <= index)
 						return index < queue.size() ? queue.get(index) : null;
 					else
-						throw new RuntimeException("Cannot unwind flushed input buffer");
+						throw new RuntimeException("cannot unwind flushed input buffer");
 				}
 			}
 

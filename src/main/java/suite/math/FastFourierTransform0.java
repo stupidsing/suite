@@ -44,7 +44,7 @@ public class FastFourierTransform0 {
 
 			return f;
 		} else
-			throw new RuntimeException("Size is not a power of 2");
+			throw new RuntimeException("size is not a power of 2");
 	}
 
 	private Complex[] getCis(int count) {

@@ -40,7 +40,7 @@ public class Qr {
 
 			return new float[][][] { q, r, };
 		} else
-			throw new RuntimeException("Wrong input sizes");
+			throw new RuntimeException("wrong input sizes");
 	}
 
 	public static float[][][] decomposeByGivensRotation(float[][] m) {
@@ -80,7 +80,7 @@ public class Qr {
 
 			return new float[][][] { q, r, };
 		} else
-			throw new RuntimeException("Wrong input sizes");
+			throw new RuntimeException("wrong input sizes");
 	}
 
 }

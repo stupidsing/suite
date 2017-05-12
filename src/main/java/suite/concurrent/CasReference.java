@@ -35,7 +35,7 @@ public class CasReference<T> {
 				else
 					new Backoff().yield(); // back-off
 			else
-				throw new RuntimeException("Stamp overflow");
+				throw new RuntimeException("stamp overflow");
 		}
 	}
 

@@ -75,7 +75,7 @@ public class ObstructionFreeStmTest {
 				if (read == readValues.get(mi))
 					stm.put(transaction, memory, read + adjustments.get(mi));
 				else
-					throw new RuntimeException("Value changed between reads");
+					throw new RuntimeException("value changed between reads");
 			} else { // read a memory
 				int mi = order;
 				System.out.println(this + " READ " + mi);
@@ -117,7 +117,7 @@ public class ObstructionFreeStmTest {
 			}
 
 			if (sum != 0)
-				throw new RuntimeException("Final sum is not zero, but is " + sum);
+				throw new RuntimeException("final sum is not zero, but is " + sum);
 
 			return true;
 		});

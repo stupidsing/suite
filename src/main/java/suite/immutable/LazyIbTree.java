@@ -98,16 +98,16 @@ public class LazyIbTree<T> implements ITree<T> {
 
 		if (0 < size)
 			if (size < minBranchFactor)
-				throw new RuntimeException("Too few branches");
+				throw new RuntimeException("too few branches");
 			else if (minBranchFactor <= size)
-				throw new RuntimeException("Too many branches");
+				throw new RuntimeException("too many branches");
 
 		for (Slot<T> slot_ : slots) {
 			if (!(comparator.compare(slot.pivot, slot_.pivot) <= 0))
-				throw new RuntimeException("Wrong slot");
+				throw new RuntimeException("wrong slot");
 			validate(slot_);
 			if (p != null && !(comparator.compare(p, slot_.pivot) < 0))
-				throw new RuntimeException("Wrong key order");
+				throw new RuntimeException("wrong key order");
 			p = slot_.pivot;
 		}
 	}
@@ -152,7 +152,7 @@ public class LazyIbTree<T> implements ITree<T> {
 			if (t0 == null)
 				return t;
 			else
-				throw new RuntimeException("Duplicate key");
+				throw new RuntimeException("duplicate key");
 		});
 	}
 

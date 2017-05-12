@@ -33,7 +33,7 @@ public class HkexFactBook {
 		else if (2000 <= year)
 			url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook" + year + "/documents/04c_Market%20Capitalisation.pdf";
 		else
-			throw new RuntimeException("Record not exist");
+			throw new RuntimeException("record not exist");
 
 		String cmd = "" //
 				+ "wget -q -O - '" + url + "'" //

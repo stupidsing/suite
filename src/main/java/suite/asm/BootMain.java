@@ -37,7 +37,7 @@ public class BootMain extends ExecutableProgram {
 			System.out.println("qemu-system-x86_64 target/boot.bin");
 			return true;
 		} else
-			throw new RuntimeException("Size not match");
+			throw new RuntimeException("size not match");
 	}
 
 }

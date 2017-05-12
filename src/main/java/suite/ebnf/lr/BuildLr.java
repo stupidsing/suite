@@ -77,7 +77,7 @@ public class BuildLr {
 				Transition transition1 = fsm.get(value1.t0);
 				return merges.add(Pair.of(transition0, transition1));
 			} else
-				throw new RuntimeException("Duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
+				throw new RuntimeException("duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
 		}
 
 		private int order(Pair<State, Reduce> pair) {

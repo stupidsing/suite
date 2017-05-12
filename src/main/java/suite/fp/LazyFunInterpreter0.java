@@ -41,7 +41,7 @@ public class LazyFunInterpreter0 {
 
 	public Thunk_ lazy(Node node) {
 		Thunk_ error = () -> {
-			throw new RuntimeException("Error termination");
+			throw new RuntimeException("error termination");
 		};
 
 		IMap<String, Thunk_> env = IMap.empty();

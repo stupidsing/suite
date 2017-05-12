@@ -91,7 +91,7 @@ public class NntpServer {
 								pw.println(group + " " + group);
 							pw.println(".");
 						} else
-							throw new RuntimeException("Unrecognized LIST command " + line);
+							throw new RuntimeException("unrecognized LIST command " + line);
 						break;
 					case LISTGROUP:
 						pw.println("211 Okay");
@@ -123,7 +123,7 @@ public class NntpServer {
 						pw.println("240 Okay");
 						break;
 					default:
-						throw new RuntimeException("Unrecognized command " + line);
+						throw new RuntimeException("unrecognized command " + line);
 					}
 				}
 			}

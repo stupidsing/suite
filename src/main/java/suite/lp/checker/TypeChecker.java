@@ -51,7 +51,7 @@ public class TypeChecker {
 						bind(type0, type1);
 					}
 			} catch (Exception ex) {
-				throw new RuntimeException("In predicate " + prototype, ex);
+				throw new RuntimeException("in predicate " + prototype, ex);
 			}
 		});
 
@@ -100,7 +100,7 @@ public class TypeChecker {
 
 	private void bind(Node type0, Node type1) {
 		if (!Binder.bind(type0, type1, trail))
-			throw new RuntimeException("Type mismatch between " + type0 + " and " + type1);
+			throw new RuntimeException("type mismatch between " + type0 + " and " + type1);
 	}
 
 }

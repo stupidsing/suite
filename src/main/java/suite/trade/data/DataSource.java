@@ -101,23 +101,23 @@ public class DataSource {
 		float price0 = prices[0];
 
 		if (length != dates.length)
-			throw new RuntimeException("Mismatched dates and prices");
+			throw new RuntimeException("mismatched dates and prices");
 
 		for (int i = 1; i < length; i++) {
 			String date1 = dates[i];
 			float price1 = prices[i];
 
 			if (0 <= date0.compareTo(date1))
-				throw new RuntimeException("Wrong date order: " + date0 + "/" + date1);
+				throw new RuntimeException("wrong date order: " + date0 + "/" + date1);
 
 			if (price1 == 0f)
-				throw new RuntimeException("Price is zero: " + price1 + "/" + date1);
+				throw new RuntimeException("price is zero: " + price1 + "/" + date1);
 
 			if (!Float.isFinite(price1))
-				throw new RuntimeException("Price is not finite: " + price1 + "/" + date1);
+				throw new RuntimeException("price is not finite: " + price1 + "/" + date1);
 
 			if (!isValid(price0, price1))
-				throw new RuntimeException("Price varied too much: " + price0 + "/" + date0 + " => " + price1 + "/" + date1);
+				throw new RuntimeException("price varied too much: " + price0 + "/" + date0 + " => " + price1 + "/" + date1);
 
 			date0 = date1;
 			price0 = price1;

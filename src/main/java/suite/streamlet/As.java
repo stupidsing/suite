@@ -174,7 +174,7 @@ public class As {
 		Map<K, V> map = new HashMap<>();
 		outlet.sink((k, v) -> {
 			if (map.put(k, v) != null)
-				throw new RuntimeException("Duplicate key " + k);
+				throw new RuntimeException("duplicate key " + k);
 		});
 		return map;
 	}

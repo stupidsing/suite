@@ -48,7 +48,7 @@ public class RuleSetPredicates {
 		try {
 			return Suite.importUrl(prover.ruleSet(), url);
 		} catch (Exception ex) {
-			throw new RuntimeException("Exception when importing " + url, ex);
+			throw new RuntimeException("exception when importing " + url, ex);
 		}
 	});
 

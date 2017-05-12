@@ -72,10 +72,10 @@ public class SimpleCgiServer {
 			if ('0' <= c && c <= '9')
 				length = length * 10 + c - '0';
 			else
-				throw new RuntimeException("Invalid netstring length");
+				throw new RuntimeException("invalid netstring length");
 
 		if (c != ':')
-			throw new RuntimeException("Netstring length not ended with ':'");
+			throw new RuntimeException("netstring length not ended with ':'");
 
 		int nBytesRead = 0;
 		byte[] bytes = new byte[length];

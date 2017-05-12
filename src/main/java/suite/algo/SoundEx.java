@@ -81,7 +81,7 @@ public class SoundEx {
 		else if (0 <= CHARS6.indexOf(ch))
 			return 6;
 		else
-			throw new RuntimeException("Unknown soundex character " + ch);
+			throw new RuntimeException("unknown soundex character " + ch);
 	}
 
 }

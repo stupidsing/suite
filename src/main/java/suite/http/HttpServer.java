@@ -63,7 +63,7 @@ public class HttpServer {
 			String path2 = URLDecoder.decode(path1, "UTF-8");
 
 			if (!String_.equals(protocol, "HTTP/1.1"))
-				throw new RuntimeException("Only HTTP/1.1 is supported");
+				throw new RuntimeException("only HTTP/1.1 is supported");
 
 			Map<String, String> requestHeaders = new HashMap<>();
 

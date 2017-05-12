@@ -294,7 +294,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		if (pair != null)
 			return pair;
 		else
-			throw new RuntimeException("No result");
+			throw new RuntimeException("no result");
 	}
 
 	public Pair<K, V> minOrNull(Comparator<Pair<K, V>> comparator) {
@@ -469,9 +469,9 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 			if (!next(pair))
 				return pair;
 			else
-				throw new RuntimeException("More than one result");
+				throw new RuntimeException("more than one result");
 		else
-			throw new RuntimeException("No result");
+			throw new RuntimeException("no result");
 	}
 
 	public Outlet<V> values() {

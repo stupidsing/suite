@@ -91,7 +91,7 @@ public class EvaluateUtil {
 		if (type != null)
 			return type;
 		else
-			throw new RuntimeException("Type inference failure");
+			throw new RuntimeException("type inference failure");
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
@@ -104,7 +104,7 @@ public class EvaluateUtil {
 			else
 				return new EagerFunInstructionExecutor(code);
 		else
-			throw new RuntimeException("Function compilation failure");
+			throw new RuntimeException("function compilation failure");
 	}
 
 	private Node doFcc(Node compileNode, FunCompilerConfig fcc) {

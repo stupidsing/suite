@@ -94,7 +94,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = Tree.decompose((Node) ds[--dsp]).getRight();
 			break;
 		default:
-			throw new RuntimeException("Unknown instruction " + insn);
+			throw new RuntimeException("unknown instruction " + insn);
 		}
 
 		exec.sp = dsp;

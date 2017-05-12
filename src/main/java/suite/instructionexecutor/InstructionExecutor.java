@@ -130,7 +130,7 @@ public class InstructionExecutor implements AutoCloseable {
 					current.frame = new Frame(parent, frameBegin.op0);
 					break;
 				case ERROR_________:
-					throw new RuntimeException("Error termination");
+					throw new RuntimeException("error termination");
 				case EVALADD_______:
 					regs[insn.op0] = number(i(regs[insn.op1]) + i(regs[insn.op2]));
 					break;
@@ -244,7 +244,7 @@ public class InstructionExecutor implements AutoCloseable {
 					sp = exec.sp;
 				}
 			} catch (Exception ex) {
-				throw new RuntimeException("At IP = " + ip, ex);
+				throw new RuntimeException("at IP = " + ip, ex);
 			}
 	}
 
@@ -255,7 +255,7 @@ public class InstructionExecutor implements AutoCloseable {
 	}
 
 	protected void handle(Exec exec, Instruction insn) {
-		throw new RuntimeException("Unknown instruction " + insn);
+		throw new RuntimeException("unknown instruction " + insn);
 	}
 
 	protected void postprocessInstructions(List<Instruction> list) {

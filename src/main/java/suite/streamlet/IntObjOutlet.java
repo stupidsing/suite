@@ -287,7 +287,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		if (pair != null)
 			return pair;
 		else
-			throw new RuntimeException("No result");
+			throw new RuntimeException("no result");
 	}
 
 	public IntObjPair<V> minOrNull(Comparator<IntObjPair<V>> comparator) {
@@ -462,9 +462,9 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 			if (!next(pair))
 				return pair;
 			else
-				throw new RuntimeException("More than one result");
+				throw new RuntimeException("more than one result");
 		else
-			throw new RuntimeException("No result");
+			throw new RuntimeException("no result");
 	}
 
 	public Outlet<V> values() {

@@ -30,7 +30,7 @@ public class Statistic {
 				sumxy += x * y;
 			}
 		else
-			throw new RuntimeException("Wrong input sizes");
+			throw new RuntimeException("wrong input sizes");
 		return (length * sumxy - sumx * sumy) / Math.sqrt((length * sumx2 - sumx * sumx) * (length * sumy2 - sumy * sumy));
 	}
 
@@ -46,7 +46,7 @@ public class Statistic {
 				sumxy += x * y;
 			}
 		else
-			throw new RuntimeException("Wrong input sizes");
+			throw new RuntimeException("wrong input sizes");
 		double il = 1d / length;
 		return (sumxy - sumx * sumy * il) * il;
 	}

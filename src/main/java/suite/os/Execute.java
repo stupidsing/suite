@@ -36,7 +36,7 @@ public class Execute {
 			else
 				throw new RuntimeException(execute.toString());
 		} else
-			throw new RuntimeException("Cannot find shell executable");
+			throw new RuntimeException("cannot find shell executable");
 	}
 
 	public Execute(String[] command) {

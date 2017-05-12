@@ -256,7 +256,7 @@ public class Outlet<T> implements Iterable<T> {
 		if (t != null)
 			return t;
 		else
-			throw new RuntimeException("No result");
+			throw new RuntimeException("no result");
 	}
 
 	public T minOrNull(Comparator<T> comparator) {
@@ -394,9 +394,9 @@ public class Outlet<T> implements Iterable<T> {
 			if (next() == null)
 				return t;
 			else
-				throw new RuntimeException("More than one result");
+				throw new RuntimeException("more than one result");
 		else
-			throw new RuntimeException("No result");
+			throw new RuntimeException("no result");
 	}
 
 }

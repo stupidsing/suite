@@ -59,7 +59,7 @@ public class Amd64Parser {
 			opImm.size = 4;
 			return opImm;
 		} else
-			throw new RuntimeException("Bad operand");
+			throw new RuntimeException("bad operand");
 	}
 
 	private Operand parseOpMem(Node[] m, int size) {
@@ -75,17 +75,17 @@ public class Amd64Parser {
 					opMem.indexReg = amd64.regsByName.get(m[0]).reg;
 					opMem.scale = ((Int) m[1]).number;
 				} else
-					throw new RuntimeException("Bad operand");
+					throw new RuntimeException("bad operand");
 			else if (component instanceof Int)
 				if (opMem.dispSize == 0) {
 					opMem.disp = ((Int) component).number;
 					opMem.dispSize = 4;
 				} else
-					throw new RuntimeException("Bad operand");
+					throw new RuntimeException("bad operand");
 			else if (opMem.baseReg < 0)
 				opMem.baseReg = amd64.regsByName.get(component).reg;
 			else
-				throw new RuntimeException("Bad operand");
+				throw new RuntimeException("bad operand");
 		return opMem;
 	}
 

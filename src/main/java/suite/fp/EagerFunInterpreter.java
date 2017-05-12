@@ -180,7 +180,7 @@ public class EagerFunInterpreter {
 				}
 			} else if ((ERROR = Matcher.error.match(node)) != null)
 				result = frame -> {
-					throw new RuntimeException("Error termination " + Formatter.display(ERROR.m));
+					throw new RuntimeException("error termination " + Formatter.display(ERROR.m));
 				};
 			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Node>> vm1 = IMap.empty();
@@ -229,7 +229,7 @@ public class EagerFunInterpreter {
 			else if ((WRAP = Matcher.wrap.match(node)) != null)
 				result = wrap(eager_(WRAP.do_));
 			else
-				throw new RuntimeException("Unrecognized construct " + node);
+				throw new RuntimeException("unrecognized construct " + node);
 
 			return result;
 		}
@@ -369,7 +369,7 @@ public class EagerFunInterpreter {
 		else if (type == Atom.of("P"))
 			operator = TermOp.AND___;
 		else
-			throw new RuntimeException("Unknown CONS type");
+			throw new RuntimeException("unknown CONS type");
 		return operator;
 	}
 

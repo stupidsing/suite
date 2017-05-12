@@ -50,7 +50,7 @@ public class HttpServerMain {
 			if (handler != null)
 				return handler.handle(p.t1);
 			else
-				throw new RuntimeException("No handler for " + p.t0);
+				throw new RuntimeException("no handler for " + p.t0);
 		};
 	}
 

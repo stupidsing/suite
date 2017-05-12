@@ -17,9 +17,9 @@ public class FindUtil {
 		if (list.size() == 1)
 			return list.get(0);
 		else if (!list.isEmpty())
-			throw new RuntimeException("Too many results");
+			throw new RuntimeException("too many results");
 		else
-			throw new RuntimeException("Failure");
+			throw new RuntimeException("failure");
 	}
 
 	public static List<Node> collectList(Finder finder, Node in) {

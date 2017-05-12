@@ -75,7 +75,7 @@ public class Amd64Assembler {
 			else if (isRm(instruction.op0))
 				insnCode = assemble(instruction.op0, bs(0xFF), 2);
 			else
-				throw new RuntimeException("Bad instruction");
+				throw new RuntimeException("bad instruction");
 			break;
 		case CLD:
 			insnCode = assemble(instruction, 0xFC);
@@ -109,7 +109,7 @@ public class Amd64Assembler {
 				insnCode = new InsnCode(0, (OpImm) instruction.op0);
 				insnCode.bs = new byte[] {};
 			} else
-				throw new RuntimeException("Bad instruction");
+				throw new RuntimeException("bad instruction");
 			break;
 		case IMUL:
 			if (instruction.op1 instanceof OpNone)
@@ -124,13 +124,13 @@ public class Amd64Assembler {
 					else if (imm.size == instruction.op0.size)
 						insnCode = assembleRegRm(instruction.op0, instruction.op1, bs(0x69));
 					else
-						throw new RuntimeException("Bad instruction");
+						throw new RuntimeException("bad instruction");
 					insnCode.immSize = imm.size;
 					insnCode.imm = imm.imm;
 				} else
-					throw new RuntimeException("Bad instruction");
+					throw new RuntimeException("bad instruction");
 			else
-				throw new RuntimeException("Bad instruction");
+				throw new RuntimeException("bad instruction");
 			break;
 		case IN:
 			insnCode = assembleInOut(instruction.op1, instruction.op0, 0xE4);
@@ -148,7 +148,7 @@ public class Amd64Assembler {
 				} else
 					insnCode = assemble(instruction, 0xCC);
 			} else
-				throw new RuntimeException("Bad instruction");
+				throw new RuntimeException("bad instruction");
 			break;
 		case INTO:
 			insnCode = assemble(instruction, 0xCE);
@@ -261,7 +261,7 @@ public class Amd64Assembler {
 					} else if (isRm(instruction.op0))
 						insnCode = assembleByteFlag(op1, 0xC6, 0);
 					else
-						throw new RuntimeException("Bad instruction");
+						throw new RuntimeException("bad instruction");
 
 					insnCode.immSize = op1.size;
 					insnCode.imm = op1.imm;
@@ -286,9 +286,9 @@ public class Amd64Assembler {
 				} else if ((insnCode = assembleRmReg(instruction, 0x88)) != null)
 					;
 				else
-					throw new RuntimeException("Bad instruction");
+					throw new RuntimeException("bad instruction");
 			else
-				throw new RuntimeException("Bad instruction");
+				throw new RuntimeException("bad instruction");
 			break;
 		case MOVSB:
 			insnCode = new InsnCode(1, bs(0xA4));
@@ -341,12 +341,12 @@ public class Amd64Assembler {
 						insnCode = new InsnCode(sreg.size, bs(0x0F, 0xA9));
 						break;
 					default:
-						throw new RuntimeException("Bad instruction");
+						throw new RuntimeException("bad instruction");
 					}
 				} else
-					throw new RuntimeException("Bad instruction");
+					throw new RuntimeException("bad instruction");
 			else
-				throw new RuntimeException("Bad instruction");
+				throw new RuntimeException("bad instruction");
 			break;
 		case POPA:
 			insnCode = assemble(instruction, 0x61);
@@ -383,12 +383,12 @@ public class Amd64Assembler {
 						insnCode = new InsnCode(sreg.size, bs(0x0F, 0xA8));
 						break;
 					default:
-						throw new RuntimeException("Bad instruction");
+						throw new RuntimeException("bad instruction");
 					}
 				} else
-					throw new RuntimeException("Bad instruction");
+					throw new RuntimeException("bad instruction");
 			else
-				throw new RuntimeException("Bad instruction");
+				throw new RuntimeException("bad instruction");
 			break;
 		case PUSHA:
 			insnCode = assemble(instruction, 0x60);
@@ -415,7 +415,7 @@ public class Amd64Assembler {
 				insnCode = new InsnCode(instruction.op0.size, (OpImm) instruction.op0);
 				insnCode.bs = bs(0xC2);
 			} else
-				throw new RuntimeException("Bad instruction");
+				throw new RuntimeException("bad instruction");
 			break;
 		case SAL:
 			insnCode = assembleShift(instruction, 0xC0, 4);
@@ -490,7 +490,7 @@ public class Amd64Assembler {
 				else
 					insnCode = assembleRegRm(instruction.op1, instruction.op0, bs(0x84));
 			else
-				throw new RuntimeException("Bad instruction");
+				throw new RuntimeException("bad instruction");
 			break;
 		case XCHG:
 			if (instruction.op0.size == instruction.op1.size)
@@ -499,7 +499,7 @@ public class Amd64Assembler {
 				else
 					insnCode = assembleRegRm(instruction.op1, instruction.op0, bs(0x86));
 			else
-				throw new RuntimeException("Bad instruction");
+				throw new RuntimeException("bad instruction");
 			break;
 		case WRMSR:
 			insnCode = new InsnCode(4, bs(0x0F, 0x30));
@@ -514,7 +514,7 @@ public class Amd64Assembler {
 		if (insnCode != null)
 			return encode(insnCode);
 		else
-			throw new RuntimeException("Bad instruction");
+			throw new RuntimeException("bad instruction");
 	}
 
 	private InsnCode assembleInOut(Operand port, Operand acc, int b) {
@@ -525,7 +525,7 @@ public class Amd64Assembler {
 			else if (port.size == 2 && port instanceof OpReg && ((OpReg) port).reg == 2) // DX
 				portImm = null;
 			else
-				throw new RuntimeException("Bad instruction");
+				throw new RuntimeException("bad instruction");
 
 			InsnCode insnCode = new InsnCode(acc.size, bs(b + (acc.size == 1 ? 0 : 1) + (portImm != null ? 0 : 8)));
 			if (portImm != null) {
@@ -534,14 +534,14 @@ public class Amd64Assembler {
 			}
 			return insnCode;
 		} else
-			throw new RuntimeException("Bad instruction");
+			throw new RuntimeException("bad instruction");
 	}
 
 	private InsnCode assembleJump(Instruction instruction, long offset, int b_near, byte[] b_far) {
 		if (instruction.op0 instanceof OpImm)
 			return assembleJumpImm((OpImm) instruction.op0, offset, b_near, b_far);
 		else
-			throw new RuntimeException("Bad instruction");
+			throw new RuntimeException("bad instruction");
 	}
 
 	private InsnCode assembleJumpImm(OpImm op0, long offset, int b1, byte[] bs4) {
@@ -557,7 +557,7 @@ public class Amd64Assembler {
 			bs0 = bs4;
 			break;
 		default:
-			throw new RuntimeException("Bad instruction");
+			throw new RuntimeException("bad instruction");
 		}
 
 		long rel = op0.imm - (offset + bs0.length + size);
@@ -568,7 +568,7 @@ public class Amd64Assembler {
 			insnCode.imm = rel;
 			return insnCode;
 		} else
-			throw new RuntimeException("Jump too far");
+			throw new RuntimeException("jump too far");
 	}
 
 	private InsnCode assembleRegRmExtended(Instruction instruction, int b0, int b1) {
@@ -576,14 +576,14 @@ public class Amd64Assembler {
 			OpReg reg = (OpReg) instruction.op0;
 			return assemble(instruction.op1, bs(b0, b1 + (instruction.op1.size <= 1 ? 0 : 1)), reg.reg);
 		} else
-			throw new RuntimeException("Bad instruction");
+			throw new RuntimeException("bad instruction");
 	}
 
 	private InsnCode assembleRegRm(Operand reg, Operand rm, byte[] bs) {
 		if (reg instanceof OpReg && isRm(rm))
 			return assemble(rm, bs, ((OpReg) reg).reg);
 		else
-			throw new RuntimeException("Bad instruction");
+			throw new RuntimeException("bad instruction");
 	}
 
 	private InsnCode assembleRm(Instruction instruction, int b_reg, int b_modrm, int num) {
@@ -594,7 +594,7 @@ public class Amd64Assembler {
 		} else if (isRm(instruction.op0))
 			insnCode = assembleByteFlag(instruction.op0, b_modrm, num);
 		else
-			throw new RuntimeException("Bad instruction");
+			throw new RuntimeException("bad instruction");
 		return insnCode;
 	}
 
@@ -609,7 +609,7 @@ public class Amd64Assembler {
 		else if (instruction.op1 instanceof OpImm)
 			insnCode = assembleRmImm(instruction.op0, (OpImm) instruction.op1, b_accImm, b_rmImm, num);
 		else
-			throw new RuntimeException("Bad instruction");
+			throw new RuntimeException("bad instruction");
 		return insnCode;
 	}
 
@@ -643,7 +643,7 @@ public class Amd64Assembler {
 			insnCode.bs = bs(b_rmImm + b0);
 			insnCode.modRm = modRm(op0, num);
 		} else
-			throw new RuntimeException("Bad instruction");
+			throw new RuntimeException("bad instruction");
 		return insnCode;
 	}
 
@@ -662,7 +662,7 @@ public class Amd64Assembler {
 				isShiftImm = false;
 				b1 = b + 16 + 2;
 			} else
-				throw new RuntimeException("Bad instruction");
+				throw new RuntimeException("bad instruction");
 
 			InsnCode insnCode = assembleByteFlag(instruction.op0, b1, num);
 
@@ -673,7 +673,7 @@ public class Amd64Assembler {
 
 			return insnCode;
 		} else
-			throw new RuntimeException("Bad instruction");
+			throw new RuntimeException("bad instruction");
 	}
 
 	private InsnCode assembleByteFlag(Operand operand, int b, int num) {
@@ -756,7 +756,7 @@ public class Amd64Assembler {
 					s = i = b = -1;
 					dispSize = ds;
 				} else
-					throw new RuntimeException("Bad operand");
+					throw new RuntimeException("bad operand");
 			else if (op.baseReg < 0 && 0 <= op.indexReg)
 				if ((op.indexReg & 7) != 4) { // [4 * EBX + 0x1234]
 					mod = 0;
@@ -766,7 +766,7 @@ public class Amd64Assembler {
 					b = 5;
 					dispSize = 4;
 				} else
-					throw new RuntimeException("Bad operand");
+					throw new RuntimeException("bad operand");
 			else if (0 <= op.baseReg && 0 <= op.indexReg)
 				if ((op.baseReg & 7) != 5 && (op.indexReg & 7) != 4) {
 					// [4 * EBX + EAX + 0x1234]
@@ -777,13 +777,13 @@ public class Amd64Assembler {
 					b = op.baseReg;
 					dispSize = op.dispSize;
 				} else
-					throw new RuntimeException("Bad operand");
+					throw new RuntimeException("bad operand");
 			else
-				throw new RuntimeException("Bad operand");
+				throw new RuntimeException("bad operand");
 
 			disp = op.disp;
 		} else
-			throw new RuntimeException("Bad operand");
+			throw new RuntimeException("bad operand");
 
 		ModRm modRm = new ModRm();
 		modRm.size = operand.size;
@@ -807,7 +807,7 @@ public class Amd64Assembler {
 		case 4:
 			return 2;
 		default:
-			throw new RuntimeException("Bad displacement");
+			throw new RuntimeException("bad displacement");
 		}
 	}
 
@@ -826,7 +826,7 @@ public class Amd64Assembler {
 		case 8:
 			return 3;
 		default:
-			throw new RuntimeException("Bad scale");
+			throw new RuntimeException("bad scale");
 		}
 	}
 

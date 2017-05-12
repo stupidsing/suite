@@ -61,7 +61,7 @@ public class GameSet {
 
 	private void play(Move move) {
 		if (!playIfValid(move))
-			throw new RuntimeException("Invalid move " + move.position + " for " + nextPlayer + "\n" + this);
+			throw new RuntimeException("invalid move " + move.position + " for " + nextPlayer + "\n" + this);
 	}
 
 	public void undo(Move move) {

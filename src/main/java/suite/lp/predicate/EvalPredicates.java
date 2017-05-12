@@ -59,7 +59,7 @@ public class EvalPredicates {
 		case LT____:
 			return comparer.compare(tree.getLeft(), tree.getRight()) < 0;
 		default:
-			throw new RuntimeException("Unknown comparison");
+			throw new RuntimeException("unknown comparison");
 		}
 	};
 
@@ -192,7 +192,7 @@ public class EvalPredicates {
 				else if (op1 == SHR)
 					result = a >> b;
 				else
-					throw new RuntimeException("Cannot evaluate expression: " + node);
+					throw new RuntimeException("cannot evaluate expression: " + node);
 			} else {
 				int a = evaluate(tree.getLeft()), b = evaluate(tree.getRight());
 				switch (op) {
@@ -215,13 +215,13 @@ public class EvalPredicates {
 					result = (int) Math.pow(a, b);
 					break;
 				default:
-					throw new RuntimeException("Cannot evaluate expression: " + node);
+					throw new RuntimeException("cannot evaluate expression: " + node);
 				}
 			}
 		} else if (node instanceof Int)
 			result = ((Int) node).number;
 		else
-			throw new RuntimeException("Cannot evaluate expression: " + node);
+			throw new RuntimeException("cannot evaluate expression: " + node);
 
 		return result;
 	}

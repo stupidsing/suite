@@ -104,13 +104,13 @@ public class Assembler {
 
 			if ((tree = Tree.decompose(node, TermOp.EQUAL_)) != null)
 				if (!Binder.bind(tree.getLeft(), tree.getRight(), trail))
-					throw new RuntimeException("Bind failed");
+					throw new RuntimeException("bind failed");
 				else
 					;
 			else if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null)
 				lnis.add(Pair.of((Reference) tree.getLeft(), tree.getRight()));
 			else
-				throw new RuntimeException("Cannot assemble " + node);
+				throw new RuntimeException("cannot assemble " + node);
 		}
 
 		return assemble(generalizer, preassemble.apply(lnis));
@@ -131,7 +131,7 @@ public class Assembler {
 					if (!isPass2)
 						lni.t0.bound(Int.of(address));
 					else if (((Int) lni.t0.finalNode()).number != address)
-						throw new RuntimeException("Address varied between passes at " + Integer.toHexString(address));
+						throw new RuntimeException("address varied between passes at " + Integer.toHexString(address));
 
 				out.append(assemble(isPass2, address, lni.t1));
 			}
@@ -151,7 +151,7 @@ public class Assembler {
 			finder.find(To.source(Tree.of(TermOp.AND___, ins)), node -> bytesList.add(convertByteStream(node)));
 			return Read.from(bytesList).min((bytes0, bytes1) -> bytes0.size() - bytes1.size());
 		} catch (Exception ex) {
-			throw new RuntimeException("In " + instruction + " during pass " + (!isPass2 ? "1" : "2"), ex);
+			throw new RuntimeException("in " + instruction + " during pass " + (!isPass2 ? "1" : "2"), ex);
 		}
 	}
 

@@ -135,7 +135,7 @@ public class ProverTest {
 		if (b0 == b1)
 			return b0;
 		else
-			throw new RuntimeException("Different prove result");
+			throw new RuntimeException("different prove result");
 	}
 
 }

@@ -167,7 +167,7 @@ public class FileFactory {
 				if (startPointer <= pointer1 && pointer1 < endPointer)
 					return pointer1;
 				else
-					throw new RuntimeException("Page index out of range");
+					throw new RuntimeException("page index out of range");
 			}
 		};
 	}

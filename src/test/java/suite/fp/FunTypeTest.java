@@ -215,7 +215,7 @@ public class FunTypeTest {
 		} catch (RuntimeException ex) {
 			return;
 		}
-		throw new RuntimeException("Cannot catch type error of: " + fps);
+		throw new RuntimeException("cannot catch type error of: " + fps);
 	}
 
 	private Node getType(String fps) {

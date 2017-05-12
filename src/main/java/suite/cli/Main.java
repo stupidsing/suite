@@ -83,7 +83,7 @@ public class Main extends ExecutableProgram {
 			else if (verb == null)
 				result &= runInteractive(inputs);
 			else
-				throw new RuntimeException("Unknown action " + verb);
+				throw new RuntimeException("unknown action " + verb);
 
 		return result;
 	}

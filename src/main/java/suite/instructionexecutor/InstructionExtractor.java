@@ -72,7 +72,7 @@ public class InstructionExtractor implements AutoCloseable {
 							extractInstructions(value, rsList);
 							rsList.add(Arrays.asList(Atom.of("FRAME-END")));
 						} else
-							throw new RuntimeException("Bad frame definition");
+							throw new RuntimeException("bad frame definition");
 					else {
 						rsList.add(rs);
 						for (Node op : List_.right(rs, 1))
@@ -109,7 +109,7 @@ public class InstructionExtractor implements AutoCloseable {
 
 			return instruction;
 		} else
-			throw new RuntimeException("Unknown opcode " + insnName);
+			throw new RuntimeException("unknown opcode " + insnName);
 	}
 
 	private int getRegisterNumber(List<Node> rs, int index) {
@@ -138,7 +138,7 @@ public class InstructionExtractor implements AutoCloseable {
 					return 0;
 			}
 
-			throw new RuntimeException("Cannot parse instruction " + rs.get(0) + " operand " + node);
+			throw new RuntimeException("cannot parse instruction " + rs.get(0) + " operand " + node);
 		} else
 			return 0;
 	}

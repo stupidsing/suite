@@ -356,7 +356,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				savePage(page);
 				allocator.deallocate(mp.pointer);
 			} else
-				throw new RuntimeException("Unbalanced B-tree");
+				throw new RuntimeException("unbalanced B-tree");
 		}
 
 		savePage(page);

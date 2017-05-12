@@ -47,7 +47,7 @@ public class IntMutable {
 		if (value == Integer.MIN_VALUE)
 			update(t);
 		else
-			throw new RuntimeException("Value already set");
+			throw new RuntimeException("value already set");
 	}
 
 	public void update(int t) {

@@ -76,7 +76,7 @@ public class CholeskyDecomposition {
 						m[i][j] -= imii * m[i][c] * m[j][c];
 			}
 		else
-			throw new RuntimeException("Wrong input sizes");
+			throw new RuntimeException("wrong input sizes");
 		return l;
 	}
 
@@ -106,7 +106,7 @@ public class CholeskyDecomposition {
 					}
 			}
 		else
-			throw new RuntimeException("Wrong input sizes");
+			throw new RuntimeException("wrong input sizes");
 		return Pair.of(l, d);
 	}
 

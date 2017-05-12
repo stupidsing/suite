@@ -108,7 +108,7 @@ public class FormatPredicates {
 
 			return prover.bind(sx, new Str(name.substring(m, n)));
 		} else
-			throw new RuntimeException("Invalid call pattern");
+			throw new RuntimeException("invalid call pattern");
 	});
 
 	public BuiltinPredicate toAtom = PredicateUtil.fun(n -> Atom.of(Formatter.display(n)));

@@ -392,7 +392,7 @@ public class InstructionTranslator implements Closeable {
 				app("#{reg} = ds[dsp + #{num}]", op0, op1);
 				break;
 			default:
-				throw new RuntimeException("Unknown instruction " + insn);
+				throw new RuntimeException("unknown instruction " + insn);
 			}
 		}
 	}

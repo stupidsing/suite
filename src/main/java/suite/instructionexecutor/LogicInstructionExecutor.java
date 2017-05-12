@@ -87,7 +87,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			exec.sp = i(regs[insn.op0]);
 			break;
 		default:
-			throw new RuntimeException("Unknown instruction " + insn);
+			throw new RuntimeException("unknown instruction " + insn);
 		}
 	}
 

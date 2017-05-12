@@ -63,7 +63,7 @@ public class Sgf {
 				throw new RuntimeException();
 			}
 
-		throw new RuntimeException("Unexpected end of input");
+		throw new RuntimeException("unexpected end of input");
 	}
 
 	private PosPair<List<Pair<String, List<String>>>> readCommands(String in, int pos) {
@@ -85,7 +85,7 @@ public class Sgf {
 				commands.add(ipCommand.t);
 			}
 
-		throw new RuntimeException("Unexpected end of input");
+		throw new RuntimeException("unexpected end of input");
 	}
 
 	private PosPair<Pair<String, List<String>>> readCommand(String in, int pos) {
@@ -108,7 +108,7 @@ public class Sgf {
 				return PosPair.of(pos, Pair.of(ipId.t, ids));
 			}
 
-		throw new RuntimeException("Unexpected end of input");
+		throw new RuntimeException("unexpected end of input");
 	}
 
 	private PosPair<String> readIf(String in, int pos, IntPredicate predicate) {
@@ -127,7 +127,7 @@ public class Sgf {
 				return PosPair.of(pos1, in.substring(pos0, pos1));
 		}
 
-		throw new RuntimeException("Unexpected end of input");
+		throw new RuntimeException("unexpected end of input");
 	}
 
 }

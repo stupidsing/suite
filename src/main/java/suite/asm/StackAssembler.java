@@ -60,9 +60,9 @@ public class StackAssembler {
 				node1 = Atom.NIL;
 			} else if ((m = FREND_.apply(node0)) != null) {
 				if (fs != 0)
-					throw new RuntimeException("Unbalanced frame stack in subroutine definition");
+					throw new RuntimeException("unbalanced frame stack in subroutine definition");
 				else if (rs != 0)
-					throw new RuntimeException("Unbalanced register stack in subroutine definition");
+					throw new RuntimeException("unbalanced register stack in subroutine definition");
 				else {
 					int[] arr = deque.pop();
 					fs = arr[0];
@@ -73,7 +73,7 @@ public class StackAssembler {
 				if (Binder.bind(m[0], Int.of(-fs), trail))
 					node1 = Atom.NIL;
 				else
-					throw new RuntimeException("Cannot bind local variable offset");
+					throw new RuntimeException("cannot bind local variable offset");
 			else if ((m = FRPOP_.apply(node0)) != null) {
 				fs -= 4;
 				node1 = Suite.substitute("POP .0", rewrite(rs, m[0]));
@@ -92,7 +92,7 @@ public class StackAssembler {
 				if (Binder.bind(m[0], Int.of(new EvalPredicates().evaluate(m[1])), trail))
 					node1 = Atom.NIL;
 				else
-					throw new RuntimeException("Cannot calculate expression");
+					throw new RuntimeException("cannot calculate expression");
 			else if (node0 == RPOP__) {
 				rs--;
 				node1 = Atom.NIL;
@@ -130,7 +130,7 @@ public class StackAssembler {
 		if (p < registers.length)
 			return registers[p];
 		else
-			throw new RuntimeException("Register stack overflow");
+			throw new RuntimeException("register stack overflow");
 	}
 
 }

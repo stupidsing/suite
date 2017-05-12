@@ -18,7 +18,7 @@ public class Mutable<T> {
 		if (value == null)
 			update(t);
 		else
-			throw new RuntimeException("Value already set");
+			throw new RuntimeException("value already set");
 	}
 
 	public void update(T t) {

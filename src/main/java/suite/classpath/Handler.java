@@ -27,7 +27,7 @@ public class Handler extends URLStreamHandler {
 		if (resource != null)
 			return resource.openConnection();
 		else
-			throw new RuntimeException("Resource not found: " + url);
+			throw new RuntimeException("resource not found: " + url);
 	}
 
 }

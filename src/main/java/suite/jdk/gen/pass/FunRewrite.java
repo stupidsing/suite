@@ -74,11 +74,11 @@ public class FunRewrite extends FunFactory {
 					placeholders.put(e4.p1, local(2));
 					return rewrite(e4.do_);
 				} else
-					throw new RuntimeException("Cannot rewrite " + e3.getClass());
+					throw new RuntimeException("cannot rewrite " + e3.getClass());
 			} else
-				throw new RuntimeException("Cannot rewrite " + e2.getClass());
+				throw new RuntimeException("cannot rewrite " + e2.getClass());
 		} else
-			throw new RuntimeException("Cannot rewrite " + e0.getClass());
+			throw new RuntimeException("cannot rewrite " + e0.getClass());
 	}
 
 	private FunExpr rewrite(FunExpr expr0) {
@@ -177,7 +177,7 @@ public class FunRewrite extends FunFactory {
 			if (e2 != null)
 				return e2;
 			else
-				throw new RuntimeException("Cannot resolve placeholder");
+				throw new RuntimeException("cannot resolve placeholder");
 		} else if (e0 instanceof ProfileFunExpr) {
 			ProfileFunExpr e1 = (ProfileFunExpr) e0;
 			fieldTypeValues.put(e1.counterFieldName, Pair.of(Type.INT, 0));

@@ -73,7 +73,7 @@ public class ThunkUtil {
 				} else if (node_ == Atom.NIL)
 					return null;
 				else
-					throw new RuntimeException("Not a list, unable to expand");
+					throw new RuntimeException("not a list, unable to expand");
 			}
 		});
 	}

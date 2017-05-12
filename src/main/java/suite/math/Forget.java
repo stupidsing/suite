@@ -14,7 +14,7 @@ public class Forget {
 			for (int i = 0; i < length; i++)
 				m[i] *= n[i];
 		else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("wrong matrix sizes");
 		return m;
 	}
 

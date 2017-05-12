@@ -200,7 +200,7 @@ public class FunGenerateBytecode {
 				list.add(InstructionConst.POP);
 			visit_(e1.right);
 		} else
-			throw new RuntimeException("Unknown expression " + e0.getClass());
+			throw new RuntimeException("unknown expression " + e0.getClass());
 	}
 
 	private void visitIf(short opcode, IfFunExpr expr) {

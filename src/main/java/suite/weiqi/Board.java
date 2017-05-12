@@ -117,9 +117,9 @@ public class Board extends Array<Occupation> {
 					killIfDead1(ga, neighbor);
 
 			if (killIfDead1(ga, c))
-				throw new RuntimeException("Cannot perform suicide move");
+				throw new RuntimeException("cannot perform suicide move");
 		} else
-			throw new RuntimeException("Cannot move on occupied position");
+			throw new RuntimeException("cannot move on occupied position");
 	}
 
 	private boolean killIfDead1(GroupAnalysis ga, Coordinate c) {

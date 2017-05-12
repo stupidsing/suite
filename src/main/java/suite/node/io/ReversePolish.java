@@ -67,7 +67,7 @@ public class ReversePolish {
 				Node right = deque.pop();
 				n = Tree.of(op, left, right);
 			} else
-				throw new RuntimeException("RPN conversion error: " + elem);
+				throw new RuntimeException("rPN conversion error: " + elem);
 
 			deque.push(n);
 		});

@@ -128,7 +128,7 @@ public class IRbTree<T> implements ITree<T> {
 			else if (isReplace)
 				node1 = new Node(node.isBlack, t, node.left, node.right);
 			else
-				throw new RuntimeException("Duplicate node " + t);
+				throw new RuntimeException("duplicate node " + t);
 		} else
 			node1 = new Node(false, t, null, null);
 

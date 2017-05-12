@@ -97,7 +97,7 @@ public class FunTypeInformation {
 			FieldStaticFunExpr e1 = (FieldStaticFunExpr) e0;
 			return e1.fieldType;
 		} else
-			throw new RuntimeException("Unknown expression " + e0.getClass());
+			throw new RuntimeException("unknown expression " + e0.getClass());
 	}
 
 	public Method invokeMethodOf(InvokeMethodFunExpr expr) {

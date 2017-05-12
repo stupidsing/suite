@@ -79,10 +79,10 @@ public class SewingProverImpl implements SewingProver {
 	private Env emptyEnvironment = new Env(new Reference[0]);
 
 	private Trampoline okay = rt -> {
-		throw new RuntimeException("Impossibly okay");
+		throw new RuntimeException("impossibly okay");
 	};
 	private Trampoline fail = rt -> {
-		throw new RuntimeException("Impossibly fail");
+		throw new RuntimeException("impossibly fail");
 	};
 
 	private SewingBinder passThru = new SewingBinder() {
@@ -189,7 +189,7 @@ public class SewingProverImpl implements SewingProver {
 		if (!rules.containsKey(null))
 			compileAll();
 		else
-			throw new RuntimeException("Must not contain wild rules");
+			throw new RuntimeException("must not contain wild rules");
 	}
 
 	public Predicate<ProverConfig> compile(Node node) {
@@ -568,7 +568,7 @@ public class SewingProverImpl implements SewingProver {
 			if (data instanceof Source<?>)
 				tr = rt -> ((Source<?>) data).source() != Boolean.TRUE ? okay : fail;
 			else
-				throw new RuntimeException("Cannot understand " + node);
+				throw new RuntimeException("cannot understand " + node);
 		} else if (node instanceof Reference) {
 			Clone_ f = sb.compile(node);
 			tr = rt -> compile_(passThru, f.apply(rt.env));
@@ -577,7 +577,7 @@ public class SewingProverImpl implements SewingProver {
 		else if (node instanceof Tuple)
 			tr = compilePredicate(sb, node);
 		else
-			throw new RuntimeException("Cannot understand " + node);
+			throw new RuntimeException("cannot understand " + node);
 
 		return tr;
 	}

@@ -113,7 +113,7 @@ public class LazyFunInterpreter {
 
 		Reference parsed = new Reference();
 		if (!prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)))
-			throw new RuntimeException("Cannot parse " + node);
+			throw new RuntimeException("cannot parse " + node);
 		return parsed;
 	}
 
@@ -218,7 +218,7 @@ public class LazyFunInterpreter {
 				};
 			} else if ((ERROR = Matcher.error.match(node)) != null)
 				result = frame -> () -> {
-					throw new RuntimeException("Error termination " + Formatter.display(ERROR.m));
+					throw new RuntimeException("error termination " + Formatter.display(ERROR.m));
 				};
 			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Thunk_>> vm1 = IMap.empty();
@@ -265,7 +265,7 @@ public class LazyFunInterpreter {
 			else if ((WRAP = Matcher.wrap.match(node)) != null)
 				result = lazy_(WRAP.do_);
 			else
-				throw new RuntimeException("Unrecognized construct " + node);
+				throw new RuntimeException("unrecognized construct " + node);
 
 			return result;
 		}
