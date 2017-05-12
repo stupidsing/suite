@@ -1,8 +1,5 @@
 package suite.trade.data;
 
-import java.util.List;
-import java.util.function.Predicate;
-
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -12,19 +9,19 @@ import suite.util.Memoize;
 
 public interface Broker {
 
-	public List<Trade> queryHistory(Predicate<Trade> pred);
+	public Streamlet<Trade> queryHistory();
 
 	public double transactionFee(double transactionAmount);
 
 	// https://www.personal.hsbc.com.hk/1/2/hk/investments/stocks/detail
 	public class Hsbc implements Broker {
-		public List<Trade> queryHistory(Predicate<Trade> pred) {
-			return memoizeHistoryRecords.source().filter(pred).toList();
+		public Streamlet<Trade> queryHistory() {
+			return memoizeHistoryRecords.source();
 		}
 
-		private static Source<Streamlet<Trade>> memoizeHistoryRecords = Memoize.source(Hsbc::historyRecords);
+		private static Source<Streamlet<Trade>> memoizeHistoryRecords = Memoize.source(Hsbc::queryHistory_);
 
-		private static Streamlet<Trade> historyRecords() {
+		private static Streamlet<Trade> queryHistory_() {
 			return Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt") //
 					.collect(As::table) //
 					.map(Trade::of) //

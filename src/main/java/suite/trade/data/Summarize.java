@@ -1,12 +1,12 @@
 package suite.trade.data;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.Constants;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.Trade;
@@ -18,16 +18,16 @@ import suite.util.To;
 public class Summarize {
 
 	private Configuration cfg;
-	private List<Trade> trades;
+	private Streamlet<Trade> trades;
 	private Map<String, Float> priceBySymbol;
 
 	public static Summarize of(Configuration cfg) {
-		List<Trade> trades = cfg.queryHistory(trade -> true);
-		Map<String, Float> priceBySymbol = cfg.quote(Read.from(trades).map(trade -> trade.symbol).toSet());
+		Streamlet<Trade> trades = cfg.queryHistory();
+		Map<String, Float> priceBySymbol = cfg.quote(trades.map(trade -> trade.symbol).toSet());
 		return new Summarize(cfg, trades, priceBySymbol);
 	}
 
-	private Summarize(Configuration cfg, List<Trade> trades, Map<String, Float> priceBySymbol) {
+	private Summarize(Configuration cfg, Streamlet<Trade> trades, Map<String, Float> priceBySymbol) {
 		this.cfg = cfg;
 		this.trades = trades;
 		this.priceBySymbol = priceBySymbol;
@@ -38,10 +38,10 @@ public class Summarize {
 	}
 
 	public <K> Map<K, Double> out(Sink<String> log, Fun<Trade, K> fun) {
-		Map<K, String> summaryByKey = Read.from(trades) //
+		Map<K, String> summaryByKey = trades //
 				.groupBy(fun) //
 				.filterKey(key -> key != null) //
-				.mapValue(trades_ -> summarize(trades_, priceBySymbol)) //
+				.mapValue(trades_ -> summarize(Read.from(trades_), priceBySymbol)) //
 				.toMap();
 
 		for (Entry<K, String> e : summaryByKey.entrySet()) {
@@ -59,9 +59,9 @@ public class Summarize {
 				.toMap();
 	}
 
-	private String summarize(List<Trade> trades_, Map<String, Float> priceBySymbol) {
-		List<Trade> trades0 = trades_;
-		List<Trade> trades1 = sellAll(trades0, priceBySymbol);
+	private String summarize(Streamlet<Trade> trades_, Map<String, Float> priceBySymbol) {
+		Streamlet<Trade> trades0 = trades_;
+		Streamlet<Trade> trades1 = sellAll(trades0, priceBySymbol);
 		Account account0 = Account.fromHistory(trades0);
 		Account account1 = Account.fromHistory(trades1);
 		double amount0 = account0.cash();
@@ -80,15 +80,14 @@ public class Summarize {
 				.collect(As.joined());
 	}
 
-	private List<Trade> sellAll(List<Trade> trades, Map<String, Float> priceBySymbol) {
-		List<Trade> sellAll = Read.from(trades) //
+	private Streamlet<Trade> sellAll(Streamlet<Trade> trades, Map<String, Float> priceBySymbol) {
+		Streamlet<Trade> sellAll = trades //
 				.groupBy(trade -> trade.strategy, TradeUtil::portfolio) //
 				.concatMap((strategy, nSharesBySymbol) -> Read //
 						.from2(nSharesBySymbol) //
-						.map((symbol, size) -> Trade.of(-size, symbol, priceBySymbol.get(symbol), strategy))) //
-				.toList();
+						.map((symbol, size) -> Trade.of(-size, symbol, priceBySymbol.get(symbol), strategy)));
 
-		return To.list(trades, sellAll);
+		return Streamlet.concat(trades, sellAll);
 	}
 
 }
