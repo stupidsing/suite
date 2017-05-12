@@ -37,6 +37,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
+import suite.node.Tuple;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.Mutable;
@@ -333,8 +334,8 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Trampoline compile_(SewingBinder sb, Node node) {
-		Trampoline tr = null;
 		List<Node> list;
+		Trampoline tr;
 		Tree tree;
 		Node[] m;
 
@@ -551,9 +552,7 @@ public class SewingProverImpl implements SewingProver {
 				return tr0;
 			};
 		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
-			tr = callSystemPredicate(sb, ((Atom) m[0]).name, m[1]);
-		else if ((tree = Tree.decompose(node)) != null)
-			tr = callSystemPredicate(sb, tree.getOperator().getName(), node);
+			tr = compileSystemPredicate(sb, ((Atom) m[0]).name, m[1], node);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;
 			if (node == ProverConstant.cut)
@@ -563,33 +562,24 @@ public class SewingProverImpl implements SewingProver {
 			else if (String_.equals(name, "fail"))
 				tr = fail;
 			else
-				tr = callSystemPredicate(sb, name, Atom.NIL);
-		} else if (node instanceof Reference) {
-			Clone_ f = sb.compile(node);
-			tr = rt -> compile_(passThru, f.apply(rt.env));
+				tr = compileSystemPredicate(sb, name, Atom.NIL, node);
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)
 				tr = rt -> ((Source<?>) data).source() != Boolean.TRUE ? okay : fail;
-		}
-
-		if (tr == null) {
-			Prototype prototype = Prototype.of(node);
-			if (rules.containsKey(prototype)) {
-				Clone_ f = sb.compile(node);
-				Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
-				tr = rt -> {
-					rt.query = f.apply(rt.env);
-					// logUtil.info(Formatter.dump(rt.query));
-					return mtr.get()::prove;
-				};
-			}
-		}
-
-		if (tr != null)
-			return tr;
+			else
+				throw new RuntimeException("Cannot understand " + node);
+		} else if (node instanceof Reference) {
+			Clone_ f = sb.compile(node);
+			tr = rt -> compile_(passThru, f.apply(rt.env));
+		} else if ((tree = Tree.decompose(node)) != null)
+			tr = compileSystemPredicate(sb, tree.getOperator().getName(), node, node);
+		else if (node instanceof Tuple)
+			tr = compilePredicate(sb, node);
 		else
 			throw new RuntimeException("Cannot understand " + node);
+
+		return tr;
 	}
 
 	private Trampoline if_(Trampoline tr0, Trampoline tr1, Trampoline tr2) {
@@ -608,9 +598,23 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Trampoline callSystemPredicate(SewingBinder sb, String name, Node pass) {
+	private Trampoline compileSystemPredicate(SewingBinder sb, String name, Node pass, Node node) {
 		BuiltinPredicate predicate = systemPredicates.get(name);
-		return predicate != null ? callPredicate(sb, predicate, pass) : null;
+		return predicate != null ? callPredicate(sb, predicate, pass) : compilePredicate(sb, node);
+	}
+
+	private Trampoline compilePredicate(SewingBinder sb, Node node) {
+		Prototype prototype = Prototype.of(node);
+		if (rules.containsKey(prototype)) {
+			Clone_ f = sb.compile(node);
+			Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
+			return rt -> {
+				rt.query = f.apply(rt.env);
+				// logUtil.info(Formatter.dump(rt.query));
+				return mtr.get()::prove;
+			};
+		} else
+			throw new RuntimeException();
 	}
 
 	private Trampoline callPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass) {
