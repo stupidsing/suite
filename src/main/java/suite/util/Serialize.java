@@ -102,7 +102,7 @@ public class Serialize {
 				.map2(field -> auto_(field.getGenericType())) //
 				.toArray();
 
-		Streamlet<Constructor<?>> ctors = Read.from(clazz.getConstructors());
+		Streamlet<Constructor<?>> ctors = Read.from(clazz.getDeclaredConstructors());
 		boolean isDefaultCtor = 0 < ctors.filter(ctor -> ctor.getParameterCount() == 0).size();
 		Constructor<?> immutableCtor = ctors.min((c0, c1) -> -Integer.compare(c0.getParameterCount(), c1.getParameterCount()));
 

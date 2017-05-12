@@ -19,7 +19,7 @@ public class Memoize {
 	 */
 	public static <I, O> Fun<I, O> fun(Fun<I, O> fun) {
 		Map<I, O> results = new ConcurrentHashMap<>();
-		return in -> results.computeIfAbsent(in, in_ -> fun.apply(in_));
+		return in -> results.computeIfAbsent(in, fun::apply);
 	}
 
 	public static <T> Source<T> future(Source<T> source) {
