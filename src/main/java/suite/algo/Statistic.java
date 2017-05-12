@@ -2,7 +2,7 @@ package suite.algo;
 
 import suite.adt.IntObjMap;
 import suite.adt.IntObjPair;
-import suite.math.Cholesky;
+import suite.math.CholeskyDecomposition;
 import suite.math.Matrix;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSource.IntObjSource;
@@ -65,7 +65,7 @@ public class Statistic {
 			int n = y.length;
 			float[][] xt = mtx.transpose(x);
 			float[][] xtx = mtx.mul(xt, x);
-			float[] lr = new Cholesky().inverseMul(xtx).apply(mtx.mul(xt, y));
+			float[] lr = new CholeskyDecomposition().inverseMul(xtx).apply(mtx.mul(xt, y));
 			betas = lr;
 
 			float[] estimatedy = To.arrayOfFloats(x, x_ -> predict(x_));

@@ -4,7 +4,7 @@ import suite.adt.Pair;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
-public class Cholesky {
+public class CholeskyDecomposition {
 
 	private Matrix mtx = new Matrix();
 

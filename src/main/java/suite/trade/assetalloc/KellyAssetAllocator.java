@@ -6,7 +6,7 @@ import java.util.Map;
 
 import suite.adt.Pair;
 import suite.algo.Statistic;
-import suite.math.Cholesky;
+import suite.math.CholeskyDecomposition;
 import suite.math.TimeSeries;
 import suite.streamlet.Read;
 import suite.trade.data.DataSource;
@@ -14,7 +14,7 @@ import suite.util.To;
 
 public class KellyAssetAllocator implements AssetAllocator {
 
-	private Cholesky cholesky = new Cholesky();
+	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Statistic stat = new Statistic();
 	private TimeSeries timeSeries = new TimeSeries();
 
