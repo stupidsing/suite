@@ -8,7 +8,7 @@ import suite.util.Util;
 public class Asset {
 
 	public static String cashCode = "HKD";
-	public static Asset cash = new Asset(cashCode, "Hong Kong Dollar", 1);
+	public static Asset cash = new Asset(cashCode, "Hong Kong Dollar", 1, Integer.MAX_VALUE);
 
 	public static Serializer<Asset> serializer = Serialize.auto(Asset.class);
 
@@ -17,11 +17,15 @@ public class Asset {
 	public final int lotSize;
 	public final int marketCap; // HKD million
 
-	public Asset(String code, String name, int lotSize) {
-		this(code, name, lotSize, 0);
+	public static Asset of(String code, String name, int lotSize) {
+		return of(code, name, lotSize, 0);
 	}
 
-	public Asset(String symbol, String name, int lotSize, int marketCap) {
+	public static Asset of(String symbol, String name, int lotSize, int marketCap) {
+		return new Asset(symbol, name, lotSize, marketCap);
+	}
+
+	private Asset(String symbol, String name, int lotSize, int marketCap) {
 		this.symbol = symbol;
 		this.name = name;
 		this.lotSize = lotSize;

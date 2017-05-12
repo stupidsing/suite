@@ -161,7 +161,7 @@ public class Hkex {
 			.from(lines.split("\n")) //
 			.filter(line -> !line.isEmpty()) //
 			.map(line -> line.split("\\|")) //
-			.map(array -> new Asset(array[0], array[1], Integer.parseInt(array[2]), Integer.parseInt(array[3]))) //
+			.map(array -> Asset.of(array[0], array[1], Integer.parseInt(array[2]), Integer.parseInt(array[3]))) //
 			.collect(As::streamlet);
 
 	private Map<String, Asset> companyBySymbol = Read.from(companies).toMap(company -> company.symbol);
@@ -253,7 +253,7 @@ public class Hkex {
 					+ "&y=");
 
 			CompanyInfo companyInfo = mapper.convertValue(json, CompanyInfo.class);
-			asset = new Asset( //
+			asset = Asset.of( //
 					HkexUtil.toSymbol(companyInfo.stockCode), //
 					companyInfo.stockName.split("\\[")[0].trim(), //
 					queryBoardLot(symbol));
@@ -382,7 +382,7 @@ public class Hkex {
 
 	private Asset toAsset(List<String> list, Map<String, Integer> lotSizeBySymbol) {
 		String symbol = toSymbol(list);
-		return new Asset( //
+		return Asset.of( //
 				symbol, //
 				list.get(2).trim(), //
 				lotSizeBySymbol.get(symbol), //
