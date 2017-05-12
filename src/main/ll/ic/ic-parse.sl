@@ -80,10 +80,15 @@ ic-parse (baseless [.params] .do) (METHOD0 .mps .do1) -- traditional subroutine 
 ic-parse (function [.params] .do) (METHOD THIS .method) -- traditional subroutine definition
 	:- ic-parse (baseless [.params] .do) .method
 #
-ic-parse (new .type .nvs0) (NEW .type1 .nvs1)
+ic-parse (new .type .nvs0) (NEW-STRUCT .type1 .nvs1)
 	:- ic-parse-type .type .type1
 	, zip .nvs0 .nvs1 .list
 	, list.query .list (.n = .v0):(.n .v1) (ic-parse .v0 .v1)
+#
+ic-parse (newt .type .tag .value) (NEW-TAG .type1 .tag .value1)
+	:- ic-parse-type I32 .tag
+	, ic-parse-type .type .type1
+	, ic-parse .value .value1
 #
 ic-parse () NOP
 #
@@ -261,6 +266,12 @@ ic-parse-type (struct ()) (STRUCT-OF ())
 ic-parse-type (struct (.nts | .t .name)) (STRUCT-OF (.nameTypes | .name .type))
 	:- ic-parse-type .t .type
 	, ic-parse-type (struct .nts) (STRUCT-OF .nameTypes)
+#
+ic-parse-type (tag ()) (TAG-OF ())
+#
+ic-parse-type (tag (.nts | .t .name)) (TAG-OF (.nameTypes | .name .type))
+	:- ic-parse-type .t .type
+	, ic-parse-type (tag .nts) (TAG-OF .nameTypes)
 #
 ic-parse-type :.typeVar .typeVar
 #

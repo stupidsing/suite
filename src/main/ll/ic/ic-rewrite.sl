@@ -42,15 +42,20 @@ ic-rewrite (METHOD0 .mps0 .do0) (METHOD0 .mps1 .do1) (.do0 .do1, .ts)/.ts
 #
 ic-rewrite (METHOD .this0 .method0) (METHOD .this1 .method1) (.this0 .this1, .method0 .method1, .ts)/.ts
 #
-ic-rewrite (NEW .type ()) (NEW .type ()) .ts/.ts
+ic-rewrite (NEW-STRUCT .type ()) (NEW-STRUCT .type ()) .ts/.ts
 #
-ic-rewrite (NEW .type0 (.k .v0, .nvs0)) (NEW .type1 (.k .v1, .nvs1)) (.v0 .v1, .ts0)/.tsx
-	:- ic-rewrite (NEW .type0 .nvs0) (NEW .type1 .nvs1) .ts0/.tsx
+ic-rewrite (NEW-STRUCT .type0 (.k .v0, .nvs0)) (NEW-STRUCT .type1 (.k .v1, .nvs1)) (.v0 .v1, .ts0)/.tsx
+	:- ic-rewrite (NEW-STRUCT .type0 .nvs0) (NEW-STRUCT .type1 .nvs1) .ts0/.tsx
 #
-ic-rewrite (NEWS ()) (NEWS ()) .ts/.ts
+ic-rewrite (NEW-STRUCTS ()) (NEW-STRUCTS ()) .ts/.ts
 #
-ic-rewrite (NEWS (.s .o .v0, .sovs0)) (NEWS (.s .o .v1, .sovs1)) (.v0 .v1, .ts0)/.tsx
-	:- ic-rewrite (NEWS .sovs0) (NEWS .sovs1) .ts0/.tsx
+ic-rewrite (NEW-STRUCTS (.s .o .v0, .sovs0)) (NEW-STRUCTS (.s .o .v1, .sovs1)) (.v0 .v1, .ts0)/.tsx
+	:- ic-rewrite (NEW-STRUCTS .sovs0) (NEW-STRUCTS .sovs1) .ts0/.tsx
+#
+ic-rewrite (NEW-TAG .type0 .tag .value0) (NEW-TAG .type1 .tag .value1) (.value0 .value1, .ts)/.ts
+	:- ic-rewrite-type .type0 .type1
+#
+ic-rewrite (NEW-TAGS .size .tag .value0) (NEW-TAGS .size .tag .value1) (.value0 .value1, .ts)/.ts
 #
 ic-rewrite NOP NOP .ts/.ts
 #
@@ -103,7 +108,7 @@ ic-rewrite-method-parameter .mps0 .mps1
 	, .mps1 = MPS .var .size
 #
 
-ic-rewrite-pragma NEW NEW .ts/.ts
+ic-rewrite-pragma NEW-STRUCT NEW-STRUCT .ts/.ts
 #
 ic-rewrite-pragma TYPE-SKIP-CHECK TYPE-SKIP-CHECK .ts/.ts
 #

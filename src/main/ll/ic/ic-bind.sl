@@ -16,18 +16,18 @@ ic-bind0 .v0 (PRAGMA _ .v1) .then .else .parsed
 #
 ic-bind0 (ARRAY .type ()) (ARRAY .type ()) .then _ .then
 #
-ic-bind0 (ARRAY .type (.head0, tail0)) (ARRAY .type (.head1, .tail1)) .then .else .parsed
+ic-bind0 (ARRAY .type (.head0, .tail0)) (ARRAY .type (.head1, .tail1)) .then .else .parsed
 	:- .array0 = ARRAY .type .tail0
 	, .array1 = ARRAY .type .tail1
 	, ic-bind-pair .head0 .head1 .array0 .array1 .then .else .parsed
 #
-ic-bind0 (NEW _ ()) (NEW _ ()) .then _ .then
+ic-bind0 (NEW-STRUCT _ ()) (NEW-STRUCT _ ()) .then _ .then
 #
-ic-bind0 (NEW .structType (.name = .value0, .nvs0)) (NEW .structType (.name = .value1, .nvs1)) .then .else .parsed
+ic-bind0 (NEW-STRUCT .structType (.name = .value0, .nvs0)) (NEW-STRUCT .structType (.name = .value1, .nvs1)) .then .else .parsed
 	:- .structType = STRUCT-OF (.nameTypes | .name _)
 	, !
-	, .struct0 = NEW (STRUCT-OF .nameTypes) .nvs0
-	, .struct1 = NEW (STRUCT-OF .nameTypes) .nvs1
+	, .struct0 = NEW-STRUCT (STRUCT-OF .nameTypes) .nvs0
+	, .struct1 = NEW-STRUCT (STRUCT-OF .nameTypes) .nvs1
 	, ic-bind-pair .value0 .value1 .struct0 .struct1 .then .else .parsed
 #
 ic-bind0 .v0 .v1 .then .else (
