@@ -9,15 +9,19 @@ public class TimeSeries {
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 
-	public Returns returns(float[] prices, double nYears) {
-		return new Returns(prices, nYears);
+	public ReturnsStat returnsStat(float[] prices) {
+		return returnsStat(prices, 1d);
 	}
 
-	public class Returns {
+	public ReturnsStat returnsStat(float[] prices, double nYears) {
+		return new ReturnsStat(prices, nYears);
+	}
+
+	public class ReturnsStat {
 		private double mean;
 		private double nYearsVariance;
 
-		private Returns(float[] prices, double nYears) {
+		private ReturnsStat(float[] prices, double nYears) {
 			float[] returns = returns(prices);
 			double r0 = Math.expm1(stat.logRiskFreeInterestRate * nYears / returns.length);
 			mean = stat.mean(returns) - r0;

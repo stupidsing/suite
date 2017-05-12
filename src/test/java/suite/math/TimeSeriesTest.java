@@ -16,7 +16,7 @@ public class TimeSeriesTest {
 	public void testSharpeRatio() {
 		DatePeriod period = DatePeriod.of(LocalDate.of(2016, 1, 1), LocalDate.of(2017, 5, 1));
 		DataSource ds = new Yahoo().dataSource("0002.HK").range(period);
-		double sharpe = new TimeSeries().returns(ds.prices, period.nYears()).sharpeRatio();
+		double sharpe = new TimeSeries().returnsStat(ds.prices, period.nYears()).sharpeRatio();
 		System.out.println("sharpe = " + sharpe);
 		assertTrue(.04d < sharpe);
 	}

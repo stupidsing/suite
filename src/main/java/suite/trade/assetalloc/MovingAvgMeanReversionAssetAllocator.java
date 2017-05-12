@@ -11,7 +11,7 @@ import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
 import suite.math.Matrix;
 import suite.math.TimeSeries;
-import suite.math.TimeSeries.Returns;
+import suite.math.TimeSeries.ReturnsStat;
 import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
@@ -85,7 +85,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 
 					double lma = mrs.latestMovingAverage();
 					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
-					Returns returns = ts.returns(dataSource.prices, dataSource.nYears());
+					ReturnsStat returns = ts.returnsStat(dataSource.prices);
 					double sharpe = returns.sharpeRatio();
 					double kelly = returns.kellyCriterion();
 					double potential;
