@@ -1,6 +1,6 @@
 package suite.sample;
 
-import suite.util.Util;
+import suite.util.String_;
 
 public class ConwayGameOfLife {
 
@@ -12,7 +12,7 @@ public class ConwayGameOfLife {
 		int x = 0;
 		for (String line : s.split("\n")) {
 			int y = 0;
-			for (char ch : Util.chars(line))
+			for (char ch : String_.chars(line))
 				game[x][y++] = !Character.isWhitespace(ch);
 			x++;
 		}

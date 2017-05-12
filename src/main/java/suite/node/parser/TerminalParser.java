@@ -8,7 +8,7 @@ import suite.node.io.Escaper;
 import suite.node.util.Context;
 import suite.os.LogUtil;
 import suite.util.ParseUtil;
-import suite.util.Util;
+import suite.util.String_;
 
 public class TerminalParser {
 
@@ -20,7 +20,7 @@ public class TerminalParser {
 
 	public Node parseTerminal(String s) {
 		if (!s.isEmpty()) {
-			char first = Util.charAt(s, 0), last = Util.charAt(s, -1);
+			char first = String_.charAt(s, 0), last = String_.charAt(s, -1);
 
 			if (ParseUtil.isInteger(s))
 				return Int.of(Integer.parseInt(s));
@@ -30,10 +30,10 @@ public class TerminalParser {
 				return Int.of(s.charAt(2));
 
 			if (first == '"' && last == '"')
-				return new Str(Escaper.unescape(Util.substr(s, 1, -1), "\""));
+				return new Str(Escaper.unescape(String_.range(s, 1, -1), "\""));
 
 			if (first == '\'' && last == '\'')
-				s = Escaper.unescape(Util.substr(s, 1, -1), "'");
+				s = Escaper.unescape(String_.range(s, 1, -1), "'");
 			else {
 				s = s.trim(); // trim unquoted atoms
 				if (!ParseUtil.isParseable(s))

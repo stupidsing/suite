@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.streamlet.Streamlet;
-import suite.util.Util;
+import suite.util.String_;
 
 public class HkexFactBookTest {
 
@@ -15,7 +15,7 @@ public class HkexFactBookTest {
 	public void test() {
 		Streamlet<String> companies = hkexFactBook.queryLeadingCompaniesByMarketCap(2012);
 		System.out.println(companies.toList());
-		assertTrue(companies.isAny(symbol -> Util.stringEquals(symbol, "0005.HK")));
+		assertTrue(companies.isAny(symbol -> String_.equals(symbol, "0005.HK")));
 	}
 
 }

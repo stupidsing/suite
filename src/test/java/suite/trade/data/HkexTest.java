@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import suite.streamlet.Read;
 import suite.trade.Asset;
-import suite.util.Util;
+import suite.util.String_;
 
 public class HkexTest {
 
@@ -28,7 +28,7 @@ public class HkexTest {
 					+ "\" //");
 
 		String name = Read.from(companies) //
-				.filter(fixie -> Util.stringEquals(fixie.symbol, "0005.HK")) //
+				.filter(fixie -> String_.equals(fixie.symbol, "0005.HK")) //
 				.uniqueResult().name;
 
 		assertTrue(name.equals("HSBC Holdings plc"));

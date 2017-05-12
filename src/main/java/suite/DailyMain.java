@@ -37,6 +37,7 @@ import suite.trade.singlealloc.Strategos;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
+import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
@@ -88,7 +89,7 @@ public class DailyMain extends ExecutableProgram {
 	private Pair<String, String> bug() {
 		String tag = "bug";
 		StringBuilder sb = new StringBuilder();
-		List<Trade> history = cfg.queryHistory(r -> Util.stringEquals(r.strategy, tag));
+		List<Trade> history = cfg.queryHistory(r -> String_.equals(r.strategy, tag));
 		Account account = Account.fromPortfolio(history);
 
 		Map<String, Float> faceValueBySymbol = Read.from(history) //
@@ -188,7 +189,7 @@ public class DailyMain extends ExecutableProgram {
 		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of(cfg, log);
 		Simulate sim = AssetAllocBackTest.of(cfg, assets, assetAllocator, log).simulate(300000f);
 
-		Account account0 = Account.fromPortfolio(cfg.queryHistory(r -> Util.stringEquals(r.strategy, tag)));
+		Account account0 = Account.fromPortfolio(cfg.queryHistory(r -> String_.equals(r.strategy, tag)));
 		Account account1 = sim.account;
 
 		Set<String> symbols = To.set(account0.assets().keySet(), account1.assets().keySet());

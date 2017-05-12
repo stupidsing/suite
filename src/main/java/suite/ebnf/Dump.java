@@ -6,7 +6,7 @@ import java.io.Writer;
 import java.util.List;
 
 import suite.ebnf.Ebnf.Ast;
-import suite.util.Util;
+import suite.util.String_;
 
 public class Dump {
 
@@ -40,7 +40,7 @@ public class Dump {
 			int end = ast.getEnd();
 
 			w.write(indent + entity0);
-			if (!Util.stringEquals(entity0, entity1))
+			if (!String_.equals(entity0, entity1))
 				w.write(".." + entity1);
 			w.write("@" + start + "-" + end);
 			if (children.isEmpty())

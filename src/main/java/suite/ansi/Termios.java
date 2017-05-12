@@ -3,7 +3,7 @@ package suite.ansi;
 import java.io.Closeable;
 
 import suite.Constants;
-import suite.util.Util;
+import suite.util.String_;
 
 public class Termios implements Closeable {
 
@@ -98,7 +98,7 @@ public class Termios implements Closeable {
 	}
 
 	public void puts(String s) {
-		for (char ch : Util.chars(s))
+		for (char ch : String_.chars(s))
 			libc.putchar(ch);
 	}
 

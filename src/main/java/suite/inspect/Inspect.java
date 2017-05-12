@@ -26,6 +26,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Source2;
 import suite.util.Rethrow;
+import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
 
@@ -78,7 +79,7 @@ public class Inspect {
 			Class<?> keyClass = inspect_.keyClass;
 			ExtractField iter = inspect_.children;
 
-			if (Util.stringEquals(prefix, "[")) {
+			if (String_.equals(prefix, "[")) {
 				sb.append("[");
 				while (iter.next()) {
 					append.accept(keyClass, iter.getKey());
@@ -87,7 +88,7 @@ public class Inspect {
 				sb.append("]");
 			} else {
 				sb.append(prefix);
-				if (!Util.stringEquals(prefix, "{"))
+				if (!String_.equals(prefix, "{"))
 					sb.append("{");
 				while (iter.next()) {
 					append.accept(keyClass, iter.getKey());

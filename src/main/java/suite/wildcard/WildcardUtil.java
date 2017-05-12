@@ -3,7 +3,7 @@ package suite.wildcard;
 import java.util.List;
 
 import suite.adt.Pair;
-import suite.util.Util;
+import suite.util.String_;
 
 public class WildcardUtil {
 
@@ -30,9 +30,9 @@ public class WildcardUtil {
 					|| h0 == h1 && isMatch2(t0, t1);
 		} else {
 			boolean isWildcardPatterns = true;
-			for (char c0 : Util.chars(p0))
+			for (char c0 : String_.chars(p0))
 				isWildcardPatterns &= c0 == '*';
-			for (char c1 : Util.chars(p1))
+			for (char c1 : String_.chars(p1))
 				isWildcardPatterns &= c1 == '*';
 			return isWildcardPatterns;
 		}
@@ -54,7 +54,7 @@ public class WildcardUtil {
 	public static String apply(String pattern, String[] input) {
 		StringBuilder sb = new StringBuilder();
 		int i = 0;
-		for (char ch : Util.chars(pattern))
+		for (char ch : String_.chars(pattern))
 			switch (ch) {
 			case '*':
 			case '?':

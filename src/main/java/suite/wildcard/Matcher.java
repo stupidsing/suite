@@ -7,7 +7,7 @@ import suite.immutable.IList;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
-import suite.util.Util;
+import suite.util.String_;
 
 public class Matcher {
 
@@ -50,7 +50,7 @@ public class Matcher {
 	private Streamlet<State> applyPattern(String pattern, String input) {
 		Streamlet<State> st = Read.each(new State(input));
 
-		for (char ch : Util.chars(pattern))
+		for (char ch : String_.chars(pattern))
 			switch (ch) {
 			case '*':
 				st = st.concatMap(state -> Read.from(() -> new Source<State>() {

@@ -19,6 +19,7 @@ import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.util.FunUtil.Source;
 import suite.util.ParseUtil;
+import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
@@ -52,7 +53,7 @@ public class Main extends ExecutableProgram {
 
 		while ((arg = source.source()) != null)
 			if (arg.startsWith("-"))
-				if (Util.stringEquals(arg, "--file"))
+				if (String_.equals(arg, "--file"))
 					inputs.add(readScript(source.source()));
 				else
 					result &= opt.processOption(arg, source);
@@ -64,19 +65,19 @@ public class Main extends ExecutableProgram {
 		dispatcher = new CommandDispatcher(opt);
 
 		if (result)
-			if (Util.stringEquals(verb, "evaluate"))
+			if (String_.equals(verb, "evaluate"))
 				result &= dispatcher.dispatchEvaluate(inputs);
-			else if (Util.stringEquals(verb, "filter"))
+			else if (String_.equals(verb, "filter"))
 				result &= dispatcher.dispatchFilter(inputs, reader, writer);
-			else if (Util.stringEquals(verb, "precompile"))
+			else if (String_.equals(verb, "precompile"))
 				result &= dispatcher.dispatchPrecompile(inputs);
-			else if (Util.stringEquals(verb, "prove"))
+			else if (String_.equals(verb, "prove"))
 				result &= dispatcher.dispatchProve(inputs);
-			else if (Util.stringEquals(verb, "query"))
+			else if (String_.equals(verb, "query"))
 				result &= runInteractive(inputs);
-			else if (Util.stringEquals(verb, "serve"))
+			else if (String_.equals(verb, "serve"))
 				new SocketServer().run();
-			else if (Util.stringEquals(verb, "type"))
+			else if (String_.equals(verb, "type"))
 				result &= dispatcher.dispatchType(inputs);
 			else if (verb == null)
 				result &= runInteractive(inputs);

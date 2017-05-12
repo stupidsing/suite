@@ -1,6 +1,6 @@
 package suite.trade.data;
 
-import suite.util.Util;
+import suite.util.String_;
 
 public class HkexUtil {
 
@@ -9,7 +9,7 @@ public class HkexUtil {
 	}
 
 	public static String toSymbol(String stockCode) {
-		return Util.right("0000" + stockCode.trim(), -4) + ".HK";
+		return String_.right("0000" + stockCode.trim(), -4) + ".HK";
 	}
 
 }

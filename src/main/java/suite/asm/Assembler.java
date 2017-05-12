@@ -27,6 +27,7 @@ import suite.streamlet.Read;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
+import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
 
@@ -73,18 +74,18 @@ public class Assembler {
 		Pair<String, String> pe;
 		int start = 0;
 
-		while (!(pe = Util.split2(lines.get(start), "=")).t1.isEmpty()) {
+		while (!(pe = String_.split2(lines.get(start), "=")).t1.isEmpty()) {
 			generalizer.getVariable(Atom.of(pe.t0)).bound(Suite.parse(pe.t1));
 			start++;
 		}
 
 		List<Pair<Reference, Node>> lnis = Read.from(Util.right(lines, start)) //
 				.map(line -> {
-					Pair<String, String> pt = Util.split2(line, "\t");
+					Pair<String, String> pt = String_.split2(line, "\t");
 					String label = pt.t0;
 					String command = pt.t1;
 
-					Reference reference = Util.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : null;
+					Reference reference = String_.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : null;
 					Node instruction = generalizer.generalize(Suite.parse(command));
 					return Pair.of(reference, instruction);
 				}).toList();

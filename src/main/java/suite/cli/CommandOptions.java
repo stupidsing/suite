@@ -15,8 +15,8 @@ import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
 import suite.util.FunUtil.Source;
+import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
 
 /**
  * Command line interface environment.
@@ -44,27 +44,27 @@ public class CommandOptions {
 		boolean result = true;
 		String arg1;
 
-		if (Util.stringEquals(arg, "--do"))
+		if (String_.equals(arg, "--do"))
 			isDo = on;
-		else if (Util.stringEquals(arg, "--chars"))
+		else if (String_.equals(arg, "--chars"))
 			isChars = on;
-		else if (Util.stringEquals(arg, "--eager"))
+		else if (String_.equals(arg, "--eager"))
 			isLazy = !on;
-		else if (Util.stringEquals(arg, "--editor"))
+		else if (String_.equals(arg, "--editor"))
 			new Editor().open();
-		else if (Util.stringEquals(arg, "--imports") && (arg1 = source.source()) != null)
+		else if (String_.equals(arg, "--imports") && (arg1 = source.source()) != null)
 			imports = Arrays.asList(arg1.split(","));
-		else if (Util.stringEquals(arg, "--lazy"))
+		else if (String_.equals(arg, "--lazy"))
 			isLazy = on;
-		else if (Util.stringEquals(arg, "--libraries") && (arg1 = source.source()) != null)
+		else if (String_.equals(arg, "--libraries") && (arg1 = source.source()) != null)
 			libraries = Arrays.asList(arg1.split(","));
 		else if (arg.startsWith("--no-"))
 			result &= processOption("--" + arg.substring(5), source, false);
-		else if (Util.stringEquals(arg, "--quiet"))
+		else if (String_.equals(arg, "--quiet"))
 			isQuiet = on;
-		else if (Util.stringEquals(arg, "--trace"))
+		else if (String_.equals(arg, "--trace"))
 			isTrace = on;
-		else if (Util.stringEquals(arg, "--use") && (arg1 = source.source()) != null)
+		else if (String_.equals(arg, "--use") && (arg1 = source.source()) != null)
 			libraries = To.list(libraries, Arrays.asList(arg1.split(",")));
 		else
 			throw new RuntimeException("Unknown option " + arg);

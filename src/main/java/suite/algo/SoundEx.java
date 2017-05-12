@@ -1,7 +1,7 @@
 package suite.algo;
 
+import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
 
 public class SoundEx {
 
@@ -59,7 +59,7 @@ public class SoundEx {
 
 	private String replace(String word, String match, String replace) {
 		StringBuilder sb = new StringBuilder();
-		for (char ch : Util.chars(word))
+		for (char ch : String_.chars(word))
 			sb.append(match.indexOf(ch) < 0 ? ch : replace);
 		word = sb.toString();
 		return word;

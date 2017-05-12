@@ -21,6 +21,7 @@ import suite.trade.data.DataSource;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
+import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
 
@@ -142,7 +143,7 @@ public class AssetAllocBackTest {
 					double valuation_ = valuation;
 
 					Map<String, Integer> portfolio = Read.from2(potentialBySymbol) //
-							.filterKey(symbol -> !Util.stringEquals(symbol, Asset.cashCode)) //
+							.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
 							.map2((symbol, potential) -> symbol, (symbol, potential) -> {
 								float price = backTestDataSourceBySymbol.get(symbol).last().price;
 								int lotSize = assetBySymbol.get(symbol).lotSize;

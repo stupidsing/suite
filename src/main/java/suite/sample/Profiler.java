@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import suite.net.Service;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.Util;
+import suite.util.String_;
 
 public class Profiler implements Service {
 
@@ -101,7 +101,7 @@ public class Profiler implements Service {
 			if (threadInfo != null //
 					&& threadInfo.getThreadId() != currentThreadId //
 					&& threadInfo.getThreadState() == State.RUNNABLE //
-					&& !Util.stringEquals(threadInfo.getThreadName(), "ReaderThread")) {
+					&& !String_.equals(threadInfo.getThreadName(), "ReaderThread")) {
 				StackTraceElement stackTrace[] = threadInfo.getStackTrace();
 				Set<String> elements = new HashSet<>();
 				int i = stackTrace.length;

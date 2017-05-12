@@ -15,7 +15,7 @@ import suite.adt.Pair;
 import suite.editor.Listen.SinkEx;
 import suite.streamlet.Nerve;
 import suite.util.FunUtil.Fun;
-import suite.util.Util;
+import suite.util.String_;
 
 public class EditorPane extends JEditorPane {
 
@@ -29,7 +29,7 @@ public class EditorPane extends JEditorPane {
 			if (isSelectedText())
 				replaceLines(segment -> {
 					StringBuilder sb = new StringBuilder("\t");
-					for (char ch : Util.chars(segment)) {
+					for (char ch : String_.chars(segment)) {
 						sb.append(ch);
 						sb.append(ch == 10 ? "\t" : "");
 					}

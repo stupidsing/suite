@@ -7,13 +7,13 @@ import java.util.Set;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.util.Util;
+import suite.util.String_;
 
 public class TradeUtil {
 
 	public static String format(Map<String, Integer> portfolio) {
 		return Read.from2(portfolio) //
-				.sortBy((code, i) -> !Util.stringEquals(code, Asset.cashCode) ? code : "") //
+				.sortBy((code, i) -> !String_.equals(code, Asset.cashCode) ? code : "") //
 				.map((code, i) -> code + ":" + i + ",") //
 				.collect(As.joined());
 	}
@@ -37,7 +37,7 @@ public class TradeUtil {
 					int n1 = assets1.computeIfAbsent(symbol, s -> 0);
 					return n1 - n0;
 				}) //
-				.filter((symbol, buySell) -> !Util.stringEquals(symbol, Asset.cashCode)) //
+				.filter((symbol, buySell) -> !String_.equals(symbol, Asset.cashCode)) //
 				.map((symbol, buySell) -> new Trade(buySell, symbol, prices.get(symbol))) //
 				.toList();
 	}

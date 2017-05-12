@@ -22,7 +22,7 @@ import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
-import suite.util.Util;
+import suite.util.String_;
 
 public class FunExpand extends FunFactory {
 
@@ -87,7 +87,7 @@ public class FunExpand extends FunFactory {
 
 	private FunExpr replaceFieldInject(FunExpr expr0, String fieldName, FunExpr to) {
 		return rewrite(e -> {
-			if (e instanceof FieldInjectFunExpr && Util.stringEquals(((FieldInjectFunExpr) e).fieldName, fieldName))
+			if (e instanceof FieldInjectFunExpr && String_.equals(((FieldInjectFunExpr) e).fieldName, fieldName))
 				return to;
 			else
 				return null;

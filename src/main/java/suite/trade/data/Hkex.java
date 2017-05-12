@@ -24,8 +24,8 @@ import suite.trade.Asset;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.Serialize;
+import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
 
 public class Hkex {
 
@@ -320,9 +320,9 @@ public class Hkex {
 		try (InputStream is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
 			return Read.each(mapper.readTree(is)) //
 					.flatMap(json_ -> json_.get("data")) //
-					.filter(json_ -> Util.stringEquals(json_.get("title").textValue(), "Hong Kong")) //
+					.filter(json_ -> String_.equals(json_.get("title").textValue(), "Hong Kong")) //
 					.flatMap(json_ -> json_.get("content")) //
-					.filter(json_ -> Util.stringEquals(json_.get(0).textValue(), "Hang Seng Index")) //
+					.filter(json_ -> String_.equals(json_.get(0).textValue(), "Hang Seng Index")) //
 					.map(json_ -> Float.parseFloat(json_.get(1).textValue().split(" ")[0].replace(",", ""))) //
 					.uniqueResult();
 		} catch (IOException ex) {
@@ -353,9 +353,9 @@ public class Hkex {
 		try (InputStream is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
 			return Read.each(mapper.readTree(is)) //
 					.flatMap(json_ -> json_.get("data")) //
-					.filter(json_ -> Util.stringEquals(json_.get("title").textValue(), "Stock price HKD")) //
+					.filter(json_ -> String_.equals(json_.get("title").textValue(), "Stock price HKD")) //
 					.flatMap(json_ -> json_.get("content")) //
-					.filter(json_ -> Util.stringEquals(json_.get(0).textValue(), "Previous<br>day close")) //
+					.filter(json_ -> String_.equals(json_.get(0).textValue(), "Previous<br>day close")) //
 					.map(json_ -> Float.parseFloat(json_.get(1).textValue().split(" ")[0])) //
 					.uniqueResult();
 		} catch (IOException ex) {
@@ -409,7 +409,7 @@ public class Hkex {
 	}
 
 	private int queryBoardLot_(String symbol) {
-		if (Util.stringEquals(symbol, "0700.HK"))
+		if (String_.equals(symbol, "0700.HK"))
 			return 100;
 		else {
 			JsonNode json = query("" //
@@ -428,7 +428,7 @@ public class Hkex {
 			String boardLotStr = Read.each(companyInfo) //
 					.flatMap(ci -> ci.data) //
 					.concatMap(Data::tableEntries) //
-					.filter(td -> Util.stringEquals(td.get(0), "Board lot")) //
+					.filter(td -> String_.equals(td.get(0), "Board lot")) //
 					.uniqueResult() //
 					.get(1) //
 					.replace(",", "");

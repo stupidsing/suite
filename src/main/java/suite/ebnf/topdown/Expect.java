@@ -3,7 +3,7 @@ package suite.ebnf.topdown;
 import java.util.Set;
 
 import suite.os.UnicodeData;
-import suite.util.Util;
+import suite.util.String_;
 
 public class Expect {
 
@@ -103,11 +103,11 @@ public class Expect {
 	public int comment(String in, int length, int start, String sm, String em) {
 		int sl = sm.length(), el = em.length();
 		int pos = start, end;
-		if (pos < length && Util.stringEquals(Util.substr(in, pos, pos + sl), sm)) {
+		if (pos < length && String_.equals(String_.range(in, pos, pos + sl), sm)) {
 			pos += 2;
-			while (pos < length && !Util.stringEquals(Util.substr(in, pos, pos + el), em))
+			while (pos < length && !String_.equals(String_.range(in, pos, pos + el), em))
 				pos++;
-			if (pos < length && Util.stringEquals(Util.substr(in, pos, pos + el), em)) {
+			if (pos < length && String_.equals(String_.range(in, pos, pos + el), em)) {
 				pos += 2;
 				end = pos;
 			} else

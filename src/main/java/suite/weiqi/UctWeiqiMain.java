@@ -13,7 +13,7 @@ import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
-import suite.util.Util;
+import suite.util.String_;
 import suite.weiqi.Weiqi.Occupation;
 
 /**
@@ -93,8 +93,8 @@ public class UctWeiqiMain<Move> {
 							status = "AFTER UNDO:";
 							break;
 						default:
-							if (!Util.isBlank(line)) {
-								Pair<String, String> pos = Util.split2(line, ",");
+							if (!String_.isBlank(line)) {
+								Pair<String, String> pos = String_.split2(line, ",");
 								int x = Integer.parseInt(pos.t0);
 								int y = Integer.parseInt(pos.t1);
 								gameSet.play(Coordinate.c(x, y));
@@ -120,7 +120,7 @@ public class UctWeiqiMain<Move> {
 
 		do
 			sb.append((s = br.readLine()) + "\n");
-		while (!Util.isBlank(s));
+		while (!String_.isBlank(s));
 
 		Board board = UserInterface.importBoard(sb.toString());
 		return new MovingGameSet(board, startingPlayer);

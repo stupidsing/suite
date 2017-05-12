@@ -10,6 +10,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import suite.util.String_;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
@@ -48,7 +49,7 @@ public class JsMain extends ExecutableProgram {
 			Object r = engine.eval(new FileReader(filename));
 			result &= r == Boolean.TRUE //
 					|| r instanceof Number && ((Number) r).intValue() != 0 //
-					|| r instanceof String && Util.isNotBlank((String) r);
+					|| r instanceof String && String_.isNotBlank((String) r);
 		}
 
 		return result;

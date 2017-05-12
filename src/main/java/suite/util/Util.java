@@ -12,9 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -23,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Level;
 
-import suite.adt.Pair;
 import suite.os.LogUtil;
 import suite.sample.Profiler;
 
@@ -67,26 +64,6 @@ public class Util {
 	public static void assert_(boolean b) {
 		if (!b)
 			throw new AssertionError();
-	}
-
-	public static char charAt(String s, int pos) {
-		if (pos < 0)
-			pos += s.length();
-		return s.charAt(pos);
-	}
-
-	public static Iterable<Character> chars(CharSequence s) {
-		return () -> new Iterator<Character>() {
-			private int index = 0;
-
-			public boolean hasNext() {
-				return index < s.length();
-			}
-
-			public Character next() {
-				return s.charAt(index++);
-			}
-		};
 	}
 
 	public static Class<?> clazz(Object object) {
@@ -140,18 +117,6 @@ public class Util {
 
 	public static StackTraceElement getStackTrace(int n) {
 		return Thread.currentThread().getStackTrace()[n];
-	}
-
-	public static boolean isBlank(String s) {
-		boolean isBlank = true;
-		if (s != null)
-			for (char c : chars(s))
-				isBlank &= Character.isWhitespace(c);
-		return isBlank;
-	}
-
-	public static boolean isNotBlank(String s) {
-		return !isBlank(s);
 	}
 
 	public static <T> T last(List<T> c) {
@@ -260,13 +225,6 @@ public class Util {
 		return list.subList(Math.min(pos, size), size);
 	}
 
-	public static String right(String s, int pos) {
-		int size = s.length();
-		if (pos < 0)
-			pos += size;
-		return s.substring(pos);
-	}
-
 	public static void run(Class<? extends ExecutableProgram> clazz, String[] args) {
 		run(clazz, args, RunOption.RUN____);
 	}
@@ -336,14 +294,6 @@ public class Util {
 		return list1;
 	}
 
-	public static Pair<String, String> split2(String s, String delimiter) {
-		int pos = s.indexOf(delimiter);
-		if (0 <= pos)
-			return Pair.of(s.substring(0, pos).trim(), s.substring(pos + delimiter.length()).trim());
-		else
-			return Pair.of(s.trim(), "");
-	}
-
 	public static <T> List<List<T>> splitn(List<T> list, int n) {
 		int s = 0;
 		List<List<T>> subsets = new ArrayList<>();
@@ -371,20 +321,6 @@ public class Util {
 		Thread thread = newThread(runnable);
 		thread.start();
 		return thread;
-	}
-
-	public static boolean stringEquals(String s0, String s1) {
-		return Objects.equals(s0, s1);
-	}
-
-	public static String substr(String s, int start, int end) {
-		int length = s.length();
-		if (start < 0)
-			start += length;
-		if (end < 0)
-			end += length;
-		end = Math.min(length, end);
-		return s.substring(start, end);
 	}
 
 	public static int temp() {

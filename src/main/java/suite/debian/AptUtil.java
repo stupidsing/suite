@@ -11,8 +11,8 @@ import java.util.zip.GZIPInputStream;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
 
 public class AptUtil {
 
@@ -42,7 +42,7 @@ public class AptUtil {
 		String prefix = packageName.substring(0, packageName.startsWith("lib") ? 4 : 1);
 
 		return Read.from(packages) //
-				.filter(pm -> Util.stringEquals(pm.get("Package"), packageName)) //
+				.filter(pm -> String_.equals(pm.get("Package"), packageName)) //
 				.map(pm -> {
 					String p = pm.get("Filename");
 					if (p != null)

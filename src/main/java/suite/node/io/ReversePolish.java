@@ -22,7 +22,7 @@ import suite.node.io.Rewriter.NodeRead;
 import suite.node.io.Rewriter.NodeWrite;
 import suite.node.io.Rewriter.ReadType;
 import suite.util.Rethrow;
-import suite.util.Util;
+import suite.util.String_;
 
 public class ReversePolish {
 
@@ -53,7 +53,7 @@ public class ReversePolish {
 				}
 				n = new NodeWrite( //
 						ReadType.valueOf(a[0]), //
-						!Util.stringEquals(a[1], "null") ? Suite.parse(a[1]) : null, //
+						!String_.equals(a[1], "null") ? Suite.parse(a[1]) : null, //
 						TermOp.valueOf(a[2]), //
 						children).node;
 				// n = Suite.parse(s);

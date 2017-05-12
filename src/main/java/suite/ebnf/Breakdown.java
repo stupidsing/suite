@@ -9,7 +9,7 @@ import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;
 import suite.streamlet.Read;
 import suite.util.ParseUtil;
-import suite.util.Util;
+import suite.util.String_;
 
 public class Breakdown {
 
@@ -32,15 +32,15 @@ public class Breakdown {
 		else if (s.equals(""))
 			eg = new Grammar(GrammarType.AND___);
 		else if (s.endsWith("?"))
-			eg = new Grammar(GrammarType.OPTION, breakdown(Util.substr(s, 0, -1)));
+			eg = new Grammar(GrammarType.OPTION, breakdown(String_.range(s, 0, -1)));
 		else if (s.endsWith("*"))
-			eg = new Grammar(GrammarType.REPT0_, breakdown(Util.substr(s, 0, -1)));
+			eg = new Grammar(GrammarType.REPT0_, breakdown(String_.range(s, 0, -1)));
 		else if (s.endsWith("+"))
-			eg = new Grammar(GrammarType.REPT1_, breakdown(Util.substr(s, 0, -1)));
+			eg = new Grammar(GrammarType.REPT1_, breakdown(String_.range(s, 0, -1)));
 		else if (s.startsWith("\"") && s.endsWith("\""))
-			eg = new Grammar(GrammarType.STRING, Escaper.unescape(Util.substr(s, 1, -1), "\""));
+			eg = new Grammar(GrammarType.STRING, Escaper.unescape(String_.range(s, 1, -1), "\""));
 		else if (s.startsWith("(") && s.endsWith(")"))
-			eg = breakdown(Util.substr(s, 1, -1));
+			eg = breakdown(String_.range(s, 1, -1));
 		else
 			eg = new Grammar(GrammarType.ENTITY, s);
 

@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
-import suite.util.Util;
+import suite.util.String_;
 
 public class LambdaInterface<I> {
 
@@ -30,7 +30,7 @@ public class LambdaInterface<I> {
 	public Method method() {
 		if (method == null) {
 			Method[] methods = Rethrow.ex(() -> interfaceClass.getMethods());
-			method = Read.from(methods).filter(m -> Util.stringEquals(m.getName(), methodName)).uniqueResult();
+			method = Read.from(methods).filter(m -> String_.equals(m.getName(), methodName)).uniqueResult();
 		}
 		return method;
 	}

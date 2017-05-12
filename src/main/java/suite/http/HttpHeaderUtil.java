@@ -11,7 +11,7 @@ import suite.Constants;
 import suite.adt.Pair;
 import suite.immutable.IList;
 import suite.util.Rethrow;
-import suite.util.Util;
+import suite.util.String_;
 
 public class HttpHeaderUtil {
 
@@ -29,7 +29,7 @@ public class HttpHeaderUtil {
 		Map<String, String> attrs = new HashMap<>();
 
 		for (String q : qs) {
-			Pair<String, String> pair = Util.split2(q, "=");
+			Pair<String, String> pair = String_.split2(q, "=");
 			attrs.put(pair.t0, decode(pair.t1));
 		}
 
@@ -53,7 +53,7 @@ public class HttpHeaderUtil {
 		Map<String, String> attrs = new HashMap<>();
 
 		for (String q : qs) {
-			Pair<String, String> pair = Util.split2(q, "=");
+			Pair<String, String> pair = String_.split2(q, "=");
 			attrs.put(pair.t0, decode(pair.t1));
 		}
 

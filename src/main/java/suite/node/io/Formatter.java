@@ -17,7 +17,7 @@ import suite.node.Tuple;
 import suite.parser.CommentPreprocessor;
 import suite.primitive.Chars;
 import suite.util.ParseUtil;
-import suite.util.Util;
+import suite.util.String_;
 
 /**
  * Formats a node for human-readable purpose (display), or for
@@ -47,7 +47,7 @@ public class Formatter {
 
 			if (tree != null) {
 				String op = tree.getOperator().getName();
-				op = Util.stringEquals(op, " ") ? "<>" : op.trim();
+				op = String_.equals(op, " ") ? "<>" : op.trim();
 
 				treeize(tree.getLeft(), indent1);
 				sb.append(indent + op + "\n");
@@ -209,7 +209,7 @@ public class Formatter {
 				quote |= s0.startsWith(ProverConstant.variablePrefix) //
 						|| s0.startsWith(ProverConstant.wildcardPrefix);
 
-				for (char c : Util.chars(s0))
+				for (char c : String_.chars(s0))
 					quote |= !('0' <= c && c <= '9') //
 							&& !('a' <= c && c <= 'z') //
 							&& !('A' <= c && c <= 'Z') //

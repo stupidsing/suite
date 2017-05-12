@@ -9,15 +9,15 @@ import suite.adt.Pair;
 import suite.http.HttpSessionController.Authenticator;
 import suite.immutable.IMap;
 import suite.util.Rethrow;
+import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
 
 // java -cp target/suite-1.0-jar-with-dependencies.jar suite.http.HttpServerMain
 public class HttpServerMain {
 
 	private Authenticator authenticator = (username, password) -> true //
-			&& Util.stringEquals(username, "user") //
-			&& Util.stringEquals(password, "");
+			&& String_.equals(username, "user") //
+			&& String_.equals(password, "");
 
 	public static void main(String[] args) {
 		new HttpServerMain().run();

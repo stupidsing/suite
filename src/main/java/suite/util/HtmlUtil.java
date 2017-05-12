@@ -29,8 +29,8 @@ public class HtmlUtil {
 
 					String key = in.substring(start, index);
 
-					if (Util.charAt(key, 1) == '#')
-						sb.append((char) Integer.parseInt(Util.substr(key, 2, -1)));
+					if (String_.charAt(key, 1) == '#')
+						sb.append((char) Integer.parseInt(String_.range(key, 2, -1)));
 					else {
 						String entity = charByEscapeToken.get(key);
 

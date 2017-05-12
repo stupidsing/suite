@@ -14,7 +14,7 @@ import suite.os.LogUtil;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
-import suite.util.Util;
+import suite.util.String_;
 
 /**
  * Backtracking LL parser for Backus-Naur form grammars.
@@ -309,19 +309,19 @@ public class TopDownParse {
 	private Parser buildLiteral(String entity) {
 		ExpectFun e;
 
-		if (Util.stringEquals(entity, "<CHARACTER>"))
+		if (String_.equals(entity, "<CHARACTER>"))
 			e = expect.char_;
-		else if (Util.stringEquals(entity, "<CHARACTER_LITERAL>"))
+		else if (String_.equals(entity, "<CHARACTER_LITERAL>"))
 			e = expect.charLiteral;
-		else if (Util.stringEquals(entity, "<FLOATING_POINT_LITERAL>"))
+		else if (String_.equals(entity, "<FLOATING_POINT_LITERAL>"))
 			e = expect.realLiteral;
-		else if (Util.stringEquals(entity, "<IDENTIFIER>"))
+		else if (String_.equals(entity, "<IDENTIFIER>"))
 			e = expect.identifier;
 		else if (entity.startsWith("<IGNORE:") && entity.endsWith(">"))
 			e = expect.fail;
-		else if (Util.stringEquals(entity, "<INTEGER_LITERAL>"))
+		else if (String_.equals(entity, "<INTEGER_LITERAL>"))
 			e = expect.integerLiteral;
-		else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
+		else if (String_.equals(entity, "<STRING_LITERAL>"))
 			e = expect.stringLiteral;
 		else if (entity.startsWith("<UNICODE_CLASS:") && entity.endsWith(">"))
 			e = expect.unicodeClass(entity.substring(4, entity.length() - 1));

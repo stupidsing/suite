@@ -7,8 +7,8 @@ import java.util.Map;
 import suite.primitive.PrimitiveFun.Double_Double;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
 
 public class Account {
 
@@ -92,7 +92,7 @@ public class Account {
 
 	public void validate() {
 		assets.forEach((code, nShares) -> {
-			if (!Util.stringEquals(code, cashCode) && nShares < 0)
+			if (!String_.equals(code, cashCode) && nShares < 0)
 				throw new RuntimeException("no short-selling " + nShares + " shares for " + code);
 		});
 	}

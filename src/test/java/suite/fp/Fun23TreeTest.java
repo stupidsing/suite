@@ -10,7 +10,7 @@ import suite.Suite;
 import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.streamlet.Read;
-import suite.util.Util;
+import suite.util.String_;
 
 public class Fun23TreeTest {
 
@@ -24,7 +24,7 @@ public class Fun23TreeTest {
 		String out0 = Formatter.dump(result0);
 		System.out.println("OUT:\n" + out0);
 
-		int nPars0 = Read.from(Util.chars(out0)).filter(c -> c == '(').size();
+		int nPars0 = Read.from(String_.chars(out0)).filter(c -> c == '(').size();
 		assertTrue(3 <= nPars0);
 
 		Node fp1 = Suite.substitute("use 23-TREE >> 0 until " + n / 2 + " | map {remove} | apply | {" + list100 + "}");
@@ -32,7 +32,7 @@ public class Fun23TreeTest {
 		String out1 = Formatter.dump(result1);
 		System.out.println("OUT:\n" + out1);
 
-		int nPars1 = Read.from(Util.chars(out1)).filter(c -> c == '(').size();
+		int nPars1 = Read.from(String_.chars(out1)).filter(c -> c == '(').size();
 		assertTrue(3 <= nPars1);
 	}
 

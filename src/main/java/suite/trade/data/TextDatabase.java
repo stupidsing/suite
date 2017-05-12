@@ -16,6 +16,7 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.HomeDir;
+import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
 
@@ -127,7 +128,7 @@ public class TextDatabase {
 		public boolean equals(Object object) {
 			if (object.getClass() == Datum.class) {
 				Datum other = (Datum) object;
-				return Util.stringEquals(key, other.key);
+				return String_.equals(key, other.key);
 			} else
 				return false;
 		}

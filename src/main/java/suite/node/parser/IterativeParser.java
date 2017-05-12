@@ -14,7 +14,7 @@ import suite.node.parser.Lexer.Token;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
 import suite.text.Preprocess;
-import suite.util.Util;
+import suite.util.String_;
 
 /**
  * Non-recursive, performance-improved parser for operator-based languages.
@@ -83,7 +83,7 @@ public class IterativeParser {
 						add(node);
 					} else
 						stack.push(new Section(ch));
-				else if (Util.isNotBlank(data))
+				else if (String_.isNotBlank(data))
 					add(terminalParser.parseTerminal(data));
 			}
 

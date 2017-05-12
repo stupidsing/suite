@@ -11,6 +11,7 @@ import suite.adt.Pair;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.util.Copy;
+import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
 
@@ -43,10 +44,10 @@ public class HttpServer {
 			String method = ls[0], url = ls[1], protocol = ls[2];
 			String server, pqs;
 
-			Pair<String, String> pp = Util.split2(url, "://");
+			Pair<String, String> pp = String_.split2(url, "://");
 
-			if (Util.isNotBlank(pp.t1)) {
-				Pair<String, String> sp = Util.split2(pp.t1, "/");
+			if (String_.isNotBlank(pp.t1)) {
+				Pair<String, String> sp = String_.split2(pp.t1, "/");
 				server = sp.t0;
 				pqs = sp.t1;
 			} else {
@@ -54,20 +55,20 @@ public class HttpServer {
 				pqs = url;
 			}
 
-			Pair<String, String> pq = Util.split2(pqs, "?");
+			Pair<String, String> pq = String_.split2(pqs, "?");
 			String path = pq.t0;
 			String query = pq.t1;
 
 			String path1 = path.startsWith("/") ? path : "/" + path;
 			String path2 = URLDecoder.decode(path1, "UTF-8");
 
-			if (!Util.stringEquals(protocol, "HTTP/1.1"))
+			if (!String_.equals(protocol, "HTTP/1.1"))
 				throw new RuntimeException("Only HTTP/1.1 is supported");
 
 			Map<String, String> requestHeaders = new HashMap<>();
 
 			while (!(line = Util.readLine(is)).isEmpty()) {
-				Pair<String, String> pair = Util.split2(line, ":");
+				Pair<String, String> pair = String_.split2(line, ":");
 				requestHeaders.put(pair.t0, pair.t1);
 			}
 

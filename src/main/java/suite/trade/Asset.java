@@ -3,7 +3,7 @@ package suite.trade;
 import suite.trade.data.Hkex;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
-import suite.util.Util;
+import suite.util.String_;
 
 public class Asset {
 
@@ -40,7 +40,7 @@ public class Asset {
 	public boolean equals(Object object) {
 		if (object.getClass() == Asset.class) {
 			Asset other = (Asset) object;
-			return Util.stringEquals(symbol, other.symbol);
+			return String_.equals(symbol, other.symbol);
 		} else
 			return false;
 	}

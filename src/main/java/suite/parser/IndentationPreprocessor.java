@@ -9,7 +9,7 @@ import suite.text.Preprocess.Run;
 import suite.text.Segment;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
-import suite.util.Util;
+import suite.util.String_;
 
 /**
  * Turns indent patterns into parentheses, to provide Python-like parsing.
@@ -60,7 +60,7 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 					if (!name.isEmpty()) {
 						if (line.startsWith(name + " "))
 							startPos = Math.max(startPos, name.length() + 1);
-						if (Util.stringEquals(line, name))
+						if (String_.equals(line, name))
 							startPos = Math.max(startPos, name.length());
 						if (line.endsWith(name))
 							endPos = Math.min(endPos, lineLength - name.length());

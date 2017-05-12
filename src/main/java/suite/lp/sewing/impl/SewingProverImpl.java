@@ -50,6 +50,7 @@ import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
+import suite.util.String_;
 import suite.util.Util;
 
 /**
@@ -547,9 +548,9 @@ public class SewingProverImpl implements SewingProver {
 			String name = ((Atom) node).name;
 			if (node == ProverConstant.cut)
 				tr = cutEnd();
-			else if (Util.stringEquals(name, ""))
+			else if (String_.equals(name, ""))
 				tr = okay;
-			else if (Util.stringEquals(name, "fail"))
+			else if (String_.equals(name, "fail"))
 				tr = fail;
 			else
 				tr = callSystemPredicate(sb, name, Atom.NIL);

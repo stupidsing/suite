@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import suite.adt.Pair;
 import suite.os.SocketUtil;
 import suite.util.CommandUtil;
+import suite.util.String_;
 import suite.util.Util;
 
 public class NntpServer {
@@ -77,14 +78,14 @@ public class NntpServer {
 							pw.println("423 Bad article number");
 						break;
 					case LIST:
-						if (Util.stringEquals(options, "ACTIVE")) {
+						if (String_.equals(options, "ACTIVE")) {
 							pw.println("215 Okay");
 							for (String groupId : nntp.listGroupIds()) {
 								Pair<String, String> articleIdRange = nntp.getArticleIdRange(groupId);
 								pw.println(groupId + " " + articleIdRange.t0 + " " + articleIdRange.t1 + " y");
 							}
 							pw.println(".");
-						} else if (Util.stringEquals(options, "NEWSGROUPS")) {
+						} else if (String_.equals(options, "NEWSGROUPS")) {
 							pw.println("215 Okay");
 							for (String group : nntp.listGroupIds())
 								pw.println(group + " " + group);
@@ -104,14 +105,14 @@ public class NntpServer {
 						pw.println("340 Okay");
 						int size = 0;
 						List<String> lines = new ArrayList<>();
-						while (!Util.stringEquals(line = Util.readLine(sis), ".") && size < 1048576) {
+						while (!String_.equals(line = Util.readLine(sis), ".") && size < 1048576) {
 							lines.add(line);
 							size += line.length();
 						}
 						article = new HashMap<>();
 						int pos = 0;
 						while (!(line = lines.get(pos++)).isEmpty()) {
-							Pair<String, String> lr = Util.split2(line, ":");
+							Pair<String, String> lr = String_.split2(line, ":");
 							article.put(lr.t0, lr.t1);
 						}
 						StringBuilder sb = new StringBuilder();
@@ -131,7 +132,7 @@ public class NntpServer {
 		private void printHead(PrintWriter pw, Map<String, String> article) {
 			for (Entry<String, String> entry : article.entrySet()) {
 				String key = entry.getKey();
-				if (!Util.stringEquals(key, Nntp.contentKey))
+				if (!String_.equals(key, Nntp.contentKey))
 					pw.println(key + ": " + entry.getValue());
 			}
 		}

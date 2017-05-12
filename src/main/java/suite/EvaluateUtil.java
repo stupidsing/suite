@@ -25,7 +25,7 @@ import suite.primitive.IoSink;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Memoize;
-import suite.util.Util;
+import suite.util.String_;
 
 public class EvaluateUtil {
 
@@ -121,7 +121,7 @@ public class EvaluateUtil {
 
 		for (int i = libraries.size() - 1; 0 <= i; i--) {
 			String library = libraries.get(i);
-			if (!Util.isBlank(library))
+			if (!String_.isBlank(library))
 				node = Suite.substitute("use .0 >> .1", Atom.of(library), node);
 		}
 

@@ -17,8 +17,8 @@ import suite.trade.DatePeriod;
 import suite.trade.Trade;
 import suite.trade.data.Broker.Hsbc;
 import suite.util.FormatUtil;
+import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
 
 public class Configuration {
 
@@ -77,7 +77,7 @@ public class Configuration {
 
 		for (String symbol : symbols) {
 			Set<String> set;
-			if (Util.stringEquals(symbol, Asset.cashCode))
+			if (String_.equals(symbol, Asset.cashCode))
 				set = hkdCodes;
 			else
 				set = yahooSymbols;

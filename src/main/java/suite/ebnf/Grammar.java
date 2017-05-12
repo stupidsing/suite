@@ -9,7 +9,7 @@ import java.util.Map;
 import suite.adt.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.Util;
+import suite.util.String_;
 
 public class Grammar {
 
@@ -38,7 +38,7 @@ public class Grammar {
 				.map(line -> line.replace('\t', ' ')) //
 				.split(line -> !line.startsWith(" ")) //
 				.map(o -> o.fold("", String::concat)) //
-				.map(line -> Util.split2(line, " ::= ")) //
+				.map(line -> String_.split2(line, " ::= ")) //
 				.filter(lr -> lr != null) //
 				.toList();
 

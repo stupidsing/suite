@@ -1,5 +1,6 @@
 package suite.node;
 
+import suite.util.String_;
 import suite.util.Util;
 
 public class Str extends Node {
@@ -14,7 +15,7 @@ public class Str extends Node {
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == Str.class) {
 			Str str = (Str) object;
-			return Util.stringEquals(value, str.value);
+			return String_.equals(value, str.value);
 		} else
 			return false;
 	}

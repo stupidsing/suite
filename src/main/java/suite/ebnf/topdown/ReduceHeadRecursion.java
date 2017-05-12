@@ -10,6 +10,7 @@ import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.String_;
 import suite.util.Util;
 
 /**
@@ -79,7 +80,7 @@ public class ReduceHeadRecursion {
 			}).toList();
 
 			hrf = new HeadRecursionForm(fun.apply(hrf0.listb), fun.apply(hrf0.listc));
-		} else if (en.type == GrammarType.NAMED_ && Util.stringEquals(en.content, entity))
+		} else if (en.type == GrammarType.NAMED_ && String_.equals(en.content, entity))
 			hrf = new HeadRecursionForm(empty, Arrays.asList(new Grammar(GrammarType.AND___)));
 		else if (en.type == GrammarType.OR____) {
 			List<HeadRecursionForm> hrfs = Read.from(en.children).map(en_ -> getHeadRecursionForm(en_, entity)).toList();

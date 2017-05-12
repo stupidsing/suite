@@ -5,7 +5,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-import suite.util.Util;
+import suite.util.String_;
 
 public class Handler extends URLStreamHandler {
 
@@ -13,7 +13,7 @@ public class Handler extends URLStreamHandler {
 		String property = System.getProperty("java.protocol.handler.pkgs");
 		String packageName = "suite";
 
-		if (Util.isBlank(property))
+		if (String_.isBlank(property))
 			property = packageName;
 		else if (!property.contains(packageName))
 			property = packageName + "|" + property;

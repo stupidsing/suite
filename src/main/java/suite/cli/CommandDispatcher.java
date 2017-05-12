@@ -35,8 +35,8 @@ import suite.streamlet.Read;
 import suite.util.CommandUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
 
 /**
  * Command line interface dispatcher.
@@ -96,7 +96,7 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchCommand(String input, Writer writer) throws IOException {
-		return Util.isBlank(input) || dispatchCommand_(input, writer);
+		return String_.isBlank(input) || dispatchCommand_(input, writer);
 	}
 
 	private boolean dispatchCommand_(String input, Writer writer) throws IOException {
@@ -108,7 +108,7 @@ public class CommandDispatcher {
 		input = pair.t1.trim();
 
 		if (input.endsWith("#"))
-			input = Util.substr(input, 0, -1);
+			input = String_.range(input, 0, -1);
 
 		Node node = Suite.parse(input.trim());
 

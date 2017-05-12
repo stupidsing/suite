@@ -19,6 +19,7 @@ import suite.editor.LayoutCalculator.Orientation;
 import suite.editor.Listen;
 import suite.os.Execute;
 import suite.util.FunUtil.Fun;
+import suite.util.String_;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
@@ -96,7 +97,7 @@ public class PopupMain extends ExecutableProgram {
 	}
 
 	public void execute(String cmd) {
-		if (!Util.isBlank(cmd)) {
+		if (!String_.isBlank(cmd)) {
 			ClipboardUtil clipboardUtil = new ClipboardUtil();
 			String text0 = clipboardUtil.getClipboardText();
 			String text1 = Suite.evaluateFilterFun(cmd, text0, true, false);

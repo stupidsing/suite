@@ -24,6 +24,7 @@ import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Nerve;
 import suite.streamlet.Read;
+import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
 
@@ -258,7 +259,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 		byte[] bytes = formMessage(data);
 
 		for (String remote : peers.keySet())
-			if (!Util.stringEquals(remote, me))
+			if (!String_.equals(remote, me))
 				sendMessage(remote, bytes);
 	}
 

@@ -18,7 +18,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
-import suite.util.Util;
+import suite.util.String_;
 
 public class Type_ {
 
@@ -63,23 +63,23 @@ public class Type_ {
 
 	private static Class<?> getClassByName(String className) {
 		return Rethrow.ex(() -> {
-			if (Util.stringEquals(className, "byte"))
+			if (String_.equals(className, "byte"))
 				return byte.class;
-			else if (Util.stringEquals(className, "char"))
+			else if (String_.equals(className, "char"))
 				return char.class;
-			else if (Util.stringEquals(className, "boolean"))
+			else if (String_.equals(className, "boolean"))
 				return boolean.class;
-			else if (Util.stringEquals(className, "double"))
+			else if (String_.equals(className, "double"))
 				return double.class;
-			else if (Util.stringEquals(className, "float"))
+			else if (String_.equals(className, "float"))
 				return float.class;
-			else if (Util.stringEquals(className, "int"))
+			else if (String_.equals(className, "int"))
 				return int.class;
-			else if (Util.stringEquals(className, "long"))
+			else if (String_.equals(className, "long"))
 				return long.class;
-			else if (Util.stringEquals(className, "short"))
+			else if (String_.equals(className, "short"))
 				return short.class;
-			else if (Util.stringEquals(className, "void"))
+			else if (String_.equals(className, "void"))
 				return void.class;
 			else
 				return Class.forName(className);
