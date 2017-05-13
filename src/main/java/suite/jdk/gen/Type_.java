@@ -32,16 +32,14 @@ public class Type_ {
 	}
 
 	public static boolean isSimple(Class<?> clazz) {
-		return clazz.isPrimitive() //
+		return clazz.isEnum() //
+				|| clazz.isPrimitive() //
 				|| clazz == Boolean.class //
 				|| clazz == Class.class //
 				|| clazz == Date.class //
-				|| clazz == Double.class //
-				|| clazz == Float.class //
-				|| clazz == Integer.class //
-				|| clazz == Long.class //
 				|| clazz == String.class //
-				|| clazz == Timestamp.class;
+				|| clazz == Timestamp.class //
+				|| Number.class.isAssignableFrom(clazz);
 	}
 
 	public static Method methodOf(Class<?> clazz) {

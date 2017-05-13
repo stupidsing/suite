@@ -10,6 +10,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,8 +85,8 @@ public class Serialize {
 			Type[] typeArgs = pt.getActualTypeArguments();
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
-			if (List.class.isAssignableFrom(clazz))
-				serializer = list(auto_(typeArgs[0]));
+			if (Collection.class.isAssignableFrom(clazz))
+				serializer = collection(auto_(typeArgs[0]));
 			else if (Map.class.isAssignableFrom(clazz))
 				serializer = map(auto_(typeArgs[0]), auto_(typeArgs[1]));
 			else if (Pair.class.isAssignableFrom(clazz))
@@ -229,6 +230,24 @@ public class Serialize {
 					dataOutput.write(zeroes, 0, i1 - i);
 					i = i1;
 				}
+			}
+		};
+	}
+
+	public static <T> Serializer<Collection<T>> collection(Serializer<T> serializer) {
+		return new Serializer<Collection<T>>() {
+			public Collection<T> read(DataInput dataInput) throws IOException {
+				int size = Serialize.int_.read(dataInput);
+				List<T> list = new ArrayList<>();
+				for (int i = 0; i < size; i++)
+					list.add(serializer.read(dataInput));
+				return list;
+			}
+
+			public void write(DataOutput dataOutput, Collection<T> list) throws IOException {
+				Serialize.int_.write(dataOutput, list.size());
+				for (T t : list)
+					serializer.write(dataOutput, t);
 			}
 		};
 	}

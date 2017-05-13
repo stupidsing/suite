@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
@@ -89,7 +90,7 @@ public class Mapify {
 		if (type instanceof Class) {
 			Class<?> clazz = (Class<?>) type;
 
-			if (isDirectlyMapped(clazz))
+			if (Type_.isSimple(clazz))
 				mapifier = new Mapifier(id, id);
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
@@ -195,14 +196,6 @@ public class Mapify {
 			throw new RuntimeException("unrecognized type " + type);
 
 		return mapifier;
-	}
-
-	private boolean isDirectlyMapped(Class<?> clazz) {
-		return clazz.isPrimitive() //
-				|| clazz.isEnum() //
-				|| clazz == Boolean.class //
-				|| clazz == String.class //
-				|| Number.class.isAssignableFrom(clazz);
 	}
 
 	private <T> T instantiate(Class<T> clazz) {
