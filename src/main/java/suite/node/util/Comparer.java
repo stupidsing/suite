@@ -45,7 +45,7 @@ public class Comparer implements Comparator<Node> {
 		n1 = n1.finalNode();
 		Class<? extends Node> clazz0 = n0.getClass();
 		Class<? extends Node> clazz1 = n1.getClass();
-		int c = order.get(clazz0) - order.get(clazz1);
+		int c = Integer.compare(order.get(clazz0), order.get(clazz1));
 
 		if (c == 0)
 			if (clazz0 == Atom.class)
@@ -60,9 +60,9 @@ public class Comparer implements Comparator<Node> {
 					c = c != 0 ? c : Object_.compare(m0.get(key), m1.get(key));
 				return c;
 			} else if (clazz0 == Int.class)
-				return ((Int) n0).number - ((Int) n1).number;
+				return Integer.compare(((Int) n0).number, ((Int) n1).number);
 			else if (clazz0 == Reference.class)
-				return ((Reference) n0).getId() - ((Reference) n1).getId();
+				return Integer.compare(((Reference) n0).getId(), ((Reference) n1).getId());
 			else if (clazz0 == Str.class)
 				return ((Str) n0).value.compareTo(((Str) n1).value);
 			else if (Tree.class.isAssignableFrom(clazz0)) {
@@ -83,7 +83,7 @@ public class Comparer implements Comparator<Node> {
 				return c;
 
 			} else
-				return n0.hashCode() - n1.hashCode();
+				return Integer.compare(n0.hashCode(), n1.hashCode());
 		else
 			return c;
 	}
