@@ -37,7 +37,9 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	private Sink<String> log;
 
 	public static AssetAllocator of(Configuration cfg, Sink<String> log) {
-		return AssetAllocatorUtil.byTradeFrequency(MovingAvgMeanReversionAssetAllocator.of_(cfg, log), 3);
+		return AssetAllocator_.reallocate( //
+				AssetAllocator_.byTradeFrequency( //
+						MovingAvgMeanReversionAssetAllocator.of_(cfg, log), 3));
 	}
 
 	public static MovingAvgMeanReversionAssetAllocator of_(Configuration cfg, Sink<String> log) {
@@ -85,6 +87,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 
 					double lma = mrs.latestMovingAverage();
 					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio - dailyRiskFreeInterestRate;
+
 					ReturnsStat returnsStat = ts.returnsStat(dataSource.prices);
 					double sharpe = returnsStat.sharpeRatio();
 					double kelly = returnsStat.kellyCriterion();
@@ -144,6 +147,8 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		public final double adf;
 		public final double hurst;
 		public final double varianceRatio;
+		public final LinearRegression meanReversion;
+		public final LinearRegression movingAvgMeanReversion;
 		public final double meanReversionRatio;
 		public final double movingAvgMeanReversionRatio;
 		public final double halfLife;
@@ -159,10 +164,14 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 				adf = adf(prices, tor);
 				hurst = hurst(prices, tor);
 				varianceRatio = varianceRatio(prices, tor);
-				meanReversionRatio = meanReversionRatio(prices, 1);
-				movingAvgMeanReversionRatio = movingAvgMeanReversionRatio(prices, movingAverage, tor);
-			} else
+				meanReversion = meanReversion(prices, 1);
+				movingAvgMeanReversion = movingAvgMeanReversion(prices, movingAverage, tor);
+				meanReversionRatio = meanReversion.betas[0];
+				movingAvgMeanReversionRatio = movingAvgMeanReversion.betas[0];
+			} else {
+				meanReversion = movingAvgMeanReversion = null;
 				adf = hurst = varianceRatio = meanReversionRatio = movingAvgMeanReversionRatio = 0d;
+			}
 
 			halfLife = neglog2 / Math.log1p(meanReversionRatio);
 			movingAvgHalfLife = neglog2 / Math.log1p(movingAvgMeanReversionRatio);
@@ -218,19 +227,17 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));
 	}
 
-	private double meanReversionRatio(float[] prices, int tor) {
+	private LinearRegression meanReversion(float[] prices, int tor) {
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { prices[i], 1f, });
 		float[] diffs1 = ts.dropDiff(tor, prices);
-		LinearRegression lr = stat.linearRegression(deps, diffs1);
-		return lr.betas[0];
+		return stat.linearRegression(deps, diffs1);
 	}
 
-	private double movingAvgMeanReversionRatio(float[] prices, float[] movingAvg, int tor) {
+	private LinearRegression movingAvgMeanReversion(float[] prices, float[] movingAvg, int tor) {
 		float[] ma = ts.drop(tor, movingAvg);
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { ma[i], 1f, });
 		float[] diffs1 = ts.dropDiff(tor, prices);
-		LinearRegression lr = stat.linearRegression(deps, diffs1);
-		return lr.betas[0];
+		return stat.linearRegression(deps, diffs1);
 	}
 
 }

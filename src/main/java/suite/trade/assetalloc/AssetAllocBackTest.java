@@ -10,7 +10,6 @@ import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.math.TimeSeries;
 import suite.os.LogUtil;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
@@ -132,23 +131,20 @@ public class AssetAllocBackTest {
 						.mapValue(dataSource -> dataSource.last().price) //
 						.toMap();
 
-				List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate( //
+				List<Pair<String, Double>> ratioBySymbol = assetAllocator.allocate( //
 						backTestDataSourceBySymbol, //
 						tradeDates, //
 						date);
 
-				if (potentialBySymbol != null) {
-					double totalPotential = Read.from2(potentialBySymbol) //
-							.collectAsDouble(As.<String, Double> sumOfDoubles((symbol, potential) -> potential));
-
+				if (ratioBySymbol != null) {
 					double valuation_ = valuation;
 
-					Map<String, Integer> portfolio = Read.from2(potentialBySymbol) //
+					Map<String, Integer> portfolio = Read.from2(ratioBySymbol) //
 							.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
 							.map2((symbol, potential) -> symbol, (symbol, potential) -> {
 								float price = backTestDataSourceBySymbol.get(symbol).last().price;
 								int lotSize = assetBySymbol.get(symbol).lotSize;
-								double lots = valuation_ * potential / (totalPotential * price * lotSize);
+								double lots = valuation_ * potential / (price * lotSize);
 								return lotSize * (int) lots; // truncate
 								// return lotSize * Math.round(lots);
 							}) //
