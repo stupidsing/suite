@@ -20,6 +20,7 @@ public class AssetAllocBackTestTest {
 	private float initial = 1000000f;
 	private LocalDate frDate = LocalDate.of(2016, 1, 1);
 	private LocalDate toDate = LocalDate.of(2017, 7, 1);
+	private DatePeriod period = DatePeriod.of(frDate, toDate);
 
 	private Sink<String> log = System.out::println;
 	private Configuration cfg = new Configuration();
@@ -49,7 +50,7 @@ public class AssetAllocBackTestTest {
 				cfg, //
 				assets, //
 				assetAllocator, //
-				DatePeriod.of(frDate, toDate), //
+				period, //
 				log);
 
 		Simulate sim = backTest.simulate(initial);
@@ -61,7 +62,7 @@ public class AssetAllocBackTestTest {
 
 	private void assertGrowth(Simulate sim) {
 		float[] valuations = sim.valuations;
-		double r = Math.expm1(stat.logRiskFreeInterestRate * DatePeriod.of(frDate, toDate).nYears());
+		double r = Math.expm1(stat.logRiskFreeInterestRate * period.nYears());
 		assertTrue(initial * r < valuations[valuations.length - 1]);
 	}
 
