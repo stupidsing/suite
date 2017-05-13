@@ -58,6 +58,7 @@ public class Statistic {
 
 	public class LinearRegression {
 		public final float[] betas;
+		public final double sse;
 		public final double r2;
 		public final double standardError;
 
@@ -81,8 +82,7 @@ public class Statistic {
 				ssr += d1 * d1;
 			}
 
-			// double sse = sst - ssr; // sum of squared residuals
-
+			sse = sst - ssr; // sum of squared residuals
 			r2 = ssr / sst; // 0 -> not accurate, 1 -> totally accurate
 			standardError = Math.sqrt(ssr / (n - mtx.width(x) - 1));
 		}
