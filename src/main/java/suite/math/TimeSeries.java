@@ -18,14 +18,19 @@ public class TimeSeries {
 	}
 
 	public class ReturnsStat {
+		private float[] returns;
 		private double mean;
 		private double nYearsVariance;
 
 		private ReturnsStat(float[] prices, double nYears) {
-			float[] returns = returns(prices);
+			returns = returns(prices);
 			double r0 = Math.expm1(stat.logRiskFreeInterestRate * nYears / returns.length);
 			mean = stat.mean(returns) - r0;
 			nYearsVariance = nYears * stat.variance(returns);
+		}
+
+		public float[] returns_() {
+			return returns;
 		}
 
 		public double sharpeRatio() {
