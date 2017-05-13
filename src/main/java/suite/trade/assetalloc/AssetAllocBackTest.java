@@ -176,7 +176,8 @@ public class AssetAllocBackTest {
 		}
 
 		public String conclusion() {
-			return "annual return = " + To.string(annualReturn) //
+			return "valuation = " + valuations[valuations.length - 1] //
+					+ ", annual return = " + To.string(annualReturn) //
 					+ ", sharpe = " + To.string(sharpe) //
 					+ ", skewness = " + To.string(skewness);
 		}
