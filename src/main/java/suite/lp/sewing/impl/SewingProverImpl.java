@@ -289,6 +289,8 @@ public class SewingProverImpl implements SewingProver {
 
 	private Cps compileNoCutPredicate_(SewingBinder sb, Node node, Cps cpsx) {
 		List<Node> list;
+		Tree tree;
+		Node m[];
 		Cps cps;
 
 		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size()) {
@@ -307,25 +309,52 @@ public class SewingProverImpl implements SewingProver {
 				}
 				return cps_;
 			};
-		} else {
-			Trampoline tr = compile_(sb, node);
-			Trampoline rem = rt -> {
-				cont(cpsx, rt);
-				return fail;
-			};
-			cps = rt -> {
-				IList<Trampoline> rems = rt.rems;
-				rt.rems = IList.cons(fail, IList.end());
-				new Runtime(rt, rt_ -> {
-					rt_.rems = rems;
-					rt_.pushRem(rem);
-					return tr;
-				}).trampoline();
-				return null;
-			};
-		}
+		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
+			cps = compileNoCutPredicate(sb, ((Atom) m[0]).name, m[1], node, cpsx);
+		else if (node instanceof Atom) {
+			String name = ((Atom) node).name;
+			if (String_.equals(name, ""))
+				cps = cpsx;
+			else if (String_.equals(name, "fail"))
+				cps = rt -> null;
+			else
+				cps = compileNoCutPredicate(sb, name, Atom.NIL, node, cpsx);
+		} else if ((tree = Tree.decompose(node)) != null)
+			cps = compileNoCutPredicate(sb, tree.getOperator().getName(), node, node, cpsx);
+		else if (node instanceof Tuple)
+			cps = compileNoCutPredicate(sb, node, cpsx);
+		else
+			throw new RuntimeException("cannot understand " + node);
 
 		return cps;
+	}
+
+	private Cps compileNoCutPredicate(SewingBinder sb, String name, Node pass, Node node, Cps cpsx) {
+		BuiltinPredicate predicate = systemPredicates.get(name);
+		return predicate != null ? compileNoCutPredicate(sb, predicate, pass, cpsx) : compileNoCutPredicate(sb, node, cpsx);
+	}
+
+	private Cps compileNoCutPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass, Cps cpsx) {
+		Clone_ f = sb.compile(pass);
+		return rt -> predicate.prove(rt.prover, f.apply(rt.env)) ? cpsx : null;
+	}
+
+	private Cps compileNoCutPredicate(SewingBinder sb, Node node, Cps cpsx) {
+		Trampoline tr = compile_(sb, node);
+		Trampoline rem = rt -> {
+			cont(cpsx, rt);
+			return fail;
+		};
+		return rt -> {
+			IList<Trampoline> rems = rt.rems;
+			rt.rems = IList.cons(fail, IList.end());
+			new Runtime(rt, rt_ -> {
+				rt_.rems = rems;
+				rt_.pushRem(rem);
+				return tr;
+			}).trampoline();
+			return null;
+		};
 	}
 
 	private void cont(Cps cps, Runtime rt) {
