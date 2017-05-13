@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import suite.algo.Statistic.LinearRegression;
 import suite.inspect.Dump;
+import suite.math.MathUtil;
 import suite.math.Matrix;
 import suite.util.To;
 
@@ -25,6 +26,9 @@ public class StatisticTest {
 		Dump.out(lr);
 		float[] actual = lr.betas;
 		mtx.verifyEquals(expect, actual, .1f);
+
+		float[] xtest = To.arrayOfFloats(m, j -> random.nextFloat());
+		MathUtil.verifyEquals(mtx.dot(expect, xtest), lr.predict(xtest), .1f);
 	}
 
 }
