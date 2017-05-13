@@ -85,9 +85,9 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 
 					double lma = mrs.latestMovingAverage();
 					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio - dailyRiskFreeInterestRate;
-					ReturnsStat returns = ts.returnsStat(dataSource.prices);
-					double sharpe = returns.sharpeRatio();
-					double kelly = returns.kellyCriterion();
+					ReturnsStat returnsStat = ts.returnsStat(dataSource.prices);
+					double sharpe = returnsStat.sharpeRatio();
+					double kelly = returnsStat.kellyCriterion();
 					double potential;
 
 					if (Boolean.TRUE) // Kelly's criterion allocation
