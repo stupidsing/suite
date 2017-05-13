@@ -50,7 +50,7 @@ public class AssetAllocBackTestTest {
 				assets, //
 				assetAllocator, //
 				DatePeriod.of(frDate, toDate), //
-				System.out::println);
+				log);
 
 		Simulate sim = backTest.simulate(initial);
 
