@@ -84,7 +84,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 					double price = dataSource.last().price;
 
 					double lma = mrs.latestMovingAverage();
-					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio;
+					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio - dailyRiskFreeInterestRate;
 					ReturnsStat returns = ts.returnsStat(dataSource.prices);
 					double sharpe = returns.sharpeRatio();
 					double kelly = returns.kellyCriterion();
@@ -105,7 +105,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 
 					return potentialStat;
 				}) //
-				.filterValue(ps -> dailyRiskFreeInterestRate < ps.dailyReturn) //
+				.filterValue(ps -> 0d < ps.dailyReturn) //
 				.filterValue(ps -> 0d < ps.sharpe) //
 				.cons(Asset.cashCode, new PotentialStat(stat.riskFreeInterestRate, 1d, 0d)) //
 				.mapValue(ps -> ps.potential) //
