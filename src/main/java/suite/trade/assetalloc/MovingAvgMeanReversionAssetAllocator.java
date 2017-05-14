@@ -104,7 +104,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 					log.sink(cfg.queryCompany(symbol) //
 							+ ", mrRatio = " + To.string(mrs.meanReversionRatio()) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio()) //
-							+ ", " + To.string(price) + " => " + To.string(predict) //
+							+ ", " + To.string(price) + " => " + To.string(lma) //
 							+ ", " + potentialStat);
 
 					return potentialStat;
