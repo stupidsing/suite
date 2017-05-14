@@ -89,18 +89,11 @@ public class TimeSeries {
 	}
 
 	public ReturnsStat returnsStat(float[] prices) {
-		return returnsStat(prices, 1d);
+		return new ReturnsStat(prices, 1d);
 	}
 
 	public ReturnsStat returnsStat(float[] prices, double nYears) {
-		return new ReturnsStat(prices, nYears);
-	}
-
-	public double varianceRatio(float[] prices, int tor) {
-		float[] logs = To.arrayOfFloats(prices, price -> (float) Math.log(price));
-		float[] diffsTor = dropDiff(tor, logs);
-		float[] diffs1 = dropDiff(1, logs);
-		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));
+		return new ReturnsStat(prices, nYears / prices.length);
 	}
 
 	public class ReturnsStat {
@@ -126,6 +119,13 @@ public class TimeSeries {
 		public double kellyCriterion() {
 			return mean / nYearsVariance;
 		}
+	}
+
+	public double varianceRatio(float[] prices, int tor) {
+		float[] logs = To.arrayOfFloats(prices, price -> (float) Math.log(price));
+		float[] diffsTor = dropDiff(tor, logs);
+		float[] diffs1 = dropDiff(1, logs);
+		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));
 	}
 
 	private float[] drop_(int tor, float[] fs) {
