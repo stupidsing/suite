@@ -3,6 +3,8 @@ package suite.trade.assetalloc;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.Test;
 
@@ -51,18 +53,18 @@ public class AssetAllocBackTestTest {
 	@Test
 	public void testControlledExperiment() {
 		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
+		Map<Boolean, Simulate> map = Read.each(Boolean.FALSE, Boolean.TRUE) //
+				.map2(b -> {
+					Constants.testFlag = b;
+					return backTest(assetAllocator);
+				}) //
+				.toMap();
 
-		Constants.testFlag = false;
-		Simulate sim0 = backTest(assetAllocator);
-		Constants.testFlag = true;
-		Simulate sim1 = backTest(assetAllocator);
-
-		System.out.println(Constants.separator);
-		System.out.println("SIM0:");
-		System.out.println(sim0.conclusion());
-		System.out.println(Constants.separator);
-		System.out.println("SIM1:");
-		System.out.println(sim1.conclusion());
+		for (Entry<Boolean, Simulate> entry : map.entrySet()) {
+			System.out.println(Constants.separator);
+			System.out.println("TEST = " + entry.getKey() + ":");
+			System.out.println(entry.getValue().conclusion());
+		}
 	}
 
 	private Simulate backTest(AssetAllocator assetAllocator) {
