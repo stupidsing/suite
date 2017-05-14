@@ -33,6 +33,13 @@ public class AssetAllocBackTestTest {
 	}
 
 	@Test
+	public void testBackTestSingle() {
+		Asset asset = cfg.queryCompany("0945.HK");
+		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of(cfg, log);
+		assertGrowth(backTest(assetAllocator, Read.each(asset)));
+	}
+
+	@Test
 	public void testBackTestHsi() {
 		String symbol = "^HSI";
 		Asset asset = Asset.of(symbol, "Hang Seng Index", 1);
