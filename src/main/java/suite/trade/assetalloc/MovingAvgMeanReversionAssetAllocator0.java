@@ -90,14 +90,8 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 					ReturnsStat returnsStat = ts.returnsStat(dataSource.prices);
 					double sharpe = returnsStat.sharpeRatio();
 					double kelly = returnsStat.kellyCriterion();
-					double potential;
 
-					if (Boolean.TRUE) // Kelly's criterion allocation
-						potential = kelly;
-					else // even allocation
-						potential = 1d;
-
-					PotentialStat potentialStat = new PotentialStat(dailyReturn, sharpe, potential);
+					PotentialStat potentialStat = new PotentialStat(dailyReturn, sharpe, kelly);
 
 					log.sink(cfg.queryCompany(symbol) //
 							+ ", mrRatio = " + To.string(mrs.meanReversionRatio()) //
