@@ -1,5 +1,6 @@
 package suite.primitive;
 
+import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToDoubleFunction;
@@ -76,6 +77,10 @@ public class PrimitiveFun {
 
 	@FunctionalInterface
 	public interface ObjObj_Int<X, Y> extends ToIntBiFunction<X, Y> {
+	}
+
+	@FunctionalInterface
+	public interface ObjObj_Obj<X, Y, Z> extends BiFunction<X, Y, Z> {
 	}
 
 }

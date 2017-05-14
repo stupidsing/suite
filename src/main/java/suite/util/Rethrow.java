@@ -1,7 +1,6 @@
 package suite.util;
 
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
@@ -9,6 +8,7 @@ import java.util.function.Predicate;
 import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitiveFun.IntObj_Obj;
 import suite.primitive.PrimitiveFun.ObjObj_Int;
+import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitivePredicate.IntObjPredicate;
 import suite.util.FunUtil.Fun;
@@ -61,16 +61,6 @@ public class Rethrow {
 		};
 	}
 
-	public static <K, V, T> BiFunction<K, V, T> fun2(BiFunction<K, V, T> fun) {
-		return (k, v) -> {
-			try {
-				return fun.apply(k, v);
-			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
-			}
-		};
-	}
-
 	public static <V> IntObj_Int<V> fun2(IntObj_Int<V> fun) {
 		return (k, v) -> {
 			try {
@@ -105,6 +95,16 @@ public class Rethrow {
 		return (k, v) -> {
 			try {
 				return fun.applyAsInt(k, v);
+			} catch (Exception ex) {
+				throw new RuntimeException("for key " + k, ex);
+			}
+		};
+	}
+
+	public static <K, V, T> ObjObj_Obj<K, V, T> fun2(ObjObj_Obj<K, V, T> fun) {
+		return (k, v) -> {
+			try {
+				return fun.apply(k, v);
 			} catch (Exception ex) {
 				throw new RuntimeException("for key " + k, ex);
 			}

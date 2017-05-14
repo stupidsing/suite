@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.node.util.Mutable;
+import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.util.Array_;
 import suite.util.FunUtil;
@@ -25,6 +25,7 @@ import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
+import suite.util.IntObjFunUtil;
 import suite.util.List_;
 import suite.util.NullableSynchronousQueue;
 import suite.util.Object_;
@@ -105,7 +106,11 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Outlet2<K, V> concatMap2(Fun<T, Outlet2<K, V>> fun) {
-		return Outlet2.of(FunUtil2.concat(FunUtil.map(t -> fun.apply(t).source2(), source)));
+		return Outlet2.of(FunUtil2.concat(FunUtil.map(t -> fun.apply(t).source(), source)));
+	}
+
+	public <O> IntObjOutlet<O> concatMapIntObj(Fun<T, IntObjOutlet<O>> fun) {
+		return IntObjOutlet.of(IntObjFunUtil.concat(FunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
 	public Outlet<T> cons(T t) {
@@ -119,7 +124,7 @@ public class Outlet<T> implements Iterable<T> {
 		return i;
 	}
 
-	public <U, R> Outlet<R> cross(List<U> list, BiFunction<T, U, R> fun) {
+	public <U, R> Outlet<R> cross(List<U> list, ObjObj_Obj<T, U, R> fun) {
 		return of(new Source<R>() {
 			private T t;
 			private int index = list.size();
@@ -176,7 +181,7 @@ public class Outlet<T> implements Iterable<T> {
 		return of(FunUtil.flatten(FunUtil.map(fun, source)));
 	}
 
-	public <R> R fold(R init, BiFunction<R, T, R> fun) {
+	public <R> R fold(R init, ObjObj_Obj<R, T, R> fun) {
 		T t;
 		while ((t = next()) != null)
 			init = fun.apply(init, t);

@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
+import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.primitive.PrimitiveFun.Obj_Float;
 import suite.primitive.PrimitiveFun.Obj_Int;
@@ -79,18 +79,22 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
-		return streamlet(() -> spawn().concatMap(t -> fun.apply(t).spawn()));
+		return concatMap_(fun);
 	}
 
 	public <K, V> Streamlet2<K, V> concatMap2(Fun<T, Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet2()));
+		return concatMap2_(fun);
+	}
+
+	public <O> IntObjStreamlet<O> concatMapIntObj(Fun<T, IntObjStreamlet<O>> fun) {
+		return concatMapIntObj_(fun);
 	}
 
 	public Streamlet<T> cons(T t) {
 		return streamlet(() -> spawn().cons(t));
 	}
 
-	public <U, R> Streamlet<R> cross(Streamlet<U> st1, BiFunction<T, U, R> fun) {
+	public <U, R> Streamlet<R> cross(Streamlet<U> st1, ObjObj_Obj<T, U, R> fun) {
 		return streamlet(() -> spawn().concatMap(t -> st1.spawn().map(t1 -> fun.apply(t, t1))));
 	}
 
@@ -119,11 +123,11 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().flatMap(fun));
 	}
 
-	public <R> R fold(R init, BiFunction<R, T, R> fun) {
+	public <R> R fold(R init, ObjObj_Obj<R, T, R> fun) {
 		return spawn().fold(init, fun);
 	}
 
-	public <U, V, W> W forkJoin(Fun<Streamlet<T>, U> fork0, Fun<Streamlet<T>, V> fork1, BiFunction<U, V, W> join) {
+	public <U, V, W> W forkJoin(Fun<Streamlet<T>, U> fork0, Fun<Streamlet<T>, V> fork1, ObjObj_Obj<U, V, W> join) {
 		return join.apply(fork0.apply(this), fork1.apply(this));
 	}
 
@@ -152,8 +156,12 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().isAny(pred);
 	}
 
+	public <O> Streamlet2<T, O> join2(Streamlet<O> streamlet) {
+		return concatMap2_(t -> streamlet.map2_(v -> t, v -> v));
+	}
+
 	public <O> Streamlet<O> map(Fun<T, O> fun) {
-		return streamlet(() -> spawn().map(fun));
+		return map_(fun);
 	}
 
 	public <V> Streamlet2<T, V> map2(Fun<T, V> vf) {
@@ -161,11 +169,11 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Streamlet2<K, V> map2(Fun<T, K> kf, Fun<T, V> vf) {
-		return new Streamlet2<>(() -> spawn().map2(kf, vf));
+		return map2_(kf, vf);
 	}
 
 	public <V1> IntObjStreamlet<V1> mapIntObj(Obj_Int<T> kf, Fun<T, V1> vf) {
-		return new IntObjStreamlet<>(() -> spawn().mapIntObj(kf, vf));
+		return mapIntObj_(kf, vf);
 	}
 
 	public <O> Streamlet<O> mapNonNull(Fun<T, O> fun) {
@@ -271,6 +279,30 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public T uniqueResult() {
 		return spawn().uniqueResult();
+	}
+
+	private <O> Streamlet<O> concatMap_(Fun<T, Streamlet<O>> fun) {
+		return streamlet(() -> spawn().concatMap(t -> fun.apply(t).spawn()));
+	}
+
+	private <K, V> Streamlet2<K, V> concatMap2_(Fun<T, Streamlet2<K, V>> fun) {
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).out()));
+	}
+
+	private <O> IntObjStreamlet<O> concatMapIntObj_(Fun<T, IntObjStreamlet<O>> fun) {
+		return new IntObjStreamlet<>(() -> spawn().concatMapIntObj(t -> fun.apply(t).out()));
+	}
+
+	private <O> Streamlet<O> map_(Fun<T, O> fun) {
+		return streamlet(() -> spawn().map(fun));
+	}
+
+	private <K, V> Streamlet2<K, V> map2_(Fun<T, K> kf, Fun<T, V> vf) {
+		return new Streamlet2<>(() -> spawn().map2(kf, vf));
+	}
+
+	private <V1> IntObjStreamlet<V1> mapIntObj_(Obj_Int<T> kf, Fun<T, V1> vf) {
+		return new IntObjStreamlet<>(() -> spawn().mapIntObj(kf, vf));
 	}
 
 	private Outlet<T> spawn() {

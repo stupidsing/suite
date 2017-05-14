@@ -43,6 +43,14 @@ public class DatePeriod extends Range<LocalDate> {
 	}
 
 	public static DatePeriod of(LocalDate from, LocalDate to) {
+		return of_(from, to);
+	}
+
+	public static DatePeriod ofYear(int year) {
+		return of(LocalDate.of(year, 1, 1), LocalDate.of(year + 1, 1, 1));
+	}
+
+	private static DatePeriod of_(LocalDate from, LocalDate to) {
 		return new DatePeriod(from, to);
 	}
 

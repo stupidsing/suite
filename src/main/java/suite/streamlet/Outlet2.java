@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -20,12 +19,14 @@ import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.node.util.Mutable;
 import suite.primitive.PrimitiveFun.ObjObj_Int;
+import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
+import suite.util.IntObjFunUtil;
 import suite.util.List_;
 import suite.util.NullableSynchronousQueue;
 import suite.util.Object_;
@@ -140,12 +141,16 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return fun.apply(this);
 	}
 
-	public <T> Outlet<T> concatMap(BiFunction<K, V, Outlet<T>> fun) {
+	public <O> Outlet<O> concatMap(ObjObj_Obj<K, V, Outlet<O>> fun) {
 		return Outlet.of(FunUtil.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source(), source2)));
 	}
 
-	public <K1, V1> Outlet2<K1, V1> concatMap2(BiFunction<K, V, Outlet2<K1, V1>> fun) {
+	public <K1, V1> Outlet2<K1, V1> concatMap2(ObjObj_Obj<K, V, Outlet2<K1, V1>> fun) {
 		return of(FunUtil2.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source2, source2)));
+	}
+
+	public <O> IntObjOutlet<O> concatMapIntObj(ObjObj_Obj<K, V, IntObjOutlet<O>> fun) {
+		return IntObjOutlet.of(IntObjFunUtil.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source(), source2)));
 	}
 
 	public <V1> Outlet2<K, V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
@@ -221,7 +226,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return next(pair) ? pair : null;
 	}
 
-	public <O> Outlet<O> flatMap(BiFunction<K, V, Iterable<O>> fun) {
+	public <O> Outlet<O> flatMap(ObjObj_Obj<K, V, Iterable<O>> fun) {
 		return Outlet.of(FunUtil.flatten(FunUtil2.map(fun, source2)));
 	}
 
@@ -265,15 +270,15 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return pair;
 	}
 
-	public <T> Outlet<T> map(BiFunction<K, V, T> fun0) {
+	public <O> Outlet<O> map(ObjObj_Obj<K, V, O> fun0) {
 		return Outlet.of(FunUtil2.map(fun0, source2));
 	}
 
-	public <K1, V1> Outlet2<K1, V1> map2(BiFunction<K, V, K1> kf, BiFunction<K, V, V1> vf) {
+	public <K1, V1> Outlet2<K1, V1> map2(ObjObj_Obj<K, V, K1> kf, ObjObj_Obj<K, V, V1> vf) {
 		return of(FunUtil2.map2(kf, vf, source2));
 	}
 
-	public <V1> IntObjOutlet<V1> mapIntObj(ObjObj_Int<K, V> kf, BiFunction<K, V, V1> vf) {
+	public <V1> IntObjOutlet<V1> mapIntObj(ObjObj_Int<K, V> kf, ObjObj_Obj<K, V, V1> vf) {
 		return IntObjOutlet.of(FunUtil2.mapIntObj(kf, vf, source2));
 	}
 
@@ -281,7 +286,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return map2((k, v) -> fun.apply(k), (k, v) -> v);
 	}
 
-	public <O> Outlet<O> mapNonNull(BiFunction<K, V, O> fun) {
+	public <O> Outlet<O> mapNonNull(ObjObj_Obj<K, V, O> fun) {
 		return Outlet.of(FunUtil2.mapNonNull(fun, source2));
 	}
 
@@ -385,7 +390,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return of(List_.sort(list, comparator));
 	}
 
-	public <O extends Comparable<? super O>> Outlet2<K, V> sortBy(BiFunction<K, V, O> fun) {
+	public <O extends Comparable<? super O>> Outlet2<K, V> sortBy(ObjObj_Obj<K, V, O> fun) {
 		return sort((e0, e1) -> Object_.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
 	}
 
@@ -397,7 +402,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		return sort((e0, e1) -> comparator.compare(e0.t1, e1.t1));
 	}
 
-	public Source2<K, V> source2() {
+	public Source2<K, V> source() {
 		return source2;
 	}
 

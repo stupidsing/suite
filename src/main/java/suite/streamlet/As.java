@@ -243,7 +243,7 @@ public class As {
 	public static <T> Obj_Double<IntObjOutlet<T>> sumOfDoubles(IntObj_Double<T> fun) {
 		return outlet -> {
 			IntObjPair<T> pair = IntObjPair.of(0, null);
-			IntObjSource<T> source = outlet.source2();
+			IntObjSource<T> source = outlet.source();
 			double result = 0d;
 			while (source.source2(pair))
 				result += fun.apply(pair.t0, pair.t1);
@@ -254,7 +254,7 @@ public class As {
 	public static <K, V> Obj_Double<Outlet2<K, V>> sumOfDoubles(ObjObj_Double<K, V> fun) {
 		return outlet -> {
 			Pair<K, V> pair = Pair.of(null, null);
-			Source2<K, V> source = outlet.source2();
+			Source2<K, V> source = outlet.source();
 			double result = 0d;
 			while (source.source2(pair))
 				result += fun.applyAsDouble(pair.t0, pair.t1);
@@ -276,7 +276,7 @@ public class As {
 	public static <T> Obj_Int<IntObjOutlet<T>> sumOfInts(IntObj_Int<T> fun) {
 		return outlet -> {
 			IntObjPair<T> pair = IntObjPair.of(0, null);
-			IntObjSource<T> source = outlet.source2();
+			IntObjSource<T> source = outlet.source();
 			int result = 0;
 			while (source.source2(pair))
 				result += fun.apply(pair.t0, pair.t1);
@@ -287,7 +287,7 @@ public class As {
 	public static <K, V> Obj_Int<Outlet2<K, V>> sumOfInts(ToIntBiFunction<K, V> fun) {
 		return outlet -> {
 			Pair<K, V> pair = Pair.of(null, null);
-			Source2<K, V> source = outlet.source2();
+			Source2<K, V> source = outlet.source();
 			int result = 0;
 			while (source.source2(pair))
 				result += fun.applyAsInt(pair.t0, pair.t1);

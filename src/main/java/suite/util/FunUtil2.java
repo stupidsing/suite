@@ -1,13 +1,13 @@
 package suite.util;
 
 import java.util.Iterator;
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import suite.adt.Pair;
 import suite.os.LogUtil;
 import suite.primitive.PrimitiveFun.ObjObj_Int;
+import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -180,16 +180,16 @@ public class FunUtil2 {
 		return () -> iterator(source2);
 	}
 
-	public static <K, V, T> Source<T> map(BiFunction<K, V, T> fun0, Source2<K, V> source2) {
-		BiFunction<K, V, T> fun1 = Rethrow.fun2(fun0);
+	public static <K, V, T> Source<T> map(ObjObj_Obj<K, V, T> fun0, Source2<K, V> source2) {
+		ObjObj_Obj<K, V, T> fun1 = Rethrow.fun2(fun0);
 		Pair<K, V> pair = Pair.of(null, null);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
-	public static <K, V, K1, V1, T> Source2<K1, V1> map2(BiFunction<K, V, K1> kf0, BiFunction<K, V, V1> vf0,
+	public static <K, V, K1, V1, T> Source2<K1, V1> map2(ObjObj_Obj<K, V, K1> kf0, ObjObj_Obj<K, V, V1> vf0,
 			Source2<K, V> source2) {
-		BiFunction<K, V, K1> kf1 = Rethrow.fun2(kf0);
-		BiFunction<K, V, V1> vf1 = Rethrow.fun2(vf0);
+		ObjObj_Obj<K, V, K1> kf1 = Rethrow.fun2(kf0);
+		ObjObj_Obj<K, V, V1> vf1 = Rethrow.fun2(vf0);
 		Pair<K, V> pair1 = Pair.of(null, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -201,9 +201,9 @@ public class FunUtil2 {
 		};
 	}
 
-	public static <K, V, V1, T> IntObjSource<V1> mapIntObj(ObjObj_Int<K, V> kf0, BiFunction<K, V, V1> vf0, Source2<K, V> source2) {
+	public static <K, V, V1, T> IntObjSource<V1> mapIntObj(ObjObj_Int<K, V> kf0, ObjObj_Obj<K, V, V1> vf0, Source2<K, V> source2) {
 		ObjObj_Int<K, V> kf1 = Rethrow.fun2(kf0);
-		BiFunction<K, V, V1> vf1 = Rethrow.fun2(vf0);
+		ObjObj_Obj<K, V, V1> vf1 = Rethrow.fun2(vf0);
 		Pair<K, V> pair1 = Pair.of(null, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -215,7 +215,7 @@ public class FunUtil2 {
 		};
 	}
 
-	public static <K, V, T1> Source<T1> mapNonNull(BiFunction<K, V, T1> fun, Source2<K, V> source) {
+	public static <K, V, T1> Source<T1> mapNonNull(ObjObj_Obj<K, V, T1> fun, Source2<K, V> source) {
 		return new Source<T1>() {
 			public T1 source() {
 				Pair<K, V> pair = Pair.of(null, null);

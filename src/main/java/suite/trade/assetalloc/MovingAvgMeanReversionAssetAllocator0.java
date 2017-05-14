@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import suite.Constants;
 import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
@@ -81,7 +82,7 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 		// ensure 0d < variance ratio: statistic is significant
 		return Read.from2(meanReversionStatBySymbol) //
 				.filterValue(mrs -> mrs.adf < 0d //
-						&& mrs.hurst < .5d //
+						&& (Constants.testFlag || mrs.hurst < .5d) //
 						&& 0d < mrs.varianceRatio) //
 				.map2((symbol, mrs) -> symbol, (symbol, mrs) -> {
 					DataSource dataSource = dataSourceBySymbol.get(symbol);
