@@ -101,8 +101,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 
 					return potentialStat;
 				}) //
-				.filterValue(ps -> 0d < ps.dailyReturn) //
-				.filterValue(ps -> 0d < ps.sharpe) //
+				.filterValue(ps -> 0d < ps.potential) //
 				.cons(Asset.cashCode, new PotentialStat(stat.riskFreeInterestRate, 1d, 0d)) //
 				.mapValue(ps -> ps.potential) //
 				.sortBy((symbol, potential) -> -potential) //
