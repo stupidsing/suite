@@ -148,3 +148,9 @@ ic-rewrite-type (STRUCT-OF (.nameTypes0 | .name .type0)) (STRUCT-OF (.nameTypes1
 	:- ic-rewrite-type .type0 .type1
 	, ic-rewrite-type (STRUCT-OF .nameTypes0) (STRUCT-OF .nameTypes1)
 #
+ic-rewrite-type (TAG-OF ()) (TAG-OF ())
+#
+ic-rewrite-type (TAG-OF (.tagTypes0 | .tag .type0)) (TAG-OF (.tagTypes1 | .tag .type1))
+	:- ic-rewrite-type .type0 .type1
+	, ic-rewrite-type (TAG-OF .tagTypes0) (TAG-OF .tagTypes1)
+#
