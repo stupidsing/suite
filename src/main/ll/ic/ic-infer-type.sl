@@ -67,7 +67,8 @@ ic-infer-type_ .vs (NEW-STRUCT .type (.name .value, .nvs)) .type
 	, ic-infer-type .vs .value .t
 	, ic-infer-type .vs (NEW-STRUCT .type .nvs) .type
 #
-ic-infer-type_ _ (NEW-TAG .type _ _) .type
+ic-infer-type_ .vs (NEW-TAG .type .tag _) .type
+	:- ic-infer-type .vs .tag I32
 #
 ic-infer-type_ .vs (NEW-TAG .type .tag .value) .type
 	:- .type = TAG-OF .nts

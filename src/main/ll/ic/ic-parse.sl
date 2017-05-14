@@ -86,8 +86,7 @@ ic-parse (new .type .nvs0) (NEW-STRUCT .type1 .nvs1)
 	, list.query .list (.n = .v0):(.n .v1) (ic-parse .v0 .v1)
 #
 ic-parse (newt .type .tag .value) (NEW-TAG .type1 .tag .value1)
-	:- ic-parse-type I32 .tag
-	, ic-parse-type .type .type1
+	:- ic-parse-type .type .type1
 	, ic-parse .value .value1
 #
 ic-parse () NOP
