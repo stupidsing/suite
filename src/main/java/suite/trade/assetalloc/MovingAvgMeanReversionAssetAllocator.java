@@ -80,7 +80,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 				.filterValue(mrs -> mrs.adf < 0d //
 						&& mrs.hurst < .5d //
 						&& 0d < mrs.varianceRatio //
-						&& 0d < mrs.movingAvgMeanReversionRatio) //
+						&& 0d < mrs.movingAvgMeanReversionRatio()) //
 				.map2((symbol, mrs) -> symbol, (symbol, mrs) -> {
 					DataSource dataSource = dataSourceBySymbol.get(symbol);
 					double price = dataSource.last().price;
@@ -102,8 +102,8 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 					PotentialStat potentialStat = new PotentialStat(dailyReturn, sharpe, potential);
 
 					log.sink(cfg.queryCompany(symbol) //
-							+ ", mrRatio = " + To.string(mrs.meanReversionRatio) //
-							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio) //
+							+ ", mrRatio = " + To.string(mrs.meanReversionRatio()) //
+							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio()) //
 							+ ", " + To.string(price) + " => " + To.string(predict) //
 							+ ", " + potentialStat);
 
@@ -150,10 +150,6 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		public final double varianceRatio;
 		public final LinearRegression meanReversion;
 		public final LinearRegression movingAvgMeanReversion;
-		public final double meanReversionRatio;
-		public final double movingAvgMeanReversionRatio;
-		public final double halfLife;
-		public final double movingAvgHalfLife;
 
 		public MeanReversionStat(DataSource dataSource0, DatePeriod mrsPeriod) {
 			DataSource dataSource = dataSource0.range(mrsPeriod);
@@ -167,27 +163,38 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 				varianceRatio = varianceRatio(prices, tor);
 				meanReversion = meanReversion(prices, 1);
 				movingAvgMeanReversion = movingAvgMeanReversion(prices, movingAverage, tor);
-				meanReversionRatio = meanReversion.betas[0];
-				movingAvgMeanReversionRatio = movingAvgMeanReversion.betas[0];
 			} else {
 				meanReversion = movingAvgMeanReversion = null;
-				adf = hurst = varianceRatio = meanReversionRatio = movingAvgMeanReversionRatio = 0d;
+				adf = hurst = varianceRatio = 0d;
 			}
-
-			halfLife = neglog2 / Math.log1p(meanReversionRatio);
-			movingAvgHalfLife = neglog2 / Math.log1p(movingAvgMeanReversionRatio);
 		}
 
 		public float latestMovingAverage() {
 			return movingAverage[movingAverage.length - 1];
 		}
 
+		public double meanReversionRatio() {
+			return meanReversion.betas[0];
+		}
+
+		public double movingAvgMeanReversionRatio() {
+			return movingAvgMeanReversion.betas[0];
+		}
+
+		public double halfLife() {
+			return neglog2 / Math.log1p(meanReversionRatio());
+		}
+
+		public double movingAvgHalfLife() {
+			return neglog2 / Math.log1p(movingAvgMeanReversionRatio());
+		}
+
 		public String toString() {
 			return "adf = " + adf //
 					+ ", hurst = " + hurst //
 					+ ", varianceRatio = " + varianceRatio //
-					+ ", halfLife = " + halfLife //
-					+ ", movingAvgHalfLife = " + movingAvgHalfLife //
+					+ ", halfLife = " + halfLife() //
+					+ ", movingAvgHalfLife = " + movingAvgHalfLife() //
 					+ ", latestMovingAverage = " + latestMovingAverage();
 		}
 	}
