@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
+import suite.Constants;
 import suite.algo.Statistic;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -28,7 +29,7 @@ public class AssetAllocBackTestTest {
 
 	@Test
 	public void testBackTest() {
-		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of(cfg, log);
+		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
 		assertGrowth(backTest(assetAllocator));
 	}
 
@@ -45,6 +46,23 @@ public class AssetAllocBackTestTest {
 		Asset asset = Asset.of(symbol, "Hang Seng Index", 1);
 		AssetAllocator assetAllocator = new SingleAssetAllocator(symbol);
 		assertGrowth(backTest(assetAllocator, Read.each(asset)));
+	}
+
+	@Test
+	public void testControlledExperiment() {
+		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
+
+		Constants.testFlag = false;
+		Simulate sim0 = backTest(assetAllocator);
+		Constants.testFlag = true;
+		Simulate sim1 = backTest(assetAllocator);
+
+		System.out.println(Constants.separator);
+		System.out.println("SIM0:");
+		System.out.println(sim0.conclusion());
+		System.out.println(Constants.separator);
+		System.out.println("SIM1:");
+		System.out.println(sim1.conclusion());
 	}
 
 	private Simulate backTest(AssetAllocator assetAllocator) {
