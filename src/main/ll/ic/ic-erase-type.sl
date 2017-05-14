@@ -49,9 +49,9 @@ ic-erase-type_ (NEW-STRUCT (STRUCT-OF .nts) (.name .value0, .nvs)) (NEW-STRUCTS 
 	, ic-type-size .type .size
 	, ic-erase-type (NEW-STRUCT (STRUCT-OF .nts) .nvs) (NEW-STRUCTS .sovs)
 #
-ic-erase-type_ (NEW-TAG (TAG-OF .nts) .tag .value0) (NEW-TAGS .size .tag .value1)
+ic-erase-type_ (NEW-TAG (TAG-OF .tts) .tag .value0) (NEW-TAGS .size .tag .value1)
 	:- ic-erase-type .value0 .value1
-	, ic-tag-type .nts .tag .type
+	, ic-tag-type .tts .tag .type
 	, ic-type-size .type .size
 #
 ic-erase-type_ NULL (NUMBER 0)
@@ -85,10 +85,10 @@ ic-struct-type-offset (.nts | _) .name .type .offset
 	:- ic-struct-type-offset .nts .name .type .offset
 #
 
-ic-tag-type (_ | .name .type) .name .type
+ic-tag-type (_ | .tag .type) .tag .type
 #
-ic-tag-type (.nts | _) .name .type
-	:- ic-tag-type .nts .name .type
+ic-tag-type (.tts | _) .tag .type
+	:- ic-tag-type .tts .tag .type
 #
 
 ic-type-size .type _

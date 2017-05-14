@@ -71,8 +71,8 @@ ic-infer-type_ .vs (NEW-TAG .type .tag _) .type
 	:- ic-infer-type .vs .tag I32
 #
 ic-infer-type_ .vs (NEW-TAG .type .tag .value) .type
-	:- .type = TAG-OF .nts
-	, ic-field-tag-type .nts .tag .t
+	:- .type = TAG-OF .tts
+	, ic-field-tag-type .tts .tag .t
 	, ic-infer-type .vs .value .t
 	, ic-infer-type .vs (NEW-TAG .type .tag .value) .type
 #
@@ -162,11 +162,11 @@ ic-match-parameter-types .vs (IP .io .do, .ips) (PARAM-OF .io .type, .pos)
 	, ic-match-parameter-types .vs .ips .pos
 #
 
-ic-field-tag-type (.nts | .name .type) .name .type
-	:- once (bound .nts; ic-error "Cannot access field of unknown type")
+ic-field-tag-type (.ntts | .nt .type) .nt .type
+	:- once (bound .ntts; ic-error "Cannot access field of unknown type")
 #
-ic-field-tag-type (.nts | _ _) .name .type
-	:- ic-field-tag-type .nts .name .type
+ic-field-tag-type (.ntts | _ _) .nt .type
+	:- ic-field-tag-type .ntts .nt .type
 #
 
 ic-condition-type .type
