@@ -21,6 +21,13 @@ import suite.trade.data.DataSource;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
+/**
+ * Find some mean-reverting stock, make sure they are below their past moving
+ * averages, find their Sharpe ratio and Kelly criterion from past returns, then
+ * trade them accordingly.
+ *
+ * @author ywsing
+ */
 public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 
 	private int top = 5;
