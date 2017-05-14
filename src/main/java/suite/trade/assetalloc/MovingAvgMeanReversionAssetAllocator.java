@@ -229,7 +229,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 
 	private LinearRegression meanReversion(float[] prices, int tor) {
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { prices[i], 1f, });
-		float[] diffs1 = ts.dropDiff(tor, prices);
+		float[] diffs1 = ts.drop(tor, ts.differences(1, prices));
 		return stat.linearRegression(deps, diffs1);
 	}
 
