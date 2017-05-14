@@ -30,6 +30,10 @@ ic-bind_ (NEW-STRUCT .structType (.name = .value0, .nvs0)) (NEW-STRUCT .structTy
 	, .struct1 = NEW-STRUCT (STRUCT-OF .nameTypes) .nvs1
 	, ic-bind-pair .value0 .value1 .struct0 .struct1 .then .else .parsed
 #
+ic-bind_ (NEW-TAG .tagType .tag0 .value0) (NEW-TAG .tagType .tag1 .value1) .then .else .parsed
+	:- !
+	, ic-bind-pair .tag0 .tag1 .value0 .value1 .then .else .parsed
+#
 ic-bind_ .v0 .v1 .then .else (
 	IF (PRAGMA TYPE-SKIP-CHECK (TREE ' = ' .v0 .v1)) .then .else
 ) #
