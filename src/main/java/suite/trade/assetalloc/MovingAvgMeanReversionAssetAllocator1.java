@@ -85,7 +85,7 @@ public class MovingAvgMeanReversionAssetAllocator1 implements AssetAllocator {
 
 					double lma = mrs.latestMovingAverage();
 					float diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
-					double dailyReturn = Math.expm1(Math.log1p(diff / price) / tor) - dailyRiskFreeInterestRate;
+					double dailyReturn = diff / price - dailyRiskFreeInterestRate;
 
 					ReturnsStat returnsStat = ts.returnsStat(dataSource.prices);
 					double sharpe = returnsStat.sharpeRatio();
@@ -96,6 +96,7 @@ public class MovingAvgMeanReversionAssetAllocator1 implements AssetAllocator {
 					log.sink(cfg.queryCompany(symbol) //
 							+ ", mrRatio = " + To.string(mrs.meanReversionRatio()) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio()) //
+							+ ", sse = " + mrs.movingAvgMeanReversion.sse //
 							+ ", " + To.string(price) + " => " + To.string(price + diff) //
 							+ ", " + potentialStat);
 
@@ -236,7 +237,7 @@ public class MovingAvgMeanReversionAssetAllocator1 implements AssetAllocator {
 	private LinearRegression movingAvgMeanReversion(float[] prices, float[] movingAvg, int tor) {
 		float[] ma = ts.drop(tor, movingAvg);
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { ma[i], 1f, });
-		float[] diffs1 = ts.dropDiff(tor, prices);
+		float[] diffs1 = ts.drop(tor, ts.differences(1, prices));
 		return stat.linearRegression(deps, diffs1);
 	}
 
