@@ -102,7 +102,7 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 				.filterValue(ps -> 0d < ps.dailyReturn) //
 				.filterValue(ps -> 0d < ps.sharpe) //
 				.cons(Asset.cashCode, new PotentialStat(stat.riskFreeInterestRate, 1d, 0d)) //
-				.mapValue(ps -> ps.potential) //
+				.mapValue(ps -> ps.kelly) //
 				.sortBy((symbol, potential) -> -potential) //
 				.take(top) //
 				.toList();
@@ -111,18 +111,18 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 	private class PotentialStat {
 		public final double dailyReturn;
 		public final double sharpe;
-		public final double potential;
+		public final double kelly;
 
-		public PotentialStat(double dailyReturn, double sharpe, double potential) {
+		public PotentialStat(double dailyReturn, double sharpe, double kelly) {
 			this.dailyReturn = dailyReturn;
 			this.sharpe = sharpe;
-			this.potential = potential;
+			this.kelly = kelly;
 		}
 
 		public String toString() {
 			return "dailyReturn = " + To.string(dailyReturn) //
 					+ ", sharpe = " + To.string(sharpe) //
-					+ ", potential = " + To.string(potential);
+					+ ", kelly = " + To.string(kelly);
 		}
 	}
 
