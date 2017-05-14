@@ -77,10 +77,10 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		// ensure 0d < variance ratio: statistic is significant
 		// ensure 0 < half-life: determine investment period
 		return Read.from2(meanReversionStatBySymbol) //
-				.filterValue(mrs -> mrs.adf < 0f //
-						&& mrs.hurst < .5f //
-						&& 0f < mrs.varianceRatio //
-						&& 0f < mrs.movingAvgMeanReversionRatio) //
+				.filterValue(mrs -> mrs.adf < 0d //
+						&& mrs.hurst < .5d //
+						&& 0d < mrs.varianceRatio //
+						&& 0d < mrs.movingAvgMeanReversionRatio) //
 				.map2((symbol, mrs) -> symbol, (symbol, mrs) -> {
 					DataSource dataSource = dataSourceBySymbol.get(symbol);
 					double price = dataSource.last().price;
