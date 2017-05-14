@@ -89,4 +89,15 @@ public class ImperativeCompilerTest {
 		System.out.println(bytes);
 	}
 
+	@Test
+	public void testTag() {
+		String s = "constant optional = (tag ( | 0 struct () | 1 int));" //
+				+ "declare optional i = newt optional 0 new ();" //
+				+ "0";
+
+		Bytes bytes = imperativeCompiler.compile(0, s);
+		assertNotNull(bytes);
+		System.out.println(bytes);
+	}
+
 }

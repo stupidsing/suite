@@ -269,8 +269,9 @@ ic-parse-type (struct (.nts | .t .name)) (STRUCT-OF (.nameTypes | .name .type))
 #
 ic-parse-type (tag ()) (TAG-OF ())
 #
-ic-parse-type (tag (.tts | .tag .t)) (TAG-OF (.tagTypes | .tag .type))
+ic-parse-type (tag (.tts | .tag .t)) (TAG-OF (.tagTypes | .tag1 .type))
 	:- ic-parse-type .t .type
+	, ic-parse .tag .tag1
 	, ic-parse-type (tag .tts) (TAG-OF .tagTypes)
 #
 ic-parse-type :.typeVar .typeVar
