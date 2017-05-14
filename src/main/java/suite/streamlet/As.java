@@ -22,6 +22,7 @@ import suite.primitive.PrimitiveFun.IntObj_Double;
 import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Double;
 import suite.primitive.PrimitiveFun.Obj_Double;
+import suite.primitive.PrimitiveFun.Obj_Float;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
@@ -34,10 +35,6 @@ public class As {
 
 	public interface Seq<I, O> {
 		public O apply(int index, I i);
-	}
-
-	public interface Obj_Float<T> {
-		public float applyAsFloat(T t);
 	}
 
 	public static <T> Fun<Outlet<T>, double[]> arrayOfDoubles(Obj_Double<T> fun) {
@@ -260,7 +257,7 @@ public class As {
 			Source2<K, V> source = outlet.source2();
 			double result = 0d;
 			while (source.source2(pair))
-				result += fun.apply(pair.t0, pair.t1);
+				result += fun.applyAsDouble(pair.t0, pair.t1);
 			return result;
 		};
 	}

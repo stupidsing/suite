@@ -1,6 +1,9 @@
 package suite.primitive;
 
+import java.util.function.IntFunction;
+import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToDoubleFunction;
+import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 
 public class PrimitiveFun {
@@ -51,8 +54,7 @@ public class PrimitiveFun {
 	}
 
 	@FunctionalInterface
-	public interface Int_Obj<T> {
-		public T apply(int i);
+	public interface Int_Obj<T> extends IntFunction<T> {
 	}
 
 	@FunctionalInterface
@@ -61,7 +63,7 @@ public class PrimitiveFun {
 
 	@FunctionalInterface
 	public interface Obj_Float<T> {
-		public float apply(T t);
+		public float applyAsFloat(T t);
 	}
 
 	@FunctionalInterface
@@ -69,13 +71,11 @@ public class PrimitiveFun {
 	}
 
 	@FunctionalInterface
-	public interface ObjObj_Double<X, Y> {
-		public double apply(X x, Y y);
+	public interface ObjObj_Double<X, Y> extends ToDoubleBiFunction<X, Y> {
 	}
 
 	@FunctionalInterface
-	public interface ObjObj_Int<X, Y> {
-		public int apply(X x, Y y);
+	public interface ObjObj_Int<X, Y> extends ToIntBiFunction<X, Y> {
 	}
 
 }

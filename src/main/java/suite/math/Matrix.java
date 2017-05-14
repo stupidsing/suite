@@ -177,7 +177,7 @@ public class Matrix {
 		return o;
 	}
 
-	// nT is column vector
+	// nT is a column vector; returns a column vector
 	public float[] mul(float[][] m, float[] nT) {
 		int ix = h(m);
 		int jx = w(m);

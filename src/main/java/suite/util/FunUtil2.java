@@ -208,7 +208,7 @@ public class FunUtil2 {
 		return pair -> {
 			boolean b = source2.source2(pair1);
 			if (b) {
-				pair.t0 = kf1.apply(pair1.t0, pair1.t1);
+				pair.t0 = kf1.applyAsInt(pair1.t0, pair1.t1);
 				pair.t1 = vf1.apply(pair1.t0, pair1.t1);
 			}
 			return b;

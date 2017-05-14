@@ -6,6 +6,7 @@ import suite.math.CholeskyDecomposition;
 import suite.math.Matrix;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSource.IntObjSource;
+import suite.util.FunUtil.Fun;
 import suite.util.To;
 
 public class Statistic {
@@ -14,6 +15,8 @@ public class Statistic {
 
 	public final double riskFreeInterestRate = .013d; // .04d;
 	public final double logRiskFreeInterestRate = Math.log1p(riskFreeInterestRate);
+
+	private CholeskyDecomposition choleskyDecomposition = new CholeskyDecomposition();
 
 	public double correlation(float[] xs, float[] ys) {
 		int length = xs.length;
@@ -63,10 +66,10 @@ public class Statistic {
 		public final double standardError;
 
 		private LinearRegression(float[][] x, float[] y) {
-			int n = y.length;
+			int nSamples = y.length;
 			float[][] xt = mtx.transpose(x);
 			float[][] xtx = mtx.mul(xt, x);
-			float[] lr = new CholeskyDecomposition().inverseMul(xtx).apply(mtx.mul(xt, y));
+			float[] lr = choleskyDecomposition.inverseMul(xtx).apply(mtx.mul(xt, y));
 			betas = lr;
 
 			float[] estimatedy = To.arrayOfFloats(x, x_ -> predict(x_));
@@ -75,7 +78,7 @@ public class Statistic {
 			double sst = 0f; // total sum of squares
 			double ssr = 0f; // estimated sum of squares
 
-			for (int i = 0; i < n; i++) {
+			for (int i = 0; i < nSamples; i++) {
 				double d0 = y[i] - meany;
 				double d1 = estimatedy[i] - meany;
 				sst += d0 * d0;
@@ -84,11 +87,48 @@ public class Statistic {
 
 			sse = sst - ssr; // sum of squared residuals
 			r2 = ssr / sst; // 0 -> not accurate, 1 -> totally accurate
-			standardError = Math.sqrt(ssr / (n - mtx.width(x) - 1));
+			standardError = Math.sqrt(ssr / (nSamples - mtx.width(x) - 1));
 		}
 
 		public float predict(float[] x) {
 			return mtx.dot(betas, x);
+		}
+	}
+
+	// iteratively reweighted least squares
+	public LogisticRegression logisticRegression(float[][] x, boolean[] bs) {
+		return new LogisticRegression(x, bs);
+	}
+
+	public class LogisticRegression {
+		private float[] w;
+
+		private LogisticRegression(float[][] x, boolean[] bs) {
+			int nSamples = mtx.height(x);
+			int sampleLength = mtx.width(x);
+			w = new float[sampleLength];
+
+			if (nSamples == bs.length) {
+				float[][] xt = mtx.transpose(x);
+				float[] y = To.arrayOfFloats(nSamples, i -> bs[i] ? 1f : 0f);
+
+				for (int n = 0; n < 256; n++) {
+					float[] bernoulli = To.arrayOfFloats(x, this::predict);
+					float[] s = To.arrayOfFloats(bernoulli, b -> b * (1f - b));
+					float[][] sx = mtx.of(x);
+					for (int i = 0; i < nSamples; i++)
+						for (int j = 0; j < sampleLength; j++)
+							sx[i][j] *= s[i];
+
+					Fun<float[], float[]> cd = choleskyDecomposition.inverseMul(mtx.mul_mTn(sx, x));
+					w = cd.apply(mtx.mul(xt, mtx.sub(mtx.add(mtx.mul(sx, w), y), bernoulli)));
+				}
+			} else
+				throw new RuntimeException("wrong input sizes");
+		}
+
+		public float predict(float[] x) {
+			return (float) (1d / (1d + Math.exp(-mtx.dot(w, x))));
 		}
 	}
 
