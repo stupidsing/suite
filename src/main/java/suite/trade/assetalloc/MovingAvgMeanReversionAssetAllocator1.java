@@ -85,7 +85,7 @@ public class MovingAvgMeanReversionAssetAllocator1 implements AssetAllocator {
 
 					double lma = mrs.latestMovingAverage();
 					float predict = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
-					double dailyReturn = predict / price - dailyRiskFreeInterestRate;
+					double dailyReturn = Math.expm1(Math.log(predict / price) / tor) - dailyRiskFreeInterestRate;
 
 					ReturnsStat returnsStat = ts.returnsStat(dataSource.prices);
 					double sharpe = returnsStat.sharpeRatio();
