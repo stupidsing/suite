@@ -80,8 +80,8 @@ public class TimeSeries {
 		return Arrays.copyOfRange(fs, tor, fs.length);
 	}
 
-	public float[] dropDiff(int tor, float[] logs) {
-		return drop_(tor, differences_(tor, logs));
+	public float[] dropDiff(int tor, float[] fs) {
+		return drop_(tor, differences_(tor, fs));
 	}
 
 	private float[] drop_(int tor, float[] fs) {
