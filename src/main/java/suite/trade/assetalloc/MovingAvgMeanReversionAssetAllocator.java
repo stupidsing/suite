@@ -1,7 +1,6 @@
 package suite.trade.assetalloc;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
-import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.math.TimeSeries.ReturnsStat;
 import suite.streamlet.Read;
@@ -28,7 +26,6 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 
 	private double neglog2 = -Math.log(2d);
 
-	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 	private MovingAverage movingAvg = new MovingAverage();
 	private TimeSeries ts = new TimeSeries();
@@ -149,11 +146,11 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 			movingAverage = movingAvg.movingGeometricAvg(prices, tor);
 
 			if (tor <= prices.length) {
-				adf = adf(prices, tor);
-				hurst = hurst(prices, tor);
-				varianceRatio = varianceRatio(prices, tor);
-				meanReversion = meanReversion(prices, 1);
-				movingAvgMeanReversion = movingAvgMeanReversion(prices, movingAverage, tor);
+				adf = ts.adf(prices, tor);
+				hurst = ts.hurst(prices, tor);
+				varianceRatio = ts.varianceRatio(prices, tor);
+				meanReversion = ts.meanReversion(prices, 1);
+				movingAvgMeanReversion = ts.movingAvgMeanReversion(prices, movingAverage, tor);
 			} else {
 				meanReversion = movingAvgMeanReversion = null;
 				adf = hurst = varianceRatio = 0d;
@@ -188,55 +185,6 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 					+ ", movingAvgHalfLife = " + movingAvgHalfLife() //
 					+ ", latestMovingAverage = " + latestMovingAverage();
 		}
-	}
-
-	// Augmented Dickey-Fuller test
-	private double adf(float[] prices, int tor) {
-		float[] diffs = ts.differences(1, prices);
-		float[][] deps = new float[prices.length][];
-		for (int i = tor; i < deps.length; i++)
-			// i - drift term, necessary?
-			deps[i] = mtx.concat(new float[] { prices[i - 1], 1f, i, }, Arrays.copyOfRange(diffs, i - tor, i));
-		float[][] deps1 = ts.drop(tor, deps);
-		float[] diffs1 = ts.drop(tor, diffs);
-		LinearRegression lr = stat.linearRegression(deps1, diffs1);
-		float lambda = lr.betas[0];
-		return lambda / lr.standardError;
-	}
-
-	private double hurst(float[] prices, int tor) {
-		float[] logPrices = To.arrayOfFloats(prices, price -> (float) Math.log(price));
-		int[] tors = To.arrayOfInts(tor, t -> t + 1);
-		float[] logVrs = To.arrayOfFloats(tor, t -> {
-			float[] diffs = ts.dropDiff(tors[t], logPrices);
-			float[] diffs2 = To.arrayOfFloats(diffs, diff -> diff * diff);
-			return (float) Math.log(stat.variance(diffs2));
-		});
-		float[][] deps = To.array(float[].class, logVrs.length, i -> new float[] { logVrs[i], 1f, });
-		float[] n = To.arrayOfFloats(logVrs.length, i -> (float) Math.log(tors[i]));
-		LinearRegression lr = stat.linearRegression(deps, n);
-		float beta0 = lr.betas[0];
-		return beta0 / 2d;
-	}
-
-	private double varianceRatio(float[] prices, int tor) {
-		float[] logs = To.arrayOfFloats(prices, price -> (float) Math.log(price));
-		float[] diffsTor = ts.dropDiff(tor, logs);
-		float[] diffs1 = ts.dropDiff(1, logs);
-		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));
-	}
-
-	private LinearRegression meanReversion(float[] prices, int tor) {
-		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { prices[i], 1f, });
-		float[] diffs1 = ts.drop(tor, ts.differences(1, prices));
-		return stat.linearRegression(deps, diffs1);
-	}
-
-	private LinearRegression movingAvgMeanReversion(float[] prices, float[] movingAvg, int tor) {
-		float[] ma = ts.drop(tor, movingAvg);
-		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { ma[i], 1f, });
-		float[] diffs1 = ts.drop(tor, ts.differences(1, prices));
-		return stat.linearRegression(deps, diffs1);
 	}
 
 }
