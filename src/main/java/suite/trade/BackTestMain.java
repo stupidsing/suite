@@ -6,7 +6,7 @@ import suite.streamlet.Streamlet;
 import suite.trade.assetalloc.AssetAllocBackTest;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.assetalloc.AssetAllocator;
-import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator;
+import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator0;
 import suite.trade.data.Configuration;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
@@ -30,7 +30,7 @@ public class BackTestMain extends ExecutableProgram {
 		LocalDate toDate = LocalDate.of(2017, 7, 1);
 		DatePeriod period = DatePeriod.of(frDate, toDate);
 
-		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of(cfg, log);
+		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(frDate); // hkex.getCompanies()
 
 		AssetAllocBackTest backTest = AssetAllocBackTest.ofFromTo( //

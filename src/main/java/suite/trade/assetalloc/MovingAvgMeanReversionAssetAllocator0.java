@@ -21,7 +21,7 @@ import suite.trade.data.DataSource;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
-public class MovingAvgMeanReversionAssetAllocator1 implements AssetAllocator {
+public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 
 	private int top = 5;
 	private int tor = 64;
@@ -37,14 +37,16 @@ public class MovingAvgMeanReversionAssetAllocator1 implements AssetAllocator {
 	private Sink<String> log;
 
 	public static AssetAllocator of(Configuration cfg, Sink<String> log) {
-		return MovingAvgMeanReversionAssetAllocator1.of_(cfg, log);
+		return AssetAllocator_.reallocate( //
+				AssetAllocator_.byTradeFrequency( //
+						MovingAvgMeanReversionAssetAllocator0.of_(cfg, log), 3));
 	}
 
-	public static MovingAvgMeanReversionAssetAllocator1 of_(Configuration cfg, Sink<String> log) {
-		return new MovingAvgMeanReversionAssetAllocator1(cfg, log);
+	public static MovingAvgMeanReversionAssetAllocator0 of_(Configuration cfg, Sink<String> log) {
+		return new MovingAvgMeanReversionAssetAllocator0(cfg, log);
 	}
 
-	private MovingAvgMeanReversionAssetAllocator1(Configuration cfg, Sink<String> log) {
+	private MovingAvgMeanReversionAssetAllocator0(Configuration cfg, Sink<String> log) {
 		this.cfg = cfg;
 		this.log = log;
 	}
@@ -78,25 +80,29 @@ public class MovingAvgMeanReversionAssetAllocator1 implements AssetAllocator {
 				.filterValue(mrs -> mrs.adf < 0d //
 						&& mrs.hurst < .5d //
 						&& 0d < mrs.varianceRatio //
-						&& mrs.movingAvgMeanReversionRatio() < 0d) //
+						&& 0d < mrs.movingAvgMeanReversionRatio()) //
 				.map2((symbol, mrs) -> symbol, (symbol, mrs) -> {
 					DataSource dataSource = dataSourceBySymbol.get(symbol);
 					double price = dataSource.last().price;
 
 					double lma = mrs.latestMovingAverage();
-					float diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
-					double dailyReturn = diff / price - dailyRiskFreeInterestRate;
-
+					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio() - dailyRiskFreeInterestRate;
 					ReturnsStat returnsStat = ts.returnsStat(dataSource.prices);
 					double sharpe = returnsStat.sharpeRatio();
-					double kelly = dailyReturn * price * price / mrs.movingAvgMeanReversion.sse;
+					double kelly = returnsStat.kellyCriterion();
+					double potential;
 
-					PotentialStat potentialStat = new PotentialStat(dailyReturn, sharpe, kelly);
+					if (Boolean.TRUE) // Kelly's criterion allocation
+						potential = kelly;
+					else // even allocation
+						potential = 1d;
+
+					PotentialStat potentialStat = new PotentialStat(dailyReturn, sharpe, potential);
 
 					log.sink(cfg.queryCompany(symbol) //
 							+ ", mrRatio = " + To.string(mrs.meanReversionRatio()) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio()) //
-							+ ", " + To.string(price) + " => " + To.string(price + diff) //
+							+ ", " + To.string(price) + " => " + To.string(lma) //
 							+ ", " + potentialStat);
 
 					return potentialStat;
@@ -236,7 +242,7 @@ public class MovingAvgMeanReversionAssetAllocator1 implements AssetAllocator {
 	private LinearRegression movingAvgMeanReversion(float[] prices, float[] movingAvg, int tor) {
 		float[] ma = ts.drop(tor, movingAvg);
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { ma[i], 1f, });
-		float[] diffs1 = ts.drop(tor, ts.differences(1, prices));
+		float[] diffs1 = ts.dropDiff(tor, prices);
 		return stat.linearRegression(deps, diffs1);
 	}
 

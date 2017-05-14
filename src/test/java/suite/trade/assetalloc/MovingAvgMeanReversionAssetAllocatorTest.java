@@ -15,7 +15,7 @@ public class MovingAvgMeanReversionAssetAllocatorTest {
 	private MovingAvgMeanReversionAssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of_(cfg, log);
 
 	@Test
-	public void testStats() {
+	public void testStat() {
 		DatePeriod period = DatePeriod.backTestDaysBefore(LocalDate.now(), 512, 32);
 		System.out.println(assetAllocator.new MeanReversionStat(cfg.dataSource("1113.HK"), period));
 	}

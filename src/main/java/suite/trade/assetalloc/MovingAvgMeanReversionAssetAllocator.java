@@ -37,9 +37,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	private Sink<String> log;
 
 	public static AssetAllocator of(Configuration cfg, Sink<String> log) {
-		return AssetAllocator_.reallocate( //
-				AssetAllocator_.byTradeFrequency( //
-						MovingAvgMeanReversionAssetAllocator.of_(cfg, log), 3));
+		return MovingAvgMeanReversionAssetAllocator.of_(cfg, log);
 	}
 
 	public static MovingAvgMeanReversionAssetAllocator of_(Configuration cfg, Sink<String> log) {
@@ -80,29 +78,25 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 				.filterValue(mrs -> mrs.adf < 0d //
 						&& mrs.hurst < .5d //
 						&& 0d < mrs.varianceRatio //
-						&& 0d < mrs.movingAvgMeanReversionRatio()) //
+						&& mrs.movingAvgMeanReversionRatio() < 0d) //
 				.map2((symbol, mrs) -> symbol, (symbol, mrs) -> {
 					DataSource dataSource = dataSourceBySymbol.get(symbol);
 					double price = dataSource.last().price;
 
 					double lma = mrs.latestMovingAverage();
-					double dailyReturn = (lma / price - 1d) * mrs.movingAvgMeanReversionRatio() - dailyRiskFreeInterestRate;
+					float diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
+					double dailyReturn = diff / price - dailyRiskFreeInterestRate;
+
 					ReturnsStat returnsStat = ts.returnsStat(dataSource.prices);
 					double sharpe = returnsStat.sharpeRatio();
-					double kelly = returnsStat.kellyCriterion();
-					double potential;
+					double kelly = dailyReturn * price * price / mrs.movingAvgMeanReversion.sse;
 
-					if (Boolean.TRUE) // Kelly's criterion allocation
-						potential = kelly;
-					else // even allocation
-						potential = 1d;
-
-					PotentialStat potentialStat = new PotentialStat(dailyReturn, sharpe, potential);
+					PotentialStat potentialStat = new PotentialStat(dailyReturn, sharpe, kelly);
 
 					log.sink(cfg.queryCompany(symbol) //
 							+ ", mrRatio = " + To.string(mrs.meanReversionRatio()) //
 							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio()) //
-							+ ", " + To.string(price) + " => " + To.string(lma) //
+							+ ", " + To.string(price) + " => " + To.string(price + diff) //
 							+ ", " + potentialStat);
 
 					return potentialStat;
@@ -242,7 +236,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	private LinearRegression movingAvgMeanReversion(float[] prices, float[] movingAvg, int tor) {
 		float[] ma = ts.drop(tor, movingAvg);
 		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { ma[i], 1f, });
-		float[] diffs1 = ts.dropDiff(tor, prices);
+		float[] diffs1 = ts.drop(tor, ts.differences(1, prices));
 		return stat.linearRegression(deps, diffs1);
 	}
 
