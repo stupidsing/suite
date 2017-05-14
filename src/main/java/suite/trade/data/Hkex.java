@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.os.Execute;
-import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -31,6 +30,8 @@ public class Hkex {
 
 	// .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private static ObjectMapper mapper = new ObjectMapper();
+
+	private Set<String> delisted = new HashSet<>(Arrays.asList("0013.HK"));
 
 	// https://www.hkex.com.hk/eng/csm/result.htm?location=companySearch&SearchMethod=2&mkt=hk&LangCode=en&StockType=MB&Ranking=ByMC&x=42&y=9
 	// stock code, stock name, market capitalisation (million)
@@ -240,7 +241,7 @@ public class Hkex {
 	public Asset queryCompany(String symbol) {
 		Asset asset = companyBySymbol.get(symbol);
 
-		if (asset == null) {
+		if (asset == null && !delisted.contains(symbol)) {
 			JsonNode json = query("" //
 					+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
 					+ "?location=companySearch" //
@@ -391,15 +392,7 @@ public class Hkex {
 
 	private Map<String, Integer> queryLotSizeBySymbol_(Streamlet<String> symbols) {
 		Source<Map<String, Integer>> fun = () -> symbols //
-				.map2(symbol -> {
-					try {
-						return queryBoardLot(symbol);
-					} catch (Exception ex) {
-						// e.g. 0013 de-listed; cannot query stock code
-						LogUtil.warn("cannot query lot size of " + symbol);
-						return null;
-					}
-				}) //
+				.map2(symbol -> !delisted.contains(symbols) ? queryBoardLot(symbol) : null) //
 				.filterValue(boardLot -> boardLot != null) //
 				.toMap();
 
