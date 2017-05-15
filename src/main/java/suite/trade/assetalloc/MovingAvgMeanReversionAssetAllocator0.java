@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import suite.Constants;
 import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
@@ -60,15 +59,11 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
-		LocalDate oneYearAgo = backTestDate.minusYears(1);
-
-		int nTradeDaysInYear = Read.from(tradeDates) //
-				.filter(tradeDate -> oneYearAgo.compareTo(tradeDate) <= 0 && tradeDate.compareTo(backTestDate) < 0) //
-				.size();
-
 		log.sink(dataSourceBySymbol.size() + " assets in data source");
 
 		DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
+		DatePeriod backTestPeriod = DatePeriod.yearsBefore(backTestDate, 1);
+		int nTradeDaysInYear = Read.from(tradeDates).filter(backTestPeriod::contains).size();
 
 		Map<String, MeanReversionStat> meanReversionStatBySymbol = Read.from2(dataSourceBySymbol) //
 				.map2((symbol, dataSource) -> symbol, (symbol, dataSource) -> meanReversionStat(symbol, dataSource, mrsPeriod)) //
@@ -82,7 +77,7 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 		// ensure 0d < variance ratio: statistic is significant
 		return Read.from2(meanReversionStatBySymbol) //
 				.filterValue(mrs -> mrs.adf < 0d //
-						&& (Constants.testFlag || mrs.hurst < .5d) //
+						&& mrs.hurst < .5d //
 						&& 0d < mrs.varianceRatio) //
 				.map2((symbol, mrs) -> symbol, (symbol, mrs) -> {
 					DataSource dataSource = dataSourceBySymbol.get(symbol);

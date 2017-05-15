@@ -50,15 +50,11 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
-		LocalDate oneYearAgo = backTestDate.minusYears(1);
-
-		int nTradeDaysInYear = Read.from(tradeDates) //
-				.filter(tradeDate -> oneYearAgo.compareTo(tradeDate) <= 0 && tradeDate.compareTo(backTestDate) < 0) //
-				.size();
-
 		log.sink(dataSourceBySymbol.size() + " assets in data source");
 
 		DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
+		DatePeriod backTestPeriod = DatePeriod.yearsBefore(backTestDate, 1);
+		int nTradeDaysInYear = Read.from(tradeDates).filter(backTestPeriod::contains).size();
 
 		Map<String, MeanReversionStat> meanReversionStatBySymbol = Read.from2(dataSourceBySymbol) //
 				.map2((symbol, dataSource) -> symbol, (symbol, dataSource) -> meanReversionStat(symbol, dataSource, mrsPeriod)) //
