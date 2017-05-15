@@ -19,8 +19,10 @@ import suite.primitive.BytesUtil;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.PrimitiveFun.IntObj_Double;
+import suite.primitive.PrimitiveFun.IntObj_Float;
 import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Double;
+import suite.primitive.PrimitiveFun.ObjObj_Float;
 import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.primitive.PrimitiveFun.Obj_Float;
 import suite.primitive.PrimitiveFun.Obj_Int;
@@ -258,6 +260,39 @@ public class As {
 			double result = 0d;
 			while (source.source2(pair))
 				result += fun.applyAsDouble(pair.t0, pair.t1);
+			return result;
+		};
+	}
+
+	public static <T> Obj_Float<Outlet<T>> sumOfFloats(Obj_Float<T> fun) {
+		return outlet -> {
+			Source<T> source = outlet.source();
+			T t;
+			Float result = 0f;
+			while ((t = source.source()) != null)
+				result += fun.applyAsFloat(t);
+			return result;
+		};
+	}
+
+	public static <T> Obj_Float<IntObjOutlet<T>> sumOfFloats(IntObj_Float<T> fun) {
+		return outlet -> {
+			IntObjPair<T> pair = IntObjPair.of(0, null);
+			IntObjSource<T> source = outlet.source();
+			Float result = 0f;
+			while (source.source2(pair))
+				result += fun.apply(pair.t0, pair.t1);
+			return result;
+		};
+	}
+
+	public static <K, V> Obj_Float<Outlet2<K, V>> sumOfFloats(ObjObj_Float<K, V> fun) {
+		return outlet -> {
+			Pair<K, V> pair = Pair.of(null, null);
+			Source2<K, V> source = outlet.source();
+			Float result = 0f;
+			while (source.source2(pair))
+				result += fun.applyAsFloat(pair.t0, pair.t1);
 			return result;
 		};
 	}
