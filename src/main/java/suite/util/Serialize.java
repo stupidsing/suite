@@ -106,6 +106,7 @@ public class Serialize {
 		Streamlet<Constructor<?>> ctors = Read.from(clazz.getDeclaredConstructors());
 		boolean isDefaultCtor = 0 < ctors.filter(ctor -> ctor.getParameterCount() == 0).size();
 		Constructor<?> immutableCtor = ctors.min((c0, c1) -> -Integer.compare(c0.getParameterCount(), c1.getParameterCount()));
+		immutableCtor.setAccessible(true);
 
 		Serializer<?> serializer0 = new Serializer<T>() {
 			public T read(DataInput dataInput) throws IOException {
