@@ -318,8 +318,8 @@ ic-compile-let (NEW-STRUCTS (.size .offset .value, .sovs)) .memory .e0/.ex
 ic-compile-let (NEW-TAGS .size .tag .value) .memory .e0/.ex
 	:- ic-compile-memory .memory .e0/.e1 _ .pointer
 	, ic-compile-let .tag (MEMORY 4 .pointer) .e1/.e2
-	, ic-compile-let .value (MEMORY .size (TREE ' + ' .pointer (NUMBER 4))) .e2/.e3
-	, .e3 = (_ R-, .ex)
+	, .e2 = (_ R-, .e3)
+	, ic-compile-let .value (MEMORY .size (TREE ' + ' .pointer (NUMBER 4))) .e3/.ex
 #
 ic-compile-let .memory0 .memory1 .e0/.ex
 	:- ic-compile-memory .memory0 .e0/.e1 .size .pointer0
