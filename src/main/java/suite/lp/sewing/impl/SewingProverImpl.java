@@ -74,7 +74,7 @@ public class SewingProverImpl implements SewingProver {
 
 	private SystemPredicates systemPredicates;
 	private ListMultimap<Prototype, Rule> rules = new ListMultimap<>();
-	private Map<Prototype, Mutable<Trampoline>> trampolinesByPrototype = new HashMap<>();
+	private Map<Prototype, Mutable<Trampoline>> trampolineByPrototype = new HashMap<>();
 
 	private Env emptyEnvironment = new Env(new Reference[0]);
 
@@ -812,7 +812,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Mutable<Trampoline> getTrampolineByPrototype(Prototype prototype) {
-		return trampolinesByPrototype.computeIfAbsent(prototype, k -> Mutable.nil());
+		return trampolineByPrototype.computeIfAbsent(prototype, k -> Mutable.nil());
 	}
 
 	private TraceLevel traceLevel(Prototype prototype) {
