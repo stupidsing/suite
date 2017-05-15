@@ -263,7 +263,7 @@ public class SewingProverImpl implements SewingProver {
 			return compileRule(head, tail, isHasCut);
 		});
 
-		Trampoline tr0 = or(trs);
+		Trampoline tr0 = orTr(trs);
 		Trampoline tr1 = isHasCut ? cutBegin(tr0) : tr0;
 		Trampoline tr2 = saveEnv(tr1);
 		return log(tr2, traceLevel);
@@ -369,9 +369,9 @@ public class SewingProverImpl implements SewingProver {
 		Node[] m;
 
 		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size())
-			tr = and(Read.from(list).map(n -> compileTr(sb, n)));
+			tr = andTr(Read.from(list).map(n -> compileTr(sb, n)));
 		else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
-			tr = or(Read.from(list).map(n -> compileTr(sb, n)));
+			tr = orTr(Read.from(list).map(n -> compileTr(sb, n)));
 		else if ((m = Suite.matcher(".0 = .1").apply(node)) != null) {
 			boolean b = complexity(m[0]) <= complexity(m[1]);
 			Node n0 = b ? m[0] : m[1];
@@ -532,7 +532,7 @@ public class SewingProverImpl implements SewingProver {
 				List<Node> results = new ArrayList<>();
 				Env env = rt.env;
 
-				Trampoline tr_ = and(Read.each(tr0, rt_ -> {
+				Trampoline tr_ = andTr(Read.each(tr0, rt_ -> {
 					results.add(f1.apply(env));
 					return fail;
 				}));
@@ -609,6 +609,62 @@ public class SewingProverImpl implements SewingProver {
 			throw new RuntimeException("cannot understand " + node);
 
 		return tr;
+	}
+
+	private Trampoline andTr(Streamlet<Trampoline> trs) {
+		List<Trampoline> trs_ = trs.toList();
+		if (trs_.size() == 0)
+			return okay;
+		else if (trs_.size() == 1)
+			return trs_.get(0);
+		else if (trs_.size() == 2) {
+			Trampoline tr0 = trs_.get(0);
+			Trampoline tr1 = trs_.get(1);
+			return rt -> {
+				rt.pushRem(tr1);
+				return tr0;
+			};
+		} else {
+			Trampoline trh = trs_.get(0);
+			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
+			return rt -> {
+				for (Trampoline tr_ : trt)
+					rt.pushRem(tr_);
+				return trh;
+			};
+		}
+	}
+
+	private Trampoline orTr(Streamlet<Trampoline> trs) {
+		List<Trampoline> trs_ = trs.toList();
+		if (trs_.size() == 0)
+			return fail;
+		else if (trs_.size() == 1)
+			return trs_.get(0);
+		else if (trs_.size() == 2) {
+			Trampoline tr0 = trs_.get(0);
+			Trampoline tr1 = trs_.get(1);
+			return rt -> {
+				Restore restore = save(rt);
+				rt.pushAlt(rt_ -> {
+					restore.restore(rt);
+					return tr1;
+				});
+				return tr0;
+			};
+		} else {
+			Trampoline trh = trs_.get(0);
+			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
+			return rt -> {
+				Restore restore = save(rt);
+				for (Trampoline tr_ : trt)
+					rt.pushAlt(rt_ -> {
+						restore.restore(rt);
+						return tr_;
+					});
+				return trh;
+			};
+		}
 	}
 
 	private Trampoline if_(Trampoline tr0, Trampoline tr1, Trampoline tr2) {
@@ -728,62 +784,6 @@ public class SewingProverImpl implements SewingProver {
 			tr2 = tr1;
 
 		return tr2;
-	}
-
-	private Trampoline and(Streamlet<Trampoline> trs) {
-		List<Trampoline> trs_ = trs.toList();
-		if (trs_.size() == 0)
-			return okay;
-		else if (trs_.size() == 1)
-			return trs_.get(0);
-		else if (trs_.size() == 2) {
-			Trampoline tr0 = trs_.get(0);
-			Trampoline tr1 = trs_.get(1);
-			return rt -> {
-				rt.pushRem(tr1);
-				return tr0;
-			};
-		} else {
-			Trampoline trh = trs_.get(0);
-			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
-			return rt -> {
-				for (Trampoline tr_ : trt)
-					rt.pushRem(tr_);
-				return trh;
-			};
-		}
-	}
-
-	private Trampoline or(Streamlet<Trampoline> trs) {
-		List<Trampoline> trs_ = trs.toList();
-		if (trs_.size() == 0)
-			return fail;
-		else if (trs_.size() == 1)
-			return trs_.get(0);
-		else if (trs_.size() == 2) {
-			Trampoline tr0 = trs_.get(0);
-			Trampoline tr1 = trs_.get(1);
-			return rt -> {
-				Restore restore = save(rt);
-				rt.pushAlt(rt_ -> {
-					restore.restore(rt);
-					return tr1;
-				});
-				return tr0;
-			};
-		} else {
-			Trampoline trh = trs_.get(0);
-			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
-			return rt -> {
-				Restore restore = save(rt);
-				for (Trampoline tr_ : trt)
-					rt.pushAlt(rt_ -> {
-						restore.restore(rt);
-						return tr_;
-					});
-				return trh;
-			};
-		}
 	}
 
 	private Restore save(Runtime rt) {
