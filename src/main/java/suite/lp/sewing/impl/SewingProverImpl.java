@@ -325,11 +325,10 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Cps orCps(Streamlet<Cps> cpss) {
-		Cps cps;
 		List<Cps> cpsList = cpss.toList();
 		Cps[] cpsArray = List_.left(cpsList, -1).toArray(new Cps[0]);
 		Cps cps_ = List_.last(cpsList);
-		cps = rt -> {
+		return rt -> {
 			Restore restore = save(rt);
 			for (Cps cps1 : cpsArray) {
 				rt.cont(cps1);
@@ -337,7 +336,6 @@ public class SewingProverImpl implements SewingProver {
 			}
 			return cps_;
 		};
-		return cps;
 	}
 
 	private Cps compileCpsCallPredicate(SewingBinder sb, String name, Node pass, Node node, Cps cpsx) {
