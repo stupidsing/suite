@@ -28,6 +28,7 @@ import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.assetalloc.AssetAllocator;
 import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator0;
 import suite.trade.data.Configuration;
+import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.trade.data.QuoteDatabase;
 import suite.trade.data.Summarize;
@@ -45,7 +46,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain extends ExecutableProgram {
 
-	private Configuration cfg = new Configuration();
+	private Configuration cfg = new ConfigurationImpl();
 	private Statistic stat = new Statistic();
 
 	public static void main(String[] args) {

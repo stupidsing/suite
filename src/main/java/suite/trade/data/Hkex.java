@@ -168,7 +168,7 @@ public class Hkex {
 	private Map<String, Asset> companyBySymbol = Read.from(companies).toMap(company -> company.symbol);
 
 	public static final Set<String> commonFirstNames = new HashSet<>(
-			Arrays.asList("", "China", "Guangdong", "Hang", "HK", "Standard"));
+			Arrays.asList("", "China", "Guangdong", "Hang", "HK", "New", "Standard"));
 
 	public static class Data {
 		public static class Content {

@@ -7,6 +7,7 @@ import org.junit.Test;
 import suite.math.DiscreteCosineTransform;
 import suite.os.LogUtil;
 import suite.trade.data.Configuration;
+import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 
 /**
@@ -16,7 +17,7 @@ import suite.trade.data.DataSource;
  */
 public class PeriodTest {
 
-	private Configuration cfg = new Configuration();
+	private Configuration cfg = new ConfigurationImpl();
 
 	private int minPeriod = 8;
 

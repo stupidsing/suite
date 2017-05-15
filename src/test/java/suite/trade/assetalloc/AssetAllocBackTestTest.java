@@ -15,6 +15,7 @@ import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.data.Configuration;
+import suite.trade.data.ConfigurationImpl;
 import suite.util.FunUtil.Sink;
 import suite.util.Object_;
 
@@ -24,7 +25,7 @@ public class AssetAllocBackTestTest {
 	private DatePeriod period = DatePeriod.ofYear(2016);
 
 	private Sink<String> log = System.out::println;
-	private Configuration cfg = new Configuration();
+	private Configuration cfg = new ConfigurationImpl();
 	private Statistic stat = new Statistic();
 
 	@Test

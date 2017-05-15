@@ -22,10 +22,6 @@ import suite.util.To;
 
 public class Yahoo {
 
-	public DataSource dataSource(String symbol) {
-		return dataSource(symbol, DatePeriod.ages());
-	}
-
 	public DataSource dataSource(String symbol, DatePeriod period) {
 		String urlString = tableUrl(symbol, period);
 

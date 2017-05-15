@@ -6,12 +6,13 @@ import org.junit.Test;
 
 import suite.trade.DatePeriod;
 import suite.trade.data.Configuration;
+import suite.trade.data.ConfigurationImpl;
 import suite.util.FunUtil.Sink;
 
 public class MovingAvgMeanReversionAssetAllocatorTest {
 
 	private Sink<String> log = System.out::println;
-	private Configuration cfg = new Configuration();
+	private Configuration cfg = new ConfigurationImpl();
 	private MovingAvgMeanReversionAssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of_(cfg, log);
 
 	@Test

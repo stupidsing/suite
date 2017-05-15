@@ -16,6 +16,7 @@ import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.data.Configuration;
+import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
@@ -29,7 +30,7 @@ public class AssetAllocBackTest {
 
 	private int historyWindow = 1024;
 
-	private Configuration cfg = new Configuration();
+	private Configuration cfg = new ConfigurationImpl();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 

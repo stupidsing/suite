@@ -8,6 +8,7 @@ import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.assetalloc.AssetAllocator;
 import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator0;
 import suite.trade.data.Configuration;
+import suite.trade.data.ConfigurationImpl;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.Util;
@@ -18,7 +19,7 @@ public class BackTestMain extends ExecutableProgram {
 
 	private float initial = 1000000f;
 	private Sink<String> log = FunUtil.nullSink();
-	private Configuration cfg = new Configuration();
+	private Configuration cfg = new ConfigurationImpl();
 
 	public static void main(String[] args) {
 		Util.run(BackTestMain.class, args);

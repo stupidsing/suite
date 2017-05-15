@@ -1,6 +1,7 @@
 package suite;
 
 import suite.trade.data.Configuration;
+import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.Summarize;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
@@ -8,7 +9,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.StatusMain
 public class StatusMain extends ExecutableProgram {
 
-	private Configuration cfg = new Configuration();
+	private Configuration cfg = new ConfigurationImpl();
 
 	public static void main(String[] args) {
 		Util.run(StatusMain.class, args);
