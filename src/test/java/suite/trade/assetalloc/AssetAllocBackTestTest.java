@@ -2,7 +2,6 @@ package suite.trade.assetalloc;
 
 import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.Test;
@@ -22,9 +21,7 @@ import suite.util.Object_;
 public class AssetAllocBackTestTest {
 
 	private float initial = 1000000f;
-	private LocalDate frDate = LocalDate.of(2016, 1, 1);
-	private LocalDate toDate = DatePeriod.ages().to;
-	private DatePeriod period = DatePeriod.of(frDate, toDate);
+	private DatePeriod period = DatePeriod.ofYear(2016);
 
 	private Sink<String> log = System.out::println;
 	private Configuration cfg = new Configuration();
@@ -71,7 +68,7 @@ public class AssetAllocBackTestTest {
 	}
 
 	private Simulate backTest(AssetAllocator assetAllocator, DatePeriod period) {
-		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(frDate); // hkex.getCompanies()
+		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(period.from); // hkex.getCompanies()
 		return backTest(assetAllocator, assets, period);
 	}
 

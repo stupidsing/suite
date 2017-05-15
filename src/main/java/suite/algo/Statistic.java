@@ -4,6 +4,7 @@ import suite.adt.IntObjMap;
 import suite.adt.IntObjPair;
 import suite.math.CholeskyDecomposition;
 import suite.math.Matrix;
+import suite.primitive.PrimitiveFun.Int_Float;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
@@ -11,12 +12,11 @@ import suite.util.To;
 
 public class Statistic {
 
+	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Matrix mtx = new Matrix();
 
 	public final double riskFreeInterestRate = .013d; // .04d;
 	public final double logRiskFreeInterestRate = Math.log1p(riskFreeInterestRate);
-
-	private CholeskyDecomposition choleskyDecomposition = new CholeskyDecomposition();
 
 	public double correlation(float[] xs, float[] ys) {
 		int length = xs.length;
@@ -54,44 +54,79 @@ public class Statistic {
 		return (sumxy - sumx * sumy * il) * il;
 	}
 
+	public double kurtosis(float[] fs) {
+		MeanVariance mv = meanVariance_(fs);
+		double mean = mv.mean;
+		double sd = mv.standardDeviation();
+		double sum = 0d;
+		for (float f : fs) {
+			double d = f - mean;
+			double d2 = d * d;
+			sum += d2 * d2;
+		}
+		double sd2 = sd * sd;
+		return sum / (fs.length * sd2 * sd2);
+	}
+
 	// ordinary least squares
 	public LinearRegression linearRegression(float[][] x, float[] y) {
 		return new LinearRegression(x, y);
 	}
 
 	public class LinearRegression {
+		public final int nSamples;
+		public final int sampleLength;
+		public final float[][] in;
 		public final float[] betas;
+		public final double invn2;
 		public final double sse;
 		public final double r2;
 		public final double standardError;
 
 		private LinearRegression(float[][] x, float[] y) {
-			int nSamples = y.length;
+			int nSamples_ = y.length;
+			int sampleLength_ = mtx.width(x);
 			float[][] xt = mtx.transpose(x);
 			float[][] xtx = mtx.mul(xt, x);
-			float[] lr = choleskyDecomposition.inverseMul(xtx).apply(mtx.mul(xt, y));
-			betas = lr;
+			betas = cholesky.inverseMul(xtx).apply(mtx.mul(xt, y));
 
-			float[] estimatedy = To.arrayOfFloats(x, x_ -> predict(x_));
-			double meany = mean(y);
+			float[] estimatedy = To.arrayOfFloats(x, this::predict);
+			double meany = mean_(y);
 
 			double sst = 0f; // total sum of squares
 			double ssr = 0f; // estimated sum of squares
 
-			for (int i = 0; i < nSamples; i++) {
+			for (int i = 0; i < nSamples_; i++) {
 				double d0 = y[i] - meany;
 				double d1 = estimatedy[i] - meany;
 				sst += d0 * d0;
 				ssr += d1 * d1;
 			}
 
+			nSamples = nSamples_;
+			sampleLength = sampleLength_;
+			in = x;
+			invn2 = 1d / (nSamples_ - sampleLength_ - 1);
 			sse = sst - ssr; // sum of squared residuals
 			r2 = ssr / sst; // 0 -> not accurate, 1 -> totally accurate
-			standardError = Math.sqrt(ssr / (nSamples - mtx.width(x) - 1));
+			standardError = Math.sqrt(ssr * invn2);
 		}
 
 		public float predict(float[] x) {
 			return mtx.dot(betas, x);
+		}
+
+		// if f-statistic < .05d, we conclude R%2 != 0, the test is significant
+		public double fStatistic() {
+			return (nSamples - sampleLength - 1) * r2 / (1d - r2);
+		}
+
+		public float[] tStatistic() {
+			return To.arrayOfFloats(sampleLength, i -> {
+				MeanVariance mv = new MeanVariance(in.length, j -> in[j][i]);
+				double invsd = Math.sqrt(mv.variance / (sse * invn2));
+				return (float) (betas[i] * invsd);
+			});
 		}
 	}
 
@@ -120,7 +155,7 @@ public class Statistic {
 						for (int j = 0; j < sampleLength; j++)
 							sx[i][j] *= s[i];
 
-					Fun<float[], float[]> cd = choleskyDecomposition.inverseMul(mtx.mul_mTn(sx, x));
+					Fun<float[], float[]> cd = cholesky.inverseMul(mtx.mul_mTn(sx, x));
 					w = cd.apply(mtx.mul(xt, mtx.sub(mtx.add(mtx.mul(sx, w), y), bernoulli)));
 				}
 			} else
@@ -130,6 +165,10 @@ public class Statistic {
 		public float predict(float[] x) {
 			return (float) (1d / (1d + Math.exp(-mtx.dot(w, x))));
 		}
+	}
+
+	public MeanVariance meanVariance(float[] fs) {
+		return meanVariance_(fs);
 	}
 
 	public Obj_Int<int[]> naiveBayes(int[][] x, int[] y) {
@@ -167,8 +206,9 @@ public class Statistic {
 	}
 
 	public double skewness(float[] fs) {
-		double mean = mean_(fs);
-		double sd = standardDeviation(fs);
+		MeanVariance mv = meanVariance_(fs);
+		double mean = mv.mean;
+		double sd = mv.standardDeviation();
 		double sum = 0d;
 		for (float f : fs) {
 			double d = f - mean;
@@ -178,27 +218,6 @@ public class Statistic {
 		double length1 = length - 1;
 		double adjustment = Math.sqrt(length * length1) / length1;
 		return adjustment * sum / (length * sd * sd * sd);
-	}
-
-	public double kurtosis(float[] fs) {
-		double mean = mean_(fs);
-		double sd = standardDeviation(fs);
-		double sum = 0d;
-		for (float f : fs) {
-			double d = f - mean;
-			double d2 = d * d;
-			sum += d2 * d2;
-		}
-		double sd2 = sd * sd;
-		return sum / (fs.length * sd2 * sd2);
-	}
-
-	public double mean(float[] fs) {
-		return mean_(fs);
-	}
-
-	public double standardDeviation(float[] fs) {
-		return Math.sqrt(variance(fs));
 	}
 
 	public String stats(float[] fs) {
@@ -230,18 +249,56 @@ public class Statistic {
 	}
 
 	public double variance(float[] fs) {
-		int length = fs.length;
-		double sum = 0d;
-		double sumsq = 0d;
+		return meanVariance_(fs).variance;
+	}
 
-		for (float f : fs) {
-			sum += f;
-			sumsq += f * f;
+	public class MeanVariance {
+		public final int size;
+		public final double min, max;
+		public final double sum, sumsq;
+		public final double mean, variance;
+
+		private MeanVariance(int length, Int_Float fun) {
+			if (0 < length) {
+				float first = fun.apply(0);
+				double min_ = first, max_ = first;
+				double sum_ = first, sumsq_ = first * first;
+
+				for (int i = 1; i < length; i++) {
+					float f = fun.apply(i);
+					min_ = Double.min(min_, f);
+					max_ = Double.max(max_, f);
+					sum_ += f;
+					sumsq_ += f * f;
+				}
+
+				double il = 1d / length;
+				double mean_ = sum_ * il;
+				size = length;
+				min = min_;
+				max = max_;
+				sum = sum_;
+				sumsq = sumsq_;
+				mean = mean_;
+				variance = sumsq_ * il - mean_ * mean_;
+			} else {
+				size = 0;
+				min = max = sum = sumsq = mean = variance = 0d;
+			}
+
 		}
 
-		double il = 1d / length;
-		double mean = sum * il;
-		return sumsq * il - mean * mean;
+		public double standardDeviation() {
+			return Math.sqrt(variance);
+		}
+
+		public String toString() {
+			return "(size = " + size //
+					+ ", mean = " + To.string(mean) //
+					+ ", range = " + To.string(min) + "~" + To.string(max) //
+					+ ", sd = " + To.string(standardDeviation()) //
+					+ ")";
+		}
 	}
 
 	private double mean_(float[] fs) {
@@ -250,6 +307,10 @@ public class Statistic {
 		for (float f : fs)
 			sum += f;
 		return sum / length;
+	}
+
+	private MeanVariance meanVariance_(float[] fs) {
+		return new MeanVariance(fs.length, i -> fs[i]);
 	}
 
 }

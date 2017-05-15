@@ -81,6 +81,7 @@ public class AssetAllocBackTest {
 
 	public class Simulate {
 		public final Account account;
+		public final DatePeriod period;
 		public final float[] valuations;
 		public final double annualReturn;
 		public final double sharpe;
@@ -90,8 +91,7 @@ public class AssetAllocBackTest {
 			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
 			Map<String, DataSource> dataSourceBySymbol = new HashMap<>();
 			double valuation = fund0;
-
-			account = Account.fromCash(fund0);
+			Account account_ = Account.fromCash(fund0);
 
 			// pre-fetch quotes
 			cfg.quote(assetBySymbol.keySet());
@@ -114,9 +114,8 @@ public class AssetAllocBackTest {
 
 			List<LocalDate> dates = datesPred.apply(tradeDates);
 			int size = dates.size();
+			float[] valuations_ = new float[size];
 			String actions;
-
-			valuations = new float[size];
 
 			for (int i = 0; i < size; i++) {
 				LocalDate date = dates.get(i);
@@ -150,33 +149,36 @@ public class AssetAllocBackTest {
 							}) //
 							.toMap();
 
-					actions = account.switchPortfolio(portfolio, latestPriceBySymbol);
+					actions = account_.switchPortfolio(portfolio, latestPriceBySymbol);
 				} else
 					actions = null;
 
-				account.validate();
+				account_.validate();
 
-				valuations[i] = (float) (valuation = account.valuation(latestPriceBySymbol));
+				valuations_[i] = (float) (valuation = account_.valuation(latestPriceBySymbol));
 
 				log.sink(FormatUtil.formatDate(date) //
 						+ ", valuation = " + valuation //
-						+ ", portfolio = " + account //
+						+ ", portfolio = " + account_ //
 						+ ", actions = " + actions);
 			}
 
-			LocalDate date0 = List_.first(dates);
-			LocalDate datex = List_.last(dates);
-			double v0 = valuations[0];
-			double vx = valuations[valuations.length - 1];
-			double nYears = DatePeriod.of(date0, datex).nYears();
+			double v0 = valuations_[0];
+			double vx = valuations_[valuations_.length - 1];
+			DatePeriod period_ = DatePeriod.of(List_.first(dates), List_.last(dates));
+			double nYears = period_.nYears();
 
+			account = account_;
+			period = period_;
+			valuations = valuations_;
 			annualReturn = Math.expm1(Math.log(vx / v0) / nYears);
 			sharpe = ts.returnsStat(valuations, nYears).sharpeRatio();
 			skewness = stat.skewness(valuations);
 		}
 
 		public String conclusion() {
-			return "valuation = " + valuations[valuations.length - 1] //
+			return "period = " + period //
+					+ ", valuation = " + valuations[valuations.length - 1] //
 					+ ", annual return = " + To.string(annualReturn) //
 					+ ", sharpe = " + To.string(sharpe) //
 					+ ", skewness = " + To.string(skewness);

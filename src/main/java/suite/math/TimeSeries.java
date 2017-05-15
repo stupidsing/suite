@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
+import suite.algo.Statistic.MeanVariance;
 import suite.util.To;
 
 public class TimeSeries {
@@ -92,20 +93,21 @@ public class TimeSeries {
 		return new ReturnsStat(prices, 1d);
 	}
 
-	public ReturnsStat returnsStat(float[] prices, double nYears) {
+	public ReturnsStat returnsStat(float[] prices, double nYears) { // annualized
 		return new ReturnsStat(prices, nYears / prices.length);
 	}
 
 	public class ReturnsStat {
 		private float[] returns;
 		private double mean;
-		private double nYearsVariance;
+		private double variance;
 
-		private ReturnsStat(float[] prices, double nYears) {
+		private ReturnsStat(float[] prices, double scale) {
 			returns = returns_(prices);
-			double r0 = Math.expm1(stat.logRiskFreeInterestRate * nYears / returns.length);
-			mean = stat.mean(returns) - r0;
-			nYearsVariance = nYears * stat.variance(returns);
+			double r0 = Math.expm1(stat.logRiskFreeInterestRate * scale / returns.length);
+			MeanVariance mv = stat.meanVariance(returns);
+			mean = mv.mean - r0;
+			variance = scale * mv.variance;
 		}
 
 		public float[] returns() {
@@ -113,11 +115,11 @@ public class TimeSeries {
 		}
 
 		public double sharpeRatio() {
-			return mean / Math.sqrt(nYearsVariance);
+			return mean / Math.sqrt(variance);
 		}
 
 		public double kellyCriterion() {
-			return mean / nYearsVariance;
+			return mean / variance;
 		}
 	}
 

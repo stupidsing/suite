@@ -10,12 +10,12 @@ import suite.util.To;
 
 public class SingleAllocBackTest {
 
-	private String symbol = "-";
-
 	public final Account account = Account.fromCash(0f);
 	public final StringBuilder tradeLog = new StringBuilder();
 	public final StringBuilder concludeLog = new StringBuilder();
 
+	private Statistic stat = new Statistic();
+	private String symbol = "-";
 	private Sink<String> tradeLogSink = To.sink(tradeLog);
 	private Sink<String> concludeLogSink = concludeLog::append;
 
@@ -43,7 +43,7 @@ public class SingleAllocBackTest {
 
 		float return_ = account.cash();
 		double nApproxYears = ds.nYears();
-		double sharpe = return_ / (Math.sqrt(nApproxYears * new Statistic().variance(valuations)));
+		double sharpe = return_ / (Math.sqrt(nApproxYears * stat.variance(valuations)));
 		// new TimeSeries().sharpeRatio(valuations, nApproxYears);
 
 		concludeLogSink.sink("" //
