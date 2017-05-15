@@ -160,6 +160,11 @@ public class SewingProverImpl implements SewingProver {
 			prover = new Prover(pc, null, trail);
 		}
 
+		private void cont(Cps cps) {
+			while (cps != null)
+				cps = cps.cont(this);
+		}
+
 		private void pushRem(Trampoline tr) {
 			if (tr != okay)
 				rems = IList.cons(tr, rems);
@@ -282,7 +287,7 @@ public class SewingProverImpl implements SewingProver {
 			return null;
 		});
 		return rt -> {
-			cont(cps, rt);
+			rt.cont(cps);
 			return fail;
 		};
 	}
@@ -304,7 +309,7 @@ public class SewingProverImpl implements SewingProver {
 			cps = rt -> {
 				Restore restore = save(rt);
 				for (Cps cps1 : cpsArray) {
-					cont(cps1, rt);
+					rt.cont(cps1);
 					restore.restore(rt);
 				}
 				return cps_;
@@ -342,7 +347,7 @@ public class SewingProverImpl implements SewingProver {
 	private Cps compileNoCutPredicate(SewingBinder sb, Node node, Cps cpsx) {
 		Trampoline tr = compile_(sb, node);
 		Trampoline rem = rt -> {
-			cont(cpsx, rt);
+			rt.cont(cpsx);
 			return fail;
 		};
 		return rt -> {
@@ -355,11 +360,6 @@ public class SewingProverImpl implements SewingProver {
 			}).trampoline();
 			return null;
 		};
-	}
-
-	private void cont(Cps cps, Runtime rt) {
-		while (cps != null)
-			cps = cps.cont(rt);
 	}
 
 	private Trampoline compile_(SewingBinder sb, Node node) {
