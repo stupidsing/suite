@@ -198,7 +198,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	public Predicate<ProverConfig> compile(Node node) {
-		Trampoline tr = cutBegin(compile_(passThru, node));
+		Trampoline tr = cutBegin(compileTr(passThru, node));
 
 		return pc -> {
 			Mutable<Boolean> result = Mutable.of(false);
@@ -272,12 +272,12 @@ public class SewingProverImpl implements SewingProver {
 	private Trampoline compileRule(Node head, Node tail, boolean isHasCut) {
 		SewingBinder sb = new SewingBinderImpl0();
 		BindPredicate p = sb.compileBind(head);
-		Trampoline tr1 = isHasCut || Boolean.TRUE ? compile_(sb, tail) : compileNoCut_(sb, tail);
+		Trampoline tr1 = isHasCut || Boolean.TRUE ? compileTr(sb, tail) : compileCps_(sb, tail);
 		return newEnv(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
 	}
 
-	private Trampoline compileNoCut_(SewingBinder sb, Node node) {
-		Cps cps = compileNoCutPredicate_(sb, node, rt -> {
+	private Trampoline compileCps_(SewingBinder sb, Node node) {
+		Cps cps = compileCps(sb, node, rt -> {
 			IList<Trampoline> rems = rt.rems;
 			rt.rems = IList.cons(fail, IList.end());
 			new Runtime(rt, rt_ -> {
@@ -292,7 +292,7 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Cps compileNoCutPredicate_(SewingBinder sb, Node node, Cps cpsx) {
+	private Cps compileCps(SewingBinder sb, Node node, Cps cpsx) {
 		List<Node> list;
 		Tree tree;
 		Node m[];
@@ -301,9 +301,9 @@ public class SewingProverImpl implements SewingProver {
 		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size()) {
 			cps = cpsx;
 			for (Node n : List_.reverse(list))
-				cps = compileNoCutPredicate_(sb, n, cps);
+				cps = compileCps(sb, n, cps);
 		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size()) {
-			List<Cps> cpsList = Read.from(list).map(n -> compileNoCutPredicate_(sb, n, cpsx)).toList();
+			List<Cps> cpsList = Read.from(list).map(n -> compileCps(sb, n, cpsx)).toList();
 			Cps[] cpsArray = List_.left(cpsList, -1).toArray(new Cps[0]);
 			Cps cps_ = List_.last(cpsList);
 			cps = rt -> {
@@ -315,7 +315,7 @@ public class SewingProverImpl implements SewingProver {
 				return cps_;
 			};
 		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
-			cps = compileNoCutPredicate(sb, ((Atom) m[0]).name, m[1], node, cpsx);
+			cps = compileCpsPredicate(sb, ((Atom) m[0]).name, m[1], node, cpsx);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;
 			if (String_.equals(name, ""))
@@ -323,29 +323,29 @@ public class SewingProverImpl implements SewingProver {
 			else if (String_.equals(name, "fail"))
 				cps = rt -> null;
 			else
-				cps = compileNoCutPredicate(sb, name, Atom.NIL, node, cpsx);
+				cps = compileCpsPredicate(sb, name, Atom.NIL, node, cpsx);
 		} else if ((tree = Tree.decompose(node)) != null)
-			cps = compileNoCutPredicate(sb, tree.getOperator().getName(), node, node, cpsx);
+			cps = compileCpsPredicate(sb, tree.getOperator().getName(), node, node, cpsx);
 		else if (node instanceof Tuple)
-			cps = compileNoCutPredicate(sb, node, cpsx);
+			cps = compileCpsPredicate(sb, node, cpsx);
 		else
 			throw new RuntimeException("cannot understand " + node);
 
 		return cps;
 	}
 
-	private Cps compileNoCutPredicate(SewingBinder sb, String name, Node pass, Node node, Cps cpsx) {
+	private Cps compileCpsPredicate(SewingBinder sb, String name, Node pass, Node node, Cps cpsx) {
 		BuiltinPredicate predicate = systemPredicates.get(name);
-		return predicate != null ? compileNoCutPredicate(sb, predicate, pass, cpsx) : compileNoCutPredicate(sb, node, cpsx);
+		return predicate != null ? compileCpsPredicate(sb, predicate, pass, cpsx) : compileCpsPredicate(sb, node, cpsx);
 	}
 
-	private Cps compileNoCutPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass, Cps cpsx) {
+	private Cps compileCpsPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass, Cps cpsx) {
 		Clone_ f = sb.compile(pass);
 		return rt -> predicate.prove(rt.prover, f.apply(rt.env)) ? cpsx : null;
 	}
 
-	private Cps compileNoCutPredicate(SewingBinder sb, Node node, Cps cpsx) {
-		Trampoline tr = compile_(sb, node);
+	private Cps compileCpsPredicate(SewingBinder sb, Node node, Cps cpsx) {
+		Trampoline tr = compileTr(sb, node);
 		Trampoline rem = rt -> {
 			rt.cont(cpsx);
 			return fail;
@@ -362,16 +362,16 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Trampoline compile_(SewingBinder sb, Node node) {
+	private Trampoline compileTr(SewingBinder sb, Node node) {
 		List<Node> list;
 		Trampoline tr;
 		Tree tree;
 		Node[] m;
 
 		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size())
-			tr = and(Read.from(list).map(n -> compile_(sb, n)));
+			tr = and(Read.from(list).map(n -> compileTr(sb, n)));
 		else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
-			tr = or(Read.from(list).map(n -> compile_(sb, n)));
+			tr = or(Read.from(list).map(n -> compileTr(sb, n)));
 		else if ((m = Suite.matcher(".0 = .1").apply(node)) != null) {
 			boolean b = complexity(m[0]) <= complexity(m[1]);
 			Node n0 = b ? m[0] : m[1];
@@ -386,10 +386,10 @@ public class SewingProverImpl implements SewingProver {
 				Class<?> clazz = Class.forName(className);
 				return (BuiltinPredicate) clazz.getField(fieldName).get(clazz.newInstance());
 			});
-			tr = compilePredicate(sb, predicate, m[2]);
+			tr = compileTrPredicate(sb, predicate, m[2]);
 		} else if ((m = Suite.matcher("find.all .0 .1 .2").apply(node)) != null) {
 			Clone_ f = sb.compile(m[0]);
-			Trampoline tr1 = compile_(sb, m[1]);
+			Trampoline tr1 = compileTr(sb, m[1]);
 			BindPredicate p = sb.compileBind(m[2]);
 			List<Node> vs = new ArrayList<>();
 			tr = rt -> {
@@ -405,9 +405,9 @@ public class SewingProverImpl implements SewingProver {
 				return tr1;
 			};
 		} else if ((m = Suite.matcher("if .0 .1 .2").apply(node)) != null) {
-			Trampoline tr0 = compile_(sb, m[0]);
-			Trampoline tr1 = compile_(sb, m[1]);
-			Trampoline tr2 = compile_(sb, m[2]);
+			Trampoline tr0 = compileTr(sb, m[0]);
+			Trampoline tr1 = compileTr(sb, m[1]);
+			Trampoline tr2 = compileTr(sb, m[2]);
 			tr = if_(tr0, tr1, tr2);
 		} else if ((m = Suite.matcher("let .0 .1").apply(node)) != null) {
 			BindPredicate p = sb.compileBind(m[0]);
@@ -443,7 +443,7 @@ public class SewingProverImpl implements SewingProver {
 			BindPredicate elem_ = sb.compileBind(m[3]);
 			BindPredicate v0_ = sb.compileBind(m[4]);
 			Clone_ vx_ = sb.compile(m[5]);
-			Trampoline tr1 = compile_(sb, m[6]);
+			Trampoline tr1 = compileTr(sb, m[6]);
 			tr = rt -> {
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				Env env0 = rt.env;
@@ -479,7 +479,7 @@ public class SewingProverImpl implements SewingProver {
 		} else if ((m = Suite.matcher("list.query.clone .0 .1 .2").apply(node)) != null) {
 			Clone_ f = sb.compile(m[0]);
 			BindPredicate p = sb.compileBind(m[1]);
-			Trampoline tr1 = compile_(sb, m[2]);
+			Trampoline tr1 = compileTr(sb, m[2]);
 			tr = rt -> {
 				Env env0 = rt.env;
 				rt.pushRem(rt_ -> {
@@ -512,9 +512,9 @@ public class SewingProverImpl implements SewingProver {
 				};
 			};
 		} else if ((m = Suite.matcher("not .0").apply(node)) != null)
-			tr = if_(compile_(sb, m[0]), fail, okay);
+			tr = if_(compileTr(sb, m[0]), fail, okay);
 		else if ((m = Suite.matcher("once .0").apply(node)) != null) {
-			Trampoline tr0 = compile_(sb, m[0]);
+			Trampoline tr0 = compileTr(sb, m[0]);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
 				rt.pushRem(rt_ -> {
@@ -526,7 +526,7 @@ public class SewingProverImpl implements SewingProver {
 		} else if ((m = Suite.matcher("suspend .0 .1 .2").apply(node)) != null) {
 			Clone_ f0 = sb.compile(m[0]);
 			Clone_ f1 = sb.compile(m[1]);
-			Trampoline tr0 = compile_(sb, m[2]);
+			Trampoline tr0 = compileTr(sb, m[2]);
 
 			tr = rt -> {
 				List<Node> results = new ArrayList<>();
@@ -558,9 +558,9 @@ public class SewingProverImpl implements SewingProver {
 				return okay;
 			};
 		} else if ((m = Suite.matcher("try .0 .1 .2").apply(node)) != null) {
-			Trampoline tr0 = compile_(sb, m[0]);
+			Trampoline tr0 = compileTr(sb, m[0]);
 			BindPredicate p = sb.compileBind(m[1]);
-			Trampoline catch0 = compile_(sb, m[2]);
+			Trampoline catch0 = compileTr(sb, m[2]);
 			tr = rt -> {
 				BindEnv be = rt;
 				Restore restore = save(rt);
@@ -581,7 +581,7 @@ public class SewingProverImpl implements SewingProver {
 				return tr0;
 			};
 		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
-			tr = compilePredicate(sb, ((Atom) m[0]).name, m[1], node);
+			tr = compileTrPredicate(sb, ((Atom) m[0]).name, m[1], node);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;
 			if (node == ProverConstant.cut)
@@ -591,7 +591,7 @@ public class SewingProverImpl implements SewingProver {
 			else if (String_.equals(name, "fail"))
 				tr = fail;
 			else
-				tr = compilePredicate(sb, name, Atom.NIL, node);
+				tr = compileTrPredicate(sb, name, Atom.NIL, node);
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)
@@ -600,11 +600,11 @@ public class SewingProverImpl implements SewingProver {
 				throw new RuntimeException("cannot understand " + node);
 		} else if (node instanceof Reference) {
 			Clone_ f = sb.compile(node);
-			tr = rt -> compile_(passThru, f.apply(rt.env));
+			tr = rt -> compileTr(passThru, f.apply(rt.env));
 		} else if ((tree = Tree.decompose(node)) != null)
-			tr = compilePredicate(sb, tree.getOperator().getName(), node, node);
+			tr = compileTrPredicate(sb, tree.getOperator().getName(), node, node);
 		else if (node instanceof Tuple)
-			tr = compilePredicate(sb, node);
+			tr = compileTrPredicate(sb, node);
 		else
 			throw new RuntimeException("cannot understand " + node);
 
@@ -627,17 +627,17 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Trampoline compilePredicate(SewingBinder sb, String name, Node pass, Node node) {
+	private Trampoline compileTrPredicate(SewingBinder sb, String name, Node pass, Node node) {
 		BuiltinPredicate predicate = systemPredicates.get(name);
-		return predicate != null ? compilePredicate(sb, predicate, pass) : compilePredicate(sb, node);
+		return predicate != null ? compileTrPredicate(sb, predicate, pass) : compileTrPredicate(sb, node);
 	}
 
-	private Trampoline compilePredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass) {
+	private Trampoline compileTrPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass) {
 		Clone_ f = sb.compile(pass);
 		return rt -> predicate.prove(rt.prover, f.apply(rt.env)) ? okay : fail;
 	}
 
-	private Trampoline compilePredicate(SewingBinder sb, Node node) {
+	private Trampoline compileTrPredicate(SewingBinder sb, Node node) {
 		Prototype prototype = Prototype.of(node);
 		if (rules.containsKey(prototype)) {
 			Clone_ f = sb.compile(node);
