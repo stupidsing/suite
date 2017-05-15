@@ -58,9 +58,9 @@ public class SldResolution {
 
 		List<Node> results = new ArrayList<>();
 
-		for (Entry<Node, Source<List<Node>>> entry : orsMap.entrySet()) {
-			Source<List<Node>> value0 = entry.getValue();
-			Source<List<Node>> value1 = orsMap.get(negate(entry.getKey()));
+		for (Entry<Node, Source<List<Node>>> e : orsMap.entrySet()) {
+			Source<List<Node>> value0 = e.getValue();
+			Source<List<Node>> value1 = orsMap.get(negate(e.getKey()));
 
 			if (value1 != null)
 				results.add(Tree.of(TermOp.AND___, To.list(value0.source(), value1.source())));

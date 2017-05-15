@@ -130,10 +130,10 @@ public class NntpServer {
 		}
 
 		private void printHead(PrintWriter pw, Map<String, String> article) {
-			for (Entry<String, String> entry : article.entrySet()) {
-				String key = entry.getKey();
+			for (Entry<String, String> e : article.entrySet()) {
+				String key = e.getKey();
 				if (!String_.equals(key, Nntp.contentKey))
-					pw.println(key + ": " + entry.getValue());
+					pw.println(key + ": " + e.getValue());
 			}
 		}
 	}

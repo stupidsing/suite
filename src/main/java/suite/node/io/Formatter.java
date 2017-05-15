@@ -53,9 +53,9 @@ public class Formatter {
 				sb.append(indent + op + "\n");
 				treeize(tree.getRight(), indent1);
 			} else if (node instanceof Dict)
-				for (Entry<Node, Reference> entry : ((Dict) node).map.entrySet()) {
-					sb.append(indent + "d:" + dump(entry.getKey()) + "\n");
-					treeize(entry.getValue().finalNode(), indent1);
+				for (Entry<Node, Reference> e : ((Dict) node).map.entrySet()) {
+					sb.append(indent + "d:" + dump(e.getKey()) + "\n");
+					treeize(e.getValue().finalNode(), indent1);
 				}
 			else if (node instanceof Tuple)
 				for (Node child : ((Tuple) node).nodes)
@@ -127,10 +127,10 @@ public class Formatter {
 				sb.append("Data<" + data.getClass().getSimpleName() + ">");
 		} else if (node instanceof Dict) {
 			sb.append("dict<");
-			for (Entry<Node, Reference> entry : ((Dict) node).map.entrySet()) {
-				format(entry.getKey(), TermOp.getLeftPrec(TermOp.AND___));
+			for (Entry<Node, Reference> e : ((Dict) node).map.entrySet()) {
+				format(e.getKey(), TermOp.getLeftPrec(TermOp.AND___));
 				sb.append(":");
-				format(entry.getValue(), TermOp.getLeftPrec(TermOp.AND___));
+				format(e.getValue(), TermOp.getLeftPrec(TermOp.AND___));
 				sb.append(",");
 			}
 			sb.append(">");

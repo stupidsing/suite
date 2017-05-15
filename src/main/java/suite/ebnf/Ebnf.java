@@ -68,8 +68,8 @@ public class Ebnf {
 
 		ReduceHeadRecursion headRecursion = new ReduceHeadRecursion(grammarByEntity);
 
-		for (Entry<String, Grammar> entry : grammarByEntity.entrySet())
-			entry.setValue(headRecursion.reduce(entry.getValue()));
+		for (Entry<String, Grammar> e : grammarByEntity.entrySet())
+			e.setValue(headRecursion.reduce(e.getValue()));
 
 		engine = new TopDownParse(grammarByEntity);
 	}

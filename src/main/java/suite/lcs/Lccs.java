@@ -65,9 +65,9 @@ public class Lccs {
 	private Map<Integer, Segment> reduceSegments(Map<Integer, Segment> segments, Bytes bytes, int rollingSize) {
 		Map<Integer, Segment> segments1 = new HashMap<>();
 
-		for (Entry<Integer, Segment> entry : segments.entrySet()) {
-			int hash = entry.getKey();
-			Segment segment = entry.getValue();
+		for (Entry<Integer, Segment> e : segments.entrySet()) {
+			int hash = e.getKey();
+			Segment segment = e.getValue();
 			int start = segment.start, end = segment.end;
 
 			segments1.put(rh.unroll(hash, bytes.get(start), rollingSize), Segment.of(start + 1, end));

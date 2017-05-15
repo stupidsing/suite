@@ -458,9 +458,9 @@ public class Serialize {
 
 			public void write(DataOutput dataOutput, Map<K, V> map) throws IOException {
 				Serialize.int_.write(dataOutput, map.size());
-				for (Entry<K, V> entry : map.entrySet()) {
-					ks.write(dataOutput, entry.getKey());
-					vs.write(dataOutput, entry.getValue());
+				for (Entry<K, V> e : map.entrySet()) {
+					ks.write(dataOutput, e.getKey());
+					vs.write(dataOutput, e.getValue());
 				}
 			}
 		};

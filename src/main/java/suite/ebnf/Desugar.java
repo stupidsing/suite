@@ -14,8 +14,8 @@ public class Desugar {
 	private int counter;
 
 	public Desugar(Map<String, Grammar> grammarByEntity0) {
-		for (Entry<String, Grammar> entry : grammarByEntity0.entrySet())
-			grammarByEntity.put(entry.getKey(), desugar(entry.getValue()));
+		for (Entry<String, Grammar> e : grammarByEntity0.entrySet())
+			grammarByEntity.put(e.getKey(), desugar(e.getValue()));
 	}
 
 	public Map<String, Grammar> getGrammarByEntity() {

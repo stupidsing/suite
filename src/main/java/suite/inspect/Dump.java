@@ -135,8 +135,8 @@ public class Dump {
 					for (Object o1 : (Collection<?>) object)
 						d(prefix + "[" + count++ + "]", o1);
 				else if (Map.class.isAssignableFrom(clazz))
-					for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet()) {
-						Object key = entry.getKey(), value = entry.getValue();
+					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet()) {
+						Object key = e.getKey(), value = e.getValue();
 						d(prefix + "[" + count + "].getKey()", key);
 						d(prefix + "[" + count + "].getValue()", value);
 						count++;
