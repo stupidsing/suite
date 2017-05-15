@@ -48,16 +48,12 @@ public class ConfigurationImpl implements Configuration {
 				});
 	}
 
-	public Streamlet<Asset> getCompanies() {
-		return hkex.getCompanies();
+	public Streamlet<Asset> queryCompanies() {
+		return hkex.queryCompanies();
 	}
 
 	public Asset queryCompany(String symbol) {
 		return hkex.queryCompany(symbol);
-	}
-
-	public Streamlet<Asset> queryCompanies() {
-		return hkex.queryCompanies();
 	}
 
 	public Streamlet<Trade> queryHistory() {

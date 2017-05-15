@@ -112,7 +112,7 @@ public class DailyMain extends ExecutableProgram {
 	private Pair<String, String> mamr() {
 		String tag = "mamr";
 		int nHoldDays = 8;
-		Streamlet<Asset> assets = cfg.getCompanies();
+		Streamlet<Asset> assets = cfg.queryCompanies();
 		BuySellStrategy strategy = new Strategos().movingAvgMeanReverting(64, nHoldDays, .15f);
 
 		// pre-fetch quotes

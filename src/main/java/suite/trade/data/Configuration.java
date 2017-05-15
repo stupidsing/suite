@@ -17,11 +17,9 @@ public interface Configuration {
 
 	public DataSource dataSourceWithLatestQuote(String symbol);
 
-	public Streamlet<Asset> getCompanies();
+	public Streamlet<Asset> queryCompanies();
 
 	public Asset queryCompany(String symbol);
-
-	public Streamlet<Asset> queryCompanies();
 
 	public Streamlet<Trade> queryHistory();
 

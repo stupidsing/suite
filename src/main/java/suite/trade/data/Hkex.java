@@ -269,46 +269,9 @@ public class Hkex {
 	}
 
 	private List<Asset> queryCompanies(int pageNo) {
-		JsonNode json = query("" //
-				+ "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
-				+ "?location=companySearch" //
-				+ "&SearchMethod=2" //
-				+ "&LangCode=en" //
-				+ "&StockCode=" //
-				+ "&StockName=" //
-				+ "&Ranking=ByMC" //
-				+ "&StockType=MB" //
-				+ "&mkt=hk" //
-				+ "&PageNo=" + (pageNo + 1) //
-				+ "&ATypeSHEx=" //
-				+ "&AType=" //
-				+ "&FDD=" //
-				+ "&FMM=" //
-				+ "&FYYYY=" //
-				+ "&TDD=" //
-				+ "&TMM=" //
-				+ "&TYYYY=");
-
-		CompanySearch companySearch = mapper.convertValue(json, CompanySearch.class);
-		Streamlet<List<String>> data0;
-
-		if (Boolean.TRUE)
-			data0 = Read.each(companySearch) //
-					.flatMap(cs -> cs.data) //
-					.concatMap(Data::tableEntries);
-		else
-			data0 = Read.each(json) //
-					.flatMap(json_ -> json_.get("data")) //
-					.flatMap(json_ -> json_.get("content")) //
-					.flatMap(json_ -> json_.get("table")) //
-					.flatMap(json_ -> json_.get("tr")) //
-					.filter(json_ -> !json_.get("thead").asBoolean()) //
-					.flatMap(json_ -> json_.get("td")) //
-					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList());
-
-		Streamlet<List<String>> data1 = data0.collect(As::streamlet);
-		Map<String, Integer> lotSizeBySymbol = queryLotSizeBySymbol_(data1.map(this::toSymbol));
-		return data1.map(datum -> toAsset(datum, lotSizeBySymbol)).toList();
+		return SerializedStoreCache //
+				.of(Serialize.list(Asset.serializer)) //
+				.get(getClass().getSimpleName() + ".queryCompanies(" + pageNo + ")", () -> queryCompanies_(pageNo));
 	}
 
 	public int queryBoardLot(String symbol) {
@@ -364,35 +327,52 @@ public class Hkex {
 		}
 	}
 
-	private JsonNode query(String url) {
-		JsonNode json;
+	private List<Asset> queryCompanies_(int pageNo) {
+		JsonNode json = query("" //
+				+ "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
+				+ "?location=companySearch" //
+				+ "&SearchMethod=2" //
+				+ "&LangCode=en" //
+				+ "&StockCode=" //
+				+ "&StockName=" //
+				+ "&Ranking=ByMC" //
+				+ "&StockType=MB" //
+				+ "&mkt=hk" //
+				+ "&PageNo=" + (pageNo + 1) //
+				+ "&ATypeSHEx=" //
+				+ "&AType=" //
+				+ "&FDD=" //
+				+ "&FMM=" //
+				+ "&FYYYY=" //
+				+ "&TDD=" //
+				+ "&TMM=" //
+				+ "&TYYYY=");
+
+		CompanySearch companySearch = mapper.convertValue(json, CompanySearch.class);
+		Streamlet<List<String>> data0;
 
 		if (Boolean.TRUE)
-			try (InputStream is = Singleton.get().getStoreCache().http(url).collect(To::inputStream)) {
-				json = mapper.readTree(is);
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-		else {
-			Execute execute = new Execute(new String[] { "curl", url, });
-			json = Rethrow.ex(() -> mapper.readTree(execute.out));
-		}
+			data0 = Read.each(companySearch) //
+					.flatMap(cs -> cs.data) //
+					.concatMap(Data::tableEntries);
+		else
+			data0 = Read.each(json) //
+					.flatMap(json_ -> json_.get("data")) //
+					.flatMap(json_ -> json_.get("content")) //
+					.flatMap(json_ -> json_.get("table")) //
+					.flatMap(json_ -> json_.get("tr")) //
+					.filter(json_ -> !json_.get("thead").asBoolean()) //
+					.flatMap(json_ -> json_.get("td")) //
+					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList());
 
-		return json;
-	}
-
-	private Asset toAsset(List<String> list, Map<String, Integer> lotSizeBySymbol) {
-		String symbol = toSymbol(list);
-		return Asset.of( //
-				symbol, //
-				list.get(2).trim(), //
-				lotSizeBySymbol.get(symbol), //
-				Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()));
+		Streamlet<List<String>> data1 = data0.collect(As::streamlet);
+		Map<String, Integer> lotSizeBySymbol = queryLotSizeBySymbol_(data1.map(this::toSymbol));
+		return data1.map(datum -> toAsset(datum, lotSizeBySymbol)).toList();
 	}
 
 	private Map<String, Integer> queryLotSizeBySymbol_(Streamlet<String> symbols) {
 		Source<Map<String, Integer>> fun = () -> symbols //
-				.map2(symbol -> !delisted.contains(symbols) ? queryBoardLot(symbol) : null) //
+				.map2(symbol -> !delisted.contains(symbols) ? queryBoardLot_(symbol) : null) //
 				.filterValue(boardLot -> boardLot != null) //
 				.toMap();
 
@@ -428,6 +408,32 @@ public class Hkex {
 
 			return Integer.parseInt(boardLotStr);
 		}
+	}
+
+	private JsonNode query(String url) {
+		JsonNode json;
+
+		if (Boolean.TRUE)
+			try (InputStream is = Singleton.get().getStoreCache().http(url).collect(To::inputStream)) {
+				json = mapper.readTree(is);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		else {
+			Execute execute = new Execute(new String[] { "curl", url, });
+			json = Rethrow.ex(() -> mapper.readTree(execute.out));
+		}
+
+		return json;
+	}
+
+	private Asset toAsset(List<String> list, Map<String, Integer> lotSizeBySymbol) {
+		String symbol = toSymbol(list);
+		return Asset.of( //
+				symbol, //
+				list.get(2).trim(), //
+				lotSizeBySymbol.get(symbol), //
+				Integer.parseInt(list.get(3).substring(4).replace("\n", "").replace(",", "").trim()));
 	}
 
 	private String toSymbol(List<String> list) {

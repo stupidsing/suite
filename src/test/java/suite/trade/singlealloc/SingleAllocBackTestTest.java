@@ -20,18 +20,6 @@ public class SingleAllocBackTestTest {
 	private Configuration cfg = new ConfigurationImpl();
 
 	@Test
-	public void testBackTest() {
-		for (Asset stock : cfg.queryCompanies()) {
-			String disp = stock.toString();
-			try {
-				backTest(stock.symbol, disp);
-			} catch (Exception ex) {
-				LogUtil.warn(ex.getMessage() + " in " + disp);
-			}
-		}
-	}
-
-	@Test
 	public void testBackTestForex() {
 		new Forex().invertedCurrencies.sink(this::backTest);
 	}
