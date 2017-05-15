@@ -2,13 +2,11 @@ package suite.trade.assetalloc;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
 import org.junit.Test;
 
 import suite.Constants;
-import suite.adt.Pair;
 import suite.algo.Statistic;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -52,20 +50,15 @@ public class AssetAllocBackTestTest {
 	@Test
 	public void testControlledExperiment() {
 		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
-		List<Pair<String, Simulate>> pairs = Read.each(Boolean.FALSE, Boolean.TRUE) //
-				.join2(Read.each(DatePeriod.ofYear(2010), DatePeriod.ofYear(2011), DatePeriod.ofYear(2012))) //
-				.map2((b, period) -> "PERIOD = " + period + ", TEST = " + b, (b, period) -> {
+		String results = Read.each(Boolean.FALSE, Boolean.TRUE) //
+				.join2(Read.range(2015, 2018).map(DatePeriod::ofYear)) //
+				.map((b, period) -> {
 					Constants.testFlag = b;
-					return backTest(assetAllocator, period);
+					return "\nTEST = " + b + ", " + backTest(assetAllocator, period).conclusion();
 				}) //
-				.sortByKey(Object_::compare) //
-				.toList();
-
-		for (Pair<String, Simulate> pair : pairs) {
-			System.out.println(Constants.separator);
-			System.out.println(pair.t0 + ":");
-			System.out.println(pair.t1.conclusion());
-		}
+				.sort(Object_::compare) //
+				.collect(As.joined());
+		System.out.println(results);
 	}
 
 	private Simulate backTest(AssetAllocator assetAllocator, DatePeriod period) {
