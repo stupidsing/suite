@@ -221,9 +221,9 @@ public class SewingProverImpl implements SewingProver {
 	private void compileAll() {
 		isHasCutByPrototype = rules.listEntries().mapValue(this::isHasCut).toMap();
 
-		for (Pair<Prototype, List<Rule>> entry : rules.listEntries()) {
-			Prototype prototype = entry.t0;
-			List<Rule> rules = new ArrayList<>(entry.t1);
+		for (Pair<Prototype, List<Rule>> e : rules.listEntries()) {
+			Prototype prototype = e.t0;
+			List<Rule> rules = new ArrayList<>(e.t1);
 			TraceLevel traceLevel = traceLevel(prototype);
 
 			// second-level indexing optimization
