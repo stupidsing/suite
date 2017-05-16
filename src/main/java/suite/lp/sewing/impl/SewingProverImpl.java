@@ -365,6 +365,9 @@ public class SewingProverImpl implements SewingProver {
 				cps = rt -> null;
 			else
 				cps = compileCpsCallPredicate(sb, name, Atom.NIL, node, cpsx);
+		} else if (node instanceof Reference) {
+			Clone_ f = sb.compile(node);
+			cps = rt -> compileCps(passThru, f.apply(rt.env), cpsx);
 		} else if ((tree = Tree.decompose(node)) != null)
 			cps = compileCpsCallPredicate(sb, tree.getOperator().getName(), node, node, cpsx);
 		else if (node instanceof Tuple)
