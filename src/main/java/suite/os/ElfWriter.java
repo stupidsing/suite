@@ -1,11 +1,11 @@
 package suite.os;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import suite.Constants;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.DataOutput_;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfWriter {
@@ -43,7 +43,7 @@ public class ElfWriter {
 		}
 	}
 
-	public void write(int org, Bytes code, OutputStream os) throws IOException {
+	public void write(int org, Bytes code, DataOutput_ do_) throws IOException {
 		Bytes header = new Writer_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(Constants.charset)) //
@@ -72,8 +72,8 @@ public class ElfWriter {
 				.dd(0x1000) // p_align
 				.toBytes();
 
-		header.write(os);
-		code.write(os);
+		do_.writeBytes(header);
+		do_.writeBytes(code);
 	}
 
 }

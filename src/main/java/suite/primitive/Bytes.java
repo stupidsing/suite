@@ -1,7 +1,5 @@
 package suite.primitive;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -173,14 +171,6 @@ public class Bytes implements Iterable<Byte> {
 		while (s < e && bs[e - 1] == 0)
 			e--;
 		return of(bs, s, e);
-	}
-
-	public void write(DataOutput_ dataOutput) throws IOException {
-		dataOutput.write(bs, start, end - start);
-	}
-
-	public void write(OutputStream os) throws IOException {
-		os.write(bs, start, end - start);
 	}
 
 	@Override

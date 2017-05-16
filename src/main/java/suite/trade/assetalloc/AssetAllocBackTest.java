@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import suite.adt.Pair;
 import suite.algo.Statistic;
@@ -84,6 +85,7 @@ public class AssetAllocBackTest {
 		public final Account account;
 		public final DatePeriod period;
 		public final float[] valuations;
+		public final Map<String, Double> holdBySymbol;
 		public final double annualReturn;
 		public final double sharpe;
 		public final double skewness;
@@ -92,6 +94,7 @@ public class AssetAllocBackTest {
 			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
 			Map<String, DataSource> dataSourceBySymbol = new HashMap<>();
 			double valuation = fund0;
+			Map<String, Double> holdBySymbol_ = new HashMap<>();
 			Account account_ = Account.fromCash(fund0);
 
 			// pre-fetch quotes
@@ -136,9 +139,9 @@ public class AssetAllocBackTest {
 						tradeDates, //
 						date);
 
-				if (ratioBySymbol != null) {
-					double valuation_ = valuation;
+				double valuation_ = valuation;
 
+				if (ratioBySymbol != null) {
 					Map<String, Integer> portfolio = Read.from2(ratioBySymbol) //
 							.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
 							.map2((symbol, potential) -> symbol, (symbol, potential) -> {
@@ -158,6 +161,13 @@ public class AssetAllocBackTest {
 
 				valuations_[i] = (float) (valuation = account_.valuation(latestPriceBySymbol));
 
+				for (Entry<String, Integer> e : account_.assets().entrySet()) {
+					holdBySymbol_.compute(e.getKey(), (s, hold) -> {
+						double h = e.getValue() / valuation_;
+						return h + (hold != null ? hold : 0d);
+					});
+				}
+
 				log.sink(FormatUtil.formatDate(date) //
 						+ ", valuation = " + valuation //
 						+ ", portfolio = " + account_ //
@@ -172,6 +182,7 @@ public class AssetAllocBackTest {
 			account = account_;
 			period = period_;
 			valuations = valuations_;
+			holdBySymbol = holdBySymbol_;
 			annualReturn = Math.expm1(Math.log(vx / v0) / nYears);
 			sharpe = ts.returnsStat(valuations, nYears).sharpeRatio();
 			skewness = stat.skewness(valuations);

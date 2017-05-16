@@ -24,7 +24,7 @@ public class BytesUtil {
 		Bytes bytes;
 		while ((bytes = outlet.next()) != null)
 			try {
-				bytes.write(os);
+				os.write(bytes.bs, bytes.start, bytes.end - bytes.start);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}

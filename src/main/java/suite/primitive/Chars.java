@@ -180,10 +180,6 @@ public class Chars implements Iterable<Character> {
 		return of(cs, s, e);
 	}
 
-	public void write(DataOutput_ dataOutput) throws IOException {
-		dataOutput.writeChars(new String(toCharArray()));
-	}
-
 	public void write(Writer writer) throws IOException {
 		writer.write(cs, start, end - start);
 	}

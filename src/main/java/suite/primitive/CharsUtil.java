@@ -24,7 +24,7 @@ public class CharsUtil {
 		Chars chars;
 		while ((chars = outlet.next()) != null)
 			try {
-				chars.write(writer);
+				writer.write(chars.cs, chars.start, chars.end - chars.start);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}

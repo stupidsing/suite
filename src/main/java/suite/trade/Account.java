@@ -113,10 +113,16 @@ public class Account {
 	}
 
 	public float valuation(Map<String, Float> prices0) {
+		return (float) Read.from2(valuationBySymbol(prices0)) //
+				.collectAsDouble(As.<String, Float> sumOfDoubles((symbol, v) -> v));
+	}
+
+	public Map<String, Float> valuationBySymbol(Map<String, Float> prices0) {
 		Map<String, Float> prices1 = new HashMap<>(prices0);
 		prices1.put(cashCode, 1f);
-		return (float) Read.from2(assets()) //
-				.collectAsDouble(As.<String, Integer> sumOfDoubles((symbol, n) -> prices1.get(symbol) * n));
+		return Read.from2(assets()) //
+				.map2((symbol, n) -> symbol, (symbol, n) -> prices1.get(symbol) * n) //
+				.toMap();
 	}
 
 	private int get(String code) {

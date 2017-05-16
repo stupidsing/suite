@@ -154,7 +154,7 @@ public class Serialize {
 
 		public void write(DataOutput_ dataOutput, Bytes bytes) throws IOException {
 			dataOutput.writeInt(bytes.size());
-			bytes.write(dataOutput);
+			dataOutput.writeBytes(bytes);
 		}
 	};
 
@@ -222,7 +222,7 @@ public class Serialize {
 			}
 
 			public void write(DataOutput_ dataOutput, Bytes bytes) throws IOException {
-				bytes.write(dataOutput);
+				dataOutput.writeBytes(bytes);
 				int i = bytes.size();
 				while (i < length) {
 					int i1 = Math.min(i + zeroes.length, length);

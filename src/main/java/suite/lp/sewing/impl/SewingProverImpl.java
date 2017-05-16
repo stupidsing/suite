@@ -37,7 +37,6 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
-import suite.node.Tuple;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.Mutable;
@@ -74,15 +73,15 @@ public class SewingProverImpl implements SewingProver {
 
 	private SystemPredicates systemPredicates;
 	private ListMultimap<Prototype, Rule> rules = new ListMultimap<>();
-	private Map<Prototype, Mutable<Trampoline>> trampolineByPrototype = new HashMap<>();
+	private Map<Prototype, Mutable<Trampoline>> trampolinesByPrototype = new HashMap<>();
 
 	private Env emptyEnvironment = new Env(new Reference[0]);
 
 	private Trampoline okay = rt -> {
-		throw new RuntimeException("impossibly okay");
+		throw new RuntimeException("Impossibly okay");
 	};
 	private Trampoline fail = rt -> {
-		throw new RuntimeException("impossibly fail");
+		throw new RuntimeException("Impossibly fail");
 	};
 
 	private SewingBinder passThru = new SewingBinder() {
@@ -100,7 +99,7 @@ public class SewingProverImpl implements SewingProver {
 	};
 
 	public interface Cps {
-		public Cps cont(Runtime rt);
+		public void cont(Runtime rt);
 	}
 
 	public interface Trampoline {
@@ -160,11 +159,6 @@ public class SewingProverImpl implements SewingProver {
 			prover = new Prover(pc, null, trail);
 		}
 
-		private void cont(Cps cps) {
-			while (cps != null)
-				cps = cps.cont(this);
-		}
-
 		private void pushRem(Trampoline tr) {
 			if (tr != okay)
 				rems = IList.cons(tr, rems);
@@ -194,11 +188,11 @@ public class SewingProverImpl implements SewingProver {
 		if (!rules.containsKey(null))
 			compileAll();
 		else
-			throw new RuntimeException("must not contain wild rules");
+			throw new RuntimeException("Must not contain wild rules");
 	}
 
 	public Predicate<ProverConfig> compile(Node node) {
-		Trampoline tr = cutBegin(compileTr(passThru, node));
+		Trampoline tr = cutBegin(compile_(passThru, node));
 
 		return pc -> {
 			Mutable<Boolean> result = Mutable.of(false);
@@ -263,119 +257,81 @@ public class SewingProverImpl implements SewingProver {
 			return compileRule(head, tail, isHasCut);
 		});
 
-		Trampoline tr0 = orTr(trs);
+		Trampoline tr0 = or(trs);
 		Trampoline tr1 = isHasCut ? cutBegin(tr0) : tr0;
-		Trampoline tr2 = saveEnvTr(tr1);
+		Trampoline tr2 = saveEnv(tr1);
 		return log(tr2, traceLevel);
 	}
 
 	private Trampoline compileRule(Node head, Node tail, boolean isHasCut) {
 		SewingBinder sb = new SewingBinderImpl0();
 		BindPredicate p = sb.compileBind(head);
-		Trampoline tr1 = isHasCut || Boolean.TRUE ? compileTr(sb, tail) : compileCps(sb, tail);
-		return newEnvTr(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
+		Trampoline tr1 = isHasCut ? compile_(sb, tail) : compileNoCut_(sb, tail);
+		return newEnv(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
 	}
 
-	private Trampoline compileCps(SewingBinder sb, Node node) {
-		Cps cps = compileCps(sb, node, rt -> {
+	private Trampoline compileNoCut_(SewingBinder sb, Node node) {
+		Cps cps = compileNoCutPredicate_(sb, node, rt -> {
 			IList<Trampoline> rems = rt.rems;
 			rt.rems = IList.cons(fail, IList.end());
 			new Runtime(rt, rt_ -> {
 				rt_.rems = rems;
 				return okay;
 			}).trampoline();
-			return null;
 		});
 		return rt -> {
-			rt.cont(cps);
+			cps.cont(rt);
 			return fail;
 		};
 	}
 
-	private Cps compileCps(SewingBinder sb, Node node, Cps cpsx) {
+	private Cps compileNoCutPredicate_(SewingBinder sb, Node node, Cps cpsx) {
 		List<Node> list;
-		Tree tree;
-		Node m[];
 		Cps cps;
 
 		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size()) {
 			cps = cpsx;
 			for (Node n : List_.reverse(list))
-				cps = compileCps(sb, n, cps);
-		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
-			cps = orCps(Read.from(list).map(n -> compileCps(sb, n, cpsx)));
-		else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
-			cps = compileCpsCallPredicate(sb, ((Atom) m[0]).name, m[1], node, cpsx);
-		else if (node instanceof Atom) {
-			String name = ((Atom) node).name;
-			if (String_.equals(name, ""))
-				cps = cpsx;
-			else if (String_.equals(name, "fail"))
-				cps = rt -> null;
-			else
-				cps = compileCpsCallPredicate(sb, name, Atom.NIL, node, cpsx);
-		} else if ((tree = Tree.decompose(node)) != null)
-			cps = compileCpsCallPredicate(sb, tree.getOperator().getName(), node, node, cpsx);
-		else if (node instanceof Tuple)
-			cps = compileCpsCallPredicate(sb, node, cpsx);
-		else
-			throw new RuntimeException("cannot understand " + node);
+				cps = compileNoCutPredicate_(sb, n, cps);
+		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size()) {
+			Cps[] cpsArray = Read.from(list).map(n -> compileNoCutPredicate_(sb, n, cpsx)).toArray(Cps.class);
+			cps = rt -> {
+				Restore restore = save(rt);
+				for (Cps cps1 : cpsArray) {
+					cps1.cont(rt);
+					restore.restore(rt);
+				}
+			};
+		} else {
+			Trampoline tr = compile_(sb, node);
+			Trampoline rem = rt -> {
+				cpsx.cont(rt);
+				return fail;
+			};
+			cps = rt -> {
+				IList<Trampoline> rems = rt.rems;
+				rt.rems = IList.cons(fail, IList.end());
+				new Runtime(rt, rt_ -> {
+					rt_.rems = rems;
+					rt_.pushRem(rem);
+					return tr;
+				}).trampoline();
+			};
+		}
 
 		return cps;
 	}
 
-	private Cps orCps(Streamlet<Cps> cpss) {
-		List<Cps> cpsList = cpss.toList();
-		Cps[] cpsArray = List_.left(cpsList, -1).toArray(new Cps[0]);
-		Cps cps_ = List_.last(cpsList);
-		return rt -> {
-			Restore restore = save(rt);
-			for (Cps cps1 : cpsArray) {
-				rt.cont(cps1);
-				restore.restore(rt);
-			}
-			return cps_;
-		};
-	}
-
-	private Cps compileCpsCallPredicate(SewingBinder sb, String name, Node pass, Node node, Cps cpsx) {
-		BuiltinPredicate predicate = systemPredicates.get(name);
-		return predicate != null ? compileCpsCallPredicate(sb, predicate, pass, cpsx) : compileCpsCallPredicate(sb, node, cpsx);
-	}
-
-	private Cps compileCpsCallPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass, Cps cpsx) {
-		Clone_ f = sb.compile(pass);
-		return rt -> predicate.prove(rt.prover, f.apply(rt.env)) ? cpsx : null;
-	}
-
-	private Cps compileCpsCallPredicate(SewingBinder sb, Node node, Cps cpsx) {
-		Trampoline tr = compileTr(sb, node);
-		Trampoline rem = rt -> {
-			rt.cont(cpsx);
-			return fail;
-		};
-		return rt -> {
-			IList<Trampoline> rems = rt.rems;
-			rt.rems = IList.cons(fail, IList.end());
-			new Runtime(rt, rt_ -> {
-				rt_.rems = rems;
-				rt_.pushRem(rem);
-				return tr;
-			}).trampoline();
-			return null;
-		};
-	}
-
-	private Trampoline compileTr(SewingBinder sb, Node node) {
+	private Trampoline compile_(SewingBinder sb, Node node) {
+		Trampoline tr = null;
 		List<Node> list;
-		Trampoline tr;
 		Tree tree;
 		Node[] m;
 
 		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size())
-			tr = andTr(Read.from(list).map(n -> compileTr(sb, n)));
+			tr = and(Read.from(list).map(n -> compile_(sb, n)));
 		else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
-			tr = orTr(Read.from(list).map(n -> compileTr(sb, n)));
+			tr = or(Read.from(list).map(n -> compile_(sb, n)));
 		else if ((m = Suite.matcher(".0 = .1").apply(node)) != null) {
 			boolean b = complexity(m[0]) <= complexity(m[1]);
 			Node n0 = b ? m[0] : m[1];
@@ -390,10 +346,10 @@ public class SewingProverImpl implements SewingProver {
 				Class<?> clazz = Class.forName(className);
 				return (BuiltinPredicate) clazz.getField(fieldName).get(clazz.newInstance());
 			});
-			tr = compileTrCallPredicate(sb, predicate, m[2]);
+			tr = callPredicate(sb, predicate, m[2]);
 		} else if ((m = Suite.matcher("find.all .0 .1 .2").apply(node)) != null) {
 			Clone_ f = sb.compile(m[0]);
-			Trampoline tr1 = compileTr(sb, m[1]);
+			Trampoline tr1 = compile_(sb, m[1]);
 			BindPredicate p = sb.compileBind(m[2]);
 			List<Node> vs = new ArrayList<>();
 			tr = rt -> {
@@ -409,9 +365,9 @@ public class SewingProverImpl implements SewingProver {
 				return tr1;
 			};
 		} else if ((m = Suite.matcher("if .0 .1 .2").apply(node)) != null) {
-			Trampoline tr0 = compileTr(sb, m[0]);
-			Trampoline tr1 = compileTr(sb, m[1]);
-			Trampoline tr2 = compileTr(sb, m[2]);
+			Trampoline tr0 = compile_(sb, m[0]);
+			Trampoline tr1 = compile_(sb, m[1]);
+			Trampoline tr2 = compile_(sb, m[2]);
 			tr = if_(tr0, tr1, tr2);
 		} else if ((m = Suite.matcher("let .0 .1").apply(node)) != null) {
 			BindPredicate p = sb.compileBind(m[0]);
@@ -424,7 +380,7 @@ public class SewingProverImpl implements SewingProver {
 			Clone_ ht_ = sb.compile(m[3]);
 			tr = rt -> {
 				Node[] ht = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
-				Trampoline tr1 = saveEnvTr(compileRule(ht[0], ht[1], true));
+				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1], true));
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				rt.pushRem(rt_ -> valuex_.test(rt_, current.get()) ? okay : fail);
 				for (Node elem : Tree.iter(list0_.apply(rt.env))) {
@@ -447,7 +403,7 @@ public class SewingProverImpl implements SewingProver {
 			BindPredicate elem_ = sb.compileBind(m[3]);
 			BindPredicate v0_ = sb.compileBind(m[4]);
 			Clone_ vx_ = sb.compile(m[5]);
-			Trampoline tr1 = compileTr(sb, m[6]);
+			Trampoline tr1 = compile_(sb, m[6]);
 			tr = rt -> {
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				Env env0 = rt.env;
@@ -472,7 +428,7 @@ public class SewingProverImpl implements SewingProver {
 			Clone_ ht_ = sb.compile(m[1]);
 			tr = rt -> {
 				Node[] ht = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
-				Trampoline tr1 = saveEnvTr(compileRule(ht[0], ht[1], true));
+				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1], true));
 				for (Node n : Tree.iter(l_.apply(rt.env)))
 					rt.pushRem(rt_ -> {
 						rt_.query = n;
@@ -483,7 +439,7 @@ public class SewingProverImpl implements SewingProver {
 		} else if ((m = Suite.matcher("list.query.clone .0 .1 .2").apply(node)) != null) {
 			Clone_ f = sb.compile(m[0]);
 			BindPredicate p = sb.compileBind(m[1]);
-			Trampoline tr1 = compileTr(sb, m[2]);
+			Trampoline tr1 = compile_(sb, m[2]);
 			tr = rt -> {
 				Env env0 = rt.env;
 				rt.pushRem(rt_ -> {
@@ -516,9 +472,9 @@ public class SewingProverImpl implements SewingProver {
 				};
 			};
 		} else if ((m = Suite.matcher("not .0").apply(node)) != null)
-			tr = if_(compileTr(sb, m[0]), fail, okay);
+			tr = if_(compile_(sb, m[0]), fail, okay);
 		else if ((m = Suite.matcher("once .0").apply(node)) != null) {
-			Trampoline tr0 = compileTr(sb, m[0]);
+			Trampoline tr0 = compile_(sb, m[0]);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
 				rt.pushRem(rt_ -> {
@@ -530,13 +486,13 @@ public class SewingProverImpl implements SewingProver {
 		} else if ((m = Suite.matcher("suspend .0 .1 .2").apply(node)) != null) {
 			Clone_ f0 = sb.compile(m[0]);
 			Clone_ f1 = sb.compile(m[1]);
-			Trampoline tr0 = compileTr(sb, m[2]);
+			Trampoline tr0 = compile_(sb, m[2]);
 
 			tr = rt -> {
 				List<Node> results = new ArrayList<>();
 				Env env = rt.env;
 
-				Trampoline tr_ = andTr(Read.each(tr0, rt_ -> {
+				Trampoline tr_ = and(Read.each(tr0, rt_ -> {
 					results.add(f1.apply(env));
 					return fail;
 				}));
@@ -562,9 +518,9 @@ public class SewingProverImpl implements SewingProver {
 				return okay;
 			};
 		} else if ((m = Suite.matcher("try .0 .1 .2").apply(node)) != null) {
-			Trampoline tr0 = compileTr(sb, m[0]);
+			Trampoline tr0 = compile_(sb, m[0]);
 			BindPredicate p = sb.compileBind(m[1]);
-			Trampoline catch0 = compileTr(sb, m[2]);
+			Trampoline catch0 = compile_(sb, m[2]);
 			tr = rt -> {
 				BindEnv be = rt;
 				Restore restore = save(rt);
@@ -585,7 +541,9 @@ public class SewingProverImpl implements SewingProver {
 				return tr0;
 			};
 		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
-			tr = compileTrCallPredicate(sb, ((Atom) m[0]).name, m[1], node);
+			tr = callSystemPredicate(sb, ((Atom) m[0]).name, m[1]);
+		else if ((tree = Tree.decompose(node)) != null)
+			tr = callSystemPredicate(sb, tree.getOperator().getName(), node);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;
 			if (node == ProverConstant.cut)
@@ -595,80 +553,33 @@ public class SewingProverImpl implements SewingProver {
 			else if (String_.equals(name, "fail"))
 				tr = fail;
 			else
-				tr = compileTrCallPredicate(sb, name, Atom.NIL, node);
+				tr = callSystemPredicate(sb, name, Atom.NIL);
+		} else if (node instanceof Reference) {
+			Clone_ f = sb.compile(node);
+			tr = rt -> compile_(passThru, f.apply(rt.env));
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)
 				tr = rt -> ((Source<?>) data).source() != Boolean.TRUE ? okay : fail;
-			else
-				throw new RuntimeException("cannot understand " + node);
-		} else if (node instanceof Reference) {
-			Clone_ f = sb.compile(node);
-			tr = rt -> compileTr(passThru, f.apply(rt.env));
-		} else if ((tree = Tree.decompose(node)) != null)
-			tr = compileTrCallPredicate(sb, tree.getOperator().getName(), node, node);
-		else if (node instanceof Tuple)
-			tr = compileTrCallPredicate(sb, node);
+		}
+
+		if (tr == null) {
+			Prototype prototype = Prototype.of(node);
+			if (rules.containsKey(prototype)) {
+				Clone_ f = sb.compile(node);
+				Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
+				tr = rt -> {
+					rt.query = f.apply(rt.env);
+					// logUtil.info(Formatter.dump(rt.query));
+					return mtr.get()::prove;
+				};
+			}
+		}
+
+		if (tr != null)
+			return tr;
 		else
-			throw new RuntimeException("cannot understand " + node);
-
-		return tr;
-	}
-
-	private Trampoline andTr(Streamlet<Trampoline> trs) {
-		List<Trampoline> trs_ = trs.toList();
-		if (trs_.size() == 0)
-			return okay;
-		else if (trs_.size() == 1)
-			return trs_.get(0);
-		else if (trs_.size() == 2) {
-			Trampoline tr0 = trs_.get(0);
-			Trampoline tr1 = trs_.get(1);
-			return rt -> {
-				rt.pushRem(tr1);
-				return tr0;
-			};
-		} else {
-			Trampoline trh = trs_.get(0);
-			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
-			return rt -> {
-				for (Trampoline tr_ : trt)
-					rt.pushRem(tr_);
-				return trh;
-			};
-		}
-	}
-
-	private Trampoline orTr(Streamlet<Trampoline> trs) {
-		List<Trampoline> trs_ = trs.toList();
-		if (trs_.size() == 0)
-			return fail;
-		else if (trs_.size() == 1)
-			return trs_.get(0);
-		else if (trs_.size() == 2) {
-			Trampoline tr0 = trs_.get(0);
-			Trampoline tr1 = trs_.get(1);
-			return rt -> {
-				Restore restore = save(rt);
-				rt.pushAlt(rt_ -> {
-					restore.restore(rt);
-					return tr1;
-				});
-				return tr0;
-			};
-		} else {
-			Trampoline trh = trs_.get(0);
-			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
-			return rt -> {
-				Restore restore = save(rt);
-				for (Trampoline tr_ : trt)
-					rt.pushAlt(rt_ -> {
-						restore.restore(rt);
-						return tr_;
-					});
-				return trh;
-			};
-		}
+			throw new RuntimeException("Cannot understand " + node);
 	}
 
 	private Trampoline if_(Trampoline tr0, Trampoline tr1, Trampoline tr2) {
@@ -687,31 +598,17 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Trampoline compileTrCallPredicate(SewingBinder sb, String name, Node pass, Node node) {
+	private Trampoline callSystemPredicate(SewingBinder sb, String name, Node pass) {
 		BuiltinPredicate predicate = systemPredicates.get(name);
-		return predicate != null ? compileTrCallPredicate(sb, predicate, pass) : compileTrCallPredicate(sb, node);
+		return predicate != null ? callPredicate(sb, predicate, pass) : null;
 	}
 
-	private Trampoline compileTrCallPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass) {
+	private Trampoline callPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass) {
 		Clone_ f = sb.compile(pass);
 		return rt -> predicate.prove(rt.prover, f.apply(rt.env)) ? okay : fail;
 	}
 
-	private Trampoline compileTrCallPredicate(SewingBinder sb, Node node) {
-		Prototype prototype = Prototype.of(node);
-		if (rules.containsKey(prototype)) {
-			Clone_ f = sb.compile(node);
-			Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
-			return rt -> {
-				rt.query = f.apply(rt.env);
-				// logUtil.info(Formatter.dump(rt.query));
-				return mtr.get()::prove;
-			};
-		} else
-			throw new RuntimeException();
-	}
-
-	private Trampoline saveEnvTr(Trampoline tr) {
+	private Trampoline saveEnv(Trampoline tr) {
 		return rt -> {
 			Env env0 = rt.env;
 			rt.pushRem(rt_ -> {
@@ -722,7 +619,7 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Trampoline newEnvTr(SewingBinder sb, Trampoline tr) {
+	private Trampoline newEnv(SewingBinder sb, Trampoline tr) {
 		return rt -> {
 			rt.env = sb.env();
 			return tr;
@@ -790,6 +687,62 @@ public class SewingProverImpl implements SewingProver {
 		return tr2;
 	}
 
+	private Trampoline and(Streamlet<Trampoline> trs) {
+		List<Trampoline> trs_ = trs.toList();
+		if (trs_.size() == 0)
+			return okay;
+		else if (trs_.size() == 1)
+			return trs_.get(0);
+		else if (trs_.size() == 2) {
+			Trampoline tr0 = trs_.get(0);
+			Trampoline tr1 = trs_.get(1);
+			return rt -> {
+				rt.pushRem(tr1);
+				return tr0;
+			};
+		} else {
+			Trampoline trh = trs_.get(0);
+			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
+			return rt -> {
+				for (Trampoline tr_ : trt)
+					rt.pushRem(tr_);
+				return trh;
+			};
+		}
+	}
+
+	private Trampoline or(Streamlet<Trampoline> trs) {
+		List<Trampoline> trs_ = trs.toList();
+		if (trs_.size() == 0)
+			return fail;
+		else if (trs_.size() == 1)
+			return trs_.get(0);
+		else if (trs_.size() == 2) {
+			Trampoline tr0 = trs_.get(0);
+			Trampoline tr1 = trs_.get(1);
+			return rt -> {
+				Restore restore = save(rt);
+				rt.pushAlt(rt_ -> {
+					restore.restore(rt);
+					return tr1;
+				});
+				return tr0;
+			};
+		} else {
+			Trampoline trh = trs_.get(0);
+			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
+			return rt -> {
+				Restore restore = save(rt);
+				for (Trampoline tr_ : trt)
+					rt.pushAlt(rt_ -> {
+						restore.restore(rt);
+						return tr_;
+					});
+				return trh;
+			};
+		}
+	}
+
 	private Restore save(Runtime rt) {
 		Env env0 = rt.env;
 		Node query0 = rt.query;
@@ -816,7 +769,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Mutable<Trampoline> getTrampolineByPrototype(Prototype prototype) {
-		return trampolineByPrototype.computeIfAbsent(prototype, k -> Mutable.nil());
+		return trampolinesByPrototype.computeIfAbsent(prototype, k -> Mutable.nil());
 	}
 
 	private TraceLevel traceLevel(Prototype prototype) {

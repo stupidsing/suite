@@ -95,13 +95,13 @@ public class StoreCache {
 			DataOutput_ do_ = DataOutput_.of(os);
 
 			do_.writeInt(keySize);
-			key.write(do_);
+			do_.writeBytes(key);
 
 			return Outlet //
 					.of(() -> Rethrow.ex(() -> {
 						Bytes value = outlet.next();
 						if (value != null)
-							value.write(do_);
+							do_.writeBytes(value);
 						return value;
 					})) //
 					.closeAtEnd(os);
