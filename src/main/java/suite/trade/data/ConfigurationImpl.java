@@ -93,7 +93,8 @@ public class ConfigurationImpl implements Configuration {
 		Map<Source_, Set<String>> map = new HashMap<>();
 		for (String symbol : symbols)
 			map.computeIfAbsent(source_(symbol), s -> new HashSet<>()).add(symbol);
-		return To.map_(hkd.quote(map.get(Source_.HKD__)), yahoo.quote(map.get(Source_.YAHOO)));
+		return To.map_(hkd.quote(map.getOrDefault(Source_.HKD__, Collections.emptySet())),
+				yahoo.quote(map.getOrDefault(Source_.YAHOO, Collections.emptySet())));
 	}
 
 	private Source_ source_(String symbol) {
