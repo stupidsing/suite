@@ -3,7 +3,9 @@ package suite.util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 
+import suite.adt.Pair;
 import suite.adt.PriorityQueue;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -15,6 +17,14 @@ public class Memoize {
 	}
 
 	/**
+	 * Cache results of a two-parameters function call, no clean-up.
+	 */
+	public static <I0, I1, O> BiFunction<I0, I1, O> biFunction(BiFunction<I0, I1, O> fun) {
+		Map<Pair<I0, I1>, O> results = new ConcurrentHashMap<>();
+		return (in0, in1) -> results.computeIfAbsent(Pair.of(in0, in1), p -> fun.apply(in0, in1));
+	}
+
+	/**
 	 * Cache results of a function call, no clean-up.
 	 */
 	public static <I, O> Fun<I, O> fun(Fun<I, O> fun) {
@@ -22,6 +32,9 @@ public class Memoize {
 		return in -> results.computeIfAbsent(in, fun::apply);
 	}
 
+	/**
+	 * Memoizer for a parameterless function, guaranteeing a single call.
+	 */
 	public static <T> Source<T> future(Source<T> source) {
 		return new Source<T>() {
 			private volatile T result;

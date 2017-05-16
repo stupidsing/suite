@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import suite.util.Object_;
 
-public class Range<T extends Comparable<? super T>> {
+public class Range<T extends Comparable<? super T>> implements Comparable<Range<T>> {
 
 	public final T from;
 	public final T to;
@@ -24,6 +24,14 @@ public class Range<T extends Comparable<? super T>> {
 
 	public boolean isEmpty() {
 		return Object_.compare(from, to) < 0;
+	}
+
+	@Override
+	public int compareTo(Range<T> other) {
+		int c = 0;
+		c = c == 0 ? from.compareTo(other.from) : c;
+		c = c == 0 ? to.compareTo(other.to) : c;
+		return c;
 	}
 
 	@Override
