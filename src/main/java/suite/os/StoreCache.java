@@ -97,7 +97,7 @@ public class StoreCache {
 			DataOutput do_ = dos;
 
 			do_.writeInt(keySize);
-			do_.write(key.toByteArray());
+			key.write(do_);
 
 			return Outlet //
 					.of(() -> Rethrow.ex(() -> {

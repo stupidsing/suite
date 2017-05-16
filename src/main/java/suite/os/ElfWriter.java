@@ -72,8 +72,8 @@ public class ElfWriter {
 				.dd(0x1000) // p_align
 				.toBytes();
 
-		os.write(header.toByteArray());
-		os.write(code.toByteArray());
+		header.write(os);
+		code.write(os);
 	}
 
 }
