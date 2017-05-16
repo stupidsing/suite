@@ -348,7 +348,14 @@ public class SewingProverImpl implements SewingProver {
 				cps = compileCps(sb, n, cps);
 		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
 			cps = orCps(Read.from(list).map(n -> compileCps(sb, n, cpsx)));
-		else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
+		else if ((m = Suite.matcher(".0 = .1").apply(node)) != null) {
+			boolean b = complexity(m[0]) <= complexity(m[1]);
+			Node n0 = b ? m[0] : m[1];
+			Node n1 = b ? m[1] : m[0];
+			BindPredicate p = sb.compileBind(n1);
+			Clone_ f = sb.compile(n0);
+			cps = rt -> p.test(rt, f.apply(rt.env)) ? cpsx : null;
+		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
 			cps = compileCpsCallPredicate(sb, ((Atom) m[0]).name, m[1], node, cpsx);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;
@@ -402,10 +409,11 @@ public class SewingProverImpl implements SewingProver {
 				Clone_ f = sb.compile(node);
 				Mutable<Cps> mcps = getCpsByPrototype(prototype);
 				cps = rt -> {
-					Node query0 = rt.query;
+					Restore restore = save(rt);
+					rt.cps = cpsx;
 					rt.query = f.apply(rt.env);
 					rt.cont(mcps.get());
-					rt.query = query0;
+					restore.restore(rt);
 					return null;
 				};
 			}
