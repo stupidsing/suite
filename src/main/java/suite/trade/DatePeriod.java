@@ -16,16 +16,11 @@ public class DatePeriod extends Range<LocalDate> {
 
 		// align date range boundaries to reduce number of web queries (and
 		// calculations)
-		LocalDate toDate = date.minusDays(date.toEpochDay() % alignment);
-		LocalDate frDate = toDate.minusDays(nDays);
-		return of_(frDate, toDate);
+		return daysBefore_(date.minusDays(date.toEpochDay() % alignment), nDays);
 	}
 
 	public static DatePeriod daysBefore(int nDays) {
-		LocalDate today = LocalDate.now();
-		LocalDate from = today.minusDays(128);
-		LocalDate to = today;
-		return of_(from, to);
+		return daysBefore_(LocalDate.now(), nDays);
 	}
 
 	public static DatePeriod threeYears() {
@@ -48,14 +43,16 @@ public class DatePeriod extends Range<LocalDate> {
 		return yearsBefore_(to, n);
 	}
 
+	private static DatePeriod daysBefore_(LocalDate to, int n) {
+		return of_(to.minusDays(n), to);
+	}
+
 	private static DatePeriod yearsBefore_(int n) {
-		LocalDate to = LocalDate.now().withDayOfMonth(1);
-		return yearsBefore_(to, n);
+		return yearsBefore_(LocalDate.now().withDayOfMonth(1), n);
 	}
 
 	private static DatePeriod yearsBefore_(LocalDate to, int n) {
-		LocalDate from = to.minusYears(n);
-		return of(from, to);
+		return of_(to.minusYears(n), to);
 	}
 
 	private static DatePeriod of_(LocalDate from, LocalDate to) {
