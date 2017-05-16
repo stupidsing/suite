@@ -71,8 +71,8 @@ public class HashBiMap<K, V> implements BiMap<K, V> {
 
 	@Override
 	public void putAll(Map<? extends K, ? extends V> m) {
-		for (java.util.Map.Entry<? extends K, ? extends V> entry : m.entrySet())
-			put(entry.getKey(), entry.getValue());
+		for (java.util.Map.Entry<? extends K, ? extends V> e : m.entrySet())
+			put(e.getKey(), e.getValue());
 	}
 
 	@Override

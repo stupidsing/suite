@@ -43,9 +43,9 @@ public class IHashMap<K, V> {
 	}
 
 	public V get(K key) {
-		for (Pair<K, V> entry : set.get(key.hashCode()))
-			if (Objects.equals(key, entry.t0))
-				return entry.t1;
+		for (Pair<K, V> e : set.get(key.hashCode()))
+			if (Objects.equals(key, e.t0))
+				return e.t1;
 		return null;
 	}
 

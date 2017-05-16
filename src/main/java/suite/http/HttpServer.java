@@ -91,8 +91,8 @@ public class HttpServer {
 			StringBuilder sb = new StringBuilder();
 
 			sb.append("HTTP/1.1 " + response.status + "\r\n");
-			for (Pair<String, String> entry : response.headers)
-				sb.append(entry.t0 + ": " + entry.t1 + "\r\n");
+			for (Pair<String, String> e : response.headers)
+				sb.append(e.t0 + ": " + e.t1 + "\r\n");
 			sb.append("\r\n");
 
 			os.write(sb.toString().getBytes(Constants.charset));
