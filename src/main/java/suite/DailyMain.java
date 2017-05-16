@@ -132,7 +132,7 @@ public class DailyMain extends ExecutableProgram {
 								SingleAllocBackTest backTest = SingleAllocBackTest.test(ds1, strategy);
 								return MathUtil.isPositive(backTest.account.cash());
 							} catch (Exception ex) {
-								LogUtil.warn(ex.getMessage() + " for " + stock);
+								LogUtil.warn(ex + " for " + stock);
 								return false;
 							}
 						}) //
