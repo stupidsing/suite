@@ -1,6 +1,5 @@
 package suite.primitive;
 
-import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.CharBuffer;
@@ -181,7 +180,7 @@ public class Chars implements Iterable<Character> {
 		return of(cs, s, e);
 	}
 
-	public void write(DataOutput dataOutput) throws IOException {
+	public void write(DataOutput_ dataOutput) throws IOException {
 		dataOutput.writeChars(new String(toCharArray()));
 	}
 

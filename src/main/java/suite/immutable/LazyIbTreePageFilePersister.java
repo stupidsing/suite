@@ -1,7 +1,5 @@
 package suite.immutable;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -17,6 +15,8 @@ import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.immutable.LazyIbTree.Slot;
+import suite.primitive.DataInput_;
+import suite.primitive.DataOutput_;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
@@ -44,11 +44,11 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 		Serializer<Pair<T, Integer>> ps = Serialize.pair(ts1, Serialize.int_);
 		Serializer<List<Pair<T, Integer>>> lps = Serialize.list(ps);
 		Serializer<PersistSlot<T>> pss = new Serializer<PersistSlot<T>>() {
-			public PersistSlot<T> read(DataInput dataInput) throws IOException {
+			public PersistSlot<T> read(DataInput_ dataInput) throws IOException {
 				return new PersistSlot<>(lps.read(dataInput));
 			}
 
-			public void write(DataOutput dataOutput, PersistSlot<T> value) throws IOException {
+			public void write(DataOutput_ dataOutput, PersistSlot<T> value) throws IOException {
 				lps.write(dataOutput, value.pairs);
 			}
 		};

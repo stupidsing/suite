@@ -1,10 +1,10 @@
 package suite.file.impl;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
+import suite.primitive.DataInput_;
 import suite.streamlet.As;
 import suite.util.Rethrow;
 import suite.util.Serialize.Serializer;
@@ -23,7 +23,7 @@ public class SerializedFileFactory {
 			}
 
 			public V load(int pointer) {
-				return Rethrow.ex(() -> serializer.read(new DataInputStream(pageFile.load(pointer).collect(As::inputStream))));
+				return Rethrow.ex(() -> serializer.read(DataInput_.of(pageFile.load(pointer).collect(As::inputStream))));
 			}
 
 			public void save(int pointer, V value) {

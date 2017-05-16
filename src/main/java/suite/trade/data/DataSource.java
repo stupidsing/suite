@@ -1,12 +1,12 @@
 package suite.trade.data;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
 
 import suite.math.Matrix;
+import suite.primitive.DataInput_;
+import suite.primitive.DataOutput_;
 import suite.trade.DatePeriod;
 import suite.util.FormatUtil;
 import suite.util.Object_;
@@ -22,13 +22,13 @@ public class DataSource {
 		private Serializer<String[]> sas = Serialize.array(String.class, Serialize.string(10));
 		private Serializer<float[]> fas = Serialize.arrayOfFloats;
 
-		public DataSource read(DataInput dataInput) throws IOException {
+		public DataSource read(DataInput_ dataInput) throws IOException {
 			String[] dates = sas.read(dataInput);
 			float[] prices = fas.read(dataInput);
 			return new DataSource(dates, prices);
 		}
 
-		public void write(DataOutput dataOutput, DataSource dataSource) throws IOException {
+		public void write(DataOutput_ dataOutput, DataSource dataSource) throws IOException {
 			sas.write(dataOutput, dataSource.dates);
 			fas.write(dataOutput, dataSource.prices);
 		}

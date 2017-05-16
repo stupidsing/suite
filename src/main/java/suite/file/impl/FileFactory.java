@@ -1,7 +1,5 @@
 package suite.file.impl;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -15,6 +13,8 @@ import suite.file.SerializedPageFile;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.DataInput_;
+import suite.primitive.DataOutput_;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 import suite.util.Util;
@@ -36,13 +36,13 @@ public class FileFactory {
 		Serializer<Bytes> bytesSerializer = Serialize.variableLengthBytes;
 
 		SerializedPageFile<Block> pageFile = SerializedFileFactory.serialized(pf, new Serializer<Block>() {
-			public Block read(DataInput dataInput) throws IOException {
+			public Block read(DataInput_ dataInput) throws IOException {
 				Extent extent = extentSerializer.read(dataInput);
 				Bytes bytes = bytesSerializer.read(dataInput);
 				return new Block(extent, bytes);
 			}
 
-			public void write(DataOutput dataOutput, Block block) throws IOException {
+			public void write(DataOutput_ dataOutput, Block block) throws IOException {
 				extentSerializer.write(dataOutput, block.extent);
 				bytesSerializer.write(dataOutput, block.bytes);
 			}

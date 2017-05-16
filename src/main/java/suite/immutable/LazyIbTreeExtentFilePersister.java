@@ -1,8 +1,5 @@
 package suite.immutable;
 
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -23,6 +20,8 @@ import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.immutable.LazyIbTree.Slot;
 import suite.primitive.Bytes;
+import suite.primitive.DataInput_;
+import suite.primitive.DataOutput_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
@@ -56,11 +55,11 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		Serializer<Pair<T, Extent>> ps = Serialize.pair(ts1, es);
 		Serializer<List<Pair<T, Extent>>> lps = Serialize.list(ps);
 		serializer = new Serializer<PersistSlot<T>>() {
-			public PersistSlot<T> read(DataInput dataInput) throws IOException {
+			public PersistSlot<T> read(DataInput_ dataInput) throws IOException {
 				return new PersistSlot<>(lps.read(dataInput));
 			}
 
-			public void write(DataOutput dataOutput, PersistSlot<T> value) throws IOException {
+			public void write(DataOutput_ dataOutput, PersistSlot<T> value) throws IOException {
 				lps.write(dataOutput, value.pairs);
 			}
 		};
@@ -164,7 +163,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	private PersistSlot<T> loadSlot(Extent extent) {
-		return Rethrow.ex(() -> serializer.read(new DataInputStream(extentFile.load(extent).collect(As::inputStream))));
+		return Rethrow.ex(() -> serializer.read(DataInput_.of(extentFile.load(extent).collect(As::inputStream))));
 	}
 
 	private Extent saveSlot(int start, PersistSlot<T> value) {

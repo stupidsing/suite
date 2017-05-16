@@ -2,12 +2,12 @@ package suite.os;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import suite.node.util.Singleton;
 import suite.primitive.Bytes;
+import suite.primitive.DataInput_;
+import suite.primitive.DataOutput_;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.Serialize;
@@ -38,7 +38,7 @@ public class SerializedStoreCache<K, V> {
 
 		return Rethrow.ex(() -> {
 			try (ByteArrayInputStream bais = new ByteArrayInputStream(valueBytes.toByteArray());
-					DataInputStream dis = new DataInputStream(bais)) {
+					DataInput_ dis = DataInput_.of(bais)) {
 				return valueSerializer.read(dis);
 			}
 		});
@@ -47,7 +47,7 @@ public class SerializedStoreCache<K, V> {
 	private static <T> Bytes serialize(Serializer<T> serializer, T t) {
 		ByteArrayOutputStream baosKey = new ByteArrayOutputStream();
 
-		try (DataOutputStream dos = new DataOutputStream(baosKey)) {
+		try (DataOutput_ dos = DataOutput_.of(baosKey)) {
 			serializer.write(dos, t);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);

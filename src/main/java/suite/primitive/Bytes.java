@@ -1,6 +1,5 @@
 package suite.primitive;
 
-import java.io.DataOutput;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -176,7 +175,7 @@ public class Bytes implements Iterable<Byte> {
 		return of(bs, s, e);
 	}
 
-	public void write(DataOutput dataOutput) throws IOException {
+	public void write(DataOutput_ dataOutput) throws IOException {
 		dataOutput.write(bs, start, end - start);
 	}
 

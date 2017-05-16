@@ -1,7 +1,5 @@
 package suite.file.impl;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -13,6 +11,8 @@ import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
+import suite.primitive.DataInput_;
+import suite.primitive.DataOutput_;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
@@ -34,13 +34,13 @@ public class JournalledFileFactory {
 		Serializer<Bytes> bytesSerializer = Serialize.bytes(pageSize);
 
 		Serializer<JournalEntry> journalEntrySerializer = new Serializer<JournalEntry>() {
-			public JournalEntry read(DataInput dataInput) throws IOException {
+			public JournalEntry read(DataInput_ dataInput) throws IOException {
 				int pointer = dataInput.readInt();
 				Bytes bytes = bytesSerializer.read(dataInput);
 				return new JournalEntry(pointer, bytes);
 			}
 
-			public void write(DataOutput dataOutput, JournalEntry journalEntry) throws IOException {
+			public void write(DataOutput_ dataOutput, JournalEntry journalEntry) throws IOException {
 				dataOutput.writeInt(journalEntry.pointer);
 				bytesSerializer.write(dataOutput, journalEntry.bytes);
 			}

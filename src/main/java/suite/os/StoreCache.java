@@ -1,8 +1,6 @@
 package suite.os;
 
 import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -13,6 +11,7 @@ import java.util.Arrays;
 import suite.Constants;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
+import suite.primitive.DataOutput_;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
@@ -93,8 +92,7 @@ public class StoreCache {
 
 			Outlet<Bytes> outlet = source.source();
 			OutputStream os = FileUtil.out(path);
-			DataOutputStream dos = new DataOutputStream(os);
-			DataOutput do_ = dos;
+			DataOutput_ do_ = DataOutput_.of(os);
 
 			do_.writeInt(keySize);
 			key.write(do_);
@@ -106,7 +104,6 @@ public class StoreCache {
 							value.write(do_);
 						return value;
 					})) //
-					.closeAtEnd(dos) //
 					.closeAtEnd(os);
 		});
 	}

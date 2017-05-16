@@ -1,7 +1,5 @@
 package suite.btree.impl;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +16,8 @@ import suite.file.impl.JournalledFileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyDataStore;
 import suite.primitive.Bytes;
+import suite.primitive.DataInput_;
+import suite.primitive.DataOutput_;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.Serialize;
@@ -42,13 +42,13 @@ public class B_TreeBuilder<Key, Value> {
 			this.b_tree = b_tree;
 		}
 
-		public B_TreeImpl<Key, Value>.Superblock read(DataInput dataInput) throws IOException {
+		public B_TreeImpl<Key, Value>.Superblock read(DataInput_ dataInput) throws IOException {
 			B_TreeImpl<Key, Value>.Superblock superblock = b_tree.new Superblock();
 			superblock.root = Serialize.int_.read(dataInput);
 			return superblock;
 		}
 
-		public void write(DataOutput dataOutput, B_TreeImpl<Key, Value>.Superblock value) throws IOException {
+		public void write(DataOutput_ dataOutput, B_TreeImpl<Key, Value>.Superblock value) throws IOException {
 			Serialize.int_.write(dataOutput, value.root);
 		}
 	}
@@ -60,7 +60,7 @@ public class B_TreeBuilder<Key, Value> {
 			this.b_tree = b_tree;
 		}
 
-		public B_TreeImpl<Key, Value>.Page read(DataInput dataInput) throws IOException {
+		public B_TreeImpl<Key, Value>.Page read(DataInput_ dataInput) throws IOException {
 			int pointer = dataInput.readInt();
 			int size = dataInput.readInt();
 
@@ -86,7 +86,7 @@ public class B_TreeBuilder<Key, Value> {
 			return page;
 		}
 
-		public void write(DataOutput dataOutput, B_TreeImpl<Key, Value>.Page page) throws IOException {
+		public void write(DataOutput_ dataOutput, B_TreeImpl<Key, Value>.Page page) throws IOException {
 			dataOutput.writeInt(page.pointer);
 			dataOutput.writeInt(page.size());
 
