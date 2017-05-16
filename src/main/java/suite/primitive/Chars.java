@@ -318,7 +318,7 @@ public class Chars implements Iterable<Character> {
 		}
 
 		public Chars toChars() {
-			return new Chars(cs, 0, size);
+			return of(cs, 0, size);
 		}
 
 		private void extendBuffer(int capacity1) {
