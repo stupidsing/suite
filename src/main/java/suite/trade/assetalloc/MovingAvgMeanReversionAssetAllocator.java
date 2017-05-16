@@ -1,6 +1,7 @@
 package suite.trade.assetalloc;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,6 +11,7 @@ import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
 import suite.math.TimeSeries;
 import suite.math.TimeSeries.ReturnsStat;
+import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
@@ -32,6 +34,8 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 
 	private Configuration cfg;
 	private Sink<String> log;
+
+	private Map<Pair<String, DatePeriod>, MeanReversionStat> memoizeMrs = new HashMap<>();
 
 	public static AssetAllocator of(Configuration cfg, Sink<String> log) {
 		return MovingAvgMeanReversionAssetAllocator.of_(cfg, log);
@@ -56,8 +60,11 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		DatePeriod backTestPeriod = DatePeriod.yearsBefore(backTestDate, 1);
 		int nTradeDaysInYear = Read.from(tradeDates).filter(backTestPeriod::contains).size();
 
+		ObjObj_Obj<String, DataSource, MeanReversionStat> mrsFun = (symbol, dataSource) -> memoizeMrs
+				.computeIfAbsent(Pair.of(symbol, mrsPeriod), p -> meanReversionStat(symbol, dataSource, mrsPeriod));
+
 		Map<String, MeanReversionStat> meanReversionStatBySymbol = Read.from2(dataSourceBySymbol) //
-				.map2((symbol, dataSource) -> symbol, (symbol, dataSource) -> meanReversionStat(symbol, dataSource, mrsPeriod)) //
+				.map2((symbol, dataSource) -> symbol, mrsFun) //
 				.toMap();
 
 		double dailyRiskFreeInterestRate = Math.expm1(stat.logRiskFreeInterestRate / nTradeDaysInYear);
