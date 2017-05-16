@@ -3,6 +3,7 @@ package suite.trade.data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +26,10 @@ public class ConfigurationImpl implements Configuration {
 	private Hkex hkex = new Hkex();
 	private HkexFactBook hkexFactBook = new HkexFactBook();
 	private Yahoo yahoo = new Yahoo();
+
+	private enum Source_ {
+		HKD__, YAHOO,
+	};
 
 	public DataSource dataSource(String symbol) {
 		return dataSource_(symbol, DatePeriod.ages());
@@ -74,23 +79,28 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	private DataSource dataSource_(String symbol, DatePeriod period) {
-		return yahoo.dataSource(symbol, period);
+		switch (source_(symbol)) {
+		case HKD__:
+			return hkd.dataSource(symbol, period);
+		case YAHOO:
+			return yahoo.dataSource(symbol, period);
+		default:
+			throw new RuntimeException();
+		}
 	}
 
 	private Map<String, Float> quote_(Set<String> symbols) {
-		Set<String> hkdCodes = new HashSet<>();
-		Set<String> yahooSymbols = new HashSet<>();
+		Map<Source_, Set<String>> map = new HashMap<>();
+		for (String symbol : symbols)
+			map.computeIfAbsent(source_(symbol), s -> new HashSet<>()).add(symbol);
+		return To.map_(hkd.quote(map.get(Source_.HKD__)), yahoo.quote(map.get(Source_.YAHOO)));
+	}
 
-		for (String symbol : symbols) {
-			Set<String> set;
-			if (String_.equals(symbol, Asset.cashCode))
-				set = hkdCodes;
-			else
-				set = yahooSymbols;
-			set.add(symbol);
-		}
-
-		return To.map_(hkd.quote(hkdCodes), yahoo.quote(yahooSymbols));
+	private Source_ source_(String symbol) {
+		if (String_.equals(symbol, Asset.cashCode))
+			return Source_.HKD__;
+		else
+			return Source_.YAHOO;
 	}
 
 }
