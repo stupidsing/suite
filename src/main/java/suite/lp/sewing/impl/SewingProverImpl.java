@@ -124,7 +124,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private class Runtime implements BindEnv {
-		private Cps cpsx;
+		private Cps cps;
 		private Env env = emptyEnvironment;
 		private Node query;
 		private IList<Trampoline> cutPoint;
@@ -332,7 +332,7 @@ public class SewingProverImpl implements SewingProver {
 	private Cps compileCpsRule(Node head, Node tail) {
 		SewingBinder sb = new SewingBinderImpl0();
 		BindPredicate p = sb.compileBind(head);
-		Cps cps = compileCps(sb, tail, rt -> rt.cpsx);
+		Cps cps = compileCps(sb, tail, rt -> rt.cps);
 		return newEnvCps(sb, rt -> p.test(rt, rt.query) ? cps : null);
 	}
 
@@ -410,7 +410,7 @@ public class SewingProverImpl implements SewingProver {
 				};
 			}
 		else
-			throw new RuntimeException();
+			throw new RuntimeException("cannot find predicate " + prototype);
 		return cps;
 	}
 
@@ -797,7 +797,7 @@ public class SewingProverImpl implements SewingProver {
 			} else
 				tr = compileTrCallCps(sb, node);
 		else
-			throw new RuntimeException();
+			throw new RuntimeException("cannot find predicate " + prototype);
 		return tr;
 	}
 
@@ -881,7 +881,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Restore save(Runtime rt) {
-		Cps cps0 = rt.cpsx;
+		Cps cps0 = rt.cps;
 		Env env0 = rt.env;
 		Node query0 = rt.query;
 		IList<Trampoline> cutPoint0 = rt.cutPoint;
@@ -889,7 +889,7 @@ public class SewingProverImpl implements SewingProver {
 		int pit0 = rt.trail.getPointInTime();
 		Sink<Node> handler0 = rt.handler;
 		return rt_ -> {
-			rt_.cpsx = cps0;
+			rt_.cps = cps0;
 			rt_.env = env0;
 			rt_.query = query0;
 			rt_.cutPoint = cutPoint0;
