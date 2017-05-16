@@ -94,8 +94,8 @@ public class Chr {
 
 		List<Node> nodes1 = new ArrayList<>();
 
-		for (Pair<Prototype, ISet<Node>> pair : state.factsByPrototype)
-			nodes1.addAll(To.list(pair.t1));
+		for (Pair<Prototype, ISet<Node>> e : state.factsByPrototype)
+			nodes1.addAll(To.list(e.t1));
 
 		return nodes1;
 	}
@@ -158,8 +158,8 @@ public class Chr {
 			states = states.map(new Fun<State, State>() {
 				public State apply(State state) {
 					IMap<Prototype, ISet<Node>> factsByPrototype1 = IMap.empty();
-					for (Pair<Prototype, ISet<Node>> pair : state.factsByPrototype)
-						factsByPrototype1 = factsByPrototype1.put(pair.t0, replace(pair.t1));
+					for (Pair<Prototype, ISet<Node>> e : state.factsByPrototype)
+						factsByPrototype1 = factsByPrototype1.put(e.t0, replace(e.t1));
 					return new State(factsByPrototype1);
 				}
 

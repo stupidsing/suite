@@ -184,9 +184,9 @@ public class EagerFunInterpreter {
 				};
 			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Node>> vm1 = IMap.empty();
-				for (Pair<Node, Fun<Frame, Node>> pair : vm) {
-					Fun<Frame, Node> getter0 = pair.t1;
-					vm1 = vm1.put(pair.t0, frame -> getter0.apply(frame.parent));
+				for (Pair<Node, Fun<Frame, Node>> e : vm) {
+					Fun<Frame, Node> getter0 = e.t1;
+					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
 				}
 				Fun<Frame, Node> value_ = new Eager_(0, vm1).put(FUN.param).eager_(FUN.do_);
 				result = frame -> new Fun_(in -> {

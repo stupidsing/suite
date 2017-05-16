@@ -222,9 +222,9 @@ public class LazyFunInterpreter {
 				};
 			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Thunk_>> vm1 = IMap.empty();
-				for (Pair<Node, Fun<Frame, Thunk_>> pair : vm) {
-					Fun<Frame, Thunk_> getter0 = pair.t1;
-					vm1 = vm1.put(pair.t0, frame -> getter0.apply(frame.parent));
+				for (Pair<Node, Fun<Frame, Thunk_>> e : vm) {
+					Fun<Frame, Thunk_> getter0 = e.t1;
+					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
 				}
 
 				Fun<Frame, Thunk_> value_ = new Lazy_(0, vm1).put(FUN.param).lazy_(FUN.do_);

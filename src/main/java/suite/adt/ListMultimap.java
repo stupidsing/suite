@@ -68,8 +68,8 @@ public class ListMultimap<K, V> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
-		for (Pair<K, List<V>> pair : listEntries())
-			sb.append(pair.t0 + "=" + pair.t1 + ", ");
+		for (Pair<K, List<V>> e : listEntries())
+			sb.append(e.t0 + "=" + e.t1 + ", ");
 		sb.append("}");
 		return sb.toString();
 	}

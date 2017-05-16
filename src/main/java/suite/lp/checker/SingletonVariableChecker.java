@@ -21,9 +21,9 @@ public class SingletonVariableChecker {
 	public void check(List<Rule> rules) {
 		ListMultimap<Prototype, Rule> rulesByPrototype = Prototype.multimap(rules);
 
-		for (Pair<Prototype, Rule> pair : rulesByPrototype.entries()) {
-			Prototype prototype = pair.t0;
-			Rule rule = pair.t1;
+		for (Pair<Prototype, Rule> e : rulesByPrototype.entries()) {
+			Prototype prototype = e.t0;
+			Rule rule = e.t1;
 
 			Scanner scanner = new Scanner();
 			scanner.scan(rule.head);
