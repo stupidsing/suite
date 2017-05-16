@@ -69,12 +69,12 @@ public class Bytes implements Iterable<Byte> {
 		this.end = end;
 	}
 
-	public Bytes append(Bytes a) {
-		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
-		byte[] nb = new byte[newSize];
-		System.arraycopy(bs, start, nb, 0, size0);
-		System.arraycopy(a.bs, a.start, nb, size0, size1);
-		return of(nb);
+	public Bytes append(Bytes bytes1) {
+		int size0 = size_(), size1 = bytes1.size_(), newSize = size0 + size1;
+		byte[] bsx = new byte[newSize];
+		System.arraycopy(bs, start, bsx, 0, size0);
+		System.arraycopy(bytes1.bs, bytes1.start, bsx, size0, size1);
+		return of(bsx);
 	}
 
 	public static Bytes asList(byte... in) {
