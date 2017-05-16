@@ -175,6 +175,14 @@ public class To {
 		};
 	}
 
+	public static int int_(byte b) {
+		return Byte.toUnsignedInt(b);
+	}
+
+	public static int int_(char c) {
+		return c;
+	}
+
 	@SafeVarargs
 	public static <T> List<T> list(Collection<T>... collections) {
 		List<T> list = new ArrayList<>();

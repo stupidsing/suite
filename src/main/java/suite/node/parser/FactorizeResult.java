@@ -18,6 +18,7 @@ import suite.primitive.Chars.CharsBuilder;
 import suite.util.FunUtil.Fun;
 import suite.util.List_;
 import suite.util.Nodify;
+import suite.util.To;
 
 public class FactorizeResult {
 
@@ -91,7 +92,7 @@ public class FactorizeResult {
 			if (i != list.size() - 1)
 				space = Chars.of(pre.cs, list.get(i).post.start, list.get(i + 1).pre.end);
 			else
-				space = Chars.of("");
+				space = To.chars("");
 			pairs.add(new FPair(list.get(i).node, space));
 		}
 

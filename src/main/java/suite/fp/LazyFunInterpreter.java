@@ -41,9 +41,9 @@ import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.Mutable;
-import suite.primitive.Chars;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
+import suite.util.To;
 
 public class LazyFunInterpreter {
 
@@ -160,7 +160,7 @@ public class LazyFunInterpreter {
 			else if ((BOOLEAN = Matcher.boolean_.match(node)) != null)
 				result = immediate(BOOLEAN.value);
 			else if ((CHARS = Matcher.chars.match(node)) != null)
-				result = immediate(new Data<>(Chars.of(((Str) CHARS.value).value)));
+				result = immediate(new Data<>(To.chars(((Str) CHARS.value).value)));
 			else if ((CONS = Matcher.cons.match(node)) != null) {
 				Fun<Frame, Thunk_> p0_ = lazy_(CONS.head);
 				Fun<Frame, Thunk_> p1_ = lazy_(CONS.tail);

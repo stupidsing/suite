@@ -29,13 +29,13 @@ public class Bytes implements Iterable<Byte> {
 
 	public static Comparator<Bytes> comparator = (bytes0, bytes1) -> {
 		int start0 = bytes0.start, start1 = bytes1.start;
-		int size0 = bytes0.size(), size1 = bytes1.size(), minSize = Math.min(size0, size1);
+		int size0 = bytes0.size_(), size1 = bytes1.size_(), minSize = Math.min(size0, size1);
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			int b0 = Byte.toUnsignedInt(bytes0.bs[start0 + index]);
-			int b1 = Byte.toUnsignedInt(bytes1.bs[start1 + index]);
-			c = Integer.compare(b0, b1);
+			int i0 = To.int_(bytes0.bs[start0 + index]);
+			int i1 = To.int_(bytes1.bs[start1 + index]);
+			c = Integer.compare(i0, i1);
 			index++;
 		}
 
@@ -70,7 +70,7 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public Bytes append(Bytes a) {
-		int size0 = size(), size1 = a.size(), newSize = size0 + size1;
+		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
 		byte[] nb = new byte[newSize];
 		System.arraycopy(bs, start, nb, 0, size0);
 		System.arraycopy(a.bs, a.start, nb, size0, size1);
@@ -94,14 +94,14 @@ public class Bytes implements Iterable<Byte> {
 
 	public byte get(int index) {
 		if (index < 0)
-			index += size();
+			index += size_();
 		int i1 = index + start;
 		checkClosedBounds(i1);
 		return bs[i1];
 	}
 
 	public int indexOf(Bytes bytes, int start) {
-		for (int i = start; i <= size() - bytes.size(); i++)
+		for (int i = start; i <= size_() - bytes.size_(); i++)
 			if (startsWith(bytes, i))
 				return i;
 		return -1;
@@ -140,14 +140,14 @@ public class Bytes implements Iterable<Byte> {
 		while (0 <= (i = indexOf(from, i0))) {
 			bb.append(range_(i0, i));
 			bb.append(to);
-			i0 = i + from.size();
+			i0 = i + from.size_();
 		}
 		bb.append(range_(i0));
 		return bb.toBytes();
 	}
 
 	public int size() {
-		return end - start;
+		return size_();
 	}
 
 	public boolean startsWith(Bytes bytes) {
@@ -207,7 +207,7 @@ public class Bytes implements Iterable<Byte> {
 		if (Object_.clazz(object) == Bytes.class) {
 			Bytes other = (Bytes) object;
 
-			if (end - start == other.end - other.start) {
+			if (size_() == other.size_()) {
 				int diff = other.start - start;
 				for (int i = start; i < end; i++)
 					if (bs[i] != other.bs[i + diff])
@@ -236,9 +236,9 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	private boolean startsWith_(Bytes bytes, int s) {
-		if (s + bytes.size() <= size()) {
+		if (s + bytes.size_() <= size_()) {
 			boolean result = true;
-			for (int i = 0; result && i < bytes.size(); i++)
+			for (int i = 0; result && i < bytes.size_(); i++)
 				result &= get(s + i) == bytes.get(i);
 			return result;
 		} else
@@ -246,11 +246,11 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	private Bytes range_(int s) {
-		return range_(s, size());
+		return range_(s, size_());
 	}
 
 	private Bytes range_(int s, int e) {
-		int size = size();
+		int size = size_();
 		if (s < 0)
 			s += size;
 		if (e < 0)
@@ -271,6 +271,10 @@ public class Bytes implements Iterable<Byte> {
 	private void checkClosedBounds(int index) {
 		if (index < start || end <= index)
 			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "]");
+	}
+
+	private int size_() {
+		return end - start;
 	}
 
 	public static class BytesBuilder {

@@ -98,7 +98,7 @@ public class Nodify {
 			else if (clazz == int.class)
 				nodifier = new Nodifier(object -> Int.of((Integer) object), node -> ((Int) node).number);
 			else if (clazz == Chars.class)
-				nodifier = new Nodifier(object -> new Str(object.toString()), node -> Chars.of(((Str) node).value));
+				nodifier = new Nodifier(object -> new Str(object.toString()), node -> To.chars(((Str) node).value));
 			else if (clazz == String.class)
 				nodifier = new Nodifier(object -> new Str(object.toString()), node -> ((Str) node).value);
 			else if (clazz.isEnum())

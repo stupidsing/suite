@@ -46,9 +46,9 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
-import suite.primitive.Chars;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.To;
 
 public class EagerFunInterpreter {
 
@@ -121,7 +121,7 @@ public class EagerFunInterpreter {
 			else if ((BOOLEAN = Matcher.boolean_.match(node)) != null)
 				result = immediate(BOOLEAN.value);
 			else if ((CHARS = Matcher.chars.match(node)) != null)
-				result = immediate(new Data<>(Chars.of(((Str) CHARS.value).value)));
+				result = immediate(new Data<>(To.chars(((Str) CHARS.value).value)));
 			else if ((CONS = Matcher.cons.match(node)) != null) {
 				Fun<Frame, Node> p0_ = eager_(CONS.head);
 				Fun<Frame, Node> p1_ = eager_(CONS.tail);

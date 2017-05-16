@@ -9,7 +9,7 @@ import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.io.Formatter;
-import suite.primitive.Chars;
+import suite.util.To;
 
 public class SuiteIntrinsics {
 
@@ -38,7 +38,7 @@ public class SuiteIntrinsics {
 
 	public Intrinsic toChars = (callback, inputs) -> {
 		Node n = Data.get(inputs.get(0));
-		return new Data<>(Chars.of(Formatter.dump(n)));
+		return new Data<>(To.chars(Formatter.dump(n)));
 	};
 
 }

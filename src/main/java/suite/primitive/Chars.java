@@ -29,23 +29,18 @@ public class Chars implements Iterable<Character> {
 
 	public static Comparator<Chars> comparator = (chars0, chars1) -> {
 		int start0 = chars0.start, start1 = chars1.start;
-		int size0 = chars0.size(), size1 = chars1.size(), minSize = Math.min(size0, size1);
+		int size0 = chars0.size_(), size1 = chars1.size_(), minSize = Math.min(size0, size1);
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			char c0 = chars0.cs[start0 + index];
-			char c1 = chars1.cs[start1 + index];
-			c = Character.compare(c0, c1);
+			int i0 = To.int_(chars0.cs[start0 + index]);
+			int i1 = To.int_(chars1.cs[start1 + index]);
+			c = Integer.compare(i0, i1);
 			index++;
 		}
 
 		return c != 0 ? c : size0 - size1;
 	};
-
-	public static Chars of(String s) {
-		char[] a = To.arrayOfChars(s);
-		return of(a);
-	}
 
 	public static Chars of(CharBuffer cb) {
 		int offset = cb.arrayOffset();
@@ -68,14 +63,14 @@ public class Chars implements Iterable<Character> {
 		return new Chars(cs, start, end);
 	}
 
-	public Chars(char[] cs, int start, int end) {
+	private Chars(char[] cs, int start, int end) {
 		this.cs = cs;
 		this.start = start;
 		this.end = end;
 	}
 
 	public Chars append(Chars a) {
-		int size0 = size(), size1 = a.size(), newSize = size0 + size1;
+		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
 		char[] nb = new char[newSize];
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
@@ -99,14 +94,14 @@ public class Chars implements Iterable<Character> {
 
 	public char get(int index) {
 		if (index < 0)
-			index += size();
+			index += size_();
 		int i1 = index + start;
 		checkClosedBounds(i1);
 		return cs[i1];
 	}
 
 	public int indexOf(Chars chars, int start) {
-		for (int i = start; i <= size() - chars.size(); i++)
+		for (int i = start; i <= size_() - chars.size_(); i++)
 			if (startsWith(chars, i))
 				return i;
 		return -1;
@@ -145,14 +140,14 @@ public class Chars implements Iterable<Character> {
 		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(range_(i0, i));
 			cb.append(to);
-			i0 = i + from.size();
+			i0 = i + from.size_();
 		}
 		cb.append(range_(i0));
 		return cb.toChars();
 	}
 
 	public int size() {
-		return end - start;
+		return size_();
 	}
 
 	public boolean startsWith(Chars chars) {
@@ -212,7 +207,7 @@ public class Chars implements Iterable<Character> {
 		if (Object_.clazz(object) == Chars.class) {
 			Chars other = (Chars) object;
 
-			if (size() == other.size()) {
+			if (size_() == other.size_()) {
 				int diff = other.start - start;
 				for (int i = start; i < end; i++)
 					if (cs[i] != other.cs[i + diff])
@@ -241,9 +236,9 @@ public class Chars implements Iterable<Character> {
 	}
 
 	private boolean startsWith_(Chars chars, int s) {
-		if (s + chars.size() <= size()) {
+		if (s + chars.size_() <= size_()) {
 			boolean result = true;
-			for (int i = 0; result && i < chars.size(); i++)
+			for (int i = 0; result && i < chars.size_(); i++)
 				result &= get(s + i) == chars.get(i);
 			return result;
 		} else
@@ -251,11 +246,11 @@ public class Chars implements Iterable<Character> {
 	}
 
 	private Chars range_(int s) {
-		return range_(s, size());
+		return range_(s, size_());
 	}
 
 	private Chars range_(int s, int e) {
-		int size = size();
+		int size = size_();
 		if (s < 0)
 			s += size;
 		if (e < 0)
@@ -278,6 +273,10 @@ public class Chars implements Iterable<Character> {
 			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "]");
 	}
 
+	private int size_() {
+		return end - start;
+	}
+
 	public static class CharsBuilder {
 		private char[] cs = emptyArray;
 		private int size;
@@ -293,7 +292,7 @@ public class Chars implements Iterable<Character> {
 		}
 
 		public CharsBuilder append(char[] cs_) {
-			return append(cs, 0, cs.length);
+			return append(cs_, 0, cs_.length);
 		}
 
 		public CharsBuilder append(char[] cs_, int start, int end) {
