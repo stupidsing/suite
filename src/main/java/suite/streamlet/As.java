@@ -1,5 +1,9 @@
 package suite.streamlet;
 
+import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -129,6 +133,10 @@ public class As {
 
 	public static Streamlet<String[]> csv(Outlet<Bytes> outlet) {
 		return outlet.collect(As::lines_).map(As::csvLine).collect(As::streamlet);
+	}
+
+	public static InputStream inputStream(Bytes bytes) {
+		return new ByteArrayInputStream(bytes.bs, bytes.start, bytes.end - bytes.start);
 	}
 
 	public static Fun<Outlet<String>, String> joined() {
@@ -330,13 +338,17 @@ public class As {
 		};
 	}
 
+	public Reader asReader(Chars chars) {
+		return new CharArrayReader(chars.cs, chars.start, chars.end - chars.start);
+	}
+
 	public static Streamlet<String[]> table(Outlet<Bytes> outlet) {
 		return outlet.collect(As::lines_) //
 				.map(bytes -> To.string(bytes).split("\t")) //
 				.collect(As::streamlet);
 	}
 
-	public static Outlet<Chars> decodeUtf8(Outlet<Bytes> bytesOutlet) {
+	public static Outlet<Chars> utf8decode(Outlet<Bytes> bytesOutlet) {
 		Source<Bytes> source = bytesOutlet.source();
 
 		return Outlet.of(new Source<Chars>() {
@@ -405,7 +417,7 @@ public class As {
 		});
 	}
 
-	public static Outlet<Bytes> encodeUtf8(Outlet<Chars> charsOutlet) {
+	public static Outlet<Bytes> utf8encode(Outlet<Chars> charsOutlet) {
 		Source<Chars> source = charsOutlet.source();
 
 		return Outlet.of(new Source<Bytes>() {

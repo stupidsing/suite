@@ -145,7 +145,7 @@ public class To {
 				while (is == null || (nBytesRead = is.read(bs, offset, length)) < 0) {
 					Bytes bytes = outlet.next();
 					if (isOpen = (bytes != null))
-						is = bytes.asInputStream();
+						is = bytes.collect(As::inputStream);
 					else
 						break;
 				}

@@ -1,11 +1,9 @@
 package suite.primitive;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -14,6 +12,7 @@ import java.util.Iterator;
 
 import suite.Constants;
 import suite.util.Copy;
+import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.To;
 
@@ -35,7 +34,7 @@ public class Bytes implements Iterable<Byte> {
 		while (c == 0 && index < minSize) {
 			int b0 = Byte.toUnsignedInt(bytes0.bs[start0 + index]);
 			int b1 = Byte.toUnsignedInt(bytes1.bs[start1 + index]);
-			c = b0 == b1 ? 0 : b0 < b1 ? -1 : 1;
+			c = Integer.compare(b0, b1);
 			index++;
 		}
 
@@ -94,8 +93,8 @@ public class Bytes implements Iterable<Byte> {
 		return bb.toBytes();
 	}
 
-	public InputStream asInputStream() {
-		return new ByteArrayInputStream(bs, start, end - start);
+	public <T> T collect(Fun<Bytes, T> fun) {
+		return fun.apply(this);
 	}
 
 	public byte get(int index) {

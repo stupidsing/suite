@@ -23,6 +23,7 @@ import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.immutable.LazyIbTree.Slot;
 import suite.primitive.Bytes;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
 import suite.util.Rethrow;
@@ -162,7 +163,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	private PersistSlot<T> loadSlot(Extent extent) {
-		return Rethrow.ex(() -> serializer.read(new DataInputStream(extentFile.load(extent).asInputStream())));
+		return Rethrow.ex(() -> serializer.read(new DataInputStream(extentFile.load(extent).collect(As::inputStream))));
 	}
 
 	private Extent saveSlot(int start, PersistSlot<T> value) {

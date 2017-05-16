@@ -1,9 +1,7 @@
 package suite.primitive;
 
-import java.io.CharArrayReader;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.CharBuffer;
@@ -13,6 +11,7 @@ import java.util.Iterator;
 
 import suite.Constants;
 import suite.util.Copy;
+import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.To;
 
@@ -32,9 +31,9 @@ public class Chars implements Iterable<Character> {
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			char c0 = chars0.cs[start0 + index];
-			char c1 = chars1.cs[start1 + index];
-			c = c0 == c1 ? 0 : c0 < c1 ? -1 : 1;
+			int c0 = chars0.cs[start0 + index];
+			int c1 = chars1.cs[start1 + index];
+			c = Integer.compare(c0, c1);
 			index++;
 		}
 
@@ -50,6 +49,11 @@ public class Chars implements Iterable<Character> {
 	public static Chars of(String s) {
 		char[] a = To.arrayOfChars(s);
 		return of(a);
+	}
+
+	public static Chars of(CharBuffer cb) {
+		int offset = cb.arrayOffset();
+		return of(cb.array(), offset, offset + cb.limit());
 	}
 
 	public static Chars of(Chars chars) {
@@ -93,8 +97,8 @@ public class Chars implements Iterable<Character> {
 		return bb.toChars();
 	}
 
-	public Reader asReader() {
-		return new CharArrayReader(cs, start, end - start);
+	public <T> T collect(Fun<Chars, T> fun) {
+		return fun.apply(this);
 	}
 
 	public char get(int index) {

@@ -110,7 +110,7 @@ public class Serialize {
 
 		Serializer<?> serializer0 = new Serializer<T>() {
 			public T read(DataInput dataInput) throws IOException {
-				try {
+				return Rethrow.ex(() -> {
 					Object object;
 					if (isDefaultCtor) {
 						object = clazz.newInstance();
@@ -127,9 +127,7 @@ public class Serialize {
 					@SuppressWarnings("unchecked")
 					T t = (T) object;
 					return t;
-				} catch (ReflectiveOperationException ex) {
-					throw new RuntimeException(ex);
-				}
+				});
 			}
 
 			public void write(DataOutput dataOutput, T t) throws IOException {
