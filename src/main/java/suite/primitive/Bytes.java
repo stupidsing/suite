@@ -24,7 +24,7 @@ public class Bytes implements Iterable<Byte> {
 
 	@FunctionalInterface
 	public interface Writer {
-		public void write(byte[] cs, int offset, int length) throws IOException;
+		public void write(byte[] bs, int offset, int length) throws IOException;
 	};
 
 	public static Comparator<Bytes> comparator = (bytes0, bytes1) -> {
