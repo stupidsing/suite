@@ -1,5 +1,6 @@
 package suite.primitive;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -20,6 +21,11 @@ public class Bytes implements Iterable<Byte> {
 
 	public final byte[] bs; // immutable
 	public final int start, end;
+
+	@FunctionalInterface
+	public interface Writer {
+		public void write(byte[] cs, int offset, int length) throws IOException;
+	};
 
 	public static Comparator<Bytes> comparator = (bytes0, bytes1) -> {
 		int start0 = bytes0.start, start1 = bytes1.start;
@@ -171,6 +177,14 @@ public class Bytes implements Iterable<Byte> {
 		while (s < e && bs[e - 1] == 0)
 			e--;
 		return of(bs, s, e);
+	}
+
+	public void write(Writer out) {
+		try {
+			out.write(bs, start, end - start);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@Override

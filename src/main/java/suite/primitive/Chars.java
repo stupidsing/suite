@@ -1,7 +1,6 @@
 package suite.primitive;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.CharBuffer;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -22,6 +21,11 @@ public class Chars implements Iterable<Character> {
 
 	public final char[] cs; // immutable
 	public final int start, end;
+
+	@FunctionalInterface
+	public interface Writer {
+		public void write(char[] cs, int offset, int length) throws IOException;
+	};
 
 	public static Comparator<Chars> comparator = (chars0, chars1) -> {
 		int start0 = chars0.start, start1 = chars1.start;
@@ -180,8 +184,12 @@ public class Chars implements Iterable<Character> {
 		return of(cs, s, e);
 	}
 
-	public void write(Writer writer) throws IOException {
-		writer.write(cs, start, end - start);
+	public void write(Writer out) {
+		try {
+			out.write(cs, start, end - start);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@Override
