@@ -3,6 +3,9 @@ package suite.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,6 +34,7 @@ import suite.Constants;
 import suite.adt.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
+import suite.primitive.IoSink;
 import suite.primitive.PrimitiveFun.Float_Float;
 import suite.primitive.PrimitiveFun.IntInt_Float;
 import suite.primitive.PrimitiveFun.Int_Float;
@@ -105,6 +109,16 @@ public class To {
 
 	public static Bytes bytes(InputStream is) {
 		return outlet(is).collect(As::bytes);
+	}
+
+	public static Bytes bytes(IoSink<DataOutput> ioSink) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			ioSink.sink(new DataOutputStream(baos));
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		return Bytes.of(baos.toByteArray());
 	}
 
 	public static Chars chars(String s) {

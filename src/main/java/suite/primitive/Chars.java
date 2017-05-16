@@ -2,7 +2,6 @@ package suite.primitive;
 
 import java.io.DataOutput;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.CharBuffer;
 import java.util.Arrays;
@@ -31,20 +30,14 @@ public class Chars implements Iterable<Character> {
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			int c0 = chars0.cs[start0 + index];
-			int c1 = chars1.cs[start1 + index];
-			c = Integer.compare(c0, c1);
+			char c0 = chars0.cs[start0 + index];
+			char c1 = chars1.cs[start1 + index];
+			c = Character.compare(c0, c1);
 			index++;
 		}
 
 		return c != 0 ? c : size0 - size1;
 	};
-
-	public static Chars of(IoSink<Writer> ioSink) throws IOException {
-		Writer writer = new StringWriter();
-		ioSink.sink(writer);
-		return of(writer.toString());
-	}
 
 	public static Chars of(String s) {
 		char[] a = To.arrayOfChars(s);
@@ -264,6 +257,8 @@ public class Chars implements Iterable<Character> {
 			s += size;
 		if (e < 0)
 			e += size;
+		s = Math.min(size, s);
+		e = Math.min(size, e);
 		int start_ = start + Math.min(size, s);
 		int end_ = start + Math.min(size, e);
 		Chars result = of(cs, start_, end_);

@@ -1,8 +1,6 @@
 package suite.primitive;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -40,12 +38,6 @@ public class Bytes implements Iterable<Byte> {
 
 		return c != 0 ? c : size0 - size1;
 	};
-
-	public static Bytes of(IoSink<DataOutput> ioSink) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ioSink.sink(new DataOutputStream(baos));
-		return of(baos.toByteArray());
-	}
 
 	public static Bytes of(ByteBuffer bb) {
 		int offset = bb.arrayOffset();

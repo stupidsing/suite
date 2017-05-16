@@ -29,6 +29,7 @@ import suite.util.FunUtil.Sink;
 import suite.util.Rethrow;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
+import suite.util.To;
 
 public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Extent, T> {
 
@@ -168,7 +169,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 
 	private Extent saveSlot(int start, PersistSlot<T> value) {
 		int bs = ExtentFile.blockSize;
-		Bytes bytes = Rethrow.ex(() -> Bytes.of(dataOutput -> serializer.write(dataOutput, value)));
+		Bytes bytes = To.bytes(dataOutput -> serializer.write(dataOutput, value));
 		Extent extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
 		extentFile.save(extent, bytes);
 		return extent;
