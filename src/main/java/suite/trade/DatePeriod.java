@@ -19,6 +19,10 @@ public class DatePeriod extends Range<LocalDate> {
 		return daysBefore_(date.minusDays(date.toEpochDay() % alignment), nDays);
 	}
 
+	public static DatePeriod daysBefore(LocalDate to, int n) {
+		return daysBefore_(to, n);
+	}
+
 	public static DatePeriod daysBefore(int nDays) {
 		return daysBefore_(LocalDate.now(), nDays);
 	}

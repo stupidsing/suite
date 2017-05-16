@@ -119,11 +119,10 @@ public class AssetAllocBackTest {
 			List<LocalDate> dates = datesPred.apply(tradeDates);
 			int size = dates.size();
 			float[] valuations_ = new float[size];
-			String actions;
 
 			for (int i = 0; i < size; i++) {
 				LocalDate date = dates.get(i);
-				DatePeriod historyWindowPeriod = DatePeriod.of(date.minusDays(historyWindow), date);
+				DatePeriod historyWindowPeriod = DatePeriod.daysBefore(date, historyWindow);
 
 				Map<String, DataSource> backTestDataSourceBySymbol = Read.from2(dataSourceBySymbol) //
 						.mapValue(dataSource -> dataSource.range(historyWindowPeriod)) //
@@ -141,24 +140,20 @@ public class AssetAllocBackTest {
 
 				double valuation_ = valuation;
 
-				if (ratioBySymbol != null) {
-					Map<String, Integer> portfolio = Read.from2(ratioBySymbol) //
-							.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
-							.map2((symbol, potential) -> symbol, (symbol, potential) -> {
-								float price = backTestDataSourceBySymbol.get(symbol).last().price;
-								int lotSize = assetBySymbol.get(symbol).lotSize;
-								double lots = valuation_ * potential / (price * lotSize);
-								return lotSize * (int) lots; // truncate
-								// return lotSize * Math.round(lots);
-							}) //
-							.toMap();
+				Map<String, Integer> portfolio = Read.from2(ratioBySymbol) //
+						.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
+						.map2((symbol, potential) -> symbol, (symbol, potential) -> {
+							float price = backTestDataSourceBySymbol.get(symbol).last().price;
+							int lotSize = assetBySymbol.get(symbol).lotSize;
+							double lots = valuation_ * potential / (price * lotSize);
+							return lotSize * (int) lots; // truncate
+							// return lotSize * Math.round(lots);
+						}) //
+						.toMap();
 
-					actions = account_.switchPortfolio(portfolio, latestPriceBySymbol);
-				} else
-					actions = null;
-
-				account_.validate();
+				String actions = account_.switchPortfolio(portfolio, latestPriceBySymbol);
 				Valuation val = account_.valuation(latestPriceBySymbol);
+				account_.validate();
 
 				valuations_[i] = (float) (valuation = val.sum());
 
@@ -196,7 +191,7 @@ public class AssetAllocBackTest {
 					+ ", annual return = " + To.string(annualReturn) //
 					+ ", sharpe = " + To.string(sharpe) //
 					+ ", skewness = " + To.string(skewness) //
-					+ ", holds = " + holdBySymbol;
+					+ ", holds = " + sb;
 		}
 	}
 
