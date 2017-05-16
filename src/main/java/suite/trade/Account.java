@@ -13,7 +13,7 @@ import suite.util.To;
 
 public class Account {
 
-	public static final String cashCode = Asset.cashCode;
+	private static String cashCode = Asset.cashCode;
 
 	public static Account fromCash(float cash) {
 		Map<String, Integer> assets = new HashMap<>();

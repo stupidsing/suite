@@ -62,7 +62,7 @@ public class AssetAllocBackTest {
 		return new AssetAllocBackTest(cfg, assets, assetAllocator, historyFromDate, datesPred, log);
 	}
 
-	public AssetAllocBackTest( //
+	private AssetAllocBackTest( //
 			Configuration cfg, //
 			Streamlet<Asset> assets, //
 			AssetAllocator assetAllocator, //
