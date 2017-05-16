@@ -409,12 +409,13 @@ public class SewingProverImpl implements SewingProver {
 				Clone_ f = sb.compile(node);
 				Mutable<Cps> mcps = getCpsByPrototype(prototype);
 				cps = rt -> {
-					Restore restore = save(rt);
-					rt.cps = cpsx;
+					Cps cps0 = rt.cps;
+					rt.cps = rt_ -> {
+						rt.cps = cps0;
+						return cpsx;
+					};
 					rt.query = f.apply(rt.env);
-					rt.cont(mcps.get());
-					restore.restore(rt);
-					return null;
+					return mcps.get();
 				};
 			}
 		else
@@ -424,10 +425,13 @@ public class SewingProverImpl implements SewingProver {
 
 	private Cps saveEnvCps(Cps cps) {
 		return rt -> {
+			Cps cps0 = rt.cps;
 			Env env0 = rt.env;
-			rt.cont(cps);
-			rt.env = env0;
-			return null;
+			rt.cps = rt_ -> {
+				rt.env = env0;
+				return cps0;
+			};
+			return cps;
 		};
 	}
 
