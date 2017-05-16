@@ -230,10 +230,7 @@ public class SewingProverImpl implements SewingProver {
 			Map<Prototype, List<Rule>> rulesByProto1;
 
 			if (6 <= rules.size()) {
-				Map<Prototype, List<Rule>> rulesByProto_ = Read //
-						.from(rules) //
-						.toListMap(rule -> Prototype.of(rule, 1));
-
+				Map<Prototype, List<Rule>> rulesByProto_ = Read.from(rules).toListMap(rule -> Prototype.of(rule, 1));
 				rulesByProto1 = !rulesByProto_.containsKey(null) ? rulesByProto_ : null;
 			} else
 				rulesByProto1 = null;
@@ -884,6 +881,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Restore save(Runtime rt) {
+		Cps cps0 = rt.cpsx;
 		Env env0 = rt.env;
 		Node query0 = rt.query;
 		IList<Trampoline> cutPoint0 = rt.cutPoint;
@@ -891,6 +889,7 @@ public class SewingProverImpl implements SewingProver {
 		int pit0 = rt.trail.getPointInTime();
 		Sink<Node> handler0 = rt.handler;
 		return rt_ -> {
+			rt_.cpsx = cps0;
 			rt_.env = env0;
 			rt_.query = query0;
 			rt_.cutPoint = cutPoint0;
