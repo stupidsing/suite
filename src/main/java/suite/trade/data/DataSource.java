@@ -138,7 +138,7 @@ public class DataSource {
 		return get(-1);
 	}
 
-	private Datum get(int pos) {
+	public Datum get(int pos) {
 		if (pos < 0)
 			pos += prices.length;
 		return new Datum(dates[pos], prices[pos]);
