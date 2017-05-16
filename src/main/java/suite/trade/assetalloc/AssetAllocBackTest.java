@@ -106,7 +106,7 @@ public class AssetAllocBackTest {
 					dataSource.validate();
 					dataSourceBySymbol.put(symbol, dataSource);
 				} catch (Exception ex) {
-					LogUtil.warn(ex.getMessage() + " in " + assetBySymbol.get(symbol));
+					LogUtil.warn(ex + " in " + assetBySymbol.get(symbol));
 				}
 
 			List<LocalDate> tradeDates = Read.from2(dataSourceBySymbol) //

@@ -51,7 +51,7 @@ public class PeriodTest {
 
 				LogUtil.info(stock + " has period " + maxIndex);
 			} catch (Exception ex) {
-				LogUtil.warn(ex.getMessage() + " in " + stock);
+				LogUtil.warn(ex + " in " + stock);
 			}
 		}
 	}
