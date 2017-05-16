@@ -7,6 +7,7 @@ import java.util.Map;
 import suite.primitive.PrimitiveFun.Double_Double;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet2;
 import suite.util.String_;
 import suite.util.To;
 
@@ -112,17 +113,29 @@ public class Account {
 		});
 	}
 
-	public float valuation(Map<String, Float> prices0) {
-		return (float) Read.from2(valuationBySymbol(prices0)) //
-				.collectAsDouble(As.<String, Float> sumOfDoubles((symbol, v) -> v));
+	public Valuation valuation(Map<String, Float> prices0) {
+		return new Valuation(prices0);
 	}
 
-	public Map<String, Float> valuationBySymbol(Map<String, Float> prices0) {
-		Map<String, Float> prices1 = new HashMap<>(prices0);
-		prices1.put(cashCode, 1f);
-		return Read.from2(assets()) //
-				.map2((symbol, n) -> symbol, (symbol, n) -> prices1.get(symbol) * n) //
-				.toMap();
+	public class Valuation {
+		public final Map<String, Float> valuationBySymbol;
+
+		private Valuation(Map<String, Float> prices0) {
+			Map<String, Float> prices1 = new HashMap<>(prices0);
+			prices1.put(cashCode, 1f);
+
+			valuationBySymbol = Read.from2(assets) //
+					.map2((symbol, n) -> symbol, (symbol, n) -> prices1.get(symbol) * n) //
+					.toMap();
+		}
+
+		public Streamlet2<String, Float> stream() {
+			return Read.from2(valuationBySymbol);
+		}
+
+		public float sum() {
+			return (float) Read.from2(valuationBySymbol).collectAsDouble(As.sumOfDoubles((symbol, v) -> v));
+		}
 	}
 
 	private int get(String code) {

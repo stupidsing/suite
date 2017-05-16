@@ -250,11 +250,11 @@ public class As {
 		};
 	}
 
-	public static <T> Obj_Double<IntObjOutlet<T>> sumOfDoubles(IntObj_Double<T> fun) {
+	public static <T> Obj_Double<IntObjOutlet<T>> sumOfDoubles(double d, IntObj_Double<T> fun) {
 		return outlet -> {
 			IntObjPair<T> pair = IntObjPair.of(0, null);
 			IntObjSource<T> source = outlet.source();
-			double result = 0d;
+			double result = d;
 			while (source.source2(pair))
 				result += fun.apply(pair.t0, pair.t1);
 			return result;
@@ -276,18 +276,18 @@ public class As {
 		return outlet -> {
 			Source<T> source = outlet.source();
 			T t;
-			Float result = 0f;
+			float result = 0f;
 			while ((t = source.source()) != null)
 				result += fun.applyAsFloat(t);
 			return result;
 		};
 	}
 
-	public static <T> Obj_Float<IntObjOutlet<T>> sumOfFloats(IntObj_Float<T> fun) {
+	public static <T> Obj_Float<IntObjOutlet<T>> sumOfFloats(float f, IntObj_Float<T> fun) {
 		return outlet -> {
 			IntObjPair<T> pair = IntObjPair.of(0, null);
 			IntObjSource<T> source = outlet.source();
-			Float result = 0f;
+			float result = f;
 			while (source.source2(pair))
 				result += fun.apply(pair.t0, pair.t1);
 			return result;
@@ -298,7 +298,7 @@ public class As {
 		return outlet -> {
 			Pair<K, V> pair = Pair.of(null, null);
 			Source2<K, V> source = outlet.source();
-			Float result = 0f;
+			float result = 0f;
 			while (source.source2(pair))
 				result += fun.applyAsFloat(pair.t0, pair.t1);
 			return result;
@@ -316,11 +316,11 @@ public class As {
 		};
 	}
 
-	public static <T> Obj_Int<IntObjOutlet<T>> sumOfInts(IntObj_Int<T> fun) {
+	public static <T> Obj_Int<IntObjOutlet<T>> sumOfInts(int i, IntObj_Int<T> fun) {
 		return outlet -> {
 			IntObjPair<T> pair = IntObjPair.of(0, null);
 			IntObjSource<T> source = outlet.source();
-			int result = 0;
+			int result = i;
 			while (source.source2(pair))
 				result += fun.apply(pair.t0, pair.t1);
 			return result;

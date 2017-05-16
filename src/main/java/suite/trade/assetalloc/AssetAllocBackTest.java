@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.adt.Pair;
 import suite.algo.Statistic;
@@ -14,6 +13,7 @@ import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
+import suite.trade.Account.Valuation;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.data.Configuration;
@@ -158,15 +158,12 @@ public class AssetAllocBackTest {
 					actions = null;
 
 				account_.validate();
+				Valuation val = account_.valuation(latestPriceBySymbol);
 
-				valuations_[i] = (float) (valuation = account_.valuation(latestPriceBySymbol));
+				valuations_[i] = (float) (valuation = val.sum());
 
-				for (Entry<String, Integer> e : account_.assets().entrySet()) {
-					holdBySymbol_.compute(e.getKey(), (s, hold) -> {
-						double h = e.getValue() / valuation_;
-						return h + (hold != null ? hold : 0d);
-					});
-				}
+				for (Pair<String, Float> e : val.stream())
+					holdBySymbol_.compute(e.t0, (s, h) -> e.t1 / (valuation_ * size) + (h != null ? h : 0d));
 
 				log.sink(FormatUtil.formatDate(date) //
 						+ ", valuation = " + valuation //
@@ -175,7 +172,7 @@ public class AssetAllocBackTest {
 			}
 
 			double v0 = valuations_[0];
-			double vx = valuations_[valuations_.length - 1];
+			double vx = valuations_[size - 1];
 			DatePeriod period_ = DatePeriod.of(List_.first(dates), List_.last(dates));
 			double nYears = period_.nYears();
 
@@ -189,11 +186,17 @@ public class AssetAllocBackTest {
 		}
 
 		public String conclusion() {
+			StringBuilder sb = new StringBuilder();
+
+			for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value))
+				sb.append(e.t0 + ":" + To.string(e.t1) + ",");
+
 			return "period = " + period //
 					+ ", valuation = " + valuations[valuations.length - 1] //
 					+ ", annual return = " + To.string(annualReturn) //
 					+ ", sharpe = " + To.string(sharpe) //
-					+ ", skewness = " + To.string(skewness);
+					+ ", skewness = " + To.string(skewness) //
+					+ ", holds = " + holdBySymbol;
 		}
 	}
 

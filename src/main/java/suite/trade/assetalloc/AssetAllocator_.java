@@ -49,7 +49,7 @@ public class AssetAllocator_ {
 		return (dataSourceBySymbol, tradeDates, backTestDate) -> {
 			List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate(dataSourceBySymbol, tradeDates, backTestDate);
 			double totalPotential = Read.from2(potentialBySymbol)
-					.collectAsDouble(As.<String, Double> sumOfDoubles((symbol, potential) -> potential));
+					.collectAsDouble(As.sumOfDoubles((symbol, potential) -> potential));
 
 			return Read.from2(potentialBySymbol) //
 					.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
