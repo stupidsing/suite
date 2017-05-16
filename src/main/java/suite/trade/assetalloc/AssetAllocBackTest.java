@@ -93,9 +93,9 @@ public class AssetAllocBackTest {
 		private Simulate(float fund0) {
 			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
 			Map<String, DataSource> dataSourceBySymbol = new HashMap<>();
-			double valuation = fund0;
 			Map<String, Double> holdBySymbol_ = new HashMap<>();
 			Account account_ = Account.fromCash(fund0);
+			double valuation = fund0;
 
 			// pre-fetch quotes
 			cfg.quote(assetBySymbol.keySet());
