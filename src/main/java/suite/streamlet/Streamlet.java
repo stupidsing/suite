@@ -62,6 +62,10 @@ public class Streamlet<T> implements Iterable<T> {
 		});
 	}
 
+	public <R> R collect(Fun<Outlet<T>, R> fun) {
+		return fun.apply(spawn());
+	}
+
 	public double collectAsDouble(Obj_Double<Outlet<T>> fun) {
 		return fun.applyAsDouble(spawn());
 	}
@@ -72,10 +76,6 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public int collectAsInt(Obj_Int<Outlet<T>> fun) {
 		return fun.applyAsInt(spawn());
-	}
-
-	public <R> R collect(Fun<Outlet<T>, R> fun) {
-		return fun.apply(spawn());
 	}
 
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {

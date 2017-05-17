@@ -69,6 +69,10 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		});
 	}
 
+	public <R> R collect(Fun<IntObjOutlet<V>, R> fun) {
+		return fun.apply(spawn());
+	}
+
 	public double collectAsDouble(Obj_Double<IntObjOutlet<V>> fun) {
 		return fun.applyAsDouble(spawn());
 	}
@@ -79,10 +83,6 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 
 	public int collectAsInt(Obj_Int<IntObjOutlet<V>> fun) {
 		return fun.applyAsInt(spawn());
-	}
-
-	public <R> R collect(Fun<IntObjOutlet<V>, R> fun) {
-		return fun.apply(spawn());
 	}
 
 	public <O> Streamlet<O> concatMap(ObjObj_Obj<Integer, V, Streamlet<O>> fun) {
