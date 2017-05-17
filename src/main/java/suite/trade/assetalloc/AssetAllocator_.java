@@ -23,10 +23,11 @@ public class AssetAllocator_ {
 		double threshold = .9d;
 
 		return (dataSourceBySymbol, tradeDates) -> backTestDate -> Read.from2(dataSourceBySymbol) //
-				.map2((symbol, dataSource) -> symbol, (symbol, dataSource) -> {
-					float[] ema = movingAvg.exponentialMovingAvg(dataSource.prices, decay);
+				.map2((symbol, dataSource) -> symbol, (symbol, dataSource0) -> {
+					DataSource dataSource1 = dataSource0.rangeBefore(backTestDate);
+					float[] ema = movingAvg.exponentialMovingAvg(dataSource1.prices, decay);
 					float lastEma = ema[ema.length - 2];
-					float latest = dataSource.last().price;
+					float latest = dataSource1.last().price;
 					return latest / lastEma < threshold ? 1d : 0d;
 				}) //
 				.toList();
@@ -34,8 +35,9 @@ public class AssetAllocator_ {
 
 	public static AssetAllocator byLastPriceChange() {
 		return (dataSourceBySymbol, tradeDates) -> backTestDate -> Read.from2(dataSourceBySymbol) //
-				.map2((symbol, dataSource) -> symbol, (symbol, dataSource) -> {
-					return dataSource.get(-2).price / dataSource.get(-1).price < .96d ? 1d : 0d;
+				.map2((symbol, dataSource) -> symbol, (symbol, dataSource0) -> {
+					DataSource dataSource1 = dataSource0.rangeBefore(backTestDate);
+					return dataSource1.get(-2).price / dataSource1.get(-1).price < .96d ? 1d : 0d;
 				}) //
 				.toList();
 	}

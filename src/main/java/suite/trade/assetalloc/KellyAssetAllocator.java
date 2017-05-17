@@ -21,7 +21,9 @@ public class KellyAssetAllocator implements AssetAllocator {
 		return backTestDate -> {
 
 			// TODO this should be the expected returns, not past returns!
-			Map<String, DataSource> predictedPricesBySymbol = dataSourceBySymbol;
+			Map<String, DataSource> predictedPricesBySymbol = Read.from2(dataSourceBySymbol) //
+					.mapValue(dataSource -> dataSource.rangeBefore(backTestDate)) //
+					.toMap();
 
 			Map<String, float[]> returnsBySymbol = Read.from2(predictedPricesBySymbol) //
 					.mapValue(dataSource -> ts.returns(dataSource.prices)) //

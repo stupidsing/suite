@@ -118,10 +118,9 @@ public class AssetAllocBackTest {
 
 			for (int i = 0; i < size; i++) {
 				LocalDate date = dates.get(i);
-				DatePeriod historyWindowPeriod = DatePeriod.daysBefore(date, AssetAllocator.historyWindow);
 
 				Map<String, DataSource> backTestDataSourceBySymbol = Read.from2(dataSourceBySymbol) //
-						.mapValue(dataSource -> dataSource.range(historyWindowPeriod)) //
+						.mapValue(dataSource -> dataSource.rangeBefore(date)) //
 						.toMap();
 
 				Map<String, Float> latestPriceBySymbol = Read.from2(backTestDataSourceBySymbol) //

@@ -8,6 +8,7 @@ import suite.math.Matrix;
 import suite.primitive.DataInput_;
 import suite.primitive.DataOutput_;
 import suite.trade.DatePeriod;
+import suite.trade.assetalloc.AssetAllocator;
 import suite.util.FormatUtil;
 import suite.util.Object_;
 import suite.util.Serialize;
@@ -72,27 +73,15 @@ public class DataSource {
 	}
 
 	public DataSource after(LocalDate date) {
-		return range(DatePeriod.of(date, DatePeriod.ages().to));
+		return range_(DatePeriod.of(date, DatePeriod.ages().to));
 	}
 
 	public DataSource range(DatePeriod period) {
-		String s0 = FormatUtil.formatDate(period.from);
-		String sx = FormatUtil.formatDate(period.to);
-		String[] dates1 = new String[dates.length];
-		float[] prices1 = new float[prices.length];
-		int j = 0;
+		return range_(period);
+	}
 
-		for (int i = 0; i < prices.length; i++) {
-			String date = dates[i];
-			float price = prices[i];
-			if (Object_.compare(s0, date) <= 0 && Object_.compare(date, sx) < 0) {
-				dates1[j] = date;
-				prices1[j] = price;
-				j++;
-			}
-		}
-
-		return new DataSource(Arrays.copyOf(dates1, j), Arrays.copyOf(prices1, j));
+	public DataSource rangeBefore(LocalDate date) {
+		return range_(DatePeriod.daysBefore(date, AssetAllocator.historyWindow));
 	}
 
 	public void validate() {
@@ -142,6 +131,26 @@ public class DataSource {
 		if (pos < 0)
 			pos += prices.length;
 		return new Datum(dates[pos], prices[pos]);
+	}
+
+	private DataSource range_(DatePeriod period) {
+		String s0 = FormatUtil.formatDate(period.from);
+		String sx = FormatUtil.formatDate(period.to);
+		String[] dates1 = new String[dates.length];
+		float[] prices1 = new float[prices.length];
+		int j = 0;
+
+		for (int i = 0; i < prices.length; i++) {
+			String date = dates[i];
+			float price = prices[i];
+			if (Object_.compare(s0, date) <= 0 && Object_.compare(date, sx) < 0) {
+				dates1[j] = date;
+				prices1[j] = price;
+				j++;
+			}
+		}
+
+		return new DataSource(Arrays.copyOf(dates1, j), Arrays.copyOf(prices1, j));
 	}
 
 	private boolean isValid(float price0, float price1) {
