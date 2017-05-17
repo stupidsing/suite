@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +56,47 @@ public class Yahoo {
 		dataSource.cleanse();
 
 		return dataSource;
+	}
+
+	public DataSource dataSourceL1(String symbol, DatePeriod period) {
+		String urlString = "https://l1-query.finance.yahoo.com/v7/finance/chart/" //
+				+ encode(symbol) //
+				+ "?period1=" + period.from.atStartOfDay().toEpochSecond(ZoneOffset.UTC) //
+				+ "&period2=" + period.to.atStartOfDay().toEpochSecond(ZoneOffset.UTC) //
+				+ "&interval=1d" //
+				+ "&indicators=quote" //
+				+ "&includeTimestamps=true" //
+				+ "&includePrePost=true" //
+				+ "&events=div%7Csplit%7Cearn" //
+				+ "&corsDomain=finance.yahoo.com";
+
+		return Rethrow.ex(() -> {
+			try (InputStream is = Singleton.get().getStoreCache().http(urlString).collect(To::inputStream)) {
+				JsonNode json = mapper.readTree(is);
+
+				String[] dates = Read.from(json) //
+						.flatMap(json_ -> json_.get("chart")) //
+						.flatMap(json_ -> json_.get("result")) //
+						.flatMap(json_ -> json_.get("meta")) //
+						.flatMap(json_ -> json_.get("timestamp")) //
+						.map(json_ -> FormatUtil
+								.formatDate(LocalDateTime.ofEpochSecond(json_.intValue(), 0, ZoneOffset.UTC).toLocalDate())) //
+						.toArray(String.class);
+
+				float[] prices = Read.from(json) //
+						.flatMap(json_ -> json_.get("chart")) //
+						.flatMap(json_ -> json_.get("result")) //
+						.flatMap(json_ -> json_.get(0)) //
+						.flatMap(json_ -> json_.get("meta")) //
+						.flatMap(json_ -> json_.get("indicators")) //
+						.flatMap(json_ -> json_.get("quote")) //
+						.flatMap(json_ -> json_.get(0)) //
+						.flatMap(json_ -> json_.get("open")) //
+						.collect(As.arrayOfFloats(JsonNode::floatValue));
+
+				return new DataSource(dates, prices);
+			}
+		});
 	}
 
 	public DataSource dataSourceYql(String symbol, DatePeriod period) {
