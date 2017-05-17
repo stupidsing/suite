@@ -4,12 +4,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import suite.Constants;
@@ -28,7 +32,9 @@ import suite.util.To;
 
 public class YahooHistory {
 
+	private Set<DayOfWeek> weekends = new HashSet<>(Arrays.asList(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
 	private Yahoo yahoo = new Yahoo();
+
 	private Path path = Paths.get("/home/ywsing/yahoo.history");
 	private Map<String, Map<String, String>> data;
 
@@ -109,7 +115,7 @@ public class YahooHistory {
 			if (hour < 9 || 17 < hour) {
 				LocalDateTime lastClose = now;
 
-				while (lastClose.getHour() != 16)
+				while (weekends.contains(lastClose.getDayOfWeek()) || lastClose.getHour() != 16)
 					lastClose = lastClose.minusHours(1);
 
 				String date = FormatUtil.formatDate(lastClose.toLocalDate());
