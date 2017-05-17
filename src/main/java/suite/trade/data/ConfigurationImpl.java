@@ -26,6 +26,7 @@ public class ConfigurationImpl implements Configuration {
 	private Hkex hkex = new Hkex();
 	private HkexFactBook hkexFactBook = new HkexFactBook();
 	private Yahoo yahoo = new Yahoo();
+	private YahooHistory yahooHistory = new YahooHistory();
 
 	private enum Source_ {
 		HKD__, YAHOO,
@@ -49,7 +50,13 @@ public class ConfigurationImpl implements Configuration {
 				.of(DataSource.serializer) //
 				.get(getClass().getSimpleName() + ".dataSourceWithLatestQuote(" + symbol + ", " + date + ")", () -> {
 					float price = quote_(Collections.singleton(symbol)).get(symbol);
-					return dataSource_(symbol, DatePeriod.ages()).cons(date, price);
+					DataSource dataSource0 = dataSource_(symbol, DatePeriod.ages());
+					DataSource dataSource1;
+					if (!String_.equals(dataSource0.last().date, date))
+						dataSource1 = dataSource0.cons(date, price);
+					else
+						dataSource1 = dataSource0;
+					return dataSource1;
 				});
 	}
 
@@ -83,7 +90,7 @@ public class ConfigurationImpl implements Configuration {
 		case HKD__:
 			return hkd.dataSource(symbol, period);
 		case YAHOO:
-			return yahoo.dataSourceCsv(symbol, period);
+			return yahooHistory.dataSource(symbol, period);
 		default:
 			throw new RuntimeException();
 		}
