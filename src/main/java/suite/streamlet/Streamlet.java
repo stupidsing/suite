@@ -165,7 +165,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <V> Streamlet2<T, V> map2(Fun<T, V> vf) {
-		return map2_(t -> t, vf);
+		return map2_(k -> k, vf);
 	}
 
 	public <K, V> Streamlet2<K, V> map2(Fun<T, K> kf, Fun<T, V> vf) {
