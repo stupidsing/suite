@@ -168,6 +168,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return map_(fun);
 	}
 
+	public <V1> Streamlet2<K, V1> map2(ObjObj_Obj<K, V, V1> vf) {
+		return map2_((k, v) -> k, vf);
+	}
+
 	public <K1, V1> Streamlet2<K1, V1> map2(ObjObj_Obj<K, V, K1> kf, ObjObj_Obj<K, V, V1> vf) {
 		return map2_(kf, vf);
 	}
