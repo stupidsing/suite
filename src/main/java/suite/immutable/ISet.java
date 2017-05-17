@@ -47,6 +47,16 @@ public class ISet<V extends Comparable<V>> implements Iterable<V> {
 	}
 
 	@Override
+	public boolean equals(Object object) {
+		return Object_.clazz(object) == ISet.class && Objects.equals(stream(), ((ISet<?>) object).stream());
+	}
+
+	@Override
+	public int hashCode() {
+		return tree.stream().hashCode();
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("(");
@@ -56,16 +66,6 @@ public class ISet<V extends Comparable<V>> implements Iterable<V> {
 
 		sb.append(")");
 		return sb.toString();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return Object_.clazz(object) == ISet.class && Objects.equals(stream(), ((ISet<?>) object).stream());
-	}
-
-	@Override
-	public int hashCode() {
-		return tree.stream().hashCode();
 	}
 
 }

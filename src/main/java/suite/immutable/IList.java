@@ -85,17 +85,6 @@ public class IList<T> implements Iterable<T> {
 	}
 
 	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		IList<T> node = this;
-		while (!node.isEmpty()) {
-			sb.append(node.head + ", ");
-			node = node.tail;
-		}
-		return sb.toString();
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == IList.class) {
 			IList<?> list0 = this;
@@ -124,6 +113,17 @@ public class IList<T> implements Iterable<T> {
 			list = list.tail;
 		}
 		return hashCode;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		IList<T> node = this;
+		while (!node.isEmpty()) {
+			sb.append(node.head + ", ");
+			node = node.tail;
+		}
+		return sb.toString();
 	}
 
 }

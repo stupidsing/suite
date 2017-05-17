@@ -54,11 +54,6 @@ public class Complex {
 	}
 
 	@Override
-	public String toString() {
-		return r + " + " + i + " i";
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Complex.class) {
 			Complex other = (Complex) object;
@@ -70,6 +65,11 @@ public class Complex {
 	@Override
 	public int hashCode() {
 		return Float.hashCode(r) * 31 + Float.hashCode(i);
+	}
+
+	@Override
+	public String toString() {
+		return r + " + " + i + " i";
 	}
 
 }

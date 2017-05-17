@@ -15,10 +15,6 @@ public interface ExtentAllocator extends Closeable {
 			this.end = end;
 		}
 
-		public String toString() {
-			return start + "-" + end;
-		}
-
 		public boolean equals(Object object) {
 			if (Object_.clazz(object) == Extent.class) {
 				Extent other = (Extent) object;
@@ -29,6 +25,10 @@ public interface ExtentAllocator extends Closeable {
 
 		public int hashCode() {
 			return start ^ end;
+		}
+
+		public String toString() {
+			return start + "-" + end;
 		}
 	}
 

@@ -19,11 +19,6 @@ public class Data<T> extends Node {
 	}
 
 	@Override
-	public String toString() {
-		return "Data [" + data + "]";
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		return Object_.clazz(object) == Data.class && Objects.equals(data, ((Data<?>) object).data);
 	}
@@ -31,6 +26,11 @@ public class Data<T> extends Node {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(data);
+	}
+
+	@Override
+	public String toString() {
+		return "Data [" + data + "]";
 	}
 
 }

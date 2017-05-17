@@ -51,6 +51,16 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 	}
 
 	@Override
+	public boolean equals(Object object) {
+		return Object_.clazz(object) == IMap.class && Objects.equals(stream(), ((IMap<?, ?>) object).stream());
+	}
+
+	@Override
+	public int hashCode() {
+		return tree.stream().hashCode();
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
@@ -60,16 +70,6 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
 		sb.append("}");
 		return sb.toString();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return Object_.clazz(object) == IMap.class && Objects.equals(stream(), ((IMap<?, ?>) object).stream());
-	}
-
-	@Override
-	public int hashCode() {
-		return tree.stream().hashCode();
 	}
 
 }
