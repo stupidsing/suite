@@ -15,7 +15,7 @@ import suite.util.String_;
 
 public class AssetAllocator_ {
 
-	public static AssetAllocator allocateByEma() {
+	public static AssetAllocator byEma() {
 		MovingAverage movingAvg = new MovingAverage();
 		int halfLife = 64;
 		double decay = Math.exp(Math.log(.5d) / halfLife);
@@ -38,7 +38,7 @@ public class AssetAllocator_ {
 		};
 	}
 
-	public static AssetAllocator allocateByLastPriceChange() {
+	public static AssetAllocator byLastPriceChange() {
 		return new AssetAllocator() {
 			public List<Pair<String, Double>> allocate( //
 					Map<String, DataSource> dataSourceBySymbol, //
@@ -72,6 +72,10 @@ public class AssetAllocator_ {
 		};
 	}
 
+	/**
+	 * Treats all positive signal as equivalent and divide the assets evenly. Do
+	 * not leave any cash.
+	 */
 	public static AssetAllocator even(AssetAllocator assetAllocator) {
 		return (dataSourceBySymbol, tradeDates, backTestDate) -> {
 			List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate(dataSourceBySymbol, tradeDates, backTestDate);
@@ -84,6 +88,9 @@ public class AssetAllocator_ {
 		};
 	}
 
+	/**
+	 * Allocate all assets in pro-rata fashion, do not leave any cash.
+	 */
 	public static AssetAllocator reallocate(AssetAllocator assetAllocator) {
 		return (dataSourceBySymbol, tradeDates, backTestDate) -> {
 			List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate(dataSourceBySymbol, tradeDates, backTestDate);
