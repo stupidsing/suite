@@ -83,7 +83,7 @@ public class ConfigurationImpl implements Configuration {
 		case HKD__:
 			return hkd.dataSource(symbol, period);
 		case YAHOO:
-			return yahoo.dataSource(symbol, period);
+			return yahoo.dataSourceCsv(symbol, period);
 		default:
 			throw new RuntimeException();
 		}

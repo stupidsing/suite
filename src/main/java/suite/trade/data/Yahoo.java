@@ -1,5 +1,6 @@
 package suite.trade.data;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
@@ -9,6 +10,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import suite.Constants;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
@@ -16,13 +20,16 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.DatePeriod;
+import suite.util.FormatUtil;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
 
 public class Yahoo {
 
-	public DataSource dataSource(String symbol, DatePeriod period) {
+	private static ObjectMapper mapper = new ObjectMapper();
+
+	public DataSource dataSourceCsv(String symbol, DatePeriod period) {
 		String urlString = tableUrl(symbol, period);
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
@@ -47,6 +54,39 @@ public class Yahoo {
 		dataSource.cleanse();
 
 		return dataSource;
+	}
+
+	public DataSource dataSourceYql(String symbol, DatePeriod period) {
+		String yql = "select *" //
+				+ " from yahoo.finance.historicaldata" //
+				+ " where symbol = \"" + symbol + "\"" //
+				+ " and startDate = \"" + FormatUtil.formatDate(period.from) + "\"" //
+				+ " and endDate = \"" + FormatUtil.formatDate(period.to) + "\"";
+
+		String urlString = "http://query.yahooapis.com/v1/public/yql" //
+				+ "?q=" + encode(yql) //
+				+ "&format=json" //
+				+ "&diagnostics=true" //
+				+ "&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys" //
+				+ "&callback=";
+
+		return Rethrow.ex(() -> {
+			try (InputStream is = Singleton.get().getStoreCache().http(urlString).collect(To::inputStream)) {
+				JsonNode json = mapper.readTree(is);
+
+				System.out.println(json);
+				Streamlet<String[]> arrays = Read.from(json) //
+						.flatMap(json_ -> json_.get("query")) //
+						.flatMap(json_ -> json_.get("results")) //
+						.flatMap(json_ -> json_.get("quote")) //
+						.map(json_ -> new String[] { json_.get("Date").textValue(), json_.get("Open").textValue(), }) //
+						.collect(As::streamlet);
+
+				String[] dates = arrays.map(array -> array[0]).toArray(String.class);
+				float[] prices = arrays.map(array -> array[1]).collect(As.arrayOfFloats(Float::parseFloat));
+				return new DataSource(dates, prices);
+			}
+		});
 	}
 
 	/**
