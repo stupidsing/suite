@@ -15,6 +15,8 @@ import suite.trade.data.DataSource;
  */
 public interface AssetAllocator {
 
+	public static int historyWindow = 1024;
+
 	/**
 	 * @return a portfolio consisting of list of symbols and potential values,
 	 *         or null if the strategy do not want to trade on that date. The
