@@ -275,7 +275,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <K1, V1> Outlet2<K1, V1> map2(ObjObj_Obj<K, V, K1> kf, ObjObj_Obj<K, V, V1> vf) {
-		return of(FunUtil2.map2(kf, vf, source2));
+		return map2_(kf, vf);
 	}
 
 	public <V1> IntObjOutlet<V1> mapIntObj(ObjObj_Int<K, V> kf, ObjObj_Obj<K, V, V1> vf) {
@@ -283,7 +283,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <K1> Outlet2<K1, V> mapKey(Fun<K, K1> fun) {
-		return map2((k, v) -> fun.apply(k), (k, v) -> v);
+		return map2_((k, v) -> fun.apply(k), (k, v) -> v);
 	}
 
 	public <O> Outlet<O> mapNonNull(ObjObj_Obj<K, V, O> fun) {
@@ -291,7 +291,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <V1> Outlet2<K, V1> mapValue(Fun<V, V1> fun) {
-		return map2((k, v) -> k, (k, v) -> fun.apply(v));
+		return map2_((k, v) -> k, (k, v) -> fun.apply(v));
 	}
 
 	public Pair<K, V> min(Comparator<Pair<K, V>> comparator) {
@@ -481,6 +481,10 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public Outlet<V> values() {
 		return map((k, v) -> v);
+	}
+
+	private <K1, V1> Outlet2<K1, V1> map2_(ObjObj_Obj<K, V, K1> kf, ObjObj_Obj<K, V, V1> vf) {
+		return of(FunUtil2.map2(kf, vf, source2));
 	}
 
 	private boolean next(Pair<K, V> pair) {

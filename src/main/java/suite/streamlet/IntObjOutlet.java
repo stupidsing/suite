@@ -272,11 +272,11 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public <V1> IntObjOutlet<V1> mapIntObj(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
-		return of(IntObjFunUtil.mapIntObj(kf, vf, intObjSource));
+		return mapIntObj_(kf, vf);
 	}
 
 	public IntObjOutlet<V> mapKey(Int_Int fun) {
-		return mapIntObj((k, v) -> fun.apply(k), (k, v) -> v);
+		return mapIntObj_((k, v) -> fun.apply(k), (k, v) -> v);
 	}
 
 	public <O> Outlet<O> mapNonNull(IntObj_Obj<V, O> fun) {
@@ -284,7 +284,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public <V1> IntObjOutlet<V1> mapValue(Fun<V, V1> fun) {
-		return mapIntObj((k, v) -> k, (k, v) -> fun.apply(v));
+		return mapIntObj_((k, v) -> k, (k, v) -> fun.apply(v));
 	}
 
 	public IntObjPair<V> min(Comparator<IntObjPair<V>> comparator) {
@@ -474,6 +474,10 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 
 	public Outlet<V> values() {
 		return map((k, v) -> v);
+	}
+
+	private <V1> IntObjOutlet<V1> mapIntObj_(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
+		return of(IntObjFunUtil.mapIntObj(kf, vf, intObjSource));
 	}
 
 	private boolean next(IntObjPair<V> pair) {
