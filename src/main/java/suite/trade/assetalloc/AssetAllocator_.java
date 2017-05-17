@@ -70,6 +70,26 @@ public class AssetAllocator_ {
 		};
 	}
 
+	public static AssetAllocator byWorstReturn() {
+		return new AssetAllocator() {
+			public List<Pair<String, Double>> allocate( //
+					Map<String, DataSource> dataSourceBySymbol, //
+					List<LocalDate> tradeDates, //
+					LocalDate backTestDate) {
+				return Read.from2(dataSourceBySymbol) //
+						.map2((symbol, dataSource) -> {
+							float price0 = dataSource.get(-2).price;
+							float price1 = dataSource.get(-1).price;
+							return price1 / price0 - 1f;
+						}) //
+						.sortBy((symbol, return_) -> return_) //
+						.take(1) //
+						.mapValue(return_ -> 1d) //
+						.toList();
+			}
+		};
+	}
+
 	public static AssetAllocator even(AssetAllocator assetAllocator) {
 		return (dataSourceBySymbol, tradeDates, backTestDate) -> {
 			List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate(dataSourceBySymbol, tradeDates, backTestDate);
