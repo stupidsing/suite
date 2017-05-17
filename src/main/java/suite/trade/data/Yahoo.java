@@ -77,21 +77,22 @@ public class Yahoo {
 				String[] dates = Read.from(json) //
 						.flatMap(json_ -> json_.get("chart")) //
 						.flatMap(json_ -> json_.get("result")) //
-						.flatMap(json_ -> json_.get("meta")) //
+						.flatMap(json_ -> json_.get(0)) //
 						.flatMap(json_ -> json_.get("timestamp")) //
-						.map(json_ -> FormatUtil
-								.formatDate(LocalDateTime.ofEpochSecond(json_.intValue(), 0, ZoneOffset.UTC).toLocalDate())) //
+						.flatMap(json_ -> json_) //
+						.map(json_ -> LocalDateTime.ofEpochSecond(json_.intValue(), 0, ZoneOffset.UTC).toLocalDate()) //
+						.map(FormatUtil::formatDate) //
 						.toArray(String.class);
 
 				float[] prices = Read.from(json) //
 						.flatMap(json_ -> json_.get("chart")) //
 						.flatMap(json_ -> json_.get("result")) //
 						.flatMap(json_ -> json_.get(0)) //
-						.flatMap(json_ -> json_.get("meta")) //
 						.flatMap(json_ -> json_.get("indicators")) //
 						.flatMap(json_ -> json_.get("quote")) //
 						.flatMap(json_ -> json_.get(0)) //
 						.flatMap(json_ -> json_.get("open")) //
+						.flatMap(json_ -> json_) //
 						.collect(As.arrayOfFloats(JsonNode::floatValue));
 
 				return new DataSource(dates, prices);
