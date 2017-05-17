@@ -15,17 +15,14 @@ import suite.trade.data.DataSource;
  */
 public interface AssetAllocator {
 
-	public static int historyWindow = 1024;
-
 	/**
 	 * @return a portfolio consisting of list of symbols and potential values,
 	 *         or null if the strategy do not want to trade on that date. The
 	 *         assets will be allocated according to potential values pro-rata.
 	 */
-	public OnDate allocate(Map<String, DataSource> dataSourceBySymbol, List<LocalDate> tradeDates);
-
-	public interface OnDate {
-		public List<Pair<String, Double>> onDate(LocalDate backTestDate);
-	}
+	public List<Pair<String, Double>> allocate( //
+			Map<String, DataSource> dataSourceBySymbol, //
+			List<LocalDate> tradeDates, //
+			LocalDate backTestDate);
 
 }

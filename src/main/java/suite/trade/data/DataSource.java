@@ -8,7 +8,6 @@ import suite.math.Matrix;
 import suite.primitive.DataInput_;
 import suite.primitive.DataOutput_;
 import suite.trade.DatePeriod;
-import suite.trade.assetalloc.AssetAllocator;
 import suite.util.FormatUtil;
 import suite.util.Object_;
 import suite.util.Serialize;
@@ -78,10 +77,6 @@ public class DataSource {
 
 	public DataSource range(DatePeriod period) {
 		return range_(period);
-	}
-
-	public DataSource rangeBefore(LocalDate date) {
-		return range_(DatePeriod.daysBefore(date, AssetAllocator.historyWindow));
 	}
 
 	public void validate() {

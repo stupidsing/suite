@@ -50,66 +50,63 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		this.log = log;
 	}
 
-	public OnDate allocate(Map<String, DataSource> dataSourceBySymbol0, List<LocalDate> tradeDates) {
-		log.sink(dataSourceBySymbol0.size() + " assets in data source");
+	public List<Pair<String, Double>> allocate( //
+			Map<String, DataSource> dataSourceBySymbol, //
+			List<LocalDate> tradeDates, //
+			LocalDate backTestDate) {
+		log.sink(dataSourceBySymbol.size() + " assets in data source");
 
-		return backTestDate -> {
-			DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
-			DatePeriod backTestPeriod = DatePeriod.yearsBefore(backTestDate, 1);
-			int nTradeDaysInYear = Read.from(tradeDates).filter(backTestPeriod::contains).size();
+		DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
+		DatePeriod backTestPeriod = DatePeriod.yearsBefore(backTestDate, 1);
+		int nTradeDaysInYear = Read.from(tradeDates).filter(backTestPeriod::contains).size();
 
-			Map<String, DataSource> dataSourceBySymbol = Read.from2(dataSourceBySymbol0) //
-					.mapValue(dataSource -> dataSource.rangeBefore(backTestDate)) //
-					.toMap();
+		ObjObj_Obj<String, DataSource, MeanReversionStat> mrsFun = (symbol, dataSource) -> memoizeMrs
+				.computeIfAbsent(Pair.of(symbol, mrsPeriod), p -> meanReversionStat(symbol, dataSource, mrsPeriod));
 
-			ObjObj_Obj<String, DataSource, MeanReversionStat> mrsFun = (symbol, dataSource) -> memoizeMrs
-					.computeIfAbsent(Pair.of(symbol, mrsPeriod), p -> meanReversionStat(symbol, dataSource, mrsPeriod));
+		Map<String, MeanReversionStat> meanReversionStatBySymbol = Read.from2(dataSourceBySymbol) //
+				.map2((symbol, dataSource) -> symbol, mrsFun) //
+				.toMap();
 
-			Map<String, MeanReversionStat> meanReversionStatBySymbol = Read.from2(dataSourceBySymbol) //
-					.map2((symbol, dataSource) -> symbol, mrsFun) //
-					.toMap();
+		double dailyRiskFreeInterestRate = Math.expm1(stat.logRiskFreeInterestRate / nTradeDaysInYear);
 
-			double dailyRiskFreeInterestRate = Math.expm1(stat.logRiskFreeInterestRate / nTradeDaysInYear);
+		// make sure all time-series are mean-reversions:
+		// ensure ADF < 0d: price is not random walk
+		// ensure Hurst exponent < .5d: price is weakly mean reverting
+		// ensure 0d < variance ratio: statistic is significant
+		// ensure 0 < half-life: determine investment period
+		return Read.from2(meanReversionStatBySymbol) //
+				.filterValue(mrs -> mrs.adf < 0d //
+						&& mrs.hurst < .5d //
+						&& 0d < mrs.varianceRatio //
+						&& mrs.movingAvgMeanReversionRatio() < 0d) //
+				.map2((symbol, mrs) -> symbol, (symbol, mrs) -> {
+					DataSource dataSource = dataSourceBySymbol.get(symbol);
+					double price = dataSource.last().price;
 
-			// make sure all time-series are mean-reversions:
-			// ensure ADF < 0d: price is not random walk
-			// ensure Hurst exponent < .5d: price is weakly mean reverting
-			// ensure 0d < variance ratio: statistic is significant
-			// ensure 0 < half-life: determine investment period
-			return Read.from2(meanReversionStatBySymbol) //
-					.filterValue(mrs -> mrs.adf < 0d //
-							&& mrs.hurst < .5d //
-							&& 0d < mrs.varianceRatio //
-							&& mrs.movingAvgMeanReversionRatio() < 0d) //
-					.map2((symbol, mrs) -> symbol, (symbol, mrs) -> {
-						DataSource dataSource = dataSourceBySymbol.get(symbol);
-						double price = dataSource.last().price;
+					double lma = mrs.latestMovingAverage();
+					float diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
+					double dailyReturn = diff / price - dailyRiskFreeInterestRate;
 
-						double lma = mrs.latestMovingAverage();
-						float diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
-						double dailyReturn = diff / price - dailyRiskFreeInterestRate;
+					ReturnsStat returnsStat = ts.returnsStat(dataSource.prices);
+					double sharpe = returnsStat.sharpeRatio();
+					double kelly = dailyReturn * price * price / mrs.movingAvgMeanReversion.sse;
 
-						ReturnsStat returnsStat = ts.returnsStat(dataSource.prices);
-						double sharpe = returnsStat.sharpeRatio();
-						double kelly = dailyReturn * price * price / mrs.movingAvgMeanReversion.sse;
+					PotentialStat potentialStat = new PotentialStat(dailyReturn, sharpe, kelly);
 
-						PotentialStat potentialStat = new PotentialStat(dailyReturn, sharpe, kelly);
+					log.sink(cfg.queryCompany(symbol) //
+							+ ", mrRatio = " + To.string(mrs.meanReversionRatio()) //
+							+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio()) //
+							+ ", " + To.string(price) + " => " + To.string(price + diff) //
+							+ ", " + potentialStat);
 
-						log.sink(cfg.queryCompany(symbol) //
-								+ ", mrRatio = " + To.string(mrs.meanReversionRatio()) //
-								+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio()) //
-								+ ", " + To.string(price) + " => " + To.string(price + diff) //
-								+ ", " + potentialStat);
-
-						return potentialStat;
-					}) //
-					.filterValue(ps -> 0d < ps.kelly) //
-					.cons(Asset.cashCode, new PotentialStat(stat.riskFreeInterestRate, 1d, 0d)) //
-					.mapValue(ps -> ps.kelly) //
-					.sortBy((symbol, potential) -> -potential) //
-					.take(top) //
-					.toList();
-		};
+					return potentialStat;
+				}) //
+				.filterValue(ps -> 0d < ps.kelly) //
+				.cons(Asset.cashCode, new PotentialStat(stat.riskFreeInterestRate, 1d, 0d)) //
+				.mapValue(ps -> ps.kelly) //
+				.sortBy((symbol, potential) -> -potential) //
+				.take(top) //
+				.toList();
 	}
 
 	private class PotentialStat {

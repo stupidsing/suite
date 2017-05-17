@@ -9,13 +9,13 @@ import java.util.Map;
 import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.math.TimeSeries;
+import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
 import suite.trade.Account.Valuation;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
-import suite.trade.assetalloc.AssetAllocator.OnDate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -28,6 +28,8 @@ import suite.util.String_;
 import suite.util.To;
 
 public class AssetAllocBackTest {
+
+	private int historyWindow = 1024;
 
 	private Configuration cfg = new ConfigurationImpl();
 	private Statistic stat = new Statistic();
@@ -98,12 +100,14 @@ public class AssetAllocBackTest {
 			// pre-fetch quotes
 			cfg.quote(assetBySymbol.keySet());
 
-			for (String symbol : assetBySymbol.keySet()) {
-				DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
-				dataSource.validate();
-				if (128 <= dataSource.dates.length)
+			for (String symbol : assetBySymbol.keySet())
+				try {
+					DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
+					dataSource.validate();
 					dataSourceBySymbol.put(symbol, dataSource);
-			}
+				} catch (Exception ex) {
+					LogUtil.warn(ex + " in " + assetBySymbol.get(symbol));
+				}
 
 			List<LocalDate> tradeDates = Read.from2(dataSourceBySymbol) //
 					.concatMap((symbol, dataSource) -> Read.from(dataSource.dates)) //
@@ -118,17 +122,21 @@ public class AssetAllocBackTest {
 
 			for (int i = 0; i < size; i++) {
 				LocalDate date = dates.get(i);
+				DatePeriod historyWindowPeriod = DatePeriod.daysBefore(date, historyWindow);
 
 				Map<String, DataSource> backTestDataSourceBySymbol = Read.from2(dataSourceBySymbol) //
-						.mapValue(dataSource -> dataSource.rangeBefore(date)) //
+						.mapValue(dataSource -> dataSource.range(historyWindowPeriod)) //
+						.filterValue(dataSource -> 128 <= dataSource.dates.length) //
 						.toMap();
 
 				Map<String, Float> latestPriceBySymbol = Read.from2(backTestDataSourceBySymbol) //
 						.mapValue(dataSource -> dataSource.last().price) //
 						.toMap();
 
-				OnDate onDate = assetAllocator.allocate(backTestDataSourceBySymbol, tradeDates);
-				List<Pair<String, Double>> ratioBySymbol = onDate.onDate(date);
+				List<Pair<String, Double>> ratioBySymbol = assetAllocator.allocate( //
+						backTestDataSourceBySymbol, //
+						tradeDates, //
+						date);
 
 				double valuation_ = valuation;
 

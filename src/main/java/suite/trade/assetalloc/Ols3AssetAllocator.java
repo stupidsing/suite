@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
 import suite.math.Matrix;
@@ -24,11 +25,13 @@ public class Ols3AssetAllocator implements AssetAllocator {
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 
-	public OnDate allocate(Map<String, DataSource> dataSourceBySymbol, List<LocalDate> tradeDates) {
-		return backTestDate -> Read.from2(dataSourceBySymbol) //
-				.mapValue(dataSource0 -> {
-					DataSource dataSource1 = dataSource0.rangeBefore(backTestDate);
-					float[] prices = dataSource1.prices;
+	public List<Pair<String, Double>> allocate( //
+			Map<String, DataSource> dataSourceBySymbol, //
+			List<LocalDate> tradeDates, //
+			LocalDate backTestDate) {
+		return Read.from2(dataSourceBySymbol) //
+				.mapValue(dataSource -> {
+					float[] prices = dataSource.prices;
 					int length = prices.length;
 					float[][] x = new float[length - lookBack][];
 					for (int i = lookBack; i < length; i++)
@@ -36,7 +39,7 @@ public class Ols3AssetAllocator implements AssetAllocator {
 					float[] y = Arrays.copyOfRange(prices, lookBack, length);
 					LinearRegression lr = stat.linearRegression(x, y);
 					float pricex = lr.predict(inputs(prices, length));
-					return pricex / dataSource1.last().price - 1d;
+					return pricex / dataSource.last().price - 1d;
 				}) //
 				.filterValue(potential -> 0d < potential) //
 				.toList();
