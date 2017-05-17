@@ -16,7 +16,7 @@ public class KellyAssetAllocator implements AssetAllocator {
 
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Statistic stat = new Statistic();
-	private TimeSeries timeSeries = new TimeSeries();
+	private TimeSeries ts = new TimeSeries();
 
 	public List<Pair<String, Double>> allocate( //
 			Map<String, DataSource> dataSourceBySymbol, //
@@ -24,13 +24,13 @@ public class KellyAssetAllocator implements AssetAllocator {
 			LocalDate backTestDate) {
 
 		// TODO this should be the expected returns, not past returns!
-		Map<String, DataSource> predictedReturnsBySymbol = dataSourceBySymbol;
+		Map<String, DataSource> predictedPricesBySymbol = dataSourceBySymbol;
 
-		Map<String, float[]> returnsBySymbol = Read.from2(predictedReturnsBySymbol) //
-				.mapValue(dataSource -> timeSeries.returns(dataSource.prices)) //
+		Map<String, float[]> returnsBySymbol = Read.from2(predictedPricesBySymbol) //
+				.mapValue(dataSource -> ts.returns(dataSource.prices)) //
 				.toMap();
 
-		Map<String, Double> excessReturnBySymbol = Read.from2(predictedReturnsBySymbol) //
+		Map<String, Double> excessReturnBySymbol = Read.from2(predictedPricesBySymbol) //
 				.mapValue(dataSource -> {
 					double price0 = dataSource.first().price;
 					double pricex = dataSource.last().price;
