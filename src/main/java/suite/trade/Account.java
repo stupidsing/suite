@@ -124,9 +124,7 @@ public class Account {
 			Map<String, Float> prices1 = new HashMap<>(prices0);
 			prices1.put(cashCode, 1f);
 
-			valuationBySymbol = Read.from2(assets) //
-					.map2((symbol, n) -> symbol, (symbol, n) -> prices1.get(symbol) * n) //
-					.toMap();
+			valuationBySymbol = Read.from2(assets).map2((symbol, n) -> prices1.get(symbol) * n).toMap();
 		}
 
 		public Streamlet2<String, Float> stream() {

@@ -11,7 +11,6 @@ import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
 import suite.math.TimeSeries;
 import suite.math.TimeSeries.ReturnsStat;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
@@ -69,11 +68,10 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 		DatePeriod backTestPeriod = DatePeriod.yearsBefore(backTestDate, 1);
 		int nTradeDaysInYear = Read.from(tradeDates).filter(backTestPeriod::contains).size();
 
-		ObjObj_Obj<String, DataSource, MeanReversionStat> mrsFun = (symbol, dataSource) -> memoizeMrs
-				.computeIfAbsent(Pair.of(symbol, mrsPeriod), p -> meanReversionStat(symbol, dataSource, mrsPeriod));
-
 		Map<String, MeanReversionStat> meanReversionStatBySymbol = Read.from2(dataSourceBySymbol) //
-				.map2((symbol, dataSource) -> symbol, mrsFun) //
+				.map2((symbol, dataSource) -> memoizeMrs.computeIfAbsent( //
+						Pair.of(symbol, mrsPeriod), //
+						p -> meanReversionStat(symbol, dataSource, mrsPeriod))) //
 				.toMap();
 
 		double dailyRiskFreeInterestRate = Math.expm1(stat.logRiskFreeInterestRate / nTradeDaysInYear);
@@ -86,7 +84,7 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 				.filterValue(mrs -> mrs.adf < 0d //
 						&& mrs.hurst < .5d //
 						&& 0d < mrs.varianceRatio) //
-				.map2((symbol, mrs) -> symbol, (symbol, mrs) -> {
+				.map2((symbol, mrs) -> {
 					DataSource dataSource = dataSourceBySymbol.get(symbol);
 					double price = dataSource.last().price;
 

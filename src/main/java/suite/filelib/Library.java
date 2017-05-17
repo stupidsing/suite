@@ -61,7 +61,7 @@ public class Library extends ExecutableProgram {
 		});
 
 		Streamlet2<Path, FileInfo> path_fileInfos = partition.t0 //
-				.map2((path, size) -> path, (path, size) -> {
+				.map2((path, size) -> {
 					BasicFileAttributes attrs = Rethrow.ex(() -> Files.readAttributes(path, BasicFileAttributes.class));
 
 					// get all file information
@@ -85,7 +85,7 @@ public class Library extends ExecutableProgram {
 		}
 
 		path_fileInfos //
-				.map2((path, fileInfo) -> path, (path, fileInfo) -> {
+				.map2((path, fileInfo) -> {
 
 					// move file to library, by md5
 					Path path1 = Paths.get(libraryDir, fileInfo.md5.substring(0, 2), fileInfo.md5);

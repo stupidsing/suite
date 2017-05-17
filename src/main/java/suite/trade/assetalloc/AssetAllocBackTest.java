@@ -142,7 +142,7 @@ public class AssetAllocBackTest {
 
 				Map<String, Integer> portfolio = Read.from2(ratioBySymbol) //
 						.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
-						.map2((symbol, potential) -> symbol, (symbol, potential) -> {
+						.map2((symbol, potential) -> {
 							float price = backTestDataSourceBySymbol.get(symbol).last().price;
 							int lotSize = assetBySymbol.get(symbol).lotSize;
 							double lots = valuation_ * potential / (price * lotSize);

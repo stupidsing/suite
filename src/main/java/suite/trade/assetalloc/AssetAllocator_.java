@@ -27,7 +27,7 @@ public class AssetAllocator_ {
 					List<LocalDate> tradeDates, //
 					LocalDate backTestDate) {
 				return Read.from2(dataSourceBySymbol) //
-						.map2((symbol, dataSource) -> symbol, (symbol, dataSource) -> {
+						.map2((symbol, dataSource) -> {
 							float[] ema = movingAvg.exponentialMovingAvg(dataSource.prices, decay);
 							float lastEma = ema[ema.length - 2];
 							float latest = dataSource.last().price;
@@ -45,9 +45,7 @@ public class AssetAllocator_ {
 					List<LocalDate> tradeDates, //
 					LocalDate backTestDate) {
 				return Read.from2(dataSourceBySymbol) //
-						.map2((symbol, dataSource) -> symbol, (symbol, dataSource) -> {
-							return dataSource.get(-2).price / dataSource.get(-1).price < .96d ? 1d : 0d;
-						}) //
+						.map2((symbol, dataSource) -> dataSource.get(-2).price / dataSource.get(-1).price < .96d ? 1d : 0d) //
 						.toList();
 			}
 		};
