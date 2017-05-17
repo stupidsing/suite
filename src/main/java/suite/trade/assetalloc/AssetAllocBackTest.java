@@ -16,6 +16,7 @@ import suite.trade.Account;
 import suite.trade.Account.Valuation;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
+import suite.trade.assetalloc.AssetAllocator.OnDate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -133,10 +134,8 @@ public class AssetAllocBackTest {
 						.mapValue(dataSource -> dataSource.last().price) //
 						.toMap();
 
-				List<Pair<String, Double>> ratioBySymbol = assetAllocator.allocate( //
-						backTestDataSourceBySymbol, //
-						tradeDates, //
-						date);
+				OnDate onDate = assetAllocator.allocate(backTestDataSourceBySymbol, tradeDates);
+				List<Pair<String, Double>> ratioBySymbol = onDate.onDate(date);
 
 				double valuation_ = valuation;
 
