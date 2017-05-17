@@ -50,13 +50,18 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		this.log = log;
 	}
 
-	public OnDate allocate(Map<String, DataSource> dataSourceBySymbol, List<LocalDate> tradeDates) {
-		log.sink(dataSourceBySymbol.size() + " assets in data source");
+	public OnDate allocate(Map<String, DataSource> dataSourceBySymbol0, List<LocalDate> tradeDates) {
+		log.sink(dataSourceBySymbol0.size() + " assets in data source");
 
 		return backTestDate -> {
+			DatePeriod historyWindowPeriod = DatePeriod.daysBefore(backTestDate, AssetAllocator.historyWindow);
 			DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
 			DatePeriod backTestPeriod = DatePeriod.yearsBefore(backTestDate, 1);
 			int nTradeDaysInYear = Read.from(tradeDates).filter(backTestPeriod::contains).size();
+
+			Map<String, DataSource> dataSourceBySymbol = Read.from2(dataSourceBySymbol0) //
+					.mapValue(dataSource -> dataSource.range(historyWindowPeriod)) //
+					.toMap();
 
 			ObjObj_Obj<String, DataSource, MeanReversionStat> mrsFun = (symbol, dataSource) -> memoizeMrs
 					.computeIfAbsent(Pair.of(symbol, mrsPeriod), p -> meanReversionStat(symbol, dataSource, mrsPeriod));
