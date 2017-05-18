@@ -20,6 +20,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.DatePeriod;
+import suite.util.HomeDir;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.String_;
@@ -29,7 +30,7 @@ public class YahooHistory {
 
 	private Yahoo yahoo = new Yahoo();
 
-	private Path path = Paths.get("/home/ywsing/yahoo.history");
+	private Path path = HomeDir.resolve("yahoo.history");
 	private Map<String, Map<String, String>> data;
 
 	public static void main(String[] args) throws IOException {
