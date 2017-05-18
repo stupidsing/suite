@@ -32,7 +32,7 @@ public class TradeUtil {
 	public static String format(Map<String, Integer> portfolio) {
 		return Read.from2(portfolio) //
 				.sortBy((code, i) -> !String_.equals(code, Asset.cashCode) ? code : "") //
-				.map((code, i) -> code + ":" + i + ",") //
+				.map((code, i) -> "+" + code + "*" + i) //
 				.collect(As.joined());
 	}
 

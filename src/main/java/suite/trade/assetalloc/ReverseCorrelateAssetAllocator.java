@@ -8,7 +8,6 @@ import java.util.Set;
 import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.math.CholeskyDecomposition;
-import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.streamlet.Read;
 import suite.trade.DatePeriod;
@@ -17,7 +16,7 @@ import suite.util.To;
 
 public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 
-	private int tor = 32;
+	private int tor = 64;
 
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Statistic stat = new Statistic();
@@ -72,9 +71,6 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 		});
 
 		float[] returns = To.arrayOfFloats(symbols, excessReturnBySymbol::get);
-
-		System.out.println(new Matrix().toString(returns));
-		System.out.println(new Matrix().toString(cov));
 
 		float[] allocations = cholesky.inverseMul(cov).apply(returns);
 
