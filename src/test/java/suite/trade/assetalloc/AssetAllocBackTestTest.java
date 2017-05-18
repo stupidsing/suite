@@ -30,9 +30,9 @@ public class AssetAllocBackTestTest {
 	@Test
 	public void testBackTest() {
 		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
-		Simulate backTest = backTest(assetAllocator, period);
-		Summarize.of(cfg, Read.from(backTest.trades)).out(System.out::println, trade -> trade.symbol);
-		assertGrowth(backTest);
+		Simulate sim = backTest(assetAllocator, period);
+		Summarize.of(cfg, Read.from(sim.trades)).out(System.out::println, trade -> trade.symbol);
+		assertGrowth(sim);
 	}
 
 	@Test
