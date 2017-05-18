@@ -74,25 +74,19 @@ public class Yahoo {
 			try (InputStream is = Singleton.get().getStoreCache().http(urlString).collect(To::inputStream)) {
 				JsonNode json = mapper.readTree(is);
 
-				String[] dates = Read.from(json) //
+				Streamlet<JsonNode> jsons = Read.each(json) //
 						.flatMap(json_ -> json_.get("chart")) //
-						.flatMap(json_ -> json_.get("result")) //
-						.flatMap(json_ -> json_.get(0)) //
+						.flatMap(json_ -> json_);
+
+				String[] dates = jsons //
 						.flatMap(json_ -> json_.get("timestamp")) //
-						.flatMap(json_ -> json_) //
 						.map(json_ -> LocalDateTime.ofEpochSecond(json_.intValue(), 0, ZoneOffset.UTC).toLocalDate()) //
 						.map(FormatUtil::formatDate) //
 						.toArray(String.class);
 
-				float[] prices = Read.from(json) //
-						.flatMap(json_ -> json_.get("chart")) //
-						.flatMap(json_ -> json_.get("result")) //
-						.flatMap(json_ -> json_.get(0)) //
-						.flatMap(json_ -> json_.get("indicators")) //
-						.flatMap(json_ -> json_.get("quote")) //
-						.flatMap(json_ -> json_.get(0)) //
+				float[] prices = jsons //
+						.flatMap(json_ -> json_.get("indicators").get("quote")) //
 						.flatMap(json_ -> json_.get("open")) //
-						.flatMap(json_ -> json_) //
 						.collect(As.arrayOfFloats(JsonNode::floatValue));
 
 				return new DataSource(dates, prices);
@@ -118,8 +112,7 @@ public class Yahoo {
 			try (InputStream is = Singleton.get().getStoreCache().http(urlString).collect(To::inputStream)) {
 				JsonNode json = mapper.readTree(is);
 
-				System.out.println(json);
-				Streamlet<String[]> arrays = Read.from(json) //
+				Streamlet<String[]> arrays = Read.each(json) //
 						.flatMap(json_ -> json_.get("query")) //
 						.flatMap(json_ -> json_.get("results")) //
 						.flatMap(json_ -> json_.get("quote")) //
