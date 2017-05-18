@@ -3,16 +3,21 @@ package suite.trade.assetalloc;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.math.CholeskyDecomposition;
+import suite.math.Matrix;
 import suite.math.TimeSeries;
 import suite.streamlet.Read;
+import suite.trade.DatePeriod;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
-public class KellyAssetAllocator implements AssetAllocator {
+public class ReverseCorrelateAssetAllocator implements AssetAllocator {
+
+	private int tor = 32;
 
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Statistic stat = new Statistic();
@@ -22,14 +27,34 @@ public class KellyAssetAllocator implements AssetAllocator {
 			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
+		DatePeriod samplePeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
 		double dailyInterestRate = Math.expm1(stat.logRiskFreeInterestRate / 256);
 
-		// TODO this should be the expected returns, not past returns!
-		Map<String, float[]> predictedPricesBySymbol = Read.from2(dataSourceBySymbol) //
-				.mapValue(dataSource -> dataSource.prices) //
+		Set<String> reverseCorrelatingSymbols = Read.from2(dataSourceBySymbol) //
+				.mapValue(dataSource -> {
+					float[] prices = dataSource.range(samplePeriod).prices;
+					float[] logReturns = ts.logReturns(prices);
+					double sum = 0d;
+					for (int i = tor; i < logReturns.length - tor; i++) {
+						int i_ = i;
+						sum += stat.correlation(j -> logReturns[i_ - j], j -> logReturns[i_ + j], tor);
+					}
+					return sum / (logReturns.length - 2 * tor);
+				}) //
+				.filterValue(corr -> .01d < corr) //
+				.keys() //
+				.toSet();
+
+		Map<String, float[]> reversePricesBySymbol = Read.from2(dataSourceBySymbol) //
+				.filterKey(reverseCorrelatingSymbols::contains) //
+				.mapValue(dataSource -> {
+					float[] prices = dataSource.prices;
+					int length = prices.length;
+					return To.arrayOfFloats(tor, i -> prices[length - 1 - i]);
+				}) //
 				.toMap();
 
-		Map<String, float[]> returnsBySymbol = Read.from2(predictedPricesBySymbol) //
+		Map<String, float[]> returnsBySymbol = Read.from2(reversePricesBySymbol) //
 				.mapValue(ts::returns) //
 				.toMap();
 
@@ -47,6 +72,9 @@ public class KellyAssetAllocator implements AssetAllocator {
 		});
 
 		float[] returns = To.arrayOfFloats(symbols, excessReturnBySymbol::get);
+
+		System.out.println(new Matrix().toString(returns));
+		System.out.println(new Matrix().toString(cov));
 
 		float[] allocations = cholesky.inverseMul(cov).apply(returns);
 
