@@ -283,40 +283,6 @@ public class SewingProverImpl implements SewingProver {
 				.isAny(b -> b);
 	}
 
-	private Trampoline compileTrCallCps(SewingBinder sb, Node node) {
-		Cps cps = compileCps(sb, node, rt -> {
-			IList<Trampoline> rems = rt.rems;
-			rt.rems = IList.cons(fail, IList.end());
-			new Runtime(rt, rt_ -> {
-				rt_.rems = rems;
-				return okay;
-			}).trampoline();
-			return null;
-		});
-		return rt -> {
-			rt.cont(cps);
-			return fail;
-		};
-	}
-
-	private Cps compileCpsCallTr(SewingBinder sb, Node node, Cps cpsx) {
-		Trampoline tr = compileTr(sb, node);
-		Trampoline rem = rt -> {
-			rt.cont(cpsx);
-			return fail;
-		};
-		return rt -> {
-			IList<Trampoline> rems = rt.rems;
-			rt.rems = IList.cons(fail, IList.end());
-			new Runtime(rt, rt_ -> {
-				rt_.rems = rems;
-				rt_.pushRem(rem);
-				return tr;
-			}).trampoline();
-			return null;
-		};
-	}
-
 	private Cps compileCpsRules(Prototype prototype, List<Rule> rules, TraceLevel traceLevel) {
 		Streamlet<Cps> cpss = Read.from(rules).map(rule -> {
 			Generalizer generalizer = new Generalizer();
@@ -404,12 +370,28 @@ public class SewingProverImpl implements SewingProver {
 
 	private Cps compileCpsCallPredicate(SewingBinder sb, Node node, Cps cpsx) {
 		Prototype prototype = Prototype.of(node);
-		Cps cps;
-		if (rules.containsKey(prototype))
-			if (isHasCutByPrototype.get(prototype))
-				cps = compileCpsCallTr(sb, node, cpsx);
-			else {
-				Clone_ f = sb.compile(node);
+		if (rules.containsKey(prototype)) {
+			Clone_ f = sb.compile(node);
+			Cps cps;
+			if (isHasCutByPrototype.get(prototype)) {
+				Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
+				Trampoline rem = rt -> {
+					rt.cont(cpsx);
+					return fail;
+				};
+				cps = rt -> {
+					IList<Trampoline> rems = rt.rems;
+					rt.rems = IList.cons(fail, IList.end());
+					new Runtime(rt, rt_ -> {
+						rt_.query = f.apply(rt.env);
+						rt_.rems = rems;
+						rt_.pushRem(rem);
+						return mtr.get();
+					}).trampoline();
+					return null;
+				};
+
+			} else {
 				Mutable<Cps> mcps = getCpsByPrototype(prototype);
 				cps = rt -> {
 					Cps cps0 = rt.cps;
@@ -421,9 +403,9 @@ public class SewingProverImpl implements SewingProver {
 					return mcps.get();
 				};
 			}
-		else
+			return cps;
+		} else
 			throw new RuntimeException("cannot find predicate " + prototype);
-		return cps;
 	}
 
 	private Cps saveEnvCps(Cps cps) {
@@ -799,21 +781,42 @@ public class SewingProverImpl implements SewingProver {
 
 	private Trampoline compileTrCallPredicate(SewingBinder sb, Node node) {
 		Prototype prototype = Prototype.of(node);
-		Trampoline tr;
-		if (rules.containsKey(prototype))
+		if (rules.containsKey(prototype)) {
+			Clone_ f = sb.compile(node);
+			Trampoline tr;
 			if (isHasCutByPrototype.get(prototype)) {
-				Clone_ f = sb.compile(node);
 				Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					rt.query = f.apply(rt.env);
-					// logUtil.info(Formatter.dump(rt.query));
 					return mtr.get()::prove;
 				};
-			} else
-				tr = compileTrCallCps(sb, node);
-		else
+			} else {
+				Mutable<Cps> mcps = getCpsByPrototype(prototype);
+
+				Cps cpsx = rt -> {
+					IList<Trampoline> rems = rt.rems;
+					rt.rems = IList.cons(fail, IList.end());
+					new Runtime(rt, rt_ -> {
+						rt_.rems = rems;
+						return okay;
+					}).trampoline();
+					return null;
+				};
+
+				tr = rt -> {
+					Cps cps0 = rt.cps;
+					rt.cps = rt_ -> {
+						rt.cps = cps0;
+						return cpsx;
+					};
+					rt.query = f.apply(rt.env);
+					rt.cont(mcps.get());
+					return fail;
+				};
+			}
+			return tr;
+		} else
 			throw new RuntimeException("cannot find predicate " + prototype);
-		return tr;
 	}
 
 	private Trampoline saveEnvTr(Trampoline tr) {
