@@ -24,7 +24,6 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.DatePeriod;
-import suite.util.FormatUtil;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.String_;
@@ -74,8 +73,8 @@ public class YahooHistory {
 	}
 
 	public DataSource dataSource(String symbol, DatePeriod period) {
-		String from = FormatUtil.formatDate(period.from);
-		String to = FormatUtil.formatDate(period.to);
+		String from = To.string(period.from);
+		String to = To.string(period.to);
 		Map<String, Float> map = new TreeMap<>();
 
 		for (Entry<String, String> e : read().get(symbol).entrySet()) {
@@ -118,7 +117,7 @@ public class YahooHistory {
 				while (weekends.contains(lastClose.getDayOfWeek()) || lastClose.getHour() != 16)
 					lastClose = lastClose.minusHours(1);
 
-				String date = FormatUtil.formatDate(lastClose.toLocalDate());
+				String date = To.string(lastClose.toLocalDate());
 				Map<String, Float> quotes = yahoo.quote(data.keySet());
 
 				for (Entry<String, Float> e : quotes.entrySet())

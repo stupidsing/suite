@@ -22,7 +22,6 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.DatePeriod;
-import suite.util.FormatUtil;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -81,7 +80,7 @@ public class Yahoo {
 				String[] dates = jsons //
 						.flatMap(json_ -> json_.get("timestamp")) //
 						.map(json_ -> LocalDateTime.ofEpochSecond(json_.intValue(), 0, ZoneOffset.UTC).toLocalDate()) //
-						.map(FormatUtil::formatDate) //
+						.map(To::string) //
 						.toArray(String.class);
 
 				float[] prices = jsons //
@@ -98,8 +97,8 @@ public class Yahoo {
 		String yql = "select *" //
 				+ " from yahoo.finance.historicaldata" //
 				+ " where symbol = \"" + symbol + "\"" //
-				+ " and startDate = \"" + FormatUtil.formatDate(period.from) + "\"" //
-				+ " and endDate = \"" + FormatUtil.formatDate(period.to) + "\"";
+				+ " and startDate = \"" + To.string(period.from) + "\"" //
+				+ " and endDate = \"" + To.string(period.to) + "\"";
 
 		String urlString = "http://query.yahooapis.com/v1/public/yql" //
 				+ "?q=" + encode(yql) //

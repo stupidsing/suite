@@ -35,7 +35,6 @@ import suite.trade.data.Summarize;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
-import suite.util.FormatUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
 import suite.util.String_;
@@ -139,7 +138,7 @@ public class DailyMain extends ExecutableProgram {
 						.toMap());
 
 		DatePeriod period = DatePeriod.daysBefore(128);
-		String sevenDaysAgo = FormatUtil.formatDate(LocalDate.now().plusDays(-7));
+		String sevenDaysAgo = To.string(LocalDate.now().plusDays(-7));
 		List<String> messages = new ArrayList<>();
 
 		// capture signals
@@ -159,7 +158,7 @@ public class DailyMain extends ExecutableProgram {
 						throw new RuntimeException("ancient data: " + datex);
 
 					Map<String, Float> latest = cfg.quote(Collections.singleton(symbol));
-					String latestDate = FormatUtil.formatDate(LocalDate.now());
+					String latestDate = To.string(LocalDate.now());
 					float latestPrice = latest.values().iterator().next();
 
 					DataSource ds1 = ds0.cons(latestDate, latestPrice);

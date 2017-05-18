@@ -19,7 +19,6 @@ import suite.trade.DatePeriod;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
-import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.List_;
@@ -112,7 +111,7 @@ public class AssetAllocBackTest {
 			List<LocalDate> tradeDates = Read.from2(dataSourceBySymbol) //
 					.concatMap((symbol, dataSource) -> Read.from(dataSource.dates)) //
 					.distinct() //
-					.map(FormatUtil::date) //
+					.map(To::date) //
 					.sort(Object_::compare) //
 					.toList();
 
@@ -160,7 +159,7 @@ public class AssetAllocBackTest {
 				for (Pair<String, Float> e : val.stream())
 					holdBySymbol_.compute(e.t0, (s, h) -> e.t1 / (valuation_ * size) + (h != null ? h : 0d));
 
-				log.sink(FormatUtil.formatDate(date) //
+				log.sink(To.string(date) //
 						+ ", valuation = " + valuation //
 						+ ", portfolio = " + account_ //
 						+ ", actions = " + actions);

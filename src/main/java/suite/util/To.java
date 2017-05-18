@@ -14,8 +14,10 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -122,6 +124,10 @@ public class To {
 
 	public static Chars chars(String s) {
 		return Chars.of(arrayOfChars(s));
+	}
+
+	public static LocalDate date(String s) {
+		return LocalDate.parse(s, Constants.dateFormat);
 	}
 
 	public static String hex(int i) {
@@ -312,8 +318,20 @@ public class To {
 		return String.format("%.3f", d);
 	}
 
+	public static String string(Instant instant) {
+		return yyyymmdd(instant);
+	}
+
+	public static String string(LocalDate date) {
+		return Constants.dateFormat.format(date);
+	}
+
+	public static String string(LocalDateTime time) {
+		return yyyymmdd(time);
+	}
+
 	public static String string(long time) {
-		return FormatUtil.formatDateTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
+		return yyyymmdd(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
 	}
 
 	public static String string(InputStream in) {
@@ -353,8 +371,16 @@ public class To {
 		return sw.toString();
 	}
 
+	public static LocalDateTime time(String s) {
+		return LocalDateTime.parse(s, Constants.dateTimeFormat);
+	}
+
 	public static URL url(String s) {
 		return Rethrow.ex(() -> new URL(s));
+	}
+
+	private static String yyyymmdd(TemporalAccessor ta) {
+		return Constants.dateTimeFormat.format(ta);
 	}
 
 }

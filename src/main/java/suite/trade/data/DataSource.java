@@ -8,10 +8,10 @@ import suite.math.Matrix;
 import suite.primitive.DataInput_;
 import suite.primitive.DataOutput_;
 import suite.trade.DatePeriod;
-import suite.util.FormatUtil;
 import suite.util.Object_;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
+import suite.util.To;
 import suite.util.Util;
 
 public class DataSource {
@@ -109,8 +109,8 @@ public class DataSource {
 	}
 
 	public double nYears() { // approximately
-		LocalDate date0 = FormatUtil.date(first().date);
-		LocalDate datex = FormatUtil.date(last().date);
+		LocalDate date0 = To.date(first().date);
+		LocalDate datex = To.date(last().date);
 		return DatePeriod.of(date0, datex).nYears();
 	}
 
@@ -129,8 +129,8 @@ public class DataSource {
 	}
 
 	private DataSource range_(DatePeriod period) {
-		String s0 = FormatUtil.formatDate(period.from);
-		String sx = FormatUtil.formatDate(period.to);
+		String s0 = To.string(period.from);
+		String sx = To.string(period.to);
 		String[] dates1 = new String[dates.length];
 		float[] prices1 = new float[prices.length];
 		int j = 0;

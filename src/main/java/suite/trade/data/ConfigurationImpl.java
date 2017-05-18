@@ -15,7 +15,6 @@ import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.Trade;
 import suite.trade.data.Broker.Hsbc;
-import suite.util.FormatUtil;
 import suite.util.String_;
 import suite.util.To;
 
@@ -44,7 +43,7 @@ public class ConfigurationImpl implements Configuration {
 
 		// count as tomorrow open if market is closed (after 4pm)
 		LocalDate tradeDate = LocalDateTime.now().plusHours(8).toLocalDate();
-		String date = FormatUtil.formatDate(tradeDate);
+		String date = To.string(tradeDate);
 
 		return SerializedStoreCache //
 				.of(DataSource.serializer) //
