@@ -22,7 +22,10 @@ public class Summarize {
 	private Map<String, Float> priceBySymbol;
 
 	public static Summarize of(Configuration cfg) {
-		Streamlet<Trade> trades = cfg.queryHistory();
+		return of(cfg, cfg.queryHistory());
+	}
+
+	public static Summarize of(Configuration cfg, Streamlet<Trade> trades) {
 		Map<String, Float> priceBySymbol = cfg.quote(trades.map(trade -> trade.symbol).toSet());
 		return new Summarize(cfg, trades, priceBySymbol);
 	}
@@ -54,7 +57,7 @@ public class Summarize {
 		log.sink(Constants.separator);
 		log.sink("Overall:" + summarize(trades, priceBySymbol));
 
-		return Read.from(sellAll(trades, priceBySymbol)) // profit & loss
+		return sellAll(trades, priceBySymbol) // profit & loss
 				.groupBy(fun, t -> (double) Account.fromHistory(t).cash()) //
 				.toMap();
 	}
@@ -81,13 +84,7 @@ public class Summarize {
 	}
 
 	private Streamlet<Trade> sellAll(Streamlet<Trade> trades, Map<String, Float> priceBySymbol) {
-		Streamlet<Trade> sellAll = trades //
-				.groupBy(trade -> trade.strategy, TradeUtil::portfolio) //
-				.concatMap((strategy, nSharesBySymbol) -> Read //
-						.from2(nSharesBySymbol) //
-						.map((symbol, size) -> Trade.of(-size, symbol, priceBySymbol.get(symbol), strategy)));
-
-		return Streamlet.concat(trades, sellAll);
+		return Streamlet.concat(trades, TradeUtil.sellAll(trades, priceBySymbol::get));
 	}
 
 }

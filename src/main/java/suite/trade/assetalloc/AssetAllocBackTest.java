@@ -1,6 +1,7 @@
 package suite.trade.assetalloc;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -9,12 +10,15 @@ import java.util.Map;
 import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.math.TimeSeries;
+import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
 import suite.trade.Account.Valuation;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
+import suite.trade.Trade;
+import suite.trade.TradeUtil;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -83,26 +87,32 @@ public class AssetAllocBackTest {
 		public final Account account;
 		public final DatePeriod period;
 		public final float[] valuations;
+		public final List<Trade> trades;
 		public final Map<String, Double> holdBySymbol;
 		public final double annualReturn;
 		public final double sharpe;
 		public final double skewness;
 
 		private Simulate(float fund0) {
+			account = Account.fromCash(fund0);
+			trades = new ArrayList<>();
+
 			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
 			Map<String, DataSource> dataSourceBySymbol = new HashMap<>();
 			Map<String, Double> holdBySymbol_ = new HashMap<>();
-			Account account_ = Account.fromCash(fund0);
 			double valuation = fund0;
 
 			// pre-fetch quotes
 			cfg.quote(assetBySymbol.keySet());
 
-			for (String symbol : assetBySymbol.keySet()) {
-				DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
-				dataSource.validate();
-				dataSourceBySymbol.put(symbol, dataSource);
-			}
+			for (String symbol : assetBySymbol.keySet())
+				try {
+					DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
+					dataSource.validate();
+					dataSourceBySymbol.put(symbol, dataSource);
+				} catch (Exception ex) {
+					LogUtil.warn("for " + symbol + " " + ex);
+				}
 
 			List<LocalDate> tradeDates = Read.from2(dataSourceBySymbol) //
 					.concatMap((symbol, dataSource) -> Read.from(dataSource.dates)) //
@@ -114,6 +124,7 @@ public class AssetAllocBackTest {
 			List<LocalDate> dates = datesPred.apply(tradeDates);
 			int size = dates.size();
 			float[] valuations_ = new float[size];
+			Map<String, Float> latestPriceBySymbol = null;
 
 			for (int i = 0; i < size; i++) {
 				LocalDate date = dates.get(i);
@@ -124,7 +135,7 @@ public class AssetAllocBackTest {
 						.filterValue(dataSource -> 128 <= dataSource.dates.length) //
 						.toMap();
 
-				Map<String, Float> latestPriceBySymbol = Read.from2(backTestDataSourceBySymbol) //
+				latestPriceBySymbol = Read.from2(backTestDataSourceBySymbol) //
 						.mapValue(dataSource -> dataSource.last().price) //
 						.toMap();
 
@@ -146,9 +157,8 @@ public class AssetAllocBackTest {
 						}) //
 						.toMap();
 
-				String actions = account_.switchPortfolio(portfolio, latestPriceBySymbol);
-				Valuation val = account_.valuation(latestPriceBySymbol);
-				account_.validate();
+				String actions = play(TradeUtil.diff(account.assets(), portfolio, latestPriceBySymbol));
+				Valuation val = account.valuation(latestPriceBySymbol);
 
 				valuations_[i] = (float) (valuation = val.sum());
 
@@ -157,7 +167,7 @@ public class AssetAllocBackTest {
 
 				log.sink(To.string(date) //
 						+ ", valuation = " + valuation //
-						+ ", portfolio = " + account_ //
+						+ ", portfolio = " + account //
 						+ ", actions = " + actions);
 			}
 
@@ -166,13 +176,21 @@ public class AssetAllocBackTest {
 			DatePeriod period_ = DatePeriod.of(List_.first(dates), List_.last(dates));
 			double nYears = period_.nYears();
 
-			account = account_;
+			play(TradeUtil.sellAll(Read.from(trades), latestPriceBySymbol::get).toList());
+
 			period = period_;
 			valuations = valuations_;
 			holdBySymbol = holdBySymbol_;
 			annualReturn = Math.expm1(Math.log(vx / v0) / nYears);
 			sharpe = ts.returnsStat(valuations, nYears).sharpeRatio();
 			skewness = stat.skewness(valuations);
+		}
+
+		private String play(List<Trade> trades_) {
+			trades.addAll(trades_);
+			account.play(trades_);
+			account.validate();
+			return TradeUtil.format(trades_);
 		}
 
 		public String conclusion() {

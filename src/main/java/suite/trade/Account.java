@@ -1,7 +1,6 @@
 package suite.trade;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import suite.primitive.PrimitiveFun.Double_Double;
@@ -51,38 +50,13 @@ public class Account {
 		return get(symbol);
 	}
 
-	private void play(Iterable<Trade> trades) {
+	public void play(Iterable<Trade> trades) {
 		for (Trade trade : trades)
-			play(trade);
+			play_(trade);
 	}
 
 	public void play(Trade trade) {
-		int buySell = trade.buySell;
-		String symbol = trade.symbol;
-		float cost = buySell * trade.price;
-
-		int cash0 = get(cashCode);
-		int cash1 = (int) (cash0 - cost);
-		int nShares0 = get(symbol);
-		int nShares1 = nShares0 + buySell;
-
-		update(cashCode, cash1);
-		update(symbol, nShares1);
-		if (buySell != 0)
-			nTransactions++;
-		transactionAmount += Math.abs(cost);
-	}
-
-	public String switchPortfolio(Map<String, Integer> assets1, Map<String, Float> prices) {
-		Map<String, Integer> assets0 = assets;
-		List<Trade> trades = TradeUtil.diff(assets0, assets1, prices);
-
-		play(trades);
-
-		return Read.from(trades) //
-				.filter(trade -> trade.buySell != 0) //
-				.map(Trade::toString) //
-				.collect(As.joined());
+		play_(trade);
 	}
 
 	@Override
@@ -134,6 +108,23 @@ public class Account {
 		public float sum() {
 			return (float) Read.from2(valuationBySymbol).collectAsDouble(As.sumOfDoubles((symbol, v) -> v));
 		}
+	}
+
+	private void play_(Trade trade) {
+		int buySell = trade.buySell;
+		String symbol = trade.symbol;
+		float cost = buySell * trade.price;
+
+		int cash0 = get(cashCode);
+		int cash1 = (int) (cash0 - cost);
+		int nShares0 = get(symbol);
+		int nShares1 = nShares0 + buySell;
+
+		update(cashCode, cash1);
+		update(symbol, nShares1);
+		if (buySell != 0)
+			nTransactions++;
+		transactionAmount += Math.abs(cost);
 	}
 
 	private int get(String code) {
