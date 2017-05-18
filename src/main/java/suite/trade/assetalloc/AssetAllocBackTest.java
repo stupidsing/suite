@@ -9,7 +9,6 @@ import java.util.Map;
 import suite.adt.Pair;
 import suite.algo.Statistic;
 import suite.math.TimeSeries;
-import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
@@ -99,14 +98,11 @@ public class AssetAllocBackTest {
 			// pre-fetch quotes
 			cfg.quote(assetBySymbol.keySet());
 
-			for (String symbol : assetBySymbol.keySet())
-				try {
-					DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
-					dataSource.validate();
-					dataSourceBySymbol.put(symbol, dataSource);
-				} catch (Exception ex) {
-					LogUtil.warn(ex + " in " + assetBySymbol.get(symbol));
-				}
+			for (String symbol : assetBySymbol.keySet()) {
+				DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
+				dataSource.validate();
+				dataSourceBySymbol.put(symbol, dataSource);
+			}
 
 			List<LocalDate> tradeDates = Read.from2(dataSourceBySymbol) //
 					.concatMap((symbol, dataSource) -> Read.from(dataSource.dates)) //
