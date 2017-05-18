@@ -25,6 +25,8 @@ public class YahooTest {
 
 	private void test(BiFunction<String, DatePeriod, DataSource> fun) {
 		DataSource dataSource = fun.apply("0005.HK", DatePeriod.of(LocalDate.of(2016, 1, 1), LocalDate.of(2017, 1, 1)));
+		System.out.println(dataSource);
+
 		int datesLength = dataSource.dates.length;
 		int pricesLength = dataSource.prices.length;
 		assertTrue(datesLength == pricesLength);
