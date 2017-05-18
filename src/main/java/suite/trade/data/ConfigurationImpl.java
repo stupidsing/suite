@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import suite.os.SerializedStoreCache;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -42,21 +41,17 @@ public class ConfigurationImpl implements Configuration {
 	public DataSource dataSourceWithLatestQuote(String symbol) {
 
 		// count as tomorrow open if market is closed (after 4pm)
-		LocalDate tradeDate = LocalDateTime.now().plusHours(8).toLocalDate();
-		String date = To.string(tradeDate);
+		String date = To.string(HkexUtil.getTradeTimeAfter(LocalDateTime.now()));
+		float price = quote_(Collections.singleton(symbol)).get(symbol);
+		DataSource dataSource0 = dataSource_(symbol, DatePeriod.ages());
+		DataSource dataSource1;
 
-		return SerializedStoreCache //
-				.of(DataSource.serializer) //
-				.get(getClass().getSimpleName() + ".dataSourceWithLatestQuote(" + symbol + ", " + date + ")", () -> {
-					float price = quote_(Collections.singleton(symbol)).get(symbol);
-					DataSource dataSource0 = dataSource_(symbol, DatePeriod.ages());
-					DataSource dataSource1;
-					if (!String_.equals(dataSource0.last().date, date))
-						dataSource1 = dataSource0.cons(date, price);
-					else
-						dataSource1 = dataSource0;
-					return dataSource1;
-				});
+		if (!String_.equals(dataSource0.last().date, date))
+			dataSource1 = dataSource0.cons(date, price);
+		else
+			dataSource1 = dataSource0;
+
+		return dataSource1;
 	}
 
 	public Streamlet<Asset> queryCompanies() {
