@@ -62,11 +62,10 @@ public class TimeSeries {
 
 	public float[] logReturns(float[] fs) {
 		float[] logReturns = new float[fs.length - 1];
-		double ln0 = Math.log(fs[0]);
+		float f0 = fs[0];
 		for (int i = 0; i < logReturns.length; i++) {
-			double ln = Math.log(fs[i + 1]);
-			logReturns[i] = (float) (ln - ln0);
-			ln0 = ln;
+			logReturns[i] = (float) Math.log1p((fs[i + 1] - f0) / f0);
+			f0 = fs[i + 1];
 		}
 		return logReturns;
 	}
