@@ -68,9 +68,9 @@ public class YahooHistory {
 	}
 
 	public DataSource dataSource(String symbol, DatePeriod period) {
+		Map<String, Float> map = new TreeMap<>();
 		String from = To.string(period.from);
 		String to = To.string(period.to);
-		Map<String, Float> map = new TreeMap<>();
 
 		for (Entry<String, String> e : read().get(symbol).entrySet()) {
 			String date = e.getKey();
@@ -96,9 +96,7 @@ public class YahooHistory {
 			for (String line : new String(Rethrow.ex(() -> Files.readAllBytes(path)), Constants.charset).split("\n")) {
 				Pair<String, String> p0 = String_.split2(line, ",");
 				Pair<String, String> p1 = String_.split2(p0.t0, "-");
-				String symbol = p1.t0;
-				String date = p1.t1;
-				String csv = p0.t1;
+				String symbol = p1.t0, date = p1.t1, csv = p0.t1;
 				getDataBySymbol(symbol).put(date, csv);
 			}
 
@@ -127,6 +125,7 @@ public class YahooHistory {
 				lines.add(e0.getKey() + "-" + e1.getKey() + "," + e1.getValue());
 
 		String text = Read.from(lines).map(line -> line + "\n").sort(Object_::compare).collect(As.joined());
+
 		try {
 			Files.write(path, text.getBytes(Constants.charset));
 		} catch (IOException ex) {
