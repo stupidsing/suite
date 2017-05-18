@@ -45,6 +45,10 @@ public class DataSource {
 			this.date = date;
 			this.price = price;
 		}
+
+		public String toString() {
+			return date + ":" + To.string(price);
+		}
 	}
 
 	public DataSource(String[] dates, float[] prices) {
@@ -112,6 +116,11 @@ public class DataSource {
 		LocalDate date0 = To.date(first().date);
 		LocalDate datex = To.date(last().date);
 		return DatePeriod.of(date0, datex).nYears();
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "(" + first() + "~" + last() + ")";
 	}
 
 	public Datum first() {
