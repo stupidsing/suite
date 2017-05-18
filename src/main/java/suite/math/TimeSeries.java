@@ -22,8 +22,7 @@ public class TimeSeries {
 		float[][] deps1 = drop_(tor, deps);
 		float[] diffs1 = drop_(tor, diffs);
 		LinearRegression lr = stat.linearRegression(deps1, diffs1);
-		float lambda = lr.betas[0];
-		return lambda / lr.standardError;
+		return lr.tStatistic()[0];
 	}
 
 	public float[] differences(int tor, float[] fs) {
