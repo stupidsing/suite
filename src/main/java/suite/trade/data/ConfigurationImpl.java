@@ -41,7 +41,7 @@ public class ConfigurationImpl implements Configuration {
 	public DataSource dataSourceWithLatestQuote(String symbol) {
 
 		// count as tomorrow open if market is closed (after 4pm)
-		String date = To.string(HkexUtil.getTradeTimeAfter(LocalDateTime.now()));
+		String date = To.string(HkexUtil.getTradeTimeAfter(LocalDateTime.now()).toLocalDate());
 		float price = quote_(Collections.singleton(symbol)).get(symbol);
 		DataSource dataSource0 = dataSource_(symbol, DatePeriod.ages());
 		DataSource dataSource1;
