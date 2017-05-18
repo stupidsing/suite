@@ -20,6 +20,11 @@ public class PrimitiveFun {
 	}
 
 	@FunctionalInterface
+	public interface Int_Double {
+		public double apply(int i);
+	}
+
+	@FunctionalInterface
 	public interface Int_Float {
 		public float apply(int i);
 	}

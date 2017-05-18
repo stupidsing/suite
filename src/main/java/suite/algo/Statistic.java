@@ -4,6 +4,7 @@ import suite.adt.IntObjMap;
 import suite.adt.IntObjPair;
 import suite.math.CholeskyDecomposition;
 import suite.math.Matrix;
+import suite.primitive.PrimitiveFun.Int_Double;
 import suite.primitive.PrimitiveFun.Int_Float;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSource.IntObjSource;
@@ -19,21 +20,26 @@ public class Statistic {
 	public final double logRiskFreeInterestRate = Math.log1p(riskFreeInterestRate);
 
 	public double correlation(float[] xs, float[] ys) {
-		int length = xs.length;
+		Int_Double xf = i -> xs[i];
+		Int_Double yf = i -> ys[i];
+		if (xs.length == ys.length)
+			return correlation(xf, yf, xs.length);
+		else
+			throw new RuntimeException("wrong input sizes");
+	}
+
+	public double correlation(Int_Double xf, Int_Double yf, int length) {
 		double sumx = 0d, sumy = 0d;
 		double sumx2 = 0d, sumy2 = 0d;
 		double sumxy = 0d;
-		if (length == ys.length)
-			for (int i = 0; i < length; i++) {
-				double x = xs[i], y = ys[i];
-				sumx += x;
-				sumy += y;
-				sumx2 += x * x;
-				sumy2 += y * y;
-				sumxy += x * y;
-			}
-		else
-			throw new RuntimeException("wrong input sizes");
+		for (int i = 0; i < length; i++) {
+			double x = xf.apply(i), y = yf.apply(i);
+			sumx += x;
+			sumy += y;
+			sumx2 += x * x;
+			sumy2 += y * y;
+			sumxy += x * y;
+		}
 		return (length * sumxy - sumx * sumy) / Math.sqrt((length * sumx2 - sumx * sumx) * (length * sumy2 - sumy * sumy));
 	}
 
