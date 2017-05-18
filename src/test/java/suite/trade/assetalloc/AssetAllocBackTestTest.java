@@ -14,6 +14,7 @@ import suite.trade.DatePeriod;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
+import suite.trade.data.Summarize;
 import suite.util.FunUtil.Sink;
 import suite.util.Object_;
 
@@ -29,7 +30,9 @@ public class AssetAllocBackTestTest {
 	@Test
 	public void testBackTest() {
 		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
-		assertGrowth(backTest(assetAllocator, period));
+		Simulate backTest = backTest(assetAllocator, period);
+		Summarize.of(cfg, Read.from(backTest.trades)).out(System.out::println, trade -> trade.symbol);
+		assertGrowth(backTest);
 	}
 
 	@Test
