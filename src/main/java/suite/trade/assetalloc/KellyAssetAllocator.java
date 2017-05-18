@@ -16,7 +16,7 @@ public class KellyAssetAllocator implements AssetAllocator {
 
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Statistic stat = new Statistic();
-	private TimeSeries timeSeries = new TimeSeries();
+	private TimeSeries ts = new TimeSeries();
 
 	public List<Pair<String, Double>> allocate( //
 			Map<String, DataSource> dataSourceBySymbol, //
@@ -27,7 +27,7 @@ public class KellyAssetAllocator implements AssetAllocator {
 		Map<String, DataSource> predictedPricesBySymbol = dataSourceBySymbol;
 
 		Map<String, float[]> returnsBySymbol = Read.from2(predictedPricesBySymbol) //
-				.mapValue(dataSource -> timeSeries.returns(dataSource.prices)) //
+				.mapValue(dataSource -> ts.returns(dataSource.prices)) //
 				.toMap();
 
 		Map<String, Double> excessReturnBySymbol = Read.from2(predictedPricesBySymbol) //
