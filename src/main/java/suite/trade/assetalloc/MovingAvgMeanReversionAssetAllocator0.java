@@ -33,7 +33,6 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 	private int tor = 64;
 
 	private double neglog2 = -Math.log(2d);
-
 	private Statistic stat = new Statistic();
 	private MovingAverage movingAvg = new MovingAverage();
 	private TimeSeries ts = new TimeSeries();

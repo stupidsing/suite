@@ -33,9 +33,8 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	private int tor = 64;
 
 	private double neglog2 = -Math.log(2d);
-
 	private Statistic stat = new Statistic();
-	private MovingAverage movingAvg = new MovingAverage();
+	private MovingAverage ma = new MovingAverage();
 	private TimeSeries ts = new TimeSeries();
 
 	private Configuration cfg;
@@ -151,7 +150,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 			DataSource dataSource = dataSource0.range(mrsPeriod);
 			float[] prices = dataSource.prices;
 
-			movingAverage = movingAvg.movingGeometricAvg(prices, tor);
+			movingAverage = ma.movingGeometricAvg(prices, tor);
 
 			if (tor <= prices.length) {
 				adf = ts.adf(prices, tor);
