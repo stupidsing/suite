@@ -30,7 +30,7 @@ public class Trade {
 
 	@Override
 	public String toString() {
-		return "|" + symbol + ":" + price + "*" + buySell;
+		return "|" + symbol + ":" + (0 <= buySell ? "+" : "-") + price + "*" + Math.abs(buySell);
 	}
 
 }
