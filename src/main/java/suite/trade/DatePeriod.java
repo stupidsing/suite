@@ -71,8 +71,4 @@ public class DatePeriod extends Range<LocalDate> {
 		return from.compareTo(date) <= 0 && date.compareTo(to) < 0;
 	}
 
-	public double nYears() {
-		return (to.toEpochDay() - from.toEpochDay()) / 365d;
-	}
-
 }

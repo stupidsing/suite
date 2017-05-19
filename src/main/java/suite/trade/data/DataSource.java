@@ -112,12 +112,6 @@ public class DataSource {
 		}
 	}
 
-	public double nYears() { // approximately
-		LocalDate date0 = To.date(first().date);
-		LocalDate datex = To.date(last().date);
-		return DatePeriod.of(date0, datex).nYears();
-	}
-
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "(" + first() + "~" + last() + ")";

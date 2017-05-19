@@ -11,6 +11,7 @@ import suite.math.CholeskyDecomposition;
 import suite.math.TimeSeries;
 import suite.streamlet.Read;
 import suite.trade.DatePeriod;
+import suite.trade.Trade_;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
@@ -27,7 +28,7 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
 		DatePeriod samplePeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
-		double dailyInterestRate = Math.expm1(stat.logRiskFreeInterestRate / 256);
+		double dailyInterestRate = Math.expm1(stat.logRiskFreeInterestRate * Trade_.invTradeDaysPerYear);
 
 		Set<String> reverseCorrelatingSymbols = Read.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {

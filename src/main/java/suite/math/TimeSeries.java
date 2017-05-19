@@ -5,6 +5,7 @@ import java.util.Arrays;
 import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
 import suite.algo.Statistic.MeanVariance;
+import suite.trade.Trade_;
 import suite.util.To;
 
 public class TimeSeries {
@@ -91,8 +92,8 @@ public class TimeSeries {
 		return new ReturnsStat(prices, 1d);
 	}
 
-	public ReturnsStat returnsStat(float[] prices, double nYears) { // annualized
-		return new ReturnsStat(prices, nYears / prices.length);
+	public ReturnsStat returnsStatDailyAnnualized(float[] prices) {
+		return new ReturnsStat(prices, Trade_.invTradeDaysPerYear);
 	}
 
 	public class ReturnsStat {

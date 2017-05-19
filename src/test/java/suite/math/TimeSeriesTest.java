@@ -19,7 +19,7 @@ public class TimeSeriesTest {
 
 		DatePeriod period = DatePeriod.of(LocalDate.of(2016, 1, 1), LocalDate.of(2017, 5, 1));
 		DataSource ds = cfg.dataSource("0002.HK").range(period);
-		double sharpe = ts.returnsStat(ds.prices, period.nYears()).sharpeRatio();
+		double sharpe = ts.returnsStatDailyAnnualized(ds.prices).sharpeRatio();
 		System.out.println("sharpe = " + sharpe);
 		assertTrue(.04d < sharpe);
 	}

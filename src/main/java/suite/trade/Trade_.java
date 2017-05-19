@@ -15,6 +15,9 @@ public class Trade_ {
 
 	public static boolean isShortSell = false;
 	public static float leverageAmount = 10000f;
+	public static int nTradeDaysPerYear = 256;
+
+	public static double invTradeDaysPerYear = 1d / nTradeDaysPerYear;
 
 	public static List<Trade> diff(Map<String, Integer> assets0, Map<String, Integer> assets1, Map<String, Float> prices) {
 		Set<String> symbols = Streamlet2.concat(Read.from2(assets0), Read.from2(assets1)) //

@@ -3,6 +3,7 @@ package suite.trade.singlealloc;
 import suite.algo.Statistic;
 import suite.trade.Account;
 import suite.trade.Trade;
+import suite.trade.Trade_;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.util.FunUtil.Sink;
@@ -42,12 +43,10 @@ public class SingleAllocBackTest {
 		buySell(ds, length - 1, -account.nShares(symbol));
 
 		float return_ = account.cash();
-		double nApproxYears = ds.nYears();
-		double sharpe = return_ / (Math.sqrt(nApproxYears * stat.variance(valuations)));
+		double sharpe = return_ / (Math.sqrt(stat.variance(valuations) * Trade_.nTradeDaysPerYear / length));
 		// new TimeSeries().sharpeRatio(valuations, nApproxYears);
 
 		concludeLogSink.sink("" //
-				+ ", nYears = " + To.string(nApproxYears) //
 				+ ", " + account.transactionSummary(a -> 0d) //
 				+ ", return = " + To.string(return_) //
 				+ ", sharpe = " + To.string(sharpe));

@@ -11,6 +11,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
+import suite.trade.Trade_;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
@@ -86,7 +87,7 @@ public class AssetAllocBackTestTest {
 
 	private void assertGrowth(Simulate sim) {
 		float[] valuations = sim.valuations;
-		double r = Math.expm1(stat.logRiskFreeInterestRate * period.nYears());
+		double r = Math.expm1(stat.logRiskFreeInterestRate * Trade_.invTradeDaysPerYear * valuations.length);
 		assertTrue(initial * r < valuations[valuations.length - 1]);
 	}
 
