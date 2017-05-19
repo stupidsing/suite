@@ -81,7 +81,7 @@ public class Account {
 	}
 
 	public void validate() {
-		if (cash_() < -Trade_.leverageAmount)
+		if (cash_() < -Trade_.maxLeverageAmount)
 			throw new RuntimeException("too much leverage: " + cash_());
 		assets.forEach((code, nShares) -> {
 			if (!Trade_.isShortSell && !String_.equals(code, cashCode) && nShares < 0)

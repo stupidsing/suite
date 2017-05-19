@@ -20,7 +20,7 @@ public class KellyAssetAllocator implements AssetAllocator {
 	private TimeSeries ts = new TimeSeries();
 
 	public static AssetAllocator of() {
-		return AssetAllocator_.removeShorts(new KellyAssetAllocator());
+		return AssetAllocator_.filterShorts(new KellyAssetAllocator());
 	}
 
 	private KellyAssetAllocator() {

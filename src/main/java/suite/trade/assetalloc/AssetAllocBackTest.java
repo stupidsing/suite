@@ -151,9 +151,7 @@ public class AssetAllocBackTest {
 						.map2((symbol, potential) -> {
 							float price = backTestDataSourceBySymbol.get(symbol).last().price;
 							int lotSize = assetBySymbol.get(symbol).lotSize;
-							double lots = valuation_ * potential / (price * lotSize);
-							return lotSize * (int) lots; // truncate
-							// return lotSize * Math.round(lots);
+							return lotSize * (int) Math.floor(valuation_ * potential / (price * lotSize));
 						}) //
 						.toMap();
 

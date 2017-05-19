@@ -1,6 +1,8 @@
 package suite.trade.assetalloc;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,18 +19,32 @@ import suite.util.To;
 
 public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 
-	private int tor = 64;
+	private int tor;
+	private double kellyReduction;
 
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
+	public static AssetAllocator of() {
+		return of(64, .1d);
+	}
+
+	public static AssetAllocator of(int tor, double kellyReduction) {
+		return AssetAllocator_.filterShorts(new ReverseCorrelateAssetAllocator(tor, kellyReduction));
+	}
+
+	private ReverseCorrelateAssetAllocator(int tor, double kellyReduction) {
+		this.tor = tor;
+		this.kellyReduction = kellyReduction;
+	}
+
 	public List<Pair<String, Double>> allocate( //
 			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
-		DatePeriod samplePeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
-		double dailyInterestRate = Trade_.riskFreeInterestRate(1);
+		DatePeriod samplePeriod = DatePeriod.backTestDaysBefore(backTestDate, 256, 32);
+		double riskFreeInterestRate = Trade_.riskFreeInterestRate(tor);
 
 		Set<String> reverseCorrelatingSymbols = Read.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {
@@ -45,6 +61,9 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 				.keys() //
 				.toSet();
 
+		if (Boolean.FALSE)
+			reverseCorrelatingSymbols = new HashSet<>(Arrays.asList("0005.HK"));
+
 		Map<String, float[]> reversePricesBySymbol = Read.from2(dataSourceBySymbol) //
 				.filterKey(reverseCorrelatingSymbols::contains) //
 				.mapValue(dataSource -> {
@@ -58,8 +77,12 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 				.mapValue(ts::returns) //
 				.toMap();
 
-		Map<String, Float> excessReturnBySymbol = Read.from2(returnsBySymbol) //
-				.mapValue(returns -> (float) (stat.meanVariance(returns).mean - dailyInterestRate)) //
+		Map<String, Float> excessReturnBySymbol = Read.from2(reversePricesBySymbol) //
+				.mapValue(prices -> {
+					double price0 = prices[0];
+					double returnTor = (prices[tor - 1] - price0) / price0;
+					return (float) (returnTor - riskFreeInterestRate);
+				}) //
 				.toMap();
 
 		String[] symbols = returnsBySymbol.keySet().toArray(new String[0]);
@@ -68,16 +91,14 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 		float[][] cov = To.arrayOfFloats(nSymbols, nSymbols, (i0, i1) -> {
 			float[] returns0 = returnsBySymbol.get(symbols[i0]);
 			float[] returns1 = returnsBySymbol.get(symbols[i1]);
-			return (float) stat.covariance(returns0, returns1);
+			return (float) (stat.covariance(returns0, returns1) * tor);
 		});
 
 		float[] returns = To.arrayOfFloats(symbols, excessReturnBySymbol::get);
-
 		float[] allocations = cholesky.inverseMul(cov).apply(returns);
 
 		return Read.range(nSymbols) //
-				.map2(i -> symbols[i], i -> (double) allocations[i]) //
-				.filterValue(potential -> 0d < potential) //
+				.map2(i -> symbols[i], i -> allocations[i] * kellyReduction) //
 				.toList();
 	}
 

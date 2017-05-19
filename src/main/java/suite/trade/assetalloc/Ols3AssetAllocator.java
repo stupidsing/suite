@@ -30,7 +30,7 @@ public class Ols3AssetAllocator implements AssetAllocator {
 	}
 
 	public static AssetAllocator of(int lookBack) {
-		return AssetAllocator_.removeShorts(new Ols3AssetAllocator(lookBack));
+		return AssetAllocator_.filterShorts(new Ols3AssetAllocator(lookBack));
 	}
 
 	private Ols3AssetAllocator(int lookBack) {
