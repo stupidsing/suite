@@ -4,7 +4,7 @@ import suite.adt.pair.IntObjPair;
 import suite.primitive.IntPrimitiveFun.Int_Obj;
 import suite.primitive.IntPrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSink.IntObjSink;
-import suite.primitive.PrimitiveSource.IntObjSource;
+import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.streamlet.IntObjOutlet;
 import suite.streamlet.IntObjStreamlet;
 

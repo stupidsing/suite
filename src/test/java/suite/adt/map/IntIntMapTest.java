@@ -8,7 +8,7 @@ import java.util.Set;
 import org.junit.Test;
 
 import suite.adt.pair.IntIntPair;
-import suite.primitive.PrimitiveSource.IntIntSource;
+import suite.primitive.IntPrimitiveSource.IntIntSource;
 
 public class IntIntMapTest {
 

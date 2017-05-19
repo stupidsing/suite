@@ -7,7 +7,7 @@ import suite.math.linalg.Matrix;
 import suite.primitive.IntPrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveFun.Int_Double;
 import suite.primitive.PrimitiveFun.Int_Float;
-import suite.primitive.PrimitiveSource.IntObjSource;
+import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 

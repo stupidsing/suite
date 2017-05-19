@@ -23,7 +23,7 @@ public class Bytes implements Iterable<Byte> {
 	public final int start, end;
 
 	@FunctionalInterface
-	public interface Writer {
+	public interface WriteByte {
 		public void write(byte[] bs, int offset, int length) throws IOException;
 	};
 
@@ -179,7 +179,7 @@ public class Bytes implements Iterable<Byte> {
 		return of(bs, s, e);
 	}
 
-	public void write(Writer out) {
+	public void write(WriteByte out) {
 		try {
 			out.write(bs, start, end - start);
 		} catch (IOException ex) {

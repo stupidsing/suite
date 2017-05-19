@@ -10,6 +10,7 @@ import suite.Constants;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
+import suite.util.ParseUtil;
 import suite.util.To;
 
 public class Chars implements Iterable<Character> {
@@ -23,7 +24,7 @@ public class Chars implements Iterable<Character> {
 	public final int start, end;
 
 	@FunctionalInterface
-	public interface Writer {
+	public interface WriteChar {
 		public void write(char[] cs, int offset, int length) throws IOException;
 	};
 
@@ -114,7 +115,7 @@ public class Chars implements Iterable<Character> {
 	public boolean isWhitespaces() {
 		boolean result = true;
 		for (int i = start; result && i < end; i++)
-			result &= Character.isWhitespace(cs[i]);
+			result &= ParseUtil.isWhitespace(cs[i]);
 		return result;
 	}
 
@@ -172,14 +173,14 @@ public class Chars implements Iterable<Character> {
 	public Chars trim() {
 		int s = start;
 		int e = end;
-		while (s < e && Character.isWhitespace(cs[s]))
+		while (s < e && ParseUtil.isWhitespace(cs[s]))
 			s++;
-		while (s < e && Character.isWhitespace(cs[e - 1]))
+		while (s < e && ParseUtil.isWhitespace(cs[e - 1]))
 			e--;
 		return of(cs, s, e);
 	}
 
-	public void write(Writer out) {
+	public void write(WriteChar out) {
 		try {
 			out.write(cs, start, end - start);
 		} catch (IOException ex) {

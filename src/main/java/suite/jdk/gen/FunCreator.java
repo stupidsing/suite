@@ -38,7 +38,7 @@ import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
 import suite.os.LogUtil;
-import suite.primitive.PrimitiveSource.IntObjSource;
+import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;

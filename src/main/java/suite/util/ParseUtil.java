@@ -73,6 +73,18 @@ public class ParseUtil {
 			throw new RuntimeException("parse error");
 	}
 
+	public static boolean isWhitespace(byte b) {
+		return b == 0;
+	}
+
+	public static boolean isWhitespace(char c) {
+		return Character.isWhitespace(c);
+	}
+
+	public static boolean isWhitespace(int i) {
+		return i == 0;
+	}
+
 	public static int search(String s, int start, String toMatch) {
 		int nameLength = toMatch.length();
 		int end = s.length() - nameLength;

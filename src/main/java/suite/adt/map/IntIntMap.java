@@ -6,8 +6,8 @@ import suite.adt.pair.IntIntPair;
 import suite.adt.pair.IntObjPair;
 import suite.primitive.IntPrimitiveFun.Int_Int;
 import suite.primitive.PrimitiveSink.IntIntSink;
-import suite.primitive.PrimitiveSource.IntIntSource;
-import suite.primitive.PrimitiveSource.IntObjSource;
+import suite.primitive.IntPrimitiveSource.IntIntSource;
+import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.streamlet.IntObjOutlet;
 import suite.streamlet.IntObjStreamlet;
 

@@ -189,6 +189,10 @@ public class To {
 		return c;
 	}
 
+	public static int int_(int i) {
+		return i;
+	}
+
 	@SafeVarargs
 	public static <T> List<T> list(Collection<T>... collections) {
 		List<T> list = new ArrayList<>();

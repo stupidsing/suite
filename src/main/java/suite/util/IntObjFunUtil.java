@@ -10,7 +10,7 @@ import suite.os.LogUtil;
 import suite.primitive.IntPrimitiveFun.IntObj_Obj;
 import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitivePredicate.IntObjPredicate;
-import suite.primitive.PrimitiveSource.IntObjSource;
+import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;

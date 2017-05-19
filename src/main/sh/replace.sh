@@ -16,3 +16,6 @@ replace-file() {
 replace-file src/main/java/suite/adt/pair/CharCharPair.java
 replace-file src/main/java/suite/adt/pair/CharObjPair.java
 replace-file src/main/java/suite/primitive/CharPrimitiveFun.java
+replace-file src/main/java/suite/primitive/CharPrimitiveSource.java
+replace-file src/main/java/suite/primitive/Chars.java
+replace-file src/main/java/suite/primitive/Chars_.java

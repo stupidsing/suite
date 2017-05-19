@@ -34,6 +34,10 @@ public class Copy {
 		primitiveArray(from, fromIndex, to, toIndex, size);
 	}
 
+	public static void ints(int[] from, int fromIndex, int[] to, int toIndex, int size) {
+		primitiveArray(from, fromIndex, to, toIndex, size);
+	}
+
 	public static void readerToWriter(Reader in, Writer out) throws IOException {
 		try (Reader in_ = in) {
 			int len;
