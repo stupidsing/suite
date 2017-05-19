@@ -121,11 +121,11 @@ public class AssetAllocBackTest {
 			Streamlet<String> tradeDates0;
 
 			if (Boolean.TRUE)
-				tradeDates0 = Read.from2(dataSourceBySymbol0) //
+				tradeDates0 = Read.from2(dataSourceBySymbol0) // union
 						.concatMap((symbol, dataSource) -> Read.from(dataSource.dates)) //
 						.distinct();
 			else
-				tradeDates0 = Read.from(Set_.intersect(Read.from2(dataSourceBySymbol0) //
+				tradeDates0 = Read.from(Set_.intersect(Read.from2(dataSourceBySymbol0) // intersect
 						.map((symbol, dataSource) -> (Collection<String>) Arrays.asList(dataSource.dates)) //
 						.toList()));
 
