@@ -1,8 +1,8 @@
 package suite.adt.map;
 
 import suite.adt.pair.IntObjPair;
-import suite.primitive.PrimitiveFun.Int_Obj;
-import suite.primitive.PrimitiveFun.Obj_Int;
+import suite.primitive.IntPrimitiveFun.Int_Obj;
+import suite.primitive.IntPrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSink.IntObjSink;
 import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.streamlet.IntObjOutlet;

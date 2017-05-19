@@ -12,10 +12,10 @@ import java.util.function.Predicate;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.primitive.IntPrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.primitive.PrimitiveFun.Obj_Float;
-import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;

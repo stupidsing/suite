@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import suite.adt.pair.IntIntPair;
 import suite.adt.pair.IntObjPair;
-import suite.primitive.PrimitiveFun.Int_Int;
+import suite.primitive.IntPrimitiveFun.Int_Int;
 import suite.primitive.PrimitiveSink.IntIntSink;
 import suite.primitive.PrimitiveSource.IntIntSource;
 import suite.primitive.PrimitiveSource.IntObjSource;

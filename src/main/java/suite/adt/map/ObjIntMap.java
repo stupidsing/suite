@@ -3,8 +3,8 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.IntObjPair;
-import suite.primitive.PrimitiveFun.Int_Int;
-import suite.primitive.PrimitiveFun.Obj_Int;
+import suite.primitive.IntPrimitiveFun.Int_Int;
+import suite.primitive.IntPrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSink.IntObjSink;
 import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.streamlet.IntObjOutlet;

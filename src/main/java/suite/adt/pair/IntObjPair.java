@@ -3,7 +3,7 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.primitive.PrimitiveFun.Int_Int;
+import suite.primitive.IntPrimitiveFun.Int_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
