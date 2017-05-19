@@ -1,4 +1,4 @@
-package suite.math;
+package suite.math.transform;
 
 // https://en.wikipedia.org/wiki/Discrete_wavelet_transform
 public class DiscreteHaarWaveletTransform {

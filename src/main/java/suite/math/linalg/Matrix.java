@@ -1,7 +1,9 @@
-package suite.math;
+package suite.math.linalg;
 
 import java.util.Arrays;
 
+import suite.math.MathUtil;
+import suite.math.Vector;
 import suite.util.Copy;
 import suite.util.To;
 

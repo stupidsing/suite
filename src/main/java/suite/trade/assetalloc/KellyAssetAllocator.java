@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.Pair;
-import suite.algo.Statistic;
-import suite.math.CholeskyDecomposition;
-import suite.math.TimeSeries;
+import suite.math.linalg.CholeskyDecomposition;
+import suite.math.stat.Statistic;
+import suite.math.stat.TimeSeries;
 import suite.streamlet.Read;
 import suite.trade.Trade_;
 import suite.trade.data.DataSource;

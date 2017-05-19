@@ -1,4 +1,4 @@
-package suite.math;
+package suite.math.linalg;
 
 import java.util.Random;
 
@@ -8,7 +8,7 @@ import suite.adt.Pair;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
-public class CholeskyTest {
+public class CholeskyDecompositionTest {
 
 	private Matrix mtx = new Matrix();
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();

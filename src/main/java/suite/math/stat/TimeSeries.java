@@ -1,10 +1,10 @@
-package suite.math;
+package suite.math.stat;
 
 import java.util.Arrays;
 
-import suite.algo.Statistic;
-import suite.algo.Statistic.LinearRegression;
-import suite.algo.Statistic.MeanVariance;
+import suite.math.linalg.Matrix;
+import suite.math.stat.Statistic.LinearRegression;
+import suite.math.stat.Statistic.MeanVariance;
 import suite.trade.Trade_;
 import suite.util.To;
 

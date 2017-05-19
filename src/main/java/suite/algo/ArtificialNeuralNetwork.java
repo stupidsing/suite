@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import suite.math.Matrix;
 import suite.math.Sigmoid;
+import suite.math.linalg.Matrix;
 import suite.util.List_;
 
 public class ArtificialNeuralNetwork {

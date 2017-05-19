@@ -1,5 +1,7 @@
 package suite.math;
 
+import suite.math.linalg.Matrix;
+
 public class Forget {
 
 	private static Matrix mtx = new Matrix();

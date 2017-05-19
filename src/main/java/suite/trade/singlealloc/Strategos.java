@@ -2,8 +2,8 @@ package suite.trade.singlealloc;
 
 import java.util.Arrays;
 
-import suite.math.DiscreteCosineTransform;
-import suite.math.Matrix;
+import suite.math.linalg.Matrix;
+import suite.math.transform.DiscreteCosineTransform;
 import suite.trade.MovingAverage;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.util.Copy;

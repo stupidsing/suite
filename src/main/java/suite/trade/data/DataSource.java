@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import suite.math.Matrix;
+import suite.math.linalg.Matrix;
 import suite.primitive.DataInput_;
 import suite.primitive.DataOutput_;
 import suite.trade.DatePeriod;

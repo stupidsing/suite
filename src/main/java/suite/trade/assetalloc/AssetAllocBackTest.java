@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.Pair;
-import suite.algo.Statistic;
-import suite.math.TimeSeries;
+import suite.math.stat.Statistic;
+import suite.math.stat.TimeSeries;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;

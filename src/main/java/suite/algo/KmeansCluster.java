@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.adt.IntObjMap;
-import suite.math.Matrix;
+import suite.math.linalg.Matrix;
 import suite.streamlet.Read;
 import suite.util.List_;
 import suite.util.To;

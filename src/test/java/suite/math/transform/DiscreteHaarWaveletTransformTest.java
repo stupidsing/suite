@@ -1,4 +1,4 @@
-package suite.math;
+package suite.math.transform;
 
 import static org.junit.Assert.assertTrue;
 

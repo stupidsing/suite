@@ -2,6 +2,7 @@ package suite.math;
 
 import org.junit.Test;
 
+import suite.math.linalg.Matrix;
 import suite.util.FunUtil.Fun;
 
 public class QrTest {

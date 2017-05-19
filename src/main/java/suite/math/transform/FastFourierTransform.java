@@ -1,5 +1,6 @@
-package suite.math;
+package suite.math.transform;
 
+import suite.math.Complex;
 import suite.util.To;
 
 // https://rosettacode.org/wiki/Fast_Fourier_transform#Java

@@ -1,4 +1,4 @@
-package suite.math;
+package suite.math.stat;
 
 import static org.junit.Assert.assertTrue;
 

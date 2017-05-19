@@ -1,13 +1,13 @@
-package suite.algo;
+package suite.math.stat;
 
 import java.util.Random;
 
 import org.junit.Test;
 
-import suite.algo.Statistic.LinearRegression;
 import suite.inspect.Dump;
 import suite.math.MathUtil;
-import suite.math.Matrix;
+import suite.math.linalg.Matrix;
+import suite.math.stat.Statistic.LinearRegression;
 import suite.util.To;
 
 public class StatisticTest {

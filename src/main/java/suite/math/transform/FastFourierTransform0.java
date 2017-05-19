@@ -1,7 +1,9 @@
-package suite.math;
+package suite.math.transform;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import suite.math.Complex;
 
 public class FastFourierTransform0 {
 

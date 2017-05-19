@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import suite.adt.Pair;
-import suite.algo.Statistic.LinearRegression;
-import suite.math.TimeSeries;
-import suite.math.TimeSeries.ReturnsStat;
+import suite.math.stat.Statistic.LinearRegression;
+import suite.math.stat.TimeSeries;
+import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;

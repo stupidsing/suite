@@ -3,7 +3,7 @@ package suite.algo;
 import org.junit.Test;
 
 import suite.algo.RecurrentNeuralNetwork.Unit;
-import suite.math.Matrix;
+import suite.math.linalg.Matrix;
 
 public class RecurrentNeuralNetworkTest {
 

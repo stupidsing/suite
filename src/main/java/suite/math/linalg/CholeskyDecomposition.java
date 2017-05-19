@@ -1,4 +1,4 @@
-package suite.math;
+package suite.math.linalg;
 
 import suite.adt.Pair;
 import suite.util.FunUtil.Fun;

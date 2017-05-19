@@ -1,6 +1,6 @@
 package suite.trade;
 
-import suite.math.Matrix;
+import suite.math.linalg.Matrix;
 import suite.util.To;
 
 public class MovingAverage {

@@ -2,10 +2,10 @@ package suite.rt.composite;
 
 import java.util.List;
 
+import suite.rt.RayHit_;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RtObject;
-import suite.rt.RayHit_;
 
 public class Minus implements RtObject {
 

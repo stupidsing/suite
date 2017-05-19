@@ -3,8 +3,8 @@ package suite.algo;
 import java.util.Random;
 
 import suite.math.Forget;
-import suite.math.Matrix;
 import suite.math.Tanh;
+import suite.math.linalg.Matrix;
 import suite.util.Copy;
 
 public class RecurrentNeuralNetwork {

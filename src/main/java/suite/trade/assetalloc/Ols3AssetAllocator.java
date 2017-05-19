@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.Pair;
-import suite.algo.Statistic;
-import suite.algo.Statistic.LinearRegression;
-import suite.math.Matrix;
+import suite.math.linalg.Matrix;
+import suite.math.stat.Statistic;
+import suite.math.stat.Statistic.LinearRegression;
 import suite.streamlet.Read;
 import suite.trade.data.DataSource;
 import suite.util.To;

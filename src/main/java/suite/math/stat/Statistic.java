@@ -1,9 +1,9 @@
-package suite.algo;
+package suite.math.stat;
 
 import suite.adt.IntObjMap;
 import suite.adt.IntObjPair;
-import suite.math.CholeskyDecomposition;
-import suite.math.Matrix;
+import suite.math.linalg.CholeskyDecomposition;
+import suite.math.linalg.Matrix;
 import suite.primitive.PrimitiveFun.Int_Double;
 import suite.primitive.PrimitiveFun.Int_Float;
 import suite.primitive.PrimitiveFun.Obj_Int;

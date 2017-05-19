@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import suite.math.DiscreteCosineTransform;
+import suite.math.transform.DiscreteCosineTransform;
 import suite.os.LogUtil;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;

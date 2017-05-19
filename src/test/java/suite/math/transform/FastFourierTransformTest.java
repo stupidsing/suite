@@ -1,6 +1,9 @@
-package suite.math;
+package suite.math.transform;
 
 import org.junit.Test;
+
+import suite.math.Complex;
+import suite.math.MathUtil;
 
 public class FastFourierTransformTest {
 
