@@ -19,23 +19,24 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 
 	private int tor;
 	private double kellyReduction;
-	private double reverseCorrelationThreshold = .03d;
+	private double reverseCorrelationThreshold;
 
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
 	public static AssetAllocator of() {
-		return of(64, .1d);
+		return of(32, .1d, .03d);
 	}
 
-	public static AssetAllocator of(int tor, double kellyReduction) {
-		return AssetAllocator_.filterShorts(new ReverseCorrelateAssetAllocator(tor, kellyReduction));
+	public static AssetAllocator of(int tor, double kellyReduction, double reverseCorrelationThreshold) {
+		return AssetAllocator_.filterShorts(new ReverseCorrelateAssetAllocator(tor, kellyReduction, .03d));
 	}
 
-	private ReverseCorrelateAssetAllocator(int tor, double kellyReduction) {
+	private ReverseCorrelateAssetAllocator(int tor, double kellyReduction, double reverseCorrelationThreshold) {
 		this.tor = tor;
 		this.kellyReduction = kellyReduction;
+		this.reverseCorrelationThreshold = reverseCorrelationThreshold;
 	}
 
 	public List<Pair<String, Double>> allocate( //

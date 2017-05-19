@@ -26,6 +26,7 @@ import suite.trade.assetalloc.AssetAllocBackTest;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.assetalloc.AssetAllocator;
 import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator0;
+import suite.trade.assetalloc.ReverseCorrelateAssetAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -34,6 +35,7 @@ import suite.trade.data.Summarize;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
 import suite.util.String_;
@@ -65,7 +67,7 @@ public class DailyMain extends ExecutableProgram {
 		quoteDatabase.join();
 
 		// perform systematic trading
-		List<Pair<String, String>> outputs = Arrays.asList(bug(), mamr(), pmamr());
+		List<Pair<String, String>> outputs = Arrays.asList(bug(), mamr(), pmamr(), revco());
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("\n" + Summarize.of(cfg).out(To.sink(sb)) + "\n");
@@ -180,11 +182,19 @@ public class DailyMain extends ExecutableProgram {
 
 	// portfolio-based moving average mean reversion
 	private Pair<String, String> pmamr() {
-		String tag = "pmamr";
+		return alloc("pmamr", MovingAvgMeanReversionAssetAllocator0.of(cfg, FunUtil.nullSink()));
+	}
+
+	// portfolio-based moving average mean reversion
+	private Pair<String, String> revco() {
+		return alloc("revco", ReverseCorrelateAssetAllocator.of());
+	}
+
+	private Pair<String, String> alloc(String tag, AssetAllocator assetAllocator) {
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = To.sink(sb);
+
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(LocalDate.now()); // hkex.getCompanies()
-		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
 		Simulate sim = AssetAllocBackTest.of(cfg, assets, assetAllocator, log).simulate(300000f);
 
 		Account account0 = Account.fromPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
