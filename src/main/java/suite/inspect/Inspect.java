@@ -25,10 +25,10 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Source2;
+import suite.util.List_;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.String_;
-import suite.util.To;
 
 /**
  * General manipulation on value objects with public fields.
@@ -399,7 +399,7 @@ public class Inspect {
 				}) //
 				.toList();
 
-		List<Field> fields = To.list(parentFields, childFields);
+		List<Field> fields = List_.concat(parentFields, childFields);
 		fields.forEach(field -> field.setAccessible(true));
 		return fields;
 	}
@@ -426,7 +426,7 @@ public class Inspect {
 				}) //
 				.toList();
 
-		List<Method> methods = To.list(parentMethods, childMethods);
+		List<Method> methods = List_.concat(parentMethods, childMethods);
 		methods.forEach(method -> method.setAccessible(true));
 		return methods;
 	}

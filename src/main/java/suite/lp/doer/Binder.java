@@ -11,7 +11,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
-import suite.util.To;
+import suite.util.List_;
 
 public class Binder {
 
@@ -37,7 +37,7 @@ public class Binder {
 			Map<Node, Reference> map0 = ((Dict) n0).map;
 			Map<Node, Reference> map1 = ((Dict) n1).map;
 			boolean result = true;
-			for (Node key : To.list(map0.keySet(), map1.keySet())) {
+			for (Node key : List_.concat(map0.keySet(), map1.keySet())) {
 				Node v0 = map0.computeIfAbsent(key, k -> new Reference());
 				Node v1 = map1.computeIfAbsent(key, k -> new Reference());
 				result &= bind(v0, v1, trail);

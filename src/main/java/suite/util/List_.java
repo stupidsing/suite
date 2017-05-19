@@ -8,6 +8,14 @@ import java.util.List;
 
 public class List_ {
 
+	@SafeVarargs
+	public static <T> List<T> concat(Collection<T>... collections) {
+		List<T> list = new ArrayList<>();
+		for (Collection<T> collection : collections)
+			list.addAll(collection);
+		return list;
+	}
+
 	public static <T> T first(Collection<T> c) {
 		return !c.isEmpty() ? c.iterator().next() : null;
 	}

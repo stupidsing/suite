@@ -11,7 +11,6 @@ import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
-import suite.util.To;
 
 public class LazyIbTree<T> implements ITree<T> {
 
@@ -209,7 +208,7 @@ public class LazyIbTree<T> implements ITree<T> {
 				slots2.add(new Slot<>(() -> Collections.emptyList(), t1));
 		}
 
-		List<Slot<T>> slots3 = To.list(List_.left(node0, s0), slots2, List_.right(node0, s1));
+		List<Slot<T>> slots3 = List_.concat(List_.left(node0, s0), slots2, List_.right(node0, s1));
 		List<Slot<T>> node1;
 
 		// checks if need to split
@@ -232,9 +231,9 @@ public class LazyIbTree<T> implements ITree<T> {
 
 			if (minBranchFactor < node0.size()) {
 				leftSlots = List_.left(node0, -1);
-				rightSlots = To.list(Arrays.asList(List_.last(node0)), node1);
+				rightSlots = List_.concat(Arrays.asList(List_.last(node0)), node1);
 			} else if (minBranchFactor < node1.size()) {
-				leftSlots = To.list(node0, Arrays.asList(List_.first(node1)));
+				leftSlots = List_.concat(node0, Arrays.asList(List_.first(node1)));
 				rightSlots = List_.right(node1, 1);
 			} else {
 				leftSlots = node0;
@@ -243,7 +242,7 @@ public class LazyIbTree<T> implements ITree<T> {
 
 			melded = Arrays.asList(slot(leftSlots), slot(rightSlots));
 		} else
-			melded = Arrays.asList(slot(To.list(node0, node1)));
+			melded = Arrays.asList(slot(List_.concat(node0, node1)));
 
 		return melded;
 	}

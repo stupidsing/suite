@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -188,14 +187,6 @@ public class To {
 
 	public static int int_(int i) {
 		return i;
-	}
-
-	@SafeVarargs
-	public static <T> List<T> list(Collection<T>... collections) {
-		List<T> list = new ArrayList<>();
-		for (Collection<T> collection : collections)
-			list.addAll(collection);
-		return list;
 	}
 
 	public static <T> List<T> list(Iterable<T> iter) {

@@ -11,7 +11,6 @@ import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.List_;
-import suite.util.To;
 
 /**
  * Facilitates storage of unlimited length of filenames on the immutable B-tree.
@@ -44,7 +43,7 @@ public class FileSystemKeySet {
 
 		return st.concatMap(bytes -> {
 			NameKey key = keyUtil.toNameKey(bytes);
-			List<NameKey> prefix1 = To.list(prefix, Arrays.asList(key));
+			List<NameKey> prefix1 = List_.concat(prefix, Arrays.asList(key));
 
 			if (key.size == 0) {
 				List<NameKey> tailKeys0 = key == minKey ? !keys0.isEmpty() ? List_.right(keys0, 1) : emptyKeys : null;

@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import suite.util.List_;
-import suite.util.To;
 
 public class IRope<T> {
 
@@ -78,13 +77,13 @@ public class IRope<T> {
 		List<IRope<T>> nodes;
 
 		if (rope1.depth < rope0.depth)
-			nodes = To.list(List_.left(rope0.nodes, -1), meld_(List_.last(rope0.nodes), rope1));
+			nodes = List_.concat(List_.left(rope0.nodes, -1), meld_(List_.last(rope0.nodes), rope1));
 		else if (rope0.depth < rope1.depth)
-			nodes = To.list(meld_(rope0, List_.first(rope1.nodes)), List_.right(rope1.nodes, 1));
+			nodes = List_.concat(meld_(rope0, List_.first(rope1.nodes)), List_.right(rope1.nodes, 1));
 		else if (0 < depth)
-			nodes = To.list(rope0.nodes, rope1.nodes);
+			nodes = List_.concat(rope0.nodes, rope1.nodes);
 		else {
-			List<T> ts = To.list(rope0.ts, rope1.ts);
+			List<T> ts = List_.concat(rope0.ts, rope1.ts);
 			if (maxBranchFactor <= ts.size()) {
 				List<T> left = List_.left(ts, minBranchFactor);
 				List<T> right = List_.right(ts, minBranchFactor);

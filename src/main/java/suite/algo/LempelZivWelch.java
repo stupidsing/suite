@@ -10,7 +10,6 @@ import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
-import suite.util.To;
 
 /**
  * Lempel-Ziv-Welch compression.
@@ -85,9 +84,9 @@ public class LempelZivWelch<Unit> {
 				List<Unit> newWord;
 
 				if (index < dict.size())
-					newWord = To.list(word0, List_.left(word = dict.get(index), 1));
+					newWord = List_.concat(word0, List_.left(word = dict.get(index), 1));
 				else
-					newWord = word = To.list(word0, List_.left(word0, 1));
+					newWord = word = List_.concat(word0, List_.left(word0, 1));
 
 				dict.add(newWord);
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 import suite.node.Node;
 import suite.node.util.Singleton;
-import suite.util.To;
+import suite.util.List_;
 
 public class CompositeRuleSet implements RuleSet {
 
@@ -49,7 +49,7 @@ public class CompositeRuleSet implements RuleSet {
 	 */
 	@Override
 	public List<Rule> getRules() {
-		return To.list(first.getRules(), second.getRules());
+		return List_.concat(first.getRules(), second.getRules());
 	}
 
 	@Override
