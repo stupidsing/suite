@@ -1,15 +1,15 @@
-package suite.util;
+package suite.primitive;
 
-import suite.primitive.CharPrimitiveFun.CharObj_Char;
-import suite.primitive.CharPrimitiveFun.CharObj_Obj;
-import suite.primitive.CharPrimitiveFun.ObjObj_Char;
-import suite.primitive.CharPrimitiveFun.Obj_Char;
-import suite.primitive.CharPrimitivePredicate.CharObjPredicate;
-import suite.primitive.CharPrimitivePredicate.CharPredicate_;
+import suite.primitive.IntPrimitiveFun.IntObj_Int;
+import suite.primitive.IntPrimitiveFun.IntObj_Obj;
+import suite.primitive.IntPrimitiveFun.ObjObj_Int;
+import suite.primitive.IntPrimitiveFun.Obj_Int;
+import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
+import suite.primitive.IntPrimitivePredicate.IntPredicate_;
 
-public class CharRethrow {
+public class IntRethrow {
 
-	public static <V> CharObj_Char<V> fun2(CharObj_Char<V> fun) {
+	public static <V> IntObj_Int<V> fun2(IntObj_Int<V> fun) {
 		return (k, v) -> {
 			try {
 				return fun.apply(k, v);
@@ -19,7 +19,7 @@ public class CharRethrow {
 		};
 	}
 
-	public static <V, T> CharObj_Obj<V, T> fun2(CharObj_Obj<V, T> fun) {
+	public static <V, T> IntObj_Obj<V, T> fun2(IntObj_Obj<V, T> fun) {
 		return (k, v) -> {
 			try {
 				return fun.apply(k, v);
@@ -29,7 +29,7 @@ public class CharRethrow {
 		};
 	}
 
-	public static <T> Obj_Char<T> fun(Obj_Char<T> fun) {
+	public static <T> Obj_Int<T> fun(Obj_Int<T> fun) {
 		return t -> {
 			try {
 				return fun.apply(t);
@@ -39,7 +39,7 @@ public class CharRethrow {
 		};
 	}
 
-	public static <K, V> ObjObj_Char<K, V> fun2(ObjObj_Char<K, V> fun) {
+	public static <K, V> ObjObj_Int<K, V> fun2(ObjObj_Int<K, V> fun) {
 		return (k, v) -> {
 			try {
 				return fun.apply(k, v);
@@ -49,7 +49,7 @@ public class CharRethrow {
 		};
 	}
 
-	public static <V> CharObjPredicate<V> charObjPredicate(CharObjPredicate<V> fun0) {
+	public static <V> IntObjPredicate<V> intObjPredicate(IntObjPredicate<V> fun0) {
 		return (k, v) -> {
 			try {
 				return fun0.test(k, v);
@@ -59,7 +59,7 @@ public class CharRethrow {
 		};
 	}
 
-	public static CharPredicate_ predicate(CharPredicate_ predicate) {
+	public static IntPredicate_ predicate(IntPredicate_ predicate) {
 		return t -> {
 			try {
 				return predicate.test(t);

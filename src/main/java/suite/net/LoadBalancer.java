@@ -13,8 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.os.SocketUtil.Io;
+import suite.primitive.IntMutable;
 import suite.util.Copy;
-import suite.util.IntMutable;
 import suite.util.Thread_;
 
 public class LoadBalancer {

@@ -1,4 +1,4 @@
-package suite.util;
+package suite.primitive;
 
 import java.util.Iterator;
 import java.util.function.Predicate;
@@ -15,6 +15,9 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Source2;
+import suite.util.NullableSynchronousQueue;
+import suite.util.Rethrow;
+import suite.util.Thread_;
 
 public class CharObjFunUtil {
 

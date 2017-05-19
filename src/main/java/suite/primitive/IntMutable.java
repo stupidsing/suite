@@ -1,4 +1,4 @@
-package suite.util;
+package suite.primitive;
 
 /**
  * An indirect reference to a primitive integer. Integer.MIN_VALUE is not

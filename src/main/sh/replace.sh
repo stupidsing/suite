@@ -15,14 +15,14 @@ replace-file() {
 
 replace-file src/main/java/suite/adt/pair/CharCharPair.java
 replace-file src/main/java/suite/adt/pair/CharObjPair.java
+replace-file src/main/java/suite/primitive/CharMutable.java
+replace-file src/main/java/suite/primitive/CharObjFunUtil.java
 replace-file src/main/java/suite/primitive/CharPrimitiveFun.java
 replace-file src/main/java/suite/primitive/CharPrimitivePredicate.java
 replace-file src/main/java/suite/primitive/CharPrimitiveSink.java
 replace-file src/main/java/suite/primitive/CharPrimitiveSource.java
+replace-file src/main/java/suite/primitive/CharRethrow.java
 #replace-file src/main/java/suite/primitive/Chars.java
 #replace-file src/main/java/suite/primitive/Chars_.java
 replace-file src/main/java/suite/streamlet/CharObjOutlet.java
 replace-file src/main/java/suite/streamlet/CharObjStreamlet.java
-replace-file src/main/java/suite/util/CharRethrow.java
-replace-file src/main/java/suite/util/CharMutable.java
-replace-file src/main/java/suite/util/CharObjFunUtil.java
