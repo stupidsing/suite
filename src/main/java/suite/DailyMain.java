@@ -200,7 +200,7 @@ public class DailyMain extends ExecutableProgram {
 
 	private Result alloc(String tag, AssetAllocator assetAllocator) {
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(LocalDate.now()); // hkex.getCompanies()
-		Simulate sim = AssetAllocBackTest.of(cfg, assets, assetAllocator, log).simulate(300000f);
+		Simulate sim = AssetAllocBackTest.ofNow(cfg, assets, assetAllocator, log).simulate(300000f);
 
 		Account account0 = Account.fromPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
 		Account account1 = sim.account;

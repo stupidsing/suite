@@ -43,7 +43,7 @@ public class AssetAllocBackTest {
 	private Fun<List<LocalDate>, List<LocalDate>> datesPred;
 	private Sink<String> log;
 
-	public static AssetAllocBackTest of( //
+	public static AssetAllocBackTest ofNow( //
 			Configuration cfg, //
 			Streamlet<Asset> assets, //
 			AssetAllocator assetAllocator, //
