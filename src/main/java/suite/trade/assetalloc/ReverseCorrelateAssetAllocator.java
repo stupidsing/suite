@@ -26,7 +26,7 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 	private TimeSeries ts = new TimeSeries();
 
 	public static AssetAllocator of() {
-		return of(32, .1d, .03d);
+		return of(48, .1d, .03d);
 	}
 
 	public static AssetAllocator of(int tor, double kellyReduction, double reverseCorrelationThreshold) {
@@ -40,7 +40,7 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 	}
 
 	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate) {
-		DatePeriod samplePeriod = DatePeriod.backTestDaysBefore(backTestDate, 256, 32);
+		DatePeriod samplePeriod = DatePeriod.backTestDaysBefore(backTestDate, 512, 32);
 		double riskFreeInterestRate = Trade_.riskFreeInterestRate(tor);
 
 		Set<String> reverseCorrelatingSymbols = Read.from2(dataSourceBySymbol) //
