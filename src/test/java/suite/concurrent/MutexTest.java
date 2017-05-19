@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import suite.concurrent.Concurrent.DeadlockException;
 import suite.concurrent.Mutex.MutexLock;
-import suite.node.util.IntMutable;
 import suite.streamlet.Read;
+import suite.util.IntMutable;
 import suite.util.Thread_;
 
 public class MutexTest {

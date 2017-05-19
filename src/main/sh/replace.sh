@@ -24,4 +24,5 @@ replace-file src/main/java/suite/primitive/CharPrimitiveSource.java
 replace-file src/main/java/suite/streamlet/CharObjOutlet.java
 replace-file src/main/java/suite/streamlet/CharObjStreamlet.java
 replace-file src/main/java/suite/util/CharRethrow.java
+replace-file src/main/java/suite/util/CharMutable.java
 replace-file src/main/java/suite/util/CharObjFunUtil.java
