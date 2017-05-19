@@ -298,7 +298,7 @@ public class Bytes implements Iterable<Byte> {
 		public BytesBuilder append(byte[] bs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
-			Copy.primitiveArray(bs_, start, bs, size, inc);
+			Copy.bytes(bs_, start, bs, size, inc);
 			size += inc;
 			return this;
 		}

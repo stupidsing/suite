@@ -25,7 +25,7 @@ public class Strategos {
 				float[] fs0 = new float[windowSize]; // moving window
 				float price0 = prices[day];
 
-				Copy.primitiveArray(prices, day - nPastDays, fs0, 0, nPastDays);
+				Copy.floats(prices, day - nPastDays, fs0, 0, nPastDays);
 				Arrays.fill(fs0, nPastDays, windowSize, price0);
 
 				float[] fs1 = dct.dct(fs0);

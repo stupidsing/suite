@@ -22,11 +22,16 @@ public class Copy {
 			throw new IndexOutOfBoundsException();
 	}
 
-	public static void primitiveArray(Object from, int fromIndex, Object to, int toIndex, int size) {
-		if (0 < size)
-			System.arraycopy(from, fromIndex, to, toIndex, size);
-		else if (size < 0)
-			throw new IndexOutOfBoundsException();
+	public static void bytes(byte[] from, int fromIndex, byte[] to, int toIndex, int size) {
+		primitiveArray(from, fromIndex, to, toIndex, size);
+	}
+
+	public static void chars(char[] from, int fromIndex, char[] to, int toIndex, int size) {
+		primitiveArray(from, fromIndex, to, toIndex, size);
+	}
+
+	public static void floats(float[] from, int fromIndex, float[] to, int toIndex, int size) {
+		primitiveArray(from, fromIndex, to, toIndex, size);
 	}
 
 	public static void readerToWriter(Reader in, Writer out) throws IOException {
@@ -73,6 +78,13 @@ public class Copy {
 				out.flush();
 			}
 		}
+	}
+
+	private static void primitiveArray(Object from, int fromIndex, Object to, int toIndex, int size) {
+		if (0 < size)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+		else if (size < 0)
+			throw new IndexOutOfBoundsException();
 	}
 
 }

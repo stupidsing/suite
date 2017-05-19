@@ -56,7 +56,7 @@ public class Matrix {
 		float[] fs1 = new float[length];
 		int i = 0;
 		for (float[] fs : array) {
-			Copy.primitiveArray(fs, 0, fs1, i, fs.length);
+			Copy.floats(fs, 0, fs1, i, fs.length);
 			i += fs.length;
 		}
 		return fs1;

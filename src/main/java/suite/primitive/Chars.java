@@ -298,7 +298,7 @@ public class Chars implements Iterable<Character> {
 		public CharsBuilder append(char[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
-			Copy.primitiveArray(cs_, start, cs, size, inc);
+			Copy.chars(cs_, start, cs, size, inc);
 			size += inc;
 			return this;
 		}

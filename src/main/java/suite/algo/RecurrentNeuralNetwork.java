@@ -67,8 +67,8 @@ public class RecurrentNeuralNetwork {
 			float[] memory0 = memory;
 			float[] iv = new float[ll1];
 
-			Copy.primitiveArray(input, 0, iv, 0, inputLength);
-			Copy.primitiveArray(memory0, 0, iv, inputLength, memoryLength);
+			Copy.floats(input, 0, iv, 0, inputLength);
+			Copy.floats(memory0, 0, iv, inputLength, memoryLength);
 			iv[ll] = 1f;
 
 			float[] memory1 = copy(memory = Tanh.tanhOn(mtx.mul(weights, iv)));

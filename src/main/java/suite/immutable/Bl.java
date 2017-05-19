@@ -83,9 +83,9 @@ public class Bl<T> {
 			Object[] ts1 = new Object[ts0.length + diff];
 			int bitCount0 = Long.bitCount(bits0);
 			int bitCount1 = Long.bitCount(bits1);
-			Copy.primitiveArray(ts0, 0, ts1, 0, bitCount0);
+			Copy.array(ts0, 0, ts1, 0, bitCount0);
 			ts1[bitCount0] = t;
-			Copy.primitiveArray(ts0, bitCount0 + diff0, ts1, bitCount0 + diff1, bitCount1);
+			Copy.array(ts0, bitCount0 + diff0, ts1, bitCount0 + diff1, bitCount1);
 
 			return new Bl<>(bitmap1, ts1);
 		} else
