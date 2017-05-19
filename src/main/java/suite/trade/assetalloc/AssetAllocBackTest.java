@@ -130,7 +130,6 @@ public class AssetAllocBackTest {
 						.toList()));
 
 			List<String> tradeDateStrings = tradeDates0.sort(Object_::compare).toList();
-
 			List<LocalDate> tradeDates = Read.from(tradeDateStrings).map(To::date).toList();
 			String[] tradeDateArray = tradeDateStrings.toArray(new String[0]);
 
