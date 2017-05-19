@@ -12,11 +12,11 @@ public class Pair<T0, T1> {
 	public T1 t1;
 
 	public static <K0, K1, V> Fun<Pair<K0, V>, Pair<K1, V>> map0(Fun<K0, K1> fun) {
-		return pair -> Pair.of(fun.apply(pair.t0), pair.t1);
+		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
 	public static <K, V0, V1> Fun<Pair<K, V0>, Pair<K, V1>> map1(Fun<V0, V1> fun) {
-		return pair -> Pair.of(pair.t0, fun.apply(pair.t1));
+		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
 	public static <T0, T1> Pair<T0, T1> of(T0 t0, T1 t1) {

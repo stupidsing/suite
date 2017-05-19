@@ -13,11 +13,11 @@ public class IntIntPair {
 	public int t1;
 
 	public static Fun<IntIntPair, IntIntPair> map0(Int_Int fun) {
-		return pair -> IntIntPair.of(fun.apply(pair.t0), pair.t1);
+		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
 	public static Fun<IntIntPair, IntIntPair> map1(Int_Int fun) {
-		return pair -> IntIntPair.of(pair.t0, fun.apply(pair.t1));
+		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
 	public static IntIntPair of(int t0, int t1) {

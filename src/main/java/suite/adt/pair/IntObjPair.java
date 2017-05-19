@@ -13,11 +13,11 @@ public class IntObjPair<T> {
 	public T t1;
 
 	public static <V> Fun<IntObjPair<V>, IntObjPair<V>> map0(Int_Int fun) {
-		return pair -> IntObjPair.of(fun.apply(pair.t0), pair.t1);
+		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
 	public static <V0, V1> Fun<IntObjPair<V0>, IntObjPair<V1>> map1(Fun<V0, V1> fun) {
-		return pair -> IntObjPair.of(pair.t0, fun.apply(pair.t1));
+		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
 	public static <T> IntObjPair<T> of(int t0, T t1) {

@@ -3,7 +3,7 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.primitive.PrimitiveFun.Char_Char;
+import suite.primitive.CharPrimitiveFun.Char_Char;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
@@ -13,11 +13,11 @@ public class CharObjPair<T> {
 	public T t1;
 
 	public static <V> Fun<CharObjPair<V>, CharObjPair<V>> map0(Char_Char fun) {
-		return pair -> CharObjPair.of(fun.apply(pair.t0), pair.t1);
+		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
 	public static <V0, V1> Fun<CharObjPair<V0>, CharObjPair<V1>> map1(Fun<V0, V1> fun) {
-		return pair -> CharObjPair.of(pair.t0, fun.apply(pair.t1));
+		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
 	public static <T> CharObjPair<T> of(char t0, T t1) {

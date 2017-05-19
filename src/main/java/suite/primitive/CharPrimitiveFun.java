@@ -4,7 +4,7 @@ public class CharPrimitiveFun {
 
 	@FunctionalInterface
 	public interface Char_Char {
-		public int apply(int i);
+		public char apply(char i);
 	}
 
 	@FunctionalInterface

@@ -7,11 +7,6 @@ import java.util.function.ToDoubleFunction;
 public class PrimitiveFun {
 
 	@FunctionalInterface
-	public interface Char_Char {
-		public char apply(char d);
-	}
-
-	@FunctionalInterface
 	public interface Double_Double {
 		public double apply(double d);
 	}
