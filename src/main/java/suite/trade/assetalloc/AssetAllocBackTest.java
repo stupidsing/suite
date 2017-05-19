@@ -185,9 +185,8 @@ public class AssetAllocBackTest {
 
 			double v0 = valuations_[0];
 			double vx = valuations_[size - 1];
-			DatePeriod period_ = DatePeriod.of(List_.first(dates), List_.last(dates));
 
-			period = period_;
+			period = DatePeriod.of(List_.first(dates), List_.last(dates));
 			valuations = valuations_;
 			holdBySymbol = holdBySymbol_;
 			annualReturn = Math.expm1(Math.log(vx / v0) * Trade_.nTradeDaysPerYear / size);
