@@ -49,8 +49,8 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 				.filterKey(reverseCorrelatingSymbols::contains) //
 				.mapValue(dataSource -> {
 					float[] prices = dataSource.prices;
-					int length = prices.length;
-					return To.arrayOfFloats(tor, i -> prices[length - 1 - i]);
+					int length1 = prices.length - 1;
+					return To.arrayOfFloats(tor, i -> prices[length1 - i]);
 				}) //
 				.toMap();
 
