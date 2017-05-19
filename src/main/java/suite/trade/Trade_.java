@@ -45,7 +45,7 @@ public class Trade_ {
 	public static String format(Map<String, Integer> portfolio) {
 		return Read.from2(portfolio) //
 				.sortBy((code, i) -> !String_.equals(code, Asset.cashCode) ? code : "") //
-				.map((code, i) -> "+" + code + "*" + i) //
+				.map((code, i) -> (0 <= i ? "+" : "-") + code + "*" + Math.abs(i)) //
 				.collect(As.joined());
 	}
 
