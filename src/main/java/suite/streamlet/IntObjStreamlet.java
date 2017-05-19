@@ -8,22 +8,22 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
 import suite.adt.map.IntObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.IntObjPair;
 import suite.adt.pair.Pair;
+import suite.primitive.IntPrimitiveFun.IntObj_Int;
 import suite.primitive.IntPrimitiveFun.IntObj_Obj;
 import suite.primitive.IntPrimitiveFun.Int_Int;
 import suite.primitive.IntPrimitiveFun.Obj_Int;
-import suite.primitive.PrimitiveFun.IntObj_Int;
+import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
+import suite.primitive.IntPrimitivePredicate.IntPredicate_;
+import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.primitive.PrimitiveFun.Obj_Float;
-import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
-import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.IntObjFunUtil;
@@ -124,7 +124,7 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return intObjStreamlet(() -> spawn().filter(fun));
 	}
 
-	public IntObjStreamlet<V> filterKey(IntPredicate fun) {
+	public IntObjStreamlet<V> filterKey(IntPredicate_ fun) {
 		return intObjStreamlet(() -> spawn().filterKey(fun));
 	}
 

@@ -13,6 +13,11 @@ public class CharPrimitiveFun {
 	}
 
 	@FunctionalInterface
+	public interface CharObj_Char<T> {
+		public char apply(char i, T t);
+	}
+
+	@FunctionalInterface
 	public interface CharObj_Obj<X, Y> {
 		public Y apply(int i, X x);
 	}

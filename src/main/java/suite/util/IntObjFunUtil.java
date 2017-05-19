@@ -1,15 +1,15 @@
 package suite.util;
 
 import java.util.Iterator;
-import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
 import suite.adt.pair.IntObjPair;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
+import suite.primitive.IntPrimitiveFun.IntObj_Int;
 import suite.primitive.IntPrimitiveFun.IntObj_Obj;
-import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
+import suite.primitive.IntPrimitivePredicate.IntPredicate_;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -93,7 +93,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> IntObjSource<V> filter(IntObjPredicate<V> fun0, IntObjSource<V> source2) {
-		IntObjPredicate<V> fun1 = Rethrow.intObjPredicate(fun0);
+		IntObjPredicate<V> fun1 = IntRethrow.intObjPredicate(fun0);
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -102,8 +102,8 @@ public class IntObjFunUtil {
 		};
 	}
 
-	public static <V> IntObjSource<V> filterKey(IntPredicate fun0, IntObjSource<V> source2) {
-		IntPredicate fun1 = Rethrow.predicate(fun0);
+	public static <V> IntObjSource<V> filterKey(IntPredicate_ fun0, IntObjSource<V> source2) {
+		IntPredicate_ fun1 = IntRethrow.predicate(fun0);
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -131,7 +131,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> boolean isAll(IntObjPredicate<V> pred0, IntObjSource<V> source2) {
-		IntObjPredicate<V> pred1 = Rethrow.intObjPredicate(pred0);
+		IntObjPredicate<V> pred1 = IntRethrow.intObjPredicate(pred0);
 		IntObjPair<V> pair = IntObjPair.of(0, null);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -140,7 +140,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> boolean isAny(IntObjPredicate<V> pred0, IntObjSource<V> source2) {
-		IntObjPredicate<V> pred1 = Rethrow.intObjPredicate(pred0);
+		IntObjPredicate<V> pred1 = IntRethrow.intObjPredicate(pred0);
 		IntObjPair<V> pair = IntObjPair.of(0, null);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -174,14 +174,14 @@ public class IntObjFunUtil {
 	}
 
 	public static <V, T> Source<T> map(IntObj_Obj<V, T> fun0, IntObjSource<V> source2) {
-		IntObj_Obj<V, T> fun1 = Rethrow.fun2(fun0);
+		IntObj_Obj<V, T> fun1 = IntRethrow.fun2(fun0);
 		IntObjPair<V> pair = IntObjPair.of(0, null);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <V, K1, V1, T> Source2<K1, V1> map2(IntObj_Obj<V, K1> kf0, IntObj_Obj<V, V1> vf0, IntObjSource<V> source2) {
-		IntObj_Obj<V, K1> kf1 = Rethrow.fun2(kf0);
-		IntObj_Obj<V, V1> vf1 = Rethrow.fun2(vf0);
+		IntObj_Obj<V, K1> kf1 = IntRethrow.fun2(kf0);
+		IntObj_Obj<V, V1> vf1 = IntRethrow.fun2(vf0);
 		IntObjPair<V> pair1 = IntObjPair.of(0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -194,8 +194,8 @@ public class IntObjFunUtil {
 	}
 
 	public static <V, V1, T> IntObjSource<V1> mapIntObj(IntObj_Int<V> kf0, IntObj_Obj<V, V1> vf0, IntObjSource<V> source2) {
-		IntObj_Int<V> kf1 = Rethrow.fun2(kf0);
-		IntObj_Obj<V, V1> vf1 = Rethrow.fun2(vf0);
+		IntObj_Int<V> kf1 = IntRethrow.fun2(kf0);
+		IntObj_Obj<V, V1> vf1 = IntRethrow.fun2(vf0);
 		IntObjPair<V> pair1 = IntObjPair.of(0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -234,7 +234,7 @@ public class IntObjFunUtil {
 	 * not be skipped.
 	 */
 	public static <V> Source<IntObjSource<V>> split(IntObjPredicate<V> fun0, IntObjSource<V> source2) {
-		IntObjPredicate<V> fun1 = Rethrow.intObjPredicate(fun0);
+		IntObjPredicate<V> fun1 = IntRethrow.intObjPredicate(fun0);
 		return new Source<IntObjSource<V>>() {
 			private IntObjPair<V> pair = IntObjPair.of(0, null);
 			private boolean isAvailable;

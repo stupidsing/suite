@@ -4,17 +4,17 @@ public class IntPrimitiveSink {
 
 	@FunctionalInterface
 	public interface IntSink {
-		public void sink(int i);
+		public void sink(int c);
 	}
 
 	@FunctionalInterface
 	public interface IntIntSink {
-		public void sink(int i, int j);
+		public void sink(int c, int d);
 	}
 
 	@FunctionalInterface
 	public interface IntObjSink<T> { // extends ObjIntConsumer<T>
-		public void sink(int i, T t);
+		public void sink(int c, T t);
 	}
 
 }

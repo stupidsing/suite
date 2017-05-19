@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
 import suite.adt.map.IntObjMap;
@@ -17,12 +16,13 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.IntObjPair;
 import suite.adt.pair.Pair;
 import suite.node.util.Mutable;
+import suite.primitive.IntPrimitiveFun.IntObj_Int;
 import suite.primitive.IntPrimitiveFun.IntObj_Obj;
 import suite.primitive.IntPrimitiveFun.Int_Int;
-import suite.primitive.PrimitiveFun.IntObj_Int;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
+import suite.primitive.IntPrimitivePredicate.IntPredicate_;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
+import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -207,7 +207,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return of(IntObjFunUtil.filter(fun, intObjSource));
 	}
 
-	public IntObjOutlet<V> filterKey(IntPredicate fun) {
+	public IntObjOutlet<V> filterKey(IntPredicate_ fun) {
 		return of(IntObjFunUtil.filterKey(fun, intObjSource));
 	}
 
