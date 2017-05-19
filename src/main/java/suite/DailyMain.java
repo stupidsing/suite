@@ -23,6 +23,7 @@ import suite.trade.Trade_;
 import suite.trade.assetalloc.AssetAllocBackTest;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.assetalloc.AssetAllocator;
+import suite.trade.assetalloc.AssetAllocator_;
 import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator0;
 import suite.trade.assetalloc.ReverseCorrelateAssetAllocator;
 import suite.trade.data.Configuration;
@@ -196,7 +197,7 @@ public class DailyMain extends ExecutableProgram {
 
 	// portfolio-based moving average mean reversion
 	private Result revco() {
-		return alloc("revco", ReverseCorrelateAssetAllocator.of());
+		return alloc("revco", AssetAllocator_.unleverage(ReverseCorrelateAssetAllocator.of()));
 	}
 
 	private Result alloc(String tag, AssetAllocator assetAllocator) {
