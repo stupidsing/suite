@@ -5,7 +5,7 @@ import java.io.IOException;
 import suite.Constants;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.primitive.DataOutput_;
+import suite.util.DataOutput_;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfWriter {

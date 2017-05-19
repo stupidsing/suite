@@ -34,7 +34,6 @@ import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
-import suite.primitive.DataOutput_;
 import suite.primitive.IntPrimitiveFun.Int_Int;
 import suite.primitive.IoSink;
 import suite.primitive.PrimitiveFun.Float_Float;

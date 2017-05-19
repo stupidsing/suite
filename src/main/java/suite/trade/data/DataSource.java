@@ -5,9 +5,9 @@ import java.time.LocalDate;
 import java.util.Arrays;
 
 import suite.math.linalg.Matrix;
-import suite.primitive.DataInput_;
-import suite.primitive.DataOutput_;
 import suite.trade.DatePeriod;
+import suite.util.DataInput_;
+import suite.util.DataOutput_;
 import suite.util.Object_;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;

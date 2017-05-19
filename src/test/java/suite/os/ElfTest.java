@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import suite.ip.ImperativeCompiler;
 import suite.primitive.Bytes;
-import suite.primitive.DataOutput_;
+import suite.util.DataOutput_;
 import suite.util.TempDir;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html

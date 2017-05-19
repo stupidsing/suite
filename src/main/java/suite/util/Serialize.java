@@ -21,8 +21,6 @@ import suite.file.ExtentAllocator.Extent;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.primitive.Bytes;
-import suite.primitive.DataInput_;
-import suite.primitive.DataOutput_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;

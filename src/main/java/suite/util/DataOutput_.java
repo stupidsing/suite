@@ -1,10 +1,12 @@
-package suite.primitive;
+package suite.util;
 
 import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import suite.primitive.Bytes;
 
 public class DataOutput_ implements Closeable, DataOutput {
 

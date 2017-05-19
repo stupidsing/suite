@@ -1,4 +1,4 @@
-package suite.primitive;
+package suite.util;
 
 import java.io.Closeable;
 import java.io.DataInput;

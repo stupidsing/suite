@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import suite.node.util.Singleton;
 import suite.primitive.Bytes;
-import suite.primitive.DataInput_;
-import suite.primitive.DataOutput_;
+import suite.util.DataInput_;
+import suite.util.DataOutput_;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.Serialize;

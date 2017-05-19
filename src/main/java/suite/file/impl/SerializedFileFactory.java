@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
-import suite.primitive.DataInput_;
 import suite.streamlet.As;
+import suite.util.DataInput_;
 import suite.util.Rethrow;
 import suite.util.Serialize.Serializer;
 import suite.util.To;
