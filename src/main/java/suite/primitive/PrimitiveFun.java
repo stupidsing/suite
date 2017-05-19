@@ -10,6 +10,11 @@ import java.util.function.ToIntFunction;
 public class PrimitiveFun {
 
 	@FunctionalInterface
+	public interface Char_Char {
+		public char apply(char d);
+	}
+
+	@FunctionalInterface
 	public interface Double_Double {
 		public double apply(double d);
 	}

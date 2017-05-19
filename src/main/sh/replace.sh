@@ -1,40 +1,17 @@
-replace-word() {
-  FROM="${1}"
-  shift
-  TO="${1}"
-  shift
-  FILES=$(find $* -print0 | xargs -0 grep -l "${FROM}")
-  echo ${FILES}
-  echo ${FILES} | xargs sed "s/${FROM}/${TO}/g" -i
-}
-
-replace_() {
-  REPLACER="${1}"
-  F0="${2}"
-  F1=$(echo "${F0}" | sh -c "${REPLACER}")
-  mkdir -p $(dirname "${F1}")
-  cat "${F0}" | sh -c "${REPLACER}" > /tmp/replaced
-  [ "${REMOVEOLD}" ] && rm -f "${F0}" || true
-  mv /tmp/replaced "${F1}"
-  echo ${F1}
-}
-
 replace() {
-  REPLACER="${1}"
-  shift
-  while [ "${1}" ]; do
-    F0="${1}"
-    shift
-    replace_ "${REPLACER}" "${F0}"
-  done
+  sed 's/Character/Integer/g' |
+  sed 's/Char/Int/g' |
+  sed 's/character/integer/g' |
+  sed 's/char/int/g' |
+  cat
 }
 
-replace-files() {
-  while read F; do
-    replace_ "${1}" "${F}"
-  done
+replace-file() {
+  F0=${1}
+  F1=$(echo ${F0} | replace ${F0})
+  cat ${F0} | replace > /tmp/replaced
+  mv /tmp/replaced ${F1}
 }
 
-replace-example() {
-  replace "sed 's/board/Board/g'" file.txt
-}
+replace-file src/main/java/suite/adt/pair/CharCharPair.java
+replace-file src/main/java/suite/adt/pair/CharObjPair.java
