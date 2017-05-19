@@ -55,7 +55,6 @@ public class KellyAssetAllocator implements AssetAllocator {
 		});
 
 		float[] returns = To.arrayOfFloats(symbols, excessReturnBySymbol::get);
-
 		float[] allocations = cholesky.inverseMul(cov).apply(returns);
 
 		return Read.range(nSymbols) //
