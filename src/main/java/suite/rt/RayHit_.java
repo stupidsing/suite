@@ -13,24 +13,24 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 
-public class RayUtil {
+public class RayHit_ {
 
 	/**
 	 * Remove hits that are shooting backwards.
 	 */
-	public static Streamlet<RayHit> filterRayHits(List<RayHit> rayHits) {
-		return Read.from(rayHits).filter(rh -> 0 < rh.advance());
+	public static Streamlet<RayHit> filter(List<RayHit> rayHits) {
+		return filter_(rayHits);
 	}
 
-	public static List<RayHit> joinRayHits(Collection<RtObject> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
-		List<List<RayHit>> rayHitsList = getRayHitsList(ray, objects);
+	public static List<RayHit> join(Collection<RtObject> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
+		List<List<RayHit>> rayHitsList = getHits(ray, objects);
 		List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : Collections.emptyList();
 		for (int i = 1; i < rayHitsList.size(); i++)
-			rayHits = joinRayHits(rayHits, rayHitsList.get(i), fun);
+			rayHits = join(rayHits, rayHitsList.get(i), fun);
 		return rayHits;
 	}
 
-	public static List<RayHit> joinRayHits(List<RayHit> rayHits0, List<RayHit> rayHits1, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
+	public static List<RayHit> join(List<RayHit> rayHits0, List<RayHit> rayHits1, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
 		List<RayHit> rayHits2 = new ArrayList<>();
 		int size0 = rayHits0.size(), size1 = rayHits1.size();
 		int index0 = 0, index1 = 0;
@@ -54,17 +54,16 @@ public class RayUtil {
 				rayHits2.add(isAdvance0 ? rayHit0 : rayHit1);
 		}
 
-		// eliminate duplicates
-		return eliminateRayHitDuplicates(rayHits2);
+		return removeDuplicates(rayHits2);
 	}
 
-	private static List<List<RayHit>> getRayHitsList(Ray ray, Collection<RtObject> objects) {
+	private static List<List<RayHit>> getHits(Ray ray, Collection<RtObject> objects) {
 		return Read.from(objects) //
-				.map(object -> RayUtil.filterRayHits(object.hit(ray)).sort(RayHit.comparator).toList()) //
+				.map(object -> filter_(object.hit(ray)).sort(RayHit.comparator).toList()) //
 				.toList();
 	}
 
-	private static List<RayHit> eliminateRayHitDuplicates(List<RayHit> rayHits0) {
+	private static List<RayHit> removeDuplicates(List<RayHit> rayHits0) {
 		List<RayHit> rayHits1 = new ArrayList<>();
 		int size = rayHits0.size();
 		RayHit rayHit;
@@ -79,6 +78,10 @@ public class RayUtil {
 				rayHits1.add(rayHits0.get(i));
 
 		return rayHits1;
+	}
+
+	private static Streamlet<RayHit> filter_(List<RayHit> rayHits) {
+		return Read.from(rayHits).filter(rh -> 0 < rh.advance());
 	}
 
 }

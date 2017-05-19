@@ -18,7 +18,7 @@ import suite.trade.Account.Valuation;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.Trade;
-import suite.trade.TradeUtil;
+import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -157,7 +157,7 @@ public class AssetAllocBackTest {
 						}) //
 						.toMap();
 
-				String actions = play(TradeUtil.diff(account.assets(), portfolio, latestPriceBySymbol));
+				String actions = play(Trade_.diff(account.assets(), portfolio, latestPriceBySymbol));
 				Valuation val = account.valuation(latestPriceBySymbol);
 
 				valuations_[i] = (float) (valuation = val.sum());
@@ -171,7 +171,7 @@ public class AssetAllocBackTest {
 						+ ", actions = " + actions);
 			}
 
-			trades.addAll(TradeUtil.sellAll(Read.from(trades), latestPriceBySymbol::get).toList());
+			trades.addAll(Trade_.sellAll(Read.from(trades), latestPriceBySymbol::get).toList());
 
 			double v0 = valuations_[0];
 			double vx = valuations_[size - 1];
@@ -190,7 +190,7 @@ public class AssetAllocBackTest {
 			trades.addAll(trades_);
 			account.play(trades_);
 			account.validate();
-			return TradeUtil.format(trades_);
+			return Trade_.format(trades_);
 		}
 
 		public String conclusion() {

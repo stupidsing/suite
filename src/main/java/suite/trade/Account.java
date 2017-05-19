@@ -27,7 +27,7 @@ public class Account {
 	}
 
 	public static Account fromPortfolio(Iterable<Trade> trades) {
-		return new Account(TradeUtil.portfolio(trades));
+		return new Account(Trade_.portfolio(trades));
 	}
 
 	private Map<String, Integer> assets = new HashMap<>();
@@ -43,7 +43,7 @@ public class Account {
 	}
 
 	public int cash() {
-		return get(cashCode);
+		return cash_();
 	}
 
 	public int nShares(String symbol) {
@@ -61,7 +61,7 @@ public class Account {
 
 	@Override
 	public String toString() {
-		return TradeUtil.format(assets());
+		return Trade_.format(assets());
 	}
 
 	public float transactionAmount() {
@@ -81,8 +81,10 @@ public class Account {
 	}
 
 	public void validate() {
+		if (cash_() < -Trade_.leverageAmount)
+			throw new RuntimeException("too much leverage: " + cash_());
 		assets.forEach((code, nShares) -> {
-			if (!String_.equals(code, cashCode) && nShares < 0)
+			if (!Trade_.isShortSell && !String_.equals(code, cashCode) && nShares < 0)
 				throw new RuntimeException("no short-selling " + nShares + " shares for " + code);
 		});
 	}
@@ -108,6 +110,10 @@ public class Account {
 		public float sum() {
 			return (float) Read.from2(valuationBySymbol).collectAsDouble(As.sumOfDoubles((symbol, v) -> v));
 		}
+	}
+
+	private int cash_() {
+		return get(cashCode);
 	}
 
 	private void play_(Trade trade) {

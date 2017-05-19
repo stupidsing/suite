@@ -5,7 +5,7 @@ import java.util.List;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RtObject;
-import suite.rt.RayUtil;
+import suite.rt.RayHit_;
 
 public class Minus implements RtObject {
 
@@ -19,9 +19,9 @@ public class Minus implements RtObject {
 
 	@Override
 	public List<RayHit> hit(Ray ray) {
-		List<RayHit> subjectRayHits = RayUtil.filterRayHits(subject.hit(ray)).sort(RayHit.comparator).toList();
-		List<RayHit> objectRayHits = RayUtil.filterRayHits(object.hit(ray)).sort(RayHit.comparator).toList();
-		return RayUtil.joinRayHits(subjectRayHits, objectRayHits, pair -> pair.t0 && !pair.t1);
+		List<RayHit> subjectRayHits = RayHit_.filter(subject.hit(ray)).sort(RayHit.comparator).toList();
+		List<RayHit> objectRayHits = RayHit_.filter(object.hit(ray)).sort(RayHit.comparator).toList();
+		return RayHit_.join(subjectRayHits, objectRayHits, pair -> pair.t0 && !pair.t1);
 	}
 
 }

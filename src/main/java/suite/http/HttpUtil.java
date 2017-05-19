@@ -21,7 +21,7 @@ import org.apache.http.impl.client.HttpClients;
 import suite.concurrent.Backoff;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
-import suite.primitive.BytesUtil;
+import suite.primitive.Bytes_;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.Rethrow;
@@ -118,7 +118,7 @@ public class HttpUtil {
 		headers.entrySet().forEach(e -> conn.setRequestProperty(e.getKey(), e.getValue()));
 
 		try (OutputStream os = conn.getOutputStream()) {
-			BytesUtil.copy(in, os);
+			Bytes_.copy(in, os);
 		}
 
 		int responseCode = conn.getResponseCode();

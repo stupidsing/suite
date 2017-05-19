@@ -203,7 +203,7 @@ public class RayTracer {
 	}
 
 	private RayHit nearestHit(List<RayHit> rayHits) {
-		return RayUtil.filterRayHits(rayHits).minOrNull(RayHit.comparator);
+		return RayHit_.filter(rayHits).minOrNull(RayHit.comparator);
 	}
 
 	/**

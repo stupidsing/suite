@@ -10,7 +10,7 @@ import suite.streamlet.Streamlet;
 import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.Trade;
-import suite.trade.TradeUtil;
+import suite.trade.Trade_;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
@@ -70,7 +70,7 @@ public class Summarize {
 		double amount0 = account0.cash();
 		double amount1 = account1.cash();
 
-		return Read.from2(TradeUtil.portfolio(trades0)) //
+		return Read.from2(Trade_.portfolio(trades0)) //
 				.map((symbol, nShares) -> {
 					Asset asset = cfg.queryCompany(symbol);
 					float price = priceBySymbol.get(symbol);
@@ -84,7 +84,7 @@ public class Summarize {
 	}
 
 	private Streamlet<Trade> sellAll(Streamlet<Trade> trades, Map<String, Float> priceBySymbol) {
-		return Streamlet.concat(trades, TradeUtil.sellAll(trades, priceBySymbol::get));
+		return Streamlet.concat(trades, Trade_.sellAll(trades, priceBySymbol::get));
 	}
 
 }

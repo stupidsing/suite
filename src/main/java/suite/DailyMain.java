@@ -22,7 +22,7 @@ import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.Trade;
-import suite.trade.TradeUtil;
+import suite.trade.Trade_;
 import suite.trade.assetalloc.AssetAllocBackTest;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.assetalloc.AssetAllocator;
@@ -194,7 +194,7 @@ public class DailyMain extends ExecutableProgram {
 
 		Set<String> symbols = To.set(account0.assets().keySet(), account1.assets().keySet());
 		Map<String, Float> priceBySymbol = cfg.quote(symbols);
-		List<Trade> trades = TradeUtil.diff(account0.assets(), account1.assets(), priceBySymbol);
+		List<Trade> trades = Trade_.diff(account0.assets(), account1.assets(), priceBySymbol);
 
 		sb.append("\n" + sim.conclusion());
 		sb.append(Read.from(trades).map(trade -> "\nSIGNAL" + trade).collect(As.joined()));

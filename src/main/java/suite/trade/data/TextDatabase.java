@@ -10,7 +10,7 @@ import java.util.TreeSet;
 
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
-import suite.primitive.BytesUtil;
+import suite.primitive.Bytes_;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
@@ -79,10 +79,10 @@ public class TextDatabase {
 	private void save() {
 		Outlet<Bytes> outlet = Read.from(data) //
 				.map(this::toBytes) //
-				.collect(BytesUtil::buffer);
+				.collect(Bytes_::buffer);
 
 		try (OutputStream os = FileUtil.out(path)) {
-			BytesUtil.copy(outlet, os);
+			Bytes_.copy(outlet, os);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

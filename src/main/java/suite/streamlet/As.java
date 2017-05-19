@@ -19,7 +19,7 @@ import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.primitive.BytesUtil;
+import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.PrimitiveFun.IntObj_Double;
@@ -483,7 +483,7 @@ public class As {
 	}
 
 	private static Outlet<Bytes> lines_(Outlet<Bytes> outlet) {
-		return BytesUtil.split(Bytes.of((byte) 10)).apply(outlet);
+		return Bytes_.split(Bytes.of((byte) 10)).apply(outlet);
 	}
 
 }

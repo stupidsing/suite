@@ -11,7 +11,10 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.util.String_;
 
-public class TradeUtil {
+public class Trade_ {
+
+	public static boolean isShortSell = false;
+	public static float leverageAmount = 10000f;
 
 	public static List<Trade> diff(Map<String, Integer> assets0, Map<String, Integer> assets1, Map<String, Float> prices) {
 		Set<String> symbols = Streamlet2.concat(Read.from2(assets0), Read.from2(assets1)) //
@@ -53,7 +56,7 @@ public class TradeUtil {
 
 	public static Streamlet<Trade> sellAll(Streamlet<Trade> trades, Obj_Float<String> priceFun) {
 		return trades //
-				.groupBy(trade -> trade.strategy, TradeUtil::portfolio) //
+				.groupBy(trade -> trade.strategy, Trade_::portfolio) //
 				.concatMap((strategy, nSharesBySymbol) -> Read //
 						.from2(nSharesBySymbol) //
 						.map((symbol, size) -> Trade.of(-size, symbol, priceFun.applyAsFloat(symbol), strategy)));

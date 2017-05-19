@@ -1,18 +1,18 @@
 package suite.primitive;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 
-import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.Chars.CharsBuilder;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
-public class BytesUtil {
+public class Chars_ {
 
 	private static int bufferSize = 65536;
 
-	public static Outlet<Bytes> buffer(Outlet<Bytes> outlet) {
+	public static Outlet<Chars> buffer(Outlet<Chars> outlet) {
 		return Outlet.of(new BufferedSource(outlet) {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
@@ -20,17 +20,17 @@ public class BytesUtil {
 		});
 	}
 
-	public static void copy(Outlet<Bytes> outlet, OutputStream os) {
-		Bytes bytes;
-		while ((bytes = outlet.next()) != null)
+	public static void copy(Outlet<Chars> outlet, Writer writer) {
+		Chars chars;
+		while ((chars = outlet.next()) != null)
 			try {
-				os.write(bytes.bs, bytes.start, bytes.end - bytes.start);
+				writer.write(chars.cs, chars.start, chars.end - chars.start);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
 	}
 
-	public static Fun<Outlet<Bytes>, Outlet<Bytes>> split(Bytes delim) {
+	public static Fun<Outlet<Chars>, Outlet<Chars>> split(Chars delim) {
 		int ds = delim.size();
 
 		return outlet -> Outlet.of(new BufferedSource(outlet) {
@@ -50,30 +50,30 @@ public class BytesUtil {
 		});
 	}
 
-	private static abstract class BufferedSource implements Source<Bytes> {
-		protected Outlet<Bytes> outlet;
-		protected Bytes buffer = Bytes.empty;
+	private static abstract class BufferedSource implements Source<Chars> {
+		protected Outlet<Chars> outlet;
+		protected Chars buffer = Chars.empty;
 		protected boolean cont = true;
 		protected int p0, p1;
 
-		public BufferedSource(Outlet<Bytes> outlet) {
+		public BufferedSource(Outlet<Chars> outlet) {
 			this.outlet = outlet;
 		}
 
-		public Bytes source() {
-			Bytes in;
-			BytesBuilder bb = new BytesBuilder();
-			bb.append(buffer);
+		public Chars source() {
+			Chars in;
+			CharsBuilder cb = new CharsBuilder();
+			cb.append(buffer);
 
 			p0 = 0;
 
 			while (!search() && (cont &= (in = outlet.next()) != null)) {
-				bb.append(in);
-				buffer = bb.toBytes();
+				cb.append(in);
+				buffer = cb.toChars();
 			}
 
 			if (cont && 0 < p0) {
-				Bytes head = buffer.range(0, p0);
+				Chars head = buffer.range(0, p0);
 				buffer = buffer.range(p1);
 				return head;
 			} else
