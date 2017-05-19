@@ -129,9 +129,8 @@ public class AssetAllocBackTest {
 						.map((symbol, dataSource) -> (Collection<String>) Arrays.asList(dataSource.dates)) //
 						.toList()));
 
-			List<String> tradeDateStrings = tradeDates0.sort(Object_::compare).toList();
-			List<LocalDate> tradeDates = Read.from(tradeDateStrings).map(To::date).toList();
-			String[] tradeDateArray = tradeDateStrings.toArray(new String[0]);
+			String[] tradeDateArray = tradeDates0.sort(Object_::compare).toArray(String.class);
+			List<LocalDate> tradeDates = Read.from(tradeDateArray).map(To::date).toList();
 
 			Map<String, DataSource> dataSourceBySymbol1 = Read.from2(dataSourceBySymbol0) //
 					.mapValue(dataSource -> dataSource.align(tradeDateArray)) //
