@@ -4,12 +4,12 @@ public class IntPrimitiveFun {
 
 	@FunctionalInterface
 	public interface Int_Int {
-		public int apply(int i);
+		public int apply(int c);
 	}
 
 	@FunctionalInterface
 	public interface IntInt_Obj<T> {
-		public T apply(int i, int j);
+		public T apply(int c, int j);
 	}
 
 	@FunctionalInterface
@@ -19,7 +19,7 @@ public class IntPrimitiveFun {
 
 	@FunctionalInterface
 	public interface IntObj_Obj<X, Y> {
-		public Y apply(int i, X x);
+		public Y apply(int c, X x);
 	}
 
 	@FunctionalInterface

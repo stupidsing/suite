@@ -24,11 +24,11 @@ import suite.primitive.IntPrimitivePredicate.IntPredicate_;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.util.Array_;
+import suite.util.IntObjFunUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
-import suite.util.IntObjFunUtil;
 import suite.util.List_;
 import suite.util.NullableSynchronousQueue;
 import suite.util.Object_;
@@ -162,7 +162,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		}, intObjSource)));
 	}
 
-	public IntObjOutlet<V> cons(Integer key, V value) {
+	public IntObjOutlet<V> cons(int key, V value) {
 		return of(IntObjFunUtil.cons(key, value, intObjSource));
 	}
 
@@ -177,7 +177,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjOutlet<V> drop(int n) {
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		boolean isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
 			n--;
@@ -191,8 +191,8 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 			IntObjOutlet<V> outlet = (IntObjOutlet<V>) (IntObjOutlet<?>) object;
 			IntObjSource<V> source2 = outlet.intObjSource;
 			boolean b, b0, b1;
-			IntObjPair<V> pair0 = IntObjPair.of(0, null);
-			IntObjPair<V> pair1 = IntObjPair.of(0, null);
+			IntObjPair<V> pair0 = IntObjPair.of((int) 0, null);
+			IntObjPair<V> pair1 = IntObjPair.of((int) 0, null);
 			while ((b = (b0 = source2.source2(pair0)) == (b1 = source2.source2(pair1))) //
 					&& b0 //
 					&& b1 //
@@ -216,7 +216,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjPair<V> first() {
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		return next(pair) ? pair : null;
 	}
 
@@ -235,7 +235,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	@Override
 	public int hashCode() {
 		int hashCode = 5;
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		while (next(pair))
 			hashCode = hashCode * 31 + pair.hashCode();
 		return hashCode;
@@ -250,11 +250,11 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public Outlet<Integer> keys() {
-		return map((k, v) -> k);
+		return map_((k, v) -> k);
 	}
 
 	public IntObjPair<V> last() {
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		if (next(pair))
 			while (next(pair))
 				;
@@ -264,7 +264,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public <O> Outlet<O> map(IntObj_Obj<V, O> fun0) {
-		return Outlet.of(IntObjFunUtil.map(fun0, intObjSource));
+		return map_(fun0);
 	}
 
 	public <K1, V1> Outlet2<K1, V1> map2(IntObj_Obj<V, K1> kf, IntObj_Obj<V, V1> vf) {
@@ -296,8 +296,8 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjPair<V> minOrNull(Comparator<IntObjPair<V>> comparator) {
-		IntObjPair<V> pair = IntObjPair.of(0, null);
-		IntObjPair<V> pair1 = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		IntObjPair<V> pair1 = IntObjPair.of((int) 0, null);
 		boolean b = next(pair);
 		if (b) {
 			while (next(pair1))
@@ -316,7 +316,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		new Thread(() -> {
 			boolean b;
 			do {
-				IntObjPair<V> pair = IntObjPair.of(0, null);
+				IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 				b = intObjSource.source2(pair);
 				queue.offerQuietly(pair);
 			} while (b);
@@ -339,7 +339,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 
 	public Outlet<IntObjPair<V>> pairs() {
 		return Outlet.of(() -> {
-			IntObjPair<V> pair = IntObjPair.of(0, null);
+			IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 			return next(pair) ? pair : null;
 		});
 	}
@@ -354,13 +354,13 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 
 	public void sink(BiConsumer<Integer, V> sink0) {
 		BiConsumer<Integer, V> sink1 = Rethrow.biConsumer(sink0);
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
 	}
 
 	public int size() {
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		int i = 0;
 		while (next(pair))
 			i++;
@@ -368,7 +368,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjOutlet<V> skip(int n) {
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		boolean end = false;
 		for (int i = 0; !end && i < n; i++)
 			end = next(pair);
@@ -378,7 +378,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	public IntObjOutlet<V> sort(Comparator<IntObjPair<V>> comparator) {
 		List<IntObjPair<V>> list = new ArrayList<>();
 		IntObjPair<V> pair;
-		while (next(pair = IntObjPair.of(0, null)))
+		while (next(pair = IntObjPair.of((int) 0, null)))
 			list.add(pair);
 		return of(List_.sort(list, comparator));
 	}
@@ -423,14 +423,14 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	public List<IntObjPair<V>> toList() {
 		List<IntObjPair<V>> list = new ArrayList<>();
 		IntObjPair<V> pair;
-		while (next(pair = IntObjPair.of(0, null)))
+		while (next(pair = IntObjPair.of((int) 0, null)))
 			list.add(pair);
 		return list;
 	}
 
 	public IntObjMap<List<V>> toListMap() {
 		IntObjMap<List<V>> map = new IntObjMap<>();
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
@@ -451,7 +451,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	public Set<IntObjPair<V>> toSet() {
 		Set<IntObjPair<V>> set = new HashSet<>();
 		IntObjPair<V> pair;
-		while (next(pair = IntObjPair.of(0, null)))
+		while (next(pair = IntObjPair.of((int) 0, null)))
 			set.add(pair);
 		return set;
 
@@ -462,7 +462,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjPair<V> uniqueResult() {
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		if (next(pair))
 			if (!next(pair))
 				return pair;
@@ -474,6 +474,10 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 
 	public Outlet<V> values() {
 		return map((k, v) -> v);
+	}
+
+	private <O> Outlet<O> map_(IntObj_Obj<V, O> fun0) {
+		return Outlet.of(IntObjFunUtil.map(fun0, intObjSource));
 	}
 
 	private <V1> IntObjOutlet<V1> mapIntObj_(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {

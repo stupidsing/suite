@@ -17,16 +17,16 @@ import suite.adt.pair.Pair;
 import suite.primitive.IntPrimitiveFun.IntObj_Int;
 import suite.primitive.IntPrimitiveFun.IntObj_Obj;
 import suite.primitive.IntPrimitiveFun.Int_Int;
-import suite.primitive.IntPrimitiveFun.Obj_Int;
 import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
 import suite.primitive.IntPrimitivePredicate.IntPredicate_;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
+import suite.primitive.IntPrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.primitive.PrimitiveFun.Obj_Float;
+import suite.util.IntObjFunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.IntObjFunUtil;
 import suite.util.Object_;
 import suite.util.To;
 
@@ -36,7 +36,7 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> IntObjStreamlet<V> concat(IntObjStreamlet<V>... streamlets) {
-		return intObjStreamlet(() -> {
+		return intbjStreamlet(() -> {
 			List<IntObjSource<V>> sources = new ArrayList<>();
 			for (IntObjStreamlet<V> streamlet : streamlets)
 				sources.add(streamlet.in.source().source());
@@ -44,7 +44,7 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		});
 	}
 
-	private static <V> IntObjStreamlet<V> intObjStreamlet(Source<IntObjOutlet<V>> in) {
+	private static <V> IntObjStreamlet<V> intbjStreamlet(Source<IntObjOutlet<V>> in) {
 		return new IntObjStreamlet<>(in);
 	}
 
@@ -58,11 +58,11 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjStreamlet<V> append(int key, V value) {
-		return intObjStreamlet(() -> spawn().append(key, value));
+		return intbjStreamlet(() -> spawn().append(key, value));
 	}
 
 	public IntObjStreamlet<V> closeAtEnd(Closeable c) {
-		return intObjStreamlet(() -> {
+		return intbjStreamlet(() -> {
 			IntObjOutlet<V> in = spawn();
 			in.closeAtEnd(c);
 			return in;
@@ -99,19 +99,19 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 
 	public <V1> IntObjStreamlet<V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
 		Fun<V, Outlet<V1>> f = v -> fun.apply(v).outlet();
-		return intObjStreamlet(() -> IntObjOutlet.of(spawn().concatMapValue(f)));
+		return intbjStreamlet(() -> IntObjOutlet.of(spawn().concatMapValue(f)));
 	}
 
 	public IntObjStreamlet<V> cons(int key, V value) {
-		return intObjStreamlet(() -> spawn().cons(key, value));
+		return intbjStreamlet(() -> spawn().cons(key, value));
 	}
 
 	public IntObjStreamlet<V> distinct() {
-		return intObjStreamlet(() -> spawn().distinct());
+		return intbjStreamlet(() -> spawn().distinct());
 	}
 
 	public IntObjStreamlet<V> drop(int n) {
-		return intObjStreamlet(() -> spawn().drop(n));
+		return intbjStreamlet(() -> spawn().drop(n));
 	}
 
 	@Override
@@ -121,15 +121,15 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjStreamlet<V> filter(IntObjPredicate<V> fun) {
-		return intObjStreamlet(() -> spawn().filter(fun));
+		return intbjStreamlet(() -> spawn().filter(fun));
 	}
 
 	public IntObjStreamlet<V> filterKey(IntPredicate_ fun) {
-		return intObjStreamlet(() -> spawn().filterKey(fun));
+		return intbjStreamlet(() -> spawn().filterKey(fun));
 	}
 
 	public IntObjStreamlet<V> filterValue(Predicate<V> fun) {
-		return intObjStreamlet(() -> spawn().filterValue(fun));
+		return intbjStreamlet(() -> spawn().filterValue(fun));
 	}
 
 	public IntObjPair<V> first() {
@@ -218,7 +218,7 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjStreamlet<V> reverse() {
-		return intObjStreamlet(() -> spawn().reverse());
+		return intbjStreamlet(() -> spawn().reverse());
 	}
 
 	public void sink(BiConsumer<Integer, V> sink) {
@@ -230,23 +230,23 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjStreamlet<V> skip(int n) {
-		return intObjStreamlet(() -> spawn().skip(n));
+		return intbjStreamlet(() -> spawn().skip(n));
 	}
 
 	public IntObjStreamlet<V> sort(Comparator<IntObjPair<V>> comparator) {
-		return intObjStreamlet(() -> spawn().sort(comparator));
+		return intbjStreamlet(() -> spawn().sort(comparator));
 	}
 
 	public <O extends Comparable<? super O>> IntObjStreamlet<V> sortBy(IntObj_Obj<V, O> fun) {
-		return intObjStreamlet(() -> spawn().sortBy(fun));
+		return intbjStreamlet(() -> spawn().sortBy(fun));
 	}
 
 	public IntObjStreamlet<V> sortByKey(Comparator<Integer> comparator) {
-		return intObjStreamlet(() -> spawn().sortByKey(comparator));
+		return intbjStreamlet(() -> spawn().sortByKey(comparator));
 	}
 
 	public IntObjStreamlet<V> sortByValue(Comparator<V> comparator) {
-		return intObjStreamlet(() -> spawn().sortByValue(comparator));
+		return intbjStreamlet(() -> spawn().sortByValue(comparator));
 	}
 
 	public IntObjSource<V> source() {
@@ -254,7 +254,7 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjStreamlet<V> take(int n) {
-		return intObjStreamlet(() -> spawn().take(n));
+		return intbjStreamlet(() -> spawn().take(n));
 	}
 
 	public IntObjPair<V>[] toArray() {
@@ -305,7 +305,7 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 
 	private <V1> IntObjStreamlet<V1> concatMapIntObj_(ObjObj_Obj<Integer, V, IntObjStreamlet<V1>> fun) {
 		ObjObj_Obj<Integer, V, IntObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
-		return intObjStreamlet(() -> IntObjOutlet.of(spawn().concatMapIntObj(bf)));
+		return intbjStreamlet(() -> IntObjOutlet.of(spawn().concatMapIntObj(bf)));
 	}
 
 	private <T> Streamlet<T> map_(IntObj_Obj<V, T> fun) {

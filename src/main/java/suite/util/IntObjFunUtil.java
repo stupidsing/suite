@@ -124,7 +124,7 @@ public class IntObjFunUtil {
 
 	public static <K, V, R> R fold(Fun<Pair<R, IntObjPair<V>>, R> fun0, R init, IntObjSource<V> source2) {
 		Fun<Pair<R, IntObjPair<V>>, R> fun1 = Rethrow.fun(fun0);
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		while (source2.source2(pair))
 			init = fun1.apply(Pair.of(init, pair));
 		return init;
@@ -132,7 +132,7 @@ public class IntObjFunUtil {
 
 	public static <V> boolean isAll(IntObjPredicate<V> pred0, IntObjSource<V> source2) {
 		IntObjPredicate<V> pred1 = IntRethrow.intObjPredicate(pred0);
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
 				return false;
@@ -141,7 +141,7 @@ public class IntObjFunUtil {
 
 	public static <V> boolean isAny(IntObjPredicate<V> pred0, IntObjSource<V> source2) {
 		IntObjPredicate<V> pred1 = IntRethrow.intObjPredicate(pred0);
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
 				return true;
@@ -154,7 +154,7 @@ public class IntObjFunUtil {
 
 			public boolean hasNext() {
 				if (next == null) {
-					IntObjPair<V> next1 = IntObjPair.of(0, null);
+					IntObjPair<V> next1 = IntObjPair.of((int) 0, null);
 					if (source2.source2(next1))
 						next = next1;
 				}
@@ -175,14 +175,14 @@ public class IntObjFunUtil {
 
 	public static <V, T> Source<T> map(IntObj_Obj<V, T> fun0, IntObjSource<V> source2) {
 		IntObj_Obj<V, T> fun1 = IntRethrow.fun2(fun0);
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <V, K1, V1, T> Source2<K1, V1> map2(IntObj_Obj<V, K1> kf0, IntObj_Obj<V, V1> vf0, IntObjSource<V> source2) {
 		IntObj_Obj<V, K1> kf1 = IntRethrow.fun2(kf0);
 		IntObj_Obj<V, V1> vf1 = IntRethrow.fun2(vf0);
-		IntObjPair<V> pair1 = IntObjPair.of(0, null);
+		IntObjPair<V> pair1 = IntObjPair.of((int) 0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
 			if (b) {
@@ -196,7 +196,7 @@ public class IntObjFunUtil {
 	public static <V, V1, T> IntObjSource<V1> mapIntObj(IntObj_Int<V> kf0, IntObj_Obj<V, V1> vf0, IntObjSource<V> source2) {
 		IntObj_Int<V> kf1 = IntRethrow.fun2(kf0);
 		IntObj_Obj<V, V1> vf1 = IntRethrow.fun2(vf0);
-		IntObjPair<V> pair1 = IntObjPair.of(0, null);
+		IntObjPair<V> pair1 = IntObjPair.of((int) 0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
 			if (b) {
@@ -210,7 +210,7 @@ public class IntObjFunUtil {
 	public static <V, T1> Source<T1> mapNonNull(IntObj_Obj<V, T1> fun, IntObjSource<V> source) {
 		return new Source<T1>() {
 			public T1 source() {
-				IntObjPair<V> pair = IntObjPair.of(0, null);
+				IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 				T1 t1 = null;
 				while (source.source2(pair))
 					if ((t1 = fun.apply(pair.t0, pair.t1)) != null)
@@ -236,7 +236,7 @@ public class IntObjFunUtil {
 	public static <V> Source<IntObjSource<V>> split(IntObjPredicate<V> fun0, IntObjSource<V> source2) {
 		IntObjPredicate<V> fun1 = IntRethrow.intObjPredicate(fun0);
 		return new Source<IntObjSource<V>>() {
-			private IntObjPair<V> pair = IntObjPair.of(0, null);
+			private IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 			private boolean isAvailable;
 			private IntObjSource<V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun1.test(pair.t0, pair.t1);
 

@@ -4,12 +4,12 @@ public class CharPrimitiveFun {
 
 	@FunctionalInterface
 	public interface Char_Char {
-		public char apply(char i);
+		public char apply(char c);
 	}
 
 	@FunctionalInterface
 	public interface CharChar_Obj<T> {
-		public T apply(int i, int j);
+		public T apply(char c, int j);
 	}
 
 	@FunctionalInterface
@@ -19,7 +19,7 @@ public class CharPrimitiveFun {
 
 	@FunctionalInterface
 	public interface CharObj_Obj<X, Y> {
-		public Y apply(int i, X x);
+		public Y apply(char c, X x);
 	}
 
 	@FunctionalInterface
