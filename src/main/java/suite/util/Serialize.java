@@ -201,8 +201,24 @@ public class Serialize {
 
 		public void write(DataOutput_ dataOutput, float[] array) throws IOException {
 			Serialize.int_.write(dataOutput, array.length);
-			for (float t : array)
-				dataOutput.writeFloat(t);
+			for (float f : array)
+				dataOutput.writeFloat(f);
+		}
+	};
+
+	public static Serializer<int[]> arrayOfInts = new Serializer<int[]>() {
+		public int[] read(DataInput_ dataInput) throws IOException {
+			int size = Serialize.int_.read(dataInput);
+			int[] array = new int[size];
+			for (int i = 0; i < size; i++)
+				array[i] = dataInput.readInt();
+			return array;
+		}
+
+		public void write(DataOutput_ dataOutput, int[] array) throws IOException {
+			Serialize.int_.write(dataOutput, array.length);
+			for (int i : array)
+				dataOutput.writeInt(i);
 		}
 	};
 
