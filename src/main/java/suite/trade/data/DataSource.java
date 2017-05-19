@@ -56,6 +56,20 @@ public class DataSource {
 		this.prices = prices;
 	}
 
+	public DataSource align(String[] dates1) {
+		int length0 = dates.length;
+		int length1 = dates1.length;
+		float[] prices1 = new float[length1];
+		int si = 0;
+		for (int di = 0; di < length1; di++) {
+			String date = dates1[di];
+			while (si < length0 && dates[si].compareTo(date) < 0)
+				si++;
+			prices1[di] = prices[si];
+		}
+		return new DataSource(dates1, prices1);
+	}
+
 	public DataSource cons(String date, float price) {
 		String[] dates1 = Util.add(String.class, dates, new String[] { date, });
 		float[] prices1 = mtx.concat(prices, new float[] { price, });

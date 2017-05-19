@@ -3,9 +3,11 @@ package suite.trade.assetalloc;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.math.stat.Statistic;
@@ -26,6 +28,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.List_;
 import suite.util.Object_;
+import suite.util.Set_;
 import suite.util.String_;
 import suite.util.To;
 
@@ -98,28 +101,42 @@ public class AssetAllocBackTest {
 			trades = new ArrayList<>();
 
 			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
-			Map<String, DataSource> dataSourceBySymbol = new HashMap<>();
+			Map<String, DataSource> dataSourceBySymbol0 = new HashMap<>();
 			Map<String, Double> holdBySymbol_ = new HashMap<>();
+			Set<String> symbols = assetBySymbol.keySet();
 			double valuation = fund0;
 
 			// pre-fetch quotes
-			cfg.quote(assetBySymbol.keySet());
+			cfg.quote(symbols);
 
-			for (String symbol : assetBySymbol.keySet())
+			for (String symbol : symbols)
 				try {
 					DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
 					dataSource.validate();
-					dataSourceBySymbol.put(symbol, dataSource);
+					dataSourceBySymbol0.put(symbol, dataSource);
 				} catch (Exception ex) {
 					LogUtil.warn("for " + symbol + " " + ex);
 				}
 
-			List<LocalDate> tradeDates = Read.from2(dataSourceBySymbol) //
-					.concatMap((symbol, dataSource) -> Read.from(dataSource.dates)) //
-					.distinct() //
-					.map(To::date) //
-					.sort(Object_::compare) //
-					.toList();
+			Streamlet<String> tradeDates0;
+
+			if (Boolean.TRUE)
+				tradeDates0 = Read.from2(dataSourceBySymbol0) //
+						.concatMap((symbol, dataSource) -> Read.from(dataSource.dates)) //
+						.distinct();
+			else
+				tradeDates0 = Read.from(Set_.intersect(Read.from2(dataSourceBySymbol0) //
+						.map((symbol, dataSource) -> (Collection<String>) Arrays.asList(dataSource.dates)) //
+						.toList()));
+
+			List<String> tradeDateStrings = tradeDates0.sort(Object_::compare).toList();
+
+			List<LocalDate> tradeDates = Read.from(tradeDateStrings).map(To::date).toList();
+			String[] tradeDateArray = tradeDateStrings.toArray(new String[0]);
+
+			Map<String, DataSource> dataSourceBySymbol1 = Read.from2(dataSourceBySymbol0) //
+					.mapValue(dataSource -> dataSource.align(tradeDateArray)) //
+					.toMap();
 
 			List<LocalDate> dates = datesPred.apply(tradeDates);
 			int size = dates.size();
@@ -130,7 +147,7 @@ public class AssetAllocBackTest {
 				LocalDate date = dates.get(i);
 				DatePeriod historyWindowPeriod = DatePeriod.daysBefore(date, historyWindow);
 
-				Map<String, DataSource> backTestDataSourceBySymbol = Read.from2(dataSourceBySymbol) //
+				Map<String, DataSource> backTestDataSourceBySymbol = Read.from2(dataSourceBySymbol1) //
 						.mapValue(dataSource -> dataSource.range(historyWindowPeriod)) //
 						.filterValue(dataSource -> 128 <= dataSource.dates.length) //
 						.toMap();
