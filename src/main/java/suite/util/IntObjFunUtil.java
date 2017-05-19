@@ -9,7 +9,7 @@ import suite.adt.pair.Pair;
 import suite.os.LogUtil;
 import suite.primitive.IntPrimitiveFun.IntObj_Obj;
 import suite.primitive.PrimitiveFun.IntObj_Int;
-import suite.primitive.PrimitivePredicate.IntObjPredicate;
+import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;

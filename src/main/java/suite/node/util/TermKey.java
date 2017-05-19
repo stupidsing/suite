@@ -11,7 +11,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewriter.NodeHead;
 import suite.node.io.Rewriter.NodeRead;
-import suite.primitive.PrimitiveSink.IntSink;
+import suite.primitive.IntPrimitiveSink.IntSink;
 import suite.util.FunUtil.Sink;
 import suite.util.HashCodeComparable;
 import suite.util.Object_;

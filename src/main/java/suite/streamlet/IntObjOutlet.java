@@ -21,7 +21,7 @@ import suite.primitive.IntPrimitiveFun.IntObj_Obj;
 import suite.primitive.IntPrimitiveFun.Int_Int;
 import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
-import suite.primitive.PrimitivePredicate.IntObjPredicate;
+import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.util.Array_;
 import suite.util.FunUtil;

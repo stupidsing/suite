@@ -8,9 +8,9 @@ import java.util.function.Predicate;
 import suite.primitive.IntPrimitiveFun.IntObj_Obj;
 import suite.primitive.IntPrimitiveFun.ObjObj_Int;
 import suite.primitive.IntPrimitiveFun.Obj_Int;
+import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
 import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
-import suite.primitive.PrimitivePredicate.IntObjPredicate;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 

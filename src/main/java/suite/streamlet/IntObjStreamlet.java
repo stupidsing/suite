@@ -22,7 +22,7 @@ import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.primitive.PrimitiveFun.Obj_Float;
-import suite.primitive.PrimitivePredicate.IntObjPredicate;
+import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;

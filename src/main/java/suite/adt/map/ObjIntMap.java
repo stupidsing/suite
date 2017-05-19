@@ -5,7 +5,7 @@ import java.util.Arrays;
 import suite.adt.pair.IntObjPair;
 import suite.primitive.IntPrimitiveFun.Int_Int;
 import suite.primitive.IntPrimitiveFun.Obj_Int;
-import suite.primitive.PrimitiveSink.IntObjSink;
+import suite.primitive.IntPrimitiveSink.IntObjSink;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.streamlet.IntObjOutlet;
 import suite.streamlet.IntObjStreamlet;

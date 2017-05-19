@@ -1,6 +1,6 @@
 package suite.primitive;
 
-public class PrimitiveSink {
+public class IntPrimitiveSink {
 
 	@FunctionalInterface
 	public interface IntSink {
