@@ -6,10 +6,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import suite.adt.Pair;
 import suite.math.MathUtil;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
@@ -35,7 +33,6 @@ import suite.trade.data.Summarize;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
 import suite.util.String_;
@@ -47,6 +44,18 @@ import suite.util.Util.ExecutableProgram;
 public class DailyMain extends ExecutableProgram {
 
 	private Configuration cfg = new ConfigurationImpl();
+	private StringBuilder sb = new StringBuilder();
+	private Sink<String> log = To.sink(sb);
+
+	private class Result {
+		private String strategy;
+		private List<Trade> trades;
+
+		private Result(String strategy, List<Trade> trades) {
+			this.strategy = strategy;
+			this.trades = trades;
+		}
+	}
 
 	public static void main(String[] args) {
 		Util.run(DailyMain.class, args);
@@ -67,14 +76,14 @@ public class DailyMain extends ExecutableProgram {
 		quoteDatabase.join();
 
 		// perform systematic trading
-		List<Pair<String, String>> outputs = Arrays.asList(bug(), mamr(), pmamr(), revco());
-		StringBuilder sb = new StringBuilder();
+		List<Result> results = Arrays.asList(bug(), mamr(), pmamr(), revco());
 
-		sb.append("\n" + Summarize.of(cfg).out(To.sink(sb)) + "\n");
+		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
 
-		for (Pair<String, String> output : outputs) {
+		for (Result result : results) {
+			String tradeString = Read.from(result.trades).map(trade -> "\nSIGNAL" + trade).collect(As.joined());
 			sb.append("\n" + Constants.separator);
-			sb.append("\nOUTPUT (" + output.t0 + "):" + output.t1 + "\n");
+			sb.append("\nOUTPUT (" + result.strategy + "):" + tradeString + "\n");
 		}
 
 		String result = sb.toString();
@@ -86,9 +95,8 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	// some orders caused by stupid bugs. need to sell those at suitable times.
-	private Pair<String, String> bug() {
+	private Result bug() {
 		String tag = "bug";
-		StringBuilder sb = new StringBuilder();
 		Streamlet<Trade> history = cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag));
 		Account account = Account.fromPortfolio(history);
 
@@ -97,18 +105,18 @@ public class DailyMain extends ExecutableProgram {
 						rs -> (float) (Read.from(rs).collectAsDouble(As.sumOfDoubles(r -> r.buySell * r.price))))
 				.toMap();
 
-		for (Entry<String, Integer> e : account.assets().entrySet()) {
-			String symbol = e.getKey();
-			int sell = e.getValue();
-			double targetPrice = (1d + 3 * Trade_.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
-			sb.append("\nSIGNAL" + Trade.of(-sell, symbol, (float) targetPrice));
-		}
+		List<Trade> trades = Read.from2(account.assets()) //
+				.map((symbol, sell) -> {
+					double targetPrice = (1d + 3 * Trade_.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
+					return Trade.of(-sell, symbol, (float) targetPrice);
+				}) //
+				.toList();
 
-		return Pair.of(tag, sb.toString());
+		return new Result(tag, trades);
 	}
 
 	// moving average mean reversion
-	private Pair<String, String> mamr() {
+	private Result mamr() {
 		String tag = "mamr";
 		int nHoldDays = 8;
 		Streamlet<Asset> assets = cfg.queryCompanies();
@@ -139,7 +147,7 @@ public class DailyMain extends ExecutableProgram {
 
 		DatePeriod period = DatePeriod.daysBefore(128);
 		String sevenDaysAgo = To.string(LocalDate.now().plusDays(-7));
-		List<String> messages = new ArrayList<>();
+		List<Trade> trades = new ArrayList<>();
 
 		// capture signals
 		for (Asset asset : assets) {
@@ -167,33 +175,30 @@ public class DailyMain extends ExecutableProgram {
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
 					int nShares = signal * asset.lotSize * Math.round(300000f / nHoldDays / (asset.lotSize * latestPrice));
-					String message = "\nSIGNAL" + Trade.of(nShares, symbol, latestPrice);
+					Trade trade = Trade.of(nShares, symbol, latestPrice);
 
 					if (signal != 0)
-						messages.add(message);
+						trades.add(trade);
 				} catch (Exception ex) {
 					LogUtil.warn(ex.getMessage() + " in " + prefix);
 				}
 			}
 		}
 
-		return Pair.of(tag, Read.from(messages).collect(As.joined()));
+		return new Result(tag, trades);
 	}
 
 	// portfolio-based moving average mean reversion
-	private Pair<String, String> pmamr() {
-		return alloc("pmamr", MovingAvgMeanReversionAssetAllocator0.of(cfg, FunUtil.nullSink()));
+	private Result pmamr() {
+		return alloc("pmamr", MovingAvgMeanReversionAssetAllocator0.of(cfg, log));
 	}
 
 	// portfolio-based moving average mean reversion
-	private Pair<String, String> revco() {
+	private Result revco() {
 		return alloc("revco", ReverseCorrelateAssetAllocator.of());
 	}
 
-	private Pair<String, String> alloc(String tag, AssetAllocator assetAllocator) {
-		StringBuilder sb = new StringBuilder();
-		Sink<String> log = To.sink(sb);
-
+	private Result alloc(String tag, AssetAllocator assetAllocator) {
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(LocalDate.now()); // hkex.getCompanies()
 		Simulate sim = AssetAllocBackTest.of(cfg, assets, assetAllocator, log).simulate(300000f);
 
@@ -205,9 +210,8 @@ public class DailyMain extends ExecutableProgram {
 		List<Trade> trades = Trade_.diff(account0.assets(), account1.assets(), priceBySymbol);
 
 		sb.append("\n" + sim.conclusion());
-		sb.append(Read.from(trades).map(trade -> "\nSIGNAL" + trade).collect(As.joined()));
 
-		return Pair.of(tag, sb.toString());
+		return new Result(tag, trades);
 	}
 
 }
