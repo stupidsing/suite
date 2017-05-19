@@ -19,6 +19,7 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 
 	private int tor;
 	private double kellyReduction;
+	private double reverseCorrelationThreshold = .03d;
 
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Statistic stat = new Statistic();
@@ -55,7 +56,7 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 					}
 					return sum / (logReturns.length - 2 * tor);
 				}) //
-				.filterValue(corr -> .01d < corr) //
+				.filterValue(corr -> reverseCorrelationThreshold < corr) //
 				.keys() //
 				.toSet();
 
