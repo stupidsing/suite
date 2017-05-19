@@ -115,4 +115,11 @@ public class AssetAllocator_ {
 		};
 	}
 
+	public static AssetAllocator removeShorts(AssetAllocator assetAllocator) {
+		return (dataSourceBySymbol, tradeDates, backTestDate) -> {
+			List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate(dataSourceBySymbol, tradeDates, backTestDate);
+			return Read.from2(potentialBySymbol).filterValue(potential -> 0d < potential).toList();
+		};
+	}
+
 }

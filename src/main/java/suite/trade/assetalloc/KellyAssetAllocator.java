@@ -19,6 +19,13 @@ public class KellyAssetAllocator implements AssetAllocator {
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
+	public static AssetAllocator of() {
+		return AssetAllocator_.removeShorts(new KellyAssetAllocator());
+	}
+
+	private KellyAssetAllocator() {
+	}
+
 	public List<Pair<String, Double>> allocate( //
 			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
@@ -53,7 +60,6 @@ public class KellyAssetAllocator implements AssetAllocator {
 
 		return Read.range(nSymbols) //
 				.map2(i -> symbols[i], i -> (double) allocations[i]) //
-				.filterValue(potential -> 0d < potential) //
 				.toList();
 	}
 

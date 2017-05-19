@@ -20,10 +20,22 @@ import suite.util.To;
  */
 public class Ols3AssetAllocator implements AssetAllocator {
 
-	private int lookBack = 16;
+	private int lookBack;
 
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
+
+	public static AssetAllocator of() {
+		return of(16);
+	}
+
+	public static AssetAllocator of(int lookBack) {
+		return AssetAllocator_.removeShorts(new Ols3AssetAllocator(lookBack));
+	}
+
+	private Ols3AssetAllocator(int lookBack) {
+		this.lookBack = lookBack;
+	}
 
 	public List<Pair<String, Double>> allocate( //
 			Map<String, DataSource> dataSourceBySymbol, //
@@ -41,7 +53,6 @@ public class Ols3AssetAllocator implements AssetAllocator {
 					float pricex = lr.predict(inputs(prices, length));
 					return pricex / dataSource.last().price - 1d;
 				}) //
-				.filterValue(potential -> 0d < potential) //
 				.toList();
 	}
 
