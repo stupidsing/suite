@@ -20,9 +20,6 @@ public interface AssetAllocator {
 	 *         or null if the strategy do not want to trade on that date. The
 	 *         assets will be allocated according to potential values pro-rata.
 	 */
-	public List<Pair<String, Double>> allocate( //
-			Map<String, DataSource> dataSourceBySymbol, //
-			List<LocalDate> tradeDates, //
-			LocalDate backTestDate);
+	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate);
 
 }

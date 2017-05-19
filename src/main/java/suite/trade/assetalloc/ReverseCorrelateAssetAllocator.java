@@ -39,10 +39,7 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 		this.reverseCorrelationThreshold = reverseCorrelationThreshold;
 	}
 
-	public List<Pair<String, Double>> allocate( //
-			Map<String, DataSource> dataSourceBySymbol, //
-			List<LocalDate> tradeDates, //
-			LocalDate backTestDate) {
+	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate) {
 		DatePeriod samplePeriod = DatePeriod.backTestDaysBefore(backTestDate, 256, 32);
 		double riskFreeInterestRate = Trade_.riskFreeInterestRate(tor);
 

@@ -16,10 +16,7 @@ public class SingleAssetAllocator implements AssetAllocator {
 		this.symbol = symbol;
 	}
 
-	public List<Pair<String, Double>> allocate( //
-			Map<String, DataSource> dataSourceBySymbol, //
-			List<LocalDate> tradeDates, //
-			LocalDate backTestDate) {
+	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate) {
 		return Arrays.asList(Pair.of(symbol, 1d));
 	}
 
