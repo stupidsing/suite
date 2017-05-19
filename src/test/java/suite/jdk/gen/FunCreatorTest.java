@@ -15,7 +15,7 @@ import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
-import suite.primitive.PrimitiveFun.Int_Int;
+import suite.primitive.IntPrimitiveFun.Int_Int;
 import suite.primitive.PrimitiveSource.IntSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
