@@ -84,7 +84,7 @@ public class Rethrow {
 	public static <T> Obj_Int<T> fun(Obj_Int<T> fun) {
 		return t -> {
 			try {
-				return fun.applyAsInt(t);
+				return fun.apply(t);
 			} catch (Exception ex) {
 				throw new RuntimeException("for " + t, ex);
 			}
@@ -94,7 +94,7 @@ public class Rethrow {
 	public static <K, V> ObjObj_Int<K, V> fun2(ObjObj_Int<K, V> fun) {
 		return (k, v) -> {
 			try {
-				return fun.applyAsInt(k, v);
+				return fun.apply(k, v);
 			} catch (Exception ex) {
 				throw new RuntimeException("for key " + k, ex);
 			}

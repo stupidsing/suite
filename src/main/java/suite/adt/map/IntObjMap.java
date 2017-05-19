@@ -83,7 +83,7 @@ public class IntObjMap<V> {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.applyAsInt(cast(v));
+		vs[index] = fun.apply(cast(v));
 	}
 
 	public IntObjSource<V> source() {

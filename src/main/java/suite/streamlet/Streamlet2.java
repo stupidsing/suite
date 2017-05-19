@@ -77,7 +77,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public int collectAsInt(Obj_Int<Outlet2<K, V>> fun) {
-		return fun.applyAsInt(spawn());
+		return fun.apply(spawn());
 	}
 
 	public <O> Streamlet<O> concatMap(ObjObj_Obj<K, V, Streamlet<O>> fun) {

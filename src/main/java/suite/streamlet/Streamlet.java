@@ -75,7 +75,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public int collectAsInt(Obj_Int<Outlet<T>> fun) {
-		return fun.applyAsInt(spawn());
+		return fun.apply(spawn());
 	}
 
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {

@@ -91,7 +91,7 @@ public class As {
 				while (true) {
 					while (size < results.length)
 						if ((t = outlet.next()) != null)
-							results[size++] = fun.applyAsInt(t);
+							results[size++] = fun.apply(t);
 						else
 							return Arrays.copyOf(results, size);
 					results = Arrays.copyOf(results, results.length * 2);
@@ -192,9 +192,9 @@ public class As {
 			T t = source.source();
 			int result1;
 			if (t != null) {
-				int result = fun.applyAsInt(t);
+				int result = fun.apply(t);
 				while ((t = source.source()) != null)
-					if ((result1 = fun.applyAsInt(t)) < result)
+					if ((result1 = fun.apply(t)) < result)
 						result = result1;
 				return result;
 			} else
@@ -311,7 +311,7 @@ public class As {
 			T t;
 			int result = 0;
 			while ((t = source.source()) != null)
-				result += fun.applyAsInt(t);
+				result += fun.apply(t);
 			return result;
 		};
 	}

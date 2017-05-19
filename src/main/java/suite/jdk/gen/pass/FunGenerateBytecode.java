@@ -117,7 +117,7 @@ public class FunGenerateBytecode {
 			If2FunExpr e1 = (If2FunExpr) e0;
 			visit_(e1.left);
 			visit_(e1.right);
-			visitIf((short) e1.opcode.applyAsInt(fti.typeOf(e1.left)), e1);
+			visitIf((short) e1.opcode.apply(fti.typeOf(e1.left)), e1);
 		} else if (e0 instanceof IfNonNullFunExpr) {
 			IfNonNullFunExpr e1 = (IfNonNullFunExpr) e0;
 			visit_(e1.object);

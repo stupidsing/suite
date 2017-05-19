@@ -35,7 +35,7 @@ public class ObjIntMap<K> {
 	public int computeIfAbsent(K key, Obj_Int<K> fun) {
 		int v = get(key);
 		if (v == EMPTYVALUE)
-			put(key, v = fun.applyAsInt(key));
+			put(key, v = fun.apply(key));
 		return v;
 	}
 
