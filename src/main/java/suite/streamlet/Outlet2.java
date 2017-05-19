@@ -18,7 +18,6 @@ import java.util.function.Predicate;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.node.util.Mutable;
-import suite.primitive.PrimitiveFun.ObjObj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.util.Array_;
 import suite.util.FunUtil;
@@ -26,7 +25,6 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
-import suite.util.IntObjFunUtil;
 import suite.util.List_;
 import suite.util.NullableSynchronousQueue;
 import suite.util.Object_;
@@ -147,10 +145,6 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public <K1, V1> Outlet2<K1, V1> concatMap2(ObjObj_Obj<K, V, Outlet2<K1, V1>> fun) {
 		return of(FunUtil2.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source2, source2)));
-	}
-
-	public <O> IntObjOutlet<O> concatMapIntObj(ObjObj_Obj<K, V, IntObjOutlet<O>> fun) {
-		return IntObjOutlet.of(IntObjFunUtil.concat(FunUtil2.map((k, v) -> fun.apply(k, v).source(), source2)));
 	}
 
 	public <V1> Outlet2<K, V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
@@ -276,10 +270,6 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public <K1, V1> Outlet2<K1, V1> map2(ObjObj_Obj<K, V, K1> kf, ObjObj_Obj<K, V, V1> vf) {
 		return map2_(kf, vf);
-	}
-
-	public <V1> IntObjOutlet<V1> mapIntObj(ObjObj_Int<K, V> kf, ObjObj_Obj<K, V, V1> vf) {
-		return IntObjOutlet.of(FunUtil2.mapIntObj(kf, vf, source2));
 	}
 
 	public <K1> Outlet2<K1, V> mapKey(Fun<K, K1> fun) {

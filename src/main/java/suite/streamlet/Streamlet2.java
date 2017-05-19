@@ -14,7 +14,6 @@ import java.util.function.Predicate;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.PrimitiveFun.ObjObj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.primitive.PrimitiveFun.Obj_Float;
@@ -87,10 +86,6 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public <K1, V1> Streamlet2<K1, V1> concatMap2(ObjObj_Obj<K, V, Streamlet2<K1, V1>> fun) {
 		return concatMap2_(fun);
-	}
-
-	public <O> IntObjStreamlet<O> concatMapIntObj(ObjObj_Obj<K, V, IntObjStreamlet<O>> fun) {
-		return concatMapIntObj_(fun);
 	}
 
 	public <V1> Streamlet2<K, V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
@@ -174,10 +169,6 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public <K1, V1> Streamlet2<K1, V1> map2(ObjObj_Obj<K, V, K1> kf, ObjObj_Obj<K, V, V1> vf) {
 		return map2_(kf, vf);
-	}
-
-	public <V1> IntObjStreamlet<V1> mapIntObj(ObjObj_Int<K, V> kf, ObjObj_Obj<K, V, V1> vf) {
-		return mapIntObj_(kf, vf);
 	}
 
 	public <K1> Streamlet2<K1, V> mapKey(Fun<K, K1> fun) {
@@ -298,21 +289,12 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return streamlet2(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 
-	private <T1> IntObjStreamlet<T1> concatMapIntObj_(ObjObj_Obj<K, V, IntObjStreamlet<T1>> fun) {
-		ObjObj_Obj<K, V, IntObjOutlet<T1>> bf = (k, v) -> fun.apply(k, v).out();
-		return new IntObjStreamlet<>(() -> IntObjOutlet.of(spawn().concatMapIntObj(bf)));
-	}
-
 	private <T> Streamlet<T> map_(ObjObj_Obj<K, V, T> fun) {
 		return new Streamlet<>(() -> spawn().map(fun));
 	}
 
 	private <K1, V1> Streamlet2<K1, V1> map2_(ObjObj_Obj<K, V, K1> kf, ObjObj_Obj<K, V, V1> vf) {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
-	}
-
-	private <V1> IntObjStreamlet<V1> mapIntObj_(ObjObj_Int<K, V> kf, ObjObj_Obj<K, V, V1> vf) {
-		return new IntObjStreamlet<>(() -> spawn().mapIntObj(kf, vf));
 	}
 
 	private Outlet2<K, V> spawn() {

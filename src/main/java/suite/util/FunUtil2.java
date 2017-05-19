@@ -6,9 +6,7 @@ import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
-import suite.primitive.PrimitiveFun.ObjObj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
-import suite.primitive.PrimitiveSource.IntObjSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -195,20 +193,6 @@ public class FunUtil2 {
 			boolean b = source2.source2(pair1);
 			if (b) {
 				pair.t0 = kf1.apply(pair1.t0, pair1.t1);
-				pair.t1 = vf1.apply(pair1.t0, pair1.t1);
-			}
-			return b;
-		};
-	}
-
-	public static <K, V, V1, T> IntObjSource<V1> mapIntObj(ObjObj_Int<K, V> kf0, ObjObj_Obj<K, V, V1> vf0, Source2<K, V> source2) {
-		ObjObj_Int<K, V> kf1 = Rethrow.fun2(kf0);
-		ObjObj_Obj<K, V, V1> vf1 = Rethrow.fun2(vf0);
-		Pair<K, V> pair1 = Pair.of(null, null);
-		return pair -> {
-			boolean b = source2.source2(pair1);
-			if (b) {
-				pair.t0 = kf1.applyAsInt(pair1.t0, pair1.t1);
 				pair.t1 = vf1.apply(pair1.t0, pair1.t1);
 			}
 			return b;

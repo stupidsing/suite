@@ -86,10 +86,6 @@ public class Streamlet<T> implements Iterable<T> {
 		return concatMap2_(fun);
 	}
 
-	public <O> IntObjStreamlet<O> concatMapIntObj(Fun<T, IntObjStreamlet<O>> fun) {
-		return concatMapIntObj_(fun);
-	}
-
 	public Streamlet<T> cons(T t) {
 		return streamlet(() -> spawn().cons(t));
 	}
@@ -170,10 +166,6 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public <K, V> Streamlet2<K, V> map2(Fun<T, K> kf, Fun<T, V> vf) {
 		return map2_(kf, vf);
-	}
-
-	public <V1> IntObjStreamlet<V1> mapIntObj(Obj_Int<T> kf, Fun<T, V1> vf) {
-		return mapIntObj_(kf, vf);
 	}
 
 	public <O> Streamlet<O> mapNonNull(Fun<T, O> fun) {
@@ -289,20 +281,12 @@ public class Streamlet<T> implements Iterable<T> {
 		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).out()));
 	}
 
-	private <O> IntObjStreamlet<O> concatMapIntObj_(Fun<T, IntObjStreamlet<O>> fun) {
-		return new IntObjStreamlet<>(() -> spawn().concatMapIntObj(t -> fun.apply(t).out()));
-	}
-
 	private <O> Streamlet<O> map_(Fun<T, O> fun) {
 		return streamlet(() -> spawn().map(fun));
 	}
 
 	private <K, V> Streamlet2<K, V> map2_(Fun<T, K> kf, Fun<T, V> vf) {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
-	}
-
-	private <V1> IntObjStreamlet<V1> mapIntObj_(Obj_Int<T> kf, Fun<T, V1> vf) {
-		return new IntObjStreamlet<>(() -> spawn().mapIntObj(kf, vf));
 	}
 
 	private Outlet<T> spawn() {

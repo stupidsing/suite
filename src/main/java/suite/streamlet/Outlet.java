@@ -17,7 +17,6 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.node.util.Mutable;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
-import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -25,7 +24,6 @@ import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
-import suite.util.IntObjFunUtil;
 import suite.util.List_;
 import suite.util.NullableSynchronousQueue;
 import suite.util.Object_;
@@ -107,10 +105,6 @@ public class Outlet<T> implements Iterable<T> {
 
 	public <K, V> Outlet2<K, V> concatMap2(Fun<T, Outlet2<K, V>> fun) {
 		return Outlet2.of(FunUtil2.concat(FunUtil.map(t -> fun.apply(t).source(), source)));
-	}
-
-	public <O> IntObjOutlet<O> concatMapIntObj(Fun<T, IntObjOutlet<O>> fun) {
-		return IntObjOutlet.of(IntObjFunUtil.concat(FunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
 	public Outlet<T> cons(T t) {
@@ -242,10 +236,6 @@ public class Outlet<T> implements Iterable<T> {
 
 	public <K, V> Outlet2<K, V> map2(Fun<T, K> kf0, Fun<T, V> vf0) {
 		return Outlet2.of(FunUtil.map2(kf0, vf0, source));
-	}
-
-	public <V1> IntObjOutlet<V1> mapIntObj(Obj_Int<T> kf, Fun<T, V1> vf) {
-		return IntObjOutlet.of(FunUtil.mapIntObj(kf, vf, source));
 	}
 
 	public <O> Outlet<O> mapNonNull(Fun<T, O> fun) {
