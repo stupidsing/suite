@@ -16,9 +16,6 @@ public class Statistic {
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Matrix mtx = new Matrix();
 
-	public final double riskFreeInterestRate = .013d; // .04d;
-	public final double logRiskFreeInterestRate = Math.log1p(riskFreeInterestRate);
-
 	public double correlation(float[] xs, float[] ys) {
 		Int_Double xf = i -> xs[i];
 		Int_Double yf = i -> ys[i];

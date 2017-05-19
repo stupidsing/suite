@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.adt.Pair;
-import suite.algo.Statistic;
 import suite.math.MathUtil;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
@@ -46,7 +45,6 @@ import suite.util.Util.ExecutableProgram;
 public class DailyMain extends ExecutableProgram {
 
 	private Configuration cfg = new ConfigurationImpl();
-	private Statistic stat = new Statistic();
 
 	public static void main(String[] args) {
 		Util.run(DailyMain.class, args);
@@ -100,7 +98,7 @@ public class DailyMain extends ExecutableProgram {
 		for (Entry<String, Integer> e : account.assets().entrySet()) {
 			String symbol = e.getKey();
 			int sell = e.getValue();
-			double targetPrice = (1d + 3 * stat.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
+			double targetPrice = (1d + 3 * Trade_.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
 			sb.append("\nSIGNAL" + Trade.of(-sell, symbol, (float) targetPrice));
 		}
 

@@ -103,7 +103,7 @@ public class TimeSeries {
 
 		private ReturnsStat(float[] prices, double scale) {
 			returns = returns_(prices);
-			double r0 = Math.expm1(stat.logRiskFreeInterestRate * scale / returns.length);
+			double r0 = Math.expm1(Trade_.logRiskFreeInterestRate * scale / returns.length);
 			MeanVariance mv = stat.meanVariance(returns);
 			mean = mv.mean - r0;
 			variance = scale * mv.variance;

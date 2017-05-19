@@ -9,6 +9,7 @@ import suite.algo.Statistic;
 import suite.math.CholeskyDecomposition;
 import suite.math.TimeSeries;
 import suite.streamlet.Read;
+import suite.trade.Trade_;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
@@ -22,7 +23,7 @@ public class KellyAssetAllocator implements AssetAllocator {
 			Map<String, DataSource> dataSourceBySymbol, //
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
-		double dailyInterestRate = Math.expm1(stat.logRiskFreeInterestRate / 256);
+		double dailyInterestRate = Trade_.riskFreeInterestRate(1);
 
 		// TODO this should be the expected returns, not past returns!
 		Map<String, float[]> predictedPricesBySymbol = Read.from2(dataSourceBySymbol) //

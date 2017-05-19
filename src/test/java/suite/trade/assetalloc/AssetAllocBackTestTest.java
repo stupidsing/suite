@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Constants;
-import suite.algo.Statistic;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -26,7 +25,6 @@ public class AssetAllocBackTestTest {
 
 	private Sink<String> log = System.out::println;
 	private Configuration cfg = new ConfigurationImpl();
-	private Statistic stat = new Statistic();
 
 	@Test
 	public void testBackTest() {
@@ -87,8 +85,9 @@ public class AssetAllocBackTestTest {
 
 	private void assertGrowth(Simulate sim) {
 		float[] valuations = sim.valuations;
-		double r = Math.expm1(stat.logRiskFreeInterestRate * Trade_.invTradeDaysPerYear * valuations.length);
-		assertTrue(initial * r < valuations[valuations.length - 1]);
+		int length = valuations.length;
+		double r = Trade_.riskFreeInterestRate(length);
+		assertTrue(initial * r < valuations[length - 1]);
 	}
 
 }

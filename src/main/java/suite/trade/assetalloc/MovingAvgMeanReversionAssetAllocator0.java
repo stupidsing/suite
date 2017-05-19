@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import suite.adt.Pair;
-import suite.algo.Statistic;
 import suite.algo.Statistic.LinearRegression;
 import suite.math.TimeSeries;
 import suite.math.TimeSeries.ReturnsStat;
@@ -15,6 +14,7 @@ import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.MovingAverage;
+import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.util.FunUtil.Sink;
@@ -33,8 +33,7 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 	private int tor = 64;
 
 	private double neglog2 = -Math.log(2d);
-	private Statistic stat = new Statistic();
-	private MovingAverage movingAvg = new MovingAverage();
+	private MovingAverage ma = new MovingAverage();
 	private TimeSeries ts = new TimeSeries();
 
 	private Configuration cfg;
@@ -64,8 +63,6 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 		log.sink(dataSourceBySymbol.size() + " assets in data source");
 
 		DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
-		DatePeriod backTestPeriod = DatePeriod.yearsBefore(backTestDate, 1);
-		int nTradeDaysInYear = Read.from(tradeDates).filter(backTestPeriod::contains).size();
 
 		Map<String, MeanReversionStat> meanReversionStatBySymbol = Read.from2(dataSourceBySymbol) //
 				.map2((symbol, dataSource) -> memoizeMrs.computeIfAbsent( //
@@ -73,7 +70,7 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 						p -> meanReversionStat(symbol, dataSource, mrsPeriod))) //
 				.toMap();
 
-		double dailyRiskFreeInterestRate = Math.expm1(stat.logRiskFreeInterestRate / nTradeDaysInYear);
+		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 		// make sure all time-series are mean-reversions:
 		// ensure ADF < 0d: price is not random walk
@@ -106,7 +103,7 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 				}) //
 				.filterValue(ps -> 0d < ps.dailyReturn) //
 				.filterValue(ps -> 0d < ps.sharpe) //
-				.cons(Asset.cashCode, new PotentialStat(stat.riskFreeInterestRate, 1d, 0d)) //
+				.cons(Asset.cashCode, new PotentialStat(Trade_.riskFreeInterestRate, 1d, 0d)) //
 				.mapValue(ps -> ps.kelly) //
 				.sortBy((symbol, potential) -> -potential) //
 				.take(top) //
@@ -150,7 +147,7 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 			DataSource dataSource = dataSource0.range(mrsPeriod);
 			float[] prices = dataSource.prices;
 
-			movingAverage = movingAvg.movingGeometricAvg(prices, tor);
+			movingAverage = ma.movingGeometricAvg(prices, tor);
 
 			if (tor <= prices.length) {
 				adf = ts.adf(prices, tor);

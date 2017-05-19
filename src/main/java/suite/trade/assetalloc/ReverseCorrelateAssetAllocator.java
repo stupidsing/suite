@@ -28,7 +28,7 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 			List<LocalDate> tradeDates, //
 			LocalDate backTestDate) {
 		DatePeriod samplePeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
-		double dailyInterestRate = Math.expm1(stat.logRiskFreeInterestRate * Trade_.invTradeDaysPerYear);
+		double dailyInterestRate = Trade_.riskFreeInterestRate(1);
 
 		Set<String> reverseCorrelatingSymbols = Read.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {
