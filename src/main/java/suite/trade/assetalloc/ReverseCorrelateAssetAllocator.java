@@ -1,8 +1,6 @@
 package suite.trade.assetalloc;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,9 +58,6 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 				.filterValue(corr -> .01d < corr) //
 				.keys() //
 				.toSet();
-
-		if (Boolean.FALSE)
-			reverseCorrelatingSymbols = new HashSet<>(Arrays.asList("0005.HK"));
 
 		Map<String, float[]> reversePricesBySymbol = Read.from2(dataSourceBySymbol) //
 				.filterKey(reverseCorrelatingSymbols::contains) //
