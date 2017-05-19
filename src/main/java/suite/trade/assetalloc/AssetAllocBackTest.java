@@ -143,6 +143,7 @@ public class AssetAllocBackTest {
 
 			for (int i = 0; i < size; i++) {
 				LocalDate date = dates.get(i);
+				int index = Arrays.binarySearch(tradeDateArray, To.string(date));
 				DatePeriod historyWindowPeriod = DatePeriod.daysBefore(date, historyWindow);
 
 				Map<String, DataSource> backTestDataSourceBySymbol = Read.from2(dataSourceBySymbol1) //
@@ -150,8 +151,8 @@ public class AssetAllocBackTest {
 						.filterValue(dataSource -> 128 <= dataSource.dates.length) //
 						.toMap();
 
-				latestPriceBySymbol = Read.from2(backTestDataSourceBySymbol) //
-						.mapValue(dataSource -> dataSource.last().price) //
+				latestPriceBySymbol = Read.from2(dataSourceBySymbol1) //
+						.mapValue(dataSource -> dataSource.prices[index]) //
 						.toMap();
 
 				List<Pair<String, Double>> ratioBySymbol = assetAllocator.allocate(backTestDataSourceBySymbol, date);
