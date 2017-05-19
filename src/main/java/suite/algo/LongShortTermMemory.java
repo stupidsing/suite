@@ -85,8 +85,8 @@ public class LongShortTermMemory {
 			float[] output0 = output;
 			float[] iv = new float[ll1];
 
-			Copy.primitiveArray(input, 0, iv, 0, inputLength);
-			Copy.primitiveArray(output0, 0, iv, inputLength, memoryLength);
+			Copy.floats(input, 0, iv, 0, inputLength);
+			Copy.floats(output0, 0, iv, inputLength, memoryLength);
 			iv[ll] = 1f;
 
 			float[] sig_fs = Sigmoid.sigmoidOn(mtx.mul(wf, iv));
