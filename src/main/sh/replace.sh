@@ -15,3 +15,4 @@ replace-file() {
 
 replace-file src/main/java/suite/adt/pair/CharCharPair.java
 replace-file src/main/java/suite/adt/pair/CharObjPair.java
+replace-file src/main/java/suite/primitive/CharPrimitiveFun.java
