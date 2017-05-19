@@ -35,6 +35,7 @@ import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
+import suite.util.Set_;
 import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
@@ -205,7 +206,7 @@ public class DailyMain extends ExecutableProgram {
 		Account account0 = Account.fromPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
 		Account account1 = sim.account;
 
-		Set<String> symbols = To.set(account0.assets().keySet(), account1.assets().keySet());
+		Set<String> symbols = Set_.union(account0.assets().keySet(), account1.assets().keySet());
 		Map<String, Float> priceBySymbol = cfg.quote(symbols);
 		List<Trade> trades = Trade_.diff(account0.assets(), account1.assets(), priceBySymbol);
 

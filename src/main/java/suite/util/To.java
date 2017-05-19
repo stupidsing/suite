@@ -23,11 +23,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.IntFunction;
 
 import suite.Constants;
@@ -260,19 +258,8 @@ public class To {
 		}).closeAtEnd(bis).closeAtEnd(is);
 	}
 
-	@SafeVarargs
-	public static <T> Set<T> set(Collection<T>... collections) {
-		Set<T> set = new HashSet<>();
-		for (Collection<T> collection : collections)
-			set.addAll(collection);
-		return set;
-	}
-
 	public static Sink<String> sink(StringBuilder sb) {
-		return s -> {
-			sb.append("\n");
-			sb.append(s);
-		};
+		return s -> sb.append("\n" + s);
 	}
 
 	@SafeVarargs

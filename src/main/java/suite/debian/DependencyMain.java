@@ -15,7 +15,7 @@ import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.util.Object_;
 import suite.util.Rethrow;
-import suite.util.To;
+import suite.util.Set_;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
@@ -27,127 +27,118 @@ public class DependencyMain extends ExecutableProgram {
 
 	// tools
 	private List<String> baseList = Arrays.asList( //
-			"acpi" //
-			, "cifs-utils" //
-			, "deborphan" //
-			, "grub-pc" //
-			, "imagemagick" //
-			, "less" //
-			, "linux-headers-686-pae" //
-			, "linux-image-686-pae" //
-			, "manpages" //
-			, "netcat-traditional" //
-			, "rlwrap" //
-			, "rsync" //
-			, "ssh" //
-			, "sshfs" //
-			, "subversion" //
-			, "unzip" //
-			, "usbutils" // lsusb
-			, "vim" //
-			, "w3m" //
-			, "wpasupplicant" //
-			, "zip" //
-	);
+			"acpi", //
+			"cifs-utils", //
+			"deborphan", //
+			"grub-pc", //
+			"imagemagick", //
+			"less", //
+			"linux-headers-686-pae", //
+			"linux-image-686-pae", //
+			"manpages", //
+			"netcat-traditional", //
+			"rlwrap", //
+			"rsync", //
+			"ssh", //
+			"sshfs", //
+			"subversion", //
+			"unzip", //
+			"usbutils", // lsusb
+			"vim", //
+			"w3m", //
+			"wpasupplicant", //
+			"zip");
 
 	private List<String> debianList = Arrays.asList( //
-			"icedove" // firefox
-			, "iceweasel" // thunderbird
-	);
+			"icedove", // firefox
+			"iceweasel"); // thunderbird
 
 	private List<String> devList = Arrays.asList( //
-			"bochs" //
-			, "build-essential" //
-			, "g++" //
-			, "git-core" //
-			, "golang" //
-			, "libreadline-dev" //
-			, "openjdk-8-jdk" //
-	);
+			"bochs", //
+			"build-essential", //
+			"g++", //
+			"git-core", //
+			"golang", //
+			"libreadline-dev", //
+			"openjdk-8-jdk");
 
 	private List<String> gamesList = Arrays.asList( //
-			"frogatto" //
-			, "gnugo" //
-			, "supertux" //
-			, "torcs" //
-			, "xscavenger" //
-	);
+			"frogatto", //
+			"gnugo", //
+			"supertux", //
+			"torcs", //
+			"xscavenger");
 
 	private List<String> guiList = Arrays.asList( //
-			"abiword" //
-			, "asunder" //
-			, "evince" //
-			, "chromium" //
-			, "compizconfig-settings-manager" //
-			, "compiz-plugins" //
-			, "dia" //
-			, "dosbox" //
-			, "fonts-droid" //
-			, "fonts-inconsolata" //
-			, "fonts-umeplus" //
-			, "fontforge" //
-			, "gcin" //
-			, "gconf-editor" //
-			, "gnome-tweak-tool" //
-			, "gnumeric" //
-			, "gparted" //
-			, "gpicview" //
-			, "leafpad" //
-			, "libreoffice" //
-			, "lightdm" //
-			, "obconf" //
-			, "openbox" //
-			, "pcmanfm" //
-			, "pidgin" //
-			, "pidgin-hotkeys" //
-			, "rdesktop" //
-			, "rxvt-unicode" //
-			, "scite" //
-			, "terminator" //
-			, "thunderbird" //
-			, "tilda" //
-			, "tint2" //
-			, "unetbootin" //
-			, "virtualbox-dkms" //
-			, "virtualbox-qt" //
-			, "wine" //
-			, "wine32" //
-			, "xchm" //
-			, "xpdf" //
-			, "xserver-xorg" //
-			, "yeahconsole" //
-	);
+			"abiword", //
+			"asunder", //
+			"evince", //
+			"chromium", //
+			"compizconfig-settings-manager", //
+			"compiz-plugins", //
+			"dia", //
+			"dosbox", //
+			"fonts-droid", //
+			"fonts-inconsolata", //
+			"fonts-umeplus", //
+			"fontforge", //
+			"gcin", //
+			"gconf-editor", //
+			"gnome-tweak-tool", //
+			"gnumeric", //
+			"gparted", //
+			"gpicview", //
+			"leafpad", //
+			"libreoffice", //
+			"lightdm", //
+			"obconf", //
+			"openbox", //
+			"pcmanfm", //
+			"pidgin", //
+			"pidgin-hotkeys", //
+			"rdesktop", //
+			"rxvt-unicode", //
+			"scite", //
+			"terminator", //
+			"thunderbird", //
+			"tilda", //
+			"tint2", //
+			"unetbootin", //
+			"virtualbox-dkms", //
+			"virtualbox-qt", //
+			"wine", //
+			"wine32", //
+			"xchm", //
+			"xpdf", //
+			"xserver-xorg", //
+			"yeahconsole");
 
 	private List<String> mediaList = Arrays.asList( //
-			"alsa-utils" //
-			, "flac" //
-			, "mpg321" //
-	);
+			"alsa-utils", //
+			"flac", //
+			"mpg321");
 
 	// not a must, but good to have
 	private List<String> supplementaryList = Arrays.asList( //
-			"btrfs-tools" //
-			, "eject" //
-			, "gnupg2" //
-			, "gstreamer1.0-plugins-good" //
-			, "python-imaging" // for bitmap2ttf
-	);
+			"btrfs-tools", //
+			"eject", //
+			"gnupg2", //
+			"gstreamer1.0-plugins-good", //
+			"python-imaging"); // for bitmap2ttf
 
 	private List<String> operatingSystemList = Arrays.asList( //
-			"iamerican" //
-			, "ibritish" //
-	);
+			"iamerican", //
+			"ibritish");
 
-	private Set<String> requiredList = To.set( //
-			baseList //
-			, debianList //
-			, devList //
-			, gamesList //
-			, guiList //
-			, mediaList //
-			, operatingSystemList //
-			, supplementaryList //
-	);
+	private Set<String> requiredList = Set_.union( //
+			baseList, //
+			debianList, //
+			devList, //
+			gamesList, //
+			guiList, //
+			mediaList, //
+			operatingSystemList, //
+			supplementaryList);
 
 	public static void main(String[] args) {
 		Util.run(DependencyMain.class, args);

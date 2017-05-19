@@ -8,6 +8,7 @@ import java.util.zip.ZipFile;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.text.TextUtil;
+import suite.util.Set_;
 import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
@@ -32,7 +33,7 @@ public class CompareZip extends ExecutableProgram {
 		ZipFile zf0 = new ZipFile(filename0);
 		ZipFile zf1 = new ZipFile(filename1);
 
-		Set<String> names = To.set(FileUtil.listZip(zf0), FileUtil.listZip(zf1));
+		Set<String> names = Set_.union(FileUtil.listZip(zf0), FileUtil.listZip(zf1));
 
 		boolean isChanged = false;
 
