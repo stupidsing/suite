@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 
 import org.junit.Test;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 
 public class ArtificialNeuralNetworkTest {
 

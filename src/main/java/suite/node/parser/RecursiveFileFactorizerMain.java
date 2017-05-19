@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import suite.Constants;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
 import suite.util.Util;

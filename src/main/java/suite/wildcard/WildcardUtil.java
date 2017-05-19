@@ -2,7 +2,7 @@ package suite.wildcard;
 
 import java.util.List;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.util.String_;
 
 public class WildcardUtil {

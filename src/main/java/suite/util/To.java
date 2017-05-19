@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.function.IntFunction;
 
 import suite.Constants;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
 import suite.primitive.DataOutput_;

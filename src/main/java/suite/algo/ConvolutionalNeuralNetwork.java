@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import suite.adt.IntIntPair;
+import suite.adt.pair.IntIntPair;
 import suite.math.Sigmoid;
 import suite.util.List_;
 import suite.util.To;

@@ -14,7 +14,7 @@ import java.util.Enumeration;
 import java.util.Map;
 
 import suite.Constants;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.primitive.PrimitiveSource.IntObjSource;

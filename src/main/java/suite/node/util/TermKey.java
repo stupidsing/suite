@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import suite.adt.IntObjMap;
-import suite.adt.IntObjPair;
-import suite.adt.Pair;
+import suite.adt.map.IntObjMap;
+import suite.adt.pair.IntObjPair;
+import suite.adt.pair.Pair;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewriter.NodeHead;

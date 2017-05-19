@@ -14,9 +14,9 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.ToIntBiFunction;
 
-import suite.adt.IntObjPair;
-import suite.adt.ListMultimap;
-import suite.adt.Pair;
+import suite.adt.map.ListMultimap;
+import suite.adt.pair.IntObjPair;
+import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;

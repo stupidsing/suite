@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;

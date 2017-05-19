@@ -15,8 +15,8 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import suite.adt.ListMultimap;
-import suite.adt.Pair;
+import suite.adt.map.ListMultimap;
+import suite.adt.pair.Pair;
 import suite.node.util.Mutable;
 import suite.primitive.PrimitiveFun.ObjObj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;

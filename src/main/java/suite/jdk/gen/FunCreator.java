@@ -28,8 +28,8 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import suite.adt.IntObjPair;
-import suite.adt.Pair;
+import suite.adt.pair.IntObjPair;
+import suite.adt.pair.Pair;
 import suite.jdk.UnsafeUtil;
 import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;

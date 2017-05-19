@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.Constants;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.util.Copy;

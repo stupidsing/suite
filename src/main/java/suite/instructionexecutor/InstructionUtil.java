@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.Suite;
-import suite.adt.BiMap;
-import suite.adt.HashBiMap;
+import suite.adt.map.BiMap;
+import suite.adt.map.HashBiMap;
 import suite.node.Node;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;

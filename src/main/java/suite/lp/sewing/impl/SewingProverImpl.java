@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import suite.Suite;
-import suite.adt.ListMultimap;
-import suite.adt.Pair;
+import suite.adt.map.ListMultimap;
+import suite.adt.pair.Pair;
 import suite.immutable.IList;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Trail;

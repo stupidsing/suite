@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 
 public class WildcardUtilTest {
 

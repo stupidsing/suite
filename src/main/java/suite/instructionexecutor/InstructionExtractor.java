@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import suite.adt.BiMap;
 import suite.adt.IdentityKey;
+import suite.adt.map.BiMap;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.lp.Trail;

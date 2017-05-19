@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.os.LogUtil;
 import suite.primitive.PrimitiveFun.ObjObj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;

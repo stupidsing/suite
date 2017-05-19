@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import suite.adt.ListMultimap;
-import suite.adt.Pair;
+import suite.adt.map.ListMultimap;
+import suite.adt.pair.Pair;
 import suite.lp.doer.ProverConstant;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;

@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Node;

@@ -1,5 +1,6 @@
-package suite.adt;
+package suite.adt.map;
 
+import suite.adt.pair.IntObjPair;
 import suite.primitive.PrimitiveFun.Int_Obj;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSink.IntObjSink;

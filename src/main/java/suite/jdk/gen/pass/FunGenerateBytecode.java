@@ -18,8 +18,8 @@ import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import suite.adt.IntIntMap;
-import suite.adt.IntObjMap;
+import suite.adt.map.IntIntMap;
+import suite.adt.map.IntObjMap;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
 import suite.jdk.gen.FunExprM.BinaryFunExpr;
 import suite.jdk.gen.FunExprM.CastFunExpr;

@@ -11,7 +11,7 @@ import javax.swing.text.Document;
 import javax.swing.text.Segment;
 import javax.swing.undo.UndoManager;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.editor.Listen.SinkEx;
 import suite.streamlet.Nerve;
 import suite.util.FunUtil.Fun;

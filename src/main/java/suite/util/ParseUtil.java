@@ -3,7 +3,7 @@ package suite.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.streamlet.Outlet;

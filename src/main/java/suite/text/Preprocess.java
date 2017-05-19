@@ -2,7 +2,7 @@ package suite.text;
 
 import java.util.List;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.util.FunUtil.Fun;
 
 public class Preprocess {

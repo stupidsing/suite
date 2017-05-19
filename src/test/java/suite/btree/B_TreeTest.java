@@ -12,7 +12,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.JournalledPageFile;
 import suite.file.impl.JournalledFileFactory;

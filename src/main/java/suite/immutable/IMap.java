@@ -3,7 +3,7 @@ package suite.immutable;
 import java.util.Iterator;
 import java.util.Objects;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.streamlet.Streamlet;
 import suite.util.Object_;
 

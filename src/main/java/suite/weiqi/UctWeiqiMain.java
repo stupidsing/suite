@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
 import suite.Constants;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.os.LogUtil;
 import suite.os.Stopwatch;
 import suite.uct.ShuffleUtil;

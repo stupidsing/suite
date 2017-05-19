@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.text.RollingHashUtil;
 import suite.text.Segment;

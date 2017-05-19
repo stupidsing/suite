@@ -5,7 +5,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.IntIntPair;
+import suite.adt.pair.IntIntPair;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;

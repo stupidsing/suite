@@ -11,7 +11,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.os.FileUtil;
 import suite.pkgmanager.action.ExecCommandAction;
 import suite.pkgmanager.action.ExtractFileAction;

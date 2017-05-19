@@ -2,7 +2,7 @@ package suite.util;
 
 import java.util.Map;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.streamlet.Read;
 
 public class CommandUtil<Command> {

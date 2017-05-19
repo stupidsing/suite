@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.Suite;
-import suite.adt.BiMap;
-import suite.adt.HashBiMap;
+import suite.adt.map.BiMap;
+import suite.adt.map.HashBiMap;
 import suite.instructionexecutor.InstructionAnalyzer.AnalyzedFrame;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Frame;

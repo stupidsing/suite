@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.streamlet.Read;
 import suite.util.Set_;
 

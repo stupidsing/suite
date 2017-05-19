@@ -1,4 +1,4 @@
-package suite.adt;
+package suite.adt.map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import suite.adt.pair.IntIntPair;
 import suite.primitive.PrimitiveSource.IntIntSource;
 
 public class IntIntMapTest {

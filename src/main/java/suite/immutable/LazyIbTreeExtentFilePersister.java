@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import suite.adt.BiMap;
-import suite.adt.HashBiMap;
 import suite.adt.IdentityKey;
-import suite.adt.Pair;
+import suite.adt.map.BiMap;
+import suite.adt.map.HashBiMap;
+import suite.adt.pair.Pair;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
 import suite.file.PageFile;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.Suite;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.lp.predicate.EvalPredicates;
 import suite.node.Atom;
 import suite.node.Int;

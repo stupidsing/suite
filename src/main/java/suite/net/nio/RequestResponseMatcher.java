@@ -3,7 +3,7 @@ package suite.net.nio;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.concurrent.Condition;
 import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
 import suite.node.util.Mutable;

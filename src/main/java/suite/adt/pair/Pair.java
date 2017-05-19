@@ -1,4 +1,4 @@
-package suite.adt;
+package suite.adt.pair;
 
 import java.util.Comparator;
 import java.util.Objects;

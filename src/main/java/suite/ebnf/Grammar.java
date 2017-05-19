@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.String_;

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.math.linalg.Matrix;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;

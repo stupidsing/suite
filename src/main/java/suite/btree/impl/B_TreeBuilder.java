@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.btree.B_Tree;
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;

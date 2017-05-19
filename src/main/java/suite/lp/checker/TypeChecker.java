@@ -6,7 +6,7 @@ import java.util.Map;
 
 import suite.Suite;
 import suite.adt.IdentityKey;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;

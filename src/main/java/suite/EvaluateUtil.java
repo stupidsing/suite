@@ -3,7 +3,7 @@ package suite;
 import java.io.IOException;
 import java.util.List;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.fp.FunCompilerConfig;
 import suite.instructionexecutor.EagerFunInstructionExecutor;
 import suite.instructionexecutor.FunInstructionExecutor;

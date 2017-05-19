@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
-import suite.adt.Pair;
 import suite.adt.PriorityQueue;
+import suite.adt.pair.Pair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 

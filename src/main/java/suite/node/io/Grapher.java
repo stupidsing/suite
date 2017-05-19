@@ -16,9 +16,9 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.IdentityKey;
-import suite.adt.IntIntPair;
-import suite.adt.IntObjMap;
-import suite.adt.Pair;
+import suite.adt.map.IntObjMap;
+import suite.adt.pair.IntIntPair;
+import suite.adt.pair.Pair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.ProverConstant;

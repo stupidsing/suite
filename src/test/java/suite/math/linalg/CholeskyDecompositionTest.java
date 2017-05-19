@@ -4,7 +4,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 

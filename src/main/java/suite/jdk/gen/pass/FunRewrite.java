@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.apache.bcel.generic.Type;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExprK.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExprK.Declare1ParameterFunExpr;

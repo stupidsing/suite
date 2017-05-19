@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;

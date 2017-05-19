@@ -13,8 +13,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import suite.adt.ListMultimap;
-import suite.adt.Pair;
+import suite.adt.map.ListMultimap;
+import suite.adt.pair.Pair;
 import suite.node.util.Mutable;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Int;

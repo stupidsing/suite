@@ -3,7 +3,7 @@ package suite.ansi;
 import java.io.IOException;
 import java.util.Objects;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.ansi.Keyboard.VK;
 import suite.streamlet.Outlet;
 import suite.util.Util;

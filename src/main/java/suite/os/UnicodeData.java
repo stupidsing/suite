@@ -8,7 +8,7 @@ import java.io.Reader;
 import java.util.Map;
 import java.util.Set;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 

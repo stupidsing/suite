@@ -1,7 +1,7 @@
 package suite.primitive;
 
-import suite.adt.IntIntPair;
-import suite.adt.IntObjPair;
+import suite.adt.pair.IntIntPair;
+import suite.adt.pair.IntObjPair;
 
 public class PrimitiveSource {
 

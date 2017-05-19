@@ -1,4 +1,4 @@
-package suite.adt;
+package suite.adt.map;
 
 import java.util.Map;
 

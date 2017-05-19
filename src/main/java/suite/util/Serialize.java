@@ -16,7 +16,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 import suite.Constants;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.file.ExtentAllocator.Extent;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;

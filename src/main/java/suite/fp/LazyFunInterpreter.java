@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import suite.Suite;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.fp.match.Matcher;
 import suite.fp.match.Matchers.APPLY;
 import suite.fp.match.Matchers.ATOM;

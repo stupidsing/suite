@@ -5,7 +5,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.Grammar;
 import suite.ebnf.lr.BuildLr.Reduce;

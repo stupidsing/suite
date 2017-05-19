@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;

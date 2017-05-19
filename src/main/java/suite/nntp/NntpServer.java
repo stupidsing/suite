@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.os.SocketUtil;
 import suite.util.CommandUtil;
 import suite.util.String_;

@@ -12,10 +12,10 @@ import java.util.function.BiConsumer;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
-import suite.adt.IntObjMap;
-import suite.adt.IntObjPair;
-import suite.adt.ListMultimap;
-import suite.adt.Pair;
+import suite.adt.map.IntObjMap;
+import suite.adt.map.ListMultimap;
+import suite.adt.pair.IntObjPair;
+import suite.adt.pair.Pair;
 import suite.node.util.Mutable;
 import suite.primitive.PrimitiveFun.IntObj_Int;
 import suite.primitive.PrimitiveFun.IntObj_Obj;

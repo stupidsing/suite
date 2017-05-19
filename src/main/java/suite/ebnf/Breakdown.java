@@ -3,7 +3,7 @@ package suite.ebnf;
 import java.util.Arrays;
 import java.util.List;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.ebnf.Grammar.GrammarType;
 import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;

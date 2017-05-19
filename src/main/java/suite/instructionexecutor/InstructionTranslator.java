@@ -9,8 +9,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import suite.adt.BiMap;
-import suite.adt.HashBiMap;
+import suite.adt.map.BiMap;
+import suite.adt.map.HashBiMap;
 import suite.fp.intrinsic.Intrinsics;
 import suite.instructionexecutor.InstructionAnalyzer.AnalyzedFrame;
 import suite.instructionexecutor.InstructionAnalyzer.AnalyzedRegister;

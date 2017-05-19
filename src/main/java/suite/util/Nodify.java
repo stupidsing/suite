@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.inspect.Inspect;
 import suite.node.Atom;
 import suite.node.Dict;

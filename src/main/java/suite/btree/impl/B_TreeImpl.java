@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.btree.B_Tree;
 import suite.file.PageAllocator;
 import suite.file.SerializedPageFile;

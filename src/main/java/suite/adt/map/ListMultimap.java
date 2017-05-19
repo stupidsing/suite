@@ -1,4 +1,4 @@
-package suite.adt;
+package suite.adt.map;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import suite.adt.pair.Pair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 

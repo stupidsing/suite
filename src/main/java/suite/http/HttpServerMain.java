@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import suite.Constants;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.http.HttpSessionController.Authenticator;
 import suite.immutable.IMap;
 import suite.util.Rethrow;

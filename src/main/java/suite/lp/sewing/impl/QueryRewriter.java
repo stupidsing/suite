@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import suite.Suite;
-import suite.adt.ListMultimap;
+import suite.adt.map.ListMultimap;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.node.Atom;

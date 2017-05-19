@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.inspect.Inspect;
 import suite.jdk.gen.Type_;
 import suite.node.util.Singleton;

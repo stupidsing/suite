@@ -12,7 +12,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.immutable.ISet;
 import suite.os.FileUtil;
 import suite.search.DirectedGraph;

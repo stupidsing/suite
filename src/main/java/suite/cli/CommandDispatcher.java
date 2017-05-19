@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import suite.Suite;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.fp.EagerFunInterpreter;
 import suite.fp.LazyFunInterpreter;
 import suite.fp.LazyFunInterpreter0;

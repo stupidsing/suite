@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.immutable.IList;

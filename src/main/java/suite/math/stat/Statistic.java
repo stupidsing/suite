@@ -1,7 +1,7 @@
 package suite.math.stat;
 
-import suite.adt.IntObjMap;
-import suite.adt.IntObjPair;
+import suite.adt.map.IntObjMap;
+import suite.adt.pair.IntObjPair;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.primitive.PrimitiveFun.Int_Double;

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import suite.Suite;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;

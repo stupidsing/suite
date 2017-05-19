@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.concurrent.Bag;
 import suite.concurrent.CasReference;
 import suite.util.FunUtil.Fun;

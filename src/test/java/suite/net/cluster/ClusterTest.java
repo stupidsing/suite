@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.net.cluster.impl.ClusterImpl;
 import suite.util.Thread_;
 import suite.util.To;

@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.Pair;
 import suite.adt.PriorityQueue;
+import suite.adt.pair.Pair;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 import suite.util.To;

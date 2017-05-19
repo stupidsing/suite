@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import suite.Suite;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.immutable.IMap;
 import suite.immutable.ISet;
 import suite.lp.Trail;

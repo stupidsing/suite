@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.text.TextUtil.ConflictException;
 import suite.util.To;

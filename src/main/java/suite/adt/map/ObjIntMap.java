@@ -1,7 +1,8 @@
-package suite.adt;
+package suite.adt.map;
 
 import java.util.Arrays;
 
+import suite.adt.pair.IntObjPair;
 import suite.primitive.PrimitiveFun.Int_Int;
 import suite.primitive.PrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveSink.IntObjSink;

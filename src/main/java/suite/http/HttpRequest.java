@@ -3,7 +3,7 @@ package suite.http;
 import java.io.InputStream;
 import java.util.Map;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.immutable.IList;
 import suite.streamlet.As;
 import suite.streamlet.Read;

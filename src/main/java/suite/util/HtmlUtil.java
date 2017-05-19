@@ -1,7 +1,7 @@
 package suite.util;
 
-import suite.adt.BiMap;
-import suite.adt.HashBiMap;
+import suite.adt.map.BiMap;
+import suite.adt.map.HashBiMap;
 
 public class HtmlUtil {
 

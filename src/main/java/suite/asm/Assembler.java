@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import suite.Suite;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;

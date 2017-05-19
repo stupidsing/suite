@@ -3,7 +3,7 @@ package suite.fs.impl;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.btree.B_Tree;
 import suite.btree.impl.B_TreeBuilder;
 import suite.fs.FileSystem;

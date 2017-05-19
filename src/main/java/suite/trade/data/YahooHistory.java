@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import suite.Constants;
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.os.Execute;
 import suite.os.FileUtil;
 import suite.streamlet.As;

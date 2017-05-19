@@ -2,7 +2,7 @@ package suite.lp.kb;
 
 import java.util.List;
 
-import suite.adt.ListMultimap;
+import suite.adt.map.ListMultimap;
 import suite.node.Node;
 
 /**

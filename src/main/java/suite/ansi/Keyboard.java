@@ -7,8 +7,8 @@ import java.util.List;
 
 import com.sun.jna.Native;
 
-import suite.adt.Pair;
 import suite.adt.Trie;
+import suite.adt.pair.Pair;
 import suite.streamlet.Nerve;
 import suite.streamlet.Nerve.Redirector;
 import suite.streamlet.Outlet;

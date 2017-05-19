@@ -3,7 +3,7 @@ package suite.lp.sewing.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.adt.Pair;
+import suite.adt.pair.Pair;
 import suite.lp.sewing.SewingCloner;
 import suite.node.Atom;
 import suite.node.Node;

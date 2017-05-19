@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.adt.IntObjPair;
+import suite.adt.pair.IntObjPair;
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;

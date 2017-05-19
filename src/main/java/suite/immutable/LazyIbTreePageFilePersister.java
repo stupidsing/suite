@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.BiMap;
-import suite.adt.HashBiMap;
 import suite.adt.IdentityKey;
-import suite.adt.Pair;
+import suite.adt.map.BiMap;
+import suite.adt.map.HashBiMap;
+import suite.adt.pair.Pair;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;
