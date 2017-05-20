@@ -11,7 +11,8 @@ import suite.trade.data.DataSource;
 
 public class MovingMedianMeanReversionAssetAllocator implements AssetAllocator {
 
-	private int windowSize = 32;
+	private int windowSize0 = 0;
+	private int windowSize1 = 32;
 
 	private MovingAverage ma = new MovingAverage();
 
@@ -24,10 +25,11 @@ public class MovingMedianMeanReversionAssetAllocator implements AssetAllocator {
 		return Read.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {
 					float[] prices = dataSource.prices;
-					float[] movingMedian = ma.movingMedian(prices, windowSize);
-					double pricex = prices[prices.length - 1];
-					double meanx = movingMedian[movingMedian.length - 1];
-					return meanx - pricex;
+					float[] movingMedian0 = ma.movingMedian(prices, windowSize0);
+					float[] movingMedian1 = ma.movingMedian(prices, windowSize1);
+					double median0 = movingMedian0[movingMedian0.length - 1];
+					double median1 = movingMedian1[movingMedian1.length - 1];
+					return median1 - median0;
 				}) //
 				.toList();
 	}
