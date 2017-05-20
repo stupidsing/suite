@@ -56,6 +56,7 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 		this.log = log;
 	}
 
+	@Override
 	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate) {
 		log.sink(dataSourceBySymbol.size() + " assets in data source");
 

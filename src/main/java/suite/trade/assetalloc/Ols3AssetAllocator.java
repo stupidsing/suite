@@ -37,6 +37,7 @@ public class Ols3AssetAllocator implements AssetAllocator {
 		this.lookBack = lookBack;
 	}
 
+	@Override
 	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate) {
 		return Read.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {

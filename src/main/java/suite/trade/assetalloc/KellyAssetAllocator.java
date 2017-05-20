@@ -26,6 +26,7 @@ public class KellyAssetAllocator implements AssetAllocator {
 	private KellyAssetAllocator() {
 	}
 
+	@Override
 	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate) {
 		double dailyInterestRate = Trade_.riskFreeInterestRate(1);
 
