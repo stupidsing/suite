@@ -79,10 +79,7 @@ public class AssetAllocator_ {
 	}
 
 	public static AssetAllocator filterShorts(AssetAllocator assetAllocator) {
-		return (dataSourceBySymbol, backTestDate) -> {
-			List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate(dataSourceBySymbol, backTestDate);
-			return Read.from2(potentialBySymbol).filterValue(potential -> 0d < potential).toList();
-		};
+		return filterShorts_(assetAllocator);
 	}
 
 	public static AssetAllocator reallocate(AssetAllocator assetAllocator) {
@@ -92,9 +89,10 @@ public class AssetAllocator_ {
 		};
 	}
 
-	public static AssetAllocator unleverage(AssetAllocator assetAllocator) {
+	public static AssetAllocator unleverage(AssetAllocator assetAllocator0) {
+		AssetAllocator assetAllocator1 = filterShorts_(assetAllocator0);
 		return (dataSourceBySymbol, backTestDate) -> {
-			List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate(dataSourceBySymbol, backTestDate);
+			List<Pair<String, Double>> potentialBySymbol = assetAllocator1.allocate(dataSourceBySymbol, backTestDate);
 			double totalPotential = totalPotential(potentialBySymbol);
 			if (1d < totalPotential)
 				return scale(potentialBySymbol, 1d / totalPotential);
@@ -107,9 +105,15 @@ public class AssetAllocator_ {
 		return Read.from2(potentialBySymbol).collectAsDouble(As.sumOfDoubles((symbol, potential) -> potential));
 	}
 
+	private static AssetAllocator filterShorts_(AssetAllocator assetAllocator) {
+		return (dataSourceBySymbol, backTestDate) -> {
+			List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate(dataSourceBySymbol, backTestDate);
+			return Read.from2(potentialBySymbol).filterValue(potential -> 0d < potential).toList();
+		};
+	}
+
 	private static List<Pair<String, Double>> scale(List<Pair<String, Double>> potentialBySymbol, double invTotalPotential) {
 		return Read.from2(potentialBySymbol) //
-				.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
 				.mapValue(potential -> potential * invTotalPotential) //
 				.toList();
 	}

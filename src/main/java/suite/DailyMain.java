@@ -25,6 +25,7 @@ import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.assetalloc.AssetAllocator;
 import suite.trade.assetalloc.AssetAllocator_;
 import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator0;
+import suite.trade.assetalloc.MovingMedianMeanReversionAssetAllocator;
 import suite.trade.assetalloc.ReverseCorrelateAssetAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
@@ -78,7 +79,7 @@ public class DailyMain extends ExecutableProgram {
 		quoteDatabase.join();
 
 		// perform systematic trading
-		List<Result> results = Arrays.asList(bug(), mamr(), pmamr(), revco());
+		List<Result> results = Arrays.asList(bug(), mamr(), pmamr(), pmmmr(), revco());
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
 
@@ -193,6 +194,11 @@ public class DailyMain extends ExecutableProgram {
 	// portfolio-based moving average mean reversion
 	private Result pmamr() {
 		return alloc("pmamr", MovingAvgMeanReversionAssetAllocator0.of(cfg, log));
+	}
+
+	// portfolio-based moving median mean reversion
+	private Result pmmmr() {
+		return alloc("pmmmr", MovingMedianMeanReversionAssetAllocator.of());
 	}
 
 	// portfolio-based moving average mean reversion
