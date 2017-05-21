@@ -14,7 +14,7 @@ public class RsiAssetAllocator implements AssetAllocator {
 	private double threshold0 = .3f;
 	private double threshold1 = .7f;
 
-	public static AssetAllocator Of() {
+	public static AssetAllocator of() {
 		return AssetAllocator_.unleverage(new RsiAssetAllocator());
 	}
 

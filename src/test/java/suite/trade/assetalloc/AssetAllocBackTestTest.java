@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Constants;
+import suite.adt.pair.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -17,6 +18,7 @@ import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.Summarize;
 import suite.util.FunUtil.Sink;
 import suite.util.Object_;
+import suite.util.String_;
 
 public class AssetAllocBackTestTest {
 
@@ -57,6 +59,30 @@ public class AssetAllocBackTestTest {
 					AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
 					Constants.testFlag = b;
 					return "\nTEST = " + b + ", " + backTest(assetAllocator, period).conclusion();
+				}) //
+				.sort(Object_::compare) //
+				.collect(As.joined());
+		System.out.println(results);
+	}
+
+	@Test
+	public void testPairsTrading() {
+		Pair<Asset, Asset> pairs0 = Pair.of(cfg.queryCompany("0341.HK"), cfg.queryCompany("0052.HK"));
+		Pair<Asset, Asset> pairs1 = Pair.of(cfg.queryCompany("0005.HK"), cfg.queryCompany("2888.HK"));
+
+		String results = Read.each(pairs0, pairs1) //
+				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
+				.map((pair, period) -> {
+					Asset asset0 = pair.t0;
+					Asset asset1 = pair.t1;
+					AssetAllocator assetAllocator = //
+							AssetAllocator_.filterAssets( //
+									symbol -> String_.equals(symbol, asset1.symbol), //
+									IndexRelativeAssetAllocator.of( //
+											cfg, //
+											asset0.symbol, //
+											RsiAssetAllocator.of()));
+					return "\nTEST = " + pair + ", " + backTest(assetAllocator, Read.each(asset0, asset1), period).conclusion();
 				}) //
 				.sort(Object_::compare) //
 				.collect(As.joined());
