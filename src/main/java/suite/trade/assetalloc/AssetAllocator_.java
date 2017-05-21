@@ -125,7 +125,7 @@ public class AssetAllocator_ {
 		if (Double.isFinite(potential))
 			return potential;
 		else
-			throw new RuntimeException("for " + symbol + ", potential is " + potential);
+			throw new RuntimeException("potential is " + potential);
 	}
 
 }
