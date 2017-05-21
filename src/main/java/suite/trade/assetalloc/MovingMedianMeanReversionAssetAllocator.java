@@ -29,8 +29,8 @@ public class MovingMedianMeanReversionAssetAllocator implements AssetAllocator {
 					float[] movingMedian1 = ma.movingMedian(prices, windowSize1);
 					double median0 = movingMedian0[movingMedian0.length - 1];
 					double median1 = movingMedian1[movingMedian1.length - 1];
-					double diff = median1 - median0;
-					return diff / median0;
+					double ratio = median1 / median0;
+					return ratio - 1d;
 				}) //
 				.toList();
 	}
