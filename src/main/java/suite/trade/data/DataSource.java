@@ -128,7 +128,8 @@ public class DataSource {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "(" + first() + "~" + last() + ")";
+		String range = 0 < prices.length ? first() + "~" + last() : "";
+		return getClass().getSimpleName() + "(" + range + ")";
 	}
 
 	public Datum first() {
