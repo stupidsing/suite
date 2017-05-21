@@ -66,9 +66,10 @@ public class AssetAllocator_ {
 				.toList();
 	}
 
-	public static AssetAllocator even(AssetAllocator assetAllocator) {
+	public static AssetAllocator even(AssetAllocator assetAllocator0) {
+		AssetAllocator assetAllocator1 = filterShorts_(assetAllocator0);
 		return (dataSourceBySymbol, backTestDate) -> {
-			List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate(dataSourceBySymbol, backTestDate);
+			List<Pair<String, Double>> potentialBySymbol = assetAllocator1.allocate(dataSourceBySymbol, backTestDate);
 			double each = 1d / Read.from2(potentialBySymbol).size();
 
 			return Read.from2(potentialBySymbol) //
@@ -115,9 +116,9 @@ public class AssetAllocator_ {
 		};
 	}
 
-	private static List<Pair<String, Double>> scale(List<Pair<String, Double>> potentialBySymbol, double invTotalPotential) {
+	private static List<Pair<String, Double>> scale(List<Pair<String, Double>> potentialBySymbol, double scale) {
 		return Read.from2(potentialBySymbol) //
-				.mapValue(potential -> potential * invTotalPotential) //
+				.mapValue(potential -> potential * scale) //
 				.toList();
 	}
 
