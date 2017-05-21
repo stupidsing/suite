@@ -85,9 +85,9 @@ public class AssetAllocBackTestTest {
 
 	private void assertGrowth(Simulate sim) {
 		float[] valuations = sim.valuations;
-		int length = valuations.length;
-		double r = Trade_.riskFreeInterestRate(length);
-		assertTrue(initial * r < valuations[length - 1]);
+		int last = valuations.length - 1;
+		double r = Trade_.riskFreeInterestRate(last);
+		assertTrue(initial * r < valuations[last]);
 	}
 
 }
