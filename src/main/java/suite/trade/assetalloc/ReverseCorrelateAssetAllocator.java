@@ -30,7 +30,7 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 	}
 
 	public static AssetAllocator of(int tor, double kellyReduction, double reverseCorrelationThreshold) {
-		return AssetAllocator_.filterShorts(new ReverseCorrelateAssetAllocator(tor, kellyReduction, .03d));
+		return AssetAllocator_.unleverage(new ReverseCorrelateAssetAllocator(tor, kellyReduction, reverseCorrelationThreshold));
 	}
 
 	private ReverseCorrelateAssetAllocator(int tor, double kellyReduction, double reverseCorrelationThreshold) {
