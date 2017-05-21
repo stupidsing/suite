@@ -184,8 +184,12 @@ public class AssetAllocBackTest {
 
 			trades.addAll(Trade_.sellAll(Read.from(trades), latestPriceBySymbol::get).toList());
 
-			double v0 = valuations_[0];
-			double vx = valuations_[size - 1];
+			double v0, vx;
+			if (0 < size) {
+				v0 = valuations_[0];
+				vx = valuations_[size - 1];
+			} else
+				v0 = vx = 1d;
 
 			period = DatePeriod.of(List_.first(dates), List_.last(dates));
 			valuations = valuations_;
