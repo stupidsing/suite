@@ -112,8 +112,8 @@ public class DataSource {
 			if (0 <= date0.compareTo(date1))
 				throw new RuntimeException("wrong date order: " + date0 + "/" + date1);
 
-			if (price1 == 0f)
-				throw new RuntimeException("price is zero: " + price1 + "/" + date1);
+			if (price1 <= 0f)
+				throw new RuntimeException("price is zero or negative: " + price1 + "/" + date1);
 
 			if (!Float.isFinite(price1))
 				throw new RuntimeException("price is not finite: " + price1 + "/" + date1);
