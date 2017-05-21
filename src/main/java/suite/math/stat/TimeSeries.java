@@ -16,17 +16,17 @@ public class TimeSeries {
 	public boolean isUnitRootDetected(float[] prices, int tor) {
 		double tStatistic = adf(prices, tor);
 		if (prices.length <= 25)
-			return -3.6d <= tStatistic;
+			return -3d <= tStatistic;
 		else if (prices.length <= 50)
-			return -3.5d <= tStatistic;
+			return -2.93d <= tStatistic;
 		else if (prices.length <= 100)
-			return -3.45d <= tStatistic;
+			return -2.89d <= tStatistic;
 		else if (prices.length <= 250)
-			return -3.43d <= tStatistic;
+			return -2.88d <= tStatistic;
 		else if (prices.length <= 500)
-			return -3.42d <= tStatistic;
+			return -2.87d <= tStatistic;
 		else
-			return -3.41d <= tStatistic;
+			return -2.86d <= tStatistic;
 	}
 
 	// Augmented Dickey-Fuller test
