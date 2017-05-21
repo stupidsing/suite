@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
 import suite.streamlet.As;
@@ -77,6 +78,11 @@ public class AssetAllocator_ {
 					.mapValue(potential -> 1d / each) //
 					.toList();
 		};
+	}
+
+	public static AssetAllocator filterAssets(Predicate<String> pred, AssetAllocator assetAllocator) {
+		return (dataSourceBySymbol, backTestDate) -> assetAllocator //
+				.allocate(Read.from2(dataSourceBySymbol).filterKey(pred).toMap(), backTestDate);
 	}
 
 	public static AssetAllocator filterShorts(AssetAllocator assetAllocator) {
