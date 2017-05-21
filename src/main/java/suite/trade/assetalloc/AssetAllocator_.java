@@ -108,7 +108,10 @@ public class AssetAllocator_ {
 	private static AssetAllocator filterShorts_(AssetAllocator assetAllocator) {
 		return (dataSourceBySymbol, backTestDate) -> {
 			List<Pair<String, Double>> potentialBySymbol = assetAllocator.allocate(dataSourceBySymbol, backTestDate);
-			return Read.from2(potentialBySymbol).filterValue(potential -> 0d < potential).toList();
+			return Read.from2(potentialBySymbol) //
+					.map2(AssetAllocator_::validate) //
+					.filterValue(potential -> 0d < potential) //
+					.toList();
 		};
 	}
 
@@ -116,6 +119,13 @@ public class AssetAllocator_ {
 		return Read.from2(potentialBySymbol) //
 				.mapValue(potential -> potential * invTotalPotential) //
 				.toList();
+	}
+
+	private static Double validate(String symbol, Double potential) {
+		if (Double.isFinite(potential))
+			return potential;
+		else
+			throw new RuntimeException("for " + symbol + ", potential is " + potential);
 	}
 
 }
