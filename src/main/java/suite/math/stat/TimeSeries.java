@@ -13,6 +13,22 @@ public class TimeSeries {
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 
+	public boolean isUnitRootDetected(float[] prices, int tor) {
+		double tStatistic = adf(prices, tor);
+		if (prices.length <= 25)
+			return -3.6d <= tStatistic;
+		else if (prices.length <= 50)
+			return -3.5d <= tStatistic;
+		else if (prices.length <= 100)
+			return -3.45d <= tStatistic;
+		else if (prices.length <= 250)
+			return -3.43d <= tStatistic;
+		else if (prices.length <= 500)
+			return -3.42d <= tStatistic;
+		else
+			return -3.41d <= tStatistic;
+	}
+
 	// Augmented Dickey-Fuller test
 	public double adf(float[] prices, int tor) {
 		float[] diffs = differences_(1, prices);
