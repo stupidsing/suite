@@ -14,6 +14,11 @@ public class YahooTest {
 	private Yahoo yahoo = new Yahoo();
 
 	@Test
+	public void testCsv() {
+		test(yahoo::dataSourceCsv);
+	}
+
+	@Test
 	public void testL1() {
 		test(yahoo::dataSourceL1);
 	}
