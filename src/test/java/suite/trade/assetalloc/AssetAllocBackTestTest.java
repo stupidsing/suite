@@ -51,10 +51,10 @@ public class AssetAllocBackTestTest {
 
 	@Test
 	public void testControlledExperiment() {
-		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
 		String results = Read.each(Boolean.FALSE, Boolean.TRUE) //
-				.join2(Read.range(2015, 2018).map(DatePeriod::ofYear)) //
+				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
 				.map((b, period) -> {
+					AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
 					Constants.testFlag = b;
 					return "\nTEST = " + b + ", " + backTest(assetAllocator, period).conclusion();
 				}) //
