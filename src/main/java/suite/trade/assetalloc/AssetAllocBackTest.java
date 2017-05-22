@@ -101,7 +101,6 @@ public class AssetAllocBackTest {
 			trades = new ArrayList<>();
 
 			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
-			Map<String, DataSource> dataSourceBySymbol0 = new HashMap<>();
 			Map<String, Double> holdBySymbol_ = new HashMap<>();
 			Set<String> symbols = assetBySymbol.keySet();
 			double valuation = fund0;
@@ -109,14 +108,9 @@ public class AssetAllocBackTest {
 			// pre-fetch quotes
 			cfg.quote(symbols);
 
-			for (String symbol : symbols)
-				try {
-					DataSource dataSource = cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate);
-					dataSource.validate();
-					dataSourceBySymbol0.put(symbol, dataSource);
-				} catch (Exception ex) {
-					LogUtil.warn("for " + symbol + " " + ex);
-				}
+			Map<String, DataSource> dataSourceBySymbol0 = Read.from(symbols) //
+					.map2(symbol -> cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate)) //
+					.toMap();
 
 			Streamlet<String> tradeDates0;
 
@@ -147,7 +141,15 @@ public class AssetAllocBackTest {
 				DatePeriod historyWindowPeriod = DatePeriod.daysBefore(date, historyWindow);
 
 				Map<String, DataSource> backTestDataSourceBySymbol = Read.from2(dataSourceBySymbol1) //
-						.mapValue(dataSource -> dataSource.range(historyWindowPeriod)) //
+						.map2((symbol, dataSource0) -> {
+							DataSource dataSource1 = dataSource0.range(historyWindowPeriod);
+							try {
+								dataSource1.validate();
+							} catch (Exception ex) {
+								LogUtil.warn("for " + symbol + " " + ex);
+							}
+							return dataSource1;
+						}) //
 						.filterValue(dataSource -> 128 <= dataSource.dates.length) //
 						.toMap();
 
@@ -208,15 +210,17 @@ public class AssetAllocBackTest {
 
 		public String conclusion() {
 			StringBuilder sb = new StringBuilder();
+			int length = valuations.length;
 
 			for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value))
 				sb.append(e.t0 + ":" + To.string(e.t1) + ",");
 
 			return "period = " + period //
-					+ ", valuation = " + valuations[valuations.length - 1] //
+					+ ", valuation = " + (0 < length ? valuations[length - 1] : "N/A") //
 					+ ", annual return = " + To.string(annualReturn) //
 					+ ", sharpe = " + To.string(sharpe) //
 					+ ", skewness = " + To.string(skewness) //
+					+ ", " + account.transactionSummary(cfg::transactionFee) //
 					+ ", holds = " + sb;
 		}
 	}
