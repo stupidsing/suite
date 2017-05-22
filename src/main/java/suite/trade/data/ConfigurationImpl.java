@@ -86,9 +86,9 @@ public class ConfigurationImpl implements Configuration {
 			return hkd.dataSource(symbol, period);
 		case YAHOO:
 			if (Boolean.TRUE)
-				return yahoo.dataSourceL1(symbol, period);
-			else if (Boolean.TRUE)
 				return yahooHistory.dataSource(symbol, period);
+			else if (Boolean.TRUE)
+				return yahoo.dataSourceL1(symbol, period);
 			else
 				return quoteDatabase.get(symbol, "o");
 		default:

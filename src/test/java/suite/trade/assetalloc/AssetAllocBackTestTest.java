@@ -55,9 +55,13 @@ public class AssetAllocBackTestTest {
 		String results = Read.each(Boolean.FALSE, Boolean.TRUE) //
 				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
 				.map((b, period) -> {
-					AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
+					AssetAllocator assetAllocator = DonchianAssetAllocator.of();
 					Constants.testFlag = b;
-					return "\nTEST = " + b + ", " + backTest(assetAllocator, period).conclusion();
+					try {
+						return "\nTEST = " + b + ", " + backTest(assetAllocator, period).conclusion();
+					} catch (Exception ex) {
+						return "\nexception = " + ex;
+					}
 				}) //
 				.sort(Object_::compare) //
 				.collect(As.joined());

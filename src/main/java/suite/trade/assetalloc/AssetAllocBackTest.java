@@ -110,6 +110,16 @@ public class AssetAllocBackTest {
 
 			Map<String, DataSource> dataSourceBySymbol0 = Read.from(symbols) //
 					.map2(symbol -> cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate)) //
+					.map2((symbol, dataSource) -> {
+						try {
+							dataSource.validate();
+							return dataSource;
+						} catch (Exception ex) {
+							LogUtil.warn("for " + symbol + " " + ex);
+							return null;
+						}
+					}) //
+					.filterValue(dataSource -> dataSource != null) //
 					.toMap();
 
 			Streamlet<String> tradeDates0;
@@ -141,15 +151,7 @@ public class AssetAllocBackTest {
 				DatePeriod historyWindowPeriod = DatePeriod.daysBefore(date, historyWindow);
 
 				Map<String, DataSource> backTestDataSourceBySymbol = Read.from2(dataSourceBySymbol1) //
-						.map2((symbol, dataSource0) -> {
-							DataSource dataSource1 = dataSource0.range(historyWindowPeriod);
-							try {
-								dataSource1.validate();
-							} catch (Exception ex) {
-								LogUtil.warn("for " + symbol + " " + ex);
-							}
-							return dataSource1;
-						}) //
+						.mapValue(dataSource -> dataSource.range(historyWindowPeriod)) //
 						.filterValue(dataSource -> 128 <= dataSource.dates.length) //
 						.toMap();
 
