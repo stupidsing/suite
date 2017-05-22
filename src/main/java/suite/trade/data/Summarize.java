@@ -50,8 +50,7 @@ public class Summarize {
 		for (Entry<K, String> e : summaryByKey.entrySet()) {
 			K key = e.getKey();
 			String summary = e.getValue();
-			log.sink(Constants.separator);
-			log.sink("For strategy " + key + ":" + summary);
+			log.sink("\nFor strategy " + key + ":" + summary);
 		}
 
 		log.sink(Constants.separator);
