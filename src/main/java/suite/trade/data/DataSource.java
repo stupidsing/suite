@@ -54,6 +54,8 @@ public class DataSource {
 	public DataSource(String[] dates, float[] prices) {
 		this.dates = dates;
 		this.prices = prices;
+		if (dates.length != prices.length)
+			throw new RuntimeException("mismatched dates and prices");
 	}
 
 	public DataSource align(String[] dates1) {
@@ -101,9 +103,6 @@ public class DataSource {
 		int length = prices.length;
 		String date0 = dates[0];
 		float price0 = prices[0];
-
-		if (length != dates.length)
-			throw new RuntimeException("mismatched dates and prices");
 
 		for (int i = 1; i < length; i++) {
 			String date1 = dates[i];
