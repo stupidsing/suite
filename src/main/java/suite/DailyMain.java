@@ -84,8 +84,10 @@ public class DailyMain extends ExecutableProgram {
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
 
 		for (Result result : results) {
-			String tradeString = Read.from(result.trades).map(trade -> "\nSIGNAL" + trade).collect(As.joined());
-			sb.append("\n" + Constants.separator);
+			String tradeString = Read.from(result.trades) //
+					.filter(trade -> trade.buySell != 0) //
+					.map(trade -> "\nSIGNAL" + trade) //
+					.collect(As.joined());
 			sb.append("\nOUTPUT (" + result.strategy + "):" + tradeString + "\n");
 		}
 
