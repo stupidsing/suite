@@ -83,9 +83,9 @@ public class Account {
 	public void validate() {
 		if (cash_() < -Trade_.maxLeverageAmount)
 			throw new RuntimeException("too much leverage: " + cash_());
-		assets.forEach((code, nShares) -> {
-			if (!Trade_.isShortSell && !String_.equals(code, cashCode) && nShares < 0)
-				throw new RuntimeException("no short-selling " + nShares + " shares for " + code);
+		assets.forEach((symbol, nShares) -> {
+			if (!Trade_.isShortSell && !String_.equals(symbol, cashCode) && nShares < 0)
+				throw new RuntimeException("no short-selling " + symbol + " " + nShares);
 		});
 	}
 
