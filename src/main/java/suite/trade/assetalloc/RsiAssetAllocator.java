@@ -31,11 +31,11 @@ public class RsiAssetAllocator implements AssetAllocator {
 					for (int i = length - window; i < length; i++)
 						if (prices[i - 1] < prices[i])
 							u++;
-					float rsi = (float) u / length;
-					if (rsi < threshold0)
-						return 1d;
-					else if (threshold1 < rsi)
-						return -1d;
+					double rsi = (double) u / length;
+					if (rsi < threshold0) // over-sold
+						return .5d - rsi;
+					else if (threshold1 < rsi) // over-bought
+						return .5d - rsi;
 					else
 						return 0d;
 				}) //
