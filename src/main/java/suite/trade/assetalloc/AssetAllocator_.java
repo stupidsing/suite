@@ -11,6 +11,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.MovingAverage;
+import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.util.String_;
 
@@ -36,6 +37,15 @@ public class AssetAllocator_ {
 		return (dataSourceBySymbol, backTestDate) -> Read.from2(dataSourceBySymbol) //
 				.map2((symbol, dataSource) -> dataSource.get(-2).price / dataSource.get(-1).price < .96d ? 1d : 0d) //
 				.toList();
+	}
+
+	public static AssetAllocator byPairs(Configuration cfg, Asset asset0, Asset asset1) {
+		return AssetAllocator_.filterAssets( //
+				symbol -> String_.equals(symbol, asset1.symbol), //
+				IndexRelativeAssetAllocator.of( //
+						cfg, //
+						asset0.symbol, //
+						RsiAssetAllocator.of()));
 	}
 
 	public static AssetAllocator byTradeFrequency(AssetAllocator assetAllocator, int tradeFrequency) {

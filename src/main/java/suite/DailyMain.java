@@ -79,7 +79,13 @@ public class DailyMain extends ExecutableProgram {
 		quoteDatabase.join();
 
 		// perform systematic trading
-		List<Result> results = Arrays.asList(bug(), mamr(), pmamr(), pmmmr(), revco());
+		List<Result> results = Arrays.asList( //
+				bug(), //
+				mamr(), //
+				pairs("0341.HK", "0052.HK"), //
+				pmamr(), //
+				pmmmr(), //
+				revco());
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
 
@@ -191,6 +197,13 @@ public class DailyMain extends ExecutableProgram {
 		return new Result(tag, trades);
 	}
 
+	private Result pairs(String symbol0, String symbol1) {
+		Asset asset0 = cfg.queryCompany(symbol0);
+		Asset asset1 = cfg.queryCompany(symbol1);
+		AssetAllocator assetAllocator = AssetAllocator_.byPairs(cfg, asset0, asset1);
+		return alloc("pairs/" + symbol0 + "/" + symbol1, Read.each(asset0, asset1), assetAllocator);
+	}
+
 	// portfolio-based moving average mean reversion
 	private Result pmamr() {
 		return alloc("pmamr", MovingAvgMeanReversionAssetAllocator0.of(cfg, log));
@@ -208,6 +221,10 @@ public class DailyMain extends ExecutableProgram {
 
 	private Result alloc(String tag, AssetAllocator assetAllocator) {
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(LocalDate.now()); // hkex.getCompanies()
+		return alloc(tag, assets, assetAllocator);
+	}
+
+	private Result alloc(String tag, Streamlet<Asset> assets, AssetAllocator assetAllocator) {
 		Simulate sim = AssetAllocBackTest.ofNow(cfg, assets, assetAllocator, log).simulate(300000f);
 
 		Account account0 = Account.fromPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
