@@ -18,7 +18,6 @@ import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.Summarize;
 import suite.util.FunUtil.Sink;
 import suite.util.Object_;
-import suite.util.String_;
 
 public class AssetAllocBackTestTest {
 
@@ -33,14 +32,14 @@ public class AssetAllocBackTestTest {
 		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
 		Simulate sim = backTest(assetAllocator, period);
 		Summarize.of(cfg, Read.from(sim.trades)).out(System.out::println, trade -> trade.symbol);
-		assertGrowth(sim);
+		assertGrowth(out(sim));
 	}
 
 	@Test
 	public void testBackTestSingle() {
 		Asset asset = cfg.queryCompany("0945.HK");
 		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of(cfg, log);
-		assertGrowth(backTest(assetAllocator, Read.each(asset), period));
+		assertGrowth(out(backTest(assetAllocator, Read.each(asset), period)));
 	}
 
 	@Test
@@ -48,7 +47,7 @@ public class AssetAllocBackTestTest {
 		String symbol = "^HSI";
 		Asset asset = Asset.of(symbol, "Hang Seng Index", 1);
 		AssetAllocator assetAllocator = new SingleAssetAllocator(symbol);
-		assertGrowth(backTest(assetAllocator, Read.each(asset), period));
+		assertGrowth(out(backTest(assetAllocator, Read.each(asset), period)));
 	}
 
 	@Test
@@ -68,24 +67,24 @@ public class AssetAllocBackTestTest {
 	@Test
 	public void testPairsTrading() {
 		Pair<Asset, Asset> pairs0 = Pair.of(cfg.queryCompany("0341.HK"), cfg.queryCompany("0052.HK"));
-		Pair<Asset, Asset> pairs1 = Pair.of(cfg.queryCompany("0005.HK"), cfg.queryCompany("2888.HK"));
+		Pair<Asset, Asset> pairs1 = Pair.of(cfg.queryCompany("0052.HK"), cfg.queryCompany("0341.HK"));
+		Pair<Asset, Asset> pairs2 = Pair.of(cfg.queryCompany("0005.HK"), cfg.queryCompany("2888.HK"));
 
-		String results = Read.each(pairs0, pairs1) //
+		String results = Read.each(pairs0, pairs1, pairs2) //
 				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
 				.map((pair, period) -> {
 					Asset asset0 = pair.t0;
 					Asset asset1 = pair.t1;
-					AssetAllocator assetAllocator = //
-							AssetAllocator_.filterAssets( //
-									symbol -> String_.equals(symbol, asset1.symbol), //
-									IndexRelativeAssetAllocator.of( //
-											cfg, //
-											asset0.symbol, //
-											RsiAssetAllocator.of()));
-					return "\nTEST = " + pair + ", " + backTest(assetAllocator, Read.each(asset0, asset1), period).conclusion();
+					AssetAllocator assetAllocator = AssetAllocator_.byPairs(cfg, asset0, asset1);
+					try {
+						return "\nTEST = " + pair + ", " + backTest(assetAllocator, Read.each(asset0, asset1), period).conclusion();
+					} catch (Exception ex) {
+						return "\nexception = " + ex;
+					}
 				}) //
 				.sort(Object_::compare) //
 				.collect(As.joined());
+
 		System.out.println(results);
 	}
 
@@ -102,11 +101,7 @@ public class AssetAllocBackTestTest {
 				period, //
 				log);
 
-		Simulate sim = backTest.simulate(initial);
-
-		System.out.println(sim.conclusion());
-		System.out.println(sim.account.transactionSummary(cfg::transactionFee));
-		return sim;
+		return backTest.simulate(initial);
 	}
 
 	private void assertGrowth(Simulate sim) {
@@ -114,6 +109,11 @@ public class AssetAllocBackTestTest {
 		int last = valuations.length - 1;
 		double r = Trade_.riskFreeInterestRate(last);
 		assertTrue(initial * r < valuations[last]);
+	}
+
+	private Simulate out(Simulate sim) {
+		System.out.println(sim.conclusion());
+		return sim;
 	}
 
 }
