@@ -83,13 +83,11 @@ public class DailyMain extends ExecutableProgram {
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
 
-		for (Result result : results) {
-			String tradeString = Read.from(result.trades) //
+		for (Result result : results)
+			sb.append(Read.from(result.trades) //
 					.filter(trade -> trade.buySell != 0) //
-					.map(trade -> "\nSIGNAL" + trade) //
-					.collect(As.joined());
-			sb.append("\nOUTPUT (" + result.strategy + "):" + tradeString + "\n");
-		}
+					.map(trade -> "\nSIGNAL(" + result.strategy + ")" + trade) //
+					.collect(As.joined()));
 
 		String result = sb.toString();
 		LogUtil.info(result);
