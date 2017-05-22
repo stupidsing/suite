@@ -23,6 +23,7 @@ public class ConfigurationImpl implements Configuration {
 	private Hkd hkd = new Hkd();
 	private Hkex hkex = new Hkex();
 	private HkexFactBook hkexFactBook = new HkexFactBook();
+	private QuoteDatabase quoteDatabase = new QuoteDatabase();
 	private Yahoo yahoo = new Yahoo();
 	private YahooHistory yahooHistory = new YahooHistory();
 
@@ -84,7 +85,12 @@ public class ConfigurationImpl implements Configuration {
 		case HKD__:
 			return hkd.dataSource(symbol, period);
 		case YAHOO:
-			return yahooHistory.dataSource(symbol, period);
+			if (Boolean.TRUE)
+				return yahoo.dataSourceL1(symbol, period);
+			else if (Boolean.TRUE)
+				return yahooHistory.dataSource(symbol, period);
+			else
+				return quoteDatabase.get(symbol, "o");
 		default:
 			throw new RuntimeException();
 		}
