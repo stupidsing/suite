@@ -13,22 +13,6 @@ public class TimeSeries {
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 
-	public boolean isUnitRootDetected(float[] prices, int tor) {
-		double tStatistic = adf(prices, tor);
-		if (prices.length <= 25)
-			return -3d <= tStatistic;
-		else if (prices.length <= 50)
-			return -2.93d <= tStatistic;
-		else if (prices.length <= 100)
-			return -2.89d <= tStatistic;
-		else if (prices.length <= 250)
-			return -2.88d <= tStatistic;
-		else if (prices.length <= 500)
-			return -2.87d <= tStatistic;
-		else
-			return -2.86d <= tStatistic;
-	}
-
 	// Augmented Dickey-Fuller test
 	public double adf(float[] prices, int tor) {
 		float[] diffs = differences_(1, prices);
@@ -48,6 +32,27 @@ public class TimeSeries {
 
 	public float[] differencesOn(int tor, float[] fs) {
 		return differencesOn_(tor, fs);
+	}
+
+	public Donchian donchian(int tor, float[] fs) {
+		return new Donchian(tor, fs);
+	}
+
+	public class Donchian {
+		public final float[] mins;
+		public final float[] maxs;
+
+		private Donchian(int tor, float[] fs) {
+			float min = fs[0], max = fs[0];
+			int length = fs.length;
+			mins = new float[length];
+			maxs = new float[length];
+			for (int i = 0; i < length; i++) {
+				float f = fs[i];
+				mins[i] = Math.min(min, f);
+				maxs[i] = Math.max(max, f);
+			}
+		}
 	}
 
 	public float[] drop(int tor, float[] fs) {
@@ -75,6 +80,22 @@ public class TimeSeries {
 		LinearRegression lr = stat.linearRegression(deps, n);
 		float beta0 = lr.betas[0];
 		return beta0 / 2d;
+	}
+
+	public boolean isUnitRootDetected(float[] prices, int tor) {
+		double tStatistic = adf(prices, tor);
+		if (prices.length <= 25)
+			return -3d <= tStatistic;
+		else if (prices.length <= 50)
+			return -2.93d <= tStatistic;
+		else if (prices.length <= 100)
+			return -2.89d <= tStatistic;
+		else if (prices.length <= 250)
+			return -2.88d <= tStatistic;
+		else if (prices.length <= 500)
+			return -2.87d <= tStatistic;
+		else
+			return -2.86d <= tStatistic;
 	}
 
 	public float[] logReturns(float[] fs) {
