@@ -12,8 +12,10 @@ import suite.adt.pair.Pair;
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
 import suite.os.LogUtil;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.trade.Account;
 import suite.trade.Account.Valuation;
 import suite.trade.Asset;
@@ -106,7 +108,7 @@ public class AssetAllocBackTest {
 			// pre-fetch quotes
 			cfg.quote(symbols);
 
-			Map<String, DataSource> dataSourceBySymbol0 = Read.from(symbols) //
+			Streamlet2<String, DataSource> dataSourceBySymbol0 = Read.from(symbols) //
 					.map2(symbol -> cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate)) //
 					.map2((symbol, dataSource) -> {
 						try {
@@ -118,12 +120,15 @@ public class AssetAllocBackTest {
 						}
 					}) //
 					.filterValue(dataSource -> dataSource != null) //
-					.toMap();
+					.collect(As::streamlet2);
 
-			AlignDataSource alignDataSource = DataSource.alignAll(Read.from2(dataSourceBySymbol0).values());
+			AlignDataSource alignDataSource = DataSource.alignAll(dataSourceBySymbol0.values());
+
+			Streamlet2<String, DataSource> dataSourceBySymbol1 = dataSourceBySymbol0 //
+					.mapValue(alignDataSource::align) //
+					.collect(As::streamlet2);
+
 			String[] tradeDateArray = alignDataSource.dates;
-			Map<String, DataSource> dataSourceBySymbol1 = Read.from2(dataSourceBySymbol0).mapValue(alignDataSource::align).toMap();
-
 			List<LocalDate> dates = datesPred.apply(Read.from(tradeDateArray).map(To::date).toList());
 			int size = dates.size();
 
@@ -135,12 +140,12 @@ public class AssetAllocBackTest {
 				int index = Arrays.binarySearch(tradeDateArray, To.string(date));
 				DatePeriod historyWindowPeriod = DatePeriod.daysBefore(date, historyWindow);
 
-				Map<String, DataSource> backTestDataSourceBySymbol = Read.from2(dataSourceBySymbol1) //
+				Map<String, DataSource> backTestDataSourceBySymbol = dataSourceBySymbol1 //
 						.mapValue(dataSource -> dataSource.range(historyWindowPeriod)) //
 						.filterValue(dataSource -> 128 <= dataSource.dates.length) //
 						.toMap();
 
-				latestPriceBySymbol = Read.from2(dataSourceBySymbol1) //
+				latestPriceBySymbol = dataSourceBySymbol1 //
 						.mapValue(dataSource -> dataSource.prices[index]) //
 						.toMap();
 
