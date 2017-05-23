@@ -55,6 +55,10 @@ public class DataSource {
 		}
 	}
 
+	public interface DatePricePredicate {
+		public boolean test(String date, float price);
+	}
+
 	public static AlignDataSource alignAll(Streamlet<DataSource> dataSources) {
 		Streamlet<String> tradeDates;
 		if (Boolean.TRUE)
@@ -87,6 +91,10 @@ public class DataSource {
 			throw new RuntimeException("mismatched dates and prices");
 	}
 
+	public DataSource after(LocalDate date) {
+		return range_(DatePeriod.of(date, DatePeriod.ages().to));
+	}
+
 	public DataSource align(String[] dates1) {
 		int length0 = dates.length;
 		int length1 = dates1.length;
@@ -105,7 +113,6 @@ public class DataSource {
 		String[] dates1 = Util.add(String.class, dates, new String[] { date, });
 		float[] prices1 = mtx.concat(prices, new float[] { price, });
 		return new DataSource(dates1, prices1);
-
 	}
 
 	public void cleanse() {
@@ -120,8 +127,22 @@ public class DataSource {
 		}
 	}
 
-	public DataSource after(LocalDate date) {
-		return range_(DatePeriod.of(date, DatePeriod.ages().to));
+	public DataSource filter(DatePricePredicate fdp) {
+		return filter_(fdp);
+	}
+
+	public Datum first() {
+		return get(0);
+	}
+
+	public Datum get(int pos) {
+		if (pos < 0)
+			pos += prices.length;
+		return new Datum(dates[pos], prices[pos]);
+	}
+
+	public Datum last() {
+		return get(-1);
 	}
 
 	public DataSource range(DatePeriod period) {
@@ -160,23 +181,13 @@ public class DataSource {
 		return getClass().getSimpleName() + "(" + range + ")";
 	}
 
-	public Datum first() {
-		return get(0);
-	}
-
-	public Datum last() {
-		return get(-1);
-	}
-
-	public Datum get(int pos) {
-		if (pos < 0)
-			pos += prices.length;
-		return new Datum(dates[pos], prices[pos]);
-	}
-
 	private DataSource range_(DatePeriod period) {
 		String s0 = To.string(period.from);
 		String sx = To.string(period.to);
+		return filter_((date, price) -> Object_.compare(s0, date) <= 0 && Object_.compare(date, sx) < 0);
+	}
+
+	private DataSource filter_(DatePricePredicate fdp) {
 		String[] dates1 = new String[dates.length];
 		float[] prices1 = new float[prices.length];
 		int j = 0;
@@ -184,7 +195,7 @@ public class DataSource {
 		for (int i = 0; i < prices.length; i++) {
 			String date = dates[i];
 			float price = prices[i];
-			if (Object_.compare(s0, date) <= 0 && Object_.compare(date, sx) < 0) {
+			if (fdp.test(date, price)) {
 				dates1[j] = date;
 				prices1[j] = price;
 				j++;

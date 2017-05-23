@@ -88,7 +88,7 @@ public class Yahoo {
 						.flatMap(json_ -> json_.get("open")) //
 						.collect(As.arrayOfFloats(JsonNode::floatValue));
 
-				return new DataSource(dates, prices);
+				return new DataSource(dates, prices).filter((date, price) -> price != 0f);
 			}
 		});
 	}
