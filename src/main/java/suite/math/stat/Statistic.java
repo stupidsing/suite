@@ -131,6 +131,15 @@ public class Statistic {
 				return (float) (betas[i] * invsd);
 			});
 		}
+
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			float[] tStatistic = tStatistic();
+			for (int i = 0; i < sampleLength; i++)
+				sb.append("\ncoefficient = " + To.string(betas[i]) + ", t-statistic = " + To.string(tStatistic[i]));
+			sb.append("\nstandard error = " + To.string(standardError) + ", r2 = " + To.string(r2));
+			return sb.toString();
+		}
 	}
 
 	// iteratively reweighted least squares
