@@ -3,14 +3,18 @@ package suite.trade.data;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collection;
 
 import suite.math.linalg.Matrix;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.trade.DatePeriod;
 import suite.util.DataInput_;
 import suite.util.DataOutput_;
 import suite.util.Object_;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
+import suite.util.Set_;
 import suite.util.To;
 import suite.util.Util;
 
@@ -48,6 +52,31 @@ public class DataSource {
 
 		public String toString() {
 			return date + ":" + To.string(price);
+		}
+	}
+
+	public static AlignDataSource alignAll(Streamlet<DataSource> dataSources) {
+		Streamlet<String> tradeDates;
+		if (Boolean.TRUE)
+			tradeDates = dataSources // union
+					.concatMap(dataSource -> Read.from(dataSource.dates)) //
+					.distinct();
+		else
+			tradeDates = Read.from(Set_.intersect(dataSources // intersect
+					.map(dataSource -> (Collection<String>) Arrays.asList(dataSource.dates)) //
+					.toList()));
+		return new AlignDataSource(tradeDates.sort(Object_::compare).toArray(String.class));
+	}
+
+	public static class AlignDataSource {
+		public final String[] dates;
+
+		private AlignDataSource(String[] dates) {
+			this.dates = dates;
+		}
+
+		public DataSource align(DataSource dataSource) {
+			return dataSource.align(dates);
 		}
 	}
 

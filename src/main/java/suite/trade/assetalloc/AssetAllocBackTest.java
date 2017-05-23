@@ -3,7 +3,6 @@ package suite.trade.assetalloc;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,11 +23,10 @@ import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
+import suite.trade.data.DataSource.AlignDataSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.List_;
-import suite.util.Object_;
-import suite.util.Set_;
 import suite.util.String_;
 import suite.util.To;
 
@@ -122,26 +120,13 @@ public class AssetAllocBackTest {
 					.filterValue(dataSource -> dataSource != null) //
 					.toMap();
 
-			Streamlet<String> tradeDates0;
+			AlignDataSource alignDataSource = DataSource.alignAll(Read.from2(dataSourceBySymbol0).values());
+			String[] tradeDateArray = alignDataSource.dates;
+			Map<String, DataSource> dataSourceBySymbol1 = Read.from2(dataSourceBySymbol0).mapValue(alignDataSource::align).toMap();
 
-			if (Boolean.TRUE)
-				tradeDates0 = Read.from2(dataSourceBySymbol0) // union
-						.concatMap((symbol, dataSource) -> Read.from(dataSource.dates)) //
-						.distinct();
-			else
-				tradeDates0 = Read.from(Set_.intersect(Read.from2(dataSourceBySymbol0) // intersect
-						.map((symbol, dataSource) -> (Collection<String>) Arrays.asList(dataSource.dates)) //
-						.toList()));
-
-			Streamlet<String> tradeDates1 = tradeDates0.sort(Object_::compare);
-			String[] tradeDateArray = tradeDates1.toArray(String.class);
-
-			Map<String, DataSource> dataSourceBySymbol1 = Read.from2(dataSourceBySymbol0) //
-					.mapValue(dataSource -> dataSource.align(tradeDateArray)) //
-					.toMap();
-
-			List<LocalDate> dates = datesPred.apply(tradeDates1.map(To::date).toList());
+			List<LocalDate> dates = datesPred.apply(Read.from(tradeDateArray).map(To::date).toList());
 			int size = dates.size();
+
 			float[] valuations_ = new float[size];
 			Map<String, Float> latestPriceBySymbol = null;
 
