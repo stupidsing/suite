@@ -90,6 +90,10 @@ public class YahooHistory {
 		return new DataSource(dates, prices);
 	}
 
+	public boolean isContainsData(String symbol) {
+		return read().containsKey(symbol);
+	}
+
 	private Map<String, String> read(String symbol) {
 		return getDataBySymbol(read(), symbol);
 	}
