@@ -96,21 +96,27 @@ public class Statistic {
 			float[] estimatedy = To.arrayOfFloats(x, this::predict);
 			double meany = mean_(y);
 
-			double sst = 0f; // total sum of squares
-			double ssr = 0f; // estimated sum of squares
+			double sst = 0d; // total sum of squares
+			double ssr = 0d; // estimated sum of squares
+			double sse_ = 0d; // sum of squared residuals
 
 			for (int i = 0; i < nSamples_; i++) {
-				double d0 = y[i] - meany;
-				double d1 = estimatedy[i] - meany;
+				float yi = y[i];
+				float estyi = estimatedy[i];
+				double d0 = yi - meany;
+				double d1 = estyi - meany;
+				double d2 = yi - estyi;
 				sst += d0 * d0;
 				ssr += d1 * d1;
+				sse_ += d2 * d2;
 			}
 
+			// sse = sst - ssr; // theoretically
 			nSamples = nSamples_;
 			sampleLength = sampleLength_;
 			in = x;
 			invn2 = 1d / (nSamples_ - sampleLength_ - 1);
-			sse = sst - ssr; // sum of squared residuals
+			sse = sse_;
 			r2 = ssr / sst; // 0 -> not accurate, 1 -> totally accurate
 			standardError = Math.sqrt(ssr * invn2);
 		}
