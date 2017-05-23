@@ -1,7 +1,6 @@
 package suite.trade.assetalloc;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.trade.singlealloc.Strategos;
-import suite.util.To;
 
 // old mamr strategy, refer Strategos.movingAvgMeanReverting()
 public class MovingAvgAssetAllocator implements AssetAllocator {
@@ -21,19 +19,25 @@ public class MovingAvgAssetAllocator implements AssetAllocator {
 	private float threshold = .15f;
 
 	private Strategos strategos = new Strategos();
+	private BuySellStrategy mamr = strategos.movingAvgMeanReverting(nPastDays, nHoldDays, threshold);
+
+	public static AssetAllocator of() {
+		return AssetAllocator_.unleverage(new MovingAvgAssetAllocator());
+	}
+
+	private MovingAvgAssetAllocator() {
+	}
 
 	@Override
 	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate) {
-		BuySellStrategy mamr = strategos.movingAvgMeanReverting(nPastDays, nHoldDays, threshold);
-
 		return Read.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {
-					int day = Arrays.binarySearch(dataSource.dates, To.string(backTestDate));
-					GetBuySell gbs = mamr.analyze(dataSource.prices);
+					float[] prices = dataSource.prices;
+					GetBuySell gbs = mamr.analyze(prices);
 					int hold = 0;
 
-					for (int i = 0; i < day; i++)
-						hold += gbs.get(day);
+					for (int i = 0; i < prices.length; i++)
+						hold += gbs.get(i);
 
 					return (double) hold;
 				}) //
