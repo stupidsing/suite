@@ -20,6 +20,7 @@ import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.Trade;
 import suite.trade.Trade_;
+import suite.trade.analysis.Summarize;
 import suite.trade.assetalloc.AssetAllocBackTest;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.assetalloc.AssetAllocator;
@@ -31,7 +32,6 @@ import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.trade.data.QuoteDatabase;
-import suite.trade.data.Summarize;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
@@ -49,6 +49,7 @@ public class DailyMain extends ExecutableProgram {
 	private Configuration cfg = new ConfigurationImpl();
 	private StringBuilder sb = new StringBuilder();
 	private Sink<String> log = To.sink(sb);
+	private LocalDate today = LocalDate.now();
 
 	private class Result {
 		private String strategy;
@@ -69,7 +70,7 @@ public class DailyMain extends ExecutableProgram {
 
 		// fetch Yahoo historical data
 		Map<String, DataSource> dataSourceBySymbol = cfg //
-				.queryLeadingCompaniesByMarketCap(LocalDate.now()) //
+				.queryLeadingCompaniesByMarketCap(today) //
 				.map(asset -> asset.symbol) //
 				.map2(cfg::dataSource) //
 				.toMap();
@@ -155,7 +156,7 @@ public class DailyMain extends ExecutableProgram {
 						.toMap());
 
 		DatePeriod period = DatePeriod.daysBefore(128);
-		String sevenDaysAgo = To.string(LocalDate.now().plusDays(-7));
+		String sevenDaysAgo = To.string(today.plusDays(-7));
 		List<Trade> trades = new ArrayList<>();
 
 		// capture signals
@@ -175,7 +176,7 @@ public class DailyMain extends ExecutableProgram {
 						throw new RuntimeException("ancient data: " + datex);
 
 					Map<String, Float> latest = cfg.quote(Collections.singleton(symbol));
-					String latestDate = To.string(LocalDate.now());
+					String latestDate = To.string(today);
 					float latestPrice = latest.values().iterator().next();
 
 					DataSource ds1 = ds0.cons(latestDate, latestPrice);
@@ -220,7 +221,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private Result alloc(String tag, AssetAllocator assetAllocator) {
-		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(LocalDate.now()); // hkex.getCompanies()
+		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today); // hkex.getCompanies()
 		return alloc(tag, assets, assetAllocator);
 	}
 

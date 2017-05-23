@@ -1,4 +1,4 @@
-package suite.trade.data;
+package suite.trade.analysis;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,6 +11,7 @@ import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.Trade;
 import suite.trade.Trade_;
+import suite.trade.data.Configuration;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.To;

@@ -1,8 +1,8 @@
 package suite;
 
+import suite.trade.analysis.Summarize;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
-import suite.trade.data.Summarize;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 

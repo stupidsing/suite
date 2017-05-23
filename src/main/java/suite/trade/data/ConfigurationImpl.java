@@ -43,12 +43,11 @@ public class ConfigurationImpl implements Configuration {
 
 		// count as tomorrow open if market is closed (after 4pm)
 		String date = To.string(HkexUtil.getTradeTimeAfter(LocalDateTime.now()).toLocalDate());
-		float price = quote_(Collections.singleton(symbol)).get(symbol);
 		DataSource dataSource0 = dataSource_(symbol, DatePeriod.ages());
 		DataSource dataSource1;
 
 		if (!String_.equals(dataSource0.last().date, date))
-			dataSource1 = dataSource0.cons(date, price);
+			dataSource1 = dataSource0.cons(date, quote_(Collections.singleton(symbol)).get(symbol));
 		else
 			dataSource1 = dataSource0;
 

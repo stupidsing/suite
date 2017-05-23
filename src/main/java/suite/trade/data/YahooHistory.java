@@ -73,7 +73,7 @@ public class YahooHistory {
 		String from = To.string(period.from);
 		String to = To.string(period.to);
 
-		for (Entry<String, String> e : read().get(symbol).entrySet()) {
+		for (Entry<String, String> e : read(symbol).entrySet()) {
 			String date = e.getKey();
 			String csv = e.getValue();
 			String[] array = csv.split(",");
@@ -90,6 +90,10 @@ public class YahooHistory {
 		return new DataSource(dates, prices);
 	}
 
+	private Map<String, String> read(String symbol) {
+		return getDataBySymbol(read(), symbol);
+	}
+
 	private Map<String, Map<String, String>> read() {
 		if (data == null) {
 			data = new HashMap<>();
@@ -98,7 +102,7 @@ public class YahooHistory {
 				Pair<String, String> p0 = String_.split2(line, ",");
 				Pair<String, String> p1 = String_.split2(p0.t0, "-");
 				String symbol = p1.t0, date = p1.t1, csv = p0.t1;
-				getDataBySymbol(symbol).put(date, csv);
+				getDataBySymbol(data, symbol).put(date, csv);
 			}
 
 			// update after market closed
@@ -109,7 +113,7 @@ public class YahooHistory {
 				Map<String, Float> quotes = yahoo.quote(data.keySet());
 
 				for (Entry<String, Float> e : quotes.entrySet())
-					getDataBySymbol(e.getKey()).put(date, "-,-,-," + To.string(e.getValue()) + ",-,-");
+					getDataBySymbol(data, e.getKey()).put(date, "-,-,-," + To.string(e.getValue()) + ",-,-");
 
 				write();
 			}
@@ -134,7 +138,7 @@ public class YahooHistory {
 		}
 	}
 
-	private Map<String, String> getDataBySymbol(String symbol) {
+	private Map<String, String> getDataBySymbol(Map<String, Map<String, String>> data, String symbol) {
 		return data.computeIfAbsent(symbol, symbol_ -> new HashMap<>());
 	}
 
