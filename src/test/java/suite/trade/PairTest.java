@@ -1,5 +1,7 @@
 package suite.trade;
 
+import static org.junit.Assert.assertTrue;
+
 import java.time.LocalDate;
 
 import org.junit.Test;
@@ -26,7 +28,7 @@ public class PairTest {
 	@Test
 	public void test() {
 		DatePeriod period = DatePeriod.of(LocalDate.of(2016, 1, 1), LocalDate.of(2017, 1, 1));
-		test(period, "0005.HK", "2888.HK");
+		// test(period, "0005.HK", "2888.HK");
 		test(period, "0341.HK", "0052.HK");
 	}
 
@@ -43,6 +45,7 @@ public class PairTest {
 		float[] y = prices1;
 		LinearRegression lr = statistic.linearRegression(x, y);
 		System.out.println(symbol0 + " -> " + symbol1 + lr);
+		assertTrue(.4d < lr.r2);
 	}
 
 }
