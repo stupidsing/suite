@@ -230,10 +230,12 @@ public class DailyMain extends ExecutableProgram {
 
 		Account account0 = Account.fromPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
 		Account account1 = sim.account;
+		Map<String, Integer> assets0 = account0.assets();
+		Map<String, Integer> assets1 = account1.assets();
 
-		Set<String> symbols = Set_.union(account0.assets().keySet(), account1.assets().keySet());
+		Set<String> symbols = Set_.union(assets0.keySet(), assets1.keySet());
 		Map<String, Float> priceBySymbol = cfg.quote(symbols);
-		List<Trade> trades = Trade_.diff(account0.assets(), account1.assets(), priceBySymbol);
+		List<Trade> trades = Trade_.diff(assets0, assets1, priceBySymbol);
 
 		sb.append("\n" + sim.conclusion());
 
