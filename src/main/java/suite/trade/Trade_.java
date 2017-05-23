@@ -8,7 +8,7 @@ import suite.primitive.PrimitiveFun.Obj_Float;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
+import suite.util.Set_;
 import suite.util.String_;
 
 public class Trade_ {
@@ -27,9 +27,7 @@ public class Trade_ {
 	}
 
 	public static List<Trade> diff(Map<String, Integer> assets0, Map<String, Integer> assets1, Map<String, Float> prices) {
-		Set<String> symbols = Streamlet2.concat(Read.from2(assets0), Read.from2(assets1)) //
-				.map((symbol, nShares) -> symbol) //
-				.toSet();
+		Set<String> symbols = Set_.union(assets0.keySet(), assets1.keySet());
 
 		return Read.from(symbols) //
 				.map2(symbol -> {
