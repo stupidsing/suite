@@ -15,6 +15,7 @@ import suite.smtp.SmtpSslGmail;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
@@ -90,11 +91,26 @@ public class DailyMain extends ExecutableProgram {
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
 
-		for (Result result : results)
-			sb.append(Read.from(result.trades) //
-					.filter(trade -> trade.buySell != 0) //
-					.map(trade -> "\nSIGNAL(" + result.strategy + ")" + trade) //
-					.collect(As.joined()));
+		Streamlet2<String, Trade> strategyTrades = Read.from(results) //
+				.concatMap2(result -> Read.from(result.trades).map2(trade -> result.strategy, trade -> trade)) //
+				.filterValue(trade -> trade.buySell != 0);
+
+		sb.append(strategyTrades //
+				.map((strategy, trade) -> "\n" + (0 <= trade.buySell ? "BUY_" : "SELL") //
+						+ " SIGNAL(" + strategy + ")" + trade //
+						+ " = " + To.string(trade.buySell * trade.price)) //
+				.sortBy(line -> line) //
+				.collect(As.joined()));
+
+		Streamlet<Trade> trades = strategyTrades.values();
+
+		sb.append("\nTOTAL BUYS = " + trades.collectAsFloat(As.sumOfFloats(trade -> Math.max(0, trade.buySell) * trade.price)));
+		sb.append("\nTOTAL SELLS = " + trades.collectAsFloat(As.sumOfFloats(trade -> Math.max(0, -trade.buySell) * trade.price)));
+
+		sb.append("\nSUGGESTIONS");
+		sb.append("\n- check your balance");
+		sb.append("\n- comment out the small orders");
+		sb.append("\n- for mamr, check actual execution using SingleAllocBackTestTest.testBackTestHkexDetails()");
 
 		String result = sb.toString();
 		LogUtil.info(result);
@@ -184,7 +200,7 @@ public class DailyMain extends ExecutableProgram {
 
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
-					int nShares = signal * asset.lotSize * Math.round(300000f / nHoldDays / (asset.lotSize * latestPrice));
+					int nShares = signal * asset.lotSize * Math.round(150000f / nHoldDays / (asset.lotSize * latestPrice));
 					Trade trade = Trade.of(nShares, symbol, latestPrice);
 
 					if (signal != 0)
@@ -217,7 +233,7 @@ public class DailyMain extends ExecutableProgram {
 
 	// portfolio-based moving average mean reversion
 	private Result revco() {
-		return alloc("revco", AssetAllocator_.unleverage(ReverseCorrelateAssetAllocator.of()));
+		return alloc("revco", ReverseCorrelateAssetAllocator.of());
 	}
 
 	private Result alloc(String tag, AssetAllocator assetAllocator) {
@@ -226,7 +242,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private Result alloc(String tag, Streamlet<Asset> assets, AssetAllocator assetAllocator) {
-		Simulate sim = AssetAllocBackTest.ofNow(cfg, assets, assetAllocator, log).simulate(300000f);
+		Simulate sim = AssetAllocBackTest.ofNow(cfg, assets, assetAllocator, log).simulate(150000f);
 
 		Account account0 = Account.fromPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
 		Account account1 = sim.account;
