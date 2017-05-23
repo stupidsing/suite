@@ -149,23 +149,23 @@ public class AssetAllocBackTest {
 						.mapValue(dataSource -> dataSource.prices[index]) //
 						.toMap();
 
+				Valuation val = account.valuation(latestPriceBySymbol);
+				valuations_[i] = (float) (valuation = val.sum());
 				List<Pair<String, Double>> ratioBySymbol = assetAllocator.allocate(backTestDataSourceBySymbol, date);
 
+				Map<String, Float> latestPriceBySymbol_ = latestPriceBySymbol;
 				double valuation_ = valuation;
 
 				Map<String, Integer> portfolio = Read.from2(ratioBySymbol) //
 						.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
 						.map2((symbol, potential) -> {
-							float price = backTestDataSourceBySymbol.get(symbol).last().price;
+							float price = latestPriceBySymbol_.get(symbol);
 							int lotSize = assetBySymbol.get(symbol).lotSize;
 							return lotSize * (int) Math.floor(valuation_ * potential / (price * lotSize));
 						}) //
 						.toMap();
 
 				String actions = play(Trade_.diff(account.assets(), portfolio, latestPriceBySymbol));
-				Valuation val = account.valuation(latestPriceBySymbol);
-
-				valuations_[i] = (float) (valuation = val.sum());
 
 				for (Pair<String, Float> e : val.stream())
 					holdBySymbol_.compute(e.t0, (s, h) -> e.t1 / (valuation_ * size) + (h != null ? h : 0d));
@@ -194,6 +194,7 @@ public class AssetAllocBackTest {
 		}
 
 		private String play(List<Trade> trades_) {
+			System.out.println(trades_);
 			trades.addAll(trades_);
 			account.play(trades_);
 			account.validate();

@@ -44,7 +44,7 @@ public class MovingAvgMeanReversionAssetAllocator0 implements AssetAllocator {
 	public static AssetAllocator of(Configuration cfg, Sink<String> log) {
 		return AssetAllocator_.reallocate( //
 				AssetAllocator_.byTradeFrequency( //
-						MovingAvgMeanReversionAssetAllocator0.of_(cfg, log), 3));
+						3, MovingAvgMeanReversionAssetAllocator0.of_(cfg, log)));
 	}
 
 	public static MovingAvgMeanReversionAssetAllocator0 of_(Configuration cfg, Sink<String> log) {

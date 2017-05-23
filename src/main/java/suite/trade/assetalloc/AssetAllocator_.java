@@ -8,6 +8,9 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
+import suite.math.stat.BollingerBands;
+import suite.math.stat.TimeSeries;
+import suite.math.stat.TimeSeries.Donchian;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Asset;
@@ -18,8 +21,36 @@ import suite.util.String_;
 
 public class AssetAllocator_ {
 
+	private static BollingerBands bb = new BollingerBands();
+	private static MovingAverage movingAvg = new MovingAverage();
+	private static TimeSeries ts = new TimeSeries();
+
+	public static AssetAllocator bollingerBands() {
+		int window = 32;
+		int k = 2;
+
+		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate) -> Read.from2(dataSourceBySymbol) //
+				.mapValue(dataSource -> {
+					float[] percentbs = bb.bb(dataSource.prices, window, k).percentb;
+					int length = percentbs.length;
+					double hold = 0d;
+					for (int i = 0; i < length; i++) {
+						float percentb = percentbs[i];
+						if (percentb <= 0f)
+							hold = 1d;
+						else if (.5f < percentb) // un-short
+							hold = 0d <= hold ? hold : 0d;
+						else if (percentb < 1f) // un-long
+							hold = hold < 0d ? hold : 0d;
+						else
+							hold = -1d;
+					}
+					return hold;
+				}) //
+				.toList());
+	}
+
 	public static AssetAllocator byEma() {
-		MovingAverage movingAvg = new MovingAverage();
 		int halfLife = 64;
 		double decay = Math.exp(Math.log(.5d) / halfLife);
 		double threshold = .9d;
@@ -43,13 +74,13 @@ public class AssetAllocator_ {
 	public static AssetAllocator byPairs(Configuration cfg, Asset asset0, Asset asset1) {
 		return AssetAllocator_.filterAssets( //
 				symbol -> String_.equals(symbol, asset1.symbol), //
-				IndexRelativeAssetAllocator.of( //
+				AssetAllocator_.relativeToIndex( //
 						cfg, //
 						asset0.symbol, //
-						RsiAssetAllocator.of()));
+						rsi_(32, .3d, .7d)));
 	}
 
-	public static AssetAllocator byTradeFrequency(AssetAllocator assetAllocator, int tradeFrequency) {
+	public static AssetAllocator byTradeFrequency(int tradeFrequency, AssetAllocator assetAllocator) {
 		return new AssetAllocator() {
 			private LocalDate date0;
 			private List<Pair<String, Double>> result0;
@@ -76,6 +107,27 @@ public class AssetAllocator_ {
 				.take(1) //
 				.mapValue(return_2 -> 1d) //
 				.toList();
+	}
+
+	public static AssetAllocator donchian() {
+		int window = 32;
+
+		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate) -> Read.from2(dataSourceBySymbol) //
+				.mapValue(dataSource -> {
+					Donchian donchian = ts.donchian(window, dataSource.prices);
+					String[] dates = dataSource.dates;
+					int length = dates.length;
+					int length1 = length - 1;
+					float price = dataSource.prices[length1];
+					boolean hold = false;
+					for (int i = 0; i < length; i++)
+						if (price == donchian.mins[i])
+							hold = true;
+						else if (price == donchian.maxs[i])
+							hold = false;
+					return hold ? 1d : 0d;
+				}) //
+				.toList());
 	}
 
 	public static AssetAllocator even(AssetAllocator assetAllocator0) {
@@ -111,6 +163,18 @@ public class AssetAllocator_ {
 		};
 	}
 
+	public static AssetAllocator relative(AssetAllocator assetAllocator, DataSource index) {
+		return relative_(assetAllocator, index);
+	}
+
+	public static AssetAllocator relativeToIndex(Configuration cfg, String indexSymbol, AssetAllocator assetAllocator) {
+		return relative_(assetAllocator, cfg.dataSourceWithLatestQuote(indexSymbol));
+	}
+
+	public static AssetAllocator rsi() {
+		return rsi_(32, .3d, .7d);
+	}
+
 	public static AssetAllocator unleverage(AssetAllocator assetAllocator0) {
 		AssetAllocator assetAllocator1 = filterShorts_(assetAllocator0);
 		return (dataSourceBySymbol, backTestDate) -> {
@@ -135,6 +199,52 @@ public class AssetAllocator_ {
 					.filterValue(potential -> 0d < potential) //
 					.toList();
 		};
+	}
+
+	private static AssetAllocator relative_(AssetAllocator assetAllocator, DataSource index) {
+		return (dataSourceBySymbol0, backTestDate) -> {
+			Map<String, DataSource> dataSourceBySymbol1 = Read.from2(dataSourceBySymbol0) //
+					.mapValue(dataSource0 -> {
+						String[] dates = dataSource0.dates;
+						String[] indexDates = index.dates;
+						float[] prices = dataSource0.prices;
+						float[] indexPrices = index.prices;
+						int length = dates.length;
+						int indexLength = indexDates.length;
+						float[] prices1 = new float[length];
+						int ii = 0;
+						for (int si = 0; si < length; si++) {
+							String date = dates[si];
+							while (ii < indexLength && indexDates[ii].compareTo(date) < 0)
+								ii++;
+							prices1[si] = prices[si] / indexPrices[ii];
+						}
+						return new DataSource(dates, prices1);
+					}) //
+					.toMap();
+
+			return assetAllocator.allocate(dataSourceBySymbol1, backTestDate);
+		};
+	}
+
+	private static AssetAllocator rsi_(int window, double threshold0, double threshold1) {
+		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate) -> Read.from2(dataSourceBySymbol) //
+				.mapValue(dataSource -> {
+					float[] prices = dataSource.prices;
+					int length = prices.length;
+					int u = 0;
+					for (int i = length - window; i < length; i++)
+						if (prices[i - 1] < prices[i])
+							u++;
+					double rsi = (double) u / length;
+					if (rsi < threshold0) // over-sold
+						return .5d - rsi;
+					else if (threshold1 < rsi) // over-bought
+						return .5d - rsi;
+					else
+						return 0d;
+				}) //
+				.toList());
 	}
 
 	private static List<Pair<String, Double>> scale(List<Pair<String, Double>> potentialBySymbol, double scale) {
