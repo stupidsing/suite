@@ -17,12 +17,15 @@ import suite.trade.Asset;
 import suite.trade.MovingAverage;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
+import suite.trade.singlealloc.BuySellStrategy;
+import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
+import suite.trade.singlealloc.Strategos;
 import suite.util.String_;
 
 public class AssetAllocator_ {
 
 	private static BollingerBands bb = new BollingerBands();
-	private static MovingAverage movingAvg = new MovingAverage();
+	private static MovingAverage ma = new MovingAverage();
 	private static TimeSeries ts = new TimeSeries();
 
 	public static AssetAllocator bollingerBands() {
@@ -57,7 +60,7 @@ public class AssetAllocator_ {
 
 		return (dataSourceBySymbol, backTestDate) -> Read.from2(dataSourceBySymbol) //
 				.map2((symbol, dataSource) -> {
-					float[] ema = movingAvg.exponentialMovingAvg(dataSource.prices, decay);
+					float[] ema = ma.exponentialMovingAvg(dataSource.prices, decay);
 					float lastEma = ema[ema.length - 2];
 					float latest = dataSource.last().price;
 					return latest / lastEma < threshold ? 1d : 0d;
@@ -130,6 +133,14 @@ public class AssetAllocator_ {
 				.toList());
 	}
 
+	public static AssetAllocator dump(AssetAllocator assetAllocator0) {
+		return (dataSourceBySymbol, backTestDate) -> {
+			List<Pair<String, Double>> ratioBySymbol = assetAllocator0.allocate(dataSourceBySymbol, backTestDate);
+			System.out.println("ratioBySymbol = " + ratioBySymbol);
+			return ratioBySymbol;
+		};
+	}
+
 	public static AssetAllocator even(AssetAllocator assetAllocator0) {
 		AssetAllocator assetAllocator1 = filterShorts_(assetAllocator0);
 		return (dataSourceBySymbol, backTestDate) -> {
@@ -150,6 +161,47 @@ public class AssetAllocator_ {
 
 	public static AssetAllocator filterShorts(AssetAllocator assetAllocator) {
 		return filterShorts_(assetAllocator);
+	}
+
+	public static AssetAllocator movingAvg() {
+		int nPastDays = 64;
+		int nHoldDays = 8;
+		float threshold = .15f;
+		Strategos strategos = new Strategos();
+		BuySellStrategy mamr = strategos.movingAvgMeanReverting(nPastDays, nHoldDays, threshold);
+
+		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate) -> {
+			return Read.from2(dataSourceBySymbol) //
+					.mapValue(dataSource -> {
+						float[] prices = dataSource.prices;
+						GetBuySell gbs = mamr.analyze(prices);
+						int hold = 0;
+
+						for (int i = 0; i < prices.length; i++)
+							hold += gbs.get(i);
+
+						return (double) hold;
+					}) //
+					.toList();
+		});
+	}
+
+	public static AssetAllocator movingMedianMeanReversion() {
+		int windowSize0 = 0;
+		int windowSize1 = 32;
+		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate) -> {
+			return Read.from2(dataSourceBySymbol) //
+					.mapValue(dataSource -> {
+						float[] prices = dataSource.prices;
+						float[] movingMedian0 = ma.movingMedian(prices, windowSize0);
+						float[] movingMedian1 = ma.movingMedian(prices, windowSize1);
+						double median0 = movingMedian0[movingMedian0.length - 1];
+						double median1 = movingMedian1[movingMedian1.length - 1];
+						double ratio = median1 / median0;
+						return ratio - 1d;
+					}) //
+					.toList();
+		});
 	}
 
 	public static AssetAllocator ofSingle(String symbol) {

@@ -27,7 +27,6 @@ import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.assetalloc.AssetAllocator;
 import suite.trade.assetalloc.AssetAllocator_;
 import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator0;
-import suite.trade.assetalloc.MovingMedianMeanReversionAssetAllocator;
 import suite.trade.assetalloc.ReverseCorrelateAssetAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
@@ -82,12 +81,13 @@ public class DailyMain extends ExecutableProgram {
 
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //
+				bb(450000f), //
 				bug(), //
-				mamr(), //
-				pairs("0341.HK", "0052.HK"), //
-				pmamr(), //
-				pmmmr(), //
-				revco());
+				mamr(75000f), //
+				pairs(200000f, "0341.HK", "0052.HK"), //
+				pmamr(75000f), //
+				pmmmr(125000f), //
+				revco(80000f));
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
 
@@ -96,7 +96,7 @@ public class DailyMain extends ExecutableProgram {
 				.filterValue(trade -> trade.buySell != 0);
 
 		sb.append(strategyTrades //
-				.map((strategy, trade) -> "\n" + (0 <= trade.buySell ? "BUY_" : "SELL") //
+				.map((strategy, trade) -> "\n" + (0 <= trade.buySell ? "BUY^" : "SELL") //
 						+ " SIGNAL(" + strategy + ")" + trade //
 						+ " = " + To.string(trade.buySell * trade.price)) //
 				.sortBy(line -> line) //
@@ -118,6 +118,10 @@ public class DailyMain extends ExecutableProgram {
 		SmtpSslGmail smtp = new SmtpSslGmail();
 		smtp.send(null, getClass().getName(), result);
 		return true;
+	}
+
+	private Result bb(float fund) {
+		return alloc("bb", fund, AssetAllocator_.bollingerBands());
 	}
 
 	// some orders caused by stupid bugs. need to sell those at suitable times.
@@ -142,7 +146,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	// moving average mean reversion
-	private Result mamr() {
+	private Result mamr(float factor) {
 		String tag = "mamr";
 		int nHoldDays = 8;
 		Streamlet<Asset> assets = cfg.queryCompanies();
@@ -200,7 +204,7 @@ public class DailyMain extends ExecutableProgram {
 
 					int last = prices.length - 1;
 					int signal = strategy.analyze(prices).get(last);
-					int nShares = signal * asset.lotSize * Math.round(150000f / nHoldDays / (asset.lotSize * latestPrice));
+					int nShares = signal * asset.lotSize * Math.round(factor / nHoldDays / (asset.lotSize * latestPrice));
 					Trade trade = Trade.of(nShares, symbol, latestPrice);
 
 					if (signal != 0)
@@ -214,35 +218,35 @@ public class DailyMain extends ExecutableProgram {
 		return new Result(tag, trades);
 	}
 
-	private Result pairs(String symbol0, String symbol1) {
+	private Result pairs(float fund, String symbol0, String symbol1) {
 		Asset asset0 = cfg.queryCompany(symbol0);
 		Asset asset1 = cfg.queryCompany(symbol1);
 		AssetAllocator assetAllocator = AssetAllocator_.byPairs(cfg, asset0, asset1);
-		return alloc("pairs/" + symbol0 + "/" + symbol1, Read.each(asset0, asset1), assetAllocator);
+		return alloc("pairs/" + symbol0 + "/" + symbol1, fund, Read.each(asset0, asset1), assetAllocator);
 	}
 
 	// portfolio-based moving average mean reversion
-	private Result pmamr() {
-		return alloc("pmamr", MovingAvgMeanReversionAssetAllocator0.of(cfg, log));
+	private Result pmamr(float fund) {
+		return alloc("pmamr", fund, MovingAvgMeanReversionAssetAllocator0.of(cfg, log));
 	}
 
 	// portfolio-based moving median mean reversion
-	private Result pmmmr() {
-		return alloc("pmmmr", MovingMedianMeanReversionAssetAllocator.of());
+	private Result pmmmr(float fund) {
+		return alloc("pmmmr", fund, AssetAllocator_.movingMedianMeanReversion());
 	}
 
 	// portfolio-based moving average mean reversion
-	private Result revco() {
-		return alloc("revco", ReverseCorrelateAssetAllocator.of());
+	private Result revco(float fund) {
+		return alloc("revco", fund, ReverseCorrelateAssetAllocator.of());
 	}
 
-	private Result alloc(String tag, AssetAllocator assetAllocator) {
+	private Result alloc(String tag, float fund, AssetAllocator assetAllocator) {
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today); // hkex.getCompanies()
-		return alloc(tag, assets, assetAllocator);
+		return alloc(tag, fund, assets, assetAllocator);
 	}
 
-	private Result alloc(String tag, Streamlet<Asset> assets, AssetAllocator assetAllocator) {
-		Simulate sim = AssetAllocBackTest.ofNow(cfg, assets, assetAllocator, log).simulate(150000f);
+	private Result alloc(String tag, float fund, Streamlet<Asset> assets, AssetAllocator assetAllocator) {
+		Simulate sim = AssetAllocBackTest.ofNow(cfg, assets, assetAllocator, log).simulate(fund);
 
 		Account account0 = Account.fromPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
 		Account account1 = sim.account;

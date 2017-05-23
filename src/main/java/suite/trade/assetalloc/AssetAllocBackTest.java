@@ -194,7 +194,6 @@ public class AssetAllocBackTest {
 		}
 
 		private String play(List<Trade> trades_) {
-			System.out.println(trades_);
 			trades.addAll(trades_);
 			account.play(trades_);
 			account.validate();
