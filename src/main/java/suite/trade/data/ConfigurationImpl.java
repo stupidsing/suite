@@ -84,7 +84,7 @@ public class ConfigurationImpl implements Configuration {
 		case HKD__:
 			return hkd.dataSource(symbol, period);
 		case YAHOO:
-			if (Boolean.TRUE)
+			if (yahooHistory.isContainsData(symbol))
 				return yahooHistory.dataSource(symbol, period);
 			else if (Boolean.TRUE)
 				return yahoo.dataSourceL1(symbol, period);
