@@ -12,10 +12,10 @@ import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.Trade_;
+import suite.trade.analysis.Summarize;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
-import suite.trade.data.Summarize;
 import suite.util.FunUtil.Sink;
 import suite.util.Object_;
 

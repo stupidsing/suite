@@ -7,6 +7,7 @@ import org.junit.Test;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Trade;
+import suite.trade.analysis.Summarize;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
