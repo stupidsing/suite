@@ -1,7 +1,6 @@
 package suite.adt.pair;
 
 import java.util.Comparator;
-import java.util.Objects;
 
 import suite.primitive.IntPrimitiveFun.Int_Int;
 import suite.util.FunUtil.Fun;
@@ -65,7 +64,7 @@ public class IntIntPair {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(t0) ^ Objects.hashCode(t1);
+		return Integer.hashCode(t0) + 31 * Integer.hashCode(t1);
 	}
 
 	@Override

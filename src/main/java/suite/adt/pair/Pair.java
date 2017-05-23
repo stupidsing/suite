@@ -60,7 +60,7 @@ public class Pair<T0, T1> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(t0) ^ Objects.hashCode(t1);
+		return Objects.hashCode(t0) + 31 * Objects.hashCode(t1);
 	}
 
 	@Override

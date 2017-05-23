@@ -65,7 +65,7 @@ public class CharObjPair<T> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(t0) ^ Objects.hashCode(t1);
+		return Character.hashCode(t0) + 31 * Objects.hashCode(t1);
 	}
 
 	@Override
