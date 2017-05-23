@@ -2,54 +2,54 @@ package suite.adt.map;
 
 import java.util.Arrays;
 
-import suite.adt.pair.IntObjPair;
-import suite.primitive.IntPrimitiveFun.Int_Int;
-import suite.primitive.IntPrimitiveFun.Obj_Int;
-import suite.primitive.IntPrimitiveSink.IntObjSink;
-import suite.primitive.IntPrimitiveSource.IntObjSource;
-import suite.streamlet.IntObjOutlet;
-import suite.streamlet.IntObjStreamlet;
+import suite.adt.pair.CharObjPair;
+import suite.primitive.CharPrimitiveFun.Char_Char;
+import suite.primitive.CharPrimitiveFun.Obj_Char;
+import suite.primitive.CharPrimitiveSink.CharObjSink;
+import suite.primitive.CharPrimitiveSource.CharObjSource;
+import suite.streamlet.CharObjOutlet;
+import suite.streamlet.CharObjStreamlet;
 
 /**
- * Map with generic object key and integer object value. Integer.MIN_VALUE is
+ * Map with generic object key and character object value. Integer.MIN_VALUE is
  * not allowed in values. Not thread-safe.
  * 
  * @author ywsing
  */
-public class ObjIntMap<K> {
+public class ObjCharMap<K> {
 
-	public final static int EMPTYVALUE = Integer.MIN_VALUE;
+	public final static char EMPTYVALUE = Character.MIN_VALUE;
 
 	private int size;
 	private Object[] ks;
-	private int[] vs;
+	private char[] vs;
 
-	public ObjIntMap() {
+	public ObjCharMap() {
 		this(8);
 	}
 
-	public ObjIntMap(int capacity) {
+	public ObjCharMap(int capacity) {
 		allocate(capacity);
 	}
 
-	public int computeIfAbsent(K key, Obj_Int<K> fun) {
-		int v = get(key);
+	public int computeIfAbsent(K key, Obj_Char<K> fun) {
+		char v = get(key);
 		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
 
-	public void forEach(IntObjSink<K> sink) {
-		IntObjPair<K> pair = IntObjPair.of((int) 0, null);
-		IntObjSource<K> source = source_();
+	public void forEach(CharObjSink<K> sink) {
+		CharObjPair<K> pair = CharObjPair.of((char) 0, null);
+		CharObjSource<K> source = source_();
 		while (source.source2(pair))
 			sink.sink(pair.t0, pair.t1);
 	}
 
-	public int get(K key) {
+	public char get(K key) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
-		int v;
+		char v;
 		while ((v = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
@@ -58,18 +58,18 @@ public class ObjIntMap<K> {
 		return v;
 	}
 
-	public int put(K key, int v) {
+	public char put(K key, char v) {
 		int capacity = vs.length;
 		size++;
 
 		if (capacity * 3 / 4 < size) {
 			int capacity1 = capacity * 2;
 			Object[] ks0 = ks;
-			int[] vs0 = vs;
+			char[] vs0 = vs;
 			allocate(capacity1);
 
 			for (int i = 0; i < capacity; i++) {
-				int v_ = vs0[i];
+				char v_ = vs0[i];
 				if (v_ != EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
@@ -78,10 +78,10 @@ public class ObjIntMap<K> {
 		return put_(key, v);
 	}
 
-	public void update(K key, Int_Int fun) {
+	public void update(K key, Char_Char fun) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
-		int v;
+		char v;
 		while ((v = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
@@ -90,18 +90,18 @@ public class ObjIntMap<K> {
 		vs[index] = fun.apply(v);
 	}
 
-	public IntObjSource<K> source() {
+	public CharObjSource<K> source() {
 		return source_();
 	}
 
-	public IntObjStreamlet<K> stream() {
-		return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
+	public CharObjStreamlet<K> stream() {
+		return new CharObjStreamlet<>(() -> CharObjOutlet.of(source_()));
 	}
 
-	private int put_(Object key, int v1) {
+	private char put_(Object key, char v1) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
-		int v0;
+		char v0;
 		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
@@ -112,13 +112,13 @@ public class ObjIntMap<K> {
 		return v0;
 	}
 
-	private IntObjSource<K> source_() {
-		return new IntObjSource<K>() {
+	private CharObjSource<K> source_() {
+		return new CharObjSource<K>() {
 			private int capacity = vs.length;
 			private int index = 0;
 
-			public boolean source2(IntObjPair<K> pair) {
-				int v;
+			public boolean source2(CharObjPair<K> pair) {
+				char v;
 				while ((v = vs[index]) == EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
@@ -131,7 +131,7 @@ public class ObjIntMap<K> {
 
 	private void allocate(int capacity) {
 		ks = new Object[capacity];
-		vs = new int[capacity];
+		vs = new char[capacity];
 		Arrays.fill(vs, EMPTYVALUE);
 	}
 

@@ -13,6 +13,8 @@ replace-file() {
   mv /tmp/replaced ${F1}
 }
 
+replace-file src/main/java/suite/adt/map/CharObjMap.java
+replace-file src/main/java/suite/adt/map/ObjCharMap.java
 replace-file src/main/java/suite/adt/pair/CharCharPair.java
 replace-file src/main/java/suite/adt/pair/CharObjPair.java
 replace-file src/main/java/suite/primitive/CharMutable.java

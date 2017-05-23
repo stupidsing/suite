@@ -36,7 +36,7 @@ public class IntObjMap<V> {
 	}
 
 	public void forEach(IntObjSink<V> sink) {
-		IntObjPair<V> pair = IntObjPair.of(0, null);
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		IntObjSource<V> source = source_();
 		while (source.source2(pair))
 			sink.sink(pair.t0, pair.t1);
