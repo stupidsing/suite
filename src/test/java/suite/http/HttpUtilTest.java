@@ -12,7 +12,7 @@ public class HttpUtilTest {
 	public void test() {
 		HttpResult result = HttpUtil.http("GET", To.url("http://feu.no-ip.info/"), To.outlet("{\"key\": \"value\"}"));
 		System.out.println(result.responseCode);
-		Bytes_.copy(result.out, System.out);
+		Bytes_.copy(result.out, System.out::write);
 	}
 
 }

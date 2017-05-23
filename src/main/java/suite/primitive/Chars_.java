@@ -1,9 +1,9 @@
 package suite.primitive;
 
 import java.io.IOException;
-import java.io.Writer;
 
 import suite.primitive.Chars.CharsBuilder;
+import suite.primitive.Chars.WriteChar;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -20,7 +20,7 @@ public class Chars_ {
 		});
 	}
 
-	public static void copy(Outlet<Chars> outlet, Writer writer) {
+	public static void copy(Outlet<Chars> outlet, WriteChar writer) {
 		Chars chars;
 		while ((chars = outlet.next()) != null)
 			try {

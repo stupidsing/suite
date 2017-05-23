@@ -82,7 +82,7 @@ public class TextDatabase {
 				.collect(Bytes_::buffer);
 
 		try (OutputStream os = FileUtil.out(path)) {
-			Bytes_.copy(outlet, os);
+			Bytes_.copy(outlet, os::write);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

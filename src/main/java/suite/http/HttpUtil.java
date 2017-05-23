@@ -118,7 +118,7 @@ public class HttpUtil {
 		headers.entrySet().forEach(e -> conn.setRequestProperty(e.getKey(), e.getValue()));
 
 		try (OutputStream os = conn.getOutputStream()) {
-			Bytes_.copy(in, os);
+			Bytes_.copy(in, os::write);
 		}
 
 		int responseCode = conn.getResponseCode();
