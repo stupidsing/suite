@@ -42,7 +42,7 @@ public class AssetAllocBackTestTest {
 	public void testBackTestSingle() {
 		Asset asset = cfg.queryCompany("0945.HK");
 		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of(cfg, log);
-		assertGrowth(out(backTest(assetAllocator, Read.each(asset), period)));
+		assertGrowth(out(backTest(assetAllocator, period, Read.each(asset))));
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class AssetAllocBackTestTest {
 		String symbol = "^HSI";
 		Asset asset = Asset.of(symbol, "Hang Seng Index", 1);
 		AssetAllocator assetAllocator = AssetAllocator_.ofSingle(symbol);
-		assertGrowth(out(backTest(assetAllocator, Read.each(asset), period)));
+		assertGrowth(out(backTest(assetAllocator, period, Read.each(asset))));
 	}
 
 	@Test
@@ -89,7 +89,7 @@ public class AssetAllocBackTestTest {
 					Asset asset1 = pair.t1;
 					AssetAllocator assetAllocator = AssetAllocator_.byPairs(cfg, asset0, asset1);
 					try {
-						return "\nTEST = " + pair + ", " + backTest(assetAllocator, Read.each(asset0, asset1), period).conclusion();
+						return "\nTEST = " + pair + ", " + backTest(assetAllocator, period, Read.each(asset0, asset1)).conclusion();
 					} catch (Exception ex) {
 						return "\nexception = " + ex;
 					}
@@ -102,10 +102,10 @@ public class AssetAllocBackTestTest {
 
 	private Simulate backTest(AssetAllocator assetAllocator, DatePeriod period) {
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(period.from); // hkex.getCompanies()
-		return backTest(assetAllocator, assets, period);
+		return backTest(assetAllocator, period, assets);
 	}
 
-	private Simulate backTest(AssetAllocator assetAllocator, Streamlet<Asset> assets, DatePeriod period) {
+	private Simulate backTest(AssetAllocator assetAllocator, DatePeriod period, Streamlet<Asset> assets) {
 		AssetAllocBackTest backTest = AssetAllocBackTest.ofFromTo( //
 				cfg, //
 				assets, //
