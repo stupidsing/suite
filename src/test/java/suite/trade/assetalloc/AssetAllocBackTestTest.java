@@ -2,6 +2,9 @@ package suite.trade.assetalloc;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 
 import suite.Constants;
@@ -46,7 +49,7 @@ public class AssetAllocBackTestTest {
 	public void testBackTestHsi() {
 		String symbol = "^HSI";
 		Asset asset = Asset.of(symbol, "Hang Seng Index", 1);
-		AssetAllocator assetAllocator = new SingleAssetAllocator(symbol);
+		AssetAllocator assetAllocator = AssetAllocator_.ofSingle(symbol);
 		assertGrowth(out(backTest(assetAllocator, Read.each(asset), period)));
 	}
 
@@ -55,7 +58,7 @@ public class AssetAllocBackTestTest {
 		String results = Read.each(Boolean.FALSE, Boolean.TRUE) //
 				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
 				.map((b, period) -> {
-					AssetAllocator assetAllocator = DonchianAssetAllocator.of();
+					AssetAllocator assetAllocator = b ? BollingerBandsAssetAllocator.of() : DonchianAssetAllocator.of();
 					Constants.testFlag = b;
 					try {
 						return "\nTEST = " + b + ", " + backTest(assetAllocator, period).conclusion();
@@ -70,11 +73,16 @@ public class AssetAllocBackTestTest {
 
 	@Test
 	public void testPairsTrading() {
-		Pair<Asset, Asset> pairs0 = Pair.of(cfg.queryCompany("0341.HK"), cfg.queryCompany("0052.HK"));
-		Pair<Asset, Asset> pairs1 = Pair.of(cfg.queryCompany("0052.HK"), cfg.queryCompany("0341.HK"));
-		Pair<Asset, Asset> pairs2 = Pair.of(cfg.queryCompany("0005.HK"), cfg.queryCompany("2888.HK"));
+		List<Pair<String, String>> symbolPairs = Arrays.asList( //
+				Pair.of("0341.HK", "0052.HK"), //
+				Pair.of("0052.HK", "0341.HK"), //
+				Pair.of("0005.HK", "2888.HK"));
 
-		String results = Read.each(pairs0, pairs1, pairs2) //
+		List<Pair<Asset, Asset>> assetPairs = Read.from2(symbolPairs) //
+				.map((symbol0, symbol1) -> Pair.of(cfg.queryCompany(symbol0), cfg.queryCompany(symbol1))) //
+				.toList();
+
+		String results = Read.from(assetPairs) //
 				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
 				.map((pair, period) -> {
 					Asset asset0 = pair.t0;
