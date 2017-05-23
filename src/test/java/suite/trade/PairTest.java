@@ -1,7 +1,6 @@
 package suite.trade;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -13,7 +12,6 @@ import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.util.Object_;
-import suite.util.To;
 
 /**
  * Finds the period of various stocks using FFT.
@@ -27,9 +25,12 @@ public class PairTest {
 
 	@Test
 	public void test() {
-		String symbol0 = "0005.HK";
-		String symbol1 = "2888.HK";
 		DatePeriod period = DatePeriod.of(LocalDate.of(2016, 1, 1), LocalDate.of(2017, 1, 1));
+		test(period, "0005.HK", "2888.HK");
+		test(period, "0341.HK", "0052.HK");
+	}
+
+	private void test(DatePeriod period, String symbol0, String symbol1) {
 		DataSource dataSource0 = cfg.dataSource(symbol0, period);
 		DataSource dataSource1 = cfg.dataSource(symbol1, period);
 		Streamlet<String> dates0 = Read.from(dataSource0.dates);
@@ -38,13 +39,10 @@ public class PairTest {
 		float[] prices0 = dataSource0.align(tradeDates).prices;
 		float[] prices1 = dataSource1.align(tradeDates).prices;
 		int length = prices0.length;
-		float[][] x = Read.range(length).map(i -> new float[] { prices0[i], prices1[i], }).toArray(float[].class);
-		float[] y = To.arrayOfFloats(length, i -> 1f);
+		float[][] x = Read.range(length).map(i -> new float[] { prices0[i], 1f, }).toArray(float[].class);
+		float[] y = prices1;
 		LinearRegression lr = statistic.linearRegression(x, y);
-		System.out.println(Arrays.toString(tradeDates));
-		System.out.println(Arrays.toString(prices0));
-		System.out.println(Arrays.toString(prices1));
-		System.out.println(lr);
+		System.out.println(symbol0 + " -> " + symbol1 + lr);
 	}
 
 }
