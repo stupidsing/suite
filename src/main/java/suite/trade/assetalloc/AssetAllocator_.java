@@ -1,6 +1,7 @@
 package suite.trade.assetalloc;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -97,6 +98,10 @@ public class AssetAllocator_ {
 
 	public static AssetAllocator filterShorts(AssetAllocator assetAllocator) {
 		return filterShorts_(assetAllocator);
+	}
+
+	public static AssetAllocator ofSingle(String symbol) {
+		return (dataSourceBySymbol, backTestDate) -> Arrays.asList(Pair.of(symbol, 1d));
 	}
 
 	public static AssetAllocator reallocate(AssetAllocator assetAllocator) {
