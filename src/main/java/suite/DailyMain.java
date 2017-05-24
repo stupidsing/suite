@@ -51,6 +51,11 @@ public class DailyMain extends ExecutableProgram {
 	private Sink<String> log = To.sink(sb);
 	private LocalDate today = LocalDate.now();
 
+	public final AssetAllocator aa_bb = AssetAllocator_.bollingerBands1();
+	public final AssetAllocator aa_pmamr = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
+	public final AssetAllocator aa_pmmmr = AssetAllocator_.movingMedianMeanReversion();
+	public final AssetAllocator aa_revco = ReverseCorrelateAssetAllocator.of();
+
 	private class Result {
 		private String strategy;
 		private List<Trade> trades;
@@ -121,7 +126,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private Result bb(float fund) {
-		return alloc("bb", fund, AssetAllocator_.bollingerBands1());
+		return alloc("bb", fund, aa_bb);
 	}
 
 	// some orders caused by stupid bugs. need to sell those at suitable times.
@@ -227,17 +232,17 @@ public class DailyMain extends ExecutableProgram {
 
 	// portfolio-based moving average mean reversion
 	private Result pmamr(float fund) {
-		return alloc("pmamr", fund, MovingAvgMeanReversionAssetAllocator0.of(cfg, log));
+		return alloc("pmamr", fund, aa_pmamr);
 	}
 
 	// portfolio-based moving median mean reversion
 	private Result pmmmr(float fund) {
-		return alloc("pmmmr", fund, AssetAllocator_.movingMedianMeanReversion());
+		return alloc("pmmmr", fund, aa_pmmmr);
 	}
 
 	// portfolio-based moving average mean reversion
 	private Result revco(float fund) {
-		return alloc("revco", fund, ReverseCorrelateAssetAllocator.of());
+		return alloc("revco", fund, aa_revco);
 	}
 
 	private Result alloc(String tag, float fund, AssetAllocator assetAllocator) {
