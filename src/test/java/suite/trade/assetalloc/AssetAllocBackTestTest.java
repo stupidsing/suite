@@ -64,7 +64,7 @@ public class AssetAllocBackTestTest {
 					try {
 						return "\nTEST = " + b + ", " + backTest(assetAllocator, period).conclusion();
 					} catch (Exception ex) {
-						return "\nexception = " + ex;
+						return "\nTEST = " + b + ", exception = " + ex;
 					}
 				}) //
 				.sort(Object_::compare) //
