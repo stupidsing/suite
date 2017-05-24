@@ -55,7 +55,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	}
 
 	@Override
-	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate) {
+	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate, int index) {
 		log.sink(dataSourceBySymbol.size() + " assets in data source");
 
 		DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);

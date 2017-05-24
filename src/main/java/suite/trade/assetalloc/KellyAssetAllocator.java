@@ -27,7 +27,7 @@ public class KellyAssetAllocator implements AssetAllocator {
 	}
 
 	@Override
-	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate) {
+	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate, int index) {
 		double dailyInterestRate = Trade_.riskFreeInterestRate(1);
 
 		// TODO this should be the expected returns, not past returns!

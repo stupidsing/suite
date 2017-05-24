@@ -39,7 +39,7 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 	}
 
 	@Override
-	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate) {
+	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate, int index) {
 		DatePeriod samplePeriod = DatePeriod.backTestDaysBefore(backTestDate, 512, 32);
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 

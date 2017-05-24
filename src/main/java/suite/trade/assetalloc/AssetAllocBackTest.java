@@ -151,7 +151,7 @@ public class AssetAllocBackTest {
 
 				Valuation val = account.valuation(latestPriceBySymbol);
 				valuations_[i] = (float) (valuation = val.sum());
-				List<Pair<String, Double>> ratioBySymbol = assetAllocator.allocate(backTestDataSourceBySymbol, date);
+				List<Pair<String, Double>> ratioBySymbol = assetAllocator.allocate(backTestDataSourceBySymbol, date, i + 1);
 
 				Map<String, Float> latestPriceBySymbol_ = latestPriceBySymbol;
 				double valuation_ = valuation;

@@ -29,19 +29,21 @@ public class MovingAverage {
 	}
 
 	public float[] exponentialMovingAvg(float[] prices, double alpha) {
-		float[] emas = new float[prices.length];
+		int length = prices.length;
+		float[] emas = new float[length];
 		double ema = prices[0];
-		for (int day = 0; day < prices.length; day++)
+		for (int day = 0; day < length; day++)
 			emas[day] = (float) (ema += alpha * (prices[day] - ema));
 		return emas;
 	}
 
 	public float[] movingAvg(float[] prices, int windowSize) {
-		float[] movingAvgs = new float[prices.length];
+		int length = prices.length;
+		float[] movingAvgs = new float[length];
 		float div = 1f / windowSize;
 		float movingSum = prices[0] * windowSize;
 
-		for (int day = 0; day < prices.length; day++) {
+		for (int day = 0; day < length; day++) {
 			movingSum += prices[day] - prices[Math.max(0, day - windowSize)];
 			movingAvgs[day] = movingSum * div;
 		}
