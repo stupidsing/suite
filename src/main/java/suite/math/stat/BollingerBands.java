@@ -37,10 +37,11 @@ public class BollingerBands {
 				double ksd = k * mv.standardDeviation();
 				double bbl = mv.mean - ksd;
 				double bbu = mv.mean + ksd;
+				double diff = bbu - bbl;
 				lower[i] = (float) bbl;
 				upper[i] = (float) bbu;
-				percentb[i] = (float) ((fs[i] - bbl) / (bbu - bbl));
-				bandwidth[i] = (float) ((bbu - bbl) / mv.mean);
+				percentb[i] = (float) ((fs[i] - bbl) / diff);
+				bandwidth[i] = (float) (diff / mv.mean);
 			}
 		}
 	}
