@@ -71,6 +71,7 @@ public class AssetAllocBackTestTest {
 				}) //
 				.sort(Object_::compare) //
 				.collect(As.joined());
+
 		System.out.println(results);
 	}
 
