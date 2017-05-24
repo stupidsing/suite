@@ -194,7 +194,8 @@ public class AssetAllocator_ {
 	public static AssetAllocator movingMedianMeanReversion() {
 		int windowSize0 = 1;
 		int windowSize1 = 32;
-		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate, index) -> Read.from2(dataSourceBySymbol) //
+		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate, index) -> Read //
+				.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {
 					float[] prices = dataSource.prices;
 					float[] movingMedian0 = ma.movingMedian(prices, windowSize0);
