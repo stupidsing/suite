@@ -1,7 +1,5 @@
 package suite.math.stat;
 
-import java.util.Arrays;
-
 import suite.math.stat.Statistic.MeanVariance;
 import suite.trade.MovingAverage;
 
@@ -14,6 +12,7 @@ public class BollingerBands {
 
 	private MovingAverage ma = new MovingAverage();
 	private Statistic stat = new Statistic();
+	private TimeSeries ts = new TimeSeries();
 
 	public Bb bb(float[] fs, int n, int k) {
 		return new Bb(fs, n, k);
@@ -33,8 +32,8 @@ public class BollingerBands {
 			percentb = new float[length];
 			bandwidth = new float[length];
 
-			for (int i = n; i < length; i++) {
-				MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(fs, i - n, i));
+			for (int i = 0; i < length; i++) {
+				MeanVariance mv = stat.meanVariance(ts.back(i - 1, n, fs));
 				double ksd = k * mv.standardDeviation();
 				double bbl = mv.mean - ksd;
 				double bbu = mv.mean + ksd;
