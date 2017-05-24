@@ -29,28 +29,11 @@ public class AssetAllocator_ {
 	private static TimeSeries ts = new TimeSeries();
 
 	public static AssetAllocator bollingerBands() {
-		int window = 32;
-		int k = 2;
+		return bollingerBands_(32, 0, 2);
+	}
 
-		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate, index) -> Read //
-				.from2(dataSourceBySymbol) //
-				.mapValue(dataSource -> {
-					float[] percentbs = bb.bb(dataSource.prices, window + 1, 1, k).percentb;
-					double hold = 0d;
-					for (int i = 0; i < index; i++) {
-						float percentb = percentbs[i];
-						if (percentb <= 0f)
-							hold = 1d;
-						else if (.5f < percentb) // un-short
-							hold = 0d <= hold ? hold : 0d;
-						else if (percentb < 1f) // un-long
-							hold = hold < 0d ? hold : 0d;
-						else
-							hold = -1d;
-					}
-					return hold;
-				}) //
-				.toList());
+	public static AssetAllocator bollingerBands1() {
+		return bollingerBands_(32 + 1, 1, 2);
 	}
 
 	public static AssetAllocator byEma() {
@@ -233,19 +216,33 @@ public class AssetAllocator_ {
 	}
 
 	public static AssetAllocator unleverage(AssetAllocator assetAllocator0) {
-		AssetAllocator assetAllocator1 = filterShorts_(assetAllocator0);
-		return (dataSourceBySymbol, backTestDate, index) -> {
-			List<Pair<String, Double>> potentialBySymbol = assetAllocator1.allocate(dataSourceBySymbol, backTestDate, index);
-			double totalPotential = totalPotential(potentialBySymbol);
-			if (1d < totalPotential)
-				return scale(potentialBySymbol, 1d / totalPotential);
-			else
-				return potentialBySymbol;
-		};
+		return unleverage_(assetAllocator0);
 	}
 
 	private static double totalPotential(List<Pair<String, Double>> potentialBySymbol) {
 		return Read.from2(potentialBySymbol).collectAsDouble(As.sumOfDoubles((symbol, potential) -> potential));
+	}
+
+	private static AssetAllocator bollingerBands_(int backPos0, int backPos1, int k) {
+		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate, index) -> Read //
+				.from2(dataSourceBySymbol) //
+				.mapValue(dataSource -> {
+					float[] percentbs = bb.bb(dataSource.prices, backPos0, backPos1, k).percentb;
+					double hold = 0d;
+					for (int i = 0; i < index; i++) {
+						float percentb = percentbs[i];
+						if (percentb <= 0f)
+							hold = 1d;
+						else if (.5f < percentb) // un-short
+							hold = 0d <= hold ? hold : 0d;
+						else if (percentb < 1f) // un-long
+							hold = hold < 0d ? hold : 0d;
+						else
+							hold = -1d;
+					}
+					return hold;
+				}) //
+				.toList());
 	}
 
 	private static AssetAllocator filterShorts_(AssetAllocator assetAllocator) {
@@ -308,6 +305,18 @@ public class AssetAllocator_ {
 		return Read.from2(potentialBySymbol) //
 				.mapValue(potential -> potential * scale) //
 				.toList();
+	}
+
+	private static AssetAllocator unleverage_(AssetAllocator assetAllocator0) {
+		AssetAllocator assetAllocator1 = filterShorts_(assetAllocator0);
+		return (dataSourceBySymbol, backTestDate, index) -> {
+			List<Pair<String, Double>> potentialBySymbol = assetAllocator1.allocate(dataSourceBySymbol, backTestDate, index);
+			double totalPotential = totalPotential(potentialBySymbol);
+			if (1d < totalPotential)
+				return scale(potentialBySymbol, 1d / totalPotential);
+			else
+				return potentialBySymbol;
+		};
 	}
 
 	private static Double validate(String symbol, Double potential) {

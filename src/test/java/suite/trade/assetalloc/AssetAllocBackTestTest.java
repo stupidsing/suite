@@ -58,7 +58,7 @@ public class AssetAllocBackTestTest {
 		String results = Read.each(Boolean.FALSE, Boolean.TRUE) //
 				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
 				.map((b, period) -> {
-					AssetAllocator assetAllocator = b ? AssetAllocator_.bollingerBands() : AssetAllocator_.donchian();
+					AssetAllocator assetAllocator = b ? AssetAllocator_.bollingerBands1() : AssetAllocator_.donchian();
 					Constants.testFlag = b;
 
 					try {
