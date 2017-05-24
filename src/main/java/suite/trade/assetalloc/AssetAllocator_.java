@@ -194,20 +194,18 @@ public class AssetAllocator_ {
 	public static AssetAllocator movingMedianMeanReversion() {
 		int windowSize0 = 1;
 		int windowSize1 = 32;
-		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate, index) -> {
-			return Read.from2(dataSourceBySymbol) //
-					.mapValue(dataSource -> {
-						float[] prices = dataSource.prices;
-						float[] movingMedian0 = ma.movingMedian(prices, windowSize0);
-						float[] movingMedian1 = ma.movingMedian(prices, windowSize1);
-						int last = index - 1;
-						double median0 = movingMedian0[last];
-						double median1 = movingMedian1[last];
-						double ratio = median1 / median0;
-						return ratio - 1d;
-					}) //
-					.toList();
-		});
+		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate, index) -> Read.from2(dataSourceBySymbol) //
+				.mapValue(dataSource -> {
+					float[] prices = dataSource.prices;
+					float[] movingMedian0 = ma.movingMedian(prices, windowSize0);
+					float[] movingMedian1 = ma.movingMedian(prices, windowSize1);
+					int last = index - 1;
+					double median0 = movingMedian0[last];
+					double median1 = movingMedian1[last];
+					double ratio = median1 / median0;
+					return ratio - 1d;
+				}) //
+				.toList());
 	}
 
 	public static AssetAllocator ofSingle(String symbol) {
