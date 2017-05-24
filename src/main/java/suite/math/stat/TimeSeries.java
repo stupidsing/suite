@@ -26,6 +26,11 @@ public class TimeSeries {
 		return lr.tStatistic()[0];
 	}
 
+	public float[] back(int index, int window, float[] fs) {
+		int index1 = index + 1;
+		return Arrays.copyOfRange(fs, Math.max(0, index1 - window), index1);
+	}
+
 	public float[] differences(int tor, float[] fs) {
 		return differences_(tor, fs);
 	}
