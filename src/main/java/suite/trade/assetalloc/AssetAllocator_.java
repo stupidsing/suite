@@ -207,6 +207,10 @@ public class AssetAllocator_ {
 		return relative_(assetAllocator, index);
 	}
 
+	public static AssetAllocator relativeToHsi(Configuration cfg, AssetAllocator assetAllocator) {
+		return relativeToIndex(cfg, "^HSI", assetAllocator);
+	}
+
 	public static AssetAllocator relativeToIndex(Configuration cfg, String indexSymbol, AssetAllocator assetAllocator) {
 		return relative_(assetAllocator, cfg.dataSourceWithLatestQuote(indexSymbol));
 	}
