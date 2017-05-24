@@ -32,7 +32,7 @@ public class AssetAllocBackTestTest {
 
 	@Test
 	public void testBackTest() {
-		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
+		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(log);
 		Simulate sim = backTest(assetAllocator, period);
 		Summarize.of(cfg, Read.from(sim.trades)).out(System.out::println, trade -> trade.symbol);
 		assertGrowth(out(sim));
@@ -41,7 +41,7 @@ public class AssetAllocBackTestTest {
 	@Test
 	public void testBackTestSingle() {
 		Asset asset = cfg.queryCompany("0945.HK");
-		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of(cfg, log);
+		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of(log);
 		assertGrowth(out(backTest(assetAllocator, period, Read.each(asset))));
 	}
 

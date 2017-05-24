@@ -1,14 +1,13 @@
 package suite.trade.assetalloc;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.Pair;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
+import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet2;
 import suite.trade.Trade_;
 import suite.trade.data.DataSource;
 import suite.util.To;
@@ -27,37 +26,41 @@ public class KellyAssetAllocator implements AssetAllocator {
 	}
 
 	@Override
-	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate, int index) {
+	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol) {
 		double dailyInterestRate = Trade_.riskFreeInterestRate(1);
 
 		// TODO this should be the expected returns, not past returns!
-		Map<String, float[]> predictedPricesBySymbol = Read.from2(dataSourceBySymbol) //
+		Streamlet2<String, float[]> predictedPricesBySymbol = dataSourceBySymbol //
 				.mapValue(dataSource -> dataSource.prices) //
-				.toMap();
+				.collect(As::streamlet2);
 
-		Map<String, float[]> returnsBySymbol = Read.from2(predictedPricesBySymbol) //
-				.mapValue(ts::returns) //
-				.toMap();
+		return (backTestDate, index) -> {
+			Map<String, float[]> returnsBySymbol = predictedPricesBySymbol //
+					.mapValue(ts::returns) //
+					.toMap();
 
-		Map<String, Float> excessReturnBySymbol = Read.from2(returnsBySymbol) //
-				.mapValue(returns -> (float) (stat.meanVariance(returns).mean - dailyInterestRate)) //
-				.toMap();
+			Map<String, Float> excessReturnBySymbol = Read //
+					.from2(returnsBySymbol) //
+					.mapValue(returns -> (float) (stat.meanVariance(returns).mean - dailyInterestRate)) //
+					.toMap();
 
-		String[] symbols = returnsBySymbol.keySet().toArray(new String[0]);
-		int nSymbols = symbols.length;
+			String[] symbols = returnsBySymbol.keySet().toArray(new String[0]);
+			int nSymbols = symbols.length;
 
-		float[][] cov = To.arrayOfFloats(nSymbols, nSymbols, (i0, i1) -> {
-			float[] returns0 = returnsBySymbol.get(symbols[i0]);
-			float[] returns1 = returnsBySymbol.get(symbols[i1]);
-			return (float) stat.covariance(returns0, returns1);
-		});
+			float[][] cov = To.arrayOfFloats(nSymbols, nSymbols, (i0, i1) -> {
+				float[] returns0 = returnsBySymbol.get(symbols[i0]);
+				float[] returns1 = returnsBySymbol.get(symbols[i1]);
+				return (float) stat.covariance(returns0, returns1);
+			});
 
-		float[] returns = To.arrayOfFloats(symbols, excessReturnBySymbol::get);
-		float[] allocations = cholesky.inverseMul(cov).apply(returns);
+			float[] returns = To.arrayOfFloats(symbols, excessReturnBySymbol::get);
+			float[] allocations = cholesky.inverseMul(cov).apply(returns);
 
-		return Read.range(nSymbols) //
-				.map2(i -> symbols[i], i -> (double) allocations[i]) //
-				.toList();
+			return Read //
+					.range(nSymbols) //
+					.map2(i -> symbols[i], i -> (double) allocations[i]) //
+					.toList();
+		};
 	}
 
 }

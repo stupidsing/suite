@@ -2,9 +2,9 @@ package suite.trade.assetalloc;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import suite.adt.pair.Pair;
+import suite.streamlet.Streamlet2;
 import suite.trade.data.DataSource;
 
 /**
@@ -15,11 +15,17 @@ import suite.trade.data.DataSource;
  */
 public interface AssetAllocator {
 
-	/**
-	 * @return a portfolio consisting of list of symbols and potential values,
-	 *         or null if the strategy do not want to trade on that date. The
-	 *         assets will be allocated according to potential values pro-rata.
-	 */
-	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate, int index);
+	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol);
+
+	public interface OnDate {
+
+		/**
+		 * @return a portfolio consisting of list of symbols and potential
+		 *         values, or null if the strategy do not want to trade on that
+		 *         date. The assets will be allocated according to potential
+		 *         values pro-rata.
+		 */
+		public List<Pair<String, Double>> onDate(LocalDate backTestDate, int index);
+	}
 
 }

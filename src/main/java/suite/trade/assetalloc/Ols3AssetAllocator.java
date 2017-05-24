@@ -1,15 +1,11 @@
 package suite.trade.assetalloc;
 
-import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
-import suite.adt.pair.Pair;
 import suite.math.linalg.Matrix;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
-import suite.streamlet.Read;
+import suite.streamlet.Streamlet2;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
@@ -38,8 +34,8 @@ public class Ols3AssetAllocator implements AssetAllocator {
 	}
 
 	@Override
-	public List<Pair<String, Double>> allocate(Map<String, DataSource> dataSourceBySymbol, LocalDate backTestDate, int index) {
-		return Read.from2(dataSourceBySymbol) //
+	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol) {
+		return (backTestDate, index) -> dataSourceBySymbol //
 				.mapValue(dataSource -> {
 					float[] prices = dataSource.prices;
 					float[][] x = new float[index - lookBack][];

@@ -31,7 +31,7 @@ public class BackTestMain extends ExecutableProgram {
 		LocalDate toDate = LocalDate.of(2017, 7, 1);
 		DatePeriod period = DatePeriod.of(frDate, toDate);
 
-		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
+		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(log);
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(frDate); // hkex.getCompanies()
 
 		AssetAllocBackTest backTest = AssetAllocBackTest.ofFromTo( //

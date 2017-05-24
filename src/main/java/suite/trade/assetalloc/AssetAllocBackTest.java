@@ -23,6 +23,7 @@ import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.Trade;
 import suite.trade.Trade_;
+import suite.trade.assetalloc.AssetAllocator.OnDate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -34,8 +35,6 @@ import suite.util.String_;
 import suite.util.To;
 
 public class AssetAllocBackTest {
-
-	private int historyWindow = 1024;
 
 	private Configuration cfg = new ConfigurationImpl();
 	private Statistic stat = new Statistic();
@@ -109,7 +108,8 @@ public class AssetAllocBackTest {
 			// pre-fetch quotes
 			cfg.quote(symbols);
 
-			Streamlet2<String, DataSource> dataSourceBySymbol0 = Read.from(symbols) //
+			Streamlet2<String, DataSource> dataSourceBySymbol0 = Read //
+					.from(symbols) //
 					.map2(symbol -> cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate)) //
 					.map2((symbol, dataSource) -> {
 						try {
@@ -129,6 +129,7 @@ public class AssetAllocBackTest {
 					.mapValue(alignDataSource::align) //
 					.collect(As::streamlet2);
 
+			OnDate onDate = assetAllocator.allocate(dataSourceBySymbol1);
 			List<LocalDate> tradeDates = Read.from(alignDataSource.dates).map(To::date).toList();
 			List<LocalDate> dates = datesPred.apply(tradeDates);
 			int size = dates.size();
@@ -139,17 +140,6 @@ public class AssetAllocBackTest {
 			for (int i = 0; i < size; i++) {
 				LocalDate date = dates.get(i);
 				int index = Collections.binarySearch(tradeDates, date);
-				DatePeriod historyWindowPeriod = DatePeriod.daysBefore(date, historyWindow);
-
-				String[] historyDates = Read.from(tradeDates) //
-						.filter(historyWindowPeriod::contains) //
-						.map(To::string) //
-						.toArray(String.class);
-
-				Map<String, DataSource> backTestDataSourceBySymbol = dataSourceBySymbol1 //
-						.mapValue(dataSource -> dataSource.align(historyDates)) //
-						.filterValue(dataSource -> 128 <= dataSource.dates.length) //
-						.toMap();
 
 				latestPriceBySymbol = dataSourceBySymbol1 //
 						.mapValue(dataSource -> dataSource.prices[index]) //
@@ -158,15 +148,12 @@ public class AssetAllocBackTest {
 				Valuation val = account.valuation(latestPriceBySymbol);
 				valuations_[i] = (float) (valuation = val.sum());
 
-				List<Pair<String, Double>> ratioBySymbol = assetAllocator.allocate( //
-						backTestDataSourceBySymbol, //
-						date, //
-						historyDates.length);
-
+				List<Pair<String, Double>> ratioBySymbol = onDate.onDate(date, index);
 				Map<String, Float> latestPriceBySymbol_ = latestPriceBySymbol;
 				double valuation_ = valuation;
 
-				Map<String, Integer> portfolio = Read.from2(ratioBySymbol) //
+				Map<String, Integer> portfolio = Read //
+						.from2(ratioBySymbol) //
 						.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
 						.map2((symbol, potential) -> {
 							float price = latestPriceBySymbol_.get(symbol);

@@ -52,7 +52,7 @@ public class DailyMain extends ExecutableProgram {
 	private LocalDate today = LocalDate.now();
 
 	public final AssetAllocator aa_bb = AssetAllocator_.bollingerBands1();
-	public final AssetAllocator aa_pmamr = MovingAvgMeanReversionAssetAllocator0.of(cfg, log);
+	public final AssetAllocator aa_pmamr = MovingAvgMeanReversionAssetAllocator0.of(log);
 	public final AssetAllocator aa_pmmmr = AssetAllocator_.movingMedianMeanReversion();
 	public final AssetAllocator aa_revco = ReverseCorrelateAssetAllocator.of();
 

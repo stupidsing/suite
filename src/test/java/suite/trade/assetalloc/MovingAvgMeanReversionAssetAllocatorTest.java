@@ -13,7 +13,7 @@ public class MovingAvgMeanReversionAssetAllocatorTest {
 
 	private Sink<String> log = System.out::println;
 	private Configuration cfg = new ConfigurationImpl();
-	private MovingAvgMeanReversionAssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of_(cfg, log);
+	private MovingAvgMeanReversionAssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of_(log);
 
 	@Test
 	public void testStat() {
