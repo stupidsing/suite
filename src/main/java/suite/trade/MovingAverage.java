@@ -40,12 +40,12 @@ public class MovingAverage {
 	public float[] movingAvg(float[] prices, int windowSize) {
 		int length = prices.length;
 		float[] movingAvgs = new float[length];
-		float div = 1f / windowSize;
-		float movingSum = prices[0] * windowSize;
+		double div = 1d / windowSize;
+		double movingSum = prices[0] * windowSize;
 
 		for (int day = 0; day < length; day++) {
 			movingSum += prices[day] - prices[Math.max(0, day - windowSize)];
-			movingAvgs[day] = movingSum * div;
+			movingAvgs[day] = (float) (movingSum * div);
 		}
 
 		return movingAvgs;
