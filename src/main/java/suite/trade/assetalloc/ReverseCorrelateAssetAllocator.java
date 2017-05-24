@@ -47,12 +47,13 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 				.mapValue(dataSource -> {
 					float[] prices = dataSource.range(samplePeriod).prices;
 					float[] logReturns = ts.logReturns(prices);
+					int ll = logReturns.length;
 					double sum = 0d;
-					for (int i = tor; i < logReturns.length - tor; i++) {
+					for (int i = tor; i < ll - tor; i++) {
 						int i_ = i;
 						sum += stat.correlation(j -> logReturns[i_ - j], j -> logReturns[i_ + j], tor);
 					}
-					return sum / (logReturns.length - 2 * tor);
+					return sum / (ll - 2 * tor);
 				}) //
 				.filterValue(Double::isFinite) //
 				.filterValue(reverseCorrelation -> reverseCorrelationThreshold < Math.abs(reverseCorrelation)) //
@@ -62,8 +63,8 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 				.filterKey(reverseCorrelationBySymbol::containsKey) //
 				.mapValue(dataSource -> {
 					float[] prices = dataSource.prices;
-					int length1 = prices.length - 1;
-					return To.arrayOfFloats(tor, i -> prices[length1 - i]);
+					int last = index - 1;
+					return To.arrayOfFloats(tor, i -> prices[last - i]);
 				}) //
 				.toMap();
 

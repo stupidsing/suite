@@ -3,6 +3,7 @@ package suite.trade.assetalloc;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,8 +129,8 @@ public class AssetAllocBackTest {
 					.mapValue(alignDataSource::align) //
 					.collect(As::streamlet2);
 
-			String[] tradeDateArray = alignDataSource.dates;
-			List<LocalDate> dates = datesPred.apply(Read.from(tradeDateArray).map(To::date).toList());
+			List<LocalDate> tradeDates = Read.from(alignDataSource.dates).map(To::date).toList();
+			List<LocalDate> dates = datesPred.apply(tradeDates);
 			int size = dates.size();
 
 			float[] valuations_ = new float[size];
@@ -137,11 +138,16 @@ public class AssetAllocBackTest {
 
 			for (int i = 0; i < size; i++) {
 				LocalDate date = dates.get(i);
-				int index = Arrays.binarySearch(tradeDateArray, To.string(date));
+				int index = Collections.binarySearch(tradeDates, date);
 				DatePeriod historyWindowPeriod = DatePeriod.daysBefore(date, historyWindow);
 
+				String[] historyDates = Read.from(tradeDates) //
+						.filter(historyWindowPeriod::contains) //
+						.map(To::string) //
+						.toArray(String.class);
+
 				Map<String, DataSource> backTestDataSourceBySymbol = dataSourceBySymbol1 //
-						.mapValue(dataSource -> dataSource.range(historyWindowPeriod)) //
+						.mapValue(dataSource -> dataSource.align(historyDates)) //
 						.filterValue(dataSource -> 128 <= dataSource.dates.length) //
 						.toMap();
 
@@ -151,7 +157,11 @@ public class AssetAllocBackTest {
 
 				Valuation val = account.valuation(latestPriceBySymbol);
 				valuations_[i] = (float) (valuation = val.sum());
-				List<Pair<String, Double>> ratioBySymbol = assetAllocator.allocate(backTestDataSourceBySymbol, date, i + 1);
+
+				List<Pair<String, Double>> ratioBySymbol = assetAllocator.allocate( //
+						backTestDataSourceBySymbol, //
+						date, //
+						historyDates.length);
 
 				Map<String, Float> latestPriceBySymbol_ = latestPriceBySymbol;
 				double valuation_ = valuation;

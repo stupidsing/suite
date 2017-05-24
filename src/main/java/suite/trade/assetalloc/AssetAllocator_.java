@@ -36,9 +36,8 @@ public class AssetAllocator_ {
 				.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {
 					float[] percentbs = bb.bb(dataSource.prices, window, k).percentb;
-					int length = percentbs.length;
 					double hold = 0d;
-					for (int i = 0; i < length; i++) {
+					for (int i = 0; i < index; i++) {
 						float percentb = percentbs[i];
 						if (percentb <= 0f)
 							hold = 1d;
@@ -63,8 +62,9 @@ public class AssetAllocator_ {
 				.from2(dataSourceBySymbol) //
 				.map2((symbol, dataSource) -> {
 					float[] ema = ma.exponentialMovingAvg(dataSource.prices, decay);
-					float lastEma = ema[ema.length - 2];
-					float latest = dataSource.last().price;
+					int last = index - 1;
+					float lastEma = ema[last];
+					float latest = dataSource.prices[last];
 					return latest / lastEma < threshold ? 1d : 0d;
 				}) //
 				.toList();
@@ -73,7 +73,7 @@ public class AssetAllocator_ {
 	public static AssetAllocator byLastPriceChange() {
 		return (dataSourceBySymbol, backTestDate, index) -> Read //
 				.from2(dataSourceBySymbol) //
-				.map2((symbol, dataSource) -> dataSource.get(-2).price / dataSource.get(-1).price < .96d ? 1d : 0d) //
+				.map2((symbol, dataSource) -> dataSource.get(index - 2).price / dataSource.get(index - 1).price < .96d ? 1d : 0d) //
 				.toList();
 	}
 
@@ -107,8 +107,9 @@ public class AssetAllocator_ {
 		return (dataSourceBySymbol, backTestDate, index) -> Read //
 				.from2(dataSourceBySymbol) //
 				.map2((symbol1, dataSource) -> {
-					float price0 = dataSource.get(-2).price;
-					float price1 = dataSource.get(-1).price;
+					float[] prices = dataSource.prices;
+					float price0 = prices[index - 2];
+					float price1 = prices[index - 1];
 					return price1 / price0 - 1f;
 				}) //
 				.sortBy((symbol2, return_1) -> return_1) //
@@ -123,13 +124,11 @@ public class AssetAllocator_ {
 		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate, index) -> Read //
 				.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {
-					Donchian donchian = ts.donchian(window, dataSource.prices);
-					String[] dates = dataSource.dates;
-					int length = dates.length;
-					int length1 = length - 1;
-					float price = dataSource.prices[length1];
+					float[] prices = dataSource.prices;
+					Donchian donchian = ts.donchian(window, prices);
+					float price = prices[index - 1];
 					boolean hold = false;
-					for (int i = 0; i < length; i++)
+					for (int i = 0; i < index; i++)
 						if (price == donchian.mins[i])
 							hold = true;
 						else if (price == donchian.maxs[i])
@@ -183,7 +182,7 @@ public class AssetAllocator_ {
 						GetBuySell gbs = mamr.analyze(prices);
 						int hold = 0;
 
-						for (int i = 0; i < prices.length; i++)
+						for (int i = 0; i < index; i++)
 							hold += gbs.get(i);
 
 						return (double) hold;
@@ -193,20 +192,22 @@ public class AssetAllocator_ {
 	}
 
 	public static AssetAllocator movingMedianMeanReversion() {
-		int windowSize0 = 0;
+		int windowSize0 = 1;
 		int windowSize1 = 32;
-		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate, index) -> Read //
-				.from2(dataSourceBySymbol) //
-				.mapValue(dataSource -> {
-					float[] prices = dataSource.prices;
-					float[] movingMedian0 = ma.movingMedian(prices, windowSize0);
-					float[] movingMedian1 = ma.movingMedian(prices, windowSize1);
-					double median0 = movingMedian0[movingMedian0.length - 1];
-					double median1 = movingMedian1[movingMedian1.length - 1];
-					double ratio = median1 / median0;
-					return ratio - 1d;
-				}) //
-				.toList());
+		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate, index) -> {
+			return Read.from2(dataSourceBySymbol) //
+					.mapValue(dataSource -> {
+						float[] prices = dataSource.prices;
+						float[] movingMedian0 = ma.movingMedian(prices, windowSize0);
+						float[] movingMedian1 = ma.movingMedian(prices, windowSize1);
+						int last = index - 1;
+						double median0 = movingMedian0[last];
+						double median1 = movingMedian1[last];
+						double ratio = median1 / median0;
+						return ratio - 1d;
+					}) //
+					.toList();
+		});
 	}
 
 	public static AssetAllocator ofSingle(String symbol) {
@@ -270,7 +271,7 @@ public class AssetAllocator_ {
 						int indexLength = indexDates.length;
 						float[] prices1 = new float[length];
 						int ii = 0;
-						for (int si = 0; si < length; si++) {
+						for (int si = 0; si < index; si++) {
 							String date = dates[si];
 							while (ii < indexLength && indexDates[ii].compareTo(date) < 0)
 								ii++;
@@ -289,12 +290,11 @@ public class AssetAllocator_ {
 				.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {
 					float[] prices = dataSource.prices;
-					int length = prices.length;
 					int u = 0;
-					for (int i = length - window; i < length; i++)
+					for (int i = index - window; i < index; i++)
 						if (prices[i - 1] < prices[i])
 							u++;
-					double rsi = (double) u / length;
+					double rsi = (double) u / window;
 					if (rsi < threshold0) // over-sold
 						return .5d - rsi;
 					else if (threshold1 < rsi) // over-bought

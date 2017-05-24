@@ -42,14 +42,13 @@ public class Ols3AssetAllocator implements AssetAllocator {
 		return Read.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {
 					float[] prices = dataSource.prices;
-					int length = prices.length;
-					float[][] x = new float[length - lookBack][];
-					for (int i = lookBack; i < length; i++)
+					float[][] x = new float[index - lookBack][];
+					for (int i = lookBack; i < index; i++)
 						x[i - lookBack] = inputs(prices, i);
-					float[] y = Arrays.copyOfRange(prices, lookBack, length);
+					float[] y = Arrays.copyOfRange(prices, lookBack, index);
 					LinearRegression lr = stat.linearRegression(x, y);
-					float pricex = lr.predict(inputs(prices, length));
-					return pricex / dataSource.last().price - 1d;
+					float pricex = lr.predict(inputs(prices, index));
+					return pricex / dataSource.prices[index] - 1d;
 				}) //
 				.toList();
 	}

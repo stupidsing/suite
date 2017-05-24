@@ -80,7 +80,7 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 						&& mrs.movingAvgMeanReversionRatio() < 0d) //
 				.map2((symbol, mrs) -> {
 					DataSource dataSource = dataSourceBySymbol.get(symbol);
-					double price = dataSource.last().price;
+					double price = dataSource.prices[index - 1];
 
 					double lma = mrs.latestMovingAverage();
 					float diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });

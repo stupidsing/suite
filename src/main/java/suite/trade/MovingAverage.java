@@ -3,11 +3,13 @@ package suite.trade;
 import java.util.Arrays;
 
 import suite.math.linalg.Matrix;
+import suite.math.stat.TimeSeries;
 import suite.util.To;
 
 public class MovingAverage {
 
 	private Matrix mtx = new Matrix();
+	private TimeSeries ts = new TimeSeries();
 
 	// moving average convergence/divergence
 	public float[] macd(float[] prices, double alpha0, double alpha1) {
@@ -53,12 +55,9 @@ public class MovingAverage {
 
 	public float[] movingMedian(float[] prices, int windowSize) {
 		return To.arrayOfFloats(prices.length, i -> {
-			float[] window = Arrays.copyOfRange(prices, Math.max(0, i - windowSize), i);
-			if (1 < window.length) {
-				Arrays.sort(window);
-				return window[window.length / 2];
-			} else
-				return prices[i];
+			float[] window = ts.back(i, windowSize, prices);
+			Arrays.sort(window);
+			return window[window.length / 2];
 		});
 	}
 
