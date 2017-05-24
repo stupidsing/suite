@@ -121,7 +121,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private Result bb(float fund) {
-		return alloc("bb", fund, AssetAllocator_.bollingerBands());
+		return alloc("bb", fund, AssetAllocator_.bollingerBands1());
 	}
 
 	// some orders caused by stupid bugs. need to sell those at suitable times.
