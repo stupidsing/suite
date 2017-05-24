@@ -25,7 +25,7 @@ import suite.util.Object_;
 public class AssetAllocBackTestTest {
 
 	private float initial = 1000000f;
-	private DatePeriod period = DatePeriod.ofYear(2016);
+	private DatePeriod period = DatePeriod.ofYear(2017);
 
 	private Sink<String> log = System.out::println;
 	private Configuration cfg = new ConfigurationImpl();
@@ -60,6 +60,7 @@ public class AssetAllocBackTestTest {
 				.map((b, period) -> {
 					AssetAllocator assetAllocator = b ? AssetAllocator_.bollingerBands() : AssetAllocator_.donchian();
 					Constants.testFlag = b;
+
 					try {
 						return "\nTEST = " + b + ", " + backTest(assetAllocator, period).conclusion();
 					} catch (Exception ex) {
@@ -91,7 +92,7 @@ public class AssetAllocBackTestTest {
 					try {
 						return "\nTEST = " + pair + ", " + backTest(assetAllocator, period, Read.each(asset0, asset1)).conclusion();
 					} catch (Exception ex) {
-						return "\nexception = " + ex;
+						return "\nTEST = " + pair + ", exception = " + ex;
 					}
 				}) //
 				.sort(Object_::compare) //
