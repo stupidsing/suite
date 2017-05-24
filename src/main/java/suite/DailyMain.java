@@ -90,6 +90,7 @@ public class DailyMain extends ExecutableProgram {
 				bug(), //
 				mamr(75000f), //
 				pairs(200000f, "0341.HK", "0052.HK"), //
+				pairs(200000f, "0052.HK", "0341.HK"), //
 				pmamr(75000f), //
 				pmmmr(125000f), //
 				revco(80000f));
