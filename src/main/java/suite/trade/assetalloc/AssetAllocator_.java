@@ -35,7 +35,7 @@ public class AssetAllocator_ {
 		return AssetAllocator_.unleverage((dataSourceBySymbol, backTestDate, index) -> Read //
 				.from2(dataSourceBySymbol) //
 				.mapValue(dataSource -> {
-					float[] percentbs = bb.bb(dataSource.prices, window, k).percentb;
+					float[] percentbs = bb.bb(dataSource.prices, window + 1, 1, k).percentb;
 					double hold = 0d;
 					for (int i = 0; i < index; i++) {
 						float percentb = percentbs[i];

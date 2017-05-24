@@ -1,7 +1,8 @@
 package suite.math.stat;
 
+import java.util.Arrays;
+
 import suite.math.stat.Statistic.MeanVariance;
-import suite.trade.MovingAverage;
 
 /**
  * Auto-regressive distributed lag.
@@ -10,12 +11,10 @@ import suite.trade.MovingAverage;
  */
 public class BollingerBands {
 
-	private MovingAverage ma = new MovingAverage();
 	private Statistic stat = new Statistic();
-	private TimeSeries ts = new TimeSeries();
 
-	public Bb bb(float[] fs, int n, int k) {
-		return new Bb(fs, n, k);
+	public Bb bb(float[] fs, int backPos0, int backPos1, int k) {
+		return new Bb(fs, backPos0, backPos1, k);
 	}
 
 	public class Bb {
@@ -24,16 +23,18 @@ public class BollingerBands {
 		public final float[] percentb;
 		public final float[] bandwidth;
 
-		private Bb(float[] fs, int n, int k) {
-			float[] movingAvg = ma.movingAvg(fs, n);
-			int length = movingAvg.length;
+		private Bb(float[] fs, int backPos0, int backPos1, int k) {
+			int length = fs.length;
 			lower = new float[length];
 			upper = new float[length];
 			percentb = new float[length];
 			bandwidth = new float[length];
 
 			for (int i = 0; i < length; i++) {
-				MeanVariance mv = stat.meanVariance(ts.back(i - 1, n, fs));
+				int i1 = i + 1;
+				int s = Math.max(0, i1 - backPos0);
+				int e = Math.max(0, i1 - backPos1);
+				MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(fs, s, e));
 				double ksd = k * mv.standardDeviation();
 				double bbl = mv.mean - ksd;
 				double bbu = mv.mean + ksd;
