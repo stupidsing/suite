@@ -22,6 +22,11 @@ public class Dump {
 	private Set<Integer> dumpedIds = new HashSet<>();
 	private Sink<String> sink;
 
+	public static <T> T t(T t) {
+		out(t);
+		return t;
+	}
+
 	/**
 	 * Dumps object content (public data and getters) through Reflection to a
 	 * log4j.

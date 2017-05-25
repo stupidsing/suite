@@ -167,8 +167,8 @@ public class As {
 		};
 	}
 
-	public static Outlet<Bytes> lines(Outlet<Bytes> outlet) {
-		return lines_(outlet);
+	public static Outlet<String> lines(Outlet<Bytes> outlet) {
+		return lines_(outlet).map(t -> To.string(t).trim());
 	}
 
 	public static <K, V> Map<K, List<V>> listMap(Outlet<Pair<K, V>> outlet) {
