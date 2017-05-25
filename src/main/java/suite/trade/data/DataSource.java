@@ -136,19 +136,20 @@ public class DataSource {
 	}
 
 	public Datum get(int pos) {
-		if (pos < 0)
-			pos += prices.length;
-		return new Datum(dates[pos], prices[pos]);
+		return get_(pos);
 	}
 
 	public Datum last() {
 		return get(-1);
 	}
 
-	public DataSource range(int start0, int end0) {
-		int start = Math.max(0, start0);
-		int end = Math.min(dates.length, end0);
-		return new DataSource(Arrays.copyOfRange(dates, start, end), Arrays.copyOfRange(prices, start, end));
+	public DatePeriod period() {
+		if (0 < dates.length) {
+			LocalDate date0 = To.date(get(0).date);
+			LocalDate datex = To.date(get(-1).date);
+			return DatePeriod.of(date0, datex);
+		} else
+			throw new RuntimeException();
 	}
 
 	public DataSource range(DatePeriod period) {
@@ -209,6 +210,12 @@ public class DataSource {
 		}
 
 		return new DataSource(Arrays.copyOf(dates1, j), Arrays.copyOf(prices1, j));
+	}
+
+	private Datum get_(int pos) {
+		if (pos < 0)
+			pos += prices.length;
+		return new Datum(dates[pos], prices[pos]);
 	}
 
 	private boolean isValid(float price0, float price1) {
