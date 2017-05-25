@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import suite.Constants;
+import suite.DailyMain;
 import suite.adt.pair.Pair;
 import suite.os.Execute;
 import suite.os.FileUtil;
@@ -25,22 +26,34 @@ import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.To;
+import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
 
-public class YahooHistory {
+public class YahooHistory extends ExecutableProgram {
 
 	private Yahoo yahoo = new Yahoo();
 
 	private Path path = HomeDir.resolve("yahoo.history");
 	private Map<String, Map<String, String>> data;
 
-	public static void main(String[] args) throws IOException {
-		new YahooHistory().init();
+	public static void main(String[] args) {
+		Util.run(DailyMain.class, args);
 	}
 
-	private void init() throws IOException {
-		if (Boolean.TRUE)
-			read();
-		else {
+	@Override
+	protected boolean run(String[] args) throws IOException {
+		read();
+
+		if (Boolean.TRUE) { // reload data for a symbol
+			String symbol = "^HSI";
+			DataSource dataSource = yahoo.dataSourceL1(symbol, DatePeriod.ages());
+			Map<String, String> data_ = getDataBySymbol(read(), symbol);
+			String[] dates = dataSource.dates;
+			float[] prices = dataSource.prices;
+			for (int i = 0; i < dates.length; i++)
+				data_.put(dates[i], openLine(prices[i]));
+			write();
+		} else {
 			String out = Execute.shell("find /home/ywsing/store-cache/ -type f | xargs grep -a -l table.csv");
 
 			Streamlet2<String, String> keyValues = Read.from(out.split("\n")) //
@@ -66,6 +79,8 @@ public class YahooHistory {
 
 			Files.write(path, sb.toString().getBytes(Constants.charset));
 		}
+
+		return true;
 	}
 
 	public DataSource dataSource(String symbol, DatePeriod period) {
@@ -117,13 +132,17 @@ public class YahooHistory {
 				Map<String, Float> quotes = yahoo.quote(data.keySet());
 
 				for (Entry<String, Float> e : quotes.entrySet())
-					getDataBySymbol(data, e.getKey()).put(date, "-,-,-," + To.string(e.getValue()) + ",-,-");
+					getDataBySymbol(data, e.getKey()).put(date, openLine(e.getValue()));
 
 				write();
 			}
 		}
 
 		return data;
+	}
+
+	private String openLine(float open) {
+		return "-,-,-," + To.string(open) + ",-,-";
 	}
 
 	private void write() {

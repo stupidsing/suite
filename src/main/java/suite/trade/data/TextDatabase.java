@@ -100,8 +100,8 @@ public class TextDatabase {
 			throw new RuntimeException("value mismatch for key " + datum.key + ": " + datum0.value + " != " + datum.value);
 	}
 
-	private Datum toDatum(Bytes bytes) {
-		String[] array = To.string(bytes).split(",");
+	private Datum toDatum(String line) {
+		String[] array = line.split(",");
 		return datum(array[0], array[1]);
 	}
 
