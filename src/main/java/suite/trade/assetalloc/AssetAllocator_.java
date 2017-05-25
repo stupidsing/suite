@@ -68,6 +68,22 @@ public class AssetAllocator_ {
 						rsi_(32, .3d, .7d)));
 	}
 
+	public static AssetAllocator byReturnsProRata() {
+		return dataSourceBySymbol -> (backTestDate, index) -> {
+			Streamlet2<String, Double> returns = dataSourceBySymbol //
+					.map2((symbol, dataSource) -> {
+						double price0 = dataSource.prices[index - 2];
+						double price1 = dataSource.prices[index - 1];
+						return (price0 - price1) / price0;
+					}) //
+					.filterValue(return_ -> 0d < return_) //
+					.collect(As::streamlet2);
+
+			double sum = returns.collectAsDouble(As.sumOfDoubles((symbol, price) -> price));
+			return returns.mapValue(return_ -> return_ / sum).toList();
+		};
+	}
+
 	public static AssetAllocator byTradeFrequency(int tradeFrequency, AssetAllocator assetAllocator) {
 		return dataSourceBySymbol -> {
 			OnDate onDate = assetAllocator.allocate(dataSourceBySymbol);
@@ -90,15 +106,15 @@ public class AssetAllocator_ {
 
 	public static AssetAllocator byWorstReturn() {
 		return dataSourceBySymbol -> (backTestDate, index) -> dataSourceBySymbol //
-				.map2((symbol1, dataSource) -> {
+				.map2((symbol, dataSource) -> {
 					float[] prices = dataSource.prices;
 					float price0 = prices[index - 2];
 					float price1 = prices[index - 1];
 					return price1 / price0 - 1f;
 				}) //
-				.sortBy((symbol2, return_1) -> return_1) //
+				.sortBy((symbol2, return_) -> return_) //
 				.take(1) //
-				.mapValue(return_2 -> 1d) //
+				.mapValue(return_ -> 1d) //
 				.toList();
 	}
 
