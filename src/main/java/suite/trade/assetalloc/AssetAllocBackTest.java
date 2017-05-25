@@ -186,7 +186,7 @@ public class AssetAllocBackTest {
 			valuations = valuations_;
 			holdBySymbol = holdBySymbol_;
 			annualReturn = Math.expm1(Math.log(vx / v0) * Trade_.nTradeDaysPerYear / size);
-			sharpe = ts.returnsStat(valuations).sharpeRatio();
+			sharpe = ts.returnsStatDailyAnnualized(valuations).sharpeRatio();
 			skewness = stat.skewness(valuations);
 		}
 
