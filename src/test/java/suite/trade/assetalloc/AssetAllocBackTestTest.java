@@ -8,7 +8,9 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Constants;
+import suite.DailyMain;
 import suite.adt.pair.Pair;
+import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -30,6 +32,9 @@ public class AssetAllocBackTestTest {
 	private Sink<String> log = System.out::println;
 	private Configuration cfg = new ConfigurationImpl();
 
+	private String hsiSymbol = "^HSI";
+	private Asset hsi = Asset.of(hsiSymbol, "Hang Seng Index", 1);
+
 	@Test
 	public void testBackTest() {
 		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(log);
@@ -46,26 +51,19 @@ public class AssetAllocBackTestTest {
 	}
 
 	@Test
-	public void testBackTestHsi() {
-		String symbol = "^HSI";
-		Asset asset = Asset.of(symbol, "Hang Seng Index", 1);
-		AssetAllocator assetAllocator = AssetAllocator_.ofSingle(symbol);
-		assertGrowth(out(backTest(assetAllocator, period, Read.each(asset))));
-	}
-
-	@Test
 	public void testControlledExperiment() {
 		String results = Read.each(Boolean.FALSE, Boolean.TRUE) //
 				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
 				.map((b, period) -> {
 					AssetAllocator assetAllocator = b //
-							? AssetAllocator_.bollingerBands1() //
-							: ReverseCorrelateAssetAllocator.of();
+							? new DailyMain().aa_bb //
+							: AssetAllocator_.ofSingle(hsiSymbol);
 					Constants.testFlag = b;
 
 					try {
 						return "\nTEST = " + b + ", " + backTest(assetAllocator, period).conclusion();
 					} catch (Exception ex) {
+						LogUtil.error(ex);
 						return "\nTEST = " + b + ", exception = " + ex;
 					}
 				}) //
@@ -95,6 +93,7 @@ public class AssetAllocBackTestTest {
 					try {
 						return "\nTEST = " + pair + ", " + backTest(assetAllocator, period, Read.each(asset0, asset1)).conclusion();
 					} catch (Exception ex) {
+						LogUtil.error(ex);
 						return "\nTEST = " + pair + ", exception = " + ex;
 					}
 				}) //
@@ -105,8 +104,9 @@ public class AssetAllocBackTestTest {
 	}
 
 	private Simulate backTest(AssetAllocator assetAllocator, DatePeriod period) {
-		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(period.from); // hkex.getCompanies()
-		return backTest(assetAllocator, period, assets);
+		Streamlet<Asset> assets0 = cfg.queryLeadingCompaniesByMarketCap(period.from); // hkex.getCompanies()
+		Streamlet<Asset> assets1 = assets0.cons(hsi);
+		return backTest(assetAllocator, period, assets1);
 	}
 
 	private Simulate backTest(AssetAllocator assetAllocator, DatePeriod period, Streamlet<Asset> assets) {
