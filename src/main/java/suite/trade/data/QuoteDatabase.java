@@ -1,10 +1,10 @@
 package suite.trade.data;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.SortedSet;
 
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet2;
 import suite.trade.data.TextDatabase.Datum;
 import suite.util.HomeDir;
 import suite.util.To;
@@ -35,8 +35,8 @@ public class QuoteDatabase {
 		textDatabase.join();
 	}
 
-	public void merge(String field, Map<String, DataSource> dataSourceBySymbol) {
-		textDatabase.merge(Read.from2(dataSourceBySymbol) //
+	public void merge(String field, Streamlet2<String, DataSource> dataSourceBySymbol) {
+		textDatabase.merge(dataSourceBySymbol //
 				.concatMap((symbol, dataSource) -> {
 					String[] dates = dataSource.dates;
 					float[] prices = dataSource.prices;

@@ -145,6 +145,12 @@ public class DataSource {
 		return get(-1);
 	}
 
+	public DataSource range(int start0, int end0) {
+		int start = Math.max(0, start0);
+		int end = Math.min(dates.length, end0);
+		return new DataSource(Arrays.copyOfRange(dates, start, end), Arrays.copyOfRange(prices, start, end));
+	}
+
 	public DataSource range(DatePeriod period) {
 		return range_(period);
 	}

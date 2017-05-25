@@ -258,7 +258,7 @@ public class AssetAllocator_ {
 	}
 
 	private static AssetAllocator relative_(AssetAllocator assetAllocator, DataSource indexDataSource) {
-		return dataSourceBySymbol0 -> {
+		return (dataSourceBySymbol0) -> {
 			Streamlet2<String, DataSource> dataSourceBySymbol1 = dataSourceBySymbol0 //
 					.mapValue(dataSource0 -> {
 						String[] dates = dataSource0.dates;
