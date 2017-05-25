@@ -115,8 +115,9 @@ public class DailyMain extends ExecutableProgram {
 
 		sb.append("\nSUGGESTIONS");
 		sb.append("\n- check your balance");
-		sb.append("\n- comment out the small orders");
+		sb.append("\n- get away with the small orders");
 		sb.append("\n- for mamr, check actual execution using SingleAllocBackTestTest.testBackTestHkexDetails()");
+		sb.append("\n");
 
 		String result = sb.toString();
 		LogUtil.info(result);

@@ -1,22 +1,34 @@
 package suite.trade;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import suite.adt.Range;
 
 public class DatePeriod extends Range<LocalDate> {
 
 	public static DatePeriod ages() {
-		LocalDate from = LocalDate.of(1980, 1, 1);
-		LocalDate to = LocalDate.of(2020, 1, 1);
-		return of_(from, to);
+		LocalDate frDate = LocalDate.of(1980, 1, 1);
+		LocalDate toDate = LocalDate.of(2020, 1, 1);
+		return of_(frDate, toDate);
 	}
 
+	// align date range boundaries to reduce number of web queries (and
+	// calculations)
 	public static DatePeriod backTestDaysBefore(LocalDate date, int nDays, int alignment) {
+		return backTestDaysBefore(date, date.plusDays(1), nDays, alignment).get(0);
+	}
 
-		// align date range boundaries to reduce number of web queries (and
-		// calculations)
-		return daysBefore_(date.minusDays(date.toEpochDay() % alignment), nDays);
+	public static List<DatePeriod> backTestDaysBefore(LocalDate frDate, LocalDate toDate, int nDays, int alignment) {
+		long epochDate0 = frDate.toEpochDay() % alignment;
+		long epochDatex = toDate.minusDays(1).toEpochDay() % alignment;
+		List<DatePeriod> periods = new ArrayList<>();
+		while (epochDate0 <= epochDatex) {
+			periods.add(daysBefore_(LocalDate.ofEpochDay(epochDate0), nDays));
+			epochDate0 += alignment;
+		}
+		return periods;
 	}
 
 	public static DatePeriod daysBefore(LocalDate to, int n) {
