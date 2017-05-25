@@ -2,7 +2,6 @@ package suite.adt;
 
 import java.util.Objects;
 
-import suite.adt.pair.Pair;
 import suite.util.Object_;
 
 public class Range<T extends Comparable<? super T>> implements Comparable<Range<T>> {
@@ -37,7 +36,7 @@ public class Range<T extends Comparable<? super T>> implements Comparable<Range<
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Pair.class) {
+		if (Object_.clazz(object) == Range.class) {
 			Range<?> other = (Range<?>) object;
 			return Objects.equals(from, other.from) && Objects.equals(to, other.to);
 		} else

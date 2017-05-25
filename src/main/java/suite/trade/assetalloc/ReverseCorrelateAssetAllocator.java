@@ -41,20 +41,32 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol) {
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
+		Map<String, Map<DatePeriod, Double>> reverseCorrelationByPeriodBySymbol = dataSourceBySymbol //
+				.mapValue(dataSource -> dataSource //
+						.period() //
+						.backTestDaysBefore(512, 32) //
+						.map2(samplePeriod -> {
+							float[] prices = dataSource.range(samplePeriod).prices;
+							float[] logReturns = ts.logReturns(prices);
+							int ll = logReturns.length;
+							double sum = 0d;
+							for (int i = tor; i < ll - tor; i++) {
+								int i_ = i;
+								sum += stat.correlation(j -> logReturns[i_ - j], j -> logReturns[i_ + j], tor);
+							}
+							return sum / (ll - 2 * tor);
+						}) //
+						.toMap()) //
+				.toMap();
+
 		return (backTestDate, index) -> {
 			DatePeriod samplePeriod = DatePeriod.backTestDaysBefore(backTestDate, 512, 32);
 
 			Map<String, Double> reverseCorrelationBySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> {
-						float[] prices = dataSource.range(samplePeriod).prices;
-						float[] logReturns = ts.logReturns(prices);
-						int ll = logReturns.length;
-						double sum = 0d;
-						for (int i = tor; i < ll - tor; i++) {
-							int i_ = i;
-							sum += stat.correlation(j -> logReturns[i_ - j], j -> logReturns[i_ + j], tor);
-						}
-						return sum / (ll - 2 * tor);
+					.map2((symbol, dataSource) -> {
+						Map<DatePeriod, Double> m = reverseCorrelationByPeriodBySymbol.get(symbol);
+						Double reverseCorrelation = m != null ? m.get(samplePeriod) : null;
+						return reverseCorrelation != null ? reverseCorrelation : Double.NaN;
 					}) //
 					.filterValue(Double::isFinite) //
 					.filterValue(reverseCorrelation -> reverseCorrelationThreshold < Math.abs(reverseCorrelation)) //

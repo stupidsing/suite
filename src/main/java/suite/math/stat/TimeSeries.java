@@ -104,13 +104,17 @@ public class TimeSeries {
 	}
 
 	public float[] logReturns(float[] fs) {
-		float[] logReturns = new float[fs.length - 1];
-		float f0 = fs[0];
-		for (int i = 0; i < logReturns.length; i++) {
-			logReturns[i] = (float) Math.log1p((fs[i + 1] - f0) / f0);
-			f0 = fs[i + 1];
-		}
-		return logReturns;
+		int length = fs.length;
+		if (0 < length) {
+			float[] logReturns = new float[length - 1];
+			float f0 = fs[0];
+			for (int i = 0; i < logReturns.length; i++) {
+				logReturns[i] = (float) Math.log1p((fs[i + 1] - f0) / f0);
+				f0 = fs[i + 1];
+			}
+			return logReturns;
+		} else
+			return new float[0];
 	}
 
 	public LinearRegression meanReversion(float[] prices, int tor) {
