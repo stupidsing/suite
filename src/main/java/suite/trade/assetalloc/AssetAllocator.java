@@ -15,7 +15,7 @@ import suite.trade.data.DataSource;
  */
 public interface AssetAllocator {
 
-	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol);
+	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDate> dates);
 
 	public interface OnDate {
 

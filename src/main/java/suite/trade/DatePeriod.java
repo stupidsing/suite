@@ -40,6 +40,16 @@ public class DatePeriod extends Range<LocalDate> {
 		return yearsBefore_(5);
 	}
 
+	public static DatePeriod of(List<LocalDate> dates) {
+		LocalDate frDate = LocalDate.MAX;
+		LocalDate toDate = LocalDate.MIN;
+		for (LocalDate date : dates) {
+			frDate = frDate.compareTo(date) < 0 ? frDate : date;
+			toDate = toDate.compareTo(date) < 0 ? date : toDate;
+		}
+		return of_(frDate, toDate);
+	}
+
 	public static DatePeriod of(LocalDate from, LocalDate to) {
 		return of_(from, to);
 	}

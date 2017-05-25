@@ -1,5 +1,7 @@
 package suite.trade.assetalloc;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import suite.math.linalg.CholeskyDecomposition;
@@ -26,7 +28,7 @@ public class KellyAssetAllocator implements AssetAllocator {
 	}
 
 	@Override
-	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol) {
+	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDate> dates) {
 		double dailyInterestRate = Trade_.riskFreeInterestRate(1);
 
 		// TODO this should be the expected returns, not past returns!

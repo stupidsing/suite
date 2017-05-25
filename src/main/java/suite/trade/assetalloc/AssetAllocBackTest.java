@@ -129,11 +129,11 @@ public class AssetAllocBackTest {
 					.mapValue(alignDataSource::align) //
 					.collect(As::streamlet2);
 
-			OnDate onDate = assetAllocator.allocate(dataSourceBySymbol1);
 			List<LocalDate> tradeDates = Read.from(alignDataSource.dates).map(To::date).toList();
 			List<LocalDate> dates = datesPred.apply(tradeDates);
 			int size = dates.size();
 
+			OnDate onDate = assetAllocator.allocate(dataSourceBySymbol1, dates);
 			float[] valuations_ = new float[size];
 			Map<String, Float> latestPriceBySymbol = null;
 

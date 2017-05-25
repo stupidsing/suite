@@ -1,5 +1,7 @@
 package suite.trade.assetalloc;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import suite.math.linalg.CholeskyDecomposition;
@@ -38,12 +40,12 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 	}
 
 	@Override
-	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol) {
+	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDate> dates) {
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 		Map<String, Map<DatePeriod, Double>> reverseCorrelationByPeriodBySymbol = dataSourceBySymbol //
-				.mapValue(dataSource -> dataSource //
-						.period() //
+				.mapValue(dataSource -> DatePeriod //
+						.of(dates) //
 						.backTestDaysBefore(512, 32) //
 						.map2(samplePeriod -> {
 							float[] prices = dataSource.range(samplePeriod).prices;
