@@ -74,11 +74,11 @@ public class DailyMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 
 		// fetch Yahoo historical data
-		Map<String, DataSource> dataSourceBySymbol = cfg //
+		Streamlet2<String, DataSource> dataSourceBySymbol = cfg //
 				.queryLeadingCompaniesByMarketCap(today) //
 				.map(asset -> asset.symbol) //
 				.map2(cfg::dataSource) //
-				.toMap();
+				.collect(As::streamlet2);
 
 		QuoteDatabase quoteDatabase = new QuoteDatabase();
 		quoteDatabase.merge("o", dataSourceBySymbol);
