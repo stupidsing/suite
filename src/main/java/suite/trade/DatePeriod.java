@@ -17,18 +17,11 @@ public class DatePeriod extends Range<LocalDate> {
 	// align date range boundaries to reduce number of web queries (and
 	// calculations)
 	public static DatePeriod backTestDaysBefore(LocalDate date, int nDays, int alignment) {
-		return backTestDaysBefore(date, date.plusDays(1), nDays, alignment).get(0);
+		return backTestDaysBefore_(date, date.plusDays(1), nDays, alignment).get(0);
 	}
 
-	public static List<DatePeriod> backTestDaysBefore(LocalDate frDate, LocalDate toDate, int nDays, int alignment) {
-		long epochDate0 = frDate.toEpochDay() % alignment;
-		long epochDatex = toDate.minusDays(1).toEpochDay() % alignment;
-		List<DatePeriod> periods = new ArrayList<>();
-		while (epochDate0 <= epochDatex) {
-			periods.add(daysBefore_(LocalDate.ofEpochDay(epochDate0), nDays));
-			epochDate0 += alignment;
-		}
-		return periods;
+	public static List<DatePeriod> backTestDaysBefore(DatePeriod period, int nDays, int alignment) {
+		return backTestDaysBefore_(period.from, period.to, nDays, alignment);
 	}
 
 	public static DatePeriod daysBefore(LocalDate to, int n) {
@@ -57,6 +50,17 @@ public class DatePeriod extends Range<LocalDate> {
 
 	public static DatePeriod yearsBefore(LocalDate to, int n) {
 		return yearsBefore_(to, n);
+	}
+
+	private static List<DatePeriod> backTestDaysBefore_(LocalDate frDate, LocalDate toDate, int nDays, int alignment) {
+		long epochDate0 = frDate.toEpochDay() % alignment;
+		long epochDatex = toDate.minusDays(1).toEpochDay() % alignment;
+		List<DatePeriod> periods = new ArrayList<>();
+		while (epochDate0 <= epochDatex) {
+			periods.add(daysBefore_(LocalDate.ofEpochDay(epochDate0), nDays));
+			epochDate0 += alignment;
+		}
+		return periods;
 	}
 
 	private static DatePeriod daysBefore_(LocalDate to, int n) {
