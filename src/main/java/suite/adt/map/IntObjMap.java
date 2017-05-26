@@ -39,7 +39,7 @@ public class IntObjMap<V> {
 		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		IntObjSource<V> source = source_();
 		while (source.source2(pair))
-			sink.sink(pair.t0, pair.t1);
+			sink.sink2(pair.t0, pair.t1);
 	}
 
 	public V get(int key) {

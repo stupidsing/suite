@@ -9,12 +9,12 @@ public class CharPrimitiveSink {
 
 	@FunctionalInterface
 	public interface CharCharSink {
-		public void sink(char c, int d);
+		public void sink2(char c, int d);
 	}
 
 	@FunctionalInterface
 	public interface CharObjSink<T> { // extends ObjCharConsumer<T>
-		public void sink(char c, T t);
+		public void sink2(char c, T t);
 	}
 
 }

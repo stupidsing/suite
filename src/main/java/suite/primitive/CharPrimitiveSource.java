@@ -12,7 +12,7 @@ public class CharPrimitiveSource {
 
 	@FunctionalInterface
 	public interface CharCharSource {
-		public boolean source(CharCharPair pair);
+		public boolean source2(CharCharPair pair);
 	}
 
 	@FunctionalInterface

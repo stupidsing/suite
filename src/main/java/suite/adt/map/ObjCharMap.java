@@ -43,7 +43,7 @@ public class ObjCharMap<K> {
 		CharObjPair<K> pair = CharObjPair.of((char) 0, null);
 		CharObjSource<K> source = source_();
 		while (source.source2(pair))
-			sink.sink(pair.t0, pair.t1);
+			sink.sink2(pair.t0, pair.t1);
 	}
 
 	public char get(K key) {

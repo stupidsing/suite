@@ -42,8 +42,8 @@ public class IntIntMap {
 	public void forEach(IntIntSink sink) {
 		IntIntPair pair = IntIntPair.of(0, 0);
 		IntIntSource source = source_();
-		while (source.source(pair))
-			sink.sink(pair.t0, pair.t1);
+		while (source.source2(pair))
+			sink.sink2(pair.t0, pair.t1);
 	}
 
 	public int get(int key) {
@@ -102,7 +102,7 @@ public class IntIntMap {
 			IntIntPair pair0 = IntIntPair.of(0, 0);
 			return IntObjOutlet.of(new IntObjSource<Integer>() {
 				public boolean source2(IntObjPair<Integer> pair) {
-					boolean b = source.source(pair0);
+					boolean b = source.source2(pair0);
 					if (b) {
 						pair.t0 = pair0.t0;
 						pair.t1 = pair0.t1;
@@ -133,7 +133,7 @@ public class IntIntMap {
 			private int capacity = kvs.length;
 			private int index = 0;
 
-			public boolean source(IntIntPair pair) {
+			public boolean source2(IntIntPair pair) {
 				long kv;
 				int v;
 				while ((v = v(kv = kvs[index])) == EMPTYVALUE)

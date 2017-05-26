@@ -31,7 +31,7 @@ public class IntIntMapTest {
 
 		IntIntSource source = map.source();
 		IntIntPair pair = IntIntPair.of(0, 0);
-		while (source.source(pair))
+		while (source.source2(pair))
 			actual.add(pair.t0 + ":" + pair.t1);
 		assertEquals(expected, actual);
 	}

@@ -12,7 +12,7 @@ public class IntPrimitiveSource {
 
 	@FunctionalInterface
 	public interface IntIntSource {
-		public boolean source(IntIntPair pair);
+		public boolean source2(IntIntPair pair);
 	}
 
 	@FunctionalInterface
