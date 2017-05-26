@@ -30,7 +30,7 @@ public class StatisticTest {
 		float[] ys = To.arrayOfFloats(xs, x -> (float) (mtx.dot(expect, x) + random.nextGaussian() * .01f));
 		LinearRegression lr = stat.linearRegression(xs, ys);
 		Dump.out(lr);
-		float[] actual = lr.betas;
+		float[] actual = lr.coefficients;
 		mtx.verifyEquals(expect, actual, .1f);
 
 		float[] xtest = To.arrayOfFloats(m, j -> random.nextFloat());

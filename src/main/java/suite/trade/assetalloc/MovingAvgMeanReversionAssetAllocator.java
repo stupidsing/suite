@@ -170,11 +170,11 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		}
 
 		public double meanReversionRatio() {
-			return meanReversion.betas[0];
+			return meanReversion.coefficients[0];
 		}
 
 		public double movingAvgMeanReversionRatio() {
-			return movingAvgMeanReversion.betas[0];
+			return movingAvgMeanReversion.coefficients[0];
 		}
 
 		public double halfLife() {

@@ -83,7 +83,7 @@ public class TimeSeries {
 		float[][] deps = To.array(float[].class, logVrs.length, i -> new float[] { logVrs[i], 1f, });
 		float[] n = To.arrayOfFloats(logVrs.length, i -> (float) Math.log(tors[i]));
 		LinearRegression lr = stat.linearRegression(deps, n);
-		float beta0 = lr.betas[0];
+		float beta0 = lr.coefficients[0];
 		return beta0 / 2d;
 	}
 

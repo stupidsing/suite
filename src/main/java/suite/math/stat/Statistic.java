@@ -6,8 +6,8 @@ import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.primitive.IntPrimitiveFun.Obj_Int;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
+import suite.primitive.Int_Flt;
 import suite.primitive.PrimitiveFun.Int_Double;
-import suite.primitive.PrimitiveFun.Int_Float;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
@@ -80,7 +80,7 @@ public class Statistic {
 		public final int nSamples;
 		public final int sampleLength;
 		public final float[][] in;
-		public final float[] betas;
+		public final float[] coefficients;
 		public final double invn2;
 		public final double sse;
 		public final double r2;
@@ -91,7 +91,7 @@ public class Statistic {
 			int sampleLength_ = mtx.width(x);
 			float[][] xt = mtx.transpose(x);
 			float[][] xtx = mtx.mul(xt, x);
-			betas = cholesky.inverseMul(xtx).apply(mtx.mul(xt, y));
+			coefficients = cholesky.inverseMul(xtx).apply(mtx.mul(xt, y));
 
 			float[] estimatedy = To.arrayOfFloats(x, this::predict);
 			double meany = mean_(y);
@@ -122,7 +122,7 @@ public class Statistic {
 		}
 
 		public float predict(float[] x) {
-			return mtx.dot(betas, x);
+			return mtx.dot(coefficients, x);
 		}
 
 		// if f-statistic < .05d, we conclude R%2 != 0, the test is significant
@@ -130,11 +130,12 @@ public class Statistic {
 			return (nSamples - sampleLength - 1) * r2 / (1d - r2);
 		}
 
+		// the t statistic is the coefficient divided by its standard error
 		public float[] tStatistic() {
 			return To.arrayOfFloats(sampleLength, i -> {
 				MeanVariance mv = new MeanVariance(in.length, j -> in[j][i]);
 				double invsd = Math.sqrt(mv.variance / (sse * invn2));
-				return (float) (betas[i] * invsd);
+				return (float) (coefficients[i] * invsd);
 			});
 		}
 
@@ -142,7 +143,7 @@ public class Statistic {
 			StringBuilder sb = new StringBuilder();
 			float[] tStatistic = tStatistic();
 			for (int i = 0; i < sampleLength; i++)
-				sb.append("\ncoefficient = " + To.string(betas[i]) + ", t-statistic = " + To.string(tStatistic[i]));
+				sb.append("\ncoefficient = " + To.string(coefficients[i]) + ", t-statistic = " + To.string(tStatistic[i]));
 			sb.append("\nstandard error = " + To.string(standardError) + ", r2 = " + To.string(r2));
 			return sb.toString();
 		}
@@ -276,7 +277,7 @@ public class Statistic {
 		public final double sum, sumsq;
 		public final double mean, variance;
 
-		private MeanVariance(int length, Int_Float fun) {
+		private MeanVariance(int length, Int_Flt fun) {
 			if (0 < length) {
 				float first = fun.apply(0);
 				double min_ = first, max_ = first;
