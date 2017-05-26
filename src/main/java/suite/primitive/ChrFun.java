@@ -1,6 +1,6 @@
 package suite.primitive;
 
-public class ChrPrimitiveFun {
+public class ChrFun {
 
 	@FunctionalInterface
 	public interface ChrObj_Obj<X, Y> {

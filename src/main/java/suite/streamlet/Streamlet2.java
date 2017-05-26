@@ -14,8 +14,8 @@ import java.util.function.Predicate;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.FltPrimitiveFun.Obj_Flt;
-import suite.primitive.IntPrimitiveFun.Obj_Int;
+import suite.primitive.FltFun.Obj_Flt;
+import suite.primitive.IntFun.Obj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.util.FunUtil.Fun;

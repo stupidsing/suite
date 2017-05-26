@@ -33,7 +33,7 @@ import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
-import suite.primitive.FltPrimitiveFun.Obj_Flt;
+import suite.primitive.FltFun.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.IntInt_Flt;
 import suite.primitive.Int_Flt;

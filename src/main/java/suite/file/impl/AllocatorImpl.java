@@ -8,7 +8,7 @@ import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.primitive.IntPrimitiveFun.Int_Obj;
+import suite.primitive.IntFun.Int_Obj;
 
 /**
  * Manage B-tree pages on disk.

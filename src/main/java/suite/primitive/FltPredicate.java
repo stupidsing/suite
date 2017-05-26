@@ -1,6 +1,6 @@
 package suite.primitive;
 
-public class FltPrimitivePredicate {
+public class FltPredicate {
 
 	@FunctionalInterface
 	public interface FltPredicate_ {

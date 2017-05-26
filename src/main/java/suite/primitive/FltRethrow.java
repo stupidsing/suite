@@ -1,8 +1,8 @@
 package suite.primitive;
 
-import suite.primitive.FltPrimitiveFun.FltObj_Obj;
-import suite.primitive.FltPrimitivePredicate.FltObjPredicate;
-import suite.primitive.FltPrimitivePredicate.FltPredicate_;
+import suite.primitive.FltFun.FltObj_Obj;
+import suite.primitive.FltPredicate.FltObjPredicate;
+import suite.primitive.FltPredicate.FltPredicate_;
 
 public class FltRethrow {
 

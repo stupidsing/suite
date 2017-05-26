@@ -1,6 +1,6 @@
 package suite.primitive;
 
-public class ShtPrimitivePredicate {
+public class ShtPredicate {
 
 	@FunctionalInterface
 	public interface ShtPredicate_ {

@@ -1,6 +1,6 @@
 package suite.primitive;
 
-public class FltPrimitiveFun {
+public class FltFun {
 
 	@FunctionalInterface
 	public interface FltObj_Obj<X, Y> {

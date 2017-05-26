@@ -17,7 +17,7 @@ import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
-import suite.primitive.IntPrimitiveSource.IntObjSource;
+import suite.primitive.IntSource.IntObjSource;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;

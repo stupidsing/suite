@@ -1,10 +1,10 @@
 package suite.adt.map;
 
 import suite.adt.pair.ShtObjPair;
-import suite.primitive.ShtPrimitiveFun.Sht_Obj;
-import suite.primitive.ShtPrimitiveSink.ShtObjSink;
-import suite.primitive.ShtPrimitiveSource.ShtObjSource;
-import suite.primitive.IntPrimitiveFun.Obj_Int;
+import suite.primitive.IntFun.Obj_Int;
+import suite.primitive.ShtFun.Sht_Obj;
+import suite.primitive.ShtSink.ShtObjSink;
+import suite.primitive.ShtSource.ShtObjSource;
 import suite.streamlet.ShtObjOutlet;
 import suite.streamlet.ShtObjStreamlet;
 

@@ -1,8 +1,8 @@
 package suite.primitive;
 
-import suite.primitive.ChrPrimitiveFun.ChrObj_Obj;
-import suite.primitive.ChrPrimitivePredicate.ChrObjPredicate;
-import suite.primitive.ChrPrimitivePredicate.ChrPredicate_;
+import suite.primitive.ChrFun.ChrObj_Obj;
+import suite.primitive.ChrPredicate.ChrObjPredicate;
+import suite.primitive.ChrPredicate.ChrPredicate_;
 
 public class ChrRethrow {
 

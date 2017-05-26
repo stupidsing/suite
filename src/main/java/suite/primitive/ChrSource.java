@@ -2,10 +2,10 @@ package suite.primitive;
 
 import suite.adt.pair.ChrObjPair;
 
-public class ChrPrimitiveSource {
+public class ChrSource {
 
 	@FunctionalInterface
-	public interface ChrSource {
+	public interface ChrSource_ {
 		public char source();
 	}
 

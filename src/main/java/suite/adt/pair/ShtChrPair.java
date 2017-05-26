@@ -2,8 +2,8 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
-import suite.primitive.Sht_Sht;
 import suite.primitive.Chr_Chr;
+import suite.primitive.Sht_Sht;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 

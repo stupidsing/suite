@@ -1,6 +1,6 @@
 package suite.primitive;
 
-public class ShtPrimitiveFun {
+public class ShtFun {
 
 	@FunctionalInterface
 	public interface ShtObj_Obj<X, Y> {

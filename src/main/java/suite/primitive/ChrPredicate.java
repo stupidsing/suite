@@ -1,6 +1,6 @@
 package suite.primitive;
 
-public class ChrPrimitivePredicate {
+public class ChrPredicate {
 
 	@FunctionalInterface
 	public interface ChrPredicate_ {

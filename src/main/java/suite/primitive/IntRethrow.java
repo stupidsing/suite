@@ -1,8 +1,8 @@
 package suite.primitive;
 
-import suite.primitive.IntPrimitiveFun.IntObj_Obj;
-import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
-import suite.primitive.IntPrimitivePredicate.IntPredicate_;
+import suite.primitive.IntFun.IntObj_Obj;
+import suite.primitive.IntPredicate.IntObjPredicate;
+import suite.primitive.IntPredicate.IntPredicate_;
 
 public class IntRethrow {
 

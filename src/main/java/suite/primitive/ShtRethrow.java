@@ -1,8 +1,8 @@
 package suite.primitive;
 
-import suite.primitive.ShtPrimitiveFun.ShtObj_Obj;
-import suite.primitive.ShtPrimitivePredicate.ShtObjPredicate;
-import suite.primitive.ShtPrimitivePredicate.ShtPredicate_;
+import suite.primitive.ShtFun.ShtObj_Obj;
+import suite.primitive.ShtPredicate.ShtObjPredicate;
+import suite.primitive.ShtPredicate.ShtPredicate_;
 
 public class ShtRethrow {
 

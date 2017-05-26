@@ -2,10 +2,10 @@ package suite.primitive;
 
 import suite.adt.pair.FltObjPair;
 
-public class FltPrimitiveSource {
+public class FltSource {
 
 	@FunctionalInterface
-	public interface FltSource {
+	public interface FltSource_ {
 		public float source();
 	}
 

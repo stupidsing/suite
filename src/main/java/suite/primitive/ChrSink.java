@@ -1,9 +1,9 @@
 package suite.primitive;
 
-public class ChrPrimitiveSink {
+public class ChrSink {
 
 	@FunctionalInterface
-	public interface ChrSink {
+	public interface ChrSink_ {
 		public void sink(char c);
 	}
 

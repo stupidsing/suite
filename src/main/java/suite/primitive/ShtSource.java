@@ -2,10 +2,10 @@ package suite.primitive;
 
 import suite.adt.pair.ShtObjPair;
 
-public class ShtPrimitiveSource {
+public class ShtSource {
 
 	@FunctionalInterface
-	public interface ShtSource {
+	public interface ShtSource_ {
 		public short source();
 	}
 

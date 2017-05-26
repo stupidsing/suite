@@ -1,9 +1,9 @@
 package suite.primitive;
 
-public class IntPrimitiveSink {
+public class IntSink {
 
 	@FunctionalInterface
-	public interface IntSink {
+	public interface IntSink_ {
 		public void sink(int c);
 	}
 

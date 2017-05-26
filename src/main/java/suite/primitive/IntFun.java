@@ -1,6 +1,6 @@
 package suite.primitive;
 
-public class IntPrimitiveFun {
+public class IntFun {
 
 	@FunctionalInterface
 	public interface IntObj_Obj<X, Y> {

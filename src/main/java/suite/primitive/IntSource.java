@@ -2,10 +2,10 @@ package suite.primitive;
 
 import suite.adt.pair.IntObjPair;
 
-public class IntPrimitiveSource {
+public class IntSource {
 
 	@FunctionalInterface
-	public interface IntSource {
+	public interface IntSource_ {
 		public int source();
 	}
 

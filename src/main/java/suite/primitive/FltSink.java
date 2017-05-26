@@ -1,9 +1,9 @@
 package suite.primitive;
 
-public class FltPrimitiveSink {
+public class FltSink {
 
 	@FunctionalInterface
-	public interface FltSink {
+	public interface FltSink_ {
 		public void sink(float c);
 	}
 

@@ -1,9 +1,9 @@
 package suite.primitive;
 
-public class ShtPrimitiveSink {
+public class ShtSink {
 
 	@FunctionalInterface
-	public interface ShtSink {
+	public interface ShtSink_ {
 		public void sink(short c);
 	}
 
