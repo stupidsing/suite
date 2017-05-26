@@ -3,7 +3,7 @@ package suite.trade;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.primitive.PrimitiveFun.Dbl_Dbl;
+import suite.primitive.Dbl_Dbl;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;

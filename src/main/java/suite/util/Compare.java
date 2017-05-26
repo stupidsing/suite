@@ -10,6 +10,10 @@ public class Compare {
 		return Character.compare(a, b);
 	}
 
+	public static int compare(double a, double b) {
+		return Double.compare(a, b);
+	}
+
 	public static int compare(float a, float b) {
 		return Float.compare(a, b);
 	}

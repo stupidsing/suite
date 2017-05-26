@@ -30,6 +30,10 @@ public class Copy {
 		primitiveArray(from, fromIndex, to, toIndex, size);
 	}
 
+	public static void doubles(double[] from, int fromIndex, double[] to, int toIndex, int size) {
+		primitiveArray(from, fromIndex, to, toIndex, size);
+	}
+
 	public static void floats(float[] from, int fromIndex, float[] to, int toIndex, int size) {
 		primitiveArray(from, fromIndex, to, toIndex, size);
 	}

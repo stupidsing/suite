@@ -22,15 +22,15 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
+import suite.primitive.DblFun.ObjObj_Dbl;
+import suite.primitive.DblFun.Obj_Dbl;
 import suite.primitive.FltFun.ObjObj_Flt;
 import suite.primitive.FltFun.Obj_Flt;
 import suite.primitive.IntFun.Obj_Int;
+import suite.primitive.IntObj_Dbl;
 import suite.primitive.IntObj_Flt;
 import suite.primitive.IntObj_Int;
 import suite.primitive.IntSource.IntObjSource;
-import suite.primitive.PrimitiveFun.IntObj_Dbl;
-import suite.primitive.PrimitiveFun.ObjObj_Dbl;
-import suite.primitive.PrimitiveFun.Obj_Dbl;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -53,7 +53,7 @@ public class As {
 				while (true) {
 					while (size < results.length)
 						if ((t = outlet.next()) != null)
-							results[size++] = fun.applyAsDouble(t);
+							results[size++] = fun.apply(t);
 						else
 							return Arrays.copyOf(results, size);
 					results = Arrays.copyOf(results, results.length * 2);
@@ -245,7 +245,7 @@ public class As {
 			T t;
 			double result = 0d;
 			while ((t = source.source()) != null)
-				result += fun.applyAsDouble(t);
+				result += fun.apply(t);
 			return result;
 		};
 	}
@@ -267,7 +267,7 @@ public class As {
 			Source2<K, V> source = outlet.source();
 			double result = 0d;
 			while (source.source2(pair))
-				result += fun.applyAsDouble(pair.t0, pair.t1);
+				result += fun.apply(pair.t0, pair.t1);
 			return result;
 		};
 	}

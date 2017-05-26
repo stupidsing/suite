@@ -12,10 +12,10 @@ import java.util.function.Predicate;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.primitive.DblFun.Obj_Dbl;
 import suite.primitive.FltFun.Obj_Flt;
 import suite.primitive.IntFun.Obj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
-import suite.primitive.PrimitiveFun.Obj_Dbl;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -67,7 +67,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public double collectAsDouble(Obj_Dbl<Outlet<T>> fun) {
-		return fun.applyAsDouble(spawn());
+		return fun.apply(spawn());
 	}
 
 	public float collectAsFloat(Obj_Flt<Outlet<T>> fun) {

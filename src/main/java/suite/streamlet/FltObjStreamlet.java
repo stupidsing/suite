@@ -22,7 +22,6 @@ import suite.primitive.FltPredicate.FltObjPredicate;
 import suite.primitive.FltPredicate.FltPredicate_;
 import suite.primitive.FltSource.FltObjSource;
 import suite.primitive.Flt_Flt;
-import suite.primitive.PrimitiveFun.Obj_Dbl;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
@@ -69,10 +68,6 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 
 	public <R> R collect(Fun<FltObjOutlet<V>, R> fun) {
 		return fun.apply(spawn());
-	}
-
-	public double collectAsDouble(Obj_Dbl<FltObjOutlet<V>> fun) {
-		return fun.applyAsDouble(spawn());
 	}
 
 	public float collectAsFloat(Obj_Flt<FltObjOutlet<V>> fun) {

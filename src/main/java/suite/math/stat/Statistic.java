@@ -6,8 +6,8 @@ import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.primitive.IntFun.Obj_Int;
 import suite.primitive.IntSource.IntObjSource;
+import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
-import suite.primitive.PrimitiveFun.Int_Dbl;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
