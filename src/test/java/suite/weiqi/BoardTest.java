@@ -9,7 +9,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import suite.util.Set_;
+import suite.util.To;
 import suite.weiqi.GroupAnalysis.Group;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -28,7 +28,7 @@ public class BoardTest {
 		for (Coordinate c1 : c.neighbors)
 			neighbors.add(c1);
 
-		assertEquals(Set_.set( //
+		assertEquals(To.set( //
 				Coordinate.c(9, 10) //
 				, Coordinate.c(11, 10) //
 				, Coordinate.c(10, 9) //
