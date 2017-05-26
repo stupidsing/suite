@@ -1,25 +1,26 @@
 package suite.trade;
 
-import java.time.LocalDate;
+import java.nio.file.Paths;
 
+import suite.Constants;
+import suite.primitive.Chars;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.assetalloc.AssetAllocBackTest;
+import suite.streamlet.Streamlet2;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.assetalloc.AssetAllocator;
-import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator0;
+import suite.trade.assetalloc.AssetAllocator_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Sink;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
 // mvn compile exec:java -Dexec.mainClass=suite.trade.BackTestMain
 public class BackTestMain extends ExecutableProgram {
 
-	private float initial = 1000000f;
-	private Sink<String> log = FunUtil.nullSink();
 	private Configuration cfg = new ConfigurationImpl();
+	private BackTestRunner runner = new BackTestRunner();
 
 	public static void main(String[] args) {
 		Util.run(BackTestMain.class, args);
@@ -27,24 +28,39 @@ public class BackTestMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		LocalDate frDate = LocalDate.of(2016, 1, 1);
-		LocalDate toDate = LocalDate.of(2017, 7, 1);
-		DatePeriod period = DatePeriod.of(frDate, toDate);
 
-		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(log);
-		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(frDate); // hkex.getCompanies()
+		// BEGIN
+		String symbol0 = "0945.HK";
+		String symbol1 = "1299.HK";
+		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
 
-		AssetAllocBackTest backTest = AssetAllocBackTest.ofFromTo( //
-				cfg, //
-				assets, //
-				assetAllocator, //
-				period, //
-				log);
+		Streamlet2<Boolean, Simulate> simulationsByKey = Read //
+				.each(Boolean.FALSE, Boolean.TRUE) //
+				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
+				.map2((key, period) -> {
+					AssetAllocator assetAllocator = key //
+							? AssetAllocator_.questoQuella(symbol0, symbol1) //
+							: AssetAllocator_.ofSingle("^HSI");
 
-		Simulate sim = backTest.simulate(initial);
+					Constants.testFlag = key;
+					return runner.backTest(assetAllocator, period, assets);
+				}) //
+				.collect(As::streamlet2);
+		// END
 
-		System.out.println(sim.conclusion());
-		System.out.println(sim.account.transactionSummary(cfg::transactionFee));
+		String content0 = Read.bytes(Paths.get("src/main/java/suite/trade/BackTestMain.java")) //
+				.collect(As::utf8decode) //
+				.map(Chars::toString) //
+				.collect(As.joined());
+
+		int p0 = 0;
+		int p1 = 0 <= p0 ? content0.indexOf("// BEGIN", p0) + 8 : -1;
+		int p2 = 0 <= p1 ? content0.indexOf("// END", p1) : -1;
+		String content1 = content0.substring(p1, p2);
+
+		System.out.println(content1);
+
+		System.out.println(runner.conclude(simulationsByKey));
 		return true;
 	}
 
