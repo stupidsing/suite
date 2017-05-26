@@ -15,16 +15,14 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.ChrObjPair;
 import suite.adt.pair.Pair;
 import suite.primitive.ChrObjFunUtil;
-import suite.primitive.ChrPrimitiveFun.ChrObj_Chr;
+import suite.primitive.ChrObj_Chr;
 import suite.primitive.ChrPrimitiveFun.ChrObj_Obj;
-import suite.primitive.ChrPrimitiveFun.Chr_Chr;
+import suite.primitive.ChrPrimitiveFun.Obj_Chr;
 import suite.primitive.ChrPrimitivePredicate.ChrObjPredicate;
 import suite.primitive.ChrPrimitivePredicate.ChrPredicate_;
 import suite.primitive.ChrPrimitiveSource.ChrObjSource;
-import suite.primitive.IntPrimitiveFun.Obj_Int;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
+import suite.primitive.Chr_Chr;
 import suite.primitive.PrimitiveFun.Obj_Double;
-import suite.primitive.PrimitiveFun.Obj_Float;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
@@ -36,7 +34,7 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> ChrObjStreamlet<V> concat(ChrObjStreamlet<V>... streamlets) {
-		return charbjStreamlet(() -> {
+		return chrObjStreamlet(() -> {
 			List<ChrObjSource<V>> sources = new ArrayList<>();
 			for (ChrObjStreamlet<V> streamlet : streamlets)
 				sources.add(streamlet.in.source().source());
@@ -44,7 +42,7 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 		});
 	}
 
-	private static <V> ChrObjStreamlet<V> charbjStreamlet(Source<ChrObjOutlet<V>> in) {
+	private static <V> ChrObjStreamlet<V> chrObjStreamlet(Source<ChrObjOutlet<V>> in) {
 		return new ChrObjStreamlet<>(in);
 	}
 
@@ -58,11 +56,11 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public ChrObjStreamlet<V> append(char key, V value) {
-		return charbjStreamlet(() -> spawn().append(key, value));
+		return chrObjStreamlet(() -> spawn().append(key, value));
 	}
 
 	public ChrObjStreamlet<V> closeAtEnd(Closeable c) {
-		return charbjStreamlet(() -> {
+		return chrObjStreamlet(() -> {
 			ChrObjOutlet<V> in = spawn();
 			in.closeAtEnd(c);
 			return in;
@@ -77,41 +75,37 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 		return fun.applyAsDouble(spawn());
 	}
 
-	public float collectAsFloat(Obj_Float<ChrObjOutlet<V>> fun) {
-		return fun.applyAsFloat(spawn());
-	}
-
-	public int collectAsInt(Obj_Int<ChrObjOutlet<V>> fun) {
+	public char collectAsChar(Obj_Chr<ChrObjOutlet<V>> fun) {
 		return fun.apply(spawn());
 	}
 
-	public <O> Streamlet<O> concatMap(ObjObj_Obj<Character, V, Streamlet<O>> fun) {
+	public <O> Streamlet<O> concatMap(ChrObj_Obj<V, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}
 
-	public <K1, V1> Streamlet2<K1, V1> concatMap2(ObjObj_Obj<Character, V, Streamlet2<K1, V1>> fun) {
+	public <K1, V1> Streamlet2<K1, V1> concatMap2(ChrObj_Obj<V, Streamlet2<K1, V1>> fun) {
 		return concatMap2_(fun);
 	}
 
-	public <V1> ChrObjStreamlet<V1> concatMapCharObj(ObjObj_Obj<Character, V, ChrObjStreamlet<V1>> fun) {
+	public <V1> ChrObjStreamlet<V1> concatMapCharObj(ChrObj_Obj<V, ChrObjStreamlet<V1>> fun) {
 		return concatMapCharObj_(fun);
 	}
 
 	public <V1> ChrObjStreamlet<V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
 		Fun<V, Outlet<V1>> f = v -> fun.apply(v).outlet();
-		return charbjStreamlet(() -> ChrObjOutlet.of(spawn().concatMapValue(f)));
+		return chrObjStreamlet(() -> ChrObjOutlet.of(spawn().concatMapValue(f)));
 	}
 
 	public ChrObjStreamlet<V> cons(char key, V value) {
-		return charbjStreamlet(() -> spawn().cons(key, value));
+		return chrObjStreamlet(() -> spawn().cons(key, value));
 	}
 
 	public ChrObjStreamlet<V> distinct() {
-		return charbjStreamlet(() -> spawn().distinct());
+		return chrObjStreamlet(() -> spawn().distinct());
 	}
 
 	public ChrObjStreamlet<V> drop(int n) {
-		return charbjStreamlet(() -> spawn().drop(n));
+		return chrObjStreamlet(() -> spawn().drop(n));
 	}
 
 	@Override
@@ -121,15 +115,15 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public ChrObjStreamlet<V> filter(ChrObjPredicate<V> fun) {
-		return charbjStreamlet(() -> spawn().filter(fun));
+		return chrObjStreamlet(() -> spawn().filter(fun));
 	}
 
 	public ChrObjStreamlet<V> filterKey(ChrPredicate_ fun) {
-		return charbjStreamlet(() -> spawn().filterKey(fun));
+		return chrObjStreamlet(() -> spawn().filterKey(fun));
 	}
 
 	public ChrObjStreamlet<V> filterValue(Predicate<V> fun) {
-		return charbjStreamlet(() -> spawn().filterValue(fun));
+		return chrObjStreamlet(() -> spawn().filterValue(fun));
 	}
 
 	public ChrObjPair<V> first() {
@@ -181,8 +175,8 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 		return map2_(kf, vf);
 	}
 
-	public <V1> ChrObjStreamlet<V1> mapCharObj(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
-		return mapCharObj_(kf, vf);
+	public <V1> ChrObjStreamlet<V1> mapChrObj(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
+		return mapChrObj_(kf, vf);
 	}
 
 	public ChrObjStreamlet<V> mapKey(Chr_Chr fun) {
@@ -218,7 +212,7 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public ChrObjStreamlet<V> reverse() {
-		return charbjStreamlet(() -> spawn().reverse());
+		return chrObjStreamlet(() -> spawn().reverse());
 	}
 
 	public void sink(BiConsumer<Character, V> sink) {
@@ -230,23 +224,23 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public ChrObjStreamlet<V> skip(int n) {
-		return charbjStreamlet(() -> spawn().skip(n));
+		return chrObjStreamlet(() -> spawn().skip(n));
 	}
 
 	public ChrObjStreamlet<V> sort(Comparator<ChrObjPair<V>> comparator) {
-		return charbjStreamlet(() -> spawn().sort(comparator));
+		return chrObjStreamlet(() -> spawn().sort(comparator));
 	}
 
 	public <O extends Comparable<? super O>> ChrObjStreamlet<V> sortBy(ChrObj_Obj<V, O> fun) {
-		return charbjStreamlet(() -> spawn().sortBy(fun));
+		return chrObjStreamlet(() -> spawn().sortBy(fun));
 	}
 
 	public ChrObjStreamlet<V> sortByKey(Comparator<Character> comparator) {
-		return charbjStreamlet(() -> spawn().sortByKey(comparator));
+		return chrObjStreamlet(() -> spawn().sortByKey(comparator));
 	}
 
 	public ChrObjStreamlet<V> sortByValue(Comparator<V> comparator) {
-		return charbjStreamlet(() -> spawn().sortByValue(comparator));
+		return chrObjStreamlet(() -> spawn().sortByValue(comparator));
 	}
 
 	public ChrObjSource<V> source() {
@@ -254,7 +248,7 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public ChrObjStreamlet<V> take(int n) {
-		return charbjStreamlet(() -> spawn().take(n));
+		return chrObjStreamlet(() -> spawn().take(n));
 	}
 
 	public ChrObjPair<V>[] toArray() {
@@ -293,19 +287,19 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 		return new Streamlet<>(() -> spawn().values());
 	}
 
-	private <T> Streamlet<T> concatMap_(ObjObj_Obj<Character, V, Streamlet<T>> fun) {
-		ObjObj_Obj<Character, V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
+	private <T> Streamlet<T> concatMap_(ChrObj_Obj<V, Streamlet<T>> fun) {
+		ChrObj_Obj<V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return new Streamlet<>(() -> Outlet.of(spawn().concatMap(bf)));
 	}
 
-	private <V1, K1> Streamlet2<K1, V1> concatMap2_(ObjObj_Obj<Character, V, Streamlet2<K1, V1>> fun) {
-		ObjObj_Obj<Character, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
+	private <V1, K1> Streamlet2<K1, V1> concatMap2_(ChrObj_Obj<V, Streamlet2<K1, V1>> fun) {
+		ChrObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
 		return new Streamlet2<>(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 
-	private <V1> ChrObjStreamlet<V1> concatMapCharObj_(ObjObj_Obj<Character, V, ChrObjStreamlet<V1>> fun) {
-		ObjObj_Obj<Character, V, ChrObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
-		return charbjStreamlet(() -> ChrObjOutlet.of(spawn().concatMapCharObj(bf)));
+	private <V1> ChrObjStreamlet<V1> concatMapCharObj_(ChrObj_Obj<V, ChrObjStreamlet<V1>> fun) {
+		ChrObj_Obj<V, ChrObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
+		return chrObjStreamlet(() -> ChrObjOutlet.of(spawn().concatMapCharObj(bf)));
 	}
 
 	private <T> Streamlet<T> map_(ChrObj_Obj<V, T> fun) {
@@ -316,8 +310,8 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
 	}
 
-	private <V1> ChrObjStreamlet<V1> mapCharObj_(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
-		return new ChrObjStreamlet<>(() -> spawn().mapCharObj(kf, vf));
+	private <V1> ChrObjStreamlet<V1> mapChrObj_(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
+		return new ChrObjStreamlet<>(() -> spawn().mapChrObj(kf, vf));
 	}
 
 	private ChrObjOutlet<V> spawn() {

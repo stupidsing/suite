@@ -123,7 +123,7 @@ public class Ints implements Iterable<Integer> {
 		IntsBuilder cb = new IntsBuilder();
 		cb.append(this);
 		while (cb.size() < size)
-			cb.append(' ');
+			cb.append((int) 0);
 		return cb.toInts();
 	}
 
@@ -224,7 +224,7 @@ public class Ints implements Iterable<Integer> {
 	public int hashCode() {
 		int result = 1;
 		for (int i = start; i < end; i++)
-			result = 31 * result + cs[i];
+			result = 31 * result + Integer.hashCode(cs[i]);
 		return result;
 	}
 

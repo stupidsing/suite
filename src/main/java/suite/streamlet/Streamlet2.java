@@ -14,10 +14,10 @@ import java.util.function.Predicate;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.primitive.FltPrimitiveFun.Obj_Flt;
 import suite.primitive.IntPrimitiveFun.Obj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Double;
-import suite.primitive.PrimitiveFun.Obj_Float;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
@@ -72,8 +72,8 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return fun.applyAsDouble(spawn());
 	}
 
-	public float collectAsFloat(Obj_Float<Outlet2<K, V>> fun) {
-		return fun.applyAsFloat(spawn());
+	public float collectAsFloat(Obj_Flt<Outlet2<K, V>> fun) {
+		return fun.apply(spawn());
 	}
 
 	public int collectAsInt(Obj_Int<Outlet2<K, V>> fun) {

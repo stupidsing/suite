@@ -17,20 +17,19 @@ import suite.adt.pair.ChrObjPair;
 import suite.adt.pair.Pair;
 import suite.node.util.Mutable;
 import suite.primitive.ChrObjFunUtil;
-import suite.primitive.ChrPrimitiveFun.ChrObj_Chr;
+import suite.primitive.ChrObj_Chr;
 import suite.primitive.ChrPrimitiveFun.ChrObj_Obj;
-import suite.primitive.ChrPrimitiveFun.Chr_Chr;
 import suite.primitive.ChrPrimitivePredicate.ChrObjPredicate;
 import suite.primitive.ChrPrimitivePredicate.ChrPredicate_;
 import suite.primitive.ChrPrimitiveSource.ChrObjSource;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
+import suite.primitive.Chr_Chr;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.List_;
-import suite.util.NullableSynchronousQueue;
+import suite.util.NullableSyncQueue;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -135,15 +134,15 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 		return fun.apply(this);
 	}
 
-	public <O> Outlet<O> concatMap(ObjObj_Obj<Character, V, Outlet<O>> fun) {
+	public <O> Outlet<O> concatMap(ChrObj_Obj<V, Outlet<O>> fun) {
 		return Outlet.of(FunUtil.concat(ChrObjFunUtil.map((k, v) -> fun.apply(k, v).source(), charObjSource)));
 	}
 
-	public <K1, V1> Outlet2<K1, V1> concatMap2(ObjObj_Obj<Character, V, Outlet2<K1, V1>> fun) {
+	public <K1, V1> Outlet2<K1, V1> concatMap2(ChrObj_Obj<V, Outlet2<K1, V1>> fun) {
 		return Outlet2.of(FunUtil2.concat(ChrObjFunUtil.map((k, v) -> fun.apply(k, v).source(), charObjSource)));
 	}
 
-	public <V1> ChrObjOutlet<V1> concatMapCharObj(ObjObj_Obj<Character, V, ChrObjOutlet<V1>> fun) {
+	public <V1> ChrObjOutlet<V1> concatMapCharObj(ChrObj_Obj<V, ChrObjOutlet<V1>> fun) {
 		return of(ChrObjFunUtil.concat(ChrObjFunUtil.map((k, v) -> fun.apply(k, v).charObjSource, charObjSource)));
 	}
 
@@ -271,12 +270,12 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 		return Outlet2.of(ChrObjFunUtil.map2(kf, vf, charObjSource));
 	}
 
-	public <V1> ChrObjOutlet<V1> mapCharObj(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
-		return mapCharObj_(kf, vf);
+	public <V1> ChrObjOutlet<V1> mapChrObj(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
+		return mapChrObj_(kf, vf);
 	}
 
 	public ChrObjOutlet<V> mapKey(Chr_Chr fun) {
-		return mapCharObj_((k, v) -> fun.apply(k), (k, v) -> v);
+		return mapChrObj_((k, v) -> fun.apply(k), (k, v) -> v);
 	}
 
 	public <O> Outlet<O> mapNonNull(ChrObj_Obj<V, O> fun) {
@@ -284,7 +283,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public <V1> ChrObjOutlet<V1> mapValue(Fun<V, V1> fun) {
-		return mapCharObj_((k, v) -> k, (k, v) -> fun.apply(v));
+		return mapChrObj_((k, v) -> k, (k, v) -> fun.apply(v));
 	}
 
 	public ChrObjPair<V> min(Comparator<ChrObjPair<V>> comparator) {
@@ -311,7 +310,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public ChrObjOutlet<V> nonBlocking(Character k0, V v0) {
-		NullableSynchronousQueue<ChrObjPair<V>> queue = new NullableSynchronousQueue<>();
+		NullableSyncQueue<ChrObjPair<V>> queue = new NullableSyncQueue<>();
 
 		new Thread(() -> {
 			boolean b;
@@ -480,7 +479,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 		return Outlet.of(ChrObjFunUtil.map(fun0, charObjSource));
 	}
 
-	private <V1> ChrObjOutlet<V1> mapCharObj_(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
+	private <V1> ChrObjOutlet<V1> mapChrObj_(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
 		return of(ChrObjFunUtil.mapCharObj(kf, vf, charObjSource));
 	}
 

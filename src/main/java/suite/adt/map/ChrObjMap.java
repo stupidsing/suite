@@ -5,8 +5,8 @@ import suite.primitive.ChrPrimitiveFun.Chr_Obj;
 import suite.primitive.ChrPrimitiveSink.ChrObjSink;
 import suite.primitive.ChrPrimitiveSource.ChrObjSource;
 import suite.primitive.IntPrimitiveFun.Obj_Int;
-import suite.streamlet.ChrObjStreamlet;
 import suite.streamlet.ChrObjOutlet;
+import suite.streamlet.ChrObjStreamlet;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -44,7 +44,7 @@ public class ChrObjMap<V> {
 
 	public V get(char key) {
 		int mask = vs.length - 1;
-		int index = key & mask;
+		int index = Character.hashCode(key) & mask;
 		Object v;
 		while ((v = vs[index]) != null)
 			if (ks[index] != key)
@@ -76,7 +76,7 @@ public class ChrObjMap<V> {
 
 	public void update(char key, Obj_Int<V> fun) {
 		int mask = vs.length - 1;
-		int index = key & mask;
+		int index = Character.hashCode(key) & mask;
 		Object v;
 		while ((v = vs[index]) != null)
 			if (ks[index] != key)
@@ -96,7 +96,7 @@ public class ChrObjMap<V> {
 
 	private Object put_(char key, Object v1) {
 		int mask = vs.length - 1;
-		int index = key & mask;
+		int index = Character.hashCode(key) & mask;
 		Object v0;
 		while ((v0 = vs[index]) != null)
 			if (ks[index] != key)

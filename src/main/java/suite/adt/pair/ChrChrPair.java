@@ -2,7 +2,7 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
-import suite.primitive.ChrPrimitiveFun.Chr_Chr;
+import suite.primitive.Chr_Chr;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 

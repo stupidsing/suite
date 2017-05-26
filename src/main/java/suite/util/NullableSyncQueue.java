@@ -11,7 +11,7 @@ import suite.node.util.Mutable;
  * 
  * @author ywsing
  */
-public class NullableSynchronousQueue<T> {
+public class NullableSyncQueue<T> {
 
 	private SynchronousQueue<Object> queue = new SynchronousQueue<>();
 	private Object nullObject = new Object();

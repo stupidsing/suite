@@ -17,12 +17,12 @@ import suite.adt.pair.IntObjPair;
 import suite.adt.pair.Pair;
 import suite.node.util.Mutable;
 import suite.primitive.IntObjFunUtil;
-import suite.primitive.IntPrimitiveFun.IntObj_Int;
+import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitiveFun.IntObj_Obj;
-import suite.primitive.IntPrimitiveFun.Int_Int;
 import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
 import suite.primitive.IntPrimitivePredicate.IntPredicate_;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
+import suite.primitive.Int_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.util.Array_;
 import suite.util.FunUtil;
@@ -30,7 +30,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.List_;
-import suite.util.NullableSynchronousQueue;
+import suite.util.NullableSyncQueue;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -311,7 +311,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjOutlet<V> nonBlocking(Integer k0, V v0) {
-		NullableSynchronousQueue<IntObjPair<V>> queue = new NullableSynchronousQueue<>();
+		NullableSyncQueue<IntObjPair<V>> queue = new NullableSyncQueue<>();
 
 		new Thread(() -> {
 			boolean b;

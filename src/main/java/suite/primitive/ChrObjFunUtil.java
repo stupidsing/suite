@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import suite.adt.pair.ChrObjPair;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
-import suite.primitive.ChrPrimitiveFun.ChrObj_Chr;
 import suite.primitive.ChrPrimitiveFun.ChrObj_Obj;
 import suite.primitive.ChrPrimitivePredicate.ChrObjPredicate;
 import suite.primitive.ChrPrimitivePredicate.ChrPredicate_;
@@ -15,7 +14,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Source2;
-import suite.util.NullableSynchronousQueue;
+import suite.util.NullableSyncQueue;
 import suite.util.Rethrow;
 import suite.util.Thread_;
 
@@ -96,7 +95,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> ChrObjSource<V> filter(ChrObjPredicate<V> fun0, ChrObjSource<V> source2) {
-		ChrObjPredicate<V> fun1 = ChrRethrow.charObjPredicate(fun0);
+		ChrObjPredicate<V> fun1 = ChrRethrow.chrObjPredicate(fun0);
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -134,7 +133,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> boolean isAll(ChrObjPredicate<V> pred0, ChrObjSource<V> source2) {
-		ChrObjPredicate<V> pred1 = ChrRethrow.charObjPredicate(pred0);
+		ChrObjPredicate<V> pred1 = ChrRethrow.chrObjPredicate(pred0);
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -143,7 +142,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> boolean isAny(ChrObjPredicate<V> pred0, ChrObjSource<V> source2) {
-		ChrObjPredicate<V> pred1 = ChrRethrow.charObjPredicate(pred0);
+		ChrObjPredicate<V> pred1 = ChrRethrow.chrObjPredicate(pred0);
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -197,7 +196,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V, V1, T> ChrObjSource<V1> mapCharObj(ChrObj_Chr<V> kf0, ChrObj_Obj<V, V1> vf0, ChrObjSource<V> source2) {
-		ChrObj_Chr<V> kf1 = ChrRethrow.fun2(kf0);
+		ChrObj_Chr<V> kf1 = ChrChrRethrow.fun2(kf0);
 		ChrObj_Obj<V, V1> vf1 = ChrRethrow.fun2(vf0);
 		ChrObjPair<V> pair1 = ChrObjPair.of((char) 0, null);
 		return pair -> {
@@ -237,7 +236,7 @@ public class ChrObjFunUtil {
 	 * not be skipped.
 	 */
 	public static <V> Source<ChrObjSource<V>> split(ChrObjPredicate<V> fun0, ChrObjSource<V> source2) {
-		ChrObjPredicate<V> fun1 = ChrRethrow.charObjPredicate(fun0);
+		ChrObjPredicate<V> fun1 = ChrRethrow.chrObjPredicate(fun0);
 		return new Source<ChrObjSource<V>>() {
 			private ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 			private boolean isAvailable;
@@ -257,7 +256,7 @@ public class ChrObjFunUtil {
 	 * Sucks data from a sink and produce into a source.
 	 */
 	public static <V> ChrObjSource<V> suck(Sink<Sink<ChrObjPair<V>>> fun) {
-		NullableSynchronousQueue<ChrObjPair<V>> queue = new NullableSynchronousQueue<>();
+		NullableSyncQueue<ChrObjPair<V>> queue = new NullableSyncQueue<>();
 		Sink<ChrObjPair<V>> enqueue = pair -> enqueue(queue, pair);
 
 		Thread thread = Thread_.startThread(() -> {
@@ -284,7 +283,7 @@ public class ChrObjFunUtil {
 		};
 	}
 
-	private static <T> void enqueue(NullableSynchronousQueue<T> queue, T t) {
+	private static <T> void enqueue(NullableSyncQueue<T> queue, T t) {
 		try {
 			queue.offer(t);
 		} catch (InterruptedException ex) {

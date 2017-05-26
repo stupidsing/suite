@@ -5,8 +5,8 @@ import suite.primitive.IntPrimitiveFun.Int_Obj;
 import suite.primitive.IntPrimitiveSink.IntObjSink;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.primitive.IntPrimitiveFun.Obj_Int;
-import suite.streamlet.IntObjStreamlet;
 import suite.streamlet.IntObjOutlet;
+import suite.streamlet.IntObjStreamlet;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -44,7 +44,7 @@ public class IntObjMap<V> {
 
 	public V get(int key) {
 		int mask = vs.length - 1;
-		int index = key & mask;
+		int index = Integer.hashCode(key) & mask;
 		Object v;
 		while ((v = vs[index]) != null)
 			if (ks[index] != key)
@@ -76,7 +76,7 @@ public class IntObjMap<V> {
 
 	public void update(int key, Obj_Int<V> fun) {
 		int mask = vs.length - 1;
-		int index = key & mask;
+		int index = Integer.hashCode(key) & mask;
 		Object v;
 		while ((v = vs[index]) != null)
 			if (ks[index] != key)
@@ -96,7 +96,7 @@ public class IntObjMap<V> {
 
 	private Object put_(int key, Object v1) {
 		int mask = vs.length - 1;
-		int index = key & mask;
+		int index = Integer.hashCode(key) & mask;
 		Object v0;
 		while ((v0 = vs[index]) != null)
 			if (ks[index] != key)

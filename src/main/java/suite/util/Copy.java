@@ -64,6 +64,10 @@ public class Copy {
 		return cloned;
 	}
 
+	public static void shorts(short[] from, int fromIndex, short[] to, int toIndex, int size) {
+		primitiveArray(from, fromIndex, to, toIndex, size);
+	}
+
 	public static Thread streamByThread(InputStream is, OutputStream os) {
 		return Thread_.newThread(() -> {
 			try (InputStream is_ = is; OutputStream os_ = os) {

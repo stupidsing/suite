@@ -123,7 +123,7 @@ public class Chars implements Iterable<Character> {
 		CharsBuilder cb = new CharsBuilder();
 		cb.append(this);
 		while (cb.size() < size)
-			cb.append(' ');
+			cb.append((char) 0);
 		return cb.toChars();
 	}
 
@@ -224,7 +224,7 @@ public class Chars implements Iterable<Character> {
 	public int hashCode() {
 		int result = 1;
 		for (int i = start; i < end; i++)
-			result = 31 * result + cs[i];
+			result = 31 * result + Character.hashCode(cs[i]);
 		return result;
 	}
 

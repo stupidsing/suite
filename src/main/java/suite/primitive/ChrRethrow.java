@@ -1,70 +1,37 @@
 package suite.primitive;
 
-import suite.primitive.ChrPrimitiveFun.ChrObj_Chr;
 import suite.primitive.ChrPrimitiveFun.ChrObj_Obj;
-import suite.primitive.ChrPrimitiveFun.ObjObj_Chr;
-import suite.primitive.ChrPrimitiveFun.Obj_Chr;
 import suite.primitive.ChrPrimitivePredicate.ChrObjPredicate;
 import suite.primitive.ChrPrimitivePredicate.ChrPredicate_;
 
 public class ChrRethrow {
 
-	public static <V> ChrObj_Chr<V> fun2(ChrObj_Chr<V> fun) {
-		return (k, v) -> {
+	public static <T> ChrObjPredicate<T> chrObjPredicate(ChrObjPredicate<T> predicate) {
+		return (c, t) -> {
 			try {
-				return fun.apply(k, v);
+				return predicate.test(c, t);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
+				throw new RuntimeException("for " + c + ":" + t + ", ", ex);
 			}
 		};
 	}
 
-	public static <V, T> ChrObj_Obj<V, T> fun2(ChrObj_Obj<V, T> fun) {
-		return (k, v) -> {
+	public static <X, Y> ChrObj_Obj<X, Y> fun2(ChrObj_Obj<X, Y> predicate) {
+		return (x, y) -> {
 			try {
-				return fun.apply(k, v);
+				return predicate.apply(x, y);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
-			}
-		};
-	}
-
-	public static <T> Obj_Chr<T> fun(Obj_Chr<T> fun) {
-		return t -> {
-			try {
-				return fun.apply(t);
-			} catch (Exception ex) {
-				throw new RuntimeException("for " + t, ex);
-			}
-		};
-	}
-
-	public static <K, V> ObjObj_Chr<K, V> fun2(ObjObj_Chr<K, V> fun) {
-		return (k, v) -> {
-			try {
-				return fun.apply(k, v);
-			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
-			}
-		};
-	}
-
-	public static <V> ChrObjPredicate<V> charObjPredicate(ChrObjPredicate<V> fun0) {
-		return (k, v) -> {
-			try {
-				return fun0.test(k, v);
-			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
+				throw new RuntimeException("for " + x + ":" + y + ", ", ex);
 			}
 		};
 	}
 
 	public static ChrPredicate_ predicate(ChrPredicate_ predicate) {
-		return t -> {
+		return c -> {
 			try {
-				return predicate.test(t);
+				return predicate.test(c);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + t, ex);
+				throw new RuntimeException("for " + c + ", ", ex);
 			}
 		};
 	}

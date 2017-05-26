@@ -25,7 +25,7 @@ import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
 import suite.util.List_;
-import suite.util.NullableSynchronousQueue;
+import suite.util.NullableSyncQueue;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -266,7 +266,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<T> nonBlock(T t0) {
-		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
+		NullableSyncQueue<T> queue = new NullableSyncQueue<>();
 
 		new Thread(() -> {
 			T t;

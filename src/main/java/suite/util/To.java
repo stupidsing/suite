@@ -31,12 +31,12 @@ import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
-import suite.primitive.IntPrimitiveFun.Int_Int;
+import suite.primitive.FltPrimitiveFun.Obj_Flt;
+import suite.primitive.Flt_Flt;
+import suite.primitive.IntInt_Flt;
+import suite.primitive.Int_Flt;
+import suite.primitive.Int_Int;
 import suite.primitive.IoSink;
-import suite.primitive.PrimitiveFun.Float_Float;
-import suite.primitive.PrimitiveFun.IntInt_Float;
-import suite.primitive.PrimitiveFun.Int_Float;
-import suite.primitive.PrimitiveFun.Obj_Float;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Sink;
@@ -70,22 +70,22 @@ public class To {
 		return Rethrow.ex(() -> (char[]) field.get(s)); // s.toCharArray()
 	}
 
-	public static float[] arrayOfFloats(float[] fs, Float_Float fun) {
+	public static float[] arrayOfFloats(float[] fs, Flt_Flt fun) {
 		return arrayOfFloats(fs.length, i -> fun.apply(fs[i]));
 	}
 
-	public static <T> float[] arrayOfFloats(T[] ts, Obj_Float<T> fun) {
-		return arrayOfFloats(ts.length, i -> fun.applyAsFloat(ts[i]));
+	public static <T> float[] arrayOfFloats(T[] ts, Obj_Flt<T> fun) {
+		return arrayOfFloats(ts.length, i -> fun.apply(ts[i]));
 	}
 
-	public static float[] arrayOfFloats(int length, Int_Float fun) {
+	public static float[] arrayOfFloats(int length, Int_Flt fun) {
 		float[] floats = new float[length];
 		for (int i = 0; i < length; i++)
 			floats[i] = fun.apply(i);
 		return floats;
 	}
 
-	public static float[][] arrayOfFloats(int height, int width, IntInt_Float fun) {
+	public static float[][] arrayOfFloats(int height, int width, IntInt_Flt fun) {
 		float[][] m = new float[height][width];
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)

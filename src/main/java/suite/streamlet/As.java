@@ -22,15 +22,15 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
-import suite.primitive.IntPrimitiveFun.IntObj_Int;
+import suite.primitive.FltPrimitiveFun.ObjObj_Flt;
+import suite.primitive.FltPrimitiveFun.Obj_Flt;
+import suite.primitive.IntObj_Flt;
+import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitiveFun.Obj_Int;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.primitive.PrimitiveFun.IntObj_Double;
-import suite.primitive.PrimitiveFun.IntObj_Float;
 import suite.primitive.PrimitiveFun.ObjObj_Double;
-import suite.primitive.PrimitiveFun.ObjObj_Float;
 import suite.primitive.PrimitiveFun.Obj_Double;
-import suite.primitive.PrimitiveFun.Obj_Float;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -62,7 +62,7 @@ public class As {
 		};
 	}
 
-	public static <T> Fun<Outlet<T>, float[]> arrayOfFloats(Obj_Float<T> fun) {
+	public static <T> Fun<Outlet<T>, float[]> arrayOfFloats(Obj_Flt<T> fun) {
 		return new Fun<Outlet<T>, float[]>() {
 			public float[] apply(Outlet<T> outlet) {
 				float[] results = new float[16];
@@ -72,7 +72,7 @@ public class As {
 				while (true) {
 					while (size < results.length)
 						if ((t = outlet.next()) != null)
-							results[size++] = fun.applyAsFloat(t);
+							results[size++] = fun.apply(t);
 						else
 							return Arrays.copyOf(results, size);
 					results = Arrays.copyOf(results, results.length * 2);
@@ -272,18 +272,18 @@ public class As {
 		};
 	}
 
-	public static <T> Obj_Float<Outlet<T>> sumOfFloats(Obj_Float<T> fun) {
+	public static <T> Obj_Flt<Outlet<T>> sumOfFloats(Obj_Flt<T> fun) {
 		return outlet -> {
 			Source<T> source = outlet.source();
 			T t;
 			float result = 0f;
 			while ((t = source.source()) != null)
-				result += fun.applyAsFloat(t);
+				result += fun.apply(t);
 			return result;
 		};
 	}
 
-	public static <T> Obj_Float<IntObjOutlet<T>> sumOfFloats(float f, IntObj_Float<T> fun) {
+	public static <T> Obj_Flt<IntObjOutlet<T>> sumOfFloats(float f, IntObj_Flt<T> fun) {
 		return outlet -> {
 			IntObjPair<T> pair = IntObjPair.of(0, null);
 			IntObjSource<T> source = outlet.source();
@@ -294,13 +294,13 @@ public class As {
 		};
 	}
 
-	public static <K, V> Obj_Float<Outlet2<K, V>> sumOfFloats(ObjObj_Float<K, V> fun) {
+	public static <K, V> Obj_Flt<Outlet2<K, V>> sumOfFloats(ObjObj_Flt<K, V> fun) {
 		return outlet -> {
 			Pair<K, V> pair = Pair.of(null, null);
 			Source2<K, V> source = outlet.source();
 			float result = 0f;
 			while (source.source2(pair))
-				result += fun.applyAsFloat(pair.t0, pair.t1);
+				result += fun.apply(pair.t0, pair.t1);
 			return result;
 		};
 	}

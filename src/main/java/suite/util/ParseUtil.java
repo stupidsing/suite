@@ -81,6 +81,10 @@ public class ParseUtil {
 		return Character.isWhitespace(c);
 	}
 
+	public static boolean isWhitespace(float f) {
+		return f == 0f;
+	}
+
 	public static boolean isWhitespace(int i) {
 		return i == 0;
 	}

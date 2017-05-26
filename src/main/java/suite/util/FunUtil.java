@@ -231,7 +231,7 @@ public class FunUtil {
 	 * Sucks data from a sink and produce into a source.
 	 */
 	public static <T> Source<T> suck(Sink<Sink<T>> fun) {
-		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
+		NullableSyncQueue<T> queue = new NullableSyncQueue<>();
 		Sink<T> enqueue = t -> enqueue(queue, t);
 
 		Thread thread = Thread_.startThread(() -> {
@@ -252,7 +252,7 @@ public class FunUtil {
 		};
 	}
 
-	private static <T> void enqueue(NullableSynchronousQueue<T> queue, T t) {
+	private static <T> void enqueue(NullableSyncQueue<T> queue, T t) {
 		try {
 			queue.offer(t);
 		} catch (InterruptedException ex) {

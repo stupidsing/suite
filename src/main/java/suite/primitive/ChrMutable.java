@@ -54,7 +54,7 @@ public class ChrMutable {
 		value = t;
 	}
 
-	public int get() {
+	public char get() {
 		return value;
 	}
 

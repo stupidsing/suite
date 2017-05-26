@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import suite.primitive.PrimitiveFun.Obj_Float;
+import suite.primitive.FltPrimitiveFun.Obj_Flt;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -62,12 +62,12 @@ public class Trade_ {
 				.toMap();
 	}
 
-	public static Streamlet<Trade> sellAll(Streamlet<Trade> trades, Obj_Float<String> priceFun) {
+	public static Streamlet<Trade> sellAll(Streamlet<Trade> trades, Obj_Flt<String> priceFun) {
 		return trades //
 				.groupBy(trade -> trade.strategy, Trade_::portfolio) //
 				.concatMap((strategy, nSharesBySymbol) -> Read //
 						.from2(nSharesBySymbol) //
-						.map((symbol, size) -> Trade.of(-size, symbol, priceFun.applyAsFloat(symbol), strategy)));
+						.map((symbol, size) -> Trade.of(-size, symbol, priceFun.apply(symbol), strategy)));
 	}
 
 }

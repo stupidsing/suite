@@ -8,11 +8,6 @@ public class ChrPrimitiveSink {
 	}
 
 	@FunctionalInterface
-	public interface ChrChrSink {
-		public void sink2(char c, int d);
-	}
-
-	@FunctionalInterface
 	public interface ChrObjSink<T> { // extends ObjCharConsumer<T>
 		public void sink2(char c, T t);
 	}

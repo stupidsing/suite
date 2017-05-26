@@ -1,7 +1,7 @@
 package suite.primitive;
 
 /**
- * An indirect reference to a primitive integer. Integer.MIN_VALUE is not
+ * An indirect reference to a primitive intacter. Integer.MIN_VALUE is not
  * allowed in the value.
  * 
  * @author ywsing

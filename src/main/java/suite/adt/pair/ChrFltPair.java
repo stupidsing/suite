@@ -2,8 +2,8 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
-import suite.primitive.ChrPrimitiveFun.Chr_Chr;
-import suite.primitive.PrimitiveFun.Float_Float;
+import suite.primitive.Chr_Chr;
+import suite.primitive.Flt_Flt;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
@@ -16,7 +16,7 @@ public class ChrFltPair {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<ChrFltPair, ChrFltPair> map1(Float_Float fun) {
+	public static Fun<ChrFltPair, ChrFltPair> map1(Flt_Flt fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

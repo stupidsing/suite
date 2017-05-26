@@ -3,7 +3,7 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.primitive.ChrPrimitiveFun.Chr_Chr;
+import suite.primitive.Chr_Chr;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
@@ -32,7 +32,7 @@ public class ChrObjPair<T> {
 	public static <T extends Comparable<? super T>> Comparator<ChrObjPair<T>> comparator() {
 		return (pair0, pair1) -> {
 			int c = Boolean.compare(pair0 != null, pair1 != null);
-			c = c == 0 ? Integer.compare(pair0.t0, pair1.t0) : c;
+			c = c == 0 ? Character.compare(pair0.t0, pair1.t0) : c;
 			c = c == 0 ? Object_.compare(pair0.t1, pair1.t1) : c;
 			return c;
 		};

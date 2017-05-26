@@ -26,7 +26,7 @@ import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
 import suite.util.List_;
-import suite.util.NullableSynchronousQueue;
+import suite.util.NullableSyncQueue;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -308,7 +308,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Outlet2<K, V> nonBlocking(K k0, V v0) {
-		NullableSynchronousQueue<Pair<K, V>> queue = new NullableSynchronousQueue<>();
+		NullableSyncQueue<Pair<K, V>> queue = new NullableSyncQueue<>();
 
 		new Thread(() -> {
 			boolean b;

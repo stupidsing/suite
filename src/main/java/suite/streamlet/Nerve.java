@@ -16,7 +16,7 @@ import suite.concurrent.CasReference;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
-import suite.util.NullableSynchronousQueue;
+import suite.util.NullableSyncQueue;
 
 /**
  * A pull-based functional reactive programming class.
@@ -112,7 +112,7 @@ public class Nerve<T> {
 	}
 
 	public Outlet<T> outlet() {
-		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
+		NullableSyncQueue<T> queue = new NullableSyncQueue<>();
 		register(queue::offerQuietly);
 		return Outlet.of(() -> {
 			try {

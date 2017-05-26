@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import suite.adt.pair.IntObjPair;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
-import suite.primitive.IntPrimitiveFun.IntObj_Int;
 import suite.primitive.IntPrimitiveFun.IntObj_Obj;
 import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
 import suite.primitive.IntPrimitivePredicate.IntPredicate_;
@@ -15,7 +14,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Source2;
-import suite.util.NullableSynchronousQueue;
+import suite.util.NullableSyncQueue;
 import suite.util.Rethrow;
 import suite.util.Thread_;
 
@@ -197,7 +196,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V, V1, T> IntObjSource<V1> mapIntObj(IntObj_Int<V> kf0, IntObj_Obj<V, V1> vf0, IntObjSource<V> source2) {
-		IntObj_Int<V> kf1 = IntRethrow.fun2(kf0);
+		IntObj_Int<V> kf1 = IntIntRethrow.fun2(kf0);
 		IntObj_Obj<V, V1> vf1 = IntRethrow.fun2(vf0);
 		IntObjPair<V> pair1 = IntObjPair.of((int) 0, null);
 		return pair -> {
@@ -257,7 +256,7 @@ public class IntObjFunUtil {
 	 * Sucks data from a sink and produce into a source.
 	 */
 	public static <V> IntObjSource<V> suck(Sink<Sink<IntObjPair<V>>> fun) {
-		NullableSynchronousQueue<IntObjPair<V>> queue = new NullableSynchronousQueue<>();
+		NullableSyncQueue<IntObjPair<V>> queue = new NullableSyncQueue<>();
 		Sink<IntObjPair<V>> enqueue = pair -> enqueue(queue, pair);
 
 		Thread thread = Thread_.startThread(() -> {
@@ -284,7 +283,7 @@ public class IntObjFunUtil {
 		};
 	}
 
-	private static <T> void enqueue(NullableSynchronousQueue<T> queue, T t) {
+	private static <T> void enqueue(NullableSyncQueue<T> queue, T t) {
 		try {
 			queue.offer(t);
 		} catch (InterruptedException ex) {

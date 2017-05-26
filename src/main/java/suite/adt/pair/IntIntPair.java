@@ -2,7 +2,7 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
-import suite.primitive.IntPrimitiveFun.Int_Int;
+import suite.primitive.Int_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
