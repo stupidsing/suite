@@ -6,27 +6,27 @@ package suite.primitive;
  * 
  * @author ywsing
  */
-public class CharMutable {
+public class ChrMutable {
 
 	private static char falseValue = 0;
 	private static char trueValue = 1;
 
 	private char value;
 
-	public static CharMutable false_() {
+	public static ChrMutable false_() {
 		return of(falseValue);
 	}
 
-	public static CharMutable true_() {
+	public static ChrMutable true_() {
 		return of(trueValue);
 	}
 
-	public static CharMutable nil() {
-		return CharMutable.of(Character.MIN_VALUE);
+	public static ChrMutable nil() {
+		return ChrMutable.of(Character.MIN_VALUE);
 	}
 
-	public static CharMutable of(char i) {
-		CharMutable p = new CharMutable();
+	public static ChrMutable of(char i) {
+		ChrMutable p = new ChrMutable();
 		p.update(i);
 		return p;
 	}

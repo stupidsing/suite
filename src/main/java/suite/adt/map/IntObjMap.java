@@ -5,8 +5,8 @@ import suite.primitive.IntPrimitiveFun.Int_Obj;
 import suite.primitive.IntPrimitiveSink.IntObjSink;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.primitive.IntPrimitiveFun.Obj_Int;
-import suite.streamlet.IntObjOutlet;
 import suite.streamlet.IntObjStreamlet;
+import suite.streamlet.IntObjOutlet;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are

@@ -3,33 +3,33 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.primitive.CharPrimitiveFun.Char_Char;
+import suite.primitive.ChrPrimitiveFun.Chr_Chr;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
-public class CharObjPair<T> {
+public class ChrObjPair<T> {
 
 	public char t0;
 	public T t1;
 
-	public static <V> Fun<CharObjPair<V>, CharObjPair<V>> map0(Char_Char fun) {
+	public static <V> Fun<ChrObjPair<V>, ChrObjPair<V>> map0(Chr_Chr fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static <V0, V1> Fun<CharObjPair<V0>, CharObjPair<V1>> map1(Fun<V0, V1> fun) {
+	public static <V0, V1> Fun<ChrObjPair<V0>, ChrObjPair<V1>> map1(Fun<V0, V1> fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
-	public static <T> CharObjPair<T> of(char t0, T t1) {
-		return new CharObjPair<>(t0, t1);
+	public static <T> ChrObjPair<T> of(char t0, T t1) {
+		return new ChrObjPair<>(t0, t1);
 	}
 
-	private CharObjPair(char t0, T t1) {
+	private ChrObjPair(char t0, T t1) {
 		this.t0 = t0;
 		this.t1 = t1;
 	}
 
-	public static <T extends Comparable<? super T>> Comparator<CharObjPair<T>> comparator() {
+	public static <T extends Comparable<? super T>> Comparator<ChrObjPair<T>> comparator() {
 		return (pair0, pair1) -> {
 			int c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Integer.compare(pair0.t0, pair1.t0) : c;
@@ -38,7 +38,7 @@ public class CharObjPair<T> {
 		};
 	}
 
-	public static <T> Comparator<CharObjPair<T>> comparatorByFirst() {
+	public static <T> Comparator<ChrObjPair<T>> comparatorByFirst() {
 		return (pair0, pair1) -> {
 			int c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Character.compare(pair0.t0, pair1.t0) : c;
@@ -46,18 +46,18 @@ public class CharObjPair<T> {
 		};
 	}
 
-	public static char first_(CharObjPair<?> pair) {
+	public static char first_(ChrObjPair<?> pair) {
 		return pair.t0;
 	}
 
-	public static <T> T second(CharObjPair<T> pair) {
+	public static <T> T second(ChrObjPair<T> pair) {
 		return pair != null ? pair.t1 : null;
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == CharObjPair.class) {
-			CharObjPair<?> other = (CharObjPair<?>) object;
+		if (Object_.clazz(object) == ChrObjPair.class) {
+			ChrObjPair<?> other = (ChrObjPair<?>) object;
 			return t0 == other.t0 && Objects.equals(t1, other.t1);
 		} else
 			return false;

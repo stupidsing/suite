@@ -2,13 +2,13 @@ package suite.adt.map;
 
 import java.util.Arrays;
 
-import suite.adt.pair.CharObjPair;
-import suite.primitive.CharPrimitiveFun.Char_Char;
-import suite.primitive.CharPrimitiveFun.Obj_Char;
-import suite.primitive.CharPrimitiveSink.CharObjSink;
-import suite.primitive.CharPrimitiveSource.CharObjSource;
-import suite.streamlet.CharObjOutlet;
-import suite.streamlet.CharObjStreamlet;
+import suite.adt.pair.ChrObjPair;
+import suite.primitive.ChrPrimitiveFun.Chr_Chr;
+import suite.primitive.ChrPrimitiveFun.Obj_Chr;
+import suite.primitive.ChrPrimitiveSink.ChrObjSink;
+import suite.primitive.ChrPrimitiveSource.ChrObjSource;
+import suite.streamlet.ChrObjOutlet;
+import suite.streamlet.ChrObjStreamlet;
 
 /**
  * Map with generic object key and character object value. Integer.MIN_VALUE is
@@ -16,7 +16,7 @@ import suite.streamlet.CharObjStreamlet;
  * 
  * @author ywsing
  */
-public class ObjCharMap<K> {
+public class ObjChrMap<K> {
 
 	public final static char EMPTYVALUE = Character.MIN_VALUE;
 
@@ -24,24 +24,24 @@ public class ObjCharMap<K> {
 	private Object[] ks;
 	private char[] vs;
 
-	public ObjCharMap() {
+	public ObjChrMap() {
 		this(8);
 	}
 
-	public ObjCharMap(int capacity) {
+	public ObjChrMap(int capacity) {
 		allocate(capacity);
 	}
 
-	public int computeIfAbsent(K key, Obj_Char<K> fun) {
+	public int computeIfAbsent(K key, Obj_Chr<K> fun) {
 		char v = get(key);
 		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
 
-	public void forEach(CharObjSink<K> sink) {
-		CharObjPair<K> pair = CharObjPair.of((char) 0, null);
-		CharObjSource<K> source = source_();
+	public void forEach(ChrObjSink<K> sink) {
+		ChrObjPair<K> pair = ChrObjPair.of((char) 0, null);
+		ChrObjSource<K> source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -78,7 +78,7 @@ public class ObjCharMap<K> {
 		return put_(key, v);
 	}
 
-	public void update(K key, Char_Char fun) {
+	public void update(K key, Chr_Chr fun) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		char v;
@@ -90,12 +90,12 @@ public class ObjCharMap<K> {
 		vs[index] = fun.apply(v);
 	}
 
-	public CharObjSource<K> source() {
+	public ChrObjSource<K> source() {
 		return source_();
 	}
 
-	public CharObjStreamlet<K> stream() {
-		return new CharObjStreamlet<>(() -> CharObjOutlet.of(source_()));
+	public ChrObjStreamlet<K> stream() {
+		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(source_()));
 	}
 
 	private char put_(Object key, char v1) {
@@ -112,12 +112,12 @@ public class ObjCharMap<K> {
 		return v0;
 	}
 
-	private CharObjSource<K> source_() {
-		return new CharObjSource<K>() {
+	private ChrObjSource<K> source_() {
+		return new ChrObjSource<K>() {
 			private int capacity = vs.length;
 			private int index = 0;
 
-			public boolean source2(CharObjPair<K> pair) {
+			public boolean source2(ChrObjPair<K> pair) {
 				char v;
 				while ((v = vs[index]) == EMPTYVALUE)
 					if (capacity <= ++index)

@@ -1,15 +1,15 @@
 package suite.primitive;
 
-import suite.primitive.CharPrimitiveFun.CharObj_Char;
-import suite.primitive.CharPrimitiveFun.CharObj_Obj;
-import suite.primitive.CharPrimitiveFun.ObjObj_Char;
-import suite.primitive.CharPrimitiveFun.Obj_Char;
-import suite.primitive.CharPrimitivePredicate.CharObjPredicate;
-import suite.primitive.CharPrimitivePredicate.CharPredicate_;
+import suite.primitive.ChrPrimitiveFun.ChrObj_Chr;
+import suite.primitive.ChrPrimitiveFun.ChrObj_Obj;
+import suite.primitive.ChrPrimitiveFun.ObjObj_Chr;
+import suite.primitive.ChrPrimitiveFun.Obj_Chr;
+import suite.primitive.ChrPrimitivePredicate.ChrObjPredicate;
+import suite.primitive.ChrPrimitivePredicate.ChrPredicate_;
 
-public class CharRethrow {
+public class ChrRethrow {
 
-	public static <V> CharObj_Char<V> fun2(CharObj_Char<V> fun) {
+	public static <V> ChrObj_Chr<V> fun2(ChrObj_Chr<V> fun) {
 		return (k, v) -> {
 			try {
 				return fun.apply(k, v);
@@ -19,7 +19,7 @@ public class CharRethrow {
 		};
 	}
 
-	public static <V, T> CharObj_Obj<V, T> fun2(CharObj_Obj<V, T> fun) {
+	public static <V, T> ChrObj_Obj<V, T> fun2(ChrObj_Obj<V, T> fun) {
 		return (k, v) -> {
 			try {
 				return fun.apply(k, v);
@@ -29,7 +29,7 @@ public class CharRethrow {
 		};
 	}
 
-	public static <T> Obj_Char<T> fun(Obj_Char<T> fun) {
+	public static <T> Obj_Chr<T> fun(Obj_Chr<T> fun) {
 		return t -> {
 			try {
 				return fun.apply(t);
@@ -39,7 +39,7 @@ public class CharRethrow {
 		};
 	}
 
-	public static <K, V> ObjObj_Char<K, V> fun2(ObjObj_Char<K, V> fun) {
+	public static <K, V> ObjObj_Chr<K, V> fun2(ObjObj_Chr<K, V> fun) {
 		return (k, v) -> {
 			try {
 				return fun.apply(k, v);
@@ -49,7 +49,7 @@ public class CharRethrow {
 		};
 	}
 
-	public static <V> CharObjPredicate<V> charObjPredicate(CharObjPredicate<V> fun0) {
+	public static <V> ChrObjPredicate<V> charObjPredicate(ChrObjPredicate<V> fun0) {
 		return (k, v) -> {
 			try {
 				return fun0.test(k, v);
@@ -59,7 +59,7 @@ public class CharRethrow {
 		};
 	}
 
-	public static CharPredicate_ predicate(CharPredicate_ predicate) {
+	public static ChrPredicate_ predicate(ChrPredicate_ predicate) {
 		return t -> {
 			try {
 				return predicate.test(t);

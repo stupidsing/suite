@@ -1,12 +1,12 @@
 package suite.adt.map;
 
-import suite.adt.pair.CharObjPair;
-import suite.primitive.CharPrimitiveFun.Char_Obj;
-import suite.primitive.CharPrimitiveSink.CharObjSink;
-import suite.primitive.CharPrimitiveSource.CharObjSource;
+import suite.adt.pair.ChrObjPair;
+import suite.primitive.ChrPrimitiveFun.Chr_Obj;
+import suite.primitive.ChrPrimitiveSink.ChrObjSink;
+import suite.primitive.ChrPrimitiveSource.ChrObjSource;
 import suite.primitive.IntPrimitiveFun.Obj_Int;
-import suite.streamlet.CharObjOutlet;
-import suite.streamlet.CharObjStreamlet;
+import suite.streamlet.ChrObjStreamlet;
+import suite.streamlet.ChrObjOutlet;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -14,30 +14,30 @@ import suite.streamlet.CharObjStreamlet;
  * 
  * @author ywsing
  */
-public class CharObjMap<V> {
+public class ChrObjMap<V> {
 
 	private int size;
 	private char[] ks;
 	private Object[] vs;
 
-	public CharObjMap() {
+	public ChrObjMap() {
 		this(8);
 	}
 
-	public CharObjMap(int capacity) {
+	public ChrObjMap(int capacity) {
 		allocate(capacity);
 	}
 
-	public V computeIfAbsent(char key, Char_Obj<V> fun) {
+	public V computeIfAbsent(char key, Chr_Obj<V> fun) {
 		V v = get(key);
 		if (v == null)
 			put(key, v = fun.apply(key));
 		return v;
 	}
 
-	public void forEach(CharObjSink<V> sink) {
-		CharObjPair<V> pair = CharObjPair.of((char) 0, null);
-		CharObjSource<V> source = source_();
+	public void forEach(ChrObjSink<V> sink) {
+		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		ChrObjSource<V> source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -86,12 +86,12 @@ public class CharObjMap<V> {
 		vs[index] = fun.apply(cast(v));
 	}
 
-	public CharObjSource<V> source() {
+	public ChrObjSource<V> source() {
 		return source_();
 	}
 
-	public CharObjStreamlet<V> stream() {
-		return new CharObjStreamlet<>(() -> CharObjOutlet.of(source_()));
+	public ChrObjStreamlet<V> stream() {
+		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(source_()));
 	}
 
 	private Object put_(char key, Object v1) {
@@ -108,12 +108,12 @@ public class CharObjMap<V> {
 		return v0;
 	}
 
-	private CharObjSource<V> source_() {
-		return new CharObjSource<V>() {
+	private ChrObjSource<V> source_() {
+		return new ChrObjSource<V>() {
 			private int capacity = vs.length;
 			private int index = 0;
 
-			public boolean source2(CharObjPair<V> pair) {
+			public boolean source2(ChrObjPair<V> pair) {
 				Object v;
 				while ((v = vs[index]) == null)
 					if (capacity <= ++index)
