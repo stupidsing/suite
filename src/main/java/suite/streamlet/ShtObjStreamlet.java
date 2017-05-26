@@ -22,7 +22,6 @@ import suite.primitive.ShtPrimitivePredicate.ShtObjPredicate;
 import suite.primitive.ShtPrimitivePredicate.ShtPredicate_;
 import suite.primitive.ShtPrimitiveSource.ShtObjSource;
 import suite.primitive.Sht_Sht;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -80,16 +79,16 @@ public class ShtObjStreamlet<V> implements Iterable<ShtObjPair<V>> {
 		return fun.apply(spawn());
 	}
 
-	public <O> Streamlet<O> concatMap(ObjObj_Obj<Short, V, Streamlet<O>> fun) {
+	public <O> Streamlet<O> concatMap(ShtObj_Obj<V, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}
 
-	public <K1, V1> Streamlet2<K1, V1> concatMap2(ObjObj_Obj<Short, V, Streamlet2<K1, V1>> fun) {
+	public <K1, V1> Streamlet2<K1, V1> concatMap2(ShtObj_Obj<V, Streamlet2<K1, V1>> fun) {
 		return concatMap2_(fun);
 	}
 
-	public <V1> ShtObjStreamlet<V1> concatMapShortObj(ObjObj_Obj<Short, V, ShtObjStreamlet<V1>> fun) {
-		return concatMapShortObj_(fun);
+	public <V1> ShtObjStreamlet<V1> concatMapShtObj(ShtObj_Obj<V, ShtObjStreamlet<V1>> fun) {
+		return concatMapShtObj_(fun);
 	}
 
 	public <V1> ShtObjStreamlet<V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
@@ -288,19 +287,19 @@ public class ShtObjStreamlet<V> implements Iterable<ShtObjPair<V>> {
 		return new Streamlet<>(() -> spawn().values());
 	}
 
-	private <T> Streamlet<T> concatMap_(ObjObj_Obj<Short, V, Streamlet<T>> fun) {
-		ObjObj_Obj<Short, V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
+	private <T> Streamlet<T> concatMap_(ShtObj_Obj<V, Streamlet<T>> fun) {
+		ShtObj_Obj<V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return new Streamlet<>(() -> Outlet.of(spawn().concatMap(bf)));
 	}
 
-	private <V1, K1> Streamlet2<K1, V1> concatMap2_(ObjObj_Obj<Short, V, Streamlet2<K1, V1>> fun) {
-		ObjObj_Obj<Short, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
+	private <V1, K1> Streamlet2<K1, V1> concatMap2_(ShtObj_Obj<V, Streamlet2<K1, V1>> fun) {
+		ShtObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
 		return new Streamlet2<>(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 
-	private <V1> ShtObjStreamlet<V1> concatMapShortObj_(ObjObj_Obj<Short, V, ShtObjStreamlet<V1>> fun) {
-		ObjObj_Obj<Short, V, ShtObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
-		return shtObjStreamlet(() -> ShtObjOutlet.of(spawn().concatMapShortObj(bf)));
+	private <V1> ShtObjStreamlet<V1> concatMapShtObj_(ShtObj_Obj<V, ShtObjStreamlet<V1>> fun) {
+		ShtObj_Obj<V, ShtObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
+		return shtObjStreamlet(() -> ShtObjOutlet.of(spawn().concatMapShtObj(bf)));
 	}
 
 	private <T> Streamlet<T> map_(ShtObj_Obj<V, T> fun) {

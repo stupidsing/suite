@@ -22,7 +22,6 @@ import suite.primitive.FltPrimitivePredicate.FltObjPredicate;
 import suite.primitive.FltPrimitivePredicate.FltPredicate_;
 import suite.primitive.FltPrimitiveSource.FltObjSource;
 import suite.primitive.Flt_Flt;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -80,16 +79,16 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 		return fun.apply(spawn());
 	}
 
-	public <O> Streamlet<O> concatMap(ObjObj_Obj<Float, V, Streamlet<O>> fun) {
+	public <O> Streamlet<O> concatMap(FltObj_Obj<V, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}
 
-	public <K1, V1> Streamlet2<K1, V1> concatMap2(ObjObj_Obj<Float, V, Streamlet2<K1, V1>> fun) {
+	public <K1, V1> Streamlet2<K1, V1> concatMap2(FltObj_Obj<V, Streamlet2<K1, V1>> fun) {
 		return concatMap2_(fun);
 	}
 
-	public <V1> FltObjStreamlet<V1> concatMapFloatObj(ObjObj_Obj<Float, V, FltObjStreamlet<V1>> fun) {
-		return concatMapFloatObj_(fun);
+	public <V1> FltObjStreamlet<V1> concatMapFltObj(FltObj_Obj<V, FltObjStreamlet<V1>> fun) {
+		return concatMapFltObj_(fun);
 	}
 
 	public <V1> FltObjStreamlet<V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
@@ -288,19 +287,19 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 		return new Streamlet<>(() -> spawn().values());
 	}
 
-	private <T> Streamlet<T> concatMap_(ObjObj_Obj<Float, V, Streamlet<T>> fun) {
-		ObjObj_Obj<Float, V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
+	private <T> Streamlet<T> concatMap_(FltObj_Obj<V, Streamlet<T>> fun) {
+		FltObj_Obj<V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return new Streamlet<>(() -> Outlet.of(spawn().concatMap(bf)));
 	}
 
-	private <V1, K1> Streamlet2<K1, V1> concatMap2_(ObjObj_Obj<Float, V, Streamlet2<K1, V1>> fun) {
-		ObjObj_Obj<Float, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
+	private <V1, K1> Streamlet2<K1, V1> concatMap2_(FltObj_Obj<V, Streamlet2<K1, V1>> fun) {
+		FltObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
 		return new Streamlet2<>(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 
-	private <V1> FltObjStreamlet<V1> concatMapFloatObj_(ObjObj_Obj<Float, V, FltObjStreamlet<V1>> fun) {
-		ObjObj_Obj<Float, V, FltObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
-		return fltObjStreamlet(() -> FltObjOutlet.of(spawn().concatMapFloatObj(bf)));
+	private <V1> FltObjStreamlet<V1> concatMapFltObj_(FltObj_Obj<V, FltObjStreamlet<V1>> fun) {
+		FltObj_Obj<V, FltObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
+		return fltObjStreamlet(() -> FltObjOutlet.of(spawn().concatMapFltObj(bf)));
 	}
 
 	private <T> Streamlet<T> map_(FltObj_Obj<V, T> fun) {

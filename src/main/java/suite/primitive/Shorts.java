@@ -7,11 +7,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.Constants;
+import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
-import suite.util.To;
 
 public class Shorts implements Iterable<Short> {
 
@@ -34,9 +34,9 @@ public class Shorts implements Iterable<Short> {
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			int i0 = To.int_(shorts0.cs[start0 + index]);
-			int i1 = To.int_(shorts1.cs[start1 + index]);
-			c = Integer.compare(i0, i1);
+			short c0 = shorts0.cs[start0 + index];
+			short c1 = shorts1.cs[start1 + index];
+			c = Compare.compare(c0, c1);
 			index++;
 		}
 

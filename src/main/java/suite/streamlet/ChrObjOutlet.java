@@ -142,7 +142,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 		return Outlet2.of(FunUtil2.concat(ChrObjFunUtil.map((k, v) -> fun.apply(k, v).source(), charObjSource)));
 	}
 
-	public <V1> ChrObjOutlet<V1> concatMapCharObj(ChrObj_Obj<V, ChrObjOutlet<V1>> fun) {
+	public <V1> ChrObjOutlet<V1> concatMapChrObj(ChrObj_Obj<V, ChrObjOutlet<V1>> fun) {
 		return of(ChrObjFunUtil.concat(ChrObjFunUtil.map((k, v) -> fun.apply(k, v).charObjSource, charObjSource)));
 	}
 
@@ -480,7 +480,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	private <V1> ChrObjOutlet<V1> mapChrObj_(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
-		return of(ChrObjFunUtil.mapCharObj(kf, vf, charObjSource));
+		return of(ChrObjFunUtil.mapChrObj(kf, vf, charObjSource));
 	}
 
 	private boolean next(ChrObjPair<V> pair) {

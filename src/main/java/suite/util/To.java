@@ -177,18 +177,6 @@ public class To {
 		};
 	}
 
-	public static int int_(byte b) {
-		return Byte.toUnsignedInt(b);
-	}
-
-	public static int int_(char c) {
-		return c;
-	}
-
-	public static int int_(int i) {
-		return i;
-	}
-
 	public static <T> List<T> list(Iterable<T> iter) {
 		return list(iter.iterator());
 	}

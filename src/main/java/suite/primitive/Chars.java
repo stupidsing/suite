@@ -7,11 +7,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.Constants;
+import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
-import suite.util.To;
 
 public class Chars implements Iterable<Character> {
 
@@ -34,9 +34,9 @@ public class Chars implements Iterable<Character> {
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			int i0 = To.int_(chars0.cs[start0 + index]);
-			int i1 = To.int_(chars1.cs[start1 + index]);
-			c = Integer.compare(i0, i1);
+			char c0 = chars0.cs[start0 + index];
+			char c1 = chars1.cs[start1 + index];
+			c = Compare.compare(c0, c1);
 			index++;
 		}
 

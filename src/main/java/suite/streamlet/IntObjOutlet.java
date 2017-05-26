@@ -23,7 +23,6 @@ import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
 import suite.primitive.IntPrimitivePredicate.IntPredicate_;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.primitive.Int_Int;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -135,15 +134,15 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return fun.apply(this);
 	}
 
-	public <O> Outlet<O> concatMap(ObjObj_Obj<Integer, V, Outlet<O>> fun) {
+	public <O> Outlet<O> concatMap(IntObj_Obj<V, Outlet<O>> fun) {
 		return Outlet.of(FunUtil.concat(IntObjFunUtil.map((k, v) -> fun.apply(k, v).source(), intObjSource)));
 	}
 
-	public <K1, V1> Outlet2<K1, V1> concatMap2(ObjObj_Obj<Integer, V, Outlet2<K1, V1>> fun) {
+	public <K1, V1> Outlet2<K1, V1> concatMap2(IntObj_Obj<V, Outlet2<K1, V1>> fun) {
 		return Outlet2.of(FunUtil2.concat(IntObjFunUtil.map((k, v) -> fun.apply(k, v).source(), intObjSource)));
 	}
 
-	public <V1> IntObjOutlet<V1> concatMapIntObj(ObjObj_Obj<Integer, V, IntObjOutlet<V1>> fun) {
+	public <V1> IntObjOutlet<V1> concatMapIntObj(IntObj_Obj<V, IntObjOutlet<V1>> fun) {
 		return of(IntObjFunUtil.concat(IntObjFunUtil.map((k, v) -> fun.apply(k, v).intObjSource, intObjSource)));
 	}
 

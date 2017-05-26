@@ -195,7 +195,7 @@ public class ChrObjFunUtil {
 		};
 	}
 
-	public static <V, V1, T> ChrObjSource<V1> mapCharObj(ChrObj_Chr<V> kf0, ChrObj_Obj<V, V1> vf0, ChrObjSource<V> source2) {
+	public static <V, V1, T> ChrObjSource<V1> mapChrObj(ChrObj_Chr<V> kf0, ChrObj_Obj<V, V1> vf0, ChrObjSource<V> source2) {
 		ChrObj_Chr<V> kf1 = ChrChrRethrow.fun2(kf0);
 		ChrObj_Obj<V, V1> vf1 = ChrRethrow.fun2(vf0);
 		ChrObjPair<V> pair1 = ChrObjPair.of((char) 0, null);

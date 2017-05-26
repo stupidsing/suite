@@ -23,7 +23,6 @@ import suite.primitive.ShtPrimitivePredicate.ShtObjPredicate;
 import suite.primitive.ShtPrimitivePredicate.ShtPredicate_;
 import suite.primitive.ShtPrimitiveSource.ShtObjSource;
 import suite.primitive.Sht_Sht;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -135,15 +134,15 @@ public class ShtObjOutlet<V> implements Iterable<ShtObjPair<V>> {
 		return fun.apply(this);
 	}
 
-	public <O> Outlet<O> concatMap(ObjObj_Obj<Short, V, Outlet<O>> fun) {
+	public <O> Outlet<O> concatMap(ShtObj_Obj<V, Outlet<O>> fun) {
 		return Outlet.of(FunUtil.concat(ShtObjFunUtil.map((k, v) -> fun.apply(k, v).source(), shortObjSource)));
 	}
 
-	public <K1, V1> Outlet2<K1, V1> concatMap2(ObjObj_Obj<Short, V, Outlet2<K1, V1>> fun) {
+	public <K1, V1> Outlet2<K1, V1> concatMap2(ShtObj_Obj<V, Outlet2<K1, V1>> fun) {
 		return Outlet2.of(FunUtil2.concat(ShtObjFunUtil.map((k, v) -> fun.apply(k, v).source(), shortObjSource)));
 	}
 
-	public <V1> ShtObjOutlet<V1> concatMapShortObj(ObjObj_Obj<Short, V, ShtObjOutlet<V1>> fun) {
+	public <V1> ShtObjOutlet<V1> concatMapShtObj(ShtObj_Obj<V, ShtObjOutlet<V1>> fun) {
 		return of(ShtObjFunUtil.concat(ShtObjFunUtil.map((k, v) -> fun.apply(k, v).shortObjSource, shortObjSource)));
 	}
 
@@ -481,7 +480,7 @@ public class ShtObjOutlet<V> implements Iterable<ShtObjPair<V>> {
 	}
 
 	private <V1> ShtObjOutlet<V1> mapShtObj_(ShtObj_Sht<V> kf, ShtObj_Obj<V, V1> vf) {
-		return of(ShtObjFunUtil.mapShortObj(kf, vf, shortObjSource));
+		return of(ShtObjFunUtil.mapShtObj(kf, vf, shortObjSource));
 	}
 
 	private boolean next(ShtObjPair<V> pair) {

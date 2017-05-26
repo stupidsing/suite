@@ -195,7 +195,7 @@ public class FltObjFunUtil {
 		};
 	}
 
-	public static <V, V1, T> FltObjSource<V1> mapFloatObj(FltObj_Flt<V> kf0, FltObj_Obj<V, V1> vf0, FltObjSource<V> source2) {
+	public static <V, V1, T> FltObjSource<V1> mapFltObj(FltObj_Flt<V> kf0, FltObj_Obj<V, V1> vf0, FltObjSource<V> source2) {
 		FltObj_Flt<V> kf1 = FltFltRethrow.fun2(kf0);
 		FltObj_Obj<V, V1> vf1 = FltRethrow.fun2(vf0);
 		FltObjPair<V> pair1 = FltObjPair.of((float) 0, null);

@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.Constants;
+import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
@@ -33,9 +34,9 @@ public class Bytes implements Iterable<Byte> {
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			int i0 = To.int_(bytes0.bs[start0 + index]);
-			int i1 = To.int_(bytes1.bs[start1 + index]);
-			c = Integer.compare(i0, i1);
+			byte c0 = bytes0.bs[start0 + index];
+			byte c1 = bytes1.bs[start1 + index];
+			c = Compare.compare(c0, c1);
 			index++;
 		}
 

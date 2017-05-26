@@ -87,8 +87,8 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 		return concatMap2_(fun);
 	}
 
-	public <V1> ChrObjStreamlet<V1> concatMapCharObj(ChrObj_Obj<V, ChrObjStreamlet<V1>> fun) {
-		return concatMapCharObj_(fun);
+	public <V1> ChrObjStreamlet<V1> concatMapChrObj(ChrObj_Obj<V, ChrObjStreamlet<V1>> fun) {
+		return concatMapChrObj_(fun);
 	}
 
 	public <V1> ChrObjStreamlet<V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
@@ -297,9 +297,9 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 		return new Streamlet2<>(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 
-	private <V1> ChrObjStreamlet<V1> concatMapCharObj_(ChrObj_Obj<V, ChrObjStreamlet<V1>> fun) {
+	private <V1> ChrObjStreamlet<V1> concatMapChrObj_(ChrObj_Obj<V, ChrObjStreamlet<V1>> fun) {
 		ChrObj_Obj<V, ChrObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
-		return chrObjStreamlet(() -> ChrObjOutlet.of(spawn().concatMapCharObj(bf)));
+		return chrObjStreamlet(() -> ChrObjOutlet.of(spawn().concatMapChrObj(bf)));
 	}
 
 	private <T> Streamlet<T> map_(ChrObj_Obj<V, T> fun) {

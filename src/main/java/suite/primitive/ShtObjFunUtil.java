@@ -195,7 +195,7 @@ public class ShtObjFunUtil {
 		};
 	}
 
-	public static <V, V1, T> ShtObjSource<V1> mapShortObj(ShtObj_Sht<V> kf0, ShtObj_Obj<V, V1> vf0, ShtObjSource<V> source2) {
+	public static <V, V1, T> ShtObjSource<V1> mapShtObj(ShtObj_Sht<V> kf0, ShtObj_Obj<V, V1> vf0, ShtObjSource<V> source2) {
 		ShtObj_Sht<V> kf1 = ShtShtRethrow.fun2(kf0);
 		ShtObj_Obj<V, V1> vf1 = ShtRethrow.fun2(vf0);
 		ShtObjPair<V> pair1 = ShtObjPair.of((short) 0, null);

@@ -22,7 +22,6 @@ import suite.primitive.IntPrimitivePredicate.IntObjPredicate;
 import suite.primitive.IntPrimitivePredicate.IntPredicate_;
 import suite.primitive.IntPrimitiveSource.IntObjSource;
 import suite.primitive.Int_Int;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.PrimitiveFun.Obj_Double;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -80,15 +79,15 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return fun.apply(spawn());
 	}
 
-	public <O> Streamlet<O> concatMap(ObjObj_Obj<Integer, V, Streamlet<O>> fun) {
+	public <O> Streamlet<O> concatMap(IntObj_Obj<V, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}
 
-	public <K1, V1> Streamlet2<K1, V1> concatMap2(ObjObj_Obj<Integer, V, Streamlet2<K1, V1>> fun) {
+	public <K1, V1> Streamlet2<K1, V1> concatMap2(IntObj_Obj<V, Streamlet2<K1, V1>> fun) {
 		return concatMap2_(fun);
 	}
 
-	public <V1> IntObjStreamlet<V1> concatMapIntObj(ObjObj_Obj<Integer, V, IntObjStreamlet<V1>> fun) {
+	public <V1> IntObjStreamlet<V1> concatMapIntObj(IntObj_Obj<V, IntObjStreamlet<V1>> fun) {
 		return concatMapIntObj_(fun);
 	}
 
@@ -288,18 +287,18 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return new Streamlet<>(() -> spawn().values());
 	}
 
-	private <T> Streamlet<T> concatMap_(ObjObj_Obj<Integer, V, Streamlet<T>> fun) {
-		ObjObj_Obj<Integer, V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
+	private <T> Streamlet<T> concatMap_(IntObj_Obj<V, Streamlet<T>> fun) {
+		IntObj_Obj<V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return new Streamlet<>(() -> Outlet.of(spawn().concatMap(bf)));
 	}
 
-	private <V1, K1> Streamlet2<K1, V1> concatMap2_(ObjObj_Obj<Integer, V, Streamlet2<K1, V1>> fun) {
-		ObjObj_Obj<Integer, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
+	private <V1, K1> Streamlet2<K1, V1> concatMap2_(IntObj_Obj<V, Streamlet2<K1, V1>> fun) {
+		IntObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
 		return new Streamlet2<>(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 
-	private <V1> IntObjStreamlet<V1> concatMapIntObj_(ObjObj_Obj<Integer, V, IntObjStreamlet<V1>> fun) {
-		ObjObj_Obj<Integer, V, IntObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
+	private <V1> IntObjStreamlet<V1> concatMapIntObj_(IntObj_Obj<V, IntObjStreamlet<V1>> fun) {
+		IntObj_Obj<V, IntObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
 		return intObjStreamlet(() -> IntObjOutlet.of(spawn().concatMapIntObj(bf)));
 	}
 

@@ -23,7 +23,6 @@ import suite.primitive.FltPrimitivePredicate.FltObjPredicate;
 import suite.primitive.FltPrimitivePredicate.FltPredicate_;
 import suite.primitive.FltPrimitiveSource.FltObjSource;
 import suite.primitive.Flt_Flt;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -135,15 +134,15 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 		return fun.apply(this);
 	}
 
-	public <O> Outlet<O> concatMap(ObjObj_Obj<Float, V, Outlet<O>> fun) {
+	public <O> Outlet<O> concatMap(FltObj_Obj<V, Outlet<O>> fun) {
 		return Outlet.of(FunUtil.concat(FltObjFunUtil.map((k, v) -> fun.apply(k, v).source(), floatObjSource)));
 	}
 
-	public <K1, V1> Outlet2<K1, V1> concatMap2(ObjObj_Obj<Float, V, Outlet2<K1, V1>> fun) {
+	public <K1, V1> Outlet2<K1, V1> concatMap2(FltObj_Obj<V, Outlet2<K1, V1>> fun) {
 		return Outlet2.of(FunUtil2.concat(FltObjFunUtil.map((k, v) -> fun.apply(k, v).source(), floatObjSource)));
 	}
 
-	public <V1> FltObjOutlet<V1> concatMapFloatObj(ObjObj_Obj<Float, V, FltObjOutlet<V1>> fun) {
+	public <V1> FltObjOutlet<V1> concatMapFltObj(FltObj_Obj<V, FltObjOutlet<V1>> fun) {
 		return of(FltObjFunUtil.concat(FltObjFunUtil.map((k, v) -> fun.apply(k, v).floatObjSource, floatObjSource)));
 	}
 
@@ -481,7 +480,7 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	private <V1> FltObjOutlet<V1> mapFltObj_(FltObj_Flt<V> kf, FltObj_Obj<V, V1> vf) {
-		return of(FltObjFunUtil.mapFloatObj(kf, vf, floatObjSource));
+		return of(FltObjFunUtil.mapFltObj(kf, vf, floatObjSource));
 	}
 
 	private boolean next(FltObjPair<V> pair) {
