@@ -22,9 +22,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.IntFunction;
 
 import suite.Constants;
@@ -235,6 +237,14 @@ public class To {
 			int nBytesRead = Rethrow.ex(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
 		}).closeAtEnd(bis).closeAtEnd(is);
+	}
+
+	@SafeVarargs
+	public static <T> Set<T> set(T... ts) {
+		Set<T> set = new HashSet<>();
+		for (T t : ts)
+			set.add(t);
+		return set;
 	}
 
 	public static Sink<String> sink(StringBuilder sb) {

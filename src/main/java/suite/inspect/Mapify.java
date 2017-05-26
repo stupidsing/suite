@@ -19,7 +19,7 @@ import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
-import suite.util.Set_;
+import suite.util.To;
 
 /**
  * Convert (supposedly) any Java structures to recursive maps.
@@ -28,8 +28,8 @@ import suite.util.Set_;
  */
 public class Mapify {
 
-	private Set<Type> collectionClasses = Set_.set(ArrayList.class, Collection.class, HashSet.class, List.class, Set.class);
-	private Set<Type> mapClasses = Set_.set(HashMap.class, Map.class);
+	private Set<Type> collectionClasses = To.set(ArrayList.class, Collection.class, HashSet.class, List.class, Set.class);
+	private Set<Type> mapClasses = To.set(HashMap.class, Map.class);
 
 	private Fun<Object, Object> id = object -> object;
 

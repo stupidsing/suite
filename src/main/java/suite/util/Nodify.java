@@ -35,8 +35,8 @@ import suite.util.FunUtil.Fun;
  */
 public class Nodify {
 
-	private Set<Type> collectionClasses = Set_.set(ArrayList.class, Collection.class, HashSet.class, List.class, Set.class);
-	private Set<Type> mapClasses = Set_.set(HashMap.class, Map.class);
+	private Set<Type> collectionClasses = To.set(ArrayList.class, Collection.class, HashSet.class, List.class, Set.class);
+	private Set<Type> mapClasses = To.set(HashMap.class, Map.class);
 
 	private Map<Type, Nodifier> nodifiers = new ConcurrentHashMap<>();
 	private Inspect inspect;
