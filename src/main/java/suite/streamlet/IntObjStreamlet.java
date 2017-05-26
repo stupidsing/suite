@@ -22,7 +22,7 @@ import suite.primitive.IntPredicate.IntObjPredicate;
 import suite.primitive.IntPredicate.IntPredicate_;
 import suite.primitive.IntSource.IntObjSource;
 import suite.primitive.Int_Int;
-import suite.primitive.PrimitiveFun.Obj_Double;
+import suite.primitive.PrimitiveFun.Obj_Dbl;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
@@ -71,7 +71,7 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return fun.apply(spawn());
 	}
 
-	public double collectAsDouble(Obj_Double<IntObjOutlet<V>> fun) {
+	public double collectAsDouble(Obj_Dbl<IntObjOutlet<V>> fun) {
 		return fun.applyAsDouble(spawn());
 	}
 

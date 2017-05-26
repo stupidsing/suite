@@ -22,7 +22,7 @@ import suite.primitive.FltPredicate.FltObjPredicate;
 import suite.primitive.FltPredicate.FltPredicate_;
 import suite.primitive.FltSource.FltObjSource;
 import suite.primitive.Flt_Flt;
-import suite.primitive.PrimitiveFun.Obj_Double;
+import suite.primitive.PrimitiveFun.Obj_Dbl;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
@@ -71,7 +71,7 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 		return fun.apply(spawn());
 	}
 
-	public double collectAsDouble(Obj_Double<FltObjOutlet<V>> fun) {
+	public double collectAsDouble(Obj_Dbl<FltObjOutlet<V>> fun) {
 		return fun.applyAsDouble(spawn());
 	}
 

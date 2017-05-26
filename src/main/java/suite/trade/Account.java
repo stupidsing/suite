@@ -3,7 +3,7 @@ package suite.trade;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.primitive.PrimitiveFun.Double_Double;
+import suite.primitive.PrimitiveFun.Dbl_Dbl;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
@@ -68,7 +68,7 @@ public class Account {
 		return transactionAmount;
 	}
 
-	public String transactionSummary(Double_Double transactionFeeFun) {
+	public String transactionSummary(Dbl_Dbl transactionFeeFun) {
 		double fee = transactionFeeFun.apply(transactionAmount);
 		return "transactions = " + To.string(transactionAmount) + "/" + nTransactions + ", fee = " + To.string(fee);
 	}

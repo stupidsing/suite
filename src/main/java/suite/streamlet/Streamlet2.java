@@ -17,7 +17,7 @@ import suite.adt.pair.Pair;
 import suite.primitive.FltFun.Obj_Flt;
 import suite.primitive.IntFun.Obj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
-import suite.primitive.PrimitiveFun.Obj_Double;
+import suite.primitive.PrimitiveFun.Obj_Dbl;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
@@ -68,7 +68,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return fun.apply(spawn());
 	}
 
-	public double collectAsDouble(Obj_Double<Outlet2<K, V>> fun) {
+	public double collectAsDouble(Obj_Dbl<Outlet2<K, V>> fun) {
 		return fun.applyAsDouble(spawn());
 	}
 

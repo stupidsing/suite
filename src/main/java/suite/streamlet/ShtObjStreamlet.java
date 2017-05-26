@@ -14,7 +14,7 @@ import suite.adt.map.ListMultimap;
 import suite.adt.map.ShtObjMap;
 import suite.adt.pair.Pair;
 import suite.adt.pair.ShtObjPair;
-import suite.primitive.PrimitiveFun.Obj_Double;
+import suite.primitive.PrimitiveFun.Obj_Dbl;
 import suite.primitive.ShtFun.Obj_Sht;
 import suite.primitive.ShtFun.ShtObj_Obj;
 import suite.primitive.ShtObjFunUtil;
@@ -71,7 +71,7 @@ public class ShtObjStreamlet<V> implements Iterable<ShtObjPair<V>> {
 		return fun.apply(spawn());
 	}
 
-	public double collectAsDouble(Obj_Double<ShtObjOutlet<V>> fun) {
+	public double collectAsDouble(Obj_Dbl<ShtObjOutlet<V>> fun) {
 		return fun.applyAsDouble(spawn());
 	}
 

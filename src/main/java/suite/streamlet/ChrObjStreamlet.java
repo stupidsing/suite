@@ -22,7 +22,7 @@ import suite.primitive.ChrPredicate.ChrObjPredicate;
 import suite.primitive.ChrPredicate.ChrPredicate_;
 import suite.primitive.ChrSource.ChrObjSource;
 import suite.primitive.Chr_Chr;
-import suite.primitive.PrimitiveFun.Obj_Double;
+import suite.primitive.PrimitiveFun.Obj_Dbl;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
@@ -71,7 +71,7 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 		return fun.apply(spawn());
 	}
 
-	public double collectAsDouble(Obj_Double<ChrObjOutlet<V>> fun) {
+	public double collectAsDouble(Obj_Dbl<ChrObjOutlet<V>> fun) {
 		return fun.applyAsDouble(spawn());
 	}
 

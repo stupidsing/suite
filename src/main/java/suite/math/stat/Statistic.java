@@ -7,7 +7,7 @@ import suite.math.linalg.Matrix;
 import suite.primitive.IntFun.Obj_Int;
 import suite.primitive.IntSource.IntObjSource;
 import suite.primitive.Int_Flt;
-import suite.primitive.PrimitiveFun.Int_Double;
+import suite.primitive.PrimitiveFun.Int_Dbl;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
@@ -17,15 +17,15 @@ public class Statistic {
 	private Matrix mtx = new Matrix();
 
 	public double correlation(float[] xs, float[] ys) {
-		Int_Double xf = i -> xs[i];
-		Int_Double yf = i -> ys[i];
+		Int_Dbl xf = i -> xs[i];
+		Int_Dbl yf = i -> ys[i];
 		if (xs.length == ys.length)
 			return correlation(xf, yf, xs.length);
 		else
 			throw new RuntimeException("wrong input sizes");
 	}
 
-	public double correlation(Int_Double xf, Int_Double yf, int length) {
+	public double correlation(Int_Dbl xf, Int_Dbl yf, int length) {
 		double sumx = 0d, sumy = 0d;
 		double sumx2 = 0d, sumy2 = 0d;
 		double sumxy = 0d;

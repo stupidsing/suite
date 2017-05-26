@@ -28,9 +28,9 @@ import suite.primitive.IntFun.Obj_Int;
 import suite.primitive.IntObj_Flt;
 import suite.primitive.IntObj_Int;
 import suite.primitive.IntSource.IntObjSource;
-import suite.primitive.PrimitiveFun.IntObj_Double;
-import suite.primitive.PrimitiveFun.ObjObj_Double;
-import suite.primitive.PrimitiveFun.Obj_Double;
+import suite.primitive.PrimitiveFun.IntObj_Dbl;
+import suite.primitive.PrimitiveFun.ObjObj_Dbl;
+import suite.primitive.PrimitiveFun.Obj_Dbl;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -43,7 +43,7 @@ public class As {
 		public O apply(int index, I i);
 	}
 
-	public static <T> Fun<Outlet<T>, double[]> arrayOfDoubles(Obj_Double<T> fun) {
+	public static <T> Fun<Outlet<T>, double[]> arrayOfDoubles(Obj_Dbl<T> fun) {
 		return new Fun<Outlet<T>, double[]>() {
 			public double[] apply(Outlet<T> outlet) {
 				double results[] = new double[16];
@@ -239,7 +239,7 @@ public class As {
 		return To.string(bytes(outlet));
 	}
 
-	public static <T> Obj_Double<Outlet<T>> sumOfDoubles(Obj_Double<T> fun) {
+	public static <T> Obj_Dbl<Outlet<T>> sumOfDoubles(Obj_Dbl<T> fun) {
 		return outlet -> {
 			Source<T> source = outlet.source();
 			T t;
@@ -250,7 +250,7 @@ public class As {
 		};
 	}
 
-	public static <T> Obj_Double<IntObjOutlet<T>> sumOfDoubles(double d, IntObj_Double<T> fun) {
+	public static <T> Obj_Dbl<IntObjOutlet<T>> sumOfDoubles(double d, IntObj_Dbl<T> fun) {
 		return outlet -> {
 			IntObjPair<T> pair = IntObjPair.of(0, null);
 			IntObjSource<T> source = outlet.source();
@@ -261,7 +261,7 @@ public class As {
 		};
 	}
 
-	public static <K, V> Obj_Double<Outlet2<K, V>> sumOfDoubles(ObjObj_Double<K, V> fun) {
+	public static <K, V> Obj_Dbl<Outlet2<K, V>> sumOfDoubles(ObjObj_Dbl<K, V> fun) {
 		return outlet -> {
 			Pair<K, V> pair = Pair.of(null, null);
 			Source2<K, V> source = outlet.source();
