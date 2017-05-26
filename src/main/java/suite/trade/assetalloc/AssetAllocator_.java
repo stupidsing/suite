@@ -2,6 +2,7 @@ package suite.trade.assetalloc;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -238,6 +239,33 @@ public class AssetAllocator_ {
 
 	public static AssetAllocator ofSingle(String symbol) {
 		return (dataSourceBySymbol, dates) -> (backTestDate, index) -> Arrays.asList(Pair.of(symbol, 1d));
+	}
+
+	public static AssetAllocator questoQuella(String symbol0, String symbol1) {
+		int tor = 64;
+		double threshold = 0d;
+
+		return AssetAllocator_.filterAssets( //
+				symbol -> String_.equals(symbol, symbol0) || String_.equals(symbol, symbol1), //
+				(dataSourceBySymbol, dates) -> {
+					Map<String, DataSource> dataSources = dataSourceBySymbol.toMap();
+					DataSource dataSource0 = dataSources.get(symbol0);
+					DataSource dataSource1 = dataSources.get(symbol1);
+
+					return (backTestDate, index) -> {
+						int ix = index - 1;
+						int i0 = ix - tor;
+						double p0 = dataSource0.get(i0).price, px = dataSource0.get(ix).price;
+						double q0 = dataSource1.get(i0).price, qx = dataSource1.get(ix).price;
+						double pdiff = (px - p0) / px;
+						double qdiff = (qx - q0) / qx;
+
+						if (threshold < Math.abs(pdiff - qdiff))
+							return Arrays.asList(Pair.of(pdiff < qdiff ? symbol0 : symbol1, 1d));
+						else
+							return Collections.emptyList();
+					};
+				});
 	}
 
 	public static AssetAllocator reallocate(AssetAllocator assetAllocator) {

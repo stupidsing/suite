@@ -89,10 +89,11 @@ public class DailyMain extends ExecutableProgram {
 				bb(450000f), //
 				bug(), //
 				mamr(75000f), //
-				pairs(200000f, "0341.HK", "0052.HK"), //
-				pairs(200000f, "0052.HK", "0341.HK"), //
+				pairs(0f, "0341.HK", "0052.HK"), //
+				pairs(0f, "0052.HK", "0341.HK"), //
 				pmamr(75000f), //
 				pmmmr(125000f), //
+				questaQuella(200000f, "0341.HK", "0052.HK"), //
 				revco(80000f));
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
@@ -240,6 +241,13 @@ public class DailyMain extends ExecutableProgram {
 	// portfolio-based moving median mean reversion
 	private Result pmmmr(float fund) {
 		return alloc("pmmmr", fund, aa_pmmmr);
+	}
+
+	private Result questaQuella(float fund, String symbol0, String symbol1) {
+		Asset asset0 = cfg.queryCompany(symbol0);
+		Asset asset1 = cfg.queryCompany(symbol1);
+		AssetAllocator assetAllocator = AssetAllocator_.questoQuella(symbol0, symbol1);
+		return alloc("pairs/" + symbol0 + "/" + symbol1, fund, Read.each(asset0, asset1), assetAllocator);
 	}
 
 	// portfolio-based moving average mean reversion
