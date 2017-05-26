@@ -95,6 +95,7 @@ public class AssetAllocBackTest {
 		public final double annualReturn;
 		public final double sharpe;
 		public final double skewness;
+		public final Exception exception;
 
 		private Simulate(float fund0) {
 			account = Account.fromCash(fund0);
@@ -134,43 +135,50 @@ public class AssetAllocBackTest {
 			int size = dates.size();
 
 			OnDate onDate = assetAllocator.allocate(dataSourceBySymbol1, dates);
-			float[] valuations_ = new float[size];
 			Map<String, Float> latestPriceBySymbol = null;
+			float[] valuations_ = new float[size];
+			Exception exception_;
 
-			for (int i = 0; i < size; i++) {
-				LocalDate date = dates.get(i);
-				int index = Collections.binarySearch(tradeDates, date);
+			try {
+				for (int i = 0; i < size; i++) {
+					LocalDate date = dates.get(i);
+					int index = Collections.binarySearch(tradeDates, date);
 
-				latestPriceBySymbol = dataSourceBySymbol1 //
-						.mapValue(dataSource -> dataSource.prices[index]) //
-						.toMap();
+					latestPriceBySymbol = dataSourceBySymbol1 //
+							.mapValue(dataSource -> dataSource.prices[index]) //
+							.toMap();
 
-				Valuation val = account.valuation(latestPriceBySymbol);
-				valuations_[i] = (float) (valuation = val.sum());
+					Valuation val = account.valuation(latestPriceBySymbol);
+					valuations_[i] = (float) (valuation = val.sum());
 
-				List<Pair<String, Double>> ratioBySymbol = onDate.onDate(date, index);
-				Map<String, Float> latestPriceBySymbol_ = latestPriceBySymbol;
-				double valuation_ = valuation;
+					List<Pair<String, Double>> ratioBySymbol = onDate.onDate(date, index);
+					Map<String, Float> latestPriceBySymbol_ = latestPriceBySymbol;
+					double valuation_ = valuation;
 
-				Map<String, Integer> portfolio = Read //
-						.from2(ratioBySymbol) //
-						.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
-						.map2((symbol, potential) -> {
-							float price = latestPriceBySymbol_.get(symbol);
-							int lotSize = assetBySymbol.get(symbol).lotSize;
-							return lotSize * (int) Math.floor(valuation_ * potential / (price * lotSize));
-						}) //
-						.toMap();
+					Map<String, Integer> portfolio = Read //
+							.from2(ratioBySymbol) //
+							.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
+							.map2((symbol, potential) -> {
+								float price = latestPriceBySymbol_.get(symbol);
+								int lotSize = assetBySymbol.get(symbol).lotSize;
+								return lotSize * (int) Math.floor(valuation_ * potential / (price * lotSize));
+							}) //
+							.toMap();
 
-				String actions = play(Trade_.diff(account.assets(), portfolio, latestPriceBySymbol));
+					String actions = play(Trade_.diff(account.assets(), portfolio, latestPriceBySymbol));
 
-				for (Pair<String, Float> e : val.stream())
-					holdBySymbol_.compute(e.t0, (s, h) -> e.t1 / (valuation_ * size) + (h != null ? h : 0d));
+					for (Pair<String, Float> e : val.stream())
+						holdBySymbol_.compute(e.t0, (s, h) -> e.t1 / (valuation_ * size) + (h != null ? h : 0d));
 
-				log.sink(To.string(date) //
-						+ ", valuation = " + valuation //
-						+ ", portfolio = " + account //
-						+ ", actions = " + actions);
+					log.sink(To.string(date) //
+							+ ", valuation = " + valuation //
+							+ ", portfolio = " + account //
+							+ ", actions = " + actions);
+				}
+
+				exception_ = null;
+			} catch (Exception ex) {
+				exception_ = ex;
 			}
 
 			trades.addAll(Trade_.sellAll(Read.from(trades), latestPriceBySymbol::get).toList());
@@ -186,8 +194,9 @@ public class AssetAllocBackTest {
 			valuations = valuations_;
 			holdBySymbol = holdBySymbol_;
 			annualReturn = Math.expm1(Math.log(vx / v0) * Trade_.nTradeDaysPerYear / size);
-			sharpe = ts.returnsStatDailyAnnualized(valuations).sharpeRatio();
-			skewness = stat.skewness(valuations);
+			sharpe = ts.returnsStatDailyAnnualized(valuations_).sharpeRatio();
+			skewness = stat.skewness(valuations_);
+			exception = exception_;
 		}
 
 		private String play(List<Trade> trades_) {
@@ -204,13 +213,18 @@ public class AssetAllocBackTest {
 			for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value))
 				sb.append(e.t0 + ":" + To.string(e.t1) + ",");
 
-			return "period = " + period //
-					+ ", valuation = " + (0 < length ? valuations[length - 1] : "N/A") //
-					+ ", annual return = " + To.string(annualReturn) //
-					+ ", sharpe = " + To.string(sharpe) //
-					+ ", skewness = " + To.string(skewness) //
-					+ ", " + account.transactionSummary(cfg::transactionFee) //
-					+ ", holds = " + sb;
+			if (exception == null)
+				return "period = " + period //
+						+ ", valuation = " + (0 < length ? valuations[length - 1] : "N/A") //
+						+ ", annual return = " + To.string(annualReturn) //
+						+ ", sharpe = " + To.string(sharpe) //
+						+ ", skewness = " + To.string(skewness) //
+						+ ", " + account.transactionSummary(cfg::transactionFee) //
+						+ ", holds = " + sb;
+			else {
+				LogUtil.error(exception);
+				return "exception = " + exception;
+			}
 		}
 	}
 
