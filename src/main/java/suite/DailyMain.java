@@ -93,7 +93,8 @@ public class DailyMain extends ExecutableProgram {
 				pairs(0f, "0052.HK", "0341.HK"), //
 				pmamr(75000f), //
 				pmmmr(125000f), //
-				questaQuella(200000f, "0341.HK", "0052.HK"), //
+				questaQuella(60000f, "0341.HK", "0052.HK"), //
+				questaQuella(200000f, "0670.HK", "1055.HK"), //
 				revco(80000f));
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
