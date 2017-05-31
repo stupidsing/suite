@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import suite.adt.pair.Pair;
 import suite.math.MathUtil;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
@@ -50,11 +51,12 @@ public class DailyMain extends ExecutableProgram {
 	private StringBuilder sb = new StringBuilder();
 	private Sink<String> log = To.sink(sb);
 	private LocalDate today = LocalDate.now();
+	private Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today);
 
-	public final AssetAllocator aa_bb = AssetAllocator_.bollingerBands1();
-	public final AssetAllocator aa_pmamr = MovingAvgMeanReversionAssetAllocator0.of(log);
-	public final AssetAllocator aa_pmmmr = AssetAllocator_.movingMedianMeanReversion();
-	public final AssetAllocator aa_revco = ReverseCorrelateAssetAllocator.of();
+	public final Pair<Streamlet<Asset>, AssetAllocator> pair_bb = Pair.of(assets, AssetAllocator_.bollingerBands1());
+	public final Pair<Streamlet<Asset>, AssetAllocator> pair_pmamr = Pair.of(assets, MovingAvgMeanReversionAssetAllocator0.of(log));
+	public final Pair<Streamlet<Asset>, AssetAllocator> pair_pmmmr = Pair.of(assets, AssetAllocator_.movingMedianMeanReversion());
+	public final Pair<Streamlet<Asset>, AssetAllocator> pair_revco = Pair.of(assets, ReverseCorrelateAssetAllocator.of());
 
 	private class Result {
 		private String strategy;
@@ -86,7 +88,7 @@ public class DailyMain extends ExecutableProgram {
 
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //
-				bb(450000f), //
+				alloc("bb", 450000f, pair_bb), //
 				bug(), //
 				mamr(75000f), //
 				pairs(0f, "0341.HK", "0052.HK"), //
@@ -95,7 +97,7 @@ public class DailyMain extends ExecutableProgram {
 				pmmmr(125000f), //
 				questaQuella(60000f, "0341.HK", "0052.HK"), //
 				questaQuella(200000f, "0670.HK", "1055.HK"), //
-				revco(80000f));
+				alloc("revco", 80000f, pair_revco));
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
 
@@ -127,10 +129,6 @@ public class DailyMain extends ExecutableProgram {
 		SmtpSslGmail smtp = new SmtpSslGmail();
 		smtp.send(null, getClass().getName(), result);
 		return true;
-	}
-
-	private Result bb(float fund) {
-		return alloc("bb", fund, aa_bb);
 	}
 
 	// some orders caused by stupid bugs. need to sell those at suitable times.
@@ -231,37 +229,34 @@ public class DailyMain extends ExecutableProgram {
 		Asset asset0 = cfg.queryCompany(symbol0);
 		Asset asset1 = cfg.queryCompany(symbol1);
 		AssetAllocator assetAllocator = AssetAllocator_.byPairs(cfg, asset0, asset1);
-		return alloc("pairs/" + symbol0 + "/" + symbol1, fund, Read.each(asset0, asset1), assetAllocator);
+		return alloc("pairs/" + symbol0 + "/" + symbol1, fund, assetAllocator, Read.each(asset0, asset1));
 	}
 
 	// portfolio-based moving average mean reversion
 	private Result pmamr(float fund) {
-		return alloc("pmamr", fund, aa_pmamr);
+		return alloc("pmamr", fund, pair_pmamr);
 	}
 
 	// portfolio-based moving median mean reversion
 	private Result pmmmr(float fund) {
-		return alloc("pmmmr", fund, aa_pmmmr);
+		return alloc("pmmmr", fund, pair_pmmmr);
 	}
 
 	private Result questaQuella(float fund, String symbol0, String symbol1) {
-		Asset asset0 = cfg.queryCompany(symbol0);
-		Asset asset1 = cfg.queryCompany(symbol1);
-		AssetAllocator assetAllocator = AssetAllocator_.questoQuella(symbol0, symbol1);
-		return alloc("pairs/" + symbol0 + "/" + symbol1, fund, Read.each(asset0, asset1), assetAllocator);
+		return alloc("qq/" + symbol0 + "/" + symbol1, fund, questaQuella(symbol0, symbol1));
 	}
 
-	// portfolio-based moving average mean reversion
-	private Result revco(float fund) {
-		return alloc("revco", fund, aa_revco);
+	public Pair<Streamlet<Asset>, AssetAllocator> questaQuella(String symbol0, String symbol1) {
+		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
+		AssetAllocator strategy = AssetAllocator_.questoQuella(symbol0, symbol1);
+		return Pair.of(assets, strategy);
 	}
 
-	private Result alloc(String tag, float fund, AssetAllocator assetAllocator) {
-		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today); // hkex.getCompanies()
-		return alloc(tag, fund, assets, assetAllocator);
+	private Result alloc(String tag, float fund, Pair<Streamlet<Asset>, AssetAllocator> pair) {
+		return alloc(tag, fund, pair.t1, pair.t0);
 	}
 
-	private Result alloc(String tag, float fund, Streamlet<Asset> assets, AssetAllocator assetAllocator) {
+	private Result alloc(String tag, float fund, AssetAllocator assetAllocator, Streamlet<Asset> assets) {
 		Simulate sim = AssetAllocBackTest.ofNow(cfg, assets, assetAllocator, log).simulate(fund);
 
 		Account account0 = Account.fromPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
