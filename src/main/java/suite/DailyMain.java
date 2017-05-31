@@ -91,11 +91,11 @@ public class DailyMain extends ExecutableProgram {
 				alloc("bb", 450000f, pair_bb), //
 				bug(), //
 				mamr(75000f), //
-				pairs(0f, "0341.HK", "0052.HK"), //
 				pairs(0f, "0052.HK", "0341.HK"), //
+				pairs(0f, "0341.HK", "0052.HK"), //
 				pmamr(75000f), //
 				pmmmr(125000f), //
-				questaQuella(60000f, "0341.HK", "0052.HK"), //
+				questaQuella(60000f, "0052.HK", "0341.HK"), //
 				questaQuella(200000f, "0670.HK", "1055.HK"), //
 				alloc("revco", 80000f, pair_revco));
 
@@ -226,10 +226,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private Result pairs(float fund, String symbol0, String symbol1) {
-		Asset asset0 = cfg.queryCompany(symbol0);
-		Asset asset1 = cfg.queryCompany(symbol1);
-		AssetAllocator assetAllocator = AssetAllocator_.byPairs(cfg, asset0, asset1);
-		return alloc("pairs/" + symbol0 + "/" + symbol1, fund, assetAllocator, Read.each(asset0, asset1));
+		return alloc("pairs/" + symbol0 + "/" + symbol1, fund, pairs(symbol0, symbol1));
 	}
 
 	// portfolio-based moving average mean reversion
@@ -246,10 +243,16 @@ public class DailyMain extends ExecutableProgram {
 		return alloc("qq/" + symbol0 + "/" + symbol1, fund, questaQuella(symbol0, symbol1));
 	}
 
+	public Pair<Streamlet<Asset>, AssetAllocator> pairs(String symbol0, String symbol1) {
+		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
+		AssetAllocator assetAllocator = AssetAllocator_.byPairs(cfg, symbol0, symbol1);
+		return Pair.of(assets, assetAllocator);
+	}
+
 	public Pair<Streamlet<Asset>, AssetAllocator> questaQuella(String symbol0, String symbol1) {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
-		AssetAllocator strategy = AssetAllocator_.questoQuella(symbol0, symbol1);
-		return Pair.of(assets, strategy);
+		AssetAllocator assetAllocator = AssetAllocator_.questoQuella(symbol0, symbol1);
+		return Pair.of(assets, assetAllocator);
 	}
 
 	private Result alloc(String tag, float fund, Pair<Streamlet<Asset>, AssetAllocator> pair) {

@@ -66,12 +66,12 @@ public class AssetAllocator_ {
 				.toList();
 	}
 
-	public static AssetAllocator byPairs(Configuration cfg, Asset asset0, Asset asset1) {
+	public static AssetAllocator byPairs(Configuration cfg, String symbol0, String symbol1) {
 		return AssetAllocator_.filterAssets( //
-				symbol -> String_.equals(symbol, asset1.symbol), //
+				symbol -> String_.equals(symbol, symbol1), //
 				AssetAllocator_.relativeToIndex( //
 						cfg, //
-						asset0.symbol, //
+						symbol0, //
 						rsi_(32, .3d, .7d)));
 	}
 
