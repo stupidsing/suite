@@ -12,7 +12,7 @@ import suite.util.To;
 
 public class Account {
 
-	private static String cashCode = Asset.cashCode;
+	private static String cashCode = Asset.cashSymbol;
 
 	public static Account fromCash(float cash) {
 		Map<String, Integer> assets = new HashMap<>();

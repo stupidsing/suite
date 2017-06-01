@@ -104,7 +104,7 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	private Source_ source_(String symbol) {
-		if (String_.equals(symbol, Asset.cashCode))
+		if (String_.equals(symbol, Asset.cashSymbol))
 			return Source_.HKD__;
 		else
 			return Source_.YAHOO;

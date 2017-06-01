@@ -12,7 +12,7 @@ import suite.util.To;
 public class Hkd {
 
 	public DataSource dataSource(String symbol, DatePeriod period) {
-		if (String_.equals(symbol, Asset.cashCode))
+		if (String_.equals(symbol, Asset.cashSymbol))
 			return new DataSource(new String[] { To.string(period.to), }, new float[] { 1f, });
 		else
 			throw new RuntimeException();
@@ -21,7 +21,7 @@ public class Hkd {
 	public Map<String, Float> quote(Set<String> symbols) {
 		return Read.from(symbols) //
 				.map2(symbol -> {
-					if (String_.equals(symbol, Asset.cashCode))
+					if (String_.equals(symbol, Asset.cashSymbol))
 						return 1f;
 					else
 						throw new RuntimeException();

@@ -157,7 +157,7 @@ public class AssetAllocBackTest {
 
 					Map<String, Integer> portfolio = Read //
 							.from2(ratioBySymbol) //
-							.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
+							.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
 							.map2((symbol, potential) -> {
 								float price = latestPriceBySymbol_.get(symbol);
 								int lotSize = assetBySymbol.get(symbol).lotSize;

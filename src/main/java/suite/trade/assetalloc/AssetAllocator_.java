@@ -172,7 +172,7 @@ public class AssetAllocator_ {
 				double each = 1d / Read.from2(potentialBySymbol).size();
 
 				return Read.from2(potentialBySymbol) //
-						.filterKey(symbol -> !String_.equals(symbol, Asset.cashCode)) //
+						.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
 						.mapValue(potential -> 1d / each) //
 						.toList();
 			};

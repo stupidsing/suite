@@ -13,6 +13,8 @@ import suite.streamlet.Streamlet2;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.assetalloc.AssetAllocator;
 import suite.trade.assetalloc.AssetAllocator_;
+import suite.trade.data.Configuration;
+import suite.trade.data.ConfigurationImpl;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
@@ -20,6 +22,7 @@ import suite.util.Util.ExecutableProgram;
 public class BackTestMain extends ExecutableProgram {
 
 	private BackTestRunner runner = new BackTestRunner();
+	private Configuration cfg = new ConfigurationImpl();
 	private DailyMain dm = new DailyMain();
 
 	public static void main(String[] args) {
@@ -30,22 +33,28 @@ public class BackTestMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 
 		// BEGIN
-		Pair<Streamlet<Asset>, AssetAllocator> pair;
-		pair = dm.questaQuella("0341.HK", "0052.HK");
-		pair = dm.pair_bb;
+		Pair<Streamlet<Asset>, AssetAllocator> pair0;
+		Pair<Streamlet<Asset>, AssetAllocator> pair1;
 
-		Pair<Streamlet<Asset>, AssetAllocator> pair_ = pair;
+		pair0 = Pair.of(Read.each(Asset.hsi), AssetAllocator_.ofSingle(Asset.hsiSymbol));
+		pair1 = dm.pair_bb;
+
+		pair0 = pairOfSingle("1055.HK");
+		pair1 = dm.questaQuella("0670.HK", "1055.HK");
+
+		pair0 = pairOfSingle("0052.HK");
+		pair1 = dm.questaQuella("0052.HK", "0341.HK");
+
+		Pair<Streamlet<Asset>, AssetAllocator> pair0_ = pair0;
+		Pair<Streamlet<Asset>, AssetAllocator> pair1_ = pair1;
 
 		Streamlet2<Boolean, Simulate> simulationsByKey = Read //
 				.each(Boolean.FALSE, Boolean.TRUE) //
 				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
 				.map2((key, period) -> {
-					AssetAllocator assetAllocator = key //
-							? pair_.t1 //
-							: AssetAllocator_.ofSingle("^HSI");
-
+					Pair<Streamlet<Asset>, AssetAllocator> pair = key ? pair1_ : pair0_;
 					Constants.testFlag = key;
-					return runner.backTest(assetAllocator, period, pair_.t0);
+					return runner.backTest(pair.t1, period, pair.t0);
 				}) //
 				.collect(As::streamlet2);
 		// END
@@ -64,6 +73,10 @@ public class BackTestMain extends ExecutableProgram {
 
 		System.out.println(runner.conclude(simulationsByKey));
 		return true;
+	}
+
+	private Pair<Streamlet<Asset>, AssetAllocator> pairOfSingle(String symbol) {
+		return Pair.of(Read.each(cfg.queryCompany(symbol)), AssetAllocator_.ofSingle(symbol));
 	}
 
 }

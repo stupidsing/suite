@@ -21,9 +21,6 @@ public class BackTestRunner {
 	private Configuration cfg = new ConfigurationImpl();
 	private Statistic stat = new Statistic();
 
-	private String hsiSymbol = "^HSI";
-	private Asset hsi = Asset.of(hsiSymbol, "Hang Seng Index", 1);
-
 	public <T> String conclude(Streamlet2<T, Simulate> simulationsByKey) {
 		Streamlet<String> results0 = simulationsByKey //
 				.map((key, simulate) -> "\nTEST = " + key + ", " + simulate.conclusion());
@@ -50,7 +47,7 @@ public class BackTestRunner {
 	public Simulate backTest(AssetAllocator assetAllocator, DatePeriod period, Streamlet<Asset> assets) {
 		AssetAllocBackTest backTest = AssetAllocBackTest.ofFromTo( //
 				cfg, //
-				assets.cons(hsi), //
+				assets.cons(Asset.hsi), //
 				assetAllocator, //
 				period, //
 				log);

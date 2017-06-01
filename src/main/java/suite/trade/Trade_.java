@@ -35,14 +35,14 @@ public class Trade_ {
 					int n1 = assets1.computeIfAbsent(symbol, s -> 0);
 					return n1 - n0;
 				}) //
-				.filter((symbol, buySell) -> !String_.equals(symbol, Asset.cashCode)) //
+				.filter((symbol, buySell) -> !String_.equals(symbol, Asset.cashSymbol)) //
 				.map((symbol, buySell) -> Trade.of(buySell, symbol, prices.get(symbol))) //
 				.toList();
 	}
 
 	public static String format(Map<String, Integer> portfolio) {
 		return Read.from2(portfolio) //
-				.sortBy((code, i) -> !String_.equals(code, Asset.cashCode) ? code : "") //
+				.sortBy((code, i) -> !String_.equals(code, Asset.cashSymbol) ? code : "") //
 				.map((code, i) -> (0 <= i ? "+" : "-") + code + "*" + Math.abs(i)) //
 				.collect(As.joined());
 	}

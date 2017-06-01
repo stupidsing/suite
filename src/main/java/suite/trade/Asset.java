@@ -7,8 +7,11 @@ import suite.util.String_;
 
 public class Asset {
 
-	public static String cashCode = "HKD";
-	public static Asset cash = new Asset(cashCode, "Hong Kong Dollar", 1, Integer.MAX_VALUE);
+	public static String cashSymbol = "HKD";
+	public static String hsiSymbol = "^HSI";
+
+	public static Asset cash = new Asset(cashSymbol, "Hong Kong Dollar", 1, Integer.MAX_VALUE);
+	public static Asset hsi = Asset.of(hsiSymbol, "Hang Seng Index", 1);
 
 	public static Serializer<Asset> serializer = Serialize.auto(Asset.class);
 
