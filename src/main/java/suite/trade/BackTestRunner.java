@@ -31,7 +31,7 @@ public class BackTestRunner {
 					double apr = mv.mean;
 					double sd = mv.standardDeviation();
 					return "\nTEST = " + key //
-							+ ">> apr = " + To.string(apr) //
+							+ " >> apr = " + To.string(apr) //
 							+ ", std dev = " + To.string(sd) //
 							+ ", sharpe = " + To.string(apr / sd);
 				});
