@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Constants;
-import suite.DailyMain;
 import suite.adt.pair.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -59,7 +58,7 @@ public class AssetAllocBackTestTest {
 				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
 				.map2((key, period) -> {
 					AssetAllocator assetAllocator = key //
-							? new DailyMain().aa_bb //
+							? AssetAllocator_.bollingerBands1() //
 							: AssetAllocator_.ofSingle("^HSI");
 
 					Constants.testFlag = key;
@@ -87,7 +86,7 @@ public class AssetAllocBackTestTest {
 				.map2((pair, period) -> {
 					Asset asset0 = pair.t0;
 					Asset asset1 = pair.t1;
-					AssetAllocator assetAllocator = AssetAllocator_.byPairs(cfg, asset0, asset1);
+					AssetAllocator assetAllocator = AssetAllocator_.byPairs(cfg, asset0.symbol, asset1.symbol);
 					return runner.backTest(assetAllocator, period, Read.each(asset0, asset1));
 				}) //
 				.collect(As::streamlet2);
