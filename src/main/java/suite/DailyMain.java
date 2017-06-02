@@ -114,14 +114,17 @@ public class DailyMain extends ExecutableProgram {
 
 		Streamlet<Trade> trades = strategyTrades.values();
 
+		sb.append("\n");
 		sb.append("\nTOTAL BUYS = " + trades.collectAsFloat(As.sumOfFloats(trade -> Math.max(0, trade.buySell) * trade.price)));
 		sb.append("\nTOTAL SELLS = " + trades.collectAsFloat(As.sumOfFloats(trade -> Math.max(0, -trade.buySell) * trade.price)));
 
+		sb.append("\n");
 		sb.append("\nSUGGESTIONS");
 		sb.append("\n- check your balance");
 		sb.append("\n- get away with the small orders");
 		sb.append("\n- sell bugs, mamr and manual");
 		sb.append("\n- for mamr, check actual execution using SingleAllocBackTestTest.testBackTestHkexDetails()");
+
 		sb.append("\n");
 
 		String result = sb.toString();
