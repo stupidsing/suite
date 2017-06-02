@@ -14,6 +14,7 @@ import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
+import suite.util.Object_;
 import suite.util.To;
 
 public class Summarize {
@@ -76,6 +77,7 @@ public class Summarize {
 					float price = priceBySymbol.get(symbol);
 					return asset + ": " + price + " * " + nShares + " = " + To.string(nShares * price);
 				}) //
+				.sort(Object_::compare) //
 				.append("OWN = " + -amount0) //
 				.append("P/L = " + amount1) //
 				.append(account0.transactionSummary(cfg::transactionFee)) //
