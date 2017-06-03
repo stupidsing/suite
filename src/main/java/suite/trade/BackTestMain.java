@@ -4,14 +4,12 @@ import java.nio.file.Paths;
 
 import suite.Constants;
 import suite.DailyMain;
-import suite.adt.pair.Pair;
 import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
-import suite.trade.assetalloc.AssetAllocator;
+import suite.trade.assetalloc.AssetAllocConfiguration;
 import suite.trade.assetalloc.AssetAllocator_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
@@ -25,8 +23,8 @@ public class BackTestMain extends ExecutableProgram {
 	private Configuration cfg = new ConfigurationImpl();
 	private DailyMain dm = new DailyMain();
 
-	private Pair<Streamlet<Asset>, AssetAllocator> pair0;
-	private Pair<Streamlet<Asset>, AssetAllocator> pair1;
+	private AssetAllocConfiguration aac0;
+	private AssetAllocConfiguration aac1;
 
 	public static void main(String[] args) {
 		Util.run(BackTestMain.class, args);
@@ -36,8 +34,8 @@ public class BackTestMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 
 		// BEGIN
-		pair0 = Pair.of(Read.each(Asset.hsi), AssetAllocator_.ofSingle(Asset.hsiSymbol));
-		pair1 = dm.pair_bb;
+		aac0 = new AssetAllocConfiguration(Read.each(Asset.hsi), AssetAllocator_.ofSingle(Asset.hsiSymbol));
+		aac1 = dm.aac_bb;
 
 		questoaQuella("0670.HK", "1055.HK");
 		questoaQuella("0052.HK", "0341.HK");
@@ -47,9 +45,9 @@ public class BackTestMain extends ExecutableProgram {
 				.each(Boolean.FALSE, Boolean.TRUE) //
 				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
 				.map2((key, period) -> {
-					Pair<Streamlet<Asset>, AssetAllocator> pair = key ? pair1 : pair0;
+					AssetAllocConfiguration aac = key ? aac1 : aac0;
 					Constants.testFlag = key;
-					return runner.backTest(pair.t1, period, pair.t0);
+					return runner.backTest(aac.assetAllocator, period, aac.assets);
 				}) //
 				.collect(As::streamlet2);
 		// END
@@ -71,12 +69,12 @@ public class BackTestMain extends ExecutableProgram {
 	}
 
 	private void questoaQuella(String symbol0, String symbol1) {
-		pair0 = pairOfSingle(symbol0);
-		pair1 = dm.questoaQuella(symbol0, symbol1);
+		aac0 = pairOfSingle(symbol0);
+		aac1 = dm.questoaQuella(symbol0, symbol1);
 	}
 
-	private Pair<Streamlet<Asset>, AssetAllocator> pairOfSingle(String symbol) {
-		return Pair.of(Read.each(cfg.queryCompany(symbol)), AssetAllocator_.ofSingle(symbol));
+	private AssetAllocConfiguration pairOfSingle(String symbol) {
+		return new AssetAllocConfiguration(Read.each(cfg.queryCompany(symbol)), AssetAllocator_.ofSingle(symbol));
 	}
 
 }

@@ -299,6 +299,37 @@ public class AssetAllocator_ {
 		return unleverage_(assetAllocator0);
 	}
 
+	public static AssetAllocator threeMovingAvgs() {
+		return AssetAllocator_.unleverage((dataSourceBySymbol, dates) -> {
+			Map<String, float[]> movingAvg0BySymbol = dataSourceBySymbol //
+					.mapValue(dataSource -> ma.exponentialMovingGeometricAvg(dataSource.prices, .11d)) //
+					.toMap();
+
+			Map<String, float[]> movingAvg1BySymbol = dataSourceBySymbol //
+					.mapValue(dataSource -> ma.exponentialMovingGeometricAvg(dataSource.prices, .08d)) //
+					.toMap();
+
+			Map<String, float[]> movingAvg2BySymbol = dataSourceBySymbol //
+					.mapValue(dataSource -> ma.exponentialMovingGeometricAvg(dataSource.prices, .05d)) //
+					.toMap();
+
+			return (backTestDate, index) -> dataSourceBySymbol //
+					.map2((symbol, dataSource) -> {
+						int last = index - 1;
+						float movingAvg0 = movingAvg0BySymbol.get(symbol)[last];
+						float movingAvg1 = movingAvg1BySymbol.get(symbol)[last];
+						float movingAvg2 = movingAvg2BySymbol.get(symbol)[last];
+						if (movingAvg0 < movingAvg1 && movingAvg1 < movingAvg2)
+							return -1d;
+						else if (movingAvg2 < movingAvg1 && movingAvg1 < movingAvg0)
+							return 1d;
+						else
+							return 0d;
+					}) //
+					.toList();
+		});
+	}
+
 	private static double totalPotential(List<Pair<String, Double>> potentialBySymbol) {
 		return Read.from2(potentialBySymbol).collectAsDouble(As.sumOfDoubles((symbol, potential) -> potential));
 	}

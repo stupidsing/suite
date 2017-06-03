@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import suite.adt.pair.Pair;
 import suite.math.MathUtil;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
@@ -25,6 +24,7 @@ import suite.trade.Trade_;
 import suite.trade.analysis.Summarize;
 import suite.trade.assetalloc.AssetAllocBackTest;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
+import suite.trade.assetalloc.AssetAllocConfiguration;
 import suite.trade.assetalloc.AssetAllocator;
 import suite.trade.assetalloc.AssetAllocator_;
 import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator0;
@@ -53,10 +53,10 @@ public class DailyMain extends ExecutableProgram {
 	private LocalDate today = LocalDate.now();
 	private Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today);
 
-	public final Pair<Streamlet<Asset>, AssetAllocator> pair_bb = Pair.of(assets, AssetAllocator_.bollingerBands1());
-	public final Pair<Streamlet<Asset>, AssetAllocator> pair_pmamr = Pair.of(assets, MovingAvgMeanReversionAssetAllocator0.of(log));
-	public final Pair<Streamlet<Asset>, AssetAllocator> pair_pmmmr = Pair.of(assets, AssetAllocator_.movingMedianMeanReversion());
-	public final Pair<Streamlet<Asset>, AssetAllocator> pair_revco = Pair.of(assets, ReverseCorrelateAssetAllocator.of());
+	public final AssetAllocConfiguration aac_bb = assetAllocConfigurationOf(AssetAllocator_.bollingerBands1());
+	public final AssetAllocConfiguration aac_pmamr = assetAllocConfigurationOf(MovingAvgMeanReversionAssetAllocator0.of(log));
+	public final AssetAllocConfiguration aac_pmmmr = assetAllocConfigurationOf(AssetAllocator_.movingMedianMeanReversion());
+	public final AssetAllocConfiguration aac_revco = assetAllocConfigurationOf(ReverseCorrelateAssetAllocator.of());
 
 	private class Result {
 		private String strategy;
@@ -88,7 +88,7 @@ public class DailyMain extends ExecutableProgram {
 
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //
-				alloc("bb", 450000f, pair_bb), //
+				alloc("bb", 450000f, aac_bb), //
 				bug(), //
 				mamr(75000f), //
 				pairs(0f, "0052.HK", "0341.HK"), //
@@ -97,7 +97,7 @@ public class DailyMain extends ExecutableProgram {
 				pmmmr(125000f), //
 				questoaQuella(60000f, "0052.HK", "0341.HK"), //
 				questoaQuella(200000f, "0670.HK", "1055.HK"), //
-				alloc("revco", 80000f, pair_revco));
+				alloc("revco", 80000f, aac_revco));
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
 
@@ -229,38 +229,42 @@ public class DailyMain extends ExecutableProgram {
 		return new Result(tag, trades);
 	}
 
+	public AssetAllocConfiguration assetAllocConfigurationOf(AssetAllocator assetAllocator) {
+		return new AssetAllocConfiguration(assets, assetAllocator);
+	}
+
 	private Result pairs(float fund, String symbol0, String symbol1) {
 		return alloc("pairs/" + symbol0 + "/" + symbol1, fund, pairs(symbol0, symbol1));
 	}
 
 	// portfolio-based moving average mean reversion
 	private Result pmamr(float fund) {
-		return alloc("pmamr", fund, pair_pmamr);
+		return alloc("pmamr", fund, aac_pmamr);
 	}
 
 	// portfolio-based moving median mean reversion
 	private Result pmmmr(float fund) {
-		return alloc("pmmmr", fund, pair_pmmmr);
+		return alloc("pmmmr", fund, aac_pmmmr);
 	}
 
 	private Result questoaQuella(float fund, String symbol0, String symbol1) {
 		return alloc("qq/" + symbol0 + "/" + symbol1, fund, questoaQuella(symbol0, symbol1));
 	}
 
-	public Pair<Streamlet<Asset>, AssetAllocator> pairs(String symbol0, String symbol1) {
+	public AssetAllocConfiguration pairs(String symbol0, String symbol1) {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
 		AssetAllocator assetAllocator = AssetAllocator_.byPairs(cfg, symbol0, symbol1);
-		return Pair.of(assets, assetAllocator);
+		return new AssetAllocConfiguration(assets, assetAllocator);
 	}
 
-	public Pair<Streamlet<Asset>, AssetAllocator> questoaQuella(String symbol0, String symbol1) {
+	public AssetAllocConfiguration questoaQuella(String symbol0, String symbol1) {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
 		AssetAllocator assetAllocator = AssetAllocator_.questoQuella(symbol0, symbol1);
-		return Pair.of(assets, assetAllocator);
+		return new AssetAllocConfiguration(assets, assetAllocator);
 	}
 
-	private Result alloc(String tag, float fund, Pair<Streamlet<Asset>, AssetAllocator> pair) {
-		return alloc(tag, fund, pair.t1, pair.t0);
+	private Result alloc(String tag, float fund, AssetAllocConfiguration pair) {
+		return alloc(tag, fund, pair.assetAllocator, pair.assets);
 	}
 
 	private Result alloc(String tag, float fund, AssetAllocator assetAllocator, Streamlet<Asset> assets) {
