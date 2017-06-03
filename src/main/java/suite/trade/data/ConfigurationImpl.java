@@ -79,6 +79,14 @@ public class ConfigurationImpl implements Configuration {
 		return broker.transactionFee(transactionAmount);
 	}
 
+	private Map<String, Float> quote_(Set<String> symbols) {
+		Map<Source_, Set<String>> map = new HashMap<>();
+		for (String symbol : symbols)
+			map.computeIfAbsent(source_(symbol), s -> new HashSet<>()).add(symbol);
+		return To.map_(hkd.quote(map.getOrDefault(Source_.HKD__, Collections.emptySet())),
+				yahoo.quote(map.getOrDefault(Source_.YAHOO, Collections.emptySet())));
+	}
+
 	private DataSource dataSource_(String symbol, DatePeriod period) {
 		switch (source_(symbol)) {
 		case HKD__:
@@ -93,14 +101,6 @@ public class ConfigurationImpl implements Configuration {
 		default:
 			throw new RuntimeException();
 		}
-	}
-
-	private Map<String, Float> quote_(Set<String> symbols) {
-		Map<Source_, Set<String>> map = new HashMap<>();
-		for (String symbol : symbols)
-			map.computeIfAbsent(source_(symbol), s -> new HashSet<>()).add(symbol);
-		return To.map_(hkd.quote(map.getOrDefault(Source_.HKD__, Collections.emptySet())),
-				yahoo.quote(map.getOrDefault(Source_.YAHOO, Collections.emptySet())));
 	}
 
 	private Source_ source_(String symbol) {
