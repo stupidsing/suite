@@ -63,8 +63,8 @@ public class BackTestMain extends ExecutableProgram {
 		String content1 = content0.substring(p1, p2);
 
 		System.out.println(content1);
-
 		System.out.println(runner.conclude(simulationsByKey));
+
 		return true;
 	}
 
