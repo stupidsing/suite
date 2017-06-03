@@ -10,6 +10,8 @@ import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
+import suite.math.stat.Statistic;
+import suite.math.stat.Statistic.MeanVariance;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.Donchian;
 import suite.streamlet.As;
@@ -29,6 +31,7 @@ public class AssetAllocator_ {
 
 	private static BollingerBands bb = new BollingerBands();
 	private static MovingAverage ma = new MovingAverage();
+	private static Statistic stat = new Statistic();
 	private static TimeSeries ts = new TimeSeries();
 
 	public static AssetAllocator bollingerBands() {
@@ -297,6 +300,31 @@ public class AssetAllocator_ {
 
 	public static AssetAllocator unleverage(AssetAllocator assetAllocator0) {
 		return unleverage_(assetAllocator0);
+	}
+
+	public static AssetAllocator variableBollingerBands() {
+		return AssetAllocator_.unleverage((dataSourceBySymbol, dates) -> {
+			return (backTestDate, index) -> dataSourceBySymbol //
+					.map2((symbol, dataSource) -> {
+						int last = index - 1;
+						double hold = 0d;
+
+						for (int window = 1; hold == 0d && window < 256; window++) {
+							float price = dataSource.prices[last];
+							MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(dataSource.prices, last - window, last));
+							double mean = mv.mean;
+							double diff = 3d * mv.standardDeviation();
+
+							if (price < mean - diff)
+								hold = 1d;
+							else if (mean + diff < price)
+								hold = -1d;
+						}
+
+						return hold;
+					}) //
+					.toList();
+		});
 	}
 
 	public static AssetAllocator threeMovingAvgs() {

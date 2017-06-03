@@ -43,6 +43,9 @@ public class BackTestMain extends ExecutableProgram {
 
 		aac0 = new AssetAllocConfiguration(Read.each(Asset.hsi), AssetAllocator_.ofSingle(Asset.hsiSymbol));
 		aac1 = dm.assetAllocConfigurationOf(AssetAllocator_.threeMovingAvgs());
+
+		aac0 = new AssetAllocConfiguration(Read.each(Asset.hsi), AssetAllocator_.ofSingle(Asset.hsiSymbol));
+		aac1 = dm.assetAllocConfigurationOf(AssetAllocator_.variableBollingerBands());
 		// END
 
 		Streamlet2<Boolean, Simulate> simulationsByKey = Read //
