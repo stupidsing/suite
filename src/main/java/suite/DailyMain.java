@@ -95,8 +95,8 @@ public class DailyMain extends ExecutableProgram {
 				pairs(0f, "0341.HK", "0052.HK"), //
 				pmamr(75000f), //
 				pmmmr(125000f), //
-				questaQuella(60000f, "0052.HK", "0341.HK"), //
-				questaQuella(200000f, "0670.HK", "1055.HK"), //
+				questoaQuella(60000f, "0052.HK", "0341.HK"), //
+				questoaQuella(200000f, "0670.HK", "1055.HK"), //
 				alloc("revco", 80000f, pair_revco));
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
@@ -243,8 +243,8 @@ public class DailyMain extends ExecutableProgram {
 		return alloc("pmmmr", fund, pair_pmmmr);
 	}
 
-	private Result questaQuella(float fund, String symbol0, String symbol1) {
-		return alloc("qq/" + symbol0 + "/" + symbol1, fund, questaQuella(symbol0, symbol1));
+	private Result questoaQuella(float fund, String symbol0, String symbol1) {
+		return alloc("qq/" + symbol0 + "/" + symbol1, fund, questoaQuella(symbol0, symbol1));
 	}
 
 	public Pair<Streamlet<Asset>, AssetAllocator> pairs(String symbol0, String symbol1) {
@@ -253,7 +253,7 @@ public class DailyMain extends ExecutableProgram {
 		return Pair.of(assets, assetAllocator);
 	}
 
-	public Pair<Streamlet<Asset>, AssetAllocator> questaQuella(String symbol0, String symbol1) {
+	public Pair<Streamlet<Asset>, AssetAllocator> questoaQuella(String symbol0, String symbol1) {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
 		AssetAllocator assetAllocator = AssetAllocator_.questoQuella(symbol0, symbol1);
 		return Pair.of(assets, assetAllocator);

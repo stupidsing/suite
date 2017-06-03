@@ -25,6 +25,9 @@ public class BackTestMain extends ExecutableProgram {
 	private Configuration cfg = new ConfigurationImpl();
 	private DailyMain dm = new DailyMain();
 
+	private Pair<Streamlet<Asset>, AssetAllocator> pair0;
+	private Pair<Streamlet<Asset>, AssetAllocator> pair1;
+
 	public static void main(String[] args) {
 		Util.run(BackTestMain.class, args);
 	}
@@ -33,17 +36,12 @@ public class BackTestMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 
 		// BEGIN
-		Pair<Streamlet<Asset>, AssetAllocator> pair0;
-		Pair<Streamlet<Asset>, AssetAllocator> pair1;
-
 		pair0 = Pair.of(Read.each(Asset.hsi), AssetAllocator_.ofSingle(Asset.hsiSymbol));
 		pair1 = dm.pair_bb;
 
-		pair0 = pairOfSingle("1055.HK");
-		pair1 = dm.questaQuella("0670.HK", "1055.HK");
-
-		pair0 = pairOfSingle("0052.HK");
-		pair1 = dm.questaQuella("0052.HK", "0341.HK");
+		questoaQuella("0670.HK", "1055.HK");
+		questoaQuella("0052.HK", "0341.HK");
+		questoaQuella("0004.HK", "0020.HK");
 
 		Pair<Streamlet<Asset>, AssetAllocator> pair0_ = pair0;
 		Pair<Streamlet<Asset>, AssetAllocator> pair1_ = pair1;
@@ -73,6 +71,11 @@ public class BackTestMain extends ExecutableProgram {
 
 		System.out.println(runner.conclude(simulationsByKey));
 		return true;
+	}
+
+	private void questoaQuella(String symbol0, String symbol1) {
+		pair0 = pairOfSingle(symbol0);
+		pair1 = dm.questoaQuella(symbol0, symbol1);
 	}
 
 	private Pair<Streamlet<Asset>, AssetAllocator> pairOfSingle(String symbol) {
