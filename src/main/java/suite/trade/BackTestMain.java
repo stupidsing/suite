@@ -43,14 +43,11 @@ public class BackTestMain extends ExecutableProgram {
 		questoaQuella("0052.HK", "0341.HK");
 		questoaQuella("0004.HK", "0020.HK");
 
-		Pair<Streamlet<Asset>, AssetAllocator> pair0_ = pair0;
-		Pair<Streamlet<Asset>, AssetAllocator> pair1_ = pair1;
-
 		Streamlet2<Boolean, Simulate> simulationsByKey = Read //
 				.each(Boolean.FALSE, Boolean.TRUE) //
 				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
 				.map2((key, period) -> {
-					Pair<Streamlet<Asset>, AssetAllocator> pair = key ? pair1_ : pair0_;
+					Pair<Streamlet<Asset>, AssetAllocator> pair = key ? pair1 : pair0;
 					Constants.testFlag = key;
 					return runner.backTest(pair.t1, period, pair.t0);
 				}) //
