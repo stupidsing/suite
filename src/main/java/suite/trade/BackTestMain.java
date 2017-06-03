@@ -41,6 +41,10 @@ public class BackTestMain extends ExecutableProgram {
 		questoaQuella("0052.HK", "0341.HK");
 		questoaQuella("0004.HK", "0020.HK");
 
+		aac0 = new AssetAllocConfiguration(Read.each(Asset.hsi), AssetAllocator_.ofSingle(Asset.hsiSymbol));
+		aac1 = dm.assetAllocConfigurationOf(AssetAllocator_.threeMovingAvgs());
+		// END
+
 		Streamlet2<Boolean, Simulate> simulationsByKey = Read //
 				.each(Boolean.FALSE, Boolean.TRUE) //
 				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
@@ -50,7 +54,6 @@ public class BackTestMain extends ExecutableProgram {
 					return runner.backTest(aac.assetAllocator, period, aac.assets);
 				}) //
 				.collect(As::streamlet2);
-		// END
 
 		String content0 = Read.bytes(Paths.get("src/main/java/suite/trade/BackTestMain.java")) //
 				.collect(As::utf8decode) //

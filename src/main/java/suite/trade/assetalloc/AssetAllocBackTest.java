@@ -75,7 +75,7 @@ public class AssetAllocBackTest {
 			Fun<List<LocalDate>, List<LocalDate>> datesPred, //
 			Sink<String> log) {
 		this.cfg = cfg;
-		this.assets = assets;
+		this.assets = assets.distinct();
 		this.historyFromDate = from.minusYears(1);
 		this.assetAllocator = assetAllocator;
 		this.datesPred = datesPred;
