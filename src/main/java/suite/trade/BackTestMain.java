@@ -32,20 +32,26 @@ public class BackTestMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
+		AssetAllocConfiguration aac_hsi = new AssetAllocConfiguration( //
+				Read.each(Asset.hsi), //
+				AssetAllocator_.ofSingle(Asset.hsiSymbol));
 
-		// BEGIN
-		aac0 = new AssetAllocConfiguration(Read.each(Asset.hsi), AssetAllocator_.ofSingle(Asset.hsiSymbol));
+		aac0 = aac_hsi;
 		aac1 = dm.aac_bb;
 
 		questoaQuella("0670.HK", "1055.HK");
 		questoaQuella("0052.HK", "0341.HK");
-		questoaQuella("0004.HK", "0020.HK");
+		questoaQuella("0020.HK", "0004.HK");
 
-		aac0 = new AssetAllocConfiguration(Read.each(Asset.hsi), AssetAllocator_.ofSingle(Asset.hsiSymbol));
+		aac0 = aac_hsi;
 		aac1 = dm.assetAllocConfigurationOf(AssetAllocator_.threeMovingAvgs());
 
-		aac0 = new AssetAllocConfiguration(Read.each(Asset.hsi), AssetAllocator_.ofSingle(Asset.hsiSymbol));
+		aac0 = aac_hsi;
 		aac1 = dm.assetAllocConfigurationOf(AssetAllocator_.variableBollingerBands());
+
+		// BEGIN
+		aac0 = aac_hsi;
+		aac1 = dm.aac_pmmmr;
 		// END
 
 		Streamlet2<Boolean, Simulate> simulationsByKey = Read //

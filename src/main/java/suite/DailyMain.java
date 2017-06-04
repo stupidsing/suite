@@ -83,19 +83,19 @@ public class DailyMain extends ExecutableProgram {
 				.collect(As::streamlet2);
 
 		QuoteDatabase quoteDatabase = new QuoteDatabase();
-		quoteDatabase.merge("o", dataSourceBySymbol);
+//		quoteDatabase.merge("o", dataSourceBySymbol);
 		quoteDatabase.join();
 
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //
-				alloc("bb", 450000f, aac_bb), //
+				alloc("bb", 400000f, aac_bb), //
 				bug(), //
 				mamr(75000f), //
 				pairs(0f, "0052.HK", "0341.HK"), //
 				pairs(0f, "0341.HK", "0052.HK"), //
-				pmamr(75000f), //
-				pmmmr(125000f), //
-				questoaQuella(60000f, "0052.HK", "0341.HK"), //
+				pmamr(125000f), //
+				pmmmr(75000f), //
+				questoaQuella(160000f, "0020.HK", "0004.HK"), //
 				questoaQuella(200000f, "0670.HK", "1055.HK"), //
 				alloc("revco", 80000f, aac_revco));
 
