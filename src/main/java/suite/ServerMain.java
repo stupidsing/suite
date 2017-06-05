@@ -20,7 +20,7 @@ import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
-// mvn compile exec:java -Dexec.mainClass=suite.ScheduleMain
+// mvn compile exec:java -Dexec.mainClass=suite.ServerMain
 public class ServerMain extends ExecutableProgram {
 
 	public static void main(String[] args) {
