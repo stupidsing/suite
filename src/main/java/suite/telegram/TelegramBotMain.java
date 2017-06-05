@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.BiFunction;
 
+import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
@@ -14,10 +15,25 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 import suite.util.Rethrow;
 import suite.util.TempDir;
 import suite.util.Thread_;
+import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
 
-public class TelegramBot {
+//mvn compile exec:java -Dexec.mainClass=suite.ScheduleMain
+public class TelegramBotMain extends ExecutableProgram {
+
+	public static void main(String[] args) {
+		Util.run(TelegramBotMain.class, args);
+	}
+
+	@Override
+	protected boolean run(String[] args) {
+		new TelegramBot().bot((userId, message) -> message);
+		return true;
+	}
 
 	public void bot(BiFunction<Integer, String, String> fun) {
+		ApiContextInitializer.init();
+
 		try {
 			new TelegramBotsApi().registerBot(new TelegramLongPollingBot() {
 				public String getBotUsername() {

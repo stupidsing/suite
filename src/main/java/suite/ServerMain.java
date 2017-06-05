@@ -1,9 +1,7 @@
 package suite;
 
-import org.telegram.telegrambots.ApiContextInitializer;
-
 import suite.http.HttpServerMain;
-import suite.telegram.TelegramBot;
+import suite.telegram.TelegramBotMain;
 import suite.util.Thread_;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
@@ -19,10 +17,7 @@ public class ServerMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 		Thread_.startThread(() -> HttpServerMain.main(args));
 		Thread_.startThread(() -> ScheduleMain.main(args));
-		Thread_.startThread(() -> {
-			ApiContextInitializer.init();
-			new TelegramBot().bot((userId, message) -> message);
-		});
+		Thread_.startThread(() -> TelegramBotMain.main(args));
 		return true;
 	}
 
