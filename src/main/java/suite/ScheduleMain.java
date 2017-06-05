@@ -22,7 +22,10 @@ public class ScheduleMain extends ExecutableProgram {
 
 	private List<Schedule> initialSchedule = Arrays.asList( //
 			daily(LocalTime.of(18, 0), () -> DailyMain.main(null)), //
+			repeat(5, () -> System.out.println("." + LocalDateTime.now())), //
 			new Schedule(LocalDateTime.of(2099, 1, 1, 0, 0), ArrayList::new));
+
+	private List<Schedule> schedules = new ArrayList<>(initialSchedule);
 
 	public static void main(String[] args) {
 		Util.run(ScheduleMain.class, args);
@@ -30,31 +33,31 @@ public class ScheduleMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		while (true) {
+		while (!schedules.isEmpty()) {
+			List<Schedule> schedules1 = new ArrayList<>();
 			LocalDateTime now = LocalDateTime.now();
-
-			List<Schedule> toRuns = Read.from(schedules) //
-					.filter(schedule -> now.isBefore(schedule.nextRunDateTime)) //
-					.toList();
-
-			for (Schedule schedule : toRuns)
-				try {
-					schedules.addAll(schedule.run.source());
-				} catch (Exception ex) {
-					LogUtil.error(ex);
-				}
 
 			LocalDateTime nextWakeUpDateTime = Read.from(schedules) //
 					.map(schedule -> schedule.nextRunDateTime) //
 					.min(Object_::compare);
 
-			Duration duration = Duration.between(now, nextWakeUpDateTime);
+			Thread_.sleepQuietly(Duration.between(now, nextWakeUpDateTime).toMillis());
 
-			Thread_.sleepQuietly(duration.toMillis());
+			for (Schedule schedule : schedules)
+				if (now.isBefore(schedule.nextRunDateTime))
+					schedules1.add(schedule);
+				else
+					try {
+						schedules1.addAll(schedule.run.source());
+					} catch (Exception ex) {
+						LogUtil.error(ex);
+					}
+
+			schedules = schedules1;
 		}
-	}
 
-	private List<Schedule> schedules = new ArrayList<>(initialSchedule);
+		return true;
+	}
 
 	private Schedule daily(LocalTime time, Runnable runnable) {
 		LocalDateTime firstRunDateTime;
@@ -77,6 +80,15 @@ public class ScheduleMain extends ExecutableProgram {
 		});
 
 		return new Schedule(firstRunDateTime, mutable.get());
+	}
+
+	private Schedule repeat(int seconds, Runnable runnable) {
+		Mutable<Source<List<Schedule>>> m = Mutable.nil();
+		m.set(() -> {
+			runnable.run();
+			return Arrays.asList(new Schedule(LocalDateTime.now().plusSeconds(seconds), m.get()));
+		});
+		return new Schedule(LocalDateTime.now(), m.get());
 	}
 
 	private class Schedule {
