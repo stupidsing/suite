@@ -21,7 +21,38 @@ import suite.util.TempDir;
 public class LogUtil {
 
 	private static int maxStackTraceLength = 99;
-	private static Log suiteLog = LogFactory.getLog("suite");
+
+	private static Log_ suiteLog = new Log_() {
+		private Log log0 = LogFactory.getLog("suite");
+
+		public void info(String message) {
+			log0.info(message);
+		}
+
+		public void warn(String message) {
+			log0.warn(message);
+		}
+
+		public void error(Throwable th) {
+			boolean isTrimmed = trimStackTrace(th);
+			log0.error(isTrimmed ? "(Trimmed)" : "", th);
+		}
+
+		public void fatal(Throwable th) {
+			boolean isTrimmed = trimStackTrace(th);
+			log0.fatal(isTrimmed ? "(Trimmed)" : "", th);
+		}
+	};
+
+	private interface Log_ {
+		public void info(String message);
+
+		public void warn(String message);
+
+		public void error(Throwable th);
+
+		public void fatal(Throwable th);
+	}
 
 	static {
 		initLog4j(Level.INFO);
@@ -63,22 +94,12 @@ public class LogUtil {
 		suiteLog.warn(message);
 	}
 
-	public static void error(String message) {
-		suiteLog.error(message);
-	}
-
 	public static void error(Throwable th) {
-		boolean isTrimmed = trimStackTrace(th);
-		suiteLog.error(isTrimmed ? "(Trimmed)" : "", th);
-	}
-
-	public static void fatal(String message) {
-		suiteLog.fatal(message);
+		suiteLog.error(th);
 	}
 
 	public static void fatal(Throwable th) {
-		boolean isTrimmed = trimStackTrace(th);
-		suiteLog.fatal(isTrimmed ? "(Trimmed)" : "", th);
+		suiteLog.fatal(th);
 	}
 
 	public static <T> T log(String message, Source<T> source) {
