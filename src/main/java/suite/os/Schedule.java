@@ -33,7 +33,7 @@ public class Schedule {
 			}
 		});
 
-		return new Schedule(firstRunDateTime1, mutable.get());
+		return of(firstRunDateTime1, mutable.get());
 	}
 
 	public static Schedule ofRepeat(int seconds, Runnable runnable) {
@@ -42,13 +42,17 @@ public class Schedule {
 			runnable.run();
 			return Arrays.asList(new Schedule(LocalDateTime.now().plusSeconds(seconds), m.get()));
 		});
-		return new Schedule(LocalDateTime.now(), m.get());
+		return of(LocalDateTime.now(), m.get());
+	}
+
+	public static Schedule of(LocalDateTime nextRunDateTime, Source<List<Schedule>> run) {
+		return new Schedule(nextRunDateTime, run);
 	}
 
 	public final LocalDateTime nextRunDateTime;
 	public final Source<List<Schedule>> run;
 
-	Schedule(LocalDateTime nextRunDateTime, Source<List<Schedule>> run) {
+	private Schedule(LocalDateTime nextRunDateTime, Source<List<Schedule>> run) {
 		this.nextRunDateTime = nextRunDateTime;
 		this.run = run;
 	}

@@ -1,6 +1,5 @@
 package suite.smtp;
 
-import java.util.Arrays;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -13,9 +12,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.net.ssl.SSLSocketFactory;
 
+import suite.Constants;
 import suite.Suite;
-import suite.lp.doer.Prover;
-import suite.lp.kb.RuleSet;
 import suite.node.Reference;
 import suite.node.Str;
 
@@ -26,10 +24,7 @@ public class SmtpSslGmail {
 		Reference ref1 = new Reference();
 		String username, password;
 
-		RuleSet rs = Suite.newRuleSet(Arrays.asList(System.getenv("HOME") + "/private/secrets.sl"));
-		Prover prover = new Prover(rs);
-
-		if (prover.prove(Suite.substitute("gmail .0 .1", ref0, ref1))) {
+		if (Constants.secrets().prove(Suite.substitute("gmail .0 .1", ref0, ref1))) {
 			username = ((Str) ref0.finalNode()).value;
 			password = ((Str) ref1.finalNode()).value;
 		} else
