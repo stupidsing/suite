@@ -6,9 +6,9 @@ import org.junit.Test;
 
 import suite.streamlet.Read;
 import suite.trade.Asset;
-import suite.trade.BackTestRunner;
 import suite.trade.DatePeriod;
 import suite.trade.Trade_;
+import suite.trade.analysis.BackTestRunner;
 import suite.trade.analysis.Summarize;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.data.Configuration;

@@ -71,12 +71,12 @@ public class TextDatabase {
 		}
 	}
 
-	private void load() {
+	private synchronized void load() {
 		if (Files.exists(path))
 			merge(path);
 	}
 
-	private void save() {
+	private synchronized void save() {
 		Outlet<Bytes> outlet = Read.from(data) //
 				.map(this::toBytes) //
 				.collect(Bytes_::buffer);

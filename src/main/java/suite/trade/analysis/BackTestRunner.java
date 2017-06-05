@@ -1,9 +1,11 @@
-package suite.trade;
+package suite.trade.analysis;
 
 import suite.math.stat.Statistic;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.trade.Asset;
+import suite.trade.DatePeriod;
 import suite.trade.assetalloc.AssetAllocBackTest;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.assetalloc.AssetAllocator;
