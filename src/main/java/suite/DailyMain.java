@@ -83,7 +83,7 @@ public class DailyMain extends ExecutableProgram {
 				.collect(As::streamlet2);
 
 		QuoteDatabase quoteDatabase = new QuoteDatabase();
-//		quoteDatabase.merge("o", dataSourceBySymbol);
+		quoteDatabase.merge("o", dataSourceBySymbol);
 		quoteDatabase.join();
 
 		// perform systematic trading
