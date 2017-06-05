@@ -95,7 +95,7 @@ public class FltObjFunUtil {
 	}
 
 	public static <V> FltObjSource<V> filter(FltObjPredicate<V> fun0, FltObjSource<V> source2) {
-		FltObjPredicate<V> fun1 = FltRethrow.fltObjPredicate(fun0);
+		FltObjPredicate<V> fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -105,7 +105,7 @@ public class FltObjFunUtil {
 	}
 
 	public static <V> FltObjSource<V> filterKey(FltPredicate_ fun0, FltObjSource<V> source2) {
-		FltPredicate_ fun1 = FltRethrow.predicate(fun0);
+		FltPredicate_ fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -133,7 +133,7 @@ public class FltObjFunUtil {
 	}
 
 	public static <V> boolean isAll(FltObjPredicate<V> pred0, FltObjSource<V> source2) {
-		FltObjPredicate<V> pred1 = FltRethrow.fltObjPredicate(pred0);
+		FltObjPredicate<V> pred1 = pred0.rethrow();
 		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -142,7 +142,7 @@ public class FltObjFunUtil {
 	}
 
 	public static <V> boolean isAny(FltObjPredicate<V> pred0, FltObjSource<V> source2) {
-		FltObjPredicate<V> pred1 = FltRethrow.fltObjPredicate(pred0);
+		FltObjPredicate<V> pred1 = pred0.rethrow();
 		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -176,14 +176,14 @@ public class FltObjFunUtil {
 	}
 
 	public static <V, T> Source<T> map(FltObj_Obj<V, T> fun0, FltObjSource<V> source2) {
-		FltObj_Obj<V, T> fun1 = FltRethrow.fun2(fun0);
+		FltObj_Obj<V, T> fun1 = fun0.rethrow();
 		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <V, K1, V1, T> Source2<K1, V1> map2(FltObj_Obj<V, K1> kf0, FltObj_Obj<V, V1> vf0, FltObjSource<V> source2) {
-		FltObj_Obj<V, K1> kf1 = FltRethrow.fun2(kf0);
-		FltObj_Obj<V, V1> vf1 = FltRethrow.fun2(vf0);
+		FltObj_Obj<V, K1> kf1 = kf0.rethrow();
+		FltObj_Obj<V, V1> vf1 = vf0.rethrow();
 		FltObjPair<V> pair1 = FltObjPair.of((float) 0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -196,8 +196,8 @@ public class FltObjFunUtil {
 	}
 
 	public static <V, V1, T> FltObjSource<V1> mapFltObj(FltObj_Flt<V> kf0, FltObj_Obj<V, V1> vf0, FltObjSource<V> source2) {
-		FltObj_Flt<V> kf1 = FltFltRethrow.fun2(kf0);
-		FltObj_Obj<V, V1> vf1 = FltRethrow.fun2(vf0);
+		FltObj_Flt<V> kf1 = kf0.rethrow();
+		FltObj_Obj<V, V1> vf1 = vf0.rethrow();
 		FltObjPair<V> pair1 = FltObjPair.of((float) 0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -236,7 +236,7 @@ public class FltObjFunUtil {
 	 * not be skipped.
 	 */
 	public static <V> Source<FltObjSource<V>> split(FltObjPredicate<V> fun0, FltObjSource<V> source2) {
-		FltObjPredicate<V> fun1 = FltRethrow.fltObjPredicate(fun0);
+		FltObjPredicate<V> fun1 = fun0.rethrow();
 		return new Source<FltObjSource<V>>() {
 			private FltObjPair<V> pair = FltObjPair.of((float) 0, null);
 			private boolean isAvailable;

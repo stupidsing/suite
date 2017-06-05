@@ -92,7 +92,7 @@ public class ChrFltFunUtil {
 	}
 
 	public static ChrFltSource filter(ChrFltPredicate fun0, ChrFltSource source2) {
-		ChrFltPredicate fun1 = ChrFltRethrow.chrFltPredicate(fun0);
+		ChrFltPredicate fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -102,7 +102,7 @@ public class ChrFltFunUtil {
 	}
 
 	public static <V> ChrFltSource filterKey(ChrPredicate_ fun0, ChrFltSource source2) {
-		ChrPredicate_ fun1 = ChrRethrow.predicate(fun0);
+		ChrPredicate_ fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -112,7 +112,7 @@ public class ChrFltFunUtil {
 	}
 
 	public static ChrFltSource filterValue(FltPredicate_ fun0, ChrFltSource source2) {
-		FltPredicate_ fun1 = FltRethrow.predicate(fun0);
+		FltPredicate_ fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t1))
@@ -130,7 +130,7 @@ public class ChrFltFunUtil {
 	}
 
 	public static boolean isAll(ChrFltPredicate pred0, ChrFltSource source2) {
-		ChrFltPredicate pred1 = ChrFltRethrow.chrFltPredicate(pred0);
+		ChrFltPredicate pred1 = pred0.rethrow();
 		ChrFltPair pair = ChrFltPair.of((char) 0, (float) 0);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -139,7 +139,7 @@ public class ChrFltFunUtil {
 	}
 
 	public static <V> boolean isAny(ChrFltPredicate pred0, ChrFltSource source2) {
-		ChrFltPredicate pred1 = ChrFltRethrow.chrFltPredicate(pred0);
+		ChrFltPredicate pred1 = pred0.rethrow();
 		ChrFltPair pair = ChrFltPair.of((char) 0, (float) 0);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -173,14 +173,14 @@ public class ChrFltFunUtil {
 	}
 
 	public static <T> Source<T> map(ChrFlt_Obj<T> fun0, ChrFltSource source2) {
-		ChrFlt_Obj<T> fun1 = ChrFltRethrow.fun2(fun0);
+		ChrFlt_Obj<T> fun1 = fun0.rethrow();
 		ChrFltPair pair = ChrFltPair.of((char) 0, (float) 0);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <K1, V1, T> Source2<K1, V1> map2(ChrFlt_Obj<K1> kf0, ChrFlt_Obj<V1> vf0, ChrFltSource source2) {
-		ChrFlt_Obj<K1> kf1 = ChrFltRethrow.fun2(kf0);
-		ChrFlt_Obj<V1> vf1 = ChrFltRethrow.fun2(vf0);
+		ChrFlt_Obj<K1> kf1 = kf0.rethrow();
+		ChrFlt_Obj<V1> vf1 = vf0.rethrow();
 		ChrFltPair pair1 = ChrFltPair.of((char) 0, (float) 0);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -193,8 +193,8 @@ public class ChrFltFunUtil {
 	}
 
 	public static ChrFltSource mapChrFlt(ChrFlt_Chr kf0, ChrFlt_Flt vf0, ChrFltSource source2) {
-		ChrFlt_Chr kf1 = ChrFlt_ChrRethrow.fun2(kf0);
-		ChrFlt_Flt vf1 = ChrFlt_FltRethrow.fun2(vf0);
+		ChrFlt_Chr kf1 = kf0.rethrow();
+		ChrFlt_Flt vf1 = vf0.rethrow();
 		ChrFltPair pair1 = ChrFltPair.of((char) 0, (float) 0);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -233,7 +233,7 @@ public class ChrFltFunUtil {
 	 * not be skipped.
 	 */
 	public static Source<ChrFltSource> split(ChrFltPredicate fun0, ChrFltSource source2) {
-		ChrFltPredicate fun1 = ChrFltRethrow.chrFltPredicate(fun0);
+		ChrFltPredicate fun1 = fun0.rethrow();
 		return new Source<ChrFltSource>() {
 			private ChrFltPair pair = ChrFltPair.of((char) 0, (float) 0);
 			private boolean isAvailable;

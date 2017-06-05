@@ -95,7 +95,7 @@ public class DblObjFunUtil {
 	}
 
 	public static <V> DblObjSource<V> filter(DblObjPredicate<V> fun0, DblObjSource<V> source2) {
-		DblObjPredicate<V> fun1 = DblRethrow.dblObjPredicate(fun0);
+		DblObjPredicate<V> fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -105,7 +105,7 @@ public class DblObjFunUtil {
 	}
 
 	public static <V> DblObjSource<V> filterKey(DblPredicate_ fun0, DblObjSource<V> source2) {
-		DblPredicate_ fun1 = DblRethrow.predicate(fun0);
+		DblPredicate_ fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -133,7 +133,7 @@ public class DblObjFunUtil {
 	}
 
 	public static <V> boolean isAll(DblObjPredicate<V> pred0, DblObjSource<V> source2) {
-		DblObjPredicate<V> pred1 = DblRethrow.dblObjPredicate(pred0);
+		DblObjPredicate<V> pred1 = pred0.rethrow();
 		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -142,7 +142,7 @@ public class DblObjFunUtil {
 	}
 
 	public static <V> boolean isAny(DblObjPredicate<V> pred0, DblObjSource<V> source2) {
-		DblObjPredicate<V> pred1 = DblRethrow.dblObjPredicate(pred0);
+		DblObjPredicate<V> pred1 = pred0.rethrow();
 		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -176,14 +176,14 @@ public class DblObjFunUtil {
 	}
 
 	public static <V, T> Source<T> map(DblObj_Obj<V, T> fun0, DblObjSource<V> source2) {
-		DblObj_Obj<V, T> fun1 = DblRethrow.fun2(fun0);
+		DblObj_Obj<V, T> fun1 = fun0.rethrow();
 		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <V, K1, V1, T> Source2<K1, V1> map2(DblObj_Obj<V, K1> kf0, DblObj_Obj<V, V1> vf0, DblObjSource<V> source2) {
-		DblObj_Obj<V, K1> kf1 = DblRethrow.fun2(kf0);
-		DblObj_Obj<V, V1> vf1 = DblRethrow.fun2(vf0);
+		DblObj_Obj<V, K1> kf1 = kf0.rethrow();
+		DblObj_Obj<V, V1> vf1 = vf0.rethrow();
 		DblObjPair<V> pair1 = DblObjPair.of((double) 0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -196,8 +196,8 @@ public class DblObjFunUtil {
 	}
 
 	public static <V, V1, T> DblObjSource<V1> mapDblObj(DblObj_Dbl<V> kf0, DblObj_Obj<V, V1> vf0, DblObjSource<V> source2) {
-		DblObj_Dbl<V> kf1 = DblDblRethrow.fun2(kf0);
-		DblObj_Obj<V, V1> vf1 = DblRethrow.fun2(vf0);
+		DblObj_Dbl<V> kf1 = kf0.rethrow();
+		DblObj_Obj<V, V1> vf1 = vf0.rethrow();
 		DblObjPair<V> pair1 = DblObjPair.of((double) 0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -236,7 +236,7 @@ public class DblObjFunUtil {
 	 * not be skipped.
 	 */
 	public static <V> Source<DblObjSource<V>> split(DblObjPredicate<V> fun0, DblObjSource<V> source2) {
-		DblObjPredicate<V> fun1 = DblRethrow.dblObjPredicate(fun0);
+		DblObjPredicate<V> fun1 = fun0.rethrow();
 		return new Source<DblObjSource<V>>() {
 			private DblObjPair<V> pair = DblObjPair.of((double) 0, null);
 			private boolean isAvailable;

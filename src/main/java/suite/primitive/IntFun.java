@@ -5,6 +5,16 @@ public class IntFun {
 	@FunctionalInterface
 	public interface IntObj_Obj<X, Y> {
 		public Y apply(int c, X x);
+
+		public default IntObj_Obj<X, Y> rethrow() {
+			return (x, y) -> {
+				try {
+					return apply(x, y);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + x + ":" + y + ", ", ex);
+				}
+			};
+		}
 	}
 
 	@FunctionalInterface

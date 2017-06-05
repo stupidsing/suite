@@ -95,7 +95,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> ChrObjSource<V> filter(ChrObjPredicate<V> fun0, ChrObjSource<V> source2) {
-		ChrObjPredicate<V> fun1 = ChrRethrow.chrObjPredicate(fun0);
+		ChrObjPredicate<V> fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -105,7 +105,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> ChrObjSource<V> filterKey(ChrPredicate_ fun0, ChrObjSource<V> source2) {
-		ChrPredicate_ fun1 = ChrRethrow.predicate(fun0);
+		ChrPredicate_ fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -133,7 +133,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> boolean isAll(ChrObjPredicate<V> pred0, ChrObjSource<V> source2) {
-		ChrObjPredicate<V> pred1 = ChrRethrow.chrObjPredicate(pred0);
+		ChrObjPredicate<V> pred1 = pred0.rethrow();
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -142,7 +142,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> boolean isAny(ChrObjPredicate<V> pred0, ChrObjSource<V> source2) {
-		ChrObjPredicate<V> pred1 = ChrRethrow.chrObjPredicate(pred0);
+		ChrObjPredicate<V> pred1 = pred0.rethrow();
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -176,14 +176,14 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V, T> Source<T> map(ChrObj_Obj<V, T> fun0, ChrObjSource<V> source2) {
-		ChrObj_Obj<V, T> fun1 = ChrRethrow.fun2(fun0);
+		ChrObj_Obj<V, T> fun1 = fun0.rethrow();
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <V, K1, V1, T> Source2<K1, V1> map2(ChrObj_Obj<V, K1> kf0, ChrObj_Obj<V, V1> vf0, ChrObjSource<V> source2) {
-		ChrObj_Obj<V, K1> kf1 = ChrRethrow.fun2(kf0);
-		ChrObj_Obj<V, V1> vf1 = ChrRethrow.fun2(vf0);
+		ChrObj_Obj<V, K1> kf1 = kf0.rethrow();
+		ChrObj_Obj<V, V1> vf1 = vf0.rethrow();
 		ChrObjPair<V> pair1 = ChrObjPair.of((char) 0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -196,8 +196,8 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V, V1, T> ChrObjSource<V1> mapChrObj(ChrObj_Chr<V> kf0, ChrObj_Obj<V, V1> vf0, ChrObjSource<V> source2) {
-		ChrObj_Chr<V> kf1 = ChrChrRethrow.fun2(kf0);
-		ChrObj_Obj<V, V1> vf1 = ChrRethrow.fun2(vf0);
+		ChrObj_Chr<V> kf1 = kf0.rethrow();
+		ChrObj_Obj<V, V1> vf1 = vf0.rethrow();
 		ChrObjPair<V> pair1 = ChrObjPair.of((char) 0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -236,7 +236,7 @@ public class ChrObjFunUtil {
 	 * not be skipped.
 	 */
 	public static <V> Source<ChrObjSource<V>> split(ChrObjPredicate<V> fun0, ChrObjSource<V> source2) {
-		ChrObjPredicate<V> fun1 = ChrRethrow.chrObjPredicate(fun0);
+		ChrObjPredicate<V> fun1 = fun0.rethrow();
 		return new Source<ChrObjSource<V>>() {
 			private ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 			private boolean isAvailable;

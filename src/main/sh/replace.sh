@@ -47,9 +47,7 @@ replace src/main/java/suite/adt/pair/ChrObjPair.java
 replace src/main/java/suite/primitive/Chr_Dbl.java
 replace src/main/java/suite/primitive/ChrDbl_Obj.java
 replace src/main/java/suite/primitive/ChrDbl_Flt.java
-replace src/main/java/suite/primitive/ChrDbl_FltRethrow.java
 replace src/main/java/suite/primitive/ChrDblPredicate.java
-replace src/main/java/suite/primitive/ChrDblRethrow.java
 replace src/main/java/suite/primitive/ChrDblSink.java
 replace src/main/java/suite/primitive/ChrDblSource.java
 replace src/main/java/suite/primitive/ChrFun.java
@@ -57,7 +55,6 @@ replace src/main/java/suite/primitive/ChrMutable.java
 replace src/main/java/suite/primitive/ChrObj_Dbl.java
 replace src/main/java/suite/primitive/ChrObjFunUtil.java
 replace src/main/java/suite/primitive/ChrPredicate.java
-replace src/main/java/suite/primitive/ChrRethrow.java
 replace src/main/java/suite/primitive/ChrSink.java
 replace src/main/java/suite/primitive/ChrSource.java
 replace src/main/java/suite/primitive/Chars.java

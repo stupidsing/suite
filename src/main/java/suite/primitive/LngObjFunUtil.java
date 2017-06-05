@@ -95,7 +95,7 @@ public class LngObjFunUtil {
 	}
 
 	public static <V> LngObjSource<V> filter(LngObjPredicate<V> fun0, LngObjSource<V> source2) {
-		LngObjPredicate<V> fun1 = LngRethrow.lngObjPredicate(fun0);
+		LngObjPredicate<V> fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -105,7 +105,7 @@ public class LngObjFunUtil {
 	}
 
 	public static <V> LngObjSource<V> filterKey(LngPredicate_ fun0, LngObjSource<V> source2) {
-		LngPredicate_ fun1 = LngRethrow.predicate(fun0);
+		LngPredicate_ fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -133,7 +133,7 @@ public class LngObjFunUtil {
 	}
 
 	public static <V> boolean isAll(LngObjPredicate<V> pred0, LngObjSource<V> source2) {
-		LngObjPredicate<V> pred1 = LngRethrow.lngObjPredicate(pred0);
+		LngObjPredicate<V> pred1 = pred0.rethrow();
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -142,7 +142,7 @@ public class LngObjFunUtil {
 	}
 
 	public static <V> boolean isAny(LngObjPredicate<V> pred0, LngObjSource<V> source2) {
-		LngObjPredicate<V> pred1 = LngRethrow.lngObjPredicate(pred0);
+		LngObjPredicate<V> pred1 = pred0.rethrow();
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -176,14 +176,14 @@ public class LngObjFunUtil {
 	}
 
 	public static <V, T> Source<T> map(LngObj_Obj<V, T> fun0, LngObjSource<V> source2) {
-		LngObj_Obj<V, T> fun1 = LngRethrow.fun2(fun0);
+		LngObj_Obj<V, T> fun1 = fun0.rethrow();
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <V, K1, V1, T> Source2<K1, V1> map2(LngObj_Obj<V, K1> kf0, LngObj_Obj<V, V1> vf0, LngObjSource<V> source2) {
-		LngObj_Obj<V, K1> kf1 = LngRethrow.fun2(kf0);
-		LngObj_Obj<V, V1> vf1 = LngRethrow.fun2(vf0);
+		LngObj_Obj<V, K1> kf1 = kf0.rethrow();
+		LngObj_Obj<V, V1> vf1 = vf0.rethrow();
 		LngObjPair<V> pair1 = LngObjPair.of((long) 0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -196,8 +196,8 @@ public class LngObjFunUtil {
 	}
 
 	public static <V, V1, T> LngObjSource<V1> mapLngObj(LngObj_Lng<V> kf0, LngObj_Obj<V, V1> vf0, LngObjSource<V> source2) {
-		LngObj_Lng<V> kf1 = LngLngRethrow.fun2(kf0);
-		LngObj_Obj<V, V1> vf1 = LngRethrow.fun2(vf0);
+		LngObj_Lng<V> kf1 = kf0.rethrow();
+		LngObj_Obj<V, V1> vf1 = vf0.rethrow();
 		LngObjPair<V> pair1 = LngObjPair.of((long) 0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -236,7 +236,7 @@ public class LngObjFunUtil {
 	 * not be skipped.
 	 */
 	public static <V> Source<LngObjSource<V>> split(LngObjPredicate<V> fun0, LngObjSource<V> source2) {
-		LngObjPredicate<V> fun1 = LngRethrow.lngObjPredicate(fun0);
+		LngObjPredicate<V> fun1 = fun0.rethrow();
 		return new Source<LngObjSource<V>>() {
 			private LngObjPair<V> pair = LngObjPair.of((long) 0, null);
 			private boolean isAvailable;

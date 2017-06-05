@@ -5,6 +5,16 @@ public class DblFun {
 	@FunctionalInterface
 	public interface DblObj_Obj<X, Y> {
 		public Y apply(double c, X x);
+
+		public default DblObj_Obj<X, Y> rethrow() {
+			return (x, y) -> {
+				try {
+					return apply(x, y);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + x + ":" + y + ", ", ex);
+				}
+			};
+		}
 	}
 
 	@FunctionalInterface

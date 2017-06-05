@@ -95,7 +95,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> IntObjSource<V> filter(IntObjPredicate<V> fun0, IntObjSource<V> source2) {
-		IntObjPredicate<V> fun1 = IntRethrow.intObjPredicate(fun0);
+		IntObjPredicate<V> fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -105,7 +105,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> IntObjSource<V> filterKey(IntPredicate_ fun0, IntObjSource<V> source2) {
-		IntPredicate_ fun1 = IntRethrow.predicate(fun0);
+		IntPredicate_ fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -133,7 +133,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> boolean isAll(IntObjPredicate<V> pred0, IntObjSource<V> source2) {
-		IntObjPredicate<V> pred1 = IntRethrow.intObjPredicate(pred0);
+		IntObjPredicate<V> pred1 = pred0.rethrow();
 		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -142,7 +142,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> boolean isAny(IntObjPredicate<V> pred0, IntObjSource<V> source2) {
-		IntObjPredicate<V> pred1 = IntRethrow.intObjPredicate(pred0);
+		IntObjPredicate<V> pred1 = pred0.rethrow();
 		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -176,14 +176,14 @@ public class IntObjFunUtil {
 	}
 
 	public static <V, T> Source<T> map(IntObj_Obj<V, T> fun0, IntObjSource<V> source2) {
-		IntObj_Obj<V, T> fun1 = IntRethrow.fun2(fun0);
+		IntObj_Obj<V, T> fun1 = fun0.rethrow();
 		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <V, K1, V1, T> Source2<K1, V1> map2(IntObj_Obj<V, K1> kf0, IntObj_Obj<V, V1> vf0, IntObjSource<V> source2) {
-		IntObj_Obj<V, K1> kf1 = IntRethrow.fun2(kf0);
-		IntObj_Obj<V, V1> vf1 = IntRethrow.fun2(vf0);
+		IntObj_Obj<V, K1> kf1 = kf0.rethrow();
+		IntObj_Obj<V, V1> vf1 = vf0.rethrow();
 		IntObjPair<V> pair1 = IntObjPair.of((int) 0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -196,8 +196,8 @@ public class IntObjFunUtil {
 	}
 
 	public static <V, V1, T> IntObjSource<V1> mapIntObj(IntObj_Int<V> kf0, IntObj_Obj<V, V1> vf0, IntObjSource<V> source2) {
-		IntObj_Int<V> kf1 = IntIntRethrow.fun2(kf0);
-		IntObj_Obj<V, V1> vf1 = IntRethrow.fun2(vf0);
+		IntObj_Int<V> kf1 = kf0.rethrow();
+		IntObj_Obj<V, V1> vf1 = vf0.rethrow();
 		IntObjPair<V> pair1 = IntObjPair.of((int) 0, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -236,7 +236,7 @@ public class IntObjFunUtil {
 	 * not be skipped.
 	 */
 	public static <V> Source<IntObjSource<V>> split(IntObjPredicate<V> fun0, IntObjSource<V> source2) {
-		IntObjPredicate<V> fun1 = IntRethrow.intObjPredicate(fun0);
+		IntObjPredicate<V> fun1 = fun0.rethrow();
 		return new Source<IntObjSource<V>>() {
 			private IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 			private boolean isAvailable;
