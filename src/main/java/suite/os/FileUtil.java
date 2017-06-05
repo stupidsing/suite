@@ -115,11 +115,15 @@ public class FileUtil {
 		};
 	}
 
-	public static String read(String filename) throws IOException {
-		return read(Paths.get(filename));
+	public static String read(String filename) {
+		return Rethrow.ex(() -> read_(Paths.get(filename)));
 	}
 
-	public static String read(Path path) throws IOException {
+	public static String read(Path path) {
+		return Rethrow.ex(() -> read_(path));
+	}
+
+	private static String read_(Path path) throws IOException {
 		byte[] bytes = Files.readAllBytes(path);
 		boolean isBomExist = 3 <= bytes.length //
 				&& bytes[0] == (byte) 0xEF //

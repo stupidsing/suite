@@ -21,7 +21,6 @@ import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
-import suite.util.Rethrow;
 import suite.util.Thread_;
 import suite.util.To;
 
@@ -207,7 +206,7 @@ public class EditorController {
 	}
 
 	private void load(String filename) {
-		String text = Rethrow.ex(() -> FileUtil.read(filename));
+		String text = FileUtil.read(filename);
 
 		JEditorPane editor = view.getEditor();
 		editor.setText(text);

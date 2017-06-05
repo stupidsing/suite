@@ -1,6 +1,5 @@
 package suite.ip;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 
@@ -11,10 +10,10 @@ import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder2;
 import suite.node.Node;
-import suite.os.FileUtil;
 import suite.parser.IncludePreprocessor;
 import suite.primitive.Bytes;
 import suite.text.Preprocess;
+import suite.util.To;
 
 public class ImperativeCompiler {
 
@@ -25,8 +24,8 @@ public class ImperativeCompiler {
 					+ ", compile-imperative .ip .code/()" //
 					+ ", sink .code"));
 
-	public Bytes compile(int org, Path path) throws IOException {
-		String s0 = FileUtil.read(path);
+	public Bytes compile(int org, Path path) {
+		String s0 = To.string(path);
 		String s1 = Preprocess.transform(Arrays.asList(new IncludePreprocessor(path.getParent())), s0).t0;
 		return compile(org, s1);
 	}

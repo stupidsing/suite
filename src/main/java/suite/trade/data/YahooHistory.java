@@ -58,7 +58,7 @@ public class YahooHistory extends ExecutableProgram {
 
 			Streamlet2<String, String> keyValues = Read.from(out.split("\n")) //
 					.concatMap(file -> {
-						String[] array = Rethrow.ex(() -> FileUtil.read(Paths.get(file))).split("\n");
+						String[] array = FileUtil.read(Paths.get(file)).split("\n");
 						String u = array[0];
 						int p0 = u.indexOf("?s=");
 						int p1 = u.indexOf("&", p0);

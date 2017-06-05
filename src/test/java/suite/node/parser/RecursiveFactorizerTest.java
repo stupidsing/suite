@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class RecursiveFactorizerTest {
 	private RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 
 	@Test
-	public void testParseUnparse() throws IOException {
+	public void testParseUnparse() {
 		String s0 = FileUtil.read("src/main/ll/auto.sl").trim();
 		FactorizeResult fr = recursiveFactorizer.parse(s0);
 		String sx = fr.unparse();
@@ -55,7 +54,7 @@ public class RecursiveFactorizerTest {
 	}
 
 	@Test
-	public void testDirectReplace() throws IOException {
+	public void testDirectReplace() {
 		String s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
 		FactorizeResult fr0 = recursiveFactorizer.parse(s0);
 		FactorizeResult frx = transform(fr0);
@@ -89,7 +88,7 @@ public class RecursiveFactorizerTest {
 	}
 
 	@Test
-	public void testRefactorRewrite0() throws IOException {
+	public void testRefactorRewrite0() {
 		String pred0 = "ic-compile-better-option";
 		String predx = "ic-new-compile-better-option";
 		String sx = rewriteNewArgument(pred0, predx, ".type", FileUtil.read("src/main/ll/ic/ic.sl").trim());
@@ -163,7 +162,7 @@ public class RecursiveFactorizerTest {
 	}
 
 	@Test
-	public void testRefactorRewrite1() throws IOException {
+	public void testRefactorRewrite1() {
 		String pred0 = "ic-compile-better-option .0 .1 .2";
 		String predx = "ic-new-compile-better-option .0 .1 .2 .type";
 		String sx = recursiveFactorizer.rewrite(pred0, predx, FileUtil.read("src/main/ll/ic/ic.sl").trim());

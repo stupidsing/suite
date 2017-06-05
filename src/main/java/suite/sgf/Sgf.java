@@ -6,7 +6,6 @@ import java.util.function.IntPredicate;
 
 import suite.adt.pair.Pair;
 import suite.os.FileUtil;
-import suite.util.Rethrow;
 
 // wget -O - http://www.flygo.net/mjxj/WeiQiTianDi/dlxs_sdl.sgf | iconv -c -f CN-GB -t UTF-8
 public class Sgf {
@@ -29,7 +28,7 @@ public class Sgf {
 	}
 
 	public Node fromFile(String filename) {
-		return from(Rethrow.ex(() -> FileUtil.read(filename)));
+		return from(FileUtil.read(filename));
 	}
 
 	public Node from(String in) {

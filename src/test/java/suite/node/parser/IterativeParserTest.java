@@ -3,8 +3,6 @@ package suite.node.parser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
-
 import org.junit.Test;
 
 import suite.node.Node;
@@ -77,7 +75,7 @@ public class IterativeParserTest {
 	}
 
 	@Test
-	public void testParseAuto() throws IOException {
+	public void testParseAuto() {
 		String in = FileUtil.read("src/main/ll/auto.sl");
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
@@ -85,7 +83,7 @@ public class IterativeParserTest {
 	}
 
 	@Test
-	public void testParseFile() throws IOException {
+	public void testParseFile() {
 		String in = FileUtil.read("src/main/ll/fc/fc.sl");
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
@@ -93,7 +91,7 @@ public class IterativeParserTest {
 	}
 
 	@Test
-	public void testParsePerformance() throws IOException {
+	public void testParsePerformance() {
 		String in = FileUtil.read("src/main/fl/STANDARD.slf");
 		Source<Boolean> test = () -> {
 			for (int i = 0; i < 20; i++)

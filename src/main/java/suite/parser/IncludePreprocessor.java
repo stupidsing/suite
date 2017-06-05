@@ -1,6 +1,5 @@
 package suite.parser;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,7 +37,7 @@ public class IncludePreprocessor implements Fun<String, List<Run>> {
 		});
 	}
 
-	private void doIncludes(Path dir, String in, boolean isInput, List<Run> runs) throws IOException {
+	private void doIncludes(Path dir, String in, boolean isInput, List<Run> runs) {
 		int start = 0;
 
 		while (true) {

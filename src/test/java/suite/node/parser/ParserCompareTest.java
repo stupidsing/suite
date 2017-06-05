@@ -2,8 +2,6 @@ package suite.node.parser;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-
 import org.junit.Test;
 
 import suite.node.Node;
@@ -23,7 +21,7 @@ public class ParserCompareTest {
 	}
 
 	@Test
-	public void testParseFileCompare() throws IOException {
+	public void testParseFileCompare() {
 		test(FileUtil.read("src/main/ll/auto.sl"));
 	}
 

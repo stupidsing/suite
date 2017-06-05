@@ -13,6 +13,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +32,7 @@ import java.util.function.IntFunction;
 
 import suite.Constants;
 import suite.adt.pair.Pair;
+import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
 import suite.primitive.FltFun.Obj_Flt;
@@ -321,6 +323,10 @@ public class To {
 
 	public static String string(long time) {
 		return yyyymmdd(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
+	}
+
+	public static String string(Path path) {
+		return FileUtil.read(path);
 	}
 
 	public static String string(Reader reader) {

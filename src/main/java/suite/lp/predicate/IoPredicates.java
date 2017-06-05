@@ -55,7 +55,7 @@ public class IoPredicates {
 
 	public BuiltinPredicate fileRead = PredicateUtil.fun(n -> {
 		String filename = Formatter.display(n);
-		return Rethrow.ex(() -> new Str(FileUtil.read(filename)));
+		return new Str(FileUtil.read(filename));
 	});
 
 	public BuiltinPredicate fileTime = PredicateUtil.fun(n -> {

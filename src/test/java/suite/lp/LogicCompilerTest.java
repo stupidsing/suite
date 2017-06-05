@@ -3,8 +3,6 @@ package suite.lp;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
 import org.junit.Test;
 
 import suite.Suite;
@@ -21,7 +19,7 @@ public class LogicCompilerTest {
 	}
 
 	@Test
-	public void testAuto() throws IOException {
+	public void testAuto() {
 		String preds = FileUtil.read("src/main/ll/auto.sl");
 		String goal = "(" + preds + ") >> member (a, b, c,) c";
 		assertTrue(Suite.proveLogic(goal));

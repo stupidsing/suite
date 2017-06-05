@@ -9,11 +9,10 @@ import java.util.Locale;
 
 import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
-import suite.os.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.HomeDir;
 import suite.util.Memoize;
-import suite.util.Rethrow;
+import suite.util.To;
 
 public class Constants {
 
@@ -28,7 +27,7 @@ public class Constants {
 
 	private static Source<Prover> memoizeSecrets = Memoize.source(() -> {
 		RuleSet rs = Suite.newRuleSet();
-		String text = Rethrow.ex(() -> FileUtil.read(HomeDir.resolve("private/secrets.sl")));
+		String text = To.string(HomeDir.resolve("private/secrets.sl"));
 		Suite.importFrom(rs, Suite.parse(text));
 		return new Prover(rs);
 	});

@@ -1,6 +1,5 @@
 package suite.text;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -16,7 +15,7 @@ import suite.util.List_;
 public class TwoPassIndexerTest {
 
 	@Test
-	public void test() throws IOException {
+	public void test() {
 		List<String> filenames = FileUtil.findPaths(Paths.get("src/test/java")) //
 				.map(Path::toAbsolutePath) //
 				.map(Path::toString) //
