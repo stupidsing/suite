@@ -297,6 +297,16 @@ public class To {
 		return String.format("%.3f", d);
 	}
 
+	public static String string(InputStream in) {
+		try (InputStream is = in;
+				InputStreamReader isr = new InputStreamReader(is, Constants.charset);
+				BufferedReader br = new BufferedReader(isr)) {
+			return string(br);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public static String string(Instant instant) {
 		return yyyymmdd(instant);
 	}
@@ -311,16 +321,6 @@ public class To {
 
 	public static String string(long time) {
 		return yyyymmdd(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
-	}
-
-	public static String string(InputStream in) {
-		try (InputStream is = in;
-				InputStreamReader isr = new InputStreamReader(is, Constants.charset);
-				BufferedReader br = new BufferedReader(isr)) {
-			return string(br);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
 	}
 
 	public static String string(Reader reader) {

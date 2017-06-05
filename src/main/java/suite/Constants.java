@@ -5,14 +5,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Locale;
 
 import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
+import suite.os.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.HomeDir;
 import suite.util.Memoize;
+import suite.util.Rethrow;
 
 public class Constants {
 
@@ -26,7 +27,9 @@ public class Constants {
 	public static Path tmp = Paths.get("/tmp");
 
 	private static Source<Prover> memoizeSecrets = Memoize.source(() -> {
-		RuleSet rs = Suite.newRuleSet(Arrays.asList(HomeDir.resolve("private/secrets.sl").toString()));
+		RuleSet rs = Suite.newRuleSet();
+		String text = Rethrow.ex(() -> FileUtil.read(HomeDir.resolve("private/secrets.sl")));
+		Suite.importFrom(rs, Suite.parse(text));
 		return new Prover(rs);
 	});
 
