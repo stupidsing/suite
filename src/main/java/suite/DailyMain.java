@@ -212,8 +212,8 @@ public class DailyMain extends ExecutableProgram {
 
 					DataSource ds1 = ds0.cons(latestDate, latestPrice);
 					float[] prices = ds1.prices;
-
 					int last = prices.length - 1;
+
 					int signal = strategy.analyze(prices).get(last);
 					int nShares = signal * asset.lotSize * Math.round(factor / nHoldDays / (asset.lotSize * latestPrice));
 					Trade trade = Trade.of(nShares, symbol, latestPrice);
