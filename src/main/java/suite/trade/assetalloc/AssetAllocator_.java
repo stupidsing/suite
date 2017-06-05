@@ -39,7 +39,8 @@ public class AssetAllocator_ {
 	}
 
 	public static AssetAllocator bollingerBands1() {
-		return bollingerBands_(32 + 1, 1, 2);
+		int lag = 1; // lag 1 day is better in back tests, do not know why
+		return bollingerBands_(32 + lag, lag, 2);
 	}
 
 	public static AssetAllocator byEma() {
