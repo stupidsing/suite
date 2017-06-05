@@ -30,8 +30,12 @@ replace() {
 
           s0 = None
           with open(filename0) as f0: s0 = f0.read()
-          sx = replace(repl0, repl1, repl2, s0)
-          with open(filename1, 'w') as f1: f1.write(sx)
+          s1 = replace(repl0, repl1, repl2, s0)
+          sx, line0 = '', ''
+          for line in s1.split('\n'):
+            if line0 != line:
+              sx, line0 = sx + line + '\n', line
+          with open(filename1, 'w') as f1: f1.write(sx[:-1])
   "
 }
 
