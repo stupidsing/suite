@@ -2,8 +2,8 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
-import suite.primitive.Dbl_Dbl;
 import suite.primitive.Int_Int;
+import suite.primitive.Dbl_Dbl;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 

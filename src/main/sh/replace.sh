@@ -4,13 +4,14 @@ replace() {
     wsd = ['Double', 'Double', 'Dbl', 'double', 'double', 'dbl']
     wsf = ['Float', 'Float', 'Flt', 'float', 'float', 'flt']
     wsi = ['Integer', 'Int', 'Int', 'int', 'int', 'int']
+    wsl = ['Long', 'Long', 'Lng', 'long', 'long', 'lng']
     wsx = ['{x0}', '{x1}', '{x2}', '{x3}', '{x4}', '{x5}']
     wsy = ['{y0}', '{y1}', '{y2}', '{y3}', '{y4}', '{y5}']
     wsz = ['{z0}', '{z1}', '{z2}', '{z3}', '{z4}', '{z5}']
 
-    repls0 = [wsc, wsd, wsf, wsi]
-    repls1 = [wsc, wsd, wsf, wsi]
-    repls2 = [wsc, wsd, wsf, wsi]
+    repls0 = [wsc, wsd, wsf, wsi, wsl]
+    repls1 = [wsc, wsd, wsf, wsi, wsl]
+    repls2 = [wsc, wsd, wsf, wsi, wsl]
 
     def r(ws0, ws1, s):
       for i in range(len(ws0)):

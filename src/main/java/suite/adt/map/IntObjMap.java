@@ -2,9 +2,9 @@ package suite.adt.map;
 
 import suite.adt.pair.IntObjPair;
 import suite.primitive.IntFun.Int_Obj;
-import suite.primitive.IntFun.Obj_Int;
 import suite.primitive.IntSink.IntObjSink;
 import suite.primitive.IntSource.IntObjSource;
+import suite.primitive.IntFun.Obj_Int;
 import suite.streamlet.IntObjOutlet;
 import suite.streamlet.IntObjStreamlet;
 
