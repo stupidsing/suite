@@ -16,7 +16,7 @@ import suite.util.FunUtil.Sink;
 import suite.util.Object_;
 import suite.util.To;
 
-public class BackTestRunner {
+public class BackTester {
 
 	private float initial = 1000000f;
 	private Sink<String> log = FunUtil.nullSink();

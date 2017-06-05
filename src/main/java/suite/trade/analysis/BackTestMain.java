@@ -21,7 +21,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.trade.BackTestMain
 public class BackTestMain extends ExecutableProgram {
 
-	private BackTestRunner runner = new BackTestRunner();
+	private BackTester runner = new BackTester();
 	private Configuration cfg = new ConfigurationImpl();
 	private DailyMain dm = new DailyMain();
 

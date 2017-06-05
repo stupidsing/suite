@@ -191,6 +191,10 @@ public class DataSource {
 	private DataSource range_(DatePeriod period) {
 		String s0 = To.string(period.from);
 		String sx = To.string(period.to);
+		return range_(s0, sx);
+	}
+
+	private DataSource range_(String s0, String sx) {
 		return filter_((date, price) -> Object_.compare(s0, date) <= 0 && Object_.compare(date, sx) < 0);
 	}
 

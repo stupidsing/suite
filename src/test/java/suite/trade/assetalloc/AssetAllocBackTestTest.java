@@ -8,7 +8,7 @@ import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.Trade_;
-import suite.trade.analysis.BackTestRunner;
+import suite.trade.analysis.BackTester;
 import suite.trade.analysis.Summarize;
 import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
 import suite.trade.data.Configuration;
@@ -22,7 +22,7 @@ public class AssetAllocBackTestTest {
 
 	private Sink<String> log = System.out::println;
 	private Configuration cfg = new ConfigurationImpl();
-	private BackTestRunner runner = new BackTestRunner();
+	private BackTester runner = new BackTester();
 
 	@Test
 	public void testBackTest() {
