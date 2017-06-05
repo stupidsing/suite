@@ -1,14 +1,8 @@
 package suite.http;
 
-import java.io.RandomAccessFile;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import suite.Constants;
-import suite.adt.pair.Pair;
 import suite.http.HttpSessionController.Authenticator;
 import suite.immutable.IMap;
-import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
@@ -29,51 +23,22 @@ public class HttpServerMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 		IMap<String, HttpHandler> empty = IMap.empty();
 
-		HttpHandler handler0 = request -> {
-			return HttpResponse.of(To.outlet("" //
-					+ "<html>" //
-					+ "<br/>method = " + request.method //
-					+ "<br/>server = " + request.server //
-					+ "<br/>path = " + request.path //
-					+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query) //
-					+ "<br/>headers = " + request.headers //
-					+ "</html>" //
-			));
-		};
+		HttpHandler handler0 = request -> HttpResponse.of(To.outlet("" //
+				+ "<html>" //
+				+ "<br/>method = " + request.method //
+				+ "<br/>server = " + request.server //
+				+ "<br/>path = " + request.path //
+				+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query) //
+				+ "<br/>headers = " + request.headers //
+				+ "</html>" //
+		));
 
-		new HttpServer().run(dispatch(empty //
-				.put("site", new HttpSessionController(authenticator).getSessionHandler(handler0)) //
-				.put("path", handlePath(Constants.tmp)) //
+		new HttpServer().run(HttpHandler.ofDispatch(empty //
+				.put("path", HttpHandler.ofPath(Constants.tmp)) //
+				.put("site", HttpHandler.ofSession(authenticator, handler0)) //
 		));
 
 		return true;
-	}
-
-	private HttpHandler dispatch(IMap<String, HttpHandler> map) {
-		return request -> {
-			Pair<String, HttpRequest> p = request.split();
-			HttpHandler handler = map.get(p.t0);
-			if (handler != null)
-				return handler.handle(p.t1);
-			else
-				throw new RuntimeException("no handler for " + p.t0);
-		};
-	}
-
-	private HttpHandler handlePath(Path root) {
-		return request -> Rethrow.ex(() -> {
-			Path path = root;
-			long size;
-
-			for (String p : request.path)
-				path = path.resolve(p);
-
-			try (RandomAccessFile file = new RandomAccessFile(path.toFile(), "r")) {
-				size = file.getChannel().size();
-			}
-
-			return HttpResponse.of(HttpResponse.HTTP200, To.outlet(Files.newInputStream(path)), size);
-		});
 	}
 
 }
