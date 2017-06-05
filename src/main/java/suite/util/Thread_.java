@@ -46,15 +46,7 @@ public class Thread_ {
 	}
 
 	public static Thread newThread(RunnableEx runnable) {
-		return new Thread() {
-			public void run() {
-				try {
-					runnable.run();
-				} catch (Exception ex) {
-					LogUtil.error(ex);
-				}
-			}
-		};
+		return newThread_(runnable);
 	}
 
 	public static void sleepQuietly(long time) {
@@ -79,13 +71,25 @@ public class Thread_ {
 	}
 
 	public static Thread startThread(RunnableEx runnable) {
-		Thread thread = newThread(runnable);
+		Thread thread = newThread_(runnable);
 		thread.start();
 		return thread;
 	}
 
 	private static ThreadPoolExecutor newExecutor(int corePoolSize, int maxPoolSize) {
 		return new ThreadPoolExecutor(corePoolSize, maxPoolSize, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256));
+	}
+
+	private static Thread newThread_(RunnableEx runnable) {
+		return new Thread() {
+			public void run() {
+				try {
+					runnable.run();
+				} catch (Exception ex) {
+					LogUtil.error(ex);
+				}
+			}
+		};
 	}
 
 }

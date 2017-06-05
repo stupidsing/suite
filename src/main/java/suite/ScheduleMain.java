@@ -60,26 +60,28 @@ public class ScheduleMain extends ExecutableProgram {
 	}
 
 	private Schedule daily(LocalTime time, Runnable runnable) {
-		LocalDateTime firstRunDateTime;
+		LocalDateTime now = LocalDateTime.now();
+		LocalDate today = now.toLocalDate();
+		LocalDateTime firstRunDateTime0 = today.atTime(time);
+		LocalDateTime firstRunDateTime1;
 
-		if (LocalTime.now().isBefore(time))
-			firstRunDateTime = LocalDate.now().atTime(time);
+		if (firstRunDateTime0.isBefore(now))
+			firstRunDateTime1 = firstRunDateTime0.plusDays(1);
 		else
-			firstRunDateTime = LocalDate.now().plusDays(1).atTime(time);
+			firstRunDateTime1 = firstRunDateTime0;
 
 		Mutable<Source<List<Schedule>>> mutable = Mutable.nil();
 
 		mutable.set(new Source<List<Schedule>>() {
-			private LocalDateTime dateTime = firstRunDateTime;
+			private LocalDateTime dateTime = firstRunDateTime1;
 
 			public List<Schedule> source() {
 				runnable.run();
-				dateTime = dateTime.plusDays(1);
-				return Arrays.asList(new Schedule(dateTime, mutable.get()));
+				return Arrays.asList(new Schedule(dateTime = dateTime.plusDays(1), mutable.get()));
 			}
 		});
 
-		return new Schedule(firstRunDateTime, mutable.get());
+		return new Schedule(firstRunDateTime1, mutable.get());
 	}
 
 	private Schedule repeat(int seconds, Runnable runnable) {

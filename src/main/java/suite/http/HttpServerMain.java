@@ -11,19 +11,22 @@ import suite.immutable.IMap;
 import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.To;
+import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
 
 // java -cp target/suite-1.0-jar-with-dependencies.jar suite.http.HttpServerMain
-public class HttpServerMain {
+public class HttpServerMain extends ExecutableProgram {
 
 	private Authenticator authenticator = (username, password) -> true //
 			&& String_.equals(username, "user") //
 			&& String_.equals(password, "");
 
 	public static void main(String[] args) {
-		new HttpServerMain().run();
+		Util.run(HttpServerMain.class, args);
 	}
 
-	private void run() {
+	@Override
+	protected boolean run(String[] args) {
 		IMap<String, HttpHandler> empty = IMap.empty();
 
 		HttpHandler handler0 = request -> {
@@ -39,8 +42,11 @@ public class HttpServerMain {
 		};
 
 		new HttpServer().run(dispatch(empty //
+				.put("site", new HttpSessionController(authenticator).getSessionHandler(handler0)) //
 				.put("path", handlePath(Constants.tmp)) //
-				.put("site", new HttpSessionController(authenticator).getSessionHandler(handler0))));
+		));
+
+		return true;
 	}
 
 	private HttpHandler dispatch(IMap<String, HttpHandler> map) {

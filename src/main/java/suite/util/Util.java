@@ -2,12 +2,16 @@ package suite.util;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Level;
 
 import suite.os.LogUtil;
+import suite.primitive.IntMutable;
+import suite.primitive.IntSource.IntSource_;
 import suite.sample.Profiler;
+import suite.util.Thread_.RunnableEx;
 
 public class Util {
 
@@ -78,44 +82,54 @@ public class Util {
 		});
 	}
 
+	public static void run(RunnableEx runnableEx, RunOption runOption) {
+	}
+
 	public static void run(Class<? extends ExecutableProgram> clazz, String[] args) {
 		run(clazz, args, RunOption.RUN____);
 	}
 
 	public static void run(Class<? extends ExecutableProgram> clazz, String[] args, RunOption runOption) {
 		LogUtil.initLog4j(Level.INFO);
-		Runnable runnable;
-		int[] code = new int[1];
+		IntMutable mutableCode = IntMutable.nil();
 
-		try (ExecutableProgram main_ = clazz.newInstance()) {
-			runnable = () -> {
-				try {
-					code[0] = main_.run(args) ? 0 : 1;
-				} catch (Throwable ex) {
-					LogUtil.fatal(ex);
-					code[0] = 2;
-				}
-			};
-
-			switch (runOption) {
-			case PROFILE:
-				new Profiler().profile(runnable);
-				break;
-			case RUN____:
-				runnable.run();
-				break;
-			case TIME___:
-				LogUtil.duration(clazz.getSimpleName(), () -> {
-					runnable.run();
-					return Boolean.TRUE;
-				});
+		Callable<Integer> runnableEx = () -> {
+			try (ExecutableProgram main_ = clazz.newInstance()) {
+				return main_.run(args) ? 0 : 1;
+			} catch (ReflectiveOperationException ex) {
+				LogUtil.fatal(ex);
+				return 2;
 			}
-		} catch (ReflectiveOperationException ex) {
-			LogUtil.fatal(ex);
-			code[0] = 2;
+		};
+
+		IntSource_ source = () -> {
+			try {
+				return runnableEx.call();
+			} catch (Throwable ex) {
+				LogUtil.fatal(ex);
+				return 2;
+			}
+		};
+
+		Runnable runnable = () -> mutableCode.set(source.source());
+
+		switch (runOption) {
+		case PROFILE:
+			new Profiler().profile(runnable);
+			break;
+		case RUN____:
+			runnable.run();
+			break;
+		case TIME___:
+			LogUtil.duration(clazz.getSimpleName(), () -> {
+				runnable.run();
+				return Boolean.TRUE;
+			});
 		}
 
-		System.exit(code[0]);
+		int code = mutableCode.get();
+		if (code != 0)
+			System.exit(code);
 	}
 
 	public static int temp() {
