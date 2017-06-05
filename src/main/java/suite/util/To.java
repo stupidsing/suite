@@ -13,6 +13,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -32,7 +33,6 @@ import java.util.function.IntFunction;
 
 import suite.Constants;
 import suite.adt.pair.Pair;
-import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
 import suite.primitive.FltFun.Obj_Flt;
@@ -326,7 +326,7 @@ public class To {
 	}
 
 	public static String string(Path path) {
-		return FileUtil.read(path);
+		return Rethrow.ex(() -> read_(path));
 	}
 
 	public static String string(Reader reader) {
@@ -366,6 +366,19 @@ public class To {
 
 	private static String yyyymmdd(TemporalAccessor ta) {
 		return Constants.dateTimeFormat.format(ta);
+	}
+
+	private static String read_(Path path) throws IOException {
+		byte[] bytes = Files.readAllBytes(path);
+		boolean isBomExist = 3 <= bytes.length //
+				&& bytes[0] == (byte) 0xEF //
+				&& bytes[1] == (byte) 0xBB //
+				&& bytes[2] == (byte) 0xBF;
+
+		if (!isBomExist)
+			return To.string(bytes);
+		else
+			return new String(bytes, 3, bytes.length - 3, Constants.charset);
 	}
 
 }

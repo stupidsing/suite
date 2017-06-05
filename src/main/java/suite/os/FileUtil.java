@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import suite.Constants;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Rethrow;
@@ -116,24 +115,7 @@ public class FileUtil {
 	}
 
 	public static String read(String filename) {
-		return Rethrow.ex(() -> read_(Paths.get(filename)));
-	}
-
-	public static String read(Path path) {
-		return Rethrow.ex(() -> read_(path));
-	}
-
-	private static String read_(Path path) throws IOException {
-		byte[] bytes = Files.readAllBytes(path);
-		boolean isBomExist = 3 <= bytes.length //
-				&& bytes[0] == (byte) 0xEF //
-				&& bytes[1] == (byte) 0xBB //
-				&& bytes[2] == (byte) 0xBF;
-
-		if (!isBomExist)
-			return To.string(bytes);
-		else
-			return new String(bytes, 3, bytes.length - 3, Constants.charset);
+		return To.string(Paths.get(filename));
 	}
 
 }

@@ -6,11 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import suite.os.FileUtil;
 import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 import suite.util.Rethrow;
+import suite.util.To;
 
 /**
  * Process #include tags.
@@ -56,7 +56,7 @@ public class IncludePreprocessor implements Fun<String, List<Run>> {
 			Path path = dir.resolve(in.substring(pos0 + open.length(), pos1));
 
 			if (included.add(path.toAbsolutePath()))
-				doIncludes(path.getParent(), FileUtil.read(path), false, runs);
+				doIncludes(path.getParent(), To.string(path), false, runs);
 
 			start = pos1 + close.length();
 		}

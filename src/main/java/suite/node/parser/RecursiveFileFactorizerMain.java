@@ -10,6 +10,7 @@ import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
+import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 import suite.wildcard.WildcardUtil;
@@ -30,7 +31,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 				.filter(path -> WildcardUtil.isMatch("*.sl", path.getFileName().toString())) //
 				.forEach(path -> {
 					RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
-					String s = FileUtil.read(path);
+					String s = To.string(path);
 					for (Pair<String, String> ft : fts)
 						s = recursiveFactorizer.rewrite(ft.t0, ft.t1, s);
 					try {

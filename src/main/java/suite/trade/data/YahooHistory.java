@@ -16,7 +16,6 @@ import suite.Constants;
 import suite.DailyMain;
 import suite.adt.pair.Pair;
 import suite.os.Execute;
-import suite.os.FileUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
@@ -58,7 +57,7 @@ public class YahooHistory extends ExecutableProgram {
 
 			Streamlet2<String, String> keyValues = Read.from(out.split("\n")) //
 					.concatMap(file -> {
-						String[] array = FileUtil.read(Paths.get(file)).split("\n");
+						String[] array = To.string(Paths.get(file)).split("\n");
 						String u = array[0];
 						int p0 = u.indexOf("?s=");
 						int p1 = u.indexOf("&", p0);
