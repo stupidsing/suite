@@ -91,8 +91,8 @@ public class FltFltMap {
 		return source_();
 	}
 
-	// public FltObjStreamlet<Float> stream() {
-	// return new FltObjStreamlet<>(() -> FltObjOutlet.of(source_()));
+	// public FltFltStreamlet stream() {
+	// return new FltFltStreamlet<>(() -> FltFltOutlet.of(source_()));
 	// }
 
 	private float put_(float key, float v1) {

@@ -92,8 +92,8 @@ public class FltLngMap {
 		return source_();
 	}
 
-	// public FltObjStreamlet<Long> stream() {
-	// return new FltObjStreamlet<>(() -> FltObjOutlet.of(source_()));
+	// public FltLngStreamlet stream() {
+	// return new FltLngStreamlet<>(() -> FltLngOutlet.of(source_()));
 	// }
 
 	private long put_(float key, long v1) {

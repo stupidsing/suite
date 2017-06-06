@@ -92,8 +92,8 @@ public class IntChrMap {
 		return source_();
 	}
 
-	// public IntObjStreamlet<Character> stream() {
-	// return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
+	// public IntChrStreamlet stream() {
+	// return new IntChrStreamlet<>(() -> IntChrOutlet.of(source_()));
 	// }
 
 	private char put_(int key, char v1) {

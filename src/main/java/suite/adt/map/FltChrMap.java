@@ -92,8 +92,8 @@ public class FltChrMap {
 		return source_();
 	}
 
-	// public FltObjStreamlet<Character> stream() {
-	// return new FltObjStreamlet<>(() -> FltObjOutlet.of(source_()));
+	// public FltChrStreamlet stream() {
+	// return new FltChrStreamlet<>(() -> FltChrOutlet.of(source_()));
 	// }
 
 	private char put_(float key, char v1) {

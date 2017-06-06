@@ -92,8 +92,8 @@ public class FltDblMap {
 		return source_();
 	}
 
-	// public FltObjStreamlet<Double> stream() {
-	// return new FltObjStreamlet<>(() -> FltObjOutlet.of(source_()));
+	// public FltDblStreamlet stream() {
+	// return new FltDblStreamlet<>(() -> FltDblOutlet.of(source_()));
 	// }
 
 	private double put_(float key, double v1) {

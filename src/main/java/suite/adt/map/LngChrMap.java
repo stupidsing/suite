@@ -92,8 +92,8 @@ public class LngChrMap {
 		return source_();
 	}
 
-	// public LngObjStreamlet<Character> stream() {
-	// return new LngObjStreamlet<>(() -> LngObjOutlet.of(source_()));
+	// public LngChrStreamlet stream() {
+	// return new LngChrStreamlet<>(() -> LngChrOutlet.of(source_()));
 	// }
 
 	private char put_(long key, char v1) {

@@ -92,8 +92,8 @@ public class IntFltMap {
 		return source_();
 	}
 
-	// public IntObjStreamlet<Float> stream() {
-	// return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
+	// public IntFltStreamlet stream() {
+	// return new IntFltStreamlet<>(() -> IntFltOutlet.of(source_()));
 	// }
 
 	private float put_(int key, float v1) {

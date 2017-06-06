@@ -92,8 +92,8 @@ public class LngFltMap {
 		return source_();
 	}
 
-	// public LngObjStreamlet<Float> stream() {
-	// return new LngObjStreamlet<>(() -> LngObjOutlet.of(source_()));
+	// public LngFltStreamlet stream() {
+	// return new LngFltStreamlet<>(() -> LngFltOutlet.of(source_()));
 	// }
 
 	private float put_(long key, float v1) {

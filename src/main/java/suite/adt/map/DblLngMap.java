@@ -92,8 +92,8 @@ public class DblLngMap {
 		return source_();
 	}
 
-	// public DblObjStreamlet<Long> stream() {
-	// return new DblObjStreamlet<>(() -> DblObjOutlet.of(source_()));
+	// public DblLngStreamlet stream() {
+	// return new DblLngStreamlet<>(() -> DblLngOutlet.of(source_()));
 	// }
 
 	private long put_(double key, long v1) {

@@ -92,8 +92,8 @@ public class IntDblMap {
 		return source_();
 	}
 
-	// public IntObjStreamlet<Double> stream() {
-	// return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
+	// public IntDblStreamlet stream() {
+	// return new IntDblStreamlet<>(() -> IntDblOutlet.of(source_()));
 	// }
 
 	private double put_(int key, double v1) {

@@ -92,8 +92,8 @@ public class DblChrMap {
 		return source_();
 	}
 
-	// public DblObjStreamlet<Character> stream() {
-	// return new DblObjStreamlet<>(() -> DblObjOutlet.of(source_()));
+	// public DblChrStreamlet stream() {
+	// return new DblChrStreamlet<>(() -> DblChrOutlet.of(source_()));
 	// }
 
 	private char put_(double key, char v1) {

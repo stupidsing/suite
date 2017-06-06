@@ -92,8 +92,8 @@ public class ChrIntMap {
 		return source_();
 	}
 
-	// public ChrObjStreamlet<Integer> stream() {
-	// return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(source_()));
+	// public ChrIntStreamlet stream() {
+	// return new ChrIntStreamlet<>(() -> ChrIntOutlet.of(source_()));
 	// }
 
 	private int put_(char key, int v1) {

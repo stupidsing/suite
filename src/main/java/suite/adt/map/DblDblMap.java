@@ -91,8 +91,8 @@ public class DblDblMap {
 		return source_();
 	}
 
-	// public DblObjStreamlet<Double> stream() {
-	// return new DblObjStreamlet<>(() -> DblObjOutlet.of(source_()));
+	// public DblDblStreamlet stream() {
+	// return new DblDblStreamlet<>(() -> DblDblOutlet.of(source_()));
 	// }
 
 	private double put_(double key, double v1) {

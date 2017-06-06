@@ -92,8 +92,8 @@ public class FltIntMap {
 		return source_();
 	}
 
-	// public FltObjStreamlet<Integer> stream() {
-	// return new FltObjStreamlet<>(() -> FltObjOutlet.of(source_()));
+	// public FltIntStreamlet stream() {
+	// return new FltIntStreamlet<>(() -> FltIntOutlet.of(source_()));
 	// }
 
 	private int put_(float key, int v1) {

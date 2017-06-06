@@ -91,8 +91,8 @@ public class IntIntMap {
 		return source_();
 	}
 
-	// public IntObjStreamlet<Integer> stream() {
-	// return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
+	// public IntIntStreamlet stream() {
+	// return new IntIntStreamlet<>(() -> IntIntOutlet.of(source_()));
 	// }
 
 	private int put_(int key, int v1) {

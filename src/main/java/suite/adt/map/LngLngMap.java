@@ -91,8 +91,8 @@ public class LngLngMap {
 		return source_();
 	}
 
-	// public LngObjStreamlet<Long> stream() {
-	// return new LngObjStreamlet<>(() -> LngObjOutlet.of(source_()));
+	// public LngLngStreamlet stream() {
+	// return new LngLngStreamlet<>(() -> LngLngOutlet.of(source_()));
 	// }
 
 	private long put_(long key, long v1) {

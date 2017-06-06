@@ -92,8 +92,8 @@ public class ChrDblMap {
 		return source_();
 	}
 
-	// public ChrObjStreamlet<Double> stream() {
-	// return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(source_()));
+	// public ChrDblStreamlet stream() {
+	// return new ChrDblStreamlet<>(() -> ChrDblOutlet.of(source_()));
 	// }
 
 	private double put_(char key, double v1) {

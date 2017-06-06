@@ -92,8 +92,8 @@ public class DblIntMap {
 		return source_();
 	}
 
-	// public DblObjStreamlet<Integer> stream() {
-	// return new DblObjStreamlet<>(() -> DblObjOutlet.of(source_()));
+	// public DblIntStreamlet stream() {
+	// return new DblIntStreamlet<>(() -> DblIntOutlet.of(source_()));
 	// }
 
 	private int put_(double key, int v1) {

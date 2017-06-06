@@ -92,8 +92,8 @@ public class LngIntMap {
 		return source_();
 	}
 
-	// public LngObjStreamlet<Integer> stream() {
-	// return new LngObjStreamlet<>(() -> LngObjOutlet.of(source_()));
+	// public LngIntStreamlet stream() {
+	// return new LngIntStreamlet<>(() -> LngIntOutlet.of(source_()));
 	// }
 
 	private int put_(long key, int v1) {

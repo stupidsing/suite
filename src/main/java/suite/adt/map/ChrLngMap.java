@@ -92,8 +92,8 @@ public class ChrLngMap {
 		return source_();
 	}
 
-	// public ChrObjStreamlet<Long> stream() {
-	// return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(source_()));
+	// public ChrLngStreamlet stream() {
+	// return new ChrLngStreamlet<>(() -> ChrLngOutlet.of(source_()));
 	// }
 
 	private long put_(char key, long v1) {

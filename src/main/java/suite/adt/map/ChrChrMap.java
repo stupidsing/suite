@@ -91,8 +91,8 @@ public class ChrChrMap {
 		return source_();
 	}
 
-	// public ChrObjStreamlet<Character> stream() {
-	// return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(source_()));
+	// public ChrChrStreamlet stream() {
+	// return new ChrChrStreamlet<>(() -> ChrChrOutlet.of(source_()));
 	// }
 
 	private char put_(char key, char v1) {

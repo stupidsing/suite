@@ -92,8 +92,8 @@ public class LngDblMap {
 		return source_();
 	}
 
-	// public LngObjStreamlet<Double> stream() {
-	// return new LngObjStreamlet<>(() -> LngObjOutlet.of(source_()));
+	// public LngDblStreamlet stream() {
+	// return new LngDblStreamlet<>(() -> LngDblOutlet.of(source_()));
 	// }
 
 	private double put_(long key, double v1) {
