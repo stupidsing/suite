@@ -35,6 +35,5 @@ replace-files() {
   done
 }
 
-replace-example() {
-  replace "sed 's/board/Board/g'" file.txt
-}
+# replace "sed 's/board/Board/g'" file.txt
+# find -name file\*.txt -type f | replace-files "sed 's/board/Board/g'"
