@@ -163,11 +163,11 @@ public class DblFunUtil {
 		return () -> iterator(source);
 	}
 
-	public static <T0, T1> Source<T1> map(Fun<T0, T1> fun0, Source<T0> source) {
-		Fun<T0, T1> fun1 = Rethrow.fun(fun0);
+	public static <T1> Source<T1> map(Dbl_Obj<T1> fun0, DblSource_ source) {
+		Dbl_Obj<T1> fun1 = fun0.rethrow();
 		return () -> {
-			T0 t0 = source.source();
-			return t0 != null ? fun1.apply(t0) : null;
+			double t0 = source.source();
+			return t0 != DblFunUtil.EMPTYVALUE ? fun1.apply(t0) : null;
 		};
 	}
 
