@@ -472,7 +472,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public Outlet<V> values() {
-		return map((k, v) -> v);
+		return map_((k, v) -> v);
 	}
 
 	private <O> Outlet<O> map_(ChrObj_Obj<V, O> fun0) {

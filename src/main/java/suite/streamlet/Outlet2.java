@@ -251,7 +251,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Outlet<K> keys() {
-		return map((k, v) -> k);
+		return map_((k, v) -> k);
 	}
 
 	public Pair<K, V> last() {
@@ -265,7 +265,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <O> Outlet<O> map(ObjObj_Obj<K, V, O> fun0) {
-		return Outlet.of(FunUtil2.map(fun0, source2));
+		return map_(fun0);
 	}
 
 	public <K1, V1> Outlet2<K1, V1> map2(ObjObj_Obj<K, V, K1> kf, ObjObj_Obj<K, V, V1> vf) {
@@ -470,7 +470,11 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Outlet<V> values() {
-		return map((k, v) -> v);
+		return map_((k, v) -> v);
+	}
+
+	private <O> Outlet<O> map_(ObjObj_Obj<K, V, O> fun0) {
+		return Outlet.of(FunUtil2.map(fun0, source2));
 	}
 
 	private <K1, V1> Outlet2<K1, V1> map2_(ObjObj_Obj<K, V, K1> kf, ObjObj_Obj<K, V, V1> vf) {
