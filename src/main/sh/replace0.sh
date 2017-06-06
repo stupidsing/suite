@@ -36,4 +36,4 @@ replace-files() {
 }
 
 # replace "sed 's/board/Board/g'" file.txt
-# find -name file\*.txt -type f | replace-files "sed 's/board/Board/g'"
+# find -name file\*.txt -type f | replace-files "sed 's/chalk/Chalk/g' | sed 's/board/Board/g'"
