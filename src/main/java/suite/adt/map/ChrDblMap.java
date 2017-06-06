@@ -7,8 +7,6 @@ import suite.primitive.ChrDblSink;
 import suite.primitive.ChrDblSource;
 import suite.primitive.Chr_Dbl;
 import suite.primitive.Dbl_Dbl;
-import suite.streamlet.ChrObjOutlet;
-import suite.streamlet.ChrObjStreamlet;
 
 /**
  * Map with character key and double value. Double.MIN_VALUE is not allowed in
@@ -94,9 +92,9 @@ public class ChrDblMap {
 		return source_();
 	}
 
-//	public ChrObjStreamlet<Double> stream() {
-//		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(source_()));
-//	}
+	// public ChrObjStreamlet<Double> stream() {
+	// return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(source_()));
+	// }
 
 	private double put_(char key, double v1) {
 		int mask = vs.length - 1;

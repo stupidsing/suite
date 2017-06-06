@@ -2,51 +2,52 @@ package suite.adt.map;
 
 import java.util.Arrays;
 
-import suite.adt.pair.IntIntPair;
-import suite.primitive.IntIntSink;
-import suite.primitive.IntIntSource;
-import suite.primitive.Int_Int;
+import suite.adt.pair.DblChrPair;
+import suite.primitive.DblChrSink;
+import suite.primitive.DblChrSource;
+import suite.primitive.Dbl_Chr;
+import suite.primitive.Chr_Chr;
 
 /**
- * Map with intacter key and int value. Integer.MIN_VALUE is not allowed in
+ * Map with doubleacter key and char value. Character.MIN_VALUE is not allowed in
  * values. Not thread-safe.
  *
  * @author ywsing
  */
-public class IntIntMap {
+public class DblChrMap {
 
-	public final static int EMPTYVALUE = Integer.MIN_VALUE;
+	public final static char EMPTYVALUE = Character.MIN_VALUE;
 
 	private int size;
-	private int[] ks;
-	private int[] vs;
+	private double[] ks;
+	private char[] vs;
 
-	public IntIntMap() {
+	public DblChrMap() {
 		this(8);
 	}
 
-	public IntIntMap(int capacity) {
+	public DblChrMap(int capacity) {
 		allocate(capacity);
 	}
 
-	public int computeIfAbsent(int key, Int_Int fun) {
-		int v = get(key);
+	public char computeIfAbsent(double key, Dbl_Chr fun) {
+		char v = get(key);
 		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
 
-	public void forEach(IntIntSink sink) {
-		IntIntPair pair = IntIntPair.of((int) 0, (int) 0);
-		IntIntSource source = source_();
+	public void forEach(DblChrSink sink) {
+		DblChrPair pair = DblChrPair.of((double) 0, (char) 0);
+		DblChrSource source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
 
-	public int get(int key) {
+	public char get(double key) {
 		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
-		int v;
+		int index = Double.hashCode(key) & mask;
+		char v;
 		while ((v = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
@@ -55,18 +56,18 @@ public class IntIntMap {
 		return v;
 	}
 
-	public int put(int key, int v) {
+	public char put(double key, char v) {
 		int capacity = vs.length;
 		size++;
 
 		if (capacity * 3 / 4 < size) {
 			int capacity1 = capacity * 2;
-			int[] ks0 = ks;
-			int[] vs0 = vs;
+			double[] ks0 = ks;
+			char[] vs0 = vs;
 			allocate(capacity1);
 
 			for (int i = 0; i < capacity; i++) {
-				int v_ = vs0[i];
+				char v_ = vs0[i];
 				if (v_ != EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
@@ -75,10 +76,10 @@ public class IntIntMap {
 		return put_(key, v);
 	}
 
-	public void update(int key, Int_Int fun) {
+	public void update(double key, Chr_Chr fun) {
 		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
-		int v;
+		int index = Double.hashCode(key) & mask;
+		char v;
 		while ((v = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
@@ -87,18 +88,18 @@ public class IntIntMap {
 		vs[index] = fun.apply(v);
 	}
 
-	public IntIntSource source() {
+	public DblChrSource source() {
 		return source_();
 	}
 
-	// public IntObjStreamlet<Integer> stream() {
-	// return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
+	// public DblObjStreamlet<Character> stream() {
+	// return new DblObjStreamlet<>(() -> DblObjOutlet.of(source_()));
 	// }
 
-	private int put_(int key, int v1) {
+	private char put_(double key, char v1) {
 		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
-		int v0;
+		int index = Double.hashCode(key) & mask;
+		char v0;
 		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
@@ -109,13 +110,13 @@ public class IntIntMap {
 		return v0;
 	}
 
-	private IntIntSource source_() {
-		return new IntIntSource() {
+	private DblChrSource source_() {
+		return new DblChrSource() {
 			private int capacity = vs.length;
 			private int index = 0;
 
-			public boolean source2(IntIntPair pair) {
-				int v;
+			public boolean source2(DblChrPair pair) {
+				char v;
 				while ((v = vs[index]) == EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
@@ -127,8 +128,8 @@ public class IntIntMap {
 	}
 
 	private void allocate(int capacity) {
-		ks = new int[capacity];
-		vs = new int[capacity];
+		ks = new double[capacity];
+		vs = new char[capacity];
 		Arrays.fill(vs, EMPTYVALUE);
 	}
 

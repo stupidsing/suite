@@ -2,51 +2,51 @@ package suite.adt.map;
 
 import java.util.Arrays;
 
-import suite.adt.pair.IntIntPair;
-import suite.primitive.IntIntSink;
-import suite.primitive.IntIntSource;
-import suite.primitive.Int_Int;
+import suite.adt.pair.ChrChrPair;
+import suite.primitive.ChrChrSink;
+import suite.primitive.ChrChrSource;
+import suite.primitive.Chr_Chr;
 
 /**
- * Map with intacter key and int value. Integer.MIN_VALUE is not allowed in
+ * Map with character key and char value. Character.MIN_VALUE is not allowed in
  * values. Not thread-safe.
  *
  * @author ywsing
  */
-public class IntIntMap {
+public class ChrChrMap {
 
-	public final static int EMPTYVALUE = Integer.MIN_VALUE;
+	public final static char EMPTYVALUE = Character.MIN_VALUE;
 
 	private int size;
-	private int[] ks;
-	private int[] vs;
+	private char[] ks;
+	private char[] vs;
 
-	public IntIntMap() {
+	public ChrChrMap() {
 		this(8);
 	}
 
-	public IntIntMap(int capacity) {
+	public ChrChrMap(int capacity) {
 		allocate(capacity);
 	}
 
-	public int computeIfAbsent(int key, Int_Int fun) {
-		int v = get(key);
+	public char computeIfAbsent(char key, Chr_Chr fun) {
+		char v = get(key);
 		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
 
-	public void forEach(IntIntSink sink) {
-		IntIntPair pair = IntIntPair.of((int) 0, (int) 0);
-		IntIntSource source = source_();
+	public void forEach(ChrChrSink sink) {
+		ChrChrPair pair = ChrChrPair.of((char) 0, (char) 0);
+		ChrChrSource source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
 
-	public int get(int key) {
+	public char get(char key) {
 		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
-		int v;
+		int index = Character.hashCode(key) & mask;
+		char v;
 		while ((v = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
@@ -55,18 +55,18 @@ public class IntIntMap {
 		return v;
 	}
 
-	public int put(int key, int v) {
+	public char put(char key, char v) {
 		int capacity = vs.length;
 		size++;
 
 		if (capacity * 3 / 4 < size) {
 			int capacity1 = capacity * 2;
-			int[] ks0 = ks;
-			int[] vs0 = vs;
+			char[] ks0 = ks;
+			char[] vs0 = vs;
 			allocate(capacity1);
 
 			for (int i = 0; i < capacity; i++) {
-				int v_ = vs0[i];
+				char v_ = vs0[i];
 				if (v_ != EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
@@ -75,10 +75,10 @@ public class IntIntMap {
 		return put_(key, v);
 	}
 
-	public void update(int key, Int_Int fun) {
+	public void update(char key, Chr_Chr fun) {
 		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
-		int v;
+		int index = Character.hashCode(key) & mask;
+		char v;
 		while ((v = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
@@ -87,18 +87,18 @@ public class IntIntMap {
 		vs[index] = fun.apply(v);
 	}
 
-	public IntIntSource source() {
+	public ChrChrSource source() {
 		return source_();
 	}
 
-	// public IntObjStreamlet<Integer> stream() {
-	// return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
+	// public ChrObjStreamlet<Character> stream() {
+	// return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(source_()));
 	// }
 
-	private int put_(int key, int v1) {
+	private char put_(char key, char v1) {
 		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
-		int v0;
+		int index = Character.hashCode(key) & mask;
+		char v0;
 		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
@@ -109,13 +109,13 @@ public class IntIntMap {
 		return v0;
 	}
 
-	private IntIntSource source_() {
-		return new IntIntSource() {
+	private ChrChrSource source_() {
+		return new ChrChrSource() {
 			private int capacity = vs.length;
 			private int index = 0;
 
-			public boolean source2(IntIntPair pair) {
-				int v;
+			public boolean source2(ChrChrPair pair) {
+				char v;
 				while ((v = vs[index]) == EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
@@ -127,8 +127,8 @@ public class IntIntMap {
 	}
 
 	private void allocate(int capacity) {
-		ks = new int[capacity];
-		vs = new int[capacity];
+		ks = new char[capacity];
+		vs = new char[capacity];
 		Arrays.fill(vs, EMPTYVALUE);
 	}
 

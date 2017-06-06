@@ -2,51 +2,51 @@ package suite.adt.map;
 
 import java.util.Arrays;
 
-import suite.adt.pair.IntIntPair;
-import suite.primitive.IntIntSink;
-import suite.primitive.IntIntSource;
-import suite.primitive.Int_Int;
+import suite.adt.pair.FltFltPair;
+import suite.primitive.FltFltSink;
+import suite.primitive.FltFltSource;
+import suite.primitive.Flt_Flt;
 
 /**
- * Map with intacter key and int value. Integer.MIN_VALUE is not allowed in
+ * Map with floatacter key and float value. Float.MIN_VALUE is not allowed in
  * values. Not thread-safe.
  *
  * @author ywsing
  */
-public class IntIntMap {
+public class FltFltMap {
 
-	public final static int EMPTYVALUE = Integer.MIN_VALUE;
+	public final static float EMPTYVALUE = Float.MIN_VALUE;
 
 	private int size;
-	private int[] ks;
-	private int[] vs;
+	private float[] ks;
+	private float[] vs;
 
-	public IntIntMap() {
+	public FltFltMap() {
 		this(8);
 	}
 
-	public IntIntMap(int capacity) {
+	public FltFltMap(int capacity) {
 		allocate(capacity);
 	}
 
-	public int computeIfAbsent(int key, Int_Int fun) {
-		int v = get(key);
+	public float computeIfAbsent(float key, Flt_Flt fun) {
+		float v = get(key);
 		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
 
-	public void forEach(IntIntSink sink) {
-		IntIntPair pair = IntIntPair.of((int) 0, (int) 0);
-		IntIntSource source = source_();
+	public void forEach(FltFltSink sink) {
+		FltFltPair pair = FltFltPair.of((float) 0, (float) 0);
+		FltFltSource source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
 
-	public int get(int key) {
+	public float get(float key) {
 		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
-		int v;
+		int index = Float.hashCode(key) & mask;
+		float v;
 		while ((v = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
@@ -55,18 +55,18 @@ public class IntIntMap {
 		return v;
 	}
 
-	public int put(int key, int v) {
+	public float put(float key, float v) {
 		int capacity = vs.length;
 		size++;
 
 		if (capacity * 3 / 4 < size) {
 			int capacity1 = capacity * 2;
-			int[] ks0 = ks;
-			int[] vs0 = vs;
+			float[] ks0 = ks;
+			float[] vs0 = vs;
 			allocate(capacity1);
 
 			for (int i = 0; i < capacity; i++) {
-				int v_ = vs0[i];
+				float v_ = vs0[i];
 				if (v_ != EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
@@ -75,10 +75,10 @@ public class IntIntMap {
 		return put_(key, v);
 	}
 
-	public void update(int key, Int_Int fun) {
+	public void update(float key, Flt_Flt fun) {
 		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
-		int v;
+		int index = Float.hashCode(key) & mask;
+		float v;
 		while ((v = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
@@ -87,18 +87,18 @@ public class IntIntMap {
 		vs[index] = fun.apply(v);
 	}
 
-	public IntIntSource source() {
+	public FltFltSource source() {
 		return source_();
 	}
 
-	// public IntObjStreamlet<Integer> stream() {
-	// return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
+	// public FltObjStreamlet<Float> stream() {
+	// return new FltObjStreamlet<>(() -> FltObjOutlet.of(source_()));
 	// }
 
-	private int put_(int key, int v1) {
+	private float put_(float key, float v1) {
 		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
-		int v0;
+		int index = Float.hashCode(key) & mask;
+		float v0;
 		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
@@ -109,13 +109,13 @@ public class IntIntMap {
 		return v0;
 	}
 
-	private IntIntSource source_() {
-		return new IntIntSource() {
+	private FltFltSource source_() {
+		return new FltFltSource() {
 			private int capacity = vs.length;
 			private int index = 0;
 
-			public boolean source2(IntIntPair pair) {
-				int v;
+			public boolean source2(FltFltPair pair) {
+				float v;
 				while ((v = vs[index]) == EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
@@ -127,8 +127,8 @@ public class IntIntMap {
 	}
 
 	private void allocate(int capacity) {
-		ks = new int[capacity];
-		vs = new int[capacity];
+		ks = new float[capacity];
+		vs = new float[capacity];
 		Arrays.fill(vs, EMPTYVALUE);
 	}
 

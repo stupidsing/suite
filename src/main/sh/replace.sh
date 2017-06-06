@@ -40,6 +40,7 @@ replace() {
   "
 }
 
+replace src/main/java/suite/adt/map/ChrDblMap.java
 replace src/main/java/suite/adt/map/ChrObjMap.java
 replace src/main/java/suite/adt/map/ObjChrMap.java
 replace src/main/java/suite/adt/pair/ChrDblPair.java

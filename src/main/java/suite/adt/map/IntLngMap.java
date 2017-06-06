@@ -2,51 +2,52 @@ package suite.adt.map;
 
 import java.util.Arrays;
 
-import suite.adt.pair.IntIntPair;
-import suite.primitive.IntIntSink;
-import suite.primitive.IntIntSource;
-import suite.primitive.Int_Int;
+import suite.adt.pair.IntLngPair;
+import suite.primitive.IntLngSink;
+import suite.primitive.IntLngSource;
+import suite.primitive.Int_Lng;
+import suite.primitive.Lng_Lng;
 
 /**
- * Map with intacter key and int value. Integer.MIN_VALUE is not allowed in
+ * Map with intacter key and long value. Long.MIN_VALUE is not allowed in
  * values. Not thread-safe.
  *
  * @author ywsing
  */
-public class IntIntMap {
+public class IntLngMap {
 
-	public final static int EMPTYVALUE = Integer.MIN_VALUE;
+	public final static long EMPTYVALUE = Long.MIN_VALUE;
 
 	private int size;
 	private int[] ks;
-	private int[] vs;
+	private long[] vs;
 
-	public IntIntMap() {
+	public IntLngMap() {
 		this(8);
 	}
 
-	public IntIntMap(int capacity) {
+	public IntLngMap(int capacity) {
 		allocate(capacity);
 	}
 
-	public int computeIfAbsent(int key, Int_Int fun) {
-		int v = get(key);
+	public long computeIfAbsent(int key, Int_Lng fun) {
+		long v = get(key);
 		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
 
-	public void forEach(IntIntSink sink) {
-		IntIntPair pair = IntIntPair.of((int) 0, (int) 0);
-		IntIntSource source = source_();
+	public void forEach(IntLngSink sink) {
+		IntLngPair pair = IntLngPair.of((int) 0, (long) 0);
+		IntLngSource source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
 
-	public int get(int key) {
+	public long get(int key) {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
-		int v;
+		long v;
 		while ((v = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
@@ -55,18 +56,18 @@ public class IntIntMap {
 		return v;
 	}
 
-	public int put(int key, int v) {
+	public long put(int key, long v) {
 		int capacity = vs.length;
 		size++;
 
 		if (capacity * 3 / 4 < size) {
 			int capacity1 = capacity * 2;
 			int[] ks0 = ks;
-			int[] vs0 = vs;
+			long[] vs0 = vs;
 			allocate(capacity1);
 
 			for (int i = 0; i < capacity; i++) {
-				int v_ = vs0[i];
+				long v_ = vs0[i];
 				if (v_ != EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
@@ -75,10 +76,10 @@ public class IntIntMap {
 		return put_(key, v);
 	}
 
-	public void update(int key, Int_Int fun) {
+	public void update(int key, Lng_Lng fun) {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
-		int v;
+		long v;
 		while ((v = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
@@ -87,18 +88,18 @@ public class IntIntMap {
 		vs[index] = fun.apply(v);
 	}
 
-	public IntIntSource source() {
+	public IntLngSource source() {
 		return source_();
 	}
 
-	// public IntObjStreamlet<Integer> stream() {
+	// public IntObjStreamlet<Long> stream() {
 	// return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
 	// }
 
-	private int put_(int key, int v1) {
+	private long put_(int key, long v1) {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
-		int v0;
+		long v0;
 		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
@@ -109,13 +110,13 @@ public class IntIntMap {
 		return v0;
 	}
 
-	private IntIntSource source_() {
-		return new IntIntSource() {
+	private IntLngSource source_() {
+		return new IntLngSource() {
 			private int capacity = vs.length;
 			private int index = 0;
 
-			public boolean source2(IntIntPair pair) {
-				int v;
+			public boolean source2(IntLngPair pair) {
+				long v;
 				while ((v = vs[index]) == EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
@@ -128,7 +129,7 @@ public class IntIntMap {
 
 	private void allocate(int capacity) {
 		ks = new int[capacity];
-		vs = new int[capacity];
+		vs = new long[capacity];
 		Arrays.fill(vs, EMPTYVALUE);
 	}
 
