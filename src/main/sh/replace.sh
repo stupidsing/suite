@@ -48,6 +48,7 @@ replace src/main/java/suite/adt/pair/ChrObjPair.java
 replace src/main/java/suite/primitive/Chr_Dbl.java
 replace src/main/java/suite/primitive/ChrDbl_Obj.java
 replace src/main/java/suite/primitive/ChrDbl_Flt.java
+replace src/main/java/suite/primitive/ChrDblFunUtil.java
 replace src/main/java/suite/primitive/ChrDblPredicate.java
 replace src/main/java/suite/primitive/ChrDblSink.java
 replace src/main/java/suite/primitive/ChrDblSource.java
