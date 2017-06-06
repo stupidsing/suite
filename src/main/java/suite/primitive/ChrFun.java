@@ -19,17 +19,27 @@ public class ChrFun {
 
 	@FunctionalInterface
 	public interface Chr_Obj<T> {
-		T apply(char c);
+		public T apply(char c);
+
+		public default Chr_Obj<T> rethrow() {
+			return i -> {
+				try {
+					return apply(i);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + i, ex);
+				}
+			};
+		}
 	}
 
 	@FunctionalInterface
 	public interface Obj_Chr<T> {
-		char apply(T t);
+		public char apply(T t);
 	}
 
 	@FunctionalInterface
 	public interface ObjObj_Chr<X, Y> {
-		char apply(X x, Y y);
+		public char apply(X x, Y y);
 	}
 
 }

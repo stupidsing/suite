@@ -19,17 +19,27 @@ public class FltFun {
 
 	@FunctionalInterface
 	public interface Flt_Obj<T> {
-		T apply(float c);
+		public T apply(float c);
+
+		public default Flt_Obj<T> rethrow() {
+			return i -> {
+				try {
+					return apply(i);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + i, ex);
+				}
+			};
+		}
 	}
 
 	@FunctionalInterface
 	public interface Obj_Flt<T> {
-		float apply(T t);
+		public float apply(T t);
 	}
 
 	@FunctionalInterface
 	public interface ObjObj_Flt<X, Y> {
-		float apply(X x, Y y);
+		public float apply(X x, Y y);
 	}
 
 }

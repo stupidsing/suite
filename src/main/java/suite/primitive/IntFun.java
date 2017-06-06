@@ -19,17 +19,27 @@ public class IntFun {
 
 	@FunctionalInterface
 	public interface Int_Obj<T> {
-		T apply(int c);
+		public T apply(int c);
+
+		public default Int_Obj<T> rethrow() {
+			return i -> {
+				try {
+					return apply(i);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + i, ex);
+				}
+			};
+		}
 	}
 
 	@FunctionalInterface
 	public interface Obj_Int<T> {
-		int apply(T t);
+		public int apply(T t);
 	}
 
 	@FunctionalInterface
 	public interface ObjObj_Int<X, Y> {
-		int apply(X x, Y y);
+		public int apply(X x, Y y);
 	}
 
 }

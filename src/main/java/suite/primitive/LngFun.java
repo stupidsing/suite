@@ -19,17 +19,27 @@ public class LngFun {
 
 	@FunctionalInterface
 	public interface Lng_Obj<T> {
-		T apply(long c);
+		public T apply(long c);
+
+		public default Lng_Obj<T> rethrow() {
+			return i -> {
+				try {
+					return apply(i);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + i, ex);
+				}
+			};
+		}
 	}
 
 	@FunctionalInterface
 	public interface Obj_Lng<T> {
-		long apply(T t);
+		public long apply(T t);
 	}
 
 	@FunctionalInterface
 	public interface ObjObj_Lng<X, Y> {
-		long apply(X x, Y y);
+		public long apply(X x, Y y);
 	}
 
 }

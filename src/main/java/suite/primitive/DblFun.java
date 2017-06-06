@@ -19,17 +19,27 @@ public class DblFun {
 
 	@FunctionalInterface
 	public interface Dbl_Obj<T> {
-		T apply(double c);
+		public T apply(double c);
+
+		public default Dbl_Obj<T> rethrow() {
+			return i -> {
+				try {
+					return apply(i);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + i, ex);
+				}
+			};
+		}
 	}
 
 	@FunctionalInterface
 	public interface Obj_Dbl<T> {
-		double apply(T t);
+		public double apply(T t);
 	}
 
 	@FunctionalInterface
 	public interface ObjObj_Dbl<X, Y> {
-		double apply(X x, Y y);
+		public double apply(X x, Y y);
 	}
 
 }
