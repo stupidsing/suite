@@ -51,6 +51,7 @@ replace src/main/java/suite/primitive/ChrDblPredicate.java
 replace src/main/java/suite/primitive/ChrDblSink.java
 replace src/main/java/suite/primitive/ChrDblSource.java
 replace src/main/java/suite/primitive/ChrFun.java
+replace src/main/java/suite/primitive/ChrFunUtil.java
 replace src/main/java/suite/primitive/ChrMutable.java
 replace src/main/java/suite/primitive/ChrObj_Dbl.java
 replace src/main/java/suite/primitive/ChrObjFunUtil.java
