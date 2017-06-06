@@ -472,7 +472,7 @@ public class LngObjOutlet<V> implements Iterable<LngObjPair<V>> {
 	}
 
 	public Outlet<V> values() {
-		return map((k, v) -> v);
+		return map_((k, v) -> v);
 	}
 
 	private <O> Outlet<O> map_(LngObj_Obj<V, O> fun0) {

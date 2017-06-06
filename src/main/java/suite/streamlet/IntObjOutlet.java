@@ -472,7 +472,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public Outlet<V> values() {
-		return map((k, v) -> v);
+		return map_((k, v) -> v);
 	}
 
 	private <O> Outlet<O> map_(IntObj_Obj<V, O> fun0) {

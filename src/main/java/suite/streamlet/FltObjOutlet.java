@@ -472,7 +472,7 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	public Outlet<V> values() {
-		return map((k, v) -> v);
+		return map_((k, v) -> v);
 	}
 
 	private <O> Outlet<O> map_(FltObj_Obj<V, O> fun0) {

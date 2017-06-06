@@ -472,7 +472,7 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	public Outlet<V> values() {
-		return map((k, v) -> v);
+		return map_((k, v) -> v);
 	}
 
 	private <O> Outlet<O> map_(DblObj_Obj<V, O> fun0) {
