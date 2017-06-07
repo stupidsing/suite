@@ -74,10 +74,6 @@ public class DatePeriod extends Range<LocalDate> {
 		return backTestDaysBefore_(from, to, nDays, alignment);
 	}
 
-	public boolean contains(LocalDate date) {
-		return from.compareTo(date) <= 0 && date.compareTo(to) < 0;
-	}
-
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == DatePeriod.class) {
