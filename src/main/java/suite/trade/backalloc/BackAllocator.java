@@ -25,7 +25,7 @@ public interface BackAllocator {
 		 *         date. The assets will be allocated according to potential
 		 *         values pro-rata.
 		 */
-		public List<Pair<String, Double>> onDate(LocalDateTime backTestDt, int index);
+		public List<Pair<String, Double>> onDateTime(LocalDateTime backTestDt, int index);
 	}
 
 }

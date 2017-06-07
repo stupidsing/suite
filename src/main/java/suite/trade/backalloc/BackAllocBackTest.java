@@ -155,7 +155,7 @@ public class BackAllocBackTest {
 					Valuation val = account.valuation(latestPriceBySymbol);
 					valuations_[i] = (float) (valuation = val.sum());
 
-					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDate(dt, index);
+					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(dt, index);
 					Map<String, Float> latestPriceBySymbol_ = latestPriceBySymbol;
 					double valuation_ = valuation;
 

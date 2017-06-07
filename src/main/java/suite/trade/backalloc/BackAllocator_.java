@@ -103,11 +103,11 @@ public class BackAllocator_ {
 				private LocalDateTime date0;
 				private List<Pair<String, Double>> result0;
 
-				public List<Pair<String, Double>> onDate(LocalDateTime backTestDt0, int index) {
+				public List<Pair<String, Double>> onDateTime(LocalDateTime backTestDt0, int index) {
 					LocalDateTime backTestDt1 = backTestDt0.minusDays(backTestDt0.toLocalDate().toEpochDay() % tradeFrequency);
 					if (!Objects.equals(date0, backTestDt1)) {
 						date0 = backTestDt1;
-						return result0 = onDateTime.onDate(backTestDt1, index);
+						return result0 = onDateTime.onDateTime(backTestDt1, index);
 					} else
 						return result0;
 				}
@@ -158,7 +158,7 @@ public class BackAllocator_ {
 			OnDateTime onDateTime = backAllocator0.allocate(dataSourceBySymbol, dts);
 
 			return (backTestDt, index) -> {
-				List<Pair<String, Double>> ratioBySymbol = onDateTime.onDate(backTestDt, index);
+				List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(backTestDt, index);
 				System.out.println("ratioBySymbol = " + ratioBySymbol);
 				return ratioBySymbol;
 			};
@@ -172,7 +172,7 @@ public class BackAllocator_ {
 			OnDateTime onDateTime = backAllocator1.allocate(dataSourceBySymbol, dts);
 
 			return (backTestDt, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDate(backTestDt, index);
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(backTestDt, index);
 				double each = 1d / Read.from2(potentialBySymbol).size();
 
 				return Read.from2(potentialBySymbol) //
@@ -184,7 +184,7 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator filterAssets(Predicate<String> pred, BackAllocator backAllocator) {
-		return (dataSourceBySymbol, dts) -> backAllocator.allocate(dataSourceBySymbol.filterKey(pred), dts)::onDate;
+		return (dataSourceBySymbol, dts) -> backAllocator.allocate(dataSourceBySymbol.filterKey(pred), dts)::onDateTime;
 	}
 
 	public static BackAllocator filterShorts(BackAllocator backAllocator) {
@@ -277,7 +277,7 @@ public class BackAllocator_ {
 			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol, dts);
 
 			return (backTestDt, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDate(backTestDt, index);
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(backTestDt, index);
 				return scale(potentialBySymbol, 1d / totalPotential(potentialBySymbol));
 			};
 		};
@@ -414,7 +414,7 @@ public class BackAllocator_ {
 					}) //
 					.collect(As::streamlet2);
 
-			return backAllocator.allocate(dataSourceBySymbol1, dts_)::onDate;
+			return backAllocator.allocate(dataSourceBySymbol1, dts_)::onDateTime;
 		};
 	}
 
@@ -450,7 +450,7 @@ public class BackAllocator_ {
 			OnDateTime onDateTime = backAllocator1.allocate(dataSourceBySymbol, dts);
 
 			return (backTestDt, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDate(backTestDt, index);
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(backTestDt, index);
 				double totalPotential = totalPotential(potentialBySymbol);
 				if (1d < totalPotential)
 					return scale(potentialBySymbol, 1d / totalPotential);
@@ -465,7 +465,7 @@ public class BackAllocator_ {
 			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol, dts);
 
 			return (backTestDt, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDate(backTestDt, index);
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(backTestDt, index);
 
 				return Read.from2(potentialBySymbol) //
 						.map2(BackAllocator_::validate) //
