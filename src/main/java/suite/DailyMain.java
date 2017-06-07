@@ -22,13 +22,13 @@ import suite.trade.DatePeriod;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.analysis.Summarize;
-import suite.trade.assetalloc.AssetAllocBackTest;
-import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
-import suite.trade.assetalloc.AssetAllocConfiguration;
-import suite.trade.assetalloc.AssetAllocator;
-import suite.trade.assetalloc.AssetAllocator_;
-import suite.trade.assetalloc.MovingAvgMeanReversionAssetAllocator0;
-import suite.trade.assetalloc.ReverseCorrelateAssetAllocator;
+import suite.trade.backalloc.BackAllocBackTest;
+import suite.trade.backalloc.BackAllocConfiguration;
+import suite.trade.backalloc.BackAllocator;
+import suite.trade.backalloc.BackAllocator_;
+import suite.trade.backalloc.MovingAvgMeanReversionBackAllocator0;
+import suite.trade.backalloc.ReverseCorrelateBackAllocator;
+import suite.trade.backalloc.BackAllocBackTest.Simulate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -53,10 +53,10 @@ public class DailyMain extends ExecutableProgram {
 	private LocalDate today = LocalDate.now();
 	private Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today);
 
-	public final AssetAllocConfiguration aac_bb = assetAllocConfigurationOf(AssetAllocator_.bollingerBands1());
-	public final AssetAllocConfiguration aac_pmamr = assetAllocConfigurationOf(MovingAvgMeanReversionAssetAllocator0.of(log));
-	public final AssetAllocConfiguration aac_pmmmr = assetAllocConfigurationOf(AssetAllocator_.movingMedianMeanReversion());
-	public final AssetAllocConfiguration aac_revco = assetAllocConfigurationOf(ReverseCorrelateAssetAllocator.of());
+	public final BackAllocConfiguration aac_bb = assetAllocConfigurationOf(BackAllocator_.bollingerBands1());
+	public final BackAllocConfiguration aac_pmamr = assetAllocConfigurationOf(MovingAvgMeanReversionBackAllocator0.of(log));
+	public final BackAllocConfiguration aac_pmmmr = assetAllocConfigurationOf(BackAllocator_.movingMedianMeanReversion());
+	public final BackAllocConfiguration aac_revco = assetAllocConfigurationOf(ReverseCorrelateBackAllocator.of());
 
 	private class Result {
 		private String strategy;
@@ -229,8 +229,8 @@ public class DailyMain extends ExecutableProgram {
 		return new Result(tag, trades);
 	}
 
-	public AssetAllocConfiguration assetAllocConfigurationOf(AssetAllocator assetAllocator) {
-		return new AssetAllocConfiguration(assets, assetAllocator);
+	public BackAllocConfiguration assetAllocConfigurationOf(BackAllocator backAllocator) {
+		return new BackAllocConfiguration(assets, backAllocator);
 	}
 
 	private Result pairs(float fund, String symbol0, String symbol1) {
@@ -251,24 +251,24 @@ public class DailyMain extends ExecutableProgram {
 		return alloc("qq/" + symbol0 + "/" + symbol1, fund, questoaQuella(symbol0, symbol1));
 	}
 
-	public AssetAllocConfiguration pairs(String symbol0, String symbol1) {
+	public BackAllocConfiguration pairs(String symbol0, String symbol1) {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
-		AssetAllocator assetAllocator = AssetAllocator_.byPairs(cfg, symbol0, symbol1);
-		return new AssetAllocConfiguration(assets, assetAllocator);
+		BackAllocator backAllocator = BackAllocator_.byPairs(cfg, symbol0, symbol1);
+		return new BackAllocConfiguration(assets, backAllocator);
 	}
 
-	public AssetAllocConfiguration questoaQuella(String symbol0, String symbol1) {
+	public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
-		AssetAllocator assetAllocator = AssetAllocator_.questoQuella(symbol0, symbol1);
-		return new AssetAllocConfiguration(assets, assetAllocator);
+		BackAllocator backAllocator = BackAllocator_.questoQuella(symbol0, symbol1);
+		return new BackAllocConfiguration(assets, backAllocator);
 	}
 
-	private Result alloc(String tag, float fund, AssetAllocConfiguration pair) {
-		return alloc(tag, fund, pair.assetAllocator, pair.assets);
+	private Result alloc(String tag, float fund, BackAllocConfiguration pair) {
+		return alloc(tag, fund, pair.backAllocator, pair.assets);
 	}
 
-	private Result alloc(String tag, float fund, AssetAllocator assetAllocator, Streamlet<Asset> assets) {
-		Simulate sim = AssetAllocBackTest.ofNow(cfg, assets, assetAllocator, log).simulate(fund);
+	private Result alloc(String tag, float fund, BackAllocator backAllocator, Streamlet<Asset> assets) {
+		Simulate sim = BackAllocBackTest.ofNow(cfg, assets, backAllocator, log).simulate(fund);
 
 		Account account0 = Account.fromPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
 		Account account1 = sim.account;

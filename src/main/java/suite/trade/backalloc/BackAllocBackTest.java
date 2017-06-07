@@ -1,4 +1,4 @@
-package suite.trade.assetalloc;
+package suite.trade.backalloc;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.Trade;
 import suite.trade.Trade_;
-import suite.trade.assetalloc.AssetAllocator.OnDate;
+import suite.trade.backalloc.BackAllocator.OnDate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -34,50 +34,50 @@ import suite.util.List_;
 import suite.util.String_;
 import suite.util.To;
 
-public class AssetAllocBackTest {
+public class BackAllocBackTest {
 
 	private Configuration cfg = new ConfigurationImpl();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
 	private Streamlet<Asset> assets;
-	private AssetAllocator assetAllocator;
+	private BackAllocator backAllocator;
 	private LocalDate historyFromDate;
 	private Fun<List<LocalDate>, List<LocalDate>> datesPred;
 	private Sink<String> log;
 
-	public static AssetAllocBackTest ofNow( //
+	public static BackAllocBackTest ofNow( //
 			Configuration cfg, //
 			Streamlet<Asset> assets, //
-			AssetAllocator assetAllocator, //
+			BackAllocator backAllocator, //
 			Sink<String> log) {
 		LocalDate historyFromDate = LocalDate.now();
 		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Arrays.asList(List_.last(dates));
-		return new AssetAllocBackTest(cfg, assets, assetAllocator, historyFromDate, datesPred, log);
+		return new BackAllocBackTest(cfg, assets, backAllocator, historyFromDate, datesPred, log);
 	}
 
-	public static AssetAllocBackTest ofFromTo( //
+	public static BackAllocBackTest ofFromTo( //
 			Configuration cfg, //
 			Streamlet<Asset> assets, //
-			AssetAllocator assetAllocator, //
+			BackAllocator backAllocator, //
 			DatePeriod period, //
 			Sink<String> log) {
 		LocalDate historyFromDate = period.from;
 		Fun<List<LocalDate>, List<LocalDate>> datesPred = dates -> Read.from(dates).filter(period::contains).toList();
-		return new AssetAllocBackTest(cfg, assets, assetAllocator, historyFromDate, datesPred, log);
+		return new BackAllocBackTest(cfg, assets, backAllocator, historyFromDate, datesPred, log);
 	}
 
-	private AssetAllocBackTest( //
+	private BackAllocBackTest( //
 			Configuration cfg, //
 			Streamlet<Asset> assets, //
-			AssetAllocator assetAllocator, //
+			BackAllocator backAllocator, //
 			LocalDate from, //
 			Fun<List<LocalDate>, List<LocalDate>> datesPred, //
 			Sink<String> log) {
 		this.cfg = cfg;
 		this.assets = assets.distinct();
 		this.historyFromDate = from.minusYears(1);
-		this.assetAllocator = assetAllocator;
+		this.backAllocator = backAllocator;
 		this.datesPred = datesPred;
 		this.log = log;
 	}
@@ -134,7 +134,7 @@ public class AssetAllocBackTest {
 			List<LocalDate> dates = datesPred.apply(tradeDates);
 			int size = dates.size();
 
-			OnDate onDate = assetAllocator.allocate(dataSourceBySymbol1, dates);
+			OnDate onDate = backAllocator.allocate(dataSourceBySymbol1, dates);
 			Map<String, Float> latestPriceBySymbol = null;
 			float[] valuations_ = new float[size];
 			Exception exception_;

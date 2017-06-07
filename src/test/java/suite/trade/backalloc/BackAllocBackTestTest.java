@@ -1,4 +1,4 @@
-package suite.trade.assetalloc;
+package suite.trade.backalloc;
 
 import static org.junit.Assert.assertTrue;
 
@@ -10,12 +10,12 @@ import suite.trade.DatePeriod;
 import suite.trade.Trade_;
 import suite.trade.analysis.BackTester;
 import suite.trade.analysis.Summarize;
-import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
+import suite.trade.backalloc.BackAllocBackTest.Simulate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.util.FunUtil.Sink;
 
-public class AssetAllocBackTestTest {
+public class BackAllocBackTestTest {
 
 	private float initial = 1000000f;
 	private DatePeriod period = DatePeriod.ofYear(2017);
@@ -26,8 +26,8 @@ public class AssetAllocBackTestTest {
 
 	@Test
 	public void testBackTest() {
-		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator0.of(log);
-		Simulate sim = runner.backTest(assetAllocator, period);
+		BackAllocator backAllocator = MovingAvgMeanReversionBackAllocator0.of(log);
+		Simulate sim = runner.backTest(backAllocator, period);
 		Summarize.of(cfg, Read.from(sim.trades)).out(System.out::println, trade -> trade.symbol);
 		assertGrowth(out(sim));
 	}
@@ -35,8 +35,8 @@ public class AssetAllocBackTestTest {
 	@Test
 	public void testBackTestSingle() {
 		Asset asset = cfg.queryCompany("0945.HK");
-		AssetAllocator assetAllocator = MovingAvgMeanReversionAssetAllocator.of(log);
-		assertGrowth(out(runner.backTest(assetAllocator, period, Read.each(asset))));
+		BackAllocator backAllocator = MovingAvgMeanReversionBackAllocator.of(log);
+		assertGrowth(out(runner.backTest(backAllocator, period, Read.each(asset))));
 	}
 
 	private void assertGrowth(Simulate sim) {

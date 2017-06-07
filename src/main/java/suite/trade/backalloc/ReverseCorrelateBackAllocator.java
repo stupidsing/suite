@@ -1,4 +1,4 @@
-package suite.trade.assetalloc;
+package suite.trade.backalloc;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,7 +15,7 @@ import suite.trade.Trade_;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
-public class ReverseCorrelateAssetAllocator implements AssetAllocator {
+public class ReverseCorrelateBackAllocator implements BackAllocator {
 
 	private int tor;
 	private double kellyReduction;
@@ -25,15 +25,15 @@ public class ReverseCorrelateAssetAllocator implements AssetAllocator {
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
-	public static AssetAllocator of() {
+	public static BackAllocator of() {
 		return of(48, 9d, .03d);
 	}
 
-	public static AssetAllocator of(int tor, double kellyReduction, double reverseCorrelationThreshold) {
-		return AssetAllocator_.unleverage(new ReverseCorrelateAssetAllocator(tor, kellyReduction, reverseCorrelationThreshold));
+	public static BackAllocator of(int tor, double kellyReduction, double reverseCorrelationThreshold) {
+		return BackAllocator_.unleverage(new ReverseCorrelateBackAllocator(tor, kellyReduction, reverseCorrelationThreshold));
 	}
 
-	private ReverseCorrelateAssetAllocator(int tor, double kellyReduction, double reverseCorrelationThreshold) {
+	private ReverseCorrelateBackAllocator(int tor, double kellyReduction, double reverseCorrelationThreshold) {
 		this.tor = tor;
 		this.kellyReduction = kellyReduction;
 		this.reverseCorrelationThreshold = reverseCorrelationThreshold;

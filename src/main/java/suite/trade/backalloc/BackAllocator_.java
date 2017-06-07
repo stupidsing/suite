@@ -1,4 +1,4 @@
-package suite.trade.assetalloc;
+package suite.trade.backalloc;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -19,7 +19,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.MovingAverage;
-import suite.trade.assetalloc.AssetAllocator.OnDate;
+import suite.trade.backalloc.BackAllocator.OnDate;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
@@ -27,23 +27,23 @@ import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.trade.singlealloc.Strategos;
 import suite.util.String_;
 
-public class AssetAllocator_ {
+public class BackAllocator_ {
 
 	private static BollingerBands bb = new BollingerBands();
 	private static MovingAverage ma = new MovingAverage();
 	private static Statistic stat = new Statistic();
 	private static TimeSeries ts = new TimeSeries();
 
-	public static AssetAllocator bollingerBands() {
+	public static BackAllocator bollingerBands() {
 		return bollingerBands_(32, 0, 2);
 	}
 
-	public static AssetAllocator bollingerBands1() {
+	public static BackAllocator bollingerBands1() {
 		int lag = 1; // lag 1 day is better in back tests, do not know why
 		return bollingerBands_(32 + lag, lag, 2);
 	}
 
-	public static AssetAllocator byEma() {
+	public static BackAllocator byEma() {
 		int halfLife = 64;
 		double decay = Math.exp(Math.log(.5d) / halfLife);
 		double threshold = .9d;
@@ -64,22 +64,22 @@ public class AssetAllocator_ {
 		};
 	}
 
-	public static AssetAllocator byLastPriceChange() {
+	public static BackAllocator byLastPriceChange() {
 		return (dataSourceBySymbol, dates) -> (backTestDate, index) -> dataSourceBySymbol //
 				.map2((symbol, dataSource) -> dataSource.get(index - 2).price / dataSource.get(index - 1).price < .96d ? 1d : 0d) //
 				.toList();
 	}
 
-	public static AssetAllocator byPairs(Configuration cfg, String symbol0, String symbol1) {
-		return AssetAllocator_.filterAssets( //
+	public static BackAllocator byPairs(Configuration cfg, String symbol0, String symbol1) {
+		return BackAllocator_.filterAssets( //
 				symbol -> String_.equals(symbol, symbol1), //
-				AssetAllocator_.relativeToIndex( //
+				BackAllocator_.relativeToIndex( //
 						cfg, //
 						symbol0, //
 						rsi_(32, .3d, .7d)));
 	}
 
-	public static AssetAllocator byReturnsProRata() {
+	public static BackAllocator byReturnsProRata() {
 		return (dataSourceBySymbol, dates) -> (backTestDate, index) -> {
 			Streamlet2<String, Double> returns = dataSourceBySymbol //
 					.map2((symbol, dataSource) -> {
@@ -95,9 +95,9 @@ public class AssetAllocator_ {
 		};
 	}
 
-	public static AssetAllocator byTradeFrequency(int tradeFrequency, AssetAllocator assetAllocator) {
+	public static BackAllocator byTradeFrequency(int tradeFrequency, BackAllocator backAllocator) {
 		return (dataSourceBySymbol, dates) -> {
-			OnDate onDate = assetAllocator.allocate(dataSourceBySymbol, dates);
+			OnDate onDate = backAllocator.allocate(dataSourceBySymbol, dates);
 
 			return new OnDate() {
 				private LocalDate date0;
@@ -115,7 +115,7 @@ public class AssetAllocator_ {
 		};
 	}
 
-	public static AssetAllocator byWorstReturn() {
+	public static BackAllocator byWorstReturn() {
 		return (dataSourceBySymbol, dates) -> (backTestDate, index) -> dataSourceBySymbol //
 				.map2((symbol, dataSource) -> {
 					float[] prices = dataSource.prices;
@@ -129,10 +129,10 @@ public class AssetAllocator_ {
 				.toList();
 	}
 
-	public static AssetAllocator donchian() {
+	public static BackAllocator donchian() {
 		int window = 32;
 
-		return AssetAllocator_.unleverage((dataSourceBySymbol, dates) -> {
+		return BackAllocator_.unleverage((dataSourceBySymbol, dates) -> {
 			Map<String, Donchian> donchianBySymbol = dataSourceBySymbol //
 					.mapValue(dataSource -> ts.donchian(window, dataSource.prices)) //
 					.toMap();
@@ -153,9 +153,9 @@ public class AssetAllocator_ {
 		});
 	}
 
-	public static AssetAllocator dump(AssetAllocator assetAllocator0) {
+	public static BackAllocator dump(BackAllocator backAllocator0) {
 		return (dataSourceBySymbol, dates) -> {
-			OnDate onDate = assetAllocator0.allocate(dataSourceBySymbol, dates);
+			OnDate onDate = backAllocator0.allocate(dataSourceBySymbol, dates);
 
 			return (backTestDate, index) -> {
 				List<Pair<String, Double>> ratioBySymbol = onDate.onDate(backTestDate, index);
@@ -165,11 +165,11 @@ public class AssetAllocator_ {
 		};
 	}
 
-	public static AssetAllocator even(AssetAllocator assetAllocator0) {
-		AssetAllocator assetAllocator1 = filterShorts_(assetAllocator0);
+	public static BackAllocator even(BackAllocator backAllocator0) {
+		BackAllocator backAllocator1 = filterShorts_(backAllocator0);
 
 		return (dataSourceBySymbol, dates) -> {
-			OnDate onDate = assetAllocator1.allocate(dataSourceBySymbol, dates);
+			OnDate onDate = backAllocator1.allocate(dataSourceBySymbol, dates);
 
 			return (backTestDate, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDate.onDate(backTestDate, index);
@@ -183,22 +183,22 @@ public class AssetAllocator_ {
 		};
 	}
 
-	public static AssetAllocator filterAssets(Predicate<String> pred, AssetAllocator assetAllocator) {
-		return (dataSourceBySymbol, dates) -> assetAllocator.allocate(dataSourceBySymbol.filterKey(pred), dates)::onDate;
+	public static BackAllocator filterAssets(Predicate<String> pred, BackAllocator backAllocator) {
+		return (dataSourceBySymbol, dates) -> backAllocator.allocate(dataSourceBySymbol.filterKey(pred), dates)::onDate;
 	}
 
-	public static AssetAllocator filterShorts(AssetAllocator assetAllocator) {
-		return filterShorts_(assetAllocator);
+	public static BackAllocator filterShorts(BackAllocator backAllocator) {
+		return filterShorts_(backAllocator);
 	}
 
-	public static AssetAllocator movingAvg() {
+	public static BackAllocator movingAvg() {
 		int nPastDays = 64;
 		int nHoldDays = 8;
 		float threshold = .15f;
 		Strategos strategos = new Strategos();
 		BuySellStrategy mamr = strategos.movingAvgMeanReverting(nPastDays, nHoldDays, threshold);
 
-		return AssetAllocator_.unleverage((dataSourceBySymbol, dates) -> {
+		return BackAllocator_.unleverage((dataSourceBySymbol, dates) -> {
 			Map<String, GetBuySell> getBuySellBySymbol = dataSourceBySymbol //
 					.mapValue(dataSource -> mamr.analyze(dataSource.prices)) //
 					.toMap();
@@ -215,10 +215,10 @@ public class AssetAllocator_ {
 		});
 	}
 
-	public static AssetAllocator movingMedianMeanReversion() {
+	public static BackAllocator movingMedianMeanReversion() {
 		int windowSize0 = 1;
 		int windowSize1 = 32;
-		return AssetAllocator_.unleverage((dataSourceBySymbol, dates) -> {
+		return BackAllocator_.unleverage((dataSourceBySymbol, dates) -> {
 			Map<String, float[]> movingMedian0BySymbol = dataSourceBySymbol //
 					.mapValue(dataSource -> ma.movingMedian(dataSource.prices, windowSize0)) //
 					.toMap();
@@ -241,15 +241,15 @@ public class AssetAllocator_ {
 		});
 	}
 
-	public static AssetAllocator ofSingle(String symbol) {
+	public static BackAllocator ofSingle(String symbol) {
 		return (dataSourceBySymbol, dates) -> (backTestDate, index) -> Arrays.asList(Pair.of(symbol, 1d));
 	}
 
-	public static AssetAllocator questoQuella(String symbol0, String symbol1) {
+	public static BackAllocator questoQuella(String symbol0, String symbol1) {
 		int tor = 64;
 		double threshold = 0d;
 
-		return AssetAllocator_.filterAssets( //
+		return BackAllocator_.filterAssets( //
 				symbol -> String_.equals(symbol, symbol0) || String_.equals(symbol, symbol1), //
 				(dataSourceBySymbol, dates) -> {
 					Map<String, DataSource> dataSources = dataSourceBySymbol.toMap();
@@ -272,9 +272,9 @@ public class AssetAllocator_ {
 				});
 	}
 
-	public static AssetAllocator reallocate(AssetAllocator assetAllocator) {
+	public static BackAllocator reallocate(BackAllocator backAllocator) {
 		return (dataSourceBySymbol, dates) -> {
-			OnDate onDate = assetAllocator.allocate(dataSourceBySymbol, dates);
+			OnDate onDate = backAllocator.allocate(dataSourceBySymbol, dates);
 
 			return (backTestDate, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDate.onDate(backTestDate, index);
@@ -283,28 +283,28 @@ public class AssetAllocator_ {
 		};
 	}
 
-	public static AssetAllocator relative(AssetAllocator assetAllocator, DataSource index) {
-		return relative_(assetAllocator, index);
+	public static BackAllocator relative(BackAllocator backAllocator, DataSource index) {
+		return relative_(backAllocator, index);
 	}
 
-	public static AssetAllocator relativeToHsi(Configuration cfg, AssetAllocator assetAllocator) {
-		return relativeToIndex(cfg, "^HSI", assetAllocator);
+	public static BackAllocator relativeToHsi(Configuration cfg, BackAllocator backAllocator) {
+		return relativeToIndex(cfg, "^HSI", backAllocator);
 	}
 
-	public static AssetAllocator relativeToIndex(Configuration cfg, String indexSymbol, AssetAllocator assetAllocator) {
-		return relative_(assetAllocator, cfg.dataSourceWithLatestQuote(indexSymbol));
+	public static BackAllocator relativeToIndex(Configuration cfg, String indexSymbol, BackAllocator backAllocator) {
+		return relative_(backAllocator, cfg.dataSourceWithLatestQuote(indexSymbol));
 	}
 
-	public static AssetAllocator rsi() {
+	public static BackAllocator rsi() {
 		return rsi_(32, .3d, .7d);
 	}
 
-	public static AssetAllocator unleverage(AssetAllocator assetAllocator0) {
-		return unleverage_(assetAllocator0);
+	public static BackAllocator unleverage(BackAllocator backAllocator0) {
+		return unleverage_(backAllocator0);
 	}
 
-	public static AssetAllocator variableBollingerBands() {
-		return AssetAllocator_.unleverage((dataSourceBySymbol, dates) -> {
+	public static BackAllocator variableBollingerBands() {
+		return BackAllocator_.unleverage((dataSourceBySymbol, dates) -> {
 			return (backTestDate, index) -> dataSourceBySymbol //
 					.map2((symbol, dataSource) -> {
 						int last = index - 1;
@@ -328,8 +328,8 @@ public class AssetAllocator_ {
 		});
 	}
 
-	public static AssetAllocator threeMovingAvgs() {
-		return AssetAllocator_.unleverage((dataSourceBySymbol, dates) -> {
+	public static BackAllocator threeMovingAvgs() {
+		return BackAllocator_.unleverage((dataSourceBySymbol, dates) -> {
 			Map<String, float[]> movingAvg0BySymbol = dataSourceBySymbol //
 					.mapValue(dataSource -> ma.exponentialMovingGeometricAvg(dataSource.prices, .11d)) //
 					.toMap();
@@ -363,8 +363,8 @@ public class AssetAllocator_ {
 		return Read.from2(potentialBySymbol).collectAsDouble(As.sumOfDoubles((symbol, potential) -> potential));
 	}
 
-	private static AssetAllocator bollingerBands_(int backPos0, int backPos1, int k) {
-		return AssetAllocator_.unleverage((dataSourceBySymbol, dates) -> {
+	private static BackAllocator bollingerBands_(int backPos0, int backPos1, int k) {
+		return BackAllocator_.unleverage((dataSourceBySymbol, dates) -> {
 			Map<String, float[]> percentbBySymbol = dataSourceBySymbol //
 					.mapValue(dataSource -> bb.bb(dataSource.prices, backPos0, backPos1, k).percentb) //
 					.toMap();
@@ -390,7 +390,7 @@ public class AssetAllocator_ {
 		});
 	}
 
-	private static AssetAllocator relative_(AssetAllocator assetAllocator, DataSource indexDataSource) {
+	private static BackAllocator relative_(BackAllocator backAllocator, DataSource indexDataSource) {
 		return (dataSourceBySymbol0, dates_) -> {
 			Streamlet2<String, DataSource> dataSourceBySymbol1 = dataSourceBySymbol0 //
 					.mapValue(dataSource0 -> {
@@ -414,12 +414,12 @@ public class AssetAllocator_ {
 					}) //
 					.collect(As::streamlet2);
 
-			return assetAllocator.allocate(dataSourceBySymbol1, dates_)::onDate;
+			return backAllocator.allocate(dataSourceBySymbol1, dates_)::onDate;
 		};
 	}
 
-	private static AssetAllocator rsi_(int window, double threshold0, double threshold1) {
-		return AssetAllocator_.unleverage((dataSourceBySymbol, dates) -> (backTestDate, index) -> dataSourceBySymbol //
+	private static BackAllocator rsi_(int window, double threshold0, double threshold1) {
+		return BackAllocator_.unleverage((dataSourceBySymbol, dates) -> (backTestDate, index) -> dataSourceBySymbol //
 				.mapValue(dataSource -> {
 					float[] prices = dataSource.prices;
 					int u = 0;
@@ -443,11 +443,11 @@ public class AssetAllocator_ {
 				.toList();
 	}
 
-	private static AssetAllocator unleverage_(AssetAllocator assetAllocator0) {
-		AssetAllocator assetAllocator1 = filterShorts_(assetAllocator0);
+	private static BackAllocator unleverage_(BackAllocator backAllocator0) {
+		BackAllocator backAllocator1 = filterShorts_(backAllocator0);
 
 		return (dataSourceBySymbol, dates) -> {
-			OnDate onDate = assetAllocator1.allocate(dataSourceBySymbol, dates);
+			OnDate onDate = backAllocator1.allocate(dataSourceBySymbol, dates);
 
 			return (backTestDate, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDate.onDate(backTestDate, index);
@@ -460,15 +460,15 @@ public class AssetAllocator_ {
 		};
 	}
 
-	private static AssetAllocator filterShorts_(AssetAllocator assetAllocator) {
+	private static BackAllocator filterShorts_(BackAllocator backAllocator) {
 		return (dataSourceBySymbol, dates) -> {
-			OnDate onDate = assetAllocator.allocate(dataSourceBySymbol, dates);
+			OnDate onDate = backAllocator.allocate(dataSourceBySymbol, dates);
 
 			return (backTestDate, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDate.onDate(backTestDate, index);
 
 				return Read.from2(potentialBySymbol) //
-						.map2(AssetAllocator_::validate) //
+						.map2(BackAllocator_::validate) //
 						.filterValue(potential -> 0d < potential) //
 						.toList();
 			};

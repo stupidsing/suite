@@ -1,4 +1,4 @@
-package suite.trade.assetalloc;
+package suite.trade.backalloc;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,7 +13,7 @@ import suite.trade.data.DataSource;
  *
  * @author ywsing
  */
-public interface AssetAllocator {
+public interface BackAllocator {
 
 	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDate> dates);
 

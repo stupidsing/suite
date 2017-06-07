@@ -1,4 +1,4 @@
-package suite.trade.assetalloc;
+package suite.trade.backalloc;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,12 +21,12 @@ import suite.util.To;
 
 /**
  * Find some mean-reverting stock, make sure they are below their past moving
- * averages, predict their Sharpe ratios and Kelly criterions, then trade them
- * accordingly.
+ * averages, find their Sharpe ratio and Kelly criterion from past returns, then
+ * trade them accordingly.
  *
  * @author ywsing
  */
-public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
+public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 
 	private int top = 5;
 	private int tor = 64;
@@ -36,15 +36,17 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 	private MovingAverage ma = new MovingAverage();
 	private TimeSeries ts = new TimeSeries();
 
-	public static AssetAllocator of(Sink<String> log) {
-		return MovingAvgMeanReversionAssetAllocator.of_(log);
+	public static BackAllocator of(Sink<String> log) {
+		return BackAllocator_.reallocate( //
+				BackAllocator_.byTradeFrequency( //
+						3, MovingAvgMeanReversionBackAllocator0.of_(log)));
 	}
 
-	public static MovingAvgMeanReversionAssetAllocator of_(Sink<String> log) {
-		return new MovingAvgMeanReversionAssetAllocator(log);
+	public static MovingAvgMeanReversionBackAllocator0 of_(Sink<String> log) {
+		return new MovingAvgMeanReversionBackAllocator0(log);
 	}
 
-	private MovingAvgMeanReversionAssetAllocator(Sink<String> log) {
+	private MovingAvgMeanReversionBackAllocator0(Sink<String> log) {
 		this.log = log;
 	}
 
@@ -78,35 +80,33 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 			// ensure ADF < 0d: price is not random walk
 			// ensure Hurst exponent < .5d: price is weakly mean reverting
 			// ensure 0d < variance ratio: statistic is significant
-			// ensure 0 < half-life: determine investment period
 			return Read.from2(meanReversionStatBySymbol) //
 					.filterValue(mrs -> mrs.adf < 0d //
 							&& mrs.hurst < .5d //
-							&& 0d < mrs.varianceRatio //
-							&& mrs.movingAvgMeanReversionRatio() < 0d) //
+							&& 0d < mrs.varianceRatio) //
 					.map2((symbol, mrs) -> {
 						DataSource dataSource = dataSources.get(symbol);
 						double price = dataSource.prices[index - 1];
 
 						double lma = mrs.latestMovingAverage();
-						float diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
-						double dailyReturn = diff / price - dailyRiskFreeInterestRate;
-
+						double mamrRatio = mrs.movingAvgMeanReversionRatio();
+						double dailyReturn = (lma / price - 1d) * mamrRatio - dailyRiskFreeInterestRate;
 						ReturnsStat returnsStat = ts.returnsStat(dataSource.prices);
 						double sharpe = returnsStat.sharpeRatio();
-						double kelly = dailyReturn * price * price / mrs.movingAvgMeanReversion.sse;
+						double kelly = returnsStat.kellyCriterion();
 
 						PotentialStat potentialStat = new PotentialStat(dailyReturn, sharpe, kelly);
 
 						log.sink(symbol //
 								+ ", mrRatio = " + To.string(mrs.meanReversionRatio()) //
-								+ ", mamrRatio = " + To.string(mrs.movingAvgMeanReversionRatio()) //
-								+ ", " + To.string(price) + " => " + To.string(price + diff) //
+								+ ", mamrRatio = " + To.string(mamrRatio) //
+								+ ", " + To.string(price) + " => " + To.string(lma) //
 								+ ", " + potentialStat);
 
 						return potentialStat;
 					}) //
-					.filterValue(ps -> 0d < ps.kelly) //
+					.filterValue(ps -> 0d < ps.dailyReturn) //
+					.filterValue(ps -> 0d < ps.sharpe) //
 					.cons(Asset.cashSymbol, new PotentialStat(Trade_.riskFreeInterestRate, 1d, 0d)) //
 					.mapValue(ps -> ps.kelly) //
 					.sortBy((symbol, potential) -> -potential) //
@@ -148,8 +148,8 @@ public class MovingAvgMeanReversionAssetAllocator implements AssetAllocator {
 		public final LinearRegression meanReversion;
 		public final LinearRegression movingAvgMeanReversion;
 
-		public MeanReversionStat(DataSource dataSource, DatePeriod mrsPeriod) {
-			float[] prices = dataSource.range(mrsPeriod).prices;
+		public MeanReversionStat(DataSource dataSource0, DatePeriod mrsPeriod) {
+			float[] prices = dataSource0.range(mrsPeriod).prices;
 
 			movingAverage = ma.movingGeometricAvg(prices, tor);
 

@@ -156,6 +156,10 @@ public class DataSource {
 		return range_(period);
 	}
 
+	public DataSource range(String s0, String sx) {
+		return range_(s0, sx);
+	}
+
 	public void validate() {
 		int length = prices.length;
 		String date0 = dates[0];

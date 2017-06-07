@@ -6,9 +6,9 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
-import suite.trade.assetalloc.AssetAllocBackTest;
-import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
-import suite.trade.assetalloc.AssetAllocator;
+import suite.trade.backalloc.BackAllocBackTest;
+import suite.trade.backalloc.BackAllocator;
+import suite.trade.backalloc.BackAllocBackTest.Simulate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.util.FunUtil;
@@ -41,16 +41,16 @@ public class BackTester {
 		return Streamlet.concat(results0, results1).sort(Object_::compare).collect(As.joined());
 	}
 
-	public Simulate backTest(AssetAllocator assetAllocator, DatePeriod period) {
+	public Simulate backTest(BackAllocator backAllocator, DatePeriod period) {
 		Streamlet<Asset> assets0 = cfg.queryLeadingCompaniesByMarketCap(period.from); // hkex.getCompanies()
-		return backTest(assetAllocator, period, assets0);
+		return backTest(backAllocator, period, assets0);
 	}
 
-	public Simulate backTest(AssetAllocator assetAllocator, DatePeriod period, Streamlet<Asset> assets) {
-		AssetAllocBackTest backTest = AssetAllocBackTest.ofFromTo( //
+	public Simulate backTest(BackAllocator backAllocator, DatePeriod period, Streamlet<Asset> assets) {
+		BackAllocBackTest backTest = BackAllocBackTest.ofFromTo( //
 				cfg, //
 				assets.cons(Asset.hsi), //
-				assetAllocator, //
+				backAllocator, //
 				period, //
 				log);
 

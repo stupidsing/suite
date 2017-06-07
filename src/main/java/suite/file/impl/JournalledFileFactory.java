@@ -11,6 +11,9 @@ import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
+import suite.primitive.IntSource.IntObjSource;
+import suite.streamlet.IntObjOutlet;
+import suite.streamlet.IntObjStreamlet;
 import suite.util.DataInput_;
 import suite.util.DataOutput_;
 import suite.util.Serialize;
@@ -50,8 +53,7 @@ public class JournalledFileFactory {
 		SerializedPageFile<JournalEntry> journalPageFile = SerializedFileFactory.serialized(jpf, journalEntrySerializer);
 		SerializedPageFile<Integer> pointerPageFile = SerializedFileFactory.serialized(ppf, Serialize.int_);
 		int nCommittedJournalEntries0 = pointerPageFile.load(0);
-
-		List<JournalEntry> journalEntries = new ArrayList<>();
+		JournalEntries journalEntries = new JournalEntries();
 
 		for (int jp = 0; jp < nCommittedJournalEntries0; jp++)
 			journalEntries.add(journalPageFile.load(jp));
@@ -94,12 +96,12 @@ public class JournalledFileFactory {
 			 * Marks a snapshot that data can be recovered to.
 			 */
 			public synchronized void commit() {
-				while (nCommittedJournalEntries < journalEntries.size()) {
-					JournalEntry journalEntry = journalEntries.get(nCommittedJournalEntries++);
+				for (IntObjPair<JournalEntry> e : journalEntries.range(nCommittedJournalEntries)) {
+					JournalEntry journalEntry = e.t1;
 					dataFile.save(journalEntry.pointer, journalEntry.bytes);
 				}
 
-				if (8 < nCommittedJournalEntries)
+				if (128 < (nCommittedJournalEntries = journalEntries.size()))
 					saveJournal();
 			}
 
@@ -116,7 +118,7 @@ public class JournalledFileFactory {
 			private void saveJournal() {
 				pointerPageFile.save(0, nCommittedJournalEntries);
 
-				if (128 < nCommittedJournalEntries)
+				if (1024 < nCommittedJournalEntries)
 					applyJournal();
 			}
 
@@ -129,35 +131,63 @@ public class JournalledFileFactory {
 				dataFile.sync();
 
 				// clear all committed entries
-				journalEntries.subList(0, nCommittedJournalEntries).clear();
+				journalEntries.remove(0, nCommittedJournalEntries);
 
 				// reset committed pointer
 				pointerPageFile.save(0, nCommittedJournalEntries = 0);
 				pointerPageFile.sync();
 
 				// write back entries for next commit
-				for (int jp = 0; jp < journalEntries.size(); jp++)
-					journalPageFile.save(jp, journalEntries.get(jp));
+				for (IntObjPair<JournalEntry> e : journalEntries.range(0))
+					journalPageFile.save(e.t0, e.t1);
 			}
 
 			private IntObjPair<JournalEntry> findPageInJournal(int pointer) {
-				return findPageInJournal(pointer, 0);
+				return journalEntries.findPageInJournal(pointer, 0);
 			}
 
 			private IntObjPair<JournalEntry> findDirtyPageInJournal(int pointer) {
-				return findPageInJournal(pointer, nCommittedJournalEntries);
-			}
-
-			private IntObjPair<JournalEntry> findPageInJournal(int pointer, int start) {
-				IntObjPair<JournalEntry> pair = null;
-				for (int jp = start; jp < journalEntries.size(); jp++) {
-					JournalEntry journalEntry = journalEntries.get(jp);
-					if (journalEntry.pointer == pointer)
-						pair = IntObjPair.of(jp, journalEntry);
-				}
-				return pair;
+				return journalEntries.findPageInJournal(pointer, nCommittedJournalEntries);
 			}
 		};
+	}
+
+	private static class JournalEntries {
+		private List<JournalEntry> jes = new ArrayList<>();
+
+		private void add(JournalEntry je) {
+			jes.add(je);
+		}
+
+		private IntObjPair<JournalEntry> findPageInJournal(int pointer, int start) {
+			return range(start) //
+					.filterValue(journalEntry -> journalEntry.pointer == pointer) //
+					.last();
+		}
+
+		private IntObjStreamlet<JournalEntry> range(int start) {
+			return new IntObjStreamlet<>(() -> IntObjOutlet.of(new IntObjSource<JournalEntry>() {
+				private int index = start;
+				private int end = size();
+
+				public boolean source2(IntObjPair<JournalEntry> pair) {
+					boolean b = index < end;
+					if (b) {
+						pair.t0 = index;
+						pair.t1 = jes.get(index++);
+					}
+					return b;
+				}
+			}));
+		}
+
+		private void remove(int start, int end) {
+			jes.subList(start, end).clear();
+		}
+
+		private int size() {
+			return jes.size();
+		}
 	}
 
 	private static class JournalEntry {

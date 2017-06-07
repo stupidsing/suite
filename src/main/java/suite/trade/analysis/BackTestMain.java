@@ -10,9 +10,9 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
-import suite.trade.assetalloc.AssetAllocBackTest.Simulate;
-import suite.trade.assetalloc.AssetAllocConfiguration;
-import suite.trade.assetalloc.AssetAllocator_;
+import suite.trade.backalloc.BackAllocConfiguration;
+import suite.trade.backalloc.BackAllocator_;
+import suite.trade.backalloc.BackAllocBackTest.Simulate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.util.Util;
@@ -25,8 +25,8 @@ public class BackTestMain extends ExecutableProgram {
 	private Configuration cfg = new ConfigurationImpl();
 	private DailyMain dm = new DailyMain();
 
-	private AssetAllocConfiguration aac0;
-	private AssetAllocConfiguration aac1;
+	private BackAllocConfiguration aac0;
+	private BackAllocConfiguration aac1;
 
 	public static void main(String[] args) {
 		Util.run(BackTestMain.class, args);
@@ -34,9 +34,9 @@ public class BackTestMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		AssetAllocConfiguration aac_hsi = new AssetAllocConfiguration( //
+		BackAllocConfiguration aac_hsi = new BackAllocConfiguration( //
 				Read.each(Asset.hsi), //
-				AssetAllocator_.ofSingle(Asset.hsiSymbol));
+				BackAllocator_.ofSingle(Asset.hsiSymbol));
 
 		aac0 = aac_hsi;
 		aac1 = dm.aac_bb;
@@ -46,10 +46,10 @@ public class BackTestMain extends ExecutableProgram {
 		questoaQuella("0020.HK", "0004.HK");
 
 		aac0 = aac_hsi;
-		aac1 = dm.assetAllocConfigurationOf(AssetAllocator_.threeMovingAvgs());
+		aac1 = dm.assetAllocConfigurationOf(BackAllocator_.threeMovingAvgs());
 
 		aac0 = aac_hsi;
-		aac1 = dm.assetAllocConfigurationOf(AssetAllocator_.variableBollingerBands());
+		aac1 = dm.assetAllocConfigurationOf(BackAllocator_.variableBollingerBands());
 
 		// BEGIN
 		aac0 = aac_hsi;
@@ -60,9 +60,9 @@ public class BackTestMain extends ExecutableProgram {
 				.each(Boolean.FALSE, Boolean.TRUE) //
 				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
 				.map2((key, period) -> {
-					AssetAllocConfiguration aac = key ? aac1 : aac0;
+					BackAllocConfiguration aac = key ? aac1 : aac0;
 					Constants.testFlag = key;
-					return runner.backTest(aac.assetAllocator, period, aac.assets);
+					return runner.backTest(aac.backAllocator, period, aac.assets);
 				}) //
 				.collect(As::streamlet2);
 
@@ -87,8 +87,8 @@ public class BackTestMain extends ExecutableProgram {
 		aac1 = dm.questoaQuella(symbol0, symbol1);
 	}
 
-	private AssetAllocConfiguration pairOfSingle(String symbol) {
-		return new AssetAllocConfiguration(Read.each(cfg.queryCompany(symbol)), AssetAllocator_.ofSingle(symbol));
+	private BackAllocConfiguration pairOfSingle(String symbol) {
+		return new BackAllocConfiguration(Read.each(cfg.queryCompany(symbol)), BackAllocator_.ofSingle(symbol));
 	}
 
 }

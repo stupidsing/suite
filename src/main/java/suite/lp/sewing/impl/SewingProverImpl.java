@@ -278,7 +278,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private boolean isHasCut(List<Rule> rules) {
-		return Boolean.TRUE || Read.from(rules) //
+		return Read.from(rules) //
 				.map(rule -> new TreeRewriter().contains(ProverConstant.cut, rule.tail)) //
 				.isAny(b -> b);
 	}

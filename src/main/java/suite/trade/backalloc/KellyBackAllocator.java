@@ -1,4 +1,4 @@
-package suite.trade.assetalloc;
+package suite.trade.backalloc;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,17 +14,17 @@ import suite.trade.Trade_;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
-public class KellyAssetAllocator implements AssetAllocator {
+public class KellyBackAllocator implements BackAllocator {
 
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
-	public static AssetAllocator of() {
-		return AssetAllocator_.filterShorts(new KellyAssetAllocator());
+	public static BackAllocator of() {
+		return BackAllocator_.filterShorts(new KellyBackAllocator());
 	}
 
-	private KellyAssetAllocator() {
+	private KellyBackAllocator() {
 	}
 
 	@Override
