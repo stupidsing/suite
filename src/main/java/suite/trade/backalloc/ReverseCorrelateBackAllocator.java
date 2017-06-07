@@ -40,7 +40,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 	}
 
 	@Override
-	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDateTime> dts) {
+	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDateTime> dts) {
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 		Map<String, Map<DatePeriod, Double>> reverseCorrelationByPeriodBySymbol = dataSourceBySymbol //

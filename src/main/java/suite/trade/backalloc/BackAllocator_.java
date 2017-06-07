@@ -19,7 +19,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.MovingAverage;
-import suite.trade.backalloc.BackAllocator.OnDate;
+import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
@@ -97,9 +97,9 @@ public class BackAllocator_ {
 
 	public static BackAllocator byTradeFrequency(int tradeFrequency, BackAllocator backAllocator) {
 		return (dataSourceBySymbol, dts) -> {
-			OnDate onDate = backAllocator.allocate(dataSourceBySymbol, dts);
+			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol, dts);
 
-			return new OnDate() {
+			return new OnDateTime() {
 				private LocalDateTime date0;
 				private List<Pair<String, Double>> result0;
 
@@ -107,7 +107,7 @@ public class BackAllocator_ {
 					LocalDateTime backTestDt1 = backTestDt0.minusDays(backTestDt0.toLocalDate().toEpochDay() % tradeFrequency);
 					if (!Objects.equals(date0, backTestDt1)) {
 						date0 = backTestDt1;
-						return result0 = onDate.onDate(backTestDt1, index);
+						return result0 = onDateTime.onDate(backTestDt1, index);
 					} else
 						return result0;
 				}
@@ -155,10 +155,10 @@ public class BackAllocator_ {
 
 	public static BackAllocator dump(BackAllocator backAllocator0) {
 		return (dataSourceBySymbol, dts) -> {
-			OnDate onDate = backAllocator0.allocate(dataSourceBySymbol, dts);
+			OnDateTime onDateTime = backAllocator0.allocate(dataSourceBySymbol, dts);
 
 			return (backTestDt, index) -> {
-				List<Pair<String, Double>> ratioBySymbol = onDate.onDate(backTestDt, index);
+				List<Pair<String, Double>> ratioBySymbol = onDateTime.onDate(backTestDt, index);
 				System.out.println("ratioBySymbol = " + ratioBySymbol);
 				return ratioBySymbol;
 			};
@@ -169,10 +169,10 @@ public class BackAllocator_ {
 		BackAllocator backAllocator1 = filterShorts_(backAllocator0);
 
 		return (dataSourceBySymbol, dts) -> {
-			OnDate onDate = backAllocator1.allocate(dataSourceBySymbol, dts);
+			OnDateTime onDateTime = backAllocator1.allocate(dataSourceBySymbol, dts);
 
 			return (backTestDt, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDate.onDate(backTestDt, index);
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDate(backTestDt, index);
 				double each = 1d / Read.from2(potentialBySymbol).size();
 
 				return Read.from2(potentialBySymbol) //
@@ -274,10 +274,10 @@ public class BackAllocator_ {
 
 	public static BackAllocator reallocate(BackAllocator backAllocator) {
 		return (dataSourceBySymbol, dts) -> {
-			OnDate onDate = backAllocator.allocate(dataSourceBySymbol, dts);
+			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol, dts);
 
 			return (backTestDt, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDate.onDate(backTestDt, index);
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDate(backTestDt, index);
 				return scale(potentialBySymbol, 1d / totalPotential(potentialBySymbol));
 			};
 		};
@@ -447,10 +447,10 @@ public class BackAllocator_ {
 		BackAllocator backAllocator1 = filterShorts_(backAllocator0);
 
 		return (dataSourceBySymbol, dts) -> {
-			OnDate onDate = backAllocator1.allocate(dataSourceBySymbol, dts);
+			OnDateTime onDateTime = backAllocator1.allocate(dataSourceBySymbol, dts);
 
 			return (backTestDt, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDate.onDate(backTestDt, index);
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDate(backTestDt, index);
 				double totalPotential = totalPotential(potentialBySymbol);
 				if (1d < totalPotential)
 					return scale(potentialBySymbol, 1d / totalPotential);
@@ -462,10 +462,10 @@ public class BackAllocator_ {
 
 	private static BackAllocator filterShorts_(BackAllocator backAllocator) {
 		return (dataSourceBySymbol, dts) -> {
-			OnDate onDate = backAllocator.allocate(dataSourceBySymbol, dts);
+			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol, dts);
 
 			return (backTestDt, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDate.onDate(backTestDt, index);
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDate(backTestDt, index);
 
 				return Read.from2(potentialBySymbol) //
 						.map2(BackAllocator_::validate) //

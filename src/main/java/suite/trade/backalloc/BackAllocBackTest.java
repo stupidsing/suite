@@ -24,7 +24,7 @@ import suite.trade.Asset;
 import suite.trade.DatePeriod;
 import suite.trade.Trade;
 import suite.trade.Trade_;
-import suite.trade.backalloc.BackAllocator.OnDate;
+import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -138,7 +138,7 @@ public class BackAllocBackTest {
 			List<LocalDateTime> dts = dtsPred.apply(tradeDts);
 			int size = dts.size();
 
-			OnDate onDate = backAllocator.allocate(dataSourceBySymbol1, dts);
+			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol1, dts);
 			Map<String, Float> latestPriceBySymbol = null;
 			float[] valuations_ = new float[size];
 			Exception exception_;
@@ -155,7 +155,7 @@ public class BackAllocBackTest {
 					Valuation val = account.valuation(latestPriceBySymbol);
 					valuations_[i] = (float) (valuation = val.sum());
 
-					List<Pair<String, Double>> ratioBySymbol = onDate.onDate(dt, index);
+					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDate(dt, index);
 					Map<String, Float> latestPriceBySymbol_ = latestPriceBySymbol;
 					double valuation_ = valuation;
 

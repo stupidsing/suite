@@ -15,9 +15,9 @@ import suite.trade.data.DataSource;
  */
 public interface BackAllocator {
 
-	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDateTime> dts);
+	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDateTime> dts);
 
-	public interface OnDate {
+	public interface OnDateTime {
 
 		/**
 		 * @return a portfolio consisting of list of symbols and potential

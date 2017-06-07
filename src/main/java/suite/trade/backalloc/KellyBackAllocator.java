@@ -28,7 +28,7 @@ public class KellyBackAllocator implements BackAllocator {
 	}
 
 	@Override
-	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDateTime> dts) {
+	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDateTime> dts) {
 		double dailyInterestRate = Trade_.riskFreeInterestRate(1);
 
 		// TODO this should be the expected returns, not past returns!
