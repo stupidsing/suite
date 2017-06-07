@@ -1,6 +1,6 @@
 package suite.trade.backalloc;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import suite.adt.pair.Pair;
@@ -15,7 +15,7 @@ import suite.trade.data.DataSource;
  */
 public interface BackAllocator {
 
-	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDate> dates);
+	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDateTime> dts);
 
 	public interface OnDate {
 
@@ -25,7 +25,7 @@ public interface BackAllocator {
 		 *         date. The assets will be allocated according to potential
 		 *         values pro-rata.
 		 */
-		public List<Pair<String, Double>> onDate(LocalDate backTestDate, int index);
+		public List<Pair<String, Double>> onDate(LocalDateTime backTestDt, int index);
 	}
 
 }

@@ -53,10 +53,10 @@ public class DailyMain extends ExecutableProgram {
 	private LocalDate today = LocalDate.now();
 	private Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today);
 
-	public final BackAllocConfiguration aac_bb = assetAllocConfigurationOf(BackAllocator_.bollingerBands1());
-	public final BackAllocConfiguration aac_pmamr = assetAllocConfigurationOf(MovingAvgMeanReversionBackAllocator0.of(log));
-	public final BackAllocConfiguration aac_pmmmr = assetAllocConfigurationOf(BackAllocator_.movingMedianMeanReversion());
-	public final BackAllocConfiguration aac_revco = assetAllocConfigurationOf(ReverseCorrelateBackAllocator.of());
+	public final BackAllocConfiguration bac_bb = assetAllocConfigurationOf(BackAllocator_.bollingerBands1());
+	public final BackAllocConfiguration bac_pmamr = assetAllocConfigurationOf(MovingAvgMeanReversionBackAllocator0.of(log));
+	public final BackAllocConfiguration bac_pmmmr = assetAllocConfigurationOf(BackAllocator_.movingMedianMeanReversion());
+	public final BackAllocConfiguration bac_revco = assetAllocConfigurationOf(ReverseCorrelateBackAllocator.of());
 
 	private class Result {
 		private String strategy;
@@ -88,7 +88,7 @@ public class DailyMain extends ExecutableProgram {
 
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //
-				alloc("bb", 400000f, aac_bb), //
+				alloc("bb", 400000f, bac_bb), //
 				bug(), //
 				mamr(75000f), //
 				pairs(0f, "0052.HK", "0341.HK"), //
@@ -97,7 +97,7 @@ public class DailyMain extends ExecutableProgram {
 				pmmmr(75000f), //
 				questoaQuella(160000f, "0020.HK", "0004.HK"), //
 				questoaQuella(200000f, "0670.HK", "1055.HK"), //
-				alloc("revco", 80000f, aac_revco));
+				alloc("revco", 80000f, bac_revco));
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
 
@@ -239,12 +239,12 @@ public class DailyMain extends ExecutableProgram {
 
 	// portfolio-based moving average mean reversion
 	private Result pmamr(float fund) {
-		return alloc("pmamr", fund, aac_pmamr);
+		return alloc("pmamr", fund, bac_pmamr);
 	}
 
 	// portfolio-based moving median mean reversion
 	private Result pmmmr(float fund) {
-		return alloc("pmmmr", fund, aac_pmmmr);
+		return alloc("pmmmr", fund, bac_pmmmr);
 	}
 
 	private Result questoaQuella(float fund, String symbol0, String symbol1) {

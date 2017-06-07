@@ -1,6 +1,6 @@
 package suite.trade.backalloc;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,22 +49,22 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 	}
 
 	@Override
-	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDate> dates) {
+	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDateTime> dts) {
 		log.sink(dataSourceBySymbol.size() + " assets in data source");
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 		Map<String, Map<DatePeriod, MeanReversionStat>> meanReversionStatByPeriodBySymbol = dataSourceBySymbol //
 				.map2((symbol, dataSource) -> DatePeriod //
-						.of(dates) //
+						.ofDateTimes(dts) //
 						.plusDays(-tor) //
 						.backTestDaysBefore(256, 32) //
 						.map2(mrsPeriod -> meanReversionStat(symbol, dataSource, mrsPeriod)) //
 						.toMap()) //
 				.toMap();
 
-		return (backTestDate, index) -> {
+		return (backTestDt, index) -> {
 			Map<String, DataSource> dataSources = dataSourceBySymbol.toMap();
-			DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDate.minusDays(tor), 256, 32);
+			DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDt.minusDays(tor), 256, 32);
 
 			Map<String, MeanReversionStat> meanReversionStatBySymbol = dataSourceBySymbol //
 					.map2((symbol, dataSource) -> {

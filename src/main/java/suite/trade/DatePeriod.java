@@ -1,6 +1,7 @@
 package suite.trade;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +21,8 @@ public class DatePeriod extends Range<LocalDate> {
 
 	// align date range boundaries to reduce number of web queries (and
 	// calculations)
-	public static DatePeriod backTestDaysBefore(LocalDate date, int nDays, int alignment) {
+	public static DatePeriod backTestDaysBefore(LocalDateTime dt, int nDays, int alignment) {
+		LocalDate date = dt.toLocalDate();
 		return backTestDaysBefore_(date, date.plusDays(1), nDays, alignment).uniqueResult();
 	}
 
@@ -48,6 +50,16 @@ public class DatePeriod extends Range<LocalDate> {
 			toDate = toDate.compareTo(date) < 0 ? date : toDate;
 		}
 		return of_(frDate, toDate);
+	}
+
+	public static DatePeriod ofDateTimes(List<LocalDateTime> dts) {
+		LocalDateTime frDt = LocalDateTime.MAX;
+		LocalDateTime toDt = LocalDateTime.MIN;
+		for (LocalDateTime dt : dts) {
+			frDt = frDt.compareTo(dt) < 0 ? frDt : dt;
+			toDt = toDt.compareTo(dt) < 0 ? dt : toDt;
+		}
+		return of_(frDt.toLocalDate(), toDt.toLocalDate().plusDays(1));
 	}
 
 	public static DatePeriod of(LocalDate from, LocalDate to) {

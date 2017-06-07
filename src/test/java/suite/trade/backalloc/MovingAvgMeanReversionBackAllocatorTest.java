@@ -1,6 +1,6 @@
 package suite.trade.backalloc;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.Test;
 
@@ -17,7 +17,7 @@ public class MovingAvgMeanReversionBackAllocatorTest {
 
 	@Test
 	public void testStat() {
-		DatePeriod period = DatePeriod.backTestDaysBefore(LocalDate.now(), 512, 32);
+		DatePeriod period = DatePeriod.backTestDaysBefore(LocalDateTime.now(), 512, 32);
 		System.out.println(backAllocator.new MeanReversionStat(cfg.dataSource("1113.HK"), period));
 	}
 

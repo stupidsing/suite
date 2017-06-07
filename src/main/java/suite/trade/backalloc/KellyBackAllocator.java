@@ -1,6 +1,6 @@
 package suite.trade.backalloc;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +28,7 @@ public class KellyBackAllocator implements BackAllocator {
 	}
 
 	@Override
-	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDate> dates) {
+	public OnDate allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDateTime> dts) {
 		double dailyInterestRate = Trade_.riskFreeInterestRate(1);
 
 		// TODO this should be the expected returns, not past returns!
@@ -36,7 +36,7 @@ public class KellyBackAllocator implements BackAllocator {
 				.mapValue(dataSource -> dataSource.prices) //
 				.collect(As::streamlet2);
 
-		return (backTestDate, index) -> {
+		return (backTestDt, index) -> {
 			Map<String, float[]> returnsBySymbol = predictedPricesBySymbol //
 					.mapValue(ts::returns) //
 					.toMap();
