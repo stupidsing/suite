@@ -13,8 +13,8 @@ replace_() {
   F0="${2}"
   F1=$(echo "${F0}" | sh -c "${REPLACER}")
   mkdir -p $(dirname "${F1}")
-  cat "${F0}" | sh -c "${REPLACER}" > /tmp/replaced
-  [ "${REMOVEOLD}" ] && rm -f "${F0}" || true
+  cat "${F0}" | sh -c "${REPLACER}" > /tmp/replaced &&
+  (! [ "${REMOVEOLD}" ] || rm -f "${F0}") &&
   mv /tmp/replaced "${F1}"
   echo ${F1}
 }
