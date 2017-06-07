@@ -4,7 +4,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 
@@ -51,16 +50,6 @@ public class Rethrow {
 				return fun.apply(i);
 			} catch (Exception ex) {
 				throw new RuntimeException("for " + i, ex);
-			}
-		};
-	}
-
-	public static <K, V, T> ObjObj_Obj<K, V, T> fun2(ObjObj_Obj<K, V, T> fun) {
-		return (k, v) -> {
-			try {
-				return fun.apply(k, v);
-			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
 			}
 		};
 	}

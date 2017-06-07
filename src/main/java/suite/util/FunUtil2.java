@@ -21,6 +21,16 @@ public class FunUtil2 {
 	@FunctionalInterface
 	public interface Sink2<K, V> {
 		public void sink2(K key, V value);
+
+		public default Sink2<K, V> rethrow() {
+			return (k, v) -> {
+				try {
+					sink2(k, v);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + k + ", " + v, ex);
+				}
+			};
+		}
 	}
 
 	public static <K, V> Source2<K, V> append(K key, V value, Source2<K, V> source) {
@@ -179,15 +189,15 @@ public class FunUtil2 {
 	}
 
 	public static <K, V, T> Source<T> map(ObjObj_Obj<K, V, T> fun0, Source2<K, V> source2) {
-		ObjObj_Obj<K, V, T> fun1 = Rethrow.fun2(fun0);
+		ObjObj_Obj<K, V, T> fun1 = fun0.rethrow();
 		Pair<K, V> pair = Pair.of(null, null);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <K, V, K1, V1, T> Source2<K1, V1> map2(ObjObj_Obj<K, V, K1> kf0, ObjObj_Obj<K, V, V1> vf0,
 			Source2<K, V> source2) {
-		ObjObj_Obj<K, V, K1> kf1 = Rethrow.fun2(kf0);
-		ObjObj_Obj<K, V, V1> vf1 = Rethrow.fun2(vf0);
+		ObjObj_Obj<K, V, K1> kf1 = kf0.rethrow();
+		ObjObj_Obj<K, V, V1> vf1 = vf0.rethrow();
 		Pair<K, V> pair1 = Pair.of(null, null);
 		return pair -> {
 			boolean b = source2.source2(pair1);
@@ -199,13 +209,14 @@ public class FunUtil2 {
 		};
 	}
 
-	public static <K, V, T1> Source<T1> mapNonNull(ObjObj_Obj<K, V, T1> fun, Source2<K, V> source) {
+	public static <K, V, T1> Source<T1> mapNonNull(ObjObj_Obj<K, V, T1> fun0, Source2<K, V> source) {
+		ObjObj_Obj<K, V, T1> fun1 = fun0.rethrow();
 		return new Source<T1>() {
 			public T1 source() {
 				Pair<K, V> pair = Pair.of(null, null);
 				T1 t1 = null;
 				while (source.source2(pair))
-					if ((t1 = fun.apply(pair.t0, pair.t1)) != null)
+					if ((t1 = fun1.apply(pair.t0, pair.t1)) != null)
 						return t1;
 				return null;
 			}

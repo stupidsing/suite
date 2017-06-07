@@ -185,13 +185,22 @@ public class IntFunUtil {
 		};
 	}
 
-	public static <T0, T1> Source<T1> mapNonNull(Fun<T0, T1> fun, Source<T0> source) {
+	public static IntSource_ mapInt(Int_Int fun0, IntSource_ source) {
+		Int_Int fun1 = fun0.rethrow();
+		return () -> {
+			int t = source.source();
+			return t != IntFunUtil.EMPTYVALUE ? fun1.apply(t) : IntFunUtil.EMPTYVALUE;
+		};
+	}
+
+	public static <T0, T1> Source<T1> mapNonNull(Fun<T0, T1> fun0, Source<T0> source) {
+		Fun<T0, T1> fun1 = Rethrow.fun(fun0);
 		return new Source<T1>() {
 			public T1 source() {
 				T0 t0;
 				T1 t1;
 				while ((t0 = source.source()) != null)
-					if ((t1 = fun.apply(t0)) != null)
+					if ((t1 = fun1.apply(t0)) != null)
 						return t1;
 				return null;
 			}

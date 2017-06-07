@@ -209,13 +209,14 @@ public class ChrObjFunUtil {
 		};
 	}
 
-	public static <V, T1> Source<T1> mapNonNull(ChrObj_Obj<V, T1> fun, ChrObjSource<V> source) {
+	public static <V, T1> Source<T1> mapNonNull(ChrObj_Obj<V, T1> fun0, ChrObjSource<V> source) {
+		ChrObj_Obj<V, T1> fun1 = fun0.rethrow();
 		return new Source<T1>() {
 			public T1 source() {
 				ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 				T1 t1 = null;
 				while (source.source2(pair))
-					if ((t1 = fun.apply(pair.t0, pair.t1)) != null)
+					if ((t1 = fun1.apply(pair.t0, pair.t1)) != null)
 						return t1;
 				return null;
 			}

@@ -209,13 +209,14 @@ public class IntObjFunUtil {
 		};
 	}
 
-	public static <V, T1> Source<T1> mapNonNull(IntObj_Obj<V, T1> fun, IntObjSource<V> source) {
+	public static <V, T1> Source<T1> mapNonNull(IntObj_Obj<V, T1> fun0, IntObjSource<V> source) {
+		IntObj_Obj<V, T1> fun1 = fun0.rethrow();
 		return new Source<T1>() {
 			public T1 source() {
 				IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 				T1 t1 = null;
 				while (source.source2(pair))
-					if ((t1 = fun.apply(pair.t0, pair.t1)) != null)
+					if ((t1 = fun1.apply(pair.t0, pair.t1)) != null)
 						return t1;
 				return null;
 			}
