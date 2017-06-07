@@ -206,13 +206,14 @@ public class LngFltFunUtil {
 		};
 	}
 
-	public static <T> Source<T> mapNonNull(LngFlt_Obj<T> fun, LngFltSource source) {
+	public static <T> Source<T> mapNonNull(LngFlt_Obj<T> fun0, LngFltSource source) {
+		LngFlt_Obj<T> fun1 = fun0.rethrow();
 		return new Source<T>() {
 			public T source() {
 				LngFltPair pair = LngFltPair.of((long) 0, (float) 0);
 				T t1 = null;
 				while (source.source2(pair))
-					if ((t1 = fun.apply(pair.t0, pair.t1)) != null)
+					if ((t1 = fun1.apply(pair.t0, pair.t1)) != null)
 						return t1;
 				return null;
 			}

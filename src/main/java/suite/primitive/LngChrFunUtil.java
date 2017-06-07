@@ -206,13 +206,14 @@ public class LngChrFunUtil {
 		};
 	}
 
-	public static <T> Source<T> mapNonNull(LngChr_Obj<T> fun, LngChrSource source) {
+	public static <T> Source<T> mapNonNull(LngChr_Obj<T> fun0, LngChrSource source) {
+		LngChr_Obj<T> fun1 = fun0.rethrow();
 		return new Source<T>() {
 			public T source() {
 				LngChrPair pair = LngChrPair.of((long) 0, (char) 0);
 				T t1 = null;
 				while (source.source2(pair))
-					if ((t1 = fun.apply(pair.t0, pair.t1)) != null)
+					if ((t1 = fun1.apply(pair.t0, pair.t1)) != null)
 						return t1;
 				return null;
 			}

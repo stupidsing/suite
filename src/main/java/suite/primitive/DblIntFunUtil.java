@@ -206,13 +206,14 @@ public class DblIntFunUtil {
 		};
 	}
 
-	public static <T> Source<T> mapNonNull(DblInt_Obj<T> fun, DblIntSource source) {
+	public static <T> Source<T> mapNonNull(DblInt_Obj<T> fun0, DblIntSource source) {
+		DblInt_Obj<T> fun1 = fun0.rethrow();
 		return new Source<T>() {
 			public T source() {
 				DblIntPair pair = DblIntPair.of((double) 0, (int) 0);
 				T t1 = null;
 				while (source.source2(pair))
-					if ((t1 = fun.apply(pair.t0, pair.t1)) != null)
+					if ((t1 = fun1.apply(pair.t0, pair.t1)) != null)
 						return t1;
 				return null;
 			}

@@ -205,13 +205,14 @@ public class LngLngFunUtil {
 		};
 	}
 
-	public static <T> Source<T> mapNonNull(LngLng_Obj<T> fun, LngLngSource source) {
+	public static <T> Source<T> mapNonNull(LngLng_Obj<T> fun0, LngLngSource source) {
+		LngLng_Obj<T> fun1 = fun0.rethrow();
 		return new Source<T>() {
 			public T source() {
 				LngLngPair pair = LngLngPair.of((long) 0, (long) 0);
 				T t1 = null;
 				while (source.source2(pair))
-					if ((t1 = fun.apply(pair.t0, pair.t1)) != null)
+					if ((t1 = fun1.apply(pair.t0, pair.t1)) != null)
 						return t1;
 				return null;
 			}

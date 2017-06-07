@@ -206,13 +206,14 @@ public class ChrLngFunUtil {
 		};
 	}
 
-	public static <T> Source<T> mapNonNull(ChrLng_Obj<T> fun, ChrLngSource source) {
+	public static <T> Source<T> mapNonNull(ChrLng_Obj<T> fun0, ChrLngSource source) {
+		ChrLng_Obj<T> fun1 = fun0.rethrow();
 		return new Source<T>() {
 			public T source() {
 				ChrLngPair pair = ChrLngPair.of((char) 0, (long) 0);
 				T t1 = null;
 				while (source.source2(pair))
-					if ((t1 = fun.apply(pair.t0, pair.t1)) != null)
+					if ((t1 = fun1.apply(pair.t0, pair.t1)) != null)
 						return t1;
 				return null;
 			}
