@@ -134,8 +134,14 @@ public class TimeSeries {
 		return returns_(fs);
 	}
 
-	public ReturnsStat returnsStat(float[] prices) {
-		return new ReturnsStat(prices, 1d);
+	public ReturnsStat returnsStat(float[] prices, double deltaMs) {
+		double scale = Trade_.invTradeDaysPerYear * 28800d * 1000d / deltaMs;
+		return new ReturnsStat(prices, 1d, scale);
+	}
+
+	public ReturnsStat returnsStatDaily(float[] prices) {
+		double dailyInterestRate = Math.expm1(Trade_.logRiskFreeInterestRate * Trade_.invTradeDaysPerYear);
+		return new ReturnsStat(prices, 1d, dailyInterestRate);
 	}
 
 	public ReturnsStat returnsStatDailyAnnualized(float[] prices) {
@@ -143,15 +149,30 @@ public class TimeSeries {
 	}
 
 	public class ReturnsStat {
+		public final double return_;
 		private float[] returns;
 		private double mean;
 		private double variance;
 
 		private ReturnsStat(float[] prices, double scale) {
-			returns = returns_(prices);
-			double r0 = Math.expm1(Trade_.logRiskFreeInterestRate * scale / returns.length);
-			MeanVariance mv = stat.meanVariance(returns);
-			mean = mv.mean - r0;
+			this(prices, scale, Math.expm1(Trade_.logRiskFreeInterestRate * scale));
+		}
+
+		private ReturnsStat(float[] prices, double scale, double interestRate) {
+			int length = prices.length;
+			double v0, vx;
+			if (0 < length) {
+				v0 = prices[0];
+				vx = prices[length - 1];
+			} else
+				v0 = vx = 1d;
+
+			float[] returns_ = returns_(prices);
+			MeanVariance mv = stat.meanVariance(returns_);
+
+			return_ = Math.expm1(Math.log(vx / v0) * scale / returns.length);
+			returns = returns_;
+			mean = mv.mean - interestRate;
 			variance = scale * mv.variance;
 		}
 

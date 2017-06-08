@@ -11,6 +11,7 @@ import java.util.Set;
 import suite.adt.pair.Pair;
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
+import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -171,18 +172,13 @@ public class BackAllocTester {
 
 			trades.addAll(Trade_.sellAll(Read.from(trades), latestPriceBySymbol::get).toList());
 
-			double v0, vx;
-			if (0 < size) {
-				v0 = valuations_[0];
-				vx = valuations_[size - 1];
-			} else
-				v0 = vx = 1d;
+			ReturnsStat rs = ts.returnsStatDailyAnnualized(valuations_);
 
 			period = TimeRange.of(List_.first(times), List_.last(times));
 			valuations = valuations_;
 			holdBySymbol = holdBySymbol_;
-			annualReturn = Math.expm1(Math.log(vx / v0) * Trade_.nTradeDaysPerYear / size);
-			sharpe = ts.returnsStatDailyAnnualized(valuations_).sharpeRatio();
+			annualReturn = rs.return_;
+			sharpe = rs.sharpeRatio();
 			skewness = stat.skewness(valuations_);
 			exception = exception_;
 		}
