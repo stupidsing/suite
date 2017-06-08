@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import suite.adt.pair.Pair;
 import suite.primitive.FltFun.Obj_Flt;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.trade.Account.Valuation;
 import suite.util.Set_;
 import suite.util.String_;
 
@@ -68,6 +70,45 @@ public class Trade_ {
 				.concatMap((strategy, nSharesBySymbol) -> Read //
 						.from2(nSharesBySymbol) //
 						.map((symbol, size) -> Trade.of(-size, symbol, priceFun.apply(symbol), strategy)));
+	}
+
+	public static UpdatePortfolio updatePortfolio( //
+			Account account, //
+			List<Pair<String, Double>> ratioBySymbol, //
+			Map<String, Asset> assetBySymbol, //
+			Map<String, Float> priceBySymbol) {
+		return new UpdatePortfolio(account, ratioBySymbol, assetBySymbol, priceBySymbol);
+	}
+
+	public static class UpdatePortfolio {
+		public final Valuation val0;
+		public final float valuation0;
+		public final List<Trade> trades;
+
+		public UpdatePortfolio( //
+				Account account, //
+				List<Pair<String, Double>> ratioBySymbol, //
+				Map<String, Asset> assetBySymbol, //
+				Map<String, Float> priceBySymbol) {
+			Valuation val = account.valuation(priceBySymbol);
+			float valuation = val.sum();
+
+			Map<String, Integer> portfolio = Read //
+					.from2(ratioBySymbol) //
+					.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
+					.map2((symbol, potential) -> {
+						float price = priceBySymbol.get(symbol);
+						int lotSize = assetBySymbol.get(symbol).lotSize;
+						return lotSize * (int) Math.floor(valuation * potential / (price * lotSize));
+					}) //
+					.toMap();
+
+			List<Trade> trades_ = Trade_.diff(account.assets(), portfolio, priceBySymbol);
+
+			val0 = val;
+			valuation0 = valuation;
+			trades = trades_;
+		}
 	}
 
 }

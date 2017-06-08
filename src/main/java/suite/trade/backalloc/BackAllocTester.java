@@ -17,12 +17,12 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Account;
-import suite.trade.Account.Valuation;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.Trade_;
+import suite.trade.Trade_.UpdatePortfolio;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
@@ -31,7 +31,6 @@ import suite.trade.data.DataSource.AlignDataSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.List_;
-import suite.util.String_;
 import suite.util.To;
 
 public class BackAllocTester {
@@ -107,7 +106,6 @@ public class BackAllocTester {
 			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
 			Map<String, Double> holdBySymbol_ = new HashMap<>();
 			Set<String> symbols = assetBySymbol.keySet();
-			double valuation = fund0;
 
 			// pre-fetch quotes
 			cfg.quote(symbols);
@@ -151,30 +149,17 @@ public class BackAllocTester {
 							.mapValue(dataSource -> dataSource.prices[index]) //
 							.toMap();
 
-					Valuation val = account.valuation(latestPriceBySymbol);
-					valuations_[i] = (float) (valuation = val.sum());
-
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
-					Map<String, Float> latestPriceBySymbol_ = latestPriceBySymbol;
-					double valuation_ = valuation;
+					UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, latestPriceBySymbol);
+					float valuation_ = valuations_[i] = up.valuation0;
 
-					Map<String, Integer> portfolio = Read //
-							.from2(ratioBySymbol) //
-							.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
-							.map2((symbol, potential) -> {
-								float price = latestPriceBySymbol_.get(symbol);
-								int lotSize = assetBySymbol.get(symbol).lotSize;
-								return lotSize * (int) Math.floor(valuation_ * potential / (price * lotSize));
-							}) //
-							.toMap();
-
-					String actions = play(Trade_.diff(account.assets(), portfolio, latestPriceBySymbol));
-
-					for (Pair<String, Float> e : val.stream())
+					for (Pair<String, Float> e : up.val0.stream())
 						holdBySymbol_.compute(e.t0, (s, h) -> e.t1 / (valuation_ * size) + (h != null ? h : 0d));
 
+					String actions = play(up.trades);
+
 					log.sink(time.ymd() //
-							+ ", valuation = " + valuation //
+							+ ", valuation = " + valuation_ //
 							+ ", portfolio = " + account //
 							+ ", actions = " + actions);
 				}

@@ -38,9 +38,6 @@ public class BackTestMain extends ExecutableProgram {
 				Read.each(Asset.hsi), //
 				BackAllocator_.ofSingle(Asset.hsiSymbol));
 
-		bac0 = bac_hsi;
-		bac1 = dm.bac_bb;
-
 		questoaQuella("0670.HK", "1055.HK");
 		questoaQuella("0052.HK", "0341.HK");
 		questoaQuella("0020.HK", "0004.HK");
@@ -49,11 +46,11 @@ public class BackTestMain extends ExecutableProgram {
 		bac1 = dm.assetAllocConfigurationOf(BackAllocator_.threeMovingAvgs());
 
 		bac0 = bac_hsi;
-		bac1 = dm.assetAllocConfigurationOf(BackAllocator_.variableBollingerBands());
+		bac1 = dm.bac_pmmmr;
 
 		// BEGIN
 		bac0 = bac_hsi;
-		bac1 = dm.bac_pmmmr;
+		bac1 = dm.bac_bb;
 		// END
 
 		Streamlet2<Boolean, Simulate> simulationsByKey = Read //
@@ -66,7 +63,7 @@ public class BackTestMain extends ExecutableProgram {
 				}) //
 				.collect(As::streamlet2);
 
-		String content0 = Read.bytes(Paths.get("src/main/java/suite/trade/BackTestMain.java")) //
+		String content0 = Read.bytes(Paths.get("src/main/java/suite/trade/analysis/BackTestMain.java")) //
 				.collect(As::utf8decode) //
 				.map(Chars::toString) //
 				.collect(As.joined());
