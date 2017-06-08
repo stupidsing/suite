@@ -1,19 +1,18 @@
 package suite.trade.data;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import suite.trade.Time;
 import suite.util.String_;
 
 public class HkexUtil {
 
 	private static Set<DayOfWeek> weekends = new HashSet<>(Arrays.asList(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
 
-	public static boolean isMarketOpen(LocalDateTime time) {
+	public static boolean isMarketOpen(Time time) {
 		return isMarketOpen_(time);
 	}
 
@@ -25,27 +24,23 @@ public class HkexUtil {
 		return String_.right("0000" + stockCode.trim(), -4) + ".HK";
 	}
 
-	public static LocalDate getPreviousTradeDate(LocalDateTime time) {
-		return getTradeTimeBefore(time).toLocalDate();
-	}
-
-	public static LocalDateTime getTradeTimeAfter(LocalDateTime time) {
-		LocalDateTime dt = time;
+	public static Time getTradeTimeBefore(Time time) {
+		Time dt = time;
 		while (!isMarketOpen_(dt))
-			dt = dt.plusHours(1);
+			dt = dt.addHours(-1);
 		return dt;
 	}
 
-	private static LocalDateTime getTradeTimeBefore(LocalDateTime time) {
-		LocalDateTime dt = time;
+	public static Time getTradeTimeAfter(Time time) {
+		Time dt = time;
 		while (!isMarketOpen_(dt))
-			dt = dt.minusHours(1);
+			dt = dt.addHours(1);
 		return dt;
 	}
 
-	private static boolean isMarketOpen_(LocalDateTime time) {
-		int hhmm = time.getHour() * 100 + time.getMinute();
-		return !weekends.contains(time.getDayOfWeek()) && 900 <= hhmm && hhmm < 1630;
+	private static boolean isMarketOpen_(Time time) {
+		int hhmm = time.hhmm();
+		return !weekends.contains(time.dow()) && 900 <= hhmm && hhmm < 1630;
 	}
 
 }

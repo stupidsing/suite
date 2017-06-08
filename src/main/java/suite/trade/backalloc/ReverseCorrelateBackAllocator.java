@@ -1,6 +1,5 @@
 package suite.trade.backalloc;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +10,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.DatePeriod;
+import suite.trade.Time;
 import suite.trade.Trade_;
 import suite.trade.data.DataSource;
 import suite.util.To;
@@ -40,7 +40,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 	}
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<LocalDateTime> dts) {
+	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<Time> dts) {
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 		Map<String, Map<DatePeriod, Double>> reverseCorrelationByPeriodBySymbol = dataSourceBySymbol //

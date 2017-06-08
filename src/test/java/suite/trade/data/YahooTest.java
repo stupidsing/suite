@@ -2,12 +2,12 @@ package suite.trade.data;
 
 import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDate;
 import java.util.function.BiFunction;
 
 import org.junit.Test;
 
 import suite.trade.DatePeriod;
+import suite.trade.Time;
 
 public class YahooTest {
 
@@ -29,7 +29,7 @@ public class YahooTest {
 	}
 
 	private void test(BiFunction<String, DatePeriod, DataSource> fun) {
-		DataSource dataSource = fun.apply("0005.HK", DatePeriod.of(LocalDate.of(2016, 1, 1), LocalDate.of(2017, 1, 1)));
+		DataSource dataSource = fun.apply("0005.HK", DatePeriod.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1)));
 
 		dataSource.validate();
 

@@ -2,8 +2,6 @@ package suite.trade;
 
 import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDate;
-
 import org.junit.Test;
 
 import suite.math.stat.Statistic;
@@ -27,7 +25,7 @@ public class PairTest {
 
 	@Test
 	public void test() {
-		DatePeriod period = DatePeriod.of(LocalDate.of(2016, 1, 1), LocalDate.of(2017, 1, 1));
+		DatePeriod period = DatePeriod.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1));
 		// test(period, "0005.HK", "2888.HK");
 		test(period, "0341.HK", "0052.HK");
 	}

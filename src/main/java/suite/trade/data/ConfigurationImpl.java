@@ -1,7 +1,5 @@
 package suite.trade.data;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +10,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
+import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.data.Broker.Hsbc;
 import suite.util.String_;
@@ -42,7 +41,7 @@ public class ConfigurationImpl implements Configuration {
 	public DataSource dataSourceWithLatestQuote(String symbol) {
 
 		// count as tomorrow open if market is closed (after 4pm)
-		String date = To.string(HkexUtil.getTradeTimeAfter(LocalDateTime.now()).toLocalDate());
+		String date = HkexUtil.getTradeTimeAfter(Time.now()).ymd();
 		DataSource dataSource0 = dataSource_(symbol, DatePeriod.ages());
 		DataSource dataSource1;
 
@@ -66,8 +65,8 @@ public class ConfigurationImpl implements Configuration {
 		return broker.queryHistory();
 	}
 
-	public Streamlet<Asset> queryLeadingCompaniesByMarketCap(LocalDate date) {
-		int year = date.getYear() - 1;
+	public Streamlet<Asset> queryLeadingCompaniesByMarketCap(Time date) {
+		int year = date.year() - 1;
 		return Read.from(hkexFactBook.queryLeadingCompaniesByMarketCap(year)).map(this::queryCompany);
 	}
 

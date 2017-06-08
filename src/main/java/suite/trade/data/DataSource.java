@@ -1,7 +1,6 @@
 package suite.trade.data;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -9,6 +8,7 @@ import suite.math.linalg.Matrix;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.DatePeriod;
+import suite.trade.Time;
 import suite.util.DataInput_;
 import suite.util.DataOutput_;
 import suite.util.Object_;
@@ -91,8 +91,8 @@ public class DataSource {
 			throw new RuntimeException("mismatched dates and prices");
 	}
 
-	public DataSource after(LocalDate date) {
-		return range_(DatePeriod.of(date, DatePeriod.ages().to));
+	public DataSource after(Time time) {
+		return range_(DatePeriod.of(time, DatePeriod.ages().to));
 	}
 
 	public DataSource align(String[] dates1) {
@@ -145,8 +145,8 @@ public class DataSource {
 
 	public DatePeriod period() {
 		if (0 < dates.length) {
-			LocalDate date0 = To.date(get(0).date);
-			LocalDate datex = To.date(get(-1).date);
+			Time date0 = Time.ofYmd(get(0).date);
+			Time datex = Time.ofYmd(get(-1).date);
 			return DatePeriod.of(date0, datex);
 		} else
 			throw new RuntimeException();
@@ -193,8 +193,8 @@ public class DataSource {
 	}
 
 	private DataSource range_(DatePeriod period) {
-		String s0 = To.string(period.from);
-		String sx = To.string(period.to);
+		String s0 = period.from.ymd();
+		String sx = period.to.ymd();
 		return range_(s0, sx);
 	}
 

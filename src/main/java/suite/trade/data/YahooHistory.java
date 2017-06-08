@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +19,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.DatePeriod;
+import suite.trade.Time;
 import suite.util.HomeDir;
 import suite.util.Object_;
 import suite.util.Rethrow;
@@ -84,8 +84,8 @@ public class YahooHistory extends ExecutableProgram {
 
 	public DataSource dataSource(String symbol, DatePeriod period) {
 		Map<String, Float> map = new TreeMap<>();
-		String from = To.string(period.from);
-		String to = To.string(period.to);
+		String from = period.from.ymd();
+		String to = period.to.ymd();
 
 		for (Entry<String, String> e : read(symbol).entrySet()) {
 			String date = e.getKey();
@@ -124,10 +124,10 @@ public class YahooHistory extends ExecutableProgram {
 			}
 
 			// update after market closed
-			LocalDateTime now = LocalDateTime.now();
+			Time now = Time.now();
 
 			if (!HkexUtil.isMarketOpen(now)) {
-				String date = To.string(HkexUtil.getPreviousTradeDate(now));
+				String date = HkexUtil.getTradeTimeBefore(now).date().ymd();
 				Map<String, Float> quotes = yahoo.quote(data.keySet());
 
 				for (Entry<String, Float> e : quotes.entrySet())

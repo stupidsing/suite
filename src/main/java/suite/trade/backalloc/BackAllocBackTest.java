@@ -1,7 +1,5 @@
 package suite.trade.backalloc;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,6 +20,7 @@ import suite.trade.Account;
 import suite.trade.Account.Valuation;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
+import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
@@ -43,8 +42,8 @@ public class BackAllocBackTest {
 
 	private Streamlet<Asset> assets;
 	private BackAllocator backAllocator;
-	private LocalDate historyFromDate;
-	private Fun<List<LocalDateTime>, List<LocalDateTime>> dtsPred;
+	private Time historyFromDate;
+	private Fun<List<Time>, List<Time>> dtsPred;
 	private Sink<String> log;
 
 	public static BackAllocBackTest ofNow( //
@@ -52,8 +51,8 @@ public class BackAllocBackTest {
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
 			Sink<String> log) {
-		LocalDate historyFromDate = LocalDate.now();
-		Fun<List<LocalDateTime>, List<LocalDateTime>> dtsPred = dts -> Arrays.asList(List_.last(dts));
+		Time historyFromDate = Time.now();
+		Fun<List<Time>, List<Time>> dtsPred = dts -> Arrays.asList(List_.last(dts));
 		return new BackAllocBackTest(cfg, assets, backAllocator, historyFromDate, dtsPred, log);
 	}
 
@@ -63,10 +62,10 @@ public class BackAllocBackTest {
 			BackAllocator backAllocator, //
 			DatePeriod period, //
 			Sink<String> log) {
-		LocalDate historyFromDate = period.from;
-		Fun<List<LocalDateTime>, List<LocalDateTime>> dtsPred = dts -> Read //
+		Time historyFromDate = period.from;
+		Fun<List<Time>, List<Time>> dtsPred = dts -> Read //
 				.from(dts) //
-				.filter(dt -> period.contains(dt.toLocalDate())) //
+				.filter(dt -> period.contains(dt)) //
 				.toList();
 		return new BackAllocBackTest(cfg, assets, backAllocator, historyFromDate, dtsPred, log);
 	}
@@ -75,12 +74,12 @@ public class BackAllocBackTest {
 			Configuration cfg, //
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
-			LocalDate from, //
-			Fun<List<LocalDateTime>, List<LocalDateTime>> dtsPred, //
+			Time from, //
+			Fun<List<Time>, List<Time>> dtsPred, //
 			Sink<String> log) {
 		this.cfg = cfg;
 		this.assets = assets.distinct();
-		this.historyFromDate = from.minusYears(1);
+		this.historyFromDate = from.addYears(-1);
 		this.backAllocator = backAllocator;
 		this.dtsPred = dtsPred;
 		this.log = log;
@@ -134,8 +133,8 @@ public class BackAllocBackTest {
 					.mapValue(alignDataSource::align) //
 					.collect(As::streamlet2);
 
-			List<LocalDateTime> tradeDts = Read.from(alignDataSource.dates).map(s -> To.date(s).atStartOfDay()).toList();
-			List<LocalDateTime> dts = dtsPred.apply(tradeDts);
+			List<Time> tradeDts = Read.from(alignDataSource.dates).map(Time::ofYmd).toList();
+			List<Time> dts = dtsPred.apply(tradeDts);
 			int size = dts.size();
 
 			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol1, dts);
@@ -145,7 +144,7 @@ public class BackAllocBackTest {
 
 			try {
 				for (int i = 0; i < size; i++) {
-					LocalDateTime dt = dts.get(i);
+					Time dt = dts.get(i);
 					int index = Collections.binarySearch(tradeDts, dt);
 
 					latestPriceBySymbol = dataSourceBySymbol1 //
@@ -174,7 +173,7 @@ public class BackAllocBackTest {
 					for (Pair<String, Float> e : val.stream())
 						holdBySymbol_.compute(e.t0, (s, h) -> e.t1 / (valuation_ * size) + (h != null ? h : 0d));
 
-					log.sink(To.string(dt) //
+					log.sink(dt.ymd() //
 							+ ", valuation = " + valuation //
 							+ ", portfolio = " + account //
 							+ ", actions = " + actions);
@@ -194,7 +193,7 @@ public class BackAllocBackTest {
 			} else
 				v0 = vx = 1d;
 
-			period = DatePeriod.of(List_.first(dts).toLocalDate(), List_.last(dts).toLocalDate());
+			period = DatePeriod.of(List_.first(dts), List_.last(dts));
 			valuations = valuations_;
 			holdBySymbol = holdBySymbol_;
 			annualReturn = Math.expm1(Math.log(vx / v0) * Trade_.nTradeDaysPerYear / size);

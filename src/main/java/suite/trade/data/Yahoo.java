@@ -3,9 +3,6 @@ package suite.trade.data;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +19,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.DatePeriod;
+import suite.trade.Time;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -60,8 +58,8 @@ public class Yahoo {
 	public DataSource dataSourceL1(String symbol, DatePeriod period) {
 		String urlString = "https://l1-query.finance.yahoo.com/v7/finance/chart/" //
 				+ encode(symbol) //
-				+ "?period1=" + period.from.atStartOfDay().toEpochSecond(ZoneOffset.UTC) //
-				+ "&period2=" + period.to.atStartOfDay().toEpochSecond(ZoneOffset.UTC) //
+				+ "?period1=" + period.from.startOfDay().epochUtcSecond() //
+				+ "&period2=" + period.to.startOfDay().epochUtcSecond() //
 				+ "&interval=1d" //
 				+ "&indicators=quote" //
 				+ "&includeTimestamps=true" //
@@ -79,8 +77,8 @@ public class Yahoo {
 
 				String[] dates = jsons //
 						.flatMap(json_ -> json_.get("timestamp")) //
-						.map(json_ -> LocalDateTime.ofEpochSecond(json_.intValue(), 0, ZoneOffset.UTC).toLocalDate()) //
-						.map(To::string) //
+						.map(json_ -> Time.ofEpochUtcSecond(json_.longValue())) //
+						.map(Time::ymd) //
 						.toArray(String.class);
 
 				float[] prices = jsons //
@@ -97,8 +95,8 @@ public class Yahoo {
 		String yql = "select *" //
 				+ " from yahoo.finance.historicaldata" //
 				+ " where symbol = \"" + symbol + "\"" //
-				+ " and startDate = \"" + To.string(period.from) + "\"" //
-				+ " and endDate = \"" + To.string(period.to) + "\"";
+				+ " and startDate = \"" + period.from.ymd() + "\"" //
+				+ " and endDate = \"" + period.to.ymd() + "\"";
 
 		String urlString = "http://query.yahooapis.com/v1/public/yql" //
 				+ "?q=" + encode(yql) //
@@ -160,12 +158,12 @@ public class Yahoo {
 	}
 
 	public String tableUrl(String symbol, DatePeriod period) {
-		LocalDate frDate = period.from;
-		LocalDate toDate = period.to;
+		Time frDate = period.from;
+		Time toDate = period.to;
 		return "https://chart.finance.yahoo.com/table.csv" //
 				+ "?s=" + encode(symbol) //
-				+ "&a=" + frDate.getMonthValue() + "&b=" + frDate.getDayOfMonth() + "&c=" + frDate.getYear() //
-				+ "&d=" + toDate.getMonthValue() + "&e=" + toDate.getDayOfMonth() + "&f=" + toDate.getYear() //
+				+ "&a=" + frDate.month() + "&b=" + frDate.dow() + "&c=" + frDate.year() //
+				+ "&d=" + toDate.month() + "&e=" + toDate.dow() + "&f=" + toDate.year() //
 				+ "&g=d" //
 				+ "&ignore=.csv";
 	}

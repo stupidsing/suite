@@ -1,7 +1,5 @@
 package suite.trade;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -11,27 +9,26 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Object_;
 
-public class DatePeriod extends Range<LocalDate> {
+public class DatePeriod extends Range<Time> {
 
 	public static DatePeriod ages() {
-		LocalDate frDate = LocalDate.of(1980, 1, 1);
-		LocalDate toDate = LocalDate.of(2020, 1, 1);
+		Time frDate = Time.of(1980, 1, 1);
+		Time toDate = Time.of(2020, 1, 1);
 		return of_(frDate, toDate);
 	}
 
 	// align date range boundaries to reduce number of web queries (and
 	// calculations)
-	public static DatePeriod backTestDaysBefore(LocalDateTime dt, int nDays, int alignment) {
-		LocalDate date = dt.toLocalDate();
-		return backTestDaysBefore_(date, date.plusDays(1), nDays, alignment).uniqueResult();
+	public static DatePeriod backTestDaysBefore(Time dt, int nDays, int alignment) {
+		return backTestDaysBefore_(dt, dt.addDays(1), nDays, alignment).uniqueResult();
 	}
 
-	public static DatePeriod daysBefore(LocalDate to, int n) {
+	public static DatePeriod daysBefore(Time to, int n) {
 		return daysBefore_(to, n);
 	}
 
 	public static DatePeriod daysBefore(int nDays) {
-		return daysBefore_(LocalDate.now(), nDays);
+		return daysBefore_(Time.today(), nDays);
 	}
 
 	public static DatePeriod threeYears() {
@@ -42,44 +39,34 @@ public class DatePeriod extends Range<LocalDate> {
 		return yearsBefore_(5);
 	}
 
-	public static DatePeriod of(List<LocalDate> dates) {
-		LocalDate frDate = LocalDate.MAX;
-		LocalDate toDate = LocalDate.MIN;
-		for (LocalDate date : dates) {
-			frDate = frDate.compareTo(date) < 0 ? frDate : date;
-			toDate = toDate.compareTo(date) < 0 ? date : toDate;
+	public static DatePeriod ofDateTimes(List<Time> ts) {
+		Time frDt = Time.MAX;
+		Time toDt = Time.MIN;
+		for (Time t : ts) {
+			frDt = frDt.compareTo(t) < 0 ? frDt : t;
+			toDt = toDt.compareTo(t) < 0 ? t : toDt;
 		}
-		return of_(frDate, toDate);
+		return of_(frDt, toDt.addDays(1));
 	}
 
-	public static DatePeriod ofDateTimes(List<LocalDateTime> dts) {
-		LocalDateTime frDt = LocalDateTime.MAX;
-		LocalDateTime toDt = LocalDateTime.MIN;
-		for (LocalDateTime dt : dts) {
-			frDt = frDt.compareTo(dt) < 0 ? frDt : dt;
-			toDt = toDt.compareTo(dt) < 0 ? dt : toDt;
-		}
-		return of_(frDt.toLocalDate(), toDt.toLocalDate().plusDays(1));
-	}
-
-	public static DatePeriod of(LocalDate from, LocalDate to) {
+	public static DatePeriod of(Time from, Time to) {
 		return of_(from, to);
 	}
 
 	public static DatePeriod ofYear(int year) {
-		return of_(LocalDate.of(year, 1, 1), LocalDate.of(year + 1, 1, 1));
+		return of_(Time.of(year, 1, 1), Time.of(year + 1, 1, 1));
 	}
 
-	public static DatePeriod yearsBefore(LocalDate to, int n) {
+	public static DatePeriod yearsBefore(Time to, int n) {
 		return yearsBefore_(to, n);
 	}
 
 	private static DatePeriod yearsBefore_(int n) {
-		return yearsBefore_(LocalDate.now().withDayOfMonth(1), n);
+		return yearsBefore_(Time.now().startOfMonth(), n);
 	}
 
-	private static DatePeriod yearsBefore_(LocalDate to, int n) {
-		return of_(to.minusYears(n), to);
+	private static DatePeriod yearsBefore_(Time to, int n) {
+		return of_(to.addYears(n), to);
 	}
 
 	public Streamlet<DatePeriod> backTestDaysBefore(int nDays, int alignment) {
@@ -96,31 +83,31 @@ public class DatePeriod extends Range<LocalDate> {
 	}
 
 	public DatePeriod plusDays(int n) {
-		return of_(from.plusDays(n), to.plusDays(n));
+		return of_(from.addDays(n), to.addDays(n));
 	}
 
-	private static Streamlet<DatePeriod> backTestDaysBefore_(LocalDate frDate, LocalDate toDate, int nDays, int alignment) {
-		long epochDate0 = frDate.toEpochDay();
-		long epochDate1 = toDate.toEpochDay() - 1;
+	private static Streamlet<DatePeriod> backTestDaysBefore_(Time frDate, Time toDate, int nDays, int alignment) {
+		long epochDate0 = frDate.epochDay();
+		long epochDate1 = toDate.epochDay() - 1;
 		epochDate0 -= epochDate0 % alignment;
 		epochDate1 -= epochDate1 % alignment;
 		List<DatePeriod> periods = new ArrayList<>();
 		while (epochDate0 <= epochDate1) {
-			periods.add(daysBefore_(LocalDate.ofEpochDay(epochDate0), nDays));
+			periods.add(daysBefore_(Time.ofEpochDay(epochDate0), nDays));
 			epochDate0 += alignment;
 		}
 		return Read.from(periods);
 	}
 
-	private static DatePeriod daysBefore_(LocalDate to, int n) {
-		return of_(to.minusDays(n), to);
+	private static DatePeriod daysBefore_(Time to, int n) {
+		return of_(to.addDays(-n), to);
 	}
 
-	private static DatePeriod of_(LocalDate from, LocalDate to) {
+	private static DatePeriod of_(Time from, Time to) {
 		return new DatePeriod(from, to);
 	}
 
-	private DatePeriod(LocalDate from, LocalDate to) {
+	private DatePeriod(Time from, Time to) {
 		super(from, to);
 	}
 

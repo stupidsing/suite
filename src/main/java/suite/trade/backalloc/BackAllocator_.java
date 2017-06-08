@@ -1,6 +1,5 @@
 package suite.trade.backalloc;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +18,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.MovingAverage;
+import suite.trade.Time;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
@@ -100,11 +100,11 @@ public class BackAllocator_ {
 			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol, dts);
 
 			return new OnDateTime() {
-				private LocalDateTime date0;
+				private Time date0;
 				private List<Pair<String, Double>> result0;
 
-				public List<Pair<String, Double>> onDateTime(LocalDateTime backTestDt0, int index) {
-					LocalDateTime backTestDt1 = backTestDt0.minusDays(backTestDt0.toLocalDate().toEpochDay() % tradeFrequency);
+				public List<Pair<String, Double>> onDateTime(Time backTestDt0, int index) {
+					Time backTestDt1 = backTestDt0.addDays(-backTestDt0.epochDay() % tradeFrequency);
 					if (!Objects.equals(date0, backTestDt1)) {
 						date0 = backTestDt1;
 						return result0 = onDateTime.onDateTime(backTestDt1, index);

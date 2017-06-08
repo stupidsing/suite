@@ -1,6 +1,5 @@
 package suite;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,6 +18,7 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
+import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.analysis.Summarize;
@@ -50,7 +50,7 @@ public class DailyMain extends ExecutableProgram {
 	private Configuration cfg = new ConfigurationImpl();
 	private StringBuilder sb = new StringBuilder();
 	private Sink<String> log = To.sink(sb);
-	private LocalDate today = LocalDate.now();
+	private Time today = Time.now();
 	private Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today);
 
 	public final BackAllocConfiguration bac_bb = assetAllocConfigurationOf(BackAllocator_.bollingerBands1());
@@ -187,7 +187,7 @@ public class DailyMain extends ExecutableProgram {
 						.toMap());
 
 		DatePeriod period = DatePeriod.daysBefore(128);
-		String sevenDaysAgo = To.string(today.plusDays(-7));
+		String sevenDaysAgo = today.addDays(-7).ymd();
 		List<Trade> trades = new ArrayList<>();
 
 		// capture signals
@@ -207,7 +207,7 @@ public class DailyMain extends ExecutableProgram {
 						throw new RuntimeException("ancient data: " + datex);
 
 					Map<String, Float> latest = cfg.quote(Collections.singleton(symbol));
-					String latestDate = To.string(today);
+					String latestDate = today.ymd();
 					float latestPrice = latest.values().iterator().next();
 
 					DataSource ds1 = ds0.cons(latestDate, latestPrice);

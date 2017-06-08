@@ -8,11 +8,12 @@ import java.util.Locale;
 import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.trade.Time;
 import suite.util.String_;
 
 public class HongKongGovernment {
 
-	public List<LocalDate> queryPublicHolidays() {
+	public List<Time> queryPublicHolidays() {
 		DateTimeFormatter yyyymmdd = DateTimeFormatter.ofPattern("yyyyMMdd", Locale.ENGLISH);
 
 		return Singleton.get() //
@@ -28,7 +29,7 @@ public class HongKongGovernment {
 				.map2(map -> map.get("DTSTART;VALUE=DATE"), map -> map.get("SUMMARY")) //
 				.filterKey(s -> s != null) //
 				.keys() //
-				.map(s -> LocalDate.parse(s, yyyymmdd)) //
+				.map(s -> Time.of(LocalDate.parse(s, yyyymmdd).atStartOfDay())) //
 				.toList();
 	}
 

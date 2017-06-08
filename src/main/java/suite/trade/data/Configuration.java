@@ -1,12 +1,12 @@
 package suite.trade.data;
 
-import java.time.LocalDate;
 import java.util.Map;
 import java.util.Set;
 
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.DatePeriod;
+import suite.trade.Time;
 import suite.trade.Trade;
 
 public interface Configuration {
@@ -23,7 +23,7 @@ public interface Configuration {
 
 	public Streamlet<Trade> queryHistory();
 
-	public Streamlet<Asset> queryLeadingCompaniesByMarketCap(LocalDate date);
+	public Streamlet<Asset> queryLeadingCompaniesByMarketCap(Time date);
 
 	public Map<String, Float> quote(Set<String> symbols);
 

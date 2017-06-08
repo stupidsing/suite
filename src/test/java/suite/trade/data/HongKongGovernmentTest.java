@@ -2,10 +2,11 @@ package suite.trade.data;
 
 import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.Test;
+
+import suite.trade.Time;
 
 public class HongKongGovernmentTest {
 
@@ -13,8 +14,8 @@ public class HongKongGovernmentTest {
 
 	@Test
 	public void test() {
-		List<LocalDate> publicHolidays = hkg.queryPublicHolidays();
+		List<Time> publicHolidays = hkg.queryPublicHolidays();
 		System.out.println(publicHolidays);
-		assertTrue(publicHolidays.contains(LocalDate.of(2018, 12, 25)));
+		assertTrue(publicHolidays.contains(Time.of(2018, 12, 25)));
 	}
 }
