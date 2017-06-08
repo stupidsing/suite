@@ -25,12 +25,12 @@ public class PairTest {
 
 	@Test
 	public void test() {
-		DatePeriod period = DatePeriod.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1));
+		TimeRange period = TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1));
 		// test(period, "0005.HK", "2888.HK");
 		test(period, "0341.HK", "0052.HK");
 	}
 
-	private void test(DatePeriod period, String symbol0, String symbol1) {
+	private void test(TimeRange period, String symbol0, String symbol1) {
 		DataSource dataSource0 = cfg.dataSource(symbol0, period);
 		DataSource dataSource1 = cfg.dataSource(symbol1, period);
 		Streamlet<String> dates0 = Read.from(dataSource0.dates);

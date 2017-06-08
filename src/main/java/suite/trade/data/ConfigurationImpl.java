@@ -9,8 +9,8 @@ import java.util.Set;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
-import suite.trade.DatePeriod;
 import suite.trade.Time;
+import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.data.Broker.Hsbc;
 import suite.util.String_;
@@ -31,10 +31,10 @@ public class ConfigurationImpl implements Configuration {
 	};
 
 	public DataSource dataSource(String symbol) {
-		return dataSource_(symbol, DatePeriod.ages());
+		return dataSource_(symbol, TimeRange.ages());
 	}
 
-	public DataSource dataSource(String symbol, DatePeriod period) {
+	public DataSource dataSource(String symbol, TimeRange period) {
 		return dataSource_(symbol, period);
 	}
 
@@ -42,7 +42,7 @@ public class ConfigurationImpl implements Configuration {
 
 		// count as tomorrow open if market is closed (after 4pm)
 		String date = HkexUtil.getTradeTimeAfter(Time.now()).ymd();
-		DataSource dataSource0 = dataSource_(symbol, DatePeriod.ages());
+		DataSource dataSource0 = dataSource_(symbol, TimeRange.ages());
 		DataSource dataSource1;
 
 		if (!String_.equals(dataSource0.last().date, date))
@@ -86,7 +86,7 @@ public class ConfigurationImpl implements Configuration {
 				yahoo.quote(map.getOrDefault(Source_.YAHOO, Collections.emptySet())));
 	}
 
-	private DataSource dataSource_(String symbol, DatePeriod period) {
+	private DataSource dataSource_(String symbol, TimeRange period) {
 		switch (source_(symbol)) {
 		case HKD__:
 			return hkd.dataSource(symbol, period);

@@ -9,8 +9,8 @@ import suite.math.stat.TimeSeries;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.trade.DatePeriod;
 import suite.trade.Time;
+import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.data.DataSource;
 import suite.util.To;
@@ -43,8 +43,8 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<Time> times) {
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
-		Map<String, Map<DatePeriod, Double>> reverseCorrelationByPeriodBySymbol = dataSourceBySymbol //
-				.mapValue(dataSource -> DatePeriod //
+		Map<String, Map<TimeRange, Double>> reverseCorrelationByPeriodBySymbol = dataSourceBySymbol //
+				.mapValue(dataSource -> TimeRange //
 						.ofDateTimes(times) //
 						.backTestDaysBefore(512, 32) //
 						.map2(samplePeriod -> {
@@ -62,11 +62,11 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 				.toMap();
 
 		return (time, index) -> {
-			DatePeriod samplePeriod = DatePeriod.backTestDaysBefore(time, 512, 32);
+			TimeRange samplePeriod = TimeRange.backTestDaysBefore(time, 512, 32);
 
 			Map<String, Double> reverseCorrelationBySymbol = dataSourceBySymbol //
 					.map2((symbol, dataSource) -> {
-						Map<DatePeriod, Double> m = reverseCorrelationByPeriodBySymbol.get(symbol);
+						Map<TimeRange, Double> m = reverseCorrelationByPeriodBySymbol.get(symbol);
 						Double reverseCorrelation = m != null ? m.get(samplePeriod) : null;
 						return reverseCorrelation != null ? reverseCorrelation : Double.NaN;
 					}) //

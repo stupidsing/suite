@@ -3,10 +3,10 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.LngFltPair;
+import suite.primitive.Flt_Flt;
 import suite.primitive.LngFltSink;
 import suite.primitive.LngFltSource;
 import suite.primitive.Lng_Flt;
-import suite.primitive.Flt_Flt;
 
 /**
  * Map with longacter key and float value. Float.MIN_VALUE is not allowed in

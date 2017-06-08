@@ -1,8 +1,8 @@
 package suite.primitive;
 
 /**
- * An indirect reference to a primitive longacter. Long.MIN_VALUE is not
- * allowed in the value.
+ * An indirect reference to a primitive longacter. Long.MIN_VALUE is not allowed
+ * in the value.
  * 
  * @author ywsing
  */

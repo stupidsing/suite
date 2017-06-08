@@ -6,11 +6,11 @@ import org.junit.Test;
 
 import suite.streamlet.Read;
 import suite.trade.Asset;
-import suite.trade.DatePeriod;
+import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.analysis.BackTester;
 import suite.trade.analysis.Summarize;
-import suite.trade.backalloc.BackAllocBackTest.Simulate;
+import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.util.FunUtil.Sink;
@@ -18,7 +18,7 @@ import suite.util.FunUtil.Sink;
 public class BackAllocBackTestTest {
 
 	private float initial = 1000000f;
-	private DatePeriod period = DatePeriod.ofYear(2017);
+	private TimeRange period = TimeRange.ofYear(2017);
 
 	private Sink<String> log = System.out::println;
 	private Configuration cfg = new ConfigurationImpl();

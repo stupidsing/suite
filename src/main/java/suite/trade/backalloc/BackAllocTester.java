@@ -19,8 +19,8 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Account;
 import suite.trade.Account.Valuation;
 import suite.trade.Asset;
-import suite.trade.DatePeriod;
 import suite.trade.Time;
+import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
@@ -34,7 +34,7 @@ import suite.util.List_;
 import suite.util.String_;
 import suite.util.To;
 
-public class BackAllocBackTest {
+public class BackAllocTester {
 
 	private Configuration cfg = new ConfigurationImpl();
 	private Statistic stat = new Statistic();
@@ -46,31 +46,31 @@ public class BackAllocBackTest {
 	private Fun<List<Time>, List<Time>> timesPred;
 	private Sink<String> log;
 
-	public static BackAllocBackTest ofNow( //
+	public static BackAllocTester ofNow( //
 			Configuration cfg, //
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
 			Sink<String> log) {
 		Time historyFromDate = Time.now();
 		Fun<List<Time>, List<Time>> timesPred = times -> Arrays.asList(List_.last(times));
-		return new BackAllocBackTest(cfg, assets, backAllocator, historyFromDate, timesPred, log);
+		return new BackAllocTester(cfg, assets, backAllocator, historyFromDate, timesPred, log);
 	}
 
-	public static BackAllocBackTest ofFromTo( //
+	public static BackAllocTester ofFromTo( //
 			Configuration cfg, //
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
-			DatePeriod period, //
+			TimeRange period, //
 			Sink<String> log) {
 		Time historyFromDate = period.from;
 		Fun<List<Time>, List<Time>> timesPred = times -> Read //
 				.from(times) //
 				.filter(time -> period.contains(time)) //
 				.toList();
-		return new BackAllocBackTest(cfg, assets, backAllocator, historyFromDate, timesPred, log);
+		return new BackAllocTester(cfg, assets, backAllocator, historyFromDate, timesPred, log);
 	}
 
-	private BackAllocBackTest( //
+	private BackAllocTester( //
 			Configuration cfg, //
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
@@ -91,7 +91,7 @@ public class BackAllocBackTest {
 
 	public class Simulate {
 		public final Account account;
-		public final DatePeriod period;
+		public final TimeRange period;
 		public final float[] valuations;
 		public final List<Trade> trades;
 		public final Map<String, Double> holdBySymbol;
@@ -193,7 +193,7 @@ public class BackAllocBackTest {
 			} else
 				v0 = vx = 1d;
 
-			period = DatePeriod.of(List_.first(times), List_.last(times));
+			period = TimeRange.of(List_.first(times), List_.last(times));
 			valuations = valuations_;
 			holdBySymbol = holdBySymbol_;
 			annualReturn = Math.expm1(Math.log(vx / v0) * Trade_.nTradeDaysPerYear / size);

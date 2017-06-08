@@ -3,10 +3,10 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.IntChrPair;
+import suite.primitive.Chr_Chr;
 import suite.primitive.IntChrSink;
 import suite.primitive.IntChrSource;
 import suite.primitive.Int_Chr;
-import suite.primitive.Chr_Chr;
 
 /**
  * Map with intacter key and char value. Character.MIN_VALUE is not allowed in

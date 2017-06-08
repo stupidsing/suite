@@ -3,10 +3,10 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.IntDblPair;
+import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntDblSink;
 import suite.primitive.IntDblSource;
 import suite.primitive.Int_Dbl;
-import suite.primitive.Dbl_Dbl;
 
 /**
  * Map with intacter key and double value. Double.MIN_VALUE is not allowed in

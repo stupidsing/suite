@@ -3,10 +3,10 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.FltDblPair;
+import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltDblSink;
 import suite.primitive.FltDblSource;
 import suite.primitive.Flt_Dbl;
-import suite.primitive.Dbl_Dbl;
 
 /**
  * Map with floatacter key and double value. Double.MIN_VALUE is not allowed in

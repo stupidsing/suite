@@ -3,10 +3,10 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.FltChrPair;
+import suite.primitive.Chr_Chr;
 import suite.primitive.FltChrSink;
 import suite.primitive.FltChrSource;
 import suite.primitive.Flt_Chr;
-import suite.primitive.Chr_Chr;
 
 /**
  * Map with floatacter key and char value. Character.MIN_VALUE is not allowed in

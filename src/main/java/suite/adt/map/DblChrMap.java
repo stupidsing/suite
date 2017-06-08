@@ -3,14 +3,14 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.DblChrPair;
+import suite.primitive.Chr_Chr;
 import suite.primitive.DblChrSink;
 import suite.primitive.DblChrSource;
 import suite.primitive.Dbl_Chr;
-import suite.primitive.Chr_Chr;
 
 /**
- * Map with doubleacter key and char value. Character.MIN_VALUE is not allowed in
- * values. Not thread-safe.
+ * Map with doubleacter key and char value. Character.MIN_VALUE is not allowed
+ * in values. Not thread-safe.
  *
  * @author ywsing
  */

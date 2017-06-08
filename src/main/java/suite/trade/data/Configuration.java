@@ -5,15 +5,15 @@ import java.util.Set;
 
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
-import suite.trade.DatePeriod;
 import suite.trade.Time;
+import suite.trade.TimeRange;
 import suite.trade.Trade;
 
 public interface Configuration {
 
 	public DataSource dataSource(String symbol);
 
-	public DataSource dataSource(String symbol, DatePeriod period);
+	public DataSource dataSource(String symbol, TimeRange period);
 
 	public DataSource dataSourceWithLatestQuote(String symbol);
 

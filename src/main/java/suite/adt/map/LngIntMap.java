@@ -3,10 +3,10 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.LngIntPair;
+import suite.primitive.Int_Int;
 import suite.primitive.LngIntSink;
 import suite.primitive.LngIntSource;
 import suite.primitive.Lng_Int;
-import suite.primitive.Int_Int;
 
 /**
  * Map with longacter key and int value. Integer.MIN_VALUE is not allowed in

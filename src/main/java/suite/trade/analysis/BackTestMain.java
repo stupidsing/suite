@@ -9,9 +9,9 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
-import suite.trade.DatePeriod;
-import suite.trade.backalloc.BackAllocBackTest.Simulate;
+import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocConfiguration;
+import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
@@ -58,7 +58,7 @@ public class BackTestMain extends ExecutableProgram {
 
 		Streamlet2<Boolean, Simulate> simulationsByKey = Read //
 				.each(Boolean.FALSE, Boolean.TRUE) //
-				.join2(Read.range(2008, 2018).map(DatePeriod::ofYear)) //
+				.join2(Read.range(2008, 2018).map(TimeRange::ofYear)) //
 				.map2((key, period) -> {
 					BackAllocConfiguration bac = key ? bac1 : bac0;
 					Constants.testFlag = key;

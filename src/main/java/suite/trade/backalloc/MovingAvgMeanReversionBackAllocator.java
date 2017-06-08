@@ -11,9 +11,9 @@ import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
-import suite.trade.DatePeriod;
 import suite.trade.MovingAverage;
 import suite.trade.Time;
+import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.data.DataSource;
 import suite.util.FunUtil.Sink;
@@ -53,8 +53,8 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 		log.sink(dataSourceBySymbol.size() + " assets in data source");
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
-		Map<String, Map<DatePeriod, MeanReversionStat>> meanReversionStatByPeriodBySymbol = dataSourceBySymbol //
-				.map2((symbol, dataSource) -> DatePeriod //
+		Map<String, Map<TimeRange, MeanReversionStat>> meanReversionStatByPeriodBySymbol = dataSourceBySymbol //
+				.map2((symbol, dataSource) -> TimeRange //
 						.ofDateTimes(times) //
 						.plusDays(-tor) //
 						.backTestDaysBefore(256, 32) //
@@ -64,11 +64,11 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 
 		return (time, index) -> {
 			Map<String, DataSource> dataSources = dataSourceBySymbol.toMap();
-			DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(time.addDays(-tor), 256, 32);
+			TimeRange mrsPeriod = TimeRange.backTestDaysBefore(time.addDays(-tor), 256, 32);
 
 			Map<String, MeanReversionStat> meanReversionStatBySymbol = dataSourceBySymbol //
 					.map2((symbol, dataSource) -> {
-						Map<DatePeriod, MeanReversionStat> m = meanReversionStatByPeriodBySymbol.get(symbol);
+						Map<TimeRange, MeanReversionStat> m = meanReversionStatByPeriodBySymbol.get(symbol);
 						return m != null ? m.get(mrsPeriod) : null;
 					}) //
 					.filterValue(mrsReversionStat -> mrsReversionStat != null) //
@@ -133,12 +133,12 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 		}
 	}
 
-	private MeanReversionStat meanReversionStat(String symbol, DataSource dataSource, DatePeriod period) {
-		Pair<String, DatePeriod> key = Pair.of(symbol, period);
+	private MeanReversionStat meanReversionStat(String symbol, DataSource dataSource, TimeRange period) {
+		Pair<String, TimeRange> key = Pair.of(symbol, period);
 		return memoizeMeanReversionStat.computeIfAbsent(key, p -> new MeanReversionStat(dataSource, period));
 	}
 
-	private static Map<Pair<String, DatePeriod>, MeanReversionStat> memoizeMeanReversionStat = new ConcurrentHashMap<>();
+	private static Map<Pair<String, TimeRange>, MeanReversionStat> memoizeMeanReversionStat = new ConcurrentHashMap<>();
 
 	public class MeanReversionStat {
 		public final float[] movingAverage;
@@ -148,7 +148,7 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 		public final LinearRegression meanReversion;
 		public final LinearRegression movingAvgMeanReversion;
 
-		public MeanReversionStat(DataSource dataSource, DatePeriod mrsPeriod) {
+		public MeanReversionStat(DataSource dataSource, TimeRange mrsPeriod) {
 			float[] prices = dataSource.range(mrsPeriod).prices;
 
 			movingAverage = ma.movingGeometricAvg(prices, tor);

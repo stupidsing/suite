@@ -17,14 +17,14 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Account;
 import suite.trade.Asset;
-import suite.trade.DatePeriod;
 import suite.trade.Time;
+import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.analysis.Summarize;
-import suite.trade.backalloc.BackAllocBackTest;
-import suite.trade.backalloc.BackAllocBackTest.Simulate;
 import suite.trade.backalloc.BackAllocConfiguration;
+import suite.trade.backalloc.BackAllocTester;
+import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.backalloc.BackAllocator_;
 import suite.trade.backalloc.MovingAvgMeanReversionBackAllocator0;
@@ -172,7 +172,7 @@ public class DailyMain extends ExecutableProgram {
 				.get(getClass().getSimpleName() + ".backTestBySymbol", () -> assets //
 						.map2(stock -> stock.symbol, stock -> {
 							try {
-								DatePeriod period = DatePeriod.threeYears();
+								TimeRange period = TimeRange.threeYears();
 								DataSource ds0 = cfg.dataSource(stock.symbol, period);
 								DataSource ds1 = ds0.range(period);
 
@@ -186,7 +186,7 @@ public class DailyMain extends ExecutableProgram {
 						}) //
 						.toMap());
 
-		DatePeriod period = DatePeriod.daysBefore(128);
+		TimeRange period = TimeRange.daysBefore(128);
 		String sevenDaysAgo = today.addDays(-7).ymd();
 		List<Trade> trades = new ArrayList<>();
 
@@ -268,7 +268,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private Result alloc(String tag, float fund, BackAllocator backAllocator, Streamlet<Asset> assets) {
-		Simulate sim = BackAllocBackTest.ofNow(cfg, assets, backAllocator, log).simulate(fund);
+		Simulate sim = BackAllocTester.ofNow(cfg, assets, backAllocator, log).simulate(fund);
 
 		Account account0 = Account.fromPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
 		Account account1 = sim.account;

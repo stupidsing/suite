@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import suite.http.HttpUtil;
 import suite.streamlet.Streamlet;
-import suite.trade.DatePeriod;
 import suite.trade.Forex;
+import suite.trade.TimeRange;
 import suite.util.Copy;
 import suite.util.Thread_;
 import suite.util.To;
@@ -23,7 +23,7 @@ public class CollectDataTest {
 				new Forex().invertedCurrencies.map((ccy, name) -> ccy));
 
 		for (String code : equities) {
-			String urlString = new Yahoo().tableUrl(code, DatePeriod.ages());
+			String urlString = new Yahoo().tableUrl(code, TimeRange.ages());
 			URL url = To.url(urlString);
 
 			try (FileOutputStream fos = new FileOutputStream("/data/storey/markets/" + code + ".csv")) {

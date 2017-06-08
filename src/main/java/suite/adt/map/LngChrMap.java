@@ -3,10 +3,10 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.LngChrPair;
+import suite.primitive.Chr_Chr;
 import suite.primitive.LngChrSink;
 import suite.primitive.LngChrSource;
 import suite.primitive.Lng_Chr;
-import suite.primitive.Chr_Chr;
 
 /**
  * Map with longacter key and char value. Character.MIN_VALUE is not allowed in

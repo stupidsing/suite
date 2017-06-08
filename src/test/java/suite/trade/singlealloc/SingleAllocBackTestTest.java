@@ -8,15 +8,15 @@ import org.junit.Test;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.trade.Asset;
-import suite.trade.DatePeriod;
 import suite.trade.Forex;
+import suite.trade.TimeRange;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 
 public class SingleAllocBackTestTest {
 
-	private DatePeriod period = DatePeriod.fiveYears();
+	private TimeRange period = TimeRange.fiveYears();
 	private Configuration cfg = new ConfigurationImpl();
 
 	@Test

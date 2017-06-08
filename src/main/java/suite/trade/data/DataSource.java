@@ -7,8 +7,8 @@ import java.util.Collection;
 import suite.math.linalg.Matrix;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.DatePeriod;
 import suite.trade.Time;
+import suite.trade.TimeRange;
 import suite.util.DataInput_;
 import suite.util.DataOutput_;
 import suite.util.Object_;
@@ -92,7 +92,7 @@ public class DataSource {
 	}
 
 	public DataSource after(Time time) {
-		return range_(DatePeriod.of(time, DatePeriod.ages().to));
+		return range_(TimeRange.of(time, TimeRange.ages().to));
 	}
 
 	public DataSource align(String[] dates1) {
@@ -143,16 +143,16 @@ public class DataSource {
 		return get(-1);
 	}
 
-	public DatePeriod period() {
+	public TimeRange period() {
 		if (0 < dates.length) {
 			Time date0 = Time.ofYmd(get(0).date);
 			Time datex = Time.ofYmd(get(-1).date);
-			return DatePeriod.of(date0, datex);
+			return TimeRange.of(date0, datex);
 		} else
 			throw new RuntimeException();
 	}
 
-	public DataSource range(DatePeriod period) {
+	public DataSource range(TimeRange period) {
 		return range_(period);
 	}
 
@@ -192,7 +192,7 @@ public class DataSource {
 		return getClass().getSimpleName() + "(" + range + ")";
 	}
 
-	private DataSource range_(DatePeriod period) {
+	private DataSource range_(TimeRange period) {
 		String s0 = period.from.ymd();
 		String sx = period.to.ymd();
 		return range_(s0, sx);

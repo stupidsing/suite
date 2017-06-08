@@ -18,8 +18,8 @@ import suite.os.Execute;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.trade.DatePeriod;
 import suite.trade.Time;
+import suite.trade.TimeRange;
 import suite.util.HomeDir;
 import suite.util.Object_;
 import suite.util.Rethrow;
@@ -45,7 +45,7 @@ public class YahooHistory extends ExecutableProgram {
 
 		if (Boolean.TRUE) { // reload data for a symbol
 			String symbol = "^HSI";
-			DataSource dataSource = yahoo.dataSourceL1(symbol, DatePeriod.ages());
+			DataSource dataSource = yahoo.dataSourceL1(symbol, TimeRange.ages());
 			Map<String, String> data_ = getDataBySymbol(read(), symbol);
 			String[] dates = dataSource.dates;
 			float[] prices = dataSource.prices;
@@ -82,7 +82,7 @@ public class YahooHistory extends ExecutableProgram {
 		return true;
 	}
 
-	public DataSource dataSource(String symbol, DatePeriod period) {
+	public DataSource dataSource(String symbol, TimeRange period) {
 		Map<String, Float> map = new TreeMap<>();
 		String from = period.from.ymd();
 		String to = period.to.ymd();

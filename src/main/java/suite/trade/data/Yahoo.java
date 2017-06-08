@@ -18,8 +18,8 @@ import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.DatePeriod;
 import suite.trade.Time;
+import suite.trade.TimeRange;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -28,7 +28,7 @@ public class Yahoo {
 
 	private static ObjectMapper mapper = new ObjectMapper();
 
-	public DataSource dataSourceCsv(String symbol, DatePeriod period) {
+	public DataSource dataSourceCsv(String symbol, TimeRange period) {
 		String urlString = tableUrl(symbol, period);
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
@@ -55,7 +55,7 @@ public class Yahoo {
 		return dataSource;
 	}
 
-	public DataSource dataSourceL1(String symbol, DatePeriod period) {
+	public DataSource dataSourceL1(String symbol, TimeRange period) {
 		String urlString = "https://l1-query.finance.yahoo.com/v7/finance/chart/" //
 				+ encode(symbol) //
 				+ "?period1=" + period.from.startOfDay().epochUtcSecond() //
@@ -91,7 +91,7 @@ public class Yahoo {
 		});
 	}
 
-	public DataSource dataSourceYql(String symbol, DatePeriod period) {
+	public DataSource dataSourceYql(String symbol, TimeRange period) {
 		String yql = "select *" //
 				+ " from yahoo.finance.historicaldata" //
 				+ " where symbol = \"" + symbol + "\"" //
@@ -157,7 +157,7 @@ public class Yahoo {
 			return new HashMap<>();
 	}
 
-	public String tableUrl(String symbol, DatePeriod period) {
+	public String tableUrl(String symbol, TimeRange period) {
 		Time frDate = period.from;
 		Time toDate = period.to;
 		return "https://chart.finance.yahoo.com/table.csv" //

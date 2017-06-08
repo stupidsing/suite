@@ -3,10 +3,10 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.LngDblPair;
+import suite.primitive.Dbl_Dbl;
 import suite.primitive.LngDblSink;
 import suite.primitive.LngDblSource;
 import suite.primitive.Lng_Dbl;
-import suite.primitive.Dbl_Dbl;
 
 /**
  * Map with longacter key and double value. Double.MIN_VALUE is not allowed in

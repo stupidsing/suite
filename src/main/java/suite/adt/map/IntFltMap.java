@@ -3,10 +3,10 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.IntFltPair;
+import suite.primitive.Flt_Flt;
 import suite.primitive.IntFltSink;
 import suite.primitive.IntFltSource;
 import suite.primitive.Int_Flt;
-import suite.primitive.Flt_Flt;
 
 /**
  * Map with intacter key and float value. Float.MIN_VALUE is not allowed in

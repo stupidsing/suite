@@ -6,8 +6,8 @@ import java.util.function.BiFunction;
 
 import org.junit.Test;
 
-import suite.trade.DatePeriod;
 import suite.trade.Time;
+import suite.trade.TimeRange;
 
 public class YahooTest {
 
@@ -28,8 +28,8 @@ public class YahooTest {
 		test(yahoo::dataSourceYql);
 	}
 
-	private void test(BiFunction<String, DatePeriod, DataSource> fun) {
-		DataSource dataSource = fun.apply("0005.HK", DatePeriod.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1)));
+	private void test(BiFunction<String, TimeRange, DataSource> fun) {
+		DataSource dataSource = fun.apply("0005.HK", TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1)));
 
 		dataSource.validate();
 
