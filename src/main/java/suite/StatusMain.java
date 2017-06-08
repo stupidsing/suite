@@ -1,5 +1,7 @@
 package suite;
 
+import java.util.TreeMap;
+
 import suite.trade.analysis.Summarize;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
@@ -18,7 +20,7 @@ public class StatusMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) {
 		Summarize summarize = Summarize.of(cfg);
-		System.out.println(summarize.out(System.out::println, r -> r.strategy));
+		System.out.println(new TreeMap<>(summarize.out(System.out::println, r -> r.strategy)));
 		return true;
 	}
 
