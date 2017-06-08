@@ -28,7 +28,7 @@ public class KellyBackAllocator implements BackAllocator {
 	}
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<Time> dts) {
+	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<Time> times) {
 		double dailyInterestRate = Trade_.riskFreeInterestRate(1);
 
 		// TODO this should be the expected returns, not past returns!
@@ -36,7 +36,7 @@ public class KellyBackAllocator implements BackAllocator {
 				.mapValue(dataSource -> dataSource.prices) //
 				.collect(As::streamlet2);
 
-		return (backTestDt, index) -> {
+		return (time, index) -> {
 			Map<String, float[]> returnsBySymbol = predictedPricesBySymbol //
 					.mapValue(ts::returns) //
 					.toMap();

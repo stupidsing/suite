@@ -15,7 +15,7 @@ import suite.trade.data.DataSource;
  */
 public interface BackAllocator {
 
-	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<Time> dts);
+	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<Time> times);
 
 	public interface OnDateTime {
 
@@ -25,7 +25,7 @@ public interface BackAllocator {
 		 *         date. The assets will be allocated according to potential
 		 *         values pro-rata.
 		 */
-		public List<Pair<String, Double>> onDateTime(Time backTestDt, int index);
+		public List<Pair<String, Double>> onDateTime(Time time, int index);
 	}
 
 }

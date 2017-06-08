@@ -49,22 +49,22 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 	}
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<Time> dts) {
+	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<Time> times) {
 		log.sink(dataSourceBySymbol.size() + " assets in data source");
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 		Map<String, Map<DatePeriod, MeanReversionStat>> meanReversionStatByPeriodBySymbol = dataSourceBySymbol //
 				.map2((symbol, dataSource) -> DatePeriod //
-						.ofDateTimes(dts) //
+						.ofDateTimes(times) //
 						.plusDays(-tor) //
 						.backTestDaysBefore(256, 32) //
 						.map2(mrsPeriod -> meanReversionStat(symbol, dataSource, mrsPeriod)) //
 						.toMap()) //
 				.toMap();
 
-		return (backTestDt, index) -> {
+		return (time, index) -> {
 			Map<String, DataSource> dataSources = dataSourceBySymbol.toMap();
-			DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(backTestDt.addDays(-tor), 256, 32);
+			DatePeriod mrsPeriod = DatePeriod.backTestDaysBefore(time.addDays(-tor), 256, 32);
 
 			Map<String, MeanReversionStat> meanReversionStatBySymbol = dataSourceBySymbol //
 					.map2((symbol, dataSource) -> {

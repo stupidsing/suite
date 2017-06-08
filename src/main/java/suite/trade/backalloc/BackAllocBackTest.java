@@ -43,7 +43,7 @@ public class BackAllocBackTest {
 	private Streamlet<Asset> assets;
 	private BackAllocator backAllocator;
 	private Time historyFromDate;
-	private Fun<List<Time>, List<Time>> dtsPred;
+	private Fun<List<Time>, List<Time>> timesPred;
 	private Sink<String> log;
 
 	public static BackAllocBackTest ofNow( //
@@ -52,8 +52,8 @@ public class BackAllocBackTest {
 			BackAllocator backAllocator, //
 			Sink<String> log) {
 		Time historyFromDate = Time.now();
-		Fun<List<Time>, List<Time>> dtsPred = dts -> Arrays.asList(List_.last(dts));
-		return new BackAllocBackTest(cfg, assets, backAllocator, historyFromDate, dtsPred, log);
+		Fun<List<Time>, List<Time>> timesPred = times -> Arrays.asList(List_.last(times));
+		return new BackAllocBackTest(cfg, assets, backAllocator, historyFromDate, timesPred, log);
 	}
 
 	public static BackAllocBackTest ofFromTo( //
@@ -63,11 +63,11 @@ public class BackAllocBackTest {
 			DatePeriod period, //
 			Sink<String> log) {
 		Time historyFromDate = period.from;
-		Fun<List<Time>, List<Time>> dtsPred = dts -> Read //
-				.from(dts) //
-				.filter(dt -> period.contains(dt)) //
+		Fun<List<Time>, List<Time>> timesPred = times -> Read //
+				.from(times) //
+				.filter(time -> period.contains(time)) //
 				.toList();
-		return new BackAllocBackTest(cfg, assets, backAllocator, historyFromDate, dtsPred, log);
+		return new BackAllocBackTest(cfg, assets, backAllocator, historyFromDate, timesPred, log);
 	}
 
 	private BackAllocBackTest( //
@@ -75,13 +75,13 @@ public class BackAllocBackTest {
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
 			Time from, //
-			Fun<List<Time>, List<Time>> dtsPred, //
+			Fun<List<Time>, List<Time>> timesPred, //
 			Sink<String> log) {
 		this.cfg = cfg;
 		this.assets = assets.distinct();
 		this.historyFromDate = from.addYears(-1);
 		this.backAllocator = backAllocator;
-		this.dtsPred = dtsPred;
+		this.timesPred = timesPred;
 		this.log = log;
 	}
 
@@ -133,19 +133,19 @@ public class BackAllocBackTest {
 					.mapValue(alignDataSource::align) //
 					.collect(As::streamlet2);
 
-			List<Time> tradeDts = Read.from(alignDataSource.dates).map(Time::ofYmd).toList();
-			List<Time> dts = dtsPred.apply(tradeDts);
-			int size = dts.size();
+			List<Time> tradeTimes = Read.from(alignDataSource.dates).map(Time::ofYmd).toList();
+			List<Time> times = timesPred.apply(tradeTimes);
+			int size = times.size();
 
-			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol1, dts);
+			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol1, times);
 			Map<String, Float> latestPriceBySymbol = null;
 			float[] valuations_ = new float[size];
 			Exception exception_;
 
 			try {
 				for (int i = 0; i < size; i++) {
-					Time dt = dts.get(i);
-					int index = Collections.binarySearch(tradeDts, dt);
+					Time time = times.get(i);
+					int index = Collections.binarySearch(tradeTimes, time);
 
 					latestPriceBySymbol = dataSourceBySymbol1 //
 							.mapValue(dataSource -> dataSource.prices[index]) //
@@ -154,7 +154,7 @@ public class BackAllocBackTest {
 					Valuation val = account.valuation(latestPriceBySymbol);
 					valuations_[i] = (float) (valuation = val.sum());
 
-					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(dt, index);
+					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
 					Map<String, Float> latestPriceBySymbol_ = latestPriceBySymbol;
 					double valuation_ = valuation;
 
@@ -173,7 +173,7 @@ public class BackAllocBackTest {
 					for (Pair<String, Float> e : val.stream())
 						holdBySymbol_.compute(e.t0, (s, h) -> e.t1 / (valuation_ * size) + (h != null ? h : 0d));
 
-					log.sink(dt.ymd() //
+					log.sink(time.ymd() //
 							+ ", valuation = " + valuation //
 							+ ", portfolio = " + account //
 							+ ", actions = " + actions);
@@ -193,7 +193,7 @@ public class BackAllocBackTest {
 			} else
 				v0 = vx = 1d;
 
-			period = DatePeriod.of(List_.first(dts), List_.last(dts));
+			period = DatePeriod.of(List_.first(times), List_.last(times));
 			valuations = valuations_;
 			holdBySymbol = holdBySymbol_;
 			annualReturn = Math.expm1(Math.log(vx / v0) * Trade_.nTradeDaysPerYear / size);
