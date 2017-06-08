@@ -90,10 +90,10 @@ public class DailyMain extends ExecutableProgram {
 		List<Result> results = Arrays.asList( //
 				alloc("bb", 400000f, bac_bb), //
 				bug(), //
-				mamr(75000f), //
+				mamr(100000f), //
 				pairs(0f, "0052.HK", "0341.HK"), //
 				pairs(0f, "0341.HK", "0052.HK"), //
-				pmamr(125000f), //
+				pmamr(100000f), //
 				pmmmr(75000f), //
 				questoaQuella(160000f, "0020.HK", "0004.HK"), //
 				questoaQuella(200000f, "0670.HK", "1055.HK"), //
