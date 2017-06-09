@@ -69,6 +69,10 @@ public class TimeRange extends Range<Time> {
 		return of_(to.addYears(-n), to);
 	}
 
+	public TimeRange addDays(int n) {
+		return of_(from.addDays(n), to.addDays(n));
+	}
+
 	public Streamlet<TimeRange> backTestDaysBefore(int nDays, int alignment) {
 		return backTestDaysBefore_(from, to, nDays, alignment);
 	}
@@ -80,10 +84,6 @@ public class TimeRange extends Range<Time> {
 			return Objects.equals(from, other.from) && Objects.equals(to, other.to);
 		} else
 			return false;
-	}
-
-	public TimeRange plusDays(int n) {
-		return of_(from.addDays(n), to.addDays(n));
 	}
 
 	private static Streamlet<TimeRange> backTestDaysBefore_(Time frDate, Time toDate, int nDays, int alignment) {
