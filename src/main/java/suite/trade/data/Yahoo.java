@@ -139,9 +139,10 @@ public class Yahoo {
 
 	private Map<String, Float> quote(Set<String> symbols, String field) {
 		Map<String, Float> quotes = quotesByField.computeIfAbsent(field, f -> new HashMap<>());
-		Streamlet<String> querySymbols = Read.from(symbols).filter(symbol -> !quotes.containsKey(symbol)).distinct();
-		if (Trade_.isCacheQuotes)
-			quotes.putAll(quote_(querySymbols, field));
+		Streamlet<String> querySymbols = Read.from(symbols) //
+				.filter(symbol -> !Trade_.isCacheQuotes || !quotes.containsKey(symbol)) //
+				.distinct();
+		quotes.putAll(quote_(querySymbols, field));
 		return Read.from(symbols).map2(quotes::get).toMap();
 	}
 

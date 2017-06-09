@@ -18,7 +18,7 @@ import suite.trade.data.ConfigurationImpl;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
-// mvn compile exec:java -Dexec.mainClass=suite.trade.BackTestMain
+// mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.BackTestMain
 public class BackTestMain extends ExecutableProgram {
 
 	private BackTester runner = new BackTester();

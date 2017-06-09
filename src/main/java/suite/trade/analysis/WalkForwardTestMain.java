@@ -13,7 +13,7 @@ import suite.trade.walkforwardalloc.WalkForwardAllocTester;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
-// mvn compile exec:java -Dexec.mainClass=suite.trade.WalkForwardTestMain
+// mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.WalkForwardTestMain
 public class WalkForwardTestMain extends ExecutableProgram {
 
 	private Configuration cfg = new ConfigurationImpl();
