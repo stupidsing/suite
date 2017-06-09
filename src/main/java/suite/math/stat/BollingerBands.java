@@ -13,7 +13,7 @@ public class BollingerBands {
 
 	private Statistic stat = new Statistic();
 
-	public Bb bb(float[] fs, int backPos0, int backPos1, int k) {
+	public Bb bb(float[] fs, int backPos0, int backPos1, float k) {
 		return new Bb(fs, backPos0, backPos1, k);
 	}
 
@@ -23,7 +23,7 @@ public class BollingerBands {
 		public final float[] percentb;
 		public final float[] bandwidth;
 
-		private Bb(float[] fs, int backPos0, int backPos1, int k) {
+		private Bb(float[] fs, int backPos0, int backPos1, float k) {
 			int length = fs.length;
 			lower = new float[length];
 			upper = new float[length];

@@ -35,12 +35,16 @@ public class BackAllocator_ {
 	private static TimeSeries ts = new TimeSeries();
 
 	public static BackAllocator bollingerBands() {
-		return bollingerBands_(32, 0, 2);
+		return bollingerBands_(2f);
+	}
+
+	public static BackAllocator bollingerBands(float k) {
+		return bollingerBands_(k);
 	}
 
 	public static BackAllocator bollingerBands1() {
 		int lag = 1; // lag 1 day is better in back tests, do not know why
-		return bollingerBands_(32 + lag, lag, 2);
+		return bollingerBands_(32 + lag, lag, 2f);
 	}
 
 	public static BackAllocator byEma() {
@@ -363,7 +367,11 @@ public class BackAllocator_ {
 		return Read.from2(potentialBySymbol).collectAsDouble(As.sumOfDoubles((symbol, potential) -> potential));
 	}
 
-	private static BackAllocator bollingerBands_(int backPos0, int backPos1, int k) {
+	private static BackAllocator bollingerBands_(float k) {
+		return bollingerBands_(32, 0, k);
+	}
+
+	private static BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {
 		return BackAllocator_.unleverage((dataSourceBySymbol, times) -> {
 			Map<String, float[]> percentbBySymbol = dataSourceBySymbol //
 					.mapValue(dataSource -> bb.bb(dataSource.prices, backPos0, backPos1, k).percentb) //

@@ -25,11 +25,11 @@ public class WalkForwardTestMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) {
 		Trade_.isCacheQuotes = false;
-		float fund0 = 50000f;
+		float fund0 = 1000000f;
 
 		WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //
 				cfg.queryLeadingCompaniesByMarketCap(Time.now()), //
-				BackAllocator_.bollingerBands().walkForwardAllocator());
+				BackAllocator_.bollingerBands(.1f).walkForwardAllocator());
 
 		WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
 

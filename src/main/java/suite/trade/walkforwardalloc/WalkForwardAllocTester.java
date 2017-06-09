@@ -87,7 +87,7 @@ public class WalkForwardAllocTester {
 		List<Trade> trades_ = up.trades;
 		String actions;
 
-		if (windowSize <= valuations.size()) {
+		if (5 <= valuations.size()) {
 			actions = play(trades_);
 			trades.addAll(trades_);
 		} else
