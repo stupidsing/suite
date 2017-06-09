@@ -92,7 +92,7 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 						float diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
 						double dailyReturn = diff / price - dailyRiskFreeInterestRate;
 
-						ReturnsStat returnsStat = ts.returnsStat(dataSource.prices);
+						ReturnsStat returnsStat = ts.returnsStatDaily(dataSource.prices);
 						double sharpe = returnsStat.sharpeRatio();
 						double kelly = dailyReturn * price * price / mrs.movingAvgMeanReversion.sse;
 

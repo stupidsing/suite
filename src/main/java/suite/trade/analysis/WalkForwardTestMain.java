@@ -1,0 +1,45 @@
+package suite.trade.analysis;
+
+import suite.os.Schedule;
+import suite.os.Scheduler;
+import suite.trade.Time;
+import suite.trade.Trade_;
+import suite.trade.backalloc.BackAllocator_;
+import suite.trade.data.Configuration;
+import suite.trade.data.ConfigurationImpl;
+import suite.trade.data.HkexUtil;
+import suite.trade.walkforwardalloc.WalkForwardAllocConfiguration;
+import suite.trade.walkforwardalloc.WalkForwardAllocTester;
+import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
+
+// mvn compile exec:java -Dexec.mainClass=suite.trade.WalkForwardTestMain
+public class WalkForwardTestMain extends ExecutableProgram {
+
+	private Configuration cfg = new ConfigurationImpl();
+
+	public static void main(String[] args) {
+		Util.run(WalkForwardTestMain.class, args);
+	}
+
+	@Override
+	protected boolean run(String[] args) {
+		Trade_.isCacheQuotes = false;
+		float fund0 = 50000f;
+
+		WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //
+				cfg.queryLeadingCompaniesByMarketCap(Time.now()), //
+				BackAllocator_.bollingerBands().walkForwardAllocator());
+
+		WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
+
+		Schedule schedule = Schedule //
+				.ofRepeat(5, () -> System.out.println(tester.tick())) //
+				.filterTime(dt -> HkexUtil.isMarketOpen(Time.of(dt)));
+
+		Scheduler.of(schedule).run();
+
+		return true;
+	}
+
+}

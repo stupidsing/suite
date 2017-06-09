@@ -5,8 +5,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 import suite.node.util.Mutable;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 
 public class Schedule {
@@ -55,6 +57,19 @@ public class Schedule {
 	private Schedule(LocalDateTime nextRunDateTime, Source<List<Schedule>> run) {
 		this.nextRunDateTime = nextRunDateTime;
 		this.run = run;
+	}
+
+	public Schedule filterTime(Predicate<LocalDateTime> pred) {
+		return Schedule.of(nextRunDateTime,
+				() -> Read //
+						.from(run.source()) //
+						.map(schedule -> {
+							LocalDateTime t = schedule.nextRunDateTime;
+							while (!pred.test(t))
+								t = t.plusHours(1);
+							return Schedule.of(t, schedule.run);
+						}) //
+						.toList());
 	}
 
 }

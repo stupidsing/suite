@@ -20,6 +20,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.trade.Trade_;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -139,7 +140,8 @@ public class Yahoo {
 	private Map<String, Float> quote(Set<String> symbols, String field) {
 		Map<String, Float> quotes = quotesByField.computeIfAbsent(field, f -> new HashMap<>());
 		Streamlet<String> querySymbols = Read.from(symbols).filter(symbol -> !quotes.containsKey(symbol)).distinct();
-		quotes.putAll(quote_(querySymbols, field));
+		if (Trade_.isCacheQuotes)
+			quotes.putAll(quote_(querySymbols, field));
 		return Read.from(symbols).map2(quotes::get).toMap();
 	}
 

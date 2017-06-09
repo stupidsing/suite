@@ -6,6 +6,7 @@ import suite.adt.pair.Pair;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.data.DataSource;
+import suite.trade.walkforwardalloc.WalkForwardAllocator;
 
 /**
  * Strategy that advise you how to divide your money into different investments,
@@ -26,6 +27,10 @@ public interface BackAllocator {
 		 *         values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(Time time, int index);
+	}
+
+	public default WalkForwardAllocator walkForwardAllocator() {
+		return (dataSourceBySymbol, index) -> allocate(dataSourceBySymbol, null).onDateTime(null, index);
 	}
 
 }

@@ -91,7 +91,7 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 						double lma = mrs.latestMovingAverage();
 						double mamrRatio = mrs.movingAvgMeanReversionRatio();
 						double dailyReturn = (lma / price - 1d) * mamrRatio - dailyRiskFreeInterestRate;
-						ReturnsStat returnsStat = ts.returnsStat(dataSource.prices);
+						ReturnsStat returnsStat = ts.returnsStatDaily(dataSource.prices);
 						double sharpe = returnsStat.sharpeRatio();
 						double kelly = returnsStat.kellyCriterion();
 
