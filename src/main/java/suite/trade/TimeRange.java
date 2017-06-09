@@ -66,7 +66,7 @@ public class TimeRange extends Range<Time> {
 	}
 
 	private static TimeRange yearsBefore_(Time to, int n) {
-		return of_(to.addYears(n), to);
+		return of_(to.addYears(-n), to);
 	}
 
 	public Streamlet<TimeRange> backTestDaysBefore(int nDays, int alignment) {
