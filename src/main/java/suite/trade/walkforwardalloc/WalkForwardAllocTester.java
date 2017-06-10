@@ -60,13 +60,16 @@ public class WalkForwardAllocTester {
 	}
 
 	public String tick() {
-		Time now = Time.now();
-		String ymdHms = now.ymdHms();
+		String ymdHms = Time.now().ymdHms();
 		Map<String, Float> priceBySymbol = cfg.quote(dataSourceBySymbol.keySet());
 
 		for (Entry<String, Float> e : priceBySymbol.entrySet())
 			log.sink(ymdHms + "," + e.getKey() + "," + e.getValue());
 
+		return tick(ymdHms, priceBySymbol);
+	}
+
+	private String tick(String ymdHms, Map<String, Float> priceBySymbol) {
 		int last = windowSize - 1;
 
 		System.arraycopy(times, 0, times, 1, last);
@@ -98,7 +101,7 @@ public class WalkForwardAllocTester {
 		} else
 			actions = "wait";
 
-		return now.ymd() //
+		return ymdHms //
 				+ ", valuation = " + valuation_ //
 				+ ", portfolio = " + account //
 				+ ", actions = " + actions;
