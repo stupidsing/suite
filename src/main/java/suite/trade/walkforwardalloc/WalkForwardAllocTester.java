@@ -77,8 +77,9 @@ public class WalkForwardAllocTester {
 
 		dataSourceBySymbol = Read.from2(dataSourceBySymbol) //
 				.map2((symbol, dataSource) -> {
-					System.arraycopy(dataSource.prices, 0, dataSource.prices, 1, last);
-					dataSource.prices[last] = priceBySymbol.get(symbol);
+					float[] prices = dataSource.prices;
+					System.arraycopy(prices, 0, prices, 1, last);
+					prices[last] = priceBySymbol.get(symbol);
 					return dataSource;
 				}) //
 				.toMap();
