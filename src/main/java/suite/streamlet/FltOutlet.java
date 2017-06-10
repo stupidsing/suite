@@ -17,7 +17,6 @@ import suite.node.util.Mutable;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltFunUtil;
-import suite.primitive.FltObj_Flt;
 import suite.primitive.FltPrimitives.FltComparator;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
@@ -70,6 +69,16 @@ public class FltOutlet implements Iterable<Float> {
 		});
 	}
 
+	public static FltOutlet of(Floats floats) {
+		return of(new FltSource() {
+			private int i;
+
+			public float source() {
+				return i < floats.size() ? floats.get(i++) : FltFunUtil.EMPTYVALUE;
+			}
+		});
+	}
+
 	public static FltOutlet of(Enumeration<Float> en) {
 		return of(To.source(en));
 	}
@@ -116,12 +125,16 @@ public class FltOutlet implements Iterable<Float> {
 		return fun.apply(this);
 	}
 
-	public FltOutlet concatMap(Flt_Obj<FltOutlet> fun) {
-		return of(FltFunUtil.concat(FltFunUtil.map(t -> fun.apply(t).source, source)));
+	public <O> Outlet<O> concatMap(Flt_Obj<Outlet<O>> fun) {
+		return Outlet.of(FunUtil.concat(FltFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
 	public <K, V> Outlet2<K, V> concatMap2(Flt_Obj<Outlet2<K, V>> fun) {
 		return Outlet2.of(FunUtil2.concat(FltFunUtil.map(t -> fun.apply(t).source(), source)));
+	}
+
+	public FltOutlet concatMapFlt(Flt_Obj<FltOutlet> fun) {
+		return of(FltFunUtil.concat(FltFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
 	public FltOutlet cons(float t) {
@@ -135,12 +148,12 @@ public class FltOutlet implements Iterable<Float> {
 		return i;
 	}
 
-	public <U> FltOutlet cross(List<U> list, FltObj_Flt<U> fun) {
-		return of(new FltSource() {
+	public <U, O> Outlet<O> cross(List<U> list, FltObj_Obj<U, O> fun) {
+		return Outlet.of(new Source<O>() {
 			private float t;
 			private int index = list.size();
 
-			public float source() {
+			public O source() {
 				if (index == list.size()) {
 					index = 0;
 					t = next();
@@ -257,6 +270,10 @@ public class FltOutlet implements Iterable<Float> {
 
 	public FltOutlet mapFlt(Flt_Flt fun0) {
 		return of(FltFunUtil.mapFlt(fun0, source));
+	}
+
+	public <V> FltObjOutlet<V> mapFltObj(Flt_Obj<V> fun0) {
+		return FltObjOutlet.of(FltFunUtil.mapFltObj(fun0, source));
 	}
 
 	public <O> Outlet<O> mapNonNull(Flt_Obj<O> fun) {

@@ -15,7 +15,6 @@ import suite.adt.map.LngObjMap;
 import suite.adt.pair.LngObjPair;
 import suite.node.util.Mutable;
 import suite.primitive.LngFunUtil;
-import suite.primitive.LngObj_Lng;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
@@ -70,6 +69,16 @@ public class LngOutlet implements Iterable<Long> {
 		});
 	}
 
+	public static LngOutlet of(Longs longs) {
+		return of(new LngSource() {
+			private int i;
+
+			public long source() {
+				return i < longs.size() ? longs.get(i++) : LngFunUtil.EMPTYVALUE;
+			}
+		});
+	}
+
 	public static LngOutlet of(Enumeration<Long> en) {
 		return of(To.source(en));
 	}
@@ -116,12 +125,16 @@ public class LngOutlet implements Iterable<Long> {
 		return fun.apply(this);
 	}
 
-	public LngOutlet concatMap(Lng_Obj<LngOutlet> fun) {
-		return of(LngFunUtil.concat(LngFunUtil.map(t -> fun.apply(t).source, source)));
+	public <O> Outlet<O> concatMap(Lng_Obj<Outlet<O>> fun) {
+		return Outlet.of(FunUtil.concat(LngFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
 	public <K, V> Outlet2<K, V> concatMap2(Lng_Obj<Outlet2<K, V>> fun) {
 		return Outlet2.of(FunUtil2.concat(LngFunUtil.map(t -> fun.apply(t).source(), source)));
+	}
+
+	public LngOutlet concatMapLng(Lng_Obj<LngOutlet> fun) {
+		return of(LngFunUtil.concat(LngFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
 	public LngOutlet cons(long t) {
@@ -135,12 +148,12 @@ public class LngOutlet implements Iterable<Long> {
 		return i;
 	}
 
-	public <U> LngOutlet cross(List<U> list, LngObj_Lng<U> fun) {
-		return of(new LngSource() {
+	public <U, O> Outlet<O> cross(List<U> list, LngObj_Obj<U, O> fun) {
+		return Outlet.of(new Source<O>() {
 			private long t;
 			private int index = list.size();
 
-			public long source() {
+			public O source() {
 				if (index == list.size()) {
 					index = 0;
 					t = next();
@@ -257,6 +270,10 @@ public class LngOutlet implements Iterable<Long> {
 
 	public LngOutlet mapLng(Lng_Lng fun0) {
 		return of(LngFunUtil.mapLng(fun0, source));
+	}
+
+	public <V> LngObjOutlet<V> mapLngObj(Lng_Obj<V> fun0) {
+		return LngObjOutlet.of(LngFunUtil.mapLngObj(fun0, source));
 	}
 
 	public <O> Outlet<O> mapNonNull(Lng_Obj<O> fun) {

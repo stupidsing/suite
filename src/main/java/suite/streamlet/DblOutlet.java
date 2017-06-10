@@ -15,7 +15,6 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.DblObjPair;
 import suite.node.util.Mutable;
 import suite.primitive.DblFunUtil;
-import suite.primitive.DblObj_Dbl;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
@@ -70,6 +69,16 @@ public class DblOutlet implements Iterable<Double> {
 		});
 	}
 
+	public static DblOutlet of(Doubles doubles) {
+		return of(new DblSource() {
+			private int i;
+
+			public double source() {
+				return i < doubles.size() ? doubles.get(i++) : DblFunUtil.EMPTYVALUE;
+			}
+		});
+	}
+
 	public static DblOutlet of(Enumeration<Double> en) {
 		return of(To.source(en));
 	}
@@ -116,12 +125,16 @@ public class DblOutlet implements Iterable<Double> {
 		return fun.apply(this);
 	}
 
-	public DblOutlet concatMap(Dbl_Obj<DblOutlet> fun) {
-		return of(DblFunUtil.concat(DblFunUtil.map(t -> fun.apply(t).source, source)));
+	public <O> Outlet<O> concatMap(Dbl_Obj<Outlet<O>> fun) {
+		return Outlet.of(FunUtil.concat(DblFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
 	public <K, V> Outlet2<K, V> concatMap2(Dbl_Obj<Outlet2<K, V>> fun) {
 		return Outlet2.of(FunUtil2.concat(DblFunUtil.map(t -> fun.apply(t).source(), source)));
+	}
+
+	public DblOutlet concatMapDbl(Dbl_Obj<DblOutlet> fun) {
+		return of(DblFunUtil.concat(DblFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
 	public DblOutlet cons(double t) {
@@ -135,12 +148,12 @@ public class DblOutlet implements Iterable<Double> {
 		return i;
 	}
 
-	public <U> DblOutlet cross(List<U> list, DblObj_Dbl<U> fun) {
-		return of(new DblSource() {
+	public <U, O> Outlet<O> cross(List<U> list, DblObj_Obj<U, O> fun) {
+		return Outlet.of(new Source<O>() {
 			private double t;
 			private int index = list.size();
 
-			public double source() {
+			public O source() {
 				if (index == list.size()) {
 					index = 0;
 					t = next();
@@ -257,6 +270,10 @@ public class DblOutlet implements Iterable<Double> {
 
 	public DblOutlet mapDbl(Dbl_Dbl fun0) {
 		return of(DblFunUtil.mapDbl(fun0, source));
+	}
+
+	public <V> DblObjOutlet<V> mapDblObj(Dbl_Obj<V> fun0) {
+		return DblObjOutlet.of(DblFunUtil.mapDblObj(fun0, source));
 	}
 
 	public <O> Outlet<O> mapNonNull(Dbl_Obj<O> fun) {

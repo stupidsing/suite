@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import suite.adt.pair.ChrObjPair;
 import suite.os.LogUtil;
+import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.primitive.ChrPrimitives.ChrSink;
 import suite.primitive.ChrPrimitives.ChrSource;
@@ -190,6 +191,20 @@ public class ChrFunUtil {
 		return () -> {
 			char t = source.source();
 			return t != ChrFunUtil.EMPTYVALUE ? fun1.apply(t) : ChrFunUtil.EMPTYVALUE;
+		};
+	}
+
+	public static <V> ChrObjSource<V> mapChrObj(Chr_Obj<V> fun0, ChrSource source) {
+		Chr_Obj<V> fun1 = fun0.rethrow();
+		return pair -> {
+			char t = source.source();
+			if (t != ChrFunUtil.EMPTYVALUE) {
+				pair.t0 = t;
+				pair.t1 = fun1.apply(t);
+				return true;
+			} else
+				return false;
+
 		};
 	}
 

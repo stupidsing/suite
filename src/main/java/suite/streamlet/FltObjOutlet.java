@@ -36,13 +36,13 @@ import suite.util.To;
 
 public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 
-	private FltObjSource<V> floatObjSource;
+	private FltObjSource<V> source;
 
 	@SafeVarargs
 	public static <V> FltObjOutlet<V> concat(FltObjOutlet<V>... outlets) {
 		List<FltObjSource<V>> sources = new ArrayList<>();
 		for (FltObjOutlet<V> outlet : outlets)
-			sources.add(outlet.floatObjSource);
+			sources.add(outlet.source);
 		return of(FltObjFunUtil.concat(To.source(sources)));
 	}
 
@@ -105,20 +105,20 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	private FltObjOutlet(FltObjSource<V> source) {
-		this.floatObjSource = source;
+		this.source = source;
 	}
 
 	@Override
 	public Iterator<FltObjPair<V>> iterator() {
-		return FltObjFunUtil.iterator(floatObjSource);
+		return FltObjFunUtil.iterator(source);
 	}
 
 	public FltObjOutlet<V> append(Float key, V value) {
-		return of(FltObjFunUtil.append(key, value, floatObjSource));
+		return of(FltObjFunUtil.append(key, value, source));
 	}
 
 	public Outlet<FltObjOutlet<V>> chunk(int n) {
-		return Outlet.of(FunUtil.map(FltObjOutlet<V>::new, FltObjFunUtil.chunk(n, floatObjSource)));
+		return Outlet.of(FunUtil.map(FltObjOutlet<V>::new, FltObjFunUtil.chunk(n, source)));
 	}
 
 	public FltObjOutlet<V> closeAtEnd(Closeable c) {
@@ -135,15 +135,15 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	public <O> Outlet<O> concatMap(FltObj_Obj<V, Outlet<O>> fun) {
-		return Outlet.of(FunUtil.concat(FltObjFunUtil.map((k, v) -> fun.apply(k, v).source(), floatObjSource)));
+		return Outlet.of(FunUtil.concat(FltObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
 	}
 
 	public <K1, V1> Outlet2<K1, V1> concatMap2(FltObj_Obj<V, Outlet2<K1, V1>> fun) {
-		return Outlet2.of(FunUtil2.concat(FltObjFunUtil.map((k, v) -> fun.apply(k, v).source(), floatObjSource)));
+		return Outlet2.of(FunUtil2.concat(FltObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
 	}
 
 	public <V1> FltObjOutlet<V1> concatMapFltObj(FltObj_Obj<V, FltObjOutlet<V1>> fun) {
-		return of(FltObjFunUtil.concat(FltObjFunUtil.map((k, v) -> fun.apply(k, v).floatObjSource, floatObjSource)));
+		return of(FltObjFunUtil.concat(FltObjFunUtil.map((k, v) -> fun.apply(k, v).source, source)));
 	}
 
 	public <V1> FltObjOutlet<V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
@@ -158,11 +158,11 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 				}
 				return b;
 			};
-		}, floatObjSource)));
+		}, source)));
 	}
 
 	public FltObjOutlet<V> cons(float key, V value) {
-		return of(FltObjFunUtil.cons(key, value, floatObjSource));
+		return of(FltObjFunUtil.cons(key, value, source));
 	}
 
 	public FltObjOutlet<V> distinct() {
@@ -188,7 +188,7 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 		if (Object_.clazz(object) == FltObjOutlet.class) {
 			@SuppressWarnings("unchecked")
 			FltObjOutlet<V> outlet = (FltObjOutlet<V>) (FltObjOutlet<?>) object;
-			FltObjSource<V> source2 = outlet.floatObjSource;
+			FltObjSource<V> source2 = outlet.source;
 			boolean b, b0, b1;
 			FltObjPair<V> pair0 = FltObjPair.of((float) 0, null);
 			FltObjPair<V> pair1 = FltObjPair.of((float) 0, null);
@@ -203,15 +203,15 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	public FltObjOutlet<V> filter(FltObjPredicate<V> fun) {
-		return of(FltObjFunUtil.filter(fun, floatObjSource));
+		return of(FltObjFunUtil.filter(fun, source));
 	}
 
 	public FltObjOutlet<V> filterKey(FltPredicate fun) {
-		return of(FltObjFunUtil.filterKey(fun, floatObjSource));
+		return of(FltObjFunUtil.filterKey(fun, source));
 	}
 
 	public FltObjOutlet<V> filterValue(Predicate<V> fun) {
-		return of(FltObjFunUtil.filterValue(fun, floatObjSource));
+		return of(FltObjFunUtil.filterValue(fun, source));
 	}
 
 	public FltObjPair<V> first() {
@@ -220,7 +220,7 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	public <O> Outlet<O> flatMap(FltObj_Obj<V, Iterable<O>> fun) {
-		return Outlet.of(FunUtil.flatten(FltObjFunUtil.map(fun, floatObjSource)));
+		return Outlet.of(FunUtil.flatten(FltObjFunUtil.map(fun, source)));
 	}
 
 	public FltObjOutlet<List<V>> groupBy() {
@@ -241,11 +241,11 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	public boolean isAll(FltObjPredicate<V> pred) {
-		return FltObjFunUtil.isAll(pred, floatObjSource);
+		return FltObjFunUtil.isAll(pred, source);
 	}
 
 	public boolean isAny(FltObjPredicate<V> pred) {
-		return FltObjFunUtil.isAny(pred, floatObjSource);
+		return FltObjFunUtil.isAny(pred, source);
 	}
 
 	public Outlet<Float> keys() {
@@ -267,7 +267,7 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	public <K1, V1> Outlet2<K1, V1> map2(FltObj_Obj<V, K1> kf, FltObj_Obj<V, V1> vf) {
-		return Outlet2.of(FltObjFunUtil.map2(kf, vf, floatObjSource));
+		return Outlet2.of(FltObjFunUtil.map2(kf, vf, source));
 	}
 
 	public <V1> FltObjOutlet<V1> mapFltObj(FltObj_Flt<V> kf, FltObj_Obj<V, V1> vf) {
@@ -279,7 +279,7 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	public <O> Outlet<O> mapNonNull(FltObj_Obj<V, O> fun) {
-		return Outlet.of(FltObjFunUtil.mapNonNull(fun, floatObjSource));
+		return Outlet.of(FltObjFunUtil.mapNonNull(fun, source));
 	}
 
 	public <V1> FltObjOutlet<V1> mapValue(Fun<V, V1> fun) {
@@ -316,7 +316,7 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 			boolean b;
 			do {
 				FltObjPair<V> pair = FltObjPair.of((float) 0, null);
-				b = floatObjSource.source2(pair);
+				b = source.source2(pair);
 				queue.offerQuietly(pair);
 			} while (b);
 		}).start();
@@ -371,7 +371,7 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 		boolean end = false;
 		for (int i = 0; !end && i < n; i++)
 			end = next(pair);
-		return !end ? of(floatObjSource) : empty();
+		return !end ? of(source) : empty();
 	}
 
 	public FltObjOutlet<V> sort(Comparator<FltObjPair<V>> comparator) {
@@ -395,11 +395,11 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	public FltObjSource<V> source() {
-		return floatObjSource;
+		return source;
 	}
 
 	public Outlet<FltObjOutlet<V>> split(FltObjPredicate<V> fun) {
-		return Outlet.of(FunUtil.map(FltObjOutlet<V>::new, FltObjFunUtil.split(fun, floatObjSource)));
+		return Outlet.of(FunUtil.map(FltObjOutlet<V>::new, FltObjFunUtil.split(fun, source)));
 	}
 
 	public FltObjOutlet<V> take(int n) {
@@ -476,15 +476,15 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	private <O> Outlet<O> map_(FltObj_Obj<V, O> fun0) {
-		return Outlet.of(FltObjFunUtil.map(fun0, floatObjSource));
+		return Outlet.of(FltObjFunUtil.map(fun0, source));
 	}
 
 	private <V1> FltObjOutlet<V1> mapFltObj_(FltObj_Flt<V> kf, FltObj_Obj<V, V1> vf) {
-		return of(FltObjFunUtil.mapFltObj(kf, vf, floatObjSource));
+		return of(FltObjFunUtil.mapFltObj(kf, vf, source));
 	}
 
 	private boolean next(FltObjPair<V> pair) {
-		return floatObjSource.source2(pair);
+		return source.source2(pair);
 	}
 
 }

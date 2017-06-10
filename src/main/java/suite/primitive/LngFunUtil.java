@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import suite.adt.pair.LngObjPair;
 import suite.os.LogUtil;
+import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngPredicate;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.LngSource;
@@ -190,6 +191,20 @@ public class LngFunUtil {
 		return () -> {
 			long t = source.source();
 			return t != LngFunUtil.EMPTYVALUE ? fun1.apply(t) : LngFunUtil.EMPTYVALUE;
+		};
+	}
+
+	public static <V> LngObjSource<V> mapLngObj(Lng_Obj<V> fun0, LngSource source) {
+		Lng_Obj<V> fun1 = fun0.rethrow();
+		return pair -> {
+			long t = source.source();
+			if (t != LngFunUtil.EMPTYVALUE) {
+				pair.t0 = t;
+				pair.t1 = fun1.apply(t);
+				return true;
+			} else
+				return false;
+
 		};
 	}
 

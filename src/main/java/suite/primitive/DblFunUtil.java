@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import suite.adt.pair.DblObjPair;
 import suite.os.LogUtil;
+import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblPredicate;
 import suite.primitive.DblPrimitives.DblSink;
 import suite.primitive.DblPrimitives.DblSource;
@@ -190,6 +191,20 @@ public class DblFunUtil {
 		return () -> {
 			double t = source.source();
 			return t != DblFunUtil.EMPTYVALUE ? fun1.apply(t) : DblFunUtil.EMPTYVALUE;
+		};
+	}
+
+	public static <V> DblObjSource<V> mapDblObj(Dbl_Obj<V> fun0, DblSource source) {
+		Dbl_Obj<V> fun1 = fun0.rethrow();
+		return pair -> {
+			double t = source.source();
+			if (t != DblFunUtil.EMPTYVALUE) {
+				pair.t0 = t;
+				pair.t1 = fun1.apply(t);
+				return true;
+			} else
+				return false;
+
 		};
 	}
 

@@ -91,7 +91,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <U, R> Streamlet<R> cross(Streamlet<U> st1, ObjObj_Obj<T, U, R> fun) {
-		return streamlet(() -> spawn().concatMap(t -> st1.spawn().map(t1 -> fun.apply(t, t1))));
+		return streamlet(() -> spawn().cross(st1.toList(), fun));
 	}
 
 	public Streamlet<T> distinct() {

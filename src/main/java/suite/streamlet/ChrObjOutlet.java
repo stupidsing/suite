@@ -36,13 +36,13 @@ import suite.util.To;
 
 public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 
-	private ChrObjSource<V> charObjSource;
+	private ChrObjSource<V> source;
 
 	@SafeVarargs
 	public static <V> ChrObjOutlet<V> concat(ChrObjOutlet<V>... outlets) {
 		List<ChrObjSource<V>> sources = new ArrayList<>();
 		for (ChrObjOutlet<V> outlet : outlets)
-			sources.add(outlet.charObjSource);
+			sources.add(outlet.source);
 		return of(ChrObjFunUtil.concat(To.source(sources)));
 	}
 
@@ -105,20 +105,20 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	private ChrObjOutlet(ChrObjSource<V> source) {
-		this.charObjSource = source;
+		this.source = source;
 	}
 
 	@Override
 	public Iterator<ChrObjPair<V>> iterator() {
-		return ChrObjFunUtil.iterator(charObjSource);
+		return ChrObjFunUtil.iterator(source);
 	}
 
 	public ChrObjOutlet<V> append(Character key, V value) {
-		return of(ChrObjFunUtil.append(key, value, charObjSource));
+		return of(ChrObjFunUtil.append(key, value, source));
 	}
 
 	public Outlet<ChrObjOutlet<V>> chunk(int n) {
-		return Outlet.of(FunUtil.map(ChrObjOutlet<V>::new, ChrObjFunUtil.chunk(n, charObjSource)));
+		return Outlet.of(FunUtil.map(ChrObjOutlet<V>::new, ChrObjFunUtil.chunk(n, source)));
 	}
 
 	public ChrObjOutlet<V> closeAtEnd(Closeable c) {
@@ -135,15 +135,15 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public <O> Outlet<O> concatMap(ChrObj_Obj<V, Outlet<O>> fun) {
-		return Outlet.of(FunUtil.concat(ChrObjFunUtil.map((k, v) -> fun.apply(k, v).source(), charObjSource)));
+		return Outlet.of(FunUtil.concat(ChrObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
 	}
 
 	public <K1, V1> Outlet2<K1, V1> concatMap2(ChrObj_Obj<V, Outlet2<K1, V1>> fun) {
-		return Outlet2.of(FunUtil2.concat(ChrObjFunUtil.map((k, v) -> fun.apply(k, v).source(), charObjSource)));
+		return Outlet2.of(FunUtil2.concat(ChrObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
 	}
 
 	public <V1> ChrObjOutlet<V1> concatMapChrObj(ChrObj_Obj<V, ChrObjOutlet<V1>> fun) {
-		return of(ChrObjFunUtil.concat(ChrObjFunUtil.map((k, v) -> fun.apply(k, v).charObjSource, charObjSource)));
+		return of(ChrObjFunUtil.concat(ChrObjFunUtil.map((k, v) -> fun.apply(k, v).source, source)));
 	}
 
 	public <V1> ChrObjOutlet<V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
@@ -158,11 +158,11 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 				}
 				return b;
 			};
-		}, charObjSource)));
+		}, source)));
 	}
 
 	public ChrObjOutlet<V> cons(char key, V value) {
-		return of(ChrObjFunUtil.cons(key, value, charObjSource));
+		return of(ChrObjFunUtil.cons(key, value, source));
 	}
 
 	public ChrObjOutlet<V> distinct() {
@@ -188,7 +188,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 		if (Object_.clazz(object) == ChrObjOutlet.class) {
 			@SuppressWarnings("unchecked")
 			ChrObjOutlet<V> outlet = (ChrObjOutlet<V>) (ChrObjOutlet<?>) object;
-			ChrObjSource<V> source2 = outlet.charObjSource;
+			ChrObjSource<V> source2 = outlet.source;
 			boolean b, b0, b1;
 			ChrObjPair<V> pair0 = ChrObjPair.of((char) 0, null);
 			ChrObjPair<V> pair1 = ChrObjPair.of((char) 0, null);
@@ -203,15 +203,15 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public ChrObjOutlet<V> filter(ChrObjPredicate<V> fun) {
-		return of(ChrObjFunUtil.filter(fun, charObjSource));
+		return of(ChrObjFunUtil.filter(fun, source));
 	}
 
 	public ChrObjOutlet<V> filterKey(ChrPredicate fun) {
-		return of(ChrObjFunUtil.filterKey(fun, charObjSource));
+		return of(ChrObjFunUtil.filterKey(fun, source));
 	}
 
 	public ChrObjOutlet<V> filterValue(Predicate<V> fun) {
-		return of(ChrObjFunUtil.filterValue(fun, charObjSource));
+		return of(ChrObjFunUtil.filterValue(fun, source));
 	}
 
 	public ChrObjPair<V> first() {
@@ -220,7 +220,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public <O> Outlet<O> flatMap(ChrObj_Obj<V, Iterable<O>> fun) {
-		return Outlet.of(FunUtil.flatten(ChrObjFunUtil.map(fun, charObjSource)));
+		return Outlet.of(FunUtil.flatten(ChrObjFunUtil.map(fun, source)));
 	}
 
 	public ChrObjOutlet<List<V>> groupBy() {
@@ -241,11 +241,11 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public boolean isAll(ChrObjPredicate<V> pred) {
-		return ChrObjFunUtil.isAll(pred, charObjSource);
+		return ChrObjFunUtil.isAll(pred, source);
 	}
 
 	public boolean isAny(ChrObjPredicate<V> pred) {
-		return ChrObjFunUtil.isAny(pred, charObjSource);
+		return ChrObjFunUtil.isAny(pred, source);
 	}
 
 	public Outlet<Character> keys() {
@@ -267,7 +267,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public <K1, V1> Outlet2<K1, V1> map2(ChrObj_Obj<V, K1> kf, ChrObj_Obj<V, V1> vf) {
-		return Outlet2.of(ChrObjFunUtil.map2(kf, vf, charObjSource));
+		return Outlet2.of(ChrObjFunUtil.map2(kf, vf, source));
 	}
 
 	public <V1> ChrObjOutlet<V1> mapChrObj(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
@@ -279,7 +279,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public <O> Outlet<O> mapNonNull(ChrObj_Obj<V, O> fun) {
-		return Outlet.of(ChrObjFunUtil.mapNonNull(fun, charObjSource));
+		return Outlet.of(ChrObjFunUtil.mapNonNull(fun, source));
 	}
 
 	public <V1> ChrObjOutlet<V1> mapValue(Fun<V, V1> fun) {
@@ -316,7 +316,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 			boolean b;
 			do {
 				ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-				b = charObjSource.source2(pair);
+				b = source.source2(pair);
 				queue.offerQuietly(pair);
 			} while (b);
 		}).start();
@@ -371,7 +371,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 		boolean end = false;
 		for (int i = 0; !end && i < n; i++)
 			end = next(pair);
-		return !end ? of(charObjSource) : empty();
+		return !end ? of(source) : empty();
 	}
 
 	public ChrObjOutlet<V> sort(Comparator<ChrObjPair<V>> comparator) {
@@ -395,11 +395,11 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public ChrObjSource<V> source() {
-		return charObjSource;
+		return source;
 	}
 
 	public Outlet<ChrObjOutlet<V>> split(ChrObjPredicate<V> fun) {
-		return Outlet.of(FunUtil.map(ChrObjOutlet<V>::new, ChrObjFunUtil.split(fun, charObjSource)));
+		return Outlet.of(FunUtil.map(ChrObjOutlet<V>::new, ChrObjFunUtil.split(fun, source)));
 	}
 
 	public ChrObjOutlet<V> take(int n) {
@@ -476,15 +476,15 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	private <O> Outlet<O> map_(ChrObj_Obj<V, O> fun0) {
-		return Outlet.of(ChrObjFunUtil.map(fun0, charObjSource));
+		return Outlet.of(ChrObjFunUtil.map(fun0, source));
 	}
 
 	private <V1> ChrObjOutlet<V1> mapChrObj_(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
-		return of(ChrObjFunUtil.mapChrObj(kf, vf, charObjSource));
+		return of(ChrObjFunUtil.mapChrObj(kf, vf, source));
 	}
 
 	private boolean next(ChrObjPair<V> pair) {
-		return charObjSource.source2(pair);
+		return source.source2(pair);
 	}
 
 }

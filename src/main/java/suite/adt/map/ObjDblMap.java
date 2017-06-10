@@ -11,8 +11,8 @@ import suite.streamlet.DblObjOutlet;
 import suite.streamlet.DblObjStreamlet;
 
 /**
- * Map with generic object key and doubleacter object value. Double.MIN_VALUE
- * is not allowed in values. Not thread-safe.
+ * Map with generic object key and doubleacter object value. Double.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

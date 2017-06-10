@@ -61,3 +61,5 @@ replace src/main/java/suite/primitive/ChrObjFunUtil.java
 replace src/main/java/suite/primitive/ChrPrimitives.java
 replace src/main/java/suite/streamlet/ChrObjOutlet.java
 replace src/main/java/suite/streamlet/ChrObjStreamlet.java
+replace src/main/java/suite/streamlet/ChrOutlet.java
+replace src/main/java/suite/streamlet/ChrStreamlet.java

@@ -15,7 +15,6 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.IntObjPair;
 import suite.node.util.Mutable;
 import suite.primitive.IntFunUtil;
-import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitives.IntComparator;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
@@ -70,6 +69,16 @@ public class IntOutlet implements Iterable<Integer> {
 		});
 	}
 
+	public static IntOutlet of(Ints ints) {
+		return of(new IntSource() {
+			private int i;
+
+			public int source() {
+				return i < ints.size() ? ints.get(i++) : IntFunUtil.EMPTYVALUE;
+			}
+		});
+	}
+
 	public static IntOutlet of(Enumeration<Integer> en) {
 		return of(To.source(en));
 	}
@@ -116,12 +125,16 @@ public class IntOutlet implements Iterable<Integer> {
 		return fun.apply(this);
 	}
 
-	public IntOutlet concatMap(Int_Obj<IntOutlet> fun) {
-		return of(IntFunUtil.concat(IntFunUtil.map(t -> fun.apply(t).source, source)));
+	public <O> Outlet<O> concatMap(Int_Obj<Outlet<O>> fun) {
+		return Outlet.of(FunUtil.concat(IntFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
 	public <K, V> Outlet2<K, V> concatMap2(Int_Obj<Outlet2<K, V>> fun) {
 		return Outlet2.of(FunUtil2.concat(IntFunUtil.map(t -> fun.apply(t).source(), source)));
+	}
+
+	public IntOutlet concatMapInt(Int_Obj<IntOutlet> fun) {
+		return of(IntFunUtil.concat(IntFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
 	public IntOutlet cons(int t) {
@@ -135,12 +148,12 @@ public class IntOutlet implements Iterable<Integer> {
 		return i;
 	}
 
-	public <U> IntOutlet cross(List<U> list, IntObj_Int<U> fun) {
-		return of(new IntSource() {
+	public <U, O> Outlet<O> cross(List<U> list, IntObj_Obj<U, O> fun) {
+		return Outlet.of(new Source<O>() {
 			private int t;
 			private int index = list.size();
 
-			public int source() {
+			public O source() {
 				if (index == list.size()) {
 					index = 0;
 					t = next();
@@ -257,6 +270,10 @@ public class IntOutlet implements Iterable<Integer> {
 
 	public IntOutlet mapInt(Int_Int fun0) {
 		return of(IntFunUtil.mapInt(fun0, source));
+	}
+
+	public <V> IntObjOutlet<V> mapIntObj(Int_Obj<V> fun0) {
+		return IntObjOutlet.of(IntFunUtil.mapIntObj(fun0, source));
 	}
 
 	public <O> Outlet<O> mapNonNull(Int_Obj<O> fun) {

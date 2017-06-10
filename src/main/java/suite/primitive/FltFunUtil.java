@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import suite.adt.pair.FltObjPair;
 import suite.os.LogUtil;
+import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltPredicate;
 import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
@@ -190,6 +191,20 @@ public class FltFunUtil {
 		return () -> {
 			float t = source.source();
 			return t != FltFunUtil.EMPTYVALUE ? fun1.apply(t) : FltFunUtil.EMPTYVALUE;
+		};
+	}
+
+	public static <V> FltObjSource<V> mapFltObj(Flt_Obj<V> fun0, FltSource source) {
+		Flt_Obj<V> fun1 = fun0.rethrow();
+		return pair -> {
+			float t = source.source();
+			if (t != FltFunUtil.EMPTYVALUE) {
+				pair.t0 = t;
+				pair.t1 = fun1.apply(t);
+				return true;
+			} else
+				return false;
+
 		};
 	}
 

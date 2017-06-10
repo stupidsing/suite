@@ -11,8 +11,8 @@ import suite.streamlet.FltObjOutlet;
 import suite.streamlet.FltObjStreamlet;
 
 /**
- * Map with generic object key and floatacter object value. Float.MIN_VALUE
- * is not allowed in values. Not thread-safe.
+ * Map with generic object key and floatacter object value. Float.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

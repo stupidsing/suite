@@ -36,13 +36,13 @@ import suite.util.To;
 
 public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 
-	private DblObjSource<V> doubleObjSource;
+	private DblObjSource<V> source;
 
 	@SafeVarargs
 	public static <V> DblObjOutlet<V> concat(DblObjOutlet<V>... outlets) {
 		List<DblObjSource<V>> sources = new ArrayList<>();
 		for (DblObjOutlet<V> outlet : outlets)
-			sources.add(outlet.doubleObjSource);
+			sources.add(outlet.source);
 		return of(DblObjFunUtil.concat(To.source(sources)));
 	}
 
@@ -105,20 +105,20 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	private DblObjOutlet(DblObjSource<V> source) {
-		this.doubleObjSource = source;
+		this.source = source;
 	}
 
 	@Override
 	public Iterator<DblObjPair<V>> iterator() {
-		return DblObjFunUtil.iterator(doubleObjSource);
+		return DblObjFunUtil.iterator(source);
 	}
 
 	public DblObjOutlet<V> append(Double key, V value) {
-		return of(DblObjFunUtil.append(key, value, doubleObjSource));
+		return of(DblObjFunUtil.append(key, value, source));
 	}
 
 	public Outlet<DblObjOutlet<V>> chunk(int n) {
-		return Outlet.of(FunUtil.map(DblObjOutlet<V>::new, DblObjFunUtil.chunk(n, doubleObjSource)));
+		return Outlet.of(FunUtil.map(DblObjOutlet<V>::new, DblObjFunUtil.chunk(n, source)));
 	}
 
 	public DblObjOutlet<V> closeAtEnd(Closeable c) {
@@ -135,15 +135,15 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	public <O> Outlet<O> concatMap(DblObj_Obj<V, Outlet<O>> fun) {
-		return Outlet.of(FunUtil.concat(DblObjFunUtil.map((k, v) -> fun.apply(k, v).source(), doubleObjSource)));
+		return Outlet.of(FunUtil.concat(DblObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
 	}
 
 	public <K1, V1> Outlet2<K1, V1> concatMap2(DblObj_Obj<V, Outlet2<K1, V1>> fun) {
-		return Outlet2.of(FunUtil2.concat(DblObjFunUtil.map((k, v) -> fun.apply(k, v).source(), doubleObjSource)));
+		return Outlet2.of(FunUtil2.concat(DblObjFunUtil.map((k, v) -> fun.apply(k, v).source(), source)));
 	}
 
 	public <V1> DblObjOutlet<V1> concatMapDblObj(DblObj_Obj<V, DblObjOutlet<V1>> fun) {
-		return of(DblObjFunUtil.concat(DblObjFunUtil.map((k, v) -> fun.apply(k, v).doubleObjSource, doubleObjSource)));
+		return of(DblObjFunUtil.concat(DblObjFunUtil.map((k, v) -> fun.apply(k, v).source, source)));
 	}
 
 	public <V1> DblObjOutlet<V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
@@ -158,11 +158,11 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 				}
 				return b;
 			};
-		}, doubleObjSource)));
+		}, source)));
 	}
 
 	public DblObjOutlet<V> cons(double key, V value) {
-		return of(DblObjFunUtil.cons(key, value, doubleObjSource));
+		return of(DblObjFunUtil.cons(key, value, source));
 	}
 
 	public DblObjOutlet<V> distinct() {
@@ -188,7 +188,7 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 		if (Object_.clazz(object) == DblObjOutlet.class) {
 			@SuppressWarnings("unchecked")
 			DblObjOutlet<V> outlet = (DblObjOutlet<V>) (DblObjOutlet<?>) object;
-			DblObjSource<V> source2 = outlet.doubleObjSource;
+			DblObjSource<V> source2 = outlet.source;
 			boolean b, b0, b1;
 			DblObjPair<V> pair0 = DblObjPair.of((double) 0, null);
 			DblObjPair<V> pair1 = DblObjPair.of((double) 0, null);
@@ -203,15 +203,15 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	public DblObjOutlet<V> filter(DblObjPredicate<V> fun) {
-		return of(DblObjFunUtil.filter(fun, doubleObjSource));
+		return of(DblObjFunUtil.filter(fun, source));
 	}
 
 	public DblObjOutlet<V> filterKey(DblPredicate fun) {
-		return of(DblObjFunUtil.filterKey(fun, doubleObjSource));
+		return of(DblObjFunUtil.filterKey(fun, source));
 	}
 
 	public DblObjOutlet<V> filterValue(Predicate<V> fun) {
-		return of(DblObjFunUtil.filterValue(fun, doubleObjSource));
+		return of(DblObjFunUtil.filterValue(fun, source));
 	}
 
 	public DblObjPair<V> first() {
@@ -220,7 +220,7 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	public <O> Outlet<O> flatMap(DblObj_Obj<V, Iterable<O>> fun) {
-		return Outlet.of(FunUtil.flatten(DblObjFunUtil.map(fun, doubleObjSource)));
+		return Outlet.of(FunUtil.flatten(DblObjFunUtil.map(fun, source)));
 	}
 
 	public DblObjOutlet<List<V>> groupBy() {
@@ -241,11 +241,11 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	public boolean isAll(DblObjPredicate<V> pred) {
-		return DblObjFunUtil.isAll(pred, doubleObjSource);
+		return DblObjFunUtil.isAll(pred, source);
 	}
 
 	public boolean isAny(DblObjPredicate<V> pred) {
-		return DblObjFunUtil.isAny(pred, doubleObjSource);
+		return DblObjFunUtil.isAny(pred, source);
 	}
 
 	public Outlet<Double> keys() {
@@ -267,7 +267,7 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	public <K1, V1> Outlet2<K1, V1> map2(DblObj_Obj<V, K1> kf, DblObj_Obj<V, V1> vf) {
-		return Outlet2.of(DblObjFunUtil.map2(kf, vf, doubleObjSource));
+		return Outlet2.of(DblObjFunUtil.map2(kf, vf, source));
 	}
 
 	public <V1> DblObjOutlet<V1> mapDblObj(DblObj_Dbl<V> kf, DblObj_Obj<V, V1> vf) {
@@ -279,7 +279,7 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	public <O> Outlet<O> mapNonNull(DblObj_Obj<V, O> fun) {
-		return Outlet.of(DblObjFunUtil.mapNonNull(fun, doubleObjSource));
+		return Outlet.of(DblObjFunUtil.mapNonNull(fun, source));
 	}
 
 	public <V1> DblObjOutlet<V1> mapValue(Fun<V, V1> fun) {
@@ -316,7 +316,7 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 			boolean b;
 			do {
 				DblObjPair<V> pair = DblObjPair.of((double) 0, null);
-				b = doubleObjSource.source2(pair);
+				b = source.source2(pair);
 				queue.offerQuietly(pair);
 			} while (b);
 		}).start();
@@ -371,7 +371,7 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 		boolean end = false;
 		for (int i = 0; !end && i < n; i++)
 			end = next(pair);
-		return !end ? of(doubleObjSource) : empty();
+		return !end ? of(source) : empty();
 	}
 
 	public DblObjOutlet<V> sort(Comparator<DblObjPair<V>> comparator) {
@@ -395,11 +395,11 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	public DblObjSource<V> source() {
-		return doubleObjSource;
+		return source;
 	}
 
 	public Outlet<DblObjOutlet<V>> split(DblObjPredicate<V> fun) {
-		return Outlet.of(FunUtil.map(DblObjOutlet<V>::new, DblObjFunUtil.split(fun, doubleObjSource)));
+		return Outlet.of(FunUtil.map(DblObjOutlet<V>::new, DblObjFunUtil.split(fun, source)));
 	}
 
 	public DblObjOutlet<V> take(int n) {
@@ -476,15 +476,15 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	private <O> Outlet<O> map_(DblObj_Obj<V, O> fun0) {
-		return Outlet.of(DblObjFunUtil.map(fun0, doubleObjSource));
+		return Outlet.of(DblObjFunUtil.map(fun0, source));
 	}
 
 	private <V1> DblObjOutlet<V1> mapDblObj_(DblObj_Dbl<V> kf, DblObj_Obj<V, V1> vf) {
-		return of(DblObjFunUtil.mapDblObj(kf, vf, doubleObjSource));
+		return of(DblObjFunUtil.mapDblObj(kf, vf, source));
 	}
 
 	private boolean next(DblObjPair<V> pair) {
-		return doubleObjSource.source2(pair);
+		return source.source2(pair);
 	}
 
 }

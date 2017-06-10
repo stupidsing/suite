@@ -17,7 +17,6 @@ import suite.node.util.Mutable;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrFunUtil;
-import suite.primitive.ChrObj_Chr;
 import suite.primitive.ChrPrimitives.ChrComparator;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
@@ -70,6 +69,16 @@ public class ChrOutlet implements Iterable<Character> {
 		});
 	}
 
+	public static ChrOutlet of(Chars chars) {
+		return of(new ChrSource() {
+			private int i;
+
+			public char source() {
+				return i < chars.size() ? chars.get(i++) : ChrFunUtil.EMPTYVALUE;
+			}
+		});
+	}
+
 	public static ChrOutlet of(Enumeration<Character> en) {
 		return of(To.source(en));
 	}
@@ -116,12 +125,16 @@ public class ChrOutlet implements Iterable<Character> {
 		return fun.apply(this);
 	}
 
-	public ChrOutlet concatMap(Chr_Obj<ChrOutlet> fun) {
-		return of(ChrFunUtil.concat(ChrFunUtil.map(t -> fun.apply(t).source, source)));
+	public <O> Outlet<O> concatMap(Chr_Obj<Outlet<O>> fun) {
+		return Outlet.of(FunUtil.concat(ChrFunUtil.map(t -> fun.apply(t).source(), source)));
 	}
 
 	public <K, V> Outlet2<K, V> concatMap2(Chr_Obj<Outlet2<K, V>> fun) {
 		return Outlet2.of(FunUtil2.concat(ChrFunUtil.map(t -> fun.apply(t).source(), source)));
+	}
+
+	public ChrOutlet concatMapChr(Chr_Obj<ChrOutlet> fun) {
+		return of(ChrFunUtil.concat(ChrFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
 	public ChrOutlet cons(char t) {
@@ -135,12 +148,12 @@ public class ChrOutlet implements Iterable<Character> {
 		return i;
 	}
 
-	public <U> ChrOutlet cross(List<U> list, ChrObj_Chr<U> fun) {
-		return of(new ChrSource() {
+	public <U, O> Outlet<O> cross(List<U> list, ChrObj_Obj<U, O> fun) {
+		return Outlet.of(new Source<O>() {
 			private char t;
 			private int index = list.size();
 
-			public char source() {
+			public O source() {
 				if (index == list.size()) {
 					index = 0;
 					t = next();
@@ -257,6 +270,10 @@ public class ChrOutlet implements Iterable<Character> {
 
 	public ChrOutlet mapChr(Chr_Chr fun0) {
 		return of(ChrFunUtil.mapChr(fun0, source));
+	}
+
+	public <V> ChrObjOutlet<V> mapChrObj(Chr_Obj<V> fun0) {
+		return ChrObjOutlet.of(ChrFunUtil.mapChrObj(fun0, source));
 	}
 
 	public <O> Outlet<O> mapNonNull(Chr_Obj<O> fun) {

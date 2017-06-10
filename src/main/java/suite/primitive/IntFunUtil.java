@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import suite.adt.pair.IntObjPair;
 import suite.os.LogUtil;
+import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntPredicate;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.IntSource;
@@ -190,6 +191,20 @@ public class IntFunUtil {
 		return () -> {
 			int t = source.source();
 			return t != IntFunUtil.EMPTYVALUE ? fun1.apply(t) : IntFunUtil.EMPTYVALUE;
+		};
+	}
+
+	public static <V> IntObjSource<V> mapIntObj(Int_Obj<V> fun0, IntSource source) {
+		Int_Obj<V> fun1 = fun0.rethrow();
+		return pair -> {
+			int t = source.source();
+			if (t != IntFunUtil.EMPTYVALUE) {
+				pair.t0 = t;
+				pair.t1 = fun1.apply(t);
+				return true;
+			} else
+				return false;
+
 		};
 	}
 
