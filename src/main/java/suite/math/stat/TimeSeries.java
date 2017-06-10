@@ -135,7 +135,7 @@ public class TimeSeries {
 	}
 
 	public ReturnsStat returnsStat(float[] prices, double deltaMs) {
-		double scale = Trade_.invTradeDaysPerYear * 28800d * 1000d / deltaMs;
+		double scale = Trade_.invTradeDaysPerYear * Trade_.nTradeSecondsPerDay * 1000d / deltaMs;
 		return new ReturnsStat(prices, 1d, scale);
 	}
 

@@ -19,6 +19,7 @@ public class Trade_ {
 	public static boolean isShortSell = false;
 	public static float maxLeverageAmount = 100000f;
 	public static int nTradeDaysPerYear = 256;
+	public static int nTradeSecondsPerDay = 28800;
 
 	public static double invTradeDaysPerYear = 1d / nTradeDaysPerYear;
 
