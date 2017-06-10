@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import suite.adt.pair.Pair;
 import suite.math.stat.Statistic;
@@ -20,6 +21,7 @@ import suite.trade.Trade_;
 import suite.trade.Trade_.UpdatePortfolio;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
+import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class WalkForwardAllocTester {
@@ -29,6 +31,7 @@ public class WalkForwardAllocTester {
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 	private WalkForwardAllocator wfa;
+	private Sink<String> log;
 
 	private long start;
 	private Map<String, Asset> assetBySymbol;
@@ -43,6 +46,7 @@ public class WalkForwardAllocTester {
 	public WalkForwardAllocTester(Configuration cfg, Streamlet<Asset> assets, float fund0, WalkForwardAllocator wfa) {
 		this.cfg = cfg;
 		this.wfa = wfa;
+		this.log = System.out::println;
 
 		times = new String[windowSize];
 		account = Account.fromCash(fund0);
@@ -56,25 +60,28 @@ public class WalkForwardAllocTester {
 	}
 
 	public String tick() {
-		Map<String, Float> latestPriceBySymbol = cfg.quote(dataSourceBySymbol.keySet());
+		Time now = Time.now();
+		String ymdHms = now.ymdHms();
+		Map<String, Float> priceBySymbol = cfg.quote(dataSourceBySymbol.keySet());
+
+		for (Entry<String, Float> e : priceBySymbol.entrySet())
+			log.sink(ymdHms + "," + e.getKey() + "," + e.getValue());
+
 		int last = windowSize - 1;
 
-		for (int i = 0; i < last; i++)
-			times[i] = times[i + 1];
-
-		Time now = Time.now();
-		times[last] = now.ymdHms();
+		System.arraycopy(times, 0, times, 1, last);
+		times[last] = ymdHms;
 
 		dataSourceBySymbol = Read.from2(dataSourceBySymbol) //
 				.map2((symbol, dataSource) -> {
 					System.arraycopy(dataSource.prices, 0, dataSource.prices, 1, last);
-					dataSource.prices[last] = latestPriceBySymbol.get(symbol);
+					dataSource.prices[last] = priceBySymbol.get(symbol);
 					return dataSource;
 				}) //
 				.toMap();
 
 		List<Pair<String, Double>> ratioBySymbol = wfa.allocate(Read.from2(dataSourceBySymbol), windowSize);
-		UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, latestPriceBySymbol);
+		UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, priceBySymbol);
 		float valuation_;
 
 		valuations.append(valuation_ = up.valuation0);
