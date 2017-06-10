@@ -20,7 +20,6 @@ import suite.trade.Trade_;
 import suite.trade.Trade_.UpdatePortfolio;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
-import suite.util.Copy;
 import suite.util.To;
 
 public class WalkForwardAllocTester {
@@ -68,10 +67,9 @@ public class WalkForwardAllocTester {
 
 		dataSourceBySymbol = Read.from2(dataSourceBySymbol) //
 				.map2((symbol, dataSource) -> {
-					float[] prices1 = new float[windowSize];
-					Copy.floats(dataSource.prices, 1, prices1, 0, windowSize - 2);
-					prices1[last] = latestPriceBySymbol.get(symbol);
-					return new DataSource(times, prices1);
+					System.arraycopy(dataSource.prices, 0, dataSource.prices, 1, last);
+					dataSource.prices[last] = latestPriceBySymbol.get(symbol);
+					return dataSource;
 				}) //
 				.toMap();
 
