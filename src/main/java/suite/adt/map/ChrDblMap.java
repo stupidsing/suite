@@ -5,7 +5,9 @@ import java.util.Arrays;
 import suite.adt.pair.ChrDblPair;
 import suite.primitive.ChrDblSink;
 import suite.primitive.ChrDblSource;
+import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Dbl;
+import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
 
 /**
@@ -15,8 +17,6 @@ import suite.primitive.Dbl_Dbl;
  * @author ywsing
  */
 public class ChrDblMap {
-
-	public final static double EMPTYVALUE = Double.MIN_VALUE;
 
 	private int size;
 	private char[] ks;
@@ -32,7 +32,7 @@ public class ChrDblMap {
 
 	public double computeIfAbsent(char key, Chr_Dbl fun) {
 		double v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == ChrFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -48,7 +48,7 @@ public class ChrDblMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		double v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -68,7 +68,7 @@ public class ChrDblMap {
 
 			for (int i = 0; i < capacity; i++) {
 				double v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != ChrFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -80,7 +80,7 @@ public class ChrDblMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		double v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -100,7 +100,7 @@ public class ChrDblMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		double v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -117,7 +117,7 @@ public class ChrDblMap {
 
 			public boolean source2(ChrDblPair pair) {
 				double v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t0 = ks[index++];
@@ -130,7 +130,7 @@ public class ChrDblMap {
 	private void allocate(int capacity) {
 		ks = new char[capacity];
 		vs = new double[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, DblFunUtil.EMPTYVALUE);
 	}
 
 }

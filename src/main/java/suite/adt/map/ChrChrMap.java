@@ -5,6 +5,7 @@ import java.util.Arrays;
 import suite.adt.pair.ChrChrPair;
 import suite.primitive.ChrChrSink;
 import suite.primitive.ChrChrSource;
+import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
 
 /**
@@ -14,8 +15,6 @@ import suite.primitive.Chr_Chr;
  * @author ywsing
  */
 public class ChrChrMap {
-
-	public final static char EMPTYVALUE = Character.MIN_VALUE;
 
 	private int size;
 	private char[] ks;
@@ -31,7 +30,7 @@ public class ChrChrMap {
 
 	public char computeIfAbsent(char key, Chr_Chr fun) {
 		char v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == ChrFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -47,7 +46,7 @@ public class ChrChrMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		char v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -67,7 +66,7 @@ public class ChrChrMap {
 
 			for (int i = 0; i < capacity; i++) {
 				char v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != ChrFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -79,7 +78,7 @@ public class ChrChrMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		char v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -99,7 +98,7 @@ public class ChrChrMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		char v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -116,7 +115,7 @@ public class ChrChrMap {
 
 			public boolean source2(ChrChrPair pair) {
 				char v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t0 = ks[index++];
@@ -129,7 +128,7 @@ public class ChrChrMap {
 	private void allocate(int capacity) {
 		ks = new char[capacity];
 		vs = new char[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, ChrFunUtil.EMPTYVALUE);
 	}
 
 }

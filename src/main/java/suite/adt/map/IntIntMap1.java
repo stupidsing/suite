@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import suite.adt.pair.IntIntPair;
 import suite.adt.pair.IntObjPair;
+import suite.primitive.IntFunUtil;
 import suite.primitive.IntIntSink;
 import suite.primitive.IntIntSource;
 import suite.primitive.IntPrimitives.IntObjSource;
@@ -19,8 +20,6 @@ import suite.streamlet.IntObjStreamlet;
  */
 public class IntIntMap1 {
 
-	public final static int EMPTYVALUE = Integer.MIN_VALUE;
-
 	private int size;
 	private long[] kvs;
 
@@ -34,7 +33,7 @@ public class IntIntMap1 {
 
 	public int computeIfAbsent(int key, Int_Int fun) {
 		int v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == IntFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -51,7 +50,7 @@ public class IntIntMap1 {
 		int index = key & mask;
 		long kv;
 		int v;
-		while ((v = v(kv = kvs[index])) != EMPTYVALUE)
+		while ((v = v(kv = kvs[index])) != IntFunUtil.EMPTYVALUE)
 			if (k(kv) != key)
 				index = index + 1 & mask;
 			else
@@ -71,7 +70,7 @@ public class IntIntMap1 {
 			for (int i = 0; i < capacity; i++) {
 				long kv0 = kvs0[i];
 				int v_ = v(kv0);
-				if (v_ != EMPTYVALUE)
+				if (v_ != IntFunUtil.EMPTYVALUE)
 					put_(k(kv0), v_);
 			}
 		}
@@ -84,7 +83,7 @@ public class IntIntMap1 {
 		int index = key & mask;
 		long kv;
 		int v;
-		while ((v = v(kv = kvs[index])) != EMPTYVALUE)
+		while ((v = v(kv = kvs[index])) != IntFunUtil.EMPTYVALUE)
 			if (k(kv) != key)
 				index = index + 1 & mask;
 			else
@@ -119,7 +118,7 @@ public class IntIntMap1 {
 		int index = key & mask;
 		long kv;
 		int v0;
-		while ((v0 = v(kv = kvs[index])) != EMPTYVALUE)
+		while ((v0 = v(kv = kvs[index])) != IntFunUtil.EMPTYVALUE)
 			if (k(kv) != key)
 				index = index + 1 & mask;
 			else
@@ -136,7 +135,7 @@ public class IntIntMap1 {
 			public boolean source2(IntIntPair pair) {
 				long kv;
 				int v;
-				while ((v = v(kv = kvs[index])) == EMPTYVALUE)
+				while ((v = v(kv = kvs[index])) == IntFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t0 = k(kv);
@@ -149,7 +148,7 @@ public class IntIntMap1 {
 
 	private void allocate(int capacity) {
 		kvs = new long[capacity];
-		Arrays.fill(kvs, kv(0, EMPTYVALUE));
+		Arrays.fill(kvs, kv(0, IntFunUtil.EMPTYVALUE));
 	}
 
 	private long kv(int k, int v) {

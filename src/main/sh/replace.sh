@@ -45,6 +45,7 @@ replace src/main/java/suite/adt/map/ChrObjMap.java
 replace src/main/java/suite/adt/map/ObjChrMap.java
 replace src/main/java/suite/adt/pair/ChrDblPair.java
 replace src/main/java/suite/adt/pair/ChrObjPair.java
+replace src/main/java/suite/adt/set/ChrSet.java
 replace src/main/java/suite/primitive/Chars.java
 replace src/main/java/suite/primitive/Chars_.java
 replace src/main/java/suite/primitive/Chr_Dbl.java

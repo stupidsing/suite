@@ -5,6 +5,7 @@ import java.util.Arrays;
 import suite.adt.pair.DblDblPair;
 import suite.primitive.DblDblSink;
 import suite.primitive.DblDblSource;
+import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
 
 /**
@@ -14,8 +15,6 @@ import suite.primitive.Dbl_Dbl;
  * @author ywsing
  */
 public class DblDblMap {
-
-	public final static double EMPTYVALUE = Double.MIN_VALUE;
 
 	private int size;
 	private double[] ks;
@@ -31,7 +30,7 @@ public class DblDblMap {
 
 	public double computeIfAbsent(double key, Dbl_Dbl fun) {
 		double v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == DblFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -47,7 +46,7 @@ public class DblDblMap {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
 		double v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -67,7 +66,7 @@ public class DblDblMap {
 
 			for (int i = 0; i < capacity; i++) {
 				double v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != DblFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -79,7 +78,7 @@ public class DblDblMap {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
 		double v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -99,7 +98,7 @@ public class DblDblMap {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
 		double v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != DblFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -116,7 +115,7 @@ public class DblDblMap {
 
 			public boolean source2(DblDblPair pair) {
 				double v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == DblFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t0 = ks[index++];
@@ -129,7 +128,7 @@ public class DblDblMap {
 	private void allocate(int capacity) {
 		ks = new double[capacity];
 		vs = new double[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, DblFunUtil.EMPTYVALUE);
 	}
 
 }

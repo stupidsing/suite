@@ -3,9 +3,11 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.IntDblPair;
+import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntDblSink;
 import suite.primitive.IntDblSource;
+import suite.primitive.IntFunUtil;
 import suite.primitive.Int_Dbl;
 
 /**
@@ -15,8 +17,6 @@ import suite.primitive.Int_Dbl;
  * @author ywsing
  */
 public class IntDblMap {
-
-	public final static double EMPTYVALUE = Double.MIN_VALUE;
 
 	private int size;
 	private int[] ks;
@@ -32,7 +32,7 @@ public class IntDblMap {
 
 	public double computeIfAbsent(int key, Int_Dbl fun) {
 		double v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == IntFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -48,7 +48,7 @@ public class IntDblMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		double v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -68,7 +68,7 @@ public class IntDblMap {
 
 			for (int i = 0; i < capacity; i++) {
 				double v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != IntFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -80,7 +80,7 @@ public class IntDblMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		double v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -100,7 +100,7 @@ public class IntDblMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		double v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -117,7 +117,7 @@ public class IntDblMap {
 
 			public boolean source2(IntDblPair pair) {
 				double v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == IntFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t0 = ks[index++];
@@ -130,7 +130,7 @@ public class IntDblMap {
 	private void allocate(int capacity) {
 		ks = new int[capacity];
 		vs = new double[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, DblFunUtil.EMPTYVALUE);
 	}
 
 }

@@ -3,6 +3,7 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.LngObjPair;
+import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.LngObjSink;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
@@ -11,14 +12,12 @@ import suite.streamlet.LngObjOutlet;
 import suite.streamlet.LngObjStreamlet;
 
 /**
- * Map with generic object key and longacter object value. Long.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with generic object key and longacter object value. Long.MIN_VALUE
+ * is not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
 public class ObjLngMap<K> {
-
-	public final static long EMPTYVALUE = Long.MIN_VALUE;
 
 	private int size;
 	private Object[] ks;
@@ -34,7 +33,7 @@ public class ObjLngMap<K> {
 
 	public long computeIfAbsent(K key, Obj_Lng<K> fun) {
 		long v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == LngFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -50,7 +49,7 @@ public class ObjLngMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		long v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -70,7 +69,7 @@ public class ObjLngMap<K> {
 
 			for (int i = 0; i < capacity; i++) {
 				long v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != LngFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -82,7 +81,7 @@ public class ObjLngMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		long v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -102,7 +101,7 @@ public class ObjLngMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		long v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -119,7 +118,7 @@ public class ObjLngMap<K> {
 
 			public boolean source2(LngObjPair<K> pair) {
 				long v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t1 = cast(ks[index++]);
@@ -132,7 +131,7 @@ public class ObjLngMap<K> {
 	private void allocate(int capacity) {
 		ks = new Object[capacity];
 		vs = new long[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, LngFunUtil.EMPTYVALUE);
 	}
 
 	private K cast(Object o) {

@@ -3,9 +3,11 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.LngFltPair;
+import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
 import suite.primitive.LngFltSink;
 import suite.primitive.LngFltSource;
+import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Flt;
 
 /**
@@ -15,8 +17,6 @@ import suite.primitive.Lng_Flt;
  * @author ywsing
  */
 public class LngFltMap {
-
-	public final static float EMPTYVALUE = Float.MIN_VALUE;
 
 	private int size;
 	private long[] ks;
@@ -32,7 +32,7 @@ public class LngFltMap {
 
 	public float computeIfAbsent(long key, Lng_Flt fun) {
 		float v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == LngFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -48,7 +48,7 @@ public class LngFltMap {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		float v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -68,7 +68,7 @@ public class LngFltMap {
 
 			for (int i = 0; i < capacity; i++) {
 				float v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != LngFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -80,7 +80,7 @@ public class LngFltMap {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		float v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -100,7 +100,7 @@ public class LngFltMap {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		float v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -117,7 +117,7 @@ public class LngFltMap {
 
 			public boolean source2(LngFltPair pair) {
 				float v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t0 = ks[index++];
@@ -130,7 +130,7 @@ public class LngFltMap {
 	private void allocate(int capacity) {
 		ks = new long[capacity];
 		vs = new float[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, FltFunUtil.EMPTYVALUE);
 	}
 
 }

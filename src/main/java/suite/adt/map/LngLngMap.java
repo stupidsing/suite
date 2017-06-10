@@ -3,6 +3,7 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.LngLngPair;
+import suite.primitive.LngFunUtil;
 import suite.primitive.LngLngSink;
 import suite.primitive.LngLngSource;
 import suite.primitive.Lng_Lng;
@@ -14,8 +15,6 @@ import suite.primitive.Lng_Lng;
  * @author ywsing
  */
 public class LngLngMap {
-
-	public final static long EMPTYVALUE = Long.MIN_VALUE;
 
 	private int size;
 	private long[] ks;
@@ -31,7 +30,7 @@ public class LngLngMap {
 
 	public long computeIfAbsent(long key, Lng_Lng fun) {
 		long v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == LngFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -47,7 +46,7 @@ public class LngLngMap {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		long v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -67,7 +66,7 @@ public class LngLngMap {
 
 			for (int i = 0; i < capacity; i++) {
 				long v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != LngFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -79,7 +78,7 @@ public class LngLngMap {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		long v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -99,7 +98,7 @@ public class LngLngMap {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		long v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -116,7 +115,7 @@ public class LngLngMap {
 
 			public boolean source2(LngLngPair pair) {
 				long v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t0 = ks[index++];
@@ -129,7 +128,7 @@ public class LngLngMap {
 	private void allocate(int capacity) {
 		ks = new long[capacity];
 		vs = new long[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, LngFunUtil.EMPTYVALUE);
 	}
 
 }

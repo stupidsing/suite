@@ -5,6 +5,7 @@ import java.util.Arrays;
 import suite.adt.pair.FltFltPair;
 import suite.primitive.FltFltSink;
 import suite.primitive.FltFltSource;
+import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
 
 /**
@@ -14,8 +15,6 @@ import suite.primitive.Flt_Flt;
  * @author ywsing
  */
 public class FltFltMap {
-
-	public final static float EMPTYVALUE = Float.MIN_VALUE;
 
 	private int size;
 	private float[] ks;
@@ -31,7 +30,7 @@ public class FltFltMap {
 
 	public float computeIfAbsent(float key, Flt_Flt fun) {
 		float v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == FltFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -47,7 +46,7 @@ public class FltFltMap {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		float v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -67,7 +66,7 @@ public class FltFltMap {
 
 			for (int i = 0; i < capacity; i++) {
 				float v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != FltFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -79,7 +78,7 @@ public class FltFltMap {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		float v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -99,7 +98,7 @@ public class FltFltMap {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		float v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -116,7 +115,7 @@ public class FltFltMap {
 
 			public boolean source2(FltFltPair pair) {
 				float v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == FltFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t0 = ks[index++];
@@ -129,7 +128,7 @@ public class FltFltMap {
 	private void allocate(int capacity) {
 		ks = new float[capacity];
 		vs = new float[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, FltFunUtil.EMPTYVALUE);
 	}
 
 }

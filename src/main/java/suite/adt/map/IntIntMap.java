@@ -3,6 +3,7 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.IntIntPair;
+import suite.primitive.IntFunUtil;
 import suite.primitive.IntIntSink;
 import suite.primitive.IntIntSource;
 import suite.primitive.Int_Int;
@@ -14,8 +15,6 @@ import suite.primitive.Int_Int;
  * @author ywsing
  */
 public class IntIntMap {
-
-	public final static int EMPTYVALUE = Integer.MIN_VALUE;
 
 	private int size;
 	private int[] ks;
@@ -31,7 +30,7 @@ public class IntIntMap {
 
 	public int computeIfAbsent(int key, Int_Int fun) {
 		int v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == IntFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -47,7 +46,7 @@ public class IntIntMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		int v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -67,7 +66,7 @@ public class IntIntMap {
 
 			for (int i = 0; i < capacity; i++) {
 				int v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != IntFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -79,7 +78,7 @@ public class IntIntMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		int v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -99,7 +98,7 @@ public class IntIntMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		int v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -116,7 +115,7 @@ public class IntIntMap {
 
 			public boolean source2(IntIntPair pair) {
 				int v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == IntFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t0 = ks[index++];
@@ -129,7 +128,7 @@ public class IntIntMap {
 	private void allocate(int capacity) {
 		ks = new int[capacity];
 		vs = new int[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, IntFunUtil.EMPTYVALUE);
 	}
 
 }

@@ -3,6 +3,7 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.ChrObjPair;
+import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrObjSink;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
@@ -18,8 +19,6 @@ import suite.streamlet.ChrObjStreamlet;
  */
 public class ObjChrMap<K> {
 
-	public final static char EMPTYVALUE = Character.MIN_VALUE;
-
 	private int size;
 	private Object[] ks;
 	private char[] vs;
@@ -34,7 +33,7 @@ public class ObjChrMap<K> {
 
 	public char computeIfAbsent(K key, Obj_Chr<K> fun) {
 		char v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == ChrFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -50,7 +49,7 @@ public class ObjChrMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		char v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -70,7 +69,7 @@ public class ObjChrMap<K> {
 
 			for (int i = 0; i < capacity; i++) {
 				char v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != ChrFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -82,7 +81,7 @@ public class ObjChrMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		char v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -102,7 +101,7 @@ public class ObjChrMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		char v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -119,7 +118,7 @@ public class ObjChrMap<K> {
 
 			public boolean source2(ChrObjPair<K> pair) {
 				char v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t1 = cast(ks[index++]);
@@ -132,7 +131,7 @@ public class ObjChrMap<K> {
 	private void allocate(int capacity) {
 		ks = new Object[capacity];
 		vs = new char[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, ChrFunUtil.EMPTYVALUE);
 	}
 
 	private K cast(Object o) {

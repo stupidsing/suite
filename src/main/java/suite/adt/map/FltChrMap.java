@@ -3,9 +3,11 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.FltChrPair;
+import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
 import suite.primitive.FltChrSink;
 import suite.primitive.FltChrSource;
+import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Chr;
 
 /**
@@ -15,8 +17,6 @@ import suite.primitive.Flt_Chr;
  * @author ywsing
  */
 public class FltChrMap {
-
-	public final static char EMPTYVALUE = Character.MIN_VALUE;
 
 	private int size;
 	private float[] ks;
@@ -32,7 +32,7 @@ public class FltChrMap {
 
 	public char computeIfAbsent(float key, Flt_Chr fun) {
 		char v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == FltFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -48,7 +48,7 @@ public class FltChrMap {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		char v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -68,7 +68,7 @@ public class FltChrMap {
 
 			for (int i = 0; i < capacity; i++) {
 				char v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != FltFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -80,7 +80,7 @@ public class FltChrMap {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		char v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -100,7 +100,7 @@ public class FltChrMap {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		char v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -117,7 +117,7 @@ public class FltChrMap {
 
 			public boolean source2(FltChrPair pair) {
 				char v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == FltFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t0 = ks[index++];
@@ -130,7 +130,7 @@ public class FltChrMap {
 	private void allocate(int capacity) {
 		ks = new float[capacity];
 		vs = new char[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, ChrFunUtil.EMPTYVALUE);
 	}
 
 }

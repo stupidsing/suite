@@ -3,9 +3,11 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.IntLngPair;
+import suite.primitive.IntFunUtil;
 import suite.primitive.IntLngSink;
 import suite.primitive.IntLngSource;
 import suite.primitive.Int_Lng;
+import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
 
 /**
@@ -15,8 +17,6 @@ import suite.primitive.Lng_Lng;
  * @author ywsing
  */
 public class IntLngMap {
-
-	public final static long EMPTYVALUE = Long.MIN_VALUE;
 
 	private int size;
 	private int[] ks;
@@ -32,7 +32,7 @@ public class IntLngMap {
 
 	public long computeIfAbsent(int key, Int_Lng fun) {
 		long v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == IntFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -48,7 +48,7 @@ public class IntLngMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		long v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -68,7 +68,7 @@ public class IntLngMap {
 
 			for (int i = 0; i < capacity; i++) {
 				long v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != IntFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -80,7 +80,7 @@ public class IntLngMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		long v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -100,7 +100,7 @@ public class IntLngMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		long v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -117,7 +117,7 @@ public class IntLngMap {
 
 			public boolean source2(IntLngPair pair) {
 				long v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == IntFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t0 = ks[index++];
@@ -130,7 +130,7 @@ public class IntLngMap {
 	private void allocate(int capacity) {
 		ks = new int[capacity];
 		vs = new long[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, LngFunUtil.EMPTYVALUE);
 	}
 
 }

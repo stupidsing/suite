@@ -3,9 +3,11 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.ChrIntPair;
+import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrIntSink;
 import suite.primitive.ChrIntSource;
 import suite.primitive.Chr_Int;
+import suite.primitive.IntFunUtil;
 import suite.primitive.Int_Int;
 
 /**
@@ -15,8 +17,6 @@ import suite.primitive.Int_Int;
  * @author ywsing
  */
 public class ChrIntMap {
-
-	public final static int EMPTYVALUE = Integer.MIN_VALUE;
 
 	private int size;
 	private char[] ks;
@@ -32,7 +32,7 @@ public class ChrIntMap {
 
 	public int computeIfAbsent(char key, Chr_Int fun) {
 		int v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == ChrFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -48,7 +48,7 @@ public class ChrIntMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		int v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -68,7 +68,7 @@ public class ChrIntMap {
 
 			for (int i = 0; i < capacity; i++) {
 				int v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+				if (v_ != ChrFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -80,7 +80,7 @@ public class ChrIntMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		int v;
-		while ((v = vs[index]) != EMPTYVALUE)
+		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -100,7 +100,7 @@ public class ChrIntMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		int v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -117,7 +117,7 @@ public class ChrIntMap {
 
 			public boolean source2(ChrIntPair pair) {
 				int v;
-				while ((v = vs[index]) == EMPTYVALUE)
+				while ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
 				pair.t0 = ks[index++];
@@ -130,7 +130,7 @@ public class ChrIntMap {
 	private void allocate(int capacity) {
 		ks = new char[capacity];
 		vs = new int[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, IntFunUtil.EMPTYVALUE);
 	}
 
 }
