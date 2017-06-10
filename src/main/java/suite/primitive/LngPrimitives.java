@@ -5,6 +5,11 @@ import suite.adt.pair.LngObjPair;
 public class LngPrimitives {
 
 	@FunctionalInterface
+	public interface LngComparator {
+		int compare(long c0, long c1);
+	}
+
+	@FunctionalInterface
 	public interface Lng_Obj<T> {
 		public T apply(long c);
 

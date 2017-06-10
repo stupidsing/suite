@@ -5,6 +5,11 @@ import suite.adt.pair.ChrObjPair;
 public class ChrPrimitives {
 
 	@FunctionalInterface
+	public interface ChrComparator {
+		int compare(char c0, char c1);
+	}
+
+	@FunctionalInterface
 	public interface Chr_Obj<T> {
 		public T apply(char c);
 

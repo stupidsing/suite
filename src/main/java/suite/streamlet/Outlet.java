@@ -183,7 +183,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Outlet2<K, List<T>> groupBy(Fun<T, K> keyFun) {
-		return map2(keyFun, value -> value).groupBy();
+		return map2_(keyFun, value -> value).groupBy();
 	}
 
 	public <K, V1> Outlet2<K, V1> groupBy(Fun<T, K> keyFun, Fun<Streamlet<T>, V1> fun) {
@@ -235,7 +235,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Outlet2<K, V> map2(Fun<T, K> kf0, Fun<T, V> vf0) {
-		return Outlet2.of(FunUtil.map2(kf0, vf0, source));
+		return map2_(kf0, vf0);
 	}
 
 	public <O> Outlet<O> mapNonNull(Fun<T, O> fun) {
@@ -265,7 +265,7 @@ public class Outlet<T> implements Iterable<T> {
 		return source.source();
 	}
 
-	public Outlet<T> nonBlock(T t0) {
+	public Outlet<T> nonBlocking(T t0) {
 		NullableSyncQueue<T> queue = new NullableSyncQueue<>();
 
 		new Thread(() -> {
@@ -356,7 +356,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).uniqueResult()).collect(As::map);
+		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).uniqueResult()).collect(As::map);
 	}
 
 	public <K, V> ListMultimap<K, T> toMultimap(Fun<T, K> keyFun) {
@@ -364,7 +364,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> ListMultimap<K, V> toMultimap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return map2(keyFun, valueFun).groupBy().collect(As::multimap);
+		return map2_(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
 	public Set<T> toSet() {
@@ -376,7 +376,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
+		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
 	}
 
 	public T uniqueResult() {
@@ -388,6 +388,10 @@ public class Outlet<T> implements Iterable<T> {
 				throw new RuntimeException("more than one result");
 		else
 			throw new RuntimeException("no result");
+	}
+
+	private <K, V> Outlet2<K, V> map2_(Fun<T, K> kf0, Fun<T, V> vf0) {
+		return Outlet2.of(FunUtil.map2(kf0, vf0, source));
 	}
 
 }

@@ -5,6 +5,11 @@ import suite.adt.pair.FltObjPair;
 public class FltPrimitives {
 
 	@FunctionalInterface
+	public interface FltComparator {
+		int compare(float c0, float c1);
+	}
+
+	@FunctionalInterface
 	public interface Flt_Obj<T> {
 		public T apply(float c);
 

@@ -147,8 +147,23 @@ public class Longs implements Iterable<Long> {
 		return cb.toLongs();
 	}
 
+	public Longs reverse() {
+		long[] cs_ = new long[size_()];
+		int si = start, di = 0;
+		while (si < end)
+			cs_[di++] = cs[si++];
+		return Longs.of(cs_);
+
+	}
+
 	public int size() {
 		return size_();
+	}
+
+	public Longs sort() {
+		long[] cs = toLongArray();
+		Arrays.sort(cs);
+		return Longs.of(cs);
 	}
 
 	public boolean startsWith(Longs longs) {

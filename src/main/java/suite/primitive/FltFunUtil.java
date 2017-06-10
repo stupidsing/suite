@@ -193,13 +193,13 @@ public class FltFunUtil {
 		};
 	}
 
-	public static <T0, T1> Source<T1> mapNonNull(Fun<T0, T1> fun0, Source<T0> source) {
-		Fun<T0, T1> fun1 = Rethrow.fun(fun0);
-		return new Source<T1>() {
-			public T1 source() {
-				T0 t0;
-				T1 t1;
-				while ((t0 = source.source()) != null)
+	public static <T> Source<T> mapNonNull(Flt_Obj<T> fun0, FltSource source) {
+		Flt_Obj<T> fun1 = fun0.rethrow();
+		return new Source<T>() {
+			public T source() {
+				float t0;
+				T t1;
+				while ((t0 = source.source()) != FltFunUtil.EMPTYVALUE)
 					if ((t1 = fun1.apply(t0)) != null)
 						return t1;
 				return null;

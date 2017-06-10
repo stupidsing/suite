@@ -147,8 +147,23 @@ public class Chars implements Iterable<Character> {
 		return cb.toChars();
 	}
 
+	public Chars reverse() {
+		char[] cs_ = new char[size_()];
+		int si = start, di = 0;
+		while (si < end)
+			cs_[di++] = cs[si++];
+		return Chars.of(cs_);
+
+	}
+
 	public int size() {
 		return size_();
+	}
+
+	public Chars sort() {
+		char[] cs = toCharArray();
+		Arrays.sort(cs);
+		return Chars.of(cs);
 	}
 
 	public boolean startsWith(Chars chars) {

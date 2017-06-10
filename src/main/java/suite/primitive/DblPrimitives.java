@@ -5,6 +5,11 @@ import suite.adt.pair.DblObjPair;
 public class DblPrimitives {
 
 	@FunctionalInterface
+	public interface DblComparator {
+		int compare(double c0, double c1);
+	}
+
+	@FunctionalInterface
 	public interface Dbl_Obj<T> {
 		public T apply(double c);
 

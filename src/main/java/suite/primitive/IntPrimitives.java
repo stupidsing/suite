@@ -5,6 +5,11 @@ import suite.adt.pair.IntObjPair;
 public class IntPrimitives {
 
 	@FunctionalInterface
+	public interface IntComparator {
+		int compare(int c0, int c1);
+	}
+
+	@FunctionalInterface
 	public interface Int_Obj<T> {
 		public T apply(int c);
 

@@ -147,8 +147,23 @@ public class Ints implements Iterable<Integer> {
 		return cb.toInts();
 	}
 
+	public Ints reverse() {
+		int[] cs_ = new int[size_()];
+		int si = start, di = 0;
+		while (si < end)
+			cs_[di++] = cs[si++];
+		return Ints.of(cs_);
+
+	}
+
 	public int size() {
 		return size_();
+	}
+
+	public Ints sort() {
+		int[] cs = toIntArray();
+		Arrays.sort(cs);
+		return Ints.of(cs);
 	}
 
 	public boolean startsWith(Ints ints) {

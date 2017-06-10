@@ -11,8 +11,8 @@ import suite.streamlet.LngObjOutlet;
 import suite.streamlet.LngObjStreamlet;
 
 /**
- * Map with generic object key and longacter object value. Long.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with generic object key and longacter object value. Long.MIN_VALUE
+ * is not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

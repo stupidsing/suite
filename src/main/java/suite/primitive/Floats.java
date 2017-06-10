@@ -147,8 +147,23 @@ public class Floats implements Iterable<Float> {
 		return cb.toFloats();
 	}
 
+	public Floats reverse() {
+		float[] cs_ = new float[size_()];
+		int si = start, di = 0;
+		while (si < end)
+			cs_[di++] = cs[si++];
+		return Floats.of(cs_);
+
+	}
+
 	public int size() {
 		return size_();
+	}
+
+	public Floats sort() {
+		float[] cs = toFloatArray();
+		Arrays.sort(cs);
+		return Floats.of(cs);
 	}
 
 	public boolean startsWith(Floats floats) {

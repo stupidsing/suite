@@ -147,8 +147,23 @@ public class Doubles implements Iterable<Double> {
 		return cb.toDoubles();
 	}
 
+	public Doubles reverse() {
+		double[] cs_ = new double[size_()];
+		int si = start, di = 0;
+		while (si < end)
+			cs_[di++] = cs[si++];
+		return Doubles.of(cs_);
+
+	}
+
 	public int size() {
 		return size_();
+	}
+
+	public Doubles sort() {
+		double[] cs = toDoubleArray();
+		Arrays.sort(cs);
+		return Doubles.of(cs);
 	}
 
 	public boolean startsWith(Doubles doubles) {
