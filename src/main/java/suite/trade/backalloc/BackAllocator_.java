@@ -430,15 +430,18 @@ public class BackAllocator_ {
 		return BackAllocator_.unleverage((dataSourceBySymbol, times) -> (time, index) -> dataSourceBySymbol //
 				.mapValue(dataSource -> {
 					float[] prices = dataSource.prices;
-					int u = 0;
-					for (int i = index - window; i < index; i++)
-						if (prices[i - 1] < prices[i])
-							u++;
-					double rsi = (double) u / window;
-					if (rsi < threshold0) // over-sold
-						return .5d - rsi;
-					else if (threshold1 < rsi) // over-bought
-						return .5d - rsi;
+					int gt = 0, ge = 0;
+					for (int i = index - window; i < index; i++) {
+						int compare = Float.compare(prices[i - 1], prices[i]);
+						gt += compare < 0 ? 1 : 0;
+						ge += compare <= 0 ? 1 : 0;
+					}
+					double rsigt = (double) gt / window;
+					double rsige = (double) ge / window;
+					if (rsige < threshold0) // over-sold
+						return .5d - rsige;
+					else if (threshold1 < rsigt) // over-bought
+						return .5d - rsigt;
 					else
 						return 0d;
 				}) //

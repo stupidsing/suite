@@ -75,14 +75,12 @@ public class WalkForwardAllocTester {
 		System.arraycopy(times, 0, times, 1, last);
 		times[last] = ymdHms;
 
-		dataSourceBySymbol = Read.from2(dataSourceBySymbol) //
-				.map2((symbol, dataSource) -> {
-					float[] prices = dataSource.prices;
-					System.arraycopy(prices, 0, prices, 1, last);
-					prices[last] = priceBySymbol.get(symbol);
-					return dataSource;
-				}) //
-				.toMap();
+		for (Entry<String, DataSource> e : dataSourceBySymbol.entrySet()) {
+			String symbol = e.getKey();
+			float[] prices = e.getValue().prices;
+			System.arraycopy(prices, 0, prices, 1, last);
+			prices[last] = priceBySymbol.get(symbol);
+		}
 
 		List<Pair<String, Double>> ratioBySymbol = wfa.allocate(Read.from2(dataSourceBySymbol), windowSize);
 		UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, priceBySymbol);
