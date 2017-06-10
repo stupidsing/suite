@@ -67,7 +67,7 @@ public class WalkForwardAllocTester {
 		times[last] = now.ymdHms();
 
 		dataSourceBySymbol = Read.from2(dataSourceBySymbol) //
-				.map2((symbol, dataSource) -> symbol, (symbol, dataSource) -> {
+				.map2((symbol, dataSource) -> {
 					float[] prices1 = new float[windowSize];
 					Copy.floats(dataSource.prices, 1, prices1, 0, windowSize - 2);
 					prices1[last] = latestPriceBySymbol.get(symbol);
