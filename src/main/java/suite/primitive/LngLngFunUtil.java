@@ -5,7 +5,7 @@ import java.util.Iterator;
 import suite.adt.pair.LngLngPair;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
-import suite.primitive.LngPredicate.LngPredicate_;
+import suite.primitive.LngPrimitives.LngPredicate_;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;

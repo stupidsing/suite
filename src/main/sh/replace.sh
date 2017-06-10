@@ -45,6 +45,8 @@ replace src/main/java/suite/adt/map/ChrObjMap.java
 replace src/main/java/suite/adt/map/ObjChrMap.java
 replace src/main/java/suite/adt/pair/ChrDblPair.java
 replace src/main/java/suite/adt/pair/ChrObjPair.java
+replace src/main/java/suite/primitive/Chars.java
+replace src/main/java/suite/primitive/Chars_.java
 replace src/main/java/suite/primitive/Chr_Dbl.java
 replace src/main/java/suite/primitive/ChrDbl_Obj.java
 replace src/main/java/suite/primitive/ChrDbl_Flt.java
@@ -52,15 +54,10 @@ replace src/main/java/suite/primitive/ChrDblFunUtil.java
 replace src/main/java/suite/primitive/ChrDblPredicate.java
 replace src/main/java/suite/primitive/ChrDblSink.java
 replace src/main/java/suite/primitive/ChrDblSource.java
-replace src/main/java/suite/primitive/ChrFun.java
 replace src/main/java/suite/primitive/ChrFunUtil.java
 replace src/main/java/suite/primitive/ChrMutable.java
 replace src/main/java/suite/primitive/ChrObj_Dbl.java
 replace src/main/java/suite/primitive/ChrObjFunUtil.java
-replace src/main/java/suite/primitive/ChrPredicate.java
-replace src/main/java/suite/primitive/ChrSink.java
-replace src/main/java/suite/primitive/ChrSource.java
-replace src/main/java/suite/primitive/Chars.java
-replace src/main/java/suite/primitive/Chars_.java
+replace src/main/java/suite/primitive/ChrPrimitives.java
 replace src/main/java/suite/streamlet/ChrObjOutlet.java
 replace src/main/java/suite/streamlet/ChrObjStreamlet.java

@@ -3,9 +3,9 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.FltObjPair;
-import suite.primitive.FltFun.Obj_Flt;
-import suite.primitive.FltSink.FltObjSink;
-import suite.primitive.FltSource.FltObjSource;
+import suite.primitive.FltPrimitives.FltObjSink;
+import suite.primitive.FltPrimitives.FltObjSource;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.streamlet.FltObjOutlet;
 import suite.streamlet.FltObjStreamlet;

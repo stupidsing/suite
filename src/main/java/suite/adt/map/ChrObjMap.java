@@ -1,10 +1,10 @@
 package suite.adt.map;
 
 import suite.adt.pair.ChrObjPair;
-import suite.primitive.ChrFun.Chr_Obj;
-import suite.primitive.ChrSink.ChrObjSink;
-import suite.primitive.ChrSource.ChrObjSource;
-import suite.primitive.IntFun.Obj_Int;
+import suite.primitive.ChrPrimitives.ChrObjSink;
+import suite.primitive.ChrPrimitives.ChrObjSource;
+import suite.primitive.ChrPrimitives.Chr_Obj;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.ChrObjOutlet;
 import suite.streamlet.ChrObjStreamlet;
 

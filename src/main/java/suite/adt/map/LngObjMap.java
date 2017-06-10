@@ -1,10 +1,10 @@
 package suite.adt.map;
 
 import suite.adt.pair.LngObjPair;
-import suite.primitive.IntFun.Obj_Int;
-import suite.primitive.LngFun.Lng_Obj;
-import suite.primitive.LngSink.LngObjSink;
-import suite.primitive.LngSource.LngObjSource;
+import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.LngPrimitives.LngObjSink;
+import suite.primitive.LngPrimitives.LngObjSource;
+import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.streamlet.LngObjOutlet;
 import suite.streamlet.LngObjStreamlet;
 

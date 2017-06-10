@@ -3,9 +3,9 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.DblObjPair;
-import suite.primitive.DblFun.Obj_Dbl;
-import suite.primitive.DblSink.DblObjSink;
-import suite.primitive.DblSource.DblObjSource;
+import suite.primitive.DblPrimitives.DblObjSink;
+import suite.primitive.DblPrimitives.DblObjSource;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.streamlet.DblObjOutlet;
 import suite.streamlet.DblObjStreamlet;

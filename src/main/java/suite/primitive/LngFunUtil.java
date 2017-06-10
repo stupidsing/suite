@@ -5,10 +5,10 @@ import java.util.Iterator;
 
 import suite.adt.pair.LngObjPair;
 import suite.os.LogUtil;
-import suite.primitive.LngFun.Lng_Obj;
-import suite.primitive.LngPredicate.LngPredicate_;
-import suite.primitive.LngSink.LngSink_;
-import suite.primitive.LngSource.LngSource_;
+import suite.primitive.LngPrimitives.LngPredicate_;
+import suite.primitive.LngPrimitives.LngSink_;
+import suite.primitive.LngPrimitives.LngSource_;
+import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;

@@ -5,10 +5,10 @@ import java.util.Iterator;
 
 import suite.adt.pair.ChrObjPair;
 import suite.os.LogUtil;
-import suite.primitive.ChrFun.Chr_Obj;
-import suite.primitive.ChrPredicate.ChrPredicate_;
-import suite.primitive.ChrSink.ChrSink_;
-import suite.primitive.ChrSource.ChrSource_;
+import suite.primitive.ChrPrimitives.ChrPredicate_;
+import suite.primitive.ChrPrimitives.ChrSink_;
+import suite.primitive.ChrPrimitives.ChrSource_;
+import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;

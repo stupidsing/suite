@@ -5,10 +5,10 @@ import java.util.Iterator;
 
 import suite.adt.pair.DblObjPair;
 import suite.os.LogUtil;
-import suite.primitive.DblFun.Dbl_Obj;
-import suite.primitive.DblPredicate.DblPredicate_;
-import suite.primitive.DblSink.DblSink_;
-import suite.primitive.DblSource.DblSource_;
+import suite.primitive.DblPrimitives.DblPredicate_;
+import suite.primitive.DblPrimitives.DblSink_;
+import suite.primitive.DblPrimitives.DblSource_;
+import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;

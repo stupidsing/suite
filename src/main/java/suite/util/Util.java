@@ -9,7 +9,7 @@ import org.apache.log4j.Level;
 
 import suite.os.LogUtil;
 import suite.primitive.IntMutable;
-import suite.primitive.IntSource.IntSource_;
+import suite.primitive.IntPrimitives.IntSource_;
 import suite.sample.Profiler;
 import suite.util.Thread_.RunnableEx;
 

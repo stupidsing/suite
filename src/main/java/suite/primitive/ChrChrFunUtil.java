@@ -5,7 +5,7 @@ import java.util.Iterator;
 import suite.adt.pair.ChrChrPair;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
-import suite.primitive.ChrPredicate.ChrPredicate_;
+import suite.primitive.ChrPrimitives.ChrPredicate_;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;

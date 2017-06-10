@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.adt.pair.Pair;
-import suite.primitive.FltFun.Obj_Flt;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;

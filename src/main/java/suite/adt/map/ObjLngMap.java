@@ -3,9 +3,9 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.LngObjPair;
-import suite.primitive.LngFun.Obj_Lng;
-import suite.primitive.LngSink.LngObjSink;
-import suite.primitive.LngSource.LngObjSource;
+import suite.primitive.LngPrimitives.LngObjSink;
+import suite.primitive.LngPrimitives.LngObjSource;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.streamlet.LngObjOutlet;
 import suite.streamlet.LngObjStreamlet;

@@ -1,10 +1,10 @@
 package suite.adt.map;
 
 import suite.adt.pair.FltObjPair;
-import suite.primitive.FltFun.Flt_Obj;
-import suite.primitive.FltSink.FltObjSink;
-import suite.primitive.FltSource.FltObjSource;
-import suite.primitive.IntFun.Obj_Int;
+import suite.primitive.FltPrimitives.FltObjSink;
+import suite.primitive.FltPrimitives.FltObjSource;
+import suite.primitive.FltPrimitives.Flt_Obj;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.FltObjOutlet;
 import suite.streamlet.FltObjStreamlet;
 

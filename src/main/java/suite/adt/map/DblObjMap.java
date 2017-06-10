@@ -1,10 +1,10 @@
 package suite.adt.map;
 
 import suite.adt.pair.DblObjPair;
-import suite.primitive.DblFun.Dbl_Obj;
-import suite.primitive.DblSink.DblObjSink;
-import suite.primitive.DblSource.DblObjSource;
-import suite.primitive.IntFun.Obj_Int;
+import suite.primitive.DblPrimitives.DblObjSink;
+import suite.primitive.DblPrimitives.DblObjSource;
+import suite.primitive.DblPrimitives.Dbl_Obj;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.DblObjOutlet;
 import suite.streamlet.DblObjStreamlet;
 

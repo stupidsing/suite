@@ -7,7 +7,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.primitive.IntFun.Obj_Int;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.util.Util;
 
 /**

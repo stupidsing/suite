@@ -5,10 +5,10 @@ import java.util.Iterator;
 
 import suite.adt.pair.FltObjPair;
 import suite.os.LogUtil;
-import suite.primitive.FltFun.Flt_Obj;
-import suite.primitive.FltPredicate.FltPredicate_;
-import suite.primitive.FltSink.FltSink_;
-import suite.primitive.FltSource.FltSource_;
+import suite.primitive.FltPrimitives.FltPredicate_;
+import suite.primitive.FltPrimitives.FltSink_;
+import suite.primitive.FltPrimitives.FltSource_;
+import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;

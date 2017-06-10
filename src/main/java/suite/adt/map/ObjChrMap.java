@@ -3,9 +3,9 @@ package suite.adt.map;
 import java.util.Arrays;
 
 import suite.adt.pair.ChrObjPair;
-import suite.primitive.ChrFun.Obj_Chr;
-import suite.primitive.ChrSink.ChrObjSink;
-import suite.primitive.ChrSource.ChrObjSource;
+import suite.primitive.ChrPrimitives.ChrObjSink;
+import suite.primitive.ChrPrimitives.ChrObjSource;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.streamlet.ChrObjOutlet;
 import suite.streamlet.ChrObjStreamlet;
