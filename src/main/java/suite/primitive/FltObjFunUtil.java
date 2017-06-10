@@ -9,7 +9,7 @@ import suite.os.LogUtil;
 import suite.primitive.FltPrimitives.FltObjPredicate;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
-import suite.primitive.FltPrimitives.FltPredicate_;
+import suite.primitive.FltPrimitives.FltPredicate;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -104,8 +104,8 @@ public class FltObjFunUtil {
 		};
 	}
 
-	public static <V> FltObjSource<V> filterKey(FltPredicate_ fun0, FltObjSource<V> source2) {
-		FltPredicate_ fun1 = fun0.rethrow();
+	public static <V> FltObjSource<V> filterKey(FltPredicate fun0, FltObjSource<V> source2) {
+		FltPredicate fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))

@@ -5,7 +5,7 @@ import java.util.Iterator;
 import suite.adt.pair.LngLngPair;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
-import suite.primitive.LngPrimitives.LngPredicate_;
+import suite.primitive.LngPrimitives.LngPredicate;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -100,8 +100,8 @@ public class LngLngFunUtil {
 		};
 	}
 
-	public static <V> LngLngSource filterKey(LngPredicate_ fun0, LngLngSource source2) {
-		LngPredicate_ fun1 = fun0.rethrow();
+	public static <V> LngLngSource filterKey(LngPredicate fun0, LngLngSource source2) {
+		LngPredicate fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -110,8 +110,8 @@ public class LngLngFunUtil {
 		};
 	}
 
-	public static LngLngSource filterValue(LngPredicate_ fun0, LngLngSource source2) {
-		LngPredicate_ fun1 = fun0.rethrow();
+	public static LngLngSource filterValue(LngPredicate fun0, LngLngSource source2) {
+		LngPredicate fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t1))

@@ -5,8 +5,8 @@ import java.util.Iterator;
 import suite.adt.pair.IntDblPair;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
-import suite.primitive.DblPrimitives.DblPredicate_;
-import suite.primitive.IntPrimitives.IntPredicate_;
+import suite.primitive.DblPrimitives.DblPredicate;
+import suite.primitive.IntPrimitives.IntPredicate;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -101,8 +101,8 @@ public class IntDblFunUtil {
 		};
 	}
 
-	public static <V> IntDblSource filterKey(IntPredicate_ fun0, IntDblSource source2) {
-		IntPredicate_ fun1 = fun0.rethrow();
+	public static <V> IntDblSource filterKey(IntPredicate fun0, IntDblSource source2) {
+		IntPredicate fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -111,8 +111,8 @@ public class IntDblFunUtil {
 		};
 	}
 
-	public static IntDblSource filterValue(DblPredicate_ fun0, IntDblSource source2) {
-		DblPredicate_ fun1 = fun0.rethrow();
+	public static IntDblSource filterValue(DblPredicate fun0, IntDblSource source2) {
+		DblPredicate fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t1))

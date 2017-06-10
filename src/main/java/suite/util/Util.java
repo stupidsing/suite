@@ -9,7 +9,7 @@ import org.apache.log4j.Level;
 
 import suite.os.LogUtil;
 import suite.primitive.IntMutable;
-import suite.primitive.IntPrimitives.IntSource_;
+import suite.primitive.IntPrimitives.IntSource;
 import suite.sample.Profiler;
 import suite.util.Thread_.RunnableEx;
 
@@ -102,7 +102,7 @@ public class Util {
 			}
 		};
 
-		IntSource_ source = () -> {
+		IntSource source = () -> {
 			try {
 				return runnableEx.call();
 			} catch (Throwable ex) {

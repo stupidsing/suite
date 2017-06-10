@@ -70,10 +70,10 @@ public class ChrPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface ChrPredicate_ {
+	public interface ChrPredicate {
 		public boolean test(char c);
 
-		public default ChrPredicate_ rethrow() {
+		public default ChrPredicate rethrow() {
 			return c -> {
 				try {
 					return test(c);
@@ -85,10 +85,10 @@ public class ChrPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface ChrSink_ {
+	public interface ChrSink {
 		public void sink(char c);
 
-		public default ChrSink_ rethrow() {
+		public default ChrSink rethrow() {
 			return t -> {
 				try {
 					sink(t);
@@ -100,7 +100,7 @@ public class ChrPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface ChrSource_ {
+	public interface ChrSource {
 		public char source();
 	}
 

@@ -9,7 +9,7 @@ import suite.os.LogUtil;
 import suite.primitive.DblPrimitives.DblObjPredicate;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
-import suite.primitive.DblPrimitives.DblPredicate_;
+import suite.primitive.DblPrimitives.DblPredicate;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -104,8 +104,8 @@ public class DblObjFunUtil {
 		};
 	}
 
-	public static <V> DblObjSource<V> filterKey(DblPredicate_ fun0, DblObjSource<V> source2) {
-		DblPredicate_ fun1 = fun0.rethrow();
+	public static <V> DblObjSource<V> filterKey(DblPredicate fun0, DblObjSource<V> source2) {
+		DblPredicate fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))

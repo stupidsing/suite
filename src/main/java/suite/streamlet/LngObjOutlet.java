@@ -21,7 +21,7 @@ import suite.primitive.LngObj_Lng;
 import suite.primitive.LngPrimitives.LngObjPredicate;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
-import suite.primitive.LngPrimitives.LngPredicate_;
+import suite.primitive.LngPrimitives.LngPredicate;
 import suite.primitive.Lng_Lng;
 import suite.util.Array_;
 import suite.util.FunUtil;
@@ -206,7 +206,7 @@ public class LngObjOutlet<V> implements Iterable<LngObjPair<V>> {
 		return of(LngObjFunUtil.filter(fun, longObjSource));
 	}
 
-	public LngObjOutlet<V> filterKey(LngPredicate_ fun) {
+	public LngObjOutlet<V> filterKey(LngPredicate fun) {
 		return of(LngObjFunUtil.filterKey(fun, longObjSource));
 	}
 

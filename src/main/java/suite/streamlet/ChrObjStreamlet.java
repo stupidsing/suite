@@ -19,7 +19,7 @@ import suite.primitive.ChrObj_Chr;
 import suite.primitive.ChrPrimitives.ChrObjPredicate;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
-import suite.primitive.ChrPrimitives.ChrPredicate_;
+import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.util.FunUtil.Fun;
@@ -113,7 +113,7 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 		return chrObjStreamlet(() -> spawn().filter(fun));
 	}
 
-	public ChrObjStreamlet<V> filterKey(ChrPredicate_ fun) {
+	public ChrObjStreamlet<V> filterKey(ChrPredicate fun) {
 		return chrObjStreamlet(() -> spawn().filterKey(fun));
 	}
 

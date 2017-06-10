@@ -19,7 +19,7 @@ import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitives.IntObjPredicate;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
-import suite.primitive.IntPrimitives.IntPredicate_;
+import suite.primitive.IntPrimitives.IntPredicate;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.util.FunUtil.Fun;
@@ -113,7 +113,7 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return intObjStreamlet(() -> spawn().filter(fun));
 	}
 
-	public IntObjStreamlet<V> filterKey(IntPredicate_ fun) {
+	public IntObjStreamlet<V> filterKey(IntPredicate fun) {
 		return intObjStreamlet(() -> spawn().filterKey(fun));
 	}
 

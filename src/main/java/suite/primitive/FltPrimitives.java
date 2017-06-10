@@ -70,10 +70,10 @@ public class FltPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface FltPredicate_ {
+	public interface FltPredicate {
 		public boolean test(float c);
 
-		public default FltPredicate_ rethrow() {
+		public default FltPredicate rethrow() {
 			return c -> {
 				try {
 					return test(c);
@@ -85,10 +85,10 @@ public class FltPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface FltSink_ {
+	public interface FltSink {
 		public void sink(float c);
 
-		public default FltSink_ rethrow() {
+		public default FltSink rethrow() {
 			return t -> {
 				try {
 					sink(t);
@@ -100,7 +100,7 @@ public class FltPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface FltSource_ {
+	public interface FltSource {
 		public float source();
 	}
 

@@ -21,7 +21,7 @@ import suite.primitive.DblObj_Dbl;
 import suite.primitive.DblPrimitives.DblObjPredicate;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
-import suite.primitive.DblPrimitives.DblPredicate_;
+import suite.primitive.DblPrimitives.DblPredicate;
 import suite.primitive.Dbl_Dbl;
 import suite.util.Array_;
 import suite.util.FunUtil;
@@ -206,7 +206,7 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 		return of(DblObjFunUtil.filter(fun, doubleObjSource));
 	}
 
-	public DblObjOutlet<V> filterKey(DblPredicate_ fun) {
+	public DblObjOutlet<V> filterKey(DblPredicate fun) {
 		return of(DblObjFunUtil.filterKey(fun, doubleObjSource));
 	}
 

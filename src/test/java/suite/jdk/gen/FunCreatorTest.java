@@ -15,7 +15,7 @@ import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
-import suite.primitive.IntPrimitives.IntSource_;
+import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.Int_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -63,13 +63,13 @@ public class FunCreatorTest {
 	public void testClosure() {
 		Source<FunExpr> fun = () -> f.declare(f.int_(1),
 				one -> f.parameter1(j -> f.add(one, j)).cast(Int_Int.class).apply(f.int_(2)));
-		assertEquals(3, LambdaInstance.of(IntSource_.class, fun).newFun().source());
+		assertEquals(3, LambdaInstance.of(IntSource.class, fun).newFun().source());
 	}
 
 	@Test
 	public void testConstant() {
 		Fun<FunExpr, FunExpr> fun = i -> f.int_(1);
-		assertEquals(1, LambdaInstance.of(IntSource_.class, fun).newFun().source());
+		assertEquals(1, LambdaInstance.of(IntSource.class, fun).newFun().source());
 	}
 
 	@Test
@@ -95,7 +95,7 @@ public class FunCreatorTest {
 	@Test
 	public void testIf() {
 		Source<FunExpr> fun = () -> f.if_(f._true(), f._true(), f._false());
-		assertEquals(1, LambdaInstance.of(IntSource_.class, fun).newFun().source());
+		assertEquals(1, LambdaInstance.of(IntSource.class, fun).newFun().source());
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class FunCreatorTest {
 	@Test
 	public void testProfile() {
 		Fun<FunExpr, FunExpr> fun = i -> (ProfileFunExpr) f.profile(f.int_(1));
-		IntSource_ instance = LambdaInstance.of(IntSource_.class, fun).newFun();
+		IntSource instance = LambdaInstance.of(IntSource.class, fun).newFun();
 		assertEquals(1, instance.source());
 		Dump.out(instance);
 	}

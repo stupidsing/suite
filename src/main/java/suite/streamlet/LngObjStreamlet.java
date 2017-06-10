@@ -19,7 +19,7 @@ import suite.primitive.LngObj_Lng;
 import suite.primitive.LngPrimitives.LngObjPredicate;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
-import suite.primitive.LngPrimitives.LngPredicate_;
+import suite.primitive.LngPrimitives.LngPredicate;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.util.FunUtil.Fun;
@@ -113,7 +113,7 @@ public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
 		return lngObjStreamlet(() -> spawn().filter(fun));
 	}
 
-	public LngObjStreamlet<V> filterKey(LngPredicate_ fun) {
+	public LngObjStreamlet<V> filterKey(LngPredicate fun) {
 		return lngObjStreamlet(() -> spawn().filterKey(fun));
 	}
 

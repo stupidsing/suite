@@ -5,8 +5,8 @@ import java.util.Iterator;
 import suite.adt.pair.LngChrPair;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
-import suite.primitive.ChrPrimitives.ChrPredicate_;
-import suite.primitive.LngPrimitives.LngPredicate_;
+import suite.primitive.ChrPrimitives.ChrPredicate;
+import suite.primitive.LngPrimitives.LngPredicate;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -101,8 +101,8 @@ public class LngChrFunUtil {
 		};
 	}
 
-	public static <V> LngChrSource filterKey(LngPredicate_ fun0, LngChrSource source2) {
-		LngPredicate_ fun1 = fun0.rethrow();
+	public static <V> LngChrSource filterKey(LngPredicate fun0, LngChrSource source2) {
+		LngPredicate fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -111,8 +111,8 @@ public class LngChrFunUtil {
 		};
 	}
 
-	public static LngChrSource filterValue(ChrPredicate_ fun0, LngChrSource source2) {
-		ChrPredicate_ fun1 = fun0.rethrow();
+	public static LngChrSource filterValue(ChrPredicate fun0, LngChrSource source2) {
+		ChrPredicate fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t1))

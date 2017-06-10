@@ -21,7 +21,7 @@ import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitives.IntObjPredicate;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
-import suite.primitive.IntPrimitives.IntPredicate_;
+import suite.primitive.IntPrimitives.IntPredicate;
 import suite.primitive.Int_Int;
 import suite.util.Array_;
 import suite.util.FunUtil;
@@ -206,7 +206,7 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		return of(IntObjFunUtil.filter(fun, intObjSource));
 	}
 
-	public IntObjOutlet<V> filterKey(IntPredicate_ fun) {
+	public IntObjOutlet<V> filterKey(IntPredicate fun) {
 		return of(IntObjFunUtil.filterKey(fun, intObjSource));
 	}
 

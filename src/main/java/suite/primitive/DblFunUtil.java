@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 import suite.adt.pair.DblObjPair;
 import suite.os.LogUtil;
-import suite.primitive.DblPrimitives.DblPredicate_;
-import suite.primitive.DblPrimitives.DblSink_;
-import suite.primitive.DblPrimitives.DblSource_;
+import suite.primitive.DblPrimitives.DblPredicate;
+import suite.primitive.DblPrimitives.DblSink;
+import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -21,8 +21,8 @@ public class DblFunUtil {
 
 	public static double EMPTYVALUE = Double.MIN_VALUE;
 
-	public static DblSource_ append(double t, DblSource_ source) {
-		return new DblSource_() {
+	public static DblSource append(double t, DblSource source) {
+		return new DblSource() {
 			private boolean isAppended = false;
 
 			public double source() {
@@ -40,12 +40,12 @@ public class DblFunUtil {
 		};
 	}
 
-	public static Source<DblSource_> chunk(int n, DblSource_ source) {
-		return new Source<DblSource_>() {
+	public static Source<DblSource> chunk(int n, DblSource source) {
+		return new Source<DblSource>() {
 			private double t = source.source();
 			private boolean isAvail = t != EMPTYVALUE;
 			private int i;
-			private DblSource_ source_ = () -> {
+			private DblSource source_ = () -> {
 				if ((isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && ++i < n)
 					return t;
 				else {
@@ -54,15 +54,15 @@ public class DblFunUtil {
 				}
 			};
 
-			public DblSource_ source() {
+			public DblSource source() {
 				return isAvail ? cons(t, source_) : null;
 			}
 		};
 	}
 
-	public static DblSource_ concat(Source<DblSource_> source) {
-		return new DblSource_() {
-			private DblSource_ source0 = nullSource();
+	public static DblSource concat(Source<DblSource> source) {
+		return new DblSource() {
+			private DblSource source0 = nullSource();
 
 			public double source() {
 				double t = EMPTYVALUE;
@@ -73,8 +73,8 @@ public class DblFunUtil {
 		};
 	}
 
-	public static DblSource_ cons(double t, DblSource_ source) {
-		return new DblSource_() {
+	public static DblSource cons(double t, DblSource source) {
+		return new DblSource() {
 			private boolean isFirst = true;
 
 			public double source() {
@@ -88,8 +88,8 @@ public class DblFunUtil {
 		};
 	}
 
-	public static DblSource_ filter(DblPredicate_ fun0, DblSource_ source) {
-		DblPredicate_ fun1 = fun0.rethrow();
+	public static DblSource filter(DblPredicate fun0, DblSource source) {
+		DblPredicate fun1 = fun0.rethrow();
 		return () -> {
 			double t = EMPTYVALUE;
 			while ((t = source.source()) != EMPTYVALUE && !fun1.test(t))
@@ -98,8 +98,8 @@ public class DblFunUtil {
 		};
 	}
 
-	public static DblSource_ flatten(Source<Iterable<Double>> source) {
-		return new DblSource_() {
+	public static DblSource flatten(Source<Iterable<Double>> source) {
+		return new DblSource() {
 			private Iterator<Double> iter = Collections.emptyIterator();
 
 			public double source() {
@@ -114,7 +114,7 @@ public class DblFunUtil {
 		};
 	}
 
-	public static <R> R fold(Fun<DblObjPair<R>, R> fun0, R init, DblSource_ source) {
+	public static <R> R fold(Fun<DblObjPair<R>, R> fun0, R init, DblSource source) {
 		Fun<DblObjPair<R>, R> fun1 = Rethrow.fun(fun0);
 		double t;
 		while ((t = source.source()) != EMPTYVALUE)
@@ -122,8 +122,8 @@ public class DblFunUtil {
 		return init;
 	}
 
-	public static boolean isAll(DblPredicate_ pred0, DblSource_ source) {
-		DblPredicate_ pred1 = pred0.rethrow();
+	public static boolean isAll(DblPredicate pred0, DblSource source) {
+		DblPredicate pred1 = pred0.rethrow();
 		double t;
 		while ((t = source.source()) != EMPTYVALUE)
 			if (!pred1.test(t))
@@ -131,8 +131,8 @@ public class DblFunUtil {
 		return true;
 	}
 
-	public static boolean isAny(DblPredicate_ pred0, DblSource_ source) {
-		DblPredicate_ pred1 = pred0.rethrow();
+	public static boolean isAny(DblPredicate pred0, DblSource source) {
+		DblPredicate pred1 = pred0.rethrow();
 		double t;
 		while ((t = source.source()) != EMPTYVALUE)
 			if (pred1.test(t))
@@ -140,7 +140,7 @@ public class DblFunUtil {
 		return false;
 	}
 
-	public static Iterator<Double> iterator(DblSource_ source) {
+	public static Iterator<Double> iterator(DblSource source) {
 		return new Iterator<Double>() {
 			private double next = EMPTYVALUE;
 
@@ -159,11 +159,11 @@ public class DblFunUtil {
 		};
 	}
 
-	public static Iterable<Double> iter(DblSource_ source) {
+	public static Iterable<Double> iter(DblSource source) {
 		return () -> iterator(source);
 	}
 
-	public static <T1> Source<T1> map(Dbl_Obj<T1> fun0, DblSource_ source) {
+	public static <T1> Source<T1> map(Dbl_Obj<T1> fun0, DblSource source) {
 		Dbl_Obj<T1> fun1 = fun0.rethrow();
 		return () -> {
 			double t0 = source.source();
@@ -171,7 +171,7 @@ public class DblFunUtil {
 		};
 	}
 
-	public static <K, V> Source2<K, V> map2(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0, DblSource_ source) {
+	public static <K, V> Source2<K, V> map2(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0, DblSource source) {
 		Dbl_Obj<K> kf1 = kf0.rethrow();
 		Dbl_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
@@ -185,7 +185,7 @@ public class DblFunUtil {
 		};
 	}
 
-	public static DblSource_ mapDbl(Dbl_Dbl fun0, DblSource_ source) {
+	public static DblSource mapDbl(Dbl_Dbl fun0, DblSource source) {
 		Dbl_Dbl fun1 = fun0.rethrow();
 		return () -> {
 			double t = source.source();
@@ -207,12 +207,12 @@ public class DblFunUtil {
 		};
 	}
 
-	public static DblSink_ nullSink() {
+	public static DblSink nullSink() {
 		return i -> {
 		};
 	}
 
-	public static DblSource_ nullSource() {
+	public static DblSource nullSource() {
 		return () -> EMPTYVALUE;
 	}
 
@@ -220,15 +220,15 @@ public class DblFunUtil {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static Source<DblSource_> split(DblPredicate_ fun0, DblSource_ source) {
-		DblPredicate_ fun1 = fun0.rethrow();
-		return new Source<DblSource_>() {
+	public static Source<DblSource> split(DblPredicate fun0, DblSource source) {
+		DblPredicate fun1 = fun0.rethrow();
+		return new Source<DblSource>() {
 			private double t = source.source();
 			private boolean isAvail = t != EMPTYVALUE;
-			private DblSource_ source_ = () -> (isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && !fun1.test(t) ? t
+			private DblSource source_ = () -> (isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && !fun1.test(t) ? t
 					: null;
 
-			public DblSource_ source() {
+			public DblSource source() {
 				return isAvail ? cons(t, source_) : null;
 			}
 		};
@@ -237,9 +237,9 @@ public class DblFunUtil {
 	/**
 	 * Sucks data from a sink and produce into a source.
 	 */
-	public static DblSource_ suck(Sink<DblSink_> fun) {
+	public static DblSource suck(Sink<DblSink> fun) {
 		NullableSyncQueue<Double> queue = new NullableSyncQueue<>();
-		DblSink_ enqueue = t -> enqueue(queue, t);
+		DblSink enqueue = t -> enqueue(queue, t);
 
 		Thread thread = Thread_.startThread(() -> {
 			try {

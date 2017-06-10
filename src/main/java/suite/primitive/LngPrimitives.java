@@ -70,10 +70,10 @@ public class LngPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface LngPredicate_ {
+	public interface LngPredicate {
 		public boolean test(long c);
 
-		public default LngPredicate_ rethrow() {
+		public default LngPredicate rethrow() {
 			return c -> {
 				try {
 					return test(c);
@@ -85,10 +85,10 @@ public class LngPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface LngSink_ {
+	public interface LngSink {
 		public void sink(long c);
 
-		public default LngSink_ rethrow() {
+		public default LngSink rethrow() {
 			return t -> {
 				try {
 					sink(t);
@@ -100,7 +100,7 @@ public class LngPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface LngSource_ {
+	public interface LngSource {
 		public long source();
 	}
 

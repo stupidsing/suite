@@ -70,10 +70,10 @@ public class IntPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface IntPredicate_ {
+	public interface IntPredicate {
 		public boolean test(int c);
 
-		public default IntPredicate_ rethrow() {
+		public default IntPredicate rethrow() {
 			return c -> {
 				try {
 					return test(c);
@@ -85,10 +85,10 @@ public class IntPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface IntSink_ {
+	public interface IntSink {
 		public void sink(int c);
 
-		public default IntSink_ rethrow() {
+		public default IntSink rethrow() {
 			return t -> {
 				try {
 					sink(t);
@@ -100,7 +100,7 @@ public class IntPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface IntSource_ {
+	public interface IntSource {
 		public int source();
 	}
 

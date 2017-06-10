@@ -5,8 +5,8 @@ import java.util.Iterator;
 import suite.adt.pair.DblChrPair;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
-import suite.primitive.ChrPrimitives.ChrPredicate_;
-import suite.primitive.DblPrimitives.DblPredicate_;
+import suite.primitive.ChrPrimitives.ChrPredicate;
+import suite.primitive.DblPrimitives.DblPredicate;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -101,8 +101,8 @@ public class DblChrFunUtil {
 		};
 	}
 
-	public static <V> DblChrSource filterKey(DblPredicate_ fun0, DblChrSource source2) {
-		DblPredicate_ fun1 = fun0.rethrow();
+	public static <V> DblChrSource filterKey(DblPredicate fun0, DblChrSource source2) {
+		DblPredicate fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -111,8 +111,8 @@ public class DblChrFunUtil {
 		};
 	}
 
-	public static DblChrSource filterValue(ChrPredicate_ fun0, DblChrSource source2) {
-		ChrPredicate_ fun1 = fun0.rethrow();
+	public static DblChrSource filterValue(ChrPredicate fun0, DblChrSource source2) {
+		ChrPredicate fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t1))

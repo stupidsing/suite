@@ -19,7 +19,7 @@ import suite.primitive.DblObj_Dbl;
 import suite.primitive.DblPrimitives.DblObjPredicate;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
-import suite.primitive.DblPrimitives.DblPredicate_;
+import suite.primitive.DblPrimitives.DblPredicate;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.util.FunUtil.Fun;
@@ -113,7 +113,7 @@ public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 		return dblObjStreamlet(() -> spawn().filter(fun));
 	}
 
-	public DblObjStreamlet<V> filterKey(DblPredicate_ fun) {
+	public DblObjStreamlet<V> filterKey(DblPredicate fun) {
 		return dblObjStreamlet(() -> spawn().filterKey(fun));
 	}
 

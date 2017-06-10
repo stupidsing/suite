@@ -9,7 +9,7 @@ import suite.os.LogUtil;
 import suite.primitive.ChrPrimitives.ChrObjPredicate;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
-import suite.primitive.ChrPrimitives.ChrPredicate_;
+import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -104,8 +104,8 @@ public class ChrObjFunUtil {
 		};
 	}
 
-	public static <V> ChrObjSource<V> filterKey(ChrPredicate_ fun0, ChrObjSource<V> source2) {
-		ChrPredicate_ fun1 = fun0.rethrow();
+	public static <V> ChrObjSource<V> filterKey(ChrPredicate fun0, ChrObjSource<V> source2) {
+		ChrPredicate fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))

@@ -70,10 +70,10 @@ public class DblPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface DblPredicate_ {
+	public interface DblPredicate {
 		public boolean test(double c);
 
-		public default DblPredicate_ rethrow() {
+		public default DblPredicate rethrow() {
 			return c -> {
 				try {
 					return test(c);
@@ -85,10 +85,10 @@ public class DblPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface DblSink_ {
+	public interface DblSink {
 		public void sink(double c);
 
-		public default DblSink_ rethrow() {
+		public default DblSink rethrow() {
 			return t -> {
 				try {
 					sink(t);
@@ -100,7 +100,7 @@ public class DblPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface DblSource_ {
+	public interface DblSource {
 		public double source();
 	}
 

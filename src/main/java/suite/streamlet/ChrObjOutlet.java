@@ -21,7 +21,7 @@ import suite.primitive.ChrObj_Chr;
 import suite.primitive.ChrPrimitives.ChrObjPredicate;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
-import suite.primitive.ChrPrimitives.ChrPredicate_;
+import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.primitive.Chr_Chr;
 import suite.util.Array_;
 import suite.util.FunUtil;
@@ -206,7 +206,7 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 		return of(ChrObjFunUtil.filter(fun, charObjSource));
 	}
 
-	public ChrObjOutlet<V> filterKey(ChrPredicate_ fun) {
+	public ChrObjOutlet<V> filterKey(ChrPredicate fun) {
 		return of(ChrObjFunUtil.filterKey(fun, charObjSource));
 	}
 

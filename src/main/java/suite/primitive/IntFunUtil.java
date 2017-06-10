@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 import suite.adt.pair.IntObjPair;
 import suite.os.LogUtil;
-import suite.primitive.IntPrimitives.IntPredicate_;
-import suite.primitive.IntPrimitives.IntSink_;
-import suite.primitive.IntPrimitives.IntSource_;
+import suite.primitive.IntPrimitives.IntPredicate;
+import suite.primitive.IntPrimitives.IntSink;
+import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -21,8 +21,8 @@ public class IntFunUtil {
 
 	public static int EMPTYVALUE = Integer.MIN_VALUE;
 
-	public static IntSource_ append(int t, IntSource_ source) {
-		return new IntSource_() {
+	public static IntSource append(int t, IntSource source) {
+		return new IntSource() {
 			private boolean isAppended = false;
 
 			public int source() {
@@ -40,12 +40,12 @@ public class IntFunUtil {
 		};
 	}
 
-	public static Source<IntSource_> chunk(int n, IntSource_ source) {
-		return new Source<IntSource_>() {
+	public static Source<IntSource> chunk(int n, IntSource source) {
+		return new Source<IntSource>() {
 			private int t = source.source();
 			private boolean isAvail = t != EMPTYVALUE;
 			private int i;
-			private IntSource_ source_ = () -> {
+			private IntSource source_ = () -> {
 				if ((isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && ++i < n)
 					return t;
 				else {
@@ -54,15 +54,15 @@ public class IntFunUtil {
 				}
 			};
 
-			public IntSource_ source() {
+			public IntSource source() {
 				return isAvail ? cons(t, source_) : null;
 			}
 		};
 	}
 
-	public static IntSource_ concat(Source<IntSource_> source) {
-		return new IntSource_() {
-			private IntSource_ source0 = nullSource();
+	public static IntSource concat(Source<IntSource> source) {
+		return new IntSource() {
+			private IntSource source0 = nullSource();
 
 			public int source() {
 				int t = EMPTYVALUE;
@@ -73,8 +73,8 @@ public class IntFunUtil {
 		};
 	}
 
-	public static IntSource_ cons(int t, IntSource_ source) {
-		return new IntSource_() {
+	public static IntSource cons(int t, IntSource source) {
+		return new IntSource() {
 			private boolean isFirst = true;
 
 			public int source() {
@@ -88,8 +88,8 @@ public class IntFunUtil {
 		};
 	}
 
-	public static IntSource_ filter(IntPredicate_ fun0, IntSource_ source) {
-		IntPredicate_ fun1 = fun0.rethrow();
+	public static IntSource filter(IntPredicate fun0, IntSource source) {
+		IntPredicate fun1 = fun0.rethrow();
 		return () -> {
 			int t = EMPTYVALUE;
 			while ((t = source.source()) != EMPTYVALUE && !fun1.test(t))
@@ -98,8 +98,8 @@ public class IntFunUtil {
 		};
 	}
 
-	public static IntSource_ flatten(Source<Iterable<Integer>> source) {
-		return new IntSource_() {
+	public static IntSource flatten(Source<Iterable<Integer>> source) {
+		return new IntSource() {
 			private Iterator<Integer> iter = Collections.emptyIterator();
 
 			public int source() {
@@ -114,7 +114,7 @@ public class IntFunUtil {
 		};
 	}
 
-	public static <R> R fold(Fun<IntObjPair<R>, R> fun0, R init, IntSource_ source) {
+	public static <R> R fold(Fun<IntObjPair<R>, R> fun0, R init, IntSource source) {
 		Fun<IntObjPair<R>, R> fun1 = Rethrow.fun(fun0);
 		int t;
 		while ((t = source.source()) != EMPTYVALUE)
@@ -122,8 +122,8 @@ public class IntFunUtil {
 		return init;
 	}
 
-	public static boolean isAll(IntPredicate_ pred0, IntSource_ source) {
-		IntPredicate_ pred1 = pred0.rethrow();
+	public static boolean isAll(IntPredicate pred0, IntSource source) {
+		IntPredicate pred1 = pred0.rethrow();
 		int t;
 		while ((t = source.source()) != EMPTYVALUE)
 			if (!pred1.test(t))
@@ -131,8 +131,8 @@ public class IntFunUtil {
 		return true;
 	}
 
-	public static boolean isAny(IntPredicate_ pred0, IntSource_ source) {
-		IntPredicate_ pred1 = pred0.rethrow();
+	public static boolean isAny(IntPredicate pred0, IntSource source) {
+		IntPredicate pred1 = pred0.rethrow();
 		int t;
 		while ((t = source.source()) != EMPTYVALUE)
 			if (pred1.test(t))
@@ -140,7 +140,7 @@ public class IntFunUtil {
 		return false;
 	}
 
-	public static Iterator<Integer> iterator(IntSource_ source) {
+	public static Iterator<Integer> iterator(IntSource source) {
 		return new Iterator<Integer>() {
 			private int next = EMPTYVALUE;
 
@@ -159,11 +159,11 @@ public class IntFunUtil {
 		};
 	}
 
-	public static Iterable<Integer> iter(IntSource_ source) {
+	public static Iterable<Integer> iter(IntSource source) {
 		return () -> iterator(source);
 	}
 
-	public static <T1> Source<T1> map(Int_Obj<T1> fun0, IntSource_ source) {
+	public static <T1> Source<T1> map(Int_Obj<T1> fun0, IntSource source) {
 		Int_Obj<T1> fun1 = fun0.rethrow();
 		return () -> {
 			int t0 = source.source();
@@ -171,7 +171,7 @@ public class IntFunUtil {
 		};
 	}
 
-	public static <K, V> Source2<K, V> map2(Int_Obj<K> kf0, Int_Obj<V> vf0, IntSource_ source) {
+	public static <K, V> Source2<K, V> map2(Int_Obj<K> kf0, Int_Obj<V> vf0, IntSource source) {
 		Int_Obj<K> kf1 = kf0.rethrow();
 		Int_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
@@ -185,7 +185,7 @@ public class IntFunUtil {
 		};
 	}
 
-	public static IntSource_ mapInt(Int_Int fun0, IntSource_ source) {
+	public static IntSource mapInt(Int_Int fun0, IntSource source) {
 		Int_Int fun1 = fun0.rethrow();
 		return () -> {
 			int t = source.source();
@@ -207,12 +207,12 @@ public class IntFunUtil {
 		};
 	}
 
-	public static IntSink_ nullSink() {
+	public static IntSink nullSink() {
 		return i -> {
 		};
 	}
 
-	public static IntSource_ nullSource() {
+	public static IntSource nullSource() {
 		return () -> EMPTYVALUE;
 	}
 
@@ -220,15 +220,15 @@ public class IntFunUtil {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static Source<IntSource_> split(IntPredicate_ fun0, IntSource_ source) {
-		IntPredicate_ fun1 = fun0.rethrow();
-		return new Source<IntSource_>() {
+	public static Source<IntSource> split(IntPredicate fun0, IntSource source) {
+		IntPredicate fun1 = fun0.rethrow();
+		return new Source<IntSource>() {
 			private int t = source.source();
 			private boolean isAvail = t != EMPTYVALUE;
-			private IntSource_ source_ = () -> (isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && !fun1.test(t) ? t
+			private IntSource source_ = () -> (isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && !fun1.test(t) ? t
 					: null;
 
-			public IntSource_ source() {
+			public IntSource source() {
 				return isAvail ? cons(t, source_) : null;
 			}
 		};
@@ -237,9 +237,9 @@ public class IntFunUtil {
 	/**
 	 * Sucks data from a sink and produce into a source.
 	 */
-	public static IntSource_ suck(Sink<IntSink_> fun) {
+	public static IntSource suck(Sink<IntSink> fun) {
 		NullableSyncQueue<Integer> queue = new NullableSyncQueue<>();
-		IntSink_ enqueue = t -> enqueue(queue, t);
+		IntSink enqueue = t -> enqueue(queue, t);
 
 		Thread thread = Thread_.startThread(() -> {
 			try {

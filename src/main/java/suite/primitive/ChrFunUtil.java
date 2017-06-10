@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 import suite.adt.pair.ChrObjPair;
 import suite.os.LogUtil;
-import suite.primitive.ChrPrimitives.ChrPredicate_;
-import suite.primitive.ChrPrimitives.ChrSink_;
-import suite.primitive.ChrPrimitives.ChrSource_;
+import suite.primitive.ChrPrimitives.ChrPredicate;
+import suite.primitive.ChrPrimitives.ChrSink;
+import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -21,8 +21,8 @@ public class ChrFunUtil {
 
 	public static char EMPTYVALUE = Character.MIN_VALUE;
 
-	public static ChrSource_ append(char t, ChrSource_ source) {
-		return new ChrSource_() {
+	public static ChrSource append(char t, ChrSource source) {
+		return new ChrSource() {
 			private boolean isAppended = false;
 
 			public char source() {
@@ -40,12 +40,12 @@ public class ChrFunUtil {
 		};
 	}
 
-	public static Source<ChrSource_> chunk(int n, ChrSource_ source) {
-		return new Source<ChrSource_>() {
+	public static Source<ChrSource> chunk(int n, ChrSource source) {
+		return new Source<ChrSource>() {
 			private char t = source.source();
 			private boolean isAvail = t != EMPTYVALUE;
 			private int i;
-			private ChrSource_ source_ = () -> {
+			private ChrSource source_ = () -> {
 				if ((isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && ++i < n)
 					return t;
 				else {
@@ -54,15 +54,15 @@ public class ChrFunUtil {
 				}
 			};
 
-			public ChrSource_ source() {
+			public ChrSource source() {
 				return isAvail ? cons(t, source_) : null;
 			}
 		};
 	}
 
-	public static ChrSource_ concat(Source<ChrSource_> source) {
-		return new ChrSource_() {
-			private ChrSource_ source0 = nullSource();
+	public static ChrSource concat(Source<ChrSource> source) {
+		return new ChrSource() {
+			private ChrSource source0 = nullSource();
 
 			public char source() {
 				char t = EMPTYVALUE;
@@ -73,8 +73,8 @@ public class ChrFunUtil {
 		};
 	}
 
-	public static ChrSource_ cons(char t, ChrSource_ source) {
-		return new ChrSource_() {
+	public static ChrSource cons(char t, ChrSource source) {
+		return new ChrSource() {
 			private boolean isFirst = true;
 
 			public char source() {
@@ -88,8 +88,8 @@ public class ChrFunUtil {
 		};
 	}
 
-	public static ChrSource_ filter(ChrPredicate_ fun0, ChrSource_ source) {
-		ChrPredicate_ fun1 = fun0.rethrow();
+	public static ChrSource filter(ChrPredicate fun0, ChrSource source) {
+		ChrPredicate fun1 = fun0.rethrow();
 		return () -> {
 			char t = EMPTYVALUE;
 			while ((t = source.source()) != EMPTYVALUE && !fun1.test(t))
@@ -98,8 +98,8 @@ public class ChrFunUtil {
 		};
 	}
 
-	public static ChrSource_ flatten(Source<Iterable<Character>> source) {
-		return new ChrSource_() {
+	public static ChrSource flatten(Source<Iterable<Character>> source) {
+		return new ChrSource() {
 			private Iterator<Character> iter = Collections.emptyIterator();
 
 			public char source() {
@@ -114,7 +114,7 @@ public class ChrFunUtil {
 		};
 	}
 
-	public static <R> R fold(Fun<ChrObjPair<R>, R> fun0, R init, ChrSource_ source) {
+	public static <R> R fold(Fun<ChrObjPair<R>, R> fun0, R init, ChrSource source) {
 		Fun<ChrObjPair<R>, R> fun1 = Rethrow.fun(fun0);
 		char t;
 		while ((t = source.source()) != EMPTYVALUE)
@@ -122,8 +122,8 @@ public class ChrFunUtil {
 		return init;
 	}
 
-	public static boolean isAll(ChrPredicate_ pred0, ChrSource_ source) {
-		ChrPredicate_ pred1 = pred0.rethrow();
+	public static boolean isAll(ChrPredicate pred0, ChrSource source) {
+		ChrPredicate pred1 = pred0.rethrow();
 		char t;
 		while ((t = source.source()) != EMPTYVALUE)
 			if (!pred1.test(t))
@@ -131,8 +131,8 @@ public class ChrFunUtil {
 		return true;
 	}
 
-	public static boolean isAny(ChrPredicate_ pred0, ChrSource_ source) {
-		ChrPredicate_ pred1 = pred0.rethrow();
+	public static boolean isAny(ChrPredicate pred0, ChrSource source) {
+		ChrPredicate pred1 = pred0.rethrow();
 		char t;
 		while ((t = source.source()) != EMPTYVALUE)
 			if (pred1.test(t))
@@ -140,7 +140,7 @@ public class ChrFunUtil {
 		return false;
 	}
 
-	public static Iterator<Character> iterator(ChrSource_ source) {
+	public static Iterator<Character> iterator(ChrSource source) {
 		return new Iterator<Character>() {
 			private char next = EMPTYVALUE;
 
@@ -159,11 +159,11 @@ public class ChrFunUtil {
 		};
 	}
 
-	public static Iterable<Character> iter(ChrSource_ source) {
+	public static Iterable<Character> iter(ChrSource source) {
 		return () -> iterator(source);
 	}
 
-	public static <T1> Source<T1> map(Chr_Obj<T1> fun0, ChrSource_ source) {
+	public static <T1> Source<T1> map(Chr_Obj<T1> fun0, ChrSource source) {
 		Chr_Obj<T1> fun1 = fun0.rethrow();
 		return () -> {
 			char t0 = source.source();
@@ -171,7 +171,7 @@ public class ChrFunUtil {
 		};
 	}
 
-	public static <K, V> Source2<K, V> map2(Chr_Obj<K> kf0, Chr_Obj<V> vf0, ChrSource_ source) {
+	public static <K, V> Source2<K, V> map2(Chr_Obj<K> kf0, Chr_Obj<V> vf0, ChrSource source) {
 		Chr_Obj<K> kf1 = kf0.rethrow();
 		Chr_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
@@ -185,7 +185,7 @@ public class ChrFunUtil {
 		};
 	}
 
-	public static ChrSource_ mapChr(Chr_Chr fun0, ChrSource_ source) {
+	public static ChrSource mapChr(Chr_Chr fun0, ChrSource source) {
 		Chr_Chr fun1 = fun0.rethrow();
 		return () -> {
 			char t = source.source();
@@ -207,12 +207,12 @@ public class ChrFunUtil {
 		};
 	}
 
-	public static ChrSink_ nullSink() {
+	public static ChrSink nullSink() {
 		return i -> {
 		};
 	}
 
-	public static ChrSource_ nullSource() {
+	public static ChrSource nullSource() {
 		return () -> EMPTYVALUE;
 	}
 
@@ -220,15 +220,15 @@ public class ChrFunUtil {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static Source<ChrSource_> split(ChrPredicate_ fun0, ChrSource_ source) {
-		ChrPredicate_ fun1 = fun0.rethrow();
-		return new Source<ChrSource_>() {
+	public static Source<ChrSource> split(ChrPredicate fun0, ChrSource source) {
+		ChrPredicate fun1 = fun0.rethrow();
+		return new Source<ChrSource>() {
 			private char t = source.source();
 			private boolean isAvail = t != EMPTYVALUE;
-			private ChrSource_ source_ = () -> (isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && !fun1.test(t) ? t
+			private ChrSource source_ = () -> (isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && !fun1.test(t) ? t
 					: null;
 
-			public ChrSource_ source() {
+			public ChrSource source() {
 				return isAvail ? cons(t, source_) : null;
 			}
 		};
@@ -237,9 +237,9 @@ public class ChrFunUtil {
 	/**
 	 * Sucks data from a sink and produce into a source.
 	 */
-	public static ChrSource_ suck(Sink<ChrSink_> fun) {
+	public static ChrSource suck(Sink<ChrSink> fun) {
 		NullableSyncQueue<Character> queue = new NullableSyncQueue<>();
-		ChrSink_ enqueue = t -> enqueue(queue, t);
+		ChrSink enqueue = t -> enqueue(queue, t);
 
 		Thread thread = Thread_.startThread(() -> {
 			try {
