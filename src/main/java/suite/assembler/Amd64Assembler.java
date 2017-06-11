@@ -42,6 +42,11 @@ public class Amd64Assembler {
 	}
 
 	public Bytes assemble(long offset, List<Instruction> instructions) {
+		assemblePass(offset, instructions); // first pass
+		return assemblePass(offset, instructions); // second pass
+	}
+
+	private Bytes assemblePass(long offset, List<Instruction> instructions) {
 		BytesBuilder bb = new BytesBuilder();
 		for (Instruction instruction : instructions) {
 			Bytes bytes = assemble(offset, instruction);
@@ -218,6 +223,10 @@ public class Amd64Assembler {
 			break;
 		case JZ:
 			insnCode = assembleJump(instruction, offset, 0x74, bs(0x0F, 0x84));
+			break;
+		case LABEL:
+			((OpImm) instruction.op0).imm = offset;
+			insnCode = new InsnCode(4, new byte[0]);
 			break;
 		case LEA:
 			insnCode = assembleRegRm(instruction.op0, instruction.op1, bs(0x8D));

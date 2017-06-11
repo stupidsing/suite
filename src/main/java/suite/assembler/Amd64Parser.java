@@ -27,12 +27,10 @@ public class Amd64Parser {
 		Node ops = tree.getRight();
 		List<Operand> operands = scan(ops, ".0, .1").map(this::parseOperand).toList();
 
-		Instruction instruction = amd64.new Instruction();
-		instruction.insn = insn;
-		instruction.op0 = 0 < operands.size() ? operands.get(0) : amd64.none;
-		instruction.op1 = 1 < operands.size() ? operands.get(1) : amd64.none;
-		instruction.op2 = 2 < operands.size() ? operands.get(2) : amd64.none;
-		return instruction;
+		return amd64.instruction(insn, //
+				0 < operands.size() ? operands.get(0) : amd64.none, //
+				1 < operands.size() ? operands.get(1) : amd64.none, //
+				2 < operands.size() ? operands.get(2) : amd64.none);
 	}
 
 	private Operand parseOperand(Node node) {

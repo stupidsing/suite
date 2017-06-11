@@ -51,6 +51,7 @@ public class Amd64 {
 		JP, //
 		JS, //
 		JZ, //
+		LABEL, //
 		LEA, //
 		LOCK, //
 		LOOP, //
@@ -260,6 +261,50 @@ public class Amd64 {
 		opRegSegment.size = 2;
 		opRegSegment.sreg = creg;
 		return opRegSegment;
+	}
+
+	public Operand imm(int imm, int size) {
+		OpImm op = new OpImm();
+		op.imm = imm;
+		op.size = size;
+		return op;
+	}
+
+	public Instruction instruction(Insn insn) {
+		return instruction(insn, none);
+	}
+
+	public Instruction instruction(Insn insn, Operand op0) {
+		return instruction(insn, op0, none);
+	}
+
+	public Instruction instruction(Insn insn, Operand op0, Operand op1) {
+		return instruction(insn, op0, op1, none);
+	}
+
+	public Instruction instruction(Insn insn, Operand op0, Operand op1, Operand op2) {
+		Instruction instruction = new Instruction();
+		instruction.insn = insn;
+		instruction.op0 = op0;
+		instruction.op1 = op1;
+		instruction.op2 = op2;
+		return instruction;
+	}
+
+	public Operand mem(OpReg reg, long disp, int size) {
+		OpMem op = new OpMem();
+		op.baseReg = reg.reg;
+		op.size = size;
+		op.disp = disp;
+		if (disp == (byte) op.disp)
+			op.dispSize = 1;
+		else
+			op.dispSize = 4;
+		return op;
+	}
+
+	public OpReg reg(String name) {
+		return regsByName.get(Atom.of(name));
 	}
 
 }
