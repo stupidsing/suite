@@ -9,8 +9,8 @@ import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
 
 /**
- * Map with character key and char value. Character.MIN_VALUE is not allowed in
- * values. Not thread-safe.
+ * Map with primitive char key and primitive char value. Character.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

@@ -12,8 +12,8 @@ import suite.streamlet.IntObjOutlet;
 import suite.streamlet.IntObjStreamlet;
 
 /**
- * Map with generic object key and intacter object value. Integer.MIN_VALUE
- * is not allowed in values. Not thread-safe.
+ * Map with generic object key and intacter object value. Integer.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

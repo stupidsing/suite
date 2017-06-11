@@ -1,8 +1,8 @@
 package suite.primitive;
 
 /**
- * An indirect reference to a primitive character. Character.MIN_VALUE is not
- * allowed in the value.
+ * An indirect reference to a primitive char. Character.MIN_VALUE is not allowed
+ * in the value.
  * 
  * @author ywsing
  */

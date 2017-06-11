@@ -11,8 +11,8 @@ import suite.primitive.IntFunUtil;
 import suite.primitive.Int_Flt;
 
 /**
- * Map with intacter key and float value. Float.MIN_VALUE is not allowed in
- * values. Not thread-safe.
+ * Map with primitive int key and primitive float value. Float.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

@@ -11,8 +11,8 @@ import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Dbl;
 
 /**
- * Map with floatacter key and double value. Double.MIN_VALUE is not allowed in
- * values. Not thread-safe.
+ * Map with primitive float key and primitive double value. Double.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

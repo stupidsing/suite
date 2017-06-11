@@ -11,8 +11,8 @@ import suite.primitive.LngIntSource;
 import suite.primitive.Lng_Int;
 
 /**
- * Map with longacter key and int value. Integer.MIN_VALUE is not allowed in
- * values. Not thread-safe.
+ * Map with primitive long key and primitive int value. Integer.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

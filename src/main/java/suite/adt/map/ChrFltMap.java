@@ -11,8 +11,8 @@ import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
 
 /**
- * Map with character key and float value. Float.MIN_VALUE is not allowed in
- * values. Not thread-safe.
+ * Map with primitive char key and primitive float value. Float.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

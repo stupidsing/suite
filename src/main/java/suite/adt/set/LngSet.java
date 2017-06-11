@@ -10,8 +10,7 @@ import suite.streamlet.LngOutlet;
 import suite.streamlet.LngStreamlet;
 
 /**
- * Set with longacter elements. Long.MIN_VALUE is not allowed. Not
- * thread-safe.
+ * Set with longacter elements. Long.MIN_VALUE is not allowed. Not thread-safe.
  *
  * @author ywsing
  */

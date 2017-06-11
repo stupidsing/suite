@@ -11,8 +11,8 @@ import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
 
 /**
- * Map with character key and double value. Double.MIN_VALUE is not allowed in
- * values. Not thread-safe.
+ * Map with primitive char key and primitive double value. Double.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

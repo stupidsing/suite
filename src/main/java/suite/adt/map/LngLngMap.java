@@ -9,8 +9,8 @@ import suite.primitive.LngLngSource;
 import suite.primitive.Lng_Lng;
 
 /**
- * Map with longacter key and long value. Long.MIN_VALUE is not allowed in
- * values. Not thread-safe.
+ * Map with primitive long key and primitive long value. Long.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

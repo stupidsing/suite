@@ -9,8 +9,8 @@ import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
 
 /**
- * Map with doubleacter key and double value. Double.MIN_VALUE is not allowed in
- * values. Not thread-safe.
+ * Map with primitive double key and primitive double value. Double.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

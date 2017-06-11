@@ -11,8 +11,8 @@ import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
 
 /**
- * Map with floatacter key and long value. Long.MIN_VALUE is not allowed in
- * values. Not thread-safe.
+ * Map with primitive float key and primitive long value. Long.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

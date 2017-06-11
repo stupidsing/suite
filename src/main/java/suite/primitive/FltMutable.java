@@ -1,8 +1,8 @@
 package suite.primitive;
 
 /**
- * An indirect reference to a primitive floatacter. Float.MIN_VALUE is not
- * allowed in the value.
+ * An indirect reference to a primitive float. Float.MIN_VALUE is not allowed in
+ * the value.
  * 
  * @author ywsing
  */

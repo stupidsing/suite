@@ -11,8 +11,8 @@ import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
 
 /**
- * Map with doubleacter key and long value. Long.MIN_VALUE is not allowed in
- * values. Not thread-safe.
+ * Map with primitive double key and primitive long value. Long.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
