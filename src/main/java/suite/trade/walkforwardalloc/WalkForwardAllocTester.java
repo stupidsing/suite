@@ -69,7 +69,7 @@ public class WalkForwardAllocTester {
 		return tick(ymdHms, priceBySymbol);
 	}
 
-	private String tick(String ymdHms, Map<String, Float> priceBySymbol) {
+	public String tick(String ymdHms, Map<String, Float> priceBySymbol) {
 		int last = windowSize - 1;
 
 		System.arraycopy(times, 0, times, 1, last);

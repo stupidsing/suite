@@ -2,16 +2,21 @@ package suite.funp;
 
 import suite.BindArrayUtil.Match;
 import suite.Suite;
+import suite.funp.FunpK.FunpAddress;
+import suite.funp.FunpK.FunpApply;
+import suite.funp.FunpK.FunpBoolean;
+import suite.funp.FunpK.FunpFixed;
+import suite.funp.FunpK.FunpIf;
+import suite.funp.FunpK.FunpLambda;
+import suite.funp.FunpK.FunpNumber;
+import suite.funp.FunpK.FunpPolyType;
+import suite.funp.FunpK.FunpReference;
+import suite.funp.FunpK.FunpVariable;
 import suite.funp.Funp_.Funp;
-import suite.funp.Funp_.FunpApply;
-import suite.funp.Funp_.FunpBoolean;
-import suite.funp.Funp_.FunpFixed;
-import suite.funp.Funp_.FunpIf;
-import suite.funp.Funp_.FunpLambda;
-import suite.funp.Funp_.FunpNumber;
 import suite.immutable.IMap;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
+import suite.lp.doer.Cloner;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
@@ -27,6 +32,7 @@ public class FunpInferType {
 	private Atom ftBoolean = Atom.of("BOOLEAN");
 	private Atom ftNumber = Atom.of("NUMBER");
 	private Match defLambda = Suite.match("LAMBDA .0 .1");
+	private Match defReference = Suite.match("REF .0");
 
 	private Trail trail = new Trail();
 
@@ -38,18 +44,22 @@ public class FunpInferType {
 	}
 
 	public int getTypeSize(Node node) {
-		if (bind(ftBoolean, node))
+		if (defLambda.apply(node) != null)
+			return Funp_.pointerSize;
+		else if (defReference.apply(node) != null)
+			return Funp_.pointerSize;
+		else if (bind(ftBoolean, node))
 			return 1;
-		else if (defLambda.apply(node) != null)
-			return 4;
 		else if (bind(ftNumber, node))
-			return 4;
+			return Funp_.intSize;
 		else
 			throw new RuntimeException(node.toString());
 	}
 
 	private Node infer(IMap<String, Node> env, Funp funp) {
-		if (funp instanceof FunpApply) {
+		if (funp instanceof FunpAddress)
+			return defReference.substitute(infer(((FunpAddress) funp).expr));
+		else if (funp instanceof FunpApply) {
 			FunpApply f1 = (FunpApply) funp;
 			Node[] m = defLambda.apply(infer(env, f1.lambda));
 			if (!bind(m[0], infer(env, f1.value)))
@@ -78,6 +88,12 @@ public class FunpInferType {
 			return defLambda.substitute(ftv, infer(env.put(f1.var, ftv), f1.expr));
 		} else if (funp instanceof FunpNumber)
 			return ftNumber;
+		else if (funp instanceof FunpPolyType)
+			return new Cloner().clone(infer(env, ((FunpPolyType) funp).expr));
+		else if (funp instanceof FunpReference)
+			return defReference.apply(infer(((FunpReference) funp).expr))[0];
+		else if (funp instanceof FunpVariable)
+			return env.get(((FunpVariable) funp).var);
 		else
 			throw new RuntimeException();
 	}

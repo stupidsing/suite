@@ -29,7 +29,7 @@ public class WalkForwardTestMain extends ExecutableProgram {
 
 		WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //
 				cfg.queryLeadingCompaniesByMarketCap(Time.now()), //
-				BackAllocator_.byWorstReturn().walkForwardAllocator());
+				BackAllocator_.rsi().walkForwardAllocator());
 
 		WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
 
