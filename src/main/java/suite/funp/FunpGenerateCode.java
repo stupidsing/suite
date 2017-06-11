@@ -17,9 +17,9 @@ import suite.funp.FunpK.FunpIf;
 import suite.funp.FunpK.FunpLambda;
 import suite.funp.FunpK.FunpNumber;
 import suite.funp.FunpK.FunpPolyType;
-import suite.funp.FunpK.FunpReference;
 import suite.funp.FunpK.FunpVariable;
 import suite.funp.FunpL.FunpFramePointer;
+import suite.funp.FunpL.FunpMemory;
 import suite.funp.Funp_.Funp;
 import suite.immutable.IMap;
 import suite.node.io.TermOp;
@@ -32,8 +32,6 @@ import suite.primitive.Bytes;
  */
 public class FunpGenerateCode {
 
-	private FunpInferType fit = new FunpInferType();
-	private FunpK funpk = new FunpK();
 	private FunpL funpl = new FunpL();
 
 	private Amd64 amd64 = new Amd64();
@@ -57,6 +55,9 @@ public class FunpGenerateCode {
 		OpReg r0 = stack[sp];
 
 		if (funp instanceof FunpApply) {
+			compileReg_(env, scope, sp, ((FunpApply) funp).value);
+			instructions.add(amd64.instruction(Insn.PUSH, r0));
+			// TODO
 		} else if (funp instanceof FunpBoolean) {
 			Operand op1 = amd64.imm(((FunpBoolean) funp).b ? 1 : 0, Funp_.intSize);
 			instructions.add(amd64.instruction(Insn.MOV, r0, op1));
@@ -65,7 +66,7 @@ public class FunpGenerateCode {
 			instructions.add(amd64.instruction(Insn.MOV, r0, ebp));
 			int scopeLevel1 = ((FunpFramePointer) funp).scope;
 			while (scope != scopeLevel1) {
-				instructions.add(amd64.instruction(Insn.MOV, ebp, amd64.mem(ebp, Funp_.intSize)));
+				instructions.add(amd64.instruction(Insn.MOV, ebp, amd64.mem(ebp, 0, Funp_.intSize)));
 				scopeLevel1--;
 			}
 		} else if (funp instanceof FunpIf) {
@@ -81,7 +82,7 @@ public class FunpGenerateCode {
 			instructions.add(amd64.instruction(Insn.LABEL, endLabel));
 		} else if (funp instanceof FunpLambda) {
 			int scope1 = scope + 1;
-			FunpReference p = funpk.new FunpReference(funpl.new FunpFramePointer(scope1));
+			Funp p = funpl.new FunpMemory(funpl.new FunpFramePointer(scope1), 8, 8);
 			IMap<String, Funp> env1 = env.put(((FunpLambda) funp).var, p);
 			Operand label = amd64.imm(0, Funp_.pointerSize);
 			instructions.add(amd64.instruction(Insn.JMP, label));
@@ -91,8 +92,16 @@ public class FunpGenerateCode {
 			instructions.add(amd64.instruction(Insn.POP, ebp));
 			instructions.add(amd64.instruction(Insn.RET));
 			instructions.add(amd64.instruction(Insn.LABEL, label));
+		} else if (funp instanceof FunpMemory) {
+			FunpMemory f1 = (FunpMemory) funp;
+			int size = f1.end - f1.start;
+			if (size <= 4) {
+				compileReg_(env, sp, scope, f1.pointer);
+				instructions.add(amd64.instruction(Insn.MOV, r0, amd64.mem(r0, f1.start, size)));
+			} else
+				throw new RuntimeException();
 		} else if (funp instanceof FunpNumber) {
-			Operand op1 = amd64.imm(((FunpNumber) funp).i, fit.getTypeSize(fit.infer(funp)));
+			Operand op1 = amd64.imm(((FunpNumber) funp).i, Funp_.intSize);
 			instructions.add(amd64.instruction(Insn.MOV, r0, op1));
 		} else if (funp instanceof FunpPolyType)
 			compileReg_(env, sp, scope, ((FunpPolyType) funp).expr);
@@ -101,13 +110,6 @@ public class FunpGenerateCode {
 			compileReg_(env, sp, scope, po.right);
 			compileReg_(env, sp1, scope, po.left);
 			instructions.add(amd64.instruction(Insn.ADD, r0, stack[sp1]));
-		} else if (funp instanceof FunpReference) {
-			int size = fit.getTypeSize(fit.infer(funp));
-			if (size <= 4) {
-				compileReg_(env, sp, scope, ((FunpReference) funp).expr);
-				instructions.add(amd64.instruction(Insn.MOV, r0, amd64.mem(r0, size)));
-			} else
-				throw new RuntimeException();
 		} else if (funp instanceof FunpVariable)
 			compileReg_(env, sp, scope, env.get(((FunpVariable) funp).var));
 		else
