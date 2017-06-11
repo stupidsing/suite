@@ -190,7 +190,7 @@ public class CommandDispatcher {
 
 	private void elaborate(Node node0, Sink<Node> sink) {
 		int[] count = { 0 };
-		Generalization generalization = SewingGeneralizerImpl.process(node0);
+		Generalization generalization = SewingGeneralizerImpl.process(node0).source();
 		Node node1 = generalization.node;
 
 		Node elab = new Data<Source<Boolean>>(() -> {

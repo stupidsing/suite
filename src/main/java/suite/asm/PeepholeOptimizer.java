@@ -3,6 +3,7 @@ package suite.asm;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.BindArrayUtil.Match;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.lp.predicate.EvalPredicates;
@@ -10,12 +11,11 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.util.FunUtil.Fun;
 
 public class PeepholeOptimizer {
 
-	private Fun<Node, Node[]> ADDI__ = Suite.matcher("ADDI (.0, .1)");
-	private Fun<Node, Node[]> MOV___ = Suite.matcher("MOV (.0, .1)");
+	private Match ADDI__ = Suite.match("ADDI (.0, .1)");
+	private Match MOV___ = Suite.match("MOV (.0, .1)");
 
 	public List<Pair<Reference, Node>> optimize(List<Pair<Reference, Node>> lnis0) {
 		List<Pair<Reference, Node>> lnis1 = new ArrayList<>();

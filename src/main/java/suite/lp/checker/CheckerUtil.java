@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import suite.BindArrayUtil.Match;
 import suite.Suite;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
@@ -15,27 +16,26 @@ import suite.node.util.TreeUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
 
 public class CheckerUtil {
 
-	private List<Fun<Node, Node[]>> matchers = Arrays.asList( //
-			Suite.matcher(".0, .1"), //
-			Suite.matcher(".0; .1"), //
-			Suite.matcher("find.all _ .0 _"), //
-			Suite.matcher("find.all.memoized _ .0 _"), //
-			Suite.matcher("if .0 then .1 else .2"), //
-			Suite.matcher("list.fold _ _ .0"), //
-			Suite.matcher("list.query _ _ .0"), //
-			Suite.matcher("not .0"), //
-			Suite.matcher("once .0"), //
-			Suite.matcher("suspend _ _ .0"), //
-			Suite.matcher("try .0 _ .1"));
+	private List<Match> matchers = Arrays.asList( //
+			Suite.match(".0, .1"), //
+			Suite.match(".0; .1"), //
+			Suite.match("find.all _ .0 _"), //
+			Suite.match("find.all.memoized _ .0 _"), //
+			Suite.match("if .0 then .1 else .2"), //
+			Suite.match("list.fold _ _ .0"), //
+			Suite.match("list.query _ _ .0"), //
+			Suite.match("not .0"), //
+			Suite.match("once .0"), //
+			Suite.match("suspend _ _ .0"), //
+			Suite.match("try .0 _ .1"));
 
 	public Streamlet<Node> scan(Node node) {
 		Node[] m = null;
 
-		for (Fun<Node, Node[]> matcher : matchers)
+		for (Match matcher : matchers)
 			if ((m = matcher.apply(node)) != null)
 				return Read.from(m).concatMap(this::scan);
 

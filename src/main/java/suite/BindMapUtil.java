@@ -24,53 +24,59 @@ import suite.util.Memoize;
 
 public class BindMapUtil {
 
-	private Fun<String, Fun<Node, Map<String, Node>>> matchers = Memoize.fun(pattern_ -> {
+	public interface Match {
+		public Map<String, Node> apply(Node node);
+
+		public Node substitute(Map<String, Node> map);
+	}
+
+	public Match match(String pattern) {
+		return matches.apply(pattern);
+	}
+
+	private Fun<String, Match> matches = Memoize.fun(pattern_ -> {
 		Generalizer generalizer = new Generalizer();
-		Node toMatch = generalizer.generalize(Suite.parse(pattern_));
+		Node fs = Suite.parse(pattern_);
+		Node toMatch = generalizer.generalize(fs);
 
 		SewingBinderImpl0 sb = new SewingBinderImpl0(false);
 		BindPredicate pred = sb.compileBind(toMatch);
+
 		Streamlet2<String, Integer> indices = Read.from(generalizer.getVariablesNames()) //
 				.map2(Formatter::display, name -> sb.getVariableIndex(generalizer.getVariable(name))) //
 				.collect(As::streamlet2);
 
-		return node -> {
-			Env env = sb.env();
-			Trail trail = new Trail();
-			BindEnv be = new BindEnv() {
-				public Env getEnv() {
-					return env;
-				}
+		return new Match() {
+			public Map<String, Node> apply(Node node) {
+				Env env = sb.env();
+				Trail trail = new Trail();
+				BindEnv be = new BindEnv() {
+					public Env getEnv() {
+						return env;
+					}
 
-				public Trail getTrail() {
-					return trail;
+					public Trail getTrail() {
+						return trail;
+					}
+				};
+				if (pred.test(be, node)) {
+					Map<String, Node> results = new HashMap<>();
+					indices.sink((name, index) -> results.put(name, env.get(index)));
+					return results;
+				} else
+					return null;
+			}
+
+			public Node substitute(Map<String, Node> map) {
+				Generalization generalization = SewingGeneralizerImpl.process(Suite.parse(pattern_)).source();
+				for (Entry<String, Node> e : map.entrySet()) {
+					Node variable = Atom.of(e.getKey());
+					((Reference) variable).bound(e.getValue());
 				}
-			};
-			if (pred.test(be, node)) {
-				Map<String, Node> results = new HashMap<>();
-				indices.sink((name, index) -> results.put(name, env.get(index)));
-				return results;
-			} else
-				return null;
+				return generalization.node;
+			}
 		};
+
 	});
-
-	// --------------------------------
-	// bind utilities
-
-	public Fun<Node, Map<String, Node>> matcher(String pattern) {
-		return matchers.apply(pattern);
-	}
-
-	public Node substitute(String pattern, Map<String, Node> map) {
-		Generalization generalization = SewingGeneralizerImpl.process(Suite.parse(pattern));
-
-		for (Entry<String, Node> e : map.entrySet()) {
-			Node variable = Atom.of(e.getKey());
-			((Reference) variable).bound(e.getValue());
-		}
-
-		return generalization.node;
-	}
 
 }

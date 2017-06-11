@@ -111,7 +111,7 @@ public class FactorizeResult {
 		TreeRewriter tr = new TreeRewriter();
 
 		Fun<Node, Node> rewrite = n0 -> {
-			Node[] m = Suite.matcher(FTerminal.class.getName() + ":.0").apply(n0);
+			Node[] m = Suite.match(FTerminal.class.getName() + ":.0").apply(n0);
 			Node n1 = m != null ? m[0] : null;
 			Node n2 = n1 instanceof Dict ? ((Dict) n1).map.get(Atom.of("chars")) : null;
 			Node n3 = n2 != null ? n2.finalNode() : null;

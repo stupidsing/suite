@@ -17,18 +17,19 @@ import suite.node.io.Rewriter.NodeWrite;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 
 public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingGeneralizer {
 
 	public static Node generalize(Node node) {
-		return process(node).node;
+		return process(node).source().node;
 	}
 
-	public static Generalization process(Node node) {
+	public static Source<Generalization> process(Node node) {
 		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
 		Fun<Env, Node> fun = sg.compile(node);
 		Env env = sg.env();
-		return sg.new Generalization(fun.apply(env), env);
+		return () -> sg.new Generalization(fun.apply(env), env);
 	}
 
 	public Fun<Env, Node> compile(Node node) {

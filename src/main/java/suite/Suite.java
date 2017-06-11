@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import suite.BindArrayUtil.Match;
 import suite.fp.FunCompilerConfig;
 import suite.fp.intrinsic.Intrinsics;
 import suite.immutable.IPointer;
@@ -33,7 +34,6 @@ import suite.node.parser.IterativeParser;
 import suite.primitive.Chars;
 import suite.primitive.IoSink;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 
@@ -133,12 +133,12 @@ public class Suite {
 	// --------------------------------
 	// bind utilities
 
-	public static Fun<Node, Node[]> matcher(String s) {
-		return bindArrayUtil.matcher(s);
+	public static Match match(String pattern) {
+		return bindArrayUtil.match(pattern);
 	}
 
-	public static Node substitute(String s, Node... nodes) {
-		return bindArrayUtil.substitute(s, nodes);
+	public static Node substitute(String pattern, Node... nodes) {
+		return bindArrayUtil.match(pattern).substitute(nodes);
 	}
 
 	// --------------------------------

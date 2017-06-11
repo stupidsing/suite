@@ -35,21 +35,21 @@ public class SewingExpressionImpl1 implements SewingExpression {
 	private LambdaInstance<Evaluate> compile_(Node node) {
 		Node[] m;
 
-		if ((m = Suite.matcher(".0 + .1").apply(node)) != null)
+		if ((m = Suite.match(".0 + .1").apply(node)) != null)
 			return compileOperator(m, "+");
-		else if ((m = Suite.matcher(".0 - .1").apply(node)) != null)
+		else if ((m = Suite.match(".0 - .1").apply(node)) != null)
 			return compileOperator(m, "-");
-		else if ((m = Suite.matcher(".0 * .1").apply(node)) != null)
+		else if ((m = Suite.match(".0 * .1").apply(node)) != null)
 			return compileOperator(m, "*");
-		else if ((m = Suite.matcher(".0 / .1").apply(node)) != null)
+		else if ((m = Suite.match(".0 / .1").apply(node)) != null)
 			return compileOperator(m, "/");
-		else if ((m = Suite.matcher(".0 and .1").apply(node)) != null)
+		else if ((m = Suite.match(".0 and .1").apply(node)) != null)
 			return compileOperator(m, "&&");
-		else if ((m = Suite.matcher(".0 or .1").apply(node)) != null)
+		else if ((m = Suite.match(".0 or .1").apply(node)) != null)
 			return compileOperator(m, "||");
-		else if ((m = Suite.matcher(".0 shl .1").apply(node)) != null)
+		else if ((m = Suite.match(".0 shl .1").apply(node)) != null)
 			return compileOperator(m, "<<");
-		else if ((m = Suite.matcher(".0 shr .1").apply(node)) != null)
+		else if ((m = Suite.match(".0 shr .1").apply(node)) != null)
 			return compileOperator(m, ">>");
 		else if (node instanceof Int)
 			return LambdaInstance.of(compiledNumber, To.map(keyNumber, ((Int) node).number));

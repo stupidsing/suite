@@ -15,14 +15,26 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 import suite.util.Memoize;
 import suite.util.To;
 
 public class BindArrayUtil {
 
-	private Fun<String, Fun<Node, Node[]>> matchers = Memoize.fun(pattern_ -> {
+	public interface Match {
+		public Node[] apply(Node node);
+
+		public Node substitute(Node... nodes);
+	}
+
+	public Match match(String pattern) {
+		return matches.apply(pattern);
+	}
+
+	private Fun<String, Match> matches = Memoize.fun(pattern_ -> {
 		Generalizer generalizer = new Generalizer();
-		Node toMatch = generalizer.generalize(Suite.parse(pattern_));
+		Node fs = Suite.parse(pattern_);
+		Node toMatch = generalizer.generalize(fs);
 
 		SewingBinderImpl0 sb = new SewingBinderImpl0(false);
 		BindPredicate pred = sb.compileBind(toMatch);
@@ -36,42 +48,38 @@ public class BindArrayUtil {
 		int size = indexList.size();
 		int[] indices = To.arrayOfInts(size, indexList::get);
 
-		return node -> {
-			Env env = sb.env();
-			Trail trail = new Trail();
-			BindEnv be = new BindEnv() {
-				public Env getEnv() {
-					return env;
-				}
+		Source<Generalization> source = SewingGeneralizerImpl.process(fs);
 
-				public Trail getTrail() {
-					return trail;
+		return new Match() {
+			public Node[] apply(Node node) {
+				Env env = sb.env();
+				Trail trail = new Trail();
+				BindEnv be = new BindEnv() {
+					public Env getEnv() {
+						return env;
+					}
+
+					public Trail getTrail() {
+						return trail;
+					}
+				};
+				if (pred.test(be, node))
+					return To.array(Node.class, size, i -> env.get(indices[i]));
+				else
+					return null;
+
+			}
+
+			public Node substitute(Node... nodes) {
+				Generalization generalization = source.source();
+				int i = 0;
+				for (Node node : nodes) {
+					Node variable = generalization.getVariable(Atom.of("." + i++));
+					((Reference) variable).bound(node);
 				}
-			};
-			if (pred.test(be, node))
-				return To.array(Node.class, size, i -> env.get(indices[i]));
-			else
-				return null;
+				return generalization.node;
+			}
 		};
 	});
-
-	// --------------------------------
-	// bind utilities
-
-	public Fun<Node, Node[]> matcher(String pattern) {
-		return matchers.apply(pattern);
-	}
-
-	public Node substitute(String pattern, Node... nodes) {
-		Generalization generalization = SewingGeneralizerImpl.process(Suite.parse(pattern));
-		int i = 0;
-
-		for (Node node : nodes) {
-			Node variable = generalization.getVariable(Atom.of("." + i++));
-			((Reference) variable).bound(node);
-		}
-
-		return generalization.node;
-	}
 
 }

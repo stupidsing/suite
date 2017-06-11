@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import suite.BindArrayUtil.Match;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.fp.match.Matcher;
@@ -180,7 +181,7 @@ public class LazyFunInterpreter {
 					} else
 						return else_.apply(frame);
 				};
-			} else if ((m = Suite.matcher("DEF-VARS (.0 .1,) .2").apply(node)) != null) {
+			} else if ((m = Suite.match("DEF-VARS (.0 .1,) .2").apply(node)) != null) {
 				Lazy_ lazy1 = put(m[0]);
 				Fun<Frame, Thunk_> value_ = lazy1.lazy_(m[1]);
 				Fun<Frame, Thunk_> expr = lazy1.lazy_(m[2]);
@@ -192,8 +193,8 @@ public class LazyFunInterpreter {
 					return expr.apply(frame);
 				};
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
-				Fun<Node, Node[]> tuple = Suite.matcher(".0 .1");
-				Streamlet<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple);
+				Match tuple = Suite.match(".0 .1");
+				Streamlet<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple::apply);
 				int size = arrays.size();
 				Lazy_ lazy0 = this;
 

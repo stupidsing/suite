@@ -314,14 +314,14 @@ public class SewingProverImpl implements SewingProver {
 				cps = compileCps(sb, n, cps);
 		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
 			cps = orCps(Read.from(list).map(n -> compileCps(sb, n, cpsx)));
-		else if ((m = Suite.matcher(".0 = .1").apply(node)) != null) {
+		else if ((m = Suite.match(".0 = .1").apply(node)) != null) {
 			boolean b = complexity(m[0]) <= complexity(m[1]);
 			Node n0 = b ? m[0] : m[1];
 			Node n1 = b ? m[1] : m[0];
 			BindPredicate p = sb.compileBind(n1);
 			Clone_ f = sb.compile(n0);
 			cps = rt -> p.test(rt, f.apply(rt.env)) ? cpsx : null;
-		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
+		} else if ((m = Suite.match(".0 .1").apply(node)) != null && m[0] instanceof Atom)
 			cps = compileCpsCallPredicate(sb, ((Atom) m[0]).name, m[1], node, cpsx);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;
@@ -458,14 +458,14 @@ public class SewingProverImpl implements SewingProver {
 			tr = andTr(Read.from(list).map(n -> compileTr(sb, n)));
 		else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
 			tr = orTr(Read.from(list).map(n -> compileTr(sb, n)));
-		else if ((m = Suite.matcher(".0 = .1").apply(node)) != null) {
+		else if ((m = Suite.match(".0 = .1").apply(node)) != null) {
 			boolean b = complexity(m[0]) <= complexity(m[1]);
 			Node n0 = b ? m[0] : m[1];
 			Node n1 = b ? m[1] : m[0];
 			BindPredicate p = sb.compileBind(n1);
 			Clone_ f = sb.compile(n0);
 			tr = rt -> p.test(rt, f.apply(rt.env)) ? okay : fail;
-		} else if ((m = Suite.matcher("builtin:.0:.1 .2").apply(node)) != null) {
+		} else if ((m = Suite.match("builtin:.0:.1 .2").apply(node)) != null) {
 			String className = ((Atom) m[0]).name;
 			String fieldName = ((Atom) m[1]).name;
 			BuiltinPredicate predicate = Rethrow.ex(() -> {
@@ -473,7 +473,7 @@ public class SewingProverImpl implements SewingProver {
 				return (BuiltinPredicate) clazz.getField(fieldName).get(clazz.newInstance());
 			});
 			tr = compileTrCallPredicate(sb, predicate, m[2]);
-		} else if ((m = Suite.matcher("find.all .0 .1 .2").apply(node)) != null) {
+		} else if ((m = Suite.match("find.all .0 .1 .2").apply(node)) != null) {
 			Clone_ f = sb.compile(m[0]);
 			Trampoline tr1 = compileTr(sb, m[1]);
 			BindPredicate p = sb.compileBind(m[2]);
@@ -490,22 +490,22 @@ public class SewingProverImpl implements SewingProver {
 				});
 				return tr1;
 			};
-		} else if ((m = Suite.matcher("if .0 .1 .2").apply(node)) != null) {
+		} else if ((m = Suite.match("if .0 .1 .2").apply(node)) != null) {
 			Trampoline tr0 = compileTr(sb, m[0]);
 			Trampoline tr1 = compileTr(sb, m[1]);
 			Trampoline tr2 = compileTr(sb, m[2]);
 			tr = if_(tr0, tr1, tr2);
-		} else if ((m = Suite.matcher("let .0 .1").apply(node)) != null) {
+		} else if ((m = Suite.match("let .0 .1").apply(node)) != null) {
 			BindPredicate p = sb.compileBind(m[0]);
 			Evaluate eval = new SewingExpressionImpl0(sb).compile(m[1]);
 			tr = rt -> p.test(rt, Int.of(eval.evaluate(rt.env))) ? okay : fail;
-		} else if ((m = Suite.matcher("list.fold .0/.1/.2 .3").apply(node)) != null) {
+		} else if ((m = Suite.match("list.fold .0/.1/.2 .3").apply(node)) != null) {
 			Clone_ list0_ = sb.compile(m[0]);
 			Clone_ value0_ = sb.compile(m[1]);
 			BindPredicate valuex_ = sb.compileBind(m[2]);
 			Clone_ ht_ = sb.compile(m[3]);
 			tr = rt -> {
-				Node[] ht = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
+				Node[] ht = Suite.match(".0 .1").apply(ht_.apply(rt.env));
 				Trampoline tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				rt.pushRem(rt_ -> valuex_.test(rt_, current.get()) ? okay : fail);
@@ -522,7 +522,7 @@ public class SewingProverImpl implements SewingProver {
 				}
 				return okay;
 			};
-		} else if ((m = Suite.matcher("list.fold.clone .0/.1/.2 .3/.4/.5 .6").apply(node)) != null) {
+		} else if ((m = Suite.match("list.fold.clone .0/.1/.2 .3/.4/.5 .6").apply(node)) != null) {
 			Clone_ list0_ = sb.compile(m[0]);
 			Clone_ value0_ = sb.compile(m[1]);
 			BindPredicate valuex_ = sb.compileBind(m[2]);
@@ -549,11 +549,11 @@ public class SewingProverImpl implements SewingProver {
 				}
 				return okay;
 			};
-		} else if ((m = Suite.matcher("list.query .0 .1").apply(node)) != null) {
+		} else if ((m = Suite.match("list.query .0 .1").apply(node)) != null) {
 			Clone_ l_ = sb.compile(m[0]);
 			Clone_ ht_ = sb.compile(m[1]);
 			tr = rt -> {
-				Node[] ht = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
+				Node[] ht = Suite.match(".0 .1").apply(ht_.apply(rt.env));
 				Trampoline tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
 				for (Node n : Tree.iter(l_.apply(rt.env)))
 					rt.pushRem(rt_ -> {
@@ -562,7 +562,7 @@ public class SewingProverImpl implements SewingProver {
 					});
 				return okay;
 			};
-		} else if ((m = Suite.matcher("list.query.clone .0 .1 .2").apply(node)) != null) {
+		} else if ((m = Suite.match("list.query.clone .0 .1 .2").apply(node)) != null) {
 			Clone_ f = sb.compile(m[0]);
 			BindPredicate p = sb.compileBind(m[1]);
 			Trampoline tr1 = compileTr(sb, m[2]);
@@ -579,7 +579,7 @@ public class SewingProverImpl implements SewingProver {
 					});
 				return okay;
 			};
-		} else if ((m = Suite.matcher("member .0 .1").apply(node)) != null && TreeUtil.isList(m[0], TermOp.AND___)) {
+		} else if ((m = Suite.match("member .0 .1").apply(node)) != null && TreeUtil.isList(m[0], TermOp.AND___)) {
 			List<BindPredicate> elems_ = Read.from(Tree.iter(m[0])).map(sb::compileBind).toList();
 			Clone_ f = sb.compile(m[1]);
 			tr = rt -> {
@@ -597,9 +597,9 @@ public class SewingProverImpl implements SewingProver {
 					return fail;
 				};
 			};
-		} else if ((m = Suite.matcher("not .0").apply(node)) != null)
+		} else if ((m = Suite.match("not .0").apply(node)) != null)
 			tr = if_(compileTr(sb, m[0]), fail, okay);
-		else if ((m = Suite.matcher("once .0").apply(node)) != null) {
+		else if ((m = Suite.match("once .0").apply(node)) != null) {
 			Trampoline tr0 = compileTr(sb, m[0]);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
@@ -609,7 +609,7 @@ public class SewingProverImpl implements SewingProver {
 				});
 				return tr0;
 			};
-		} else if ((m = Suite.matcher("suspend .0 .1 .2").apply(node)) != null) {
+		} else if ((m = Suite.match("suspend .0 .1 .2").apply(node)) != null) {
 			Clone_ f0 = sb.compile(m[0]);
 			Clone_ f1 = sb.compile(m[1]);
 			Trampoline tr0 = compileTr(sb, m[2]);
@@ -637,13 +637,13 @@ public class SewingProverImpl implements SewingProver {
 				} else
 					return fail;
 			};
-		} else if ((m = Suite.matcher("throw .0").apply(node)) != null) {
+		} else if ((m = Suite.match("throw .0").apply(node)) != null) {
 			Clone_ f = sb.compile(m[0]);
 			tr = rt -> {
 				rt.handler.sink(new Cloner().clone(f.apply(rt.env)));
 				return okay;
 			};
-		} else if ((m = Suite.matcher("try .0 .1 .2").apply(node)) != null) {
+		} else if ((m = Suite.match("try .0 .1 .2").apply(node)) != null) {
 			Trampoline tr0 = compileTr(sb, m[0]);
 			BindPredicate p = sb.compileBind(m[1]);
 			Trampoline catch0 = compileTr(sb, m[2]);
@@ -666,7 +666,7 @@ public class SewingProverImpl implements SewingProver {
 				});
 				return tr0;
 			};
-		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
+		} else if ((m = Suite.match(".0 .1").apply(node)) != null && m[0] instanceof Atom)
 			tr = compileTrCallPredicate(sb, ((Atom) m[0]).name, m[1], node);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;

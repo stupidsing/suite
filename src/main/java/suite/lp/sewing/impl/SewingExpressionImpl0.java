@@ -19,35 +19,35 @@ public class SewingExpressionImpl0 implements SewingExpression {
 	public Evaluate compile(Node node) {
 		Node[] m;
 
-		if ((m = Suite.matcher(".0 + .1").apply(node)) != null) {
+		if ((m = Suite.match(".0 + .1").apply(node)) != null) {
 			Evaluate e0 = compile(m[0]);
 			Evaluate e1 = compile(m[1]);
 			return env -> e0.evaluate(env) + e1.evaluate(env);
-		} else if ((m = Suite.matcher(".0 - .1").apply(node)) != null) {
+		} else if ((m = Suite.match(".0 - .1").apply(node)) != null) {
 			Evaluate e0 = compile(m[0]);
 			Evaluate e1 = compile(m[1]);
 			return env -> e0.evaluate(env) - e1.evaluate(env);
-		} else if ((m = Suite.matcher(".0 * .1").apply(node)) != null) {
+		} else if ((m = Suite.match(".0 * .1").apply(node)) != null) {
 			Evaluate e0 = compile(m[0]);
 			Evaluate e1 = compile(m[1]);
 			return env -> e0.evaluate(env) * e1.evaluate(env);
-		} else if ((m = Suite.matcher(".0 / .1").apply(node)) != null) {
+		} else if ((m = Suite.match(".0 / .1").apply(node)) != null) {
 			Evaluate e0 = compile(m[0]);
 			Evaluate e1 = compile(m[1]);
 			return env -> e0.evaluate(env) / e1.evaluate(env);
-		} else if ((m = Suite.matcher(".0 and .1").apply(node)) != null) {
+		} else if ((m = Suite.match(".0 and .1").apply(node)) != null) {
 			Evaluate e0 = compile(m[0]);
 			Evaluate e1 = compile(m[1]);
 			return env -> e0.evaluate(env) & e1.evaluate(env);
-		} else if ((m = Suite.matcher(".0 or .1").apply(node)) != null) {
+		} else if ((m = Suite.match(".0 or .1").apply(node)) != null) {
 			Evaluate e0 = compile(m[0]);
 			Evaluate e1 = compile(m[1]);
 			return env -> e0.evaluate(env) | e1.evaluate(env);
-		} else if ((m = Suite.matcher(".0 shl .1").apply(node)) != null) {
+		} else if ((m = Suite.match(".0 shl .1").apply(node)) != null) {
 			Evaluate e0 = compile(m[0]);
 			Evaluate e1 = compile(m[1]);
 			return env -> e0.evaluate(env) << e1.evaluate(env);
-		} else if ((m = Suite.matcher(".0 shr .1").apply(node)) != null) {
+		} else if ((m = Suite.match(".0 shr .1").apply(node)) != null) {
 			Evaluate e0 = compile(m[0]);
 			Evaluate e1 = compile(m[1]);
 			return env -> e0.evaluate(env) >> e1.evaluate(env);

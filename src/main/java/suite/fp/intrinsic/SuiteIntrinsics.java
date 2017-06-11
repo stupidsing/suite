@@ -16,7 +16,7 @@ public class SuiteIntrinsics {
 	public Intrinsic match = (callback, inputs) -> {
 		String s = Data.get(inputs.get(0)).toString();
 		Node n = Data.get(inputs.get(1));
-		Node[] m = Suite.matcher(s.toString()).apply(n);
+		Node[] m = Suite.match(s.toString()).apply(n);
 		if (m != null)
 			return Intrinsics.drain(callback, p -> new Data<>(m[p]), m.length);
 		else

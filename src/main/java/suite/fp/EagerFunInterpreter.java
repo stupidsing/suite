@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import suite.BindArrayUtil.Match;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.fp.intrinsic.Intrinsics;
@@ -142,8 +143,8 @@ public class EagerFunInterpreter {
 						return else_.apply(frame);
 				};
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
-				Fun<Node, Node[]> tuple = Suite.matcher(".0 .1");
-				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple).toList();
+				Match tuple = Suite.match(".0 .1");
+				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple::apply).toList();
 				if (arrays.size() == 1) {
 					Node[] array = arrays.get(0);
 					IMap<Node, Fun<Frame, Node>> vm1 = vm.put(array[0], unwrap(getter(fs)));

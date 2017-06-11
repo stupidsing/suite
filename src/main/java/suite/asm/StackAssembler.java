@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+import suite.BindArrayUtil.Match;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.lp.Trail;
@@ -15,7 +16,6 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.util.TreeRewriter;
-import suite.util.FunUtil.Fun;
 
 public class StackAssembler {
 
@@ -23,14 +23,14 @@ public class StackAssembler {
 	private Node rsOp1 = Atom.of("$1");
 	private Node[] registers = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI") };
 
-	private Fun<Node, Node[]> FRBGN_ = Suite.matcher("FR-BEGIN ()");
-	private Fun<Node, Node[]> FREND_ = Suite.matcher("FR-END ()");
-	private Fun<Node, Node[]> FRGET_ = Suite.matcher("FR-GET .0");
-	private Fun<Node, Node[]> FRPOP_ = Suite.matcher("FR-POP .0");
-	private Fun<Node, Node[]> FRPOPN = Suite.matcher("FR-POPN .0");
-	private Fun<Node, Node[]> FRPSH_ = Suite.matcher("FR-PUSH .0");
-	private Fun<Node, Node[]> FRPSHN = Suite.matcher("FR-PUSHN .0");
-	private Fun<Node, Node[]> LET___ = Suite.matcher("LET (.0, .1)");
+	private Match FRBGN_ = Suite.match("FR-BEGIN ()");
+	private Match FREND_ = Suite.match("FR-END ()");
+	private Match FRGET_ = Suite.match("FR-GET .0");
+	private Match FRPOP_ = Suite.match("FR-POP .0");
+	private Match FRPOPN = Suite.match("FR-POPN .0");
+	private Match FRPSH_ = Suite.match("FR-PUSH .0");
+	private Match FRPSHN = Suite.match("FR-PUSHN .0");
+	private Match LET___ = Suite.match("LET (.0, .1)");
 	private Node RPOP__ = Atom.of("R-");
 	private Node RPSH__ = Atom.of("R+");
 	private Node RRESTA = Atom.of("RRESTORE-ALL");

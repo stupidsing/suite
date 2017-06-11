@@ -58,7 +58,7 @@ public class Matcher<T> {
 	}
 
 	public T match(Node node) {
-		Map<String, Node> map = bindMapUtil.matcher(matcher).apply(node);
+		Map<String, Node> map = bindMapUtil.match(matcher).apply(node);
 		return Rethrow.ex(() -> {
 			if (map != null) {
 				T t = ctor.source();
