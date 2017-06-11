@@ -12,4 +12,16 @@ public class FunpL {
 		}
 	}
 
+	public class FunpMemory extends Funp {
+		public final Funp pointer;
+		public final int start;
+		public final int end;
+
+		public FunpMemory(Funp pointer, int start, int end) {
+			this.pointer = pointer;
+			this.start = start;
+			this.end = end;
+		}
+	}
+
 }
