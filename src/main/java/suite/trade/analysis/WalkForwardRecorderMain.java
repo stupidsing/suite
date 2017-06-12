@@ -40,6 +40,12 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
+		String ts = Time.now().ymdHms() //
+				.replace("-", "") //
+				.replace(" ", "-") //
+				.replace(":", "");
+
+		String filename = "wfa." + ts + ".csv";
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(Time.now());
 
 		Trade_.isCacheQuotes = false;
@@ -51,7 +57,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 						Map<String, Float> priceBySymbol = cfg.quote(assets.map(asset -> asset.symbol).toSet());
 
 						try (OutputStream os = Files.newOutputStream( //
-								HomeDir.resolve("wfa.csv"), //
+								HomeDir.resolve(filename), //
 								StandardOpenOption.APPEND, //
 								StandardOpenOption.CREATE, //
 								StandardOpenOption.WRITE); //
