@@ -1,28 +1,63 @@
 package suite.funp;
 
-import suite.funp.Funp_.PN0;
-import suite.funp.Funp_.PN1;
+import suite.funp.Funp_.Funp;
 
 public class P1 {
 
-	public static class FunpFramePointer implements PN1 {
-		public final int scope;
+	public static class FunpAssign implements Funp {
+		public FunpMemory memory;
+		public Funp value;
+		public Funp expr;
 
-		public FunpFramePointer(int scope) {
-			this.scope = scope;
+		public FunpAssign(FunpMemory memory, Funp value, Funp expr) {
+			this.memory = memory;
+			this.value = value;
+			this.expr = expr;
 		}
 	}
 
-	public static class FunpMemory implements PN1 {
-		public final PN0 pointer;
-		public final int start;
-		public final int end;
+	public static class FunpFramePointer implements Funp {
+	}
 
-		public FunpMemory(PN0 pointer, int start, int end) {
+	public static class FunpInvoke implements Funp {
+		public Funp lambda;
+
+		public FunpInvoke(Funp lambda) {
+			this.lambda = lambda;
+		}
+	}
+
+	public static class FunpMemory implements Funp {
+		public Funp pointer;
+		public int start;
+		public int end;
+
+		public FunpMemory(Funp pointer, int start, int end) {
 			this.pointer = pointer;
 			this.start = start;
 			this.end = end;
 		}
+	}
+
+	public static class FunpSaveRegisters implements Funp {
+		public Funp expr;
+
+		public FunpSaveRegisters(Funp expr) {
+			this.expr = expr;
+		}
+	}
+
+	public static class FunpStack implements Funp {
+		public int size; // allocate size
+		public Funp expr;
+
+		public FunpStack(int size, Funp expr) {
+			this.size = size;
+			this.expr = expr;
+		}
+	}
+
+	public static class FunpStackPointer implements Funp {
 	}
 
 }

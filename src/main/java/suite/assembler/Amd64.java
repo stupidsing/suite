@@ -263,31 +263,23 @@ public class Amd64 {
 		return opRegSegment;
 	}
 
-	public Operand imm(int imm, int size) {
+	public Operand imm(long imm) {
+		return imm(imm, size(imm));
+	}
+
+	public Operand imm(long imm, int size) {
 		OpImm op = new OpImm();
 		op.imm = imm;
 		op.size = size;
 		return op;
 	}
 
-	public Instruction instruction(Insn insn) {
-		return instruction(insn, none);
-	}
-
-	public Instruction instruction(Insn insn, Operand op0) {
-		return instruction(insn, op0, none);
-	}
-
-	public Instruction instruction(Insn insn, Operand op0, Operand op1) {
-		return instruction(insn, op0, op1, none);
-	}
-
-	public Instruction instruction(Insn insn, Operand op0, Operand op1, Operand op2) {
+	public Instruction instruction(Insn insn, Operand... ops) {
 		Instruction instruction = new Instruction();
 		instruction.insn = insn;
-		instruction.op0 = op0;
-		instruction.op1 = op1;
-		instruction.op2 = op2;
+		instruction.op0 = 0 < ops.length ? ops[0] : none;
+		instruction.op1 = 1 < ops.length ? ops[1] : none;
+		instruction.op2 = 2 < ops.length ? ops[2] : none;
 		return instruction;
 	}
 
@@ -296,15 +288,21 @@ public class Amd64 {
 		op.baseReg = reg.reg;
 		op.size = size;
 		op.disp = disp;
-		if (disp == (byte) op.disp)
-			op.dispSize = 1;
-		else
-			op.dispSize = 4;
+		op.dispSize = size(disp);
 		return op;
 	}
 
 	public OpReg reg(String name) {
 		return regsByName.get(Atom.of(name));
+	}
+
+	private int size(long v) {
+		if (v == (byte) v)
+			return 1;
+		else if (v == (int) v)
+			return 4;
+		else
+			return 8;
 	}
 
 }

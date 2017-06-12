@@ -1,7 +1,7 @@
 package suite.funp;
 
 import suite.Suite;
-import suite.funp.Funp_.PN0;
+import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpFixed;
@@ -17,7 +17,7 @@ import suite.node.Tree;
 
 public class P0Parse {
 
-	public PN0 parse(Node node) {
+	public Funp parse(Node node) {
 		Node[] m;
 
 		if ((m = Suite.match(".0 | .1").apply(node)) != null)
@@ -44,12 +44,12 @@ public class P0Parse {
 			return new FunpVariable(name(node));
 		else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
-			PN0 n0 = new FunpVariable(tree.getOperator().getName());
-			PN0 n1 = new FunpApply(n0, parse(tree.getLeft()));
-			PN0 n2 = new FunpApply(n1, parse(tree.getRight()));
+			Funp n0 = new FunpVariable(tree.getOperator().getName());
+			Funp n1 = new FunpApply(n0, parse(tree.getLeft()));
+			Funp n2 = new FunpApply(n1, parse(tree.getRight()));
 			return n2;
 		} else
-			throw new RuntimeException();
+			throw new RuntimeException("cannot parse " + node);
 	}
 
 	private String name(Node node) {

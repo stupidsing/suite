@@ -6,10 +6,7 @@ public class Funp_ {
 	public static int integerSize = 4;
 	public static int pointerSize = 4;
 
-	public static interface PN0 {
-	}
-
-	public static interface PN1 {
+	public interface Funp {
 	}
 
 }
