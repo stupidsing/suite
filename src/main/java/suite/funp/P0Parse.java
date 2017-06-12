@@ -1,7 +1,15 @@
 package suite.funp;
 
 import suite.Suite;
-import suite.funp.Funp_.Funp;
+import suite.funp.Funp_.PN0;
+import suite.funp.P0.FunpApply;
+import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpFixed;
+import suite.funp.P0.FunpIf;
+import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpNumber;
+import suite.funp.P0.FunpPolyType;
+import suite.funp.P0.FunpVariable;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -9,39 +17,37 @@ import suite.node.Tree;
 
 public class P0Parse {
 
-	private P0 p0 = new P0();
-
-	public Funp parse(Node node) {
+	public PN0 parse(Node node) {
 		Node[] m;
 
 		if ((m = Suite.match(".0 | .1").apply(node)) != null)
-			return p0.new FunpApply(parse(m[0]), parse(m[1]));
+			return new FunpApply(parse(m[0]), parse(m[1]));
 		else if (node == Atom.FALSE)
-			return p0.new FunpBoolean(false);
+			return new FunpBoolean(false);
 		else if (node == Atom.TRUE)
-			return p0.new FunpBoolean(true);
+			return new FunpBoolean(true);
 		else if ((m = Suite.match("define .0 := .1 >> .2").apply(node)) != null)
 			return parse(Suite.substitute("poly .1 | (.0 => .2)", m));
 		else if ((m = Suite.match("fixed .0 => .1").apply(node)) != null)
-			return p0.new FunpFixed(name(m[0]), parse(m[1]));
+			return new FunpFixed(name(m[0]), parse(m[1]));
 		else if ((m = Suite.match("if .0 then .1 else .2").apply(node)) != null)
-			return p0.new FunpIf(parse(m[0]), parse(m[1]), parse(m[2]));
+			return new FunpIf(parse(m[0]), parse(m[1]), parse(m[2]));
 		else if ((m = Suite.match("let .0 := .1 >> .2").apply(node)) != null)
 			return parse(Suite.substitute(".1 | (.0 => .2)", m));
 		else if ((m = Suite.match(".0 => .1").apply(node)) != null)
-			return p0.new FunpLambda(name(m[0]), parse(m[1]));
+			return new FunpLambda(name(m[0]), parse(m[1]));
 		else if (node instanceof Int)
-			return p0.new FunpNumber(((Int) node).number);
+			return new FunpNumber(((Int) node).number);
 		else if ((m = Suite.match("poly .0").apply(node)) != null)
-			return p0.new FunpPolyType(parse(m[0]));
+			return new FunpPolyType(parse(m[0]));
 		else if (node instanceof Atom)
-			return p0.new FunpVariable(name(node));
+			return new FunpVariable(name(node));
 		else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
-			Funp f0 = p0.new FunpVariable(tree.getOperator().getName());
-			Funp f1 = p0.new FunpApply(f0, parse(tree.getLeft()));
-			Funp f2 = p0.new FunpApply(f1, parse(tree.getRight()));
-			return f2;
+			PN0 n0 = new FunpVariable(tree.getOperator().getName());
+			PN0 n1 = new FunpApply(n0, parse(tree.getLeft()));
+			PN0 n2 = new FunpApply(n1, parse(tree.getRight()));
+			return n2;
 		} else
 			throw new RuntimeException();
 	}

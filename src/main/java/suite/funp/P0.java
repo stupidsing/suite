@@ -1,28 +1,29 @@
 package suite.funp;
 
-import suite.funp.Funp_.Funp;
+import suite.funp.Funp_.PN0;
+import suite.funp.Funp_.PN1;
 
 public class P0 {
 
-	public class FunpAddress extends Funp {
-		public final Funp expr;
+	public static class FunpAddress implements PN0, PN1 {
+		public final PN0 expr;
 
-		public FunpAddress(Funp expr) {
+		public FunpAddress(PN0 expr) {
 			this.expr = expr;
 		}
 	}
 
-	public class FunpApply extends Funp {
-		public final Funp lambda;
-		public final Funp value;
+	public static class FunpApply implements PN0, PN1 {
+		public final PN0 lambda;
+		public final PN0 value;
 
-		public FunpApply(Funp lambda, Funp value) {
+		public FunpApply(PN0 lambda, PN0 value) {
 			this.lambda = lambda;
 			this.value = value;
 		}
 	}
 
-	public class FunpBoolean extends Funp {
+	public static class FunpBoolean implements PN0, PN1 {
 		public final boolean b;
 
 		public FunpBoolean(boolean b) {
@@ -30,39 +31,39 @@ public class P0 {
 		}
 	}
 
-	public class FunpFixed extends Funp {
+	public static class FunpFixed implements PN0 {
 		public final String var;
-		public final Funp expr;
+		public final PN0 expr;
 
-		public FunpFixed(String var, Funp expr) {
+		public FunpFixed(String var, PN0 expr) {
 			this.var = var;
 			this.expr = expr;
 		}
 	}
 
-	public class FunpIf extends Funp {
-		public final Funp if_;
-		public final Funp then;
-		public final Funp else_;
+	public static class FunpIf implements PN0, PN1 {
+		public final PN0 if_;
+		public final PN0 then;
+		public final PN0 else_;
 
-		public FunpIf(Funp if_, Funp then, Funp else_) {
+		public FunpIf(PN0 if_, PN0 then, PN0 else_) {
 			this.if_ = if_;
 			this.then = then;
 			this.else_ = else_;
 		}
 	}
 
-	public class FunpLambda extends Funp {
+	public static class FunpLambda implements PN0 {
 		public final String var;
-		public final Funp expr;
+		public final PN0 expr;
 
-		public FunpLambda(String var, Funp expr) {
+		public FunpLambda(String var, PN0 expr) {
 			this.var = var;
 			this.expr = expr;
 		}
 	}
 
-	public class FunpNumber extends Funp {
+	public static class FunpNumber implements PN0, PN1 {
 		public final int i;
 
 		public FunpNumber(int i) {
@@ -70,23 +71,23 @@ public class P0 {
 		}
 	}
 
-	public class FunpPolyType extends Funp {
-		public final Funp expr;
+	public static class FunpPolyType implements PN0 {
+		public final PN0 expr;
 
-		public FunpPolyType(Funp expr) {
+		public FunpPolyType(PN0 expr) {
 			this.expr = expr;
 		}
 	}
 
-	public class FunpReference extends Funp {
-		public final Funp expr;
+	public static class FunpReference implements PN0, PN1 {
+		public final PN0 expr;
 
-		public FunpReference(Funp expr) {
+		public FunpReference(PN0 expr) {
 			this.expr = expr;
 		}
 	}
 
-	public class FunpVariable extends Funp {
+	public static class FunpVariable implements PN0 {
 		public final String var;
 
 		public FunpVariable(String var) {
