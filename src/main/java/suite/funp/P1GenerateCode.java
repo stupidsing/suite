@@ -48,68 +48,68 @@ public class P1GenerateCode {
 		return asm.assemble(offset, instructions);
 	}
 
-	private void compileReg_(IMap<String, PN0> env, int scope, int sp, PN0 n) {
+	private void compileReg_(IMap<String, PN0> env, int scope, int sp, PN0 n0) {
 		ParseOperator po;
 		OpReg r0 = stack[sp];
 
-		if (n instanceof FunpApply) {
-			compileReg_(env, scope, sp, ((FunpApply) n).value);
+		if (n0 instanceof FunpApply) {
+			compileReg_(env, scope, sp, ((FunpApply) n0).value);
 			instructions.add(amd64.instruction(Insn.PUSH, r0));
 			// TODO
-		} else if (n instanceof FunpBoolean) {
-			Operand op1 = amd64.imm(((FunpBoolean) n).b ? 1 : 0, Funp_.integerSize);
+		} else if (n0 instanceof FunpBoolean) {
+			Operand op1 = amd64.imm(((FunpBoolean) n0).b ? 1 : 0, Funp_.integerSize);
 			instructions.add(amd64.instruction(Insn.MOV, r0, op1));
-		} else if (n instanceof FunpFixed) {
-		} else if (n instanceof FunpFramePointer) {
+		} else if (n0 instanceof FunpFixed) {
+		} else if (n0 instanceof FunpFramePointer) {
 			instructions.add(amd64.instruction(Insn.MOV, r0, ebp));
-			int scopeLevel1 = ((FunpFramePointer) n).scope;
+			int scopeLevel1 = ((FunpFramePointer) n0).scope;
 			while (scope != scopeLevel1) {
 				instructions.add(amd64.instruction(Insn.MOV, ebp, amd64.mem(ebp, 0, Funp_.integerSize)));
 				scopeLevel1--;
 			}
-		} else if (n instanceof FunpIf) {
+		} else if (n0 instanceof FunpIf) {
 			Operand elseLabel = amd64.imm(0, Funp_.pointerSize);
 			Operand endLabel = amd64.imm(0, Funp_.pointerSize);
-			compileReg_(env, sp, scope, ((FunpIf) n).if_);
+			compileReg_(env, sp, scope, ((FunpIf) n0).if_);
 			instructions.add(amd64.instruction(Insn.OR, r0, r0));
 			instructions.add(amd64.instruction(Insn.JE, elseLabel));
-			compileReg_(env, sp, scope, ((FunpIf) n).then);
+			compileReg_(env, sp, scope, ((FunpIf) n0).then);
 			instructions.add(amd64.instruction(Insn.JMP, endLabel));
 			instructions.add(amd64.instruction(Insn.LABEL, elseLabel));
-			compileReg_(env, sp, scope, ((FunpIf) n).else_);
+			compileReg_(env, sp, scope, ((FunpIf) n0).else_);
 			instructions.add(amd64.instruction(Insn.LABEL, endLabel));
-		} else if (n instanceof FunpLambda) {
+		} else if (n0 instanceof FunpLambda) {
 			int scope1 = scope + 1;
-			PN0 p = null; // new FunpMemory(new FunpFramePointer(scope1), 8, 8);
-			IMap<String, PN0> env1 = env.put(((FunpLambda) n).var, p);
+			PN0 p = null;
+			IMap<String, PN0> env1 = env.put(((FunpLambda) n0).var, p);
 			Operand label = amd64.imm(0, Funp_.pointerSize);
 			instructions.add(amd64.instruction(Insn.JMP, label));
 			instructions.add(amd64.instruction(Insn.PUSH, ebp));
 			instructions.add(amd64.instruction(Insn.MOV, ebp, amd64.reg("ESP")));
-			compileReg_(env1, 0, scope1, ((FunpLambda) n).expr);
+			compileReg_(env1, 0, scope1, ((FunpLambda) n0).expr);
 			instructions.add(amd64.instruction(Insn.POP, ebp));
 			instructions.add(amd64.instruction(Insn.RET));
 			instructions.add(amd64.instruction(Insn.LABEL, label));
-		} else if (n instanceof FunpMemory) {
-			FunpMemory f1 = (FunpMemory) n;
+		} else if (n0 instanceof FunpMemory) {
+			FunpMemory f1 = (FunpMemory) n0;
 			int size = f1.end - f1.start;
 			if (size <= 4) {
 				compileReg_(env, sp, scope, f1.pointer);
 				instructions.add(amd64.instruction(Insn.MOV, r0, amd64.mem(r0, f1.start, size)));
 			} else
 				throw new RuntimeException();
-		} else if (n instanceof FunpNumber) {
-			Operand op1 = amd64.imm(((FunpNumber) n).i, Funp_.integerSize);
+		} else if (n0 instanceof FunpNumber) {
+			Operand op1 = amd64.imm(((FunpNumber) n0).i, Funp_.integerSize);
 			instructions.add(amd64.instruction(Insn.MOV, r0, op1));
-		} else if (n instanceof FunpPolyType)
-			compileReg_(env, sp, scope, ((FunpPolyType) n).expr);
-		else if ((po = parseOperator(n)) != null && Objects.equals(po.op, TermOp.PLUS__.name)) {
+		} else if (n0 instanceof FunpPolyType)
+			compileReg_(env, sp, scope, ((FunpPolyType) n0).expr);
+		else if ((po = parseOperator(n0)) != null && Objects.equals(po.op, TermOp.PLUS__.name)) {
 			int sp1 = sp + 1;
 			compileReg_(env, sp, scope, po.right);
 			compileReg_(env, sp1, scope, po.left);
 			instructions.add(amd64.instruction(Insn.ADD, r0, stack[sp1]));
-		} else if (n instanceof FunpVariable)
-			compileReg_(env, sp, scope, env.get(((FunpVariable) n).var));
+		} else if (n0 instanceof FunpVariable)
+			compileReg_(env, sp, scope, env.get(((FunpVariable) n0).var));
 		else
 			throw new RuntimeException();
 	}

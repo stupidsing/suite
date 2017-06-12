@@ -56,44 +56,44 @@ public class P1InferType {
 			throw new RuntimeException(node.toString());
 	}
 
-	private Node infer(IMap<String, Node> env, PN0 np0) {
-		if (np0 instanceof FunpAddress)
-			return defReference.substitute(infer(((FunpAddress) np0).expr));
-		else if (np0 instanceof FunpApply) {
-			FunpApply f1 = (FunpApply) np0;
-			Node[] m = defLambda.apply(infer(env, f1.lambda));
-			if (!bind(m[0], infer(env, f1.value)))
+	private Node infer(IMap<String, Node> env, PN0 n0) {
+		if (n0 instanceof FunpAddress)
+			return defReference.substitute(infer(((FunpAddress) n0).expr));
+		else if (n0 instanceof FunpApply) {
+			FunpApply n1 = (FunpApply) n0;
+			Node[] m = defLambda.apply(infer(env, n1.lambda));
+			if (!bind(m[0], infer(env, n1.value)))
 				return m[1];
 			else
 				throw new RuntimeException();
-		} else if (np0 instanceof FunpBoolean)
+		} else if (n0 instanceof FunpBoolean)
 			return ftBoolean;
-		else if (np0 instanceof FunpFixed) {
-			FunpFixed f1 = (FunpFixed) np0;
-			Node ftf = new Reference();
-			if (bind(ftf, infer(env.put(f1.var, ftf), f1.expr)))
-				return ftf;
+		else if (n0 instanceof FunpFixed) {
+			FunpFixed n1 = (FunpFixed) n0;
+			Node t = new Reference();
+			if (bind(t, infer(env.put(n1.var, t), n1.expr)))
+				return t;
 			else
 				throw new RuntimeException();
-		} else if (np0 instanceof FunpIf) {
-			FunpIf f1 = (FunpIf) np0;
-			Node ft;
-			if (bind(ftBoolean, infer(env, f1.if_)) && bind(ft = infer(env, f1.then), infer(env, f1.else_)))
-				return ft;
+		} else if (n0 instanceof FunpIf) {
+			FunpIf n1 = (FunpIf) n0;
+			Node t;
+			if (bind(ftBoolean, infer(env, n1.if_)) && bind(t = infer(env, n1.then), infer(env, n1.else_)))
+				return t;
 			else
 				throw new RuntimeException();
-		} else if (np0 instanceof FunpLambda) {
-			FunpLambda f1 = (FunpLambda) np0;
-			Node ftv = new Reference();
-			return defLambda.substitute(ftv, infer(env.put(f1.var, ftv), f1.expr));
-		} else if (np0 instanceof FunpNumber)
+		} else if (n0 instanceof FunpLambda) {
+			FunpLambda n1 = (FunpLambda) n0;
+			Node tv = new Reference();
+			return defLambda.substitute(tv, infer(env.put(n1.var, tv), n1.expr));
+		} else if (n0 instanceof FunpNumber)
 			return ftNumber;
-		else if (np0 instanceof FunpPolyType)
-			return new Cloner().clone(infer(env, ((FunpPolyType) np0).expr));
-		else if (np0 instanceof FunpReference)
-			return defReference.apply(infer(((FunpReference) np0).expr))[0];
-		else if (np0 instanceof FunpVariable)
-			return env.get(((FunpVariable) np0).var);
+		else if (n0 instanceof FunpPolyType)
+			return new Cloner().clone(infer(env, ((FunpPolyType) n0).expr));
+		else if (n0 instanceof FunpReference)
+			return defReference.apply(infer(((FunpReference) n0).expr))[0];
+		else if (n0 instanceof FunpVariable)
+			return env.get(((FunpVariable) n0).var);
 		else
 			throw new RuntimeException();
 	}
