@@ -2,7 +2,7 @@ package suite.funp;
 
 import suite.funp.Funp_.Funp;
 
-public class FunpK {
+public class P0 {
 
 	public class FunpAddress extends Funp {
 		public final Funp expr;

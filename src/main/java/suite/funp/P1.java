@@ -2,7 +2,7 @@ package suite.funp;
 
 import suite.funp.Funp_.Funp;
 
-public class FunpL {
+public class P1 {
 
 	public class FunpFramePointer extends Funp {
 		public final int scope;

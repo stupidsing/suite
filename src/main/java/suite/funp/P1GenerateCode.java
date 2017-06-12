@@ -10,16 +10,16 @@ import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assembler;
-import suite.funp.FunpK.FunpApply;
-import suite.funp.FunpK.FunpBoolean;
-import suite.funp.FunpK.FunpFixed;
-import suite.funp.FunpK.FunpIf;
-import suite.funp.FunpK.FunpLambda;
-import suite.funp.FunpK.FunpNumber;
-import suite.funp.FunpK.FunpPolyType;
-import suite.funp.FunpK.FunpVariable;
-import suite.funp.FunpL.FunpFramePointer;
-import suite.funp.FunpL.FunpMemory;
+import suite.funp.P0.FunpApply;
+import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpFixed;
+import suite.funp.P0.FunpIf;
+import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpNumber;
+import suite.funp.P0.FunpPolyType;
+import suite.funp.P0.FunpVariable;
+import suite.funp.P1.FunpFramePointer;
+import suite.funp.P1.FunpMemory;
 import suite.funp.Funp_.Funp;
 import suite.immutable.IMap;
 import suite.node.io.TermOp;
@@ -30,9 +30,9 @@ import suite.primitive.Bytes;
  *
  * @author ywsing
  */
-public class FunpL_GenerateCode {
+public class P1GenerateCode {
 
-	private FunpL funpl = new FunpL();
+	private P1 funpl = new P1();
 
 	private Amd64 amd64 = new Amd64();
 	private OpReg ebp = amd64.reg("EBP");
