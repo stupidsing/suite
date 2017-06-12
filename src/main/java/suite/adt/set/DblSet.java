@@ -5,7 +5,6 @@ import java.util.Arrays;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.DblSink;
 import suite.primitive.DblPrimitives.DblSource;
-import suite.primitive.Dbl_Dbl;
 import suite.streamlet.DblOutlet;
 import suite.streamlet.DblStreamlet;
 
@@ -35,7 +34,7 @@ public class DblSet {
 			sink.sink(c);
 	}
 
-	public double put(double v) {
+	public boolean add(double v) {
 		int capacity = vs.length;
 		size++;
 
@@ -47,23 +46,11 @@ public class DblSet {
 			for (int i = 0; i < capacity; i++) {
 				double v_ = vs0[i];
 				if (v_ != DblFunUtil.EMPTYVALUE)
-					put_(v_);
+					add_(v_);
 			}
 		}
 
-		return put_(v);
-	}
-
-	public void update(double key, Dbl_Dbl fun) {
-		int mask = vs.length - 1;
-		int index = Double.hashCode(key) & mask;
-		double v;
-		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
-			if (v != key)
-				index = index + 1 & mask;
-			else
-				break;
-		vs[index] = fun.apply(v);
+		return add_(v);
 	}
 
 	public DblSource source() {
@@ -74,7 +61,7 @@ public class DblSet {
 		return new DblStreamlet(() -> DblOutlet.of(source_()));
 	}
 
-	private double put_(double v1) {
+	private boolean add_(double v1) {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(v1) & mask;
 		double v0;
@@ -82,9 +69,9 @@ public class DblSet {
 			if (v0 != v1)
 				index = index + 1 & mask;
 			else
-				throw new RuntimeException("duplicate");
+				return false;
 		vs[index] = v1;
-		return v0;
+		return true;
 	}
 
 	private DblSource source_() {

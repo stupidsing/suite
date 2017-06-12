@@ -5,7 +5,6 @@ import java.util.Arrays;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrSink;
 import suite.primitive.ChrPrimitives.ChrSource;
-import suite.primitive.Chr_Chr;
 import suite.streamlet.ChrOutlet;
 import suite.streamlet.ChrStreamlet;
 
@@ -35,7 +34,7 @@ public class ChrSet {
 			sink.sink(c);
 	}
 
-	public char put(char v) {
+	public boolean add(char v) {
 		int capacity = vs.length;
 		size++;
 
@@ -47,23 +46,11 @@ public class ChrSet {
 			for (int i = 0; i < capacity; i++) {
 				char v_ = vs0[i];
 				if (v_ != ChrFunUtil.EMPTYVALUE)
-					put_(v_);
+					add_(v_);
 			}
 		}
 
-		return put_(v);
-	}
-
-	public void update(char key, Chr_Chr fun) {
-		int mask = vs.length - 1;
-		int index = Character.hashCode(key) & mask;
-		char v;
-		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
-			if (v != key)
-				index = index + 1 & mask;
-			else
-				break;
-		vs[index] = fun.apply(v);
+		return add_(v);
 	}
 
 	public ChrSource source() {
@@ -74,7 +61,7 @@ public class ChrSet {
 		return new ChrStreamlet(() -> ChrOutlet.of(source_()));
 	}
 
-	private char put_(char v1) {
+	private boolean add_(char v1) {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(v1) & mask;
 		char v0;
@@ -82,9 +69,9 @@ public class ChrSet {
 			if (v0 != v1)
 				index = index + 1 & mask;
 			else
-				throw new RuntimeException("duplicate");
+				return false;
 		vs[index] = v1;
-		return v0;
+		return true;
 	}
 
 	private ChrSource source_() {

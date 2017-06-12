@@ -5,7 +5,6 @@ import java.util.Arrays;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
-import suite.primitive.Flt_Flt;
 import suite.streamlet.FltOutlet;
 import suite.streamlet.FltStreamlet;
 
@@ -35,7 +34,7 @@ public class FltSet {
 			sink.sink(c);
 	}
 
-	public float put(float v) {
+	public boolean add(float v) {
 		int capacity = vs.length;
 		size++;
 
@@ -47,23 +46,11 @@ public class FltSet {
 			for (int i = 0; i < capacity; i++) {
 				float v_ = vs0[i];
 				if (v_ != FltFunUtil.EMPTYVALUE)
-					put_(v_);
+					add_(v_);
 			}
 		}
 
-		return put_(v);
-	}
-
-	public void update(float key, Flt_Flt fun) {
-		int mask = vs.length - 1;
-		int index = Float.hashCode(key) & mask;
-		float v;
-		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
-			if (v != key)
-				index = index + 1 & mask;
-			else
-				break;
-		vs[index] = fun.apply(v);
+		return add_(v);
 	}
 
 	public FltSource source() {
@@ -74,7 +61,7 @@ public class FltSet {
 		return new FltStreamlet(() -> FltOutlet.of(source_()));
 	}
 
-	private float put_(float v1) {
+	private boolean add_(float v1) {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(v1) & mask;
 		float v0;
@@ -82,9 +69,9 @@ public class FltSet {
 			if (v0 != v1)
 				index = index + 1 & mask;
 			else
-				throw new RuntimeException("duplicate");
+				return false;
 		vs[index] = v1;
-		return v0;
+		return true;
 	}
 
 	private FltSource source_() {
