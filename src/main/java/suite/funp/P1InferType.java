@@ -2,6 +2,7 @@ package suite.funp;
 
 import suite.BindArrayUtil.Match;
 import suite.Suite;
+import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpAddress;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
@@ -12,7 +13,6 @@ import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpVariable;
-import suite.funp.Funp_.Funp;
 import suite.immutable.IMap;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
