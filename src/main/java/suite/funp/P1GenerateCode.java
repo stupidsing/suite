@@ -10,6 +10,7 @@ import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assembler;
+import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpFixed;
@@ -20,7 +21,6 @@ import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P1.FunpFramePointer;
 import suite.funp.P1.FunpMemory;
-import suite.funp.Funp_.Funp;
 import suite.immutable.IMap;
 import suite.node.io.TermOp;
 import suite.primitive.Bytes;
@@ -32,7 +32,7 @@ import suite.primitive.Bytes;
  */
 public class P1GenerateCode {
 
-	private P1 funpl = new P1();
+	private P1 p1 = new P1();
 
 	private Amd64 amd64 = new Amd64();
 	private OpReg ebp = amd64.reg("EBP");
@@ -82,7 +82,7 @@ public class P1GenerateCode {
 			instructions.add(amd64.instruction(Insn.LABEL, endLabel));
 		} else if (funp instanceof FunpLambda) {
 			int scope1 = scope + 1;
-			Funp p = funpl.new FunpMemory(funpl.new FunpFramePointer(scope1), 8, 8);
+			Funp p = p1.new FunpMemory(p1.new FunpFramePointer(scope1), 8, 8);
 			IMap<String, Funp> env1 = env.put(((FunpLambda) funp).var, p);
 			Operand label = amd64.imm(0, Funp_.pointerSize);
 			instructions.add(amd64.instruction(Insn.JMP, label));
