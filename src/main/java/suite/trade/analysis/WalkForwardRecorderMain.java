@@ -29,7 +29,7 @@ import suite.util.HomeDir;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
-// mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.WalkForwardTestMain
+// mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.WalkForwardRecorderMain
 public class WalkForwardRecorderMain extends ExecutableProgram {
 
 	private Configuration cfg = new ConfigurationImpl();
