@@ -125,11 +125,11 @@ public class WalkForwardAllocTester {
 				+ ", holds = " + sb;
 	}
 
-	private String play(List<Trade> trades) {
-		trades.addAll(trades);
-		account.play(trades);
+	private String play(List<Trade> trades_) {
+		trades.addAll(trades_);
+		account.play(trades_);
 		account.validate();
-		return Trade_.format(trades);
+		return Trade_.format(trades_);
 	}
 
 }

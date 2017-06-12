@@ -40,17 +40,14 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		String ts = Time.now().ymdHms() //
-				.replace("-", "") //
-				.replace(" ", "-") //
-				.replace(":", "");
-
-		String filename = "wfa." + ts + ".csv";
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(Time.now());
 
 		Trade_.isCacheQuotes = false;
 
-		if (Boolean.TRUE) { // record
+		if (Boolean.FALSE) { // record
+			String ts = Time.now().ymdHms().replace("-", "").replace(" ", "-").replace(":", "");
+			String filename = "wfa." + ts + ".csv";
+
 			Schedule schedule = Schedule //
 					.ofRepeat(5, () -> {
 						String ymdHms = Time.now().ymdHms();
@@ -71,14 +68,20 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 			Scheduler.of(schedule.filterTime(dt -> HkexUtil.isMarketOpen(Time.of(dt)))).run();
 		} else { // replay
+			String ts = "20170612-092616";
+			String filename = "wfa." + ts + ".csv";
+
 			Map<String, Map<String, Float>> data = new TreeMap<>();
 
-			try (InputStream is = Files.newInputStream(HomeDir.resolve("wfa.csv")); //
+			try (InputStream is = Files.newInputStream(HomeDir.resolve(filename)); //
 					InputStreamReader isr = new InputStreamReader(is); //
 					BufferedReader br = new BufferedReader(isr)) {
 				while (br.ready()) {
 					String[] array = br.readLine().split(",");
-					data.computeIfAbsent(array[0], s -> new HashMap<>()).put(array[1], Float.parseFloat(array[2]));
+					String time = array[0].trim();
+					String symbol = array[1].trim();
+					float price = Float.parseFloat(array[2].trim());
+					data.computeIfAbsent(time, s -> new HashMap<>()).put(symbol, price);
 				}
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
@@ -92,7 +95,9 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 			WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
 
 			for (Entry<String, Map<String, Float>> e : data.entrySet())
-				tester.tick(e.getKey(), e.getValue());
+				System.out.println(tester.tick(e.getKey(), e.getValue()));
+
+			System.out.println(tester.conclusion());
 		}
 
 		return true;
