@@ -30,7 +30,7 @@ import suite.primitive.Bytes;
  *
  * @author ywsing
  */
-public class FunpGenerateCode {
+public class FunpL_GenerateCode {
 
 	private FunpL funpl = new FunpL();
 

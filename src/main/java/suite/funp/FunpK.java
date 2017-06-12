@@ -4,9 +4,6 @@ import suite.funp.Funp_.Funp;
 
 public class FunpK {
 
-	public static int intSize = 4;
-	public static int pointerSize = 4;
-
 	public class FunpAddress extends Funp {
 		public final Funp expr;
 

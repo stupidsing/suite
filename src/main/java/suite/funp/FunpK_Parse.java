@@ -7,7 +7,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 
-public class FunpParse {
+public class FunpK_Parse {
 
 	private FunpK funpk = new FunpK();
 

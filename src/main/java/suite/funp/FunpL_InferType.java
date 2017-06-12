@@ -27,7 +27,7 @@ import suite.node.io.TermOp;
  *
  * @author ywsing
  */
-public class FunpInferType {
+public class FunpL_InferType {
 
 	private Atom ftBoolean = Atom.of("BOOLEAN");
 	private Atom ftNumber = Atom.of("NUMBER");
