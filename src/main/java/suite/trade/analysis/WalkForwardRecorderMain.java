@@ -52,7 +52,9 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 						try (OutputStream os = Files.newOutputStream( //
 								HomeDir.resolve("wfa.csv"), //
-								StandardOpenOption.APPEND, StandardOpenOption.WRITE); //
+								StandardOpenOption.APPEND, //
+								StandardOpenOption.CREATE, //
+								StandardOpenOption.WRITE); //
 								PrintWriter bw = new PrintWriter(os)) {
 							for (Entry<String, Float> e : priceBySymbol.entrySet())
 								bw.println(ymdHms + ", " + e.getKey() + ", " + e.getValue());
