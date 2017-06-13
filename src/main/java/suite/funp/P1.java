@@ -37,6 +37,18 @@ public class P1 {
 			this.start = start;
 			this.end = end;
 		}
+
+		public int size() {
+			return end - start;
+		}
+	}
+
+	public static class FunpSaveEbp implements Funp {
+		public Funp expr;
+
+		public FunpSaveEbp(Funp expr) {
+			this.expr = expr;
+		}
 	}
 
 	public static class FunpSaveRegisters implements Funp {

@@ -20,6 +20,7 @@ import suite.funp.P1.FunpAssign;
 import suite.funp.P1.FunpFramePointer;
 import suite.funp.P1.FunpInvoke;
 import suite.funp.P1.FunpMemory;
+import suite.funp.P1.FunpSaveEbp;
 import suite.funp.P1.FunpSaveRegisters;
 import suite.funp.P1.FunpStack;
 import suite.funp.P1.FunpStackPointer;
@@ -123,7 +124,8 @@ public class P1InferType {
 			int size = getTypeSize(typeByNode.get(p));
 			FunpMemory memory = new FunpMemory(new FunpStackPointer(), 0, size);
 			Funp lambda = rewrite(scope, env, n1.lambda);
-			return new FunpSaveRegisters(new FunpStack(size, new FunpAssign(memory, p, new FunpInvoke(lambda))));
+			FunpStack invoke = new FunpStack(size, new FunpAssign(memory, p, new FunpInvoke(lambda)));
+			return new FunpSaveEbp(new FunpSaveRegisters(invoke));
 		} else if (n0 instanceof FunpLambda) {
 			String var = ((FunpLambda) n0).var;
 			int scope1 = scope + 1;
@@ -135,12 +137,13 @@ public class P1InferType {
 			Var vd = env.get(((FunpVariable) n0).var);
 			int scope1 = vd.scope;
 			int size = vd.size;
-
 			Funp n1 = new FunpFramePointer();
+
 			while (scope != scope1) {
 				n1 = new FunpMemory(n1, 0, Funp_.pointerSize);
 				scope1--;
 			}
+
 			return new FunpMemory(n1, size + Funp_.pointerSize * 2, size);
 		} else
 			return null;
