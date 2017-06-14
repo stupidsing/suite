@@ -18,7 +18,6 @@ import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P1.FunpAssign;
 import suite.funp.P1.FunpFramePointer;
@@ -63,7 +62,13 @@ public class P2GenerateCode {
 		int is = Funp_.integerSize;
 		int ps = Funp_.pointerSize;
 
-		if (n0 instanceof FunpAssign) {
+		if (n0 instanceof FunpAddress) {
+			FunpAddress n1 = (FunpAddress) n0;
+			if (n1.expr instanceof FunpMemory)
+				compileReg_(sp, n1.expr);
+			else
+				throw new RuntimeException();
+		} else if (n0 instanceof FunpAssign) {
 			FunpAssign n1 = (FunpAssign) n0;
 			FunpMemory m0 = n1.memory;
 			Funp value = n1.value;
@@ -137,7 +142,7 @@ public class P2GenerateCode {
 		} else if (n0 instanceof FunpMemory) {
 			FunpMemory f1 = (FunpMemory) n0;
 			int size = f1.end - f1.start;
-			if (size <= 4) {
+			if (size <= ps) {
 				compileReg_(sp, f1.pointer);
 				instructions.add(amd64.instruction(Insn.MOV, r0, amd64.mem(r0, f1.start, size)));
 			} else
@@ -145,9 +150,7 @@ public class P2GenerateCode {
 		} else if (n0 instanceof FunpNumber) {
 			Operand op1 = amd64.imm(((FunpNumber) n0).i, is);
 			instructions.add(amd64.instruction(Insn.MOV, r0, op1));
-		} else if (n0 instanceof FunpPolyType)
-			compileReg_(sp, ((FunpPolyType) n0).expr);
-		else if (n0 instanceof FunpSaveEbp) {
+		} else if (n0 instanceof FunpSaveEbp) {
 			instructions.add(amd64.instruction(Insn.PUSH, ebp));
 			compileReg_(sp, ((FunpSaveEbp) n0).expr);
 			instructions.add(amd64.instruction(Insn.POP, ebp));
