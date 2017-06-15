@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import suite.Constants;
+import suite.adt.pair.Pair;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.streamlet.As;
@@ -57,6 +58,90 @@ public class Yahoo {
 	}
 
 	public DataSource dataSourceL1(String symbol, TimeRange period) {
+		JsonNode json = queryL1(symbol, period);
+
+		Streamlet<JsonNode> jsons = Read.each(json) //
+				.flatMap(json_ -> json_.get("chart").get("result"));
+
+		String[] dates = jsons //
+				.flatMap(json_ -> json_.get("timestamp")) //
+				.map(json_ -> Time.ofEpochUtcSecond(json_.longValue())) //
+				.map(Time::ymd) //
+				.toArray(String.class);
+
+		float[] prices = jsons //
+				.flatMap(json_ -> json_.get("indicators").get("quote")) //
+				.flatMap(json_ -> json_.get("open")) //
+				.collect(As.arrayOfFloats(JsonNode::floatValue));
+
+		return new DataSource(dates, prices).filter((date, price) -> price != 0f);
+	}
+
+	public DataSource dataSourceManuallyAdjustedCloseL1(String symbol, TimeRange period) {
+		JsonNode json = queryL1(symbol, period);
+
+		Streamlet<JsonNode> jsons = Read.each(json) //
+				.flatMap(json_ -> json_.get("chart").get("result"));
+
+		int[] epochs = jsons //
+				.flatMap(json_ -> json_.get("timestamp")) //
+				.collect(As.arrayOfInts(json_ -> json_.intValue()));
+
+		float[] prices = jsons //
+				.flatMap(json_ -> json_.get("unadjquote").get("unadjclose")) //
+				.flatMap(json_ -> json_.get("open")) //
+				.collect(As.arrayOfFloats(JsonNode::floatValue));
+
+		int length = epochs.length;
+		String[] dates = new String[length];
+
+		List<Pair<Long, Float>> dividends = jsons //
+				.flatMap(json_ -> json_.get("events").get("dividends")) //
+				.map2(json_ -> json_.get("date").longValue(), json_ -> json_.get("amount").floatValue()) //
+				.sortByKey((l0, l1) -> Long.compare(l1, l0)) //
+				.toList();
+
+		List<Pair<Long, Float>> splits = jsons //
+				.flatMap(json_ -> json_.get("events").get("splits")) //
+				.map2(json_ -> json_.get("date").longValue(),
+						json_ -> json_.get("numerator").floatValue() / json_.get("denominator").floatValue()) //
+				.sortByKey((l0, l1) -> Long.compare(l1, l0)) //
+				.toList();
+
+		for (int i = 0; i < length; i++)
+			dates[i] = Time.ofEpochUtcSecond(epochs[i]).ymd();
+
+		int di = dividends.size() - 1;
+		int si = splits.size() - 1;
+		float a = 0f, b = 1f;
+
+		for (int i = length - 1; 0 <= i; i--) {
+			prices[i] = a + b * prices[i];
+
+			if (0 <= di) {
+				Pair<Long, Float> dividend = dividends.get(di);
+
+				if (dividend.t0 == epochs[i]) {
+					a -= dividend.t1;
+					di--;
+				}
+			}
+
+			if (0 <= si) {
+				Pair<Long, Float> split = splits.get(si);
+
+				if (split.t0 == epochs[i]) {
+					a *= split.t1;
+					b *= split.t1;
+					si--;
+				}
+			}
+		}
+
+		return new DataSource(dates, prices);
+	}
+
+	private JsonNode queryL1(String symbol, TimeRange period) {
 		String urlString = "https://l1-query.finance.yahoo.com/v7/finance/chart/" //
 				+ encode(symbol) //
 				+ "?period1=" + period.from.startOfDay().epochUtcSecond() //
@@ -73,23 +158,7 @@ public class Yahoo {
 				return mapper.readTree(is);
 			}
 		});
-
-		Streamlet<JsonNode> jsons = Read.each(json) //
-				.flatMap(json_ -> json_.get("chart")) //
-				.flatMap(json_ -> json_);
-
-		String[] dates = jsons //
-				.flatMap(json_ -> json_.get("timestamp")) //
-				.map(json_ -> Time.ofEpochUtcSecond(json_.longValue())) //
-				.map(Time::ymd) //
-				.toArray(String.class);
-
-		float[] prices = jsons //
-				.flatMap(json_ -> json_.get("indicators").get("quote")) //
-				.flatMap(json_ -> json_.get("open")) //
-				.collect(As.arrayOfFloats(JsonNode::floatValue));
-
-		return new DataSource(dates, prices).filter((date, price) -> price != 0f);
+		return json;
 	}
 
 	public DataSource dataSourceYql(String symbol, TimeRange period) {
