@@ -1,14 +1,15 @@
 package suite.funp;
 
 import suite.funp.Funp_.Funp;
+import suite.util.FunUtil.Fun;
 
 public class P1 {
 
 	public static class FunpAllocStack implements Funp {
 		public int size; // allocate size
-		public Funp expr;
+		public Fun<FunpMemory, Funp> expr;
 
-		public FunpAllocStack(int size, Funp expr) {
+		public FunpAllocStack(int size, Fun<FunpMemory, Funp> expr) {
 			this.size = size;
 			this.expr = expr;
 		}
@@ -71,9 +72,6 @@ public class P1 {
 		public FunpSaveRegisters(Funp expr) {
 			this.expr = expr;
 		}
-	}
-
-	public static class FunpStackPointer implements Funp {
 	}
 
 }

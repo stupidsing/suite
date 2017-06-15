@@ -15,14 +15,13 @@ import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpVariable;
+import suite.funp.P1.FunpAllocStack;
 import suite.funp.P1.FunpAssign;
 import suite.funp.P1.FunpFramePointer;
 import suite.funp.P1.FunpInvoke;
 import suite.funp.P1.FunpMemory;
 import suite.funp.P1.FunpSaveEbp;
 import suite.funp.P1.FunpSaveRegisters;
-import suite.funp.P1.FunpAllocStack;
-import suite.funp.P1.FunpStackPointer;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
@@ -119,9 +118,8 @@ public class P1InferType {
 			FunpApply n1 = (FunpApply) n0;
 			Funp p = n1.value;
 			int size = getTypeSize(typeByNode.get(p));
-			FunpMemory memory = new FunpMemory(new FunpStackPointer(), 0, size);
 			Funp lambda = rewrite(scope, env, n1.lambda);
-			FunpAllocStack invoke = new FunpAllocStack(size, new FunpAssign(memory, p, new FunpInvoke(lambda)));
+			FunpAllocStack invoke = new FunpAllocStack(size, buffer -> new FunpAssign(buffer, p, new FunpInvoke(lambda)));
 			return new FunpSaveEbp(new FunpSaveRegisters(invoke));
 		} else if (n0 instanceof FunpLambda) {
 			String var = ((FunpLambda) n0).var;
