@@ -4,14 +4,6 @@ import suite.funp.Funp_.Funp;
 
 public class P0 {
 
-	public static class FunpAddress implements Funp {
-		public Funp expr;
-
-		public FunpAddress(Funp expr) {
-			this.expr = expr;
-		}
-	}
-
 	public static class FunpApply implements Funp {
 		public Funp lambda;
 		public Funp value;

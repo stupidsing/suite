@@ -38,6 +38,10 @@ public class P1 {
 			this.end = end;
 		}
 
+		public FunpMemory range(int s, int e) {
+			return new FunpMemory(pointer, start + s, start + e);
+		}
+
 		public int size() {
 			return end - start;
 		}

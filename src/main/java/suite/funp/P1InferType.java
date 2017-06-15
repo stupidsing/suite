@@ -6,7 +6,6 @@ import java.util.Map;
 import suite.BindArrayUtil.Match;
 import suite.Suite;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.FunpAddress;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpFixed;
@@ -72,9 +71,7 @@ public class P1InferType {
 	}
 
 	private Node infer_(IMap<String, Node> env, Funp n0) {
-		if (n0 instanceof FunpAddress)
-			return defReference.substitute(infer(((FunpAddress) n0).expr));
-		else if (n0 instanceof FunpApply) {
+		if (n0 instanceof FunpApply) {
 			FunpApply n1 = (FunpApply) n0;
 			Node[] m = defLambda.apply(infer(env, n1.lambda));
 			if (!bind(m[0], infer(env, n1.value)))

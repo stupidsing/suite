@@ -12,7 +12,6 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assembler;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.FunpAddress;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpFixed;
@@ -64,13 +63,7 @@ public class P2GenerateCode {
 		int is = Funp_.integerSize;
 		int ps = Funp_.pointerSize;
 
-		if (n0 instanceof FunpAddress) {
-			FunpAddress n1 = (FunpAddress) n0;
-			if (n1.expr instanceof FunpMemory)
-				compileReg_(sp, n1.expr);
-			else
-				throw new RuntimeException();
-		} else if (n0 instanceof FunpAssign) {
+		if (n0 instanceof FunpAssign) {
 			FunpAssign n1 = (FunpAssign) n0;
 			FunpMemory m0 = n1.memory;
 			Funp value = n1.value;
@@ -129,13 +122,17 @@ public class P2GenerateCode {
 			compileReg_(sp, ((FunpIf) n0).else_);
 			instructions.add(amd64.instruction(Insn.LABEL, endLabel));
 		} else if (n0 instanceof FunpInvoke) {
-			Funp n1 = new FunpAddress(((FunpInvoke) n0).lambda);
-			Funp frame = new FunpMemory(n1, 0, ps);
-			Funp ip = new FunpMemory(n1, ps, ps + ps);
-			compileReg_(sp, frame);
-			compileReg_(sp + 1, ip);
-			instructions.add(amd64.instruction(Insn.MOV, ebp, stack[sp]));
-			instructions.add(amd64.instruction(Insn.CALL, stack[sp + 1]));
+			Funp lambda = ((FunpInvoke) n0).lambda;
+			if (lambda instanceof FunpMemory) {
+				FunpMemory memory = (FunpMemory) lambda;
+				Funp frame = memory.range(0, ps);
+				Funp ip = memory.range(ps, ps + ps);
+				compileReg_(sp, frame);
+				compileReg_(sp + 1, ip);
+				instructions.add(amd64.instruction(Insn.MOV, ebp, stack[sp]));
+				instructions.add(amd64.instruction(Insn.CALL, stack[sp + 1]));
+			} else
+				throw new RuntimeException("cannot generate code for " + n0);
 		} else if (n0 instanceof FunpSaveEbp) {
 			instructions.add(amd64.instruction(Insn.PUSH, ebp));
 			compileReg_(sp, ((FunpSaveEbp) n0).expr);
