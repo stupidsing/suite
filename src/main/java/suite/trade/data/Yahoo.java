@@ -121,8 +121,7 @@ public class Yahoo {
 
 			if (0 <= di) {
 				Pair<Long, Float> dividend = dividends.get(di);
-
-				if (dividend.t0 == epoch) {
+				if (epoch == dividend.t0.longValue()) {
 					a -= dividend.t1;
 					di--;
 				}
@@ -130,8 +129,7 @@ public class Yahoo {
 
 			if (0 <= si) {
 				Pair<Long, Float> split = splits.get(si);
-
-				if (split.t0 == epoch) {
+				if (epoch == split.t0.longValue()) {
 					a *= split.t1;
 					b *= split.t1;
 					si--;
