@@ -4,6 +4,16 @@ import suite.funp.Funp_.Funp;
 
 public class P1 {
 
+	public static class FunpAllocStack implements Funp {
+		public int size; // allocate size
+		public Funp expr;
+
+		public FunpAllocStack(int size, Funp expr) {
+			this.size = size;
+			this.expr = expr;
+		}
+	}
+
 	public static class FunpAssign implements Funp {
 		public FunpMemory memory;
 		public Funp value;
@@ -59,16 +69,6 @@ public class P1 {
 		public Funp expr;
 
 		public FunpSaveRegisters(Funp expr) {
-			this.expr = expr;
-		}
-	}
-
-	public static class FunpStack implements Funp {
-		public int size; // allocate size
-		public Funp expr;
-
-		public FunpStack(int size, Funp expr) {
-			this.size = size;
 			this.expr = expr;
 		}
 	}

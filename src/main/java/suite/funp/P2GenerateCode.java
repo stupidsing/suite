@@ -19,13 +19,13 @@ import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpVariable;
+import suite.funp.P1.FunpAllocStack;
 import suite.funp.P1.FunpAssign;
 import suite.funp.P1.FunpFramePointer;
 import suite.funp.P1.FunpInvoke;
 import suite.funp.P1.FunpMemory;
 import suite.funp.P1.FunpSaveEbp;
 import suite.funp.P1.FunpSaveRegisters;
-import suite.funp.P1.FunpStack;
 import suite.funp.P1.FunpStackPointer;
 import suite.node.io.TermOp;
 import suite.primitive.Bytes;
@@ -63,7 +63,13 @@ public class P2GenerateCode {
 		int is = Funp_.integerSize;
 		int ps = Funp_.pointerSize;
 
-		if (n0 instanceof FunpAssign) {
+		if (n0 instanceof FunpAllocStack) {
+			FunpAllocStack n1 = (FunpAllocStack) n0;
+			Operand imm = amd64.imm(n1.size);
+			instructions.add(amd64.instruction(Insn.SUB, esp, imm));
+			compileReg_(sp, n1.expr);
+			instructions.add(amd64.instruction(Insn.ADD, esp, imm));
+		} else if (n0 instanceof FunpAssign) {
 			FunpAssign n1 = (FunpAssign) n0;
 			FunpMemory m0 = n1.memory;
 			Funp value = n1.value;
@@ -143,12 +149,6 @@ public class P2GenerateCode {
 			compileReg_(sp, ((FunpSaveRegisters) n0).expr);
 			for (int i = sp - 1; 0 <= i; i--)
 				instructions.add(amd64.instruction(Insn.POP, stack[i]));
-		} else if (n0 instanceof FunpStack) {
-			FunpStack n1 = (FunpStack) n0;
-			Operand imm = amd64.imm(n1.size);
-			instructions.add(amd64.instruction(Insn.SUB, esp, imm));
-			compileReg_(sp, n1.expr);
-			instructions.add(amd64.instruction(Insn.ADD, esp, imm));
 		} else if ((po = parseOperator(n0)) != null && Objects.equals(po.op, TermOp.PLUS__.name)) {
 			int sp1 = sp + 1;
 			compileReg_(sp, po.right);
