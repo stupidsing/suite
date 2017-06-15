@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import suite.BindArrayUtil.Match;
 import suite.Suite;
+import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.fp.match.Matcher;
 import suite.fp.match.Matchers.APPLY;
@@ -41,7 +42,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
-import suite.node.util.Mutable;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.To;

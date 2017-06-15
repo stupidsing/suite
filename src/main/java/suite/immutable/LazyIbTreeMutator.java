@@ -1,8 +1,8 @@
 package suite.immutable;
 
+import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.fs.KeyValueMutator;
-import suite.node.util.Mutable;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 

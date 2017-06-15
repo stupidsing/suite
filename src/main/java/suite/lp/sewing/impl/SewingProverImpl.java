@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import suite.Suite;
+import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.immutable.IList;
@@ -40,7 +41,6 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
-import suite.node.util.Mutable;
 import suite.node.util.SuiteException;
 import suite.node.util.TreeRewriter;
 import suite.node.util.TreeUtil;

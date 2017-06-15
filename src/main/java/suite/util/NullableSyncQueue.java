@@ -2,7 +2,7 @@ package suite.util;
 
 import java.util.concurrent.SynchronousQueue;
 
-import suite.node.util.Mutable;
+import suite.adt.Mutable;
 
 /**
  * The synchronous queue class do not support nulls; in this class, we have to

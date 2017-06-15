@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import suite.adt.Mutable;
 import suite.adt.map.DblObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.DblObjPair;
-import suite.node.util.Mutable;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObjSource;

@@ -11,11 +11,11 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import suite.adt.Mutable;
 import suite.adt.map.DblObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.DblObjPair;
 import suite.adt.pair.Pair;
-import suite.node.util.Mutable;
 import suite.primitive.DblObjFunUtil;
 import suite.primitive.DblObj_Dbl;
 import suite.primitive.DblPrimitives.DblObjPredicate;

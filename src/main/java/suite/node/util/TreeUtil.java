@@ -3,6 +3,7 @@ package suite.node.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.adt.Mutable;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;

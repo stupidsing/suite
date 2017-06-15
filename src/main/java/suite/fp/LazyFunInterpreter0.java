@@ -1,6 +1,7 @@
 package suite.fp;
 
 import suite.Suite;
+import suite.adt.Mutable;
 import suite.immutable.IMap;
 import suite.node.Atom;
 import suite.node.Int;
@@ -8,7 +9,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.node.util.Mutable;
 import suite.util.FunUtil.Fun;
 
 public class LazyFunInterpreter0 {

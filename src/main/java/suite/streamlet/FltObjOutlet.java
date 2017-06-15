@@ -11,11 +11,11 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import suite.adt.Mutable;
 import suite.adt.map.FltObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.FltObjPair;
 import suite.adt.pair.Pair;
-import suite.node.util.Mutable;
 import suite.primitive.FltObjFunUtil;
 import suite.primitive.FltObj_Flt;
 import suite.primitive.FltPrimitives.FltObjPredicate;

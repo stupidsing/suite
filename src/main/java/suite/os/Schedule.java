@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-import suite.node.util.Mutable;
+import suite.adt.Mutable;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 

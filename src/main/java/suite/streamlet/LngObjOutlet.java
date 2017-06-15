@@ -11,11 +11,11 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.map.LngObjMap;
 import suite.adt.pair.LngObjPair;
 import suite.adt.pair.Pair;
-import suite.node.util.Mutable;
 import suite.primitive.LngObjFunUtil;
 import suite.primitive.LngObj_Lng;
 import suite.primitive.LngPrimitives.LngObjPredicate;

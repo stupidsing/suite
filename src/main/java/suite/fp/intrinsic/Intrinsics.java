@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.IntFunction;
 
 import suite.Constants;
+import suite.adt.Mutable;
 import suite.immutable.IPointer;
 import suite.instructionexecutor.thunk.IndexedReader;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
@@ -17,7 +18,6 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.node.util.Mutable;
 import suite.primitive.Chars;
 import suite.util.Object_;
 import suite.util.Rethrow;

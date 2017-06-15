@@ -1,4 +1,4 @@
-package suite.node.util;
+package suite.adt;
 
 public class Mutable<T> {
 

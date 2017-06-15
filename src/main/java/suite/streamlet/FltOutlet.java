@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import suite.adt.Mutable;
 import suite.adt.map.FltObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.FltObjPair;
-import suite.node.util.Mutable;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltFunUtil;

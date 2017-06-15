@@ -11,11 +11,11 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import suite.adt.Mutable;
 import suite.adt.map.ChrObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.ChrObjPair;
 import suite.adt.pair.Pair;
-import suite.node.util.Mutable;
 import suite.primitive.ChrObjFunUtil;
 import suite.primitive.ChrObj_Chr;
 import suite.primitive.ChrPrimitives.ChrObjPredicate;

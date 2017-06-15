@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.map.LngObjMap;
 import suite.adt.pair.LngObjPair;
-import suite.node.util.Mutable;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObjSource;

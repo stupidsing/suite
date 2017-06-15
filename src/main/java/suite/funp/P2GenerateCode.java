@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import suite.adt.Opt;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
@@ -58,6 +59,7 @@ public class P2GenerateCode {
 
 	private void compileReg_(int sp, Funp n0) {
 		ParseOperator po;
+		Opt<Operand> oper;
 		OpReg r0 = stack[sp];
 		int is = Funp_.integerSize;
 		int ps = Funp_.pointerSize;
@@ -113,13 +115,8 @@ public class P2GenerateCode {
 			} else
 				throw new RuntimeException();
 			compileReg_(sp, n1.expr);
-		} else if (n0 instanceof FunpBoolean) {
-			Operand op1 = amd64.imm(((FunpBoolean) n0).b ? 1 : 0, is);
-			instructions.add(amd64.instruction(Insn.MOV, r0, op1));
 		} else if (n0 instanceof FunpFixed)
 			;
-		else if (n0 instanceof FunpFramePointer)
-			instructions.add(amd64.instruction(Insn.MOV, r0, ebp));
 		else if (n0 instanceof FunpIf) {
 			Operand elseLabel = amd64.imm(0, ps);
 			Operand endLabel = amd64.imm(0, ps);
@@ -139,17 +136,6 @@ public class P2GenerateCode {
 			compileReg_(sp + 1, ip);
 			instructions.add(amd64.instruction(Insn.MOV, ebp, stack[sp]));
 			instructions.add(amd64.instruction(Insn.CALL, stack[sp + 1]));
-		} else if (n0 instanceof FunpMemory) {
-			FunpMemory f1 = (FunpMemory) n0;
-			int size = f1.end - f1.start;
-			if (size <= ps) {
-				compileReg_(sp, f1.pointer);
-				instructions.add(amd64.instruction(Insn.MOV, r0, amd64.mem(r0, f1.start, size)));
-			} else
-				throw new RuntimeException("cannot generate code for " + n0);
-		} else if (n0 instanceof FunpNumber) {
-			Operand op1 = amd64.imm(((FunpNumber) n0).i, is);
-			instructions.add(amd64.instruction(Insn.MOV, r0, op1));
 		} else if (n0 instanceof FunpSaveEbp) {
 			instructions.add(amd64.instruction(Insn.PUSH, ebp));
 			compileReg_(sp, ((FunpSaveEbp) n0).expr);
@@ -166,28 +152,52 @@ public class P2GenerateCode {
 			instructions.add(amd64.instruction(Insn.SUB, esp, imm));
 			compileReg_(sp, n1.expr);
 			instructions.add(amd64.instruction(Insn.ADD, esp, imm));
-		} else if (n0 instanceof FunpStackPointer)
-			instructions.add(amd64.instruction(Insn.MOV, r0, esp));
-		else if ((po = parseOperator(n0)) != null && Objects.equals(po.op, TermOp.PLUS__.name)) {
+		} else if ((po = parseOperator(n0)) != null && Objects.equals(po.op, TermOp.PLUS__.name)) {
 			int sp1 = sp + 1;
 			compileReg_(sp, po.right);
 			compileReg_(sp1, po.left);
 			instructions.add(amd64.instruction(Insn.ADD, r0, stack[sp1]));
-		} else
+		} else if (!(oper = compileOp(sp, n0)).isEmpty())
+			instructions.add(amd64.instruction(Insn.MOV, r0, oper.get()));
+		else
 			throw new RuntimeException("cannot generate code for " + n0);
 	}
 
-	public ParseOperator parseOperator(Funp f0) {
-		FunpApply f1 = f0 instanceof FunpApply ? (FunpApply) f0 : null;
-		Funp f2 = f1 != null ? f1.value : null;
-		FunpApply f3 = f2 instanceof FunpApply ? (FunpApply) f2 : null;
-		Funp f4 = f3 != null ? f3.value : null;
-		String var = f4 instanceof FunpVariable ? ((FunpVariable) f4).var : null;
+	private Opt<Operand> compileOp(int sp, Funp n0) {
+		if (n0 instanceof FunpBoolean)
+			return Opt.of(amd64.imm(((FunpBoolean) n0).b ? 1 : 0, Funp_.booleanSize));
+		else if (n0 instanceof FunpMemory) {
+			FunpMemory n1 = (FunpMemory) n0;
+			int size = n1.size();
+			return compileOpReg(sp, n1.pointer) //
+					.filter(op -> size <= Funp_.pointerSize) //
+					.map(op -> amd64.mem(op, n1.start, size));
+		} else if (n0 instanceof FunpNumber)
+			return Opt.of(amd64.imm(((FunpNumber) n0).i, Funp_.integerSize));
+		else
+			return compileOpReg(sp, n0).map(op -> op);
+	}
+
+	private Opt<OpReg> compileOpReg(int sp, Funp n0) {
+		if (n0 instanceof FunpFramePointer)
+			return Opt.of(ebp);
+		else if (n0 instanceof FunpStackPointer)
+			return Opt.of(esp);
+		else
+			return Opt.none();
+	}
+
+	public ParseOperator parseOperator(Funp n0) {
+		FunpApply n1 = n0 instanceof FunpApply ? (FunpApply) n0 : null;
+		Funp n2 = n1 != null ? n1.value : null;
+		FunpApply n3 = n2 instanceof FunpApply ? (FunpApply) n2 : null;
+		Funp n4 = n3 != null ? n3.value : null;
+		String var = n4 instanceof FunpVariable ? ((FunpVariable) n4).var : null;
 		if (var != null) {
 			ParseOperator po = new ParseOperator();
 			po.op = var;
-			po.left = f3.value;
-			po.right = f1.value;
+			po.left = n3.value;
+			po.right = n1.value;
 			return po;
 		} else
 			return null;

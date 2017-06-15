@@ -18,9 +18,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
+import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.jdk.gen.Type_;
-import suite.node.util.Mutable;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
