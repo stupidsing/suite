@@ -117,11 +117,12 @@ public class Yahoo {
 
 		for (int i = length - 1; 0 <= i; i--) {
 			prices[i] = a + b * prices[i];
+			int epoch = epochs[i];
 
 			if (0 <= di) {
 				Pair<Long, Float> dividend = dividends.get(di);
 
-				if (dividend.t0 == epochs[i]) {
+				if (dividend.t0 == epoch) {
 					a -= dividend.t1;
 					di--;
 				}
@@ -130,7 +131,7 @@ public class Yahoo {
 			if (0 <= si) {
 				Pair<Long, Float> split = splits.get(si);
 
-				if (split.t0 == epochs[i]) {
+				if (split.t0 == epoch) {
 					a *= split.t1;
 					b *= split.t1;
 					si--;
