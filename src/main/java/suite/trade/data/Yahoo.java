@@ -68,28 +68,28 @@ public class Yahoo {
 				+ "&events=div%7Csplit%7Cearn" //
 				+ "&corsDomain=finance.yahoo.com";
 
-		return Rethrow.ex(() -> {
+		JsonNode json = Rethrow.ex(() -> {
 			try (InputStream is = Singleton.get().getStoreCache().http(urlString).collect(To::inputStream)) {
-				JsonNode json = mapper.readTree(is);
-
-				Streamlet<JsonNode> jsons = Read.each(json) //
-						.flatMap(json_ -> json_.get("chart")) //
-						.flatMap(json_ -> json_);
-
-				String[] dates = jsons //
-						.flatMap(json_ -> json_.get("timestamp")) //
-						.map(json_ -> Time.ofEpochUtcSecond(json_.longValue())) //
-						.map(Time::ymd) //
-						.toArray(String.class);
-
-				float[] prices = jsons //
-						.flatMap(json_ -> json_.get("indicators").get("quote")) //
-						.flatMap(json_ -> json_.get("open")) //
-						.collect(As.arrayOfFloats(JsonNode::floatValue));
-
-				return new DataSource(dates, prices).filter((date, price) -> price != 0f);
+				return mapper.readTree(is);
 			}
 		});
+
+		Streamlet<JsonNode> jsons = Read.each(json) //
+				.flatMap(json_ -> json_.get("chart")) //
+				.flatMap(json_ -> json_);
+
+		String[] dates = jsons //
+				.flatMap(json_ -> json_.get("timestamp")) //
+				.map(json_ -> Time.ofEpochUtcSecond(json_.longValue())) //
+				.map(Time::ymd) //
+				.toArray(String.class);
+
+		float[] prices = jsons //
+				.flatMap(json_ -> json_.get("indicators").get("quote")) //
+				.flatMap(json_ -> json_.get("open")) //
+				.collect(As.arrayOfFloats(JsonNode::floatValue));
+
+		return new DataSource(dates, prices).filter((date, price) -> price != 0f);
 	}
 
 	public DataSource dataSourceYql(String symbol, TimeRange period) {
