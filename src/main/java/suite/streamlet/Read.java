@@ -17,7 +17,6 @@ import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
-import suite.primitive.IntPrimitives.IntObjSource;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
@@ -97,10 +96,6 @@ public class Read {
 
 	public static <K, V> Streamlet2<K, V> from2(Source<Source2<K, V>> source) {
 		return new Streamlet2<>(() -> Outlet2.of(source.source()));
-	}
-
-	public static <V> IntObjStreamlet<V> fromIntObj(Source<IntObjSource<V>> source) {
-		return new IntObjStreamlet<>(() -> IntObjOutlet.of(source.source()));
 	}
 
 	public static Streamlet<String> lines(Path path) {
