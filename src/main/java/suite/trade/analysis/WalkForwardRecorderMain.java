@@ -44,7 +44,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 		Trade_.isCacheQuotes = false;
 
-		if (Boolean.FALSE) { // record
+		if (Boolean.TRUE) { // record
 			String ts = Time.now().ymdHms().replace("-", "").replace(" ", "-").replace(":", "");
 			String filename = "wfa." + ts + ".csv";
 
