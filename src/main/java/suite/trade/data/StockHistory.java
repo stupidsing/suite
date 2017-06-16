@@ -4,13 +4,13 @@ import suite.adt.pair.LngFltPair;
 import suite.trade.Time;
 import suite.util.To;
 
-public class HistoricalData {
+public class StockHistory {
 
 	public final LngFltPair[] prices0; // un-adjusted
 	public final LngFltPair[] dividends;
 	public final LngFltPair[] splits;
 
-	public HistoricalData(LngFltPair[] prices0, LngFltPair[] dividends, LngFltPair[] splits) {
+	public StockHistory(LngFltPair[] prices0, LngFltPair[] dividends, LngFltPair[] splits) {
 		this.prices0 = prices0;
 		this.dividends = dividends;
 		this.splits = splits;

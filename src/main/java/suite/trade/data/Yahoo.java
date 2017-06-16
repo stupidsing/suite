@@ -108,7 +108,7 @@ public class Yahoo {
 				.sort(LngFltPair.comparatorByFirst()) //
 				.toArray(LngFltPair.class);
 
-		return new HistoricalData(prices0, dividends, splits).adjust();
+		return new StockHistory(prices0, dividends, splits).adjust();
 	}
 
 	private JsonNode queryL1(String symbol, TimeRange period) {
