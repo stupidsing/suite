@@ -1,8 +1,11 @@
 package suite.trade.data;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +25,7 @@ import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
+import suite.util.HomeDir;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -78,6 +82,23 @@ public class Yahoo {
 	}
 
 	public DataSource dataSourceL1ManuallyAdjustedClose(String symbol, TimeRange period) {
+		return dataSourceL1ManuallyAdjustedClose(symbol).range(period);
+	}
+
+	private DataSource dataSourceL1ManuallyAdjustedClose(String symbol) {
+		Path path = HomeDir.resolve("yahoo." + symbol);
+		StockHistory stockHistory0;
+		TimeRange period;
+
+		if (Files.exists(path)) {
+			List<String> lines = Rethrow.ex(() -> Files.readAllLines(path));
+			stockHistory0 = StockHistory.of(Read.from(lines).outlet());
+			period = TimeRange.daysBefore(31);
+		} else {
+			stockHistory0 = StockHistory.new_();
+			period = TimeRange.ages();
+		}
+
 		JsonNode json = queryL1(symbol, period);
 
 		Streamlet<JsonNode> jsons = Read.each(json) //
@@ -102,7 +123,16 @@ public class Yahoo {
 				.sort(LngFltPair.comparatorByFirst()) //
 				.toArray(LngFltPair.class);
 
-		return StockHistory.of(closes, dividends, splits).adjust();
+		StockHistory stockHistory1 = StockHistory.of(closes, dividends, splits).merge(stockHistory0);
+
+		try {
+			List<String> lines = stockHistory1.write().toList();
+			Files.write(path, lines);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+
+		return stockHistory1.adjust();
 	}
 
 	private LngFltPair[] getUnadj(long[] epochs, Streamlet<JsonNode> jsons, String tag) {

@@ -1,12 +1,13 @@
 package suite.trade.data;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import suite.adt.pair.LngFltPair;
+import suite.streamlet.Outlet;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.trade.Time;
-import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.String_;
 import suite.util.To;
@@ -17,7 +18,8 @@ public class StockHistory {
 	public final LngFltPair[] dividends;
 	public final LngFltPair[] splits;
 
-	public static StockHistory of(Source<String> source) {
+	public static StockHistory of(Outlet<String> outlet) {
+		Source<String> source = outlet.source();
 		LngFltPair[] prices0 = readPairs(source);
 		LngFltPair[] dividends = readPairs(source);
 		LngFltPair[] splits = readPairs(source);
@@ -35,6 +37,10 @@ public class StockHistory {
 				}
 			}
 		return pairs.toArray(new LngFltPair[0]);
+	}
+
+	public static StockHistory new_() {
+		return of(new LngFltPair[0], new LngFltPair[0], new LngFltPair[0]);
 	}
 
 	public static StockHistory of(LngFltPair[] prices0, LngFltPair[] dividends, LngFltPair[] splits) {
@@ -110,13 +116,12 @@ public class StockHistory {
 		return new DataSource(dates, prices);
 	}
 
-	public void write(Sink<String> sink) {
-		for (LngFltPair[] pairs : Arrays.asList(prices0, dividends, splits)) {
-			sink.sink("{");
-			for (LngFltPair pair : pairs)
-				sink.sink(pair.t0 + ":" + pair.t1);
-			sink.sink("{");
-		}
+	public Streamlet<String> write() {
+		return Read.each(prices0, dividends, splits) //
+				.concatMap(pairs -> Streamlet.concat( //
+						Read.each("{"), //
+						Read.from(pairs).map(pair -> pair.t0 + ":" + pair.t1), //
+						Read.each("}")));
 	}
 
 }
