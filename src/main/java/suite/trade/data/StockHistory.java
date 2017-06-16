@@ -47,6 +47,35 @@ public class StockHistory {
 		this.splits = splits;
 	}
 
+	public StockHistory merge(StockHistory other) {
+		return of( //
+				merge(prices0, other.prices0), //
+				merge(dividends, other.dividends), //
+				merge(splits, other.splits));
+	}
+
+	private LngFltPair[] merge(LngFltPair[] pairs0, LngFltPair[] pairs1) {
+		List<LngFltPair> pairs = new ArrayList<>();
+		int length1 = pairs1.length;
+		int i1 = 0;
+		for (LngFltPair pair0 : pairs0) {
+			long l0 = pair0.t0;
+			while (i1 < length1) {
+				LngFltPair pair1 = pairs1[i1];
+				long l1 = pair1.t0;
+				if (l1 < l0)
+					pairs.add(pair1);
+				else if (l0 < l1)
+					break;
+				i1++;
+			}
+			pairs.add(pair0);
+		}
+		while (i1 < length1)
+			pairs.add(pairs1[i1++]);
+		return pairs.toArray(new LngFltPair[0]);
+	}
+
 	public DataSource adjust() {
 		int length = prices0.length;
 		String[] dates = To.array(String.class, length, i -> Time.ofEpochUtcSecond(prices0[i].t0).ymd());
