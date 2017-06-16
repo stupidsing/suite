@@ -87,13 +87,7 @@ public class Yahoo {
 				.flatMap(json_ -> json_.get("timestamp")) //
 				.collect(As.arrayOfLongs(json_ -> json_.longValue()));
 
-		float[] prices = jsons //
-				.flatMap(json_ -> json_.get("indicators").get("unadjquote")) //
-				.flatMap(json_ -> json_.get("unadjclose")) //
-				.collect(As.arrayOfFloats(JsonNode::floatValue));
-
-		int length = epochs.length;
-		LngFltPair[] prices0 = To.array(LngFltPair.class, length, i -> LngFltPair.of(epochs[i], prices[i]));
+		LngFltPair[] closes = getUnadj(epochs, jsons, "unadjclose");
 
 		LngFltPair[] dividends = jsons //
 				.flatMap(json_ -> json_.get("events").get("dividends")) //
@@ -108,7 +102,18 @@ public class Yahoo {
 				.sort(LngFltPair.comparatorByFirst()) //
 				.toArray(LngFltPair.class);
 
-		return StockHistory.of(prices0, dividends, splits).adjust();
+		return StockHistory.of(closes, dividends, splits).adjust();
+	}
+
+	private LngFltPair[] getUnadj(long[] epochs, Streamlet<JsonNode> jsons, String tag) {
+		float[] prices = jsons //
+				.flatMap(json_ -> json_.get("indicators").get("unadjquote")) //
+				.flatMap(json_ -> json_.get(tag)) //
+				.collect(As.arrayOfFloats(JsonNode::floatValue));
+
+		int length = epochs.length;
+		LngFltPair[] prices0 = To.array(LngFltPair.class, length, i -> LngFltPair.of(epochs[i], prices[i]));
+		return prices0;
 	}
 
 	private JsonNode queryL1(String symbol, TimeRange period) {
