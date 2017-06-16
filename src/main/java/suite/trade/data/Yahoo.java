@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import suite.Constants;
-import suite.adt.pair.Pair;
+import suite.adt.pair.LngFltPair;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.streamlet.As;
@@ -77,7 +77,7 @@ public class Yahoo {
 		return new DataSource(dates, prices).filter((date, price) -> price != 0f);
 	}
 
-	public DataSource dataSourceManuallyAdjustedCloseL1(String symbol, TimeRange period) {
+	public DataSource dataSourceL1ManuallyAdjustedClose(String symbol, TimeRange period) {
 		JsonNode json = queryL1(symbol, period);
 
 		Streamlet<JsonNode> jsons = Read.each(json) //
@@ -93,26 +93,24 @@ public class Yahoo {
 				.collect(As.arrayOfFloats(JsonNode::floatValue));
 
 		int length = epochs.length;
-		String[] dates = new String[length];
 
-		List<Pair<Long, Float>> dividends = jsons //
+		LngFltPair[] dividends = jsons //
 				.flatMap(json_ -> json_.get("events").get("dividends")) //
-				.map2(json_ -> json_.get("date").longValue(), json_ -> json_.get("amount").floatValue()) //
-				.sortByKey((l0, l1) -> Long.compare(l1, l0)) //
-				.toList();
+				.map(json_ -> LngFltPair.of(json_.get("date").longValue(), json_.get("amount").floatValue())) //
+				.sort(LngFltPair.comparatorByFirst()) //
+				.toArray(LngFltPair.class);
 
-		List<Pair<Long, Float>> splits = jsons //
+		LngFltPair[] splits = jsons //
 				.flatMap(json_ -> json_.get("events").get("splits")) //
-				.map2(json_ -> json_.get("date").longValue(),
-						json_ -> json_.get("numerator").floatValue() / json_.get("denominator").floatValue()) //
-				.sortByKey((l0, l1) -> Long.compare(l1, l0)) //
-				.toList();
+				.map(json_ -> LngFltPair.of(json_.get("date").longValue(),
+						json_.get("numerator").floatValue() / json_.get("denominator").floatValue())) //
+				.sort(LngFltPair.comparatorByFirst()) //
+				.toArray(LngFltPair.class);
 
-		for (int i = 0; i < length; i++)
-			dates[i] = Time.ofEpochUtcSecond(epochs[i]).ymd();
+		String[] dates = To.array(String.class, length, i -> Time.ofEpochUtcSecond(epochs[i]).ymd());
 
-		int di = dividends.size() - 1;
-		int si = splits.size() - 1;
+		int di = dividends.length - 1;
+		int si = splits.length - 1;
 		float a = 0f, b = 1f;
 
 		for (int i = length - 1; 0 <= i; i--) {
@@ -120,16 +118,16 @@ public class Yahoo {
 			int epoch = epochs[i];
 
 			if (0 <= di) {
-				Pair<Long, Float> dividend = dividends.get(di);
-				if (epoch == dividend.t0.longValue()) {
+				LngFltPair dividend = dividends[di];
+				if (epoch == dividend.t0) {
 					a -= dividend.t1;
 					di--;
 				}
 			}
 
 			if (0 <= si) {
-				Pair<Long, Float> split = splits.get(si);
-				if (epoch == split.t0.longValue()) {
+				LngFltPair split = splits[si];
+				if (epoch == split.t0) {
 					a *= split.t1;
 					b *= split.t1;
 					si--;
