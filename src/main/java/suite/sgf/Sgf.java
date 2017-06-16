@@ -7,7 +7,7 @@ import java.util.function.IntPredicate;
 import suite.adt.pair.Pair;
 import suite.os.FileUtil;
 
-// wget -O - http://www.flygo.net/mjxj/WeiQiTianDi/dlxs_sdl.sgf | iconv -c -f CN-GB -t UTF-8
+// curl http://www.flygo.net/mjxj/WeiQiTianDi/dlxs_sdl.sgf | iconv -c -f CN-GB -t UTF-8
 public class Sgf {
 
 	public static class PosPair<T> {

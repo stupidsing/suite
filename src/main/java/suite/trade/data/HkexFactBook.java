@@ -7,6 +7,7 @@ import suite.os.Execute;
 import suite.os.SerializedStoreCache;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Object_;
 import suite.util.Serialize;
 
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
@@ -36,7 +37,7 @@ public class HkexFactBook {
 			throw new RuntimeException("record not exist");
 
 		String cmd = "" //
-				+ "wget -q -O - '" + url + "'" //
+				+ "curl '" + url + "'" //
 				+ " | pdftotext -nopgbrk -raw - -" //
 				+ " | sed -e '1,/leading companies in market capitalisation/ d'" //
 				+ " | grep '^[1-9]'" //
@@ -65,6 +66,23 @@ public class HkexFactBook {
 					} else
 						return Read.empty();
 				}) //
+				.toList();
+	}
+
+	public List<String> queryMainBoardCompanies() {
+		String url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2016/Documents/38.pdf";
+		String cmd = "" //
+				+ "curl '" + url + "'" //
+				+ " | pdftotext -nopgbrk -raw - -" //
+				+ " | sed -e '1,/List of listed companies on Main Board/ d'" //
+				+ " | sed -n '1,/List of listed companies on GEM/ p'" //
+				+ " | egrep '^0'";
+
+		String out = Execute.shell(cmd);
+
+		return Read.from(out.split("\n")) //
+				.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
+				.sort(Object_::compare) //
 				.toList();
 	}
 
