@@ -10,7 +10,11 @@ public class StockHistory {
 	public final LngFltPair[] dividends;
 	public final LngFltPair[] splits;
 
-	public StockHistory(LngFltPair[] prices0, LngFltPair[] dividends, LngFltPair[] splits) {
+	public static StockHistory of(LngFltPair[] prices0, LngFltPair[] dividends, LngFltPair[] splits) {
+		return new StockHistory(prices0, dividends, splits);
+	}
+
+	private StockHistory(LngFltPair[] prices0, LngFltPair[] dividends, LngFltPair[] splits) {
 		this.prices0 = prices0;
 		this.dividends = dividends;
 		this.splits = splits;

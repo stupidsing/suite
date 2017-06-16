@@ -88,8 +88,8 @@ public class Yahoo {
 				.collect(As.arrayOfLongs(json_ -> json_.longValue()));
 
 		float[] prices = jsons //
-				.flatMap(json_ -> json_.get("unadjquote").get("unadjclose")) //
-				.flatMap(json_ -> json_.get("open")) //
+				.flatMap(json_ -> json_.get("indicators").get("unadjquote")) //
+				.flatMap(json_ -> json_.get("unadjclose")) //
 				.collect(As.arrayOfFloats(JsonNode::floatValue));
 
 		int length = epochs.length;
@@ -108,7 +108,7 @@ public class Yahoo {
 				.sort(LngFltPair.comparatorByFirst()) //
 				.toArray(LngFltPair.class);
 
-		return new StockHistory(prices0, dividends, splits).adjust();
+		return StockHistory.of(prices0, dividends, splits).adjust();
 	}
 
 	private JsonNode queryL1(String symbol, TimeRange period) {
