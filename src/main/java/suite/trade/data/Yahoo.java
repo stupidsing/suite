@@ -83,9 +83,9 @@ public class Yahoo {
 		Streamlet<JsonNode> jsons = Read.each(json) //
 				.flatMap(json_ -> json_.get("chart").get("result"));
 
-		int[] epochs = jsons //
+		long[] epochs = jsons //
 				.flatMap(json_ -> json_.get("timestamp")) //
-				.collect(As.arrayOfInts(json_ -> json_.intValue()));
+				.collect(As.arrayOfLongs(json_ -> json_.longValue()));
 
 		float[] prices = jsons //
 				.flatMap(json_ -> json_.get("unadjquote").get("unadjclose")) //
@@ -93,6 +93,7 @@ public class Yahoo {
 				.collect(As.arrayOfFloats(JsonNode::floatValue));
 
 		int length = epochs.length;
+		LngFltPair[] prices0 = To.array(LngFltPair.class, length, i -> LngFltPair.of(epochs[i], prices[i]));
 
 		LngFltPair[] dividends = jsons //
 				.flatMap(json_ -> json_.get("events").get("dividends")) //
@@ -107,35 +108,7 @@ public class Yahoo {
 				.sort(LngFltPair.comparatorByFirst()) //
 				.toArray(LngFltPair.class);
 
-		String[] dates = To.array(String.class, length, i -> Time.ofEpochUtcSecond(epochs[i]).ymd());
-
-		int di = dividends.length - 1;
-		int si = splits.length - 1;
-		float a = 0f, b = 1f;
-
-		for (int i = length - 1; 0 <= i; i--) {
-			prices[i] = a + b * prices[i];
-			int epoch = epochs[i];
-
-			if (0 <= di) {
-				LngFltPair dividend = dividends[di];
-				if (epoch == dividend.t0) {
-					a -= dividend.t1;
-					di--;
-				}
-			}
-
-			if (0 <= si) {
-				LngFltPair split = splits[si];
-				if (epoch == split.t0) {
-					a *= split.t1;
-					b *= split.t1;
-					si--;
-				}
-			}
-		}
-
-		return new DataSource(dates, prices);
+		return new HistoricalData(prices0, dividends, splits).adjust();
 	}
 
 	private JsonNode queryL1(String symbol, TimeRange period) {
