@@ -283,11 +283,11 @@ public class Hkex {
 
 		try (InputStream is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
 			return Read.each(mapper.readTree(is)) //
-					.flatMap(json_ -> json_.get("data")) //
-					.filter(json_ -> String_.equals(json_.get("title").textValue(), "Hong Kong")) //
-					.flatMap(json_ -> json_.get("content")) //
-					.filter(json_ -> String_.equals(json_.get(0).textValue(), "Hang Seng Index")) //
-					.map(json_ -> Float.parseFloat(json_.get(1).textValue().split(" ")[0].replace(",", ""))) //
+					.flatMap(json_ -> json_.path("data")) //
+					.filter(json_ -> String_.equals(json_.path("title").textValue(), "Hong Kong")) //
+					.flatMap(json_ -> json_.path("content")) //
+					.filter(json_ -> String_.equals(json_.path(0).textValue(), "Hang Seng Index")) //
+					.map(json_ -> Float.parseFloat(json_.path(1).textValue().split(" ")[0].replace(",", ""))) //
 					.uniqueResult();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
@@ -316,11 +316,11 @@ public class Hkex {
 
 		try (InputStream is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
 			return Read.each(mapper.readTree(is)) //
-					.flatMap(json_ -> json_.get("data")) //
-					.filter(json_ -> String_.equals(json_.get("title").textValue(), "Stock price HKD")) //
-					.flatMap(json_ -> json_.get("content")) //
-					.filter(json_ -> String_.equals(json_.get(0).textValue(), "Previous<br>day close")) //
-					.map(json_ -> Float.parseFloat(json_.get(1).textValue().split(" ")[0])) //
+					.flatMap(json_ -> json_.path("data")) //
+					.filter(json_ -> String_.equals(json_.path("title").textValue(), "Stock price HKD")) //
+					.flatMap(json_ -> json_.path("content")) //
+					.filter(json_ -> String_.equals(json_.path(0).textValue(), "Previous<br>day close")) //
+					.map(json_ -> Float.parseFloat(json_.path(1).textValue().split(" ")[0])) //
 					.uniqueResult();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
@@ -357,12 +357,12 @@ public class Hkex {
 					.concatMap(Data::tableEntries);
 		else
 			data0 = Read.each(json) //
-					.flatMap(json_ -> json_.get("data")) //
-					.flatMap(json_ -> json_.get("content")) //
-					.flatMap(json_ -> json_.get("table")) //
-					.flatMap(json_ -> json_.get("tr")) //
-					.filter(json_ -> !json_.get("thead").asBoolean()) //
-					.flatMap(json_ -> json_.get("td")) //
+					.flatMap(json_ -> json_.path("data")) //
+					.flatMap(json_ -> json_.path("content")) //
+					.flatMap(json_ -> json_.path("table")) //
+					.flatMap(json_ -> json_.path("tr")) //
+					.filter(json_ -> !json_.path("thead").asBoolean()) //
+					.flatMap(json_ -> json_.path("td")) //
 					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList());
 
 		Streamlet<List<String>> data1 = data0.collect(As::streamlet);

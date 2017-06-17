@@ -65,6 +65,10 @@ public class Time implements Comparable<Time> {
 		return new Time(dateTime.plusHours(n));
 	}
 
+	public Time addSeconds(long n) {
+		return new Time(dateTime.plusSeconds(n));
+	}
+
 	public Time addYears(long n) {
 		return new Time(dateTime.plusYears(n));
 	}
@@ -103,6 +107,10 @@ public class Time implements Comparable<Time> {
 
 	public Time startOfMonth() {
 		return new Time(dateTime.toLocalDate().withDayOfMonth(1).atStartOfDay());
+	}
+
+	public Time thisSecond() {
+		return new Time(dateTime.withSecond(0));
 	}
 
 	public int year() {

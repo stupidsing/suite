@@ -9,6 +9,7 @@ import org.junit.Test;
 import suite.inspect.Dump;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.util.Thread_;
 
 public class YahooTest {
 
@@ -28,9 +29,17 @@ public class YahooTest {
 	public void testL1Manual() {
 		Time frDate = Time.ofEpochUtcSecond(1490578200l);
 		Time toDate = Time.now();
-		System.out.println(frDate.ymdHms());
-		DataSource dataSource = yahoo.dataSourceL1Manual("0012.HK", TimeRange.of(frDate, toDate));
-		Dump.out(dataSource);
+		Dump.out(yahoo.dataSourceL1Manual("0012.HK", TimeRange.of(frDate, toDate)));
+	}
+
+	@Test
+	public void testL1ManualAll() {
+		for (String symbol : new HkexFactBook().queryLeadingCompaniesByMarketCap(2016)) {
+			// for (String symbol : new
+			// HkexFactBook().queryMainBoardCompanies()) {
+			yahoo.dataSourceL1Manual(symbol, TimeRange.daysBefore(31));
+			Thread_.sleepQuietly(5000l);
+		}
 	}
 
 	@Test

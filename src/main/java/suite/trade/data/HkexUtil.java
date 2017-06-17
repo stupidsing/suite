@@ -25,16 +25,28 @@ public class HkexUtil {
 	}
 
 	public static Time getTradeTimeBefore(Time time) {
-		Time dt = time;
-		while (!isMarketOpen_(dt))
-			dt = dt.addHours(-1);
+		Time dt = time, dt1;
+		if (!isMarketOpen_(dt)) {
+			dt = dt.thisSecond();
+			for (int d : new int[] { 14400, 3600, 300, 30, 5, })
+				while (!isMarketOpen_(dt1 = dt.addSeconds(-d)))
+					dt = dt1;
+			while (!isMarketOpen_(dt))
+				dt = dt.addSeconds(-1);
+		}
 		return dt;
 	}
 
 	public static Time getTradeTimeAfter(Time time) {
-		Time dt = time;
-		while (!isMarketOpen_(dt))
-			dt = dt.addHours(1);
+		Time dt = time, dt1;
+		if (!isMarketOpen_(dt)) {
+			dt = dt.thisSecond().addSeconds(1);
+			for (int d : new int[] { 14400, 3600, 300, 30, 5, })
+				while (!isMarketOpen_(dt1 = dt.addSeconds(d)))
+					dt = dt1;
+			while (!isMarketOpen_(dt))
+				dt = dt.addSeconds(1);
+		}
 		return dt;
 	}
 

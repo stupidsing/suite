@@ -11,32 +11,32 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
-import suite.util.FunUtil.Source;
 import suite.util.Set_;
 import suite.util.String_;
 
 public class StockHistory {
 
+	public final Time time;
 	public final Map<String, LngFltPair[]> data; // un-adjusted
 	public final LngFltPair[] dividends;
 	public final LngFltPair[] splits;
 
 	public static StockHistory of(Outlet<String> outlet) {
-		Source<String> source = outlet.source();
-		LngFltPair[] dividends = readPairs(source);
-		LngFltPair[] splits = readPairs(source);
+		Time time = Time.ofYmdHms(outlet.next());
+		LngFltPair[] dividends = readPairs(outlet);
+		LngFltPair[] splits = readPairs(outlet);
 		Map<String, LngFltPair[]> data = new HashMap<>();
 		String tag;
-		if ((tag = source.source()) != null)
-			data.put(tag, readPairs(source));
-		return StockHistory.of(data, dividends, splits);
+		if ((tag = outlet.next()) != null)
+			data.put(tag, readPairs(outlet));
+		return StockHistory.of(time, data, dividends, splits);
 	}
 
-	private static LngFltPair[] readPairs(Source<String> source) {
+	private static LngFltPair[] readPairs(Outlet<String> outlet) {
 		List<LngFltPair> pairs = new ArrayList<>();
 		String line;
-		if (String_.equals(line = source.source(), "{"))
-			while (!String_.equals(line = source.source(), "}")) {
+		if (String_.equals(line = outlet.next(), "{"))
+			while (!String_.equals(line = outlet.next(), "}")) {
 				String[] array = line.split(":");
 				pairs.add(LngFltPair.of(Long.parseLong(array[0]), Float.parseFloat(array[1])));
 			}
@@ -48,10 +48,15 @@ public class StockHistory {
 	}
 
 	public static StockHistory of(Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
-		return new StockHistory(data, dividends, splits);
+		return of(HkexUtil.getTradeTimeBefore(Time.now()), data, dividends, splits);
 	}
 
-	private StockHistory(Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
+	public static StockHistory of(Time time, Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
+		return new StockHistory(time, data, dividends, splits);
+	}
+
+	private StockHistory(Time time, Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
+		this.time = time;
 		this.data = data;
 		this.dividends = dividends;
 		this.splits = splits;
@@ -129,13 +134,10 @@ public class StockHistory {
 	}
 
 	public Streamlet<String> write() {
-		Streamlet<String> s0 = Read.each(dividends, splits) //
-				.concatMap(this::concat);
-
-		Streamlet<String> s1 = Read.from2(data) //
-				.concatMap((tag, fs) -> concat(fs).cons(tag));
-
-		return Streamlet.concat(s0, s1);
+		Streamlet<String> s0 = Read.each(time.ymdHms());
+		Streamlet<String> s1 = Read.each(dividends, splits).concatMap(this::concat);
+		Streamlet<String> s2 = Read.from2(data).concatMap((tag, fs) -> concat(fs).cons(tag));
+		return Streamlet.concat(s0, s1, s2);
 	}
 
 	private Streamlet<String> concat(LngFltPair[] pairs) {

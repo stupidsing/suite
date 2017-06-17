@@ -66,17 +66,17 @@ public class Yahoo {
 		JsonNode json = queryL1(symbol, period);
 
 		Streamlet<JsonNode> jsons = Read.each(json) //
-				.flatMap(json_ -> json_.get("chart").get("result"));
+				.flatMap(json_ -> json_.path("chart").path("result"));
 
 		String[] dates = jsons //
-				.flatMap(json_ -> json_.get("timestamp")) //
+				.flatMap(json_ -> json_.path("timestamp")) //
 				.map(json_ -> Time.ofEpochUtcSecond(json_.longValue())) //
 				.map(Time::ymd) //
 				.toArray(String.class);
 
 		float[] prices = jsons //
-				.flatMap(json_ -> json_.get("indicators").get("quote")) //
-				.flatMap(json_ -> json_.get("open")) //
+				.flatMap(json_ -> json_.path("indicators").path("quote")) //
+				.flatMap(json_ -> json_.path("open")) //
 				.collect(As.arrayOfFloats(JsonNode::floatValue));
 
 		return new DataSource(dates, prices).filter((date, price) -> price != 0f);
@@ -97,53 +97,56 @@ public class Yahoo {
 			period = TimeRange.daysBefore(31);
 		} else {
 			stockHistory0 = StockHistory.new_();
-			Time frDate = Time.ofEpochUtcSecond(1490578200l);
-			Time toDate = Time.now();
-			period = TimeRange.of(frDate, toDate);
-			// period = TimeRange.ages();
+			period = TimeRange.ages();
 		}
 
-		JsonNode json = queryL1(symbol, period);
+		Time time = HkexUtil.getTradeTimeBefore(Time.now());
+		StockHistory stockHistory1;
 
-		Streamlet<JsonNode> jsons = Read.each(json) //
-				.flatMap(json_ -> json_.get("chart").get("result"));
+		if (stockHistory0.time.compareTo(time) <= 0) {
+			JsonNode json = queryL1(symbol, period);
 
-		long[] epochs = jsons //
-				.flatMap(json_ -> json_.get("timestamp")) //
-				.collect(As.arrayOfLongs(JsonNode::longValue));
+			Streamlet<JsonNode> jsons = Read.each(json) //
+					.flatMap(json_ -> json_.path("chart").path("result"));
 
-		int length = epochs.length;
+			long[] epochs = jsons //
+					.flatMap(json_ -> json_.path("timestamp")) //
+					.collect(As.arrayOfLongs(JsonNode::longValue));
 
-		Streamlet2<String, Streamlet<JsonNode>> dataJsons0 = Read //
-				.each("open", "close", "high", "low") //
-				.map2(tag -> jsons //
-						.flatMap(json_ -> json_.get("indicators").get("unadjquote")) //
-						.flatMap(json_ -> json_.get("unadj" + tag)));
+			int length = epochs.length;
 
-		Streamlet2<String, Streamlet<JsonNode>> dataJsons1 = Read //
-				.each("volume") //
-				.map2(tag -> jsons //
-						.flatMap(json_ -> json_.get("indicators").get("quote")) //
-						.flatMap(json_ -> json_.get(tag)));
+			Streamlet2<String, Streamlet<JsonNode>> dataJsons0 = Read //
+					.each("open", "close", "high", "low") //
+					.map2(tag -> jsons //
+							.flatMap(json_ -> json_.path("indicators").path("unadjquote")) //
+							.flatMap(json_ -> json_.path("unadj" + tag)));
 
-		Map<String, LngFltPair[]> data = Streamlet2.concat(dataJsons0, dataJsons1) //
-				.mapValue(json_ -> getData(epochs, length, json_)) //
-				.toMap();
+			Streamlet2<String, Streamlet<JsonNode>> dataJsons1 = Read //
+					.each("volume") //
+					.map2(tag -> jsons //
+							.flatMap(json_ -> json_.path("indicators").path("quote")) //
+							.flatMap(json_ -> json_.path(tag)));
 
-		LngFltPair[] dividends = jsons //
-				.flatMap(json_ -> json_.get("events").get("dividends")) //
-				.map(json_ -> LngFltPair.of(json_.get("date").longValue(), json_.get("amount").floatValue())) //
-				.sort(LngFltPair.comparatorByFirst()) //
-				.toArray(LngFltPair.class);
+			Map<String, LngFltPair[]> data = Streamlet2.concat(dataJsons0, dataJsons1) //
+					.mapValue(json_ -> getData(epochs, length, json_)) //
+					.toMap();
 
-		LngFltPair[] splits = jsons //
-				.flatMap(json_ -> json_.get("events").get("splits")) //
-				.map(json_ -> LngFltPair.of(json_.get("date").longValue(),
-						json_.get("numerator").floatValue() / json_.get("denominator").floatValue())) //
-				.sort(LngFltPair.comparatorByFirst()) //
-				.toArray(LngFltPair.class);
+			LngFltPair[] dividends = jsons //
+					.flatMap(json_ -> json_.path("events").path("dividends")) //
+					.map(json_ -> LngFltPair.of(json_.path("date").longValue(), json_.path("amount").floatValue())) //
+					.sort(LngFltPair.comparatorByFirst()) //
+					.toArray(LngFltPair.class);
 
-		StockHistory stockHistory1 = StockHistory.of(data, dividends, splits).merge(stockHistory0);
+			LngFltPair[] splits = jsons //
+					.flatMap(json_ -> json_.path("events").path("splits")) //
+					.map(json_ -> LngFltPair.of(json_.path("date").longValue(),
+							json_.path("numerator").floatValue() / json_.path("denominator").floatValue())) //
+					.sort(LngFltPair.comparatorByFirst()) //
+					.toArray(LngFltPair.class);
+
+			stockHistory1 = StockHistory.of(data, dividends, splits).merge(stockHistory0);
+		} else
+			stockHistory1 = stockHistory0;
 
 		try {
 			List<String> lines = stockHistory1.write().toList();
@@ -199,10 +202,10 @@ public class Yahoo {
 				JsonNode json = mapper.readTree(is);
 
 				Streamlet<String[]> arrays = Read.each(json) //
-						.flatMap(json_ -> json_.get("query")) //
-						.flatMap(json_ -> json_.get("results")) //
-						.flatMap(json_ -> json_.get("quote")) //
-						.map(json_ -> new String[] { json_.get("Date").textValue(), json_.get("Open").textValue(), }) //
+						.flatMap(json_ -> json_.path("query")) //
+						.flatMap(json_ -> json_.path("results")) //
+						.flatMap(json_ -> json_.path("quote")) //
+						.map(json_ -> new String[] { json_.path("Date").textValue(), json_.path("Open").textValue(), }) //
 						.collect(As::streamlet);
 
 				String[] dates = arrays.map(array -> array[0]).toArray(String.class);
