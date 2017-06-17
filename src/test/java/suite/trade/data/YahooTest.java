@@ -7,6 +7,7 @@ import java.util.function.BiFunction;
 import org.junit.Test;
 
 import suite.inspect.Dump;
+import suite.os.LogUtil;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.util.Thread_;
@@ -35,10 +36,14 @@ public class YahooTest {
 	@Test
 	public void testL1ManualAll() {
 		HkexFactBook hkexFactBook = new HkexFactBook();
-		Iterable<String> symbols = hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
-		// new hkexFactBook.queryMainBoardCompanies())
+		Iterable<String> symbols = hkexFactBook.queryMainBoardCompanies();
+		// hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
 		for (String symbol : symbols) {
-			yahoo.dataSourceL1Manual(symbol, TimeRange.daysBefore(31));
+			try {
+				yahoo.dataSourceL1Manual(symbol, TimeRange.daysBefore(31));
+			} catch (Exception ex) {
+				LogUtil.error(ex);
+			}
 			Thread_.sleepQuietly(5000l);
 		}
 	}
