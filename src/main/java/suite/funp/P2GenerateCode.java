@@ -139,10 +139,11 @@ public class P2GenerateCode {
 				Funp ip = memory.range(ps, ps + ps);
 				compileReg_(r, spd, frame);
 				compileReg_(r + 1, spd, ip);
-				instructions.add(amd64.instruction(Insn.MOV, ebp, stack[r]));
+				instructions.add(amd64.instruction(Insn.MOV, ebp, r0));
 				instructions.add(amd64.instruction(Insn.CALL, stack[r + 1]));
+				instructions.add(amd64.instruction(Insn.MOV, r0, stack[0]));
 			} else {
-				FunpAllocStack n_ = new FunpAllocStack(ps, buffer -> new FunpAssign(buffer, lambda, new FunpInvoke(buffer)));
+				FunpAllocStack n_ = new FunpAllocStack(ps + ps, buffer -> new FunpAssign(buffer, lambda, new FunpInvoke(buffer)));
 				compileReg_(r, spd, n_);
 			}
 		} else if (n0 instanceof FunpSaveEbp) {

@@ -56,7 +56,7 @@ public class P1InferType {
 	}
 
 	private Node infer(Funp funp) {
-		IMap<String, Node> env = IMap.<String, Node> empty() //
+		IMap<String, Node> env = IMap.<String, Node>empty() //
 				.put(TermOp.PLUS__.getName(), Suite.substitute(".0 => .1 => .2", ftNumber, ftNumber, ftNumber));
 
 		return infer(env, funp);

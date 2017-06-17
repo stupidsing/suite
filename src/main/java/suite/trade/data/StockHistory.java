@@ -1,7 +1,10 @@
 package suite.trade.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import suite.adt.pair.LngFltPair;
 import suite.streamlet.Outlet;
@@ -9,21 +12,25 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.util.FunUtil.Source;
+import suite.util.Set_;
 import suite.util.String_;
 import suite.util.To;
 
 public class StockHistory {
 
-	public final LngFltPair[] prices0; // un-adjusted
+	public final Map<String, LngFltPair[]> data; // un-adjusted
 	public final LngFltPair[] dividends;
 	public final LngFltPair[] splits;
 
 	public static StockHistory of(Outlet<String> outlet) {
 		Source<String> source = outlet.source();
-		LngFltPair[] prices0 = readPairs(source);
 		LngFltPair[] dividends = readPairs(source);
 		LngFltPair[] splits = readPairs(source);
-		return StockHistory.of(prices0, dividends, splits);
+		Map<String, LngFltPair[]> data = new HashMap<>();
+		String tag;
+		if ((tag = source.source()) != null)
+			data.put(tag, readPairs(source));
+		return StockHistory.of(data, dividends, splits);
 	}
 
 	private static LngFltPair[] readPairs(Source<String> source) {
@@ -40,24 +47,25 @@ public class StockHistory {
 	}
 
 	public static StockHistory new_() {
-		return of(new LngFltPair[0], new LngFltPair[0], new LngFltPair[0]);
+		return of(new HashMap<>(), new LngFltPair[0], new LngFltPair[0]);
 	}
 
-	public static StockHistory of(LngFltPair[] prices0, LngFltPair[] dividends, LngFltPair[] splits) {
-		return new StockHistory(prices0, dividends, splits);
+	public static StockHistory of(Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
+		return new StockHistory(data, dividends, splits);
 	}
 
-	private StockHistory(LngFltPair[] prices0, LngFltPair[] dividends, LngFltPair[] splits) {
-		this.prices0 = prices0;
+	private StockHistory(Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
+		this.data = data;
 		this.dividends = dividends;
 		this.splits = splits;
 	}
 
 	public StockHistory merge(StockHistory other) {
-		return of( //
-				merge(prices0, other.prices0), //
-				merge(dividends, other.dividends), //
-				merge(splits, other.splits));
+		Set<String> keys = Set_.union(data.keySet(), other.data.keySet());
+		Map<String, LngFltPair[]> data1 = Read.from(keys) //
+				.map2(key -> merge(data.get(key), other.data.get(key))) //
+				.toMap();
+		return of(data1, merge(dividends, other.dividends), merge(splits, other.splits));
 	}
 
 	private LngFltPair[] merge(LngFltPair[] pairs0, LngFltPair[] pairs1) {
@@ -82,18 +90,19 @@ public class StockHistory {
 		return pairs.toArray(new LngFltPair[0]);
 	}
 
-	public DataSource adjust() {
-		int length = prices0.length;
-		String[] dates = To.array(String.class, length, i -> Time.ofEpochUtcSecond(prices0[i].t0).ymd());
-		float[] prices = To.arrayOfFloats(prices0, pair -> pair.t1);
+	public DataSource adjustPrices(String tag) {
+		LngFltPair[] pairs = data.get(tag);
+		int length = pairs.length;
+		String[] dates = To.array(String.class, length, i -> Time.ofEpochUtcSecond(pairs[i].t0).ymd());
+		float[] data = To.arrayOfFloats(pairs, pair -> pair.t1);
 
 		int di = dividends.length - 1;
 		int si = splits.length - 1;
 		float a = 0f, b = 1f;
 
 		for (int i = length - 1; 0 <= i; i--) {
-			prices[i] = a + b * prices[i];
-			long epoch = prices0[i].t0;
+			data[i] = a + b * data[i];
+			long epoch = pairs[i].t0;
 
 			if (0 <= di) {
 				LngFltPair dividend = dividends[di];
@@ -113,15 +122,24 @@ public class StockHistory {
 			}
 		}
 
-		return new DataSource(dates, prices);
+		return new DataSource(dates, data);
 	}
 
 	public Streamlet<String> write() {
-		return Read.each(prices0, dividends, splits) //
-				.concatMap(pairs -> Streamlet.concat( //
-						Read.each("{"), //
-						Read.from(pairs).map(pair -> pair.t0 + ":" + pair.t1), //
-						Read.each("}")));
+		Streamlet<String> s0 = Read.each(dividends, splits) //
+				.concatMap(this::concat);
+
+		Streamlet<String> s1 = Read.each("open", "close", "high", "low") //
+				.concatMap(tag -> concat(data.get(tag)).cons(tag));
+
+		return Streamlet.concat(s0, s1);
+	}
+
+	private Streamlet<String> concat(LngFltPair[] pairs) {
+		return Streamlet.concat( //
+				Read.each("{"), //
+				Read.from(pairs).map(pair -> pair.t0 + ":" + pair.t1), //
+				Read.each("}"));
 	}
 
 }

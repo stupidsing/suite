@@ -22,6 +22,7 @@ import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
@@ -106,9 +107,25 @@ public class Yahoo {
 
 		long[] epochs = jsons //
 				.flatMap(json_ -> json_.get("timestamp")) //
-				.collect(As.arrayOfLongs(json_ -> json_.longValue()));
+				.collect(As.arrayOfLongs(JsonNode::longValue));
 
-		LngFltPair[] closes = getUnadj(epochs, jsons, "unadjclose");
+		int length = epochs.length;
+
+		Streamlet2<String, Streamlet<JsonNode>> dataJsons0 = Read //
+				.each("open", "close", "high", "low") //
+				.map2(tag -> jsons //
+						.flatMap(json_ -> json_.get("indicators").get("unadjquote")) //
+						.flatMap(json_ -> json_.get("unadj" + tag)));
+
+		Streamlet2<String, Streamlet<JsonNode>> dataJsons1 = Read //
+				.each("volume") //
+				.map2(tag -> jsons //
+						.flatMap(json_ -> json_.get("indicators").get("quote")) //
+						.flatMap(json_ -> json_.get(tag)));
+
+		Map<String, LngFltPair[]> data = Streamlet2.concat(dataJsons0, dataJsons1) //
+				.mapValue(json_ -> getData(epochs, length, json_)) //
+				.toMap();
 
 		LngFltPair[] dividends = jsons //
 				.flatMap(json_ -> json_.get("events").get("dividends")) //
@@ -123,7 +140,7 @@ public class Yahoo {
 				.sort(LngFltPair.comparatorByFirst()) //
 				.toArray(LngFltPair.class);
 
-		StockHistory stockHistory1 = StockHistory.of(closes, dividends, splits).merge(stockHistory0);
+		StockHistory stockHistory1 = StockHistory.of(data, dividends, splits).merge(stockHistory0);
 
 		try {
 			List<String> lines = stockHistory1.write().toList();
@@ -132,18 +149,12 @@ public class Yahoo {
 			throw new RuntimeException(ex);
 		}
 
-		return stockHistory1.adjust();
+		return stockHistory1.adjustPrices("close");
 	}
 
-	private LngFltPair[] getUnadj(long[] epochs, Streamlet<JsonNode> jsons, String tag) {
-		float[] prices = jsons //
-				.flatMap(json_ -> json_.get("indicators").get("unadjquote")) //
-				.flatMap(json_ -> json_.get(tag)) //
-				.collect(As.arrayOfFloats(JsonNode::floatValue));
-
-		int length = epochs.length;
-		LngFltPair[] prices0 = To.array(LngFltPair.class, length, i -> LngFltPair.of(epochs[i], prices[i]));
-		return prices0;
+	private LngFltPair[] getData(long[] epochs, int length, Streamlet<JsonNode> json) {
+		float[] data = json.collect(As.arrayOfFloats(JsonNode::floatValue));
+		return To.array(LngFltPair.class, length, i -> LngFltPair.of(epochs[i], data[i]));
 	}
 
 	private JsonNode queryL1(String symbol, TimeRange period) {
