@@ -104,7 +104,7 @@ public class StockHistory {
 		for (int i = length - 1; 0 <= i; i--) {
 			LngFltPair pair = pairs[i];
 			long epoch = pair.t0;
-			
+
 			if (0 <= di) {
 				LngFltPair dividend = dividends[di];
 				if (epoch < dividend.t0) {
@@ -132,8 +132,8 @@ public class StockHistory {
 		Streamlet<String> s0 = Read.each(dividends, splits) //
 				.concatMap(this::concat);
 
-		Streamlet<String> s1 = Read.each("open", "close", "high", "low") //
-				.concatMap(tag -> concat(data.get(tag)).cons(tag));
+		Streamlet<String> s1 = Read.from2(data) //
+				.concatMap((tag, fs) -> concat(fs).cons(tag));
 
 		return Streamlet.concat(s0, s1);
 	}

@@ -83,10 +83,10 @@ public class Yahoo {
 	}
 
 	public DataSource dataSourceL1Manual(String symbol, TimeRange period) {
-		return dataSourceL1ManuallyAdjustedClose(symbol).range(period);
+		return dataSourceL1Manual(symbol).range(period);
 	}
 
-	private DataSource dataSourceL1ManuallyAdjustedClose(String symbol) {
+	private DataSource dataSourceL1Manual(String symbol) {
 		Path path = HomeDir.dir("yahoo").resolve(symbol + ".txt");
 		StockHistory stockHistory0;
 		TimeRange period;
