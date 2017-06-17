@@ -104,21 +104,20 @@ public class StockHistory {
 		for (int i = length - 1; 0 <= i; i--) {
 			LngFltPair pair = pairs[i];
 			long epoch = pair.t0;
+			
+			if (0 <= di) {
+				LngFltPair dividend = dividends[di];
+				if (epoch < dividend.t0) {
+					a -= dividend.t1 * b;
+					di--;
+				}
+			}
 
 			if (0 <= si) {
 				LngFltPair split = splits[si];
 				if (epoch < split.t0) {
-					a *= split.t1;
 					b *= split.t1;
 					si--;
-				}
-			}
-
-			if (0 <= di) {
-				LngFltPair dividend = dividends[di];
-				if (epoch < dividend.t0) {
-					a -= dividend.t1;
-					di--;
 				}
 			}
 
