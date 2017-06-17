@@ -148,7 +148,7 @@ public class P2GenerateCode {
 			}
 		} else if (n0 instanceof FunpSaveEbp) {
 			instructions.add(amd64.instruction(Insn.PUSH, ebp));
-			compileReg_(r, spd, ((FunpSaveEbp) n0).expr);
+			compileReg_(r, spd - 4, ((FunpSaveEbp) n0).expr);
 			instructions.add(amd64.instruction(Insn.POP, ebp));
 		} else if (n0 instanceof FunpSaveRegisters) {
 			for (int i = 0; i <= r - 1; i++)
