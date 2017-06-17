@@ -124,7 +124,7 @@ public class P2GenerateCode {
 			Operand endLabel = amd64.imm(0, ps);
 			compileReg_(r, spd, ((FunpIf) n0).if_);
 			instructions.add(amd64.instruction(Insn.OR, r0, r0));
-			instructions.add(amd64.instruction(Insn.JE, elseLabel));
+			instructions.add(amd64.instruction(Insn.JZ, elseLabel));
 			compileReg_(r, spd, ((FunpIf) n0).then);
 			instructions.add(amd64.instruction(Insn.JMP, endLabel));
 			instructions.add(amd64.instruction(Insn.LABEL, elseLabel));
