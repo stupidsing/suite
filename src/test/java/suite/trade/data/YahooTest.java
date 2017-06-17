@@ -6,6 +6,7 @@ import java.util.function.BiFunction;
 
 import org.junit.Test;
 
+import suite.inspect.Dump;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 
@@ -21,6 +22,15 @@ public class YahooTest {
 	@Test
 	public void testL1() {
 		test(yahoo::dataSourceL1);
+	}
+
+	@Test
+	public void testL1Manual() {
+		Time frDate = Time.ofEpochUtcSecond(1490578200l);
+		Time toDate = Time.now();
+		System.out.println(frDate.ymdHms());
+		DataSource dataSource = yahoo.dataSourceL1Manual("0012.HK", TimeRange.of(frDate, toDate));
+		Dump.out(dataSource);
 	}
 
 	@Test

@@ -310,7 +310,7 @@ public class To {
 	}
 
 	public static String string(Instant instant) {
-		return yyyymmdd(instant);
+		return ymdhms(instant);
 	}
 
 	public static String string(LocalDate date) {
@@ -318,11 +318,11 @@ public class To {
 	}
 
 	public static String string(LocalDateTime time) {
-		return yyyymmdd(time);
+		return ymdhms(time);
 	}
 
 	public static String string(long time) {
-		return yyyymmdd(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
+		return ymdhms(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
 	}
 
 	public static String string(Path path) {
@@ -364,10 +364,6 @@ public class To {
 		return Rethrow.ex(() -> new URL(s));
 	}
 
-	private static String yyyymmdd(TemporalAccessor ta) {
-		return Constants.dateTimeFormat.format(ta);
-	}
-
 	private static String read_(Path path) throws IOException {
 		byte[] bytes = Files.readAllBytes(path);
 		boolean isBomExist = 3 <= bytes.length //
@@ -379,6 +375,10 @@ public class To {
 			return To.string(bytes);
 		else
 			return new String(bytes, 3, bytes.length - 3, Constants.charset);
+	}
+
+	private static String ymdhms(TemporalAccessor ta) {
+		return Constants.dateTimeFormat.format(ta);
 	}
 
 }

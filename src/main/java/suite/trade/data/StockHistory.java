@@ -14,7 +14,6 @@ import suite.trade.Time;
 import suite.util.FunUtil.Source;
 import suite.util.Set_;
 import suite.util.String_;
-import suite.util.To;
 
 public class StockHistory {
 
@@ -37,11 +36,9 @@ public class StockHistory {
 		List<LngFltPair> pairs = new ArrayList<>();
 		String line;
 		if (String_.equals(line = source.source(), "{"))
-			while ((line = source.source()) != null) {
-				if (!String_.equals(line = source.source(), "}")) {
-					String[] array = line.split(":");
-					pairs.add(LngFltPair.of(Long.parseLong(array[0]), Float.parseFloat(array[1])));
-				}
+			while (!String_.equals(line = source.source(), "}")) {
+				String[] array = line.split(":");
+				pairs.add(LngFltPair.of(Long.parseLong(array[0]), Float.parseFloat(array[1])));
 			}
 		return pairs.toArray(new LngFltPair[0]);
 	}
@@ -60,10 +57,14 @@ public class StockHistory {
 		this.splits = splits;
 	}
 
+	public LngFltPair[] get(String tag) {
+		return data.getOrDefault(tag, new LngFltPair[0]);
+	}
+
 	public StockHistory merge(StockHistory other) {
 		Set<String> keys = Set_.union(data.keySet(), other.data.keySet());
 		Map<String, LngFltPair[]> data1 = Read.from(keys) //
-				.map2(key -> merge(data.get(key), other.data.get(key))) //
+				.map2(key -> merge(get(key), other.get(key))) //
 				.toMap();
 		return of(data1, merge(dividends, other.dividends), merge(splits, other.splits));
 	}
@@ -93,36 +94,39 @@ public class StockHistory {
 	public DataSource adjustPrices(String tag) {
 		LngFltPair[] pairs = data.get(tag);
 		int length = pairs.length;
-		String[] dates = To.array(String.class, length, i -> Time.ofEpochUtcSecond(pairs[i].t0).ymd());
-		float[] data = To.arrayOfFloats(pairs, pair -> pair.t1);
+		String[] dates = new String[length];
+		float[] prices = new float[length];
 
-		int di = dividends.length - 1;
 		int si = splits.length - 1;
+		int di = dividends.length - 1;
 		float a = 0f, b = 1f;
 
 		for (int i = length - 1; 0 <= i; i--) {
-			data[i] = a + b * data[i];
-			long epoch = pairs[i].t0;
-
-			if (0 <= di) {
-				LngFltPair dividend = dividends[di];
-				if (epoch == dividend.t0) {
-					a -= dividend.t1;
-					di--;
-				}
-			}
+			LngFltPair pair = pairs[i];
+			long epoch = pair.t0;
 
 			if (0 <= si) {
 				LngFltPair split = splits[si];
-				if (epoch == split.t0) {
+				if (epoch < split.t0) {
 					a *= split.t1;
 					b *= split.t1;
 					si--;
 				}
 			}
+
+			if (0 <= di) {
+				LngFltPair dividend = dividends[di];
+				if (epoch < dividend.t0) {
+					a -= dividend.t1;
+					di--;
+				}
+			}
+
+			dates[i] = Time.ofEpochUtcSecond(pair.t0).ymd();
+			prices[i] = a + b * pair.t1;
 		}
 
-		return new DataSource(dates, data);
+		return new DataSource(dates, prices);
 	}
 
 	public Streamlet<String> write() {

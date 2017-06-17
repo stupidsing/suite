@@ -82,12 +82,12 @@ public class Yahoo {
 		return new DataSource(dates, prices).filter((date, price) -> price != 0f);
 	}
 
-	public DataSource dataSourceL1ManuallyAdjustedClose(String symbol, TimeRange period) {
+	public DataSource dataSourceL1Manual(String symbol, TimeRange period) {
 		return dataSourceL1ManuallyAdjustedClose(symbol).range(period);
 	}
 
 	private DataSource dataSourceL1ManuallyAdjustedClose(String symbol) {
-		Path path = HomeDir.resolve("yahoo." + symbol);
+		Path path = HomeDir.dir("yahoo").resolve(symbol + ".txt");
 		StockHistory stockHistory0;
 		TimeRange period;
 
@@ -97,7 +97,10 @@ public class Yahoo {
 			period = TimeRange.daysBefore(31);
 		} else {
 			stockHistory0 = StockHistory.new_();
-			period = TimeRange.ages();
+			Time frDate = Time.ofEpochUtcSecond(1490578200l);
+			Time toDate = Time.now();
+			period = TimeRange.of(frDate, toDate);
+			// period = TimeRange.ages();
 		}
 
 		JsonNode json = queryL1(symbol, period);

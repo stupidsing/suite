@@ -4,8 +4,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import suite.Constants;
+import suite.os.FileUtil;
 
 public class HomeDir {
+
+	public static Path dir(String path_) {
+		Path path = resolve(path_);
+		FileUtil.mkdir(path);
+		return path;
+	}
 
 	public static Path resolve(String path_) {
 		return getHomePath().resolve(path_);
