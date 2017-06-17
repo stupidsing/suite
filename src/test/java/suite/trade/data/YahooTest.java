@@ -34,9 +34,10 @@ public class YahooTest {
 
 	@Test
 	public void testL1ManualAll() {
-		for (String symbol : new HkexFactBook().queryLeadingCompaniesByMarketCap(2016)) {
-			// for (String symbol : new
-			// HkexFactBook().queryMainBoardCompanies()) {
+		HkexFactBook hkexFactBook = new HkexFactBook();
+		Iterable<String> symbols = hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
+		// new hkexFactBook.queryMainBoardCompanies())
+		for (String symbol : symbols) {
 			yahoo.dataSourceL1Manual(symbol, TimeRange.daysBefore(31));
 			Thread_.sleepQuietly(5000l);
 		}
