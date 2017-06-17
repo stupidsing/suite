@@ -124,7 +124,7 @@ public class P1InferType {
 		} else if (n0 instanceof FunpLambda) {
 			String var = ((FunpLambda) n0).var;
 			int scope1 = scope + 1;
-			int vs = getTypeSize(typeByNode.get(var));
+			int vs = getTypeSize(defLambda.apply(typeByNode.get(n0))[0]);
 			return rewrite(scope1, env.put(var, new Var(scope1, vs)), n0);
 		} else if (n0 instanceof FunpPolyType)
 			return rewrite(scope, env, ((FunpPolyType) n0).expr);
