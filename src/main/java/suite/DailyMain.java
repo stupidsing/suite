@@ -32,7 +32,6 @@ import suite.trade.backalloc.ReverseCorrelateBackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
-import suite.trade.data.QuoteDatabase;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
@@ -74,17 +73,6 @@ public class DailyMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-
-		// fetch Yahoo historical data
-		Streamlet2<String, DataSource> dataSourceBySymbol = cfg //
-				.queryLeadingCompaniesByMarketCap(today) //
-				.map(asset -> asset.symbol) //
-				.map2(cfg::dataSource) //
-				.collect(As::streamlet2);
-
-		QuoteDatabase quoteDatabase = new QuoteDatabase();
-		quoteDatabase.merge("o", dataSourceBySymbol);
-		quoteDatabase.join();
 
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //

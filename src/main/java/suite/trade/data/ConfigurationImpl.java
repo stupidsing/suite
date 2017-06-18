@@ -22,7 +22,6 @@ public class ConfigurationImpl implements Configuration {
 	private Hkd hkd = new Hkd();
 	private Hkex hkex = new Hkex();
 	private HkexFactBook hkexFactBook = new HkexFactBook();
-	private QuoteDatabase quoteDatabase = new QuoteDatabase();
 	private Yahoo yahoo = new Yahoo();
 	private YahooHistory yahooHistory = new YahooHistory();
 
@@ -93,10 +92,8 @@ public class ConfigurationImpl implements Configuration {
 		case YAHOO:
 			if (yahooHistory.isContainsData(symbol))
 				return yahooHistory.dataSource(symbol, period);
-			else if (Boolean.TRUE)
-				return yahoo.dataSourceL1(symbol, period);
 			else
-				return quoteDatabase.get(symbol, "o");
+				return yahoo.dataSourceL1(symbol, period);
 		default:
 			throw new RuntimeException();
 		}
