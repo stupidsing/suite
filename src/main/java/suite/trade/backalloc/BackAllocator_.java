@@ -404,18 +404,18 @@ public class BackAllocator_ {
 					.mapValue(dataSource0 -> {
 						String[] times = dataSource0.dates;
 						float[] prices = dataSource0.prices;
-						String[] indextimes = indexDataSource.dates;
+						String[] indexDates = indexDataSource.dates;
 						float[] indexPrices = indexDataSource.prices;
 						int length = times.length;
-						int indexLength = indextimes.length;
+						int indexLength = indexDates.length;
 						float[] prices1 = new float[length];
 						int ii = 0;
 
-						for (int si = 0; si < length; si++) {
-							String date = times[si];
-							while (ii < indexLength && indextimes[ii].compareTo(date) < 0)
+						for (int di = 0; di < length; di++) {
+							String date = times[di];
+							while (ii < indexLength && indexDates[ii].compareTo(date) < 0)
 								ii++;
-							prices1[si] = prices[si] / indexPrices[ii];
+							prices1[di] = prices[di] / indexPrices[ii];
 						}
 
 						return new DataSource(times, prices1);
