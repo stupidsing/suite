@@ -155,7 +155,10 @@ public class Yahoo {
 			throw new RuntimeException(ex);
 		}
 
-		return stockHistory1.adjustPrices("close");
+		DataSource dataSource = stockHistory1.adjustPrices("close");
+		dataSource.cleanse();
+
+		return dataSource;
 	}
 
 	private LngFltPair[] getData(long[] epochs, int length, Streamlet<JsonNode> json) {
