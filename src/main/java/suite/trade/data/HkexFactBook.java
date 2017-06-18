@@ -1,14 +1,21 @@
 package suite.trade.data;
 
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import suite.os.Execute;
 import suite.os.SerializedStoreCache;
+import suite.primitive.Chars;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Object_;
 import suite.util.Serialize;
+import suite.util.String_;
+import suite.util.To;
 
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
 public class HkexFactBook {
@@ -21,15 +28,7 @@ public class HkexFactBook {
 	}
 
 	private List<String> queryLeadingCompaniesByMarketCap_(int year) {
-		String factBookUrl = getFactBookUrl(year);
-		String url;
-
-		if (2001 <= year)
-			url = factBookUrl + "/06.pdf";
-		else if (2000 <= year)
-			url = factBookUrl + "/04c_Market%20Capitalisation.pdf";
-		else
-			throw new RuntimeException("record not exist");
+		String url = getUrl(year, "market capitalisation");
 
 		String cmd = "" //
 				+ "curl '" + url + "'" //
@@ -64,46 +63,14 @@ public class HkexFactBook {
 				.toList();
 	}
 
-	public List<String> queryMainBoardCompanies() {
-		int year = 2016;
-		String factBookUrl = getFactBookUrl(year);
-		String url;
-
-		if (2014 <= year)
-			url = factBookUrl + "/38.pdf";
-		else if (2013 <= year)
-			url = factBookUrl + "/37.pdf";
-		else if (2012 <= year)
-			url = factBookUrl + "/36.pdf";
-		else if (2010 <= year)
-			url = factBookUrl + "/34.pdf";
-		else if (2009 <= year)
-			url = factBookUrl + "/35.pdf";
-		else if (2008 <= year)
-			url = factBookUrl + "/33.pdf";
-		else if (2006 <= year)
-			url = factBookUrl + "/32.pdf";
-		else if (2005 <= year)
-			url = factBookUrl + "/30.pdf";
-		else if (2004 <= year)
-			url = factBookUrl + "/31.pdf";
-		else if (2003 <= year)
-			url = factBookUrl + "/29.pdf";
-		else if (2002 <= year)
-			url = factBookUrl + "/30.pdf";
-		else if (2001 <= year)
-			url = factBookUrl + "/29.pdf";
-		else if (2000 <= year)
-			url = factBookUrl + "/11_Appendices.pdf";
-		else
-			throw new RuntimeException("record not exist");
+	public List<String> queryMainBoardCompanies(int year) {
+		String url = getUrl(year, "Appendices");
 		String cmd = "" //
 				+ "curl '" + url + "'" //
 				+ " | pdftotext -nopgbrk -raw - -" //
 				+ " | sed -e '1,/List of listed companies on Main Board/ d'" //
 				+ " | sed -n '1,/List of listed companies on GEM/ p'" //
 				+ " | egrep '^0'";
-
 		String out = Execute.shell(cmd);
 
 		return Read.from(out.split("\n")) //
@@ -112,22 +79,25 @@ public class HkexFactBook {
 				.toList();
 	}
 
-	private String getFactBookUrl(int year) {
-		String url;
+	private String getUrl(int year, String section) {
+		URI uri0 = To.uri("https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook.htm");
+		URI uri1 = resolveLinks(uri0).get(Integer.toString(year));
+		System.out.println(uri1);
+		return resolveLinks(uri1).get(section).toString();
+	}
 
-		if (2009 <= year)
-			url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook" + year + "/Documents";
-		else if (2004 <= year)
-			url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook" + year + "/e";
-		else if (2003 <= year)
-			url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook/documents";
-		else if (2000 <= year)
-			url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook" + year + "/documents";
-		else if (1999 <= year)
-			url = "https://www.hkex.com.hk/eng/stat/statrpt/factbook/documents";
-		else
-			throw new RuntimeException("record not exist");
-		return url;
+	private Map<String, URI> resolveLinks(URI uri) {
+		String out = Read.uri(uri).collect(As::utf8decode).map(Chars::toString).collect(As.joined());
+		Map<String, URI> links = new HashMap<>();
+		String[] m;
+
+		while ((m = String_.split(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
+			links.put(m[4], uri.resolve(m[2]));
+			out = m[5];
+		}
+
+		System.out.println(links);
+		return links;
 	}
 
 }

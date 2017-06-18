@@ -33,10 +33,10 @@ public class YahooTest {
 		Dump.out(yahoo.dataSourceL1Manual("0012.HK", TimeRange.of(frDate, toDate)));
 	}
 
-	@Test
+	// @Test
 	public void testL1ManualAll() {
 		HkexFactBook hkexFactBook = new HkexFactBook();
-		Iterable<String> symbols = hkexFactBook.queryMainBoardCompanies();
+		Iterable<String> symbols = hkexFactBook.queryMainBoardCompanies(2016);
 		// hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
 		for (String symbol : symbols) {
 			try {

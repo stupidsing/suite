@@ -12,6 +12,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -358,6 +359,10 @@ public class To {
 
 	public static LocalDateTime time(String s) {
 		return LocalDateTime.parse(s, Constants.dateTimeFormat);
+	}
+
+	public static URI uri(String s) {
+		return Rethrow.ex(() -> new URI(s));
 	}
 
 	public static URL url(String s) {

@@ -23,7 +23,7 @@ public class HkexFactBookTest {
 
 	@Test
 	public void testMainBoard() {
-		List<String> companies = hkexFactBook.queryMainBoardCompanies();
+		List<String> companies = hkexFactBook.queryMainBoardCompanies(2012);
 		System.out.println(companies);
 		assertTrue(Read.from(companies).isAny(symbol -> String_.equals(symbol, "0005.HK")));
 	}

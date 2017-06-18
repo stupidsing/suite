@@ -1,6 +1,8 @@
 package suite.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 import suite.adt.pair.Pair;
@@ -58,6 +60,21 @@ public class String_ {
 		if (pos < 0)
 			pos += size;
 		return s.substring(pos);
+	}
+
+	public static String[] split(String in, String... keys) {
+		List<String> outs = new ArrayList<>();
+		int p = 0;
+		for (String key : keys) {
+			int p1 = in.indexOf(key, p);
+			if (0 <= p1) {
+				outs.add(in.substring(p, p1));
+				p = p1 + key.length();
+			} else
+				return null;
+		}
+		outs.add(in.substring(p));
+		return outs.toArray(new String[0]);
 	}
 
 	public static Pair<String, String> split2(String s, String delimiter) {
