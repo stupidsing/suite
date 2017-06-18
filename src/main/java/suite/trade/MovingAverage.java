@@ -30,6 +30,10 @@ public class MovingAverage {
 		return To.arrayOfFloats(movingAvgs, lma -> (float) Math.exp(lma));
 	}
 
+	public float[] exponentialMovingAvg(float[] prices, int halfLife) {
+		return exponentialMovingAvg(prices, Math.exp(Math.log(.5d) * halfLife));
+	}
+
 	public float[] exponentialMovingAvg(float[] prices, double alpha) {
 		int length = prices.length;
 		float[] emas = new float[length];

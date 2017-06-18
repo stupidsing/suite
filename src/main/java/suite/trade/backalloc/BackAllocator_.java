@@ -42,12 +42,11 @@ public class BackAllocator_ {
 
 	public static BackAllocator byEma() {
 		int halfLife = 64;
-		double decay = Math.exp(Math.log(.5d) / halfLife);
 		double threshold = .9d;
 
 		return (dataSourceBySymbol, times) -> {
 			Map<String, float[]> ema = dataSourceBySymbol //
-					.mapValue(dataSource -> ma.exponentialMovingAvg(dataSource.prices, decay)) //
+					.mapValue(dataSource -> ma.exponentialMovingAvg(dataSource.prices, halfLife)) //
 					.toMap();
 
 			return (time, index) -> dataSourceBySymbol //
