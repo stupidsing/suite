@@ -29,6 +29,16 @@ public class Time implements Comparable<Time> {
 		return of(LocalDateTime.now());
 	}
 
+	public static Time of(String s) {
+		if (s.contains("-"))
+			if (s.length() == 10)
+				return ofYmd(s);
+			else
+				return ofYmdHms(s);
+		else
+			return ofEpochUtcSecond(Long.parseLong(s));
+	}
+
 	public static Time ofYmd(String s) {
 		return of(To.date(s).atStartOfDay());
 	}
