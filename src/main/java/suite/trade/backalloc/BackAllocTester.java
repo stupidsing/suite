@@ -140,9 +140,10 @@ public class BackAllocTester {
 			Map<String, Float> latestPriceBySymbol = null;
 			float[] valuations_ = new float[size];
 			Exception exception_;
+			int i = 0;
 
 			try {
-				for (int i = 0; i < size; i++) {
+				while (i < size) {
 					Time time = times.get(i);
 					int index = Collections.binarySearch(tradeTimes, time);
 
@@ -163,11 +164,13 @@ public class BackAllocTester {
 							+ ", valuation = " + valuation_ //
 							+ ", portfolio = " + account //
 							+ ", actions = " + actions);
+
+					i++;
 				}
 
 				exception_ = null;
 			} catch (Exception ex) {
-				exception_ = ex;
+				exception_ = new RuntimeException("at " + times.get(i).ymd(), ex);
 			}
 
 			trades.addAll(Trade_.sellAll(Read.from(trades), latestPriceBySymbol::get).toList());
