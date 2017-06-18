@@ -1,6 +1,7 @@
 package suite.trade.backalloc;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
@@ -32,8 +33,24 @@ public interface BackAllocator {
 		public List<Pair<String, Double>> onDateTime(Time time, int index);
 	}
 
-	public default WalkForwardAllocator walkForwardAllocator() {
-		return (dataSourceBySymbol, index) -> allocate(dataSourceBySymbol, null).onDateTime(null, index);
+	public default BackAllocator byTradeFrequency(int tradeFrequency) {
+		return (dataSourceBySymbol, times) -> {
+			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
+
+			return new OnDateTime() {
+				private Time date0;
+				private List<Pair<String, Double>> result0;
+
+				public List<Pair<String, Double>> onDateTime(Time time0, int index) {
+					Time time1 = time0.addDays(-time0.epochDay() % tradeFrequency);
+					if (!Objects.equals(date0, time1)) {
+						date0 = time1;
+						return result0 = onDateTime.onDateTime(time1, index);
+					} else
+						return result0;
+				}
+			};
+		};
 	}
 
 	public default BackAllocator filterAssets(Predicate<String> pred) {
@@ -86,6 +103,10 @@ public interface BackAllocator {
 					return potentialBySymbol;
 			};
 		};
+	}
+
+	public default WalkForwardAllocator walkForwardAllocator() {
+		return (dataSourceBySymbol, index) -> allocate(dataSourceBySymbol, null).onDateTime(null, index);
 	}
 
 }

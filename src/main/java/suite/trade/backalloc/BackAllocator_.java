@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
@@ -17,7 +16,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.MovingAverage;
-import suite.trade.Time;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
@@ -92,26 +90,6 @@ public class BackAllocator_ {
 
 			double sum = returns.collectAsDouble(As.sumOfDoubles((symbol, price) -> price));
 			return returns.mapValue(return_ -> return_ / sum).toList();
-		};
-	}
-
-	public static BackAllocator byTradeFrequency(int tradeFrequency, BackAllocator backAllocator) {
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol, times);
-
-			return new OnDateTime() {
-				private Time date0;
-				private List<Pair<String, Double>> result0;
-
-				public List<Pair<String, Double>> onDateTime(Time time0, int index) {
-					Time time1 = time0.addDays(-time0.epochDay() % tradeFrequency);
-					if (!Objects.equals(date0, time1)) {
-						date0 = time1;
-						return result0 = onDateTime.onDateTime(time1, index);
-					} else
-						return result0;
-				}
-			};
 		};
 	}
 
