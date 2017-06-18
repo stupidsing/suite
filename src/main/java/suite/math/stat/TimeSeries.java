@@ -170,7 +170,7 @@ public class TimeSeries {
 			float[] returns_ = returns_(prices);
 			MeanVariance mv = stat.meanVariance(returns_);
 
-			return_ = Math.expm1(Math.log(vx / v0) * scale / returns_.length);
+			return_ = Math.expm1(Math.log(vx / v0) * returns_.length * scale);
 			returns = returns_;
 			mean = mv.mean - interestRate;
 			variance = scale * mv.variance;
