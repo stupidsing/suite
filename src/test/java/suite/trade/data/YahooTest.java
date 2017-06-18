@@ -16,10 +16,6 @@ public class YahooTest {
 
 	private Yahoo yahoo = new Yahoo();
 
-	@Test
-	public void testCsv() {
-		test(yahoo::dataSourceCsv);
-	}
 
 	@Test
 	public void testL1() {
@@ -29,7 +25,7 @@ public class YahooTest {
 	@Test
 	public void testL1Manual() {
 		Time frDate = Time.ofEpochUtcSecond(1490578200l);
-		Time toDate = Time.now();
+		Time toDate = Time.ofEpochUtcSecond(1497490200l);
 		Dump.out(yahoo.dataSourceL1Manual("0012.HK", TimeRange.of(frDate, toDate)));
 	}
 
