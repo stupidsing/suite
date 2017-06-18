@@ -118,7 +118,12 @@ public class StockHistory {
 			if (0 <= di) {
 				LngFltPair dividend = dividends[di];
 				if (epoch < dividend.t0) {
-					a -= dividend.t1 * b;
+					if (Boolean.TRUE)
+						// may got negative prices
+						a -= dividend.t1 * b;
+					else
+						// may got skewed profits
+						b *= (pair.t0 - dividend.t0) / pair.t0;
 					di--;
 				}
 			}
