@@ -311,7 +311,7 @@ public class To {
 	}
 
 	public static String string(Instant instant) {
-		return ymdhms(instant);
+		return ymdHms(instant);
 	}
 
 	public static String string(LocalDate date) {
@@ -319,11 +319,11 @@ public class To {
 	}
 
 	public static String string(LocalDateTime time) {
-		return ymdhms(time);
+		return ymdHms(time);
 	}
 
 	public static String string(long time) {
-		return ymdhms(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
+		return ymdHms(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
 	}
 
 	public static String string(Path path) {
@@ -382,7 +382,7 @@ public class To {
 			return new String(bytes, 3, bytes.length - 3, Constants.charset);
 	}
 
-	private static String ymdhms(TemporalAccessor ta) {
+	private static String ymdHms(TemporalAccessor ta) {
 		return Constants.dateTimeFormat.format(ta);
 	}
 
