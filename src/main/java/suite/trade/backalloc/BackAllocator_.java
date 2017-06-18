@@ -2,7 +2,6 @@ package suite.trade.backalloc;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
@@ -12,11 +11,8 @@ import suite.math.stat.Statistic.MeanVariance;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.Donchian;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.trade.Asset;
 import suite.trade.MovingAverage;
-import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
@@ -73,7 +69,8 @@ public class BackAllocator_ {
 
 	public static BackAllocator byPairs(Configuration cfg, String symbol0, String symbol1) {
 		return BackAllocator_ //
-				.relativeToIndex(cfg, symbol0, rsi_(32, .3d, .7d)) //
+				.rsi_(32, .3d, .7d) //
+				.relativeToIndex(cfg, symbol0) //
 				.filterAssets(symbol -> String_.equals(symbol, symbol1));
 	}
 
@@ -131,36 +128,6 @@ public class BackAllocator_ {
 		};
 
 		return ba0.unleverage();
-	}
-
-	public static BackAllocator dump(BackAllocator backAllocator0) {
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = backAllocator0.allocate(dataSourceBySymbol, times);
-
-			return (time, index) -> {
-				List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
-				System.out.println("ratioBySymbol = " + ratioBySymbol);
-				return ratioBySymbol;
-			};
-		};
-	}
-
-	public static BackAllocator even(BackAllocator backAllocator0) {
-		BackAllocator backAllocator1 = backAllocator0.filterShorts();
-
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = backAllocator1.allocate(dataSourceBySymbol, times);
-
-			return (time, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
-				double each = 1d / Read.from2(potentialBySymbol).size();
-
-				return Read.from2(potentialBySymbol) //
-						.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
-						.mapValue(potential -> 1d / each) //
-						.toList();
-			};
-		};
 	}
 
 	public static BackAllocator movingAvg() {
@@ -247,18 +214,6 @@ public class BackAllocator_ {
 		};
 
 		return ba0.filterAssets(symbol -> String_.equals(symbol, symbol0) || String_.equals(symbol, symbol1));
-	}
-
-	public static BackAllocator relative(BackAllocator backAllocator, DataSource index) {
-		return relative_(backAllocator, index);
-	}
-
-	public static BackAllocator relativeToHsi(Configuration cfg, BackAllocator backAllocator) {
-		return relativeToIndex(cfg, "^HSI", backAllocator);
-	}
-
-	public static BackAllocator relativeToIndex(Configuration cfg, String indexSymbol, BackAllocator backAllocator) {
-		return relative_(backAllocator, cfg.dataSource(indexSymbol));
 	}
 
 	public static BackAllocator rsi() {
@@ -356,34 +311,6 @@ public class BackAllocator_ {
 		};
 
 		return ba0.unleverage();
-	}
-
-	private static BackAllocator relative_(BackAllocator backAllocator, DataSource indexDataSource) {
-		return (dataSourceBySymbol0, times_) -> {
-			Streamlet2<String, DataSource> dataSourceBySymbol1 = dataSourceBySymbol0 //
-					.mapValue(dataSource0 -> {
-						String[] times = dataSource0.dates;
-						float[] prices = dataSource0.prices;
-						String[] indexDates = indexDataSource.dates;
-						float[] indexPrices = indexDataSource.prices;
-						int length = times.length;
-						int indexLength = indexDates.length;
-						float[] prices1 = new float[length];
-						int ii = 0;
-
-						for (int di = 0; di < length; di++) {
-							String date = times[di];
-							while (ii < indexLength && indexDates[ii].compareTo(date) < 0)
-								ii++;
-							prices1[di] = prices[di] / indexPrices[ii];
-						}
-
-						return new DataSource(times, prices1);
-					}) //
-					.collect(As::streamlet2);
-
-			return backAllocator.allocate(dataSourceBySymbol1, times_)::onDateTime;
-		};
 	}
 
 	private static BackAllocator rsi_(int window, double threshold0, double threshold1) {

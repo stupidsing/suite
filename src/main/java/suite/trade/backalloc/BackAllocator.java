@@ -8,9 +8,12 @@ import suite.adt.pair.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
+import suite.trade.Asset;
 import suite.trade.Time;
+import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
+import suite.util.String_;
 
 /**
  * Strategy that advise you how to divide your money into different investments,
@@ -53,6 +56,36 @@ public interface BackAllocator {
 		};
 	}
 
+	public default BackAllocator dump() {
+		return (dataSourceBySymbol, times) -> {
+			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
+
+			return (time, index) -> {
+				List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
+				System.out.println("ratioBySymbol = " + ratioBySymbol);
+				return ratioBySymbol;
+			};
+		};
+	}
+
+	public default BackAllocator even() {
+		BackAllocator ba1 = filterShorts();
+
+		return (dataSourceBySymbol, times) -> {
+			OnDateTime onDateTime = ba1.allocate(dataSourceBySymbol, times);
+
+			return (time, index) -> {
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
+				double each = 1d / Read.from2(potentialBySymbol).size();
+
+				return Read.from2(potentialBySymbol) //
+						.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
+						.mapValue(potential -> 1d / each) //
+						.toList();
+			};
+		};
+	}
+
 	public default BackAllocator filterAssets(Predicate<String> pred) {
 		return (dataSourceBySymbol, times) -> allocate(dataSourceBySymbol.filterKey(pred), times)::onDateTime;
 	}
@@ -88,11 +121,47 @@ public interface BackAllocator {
 		};
 	}
 
+	public default BackAllocator relative(DataSource indexDataSource) {
+		return (dataSourceBySymbol0, times_) -> {
+			Streamlet2<String, DataSource> dataSourceBySymbol1 = dataSourceBySymbol0 //
+					.mapValue(dataSource0 -> {
+						String[] times = dataSource0.dates;
+						float[] prices = dataSource0.prices;
+						String[] indexDates = indexDataSource.dates;
+						float[] indexPrices = indexDataSource.prices;
+						int length = times.length;
+						int indexLength = indexDates.length;
+						float[] prices1 = new float[length];
+						int ii = 0;
+
+						for (int di = 0; di < length; di++) {
+							String date = times[di];
+							while (ii < indexLength && indexDates[ii].compareTo(date) < 0)
+								ii++;
+							prices1[di] = prices[di] / indexPrices[ii];
+						}
+
+						return new DataSource(times, prices1);
+					}) //
+					.collect(As::streamlet2);
+
+			return allocate(dataSourceBySymbol1, times_)::onDateTime;
+		};
+	}
+
+	public default BackAllocator relativeToHsi(Configuration cfg) {
+		return relativeToIndex(cfg, "^HSI");
+	}
+
+	public default BackAllocator relativeToIndex(Configuration cfg, String indexSymbol) {
+		return relative(cfg.dataSource(indexSymbol));
+	}
+
 	public default BackAllocator unleverage() {
-		BackAllocator backAllocator1 = filterShorts();
+		BackAllocator ba1 = filterShorts();
 
 		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = backAllocator1.allocate(dataSourceBySymbol, times);
+			OnDateTime onDateTime = ba1.allocate(dataSourceBySymbol, times);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
