@@ -24,6 +24,15 @@ public class StoreCache {
 	private int documentAge = 30;
 	private Path dir = HomeDir.resolve("store-cache");
 
+	public StoreCache() {
+		long current = System.currentTimeMillis();
+
+		LogUtil.info(FileUtil.findPaths(dir) //
+				.filter(path -> !isUpToDate(path, current)) //
+				.map(path -> "rm -f " + path) //
+				.collect(As.joined()));
+	}
+
 	public Outlet<Bytes> http(String urlString) {
 		URL url = To.url(urlString);
 		return getOutlet(urlString, () -> HttpUtil.get(url).out);
@@ -50,9 +59,7 @@ public class StoreCache {
 			Path path;
 
 			while (Files.exists(path = dir1.resolve(hex8 + "." + i++))) {
-				long lastModified = Files.getLastModifiedTime(path).toMillis();
-
-				if (current - lastModified < 1000l * 86400 * documentAge) {
+				if (isUpToDate(path, current)) {
 					InputStream is = Files.newInputStream(path);
 					DataInputStream dis = new DataInputStream(is);
 
@@ -106,6 +113,10 @@ public class StoreCache {
 					})) //
 					.closeAtEnd(os);
 		});
+	}
+
+	private boolean isUpToDate(Path path, long current) {
+		return current - Rethrow.ex(() -> Files.getLastModifiedTime(path)).toMillis() < 1000l * 86400 * documentAge;
 	}
 
 }
