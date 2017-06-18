@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -125,10 +124,6 @@ public class Read {
 			int[] i = new int[] { s, };
 			return Outlet.of(() -> i[0] < e ? i[0]++ : null);
 		});
-	}
-
-	public static Streamlet<Bytes> uri(URI uri) {
-		return url(Rethrow.ex(() -> uri.toURL()));
 	}
 
 	public static Streamlet<Bytes> url(String urlString) {

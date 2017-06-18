@@ -22,9 +22,11 @@ import suite.concurrent.Backoff;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes_;
+import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.Rethrow;
+import suite.util.String_;
 import suite.util.Thread_;
 import suite.util.To;
 
@@ -60,6 +62,21 @@ public class HttpUtil {
 	}
 
 	public static HttpResult http(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) {
+		return http_(method, url, in, headers);
+	}
+
+	public static Map<String, URI> resolveLinks(URI uri) {
+		String out = get(Rethrow.ex(() -> uri.toURL())).out.collect(As::utf8decode).map(Chars::toString).collect(As.joined());
+		Map<String, URI> links = new HashMap<>();
+		String[] m;
+		while ((m = String_.split(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
+			links.put(m[4], uri.resolve(m[2]));
+			out = m[5];
+		}
+		return links;
+	}
+
+	private static HttpResult http_(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) {
 		AtomicLong al = timestamps.computeIfAbsent(url.getHost(), server -> new AtomicLong());
 		Backoff backoff = new Backoff();
 		long current, last, start, next;

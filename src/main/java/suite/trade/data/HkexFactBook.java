@@ -2,19 +2,15 @@ package suite.trade.data;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import suite.http.HttpUtil;
 import suite.os.Execute;
 import suite.os.SerializedStoreCache;
-import suite.primitive.Chars;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Object_;
 import suite.util.Serialize;
-import suite.util.String_;
 import suite.util.To;
 
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
@@ -81,23 +77,8 @@ public class HkexFactBook {
 
 	private String getUrl(int year, String section) {
 		URI uri0 = To.uri("https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook.htm");
-		URI uri1 = resolveLinks(uri0).get(Integer.toString(year));
-		System.out.println(uri1);
-		return resolveLinks(uri1).get(section).toString();
-	}
-
-	private Map<String, URI> resolveLinks(URI uri) {
-		String out = Read.uri(uri).collect(As::utf8decode).map(Chars::toString).collect(As.joined());
-		Map<String, URI> links = new HashMap<>();
-		String[] m;
-
-		while ((m = String_.split(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
-			links.put(m[4], uri.resolve(m[2]));
-			out = m[5];
-		}
-
-		System.out.println(links);
-		return links;
+		URI uri1 = HttpUtil.resolveLinks(uri0).get(Integer.toString(year));
+		return HttpUtil.resolveLinks(uri1).get(section).toString();
 	}
 
 }
