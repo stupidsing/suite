@@ -3,6 +3,7 @@ package suite.trade.data;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import suite.http.HttpUtil;
 import suite.os.Execute;
@@ -77,8 +78,15 @@ public class HkexFactBook {
 
 	private String getUrl(int year, String section) {
 		URI uri0 = To.uri("https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook.htm");
-		URI uri1 = HttpUtil.resolveLinks(uri0).get(Integer.toString(year));
-		return HttpUtil.resolveLinks(uri1).get(section).toString();
+		Map<String, URI> links0 = HttpUtil.resolveLinks(uri0);
+		URI uri1 = links0.get(Integer.toString(year));
+		Map<String, URI> links1 = HttpUtil.resolveLinks(uri1);
+		URI uri2;
+		if ((uri2 = links1.get(section)) != null //
+				|| (uri2 = links1.get("- " + section)) != null)
+			return uri2.toString();
+		else
+			throw new RuntimeException();
 	}
 
 }
