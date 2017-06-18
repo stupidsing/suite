@@ -21,7 +21,7 @@ public class KellyBackAllocator implements BackAllocator {
 	private TimeSeries ts = new TimeSeries();
 
 	public static BackAllocator of() {
-		return BackAllocator_.filterShorts(new KellyBackAllocator());
+		return new KellyBackAllocator().filterShorts();
 	}
 
 	private KellyBackAllocator() {

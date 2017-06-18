@@ -1,8 +1,10 @@
 package suite.trade.backalloc;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.data.DataSource;
@@ -31,6 +33,30 @@ public interface BackAllocator {
 
 	public default WalkForwardAllocator walkForwardAllocator() {
 		return (dataSourceBySymbol, index) -> allocate(dataSourceBySymbol, null).onDateTime(null, index);
+	}
+
+	public default BackAllocator filterAssets(Predicate<String> pred) {
+		return (dataSourceBySymbol, times) -> allocate(dataSourceBySymbol.filterKey(pred), times)::onDateTime;
+	}
+
+	public default BackAllocator filterShorts() {
+		return (dataSourceBySymbol, times) -> {
+			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
+
+			return (time, index) -> {
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
+
+				return Read.from2(potentialBySymbol) //
+						.map2((symbol, potential) -> {
+							if (Double.isFinite(potential))
+								return potential;
+							else
+								throw new RuntimeException("potential is " + potential);
+						}) //
+						.filterValue(potential -> 0d < potential) //
+						.toList();
+			};
+		};
 	}
 
 }

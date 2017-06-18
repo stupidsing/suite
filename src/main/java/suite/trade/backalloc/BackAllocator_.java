@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
@@ -75,12 +74,9 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator byPairs(Configuration cfg, String symbol0, String symbol1) {
-		return BackAllocator_.filterAssets( //
-				symbol -> String_.equals(symbol, symbol1), //
-				BackAllocator_.relativeToIndex( //
-						cfg, //
-						symbol0, //
-						rsi_(32, .3d, .7d)));
+		return BackAllocator_ //
+				.relativeToIndex(cfg, symbol0, rsi_(32, .3d, .7d)) //
+				.filterAssets(symbol -> String_.equals(symbol, symbol1));
 	}
 
 	public static BackAllocator byReturnsProRata() {
@@ -170,7 +166,7 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator even(BackAllocator backAllocator0) {
-		BackAllocator backAllocator1 = filterShorts_(backAllocator0);
+		BackAllocator backAllocator1 = backAllocator0.filterShorts();
 
 		return (dataSourceBySymbol, times) -> {
 			OnDateTime onDateTime = backAllocator1.allocate(dataSourceBySymbol, times);
@@ -185,14 +181,6 @@ public class BackAllocator_ {
 						.toList();
 			};
 		};
-	}
-
-	public static BackAllocator filterAssets(Predicate<String> pred, BackAllocator backAllocator) {
-		return (dataSourceBySymbol, times) -> backAllocator.allocate(dataSourceBySymbol.filterKey(pred), times)::onDateTime;
-	}
-
-	public static BackAllocator filterShorts(BackAllocator backAllocator) {
-		return filterShorts_(backAllocator);
 	}
 
 	public static BackAllocator movingAvg() {
@@ -253,27 +241,27 @@ public class BackAllocator_ {
 		int tor = 64;
 		double threshold = 0d;
 
-		return BackAllocator_.filterAssets( //
-				symbol -> String_.equals(symbol, symbol0) || String_.equals(symbol, symbol1), //
-				(dataSourceBySymbol, times) -> {
-					Map<String, DataSource> dataSources = dataSourceBySymbol.toMap();
-					DataSource dataSource0 = dataSources.get(symbol0);
-					DataSource dataSource1 = dataSources.get(symbol1);
+		BackAllocator allocator0 = (dataSourceBySymbol, times) -> {
+			Map<String, DataSource> dataSources = dataSourceBySymbol.toMap();
+			DataSource dataSource0 = dataSources.get(symbol0);
+			DataSource dataSource1 = dataSources.get(symbol1);
 
-					return (time, index) -> {
-						int ix = index - 1;
-						int i0 = ix - tor;
-						double p0 = dataSource0.get(i0).price, px = dataSource0.get(ix).price;
-						double q0 = dataSource1.get(i0).price, qx = dataSource1.get(ix).price;
-						double pdiff = (px - p0) / px;
-						double qdiff = (qx - q0) / qx;
+			return (time, index) -> {
+				int ix = index - 1;
+				int i0 = ix - tor;
+				double p0 = dataSource0.get(i0).price, px = dataSource0.get(ix).price;
+				double q0 = dataSource1.get(i0).price, qx = dataSource1.get(ix).price;
+				double pdiff = (px - p0) / px;
+				double qdiff = (qx - q0) / qx;
 
-						if (threshold < Math.abs(pdiff - qdiff))
-							return Arrays.asList(Pair.of(pdiff < qdiff ? symbol0 : symbol1, 1d));
-						else
-							return Collections.emptyList();
-					};
-				});
+				if (threshold < Math.abs(pdiff - qdiff))
+					return Arrays.asList(Pair.of(pdiff < qdiff ? symbol0 : symbol1, 1d));
+				else
+					return Collections.emptyList();
+			};
+		};
+
+		return allocator0.filterAssets(symbol -> String_.equals(symbol, symbol0) || String_.equals(symbol, symbol1));
 	}
 
 	public static BackAllocator reallocate(BackAllocator backAllocator) {
@@ -455,7 +443,7 @@ public class BackAllocator_ {
 	}
 
 	private static BackAllocator unleverage_(BackAllocator backAllocator0) {
-		BackAllocator backAllocator1 = filterShorts_(backAllocator0);
+		BackAllocator backAllocator1 = backAllocator0.filterShorts();
 
 		return (dataSourceBySymbol, times) -> {
 			OnDateTime onDateTime = backAllocator1.allocate(dataSourceBySymbol, times);
@@ -469,28 +457,6 @@ public class BackAllocator_ {
 					return potentialBySymbol;
 			};
 		};
-	}
-
-	private static BackAllocator filterShorts_(BackAllocator backAllocator) {
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol, times);
-
-			return (time, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
-
-				return Read.from2(potentialBySymbol) //
-						.map2(BackAllocator_::validate) //
-						.filterValue(potential -> 0d < potential) //
-						.toList();
-			};
-		};
-	}
-
-	private static Double validate(String symbol, Double potential) {
-		if (Double.isFinite(potential))
-			return potential;
-		else
-			throw new RuntimeException("potential is " + potential);
 	}
 
 }
