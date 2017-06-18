@@ -11,6 +11,7 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
+import suite.trade.TimeRange;
 import suite.util.Set_;
 import suite.util.String_;
 
@@ -27,7 +28,7 @@ public class StockHistory {
 		LngFltPair[] splits = readPairs(outlet);
 		Map<String, LngFltPair[]> data = new HashMap<>();
 		String tag;
-		if ((tag = outlet.next()) != null)
+		while ((tag = outlet.next()) != null)
 			data.put(tag, readPairs(outlet));
 		return StockHistory.of(time, data, dividends, splits);
 	}
@@ -37,14 +38,18 @@ public class StockHistory {
 		String line;
 		if (String_.equals(line = outlet.next(), "{"))
 			while (!String_.equals(line = outlet.next(), "}")) {
-				String[] array = line.split(":");
-				pairs.add(LngFltPair.of(Long.parseLong(array[0]), Float.parseFloat(array[1])));
+				int p = line.lastIndexOf(":");
+				Time date = Time.of(line.substring(0, p));
+				float price = Float.parseFloat(line.substring(p + 1));
+				pairs.add(LngFltPair.of(date.epochUtcSecond(), price));
 			}
+		else
+			throw new RuntimeException();
 		return pairs.toArray(new LngFltPair[0]);
 	}
 
 	public static StockHistory new_() {
-		return of(new HashMap<>(), new LngFltPair[0], new LngFltPair[0]);
+		return of(TimeRange.ages().from, new HashMap<>(), new LngFltPair[0], new LngFltPair[0]);
 	}
 
 	public static StockHistory of(Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
@@ -143,7 +148,7 @@ public class StockHistory {
 	private Streamlet<String> concat(LngFltPair[] pairs) {
 		return Streamlet.concat( //
 				Read.each("{"), //
-				Read.from(pairs).map(pair -> pair.t0 + ":" + pair.t1), //
+				Read.from(pairs).map(pair -> Time.ofEpochUtcSecond(pair.t0).ymdHms() + ":" + pair.t1), //
 				Read.each("}"));
 	}
 
