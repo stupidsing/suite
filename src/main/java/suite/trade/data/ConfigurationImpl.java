@@ -89,17 +89,21 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	private DataSource dataSource_(String symbol, TimeRange period) {
+		DataSource dataSource;
 		switch (source_(symbol)) {
 		case HKD__:
-			return hkd.dataSource(symbol, period);
+			dataSource = hkd.dataSource(symbol, period);
+			break;
 		case YAHOO:
 			if (yahooHistory.isContainsData(symbol))
-				return yahooHistory.dataSource(symbol, period);
+				dataSource = yahooHistory.dataSource(symbol, period);
 			else
-				return yahoo.dataSourceL1(symbol, period);
+				dataSource = yahoo.dataSourceL1(symbol, period);
+			break;
 		default:
 			throw new RuntimeException();
 		}
+		return dataSource;
 	}
 
 	private Source_ source_(String symbol) {
