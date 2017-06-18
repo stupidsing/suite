@@ -41,6 +41,22 @@ public class String_ {
 		return isBlank;
 	}
 
+	public static boolean isInteger(String s) {
+		boolean result;
+
+		if (!s.isEmpty()) {
+			if (s.charAt(0) == '-')
+				s = s.substring(1);
+
+			result = !s.isEmpty();
+			for (char c : String_.chars(s))
+				result &= Character.isDigit(c);
+		} else
+			result = false;
+
+		return result;
+	}
+
 	public static boolean isNotBlank(String s) {
 		return !isBlank(s);
 	}
@@ -62,10 +78,10 @@ public class String_ {
 		return s.substring(pos);
 	}
 
-	public static String[] split(String in, String... keys) {
+	public static String[] split(String in, String... parts) {
 		List<String> outs = new ArrayList<>();
 		int p = 0;
-		for (String key : keys) {
+		for (String key : parts) {
 			int p1 = in.indexOf(key, p);
 			if (0 <= p1) {
 				outs.add(in.substring(p, p1));

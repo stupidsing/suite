@@ -22,7 +22,7 @@ public class TerminalParser {
 		if (!s.isEmpty()) {
 			char first = String_.charAt(s, 0), last = String_.charAt(s, -1);
 
-			if (ParseUtil.isInteger(s))
+			if (String_.isInteger(s))
 				return Int.of(Integer.parseInt(s));
 			if (s.startsWith("+x")) // allows +xFFFFFFFF
 				return Int.of((int) Long.parseLong(s.substring(2), 16));

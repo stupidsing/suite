@@ -16,7 +16,6 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.parser.CommentPreprocessor;
 import suite.primitive.Chars;
-import suite.util.ParseUtil;
 import suite.util.String_;
 
 /**
@@ -220,7 +219,7 @@ public class Formatter {
 						|| s0.contains(CommentPreprocessor.openLineComment) //
 						|| s0.contains(CommentPreprocessor.closeLineComment);
 
-				quote |= ParseUtil.isInteger(s0);
+				quote |= String_.isInteger(s0);
 
 				s1 = quote ? Escaper.escape(s0, '\'') : s0;
 			} else

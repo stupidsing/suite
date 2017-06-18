@@ -29,22 +29,6 @@ public class ParseUtil {
 		return quote;
 	}
 
-	public static boolean isInteger(String s) {
-		boolean result;
-
-		if (!s.isEmpty()) {
-			if (s.charAt(0) == '-')
-				s = s.substring(1);
-
-			result = !s.isEmpty();
-			for (char c : String_.chars(s))
-				result &= Character.isDigit(c);
-		} else
-			result = false;
-
-		return result;
-	}
-
 	public static boolean isParseable(String s) {
 		return isParseable(s, false);
 	}
@@ -109,19 +93,6 @@ public class ParseUtil {
 		return -1;
 	}
 
-	public static List<String> searchn(String s, String name, Assoc assoc) {
-		List<String> list = new ArrayList<>();
-		Pair<String, String> pair;
-
-		while ((pair = search(s, name, assoc)) != null) {
-			list.add(pair.t0);
-			s = pair.t1;
-		}
-
-		list.add(s);
-		return list;
-	}
-
 	public static Pair<String, String> search(String s, String name) {
 		Pair<String, String> pair = search(s, name, Assoc.RIGHT);
 		return pair != null ? pair : Pair.of(s, "");
@@ -140,6 +111,19 @@ public class ParseUtil {
 			return Pair.of(left, right);
 		} else
 			return null;
+	}
+
+	public static List<String> searchn(String s, String name, Assoc assoc) {
+		List<String> list = new ArrayList<>();
+		Pair<String, String> pair;
+
+		while ((pair = search(s, name, assoc)) != null) {
+			list.add(pair.t0);
+			s = pair.t1;
+		}
+
+		list.add(s);
+		return list;
 	}
 
 	public static Segment searchPosition(char[] cs, Segment segment, Operator operator) {
