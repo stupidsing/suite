@@ -37,9 +37,9 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 	private TimeSeries ts = new TimeSeries();
 
 	public static BackAllocator of(Sink<String> log) {
-		return BackAllocator_.reallocate( //
-				BackAllocator_.byTradeFrequency( //
-						3, MovingAvgMeanReversionBackAllocator0.of_(log)));
+		return BackAllocator_ //
+				.byTradeFrequency(3, MovingAvgMeanReversionBackAllocator0.of_(log)) //
+				.reallocate();
 	}
 
 	public static MovingAvgMeanReversionBackAllocator0 of_(Sink<String> log) {

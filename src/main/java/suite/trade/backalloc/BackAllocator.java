@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
@@ -57,6 +58,48 @@ public interface BackAllocator {
 						.toList();
 			};
 		};
+	}
+
+	public default BackAllocator reallocate() {
+		return (dataSourceBySymbol, times) -> {
+			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
+
+			return (time, index) -> {
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
+				return BackAllocatorUtil.scale(potentialBySymbol, 1d / BackAllocatorUtil.totalPotential(potentialBySymbol));
+			};
+		};
+	}
+
+	public default BackAllocator unleverage() {
+		BackAllocator backAllocator1 = filterShorts();
+
+		return (dataSourceBySymbol, times) -> {
+			OnDateTime onDateTime = backAllocator1.allocate(dataSourceBySymbol, times);
+
+			return (time, index) -> {
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
+				double totalPotential = BackAllocatorUtil.totalPotential(potentialBySymbol);
+				if (1d < totalPotential)
+					return BackAllocatorUtil.scale(potentialBySymbol, 1d / totalPotential);
+				else
+					return potentialBySymbol;
+			};
+		};
+	}
+
+}
+
+class BackAllocatorUtil {
+
+	static List<Pair<String, Double>> scale(List<Pair<String, Double>> potentialBySymbol, double scale) {
+		return Read.from2(potentialBySymbol) //
+				.mapValue(potential -> potential * scale) //
+				.toList();
+	}
+
+	static double totalPotential(List<Pair<String, Double>> potentialBySymbol) {
+		return Read.from2(potentialBySymbol).collectAsDouble(As.sumOfDoubles((symbol, potential) -> potential));
 	}
 
 }

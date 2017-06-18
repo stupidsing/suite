@@ -30,7 +30,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 	}
 
 	public static BackAllocator of(int tor, double kellyReduction, double reverseCorrelationThreshold) {
-		return BackAllocator_.unleverage(new ReverseCorrelateBackAllocator(tor, kellyReduction, reverseCorrelationThreshold));
+		return new ReverseCorrelateBackAllocator(tor, kellyReduction, reverseCorrelationThreshold).unleverage();
 	}
 
 	private ReverseCorrelateBackAllocator(int tor, double kellyReduction, double reverseCorrelationThreshold) {

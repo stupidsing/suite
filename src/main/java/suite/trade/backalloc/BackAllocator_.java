@@ -132,7 +132,7 @@ public class BackAllocator_ {
 	public static BackAllocator donchian() {
 		int window = 32;
 
-		return BackAllocator_.unleverage((dataSourceBySymbol, times) -> {
+		BackAllocator ba0 = (dataSourceBySymbol, times) -> {
 			Map<String, Donchian> donchianBySymbol = dataSourceBySymbol //
 					.mapValue(dataSource -> ts.donchian(window, dataSource.prices)) //
 					.toMap();
@@ -150,7 +150,9 @@ public class BackAllocator_ {
 						return hold ? 1d : 0d;
 					}) //
 					.toList();
-		});
+		};
+
+		return ba0.unleverage();
 	}
 
 	public static BackAllocator dump(BackAllocator backAllocator0) {
@@ -190,7 +192,7 @@ public class BackAllocator_ {
 		Strategos strategos = new Strategos();
 		BuySellStrategy mamr = strategos.movingAvgMeanReverting(nPastDays, nHoldDays, threshold);
 
-		return BackAllocator_.unleverage((dataSourceBySymbol, times) -> {
+		BackAllocator ba0 = (dataSourceBySymbol, times) -> {
 			Map<String, GetBuySell> getBuySellBySymbol = dataSourceBySymbol //
 					.mapValue(dataSource -> mamr.analyze(dataSource.prices)) //
 					.toMap();
@@ -204,13 +206,16 @@ public class BackAllocator_ {
 						return (double) hold;
 					}) //
 					.toList();
-		});
+		};
+
+		return ba0.unleverage();
 	}
 
 	public static BackAllocator movingMedianMeanReversion() {
 		int windowSize0 = 1;
 		int windowSize1 = 32;
-		return BackAllocator_.unleverage((dataSourceBySymbol, times) -> {
+
+		BackAllocator ba0 = (dataSourceBySymbol, times) -> {
 			Map<String, float[]> movingMedian0BySymbol = dataSourceBySymbol //
 					.mapValue(dataSource -> ma.movingMedian(dataSource.prices, windowSize0)) //
 					.toMap();
@@ -230,7 +235,9 @@ public class BackAllocator_ {
 						return ratio - 1d;
 					}) //
 					.toList();
-		});
+		};
+
+		return ba0.unleverage();
 	}
 
 	public static BackAllocator ofSingle(String symbol) {
@@ -241,7 +248,7 @@ public class BackAllocator_ {
 		int tor = 64;
 		double threshold = 0d;
 
-		BackAllocator allocator0 = (dataSourceBySymbol, times) -> {
+		BackAllocator ba0 = (dataSourceBySymbol, times) -> {
 			Map<String, DataSource> dataSources = dataSourceBySymbol.toMap();
 			DataSource dataSource0 = dataSources.get(symbol0);
 			DataSource dataSource1 = dataSources.get(symbol1);
@@ -261,18 +268,7 @@ public class BackAllocator_ {
 			};
 		};
 
-		return allocator0.filterAssets(symbol -> String_.equals(symbol, symbol0) || String_.equals(symbol, symbol1));
-	}
-
-	public static BackAllocator reallocate(BackAllocator backAllocator) {
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol, times);
-
-			return (time, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
-				return scale(potentialBySymbol, 1d / totalPotential(potentialBySymbol));
-			};
-		};
+		return ba0.filterAssets(symbol -> String_.equals(symbol, symbol0) || String_.equals(symbol, symbol1));
 	}
 
 	public static BackAllocator relative(BackAllocator backAllocator, DataSource index) {
@@ -284,19 +280,15 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator relativeToIndex(Configuration cfg, String indexSymbol, BackAllocator backAllocator) {
-		return relative_(backAllocator, cfg.dataSourceWithLatestQuote(indexSymbol));
+		return relative_(backAllocator, cfg.dataSource(indexSymbol));
 	}
 
 	public static BackAllocator rsi() {
 		return rsi_(32, .3d, .7d);
 	}
 
-	public static BackAllocator unleverage(BackAllocator backAllocator0) {
-		return unleverage_(backAllocator0);
-	}
-
 	public static BackAllocator variableBollingerBands() {
-		return BackAllocator_.unleverage((dataSourceBySymbol, times) -> {
+		BackAllocator ba0 = (dataSourceBySymbol, times) -> {
 			return (time, index) -> dataSourceBySymbol //
 					.map2((symbol, dataSource) -> {
 						int last = index - 1;
@@ -317,11 +309,13 @@ public class BackAllocator_ {
 						return hold;
 					}) //
 					.toList();
-		});
+		};
+
+		return ba0.unleverage();
 	}
 
 	public static BackAllocator threeMovingAvgs() {
-		return BackAllocator_.unleverage((dataSourceBySymbol, times) -> {
+		BackAllocator ba0 = (dataSourceBySymbol, times) -> {
 			Map<String, float[]> movingAvg0BySymbol = dataSourceBySymbol //
 					.mapValue(dataSource -> ma.exponentialMovingGeometricAvg(dataSource.prices, .11d)) //
 					.toMap();
@@ -348,11 +342,9 @@ public class BackAllocator_ {
 							return 0d;
 					}) //
 					.toList();
-		});
-	}
+		};
 
-	private static double totalPotential(List<Pair<String, Double>> potentialBySymbol) {
-		return Read.from2(potentialBySymbol).collectAsDouble(As.sumOfDoubles((symbol, potential) -> potential));
+		return ba0.unleverage();
 	}
 
 	private static BackAllocator bollingerBands_(float k) {
@@ -360,7 +352,7 @@ public class BackAllocator_ {
 	}
 
 	private static BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {
-		return BackAllocator_.unleverage((dataSourceBySymbol, times) -> {
+		BackAllocator ba0 = (dataSourceBySymbol, times) -> {
 			Map<String, float[]> percentbBySymbol = dataSourceBySymbol //
 					.mapValue(dataSource -> bb.bb(dataSource.prices, backPos0, backPos1, k).percentb) //
 					.toMap();
@@ -383,7 +375,9 @@ public class BackAllocator_ {
 						return hold;
 					}) //
 					.toList();
-		});
+		};
+
+		return ba0.unleverage();
 	}
 
 	private static BackAllocator relative_(BackAllocator backAllocator, DataSource indexDataSource) {
@@ -415,7 +409,7 @@ public class BackAllocator_ {
 	}
 
 	private static BackAllocator rsi_(int window, double threshold0, double threshold1) {
-		return BackAllocator_.unleverage((dataSourceBySymbol, times) -> (time, index) -> dataSourceBySymbol //
+		BackAllocator ba0 = (dataSourceBySymbol, times) -> (time, index) -> dataSourceBySymbol //
 				.mapValue(dataSource -> {
 					float[] prices = dataSource.prices;
 					int gt = 0, ge = 0;
@@ -433,30 +427,9 @@ public class BackAllocator_ {
 					else
 						return 0d;
 				}) //
-				.toList());
-	}
-
-	private static List<Pair<String, Double>> scale(List<Pair<String, Double>> potentialBySymbol, double scale) {
-		return Read.from2(potentialBySymbol) //
-				.mapValue(potential -> potential * scale) //
 				.toList();
-	}
 
-	private static BackAllocator unleverage_(BackAllocator backAllocator0) {
-		BackAllocator backAllocator1 = backAllocator0.filterShorts();
-
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = backAllocator1.allocate(dataSourceBySymbol, times);
-
-			return (time, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
-				double totalPotential = totalPotential(potentialBySymbol);
-				if (1d < totalPotential)
-					return scale(potentialBySymbol, 1d / totalPotential);
-				else
-					return potentialBySymbol;
-			};
-		};
+		return ba0.unleverage();
 	}
 
 }
