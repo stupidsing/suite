@@ -99,13 +99,14 @@ public class DataSource {
 		int length0 = dates.length;
 		int length1 = dates1.length;
 		float[] prices1 = new float[length1];
-		int si = 0;
-		for (int di = 0; di < length1; di++) {
-			String date = dates1[di];
-			while (si < length0 && dates[si].compareTo(date) < 0)
+		int si = 0, di = 0;
+		while (di < length1)
+			if (length0 <= si)
+				prices1[di++] = 0f;
+			else if (dates1[di].compareTo(dates[si]) <= 0)
+				prices1[di++] = prices[si];
+			else
 				si++;
-			prices1[di] = prices[si];
-		}
 		return new DataSource(dates1, prices1);
 	}
 
@@ -172,8 +173,8 @@ public class DataSource {
 			if (0 <= date0.compareTo(date1))
 				throw new RuntimeException("wrong date order: " + date0 + "/" + date1);
 
-			if (price1 <= 0f)
-				throw new RuntimeException("price is zero or negative: " + price1 + "/" + date1);
+			if (price1 < 0f)
+				throw new RuntimeException("price is negative: " + price1 + "/" + date1);
 
 			if (!Float.isFinite(price1))
 				throw new RuntimeException("price is not finite: " + price1 + "/" + date1);
