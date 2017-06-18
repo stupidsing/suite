@@ -103,7 +103,7 @@ public class Yahoo {
 		Time time = HkexUtil.getTradeTimeBefore(Time.now());
 		StockHistory stockHistory1;
 
-		if (stockHistory0.time.compareTo(time) <= 0) {
+		if (stockHistory0.time.compareTo(time) < 0) {
 			JsonNode json = queryL1(symbol, period);
 
 			Streamlet<JsonNode> jsons = Read.each(json) //
