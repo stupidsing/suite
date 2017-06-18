@@ -70,7 +70,7 @@ public class HttpUtil {
 		Map<String, URI> links = new HashMap<>();
 		String[] m;
 		while ((m = String_.split(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
-			links.put(m[4], uri.resolve(m[2]));
+			links.putIfAbsent(m[4], uri.resolve(m[2]));
 			out = m[5];
 		}
 		return links;
