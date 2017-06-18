@@ -12,9 +12,11 @@ import suite.streamlet.Streamlet;
 import suite.trade.Account.Valuation;
 import suite.util.Set_;
 import suite.util.String_;
+import suite.util.To;
 
 public class Trade_ {
 
+	public static Set<String> blackList = To.set("N/A");
 	public static boolean isCacheQuotes = true;
 	public static boolean isShortSell = false;
 	public static float maxLeverageAmount = 100000f;

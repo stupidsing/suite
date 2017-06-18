@@ -12,6 +12,7 @@ import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade;
+import suite.trade.Trade_;
 import suite.trade.data.Broker.Hsbc;
 import suite.util.String_;
 import suite.util.To;
@@ -53,11 +54,11 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	public Streamlet<Asset> queryCompanies() {
-		return hkex.queryCompanies();
+		return hkex.queryCompanies().filter(asset -> !Trade_.blackList.contains(asset.symbol));
 	}
 
 	public Asset queryCompany(String symbol) {
-		return hkex.queryCompany(symbol);
+		return !Trade_.blackList.contains(symbol) ? hkex.queryCompany(symbol) : null;
 	}
 
 	public Streamlet<Trade> queryHistory() {
@@ -66,7 +67,9 @@ public class ConfigurationImpl implements Configuration {
 
 	public Streamlet<Asset> queryLeadingCompaniesByMarketCap(Time date) {
 		int year = date.year() - 1;
-		return Read.from(hkexFactBook.queryLeadingCompaniesByMarketCap(year)).map(this::queryCompany);
+		return Read.from(hkexFactBook.queryLeadingCompaniesByMarketCap(year)) //
+				.map(this::queryCompany) //
+				.filter(asset -> !Trade_.blackList.contains(asset.symbol));
 	}
 
 	public Map<String, Float> quote(Set<String> symbols) {
