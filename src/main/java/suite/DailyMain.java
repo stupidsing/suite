@@ -79,13 +79,14 @@ public class DailyMain extends ExecutableProgram {
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //
 				alloc("bb", 100000f, bac_bb), //
-				bug(), //
+				sell("bug"), //
 				alloc("ema", 100000f, bac_ema), //
 				mamr(100000f), //
-				pmamr(100000f), //
-				pmmmr(120000f), //
+				alloc("pmamr", 100000f, bac_pmamr), //
+				alloc("pmmmr", 120000f, bac_pmmmr), //
 				alloc("revco", 80000f, bac_revco), //
-				alloc("tma", 100000f, bac_tma));
+				alloc("tma", 100000f, bac_tma), //
+				sell("sellpool"));
 
 		// unused strategies
 		pairs(0f, "0341.HK", "0052.HK");
@@ -128,25 +129,8 @@ public class DailyMain extends ExecutableProgram {
 		return true;
 	}
 
-	// some orders caused by stupid bugs. need to sell those at suitable times.
 	private Result bug() {
-		String tag = "bug";
-		Streamlet<Trade> history = cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag));
-		Account account = Account.fromPortfolio(history);
-
-		Map<String, Float> faceValueBySymbol = history //
-				.groupBy(record -> record.symbol, //
-						rs -> (float) (Read.from(rs).collectAsDouble(As.sumOfDoubles(r -> r.buySell * r.price))))
-				.toMap();
-
-		List<Trade> trades = Read.from2(account.assets()) //
-				.map((symbol, sell) -> {
-					double targetPrice = (1d + 3 * Trade_.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
-					return Trade.of(-sell, symbol, (float) targetPrice);
-				}) //
-				.toList();
-
-		return new Result(tag, trades);
+		return sell("bug");
 	}
 
 	// moving average mean reversion
@@ -230,16 +214,6 @@ public class DailyMain extends ExecutableProgram {
 		return alloc("pairs/" + symbol0 + "/" + symbol1, fund, pairs(symbol0, symbol1));
 	}
 
-	// portfolio-based moving average mean reversion
-	private Result pmamr(float fund) {
-		return alloc("pmamr", fund, bac_pmamr);
-	}
-
-	// portfolio-based moving median mean reversion
-	private Result pmmmr(float fund) {
-		return alloc("pmmmr", fund, bac_pmmmr);
-	}
-
 	private Result questoaQuella(float fund, String symbol0, String symbol1) {
 		return alloc("qq/" + symbol0 + "/" + symbol1, fund, questoaQuella(symbol0, symbol1));
 	}
@@ -254,6 +228,26 @@ public class DailyMain extends ExecutableProgram {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
 		BackAllocator backAllocator = BackAllocator_.questoQuella(symbol0, symbol1);
 		return new BackAllocConfiguration(assets, backAllocator);
+	}
+
+	// some orders caused by stupid bugs. need to sell those at suitable times.
+	private Result sell(String tag) {
+		Streamlet<Trade> history = cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag));
+		Account account = Account.fromPortfolio(history);
+
+		Map<String, Float> faceValueBySymbol = history //
+				.groupBy(record -> record.symbol, //
+						rs -> (float) (Read.from(rs).collectAsDouble(As.sumOfDoubles(r -> r.buySell * r.price))))
+				.toMap();
+
+		List<Trade> trades = Read.from2(account.assets()) //
+				.map((symbol, sell) -> {
+					double targetPrice = (1d + 3 * Trade_.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
+					return Trade.of(-sell, symbol, (float) targetPrice);
+				}) //
+				.toList();
+
+		return new Result(tag, trades);
 	}
 
 	private Result alloc(String tag, float fund, BackAllocConfiguration pair) {
