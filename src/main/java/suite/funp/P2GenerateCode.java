@@ -26,6 +26,7 @@ import suite.funp.P1.FunpInvoke;
 import suite.funp.P1.FunpMemory;
 import suite.funp.P1.FunpSaveEbp;
 import suite.funp.P1.FunpSaveRegisters;
+import suite.funp.P1.FunpSeq;
 import suite.node.io.TermOp;
 import suite.primitive.Bytes;
 
@@ -116,7 +117,6 @@ public class P2GenerateCode {
 					throw new RuntimeException();
 			} else
 				throw new RuntimeException();
-			compileReg_(r, spd, n1.expr);
 		} else if (n0 instanceof FunpFixed)
 			;
 		else if (n0 instanceof FunpIf) {
@@ -137,13 +137,15 @@ public class P2GenerateCode {
 				FunpMemory memory = (FunpMemory) lambda;
 				Funp frame = memory.range(0, ps);
 				Funp ip = memory.range(ps, ps + ps);
+				int size = is;
 				compileReg_(r, spd, frame);
 				compileReg_(r + 1, spd, ip);
 				instructions.add(amd64.instruction(Insn.MOV, ebp, r0));
 				instructions.add(amd64.instruction(Insn.CALL, stack[r + 1]));
-				instructions.add(amd64.instruction(Insn.MOV, r0, stack[0]));
+				instructions.add(amd64.instruction(Insn.MOV, r0, amd64.mem(esp, is - size, size)));
 			} else {
-				FunpAllocStack n_ = new FunpAllocStack(ps + ps, buffer -> new FunpAssign(buffer, lambda, new FunpInvoke(buffer)));
+				FunpAllocStack n_ = new FunpAllocStack(ps + ps,
+						buffer -> new FunpSeq(new FunpAssign(buffer, lambda), new FunpInvoke(buffer)));
 				compileReg_(r, spd, n_);
 			}
 		} else if (n0 instanceof FunpSaveEbp) {
@@ -156,7 +158,10 @@ public class P2GenerateCode {
 			compileReg_(r, spd - r * is, ((FunpSaveRegisters) n0).expr);
 			for (int i = r - 1; 0 <= i; i--)
 				instructions.add(amd64.instruction(Insn.POP, stack[i]));
-		} else if ((po = parseOperator(n0)) != null && Objects.equals(po.op, TermOp.PLUS__.name)) {
+		} else if (n0 instanceof FunpSeq)
+			for (Funp expr : ((FunpSeq) n0).exprs)
+				compileReg_(r, spd, expr);
+		else if ((po = parseOperator(n0)) != null && Objects.equals(po.op, TermOp.PLUS__.name)) {
 			int sp1 = r + 1;
 			compileReg_(r, spd, po.right);
 			compileReg_(sp1, spd, po.left);

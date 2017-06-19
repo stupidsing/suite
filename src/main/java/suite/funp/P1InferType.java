@@ -22,6 +22,7 @@ import suite.funp.P1.FunpInvoke;
 import suite.funp.P1.FunpMemory;
 import suite.funp.P1.FunpSaveEbp;
 import suite.funp.P1.FunpSaveRegisters;
+import suite.funp.P1.FunpSeq;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
@@ -56,7 +57,7 @@ public class P1InferType {
 	}
 
 	private Node infer(Funp funp) {
-		IMap<String, Node> env = IMap.<String, Node>empty() //
+		IMap<String, Node> env = IMap.<String, Node> empty() //
 				.put(TermOp.PLUS__.getName(), Suite.substitute(".0 => .1 => .2", ftNumber, ftNumber, ftNumber));
 
 		return infer(env, funp);
@@ -119,37 +120,40 @@ public class P1InferType {
 			Funp p = n1.value;
 			int size = getTypeSize(typeByNode.get(p));
 			Funp lambda = rewrite(scope, env, n1.lambda);
-			FunpAllocStack invoke = new FunpAllocStack(size, buffer -> new FunpAssign(buffer, p, new FunpInvoke(lambda)));
+			FunpAllocStack invoke = new FunpAllocStack(size,
+					buffer -> new FunpSeq(new FunpAssign(buffer, p), new FunpInvoke(lambda)));
 			return new FunpSaveEbp(new FunpSaveRegisters(invoke));
 		} else if (n0 instanceof FunpLambda) {
 			String var = ((FunpLambda) n0).var;
 			int scope1 = scope + 1;
-			int vs = getTypeSize(defLambda.apply(typeByNode.get(n0))[0]);
-			return rewrite(scope1, env.put(var, new Var(scope1, vs)), n0);
+			Node[] types = defLambda.apply(typeByNode.get(n0));
+			int is = getTypeSize(types[0]);
+			int os = getTypeSize(types[1]);
+			Funp lambda = rewrite(scope1, env.put(var, new Var(scope1, os, is)), n0);
+			return new FunpAssign(new FunpMemory(new FunpFramePointer(), 0, os), lambda);
 		} else if (n0 instanceof FunpPolyType)
 			return rewrite(scope, env, ((FunpPolyType) n0).expr);
 		else if (n0 instanceof FunpVariable) {
 			Var vd = env.get(((FunpVariable) n0).var);
 			int scope1 = vd.scope;
-			int size = vd.size;
-			Funp n1 = new FunpFramePointer();
-
+			Funp nfp = new FunpFramePointer();
 			while (scope != scope1) {
-				n1 = new FunpMemory(n1, 0, Funp_.pointerSize);
+				nfp = new FunpMemory(nfp, 0, Funp_.pointerSize);
 				scope1--;
 			}
-
-			return new FunpMemory(n1, size + Funp_.pointerSize * 2, size);
+			return new FunpMemory(nfp, vd.offset, vd.size);
 		} else
 			return null;
 	}
 
 	private class Var {
 		private int scope;
+		private int offset;
 		private int size;
 
-		public Var(int scope, int size) {
+		public Var(int scope, int offset, int size) {
 			this.scope = scope;
+			this.offset = offset;
 			this.size = size;
 		}
 

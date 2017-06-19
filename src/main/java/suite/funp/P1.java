@@ -18,12 +18,10 @@ public class P1 {
 	public static class FunpAssign implements Funp {
 		public FunpMemory memory;
 		public Funp value;
-		public Funp expr;
 
-		public FunpAssign(FunpMemory memory, Funp value, Funp expr) {
+		public FunpAssign(FunpMemory memory, Funp value) {
 			this.memory = memory;
 			this.value = value;
-			this.expr = expr;
 		}
 	}
 
@@ -71,6 +69,14 @@ public class P1 {
 
 		public FunpSaveRegisters(Funp expr) {
 			this.expr = expr;
+		}
+	}
+
+	public static class FunpSeq implements Funp {
+		public Funp[] exprs;
+
+		public FunpSeq(Funp... exprs) {
+			this.exprs = exprs;
 		}
 	}
 
