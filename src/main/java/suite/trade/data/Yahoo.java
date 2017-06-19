@@ -82,6 +82,7 @@ public class Yahoo {
 		return new DataSource(dates, prices).filter((date, price) -> price != 0f);
 	}
 
+	// https://l1-query.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com
 	public DataSource dataSourceL1Manual(String symbol, TimeRange period) {
 		return dataSourceL1Manual(symbol).range(period);
 	}
