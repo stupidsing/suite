@@ -283,7 +283,7 @@ public class Amd64 {
 		return instruction;
 	}
 
-	public Operand mem(OpReg reg, long disp, int size) {
+	public OpMem mem(OpReg reg, long disp, int size) {
 		OpMem op = new OpMem();
 		op.baseReg = reg.reg;
 		op.size = size;
