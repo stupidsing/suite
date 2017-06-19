@@ -57,6 +57,7 @@ public class DailyMain extends ExecutableProgram {
 	public final BackAllocConfiguration bac_pmamr = assetAllocConfigurationOf(MovingAvgMeanReversionBackAllocator0.of(log));
 	public final BackAllocConfiguration bac_pmmmr = assetAllocConfigurationOf(BackAllocator_.movingMedianMeanReversion());
 	public final BackAllocConfiguration bac_revco = assetAllocConfigurationOf(ReverseCorrelateBackAllocator.of());
+	public final BackAllocConfiguration bac_tma = assetAllocConfigurationOf(BackAllocator_.threeMovingAvgs());
 
 	private class Result {
 		private String strategy;
@@ -77,13 +78,14 @@ public class DailyMain extends ExecutableProgram {
 
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //
-				alloc("bb", 200000f, bac_bb), //
+				alloc("bb", 100000f, bac_bb), //
 				bug(), //
-				alloc("ema", 200000f, bac_ema), //
+				alloc("ema", 100000f, bac_ema), //
 				mamr(100000f), //
 				pmamr(100000f), //
 				pmmmr(120000f), //
-				alloc("revco", 80000f, bac_revco));
+				alloc("revco", 80000f, bac_revco), //
+				alloc("tma", 100000f, bac_tma));
 
 		// unused strategies
 		pairs(0f, "0341.HK", "0052.HK");
