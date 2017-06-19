@@ -129,10 +129,6 @@ public class DailyMain extends ExecutableProgram {
 		return true;
 	}
 
-	private Result bug() {
-		return sell("bug");
-	}
-
 	// moving average mean reversion
 	private Result mamr(float factor) {
 		String tag = "mamr";
