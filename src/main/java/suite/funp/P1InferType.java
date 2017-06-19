@@ -118,19 +118,21 @@ public class P1InferType {
 		if (n0 instanceof FunpApply) {
 			FunpApply n1 = (FunpApply) n0;
 			Funp p = n1.value;
-			int size = getTypeSize(typeByNode.get(p));
-			Funp lambda = rewrite(scope, env, n1.lambda);
-			FunpAllocStack invoke = new FunpAllocStack(size,
-					buffer -> new FunpSeq(new FunpAssign(buffer, p), new FunpInvoke(lambda)));
+			Funp lambda0 = n1.lambda;
+			LambdaType lt = new LambdaType(lambda0);
+			Funp lambda1 = rewrite(scope, env, lambda0);
+			FunpAllocStack invoke = new FunpAllocStack( //
+					lt.is + lt.os, //
+					buffer -> new FunpSeq( //
+							new FunpAssign(buffer.range(0, lt.is), p), //
+							new FunpInvoke(lambda1)));
 			return new FunpSaveEbp(new FunpSaveRegisters(invoke));
 		} else if (n0 instanceof FunpLambda) {
 			String var = ((FunpLambda) n0).var;
 			int scope1 = scope + 1;
-			Node[] types = defLambda.apply(typeByNode.get(n0));
-			int is = getTypeSize(types[0]);
-			int os = getTypeSize(types[1]);
-			Funp lambda = rewrite(scope1, env.put(var, new Var(scope1, os, is)), n0);
-			return new FunpAssign(new FunpMemory(new FunpFramePointer(), 0, os), lambda);
+			LambdaType lt = new LambdaType(n0);
+			Funp n1 = rewrite(scope1, env.put(var, new Var(scope1, lt.os, lt.is)), n0);
+			return new FunpAssign(new FunpMemory(new FunpFramePointer(), 0, lt.os), n1);
 		} else if (n0 instanceof FunpPolyType)
 			return rewrite(scope, env, ((FunpPolyType) n0).expr);
 		else if (n0 instanceof FunpVariable) {
@@ -157,6 +159,16 @@ public class P1InferType {
 			this.size = size;
 		}
 
+	}
+
+	private class LambdaType {
+		private int is, os;
+
+		private LambdaType(Funp lambda) {
+			Node[] types = defLambda.apply(typeByNode.get(lambda));
+			is = getTypeSize(types[0]);
+			os = getTypeSize(types[1]);
+		}
 	}
 
 	private int getTypeSize(Node n0) {
