@@ -50,7 +50,7 @@ public class BackTestMain extends ExecutableProgram {
 
 		// BEGIN
 		bac0 = bac_hsi;
-		bac1 = dm.assetAllocConfigurationOf(BackAllocator_.threeMovingAvgs());
+		bac1 = dm.bac_bb;
 		// END
 
 		Streamlet2<Boolean, Simulate> simulationsByKey = Read //
