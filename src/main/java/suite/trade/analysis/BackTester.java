@@ -49,7 +49,7 @@ public class BackTester {
 	public Simulate backTest(BackAllocator backAllocator, TimeRange period, Streamlet<Asset> assets) {
 		BackAllocTester backTest = BackAllocTester.ofFromTo( //
 				cfg, //
-				assets.cons(Asset.hsi), //
+				assets, //
 				backAllocator, //
 				period, //
 				log);

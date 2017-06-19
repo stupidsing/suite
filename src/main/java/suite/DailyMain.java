@@ -53,7 +53,7 @@ public class DailyMain extends ExecutableProgram {
 	private Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today);
 
 	public final BackAllocConfiguration bac_bb = assetAllocConfigurationOf(BackAllocator_.bollingerBands());
-	public final BackAllocConfiguration bac_ema = assetAllocConfigurationOf(BackAllocator_.byEma());
+	public final BackAllocConfiguration bac_ema = assetAllocConfigurationOf(BackAllocator_.byEma().unleverage());
 	public final BackAllocConfiguration bac_pmamr = assetAllocConfigurationOf(MovingAvgMeanReversionBackAllocator0.of(log));
 	public final BackAllocConfiguration bac_pmmmr = assetAllocConfigurationOf(BackAllocator_.movingMedianMeanReversion());
 	public final BackAllocConfiguration bac_revco = assetAllocConfigurationOf(ReverseCorrelateBackAllocator.of());
@@ -77,17 +77,17 @@ public class DailyMain extends ExecutableProgram {
 
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //
-				alloc("bb", 400000f, bac_bb), //
+				alloc("bb", 200000f, bac_bb), //
 				bug(), //
-				alloc("ema", 400000f, bac_ema), //
+				alloc("ema", 200000f, bac_ema), //
 				mamr(100000f), //
-				pairs(0f, "0052.HK", "0341.HK"), //
-				pairs(0f, "0341.HK", "0052.HK"), //
 				pmamr(100000f), //
-				pmmmr(75000f), //
-				questoaQuella(160000f, "0020.HK", "0004.HK"), //
-				questoaQuella(200000f, "0670.HK", "1055.HK"), //
+				pmmmr(120000f), //
 				alloc("revco", 80000f, bac_revco));
+
+		// unused strategies
+		pairs(0f, "0341.HK", "0052.HK");
+		questoaQuella(200000f, "0670.HK", "1055.HK");
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
 
