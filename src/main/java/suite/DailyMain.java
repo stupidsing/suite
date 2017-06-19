@@ -52,7 +52,8 @@ public class DailyMain extends ExecutableProgram {
 	private Time today = Time.now();
 	private Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today);
 
-	public final BackAllocConfiguration bac_bb = assetAllocConfigurationOf(BackAllocator_.bollingerBands1());
+	public final BackAllocConfiguration bac_bb = assetAllocConfigurationOf(BackAllocator_.bollingerBands());
+	public final BackAllocConfiguration bac_ema = assetAllocConfigurationOf(BackAllocator_.byEma());
 	public final BackAllocConfiguration bac_pmamr = assetAllocConfigurationOf(MovingAvgMeanReversionBackAllocator0.of(log));
 	public final BackAllocConfiguration bac_pmmmr = assetAllocConfigurationOf(BackAllocator_.movingMedianMeanReversion());
 	public final BackAllocConfiguration bac_revco = assetAllocConfigurationOf(ReverseCorrelateBackAllocator.of());
@@ -78,6 +79,7 @@ public class DailyMain extends ExecutableProgram {
 		List<Result> results = Arrays.asList( //
 				alloc("bb", 400000f, bac_bb), //
 				bug(), //
+				alloc("ema", 400000f, bac_ema), //
 				mamr(100000f), //
 				pairs(0f, "0052.HK", "0341.HK"), //
 				pairs(0f, "0341.HK", "0052.HK"), //

@@ -16,27 +16,26 @@ public class YahooTest {
 
 	private Yahoo yahoo = new Yahoo();
 
-
 	@Test
 	public void testL1() {
 		test(yahoo::dataSourceL1);
 	}
 
 	@Test
-	public void testL1Manual() {
+	public void testL1Adjust() {
 		Time frDate = Time.ofEpochUtcSecond(1490578200l);
 		Time toDate = Time.ofEpochUtcSecond(1497490200l);
-		Dump.out(yahoo.dataSourceL1Manual("0012.HK", TimeRange.of(frDate, toDate)));
+		Dump.out(yahoo.dataSourceL1("0012.HK", TimeRange.of(frDate, toDate)));
 	}
 
 	// @Test
-	public void testL1ManualAll() {
+	public void testL1All() {
 		HkexFactBook hkexFactBook = new HkexFactBook();
 		Iterable<String> symbols = hkexFactBook.queryMainBoardCompanies(2016);
 		// hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
 		for (String symbol : symbols) {
 			try {
-				yahoo.dataSourceL1Manual(symbol, TimeRange.daysBefore(31));
+				yahoo.dataSourceL1(symbol, TimeRange.daysBefore(31));
 			} catch (Exception ex) {
 				LogUtil.error(ex);
 			}

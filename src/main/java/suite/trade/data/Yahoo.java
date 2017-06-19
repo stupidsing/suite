@@ -1,6 +1,5 @@
 package suite.trade.data;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -62,50 +61,26 @@ public class Yahoo {
 		return dataSource;
 	}
 
-	public DataSource dataSourceL1(String symbol, TimeRange period) {
-		JsonNode json = queryL1(symbol, period);
-
-		Streamlet<JsonNode> jsons = Read.each(json) //
-				.flatMap(json_ -> json_.path("chart").path("result"));
-
-		String[] dates = jsons //
-				.flatMap(json_ -> json_.path("timestamp")) //
-				.map(json_ -> Time.ofEpochUtcSecond(json_.longValue())) //
-				.map(Time::ymd) //
-				.toArray(String.class);
-
-		float[] prices = jsons //
-				.flatMap(json_ -> json_.path("indicators").path("quote")) //
-				.flatMap(json_ -> json_.path("open")) //
-				.collect(As.arrayOfFloats(JsonNode::floatValue));
-
-		return new DataSource(dates, prices).filter((date, price) -> price != 0f);
-	}
-
 	// https://l1-query.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com
-	public DataSource dataSourceL1Manual(String symbol, TimeRange period) {
-		return dataSourceL1Manual(symbol).range(period);
+	public DataSource dataSourceL1(String symbol, TimeRange period) {
+		return dataSourceL1(symbol).range(period);
 	}
 
-	private DataSource dataSourceL1Manual(String symbol) {
+	private DataSource dataSourceL1(String symbol) {
 		Path path = HomeDir.dir("yahoo").resolve(symbol + ".txt");
 		StockHistory stockHistory0;
-		TimeRange period;
 
 		if (Files.exists(path)) {
 			List<String> lines = Rethrow.ex(() -> Files.readAllLines(path));
 			stockHistory0 = StockHistory.of(Read.from(lines).outlet());
-			period = TimeRange.daysBefore(31);
-		} else {
+		} else
 			stockHistory0 = StockHistory.new_();
-			period = TimeRange.ages();
-		}
 
 		Time time = HkexUtil.getTradeTimeBefore(Time.now());
 		StockHistory stockHistory1;
 
 		if (stockHistory0.time.compareTo(time) < 0) {
-			JsonNode json = queryL1(symbol, period);
+			JsonNode json = queryL1(symbol, TimeRange.of(stockHistory0.time.addDays(-14), Time.now()));
 
 			Streamlet<JsonNode> jsons = Read.each(json) //
 					.flatMap(json_ -> json_.path("chart").path("result"));
@@ -146,15 +121,11 @@ public class Yahoo {
 					.toArray(LngFltPair.class);
 
 			stockHistory1 = StockHistory.of(data, dividends, splits).merge(stockHistory0);
+
+			List<String> lines = stockHistory1.write().toList();
+			Rethrow.ex(() -> Files.write(path, lines));
 		} else
 			stockHistory1 = stockHistory0;
-
-		try {
-			List<String> lines = stockHistory1.write().toList();
-			Files.write(path, lines);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
 
 		DataSource dataSource = stockHistory1.adjustPrices("close");
 		dataSource.cleanse();
@@ -168,19 +139,20 @@ public class Yahoo {
 	}
 
 	private JsonNode queryL1(String symbol, TimeRange period) {
-		String urlString = "https://l1-query.finance.yahoo.com/v7/finance/chart/" //
+		URL url = To.url("" //
+				+ "https://l1-query.finance.yahoo.com/v7/finance/chart/" //
 				+ encode(symbol) //
-				+ "?period1=" + period.from.startOfDay().epochUtcSecond() //
-				+ "&period2=" + period.to.startOfDay().epochUtcSecond() //
+				+ "?period1=" + period.from.epochUtcSecond() //
+				+ "&period2=" + period.to.epochUtcSecond() //
 				+ "&interval=1d" //
 				+ "&indicators=quote" //
 				+ "&includeTimestamps=true" //
 				+ "&includePrePost=true" //
 				+ "&events=div%7Csplit%7Cearn" //
-				+ "&corsDomain=finance.yahoo.com";
+				+ "&corsDomain=finance.yahoo.com");
 
 		JsonNode json = Rethrow.ex(() -> {
-			try (InputStream is = Singleton.get().getStoreCache().http(urlString).collect(To::inputStream)) {
+			try (InputStream is = HttpUtil.get(url).out.collect(To::inputStream)) {
 				return mapper.readTree(is);
 			}
 		});

@@ -15,8 +15,6 @@ public interface Configuration {
 
 	public DataSource dataSource(String symbol, TimeRange period);
 
-	public DataSource dataSourceWithLatestQuote(String symbol);
-
 	public Streamlet<Asset> queryCompanies();
 
 	public Asset queryCompany(String symbol);

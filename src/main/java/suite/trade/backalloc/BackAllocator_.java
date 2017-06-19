@@ -35,11 +35,6 @@ public class BackAllocator_ {
 		return bollingerBands_(k);
 	}
 
-	public static BackAllocator bollingerBands1() {
-		int lag = 1; // lag 1 day is better in back tests, do not know why
-		return bollingerBands_(32 + lag, lag, 2f);
-	}
-
 	public static BackAllocator byEma() {
 		int halfLife = 64;
 		double threshold = .9d;

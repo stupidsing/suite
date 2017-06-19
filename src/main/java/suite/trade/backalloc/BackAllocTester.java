@@ -113,7 +113,7 @@ public class BackAllocTester {
 
 			Streamlet2<String, DataSource> dataSourceBySymbol0 = Read //
 					.from(symbols) //
-					.map2(symbol -> cfg.dataSourceWithLatestQuote(symbol).after(historyFromDate)) //
+					.map2(symbol -> cfg.dataSource(symbol).after(historyFromDate)) //
 					.map2((symbol, dataSource) -> {
 						try {
 							dataSource.validate();

@@ -24,7 +24,6 @@ public class ConfigurationImpl implements Configuration {
 	private Hkex hkex = new Hkex();
 	private HkexFactBook hkexFactBook = new HkexFactBook();
 	private Yahoo yahoo = new Yahoo();
-	private YahooHistory yahooHistory = new YahooHistory();
 
 	private enum Source_ {
 		HKD__, YAHOO,
@@ -36,21 +35,6 @@ public class ConfigurationImpl implements Configuration {
 
 	public DataSource dataSource(String symbol, TimeRange period) {
 		return dataSource_(symbol, period);
-	}
-
-	public DataSource dataSourceWithLatestQuote(String symbol) {
-
-		// count as tomorrow open if market is closed (after 4pm)
-		String date = HkexUtil.getTradeTimeAfter(Time.now()).ymd();
-		DataSource dataSource0 = dataSource_(symbol, TimeRange.ages());
-		DataSource dataSource1;
-
-		if (!String_.equals(dataSource0.last().date, date))
-			dataSource1 = dataSource0.cons(date, quote_(Collections.singleton(symbol)).get(symbol));
-		else
-			dataSource1 = dataSource0;
-
-		return dataSource1;
 	}
 
 	public Streamlet<Asset> queryCompanies() {
@@ -95,10 +79,7 @@ public class ConfigurationImpl implements Configuration {
 			dataSource = hkd.dataSource(symbol, period);
 			break;
 		case YAHOO:
-			if (yahooHistory.isContainsData(symbol))
-				dataSource = yahooHistory.dataSource(symbol, period);
-			else
-				dataSource = yahoo.dataSourceL1(symbol, period);
+			dataSource = yahoo.dataSourceL1(symbol, period);
 			break;
 		default:
 			throw new RuntimeException();
