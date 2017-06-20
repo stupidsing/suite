@@ -75,6 +75,8 @@ public class TimeSeries {
 	}
 
 	public float[] arch(float[] ys, int p, int q) {
+
+		// auto regressive
 		int length = ys.length;
 		float[][] xs0 = To.array(float[].class, length, i -> copyPadZeroes(ys, i - p, i));
 		LinearRegression lr0 = stat.linearRegression(xs0, ys);
@@ -84,6 +86,7 @@ public class TimeSeries {
 			return (float) (residual * residual);
 		});
 
+		// conditional heteroskedasticity
 		float[][] xs1 = To.array(float[].class, length, i -> copyPadZeroes(variances, i - p, i));
 		LinearRegression lr1 = stat.linearRegression(xs1, variances);
 
