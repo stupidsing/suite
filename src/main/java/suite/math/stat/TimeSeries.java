@@ -59,12 +59,13 @@ public class TimeSeries {
 			residuals[iter] = yiter;
 
 			float[][] xs = To.array(float[].class, length, i -> {
-				int from = i - p;
+				int p0 = -Math.max(0, i - p);
+				int nr = Math.min(iterp1, q);
+
 				float[] fs1 = new float[p + iterp1];
-				int p0 = -Math.max(0, from);
 				Arrays.fill(fs1, 0, p0, 0f);
-				Copy.floats(ys, 0, fs1, p0, i - p0);
-				Copy.floats(residuals, 0, fs1, p, iterp1);
+				Copy.floats(ys, 0, fs1, p0, p - p0);
+				Copy.floats(residuals, 0, fs1, p, nr);
 				return fs1;
 			});
 
