@@ -47,24 +47,24 @@ public class TimeSeries {
 		LinearRegression lr = null;
 
 		for (int iter = 0; iter < q; iter++) {
-			int iter_ = iter;
-			float yiter = ys[iter_];
-			int iter1 = iter_ - 1;
+			float yiter = ys[iter];
+			int iterm1 = iter - 1;
+			int iterp1 = iter + 1;
 
-			for (int j = 0; j < Math.min(p, iter1); j++)
-				yiter -= lr.coefficients[j] * ys[iter1 - j];
-			for (int j = 0; j < Math.min(q, iter1); j++)
-				yiter -= lr.coefficients[p + j] * residuals[iter1 - j];
+			for (int j = 0; j < Math.min(p, iterm1); j++)
+				yiter -= lr.coefficients[j] * ys[iterm1 - j];
+			for (int j = 0; j < Math.min(q, iterm1); j++)
+				yiter -= lr.coefficients[p + j] * residuals[iterm1 - j];
 
-			residuals[iter_] = yiter;
+			residuals[iter] = yiter;
 
 			float[][] xs = To.array(float[].class, length, i -> {
 				int from = i - p;
-				float[] fs1 = new float[p + iter_ + 1];
+				float[] fs1 = new float[p + iterp1];
 				int p0 = -Math.max(0, from);
 				Arrays.fill(fs1, 0, p0, 0f);
 				Copy.floats(ys, 0, fs1, p0, i - p0);
-				Copy.floats(residuals, 0, fs1, p, iter_ + 1);
+				Copy.floats(residuals, 0, fs1, p, iterp1);
 				return fs1;
 			});
 
