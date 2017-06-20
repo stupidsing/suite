@@ -34,6 +34,25 @@ public class TimeSeries {
 		return stat.linearRegression(deps, ys1);
 	}
 
+	public float[] arch(float[] ys, int p, int q) {
+
+		// auto regressive
+		int length = ys.length;
+		float[][] xs0 = To.array(float[].class, length, i -> copyPadZeroes(ys, i - p, i));
+		LinearRegression lr0 = stat.linearRegression(xs0, ys);
+
+		float[] variances = To.arrayOfFloats(length, i -> {
+			double residual = ys[i] - lr0.predict(xs0[i]);
+			return (float) (residual * residual);
+		});
+
+		// conditional heteroskedasticity
+		float[][] xs1 = To.array(float[].class, length, i -> copyPadZeroes(variances, i - p, i));
+		LinearRegression lr1 = stat.linearRegression(xs1, variances);
+
+		return mtx.concat(lr0.coefficients, lr1.coefficients);
+	}
+
 	public LinearRegression arima(float[] ys, int p, int d, int q) {
 		float[] is = mtx.of(ys);
 		for (int i = 0; i < d; i++)
@@ -73,25 +92,6 @@ public class TimeSeries {
 		}
 
 		return lr;
-	}
-
-	public float[] arch(float[] ys, int p, int q) {
-
-		// auto regressive
-		int length = ys.length;
-		float[][] xs0 = To.array(float[].class, length, i -> copyPadZeroes(ys, i - p, i));
-		LinearRegression lr0 = stat.linearRegression(xs0, ys);
-
-		float[] variances = To.arrayOfFloats(length, i -> {
-			double residual = ys[i] - lr0.predict(xs0[i]);
-			return (float) (residual * residual);
-		});
-
-		// conditional heteroskedasticity
-		float[][] xs1 = To.array(float[].class, length, i -> copyPadZeroes(variances, i - p, i));
-		LinearRegression lr1 = stat.linearRegression(xs1, variances);
-
-		return mtx.concat(lr0.coefficients, lr1.coefficients);
 	}
 
 	private float[] copyPadZeroes(float[] fs0, int from, int to) {
