@@ -6,6 +6,7 @@ import suite.math.linalg.Matrix;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.trade.Trade_;
+import suite.util.Copy;
 import suite.util.To;
 
 public class TimeSeries {
@@ -14,16 +15,87 @@ public class TimeSeries {
 	private Statistic stat = new Statistic();
 
 	// Augmented Dickey-Fuller test
-	public double adf(float[] prices, int tor) {
-		float[] diffs = differences_(1, prices);
-		float[][] deps = new float[prices.length][];
-		for (int i = tor; i < deps.length; i++)
+	public double adf(float[] ys, int tor) {
+		float[] ydiffs = differences_(1, ys);
+		float[][] xs = new float[ys.length][];
+		for (int i = tor; i < xs.length; i++)
 			// i - drift term, necessary?
-			deps[i] = mtx.concat(new float[] { prices[i - 1], 1f, i, }, Arrays.copyOfRange(diffs, i - tor, i));
-		float[][] deps1 = drop_(tor, deps);
-		float[] diffs1 = drop_(tor, diffs);
-		LinearRegression lr = stat.linearRegression(deps1, diffs1);
+			xs[i] = mtx.concat(new float[] { ys[i - 1], 1f, i, }, Arrays.copyOfRange(ydiffs, i - tor, i));
+		float[][] xs1 = drop_(tor, xs);
+		float[] ydiffs1 = drop_(tor, ydiffs);
+		LinearRegression lr = stat.linearRegression(xs1, ydiffs1);
 		return lr.tStatistic()[0];
+	}
+
+	public LinearRegression ar(float[] ys, int n) {
+		int length = ys.length;
+		float[][] deps = To.array(float[].class, length - n, i -> Arrays.copyOfRange(ys, i, i + n));
+		float[] ys1 = Arrays.copyOfRange(ys, n, length);
+		return stat.linearRegression(deps, ys1);
+	}
+
+	public LinearRegression arima(float[] ys, int p, int d, int q) {
+		float[] is = mtx.of(ys);
+		for (int i = 0; i < d; i++)
+			is = differencesOn_(i, is);
+		return arma(ys, p, q);
+	}
+
+	public LinearRegression arma(float[] ys, int p, int q) {
+		int length = ys.length;
+		float[] residuals = new float[q];
+		LinearRegression lr = null;
+
+		for (int iter = 0; iter < q; iter++) {
+			int iter_ = iter;
+			float yiter = ys[iter_];
+			int iter1 = iter_ - 1;
+
+			for (int j = 0; j < Math.min(p, iter1); j++)
+				yiter -= lr.coefficients[j] * ys[iter1 - j];
+			for (int j = 0; j < Math.min(q, iter1); j++)
+				yiter -= lr.coefficients[p + j] * residuals[iter1 - j];
+
+			residuals[iter_] = yiter;
+
+			float[][] xs = To.array(float[].class, length, i -> {
+				int from = i - p;
+				float[] fs1 = new float[p + iter_ + 1];
+				int p0 = -Math.max(0, from);
+				Arrays.fill(fs1, 0, p0, 0f);
+				Copy.floats(ys, 0, fs1, p0, i - p0);
+				Copy.floats(residuals, 0, fs1, p, iter_ + 1);
+				return fs1;
+			});
+
+			lr = stat.linearRegression(xs, ys);
+		}
+
+		return lr;
+	}
+
+	public float[] arch(float[] ys, int p, int q) {
+		int length = ys.length;
+		float[][] xs0 = To.array(float[].class, length, i -> copyPadZeroes(ys, i - p, i));
+		LinearRegression lr0 = stat.linearRegression(xs0, ys);
+
+		float[] variances = To.arrayOfFloats(length, i -> {
+			double residual = ys[i] - lr0.predict(xs0[i]);
+			return (float) (residual * residual);
+		});
+
+		float[][] xs1 = To.array(float[].class, length, i -> copyPadZeroes(variances, i - p, i));
+		LinearRegression lr1 = stat.linearRegression(xs1, variances);
+
+		return mtx.concat(lr0.coefficients, lr1.coefficients);
+	}
+
+	private float[] copyPadZeroes(float[] fs0, int from, int to) {
+		float[] fs1 = new float[to - from];
+		int p = -Math.max(0, from);
+		Arrays.fill(fs1, 0, p, 0f);
+		Copy.floats(fs0, 0, fs1, p, to - p);
+		return fs1;
 	}
 
 	public float[] back(int index, int window, float[] fs) {
@@ -72,62 +144,62 @@ public class TimeSeries {
 		return drop_(tor, differences_(tor, fs));
 	}
 
-	public double hurst(float[] prices, int tor) {
-		float[] logPrices = To.arrayOfFloats(prices, price -> (float) Math.log(price));
+	public double hurst(float[] ys, int tor) {
+		float[] logys = To.arrayOfFloats(ys, price -> (float) Math.log(price));
 		int[] tors = To.arrayOfInts(tor, t -> t + 1);
 		float[] logVrs = To.arrayOfFloats(tor, t -> {
-			float[] diffs = dropDiff(tors[t], logPrices);
+			float[] diffs = dropDiff(tors[t], logys);
 			float[] diffs2 = To.arrayOfFloats(diffs, diff -> diff * diff);
 			return (float) Math.log(stat.variance(diffs2));
 		});
-		float[][] deps = To.array(float[].class, logVrs.length, i -> new float[] { logVrs[i], 1f, });
+		float[][] xs = To.array(float[].class, logVrs.length, i -> new float[] { logVrs[i], 1f, });
 		float[] n = To.arrayOfFloats(logVrs.length, i -> (float) Math.log(tors[i]));
-		LinearRegression lr = stat.linearRegression(deps, n);
+		LinearRegression lr = stat.linearRegression(xs, n);
 		float beta0 = lr.coefficients[0];
 		return beta0 / 2d;
 	}
 
-	public boolean isUnitRootDetected(float[] prices, int tor) {
-		double tStatistic = adf(prices, tor);
-		if (prices.length <= 25)
+	public boolean isUnitRootDetected(float[] ys, int tor) {
+		double tStatistic = adf(ys, tor);
+		if (ys.length <= 25)
 			return -3d <= tStatistic;
-		else if (prices.length <= 50)
+		else if (ys.length <= 50)
 			return -2.93d <= tStatistic;
-		else if (prices.length <= 100)
+		else if (ys.length <= 100)
 			return -2.89d <= tStatistic;
-		else if (prices.length <= 250)
+		else if (ys.length <= 250)
 			return -2.88d <= tStatistic;
-		else if (prices.length <= 500)
+		else if (ys.length <= 500)
 			return -2.87d <= tStatistic;
 		else
 			return -2.86d <= tStatistic;
 	}
 
-	public float[] logReturns(float[] fs) {
-		int length = fs.length;
+	public float[] logReturns(float[] ys) {
+		int length = ys.length;
 		if (0 < length) {
 			float[] logReturns = new float[length - 1];
-			float f0 = fs[0];
+			float f0 = ys[0];
 			for (int i = 0; i < logReturns.length; i++) {
-				logReturns[i] = (float) Math.log1p((fs[i + 1] - f0) / f0);
-				f0 = fs[i + 1];
+				logReturns[i] = (float) Math.log1p((ys[i + 1] - f0) / f0);
+				f0 = ys[i + 1];
 			}
 			return logReturns;
 		} else
 			return new float[0];
 	}
 
-	public LinearRegression meanReversion(float[] prices, int tor) {
-		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { prices[i], 1f, });
-		float[] diffs1 = drop_(tor, differences_(1, prices));
-		return stat.linearRegression(deps, diffs1);
+	public LinearRegression meanReversion(float[] ys, int tor) {
+		float[][] xs = To.array(float[].class, ys.length - tor, i -> new float[] { ys[i], 1f, });
+		float[] diffs1 = drop_(tor, differences_(1, ys));
+		return stat.linearRegression(xs, diffs1);
 	}
 
-	public LinearRegression movingAvgMeanReversion(float[] prices, float[] movingAvg, int tor) {
+	public LinearRegression movingAvgMeanReversion(float[] ys, float[] movingAvg, int tor) {
 		float[] ma = drop_(tor, movingAvg);
-		float[][] deps = To.array(float[].class, prices.length - tor, i -> new float[] { ma[i], 1f, });
-		float[] diffs1 = drop_(tor, differences_(1, prices));
-		return stat.linearRegression(deps, diffs1);
+		float[][] xs = To.array(float[].class, ys.length - tor, i -> new float[] { ma[i], 1f, });
+		float[] diffs1 = drop_(tor, differences_(1, ys));
+		return stat.linearRegression(xs, diffs1);
 	}
 
 	public float[] returns(float[] fs) {
