@@ -1,5 +1,7 @@
 package suite.trade;
 
+import suite.util.To;
+
 public class Trade {
 
 	public final String date;
@@ -30,7 +32,7 @@ public class Trade {
 
 	@Override
 	public String toString() {
-		return (0 <= buySell ? "+" : "-") + symbol + ":" + price + "*" + Math.abs(buySell);
+		return (0 <= buySell ? "+" : "-") + symbol + ":" + To.string(price) + "*" + Math.abs(buySell);
 	}
 
 }
