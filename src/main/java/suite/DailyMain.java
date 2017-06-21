@@ -89,8 +89,10 @@ public class DailyMain extends ExecutableProgram {
 				sell("sellpool"));
 
 		// unused strategies
-		pairs(0f, "0341.HK", "0052.HK");
-		questoaQuella(200000f, "0670.HK", "1055.HK");
+		if (Boolean.FALSE) {
+			pairs(0f, "0341.HK", "0052.HK");
+			questoaQuella(200000f, "0670.HK", "1055.HK");
+		}
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
 
