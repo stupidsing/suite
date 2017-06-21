@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.inspect.Inspect;
 import suite.jdk.gen.Type_;
@@ -57,6 +58,12 @@ public class Object_ {
 			return t0.compareTo(t1);
 		else
 			return b0 ? 1 : b1 ? -1 : 0;
+	}
+
+	public static <T> T fix(Fun<Mutable<T>, T> fun) {
+		Mutable<T> m = Mutable.nil();
+		m.set(fun.apply(m));
+		return m.get();
 	}
 
 	public static Mapper mapper(Type type) {

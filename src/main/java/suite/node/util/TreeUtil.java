@@ -3,24 +3,22 @@ package suite.node.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.adt.Mutable;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.util.FunUtil.Sink;
+import suite.util.Object_;
 
 public class TreeUtil {
 
 	public static List<Node> breakdown(Operator operator, Node node) {
 		List<Node> list = new ArrayList<>();
-		Mutable<Sink<Node>> mutableSink = Mutable.nil();
-		Sink<Node> sink;
-		mutableSink.set(sink = node_ -> {
+		Sink<Node> sink = Object_.fix(m -> node_ -> {
 			Tree tree;
 			if ((tree = Tree.decompose(node_, operator)) != null) {
-				Sink<Node> sink_ = mutableSink.get();
+				Sink<Node> sink_ = m.get();
 				sink_.sink(tree.getLeft());
 				sink_.sink(tree.getRight());
 			} else

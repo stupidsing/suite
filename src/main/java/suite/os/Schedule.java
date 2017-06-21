@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-import suite.adt.Mutable;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
+import suite.util.Object_;
 
 public class Schedule {
 
@@ -24,27 +24,24 @@ public class Schedule {
 		else
 			firstRunDateTime1 = firstRunDateTime0;
 
-		Mutable<Source<List<Schedule>>> mutable = Mutable.nil();
-
-		mutable.set(new Source<List<Schedule>>() {
+		Source<List<Schedule>> source = Object_.fix(m -> new Source<List<Schedule>>() {
 			private LocalDateTime dateTime = firstRunDateTime1;
 
 			public List<Schedule> source() {
 				runnable.run();
-				return Arrays.asList(new Schedule(dateTime = dateTime.plusDays(1), mutable.get()));
+				return Arrays.asList(new Schedule(dateTime = dateTime.plusDays(1), m.get()));
 			}
 		});
 
-		return of(firstRunDateTime1, mutable.get());
+		return of(firstRunDateTime1, source);
 	}
 
 	public static Schedule ofRepeat(int seconds, Runnable runnable) {
-		Mutable<Source<List<Schedule>>> m = Mutable.nil();
-		m.set(() -> {
+		Source<List<Schedule>> source = Object_.fix(m -> () -> {
 			runnable.run();
 			return Arrays.asList(new Schedule(LocalDateTime.now().plusSeconds(seconds), m.get()));
 		});
-		return of(LocalDateTime.now(), m.get());
+		return of(LocalDateTime.now(), source);
 	}
 
 	public static Schedule of(LocalDateTime nextRunDateTime, Source<List<Schedule>> run) {

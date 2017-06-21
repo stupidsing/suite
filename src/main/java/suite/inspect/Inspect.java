@@ -71,8 +71,6 @@ public class Inspect {
 			}
 		};
 
-		Sink<Object> app = object_ -> append.accept(Object_.clazz(object_), object_);
-
 		sink.set(object_ -> {
 			Extract inspect_ = new Extract(object_);
 			String prefix = inspect_.prefix;
@@ -100,6 +98,7 @@ public class Inspect {
 			}
 		});
 
+		Sink<Object> app = object_ -> append.accept(Object_.clazz(object_), object_);
 		app.sink(object);
 		return sb.toString();
 	}
