@@ -2,7 +2,7 @@ package suite.funp;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 import suite.adt.Opt;
 import suite.assembler.Amd64;
@@ -27,8 +27,11 @@ import suite.funp.P1.FunpMemory;
 import suite.funp.P1.FunpSaveEbp;
 import suite.funp.P1.FunpSaveRegisters;
 import suite.funp.P1.FunpSeq;
+import suite.node.io.Operator;
+import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.primitive.Bytes;
+import suite.streamlet.Read;
 import suite.util.FunUtil2.Sink2;
 
 /**
@@ -54,6 +57,12 @@ public class P2GenerateCode {
 
 	private List<Instruction> instructions = new ArrayList<>();
 
+	private Map<Operator, Insn> insnByOp = Read.<Operator, Insn>empty2() //
+			.append(TermOp.PLUS__, Insn.ADD) //
+			.append(TermOp.MINUS_, Insn.SUB) //
+			.append(TermOp.MULT__, Insn.IMUL) //
+			.toMap();
+
 	public Bytes compile(Funp funp, int offset) {
 		Amd64Assembler asm = new Amd64Assembler();
 		compileReg_(0, 0, funp);
@@ -64,8 +73,10 @@ public class P2GenerateCode {
 			int r, // register stack pointer
 			int spd, // = ESP - EBP
 			Funp n0) {
-		ParseOperator po;
 		Opt<Operand> oper;
+		ParseOperator po;
+		Operator op;
+		Insn insn;
 		OpReg r0 = stack[r];
 
 		if (n0 instanceof FunpAllocStack) {
@@ -110,11 +121,18 @@ public class P2GenerateCode {
 		} else if (n0 instanceof FunpSeq)
 			for (Funp expr : ((FunpSeq) n0).exprs)
 				compileReg_(r, spd, expr);
-		else if ((po = parseOperator(n0)) != null && Objects.equals(po.op, TermOp.PLUS__.name)) {
+		else if ((po = parseOperator(n0)) != null //
+				&& (op = TermOp.find(po.op)) != null //
+				&& (insn = insnByOp.get(op)) != null) {
 			int sp1 = r + 1;
-			compileReg_(r, spd, po.right);
-			compileReg_(sp1, spd, po.left);
-			instructions.add(amd64.instruction(Insn.ADD, r0, stack[sp1]));
+			if (op.getAssoc() == Assoc.RIGHT) {
+				compileReg_(r, spd, po.right);
+				compileReg_(sp1, spd, po.left);
+			} else {
+				compileReg_(r, spd, po.left);
+				compileReg_(sp1, spd, po.right);
+			}
+			instructions.add(amd64.instruction(insn, r0, stack[sp1]));
 		} else if (!(oper = compileOp(r, n0)).isEmpty())
 			instructions.add(amd64.instruction(Insn.MOV, r0, oper.get()));
 		else
@@ -241,7 +259,7 @@ public class P2GenerateCode {
 		}
 	}
 
-	public ParseOperator parseOperator(Funp n0) {
+	private ParseOperator parseOperator(Funp n0) {
 		FunpApply n1 = n0 instanceof FunpApply ? (FunpApply) n0 : null;
 		Funp n2 = n1 != null ? n1.value : null;
 		FunpApply n3 = n2 instanceof FunpApply ? (FunpApply) n2 : null;
