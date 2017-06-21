@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
-import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
@@ -51,9 +50,8 @@ public class Inspect {
 	public String toString(Object object) {
 		StringBuilder sb = new StringBuilder();
 		Set<Integer> ids = new HashSet<>();
-		Mutable<Sink<Object>> sink = Mutable.nil();
 
-		BiConsumer<Class<?>, Object> append = (clazz, object_) -> {
+		BiConsumer<Class<?>, Object> append = Object_.fix(m -> (clazz, object_) -> {
 			if (object_ == null)
 				sb.append("null");
 			else if (Type_.isSimple(clazz))
@@ -62,44 +60,41 @@ public class Inspect {
 				int id = System.identityHashCode(object_);
 				if (ids.add(id))
 					try {
-						sink.get().sink(object_);
+						Extract inspect_ = new Extract(object_);
+						String prefix = inspect_.prefix;
+						Class<?> keyClass = inspect_.keyClass;
+						ExtractField iter = inspect_.children;
+
+						if (String_.equals(prefix, "[")) {
+							sb.append("[");
+							while (iter.next()) {
+								m.get().accept(keyClass, iter.getKey());
+								sb.append(",");
+							}
+							sb.append("]");
+						} else {
+							sb.append(prefix);
+							if (!String_.equals(prefix, "{"))
+								sb.append("{");
+							while (iter.next()) {
+								m.get().accept(keyClass, iter.getKey());
+								sb.append("=");
+								m.get().accept(iter.getValueClass(), iter.getValue());
+								sb.append(",");
+							}
+							sb.append("}");
+						}
 					} finally {
 						ids.remove(id);
 					}
 				else
 					sb.append("<recurse>");
 			}
-		};
-
-		sink.set(object_ -> {
-			Extract inspect_ = new Extract(object_);
-			String prefix = inspect_.prefix;
-			Class<?> keyClass = inspect_.keyClass;
-			ExtractField iter = inspect_.children;
-
-			if (String_.equals(prefix, "[")) {
-				sb.append("[");
-				while (iter.next()) {
-					append.accept(keyClass, iter.getKey());
-					sb.append(",");
-				}
-				sb.append("]");
-			} else {
-				sb.append(prefix);
-				if (!String_.equals(prefix, "{"))
-					sb.append("{");
-				while (iter.next()) {
-					append.accept(keyClass, iter.getKey());
-					sb.append("=");
-					append.accept(iter.getValueClass(), iter.getValue());
-					sb.append(",");
-				}
-				sb.append("}");
-			}
 		});
 
 		Sink<Object> app = object_ -> append.accept(Object_.clazz(object_), object_);
 		app.sink(object);
+
 		return sb.toString();
 	}
 
