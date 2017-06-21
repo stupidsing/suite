@@ -12,6 +12,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.util.Object_;
 import suite.util.Set_;
 import suite.util.String_;
 
@@ -79,6 +80,13 @@ public class StockHistory {
 		return of(data1, merge(dividends, other.dividends), merge(splits, other.splits));
 	}
 
+	public StockHistory alignToDate() {
+		Map<String, LngFltPair[]> data1 = Read.from2(data) //
+				.mapValue(this::alignToDate) //
+				.toMap();
+		return of(data1, alignToDate(dividends), alignToDate(splits));
+	}
+
 	private LngFltPair[] merge(LngFltPair[] pairs0, LngFltPair[] pairs1) {
 		List<LngFltPair> pairs = new ArrayList<>();
 		int length1 = pairs1.length;
@@ -99,6 +107,18 @@ public class StockHistory {
 		while (i1 < length1)
 			pairs.add(pairs1[i1++]);
 		return pairs.toArray(new LngFltPair[0]);
+	}
+
+	private LngFltPair[] alignToDate(LngFltPair[] pairs) {
+		List<LngFltPair> list = new ArrayList<>();
+		Time date = TimeRange.ages().from;
+		for (LngFltPair pair : pairs) {
+			Time date1 = Time.ofEpochUtcSecond(pair.t0).startOfDay();
+			if (Object_.compare(date, date1) < 0)
+				list.add(pair);
+			date = date1;
+		}
+		return list.toArray(new LngFltPair[0]);
 	}
 
 	public DataSource adjustPrices(String tag) {

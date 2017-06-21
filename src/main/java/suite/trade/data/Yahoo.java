@@ -120,7 +120,7 @@ public class Yahoo {
 					.sort(LngFltPair.comparatorByFirst()) //
 					.toArray(LngFltPair.class);
 
-			stockHistory1 = StockHistory.of(data, dividends, splits).merge(stockHistory0);
+			stockHistory1 = StockHistory.of(data, dividends, splits).merge(stockHistory0).alignToDate();
 
 			List<String> lines = stockHistory1.write().toList();
 			Rethrow.ex(() -> Files.write(path, lines));
