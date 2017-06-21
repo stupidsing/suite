@@ -69,10 +69,12 @@ public class TimeSeries {
 			float yiter = ys[iter];
 			int iterm1 = iter - 1;
 			int iterp1 = iter + 1;
+			int ix = Math.min(p, iterm1);
+			int jx = Math.min(q, iterm1);
 
-			for (int j = 0; j < Math.min(p, iterm1); j++)
+			for (int j = 0; j < ix; j++)
 				yiter -= lr.coefficients[j] * ys[iterm1 - j];
-			for (int j = 0; j < Math.min(q, iterm1); j++)
+			for (int j = 0; j < jx; j++)
 				yiter -= lr.coefficients[p + j] * residuals[iterm1 - j];
 
 			residuals[iter] = yiter;
