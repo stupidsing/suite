@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.function.IntFunction;
 
 import suite.Constants;
-import suite.adt.Mutable;
 import suite.immutable.IPointer;
 import suite.instructionexecutor.thunk.IndexedReader;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
@@ -64,19 +63,18 @@ public class Intrinsics {
 	}
 
 	public static Node drain(IntrinsicCallback callback, IPointer<Node> pointer) {
-		Mutable<Intrinsic> drain = Mutable.nil();
-		drain.set((callback1, inputs) -> {
+		Intrinsic drain = Object_.fix(m -> (callback1, inputs) -> {
 			IPointer<Node> pointer1 = Data.get(inputs.get(0));
 			Node head;
 
 			if ((head = pointer1.head()) != null) {
 				Node left = callback1.enclose(Intrinsics.id_, head);
-				Node right = callback1.enclose(drain.get(), new Data<>(pointer1.tail()));
+				Node right = callback1.enclose(m.get(), new Data<>(pointer1.tail()));
 				return Tree.of(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
 		});
-		return callback.yawn(callback.enclose(drain.get(), new Data<>(pointer)));
+		return callback.yawn(callback.enclose(drain, new Data<>(pointer)));
 	}
 
 	public static Node enclose(IntrinsicCallback callback, Node node) {
