@@ -57,9 +57,13 @@ public class P1InferType {
 	}
 
 	private Node infer(Funp funp) {
-		IMap<String, Node> env = IMap.<String, Node> empty() //
-				.put(TermOp.PLUS__.getName(), Suite.substitute(".0 => .1 => .2", ftNumber, ftNumber, ftNumber));
-
+		Node t0 = ftNumber;
+		Node t1 = defLambda.substitute(ftNumber, t0);
+		Node t2 = defLambda.substitute(ftNumber, t1);
+		IMap<String, Node> env = IMap.<String, Node>empty() //
+				.put(TermOp.PLUS__.getName(), t2) //
+				.put(TermOp.MINUS_.getName(), t2) //
+				.put(TermOp.MULT__.getName(), t2);
 		return infer(env, funp);
 	}
 
@@ -74,7 +78,7 @@ public class P1InferType {
 		if (n0 instanceof FunpApply) {
 			FunpApply n1 = (FunpApply) n0;
 			Node[] m = defLambda.apply(infer(env, n1.lambda));
-			if (!bind(m[0], infer(env, n1.value)))
+			if (bind(m[0], infer(env, n1.value)))
 				return m[1];
 			else
 				throw new RuntimeException("cannot infer type for " + n0);
@@ -121,18 +125,18 @@ public class P1InferType {
 			Funp lambda0 = n1.lambda;
 			LambdaType lt = new LambdaType(lambda0);
 			Funp lambda1 = rewrite(scope, env, lambda0);
-			FunpAllocStack invoke = new FunpAllocStack( //
+			FunpAllocStack invoke = FunpAllocStack.of( //
 					lt.is + lt.os, //
-					buffer -> new FunpSeq( //
-							new FunpAssign(buffer.range(0, lt.is), p), //
-							new FunpInvoke(lambda1)));
-			return new FunpSaveEbp(new FunpSaveRegisters(invoke));
+					buffer -> FunpSeq.of( //
+							FunpAssign.of(buffer.range(0, lt.is), p), //
+							FunpInvoke.of(lambda1)));
+			return FunpSaveEbp.of(FunpSaveRegisters.of(invoke));
 		} else if (n0 instanceof FunpLambda) {
 			String var = ((FunpLambda) n0).var;
 			int scope1 = scope + 1;
 			LambdaType lt = new LambdaType(n0);
 			Funp n1 = rewrite(scope1, env.put(var, new Var(scope1, lt.os, lt.is)), n0);
-			return new FunpAssign(new FunpMemory(new FunpFramePointer(), 0, lt.os), n1);
+			return FunpAssign.of(FunpMemory.of(new FunpFramePointer(), 0, lt.os), n1);
 		} else if (n0 instanceof FunpPolyType)
 			return rewrite(scope, env, ((FunpPolyType) n0).expr);
 		else if (n0 instanceof FunpVariable) {
@@ -140,10 +144,10 @@ public class P1InferType {
 			int scope1 = vd.scope;
 			Funp nfp = new FunpFramePointer();
 			while (scope != scope1) {
-				nfp = new FunpMemory(nfp, 0, Funp_.pointerSize);
+				nfp = FunpMemory.of(nfp, 0, Funp_.pointerSize);
 				scope1--;
 			}
-			return new FunpMemory(nfp, vd.offset, vd.size);
+			return FunpMemory.of(nfp, vd.offset, vd.size);
 		} else
 			return null;
 	}
@@ -184,8 +188,8 @@ public class P1InferType {
 			throw new RuntimeException("cannot infer type for " + n0);
 	}
 
-	private boolean bind(Node ft0, Node ft1) {
-		return Binder.bind(ft0, ft1, trail);
+	private boolean bind(Node t0, Node t1) {
+		return Binder.bind(t0, t1, trail);
 	}
 
 }

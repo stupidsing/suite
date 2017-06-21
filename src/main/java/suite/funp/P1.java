@@ -9,9 +9,11 @@ public class P1 {
 		public int size; // allocate size
 		public Fun<FunpMemory, Funp> expr;
 
-		public FunpAllocStack(int size, Fun<FunpMemory, Funp> expr) {
-			this.size = size;
-			this.expr = expr;
+		public static FunpAllocStack of(int size, Fun<FunpMemory, Funp> expr) {
+			FunpAllocStack f = new FunpAllocStack();
+			f.size = size;
+			f.expr = expr;
+			return f;
 		}
 	}
 
@@ -19,9 +21,11 @@ public class P1 {
 		public FunpMemory memory;
 		public Funp value;
 
-		public FunpAssign(FunpMemory memory, Funp value) {
-			this.memory = memory;
-			this.value = value;
+		public static FunpAssign of(FunpMemory memory, Funp value) {
+			FunpAssign f = new FunpAssign();
+			f.memory = memory;
+			f.value = value;
+			return f;
 		}
 	}
 
@@ -31,8 +35,10 @@ public class P1 {
 	public static class FunpInvoke implements Funp {
 		public Funp lambda;
 
-		public FunpInvoke(Funp lambda) {
-			this.lambda = lambda;
+		public static FunpInvoke of(Funp lambda) {
+			FunpInvoke f = new FunpInvoke();
+			f.lambda = lambda;
+			return f;
 		}
 	}
 
@@ -41,14 +47,16 @@ public class P1 {
 		public int start;
 		public int end;
 
-		public FunpMemory(Funp pointer, int start, int end) {
-			this.pointer = pointer;
-			this.start = start;
-			this.end = end;
+		public static FunpMemory of(Funp pointer, int start, int end) {
+			FunpMemory f = new FunpMemory();
+			f.pointer = pointer;
+			f.start = start;
+			f.end = end;
+			return f;
 		}
 
 		public FunpMemory range(int s, int e) {
-			return new FunpMemory(pointer, start + s, start + e);
+			return of(pointer, start + s, start + e);
 		}
 
 		public int size() {
@@ -59,24 +67,30 @@ public class P1 {
 	public static class FunpSaveEbp implements Funp {
 		public Funp expr;
 
-		public FunpSaveEbp(Funp expr) {
-			this.expr = expr;
+		public static FunpSaveEbp of(Funp expr) {
+			FunpSaveEbp f = new FunpSaveEbp();
+			f.expr = expr;
+			return f;
 		}
 	}
 
 	public static class FunpSaveRegisters implements Funp {
 		public Funp expr;
 
-		public FunpSaveRegisters(Funp expr) {
-			this.expr = expr;
+		public static FunpSaveRegisters of(Funp expr) {
+			FunpSaveRegisters f = new FunpSaveRegisters();
+			f.expr = expr;
+			return f;
 		}
 	}
 
 	public static class FunpSeq implements Funp {
 		public Funp[] exprs;
 
-		public FunpSeq(Funp... exprs) {
-			this.exprs = exprs;
+		public static FunpSeq of(Funp... exprs) {
+			FunpSeq f = new FunpSeq();
+			f.exprs = exprs;
+			return f;
 		}
 	}
 

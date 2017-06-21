@@ -1,5 +1,7 @@
 package suite.funp;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import suite.Suite;
@@ -17,6 +19,17 @@ public class FunpTest {
 		Funp f1 = new P1InferType().infer(f0, new Reference());
 		Bytes bytes = new P2GenerateCode().compile(f1, 0);
 		System.out.println(bytes);
+		assertTrue(bytes != null);
+	}
+
+	@Test
+	public void test1() {
+		Node node = Suite.parse("1 + 2");
+		Funp f0 = new P0Parse().parse(node);
+		Funp f1 = new P1InferType().infer(f0, new Reference());
+		Bytes bytes = new P2GenerateCode().compile(f1, 0);
+		System.out.println(bytes);
+		assertTrue(bytes != null);
 	}
 
 }

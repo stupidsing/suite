@@ -84,7 +84,7 @@ public class P2GenerateCode {
 			int size = n1.size;
 			Operand imm = amd64.imm(size);
 			instructions.add(amd64.instruction(Insn.SUB, esp, imm));
-			compileReg_(r, spd - size, n1.expr.apply(new FunpMemory(new FunpFramePointer(), spd, spd + size)));
+			compileReg_(r, spd - size, n1.expr.apply(FunpMemory.of(new FunpFramePointer(), spd, spd + size)));
 			instructions.add(amd64.instruction(Insn.ADD, esp, imm));
 		} else if (n0 instanceof FunpAssign) {
 			FunpAssign n1 = (FunpAssign) n0;
@@ -186,8 +186,8 @@ public class P2GenerateCode {
 			instructions.add(amd64.instruction(Insn.CALL, stack[r + 1]));
 			onResult.sink2(esp, is - size);
 		} else {
-			FunpAllocStack n_ = new FunpAllocStack(ps + ps,
-					buffer -> new FunpSeq(new FunpAssign(buffer, lambda), new FunpInvoke(buffer)));
+			FunpAllocStack n_ = FunpAllocStack.of(ps + ps,
+					buffer -> FunpSeq.of(FunpAssign.of(buffer, lambda), FunpInvoke.of(buffer)));
 			compileReg_(r, spd, n_);
 		}
 	}

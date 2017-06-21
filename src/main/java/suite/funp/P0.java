@@ -8,17 +8,21 @@ public class P0 {
 		public Funp lambda;
 		public Funp value;
 
-		public FunpApply(Funp lambda, Funp value) {
-			this.lambda = lambda;
-			this.value = value;
+		public static FunpApply of(Funp lambda, Funp value) {
+			FunpApply f = new FunpApply();
+			f.lambda = lambda;
+			f.value = value;
+			return f;
 		}
 	}
 
 	public static class FunpBoolean implements Funp {
 		public boolean b;
 
-		public FunpBoolean(boolean b) {
-			this.b = b;
+		public static FunpBoolean of(boolean b) {
+			FunpBoolean f = new FunpBoolean();
+			f.b = b;
+			return f;
 		}
 	}
 
@@ -26,9 +30,11 @@ public class P0 {
 		public String var;
 		public Funp expr;
 
-		public FunpFixed(String var, Funp expr) {
-			this.var = var;
-			this.expr = expr;
+		public static FunpFixed of(String var, Funp expr) {
+			FunpFixed f = new FunpFixed();
+			f.var = var;
+			f.expr = expr;
+			return f;
 		}
 	}
 
@@ -37,10 +43,12 @@ public class P0 {
 		public Funp then;
 		public Funp else_;
 
-		public FunpIf(Funp if_, Funp then, Funp else_) {
-			this.if_ = if_;
-			this.then = then;
-			this.else_ = else_;
+		public static FunpIf of(Funp if_, Funp then, Funp else_) {
+			FunpIf f = new FunpIf();
+			f.if_ = if_;
+			f.then = then;
+			f.else_ = else_;
+			return f;
 		}
 	}
 
@@ -48,41 +56,51 @@ public class P0 {
 		public String var;
 		public Funp expr;
 
-		public FunpLambda(String var, Funp expr) {
-			this.var = var;
-			this.expr = expr;
+		public static FunpLambda of(String var, Funp expr) {
+			FunpLambda f = new FunpLambda();
+			f.var = var;
+			f.expr = expr;
+			return f;
 		}
 	}
 
 	public static class FunpNumber implements Funp {
 		public int i;
 
-		public FunpNumber(int i) {
-			this.i = i;
+		public static FunpNumber of(int i) {
+			FunpNumber f = new FunpNumber();
+			f.i = i;
+			return f;
 		}
 	}
 
 	public static class FunpPolyType implements Funp {
 		public Funp expr;
 
-		public FunpPolyType(Funp expr) {
-			this.expr = expr;
+		public static FunpPolyType of(Funp expr) {
+			FunpPolyType f = new FunpPolyType();
+			f.expr = expr;
+			return f;
 		}
 	}
 
 	public static class FunpReference implements Funp {
 		public Funp expr;
 
-		public FunpReference(Funp expr) {
-			this.expr = expr;
+		public static FunpReference of(Funp expr) {
+			FunpReference f = new FunpReference();
+			f.expr = expr;
+			return f;
 		}
 	}
 
 	public static class FunpVariable implements Funp {
 		public String var;
 
-		public FunpVariable(String var) {
-			this.var = var;
+		public static FunpVariable of(String var) {
+			FunpVariable f = new FunpVariable();
+			f.var = var;
+			return f;
 		};
 	}
 

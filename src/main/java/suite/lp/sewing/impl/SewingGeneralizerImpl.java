@@ -28,8 +28,10 @@ public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingG
 	public static Source<Generalization> process(Node node) {
 		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
 		Fun<Env, Node> fun = sg.compile(node);
-		Env env = sg.env();
-		return () -> sg.new Generalization(fun.apply(env), env);
+		return () -> {
+			Env env = sg.env();
+			return sg.new Generalization(fun.apply(env), env);
+		};
 	}
 
 	public Fun<Env, Node> compile(Node node) {
