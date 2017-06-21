@@ -12,13 +12,12 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assembler;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpVariable;
+import suite.funp.P0.FunpTree;
 import suite.funp.P1.FunpAllocStack;
 import suite.funp.P1.FunpAssign;
 import suite.funp.P1.FunpFramePointer;
@@ -55,13 +54,13 @@ public class P2GenerateCode {
 			amd64.reg("EBX"), //
 			amd64.reg("ESI"), };
 
-	private List<Instruction> instructions = new ArrayList<>();
-
 	private Map<Operator, Insn> insnByOp = Read.<Operator, Insn>empty2() //
-			.append(TermOp.PLUS__, Insn.ADD) //
-			.append(TermOp.MINUS_, Insn.SUB) //
-			.append(TermOp.MULT__, Insn.IMUL) //
+			.cons(TermOp.PLUS__, Insn.ADD) //
+			.cons(TermOp.MINUS_, Insn.SUB) //
+			.cons(TermOp.MULT__, Insn.IMUL) //
 			.toMap();
+
+	private List<Instruction> instructions = new ArrayList<>();
 
 	public Bytes compile(Funp funp, int offset) {
 		Amd64Assembler asm = new Amd64Assembler();
@@ -74,9 +73,6 @@ public class P2GenerateCode {
 			int spd, // = ESP - EBP
 			Funp n0) {
 		Opt<Operand> oper;
-		ParseOperator po;
-		Operator op;
-		Insn insn;
 		OpReg r0 = stack[r];
 
 		if (n0 instanceof FunpAllocStack) {
@@ -121,18 +117,18 @@ public class P2GenerateCode {
 		} else if (n0 instanceof FunpSeq)
 			for (Funp expr : ((FunpSeq) n0).exprs)
 				compileReg_(r, spd, expr);
-		else if ((po = parseOperator(n0)) != null //
-				&& (op = TermOp.find(po.op)) != null //
-				&& (insn = insnByOp.get(op)) != null) {
+		else if (n0 instanceof FunpTree) {
+			FunpTree n1 = (FunpTree) n0;
+			Operator operator = n1.operator;
 			int sp1 = r + 1;
-			if (op.getAssoc() == Assoc.RIGHT) {
-				compileReg_(r, spd, po.right);
-				compileReg_(sp1, spd, po.left);
+			if (operator.getAssoc() == Assoc.RIGHT) {
+				compileReg_(r, spd, n1.right);
+				compileReg_(sp1, spd, n1.left);
 			} else {
-				compileReg_(r, spd, po.left);
-				compileReg_(sp1, spd, po.right);
+				compileReg_(r, spd, n1.left);
+				compileReg_(sp1, spd, n1.right);
 			}
-			instructions.add(amd64.instruction(insn, r0, stack[sp1]));
+			instructions.add(amd64.instruction(insnByOp.get(operator), r0, stack[sp1]));
 		} else if (!(oper = compileOp(r, n0)).isEmpty())
 			instructions.add(amd64.instruction(Insn.MOV, r0, oper.get()));
 		else
@@ -224,7 +220,7 @@ public class P2GenerateCode {
 				instructions.add(amd64.instruction(Insn.MOVSB));
 			instructions.add(amd64.instruction(Insn.CLD));
 			instructions.add(amd64.instruction(Insn.POP, amd64.reg("ESI")));
-			doRegs(Insn.POP, r, "EDI", "ESI", "ECX");
+			doRegs(Insn.POP, r - 1, "EDI", "ESI", "ECX");
 		}
 	}
 
@@ -257,28 +253,6 @@ public class P2GenerateCode {
 				if (opReg == stack[i])
 					instructions.add(amd64.instruction(insn, opReg));
 		}
-	}
-
-	private ParseOperator parseOperator(Funp n0) {
-		FunpApply n1 = n0 instanceof FunpApply ? (FunpApply) n0 : null;
-		Funp n2 = n1 != null ? n1.value : null;
-		FunpApply n3 = n2 instanceof FunpApply ? (FunpApply) n2 : null;
-		Funp n4 = n3 != null ? n3.value : null;
-		String var = n4 instanceof FunpVariable ? ((FunpVariable) n4).var : null;
-		if (var != null) {
-			ParseOperator po = new ParseOperator();
-			po.op = var;
-			po.left = n3.value;
-			po.right = n1.value;
-			return po;
-		} else
-			return null;
-	}
-
-	private class ParseOperator {
-		private String op;
-		private Funp left;
-		private Funp right;
 	}
 
 }

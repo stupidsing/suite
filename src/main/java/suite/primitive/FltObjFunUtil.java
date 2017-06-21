@@ -26,13 +26,12 @@ public class FltObjFunUtil {
 
 			public boolean source2(FltObjPair<V> pair) {
 				if (!isAppended) {
-					boolean b = source.source2(pair);
-					if (!b) {
+					if (!source.source2(pair)) {
 						pair.t0 = key;
 						pair.t1 = value;
 						isAppended = true;
 					}
-					return b;
+					return true;
 				} else
 					return false;
 			}

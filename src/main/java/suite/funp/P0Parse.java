@@ -9,6 +9,7 @@ import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
+import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.node.Atom;
 import suite.node.Int;
@@ -44,10 +45,9 @@ public class P0Parse {
 			return FunpVariable.of(name(node));
 		else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
-			Funp n0 = FunpVariable.of(tree.getOperator().getName());
-			Funp n1 = FunpApply.of(n0, parse(tree.getLeft()));
-			Funp n2 = FunpApply.of(n1, parse(tree.getRight()));
-			return n2;
+			Funp left = parse(tree.getLeft());
+			Funp right = parse(tree.getRight());
+			return FunpTree.of(tree.getOperator(), left, right);
 		} else
 			throw new RuntimeException("cannot parse " + node);
 	}

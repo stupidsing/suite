@@ -1,6 +1,7 @@
 package suite.funp;
 
 import suite.funp.Funp_.Funp;
+import suite.node.io.Operator;
 
 public class P0 {
 
@@ -90,6 +91,20 @@ public class P0 {
 		public static FunpReference of(Funp expr) {
 			FunpReference f = new FunpReference();
 			f.expr = expr;
+			return f;
+		}
+	}
+
+	public static class FunpTree implements Funp {
+		public Operator operator;
+		public Funp left;
+		public Funp right;
+
+		public static FunpTree of(Operator operator, Funp left, Funp right) {
+			FunpTree f = new FunpTree();
+			f.operator = operator;
+			f.left = left;
+			f.right = right;
 			return f;
 		}
 	}

@@ -14,6 +14,7 @@ import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpReference;
+import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P1.FunpAllocStack;
 import suite.funp.P1.FunpAssign;
@@ -108,7 +109,14 @@ public class P1InferType {
 			return new Cloner().clone(infer(env, ((FunpPolyType) n0).expr));
 		else if (n0 instanceof FunpReference)
 			return defReference.apply(infer(((FunpReference) n0).expr))[0];
-		else if (n0 instanceof FunpVariable)
+		else if (n0 instanceof FunpTree) {
+			Node t0 = infer_(env, ((FunpTree) n0).left);
+			Node t1 = infer_(env, ((FunpTree) n0).right);
+			if (bind(t0, ftNumber) && bind(t1, ftNumber))
+				return ftNumber;
+			else
+				throw new RuntimeException("cannot infer type for " + n0);
+		} else if (n0 instanceof FunpVariable)
 			return env.get(((FunpVariable) n0).var);
 		else
 			throw new RuntimeException("cannot infer type for " + n0);
