@@ -120,7 +120,7 @@ public class Amd64 {
 	}
 
 	public class OpMem extends Operand {
-		public int scale, indexReg, baseReg, dispSize;
+		public int baseReg, indexReg, scale, dispSize;
 		public long disp;
 	}
 
@@ -286,6 +286,7 @@ public class Amd64 {
 	public OpMem mem(OpReg reg, long disp, int size) {
 		OpMem op = new OpMem();
 		op.baseReg = reg.reg;
+		op.indexReg = -1;
 		op.size = size;
 		op.disp = disp;
 		op.dispSize = size(disp);
