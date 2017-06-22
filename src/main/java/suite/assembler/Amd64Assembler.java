@@ -268,11 +268,11 @@ public class Amd64Assembler {
 					OpImm op1 = (OpImm) instruction.op1;
 
 					if (instruction.op0 instanceof OpReg) {
-						insnCode = new InsnCode(op1.size, op1);
 						OpReg op0 = (OpReg) instruction.op0;
+						insnCode = new InsnCode(op1.size, op1);
 						insnCode.bs = bs(0xB0 + (op0.size <= 1 ? 0 : 8) + op0.reg);
 					} else if (isRm(instruction.op0))
-						insnCode = assembleByteFlag(op1, 0xC6, 0);
+						insnCode = assembleByteFlag(instruction.op0, 0xC6, 0);
 					else
 						throw new RuntimeException("bad instruction");
 
