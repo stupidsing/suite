@@ -389,7 +389,11 @@ public class Inspect {
 		List<Field> childFields = Read.from(clazz.getDeclaredFields()) //
 				.filter(field -> {
 					int modifiers = field.getModifiers();
-					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && names.add(field.getName());
+					String name = field.getName();
+					return !Modifier.isStatic(modifiers) //
+							&& !Modifier.isTransient(modifiers) //
+							&& !name.startsWith("this") //
+							&& names.add(name);
 				}) //
 				.toList();
 

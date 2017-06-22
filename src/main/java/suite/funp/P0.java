@@ -6,13 +6,13 @@ import suite.node.io.Operator;
 public class P0 {
 
 	public static class FunpApply implements Funp {
-		public Funp lambda;
 		public Funp value;
+		public Funp lambda;
 
-		public static FunpApply of(Funp lambda, Funp value) {
+		public static FunpApply of(Funp value, Funp lambda) {
 			FunpApply f = new FunpApply();
-			f.lambda = lambda;
 			f.value = value;
+			f.lambda = lambda;
 			return f;
 		}
 	}

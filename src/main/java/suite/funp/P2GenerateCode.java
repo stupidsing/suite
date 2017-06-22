@@ -54,7 +54,7 @@ public class P2GenerateCode {
 			amd64.reg("EBX"), //
 			amd64.reg("ESI"), };
 
-	private Map<Operator, Insn> insnByOp = Read.<Operator, Insn>empty2() //
+	private Map<Operator, Insn> insnByOp = Read.<Operator, Insn> empty2() //
 			.cons(TermOp.PLUS__, Insn.ADD) //
 			.cons(TermOp.MINUS_, Insn.SUB) //
 			.cons(TermOp.MULT__, Insn.IMUL) //

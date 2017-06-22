@@ -61,7 +61,7 @@ public class P1InferType {
 		Node t0 = ftNumber;
 		Node t1 = defLambda.substitute(ftNumber, t0);
 		Node t2 = defLambda.substitute(ftNumber, t1);
-		IMap<String, Node> env = IMap.<String, Node>empty() //
+		IMap<String, Node> env = IMap.<String, Node> empty() //
 				.put(TermOp.PLUS__.getName(), t2) //
 				.put(TermOp.MINUS_.getName(), t2) //
 				.put(TermOp.MULT__.getName(), t2);
