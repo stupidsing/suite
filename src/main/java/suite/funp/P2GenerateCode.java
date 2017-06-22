@@ -69,86 +69,84 @@ public class P2GenerateCode {
 	}
 
 	private void compileReg_( //
-			int r, // register stack pointer
-			int spd, // = ESP - EBP
+			int sp, // register stack pointer
+			int fd, // = ESP - EBP
 			Funp n0) {
 		Opt<Operand> oper;
-		OpReg r0 = stack[r];
+		OpReg r0 = stack[sp];
 
 		if (n0 instanceof FunpAllocStack) {
 			FunpAllocStack n1 = (FunpAllocStack) n0;
 			int size = n1.size;
 			Operand imm = amd64.imm(size);
 			instructions.add(amd64.instruction(Insn.SUB, esp, imm));
-			compileReg_(r, spd - size, n1.expr.apply(FunpMemory.of(new FunpFramePointer(), spd, spd + size)));
+			compileReg_(sp, fd - size, n1.expr.apply(FunpMemory.of(new FunpFramePointer(), fd, fd + size)));
 			instructions.add(amd64.instruction(Insn.ADD, esp, imm));
 		} else if (n0 instanceof FunpAssign) {
 			FunpAssign n1 = (FunpAssign) n0;
-			FunpMemory m0 = n1.memory;
-			Funp value = n1.value;
-			compileAssign(r, spd, m0, value);
+			compileAssign(sp, fd, n1.memory, n1.value);
 		} else if (n0 instanceof FunpFixed)
 			;
 		else if (n0 instanceof FunpIf) {
 			Operand elseLabel = amd64.imm(0, ps);
 			Operand endLabel = amd64.imm(0, ps);
-			compileReg_(r, spd, ((FunpIf) n0).if_);
+			compileReg_(sp, fd, ((FunpIf) n0).if_);
 			instructions.add(amd64.instruction(Insn.OR, r0, r0));
 			instructions.add(amd64.instruction(Insn.JZ, elseLabel));
-			compileReg_(r, spd, ((FunpIf) n0).then);
+			compileReg_(sp, fd, ((FunpIf) n0).then);
 			instructions.add(amd64.instruction(Insn.JMP, endLabel));
 			instructions.add(amd64.instruction(Insn.LABEL, elseLabel));
-			compileReg_(r, spd, ((FunpIf) n0).else_);
+			compileReg_(sp, fd, ((FunpIf) n0).else_);
 			instructions.add(amd64.instruction(Insn.LABEL, endLabel));
 		} else if (n0 instanceof FunpInvoke)
-			compileInvoke(r, spd, //
+			compileInvoke(sp, fd, //
 					(FunpInvoke) n0, is, //
 					(r_, disp) -> instructions.add(amd64.instruction(Insn.MOV, r0, amd64.mem(r_, disp, is))));
 		else if (n0 instanceof FunpSaveEbp) {
 			instructions.add(amd64.instruction(Insn.PUSH, ebp));
-			compileReg_(r, spd - 4, ((FunpSaveEbp) n0).expr);
+			compileReg_(sp, fd - 4, ((FunpSaveEbp) n0).expr);
 			instructions.add(amd64.instruction(Insn.POP, ebp));
 		} else if (n0 instanceof FunpSaveRegisters) {
-			for (int i = 0; i <= r - 1; i++)
+			for (int i = 0; i <= sp - 1; i++)
 				instructions.add(amd64.instruction(Insn.PUSH, stack[i]));
-			compileReg_(r, spd - r * is, ((FunpSaveRegisters) n0).expr);
-			for (int i = r - 1; 0 <= i; i--)
+			compileReg_(sp, fd - sp * is, ((FunpSaveRegisters) n0).expr);
+			for (int i = sp - 1; 0 <= i; i--)
 				instructions.add(amd64.instruction(Insn.POP, stack[i]));
 		} else if (n0 instanceof FunpSeq)
 			for (Funp expr : ((FunpSeq) n0).exprs)
-				compileReg_(r, spd, expr);
+				compileReg_(sp, fd, expr);
 		else if (n0 instanceof FunpTree) {
 			FunpTree n1 = (FunpTree) n0;
 			Operator operator = n1.operator;
-			int sp1 = r + 1;
+			int sp1 = sp + 1;
 			if (operator.getAssoc() == Assoc.RIGHT) {
-				compileReg_(r, spd, n1.right);
-				compileReg_(sp1, spd, n1.left);
+				compileReg_(sp, fd, n1.right);
+				compileReg_(sp1, fd, n1.left);
 			} else {
-				compileReg_(r, spd, n1.left);
-				compileReg_(sp1, spd, n1.right);
+				compileReg_(sp, fd, n1.left);
+				compileReg_(sp1, fd, n1.right);
 			}
 			instructions.add(amd64.instruction(insnByOp.get(operator), r0, stack[sp1]));
-		} else if (!(oper = compileOp(r, n0)).isEmpty())
+		} else if (!(oper = compileOp(sp, n0)).isEmpty())
 			instructions.add(amd64.instruction(Insn.MOV, r0, oper.get()));
 		else
 			throw new RuntimeException("cannot generate code for " + n0);
 	}
 
-	private void compileAssign(int r, int spd, FunpMemory target, Funp source) {
-		OpReg r0 = stack[r];
+	private void compileAssign(int sp, int fd, FunpMemory target, Funp source) {
+		OpReg r0 = stack[sp];
 		int size = target.size();
 
-		compileReg_(r, spd, target.pointer);
+		compileReg_(sp, fd, target.pointer);
 
 		if (size <= is) {
 			Operand mem = amd64.mem(r0, target.start, size);
-			compileReg_(r + 1, spd, source);
-			instructions.add(amd64.instruction(Insn.MOV, mem, stack[r + 1]));
+			compileReg_(sp + 1, fd, source);
+			instructions.add(amd64.instruction(Insn.MOV, mem, stack[sp + 1]));
 		} else if (source instanceof FunpInvoke)
-			compileInvoke(r, spd, //
+			compileInvoke(sp, fd, //
 					(FunpInvoke) source, size, //
-					(r_, disp) -> compileMove(r, r0, target.start, r_, disp, target.size()));
+					(r_, disp) -> compileMove(sp, r0, target.start, r_, disp, target.size()));
 		else if (source instanceof FunpLambda) {
 			Operand lambdaLabel = amd64.imm(0, ps);
 			Operand endLabel = amd64.imm(0, ps);
@@ -163,42 +161,42 @@ public class P2GenerateCode {
 			instructions.add(amd64.instruction(Insn.MOV, amd64.mem(r0, target.start, ps), ebp));
 			instructions.add(amd64.instruction(Insn.MOV, amd64.mem(r0, target.start + ps, ps), lambdaLabel));
 		} else if (source instanceof FunpMemory)
-			compileMove(r, spd, target, (FunpMemory) source);
+			compileMove(sp, fd, target, (FunpMemory) source);
 		else
-			throw new RuntimeException();
+			throw new RuntimeException("cannot assign from " + source);
 	}
 
-	private void compileInvoke(int r, int spd, FunpInvoke invoke, int size, Sink2<OpReg, Integer> onResult) {
-		OpReg r0 = stack[r];
+	private void compileInvoke(int sp, int fd, FunpInvoke invoke, int size, Sink2<OpReg, Integer> onResult) {
+		OpReg r0 = stack[sp];
 		Funp lambda = invoke.lambda;
 
 		if (lambda instanceof FunpMemory) {
 			FunpMemory memory = (FunpMemory) lambda;
 			Funp frame = memory.range(0, ps);
 			Funp ip = memory.range(ps, ps + ps);
-			compileReg_(r, spd, frame);
-			compileReg_(r + 1, spd, ip);
+			compileReg_(sp, fd, frame);
+			compileReg_(sp + 1, fd, ip);
 			instructions.add(amd64.instruction(Insn.MOV, ebp, r0));
-			instructions.add(amd64.instruction(Insn.CALL, stack[r + 1]));
+			instructions.add(amd64.instruction(Insn.CALL, stack[sp + 1]));
 			onResult.sink2(esp, is - size);
 		} else {
 			FunpAllocStack n_ = FunpAllocStack.of(ps + ps,
 					buffer -> FunpSeq.of(FunpAssign.of(buffer, lambda), FunpInvoke.of(buffer)));
-			compileReg_(r, spd, n_);
+			compileReg_(sp, fd, n_);
 		}
 	}
 
-	private void compileMove(int r, int spd, FunpMemory target, FunpMemory source) {
+	private void compileMove(int sp, int fd, FunpMemory target, FunpMemory source) {
 		int size = target.size();
 		if (size == source.size()) {
-			int r1 = r + 1;
-			compileReg_(r1, spd, source.pointer);
-			compileMove(r, stack[r], target.start, stack[r1], source.start, size);
+			int r1 = sp + 1;
+			compileReg_(r1, fd, source.pointer);
+			compileMove(sp, stack[sp], target.start, stack[r1], source.start, size);
 		} else
 			throw new RuntimeException();
 	}
 
-	private void compileMove(int r, OpReg reg0, int start0, OpReg reg1, int start1, int size) {
+	private void compileMove(int sp, OpReg r0, int start0, OpReg reg1, int start1, int size) {
 		if (size <= 16) {
 			int i = 0;
 
@@ -206,13 +204,13 @@ public class P2GenerateCode {
 				int s = i + is <= size ? is : 1;
 				OpReg reg = 1 < s ? ecx : cl;
 				instructions.add(amd64.instruction(Insn.MOV, reg, amd64.mem(reg1, start1 + i, s)));
-				instructions.add(amd64.instruction(Insn.MOV, amd64.mem(reg0, start0 + i, s), reg));
+				instructions.add(amd64.instruction(Insn.MOV, amd64.mem(r0, start0 + i, s), reg));
 				i += s;
 			}
 		} else {
-			doRegs(Insn.PUSH, r - 1, "ECX", "ESI", "EDI");
+			doRegs(sp - 1, Insn.PUSH, "ECX", "ESI", "EDI");
 			instructions.add(amd64.instruction(Insn.LEA, amd64.reg("ESI"), amd64.mem(reg1, start1, 4)));
-			instructions.add(amd64.instruction(Insn.LEA, amd64.reg("EDI"), amd64.mem(reg0, start0, 4)));
+			instructions.add(amd64.instruction(Insn.LEA, amd64.reg("EDI"), amd64.mem(r0, start0, 4)));
 			instructions.add(amd64.instruction(Insn.MOV, amd64.reg("ECX"), amd64.imm(size / 4, 4)));
 			instructions.add(amd64.instruction(Insn.REP));
 			instructions.add(amd64.instruction(Insn.MOVSD));
@@ -220,7 +218,7 @@ public class P2GenerateCode {
 				instructions.add(amd64.instruction(Insn.MOVSB));
 			instructions.add(amd64.instruction(Insn.CLD));
 			instructions.add(amd64.instruction(Insn.POP, amd64.reg("ESI")));
-			doRegs(Insn.POP, r - 1, "EDI", "ESI", "ECX");
+			doRegs(sp - 1, Insn.POP, "EDI", "ESI", "ECX");
 		}
 	}
 
@@ -246,10 +244,10 @@ public class P2GenerateCode {
 			return Opt.none();
 	}
 
-	private void doRegs(Insn insn, int r, String... regs) {
+	private void doRegs(int sp, Insn insn, String... regs) {
 		for (String reg : regs) {
 			OpReg opReg = amd64.reg(reg);
-			for (int i = 0; i < r; i++)
+			for (int i = 0; i < sp; i++)
 				if (opReg == stack[i])
 					instructions.add(amd64.instruction(insn, opReg));
 		}
