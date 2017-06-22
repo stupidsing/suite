@@ -13,13 +13,25 @@ import suite.primitive.Bytes;
 public class FunpTest {
 
 	@Test
-	public void test() {
+	public void testExpr() {
 		Node node = Suite.parse("1 + 2 * 3");
-		Funp f0 = new P0Parse().parse(node);
-		Funp f1 = new P1InferType().infer(f0, new Reference());
-		Bytes bytes = new P2GenerateCode().compile(f1, 0);
+		Bytes bytes = compile(node);
 		System.out.println(bytes);
 		assertTrue(bytes != null);
+	}
+
+	@Test
+	public void testLambda() {
+		Node node = Suite.parse("0 | (a => a + 1)");
+		Bytes bytes = compile(node);
+		System.out.println(bytes);
+		assertTrue(bytes != null);
+	}
+
+	private Bytes compile(Node node) {
+		Funp f0 = new P0Parse().parse(node);
+		Funp f1 = new P1InferType().infer(f0, new Reference());
+		return new P2GenerateCode().compile(f1, 0);
 	}
 
 }
