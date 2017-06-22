@@ -10,6 +10,7 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.OpRegControl;
 import suite.assembler.Amd64.OpRegSegment;
 import suite.assembler.Amd64.Operand;
+import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 
@@ -48,11 +49,14 @@ public class Amd64Assembler {
 
 	private Bytes assemblePass(long offset, List<Instruction> instructions) {
 		BytesBuilder bb = new BytesBuilder();
-		for (Instruction instruction : instructions) {
-			Bytes bytes = assemble(offset, instruction);
-			bb.append(bytes);
-			offset += bytes.size();
-		}
+		for (Instruction instruction : instructions)
+			try {
+				Bytes bytes = assemble(offset, instruction);
+				bb.append(bytes);
+				offset += bytes.size();
+			} catch (Exception ex) {
+				throw new RuntimeException("for " + Singleton.get().getInspect().toString(instruction), ex);
+			}
 		return bb.toBytes();
 	}
 
