@@ -29,7 +29,7 @@ public class StoreCache {
 
 		LogUtil.info(FileUtil.findPaths(dir) //
 				.filter(path -> !isUpToDate(path, current)) //
-				.map(path -> "\nrm -f '" + path + "'") //
+				.map(path -> "\nrm '" + path + "'") //
 				.collect(As.joined()));
 	}
 
