@@ -2,6 +2,7 @@ package suite.trade.data;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -23,13 +24,17 @@ public class Google {
 
 	private static ObjectMapper mapper = new ObjectMapper();
 
+	// http://www.jarloo.com/real-time-google-stock-api/
 	public Map<String, Float> quote(Set<String> symbols) {
 
 		// This must be queried separately, or server would return JWNG of
 		// London Exchange. Do not know why.
 		if (symbols.contains("2020.HK"))
-			quotesBySymbol.putAll(quote_(Read.each("2020.HK")));
+			quotesBySymbol.putAll(quote_(Collections.singleton("2020.HK")));
+		return quote_(symbols);
+	}
 
+	private Map<String, Float> quote_(Set<String> symbols) {
 		Streamlet<String> querySymbols = Read.from(symbols) //
 				.filter(symbol -> !Trade_.isCacheQuotes || !quotesBySymbol.containsKey(symbol)) //
 				.distinct();
@@ -43,7 +48,6 @@ public class Google {
 
 	private static Map<String, Float> quotesBySymbol = new HashMap<>();
 
-	// http://www.jarloo.com/real-time-google-stock-api/
 	private synchronized Map<String, Float> quote_(Streamlet<String> symbols) {
 		if (0 < symbols.size()) {
 			URL url = To.url("http://finance.google.com/finance/info?client=ig&q=HKEX%3A" //
