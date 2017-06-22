@@ -558,7 +558,6 @@ public class Amd64Assembler {
 	}
 
 	private InsnCode assembleJumpImm(OpImm op0, long offset, int b1, byte[] bs4) {
-		InsnCode insnCode;
 		int size = op0.size;
 		byte[] bs0;
 
@@ -574,6 +573,7 @@ public class Amd64Assembler {
 		}
 
 		long rel = op0.imm - (offset + bs0.length + size);
+		InsnCode insnCode;
 
 		if (1 < size || -128 <= rel && rel < 128) {
 			insnCode = new InsnCode(size, bs0);
@@ -646,8 +646,7 @@ public class Amd64Assembler {
 	}
 
 	private InsnCode assembleRmImm(Operand op0, OpImm op1, int b_accImm, int b_rmImm, int num) {
-		InsnCode insnCode;
-		insnCode = new InsnCode(op0.size, op1);
+		InsnCode insnCode = new InsnCode(op0.size, op1);
 
 		if (isAcc(op0))
 			insnCode.bs = bs(b_accImm + (op0.size <= 1 ? 0 : 1));
