@@ -144,8 +144,8 @@ public class P1InferType {
 			String var = n1.var;
 			int scope1 = scope + 1;
 			LambdaType lt = new LambdaType(n0);
-			Funp expr = rewrite(scope1, env.put(var, new Var(scope1, lt.os, lt.is)), n1.expr);
-			return FunpAssign.of(FunpMemory.of(new FunpFramePointer(), 0, lt.os), expr);
+			Funp expr = rewrite(scope1, env.put(var, new Var(scope1, lt.os, lt.os + lt.is)), n1.expr);
+			return FunpLambda.of(var, FunpAssign.of(FunpMemory.of(new FunpFramePointer(), 0, lt.os), expr));
 		} else if (n0 instanceof FunpPolyType)
 			return rewrite(scope, env, ((FunpPolyType) n0).expr);
 		else if (n0 instanceof FunpVariable) {
@@ -156,22 +156,21 @@ public class P1InferType {
 				nfp = FunpMemory.of(nfp, 0, Funp_.pointerSize);
 				scope1--;
 			}
-			return FunpMemory.of(nfp, vd.offset, vd.size);
+			return FunpMemory.of(nfp, vd.start, vd.end);
 		} else
 			return null;
 	}
 
 	private class Var {
 		private int scope;
-		private int offset;
-		private int size;
+		private int start;
+		private int end;
 
-		public Var(int scope, int offset, int size) {
+		public Var(int scope, int start, int end) {
 			this.scope = scope;
-			this.offset = offset;
-			this.size = size;
+			this.start = start;
+			this.end = end;
 		}
-
 	}
 
 	private class LambdaType {

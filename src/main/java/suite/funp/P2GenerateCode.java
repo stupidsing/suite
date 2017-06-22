@@ -196,20 +196,20 @@ public class P2GenerateCode {
 			throw new RuntimeException();
 	}
 
-	private void compileMove(int sp, OpReg r0, int start0, OpReg reg1, int start1, int size) {
+	private void compileMove(int sp, OpReg r0, int start0, OpReg r1, int start1, int size) {
 		if (size <= 16) {
 			int i = 0;
 
 			while (i < size) {
 				int s = i + is <= size ? is : 1;
-				OpReg reg = 1 < s ? ecx : cl;
-				instructions.add(amd64.instruction(Insn.MOV, reg, amd64.mem(reg1, start1 + i, s)));
-				instructions.add(amd64.instruction(Insn.MOV, amd64.mem(r0, start0 + i, s), reg));
+				OpReg r = 1 < s ? ecx : cl;
+				instructions.add(amd64.instruction(Insn.MOV, r, amd64.mem(r1, start1 + i, s)));
+				instructions.add(amd64.instruction(Insn.MOV, amd64.mem(r0, start0 + i, s), r));
 				i += s;
 			}
 		} else {
 			doRegs(sp - 1, Insn.PUSH, "ECX", "ESI", "EDI");
-			instructions.add(amd64.instruction(Insn.LEA, amd64.reg("ESI"), amd64.mem(reg1, start1, 4)));
+			instructions.add(amd64.instruction(Insn.LEA, amd64.reg("ESI"), amd64.mem(r1, start1, 4)));
 			instructions.add(amd64.instruction(Insn.LEA, amd64.reg("EDI"), amd64.mem(r0, start0, 4)));
 			instructions.add(amd64.instruction(Insn.MOV, amd64.reg("ECX"), amd64.imm(size / 4, 4)));
 			instructions.add(amd64.instruction(Insn.REP));
