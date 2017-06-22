@@ -318,6 +318,9 @@ as-mod-rm:_:_a (`.indexReg * .scale + .disp`) (0 (0 4)) (.s (.rexir .ir) 5) (32 
 	, as-rex-reg:32 .indexReg .rexir .ir
 	, not (.ir = 4)
 #
+as-mod-rm:_:_a (`ESP + .disp`) (.mod (0 4)) (0 (0 4) 4) (.ds .disp)
+	:- once (.disp = 0, .mod = 1, .ds = 1; as-disp-mod:.ds .disp .mod)
+#
 as-mod-rm:_:_a (`.reg + .disp`) (.mod (.rexr .r)) () (.ds .disp)
 	:- as-rex-reg:32 .reg .rexr .r
 	, as-disp-mod:.ds .disp .mod
