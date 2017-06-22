@@ -23,7 +23,7 @@ import suite.funp.P1.FunpAssign;
 import suite.funp.P1.FunpFramePointer;
 import suite.funp.P1.FunpInvoke;
 import suite.funp.P1.FunpMemory;
-import suite.funp.P1.FunpSaveEbp;
+import suite.funp.P1.FunpSaveFramePointer;
 import suite.funp.P1.FunpSaveRegisters;
 import suite.funp.P1.FunpSeq;
 import suite.node.io.Operator;
@@ -102,9 +102,9 @@ public class P2GenerateCode {
 			compileInvoke(sp, fd, //
 					(FunpInvoke) n0, is, //
 					(r_, disp) -> instructions.add(amd64.instruction(Insn.MOV, r0, amd64.mem(r_, disp, is))));
-		else if (n0 instanceof FunpSaveEbp) {
+		else if (n0 instanceof FunpSaveFramePointer) {
 			instructions.add(amd64.instruction(Insn.PUSH, ebp));
-			compileReg_(sp, fd - 4, ((FunpSaveEbp) n0).expr);
+			compileReg_(sp, fd - 4, ((FunpSaveFramePointer) n0).expr);
 			instructions.add(amd64.instruction(Insn.POP, ebp));
 		} else if (n0 instanceof FunpSaveRegisters) {
 			for (int i = 0; i <= sp - 1; i++)

@@ -64,11 +64,11 @@ public class P1 {
 		}
 	}
 
-	public static class FunpSaveEbp implements Funp {
+	public static class FunpSaveFramePointer implements Funp {
 		public Funp expr;
 
-		public static FunpSaveEbp of(Funp expr) {
-			FunpSaveEbp f = new FunpSaveEbp();
+		public static FunpSaveFramePointer of(Funp expr) {
+			FunpSaveFramePointer f = new FunpSaveFramePointer();
 			f.expr = expr;
 			return f;
 		}
