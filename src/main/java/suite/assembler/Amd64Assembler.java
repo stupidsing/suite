@@ -754,40 +754,54 @@ public class Amd64Assembler {
 			disp = 0;
 		} else if (operand instanceof OpMem) {
 			OpMem op = (OpMem) operand;
-			if (op.baseReg < 0 && op.indexReg < 0) { // [0x1234]
+			int baseReg = op.baseReg;
+			int indexReg;
+			int ds0 = op.dispSize;
+
+			if ((op.indexReg & 7) != 4)
+				indexReg = op.indexReg;
+			else
+				throw new RuntimeException("bad operand");
+
+			if (baseReg < 0 && indexReg < 0) { // [0x1234]
 				mod = 0;
 				rm = 5;
 				s = i = b = -1;
 				dispSize = 4;
-			} else if (0 <= op.baseReg && op.indexReg < 0)
-				if ((op.baseReg & 7) != 4) {
+			} else if (0 <= baseReg && indexReg < 0)
+				if ((baseReg & 7) != 4) {
 					// [EAX], [EAX + 0x1234]
-					int ds = op.dispSize == 0 && (op.baseReg & 7) == 5 ? 1 : op.dispSize;
-					mod = dispMod(ds);
-					rm = op.baseReg;
+					int ds1 = (baseReg & 7) == 5 && ds0 == 0 ? 1 : ds0;
+					mod = dispMod(ds1);
+					rm = baseReg;
 					s = i = b = -1;
-					dispSize = ds;
-				} else
-					throw new RuntimeException("bad operand");
-			else if (op.baseReg < 0 && 0 <= op.indexReg)
-				if ((op.indexReg & 7) != 4) { // [4 * EBX + 0x1234]
-					mod = 0;
+					dispSize = ds1;
+				} else {
+					// [ESP + 0], [ESP + 0x1234]
+					int ds1 = baseReg == 4 && ds0 == 0 ? 1 : ds0;
+					mod = dispMod(ds1);
 					rm = 4;
-					s = scale(op);
-					i = op.indexReg;
-					b = 5;
-					dispSize = 4;
-				} else
-					throw new RuntimeException("bad operand");
-			else if (0 <= op.baseReg && 0 <= op.indexReg)
-				if ((op.baseReg & 7) != 5 && (op.indexReg & 7) != 4) {
+					s = 0;
+					i = 4;
+					b = baseReg & 7;
+					dispSize = ds1;
+				}
+			else if (baseReg < 0 && 0 <= indexReg) { // [4 * EBX + 0x1234]
+				mod = 0;
+				rm = 4;
+				s = scale(op);
+				i = indexReg;
+				b = 5;
+				dispSize = 4;
+			} else if (0 <= baseReg && 0 <= indexReg)
+				if ((baseReg & 7) != 5) {
 					// [4 * EBX + EAX + 0x1234]
-					mod = dispMod(op.dispSize);
+					mod = dispMod(ds0);
 					rm = 4;
 					s = scale(op);
-					i = op.indexReg;
-					b = op.baseReg;
-					dispSize = op.dispSize;
+					i = indexReg;
+					b = baseReg;
+					dispSize = ds0;
 				} else
 					throw new RuntimeException("bad operand");
 			else
