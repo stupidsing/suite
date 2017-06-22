@@ -58,6 +58,10 @@ public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 		return dblObjStreamlet(() -> spawn().append(key, value));
 	}
 
+	public Streamlet<DblObjOutlet<V>> chunk(int n) {
+		return new Streamlet<>(() -> spawn().chunk(n));
+	}
+
 	public DblObjStreamlet<V> closeAtEnd(Closeable c) {
 		return dblObjStreamlet(() -> {
 			DblObjOutlet<V> in = spawn();

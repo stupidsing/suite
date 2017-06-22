@@ -58,6 +58,10 @@ public class FltStreamlet implements Iterable<Float> {
 		return streamlet(() -> spawn().append(t));
 	}
 
+	public Streamlet<FltOutlet> chunk(int n) {
+		return new Streamlet<>(() -> spawn().chunk(n));
+	}
+
 	public FltStreamlet closeAtEnd(Closeable c) {
 		return streamlet(() -> {
 			FltOutlet in = spawn();

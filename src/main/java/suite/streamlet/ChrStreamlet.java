@@ -58,6 +58,10 @@ public class ChrStreamlet implements Iterable<Character> {
 		return streamlet(() -> spawn().append(t));
 	}
 
+	public Streamlet<ChrOutlet> chunk(int n) {
+		return new Streamlet<>(() -> spawn().chunk(n));
+	}
+
 	public ChrStreamlet closeAtEnd(Closeable c) {
 		return streamlet(() -> {
 			ChrOutlet in = spawn();

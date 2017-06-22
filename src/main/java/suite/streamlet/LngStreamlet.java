@@ -58,6 +58,10 @@ public class LngStreamlet implements Iterable<Long> {
 		return streamlet(() -> spawn().append(t));
 	}
 
+	public Streamlet<LngOutlet> chunk(int n) {
+		return new Streamlet<>(() -> spawn().chunk(n));
+	}
+
 	public LngStreamlet closeAtEnd(Closeable c) {
 		return streamlet(() -> {
 			LngOutlet in = spawn();

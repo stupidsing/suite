@@ -58,6 +58,10 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return intObjStreamlet(() -> spawn().append(key, value));
 	}
 
+	public Streamlet<IntObjOutlet<V>> chunk(int n) {
+		return new Streamlet<>(() -> spawn().chunk(n));
+	}
+
 	public IntObjStreamlet<V> closeAtEnd(Closeable c) {
 		return intObjStreamlet(() -> {
 			IntObjOutlet<V> in = spawn();

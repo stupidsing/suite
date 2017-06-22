@@ -58,6 +58,10 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 		return chrObjStreamlet(() -> spawn().append(key, value));
 	}
 
+	public Streamlet<ChrObjOutlet<V>> chunk(int n) {
+		return new Streamlet<>(() -> spawn().chunk(n));
+	}
+
 	public ChrObjStreamlet<V> closeAtEnd(Closeable c) {
 		return chrObjStreamlet(() -> {
 			ChrObjOutlet<V> in = spawn();

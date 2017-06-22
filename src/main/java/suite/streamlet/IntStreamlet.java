@@ -58,6 +58,10 @@ public class IntStreamlet implements Iterable<Integer> {
 		return streamlet(() -> spawn().append(t));
 	}
 
+	public Streamlet<IntOutlet> chunk(int n) {
+		return new Streamlet<>(() -> spawn().chunk(n));
+	}
+
 	public IntStreamlet closeAtEnd(Closeable c) {
 		return streamlet(() -> {
 			IntOutlet in = spawn();

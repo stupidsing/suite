@@ -58,6 +58,10 @@ public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
 		return lngObjStreamlet(() -> spawn().append(key, value));
 	}
 
+	public Streamlet<LngObjOutlet<V>> chunk(int n) {
+		return new Streamlet<>(() -> spawn().chunk(n));
+	}
+
 	public LngObjStreamlet<V> closeAtEnd(Closeable c) {
 		return lngObjStreamlet(() -> {
 			LngObjOutlet<V> in = spawn();

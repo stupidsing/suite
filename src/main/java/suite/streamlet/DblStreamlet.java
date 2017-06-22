@@ -58,6 +58,10 @@ public class DblStreamlet implements Iterable<Double> {
 		return streamlet(() -> spawn().append(t));
 	}
 
+	public Streamlet<DblOutlet> chunk(int n) {
+		return new Streamlet<>(() -> spawn().chunk(n));
+	}
+
 	public DblStreamlet closeAtEnd(Closeable c) {
 		return streamlet(() -> {
 			DblOutlet in = spawn();
