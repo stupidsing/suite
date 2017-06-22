@@ -151,12 +151,11 @@ public class Yahoo {
 				+ "&events=div%7Csplit%7Cearn" //
 				+ "&corsDomain=finance.yahoo.com");
 
-		JsonNode json = Rethrow.ex(() -> {
+		return Rethrow.ex(() -> {
 			try (InputStream is = HttpUtil.get(url).out.collect(To::inputStream)) {
 				return mapper.readTree(is);
 			}
 		});
-		return json;
 	}
 
 	public DataSource dataSourceYql(String symbol, TimeRange period) {
