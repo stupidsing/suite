@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import suite.streamlet.Read;
+import suite.util.To;
 
 public class GoogleTest {
 
@@ -14,7 +14,7 @@ public class GoogleTest {
 
 	@Test
 	public void test() {
-		Map<String, Float> priceBySymbol = google.quote(Read.each("0002.HK", "0005.HK"));
+		Map<String, Float> priceBySymbol = google.quote(To.set("0002.HK", "0005.HK"));
 		assertTrue(0f < priceBySymbol.get("0002.HK"));
 		assertTrue(0f < priceBySymbol.get("0005.HK"));
 	}

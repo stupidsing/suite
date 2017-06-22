@@ -20,6 +20,7 @@ import suite.util.To;
 public class ConfigurationImpl implements Configuration {
 
 	private Broker broker = new Hsbc();
+	private Google google = new Google();
 	private Hkd hkd = new Hkd();
 	private Hkex hkex = new Hkex();
 	private HkexFactBook hkexFactBook = new HkexFactBook();
@@ -69,7 +70,7 @@ public class ConfigurationImpl implements Configuration {
 		for (String symbol : symbols)
 			map.computeIfAbsent(source_(symbol), s -> new HashSet<>()).add(symbol);
 		return To.map_(hkd.quote(map.getOrDefault(Source_.HKD__, Collections.emptySet())),
-				yahoo.quote(map.getOrDefault(Source_.YAHOO, Collections.emptySet())));
+				google.quote(map.getOrDefault(Source_.YAHOO, Collections.emptySet())));
 	}
 
 	private DataSource dataSource_(String symbol, TimeRange period) {
