@@ -140,11 +140,12 @@ public class P1InferType {
 							FunpInvoke.of(lambda1)));
 			return FunpSaveEbp.of(FunpSaveRegisters.of(invoke));
 		} else if (n0 instanceof FunpLambda) {
-			String var = ((FunpLambda) n0).var;
+			FunpLambda n1 = (FunpLambda) n0;
+			String var = n1.var;
 			int scope1 = scope + 1;
 			LambdaType lt = new LambdaType(n0);
-			Funp n1 = rewrite(scope1, env.put(var, new Var(scope1, lt.os, lt.is)), n0);
-			return FunpAssign.of(FunpMemory.of(new FunpFramePointer(), 0, lt.os), n1);
+			Funp expr = rewrite(scope1, env.put(var, new Var(scope1, lt.os, lt.is)), n1.expr);
+			return FunpAssign.of(FunpMemory.of(new FunpFramePointer(), 0, lt.os), expr);
 		} else if (n0 instanceof FunpPolyType)
 			return rewrite(scope, env, ((FunpPolyType) n0).expr);
 		else if (n0 instanceof FunpVariable) {
