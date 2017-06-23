@@ -51,7 +51,7 @@ public class Google {
 	private synchronized Map<String, Float> quote_(Streamlet<String> symbols) {
 		if (0 < symbols.size()) {
 			URL url = To.url("http://finance.google.com/finance/info?client=ig&q=HKEX%3A" //
-					+ symbols.sort(Object_::compare).map(symbol -> symbol.substring(0, 4)).collect(As.joined(",")));
+					+ symbols.sort(Object_::compare).map(this::fromSymbol).collect(As.joined(",")));
 
 			JsonNode json = Rethrow.ex(() -> {
 				try (InputStream is = HttpUtil.get(url).out.collect(To::inputStream)) {
@@ -62,11 +62,28 @@ public class Google {
 			});
 
 			return Read.from(json) //
-					.map2(json_ -> json_.get("t").textValue() + ".HK", json_ -> Float.parseFloat(json_.get("l").textValue())) //
+					.map2(json_ -> toSymbol(json_.get("t").textValue()),
+							json_ -> Float.parseFloat(json_.get("l").textValue().replace(",", ""))) //
 					.toMap();
 
 		} else
 			return new HashMap<>();
+	}
+
+	private String fromSymbol(String symbol) {
+		if (symbol.startsWith("^"))
+			return symbol.substring(1);
+		else if (symbol.endsWith(".HK"))
+			return symbol.substring(0, 4);
+		else
+			throw new RuntimeException();
+	}
+
+	private String toSymbol(String code) {
+		if (code.length() == 4)
+			return code + ".HK";
+		else
+			return "^" + code;
 	}
 
 }
