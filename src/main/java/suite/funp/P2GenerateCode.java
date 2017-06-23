@@ -178,6 +178,7 @@ public class P2GenerateCode {
 			compileReg_(sp + 1, fd, ip);
 			instructions.add(amd64.instruction(Insn.MOV, ebp, r0));
 			instructions.add(amd64.instruction(Insn.CALL, stack[sp + 1]));
+			// TODO move this after registers are restored
 			onResult.sink2(esp, is - size);
 		} else {
 			FunpAllocStack n_ = FunpAllocStack.of(ps + ps,
