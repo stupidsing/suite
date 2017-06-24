@@ -98,6 +98,10 @@ public class BackAllocator_ {
 				.toList();
 	}
 
+	public static BackAllocator cash() {
+		return (dataSourceBySymbol, times) -> (time, index) -> Collections.emptyList();
+	}
+
 	public static BackAllocator donchian() {
 		int window = 32;
 

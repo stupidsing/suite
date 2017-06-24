@@ -57,6 +57,7 @@ public class DailyMain extends ExecutableProgram {
 	public final BackAllocConfiguration bac_pmamr = assetAllocConfigurationOf(MovingAvgMeanReversionBackAllocator0.of(log));
 	public final BackAllocConfiguration bac_pmmmr = assetAllocConfigurationOf(BackAllocator_.movingMedianMeanReversion());
 	public final BackAllocConfiguration bac_revco = assetAllocConfigurationOf(ReverseCorrelateBackAllocator.of());
+	public final BackAllocConfiguration bac_sell = assetAllocConfigurationOf(BackAllocator_.cash());
 	public final BackAllocConfiguration bac_tma = assetAllocConfigurationOf(BackAllocator_.threeMovingAvgs());
 
 	private class Result {
@@ -79,19 +80,20 @@ public class DailyMain extends ExecutableProgram {
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //
 				alloc("bb", 100000f, bac_bb), //
-				sell("bug"), //
+				alloc("bug", 0f, bac_sell), //
 				alloc("ema", 100000f, bac_ema), //
 				mamr(100000f), //
 				alloc("pmamr", 100000f, bac_pmamr), //
 				alloc("pmmmr", 120000f, bac_pmmmr), //
 				alloc("revco", 80000f, bac_revco), //
 				alloc("tma", 100000f, bac_tma), //
-				sell("sellpool"));
+				alloc("sellpool", 0f, bac_sell));
 
 		// unused strategies
 		if (Boolean.FALSE) {
 			pairs(0f, "0341.HK", "0052.HK");
 			questoaQuella(200000f, "0670.HK", "1055.HK");
+			sellForEarn("sellpool");
 		}
 
 		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
@@ -229,7 +231,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	// some orders caused by stupid bugs. need to sell those at suitable times.
-	private Result sell(String tag) {
+	private Result sellForEarn(String tag) {
 		Streamlet<Trade> history = cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag));
 		Account account = Account.fromPortfolio(history);
 
