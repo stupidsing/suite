@@ -10,12 +10,12 @@ import suite.util.To;
  *
  * @author ywsing
  */
-public class Adl {
+public class Ardl {
 
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 
-	public LinearRegression[] adl(float[][] fsList, int lambda) {
+	public LinearRegression[] ardl(float[][] fsList, int lambda) {
 		int n = fsList.length;
 		int length = fsList[0].length;
 		LinearRegression[] lrs = new LinearRegression[n];
