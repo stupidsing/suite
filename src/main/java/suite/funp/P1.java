@@ -38,11 +38,11 @@ public class P1 {
 	}
 
 	public static class FunpInvoke implements Funp, P2.End {
-		public Funp lambda;
+		public Funp routine;
 
-		public static FunpInvoke of(Funp lambda) {
+		public static FunpInvoke of(Funp routine) {
 			FunpInvoke f = new FunpInvoke();
-			f.lambda = lambda;
+			f.routine = routine;
 			return f;
 		}
 	}
