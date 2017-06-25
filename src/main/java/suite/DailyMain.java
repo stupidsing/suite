@@ -117,7 +117,6 @@ public class DailyMain extends ExecutableProgram {
 				.map((strategy, t) -> "" //
 						+ "\n" + ymd + "\t" + t.buySell + "\t" + t.symbol + "\t" + t.price + "\t" + t.strategy //
 						+ "\n" + ymd + "\t" + (-t.buySell) + "\t" + t.symbol + "\t" + t.price + "\tsellpool") //
-				.sortBy(line -> line) //
 				.collect(As.joined()));
 
 		Streamlet<Trade> trades = strategyTrades.values();
