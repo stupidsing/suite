@@ -42,26 +42,6 @@ public interface BackAllocator {
 		public List<Pair<String, Double>> onDateTime(Time time, int index);
 	}
 
-	public default BackAllocator byTradeFrequency(int tradeFrequency) {
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
-
-			return new OnDateTime() {
-				private Time time0;
-				private List<Pair<String, Double>> result0;
-
-				public List<Pair<String, Double>> onDateTime(Time time_, int index) {
-					Time time1 = time_.addDays(-time_.epochDay() % tradeFrequency);
-					if (!Objects.equals(time0, time1)) {
-						time0 = time1;
-						result0 = onDateTime.onDateTime(time1, index);
-					}
-					return result0;
-				}
-			};
-		};
-	}
-
 	public default BackAllocator dump() {
 		return (dataSourceBySymbol, times) -> {
 			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
@@ -112,6 +92,26 @@ public interface BackAllocator {
 						}) //
 						.filterValue(potential -> 0d < potential) //
 						.toList();
+			};
+		};
+	}
+
+	public default BackAllocator frequency(int tradeFrequency) {
+		return (dataSourceBySymbol, times) -> {
+			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
+
+			return new OnDateTime() {
+				private Time time0;
+				private List<Pair<String, Double>> result0;
+
+				public List<Pair<String, Double>> onDateTime(Time time_, int index) {
+					Time time1 = time_.addDays(-time_.epochDay() % tradeFrequency);
+					if (!Objects.equals(time0, time1)) {
+						time0 = time1;
+						result0 = onDateTime.onDateTime(time1, index);
+					}
+					return result0;
+				}
 			};
 		};
 	}
