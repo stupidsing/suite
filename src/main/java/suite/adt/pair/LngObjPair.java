@@ -3,11 +3,16 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
+import suite.adt.Opt;
+import suite.primitive.LngFunUtil;
+import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.Lng_Lng;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class LngObjPair<T> {
+
+	private static LngObjPair<?> none_ = LngObjPair.of(LngFunUtil.EMPTYVALUE, null);
 
 	public long t0;
 	public T t1;
@@ -18,6 +23,11 @@ public class LngObjPair<T> {
 
 	public static <V0, V1> Fun<LngObjPair<V0>, LngObjPair<V1>> map1(Fun<V0, V1> fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> LngObjPair<T> none() {
+		return (LngObjPair<T>) none_;
 	}
 
 	public static <T> LngObjPair<T> of(long t0, T t1) {
@@ -44,6 +54,10 @@ public class LngObjPair<T> {
 			c = c == 0 ? Long.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};
+	}
+
+	public <O> Opt<O> map(LngObj_Obj<T, O> fun) {
+		return t0 != LngFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
 	}
 
 	public static long first_(LngObjPair<?> pair) {

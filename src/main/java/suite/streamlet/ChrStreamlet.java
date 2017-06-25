@@ -15,6 +15,7 @@ import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrMutable;
+import suite.primitive.ChrOpt;
 import suite.primitive.ChrPrimitives.ChrComparator;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.ChrPrimitives.ChrPredicate;
@@ -167,6 +168,10 @@ public class ChrStreamlet implements Iterable<Character> {
 		return concatMap2_(t -> streamlet.map2(v -> t, v -> v));
 	}
 
+	public char last() {
+		return spawn().last();
+	}
+
 	public <O> Streamlet<O> map(Chr_Obj<O> fun) {
 		return map_(fun);
 	}
@@ -187,10 +192,6 @@ public class ChrStreamlet implements Iterable<Character> {
 		return new Streamlet<>(() -> spawn().mapNonNull(fun));
 	}
 
-	public char last() {
-		return spawn().last();
-	}
-
 	public ChrStreamlet memoize() {
 		Chars list = toList().toChars();
 		return streamlet(() -> ChrOutlet.of(list));
@@ -202,6 +203,10 @@ public class ChrStreamlet implements Iterable<Character> {
 
 	public char minOrNull(ChrComparator comparator) {
 		return spawn().minOrNull(comparator);
+	}
+
+	public ChrOpt opt() {
+		return spawn().opt();
 	}
 
 	public ChrOutlet outlet() {
@@ -281,7 +286,7 @@ public class ChrStreamlet implements Iterable<Character> {
 	}
 
 	public char uniqueResult() {
-		return spawn().uniqueResult();
+		return spawn().opt().get();
 	}
 
 	private <O> Streamlet<O> concatMap_(Chr_Obj<Streamlet<O>> fun) {

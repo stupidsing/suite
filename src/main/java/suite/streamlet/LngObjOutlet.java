@@ -336,6 +336,17 @@ public class LngObjOutlet<V> implements Iterable<LngObjPair<V>> {
 		});
 	}
 
+	public LngObjPair<V> opt() {
+		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
+		if (next(pair))
+			if (!next(pair))
+				return pair;
+			else
+				throw new RuntimeException("more than one result");
+		else
+			return LngObjPair.none();
+	}
+
 	public Outlet<LngObjPair<V>> pairs() {
 		return Outlet.of(() -> {
 			LngObjPair<V> pair = LngObjPair.of((long) 0, null);
@@ -458,17 +469,6 @@ public class LngObjOutlet<V> implements Iterable<LngObjPair<V>> {
 
 	public LngObjMap<Set<V>> toSetMap() {
 		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
-	}
-
-	public LngObjPair<V> uniqueResult() {
-		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
-		if (next(pair))
-			if (!next(pair))
-				return pair;
-			else
-				throw new RuntimeException("more than one result");
-		else
-			throw new RuntimeException("no result");
 	}
 
 	public Outlet<V> values() {

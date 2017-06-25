@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import suite.adt.Opt;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -160,6 +161,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return concatMap2_(t -> streamlet.map2_(v -> t, v -> v));
 	}
 
+	public T last() {
+		return spawn().last();
+	}
+
 	public <O> Streamlet<O> map(Fun<T, O> fun) {
 		return map_(fun);
 	}
@@ -176,10 +181,6 @@ public class Streamlet<T> implements Iterable<T> {
 		return new Streamlet<>(() -> spawn().mapNonNull(fun));
 	}
 
-	public T last() {
-		return spawn().last();
-	}
-
 	public Streamlet<T> memoize() {
 		List<T> list = toList();
 		return streamlet(() -> Outlet.of(list));
@@ -191,6 +192,10 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public T minOrNull(Comparator<T> comparator) {
 		return spawn().minOrNull(comparator);
+	}
+
+	public Opt<T> opt() {
+		return spawn().opt();
 	}
 
 	public Outlet<T> outlet() {
@@ -274,7 +279,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public T uniqueResult() {
-		return spawn().uniqueResult();
+		return spawn().opt().get();
 	}
 
 	private <O> Streamlet<O> concatMap_(Fun<T, Streamlet<O>> fun) {

@@ -13,6 +13,7 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntMutable;
+import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.IntPredicate;
@@ -167,6 +168,10 @@ public class IntStreamlet implements Iterable<Integer> {
 		return concatMap2_(t -> streamlet.map2(v -> t, v -> v));
 	}
 
+	public int last() {
+		return spawn().last();
+	}
+
 	public <O> Streamlet<O> map(Int_Obj<O> fun) {
 		return map_(fun);
 	}
@@ -187,10 +192,6 @@ public class IntStreamlet implements Iterable<Integer> {
 		return new Streamlet<>(() -> spawn().mapNonNull(fun));
 	}
 
-	public int last() {
-		return spawn().last();
-	}
-
 	public IntStreamlet memoize() {
 		Ints list = toList().toInts();
 		return streamlet(() -> IntOutlet.of(list));
@@ -202,6 +203,10 @@ public class IntStreamlet implements Iterable<Integer> {
 
 	public int minOrNull(IntComparator comparator) {
 		return spawn().minOrNull(comparator);
+	}
+
+	public IntOpt opt() {
+		return spawn().opt();
 	}
 
 	public IntOutlet outlet() {
@@ -281,7 +286,7 @@ public class IntStreamlet implements Iterable<Integer> {
 	}
 
 	public int uniqueResult() {
-		return spawn().uniqueResult();
+		return spawn().opt().get();
 	}
 
 	private <O> Streamlet<O> concatMap_(Int_Obj<Streamlet<O>> fun) {

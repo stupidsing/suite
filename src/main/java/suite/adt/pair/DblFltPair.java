@@ -2,12 +2,18 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
+import suite.adt.Opt;
+import suite.primitive.DblFlt_Obj;
+import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class DblFltPair {
+
+	private static DblFltPair none_ = DblFltPair.of(DblFunUtil.EMPTYVALUE, FltFunUtil.EMPTYVALUE);
 
 	public double t0;
 	public float t1;
@@ -18,6 +24,10 @@ public class DblFltPair {
 
 	public static Fun<DblFltPair, DblFltPair> map1(Flt_Flt fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
+	}
+
+	public static DblFltPair none() {
+		return none_;
 	}
 
 	public static DblFltPair of(double t0, float t1) {
@@ -44,6 +54,10 @@ public class DblFltPair {
 			c = c == 0 ? Double.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};
+	}
+
+	public <O> Opt<O> map(DblFlt_Obj<O> fun) {
+		return t0 != DblFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
 	}
 
 	public static double first_(DblFltPair pair) {

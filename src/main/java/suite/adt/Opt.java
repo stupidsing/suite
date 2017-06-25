@@ -35,7 +35,10 @@ public class Opt<T> {
 	}
 
 	public T get() {
-		return value;
+		if (!isEmpty())
+			return value;
+		else
+			throw new RuntimeException("no result");
 	}
 
 	@Override

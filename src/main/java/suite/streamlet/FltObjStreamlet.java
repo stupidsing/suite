@@ -14,6 +14,7 @@ import suite.adt.map.FltObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.FltObjPair;
 import suite.adt.pair.Pair;
+import suite.primitive.FltFunUtil;
 import suite.primitive.FltObjFunUtil;
 import suite.primitive.FltObj_Flt;
 import suite.primitive.FltPrimitives.FltObjPredicate;
@@ -198,6 +199,10 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 		return spawn().minOrNull(comparator);
 	}
 
+	public FltObjPair<V> opt() {
+		return spawn().opt();
+	}
+
 	public FltObjOutlet<V> out() {
 		return spawn();
 	}
@@ -279,7 +284,11 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	public FltObjPair<V> uniqueResult() {
-		return spawn().uniqueResult();
+		FltObjPair<V> pair = spawn().opt();
+		if (pair.t0 != FltFunUtil.EMPTYVALUE)
+			return pair;
+		else
+			throw new RuntimeException("no result");
 	}
 
 	public Streamlet<V> values() {

@@ -17,6 +17,7 @@ import suite.adt.pair.FltObjPair;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltFunUtil;
+import suite.primitive.FltOpt;
 import suite.primitive.FltPrimitives.FltComparator;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
@@ -320,6 +321,17 @@ public class FltOutlet implements Iterable<Float> {
 		});
 	}
 
+	public FltOpt opt() {
+		float t = next();
+		if (t != FltFunUtil.EMPTYVALUE)
+			if (next() == FltFunUtil.EMPTYVALUE)
+				return FltOpt.of(t);
+			else
+				throw new RuntimeException("more than one result");
+		else
+			return FltOpt.none();
+	}
+
 	public FltOutlet reverse() {
 		return of(toList().toFloats().reverse());
 	}
@@ -411,17 +423,6 @@ public class FltOutlet implements Iterable<Float> {
 
 	public <K, V> Map<K, Set<V>> toSetMap(Flt_Obj<K> keyFun, Flt_Obj<V> valueFun) {
 		return map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
-	}
-
-	public float uniqueResult() {
-		float t = next();
-		if (t != FltFunUtil.EMPTYVALUE)
-			if (next() == FltFunUtil.EMPTYVALUE)
-				return t;
-			else
-				throw new RuntimeException("more than one result");
-		else
-			throw new RuntimeException("no result");
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Flt_Obj<K> kf0, Flt_Obj<V> vf0) {

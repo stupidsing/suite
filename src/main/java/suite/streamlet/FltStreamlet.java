@@ -15,6 +15,7 @@ import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltMutable;
+import suite.primitive.FltOpt;
 import suite.primitive.FltPrimitives.FltComparator;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.FltPrimitives.FltPredicate;
@@ -167,6 +168,10 @@ public class FltStreamlet implements Iterable<Float> {
 		return concatMap2_(t -> streamlet.map2(v -> t, v -> v));
 	}
 
+	public float last() {
+		return spawn().last();
+	}
+
 	public <O> Streamlet<O> map(Flt_Obj<O> fun) {
 		return map_(fun);
 	}
@@ -187,10 +192,6 @@ public class FltStreamlet implements Iterable<Float> {
 		return new Streamlet<>(() -> spawn().mapNonNull(fun));
 	}
 
-	public float last() {
-		return spawn().last();
-	}
-
 	public FltStreamlet memoize() {
 		Floats list = toList().toFloats();
 		return streamlet(() -> FltOutlet.of(list));
@@ -202,6 +203,10 @@ public class FltStreamlet implements Iterable<Float> {
 
 	public float minOrNull(FltComparator comparator) {
 		return spawn().minOrNull(comparator);
+	}
+
+	public FltOpt opt() {
+		return spawn().opt();
 	}
 
 	public FltOutlet outlet() {
@@ -281,7 +286,7 @@ public class FltStreamlet implements Iterable<Float> {
 	}
 
 	public float uniqueResult() {
-		return spawn().uniqueResult();
+		return spawn().opt().get();
 	}
 
 	private <O> Streamlet<O> concatMap_(Flt_Obj<Streamlet<O>> fun) {

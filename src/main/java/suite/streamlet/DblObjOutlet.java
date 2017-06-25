@@ -336,6 +336,17 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 		});
 	}
 
+	public DblObjPair<V> opt() {
+		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		if (next(pair))
+			if (!next(pair))
+				return pair;
+			else
+				throw new RuntimeException("more than one result");
+		else
+			return DblObjPair.none();
+	}
+
 	public Outlet<DblObjPair<V>> pairs() {
 		return Outlet.of(() -> {
 			DblObjPair<V> pair = DblObjPair.of((double) 0, null);
@@ -458,17 +469,6 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 
 	public DblObjMap<Set<V>> toSetMap() {
 		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
-	}
-
-	public DblObjPair<V> uniqueResult() {
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
-		if (next(pair))
-			if (!next(pair))
-				return pair;
-			else
-				throw new RuntimeException("more than one result");
-		else
-			throw new RuntimeException("no result");
 	}
 
 	public Outlet<V> values() {

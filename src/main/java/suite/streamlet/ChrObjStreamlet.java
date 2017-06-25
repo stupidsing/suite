@@ -14,6 +14,7 @@ import suite.adt.map.ChrObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.ChrObjPair;
 import suite.adt.pair.Pair;
+import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrObjFunUtil;
 import suite.primitive.ChrObj_Chr;
 import suite.primitive.ChrPrimitives.ChrObjPredicate;
@@ -198,6 +199,10 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 		return spawn().minOrNull(comparator);
 	}
 
+	public ChrObjPair<V> opt() {
+		return spawn().opt();
+	}
+
 	public ChrObjOutlet<V> out() {
 		return spawn();
 	}
@@ -279,7 +284,11 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public ChrObjPair<V> uniqueResult() {
-		return spawn().uniqueResult();
+		ChrObjPair<V> pair = spawn().opt();
+		if (pair.t0 != ChrFunUtil.EMPTYVALUE)
+			return pair;
+		else
+			throw new RuntimeException("no result");
 	}
 
 	public Streamlet<V> values() {

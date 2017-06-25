@@ -17,6 +17,7 @@ import suite.adt.pair.ChrObjPair;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrOpt;
 import suite.primitive.ChrPrimitives.ChrComparator;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
@@ -320,6 +321,17 @@ public class ChrOutlet implements Iterable<Character> {
 		});
 	}
 
+	public ChrOpt opt() {
+		char t = next();
+		if (t != ChrFunUtil.EMPTYVALUE)
+			if (next() == ChrFunUtil.EMPTYVALUE)
+				return ChrOpt.of(t);
+			else
+				throw new RuntimeException("more than one result");
+		else
+			return ChrOpt.none();
+	}
+
 	public ChrOutlet reverse() {
 		return of(toList().toChars().reverse());
 	}
@@ -411,17 +423,6 @@ public class ChrOutlet implements Iterable<Character> {
 
 	public <K, V> Map<K, Set<V>> toSetMap(Chr_Obj<K> keyFun, Chr_Obj<V> valueFun) {
 		return map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
-	}
-
-	public char uniqueResult() {
-		char t = next();
-		if (t != ChrFunUtil.EMPTYVALUE)
-			if (next() == ChrFunUtil.EMPTYVALUE)
-				return t;
-			else
-				throw new RuntimeException("more than one result");
-		else
-			throw new RuntimeException("no result");
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {

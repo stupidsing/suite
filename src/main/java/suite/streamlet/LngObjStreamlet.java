@@ -14,6 +14,7 @@ import suite.adt.map.ListMultimap;
 import suite.adt.map.LngObjMap;
 import suite.adt.pair.LngObjPair;
 import suite.adt.pair.Pair;
+import suite.primitive.LngFunUtil;
 import suite.primitive.LngObjFunUtil;
 import suite.primitive.LngObj_Lng;
 import suite.primitive.LngPrimitives.LngObjPredicate;
@@ -198,6 +199,10 @@ public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
 		return spawn().minOrNull(comparator);
 	}
 
+	public LngObjPair<V> opt() {
+		return spawn().opt();
+	}
+
 	public LngObjOutlet<V> out() {
 		return spawn();
 	}
@@ -279,7 +284,11 @@ public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
 	}
 
 	public LngObjPair<V> uniqueResult() {
-		return spawn().uniqueResult();
+		LngObjPair<V> pair = spawn().opt();
+		if (pair.t0 != LngFunUtil.EMPTYVALUE)
+			return pair;
+		else
+			throw new RuntimeException("no result");
 	}
 
 	public Streamlet<V> values() {

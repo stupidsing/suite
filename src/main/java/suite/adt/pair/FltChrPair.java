@@ -2,12 +2,18 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
+import suite.adt.Opt;
+import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
+import suite.primitive.FltChr_Obj;
+import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class FltChrPair {
+
+	private static FltChrPair none_ = FltChrPair.of(FltFunUtil.EMPTYVALUE, ChrFunUtil.EMPTYVALUE);
 
 	public float t0;
 	public char t1;
@@ -18,6 +24,10 @@ public class FltChrPair {
 
 	public static Fun<FltChrPair, FltChrPair> map1(Chr_Chr fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
+	}
+
+	public static FltChrPair none() {
+		return none_;
 	}
 
 	public static FltChrPair of(float t0, char t1) {
@@ -44,6 +54,10 @@ public class FltChrPair {
 			c = c == 0 ? Float.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};
+	}
+
+	public <O> Opt<O> map(FltChr_Obj<O> fun) {
+		return t0 != FltFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
 	}
 
 	public static float first_(FltChrPair pair) {

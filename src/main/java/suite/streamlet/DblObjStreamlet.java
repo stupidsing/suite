@@ -14,6 +14,7 @@ import suite.adt.map.DblObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.DblObjPair;
 import suite.adt.pair.Pair;
+import suite.primitive.DblFunUtil;
 import suite.primitive.DblObjFunUtil;
 import suite.primitive.DblObj_Dbl;
 import suite.primitive.DblPrimitives.DblObjPredicate;
@@ -198,6 +199,10 @@ public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 		return spawn().minOrNull(comparator);
 	}
 
+	public DblObjPair<V> opt() {
+		return spawn().opt();
+	}
+
 	public DblObjOutlet<V> out() {
 		return spawn();
 	}
@@ -279,7 +284,11 @@ public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	public DblObjPair<V> uniqueResult() {
-		return spawn().uniqueResult();
+		DblObjPair<V> pair = spawn().opt();
+		if (pair.t0 != DblFunUtil.EMPTYVALUE)
+			return pair;
+		else
+			throw new RuntimeException("no result");
 	}
 
 	public Streamlet<V> values() {

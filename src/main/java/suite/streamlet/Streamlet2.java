@@ -276,7 +276,11 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Pair<K, V> uniqueResult() {
-		return spawn().uniqueResult();
+		Pair<K, V> pair = spawn().opt();
+		if (pair.t0 != null)
+			return pair;
+		else
+			throw new RuntimeException("no result");
 	}
 
 	public Streamlet<V> values() {

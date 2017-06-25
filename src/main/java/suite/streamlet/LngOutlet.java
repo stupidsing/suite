@@ -15,6 +15,7 @@ import suite.adt.map.ListMultimap;
 import suite.adt.map.LngObjMap;
 import suite.adt.pair.LngObjPair;
 import suite.primitive.LngFunUtil;
+import suite.primitive.LngOpt;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
@@ -320,6 +321,17 @@ public class LngOutlet implements Iterable<Long> {
 		});
 	}
 
+	public LngOpt opt() {
+		long t = next();
+		if (t != LngFunUtil.EMPTYVALUE)
+			if (next() == LngFunUtil.EMPTYVALUE)
+				return LngOpt.of(t);
+			else
+				throw new RuntimeException("more than one result");
+		else
+			return LngOpt.none();
+	}
+
 	public LngOutlet reverse() {
 		return of(toList().toLongs().reverse());
 	}
@@ -411,17 +423,6 @@ public class LngOutlet implements Iterable<Long> {
 
 	public <K, V> Map<K, Set<V>> toSetMap(Lng_Obj<K> keyFun, Lng_Obj<V> valueFun) {
 		return map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
-	}
-
-	public long uniqueResult() {
-		long t = next();
-		if (t != LngFunUtil.EMPTYVALUE)
-			if (next() == LngFunUtil.EMPTYVALUE)
-				return t;
-			else
-				throw new RuntimeException("more than one result");
-		else
-			throw new RuntimeException("no result");
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {

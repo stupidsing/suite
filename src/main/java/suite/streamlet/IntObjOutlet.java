@@ -336,6 +336,17 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		});
 	}
 
+	public IntObjPair<V> opt() {
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		if (next(pair))
+			if (!next(pair))
+				return pair;
+			else
+				throw new RuntimeException("more than one result");
+		else
+			return IntObjPair.none();
+	}
+
 	public Outlet<IntObjPair<V>> pairs() {
 		return Outlet.of(() -> {
 			IntObjPair<V> pair = IntObjPair.of((int) 0, null);
@@ -458,17 +469,6 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 
 	public IntObjMap<Set<V>> toSetMap() {
 		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
-	}
-
-	public IntObjPair<V> uniqueResult() {
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
-		if (next(pair))
-			if (!next(pair))
-				return pair;
-			else
-				throw new RuntimeException("more than one result");
-		else
-			throw new RuntimeException("no result");
 	}
 
 	public Outlet<V> values() {

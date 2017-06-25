@@ -3,11 +3,16 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
+import suite.adt.Opt;
+import suite.primitive.DblFunUtil;
+import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.Dbl_Dbl;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class DblObjPair<T> {
+
+	private static DblObjPair<?> none_ = DblObjPair.of(DblFunUtil.EMPTYVALUE, null);
 
 	public double t0;
 	public T t1;
@@ -18,6 +23,11 @@ public class DblObjPair<T> {
 
 	public static <V0, V1> Fun<DblObjPair<V0>, DblObjPair<V1>> map1(Fun<V0, V1> fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> DblObjPair<T> none() {
+		return (DblObjPair<T>) none_;
 	}
 
 	public static <T> DblObjPair<T> of(double t0, T t1) {
@@ -44,6 +54,10 @@ public class DblObjPair<T> {
 			c = c == 0 ? Double.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};
+	}
+
+	public <O> Opt<O> map(DblObj_Obj<T, O> fun) {
+		return t0 != DblFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
 	}
 
 	public static double first_(DblObjPair<?> pair) {

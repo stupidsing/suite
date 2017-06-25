@@ -2,11 +2,16 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
+import suite.adt.Opt;
+import suite.primitive.IntFunUtil;
+import suite.primitive.IntInt_Obj;
 import suite.primitive.Int_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class IntIntPair {
+
+	private static IntIntPair none_ = IntIntPair.of(IntFunUtil.EMPTYVALUE, IntFunUtil.EMPTYVALUE);
 
 	public int t0;
 	public int t1;
@@ -17,6 +22,10 @@ public class IntIntPair {
 
 	public static Fun<IntIntPair, IntIntPair> map1(Int_Int fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
+	}
+
+	public static IntIntPair none() {
+		return none_;
 	}
 
 	public static IntIntPair of(int t0, int t1) {
@@ -43,6 +52,10 @@ public class IntIntPair {
 			c = c == 0 ? Integer.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};
+	}
+
+	public <O> Opt<O> map(IntInt_Obj<O> fun) {
+		return t0 != IntFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
 	}
 
 	public static int first_(IntIntPair pair) {

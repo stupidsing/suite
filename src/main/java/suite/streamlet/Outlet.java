@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import suite.adt.Mutable;
+import suite.adt.Opt;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
@@ -281,6 +282,17 @@ public class Outlet<T> implements Iterable<T> {
 		});
 	}
 
+	public Opt<T> opt() {
+		T t = next();
+		if (t != null)
+			if (next() == null)
+				return Opt.of(t);
+			else
+				throw new RuntimeException("more than one result");
+		else
+			return Opt.none();
+	}
+
 	public Outlet<T> reverse() {
 		return of(List_.reverse(toList()));
 	}
@@ -377,17 +389,6 @@ public class Outlet<T> implements Iterable<T> {
 
 	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
 		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
-	}
-
-	public T uniqueResult() {
-		T t = next();
-		if (t != null)
-			if (next() == null)
-				return t;
-			else
-				throw new RuntimeException("more than one result");
-		else
-			throw new RuntimeException("no result");
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Fun<T, K> kf0, Fun<T, V> vf0) {

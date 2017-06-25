@@ -14,6 +14,7 @@ import suite.adt.map.IntObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.IntObjPair;
 import suite.adt.pair.Pair;
+import suite.primitive.IntFunUtil;
 import suite.primitive.IntObjFunUtil;
 import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitives.IntObjPredicate;
@@ -198,6 +199,10 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return spawn().minOrNull(comparator);
 	}
 
+	public IntObjPair<V> opt() {
+		return spawn().opt();
+	}
+
 	public IntObjOutlet<V> out() {
 		return spawn();
 	}
@@ -279,7 +284,11 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjPair<V> uniqueResult() {
-		return spawn().uniqueResult();
+		IntObjPair<V> pair = spawn().opt();
+		if (pair.t0 != IntFunUtil.EMPTYVALUE)
+			return pair;
+		else
+			throw new RuntimeException("no result");
 	}
 
 	public Streamlet<V> values() {

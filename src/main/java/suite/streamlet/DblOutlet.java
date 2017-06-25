@@ -15,6 +15,7 @@ import suite.adt.map.DblObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.DblObjPair;
 import suite.primitive.DblFunUtil;
+import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
@@ -320,6 +321,17 @@ public class DblOutlet implements Iterable<Double> {
 		});
 	}
 
+	public DblOpt opt() {
+		double t = next();
+		if (t != DblFunUtil.EMPTYVALUE)
+			if (next() == DblFunUtil.EMPTYVALUE)
+				return DblOpt.of(t);
+			else
+				throw new RuntimeException("more than one result");
+		else
+			return DblOpt.none();
+	}
+
 	public DblOutlet reverse() {
 		return of(toList().toDoubles().reverse());
 	}
@@ -411,17 +423,6 @@ public class DblOutlet implements Iterable<Double> {
 
 	public <K, V> Map<K, Set<V>> toSetMap(Dbl_Obj<K> keyFun, Dbl_Obj<V> valueFun) {
 		return map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
-	}
-
-	public double uniqueResult() {
-		double t = next();
-		if (t != DblFunUtil.EMPTYVALUE)
-			if (next() == DblFunUtil.EMPTYVALUE)
-				return t;
-			else
-				throw new RuntimeException("more than one result");
-		else
-			throw new RuntimeException("no result");
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0) {

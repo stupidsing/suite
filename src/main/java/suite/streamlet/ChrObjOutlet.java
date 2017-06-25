@@ -336,6 +336,17 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 		});
 	}
 
+	public ChrObjPair<V> opt() {
+		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		if (next(pair))
+			if (!next(pair))
+				return pair;
+			else
+				throw new RuntimeException("more than one result");
+		else
+			return ChrObjPair.none();
+	}
+
 	public Outlet<ChrObjPair<V>> pairs() {
 		return Outlet.of(() -> {
 			ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
@@ -458,17 +469,6 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 
 	public ChrObjMap<Set<V>> toSetMap() {
 		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
-	}
-
-	public ChrObjPair<V> uniqueResult() {
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-		if (next(pair))
-			if (!next(pair))
-				return pair;
-			else
-				throw new RuntimeException("more than one result");
-		else
-			throw new RuntimeException("no result");
 	}
 
 	public Outlet<V> values() {

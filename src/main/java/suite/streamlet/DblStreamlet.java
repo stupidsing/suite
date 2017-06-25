@@ -13,6 +13,7 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblMutable;
+import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.DblPrimitives.DblPredicate;
@@ -167,6 +168,10 @@ public class DblStreamlet implements Iterable<Double> {
 		return concatMap2_(t -> streamlet.map2(v -> t, v -> v));
 	}
 
+	public double last() {
+		return spawn().last();
+	}
+
 	public <O> Streamlet<O> map(Dbl_Obj<O> fun) {
 		return map_(fun);
 	}
@@ -187,10 +192,6 @@ public class DblStreamlet implements Iterable<Double> {
 		return new Streamlet<>(() -> spawn().mapNonNull(fun));
 	}
 
-	public double last() {
-		return spawn().last();
-	}
-
 	public DblStreamlet memoize() {
 		Doubles list = toList().toDoubles();
 		return streamlet(() -> DblOutlet.of(list));
@@ -202,6 +203,10 @@ public class DblStreamlet implements Iterable<Double> {
 
 	public double minOrNull(DblComparator comparator) {
 		return spawn().minOrNull(comparator);
+	}
+
+	public DblOpt opt() {
+		return spawn().opt();
 	}
 
 	public DblOutlet outlet() {
@@ -281,7 +286,7 @@ public class DblStreamlet implements Iterable<Double> {
 	}
 
 	public double uniqueResult() {
-		return spawn().uniqueResult();
+		return spawn().opt().get();
 	}
 
 	private <O> Streamlet<O> concatMap_(Dbl_Obj<Streamlet<O>> fun) {

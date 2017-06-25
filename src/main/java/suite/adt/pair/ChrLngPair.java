@@ -2,12 +2,18 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
+import suite.adt.Opt;
+import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrLng_Obj;
 import suite.primitive.Chr_Chr;
+import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class ChrLngPair {
+
+	private static ChrLngPair none_ = ChrLngPair.of(ChrFunUtil.EMPTYVALUE, LngFunUtil.EMPTYVALUE);
 
 	public char t0;
 	public long t1;
@@ -18,6 +24,10 @@ public class ChrLngPair {
 
 	public static Fun<ChrLngPair, ChrLngPair> map1(Lng_Lng fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
+	}
+
+	public static ChrLngPair none() {
+		return none_;
 	}
 
 	public static ChrLngPair of(char t0, long t1) {
@@ -44,6 +54,10 @@ public class ChrLngPair {
 			c = c == 0 ? Character.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};
+	}
+
+	public <O> Opt<O> map(ChrLng_Obj<O> fun) {
+		return t0 != ChrFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
 	}
 
 	public static char first_(ChrLngPair pair) {

@@ -336,6 +336,17 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 		});
 	}
 
+	public FltObjPair<V> opt() {
+		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
+		if (next(pair))
+			if (!next(pair))
+				return pair;
+			else
+				throw new RuntimeException("more than one result");
+		else
+			return FltObjPair.none();
+	}
+
 	public Outlet<FltObjPair<V>> pairs() {
 		return Outlet.of(() -> {
 			FltObjPair<V> pair = FltObjPair.of((float) 0, null);
@@ -458,17 +469,6 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 
 	public FltObjMap<Set<V>> toSetMap() {
 		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
-	}
-
-	public FltObjPair<V> uniqueResult() {
-		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
-		if (next(pair))
-			if (!next(pair))
-				return pair;
-			else
-				throw new RuntimeException("more than one result");
-		else
-			throw new RuntimeException("no result");
 	}
 
 	public Outlet<V> values() {

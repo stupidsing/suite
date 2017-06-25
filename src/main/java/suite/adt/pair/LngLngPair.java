@@ -2,11 +2,16 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
+import suite.adt.Opt;
+import suite.primitive.LngFunUtil;
+import suite.primitive.LngLng_Obj;
 import suite.primitive.Lng_Lng;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class LngLngPair {
+
+	private static LngLngPair none_ = LngLngPair.of(LngFunUtil.EMPTYVALUE, LngFunUtil.EMPTYVALUE);
 
 	public long t0;
 	public long t1;
@@ -17,6 +22,10 @@ public class LngLngPair {
 
 	public static Fun<LngLngPair, LngLngPair> map1(Lng_Lng fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
+	}
+
+	public static LngLngPair none() {
+		return none_;
 	}
 
 	public static LngLngPair of(long t0, long t1) {
@@ -43,6 +52,10 @@ public class LngLngPair {
 			c = c == 0 ? Long.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};
+	}
+
+	public <O> Opt<O> map(LngLng_Obj<O> fun) {
+		return t0 != LngFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
 	}
 
 	public static long first_(LngLngPair pair) {

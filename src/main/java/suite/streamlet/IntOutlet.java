@@ -15,6 +15,7 @@ import suite.adt.map.IntObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.IntObjPair;
 import suite.primitive.IntFunUtil;
+import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
@@ -320,6 +321,17 @@ public class IntOutlet implements Iterable<Integer> {
 		});
 	}
 
+	public IntOpt opt() {
+		int t = next();
+		if (t != IntFunUtil.EMPTYVALUE)
+			if (next() == IntFunUtil.EMPTYVALUE)
+				return IntOpt.of(t);
+			else
+				throw new RuntimeException("more than one result");
+		else
+			return IntOpt.none();
+	}
+
 	public IntOutlet reverse() {
 		return of(toList().toInts().reverse());
 	}
@@ -411,17 +423,6 @@ public class IntOutlet implements Iterable<Integer> {
 
 	public <K, V> Map<K, Set<V>> toSetMap(Int_Obj<K> keyFun, Int_Obj<V> valueFun) {
 		return map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
-	}
-
-	public int uniqueResult() {
-		int t = next();
-		if (t != IntFunUtil.EMPTYVALUE)
-			if (next() == IntFunUtil.EMPTYVALUE)
-				return t;
-			else
-				throw new RuntimeException("more than one result");
-		else
-			throw new RuntimeException("no result");
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Int_Obj<K> kf0, Int_Obj<V> vf0) {

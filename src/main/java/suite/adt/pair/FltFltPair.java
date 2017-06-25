@@ -2,11 +2,16 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
+import suite.adt.Opt;
+import suite.primitive.FltFlt_Obj;
+import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class FltFltPair {
+
+	private static FltFltPair none_ = FltFltPair.of(FltFunUtil.EMPTYVALUE, FltFunUtil.EMPTYVALUE);
 
 	public float t0;
 	public float t1;
@@ -17,6 +22,10 @@ public class FltFltPair {
 
 	public static Fun<FltFltPair, FltFltPair> map1(Flt_Flt fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
+	}
+
+	public static FltFltPair none() {
+		return none_;
 	}
 
 	public static FltFltPair of(float t0, float t1) {
@@ -43,6 +52,10 @@ public class FltFltPair {
 			c = c == 0 ? Float.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};
+	}
+
+	public <O> Opt<O> map(FltFlt_Obj<O> fun) {
+		return t0 != FltFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
 	}
 
 	public static float first_(FltFltPair pair) {

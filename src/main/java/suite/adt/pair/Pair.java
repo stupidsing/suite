@@ -2,11 +2,15 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.function.BiFunction;
 
+import suite.adt.Opt;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class Pair<T0, T1> {
+
+	private static Pair<?, ?> none_ = Pair.of(null, null);
 
 	public T0 t0;
 	public T1 t1;
@@ -17,6 +21,11 @@ public class Pair<T0, T1> {
 
 	public static <K, V0, V1> Fun<Pair<K, V0>, Pair<K, V1>> map1(Fun<V0, V1> fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T0, T1> Pair<T0, T1> none() {
+		return (Pair<T0, T1>) none_;
 	}
 
 	public static <T0, T1> Pair<T0, T1> of(T0 t0, T1 t1) {
@@ -39,6 +48,10 @@ public class Pair<T0, T1> {
 
 	public static <T0 extends Comparable<? super T0>, T1> Comparator<Pair<T0, T1>> comparatorByFirst() {
 		return (pair0, pair1) -> Object_.compare(first_(pair0), first_(pair1));
+	}
+
+	public <O> Opt<O> map(BiFunction<T0, T1, O> fun) {
+		return t0 != null ? Opt.of(fun.apply(t0, t1)) : Opt.none();
 	}
 
 	public static <T0> T0 first_(Pair<T0, ?> pair) {

@@ -334,6 +334,17 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		});
 	}
 
+	public Pair<K, V> opt() {
+		Pair<K, V> pair = Pair.of(null, null);
+		if (next(pair))
+			if (!next(pair))
+				return pair;
+			else
+				throw new RuntimeException("more than one result");
+		else
+			return Pair.none();
+	}
+
 	public Outlet<Pair<K, V>> pairs() {
 		return Outlet.of(() -> {
 			Pair<K, V> pair = Pair.of(null, null);
@@ -456,17 +467,6 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public Map<K, Set<V>> toSetMap() {
 		return groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
-	}
-
-	public Pair<K, V> uniqueResult() {
-		Pair<K, V> pair = Pair.of(null, null);
-		if (next(pair))
-			if (!next(pair))
-				return pair;
-			else
-				throw new RuntimeException("more than one result");
-		else
-			throw new RuntimeException("no result");
 	}
 
 	public Outlet<V> values() {

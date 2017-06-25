@@ -13,6 +13,7 @@ import suite.adt.map.LngObjMap;
 import suite.adt.pair.Pair;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngMutable;
+import suite.primitive.LngOpt;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.LngPrimitives.LngPredicate;
@@ -167,6 +168,10 @@ public class LngStreamlet implements Iterable<Long> {
 		return concatMap2_(t -> streamlet.map2(v -> t, v -> v));
 	}
 
+	public long last() {
+		return spawn().last();
+	}
+
 	public <O> Streamlet<O> map(Lng_Obj<O> fun) {
 		return map_(fun);
 	}
@@ -187,10 +192,6 @@ public class LngStreamlet implements Iterable<Long> {
 		return new Streamlet<>(() -> spawn().mapNonNull(fun));
 	}
 
-	public long last() {
-		return spawn().last();
-	}
-
 	public LngStreamlet memoize() {
 		Longs list = toList().toLongs();
 		return streamlet(() -> LngOutlet.of(list));
@@ -202,6 +203,10 @@ public class LngStreamlet implements Iterable<Long> {
 
 	public long minOrNull(LngComparator comparator) {
 		return spawn().minOrNull(comparator);
+	}
+
+	public LngOpt opt() {
+		return spawn().opt();
 	}
 
 	public LngOutlet outlet() {
@@ -281,7 +286,7 @@ public class LngStreamlet implements Iterable<Long> {
 	}
 
 	public long uniqueResult() {
-		return spawn().uniqueResult();
+		return spawn().opt().get();
 	}
 
 	private <O> Streamlet<O> concatMap_(Lng_Obj<Streamlet<O>> fun) {

@@ -2,12 +2,18 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
+import suite.adt.Opt;
+import suite.primitive.ChrDbl_Obj;
+import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
+import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class ChrDblPair {
+
+	private static ChrDblPair none_ = ChrDblPair.of(ChrFunUtil.EMPTYVALUE, DblFunUtil.EMPTYVALUE);
 
 	public char t0;
 	public double t1;
@@ -18,6 +24,10 @@ public class ChrDblPair {
 
 	public static Fun<ChrDblPair, ChrDblPair> map1(Dbl_Dbl fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
+	}
+
+	public static ChrDblPair none() {
+		return none_;
 	}
 
 	public static ChrDblPair of(char t0, double t1) {
@@ -44,6 +54,10 @@ public class ChrDblPair {
 			c = c == 0 ? Character.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};
+	}
+
+	public <O> Opt<O> map(ChrDbl_Obj<O> fun) {
+		return t0 != ChrFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
 	}
 
 	public static char first_(ChrDblPair pair) {

@@ -2,12 +2,18 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 
+import suite.adt.Opt;
+import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.LngDbl_Obj;
+import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class LngDblPair {
+
+	private static LngDblPair none_ = LngDblPair.of(LngFunUtil.EMPTYVALUE, DblFunUtil.EMPTYVALUE);
 
 	public long t0;
 	public double t1;
@@ -18,6 +24,10 @@ public class LngDblPair {
 
 	public static Fun<LngDblPair, LngDblPair> map1(Dbl_Dbl fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
+	}
+
+	public static LngDblPair none() {
+		return none_;
 	}
 
 	public static LngDblPair of(long t0, double t1) {
@@ -44,6 +54,10 @@ public class LngDblPair {
 			c = c == 0 ? Long.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};
+	}
+
+	public <O> Opt<O> map(LngDbl_Obj<O> fun) {
+		return t0 != LngFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
 	}
 
 	public static long first_(LngDblPair pair) {
