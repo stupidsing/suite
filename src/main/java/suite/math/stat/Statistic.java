@@ -82,7 +82,7 @@ public class Statistic {
 		public final float[][] in;
 		public final float[] coefficients;
 		public final double invn2;
-		public final double sse;
+		public final double sst, sse;
 		public final double r2;
 		public final double standardError;
 
@@ -96,7 +96,7 @@ public class Statistic {
 			float[] estimatedy = To.arrayOfFloats(x, this::predict);
 			double meany = mean_(y);
 
-			double sst = 0d; // total sum of squares
+			double sst_ = 0d; // total sum of squares
 			double ssr = 0d; // estimated sum of squares
 			double sse_ = 0d; // sum of squared residuals
 
@@ -106,7 +106,7 @@ public class Statistic {
 				double d0 = yi - meany;
 				double d1 = estyi - meany;
 				double d2 = yi - estyi;
-				sst += d0 * d0;
+				sst_ += d0 * d0;
 				ssr += d1 * d1;
 				sse_ += d2 * d2;
 			}
@@ -116,13 +116,27 @@ public class Statistic {
 			sampleLength = sampleLength_;
 			in = x;
 			invn2 = 1d / (nSamples_ - sampleLength_ - 1);
+			sst = sst_;
 			sse = sse_;
-			r2 = ssr / sst; // 0 -> not accurate, 1 -> totally accurate
+			r2 = ssr / sst_; // 0 -> not accurate, 1 -> totally accurate
 			standardError = Math.sqrt(ssr * invn2);
 		}
 
 		public float predict(float[] x) {
 			return mtx.dot(coefficients, x);
+		}
+
+		public double aic() {
+			return 2d * (sampleLength - logLikelihood());
+		}
+
+		public double bic() {
+			return Math.log(nSamples) * sampleLength - 2d * logLikelihood();
+		}
+
+		public double logLikelihood() {
+			double variance = sst / (nSamples - sampleLength - 1);
+			return -.5d * (nSamples * (Math.log(2 * Math.PI) + Math.log(variance)) + sse / variance);
 		}
 
 		// if f-statistic < .05d, we conclude R%2 != 0, the test is significant
