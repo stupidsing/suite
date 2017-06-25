@@ -150,6 +150,45 @@ public class BackAllocator_ {
 		};
 	}
 
+	public static BackAllocator movingAvgMedian() {
+		int windowSize0 = 4;
+		int windowSize1 = 12;
+
+		return (dataSourceBySymbol, times) -> {
+			Map<String, float[]> movingAvg0BySymbol = dataSourceBySymbol //
+					.mapValue(dataSource -> ma.movingAvg(dataSource.prices, windowSize0)) //
+					.toMap();
+
+			Map<String, float[]> movingAvg1BySymbol = dataSourceBySymbol //
+					.mapValue(dataSource -> ma.movingAvg(dataSource.prices, windowSize1)) //
+					.toMap();
+
+			Map<String, float[]> movingMedian0BySymbol = dataSourceBySymbol //
+					.mapValue(dataSource -> ma.movingMedian(dataSource.prices, windowSize0)) //
+					.toMap();
+
+			Map<String, float[]> movingMedian1BySymbol = dataSourceBySymbol //
+					.mapValue(dataSource -> ma.movingMedian(dataSource.prices, windowSize1)) //
+					.toMap();
+
+			return (time, index) -> dataSourceBySymbol //
+					.map2((symbol, dataSource) -> {
+						int last = index - 1;
+						float movingAvg0 = movingAvg0BySymbol.get(symbol)[last];
+						float movingAvg1 = movingAvg1BySymbol.get(symbol)[last];
+						float movingMedian0 = movingMedian0BySymbol.get(symbol)[last];
+						float movingMedian1 = movingMedian1BySymbol.get(symbol)[last];
+						if (movingAvg0 < movingMedian0 && movingAvg1 < movingMedian1)
+							return 1d;
+						else if (movingMedian0 < movingAvg0 && movingMedian1 < movingAvg1)
+							return -1d;
+						else
+							return 0d;
+					}) //
+					.toList();
+		};
+	}
+
 	public static BackAllocator movingMedianMeanRevn() {
 		int windowSize0 = 1;
 		int windowSize1 = 32;
