@@ -230,7 +230,7 @@ public class P2GenerateCode {
 			Operand imm = amd64.imm(size);
 			Opt<Operand> push;
 
-			if (size == is && !(push = compileOp(sp, value)).isEmpty())
+			if (!(push = compileOp(sp, value)).isEmpty())
 				instructions.add(amd64.instruction(Insn.PUSH, push.get()));
 			else {
 				instructions.add(amd64.instruction(Insn.SUB, esp, imm));
