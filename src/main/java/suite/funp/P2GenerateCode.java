@@ -87,9 +87,8 @@ public class P2GenerateCode {
 		compileReg(sp, fd, target.pointer);
 
 		if (size <= is) {
-			Operand mem = amd64.mem(r0, target.start, size);
 			compileReg(sp1, fd, source);
-			emitMov(mem, stack[sp1]);
+			emitMov(amd64.mem(r0, target.start, size), stack[sp1]);
 		} else if (size == ps + ps) {
 			compileOp2(sp1, fd, source);
 			emitMov(amd64.mem(r0, target.start, size), stack[sp1]);
