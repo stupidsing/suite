@@ -12,6 +12,12 @@ import suite.trade.data.DataSource;
 import suite.util.Object_;
 import suite.util.To;
 
+/**
+ * Genetic programming on asset allocation, and use Monte-carlo simulation to
+ * evaluate outcomes.
+ *
+ * @author ywsing
+ */
 public class MonteCarloBackAllocator implements BackAllocator {
 
 	private Random random = new Random(Time.of(2017, 1, 1).epochUtcSecond());
