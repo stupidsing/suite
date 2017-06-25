@@ -2,6 +2,7 @@ package suite.math.stat;
 
 import suite.math.linalg.Matrix;
 import suite.math.stat.Statistic.LinearRegression;
+import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.To;
 
@@ -15,30 +16,31 @@ public class Ardl {
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 
-	public LinearRegression[] ardl(float[][] fsList, int lambda) {
+	public LinearRegression[] ardl(float[][] fsList, int maxLag) {
 		int n = fsList.length;
 		int length = fsList[0].length;
-		LinearRegression[] lrs = new LinearRegression[n];
 
-		for (int it = 0; it < n; it++) // dependent time series
-			if (length == fsList[it].length) {
-				int it_ = it;
+		LinearRegression[] lrs = Read.range(n) //
+				.map(it -> {
+					float[] fs = fsList[it];
 
-				float[][] x = To.array(float[].class, length - lambda, t -> {
-					int tx = t + lambda;
-					float[][] xl = new float[n + 1][lambda];
-					float[] last = xl[n];
-					for (int is = 0; is < n; is++) { // explanatory time series
-						float[] fsi = fsList[is];
-						Copy.floats(fsi, t, xl[is], 0, lambda);
-						last[is] = is != it_ ? fsi[tx] : 1f;
-					}
-					return mtx.concat(xl);
-				});
+					if (length == fs.length) {
+						float[][] x = To.array(float[].class, length - maxLag, t -> {
+							float[][] xl = new float[n][maxLag + 1];
+							for (int is = 0; is < n; is++) {
+								float[] fsi = fsList[is];
+								float[] xs = xl[is];
+								Copy.floats(fsi, t, xs, 0, maxLag);
+								xs[maxLag] = is != it ? fsi[t + maxLag] : 1f;
+							}
+							return mtx.concat(xl);
+						});
 
-				lrs[it] = stat.linearRegression(x, fsList[it]);
-			} else
-				throw new RuntimeException("wrong input sizes");
+						return stat.linearRegression(x, fs);
+					} else
+						throw new RuntimeException("wrong input sizes");
+				}) //
+				.toArray(LinearRegression.class);
 
 		return lrs;
 	}
