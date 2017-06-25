@@ -1,9 +1,11 @@
 package suite.trade.analysis;
 
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
-import suite.Constants;
 import suite.DailyMain;
+import suite.adt.pair.Pair;
 import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.IntStreamlet;
@@ -26,8 +28,7 @@ public class BackTestMain extends ExecutableProgram {
 	private Configuration cfg = new ConfigurationImpl();
 	private DailyMain dm = new DailyMain();
 
-	private BackAllocConfiguration bac0;
-	private BackAllocConfiguration bac1;
+	private Map<String, BackAllocConfiguration> bacs = new HashMap<>();
 
 	public static void main(String[] args) {
 		Util.run(BackTestMain.class, args);
@@ -39,27 +40,27 @@ public class BackTestMain extends ExecutableProgram {
 				Read.each(Asset.hsi), //
 				BackAllocator_.ofSingle(Asset.hsiSymbol));
 
-		questoaQuella("0670.HK", "1055.HK");
-		questoaQuella("0052.HK", "0341.HK");
-		questoaQuella("0020.HK", "0004.HK");
+		if (Boolean.FALSE) {
+			questoaQuella("0670.HK", "1055.HK");
+			questoaQuella("0052.HK", "0341.HK");
+			questoaQuella("0020.HK", "0004.HK");
 
-		bac0 = bac_hsi;
-		bac1 = dm.assetAllocConfigurationOf(BackAllocator_.threeMovingAvgs().unleverage());
-
-		bac0 = bac_hsi;
-		bac1 = dm.bac_pmmmr;
+			bacs.put("hsi", bac_hsi);
+			bacs.put("pmmmr", dm.bac_pmmmr);
+			bacs.put("threeMovingAvgs", dm.bac_tma);
+		}
 
 		// BEGIN
-		bac0 = bac_hsi;
-		bac1 = dm.assetAllocConfigurationOf(BackAllocator_.donchian().unleverage());
+		bacs.put("hsi", bac_hsi);
+		bacs.put("donchian", dm.assetAllocConfigurationOf(BackAllocator_.donchian().unleverage()));
 		// END
 
-		Streamlet2<Boolean, Simulate> simulationsByKey = Read //
-				.each(Boolean.FALSE, Boolean.TRUE) //
+		Streamlet2<String, Simulate> simulationsByKey = Read //
+				.from2(bacs) //
+				.map(Pair::of) //
 				.join2(IntStreamlet.range(2008, 2018).map(TimeRange::ofYear)) //
-				.map2((key, period) -> {
-					BackAllocConfiguration bac = key ? bac1 : bac0;
-					Constants.testFlag = key;
+				.map2((pair, period) -> pair.t0, (pair, period) -> {
+					BackAllocConfiguration bac = pair.t1;
 					return runner.backTest(bac.backAllocator, period, bac.assets);
 				}) //
 				.collect(As::streamlet2);
@@ -81,8 +82,9 @@ public class BackTestMain extends ExecutableProgram {
 	}
 
 	private void questoaQuella(String symbol0, String symbol1) {
-		bac0 = pairOfSingle(symbol0);
-		bac1 = dm.questoaQuella(symbol0, symbol1);
+		bacs.put(symbol0, pairOfSingle(symbol0));
+		bacs.put(symbol1, pairOfSingle(symbol1));
+		bacs.put("pair/" + symbol0 + "/" + symbol1, dm.questoaQuella(symbol0, symbol1));
 	}
 
 	private BackAllocConfiguration pairOfSingle(String symbol) {
