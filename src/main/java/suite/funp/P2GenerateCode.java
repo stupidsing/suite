@@ -21,7 +21,8 @@ import suite.funp.P0.FunpTree;
 import suite.funp.P1.FunpAllocStack;
 import suite.funp.P1.FunpAssign;
 import suite.funp.P1.FunpFramePointer;
-import suite.funp.P1.FunpInvoke;
+import suite.funp.P1.FunpInvokeInt;
+import suite.funp.P1.FunpInvokeInt2;
 import suite.funp.P1.FunpMemory;
 import suite.funp.P1.FunpRoutine;
 import suite.funp.P1.FunpSaveFramePointer;
@@ -44,7 +45,6 @@ public class P2GenerateCode {
 
 	private Amd64 amd64 = new Amd64();
 	private OpReg cl = amd64.reg("CL");
-	private OpReg eax = amd64.reg("EAX");
 	private OpReg ecx = amd64.reg("ECX");
 	private OpReg ebp = amd64.reg("EBP");
 	private OpReg esp = amd64.reg("ESP");
@@ -89,14 +89,14 @@ public class P2GenerateCode {
 		if (size <= is) {
 			Operand mem = amd64.mem(r0, target.start, size);
 			compileReg(sp1, fd, source);
-			instructions.add(amd64.instruction(Insn.MOV, mem, stack[sp1]));
+			mov(mem, stack[sp1]);
+		} else if (size == ps + ps) {
+			compileOp2(sp1, fd, source);
+			mov(amd64.mem(r0, target.start, size), stack[sp1]);
+			mov(amd64.mem(r0, target.start + ps, size), stack[sp1 + 1]);
 		} else if (source instanceof FunpMemory)
 			compileMove(sp, fd, target, (FunpMemory) source);
-		else if (source instanceof FunpRoutine) {
-			Pair<Operand, Operand> pair = compileRoutine((FunpRoutine) source);
-			instructions.add(amd64.instruction(Insn.MOV, amd64.mem(r0, target.start, ps), pair.t0));
-			instructions.add(amd64.instruction(Insn.MOV, amd64.mem(r0, target.start + ps, ps), pair.t1));
-		} else
+		else
 			throw new RuntimeException("cannot assign from " + source);
 	}
 
@@ -117,8 +117,8 @@ public class P2GenerateCode {
 				while (i < size) {
 					int s = i + is <= size ? is : 1;
 					OpReg r = 1 < s ? ecx : cl;
-					instructions.add(amd64.instruction(Insn.MOV, r, amd64.mem(r1, start1 + i, s)));
-					instructions.add(amd64.instruction(Insn.MOV, amd64.mem(r0, start0 + i, s), r));
+					mov(r, amd64.mem(r1, start1 + i, s));
+					mov(amd64.mem(r0, start0 + i, s), r);
 					i += s;
 				}
 				;
@@ -127,7 +127,7 @@ public class P2GenerateCode {
 			saveRegs(sp - 1, () -> {
 				instructions.add(amd64.instruction(Insn.LEA, amd64.reg("ESI"), amd64.mem(r1, start1, 4)));
 				instructions.add(amd64.instruction(Insn.LEA, amd64.reg("EDI"), amd64.mem(r0, start0, 4)));
-				instructions.add(amd64.instruction(Insn.MOV, ecx, amd64.imm(size / 4, 4)));
+				mov(ecx, amd64.imm(size / 4, 4));
 				instructions.add(amd64.instruction(Insn.CLD));
 				instructions.add(amd64.instruction(Insn.REP));
 				instructions.add(amd64.instruction(Insn.MOVSD));
@@ -147,22 +147,9 @@ public class P2GenerateCode {
 
 		if (n0 instanceof FunpFixed)
 			;
-		else if (n0 instanceof FunpInvoke) {
-			Funp routine = ((FunpInvoke) n0).routine;
-			Pair<Operand, Operand> pair;
-			if (routine instanceof FunpRoutine)
-				pair = compileRoutine((FunpRoutine) routine);
-			else if (routine instanceof FunpMemory) {
-				FunpMemory memory = (FunpMemory) routine;
-				int sp1 = sp + 1;
-				compileReg(sp, fd, memory.range(0, ps));
-				compileReg(sp1, fd, memory.range(ps, ps + ps));
-				pair = Pair.of(r0, stack[sp1]);
-			} else
-				throw new RuntimeException();
-			instructions.add(amd64.instruction(Insn.MOV, ebp, pair.t0));
-			instructions.add(amd64.instruction(Insn.CALL, pair.t1));
-			instructions.add(amd64.instruction(Insn.MOV, r0, eax));
+		else if (n0 instanceof FunpInvokeInt) {
+			compileInvoke(sp, fd, ((FunpInvokeInt) n0).routine);
+			mov(r0, stack[0]);
 		} else if (n0 instanceof FunpTree) {
 			FunpTree n1 = (FunpTree) n0;
 			Operator operator = n1.operator;
@@ -176,19 +163,45 @@ public class P2GenerateCode {
 			}
 			instructions.add(amd64.instruction(insnByOp.get(operator), r0, stack[sp1]));
 		} else if (!(oper = compileOp(sp, n0)).isEmpty())
-			instructions.add(amd64.instruction(Insn.MOV, r0, oper.get()));
+			mov(r0, oper.get());
 		else
 			throw new RuntimeException("cannot generate code for " + n0);
 	}
 
-	private Pair<Operand, Operand> compileRoutine(FunpRoutine n1) {
+	private void compileInvoke(int sp, int fd, Funp n0) {
+		Pair<Operand, Operand> pair = compileOp2(sp, fd, n0);
+		mov(ebp, pair.t0);
+		instructions.add(amd64.instruction(Insn.CALL, pair.t1));
+	}
+
+	private Pair<Operand, Operand> compileOp2(int sp, int fd, Funp n0) {
+		int sp1 = sp + 1;
+		OpReg r0 = stack[sp];
+		OpReg r1 = stack[sp1];
+		if (n0 instanceof FunpRoutine)
+			return compileRoutine((FunpRoutine) n0);
+		else if (n0 instanceof FunpInvokeInt2) {
+			compileInvoke(sp, fd, ((FunpInvokeInt2) n0).routine);
+			mov(r1, stack[1]);
+			mov(r0, stack[0]);
+			return Pair.of(r0, r1);
+		} else if (n0 instanceof FunpMemory) {
+			FunpMemory memory = (FunpMemory) n0;
+			compileReg(sp, fd, memory.range(0, ps));
+			compileReg(sp1, fd, memory.range(ps, ps + ps));
+			return Pair.of(r0, r1);
+		} else
+			throw new RuntimeException();
+	}
+
+	private Pair<Operand, Operand> compileRoutine(FunpRoutine n0) {
 		Operand routineLabel = amd64.imm(0, ps);
 		Operand endLabel = amd64.imm(0, ps);
 		instructions.add(amd64.instruction(Insn.JMP, endLabel));
 		instructions.add(amd64.instruction(Insn.LABEL, routineLabel));
 		instructions.add(amd64.instruction(Insn.PUSH, ebp));
-		instructions.add(amd64.instruction(Insn.MOV, ebp, esp));
-		compileReg(0, 4, n1.expr);
+		mov(ebp, esp);
+		compileReg(0, 4, n0.expr);
 		instructions.add(amd64.instruction(Insn.POP, ebp));
 		instructions.add(amd64.instruction(Insn.RET));
 		instructions.add(amd64.instruction(Insn.LABEL, endLabel));
@@ -281,6 +294,11 @@ public class P2GenerateCode {
 				if (opReg == stack[i])
 					instructions.add(amd64.instruction(insn, opReg));
 		}
+	}
+
+	private void mov(Operand op0, Operand op1) {
+		if (op0 != op1)
+			instructions.add(amd64.instruction(Insn.MOV, op0, op1));
 	}
 
 }
