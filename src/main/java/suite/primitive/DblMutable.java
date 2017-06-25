@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.util.Object_;
+
 /**
  * An indirect reference to a primitive double. Double.MIN_VALUE is not allowed
  * in the value.
@@ -37,6 +39,21 @@ public class DblMutable {
 
 	public double get() {
 		return value;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return Object_.clazz(object) == DblMutable.class && value == ((DblMutable) object).value;
+	}
+
+	@Override
+	public int hashCode() {
+		return Double.hashCode(value);
+	}
+
+	@Override
+	public String toString() {
+		return value != DblFunUtil.EMPTYVALUE ? Double.toString(value) : "null";
 	}
 
 }

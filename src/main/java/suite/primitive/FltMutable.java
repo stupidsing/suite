@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.util.Object_;
+
 /**
  * An indirect reference to a primitive float. Float.MIN_VALUE is not allowed in
  * the value.
@@ -37,6 +39,21 @@ public class FltMutable {
 
 	public float get() {
 		return value;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return Object_.clazz(object) == FltMutable.class && value == ((FltMutable) object).value;
+	}
+
+	@Override
+	public int hashCode() {
+		return Float.hashCode(value);
+	}
+
+	@Override
+	public String toString() {
+		return value != FltFunUtil.EMPTYVALUE ? Float.toString(value) : "null";
 	}
 
 }

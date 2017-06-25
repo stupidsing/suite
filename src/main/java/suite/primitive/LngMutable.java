@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.util.Object_;
+
 /**
  * An indirect reference to a primitive long. Long.MIN_VALUE is not allowed in
  * the value.
@@ -37,6 +39,21 @@ public class LngMutable {
 
 	public long get() {
 		return value;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return Object_.clazz(object) == LngMutable.class && value == ((LngMutable) object).value;
+	}
+
+	@Override
+	public int hashCode() {
+		return Long.hashCode(value);
+	}
+
+	@Override
+	public String toString() {
+		return value != LngFunUtil.EMPTYVALUE ? Long.toString(value) : "null";
 	}
 
 }
