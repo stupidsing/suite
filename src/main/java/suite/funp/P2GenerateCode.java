@@ -154,11 +154,9 @@ public class P2GenerateCode {
 				pair = compileRoutine((FunpRoutine) routine);
 			else if (routine instanceof FunpMemory) {
 				FunpMemory memory = (FunpMemory) routine;
-				Funp frame = memory.range(0, ps);
-				Funp ip = memory.range(ps, ps + ps);
 				int sp1 = sp + 1;
-				compileReg(sp, fd, frame);
-				compileReg(sp1, fd, ip);
+				compileReg(sp, fd, memory.range(0, ps));
+				compileReg(sp1, fd, memory.range(ps, ps + ps));
 				pair = Pair.of(r0, stack[sp1]);
 			} else
 				throw new RuntimeException();
