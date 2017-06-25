@@ -15,7 +15,6 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
-import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpTree;
 import suite.funp.P1.FunpAllocStack;
@@ -23,6 +22,7 @@ import suite.funp.P1.FunpAssign;
 import suite.funp.P1.FunpFramePointer;
 import suite.funp.P1.FunpInvoke;
 import suite.funp.P1.FunpMemory;
+import suite.funp.P1.FunpRoutine;
 import suite.funp.P1.FunpSaveFramePointer;
 import suite.funp.P1.FunpSaveRegisters;
 import suite.funp.P1.FunpSeq;
@@ -134,6 +134,7 @@ public class P2GenerateCode {
 	}
 
 	private void compileAssign(int sp, int fd, FunpMemory target, Funp source) {
+		int sp1 = sp + 1;
 		OpReg r0 = stack[sp];
 		int size = target.size();
 
@@ -141,28 +142,28 @@ public class P2GenerateCode {
 
 		if (size <= is) {
 			Operand mem = amd64.mem(r0, target.start, size);
-			compileReg_(sp + 1, fd, source);
-			instructions.add(amd64.instruction(Insn.MOV, mem, stack[sp + 1]));
+			compileReg_(sp1, fd, source);
+			instructions.add(amd64.instruction(Insn.MOV, mem, stack[sp1]));
 		} else if (source instanceof FunpInvoke)
-			compileInvoke(sp, fd, //
+			compileInvoke(sp1, fd, //
 					(FunpInvoke) source, size, //
 					(r_, disp) -> compileMove(sp, r0, target.start, r_, disp, target.size()));
-		else if (source instanceof FunpLambda) {
+		else if (source instanceof FunpMemory)
+			compileMove(sp, fd, target, (FunpMemory) source);
+		else if (source instanceof FunpRoutine) {
 			Operand lambdaLabel = amd64.imm(0, ps);
 			Operand endLabel = amd64.imm(0, ps);
 			instructions.add(amd64.instruction(Insn.JMP, endLabel));
 			instructions.add(amd64.instruction(Insn.LABEL, lambdaLabel));
 			instructions.add(amd64.instruction(Insn.PUSH, ebp));
 			instructions.add(amd64.instruction(Insn.MOV, ebp, esp));
-			compileReg_(0, 4, ((FunpLambda) source).expr);
+			compileReg_(0, 4, ((FunpRoutine) source).expr);
 			instructions.add(amd64.instruction(Insn.POP, ebp));
 			instructions.add(amd64.instruction(Insn.RET));
 			instructions.add(amd64.instruction(Insn.LABEL, endLabel));
 			instructions.add(amd64.instruction(Insn.MOV, amd64.mem(r0, target.start, ps), ebp));
 			instructions.add(amd64.instruction(Insn.MOV, amd64.mem(r0, target.start + ps, ps), lambdaLabel));
-		} else if (source instanceof FunpMemory)
-			compileMove(sp, fd, target, (FunpMemory) source);
-		else
+		} else
 			throw new RuntimeException("cannot assign from " + source);
 	}
 
@@ -174,10 +175,12 @@ public class P2GenerateCode {
 			FunpMemory memory = (FunpMemory) lambda;
 			Funp frame = memory.range(0, ps);
 			Funp ip = memory.range(ps, ps + ps);
+			int sp1 = sp + 1;
+
 			compileReg_(sp, fd, frame);
-			compileReg_(sp + 1, fd, ip);
+			compileReg_(sp1, fd, ip);
 			instructions.add(amd64.instruction(Insn.MOV, ebp, r0));
-			instructions.add(amd64.instruction(Insn.CALL, stack[sp + 1]));
+			instructions.add(amd64.instruction(Insn.CALL, stack[sp1]));
 			// TODO move this after registers are restored
 			onResult.sink2(esp, is - size);
 		} else {

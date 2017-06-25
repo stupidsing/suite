@@ -5,7 +5,10 @@ import suite.util.FunUtil.Fun;
 
 public class P1 {
 
-	public static class FunpAllocStack implements Funp {
+	public interface End {
+	}
+
+	public static class FunpAllocStack implements Funp, P2.End {
 		public int size; // allocate size
 		public Fun<FunpMemory, Funp> expr;
 
@@ -17,7 +20,7 @@ public class P1 {
 		}
 	}
 
-	public static class FunpAssign implements Funp {
+	public static class FunpAssign implements Funp, P2.End {
 		public FunpMemory memory;
 		public Funp value;
 
@@ -29,10 +32,10 @@ public class P1 {
 		}
 	}
 
-	public static class FunpFramePointer implements Funp {
+	public static class FunpFramePointer implements Funp, P2.End {
 	}
 
-	public static class FunpInvoke implements Funp {
+	public static class FunpInvoke implements Funp, P2.End {
 		public Funp lambda;
 
 		public static FunpInvoke of(Funp lambda) {
@@ -42,7 +45,7 @@ public class P1 {
 		}
 	}
 
-	public static class FunpMemory implements Funp {
+	public static class FunpMemory implements Funp, P2.End {
 		public Funp pointer;
 		public int start;
 		public int end;
@@ -64,7 +67,17 @@ public class P1 {
 		}
 	}
 
-	public static class FunpSaveFramePointer implements Funp {
+	public static class FunpRoutine implements Funp, P2.End {
+		public Funp expr;
+
+		public static FunpRoutine of(Funp expr) {
+			FunpRoutine f = new FunpRoutine();
+			f.expr = expr;
+			return f;
+		}
+	}
+
+	public static class FunpSaveFramePointer implements Funp, P2.End {
 		public Funp expr;
 
 		public static FunpSaveFramePointer of(Funp expr) {
@@ -74,7 +87,7 @@ public class P1 {
 		}
 	}
 
-	public static class FunpSaveRegisters implements Funp {
+	public static class FunpSaveRegisters implements Funp, P2.End {
 		public Funp expr;
 
 		public static FunpSaveRegisters of(Funp expr) {
@@ -84,7 +97,7 @@ public class P1 {
 		}
 	}
 
-	public static class FunpSeq implements Funp {
+	public static class FunpSeq implements Funp, P2.End {
 		public Funp[] exprs;
 
 		public static FunpSeq of(Funp... exprs) {

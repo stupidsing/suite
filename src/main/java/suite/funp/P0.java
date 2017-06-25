@@ -5,7 +5,10 @@ import suite.node.io.Operator;
 
 public class P0 {
 
-	public static class FunpApply implements Funp {
+	public interface End {
+	}
+
+	public static class FunpApply implements Funp, P1.End {
 		public Funp value;
 		public Funp lambda;
 
@@ -17,7 +20,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpBoolean implements Funp {
+	public static class FunpBoolean implements Funp, P2.End {
 		public boolean b;
 
 		public static FunpBoolean of(boolean b) {
@@ -27,7 +30,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpFixed implements Funp {
+	public static class FunpFixed implements Funp, P2.End {
 		public String var;
 		public Funp expr;
 
@@ -39,7 +42,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpIf implements Funp {
+	public static class FunpIf implements Funp, P2.End {
 		public Funp if_;
 		public Funp then;
 		public Funp else_;
@@ -53,7 +56,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpLambda implements Funp {
+	public static class FunpLambda implements Funp, P1.End {
 		public String var;
 		public Funp expr;
 
@@ -65,7 +68,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpNumber implements Funp {
+	public static class FunpNumber implements Funp, P2.End {
 		public int i;
 
 		public static FunpNumber of(int i) {
@@ -75,7 +78,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpPolyType implements Funp {
+	public static class FunpPolyType implements Funp, P1.End {
 		public Funp expr;
 
 		public static FunpPolyType of(Funp expr) {
@@ -85,7 +88,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpReference implements Funp {
+	public static class FunpReference implements Funp, P2.End {
 		public Funp expr;
 
 		public static FunpReference of(Funp expr) {
@@ -95,7 +98,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpTree implements Funp {
+	public static class FunpTree implements Funp, P2.End {
 		public Operator operator;
 		public Funp left;
 		public Funp right;
@@ -109,7 +112,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpVariable implements Funp {
+	public static class FunpVariable implements Funp, P1.End {
 		public String var;
 
 		public static FunpVariable of(String var) {
