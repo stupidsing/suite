@@ -1,5 +1,9 @@
 package suite.adt;
 
+import java.util.Objects;
+
+import suite.util.Object_;
+
 public class Mutable<T> {
 
 	private T value;
@@ -27,6 +31,21 @@ public class Mutable<T> {
 
 	public T get() {
 		return value;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return Object_.clazz(object) == Mutable.class && Objects.equals(value, ((Mutable<?>) object).value);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(value);
+	}
+
+	@Override
+	public String toString() {
+		return value != null ? value.toString() : "null";
 	}
 
 }

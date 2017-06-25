@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.util.Object_;
+
 /**
  * An indirect reference to a primitive char. Character.MIN_VALUE is not allowed
  * in the value.
@@ -37,6 +39,21 @@ public class ChrMutable {
 
 	public char get() {
 		return value;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return Object_.clazz(object) == ChrMutable.class && value == ((ChrMutable) object).value;
+	}
+
+	@Override
+	public int hashCode() {
+		return Character.hashCode(value);
+	}
+
+	@Override
+	public String toString() {
+		return value != ChrFunUtil.EMPTYVALUE ? Character.toString(value) : "null";
 	}
 
 }

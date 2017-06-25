@@ -1,8 +1,10 @@
 package suite.adt;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import suite.util.FunUtil.Fun;
+import suite.util.Object_;
 
 public class Opt<T> {
 
@@ -34,6 +36,21 @@ public class Opt<T> {
 
 	public T get() {
 		return value;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return Object_.clazz(object) == Opt.class && Objects.equals(value, ((Opt<?>) object).value);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(value);
+	}
+
+	@Override
+	public String toString() {
+		return value != null ? value.toString() : "null";
 	}
 
 }
