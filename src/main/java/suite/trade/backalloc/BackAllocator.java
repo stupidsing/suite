@@ -1,6 +1,11 @@
 package suite.trade.backalloc;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -107,6 +112,34 @@ public interface BackAllocator {
 						}) //
 						.filterValue(potential -> 0d < potential) //
 						.toList();
+			};
+		};
+	}
+
+	public default BackAllocator holdMinimum(int period) {
+		return (dataSourceBySymbol, times) -> {
+			Deque<Map<String, Double>> queue = new ArrayDeque<>();
+
+			for (int i = 0; i < period; i++)
+				queue.addLast(new HashMap<>());
+
+			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
+
+			return (time, index) -> {
+				Map<String, Double> ratioBySymbol = Read //
+						.from2(onDateTime.onDateTime(time, index)) //
+						.toMap();
+
+				queue.removeFirst();
+				queue.addLast(ratioBySymbol);
+
+				Map<String, Double> max = new HashMap<>();
+
+				for (Map<String, Double> m : queue)
+					for (Entry<String, Double> e : m.entrySet())
+						max.compute(e.getKey(), (k, v) -> Math.max(v != null ? v : 0d, e.getValue()));
+
+				return Read.from2(max).toList();
 			};
 		};
 	}

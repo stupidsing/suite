@@ -199,7 +199,9 @@ public class BackAllocator_ {
 				double qdiff = (qx - q0) / qx;
 
 				if (threshold < Math.abs(pdiff - qdiff))
-					return Arrays.asList(Pair.of(pdiff < qdiff ? symbol0 : symbol1, 1d));
+					return Arrays.asList( //
+							Pair.of(pdiff < qdiff ? symbol0 : symbol1, 1d), //
+							Pair.of(pdiff < qdiff ? symbol1 : symbol0, -1d));
 				else
 					return Collections.emptyList();
 			};
