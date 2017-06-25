@@ -205,7 +205,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator unleverage() {
-		BackAllocator ba1 = Trade_.isShortSell ? this : filterShorts();
+		BackAllocator ba0 = this;
+		BackAllocator ba1 = Trade_.isShortSell ? ba0 : ba0.filterShorts();
 		BackAllocator ba2;
 
 		if (Trade_.maxLeverageAmount < 999999f)
