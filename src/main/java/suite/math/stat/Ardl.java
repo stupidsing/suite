@@ -2,7 +2,7 @@ package suite.math.stat;
 
 import suite.math.linalg.Matrix;
 import suite.math.stat.Statistic.LinearRegression;
-import suite.streamlet.Read;
+import suite.streamlet.IntStreamlet;
 import suite.util.Copy;
 import suite.util.To;
 
@@ -28,7 +28,8 @@ public class Ardl {
 		int n = fsList.length;
 		int length = fsList[0].length;
 
-		LinearRegression[] lrs = Read.range(n) //
+		LinearRegression[] lrs = IntStreamlet //
+				.range(n) //
 				.map(it -> {
 					float[] fs = fsList[it];
 
@@ -48,7 +49,7 @@ public class Ardl {
 	}
 
 	private float[] getExplanatoryVariables(float[][] fsList, int it, int t) {
-		return mtx.concat(Read //
+		return mtx.concat(IntStreamlet //
 				.range(fsList.length) //
 				.map(is -> {
 					float[] fsi = fsList[is];

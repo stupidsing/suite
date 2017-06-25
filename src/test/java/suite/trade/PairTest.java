@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
+import suite.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.data.Configuration;
@@ -39,7 +40,7 @@ public class PairTest {
 		float[] prices0 = dataSource0.align(tradeDates).prices;
 		float[] prices1 = dataSource1.align(tradeDates).prices;
 		int length = prices0.length;
-		float[][] x = Read.range(length).map(i -> new float[] { prices0[i], 1f, }).toArray(float[].class);
+		float[][] x = IntStreamlet.range(length).map(i -> new float[] { prices0[i], 1f, }).toArray(float[].class);
 		float[] y = prices1;
 		LinearRegression lr = statistic.linearRegression(x, y);
 		System.out.println(symbol0 + " -> " + symbol1 + lr);

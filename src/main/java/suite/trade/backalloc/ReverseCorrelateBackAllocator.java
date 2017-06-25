@@ -7,7 +7,7 @@ import suite.math.linalg.CholeskyDecomposition;
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
 import suite.streamlet.As;
-import suite.streamlet.Read;
+import suite.streamlet.IntStreamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
@@ -110,7 +110,8 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 			float[] returns = To.arrayOfFloats(symbols, excessReturnBySymbol::get);
 			float[] allocations = cholesky.inverseMul(cov).apply(returns);
 
-			return Read.range(nSymbols) //
+			return IntStreamlet //
+					.range(nSymbols) //
 					.map2(i -> symbols[i], i -> allocations[i] * kellyReduction) //
 					.toList();
 		};

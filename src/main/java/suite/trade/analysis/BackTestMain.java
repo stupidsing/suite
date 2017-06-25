@@ -6,6 +6,7 @@ import suite.Constants;
 import suite.DailyMain;
 import suite.primitive.Chars;
 import suite.streamlet.As;
+import suite.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
@@ -55,7 +56,7 @@ public class BackTestMain extends ExecutableProgram {
 
 		Streamlet2<Boolean, Simulate> simulationsByKey = Read //
 				.each(Boolean.FALSE, Boolean.TRUE) //
-				.join2(Read.range(2008, 2018).map(TimeRange::ofYear)) //
+				.join2(IntStreamlet.range(2008, 2018).map(TimeRange::ofYear)) //
 				.map2((key, period) -> {
 					BackAllocConfiguration bac = key ? bac1 : bac0;
 					Constants.testFlag = key;

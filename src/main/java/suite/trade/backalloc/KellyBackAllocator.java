@@ -7,6 +7,7 @@ import suite.math.linalg.CholeskyDecomposition;
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
 import suite.streamlet.As;
+import suite.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
@@ -58,7 +59,7 @@ public class KellyBackAllocator implements BackAllocator {
 			float[] returns = To.arrayOfFloats(symbols, excessReturnBySymbol::get);
 			float[] allocations = cholesky.inverseMul(cov).apply(returns);
 
-			return Read //
+			return IntStreamlet //
 					.range(nSymbols) //
 					.map2(i -> symbols[i], i -> (double) allocations[i]) //
 					.toList();

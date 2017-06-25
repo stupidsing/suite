@@ -198,22 +198,22 @@ public class Amd64 {
 			put(Atom.of("R13D"), newReg(4, 13));
 			put(Atom.of("R14D"), newReg(4, 14));
 			put(Atom.of("R15D"), newReg(4, 15));
-			put(Atom.of("RAX"), newReg(4, 0));
-			put(Atom.of("RCX"), newReg(4, 1));
-			put(Atom.of("RDX"), newReg(4, 2));
-			put(Atom.of("RBX"), newReg(4, 3));
-			put(Atom.of("RSP"), newReg(4, 4));
-			put(Atom.of("RBP"), newReg(4, 5));
-			put(Atom.of("RSI"), newReg(4, 6));
-			put(Atom.of("RDI"), newReg(4, 7));
-			put(Atom.of("R8"), newReg(4, 8));
-			put(Atom.of("R9"), newReg(4, 9));
-			put(Atom.of("R10"), newReg(4, 10));
-			put(Atom.of("R11"), newReg(4, 11));
-			put(Atom.of("R12"), newReg(4, 12));
-			put(Atom.of("R13"), newReg(4, 13));
-			put(Atom.of("R14"), newReg(4, 14));
-			put(Atom.of("R15"), newReg(4, 15));
+			put(Atom.of("RAX"), newReg(8, 0));
+			put(Atom.of("RCX"), newReg(8, 1));
+			put(Atom.of("RDX"), newReg(8, 2));
+			put(Atom.of("RBX"), newReg(8, 3));
+			put(Atom.of("RSP"), newReg(8, 4));
+			put(Atom.of("RBP"), newReg(8, 5));
+			put(Atom.of("RSI"), newReg(8, 6));
+			put(Atom.of("RDI"), newReg(8, 7));
+			put(Atom.of("R8"), newReg(8, 8));
+			put(Atom.of("R9"), newReg(8, 9));
+			put(Atom.of("R10"), newReg(8, 10));
+			put(Atom.of("R11"), newReg(8, 11));
+			put(Atom.of("R12"), newReg(8, 12));
+			put(Atom.of("R13"), newReg(8, 13));
+			put(Atom.of("R14"), newReg(8, 14));
+			put(Atom.of("R15"), newReg(8, 15));
 
 		}
 	};

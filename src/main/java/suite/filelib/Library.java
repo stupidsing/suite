@@ -15,6 +15,7 @@ import org.apache.commons.codec.digest.Md5Crypt;
 
 import suite.adt.pair.Pair;
 import suite.os.FileUtil;
+import suite.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.Rethrow;
@@ -65,7 +66,8 @@ public class Library extends ExecutableProgram {
 					BasicFileAttributes attrs = Rethrow.ex(() -> Files.readAttributes(path, BasicFileAttributes.class));
 
 					// get all file information
-					List<String> tags = Read.range(path.getNameCount()) //
+					List<String> tags = IntStreamlet //
+							.range(path.getNameCount()) //
 							.map(i -> path.getName(i).toString()) //
 							.cons(To.string(attrs.lastModifiedTime().toInstant())) //
 							.toList();

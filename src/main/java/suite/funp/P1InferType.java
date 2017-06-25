@@ -21,6 +21,7 @@ import suite.funp.P1.FunpFramePointer;
 import suite.funp.P1.FunpInvokeInt;
 import suite.funp.P1.FunpMemory;
 import suite.funp.P1.FunpRoutine;
+import suite.funp.P1.FunpRoutine2;
 import suite.funp.P1.FunpSaveFramePointer;
 import suite.funp.P1.FunpSaveRegisters;
 import suite.immutable.IMap;
@@ -140,7 +141,12 @@ public class P1InferType {
 			int scope1 = scope + 1;
 			LambdaType lt = lambdaType(n0);
 			Funp expr = rewrite(scope1, env.put(var, new Var(scope1, 0, lt.is)), n1.expr);
-			return FunpRoutine.of(expr);
+			if (lt.os == Funp_.pointerSize)
+				return FunpRoutine.of(expr);
+			else if (lt.os == Funp_.pointerSize * 2)
+				return FunpRoutine2.of(expr);
+			else
+				throw new RuntimeException();
 		} else if (n0 instanceof FunpPolyType)
 			return rewrite(scope, env, ((FunpPolyType) n0).expr);
 		else if (n0 instanceof FunpVariable) {

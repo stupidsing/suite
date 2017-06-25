@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.streamlet.Read;
+import suite.streamlet.IntStreamlet;
 import suite.util.Thread_;
 import suite.weiqi.Weiqi;
 
@@ -60,7 +60,8 @@ public class UctSearch<Move> {
 		AtomicInteger count = new AtomicInteger();
 		long end = System.currentTimeMillis() + boundedTime;
 
-		List<Thread> threads = Read.range(numberOfThreads) //
+		List<Thread> threads = IntStreamlet //
+				.range(numberOfThreads) //
 				.map(i -> Thread_.newThread(() -> {
 					int j = 0;
 

@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 import suite.Constants;
 import suite.math.Vector;
 import suite.os.LogUtil;
-import suite.streamlet.Read;
+import suite.streamlet.IntStreamlet;
 import suite.util.Thread_;
 import suite.util.To;
 
@@ -22,7 +22,8 @@ public class Render {
 		float scale = 1f / Math.max(width, height);
 		int centreX = width / 2, centreY = height / 2;
 
-		List<Thread> threads = Read.range(nThreads) //
+		List<Thread> threads = IntStreamlet //
+				.range(nThreads) //
 				.map(t -> Thread_.newThread(() -> {
 					for (int x = xs[t]; x < xs[t + 1]; x++)
 						for (int y = 0; y < height; y++) {

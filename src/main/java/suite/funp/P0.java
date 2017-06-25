@@ -2,6 +2,7 @@ package suite.funp;
 
 import suite.funp.Funp_.Funp;
 import suite.node.io.Operator;
+import suite.node.io.Operator.Assoc;
 
 public class P0 {
 
@@ -109,6 +110,14 @@ public class P0 {
 			f.left = left;
 			f.right = right;
 			return f;
+		}
+
+		public Funp getFirst() {
+			return operator.getAssoc() == Assoc.RIGHT ? right : left;
+		}
+
+		public Funp getSecond() {
+			return operator.getAssoc() == Assoc.RIGHT ? left : right;
 		}
 	}
 

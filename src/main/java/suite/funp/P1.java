@@ -90,6 +90,16 @@ public class P1 {
 		}
 	}
 
+	public static class FunpRoutine2 implements Funp, P2.End {
+		public Funp expr;
+
+		public static FunpRoutine2 of(Funp expr) {
+			FunpRoutine2 f = new FunpRoutine2();
+			f.expr = expr;
+			return f;
+		}
+	}
+
 	public static class FunpSaveFramePointer implements Funp, P2.End {
 		public Funp expr;
 
