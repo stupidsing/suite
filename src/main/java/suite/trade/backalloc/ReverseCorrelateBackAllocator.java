@@ -3,15 +3,12 @@ package suite.trade.backalloc;
 import java.util.List;
 import java.util.Map;
 
-import suite.math.linalg.CholeskyDecomposition;
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
 import suite.streamlet.As;
-import suite.streamlet.IntStreamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
-import suite.trade.Trade_;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
@@ -21,7 +18,6 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 	private double kellyReduction;
 	private double reverseCorrelationThreshold;
 
-	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
@@ -41,8 +37,6 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 
 	@Override
 	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<Time> times) {
-		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
-
 		Map<String, Map<TimeRange, Double>> reverseCorrelationByPeriodBySymbol = dataSourceBySymbol //
 				.mapValue(dataSource -> TimeRange //
 						.ofDateTimes(times) //
@@ -83,37 +77,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 					}) //
 					.collect(As::streamlet2);
 
-			Map<String, float[]> returnsBySymbol = reversePricesBySymbol //
-					.mapValue(ts::returns) //
-					.toMap();
-
-			Map<String, Float> excessReturnBySymbol = reversePricesBySymbol //
-					.map2((symbol, prices) -> {
-						double reverseCorrelation = reverseCorrelationBySymbol.get(symbol);
-						double price0 = prices[0];
-						double priceDiff = prices[tor - 1] - price0;
-						double returnTor = priceDiff / price0;
-						double returnDaily = Math.expm1(Math.log1p(returnTor) / tor) * Math.signum(reverseCorrelation);
-						return (float) (returnDaily - dailyRiskFreeInterestRate);
-					}) //
-					.toMap();
-
-			String[] symbols = returnsBySymbol.keySet().toArray(new String[0]);
-			int nSymbols = symbols.length;
-
-			float[][] cov = To.arrayOfFloats(nSymbols, nSymbols, (i0, i1) -> {
-				float[] returns0 = returnsBySymbol.get(symbols[i0]);
-				float[] returns1 = returnsBySymbol.get(symbols[i1]);
-				return (float) (stat.covariance(returns0, returns1) * tor);
-			});
-
-			float[] returns = To.arrayOfFloats(symbols, excessReturnBySymbol::get);
-			float[] allocations = cholesky.inverseMul(cov).apply(returns);
-
-			return IntStreamlet //
-					.range(nSymbols) //
-					.map2(i -> symbols[i], i -> allocations[i] * kellyReduction) //
-					.toList();
+			return new KellyCriterion().allocate(reversePricesBySymbol, kellyReduction);
 		};
 	}
 
