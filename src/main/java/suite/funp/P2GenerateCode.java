@@ -216,11 +216,11 @@ public class P2GenerateCode {
 			instructions.add(amd64.instruction(Insn.LEA, amd64.reg("ESI"), amd64.mem(r1, start1, 4)));
 			instructions.add(amd64.instruction(Insn.LEA, amd64.reg("EDI"), amd64.mem(r0, start0, 4)));
 			instructions.add(amd64.instruction(Insn.MOV, amd64.reg("ECX"), amd64.imm(size / 4, 4)));
+			instructions.add(amd64.instruction(Insn.CLD));
 			instructions.add(amd64.instruction(Insn.REP));
 			instructions.add(amd64.instruction(Insn.MOVSD));
 			for (int i = 0; i < size % 4; i++)
 				instructions.add(amd64.instruction(Insn.MOVSB));
-			instructions.add(amd64.instruction(Insn.CLD));
 			instructions.add(amd64.instruction(Insn.POP, amd64.reg("ESI")));
 			doRegs(sp - 1, Insn.POP, "EDI", "ESI", "ECX");
 		}
