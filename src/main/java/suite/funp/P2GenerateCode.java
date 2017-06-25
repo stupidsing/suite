@@ -175,21 +175,28 @@ public class P2GenerateCode {
 	}
 
 	private Pair<Operand, Operand> compileOp2(int sp, int fd, Funp n0) {
-		int sp1 = sp + 1;
-		OpReg r0 = stack[sp];
-		OpReg r1 = stack[sp1];
 		if (n0 instanceof FunpRoutine)
 			return compileRoutine((FunpRoutine) n0);
-		else if (n0 instanceof FunpInvokeInt2) {
+		else {
+			compileReg2(sp, fd, n0);
+			return Pair.of(stack[sp], stack[sp + 1]);
+		}
+	}
+
+	private void compileReg2(int sp, int fd, Funp n0) {
+		compile(sp, fd, this::compileReg2_, n0);
+	}
+
+	private void compileReg2_(int sp, int fd, Funp n0) {
+		int sp1 = sp + 1;
+		if (n0 instanceof FunpInvokeInt2) {
 			compileInvoke(sp, fd, ((FunpInvokeInt2) n0).routine);
-			mov(r1, stack[1]);
-			mov(r0, stack[0]);
-			return Pair.of(r0, r1);
+			mov(stack[sp1], stack[1]);
+			mov(stack[sp], stack[0]);
 		} else if (n0 instanceof FunpMemory) {
 			FunpMemory memory = (FunpMemory) n0;
 			compileReg(sp, fd, memory.range(0, ps));
 			compileReg(sp1, fd, memory.range(ps, ps + ps));
-			return Pair.of(r0, r1);
 		} else
 			throw new RuntimeException();
 	}
