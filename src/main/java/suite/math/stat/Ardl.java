@@ -31,13 +31,12 @@ public class Ardl {
 					for (int is = 0; is < n; is++) { // explanatory time series
 						float[] fsi = fsList[is];
 						Copy.floats(fsi, t, xl[is], 0, lambda);
-						last[is] = fsi[tx];
+						last[is] = is != it_ ? fsi[tx] : 1f;
 					}
-					last[it_] = 1f;
 					return mtx.concat(xl);
 				});
 
-				lrs[it] = stat.linearRegression(x, fsList[0]);
+				lrs[it] = stat.linearRegression(x, fsList[it]);
 			} else
 				throw new RuntimeException("wrong input sizes");
 
