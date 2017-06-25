@@ -23,11 +23,13 @@ public class P1 {
 	public static class FunpAssign implements Funp, P2.End {
 		public FunpMemory memory;
 		public Funp value;
+		public Funp expr;
 
-		public static FunpAssign of(FunpMemory memory, Funp value) {
+		public static FunpAssign of(FunpMemory memory, Funp value, Funp expr) {
 			FunpAssign f = new FunpAssign();
 			f.memory = memory;
 			f.value = value;
+			f.expr = expr;
 			return f;
 		}
 	}
@@ -93,16 +95,6 @@ public class P1 {
 		public static FunpSaveRegisters of(Funp expr) {
 			FunpSaveRegisters f = new FunpSaveRegisters();
 			f.expr = expr;
-			return f;
-		}
-	}
-
-	public static class FunpSeq implements Funp, P2.End {
-		public Funp[] exprs;
-
-		public static FunpSeq of(Funp... exprs) {
-			FunpSeq f = new FunpSeq();
-			f.exprs = exprs;
 			return f;
 		}
 	}

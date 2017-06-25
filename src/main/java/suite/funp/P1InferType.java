@@ -24,7 +24,6 @@ import suite.funp.P1.FunpMemory;
 import suite.funp.P1.FunpRoutine;
 import suite.funp.P1.FunpSaveFramePointer;
 import suite.funp.P1.FunpSaveRegisters;
-import suite.funp.P1.FunpSeq;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
@@ -136,9 +135,7 @@ public class P1InferType {
 			Funp lambda1 = rewrite(scope, env, lambda0);
 			FunpAllocStack invoke = FunpAllocStack.of( //
 					lt.is, //
-					buffer -> FunpSeq.of( //
-							FunpAssign.of(buffer.range(0, lt.is), p), //
-							FunpInvoke.of(lambda1)));
+					buffer -> FunpAssign.of(buffer.range(0, lt.is), p, FunpInvoke.of(lambda1)));
 			return FunpSaveFramePointer.of(FunpSaveRegisters.of(invoke));
 		} else if (n0 instanceof FunpLambda) {
 			FunpLambda n1 = (FunpLambda) n0;
