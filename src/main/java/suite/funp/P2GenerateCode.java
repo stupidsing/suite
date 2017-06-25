@@ -77,20 +77,19 @@ public class P2GenerateCode {
 	}
 
 	private Pair<OpReg, OpReg> compileReg2(RegisterSet rs, int fd, Funp n0) {
-		return compile(rs, fd, this::compileReg2_, n0);
-	}
-
-	private Pair<OpReg, OpReg> compileReg2_(RegisterSet rs, int fd, Funp n0) {
-		if (n0 instanceof FunpInvokeInt2) {
-			compileInvoke_(rs, fd, ((FunpInvokeInt2) n0).routine);
-			return Pair.of(edx, eax);
-		} else if (n0 instanceof FunpMemory) {
-			FunpMemory memory = (FunpMemory) n0;
-			OpReg r0 = compileReg(rs, fd, memory.range(0, ps));
-			OpReg r1 = compileReg(rs.mask(r0), fd, memory.range(ps, ps + ps));
-			return Pair.of(r0, r1);
-		} else
-			throw new RuntimeException();
+		Pair<Operand, Operand> pair = compileOp2(rs, fd, n0);
+		Operand op0 = pair.t0;
+		Operand op1 = pair.t1;
+		OpReg r0, r1;
+		if (op0 instanceof OpReg)
+			r0 = (OpReg) op0;
+		else
+			emitMov(r0 = rs.get(), op0);
+		if (op1 instanceof OpReg)
+			r1 = (OpReg) op1;
+		else
+			emitMov(r1 = rs.mask(r0).get(), op0);
+		return Pair.of(r0, r1);
 	}
 
 	private OpReg compileReg(RegisterSet rs, int fd, Funp n0) {
@@ -98,9 +97,9 @@ public class P2GenerateCode {
 		if (op instanceof OpReg)
 			return (OpReg) op;
 		else {
-			OpReg opReg = rs.get();
-			emitMov(opReg, op);
-			return opReg;
+			OpReg r0 = rs.get();
+			emitMov(r0, op);
+			return r0;
 		}
 	}
 
@@ -109,7 +108,19 @@ public class P2GenerateCode {
 	}
 
 	private Pair<Operand, Operand> compileOp2_(RegisterSet rs, int fd, Funp n0) {
-		if (n0 instanceof FunpRoutine)
+		if (n0 instanceof FunpInvokeInt2) {
+			compileInvoke(rs, fd, ((FunpInvokeInt2) n0).routine);
+			OpReg r0 = rs.get();
+			OpReg r1 = rs.mask(r0).get();
+			emitMov(r0, eax);
+			emitMov(r1, edx);
+			return Pair.of(r0, r1);
+		} else if (n0 instanceof FunpMemory) {
+			FunpMemory memory = (FunpMemory) n0;
+			OpReg r0 = compileReg(rs, fd, memory.range(0, ps));
+			OpReg r1 = compileReg(rs.mask(r0), fd, memory.range(ps, ps + ps));
+			return Pair.of(r0, r1);
+		} else if (n0 instanceof FunpRoutine)
 			return compileRoutine(() -> emitMov(eax, compileReg(registerSet, 4, ((FunpRoutine) n0).expr)));
 		else if (n0 instanceof FunpRoutine2)
 			return compileRoutine(() -> {
@@ -135,8 +146,10 @@ public class P2GenerateCode {
 		else if (n0 instanceof FunpFramePointer)
 			return ebp;
 		else if (n0 instanceof FunpInvokeInt) {
-			compileInvoke_(rs, fd, ((FunpInvokeInt) n0).routine);
-			return eax;
+			compileInvoke(rs, fd, ((FunpInvokeInt) n0).routine);
+			OpReg r0 = rs.get();
+			emitMov(r0, eax);
+			return r0;
 		} else if (n0 instanceof FunpMemory) {
 			FunpMemory n1 = (FunpMemory) n0;
 			int size = n1.size();
@@ -157,7 +170,7 @@ public class P2GenerateCode {
 			throw new RuntimeException("cannot generate code for " + n0);
 	}
 
-	private void compileInvoke_(RegisterSet rs, int fd, Funp n0) {
+	private void compileInvoke(RegisterSet rs, int fd, Funp n0) {
 		Pair<Operand, Operand> pair = compileOp2(rs, fd, n0);
 		emitMov(ebp, pair.t0);
 		emit(amd64.instruction(Insn.CALL, pair.t1));
