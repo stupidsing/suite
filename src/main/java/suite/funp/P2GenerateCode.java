@@ -225,10 +225,22 @@ public class P2GenerateCode {
 		if (n0 instanceof FunpAllocStack) {
 			FunpAllocStack n1 = (FunpAllocStack) n0;
 			int size = n1.size;
+			Funp value = n1.value;
+
 			Operand imm = amd64.imm(size);
-			instructions.add(amd64.instruction(Insn.SUB, esp, imm));
-			compile(sp, fd - size, c, n1.expr.apply(FunpMemory.of(new FunpFramePointer(), fd, fd + size)));
-			instructions.add(amd64.instruction(Insn.ADD, esp, imm));
+			Opt<Operand> push;
+
+			if (size == is && !(push = compileOp(sp, value)).isEmpty())
+				instructions.add(amd64.instruction(Insn.PUSH, push.get()));
+			else {
+				instructions.add(amd64.instruction(Insn.SUB, esp, imm));
+				compileAssign(sp, fd, FunpMemory.of(new FunpFramePointer(), fd, fd + size), value);
+			}
+			compile(sp, fd - size, c, n1.expr);
+			if (size == is)
+				instructions.add(amd64.instruction(Insn.POP, stack[sp + 1]));
+			else
+				instructions.add(amd64.instruction(Insn.ADD, esp, imm));
 		} else if (n0 instanceof FunpAssign) {
 			FunpAssign n1 = (FunpAssign) n0;
 			compileAssign(sp, fd, n1.memory, n1.value);
