@@ -44,14 +44,14 @@ public class BackTestMain extends ExecutableProgram {
 		questoaQuella("0020.HK", "0004.HK");
 
 		bac0 = bac_hsi;
-		bac1 = dm.assetAllocConfigurationOf(BackAllocator_.threeMovingAvgs());
+		bac1 = dm.assetAllocConfigurationOf(BackAllocator_.threeMovingAvgs().unleverage());
 
 		bac0 = bac_hsi;
 		bac1 = dm.bac_pmmmr;
 
 		// BEGIN
 		bac0 = bac_hsi;
-		bac1 = dm.assetAllocConfigurationOf(BackAllocator_.donchian());
+		bac1 = dm.assetAllocConfigurationOf(BackAllocator_.donchian().unleverage());
 		// END
 
 		Streamlet2<Boolean, Simulate> simulationsByKey = Read //

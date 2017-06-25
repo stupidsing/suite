@@ -52,13 +52,14 @@ public class DailyMain extends ExecutableProgram {
 	private Time today = Time.now();
 	private Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today);
 
-	public final BackAllocConfiguration bac_bb = assetAllocConfigurationOf(BackAllocator_.bollingerBands());
+	public final BackAllocConfiguration bac_bb = assetAllocConfigurationOf(BackAllocator_.bollingerBands().unleverage());
+	public final BackAllocConfiguration bac_donchian = assetAllocConfigurationOf(BackAllocator_.donchian().unleverage());
 	public final BackAllocConfiguration bac_ema = assetAllocConfigurationOf(BackAllocator_.byEma().unleverage());
 	public final BackAllocConfiguration bac_pmamr = assetAllocConfigurationOf(MovingAvgMeanReversionBackAllocator0.of(log));
-	public final BackAllocConfiguration bac_pmmmr = assetAllocConfigurationOf(BackAllocator_.movingMedianMeanReversion());
-	public final BackAllocConfiguration bac_revco = assetAllocConfigurationOf(ReverseCorrelateBackAllocator.of());
+	public final BackAllocConfiguration bac_pmmmr = assetAllocConfigurationOf(BackAllocator_.movingMedianMeanRevn().unleverage());
+	public final BackAllocConfiguration bac_revco = assetAllocConfigurationOf(ReverseCorrelateBackAllocator.of().unleverage());
 	public final BackAllocConfiguration bac_sell = assetAllocConfigurationOf(BackAllocator_.cash());
-	public final BackAllocConfiguration bac_tma = assetAllocConfigurationOf(BackAllocator_.threeMovingAvgs());
+	public final BackAllocConfiguration bac_tma = assetAllocConfigurationOf(BackAllocator_.threeMovingAvgs().unleverage());
 
 	private class Result {
 		private String strategy;
@@ -76,11 +77,13 @@ public class DailyMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
+		String ymd = Time.now().ymd();
 
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //
 				alloc("bb", 100000f, bac_bb), //
 				alloc("bug", 0f, bac_sell), //
+				alloc("donchian", 100000f, bac_donchian), //
 				alloc("ema", 100000f, bac_ema), //
 				mamr(100000f), //
 				alloc("pmamr", 100000f, bac_pmamr), //
@@ -106,6 +109,14 @@ public class DailyMain extends ExecutableProgram {
 				.map((strategy, trade) -> "\n" + (0 <= trade.buySell ? "BUY^" : "SELL") //
 						+ " SIGNAL(" + strategy + ")" + trade //
 						+ " = " + To.string(trade.buySell * trade.price)) //
+				.sortBy(line -> line) //
+				.collect(As.joined()));
+
+		sb.append(strategyTrades //
+				.filterValue(trade -> !To.set("sellpool").contains(trade.strategy)) //
+				.map((strategy, t) -> "" //
+						+ "\n" + ymd + "\t" + t.buySell + "\t" + t.symbol + "\t" + t.price + "\t" + t.strategy //
+						+ "\n" + ymd + "\t" + (-t.buySell) + "\t" + t.symbol + "\t" + t.price + "\tsellpool") //
 				.sortBy(line -> line) //
 				.collect(As.joined()));
 
@@ -220,7 +231,7 @@ public class DailyMain extends ExecutableProgram {
 
 	public BackAllocConfiguration pairs(String symbol0, String symbol1) {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
-		BackAllocator backAllocator = BackAllocator_.byPairs(cfg, symbol0, symbol1);
+		BackAllocator backAllocator = BackAllocator_.byPairs(cfg, symbol0, symbol1).unleverage();
 		return new BackAllocConfiguration(assets, backAllocator);
 	}
 

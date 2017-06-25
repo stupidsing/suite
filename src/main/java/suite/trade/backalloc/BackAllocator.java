@@ -10,6 +10,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
+import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
@@ -158,20 +159,26 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator unleverage() {
-		BackAllocator ba1 = filterShorts();
+		BackAllocator ba1 = Trade_.isShortSell ? this : filterShorts();
+		BackAllocator ba2;
 
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = ba1.allocate(dataSourceBySymbol, times);
+		if (Trade_.maxLeverageAmount < 999999f)
+			ba2 = (dataSourceBySymbol, times) -> {
+				OnDateTime onDateTime = ba1.allocate(dataSourceBySymbol, times);
 
-			return (time, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
-				double totalPotential = BackAllocatorUtil.totalPotential(potentialBySymbol);
-				if (1d < totalPotential)
-					return BackAllocatorUtil.scale(potentialBySymbol, 1d / totalPotential);
-				else
-					return potentialBySymbol;
+				return (time, index) -> {
+					List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
+					double totalPotential = BackAllocatorUtil.totalPotential(potentialBySymbol);
+					if (1d < totalPotential)
+						return BackAllocatorUtil.scale(potentialBySymbol, 1d / totalPotential);
+					else
+						return potentialBySymbol;
+				};
 			};
-		};
+		else
+			ba2 = ba1;
+
+		return ba2;
 	}
 
 	public default WalkForwardAllocator walkForwardAllocator() {

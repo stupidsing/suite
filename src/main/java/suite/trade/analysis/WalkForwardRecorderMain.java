@@ -89,7 +89,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 			WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //
 					cfg.queryLeadingCompaniesByMarketCap(Time.now()), //
-					BackAllocator_.rsi().walkForwardAllocator());
+					BackAllocator_.rsi().unleverage().walkForwardAllocator());
 
 			float fund0 = 1000000f;
 			WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
