@@ -8,21 +8,10 @@ package suite.primitive;
  */
 public class ChrMutable {
 
-	private static char falseValue = 0;
-	private static char trueValue = 1;
-
 	private char value;
 
-	public static ChrMutable false_() {
-		return of(falseValue);
-	}
-
-	public static ChrMutable true_() {
-		return of(trueValue);
-	}
-
 	public static ChrMutable nil() {
-		return ChrMutable.of(Character.MIN_VALUE);
+		return ChrMutable.of(ChrFunUtil.EMPTYVALUE);
 	}
 
 	public static ChrMutable of(char i) {
@@ -31,20 +20,12 @@ public class ChrMutable {
 		return p;
 	}
 
-	public boolean isTrue() {
-		return value == trueValue;
-	}
-
-	public void setFalse() {
-		update(falseValue);
-	}
-
-	public void setTrue() {
-		update(trueValue);
+	public char increment() {
+		return value++;
 	}
 
 	public void set(char t) {
-		if (value == Integer.MIN_VALUE)
+		if (value == ChrFunUtil.EMPTYVALUE)
 			update(t);
 		else
 			throw new RuntimeException("value already set");

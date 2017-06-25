@@ -12,6 +12,7 @@ import suite.adt.map.ListMultimap;
 import suite.adt.map.LngObjMap;
 import suite.adt.pair.Pair;
 import suite.primitive.LngFunUtil;
+import suite.primitive.LngMutable;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.LngPrimitives.LngPredicate;
@@ -38,6 +39,20 @@ public class LngStreamlet implements Iterable<Long> {
 			for (LngStreamlet streamlet : streamlets)
 				sources.add(streamlet.in.source().source());
 			return LngOutlet.of(LngFunUtil.concat(To.source(sources)));
+		});
+	}
+
+	public static LngStreamlet range(long e) {
+		return range((long) 0, e);
+	}
+
+	public static LngStreamlet range(long s, long e) {
+		return streamlet(() -> {
+			LngMutable m = LngMutable.of(s);
+			return LngOutlet.of(() -> {
+				long c = m.increment();
+				return c < e ? c : LngFunUtil.EMPTYVALUE;
+			});
 		});
 	}
 

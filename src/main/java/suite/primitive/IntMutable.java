@@ -8,21 +8,10 @@ package suite.primitive;
  */
 public class IntMutable {
 
-	private static int falseValue = 0;
-	private static int trueValue = 1;
-
 	private int value;
 
-	public static IntMutable false_() {
-		return of(falseValue);
-	}
-
-	public static IntMutable true_() {
-		return of(trueValue);
-	}
-
 	public static IntMutable nil() {
-		return IntMutable.of(Integer.MIN_VALUE);
+		return IntMutable.of(IntFunUtil.EMPTYVALUE);
 	}
 
 	public static IntMutable of(int i) {
@@ -31,20 +20,12 @@ public class IntMutable {
 		return p;
 	}
 
-	public boolean isTrue() {
-		return value == trueValue;
-	}
-
-	public void setFalse() {
-		update(falseValue);
-	}
-
-	public void setTrue() {
-		update(trueValue);
+	public int increment() {
+		return value++;
 	}
 
 	public void set(int t) {
-		if (value == Integer.MIN_VALUE)
+		if (value == IntFunUtil.EMPTYVALUE)
 			update(t);
 		else
 			throw new RuntimeException("value already set");

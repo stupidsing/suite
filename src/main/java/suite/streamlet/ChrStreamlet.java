@@ -14,6 +14,7 @@ import suite.adt.pair.Pair;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrMutable;
 import suite.primitive.ChrPrimitives.ChrComparator;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.ChrPrimitives.ChrPredicate;
@@ -38,6 +39,20 @@ public class ChrStreamlet implements Iterable<Character> {
 			for (ChrStreamlet streamlet : streamlets)
 				sources.add(streamlet.in.source().source());
 			return ChrOutlet.of(ChrFunUtil.concat(To.source(sources)));
+		});
+	}
+
+	public static ChrStreamlet range(char e) {
+		return range((char) 0, e);
+	}
+
+	public static ChrStreamlet range(char s, char e) {
+		return streamlet(() -> {
+			ChrMutable m = ChrMutable.of(s);
+			return ChrOutlet.of(() -> {
+				char c = m.increment();
+				return c < e ? c : ChrFunUtil.EMPTYVALUE;
+			});
 		});
 	}
 

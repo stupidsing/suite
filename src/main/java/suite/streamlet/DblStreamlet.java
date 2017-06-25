@@ -12,6 +12,7 @@ import suite.adt.map.DblObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.DblFunUtil;
+import suite.primitive.DblMutable;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.DblPrimitives.DblPredicate;
@@ -38,6 +39,20 @@ public class DblStreamlet implements Iterable<Double> {
 			for (DblStreamlet streamlet : streamlets)
 				sources.add(streamlet.in.source().source());
 			return DblOutlet.of(DblFunUtil.concat(To.source(sources)));
+		});
+	}
+
+	public static DblStreamlet range(double e) {
+		return range((double) 0, e);
+	}
+
+	public static DblStreamlet range(double s, double e) {
+		return streamlet(() -> {
+			DblMutable m = DblMutable.of(s);
+			return DblOutlet.of(() -> {
+				double c = m.increment();
+				return c < e ? c : DblFunUtil.EMPTYVALUE;
+			});
 		});
 	}
 

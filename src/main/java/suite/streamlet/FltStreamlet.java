@@ -14,6 +14,7 @@ import suite.adt.pair.Pair;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltFunUtil;
+import suite.primitive.FltMutable;
 import suite.primitive.FltPrimitives.FltComparator;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.FltPrimitives.FltPredicate;
@@ -38,6 +39,20 @@ public class FltStreamlet implements Iterable<Float> {
 			for (FltStreamlet streamlet : streamlets)
 				sources.add(streamlet.in.source().source());
 			return FltOutlet.of(FltFunUtil.concat(To.source(sources)));
+		});
+	}
+
+	public static FltStreamlet range(float e) {
+		return range((float) 0, e);
+	}
+
+	public static FltStreamlet range(float s, float e) {
+		return streamlet(() -> {
+			FltMutable m = FltMutable.of(s);
+			return FltOutlet.of(() -> {
+				float c = m.increment();
+				return c < e ? c : FltFunUtil.EMPTYVALUE;
+			});
 		});
 	}
 

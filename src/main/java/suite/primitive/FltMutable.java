@@ -8,21 +8,10 @@ package suite.primitive;
  */
 public class FltMutable {
 
-	private static float falseValue = 0;
-	private static float trueValue = 1;
-
 	private float value;
 
-	public static FltMutable false_() {
-		return of(falseValue);
-	}
-
-	public static FltMutable true_() {
-		return of(trueValue);
-	}
-
 	public static FltMutable nil() {
-		return FltMutable.of(Float.MIN_VALUE);
+		return FltMutable.of(FltFunUtil.EMPTYVALUE);
 	}
 
 	public static FltMutable of(float i) {
@@ -31,20 +20,12 @@ public class FltMutable {
 		return p;
 	}
 
-	public boolean isTrue() {
-		return value == trueValue;
-	}
-
-	public void setFalse() {
-		update(falseValue);
-	}
-
-	public void setTrue() {
-		update(trueValue);
+	public float increment() {
+		return value++;
 	}
 
 	public void set(float t) {
-		if (value == Integer.MIN_VALUE)
+		if (value == FltFunUtil.EMPTYVALUE)
 			update(t);
 		else
 			throw new RuntimeException("value already set");

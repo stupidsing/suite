@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.os.SocketUtil.Io;
-import suite.primitive.IntMutable;
+import suite.primitive.BooMutable;
 import suite.util.Copy;
 import suite.util.Thread_;
 
@@ -30,7 +30,7 @@ public class LoadBalancer {
 	}
 
 	public void run() throws IOException {
-		IntMutable running = IntMutable.true_();
+		BooMutable running = BooMutable.true_();
 
 		Thread probe = new Thread(() -> {
 			while (running.isTrue())

@@ -17,6 +17,7 @@ import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
+import suite.primitive.IntFunUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
@@ -115,14 +116,14 @@ public class Read {
 		return Outlet.of(() -> Rethrow.ex(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
 	}
 
-	public static Streamlet<Integer> range(int e) {
+	public static IntStreamlet range(int e) {
 		return range(0, e);
 	}
 
-	public static Streamlet<Integer> range(int s, int e) {
-		return new Streamlet<Integer>(() -> {
+	public static IntStreamlet range(int s, int e) {
+		return new IntStreamlet(() -> {
 			int[] i = new int[] { s, };
-			return Outlet.of(() -> i[0] < e ? i[0]++ : null);
+			return IntOutlet.of(() -> i[0] < e ? i[0]++ : IntFunUtil.EMPTYVALUE);
 		});
 	}
 

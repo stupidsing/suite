@@ -12,6 +12,7 @@ import suite.adt.map.IntObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.IntFunUtil;
+import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntComparator;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.IntPredicate;
@@ -38,6 +39,20 @@ public class IntStreamlet implements Iterable<Integer> {
 			for (IntStreamlet streamlet : streamlets)
 				sources.add(streamlet.in.source().source());
 			return IntOutlet.of(IntFunUtil.concat(To.source(sources)));
+		});
+	}
+
+	public static IntStreamlet range(int e) {
+		return range((int) 0, e);
+	}
+
+	public static IntStreamlet range(int s, int e) {
+		return streamlet(() -> {
+			IntMutable m = IntMutable.of(s);
+			return IntOutlet.of(() -> {
+				int c = m.increment();
+				return c < e ? c : IntFunUtil.EMPTYVALUE;
+			});
 		});
 	}
 

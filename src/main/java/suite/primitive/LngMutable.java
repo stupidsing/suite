@@ -8,21 +8,10 @@ package suite.primitive;
  */
 public class LngMutable {
 
-	private static long falseValue = 0;
-	private static long trueValue = 1;
-
 	private long value;
 
-	public static LngMutable false_() {
-		return of(falseValue);
-	}
-
-	public static LngMutable true_() {
-		return of(trueValue);
-	}
-
 	public static LngMutable nil() {
-		return LngMutable.of(Long.MIN_VALUE);
+		return LngMutable.of(LngFunUtil.EMPTYVALUE);
 	}
 
 	public static LngMutable of(long i) {
@@ -31,20 +20,12 @@ public class LngMutable {
 		return p;
 	}
 
-	public boolean isTrue() {
-		return value == trueValue;
-	}
-
-	public void setFalse() {
-		update(falseValue);
-	}
-
-	public void setTrue() {
-		update(trueValue);
+	public long increment() {
+		return value++;
 	}
 
 	public void set(long t) {
-		if (value == Integer.MIN_VALUE)
+		if (value == LngFunUtil.EMPTYVALUE)
 			update(t);
 		else
 			throw new RuntimeException("value already set");

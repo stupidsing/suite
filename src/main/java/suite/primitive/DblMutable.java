@@ -8,21 +8,10 @@ package suite.primitive;
  */
 public class DblMutable {
 
-	private static double falseValue = 0;
-	private static double trueValue = 1;
-
 	private double value;
 
-	public static DblMutable false_() {
-		return of(falseValue);
-	}
-
-	public static DblMutable true_() {
-		return of(trueValue);
-	}
-
 	public static DblMutable nil() {
-		return DblMutable.of(Double.MIN_VALUE);
+		return DblMutable.of(DblFunUtil.EMPTYVALUE);
 	}
 
 	public static DblMutable of(double i) {
@@ -31,20 +20,12 @@ public class DblMutable {
 		return p;
 	}
 
-	public boolean isTrue() {
-		return value == trueValue;
-	}
-
-	public void setFalse() {
-		update(falseValue);
-	}
-
-	public void setTrue() {
-		update(trueValue);
+	public double increment() {
+		return value++;
 	}
 
 	public void set(double t) {
-		if (value == Integer.MIN_VALUE)
+		if (value == DblFunUtil.EMPTYVALUE)
 			update(t);
 		else
 			throw new RuntimeException("value already set");
