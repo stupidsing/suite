@@ -54,6 +54,8 @@ public class P2GenerateCode {
 	private RegisterSet registerSet = new RegisterSet().mask(ebp, esp);
 
 	private Map<Operator, Insn> insnByOp = Read.<Operator, Insn> empty2() //
+			.cons(TermOp.BIGOR_, Insn.OR) //
+			.cons(TermOp.BIGAND, Insn.AND) //
 			.cons(TermOp.PLUS__, Insn.ADD) //
 			.cons(TermOp.MINUS_, Insn.SUB) //
 			.cons(TermOp.MULT__, Insn.IMUL) //
@@ -74,30 +76,15 @@ public class P2GenerateCode {
 		return asm.assemble(offset, instructions);
 	}
 
-	private Pair<OpReg, OpReg> compileInvoke2(RegisterSet rs, int fd, Funp n0) {
-		compileInvoke_(rs, fd, n0);
-		return Pair.of(edx, eax);
-	}
-
-	private OpReg compileInvoke(RegisterSet rs, int fd, Funp n0) {
-		compileInvoke_(rs, fd, n0);
-		return eax;
-	}
-
-	private void compileInvoke_(RegisterSet rs, int fd, Funp n0) {
-		Pair<Operand, Operand> pair = compileOp2(rs, fd, n0);
-		emitMov(ebp, pair.t0);
-		emit(amd64.instruction(Insn.CALL, pair.t1));
-	}
-
 	private Pair<OpReg, OpReg> compileReg2(RegisterSet rs, int fd, Funp n0) {
 		return compile(rs, fd, this::compileReg2_, n0);
 	}
 
 	private Pair<OpReg, OpReg> compileReg2_(RegisterSet rs, int fd, Funp n0) {
-		if (n0 instanceof FunpInvokeInt2)
-			return compileInvoke2(rs, fd, ((FunpInvokeInt2) n0).routine);
-		else if (n0 instanceof FunpMemory) {
+		if (n0 instanceof FunpInvokeInt2) {
+			compileInvoke_(rs, fd, ((FunpInvokeInt2) n0).routine);
+			return Pair.of(edx, eax);
+		} else if (n0 instanceof FunpMemory) {
 			FunpMemory memory = (FunpMemory) n0;
 			OpReg r0 = compileReg(rs, fd, memory.range(0, ps));
 			OpReg r1 = compileReg(rs.mask(r0), fd, memory.range(ps, ps + ps));
@@ -123,9 +110,13 @@ public class P2GenerateCode {
 
 	private Pair<Operand, Operand> compileOp2_(RegisterSet rs, int fd, Funp n0) {
 		if (n0 instanceof FunpRoutine)
-			return compileRoutine((FunpRoutine) n0);
+			return compileRoutine(() -> emitMov(eax, compileReg(registerSet, 4, ((FunpRoutine) n0).expr)));
 		else if (n0 instanceof FunpRoutine2)
-			return compileRoutine2((FunpRoutine2) n0);
+			return compileRoutine(() -> {
+				Pair<OpReg, OpReg> pair1 = compileReg2(registerSet, 4, ((FunpRoutine2) n0).expr);
+				emitMov(eax, pair1.t0);
+				emitMov(edx, pair1.t1);
+			});
 		else {
 			Pair<OpReg, OpReg> pair = compileReg2(rs, fd, n0);
 			return Pair.of(pair.t0, pair.t1);
@@ -143,9 +134,10 @@ public class P2GenerateCode {
 			return rs.get(); // TODO
 		else if (n0 instanceof FunpFramePointer)
 			return ebp;
-		else if (n0 instanceof FunpInvokeInt)
-			return compileInvoke(rs, fd, ((FunpInvokeInt) n0).routine);
-		else if (n0 instanceof FunpMemory) {
+		else if (n0 instanceof FunpInvokeInt) {
+			compileInvoke_(rs, fd, ((FunpInvokeInt) n0).routine);
+			return eax;
+		} else if (n0 instanceof FunpMemory) {
 			FunpMemory n1 = (FunpMemory) n0;
 			int size = n1.size();
 			if (size == is)
@@ -165,19 +157,13 @@ public class P2GenerateCode {
 			throw new RuntimeException("cannot generate code for " + n0);
 	}
 
-	private Pair<Operand, Operand> compileRoutine2(FunpRoutine2 n0) {
-		return compileRoutine_(() -> {
-			Pair<OpReg, OpReg> pair = compileReg2(registerSet, 4, n0.expr);
-			emitMov(eax, pair.t0);
-			emitMov(edx, pair.t1);
-		});
+	private void compileInvoke_(RegisterSet rs, int fd, Funp n0) {
+		Pair<Operand, Operand> pair = compileOp2(rs, fd, n0);
+		emitMov(ebp, pair.t0);
+		emit(amd64.instruction(Insn.CALL, pair.t1));
 	}
 
-	private Pair<Operand, Operand> compileRoutine(FunpRoutine n0) {
-		return compileRoutine_(() -> emitMov(eax, compileReg(registerSet, 4, n0.expr)));
-	}
-
-	private Pair<Operand, Operand> compileRoutine_(Runnable runnable) {
+	private Pair<Operand, Operand> compileRoutine(Runnable runnable) {
 		Operand routineLabel = amd64.imm(0, ps);
 		Operand endLabel = amd64.imm(0, ps);
 		emit(amd64.instruction(Insn.JMP, endLabel));
@@ -189,6 +175,35 @@ public class P2GenerateCode {
 		emit(amd64.instruction(Insn.RET));
 		emit(amd64.instruction(Insn.LABEL, endLabel));
 		return Pair.of(ebp, routineLabel);
+	}
+
+	private boolean compileAssign(RegisterSet rs, int fd, FunpMemory target, Funp node) {
+		return compile(rs, fd, (sp_, fd_, n_) -> compileAssign_(sp_, fd_, target, n_), node);
+	}
+
+	private boolean compileAssign_(RegisterSet rs0, int fd, FunpMemory target, Funp n0) {
+		int size = target.size();
+		OpReg r0 = compileReg(rs0, fd, target.pointer);
+		RegisterSet rs1 = rs0.mask(r0);
+
+		if (size <= is) {
+			OpReg r1 = compileReg(rs1, fd, n0);
+			emitMov(amd64.mem(r0, target.start, size), r1);
+		} else if (size == ps + ps) {
+			Pair<Operand, Operand> pair = compileOp2(rs1, fd, n0);
+			emitMov(amd64.mem(r0, target.start, size), pair.t0);
+			emitMov(amd64.mem(r0, target.start + ps, size), pair.t1);
+		} else if (n0 instanceof FunpMemory) {
+			FunpMemory source = (FunpMemory) n0;
+			if (size == source.size()) {
+				OpReg r1 = compileReg(rs0, fd, source.pointer);
+				compileMove(rs0.mask(r0), r0, target.start, r1, source.start, size);
+			} else
+				throw new RuntimeException();
+		} else
+			throw new RuntimeException("cannot assign from " + n0);
+
+		return true;
 	}
 
 	private <T> T compile(RegisterSet rs, int fd, CompileSink<T> c, Funp n0) {
@@ -247,35 +262,6 @@ public class P2GenerateCode {
 			t = c.compile(rs, fd, n0);
 
 		return t;
-	}
-
-	private boolean compileAssign(RegisterSet rs, int fd, FunpMemory target, Funp node) {
-		return compile(rs, fd, (sp_, fd_, n_) -> compileAssign_(sp_, fd_, target, n_), node);
-	}
-
-	private boolean compileAssign_(RegisterSet rs0, int fd, FunpMemory target, Funp n0) {
-		int size = target.size();
-		OpReg r0 = compileReg(rs0, fd, target.pointer);
-		RegisterSet rs1 = rs0.mask(r0);
-
-		if (size <= is) {
-			OpReg r1 = compileReg(rs1, fd, n0);
-			emitMov(amd64.mem(r0, target.start, size), r1);
-		} else if (size == ps + ps) {
-			Pair<Operand, Operand> pair = compileOp2(rs1, fd, n0);
-			emitMov(amd64.mem(r0, target.start, size), pair.t0);
-			emitMov(amd64.mem(r0, target.start + ps, size), pair.t1);
-		} else if (n0 instanceof FunpMemory) {
-			FunpMemory source = (FunpMemory) n0;
-			if (size == source.size()) {
-				OpReg r1 = compileReg(rs0, fd, source.pointer);
-				compileMove(rs0.mask(r0), r0, target.start, r1, source.start, size);
-			} else
-				throw new RuntimeException();
-		} else
-			throw new RuntimeException("cannot assign from " + n0);
-
-		return true;
 	}
 
 	private void compileMove(RegisterSet rs, OpReg r0, int start0, OpReg r1, int start1, int size) {

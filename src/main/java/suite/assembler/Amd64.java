@@ -242,27 +242,6 @@ public class Amd64 {
 		}
 	};
 
-	private OpReg newReg(int size, int reg) {
-		OpReg opReg = new OpReg();
-		opReg.size = size;
-		opReg.reg = reg;
-		return opReg;
-	}
-
-	private OpRegControl newRegControl(int creg) {
-		OpRegControl opRegControl = new OpRegControl();
-		opRegControl.size = 4;
-		opRegControl.creg = creg;
-		return opRegControl;
-	}
-
-	private OpRegSegment newRegSegment(int creg) {
-		OpRegSegment opRegSegment = new OpRegSegment();
-		opRegSegment.size = 2;
-		opRegSegment.sreg = creg;
-		return opRegSegment;
-	}
-
 	public Operand imm(long imm) {
 		return imm(imm, size(imm));
 	}
@@ -295,6 +274,27 @@ public class Amd64 {
 
 	public OpReg reg(String name) {
 		return regsByName.get(Atom.of(name));
+	}
+
+	private OpReg newReg(int size, int reg) {
+		OpReg opReg = new OpReg();
+		opReg.size = size;
+		opReg.reg = reg;
+		return opReg;
+	}
+
+	private OpRegControl newRegControl(int creg) {
+		OpRegControl opRegControl = new OpRegControl();
+		opRegControl.size = 4;
+		opRegControl.creg = creg;
+		return opRegControl;
+	}
+
+	private OpRegSegment newRegSegment(int creg) {
+		OpRegSegment opRegSegment = new OpRegSegment();
+		opRegSegment.size = 2;
+		opRegSegment.sreg = creg;
+		return opRegSegment;
 	}
 
 	private int size(long v) {
