@@ -132,10 +132,10 @@ public class P1InferType {
 			FunpApply n1 = (FunpApply) n0;
 			Funp p = n1.value;
 			Funp lambda0 = n1.lambda;
-			LambdaType lt = new LambdaType(lambda0);
+			LambdaType lt = lambdaType(lambda0);
 			Funp lambda1 = rewrite(scope, env, lambda0);
 			FunpAllocStack invoke = FunpAllocStack.of( //
-					lt.is + lt.os, //
+					lt.is, //
 					buffer -> FunpSeq.of( //
 							FunpAssign.of(buffer.range(0, lt.is), p), //
 							FunpInvoke.of(lambda1)));
@@ -144,9 +144,9 @@ public class P1InferType {
 			FunpLambda n1 = (FunpLambda) n0;
 			String var = n1.var;
 			int scope1 = scope + 1;
-			LambdaType lt = new LambdaType(n0);
-			Funp expr = rewrite(scope1, env.put(var, new Var(scope1, lt.os, lt.os + lt.is)), n1.expr);
-			return FunpRoutine.of(FunpAssign.of(FunpMemory.of(new FunpFramePointer(), 0, lt.os), expr));
+			LambdaType lt = lambdaType(n0);
+			Funp expr = rewrite(scope1, env.put(var, new Var(scope1, 0, lt.is)), n1.expr);
+			return FunpRoutine.of(expr);
 		} else if (n0 instanceof FunpPolyType)
 			return rewrite(scope, env, ((FunpPolyType) n0).expr);
 		else if (n0 instanceof FunpVariable) {
@@ -172,6 +172,15 @@ public class P1InferType {
 			this.start = start;
 			this.end = end;
 		}
+	}
+
+	private LambdaType lambdaType(Funp lambda) {
+		LambdaType lt = new LambdaType(lambda);
+		if (lt.os <= Funp_.integerSize)
+			return lt;
+		else
+			throw new RuntimeException();
+
 	}
 
 	private class LambdaType {
