@@ -1,6 +1,5 @@
 package suite.ansi;
 
-import java.io.IOException;
 import java.util.Objects;
 
 import suite.adt.pair.Pair;
@@ -12,7 +11,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.ansi.ReadLineMain
 public class ReadLineMain extends ExecutableProgram {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		Util.run(ReadLineMain.class, args);
 	}
 

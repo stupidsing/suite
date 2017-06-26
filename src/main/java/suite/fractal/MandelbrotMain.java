@@ -10,16 +10,27 @@ import javax.swing.JLabel;
 import suite.image.Render;
 import suite.math.Complex;
 import suite.math.Vector;
+import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
 
-public class Mandelbrot {
+public class MandelbrotMain extends ExecutableProgram {
 
 	private int width;
 	private int height;
 
 	public static void main(String[] args) {
-		int width = 1024;
-		int height = 768;
-		BufferedImage image = new Mandelbrot(width, height).trace();
+		Util.run(MandelbrotMain.class, args);
+	}
+
+	public MandelbrotMain() {
+		super();
+		this.width = 1024;
+		this.height = 768;
+	}
+
+	@Override
+	protected boolean run(String[] args) {
+		BufferedImage image = trace();
 
 		JLabel label = new JLabel(new ImageIcon(image));
 
@@ -27,9 +38,10 @@ public class Mandelbrot {
 		frame.getContentPane().add(label, BorderLayout.CENTER);
 		frame.setSize(width, height);
 		frame.setVisible(true);
+		return true;
 	}
 
-	public Mandelbrot(int width, int height) {
+	public MandelbrotMain(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}

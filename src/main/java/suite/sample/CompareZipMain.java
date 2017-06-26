@@ -18,12 +18,12 @@ import suite.util.Util.ExecutableProgram;
  *
  * @author ywsing
  */
-public class CompareZip extends ExecutableProgram {
+public class CompareZipMain extends ExecutableProgram {
 
 	private TextUtil textUtil = new TextUtil();
 
-	public static void main(String[] args) throws IOException {
-		Util.run(CompareZip.class, args);
+	public static void main(String[] args) {
+		Util.run(CompareZipMain.class, args);
 	}
 
 	@Override

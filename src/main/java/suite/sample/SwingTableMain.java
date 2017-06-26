@@ -12,12 +12,20 @@ import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.table.AbstractTableModel;
 
+import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
+
 /**
  * A boring demonstration of various Swing components.
  */
-public class SwingTable {
+public class SwingTableMain extends ExecutableProgram {
 
 	public static void main(String[] args) {
+		Util.run(SwingTableMain.class, args);
+	}
+
+	@Override
+	protected boolean run(String[] args) {
 		JLabel label = new JLabel("Hello World~~~");
 
 		JTextPane editor = new JTextPane();
@@ -66,6 +74,7 @@ public class SwingTable {
 		// frame.setLocation(200, 200);
 		frame.pack(); // pack it up for display
 		frame.setVisible(true);
+		return true;
 	}
 
 }

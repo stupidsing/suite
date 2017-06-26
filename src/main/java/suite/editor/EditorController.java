@@ -123,7 +123,7 @@ public class EditorController {
 		view1._init(model, view1, controller);
 		controller._init(model, view1, controller);
 
-		view1.run(controller, Editor.class.getSimpleName());
+		view1.run(controller, EditorMain.class.getSimpleName());
 	}
 
 	public void open() {

@@ -16,8 +16,9 @@ import suite.os.SocketUtil;
 import suite.util.CommandUtil;
 import suite.util.String_;
 import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
 
-public class NntpServer {
+public class NntpServerMain extends ExecutableProgram {
 
 	private enum NntpCommand {
 		ARTICLE, BODY, GROUP, HEAD, LIST, LISTGROUP, NEWNEWS, POST
@@ -25,8 +26,14 @@ public class NntpServer {
 
 	private Nntp nntp;
 
-	public static void main(String[] args) throws IOException {
-		new NntpServer().run();
+	public static void main(String[] args) {
+		Util.run(NntpServerMain.class, args);
+	}
+
+	@Override
+	protected boolean run(String[] args) throws IOException {
+		run();
+		return true;
 	}
 
 	private void run() throws IOException {

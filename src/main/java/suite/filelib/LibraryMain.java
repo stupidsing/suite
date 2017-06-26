@@ -30,7 +30,7 @@ import suite.util.Util.ExecutableProgram;
  * 
  * @author ywsing
  */
-public class Library extends ExecutableProgram {
+public class LibraryMain extends ExecutableProgram {
 
 	private String inputDir = "/data/storey/lg";
 	private List<String> fileExtensions = Arrays.asList("jpg");
@@ -43,7 +43,7 @@ public class Library extends ExecutableProgram {
 	}
 
 	public static void main(String[] args) {
-		Util.run(Library.class, args);
+		Util.run(LibraryMain.class, args);
 	}
 
 	protected boolean run(String[] args) {

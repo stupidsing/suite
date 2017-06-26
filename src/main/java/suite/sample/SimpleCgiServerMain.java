@@ -11,18 +11,26 @@ import java.util.Map;
 import suite.Constants;
 import suite.os.SocketUtil;
 import suite.util.To;
+import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
 
-public class SimpleCgiServer {
+public class SimpleCgiServerMain extends ExecutableProgram {
 
 	public interface Handler {
 		public void handle(Map<String, String> headers, OutputStream os) throws IOException;
 	}
 
-	public static void main(String[] args) throws IOException {
-		new SimpleCgiServer().run((headers, os) -> {
+	public static void main(String[] args) {
+		Util.run(SimpleCgiServerMain.class, args);
+	}
+
+	@Override
+	protected boolean run(String[] args) throws IOException {
+		run((headers, os) -> {
 			OutputStreamWriter writer = new OutputStreamWriter(os, Constants.charset);
 			writer.write("<html>" + headers + "</html>");
 		});
+		return true;
 	}
 
 	private void run(Handler handler) throws IOException {

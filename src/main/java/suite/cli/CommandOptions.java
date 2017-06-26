@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import suite.Suite;
-import suite.editor.Editor;
+import suite.editor.EditorMain;
 import suite.fp.FunCompilerConfig;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
@@ -51,7 +51,7 @@ public class CommandOptions {
 		else if (String_.equals(arg, "--eager"))
 			isLazy = !on;
 		else if (String_.equals(arg, "--editor"))
-			new Editor().open();
+			new EditorMain().open();
 		else if (String_.equals(arg, "--imports") && (arg1 = source.source()) != null)
 			imports = Arrays.asList(arg1.split(","));
 		else if (String_.equals(arg, "--lazy"))

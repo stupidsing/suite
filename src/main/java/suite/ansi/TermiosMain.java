@@ -1,7 +1,5 @@
 package suite.ansi;
 
-import java.io.IOException;
-
 import com.sun.jna.Native;
 
 import suite.ansi.Termios.AnsiColor;
@@ -12,7 +10,7 @@ public class TermiosMain {
 
 	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		new TermiosMain().run();
 	}
 

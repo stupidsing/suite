@@ -3,6 +3,7 @@ package suite.gpu;
 import java.nio.ByteOrder;
 
 import org.bridj.Pointer;
+import org.junit.Test;
 
 import com.nativelibs4java.opencl.CLBuffer;
 import com.nativelibs4java.opencl.CLContext;
@@ -14,7 +15,8 @@ import com.nativelibs4java.opencl.JavaCL;
 
 public class GpuTest {
 
-	public static void main(String[] args) {
+	@Test
+	public void test() {
 		String openCl = "" //
 				+ "__kernel void add_floats(__global float *a, __global float *b, __global float *o, int n) { \n" //
 				+ "    int i = get_global_id(0); \n" //

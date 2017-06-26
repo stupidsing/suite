@@ -11,15 +11,19 @@ import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.util.Copy;
 import suite.util.Thread_;
+import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
 
-public class TelnetServer {
+public class TelnetServerMain extends ExecutableProgram {
 
-	public static void main(String[] args) throws IOException {
-		new TelnetServer().run();
+	public static void main(String[] args) {
+		Util.run(TelnetServerMain.class, args);
 	}
 
-	private void run() throws IOException {
+	@Override
+	protected boolean run(String[] args) throws IOException {
 		new SocketUtil().listenIo(2323, (sis, sos) -> new Server().serve(sis, sos));
+		return true;
 	}
 
 	private class Server {
