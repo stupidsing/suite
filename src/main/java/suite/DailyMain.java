@@ -103,7 +103,8 @@ public class DailyMain extends ExecutableProgram {
 
 		Streamlet2<String, Trade> strategyTrades = Read.from(results) //
 				.concatMap2(result -> Read.from(result.trades).map2(trade -> result.strategy, trade -> trade)) //
-				.filterValue(trade -> trade.buySell != 0);
+				.filterValue(trade -> trade.buySell != 0) //
+				.collect(As::streamlet2);
 
 		sb.append(strategyTrades //
 				.map((strategy, trade) -> "\n" + (0 <= trade.buySell ? "BUY^" : "SELL") //
@@ -113,9 +114,9 @@ public class DailyMain extends ExecutableProgram {
 				.collect(As.joined()));
 
 		sb.append(strategyTrades //
-				.filterValue(trade -> !To.set("sellpool").contains(trade.strategy)) //
+				.filterKey(strategy -> !To.set("sellpool").contains(strategy)) //
 				.map((strategy, t) -> "" //
-						+ "\n" + ymd + "\t" + t.buySell + "\t" + t.symbol + "\t" + t.price + "\t" + t.strategy //
+						+ "\n" + ymd + "\t" + t.buySell + "\t" + t.symbol + "\t" + t.price + "\t" + strategy //
 						+ "\n" + ymd + "\t" + (-t.buySell) + "\t" + t.symbol + "\t" + t.price + "\tsellpool") //
 				.collect(As.joined()));
 
