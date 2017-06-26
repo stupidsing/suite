@@ -146,14 +146,27 @@ public class Amd64 {
 
 	public final Operand none = new OpNone();
 
+	public OpReg al = newReg(1, 0);
+	public OpReg cl = newReg(1, 1);
+	public OpReg dl = newReg(1, 2);
+	public OpReg bl = newReg(1, 3);
+	public OpReg eax = newReg(4, 0);
+	public OpReg ecx = newReg(4, 1);
+	public OpReg edx = newReg(4, 2);
+	public OpReg ebx = newReg(4, 3);
+	public OpReg esp = newReg(4, 4);
+	public OpReg ebp = newReg(4, 5);
+	public OpReg esi = newReg(4, 6);
+	public OpReg edi = newReg(4, 7);
+
 	public Map<Node, OpReg> regsByName = new HashMap<Node, OpReg>() {
 		private static final long serialVersionUID = 1l;
 
 		{
-			put(Atom.of("AL"), newReg(1, 0));
-			put(Atom.of("CL"), newReg(1, 1));
-			put(Atom.of("DL"), newReg(1, 2));
-			put(Atom.of("BL"), newReg(1, 3));
+			put(Atom.of("AL"), al);
+			put(Atom.of("CL"), cl);
+			put(Atom.of("DL"), dl);
+			put(Atom.of("BL"), bl);
 			put(Atom.of("SPL"), newReg(1, 4));
 			put(Atom.of("BPL"), newReg(1, 5));
 			put(Atom.of("SIL"), newReg(1, 6));
@@ -182,14 +195,14 @@ public class Amd64 {
 			put(Atom.of("R13W"), newReg(2, 13));
 			put(Atom.of("R14W"), newReg(2, 14));
 			put(Atom.of("R15W"), newReg(2, 15));
-			put(Atom.of("EAX"), newReg(4, 0));
-			put(Atom.of("ECX"), newReg(4, 1));
-			put(Atom.of("EDX"), newReg(4, 2));
-			put(Atom.of("EBX"), newReg(4, 3));
-			put(Atom.of("ESP"), newReg(4, 4));
-			put(Atom.of("EBP"), newReg(4, 5));
-			put(Atom.of("ESI"), newReg(4, 6));
-			put(Atom.of("EDI"), newReg(4, 7));
+			put(Atom.of("EAX"), eax);
+			put(Atom.of("ECX"), ecx);
+			put(Atom.of("EDX"), edx);
+			put(Atom.of("EBX"), ebx);
+			put(Atom.of("ESP"), esp);
+			put(Atom.of("EBP"), ebp);
+			put(Atom.of("ESI"), esi);
+			put(Atom.of("EDI"), edi);
 			put(Atom.of("R8D"), newReg(4, 8));
 			put(Atom.of("R9D"), newReg(4, 9));
 			put(Atom.of("R10D"), newReg(4, 10));

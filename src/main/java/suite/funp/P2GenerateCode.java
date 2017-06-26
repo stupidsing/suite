@@ -44,12 +44,14 @@ public class P2GenerateCode {
 	private int ps = Funp_.pointerSize;
 
 	private Amd64 amd64 = new Amd64();
-	private OpReg cl = amd64.reg("CL");
-	private OpReg eax = amd64.reg("EAX");
-	private OpReg ecx = amd64.reg("ECX");
-	private OpReg edx = amd64.reg("EDX");
-	private OpReg ebp = amd64.reg("EBP");
-	private OpReg esp = amd64.reg("ESP");
+	private OpReg cl = amd64.cl;
+	private OpReg eax = amd64.eax;
+	private OpReg ecx = amd64.ecx;
+	private OpReg edx = amd64.edx;
+	private OpReg ebp = amd64.ebp;
+	private OpReg esp = amd64.esp;
+	private OpReg esi = amd64.esi;
+	private OpReg edi = amd64.edi;
 
 	private RegisterSet registerSet = new RegisterSet().mask(ebp, esp);
 
@@ -121,10 +123,10 @@ public class P2GenerateCode {
 			OpReg r1 = compileReg(rs.mask(r0), fd, memory.range(ps, ps + ps));
 			return Pair.of(r0, r1);
 		} else if (n0 instanceof FunpRoutine)
-			return compileRoutine(() -> emitMov(eax, compileReg(registerSet, 4, ((FunpRoutine) n0).expr)));
+			return compileRoutine(() -> emitMov(eax, compileReg(registerSet, ps, ((FunpRoutine) n0).expr)));
 		else if (n0 instanceof FunpRoutine2)
 			return compileRoutine(() -> {
-				Pair<OpReg, OpReg> pair1 = compileReg2(registerSet, 4, ((FunpRoutine2) n0).expr);
+				Pair<OpReg, OpReg> pair1 = compileReg2(registerSet, ps, ((FunpRoutine2) n0).expr);
 				emitMov(eax, pair1.t0);
 				emitMov(edx, pair1.t1);
 			});
@@ -261,7 +263,7 @@ public class P2GenerateCode {
 				throw new RuntimeException();
 		} else if (n0 instanceof FunpSaveFramePointer) {
 			emit(amd64.instruction(Insn.PUSH, ebp));
-			t = compile(rs, fd - 4, c, ((FunpSaveFramePointer) n0).expr);
+			t = compile(rs, fd - ps, c, ((FunpSaveFramePointer) n0).expr);
 			emit(amd64.instruction(Insn.POP, ebp));
 			return t;
 		} else if (n0 instanceof FunpSaveRegisters) {
@@ -288,30 +290,30 @@ public class P2GenerateCode {
 					emitMov(amd64.mem(r0, start0 + i, s), r);
 					i += s;
 				}
-			}, "ECX");
+			}, ecx);
 		else
 			saveRegs(rs, () -> {
-				emit(amd64.instruction(Insn.LEA, amd64.reg("ESI"), amd64.mem(r1, start1, 4)));
-				emit(amd64.instruction(Insn.LEA, amd64.reg("EDI"), amd64.mem(r0, start0, 4)));
+				emit(amd64.instruction(Insn.LEA, esi, amd64.mem(r1, start1, is)));
+				emit(amd64.instruction(Insn.LEA, edi, amd64.mem(r0, start0, is)));
 				emitMov(ecx, amd64.imm(size / 4, 4));
 				emit(amd64.instruction(Insn.CLD));
 				emit(amd64.instruction(Insn.REP));
 				emit(amd64.instruction(Insn.MOVSD));
 				for (int i = 0; i < size % 4; i++)
 					emit(amd64.instruction(Insn.MOVSB));
-				emit(amd64.instruction(Insn.POP, amd64.reg("ESI")));
-			}, "ECX", "ESI", "EDI");
+				emit(amd64.instruction(Insn.POP, esi));
+			}, ecx, esi, edi);
 	}
 
-	private void saveRegs(RegisterSet rs, Runnable runnable, String... registerNames) {
-		saveRegs(rs, runnable, 0, registerNames);
+	private void saveRegs(RegisterSet rs, Runnable runnable, OpReg... opRegs) {
+		saveRegs(rs, runnable, 0, opRegs);
 	}
 
-	private void saveRegs(RegisterSet rs, Runnable runnable, int index, String... registerNames) {
+	private void saveRegs(RegisterSet rs, Runnable runnable, int index, OpReg... opRegs) {
 		OpReg op;
-		if (index < registerNames.length && rs.isSet(op = amd64.reg(registerNames[index]))) {
+		if (index < opRegs.length && rs.isSet(op = opRegs[index])) {
 			emit(amd64.instruction(Insn.PUSH, op));
-			saveRegs(rs, runnable, index + 1, registerNames);
+			saveRegs(rs, runnable, index + 1, opRegs);
 			emit(amd64.instruction(Insn.POP, op));
 		} else
 			runnable.run();
