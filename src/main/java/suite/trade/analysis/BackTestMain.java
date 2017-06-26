@@ -52,6 +52,7 @@ public class BackTestMain extends ExecutableProgram {
 		bacs.put("hsi", bac_hsi);
 		bacs.put("bb", dm.bac_bb);
 		bacs.put("donchian", dm.bac_donchian);
+		bacs.put("pmamr", dm.bac_pmamr);
 		bacs.put("pmmmr", dm.bac_pmmmr);
 		bacs.put("tma", dm.bac_tma);
 		// END

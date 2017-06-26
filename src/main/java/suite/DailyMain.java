@@ -115,6 +115,7 @@ public class DailyMain extends ExecutableProgram {
 
 		sb.append(strategyTrades //
 				.filterKey(strategy -> !To.set("sellpool").contains(strategy)) //
+				.filterValue(trade -> trade.buySell < 0) //
 				.map((strategy, t) -> "" //
 						+ "\n" + ymd + "\t" + t.buySell + "\t" + t.symbol + "\t" + t.price + "\t" + strategy //
 						+ "\n" + ymd + "\t" + (-t.buySell) + "\t" + t.symbol + "\t" + t.price + "\tsellpool") //
