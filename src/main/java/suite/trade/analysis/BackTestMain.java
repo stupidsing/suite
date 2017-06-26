@@ -46,13 +46,13 @@ public class BackTestMain extends ExecutableProgram {
 			questoaQuella("0020.HK", "0004.HK");
 
 			bacs.put("hsi", bac_hsi);
-			bacs.put("pmmmr", dm.bac_pmmmr);
-			bacs.put("threeMovingAvgs", dm.bac_tma);
 		}
 
 		// BEGIN
 		bacs.put("hsi", bac_hsi);
-		bacs.put("donchian", dm.assetAllocConfigurationOf(BackAllocator_.donchian().unleverage()));
+		bacs.put("donchian", dm.bac_donchian);
+		bacs.put("pmmmr", dm.bac_pmmmr);
+		bacs.put("threeMovingAvgs", dm.bac_tma);
 		// END
 
 		Streamlet2<String, Simulate> simulationsByKey = Read //

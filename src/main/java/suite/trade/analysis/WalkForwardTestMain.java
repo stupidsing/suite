@@ -24,8 +24,11 @@ public class WalkForwardTestMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		Trade_.isCacheQuotes = false;
 		float fund0 = 1000000f;
+
+		Trade_.isCacheQuotes = false;
+		Trade_.isShortSell = true;
+		Trade_.maxLeverageAmount = fund0;
 
 		WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //
 				cfg.queryLeadingCompaniesByMarketCap(Time.now()), //
