@@ -50,9 +50,10 @@ public class BackTestMain extends ExecutableProgram {
 
 		// BEGIN
 		bacs.put("hsi", bac_hsi);
+		bacs.put("bb", dm.bac_bb);
 		bacs.put("donchian", dm.bac_donchian);
 		bacs.put("pmmmr", dm.bac_pmmmr);
-		bacs.put("threeMovingAvgs", dm.bac_tma);
+		bacs.put("tma", dm.bac_tma);
 		// END
 
 		Streamlet2<String, Simulate> simulationsByKey = Read //
