@@ -9,10 +9,10 @@ import suite.trade.data.DataSource;
 
 public interface WalkForwardAllocator {
 
-	public List<Pair<String, Double>> allocate(Streamlet2<String, DataSource> dataSourceBySymbol, int index);
+	public List<Pair<String, Double>> allocate(Streamlet2<String, DataSource> dsBySymbol, int index);
 
 	public default BackAllocator backAllocator() {
-		return (dataSourceBySymbol, times) -> (time, index) -> allocate(dataSourceBySymbol, index);
+		return (dsBySymbol, times) -> (time, index) -> allocate(dsBySymbol, index);
 	}
 
 }

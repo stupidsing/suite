@@ -19,12 +19,12 @@ public class ArdlBackAllocator implements BackAllocator {
 	private Ardl ardl = new Ardl(9, false);
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol0, List<Time> times) {
-		Map<String, DataSource> dataSourceBySymbol1 = dataSourceBySymbol0.toMap();
-		String[] symbols = dataSourceBySymbol0.keys().toArray(String.class);
+	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol0, List<Time> times) {
+		Map<String, DataSource> dsBySymbol1 = dsBySymbol0.toMap();
+		String[] symbols = dsBySymbol0.keys().toArray(String.class);
 
 		float[][] fs = Read.from(symbols) //
-				.map(symbol -> dataSourceBySymbol1.get(symbol).prices) //
+				.map(symbol -> dsBySymbol1.get(symbol).prices) //
 				.toArray(float[].class);
 
 		LinearRegression[] lrs = ardl.ardl(fs);

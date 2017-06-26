@@ -30,7 +30,7 @@ import suite.util.String_;
  */
 public interface BackAllocator {
 
-	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<Time> times);
+	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, List<Time> times);
 
 	public interface OnDateTime {
 
@@ -44,8 +44,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator dump() {
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
+		return (dsBySymbol, times) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, times);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
@@ -58,8 +58,8 @@ public interface BackAllocator {
 	public default BackAllocator even() {
 		BackAllocator ba1 = filterShorts();
 
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = ba1.allocate(dataSourceBySymbol, times);
+		return (dsBySymbol, times) -> {
+			OnDateTime onDateTime = ba1.allocate(dsBySymbol, times);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
@@ -74,12 +74,12 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator filterAssets(Predicate<String> pred) {
-		return (dataSourceBySymbol, times) -> allocate(dataSourceBySymbol.filterKey(pred), times)::onDateTime;
+		return (dsBySymbol, times) -> allocate(dsBySymbol.filterKey(pred), times)::onDateTime;
 	}
 
 	public default BackAllocator filterShorts() {
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
+		return (dsBySymbol, times) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, times);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
@@ -98,8 +98,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator frequency(int tradeFrequency) {
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
+		return (dsBySymbol, times) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, times);
 
 			return new OnDateTime() {
 				private Time time0;
@@ -118,13 +118,13 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator holdMinimum(int period) {
-		return (dataSourceBySymbol, times) -> {
+		return (dsBySymbol, times) -> {
 			Deque<Map<String, Double>> queue = new ArrayDeque<>();
 
 			for (int i = 0; i < period; i++)
 				queue.addLast(new HashMap<>());
 
-			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
+			OnDateTime onDateTime = allocate(dsBySymbol, times);
 
 			return (time, index) -> {
 				Map<String, Double> ratioBySymbol = Read //
@@ -146,8 +146,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator reallocate() {
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
+		return (dsBySymbol, times) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, times);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
@@ -157,11 +157,11 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator relative(DataSource indexDataSource) {
-		return (dataSourceBySymbol0, times_) -> {
-			Streamlet2<String, DataSource> dataSourceBySymbol1 = dataSourceBySymbol0 //
-					.mapValue(dataSource0 -> {
-						String[] times = dataSource0.dates;
-						float[] prices = dataSource0.prices;
+		return (dsBySymbol0, times_) -> {
+			Streamlet2<String, DataSource> dsBySymbol1 = dsBySymbol0 //
+					.mapValue(ds0 -> {
+						String[] times = ds0.dates;
+						float[] prices = ds0.prices;
 						String[] indexDates = indexDataSource.dates;
 						float[] indexPrices = indexDataSource.prices;
 						int length = times.length;
@@ -180,7 +180,7 @@ public interface BackAllocator {
 					}) //
 					.collect(As::streamlet2);
 
-			return allocate(dataSourceBySymbol1, times_)::onDateTime;
+			return allocate(dsBySymbol1, times_)::onDateTime;
 		};
 	}
 
@@ -193,8 +193,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator top(int top) {
-		return (dataSourceBySymbol, times) -> {
-			OnDateTime onDateTime = allocate(dataSourceBySymbol, times);
+		return (dsBySymbol, times) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, times);
 
 			return (time, index) -> Read //
 					.from2(onDateTime.onDateTime(time, index)) //
@@ -210,8 +210,8 @@ public interface BackAllocator {
 		BackAllocator ba2;
 
 		if (Trade_.maxLeverageAmount < 999999f)
-			ba2 = (dataSourceBySymbol, times) -> {
-				OnDateTime onDateTime = ba1.allocate(dataSourceBySymbol, times);
+			ba2 = (dsBySymbol, times) -> {
+				OnDateTime onDateTime = ba1.allocate(dsBySymbol, times);
 
 				return (time, index) -> {
 					List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
@@ -229,7 +229,7 @@ public interface BackAllocator {
 	}
 
 	public default WalkForwardAllocator walkForwardAllocator() {
-		return (dataSourceBySymbol, index) -> allocate(dataSourceBySymbol, null).onDateTime(null, index);
+		return (dsBySymbol, index) -> allocate(dsBySymbol, null).onDateTime(null, index);
 	}
 
 }

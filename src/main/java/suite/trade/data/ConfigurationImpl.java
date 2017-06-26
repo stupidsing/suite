@@ -74,18 +74,18 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	private DataSource dataSource_(String symbol, TimeRange period) {
-		DataSource dataSource;
+		DataSource ds;
 		switch (source_(symbol)) {
 		case HKD__:
-			dataSource = hkd.dataSource(symbol, period);
+			ds = hkd.dataSource(symbol, period);
 			break;
 		case YAHOO:
-			dataSource = yahoo.dataSourceL1(symbol, period);
+			ds = yahoo.dataSourceL1(symbol, period);
 			break;
 		default:
 			throw new RuntimeException();
 		}
-		return dataSource;
+		return ds;
 	}
 
 	private Source_ source_(String symbol) {

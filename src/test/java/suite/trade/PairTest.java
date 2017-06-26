@@ -32,13 +32,13 @@ public class PairTest {
 	}
 
 	private void test(TimeRange period, String symbol0, String symbol1) {
-		DataSource dataSource0 = cfg.dataSource(symbol0, period);
-		DataSource dataSource1 = cfg.dataSource(symbol1, period);
-		Streamlet<String> dates0 = Read.from(dataSource0.dates);
-		Streamlet<String> dates1 = Read.from(dataSource1.dates);
+		DataSource ds0 = cfg.dataSource(symbol0, period);
+		DataSource ds1 = cfg.dataSource(symbol1, period);
+		Streamlet<String> dates0 = Read.from(ds0.dates);
+		Streamlet<String> dates1 = Read.from(ds1.dates);
 		String[] tradeDates = Streamlet.concat(dates0, dates1).distinct().sort(Object_::compare).toArray(String.class);
-		float[] prices0 = dataSource0.align(tradeDates).prices;
-		float[] prices1 = dataSource1.align(tradeDates).prices;
+		float[] prices0 = ds0.align(tradeDates).prices;
+		float[] prices1 = ds1.align(tradeDates).prices;
 		int length = prices0.length;
 		float[][] x = IntStreamlet.range(length).map(i -> new float[] { prices0[i], 1f, }).toArray(float[].class);
 		float[] y = prices1;

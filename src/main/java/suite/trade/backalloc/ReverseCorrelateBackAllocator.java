@@ -15,7 +15,7 @@ import suite.util.To;
 public class ReverseCorrelateBackAllocator implements BackAllocator {
 
 	private int tor;
-	private double kellyReduction;
+	private double reduction;
 	private double reverseCorrelationThreshold;
 
 	private Statistic stat = new Statistic();
@@ -31,18 +31,18 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 
 	private ReverseCorrelateBackAllocator(int tor, double kellyReduction, double reverseCorrelationThreshold) {
 		this.tor = tor;
-		this.kellyReduction = kellyReduction;
+		this.reduction = kellyReduction;
 		this.reverseCorrelationThreshold = reverseCorrelationThreshold;
 	}
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<Time> times) {
-		Map<String, Map<TimeRange, Double>> reverseCorrelationByPeriodBySymbol = dataSourceBySymbol //
-				.mapValue(dataSource -> TimeRange //
+	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, List<Time> times) {
+		Map<String, Map<TimeRange, Double>> reverseCorrelationByPeriodBySymbol = dsBySymbol //
+				.mapValue(ds -> TimeRange //
 						.ofDateTimes(times) //
 						.backTestDaysBefore(512, 32) //
 						.map2(samplePeriod -> {
-							float[] prices = dataSource.range(samplePeriod).prices;
+							float[] prices = ds.range(samplePeriod).prices;
 							float[] logReturns = ts.logReturns(prices);
 							int ll = logReturns.length;
 							double sum = 0d;
@@ -58,8 +58,8 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 		return (time, index) -> {
 			TimeRange samplePeriod = TimeRange.backTestDaysBefore(time, 512, 32);
 
-			Map<String, Double> reverseCorrelationBySymbol = dataSourceBySymbol //
-					.map2((symbol, dataSource) -> {
+			Map<String, Double> reverseCorrelationBySymbol = dsBySymbol //
+					.map2((symbol, ds) -> {
 						Map<TimeRange, Double> m = reverseCorrelationByPeriodBySymbol.get(symbol);
 						Double reverseCorrelation = m != null ? m.get(samplePeriod) : null;
 						return reverseCorrelation != null ? reverseCorrelation : Double.NaN;
@@ -68,16 +68,16 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 					.filterValue(reverseCorrelation -> reverseCorrelationThreshold < Math.abs(reverseCorrelation)) //
 					.toMap();
 
-			Streamlet2<String, float[]> reversePricesBySymbol = dataSourceBySymbol //
+			Streamlet2<String, float[]> reversePricesBySymbol = dsBySymbol //
 					.filterKey(reverseCorrelationBySymbol::containsKey) //
-					.mapValue(dataSource -> {
-						float[] prices = dataSource.prices;
+					.mapValue(ds -> {
+						float[] prices = ds.prices;
 						int last = index - 1;
 						return To.arrayOfFloats(tor, i -> prices[last - i]);
 					}) //
 					.collect(As::streamlet2);
 
-			return new KellyCriterion().allocate(reversePricesBySymbol, kellyReduction);
+			return new KellyCriterion().allocate(reversePricesBySymbol, reduction);
 		};
 	}
 

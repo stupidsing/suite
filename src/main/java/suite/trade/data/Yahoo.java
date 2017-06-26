@@ -55,10 +55,10 @@ public class Yahoo {
 
 		adjust(symbol, dates, prices);
 
-		DataSource dataSource = new DataSource(dates, prices);
-		dataSource.cleanse();
+		DataSource ds = new DataSource(dates, prices);
+		ds.cleanse();
 
-		return dataSource;
+		return ds;
 	}
 
 	// https://l1-query.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com
@@ -127,10 +127,10 @@ public class Yahoo {
 		} else
 			stockHistory1 = stockHistory0;
 
-		DataSource dataSource = stockHistory1.adjustPrices("close");
-		dataSource.cleanse();
+		DataSource ds = stockHistory1.adjustPrices("close");
+		ds.cleanse();
 
-		return dataSource;
+		return ds;
 	}
 
 	private LngFltPair[] getData(long[] epochs, int length, Streamlet<JsonNode> json) {

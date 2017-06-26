@@ -32,9 +32,9 @@ public class DataSource {
 			return new DataSource(dates, prices);
 		}
 
-		public void write(DataOutput_ dataOutput, DataSource dataSource) throws IOException {
-			sas.write(dataOutput, dataSource.dates);
-			fas.write(dataOutput, dataSource.prices);
+		public void write(DataOutput_ dataOutput, DataSource ds) throws IOException {
+			sas.write(dataOutput, ds.dates);
+			fas.write(dataOutput, ds.prices);
 		}
 	};
 
@@ -63,11 +63,11 @@ public class DataSource {
 		Streamlet<String> tradeDates;
 		if (Boolean.TRUE)
 			tradeDates = dataSources // union
-					.concatMap(dataSource -> Read.from(dataSource.dates)) //
+					.concatMap(ds -> Read.from(ds.dates)) //
 					.distinct();
 		else
 			tradeDates = Read.from(Set_.intersect(dataSources // intersect
-					.map(dataSource -> (Collection<String>) Arrays.asList(dataSource.dates)) //
+					.map(ds -> (Collection<String>) Arrays.asList(ds.dates)) //
 					.toList()));
 		return new AlignDataSource(tradeDates.sort(Object_::compare).toArray(String.class));
 	}
@@ -79,8 +79,8 @@ public class DataSource {
 			this.dates = dates;
 		}
 
-		public DataSource align(DataSource dataSource) {
-			return dataSource.align(dates);
+		public DataSource align(DataSource ds) {
+			return ds.align(dates);
 		}
 	}
 

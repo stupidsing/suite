@@ -35,7 +35,7 @@ public class WalkForwardAllocTester {
 
 	private long start;
 	private Map<String, Asset> assetBySymbol;
-	private Map<String, DataSource> dataSourceBySymbol;
+	private Map<String, DataSource> dsBySymbol;
 
 	private String[] times;
 	private Account account;
@@ -56,12 +56,12 @@ public class WalkForwardAllocTester {
 
 		start = System.currentTimeMillis();
 		assetBySymbol = assets.toMap(asset -> asset.symbol);
-		dataSourceBySymbol = assets.map2(asset -> asset.symbol, asset -> new DataSource(times, new float[windowSize])).toMap();
+		dsBySymbol = assets.map2(asset -> asset.symbol, asset -> new DataSource(times, new float[windowSize])).toMap();
 	}
 
 	public String tick() {
 		String ymdHms = Time.now().ymdHms();
-		Map<String, Float> priceBySymbol = cfg.quote(dataSourceBySymbol.keySet());
+		Map<String, Float> priceBySymbol = cfg.quote(dsBySymbol.keySet());
 
 		for (Entry<String, Float> e : priceBySymbol.entrySet())
 			log.sink(ymdHms + "," + e.getKey() + "," + e.getValue());
@@ -75,14 +75,14 @@ public class WalkForwardAllocTester {
 		System.arraycopy(times, 0, times, 1, last);
 		times[last] = ymdHms;
 
-		for (Entry<String, DataSource> e : dataSourceBySymbol.entrySet()) {
+		for (Entry<String, DataSource> e : dsBySymbol.entrySet()) {
 			String symbol = e.getKey();
 			float[] prices = e.getValue().prices;
 			System.arraycopy(prices, 0, prices, 1, last);
 			prices[last] = priceBySymbol.get(symbol);
 		}
 
-		List<Pair<String, Double>> ratioBySymbol = wfa.allocate(Read.from2(dataSourceBySymbol), windowSize);
+		List<Pair<String, Double>> ratioBySymbol = wfa.allocate(Read.from2(dsBySymbol), windowSize);
 		UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, priceBySymbol);
 		float valuation_;
 

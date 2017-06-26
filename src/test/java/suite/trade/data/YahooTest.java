@@ -49,12 +49,12 @@ public class YahooTest {
 	}
 
 	private void test(BiFunction<String, TimeRange, DataSource> fun) {
-		DataSource dataSource = fun.apply("0005.HK", TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1)));
+		DataSource ds = fun.apply("0005.HK", TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1)));
 
-		dataSource.validate();
+		ds.validate();
 
-		int datesLength = dataSource.dates.length;
-		int pricesLength = dataSource.prices.length;
+		int datesLength = ds.dates.length;
+		int pricesLength = ds.prices.length;
 		assertTrue(datesLength == pricesLength);
 		assertTrue(0 < datesLength);
 	}

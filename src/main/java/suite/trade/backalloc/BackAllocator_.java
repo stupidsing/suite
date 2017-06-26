@@ -39,16 +39,16 @@ public class BackAllocator_ {
 		int halfLife = 64;
 		double threshold = .9d;
 
-		return (dataSourceBySymbol, times) -> {
-			Map<String, float[]> ema = dataSourceBySymbol //
-					.mapValue(dataSource -> ma.exponentialMovingAvg(dataSource.prices, halfLife)) //
+		return (dsBySymbol, times) -> {
+			Map<String, float[]> ema = dsBySymbol //
+					.mapValue(ds -> ma.exponentialMovingAvg(ds.prices, halfLife)) //
 					.toMap();
 
-			return (time, index) -> dataSourceBySymbol //
-					.map2((symbol, dataSource) -> {
+			return (time, index) -> dsBySymbol //
+					.map2((symbol, ds) -> {
 						int last = index - 1;
 						float lastEma = ema.get(symbol)[last];
-						float latest = dataSource.prices[last];
+						float latest = ds.prices[last];
 						return latest / lastEma < threshold ? 1d : 0d;
 					}) //
 					.toList();
@@ -56,9 +56,10 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator byLastPriceChange() {
-		return (dataSourceBySymbol, times) -> (time, index) -> dataSourceBySymbol //
-				.map2((symbol, dataSource) -> dataSource.get(index - 2).price / dataSource.get(index - 1).price < .96d ? 1d : 0d) //
-				.toList();
+		return (dsBySymbol,
+				times) -> (time, index) -> dsBySymbol //
+						.map2((symbol, ds) -> ds.get(index - 2).price / ds.get(index - 1).price < .96d ? 1d : 0d) //
+						.toList();
 	}
 
 	public static BackAllocator byPairs(Configuration cfg, String symbol0, String symbol1) {
@@ -69,11 +70,11 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator byReturnsProRata() {
-		return (dataSourceBySymbol, times) -> (time, index) -> {
-			Streamlet2<String, Double> returns = dataSourceBySymbol //
-					.map2((symbol, dataSource) -> {
-						double price0 = dataSource.prices[index - 2];
-						double price1 = dataSource.prices[index - 1];
+		return (dsBySymbol, times) -> (time, index) -> {
+			Streamlet2<String, Double> returns = dsBySymbol //
+					.map2((symbol, ds) -> {
+						double price0 = ds.prices[index - 2];
+						double price1 = ds.prices[index - 1];
 						return (price0 - price1) / price0;
 					}) //
 					.filterValue(return_ -> 0d < return_) //
@@ -85,9 +86,9 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator byWorstReturn() {
-		return (dataSourceBySymbol, times) -> (time, index) -> dataSourceBySymbol //
-				.map2((symbol, dataSource) -> {
-					float[] prices = dataSource.prices;
+		return (dsBySymbol, times) -> (time, index) -> dsBySymbol //
+				.map2((symbol, ds) -> {
+					float[] prices = ds.prices;
 					float price0 = prices[index - 2];
 					float price1 = prices[index - 1];
 					return price1 / price0 - 1f;
@@ -99,21 +100,21 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator cash() {
-		return (dataSourceBySymbol, times) -> (time, index) -> Collections.emptyList();
+		return (dsBySymbol, times) -> (time, index) -> Collections.emptyList();
 	}
 
 	public static BackAllocator donchian() {
 		int window = 32;
 
-		return (dataSourceBySymbol, times) -> {
-			Map<String, Donchian> donchianBySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> ts.donchian(window, dataSource.prices)) //
+		return (dsBySymbol, times) -> {
+			Map<String, Donchian> donchianBySymbol = dsBySymbol //
+					.mapValue(ds -> ts.donchian(window, ds.prices)) //
 					.toMap();
 
-			return (time, index) -> dataSourceBySymbol //
-					.map2((symbol, dataSource) -> {
+			return (time, index) -> dsBySymbol //
+					.map2((symbol, ds) -> {
 						Donchian donchian = donchianBySymbol.get(symbol);
-						float price = dataSource.prices[index - 1];
+						float price = ds.prices[index - 1];
 						boolean hold = false;
 						for (int i = 0; i < index; i++)
 							if (price == donchian.mins[i])
@@ -133,13 +134,13 @@ public class BackAllocator_ {
 		Strategos strategos = new Strategos();
 		BuySellStrategy mamr = strategos.movingAvgMeanReverting(nPastDays, nHoldDays, threshold);
 
-		return (dataSourceBySymbol, times) -> {
-			Map<String, GetBuySell> getBuySellBySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> mamr.analyze(dataSource.prices)) //
+		return (dsBySymbol, times) -> {
+			Map<String, GetBuySell> getBuySellBySymbol = dsBySymbol //
+					.mapValue(ds -> mamr.analyze(ds.prices)) //
 					.toMap();
 
-			return (time, index) -> dataSourceBySymbol //
-					.map2((symbol, dataSource) -> {
+			return (time, index) -> dsBySymbol //
+					.map2((symbol, ds) -> {
 						GetBuySell gbs = getBuySellBySymbol.get(symbol);
 						int hold = 0;
 						for (int i = 0; i < index; i++)
@@ -154,25 +155,25 @@ public class BackAllocator_ {
 		int windowSize0 = 4;
 		int windowSize1 = 12;
 
-		return (dataSourceBySymbol, times) -> {
-			Map<String, float[]> movingAvg0BySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> ma.movingAvg(dataSource.prices, windowSize0)) //
+		return (dsBySymbol, times) -> {
+			Map<String, float[]> movingAvg0BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.movingAvg(ds.prices, windowSize0)) //
 					.toMap();
 
-			Map<String, float[]> movingAvg1BySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> ma.movingAvg(dataSource.prices, windowSize1)) //
+			Map<String, float[]> movingAvg1BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.movingAvg(ds.prices, windowSize1)) //
 					.toMap();
 
-			Map<String, float[]> movingMedian0BySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> ma.movingMedian(dataSource.prices, windowSize0)) //
+			Map<String, float[]> movingMedian0BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.movingMedian(ds.prices, windowSize0)) //
 					.toMap();
 
-			Map<String, float[]> movingMedian1BySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> ma.movingMedian(dataSource.prices, windowSize1)) //
+			Map<String, float[]> movingMedian1BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.movingMedian(ds.prices, windowSize1)) //
 					.toMap();
 
-			return (time, index) -> dataSourceBySymbol //
-					.map2((symbol, dataSource) -> {
+			return (time, index) -> dsBySymbol //
+					.map2((symbol, ds) -> {
 						int last = index - 1;
 						float movingAvg0 = movingAvg0BySymbol.get(symbol)[last];
 						float movingAvg1 = movingAvg1BySymbol.get(symbol)[last];
@@ -193,17 +194,17 @@ public class BackAllocator_ {
 		int windowSize0 = 1;
 		int windowSize1 = 32;
 
-		return (dataSourceBySymbol, times) -> {
-			Map<String, float[]> movingMedian0BySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> ma.movingMedian(dataSource.prices, windowSize0)) //
+		return (dsBySymbol, times) -> {
+			Map<String, float[]> movingMedian0BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.movingMedian(ds.prices, windowSize0)) //
 					.toMap();
 
-			Map<String, float[]> movingMedian1BySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> ma.movingMedian(dataSource.prices, windowSize1)) //
+			Map<String, float[]> movingMedian1BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.movingMedian(ds.prices, windowSize1)) //
 					.toMap();
 
-			return (time, index) -> dataSourceBySymbol //
-					.map2((symbol, dataSource) -> {
+			return (time, index) -> dsBySymbol //
+					.map2((symbol, ds) -> {
 						float[] movingMedian0 = movingMedian0BySymbol.get(symbol);
 						float[] movingMedian1 = movingMedian1BySymbol.get(symbol);
 						int last = index - 1;
@@ -217,23 +218,23 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator ofSingle(String symbol) {
-		return (dataSourceBySymbol, times) -> (time, index) -> Arrays.asList(Pair.of(symbol, 1d));
+		return (dsBySymbol, times) -> (time, index) -> Arrays.asList(Pair.of(symbol, 1d));
 	}
 
 	public static BackAllocator questoQuella(String symbol0, String symbol1) {
 		int tor = 64;
 		double threshold = 0d;
 
-		BackAllocator ba0 = (dataSourceBySymbol, times) -> {
-			Map<String, DataSource> dataSources = dataSourceBySymbol.toMap();
-			DataSource dataSource0 = dataSources.get(symbol0);
-			DataSource dataSource1 = dataSources.get(symbol1);
+		BackAllocator ba0 = (dsBySymbol, times) -> {
+			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
+			DataSource ds0 = dsBySymbol_.get(symbol0);
+			DataSource ds1 = dsBySymbol_.get(symbol1);
 
 			return (time, index) -> {
 				int ix = index - 1;
 				int i0 = ix - tor;
-				double p0 = dataSource0.get(i0).price, px = dataSource0.get(ix).price;
-				double q0 = dataSource1.get(i0).price, qx = dataSource1.get(ix).price;
+				double p0 = ds0.get(i0).price, px = ds0.get(ix).price;
+				double q0 = ds1.get(i0).price, qx = ds1.get(ix).price;
 				double pdiff = (px - p0) / px;
 				double qdiff = (qx - q0) / qx;
 
@@ -254,15 +255,15 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator variableBollingerBands() {
-		return (dataSourceBySymbol, times) -> {
-			return (time, index) -> dataSourceBySymbol //
-					.map2((symbol, dataSource) -> {
+		return (dsBySymbol, times) -> {
+			return (time, index) -> dsBySymbol //
+					.map2((symbol, ds) -> {
 						int last = index - 1;
 						double hold = 0d;
 
 						for (int window = 1; hold == 0d && window < 256; window++) {
-							float price = dataSource.prices[last];
-							MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(dataSource.prices, last - window, last));
+							float price = ds.prices[last];
+							MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(ds.prices, last - window, last));
 							double mean = mv.mean;
 							double diff = 3d * mv.standardDeviation();
 
@@ -279,21 +280,21 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator threeMovingAvgs() {
-		return (dataSourceBySymbol, times) -> {
-			Map<String, float[]> movingAvg0BySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> ma.exponentialMovingGeometricAvg(dataSource.prices, 12)) //
+		return (dsBySymbol, times) -> {
+			Map<String, float[]> movingAvg0BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.exponentialMovingGeometricAvg(ds.prices, 12)) //
 					.toMap();
 
-			Map<String, float[]> movingAvg1BySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> ma.exponentialMovingGeometricAvg(dataSource.prices, 6)) //
+			Map<String, float[]> movingAvg1BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.exponentialMovingGeometricAvg(ds.prices, 6)) //
 					.toMap();
 
-			Map<String, float[]> movingAvg2BySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> ma.exponentialMovingGeometricAvg(dataSource.prices, 3)) //
+			Map<String, float[]> movingAvg2BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.exponentialMovingGeometricAvg(ds.prices, 3)) //
 					.toMap();
 
-			return (time, index) -> dataSourceBySymbol //
-					.map2((symbol, dataSource) -> {
+			return (time, index) -> dsBySymbol //
+					.map2((symbol, ds) -> {
 						int last = index - 1;
 						float movingAvg0 = movingAvg0BySymbol.get(symbol)[last];
 						float movingAvg1 = movingAvg1BySymbol.get(symbol)[last];
@@ -314,13 +315,13 @@ public class BackAllocator_ {
 	}
 
 	private static BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {
-		return (dataSourceBySymbol, times) -> {
-			Map<String, float[]> percentbBySymbol = dataSourceBySymbol //
-					.mapValue(dataSource -> bb.bb(dataSource.prices, backPos0, backPos1, k).percentb) //
+		return (dsBySymbol, times) -> {
+			Map<String, float[]> percentbBySymbol = dsBySymbol //
+					.mapValue(ds -> bb.bb(ds.prices, backPos0, backPos1, k).percentb) //
 					.toMap();
 
-			return (time, index) -> dataSourceBySymbol //
-					.map2((symbol, dataSource) -> {
+			return (time, index) -> dsBySymbol //
+					.map2((symbol, ds) -> {
 						float[] percentbs = percentbBySymbol.get(symbol);
 						double hold = 0d;
 						for (int i = 0; i < index; i++) {
@@ -341,9 +342,9 @@ public class BackAllocator_ {
 	}
 
 	private static BackAllocator rsi_(int window, double threshold0, double threshold1) {
-		return (dataSourceBySymbol, times) -> (time, index) -> dataSourceBySymbol //
-				.mapValue(dataSource -> {
-					float[] prices = dataSource.prices;
+		return (dsBySymbol, times) -> (time, index) -> dsBySymbol //
+				.mapValue(ds -> {
+					float[] prices = ds.prices;
 					int gt = 0, ge = 0;
 					for (int i = index - window; i < index; i++) {
 						int compare = Float.compare(prices[i - 1], prices[i]);

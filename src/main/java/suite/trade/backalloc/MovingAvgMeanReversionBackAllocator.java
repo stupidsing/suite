@@ -49,25 +49,25 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 	}
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dataSourceBySymbol, List<Time> times) {
-		log.sink(dataSourceBySymbol.size() + " assets in data source");
+	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, List<Time> times) {
+		log.sink(dsBySymbol.size() + " assets in data source");
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
-		Map<String, Map<TimeRange, MeanReversionStat>> meanReversionStatByPeriodBySymbol = dataSourceBySymbol //
-				.map2((symbol, dataSource) -> TimeRange //
+		Map<String, Map<TimeRange, MeanReversionStat>> meanReversionStatByPeriodBySymbol = dsBySymbol //
+				.map2((symbol, ds) -> TimeRange //
 						.ofDateTimes(times) //
 						.addDays(-tor) //
 						.backTestDaysBefore(256, 32) //
-						.map2(mrsPeriod -> meanReversionStat(symbol, dataSource, mrsPeriod)) //
+						.map2(mrsPeriod -> meanReversionStat(symbol, ds, mrsPeriod)) //
 						.toMap()) //
 				.toMap();
 
 		return (time, index) -> {
-			Map<String, DataSource> dataSources = dataSourceBySymbol.toMap();
+			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
 			TimeRange mrsPeriod = TimeRange.backTestDaysBefore(time.addDays(-tor), 256, 32);
 
-			Map<String, MeanReversionStat> meanReversionStatBySymbol = dataSourceBySymbol //
-					.map2((symbol, dataSource) -> {
+			Map<String, MeanReversionStat> meanReversionStatBySymbol = dsBySymbol //
+					.map2((symbol, ds) -> {
 						Map<TimeRange, MeanReversionStat> m = meanReversionStatByPeriodBySymbol.get(symbol);
 						return m != null ? m.get(mrsPeriod) : null;
 					}) //
@@ -85,14 +85,14 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 							&& 0d < mrs.varianceRatio //
 							&& mrs.movingAvgMeanReversionRatio() < 0d) //
 					.map2((symbol, mrs) -> {
-						DataSource dataSource = dataSources.get(symbol);
-						double price = dataSource.prices[index - 1];
+						DataSource ds = dsBySymbol_.get(symbol);
+						double price = ds.prices[index - 1];
 
 						double lma = mrs.latestMovingAverage();
 						float diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
 						double dailyReturn = diff / price - dailyRiskFreeInterestRate;
 
-						ReturnsStat returnsStat = ts.returnsStatDaily(dataSource.prices);
+						ReturnsStat returnsStat = ts.returnsStatDaily(ds.prices);
 						double sharpe = returnsStat.sharpeRatio();
 						double kelly = dailyReturn * price * price / mrs.movingAvgMeanReversion.sse;
 
@@ -133,9 +133,9 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 		}
 	}
 
-	private MeanReversionStat meanReversionStat(String symbol, DataSource dataSource, TimeRange period) {
+	private MeanReversionStat meanReversionStat(String symbol, DataSource ds, TimeRange period) {
 		Pair<String, TimeRange> key = Pair.of(symbol, period);
-		return memoizeMeanReversionStat.computeIfAbsent(key, p -> new MeanReversionStat(dataSource, period));
+		return memoizeMeanReversionStat.computeIfAbsent(key, p -> new MeanReversionStat(ds, period));
 	}
 
 	private static Map<Pair<String, TimeRange>, MeanReversionStat> memoizeMeanReversionStat = new ConcurrentHashMap<>();
@@ -148,8 +148,8 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 		public final LinearRegression meanReversion;
 		public final LinearRegression movingAvgMeanReversion;
 
-		public MeanReversionStat(DataSource dataSource, TimeRange mrsPeriod) {
-			float[] prices = dataSource.range(mrsPeriod).prices;
+		public MeanReversionStat(DataSource ds, TimeRange mrsPeriod) {
+			float[] prices = ds.range(mrsPeriod).prices;
 
 			movingAverage = ma.movingGeometricAvg(prices, tor);
 

@@ -111,24 +111,24 @@ public class BackAllocTester {
 			// pre-fetch quotes
 			cfg.quote(symbols);
 
-			Streamlet2<String, DataSource> dataSourceBySymbol0 = Read //
+			Streamlet2<String, DataSource> dsBySymbol0 = Read //
 					.from(symbols) //
 					.map2(symbol -> cfg.dataSource(symbol).after(historyFromDate)) //
-					.map2((symbol, dataSource) -> {
+					.map2((symbol, ds) -> {
 						try {
-							dataSource.validate();
-							return dataSource;
+							ds.validate();
+							return ds;
 						} catch (Exception ex) {
 							LogUtil.warn("for " + symbol + " " + ex);
 							return null;
 						}
 					}) //
-					.filterValue(dataSource -> dataSource != null) //
+					.filterValue(ds -> ds != null) //
 					.collect(As::streamlet2);
 
-			AlignDataSource alignDataSource = DataSource.alignAll(dataSourceBySymbol0.values());
+			AlignDataSource alignDataSource = DataSource.alignAll(dsBySymbol0.values());
 
-			Streamlet2<String, DataSource> dataSourceBySymbol1 = dataSourceBySymbol0 //
+			Streamlet2<String, DataSource> dsBySymbol1 = dsBySymbol0 //
 					.mapValue(alignDataSource::align) //
 					.collect(As::streamlet2);
 
@@ -136,7 +136,7 @@ public class BackAllocTester {
 			List<Time> times = timesPred.apply(tradeTimes);
 			int size = times.size();
 
-			OnDateTime onDateTime = backAllocator.allocate(dataSourceBySymbol1, times);
+			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol1, times);
 			Map<String, Float> latestPriceBySymbol = null;
 			float[] valuations_ = new float[size];
 			Exception exception_;
@@ -147,8 +147,8 @@ public class BackAllocTester {
 					Time time = times.get(i);
 					int index = Collections.binarySearch(tradeTimes, time);
 
-					latestPriceBySymbol = dataSourceBySymbol1 //
-							.mapValue(dataSource -> dataSource.prices[index]) //
+					latestPriceBySymbol = dsBySymbol1 //
+							.mapValue(ds -> ds.prices[index]) //
 							.toMap();
 
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
