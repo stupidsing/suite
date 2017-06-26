@@ -76,7 +76,7 @@ public class Yahoo {
 		} else
 			stockHistory0 = StockHistory.new_();
 
-		Time time = HkexUtil.getTradeTimeBefore(Time.now());
+		Time time = HkexUtil.getCloseTimeBefore(Time.now());
 		StockHistory stockHistory1;
 
 		if (stockHistory0.time.compareTo(time) < 0) {
