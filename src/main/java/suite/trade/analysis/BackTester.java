@@ -23,6 +23,22 @@ public class BackTester {
 	private Configuration cfg = new ConfigurationImpl();
 	private Statistic stat = new Statistic();
 
+	public Simulate backTest(BackAllocator backAllocator, TimeRange period) {
+		Streamlet<Asset> assets0 = cfg.queryLeadingCompaniesByMarketCap(period.from); // hkex.getCompanies()
+		return backTest(backAllocator, period, assets0);
+	}
+
+	public Simulate backTest(BackAllocator backAllocator, TimeRange period, Streamlet<Asset> assets) {
+		BackAllocTester backTest = BackAllocTester.ofFromTo( //
+				cfg, //
+				assets, //
+				backAllocator, //
+				period, //
+				log);
+
+		return backTest.simulate(initial);
+	}
+
 	public <T> String conclude(Streamlet2<T, Simulate> simulationsByKey) {
 		Streamlet<String> results0 = simulationsByKey //
 				.map((key, simulate) -> "\nTEST = " + key + ", " + simulate.conclusion());
@@ -39,22 +55,6 @@ public class BackTester {
 				});
 
 		return Streamlet.concat(results0, results1).sort(Object_::compare).collect(As.joined());
-	}
-
-	public Simulate backTest(BackAllocator backAllocator, TimeRange period) {
-		Streamlet<Asset> assets0 = cfg.queryLeadingCompaniesByMarketCap(period.from); // hkex.getCompanies()
-		return backTest(backAllocator, period, assets0);
-	}
-
-	public Simulate backTest(BackAllocator backAllocator, TimeRange period, Streamlet<Asset> assets) {
-		BackAllocTester backTest = BackAllocTester.ofFromTo( //
-				cfg, //
-				assets, //
-				backAllocator, //
-				period, //
-				log);
-
-		return backTest.simulate(initial);
 	}
 
 }
