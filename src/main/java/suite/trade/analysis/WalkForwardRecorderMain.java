@@ -41,10 +41,13 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) {
 		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(Time.now());
+		float fund0 = 1000000f;
 
 		Trade_.isCacheQuotes = false;
+		Trade_.isShortSell = true;
+		Trade_.maxLeverageAmount = fund0;
 
-		if (Boolean.TRUE) { // record
+		if (Boolean.FALSE) { // record
 			String ts = Time.now().ymdHms().replace("-", "").replace(" ", "-").replace(":", "");
 			String filename = "wfa." + ts + ".csv";
 
@@ -91,7 +94,6 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 					cfg.queryLeadingCompaniesByMarketCap(Time.now()), //
 					BackAllocator_.rsi().unleverage().walkForwardAllocator());
 
-			float fund0 = 1000000f;
 			WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
 
 			for (Entry<String, Map<String, Float>> e : data.entrySet())
