@@ -34,6 +34,8 @@ public class Yahoo {
 
 	private static ObjectMapper mapper = new ObjectMapper();
 
+	private Cleanse cleanse = new Cleanse();
+
 	public DataSource dataSourceCsv(String symbol, TimeRange period) {
 		String urlString = tableUrl(symbol, period);
 
@@ -55,18 +57,12 @@ public class Yahoo {
 
 		adjust(symbol, dates, prices);
 
-		DataSource ds = new DataSource(dates, prices);
-		ds.cleanse();
-
+		DataSource ds = new DataSource(dates, cleanse.cleanse(prices));
 		return ds;
 	}
 
 	// https://l1-query.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com
 	public DataSource dataSourceL1(String symbol, TimeRange period) {
-		return dataSourceL1(symbol).range(period);
-	}
-
-	private DataSource dataSourceL1(String symbol) {
 		Path path = HomeDir.dir("yahoo").resolve(symbol + ".txt");
 		StockHistory stockHistory0;
 
@@ -104,7 +100,11 @@ public class Yahoo {
 							.flatMap(json_ -> json_.path(tag)));
 
 			Map<String, LngFltPair[]> data = Streamlet2.concat(dataJsons0, dataJsons1) //
-					.mapValue(json_ -> getData(epochs, length, json_)) //
+					.mapValue(json_ -> {
+						float[] fs = json_.collect(As.arrayOfFloats(JsonNode::floatValue));
+						LngFltPair[] pairs = To.array(LngFltPair.class, length, i -> LngFltPair.of(epochs[i], fs[i]));
+						return cleanse.cleanse(pairs);
+					}) //
 					.toMap();
 
 			LngFltPair[] dividends = jsons //
@@ -127,15 +127,9 @@ public class Yahoo {
 		} else
 			stockHistory1 = stockHistory0;
 
-		DataSource ds = stockHistory1.adjustPrices("close");
-		ds.cleanse();
+		DataSource ds = stockHistory1.filter(period).adjustPrices("close");
 
-		return ds;
-	}
-
-	private LngFltPair[] getData(long[] epochs, int length, Streamlet<JsonNode> json) {
-		float[] data = json.collect(As.arrayOfFloats(JsonNode::floatValue));
-		return To.array(LngFltPair.class, length, i -> LngFltPair.of(epochs[i], data[i]));
+		return cleanse.cleanse(ds).range(period);
 	}
 
 	private JsonNode queryL1(String symbol, TimeRange period) {

@@ -42,7 +42,7 @@ public class BackAllocTester {
 
 	private Streamlet<Asset> assets;
 	private BackAllocator backAllocator;
-	private Time historyFromDate;
+	private TimeRange period;
 	private Fun<List<Time>, List<Time>> timesPred;
 	private Sink<String> log;
 
@@ -51,9 +51,9 @@ public class BackAllocTester {
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
 			Sink<String> log) {
-		Time historyFromDate = Time.now();
+		Time now = Time.now();
 		Fun<List<Time>, List<Time>> timesPred = times -> Arrays.asList(List_.last(times));
-		return new BackAllocTester(cfg, assets, backAllocator, historyFromDate, timesPred, log);
+		return new BackAllocTester(cfg, assets, backAllocator, TimeRange.of(now, now), timesPred, log);
 	}
 
 	public static BackAllocTester ofFromTo( //
@@ -62,24 +62,23 @@ public class BackAllocTester {
 			BackAllocator backAllocator, //
 			TimeRange period, //
 			Sink<String> log) {
-		Time historyFromDate = period.from;
 		Fun<List<Time>, List<Time>> timesPred = times -> Read //
 				.from(times) //
-				.filter(time -> period.contains(time)) //
+				.filter(period::contains) //
 				.toList();
-		return new BackAllocTester(cfg, assets, backAllocator, historyFromDate, timesPred, log);
+		return new BackAllocTester(cfg, assets, backAllocator, period, timesPred, log);
 	}
 
 	private BackAllocTester( //
 			Configuration cfg, //
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
-			Time from, //
+			TimeRange period, //
 			Fun<List<Time>, List<Time>> timesPred, //
 			Sink<String> log) {
 		this.cfg = cfg;
 		this.assets = assets.distinct();
-		this.historyFromDate = from.addYears(-1);
+		this.period = period;
 		this.backAllocator = backAllocator;
 		this.timesPred = timesPred;
 		this.log = log;
@@ -91,7 +90,6 @@ public class BackAllocTester {
 
 	public class Simulate {
 		public final Account account;
-		public final TimeRange period;
 		public final float[] valuations;
 		public final List<Trade> trades;
 		public final Map<String, Double> holdBySymbol;
@@ -107,13 +105,14 @@ public class BackAllocTester {
 			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
 			Map<String, Double> holdBySymbol_ = new HashMap<>();
 			Set<String> symbols = assetBySymbol.keySet();
+			TimeRange historyPeriod = TimeRange.of(period.from.addYears(-1), period.to);
 
 			// pre-fetch quotes
 			cfg.quote(symbols);
 
 			Streamlet2<String, DataSource> dsBySymbol0 = Read //
 					.from(symbols) //
-					.map2(symbol -> cfg.dataSource(symbol).after(historyFromDate)) //
+					.map2(symbol -> cfg.dataSource(symbol, historyPeriod)) //
 					.map2((symbol, ds) -> {
 						try {
 							ds.validate();
@@ -177,7 +176,6 @@ public class BackAllocTester {
 
 			ReturnsStat rs = ts.returnsStatDailyAnnualized(valuations_);
 
-			period = TimeRange.of(List_.first(times), List_.last(times));
 			valuations = valuations_;
 			holdBySymbol = holdBySymbol_;
 			annualReturn = rs.return_;

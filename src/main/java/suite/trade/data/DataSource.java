@@ -20,6 +20,7 @@ import suite.util.Util;
 
 public class DataSource {
 
+	private Cleanse cleanse = new Cleanse();
 	public static Matrix mtx = new Matrix();
 
 	public static Serializer<DataSource> serializer = new Serializer<DataSource>() {
@@ -116,18 +117,6 @@ public class DataSource {
 		return new DataSource(dates1, prices1);
 	}
 
-	public void cleanse() {
-
-		// ignore price sparks caused by data source bugs
-		for (int i = 2; i < prices.length; i++) {
-			float price0 = prices[i - 2];
-			float price1 = prices[i - 1];
-			float price2 = prices[i - 0];
-			if (isValid(price0, price2) && !isValid(price0, price1) && !isValid(price1, price2))
-				prices[i - 1] = price0;
-		}
-	}
-
 	public DataSource filter(DatePricePredicate fdp) {
 		return filter_(fdp);
 	}
@@ -163,8 +152,8 @@ public class DataSource {
 
 	public void validate() {
 		int length = prices.length;
-		String date0 = dates[0];
-		float price0 = prices[0];
+		String date0 = 0 < length ? dates[0] : null;
+		float price0 = 0 < length ? prices[0] : Float.MAX_VALUE;
 
 		for (int i = 1; i < length; i++) {
 			String date1 = dates[i];
@@ -179,7 +168,7 @@ public class DataSource {
 			if (!Float.isFinite(price1))
 				throw new RuntimeException("price is not finite: " + price1 + "/" + date1);
 
-			if (!isValid(price0, price1))
+			if (!cleanse.isValid(price0, price1))
 				throw new RuntimeException("price varied too much: " + price0 + "/" + date0 + " => " + price1 + "/" + date1);
 
 			date0 = date1;
@@ -225,11 +214,6 @@ public class DataSource {
 		if (pos < 0)
 			pos += prices.length;
 		return new Datum(dates[pos], prices[pos]);
-	}
-
-	private boolean isValid(float price0, float price1) {
-		float ratio = price1 / price0;
-		return 1f / 2f < ratio && ratio < 2f / 1f;
 	}
 
 }

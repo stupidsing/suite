@@ -15,7 +15,6 @@ import suite.trade.Asset;
 import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocTester.Simulate;
-import suite.trade.backalloc.BackAllocator_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.util.Util;
@@ -36,9 +35,7 @@ public class BackTestMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		BackAllocConfiguration bac_hsi = new BackAllocConfiguration( //
-				Read.each(Asset.hsi), //
-				BackAllocator_.ofSingle(Asset.hsiSymbol));
+		BackAllocConfiguration bac_hsi = BackAllocConfiguration.ofSingle(Asset.hsi);
 
 		if (Boolean.FALSE) {
 			questoaQuella("0670.HK", "1055.HK");
@@ -55,6 +52,7 @@ public class BackTestMain extends ExecutableProgram {
 		bacs.put("pmamr", dm.bac_pmamr);
 		bacs.put("pmmmr", dm.bac_pmmmr);
 		bacs.put("tma", dm.bac_tma);
+		questoaQuella("0753.HK", "1055.HK");
 		// END
 
 		Streamlet2<String, Simulate> simulationsByKey = Read //
@@ -84,13 +82,9 @@ public class BackTestMain extends ExecutableProgram {
 	}
 
 	private void questoaQuella(String symbol0, String symbol1) {
-		bacs.put(symbol0, pairOfSingle(symbol0));
-		bacs.put(symbol1, pairOfSingle(symbol1));
+		bacs.put(symbol0, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol0)));
+		bacs.put(symbol1, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol1)));
 		bacs.put("pair/" + symbol0 + "/" + symbol1, dm.questoaQuella(symbol0, symbol1));
-	}
-
-	private BackAllocConfiguration pairOfSingle(String symbol) {
-		return new BackAllocConfiguration(Read.each(cfg.queryCompany(symbol)), BackAllocator_.ofSingle(symbol));
 	}
 
 }

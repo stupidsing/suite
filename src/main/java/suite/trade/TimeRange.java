@@ -39,22 +39,22 @@ public class TimeRange extends Range<Time> {
 		return yearsBefore_(5);
 	}
 
-	public static TimeRange ofDateTimes(List<Time> ts) {
-		Time frDt = Time.MAX;
-		Time toDt = Time.MIN;
-		for (Time t : ts) {
-			frDt = frDt.compareTo(t) < 0 ? frDt : t;
-			toDt = toDt.compareTo(t) < 0 ? t : toDt;
-		}
-		return of_(frDt, toDt.addDays(1));
-	}
-
 	public static TimeRange of(Time from, Time to) {
 		return of_(from, to);
 	}
 
 	public static TimeRange ofYear(int year) {
 		return of_(Time.of(year, 1, 1), Time.of(year + 1, 1, 1));
+	}
+
+	public static TimeRange rangeOf(List<Time> ts) {
+		Time frDt = TimeRange.ages().to;
+		Time toDt = TimeRange.ages().from;
+		for (Time t : ts) {
+			frDt = frDt.compareTo(t) < 0 ? frDt : t;
+			toDt = toDt.compareTo(t) < 0 ? t : toDt;
+		}
+		return of_(frDt, toDt.addDays(1));
 	}
 
 	public static TimeRange yearsBefore(Time to, int n) {

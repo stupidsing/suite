@@ -55,7 +55,7 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 
 		Map<String, Map<TimeRange, MeanReversionStat>> meanReversionStatByPeriodBySymbol = dsBySymbol //
 				.map2((symbol, ds) -> TimeRange //
-						.ofDateTimes(times) //
+						.rangeOf(times) //
 						.addDays(-tor) //
 						.backTestDaysBefore(256, 32) //
 						.map2(mrsPeriod -> meanReversionStat(symbol, ds, mrsPeriod)) //

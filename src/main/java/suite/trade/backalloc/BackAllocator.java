@@ -106,7 +106,7 @@ public interface BackAllocator {
 				private List<Pair<String, Double>> result0;
 
 				public List<Pair<String, Double>> onDateTime(Time time_, int index) {
-					Time time1 = time_.addDays(-time_.epochDay() % tradeFrequency);
+					Time time1 = time_.addDays(-(time_.epochDay() % tradeFrequency));
 					if (!Objects.equals(time0, time1)) {
 						time0 = time1;
 						result0 = onDateTime.onDateTime(time1, index);

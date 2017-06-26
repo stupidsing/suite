@@ -39,7 +39,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, List<Time> times) {
 		Map<String, Map<TimeRange, Double>> reverseCorrelationByPeriodBySymbol = dsBySymbol //
 				.mapValue(ds -> TimeRange //
-						.ofDateTimes(times) //
+						.rangeOf(times) //
 						.backTestDaysBefore(512, 32) //
 						.map2(samplePeriod -> {
 							float[] prices = ds.range(samplePeriod).prices;
