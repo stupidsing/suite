@@ -1,10 +1,15 @@
 package suite.trade.data;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import suite.primitive.Bytes;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Trade;
 import suite.util.FunUtil.Source;
+import suite.util.HomeDir;
 import suite.util.Memoize;
 
 public interface Broker {
@@ -22,7 +27,13 @@ public interface Broker {
 		private static Source<Streamlet<Trade>> memoizeHistoryRecords = Memoize.source(Hsbc::queryHistory_);
 
 		private static Streamlet<Trade> queryHistory_() {
-			return Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt") //
+			Path path = HomeDir.resolve("workspace").resolve("home-data").resolve("stock.txt");
+			Streamlet<Bytes> bytes;
+			if (Files.exists(path))
+				bytes = Read.bytes(path);
+			else
+				bytes = Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt");
+			return bytes //
 					.collect(As::table) //
 					.map(Trade::of) //
 					.collect(As::streamlet);
