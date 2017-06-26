@@ -3,7 +3,6 @@ package suite.trade.analysis;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import suite.Constants;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -55,7 +54,6 @@ public class Summarize {
 			log.sink("\nFor strategy " + key + ":" + summary);
 		}
 
-		log.sink(Constants.separator);
 		log.sink("Overall:" + summarize(trades, priceBySymbol));
 
 		return sellAll(trades, priceBySymbol) // profit & loss
