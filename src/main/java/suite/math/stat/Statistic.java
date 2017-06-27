@@ -1,13 +1,13 @@
 package suite.math.stat;
 
-import suite.adt.map.IntObjMap;
-import suite.adt.pair.IntObjPair;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
+import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 

@@ -15,9 +15,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import suite.Constants;
-import suite.adt.pair.LngFltPair;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
+import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;

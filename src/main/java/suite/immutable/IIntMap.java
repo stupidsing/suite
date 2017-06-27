@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import suite.adt.pair.IntObjPair;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 

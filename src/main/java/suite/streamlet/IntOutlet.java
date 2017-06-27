@@ -11,9 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.Mutable;
-import suite.adt.map.IntObjMap;
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.IntObjPair;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
@@ -26,6 +24,8 @@ import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Int;
 import suite.primitive.Ints;
 import suite.primitive.Ints.IntsBuilder;
+import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;

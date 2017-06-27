@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.adt.pair.IntDblPair;
+import suite.primitive.adt.pair.IntDblPair;
 
 public interface IntDblSource {
 

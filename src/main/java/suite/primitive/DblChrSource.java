@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.adt.pair.DblChrPair;
+import suite.primitive.adt.pair.DblChrPair;
 
 public interface DblChrSource {
 

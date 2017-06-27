@@ -5,12 +5,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.adt.pair.IntObjPair;
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.util.DataInput_;
 import suite.util.DataOutput_;
 import suite.util.Serialize;

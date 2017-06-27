@@ -10,9 +10,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-import suite.adt.map.ChrObjMap;
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.ChrObjPair;
 import suite.adt.pair.Pair;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrObjFunUtil;
@@ -23,6 +21,8 @@ import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
+import suite.primitive.adt.map.ChrObjMap;
+import suite.primitive.adt.pair.ChrObjPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;

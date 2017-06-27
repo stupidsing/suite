@@ -1,6 +1,6 @@
 package suite.trade.data;
 
-import suite.adt.pair.LngFltPair;
+import suite.primitive.adt.pair.LngFltPair;
 
 /**
  * Eliminate price sparks caused by data source bugs.

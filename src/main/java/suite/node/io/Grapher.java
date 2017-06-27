@@ -16,8 +16,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.IdentityKey;
-import suite.adt.map.IntObjMap;
-import suite.adt.pair.IntIntPair;
 import suite.adt.pair.Pair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -33,6 +31,8 @@ import suite.node.Tuple;
 import suite.node.io.Rewriter.NodeHead;
 import suite.node.io.Rewriter.NodeRead;
 import suite.node.io.Rewriter.ReadType;
+import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 

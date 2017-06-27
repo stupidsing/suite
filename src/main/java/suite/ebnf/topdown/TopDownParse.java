@@ -5,12 +5,12 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.IntIntPair;
 import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.ebnf.topdown.Expect.ExpectFun;
 import suite.os.LogUtil;
+import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;

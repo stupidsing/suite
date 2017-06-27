@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import suite.adt.map.ChrObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.Chars;
@@ -24,6 +23,7 @@ import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.Chr_Chr;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
+import suite.primitive.adt.map.ChrObjMap;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;

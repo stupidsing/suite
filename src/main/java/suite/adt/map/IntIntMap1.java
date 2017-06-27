@@ -2,13 +2,13 @@ package suite.adt.map;
 
 import java.util.Arrays;
 
-import suite.adt.pair.IntIntPair;
-import suite.adt.pair.IntObjPair;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntIntSink;
 import suite.primitive.IntIntSource;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.Int_Int;
+import suite.primitive.adt.pair.IntIntPair;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.IntObjOutlet;
 import suite.streamlet.IntObjStreamlet;
 

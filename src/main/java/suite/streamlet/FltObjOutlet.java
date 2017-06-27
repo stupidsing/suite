@@ -12,9 +12,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import suite.adt.Mutable;
-import suite.adt.map.FltObjMap;
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.FltObjPair;
 import suite.adt.pair.Pair;
 import suite.primitive.FltObjFunUtil;
 import suite.primitive.FltObj_Flt;
@@ -23,6 +21,8 @@ import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.FltPrimitives.FltPredicate;
 import suite.primitive.Flt_Flt;
+import suite.primitive.adt.map.FltObjMap;
+import suite.primitive.adt.pair.FltObjPair;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;

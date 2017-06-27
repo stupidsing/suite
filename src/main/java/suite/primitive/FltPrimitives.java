@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.adt.pair.FltObjPair;
+import suite.primitive.adt.pair.FltObjPair;
 
 public class FltPrimitives {
 

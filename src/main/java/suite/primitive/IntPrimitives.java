@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.adt.pair.IntObjPair;
+import suite.primitive.adt.pair.IntObjPair;
 
 public class IntPrimitives {
 

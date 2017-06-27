@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.adt.pair.ChrObjPair;
+import suite.primitive.adt.pair.ChrObjPair;
 
 public class ChrPrimitives {
 

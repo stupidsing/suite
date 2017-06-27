@@ -15,7 +15,6 @@ import java.util.function.BiFunction;
 import java.util.function.ToIntBiFunction;
 
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.IntObjPair;
 import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
@@ -32,6 +31,7 @@ import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.LngPrimitives.Obj_Lng;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;

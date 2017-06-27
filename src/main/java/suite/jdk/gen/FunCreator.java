@@ -28,7 +28,6 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import suite.adt.pair.IntObjPair;
 import suite.adt.pair.Pair;
 import suite.jdk.UnsafeUtil;
 import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
@@ -39,6 +38,7 @@ import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
 import suite.os.LogUtil;
 import suite.primitive.IntPrimitives.IntObjSource;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;

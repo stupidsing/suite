@@ -11,9 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.Mutable;
-import suite.adt.map.DblObjMap;
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.DblObjPair;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
@@ -26,6 +24,8 @@ import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
+import suite.primitive.adt.map.DblObjMap;
+import suite.primitive.adt.pair.DblObjPair;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;

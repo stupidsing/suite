@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 
-import suite.adt.pair.LngFltPair;
+import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;

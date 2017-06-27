@@ -12,9 +12,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import suite.adt.Mutable;
-import suite.adt.map.DblObjMap;
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.DblObjPair;
 import suite.adt.pair.Pair;
 import suite.primitive.DblObjFunUtil;
 import suite.primitive.DblObj_Dbl;
@@ -23,6 +21,8 @@ import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.DblPrimitives.DblPredicate;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.adt.map.DblObjMap;
+import suite.primitive.adt.pair.DblObjPair;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;

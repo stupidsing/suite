@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.adt.pair.ChrLngPair;
+import suite.primitive.adt.pair.ChrLngPair;
 
 public interface ChrLngSource {
 

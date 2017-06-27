@@ -2,11 +2,11 @@ package suite.primitive;
 
 import java.util.Iterator;
 
-import suite.adt.pair.ChrDblPair;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
 import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.primitive.DblPrimitives.DblPredicate;
+import suite.primitive.adt.pair.ChrDblPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;

@@ -18,8 +18,6 @@ import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
-import suite.adt.map.IntIntMap;
-import suite.adt.map.IntObjMap;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
 import suite.jdk.gen.FunExprM.BinaryFunExpr;
 import suite.jdk.gen.FunExprM.CastFunExpr;
@@ -40,6 +38,8 @@ import suite.jdk.gen.FunExprM.PrintlnFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
+import suite.primitive.adt.map.IntIntMap;
+import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.Read;
 
 public class FunGenerateBytecode {

@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.adt.pair.LngObjPair;
+import suite.primitive.adt.pair.LngObjPair;
 
 public class LngPrimitives {
 

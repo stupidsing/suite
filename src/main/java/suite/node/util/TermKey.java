@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import suite.adt.map.IntObjMap;
-import suite.adt.pair.IntObjPair;
 import suite.adt.pair.Pair;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewriter.NodeHead;
 import suite.node.io.Rewriter.NodeRead;
 import suite.primitive.IntPrimitives.IntSink;
+import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.util.FunUtil.Sink;
 import suite.util.HashCodeComparable;
 import suite.util.Object_;

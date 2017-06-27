@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.adt.map.IntObjMap;
 import suite.math.linalg.Matrix;
+import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.Read;
 import suite.util.List_;
 import suite.util.To;

@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.adt.pair.IntIntPair;
+import suite.primitive.adt.pair.IntIntPair;
 
 public interface IntIntSource {
 

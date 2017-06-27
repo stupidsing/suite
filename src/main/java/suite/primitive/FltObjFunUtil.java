@@ -3,13 +3,13 @@ package suite.primitive;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
-import suite.adt.pair.FltObjPair;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
 import suite.primitive.FltPrimitives.FltObjPredicate;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.FltPrimitives.FltPredicate;
+import suite.primitive.adt.pair.FltObjPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;

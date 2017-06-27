@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.adt.pair.DblObjPair;
+import suite.primitive.adt.pair.DblObjPair;
 
 public class DblPrimitives {
 

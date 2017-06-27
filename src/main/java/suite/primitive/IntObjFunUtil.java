@@ -3,13 +3,13 @@ package suite.primitive;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
-import suite.adt.pair.IntObjPair;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
 import suite.primitive.IntPrimitives.IntObjPredicate;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.IntPredicate;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;

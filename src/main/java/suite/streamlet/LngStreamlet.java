@@ -9,7 +9,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.map.ListMultimap;
-import suite.adt.map.LngObjMap;
 import suite.adt.pair.Pair;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngMutable;
@@ -24,6 +23,7 @@ import suite.primitive.Lng_Lng;
 import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
+import suite.primitive.adt.map.LngObjMap;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;

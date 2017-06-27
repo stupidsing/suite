@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import suite.adt.map.DblObjMap;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.DblFunUtil;
@@ -24,6 +23,7 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
+import suite.primitive.adt.map.DblObjMap;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;

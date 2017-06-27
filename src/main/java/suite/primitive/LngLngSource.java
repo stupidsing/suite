@@ -1,6 +1,6 @@
 package suite.primitive;
 
-import suite.adt.pair.LngLngPair;
+import suite.primitive.adt.pair.LngLngPair;
 
 public interface LngLngSource {
 

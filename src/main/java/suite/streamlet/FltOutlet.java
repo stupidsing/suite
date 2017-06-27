@@ -11,9 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.Mutable;
-import suite.adt.map.FltObjMap;
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.FltObjPair;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltFunUtil;
@@ -26,6 +24,8 @@ import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.Flt_Flt;
+import suite.primitive.adt.map.FltObjMap;
+import suite.primitive.adt.pair.FltObjPair;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;

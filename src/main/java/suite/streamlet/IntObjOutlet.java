@@ -12,9 +12,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import suite.adt.Mutable;
-import suite.adt.map.IntObjMap;
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.IntObjPair;
 import suite.adt.pair.Pair;
 import suite.primitive.IntObjFunUtil;
 import suite.primitive.IntObj_Int;
@@ -23,6 +21,8 @@ import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.IntPredicate;
 import suite.primitive.Int_Int;
+import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;

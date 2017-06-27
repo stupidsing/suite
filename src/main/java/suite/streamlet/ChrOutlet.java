@@ -11,9 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.Mutable;
-import suite.adt.map.ChrObjMap;
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.ChrObjPair;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrFunUtil;
@@ -26,6 +24,8 @@ import suite.primitive.ChrPrimitives.ChrSink;
 import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.Chr_Chr;
+import suite.primitive.adt.map.ChrObjMap;
+import suite.primitive.adt.pair.ChrObjPair;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;

@@ -3,7 +3,7 @@ package suite.immutable;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import suite.adt.pair.IntObjPair;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Copy;
