@@ -282,7 +282,7 @@ public class BackAllocator_ {
 	public static BackAllocator threeMovingAvgs() {
 		return (dsBySymbol, times) -> {
 			Map<String, float[]> movingAvg0BySymbol = dsBySymbol //
-					.mapValue(ds -> ma.exponentialMovingGeometricAvg(ds.prices, 12)) //
+					.mapValue(ds -> ma.exponentialMovingGeometricAvg(ds.prices, 18)) //
 					.toMap();
 
 			Map<String, float[]> movingAvg1BySymbol = dsBySymbol //
@@ -290,7 +290,7 @@ public class BackAllocator_ {
 					.toMap();
 
 			Map<String, float[]> movingAvg2BySymbol = dsBySymbol //
-					.mapValue(ds -> ma.exponentialMovingGeometricAvg(ds.prices, 3)) //
+					.mapValue(ds -> ma.exponentialMovingGeometricAvg(ds.prices, 2)) //
 					.toMap();
 
 			return (time, index) -> dsBySymbol //
