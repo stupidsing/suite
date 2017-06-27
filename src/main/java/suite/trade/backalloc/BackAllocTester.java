@@ -136,7 +136,7 @@ public class BackAllocTester {
 			int size = times.size();
 
 			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol1, times);
-			Map<String, Float> latestPriceBySymbol = null;
+			Map<String, Float> latestPriceBySymbol = Collections.emptyMap();
 			float[] valuations_ = new float[size];
 			Exception exception_;
 			int i = 0;
