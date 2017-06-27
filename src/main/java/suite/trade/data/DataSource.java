@@ -103,7 +103,7 @@ public class DataSource {
 		int si = 0, di = 0;
 		while (di < length1)
 			if (length0 <= si)
-				prices1[di++] = 0f;
+				prices1[di++] = Float.MAX_VALUE;
 			else if (dates1[di].compareTo(dates[si]) <= 0)
 				prices1[di++] = prices[si];
 			else
