@@ -102,8 +102,7 @@ public class Yahoo {
 			Map<String, LngFltPair[]> data = Streamlet2.concat(dataJsons0, dataJsons1) //
 					.mapValue(json_ -> {
 						float[] fs = json_.collect(As.arrayOfFloats(JsonNode::floatValue));
-						LngFltPair[] pairs = To.array(LngFltPair.class, length, i -> LngFltPair.of(epochs[i], fs[i]));
-						return cleanse.cleanse(pairs);
+						return To.array(LngFltPair.class, length, i -> LngFltPair.of(epochs[i], fs[i]));
 					}) //
 					.toMap();
 
@@ -127,7 +126,7 @@ public class Yahoo {
 		} else
 			stockHistory1 = stockHistory0;
 
-		DataSource ds = stockHistory1.filter(period).adjustPrices("close");
+		DataSource ds = stockHistory1.cleanse().filter(period).adjustPrices("close");
 
 		return cleanse.cleanse(ds).range(period);
 	}

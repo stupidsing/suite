@@ -20,6 +20,8 @@ import suite.util.String_;
 
 public class StockHistory {
 
+	private static Cleanse cleanse = new Cleanse();
+
 	public final Time time;
 	public final Map<String, LngFltPair[]> data; // un-adjusted
 	public final LngFltPair[] dividends;
@@ -72,6 +74,10 @@ public class StockHistory {
 
 	public LngFltPair[] get(String tag) {
 		return data.getOrDefault(tag, new LngFltPair[0]);
+	}
+
+	public StockHistory cleanse() {
+		return StockHistory.of(Read.from2(data).mapValue(cleanse::cleanse).toMap(), dividends, splits);
 	}
 
 	public StockHistory filter(TimeRange period) {
