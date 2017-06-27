@@ -52,7 +52,7 @@ public class DailyMain extends ExecutableProgram {
 	private Time today = Time.now();
 	private Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today);
 
-	public final BackAllocConfiguration bac_bb = backAllocConfigurationOf(BackAllocator_.bollingerBands().unleverage());
+	public final BackAllocConfiguration bac_bb = backAllocConfigurationOf(BackAllocator_.bollingerBands().holdMinimum(9).unleverage());
 	public final BackAllocConfiguration bac_donchian = backAllocConfigurationOf(BackAllocator_.donchian().unleverage());
 	public final BackAllocConfiguration bac_ema = backAllocConfigurationOf(BackAllocator_.byEma().unleverage());
 	public final BackAllocConfiguration bac_pmamr = backAllocConfigurationOf(MovingAvgMeanReversionBackAllocator0.of(log));
