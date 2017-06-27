@@ -17,11 +17,11 @@ public interface Configuration {
 
 	public Streamlet<Asset> queryCompanies();
 
+	public Streamlet<Asset> queryCompaniesByMarketCap(Time date);
+
 	public Asset queryCompany(String symbol);
 
 	public Streamlet<Trade> queryHistory();
-
-	public Streamlet<Asset> queryLeadingCompaniesByMarketCap(Time date);
 
 	public Map<String, Float> quote(Set<String> symbols);
 

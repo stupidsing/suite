@@ -40,7 +40,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(Time.now());
+		Streamlet<Asset> assets = cfg.queryCompaniesByMarketCap(Time.now());
 		float fund0 = 1000000f;
 
 		Trade_.isCacheQuotes = false;
@@ -91,7 +91,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 			}
 
 			WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //
-					cfg.queryLeadingCompaniesByMarketCap(Time.now()), //
+					cfg.queryCompaniesByMarketCap(Time.now()), //
 					BackAllocator_.rsi().unleverage().walkForwardAllocator());
 
 			WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);

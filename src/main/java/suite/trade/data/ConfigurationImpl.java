@@ -46,15 +46,15 @@ public class ConfigurationImpl implements Configuration {
 		return !Trade_.blackList.contains(symbol) ? hkex.queryCompany(symbol) : null;
 	}
 
-	public Streamlet<Trade> queryHistory() {
-		return broker.queryHistory();
-	}
-
-	public Streamlet<Asset> queryLeadingCompaniesByMarketCap(Time date) {
+	public Streamlet<Asset> queryCompaniesByMarketCap(Time date) {
 		int year = date.year() - 1;
 		return Read.from(hkexFactBook.queryLeadingCompaniesByMarketCap(year)) //
 				.map(this::queryCompany) //
 				.filter(asset -> !Trade_.blackList.contains(asset.symbol));
+	}
+
+	public Streamlet<Trade> queryHistory() {
+		return broker.queryHistory();
 	}
 
 	public Map<String, Float> quote(Set<String> symbols) {

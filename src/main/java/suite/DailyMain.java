@@ -50,7 +50,7 @@ public class DailyMain extends ExecutableProgram {
 	private StringBuilder sb = new StringBuilder();
 	private Sink<String> log = To.sink(sb);
 	private Time today = Time.now();
-	private Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today);
+	private Streamlet<Asset> assets = cfg.queryCompaniesByMarketCap(today);
 
 	public final BackAllocConfiguration bac_bb = bac(BackAllocator_.bollingerBands().holdMinimum(9).unleverage());
 	public final BackAllocConfiguration bac_donchian = bac(BackAllocator_.donchian().unleverage());

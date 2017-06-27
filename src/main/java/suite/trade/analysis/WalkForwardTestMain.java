@@ -31,7 +31,7 @@ public class WalkForwardTestMain extends ExecutableProgram {
 		Trade_.maxLeverageAmount = fund0;
 
 		WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //
-				cfg.queryLeadingCompaniesByMarketCap(Time.now()), //
+				cfg.queryCompaniesByMarketCap(Time.now()), //
 				BackAllocator_.rsi().unleverage().walkForwardAllocator());
 
 		WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);

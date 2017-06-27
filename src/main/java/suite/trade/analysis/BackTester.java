@@ -24,7 +24,7 @@ public class BackTester {
 	private Statistic stat = new Statistic();
 
 	public Simulate backTest(BackAllocator backAllocator, TimeRange period) {
-		Streamlet<Asset> assets0 = cfg.queryLeadingCompaniesByMarketCap(period.from); // hkex.getCompanies()
+		Streamlet<Asset> assets0 = cfg.queryCompaniesByMarketCap(period.from); // hkex.getCompanies()
 		return backTest(backAllocator, period, assets0);
 	}
 
