@@ -8,11 +8,10 @@ import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.MeanVariance;
-import suite.math.stat.TimeSeries;
-import suite.math.stat.TimeSeries.Donchian;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet2;
 import suite.trade.MovingAverage;
+import suite.trade.MovingAverage.MovingRange;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
@@ -25,7 +24,6 @@ public class BackAllocator_ {
 	private static BollingerBands bb = new BollingerBands();
 	private static MovingAverage ma = new MovingAverage();
 	private static Statistic stat = new Statistic();
-	private static TimeSeries ts = new TimeSeries();
 
 	public static BackAllocator bollingerBands() {
 		return bollingerBands_(2f);
@@ -107,21 +105,29 @@ public class BackAllocator_ {
 		int window = 32;
 
 		return (dsBySymbol, times) -> {
-			Map<String, Donchian> donchianBySymbol = dsBySymbol //
-					.mapValue(ds -> ts.donchian(window, ds.prices)) //
+			Map<String, MovingRange[]> movingRangeBySymbol = dsBySymbol //
+					.mapValue(ds -> ma.movingRange(ds.prices, window)) //
 					.toMap();
 
 			return (time, index) -> dsBySymbol //
 					.map2((symbol, ds) -> {
-						Donchian donchian = donchianBySymbol.get(symbol);
+						MovingRange[] movingRange = movingRangeBySymbol.get(symbol);
 						float price = ds.prices[index - 1];
-						boolean hold = false;
-						for (int i = 0; i < index; i++)
-							if (price == donchian.mins[i])
-								hold = true;
-							else if (price == donchian.maxs[i])
-								hold = false;
-						return hold ? 1d : 0d;
+						double hold = 0d;
+						for (int i = 0; i < index; i++) {
+							float min = movingRange[i].min;
+							float max = movingRange[i].max;
+							float median = movingRange[i].median;
+							if (price <= min)
+								hold = 1d;
+							else if (price < median)
+								hold = Math.max(0d, hold);
+							else if (price < max)
+								hold = Math.min(0d, hold);
+							else
+								hold = -1d;
+						}
+						return hold;
 					}) //
 					.toList();
 		};
@@ -164,12 +170,12 @@ public class BackAllocator_ {
 					.mapValue(ds -> ma.movingAvg(ds.prices, windowSize1)) //
 					.toMap();
 
-			Map<String, float[]> movingMedian0BySymbol = dsBySymbol //
-					.mapValue(ds -> ma.movingMedian(ds.prices, windowSize0)) //
+			Map<String, MovingRange[]> movingRange0BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.movingRange(ds.prices, windowSize0)) //
 					.toMap();
 
-			Map<String, float[]> movingMedian1BySymbol = dsBySymbol //
-					.mapValue(ds -> ma.movingMedian(ds.prices, windowSize1)) //
+			Map<String, MovingRange[]> movingRange1BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.movingRange(ds.prices, windowSize1)) //
 					.toMap();
 
 			return (time, index) -> dsBySymbol //
@@ -177,8 +183,8 @@ public class BackAllocator_ {
 						int last = index - 1;
 						float movingAvg0 = movingAvg0BySymbol.get(symbol)[last];
 						float movingAvg1 = movingAvg1BySymbol.get(symbol)[last];
-						float movingMedian0 = movingMedian0BySymbol.get(symbol)[last];
-						float movingMedian1 = movingMedian1BySymbol.get(symbol)[last];
+						float movingMedian0 = movingRange0BySymbol.get(symbol)[last].median;
+						float movingMedian1 = movingRange1BySymbol.get(symbol)[last].median;
 						if (movingAvg0 < movingMedian0 && movingAvg1 < movingMedian1)
 							return 1d;
 						else if (movingMedian0 < movingAvg0 && movingMedian1 < movingAvg1)
@@ -195,21 +201,21 @@ public class BackAllocator_ {
 		int windowSize1 = 32;
 
 		return (dsBySymbol, times) -> {
-			Map<String, float[]> movingMedian0BySymbol = dsBySymbol //
-					.mapValue(ds -> ma.movingMedian(ds.prices, windowSize0)) //
+			Map<String, MovingRange[]> movingMedian0BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.movingRange(ds.prices, windowSize0)) //
 					.toMap();
 
-			Map<String, float[]> movingMedian1BySymbol = dsBySymbol //
-					.mapValue(ds -> ma.movingMedian(ds.prices, windowSize1)) //
+			Map<String, MovingRange[]> movingMedian1BySymbol = dsBySymbol //
+					.mapValue(ds -> ma.movingRange(ds.prices, windowSize1)) //
 					.toMap();
 
 			return (time, index) -> dsBySymbol //
 					.map2((symbol, ds) -> {
-						float[] movingMedian0 = movingMedian0BySymbol.get(symbol);
-						float[] movingMedian1 = movingMedian1BySymbol.get(symbol);
+						MovingRange[] movingRange0 = movingMedian0BySymbol.get(symbol);
+						MovingRange[] movingRange1 = movingMedian1BySymbol.get(symbol);
 						int last = index - 1;
-						double median0 = movingMedian0[last];
-						double median1 = movingMedian1[last];
+						double median0 = movingRange0[last].median;
+						double median1 = movingRange1[last].median;
 						double ratio = median1 / median0;
 						return ratio - 1d;
 					}) //
@@ -329,9 +335,9 @@ public class BackAllocator_ {
 							if (percentb <= 0f)
 								hold = 1d;
 							else if (.5f < percentb) // un-short
-								hold = 0d <= hold ? hold : 0d;
+								hold = Math.max(0d, hold);
 							else if (percentb < 1f) // un-long
-								hold = hold < 0d ? hold : 0d;
+								hold = Math.min(0d, hold);
 							else
 								hold = -1d;
 						}

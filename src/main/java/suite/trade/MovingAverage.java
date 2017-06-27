@@ -61,12 +61,25 @@ public class MovingAverage {
 		return movingAvgs;
 	}
 
-	public float[] movingMedian(float[] prices, int windowSize) {
-		return To.arrayOfFloats(prices.length, i -> {
+	public MovingRange[] movingRange(float[] prices, int windowSize) {
+		return To.array(MovingRange.class, prices.length, i -> {
 			float[] window = ts.back(i, windowSize, prices);
 			Arrays.sort(window);
-			return window[window.length / 2];
+			int length = window.length;
+			return new MovingRange(window[0], window[length - 1], window[length / 2]);
 		});
+	}
+
+	public class MovingRange {
+		public final float min;
+		public final float max;
+		public final float median;
+
+		private MovingRange(float min, float max, float median) {
+			this.min = min;
+			this.max = max;
+			this.median = median;
+		}
 	}
 
 }

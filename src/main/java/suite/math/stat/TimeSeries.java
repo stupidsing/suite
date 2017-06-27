@@ -117,33 +117,6 @@ public class TimeSeries {
 		return differencesOn_(tor, fs);
 	}
 
-	public Donchian donchian(int tor, float[] fs) {
-		return new Donchian(tor, fs);
-	}
-
-	public class Donchian {
-		public final float[] mins;
-		public final float[] maxs;
-
-		private Donchian(int tor, float[] fs) {
-			int length = fs.length;
-			mins = new float[length];
-			maxs = new float[length];
-			for (int i = 0; i < length; i++) {
-				int j0 = Math.max(0, i - tor);
-				float min = Float.MAX_VALUE;
-				float max = Float.MIN_VALUE;
-				for (int j = j0; j < i; j++) {
-					float f = fs[j];
-					min = Math.min(f, min);
-					max = Math.max(f, max);
-				}
-				mins[i] = min;
-				maxs[i] = max;
-			}
-		}
-	}
-
 	public float[] drop(int tor, float[] fs) {
 		return drop_(tor, fs);
 	}
