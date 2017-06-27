@@ -56,7 +56,7 @@ public class DailyMain extends ExecutableProgram {
 	public final BackAllocConfiguration bac_donchian = bac(BackAllocator_.donchian().unleverage());
 	public final BackAllocConfiguration bac_ema = bac(BackAllocator_.byEma().unleverage());
 	public final BackAllocConfiguration bac_pmamr = bac(MovingAvgMeanReversionBackAllocator0.of(log));
-	public final BackAllocConfiguration bac_pmmmr = bac(BackAllocator_.movingMedianMeanRevn().unleverage());
+	public final BackAllocConfiguration bac_pmmmr = bac(BackAllocator_.movingMedianMeanRevn().holdMinimum(9).unleverage());
 	public final BackAllocConfiguration bac_revco = bac(ReverseCorrelateBackAllocator.of().unleverage());
 	public final BackAllocConfiguration bac_rsi = bac(BackAllocator_.rsi().unleverage());
 	public final BackAllocConfiguration bac_sell = bac(BackAllocator_.cash());
