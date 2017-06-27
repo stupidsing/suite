@@ -26,11 +26,7 @@ public class BackAllocator_ {
 	private static Statistic stat = new Statistic();
 
 	public static BackAllocator bollingerBands() {
-		return bollingerBands_(2f);
-	}
-
-	public static BackAllocator bollingerBands(float k) {
-		return bollingerBands_(k);
+		return bollingerBands_(32, 0, 2f);
 	}
 
 	public static BackAllocator byEma() {
@@ -314,10 +310,6 @@ public class BackAllocator_ {
 					}) //
 					.toList();
 		};
-	}
-
-	private static BackAllocator bollingerBands_(float k) {
-		return bollingerBands_(32, 0, k);
 	}
 
 	private static BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {
