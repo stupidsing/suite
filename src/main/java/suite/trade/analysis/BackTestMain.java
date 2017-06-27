@@ -38,7 +38,6 @@ public class BackTestMain extends ExecutableProgram {
 		BackAllocConfiguration bac_hsi = BackAllocConfiguration.ofSingle(Asset.hsi);
 
 		if (Boolean.FALSE) {
-			bacs.put("donchian", dm.bac_donchian);
 			questoaQuella("0020.HK", "0004.HK");
 			questoaQuella("0052.HK", "0341.HK");
 			questoaQuella("0670.HK", "1055.HK");
@@ -48,8 +47,11 @@ public class BackTestMain extends ExecutableProgram {
 		// BEGIN
 		bacs.put("hsi", bac_hsi);
 		bacs.put("bb", dm.bac_bb);
+		bacs.put("donchian", dm.bac_donchian);
+		bacs.put("ema", dm.bac_ema);
 		bacs.put("pmamr", dm.bac_pmamr);
 		bacs.put("pmmmr", dm.bac_pmmmr);
+		bacs.put("rsi", dm.bac_rsi);
 		bacs.put("tma", dm.bac_tma);
 		// END
 
