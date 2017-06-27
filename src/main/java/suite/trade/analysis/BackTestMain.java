@@ -3,6 +3,7 @@ package suite.trade.analysis;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import suite.DailyMain;
 import suite.adt.pair.Pair;
@@ -27,7 +28,7 @@ public class BackTestMain extends ExecutableProgram {
 	private Configuration cfg = new ConfigurationImpl();
 	private DailyMain dm = new DailyMain();
 
-	private Map<String, BackAllocConfiguration> bacs = new HashMap<>();
+	private Map<String, BackAllocConfiguration> bacs;
 
 	public static void main(String[] args) {
 		Util.run(BackTestMain.class, args);
@@ -44,16 +45,25 @@ public class BackTestMain extends ExecutableProgram {
 			questoaQuella("0753.HK", "1055.HK");
 		}
 
+		Map<String, BackAllocConfiguration> bacs_ = new HashMap<>();
+
 		// BEGIN
-		bacs.put("hsi", bac_hsi);
-		bacs.put("bb", dm.bac_bb);
-		bacs.put("donchian", dm.bac_donchian);
-		bacs.put("ema", dm.bac_ema);
-		bacs.put("pmamr", dm.bac_pmamr);
-		bacs.put("pmmmr", dm.bac_pmmmr);
-		bacs.put("rsi", dm.bac_rsi);
-		bacs.put("tma", dm.bac_tma);
+		bacs_.put("hsi", bac_hsi);
+		bacs_.put("bb", dm.bac_bb);
+		bacs_.put("donchian", dm.bac_donchian);
+		bacs_.put("ema", dm.bac_ema);
+		bacs_.put("pmamr", dm.bac_pmamr);
+		bacs_.put("pmmmr", dm.bac_pmmmr);
+		bacs_.put("rsi", dm.bac_rsi);
+		bacs_.put("tma", dm.bac_tma);
 		// END
+
+		Set<String> strategyNames = Read.from(args).toSet();
+
+		bacs = Read //
+				.from2(bacs_) //
+				.filterKey(strategyName -> args.length == 0 || strategyNames.contains(strategyName)) //
+				.toMap();
 
 		Streamlet2<String, Simulate> simulationsByKey = Read //
 				.from2(bacs) //
