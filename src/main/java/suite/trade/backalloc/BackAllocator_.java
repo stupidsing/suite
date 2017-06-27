@@ -35,7 +35,7 @@ public class BackAllocator_ {
 
 	public static BackAllocator byEma() {
 		int halfLife = 64;
-		double threshold = .9d;
+		double threshold = .96d;
 
 		return (dsBySymbol, times) -> {
 			Map<String, float[]> ema = dsBySymbol //
