@@ -52,15 +52,15 @@ public class DailyMain extends ExecutableProgram {
 	private Time today = Time.now();
 	private Streamlet<Asset> assets = cfg.queryLeadingCompaniesByMarketCap(today);
 
-	public final BackAllocConfiguration bac_bb = backAllocConfigurationOf(BackAllocator_.bollingerBands().holdMinimum(9).unleverage());
-	public final BackAllocConfiguration bac_donchian = backAllocConfigurationOf(BackAllocator_.donchian().unleverage());
-	public final BackAllocConfiguration bac_ema = backAllocConfigurationOf(BackAllocator_.byEma().unleverage());
-	public final BackAllocConfiguration bac_pmamr = backAllocConfigurationOf(MovingAvgMeanReversionBackAllocator0.of(log));
-	public final BackAllocConfiguration bac_pmmmr = backAllocConfigurationOf(BackAllocator_.movingMedianMeanRevn().unleverage());
-	public final BackAllocConfiguration bac_revco = backAllocConfigurationOf(ReverseCorrelateBackAllocator.of().unleverage());
-	public final BackAllocConfiguration bac_rsi = backAllocConfigurationOf(BackAllocator_.rsi().unleverage());
-	public final BackAllocConfiguration bac_sell = backAllocConfigurationOf(BackAllocator_.cash());
-	public final BackAllocConfiguration bac_tma = backAllocConfigurationOf(BackAllocator_.threeMovingAvgs().unleverage());
+	public final BackAllocConfiguration bac_bb = bac(BackAllocator_.bollingerBands().holdMinimum(9).unleverage());
+	public final BackAllocConfiguration bac_donchian = bac(BackAllocator_.donchian().unleverage());
+	public final BackAllocConfiguration bac_ema = bac(BackAllocator_.byEma().unleverage());
+	public final BackAllocConfiguration bac_pmamr = bac(MovingAvgMeanReversionBackAllocator0.of(log));
+	public final BackAllocConfiguration bac_pmmmr = bac(BackAllocator_.movingMedianMeanRevn().unleverage());
+	public final BackAllocConfiguration bac_revco = bac(ReverseCorrelateBackAllocator.of().unleverage());
+	public final BackAllocConfiguration bac_rsi = bac(BackAllocator_.rsi().unleverage());
+	public final BackAllocConfiguration bac_sell = bac(BackAllocator_.cash());
+	public final BackAllocConfiguration bac_tma = bac(BackAllocator_.threeMovingAvgs().unleverage());
 
 	private class Result {
 		private String strategy;
@@ -219,7 +219,7 @@ public class DailyMain extends ExecutableProgram {
 		return new Result(tag, trades);
 	}
 
-	public BackAllocConfiguration backAllocConfigurationOf(BackAllocator backAllocator) {
+	public BackAllocConfiguration bac(BackAllocator backAllocator) {
 		return new BackAllocConfiguration(assets, backAllocator);
 	}
 
