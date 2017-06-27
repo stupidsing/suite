@@ -126,14 +126,20 @@ public class TimeSeries {
 		public final float[] maxs;
 
 		private Donchian(int tor, float[] fs) {
-			float min = fs[0], max = fs[0];
 			int length = fs.length;
 			mins = new float[length];
 			maxs = new float[length];
 			for (int i = 0; i < length; i++) {
-				float f = fs[i];
-				mins[i] = Math.min(min, f);
-				maxs[i] = Math.max(max, f);
+				int j0 = Math.max(0, i - tor);
+				float min = Float.MAX_VALUE;
+				float max = Float.MIN_VALUE;
+				for (int j = j0; j < i; j++) {
+					float f = fs[j];
+					min = Math.min(f, min);
+					max = Math.max(f, max);
+				}
+				mins[i] = min;
+				maxs[i] = max;
 			}
 		}
 	}
