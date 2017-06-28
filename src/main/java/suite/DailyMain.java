@@ -60,7 +60,7 @@ public class DailyMain extends ExecutableProgram {
 	public final BackAllocConfiguration bac_revco = bac(ReverseCorrelateBackAllocator.of().unleverage());
 	public final BackAllocConfiguration bac_rsi = bac(BackAllocator_.rsi().unleverage());
 	public final BackAllocConfiguration bac_sell = bac(BackAllocator_.cash());
-	public final BackAllocConfiguration bac_tma = bac(BackAllocator_.threeMovingAvgs().unleverage());
+	public final BackAllocConfiguration bac_tma = bac(BackAllocator_.tripleMovingAvgs().unleverage());
 
 	private class Result {
 		private String strategy;

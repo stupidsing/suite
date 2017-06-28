@@ -267,7 +267,7 @@ public class BackAllocator_ {
 		};
 	}
 
-	public static BackAllocator threeMovingAvgs() {
+	public static BackAllocator tripleMovingAvgs() {
 		return (dsBySymbol, times) -> {
 			Map<String, float[]> movingAvg0BySymbol = dsBySymbol //
 					.mapValue(ds -> ma.exponentialMovingGeometricAvg(ds.prices, 18)) //
