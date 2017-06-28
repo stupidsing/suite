@@ -29,50 +29,6 @@ public class BackAllocator_ {
 		return bollingerBands_(32, 0, 2f);
 	}
 
-	public static BackAllocator byLastPriceChange() {
-		return (dsBySymbol,
-				times) -> (time, index) -> dsBySymbol //
-						.map2((symbol, ds) -> ds.get(index - 2).price / ds.get(index - 1).price < .96d ? 1d : 0d) //
-						.toList();
-	}
-
-	public static BackAllocator byPairs(Configuration cfg, String symbol0, String symbol1) {
-		return BackAllocator_ //
-				.rsi_(32, .3d, .7d) //
-				.relativeToIndex(cfg, symbol0) //
-				.filterAssets(symbol -> String_.equals(symbol, symbol1));
-	}
-
-	public static BackAllocator byReturnsProRata() {
-		return (dsBySymbol, times) -> (time, index) -> {
-			Streamlet2<String, Double> returns = dsBySymbol //
-					.map2((symbol, ds) -> {
-						double price0 = ds.prices[index - 2];
-						double price1 = ds.prices[index - 1];
-						return (price0 - price1) / price0;
-					}) //
-					.filterValue(return_ -> 0d < return_) //
-					.collect(As::streamlet2);
-
-			double sum = returns.collectAsDouble(As.sumOfDoubles((symbol, price) -> price));
-			return returns.mapValue(return_ -> return_ / sum).toList();
-		};
-	}
-
-	public static BackAllocator byWorstReturn() {
-		return (dsBySymbol, times) -> (time, index) -> dsBySymbol //
-				.map2((symbol, ds) -> {
-					float[] prices = ds.prices;
-					float price0 = prices[index - 2];
-					float price1 = prices[index - 1];
-					return price1 / price0 - 1f;
-				}) //
-				.sortBy((symbol2, return_) -> return_) //
-				.take(1) //
-				.mapValue(return_ -> 1d) //
-				.toList();
-	}
-
 	public static BackAllocator cash() {
 		return (dsBySymbol, times) -> (time, index) -> Collections.emptyList();
 	}
@@ -126,6 +82,29 @@ public class BackAllocator_ {
 						return latest / lastEma < threshold ? 1d : 0d;
 					}) //
 					.toList();
+		};
+	}
+
+	public static BackAllocator lastReturn() {
+		return (dsBySymbol,
+				times) -> (time, index) -> dsBySymbol //
+						.map2((symbol, ds) -> ds.get(index - 2).price / ds.get(index - 1).price < .96d ? 1d : 0d) //
+						.toList();
+	}
+
+	public static BackAllocator lastReturnsProRata() {
+		return (dsBySymbol, times) -> (time, index) -> {
+			Streamlet2<String, Double> returns = dsBySymbol //
+					.map2((symbol, ds) -> {
+						double price0 = ds.prices[index - 2];
+						double price1 = ds.prices[index - 1];
+						return (price0 - price1) / price0;
+					}) //
+					.filterValue(return_ -> 0d < return_) //
+					.collect(As::streamlet2);
+
+			double sum = returns.collectAsDouble(As.sumOfDoubles((symbol, price) -> price));
+			return returns.mapValue(return_ -> return_ / sum).toList();
 		};
 	}
 
@@ -223,6 +202,13 @@ public class BackAllocator_ {
 		return (dsBySymbol, times) -> (time, index) -> Arrays.asList(Pair.of(symbol, 1d));
 	}
 
+	public static BackAllocator pairs(Configuration cfg, String symbol0, String symbol1) {
+		return BackAllocator_ //
+				.rsi_(32, .3d, .7d) //
+				.relativeToIndex(cfg, symbol0) //
+				.filterAssets(symbol -> String_.equals(symbol, symbol1));
+	}
+
 	public static BackAllocator questoQuella(String symbol0, String symbol1) {
 		int tor = 64;
 		double threshold = 0d;
@@ -310,6 +296,20 @@ public class BackAllocator_ {
 					}) //
 					.toList();
 		};
+	}
+
+	public static BackAllocator worstLastReturn() {
+		return (dsBySymbol, times) -> (time, index) -> dsBySymbol //
+				.map2((symbol, ds) -> {
+					float[] prices = ds.prices;
+					float price0 = prices[index - 2];
+					float price1 = prices[index - 1];
+					return price1 / price0 - 1f;
+				}) //
+				.sortBy((symbol2, return_) -> return_) //
+				.take(1) //
+				.mapValue(return_ -> 1d) //
+				.toList();
 	}
 
 	private static BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {
