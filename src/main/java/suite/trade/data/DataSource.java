@@ -68,7 +68,7 @@ public class DataSource {
 					.distinct();
 		else
 			tradeDates = Read.from(Set_.intersect(dataSources // intersect
-					.map(ds -> (Collection<String>) Arrays.asList(ds.dates)) //
+					.<Collection<String>> map(ds -> Arrays.asList(ds.dates)) //
 					.toList()));
 		return new AlignDataSource(tradeDates.sort(Object_::compare).toArray(String.class));
 	}
