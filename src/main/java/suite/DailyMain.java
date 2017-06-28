@@ -55,7 +55,7 @@ public class DailyMain extends ExecutableProgram {
 
 	public final BackAllocConfiguration bac_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9).bacUnl(fun);
 	public final BackAllocConfiguration bac_donchian = BackAllocator_.donchian(9).bacUnl(fun);
-	public final BackAllocConfiguration bac_ema = BackAllocator_.ema().bacUnl(fun);
+	public final BackAllocConfiguration bac_ema = BackAllocator_.ema().top(3).bacUnl(fun);
 	public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).bacUnl(fun);
 	public final BackAllocConfiguration bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdMinimum(9).bacUnl(fun);
 	public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().bacUnl(fun);
