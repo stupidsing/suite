@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
-import suite.streamlet.IntStreamlet;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.data.Configuration;

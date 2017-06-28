@@ -5,8 +5,8 @@ import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.DblObjPair;
-import suite.streamlet.DblObjOutlet;
-import suite.streamlet.DblObjStreamlet;
+import suite.primitive.streamlet.DblObjOutlet;
+import suite.primitive.streamlet.DblObjStreamlet;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are

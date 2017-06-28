@@ -7,7 +7,7 @@ import suite.adt.pair.Pair;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
-import suite.streamlet.IntStreamlet;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Trade_;

@@ -8,8 +8,8 @@ import java.util.Iterator;
 
 import suite.Constants;
 import suite.primitive.ChrPrimitives.ChrSource;
-import suite.streamlet.ChrOutlet;
-import suite.streamlet.ChrStreamlet;
+import suite.primitive.streamlet.ChrOutlet;
+import suite.primitive.streamlet.ChrStreamlet;
 import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;

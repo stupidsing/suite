@@ -1,4 +1,4 @@
-package suite.streamlet;
+package suite.primitive.streamlet;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -23,6 +23,10 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
+import suite.streamlet.Outlet;
+import suite.streamlet.Outlet2;
+import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;

@@ -6,7 +6,7 @@ import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
-import suite.streamlet.IntStreamlet;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 
 public class RegisterSet {

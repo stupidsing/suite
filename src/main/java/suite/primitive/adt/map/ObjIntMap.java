@@ -8,8 +8,8 @@ import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.streamlet.IntObjOutlet;
-import suite.streamlet.IntObjStreamlet;
+import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjStreamlet;
 
 /**
  * Map with generic object key and intacter object value. Integer.MIN_VALUE is

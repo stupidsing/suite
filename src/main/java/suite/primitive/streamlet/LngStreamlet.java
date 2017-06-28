@@ -1,4 +1,4 @@
-package suite.streamlet;
+package suite.primitive.streamlet;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -24,6 +24,8 @@ import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.LngObjMap;
+import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;

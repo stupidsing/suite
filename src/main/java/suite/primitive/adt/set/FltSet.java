@@ -5,8 +5,8 @@ import java.util.Arrays;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
-import suite.streamlet.FltOutlet;
-import suite.streamlet.FltStreamlet;
+import suite.primitive.streamlet.FltOutlet;
+import suite.primitive.streamlet.FltStreamlet;
 
 /**
  * Set with floatacter elements. Float.MIN_VALUE is not allowed. Not

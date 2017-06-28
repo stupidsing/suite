@@ -8,8 +8,8 @@ import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.DblObjPair;
-import suite.streamlet.DblObjOutlet;
-import suite.streamlet.DblObjStreamlet;
+import suite.primitive.streamlet.DblObjOutlet;
+import suite.primitive.streamlet.DblObjStreamlet;
 
 /**
  * Map with generic object key and doubleacter object value. Double.MIN_VALUE is

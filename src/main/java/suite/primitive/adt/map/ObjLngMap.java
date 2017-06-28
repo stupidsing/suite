@@ -8,8 +8,8 @@ import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.LngObjPair;
-import suite.streamlet.LngObjOutlet;
-import suite.streamlet.LngObjStreamlet;
+import suite.primitive.streamlet.LngObjOutlet;
+import suite.primitive.streamlet.LngObjStreamlet;
 
 /**
  * Map with generic object key and longacter object value. Long.MIN_VALUE is not

@@ -5,8 +5,8 @@ import java.util.Arrays;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.IntSource;
-import suite.streamlet.IntOutlet;
-import suite.streamlet.IntStreamlet;
+import suite.primitive.streamlet.IntOutlet;
+import suite.primitive.streamlet.IntStreamlet;
 
 /**
  * Set with intacter elements. Integer.MIN_VALUE is not allowed. Not

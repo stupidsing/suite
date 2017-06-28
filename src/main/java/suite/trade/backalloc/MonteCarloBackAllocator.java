@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Random;
 
 import suite.math.stat.TimeSeries;
-import suite.streamlet.IntStreamlet;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;

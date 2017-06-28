@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.streamlet.IntStreamlet;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.util.Thread_;
 import suite.weiqi.Weiqi;
 

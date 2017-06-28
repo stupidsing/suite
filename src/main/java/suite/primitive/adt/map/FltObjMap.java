@@ -5,8 +5,8 @@ import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.FltObjPair;
-import suite.streamlet.FltObjOutlet;
-import suite.streamlet.FltObjStreamlet;
+import suite.primitive.streamlet.FltObjOutlet;
+import suite.primitive.streamlet.FltObjStreamlet;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are

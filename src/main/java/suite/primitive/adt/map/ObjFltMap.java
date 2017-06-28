@@ -8,8 +8,8 @@ import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.FltObjPair;
-import suite.streamlet.FltObjOutlet;
-import suite.streamlet.FltObjStreamlet;
+import suite.primitive.streamlet.FltObjOutlet;
+import suite.primitive.streamlet.FltObjStreamlet;
 
 /**
  * Map with generic object key and floatacter object value. Float.MIN_VALUE is

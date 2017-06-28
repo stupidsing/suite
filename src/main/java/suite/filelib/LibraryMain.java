@@ -15,7 +15,7 @@ import org.apache.commons.codec.digest.Md5Crypt;
 
 import suite.adt.pair.Pair;
 import suite.os.FileUtil;
-import suite.streamlet.IntStreamlet;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.Rethrow;

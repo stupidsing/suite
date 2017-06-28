@@ -1,4 +1,4 @@
-package suite.streamlet;
+package suite.primitive.streamlet;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -24,6 +24,8 @@ import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.Flt_Flt;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.FltObjMap;
+import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;

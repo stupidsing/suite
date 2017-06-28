@@ -1,4 +1,4 @@
-package suite.streamlet;
+package suite.primitive.streamlet;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -26,6 +26,10 @@ import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.pair.DblObjPair;
+import suite.streamlet.As;
+import suite.streamlet.Outlet;
+import suite.streamlet.Outlet2;
+import suite.streamlet.Read;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;

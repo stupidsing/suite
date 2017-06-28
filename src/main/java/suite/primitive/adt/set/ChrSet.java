@@ -5,8 +5,8 @@ import java.util.Arrays;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrSink;
 import suite.primitive.ChrPrimitives.ChrSource;
-import suite.streamlet.ChrOutlet;
-import suite.streamlet.ChrStreamlet;
+import suite.primitive.streamlet.ChrOutlet;
+import suite.primitive.streamlet.ChrStreamlet;
 
 /**
  * Set with character elements. Character.MIN_VALUE is not allowed. Not

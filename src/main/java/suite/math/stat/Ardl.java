@@ -2,7 +2,7 @@ package suite.math.stat;
 
 import suite.math.linalg.Matrix;
 import suite.math.stat.Statistic.LinearRegression;
-import suite.streamlet.IntStreamlet;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.util.Copy;
 import suite.util.To;
 

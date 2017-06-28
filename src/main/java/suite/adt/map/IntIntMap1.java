@@ -9,8 +9,8 @@ import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.streamlet.IntObjOutlet;
-import suite.streamlet.IntObjStreamlet;
+import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjStreamlet;
 
 /**
  * Map with integer key and integer object value. EMPTYVALUE is not allowed in

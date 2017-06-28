@@ -5,8 +5,8 @@ import java.util.Arrays;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.DblSink;
 import suite.primitive.DblPrimitives.DblSource;
-import suite.streamlet.DblOutlet;
-import suite.streamlet.DblStreamlet;
+import suite.primitive.streamlet.DblOutlet;
+import suite.primitive.streamlet.DblStreamlet;
 
 /**
  * Set with doubleacter elements. Double.MIN_VALUE is not allowed. Not

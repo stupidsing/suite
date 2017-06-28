@@ -5,8 +5,8 @@ import java.util.Arrays;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.LngSource;
-import suite.streamlet.LngOutlet;
-import suite.streamlet.LngStreamlet;
+import suite.primitive.streamlet.LngOutlet;
+import suite.primitive.streamlet.LngStreamlet;
 
 /**
  * Set with longacter elements. Long.MIN_VALUE is not allowed. Not thread-safe.

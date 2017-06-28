@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 import suite.Constants;
 import suite.math.Vector;
 import suite.os.LogUtil;
-import suite.streamlet.IntStreamlet;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.util.Thread_;
 import suite.util.To;
 

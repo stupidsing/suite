@@ -5,8 +5,8 @@ import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.ChrObjPair;
-import suite.streamlet.ChrObjOutlet;
-import suite.streamlet.ChrObjStreamlet;
+import suite.primitive.streamlet.ChrObjOutlet;
+import suite.primitive.streamlet.ChrObjStreamlet;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are

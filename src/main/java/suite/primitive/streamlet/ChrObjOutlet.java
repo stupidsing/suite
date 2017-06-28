@@ -1,4 +1,4 @@
-package suite.streamlet;
+package suite.primitive.streamlet;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -23,6 +23,10 @@ import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.pair.ChrObjPair;
+import suite.streamlet.Outlet;
+import suite.streamlet.Outlet2;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
