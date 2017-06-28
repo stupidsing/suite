@@ -57,9 +57,9 @@ public class BackTestMain extends ExecutableProgram {
 		bacs_.put("bb", dm.bac_bb);
 		bacs_.put("donchian", dm.bac_donchian);
 		bacs_.put("ema", dm.bac_ema);
-		bacs_.put("lr02", BackAllocator_.lastReturn(0, 2).holdMinimum(9).bacUnl(fun));
-		bacs_.put("lr20", BackAllocator_.lastReturn(2, 0).holdMinimum(9).bacUnl(fun));
-		bacs_.put("lr22", BackAllocator_.lastReturn(2, 2).holdMinimum(9).bacUnl(fun));
+		bacs_.put("lr02", BackAllocator_.lastReturn(0, 2).bacUnl(fun));
+		bacs_.put("lr20", BackAllocator_.lastReturn(2, 0).bacUnl(fun));
+		bacs_.put("lr22", BackAllocator_.lastReturn(2, 2).bacUnl(fun));
 		bacs_.put("pmamr", dm.bac_pmamr);
 		bacs_.put("pmmmr", dm.bac_pmmmr);
 		bacs_.put("rsi", dm.bac_rsi);

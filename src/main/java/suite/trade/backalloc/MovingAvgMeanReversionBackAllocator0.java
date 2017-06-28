@@ -151,7 +151,7 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 
 			movingAverage = ma.movingGeometricAvg(prices, tor);
 
-			if (tor <= prices.length) {
+			if (tor * 2 <= prices.length) {
 				adf = ts.adf(prices, tor);
 				hurst = ts.hurst(prices, tor);
 				varianceRatio = ts.varianceRatio(prices, tor);
