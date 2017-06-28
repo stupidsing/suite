@@ -67,9 +67,8 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator ema() {
-		int halfLife = 64;
-		double threshold = .96d;
-		double invThreshold = 1d / threshold;
+		int halfLife = 2;
+		double scale = 1d / Math.log(.8d);
 
 		return (dsBySymbol, times) -> {
 			Map<String, float[]> ema = dsBySymbol //
@@ -79,15 +78,10 @@ public class BackAllocator_ {
 			return (time, index) -> dsBySymbol //
 					.map2((symbol, ds) -> {
 						int last = index - 1;
-						float lastEma = ema.get(symbol)[last];
-						float latest = ds.prices[last];
-						float r = latest / lastEma;
-						if (r < threshold)
-							return 1d;
-						else if (invThreshold < r)
-							return -1d;
-						else
-							return 0d;
+						double lastEma = ema.get(symbol)[last];
+						double latest = ds.prices[last];
+						double r = latest / lastEma;
+						return Math.log(r) * scale;
 					}) //
 					.toList();
 		};
