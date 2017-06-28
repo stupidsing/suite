@@ -33,9 +33,7 @@ public class BackAllocator_ {
 		return (dsBySymbol, times) -> (time, index) -> Collections.emptyList();
 	}
 
-	public static BackAllocator donchian() {
-		int window = 32;
-
+	public static BackAllocator donchian(int window) {
 		return (dsBySymbol, times) -> {
 			Map<String, MovingRange[]> movingRangeBySymbol = dsBySymbol //
 					.mapValue(ds -> ma.movingRange(ds.prices, window)) //

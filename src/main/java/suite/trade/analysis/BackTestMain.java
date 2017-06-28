@@ -17,6 +17,7 @@ import suite.trade.Asset;
 import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocTester.Simulate;
+import suite.trade.backalloc.BackAllocator_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.util.Util;
@@ -38,15 +39,15 @@ public class BackTestMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) {
 		BackAllocConfiguration bac_hsi = BackAllocConfiguration.ofSingle(Asset.hsi);
+		Map<String, BackAllocConfiguration> bacs_ = new HashMap<>();
 
 		if (Boolean.FALSE) {
+			bacs_.put("donchian9", BackAllocator_.donchian(9).bacUnl(cfg::queryCompaniesByMarketCap));
 			questoaQuella("0020.HK", "0004.HK");
 			questoaQuella("0052.HK", "0341.HK");
 			questoaQuella("0670.HK", "1055.HK");
 			questoaQuella("0753.HK", "1055.HK");
 		}
-
-		Map<String, BackAllocConfiguration> bacs_ = new HashMap<>();
 
 		// BEGIN
 		bacs_.put("hsi", bac_hsi);
