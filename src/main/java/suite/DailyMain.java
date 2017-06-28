@@ -35,6 +35,7 @@ import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
 import suite.util.Set_;
@@ -50,18 +51,18 @@ public class DailyMain extends ExecutableProgram {
 	private StringBuilder sb = new StringBuilder();
 	private Sink<String> log = To.sink(sb);
 	private Time today = Time.now();
-	private Streamlet<Asset> assets = cfg.queryCompaniesByMarketCap(today);
+	private Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
 
 	public final BackAllocConfiguration bac_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9).unleverage()
-			.bac(assets);
-	public final BackAllocConfiguration bac_donchian = BackAllocator_.donchian().unleverage().bac(assets);
-	public final BackAllocConfiguration bac_ema = BackAllocator_.ema().unleverage().bac(assets);
-	public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).bac(assets);
-	public final BackAllocConfiguration bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdMinimum(9).unleverage().bac(assets);
-	public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().unleverage().bac(assets);
-	public final BackAllocConfiguration bac_rsi = BackAllocator_.rsi().unleverage().bac(assets);
-	public final BackAllocConfiguration bac_sell = BackAllocator_.cash().bac(assets);
-	public final BackAllocConfiguration bac_tma = BackAllocator_.tripleMovingAvgs().unleverage().bac(assets);
+			.bac(fun);
+	public final BackAllocConfiguration bac_donchian = BackAllocator_.donchian().unleverage().bac(fun);
+	public final BackAllocConfiguration bac_ema = BackAllocator_.ema().unleverage().bac(fun);
+	public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).bac(fun);
+	public final BackAllocConfiguration bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdMinimum(9).unleverage().bac(fun);
+	public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().unleverage().bac(fun);
+	public final BackAllocConfiguration bac_rsi = BackAllocator_.rsi().unleverage().bac(fun);
+	public final BackAllocConfiguration bac_sell = BackAllocator_.cash().bac(fun);
+	public final BackAllocConfiguration bac_tma = BackAllocator_.tripleMovingAvgs().unleverage().bac(fun);
 
 	private class Result {
 		private String strategy;
@@ -231,13 +232,13 @@ public class DailyMain extends ExecutableProgram {
 	public BackAllocConfiguration pairs(String symbol0, String symbol1) {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
 		BackAllocator backAllocator = BackAllocator_.pairs(cfg, symbol0, symbol1).unleverage();
-		return new BackAllocConfiguration(assets, backAllocator);
+		return new BackAllocConfiguration(time -> assets, backAllocator);
 	}
 
 	public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
 		BackAllocator backAllocator = BackAllocator_.questoQuella(symbol0, symbol1);
-		return new BackAllocConfiguration(assets, backAllocator);
+		return new BackAllocConfiguration(time -> assets, backAllocator);
 	}
 
 	// some orders caused by stupid bugs. need to sell those at suitable times.
@@ -261,7 +262,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private Result alloc(String tag, float fund, BackAllocConfiguration pair) {
-		return alloc(tag, fund, pair.backAllocator, pair.assets);
+		return alloc(tag, fund, pair.backAllocator, pair.assetsFun.apply(today));
 	}
 
 	private Result alloc(String tag, float fund, BackAllocator backAllocator, Streamlet<Asset> assets) {

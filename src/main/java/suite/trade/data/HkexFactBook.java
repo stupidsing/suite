@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import suite.http.HttpUtil;
 import suite.os.Execute;
@@ -81,12 +82,14 @@ public class HkexFactBook {
 		Map<String, URI> links0 = HttpUtil.resolveLinks(uri0);
 		URI uri1 = links0.get(Integer.toString(year));
 		Map<String, URI> links1 = HttpUtil.resolveLinks(uri1);
-		URI uri2;
-		if ((uri2 = links1.get(section)) != null //
-				|| (uri2 = links1.get("- " + section)) != null)
-			return uri2.toString();
-		else
-			throw new RuntimeException();
+
+		for (Entry<String, URI> e : links1.entrySet()) {
+			String link = e.getKey();
+			if (link.startsWith(section) || link.startsWith("- " + section))
+				return e.getValue().toString();
+		}
+
+		throw new RuntimeException();
 	}
 
 }

@@ -3,18 +3,20 @@ package suite.trade.backalloc;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
+import suite.trade.Time;
+import suite.util.FunUtil.Fun;
 
 public class BackAllocConfiguration {
 
-	public final Streamlet<Asset> assets;
+	public final Fun<Time, Streamlet<Asset>> assetsFun;
 	public final BackAllocator backAllocator;
 
 	public static BackAllocConfiguration ofSingle(Asset asset) {
-		return new BackAllocConfiguration(Read.each(asset), BackAllocator_.ofSingle(asset.symbol));
+		return new BackAllocConfiguration(time -> Read.each(asset), BackAllocator_.ofSingle(asset.symbol));
 	}
 
-	public BackAllocConfiguration(Streamlet<Asset> assets, BackAllocator backAllocator) {
-		this.assets = assets;
+	public BackAllocConfiguration(Fun<Time, Streamlet<Asset>> assetsFun, BackAllocator backAllocator) {
+		this.assetsFun = assetsFun;
 		this.backAllocator = backAllocator;
 	}
 

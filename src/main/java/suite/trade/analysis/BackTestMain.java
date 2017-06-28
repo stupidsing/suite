@@ -11,6 +11,7 @@ import suite.primitive.Chars;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.TimeRange;
@@ -71,7 +72,8 @@ public class BackTestMain extends ExecutableProgram {
 				.join2(IntStreamlet.range(2008, 2018).map(TimeRange::ofYear)) //
 				.map2((pair, period) -> pair.t0, (pair, period) -> {
 					BackAllocConfiguration bac = pair.t1;
-					return runner.backTest(bac.backAllocator, period, bac.assets);
+					Streamlet<Asset> assets = bac.assetsFun.apply(period.from);
+					return runner.backTest(bac.backAllocator, period, assets);
 				}) //
 				.collect(As::streamlet2);
 

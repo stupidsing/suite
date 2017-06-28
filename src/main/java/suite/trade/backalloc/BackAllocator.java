@@ -21,6 +21,7 @@ import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
+import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.String_;
 
@@ -45,8 +46,8 @@ public interface BackAllocator {
 		public List<Pair<String, Double>> onDateTime(Time time, int index);
 	}
 
-	public default BackAllocConfiguration bac(Streamlet<Asset> assets) {
-		return new BackAllocConfiguration(assets, this);
+	public default BackAllocConfiguration bac(Fun<Time, Streamlet<Asset>> assetsFun) {
+		return new BackAllocConfiguration(assetsFun, this);
 	}
 
 	public default BackAllocator dump() {
