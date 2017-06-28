@@ -50,6 +50,10 @@ public interface BackAllocator {
 		return new BackAllocConfiguration(assetsFun, this);
 	}
 
+	public default BackAllocConfiguration bacUnl(Fun<Time, Streamlet<Asset>> assetsFun) {
+		return unleverage().bac(assetsFun);
+	}
+
 	public default BackAllocator dump() {
 		return (dsBySymbol, times) -> {
 			OnDateTime onDateTime = allocate(dsBySymbol, times);
