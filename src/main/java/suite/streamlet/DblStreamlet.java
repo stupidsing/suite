@@ -43,6 +43,10 @@ public class DblStreamlet implements Iterable<Double> {
 		});
 	}
 
+	public static DblStreamlet from(double[] ts) {
+		return streamlet(() -> DblOutlet.of(ts));
+	}
+
 	public static DblStreamlet range(double e) {
 		return range((double) 0, e);
 	}

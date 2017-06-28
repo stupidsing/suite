@@ -43,6 +43,10 @@ public class FltStreamlet implements Iterable<Float> {
 		});
 	}
 
+	public static FltStreamlet from(float[] ts) {
+		return streamlet(() -> FltOutlet.of(ts));
+	}
+
 	public static FltStreamlet range(float e) {
 		return range((float) 0, e);
 	}

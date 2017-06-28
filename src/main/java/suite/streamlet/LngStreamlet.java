@@ -43,6 +43,10 @@ public class LngStreamlet implements Iterable<Long> {
 		});
 	}
 
+	public static LngStreamlet from(long[] ts) {
+		return streamlet(() -> LngOutlet.of(ts));
+	}
+
 	public static LngStreamlet range(long e) {
 		return range((long) 0, e);
 	}

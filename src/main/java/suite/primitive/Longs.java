@@ -7,6 +7,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.Constants;
+import suite.primitive.LngPrimitives.LngSource;
+import suite.streamlet.LngOutlet;
+import suite.streamlet.LngStreamlet;
 import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
@@ -117,6 +120,16 @@ public class Longs implements Iterable<Long> {
 		for (int i = start; result && i < end; i++)
 			result &= ParseUtil.isWhitespace(cs[i]);
 		return result;
+	}
+
+	public LngStreamlet streamlet() {
+		return new LngStreamlet(() -> LngOutlet.of(new LngSource() {
+			private int i = start;
+
+			public long source() {
+				return i < end ? cs[i++] : LngFunUtil.EMPTYVALUE;
+			}
+		}));
 	}
 
 	public Longs pad(int size) {

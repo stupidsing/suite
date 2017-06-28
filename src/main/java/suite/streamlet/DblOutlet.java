@@ -65,17 +65,7 @@ public class DblOutlet implements Iterable<Double> {
 			private int i;
 
 			public double source() {
-				return i < ts.length ? ts[i++] : null;
-			}
-		});
-	}
-
-	public static DblOutlet of(Doubles doubles) {
-		return of(new DblSource() {
-			private int i;
-
-			public double source() {
-				return i < doubles.size() ? doubles.get(i++) : DblFunUtil.EMPTYVALUE;
+				return i < ts.length ? ts[i++] : DblFunUtil.EMPTYVALUE;
 			}
 		});
 	}

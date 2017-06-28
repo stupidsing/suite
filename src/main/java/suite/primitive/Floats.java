@@ -7,6 +7,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.Constants;
+import suite.primitive.FltPrimitives.FltSource;
+import suite.streamlet.FltOutlet;
+import suite.streamlet.FltStreamlet;
 import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
@@ -117,6 +120,16 @@ public class Floats implements Iterable<Float> {
 		for (int i = start; result && i < end; i++)
 			result &= ParseUtil.isWhitespace(cs[i]);
 		return result;
+	}
+
+	public FltStreamlet streamlet() {
+		return new FltStreamlet(() -> FltOutlet.of(new FltSource() {
+			private int i = start;
+
+			public float source() {
+				return i < end ? cs[i++] : FltFunUtil.EMPTYVALUE;
+			}
+		}));
 	}
 
 	public Floats pad(int size) {

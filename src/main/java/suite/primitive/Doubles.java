@@ -7,6 +7,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.Constants;
+import suite.primitive.DblPrimitives.DblSource;
+import suite.streamlet.DblOutlet;
+import suite.streamlet.DblStreamlet;
 import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
@@ -117,6 +120,16 @@ public class Doubles implements Iterable<Double> {
 		for (int i = start; result && i < end; i++)
 			result &= ParseUtil.isWhitespace(cs[i]);
 		return result;
+	}
+
+	public DblStreamlet streamlet() {
+		return new DblStreamlet(() -> DblOutlet.of(new DblSource() {
+			private int i = start;
+
+			public double source() {
+				return i < end ? cs[i++] : DblFunUtil.EMPTYVALUE;
+			}
+		}));
 	}
 
 	public Doubles pad(int size) {

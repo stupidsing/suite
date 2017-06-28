@@ -43,6 +43,10 @@ public class IntStreamlet implements Iterable<Integer> {
 		});
 	}
 
+	public static IntStreamlet from(int[] ts) {
+		return streamlet(() -> IntOutlet.of(ts));
+	}
+
 	public static IntStreamlet range(int e) {
 		return range((int) 0, e);
 	}

@@ -43,6 +43,10 @@ public class ChrStreamlet implements Iterable<Character> {
 		});
 	}
 
+	public static ChrStreamlet from(char[] ts) {
+		return streamlet(() -> ChrOutlet.of(ts));
+	}
+
 	public static ChrStreamlet range(char e) {
 		return range((char) 0, e);
 	}

@@ -65,17 +65,7 @@ public class LngOutlet implements Iterable<Long> {
 			private int i;
 
 			public long source() {
-				return i < ts.length ? ts[i++] : null;
-			}
-		});
-	}
-
-	public static LngOutlet of(Longs longs) {
-		return of(new LngSource() {
-			private int i;
-
-			public long source() {
-				return i < longs.size() ? longs.get(i++) : LngFunUtil.EMPTYVALUE;
+				return i < ts.length ? ts[i++] : LngFunUtil.EMPTYVALUE;
 			}
 		});
 	}

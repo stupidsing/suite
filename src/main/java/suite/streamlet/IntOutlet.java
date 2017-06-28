@@ -65,17 +65,7 @@ public class IntOutlet implements Iterable<Integer> {
 			private int i;
 
 			public int source() {
-				return i < ts.length ? ts[i++] : null;
-			}
-		});
-	}
-
-	public static IntOutlet of(Ints ints) {
-		return of(new IntSource() {
-			private int i;
-
-			public int source() {
-				return i < ints.size() ? ints.get(i++) : IntFunUtil.EMPTYVALUE;
+				return i < ts.length ? ts[i++] : IntFunUtil.EMPTYVALUE;
 			}
 		});
 	}

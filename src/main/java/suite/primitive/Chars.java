@@ -7,6 +7,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.Constants;
+import suite.primitive.ChrPrimitives.ChrSource;
+import suite.streamlet.ChrOutlet;
+import suite.streamlet.ChrStreamlet;
 import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
@@ -117,6 +120,16 @@ public class Chars implements Iterable<Character> {
 		for (int i = start; result && i < end; i++)
 			result &= ParseUtil.isWhitespace(cs[i]);
 		return result;
+	}
+
+	public ChrStreamlet streamlet() {
+		return new ChrStreamlet(() -> ChrOutlet.of(new ChrSource() {
+			private int i = start;
+
+			public char source() {
+				return i < end ? cs[i++] : ChrFunUtil.EMPTYVALUE;
+			}
+		}));
 	}
 
 	public Chars pad(int size) {

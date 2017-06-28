@@ -65,17 +65,7 @@ public class ChrOutlet implements Iterable<Character> {
 			private int i;
 
 			public char source() {
-				return i < ts.length ? ts[i++] : null;
-			}
-		});
-	}
-
-	public static ChrOutlet of(Chars chars) {
-		return of(new ChrSource() {
-			private int i;
-
-			public char source() {
-				return i < chars.size() ? chars.get(i++) : ChrFunUtil.EMPTYVALUE;
+				return i < ts.length ? ts[i++] : ChrFunUtil.EMPTYVALUE;
 			}
 		});
 	}

@@ -65,17 +65,7 @@ public class FltOutlet implements Iterable<Float> {
 			private int i;
 
 			public float source() {
-				return i < ts.length ? ts[i++] : null;
-			}
-		});
-	}
-
-	public static FltOutlet of(Floats floats) {
-		return of(new FltSource() {
-			private int i;
-
-			public float source() {
-				return i < floats.size() ? floats.get(i++) : FltFunUtil.EMPTYVALUE;
+				return i < ts.length ? ts[i++] : FltFunUtil.EMPTYVALUE;
 			}
 		});
 	}

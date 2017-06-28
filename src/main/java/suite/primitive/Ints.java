@@ -7,6 +7,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.Constants;
+import suite.primitive.IntPrimitives.IntSource;
+import suite.streamlet.IntOutlet;
+import suite.streamlet.IntStreamlet;
 import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
@@ -117,6 +120,16 @@ public class Ints implements Iterable<Integer> {
 		for (int i = start; result && i < end; i++)
 			result &= ParseUtil.isWhitespace(cs[i]);
 		return result;
+	}
+
+	public IntStreamlet streamlet() {
+		return new IntStreamlet(() -> IntOutlet.of(new IntSource() {
+			private int i = start;
+
+			public int source() {
+				return i < end ? cs[i++] : IntFunUtil.EMPTYVALUE;
+			}
+		}));
 	}
 
 	public Ints pad(int size) {
