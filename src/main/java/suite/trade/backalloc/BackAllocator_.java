@@ -2,6 +2,7 @@ package suite.trade.backalloc;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
@@ -9,6 +10,8 @@ import suite.math.stat.BollingerBands;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.streamlet.As;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.MovingAverage;
 import suite.trade.MovingAverage.MovingRange;
@@ -83,19 +86,35 @@ public class BackAllocator_ {
 		};
 	}
 
-	public static BackAllocator lastReturn() {
-		return (dsBySymbol,
-				times) -> (time, index) -> dsBySymbol //
-						.map2((symbol, ds) -> ds.get(index - 2).price / ds.get(index - 1).price < .96d ? 1d : 0d) //
-						.toList();
+	public static BackAllocator lastReturn(int nWorsts, int nBests) {
+		return (dsBySymbol, times) -> (time, index) -> {
+			List<String> list = dsBySymbol //
+					.map2((symbol, ds) -> {
+						float[] prices = ds.prices;
+						double price0 = prices[index - 2];
+						double price1 = prices[index - 1];
+						return price1 / price0 - 1d;
+					}) //
+					.sortBy((symbol, return_) -> return_) //
+					.keys() //
+					.toList();
+
+			int size = list.size();
+
+			return Streamlet //
+					.concat(Read.from(list.subList(0, nWorsts)), Read.from(list.subList(size - nBests, size))) //
+					.map2(symbol -> 1d / (nWorsts + nBests)) //
+					.toList();
+		};
 	}
 
 	public static BackAllocator lastReturnsProRata() {
 		return (dsBySymbol, times) -> (time, index) -> {
 			Streamlet2<String, Double> returns = dsBySymbol //
 					.map2((symbol, ds) -> {
-						double price0 = ds.prices[index - 2];
-						double price1 = ds.prices[index - 1];
+						float[] prices = ds.prices;
+						double price0 = prices[index - 2];
+						double price1 = prices[index - 1];
 						return (price0 - price1) / price0;
 					}) //
 					.filterValue(return_ -> 0d < return_) //
@@ -294,20 +313,6 @@ public class BackAllocator_ {
 					}) //
 					.toList();
 		};
-	}
-
-	public static BackAllocator worstLastReturn() {
-		return (dsBySymbol, times) -> (time, index) -> dsBySymbol //
-				.map2((symbol, ds) -> {
-					float[] prices = ds.prices;
-					float price0 = prices[index - 2];
-					float price1 = prices[index - 1];
-					return price1 / price0 - 1f;
-				}) //
-				.sortBy((symbol2, return_) -> return_) //
-				.take(1) //
-				.mapValue(return_ -> 1d) //
-				.toList();
 	}
 
 	private static BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {

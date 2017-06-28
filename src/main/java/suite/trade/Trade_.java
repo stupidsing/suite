@@ -20,6 +20,7 @@ public class Trade_ {
 	public static boolean isCacheQuotes = true;
 	public static boolean isShortSell = false;
 	public static float maxLeverageAmount = 100000f;
+	public static float negligible = 1E-6f;
 	public static int nTradeDaysPerYear = 256;
 	public static int nTradeSecondsPerDay = 28800;
 
@@ -103,7 +104,10 @@ public class Trade_ {
 					.map2((symbol, potential) -> {
 						float price = priceBySymbol.get(symbol);
 						int lotSize = assetBySymbol.get(symbol).lotSize;
-						return lotSize * (int) Math.floor(valuation * potential / (price * lotSize));
+						if (negligible < price)
+							return lotSize * (int) Math.floor(valuation * potential / (price * lotSize));
+						else
+							return 0; // cannot buy liquidated stock
 					}) //
 					.toMap();
 

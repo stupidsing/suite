@@ -9,6 +9,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.trade.Trade_;
 import suite.util.DataInput_;
 import suite.util.DataOutput_;
 import suite.util.Object_;
@@ -103,7 +104,7 @@ public class DataSource {
 		int si = 0, di = 0;
 		while (di < length1)
 			if (length0 <= si)
-				prices1[di++] = Float.MAX_VALUE;
+				prices1[di++] = Trade_.negligible; // avoid division by 0s
 			else if (dates1[di].compareTo(dates[si]) <= 0)
 				prices1[di++] = prices[si];
 			else

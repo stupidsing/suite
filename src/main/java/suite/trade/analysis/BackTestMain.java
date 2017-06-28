@@ -14,12 +14,14 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
+import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
+import suite.util.FunUtil.Fun;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
@@ -39,10 +41,11 @@ public class BackTestMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) {
 		BackAllocConfiguration bac_hsi = BackAllocConfiguration.ofSingle(Asset.hsi);
+		Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
 		Map<String, BackAllocConfiguration> bacs_ = new HashMap<>();
 
 		if (Boolean.FALSE) {
-			bacs_.put("donchian9", BackAllocator_.donchian(9).bacUnl(cfg::queryCompaniesByMarketCap));
+			bacs_.put("donchian9", BackAllocator_.donchian(9).bacUnl(fun));
 			questoaQuella("0020.HK", "0004.HK");
 			questoaQuella("0052.HK", "0341.HK");
 			questoaQuella("0670.HK", "1055.HK");
@@ -54,6 +57,9 @@ public class BackTestMain extends ExecutableProgram {
 		bacs_.put("bb", dm.bac_bb);
 		bacs_.put("donchian", dm.bac_donchian);
 		bacs_.put("ema", dm.bac_ema);
+		bacs_.put("lr02", BackAllocator_.lastReturn(0, 2).holdMinimum(9).bacUnl(fun));
+		bacs_.put("lr20", BackAllocator_.lastReturn(2, 0).holdMinimum(9).bacUnl(fun));
+		bacs_.put("lr22", BackAllocator_.lastReturn(2, 2).holdMinimum(9).bacUnl(fun));
 		bacs_.put("pmamr", dm.bac_pmamr);
 		bacs_.put("pmmmr", dm.bac_pmmmr);
 		bacs_.put("rsi", dm.bac_rsi);
