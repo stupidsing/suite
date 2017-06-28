@@ -158,10 +158,6 @@ public interface BackAllocator {
 	public default BackAllocator holdMinimum(int period) {
 		return (dsBySymbol, times) -> {
 			Deque<Map<String, Double>> queue = new ArrayDeque<>();
-
-			for (int i = 0; i < period; i++)
-				queue.addLast(new HashMap<>());
-
 			OnDateTime onDateTime = allocate(dsBySymbol, times);
 
 			return (time, index) -> {
@@ -169,8 +165,9 @@ public interface BackAllocator {
 						.from2(onDateTime.onDateTime(time, index)) //
 						.toMap();
 
-				queue.removeFirst();
 				queue.addLast(ratioBySymbol);
+				while (period < queue.size())
+					queue.removeFirst();
 
 				Map<String, Double> max = new HashMap<>();
 
