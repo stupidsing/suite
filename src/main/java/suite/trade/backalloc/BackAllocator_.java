@@ -29,26 +29,6 @@ public class BackAllocator_ {
 		return bollingerBands_(32, 0, 2f);
 	}
 
-	public static BackAllocator byEma() {
-		int halfLife = 64;
-		double threshold = .96d;
-
-		return (dsBySymbol, times) -> {
-			Map<String, float[]> ema = dsBySymbol //
-					.mapValue(ds -> ma.exponentialMovingAvg(ds.prices, halfLife)) //
-					.toMap();
-
-			return (time, index) -> dsBySymbol //
-					.map2((symbol, ds) -> {
-						int last = index - 1;
-						float lastEma = ema.get(symbol)[last];
-						float latest = ds.prices[last];
-						return latest / lastEma < threshold ? 1d : 0d;
-					}) //
-					.toList();
-		};
-	}
-
 	public static BackAllocator byLastPriceChange() {
 		return (dsBySymbol,
 				times) -> (time, index) -> dsBySymbol //
@@ -124,6 +104,26 @@ public class BackAllocator_ {
 								hold = -1d;
 						}
 						return hold;
+					}) //
+					.toList();
+		};
+	}
+
+	public static BackAllocator ema() {
+		int halfLife = 64;
+		double threshold = .96d;
+
+		return (dsBySymbol, times) -> {
+			Map<String, float[]> ema = dsBySymbol //
+					.mapValue(ds -> ma.exponentialMovingAvg(ds.prices, halfLife)) //
+					.toMap();
+
+			return (time, index) -> dsBySymbol //
+					.map2((symbol, ds) -> {
+						int last = index - 1;
+						float lastEma = ema.get(symbol)[last];
+						float latest = ds.prices[last];
+						return latest / lastEma < threshold ? 1d : 0d;
 					}) //
 					.toList();
 		};
