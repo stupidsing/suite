@@ -93,7 +93,7 @@ public class DataSource {
 	}
 
 	public DataSource after(Time time) {
-		return range_(TimeRange.of(time, TimeRange.ages().to));
+		return range_(TimeRange.of(time, TimeRange.max));
 	}
 
 	public DataSource align(String[] dates1) {

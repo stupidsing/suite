@@ -1,6 +1,7 @@
 package suite.trade.backalloc;
 
 import java.util.ArrayDeque;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +76,31 @@ public interface BackAllocator {
 
 	public default BackAllocator filterAssets(Predicate<String> pred) {
 		return (dsBySymbol, times) -> allocate(dsBySymbol.filterKey(pred), times)::onDateTime;
+	}
+
+	public default BackAllocator filterByIndex(Configuration cfg, String indexSymbol) {
+		DataSource indexDataSource = cfg.dataSource(indexSymbol);
+
+		return (dsBySymbol, times) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, times);
+
+			return (time, index) -> {
+				Time date = time.date();
+				String ymd0 = date.addDays(-1).ymd();
+				String ymdx = date.addDays(1).ymd();
+				DataSource ids = indexDataSource.range(ymd0, ymdx);
+
+				double indexPrice0 = ids.first().price;
+				double indexPricex = ids.last().price;
+				double indexReturn = (indexPricex - indexPrice0) / indexPrice0;
+
+				List<Pair<String, Double>> ratioBySymbol = -.03f < indexReturn //
+						? onDateTime.onDateTime(time, index) //
+						: Collections.emptyList();
+
+				return ratioBySymbol;
+			};
+		};
 	}
 
 	public default BackAllocator filterShorts() {

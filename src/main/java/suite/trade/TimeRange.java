@@ -11,10 +11,11 @@ import suite.util.Object_;
 
 public class TimeRange extends Range<Time> {
 
+	public static Time min = Time.of(1980, 1, 1);
+	public static Time max = Time.of(2020, 1, 1);
+
 	public static TimeRange ages() {
-		Time frDate = Time.of(1980, 1, 1);
-		Time toDate = Time.of(2020, 1, 1);
-		return of_(frDate, toDate);
+		return of_(min, max);
 	}
 
 	// align date range boundaries to reduce number of web queries (and
@@ -48,8 +49,8 @@ public class TimeRange extends Range<Time> {
 	}
 
 	public static TimeRange rangeOf(List<Time> ts) {
-		Time frDt = TimeRange.ages().to;
-		Time toDt = TimeRange.ages().from;
+		Time frDt = min;
+		Time toDt = max;
 		for (Time t : ts) {
 			frDt = frDt.compareTo(t) < 0 ? frDt : t;
 			toDt = toDt.compareTo(t) < 0 ? t : toDt;

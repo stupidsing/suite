@@ -54,7 +54,7 @@ public class StockHistory {
 	}
 
 	public static StockHistory new_() {
-		return of(TimeRange.ages().from, new HashMap<>(), new LngFltPair[0], new LngFltPair[0]);
+		return of(TimeRange.min, new HashMap<>(), new LngFltPair[0], new LngFltPair[0]);
 	}
 
 	public static StockHistory of(Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
@@ -129,7 +129,7 @@ public class StockHistory {
 	public StockHistory alignToDate() {
 		Fun<LngFltPair[], LngFltPair[]> align_ = pairs0 -> {
 			List<LngFltPair> pairs1 = new ArrayList<>();
-			Time date = TimeRange.ages().from;
+			Time date = TimeRange.min;
 			for (LngFltPair pair : pairs0) {
 				Time date1 = Time.ofEpochUtcSecond(pair.t0).startOfDay();
 				if (Object_.compare(date, date1) < 0)
