@@ -165,6 +165,9 @@ public class DataSource {
 			if (price1 < 0f)
 				throw new RuntimeException("price is negative: " + price1 + "/" + date1);
 
+			if (999f < price1)
+				throw new RuntimeException("price too high: " + price1 + "/" + date1);
+
 			if (!Float.isFinite(price1))
 				throw new RuntimeException("price is not finite: " + price1 + "/" + date1);
 
