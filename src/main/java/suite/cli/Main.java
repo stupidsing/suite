@@ -20,6 +20,7 @@ import suite.os.LogUtil;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
 import suite.util.ParseUtil;
+import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
@@ -78,7 +79,13 @@ public class Main extends ExecutableProgram {
 				result &= runInteractive(inputs);
 			else if (String_.equals(verb, "serve"))
 				new SocketServer().run();
-			else if (String_.equals(verb, "type"))
+			else if (verb != null && verb.startsWith("suite.")) {
+				String verb_ = verb;
+				@SuppressWarnings("unchecked")
+				Class<? extends ExecutableProgram> clazz = (Class<? extends ExecutableProgram>) //
+				Rethrow.ex(() -> Class.forName(verb_));
+				Util.run(clazz, inputs.toArray(new String[0]));
+			} else if (String_.equals(verb, "type"))
 				result &= dispatcher.dispatchType(inputs);
 			else if (verb == null)
 				result &= runInteractive(inputs);
