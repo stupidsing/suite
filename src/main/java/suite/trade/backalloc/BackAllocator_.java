@@ -80,8 +80,7 @@ public class BackAllocator_ {
 						int last = index - 1;
 						double lastEma = ema.get(symbol)[last];
 						double latest = ds.prices[last];
-						double r = latest / lastEma;
-						return Math.log(r) * scale;
+						return Math.log(latest / lastEma) * scale;
 					}) //
 					.toList();
 		};
