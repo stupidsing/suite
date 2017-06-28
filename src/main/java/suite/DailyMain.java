@@ -52,15 +52,16 @@ public class DailyMain extends ExecutableProgram {
 	private Time today = Time.now();
 	private Streamlet<Asset> assets = cfg.queryCompaniesByMarketCap(today);
 
-	public final BackAllocConfiguration bac_bb = bac(BackAllocator_.bollingerBands().holdMinimum(9).unleverage());
-	public final BackAllocConfiguration bac_donchian = bac(BackAllocator_.donchian().unleverage());
-	public final BackAllocConfiguration bac_ema = bac(BackAllocator_.ema().unleverage());
-	public final BackAllocConfiguration bac_pmamr = bac(MovingAvgMeanReversionBackAllocator0.of(log));
-	public final BackAllocConfiguration bac_pmmmr = bac(BackAllocator_.movingMedianMeanRevn().holdMinimum(9).unleverage());
-	public final BackAllocConfiguration bac_revco = bac(ReverseCorrelateBackAllocator.of().unleverage());
-	public final BackAllocConfiguration bac_rsi = bac(BackAllocator_.rsi().unleverage());
-	public final BackAllocConfiguration bac_sell = bac(BackAllocator_.cash());
-	public final BackAllocConfiguration bac_tma = bac(BackAllocator_.tripleMovingAvgs().unleverage());
+	public final BackAllocConfiguration bac_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9).unleverage()
+			.bac(assets);
+	public final BackAllocConfiguration bac_donchian = BackAllocator_.donchian().unleverage().bac(assets);
+	public final BackAllocConfiguration bac_ema = BackAllocator_.ema().unleverage().bac(assets);
+	public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).bac(assets);
+	public final BackAllocConfiguration bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdMinimum(9).unleverage().bac(assets);
+	public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().unleverage().bac(assets);
+	public final BackAllocConfiguration bac_rsi = BackAllocator_.rsi().unleverage().bac(assets);
+	public final BackAllocConfiguration bac_sell = BackAllocator_.cash().bac(assets);
+	public final BackAllocConfiguration bac_tma = BackAllocator_.tripleMovingAvgs().unleverage().bac(assets);
 
 	private class Result {
 		private String strategy;
@@ -217,10 +218,6 @@ public class DailyMain extends ExecutableProgram {
 		}
 
 		return new Result(tag, trades);
-	}
-
-	public BackAllocConfiguration bac(BackAllocator backAllocator) {
-		return new BackAllocConfiguration(assets, backAllocator);
 	}
 
 	private Result pairs(float fund, String symbol0, String symbol1) {

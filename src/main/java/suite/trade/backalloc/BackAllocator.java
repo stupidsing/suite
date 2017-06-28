@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 import suite.adt.pair.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
@@ -42,6 +43,10 @@ public interface BackAllocator {
 		 *         values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(Time time, int index);
+	}
+
+	public default BackAllocConfiguration bac(Streamlet<Asset> assets) {
+		return new BackAllocConfiguration(assets, this);
 	}
 
 	public default BackAllocator dump() {
@@ -78,6 +83,10 @@ public interface BackAllocator {
 		return (dsBySymbol, times) -> allocate(dsBySymbol.filterKey(pred), times)::onDateTime;
 	}
 
+	public default BackAllocator filterByIndex(Configuration cfg) {
+		return filterByIndex(cfg, "^GSPC");
+	}
+
 	public default BackAllocator filterByIndex(Configuration cfg, String indexSymbol) {
 		DataSource indexDataSource = cfg.dataSource(indexSymbol);
 
@@ -86,19 +95,17 @@ public interface BackAllocator {
 
 			return (time, index) -> {
 				Time date = time.date();
-				String ymd0 = date.addDays(-1).ymd();
+				String ymd0 = date.addDays(-7).ymd();
 				String ymdx = date.addDays(1).ymd();
 				DataSource ids = indexDataSource.range(ymd0, ymdx);
 
-				double indexPrice0 = ids.first().price;
-				double indexPricex = ids.last().price;
+				double indexPrice0 = ids.get(-1).price;
+				double indexPricex = ids.get(-2).price;
 				double indexReturn = (indexPricex - indexPrice0) / indexPrice0;
 
-				List<Pair<String, Double>> ratioBySymbol = -.03f < indexReturn //
+				return -.03f < indexReturn //
 						? onDateTime.onDateTime(time, index) //
 						: Collections.emptyList();
-
-				return ratioBySymbol;
 			};
 		};
 	}
