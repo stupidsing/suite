@@ -132,9 +132,9 @@ public class DataSource {
 
 	public TimeRange period() {
 		if (0 < dates.length) {
-			Time date0 = Time.ofEpochUtcSecond(get(0).t0);
-			Time datex = Time.ofEpochUtcSecond(get(-1).t0);
-			return TimeRange.of(date0, datex);
+			Time time0 = Time.ofEpochUtcSecond(get(0).t0);
+			Time timex = Time.ofEpochUtcSecond(get(-1).t0);
+			return TimeRange.of(time0, timex);
 		} else
 			throw new RuntimeException();
 	}

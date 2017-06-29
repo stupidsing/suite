@@ -192,12 +192,12 @@ public class DailyMain extends ExecutableProgram {
 
 				try {
 					DataSource ds0 = cfg.dataSource(symbol, period);
-					Time datex = Time.ofEpochUtcSecond(ds0.last().t0);
+					Time timex = Time.ofEpochUtcSecond(ds0.last().t0);
 
-					if (0 <= Time.compare(datex, sevenDaysAgo))
+					if (0 <= Time.compare(timex, sevenDaysAgo))
 						ds0.validate();
 					else
-						throw new RuntimeException("ancient data: " + datex);
+						throw new RuntimeException("ancient data: " + timex);
 
 					Map<String, Float> latest = cfg.quote(Collections.singleton(symbol));
 					long latestDate = today.startOfDay().epochUtcSecond();

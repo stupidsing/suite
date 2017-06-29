@@ -44,9 +44,9 @@ public class StockHistory {
 		if (String_.equals(line = outlet.next(), "{"))
 			while (!String_.equals(line = outlet.next(), "}")) {
 				int p = line.lastIndexOf(":");
-				Time date = Time.of(line.substring(0, p));
+				Time time = Time.of(line.substring(0, p));
 				float price = Float.parseFloat(line.substring(p + 1));
-				pairs.add(LngFltPair.of(date.epochUtcSecond(), price));
+				pairs.add(LngFltPair.of(time.epochUtcSecond(), price));
 			}
 		else
 			throw new RuntimeException();

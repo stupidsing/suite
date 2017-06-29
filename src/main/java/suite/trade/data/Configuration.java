@@ -17,7 +17,7 @@ public interface Configuration {
 
 	public Streamlet<Asset> queryCompanies();
 
-	public Streamlet<Asset> queryCompaniesByMarketCap(Time date);
+	public Streamlet<Asset> queryCompaniesByMarketCap(Time time);
 
 	public Asset queryCompany(String symbol);
 

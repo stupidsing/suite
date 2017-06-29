@@ -46,8 +46,8 @@ public class ConfigurationImpl implements Configuration {
 		return !Trade_.blackList.contains(symbol) ? hkex.queryCompany(symbol) : null;
 	}
 
-	public Streamlet<Asset> queryCompaniesByMarketCap(Time date) {
-		int year = date.year() - 1;
+	public Streamlet<Asset> queryCompaniesByMarketCap(Time time) {
+		int year = time.year() - 1;
 		return Read.from(hkexFactBook.queryLeadingCompaniesByMarketCap(year)) //
 				.map(this::queryCompany) //
 				.filter(asset -> !Trade_.blackList.contains(asset.symbol));
