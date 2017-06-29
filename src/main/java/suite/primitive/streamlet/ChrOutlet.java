@@ -368,7 +368,7 @@ public class ChrOutlet implements Iterable<Character> {
 
 	public char[] toArray() {
 		CharsBuilder list = toList();
-		return list.toChars().toCharArray();
+		return list.toChars().toArray();
 	}
 
 	public CharsBuilder toList() {

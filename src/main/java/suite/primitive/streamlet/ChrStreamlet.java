@@ -21,9 +21,11 @@ import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.primitive.ChrPrimitives.ChrSink;
 import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.ChrPrimitives.Chr_Obj;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.ChrObjMap;
+import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Fun;
@@ -34,6 +36,17 @@ import suite.util.To;
 public class ChrStreamlet implements Iterable<Character> {
 
 	private Source<ChrOutlet> in;
+
+	public static <T> Fun<Outlet<T>, ChrStreamlet> collect(Obj_Chr<T> fun0) {
+		Obj_Chr<T> fun1 = fun0.rethrow();
+		return ts -> {
+			CharsBuilder cb = new CharsBuilder();
+			T t;
+			while ((t = ts.next()) != null)
+				cb.append(fun1.apply(t));
+			return cb.toChars().streamlet();
+		};
+	}
 
 	@SafeVarargs
 	public static ChrStreamlet concat(ChrStreamlet... streamlets) {

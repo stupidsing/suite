@@ -107,7 +107,7 @@ public class WalkForwardAllocTester {
 	}
 
 	public String conclusion() {
-		float[] valuations_ = valuations.toFloats().toFloatArray();
+		float[] valuations_ = valuations.toFloats().toArray();
 		int length = valuations_.length;
 		double deltaMs = (start - System.currentTimeMillis()) / length;
 		ReturnsStat rs = ts.returnsStat(valuations_, deltaMs);

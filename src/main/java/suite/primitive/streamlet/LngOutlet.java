@@ -368,7 +368,7 @@ public class LngOutlet implements Iterable<Long> {
 
 	public long[] toArray() {
 		LongsBuilder list = toList();
-		return list.toLongs().toLongArray();
+		return list.toLongs().toArray();
 	}
 
 	public LongsBuilder toList() {

@@ -174,7 +174,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public Doubles sort() {
-		double[] cs = toDoubleArray();
+		double[] cs = toArray();
 		Arrays.sort(cs);
 		return Doubles.of(cs);
 	}
@@ -187,7 +187,7 @@ public class Doubles implements Iterable<Double> {
 		return startsWith_(doubles, s);
 	}
 
-	public double[] toDoubleArray() {
+	public double[] toArray() {
 		if (start != 0 || end != cs.length)
 			return Arrays.copyOfRange(cs, start, end);
 		else

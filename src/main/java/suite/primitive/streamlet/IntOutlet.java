@@ -368,7 +368,7 @@ public class IntOutlet implements Iterable<Integer> {
 
 	public int[] toArray() {
 		IntsBuilder list = toList();
-		return list.toInts().toIntArray();
+		return list.toInts().toArray();
 	}
 
 	public IntsBuilder toList() {

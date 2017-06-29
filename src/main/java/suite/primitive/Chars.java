@@ -174,7 +174,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public Chars sort() {
-		char[] cs = toCharArray();
+		char[] cs = toArray();
 		Arrays.sort(cs);
 		return Chars.of(cs);
 	}
@@ -187,7 +187,7 @@ public class Chars implements Iterable<Character> {
 		return startsWith_(chars, s);
 	}
 
-	public char[] toCharArray() {
+	public char[] toArray() {
 		if (start != 0 || end != cs.length)
 			return Arrays.copyOfRange(cs, start, end);
 		else

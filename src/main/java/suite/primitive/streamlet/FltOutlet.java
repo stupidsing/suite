@@ -368,7 +368,7 @@ public class FltOutlet implements Iterable<Float> {
 
 	public float[] toArray() {
 		FloatsBuilder list = toList();
-		return list.toFloats().toFloatArray();
+		return list.toFloats().toArray();
 	}
 
 	public FloatsBuilder toList() {

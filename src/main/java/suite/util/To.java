@@ -289,7 +289,7 @@ public class To {
 	}
 
 	public static String string(Bytes bytes) {
-		return string(bytes.toByteArray());
+		return string(bytes.toArray());
 	}
 
 	public static String string(byte[] bs) {

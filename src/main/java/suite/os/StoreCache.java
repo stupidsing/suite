@@ -66,7 +66,7 @@ public class StoreCache {
 					if (dis.readInt() == keySize) {
 						byte[] kb = new byte[keySize];
 						dis.readFully(kb);
-						if (Arrays.equals(key.toByteArray(), kb))
+						if (Arrays.equals(key.toArray(), kb))
 							return Outlet.of(new Source<Bytes>() {
 								private boolean cont = true;
 

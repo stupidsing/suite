@@ -33,7 +33,7 @@ public class LngPrimitives {
 				try {
 					return apply(x, y);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + x + ":" + y + ", ", ex);
+					throw new RuntimeException("for " + x + ":" + y, ex);
 				}
 			};
 		}
@@ -48,7 +48,7 @@ public class LngPrimitives {
 				try {
 					return test(c, t);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + c + ":" + t + ", ", ex);
+					throw new RuntimeException("for " + c + ":" + t, ex);
 				}
 			};
 		}
@@ -83,7 +83,7 @@ public class LngPrimitives {
 				try {
 					return test(c);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + c + ", ", ex);
+					throw new RuntimeException("for " + c, ex);
 				}
 			};
 		}
@@ -112,11 +112,31 @@ public class LngPrimitives {
 	@FunctionalInterface
 	public interface Obj_Lng<T> {
 		public long apply(T t);
+
+		public default Obj_Lng<T> rethrow() {
+			return t -> {
+				try {
+					return apply(t);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + t, ex);
+				}
+			};
+		}
 	}
 
 	@FunctionalInterface
 	public interface ObjObj_Lng<X, Y> {
 		public long apply(X x, Y y);
+
+		public default ObjObj_Lng<X, Y> rethrow() {
+			return (x, y) -> {
+				try {
+					return apply(x, y);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + x + ":" + y, ex);
+				}
+			};
+		}
 	}
 
 }

@@ -174,7 +174,7 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public Ints sort() {
-		int[] cs = toIntArray();
+		int[] cs = toArray();
 		Arrays.sort(cs);
 		return Ints.of(cs);
 	}
@@ -187,7 +187,7 @@ public class Ints implements Iterable<Integer> {
 		return startsWith_(ints, s);
 	}
 
-	public int[] toIntArray() {
+	public int[] toArray() {
 		if (start != 0 || end != cs.length)
 			return Arrays.copyOfRange(cs, start, end);
 		else

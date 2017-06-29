@@ -174,7 +174,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public Floats sort() {
-		float[] cs = toFloatArray();
+		float[] cs = toArray();
 		Arrays.sort(cs);
 		return Floats.of(cs);
 	}
@@ -187,7 +187,7 @@ public class Floats implements Iterable<Float> {
 		return startsWith_(floats, s);
 	}
 
-	public float[] toFloatArray() {
+	public float[] toArray() {
 		if (start != 0 || end != cs.length)
 			return Arrays.copyOfRange(cs, start, end);
 		else

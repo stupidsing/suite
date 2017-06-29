@@ -33,7 +33,7 @@ public class ChrPrimitives {
 				try {
 					return apply(x, y);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + x + ":" + y + ", ", ex);
+					throw new RuntimeException("for " + x + ":" + y, ex);
 				}
 			};
 		}
@@ -48,7 +48,7 @@ public class ChrPrimitives {
 				try {
 					return test(c, t);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + c + ":" + t + ", ", ex);
+					throw new RuntimeException("for " + c + ":" + t, ex);
 				}
 			};
 		}
@@ -83,7 +83,7 @@ public class ChrPrimitives {
 				try {
 					return test(c);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + c + ", ", ex);
+					throw new RuntimeException("for " + c, ex);
 				}
 			};
 		}
@@ -112,11 +112,31 @@ public class ChrPrimitives {
 	@FunctionalInterface
 	public interface Obj_Chr<T> {
 		public char apply(T t);
+
+		public default Obj_Chr<T> rethrow() {
+			return t -> {
+				try {
+					return apply(t);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + t, ex);
+				}
+			};
+		}
 	}
 
 	@FunctionalInterface
 	public interface ObjObj_Chr<X, Y> {
 		public char apply(X x, Y y);
+
+		public default ObjObj_Chr<X, Y> rethrow() {
+			return (x, y) -> {
+				try {
+					return apply(x, y);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + x + ":" + y, ex);
+				}
+			};
+		}
 	}
 
 }

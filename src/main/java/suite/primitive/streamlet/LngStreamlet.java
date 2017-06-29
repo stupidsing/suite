@@ -19,11 +19,13 @@ import suite.primitive.LngPrimitives.LngPredicate;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.LngPrimitives.Lng_Obj;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.LngObjMap;
+import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Fun;
@@ -43,6 +45,17 @@ public class LngStreamlet implements Iterable<Long> {
 				sources.add(streamlet.in.source().source());
 			return LngOutlet.of(LngFunUtil.concat(To.source(sources)));
 		});
+	}
+
+	public static <T> Fun<Outlet<T>, LngStreamlet> from(Obj_Lng<T> fun0) {
+		Obj_Lng<T> fun1 = fun0.rethrow();
+		return ts -> {
+			LongsBuilder cb = new LongsBuilder();
+			T t;
+			while ((t = ts.next()) != null)
+				cb.append(fun1.apply(t));
+			return cb.toLongs().streamlet();
+		};
 	}
 
 	public static LngStreamlet from(long[] ts) {

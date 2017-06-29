@@ -33,7 +33,7 @@ public class FltPrimitives {
 				try {
 					return apply(x, y);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + x + ":" + y + ", ", ex);
+					throw new RuntimeException("for " + x + ":" + y, ex);
 				}
 			};
 		}
@@ -48,7 +48,7 @@ public class FltPrimitives {
 				try {
 					return test(c, t);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + c + ":" + t + ", ", ex);
+					throw new RuntimeException("for " + c + ":" + t, ex);
 				}
 			};
 		}
@@ -83,7 +83,7 @@ public class FltPrimitives {
 				try {
 					return test(c);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + c + ", ", ex);
+					throw new RuntimeException("for " + c, ex);
 				}
 			};
 		}
@@ -112,11 +112,31 @@ public class FltPrimitives {
 	@FunctionalInterface
 	public interface Obj_Flt<T> {
 		public float apply(T t);
+
+		public default Obj_Flt<T> rethrow() {
+			return t -> {
+				try {
+					return apply(t);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + t, ex);
+				}
+			};
+		}
 	}
 
 	@FunctionalInterface
 	public interface ObjObj_Flt<X, Y> {
 		public float apply(X x, Y y);
+
+		public default ObjObj_Flt<X, Y> rethrow() {
+			return (x, y) -> {
+				try {
+					return apply(x, y);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + x + ":" + y, ex);
+				}
+			};
+		}
 	}
 
 }

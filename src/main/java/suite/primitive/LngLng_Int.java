@@ -9,7 +9,7 @@ public interface LngLng_Int {
 			try {
 				return apply(c, f);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + c + ", " + f, ex);
+				throw new RuntimeException("for " + c + ":" + f, ex);
 			}
 		};
 

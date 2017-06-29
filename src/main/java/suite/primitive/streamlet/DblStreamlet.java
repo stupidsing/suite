@@ -19,11 +19,13 @@ import suite.primitive.DblPrimitives.DblPredicate;
 import suite.primitive.DblPrimitives.DblSink;
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.DblPrimitives.Dbl_Obj;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.DblObjMap;
+import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Fun;
@@ -34,6 +36,17 @@ import suite.util.To;
 public class DblStreamlet implements Iterable<Double> {
 
 	private Source<DblOutlet> in;
+
+	public static <T> Fun<Outlet<T>, DblStreamlet> collect(Obj_Dbl<T> fun0) {
+		Obj_Dbl<T> fun1 = fun0.rethrow();
+		return ts -> {
+			DoublesBuilder cb = new DoublesBuilder();
+			T t;
+			while ((t = ts.next()) != null)
+				cb.append(fun1.apply(t));
+			return cb.toDoubles().streamlet();
+		};
+	}
 
 	@SafeVarargs
 	public static DblStreamlet concat(DblStreamlet... streamlets) {

@@ -174,7 +174,7 @@ public class Longs implements Iterable<Long> {
 	}
 
 	public Longs sort() {
-		long[] cs = toLongArray();
+		long[] cs = toArray();
 		Arrays.sort(cs);
 		return Longs.of(cs);
 	}
@@ -187,7 +187,7 @@ public class Longs implements Iterable<Long> {
 		return startsWith_(longs, s);
 	}
 
-	public long[] toLongArray() {
+	public long[] toArray() {
 		if (start != 0 || end != cs.length)
 			return Arrays.copyOfRange(cs, start, end);
 		else

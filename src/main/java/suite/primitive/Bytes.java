@@ -159,7 +159,7 @@ public class Bytes implements Iterable<Byte> {
 		return startsWith_(bytes, s);
 	}
 
-	public byte[] toByteArray() {
+	public byte[] toArray() {
 		if (start != 0 || end != bs.length)
 			return Arrays.copyOfRange(bs, start, end);
 		else

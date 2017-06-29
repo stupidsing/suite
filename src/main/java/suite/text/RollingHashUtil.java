@@ -9,7 +9,7 @@ public class RollingHashUtil {
 	 */
 	public int hash(Bytes bytes) {
 		int rollingHash = 0;
-		for (byte b : bytes.toByteArray())
+		for (byte b : bytes.toArray())
 			rollingHash = roll(rollingHash, b);
 		return rollingHash;
 	}

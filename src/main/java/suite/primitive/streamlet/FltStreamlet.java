@@ -21,9 +21,11 @@ import suite.primitive.FltPrimitives.FltPredicate;
 import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.FltPrimitives.Flt_Obj;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.FltObjMap;
+import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Fun;
@@ -34,6 +36,17 @@ import suite.util.To;
 public class FltStreamlet implements Iterable<Float> {
 
 	private Source<FltOutlet> in;
+
+	public static <T> Fun<Outlet<T>, FltStreamlet> collect(Obj_Flt<T> fun0) {
+		Obj_Flt<T> fun1 = fun0.rethrow();
+		return ts -> {
+			FloatsBuilder cb = new FloatsBuilder();
+			T t;
+			while ((t = ts.next()) != null)
+				cb.append(fun1.apply(t));
+			return cb.toFloats().streamlet();
+		};
+	}
 
 	@SafeVarargs
 	public static FltStreamlet concat(FltStreamlet... streamlets) {

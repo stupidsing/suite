@@ -19,11 +19,13 @@ import suite.primitive.IntPrimitives.IntPredicate;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.IntPrimitives.Int_Obj;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.Ints;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.IntObjMap;
+import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Fun;
@@ -34,6 +36,17 @@ import suite.util.To;
 public class IntStreamlet implements Iterable<Integer> {
 
 	private Source<IntOutlet> in;
+
+	public static <T> Fun<Outlet<T>, IntStreamlet> collect(Obj_Int<T> fun0) {
+		Obj_Int<T> fun1 = fun0.rethrow();
+		return ts -> {
+			IntsBuilder cb = new IntsBuilder();
+			T t;
+			while ((t = ts.next()) != null)
+				cb.append(fun1.apply(t));
+			return cb.toInts().streamlet();
+		};
+	}
 
 	@SafeVarargs
 	public static IntStreamlet concat(IntStreamlet... streamlets) {

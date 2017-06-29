@@ -368,7 +368,7 @@ public class DblOutlet implements Iterable<Double> {
 
 	public double[] toArray() {
 		DoublesBuilder list = toList();
-		return list.toDoubles().toDoubleArray();
+		return list.toDoubles().toArray();
 	}
 
 	public DoublesBuilder toList() {
