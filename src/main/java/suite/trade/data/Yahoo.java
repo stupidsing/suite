@@ -18,6 +18,7 @@ import suite.Constants;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.primitive.FltPrimitives.Obj_Flt;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -85,7 +86,8 @@ public class Yahoo {
 
 			long[] epochs = jsons //
 					.flatMap(json_ -> json_.path("timestamp")) //
-					.collect(As.arrayOfLongs(JsonNode::longValue));
+					.collect(Obj_Lng.lift(JsonNode::longValue)) //
+					.toArray();
 
 			int length = epochs.length;
 
