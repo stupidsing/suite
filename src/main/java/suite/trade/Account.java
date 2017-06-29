@@ -3,8 +3,8 @@ package suite.trade;
 import java.util.HashMap;
 import java.util.Map;
 
+import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.Dbl_Dbl;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.String_;
@@ -108,7 +108,7 @@ public class Account {
 		}
 
 		public float sum() {
-			return (float) Read.from2(valuationBySymbol).collectAsDouble(As.sumOfDoubles((symbol, v) -> v));
+			return (float) Read.from2(valuationBySymbol).collectAsDouble(ObjObj_Dbl.sum((symbol, v) -> v));
 		}
 	}
 

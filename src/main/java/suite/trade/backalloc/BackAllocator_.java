@@ -9,6 +9,7 @@ import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.MeanVariance;
+import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -120,7 +121,7 @@ public class BackAllocator_ {
 					.filterValue(return_ -> 0d < return_) //
 					.collect(As::streamlet2);
 
-			double sum = returns.collectAsDouble(As.sumOfDoubles((symbol, price) -> price));
+			double sum = returns.collectAsDouble(ObjObj_Dbl.sum((symbol, price) -> price));
 			return returns.mapValue(return_ -> return_ / sum).toList();
 		};
 	}

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.ToIntBiFunction;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
@@ -21,22 +20,13 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
-import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.FltPrimitives.ObjObj_Flt;
 import suite.primitive.FltPrimitives.Obj_Flt;
-import suite.primitive.IntObj_Dbl;
-import suite.primitive.IntObj_Flt;
-import suite.primitive.IntObj_Int;
-import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.LngPrimitives.Obj_Lng;
-import suite.primitive.adt.pair.IntObjPair;
-import suite.primitive.streamlet.IntObjOutlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Source2;
 import suite.util.To;
 
 public class As {
@@ -258,72 +248,6 @@ public class As {
 
 	public static String string(Outlet<Bytes> outlet) {
 		return To.string(bytes(outlet));
-	}
-
-	public static <T> Obj_Dbl<IntObjOutlet<T>> sumOfDoubles(double d, IntObj_Dbl<T> fun) {
-		return outlet -> {
-			IntObjPair<T> pair = IntObjPair.of(0, null);
-			IntObjSource<T> source = outlet.source();
-			double result = d;
-			while (source.source2(pair))
-				result += fun.apply(pair.t0, pair.t1);
-			return result;
-		};
-	}
-
-	public static <K, V> Obj_Dbl<Outlet2<K, V>> sumOfDoubles(ObjObj_Dbl<K, V> fun) {
-		return outlet -> {
-			Pair<K, V> pair = Pair.of(null, null);
-			Source2<K, V> source = outlet.source();
-			double result = 0d;
-			while (source.source2(pair))
-				result += fun.apply(pair.t0, pair.t1);
-			return result;
-		};
-	}
-
-	public static <T> Obj_Flt<IntObjOutlet<T>> sumOfFloats(float f, IntObj_Flt<T> fun) {
-		return outlet -> {
-			IntObjPair<T> pair = IntObjPair.of(0, null);
-			IntObjSource<T> source = outlet.source();
-			float result = f;
-			while (source.source2(pair))
-				result += fun.apply(pair.t0, pair.t1);
-			return result;
-		};
-	}
-
-	public static <K, V> Obj_Flt<Outlet2<K, V>> sumOfFloats(ObjObj_Flt<K, V> fun) {
-		return outlet -> {
-			Pair<K, V> pair = Pair.of(null, null);
-			Source2<K, V> source = outlet.source();
-			float result = 0f;
-			while (source.source2(pair))
-				result += fun.apply(pair.t0, pair.t1);
-			return result;
-		};
-	}
-
-	public static <T> Obj_Int<IntObjOutlet<T>> sumOfInts(int i, IntObj_Int<T> fun) {
-		return outlet -> {
-			IntObjPair<T> pair = IntObjPair.of(0, null);
-			IntObjSource<T> source = outlet.source();
-			int result = i;
-			while (source.source2(pair))
-				result += fun.apply(pair.t0, pair.t1);
-			return result;
-		};
-	}
-
-	public static <K, V> Obj_Int<Outlet2<K, V>> sumOfInts(ToIntBiFunction<K, V> fun) {
-		return outlet -> {
-			Pair<K, V> pair = Pair.of(null, null);
-			Source2<K, V> source = outlet.source();
-			int result = 0;
-			while (source.source2(pair))
-				result += fun.applyAsInt(pair.t0, pair.t1);
-			return result;
-		};
 	}
 
 	public Reader asReader(Chars chars) {

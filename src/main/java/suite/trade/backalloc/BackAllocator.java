@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
+import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -279,7 +280,7 @@ class BackAllocatorUtil {
 	}
 
 	static double totalPotential(List<Pair<String, Double>> potentialBySymbol) {
-		return Read.from2(potentialBySymbol).collectAsDouble(As.sumOfDoubles((symbol, potential) -> potential));
+		return Read.from2(potentialBySymbol).collectAsDouble(ObjObj_Dbl.sum((symbol, potential) -> potential));
 	}
 
 }
