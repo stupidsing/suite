@@ -78,7 +78,7 @@ public class Yahoo {
 		Time time = HkexUtil.getCloseTimeBefore(Time.now());
 		StockHistory stockHistory1;
 
-		if (stockHistory0.time.compareTo(time) < 0) {
+		if (Time.compare(stockHistory0.time, time) < 0) {
 			JsonNode json = queryL1(symbol, TimeRange.of(stockHistory0.time.addDays(-14), Time.now()));
 
 			Streamlet<JsonNode> jsons = Read.each(json) //
@@ -123,7 +123,7 @@ public class Yahoo {
 					.sort(LngFltPair.comparatorByFirst()) //
 					.toArray(LngFltPair.class);
 
-			stockHistory1 = StockHistory.of(data, dividends, splits).merge(stockHistory0).alignToDate();
+			stockHistory1 = StockHistory.of(time, data, dividends, splits).merge(stockHistory0).alignToDate();
 
 			List<String> lines = stockHistory1.write().toList();
 			Rethrow.ex(() -> Files.write(path, lines));

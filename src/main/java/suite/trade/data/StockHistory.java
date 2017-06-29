@@ -57,10 +57,6 @@ public class StockHistory {
 		return of(TimeRange.min, new HashMap<>(), new LngFltPair[0], new LngFltPair[0]);
 	}
 
-	public static StockHistory of(Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
-		return of(HkexUtil.getTradeTimeBefore(Time.now()), data, dividends, splits);
-	}
-
 	public static StockHistory of(Time time, Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
 		return new StockHistory(time, data, dividends, splits);
 	}
@@ -77,7 +73,7 @@ public class StockHistory {
 	}
 
 	public StockHistory cleanse() {
-		return StockHistory.of(Read.from2(data).mapValue(cleanse::cleanse).toMap(), dividends, splits);
+		return StockHistory.of(time, Read.from2(data).mapValue(cleanse::cleanse).toMap(), dividends, splits);
 	}
 
 	public StockHistory filter(TimeRange period) {
@@ -94,7 +90,7 @@ public class StockHistory {
 		Map<String, LngFltPair[]> data1 = Read.from2(data) //
 				.mapValue(filter_) //
 				.toMap();
-		return of(data1, filter_.apply(dividends), filter_.apply(splits));
+		return of(time, data1, filter_.apply(dividends), filter_.apply(splits));
 	}
 
 	public StockHistory merge(StockHistory other) {
@@ -123,7 +119,7 @@ public class StockHistory {
 		Map<String, LngFltPair[]> data1 = Read.from(keys) //
 				.map2(key -> merge_.apply(get(key), other.get(key))) //
 				.toMap();
-		return of(data1, merge_.apply(dividends, other.dividends), merge_.apply(splits, other.splits));
+		return of(time, data1, merge_.apply(dividends, other.dividends), merge_.apply(splits, other.splits));
 	}
 
 	public StockHistory alignToDate() {
@@ -141,7 +137,7 @@ public class StockHistory {
 		Map<String, LngFltPair[]> data1 = Read.from2(data) //
 				.mapValue(align_) //
 				.toMap();
-		return of(data1, align_.apply(dividends), align_.apply(splits));
+		return of(time, data1, align_.apply(dividends), align_.apply(splits));
 	}
 
 	public DataSource adjustPrices(String tag) {

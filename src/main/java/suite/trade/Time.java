@@ -126,7 +126,7 @@ public class Time implements Comparable<Time> {
 	}
 
 	public Time thisSecond() {
-		return new Time(dateTime.withSecond(0));
+		return new Time(dateTime.withNano(0));
 	}
 
 	public int year() {
