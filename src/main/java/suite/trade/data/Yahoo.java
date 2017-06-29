@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import suite.Constants;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -53,7 +54,8 @@ public class Yahoo {
 				.toArray(String.class);
 
 		float[] prices = Read.from(arrays) //
-				.collect(As.arrayOfFloats(array -> Float.parseFloat(array[1])));
+				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))) //
+				.toArray();
 
 		adjust(symbol, dates, prices);
 
@@ -101,7 +103,7 @@ public class Yahoo {
 
 			Map<String, LngFltPair[]> data = Streamlet2.concat(dataJsons0, dataJsons1) //
 					.mapValue(json_ -> {
-						float[] fs = json_.collect(As.arrayOfFloats(JsonNode::floatValue));
+						float[] fs = json_.collect(Obj_Flt.lift(JsonNode::floatValue)).toArray();
 						return To.array(LngFltPair.class, length, i -> LngFltPair.of(epochs[i], fs[i]));
 					}) //
 					.toMap();
@@ -177,7 +179,7 @@ public class Yahoo {
 						.collect(As::streamlet);
 
 				String[] dates = arrays.map(array -> array[0]).toArray(String.class);
-				float[] prices = arrays.map(array -> array[1]).collect(As.arrayOfFloats(Float::parseFloat));
+				float[] prices = arrays.map(array -> array[1]).collect(Obj_Flt.lift(Float::parseFloat)).toArray();
 				return new DataSource(dates, prices);
 			}
 		});

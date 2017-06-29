@@ -20,8 +20,6 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
-import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.util.FunUtil.Fun;
@@ -33,44 +31,6 @@ public class As {
 
 	public interface Seq<I, O> {
 		public O apply(int index, I i);
-	}
-
-	public static <T> Fun<Outlet<T>, double[]> arrayOfDoubles(Obj_Dbl<T> fun) {
-		return new Fun<Outlet<T>, double[]>() {
-			public double[] apply(Outlet<T> outlet) {
-				double results[] = new double[16];
-				int size = 0;
-				T t;
-
-				while (true) {
-					while (size < results.length)
-						if ((t = outlet.next()) != null)
-							results[size++] = fun.apply(t);
-						else
-							return Arrays.copyOf(results, size);
-					results = Arrays.copyOf(results, results.length * 2);
-				}
-			}
-		};
-	}
-
-	public static <T> Fun<Outlet<T>, float[]> arrayOfFloats(Obj_Flt<T> fun) {
-		return new Fun<Outlet<T>, float[]>() {
-			public float[] apply(Outlet<T> outlet) {
-				float[] results = new float[16];
-				int size = 0;
-				T t;
-
-				while (true) {
-					while (size < results.length)
-						if ((t = outlet.next()) != null)
-							results[size++] = fun.apply(t);
-						else
-							return Arrays.copyOf(results, size);
-					results = Arrays.copyOf(results, results.length * 2);
-				}
-			}
-		};
 	}
 
 	public static <T> Fun<Outlet<T>, int[]> arrayOfInts(Obj_Int<T> fun) {

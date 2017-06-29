@@ -1,6 +1,7 @@
 package suite.trade.analysis;
 
 import suite.math.stat.Statistic;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -44,7 +45,9 @@ public class BackTester {
 				.map((key, simulate) -> "\nTEST = " + key + ", " + simulate.conclusion());
 
 		Streamlet<String> results1 = simulationsByKey //
-				.groupBy(sims -> stat.meanVariance(sims.collect(As.arrayOfFloats(sim -> (float) sim.annualReturn)))) //
+				.groupBy(sims -> stat.meanVariance(sims //
+						.collect(Obj_Flt.lift(sim -> (float) sim.annualReturn)) //
+						.toArray())) //
 				.map((key, mv) -> {
 					double apr = mv.mean;
 					double sd = mv.standardDeviation();
