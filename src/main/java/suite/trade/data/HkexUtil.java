@@ -45,17 +45,17 @@ public class HkexUtil {
 		return until(time, 1, HkexUtil::isMarketOpen_);
 	}
 
-	private static Time until(Time time, int dir, Predicate<Time> pred) {
-		Time dt = time;
-		if (!pred.test(dt)) {
-			dt = dt.thisSecond().addSeconds(dir < 0 ? 0 : 1);
-			Time dt1 = null;
+	private static Time until(Time start, int dir, Predicate<Time> pred) {
+		Time t = start;
+		if (!pred.test(t)) {
+			t = t.thisSecond().addSeconds(dir < 0 ? 0 : 1);
+			Time t1 = null;
 			for (int d : new int[] { 14400, 3600, 300, 30, 5, 1, })
-				while (!pred.test(dt1 = dt.addSeconds(dir * d)))
-					dt = dt1;
-			dt = dt1;
+				while (!pred.test(t1 = t.addSeconds(dir * d)))
+					t = t1;
+			t = t1;
 		}
-		return dt;
+		return t;
 	}
 
 	private static boolean isMarketOpen_(Time time) {
