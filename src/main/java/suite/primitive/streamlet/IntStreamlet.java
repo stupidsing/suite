@@ -37,17 +37,6 @@ public class IntStreamlet implements Iterable<Integer> {
 
 	private Source<IntOutlet> in;
 
-	public static <T> Fun<Outlet<T>, IntStreamlet> collect(Obj_Int<T> fun0) {
-		Obj_Int<T> fun1 = fun0.rethrow();
-		return ts -> {
-			IntsBuilder cb = new IntsBuilder();
-			T t;
-			while ((t = ts.next()) != null)
-				cb.append(fun1.apply(t));
-			return cb.toInts().streamlet();
-		};
-	}
-
 	@SafeVarargs
 	public static IntStreamlet concat(IntStreamlet... streamlets) {
 		return streamlet(() -> {
@@ -56,6 +45,17 @@ public class IntStreamlet implements Iterable<Integer> {
 				sources.add(streamlet.in.source().source());
 			return IntOutlet.of(IntFunUtil.concat(To.source(sources)));
 		});
+	}
+
+	public static <T> Fun<Outlet<T>, IntStreamlet> from(Obj_Int<T> fun0) {
+		Obj_Int<T> fun1 = fun0.rethrow();
+		return ts -> {
+			IntsBuilder cb = new IntsBuilder();
+			T t;
+			while ((t = ts.next()) != null)
+				cb.append(fun1.apply(t));
+			return cb.toInts().streamlet();
+		};
 	}
 
 	public static IntStreamlet from(int[] ts) {

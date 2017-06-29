@@ -37,17 +37,6 @@ public class FltStreamlet implements Iterable<Float> {
 
 	private Source<FltOutlet> in;
 
-	public static <T> Fun<Outlet<T>, FltStreamlet> collect(Obj_Flt<T> fun0) {
-		Obj_Flt<T> fun1 = fun0.rethrow();
-		return ts -> {
-			FloatsBuilder cb = new FloatsBuilder();
-			T t;
-			while ((t = ts.next()) != null)
-				cb.append(fun1.apply(t));
-			return cb.toFloats().streamlet();
-		};
-	}
-
 	@SafeVarargs
 	public static FltStreamlet concat(FltStreamlet... streamlets) {
 		return streamlet(() -> {
@@ -56,6 +45,17 @@ public class FltStreamlet implements Iterable<Float> {
 				sources.add(streamlet.in.source().source());
 			return FltOutlet.of(FltFunUtil.concat(To.source(sources)));
 		});
+	}
+
+	public static <T> Fun<Outlet<T>, FltStreamlet> from(Obj_Flt<T> fun0) {
+		Obj_Flt<T> fun1 = fun0.rethrow();
+		return ts -> {
+			FloatsBuilder cb = new FloatsBuilder();
+			T t;
+			while ((t = ts.next()) != null)
+				cb.append(fun1.apply(t));
+			return cb.toFloats().streamlet();
+		};
 	}
 
 	public static FltStreamlet from(float[] ts) {

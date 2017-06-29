@@ -37,17 +37,6 @@ public class DblStreamlet implements Iterable<Double> {
 
 	private Source<DblOutlet> in;
 
-	public static <T> Fun<Outlet<T>, DblStreamlet> collect(Obj_Dbl<T> fun0) {
-		Obj_Dbl<T> fun1 = fun0.rethrow();
-		return ts -> {
-			DoublesBuilder cb = new DoublesBuilder();
-			T t;
-			while ((t = ts.next()) != null)
-				cb.append(fun1.apply(t));
-			return cb.toDoubles().streamlet();
-		};
-	}
-
 	@SafeVarargs
 	public static DblStreamlet concat(DblStreamlet... streamlets) {
 		return streamlet(() -> {
@@ -56,6 +45,17 @@ public class DblStreamlet implements Iterable<Double> {
 				sources.add(streamlet.in.source().source());
 			return DblOutlet.of(DblFunUtil.concat(To.source(sources)));
 		});
+	}
+
+	public static <T> Fun<Outlet<T>, DblStreamlet> from(Obj_Dbl<T> fun0) {
+		Obj_Dbl<T> fun1 = fun0.rethrow();
+		return ts -> {
+			DoublesBuilder cb = new DoublesBuilder();
+			T t;
+			while ((t = ts.next()) != null)
+				cb.append(fun1.apply(t));
+			return cb.toDoubles().streamlet();
+		};
 	}
 
 	public static DblStreamlet from(double[] ts) {
