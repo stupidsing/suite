@@ -1,10 +1,10 @@
 replace() {
   python -c "if True:
-    wsc = ['Character', 'CharBuffer', 'Chars', 'Chr', 'char', 'chr']
-    wsd = ['Double', 'DoubleBuffer', 'Doubles', 'Dbl', 'double', 'dbl']
-    wsf = ['Float', 'FloatBuffer', 'Floats', 'Flt', 'float', 'flt']
-    wsi = ['Integer', 'IntBuffer', 'Ints', 'Int', 'int', 'int']
-    wsl = ['Long', 'LongBuffer', 'Longs', 'Lng', 'long', 'lng']
+    wsc = ['CharBuffer', 'Chars', 'Character', 'Chr', 'char', 'chr']
+    wsd = ['DoubleBuffer', 'Doubles', 'Double', 'Dbl', 'double', 'dbl']
+    wsf = ['FloatBuffer', 'Floats', 'Float', 'Flt', 'float', 'flt']
+    wsi = ['IntBuffer', 'Ints', 'Integer', 'Int', 'int', 'int']
+    wsl = ['LongBuffer', 'Longs', 'Long', 'Lng', 'long', 'lng']
 
     repls0 = [wsc, wsd, wsf, wsi, wsl]
     repls1 = [wsc, wsd, wsf, wsi, wsl]

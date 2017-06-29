@@ -1,6 +1,20 @@
 package suite.primitive;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import suite.adt.pair.Pair;
+import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.pair.DblObjPair;
+import suite.primitive.streamlet.DblOutlet;
+import suite.primitive.streamlet.DblStreamlet;
+import suite.streamlet.Outlet;
+import suite.streamlet.Outlet2;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Source2;
 
 public class DblPrimitives {
 
@@ -12,6 +26,17 @@ public class DblPrimitives {
 	@FunctionalInterface
 	public interface Dbl_Obj<T> {
 		public T apply(double c);
+
+		public static <T> Fun<DblOutlet, Streamlet<T>> lift(Dbl_Obj<T> fun0) {
+			Dbl_Obj<T> fun1 = fun0.rethrow();
+			return s -> {
+				List<T> ts = new ArrayList<>();
+				double c;
+				while ((c = s.next()) != DblFunUtil.EMPTYVALUE)
+					ts.add(fun1.apply(c));
+				return Read.from(ts);
+			};
+		}
 
 		public default Dbl_Obj<T> rethrow() {
 			return i -> {
@@ -113,6 +138,29 @@ public class DblPrimitives {
 	public interface Obj_Dbl<T> {
 		public double apply(T t);
 
+		public static <T> Fun<Outlet<T>, DblStreamlet> lift(Obj_Dbl<T> fun0) {
+			Obj_Dbl<T> fun1 = fun0.rethrow();
+			return ts -> {
+				DoublesBuilder b = new DoublesBuilder();
+				T t;
+				while ((t = ts.next()) != null)
+					b.append(fun1.apply(t));
+				return b.toDoubles().streamlet();
+			};
+		}
+
+		public static <T> Obj_Dbl<Outlet<T>> sum(Obj_Dbl<T> fun0) {
+			Obj_Dbl<T> fun1 = fun0.rethrow();
+			return outlet -> {
+				Source<T> source = outlet.source();
+				T t;
+				double result = (double) 0;
+				while ((t = source.source()) != null)
+					result += fun1.apply(t);
+				return result;
+			};
+		}
+
 		public default Obj_Dbl<T> rethrow() {
 			return t -> {
 				try {
@@ -127,6 +175,18 @@ public class DblPrimitives {
 	@FunctionalInterface
 	public interface ObjObj_Dbl<X, Y> {
 		public double apply(X x, Y y);
+
+		public static <K, V> Obj_Dbl<Outlet2<K, V>> sum(ObjObj_Dbl<K, V> fun0) {
+			ObjObj_Dbl<K, V> fun1 = fun0.rethrow();
+			return outlet -> {
+				Pair<K, V> pair = Pair.of(null, null);
+				Source2<K, V> source = outlet.source();
+				double result = (double) 0;
+				while (source.source2(pair))
+					result += fun1.apply(pair.t0, pair.t1);
+				return result;
+			};
+		}
 
 		public default ObjObj_Dbl<X, Y> rethrow() {
 			return (x, y) -> {

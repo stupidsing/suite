@@ -1,6 +1,20 @@
 package suite.primitive;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import suite.adt.pair.Pair;
+import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.pair.IntObjPair;
+import suite.primitive.streamlet.IntOutlet;
+import suite.primitive.streamlet.IntStreamlet;
+import suite.streamlet.Outlet;
+import suite.streamlet.Outlet2;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Source2;
 
 public class IntPrimitives {
 
@@ -12,6 +26,17 @@ public class IntPrimitives {
 	@FunctionalInterface
 	public interface Int_Obj<T> {
 		public T apply(int c);
+
+		public static <T> Fun<IntOutlet, Streamlet<T>> lift(Int_Obj<T> fun0) {
+			Int_Obj<T> fun1 = fun0.rethrow();
+			return s -> {
+				List<T> ts = new ArrayList<>();
+				int c;
+				while ((c = s.next()) != IntFunUtil.EMPTYVALUE)
+					ts.add(fun1.apply(c));
+				return Read.from(ts);
+			};
+		}
 
 		public default Int_Obj<T> rethrow() {
 			return i -> {
@@ -113,6 +138,29 @@ public class IntPrimitives {
 	public interface Obj_Int<T> {
 		public int apply(T t);
 
+		public static <T> Fun<Outlet<T>, IntStreamlet> lift(Obj_Int<T> fun0) {
+			Obj_Int<T> fun1 = fun0.rethrow();
+			return ts -> {
+				IntsBuilder b = new IntsBuilder();
+				T t;
+				while ((t = ts.next()) != null)
+					b.append(fun1.apply(t));
+				return b.toInts().streamlet();
+			};
+		}
+
+		public static <T> Obj_Int<Outlet<T>> sum(Obj_Int<T> fun0) {
+			Obj_Int<T> fun1 = fun0.rethrow();
+			return outlet -> {
+				Source<T> source = outlet.source();
+				T t;
+				int result = (int) 0;
+				while ((t = source.source()) != null)
+					result += fun1.apply(t);
+				return result;
+			};
+		}
+
 		public default Obj_Int<T> rethrow() {
 			return t -> {
 				try {
@@ -127,6 +175,18 @@ public class IntPrimitives {
 	@FunctionalInterface
 	public interface ObjObj_Int<X, Y> {
 		public int apply(X x, Y y);
+
+		public static <K, V> Obj_Int<Outlet2<K, V>> sum(ObjObj_Int<K, V> fun0) {
+			ObjObj_Int<K, V> fun1 = fun0.rethrow();
+			return outlet -> {
+				Pair<K, V> pair = Pair.of(null, null);
+				Source2<K, V> source = outlet.source();
+				int result = (int) 0;
+				while (source.source2(pair))
+					result += fun1.apply(pair.t0, pair.t1);
+				return result;
+			};
+		}
 
 		public default ObjObj_Int<X, Y> rethrow() {
 			return (x, y) -> {

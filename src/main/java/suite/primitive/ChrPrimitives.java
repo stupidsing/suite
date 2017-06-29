@@ -1,6 +1,20 @@
 package suite.primitive;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import suite.adt.pair.Pair;
+import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.adt.pair.ChrObjPair;
+import suite.primitive.streamlet.ChrOutlet;
+import suite.primitive.streamlet.ChrStreamlet;
+import suite.streamlet.Outlet;
+import suite.streamlet.Outlet2;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Source2;
 
 public class ChrPrimitives {
 
@@ -12,6 +26,17 @@ public class ChrPrimitives {
 	@FunctionalInterface
 	public interface Chr_Obj<T> {
 		public T apply(char c);
+
+		public static <T> Fun<ChrOutlet, Streamlet<T>> lift(Chr_Obj<T> fun0) {
+			Chr_Obj<T> fun1 = fun0.rethrow();
+			return s -> {
+				List<T> ts = new ArrayList<>();
+				char c;
+				while ((c = s.next()) != ChrFunUtil.EMPTYVALUE)
+					ts.add(fun1.apply(c));
+				return Read.from(ts);
+			};
+		}
 
 		public default Chr_Obj<T> rethrow() {
 			return i -> {
@@ -113,6 +138,29 @@ public class ChrPrimitives {
 	public interface Obj_Chr<T> {
 		public char apply(T t);
 
+		public static <T> Fun<Outlet<T>, ChrStreamlet> lift(Obj_Chr<T> fun0) {
+			Obj_Chr<T> fun1 = fun0.rethrow();
+			return ts -> {
+				CharsBuilder b = new CharsBuilder();
+				T t;
+				while ((t = ts.next()) != null)
+					b.append(fun1.apply(t));
+				return b.toChars().streamlet();
+			};
+		}
+
+		public static <T> Obj_Chr<Outlet<T>> sum(Obj_Chr<T> fun0) {
+			Obj_Chr<T> fun1 = fun0.rethrow();
+			return outlet -> {
+				Source<T> source = outlet.source();
+				T t;
+				char result = (char) 0;
+				while ((t = source.source()) != null)
+					result += fun1.apply(t);
+				return result;
+			};
+		}
+
 		public default Obj_Chr<T> rethrow() {
 			return t -> {
 				try {
@@ -127,6 +175,18 @@ public class ChrPrimitives {
 	@FunctionalInterface
 	public interface ObjObj_Chr<X, Y> {
 		public char apply(X x, Y y);
+
+		public static <K, V> Obj_Chr<Outlet2<K, V>> sum(ObjObj_Chr<K, V> fun0) {
+			ObjObj_Chr<K, V> fun1 = fun0.rethrow();
+			return outlet -> {
+				Pair<K, V> pair = Pair.of(null, null);
+				Source2<K, V> source = outlet.source();
+				char result = (char) 0;
+				while (source.source2(pair))
+					result += fun1.apply(pair.t0, pair.t1);
+				return result;
+			};
+		}
 
 		public default ObjObj_Chr<X, Y> rethrow() {
 			return (x, y) -> {
