@@ -112,7 +112,7 @@ public class To {
 	}
 
 	public static Bytes bytes(InputStream is) {
-		return outlet(is).collect(As::bytes);
+		return outlet(is).collect(Bytes::of);
 	}
 
 	public static Bytes bytes(IoSink<DataOutput_> ioSink) {

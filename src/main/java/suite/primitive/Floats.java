@@ -10,6 +10,7 @@ import suite.Constants;
 import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.FltStreamlet;
+import suite.streamlet.Outlet;
 import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
@@ -45,6 +46,12 @@ public class Floats implements Iterable<Float> {
 
 		return c != 0 ? c : size0 - size1;
 	};
+
+	public static Floats of(Outlet<Floats> outlet) {
+		FloatsBuilder cb = new FloatsBuilder();
+		outlet.forEach(cb::append);
+		return cb.toFloats();
+	}
 
 	public static Floats of(FloatBuffer cb) {
 		int offset = cb.arrayOffset();

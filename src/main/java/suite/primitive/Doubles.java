@@ -10,6 +10,7 @@ import suite.Constants;
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
+import suite.streamlet.Outlet;
 import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
@@ -45,6 +46,12 @@ public class Doubles implements Iterable<Double> {
 
 		return c != 0 ? c : size0 - size1;
 	};
+
+	public static Doubles of(Outlet<Doubles> outlet) {
+		DoublesBuilder cb = new DoublesBuilder();
+		outlet.forEach(cb::append);
+		return cb.toDoubles();
+	}
 
 	public static Doubles of(DoubleBuffer cb) {
 		int offset = cb.arrayOffset();

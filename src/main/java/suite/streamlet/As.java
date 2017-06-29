@@ -31,18 +31,6 @@ public class As {
 		public O apply(int index, I i);
 	}
 
-	public static Bytes bytes(Outlet<Bytes> outlet) {
-		BytesBuilder bb = new BytesBuilder();
-		outlet.forEach(bb::append);
-		return bb.toBytes();
-	}
-
-	public static Chars chars(Outlet<Chars> outlet) {
-		CharsBuilder cb = new CharsBuilder();
-		outlet.forEach(cb::append);
-		return cb.toChars();
-	}
-
 	public static Fun<Outlet<String>, String> conc(String delimiter) {
 		return outlet -> {
 			StringBuilder sb = new StringBuilder();
@@ -167,7 +155,7 @@ public class As {
 	}
 
 	public static String string(Outlet<Bytes> outlet) {
-		return To.string(bytes(outlet));
+		return To.string(Bytes.of(outlet));
 	}
 
 	public Reader asReader(Chars chars) {

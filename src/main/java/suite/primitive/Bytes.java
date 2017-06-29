@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.Constants;
+import suite.streamlet.Outlet;
 import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
@@ -42,6 +43,12 @@ public class Bytes implements Iterable<Byte> {
 
 		return c != 0 ? c : size0 - size1;
 	};
+
+	public static Bytes of(Outlet<Bytes> outlet) {
+		BytesBuilder bb = new BytesBuilder();
+		outlet.forEach(bb::append);
+		return bb.toBytes();
+	}
 
 	public static Bytes of(ByteBuffer bb) {
 		int offset = bb.arrayOffset();

@@ -10,6 +10,7 @@ import suite.Constants;
 import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.streamlet.LngOutlet;
 import suite.primitive.streamlet.LngStreamlet;
+import suite.streamlet.Outlet;
 import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
@@ -45,6 +46,12 @@ public class Longs implements Iterable<Long> {
 
 		return c != 0 ? c : size0 - size1;
 	};
+
+	public static Longs of(Outlet<Longs> outlet) {
+		LongsBuilder cb = new LongsBuilder();
+		outlet.forEach(cb::append);
+		return cb.toLongs();
+	}
 
 	public static Longs of(LongBuffer cb) {
 		int offset = cb.arrayOffset();

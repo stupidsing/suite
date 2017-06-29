@@ -10,6 +10,7 @@ import suite.Constants;
 import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.streamlet.ChrOutlet;
 import suite.primitive.streamlet.ChrStreamlet;
+import suite.streamlet.Outlet;
 import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
@@ -45,6 +46,12 @@ public class Chars implements Iterable<Character> {
 
 		return c != 0 ? c : size0 - size1;
 	};
+
+	public static Chars of(Outlet<Chars> outlet) {
+		CharsBuilder cb = new CharsBuilder();
+		outlet.forEach(cb::append);
+		return cb.toChars();
+	}
 
 	public static Chars of(CharBuffer cb) {
 		int offset = cb.arrayOffset();

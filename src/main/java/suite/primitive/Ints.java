@@ -10,6 +10,7 @@ import suite.Constants;
 import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.streamlet.IntOutlet;
 import suite.primitive.streamlet.IntStreamlet;
+import suite.streamlet.Outlet;
 import suite.util.Compare;
 import suite.util.Copy;
 import suite.util.FunUtil.Fun;
@@ -45,6 +46,12 @@ public class Ints implements Iterable<Integer> {
 
 		return c != 0 ? c : size0 - size1;
 	};
+
+	public static Ints of(Outlet<Ints> outlet) {
+		IntsBuilder cb = new IntsBuilder();
+		outlet.forEach(cb::append);
+		return cb.toInts();
+	}
 
 	public static Ints of(IntBuffer cb) {
 		int offset = cb.arrayOffset();
