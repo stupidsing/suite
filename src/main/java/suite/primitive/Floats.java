@@ -27,7 +27,7 @@ public class Floats implements Iterable<Float> {
 	public final int start, end;
 
 	@FunctionalInterface
-	public interface WriteFloat {
+	public interface WriteChar {
 		public void write(float[] cs, int offset, int length) throws IOException;
 	};
 
@@ -86,7 +86,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public static Floats concat(Floats... array) {
-		FltsBuilder bb = new FltsBuilder();
+		FloatsBuilder bb = new FloatsBuilder();
 		for (Floats floats : array)
 			bb.append(floats);
 		return bb.toFloats();
@@ -133,7 +133,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public Floats pad(int size) {
-		FltsBuilder cb = new FltsBuilder();
+		FloatsBuilder cb = new FloatsBuilder();
 		cb.append(this);
 		while (cb.size() < size)
 			cb.append((float) 0);
@@ -149,7 +149,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public Floats replace(Floats from, Floats to) {
-		FltsBuilder cb = new FltsBuilder();
+		FloatsBuilder cb = new FloatsBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(range_(i0, i));
@@ -208,7 +208,7 @@ public class Floats implements Iterable<Float> {
 		return of(cs, s, e);
 	}
 
-	public void write(WriteFloat out) {
+	public void write(WriteChar out) {
 		try {
 			out.write(cs, start, end - start);
 		} catch (IOException ex) {
@@ -306,25 +306,25 @@ public class Floats implements Iterable<Float> {
 		return end - start;
 	}
 
-	public static class FltsBuilder {
+	public static class FloatsBuilder {
 		private float[] cs = emptyArray;
 		private int size;
 
-		public FltsBuilder append(Floats floats) {
+		public FloatsBuilder append(Floats floats) {
 			return append(floats.cs, floats.start, floats.end);
 		}
 
-		public FltsBuilder append(float c) {
+		public FloatsBuilder append(float c) {
 			extendBuffer(size + 1);
 			cs[size++] = c;
 			return this;
 		}
 
-		public FltsBuilder append(float[] cs_) {
+		public FloatsBuilder append(float[] cs_) {
 			return append(cs_, 0, cs_.length);
 		}
 
-		public FltsBuilder append(float[] cs_, int start, int end) {
+		public FloatsBuilder append(float[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
 			Copy.floats(cs_, start, cs, size, inc);

@@ -3,7 +3,7 @@ package suite.primitive;
 import java.io.IOException;
 
 import suite.primitive.Ints.IntsBuilder;
-import suite.primitive.Ints.WriteInt;
+import suite.primitive.Ints.WriteChar;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -20,7 +20,7 @@ public class Ints_ {
 		});
 	}
 
-	public static void copy(Outlet<Ints> outlet, WriteInt writer) {
+	public static void copy(Outlet<Ints> outlet, WriteChar writer) {
 		Ints ints;
 		while ((ints = outlet.next()) != null)
 			try {

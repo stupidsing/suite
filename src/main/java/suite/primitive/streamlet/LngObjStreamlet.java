@@ -79,7 +79,7 @@ public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
 		return fun.apply(spawn());
 	}
 
-	public long collectAsLong(Obj_Lng<LngObjOutlet<V>> fun) {
+	public long collectAsChar(Obj_Lng<LngObjOutlet<V>> fun) {
 		return fun.apply(spawn());
 	}
 

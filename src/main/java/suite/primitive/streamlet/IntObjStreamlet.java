@@ -79,7 +79,7 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return fun.apply(spawn());
 	}
 
-	public int collectAsInt(Obj_Int<IntObjOutlet<V>> fun) {
+	public int collectAsChar(Obj_Int<IntObjOutlet<V>> fun) {
 		return fun.apply(spawn());
 	}
 

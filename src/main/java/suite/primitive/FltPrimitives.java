@@ -55,7 +55,7 @@ public class FltPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface FltObjSink<T> { // extends ObjFloatConsumer<T>
+	public interface FltObjSink<T> { // extends ObjCharConsumer<T>
 		public void sink2(float c, T t);
 
 		public default FltObjSink<T> rethrow() {

@@ -11,7 +11,7 @@ import java.util.Set;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.Chars;
-import suite.primitive.Chars.ChrsBuilder;
+import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrMutable;
 import suite.primitive.ChrOpt;
@@ -50,7 +50,7 @@ public class ChrStreamlet implements Iterable<Character> {
 	public static <T> Fun<Outlet<T>, ChrStreamlet> from(Obj_Chr<T> fun0) {
 		Obj_Chr<T> fun1 = fun0.rethrow();
 		return ts -> {
-			ChrsBuilder cb = new ChrsBuilder();
+			CharsBuilder cb = new CharsBuilder();
 			T t;
 			while ((t = ts.next()) != null)
 				cb.append(fun1.apply(t));
@@ -158,7 +158,7 @@ public class ChrStreamlet implements Iterable<Character> {
 		return join.apply(fork0.apply(this), fork1.apply(this));
 	}
 
-	public <V> ChrObjStreamlet<ChrsBuilder> groupBy() {
+	public <V> ChrObjStreamlet<CharsBuilder> groupBy() {
 		return new ChrObjStreamlet<>(() -> spawn().groupBy());
 	}
 
@@ -268,15 +268,15 @@ public class ChrStreamlet implements Iterable<Character> {
 		return spawn().toArray();
 	}
 
-	public ChrsBuilder toList() {
+	public CharsBuilder toList() {
 		return spawn().toList();
 	}
 
-	public <K> ChrObjMap<ChrsBuilder> toListMap() {
+	public <K> ChrObjMap<CharsBuilder> toListMap() {
 		return spawn().toListMap();
 	}
 
-	public <K> ChrObjMap<ChrsBuilder> toListMap(Chr_Chr valueFun) {
+	public <K> ChrObjMap<CharsBuilder> toListMap(Chr_Chr valueFun) {
 		return spawn().toListMap(valueFun);
 	}
 

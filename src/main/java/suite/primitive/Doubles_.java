@@ -2,8 +2,8 @@ package suite.primitive;
 
 import java.io.IOException;
 
-import suite.primitive.Doubles.DblsBuilder;
-import suite.primitive.Doubles.WriteDouble;
+import suite.primitive.Doubles.DoublesBuilder;
+import suite.primitive.Doubles.WriteChar;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -20,7 +20,7 @@ public class Doubles_ {
 		});
 	}
 
-	public static void copy(Outlet<Doubles> outlet, WriteDouble writer) {
+	public static void copy(Outlet<Doubles> outlet, WriteChar writer) {
 		Doubles doubles;
 		while ((doubles = outlet.next()) != null)
 			try {
@@ -62,7 +62,7 @@ public class Doubles_ {
 
 		public Doubles source() {
 			Doubles in;
-			DblsBuilder cb = new DblsBuilder();
+			DoublesBuilder cb = new DoublesBuilder();
 			cb.append(buffer);
 
 			p0 = 0;

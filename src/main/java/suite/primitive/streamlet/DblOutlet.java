@@ -23,7 +23,7 @@ import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Doubles;
-import suite.primitive.Doubles.DblsBuilder;
+import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.streamlet.As;
@@ -207,7 +207,7 @@ public class DblOutlet implements Iterable<Double> {
 		return init;
 	}
 
-	public <V> DblObjOutlet<DblsBuilder> groupBy() {
+	public <V> DblObjOutlet<DoublesBuilder> groupBy() {
 		return DblObjOutlet.of(toListMap().source());
 	}
 
@@ -367,27 +367,27 @@ public class DblOutlet implements Iterable<Double> {
 	}
 
 	public double[] toArray() {
-		DblsBuilder list = toList();
+		DoublesBuilder list = toList();
 		return list.toDoubles().toArray();
 	}
 
-	public DblsBuilder toList() {
-		DblsBuilder list = new DblsBuilder();
+	public DoublesBuilder toList() {
+		DoublesBuilder list = new DoublesBuilder();
 		double t;
 		while ((t = next()) != DblFunUtil.EMPTYVALUE)
 			list.append(t);
 		return list;
 	}
 
-	public <K> DblObjMap<DblsBuilder> toListMap() {
+	public <K> DblObjMap<DoublesBuilder> toListMap() {
 		return toListMap(value -> value);
 	}
 
-	public <K> DblObjMap<DblsBuilder> toListMap(Dbl_Dbl valueFun) {
-		DblObjMap<DblsBuilder> map = new DblObjMap<>();
+	public <K> DblObjMap<DoublesBuilder> toListMap(Dbl_Dbl valueFun) {
+		DblObjMap<DoublesBuilder> map = new DblObjMap<>();
 		double t;
 		while ((t = next()) != DblFunUtil.EMPTYVALUE)
-			map.computeIfAbsent(t, k_ -> new DblsBuilder()).append(valueFun.apply(t));
+			map.computeIfAbsent(t, k_ -> new DoublesBuilder()).append(valueFun.apply(t));
 		return map;
 	}
 

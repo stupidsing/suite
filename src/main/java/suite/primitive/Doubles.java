@@ -27,7 +27,7 @@ public class Doubles implements Iterable<Double> {
 	public final int start, end;
 
 	@FunctionalInterface
-	public interface WriteDouble {
+	public interface WriteChar {
 		public void write(double[] cs, int offset, int length) throws IOException;
 	};
 
@@ -86,7 +86,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public static Doubles concat(Doubles... array) {
-		DblsBuilder bb = new DblsBuilder();
+		DoublesBuilder bb = new DoublesBuilder();
 		for (Doubles doubles : array)
 			bb.append(doubles);
 		return bb.toDoubles();
@@ -133,7 +133,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public Doubles pad(int size) {
-		DblsBuilder cb = new DblsBuilder();
+		DoublesBuilder cb = new DoublesBuilder();
 		cb.append(this);
 		while (cb.size() < size)
 			cb.append((double) 0);
@@ -149,7 +149,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public Doubles replace(Doubles from, Doubles to) {
-		DblsBuilder cb = new DblsBuilder();
+		DoublesBuilder cb = new DoublesBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(range_(i0, i));
@@ -208,7 +208,7 @@ public class Doubles implements Iterable<Double> {
 		return of(cs, s, e);
 	}
 
-	public void write(WriteDouble out) {
+	public void write(WriteChar out) {
 		try {
 			out.write(cs, start, end - start);
 		} catch (IOException ex) {
@@ -306,25 +306,25 @@ public class Doubles implements Iterable<Double> {
 		return end - start;
 	}
 
-	public static class DblsBuilder {
+	public static class DoublesBuilder {
 		private double[] cs = emptyArray;
 		private int size;
 
-		public DblsBuilder append(Doubles doubles) {
+		public DoublesBuilder append(Doubles doubles) {
 			return append(doubles.cs, doubles.start, doubles.end);
 		}
 
-		public DblsBuilder append(double c) {
+		public DoublesBuilder append(double c) {
 			extendBuffer(size + 1);
 			cs[size++] = c;
 			return this;
 		}
 
-		public DblsBuilder append(double[] cs_) {
+		public DoublesBuilder append(double[] cs_) {
 			return append(cs_, 0, cs_.length);
 		}
 
-		public DblsBuilder append(double[] cs_, int start, int end) {
+		public DoublesBuilder append(double[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
 			Copy.doubles(cs_, start, cs, size, inc);

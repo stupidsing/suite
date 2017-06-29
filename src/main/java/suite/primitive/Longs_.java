@@ -2,8 +2,8 @@ package suite.primitive;
 
 import java.io.IOException;
 
-import suite.primitive.Longs.LngsBuilder;
-import suite.primitive.Longs.WriteLong;
+import suite.primitive.Longs.LongsBuilder;
+import suite.primitive.Longs.WriteChar;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -20,7 +20,7 @@ public class Longs_ {
 		});
 	}
 
-	public static void copy(Outlet<Longs> outlet, WriteLong writer) {
+	public static void copy(Outlet<Longs> outlet, WriteChar writer) {
 		Longs longs;
 		while ((longs = outlet.next()) != null)
 			try {
@@ -62,7 +62,7 @@ public class Longs_ {
 
 		public Longs source() {
 			Longs in;
-			LngsBuilder cb = new LngsBuilder();
+			LongsBuilder cb = new LongsBuilder();
 			cb.append(buffer);
 
 			p0 = 0;

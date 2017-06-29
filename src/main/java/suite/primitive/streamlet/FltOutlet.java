@@ -13,7 +13,7 @@ import java.util.Set;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Floats;
-import suite.primitive.Floats.FltsBuilder;
+import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltOpt;
 import suite.primitive.FltPrimitives.FltComparator;
@@ -207,7 +207,7 @@ public class FltOutlet implements Iterable<Float> {
 		return init;
 	}
 
-	public <V> FltObjOutlet<FltsBuilder> groupBy() {
+	public <V> FltObjOutlet<FloatsBuilder> groupBy() {
 		return FltObjOutlet.of(toListMap().source());
 	}
 
@@ -367,27 +367,27 @@ public class FltOutlet implements Iterable<Float> {
 	}
 
 	public float[] toArray() {
-		FltsBuilder list = toList();
+		FloatsBuilder list = toList();
 		return list.toFloats().toArray();
 	}
 
-	public FltsBuilder toList() {
-		FltsBuilder list = new FltsBuilder();
+	public FloatsBuilder toList() {
+		FloatsBuilder list = new FloatsBuilder();
 		float t;
 		while ((t = next()) != FltFunUtil.EMPTYVALUE)
 			list.append(t);
 		return list;
 	}
 
-	public <K> FltObjMap<FltsBuilder> toListMap() {
+	public <K> FltObjMap<FloatsBuilder> toListMap() {
 		return toListMap(value -> value);
 	}
 
-	public <K> FltObjMap<FltsBuilder> toListMap(Flt_Flt valueFun) {
-		FltObjMap<FltsBuilder> map = new FltObjMap<>();
+	public <K> FltObjMap<FloatsBuilder> toListMap(Flt_Flt valueFun) {
+		FltObjMap<FloatsBuilder> map = new FltObjMap<>();
 		float t;
 		while ((t = next()) != FltFunUtil.EMPTYVALUE)
-			map.computeIfAbsent(t, k_ -> new FltsBuilder()).append(valueFun.apply(t));
+			map.computeIfAbsent(t, k_ -> new FloatsBuilder()).append(valueFun.apply(t));
 		return map;
 	}
 

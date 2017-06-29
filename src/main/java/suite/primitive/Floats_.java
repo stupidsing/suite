@@ -2,8 +2,8 @@ package suite.primitive;
 
 import java.io.IOException;
 
-import suite.primitive.Floats.FltsBuilder;
-import suite.primitive.Floats.WriteFloat;
+import suite.primitive.Floats.FloatsBuilder;
+import suite.primitive.Floats.WriteChar;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -20,7 +20,7 @@ public class Floats_ {
 		});
 	}
 
-	public static void copy(Outlet<Floats> outlet, WriteFloat writer) {
+	public static void copy(Outlet<Floats> outlet, WriteChar writer) {
 		Floats floats;
 		while ((floats = outlet.next()) != null)
 			try {
@@ -62,7 +62,7 @@ public class Floats_ {
 
 		public Floats source() {
 			Floats in;
-			FltsBuilder cb = new FltsBuilder();
+			FloatsBuilder cb = new FloatsBuilder();
 			cb.append(buffer);
 
 			p0 = 0;

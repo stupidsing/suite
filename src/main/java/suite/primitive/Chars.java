@@ -86,7 +86,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public static Chars concat(Chars... array) {
-		ChrsBuilder bb = new ChrsBuilder();
+		CharsBuilder bb = new CharsBuilder();
 		for (Chars chars : array)
 			bb.append(chars);
 		return bb.toChars();
@@ -133,7 +133,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public Chars pad(int size) {
-		ChrsBuilder cb = new ChrsBuilder();
+		CharsBuilder cb = new CharsBuilder();
 		cb.append(this);
 		while (cb.size() < size)
 			cb.append((char) 0);
@@ -149,7 +149,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public Chars replace(Chars from, Chars to) {
-		ChrsBuilder cb = new ChrsBuilder();
+		CharsBuilder cb = new CharsBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(range_(i0, i));
@@ -306,25 +306,25 @@ public class Chars implements Iterable<Character> {
 		return end - start;
 	}
 
-	public static class ChrsBuilder {
+	public static class CharsBuilder {
 		private char[] cs = emptyArray;
 		private int size;
 
-		public ChrsBuilder append(Chars chars) {
+		public CharsBuilder append(Chars chars) {
 			return append(chars.cs, chars.start, chars.end);
 		}
 
-		public ChrsBuilder append(char c) {
+		public CharsBuilder append(char c) {
 			extendBuffer(size + 1);
 			cs[size++] = c;
 			return this;
 		}
 
-		public ChrsBuilder append(char[] cs_) {
+		public CharsBuilder append(char[] cs_) {
 			return append(cs_, 0, cs_.length);
 		}
 
-		public ChrsBuilder append(char[] cs_, int start, int end) {
+		public CharsBuilder append(char[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
 			Copy.chars(cs_, start, cs, size, inc);

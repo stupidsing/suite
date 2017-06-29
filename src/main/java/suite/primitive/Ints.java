@@ -27,7 +27,7 @@ public class Ints implements Iterable<Integer> {
 	public final int start, end;
 
 	@FunctionalInterface
-	public interface WriteInt {
+	public interface WriteChar {
 		public void write(int[] cs, int offset, int length) throws IOException;
 	};
 
@@ -208,7 +208,7 @@ public class Ints implements Iterable<Integer> {
 		return of(cs, s, e);
 	}
 
-	public void write(WriteInt out) {
+	public void write(WriteChar out) {
 		try {
 			out.write(cs, start, end - start);
 		} catch (IOException ex) {

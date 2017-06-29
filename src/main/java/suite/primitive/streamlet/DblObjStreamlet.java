@@ -79,7 +79,7 @@ public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 		return fun.apply(spawn());
 	}
 
-	public double collectAsDouble(Obj_Dbl<DblObjOutlet<V>> fun) {
+	public double collectAsChar(Obj_Dbl<DblObjOutlet<V>> fun) {
 		return fun.apply(spawn());
 	}
 

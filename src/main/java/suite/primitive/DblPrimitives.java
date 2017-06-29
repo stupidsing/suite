@@ -55,7 +55,7 @@ public class DblPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface DblObjSink<T> { // extends ObjDoubleConsumer<T>
+	public interface DblObjSink<T> { // extends ObjCharConsumer<T>
 		public void sink2(double c, T t);
 
 		public default DblObjSink<T> rethrow() {

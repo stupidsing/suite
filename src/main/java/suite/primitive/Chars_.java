@@ -2,7 +2,7 @@ package suite.primitive;
 
 import java.io.IOException;
 
-import suite.primitive.Chars.ChrsBuilder;
+import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.Chars.WriteChar;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
@@ -62,7 +62,7 @@ public class Chars_ {
 
 		public Chars source() {
 			Chars in;
-			ChrsBuilder cb = new ChrsBuilder();
+			CharsBuilder cb = new CharsBuilder();
 			cb.append(buffer);
 
 			p0 = 0;

@@ -1,26 +1,26 @@
 replace() {
   python -c "if True:
-    wsc = ['Character', 'Char', 'Chr', 'char', 'chr']
-    wsd = ['Double', 'Double', 'Dbl', 'double', 'dbl']
-    wsf = ['Float', 'Float', 'Flt', 'float', 'flt']
-    wsi = ['Integer', 'Int', 'Int', 'int', 'int']
-    wsl = ['Long', 'Long', 'Lng', 'long', 'lng']
-    wsx = ['{x0}', '{x1}', '{x2}', '{x3}', '{x4}']
-    wsy = ['{y0}', '{y1}', '{y2}', '{y3}', '{y4}']
-    wsz = ['{z0}', '{z1}', '{z2}', '{z3}', '{z4}']
+    wsc = ['Character', 'CharBuffer', 'Chars', 'Chr', 'char', 'chr']
+    wsd = ['Double', 'DoubleBuffer', 'Doubles', 'Dbl', 'double', 'dbl']
+    wsf = ['Float', 'FloatBuffer', 'Floats', 'Flt', 'float', 'flt']
+    wsi = ['Integer', 'IntBuffer', 'Ints', 'Int', 'int', 'int']
+    wsl = ['Long', 'LongBuffer', 'Longs', 'Lng', 'long', 'lng']
 
     repls0 = [wsc, wsd, wsf, wsi, wsl]
     repls1 = [wsc, wsd, wsf, wsi, wsl]
     repls2 = [wsc, wsd, wsf, wsi, wsl]
 
-    def r(ws0, ws1, s):
-      for i in range(len(ws0)):
-        s = s.replace(ws0[i], ws1[i])
+    def r0(ws0, v, s):
+      for i in range(len(ws0)): s = s.replace(ws0[i], '{' + v + str(i) + '}')
+      return s
+
+    def r1(v, ws1, s):
+      for i in range(len(ws1)): s = s.replace('{' + v + str(i) + '}', ws1[i])
       return s
 
     def replace(ws0, ws1, ws2, s):
-      s = r(wsc, wsx, (r(wsd, wsy, (r(wsf, wsz, (s))))))
-      s = r(wsx, ws0, (r(wsy, ws1, (r(wsz, ws2, (s))))))
+      s = r0(wsc, 'x', (r0(wsd, 'y', (r0(wsf, 'z', (s))))))
+      s = r1('x', ws0, (r1('y', ws1, (r1('z', ws2, (s))))))
       return s
 
     for repl0 in repls0:

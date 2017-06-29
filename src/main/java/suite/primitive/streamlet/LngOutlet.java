@@ -23,7 +23,7 @@ import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.Lng_Lng;
 import suite.primitive.Longs;
-import suite.primitive.Longs.LngsBuilder;
+import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.streamlet.As;
@@ -207,7 +207,7 @@ public class LngOutlet implements Iterable<Long> {
 		return init;
 	}
 
-	public <V> LngObjOutlet<LngsBuilder> groupBy() {
+	public <V> LngObjOutlet<LongsBuilder> groupBy() {
 		return LngObjOutlet.of(toListMap().source());
 	}
 
@@ -367,27 +367,27 @@ public class LngOutlet implements Iterable<Long> {
 	}
 
 	public long[] toArray() {
-		LngsBuilder list = toList();
+		LongsBuilder list = toList();
 		return list.toLongs().toArray();
 	}
 
-	public LngsBuilder toList() {
-		LngsBuilder list = new LngsBuilder();
+	public LongsBuilder toList() {
+		LongsBuilder list = new LongsBuilder();
 		long t;
 		while ((t = next()) != LngFunUtil.EMPTYVALUE)
 			list.append(t);
 		return list;
 	}
 
-	public <K> LngObjMap<LngsBuilder> toListMap() {
+	public <K> LngObjMap<LongsBuilder> toListMap() {
 		return toListMap(value -> value);
 	}
 
-	public <K> LngObjMap<LngsBuilder> toListMap(Lng_Lng valueFun) {
-		LngObjMap<LngsBuilder> map = new LngObjMap<>();
+	public <K> LngObjMap<LongsBuilder> toListMap(Lng_Lng valueFun) {
+		LngObjMap<LongsBuilder> map = new LngObjMap<>();
 		long t;
 		while ((t = next()) != LngFunUtil.EMPTYVALUE)
-			map.computeIfAbsent(t, k_ -> new LngsBuilder()).append(valueFun.apply(t));
+			map.computeIfAbsent(t, k_ -> new LongsBuilder()).append(valueFun.apply(t));
 		return map;
 	}
 

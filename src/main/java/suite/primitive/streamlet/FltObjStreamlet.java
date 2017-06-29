@@ -79,7 +79,7 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 		return fun.apply(spawn());
 	}
 
-	public float collectAsFloat(Obj_Flt<FltObjOutlet<V>> fun) {
+	public float collectAsChar(Obj_Flt<FltObjOutlet<V>> fun) {
 		return fun.apply(spawn());
 	}
 

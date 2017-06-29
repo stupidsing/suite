@@ -55,7 +55,7 @@ public class IntPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface IntObjSink<T> { // extends ObjIntConsumer<T>
+	public interface IntObjSink<T> { // extends ObjCharConsumer<T>
 		public void sink2(int c, T t);
 
 		public default IntObjSink<T> rethrow() {

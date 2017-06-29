@@ -13,7 +13,7 @@ import java.util.Set;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.primitive.Chars;
-import suite.primitive.Chars.ChrsBuilder;
+import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrOpt;
 import suite.primitive.ChrPrimitives.ChrComparator;
@@ -207,7 +207,7 @@ public class ChrOutlet implements Iterable<Character> {
 		return init;
 	}
 
-	public <V> ChrObjOutlet<ChrsBuilder> groupBy() {
+	public <V> ChrObjOutlet<CharsBuilder> groupBy() {
 		return ChrObjOutlet.of(toListMap().source());
 	}
 
@@ -367,27 +367,27 @@ public class ChrOutlet implements Iterable<Character> {
 	}
 
 	public char[] toArray() {
-		ChrsBuilder list = toList();
+		CharsBuilder list = toList();
 		return list.toChars().toArray();
 	}
 
-	public ChrsBuilder toList() {
-		ChrsBuilder list = new ChrsBuilder();
+	public CharsBuilder toList() {
+		CharsBuilder list = new CharsBuilder();
 		char t;
 		while ((t = next()) != ChrFunUtil.EMPTYVALUE)
 			list.append(t);
 		return list;
 	}
 
-	public <K> ChrObjMap<ChrsBuilder> toListMap() {
+	public <K> ChrObjMap<CharsBuilder> toListMap() {
 		return toListMap(value -> value);
 	}
 
-	public <K> ChrObjMap<ChrsBuilder> toListMap(Chr_Chr valueFun) {
-		ChrObjMap<ChrsBuilder> map = new ChrObjMap<>();
+	public <K> ChrObjMap<CharsBuilder> toListMap(Chr_Chr valueFun) {
+		ChrObjMap<CharsBuilder> map = new ChrObjMap<>();
 		char t;
 		while ((t = next()) != ChrFunUtil.EMPTYVALUE)
-			map.computeIfAbsent(t, k_ -> new ChrsBuilder()).append(valueFun.apply(t));
+			map.computeIfAbsent(t, k_ -> new CharsBuilder()).append(valueFun.apply(t));
 		return map;
 	}
 

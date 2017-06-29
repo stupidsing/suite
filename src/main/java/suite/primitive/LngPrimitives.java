@@ -55,7 +55,7 @@ public class LngPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface LngObjSink<T> { // extends ObjLongConsumer<T>
+	public interface LngObjSink<T> { // extends ObjCharConsumer<T>
 		public void sink2(long c, T t);
 
 		public default LngObjSink<T> rethrow() {

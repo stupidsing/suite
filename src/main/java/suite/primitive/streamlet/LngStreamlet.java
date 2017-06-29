@@ -22,7 +22,7 @@ import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.Longs;
-import suite.primitive.Longs.LngsBuilder;
+import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.LngObjMap;
 import suite.streamlet.Outlet;
@@ -50,7 +50,7 @@ public class LngStreamlet implements Iterable<Long> {
 	public static <T> Fun<Outlet<T>, LngStreamlet> from(Obj_Lng<T> fun0) {
 		Obj_Lng<T> fun1 = fun0.rethrow();
 		return ts -> {
-			LngsBuilder cb = new LngsBuilder();
+			LongsBuilder cb = new LongsBuilder();
 			T t;
 			while ((t = ts.next()) != null)
 				cb.append(fun1.apply(t));
@@ -158,7 +158,7 @@ public class LngStreamlet implements Iterable<Long> {
 		return join.apply(fork0.apply(this), fork1.apply(this));
 	}
 
-	public <V> LngObjStreamlet<LngsBuilder> groupBy() {
+	public <V> LngObjStreamlet<LongsBuilder> groupBy() {
 		return new LngObjStreamlet<>(() -> spawn().groupBy());
 	}
 
@@ -268,15 +268,15 @@ public class LngStreamlet implements Iterable<Long> {
 		return spawn().toArray();
 	}
 
-	public LngsBuilder toList() {
+	public LongsBuilder toList() {
 		return spawn().toList();
 	}
 
-	public <K> LngObjMap<LngsBuilder> toListMap() {
+	public <K> LngObjMap<LongsBuilder> toListMap() {
 		return spawn().toListMap();
 	}
 
-	public <K> LngObjMap<LngsBuilder> toListMap(Lng_Lng valueFun) {
+	public <K> LngObjMap<LongsBuilder> toListMap(Lng_Lng valueFun) {
 		return spawn().toListMap(valueFun);
 	}
 
