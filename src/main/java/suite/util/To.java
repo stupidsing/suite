@@ -42,8 +42,10 @@ import suite.primitive.IntInt_Flt;
 import suite.primitive.Int_Flt;
 import suite.primitive.Int_Int;
 import suite.primitive.IoSink;
+import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 
@@ -80,7 +82,7 @@ public class To {
 	}
 
 	public static <T> float[] arrayOfFloats(T[] ts, Obj_Flt<T> fun) {
-		return arrayOfFloats(ts.length, i -> fun.apply(ts[i]));
+		return Read.from(ts).collect(FltStreamlet.from(fun)).toArray();
 	}
 
 	public static float[] arrayOfFloats(int length, Int_Flt fun) {
