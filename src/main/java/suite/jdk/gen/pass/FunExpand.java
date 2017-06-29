@@ -19,7 +19,7 @@ import suite.jdk.lambda.LambdaImplementation;
 import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
 import suite.node.util.Singleton;
-import suite.streamlet.As;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.String_;
@@ -100,7 +100,7 @@ public class FunExpand extends FunFactory {
 			return weight(e1.expr);
 		} else
 			return Read.from(inspect.fields(e0.getClass())) //
-					.collectAsInt(As.sumOfInts(field -> {
+					.collectAsInt(Obj_Int.sum(field -> {
 						Object e1 = Rethrow.ex(() -> field.get(e0));
 						if (e1 instanceof FunExpr)
 							return weight_(e1);

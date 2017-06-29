@@ -260,17 +260,6 @@ public class As {
 		return To.string(bytes(outlet));
 	}
 
-	public static <T> Obj_Dbl<Outlet<T>> sumOfDoubles(Obj_Dbl<T> fun) {
-		return outlet -> {
-			Source<T> source = outlet.source();
-			T t;
-			double result = 0d;
-			while ((t = source.source()) != null)
-				result += fun.apply(t);
-			return result;
-		};
-	}
-
 	public static <T> Obj_Dbl<IntObjOutlet<T>> sumOfDoubles(double d, IntObj_Dbl<T> fun) {
 		return outlet -> {
 			IntObjPair<T> pair = IntObjPair.of(0, null);
@@ -293,17 +282,6 @@ public class As {
 		};
 	}
 
-	public static <T> Obj_Flt<Outlet<T>> sumOfFloats(Obj_Flt<T> fun) {
-		return outlet -> {
-			Source<T> source = outlet.source();
-			T t;
-			float result = 0f;
-			while ((t = source.source()) != null)
-				result += fun.apply(t);
-			return result;
-		};
-	}
-
 	public static <T> Obj_Flt<IntObjOutlet<T>> sumOfFloats(float f, IntObj_Flt<T> fun) {
 		return outlet -> {
 			IntObjPair<T> pair = IntObjPair.of(0, null);
@@ -322,17 +300,6 @@ public class As {
 			float result = 0f;
 			while (source.source2(pair))
 				result += fun.apply(pair.t0, pair.t1);
-			return result;
-		};
-	}
-
-	public static <T> Obj_Int<Outlet<T>> sumOfInts(Obj_Int<T> fun) {
-		return outlet -> {
-			Source<T> source = outlet.source();
-			T t;
-			int result = 0;
-			while ((t = source.source()) != null)
-				result += fun.apply(t);
 			return result;
 		};
 	}

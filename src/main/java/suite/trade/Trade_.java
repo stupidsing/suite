@@ -6,6 +6,7 @@ import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.primitive.FltPrimitives.Obj_Flt;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -64,7 +65,7 @@ public class Trade_ {
 	public static Map<String, Integer> portfolio(Iterable<Trade> trades) {
 		return Read.from(trades) //
 				.map2(r -> r.symbol, r -> r.buySell) //
-				.groupBy(sizes -> sizes.collectAsInt(As.sumOfInts(size -> size))) //
+				.groupBy(sizes -> sizes.collectAsInt(Obj_Int.sum(size -> size))) //
 				.filterValue(size -> size != 0) //
 				.toMap();
 	}

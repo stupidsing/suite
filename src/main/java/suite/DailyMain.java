@@ -10,6 +10,8 @@ import java.util.Set;
 import suite.math.MathUtil;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
+import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.smtp.SmtpSslGmail;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -126,8 +128,8 @@ public class DailyMain extends ExecutableProgram {
 		Streamlet<Trade> trades = strategyTrades.values();
 
 		sb.append("\n");
-		sb.append("\nTOTAL BUYS = " + trades.collectAsFloat(As.sumOfFloats(trade -> Math.max(0, trade.buySell) * trade.price)));
-		sb.append("\nTOTAL SELLS = " + trades.collectAsFloat(As.sumOfFloats(trade -> Math.max(0, -trade.buySell) * trade.price)));
+		sb.append("\nTOTAL BUYS = " + trades.collectAsFloat(Obj_Flt.sum(trade -> Math.max(0, trade.buySell) * trade.price)));
+		sb.append("\nTOTAL SELLS = " + trades.collectAsFloat(Obj_Flt.sum(trade -> Math.max(0, -trade.buySell) * trade.price)));
 
 		sb.append("\n");
 		sb.append("\nSUGGESTIONS");
@@ -247,7 +249,7 @@ public class DailyMain extends ExecutableProgram {
 
 		Map<String, Float> faceValueBySymbol = history //
 				.groupBy(record -> record.symbol, //
-						rs -> (float) (Read.from(rs).collectAsDouble(As.sumOfDoubles(r -> r.buySell * r.price))))
+						rs -> (float) (Read.from(rs).collectAsDouble(Obj_Dbl.sum(r -> r.buySell * r.price))))
 				.toMap();
 
 		List<Trade> trades = Read.from2(account.assets()) //
