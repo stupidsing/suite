@@ -5,7 +5,6 @@ import java.io.CharArrayReader;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +20,6 @@ import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -31,44 +29,6 @@ public class As {
 
 	public interface Seq<I, O> {
 		public O apply(int index, I i);
-	}
-
-	public static <T> Fun<Outlet<T>, int[]> arrayOfInts(Obj_Int<T> fun) {
-		return new Fun<Outlet<T>, int[]>() {
-			public int[] apply(Outlet<T> outlet) {
-				int[] results = new int[16];
-				int size = 0;
-				T t;
-
-				while (true) {
-					while (size < results.length)
-						if ((t = outlet.next()) != null)
-							results[size++] = fun.apply(t);
-						else
-							return Arrays.copyOf(results, size);
-					results = Arrays.copyOf(results, results.length * 2);
-				}
-			}
-		};
-	}
-
-	public static <T> Fun<Outlet<T>, long[]> arrayOfLongs(Obj_Lng<T> fun) {
-		return new Fun<Outlet<T>, long[]>() {
-			public long[] apply(Outlet<T> outlet) {
-				long[] results = new long[16];
-				int size = 0;
-				T t;
-
-				while (true) {
-					while (size < results.length)
-						if ((t = outlet.next()) != null)
-							results[size++] = fun.apply(t);
-						else
-							return Arrays.copyOf(results, size);
-					results = Arrays.copyOf(results, results.length * 2);
-				}
-			}
-		};
 	}
 
 	public static Bytes bytes(Outlet<Bytes> outlet) {
