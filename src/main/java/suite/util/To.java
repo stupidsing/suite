@@ -82,7 +82,7 @@ public class To {
 	}
 
 	public static <T> float[] arrayOfFloats(T[] ts, Obj_Flt<T> fun) {
-		return Read.from(ts).collect(FltStreamlet.from(fun)).toArray();
+		return Read.from(ts).collect(FltStreamlet.of(fun)).toArray();
 	}
 
 	public static float[] arrayOfFloats(int length, Int_Flt fun) {

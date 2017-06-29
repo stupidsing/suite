@@ -47,7 +47,7 @@ public class IntStreamlet implements Iterable<Integer> {
 		});
 	}
 
-	public static <T> Fun<Outlet<T>, IntStreamlet> from(Obj_Int<T> fun0) {
+	public static <T> Fun<Outlet<T>, IntStreamlet> of(Obj_Int<T> fun0) {
 		Obj_Int<T> fun1 = fun0.rethrow();
 		return ts -> {
 			IntsBuilder cb = new IntsBuilder();
@@ -58,7 +58,7 @@ public class IntStreamlet implements Iterable<Integer> {
 		};
 	}
 
-	public static IntStreamlet from(int[] ts) {
+	public static IntStreamlet of(int[] ts) {
 		return streamlet(() -> IntOutlet.of(ts));
 	}
 

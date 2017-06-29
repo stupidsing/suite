@@ -47,7 +47,7 @@ public class FltStreamlet implements Iterable<Float> {
 		});
 	}
 
-	public static <T> Fun<Outlet<T>, FltStreamlet> from(Obj_Flt<T> fun0) {
+	public static <T> Fun<Outlet<T>, FltStreamlet> of(Obj_Flt<T> fun0) {
 		Obj_Flt<T> fun1 = fun0.rethrow();
 		return ts -> {
 			FloatsBuilder cb = new FloatsBuilder();
@@ -58,7 +58,7 @@ public class FltStreamlet implements Iterable<Float> {
 		};
 	}
 
-	public static FltStreamlet from(float[] ts) {
+	public static FltStreamlet of(float[] ts) {
 		return streamlet(() -> FltOutlet.of(ts));
 	}
 

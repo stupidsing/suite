@@ -47,7 +47,7 @@ public class LngStreamlet implements Iterable<Long> {
 		});
 	}
 
-	public static <T> Fun<Outlet<T>, LngStreamlet> from(Obj_Lng<T> fun0) {
+	public static <T> Fun<Outlet<T>, LngStreamlet> of(Obj_Lng<T> fun0) {
 		Obj_Lng<T> fun1 = fun0.rethrow();
 		return ts -> {
 			LongsBuilder cb = new LongsBuilder();
@@ -58,7 +58,7 @@ public class LngStreamlet implements Iterable<Long> {
 		};
 	}
 
-	public static LngStreamlet from(long[] ts) {
+	public static LngStreamlet of(long[] ts) {
 		return streamlet(() -> LngOutlet.of(ts));
 	}
 

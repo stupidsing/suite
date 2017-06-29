@@ -47,7 +47,7 @@ public class DblStreamlet implements Iterable<Double> {
 		});
 	}
 
-	public static <T> Fun<Outlet<T>, DblStreamlet> from(Obj_Dbl<T> fun0) {
+	public static <T> Fun<Outlet<T>, DblStreamlet> of(Obj_Dbl<T> fun0) {
 		Obj_Dbl<T> fun1 = fun0.rethrow();
 		return ts -> {
 			DoublesBuilder cb = new DoublesBuilder();
@@ -58,7 +58,7 @@ public class DblStreamlet implements Iterable<Double> {
 		};
 	}
 
-	public static DblStreamlet from(double[] ts) {
+	public static DblStreamlet of(double[] ts) {
 		return streamlet(() -> DblOutlet.of(ts));
 	}
 

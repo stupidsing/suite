@@ -47,7 +47,7 @@ public class ChrStreamlet implements Iterable<Character> {
 		});
 	}
 
-	public static <T> Fun<Outlet<T>, ChrStreamlet> from(Obj_Chr<T> fun0) {
+	public static <T> Fun<Outlet<T>, ChrStreamlet> of(Obj_Chr<T> fun0) {
 		Obj_Chr<T> fun1 = fun0.rethrow();
 		return ts -> {
 			CharsBuilder cb = new CharsBuilder();
@@ -58,7 +58,7 @@ public class ChrStreamlet implements Iterable<Character> {
 		};
 	}
 
-	public static ChrStreamlet from(char[] ts) {
+	public static ChrStreamlet of(char[] ts) {
 		return streamlet(() -> ChrOutlet.of(ts));
 	}
 
