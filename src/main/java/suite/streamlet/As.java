@@ -20,7 +20,7 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
 import suite.primitive.Chars;
-import suite.primitive.Chars.CharsBuilder;
+import suite.primitive.Chars.ChrsBuilder;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.FltPrimitives.ObjObj_Flt;
@@ -128,7 +128,7 @@ public class As {
 	}
 
 	public static Chars chars(Outlet<Chars> outlet) {
-		CharsBuilder cb = new CharsBuilder();
+		ChrsBuilder cb = new ChrsBuilder();
 		outlet.forEach(cb::append);
 		return cb.toChars();
 	}
@@ -391,7 +391,7 @@ public class As {
 
 			private Chars decode() {
 				Bytes bytes = bb.toBytes();
-				CharsBuilder cb = new CharsBuilder();
+				ChrsBuilder cb = new ChrsBuilder();
 				int s = 0;
 
 				while (s < bytes.size()) {

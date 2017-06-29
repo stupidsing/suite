@@ -14,7 +14,7 @@ import suite.node.Str;
 import suite.node.util.Singleton;
 import suite.node.util.TreeRewriter;
 import suite.primitive.Chars;
-import suite.primitive.Chars.CharsBuilder;
+import suite.primitive.Chars.ChrsBuilder;
 import suite.util.FunUtil.Fun;
 import suite.util.List_;
 import suite.util.Nodify;
@@ -133,14 +133,14 @@ public class FactorizeResult {
 	}
 
 	public String unparse() {
-		CharsBuilder cb = new CharsBuilder();
+		ChrsBuilder cb = new ChrsBuilder();
 		cb.append(pre);
 		unparse(cb, node);
 		cb.append(post);
 		return cb.toChars().toString();
 	}
 
-	private void unparse(CharsBuilder cb, FNode fn) {
+	private void unparse(ChrsBuilder cb, FNode fn) {
 		if (fn instanceof FTree) {
 			FTree ft = (FTree) fn;
 			List<FPair> pairs = ft.pairs;

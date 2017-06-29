@@ -86,7 +86,7 @@ public class Longs implements Iterable<Long> {
 	}
 
 	public static Longs concat(Longs... array) {
-		LongsBuilder bb = new LongsBuilder();
+		LngsBuilder bb = new LngsBuilder();
 		for (Longs longs : array)
 			bb.append(longs);
 		return bb.toLongs();
@@ -133,7 +133,7 @@ public class Longs implements Iterable<Long> {
 	}
 
 	public Longs pad(int size) {
-		LongsBuilder cb = new LongsBuilder();
+		LngsBuilder cb = new LngsBuilder();
 		cb.append(this);
 		while (cb.size() < size)
 			cb.append((long) 0);
@@ -149,7 +149,7 @@ public class Longs implements Iterable<Long> {
 	}
 
 	public Longs replace(Longs from, Longs to) {
-		LongsBuilder cb = new LongsBuilder();
+		LngsBuilder cb = new LngsBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(range_(i0, i));
@@ -306,25 +306,25 @@ public class Longs implements Iterable<Long> {
 		return end - start;
 	}
 
-	public static class LongsBuilder {
+	public static class LngsBuilder {
 		private long[] cs = emptyArray;
 		private int size;
 
-		public LongsBuilder append(Longs longs) {
+		public LngsBuilder append(Longs longs) {
 			return append(longs.cs, longs.start, longs.end);
 		}
 
-		public LongsBuilder append(long c) {
+		public LngsBuilder append(long c) {
 			extendBuffer(size + 1);
 			cs[size++] = c;
 			return this;
 		}
 
-		public LongsBuilder append(long[] cs_) {
+		public LngsBuilder append(long[] cs_) {
 			return append(cs_, 0, cs_.length);
 		}
 
-		public LongsBuilder append(long[] cs_, int start, int end) {
+		public LngsBuilder append(long[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
 			Copy.longs(cs_, start, cs, size, inc);

@@ -86,7 +86,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public static Floats concat(Floats... array) {
-		FloatsBuilder bb = new FloatsBuilder();
+		FltsBuilder bb = new FltsBuilder();
 		for (Floats floats : array)
 			bb.append(floats);
 		return bb.toFloats();
@@ -133,7 +133,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public Floats pad(int size) {
-		FloatsBuilder cb = new FloatsBuilder();
+		FltsBuilder cb = new FltsBuilder();
 		cb.append(this);
 		while (cb.size() < size)
 			cb.append((float) 0);
@@ -149,7 +149,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public Floats replace(Floats from, Floats to) {
-		FloatsBuilder cb = new FloatsBuilder();
+		FltsBuilder cb = new FltsBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(range_(i0, i));
@@ -306,25 +306,25 @@ public class Floats implements Iterable<Float> {
 		return end - start;
 	}
 
-	public static class FloatsBuilder {
+	public static class FltsBuilder {
 		private float[] cs = emptyArray;
 		private int size;
 
-		public FloatsBuilder append(Floats floats) {
+		public FltsBuilder append(Floats floats) {
 			return append(floats.cs, floats.start, floats.end);
 		}
 
-		public FloatsBuilder append(float c) {
+		public FltsBuilder append(float c) {
 			extendBuffer(size + 1);
 			cs[size++] = c;
 			return this;
 		}
 
-		public FloatsBuilder append(float[] cs_) {
+		public FltsBuilder append(float[] cs_) {
 			return append(cs_, 0, cs_.length);
 		}
 
-		public FloatsBuilder append(float[] cs_, int start, int end) {
+		public FltsBuilder append(float[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
 			Copy.floats(cs_, start, cs, size, inc);

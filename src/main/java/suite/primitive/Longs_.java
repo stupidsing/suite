@@ -2,7 +2,7 @@ package suite.primitive;
 
 import java.io.IOException;
 
-import suite.primitive.Longs.LongsBuilder;
+import suite.primitive.Longs.LngsBuilder;
 import suite.primitive.Longs.WriteLong;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
@@ -62,7 +62,7 @@ public class Longs_ {
 
 		public Longs source() {
 			Longs in;
-			LongsBuilder cb = new LongsBuilder();
+			LngsBuilder cb = new LngsBuilder();
 			cb.append(buffer);
 
 			p0 = 0;

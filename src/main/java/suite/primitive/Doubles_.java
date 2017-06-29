@@ -2,7 +2,7 @@ package suite.primitive;
 
 import java.io.IOException;
 
-import suite.primitive.Doubles.DoublesBuilder;
+import suite.primitive.Doubles.DblsBuilder;
 import suite.primitive.Doubles.WriteDouble;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
@@ -62,7 +62,7 @@ public class Doubles_ {
 
 		public Doubles source() {
 			Doubles in;
-			DoublesBuilder cb = new DoublesBuilder();
+			DblsBuilder cb = new DblsBuilder();
 			cb.append(buffer);
 
 			p0 = 0;

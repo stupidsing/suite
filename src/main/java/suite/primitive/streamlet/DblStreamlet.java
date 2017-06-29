@@ -22,7 +22,7 @@ import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Doubles;
-import suite.primitive.Doubles.DoublesBuilder;
+import suite.primitive.Doubles.DblsBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.DblObjMap;
 import suite.streamlet.Outlet;
@@ -50,7 +50,7 @@ public class DblStreamlet implements Iterable<Double> {
 	public static <T> Fun<Outlet<T>, DblStreamlet> from(Obj_Dbl<T> fun0) {
 		Obj_Dbl<T> fun1 = fun0.rethrow();
 		return ts -> {
-			DoublesBuilder cb = new DoublesBuilder();
+			DblsBuilder cb = new DblsBuilder();
 			T t;
 			while ((t = ts.next()) != null)
 				cb.append(fun1.apply(t));
@@ -158,7 +158,7 @@ public class DblStreamlet implements Iterable<Double> {
 		return join.apply(fork0.apply(this), fork1.apply(this));
 	}
 
-	public <V> DblObjStreamlet<DoublesBuilder> groupBy() {
+	public <V> DblObjStreamlet<DblsBuilder> groupBy() {
 		return new DblObjStreamlet<>(() -> spawn().groupBy());
 	}
 
@@ -268,15 +268,15 @@ public class DblStreamlet implements Iterable<Double> {
 		return spawn().toArray();
 	}
 
-	public DoublesBuilder toList() {
+	public DblsBuilder toList() {
 		return spawn().toList();
 	}
 
-	public <K> DblObjMap<DoublesBuilder> toListMap() {
+	public <K> DblObjMap<DblsBuilder> toListMap() {
 		return spawn().toListMap();
 	}
 
-	public <K> DblObjMap<DoublesBuilder> toListMap(Dbl_Dbl valueFun) {
+	public <K> DblObjMap<DblsBuilder> toListMap(Dbl_Dbl valueFun) {
 		return spawn().toListMap(valueFun);
 	}
 

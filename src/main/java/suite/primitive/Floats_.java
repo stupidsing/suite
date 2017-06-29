@@ -2,7 +2,7 @@ package suite.primitive;
 
 import java.io.IOException;
 
-import suite.primitive.Floats.FloatsBuilder;
+import suite.primitive.Floats.FltsBuilder;
 import suite.primitive.Floats.WriteFloat;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
@@ -62,7 +62,7 @@ public class Floats_ {
 
 		public Floats source() {
 			Floats in;
-			FloatsBuilder cb = new FloatsBuilder();
+			FltsBuilder cb = new FltsBuilder();
 			cb.append(buffer);
 
 			p0 = 0;

@@ -86,7 +86,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public static Doubles concat(Doubles... array) {
-		DoublesBuilder bb = new DoublesBuilder();
+		DblsBuilder bb = new DblsBuilder();
 		for (Doubles doubles : array)
 			bb.append(doubles);
 		return bb.toDoubles();
@@ -133,7 +133,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public Doubles pad(int size) {
-		DoublesBuilder cb = new DoublesBuilder();
+		DblsBuilder cb = new DblsBuilder();
 		cb.append(this);
 		while (cb.size() < size)
 			cb.append((double) 0);
@@ -149,7 +149,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public Doubles replace(Doubles from, Doubles to) {
-		DoublesBuilder cb = new DoublesBuilder();
+		DblsBuilder cb = new DblsBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(range_(i0, i));
@@ -306,25 +306,25 @@ public class Doubles implements Iterable<Double> {
 		return end - start;
 	}
 
-	public static class DoublesBuilder {
+	public static class DblsBuilder {
 		private double[] cs = emptyArray;
 		private int size;
 
-		public DoublesBuilder append(Doubles doubles) {
+		public DblsBuilder append(Doubles doubles) {
 			return append(doubles.cs, doubles.start, doubles.end);
 		}
 
-		public DoublesBuilder append(double c) {
+		public DblsBuilder append(double c) {
 			extendBuffer(size + 1);
 			cs[size++] = c;
 			return this;
 		}
 
-		public DoublesBuilder append(double[] cs_) {
+		public DblsBuilder append(double[] cs_) {
 			return append(cs_, 0, cs_.length);
 		}
 
-		public DoublesBuilder append(double[] cs_, int start, int end) {
+		public DblsBuilder append(double[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
 			Copy.doubles(cs_, start, cs, size, inc);

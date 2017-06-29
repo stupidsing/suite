@@ -11,7 +11,7 @@ import java.util.Set;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.Floats;
-import suite.primitive.Floats.FloatsBuilder;
+import suite.primitive.Floats.FltsBuilder;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltMutable;
 import suite.primitive.FltOpt;
@@ -50,7 +50,7 @@ public class FltStreamlet implements Iterable<Float> {
 	public static <T> Fun<Outlet<T>, FltStreamlet> from(Obj_Flt<T> fun0) {
 		Obj_Flt<T> fun1 = fun0.rethrow();
 		return ts -> {
-			FloatsBuilder cb = new FloatsBuilder();
+			FltsBuilder cb = new FltsBuilder();
 			T t;
 			while ((t = ts.next()) != null)
 				cb.append(fun1.apply(t));
@@ -158,7 +158,7 @@ public class FltStreamlet implements Iterable<Float> {
 		return join.apply(fork0.apply(this), fork1.apply(this));
 	}
 
-	public <V> FltObjStreamlet<FloatsBuilder> groupBy() {
+	public <V> FltObjStreamlet<FltsBuilder> groupBy() {
 		return new FltObjStreamlet<>(() -> spawn().groupBy());
 	}
 
@@ -268,15 +268,15 @@ public class FltStreamlet implements Iterable<Float> {
 		return spawn().toArray();
 	}
 
-	public FloatsBuilder toList() {
+	public FltsBuilder toList() {
 		return spawn().toList();
 	}
 
-	public <K> FltObjMap<FloatsBuilder> toListMap() {
+	public <K> FltObjMap<FltsBuilder> toListMap() {
 		return spawn().toListMap();
 	}
 
-	public <K> FltObjMap<FloatsBuilder> toListMap(Flt_Flt valueFun) {
+	public <K> FltObjMap<FltsBuilder> toListMap(Flt_Flt valueFun) {
 		return spawn().toListMap(valueFun);
 	}
 
