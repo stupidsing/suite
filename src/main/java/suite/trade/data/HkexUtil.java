@@ -25,29 +25,35 @@ public class HkexUtil {
 		return String_.right("0000" + stockCode.trim(), -4) + ".HK";
 	}
 
+	public static Time getOpenTimeBefore(Time time) {
+		time = until(time, -1, HkexUtil::isMarketOpen_);
+		time = until(time, -1, time_ -> !isMarketOpen_(time_));
+		return time.addSeconds(1);
+	}
+
 	public static Time getCloseTimeBefore(Time time) {
-		time = getTime(time, -1, time_ -> !isMarketOpen_(time_));
-		time = getTime(time, -1, HkexUtil::isMarketOpen_);
-		return time;
+		time = until(time, -1, time_ -> !isMarketOpen_(time_));
+		time = until(time, -1, HkexUtil::isMarketOpen_);
+		return time.addSeconds(1);
 	}
 
 	public static Time getTradeTimeBefore(Time time) {
-		return getTime(time, -1, HkexUtil::isMarketOpen_);
+		return until(time, -1, HkexUtil::isMarketOpen_);
 	}
 
 	public static Time getTradeTimeAfter(Time time) {
-		return getTime(time, 1, HkexUtil::isMarketOpen_);
+		return until(time, 1, HkexUtil::isMarketOpen_);
 	}
 
-	private static Time getTime(Time time, int dir, Predicate<Time> pred) {
-		Time dt = time, dt1;
+	private static Time until(Time time, int dir, Predicate<Time> pred) {
+		Time dt = time;
 		if (!pred.test(dt)) {
 			dt = dt.thisSecond().addSeconds(dir < 0 ? 0 : 1);
-			for (int d : new int[] { 14400, 3600, 300, 30, 5, })
-				while (!isMarketOpen_(dt1 = dt.addSeconds(dir * d)))
+			Time dt1 = null;
+			for (int d : new int[] { 14400, 3600, 300, 30, 5, 1, })
+				while (!pred.test(dt1 = dt.addSeconds(dir * d)))
 					dt = dt1;
-			while (!pred.test(dt))
-				dt = dt.addSeconds(dir);
+			dt = dt1;
 		}
 		return dt;
 	}
