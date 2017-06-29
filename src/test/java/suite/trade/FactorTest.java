@@ -25,16 +25,19 @@ public class FactorTest {
 
 	@Test
 	public void test() {
-		String factorIndexSymbol = "^GSPC";
+		String factorIndexSymbol = "NDAQ"; // ^DJI, ^GSPC
 
 		TimeRange period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(Time.now()), 250 * 3);
-		DataSource ds0 = cfg.dataSource(factorIndexSymbol).range(period); // cfg.dataSource("^GSPC");
+		DataSource ds0 = cfg.dataSource(factorIndexSymbol).range(period);
 		float[] r0 = ts.returns(ds0.prices);
 
 		Streamlet<Asset> assets = cfg.queryCompaniesByMarketCap(Time.now());
 
 		List<Pair<Asset, Double>> pairs = Read.from(assets) //
 				.cons(Asset.hsi) //
+				.cons(cfg.queryCompany("1169.HK")) //
+				.cons(cfg.queryCompany("2638.HK")) //
+				.cons(cfg.queryCompany("0880.HK")) //
 				.map2(asset -> {
 					DataSource ds = cfg.dataSource(asset.symbol).range(period).align(ds0.dates);
 					float[] r1 = ts.returns(ds.prices);

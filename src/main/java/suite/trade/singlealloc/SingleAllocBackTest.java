@@ -2,6 +2,7 @@ package suite.trade.singlealloc;
 
 import suite.math.stat.Statistic;
 import suite.trade.Account;
+import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.data.DataSource;
@@ -59,7 +60,7 @@ public class SingleAllocBackTest {
 
 		if (day == 0 || buySell != 0)
 			tradeLogSink.sink("" //
-					+ "> date = " + ds.dates[day] //
+					+ "> date = " + Time.ofEpochUtcSecond(ds.dates[day]).ymd() //
 					+ ", buy/sell = " + buySell //
 					+ ", price = " + To.string(price) //
 					+ ", nShares = " + account.nShares(symbol) //
