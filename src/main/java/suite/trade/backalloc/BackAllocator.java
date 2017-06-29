@@ -101,12 +101,12 @@ public interface BackAllocator {
 
 			return (time, index) -> {
 				Time date = time.date();
-				String ymd0 = date.addDays(-7).ymd();
-				String ymdx = date.addDays(1).ymd();
-				DataSource ids = indexDataSource.range(ymd0, ymdx);
+				long ep0 = date.addDays(-7).epochUtcSecond();
+				long epx = date.epochUtcSecond();
+				DataSource ids = indexDataSource.range(ep0, epx);
 
-				double indexPrice0 = ids.get(-1).price;
-				double indexPricex = ids.get(-2).price;
+				double indexPrice0 = ids.get(-1).t1;
+				double indexPricex = ids.get(-2).t1;
 				double indexReturn = (indexPricex - indexPrice0) / indexPrice0;
 
 				return -.03f < indexReturn //
@@ -196,9 +196,9 @@ public interface BackAllocator {
 		return (dsBySymbol0, times_) -> {
 			Streamlet2<String, DataSource> dsBySymbol1 = dsBySymbol0 //
 					.mapValue(ds0 -> {
-						String[] times = ds0.dates;
+						long[] times = ds0.dates;
 						float[] prices = ds0.prices;
-						String[] indexDates = indexDataSource.dates;
+						long[] indexDates = indexDataSource.dates;
 						float[] indexPrices = indexDataSource.prices;
 						int length = times.length;
 						int indexLength = indexDates.length;
@@ -206,8 +206,8 @@ public interface BackAllocator {
 						int ii = 0;
 
 						for (int di = 0; di < length; di++) {
-							String date = times[di];
-							while (ii < indexLength && indexDates[ii].compareTo(date) < 0)
+							long date = times[di];
+							while (ii < indexLength && indexDates[ii] < date)
 								ii++;
 							prices1[di] = prices[di] / indexPrices[ii];
 						}

@@ -74,14 +74,14 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 			String ts = "20170612-092616";
 			String filename = "wfa." + ts + ".csv";
 
-			Map<String, Map<String, Float>> data = new TreeMap<>();
+			Map<Time, Map<String, Float>> data = new TreeMap<>();
 
 			try (InputStream is = Files.newInputStream(HomeDir.resolve(filename)); //
 					InputStreamReader isr = new InputStreamReader(is); //
 					BufferedReader br = new BufferedReader(isr)) {
 				while (br.ready()) {
 					String[] array = br.readLine().split(",");
-					String time = array[0].trim();
+					Time time = Time.of(array[0].trim());
 					String symbol = array[1].trim();
 					float price = Float.parseFloat(array[2].trim());
 					data.computeIfAbsent(time, s -> new HashMap<>()).put(symbol, price);
@@ -96,7 +96,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 			WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
 
-			for (Entry<String, Map<String, Float>> e : data.entrySet())
+			for (Entry<Time, Map<String, Float>> e : data.entrySet())
 				System.out.println(tester.tick(e.getKey(), e.getValue()));
 
 			System.out.println(tester.conclusion());

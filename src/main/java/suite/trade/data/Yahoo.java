@@ -50,9 +50,9 @@ public class Yahoo {
 				.sort((a0, a1) -> Object_.compare(a0[0], a1[0])) //
 				.toList();
 
-		String[] dates = Read.from(arrays) //
-				.map(array -> array[0]) //
-				.toArray(String.class);
+		long[] dates = Read.from(arrays) //
+				.collect(Obj_Lng.lift(array -> Time.of(array[0]).epochUtcSecond())) //
+				.toArray();
 
 		float[] prices = Read.from(arrays) //
 				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))) //
@@ -180,8 +180,8 @@ public class Yahoo {
 						.map(json_ -> new String[] { json_.path("Date").textValue(), json_.path("Open").textValue(), }) //
 						.collect(As::streamlet);
 
-				String[] dates = arrays.map(array -> array[0]).toArray(String.class);
-				float[] prices = arrays.map(array -> array[1]).collect(Obj_Flt.lift(Float::parseFloat)).toArray();
+				long[] dates = arrays.collect(Obj_Lng.lift(array -> Time.of(array[0]).epochUtcSecond())).toArray();
+				float[] prices = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
 				return new DataSource(dates, prices);
 			}
 		});
@@ -234,12 +234,12 @@ public class Yahoo {
 				+ "&ignore=.csv";
 	}
 
-	private void adjust(String symbol, String[] dates, float[] prices) {
-		Map<String, BiFunction<String, Float, Float>> adjusters = new HashMap<>();
-		adjusters.put("0700.HK", (d, p) -> d.compareTo("2014-05-14") <= 0 ? p * .2f : p);
-		adjusters.put("2318.HK", (d, p) -> d.compareTo("2014-03-23") <= 0 ? p * .5f : p);
+	private void adjust(String symbol, long[] dates, float[] prices) {
+		Map<String, BiFunction<Long, Float, Float>> adjusters = new HashMap<>();
+		adjusters.put("0700.HK", (d, p) -> Time.compare(Time.ofEpochUtcSecond(d), Time.of("2014-05-14")) <= 0 ? p * .2f : p);
+		adjusters.put("2318.HK", (d, p) -> Time.compare(Time.ofEpochUtcSecond(d), Time.of("2014-03-23")) <= 0 ? p * .5f : p);
 
-		BiFunction<String, Float, Float> adjuster = adjusters.get(symbol);
+		BiFunction<Long, Float, Float> adjuster = adjusters.get(symbol);
 		if (adjuster != null)
 			for (int d = 0; d < prices.length; d++)
 				prices[d] = adjuster.apply(dates[d], prices[d]);

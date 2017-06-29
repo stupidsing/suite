@@ -37,7 +37,7 @@ public class WalkForwardAllocTester {
 	private Map<String, Asset> assetBySymbol;
 	private Map<String, DataSource> dsBySymbol;
 
-	private String[] times;
+	private long[] times;
 	private Account account;
 	private FloatsBuilder valuations;
 	private List<Trade> trades;
@@ -48,7 +48,7 @@ public class WalkForwardAllocTester {
 		this.wfa = wfa;
 		this.log = System.out::println;
 
-		times = new String[windowSize];
+		times = new long[windowSize];
 		account = Account.fromCash(fund0);
 		valuations = new FloatsBuilder();
 		trades = new ArrayList<>();
@@ -60,20 +60,20 @@ public class WalkForwardAllocTester {
 	}
 
 	public String tick() {
-		String ymdHms = Time.now().ymdHms();
+		Time time = Time.now();
 		Map<String, Float> priceBySymbol = cfg.quote(dsBySymbol.keySet());
 
 		for (Entry<String, Float> e : priceBySymbol.entrySet())
-			log.sink(ymdHms + "," + e.getKey() + "," + e.getValue());
+			log.sink(time.ymdHms() + "," + e.getKey() + "," + e.getValue());
 
-		return tick(ymdHms, priceBySymbol);
+		return tick(time, priceBySymbol);
 	}
 
-	public String tick(String ymdHms, Map<String, Float> priceBySymbol) {
+	public String tick(Time time, Map<String, Float> priceBySymbol) {
 		int last = windowSize - 1;
 
 		System.arraycopy(times, 0, times, 1, last);
-		times[last] = ymdHms;
+		times[last] = time.epochUtcSecond();
 
 		for (Entry<String, DataSource> e : dsBySymbol.entrySet()) {
 			String symbol = e.getKey();
@@ -100,7 +100,7 @@ public class WalkForwardAllocTester {
 		} else
 			actions = "wait";
 
-		return ymdHms //
+		return time.ymdHms() //
 				+ ", valuation = " + valuation_ //
 				+ ", portfolio = " + account //
 				+ ", actions = " + actions;

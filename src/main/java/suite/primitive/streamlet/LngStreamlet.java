@@ -47,6 +47,15 @@ public class LngStreamlet implements Iterable<Long> {
 		});
 	}
 
+	public static LngStreamlet concat(Outlet<LngStreamlet> streamlets) {
+		return streamlet(() -> {
+			List<LngSource> sources = new ArrayList<>();
+			for (LngStreamlet streamlet : streamlets)
+				sources.add(streamlet.in.source().source());
+			return LngOutlet.of(LngFunUtil.concat(To.source(sources)));
+		});
+	}
+
 	public static <T> Fun<Outlet<T>, LngStreamlet> of(Obj_Lng<T> fun0) {
 		Obj_Lng<T> fun1 = fun0.rethrow();
 		return ts -> {

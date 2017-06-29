@@ -1,7 +1,6 @@
 package suite.streamlet;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +21,6 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
-import suite.util.To;
 
 public class Streamlet<T> implements Iterable<T> {
 
@@ -30,11 +28,13 @@ public class Streamlet<T> implements Iterable<T> {
 
 	@SafeVarargs
 	public static <T> Streamlet<T> concat(Streamlet<T>... streamlets) {
+		return Read.from(streamlets).collect(Streamlet::concat);
+	}
+
+	public static <T> Streamlet<T> concat(Outlet<Streamlet<T>> streamlets) {
 		return streamlet(() -> {
-			List<Source<T>> sources = new ArrayList<>();
-			for (Streamlet<T> streamlet : streamlets)
-				sources.add(streamlet.in.source().source());
-			return Outlet.of(FunUtil.concat(To.source(sources)));
+			Source<Streamlet<T>> source = streamlets.source();
+			return Outlet.of(FunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 

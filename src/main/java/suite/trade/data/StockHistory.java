@@ -147,7 +147,7 @@ public class StockHistory {
 	public DataSource adjustPrices(String tag) {
 		LngFltPair[] pairs = data.get(tag);
 		int length = pairs.length;
-		String[] dates = new String[length];
+		long[] dates = new long[length];
 		float[] prices = new float[length];
 
 		int si = splits.length - 1;
@@ -179,7 +179,7 @@ public class StockHistory {
 				}
 			}
 
-			dates[i] = Time.ofEpochUtcSecond(pair.t0).ymd();
+			dates[i] = pair.t0;
 			prices[i] = a + b * pair.t1;
 		}
 

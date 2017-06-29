@@ -1,7 +1,6 @@
 package suite.streamlet;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -18,12 +17,12 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Source2;
 import suite.util.Object_;
-import suite.util.To;
 
 public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 
@@ -31,11 +30,13 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	@SafeVarargs
 	public static <K, V> Streamlet2<K, V> concat(Streamlet2<K, V>... streamlets) {
+		return Read.from(streamlets).collect(Streamlet2::concat);
+	}
+
+	public static <K, V> Streamlet2<K, V> concat(Outlet<Streamlet2<K, V>> streamlets) {
 		return streamlet2(() -> {
-			List<Source2<K, V>> sources = new ArrayList<>();
-			for (Streamlet2<K, V> streamlet : streamlets)
-				sources.add(streamlet.in.source().source());
-			return Outlet2.of(FunUtil2.concat(To.source(sources)));
+			Source<Streamlet2<K, V>> source = streamlets.source();
+			return Outlet2.of(FunUtil2.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 

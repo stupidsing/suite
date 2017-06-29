@@ -239,8 +239,8 @@ public class BackAllocator_ {
 			return (time, index) -> {
 				int ix = index - 1;
 				int i0 = ix - tor;
-				double p0 = ds0.get(i0).price, px = ds0.get(ix).price;
-				double q0 = ds1.get(i0).price, qx = ds1.get(ix).price;
+				double p0 = ds0.get(i0).t1, px = ds0.get(ix).t1;
+				double q0 = ds1.get(i0).t1, qx = ds1.get(ix).t1;
 				double pdiff = (px - p0) / px;
 				double qdiff = (qx - q0) / qx;
 

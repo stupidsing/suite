@@ -1,9 +1,7 @@
 package suite.primitive.streamlet;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -26,12 +24,13 @@ import suite.primitive.Chr_Chr;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
-import suite.util.To;
 
 public class ChrStreamlet implements Iterable<Character> {
 
@@ -39,11 +38,13 @@ public class ChrStreamlet implements Iterable<Character> {
 
 	@SafeVarargs
 	public static ChrStreamlet concat(ChrStreamlet... streamlets) {
+		return Read.from(streamlets).collect(ChrStreamlet::concat);
+	}
+
+	public static ChrStreamlet concat(Outlet<ChrStreamlet> streamlets) {
 		return streamlet(() -> {
-			List<ChrSource> sources = new ArrayList<>();
-			for (ChrStreamlet streamlet : streamlets)
-				sources.add(streamlet.in.source().source());
-			return ChrOutlet.of(ChrFunUtil.concat(To.source(sources)));
+			Source<ChrStreamlet> source = streamlets.source();
+			return ChrOutlet.of(ChrFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 

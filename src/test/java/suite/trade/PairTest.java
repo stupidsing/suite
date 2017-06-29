@@ -7,12 +7,10 @@ import org.junit.Test;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
+import suite.primitive.streamlet.LngStreamlet;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
-import suite.util.Object_;
 
 /**
  * Finds the period of various stocks using FFT.
@@ -34,9 +32,9 @@ public class PairTest {
 	private void test(TimeRange period, String symbol0, String symbol1) {
 		DataSource ds0 = cfg.dataSource(symbol0, period);
 		DataSource ds1 = cfg.dataSource(symbol1, period);
-		Streamlet<String> dates0 = Read.from(ds0.dates);
-		Streamlet<String> dates1 = Read.from(ds1.dates);
-		String[] tradeDates = Streamlet.concat(dates0, dates1).distinct().sort(Object_::compare).toArray(String.class);
+		LngStreamlet dates0 = LngStreamlet.of(ds0.dates);
+		LngStreamlet dates1 = LngStreamlet.of(ds1.dates);
+		long[] tradeDates = LngStreamlet.concat(dates0, dates1).distinct().sort().toArray();
 		float[] prices0 = ds0.align(tradeDates).prices;
 		float[] prices1 = ds1.align(tradeDates).prices;
 		int length = prices0.length;

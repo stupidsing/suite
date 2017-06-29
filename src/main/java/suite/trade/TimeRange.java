@@ -52,8 +52,8 @@ public class TimeRange extends Range<Time> {
 		Time frDt = min;
 		Time toDt = max;
 		for (Time t : ts) {
-			frDt = frDt.compareTo(t) < 0 ? frDt : t;
-			toDt = toDt.compareTo(t) < 0 ? t : toDt;
+			frDt = Time.compare(frDt, t) < 0 ? frDt : t;
+			toDt = Time.compare(toDt, t) < 0 ? t : toDt;
 		}
 		return of_(frDt, toDt.addDays(1));
 	}

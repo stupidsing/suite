@@ -1,7 +1,6 @@
 package suite.primitive.streamlet;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -25,12 +24,13 @@ import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
-import suite.util.To;
 
 public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 
@@ -38,11 +38,13 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> ChrObjStreamlet<V> concat(ChrObjStreamlet<V>... streamlets) {
+		return Read.from(streamlets).collect(ChrObjStreamlet::concat);
+	}
+
+	public static <U> ChrObjStreamlet<U> concat(Outlet<ChrObjStreamlet<U>> streamlets) {
 		return chrObjStreamlet(() -> {
-			List<ChrObjSource<V>> sources = new ArrayList<>();
-			for (ChrObjStreamlet<V> streamlet : streamlets)
-				sources.add(streamlet.in.source().source());
-			return ChrObjOutlet.of(ChrObjFunUtil.concat(To.source(sources)));
+			Source<ChrObjStreamlet<U>> source = streamlets.source();
+			return ChrObjOutlet.of(ChrObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 

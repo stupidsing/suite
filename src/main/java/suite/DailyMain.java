@@ -180,7 +180,7 @@ public class DailyMain extends ExecutableProgram {
 						.toMap());
 
 		TimeRange period = TimeRange.daysBefore(128);
-		String sevenDaysAgo = today.addDays(-7).ymd();
+		Time sevenDaysAgo = today.addDays(-7);
 		List<Trade> trades = new ArrayList<>();
 
 		// capture signals
@@ -192,15 +192,15 @@ public class DailyMain extends ExecutableProgram {
 
 				try {
 					DataSource ds0 = cfg.dataSource(symbol, period);
-					String datex = ds0.last().date;
+					Time datex = Time.ofEpochUtcSecond(ds0.last().t0);
 
-					if (0 <= datex.compareTo(sevenDaysAgo))
+					if (0 <= Time.compare(datex, sevenDaysAgo))
 						ds0.validate();
 					else
 						throw new RuntimeException("ancient data: " + datex);
 
 					Map<String, Float> latest = cfg.quote(Collections.singleton(symbol));
-					String latestDate = today.ymd();
+					long latestDate = today.startOfDay().epochUtcSecond();
 					float latestPrice = latest.values().iterator().next();
 
 					DataSource ds1 = ds0.cons(latestDate, latestPrice);

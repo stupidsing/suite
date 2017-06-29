@@ -21,6 +21,12 @@ public class Time implements Comparable<Time> {
 
 	private LocalDateTime dateTime;
 
+	public static int compare(Time t0, Time t1) {
+		LocalDateTime dt0 = t0.dateTime;
+		LocalDateTime dt1 = t1.dateTime;
+		return Long.compare(dt0.toEpochSecond(ZoneOffset.UTC), dt1.toEpochSecond(ZoneOffset.UTC));
+	}
+
 	public static Time today() {
 		return of(LocalDate.now().atStartOfDay());
 	}
@@ -137,9 +143,7 @@ public class Time implements Comparable<Time> {
 
 	@Override
 	public int compareTo(Time other) {
-		LocalDateTime dt0 = dateTime;
-		LocalDateTime dt1 = other.dateTime;
-		return Long.compare(dt0.toEpochSecond(ZoneOffset.UTC), dt1.toEpochSecond(ZoneOffset.UTC));
+		return compare(this, other);
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.os.LogUtil;
+import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -131,7 +132,7 @@ public class BackAllocTester {
 					.mapValue(alignDataSource::align) //
 					.collect(As::streamlet2);
 
-			List<Time> tradeTimes = Read.from(alignDataSource.dates).map(Time::ofYmd).toList();
+			List<Time> tradeTimes = LngStreamlet.of(alignDataSource.dates).map(Time::ofEpochUtcSecond).toList();
 			List<Time> times = timesPred.apply(tradeTimes);
 			int size = times.size();
 
