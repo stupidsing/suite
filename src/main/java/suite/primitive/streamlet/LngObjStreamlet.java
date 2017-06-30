@@ -1,7 +1,6 @@
 package suite.primitive.streamlet;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -19,18 +18,18 @@ import suite.primitive.LngPrimitives.LngObjPredicate;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.LngPrimitives.LngPredicate;
-import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
-import suite.util.To;
 
 public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
 
@@ -38,11 +37,13 @@ public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> LngObjStreamlet<V> concat(LngObjStreamlet<V>... streamlets) {
+		return Read.from(streamlets).collect(LngObjStreamlet::concat);
+	}
+
+	public static <U> LngObjStreamlet<U> concat(Outlet<LngObjStreamlet<U>> streamlets) {
 		return lngObjStreamlet(() -> {
-			List<LngObjSource<V>> sources = new ArrayList<>();
-			for (LngObjStreamlet<V> streamlet : streamlets)
-				sources.add(streamlet.in.source().source());
-			return LngObjOutlet.of(LngObjFunUtil.concat(To.source(sources)));
+			Source<LngObjStreamlet<U>> source = streamlets.source();
+			return LngObjOutlet.of(LngObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 
@@ -76,10 +77,6 @@ public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
 	}
 
 	public <R> R collect(Fun<LngObjOutlet<V>, R> fun) {
-		return fun.apply(spawn());
-	}
-
-	public long collectAsChar(Obj_Lng<LngObjOutlet<V>> fun) {
 		return fun.apply(spawn());
 	}
 

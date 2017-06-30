@@ -18,7 +18,6 @@ import suite.primitive.ChrPrimitives.ChrObjPredicate;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.ChrPrimitives.ChrPredicate;
-import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.pair.ChrObjPair;
@@ -78,10 +77,6 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public <R> R collect(Fun<ChrObjOutlet<V>, R> fun) {
-		return fun.apply(spawn());
-	}
-
-	public char collectAsChar(Obj_Chr<ChrObjOutlet<V>> fun) {
 		return fun.apply(spawn());
 	}
 

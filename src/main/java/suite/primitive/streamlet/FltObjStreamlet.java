@@ -1,7 +1,6 @@
 package suite.primitive.streamlet;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -19,18 +18,18 @@ import suite.primitive.FltPrimitives.FltObjPredicate;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.FltPrimitives.FltPredicate;
-import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
-import suite.util.To;
 
 public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 
@@ -38,11 +37,13 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> FltObjStreamlet<V> concat(FltObjStreamlet<V>... streamlets) {
+		return Read.from(streamlets).collect(FltObjStreamlet::concat);
+	}
+
+	public static <U> FltObjStreamlet<U> concat(Outlet<FltObjStreamlet<U>> streamlets) {
 		return fltObjStreamlet(() -> {
-			List<FltObjSource<V>> sources = new ArrayList<>();
-			for (FltObjStreamlet<V> streamlet : streamlets)
-				sources.add(streamlet.in.source().source());
-			return FltObjOutlet.of(FltObjFunUtil.concat(To.source(sources)));
+			Source<FltObjStreamlet<U>> source = streamlets.source();
+			return FltObjOutlet.of(FltObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 
@@ -76,10 +77,6 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	public <R> R collect(Fun<FltObjOutlet<V>, R> fun) {
-		return fun.apply(spawn());
-	}
-
-	public float collectAsChar(Obj_Flt<FltObjOutlet<V>> fun) {
 		return fun.apply(spawn());
 	}
 

@@ -1,7 +1,6 @@
 package suite.primitive.streamlet;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -19,18 +18,18 @@ import suite.primitive.DblPrimitives.DblObjPredicate;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.DblPrimitives.DblPredicate;
-import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
-import suite.util.To;
 
 public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 
@@ -38,11 +37,13 @@ public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> DblObjStreamlet<V> concat(DblObjStreamlet<V>... streamlets) {
+		return Read.from(streamlets).collect(DblObjStreamlet::concat);
+	}
+
+	public static <U> DblObjStreamlet<U> concat(Outlet<DblObjStreamlet<U>> streamlets) {
 		return dblObjStreamlet(() -> {
-			List<DblObjSource<V>> sources = new ArrayList<>();
-			for (DblObjStreamlet<V> streamlet : streamlets)
-				sources.add(streamlet.in.source().source());
-			return DblObjOutlet.of(DblObjFunUtil.concat(To.source(sources)));
+			Source<DblObjStreamlet<U>> source = streamlets.source();
+			return DblObjOutlet.of(DblObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 
@@ -76,10 +77,6 @@ public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	public <R> R collect(Fun<DblObjOutlet<V>, R> fun) {
-		return fun.apply(spawn());
-	}
-
-	public double collectAsChar(Obj_Dbl<DblObjOutlet<V>> fun) {
 		return fun.apply(spawn());
 	}
 

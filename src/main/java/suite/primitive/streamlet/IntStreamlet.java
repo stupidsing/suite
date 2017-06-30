@@ -1,9 +1,7 @@
 package suite.primitive.streamlet;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -26,12 +24,13 @@ import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
-import suite.util.To;
 
 public class IntStreamlet implements Iterable<Integer> {
 
@@ -39,11 +38,13 @@ public class IntStreamlet implements Iterable<Integer> {
 
 	@SafeVarargs
 	public static IntStreamlet concat(IntStreamlet... streamlets) {
+		return Read.from(streamlets).collect(IntStreamlet::concat);
+	}
+
+	public static IntStreamlet concat(Outlet<IntStreamlet> streamlets) {
 		return streamlet(() -> {
-			List<IntSource> sources = new ArrayList<>();
-			for (IntStreamlet streamlet : streamlets)
-				sources.add(streamlet.in.source().source());
-			return IntOutlet.of(IntFunUtil.concat(To.source(sources)));
+			Source<IntStreamlet> source = streamlets.source();
+			return IntOutlet.of(IntFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 

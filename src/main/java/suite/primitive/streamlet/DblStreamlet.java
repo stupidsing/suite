@@ -1,9 +1,7 @@
 package suite.primitive.streamlet;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -26,12 +24,13 @@ import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.DblObjMap;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
-import suite.util.To;
 
 public class DblStreamlet implements Iterable<Double> {
 
@@ -39,11 +38,13 @@ public class DblStreamlet implements Iterable<Double> {
 
 	@SafeVarargs
 	public static DblStreamlet concat(DblStreamlet... streamlets) {
+		return Read.from(streamlets).collect(DblStreamlet::concat);
+	}
+
+	public static DblStreamlet concat(Outlet<DblStreamlet> streamlets) {
 		return streamlet(() -> {
-			List<DblSource> sources = new ArrayList<>();
-			for (DblStreamlet streamlet : streamlets)
-				sources.add(streamlet.in.source().source());
-			return DblOutlet.of(DblFunUtil.concat(To.source(sources)));
+			Source<DblStreamlet> source = streamlets.source();
+			return DblOutlet.of(DblFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 

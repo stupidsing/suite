@@ -1,9 +1,7 @@
 package suite.primitive.streamlet;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -26,12 +24,13 @@ import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.LngObjMap;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
-import suite.util.To;
 
 public class LngStreamlet implements Iterable<Long> {
 
@@ -39,20 +38,13 @@ public class LngStreamlet implements Iterable<Long> {
 
 	@SafeVarargs
 	public static LngStreamlet concat(LngStreamlet... streamlets) {
-		return streamlet(() -> {
-			List<LngSource> sources = new ArrayList<>();
-			for (LngStreamlet streamlet : streamlets)
-				sources.add(streamlet.in.source().source());
-			return LngOutlet.of(LngFunUtil.concat(To.source(sources)));
-		});
+		return Read.from(streamlets).collect(LngStreamlet::concat);
 	}
 
 	public static LngStreamlet concat(Outlet<LngStreamlet> streamlets) {
 		return streamlet(() -> {
-			List<LngSource> sources = new ArrayList<>();
-			for (LngStreamlet streamlet : streamlets)
-				sources.add(streamlet.in.source().source());
-			return LngOutlet.of(LngFunUtil.concat(To.source(sources)));
+			Source<LngStreamlet> source = streamlets.source();
+			return LngOutlet.of(LngFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 
