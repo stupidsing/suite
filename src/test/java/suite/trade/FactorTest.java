@@ -40,7 +40,7 @@ public class FactorTest {
 
 		float[] indexReturns = dataSources //
 				.map(ds -> ts.returns(alignDataSource.align(ds).prices)) //
-				.fold(new float[alignDataSource.dates.length - 1], (r0, r1) -> mtx.add(r0, r1));
+				.fold(new float[alignDataSource.dates.length], (r0, r1) -> mtx.add(r0, r1));
 
 		Streamlet<Asset> assets = cfg.queryCompaniesByMarketCap(Time.now());
 

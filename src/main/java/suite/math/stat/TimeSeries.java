@@ -276,17 +276,14 @@ public class TimeSeries {
 
 	private float[] returns_(float[] fs) {
 		int length = fs.length;
-		if (0 < length) {
-			float[] returns = new float[length - 1];
-			float price0 = fs[0];
-			for (int i = 0; i < returns.length; i++) {
-				float price = fs[i + 1];
-				returns[i] = (price - price0) / price0;
-				price0 = price;
-			}
-			return returns;
-		} else
-			return new float[0];
+		float[] returns = new float[length];
+		float price0 = 0 < length ? fs[0] : 0f;
+		for (int i = 0; i < returns.length; i++) {
+			float price = fs[i];
+			returns[i] = (price - price0) / price0;
+			price0 = price;
+		}
+		return returns;
 	}
 
 }
