@@ -6,30 +6,41 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
+import suite.math.linalg.Matrix;
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
+import suite.trade.data.DataSource.AlignDataSource;
 import suite.trade.data.HkexUtil;
 import suite.util.Object_;
 
 public class FactorTest {
 
 	private Configuration cfg = new ConfigurationImpl();
+	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
 	@Test
 	public void test() {
-		String factorIndexSymbol = "NDAQ"; // ^DJI, ^GSPC
-
 		TimeRange period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(Time.now()), 250 * 3);
-		DataSource ds0 = cfg.dataSource(factorIndexSymbol).range(period);
-		float[] r0 = ts.returns(ds0.prices);
+
+		Streamlet<DataSource> dataSources = Read //
+				.each("^DJI", "^GSPC", "NDAQ") //
+				.map(symbol -> cfg.dataSource(symbol).range(period)) //
+				.collect(As::streamlet);
+
+		AlignDataSource alignDataSource = DataSource.alignAll(dataSources);
+
+		float[] indexReturns = dataSources //
+				.map(ds -> ts.returns(alignDataSource.align(ds).prices)) //
+				.fold(new float[alignDataSource.dates.length - 1], (r0, r1) -> mtx.add(r0, r1));
 
 		Streamlet<Asset> assets = cfg.queryCompaniesByMarketCap(Time.now());
 
@@ -39,9 +50,9 @@ public class FactorTest {
 				.cons(cfg.queryCompany("2638.HK")) //
 				.cons(cfg.queryCompany("0880.HK")) //
 				.map2(asset -> {
-					DataSource ds = cfg.dataSource(asset.symbol).range(period).align(ds0.dates);
-					float[] r1 = ts.returns(ds.prices);
-					return stat.correlation(r0, r1);
+					DataSource ds = cfg.dataSource(asset.symbol).range(period).align(alignDataSource.dates);
+					float[] returns = ts.returns(ds.prices);
+					return stat.correlation(indexReturns, returns);
 				}) //
 				.sortByValue(Object_::compare) //
 				.toList();

@@ -196,6 +196,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return spawn().minOrNull(comparator);
 	}
 
+	public Pair<K, V> opt() {
+		return spawn().opt();
+	}
+
 	public Outlet2<K, V> out() {
 		return spawn();
 	}

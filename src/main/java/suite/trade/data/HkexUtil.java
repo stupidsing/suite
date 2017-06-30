@@ -17,14 +17,6 @@ public class HkexUtil {
 		return isMarketOpen_(time);
 	}
 
-	public static String toStockCode(String symbol) {
-		return "" + Integer.parseInt(symbol.replace(".HK", ""));
-	}
-
-	public static String toSymbol(String stockCode) {
-		return String_.right("0000" + stockCode.trim(), -4) + ".HK";
-	}
-
 	public static Time getOpenTimeBefore(Time time) {
 		time = until(time, -1, HkexUtil::isMarketOpen_);
 		time = until(time, -1, time_ -> !isMarketOpen_(time_));
@@ -43,6 +35,14 @@ public class HkexUtil {
 
 	public static Time getTradeTimeAfter(Time time) {
 		return until(time, 1, HkexUtil::isMarketOpen_);
+	}
+
+	public static String toStockCode(String symbol) {
+		return "" + Integer.parseInt(symbol.replace(".HK", ""));
+	}
+
+	public static String toSymbol(String stockCode) {
+		return String_.right("0000" + stockCode.trim(), -4) + ".HK";
 	}
 
 	private static Time until(Time start, int dir, Predicate<Time> pred) {
