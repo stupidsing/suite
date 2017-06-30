@@ -60,7 +60,7 @@ public class SingleAllocBackTest {
 
 		if (day == 0 || buySell != 0)
 			tradeLogSink.sink("" //
-					+ "> date = " + Time.ofEpochUtcSecond(ds.dates[day]).ymd() //
+					+ "> date = " + Time.ofEpochSec(ds.ts[day]).ymd() //
 					+ ", buy/sell = " + buySell //
 					+ ", price = " + To.string(price) //
 					+ ", nShares = " + account.nShares(symbol) //

@@ -40,7 +40,7 @@ public class FactorTest {
 
 		float[] indexReturns = dataSources //
 				.map(ds -> ts.returns(alignDataSource.align(ds).prices)) //
-				.fold(new float[alignDataSource.dates.length], (r0, r1) -> mtx.add(r0, r1));
+				.fold(new float[alignDataSource.ts.length], (r0, r1) -> mtx.add(r0, r1));
 
 		Streamlet<Asset> assets = cfg.queryCompaniesByMarketCap(Time.now());
 
@@ -50,7 +50,7 @@ public class FactorTest {
 				.cons(cfg.queryCompany("2638.HK")) //
 				.cons(cfg.queryCompany("0880.HK")) //
 				.map2(asset -> {
-					DataSource ds = cfg.dataSource(asset.symbol).range(period).align(alignDataSource.dates);
+					DataSource ds = cfg.dataSource(asset.symbol).range(period).align(alignDataSource.ts);
 					float[] returns = ts.returns(ds.prices);
 					return stat.correlation(indexReturns, returns);
 				}) //

@@ -50,17 +50,17 @@ public class Yahoo {
 				.sort((a0, a1) -> Object_.compare(a0[0], a1[0])) //
 				.toList();
 
-		long[] dates = Read.from(arrays) //
-				.collect(Obj_Lng.lift(array -> Time.of(array[0]).epochUtcSecond())) //
+		long[] ts = Read.from(arrays) //
+				.collect(Obj_Lng.lift(array -> Time.of(array[0]).epochSec())) //
 				.toArray();
 
 		float[] prices = Read.from(arrays) //
 				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))) //
 				.toArray();
 
-		adjust(symbol, dates, prices);
+		adjust(symbol, ts, prices);
 
-		DataSource ds = new DataSource(dates, cleanse.cleanse(prices));
+		DataSource ds = new DataSource(ts, cleanse.cleanse(prices));
 		return ds;
 	}
 
@@ -84,12 +84,12 @@ public class Yahoo {
 			Streamlet<JsonNode> jsons = Read.each(json) //
 					.flatMap(json_ -> json_.path("chart").path("result"));
 
-			long[] epochs = jsons //
+			long[] ts = jsons //
 					.flatMap(json_ -> json_.path("timestamp")) //
 					.collect(Obj_Lng.lift(JsonNode::longValue)) //
 					.toArray();
 
-			int length = epochs.length;
+			int length = ts.length;
 
 			Streamlet2<String, Streamlet<JsonNode>> dataJsons0 = Read //
 					.each("open", "close", "high", "low") //
@@ -106,7 +106,7 @@ public class Yahoo {
 			Map<String, LngFltPair[]> data = Streamlet2.concat(dataJsons0, dataJsons1) //
 					.mapValue(json_ -> {
 						float[] fs = json_.collect(Obj_Flt.lift(JsonNode::floatValue)).toArray();
-						return To.array(LngFltPair.class, length, i -> LngFltPair.of(epochs[i], fs[i]));
+						return To.array(LngFltPair.class, length, i -> LngFltPair.of(ts[i], fs[i]));
 					}) //
 					.toMap();
 
@@ -139,8 +139,8 @@ public class Yahoo {
 		URL url = To.url("" //
 				+ "https://l1-query.finance.yahoo.com/v7/finance/chart/" //
 				+ encode(symbol) //
-				+ "?period1=" + period.from.epochUtcSecond() //
-				+ "&period2=" + period.to.epochUtcSecond() //
+				+ "?period1=" + period.from.epochSec() //
+				+ "&period2=" + period.to.epochSec() //
 				+ "&interval=1d" //
 				+ "&indicators=quote" //
 				+ "&includeTimestamps=true" //
@@ -180,9 +180,9 @@ public class Yahoo {
 						.map(json_ -> new String[] { json_.path("Date").textValue(), json_.path("Open").textValue(), }) //
 						.collect(As::streamlet);
 
-				long[] dates = arrays.collect(Obj_Lng.lift(array -> Time.of(array[0]).epochUtcSecond())).toArray();
+				long[] ts = arrays.collect(Obj_Lng.lift(array -> Time.of(array[0]).epochSec())).toArray();
 				float[] prices = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
-				return new DataSource(dates, prices);
+				return new DataSource(ts, prices);
 			}
 		});
 	}
@@ -234,15 +234,15 @@ public class Yahoo {
 				+ "&ignore=.csv";
 	}
 
-	private void adjust(String symbol, long[] dates, float[] prices) {
+	private void adjust(String symbol, long[] ts, float[] prices) {
 		Map<String, BiFunction<Long, Float, Float>> adjusters = new HashMap<>();
-		adjusters.put("0700.HK", (d, p) -> Time.compare(Time.ofEpochUtcSecond(d), Time.of("2014-05-14")) <= 0 ? p * .2f : p);
-		adjusters.put("2318.HK", (d, p) -> Time.compare(Time.ofEpochUtcSecond(d), Time.of("2014-03-23")) <= 0 ? p * .5f : p);
+		adjusters.put("0700.HK", (d, p) -> Time.compare(Time.ofEpochSec(d), Time.of("2014-05-14")) <= 0 ? p * .2f : p);
+		adjusters.put("2318.HK", (d, p) -> Time.compare(Time.ofEpochSec(d), Time.of("2014-03-23")) <= 0 ? p * .5f : p);
 
 		BiFunction<Long, Float, Float> adjuster = adjusters.get(symbol);
 		if (adjuster != null)
 			for (int d = 0; d < prices.length; d++)
-				prices[d] = adjuster.apply(dates[d], prices[d]);
+				prices[d] = adjuster.apply(ts[d], prices[d]);
 	}
 
 	private String encode(String s) {

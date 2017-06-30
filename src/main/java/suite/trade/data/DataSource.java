@@ -31,59 +31,59 @@ public class DataSource {
 		private Serializer<float[]> fas = Serialize.arrayOfFloats;
 
 		public DataSource read(DataInput_ dataInput) throws IOException {
-			long[] dates = Read //
+			long[] ts = Read //
 					.from(sas.read(dataInput)) //
-					.collect(LngStreamlet.of(s -> Time.of(s).epochUtcSecond())) //
+					.collect(LngStreamlet.of(s -> Time.of(s).epochSec())) //
 					.toArray();
 			float[] prices = fas.read(dataInput);
-			return new DataSource(dates, prices);
+			return new DataSource(ts, prices);
 		}
 
 		public void write(DataOutput_ dataOutput, DataSource ds) throws IOException {
-			String[] dates = LngStreamlet //
-					.of(ds.dates) //
-					.map(ep -> Time.ofEpochUtcSecond(ep).ymd()) //
+			String[] ymds = LngStreamlet //
+					.of(ds.ts) //
+					.map(ep -> Time.ofEpochSec(ep).ymd()) //
 					.toArray(String.class);
-			sas.write(dataOutput, dates);
+			sas.write(dataOutput, ymds);
 			fas.write(dataOutput, ds.prices);
 		}
 	};
 
-	public final long[] dates;
+	public final long[] ts;
 	public final float[] prices;
 
 	public static AlignDataSource alignAll(Streamlet<DataSource> dataSources) {
-		Streamlet<Long> tradeDates;
+		Streamlet<Long> tradeTimes;
 		if (Boolean.TRUE)
-			tradeDates = dataSources // union
-					.concatMap(ds -> LngStreamlet.of(ds.dates).map(date -> date)) //
+			tradeTimes = dataSources // union
+					.concatMap(ds -> LngStreamlet.of(ds.ts).map(t -> t)) //
 					.distinct();
 		else
-			tradeDates = Read.from(Set_.intersect(dataSources // intersect
-					.<Collection<Long>> map(ds -> LngStreamlet.of(ds.dates).map(date -> date).toList()) //
+			tradeTimes = Read.from(Set_.intersect(dataSources // intersect
+					.<Collection<Long>> map(ds -> LngStreamlet.of(ds.ts).map(t -> t).toList()) //
 					.toList()));
-		return new AlignDataSource(tradeDates //
+		return new AlignDataSource(tradeTimes //
 				.sort(Object_::compare) //
-				.collect(Obj_Lng.lift(date -> date)) //
+				.collect(Obj_Lng.lift(t -> t)) //
 				.toArray());
 	}
 
 	public static class AlignDataSource {
-		public final long[] dates;
+		public final long[] ts;
 
-		private AlignDataSource(long[] dates) {
-			this.dates = dates;
+		private AlignDataSource(long[] ts) {
+			this.ts = ts;
 		}
 
 		public DataSource align(DataSource ds) {
-			return ds.align(dates);
+			return ds.align(ts);
 		}
 	}
 
-	public DataSource(long[] dates, float[] prices) {
-		this.dates = dates;
+	public DataSource(long[] ts, float[] prices) {
+		this.ts = ts;
 		this.prices = prices;
-		if (dates.length != prices.length)
+		if (ts.length != prices.length)
 			throw new RuntimeException("mismatched dates and prices");
 	}
 
@@ -91,27 +91,27 @@ public class DataSource {
 		return range_(TimeRange.of(time, TimeRange.max));
 	}
 
-	public DataSource align(long[] dates1) {
-		int length0 = dates.length;
-		int length1 = dates1.length;
+	public DataSource align(long[] ts1) {
+		int length0 = ts.length;
+		int length1 = ts1.length;
 		float[] prices1 = new float[length1];
 		int si = 0, di = 0;
 		while (di < length1)
 			if (length0 <= si)
 				prices1[di++] = Trade_.negligible; // avoid division by 0s
-			else if (dates1[di] <= dates[si])
+			else if (ts1[di] <= ts[si])
 				prices1[di++] = prices[si];
 			else
 				si++;
-		return new DataSource(dates1, prices1);
+		return new DataSource(ts1, prices1);
 	}
 
-	public DataSource cons(long date, float price) {
-		int length = dates.length;
-		long[] dates1 = Arrays.copyOf(dates, length + 1);
+	public DataSource cons(long time, float price) {
+		int length = ts.length;
+		long[] ts1 = Arrays.copyOf(ts, length + 1);
 		float[] prices1 = mtx.concat(prices, new float[] { price, });
-		dates1[length] = date;
-		return new DataSource(dates1, prices1);
+		ts1[length] = time;
+		return new DataSource(ts1, prices1);
 	}
 
 	public DataSource filter(LngFltPredicate fdp) {
@@ -131,9 +131,9 @@ public class DataSource {
 	}
 
 	public TimeRange period() {
-		if (0 < dates.length) {
-			Time time0 = Time.ofEpochUtcSecond(get(0).t0);
-			Time timex = Time.ofEpochUtcSecond(get(-1).t0);
+		if (0 < ts.length) {
+			Time time0 = Time.ofEpochSec(get(0).t0);
+			Time timex = Time.ofEpochSec(get(-1).t0);
 			return TimeRange.of(time0, timex);
 		} else
 			throw new RuntimeException();
@@ -143,37 +143,37 @@ public class DataSource {
 		return range_(period);
 	}
 
-	public DataSource range(long ep0, long epx) {
-		return range_(ep0, epx);
+	public DataSource range(long t0, long tx) {
+		return range_(t0, tx);
 	}
 
 	public void validate() {
 		int length = prices.length;
-		long date0 = 0 < length ? dates[0] : Long.MIN_VALUE;
+		long t0 = 0 < length ? ts[0] : Long.MIN_VALUE;
 		float price0 = 0 < length ? prices[0] : Float.MAX_VALUE;
 
 		for (int i = 1; i < length; i++) {
-			long date1 = dates[i];
+			long t1 = ts[i];
 			float price1 = prices[i];
-			String ymd0 = Time.ofEpochUtcSecond(date0).ymd();
-			String ymd1 = Time.ofEpochUtcSecond(date1).ymd();
+			String date0 = Time.ofEpochSec(t0).ymd();
+			String date1 = Time.ofEpochSec(t1).ymd();
 
-			if (date1 <= date0)
-				throw new RuntimeException("wrong date order: " + ymd0 + "/" + ymd1);
+			if (t1 <= t0)
+				throw new RuntimeException("wrong date order: " + date0 + "/" + date1);
 
 			if (price1 < 0f)
-				throw new RuntimeException("price is negative: " + price1 + "/" + ymd1);
+				throw new RuntimeException("price is negative: " + price1 + "/" + date1);
 
 			if (1E6f < price1)
-				throw new RuntimeException("price too high: " + price1 + "/" + ymd1);
+				throw new RuntimeException("price too high: " + price1 + "/" + date1);
 
 			if (!Float.isFinite(price1))
-				throw new RuntimeException("price is not finite: " + price1 + "/" + ymd1);
+				throw new RuntimeException("price is not finite: " + price1 + "/" + date1);
 
 			if (!cleanse.isValid(price0, price1))
-				throw new RuntimeException("price varied too much: " + price0 + "/" + ymd0 + " => " + price1 + "/" + ymd1);
+				throw new RuntimeException("price varied too much: " + price0 + "/" + date0 + " => " + price1 + "/" + date1);
 
-			date0 = date1;
+			t0 = t1;
 			price0 = price1;
 		}
 	}
@@ -185,37 +185,37 @@ public class DataSource {
 	}
 
 	private DataSource range_(TimeRange period) {
-		long ep0 = period.from.epochUtcSecond();
-		long epx = period.to.epochUtcSecond();
-		return range_(ep0, epx);
+		long t0 = period.from.epochSec();
+		long tx = period.to.epochSec();
+		return range_(t0, tx);
 	}
 
-	private DataSource range_(long s0, long sx) {
-		return filter_((date, price) -> s0 <= date && date < sx);
+	private DataSource range_(long t0, long sx) {
+		return filter_((time, price) -> t0 <= time && time < sx);
 	}
 
 	private DataSource filter_(LngFltPredicate fdp) {
-		long[] dates1 = new long[dates.length];
+		long[] ts1 = new long[ts.length];
 		float[] prices1 = new float[prices.length];
 		int j = 0;
 
 		for (int i = 0; i < prices.length; i++) {
-			long date = dates[i];
+			long t = ts[i];
 			float price = prices[i];
-			if (fdp.test(date, price)) {
-				dates1[j] = date;
+			if (fdp.test(t, price)) {
+				ts1[j] = t;
 				prices1[j] = price;
 				j++;
 			}
 		}
 
-		return new DataSource(Arrays.copyOf(dates1, j), Arrays.copyOf(prices1, j));
+		return new DataSource(Arrays.copyOf(ts1, j), Arrays.copyOf(prices1, j));
 	}
 
 	private LngFltPair get_(int pos) {
 		if (pos < 0)
 			pos += prices.length;
-		return LngFltPair.of(dates[pos], prices[pos]);
+		return LngFltPair.of(ts[pos], prices[pos]);
 	}
 
 }

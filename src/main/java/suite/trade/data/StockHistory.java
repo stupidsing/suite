@@ -46,7 +46,7 @@ public class StockHistory {
 				int p = line.lastIndexOf(":");
 				Time time = Time.of(line.substring(0, p));
 				float price = Float.parseFloat(line.substring(p + 1));
-				pairs.add(LngFltPair.of(time.epochUtcSecond(), price));
+				pairs.add(LngFltPair.of(time.epochSec(), price));
 			}
 		else
 			throw new RuntimeException();
@@ -77,8 +77,8 @@ public class StockHistory {
 	}
 
 	public StockHistory filter(TimeRange period) {
-		long t0 = period.from.epochUtcSecond();
-		long tx = period.to.epochUtcSecond();
+		long t0 = period.from.epochSec();
+		long tx = period.to.epochSec();
 		Fun<LngFltPair[], LngFltPair[]> filter_ = pairs0 -> {
 			List<LngFltPair> pairs1 = new ArrayList<>();
 			for (LngFltPair pair : pairs0)
@@ -127,7 +127,7 @@ public class StockHistory {
 			List<LngFltPair> pairs1 = new ArrayList<>();
 			Time date = TimeRange.min;
 			for (LngFltPair pair : pairs0) {
-				Time date1 = Time.ofEpochUtcSecond(pair.t0).startOfDay();
+				Time date1 = Time.ofEpochSec(pair.t0).startOfDay();
 				if (Object_.compare(date, date1) < 0)
 					pairs1.add(pair);
 				date = date1;
@@ -143,7 +143,7 @@ public class StockHistory {
 	public DataSource adjustPrices(String tag) {
 		LngFltPair[] pairs = data.get(tag);
 		int length = pairs.length;
-		long[] dates = new long[length];
+		long[] ts = new long[length];
 		float[] prices = new float[length];
 
 		int si = splits.length - 1;
@@ -152,11 +152,11 @@ public class StockHistory {
 
 		for (int i = length - 1; 0 <= i; i--) {
 			LngFltPair pair = pairs[i];
-			long epoch = pair.t0;
+			long t = pair.t0;
 
 			if (0 <= di) {
 				LngFltPair dividend = dividends[di];
-				if (epoch < dividend.t0) {
+				if (t < dividend.t0) {
 					if (Boolean.TRUE)
 						// may got negative prices
 						a -= dividend.t1 * b;
@@ -169,17 +169,17 @@ public class StockHistory {
 
 			if (0 <= si) {
 				LngFltPair split = splits[si];
-				if (epoch < split.t0) {
+				if (t < split.t0) {
 					b *= split.t1;
 					si--;
 				}
 			}
 
-			dates[i] = pair.t0;
+			ts[i] = pair.t0;
 			prices[i] = a + b * pair.t1;
 		}
 
-		return new DataSource(dates, prices);
+		return new DataSource(ts, prices);
 	}
 
 	public Streamlet<String> write() {
@@ -192,7 +192,7 @@ public class StockHistory {
 	private Streamlet<String> concat(LngFltPair[] pairs) {
 		return Streamlet.concat( //
 				Read.each("{"), //
-				Read.from(pairs).map(pair -> Time.ofEpochUtcSecond(pair.t0).ymdHms() + ":" + pair.t1), //
+				Read.from(pairs).map(pair -> Time.ofEpochSec(pair.t0).ymdHms() + ":" + pair.t1), //
 				Read.each("}"));
 	}
 

@@ -132,7 +132,7 @@ public class BackAllocTester {
 					.mapValue(alignDataSource::align) //
 					.collect(As::streamlet2);
 
-			List<Time> tradeTimes = LngStreamlet.of(alignDataSource.dates).map(Time::ofEpochUtcSecond).toList();
+			List<Time> tradeTimes = LngStreamlet.of(alignDataSource.ts).map(Time::ofEpochSec).toList();
 			List<Time> times = timesPred.apply(tradeTimes);
 			int size = times.size();
 

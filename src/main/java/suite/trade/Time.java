@@ -42,7 +42,7 @@ public class Time implements Comparable<Time> {
 			else
 				return ofYmdHms(s);
 		else
-			return ofEpochUtcSecond(Long.parseLong(s));
+			return ofEpochSec(Long.parseLong(s));
 	}
 
 	public static Time ofYmd(String s) {
@@ -61,7 +61,7 @@ public class Time implements Comparable<Time> {
 		return of(LocalDate.ofEpochDay(e).atStartOfDay());
 	}
 
-	public static Time ofEpochUtcSecond(long e) {
+	public static Time ofEpochSec(long e) {
 		return of(LocalDateTime.ofEpochSecond(e, 0, ZoneOffset.UTC));
 	}
 
@@ -105,7 +105,7 @@ public class Time implements Comparable<Time> {
 		return dateTime.toLocalDate().toEpochDay();
 	}
 
-	public long epochUtcSecond() {
+	public long epochSec() {
 		return dateTime.toEpochSecond(ZoneOffset.UTC);
 	}
 

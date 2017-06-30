@@ -73,7 +73,7 @@ public class WalkForwardAllocTester {
 		int last = windowSize - 1;
 
 		System.arraycopy(times, 0, times, 1, last);
-		times[last] = time.epochUtcSecond();
+		times[last] = time.epochSec();
 
 		for (Entry<String, DataSource> e : dsBySymbol.entrySet()) {
 			String symbol = e.getKey();

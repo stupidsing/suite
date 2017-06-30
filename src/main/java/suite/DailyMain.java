@@ -192,7 +192,7 @@ public class DailyMain extends ExecutableProgram {
 
 				try {
 					DataSource ds0 = cfg.dataSource(symbol, period);
-					Time timex = Time.ofEpochUtcSecond(ds0.last().t0);
+					Time timex = Time.ofEpochSec(ds0.last().t0);
 
 					if (0 <= Time.compare(timex, sevenDaysAgo))
 						ds0.validate();
@@ -200,7 +200,7 @@ public class DailyMain extends ExecutableProgram {
 						throw new RuntimeException("ancient data: " + timex);
 
 					Map<String, Float> latest = cfg.quote(Collections.singleton(symbol));
-					long latestDate = today.startOfDay().epochUtcSecond();
+					long latestDate = today.startOfDay().epochSec();
 					float latestPrice = latest.values().iterator().next();
 
 					DataSource ds1 = ds0.cons(latestDate, latestPrice);

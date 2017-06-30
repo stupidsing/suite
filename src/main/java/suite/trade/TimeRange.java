@@ -88,14 +88,14 @@ public class TimeRange extends Range<Time> {
 	}
 
 	private static Streamlet<TimeRange> backTestDaysBefore_(Time frDate, Time toDate, int nDays, int alignment) {
-		long epochDate0 = frDate.epochDay();
-		long epochDate1 = toDate.epochDay() - 1;
-		epochDate0 -= epochDate0 % alignment;
-		epochDate1 -= epochDate1 % alignment;
+		long epd0 = frDate.epochDay();
+		long epd1 = toDate.epochDay() - 1;
+		epd0 -= epd0 % alignment;
+		epd1 -= epd1 % alignment;
 		List<TimeRange> periods = new ArrayList<>();
-		while (epochDate0 <= epochDate1) {
-			periods.add(daysBefore_(Time.ofEpochDay(epochDate0), nDays));
-			epochDate0 += alignment;
+		while (epd0 <= epd1) {
+			periods.add(daysBefore_(Time.ofEpochDay(epd0), nDays));
+			epd0 += alignment;
 		}
 		return Read.from(periods);
 	}

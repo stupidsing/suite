@@ -21,7 +21,7 @@ import suite.util.To;
  */
 public class MonteCarloBackAllocator implements BackAllocator {
 
-	private Random random = new Random(Time.of(2017, 1, 1).epochUtcSecond());
+	private Random random = new Random(Time.of(2017, 1, 1).epochSec());
 	private TimeSeries ts = new TimeSeries();
 
 	@Override

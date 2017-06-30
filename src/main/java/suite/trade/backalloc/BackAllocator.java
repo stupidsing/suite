@@ -101,9 +101,9 @@ public interface BackAllocator {
 
 			return (time, index) -> {
 				Time date = time.date();
-				long ep0 = date.addDays(-7).epochUtcSecond();
-				long epx = date.epochUtcSecond();
-				DataSource ids = indexDataSource.range(ep0, epx);
+				long t0 = date.addDays(-7).epochSec();
+				long tx = date.epochSec();
+				DataSource ids = indexDataSource.range(t0, tx);
 
 				double indexPrice0 = ids.get(-1).t1;
 				double indexPricex = ids.get(-2).t1;
@@ -196,9 +196,9 @@ public interface BackAllocator {
 		return (dsBySymbol0, times_) -> {
 			Streamlet2<String, DataSource> dsBySymbol1 = dsBySymbol0 //
 					.mapValue(ds0 -> {
-						long[] times = ds0.dates;
+						long[] times = ds0.ts;
 						float[] prices = ds0.prices;
-						long[] indexDates = indexDataSource.dates;
+						long[] indexDates = indexDataSource.ts;
 						float[] indexPrices = indexDataSource.prices;
 						int length = times.length;
 						int indexLength = indexDates.length;

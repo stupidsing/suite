@@ -23,9 +23,9 @@ public class YahooTest {
 
 	@Test
 	public void testL1Adjust() {
-		Time frDate = Time.ofEpochUtcSecond(1490578200l);
-		Time toDate = Time.ofEpochUtcSecond(1497490200l);
-		Dump.out(yahoo.dataSourceL1("0012.HK", TimeRange.of(frDate, toDate)));
+		Time t0 = Time.ofEpochSec(1490578200l);
+		Time tx = Time.ofEpochSec(1497490200l);
+		Dump.out(yahoo.dataSourceL1("0012.HK", TimeRange.of(t0, tx)));
 	}
 
 	// @Test
@@ -53,10 +53,10 @@ public class YahooTest {
 
 		ds.validate();
 
-		int datesLength = ds.dates.length;
+		int tsLength = ds.ts.length;
 		int pricesLength = ds.prices.length;
-		assertTrue(datesLength == pricesLength);
-		assertTrue(0 < datesLength);
+		assertTrue(tsLength == pricesLength);
+		assertTrue(0 < tsLength);
 	}
 
 }

@@ -12,7 +12,7 @@ public class Hkd {
 
 	public DataSource dataSource(String symbol, TimeRange period) {
 		if (String_.equals(symbol, Asset.cashSymbol))
-			return new DataSource(new long[] { period.to.epochUtcSecond(), }, new float[] { 1f, });
+			return new DataSource(new long[] { period.to.epochSec(), }, new float[] { 1f, });
 		else
 			throw new RuntimeException();
 	}
