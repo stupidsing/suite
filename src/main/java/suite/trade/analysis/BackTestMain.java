@@ -16,6 +16,7 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.trade.Trade_;
 import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocConfigurations;
 import suite.trade.backalloc.BackAllocTester.Simulate;
@@ -75,7 +76,9 @@ public class BackTestMain extends ExecutableProgram {
 		Streamlet2<String, Simulate> simulationsByKey = Read //
 				.from2(bacByTag) //
 				.map(Pair::of) //
-				.join2(IntStreamlet.range(2008, 2018).map(TimeRange::ofYear)) //
+				.join2(IntStreamlet //
+						.range(2008, Trade_.thisYear) //
+						.map(TimeRange::ofYear)) //
 				.map2((pair, period) -> pair.t0, (pair, period) -> {
 					BackAllocConfiguration bac = pair.t1;
 					Streamlet<Asset> assets = bac.assetsFun.apply(period.from);

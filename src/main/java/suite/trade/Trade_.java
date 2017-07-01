@@ -24,6 +24,7 @@ public class Trade_ {
 	public static float negligible = 1E-6f;
 	public static int nTradeDaysPerYear = 256;
 	public static int nTradeSecondsPerDay = 28800;
+	public static int thisYear = Time.now().year();
 
 	public static double invTradeDaysPerYear = 1d / nTradeDaysPerYear;
 

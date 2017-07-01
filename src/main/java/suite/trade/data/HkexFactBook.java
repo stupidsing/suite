@@ -2,10 +2,12 @@ package suite.trade.data;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.adt.Opt;
 import suite.http.HttpUtil;
 import suite.os.Execute;
 import suite.os.SerializedStoreCache;
@@ -17,6 +19,22 @@ import suite.util.To;
 
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
 public class HkexFactBook {
+
+	public Streamlet<String> queryDelisted() {
+		return Read.from(SerializedStoreCache //
+				.of(Serialize.list(Serialize.variableLengthString)) //
+				.get(getClass().getSimpleName() + ".queryDelisted()", () -> {
+					String cmd = "" //
+							+ "curl http://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc" //
+							+ " | catdoc" //
+							+ " | sed -n 's/.*(\\(.*\\)).*/\\1/p'" //
+							+ " | egrep -v '^[A-Za-z]'" //
+							+ " | sort -rn";
+
+					return Opt.of(cmd).map(Execute::shell).map(s -> s.split("\n")).map(Arrays::asList).get();
+				})) //
+				.map(HkexUtil::toSymbol);
+	}
 
 	public Streamlet<String> queryLeadingCompaniesByMarketCap(int year) {
 		return Read.from(SerializedStoreCache //
