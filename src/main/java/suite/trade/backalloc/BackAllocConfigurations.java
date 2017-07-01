@@ -1,5 +1,7 @@
 package suite.trade.backalloc;
 
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.Time;
@@ -9,6 +11,7 @@ import suite.util.FunUtil.Sink;
 
 public class BackAllocConfigurations {
 
+	private Configuration cfg;
 	public final BackAllocConfiguration bac_bb;
 	public final BackAllocConfiguration bac_donchian;
 	public final BackAllocConfiguration bac_ema;
@@ -21,6 +24,7 @@ public class BackAllocConfigurations {
 	public final BackAllocConfiguration bac_tma;
 
 	public BackAllocConfigurations(Configuration cfg, Sink<String> log) {
+		this.cfg = cfg;
 		Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
 
 		bac_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9).bacUnl(fun);
@@ -33,7 +37,12 @@ public class BackAllocConfigurations {
 		bac_rsi = BackAllocator_.rsi().bacUnl(fun);
 		bac_sell = BackAllocator_.cash().bacUnl(fun);
 		bac_tma = BackAllocator_.tripleMovingAvgs().bacUnl(fun);
+	}
 
+	public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {
+		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
+		BackAllocator backAllocator = BackAllocator_.questoQuella(symbol0, symbol1);
+		return new BackAllocConfiguration(time -> assets, backAllocator);
 	}
 
 }

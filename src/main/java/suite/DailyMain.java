@@ -216,18 +216,12 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private Result questoaQuella(float fund, String symbol0, String symbol1) {
-		return alloc("qq/" + symbol0 + "/" + symbol1, fund, questoaQuella(symbol0, symbol1));
+		return alloc("qq/" + symbol0 + "/" + symbol1, fund, bacs.questoaQuella(symbol0, symbol1));
 	}
 
 	public BackAllocConfiguration pairs(String symbol0, String symbol1) {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
 		BackAllocator backAllocator = BackAllocator_.pairs(cfg, symbol0, symbol1).unleverage();
-		return new BackAllocConfiguration(time -> assets, backAllocator);
-	}
-
-	public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {
-		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
-		BackAllocator backAllocator = BackAllocator_.questoQuella(symbol0, symbol1);
 		return new BackAllocConfiguration(time -> assets, backAllocator);
 	}
 

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import suite.DailyMain;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
 import suite.primitive.Chars;
@@ -32,7 +31,6 @@ public class BackTestMain extends ExecutableProgram {
 
 	private BackTester runner = new BackTester();
 	private Configuration cfg = new ConfigurationImpl();
-	private DailyMain dm = new DailyMain();
 
 	private BackAllocConfigurations bacs = new BackAllocConfigurations(cfg, LogUtil::info);
 
@@ -104,7 +102,7 @@ public class BackTestMain extends ExecutableProgram {
 	private void questoaQuella(String symbol0, String symbol1) {
 		bacByTag.put(symbol0, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol0)));
 		bacByTag.put(symbol1, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol1)));
-		bacByTag.put("pair/" + symbol0 + "/" + symbol1, dm.questoaQuella(symbol0, symbol1));
+		bacByTag.put("pair/" + symbol0 + "/" + symbol1, bacs.questoaQuella(symbol0, symbol1));
 	}
 
 }
