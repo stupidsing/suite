@@ -48,14 +48,14 @@ public class TimeRange extends Range<Time> {
 		return of_(Time.of(year, 1, 1), Time.of(year + 1, 1, 1));
 	}
 
-	public static TimeRange rangeOf(List<Time> ts) {
-		Time frDt = min;
-		Time toDt = max;
-		for (Time t : ts) {
-			frDt = Time.compare(frDt, t) < 0 ? frDt : t;
-			toDt = Time.compare(toDt, t) < 0 ? t : toDt;
+	public static TimeRange rangeOf(List<Time> times) {
+		Time fr = min;
+		Time to = max;
+		for (Time time : times) {
+			fr = Time.compare(fr, time) < 0 ? fr : time;
+			to = Time.compare(to, time) < 0 ? time : to;
 		}
-		return of_(frDt, toDt.addDays(1));
+		return of_(fr, to.addDays(1));
 	}
 
 	public static TimeRange yearsBefore(Time to, int n) {

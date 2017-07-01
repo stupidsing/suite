@@ -46,16 +46,16 @@ public class HkexUtil {
 	}
 
 	private static Time until(Time start, int dir, Predicate<Time> pred) {
-		Time t = start;
-		if (!pred.test(t)) {
-			t = t.thisSecond().addSeconds(dir < 0 ? 0 : 1);
-			Time t1 = null;
+		Time time = start;
+		if (!pred.test(time)) {
+			time = time.thisSecond().addSeconds(dir < 0 ? 0 : 1);
+			Time time1 = null;
 			for (int d : new int[] { 14400, 3600, 300, 30, 5, 1, })
-				while (!pred.test(t1 = t.addSeconds(dir * d)))
-					t = t1;
-			t = t1;
+				while (!pred.test(time1 = time.addSeconds(dir * d)))
+					time = time1;
+			time = time1;
 		}
-		return t;
+		return time;
 	}
 
 	private static boolean isMarketOpen_(Time time) {

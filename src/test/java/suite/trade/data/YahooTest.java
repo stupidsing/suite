@@ -23,9 +23,9 @@ public class YahooTest {
 
 	@Test
 	public void testL1Adjust() {
-		Time t0 = Time.ofEpochSec(1490578200l);
-		Time tx = Time.ofEpochSec(1497490200l);
-		Dump.out(yahoo.dataSourceL1("0012.HK", TimeRange.of(t0, tx)));
+		Time time0 = Time.ofEpochSec(1490578200l);
+		Time timex = Time.ofEpochSec(1497490200l);
+		Dump.out(yahoo.dataSourceL1("0012.HK", TimeRange.of(time0, timex)));
 	}
 
 	// @Test
