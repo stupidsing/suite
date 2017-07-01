@@ -29,13 +29,15 @@ public class FactorTest {
 
 	@Test
 	public void test() {
+		Streamlet<Asset> assets0 = cfg.queryCompaniesByMarketCap(Time.now());
+		Streamlet<Asset> assets1 = cfg.queryHistory().map(trade -> trade.symbol).distinct().map(cfg::queryCompany);
+
 		List<Pair<Asset, Double>> pairs = test( //
 				Read.each("^DJI", "^GSPC", "NDAQ"), //
-				cfg.queryCompaniesByMarketCap(Time.now()) //
+				Streamlet.concat(assets0, assets1) //
 						.cons(Asset.hsi) //
-						.cons(cfg.queryCompany("1169.HK")) //
-						.cons(cfg.queryCompany("2638.HK")) //
-						.cons(cfg.queryCompany("0880.HK")));
+						.cons(cfg.queryCompany("0753.HK")) //
+						.distinct());
 
 		for (Pair<Asset, Double> pair : pairs)
 			System.out.println(pair);
