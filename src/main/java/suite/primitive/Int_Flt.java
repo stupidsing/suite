@@ -1,6 +1,8 @@
 package suite.primitive;
 
 import suite.primitive.Floats.FloatsBuilder;
+import suite.primitive.FltPrimitives.Obj_Flt;
+import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.primitive.streamlet.IntOutlet;
 import suite.util.FunUtil.Fun;
@@ -14,10 +16,22 @@ public interface Int_Flt {
 		Int_Flt fun1 = fun0.rethrow();
 		return ts -> {
 			FloatsBuilder b = new FloatsBuilder();
-			int t;
-			while ((t = ts.next()) != IntFunUtil.EMPTYVALUE)
-				b.append(fun1.apply(t));
+			int c;
+			while ((c = ts.next()) != IntFunUtil.EMPTYVALUE)
+				b.append(fun1.apply(c));
 			return b.toFloats().streamlet();
+		};
+	}
+
+	public static Obj_Flt<IntOutlet> sum(Int_Flt fun0) {
+		Int_Flt fun1 = fun0.rethrow();
+		return outlet -> {
+			IntSource source = outlet.source();
+			int c;
+			float result = (float) 0;
+			while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
+				result += fun1.apply(c);
+			return result;
 		};
 	}
 

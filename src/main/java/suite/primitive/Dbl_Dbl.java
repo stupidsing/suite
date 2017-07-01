@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.primitive.DblPrimitives.DblSource;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
@@ -14,10 +16,22 @@ public interface Dbl_Dbl {
 		Dbl_Dbl fun1 = fun0.rethrow();
 		return ts -> {
 			DoublesBuilder b = new DoublesBuilder();
-			double t;
-			while ((t = ts.next()) != DblFunUtil.EMPTYVALUE)
-				b.append(fun1.apply(t));
+			double c;
+			while ((c = ts.next()) != DblFunUtil.EMPTYVALUE)
+				b.append(fun1.apply(c));
 			return b.toDoubles().streamlet();
+		};
+	}
+
+	public static Obj_Dbl<DblOutlet> sum(Dbl_Dbl fun0) {
+		Dbl_Dbl fun1 = fun0.rethrow();
+		return outlet -> {
+			DblSource source = outlet.source();
+			double c;
+			double result = (double) 0;
+			while ((c = source.source()) != DblFunUtil.EMPTYVALUE)
+				result += fun1.apply(c);
+			return result;
 		};
 	}
 

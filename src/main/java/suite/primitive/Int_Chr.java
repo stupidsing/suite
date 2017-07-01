@@ -1,6 +1,8 @@
 package suite.primitive;
 
 import suite.primitive.Chars.CharsBuilder;
+import suite.primitive.ChrPrimitives.Obj_Chr;
+import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.primitive.streamlet.IntOutlet;
 import suite.util.FunUtil.Fun;
@@ -14,10 +16,22 @@ public interface Int_Chr {
 		Int_Chr fun1 = fun0.rethrow();
 		return ts -> {
 			CharsBuilder b = new CharsBuilder();
-			int t;
-			while ((t = ts.next()) != IntFunUtil.EMPTYVALUE)
-				b.append(fun1.apply(t));
+			int c;
+			while ((c = ts.next()) != IntFunUtil.EMPTYVALUE)
+				b.append(fun1.apply(c));
 			return b.toChars().streamlet();
+		};
+	}
+
+	public static Obj_Chr<IntOutlet> sum(Int_Chr fun0) {
+		Int_Chr fun1 = fun0.rethrow();
+		return outlet -> {
+			IntSource source = outlet.source();
+			int c;
+			char result = (char) 0;
+			while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
+				result += fun1.apply(c);
+			return result;
 		};
 	}
 

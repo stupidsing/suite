@@ -1,6 +1,8 @@
 package suite.primitive;
 
+import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.Floats.FloatsBuilder;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.streamlet.ChrOutlet;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.util.FunUtil.Fun;
@@ -14,10 +16,22 @@ public interface Chr_Flt {
 		Chr_Flt fun1 = fun0.rethrow();
 		return ts -> {
 			FloatsBuilder b = new FloatsBuilder();
-			char t;
-			while ((t = ts.next()) != ChrFunUtil.EMPTYVALUE)
-				b.append(fun1.apply(t));
+			char c;
+			while ((c = ts.next()) != ChrFunUtil.EMPTYVALUE)
+				b.append(fun1.apply(c));
 			return b.toFloats().streamlet();
+		};
+	}
+
+	public static Obj_Flt<ChrOutlet> sum(Chr_Flt fun0) {
+		Chr_Flt fun1 = fun0.rethrow();
+		return outlet -> {
+			ChrSource source = outlet.source();
+			char c;
+			float result = (float) 0;
+			while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
+				result += fun1.apply(c);
+			return result;
 		};
 	}
 

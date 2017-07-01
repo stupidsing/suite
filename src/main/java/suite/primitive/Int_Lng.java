@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.primitive.IntPrimitives.IntSource;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.streamlet.IntOutlet;
 import suite.primitive.streamlet.LngStreamlet;
@@ -14,10 +16,22 @@ public interface Int_Lng {
 		Int_Lng fun1 = fun0.rethrow();
 		return ts -> {
 			LongsBuilder b = new LongsBuilder();
-			int t;
-			while ((t = ts.next()) != IntFunUtil.EMPTYVALUE)
-				b.append(fun1.apply(t));
+			int c;
+			while ((c = ts.next()) != IntFunUtil.EMPTYVALUE)
+				b.append(fun1.apply(c));
 			return b.toLongs().streamlet();
+		};
+	}
+
+	public static Obj_Lng<IntOutlet> sum(Int_Lng fun0) {
+		Int_Lng fun1 = fun0.rethrow();
+		return outlet -> {
+			IntSource source = outlet.source();
+			int c;
+			long result = (long) 0;
+			while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
+				result += fun1.apply(c);
+			return result;
 		};
 	}
 

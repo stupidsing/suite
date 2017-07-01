@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.primitive.ChrPrimitives.ChrSource;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.streamlet.ChrOutlet;
 import suite.primitive.streamlet.DblStreamlet;
@@ -14,10 +16,22 @@ public interface Chr_Dbl {
 		Chr_Dbl fun1 = fun0.rethrow();
 		return ts -> {
 			DoublesBuilder b = new DoublesBuilder();
-			char t;
-			while ((t = ts.next()) != ChrFunUtil.EMPTYVALUE)
-				b.append(fun1.apply(t));
+			char c;
+			while ((c = ts.next()) != ChrFunUtil.EMPTYVALUE)
+				b.append(fun1.apply(c));
 			return b.toDoubles().streamlet();
+		};
+	}
+
+	public static Obj_Dbl<ChrOutlet> sum(Chr_Dbl fun0) {
+		Chr_Dbl fun1 = fun0.rethrow();
+		return outlet -> {
+			ChrSource source = outlet.source();
+			char c;
+			double result = (double) 0;
+			while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
+				result += fun1.apply(c);
+			return result;
 		};
 	}
 

@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.primitive.FltPrimitives.FltSource;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.LngStreamlet;
@@ -14,10 +16,22 @@ public interface Flt_Lng {
 		Flt_Lng fun1 = fun0.rethrow();
 		return ts -> {
 			LongsBuilder b = new LongsBuilder();
-			float t;
-			while ((t = ts.next()) != FltFunUtil.EMPTYVALUE)
-				b.append(fun1.apply(t));
+			float c;
+			while ((c = ts.next()) != FltFunUtil.EMPTYVALUE)
+				b.append(fun1.apply(c));
 			return b.toLongs().streamlet();
+		};
+	}
+
+	public static Obj_Lng<FltOutlet> sum(Flt_Lng fun0) {
+		Flt_Lng fun1 = fun0.rethrow();
+		return outlet -> {
+			FltSource source = outlet.source();
+			float c;
+			long result = (long) 0;
+			while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
+				result += fun1.apply(c);
+			return result;
 		};
 	}
 

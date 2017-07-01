@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.primitive.IntPrimitives.IntSource;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.streamlet.IntOutlet;
 import suite.primitive.streamlet.IntStreamlet;
@@ -14,10 +16,22 @@ public interface Int_Int {
 		Int_Int fun1 = fun0.rethrow();
 		return ts -> {
 			IntsBuilder b = new IntsBuilder();
-			int t;
-			while ((t = ts.next()) != IntFunUtil.EMPTYVALUE)
-				b.append(fun1.apply(t));
+			int c;
+			while ((c = ts.next()) != IntFunUtil.EMPTYVALUE)
+				b.append(fun1.apply(c));
 			return b.toInts().streamlet();
+		};
+	}
+
+	public static Obj_Int<IntOutlet> sum(Int_Int fun0) {
+		Int_Int fun1 = fun0.rethrow();
+		return outlet -> {
+			IntSource source = outlet.source();
+			int c;
+			int result = (int) 0;
+			while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
+				result += fun1.apply(c);
+			return result;
 		};
 	}
 
