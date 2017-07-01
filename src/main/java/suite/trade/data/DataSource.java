@@ -9,8 +9,10 @@ import suite.primitive.LngFltPredicate;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.primitive.streamlet.LngStreamlet;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
@@ -51,6 +53,26 @@ public class DataSource {
 
 	public final long[] ts;
 	public final float[] prices;
+
+	public static <K> AlignKeyDataSource<K> alignAll(Streamlet2<K, DataSource> dsByKey) {
+		AlignDataSource alignDataSource = DataSource.alignAll(dsByKey.values());
+
+		Streamlet2<K, DataSource> dsBySymbol1 = dsByKey //
+				.mapValue(alignDataSource::align) //
+				.collect(As::streamlet2);
+
+		return new AlignKeyDataSource<>(alignDataSource, dsBySymbol1);
+	}
+
+	public static class AlignKeyDataSource<K> {
+		public final long[] ts;
+		public final Streamlet2<K, DataSource> dsByKey;
+
+		private AlignKeyDataSource(AlignDataSource alignDataSource, Streamlet2<K, DataSource> dsByKey) {
+			this.ts = alignDataSource.ts;
+			this.dsByKey = dsByKey;
+		}
+	}
 
 	public static AlignDataSource alignAll(Streamlet<DataSource> dataSources) {
 		Streamlet<Long> tradeTimes;

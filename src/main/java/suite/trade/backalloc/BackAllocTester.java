@@ -29,7 +29,7 @@ import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
-import suite.trade.data.DataSource.AlignDataSource;
+import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.List_;
@@ -126,13 +126,10 @@ public class BackAllocTester {
 					.filterValue(ds -> ds != null) //
 					.collect(As::streamlet2);
 
-			AlignDataSource alignDataSource = DataSource.alignAll(dsBySymbol0.values());
+			AlignKeyDataSource<String> akds = DataSource.alignAll(dsBySymbol0);
+			Streamlet2<String, DataSource> dsBySymbol1 = akds.dsByKey;
 
-			Streamlet2<String, DataSource> dsBySymbol1 = dsBySymbol0 //
-					.mapValue(alignDataSource::align) //
-					.collect(As::streamlet2);
-
-			List<Time> tradeTimes = LngStreamlet.of(alignDataSource.ts).map(Time::ofEpochSec).toList();
+			List<Time> tradeTimes = LngStreamlet.of(akds.ts).map(Time::ofEpochSec).toList();
 			List<Time> times = timesPred.apply(tradeTimes);
 			int size = times.size();
 
@@ -147,9 +144,7 @@ public class BackAllocTester {
 					Time time = times.get(i);
 					int index = Collections.binarySearch(tradeTimes, time);
 
-					latestPriceBySymbol = dsBySymbol1 //
-							.mapValue(ds -> ds.prices[index]) //
-							.toMap();
+					latestPriceBySymbol = dsBySymbol1.mapValue(ds -> ds.prices[index]).toMap();
 
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
 					UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, latestPriceBySymbol);

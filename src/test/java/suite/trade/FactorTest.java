@@ -12,11 +12,12 @@ import suite.math.stat.TimeSeries;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
-import suite.trade.data.DataSource.AlignDataSource;
+import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.HkexUtil;
 import suite.util.Object_;
 
@@ -52,19 +53,19 @@ public class FactorTest {
 	private List<Pair<Asset, Double>> test(Streamlet<String> indices, Streamlet<Asset> assets) {
 		TimeRange period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(Time.now()), 250 * 3);
 
-		Streamlet<DataSource> dataSources = indices //
-				.map(symbol -> cfg.dataSource(symbol).range(period)) //
-				.collect(As::streamlet);
+		Streamlet2<String, DataSource> dsBySymbol = indices //
+				.map2(symbol -> cfg.dataSource(symbol).range(period)) //
+				.collect(As::streamlet2);
 
-		AlignDataSource alignDataSource = DataSource.alignAll(dataSources);
+		AlignKeyDataSource<String> akds = DataSource.alignAll(dsBySymbol);
 
-		float[] indexReturns = dataSources //
-				.map(ds -> ts.returns(alignDataSource.align(ds).prices)) //
-				.fold(new float[alignDataSource.ts.length], mtx::add);
+		float[] indexReturns = akds.dsByKey //
+				.map((symbol, ds) -> ts.returns(ds.prices)) //
+				.fold(new float[akds.ts.length], mtx::add);
 
 		return assets //
 				.map2(asset -> {
-					DataSource ds = cfg.dataSource(asset.symbol).range(period).align(alignDataSource.ts);
+					DataSource ds = cfg.dataSource(asset.symbol).range(period).align(DataSource.alignAll(dsBySymbol).ts);
 					float[] returns = ts.returns(ds.prices);
 					return stat.correlation(indexReturns, returns);
 				}) //
