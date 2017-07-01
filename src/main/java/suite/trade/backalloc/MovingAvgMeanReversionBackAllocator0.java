@@ -53,12 +53,12 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 		log.sink(dsBySymbol.size() + " assets in data source");
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
-		Map<String, Map<TimeRange, MeanReversionStat>> meanReversionStatByPeriodBySymbol = dsBySymbol //
+		Map<String, Map<TimeRange, MeanReversionStat>> mrsByPeriodBySymbol = dsBySymbol //
 				.map2((symbol, ds) -> TimeRange //
 						.rangeOf(times) //
 						.addDays(-tor) //
 						.backTestDaysBefore(256, 32) //
-						.map2(mrsPeriod -> meanReversionStat(symbol, ds, mrsPeriod)) //
+						.map2(mrsPeriod -> mrs(symbol, ds, mrsPeriod)) //
 						.toMap()) //
 				.toMap();
 
@@ -66,9 +66,9 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
 			TimeRange mrsPeriod = TimeRange.backTestDaysBefore(time.addDays(-tor), 256, 32);
 
-			Map<String, MeanReversionStat> meanReversionStatBySymbol = dsBySymbol //
+			Map<String, MeanReversionStat> mrsBySymbol = dsBySymbol //
 					.map2((symbol, ds) -> {
-						Map<TimeRange, MeanReversionStat> m = meanReversionStatByPeriodBySymbol.get(symbol);
+						Map<TimeRange, MeanReversionStat> m = mrsByPeriodBySymbol.get(symbol);
 						return m != null ? m.get(mrsPeriod) : null;
 					}) //
 					.filterValue(mrsReversionStat -> mrsReversionStat != null) //
@@ -78,7 +78,7 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 			// ensure ADF < 0d: price is not random walk
 			// ensure Hurst exponent < .5d: price is weakly mean reverting
 			// ensure 0d < variance ratio: statistic is significant
-			return Read.from2(meanReversionStatBySymbol) //
+			return Read.from2(mrsBySymbol) //
 					.filterValue(mrs -> mrs.adf < 0d //
 							&& mrs.hurst < .5d //
 							&& 0d < mrs.varianceRatio) //
@@ -131,7 +131,7 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 		}
 	}
 
-	private MeanReversionStat meanReversionStat(String symbol, DataSource ds, TimeRange period) {
+	private MeanReversionStat mrs(String symbol, DataSource ds, TimeRange period) {
 		Pair<String, TimeRange> key = Pair.of(symbol, period);
 		return memoizeMeanReversionStat.computeIfAbsent(key, p -> new MeanReversionStat(ds, period));
 	}

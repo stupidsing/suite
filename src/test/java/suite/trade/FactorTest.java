@@ -43,8 +43,10 @@ public class FactorTest {
 		for (Pair<Asset, Double> pair : pairs)
 			System.out.println(pair);
 
-		BackAllocator ba = (dsBySymbol, times) -> (time, index) -> {
-			return new ArrayList<>();
+		BackAllocator ba = (dsBySymbol, times) -> {
+			return (time, index) -> {
+				return new ArrayList<>();
+			};
 		};
 
 		ba.getClass();
