@@ -7,6 +7,7 @@ import java.util.Set;
 
 import suite.DailyMain;
 import suite.adt.pair.Pair;
+import suite.os.LogUtil;
 import suite.primitive.Chars;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.As;
@@ -17,6 +18,7 @@ import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocConfiguration;
+import suite.trade.backalloc.BackAllocConfigurations;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator_;
 import suite.trade.data.Configuration;
@@ -32,7 +34,9 @@ public class BackTestMain extends ExecutableProgram {
 	private Configuration cfg = new ConfigurationImpl();
 	private DailyMain dm = new DailyMain();
 
-	private Map<String, BackAllocConfiguration> bacs;
+	private BackAllocConfigurations bacs = new BackAllocConfigurations(cfg, LogUtil::info);
+
+	private Map<String, BackAllocConfiguration> bacByTag;
 
 	public static void main(String[] args) {
 		Util.run(BackTestMain.class, args);
@@ -40,12 +44,11 @@ public class BackTestMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		BackAllocConfiguration bac_hsi = BackAllocConfiguration.ofSingle(Asset.hsi);
 		Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
-		Map<String, BackAllocConfiguration> bacs_ = new HashMap<>();
+		Map<String, BackAllocConfiguration> bacByTag_ = new HashMap<>();
 
 		if (Boolean.FALSE) {
-			bacs_.put("donchian9", BackAllocator_.donchian(9).bacUnl(fun));
+			bacByTag_.put("donchian9", BackAllocator_.donchian(9).bacUnl(fun));
 			questoaQuella("0020.HK", "0004.HK");
 			questoaQuella("0052.HK", "0341.HK");
 			questoaQuella("0670.HK", "1055.HK");
@@ -53,26 +56,26 @@ public class BackTestMain extends ExecutableProgram {
 		}
 
 		// BEGIN
-		bacs_.put("hsi", bac_hsi);
-		bacs_.put("bb", dm.bac_bb);
-		bacs_.put("donchian", dm.bac_donchian);
-		bacs_.put("ema", dm.bac_ema);
-		bacs_.put("lr", BackAllocator_.lastReturn(2, 0).bacUnl(fun));
-		bacs_.put("pmamr", dm.bac_pmamr);
-		bacs_.put("pmmmr", dm.bac_pmmmr);
-		bacs_.put("rsi", dm.bac_rsi);
-		bacs_.put("tma", dm.bac_tma);
+		bacByTag_.put("hsi", bacs.bac_hsi);
+		bacByTag_.put("bb", bacs.bac_bb);
+		bacByTag_.put("donchian", bacs.bac_donchian);
+		bacByTag_.put("ema", bacs.bac_ema);
+		bacByTag_.put("lr", BackAllocator_.lastReturn(2, 0).bacUnl(fun));
+		bacByTag_.put("pmamr", bacs.bac_pmamr);
+		bacByTag_.put("pmmmr", bacs.bac_pmmmr);
+		bacByTag_.put("rsi", bacs.bac_rsi);
+		bacByTag_.put("tma", bacs.bac_tma);
 		// END
 
 		Set<String> strategyNames = Read.from(args).toSet();
 
-		bacs = Read //
-				.from2(bacs_) //
+		bacByTag = Read //
+				.from2(bacByTag_) //
 				.filterKey(strategyName -> args.length == 0 || strategyNames.contains(strategyName)) //
 				.toMap();
 
 		Streamlet2<String, Simulate> simulationsByKey = Read //
-				.from2(bacs) //
+				.from2(bacByTag) //
 				.map(Pair::of) //
 				.join2(IntStreamlet.range(2008, 2018).map(TimeRange::ofYear)) //
 				.map2((pair, period) -> pair.t0, (pair, period) -> {
@@ -99,9 +102,9 @@ public class BackTestMain extends ExecutableProgram {
 	}
 
 	private void questoaQuella(String symbol0, String symbol1) {
-		bacs.put(symbol0, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol0)));
-		bacs.put(symbol1, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol1)));
-		bacs.put("pair/" + symbol0 + "/" + symbol1, dm.questoaQuella(symbol0, symbol1));
+		bacByTag.put(symbol0, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol0)));
+		bacByTag.put(symbol1, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol1)));
+		bacByTag.put("pair/" + symbol0 + "/" + symbol1, dm.questoaQuella(symbol0, symbol1));
 	}
 
 }

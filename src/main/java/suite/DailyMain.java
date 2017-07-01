@@ -25,19 +25,17 @@ import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.analysis.Summarize;
 import suite.trade.backalloc.BackAllocConfiguration;
+import suite.trade.backalloc.BackAllocConfigurations;
 import suite.trade.backalloc.BackAllocTester;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.backalloc.BackAllocator_;
-import suite.trade.backalloc.MovingAvgMeanReversionBackAllocator0;
-import suite.trade.backalloc.ReverseCorrelateBackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
 import suite.util.Set_;
@@ -53,17 +51,8 @@ public class DailyMain extends ExecutableProgram {
 	private StringBuilder sb = new StringBuilder();
 	private Sink<String> log = To.sink(sb);
 	private Time today = Time.now();
-	private Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
 
-	public final BackAllocConfiguration bac_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9).bacUnl(fun);
-	public final BackAllocConfiguration bac_donchian = BackAllocator_.donchian(9).bacUnl(fun);
-	public final BackAllocConfiguration bac_ema = BackAllocator_.ema().top(3).bacUnl(fun);
-	public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).bacUnl(fun);
-	public final BackAllocConfiguration bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdMinimum(9).bacUnl(fun);
-	public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().bacUnl(fun);
-	public final BackAllocConfiguration bac_rsi = BackAllocator_.rsi().bacUnl(fun);
-	public final BackAllocConfiguration bac_sell = BackAllocator_.cash().bacUnl(fun);
-	public final BackAllocConfiguration bac_tma = BackAllocator_.tripleMovingAvgs().bacUnl(fun);
+	private BackAllocConfigurations bacs = new BackAllocConfigurations(cfg, log);
 
 	private class Result {
 		private String strategy;
@@ -85,19 +74,19 @@ public class DailyMain extends ExecutableProgram {
 
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //
-				alloc("bb", 100000f, bac_bb), //
-				alloc("bug", 0f, bac_sell), //
-				alloc("ema", 100000f, bac_ema), //
+				alloc("bb", 100000f, bacs.bac_bb), //
+				alloc("bug", 0f, bacs.bac_sell), //
+				alloc("ema", 100000f, bacs.bac_ema), //
 				mamr(100000f), //
-				alloc("pmamr", 100000f, bac_pmamr), //
-				alloc("pmmmr", 120000f, bac_pmmmr), //
-				alloc("revco", 80000f, bac_revco), //
-				alloc("tma", 100000f, bac_tma), //
-				alloc("sellpool", 0f, bac_sell));
+				alloc("pmamr", 100000f, bacs.bac_pmamr), //
+				alloc("pmmmr", 120000f, bacs.bac_pmmmr), //
+				alloc("revco", 80000f, bacs.bac_revco), //
+				alloc("tma", 100000f, bacs.bac_tma), //
+				alloc("sellpool", 0f, bacs.bac_sell));
 
 		// unused strategies
 		if (Boolean.FALSE) {
-			alloc("donchian", 100000f, bac_donchian);
+			alloc("donchian", 100000f, bacs.bac_donchian);
 			pairs(0f, "0341.HK", "0052.HK");
 			questoaQuella(200000f, "0670.HK", "1055.HK");
 			sellForEarn("sellpool");
