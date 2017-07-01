@@ -44,7 +44,7 @@ public class FactorTest {
 
 		Streamlet<Asset> assets = cfg.queryCompaniesByMarketCap(Time.now());
 
-		List<Pair<Asset, Double>> pairs = Read.from(assets) //
+		List<Pair<Asset, Double>> pairs = assets //
 				.cons(Asset.hsi) //
 				.cons(cfg.queryCompany("1169.HK")) //
 				.cons(cfg.queryCompany("2638.HK")) //
