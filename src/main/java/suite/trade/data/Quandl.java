@@ -14,7 +14,7 @@ import suite.util.Object_;
 public class Quandl {
 
 	public DataSource dataSourceCsv(String symbol, TimeRange period) {
-		String urlString = "https://www.quandl.com/api/v1/datasets/CHRIS/CME_CL1.csv";
+		String urlString = "https://www.quandl.com/api/v1/datasets/CHRIS/CME_CL1.csv?" + period.hashCode();
 
 		// Date, Open, High, Low, Last, Change, Settle, Volume, Previous Day
 		// Open Interest
