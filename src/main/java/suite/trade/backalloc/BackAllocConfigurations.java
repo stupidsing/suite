@@ -31,7 +31,7 @@ public class BackAllocConfigurations {
 		Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
 
 		BackAllocator ba_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9);
-		BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().top(3).even();
+		BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().filterShorts().top(3).even();
 
 		bac_bb = ba_bb.bacUnl(fun);
 		bac_donchian = BackAllocator_.donchian(9).bacUnl(fun);
