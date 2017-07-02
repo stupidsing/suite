@@ -14,6 +14,7 @@ import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocator;
+import suite.trade.data.Cleanse;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
@@ -26,12 +27,13 @@ public class Factor {
 	private DataSource irds;
 
 	private Configuration cfg;
+	private Cleanse cleanse = new Cleanse();
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
 	public static Factor ofCrudeOil(Configuration cfg) {
-		return new Factor(cfg, Read.each("CL=F"));
+		return new Factor(cfg, Read.each("CLQ17.NYM")); // "CL=F"
 	}
 
 	public static Factor ofUsMarket(Configuration cfg) {
@@ -42,7 +44,7 @@ public class Factor {
 		this.cfg = cfg;
 
 		AlignKeyDataSource<String> akds = indices //
-				.map2(cfg::dataSource) //
+				.map2(symbol -> cleanse.removeZeroes(cfg.dataSource(symbol))) //
 				.collect(As::streamlet2) //
 				.apply(DataSource::alignAll);
 

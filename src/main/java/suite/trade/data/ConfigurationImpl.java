@@ -24,10 +24,11 @@ public class ConfigurationImpl implements Configuration {
 	private Hkd hkd = new Hkd();
 	private Hkex hkex = new Hkex();
 	private HkexFactBook hkexFactBook = new HkexFactBook();
+	private Quandl quandl = new Quandl();
 	private Yahoo yahoo = new Yahoo();
 
 	private enum Source_ {
-		HKD__, YAHOO,
+		HKD___, QUANDL, YAHOO_,
 	};
 
 	public DataSource dataSource(String symbol) {
@@ -69,17 +70,20 @@ public class ConfigurationImpl implements Configuration {
 		Map<Source_, Set<String>> map = new HashMap<>();
 		for (String symbol : symbols)
 			map.computeIfAbsent(source_(symbol), s -> new HashSet<>()).add(symbol);
-		return To.map_(hkd.quote(map.getOrDefault(Source_.HKD__, Collections.emptySet())),
-				google.quote(map.getOrDefault(Source_.YAHOO, Collections.emptySet())));
+		return To.map_(hkd.quote(map.getOrDefault(Source_.HKD___, Collections.emptySet())),
+				google.quote(map.getOrDefault(Source_.YAHOO_, Collections.emptySet())));
 	}
 
 	private DataSource dataSource_(String symbol, TimeRange period) {
 		DataSource ds;
 		switch (source_(symbol)) {
-		case HKD__:
+		case HKD___:
 			ds = hkd.dataSource(symbol, period);
 			break;
-		case YAHOO:
+		case QUANDL:
+			ds = quandl.dataSourceCsv(symbol, period);
+			break;
+		case YAHOO_:
 			ds = yahoo.dataSourceL1(symbol, period);
 			break;
 		default:
@@ -90,9 +94,11 @@ public class ConfigurationImpl implements Configuration {
 
 	private Source_ source_(String symbol) {
 		if (String_.equals(symbol, Asset.cashSymbol))
-			return Source_.HKD__;
+			return Source_.HKD___;
+		else if (String_.equals(symbol, "CL=F") || String_.equals(symbol, "CLQ17.NYM"))
+			return Source_.QUANDL;
 		else
-			return Source_.YAHOO;
+			return Source_.YAHOO_;
 	}
 
 }

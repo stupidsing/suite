@@ -90,6 +90,7 @@ public class StockHistory {
 		Map<String, LngFltPair[]> data1 = Read.from2(data) //
 				.mapValue(filter_) //
 				.toMap();
+
 		return of(time, data1, filter_.apply(dividends), filter_.apply(splits));
 	}
 
