@@ -129,7 +129,7 @@ public class BackAllocTester {
 					.apply(DataSource::alignAll);
 
 			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
-			long[] tradeTs = LngStreamlet.of(akds.ts).toArray();
+			long[] tradeTs = akds.ts;
 			long[] ts_ = tsPred.apply(tradeTs);
 			int size = ts_.length;
 
