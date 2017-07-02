@@ -18,6 +18,22 @@ public class LngSet {
 	private int size;
 	private long[] vs;
 
+	public static LngSet intersect(LngSet... sets) {
+		return sets[0].stream().filter(c -> {
+			boolean b = true;
+			for (LngSet set_ : sets)
+				b &= set_.contains(c);
+			return b;
+		}).toSet();
+	}
+
+	public static LngSet union(LngSet... sets) {
+		LngSet set = new LngSet();
+		for (LngSet set_ : sets)
+			set_.stream().sink(set::add);
+		return set;
+	}
+
 	public LngSet() {
 		this(8);
 	}
@@ -33,7 +49,7 @@ public class LngSet {
 			sink.sink(c);
 	}
 
-	public boolean add(long v) {
+	public boolean add(long c) {
 		int capacity = vs.length;
 		size++;
 
@@ -49,7 +65,11 @@ public class LngSet {
 			}
 		}
 
-		return add_(v);
+		return add_(c);
+	}
+
+	public boolean contains(long c) {
+		return 0 <= index(c);
 	}
 
 	public LngSource source() {
@@ -60,17 +80,25 @@ public class LngSet {
 		return new LngStreamlet(() -> LngOutlet.of(source_()));
 	}
 
-	private boolean add_(long v1) {
+	private boolean add_(long c) {
+		int index = index(c);
+		if (0 <= index) {
+			vs[index] = c;
+			return true;
+		} else
+			return false;
+	}
+
+	private int index(long c) {
 		int mask = vs.length - 1;
-		int index = Long.hashCode(v1) & mask;
-		long v0;
-		while ((v0 = vs[index]) != LngFunUtil.EMPTYVALUE)
-			if (v0 != v1)
+		int index = Long.hashCode(c) & mask;
+		long c0;
+		while ((c0 = vs[index]) != LngFunUtil.EMPTYVALUE)
+			if (c0 != c)
 				index = index + 1 & mask;
 			else
-				return false;
-		vs[index] = v1;
-		return true;
+				return -1;
+		return index;
 	}
 
 	private LngSource source_() {

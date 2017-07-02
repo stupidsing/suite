@@ -19,6 +19,22 @@ public class DblSet {
 	private int size;
 	private double[] vs;
 
+	public static DblSet intersect(DblSet... sets) {
+		return sets[0].stream().filter(c -> {
+			boolean b = true;
+			for (DblSet set_ : sets)
+				b &= set_.contains(c);
+			return b;
+		}).toSet();
+	}
+
+	public static DblSet union(DblSet... sets) {
+		DblSet set = new DblSet();
+		for (DblSet set_ : sets)
+			set_.stream().sink(set::add);
+		return set;
+	}
+
 	public DblSet() {
 		this(8);
 	}
@@ -34,7 +50,7 @@ public class DblSet {
 			sink.sink(c);
 	}
 
-	public boolean add(double v) {
+	public boolean add(double c) {
 		int capacity = vs.length;
 		size++;
 
@@ -50,7 +66,11 @@ public class DblSet {
 			}
 		}
 
-		return add_(v);
+		return add_(c);
+	}
+
+	public boolean contains(double c) {
+		return 0 <= index(c);
 	}
 
 	public DblSource source() {
@@ -61,17 +81,25 @@ public class DblSet {
 		return new DblStreamlet(() -> DblOutlet.of(source_()));
 	}
 
-	private boolean add_(double v1) {
+	private boolean add_(double c) {
+		int index = index(c);
+		if (0 <= index) {
+			vs[index] = c;
+			return true;
+		} else
+			return false;
+	}
+
+	private int index(double c) {
 		int mask = vs.length - 1;
-		int index = Double.hashCode(v1) & mask;
-		double v0;
-		while ((v0 = vs[index]) != DblFunUtil.EMPTYVALUE)
-			if (v0 != v1)
+		int index = Double.hashCode(c) & mask;
+		double c0;
+		while ((c0 = vs[index]) != DblFunUtil.EMPTYVALUE)
+			if (c0 != c)
 				index = index + 1 & mask;
 			else
-				return false;
-		vs[index] = v1;
-		return true;
+				return -1;
+		return index;
 	}
 
 	private DblSource source_() {

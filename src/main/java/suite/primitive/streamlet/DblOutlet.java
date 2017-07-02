@@ -26,6 +26,7 @@ import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.pair.DblObjPair;
+import suite.primitive.adt.set.DblSet;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -99,8 +100,8 @@ public class DblOutlet implements Iterable<Double> {
 		return DblFunUtil.iterator(source);
 	}
 
-	public DblOutlet append(double t) {
-		return of(DblFunUtil.append(t, source));
+	public DblOutlet append(double c) {
+		return of(DblFunUtil.append(c, source));
 	}
 
 	public Outlet<DblOutlet> chunk(int n) {
@@ -132,8 +133,8 @@ public class DblOutlet implements Iterable<Double> {
 		return of(DblFunUtil.concat(DblFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
-	public DblOutlet cons(double t) {
-		return of(DblFunUtil.cons(t, source));
+	public DblOutlet cons(double c) {
+		return of(DblFunUtil.cons(c, source));
 	}
 
 	public int count() {
@@ -145,15 +146,15 @@ public class DblOutlet implements Iterable<Double> {
 
 	public <U, O> Outlet<O> cross(List<U> list, DblObj_Obj<U, O> fun) {
 		return Outlet.of(new Source<O>() {
-			private double t;
+			private double c;
 			private int index = list.size();
 
 			public O source() {
 				if (index == list.size()) {
 					index = 0;
-					t = next();
+					c = next();
 				}
-				return fun.apply(t, list.get(index++));
+				return fun.apply(c, list.get(index++));
 			}
 		});
 	}
@@ -161,10 +162,10 @@ public class DblOutlet implements Iterable<Double> {
 	public DblOutlet distinct() {
 		Set<Double> set = new HashSet<>();
 		return of(() -> {
-			double t;
-			while ((t = next()) != DblFunUtil.EMPTYVALUE && !set.add(t))
+			double c;
+			while ((c = next()) != DblFunUtil.EMPTYVALUE && !set.add(c))
 				;
-			return t;
+			return c;
 		});
 	}
 
@@ -201,9 +202,9 @@ public class DblOutlet implements Iterable<Double> {
 	}
 
 	public <R> R fold(R init, DblObj_Obj<R, R> fun) {
-		double t;
-		while ((t = next()) != DblFunUtil.EMPTYVALUE)
-			init = fun.apply(t, init);
+		double c;
+		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+			init = fun.apply(c, init);
 		return init;
 	}
 
@@ -218,9 +219,9 @@ public class DblOutlet implements Iterable<Double> {
 	@Override
 	public int hashCode() {
 		int hashCode = 5;
-		double t;
-		while ((t = source.source()) != DblFunUtil.EMPTYVALUE)
-			hashCode = hashCode * 31 + Objects.hashCode(t);
+		double c;
+		while ((c = source.source()) != DblFunUtil.EMPTYVALUE)
+			hashCode = hashCode * 31 + Objects.hashCode(c);
 		return hashCode;
 	}
 
@@ -229,9 +230,9 @@ public class DblOutlet implements Iterable<Double> {
 			private int i = 0;
 
 			public boolean source2(DblObjPair<Integer> pair) {
-				double t = next();
-				if (t != DblFunUtil.EMPTYVALUE) {
-					pair.t0 = t;
+				double c = next();
+				if (c != DblFunUtil.EMPTYVALUE) {
+					pair.t0 = c;
 					pair.t1 = i++;
 					return true;
 				} else
@@ -249,10 +250,10 @@ public class DblOutlet implements Iterable<Double> {
 	}
 
 	public double last() {
-		double t, t1 = DblFunUtil.EMPTYVALUE;
-		while ((t = next()) != DblFunUtil.EMPTYVALUE)
-			t1 = t;
-		return t1;
+		double c, c1 = DblFunUtil.EMPTYVALUE;
+		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+			c1 = c;
+		return c1;
 	}
 
 	public <O> Outlet<O> map(Dbl_Obj<O> fun) {
@@ -276,20 +277,20 @@ public class DblOutlet implements Iterable<Double> {
 	}
 
 	public double min(DblComparator comparator) {
-		double t = minOrNull(comparator);
-		if (t != DblFunUtil.EMPTYVALUE)
-			return t;
+		double c = minOrNull(comparator);
+		if (c != DblFunUtil.EMPTYVALUE)
+			return c;
 		else
 			throw new RuntimeException("no result");
 	}
 
 	public double minOrNull(DblComparator comparator) {
-		double t = next(), t1;
-		if (t != DblFunUtil.EMPTYVALUE) {
-			while ((t1 = next()) != DblFunUtil.EMPTYVALUE)
-				if (0 < comparator.compare(t, t1))
-					t = t1;
-			return t;
+		double c = next(), c1;
+		if (c != DblFunUtil.EMPTYVALUE) {
+			while ((c1 = next()) != DblFunUtil.EMPTYVALUE)
+				if (0 < comparator.compare(c, c1))
+					c = c1;
+			return c;
 		} else
 			return DblFunUtil.EMPTYVALUE;
 	}
@@ -298,28 +299,28 @@ public class DblOutlet implements Iterable<Double> {
 		return source.source();
 	}
 
-	public DblOutlet nonBlock(double t0) {
+	public DblOutlet nonBlock(double c0) {
 		NullableSyncQueue<Double> queue = new NullableSyncQueue<>();
 
 		new Thread(() -> {
-			double t;
+			double c;
 			do
-				queue.offerQuietly(t = source.source());
-			while (t != DblFunUtil.EMPTYVALUE);
+				queue.offerQuietly(c = source.source());
+			while (c != DblFunUtil.EMPTYVALUE);
 		}).start();
 
 		return new DblOutlet(() -> {
 			Mutable<Double> mutable = Mutable.nil();
-			double c = queue.poll(mutable) ? mutable.get() : t0;
+			double c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});
 	}
 
 	public DblOpt opt() {
-		double t = next();
-		if (t != DblFunUtil.EMPTYVALUE)
+		double c = next();
+		if (c != DblFunUtil.EMPTYVALUE)
 			if (next() == DblFunUtil.EMPTYVALUE)
-				return DblOpt.of(t);
+				return DblOpt.of(c);
 			else
 				throw new RuntimeException("more than one result");
 		else
@@ -332,9 +333,9 @@ public class DblOutlet implements Iterable<Double> {
 
 	public void sink(DblSink sink0) {
 		DblSink sink1 = sink0.rethrow();
-		double t;
-		while ((t = next()) != DblFunUtil.EMPTYVALUE)
-			sink1.sink(t);
+		double c;
+		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+			sink1.sink(c);
 	}
 
 	public DblOutlet skip(int n) {
@@ -373,9 +374,9 @@ public class DblOutlet implements Iterable<Double> {
 
 	public DoublesBuilder toList() {
 		DoublesBuilder list = new DoublesBuilder();
-		double t;
-		while ((t = next()) != DblFunUtil.EMPTYVALUE)
-			list.append(t);
+		double c;
+		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+			list.append(c);
 		return list;
 	}
 
@@ -385,9 +386,9 @@ public class DblOutlet implements Iterable<Double> {
 
 	public <K> DblObjMap<DoublesBuilder> toListMap(Dbl_Dbl valueFun) {
 		DblObjMap<DoublesBuilder> map = new DblObjMap<>();
-		double t;
-		while ((t = next()) != DblFunUtil.EMPTYVALUE)
-			map.computeIfAbsent(t, k_ -> new DoublesBuilder()).append(valueFun.apply(t));
+		double c;
+		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+			map.computeIfAbsent(c, k_ -> new DoublesBuilder()).append(valueFun.apply(c));
 		return map;
 	}
 
@@ -407,11 +408,11 @@ public class DblOutlet implements Iterable<Double> {
 		return map2(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
-	public Set<Double> toSet() {
-		Set<Double> set = new HashSet<>();
-		double t;
-		while ((t = next()) != DblFunUtil.EMPTYVALUE)
-			set.add(t);
+	public DblSet toSet() {
+		DblSet set = new DblSet();
+		double c;
+		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+			set.add(c);
 		return set;
 	}
 

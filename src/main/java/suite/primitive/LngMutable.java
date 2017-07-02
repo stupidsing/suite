@@ -16,9 +16,9 @@ public class LngMutable {
 		return LngMutable.of(LngFunUtil.EMPTYVALUE);
 	}
 
-	public static LngMutable of(long i) {
+	public static LngMutable of(long c) {
 		LngMutable p = new LngMutable();
-		p.update(i);
+		p.update(c);
 		return p;
 	}
 
@@ -26,15 +26,15 @@ public class LngMutable {
 		return value++;
 	}
 
-	public void set(long t) {
+	public void set(long c) {
 		if (value == LngFunUtil.EMPTYVALUE)
-			update(t);
+			update(c);
 		else
 			throw new RuntimeException("value already set");
 	}
 
-	public void update(long t) {
-		value = t;
+	public void update(long c) {
+		value = c;
 	}
 
 	public long get() {

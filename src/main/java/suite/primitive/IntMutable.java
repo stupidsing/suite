@@ -16,9 +16,9 @@ public class IntMutable {
 		return IntMutable.of(IntFunUtil.EMPTYVALUE);
 	}
 
-	public static IntMutable of(int i) {
+	public static IntMutable of(int c) {
 		IntMutable p = new IntMutable();
-		p.update(i);
+		p.update(c);
 		return p;
 	}
 
@@ -26,15 +26,15 @@ public class IntMutable {
 		return value++;
 	}
 
-	public void set(int t) {
+	public void set(int c) {
 		if (value == IntFunUtil.EMPTYVALUE)
-			update(t);
+			update(c);
 		else
 			throw new RuntimeException("value already set");
 	}
 
-	public void update(int t) {
-		value = t;
+	public void update(int c) {
+		value = c;
 	}
 
 	public int get() {

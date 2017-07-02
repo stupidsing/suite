@@ -16,9 +16,9 @@ public class ChrMutable {
 		return ChrMutable.of(ChrFunUtil.EMPTYVALUE);
 	}
 
-	public static ChrMutable of(char i) {
+	public static ChrMutable of(char c) {
 		ChrMutable p = new ChrMutable();
-		p.update(i);
+		p.update(c);
 		return p;
 	}
 
@@ -26,15 +26,15 @@ public class ChrMutable {
 		return value++;
 	}
 
-	public void set(char t) {
+	public void set(char c) {
 		if (value == ChrFunUtil.EMPTYVALUE)
-			update(t);
+			update(c);
 		else
 			throw new RuntimeException("value already set");
 	}
 
-	public void update(char t) {
-		value = t;
+	public void update(char c) {
+		value = c;
 	}
 
 	public char get() {

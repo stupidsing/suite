@@ -19,6 +19,22 @@ public class FltSet {
 	private int size;
 	private float[] vs;
 
+	public static FltSet intersect(FltSet... sets) {
+		return sets[0].stream().filter(c -> {
+			boolean b = true;
+			for (FltSet set_ : sets)
+				b &= set_.contains(c);
+			return b;
+		}).toSet();
+	}
+
+	public static FltSet union(FltSet... sets) {
+		FltSet set = new FltSet();
+		for (FltSet set_ : sets)
+			set_.stream().sink(set::add);
+		return set;
+	}
+
 	public FltSet() {
 		this(8);
 	}
@@ -34,7 +50,7 @@ public class FltSet {
 			sink.sink(c);
 	}
 
-	public boolean add(float v) {
+	public boolean add(float c) {
 		int capacity = vs.length;
 		size++;
 
@@ -50,7 +66,11 @@ public class FltSet {
 			}
 		}
 
-		return add_(v);
+		return add_(c);
+	}
+
+	public boolean contains(float c) {
+		return 0 <= index(c);
 	}
 
 	public FltSource source() {
@@ -61,17 +81,25 @@ public class FltSet {
 		return new FltStreamlet(() -> FltOutlet.of(source_()));
 	}
 
-	private boolean add_(float v1) {
+	private boolean add_(float c) {
+		int index = index(c);
+		if (0 <= index) {
+			vs[index] = c;
+			return true;
+		} else
+			return false;
+	}
+
+	private int index(float c) {
 		int mask = vs.length - 1;
-		int index = Float.hashCode(v1) & mask;
-		float v0;
-		while ((v0 = vs[index]) != FltFunUtil.EMPTYVALUE)
-			if (v0 != v1)
+		int index = Float.hashCode(c) & mask;
+		float c0;
+		while ((c0 = vs[index]) != FltFunUtil.EMPTYVALUE)
+			if (c0 != c)
 				index = index + 1 & mask;
 			else
-				return false;
-		vs[index] = v1;
-		return true;
+				return -1;
+		return index;
 	}
 
 	private FltSource source_() {

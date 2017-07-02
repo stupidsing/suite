@@ -23,6 +23,7 @@ import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.ChrObjMap;
+import suite.primitive.adt.set.ChrSet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -90,8 +91,8 @@ public class ChrStreamlet implements Iterable<Character> {
 		return spawn().iterator();
 	}
 
-	public ChrStreamlet append(char t) {
-		return streamlet(() -> spawn().append(t));
+	public ChrStreamlet append(char c) {
+		return streamlet(() -> spawn().append(c));
 	}
 
 	public <R> R apply(Fun<ChrStreamlet, R> fun) {
@@ -122,8 +123,8 @@ public class ChrStreamlet implements Iterable<Character> {
 		return concatMap2_(fun);
 	}
 
-	public ChrStreamlet cons(char t) {
-		return streamlet(() -> spawn().cons(t));
+	public ChrStreamlet cons(char c) {
+		return streamlet(() -> spawn().cons(c));
 	}
 
 	public <U, O> Streamlet<O> cross(Streamlet<U> st1, ChrObj_Obj<U, O> fun) {
@@ -301,7 +302,7 @@ public class ChrStreamlet implements Iterable<Character> {
 		return spawn().toMultimap(keyFun, valueFun);
 	}
 
-	public Set<Character> toSet() {
+	public ChrSet toSet() {
 		return spawn().toSet();
 	}
 

@@ -16,9 +16,9 @@ public class FltMutable {
 		return FltMutable.of(FltFunUtil.EMPTYVALUE);
 	}
 
-	public static FltMutable of(float i) {
+	public static FltMutable of(float c) {
 		FltMutable p = new FltMutable();
-		p.update(i);
+		p.update(c);
 		return p;
 	}
 
@@ -26,15 +26,15 @@ public class FltMutable {
 		return value++;
 	}
 
-	public void set(float t) {
+	public void set(float c) {
 		if (value == FltFunUtil.EMPTYVALUE)
-			update(t);
+			update(c);
 		else
 			throw new RuntimeException("value already set");
 	}
 
-	public void update(float t) {
-		value = t;
+	public void update(float c) {
+		value = c;
 	}
 
 	public float get() {

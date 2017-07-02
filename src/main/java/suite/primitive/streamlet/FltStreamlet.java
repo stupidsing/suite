@@ -23,6 +23,7 @@ import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.FltObjMap;
+import suite.primitive.adt.set.FltSet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -90,8 +91,8 @@ public class FltStreamlet implements Iterable<Float> {
 		return spawn().iterator();
 	}
 
-	public FltStreamlet append(float t) {
-		return streamlet(() -> spawn().append(t));
+	public FltStreamlet append(float c) {
+		return streamlet(() -> spawn().append(c));
 	}
 
 	public <R> R apply(Fun<FltStreamlet, R> fun) {
@@ -122,8 +123,8 @@ public class FltStreamlet implements Iterable<Float> {
 		return concatMap2_(fun);
 	}
 
-	public FltStreamlet cons(float t) {
-		return streamlet(() -> spawn().cons(t));
+	public FltStreamlet cons(float c) {
+		return streamlet(() -> spawn().cons(c));
 	}
 
 	public <U, O> Streamlet<O> cross(Streamlet<U> st1, FltObj_Obj<U, O> fun) {
@@ -301,7 +302,7 @@ public class FltStreamlet implements Iterable<Float> {
 		return spawn().toMultimap(keyFun, valueFun);
 	}
 
-	public Set<Float> toSet() {
+	public FltSet toSet() {
 		return spawn().toSet();
 	}
 

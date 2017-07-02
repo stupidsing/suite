@@ -23,6 +23,7 @@ import suite.primitive.Ints;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.set.IntSet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -90,8 +91,8 @@ public class IntStreamlet implements Iterable<Integer> {
 		return spawn().iterator();
 	}
 
-	public IntStreamlet append(int t) {
-		return streamlet(() -> spawn().append(t));
+	public IntStreamlet append(int c) {
+		return streamlet(() -> spawn().append(c));
 	}
 
 	public <R> R apply(Fun<IntStreamlet, R> fun) {
@@ -122,8 +123,8 @@ public class IntStreamlet implements Iterable<Integer> {
 		return concatMap2_(fun);
 	}
 
-	public IntStreamlet cons(int t) {
-		return streamlet(() -> spawn().cons(t));
+	public IntStreamlet cons(int c) {
+		return streamlet(() -> spawn().cons(c));
 	}
 
 	public <U, O> Streamlet<O> cross(Streamlet<U> st1, IntObj_Obj<U, O> fun) {
@@ -301,7 +302,7 @@ public class IntStreamlet implements Iterable<Integer> {
 		return spawn().toMultimap(keyFun, valueFun);
 	}
 
-	public Set<Integer> toSet() {
+	public IntSet toSet() {
 		return spawn().toSet();
 	}
 

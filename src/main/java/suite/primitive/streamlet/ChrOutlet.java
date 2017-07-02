@@ -26,6 +26,7 @@ import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.pair.ChrObjPair;
+import suite.primitive.adt.set.ChrSet;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -99,8 +100,8 @@ public class ChrOutlet implements Iterable<Character> {
 		return ChrFunUtil.iterator(source);
 	}
 
-	public ChrOutlet append(char t) {
-		return of(ChrFunUtil.append(t, source));
+	public ChrOutlet append(char c) {
+		return of(ChrFunUtil.append(c, source));
 	}
 
 	public Outlet<ChrOutlet> chunk(int n) {
@@ -132,8 +133,8 @@ public class ChrOutlet implements Iterable<Character> {
 		return of(ChrFunUtil.concat(ChrFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
-	public ChrOutlet cons(char t) {
-		return of(ChrFunUtil.cons(t, source));
+	public ChrOutlet cons(char c) {
+		return of(ChrFunUtil.cons(c, source));
 	}
 
 	public int count() {
@@ -145,15 +146,15 @@ public class ChrOutlet implements Iterable<Character> {
 
 	public <U, O> Outlet<O> cross(List<U> list, ChrObj_Obj<U, O> fun) {
 		return Outlet.of(new Source<O>() {
-			private char t;
+			private char c;
 			private int index = list.size();
 
 			public O source() {
 				if (index == list.size()) {
 					index = 0;
-					t = next();
+					c = next();
 				}
-				return fun.apply(t, list.get(index++));
+				return fun.apply(c, list.get(index++));
 			}
 		});
 	}
@@ -161,10 +162,10 @@ public class ChrOutlet implements Iterable<Character> {
 	public ChrOutlet distinct() {
 		Set<Character> set = new HashSet<>();
 		return of(() -> {
-			char t;
-			while ((t = next()) != ChrFunUtil.EMPTYVALUE && !set.add(t))
+			char c;
+			while ((c = next()) != ChrFunUtil.EMPTYVALUE && !set.add(c))
 				;
-			return t;
+			return c;
 		});
 	}
 
@@ -201,9 +202,9 @@ public class ChrOutlet implements Iterable<Character> {
 	}
 
 	public <R> R fold(R init, ChrObj_Obj<R, R> fun) {
-		char t;
-		while ((t = next()) != ChrFunUtil.EMPTYVALUE)
-			init = fun.apply(t, init);
+		char c;
+		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+			init = fun.apply(c, init);
 		return init;
 	}
 
@@ -218,9 +219,9 @@ public class ChrOutlet implements Iterable<Character> {
 	@Override
 	public int hashCode() {
 		int hashCode = 5;
-		char t;
-		while ((t = source.source()) != ChrFunUtil.EMPTYVALUE)
-			hashCode = hashCode * 31 + Objects.hashCode(t);
+		char c;
+		while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
+			hashCode = hashCode * 31 + Objects.hashCode(c);
 		return hashCode;
 	}
 
@@ -229,9 +230,9 @@ public class ChrOutlet implements Iterable<Character> {
 			private int i = 0;
 
 			public boolean source2(ChrObjPair<Integer> pair) {
-				char t = next();
-				if (t != ChrFunUtil.EMPTYVALUE) {
-					pair.t0 = t;
+				char c = next();
+				if (c != ChrFunUtil.EMPTYVALUE) {
+					pair.t0 = c;
 					pair.t1 = i++;
 					return true;
 				} else
@@ -249,10 +250,10 @@ public class ChrOutlet implements Iterable<Character> {
 	}
 
 	public char last() {
-		char t, t1 = ChrFunUtil.EMPTYVALUE;
-		while ((t = next()) != ChrFunUtil.EMPTYVALUE)
-			t1 = t;
-		return t1;
+		char c, c1 = ChrFunUtil.EMPTYVALUE;
+		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+			c1 = c;
+		return c1;
 	}
 
 	public <O> Outlet<O> map(Chr_Obj<O> fun) {
@@ -276,20 +277,20 @@ public class ChrOutlet implements Iterable<Character> {
 	}
 
 	public char min(ChrComparator comparator) {
-		char t = minOrNull(comparator);
-		if (t != ChrFunUtil.EMPTYVALUE)
-			return t;
+		char c = minOrNull(comparator);
+		if (c != ChrFunUtil.EMPTYVALUE)
+			return c;
 		else
 			throw new RuntimeException("no result");
 	}
 
 	public char minOrNull(ChrComparator comparator) {
-		char t = next(), t1;
-		if (t != ChrFunUtil.EMPTYVALUE) {
-			while ((t1 = next()) != ChrFunUtil.EMPTYVALUE)
-				if (0 < comparator.compare(t, t1))
-					t = t1;
-			return t;
+		char c = next(), c1;
+		if (c != ChrFunUtil.EMPTYVALUE) {
+			while ((c1 = next()) != ChrFunUtil.EMPTYVALUE)
+				if (0 < comparator.compare(c, c1))
+					c = c1;
+			return c;
 		} else
 			return ChrFunUtil.EMPTYVALUE;
 	}
@@ -298,28 +299,28 @@ public class ChrOutlet implements Iterable<Character> {
 		return source.source();
 	}
 
-	public ChrOutlet nonBlock(char t0) {
+	public ChrOutlet nonBlock(char c0) {
 		NullableSyncQueue<Character> queue = new NullableSyncQueue<>();
 
 		new Thread(() -> {
-			char t;
+			char c;
 			do
-				queue.offerQuietly(t = source.source());
-			while (t != ChrFunUtil.EMPTYVALUE);
+				queue.offerQuietly(c = source.source());
+			while (c != ChrFunUtil.EMPTYVALUE);
 		}).start();
 
 		return new ChrOutlet(() -> {
 			Mutable<Character> mutable = Mutable.nil();
-			char c = queue.poll(mutable) ? mutable.get() : t0;
+			char c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});
 	}
 
 	public ChrOpt opt() {
-		char t = next();
-		if (t != ChrFunUtil.EMPTYVALUE)
+		char c = next();
+		if (c != ChrFunUtil.EMPTYVALUE)
 			if (next() == ChrFunUtil.EMPTYVALUE)
-				return ChrOpt.of(t);
+				return ChrOpt.of(c);
 			else
 				throw new RuntimeException("more than one result");
 		else
@@ -332,9 +333,9 @@ public class ChrOutlet implements Iterable<Character> {
 
 	public void sink(ChrSink sink0) {
 		ChrSink sink1 = sink0.rethrow();
-		char t;
-		while ((t = next()) != ChrFunUtil.EMPTYVALUE)
-			sink1.sink(t);
+		char c;
+		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+			sink1.sink(c);
 	}
 
 	public ChrOutlet skip(int n) {
@@ -373,9 +374,9 @@ public class ChrOutlet implements Iterable<Character> {
 
 	public CharsBuilder toList() {
 		CharsBuilder list = new CharsBuilder();
-		char t;
-		while ((t = next()) != ChrFunUtil.EMPTYVALUE)
-			list.append(t);
+		char c;
+		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+			list.append(c);
 		return list;
 	}
 
@@ -385,9 +386,9 @@ public class ChrOutlet implements Iterable<Character> {
 
 	public <K> ChrObjMap<CharsBuilder> toListMap(Chr_Chr valueFun) {
 		ChrObjMap<CharsBuilder> map = new ChrObjMap<>();
-		char t;
-		while ((t = next()) != ChrFunUtil.EMPTYVALUE)
-			map.computeIfAbsent(t, k_ -> new CharsBuilder()).append(valueFun.apply(t));
+		char c;
+		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+			map.computeIfAbsent(c, k_ -> new CharsBuilder()).append(valueFun.apply(c));
 		return map;
 	}
 
@@ -407,11 +408,11 @@ public class ChrOutlet implements Iterable<Character> {
 		return map2(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
-	public Set<Character> toSet() {
-		Set<Character> set = new HashSet<>();
-		char t;
-		while ((t = next()) != ChrFunUtil.EMPTYVALUE)
-			set.add(t);
+	public ChrSet toSet() {
+		ChrSet set = new ChrSet();
+		char c;
+		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+			set.add(c);
 		return set;
 	}
 

@@ -23,6 +23,7 @@ import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.DblObjMap;
+import suite.primitive.adt.set.DblSet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -90,8 +91,8 @@ public class DblStreamlet implements Iterable<Double> {
 		return spawn().iterator();
 	}
 
-	public DblStreamlet append(double t) {
-		return streamlet(() -> spawn().append(t));
+	public DblStreamlet append(double c) {
+		return streamlet(() -> spawn().append(c));
 	}
 
 	public <R> R apply(Fun<DblStreamlet, R> fun) {
@@ -122,8 +123,8 @@ public class DblStreamlet implements Iterable<Double> {
 		return concatMap2_(fun);
 	}
 
-	public DblStreamlet cons(double t) {
-		return streamlet(() -> spawn().cons(t));
+	public DblStreamlet cons(double c) {
+		return streamlet(() -> spawn().cons(c));
 	}
 
 	public <U, O> Streamlet<O> cross(Streamlet<U> st1, DblObj_Obj<U, O> fun) {
@@ -301,7 +302,7 @@ public class DblStreamlet implements Iterable<Double> {
 		return spawn().toMultimap(keyFun, valueFun);
 	}
 
-	public Set<Double> toSet() {
+	public DblSet toSet() {
 		return spawn().toSet();
 	}
 

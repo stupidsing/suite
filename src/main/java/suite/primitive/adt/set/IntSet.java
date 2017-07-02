@@ -19,6 +19,22 @@ public class IntSet {
 	private int size;
 	private int[] vs;
 
+	public static IntSet intersect(IntSet... sets) {
+		return sets[0].stream().filter(c -> {
+			boolean b = true;
+			for (IntSet set_ : sets)
+				b &= set_.contains(c);
+			return b;
+		}).toSet();
+	}
+
+	public static IntSet union(IntSet... sets) {
+		IntSet set = new IntSet();
+		for (IntSet set_ : sets)
+			set_.stream().sink(set::add);
+		return set;
+	}
+
 	public IntSet() {
 		this(8);
 	}
@@ -34,7 +50,7 @@ public class IntSet {
 			sink.sink(c);
 	}
 
-	public boolean add(int v) {
+	public boolean add(int c) {
 		int capacity = vs.length;
 		size++;
 
@@ -50,7 +66,11 @@ public class IntSet {
 			}
 		}
 
-		return add_(v);
+		return add_(c);
+	}
+
+	public boolean contains(int c) {
+		return 0 <= index(c);
 	}
 
 	public IntSource source() {
@@ -61,17 +81,25 @@ public class IntSet {
 		return new IntStreamlet(() -> IntOutlet.of(source_()));
 	}
 
-	private boolean add_(int v1) {
+	private boolean add_(int c) {
+		int index = index(c);
+		if (0 <= index) {
+			vs[index] = c;
+			return true;
+		} else
+			return false;
+	}
+
+	private int index(int c) {
 		int mask = vs.length - 1;
-		int index = Integer.hashCode(v1) & mask;
-		int v0;
-		while ((v0 = vs[index]) != IntFunUtil.EMPTYVALUE)
-			if (v0 != v1)
+		int index = Integer.hashCode(c) & mask;
+		int c0;
+		while ((c0 = vs[index]) != IntFunUtil.EMPTYVALUE)
+			if (c0 != c)
 				index = index + 1 & mask;
 			else
-				return false;
-		vs[index] = v1;
-		return true;
+				return -1;
+		return index;
 	}
 
 	private IntSource source_() {

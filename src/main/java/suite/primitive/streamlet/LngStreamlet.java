@@ -23,6 +23,7 @@ import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.LngObjMap;
+import suite.primitive.adt.set.LngSet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -90,8 +91,8 @@ public class LngStreamlet implements Iterable<Long> {
 		return spawn().iterator();
 	}
 
-	public LngStreamlet append(long t) {
-		return streamlet(() -> spawn().append(t));
+	public LngStreamlet append(long c) {
+		return streamlet(() -> spawn().append(c));
 	}
 
 	public <R> R apply(Fun<LngStreamlet, R> fun) {
@@ -122,8 +123,8 @@ public class LngStreamlet implements Iterable<Long> {
 		return concatMap2_(fun);
 	}
 
-	public LngStreamlet cons(long t) {
-		return streamlet(() -> spawn().cons(t));
+	public LngStreamlet cons(long c) {
+		return streamlet(() -> spawn().cons(c));
 	}
 
 	public <U, O> Streamlet<O> cross(Streamlet<U> st1, LngObj_Obj<U, O> fun) {
@@ -301,7 +302,7 @@ public class LngStreamlet implements Iterable<Long> {
 		return spawn().toMultimap(keyFun, valueFun);
 	}
 
-	public Set<Long> toSet() {
+	public LngSet toSet() {
 		return spawn().toSet();
 	}
 

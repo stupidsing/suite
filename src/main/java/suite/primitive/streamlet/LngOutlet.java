@@ -26,6 +26,7 @@ import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.pair.LngObjPair;
+import suite.primitive.adt.set.LngSet;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -99,8 +100,8 @@ public class LngOutlet implements Iterable<Long> {
 		return LngFunUtil.iterator(source);
 	}
 
-	public LngOutlet append(long t) {
-		return of(LngFunUtil.append(t, source));
+	public LngOutlet append(long c) {
+		return of(LngFunUtil.append(c, source));
 	}
 
 	public Outlet<LngOutlet> chunk(int n) {
@@ -132,8 +133,8 @@ public class LngOutlet implements Iterable<Long> {
 		return of(LngFunUtil.concat(LngFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
-	public LngOutlet cons(long t) {
-		return of(LngFunUtil.cons(t, source));
+	public LngOutlet cons(long c) {
+		return of(LngFunUtil.cons(c, source));
 	}
 
 	public int count() {
@@ -145,15 +146,15 @@ public class LngOutlet implements Iterable<Long> {
 
 	public <U, O> Outlet<O> cross(List<U> list, LngObj_Obj<U, O> fun) {
 		return Outlet.of(new Source<O>() {
-			private long t;
+			private long c;
 			private int index = list.size();
 
 			public O source() {
 				if (index == list.size()) {
 					index = 0;
-					t = next();
+					c = next();
 				}
-				return fun.apply(t, list.get(index++));
+				return fun.apply(c, list.get(index++));
 			}
 		});
 	}
@@ -161,10 +162,10 @@ public class LngOutlet implements Iterable<Long> {
 	public LngOutlet distinct() {
 		Set<Long> set = new HashSet<>();
 		return of(() -> {
-			long t;
-			while ((t = next()) != LngFunUtil.EMPTYVALUE && !set.add(t))
+			long c;
+			while ((c = next()) != LngFunUtil.EMPTYVALUE && !set.add(c))
 				;
-			return t;
+			return c;
 		});
 	}
 
@@ -201,9 +202,9 @@ public class LngOutlet implements Iterable<Long> {
 	}
 
 	public <R> R fold(R init, LngObj_Obj<R, R> fun) {
-		long t;
-		while ((t = next()) != LngFunUtil.EMPTYVALUE)
-			init = fun.apply(t, init);
+		long c;
+		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+			init = fun.apply(c, init);
 		return init;
 	}
 
@@ -218,9 +219,9 @@ public class LngOutlet implements Iterable<Long> {
 	@Override
 	public int hashCode() {
 		int hashCode = 5;
-		long t;
-		while ((t = source.source()) != LngFunUtil.EMPTYVALUE)
-			hashCode = hashCode * 31 + Objects.hashCode(t);
+		long c;
+		while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
+			hashCode = hashCode * 31 + Objects.hashCode(c);
 		return hashCode;
 	}
 
@@ -229,9 +230,9 @@ public class LngOutlet implements Iterable<Long> {
 			private int i = 0;
 
 			public boolean source2(LngObjPair<Integer> pair) {
-				long t = next();
-				if (t != LngFunUtil.EMPTYVALUE) {
-					pair.t0 = t;
+				long c = next();
+				if (c != LngFunUtil.EMPTYVALUE) {
+					pair.t0 = c;
 					pair.t1 = i++;
 					return true;
 				} else
@@ -249,10 +250,10 @@ public class LngOutlet implements Iterable<Long> {
 	}
 
 	public long last() {
-		long t, t1 = LngFunUtil.EMPTYVALUE;
-		while ((t = next()) != LngFunUtil.EMPTYVALUE)
-			t1 = t;
-		return t1;
+		long c, c1 = LngFunUtil.EMPTYVALUE;
+		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+			c1 = c;
+		return c1;
 	}
 
 	public <O> Outlet<O> map(Lng_Obj<O> fun) {
@@ -276,20 +277,20 @@ public class LngOutlet implements Iterable<Long> {
 	}
 
 	public long min(LngComparator comparator) {
-		long t = minOrNull(comparator);
-		if (t != LngFunUtil.EMPTYVALUE)
-			return t;
+		long c = minOrNull(comparator);
+		if (c != LngFunUtil.EMPTYVALUE)
+			return c;
 		else
 			throw new RuntimeException("no result");
 	}
 
 	public long minOrNull(LngComparator comparator) {
-		long t = next(), t1;
-		if (t != LngFunUtil.EMPTYVALUE) {
-			while ((t1 = next()) != LngFunUtil.EMPTYVALUE)
-				if (0 < comparator.compare(t, t1))
-					t = t1;
-			return t;
+		long c = next(), c1;
+		if (c != LngFunUtil.EMPTYVALUE) {
+			while ((c1 = next()) != LngFunUtil.EMPTYVALUE)
+				if (0 < comparator.compare(c, c1))
+					c = c1;
+			return c;
 		} else
 			return LngFunUtil.EMPTYVALUE;
 	}
@@ -298,28 +299,28 @@ public class LngOutlet implements Iterable<Long> {
 		return source.source();
 	}
 
-	public LngOutlet nonBlock(long t0) {
+	public LngOutlet nonBlock(long c0) {
 		NullableSyncQueue<Long> queue = new NullableSyncQueue<>();
 
 		new Thread(() -> {
-			long t;
+			long c;
 			do
-				queue.offerQuietly(t = source.source());
-			while (t != LngFunUtil.EMPTYVALUE);
+				queue.offerQuietly(c = source.source());
+			while (c != LngFunUtil.EMPTYVALUE);
 		}).start();
 
 		return new LngOutlet(() -> {
 			Mutable<Long> mutable = Mutable.nil();
-			long c = queue.poll(mutable) ? mutable.get() : t0;
+			long c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});
 	}
 
 	public LngOpt opt() {
-		long t = next();
-		if (t != LngFunUtil.EMPTYVALUE)
+		long c = next();
+		if (c != LngFunUtil.EMPTYVALUE)
 			if (next() == LngFunUtil.EMPTYVALUE)
-				return LngOpt.of(t);
+				return LngOpt.of(c);
 			else
 				throw new RuntimeException("more than one result");
 		else
@@ -332,9 +333,9 @@ public class LngOutlet implements Iterable<Long> {
 
 	public void sink(LngSink sink0) {
 		LngSink sink1 = sink0.rethrow();
-		long t;
-		while ((t = next()) != LngFunUtil.EMPTYVALUE)
-			sink1.sink(t);
+		long c;
+		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+			sink1.sink(c);
 	}
 
 	public LngOutlet skip(int n) {
@@ -373,9 +374,9 @@ public class LngOutlet implements Iterable<Long> {
 
 	public LongsBuilder toList() {
 		LongsBuilder list = new LongsBuilder();
-		long t;
-		while ((t = next()) != LngFunUtil.EMPTYVALUE)
-			list.append(t);
+		long c;
+		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+			list.append(c);
 		return list;
 	}
 
@@ -385,9 +386,9 @@ public class LngOutlet implements Iterable<Long> {
 
 	public <K> LngObjMap<LongsBuilder> toListMap(Lng_Lng valueFun) {
 		LngObjMap<LongsBuilder> map = new LngObjMap<>();
-		long t;
-		while ((t = next()) != LngFunUtil.EMPTYVALUE)
-			map.computeIfAbsent(t, k_ -> new LongsBuilder()).append(valueFun.apply(t));
+		long c;
+		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+			map.computeIfAbsent(c, k_ -> new LongsBuilder()).append(valueFun.apply(c));
 		return map;
 	}
 
@@ -407,11 +408,11 @@ public class LngOutlet implements Iterable<Long> {
 		return map2(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
-	public Set<Long> toSet() {
-		Set<Long> set = new HashSet<>();
-		long t;
-		while ((t = next()) != LngFunUtil.EMPTYVALUE)
-			set.add(t);
+	public LngSet toSet() {
+		LngSet set = new LngSet();
+		long c;
+		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+			set.add(c);
 		return set;
 	}
 

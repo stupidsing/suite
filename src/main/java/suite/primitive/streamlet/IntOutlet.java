@@ -26,6 +26,7 @@ import suite.primitive.Ints;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
+import suite.primitive.adt.set.IntSet;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -99,8 +100,8 @@ public class IntOutlet implements Iterable<Integer> {
 		return IntFunUtil.iterator(source);
 	}
 
-	public IntOutlet append(int t) {
-		return of(IntFunUtil.append(t, source));
+	public IntOutlet append(int c) {
+		return of(IntFunUtil.append(c, source));
 	}
 
 	public Outlet<IntOutlet> chunk(int n) {
@@ -132,8 +133,8 @@ public class IntOutlet implements Iterable<Integer> {
 		return of(IntFunUtil.concat(IntFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
-	public IntOutlet cons(int t) {
-		return of(IntFunUtil.cons(t, source));
+	public IntOutlet cons(int c) {
+		return of(IntFunUtil.cons(c, source));
 	}
 
 	public int count() {
@@ -145,15 +146,15 @@ public class IntOutlet implements Iterable<Integer> {
 
 	public <U, O> Outlet<O> cross(List<U> list, IntObj_Obj<U, O> fun) {
 		return Outlet.of(new Source<O>() {
-			private int t;
+			private int c;
 			private int index = list.size();
 
 			public O source() {
 				if (index == list.size()) {
 					index = 0;
-					t = next();
+					c = next();
 				}
-				return fun.apply(t, list.get(index++));
+				return fun.apply(c, list.get(index++));
 			}
 		});
 	}
@@ -161,10 +162,10 @@ public class IntOutlet implements Iterable<Integer> {
 	public IntOutlet distinct() {
 		Set<Integer> set = new HashSet<>();
 		return of(() -> {
-			int t;
-			while ((t = next()) != IntFunUtil.EMPTYVALUE && !set.add(t))
+			int c;
+			while ((c = next()) != IntFunUtil.EMPTYVALUE && !set.add(c))
 				;
-			return t;
+			return c;
 		});
 	}
 
@@ -201,9 +202,9 @@ public class IntOutlet implements Iterable<Integer> {
 	}
 
 	public <R> R fold(R init, IntObj_Obj<R, R> fun) {
-		int t;
-		while ((t = next()) != IntFunUtil.EMPTYVALUE)
-			init = fun.apply(t, init);
+		int c;
+		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+			init = fun.apply(c, init);
 		return init;
 	}
 
@@ -218,9 +219,9 @@ public class IntOutlet implements Iterable<Integer> {
 	@Override
 	public int hashCode() {
 		int hashCode = 5;
-		int t;
-		while ((t = source.source()) != IntFunUtil.EMPTYVALUE)
-			hashCode = hashCode * 31 + Objects.hashCode(t);
+		int c;
+		while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
+			hashCode = hashCode * 31 + Objects.hashCode(c);
 		return hashCode;
 	}
 
@@ -229,9 +230,9 @@ public class IntOutlet implements Iterable<Integer> {
 			private int i = 0;
 
 			public boolean source2(IntObjPair<Integer> pair) {
-				int t = next();
-				if (t != IntFunUtil.EMPTYVALUE) {
-					pair.t0 = t;
+				int c = next();
+				if (c != IntFunUtil.EMPTYVALUE) {
+					pair.t0 = c;
 					pair.t1 = i++;
 					return true;
 				} else
@@ -249,10 +250,10 @@ public class IntOutlet implements Iterable<Integer> {
 	}
 
 	public int last() {
-		int t, t1 = IntFunUtil.EMPTYVALUE;
-		while ((t = next()) != IntFunUtil.EMPTYVALUE)
-			t1 = t;
-		return t1;
+		int c, c1 = IntFunUtil.EMPTYVALUE;
+		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+			c1 = c;
+		return c1;
 	}
 
 	public <O> Outlet<O> map(Int_Obj<O> fun) {
@@ -276,20 +277,20 @@ public class IntOutlet implements Iterable<Integer> {
 	}
 
 	public int min(IntComparator comparator) {
-		int t = minOrNull(comparator);
-		if (t != IntFunUtil.EMPTYVALUE)
-			return t;
+		int c = minOrNull(comparator);
+		if (c != IntFunUtil.EMPTYVALUE)
+			return c;
 		else
 			throw new RuntimeException("no result");
 	}
 
 	public int minOrNull(IntComparator comparator) {
-		int t = next(), t1;
-		if (t != IntFunUtil.EMPTYVALUE) {
-			while ((t1 = next()) != IntFunUtil.EMPTYVALUE)
-				if (0 < comparator.compare(t, t1))
-					t = t1;
-			return t;
+		int c = next(), c1;
+		if (c != IntFunUtil.EMPTYVALUE) {
+			while ((c1 = next()) != IntFunUtil.EMPTYVALUE)
+				if (0 < comparator.compare(c, c1))
+					c = c1;
+			return c;
 		} else
 			return IntFunUtil.EMPTYVALUE;
 	}
@@ -298,28 +299,28 @@ public class IntOutlet implements Iterable<Integer> {
 		return source.source();
 	}
 
-	public IntOutlet nonBlock(int t0) {
+	public IntOutlet nonBlock(int c0) {
 		NullableSyncQueue<Integer> queue = new NullableSyncQueue<>();
 
 		new Thread(() -> {
-			int t;
+			int c;
 			do
-				queue.offerQuietly(t = source.source());
-			while (t != IntFunUtil.EMPTYVALUE);
+				queue.offerQuietly(c = source.source());
+			while (c != IntFunUtil.EMPTYVALUE);
 		}).start();
 
 		return new IntOutlet(() -> {
 			Mutable<Integer> mutable = Mutable.nil();
-			int c = queue.poll(mutable) ? mutable.get() : t0;
+			int c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});
 	}
 
 	public IntOpt opt() {
-		int t = next();
-		if (t != IntFunUtil.EMPTYVALUE)
+		int c = next();
+		if (c != IntFunUtil.EMPTYVALUE)
 			if (next() == IntFunUtil.EMPTYVALUE)
-				return IntOpt.of(t);
+				return IntOpt.of(c);
 			else
 				throw new RuntimeException("more than one result");
 		else
@@ -332,9 +333,9 @@ public class IntOutlet implements Iterable<Integer> {
 
 	public void sink(IntSink sink0) {
 		IntSink sink1 = sink0.rethrow();
-		int t;
-		while ((t = next()) != IntFunUtil.EMPTYVALUE)
-			sink1.sink(t);
+		int c;
+		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+			sink1.sink(c);
 	}
 
 	public IntOutlet skip(int n) {
@@ -373,9 +374,9 @@ public class IntOutlet implements Iterable<Integer> {
 
 	public IntsBuilder toList() {
 		IntsBuilder list = new IntsBuilder();
-		int t;
-		while ((t = next()) != IntFunUtil.EMPTYVALUE)
-			list.append(t);
+		int c;
+		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+			list.append(c);
 		return list;
 	}
 
@@ -385,9 +386,9 @@ public class IntOutlet implements Iterable<Integer> {
 
 	public <K> IntObjMap<IntsBuilder> toListMap(Int_Int valueFun) {
 		IntObjMap<IntsBuilder> map = new IntObjMap<>();
-		int t;
-		while ((t = next()) != IntFunUtil.EMPTYVALUE)
-			map.computeIfAbsent(t, k_ -> new IntsBuilder()).append(valueFun.apply(t));
+		int c;
+		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+			map.computeIfAbsent(c, k_ -> new IntsBuilder()).append(valueFun.apply(c));
 		return map;
 	}
 
@@ -407,11 +408,11 @@ public class IntOutlet implements Iterable<Integer> {
 		return map2(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
-	public Set<Integer> toSet() {
-		Set<Integer> set = new HashSet<>();
-		int t;
-		while ((t = next()) != IntFunUtil.EMPTYVALUE)
-			set.add(t);
+	public IntSet toSet() {
+		IntSet set = new IntSet();
+		int c;
+		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+			set.add(c);
 		return set;
 	}
 

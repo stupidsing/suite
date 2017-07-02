@@ -22,18 +22,18 @@ public class ChrFunUtil {
 
 	public static char EMPTYVALUE = Character.MIN_VALUE;
 
-	public static ChrSource append(char t, ChrSource source) {
+	public static ChrSource append(char c, ChrSource source) {
 		return new ChrSource() {
 			private boolean isAppended = false;
 
 			public char source() {
 				if (!isAppended) {
-					char t_ = source.source();
-					if (t_ != EMPTYVALUE)
-						return t_;
+					char c_ = source.source();
+					if (c_ != EMPTYVALUE)
+						return c_;
 					else {
 						isAppended = true;
-						return t;
+						return c;
 					}
 				} else
 					return EMPTYVALUE;
@@ -43,12 +43,12 @@ public class ChrFunUtil {
 
 	public static Source<ChrSource> chunk(int n, ChrSource source) {
 		return new Source<ChrSource>() {
-			private char t = source.source();
-			private boolean isAvail = t != EMPTYVALUE;
+			private char c = source.source();
+			private boolean isAvail = c != EMPTYVALUE;
 			private int i;
 			private ChrSource source_ = () -> {
-				if ((isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && ++i < n)
-					return t;
+				if ((isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && ++i < n)
+					return c;
 				else {
 					i = 0;
 					return EMPTYVALUE;
@@ -56,7 +56,7 @@ public class ChrFunUtil {
 			};
 
 			public ChrSource source() {
-				return isAvail ? cons(t, source_) : null;
+				return isAvail ? cons(c, source_) : null;
 			}
 		};
 	}
@@ -66,15 +66,15 @@ public class ChrFunUtil {
 			private ChrSource source0 = nullSource();
 
 			public char source() {
-				char t = EMPTYVALUE;
-				while (source0 != null && (t = source0.source()) == EMPTYVALUE)
+				char c = EMPTYVALUE;
+				while (source0 != null && (c = source0.source()) == EMPTYVALUE)
 					source0 = source.source();
-				return t;
+				return c;
 			}
 		};
 	}
 
-	public static ChrSource cons(char t, ChrSource source) {
+	public static ChrSource cons(char c, ChrSource source) {
 		return new ChrSource() {
 			private boolean isFirst = true;
 
@@ -83,7 +83,7 @@ public class ChrFunUtil {
 					return source.source();
 				else {
 					isFirst = false;
-					return t;
+					return c;
 				}
 			}
 		};
@@ -92,10 +92,10 @@ public class ChrFunUtil {
 	public static ChrSource filter(ChrPredicate fun0, ChrSource source) {
 		ChrPredicate fun1 = fun0.rethrow();
 		return () -> {
-			char t = EMPTYVALUE;
-			while ((t = source.source()) != EMPTYVALUE && !fun1.test(t))
+			char c = EMPTYVALUE;
+			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
 				;
-			return t;
+			return c;
 		};
 	}
 
@@ -117,26 +117,26 @@ public class ChrFunUtil {
 
 	public static <R> R fold(Fun<ChrObjPair<R>, R> fun0, R init, ChrSource source) {
 		Fun<ChrObjPair<R>, R> fun1 = Rethrow.fun(fun0);
-		char t;
-		while ((t = source.source()) != EMPTYVALUE)
-			init = fun1.apply(ChrObjPair.of(t, init));
+		char c;
+		while ((c = source.source()) != EMPTYVALUE)
+			init = fun1.apply(ChrObjPair.of(c, init));
 		return init;
 	}
 
 	public static boolean isAll(ChrPredicate pred0, ChrSource source) {
 		ChrPredicate pred1 = pred0.rethrow();
-		char t;
-		while ((t = source.source()) != EMPTYVALUE)
-			if (!pred1.test(t))
+		char c;
+		while ((c = source.source()) != EMPTYVALUE)
+			if (!pred1.test(c))
 				return false;
 		return true;
 	}
 
 	public static boolean isAny(ChrPredicate pred0, ChrSource source) {
 		ChrPredicate pred1 = pred0.rethrow();
-		char t;
-		while ((t = source.source()) != EMPTYVALUE)
-			if (pred1.test(t))
+		char c;
+		while ((c = source.source()) != EMPTYVALUE)
+			if (pred1.test(c))
 				return true;
 		return false;
 	}
@@ -167,8 +167,8 @@ public class ChrFunUtil {
 	public static <T1> Source<T1> map(Chr_Obj<T1> fun0, ChrSource source) {
 		Chr_Obj<T1> fun1 = fun0.rethrow();
 		return () -> {
-			char t0 = source.source();
-			return t0 != ChrFunUtil.EMPTYVALUE ? fun1.apply(t0) : null;
+			char c0 = source.source();
+			return c0 != ChrFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
 
@@ -176,11 +176,11 @@ public class ChrFunUtil {
 		Chr_Obj<K> kf1 = kf0.rethrow();
 		Chr_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
-			char t = source.source();
-			boolean b = t != EMPTYVALUE;
+			char c = source.source();
+			boolean b = c != EMPTYVALUE;
 			if (b) {
-				pair.t0 = kf1.apply(t);
-				pair.t1 = vf1.apply(t);
+				pair.t0 = kf1.apply(c);
+				pair.t1 = vf1.apply(c);
 			}
 			return b;
 		};
@@ -189,18 +189,18 @@ public class ChrFunUtil {
 	public static ChrSource mapChr(Chr_Chr fun0, ChrSource source) {
 		Chr_Chr fun1 = fun0.rethrow();
 		return () -> {
-			char t = source.source();
-			return t != ChrFunUtil.EMPTYVALUE ? fun1.apply(t) : ChrFunUtil.EMPTYVALUE;
+			char c = source.source();
+			return c != ChrFunUtil.EMPTYVALUE ? fun1.apply(c) : ChrFunUtil.EMPTYVALUE;
 		};
 	}
 
 	public static <V> ChrObjSource<V> mapChrObj(Chr_Obj<V> fun0, ChrSource source) {
 		Chr_Obj<V> fun1 = fun0.rethrow();
 		return pair -> {
-			char t = source.source();
-			if (t != ChrFunUtil.EMPTYVALUE) {
-				pair.t0 = t;
-				pair.t1 = fun1.apply(t);
+			char c = source.source();
+			if (c != ChrFunUtil.EMPTYVALUE) {
+				pair.t0 = c;
+				pair.t1 = fun1.apply(c);
 				return true;
 			} else
 				return false;
@@ -212,11 +212,11 @@ public class ChrFunUtil {
 		Chr_Obj<T> fun1 = fun0.rethrow();
 		return new Source<T>() {
 			public T source() {
-				char t0;
-				T t1;
-				while ((t0 = source.source()) != ChrFunUtil.EMPTYVALUE)
-					if ((t1 = fun1.apply(t0)) != null)
-						return t1;
+				char c;
+				T t;
+				while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
+					if ((t = fun1.apply(c)) != null)
+						return t;
 				return null;
 			}
 		};
@@ -238,13 +238,13 @@ public class ChrFunUtil {
 	public static Source<ChrSource> split(ChrPredicate fun0, ChrSource source) {
 		ChrPredicate fun1 = fun0.rethrow();
 		return new Source<ChrSource>() {
-			private char t = source.source();
-			private boolean isAvail = t != EMPTYVALUE;
-			private ChrSource source_ = () -> (isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && !fun1.test(t) ? t
+			private char c = source.source();
+			private boolean isAvail = c != EMPTYVALUE;
+			private ChrSource source_ = () -> (isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && !fun1.test(c) ? c
 					: null;
 
 			public ChrSource source() {
-				return isAvail ? cons(t, source_) : null;
+				return isAvail ? cons(c, source_) : null;
 			}
 		};
 	}
@@ -254,7 +254,7 @@ public class ChrFunUtil {
 	 */
 	public static ChrSource suck(Sink<ChrSink> fun) {
 		NullableSyncQueue<Character> queue = new NullableSyncQueue<>();
-		ChrSink enqueue = t -> enqueue(queue, t);
+		ChrSink enqueue = c -> enqueue(queue, c);
 
 		Thread thread = Thread_.startThread(() -> {
 			try {
@@ -274,9 +274,9 @@ public class ChrFunUtil {
 		};
 	}
 
-	private static void enqueue(NullableSyncQueue<Character> queue, char t) {
+	private static void enqueue(NullableSyncQueue<Character> queue, char c) {
 		try {
-			queue.offer(t);
+			queue.offer(c);
 		} catch (InterruptedException ex) {
 			LogUtil.error(ex);
 		}

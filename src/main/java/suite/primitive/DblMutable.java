@@ -16,9 +16,9 @@ public class DblMutable {
 		return DblMutable.of(DblFunUtil.EMPTYVALUE);
 	}
 
-	public static DblMutable of(double i) {
+	public static DblMutable of(double c) {
 		DblMutable p = new DblMutable();
-		p.update(i);
+		p.update(c);
 		return p;
 	}
 
@@ -26,15 +26,15 @@ public class DblMutable {
 		return value++;
 	}
 
-	public void set(double t) {
+	public void set(double c) {
 		if (value == DblFunUtil.EMPTYVALUE)
-			update(t);
+			update(c);
 		else
 			throw new RuntimeException("value already set");
 	}
 
-	public void update(double t) {
-		value = t;
+	public void update(double c) {
+		value = c;
 	}
 
 	public double get() {

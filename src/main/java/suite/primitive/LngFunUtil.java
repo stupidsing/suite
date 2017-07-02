@@ -22,18 +22,18 @@ public class LngFunUtil {
 
 	public static long EMPTYVALUE = Long.MIN_VALUE;
 
-	public static LngSource append(long t, LngSource source) {
+	public static LngSource append(long c, LngSource source) {
 		return new LngSource() {
 			private boolean isAppended = false;
 
 			public long source() {
 				if (!isAppended) {
-					long t_ = source.source();
-					if (t_ != EMPTYVALUE)
-						return t_;
+					long c_ = source.source();
+					if (c_ != EMPTYVALUE)
+						return c_;
 					else {
 						isAppended = true;
-						return t;
+						return c;
 					}
 				} else
 					return EMPTYVALUE;
@@ -43,12 +43,12 @@ public class LngFunUtil {
 
 	public static Source<LngSource> chunk(int n, LngSource source) {
 		return new Source<LngSource>() {
-			private long t = source.source();
-			private boolean isAvail = t != EMPTYVALUE;
+			private long c = source.source();
+			private boolean isAvail = c != EMPTYVALUE;
 			private int i;
 			private LngSource source_ = () -> {
-				if ((isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && ++i < n)
-					return t;
+				if ((isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && ++i < n)
+					return c;
 				else {
 					i = 0;
 					return EMPTYVALUE;
@@ -56,7 +56,7 @@ public class LngFunUtil {
 			};
 
 			public LngSource source() {
-				return isAvail ? cons(t, source_) : null;
+				return isAvail ? cons(c, source_) : null;
 			}
 		};
 	}
@@ -66,15 +66,15 @@ public class LngFunUtil {
 			private LngSource source0 = nullSource();
 
 			public long source() {
-				long t = EMPTYVALUE;
-				while (source0 != null && (t = source0.source()) == EMPTYVALUE)
+				long c = EMPTYVALUE;
+				while (source0 != null && (c = source0.source()) == EMPTYVALUE)
 					source0 = source.source();
-				return t;
+				return c;
 			}
 		};
 	}
 
-	public static LngSource cons(long t, LngSource source) {
+	public static LngSource cons(long c, LngSource source) {
 		return new LngSource() {
 			private boolean isFirst = true;
 
@@ -83,7 +83,7 @@ public class LngFunUtil {
 					return source.source();
 				else {
 					isFirst = false;
-					return t;
+					return c;
 				}
 			}
 		};
@@ -92,10 +92,10 @@ public class LngFunUtil {
 	public static LngSource filter(LngPredicate fun0, LngSource source) {
 		LngPredicate fun1 = fun0.rethrow();
 		return () -> {
-			long t = EMPTYVALUE;
-			while ((t = source.source()) != EMPTYVALUE && !fun1.test(t))
+			long c = EMPTYVALUE;
+			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
 				;
-			return t;
+			return c;
 		};
 	}
 
@@ -117,26 +117,26 @@ public class LngFunUtil {
 
 	public static <R> R fold(Fun<LngObjPair<R>, R> fun0, R init, LngSource source) {
 		Fun<LngObjPair<R>, R> fun1 = Rethrow.fun(fun0);
-		long t;
-		while ((t = source.source()) != EMPTYVALUE)
-			init = fun1.apply(LngObjPair.of(t, init));
+		long c;
+		while ((c = source.source()) != EMPTYVALUE)
+			init = fun1.apply(LngObjPair.of(c, init));
 		return init;
 	}
 
 	public static boolean isAll(LngPredicate pred0, LngSource source) {
 		LngPredicate pred1 = pred0.rethrow();
-		long t;
-		while ((t = source.source()) != EMPTYVALUE)
-			if (!pred1.test(t))
+		long c;
+		while ((c = source.source()) != EMPTYVALUE)
+			if (!pred1.test(c))
 				return false;
 		return true;
 	}
 
 	public static boolean isAny(LngPredicate pred0, LngSource source) {
 		LngPredicate pred1 = pred0.rethrow();
-		long t;
-		while ((t = source.source()) != EMPTYVALUE)
-			if (pred1.test(t))
+		long c;
+		while ((c = source.source()) != EMPTYVALUE)
+			if (pred1.test(c))
 				return true;
 		return false;
 	}
@@ -167,8 +167,8 @@ public class LngFunUtil {
 	public static <T1> Source<T1> map(Lng_Obj<T1> fun0, LngSource source) {
 		Lng_Obj<T1> fun1 = fun0.rethrow();
 		return () -> {
-			long t0 = source.source();
-			return t0 != LngFunUtil.EMPTYVALUE ? fun1.apply(t0) : null;
+			long c0 = source.source();
+			return c0 != LngFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
 
@@ -176,11 +176,11 @@ public class LngFunUtil {
 		Lng_Obj<K> kf1 = kf0.rethrow();
 		Lng_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
-			long t = source.source();
-			boolean b = t != EMPTYVALUE;
+			long c = source.source();
+			boolean b = c != EMPTYVALUE;
 			if (b) {
-				pair.t0 = kf1.apply(t);
-				pair.t1 = vf1.apply(t);
+				pair.t0 = kf1.apply(c);
+				pair.t1 = vf1.apply(c);
 			}
 			return b;
 		};
@@ -189,18 +189,18 @@ public class LngFunUtil {
 	public static LngSource mapLng(Lng_Lng fun0, LngSource source) {
 		Lng_Lng fun1 = fun0.rethrow();
 		return () -> {
-			long t = source.source();
-			return t != LngFunUtil.EMPTYVALUE ? fun1.apply(t) : LngFunUtil.EMPTYVALUE;
+			long c = source.source();
+			return c != LngFunUtil.EMPTYVALUE ? fun1.apply(c) : LngFunUtil.EMPTYVALUE;
 		};
 	}
 
 	public static <V> LngObjSource<V> mapLngObj(Lng_Obj<V> fun0, LngSource source) {
 		Lng_Obj<V> fun1 = fun0.rethrow();
 		return pair -> {
-			long t = source.source();
-			if (t != LngFunUtil.EMPTYVALUE) {
-				pair.t0 = t;
-				pair.t1 = fun1.apply(t);
+			long c = source.source();
+			if (c != LngFunUtil.EMPTYVALUE) {
+				pair.t0 = c;
+				pair.t1 = fun1.apply(c);
 				return true;
 			} else
 				return false;
@@ -212,11 +212,11 @@ public class LngFunUtil {
 		Lng_Obj<T> fun1 = fun0.rethrow();
 		return new Source<T>() {
 			public T source() {
-				long t0;
-				T t1;
-				while ((t0 = source.source()) != LngFunUtil.EMPTYVALUE)
-					if ((t1 = fun1.apply(t0)) != null)
-						return t1;
+				long c;
+				T t;
+				while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
+					if ((t = fun1.apply(c)) != null)
+						return t;
 				return null;
 			}
 		};
@@ -238,13 +238,13 @@ public class LngFunUtil {
 	public static Source<LngSource> split(LngPredicate fun0, LngSource source) {
 		LngPredicate fun1 = fun0.rethrow();
 		return new Source<LngSource>() {
-			private long t = source.source();
-			private boolean isAvail = t != EMPTYVALUE;
-			private LngSource source_ = () -> (isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && !fun1.test(t) ? t
+			private long c = source.source();
+			private boolean isAvail = c != EMPTYVALUE;
+			private LngSource source_ = () -> (isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && !fun1.test(c) ? c
 					: null;
 
 			public LngSource source() {
-				return isAvail ? cons(t, source_) : null;
+				return isAvail ? cons(c, source_) : null;
 			}
 		};
 	}
@@ -254,7 +254,7 @@ public class LngFunUtil {
 	 */
 	public static LngSource suck(Sink<LngSink> fun) {
 		NullableSyncQueue<Long> queue = new NullableSyncQueue<>();
-		LngSink enqueue = t -> enqueue(queue, t);
+		LngSink enqueue = c -> enqueue(queue, c);
 
 		Thread thread = Thread_.startThread(() -> {
 			try {
@@ -274,9 +274,9 @@ public class LngFunUtil {
 		};
 	}
 
-	private static void enqueue(NullableSyncQueue<Long> queue, long t) {
+	private static void enqueue(NullableSyncQueue<Long> queue, long c) {
 		try {
-			queue.offer(t);
+			queue.offer(c);
 		} catch (InterruptedException ex) {
 			LogUtil.error(ex);
 		}

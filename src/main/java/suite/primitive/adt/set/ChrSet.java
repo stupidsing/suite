@@ -19,6 +19,22 @@ public class ChrSet {
 	private int size;
 	private char[] vs;
 
+	public static ChrSet intersect(ChrSet... sets) {
+		return sets[0].stream().filter(c -> {
+			boolean b = true;
+			for (ChrSet set_ : sets)
+				b &= set_.contains(c);
+			return b;
+		}).toSet();
+	}
+
+	public static ChrSet union(ChrSet... sets) {
+		ChrSet set = new ChrSet();
+		for (ChrSet set_ : sets)
+			set_.stream().sink(set::add);
+		return set;
+	}
+
 	public ChrSet() {
 		this(8);
 	}
@@ -34,7 +50,7 @@ public class ChrSet {
 			sink.sink(c);
 	}
 
-	public boolean add(char v) {
+	public boolean add(char c) {
 		int capacity = vs.length;
 		size++;
 
@@ -50,7 +66,11 @@ public class ChrSet {
 			}
 		}
 
-		return add_(v);
+		return add_(c);
+	}
+
+	public boolean contains(char c) {
+		return 0 <= index(c);
 	}
 
 	public ChrSource source() {
@@ -61,17 +81,25 @@ public class ChrSet {
 		return new ChrStreamlet(() -> ChrOutlet.of(source_()));
 	}
 
-	private boolean add_(char v1) {
+	private boolean add_(char c) {
+		int index = index(c);
+		if (0 <= index) {
+			vs[index] = c;
+			return true;
+		} else
+			return false;
+	}
+
+	private int index(char c) {
 		int mask = vs.length - 1;
-		int index = Character.hashCode(v1) & mask;
-		char v0;
-		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
-			if (v0 != v1)
+		int index = Character.hashCode(c) & mask;
+		char c0;
+		while ((c0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
+			if (c0 != c)
 				index = index + 1 & mask;
 			else
-				return false;
-		vs[index] = v1;
-		return true;
+				return -1;
+		return index;
 	}
 
 	private ChrSource source_() {

@@ -22,18 +22,18 @@ public class FltFunUtil {
 
 	public static float EMPTYVALUE = Float.MIN_VALUE;
 
-	public static FltSource append(float t, FltSource source) {
+	public static FltSource append(float c, FltSource source) {
 		return new FltSource() {
 			private boolean isAppended = false;
 
 			public float source() {
 				if (!isAppended) {
-					float t_ = source.source();
-					if (t_ != EMPTYVALUE)
-						return t_;
+					float c_ = source.source();
+					if (c_ != EMPTYVALUE)
+						return c_;
 					else {
 						isAppended = true;
-						return t;
+						return c;
 					}
 				} else
 					return EMPTYVALUE;
@@ -43,12 +43,12 @@ public class FltFunUtil {
 
 	public static Source<FltSource> chunk(int n, FltSource source) {
 		return new Source<FltSource>() {
-			private float t = source.source();
-			private boolean isAvail = t != EMPTYVALUE;
+			private float c = source.source();
+			private boolean isAvail = c != EMPTYVALUE;
 			private int i;
 			private FltSource source_ = () -> {
-				if ((isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && ++i < n)
-					return t;
+				if ((isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && ++i < n)
+					return c;
 				else {
 					i = 0;
 					return EMPTYVALUE;
@@ -56,7 +56,7 @@ public class FltFunUtil {
 			};
 
 			public FltSource source() {
-				return isAvail ? cons(t, source_) : null;
+				return isAvail ? cons(c, source_) : null;
 			}
 		};
 	}
@@ -66,15 +66,15 @@ public class FltFunUtil {
 			private FltSource source0 = nullSource();
 
 			public float source() {
-				float t = EMPTYVALUE;
-				while (source0 != null && (t = source0.source()) == EMPTYVALUE)
+				float c = EMPTYVALUE;
+				while (source0 != null && (c = source0.source()) == EMPTYVALUE)
 					source0 = source.source();
-				return t;
+				return c;
 			}
 		};
 	}
 
-	public static FltSource cons(float t, FltSource source) {
+	public static FltSource cons(float c, FltSource source) {
 		return new FltSource() {
 			private boolean isFirst = true;
 
@@ -83,7 +83,7 @@ public class FltFunUtil {
 					return source.source();
 				else {
 					isFirst = false;
-					return t;
+					return c;
 				}
 			}
 		};
@@ -92,10 +92,10 @@ public class FltFunUtil {
 	public static FltSource filter(FltPredicate fun0, FltSource source) {
 		FltPredicate fun1 = fun0.rethrow();
 		return () -> {
-			float t = EMPTYVALUE;
-			while ((t = source.source()) != EMPTYVALUE && !fun1.test(t))
+			float c = EMPTYVALUE;
+			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
 				;
-			return t;
+			return c;
 		};
 	}
 
@@ -117,26 +117,26 @@ public class FltFunUtil {
 
 	public static <R> R fold(Fun<FltObjPair<R>, R> fun0, R init, FltSource source) {
 		Fun<FltObjPair<R>, R> fun1 = Rethrow.fun(fun0);
-		float t;
-		while ((t = source.source()) != EMPTYVALUE)
-			init = fun1.apply(FltObjPair.of(t, init));
+		float c;
+		while ((c = source.source()) != EMPTYVALUE)
+			init = fun1.apply(FltObjPair.of(c, init));
 		return init;
 	}
 
 	public static boolean isAll(FltPredicate pred0, FltSource source) {
 		FltPredicate pred1 = pred0.rethrow();
-		float t;
-		while ((t = source.source()) != EMPTYVALUE)
-			if (!pred1.test(t))
+		float c;
+		while ((c = source.source()) != EMPTYVALUE)
+			if (!pred1.test(c))
 				return false;
 		return true;
 	}
 
 	public static boolean isAny(FltPredicate pred0, FltSource source) {
 		FltPredicate pred1 = pred0.rethrow();
-		float t;
-		while ((t = source.source()) != EMPTYVALUE)
-			if (pred1.test(t))
+		float c;
+		while ((c = source.source()) != EMPTYVALUE)
+			if (pred1.test(c))
 				return true;
 		return false;
 	}
@@ -167,8 +167,8 @@ public class FltFunUtil {
 	public static <T1> Source<T1> map(Flt_Obj<T1> fun0, FltSource source) {
 		Flt_Obj<T1> fun1 = fun0.rethrow();
 		return () -> {
-			float t0 = source.source();
-			return t0 != FltFunUtil.EMPTYVALUE ? fun1.apply(t0) : null;
+			float c0 = source.source();
+			return c0 != FltFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
 
@@ -176,11 +176,11 @@ public class FltFunUtil {
 		Flt_Obj<K> kf1 = kf0.rethrow();
 		Flt_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
-			float t = source.source();
-			boolean b = t != EMPTYVALUE;
+			float c = source.source();
+			boolean b = c != EMPTYVALUE;
 			if (b) {
-				pair.t0 = kf1.apply(t);
-				pair.t1 = vf1.apply(t);
+				pair.t0 = kf1.apply(c);
+				pair.t1 = vf1.apply(c);
 			}
 			return b;
 		};
@@ -189,18 +189,18 @@ public class FltFunUtil {
 	public static FltSource mapFlt(Flt_Flt fun0, FltSource source) {
 		Flt_Flt fun1 = fun0.rethrow();
 		return () -> {
-			float t = source.source();
-			return t != FltFunUtil.EMPTYVALUE ? fun1.apply(t) : FltFunUtil.EMPTYVALUE;
+			float c = source.source();
+			return c != FltFunUtil.EMPTYVALUE ? fun1.apply(c) : FltFunUtil.EMPTYVALUE;
 		};
 	}
 
 	public static <V> FltObjSource<V> mapFltObj(Flt_Obj<V> fun0, FltSource source) {
 		Flt_Obj<V> fun1 = fun0.rethrow();
 		return pair -> {
-			float t = source.source();
-			if (t != FltFunUtil.EMPTYVALUE) {
-				pair.t0 = t;
-				pair.t1 = fun1.apply(t);
+			float c = source.source();
+			if (c != FltFunUtil.EMPTYVALUE) {
+				pair.t0 = c;
+				pair.t1 = fun1.apply(c);
 				return true;
 			} else
 				return false;
@@ -212,11 +212,11 @@ public class FltFunUtil {
 		Flt_Obj<T> fun1 = fun0.rethrow();
 		return new Source<T>() {
 			public T source() {
-				float t0;
-				T t1;
-				while ((t0 = source.source()) != FltFunUtil.EMPTYVALUE)
-					if ((t1 = fun1.apply(t0)) != null)
-						return t1;
+				float c;
+				T t;
+				while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
+					if ((t = fun1.apply(c)) != null)
+						return t;
 				return null;
 			}
 		};
@@ -238,13 +238,13 @@ public class FltFunUtil {
 	public static Source<FltSource> split(FltPredicate fun0, FltSource source) {
 		FltPredicate fun1 = fun0.rethrow();
 		return new Source<FltSource>() {
-			private float t = source.source();
-			private boolean isAvail = t != EMPTYVALUE;
-			private FltSource source_ = () -> (isAvail = isAvail && (t = source.source()) != EMPTYVALUE) && !fun1.test(t) ? t
+			private float c = source.source();
+			private boolean isAvail = c != EMPTYVALUE;
+			private FltSource source_ = () -> (isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && !fun1.test(c) ? c
 					: null;
 
 			public FltSource source() {
-				return isAvail ? cons(t, source_) : null;
+				return isAvail ? cons(c, source_) : null;
 			}
 		};
 	}
@@ -254,7 +254,7 @@ public class FltFunUtil {
 	 */
 	public static FltSource suck(Sink<FltSink> fun) {
 		NullableSyncQueue<Float> queue = new NullableSyncQueue<>();
-		FltSink enqueue = t -> enqueue(queue, t);
+		FltSink enqueue = c -> enqueue(queue, c);
 
 		Thread thread = Thread_.startThread(() -> {
 			try {
@@ -274,9 +274,9 @@ public class FltFunUtil {
 		};
 	}
 
-	private static void enqueue(NullableSyncQueue<Float> queue, float t) {
+	private static void enqueue(NullableSyncQueue<Float> queue, float c) {
 		try {
-			queue.offer(t);
+			queue.offer(c);
 		} catch (InterruptedException ex) {
 			LogUtil.error(ex);
 		}

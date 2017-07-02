@@ -26,6 +26,7 @@ import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.pair.FltObjPair;
+import suite.primitive.adt.set.FltSet;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -99,8 +100,8 @@ public class FltOutlet implements Iterable<Float> {
 		return FltFunUtil.iterator(source);
 	}
 
-	public FltOutlet append(float t) {
-		return of(FltFunUtil.append(t, source));
+	public FltOutlet append(float c) {
+		return of(FltFunUtil.append(c, source));
 	}
 
 	public Outlet<FltOutlet> chunk(int n) {
@@ -132,8 +133,8 @@ public class FltOutlet implements Iterable<Float> {
 		return of(FltFunUtil.concat(FltFunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
-	public FltOutlet cons(float t) {
-		return of(FltFunUtil.cons(t, source));
+	public FltOutlet cons(float c) {
+		return of(FltFunUtil.cons(c, source));
 	}
 
 	public int count() {
@@ -145,15 +146,15 @@ public class FltOutlet implements Iterable<Float> {
 
 	public <U, O> Outlet<O> cross(List<U> list, FltObj_Obj<U, O> fun) {
 		return Outlet.of(new Source<O>() {
-			private float t;
+			private float c;
 			private int index = list.size();
 
 			public O source() {
 				if (index == list.size()) {
 					index = 0;
-					t = next();
+					c = next();
 				}
-				return fun.apply(t, list.get(index++));
+				return fun.apply(c, list.get(index++));
 			}
 		});
 	}
@@ -161,10 +162,10 @@ public class FltOutlet implements Iterable<Float> {
 	public FltOutlet distinct() {
 		Set<Float> set = new HashSet<>();
 		return of(() -> {
-			float t;
-			while ((t = next()) != FltFunUtil.EMPTYVALUE && !set.add(t))
+			float c;
+			while ((c = next()) != FltFunUtil.EMPTYVALUE && !set.add(c))
 				;
-			return t;
+			return c;
 		});
 	}
 
@@ -201,9 +202,9 @@ public class FltOutlet implements Iterable<Float> {
 	}
 
 	public <R> R fold(R init, FltObj_Obj<R, R> fun) {
-		float t;
-		while ((t = next()) != FltFunUtil.EMPTYVALUE)
-			init = fun.apply(t, init);
+		float c;
+		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+			init = fun.apply(c, init);
 		return init;
 	}
 
@@ -218,9 +219,9 @@ public class FltOutlet implements Iterable<Float> {
 	@Override
 	public int hashCode() {
 		int hashCode = 5;
-		float t;
-		while ((t = source.source()) != FltFunUtil.EMPTYVALUE)
-			hashCode = hashCode * 31 + Objects.hashCode(t);
+		float c;
+		while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
+			hashCode = hashCode * 31 + Objects.hashCode(c);
 		return hashCode;
 	}
 
@@ -229,9 +230,9 @@ public class FltOutlet implements Iterable<Float> {
 			private int i = 0;
 
 			public boolean source2(FltObjPair<Integer> pair) {
-				float t = next();
-				if (t != FltFunUtil.EMPTYVALUE) {
-					pair.t0 = t;
+				float c = next();
+				if (c != FltFunUtil.EMPTYVALUE) {
+					pair.t0 = c;
 					pair.t1 = i++;
 					return true;
 				} else
@@ -249,10 +250,10 @@ public class FltOutlet implements Iterable<Float> {
 	}
 
 	public float last() {
-		float t, t1 = FltFunUtil.EMPTYVALUE;
-		while ((t = next()) != FltFunUtil.EMPTYVALUE)
-			t1 = t;
-		return t1;
+		float c, c1 = FltFunUtil.EMPTYVALUE;
+		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+			c1 = c;
+		return c1;
 	}
 
 	public <O> Outlet<O> map(Flt_Obj<O> fun) {
@@ -276,20 +277,20 @@ public class FltOutlet implements Iterable<Float> {
 	}
 
 	public float min(FltComparator comparator) {
-		float t = minOrNull(comparator);
-		if (t != FltFunUtil.EMPTYVALUE)
-			return t;
+		float c = minOrNull(comparator);
+		if (c != FltFunUtil.EMPTYVALUE)
+			return c;
 		else
 			throw new RuntimeException("no result");
 	}
 
 	public float minOrNull(FltComparator comparator) {
-		float t = next(), t1;
-		if (t != FltFunUtil.EMPTYVALUE) {
-			while ((t1 = next()) != FltFunUtil.EMPTYVALUE)
-				if (0 < comparator.compare(t, t1))
-					t = t1;
-			return t;
+		float c = next(), c1;
+		if (c != FltFunUtil.EMPTYVALUE) {
+			while ((c1 = next()) != FltFunUtil.EMPTYVALUE)
+				if (0 < comparator.compare(c, c1))
+					c = c1;
+			return c;
 		} else
 			return FltFunUtil.EMPTYVALUE;
 	}
@@ -298,28 +299,28 @@ public class FltOutlet implements Iterable<Float> {
 		return source.source();
 	}
 
-	public FltOutlet nonBlock(float t0) {
+	public FltOutlet nonBlock(float c0) {
 		NullableSyncQueue<Float> queue = new NullableSyncQueue<>();
 
 		new Thread(() -> {
-			float t;
+			float c;
 			do
-				queue.offerQuietly(t = source.source());
-			while (t != FltFunUtil.EMPTYVALUE);
+				queue.offerQuietly(c = source.source());
+			while (c != FltFunUtil.EMPTYVALUE);
 		}).start();
 
 		return new FltOutlet(() -> {
 			Mutable<Float> mutable = Mutable.nil();
-			float c = queue.poll(mutable) ? mutable.get() : t0;
+			float c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});
 	}
 
 	public FltOpt opt() {
-		float t = next();
-		if (t != FltFunUtil.EMPTYVALUE)
+		float c = next();
+		if (c != FltFunUtil.EMPTYVALUE)
 			if (next() == FltFunUtil.EMPTYVALUE)
-				return FltOpt.of(t);
+				return FltOpt.of(c);
 			else
 				throw new RuntimeException("more than one result");
 		else
@@ -332,9 +333,9 @@ public class FltOutlet implements Iterable<Float> {
 
 	public void sink(FltSink sink0) {
 		FltSink sink1 = sink0.rethrow();
-		float t;
-		while ((t = next()) != FltFunUtil.EMPTYVALUE)
-			sink1.sink(t);
+		float c;
+		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+			sink1.sink(c);
 	}
 
 	public FltOutlet skip(int n) {
@@ -373,9 +374,9 @@ public class FltOutlet implements Iterable<Float> {
 
 	public FloatsBuilder toList() {
 		FloatsBuilder list = new FloatsBuilder();
-		float t;
-		while ((t = next()) != FltFunUtil.EMPTYVALUE)
-			list.append(t);
+		float c;
+		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+			list.append(c);
 		return list;
 	}
 
@@ -385,9 +386,9 @@ public class FltOutlet implements Iterable<Float> {
 
 	public <K> FltObjMap<FloatsBuilder> toListMap(Flt_Flt valueFun) {
 		FltObjMap<FloatsBuilder> map = new FltObjMap<>();
-		float t;
-		while ((t = next()) != FltFunUtil.EMPTYVALUE)
-			map.computeIfAbsent(t, k_ -> new FloatsBuilder()).append(valueFun.apply(t));
+		float c;
+		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+			map.computeIfAbsent(c, k_ -> new FloatsBuilder()).append(valueFun.apply(c));
 		return map;
 	}
 
@@ -407,11 +408,11 @@ public class FltOutlet implements Iterable<Float> {
 		return map2(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
-	public Set<Float> toSet() {
-		Set<Float> set = new HashSet<>();
-		float t;
-		while ((t = next()) != FltFunUtil.EMPTYVALUE)
-			set.add(t);
+	public FltSet toSet() {
+		FltSet set = new FltSet();
+		float c;
+		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+			set.add(c);
 		return set;
 	}
 
