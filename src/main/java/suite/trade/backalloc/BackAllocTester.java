@@ -109,9 +109,6 @@ public class BackAllocTester {
 			Set<String> symbols = assetBySymbol.keySet();
 			TimeRange historyPeriod = TimeRange.of(period.from.addYears(-1), period.to);
 
-			// pre-fetch quotes
-			cfg.quote(symbols);
-
 			AlignKeyDataSource<String> akds = Read //
 					.from(symbols) //
 					.map2(symbol -> {
