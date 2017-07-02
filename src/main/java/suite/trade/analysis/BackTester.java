@@ -45,6 +45,7 @@ public class BackTester {
 				.map((key, simulate) -> "\nTEST = " + key + ", " + simulate.conclusion());
 
 		Streamlet<String> results1 = simulationsByKey //
+				.filterValue(sim -> sim.exception == null) //
 				.groupBy(sims -> stat.meanVariance(sims //
 						.collect(Obj_Flt.lift(sim -> (float) sim.annualReturn)) //
 						.toArray())) //

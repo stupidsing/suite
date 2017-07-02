@@ -32,7 +32,7 @@ public class BackAllocConfigurations {
 		bac_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9).bacUnl(fun);
 		bac_donchian = BackAllocator_.donchian(9).bacUnl(fun);
 		bac_ema = BackAllocator_.ema().top(3).bacUnl(fun);
-		bac_facoil = Factor.ofCrudeOil(cfg).backAllocator().bacUnl(fun);
+		bac_facoil = Factor.ofCrudeOil(cfg).backAllocator().top(3).even().bacUnl(fun);
 		bac_hsi = BackAllocConfiguration.ofSingle(Asset.hsi);
 		bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).bacUnl(fun);
 		bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdMinimum(9).bacUnl(fun);

@@ -75,12 +75,16 @@ public interface BackAllocator {
 
 			return (time, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
-				double each = 1d / Read.from2(potentialBySymbol).size();
+				int size = Read.from2(potentialBySymbol).size();
 
-				return Read.from2(potentialBySymbol) //
-						.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
-						.mapValue(potential -> 1d / each) //
-						.toList();
+				if (0 < size) {
+					double each = 1d / size;
+					return Read.from2(potentialBySymbol) //
+							.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
+							.mapValue(potential -> 1d / each) //
+							.toList();
+				} else
+					return Collections.emptyList();
 			};
 		};
 	}

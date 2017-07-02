@@ -30,6 +30,7 @@ import suite.trade.Trade_;
 import suite.util.HomeDir;
 import suite.util.Object_;
 import suite.util.Rethrow;
+import suite.util.String_;
 import suite.util.To;
 
 public class Yahoo {
@@ -66,6 +67,13 @@ public class Yahoo {
 
 	// https://l1-query.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com
 	public DataSource dataSourceL1(String symbol, TimeRange period) {
+		if (!String_.equals(symbol, "0566.HK"))
+			return dataSourceL1_(symbol, period);
+		else
+			throw new RuntimeException("Delisted " + symbol);
+	}
+
+	public DataSource dataSourceL1_(String symbol, TimeRange period) {
 		Path path = HomeDir.dir("yahoo").resolve(symbol + ".txt");
 		StockHistory stockHistory0;
 
