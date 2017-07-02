@@ -52,7 +52,7 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocConfiguration bacUnl(Fun<Time, Streamlet<Asset>> assetsFun) {
-		return unleverage().bac(assetsFun);
+		return top(40).unleverage().bac(assetsFun);
 	}
 
 	public default BackAllocator dump() {
