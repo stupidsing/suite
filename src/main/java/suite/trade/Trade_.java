@@ -17,7 +17,7 @@ import suite.util.To;
 
 public class Trade_ {
 
-	public static Set<String> blackList = To.set("N/A");
+	public static Set<String> blackList = To.set("0566.HK");
 	public static boolean isCacheQuotes = true;
 	public static boolean isShortSell = false;
 	public static float leverageAmount = 100000f;

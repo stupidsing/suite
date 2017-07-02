@@ -40,18 +40,18 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	public Streamlet<Asset> queryCompanies() {
-		return hkex.queryCompanies().filter(asset -> !Trade_.blackList.contains(asset.symbol));
+		return hkex.queryCompanies().filter(this::filter);
 	}
 
 	public Asset queryCompany(String symbol) {
-		return !Trade_.blackList.contains(symbol) ? hkex.queryCompany(symbol) : null;
+		return filter(symbol) ? hkex.queryCompany(symbol) : null;
 	}
 
 	public Streamlet<Asset> queryCompaniesByMarketCap(Time time) {
 		int year = time.year() - 1;
 		return Read.from(hkexFactBook.queryLeadingCompaniesByMarketCap(year)) //
 				.map(this::queryCompany) //
-				.filter(asset -> !Trade_.blackList.contains(asset.symbol));
+				.filter(this::filter);
 	}
 
 	public Streamlet<Trade> queryHistory() {
@@ -69,7 +69,8 @@ public class ConfigurationImpl implements Configuration {
 	private Map<String, Float> quote_(Set<String> symbols) {
 		Map<Source_, Set<String>> map = new HashMap<>();
 		for (String symbol : symbols)
-			map.computeIfAbsent(source_(symbol), s -> new HashSet<>()).add(symbol);
+			if (filter(symbol))
+				map.computeIfAbsent(source_(symbol), s -> new HashSet<>()).add(symbol);
 		return To.map_(hkd.quote(map.getOrDefault(Source_.HKD___, Collections.emptySet())),
 				google.quote(map.getOrDefault(Source_.YAHOO_, Collections.emptySet())));
 	}
@@ -99,6 +100,14 @@ public class ConfigurationImpl implements Configuration {
 			return Source_.QUANDL;
 		else
 			return Source_.YAHOO_;
+	}
+
+	private boolean filter(Asset asset) {
+		return filter(asset.symbol);
+	}
+
+	private boolean filter(String symbol) {
+		return !Trade_.blackList.contains(symbol);
 	}
 
 }
