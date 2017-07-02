@@ -62,7 +62,7 @@ public class Factor {
 				.toList();
 	}
 
-	public BackAllocator backAllocator(DataSource irds) {
+	public BackAllocator backAllocator() {
 		return (dsBySymbol, ts_) -> {
 			Map<String, DataSource> returnDsBySymbol = dsBySymbol.mapValue(this::returns).toMap();
 
