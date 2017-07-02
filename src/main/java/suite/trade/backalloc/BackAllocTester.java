@@ -1,7 +1,6 @@
 package suite.trade.backalloc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -133,18 +132,22 @@ public class BackAllocTester {
 			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol, ts_);
 			Map<String, Float> latestPriceBySymbol = Collections.emptyMap();
 			float[] valuations_ = new float[size];
-			int i = 0;
+			int index = 0;
 			String ymd = null;
 			Exception exception_;
 
 			try {
-				while (i < size) {
+				for (int i = 0; i < size; i++) {
 					long t = ts_[i];
 					Time time = Time.ofEpochSec(t);
-					int index = Arrays.binarySearch(tradeTs, t);
+
+					while (tradeTs[index] != t)
+						index++;
+
+					int index_ = index;
 
 					ymd = time.ymd();
-					latestPriceBySymbol = dsBySymbol.mapValue(ds -> ds.prices[index]).toMap();
+					latestPriceBySymbol = dsBySymbol.mapValue(ds -> ds.prices[index_]).toMap();
 
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
 					UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, latestPriceBySymbol);
@@ -159,8 +162,6 @@ public class BackAllocTester {
 							+ ", valuation = " + valuation_ //
 							+ ", portfolio = " + account //
 							+ ", actions = " + actions);
-
-					i++;
 				}
 
 				exception_ = null;
