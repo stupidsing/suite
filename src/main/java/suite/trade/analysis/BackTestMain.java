@@ -47,7 +47,7 @@ public class BackTestMain extends ExecutableProgram {
 		Map<String, BackAllocConfiguration> bacByTag_ = new HashMap<>();
 
 		if (Boolean.FALSE) {
-			bacByTag_.put("donchian9", BackAllocator_.donchian(9).bacUnl(fun));
+			bacByTag_.put("donchian9", BackAllocator_.donchian(9).cfgUnl(fun));
 			questoaQuella("0020.HK", "0004.HK");
 			questoaQuella("0052.HK", "0341.HK");
 			questoaQuella("0670.HK", "1055.HK");
@@ -60,7 +60,7 @@ public class BackTestMain extends ExecutableProgram {
 		bacByTag_.put("donchian", bacs.bac_donchian);
 		bacByTag_.put("ema", bacs.bac_ema);
 		bacByTag_.put("facoil", bacs.bac_facoil);
-		bacByTag_.put("lr", BackAllocator_.lastReturn(2, 0).bacUnl(fun));
+		bacByTag_.put("lr", BackAllocator_.lastReturn(2, 0).cfgUnl(fun));
 		bacByTag_.put("mix", bacs.bac_mix);
 		bacByTag_.put("pmamr", bacs.bac_pmamr);
 		bacByTag_.put("pmmmr", bacs.bac_pmmmr);

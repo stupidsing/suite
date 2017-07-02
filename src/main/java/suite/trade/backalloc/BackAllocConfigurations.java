@@ -31,20 +31,20 @@ public class BackAllocConfigurations {
 		Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
 
 		BackAllocator ba_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9);
-		BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().filterShorts().top(3).even();
+		BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().longOnly().pick(3).even();
 
-		bac_bb = ba_bb.bacUnl(fun);
-		bac_donchian = BackAllocator_.donchian(9).bacUnl(fun);
-		bac_ema = BackAllocator_.ema().top(3).bacUnl(fun);
-		bac_facoil = ba_facoil.bacUnl(fun);
+		bac_bb = ba_bb.cfgUnl(fun);
+		bac_donchian = BackAllocator_.donchian(9).cfgUnl(fun);
+		bac_ema = BackAllocator_.ema().pick(3).cfgUnl(fun);
+		bac_facoil = ba_facoil.cfgUnl(fun);
 		bac_hsi = BackAllocConfiguration.ofSingle(Asset.hsi);
-		bac_mix = BackAllocator_.sum(ba_bb, ba_facoil).bacUnl(fun);
-		bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).bacUnl(fun);
-		bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdMinimum(9).bacUnl(fun);
-		bac_revco = ReverseCorrelateBackAllocator.of().bacUnl(fun);
-		bac_rsi = BackAllocator_.rsi().bacUnl(fun);
-		bac_sell = BackAllocator_.cash().bacUnl(fun);
-		bac_tma = BackAllocator_.tripleMovingAvgs().bacUnl(fun);
+		bac_mix = BackAllocator_.sum(ba_bb, ba_facoil).cfgUnl(fun);
+		bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).cfgUnl(fun);
+		bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdMinimum(9).cfgUnl(fun);
+		bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
+		bac_rsi = BackAllocator_.rsi().cfgUnl(fun);
+		bac_sell = BackAllocator_.cash().cfgUnl(fun);
+		bac_tma = BackAllocator_.tripleMovingAvgs().cfgUnl(fun);
 	}
 
 	public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {

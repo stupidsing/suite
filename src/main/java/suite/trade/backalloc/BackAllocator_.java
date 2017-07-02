@@ -226,7 +226,7 @@ public class BackAllocator_ {
 		return BackAllocator_ //
 				.rsi_(32, .3d, .7d) //
 				.relativeToIndex(cfg, symbol0) //
-				.filterAssets(symbol -> String_.equals(symbol, symbol1));
+				.filterByAsset(symbol -> String_.equals(symbol, symbol1));
 	}
 
 	public static BackAllocator questoQuella(String symbol0, String symbol1) {
@@ -255,7 +255,7 @@ public class BackAllocator_ {
 			};
 		};
 
-		return ba0.filterAssets(symbol -> String_.equals(symbol, symbol0) || String_.equals(symbol, symbol1));
+		return ba0.filterByAsset(symbol -> String_.equals(symbol, symbol0) || String_.equals(symbol, symbol1));
 	}
 
 	public static BackAllocator rsi() {

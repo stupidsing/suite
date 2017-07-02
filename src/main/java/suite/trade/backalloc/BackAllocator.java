@@ -47,12 +47,12 @@ public interface BackAllocator {
 		public List<Pair<String, Double>> onDateTime(Time time, int index);
 	}
 
-	public default BackAllocConfiguration bac(Fun<Time, Streamlet<Asset>> assetsFun) {
+	public default BackAllocConfiguration cfg(Fun<Time, Streamlet<Asset>> assetsFun) {
 		return new BackAllocConfiguration(assetsFun, this);
 	}
 
-	public default BackAllocConfiguration bacUnl(Fun<Time, Streamlet<Asset>> assetsFun) {
-		return top(40).unleverage().bac(assetsFun);
+	public default BackAllocConfiguration cfgUnl(Fun<Time, Streamlet<Asset>> assetsFun) {
+		return pick(40).unleverage().cfg(assetsFun);
 	}
 
 	public default BackAllocator dump() {
@@ -68,7 +68,7 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator even() {
-		BackAllocator ba1 = filterShorts();
+		BackAllocator ba1 = longOnly();
 
 		return (dsBySymbol, ts) -> {
 			OnDateTime onDateTime = ba1.allocate(dsBySymbol, ts);
@@ -89,15 +89,15 @@ public interface BackAllocator {
 		};
 	}
 
-	public default BackAllocator filterAssets(Predicate<String> pred) {
+	public default BackAllocator filterByAsset(Predicate<String> pred) {
 		return (dsBySymbol, ts) -> allocate(dsBySymbol.filterKey(pred), ts)::onDateTime;
 	}
 
 	public default BackAllocator filterByIndex(Configuration cfg) {
-		return filterByIndex(cfg, "^GSPC");
+		return filterByIndexReturn(cfg, "^GSPC");
 	}
 
-	public default BackAllocator filterByIndex(Configuration cfg, String indexSymbol) {
+	public default BackAllocator filterByIndexReturn(Configuration cfg, String indexSymbol) {
 		DataSource indexDataSource = cfg.dataSource(indexSymbol);
 
 		return (dsBySymbol, ts) -> {
@@ -120,27 +120,7 @@ public interface BackAllocator {
 		};
 	}
 
-	public default BackAllocator filterShorts() {
-		return (dsBySymbol, ts) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, ts);
-
-			return (time, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
-
-				return Read.from2(potentialBySymbol) //
-						.map2((symbol, potential) -> {
-							if (Double.isFinite(potential))
-								return potential;
-							else
-								throw new RuntimeException("potential is " + potential);
-						}) //
-						.filterValue(potential -> 0d < potential) //
-						.toList();
-			};
-		};
-	}
-
-	public default BackAllocator frequency(int tradeFrequency) {
+	public default BackAllocator frequency(int freq) {
 		return (dsBySymbol, ts) -> {
 			OnDateTime onDateTime = allocate(dsBySymbol, ts);
 
@@ -149,7 +129,7 @@ public interface BackAllocator {
 				private List<Pair<String, Double>> result0;
 
 				public List<Pair<String, Double>> onDateTime(Time time_, int index) {
-					Time time1 = time_.addDays(-(time_.epochDay() % tradeFrequency));
+					Time time1 = time_.addDays(-(time_.epochDay() % freq));
 					if (!Objects.equals(time0, time1)) {
 						time0 = time1;
 						result0 = onDateTime.onDateTime(time1, index);
@@ -182,6 +162,38 @@ public interface BackAllocator {
 
 				return Read.from2(max).toList();
 			};
+		};
+	}
+
+	public default BackAllocator longOnly() {
+		return (dsBySymbol, ts) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, ts);
+
+			return (time, index) -> {
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
+
+				return Read.from2(potentialBySymbol) //
+						.map2((symbol, potential) -> {
+							if (Double.isFinite(potential))
+								return potential;
+							else
+								throw new RuntimeException("potential is " + potential);
+						}) //
+						.filterValue(potential -> 0d < potential) //
+						.toList();
+			};
+		};
+	}
+
+	public default BackAllocator pick(int top) {
+		return (dsBySymbol, ts) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, ts);
+
+			return (time, index) -> Read //
+					.from2(onDateTime.onDateTime(time, index)) //
+					.sortByValue((r0, r1) -> Object_.compare(r1, r0)) //
+					.take(top) //
+					.toList();
 		};
 	}
 
@@ -232,21 +244,9 @@ public interface BackAllocator {
 		return relative(cfg.dataSource(indexSymbol));
 	}
 
-	public default BackAllocator top(int top) {
-		return (dsBySymbol, ts) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, ts);
-
-			return (time, index) -> Read //
-					.from2(onDateTime.onDateTime(time, index)) //
-					.sortByValue((r0, r1) -> Object_.compare(r1, r0)) //
-					.take(top) //
-					.toList();
-		};
-	}
-
 	public default BackAllocator unleverage() {
 		BackAllocator ba0 = this;
-		BackAllocator ba1 = Trade_.isShortSell ? ba0 : ba0.filterShorts();
+		BackAllocator ba1 = Trade_.isShortSell ? ba0 : ba0.longOnly();
 		BackAllocator ba2;
 
 		if (Trade_.leverageAmount < 999999f)
