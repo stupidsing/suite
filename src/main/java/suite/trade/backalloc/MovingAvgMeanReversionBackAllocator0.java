@@ -2,9 +2,7 @@ package suite.trade.backalloc;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import suite.adt.pair.Pair;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;
@@ -16,6 +14,7 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.data.DataSource;
+import suite.trade.data.DataSourceView;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
@@ -53,24 +52,13 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 		log.sink(dsBySymbol.size() + " assets in data source");
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
-		Map<String, Map<TimeRange, MeanReversionStat>> mrsByPeriodBySymbol = dsBySymbol //
-				.map2((symbol, ds) -> TimeRange //
-						.rangeOf(times) //
-						.addDays(-tor) //
-						.backTestDaysBefore(256, 32) //
-						.map2(mrsPeriod -> mrs(symbol, ds, mrsPeriod)) //
-						.toMap()) //
-				.toMap();
+		DataSourceView<String, MeanReversionStat> dsv = DataSourceView.of(tor, 256, 32, dsBySymbol, times, MeanReversionStat::new);
 
 		return (time, index) -> {
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
-			TimeRange mrsPeriod = TimeRange.backTestDaysBefore(time.addDays(-tor), 256, 32);
 
 			Map<String, MeanReversionStat> mrsBySymbol = dsBySymbol //
-					.map2((symbol, ds) -> {
-						Map<TimeRange, MeanReversionStat> m = mrsByPeriodBySymbol.get(symbol);
-						return m != null ? m.get(mrsPeriod) : null;
-					}) //
+					.map2((symbol, ds) -> dsv.get(symbol, time)) //
 					.filterValue(mrsReversionStat -> mrsReversionStat != null) //
 					.toMap();
 
@@ -130,13 +118,6 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 					+ ", kelly = " + To.string(kelly);
 		}
 	}
-
-	private MeanReversionStat mrs(String symbol, DataSource ds, TimeRange period) {
-		Pair<String, TimeRange> key = Pair.of(symbol, period);
-		return memoizeMeanReversionStat.computeIfAbsent(key, p -> new MeanReversionStat(ds, period));
-	}
-
-	private static Map<Pair<String, TimeRange>, MeanReversionStat> memoizeMeanReversionStat = new ConcurrentHashMap<>();
 
 	public class MeanReversionStat {
 		public final float[] movingAverage;

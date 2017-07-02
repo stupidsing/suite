@@ -54,14 +54,14 @@ public class DataSource {
 	public final long[] ts;
 	public final float[] prices;
 
-	public static <K> AlignKeyDataSource<K> alignAll(Streamlet2<K, DataSource> dsByKey) {
-		AlignDataSource alignDataSource = DataSource.alignAll(dsByKey.values());
+	public static <K> AlignKeyDataSource<K> alignAll(Streamlet2<K, DataSource> dsByKey0) {
+		AlignDataSource alignDataSource = DataSource.alignAll(dsByKey0.values());
 
-		Streamlet2<K, DataSource> dsBySymbol1 = dsByKey //
+		Streamlet2<K, DataSource> dsByKey1 = dsByKey0 //
 				.mapValue(alignDataSource::align) //
 				.collect(As::streamlet2);
 
-		return new AlignKeyDataSource<>(alignDataSource, dsBySymbol1);
+		return new AlignKeyDataSource<>(alignDataSource, dsByKey1);
 	}
 
 	public static class AlignKeyDataSource<K> {

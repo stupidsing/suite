@@ -8,8 +8,8 @@ import suite.math.stat.TimeSeries;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
-import suite.trade.TimeRange;
 import suite.trade.data.DataSource;
+import suite.trade.data.DataSourceView;
 import suite.util.To;
 
 public class ReverseCorrelateBackAllocator implements BackAllocator {
@@ -37,31 +37,22 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 
 	@Override
 	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, List<Time> times) {
-		Map<String, Map<TimeRange, Double>> reverseCorrelationByPeriodBySymbol = dsBySymbol //
-				.mapValue(ds -> TimeRange //
-						.rangeOf(times) //
-						.backTestDaysBefore(512, 32) //
-						.map2(samplePeriod -> {
-							float[] prices = ds.range(samplePeriod).prices;
-							float[] logReturns = ts.logReturns(prices);
-							int ll = logReturns.length;
-							double sum = 0d;
-							for (int i = tor; i < ll - tor; i++) {
-								int i_ = i;
-								sum += stat.correlation(j -> logReturns[i_ - j], j -> logReturns[i_ + j], tor);
-							}
-							return sum / (ll - 2 * tor);
-						}) //
-						.toMap()) //
-				.toMap();
+		DataSourceView<String, Double> dsv = DataSourceView.of(0, 512, 32, dsBySymbol, times, (ds, samplePeriod) -> {
+			float[] prices = ds.range(samplePeriod).prices;
+			float[] logReturns = ts.logReturns(prices);
+			int ll = logReturns.length;
+			double sum = 0d;
+			for (int i = tor; i < ll - tor; i++) {
+				int i_ = i;
+				sum += stat.correlation(j -> logReturns[i_ - j], j -> logReturns[i_ + j], tor);
+			}
+			return sum / (ll - 2 * tor);
+		});
 
 		return (time, index) -> {
-			TimeRange samplePeriod = TimeRange.backTestDaysBefore(time, 512, 32);
-
 			Map<String, Double> reverseCorrelationBySymbol = dsBySymbol //
 					.map2((symbol, ds) -> {
-						Map<TimeRange, Double> m = reverseCorrelationByPeriodBySymbol.get(symbol);
-						Double reverseCorrelation = m != null ? m.get(samplePeriod) : null;
+						Double reverseCorrelation = dsv.get(symbol, time);
 						return reverseCorrelation != null ? reverseCorrelation : Double.NaN;
 					}) //
 					.filterValue(Double::isFinite) //
