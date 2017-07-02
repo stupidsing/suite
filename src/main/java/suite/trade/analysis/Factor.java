@@ -15,7 +15,6 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
-import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
@@ -26,7 +25,7 @@ public class Factor {
 
 	private DataSource irds;
 
-	private Configuration cfg = new ConfigurationImpl();
+	private Configuration cfg;
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
