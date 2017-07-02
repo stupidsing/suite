@@ -245,7 +245,7 @@ public interface BackAllocator {
 		BackAllocator ba1 = Trade_.isShortSell ? ba0 : ba0.filterShorts();
 		BackAllocator ba2;
 
-		if (Trade_.maxLeverageAmount < 999999f)
+		if (Trade_.leverageAmount < 999999f)
 			ba2 = (dsBySymbol, ts) -> {
 				OnDateTime onDateTime = ba1.allocate(dsBySymbol, ts);
 

@@ -20,7 +20,8 @@ public class Trade_ {
 	public static Set<String> blackList = To.set("N/A");
 	public static boolean isCacheQuotes = true;
 	public static boolean isShortSell = false;
-	public static float maxLeverageAmount = 100000f;
+	public static float leverageAmount = 100000f;
+	public static float max = 1E6f;
 	public static float negligible = 1E-6f;
 	public static int nTradeDaysPerYear = 256;
 	public static int nTradeSecondsPerDay = 28800;

@@ -28,7 +28,7 @@ public class WalkForwardTestMain extends ExecutableProgram {
 
 		Trade_.isCacheQuotes = false;
 		Trade_.isShortSell = true;
-		Trade_.maxLeverageAmount = fund0;
+		Trade_.leverageAmount = fund0;
 
 		WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //
 				cfg.queryCompaniesByMarketCap(Time.now()), //

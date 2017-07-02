@@ -97,7 +97,7 @@ public class DataSource {
 		}
 
 		public DataSource align(DataSource ds) {
-			return ds.align(ts);
+			return ds.alignAfterPrices(ts);
 		}
 	}
 
@@ -112,7 +112,7 @@ public class DataSource {
 		return range_(TimeRange.of(time, TimeRange.max));
 	}
 
-	public DataSource align(long[] ts1) {
+	public DataSource alignAfterPrices(long[] ts1) {
 		int length0 = ts.length;
 		int length1 = ts1.length;
 		float[] prices1 = new float[length1];
@@ -124,6 +124,21 @@ public class DataSource {
 				prices1[di++] = prices[si];
 			else
 				si++;
+		return new DataSource(ts1, prices1);
+	}
+
+	public DataSource alignBeforePrices(long[] ts1) {
+		int length0 = ts.length;
+		int length1 = ts1.length;
+		float[] prices1 = new float[length1];
+		int si = length0 - 1, di = length1 - 1;
+		while (0 <= di)
+			if (si < 0)
+				prices1[di--] = Trade_.max; // avoid division by 0s
+			else if (ts[si] <= ts1[di])
+				prices1[di--] = prices[si];
+			else
+				si--;
 		return new DataSource(ts1, prices1);
 	}
 
@@ -193,7 +208,7 @@ public class DataSource {
 			if (price1 < 0f)
 				throw new RuntimeException("price is negative: " + price1 + "/" + date1);
 
-			if (1E6f < price1)
+			if (Trade_.max < price1)
 				throw new RuntimeException("price too high: " + price1 + "/" + date1);
 
 			if (!Float.isFinite(price1))

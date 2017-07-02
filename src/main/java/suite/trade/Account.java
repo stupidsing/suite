@@ -81,7 +81,7 @@ public class Account {
 	}
 
 	public void validate() {
-		if (cash_() < -Trade_.maxLeverageAmount)
+		if (cash_() < -Trade_.leverageAmount)
 			throw new RuntimeException("too much leverage: " + cash_());
 		assets.forEach((symbol, nShares) -> {
 			if (!Trade_.isShortSell && !String_.equals(symbol, cashCode) && nShares < 0)
@@ -117,20 +117,25 @@ public class Account {
 	}
 
 	private void play_(Trade trade) {
-		int buySell = trade.buySell;
-		String symbol = trade.symbol;
-		float cost = buySell * trade.price;
+		float price = trade.price;
 
-		int cash0 = get(cashCode);
-		int cash1 = (int) (cash0 - cost);
-		int nShares0 = get(symbol);
-		int nShares1 = nShares0 + buySell;
+		if (Trade_.negligible < price && price < Trade_.max) {
+			int buySell = trade.buySell;
+			String symbol = trade.symbol;
+			float cost = buySell * price;
 
-		update(cashCode, cash1);
-		update(symbol, nShares1);
-		if (buySell != 0)
-			nTransactions++;
-		transactionAmount += Math.abs(cost);
+			int cash0 = get(cashCode);
+			int cash1 = (int) (cash0 - cost);
+			int nShares0 = get(symbol);
+			int nShares1 = nShares0 + buySell;
+
+			update(cashCode, cash1);
+			update(symbol, nShares1);
+			if (buySell != 0)
+				nTransactions++;
+			transactionAmount += Math.abs(cost);
+		} else
+			throw new RuntimeException("impossible transaction price: " + price);
 	}
 
 	private int get(String code) {

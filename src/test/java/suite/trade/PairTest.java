@@ -35,8 +35,8 @@ public class PairTest {
 		LngStreamlet ts0 = LngStreamlet.of(ds0.ts);
 		LngStreamlet ts1 = LngStreamlet.of(ds1.ts);
 		long[] tradeTimes = LngStreamlet.concat(ts0, ts1).distinct().sort().toArray();
-		float[] prices0 = ds0.align(tradeTimes).prices;
-		float[] prices1 = ds1.align(tradeTimes).prices;
+		float[] prices0 = ds0.alignAfterPrices(tradeTimes).prices;
+		float[] prices1 = ds1.alignAfterPrices(tradeTimes).prices;
 		int length = prices0.length;
 		float[][] x = IntStreamlet.range(length).map(i -> new float[] { prices0[i], 1f, }).toArray(float[].class);
 		float[] y = prices1;

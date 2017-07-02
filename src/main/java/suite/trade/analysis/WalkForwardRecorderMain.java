@@ -45,7 +45,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 		Trade_.isCacheQuotes = false;
 		Trade_.isShortSell = true;
-		Trade_.maxLeverageAmount = fund0;
+		Trade_.leverageAmount = fund0;
 
 		if (Boolean.FALSE) { // record
 			String ts = Time.now().ymdHms().replace("-", "").replace(" ", "-").replace(":", "");

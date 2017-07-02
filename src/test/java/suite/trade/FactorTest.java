@@ -58,6 +58,15 @@ public class FactorTest {
 		backAllocator(irds).getClass();
 	}
 
+	private List<Pair<Asset, Double>> test(DataSource irds, Streamlet<Asset> assets) {
+		TimeRange period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(Time.now()), 250 * 3);
+
+		return assets //
+				.map2(asset -> correlate(irds, returns(cfg.dataSource(asset.symbol)), period)) //
+				.sortByValue(Object_::compare) //
+				.toList();
+	}
+
 	private BackAllocator backAllocator(DataSource irds) {
 		return (dsBySymbol, ts_) -> {
 			Map<String, DataSource> returnDsBySymbol = dsBySymbol.mapValue(this::returns).toMap();
@@ -75,22 +84,13 @@ public class FactorTest {
 		};
 	}
 
-	private List<Pair<Asset, Double>> test(DataSource irds, Streamlet<Asset> assets) {
-		TimeRange period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(Time.now()), 250 * 3);
-
-		return assets //
-				.map2(asset -> correlate(irds, returns(cfg.dataSource(asset.symbol)), period)) //
-				.sortByValue(Object_::compare) //
-				.toList();
-	}
-
 	private DataSource returns(DataSource ds) {
 		return new DataSource(ds.ts, ts.returns(ds.prices));
 	}
 
 	private double correlate(DataSource irds0, DataSource rds0, TimeRange period) {
-		DataSource irds1 = irds0.range(period);
-		DataSource rds1 = rds0.range(period).align(irds1.ts);
+		DataSource rds1 = rds0.range(period);
+		DataSource irds1 = irds0.range(period).alignBeforePrices(rds1.ts);
 		return stat.correlation(irds1.prices, rds1.prices);
 	}
 
