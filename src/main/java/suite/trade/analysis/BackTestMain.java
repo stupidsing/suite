@@ -61,6 +61,7 @@ public class BackTestMain extends ExecutableProgram {
 		bacByTag_.put("ema", bacs.bac_ema);
 		bacByTag_.put("facoil", bacs.bac_facoil);
 		bacByTag_.put("lr", BackAllocator_.lastReturn(2, 0).bacUnl(fun));
+		bacByTag_.put("mix", bacs.bac_mix);
 		bacByTag_.put("pmamr", bacs.bac_pmamr);
 		bacByTag_.put("pmmmr", bacs.bac_pmmmr);
 		bacByTag_.put("rsi", bacs.bac_rsi);

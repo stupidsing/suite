@@ -10,12 +10,14 @@ import suite.math.stat.BollingerBands;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.MovingAverage;
 import suite.trade.MovingAverage.MovingRange;
+import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
@@ -260,27 +262,15 @@ public class BackAllocator_ {
 		return rsi_(32, .3d, .7d);
 	}
 
-	public static BackAllocator variableBollingerBands() {
+	public static BackAllocator sum(BackAllocator... bas) {
 		return (dsBySymbol, ts) -> {
-			return (time, index) -> dsBySymbol //
-					.map2((symbol, ds) -> {
-						int last = index - 1;
-						double hold = 0d;
+			Streamlet<OnDateTime> odts = Read.from(bas) //
+					.map(ba -> ba.allocate(dsBySymbol, ts)) //
+					.collect(As::streamlet);
 
-						for (int window = 1; hold == 0d && window < 256; window++) {
-							float price = ds.prices[last];
-							MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(ds.prices, last - window, last));
-							double mean = mv.mean;
-							double diff = 3d * mv.standardDeviation();
-
-							if (price < mean - diff)
-								hold = 1d;
-							else if (mean + diff < price)
-								hold = -1d;
-						}
-
-						return hold;
-					}) //
+			return (time, index) -> odts //
+					.flatMap(odt -> odt.onDateTime(time, index)) //
+					.groupBy(pair -> pair.t0, st -> st.collectAsDouble(Obj_Dbl.sum(pair -> pair.t1))) //
 					.toList();
 		};
 	}
@@ -311,6 +301,32 @@ public class BackAllocator_ {
 							return 1d;
 						else
 							return 0d;
+					}) //
+					.toList();
+		};
+	}
+
+	public static BackAllocator variableBollingerBands() {
+		return (dsBySymbol, ts) -> {
+			return (time, index) -> dsBySymbol //
+					.map2((symbol, ds) -> {
+						int last = index - 1;
+						double hold = 0d;
+						float[] prices = ds.prices;
+
+						for (int window = 1; hold == 0d && window < 256; window++) {
+							float price = prices[last];
+							MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(prices, last - window, last));
+							double mean = mv.mean;
+							double diff = 3d * mv.standardDeviation();
+
+							if (price < mean - diff)
+								hold = 1d;
+							else if (mean + diff < price)
+								hold = -1d;
+						}
+
+						return hold;
 					}) //
 					.toList();
 		};

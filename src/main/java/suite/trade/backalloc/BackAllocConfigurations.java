@@ -17,6 +17,7 @@ public class BackAllocConfigurations {
 	public final BackAllocConfiguration bac_donchian;
 	public final BackAllocConfiguration bac_ema;
 	public final BackAllocConfiguration bac_hsi;
+	public final BackAllocConfiguration bac_mix;
 	public final BackAllocConfiguration bac_pmamr;
 	public final BackAllocConfiguration bac_facoil;
 	public final BackAllocConfiguration bac_pmmmr;
@@ -29,11 +30,15 @@ public class BackAllocConfigurations {
 		this.cfg = cfg;
 		Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
 
-		bac_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9).bacUnl(fun);
+		BackAllocator ba_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9);
+		BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().top(3).even();
+
+		bac_bb = ba_bb.bacUnl(fun);
 		bac_donchian = BackAllocator_.donchian(9).bacUnl(fun);
 		bac_ema = BackAllocator_.ema().top(3).bacUnl(fun);
-		bac_facoil = Factor.ofCrudeOil(cfg).backAllocator().top(3).even().bacUnl(fun);
+		bac_facoil = ba_facoil.bacUnl(fun);
 		bac_hsi = BackAllocConfiguration.ofSingle(Asset.hsi);
+		bac_mix = BackAllocator_.sum(ba_bb, ba_facoil).bacUnl(fun);
 		bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).bacUnl(fun);
 		bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdMinimum(9).bacUnl(fun);
 		bac_revco = ReverseCorrelateBackAllocator.of().bacUnl(fun);
