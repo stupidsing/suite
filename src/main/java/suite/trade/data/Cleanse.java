@@ -46,7 +46,7 @@ public class Cleanse {
 			prices1[i] = price0 = price != 0f ? price : price0;
 		}
 
-		return new DataSource(ts, prices1);
+		return new DataSource(ds.ts, prices1);
 	}
 
 	private void cleanse(int length, Int_Flt get, IntFlt_Flt set) {
