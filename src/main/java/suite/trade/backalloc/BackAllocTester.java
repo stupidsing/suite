@@ -32,7 +32,6 @@ import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
-import suite.util.List_;
 import suite.util.To;
 
 public class BackAllocTester {
@@ -44,7 +43,7 @@ public class BackAllocTester {
 	private Streamlet<Asset> assets;
 	private BackAllocator backAllocator;
 	private TimeRange period;
-	private Fun<List<Time>, List<Time>> timesPred;
+	private Fun<long[], long[]> tsPred;
 	private Sink<String> log;
 
 	public static BackAllocTester ofNow( //
@@ -53,7 +52,7 @@ public class BackAllocTester {
 			BackAllocator backAllocator, //
 			Sink<String> log) {
 		Time now = Time.now();
-		Fun<List<Time>, List<Time>> timesPred = times -> Arrays.asList(List_.last(times));
+		Fun<long[], long[]> timesPred = ts_ -> new long[] { ts_[ts_.length - 1], };
 		return new BackAllocTester(cfg, assets, backAllocator, TimeRange.of(now, now), timesPred, log);
 	}
 
@@ -63,11 +62,13 @@ public class BackAllocTester {
 			BackAllocator backAllocator, //
 			TimeRange period, //
 			Sink<String> log) {
-		Fun<List<Time>, List<Time>> timesPred = times -> Read //
-				.from(times) //
-				.filter(period::contains) //
-				.toList();
-		return new BackAllocTester(cfg, assets, backAllocator, period, timesPred, log);
+		long t0 = period.from.epochSec();
+		long tx = period.to.epochSec();
+		Fun<long[], long[]> tsPred = ts_ -> LngStreamlet //
+				.of(ts_) //
+				.filter(t -> t0 <= t && t < tx) //
+				.toArray();
+		return new BackAllocTester(cfg, assets, backAllocator, period, tsPred, log);
 	}
 
 	private BackAllocTester( //
@@ -75,13 +76,13 @@ public class BackAllocTester {
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
 			TimeRange period, //
-			Fun<List<Time>, List<Time>> timesPred, //
+			Fun<long[], long[]> timesPred, //
 			Sink<String> log) {
 		this.cfg = cfg;
 		this.assets = assets.distinct();
 		this.period = period;
 		this.backAllocator = backAllocator;
-		this.timesPred = timesPred;
+		this.tsPred = timesPred;
 		this.log = log;
 	}
 
@@ -129,21 +130,24 @@ public class BackAllocTester {
 			AlignKeyDataSource<String> akds = DataSource.alignAll(dsBySymbol0);
 			Streamlet2<String, DataSource> dsBySymbol1 = akds.dsByKey;
 
-			List<Time> tradeTimes = LngStreamlet.of(akds.ts).map(Time::ofEpochSec).toList();
-			List<Time> times = timesPred.apply(tradeTimes);
-			int size = times.size();
+			long[] tradeTs = LngStreamlet.of(akds.ts).toArray();
+			long[] ts_ = tsPred.apply(tradeTs);
+			int size = ts_.length;
 
-			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol1, times);
+			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol1, ts_);
 			Map<String, Float> latestPriceBySymbol = Collections.emptyMap();
 			float[] valuations_ = new float[size];
 			Exception exception_;
 			int i = 0;
+			String ymd = null;
 
 			try {
 				while (i < size) {
-					Time time = times.get(i);
-					int index = Collections.binarySearch(tradeTimes, time);
+					long t = ts_[i];
+					Time time = Time.ofEpochSec(t);
+					int index = Arrays.binarySearch(tradeTs, t);
 
+					ymd = time.ymd();
 					latestPriceBySymbol = dsBySymbol1.mapValue(ds -> ds.prices[index]).toMap();
 
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
@@ -155,7 +159,7 @@ public class BackAllocTester {
 
 					String actions = play(up.trades);
 
-					log.sink(time.ymd() //
+					log.sink(ymd //
 							+ ", valuation = " + valuation_ //
 							+ ", portfolio = " + account //
 							+ ", actions = " + actions);
@@ -165,7 +169,7 @@ public class BackAllocTester {
 
 				exception_ = null;
 			} catch (Exception ex) {
-				exception_ = new RuntimeException("at " + times.get(i).ymd(), ex);
+				exception_ = new RuntimeException("at " + ymd, ex);
 			}
 
 			trades.addAll(Trade_.sellAll(Read.from(trades), latestPriceBySymbol::get).toList());

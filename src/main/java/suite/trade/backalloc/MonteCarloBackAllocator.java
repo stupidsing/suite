@@ -25,7 +25,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 	private TimeSeries ts = new TimeSeries();
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, List<Time> times) {
+	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, long[] ts_) {
 		return (time, index) -> {
 			Map<String, float[]> returnsBySymbol = dsBySymbol //
 					.mapValue(ds -> ts.returns(ds.prices)) //

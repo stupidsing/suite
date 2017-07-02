@@ -34,11 +34,11 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator cash() {
-		return (dsBySymbol, times) -> (time, index) -> Collections.emptyList();
+		return (dsBySymbol, ts) -> (time, index) -> Collections.emptyList();
 	}
 
 	public static BackAllocator donchian(int window) {
-		return (dsBySymbol, times) -> {
+		return (dsBySymbol, ts) -> {
 			Map<String, MovingRange[]> movingRangeBySymbol = dsBySymbol //
 					.mapValue(ds -> ma.movingRange(ds.prices, window)) //
 					.toMap();
@@ -71,7 +71,7 @@ public class BackAllocator_ {
 		int halfLife = 2;
 		double scale = 1d / Math.log(.8d);
 
-		return (dsBySymbol, times) -> {
+		return (dsBySymbol, ts) -> {
 			Map<String, float[]> ema = dsBySymbol //
 					.mapValue(ds -> ma.exponentialMovingAvg(ds.prices, halfLife)) //
 					.toMap();
@@ -88,7 +88,7 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator lastReturn(int nWorsts, int nBests) {
-		return (dsBySymbol, times) -> (time, index) -> {
+		return (dsBySymbol, ts) -> (time, index) -> {
 			List<String> list = dsBySymbol //
 					.map2((symbol, ds) -> {
 						float[] prices = ds.prices;
@@ -110,7 +110,7 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator lastReturnsProRata() {
-		return (dsBySymbol, times) -> (time, index) -> {
+		return (dsBySymbol, ts) -> (time, index) -> {
 			Streamlet2<String, Double> returns = dsBySymbol //
 					.map2((symbol, ds) -> {
 						float[] prices = ds.prices;
@@ -133,7 +133,7 @@ public class BackAllocator_ {
 		Strategos strategos = new Strategos();
 		BuySellStrategy mamr = strategos.movingAvgMeanReverting(nPastDays, nHoldDays, threshold);
 
-		return (dsBySymbol, times) -> {
+		return (dsBySymbol, ts) -> {
 			Map<String, GetBuySell> getBuySellBySymbol = dsBySymbol //
 					.mapValue(ds -> mamr.analyze(ds.prices)) //
 					.toMap();
@@ -154,7 +154,7 @@ public class BackAllocator_ {
 		int windowSize0 = 4;
 		int windowSize1 = 12;
 
-		return (dsBySymbol, times) -> {
+		return (dsBySymbol, ts) -> {
 			Map<String, float[]> movingAvg0BySymbol = dsBySymbol //
 					.mapValue(ds -> ma.movingAvg(ds.prices, windowSize0)) //
 					.toMap();
@@ -193,7 +193,7 @@ public class BackAllocator_ {
 		int windowSize0 = 1;
 		int windowSize1 = 32;
 
-		return (dsBySymbol, times) -> {
+		return (dsBySymbol, ts) -> {
 			Map<String, MovingRange[]> movingMedian0BySymbol = dsBySymbol //
 					.mapValue(ds -> ma.movingRange(ds.prices, windowSize0)) //
 					.toMap();
@@ -217,7 +217,7 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator ofSingle(String symbol) {
-		return (dsBySymbol, times) -> (time, index) -> Arrays.asList(Pair.of(symbol, 1d));
+		return (dsBySymbol, ts) -> (time, index) -> Arrays.asList(Pair.of(symbol, 1d));
 	}
 
 	public static BackAllocator pairs(Configuration cfg, String symbol0, String symbol1) {
@@ -231,7 +231,7 @@ public class BackAllocator_ {
 		int tor = 64;
 		double threshold = 0d;
 
-		BackAllocator ba0 = (dsBySymbol, times) -> {
+		BackAllocator ba0 = (dsBySymbol, ts) -> {
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
 			DataSource ds0 = dsBySymbol_.get(symbol0);
 			DataSource ds1 = dsBySymbol_.get(symbol1);
@@ -261,7 +261,7 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator variableBollingerBands() {
-		return (dsBySymbol, times) -> {
+		return (dsBySymbol, ts) -> {
 			return (time, index) -> dsBySymbol //
 					.map2((symbol, ds) -> {
 						int last = index - 1;
@@ -286,7 +286,7 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator tripleMovingAvgs() {
-		return (dsBySymbol, times) -> {
+		return (dsBySymbol, ts) -> {
 			Map<String, float[]> movingAvg0BySymbol = dsBySymbol //
 					.mapValue(ds -> ma.exponentialMovingGeometricAvg(ds.prices, 18)) //
 					.toMap();
@@ -317,7 +317,7 @@ public class BackAllocator_ {
 	}
 
 	private static BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {
-		return (dsBySymbol, times) -> {
+		return (dsBySymbol, ts) -> {
 			Map<String, float[]> percentbBySymbol = dsBySymbol //
 					.mapValue(ds -> bb.bb(ds.prices, backPos0, backPos1, k).percentb) //
 					.toMap();
@@ -344,7 +344,7 @@ public class BackAllocator_ {
 	}
 
 	private static BackAllocator rsi_(int window, double threshold0, double threshold1) {
-		return (dsBySymbol, times) -> (time, index) -> dsBySymbol //
+		return (dsBySymbol, ts) -> (time, index) -> dsBySymbol //
 				.mapValue(ds -> {
 					float[] prices = ds.prices;
 					int gt = 0, ge = 0;

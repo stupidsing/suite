@@ -2,7 +2,6 @@ package suite.trade.backalloc;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
@@ -10,7 +9,6 @@ import suite.math.stat.Ardl;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.trade.Time;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
@@ -19,7 +17,7 @@ public class ArdlBackAllocator implements BackAllocator {
 	private Ardl ardl = new Ardl(9, false);
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol0, List<Time> times) {
+	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol0, long[] ts_) {
 		Map<String, DataSource> dsBySymbol1 = dsBySymbol0.toMap();
 		String[] symbols = dsBySymbol0.keys().toArray(String.class);
 

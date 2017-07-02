@@ -1,6 +1,5 @@
 package suite.trade.data;
 
-import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -18,9 +17,9 @@ public class DataSourceView<K, V> {
 			int nDays, //
 			int alignment, //
 			Streamlet2<String, DataSource> dsByKey, //
-			List<Time> times, //
+			long[] ts, //
 			BiFunction<DataSource, TimeRange, V> fun) {
-		return new DataSourceView<>(tor, nDays, alignment, dsByKey, times, fun);
+		return new DataSourceView<>(tor, nDays, alignment, dsByKey, ts, fun);
 	}
 
 	private DataSourceView( //
@@ -28,11 +27,11 @@ public class DataSourceView<K, V> {
 			int nDays, //
 			int alignment, //
 			Streamlet2<String, DataSource> dsByKey, //
-			List<Time> times, //
+			long[] ts, //
 			BiFunction<DataSource, TimeRange, V> fun) {
 		this.viewBySymbol = dsByKey //
 				.map2((symbol, ds) -> TimeRange //
-						.rangeOf(times) //
+						.rangeOf(ts) //
 						.addDays(-tor) //
 						.backTestDaysBefore(nDays, alignment) //
 						.map2(period -> fun.apply(ds, period)) //

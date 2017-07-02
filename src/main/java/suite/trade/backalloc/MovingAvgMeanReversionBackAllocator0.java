@@ -1,6 +1,5 @@
 package suite.trade.backalloc;
 
-import java.util.List;
 import java.util.Map;
 
 import suite.math.stat.Statistic.LinearRegression;
@@ -10,7 +9,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.MovingAverage;
-import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.data.DataSource;
@@ -48,11 +46,11 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 	}
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, List<Time> times) {
+	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, long[] ts_) {
 		log.sink(dsBySymbol.size() + " assets in data source");
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
-		DataSourceView<String, MeanReversionStat> dsv = DataSourceView.of(tor, 256, 32, dsBySymbol, times, MeanReversionStat::new);
+		DataSourceView<String, MeanReversionStat> dsv = DataSourceView.of(tor, 256, 32, dsBySymbol, ts_, MeanReversionStat::new);
 
 		return (time, index) -> {
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
