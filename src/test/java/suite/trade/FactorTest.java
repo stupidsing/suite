@@ -67,7 +67,7 @@ public class FactorTest {
 
 		return assets //
 				.map2(asset -> {
-					DataSource ds = cfg.dataSource(asset.symbol).range(period).align(DataSource.alignAll(dsBySymbol).ts);
+					DataSource ds = cfg.dataSource(asset.symbol).range(period).align(akds.ts);
 					float[] returns = ts.returns(ds.prices);
 					return stat.correlation(indexReturns, returns);
 				}) //
