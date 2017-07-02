@@ -64,6 +64,10 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 		return fltObjStreamlet(() -> spawn().append(key, value));
 	}
 
+	public <R> R apply(Fun<FltObjStreamlet<V>, R> fun) {
+		return fun.apply(this);
+	}
+
 	public Streamlet<FltObjOutlet<V>> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

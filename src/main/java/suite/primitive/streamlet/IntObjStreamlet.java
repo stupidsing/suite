@@ -64,6 +64,10 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 		return intObjStreamlet(() -> spawn().append(key, value));
 	}
 
+	public <R> R apply(Fun<IntObjStreamlet<V>, R> fun) {
+		return fun.apply(this);
+	}
+
 	public Streamlet<IntObjOutlet<V>> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

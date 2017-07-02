@@ -112,7 +112,7 @@ public class BackAllocTester {
 			// pre-fetch quotes
 			cfg.quote(symbols);
 
-			Streamlet2<String, DataSource> dsBySymbol0 = Read //
+			AlignKeyDataSource<String> akds = Read //
 					.from(symbols) //
 					.map2(symbol -> {
 						try {
@@ -125,16 +125,15 @@ public class BackAllocTester {
 						}
 					}) //
 					.filterValue(ds -> ds != null) //
-					.collect(As::streamlet2);
+					.collect(As::streamlet2) //
+					.apply(DataSource::alignAll);
 
-			AlignKeyDataSource<String> akds = DataSource.alignAll(dsBySymbol0);
-			Streamlet2<String, DataSource> dsBySymbol1 = akds.dsByKey;
-
+			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 			long[] tradeTs = LngStreamlet.of(akds.ts).toArray();
 			long[] ts_ = tsPred.apply(tradeTs);
 			int size = ts_.length;
 
-			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol1, ts_);
+			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol, ts_);
 			Map<String, Float> latestPriceBySymbol = Collections.emptyMap();
 			float[] valuations_ = new float[size];
 			Exception exception_;
@@ -148,7 +147,7 @@ public class BackAllocTester {
 					int index = Arrays.binarySearch(tradeTs, t);
 
 					ymd = time.ymd();
-					latestPriceBySymbol = dsBySymbol1.mapValue(ds -> ds.prices[index]).toMap();
+					latestPriceBySymbol = dsBySymbol.mapValue(ds -> ds.prices[index]).toMap();
 
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
 					UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, latestPriceBySymbol);

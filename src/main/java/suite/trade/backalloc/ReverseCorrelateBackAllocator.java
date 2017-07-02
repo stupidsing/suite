@@ -35,7 +35,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 
 	@Override
 	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, long[] ts_) {
-		DataSourceView<String, Double> dsv = DataSourceView.of(0, 512, 32, dsBySymbol, ts_, (ds, samplePeriod) -> {
+		DataSourceView<String, Double> dsv = DataSourceView.of(0, 512, dsBySymbol, ts_, (symbol, ds, samplePeriod) -> {
 			float[] prices = ds.range(samplePeriod).prices;
 			float[] logReturns = ts.logReturns(prices);
 			int ll = logReturns.length;

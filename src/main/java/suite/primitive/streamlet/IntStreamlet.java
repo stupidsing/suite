@@ -94,6 +94,10 @@ public class IntStreamlet implements Iterable<Integer> {
 		return streamlet(() -> spawn().append(t));
 	}
 
+	public <R> R apply(Fun<IntStreamlet, R> fun) {
+		return fun.apply(this);
+	}
+
 	public Streamlet<IntOutlet> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

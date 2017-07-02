@@ -94,6 +94,10 @@ public class DblStreamlet implements Iterable<Double> {
 		return streamlet(() -> spawn().append(t));
 	}
 
+	public <R> R apply(Fun<DblStreamlet, R> fun) {
+		return fun.apply(this);
+	}
+
 	public Streamlet<DblOutlet> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

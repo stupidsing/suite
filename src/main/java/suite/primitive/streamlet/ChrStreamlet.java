@@ -94,6 +94,10 @@ public class ChrStreamlet implements Iterable<Character> {
 		return streamlet(() -> spawn().append(t));
 	}
 
+	public <R> R apply(Fun<ChrStreamlet, R> fun) {
+		return fun.apply(this);
+	}
+
 	public Streamlet<ChrOutlet> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

@@ -57,11 +57,10 @@ public class DataSource {
 	public static <K> AlignKeyDataSource<K> alignAll(Streamlet2<K, DataSource> dsByKey0) {
 		AlignDataSource alignDataSource = DataSource.alignAll(dsByKey0.values());
 
-		Streamlet2<K, DataSource> dsByKey1 = dsByKey0 //
+		return dsByKey0 //
 				.mapValue(alignDataSource::align) //
-				.collect(As::streamlet2);
-
-		return new AlignKeyDataSource<>(alignDataSource, dsByKey1);
+				.collect(As::streamlet2) //
+				.apply(st -> new AlignKeyDataSource<>(alignDataSource, st));
 	}
 
 	public static class AlignKeyDataSource<K> {
@@ -150,6 +149,14 @@ public class DataSource {
 
 	public LngFltPair last() {
 		return get(-1);
+	}
+
+	public LngFltPair last(Time time) {
+		long t = time.epochSec();
+		for (int i = ts.length - 1; 0 <= i; i--)
+			if (ts[i] <= t)
+				return LngFltPair.of(ts[i], prices[i]);
+		return null;
 	}
 
 	public TimeRange period() {

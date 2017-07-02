@@ -57,6 +57,10 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return streamlet2(() -> spawn().append(key, value));
 	}
 
+	public <T> T apply(Fun<Streamlet2<K, V>, T> fun) {
+		return fun.apply(this);
+	}
+
 	public Streamlet<Outlet2<K, V>> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

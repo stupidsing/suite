@@ -12,7 +12,7 @@ public interface WalkForwardAllocator {
 	public List<Pair<String, Double>> allocate(Streamlet2<String, DataSource> dsBySymbol, int index);
 
 	public default BackAllocator backAllocator() {
-		return (dsBySymbol, times) -> (time, index) -> allocate(dsBySymbol, index);
+		return (dsBySymbol, ts) -> (time, index) -> allocate(dsBySymbol, index);
 	}
 
 }

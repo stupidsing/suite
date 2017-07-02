@@ -64,6 +64,10 @@ public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 		return dblObjStreamlet(() -> spawn().append(key, value));
 	}
 
+	public <R> R apply(Fun<DblObjStreamlet<V>, R> fun) {
+		return fun.apply(this);
+	}
+
 	public Streamlet<DblObjOutlet<V>> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

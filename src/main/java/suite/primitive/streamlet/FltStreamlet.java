@@ -94,6 +94,10 @@ public class FltStreamlet implements Iterable<Float> {
 		return streamlet(() -> spawn().append(t));
 	}
 
+	public <R> R apply(Fun<FltStreamlet, R> fun) {
+		return fun.apply(this);
+	}
+
 	public Streamlet<FltOutlet> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

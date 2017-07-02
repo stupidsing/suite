@@ -42,11 +42,9 @@ public class Grammar {
 				.filter(lr -> lr != null) //
 				.toList();
 
-		Map<String, Grammar> grammarByEntity = Read.from(pairs) //
+		return Read.from(pairs) //
 				.map2(lr -> lr.t0, lr -> breakdown.breakdown(lr.t0, lr.t1)) //
 				.collect(As::map);
-
-		return grammarByEntity;
 	}
 
 	public Grammar(GrammarType type) {

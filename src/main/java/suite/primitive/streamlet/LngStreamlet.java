@@ -94,6 +94,10 @@ public class LngStreamlet implements Iterable<Long> {
 		return streamlet(() -> spawn().append(t));
 	}
 
+	public <R> R apply(Fun<LngStreamlet, R> fun) {
+		return fun.apply(this);
+	}
+
 	public Streamlet<LngOutlet> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}
