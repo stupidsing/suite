@@ -13,20 +13,16 @@ import javax.mail.internet.MimeMessage;
 import javax.net.ssl.SSLSocketFactory;
 
 import suite.Constants;
-import suite.Suite;
-import suite.node.Reference;
-import suite.node.Str;
 
 public class SmtpSslGmail {
 
 	public void send(String to, String subject, String body) {
-		Reference ref0 = new Reference();
-		Reference ref1 = new Reference();
+		String[] m;
 		String username, password;
 
-		if (Constants.secrets().prove(Suite.substitute("gmail .0 .1", ref0, ref1))) {
-			username = ((Str) ref0.finalNode()).value;
-			password = ((Str) ref1.finalNode()).value;
+		if ((m = Constants.secrets("gmail .0 .1")) != null) {
+			username = m[0];
+			password = m[1];
 		} else
 			throw new RuntimeException();
 

@@ -2,6 +2,7 @@ package suite.trade.data;
 
 import java.util.List;
 
+import suite.Constants;
 import suite.node.util.Singleton;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
@@ -14,7 +15,11 @@ import suite.util.Object_;
 public class Quandl {
 
 	public DataSource dataSourceCsv(String symbol, TimeRange period) {
-		String urlString = "https://www.quandl.com/api/v1/datasets/CHRIS/CME_CL1.csv?" + period.hashCode();
+		String[] m = Constants.secrets("quandl .0");
+
+		String urlString = "https://www.quandl.com/api/v1/datasets/CHRIS/CME_CL1.csv" //
+				+ "?ph=" + period.hashCode() //
+				+ (m != null ? "&api_key=" + m[0] : "");
 
 		// Date, Open, High, Low, Last, Change, Settle, Volume, Previous Day
 		// Open Interest
