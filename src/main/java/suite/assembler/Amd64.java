@@ -1,10 +1,9 @@
 package suite.assembler;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import suite.adt.map.BiMap;
+import suite.adt.map.HashBiMap;
 import suite.node.Atom;
-import suite.node.Node;
+import suite.primitive.streamlet.IntStreamlet;
 
 public class Amd64 {
 
@@ -144,57 +143,60 @@ public class Amd64 {
 		public Operand op0, op1, op2;
 	}
 
-	public final Operand none = new OpNone();
+	public Operand none = new OpNone();
 
-	public OpReg al = newReg(1, 0);
-	public OpReg cl = newReg(1, 1);
-	public OpReg dl = newReg(1, 2);
-	public OpReg bl = newReg(1, 3);
-	public OpReg eax = newReg(4, 0);
-	public OpReg ecx = newReg(4, 1);
-	public OpReg edx = newReg(4, 2);
-	public OpReg ebx = newReg(4, 3);
-	public OpReg esp = newReg(4, 4);
-	public OpReg ebp = newReg(4, 5);
-	public OpReg esi = newReg(4, 6);
-	public OpReg edi = newReg(4, 7);
+	public OpReg[] reg8 = IntStreamlet.range(16).map(r -> newReg(1, r)).toArray(OpReg.class);
+	public OpReg[] reg16 = IntStreamlet.range(16).map(r -> newReg(2, r)).toArray(OpReg.class);
+	public OpReg[] reg32 = IntStreamlet.range(16).map(r -> newReg(4, r)).toArray(OpReg.class);
+	public OpReg[] reg64 = IntStreamlet.range(16).map(r -> newReg(8, r)).toArray(OpReg.class);
 
-	public Map<Node, OpReg> regsByName = new HashMap<Node, OpReg>() {
-		private static final long serialVersionUID = 1l;
+	public OpReg al = reg8[0];
+	public OpReg cl = reg8[1];
+	public OpReg dl = reg8[2];
+	public OpReg bl = reg8[3];
+	public OpReg eax = reg32[0];
+	public OpReg ecx = reg32[1];
+	public OpReg edx = reg32[2];
+	public OpReg ebx = reg32[3];
+	public OpReg esp = reg32[4];
+	public OpReg ebp = reg32[5];
+	public OpReg esi = reg32[6];
+	public OpReg edi = reg32[7];
 
+	public BiMap<Atom, OpReg> regsByName = new HashBiMap<Atom, OpReg>() {
 		{
 			put(Atom.of("AL"), al);
 			put(Atom.of("CL"), cl);
 			put(Atom.of("DL"), dl);
 			put(Atom.of("BL"), bl);
-			put(Atom.of("SPL"), newReg(1, 4));
-			put(Atom.of("BPL"), newReg(1, 5));
-			put(Atom.of("SIL"), newReg(1, 6));
-			put(Atom.of("DIL"), newReg(1, 7));
-			put(Atom.of("R8B"), newReg(1, 8));
-			put(Atom.of("R9B"), newReg(1, 9));
-			put(Atom.of("R10B"), newReg(1, 10));
-			put(Atom.of("R11B"), newReg(1, 11));
-			put(Atom.of("R12B"), newReg(1, 12));
-			put(Atom.of("R13B"), newReg(1, 13));
-			put(Atom.of("R14B"), newReg(1, 14));
-			put(Atom.of("R15B"), newReg(1, 15));
-			put(Atom.of("AX"), newReg(2, 0));
-			put(Atom.of("CX"), newReg(2, 1));
-			put(Atom.of("DX"), newReg(2, 2));
-			put(Atom.of("BX"), newReg(2, 3));
-			put(Atom.of("SP"), newReg(2, 4));
-			put(Atom.of("BP"), newReg(2, 5));
-			put(Atom.of("SI"), newReg(2, 6));
-			put(Atom.of("DI"), newReg(2, 7));
-			put(Atom.of("R8W"), newReg(2, 8));
-			put(Atom.of("R9W"), newReg(2, 9));
-			put(Atom.of("R10W"), newReg(2, 10));
-			put(Atom.of("R11W"), newReg(2, 11));
-			put(Atom.of("R12W"), newReg(2, 12));
-			put(Atom.of("R13W"), newReg(2, 13));
-			put(Atom.of("R14W"), newReg(2, 14));
-			put(Atom.of("R15W"), newReg(2, 15));
+			put(Atom.of("SPL"), reg8[4]);
+			put(Atom.of("BPL"), reg8[5]);
+			put(Atom.of("SIL"), reg8[6]);
+			put(Atom.of("DIL"), reg8[7]);
+			put(Atom.of("R8B"), reg8[8]);
+			put(Atom.of("R9B"), reg8[9]);
+			put(Atom.of("R10B"), reg8[10]);
+			put(Atom.of("R11B"), reg8[11]);
+			put(Atom.of("R12B"), reg8[12]);
+			put(Atom.of("R13B"), reg8[13]);
+			put(Atom.of("R14B"), reg8[14]);
+			put(Atom.of("R15B"), reg8[15]);
+			put(Atom.of("AX"), reg16[0]);
+			put(Atom.of("CX"), reg16[1]);
+			put(Atom.of("DX"), reg16[2]);
+			put(Atom.of("BX"), reg16[3]);
+			put(Atom.of("SP"), reg16[4]);
+			put(Atom.of("BP"), reg16[5]);
+			put(Atom.of("SI"), reg16[6]);
+			put(Atom.of("DI"), reg16[7]);
+			put(Atom.of("R8W"), reg16[8]);
+			put(Atom.of("R9W"), reg16[9]);
+			put(Atom.of("R10W"), reg16[10]);
+			put(Atom.of("R11W"), reg16[11]);
+			put(Atom.of("R12W"), reg16[12]);
+			put(Atom.of("R13W"), reg16[13]);
+			put(Atom.of("R14W"), reg16[14]);
+			put(Atom.of("R15W"), reg16[15]);
 			put(Atom.of("EAX"), eax);
 			put(Atom.of("ECX"), ecx);
 			put(Atom.of("EDX"), edx);
@@ -203,37 +205,35 @@ public class Amd64 {
 			put(Atom.of("EBP"), ebp);
 			put(Atom.of("ESI"), esi);
 			put(Atom.of("EDI"), edi);
-			put(Atom.of("R8D"), newReg(4, 8));
-			put(Atom.of("R9D"), newReg(4, 9));
-			put(Atom.of("R10D"), newReg(4, 10));
-			put(Atom.of("R11D"), newReg(4, 11));
-			put(Atom.of("R12D"), newReg(4, 12));
-			put(Atom.of("R13D"), newReg(4, 13));
-			put(Atom.of("R14D"), newReg(4, 14));
-			put(Atom.of("R15D"), newReg(4, 15));
-			put(Atom.of("RAX"), newReg(8, 0));
-			put(Atom.of("RCX"), newReg(8, 1));
-			put(Atom.of("RDX"), newReg(8, 2));
-			put(Atom.of("RBX"), newReg(8, 3));
-			put(Atom.of("RSP"), newReg(8, 4));
-			put(Atom.of("RBP"), newReg(8, 5));
-			put(Atom.of("RSI"), newReg(8, 6));
-			put(Atom.of("RDI"), newReg(8, 7));
-			put(Atom.of("R8"), newReg(8, 8));
-			put(Atom.of("R9"), newReg(8, 9));
-			put(Atom.of("R10"), newReg(8, 10));
-			put(Atom.of("R11"), newReg(8, 11));
-			put(Atom.of("R12"), newReg(8, 12));
-			put(Atom.of("R13"), newReg(8, 13));
-			put(Atom.of("R14"), newReg(8, 14));
-			put(Atom.of("R15"), newReg(8, 15));
+			put(Atom.of("R8D"), reg32[8]);
+			put(Atom.of("R9D"), reg32[9]);
+			put(Atom.of("R10D"), reg32[10]);
+			put(Atom.of("R11D"), reg32[11]);
+			put(Atom.of("R12D"), reg32[12]);
+			put(Atom.of("R13D"), reg32[13]);
+			put(Atom.of("R14D"), reg32[14]);
+			put(Atom.of("R15D"), reg32[15]);
+			put(Atom.of("RAX"), reg64[0]);
+			put(Atom.of("RCX"), reg64[1]);
+			put(Atom.of("RDX"), reg64[2]);
+			put(Atom.of("RBX"), reg64[3]);
+			put(Atom.of("RSP"), reg64[4]);
+			put(Atom.of("RBP"), reg64[5]);
+			put(Atom.of("RSI"), reg64[6]);
+			put(Atom.of("RDI"), reg64[7]);
+			put(Atom.of("R8"), reg64[8]);
+			put(Atom.of("R9"), reg64[9]);
+			put(Atom.of("R10"), reg64[10]);
+			put(Atom.of("R11"), reg64[11]);
+			put(Atom.of("R12"), reg64[12]);
+			put(Atom.of("R13"), reg64[13]);
+			put(Atom.of("R14"), reg64[14]);
+			put(Atom.of("R15"), reg64[15]);
 
 		}
 	};
 
-	public Map<Node, OpRegControl> cregsByName = new HashMap<Node, OpRegControl>() {
-		private static final long serialVersionUID = 1l;
-
+	public BiMap<Atom, OpRegControl> cregsByName = new HashBiMap<Atom, OpRegControl>() {
 		{
 			put(Atom.of("CR0"), newRegControl(0));
 			put(Atom.of("CR2"), newRegControl(2));
@@ -242,9 +242,7 @@ public class Amd64 {
 		}
 	};
 
-	public Map<Node, OpRegSegment> sregsByName = new HashMap<Node, OpRegSegment>() {
-		private static final long serialVersionUID = 1l;
-
+	public BiMap<Atom, OpRegSegment> sregsByName = new HashBiMap<Atom, OpRegSegment>() {
 		{
 			put(Atom.of("ES"), newRegSegment(0));
 			put(Atom.of("CS"), newRegSegment(1));
