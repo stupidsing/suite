@@ -262,7 +262,7 @@ public class DailyMain extends ExecutableProgram {
 		Map<String, Float> priceBySymbol = cfg.quote(symbols);
 		List<Trade> trades = Trade_.diff(assets0, assets1, priceBySymbol);
 
-		sb.append("\n" + sim.conclusion());
+		sb.append("\nstrategy = " + tag + ", " + sim.conclusion());
 
 		return new Result(tag, trades);
 	}
