@@ -10,7 +10,6 @@ import suite.inspect.Dump;
 import suite.os.LogUtil;
 import suite.trade.Time;
 import suite.trade.TimeRange;
-import suite.util.Thread_;
 
 public class YahooTest {
 
@@ -39,7 +38,6 @@ public class YahooTest {
 			} catch (Exception ex) {
 				LogUtil.error(ex);
 			}
-			Thread_.sleepQuietly(5000l);
 		}
 	}
 
