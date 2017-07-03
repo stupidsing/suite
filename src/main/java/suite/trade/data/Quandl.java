@@ -14,11 +14,14 @@ import suite.util.Object_;
 
 public class Quandl {
 
-	public DataSource dataSourceCsv(String symbol, TimeRange period) {
+	public DataSource dataSourceCsv(String symbol, TimeRange period0) {
 		String[] m = Constants.secrets("quandl .0");
+		long usMarketClose = 16l;
+		long ph0 = period0.to.epochSec() - (usMarketClose + 4) * 24 * 3600;
+		long ph1 = ph0 - (ph0 % 86400l);
 
 		String urlString = "https://www.quandl.com/api/v1/datasets/CHRIS/CME_CL1.csv" //
-				+ "?ph=" + period.hashCode() //
+				+ "?ph=" + ph1 //
 				+ (m != null ? "&api_key=" + m[0] : "");
 
 		// Date, Open, High, Low, Last, Change, Settle, Volume, Previous Day
@@ -39,7 +42,7 @@ public class Quandl {
 				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))) //
 				.toArray();
 
-		return new DataSource(ts, prices).range(period);
+		return new DataSource(ts, prices).range(period0);
 	}
 
 }
