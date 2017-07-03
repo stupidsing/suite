@@ -22,20 +22,29 @@ public class StockHistory {
 
 	private static Cleanse cleanse = new Cleanse();
 
+	public final String exchange;
 	public final Time time;
 	public final Map<String, LngFltPair[]> data; // un-adjusted
 	public final LngFltPair[] dividends;
 	public final LngFltPair[] splits;
 
 	public static StockHistory of(Outlet<String> outlet) {
-		Time time = Time.ofYmdHms(outlet.next());
+		Map<String, String> properties = new HashMap<>();
+		Map<String, LngFltPair[]> data = new HashMap<>();
+		String line;
+
+		while ('9' < (line = outlet.next()).charAt(0)) {
+			String[] array = line.split("=");
+			properties.put(array[0].trim(), array[1].trim());
+		}
+		String exchange = properties.get("exchange");
+		Time time = Time.ofYmdHms(line);
 		LngFltPair[] dividends = readPairs(outlet);
 		LngFltPair[] splits = readPairs(outlet);
-		Map<String, LngFltPair[]> data = new HashMap<>();
 		String tag;
 		while ((tag = outlet.next()) != null)
 			data.put(tag, readPairs(outlet));
-		return StockHistory.of(time, data, dividends, splits);
+		return StockHistory.of(exchange, time, data, dividends, splits);
 	}
 
 	private static LngFltPair[] readPairs(Outlet<String> outlet) {
@@ -54,14 +63,24 @@ public class StockHistory {
 	}
 
 	public static StockHistory new_() {
-		return of(TimeRange.min, new HashMap<>(), new LngFltPair[0], new LngFltPair[0]);
+		return of(null, TimeRange.min, new HashMap<>(), new LngFltPair[0], new LngFltPair[0]);
 	}
 
 	public static StockHistory of(Time time, Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
-		return new StockHistory(time, data, dividends, splits);
+		return of(null, time, data, dividends, splits);
 	}
 
-	private StockHistory(Time time, Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
+	public static StockHistory of(//
+			String exchange, //
+			Time time, //
+			Map<String, LngFltPair[]> data, //
+			LngFltPair[] dividends, //
+			LngFltPair[] splits) {
+		return new StockHistory(exchange, time, data, dividends, splits);
+	}
+
+	private StockHistory(String exchange, Time time, Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
+		this.exchange = exchange;
 		this.time = time;
 		this.data = data;
 		this.dividends = dividends;
@@ -120,7 +139,7 @@ public class StockHistory {
 		Map<String, LngFltPair[]> data1 = Read.from(keys) //
 				.map2(key -> merge_.apply(get(key), other.get(key))) //
 				.toMap();
-		return of(time, data1, merge_.apply(dividends, other.dividends), merge_.apply(splits, other.splits));
+		return of(exchange, time, data1, merge_.apply(dividends, other.dividends), merge_.apply(splits, other.splits));
 	}
 
 	public StockHistory alignToDate() {
@@ -138,7 +157,7 @@ public class StockHistory {
 		Map<String, LngFltPair[]> data1 = Read.from2(data) //
 				.mapValue(align_) //
 				.toMap();
-		return of(time, data1, align_.apply(dividends), align_.apply(splits));
+		return of(exchange, time, data1, align_.apply(dividends), align_.apply(splits));
 	}
 
 	public DataSource adjustPrices(String tag) {
@@ -184,7 +203,7 @@ public class StockHistory {
 	}
 
 	public Streamlet<String> write() {
-		Streamlet<String> s0 = Read.each(time.ymdHms());
+		Streamlet<String> s0 = Read.each("exchange = " + exchange, time.ymdHms());
 		Streamlet<String> s1 = Read.each(dividends, splits).concatMap(this::concat);
 		Streamlet<String> s2 = Read.from2(data).concatMap((tag, fs) -> concat(fs).cons(tag));
 		return Streamlet.concat(s0, s1, s2);

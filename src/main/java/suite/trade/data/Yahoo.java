@@ -30,6 +30,7 @@ import suite.trade.Trade_;
 import suite.util.HomeDir;
 import suite.util.Object_;
 import suite.util.Rethrow;
+import suite.util.String_;
 import suite.util.To;
 
 public class Yahoo {
@@ -84,6 +85,13 @@ public class Yahoo {
 			Streamlet<JsonNode> jsons = Read.each(json) //
 					.flatMap(json_ -> json_.path("chart").path("result"));
 
+			System.out.println(jsons //
+					.map(json_ -> json_.path("meta").path("exchangeName").textValue()).toList());
+
+			String exchange = jsons //
+					.map(json_ -> json_.path("meta").path("exchangeName").textValue()) //
+					.uniqueResult();
+
 			long[] ts = jsons //
 					.flatMap(json_ -> json_.path("timestamp")) //
 					.collect(Obj_Lng.lift(JsonNode::longValue)) //
@@ -123,7 +131,7 @@ public class Yahoo {
 					.sort(LngFltPair.comparatorByFirst()) //
 					.toArray(LngFltPair.class);
 
-			stockHistory1 = StockHistory.of(time, data, dividends, splits).merge(stockHistory0).alignToDate();
+			stockHistory1 = StockHistory.of(exchange, time, data, dividends, splits).merge(stockHistory0).alignToDate();
 
 			List<String> lines = stockHistory1.write().toList();
 			Rethrow.ex(() -> Files.write(path, lines));
@@ -136,8 +144,7 @@ public class Yahoo {
 		// close time
 		long[] ts = ds.ts;
 		int last = ts.length - 1;
-		Time lastTime = HkexUtil.getTradeTimeBefore(Time.ofEpochSec(ts[last]));
-		ts[last] = lastTime.epochSec();
+		ts[last] = getTradeTimeBefore(stockHistory1, Time.ofEpochSec(ts[last])).epochSec();
 
 		return cleanse.cleanse(ds).range(period);
 	}
@@ -250,6 +257,10 @@ public class Yahoo {
 		if (adjuster != null)
 			for (int d = 0; d < prices.length; d++)
 				prices[d] = adjuster.apply(ts[d], prices[d]);
+	}
+
+	private Time getTradeTimeBefore(StockHistory stockHistory, Time time) {
+		return !String_.equals(stockHistory.exchange, "HKG") ? time : HkexUtil.getTradeTimeBefore(time);
 	}
 
 	private String encode(String s) {
