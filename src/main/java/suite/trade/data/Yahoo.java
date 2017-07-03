@@ -136,7 +136,7 @@ public class Yahoo {
 		// close time
 		long[] ts = ds.ts;
 		int last = ts.length - 1;
-		Time lastTime = HkexUtil.getOpenTimeBefore(Time.ofEpochSec(ts[last]));
+		Time lastTime = HkexUtil.getTradeTimeBefore(Time.ofEpochSec(ts[last]));
 		ts[last] = lastTime.epochSec();
 
 		return cleanse.cleanse(ds).range(period);
