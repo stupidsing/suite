@@ -3,11 +3,14 @@ package suite.trade.data;
 import java.util.Map;
 import java.util.Set;
 
+import suite.os.LogUtil;
+import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade;
+import suite.trade.data.DataSource.AlignKeyDataSource;
 
 public interface Configuration {
 
@@ -26,5 +29,22 @@ public interface Configuration {
 	public Map<String, Float> quote(Set<String> symbols);
 
 	public double transactionFee(double transactionAmount);
+
+	public default AlignKeyDataSource<String> dataSources(Streamlet<String> symbols, TimeRange period) {
+		return symbols //
+				.map2(symbol -> {
+					try {
+						DataSource ds = dataSource(symbol, period);
+						ds.validate();
+						return ds;
+					} catch (Exception ex) {
+						LogUtil.warn("for " + symbol + " " + ex);
+						return null;
+					}
+				}) //
+				.filterValue(ds -> ds != null) //
+				.collect(As::streamlet2) //
+				.apply(DataSource::alignAll);
+	}
 
 }

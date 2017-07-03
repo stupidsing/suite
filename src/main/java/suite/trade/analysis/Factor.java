@@ -7,7 +7,6 @@ import suite.adt.pair.Pair;
 import suite.math.linalg.Matrix;
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -30,7 +29,7 @@ public class Factor {
 	private Cleanse cleanse = new Cleanse();
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
-	private Time today = Time.now().date();
+	private Time now = Time.now();
 	private TimeSeries ts = new TimeSeries();
 
 	public static Factor ofCrudeOil(Configuration cfg) {
@@ -44,13 +43,10 @@ public class Factor {
 	private Factor(Configuration cfg, Streamlet<String> indices) {
 		this.cfg = cfg;
 
-		AlignKeyDataSource<String> akds = indices //
-				.map2(symbol -> cleanse.removeZeroes(cfg.dataSource(symbol, TimeRange.of(Time.MIN, today)))) //
-				.collect(As::streamlet2) //
-				.apply(DataSource::alignAll);
+		AlignKeyDataSource<String> akds = cfg.dataSources(indices, TimeRange.of(Time.MIN, now));
 
 		float[] indexReturns = akds.dsByKey //
-				.map((symbol, ds) -> ts.returns(ds.prices)) //
+				.map((symbol, ds) -> ts.returns(cleanse.removeZeroes(ds.prices))) //
 				.fold(new float[akds.ts.length], mtx::add);
 
 		irds = new DataSource(akds.ts, indexReturns);

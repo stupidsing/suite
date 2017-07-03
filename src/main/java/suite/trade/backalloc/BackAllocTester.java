@@ -13,7 +13,6 @@ import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.os.LogUtil;
 import suite.primitive.streamlet.LngStreamlet;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -108,24 +107,10 @@ public class BackAllocTester {
 			Set<String> symbols = assetBySymbol.keySet();
 			TimeRange historyPeriod = TimeRange.of(period.from.addYears(-1), period.to);
 
-			AlignKeyDataSource<String> akds = Read //
-					.from(symbols) //
-					.map2(symbol -> {
-						try {
-							DataSource ds = cfg.dataSource(symbol, historyPeriod);
-							ds.validate();
-							return ds;
-						} catch (Exception ex) {
-							LogUtil.warn("for " + symbol + " " + ex);
-							return null;
-						}
-					}) //
-					.filterValue(ds -> ds != null) //
-					.collect(As::streamlet2) //
-					.apply(DataSource::alignAll);
-
+			AlignKeyDataSource<String> akds = cfg.dataSources(Read.from(symbols), historyPeriod);
 			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 			long[] tradeTs = akds.ts;
+
 			long[] ts_ = tsPred.apply(tradeTs);
 			int size = ts_.length;
 
