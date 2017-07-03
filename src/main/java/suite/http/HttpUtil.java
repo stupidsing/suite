@@ -99,7 +99,7 @@ public class HttpUtil {
 		long current, last, start, next;
 
 		do
-			next = 2000l + (start = Math.max(last = al.get(), current = System.currentTimeMillis()));
+			next = 3000l + (start = Math.max(last = al.get(), current = System.currentTimeMillis()));
 		while (!al.compareAndSet(last, next) || backoff.exponentially());
 
 		Thread_.sleepQuietly(start - current);
