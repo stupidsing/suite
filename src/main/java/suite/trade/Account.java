@@ -135,7 +135,7 @@ public class Account {
 				nTransactions++;
 			transactionAmount += Math.abs(cost);
 		} else
-			throw new RuntimeException("impossible transaction price: " + price);
+			throw new RuntimeException("impossible transaction price: " + trade);
 	}
 
 	private int get(String code) {

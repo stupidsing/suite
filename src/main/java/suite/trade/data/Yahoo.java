@@ -132,6 +132,13 @@ public class Yahoo {
 
 		DataSource ds = stockHistory1.cleanse().filter(period).adjustPrices("close");
 
+		// the latest time stamp may fluctuate; adjust it to previous market
+		// close time
+		long[] ts = ds.ts;
+		int last = ts.length - 1;
+		Time lastTime = HkexUtil.getOpenTimeBefore(Time.ofEpochSec(ts[last]));
+		ts[last] = lastTime.epochSec();
+
 		return cleanse.cleanse(ds).range(period);
 	}
 
