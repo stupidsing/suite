@@ -20,10 +20,12 @@ import suite.util.To;
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
 public class HkexFactBook {
 
+	private String prefix = getClass().getSimpleName();
+
 	public Streamlet<String> queryDelisted() {
 		return Read.from(SerializedStoreCache //
 				.of(Serialize.list(Serialize.variableLengthString)) //
-				.get(getClass().getSimpleName() + ".queryDelisted()", () -> {
+				.get(prefix + ".queryDelisted()", () -> {
 					String cmd = "" //
 							+ "curl http://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc" //
 							+ " | catdoc" //
@@ -39,8 +41,7 @@ public class HkexFactBook {
 	public Streamlet<String> queryLeadingCompaniesByMarketCap(int year) {
 		return Read.from(SerializedStoreCache //
 				.of(Serialize.list(Serialize.variableLengthString)) //
-				.get(getClass().getSimpleName() + ".queryLeadingCompaniesByMarketCap(" + year + ")",
-						() -> queryLeadingCompaniesByMarketCap_(year)));
+				.get(prefix + ".queryLeadingCompaniesByMarketCap(" + year + ")", () -> queryLeadingCompaniesByMarketCap_(year)));
 	}
 
 	private List<String> queryLeadingCompaniesByMarketCap_(int year) {
@@ -79,20 +80,24 @@ public class HkexFactBook {
 				.toList();
 	}
 
-	public List<String> queryMainBoardCompanies(int year) {
-		String url = getUrl(year, "Appendices");
-		String cmd = "" //
-				+ "curl '" + url + "'" //
-				+ " | pdftotext -nopgbrk -raw - -" //
-				+ " | sed -e '1,/List of listed companies on Main Board/ d'" //
-				+ " | sed -n '1,/List of listed companies on GEM/ p'" //
-				+ " | egrep '^0'";
-		String out = Execute.shell(cmd);
+	public Streamlet<String> queryMainBoardCompanies(int year) {
+		return Read.from(SerializedStoreCache //
+				.of(Serialize.list(Serialize.variableLengthString)) //
+				.get(prefix + ".queryMainBoardCompanies(" + year + ")", () -> {
+					String url = getUrl(year, "Appendices");
+					String cmd = "" //
+							+ "curl '" + url + "'" //
+							+ " | pdftotext -nopgbrk -raw - -" //
+							+ " | sed -e '1,/List of listed companies on Main Board/ d'" //
+							+ " | sed -n '1,/List of listed companies on GEM/ p'" //
+							+ " | egrep '^0'";
+					String out = Execute.shell(cmd);
 
-		return Read.from(out.split("\n")) //
-				.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
-				.sort(Object_::compare) //
-				.toList();
+					return Read.from(out.split("\n")) //
+							.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
+							.sort(Object_::compare) //
+							.toList();
+				}));
 	}
 
 	private String getUrl(int year, String section) {
