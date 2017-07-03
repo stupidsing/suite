@@ -19,6 +19,16 @@ public class FunUtil {
 	@FunctionalInterface
 	public interface Sink<I> {
 		public void sink(I i);
+
+		public default Sink<I> rethrow() {
+			return t -> {
+				try {
+					sink(t);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + t, ex);
+				}
+			};
+		}
 	}
 
 	@FunctionalInterface

@@ -28,7 +28,6 @@ import suite.util.FunUtil2.Source2;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
 import suite.util.Object_;
-import suite.util.Rethrow;
 import suite.util.To;
 
 /**
@@ -298,7 +297,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public void sink(Sink<T> sink0) {
-		Sink<T> sink1 = Rethrow.sink(sink0);
+		Sink<T> sink1 = sink0.rethrow();
 		T t;
 		while ((t = next()) != null)
 			sink1.sink(t);

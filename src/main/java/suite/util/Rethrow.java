@@ -5,7 +5,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
 
 public class Rethrow {
 
@@ -58,16 +57,6 @@ public class Rethrow {
 		return t -> {
 			try {
 				return predicate.test(t);
-			} catch (Exception ex) {
-				throw new RuntimeException("for " + t, ex);
-			}
-		};
-	}
-
-	public static <T> Sink<T> sink(Sink<T> sink) {
-		return t -> {
-			try {
-				sink.sink(t);
 			} catch (Exception ex) {
 				throw new RuntimeException("for " + t, ex);
 			}
