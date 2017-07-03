@@ -22,6 +22,16 @@ public class Range<T extends Comparable<? super T>> implements Comparable<Range<
 		return from.compareTo(t) <= 0 && t.compareTo(to) < 0;
 	}
 
+	public Range<T> intersect(Range<T> other) {
+		T fr0 = from;
+		T fr1 = other.from;
+		T to0 = to;
+		T to1 = other.to;
+		T fr = fr0.compareTo(fr1) < 0 ? fr1 : fr0;
+		T to = to0.compareTo(to1) < 0 ? to0 : to1;
+		return of(fr, to);
+	}
+
 	public boolean isEmpty() {
 		return Object_.compare(from, to) < 0;
 	}
