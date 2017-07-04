@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.analysis;
 
 import java.util.List;
 
@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import suite.adt.pair.Pair;
 import suite.streamlet.Streamlet;
+import suite.trade.Asset;
+import suite.trade.Time;
 import suite.trade.analysis.Factor;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
