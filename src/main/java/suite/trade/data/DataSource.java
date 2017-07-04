@@ -154,6 +154,14 @@ public class DataSource {
 		return range_(t0, tx);
 	}
 
+	public String recent(String prefix) {
+		StringBuilder sb = new StringBuilder();
+		int w = 5;
+		for (int i = ts.length - w; i < ts.length; i++)
+			sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "] = " + prices[i] + "\n");
+		return sb.toString();
+	}
+
 	public void validate() {
 		int length = prices.length;
 		long t0 = 0 < length ? ts[0] : Long.MIN_VALUE;
