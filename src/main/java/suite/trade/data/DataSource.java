@@ -17,6 +17,7 @@ import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.util.Object_;
 import suite.util.Set_;
+import suite.util.To;
 
 public class DataSource {
 
@@ -154,11 +155,10 @@ public class DataSource {
 		return range_(t0, tx);
 	}
 
-	public String recent(String prefix) {
+	public String recent(String prefix, int size) {
 		StringBuilder sb = new StringBuilder();
-		int w = 5;
-		for (int i = ts.length - w; i < ts.length; i++)
-			sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "] = " + prices[i] + "\n");
+		for (int i = ts.length - size; i < ts.length; i++)
+			sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "] = " + To.string(prices[i]) + "\n");
 		return sb.toString();
 	}
 
