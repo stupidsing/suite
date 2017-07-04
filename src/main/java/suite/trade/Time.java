@@ -18,6 +18,7 @@ public class Time implements Comparable<Time> {
 
 	public static Time MIN = of(LocalDateTime.MIN);
 	public static Time MAX = of(LocalDateTime.MAX);
+	private static int timeZone = 8;
 
 	private LocalDateTime dateTime;
 
@@ -42,7 +43,7 @@ public class Time implements Comparable<Time> {
 			else
 				return ofYmdHms(s);
 		else
-			return ofEpochSec(Long.parseLong(s));
+			throw new RuntimeException();
 	}
 
 	public static Time ofYmd(String s) {
@@ -62,7 +63,11 @@ public class Time implements Comparable<Time> {
 	}
 
 	public static Time ofEpochSec(long e) {
-		return of(LocalDateTime.ofEpochSecond(e, 0, ZoneOffset.UTC));
+		return ofEpochSec(e, timeZone);
+	}
+
+	private static Time ofEpochSec(long e, int timeZone) {
+		return of(LocalDateTime.ofEpochSecond(e, 0, ZoneOffset.ofHours(timeZone)));
 	}
 
 	public static Time of(LocalDateTime dt) {
@@ -106,7 +111,11 @@ public class Time implements Comparable<Time> {
 	}
 
 	public long epochSec() {
-		return dateTime.toEpochSecond(ZoneOffset.UTC);
+		return epochSec(timeZone);
+	}
+
+	public long epochSec(int timeZone) {
+		return dateTime.toEpochSecond(ZoneOffset.ofHours(timeZone));
 	}
 
 	public int hhmm() {

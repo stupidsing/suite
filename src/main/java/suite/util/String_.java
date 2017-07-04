@@ -27,6 +27,10 @@ public class String_ {
 		};
 	}
 
+	public static int compare(String s0, String s1) {
+		return Object_.compare(s0, s1);
+	}
+
 	public static boolean equals(String s0, String s1) {
 		return Objects.equals(s0, s1);
 	}

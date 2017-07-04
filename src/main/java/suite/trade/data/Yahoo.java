@@ -52,11 +52,11 @@ public class Yahoo {
 				.toList();
 
 		long[] ts = Read.from(arrays) //
-				.collect(Obj_Lng.lift(array -> Time.of(array[0]).epochSec())) //
+				.collect(Obj_Lng.lift(array -> closeTs(array[0]))) //
 				.toArray();
 
 		float[] prices = Read.from(arrays) //
-				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))) //
+				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))) //
 				.toArray();
 
 		adjust(symbol, ts, prices);
@@ -145,7 +145,7 @@ public class Yahoo {
 		// close time
 		long[] ts = ds.ts;
 		int last = ts.length - 1;
-		ts[last] = getTradeTimeBefore(stockHistory1.exchange, Time.ofEpochSec(ts[last])).epochSec();
+		ts[last] = getTradeTimeBefore(stockHistory1.exchange, ts[last]);
 
 		return cleanse.cleanse(ds).range(period);
 	}
@@ -192,10 +192,10 @@ public class Yahoo {
 						.flatMap(json_ -> json_.path("query")) //
 						.flatMap(json_ -> json_.path("results")) //
 						.flatMap(json_ -> json_.path("quote")) //
-						.map(json_ -> new String[] { json_.path("Date").textValue(), json_.path("Open").textValue(), }) //
+						.map(json_ -> new String[] { json_.path("Date").textValue(), json_.path("Close").textValue(), }) //
 						.collect(As::streamlet);
 
-				long[] ts = arrays.collect(Obj_Lng.lift(array -> Time.of(array[0]).epochSec())).toArray();
+				long[] ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
 				float[] prices = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
 				return new DataSource(ts, prices);
 			}
@@ -251,8 +251,8 @@ public class Yahoo {
 
 	private void adjust(String symbol, long[] ts, float[] prices) {
 		Map<String, BiFunction<Long, Float, Float>> adjusters = new HashMap<>();
-		adjusters.put("0700.HK", (d, p) -> Time.compare(Time.ofEpochSec(d), Time.of("2014-05-14")) <= 0 ? p * .2f : p);
-		adjusters.put("2318.HK", (d, p) -> Time.compare(Time.ofEpochSec(d), Time.of("2014-03-23")) <= 0 ? p * .5f : p);
+		adjusters.put("0700.HK", (d, p) -> String_.compare(Time.ofEpochSec(d).ymd(), "2014-05-14") <= 0 ? p * .2f : p);
+		adjusters.put("2318.HK", (d, p) -> String_.compare(Time.ofEpochSec(d).ymd(), "2014-03-23") <= 0 ? p * .5f : p);
 
 		BiFunction<Long, Float, Float> adjuster = adjusters.get(symbol);
 		if (adjuster != null)
@@ -260,8 +260,12 @@ public class Yahoo {
 				prices[d] = adjuster.apply(ts[d], prices[d]);
 	}
 
-	private Time getTradeTimeBefore(String exchange, Time time) {
-		return !String_.equals(exchange, "HKG") ? time : HkexUtil.getTradeTimeBefore(time);
+	private long getTradeTimeBefore(String exchange, long t) {
+		return !String_.equals(exchange, "HKG") ? t : HkexUtil.getTradeTimeBefore(Time.ofEpochSec(t)).epochSec();
+	}
+
+	private long closeTs(String ymd) {
+		return Time.of(ymd + " 16:30:00").epochSec();
 	}
 
 	private String encode(String s) {

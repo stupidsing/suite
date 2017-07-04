@@ -10,7 +10,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Time;
 import suite.trade.TimeRange;
-import suite.util.Object_;
+import suite.util.String_;
 
 public class Quandl {
 
@@ -31,11 +31,11 @@ public class Quandl {
 				.http(urlString) //
 				.collect(As::csv) //
 				.skip(1) //
-				.sort((a0, a1) -> Object_.compare(a0[0], a1[0])) //
+				.sort((a0, a1) -> String_.compare(a0[0], a1[0])) //
 				.toList();
 
 		long[] ts = Read.from(arrays) //
-				.collect(Obj_Lng.lift(array -> Time.of(array[0]).epochSec())) //
+				.collect(Obj_Lng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))) //
 				.toArray();
 
 		float[] prices = Read.from(arrays) //

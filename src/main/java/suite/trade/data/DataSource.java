@@ -1,6 +1,5 @@
 package suite.trade.data;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -16,40 +15,13 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
-import suite.util.DataInput_;
-import suite.util.DataOutput_;
 import suite.util.Object_;
-import suite.util.Serialize;
-import suite.util.Serialize.Serializer;
 import suite.util.Set_;
 
 public class DataSource {
 
 	private Cleanse cleanse = new Cleanse();
 	public static Matrix mtx = new Matrix();
-
-	public static Serializer<DataSource> serializer = new Serializer<DataSource>() {
-		private Serializer<String[]> sas = Serialize.array(String.class, Serialize.string(10));
-		private Serializer<float[]> fas = Serialize.arrayOfFloats;
-
-		public DataSource read(DataInput_ dataInput) throws IOException {
-			long[] ts = Read //
-					.from(sas.read(dataInput)) //
-					.collect(LngStreamlet.of(s -> Time.of(s).epochSec())) //
-					.toArray();
-			float[] prices = fas.read(dataInput);
-			return new DataSource(ts, prices);
-		}
-
-		public void write(DataOutput_ dataOutput, DataSource ds) throws IOException {
-			String[] ymds = LngStreamlet //
-					.of(ds.ts) //
-					.map(ep -> Time.ofEpochSec(ep).ymd()) //
-					.toArray(String.class);
-			sas.write(dataOutput, ymds);
-			fas.write(dataOutput, ds.prices);
-		}
-	};
 
 	public final long[] ts;
 	public final float[] prices;
@@ -174,15 +146,6 @@ public class DataSource {
 		return null;
 	}
 
-	public TimeRange period() {
-		if (0 < ts.length) {
-			Time time0 = Time.ofEpochSec(get(0).t0);
-			Time timex = Time.ofEpochSec(get(-1).t0);
-			return TimeRange.of(time0, timex);
-		} else
-			throw new RuntimeException();
-	}
-
 	public DataSource range(TimeRange period) {
 		return range_(period);
 	}
@@ -195,11 +158,11 @@ public class DataSource {
 		int length = prices.length;
 		long t0 = 0 < length ? ts[0] : Long.MIN_VALUE;
 		float price0 = 0 < length ? prices[0] : Float.MAX_VALUE;
+		String date0 = Time.ofEpochSec(t0).ymd();
 
 		for (int i = 1; i < length; i++) {
 			long t1 = ts[i];
 			float price1 = prices[i];
-			String date0 = Time.ofEpochSec(t0).ymd();
 			String date1 = Time.ofEpochSec(t1).ymd();
 
 			if (t1 <= t0)
@@ -219,6 +182,7 @@ public class DataSource {
 
 			t0 = t1;
 			price0 = price1;
+			date0 = date1;
 		}
 	}
 

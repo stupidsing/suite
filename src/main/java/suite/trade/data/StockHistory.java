@@ -38,16 +38,18 @@ public class StockHistory {
 			properties.put(array[0].trim(), array[1].trim());
 		}
 		String exchange = properties.get("exchange");
+		String timeZoneStr = properties.get("timeZone");
+		int timeZone = timeZoneStr != null ? Integer.parseInt(timeZoneStr) : 0;
 		Time time = Time.ofYmdHms(line);
-		LngFltPair[] dividends = readPairs(outlet);
-		LngFltPair[] splits = readPairs(outlet);
+		LngFltPair[] dividends = readPairs(timeZone, outlet);
+		LngFltPair[] splits = readPairs(timeZone, outlet);
 		String tag;
 		while ((tag = outlet.next()) != null)
-			data.put(tag, readPairs(outlet));
+			data.put(tag, readPairs(timeZone, outlet));
 		return StockHistory.of(exchange, time, data, dividends, splits);
 	}
 
-	private static LngFltPair[] readPairs(Outlet<String> outlet) {
+	private static LngFltPair[] readPairs(int timeZone, Outlet<String> outlet) {
 		List<LngFltPair> pairs = new ArrayList<>();
 		String line;
 		if (String_.equals(line = outlet.next(), "{"))
@@ -55,7 +57,7 @@ public class StockHistory {
 				int p = line.lastIndexOf(":");
 				Time time = Time.of(line.substring(0, p));
 				float price = Float.parseFloat(line.substring(p + 1));
-				pairs.add(LngFltPair.of(time.epochSec(), price));
+				pairs.add(LngFltPair.of(time.epochSec(timeZone), price));
 			}
 		else
 			throw new RuntimeException();
@@ -203,7 +205,10 @@ public class StockHistory {
 	}
 
 	public Streamlet<String> write() {
-		Streamlet<String> s0 = Read.each("exchange = " + exchange, time.ymdHms());
+		Streamlet<String> s0 = Read.each( //
+				"exchange = " + exchange, //
+				"timeZone = 8", //
+				time.ymdHms());
 		Streamlet<String> s1 = Read.each(dividends, splits).concatMap(this::concat);
 		Streamlet<String> s2 = Read.from2(data).concatMap((tag, fs) -> concat(fs).cons(tag));
 		return Streamlet.concat(s0, s1, s2);
