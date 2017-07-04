@@ -85,9 +85,6 @@ public class Yahoo {
 			Streamlet<JsonNode> jsons = Read.each(json) //
 					.flatMap(json_ -> json_.path("chart").path("result"));
 
-			System.out.println(jsons //
-					.map(json_ -> json_.path("meta").path("exchangeName").textValue()).toList());
-
 			String exchange = jsons //
 					.map(json_ -> json_.path("meta").path("exchangeName").textValue()) //
 					.uniqueResult();
@@ -111,7 +108,8 @@ public class Yahoo {
 							.flatMap(json_ -> json_.path("indicators").path("quote")) //
 							.flatMap(json_ -> json_.path(tag)));
 
-			Map<String, LngFltPair[]> data = Streamlet2.concat(dataJsons0, dataJsons1) //
+			Map<String, LngFltPair[]> data = Streamlet2 //
+					.concat(dataJsons0, dataJsons1) //
 					.mapValue(json_ -> {
 						float[] fs = json_.collect(Obj_Flt.lift(JsonNode::floatValue)).toArray();
 						return To.array(LngFltPair.class, length, i -> LngFltPair.of(ts[i], fs[i]));
@@ -131,7 +129,10 @@ public class Yahoo {
 					.sort(LngFltPair.comparatorByFirst()) //
 					.toArray(LngFltPair.class);
 
-			stockHistory1 = StockHistory.of(exchange, time, data, dividends, splits).merge(stockHistory0).alignToDate();
+			stockHistory1 = StockHistory //
+					.of(exchange, time, data, dividends, splits) //
+					.merge(stockHistory0) //
+					.alignToDate();
 
 			List<String> lines = stockHistory1.write().toList();
 			Rethrow.ex(() -> Files.write(path, lines));
@@ -144,7 +145,7 @@ public class Yahoo {
 		// close time
 		long[] ts = ds.ts;
 		int last = ts.length - 1;
-		ts[last] = getTradeTimeBefore(stockHistory1, Time.ofEpochSec(ts[last])).epochSec();
+		ts[last] = getTradeTimeBefore(stockHistory1.exchange, Time.ofEpochSec(ts[last])).epochSec();
 
 		return cleanse.cleanse(ds).range(period);
 	}
@@ -259,8 +260,8 @@ public class Yahoo {
 				prices[d] = adjuster.apply(ts[d], prices[d]);
 	}
 
-	private Time getTradeTimeBefore(StockHistory stockHistory, Time time) {
-		return !String_.equals(stockHistory.exchange, "HKG") ? time : HkexUtil.getTradeTimeBefore(time);
+	private Time getTradeTimeBefore(String exchange, Time time) {
+		return !String_.equals(exchange, "HKG") ? time : HkexUtil.getTradeTimeBefore(time);
 	}
 
 	private String encode(String s) {
