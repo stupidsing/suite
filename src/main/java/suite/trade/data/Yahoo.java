@@ -91,7 +91,7 @@ public class Yahoo {
 
 			long[] ts = jsons //
 					.flatMap(json_ -> json_.path("timestamp")) //
-					.collect(Obj_Lng.lift(JsonNode::longValue)) //
+					.collect(Obj_Lng.lift(t -> getOpenTimeBefore(exchange, t.longValue()))) //
 					.toArray();
 
 			int length = ts.length;
@@ -258,6 +258,10 @@ public class Yahoo {
 		if (adjuster != null)
 			for (int d = 0; d < prices.length; d++)
 				prices[d] = adjuster.apply(ts[d], prices[d]);
+	}
+
+	private long getOpenTimeBefore(String exchange, long t) {
+		return !String_.equals(exchange, "HKG") ? t : HkexUtil.getOpenTimeBefore(Time.ofEpochSec(t)).epochSec();
 	}
 
 	private long getTradeTimeBefore(String exchange, long t) {

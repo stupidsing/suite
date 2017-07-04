@@ -60,7 +60,7 @@ public class HkexUtil {
 
 	private static boolean isMarketOpen_(Time time) {
 		int hhmm = time.hhmm();
-		return !weekends.contains(time.dow()) && 900 <= hhmm && hhmm < 1630;
+		return !weekends.contains(time.dow()) && 930 <= hhmm && hhmm < 1630;
 	}
 
 }
