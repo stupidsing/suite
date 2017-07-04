@@ -39,7 +39,7 @@ public class Quandl {
 				.toArray();
 
 		float[] prices = Read.from(arrays) //
-				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))) //
+				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[6]))) //
 				.toArray();
 
 		return new DataSource(ts, prices).range(period);
