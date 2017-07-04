@@ -28,7 +28,6 @@ import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
@@ -41,18 +40,7 @@ public class BackAllocTester {
 	private Streamlet<Asset> assets;
 	private BackAllocator backAllocator;
 	private TimeRange period;
-	private Fun<long[], long[]> tsPred;
 	private Sink<String> log;
-
-	public static BackAllocTester ofNow( //
-			Configuration cfg, //
-			Streamlet<Asset> assets, //
-			BackAllocator backAllocator, //
-			Sink<String> log) {
-		Time now = Time.now();
-		Fun<long[], long[]> timesPred = ts_ -> new long[] { ts_[ts_.length - 1], };
-		return new BackAllocTester(cfg, assets, backAllocator, TimeRange.of(now, now), timesPred, log);
-	}
 
 	public static BackAllocTester ofFromTo( //
 			Configuration cfg, //
@@ -60,13 +48,7 @@ public class BackAllocTester {
 			BackAllocator backAllocator, //
 			TimeRange period, //
 			Sink<String> log) {
-		long t0 = period.from.epochSec();
-		long tx = period.to.epochSec();
-		Fun<long[], long[]> tsPred = ts_ -> LngStreamlet //
-				.of(ts_) //
-				.filter(t -> t0 <= t && t < tx) //
-				.toArray();
-		return new BackAllocTester(cfg, assets, backAllocator, period, tsPred, log);
+		return new BackAllocTester(cfg, assets, backAllocator, period, log);
 	}
 
 	private BackAllocTester( //
@@ -74,13 +56,11 @@ public class BackAllocTester {
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
 			TimeRange period, //
-			Fun<long[], long[]> timesPred, //
 			Sink<String> log) {
 		this.cfg = cfg;
 		this.assets = assets.distinct();
 		this.period = period;
 		this.backAllocator = backAllocator;
-		this.tsPred = timesPred;
 		this.log = log;
 	}
 
@@ -111,7 +91,9 @@ public class BackAllocTester {
 			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 			long[] tradeTs = akds.ts;
 
-			long[] ts_ = tsPred.apply(tradeTs);
+			long t0 = period.from.epochSec();
+			long tx = period.to.epochSec();
+			long[] ts_ = LngStreamlet.of(tradeTs).filter(t -> t0 <= t && t < tx).toArray();
 			int size = ts_.length;
 
 			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol, ts_);
