@@ -30,14 +30,7 @@ public class BackTester {
 	}
 
 	public Simulate backTest(BackAllocator backAllocator, TimeRange period, Streamlet<Asset> assets) {
-		BackAllocTester backTest = BackAllocTester.ofFromTo( //
-				cfg, //
-				assets, //
-				backAllocator, //
-				period, //
-				log);
-
-		return backTest.simulate(initial);
+		return BackAllocTester.of(cfg, period, assets, backAllocator, log).simulate(initial);
 	}
 
 	public <T> String conclude(Streamlet2<T, Simulate> simulationsByKey) {

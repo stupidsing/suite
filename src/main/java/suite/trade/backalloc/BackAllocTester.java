@@ -37,29 +37,29 @@ public class BackAllocTester {
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
+	private TimeRange period;
 	private Streamlet<Asset> assets;
 	private BackAllocator backAllocator;
-	private TimeRange period;
 	private Sink<String> log;
 
-	public static BackAllocTester ofFromTo( //
+	public static BackAllocTester of( //
 			Configuration cfg, //
+			TimeRange period, //
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
-			TimeRange period, //
 			Sink<String> log) {
-		return new BackAllocTester(cfg, assets, backAllocator, period, log);
+		return new BackAllocTester(cfg, period, assets.distinct(), backAllocator, log);
 	}
 
 	private BackAllocTester( //
 			Configuration cfg, //
+			TimeRange period, //
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
-			TimeRange period, //
 			Sink<String> log) {
 		this.cfg = cfg;
-		this.assets = assets.distinct();
 		this.period = period;
+		this.assets = assets;
 		this.backAllocator = backAllocator;
 		this.log = log;
 	}

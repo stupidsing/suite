@@ -251,7 +251,8 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private Result alloc(String tag, float fund, BackAllocator backAllocator, Streamlet<Asset> assets) {
-		Simulate sim = BackAllocTester.ofFromTo(cfg, assets, backAllocator, TimeRange.daysBefore(31), log).simulate(fund);
+		TimeRange period = TimeRange.daysBefore(31);
+		Simulate sim = BackAllocTester.of(cfg, period, assets, backAllocator, log).simulate(fund);
 		Account account0 = Account.fromPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
 		Account account1 = sim.account;
 		Map<String, Integer> assets0 = account0.assets();
