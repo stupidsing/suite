@@ -25,7 +25,6 @@ import suite.trade.Trade_;
 import suite.trade.Trade_.UpdatePortfolio;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
-import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.util.FunUtil.Sink;
@@ -33,14 +32,14 @@ import suite.util.To;
 
 public class BackAllocTester {
 
-	private Configuration cfg = new ConfigurationImpl();
-	private Statistic stat = new Statistic();
-	private TimeSeries ts = new TimeSeries();
-
+	private Configuration cfg;
 	private TimeRange period;
 	private Streamlet<Asset> assets;
 	private BackAllocator backAllocator;
 	private Sink<String> log;
+
+	private Statistic stat = new Statistic();
+	private TimeSeries ts = new TimeSeries();
 
 	public static BackAllocTester of( //
 			Configuration cfg, //
