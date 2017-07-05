@@ -44,7 +44,7 @@ public class Factor {
 	private Factor(Configuration cfg, Streamlet<String> indices) {
 		this.cfg = cfg;
 
-		AlignKeyDataSource<String> akds = cfg.dataSources(indices, TimeRange.of(Time.MIN, now));
+		AlignKeyDataSource<String> akds = cfg.dataSources(TimeRange.of(Time.MIN, now), indices);
 
 		float[] indexPrices = akds.dsByKey //
 				.map((symbol, ds) -> cleanse.removeZeroes(ds.prices)) //

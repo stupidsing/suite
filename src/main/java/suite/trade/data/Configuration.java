@@ -30,7 +30,7 @@ public interface Configuration {
 
 	public double transactionFee(double transactionAmount);
 
-	public default AlignKeyDataSource<String> dataSources(Streamlet<String> symbols, TimeRange period) {
+	public default AlignKeyDataSource<String> dataSources(TimeRange period, Streamlet<String> symbols) {
 		return symbols //
 				.map2(symbol -> {
 					try {

@@ -86,7 +86,7 @@ public class BackAllocTester {
 			Set<String> symbols = assetBySymbol.keySet();
 			TimeRange historyPeriod = TimeRange.of(period.from.addYears(-1), period.to);
 
-			AlignKeyDataSource<String> akds = cfg.dataSources(Read.from(symbols), historyPeriod);
+			AlignKeyDataSource<String> akds = cfg.dataSources(historyPeriod, Read.from(symbols));
 			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 			long[] tradeTs = akds.ts;
 
