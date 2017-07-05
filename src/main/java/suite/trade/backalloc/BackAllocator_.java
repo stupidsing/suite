@@ -92,12 +92,7 @@ public class BackAllocator_ {
 	public static BackAllocator lastReturn(int nWorsts, int nBests) {
 		return (dsBySymbol, ts) -> (time, index) -> {
 			List<String> list = dsBySymbol //
-					.map2((symbol, ds) -> {
-						float[] prices = ds.prices;
-						double price0 = prices[index - 2];
-						double price1 = prices[index - 1];
-						return price1 / price0 - 1d;
-					}) //
+					.map2((symbol, ds) -> ds.lastReturn(index)) //
 					.sortBy((symbol, return_) -> return_) //
 					.keys() //
 					.toList();
@@ -114,12 +109,7 @@ public class BackAllocator_ {
 	public static BackAllocator lastReturnsProRata() {
 		return (dsBySymbol, ts) -> (time, index) -> {
 			Streamlet2<String, Double> returns = dsBySymbol //
-					.map2((symbol, ds) -> {
-						float[] prices = ds.prices;
-						double price0 = prices[index - 2];
-						double price1 = prices[index - 1];
-						return (price0 - price1) / price0;
-					}) //
+					.map2((symbol, ds) -> ds.lastReturn(index)) //
 					.filterValue(return_ -> 0d < return_) //
 					.collect(As::streamlet2);
 
@@ -211,8 +201,7 @@ public class BackAllocator_ {
 						int last = index - 1;
 						double median0 = movingRange0[last].median;
 						double median1 = movingRange1[last].median;
-						double ratio = median1 / median0;
-						return ratio - 1d;
+						return (median1 - median0) / median0;
 					}) //
 					.toList();
 		};
@@ -243,8 +232,8 @@ public class BackAllocator_ {
 				int i0 = ix - tor;
 				double p0 = ds0.get(i0).t1, px = ds0.get(ix).t1;
 				double q0 = ds1.get(i0).t1, qx = ds1.get(ix).t1;
-				double pdiff = (px - p0) / px;
-				double qdiff = (qx - q0) / qx;
+				double pdiff = (px - p0) / p0;
+				double qdiff = (qx - q0) / q0;
 
 				if (threshold < Math.abs(pdiff - qdiff))
 					return Arrays.asList( //

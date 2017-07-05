@@ -147,6 +147,12 @@ public class DataSource {
 		return null;
 	}
 
+	public double lastReturn(int index) {
+		double price0 = prices[index - 2];
+		double price1 = prices[index - 1];
+		return (price1 - price0) / price0;
+	}
+
 	public DataSource range(TimeRange period) {
 		return range_(period);
 	}

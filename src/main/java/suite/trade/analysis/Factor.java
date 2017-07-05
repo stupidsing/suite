@@ -23,7 +23,7 @@ import suite.util.Object_;
 
 public class Factor {
 
-	private DataSource irds;
+	private DataSource ids;
 
 	private Configuration cfg;
 	private Cleanse cleanse = new Cleanse();
@@ -49,14 +49,14 @@ public class Factor {
 				.map((symbol, ds) -> cleanse.removeZeroes(ds.prices)) //
 				.fold(new float[akds.ts.length], mtx::add);
 
-		irds = new DataSource(akds.ts, indexPrices);
+		ids = new DataSource(akds.ts, indexPrices);
 	}
 
 	public List<Pair<Asset, Double>> query(Streamlet<Asset> assets) {
 		TimeRange period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(Time.now()), 250 * 3);
 
 		return assets //
-				.map2(asset -> correlate(irds, cfg.dataSource(asset.symbol), period)) //
+				.map2(asset -> correlate(ids, cfg.dataSource(asset.symbol), period)) //
 				.sortByValue(Object_::compare) //
 				.toList();
 	}
@@ -66,10 +66,12 @@ public class Factor {
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
 
 			DataSourceView<String, Double> dsv = DataSourceView.of(0, 64, dsBySymbol, ts_,
-					(symbol, ds, period) -> correlate(irds, dsBySymbol_.get(symbol), period));
+					(symbol, ds, period) -> correlate(ids, dsBySymbol_.get(symbol), period));
 
 			return (time, index) -> {
-				float indexReturn = irds.last(time).t1;
+				double price0 = ids.prices[index - 2];
+				double price1 = ids.prices[index - 1];
+				double indexReturn = (price1 - price0) / price0;
 
 				return dsBySymbol //
 						.map2((symbol, ds) -> indexReturn * dsv.get(symbol, time)) //
