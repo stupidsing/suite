@@ -45,28 +45,28 @@ public class Factor {
 
 		AlignKeyDataSource<String> akds = cfg.dataSources(indices, TimeRange.of(Time.MIN, now));
 
-		float[] indexReturns = akds.dsByKey //
-				.map((symbol, ds) -> ts.returns(cleanse.removeZeroes(ds.prices))) //
+		float[] indexPrices = akds.dsByKey //
+				.map((symbol, ds) -> cleanse.removeZeroes(ds.prices)) //
 				.fold(new float[akds.ts.length], mtx::add);
 
-		irds = new DataSource(akds.ts, indexReturns);
+		irds = new DataSource(akds.ts, indexPrices);
 	}
 
 	public List<Pair<Asset, Double>> query(Streamlet<Asset> assets) {
 		TimeRange period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(Time.now()), 250 * 3);
 
 		return assets //
-				.map2(asset -> correlate(irds, returns(cfg.dataSource(asset.symbol)), period)) //
+				.map2(asset -> correlate(irds, cfg.dataSource(asset.symbol), period)) //
 				.sortByValue(Object_::compare) //
 				.toList();
 	}
 
 	public BackAllocator backAllocator() {
 		return (dsBySymbol, ts_) -> {
-			Map<String, DataSource> returnDsBySymbol = dsBySymbol.mapValue(this::returns).toMap();
+			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
 
 			DataSourceView<String, Double> dsv = DataSourceView.of(0, 64, dsBySymbol, ts_,
-					(symbol, ds, period) -> correlate(irds, returnDsBySymbol.get(symbol), period));
+					(symbol, ds, period) -> correlate(irds, dsBySymbol_.get(symbol), period));
 
 			return (time, index) -> {
 				float indexReturn = irds.last(time).t1;
@@ -78,14 +78,10 @@ public class Factor {
 		};
 	}
 
-	private DataSource returns(DataSource ds) {
-		return new DataSource(ds.ts, ts.returns(ds.prices));
-	}
-
 	private double correlate(DataSource irds0, DataSource rds0, TimeRange period) {
 		DataSource rds1 = rds0.range(period);
 		DataSource irds1 = irds0.range(period).alignBeforePrices(rds1.ts);
-		return stat.correlation(irds1.prices, rds1.prices);
+		return stat.correlation(ts.returns(irds1.prices), ts.returns(rds1.prices));
 	}
 
 }

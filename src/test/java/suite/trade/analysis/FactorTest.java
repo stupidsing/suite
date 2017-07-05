@@ -25,7 +25,7 @@ public class FactorTest {
 				.cons(cfg.queryCompany("0753.HK")) //
 				.distinct();
 
-		List<Pair<Asset, Double>> pairs = Factor.ofUsMarket(cfg).query(assets);
+		List<Pair<Asset, Double>> pairs = Factor.ofCrudeOil(cfg).query(assets);
 
 		for (Pair<Asset, Double> pair : pairs)
 			System.out.println(pair);
