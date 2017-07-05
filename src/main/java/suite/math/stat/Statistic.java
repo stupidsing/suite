@@ -157,7 +157,8 @@ public class Statistic {
 			StringBuilder sb = new StringBuilder();
 			float[] tStatistic = tStatistic();
 			for (int i = 0; i < sampleLength; i++)
-				sb.append("\ncoefficient = " + To.string(coefficients[i]) + ", t-statistic = " + To.string(tStatistic[i]));
+				sb.append("\ncoefficient = " + To.string(coefficients[i]) //
+						+ ", t-statistic = " + To.string(tStatistic[i]));
 			sb.append("\nstandard error = " + To.string(standardError) + ", r2 = " + To.string(r2));
 			return sb.toString();
 		}
