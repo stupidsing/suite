@@ -2,6 +2,7 @@ package suite.trade.backalloc;
 
 import java.util.Map;
 
+import suite.math.stat.Quant;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;
@@ -75,7 +76,7 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 
 						double lma = mrs.latestMovingAverage();
 						double mamrRatio = mrs.movingAvgMeanReversionRatio();
-						double dailyReturn = (lma / price - 1d) * mamrRatio - dailyRiskFreeInterestRate;
+						double dailyReturn = Quant.return_(price, lma) * mamrRatio - dailyRiskFreeInterestRate;
 						ReturnsStat returnsStat = ts.returnsStatDaily(ds.prices);
 						double sharpe = returnsStat.sharpeRatio();
 						double kelly = returnsStat.kellyCriterion();

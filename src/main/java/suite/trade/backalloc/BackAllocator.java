@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
+import suite.math.stat.Quant;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -111,7 +112,7 @@ public interface BackAllocator {
 
 				double indexPrice0 = ids.get(-1).t1;
 				double indexPricex = ids.get(-2).t1;
-				double indexReturn = (indexPricex - indexPrice0) / indexPrice0;
+				double indexReturn = Quant.return_(indexPrice0, indexPricex);
 
 				return -.03f < indexReturn //
 						? onDateTime.onDateTime(time, index) //

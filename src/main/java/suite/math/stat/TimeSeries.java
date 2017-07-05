@@ -166,7 +166,7 @@ public class TimeSeries {
 			float[] logReturns = new float[length - 1];
 			float f0 = ys[0];
 			for (int i = 0; i < logReturns.length; i++) {
-				logReturns[i] = (float) Math.log1p((ys[i + 1] - f0) / f0);
+				logReturns[i] = (float) Quant.logReturn(f0, ys[i + 1]);
 				f0 = ys[i + 1];
 			}
 			return logReturns;
@@ -227,7 +227,7 @@ public class TimeSeries {
 			float[] returns_ = returns_(prices);
 			MeanVariance mv = stat.meanVariance(returns_);
 
-			return_ = Math.expm1(Math.log(vx / v0) * returns_.length * scale);
+			return_ = Math.expm1(Quant.logReturn(v0, vx) * returns_.length * scale);
 			returns = returns_;
 			mean = mv.mean - interestRate;
 			variance = scale * mv.variance;
@@ -280,7 +280,7 @@ public class TimeSeries {
 		float price0 = 0 < length ? fs[0] : 0f;
 		for (int i = 0; i < returns.length; i++) {
 			float price = fs[i];
-			returns[i] = (price - price0) / price0;
+			returns[i] = (float) Quant.return_(price0, price);
 			price0 = price;
 		}
 		return returns;

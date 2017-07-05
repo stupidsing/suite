@@ -7,6 +7,7 @@ import java.util.Map;
 
 import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
+import suite.math.stat.Quant;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
@@ -83,7 +84,7 @@ public class BackAllocator_ {
 						int last = index - 1;
 						double lastEma = ema.get(symbol)[last];
 						double latest = ds.prices[last];
-						return Math.log(latest / lastEma) * scale;
+						return Quant.logReturn(lastEma, latest) * scale;
 					}) //
 					.toList();
 		};
@@ -199,9 +200,7 @@ public class BackAllocator_ {
 						MovingRange[] movingRange0 = movingMedian0BySymbol.get(symbol);
 						MovingRange[] movingRange1 = movingMedian1BySymbol.get(symbol);
 						int last = index - 1;
-						double median0 = movingRange0[last].median;
-						double median1 = movingRange1[last].median;
-						return (median1 - median0) / median0;
+						return Quant.return_(movingRange0[last].median, movingRange1[last].median);
 					}) //
 					.toList();
 		};
@@ -232,8 +231,8 @@ public class BackAllocator_ {
 				int i0 = ix - tor;
 				double p0 = ds0.get(i0).t1, px = ds0.get(ix).t1;
 				double q0 = ds1.get(i0).t1, qx = ds1.get(ix).t1;
-				double pdiff = (px - p0) / p0;
-				double qdiff = (qx - q0) / q0;
+				double pdiff = Quant.return_(p0, px);
+				double qdiff = Quant.return_(q0, qx);
 
 				if (threshold < Math.abs(pdiff - qdiff))
 					return Arrays.asList( //

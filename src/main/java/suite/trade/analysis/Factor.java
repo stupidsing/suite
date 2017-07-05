@@ -5,6 +5,7 @@ import java.util.Map;
 
 import suite.adt.pair.Pair;
 import suite.math.linalg.Matrix;
+import suite.math.stat.Quant;
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
 import suite.streamlet.Read;
@@ -69,9 +70,8 @@ public class Factor {
 					(symbol, ds, period) -> correlate(ids, dsBySymbol_.get(symbol), period));
 
 			return (time, index) -> {
-				double price0 = ids.prices[index - 2];
-				double price1 = ids.prices[index - 1];
-				double indexReturn = (price1 - price0) / price0;
+				float[] indexPrices = ids.prices;
+				double indexReturn = Quant.return_(indexPrices[index - 2], indexPrices[index - 1]);
 
 				return dsBySymbol //
 						.map2((symbol, ds) -> indexReturn * dsv.get(symbol, time)) //

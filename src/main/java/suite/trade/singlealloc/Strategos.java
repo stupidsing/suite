@@ -3,6 +3,7 @@ package suite.trade.singlealloc;
 import java.util.Arrays;
 
 import suite.math.linalg.Matrix;
+import suite.math.stat.Quant;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.trade.MovingAverage;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
@@ -81,7 +82,7 @@ public class Strategos {
 
 	// get buy/sell signal according to predicted price move direction
 	private int getSignal(float price0, float price1, float threshold) {
-		float ratio = (price1 - price0) / price0;
+		double ratio = Quant.return_(price0, price1);
 		int signal;
 
 		if (ratio < -threshold)
