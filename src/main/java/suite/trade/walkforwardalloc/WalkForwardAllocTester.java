@@ -11,6 +11,7 @@ import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.primitive.Floats.FloatsBuilder;
+import suite.primitive.adt.pair.FltFltPair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
@@ -56,7 +57,7 @@ public class WalkForwardAllocTester {
 
 		start = System.currentTimeMillis();
 		assetBySymbol = assets.toMap(asset -> asset.symbol);
-		dsBySymbol = assets.map2(asset -> asset.symbol, asset -> new DataSource(times, new float[windowSize])).toMap();
+		dsBySymbol = assets.map2(asset -> asset.symbol, asset -> DataSource.of(times, new float[windowSize])).toMap();
 	}
 
 	public String tick() {
@@ -83,7 +84,13 @@ public class WalkForwardAllocTester {
 		}
 
 		List<Pair<String, Double>> ratioBySymbol = wfa.allocate(Read.from2(dsBySymbol), windowSize);
-		UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, priceBySymbol);
+
+		UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol,
+				Read //
+						.from2(priceBySymbol) //
+						.mapValue(price -> FltFltPair.of(price, price)) //
+						.toMap());
+
 		float valuation_;
 
 		valuations.append(valuation_ = up.valuation0);

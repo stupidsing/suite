@@ -229,7 +229,7 @@ public interface BackAllocator {
 							prices1[di] = prices[di] / indexPrices[ii];
 						}
 
-						return new DataSource(times, prices1);
+						return DataSource.of(times, prices1);
 					}) //
 					.collect(As::streamlet2);
 

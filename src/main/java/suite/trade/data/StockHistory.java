@@ -201,7 +201,7 @@ public class StockHistory {
 			prices[i] = a + b * pair.t1;
 		}
 
-		return new DataSource(ts, prices);
+		return DataSource.of(ts, prices);
 	}
 
 	public Streamlet<String> write() {

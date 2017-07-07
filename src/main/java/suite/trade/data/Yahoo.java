@@ -43,25 +43,25 @@ public class Yahoo {
 		String urlString = tableUrl(symbol, period);
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
-		List<String[]> arrays = Singleton.get() //
+		Streamlet<String[]> arrays = Singleton.get() //
 				.getStoreCache() //
 				.http(urlString) //
 				.collect(As::csv) //
 				.skip(1) //
 				.sort((a0, a1) -> Object_.compare(a0[0], a1[0])) //
-				.toList();
+				.collect(As::streamlet);
 
-		long[] ts = Read.from(arrays) //
+		long[] ts = arrays //
 				.collect(Obj_Lng.lift(array -> closeTs(array[0]))) //
 				.toArray();
 
-		float[] prices = Read.from(arrays) //
+		float[] closes = arrays //
 				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))) //
 				.toArray();
 
-		adjust(symbol, ts, prices);
+		adjust(symbol, ts, closes);
 
-		DataSource ds = new DataSource(ts, cleanse.cleanse(prices));
+		DataSource ds = DataSource.of(ts, cleanse.cleanse(closes));
 		return ds;
 	}
 
@@ -197,7 +197,7 @@ public class Yahoo {
 
 				long[] ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
 				float[] prices = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
-				return new DataSource(ts, prices);
+				return DataSource.of(ts, prices);
 			}
 		});
 	}

@@ -7,6 +7,7 @@ import java.util.Set;
 import suite.adt.pair.Pair;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.adt.pair.FltFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -36,7 +37,7 @@ public class Trade_ {
 		return Math.expm1(logRiskFreeInterestRate * invTradeDaysPerYear * nDays);
 	}
 
-	public static List<Trade> diff(Map<String, Integer> assets0, Map<String, Integer> assets1, Map<String, Float> prices) {
+	public static List<Trade> diff(Map<String, Integer> assets0, Map<String, Integer> assets1, Obj_Flt<String> priceFun) {
 		Set<String> symbols = Set_.union(assets0.keySet(), assets1.keySet());
 
 		return Read.from(symbols) //
@@ -46,7 +47,7 @@ public class Trade_ {
 					return n1 - n0;
 				}) //
 				.filter((symbol, buySell) -> !String_.equals(symbol, Asset.cashSymbol)) //
-				.map((symbol, buySell) -> Trade.of(buySell, symbol, prices.get(symbol))) //
+				.map((symbol, buySell) -> Trade.of(buySell, symbol, priceFun.apply(symbol))) //
 				.toList();
 	}
 
@@ -84,7 +85,7 @@ public class Trade_ {
 			Account account, //
 			List<Pair<String, Double>> ratioBySymbol, //
 			Map<String, Asset> assetBySymbol, //
-			Map<String, Float> priceBySymbol) {
+			Map<String, FltFltPair> priceBySymbol) {
 		return new UpdatePortfolio(account, ratioBySymbol, assetBySymbol, priceBySymbol);
 	}
 
@@ -97,15 +98,15 @@ public class Trade_ {
 				Account account, //
 				List<Pair<String, Double>> ratioBySymbol, //
 				Map<String, Asset> assetBySymbol, //
-				Map<String, Float> priceBySymbol) {
-			Valuation val = account.valuation(priceBySymbol);
+				Map<String, FltFltPair> priceBySymbol) {
+			Valuation val = account.valuation(symbol -> priceBySymbol.get(symbol).t0);
 			float valuation = val.sum();
 
 			Map<String, Integer> portfolio = Read //
 					.from2(ratioBySymbol) //
 					.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
 					.map2((symbol, potential) -> {
-						float price = priceBySymbol.get(symbol);
+						float price = priceBySymbol.get(symbol).t0;
 						int lotSize = assetBySymbol.get(symbol).lotSize;
 						if (negligible < price)
 							return lotSize * (int) Math.floor(valuation * potential / (price * lotSize));
@@ -114,7 +115,7 @@ public class Trade_ {
 					}) //
 					.toMap();
 
-			List<Trade> trades_ = Trade_.diff(account.assets(), portfolio, priceBySymbol);
+			List<Trade> trades_ = Trade_.diff(account.assets(), portfolio, symbol -> priceBySymbol.get(priceBySymbol).t1);
 
 			val0 = val;
 			valuation0 = valuation;

@@ -260,7 +260,7 @@ public class DailyMain extends ExecutableProgram {
 
 		Set<String> symbols = Set_.union(assets0.keySet(), assets1.keySet());
 		Map<String, Float> priceBySymbol = cfg.quote(symbols);
-		List<Trade> trades = Trade_.diff(assets0, assets1, priceBySymbol);
+		List<Trade> trades = Trade_.diff(assets0, assets1, priceBySymbol::get);
 
 		sb.append("\nstrategy = " + tag + ", " + sim.conclusion());
 

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.String_;
@@ -89,18 +90,16 @@ public class Account {
 		});
 	}
 
-	public Valuation valuation(Map<String, Float> prices0) {
-		return new Valuation(prices0);
+	public Valuation valuation(Obj_Flt<String> priceFun) {
+		return new Valuation(priceFun);
 	}
 
 	public class Valuation {
 		public final Map<String, Float> valuationBySymbol;
 
-		private Valuation(Map<String, Float> prices0) {
-			Map<String, Float> prices1 = new HashMap<>(prices0);
-			prices1.put(cashCode, 1f);
-
-			valuationBySymbol = Read.from2(assets).map2((symbol, n) -> prices1.get(symbol) * n).toMap();
+		private Valuation(Obj_Flt<String> priceFun0) {
+			Obj_Flt<String> priceFun1 = symbol -> !String_.equals(symbol, cashCode) ? priceFun0.apply(cashCode) : 1f;
+			valuationBySymbol = Read.from2(assets).map2((symbol, n) -> priceFun1.apply(symbol) * n).toMap();
 		}
 
 		public Streamlet2<String, Float> stream() {

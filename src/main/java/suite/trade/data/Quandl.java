@@ -42,7 +42,7 @@ public class Quandl {
 				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[6]))) //
 				.toArray();
 
-		return new DataSource(ts, prices).range(period);
+		return DataSource.of(ts, prices).range(period);
 	}
 
 }

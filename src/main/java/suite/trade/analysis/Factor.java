@@ -34,11 +34,11 @@ public class Factor {
 	private TimeSeries ts = new TimeSeries();
 
 	public static Factor ofCrudeOil(Configuration cfg) {
-		return new Factor(cfg, Read.each("CLQ17.NYM")); // "CL=F"
+		return of(cfg, Read.each("CLQ17.NYM")); // "CL=F"
 	}
 
 	public static Factor ofUsMarket(Configuration cfg) {
-		return new Factor(cfg, Read.each("^DJI", "^GSPC", "NDAQ"));
+		return of(cfg, Read.each("^DJI", "^GSPC", "NDAQ"));
 	}
 
 	public static Factor of(Configuration cfg, Streamlet<String> indices) {
@@ -54,7 +54,7 @@ public class Factor {
 				.map((symbol, ds) -> cleanse.removeZeroes(ds.prices)) //
 				.fold(new float[akds.ts.length], mtx::add);
 
-		ids = new DataSource(akds.ts, indexPrices);
+		ids = DataSource.of(akds.ts, indexPrices);
 	}
 
 	public List<Pair<Asset, Double>> query(Streamlet<Asset> assets) {

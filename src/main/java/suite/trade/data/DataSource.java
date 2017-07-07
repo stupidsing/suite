@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import suite.math.linalg.Matrix;
+import suite.primitive.Floats_;
 import suite.primitive.LngFltPredicate;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.pair.LngFltPair;
@@ -26,6 +27,9 @@ public class DataSource {
 
 	public final long[] ts;
 	public final float[] prices;
+
+	// prices of next tick, e.g. tomorrow's open
+	public final float[] nextPrices;
 
 	public static <K> AlignKeyDataSource<K> alignAll(Streamlet2<K, DataSource> dsByKey0) {
 		AlignDataSource alignDataSource = DataSource.alignAll(dsByKey0.values());
@@ -74,10 +78,24 @@ public class DataSource {
 		}
 	}
 
-	public DataSource(long[] ts, float[] prices) {
+	public static DataSource ofOpenClose(long[] ts, float[] opens, float[] closes) {
+		int length = opens.length;
+		int lengthm1 = length - 1;
+		float[] nexts = new float[length];
+		Floats_.copy(opens, 1, nexts, 0, lengthm1);
+		nexts[lengthm1] = closes[lengthm1];
+		return new DataSource(ts, closes, nexts);
+	}
+
+	public static DataSource of(long[] ts, float[] prices) {
+		return new DataSource(ts, prices, prices);
+	}
+
+	private DataSource(long[] ts, float[] prices, float[] nextPrices) {
 		this.ts = ts;
 		this.prices = prices;
-		if (ts.length != prices.length)
+		this.nextPrices = nextPrices;
+		if (ts.length != prices.length || ts.length != nextPrices.length)
 			throw new RuntimeException("mismatched dates and prices");
 	}
 
@@ -97,7 +115,7 @@ public class DataSource {
 				prices1[di++] = prices[si];
 			else
 				si++;
-		return new DataSource(ts1, prices1);
+		return of(ts1, prices1);
 	}
 
 	public DataSource alignBeforePrices(long[] ts1) {
@@ -112,7 +130,7 @@ public class DataSource {
 				prices1[di--] = prices[si];
 			else
 				si--;
-		return new DataSource(ts1, prices1);
+		return of(ts1, prices1);
 	}
 
 	public DataSource cons(long time, float price) {
@@ -120,7 +138,7 @@ public class DataSource {
 		long[] ts1 = Arrays.copyOf(ts, length + 1);
 		float[] prices1 = mtx.concat(prices, new float[] { price, });
 		ts1[length] = time;
-		return new DataSource(ts1, prices1);
+		return of(ts1, prices1);
 	}
 
 	public DataSource filter(LngFltPredicate fdp) {
@@ -231,7 +249,7 @@ public class DataSource {
 			}
 		}
 
-		return new DataSource(Arrays.copyOf(ts1, j), Arrays.copyOf(prices1, j));
+		return of(Arrays.copyOf(ts1, j), Arrays.copyOf(prices1, j));
 	}
 
 	private LngFltPair get_(int pos) {
