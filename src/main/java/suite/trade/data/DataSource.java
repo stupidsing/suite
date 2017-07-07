@@ -1,12 +1,16 @@
 package suite.trade.data;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import suite.math.linalg.Matrix;
 import suite.primitive.Floats_;
-import suite.primitive.LngFltPredicate;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
+import suite.primitive.Longs.LongsBuilder;
+import suite.primitive.adt.pair.FltFltPair;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.As;
@@ -94,6 +98,12 @@ public class DataSource {
 		return of(ts, prices, prices);
 	}
 
+	public static DataSource of(long[] ts, Streamlet<FltFltPair> pairs) {
+		float[] prices = pairs.collect(Obj_Flt.lift(pair -> pair.t0)).toArray();
+		float[] nextPrices = pairs.collect(Obj_Flt.lift(pair -> pair.t1)).toArray();
+		return of(ts, prices, nextPrices);
+	}
+
 	public static DataSource of(long[] ts, float[] prices, float[] nextPrices) {
 		return new DataSource(ts, prices, nextPrices);
 	}
@@ -113,43 +123,42 @@ public class DataSource {
 	public DataSource alignAfterPrices(long[] ts1) {
 		int length0 = ts.length;
 		int length1 = ts1.length;
-		float[] prices1 = new float[length1];
+		FltFltPair[] pairs1 = new FltFltPair[length1];
 		int si = 0, di = 0;
 		while (di < length1)
 			if (length0 <= si)
-				prices1[di++] = Trade_.negligible; // avoid division by 0s
+				// avoid division by 0s
+				pairs1[di++] = FltFltPair.of(Trade_.negligible, Trade_.negligible);
 			else if (ts1[di] <= ts[si])
-				prices1[di++] = prices[si];
+				pairs1[di++] = getPair_(si);
 			else
 				si++;
-		return of(ts1, prices1);
+		return of(ts1, Read.from(pairs1));
 	}
 
 	public DataSource alignBeforePrices(long[] ts1) {
 		int length0 = ts.length;
 		int length1 = ts1.length;
-		float[] prices1 = new float[length1];
+		FltFltPair[] pairs1 = new FltFltPair[length1];
 		int si = length0 - 1, di = length1 - 1;
 		while (0 <= di)
 			if (si < 0)
-				prices1[di--] = Trade_.max; // avoid division by 0s
+				// avoid division by 0s
+				pairs1[di--] = FltFltPair.of(Trade_.max, Trade_.max);
 			else if (ts[si] <= ts1[di])
-				prices1[di--] = prices[si];
+				pairs1[di--] = getPair_(si);
 			else
 				si--;
-		return of(ts1, prices1);
+		return of(ts1, Read.from(pairs1));
 	}
 
 	public DataSource cons(long time, float price) {
 		int length = ts.length;
 		long[] ts1 = Arrays.copyOf(ts, length + 1);
 		float[] prices1 = mtx.concat(prices, new float[] { price, });
+		float[] nextPrices1 = mtx.concat(nextPrices, new float[] { price, });
 		ts1[length] = time;
-		return of(ts1, prices1);
-	}
-
-	public DataSource filter(LngFltPredicate fdp) {
-		return filter_(fdp);
+		return of(ts1, prices1, nextPrices1);
 	}
 
 	public LngFltPair first() {
@@ -158,6 +167,10 @@ public class DataSource {
 
 	public LngFltPair get(int pos) {
 		return get_(pos);
+	}
+
+	public FltFltPair getPair(int pos) {
+		return getPair_(pos);
 	}
 
 	public LngFltPair last() {
@@ -194,14 +207,26 @@ public class DataSource {
 	}
 
 	public void validate() {
-		int length = prices.length;
+		validate(prices);
+		if (prices != nextPrices)
+			validate(nextPrices);
+	}
+
+	@Override
+	public String toString() {
+		String range = 0 < prices.length ? first() + "~" + last() : "";
+		return getClass().getSimpleName() + "(" + range + ")";
+	}
+
+	private void validate(float[] prices_) {
+		int length = prices_.length;
 		long t0 = 0 < length ? ts[0] : Long.MIN_VALUE;
-		float price0 = 0 < length ? prices[0] : Float.MAX_VALUE;
+		float price0 = 0 < length ? prices_[0] : Float.MAX_VALUE;
 		String date0 = Time.ofEpochSec(t0).ymd();
 
 		for (int i = 1; i < length; i++) {
 			long t1 = ts[i];
-			float price1 = prices[i];
+			float price1 = prices_[i];
 			String date1 = Time.ofEpochSec(t1).ymd();
 
 			if (t1 <= t0)
@@ -225,44 +250,36 @@ public class DataSource {
 		}
 	}
 
-	@Override
-	public String toString() {
-		String range = 0 < prices.length ? first() + "~" + last() : "";
-		return getClass().getSimpleName() + "(" + range + ")";
-	}
-
 	private DataSource range_(TimeRange period) {
 		long t0 = period.from.epochSec();
 		long tx = period.to.epochSec();
 		return range_(t0, tx);
 	}
 
-	private DataSource range_(long t0, long sx) {
-		return filter_((time, price) -> t0 <= time && time < sx);
-	}
-
-	private DataSource filter_(LngFltPredicate fdp) {
-		long[] ts1 = new long[ts.length];
-		float[] prices1 = new float[prices.length];
-		int j = 0;
+	private DataSource range_(long t0, long tx) {
+		LongsBuilder ts1 = new LongsBuilder();
+		List<FltFltPair> pairs1 = new ArrayList<>();
 
 		for (int i = 0; i < prices.length; i++) {
 			long t = ts[i];
-			float price = prices[i];
-			if (fdp.test(t, price)) {
-				ts1[j] = t;
-				prices1[j] = price;
-				j++;
+			FltFltPair pair = getPair_(i);
+			if (t0 <= t && t < tx) {
+				ts1.append(t);
+				pairs1.add(pair);
 			}
 		}
 
-		return of(Arrays.copyOf(ts1, j), Arrays.copyOf(prices1, j));
+		return of(ts1.toLongs().toArray(), Read.from(pairs1));
 	}
 
 	private LngFltPair get_(int pos) {
 		if (pos < 0)
 			pos += prices.length;
 		return LngFltPair.of(ts[pos], prices[pos]);
+	}
+
+	private FltFltPair getPair_(int pos) {
+		return FltFltPair.of(prices[pos], nextPrices[pos]);
 	}
 
 }

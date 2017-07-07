@@ -1,13 +1,11 @@
 package suite.trade.data;
 
-import java.util.List;
-
 import suite.Constants;
 import suite.node.util.Singleton;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.streamlet.As;
-import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.util.String_;
@@ -26,23 +24,19 @@ public class Quandl {
 
 		// Date, Open, High, Low, Last, Change, Settle, Volume, Previous Day
 		// Open Interest
-		List<String[]> arrays = Singleton.get() //
+		Streamlet<String[]> arrays = Singleton.get() //
 				.getStoreCache() //
 				.http(urlString) //
 				.collect(As::csv) //
 				.skip(1) //
 				.sort((a0, a1) -> String_.compare(a0[0], a1[0])) //
-				.toList();
+				.collect(As::streamlet);
 
-		long[] ts = Read.from(arrays) //
-				.collect(Obj_Lng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))) //
-				.toArray();
+		long[] ts = arrays.collect(Obj_Lng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))).toArray();
+		float[] opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
+		float[] settles = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[6]))).toArray();
 
-		float[] prices = Read.from(arrays) //
-				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[6]))) //
-				.toArray();
-
-		return DataSource.of(ts, prices).range(period);
+		return DataSource.ofOpenClose(ts, opens, settles).range(period);
 	}
 
 }

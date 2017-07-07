@@ -114,9 +114,7 @@ public class BackAllocTester {
 					int index_ = index;
 
 					ymd = time.ymd();
-					priceBySymbol = dsBySymbol //
-							.mapValue(ds -> FltFltPair.of(ds.prices[index_], ds.nextPrices[index_])) //
-							.toMap();
+					priceBySymbol = dsBySymbol.mapValue(ds -> ds.getPair(index_)).toMap();
 
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
 					UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, priceBySymbol);

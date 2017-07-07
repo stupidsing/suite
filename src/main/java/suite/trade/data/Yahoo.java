@@ -51,23 +51,17 @@ public class Yahoo {
 				.sort((a0, a1) -> Object_.compare(a0[0], a1[0])) //
 				.collect(As::streamlet);
 
-		long[] ts = arrays //
-				.collect(Obj_Lng.lift(array -> closeTs(array[0]))) //
-				.toArray();
-
-		float[] opens = arrays //
-				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))) //
-				.toArray();
-
-		float[] closes = arrays //
-				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))) //
-				.toArray();
+		long[] ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
+		float[] opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
+		float[] closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
 
 		adjust(symbol, ts, opens);
 		adjust(symbol, ts, closes);
 
-		DataSource ds = DataSource.of(ts, cleanse.cleanse(closes));
-		return ds;
+		return DataSource.ofOpenClose( //
+				ts, //
+				cleanse.cleanse(opens), //
+				cleanse.cleanse(closes));
 	}
 
 	// https://l1-query.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com
