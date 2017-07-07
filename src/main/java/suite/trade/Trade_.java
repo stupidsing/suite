@@ -37,7 +37,7 @@ public class Trade_ {
 		return Math.expm1(logRiskFreeInterestRate * invTradeDaysPerYear * nDays);
 	}
 
-	public static List<Trade> diff(Map<String, Integer> assets0, Map<String, Integer> assets1, Obj_Flt<String> priceFun) {
+	public static Streamlet<Trade> diff(Map<String, Integer> assets0, Map<String, Integer> assets1, Obj_Flt<String> priceFun) {
 		Set<String> symbols = Set_.union(assets0.keySet(), assets1.keySet());
 
 		return Read.from(symbols) //
@@ -48,7 +48,7 @@ public class Trade_ {
 				}) //
 				.filter((symbol, buySell) -> !String_.equals(symbol, Asset.cashSymbol)) //
 				.map((symbol, buySell) -> Trade.of(buySell, symbol, priceFun.apply(symbol))) //
-				.toList();
+				.collect(As::streamlet);
 	}
 
 	public static String format(Map<String, Integer> portfolio) {
@@ -115,7 +115,15 @@ public class Trade_ {
 					}) //
 					.toMap();
 
-			List<Trade> trades_ = Trade_.diff(account.assets(), portfolio, symbol -> priceBySymbol.get(symbol).t1);
+			List<Trade> trades_ = Trade_ //
+					.diff(account.assets(), portfolio, symbol -> priceBySymbol.get(symbol).t1) //
+					.filter(trade -> {
+						int buySell = trade.buySell;
+						float price = trade.price;
+						float nextPrice = priceBySymbol.get(trade.symbol).t1;
+						return buySell < 0 && price <= nextPrice || 0 < buySell && nextPrice <= price;
+					}) //
+					.toList();
 
 			val0 = val;
 			valuation0 = valuation;
