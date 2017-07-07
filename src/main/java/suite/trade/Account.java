@@ -82,8 +82,9 @@ public class Account {
 	}
 
 	public void validate() {
-		if (cash_() < -Trade_.leverageAmount)
-			throw new RuntimeException("too much leverage: " + cash_());
+		int cash = cash_();
+		if (cash < -Trade_.leverageAmount)
+			throw new RuntimeException("too much leverage: " + cash);
 		assets.forEach((symbol, nShares) -> {
 			if (!Trade_.isShortSell && !String_.equals(symbol, cashCode) && nShares < 0)
 				throw new RuntimeException("no short-selling " + symbol + " " + nShares);
@@ -107,7 +108,7 @@ public class Account {
 		}
 
 		public float sum() {
-			return (float) Read.from2(valuationBySymbol).collectAsDouble(ObjObj_Dbl.sum((symbol, v) -> v));
+			return (float) stream().collectAsDouble(ObjObj_Dbl.sum((symbol, v) -> v));
 		}
 	}
 
