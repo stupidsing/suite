@@ -78,17 +78,24 @@ public class DataSource {
 		}
 	}
 
+	// at the end of the day -
+	// current price = today's closing price;
+	// next price = tomorrow's opening price.
 	public static DataSource ofOpenClose(long[] ts, float[] opens, float[] closes) {
 		int length = opens.length;
 		int lengthm1 = length - 1;
 		float[] nexts = new float[length];
 		Floats_.copy(opens, 1, nexts, 0, lengthm1);
 		nexts[lengthm1] = closes[lengthm1];
-		return new DataSource(ts, closes, nexts);
+		return of(ts, closes, nexts);
 	}
 
 	public static DataSource of(long[] ts, float[] prices) {
-		return new DataSource(ts, prices, prices);
+		return of(ts, prices, prices);
+	}
+
+	public static DataSource of(long[] ts, float[] prices, float[] nextPrices) {
+		return new DataSource(ts, prices, nextPrices);
 	}
 
 	private DataSource(long[] ts, float[] prices, float[] nextPrices) {
