@@ -85,11 +85,12 @@ public class Trade_ {
 			Account account, //
 			List<Pair<String, Double>> ratioBySymbol, //
 			Map<String, Asset> assetBySymbol, //
-			Map<String, Eod> priceBySymbol) {
-		return new UpdatePortfolio(account, ratioBySymbol, assetBySymbol, priceBySymbol);
+			Map<String, Eod> eodBySymbol) {
+		return new UpdatePortfolio(account, ratioBySymbol, assetBySymbol, eodBySymbol);
 	}
 
 	public static class UpdatePortfolio {
+		private boolean isMarketOrder = false;
 		public final Valuation val0;
 		public final float valuation0;
 		public final List<Trade> trades;
@@ -98,15 +99,15 @@ public class Trade_ {
 				Account account, //
 				List<Pair<String, Double>> ratioBySymbol, //
 				Map<String, Asset> assetBySymbol, //
-				Map<String, Eod> priceBySymbol) {
-			Valuation val = account.valuation(symbol -> priceBySymbol.get(symbol).price);
+				Map<String, Eod> eodBySymbol) {
+			Valuation val = account.valuation(symbol -> eodBySymbol.get(symbol).price);
 			float valuation = val.sum();
 
 			Map<String, Integer> portfolio = Read //
 					.from2(ratioBySymbol) //
 					.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
 					.map2((symbol, potential) -> {
-						float price = priceBySymbol.get(symbol).price;
+						float price = eodBySymbol.get(symbol).price;
 						int lotSize = assetBySymbol.get(symbol).lotSize;
 						if (negligible < price)
 							return lotSize * (int) Math.floor(valuation * potential / (price * lotSize));
@@ -115,13 +116,20 @@ public class Trade_ {
 					}) //
 					.toMap();
 
+			Obj_Flt<String> priceFun;
+			if (isMarketOrder)
+				priceFun = symbol -> eodBySymbol.get(symbol).nextOpen;
+			else
+				priceFun = symbol -> eodBySymbol.get(symbol).price;
+
 			List<Trade> trades_ = Trade_ //
-					.diff(account.assets(), portfolio, symbol -> priceBySymbol.get(symbol).nextOpen) //
+					.diff(account.assets(), portfolio, priceFun) //
 					.filter(trade -> { // can be executed in next open price?
-						int buySell = trade.buySell;
+						String symbol = trade.symbol;
 						float price = trade.price;
-						float nextOpen = priceBySymbol.get(trade.symbol).nextOpen;
-						return buySell < 0 && price <= nextOpen || 0 < buySell && nextOpen <= price;
+						float nextLow = eodBySymbol.get(symbol).nextLow;
+						float nextHigh = eodBySymbol.get(symbol).nextHigh;
+						return nextLow <= price && nextHigh <= price;
 					}) //
 					.sortBy(trade -> trade.buySell) // sell first
 					.toList();

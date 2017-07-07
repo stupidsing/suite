@@ -97,7 +97,7 @@ public class BackAllocTester {
 			int size = ts_.length;
 
 			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol, ts_);
-			Map<String, Eod> priceBySymbol = Collections.emptyMap();
+			Map<String, Eod> eodBySymbol = Collections.emptyMap();
 			float[] valuations_ = new float[size];
 			int index = 0;
 			String ymd = null;
@@ -114,10 +114,10 @@ public class BackAllocTester {
 					int index_ = index;
 
 					ymd = time.ymd();
-					priceBySymbol = dsBySymbol.mapValue(ds -> ds.getEod(index_)).toMap();
+					eodBySymbol = dsBySymbol.mapValue(ds -> ds.getEod(index_)).toMap();
 
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
-					UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, priceBySymbol);
+					UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, eodBySymbol);
 					float valuation_ = valuations_[i] = up.valuation0;
 
 					for (Pair<String, Float> e : up.val0.stream())
@@ -136,8 +136,8 @@ public class BackAllocTester {
 				exception_ = new RuntimeException("at " + ymd, ex);
 			}
 
-			Map<String, Eod> priceBySymbol_ = priceBySymbol;
-			trades.addAll(Trade_.sellAll(Read.from(trades), symbol -> priceBySymbol_.get(symbol).nextOpen).toList());
+			Map<String, Eod> eodBySymbol_ = eodBySymbol;
+			trades.addAll(Trade_.sellAll(Read.from(trades), symbol -> eodBySymbol_.get(symbol).nextOpen).toList());
 
 			ReturnsStat rs = ts.returnsStatDailyAnnualized(valuations_);
 
