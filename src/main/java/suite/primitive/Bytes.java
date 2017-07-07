@@ -9,7 +9,6 @@ import java.util.Iterator;
 import suite.Constants;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Copy;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.To;
@@ -306,7 +305,7 @@ public class Bytes implements Iterable<Byte> {
 		public BytesBuilder append(byte[] bs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
-			Copy.bytes(bs_, start, bs, size, inc);
+			Bytes_.copy(bs_, start, bs, size, inc);
 			size += inc;
 			return this;
 		}

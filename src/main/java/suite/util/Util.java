@@ -40,7 +40,7 @@ public class Util {
 
 		for (T[] list : lists) {
 			int length = list.length;
-			Copy.array(list, 0, result, i, length);
+			Array_.copy(list, 0, result, i, length);
 			i += length;
 		}
 		return result;

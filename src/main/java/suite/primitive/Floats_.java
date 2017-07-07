@@ -20,6 +20,13 @@ public class Floats_ {
 		});
 	}
 
+	public static void copy(float[] from, int fromIndex, float[] to, int toIndex, int size) {
+		if (0 < size)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+		else if (size < 0)
+			throw new IndexOutOfBoundsException();
+	}
+
 	public static void copy(Outlet<Floats> outlet, WriteChar writer) {
 		Floats floats;
 		while ((floats = outlet.next()) != null)

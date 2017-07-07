@@ -7,7 +7,7 @@ import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tuple;
-import suite.util.Copy;
+import suite.util.Array_;
 
 public class ArrayIntrinsics {
 
@@ -15,8 +15,8 @@ public class ArrayIntrinsics {
 		Node[] array0 = ((Tuple) inputs.get(0)).nodes;
 		Node[] array1 = ((Tuple) inputs.get(1)).nodes;
 		Node[] array = new Node[array0.length + array1.length];
-		Copy.array(array0, 0, array, 0, array0.length);
-		Copy.array(array1, 0, array, array0.length, array1.length);
+		Array_.copy(array0, 0, array, 0, array0.length);
+		Array_.copy(array1, 0, array, array0.length, array1.length);
 		return Tuple.of(array);
 	};
 

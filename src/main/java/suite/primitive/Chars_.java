@@ -20,6 +20,13 @@ public class Chars_ {
 		});
 	}
 
+	public static void copy(char[] from, int fromIndex, char[] to, int toIndex, int size) {
+		if (0 < size)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+		else if (size < 0)
+			throw new IndexOutOfBoundsException();
+	}
+
 	public static void copy(Outlet<Chars> outlet, WriteChar writer) {
 		Chars chars;
 		while ((chars = outlet.next()) != null)

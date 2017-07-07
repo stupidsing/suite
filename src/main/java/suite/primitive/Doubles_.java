@@ -20,6 +20,13 @@ public class Doubles_ {
 		});
 	}
 
+	public static void copy(double[] from, int fromIndex, double[] to, int toIndex, int size) {
+		if (0 < size)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+		else if (size < 0)
+			throw new IndexOutOfBoundsException();
+	}
+
 	public static void copy(Outlet<Doubles> outlet, WriteChar writer) {
 		Doubles doubles;
 		while ((doubles = outlet.next()) != null)

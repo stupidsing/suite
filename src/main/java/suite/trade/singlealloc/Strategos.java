@@ -5,9 +5,9 @@ import java.util.Arrays;
 import suite.math.linalg.Matrix;
 import suite.math.stat.Quant;
 import suite.math.transform.DiscreteCosineTransform;
+import suite.primitive.Floats_;
 import suite.trade.MovingAverage;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
-import suite.util.Copy;
 import suite.util.To;
 
 public class Strategos {
@@ -26,7 +26,7 @@ public class Strategos {
 				float[] fs0 = new float[windowSize]; // moving window
 				float price0 = prices[day];
 
-				Copy.floats(prices, day - nPastDays, fs0, 0, nPastDays);
+				Floats_.copy(prices, day - nPastDays, fs0, 0, nPastDays);
 				Arrays.fill(fs0, nPastDays, windowSize, price0);
 
 				float[] fs1 = dct.dct(fs0);

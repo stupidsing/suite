@@ -2,8 +2,8 @@ package suite.math.stat;
 
 import suite.math.linalg.Matrix;
 import suite.math.stat.Statistic.LinearRegression;
+import suite.primitive.Floats_;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.util.Copy;
 import suite.util.To;
 
 /**
@@ -54,7 +54,7 @@ public class Ardl {
 				.map(is -> {
 					float[] fsi = fsList[is];
 					float[] xs = new float[maxLag + (isIncludeCurrent ? 1 : 0)];
-					Copy.floats(fsi, t, xs, 0, maxLag);
+					Floats_.copy(fsi, t, xs, 0, maxLag);
 					if (isIncludeCurrent)
 						xs[maxLag] = is != it ? fsi[t + maxLag] : 1f;
 					return xs;

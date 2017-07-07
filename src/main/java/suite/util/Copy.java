@@ -15,37 +15,6 @@ import suite.Constants;
 
 public class Copy {
 
-	public static <T> void array(T[] from, int fromIndex, T[] to, int toIndex, int size) {
-		if (0 < size)
-			System.arraycopy(from, fromIndex, to, toIndex, size);
-		else if (size < 0)
-			throw new IndexOutOfBoundsException();
-	}
-
-	public static void bytes(byte[] from, int fromIndex, byte[] to, int toIndex, int size) {
-		primitiveArray(from, fromIndex, to, toIndex, size);
-	}
-
-	public static void chars(char[] from, int fromIndex, char[] to, int toIndex, int size) {
-		primitiveArray(from, fromIndex, to, toIndex, size);
-	}
-
-	public static void doubles(double[] from, int fromIndex, double[] to, int toIndex, int size) {
-		primitiveArray(from, fromIndex, to, toIndex, size);
-	}
-
-	public static void floats(float[] from, int fromIndex, float[] to, int toIndex, int size) {
-		primitiveArray(from, fromIndex, to, toIndex, size);
-	}
-
-	public static void ints(int[] from, int fromIndex, int[] to, int toIndex, int size) {
-		primitiveArray(from, fromIndex, to, toIndex, size);
-	}
-
-	public static void longs(long[] from, int fromIndex, long[] to, int toIndex, int size) {
-		primitiveArray(from, fromIndex, to, toIndex, size);
-	}
-
 	public static void readerToWriter(Reader in, Writer out) throws IOException {
 		try (Reader in_ = in) {
 			int len;
@@ -72,10 +41,6 @@ public class Copy {
 		return cloned;
 	}
 
-	public static void shorts(short[] from, int fromIndex, short[] to, int toIndex, int size) {
-		primitiveArray(from, fromIndex, to, toIndex, size);
-	}
-
 	public static Thread streamByThread(InputStream is, OutputStream os) {
 		return Thread_.newThread(() -> {
 			try (InputStream is_ = is; OutputStream os_ = os) {
@@ -94,13 +59,6 @@ public class Copy {
 				out.flush();
 			}
 		}
-	}
-
-	private static void primitiveArray(Object from, int fromIndex, Object to, int toIndex, int size) {
-		if (0 < size)
-			System.arraycopy(from, fromIndex, to, toIndex, size);
-		else if (size < 0)
-			throw new IndexOutOfBoundsException();
 	}
 
 }

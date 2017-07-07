@@ -5,7 +5,7 @@ import java.util.Random;
 import suite.math.Forget;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
-import suite.util.Copy;
+import suite.primitive.Floats_;
 
 public class RecurrentNeuralNetwork {
 
@@ -67,8 +67,8 @@ public class RecurrentNeuralNetwork {
 			float[] memory0 = memory;
 			float[] iv = new float[ll1];
 
-			Copy.floats(input, 0, iv, 0, inputLength);
-			Copy.floats(memory0, 0, iv, inputLength, memoryLength);
+			Floats_.copy(input, 0, iv, 0, inputLength);
+			Floats_.copy(memory0, 0, iv, inputLength, memoryLength);
 			iv[ll] = 1f;
 
 			float[] memory1 = copy(memory = Tanh.tanhOn(mtx.mul(weights, iv)));

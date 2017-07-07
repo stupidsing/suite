@@ -6,7 +6,7 @@ import java.util.function.BiFunction;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Copy;
+import suite.util.Array_;
 
 /**
  * Bitmap list.
@@ -83,9 +83,9 @@ public class Bl<T> {
 			Object[] ts1 = new Object[ts0.length + diff];
 			int bitCount0 = Long.bitCount(bits0);
 			int bitCount1 = Long.bitCount(bits1);
-			Copy.array(ts0, 0, ts1, 0, bitCount0);
+			Array_.copy(ts0, 0, ts1, 0, bitCount0);
 			ts1[bitCount0] = t;
-			Copy.array(ts0, bitCount0 + diff0, ts1, bitCount0 + diff1, bitCount1);
+			Array_.copy(ts0, bitCount0 + diff0, ts1, bitCount0 + diff1, bitCount1);
 
 			return new Bl<>(bitmap1, ts1);
 		} else

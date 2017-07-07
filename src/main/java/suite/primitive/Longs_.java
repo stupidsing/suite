@@ -20,6 +20,13 @@ public class Longs_ {
 		});
 	}
 
+	public static void copy(long[] from, int fromIndex, long[] to, int toIndex, int size) {
+		if (0 < size)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+		else if (size < 0)
+			throw new IndexOutOfBoundsException();
+	}
+
 	public static void copy(Outlet<Longs> outlet, WriteChar writer) {
 		Longs longs;
 		while ((longs = outlet.next()) != null)

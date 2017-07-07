@@ -20,6 +20,13 @@ public class Bytes_ {
 		});
 	}
 
+	public static void copy(byte[] from, int fromIndex, byte[] to, int toIndex, int size) {
+		if (0 < size)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+		else if (size < 0)
+			throw new IndexOutOfBoundsException();
+	}
+
 	public static void copy(Outlet<Bytes> outlet, WriteByte writer) {
 		Bytes bytes;
 		while ((bytes = outlet.next()) != null)

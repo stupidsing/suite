@@ -5,8 +5,8 @@ import java.util.Arrays;
 import suite.math.linalg.Matrix;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.Statistic.MeanVariance;
+import suite.primitive.Floats_;
 import suite.trade.Trade_;
-import suite.util.Copy;
 import suite.util.To;
 
 public class TimeSeries {
@@ -85,8 +85,8 @@ public class TimeSeries {
 
 				float[] fs1 = new float[p + iterp1];
 				Arrays.fill(fs1, 0, p0, 0f);
-				Copy.floats(ys, 0, fs1, p0, p - p0);
-				Copy.floats(residuals, 0, fs1, p, nr);
+				Floats_.copy(ys, 0, fs1, p0, p - p0);
+				Floats_.copy(residuals, 0, fs1, p, nr);
 				return fs1;
 			});
 
@@ -100,7 +100,7 @@ public class TimeSeries {
 		float[] fs1 = new float[to - from];
 		int p = -Math.max(0, from);
 		Arrays.fill(fs1, 0, p, 0f);
-		Copy.floats(fs0, 0, fs1, p, to - p);
+		Floats_.copy(fs0, 0, fs1, p, to - p);
 		return fs1;
 	}
 

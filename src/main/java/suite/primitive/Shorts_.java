@@ -20,6 +20,13 @@ public class Shorts_ {
 		});
 	}
 
+	public static void copy(short[] from, int fromIndex, short[] to, int toIndex, int size) {
+		if (0 < size)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+		else if (size < 0)
+			throw new IndexOutOfBoundsException();
+	}
+
 	public static void copy(Outlet<Shorts> outlet, WriteShort writer) {
 		Shorts shorts;
 		while ((shorts = outlet.next()) != null)

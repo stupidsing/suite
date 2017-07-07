@@ -12,7 +12,6 @@ import suite.primitive.streamlet.IntOutlet;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Copy;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
@@ -334,7 +333,7 @@ public class Ints implements Iterable<Integer> {
 		public IntsBuilder append(int[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
-			Copy.ints(cs_, start, cs, size, inc);
+			Ints_.copy(cs_, start, cs, size, inc);
 			size += inc;
 			return this;
 		}

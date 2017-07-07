@@ -12,7 +12,6 @@ import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Copy;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
@@ -334,7 +333,7 @@ public class Floats implements Iterable<Float> {
 		public FloatsBuilder append(float[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
-			Copy.floats(cs_, start, cs, size, inc);
+			Floats_.copy(cs_, start, cs, size, inc);
 			size += inc;
 			return this;
 		}

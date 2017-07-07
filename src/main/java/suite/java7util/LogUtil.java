@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import suite.inspect.Dump;
-import suite.util.Copy;
+import suite.util.Array_;
 
 @Deprecated
 public class LogUtil {
@@ -63,7 +63,7 @@ public class LogUtil {
 
 			if (maxStackTraceLength < st0.length) {
 				StackTraceElement[] st1 = new StackTraceElement[maxStackTraceLength];
-				Copy.array(st0, 0, st1, 0, maxStackTraceLength);
+				Array_.copy(st0, 0, st1, 0, maxStackTraceLength);
 				th.setStackTrace(st1);
 
 				isTrimmed = true;

@@ -14,7 +14,7 @@ import org.apache.log4j.PatternLayout;
 
 import suite.inspect.Dump;
 import suite.proxy.Intercept;
-import suite.util.Copy;
+import suite.util.Array_;
 import suite.util.FunUtil.Source;
 import suite.util.TempDir;
 
@@ -150,7 +150,7 @@ public class LogUtil {
 
 			if (maxStackTraceLength < st0.length) {
 				StackTraceElement[] st1 = new StackTraceElement[maxStackTraceLength];
-				Copy.array(st0, 0, st1, 0, maxStackTraceLength);
+				Array_.copy(st0, 0, st1, 0, maxStackTraceLength);
 				th.setStackTrace(st1);
 
 				isTrimmed = true;

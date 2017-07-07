@@ -8,7 +8,6 @@ import java.util.Iterator;
 
 import suite.Constants;
 import suite.util.Compare;
-import suite.util.Copy;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
@@ -299,7 +298,7 @@ public class Shorts implements Iterable<Short> {
 		public ShortsBuilder append(short[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
-			Copy.shorts(cs_, start, cs, size, inc);
+			Shorts_.copy(cs_, start, cs, size, inc);
 			size += inc;
 			return this;
 		}

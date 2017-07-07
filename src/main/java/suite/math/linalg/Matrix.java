@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import suite.math.MathUtil;
 import suite.math.Vector;
-import suite.util.Copy;
+import suite.primitive.Floats_;
 import suite.util.To;
 
 public class Matrix {
@@ -56,7 +56,7 @@ public class Matrix {
 		float[] fs1 = new float[length];
 		int i = 0;
 		for (float[] fs : array) {
-			Copy.floats(fs, 0, fs1, i, fs.length);
+			Floats_.copy(fs, 0, fs1, i, fs.length);
 			i += fs.length;
 		}
 		return fs1;

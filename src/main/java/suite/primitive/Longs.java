@@ -12,7 +12,6 @@ import suite.primitive.streamlet.LngOutlet;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Copy;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
@@ -334,7 +333,7 @@ public class Longs implements Iterable<Long> {
 		public LongsBuilder append(long[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
-			Copy.longs(cs_, start, cs, size, inc);
+			Longs_.copy(cs_, start, cs, size, inc);
 			size += inc;
 			return this;
 		}

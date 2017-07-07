@@ -12,7 +12,6 @@ import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Copy;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
@@ -334,7 +333,7 @@ public class Doubles implements Iterable<Double> {
 		public DoublesBuilder append(double[] cs_, int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
-			Copy.doubles(cs_, start, cs, size, inc);
+			Doubles_.copy(cs_, start, cs, size, inc);
 			size += inc;
 			return this;
 		}

@@ -6,7 +6,7 @@ import suite.math.Forget;
 import suite.math.Sigmoid;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
-import suite.util.Copy;
+import suite.primitive.Floats_;
 
 public class LongShortTermMemory {
 
@@ -85,8 +85,8 @@ public class LongShortTermMemory {
 			float[] output0 = output;
 			float[] iv = new float[ll1];
 
-			Copy.floats(input, 0, iv, 0, inputLength);
-			Copy.floats(output0, 0, iv, inputLength, memoryLength);
+			Floats_.copy(input, 0, iv, 0, inputLength);
+			Floats_.copy(output0, 0, iv, inputLength, memoryLength);
 			iv[ll] = 1f;
 
 			float[] sig_fs = Sigmoid.sigmoidOn(mtx.mul(wf, iv));

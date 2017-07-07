@@ -20,6 +20,13 @@ public class Ints_ {
 		});
 	}
 
+	public static void copy(int[] from, int fromIndex, int[] to, int toIndex, int size) {
+		if (0 < size)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+		else if (size < 0)
+			throw new IndexOutOfBoundsException();
+	}
+
 	public static void copy(Outlet<Ints> outlet, WriteChar writer) {
 		Ints ints;
 		while ((ints = outlet.next()) != null)
