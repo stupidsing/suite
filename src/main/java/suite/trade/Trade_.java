@@ -116,12 +116,12 @@ public class Trade_ {
 					.toMap();
 
 			List<Trade> trades_ = Trade_ //
-					.diff(account.assets(), portfolio, symbol -> priceBySymbol.get(symbol).nextPrice) //
+					.diff(account.assets(), portfolio, symbol -> priceBySymbol.get(symbol).nextOpen) //
 					.filter(trade -> { // can be executed in next open price?
 						int buySell = trade.buySell;
 						float price = trade.price;
-						float nextPrice = priceBySymbol.get(trade.symbol).nextPrice;
-						return buySell < 0 && price <= nextPrice || 0 < buySell && nextPrice <= price;
+						float nextOpen = priceBySymbol.get(trade.symbol).nextOpen;
+						return buySell < 0 && price <= nextOpen || 0 < buySell && nextOpen <= price;
 					}) //
 					.sortBy(trade -> trade.buySell) // sell first
 					.toList();

@@ -13,7 +13,7 @@ public class Cleanse {
 
 	public DataSource cleanse(DataSource ds) {
 		cleanse(ds.prices);
-		cleanse(ds.nextPrices);
+		cleanse(ds.nextOpens);
 		return ds;
 	}
 

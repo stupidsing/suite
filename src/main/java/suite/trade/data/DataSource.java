@@ -32,23 +32,23 @@ public class DataSource {
 	public final float[] prices;
 
 	// prices of next tick, e.g. tomorrow's open
-	public final float[] nextPrices;
+	public final float[] nextOpens;
 
 	public static class Eod {
 		public final float price;
-		public final float nextPrice;
+		public final float nextOpen;
 
 		public static Eod of(float price) {
 			return of(price, price);
 		}
 
-		public static Eod of(float price, float nextPrice) {
-			return new Eod(price, nextPrice);
+		public static Eod of(float price, float nextOpen) {
+			return new Eod(price, nextOpen);
 		}
 
-		private Eod(float price, float nextPrice) {
+		private Eod(float price, float nextOpen) {
 			this.price = price;
-			this.nextPrice = nextPrice;
+			this.nextOpen = nextOpen;
 		}
 	}
 
@@ -117,19 +117,19 @@ public class DataSource {
 
 	public static DataSource of(long[] ts, Streamlet<Eod> pairs) {
 		float[] prices = pairs.collect(Obj_Flt.lift(pair -> pair.price)).toArray();
-		float[] nextPrices = pairs.collect(Obj_Flt.lift(pair -> pair.nextPrice)).toArray();
-		return of(ts, prices, nextPrices);
+		float[] nextOpens = pairs.collect(Obj_Flt.lift(pair -> pair.nextOpen)).toArray();
+		return of(ts, prices, nextOpens);
 	}
 
-	public static DataSource of(long[] ts, float[] prices, float[] nextPrices) {
-		return new DataSource(ts, prices, nextPrices);
+	public static DataSource of(long[] ts, float[] prices, float[] nextOpens) {
+		return new DataSource(ts, prices, nextOpens);
 	}
 
-	private DataSource(long[] ts, float[] prices, float[] nextPrices) {
+	private DataSource(long[] ts, float[] prices, float[] nextOpens) {
 		this.ts = ts;
 		this.prices = prices;
-		this.nextPrices = nextPrices;
-		if (ts.length != prices.length || ts.length != nextPrices.length)
+		this.nextOpens = nextOpens;
+		if (ts.length != prices.length || ts.length != nextOpens.length)
 			throw new RuntimeException("mismatched dates and prices");
 	}
 
@@ -173,9 +173,9 @@ public class DataSource {
 		int length = ts.length;
 		long[] ts1 = Arrays.copyOf(ts, length + 1);
 		float[] prices1 = mtx.concat(prices, new float[] { price, });
-		float[] nextPrices1 = mtx.concat(nextPrices, new float[] { price, });
+		float[] nextOpens1 = mtx.concat(nextOpens, new float[] { price, });
 		ts1[length] = time;
-		return of(ts1, prices1, nextPrices1);
+		return of(ts1, prices1, nextOpens1);
 	}
 
 	public LngFltPair first() {
@@ -225,8 +225,8 @@ public class DataSource {
 
 	public void validate() {
 		validate(prices);
-		if (prices != nextPrices)
-			validate(nextPrices);
+		if (prices != nextOpens)
+			validate(nextOpens);
 	}
 
 	@Override
@@ -296,7 +296,7 @@ public class DataSource {
 	}
 
 	private Eod getEod_(int pos) {
-		return Eod.of(prices[pos], nextPrices[pos]);
+		return Eod.of(prices[pos], nextOpens[pos]);
 	}
 
 }

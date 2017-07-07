@@ -170,7 +170,7 @@ public class StockHistory {
 
 		long[] ts = new long[closeLength];
 		float[] prices = new float[closeLength];
-		float[] nextPrices = new float[closeLength];
+		float[] nextOpens = new float[closeLength];
 		int io = 0;
 
 		for (int ic = 0; ic < closeLength; ic++) {
@@ -181,10 +181,10 @@ public class StockHistory {
 
 			ts[ic] = t;
 			prices[ic] = closePair.t1;
-			nextPrices[ic] = (io < openLength ? openPairs[io] : closePair).t1;
+			nextOpens[ic] = (io < openLength ? openPairs[io] : closePair).t1;
 		}
 
-		return DataSource.of(ts, prices, nextPrices);
+		return DataSource.of(ts, prices, nextOpens);
 	}
 
 	public Streamlet<String> write() {

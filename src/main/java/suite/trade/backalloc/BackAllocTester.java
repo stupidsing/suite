@@ -137,7 +137,7 @@ public class BackAllocTester {
 			}
 
 			Map<String, Eod> priceBySymbol_ = priceBySymbol;
-			trades.addAll(Trade_.sellAll(Read.from(trades), symbol -> priceBySymbol_.get(symbol).nextPrice).toList());
+			trades.addAll(Trade_.sellAll(Read.from(trades), symbol -> priceBySymbol_.get(symbol).nextOpen).toList());
 
 			ReturnsStat rs = ts.returnsStatDailyAnnualized(valuations_);
 
