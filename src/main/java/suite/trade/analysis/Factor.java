@@ -41,6 +41,10 @@ public class Factor {
 		return new Factor(cfg, Read.each("^DJI", "^GSPC", "NDAQ"));
 	}
 
+	public static Factor of(Configuration cfg, Streamlet<String> indices) {
+		return new Factor(cfg, indices);
+	}
+
 	private Factor(Configuration cfg, Streamlet<String> indices) {
 		this.cfg = cfg;
 
