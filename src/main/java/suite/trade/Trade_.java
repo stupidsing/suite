@@ -115,7 +115,7 @@ public class Trade_ {
 					}) //
 					.toMap();
 
-			List<Trade> trades_ = Trade_.diff(account.assets(), portfolio, symbol -> priceBySymbol.get(priceBySymbol).t1);
+			List<Trade> trades_ = Trade_.diff(account.assets(), portfolio, symbol -> priceBySymbol.get(symbol).t1);
 
 			val0 = val;
 			valuation0 = valuation;
