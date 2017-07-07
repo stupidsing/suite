@@ -1,6 +1,5 @@
 package suite.math.stat;
 
-import suite.math.linalg.Matrix;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.primitive.streamlet.IntStreamlet;
@@ -16,7 +15,6 @@ public class Ardl {
 	private int maxLag;
 	private boolean isIncludeCurrent;
 
-	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 
 	public Ardl(int maxLag, boolean isIncludeCurrent) {
@@ -49,7 +47,7 @@ public class Ardl {
 	}
 
 	private float[] getExplanatoryVariables(float[][] fsList, int it, int t) {
-		return mtx.concat(IntStreamlet //
+		return Floats_.concat(IntStreamlet //
 				.range(fsList.length) //
 				.map(is -> {
 					float[] fsi = fsList[is];

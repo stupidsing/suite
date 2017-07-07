@@ -20,7 +20,7 @@ public class TimeSeries {
 		float[][] xs = new float[ys.length][];
 		for (int i = tor; i < xs.length; i++)
 			// i - drift term, necessary?
-			xs[i] = mtx.concat(new float[] { ys[i - 1], 1f, i, }, Arrays.copyOfRange(ydiffs, i - tor, i));
+			xs[i] = Floats_.concat(new float[] { ys[i - 1], 1f, i, }, Arrays.copyOfRange(ydiffs, i - tor, i));
 		float[][] xs1 = drop_(tor, xs);
 		float[] ydiffs1 = drop_(tor, ydiffs);
 		LinearRegression lr = stat.linearRegression(xs1, ydiffs1);
@@ -50,7 +50,7 @@ public class TimeSeries {
 		float[][] xs1 = To.array(float[].class, length, i -> copyPadZeroes(variances, i - p, i));
 		LinearRegression lr1 = stat.linearRegression(xs1, variances);
 
-		return mtx.concat(lr0.coefficients, lr1.coefficients);
+		return Floats_.concat(lr0.coefficients, lr1.coefficients);
 	}
 
 	public LinearRegression arima(float[] ys, int p, int d, int q) {

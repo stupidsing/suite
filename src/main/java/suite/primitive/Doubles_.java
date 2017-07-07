@@ -20,6 +20,19 @@ public class Doubles_ {
 		});
 	}
 
+	public static double[] concat(double[]... array) {
+		int length = 0;
+		for (double[] fs : array)
+			length += fs.length;
+		double[] fs1 = new double[length];
+		int i = 0;
+		for (double[] fs : array) {
+			Doubles_.copy(fs, 0, fs1, i, fs.length);
+			i += fs.length;
+		}
+		return fs1;
+	}
+
 	public static void copy(double[] from, int fromIndex, double[] to, int toIndex, int size) {
 		if (0 < size)
 			System.arraycopy(from, fromIndex, to, toIndex, size);

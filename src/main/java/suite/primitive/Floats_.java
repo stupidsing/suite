@@ -20,6 +20,19 @@ public class Floats_ {
 		});
 	}
 
+	public static float[] concat(float[]... array) {
+		int length = 0;
+		for (float[] fs : array)
+			length += fs.length;
+		float[] fs1 = new float[length];
+		int i = 0;
+		for (float[] fs : array) {
+			Floats_.copy(fs, 0, fs1, i, fs.length);
+			i += fs.length;
+		}
+		return fs1;
+	}
+
 	public static void copy(float[] from, int fromIndex, float[] to, int toIndex, int size) {
 		if (0 < size)
 			System.arraycopy(from, fromIndex, to, toIndex, size);

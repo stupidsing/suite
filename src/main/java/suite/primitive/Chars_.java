@@ -20,6 +20,34 @@ public class Chars_ {
 		});
 	}
 
+	public static char[] concat(char[]... array) {
+		int length = 0;
+		for (char[] fs : array)
+			length += fs.length;
+		char[] fs1 = new char[length];
+		int i = 0;
+		for (char[] fs : array) {
+			int length_ = fs.length;
+			copy(fs, 0, fs1, i, length_);
+			i += length_;
+		}
+		return fs1;
+	}
+
+	public static Chars concat(Chars... array) {
+		int length = 0;
+		for (Chars chars : array)
+			length += chars.size();
+		char[] cs1 = new char[length];
+		int i = 0;
+		for (Chars chars : array) {
+			int size_ = chars.size();
+			copy(chars.cs, chars.start, cs1, i, size_);
+			i += size_;
+		}
+		return Chars.of(cs1);
+	}
+
 	public static void copy(char[] from, int fromIndex, char[] to, int toIndex, int size) {
 		if (0 < size)
 			System.arraycopy(from, fromIndex, to, toIndex, size);

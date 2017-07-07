@@ -172,8 +172,8 @@ public class DataSource {
 	public DataSource cons(long time, float price) {
 		int length = ts.length;
 		long[] ts1 = Arrays.copyOf(ts, length + 1);
-		float[] prices1 = mtx.concat(prices, new float[] { price, });
-		float[] nextOpens1 = mtx.concat(nextOpens, new float[] { price, });
+		float[] prices1 = Floats_.concat(prices, new float[] { price, });
+		float[] nextOpens1 = prices1 = Floats_.concat(nextOpens, new float[] { price, });
 		ts1[length] = time;
 		return of(ts1, prices1, nextOpens1);
 	}

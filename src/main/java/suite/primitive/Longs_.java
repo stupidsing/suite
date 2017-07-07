@@ -20,6 +20,19 @@ public class Longs_ {
 		});
 	}
 
+	public static long[] concat(long[]... array) {
+		int length = 0;
+		for (long[] fs : array)
+			length += fs.length;
+		long[] fs1 = new long[length];
+		int i = 0;
+		for (long[] fs : array) {
+			Longs_.copy(fs, 0, fs1, i, fs.length);
+			i += fs.length;
+		}
+		return fs1;
+	}
+
 	public static void copy(long[] from, int fromIndex, long[] to, int toIndex, int size) {
 		if (0 < size)
 			System.arraycopy(from, fromIndex, to, toIndex, size);

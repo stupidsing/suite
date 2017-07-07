@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import suite.math.MathUtil;
 import suite.math.Vector;
-import suite.primitive.Floats_;
 import suite.util.To;
 
 public class Matrix {
@@ -47,19 +46,6 @@ public class Matrix {
 		else
 			throw new RuntimeException("wrong input sizes");
 		return m;
-	}
-
-	public float[] concat(float[]... array) {
-		int length = 0;
-		for (float[] fs : array)
-			length += fs.length;
-		float[] fs1 = new float[length];
-		int i = 0;
-		for (float[] fs : array) {
-			Floats_.copy(fs, 0, fs1, i, fs.length);
-			i += fs.length;
-		}
-		return fs1;
 	}
 
 	public float[][] convolute(float[][] m, float[][] k) {

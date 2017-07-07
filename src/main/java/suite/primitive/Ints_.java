@@ -20,6 +20,19 @@ public class Ints_ {
 		});
 	}
 
+	public static int[] concat(int[]... array) {
+		int length = 0;
+		for (int[] fs : array)
+			length += fs.length;
+		int[] fs1 = new int[length];
+		int i = 0;
+		for (int[] fs : array) {
+			Ints_.copy(fs, 0, fs1, i, fs.length);
+			i += fs.length;
+		}
+		return fs1;
+	}
+
 	public static void copy(int[] from, int fromIndex, int[] to, int toIndex, int size) {
 		if (0 < size)
 			System.arraycopy(from, fromIndex, to, toIndex, size);
