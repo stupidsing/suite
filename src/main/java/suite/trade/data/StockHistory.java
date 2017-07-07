@@ -162,18 +162,59 @@ public class StockHistory {
 		return of(exchange, time, data1, align_.apply(dividends), align_.apply(splits));
 	}
 
-	public DataSource adjustPrices(String tag) {
-		LngFltPair[] pairs = data.get(tag);
-		int length = pairs.length;
-		long[] ts = new long[length];
-		float[] prices = new float[length];
+	public DataSource toDataSource() {
+		LngFltPair[] closePairs = adjustPrices("close");
+		LngFltPair[] openPairs = adjustPrices("open");
+		int closeLength = closePairs.length;
+		int openLength = openPairs.length;
+
+		long[] ts = new long[closeLength];
+		float[] prices = new float[closeLength];
+		float[] nextPrices = new float[closeLength];
+		int io = 0;
+
+		for (int ic = 0; ic < closeLength; ic++) {
+			LngFltPair closePair = closePairs[ic];
+			long t = closePair.t0;
+			while (io < openLength && openPairs[io].t0 < t)
+				io++;
+
+			ts[ic] = t;
+			prices[ic] = closePair.t1;
+			nextPrices[ic] = (io < openLength ? openPairs[io] : closePair).t1;
+		}
+
+		return DataSource.of(ts, prices, nextPrices);
+	}
+
+	public Streamlet<String> write() {
+		Streamlet<String> s0 = Read.each( //
+				"exchange = " + exchange, //
+				"timeZone = 8", //
+				time.ymdHms());
+		Streamlet<String> s1 = Read.each(dividends, splits).concatMap(this::concat);
+		Streamlet<String> s2 = Read.from2(data).concatMap((tag, fs) -> concat(fs).cons(tag));
+		return Streamlet.concat(s0, s1, s2);
+	}
+
+	private Streamlet<String> concat(LngFltPair[] pairs) {
+		return Streamlet.concat( //
+				Read.each("{"), //
+				Read.from(pairs).map(pair -> Time.ofEpochSec(pair.t0).ymdHms() + ":" + pair.t1), //
+				Read.each("}"));
+	}
+
+	private LngFltPair[] adjustPrices(String tag) {
+		LngFltPair[] pairs0 = data.get(tag);
+		int length = pairs0.length;
+		LngFltPair[] pairs1 = new LngFltPair[length];
 
 		int si = splits.length - 1;
 		int di = dividends.length - 1;
 		float a = 0f, b = 1f;
 
 		for (int i = length - 1; 0 <= i; i--) {
-			LngFltPair pair = pairs[i];
+			LngFltPair pair = pairs0[i];
 			long t = pair.t0;
 
 			if (0 <= di) {
@@ -197,28 +238,10 @@ public class StockHistory {
 				}
 			}
 
-			ts[i] = pair.t0;
-			prices[i] = a + b * pair.t1;
+			pairs1[i] = LngFltPair.of(pair.t0, a + b * pair.t1);
 		}
 
-		return DataSource.of(ts, prices);
-	}
-
-	public Streamlet<String> write() {
-		Streamlet<String> s0 = Read.each( //
-				"exchange = " + exchange, //
-				"timeZone = 8", //
-				time.ymdHms());
-		Streamlet<String> s1 = Read.each(dividends, splits).concatMap(this::concat);
-		Streamlet<String> s2 = Read.from2(data).concatMap((tag, fs) -> concat(fs).cons(tag));
-		return Streamlet.concat(s0, s1, s2);
-	}
-
-	private Streamlet<String> concat(LngFltPair[] pairs) {
-		return Streamlet.concat( //
-				Read.each("{"), //
-				Read.from(pairs).map(pair -> Time.ofEpochSec(pair.t0).ymdHms() + ":" + pair.t1), //
-				Read.each("}"));
+		return pairs1;
 	}
 
 }

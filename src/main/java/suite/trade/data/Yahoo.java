@@ -55,10 +55,15 @@ public class Yahoo {
 				.collect(Obj_Lng.lift(array -> closeTs(array[0]))) //
 				.toArray();
 
+		float[] opens = arrays //
+				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))) //
+				.toArray();
+
 		float[] closes = arrays //
 				.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))) //
 				.toArray();
 
+		adjust(symbol, ts, opens);
 		adjust(symbol, ts, closes);
 
 		DataSource ds = DataSource.of(ts, cleanse.cleanse(closes));
@@ -139,7 +144,7 @@ public class Yahoo {
 		} else
 			stockHistory1 = stockHistory0;
 
-		DataSource ds = stockHistory1.cleanse().filter(period).adjustPrices("close");
+		DataSource ds = stockHistory1.cleanse().filter(period).toDataSource();
 
 		// the latest time stamp may fluctuate; adjust it to previous market
 		// close time
@@ -188,16 +193,23 @@ public class Yahoo {
 			try (InputStream is = Singleton.get().getStoreCache().http(urlString).collect(To::inputStream)) {
 				JsonNode json = mapper.readTree(is);
 
-				Streamlet<String[]> arrays = Read.each(json) //
+				Streamlet<JsonNode> quotes = Read.each(json) //
 						.flatMap(json_ -> json_.path("query")) //
 						.flatMap(json_ -> json_.path("results")) //
 						.flatMap(json_ -> json_.path("quote")) //
-						.map(json_ -> new String[] { json_.path("Date").textValue(), json_.path("Close").textValue(), }) //
+						.collect(As::streamlet);
+
+				Streamlet<String[]> arrays = quotes //
+						.map(json_ -> new String[] { //
+								json_.path("Date").textValue(), //
+								json_.path("Open").textValue(), //
+								json_.path("Close").textValue(), }) //
 						.collect(As::streamlet);
 
 				long[] ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
-				float[] prices = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
-				return DataSource.of(ts, prices);
+				float[] opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
+				float[] closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
+				return DataSource.ofOpenClose(ts, opens, closes);
 			}
 		});
 	}
@@ -209,10 +221,7 @@ public class Yahoo {
 	 */
 	public synchronized Map<String, Float> quote(Set<String> symbols) {
 		return quote(symbols, "l1"); // last price
-	}
-
-	public synchronized Map<String, Float> quoteOpenPrice(Set<String> symbols) {
-		return quote(symbols, "o");
+		// "o" - open
 	}
 
 	private Map<String, Float> quote(Set<String> symbols, String field) {

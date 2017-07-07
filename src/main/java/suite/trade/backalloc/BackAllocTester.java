@@ -115,7 +115,7 @@ public class BackAllocTester {
 
 					ymd = time.ymd();
 					priceBySymbol = dsBySymbol //
-							.mapValue(ds -> FltFltPair.of(ds.prices[index_], ds.prices[index_])) //
+							.mapValue(ds -> FltFltPair.of(ds.prices[index_], ds.nextPrices[index_])) //
 							.toMap();
 
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
