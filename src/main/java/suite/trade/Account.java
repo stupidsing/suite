@@ -98,7 +98,7 @@ public class Account {
 		public final Map<String, Float> valuationBySymbol;
 
 		private Valuation(Obj_Flt<String> priceFun0) {
-			Obj_Flt<String> priceFun1 = symbol -> !String_.equals(symbol, cashCode) ? priceFun0.apply(cashCode) : 1f;
+			Obj_Flt<String> priceFun1 = symbol -> !String_.equals(symbol, cashCode) ? priceFun0.apply(symbol) : 1f;
 			valuationBySymbol = Read.from2(assets).map2((symbol, n) -> priceFun1.apply(symbol) * n).toMap();
 		}
 
