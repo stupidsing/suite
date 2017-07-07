@@ -94,7 +94,7 @@ public class Trade_ {
 		public final float valuation0;
 		public final List<Trade> trades;
 
-		public UpdatePortfolio( //
+		private UpdatePortfolio( //
 				Account account, //
 				List<Pair<String, Double>> ratioBySymbol, //
 				Map<String, Asset> assetBySymbol, //
