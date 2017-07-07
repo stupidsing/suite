@@ -54,14 +54,20 @@ public class Yahoo {
 		long[] ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
 		float[] opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
 		float[] closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
+		float[] lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
+		float[] highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
 
 		adjust(symbol, ts, opens);
 		adjust(symbol, ts, closes);
+		adjust(symbol, ts, lows);
+		adjust(symbol, ts, highs);
 
 		return DataSource.ofOpenClose( //
 				ts, //
 				cleanse.cleanse(opens), //
-				cleanse.cleanse(closes));
+				cleanse.cleanse(closes), //
+				cleanse.cleanse(lows), //
+				cleanse.cleanse(highs));
 	}
 
 	// https://l1-query.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com
@@ -197,13 +203,17 @@ public class Yahoo {
 						.map(json_ -> new String[] { //
 								json_.path("Date").textValue(), //
 								json_.path("Open").textValue(), //
-								json_.path("Close").textValue(), }) //
+								json_.path("Close").textValue(), //
+								json_.path("Low").textValue(), //
+								json_.path("High").textValue(), }) //
 						.collect(As::streamlet);
 
 				long[] ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
 				float[] opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
 				float[] closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
-				return DataSource.ofOpenClose(ts, opens, closes);
+				float[] lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
+				float[] highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
+				return DataSource.ofOpenClose(ts, opens, closes, lows, highs);
 			}
 		});
 	}

@@ -33,22 +33,28 @@ public class DataSource {
 
 	// prices of next tick, e.g. tomorrow's open
 	public final float[] nextOpens;
+	public final float[] nextLows;
+	public final float[] nextHighs;
 
 	public static class Eod {
 		public final float price;
 		public final float nextOpen;
+		public final float nextLow;
+		public final float nextHigh;
 
 		public static Eod of(float price) {
-			return of(price, price);
+			return of(price, price, price, price);
 		}
 
-		public static Eod of(float price, float nextOpen) {
-			return new Eod(price, nextOpen);
+		public static Eod of(float price, float nextOpen, float nextLow, float nextHigh) {
+			return new Eod(price, nextOpen, nextLow, nextHigh);
 		}
 
-		private Eod(float price, float nextOpen) {
+		private Eod(float price, float nextOpen, float nextLow, float nextHigh) {
 			this.price = price;
 			this.nextOpen = nextOpen;
+			this.nextLow = nextLow;
+			this.nextHigh = nextHigh;
 		}
 	}
 
@@ -102,33 +108,44 @@ public class DataSource {
 	// at the end of the day -
 	// current price = today's closing price;
 	// next price = tomorrow's opening price.
-	public static DataSource ofOpenClose(long[] ts, float[] opens, float[] closes) {
+	public static DataSource ofOpenClose(long[] ts, float[] opens, float[] closes, float[] lows, float[] highs) {
+		float[] nextOpens = next(opens, closes);
+		float[] nextLows = next(lows, closes);
+		float[] nextHighs = next(highs, closes);
+		return of(ts, closes, nextOpens, nextLows, nextHighs);
+	}
+
+	private static float[] next(float[] opens, float[] closes) {
 		int length = opens.length;
 		int lengthm1 = length - 1;
-		float[] nexts = new float[length];
-		Floats_.copy(opens, 1, nexts, 0, lengthm1);
-		nexts[lengthm1] = closes[lengthm1];
-		return of(ts, closes, nexts);
+		float[] nextOpens = new float[length];
+		Floats_.copy(opens, 1, nextOpens, 0, lengthm1);
+		nextOpens[lengthm1] = closes[lengthm1];
+		return nextOpens;
 	}
 
 	public static DataSource of(long[] ts, float[] prices) {
-		return of(ts, prices, prices);
+		return of(ts, prices, prices, prices, prices);
 	}
 
 	public static DataSource of(long[] ts, Streamlet<Eod> pairs) {
 		float[] prices = pairs.collect(Obj_Flt.lift(pair -> pair.price)).toArray();
 		float[] nextOpens = pairs.collect(Obj_Flt.lift(pair -> pair.nextOpen)).toArray();
-		return of(ts, prices, nextOpens);
+		float[] nextLows = pairs.collect(Obj_Flt.lift(pair -> pair.nextLow)).toArray();
+		float[] nextHighs = pairs.collect(Obj_Flt.lift(pair -> pair.nextHigh)).toArray();
+		return of(ts, prices, nextOpens, nextLows, nextHighs);
 	}
 
-	public static DataSource of(long[] ts, float[] prices, float[] nextOpens) {
-		return new DataSource(ts, prices, nextOpens);
+	public static DataSource of(long[] ts, float[] prices, float[] nextOpens, float[] nextLows, float[] nextHighs) {
+		return new DataSource(ts, prices, nextOpens, nextLows, nextHighs);
 	}
 
-	private DataSource(long[] ts, float[] prices, float[] nextOpens) {
+	private DataSource(long[] ts, float[] prices, float[] nextOpens, float[] nextLows, float[] nextHighs) {
 		this.ts = ts;
 		this.prices = prices;
 		this.nextOpens = nextOpens;
+		this.nextLows = nextLows;
+		this.nextHighs = nextHighs;
 		if (ts.length != prices.length || ts.length != nextOpens.length)
 			throw new RuntimeException("mismatched dates and prices");
 	}
@@ -172,10 +189,12 @@ public class DataSource {
 	public DataSource cons(long time, float price) {
 		int length = ts.length;
 		long[] ts1 = Arrays.copyOf(ts, length + 1);
-		float[] prices1 = Floats_.concat(prices, new float[] { price, });
-		float[] nextOpens1 = prices1 = Floats_.concat(nextOpens, new float[] { price, });
 		ts1[length] = time;
-		return of(ts1, prices1, nextOpens1);
+		return of(ts1, //
+				Floats_.concat(prices, new float[] { price, }), //
+				Floats_.concat(nextOpens, new float[] { price, }), //
+				Floats_.concat(nextLows, new float[] { price, }), //
+				Floats_.concat(nextHighs, new float[] { price, }));
 	}
 
 	public LngFltPair first() {
@@ -296,7 +315,7 @@ public class DataSource {
 	}
 
 	private Eod getEod_(int pos) {
-		return Eod.of(prices[pos], nextOpens[pos]);
+		return Eod.of(prices[pos], nextOpens[pos], nextLows[pos], nextHighs[pos]);
 	}
 
 }

@@ -35,8 +35,10 @@ public class Quandl {
 		long[] ts = arrays.collect(Obj_Lng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))).toArray();
 		float[] opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
 		float[] settles = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[6]))).toArray();
+		float[] lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
+		float[] highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
 
-		return DataSource.ofOpenClose(ts, opens, settles).range(period);
+		return DataSource.ofOpenClose(ts, opens, settles, lows, highs).range(period);
 	}
 
 }

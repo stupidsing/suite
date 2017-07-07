@@ -163,28 +163,37 @@ public class StockHistory {
 	}
 
 	public DataSource toDataSource() {
-		LngFltPair[] closePairs = adjustPrices("close");
 		LngFltPair[] openPairs = adjustPrices("open");
+		LngFltPair[] closePairs = adjustPrices("close");
+		LngFltPair[] lowPairs_ = adjustPrices("low");
+		LngFltPair[] highPairs = adjustPrices("high");
 		int closeLength = closePairs.length;
-		int openLength = openPairs.length;
-
 		long[] ts = new long[closeLength];
 		float[] prices = new float[closeLength];
 		float[] nextOpens = new float[closeLength];
-		int io = 0;
+		float[] nextLows_ = new float[closeLength];
+		float[] nextHighs = new float[closeLength];
+		int io = 0, il = 0, ih = 0;
 
 		for (int ic = 0; ic < closeLength; ic++) {
 			LngFltPair closePair = closePairs[ic];
 			long t = closePair.t0;
-			while (io < openLength && openPairs[io].t0 < t)
-				io++;
 
 			ts[ic] = t;
 			prices[ic] = closePair.t1;
-			nextOpens[ic] = (io < openLength ? openPairs[io] : closePair).t1;
+			nextOpens[ic] = ((io = scan(openPairs, io, t)) < openPairs.length ? openPairs[io] : closePair).t1;
+			nextLows_[ic] = ((il = scan(lowPairs_, il, t)) < lowPairs_.length ? lowPairs_[il] : closePair).t1;
+			nextHighs[ic] = ((ih = scan(highPairs, ih, t)) < highPairs.length ? highPairs[ih] : closePair).t1;
 		}
 
-		return DataSource.of(ts, prices, nextOpens);
+		return DataSource.of(ts, prices, nextOpens, nextLows_, nextHighs);
+	}
+
+	private int scan(LngFltPair[] pairs, int i, long t) {
+		int pength = pairs.length;
+		while (i < pength && pairs[i].t0 < t)
+			i++;
+		return i;
 	}
 
 	public Streamlet<String> write() {
