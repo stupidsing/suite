@@ -11,7 +11,6 @@ import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.primitive.Floats.FloatsBuilder;
-import suite.primitive.adt.pair.FltFltPair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
@@ -22,6 +21,7 @@ import suite.trade.Trade_;
 import suite.trade.Trade_.UpdatePortfolio;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
+import suite.trade.data.DataSource.Eod;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
@@ -86,10 +86,7 @@ public class WalkForwardAllocTester {
 		List<Pair<String, Double>> ratioBySymbol = wfa.allocate(Read.from2(dsBySymbol), windowSize);
 
 		UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol,
-				Read //
-						.from2(priceBySymbol) //
-						.mapValue(price -> FltFltPair.of(price, price)) //
-						.toMap());
+				Read.from2(priceBySymbol).mapValue(Eod::of).toMap());
 
 		float valuation_;
 

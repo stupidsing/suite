@@ -10,7 +10,6 @@ import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;
-import suite.primitive.adt.pair.FltFltPair;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.As;
@@ -34,6 +33,24 @@ public class DataSource {
 
 	// prices of next tick, e.g. tomorrow's open
 	public final float[] nextPrices;
+
+	public static class Eod {
+		public final float price;
+		public final float nextPrice;
+
+		public static Eod of(float price) {
+			return of(price, price);
+		}
+
+		public static Eod of(float price, float nextPrice) {
+			return new Eod(price, nextPrice);
+		}
+
+		private Eod(float price, float nextPrice) {
+			this.price = price;
+			this.nextPrice = nextPrice;
+		}
+	}
 
 	public static <K> AlignKeyDataSource<K> alignAll(Streamlet2<K, DataSource> dsByKey0) {
 		AlignDataSource alignDataSource = DataSource.alignAll(dsByKey0.values());
@@ -98,9 +115,9 @@ public class DataSource {
 		return of(ts, prices, prices);
 	}
 
-	public static DataSource of(long[] ts, Streamlet<FltFltPair> pairs) {
-		float[] prices = pairs.collect(Obj_Flt.lift(pair -> pair.t0)).toArray();
-		float[] nextPrices = pairs.collect(Obj_Flt.lift(pair -> pair.t1)).toArray();
+	public static DataSource of(long[] ts, Streamlet<Eod> pairs) {
+		float[] prices = pairs.collect(Obj_Flt.lift(pair -> pair.price)).toArray();
+		float[] nextPrices = pairs.collect(Obj_Flt.lift(pair -> pair.nextPrice)).toArray();
 		return of(ts, prices, nextPrices);
 	}
 
@@ -123,14 +140,14 @@ public class DataSource {
 	public DataSource alignAfterPrices(long[] ts1) {
 		int length0 = ts.length;
 		int length1 = ts1.length;
-		FltFltPair[] pairs1 = new FltFltPair[length1];
+		Eod[] pairs1 = new Eod[length1];
 		int si = 0, di = 0;
 		while (di < length1)
 			if (length0 <= si)
 				// avoid division by 0s
-				pairs1[di++] = FltFltPair.of(Trade_.negligible, Trade_.negligible);
+				pairs1[di++] = Eod.of(Trade_.negligible);
 			else if (ts1[di] <= ts[si])
-				pairs1[di++] = getPair_(si);
+				pairs1[di++] = getEod_(si);
 			else
 				si++;
 		return of(ts1, Read.from(pairs1));
@@ -139,14 +156,14 @@ public class DataSource {
 	public DataSource alignBeforePrices(long[] ts1) {
 		int length0 = ts.length;
 		int length1 = ts1.length;
-		FltFltPair[] pairs1 = new FltFltPair[length1];
+		Eod[] pairs1 = new Eod[length1];
 		int si = length0 - 1, di = length1 - 1;
 		while (0 <= di)
 			if (si < 0)
 				// avoid division by 0s
-				pairs1[di--] = FltFltPair.of(Trade_.max, Trade_.max);
+				pairs1[di--] = Eod.of(Trade_.max);
 			else if (ts[si] <= ts1[di])
-				pairs1[di--] = getPair_(si);
+				pairs1[di--] = getEod_(si);
 			else
 				si--;
 		return of(ts1, Read.from(pairs1));
@@ -169,8 +186,8 @@ public class DataSource {
 		return get_(pos);
 	}
 
-	public FltFltPair getPair(int pos) {
-		return getPair_(pos);
+	public Eod getEod(int pos) {
+		return getEod_(pos);
 	}
 
 	public LngFltPair last() {
@@ -258,11 +275,11 @@ public class DataSource {
 
 	private DataSource range_(long t0, long tx) {
 		LongsBuilder ts1 = new LongsBuilder();
-		List<FltFltPair> pairs1 = new ArrayList<>();
+		List<Eod> pairs1 = new ArrayList<>();
 
 		for (int i = 0; i < prices.length; i++) {
 			long t = ts[i];
-			FltFltPair pair = getPair_(i);
+			Eod pair = getEod_(i);
 			if (t0 <= t && t < tx) {
 				ts1.append(t);
 				pairs1.add(pair);
@@ -278,8 +295,8 @@ public class DataSource {
 		return LngFltPair.of(ts[pos], prices[pos]);
 	}
 
-	private FltFltPair getPair_(int pos) {
-		return FltFltPair.of(prices[pos], nextPrices[pos]);
+	private Eod getEod_(int pos) {
+		return Eod.of(prices[pos], nextPrices[pos]);
 	}
 
 }

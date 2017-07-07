@@ -7,11 +7,11 @@ import java.util.Set;
 import suite.adt.pair.Pair;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.adt.pair.FltFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account.Valuation;
+import suite.trade.data.DataSource.Eod;
 import suite.util.Set_;
 import suite.util.String_;
 import suite.util.To;
@@ -85,7 +85,7 @@ public class Trade_ {
 			Account account, //
 			List<Pair<String, Double>> ratioBySymbol, //
 			Map<String, Asset> assetBySymbol, //
-			Map<String, FltFltPair> priceBySymbol) {
+			Map<String, Eod> priceBySymbol) {
 		return new UpdatePortfolio(account, ratioBySymbol, assetBySymbol, priceBySymbol);
 	}
 
@@ -98,15 +98,15 @@ public class Trade_ {
 				Account account, //
 				List<Pair<String, Double>> ratioBySymbol, //
 				Map<String, Asset> assetBySymbol, //
-				Map<String, FltFltPair> priceBySymbol) {
-			Valuation val = account.valuation(symbol -> priceBySymbol.get(symbol).t0);
+				Map<String, Eod> priceBySymbol) {
+			Valuation val = account.valuation(symbol -> priceBySymbol.get(symbol).price);
 			float valuation = val.sum();
 
 			Map<String, Integer> portfolio = Read //
 					.from2(ratioBySymbol) //
 					.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
 					.map2((symbol, potential) -> {
-						float price = priceBySymbol.get(symbol).t0;
+						float price = priceBySymbol.get(symbol).price;
 						int lotSize = assetBySymbol.get(symbol).lotSize;
 						if (negligible < price)
 							return lotSize * (int) Math.floor(valuation * potential / (price * lotSize));
@@ -116,13 +116,14 @@ public class Trade_ {
 					.toMap();
 
 			List<Trade> trades_ = Trade_ //
-					.diff(account.assets(), portfolio, symbol -> priceBySymbol.get(symbol).t1) //
-					.filter(trade -> {
+					.diff(account.assets(), portfolio, symbol -> priceBySymbol.get(symbol).nextPrice) //
+					.filter(trade -> { // can be executed in next open price?
 						int buySell = trade.buySell;
 						float price = trade.price;
-						float nextPrice = priceBySymbol.get(trade.symbol).t1;
+						float nextPrice = priceBySymbol.get(trade.symbol).nextPrice;
 						return buySell < 0 && price <= nextPrice || 0 < buySell && nextPrice <= price;
 					}) //
+					.sortBy(trade -> trade.buySell) // sell first
 					.toList();
 
 			val0 = val;

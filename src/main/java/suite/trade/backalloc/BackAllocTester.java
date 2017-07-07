@@ -12,7 +12,6 @@ import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.os.LogUtil;
-import suite.primitive.adt.pair.FltFltPair;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -28,6 +27,7 @@ import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
+import suite.trade.data.DataSource.Eod;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
@@ -97,7 +97,7 @@ public class BackAllocTester {
 			int size = ts_.length;
 
 			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol, ts_);
-			Map<String, FltFltPair> priceBySymbol = Collections.emptyMap();
+			Map<String, Eod> priceBySymbol = Collections.emptyMap();
 			float[] valuations_ = new float[size];
 			int index = 0;
 			String ymd = null;
@@ -114,7 +114,7 @@ public class BackAllocTester {
 					int index_ = index;
 
 					ymd = time.ymd();
-					priceBySymbol = dsBySymbol.mapValue(ds -> ds.getPair(index_)).toMap();
+					priceBySymbol = dsBySymbol.mapValue(ds -> ds.getEod(index_)).toMap();
 
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
 					UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, priceBySymbol);
@@ -136,8 +136,8 @@ public class BackAllocTester {
 				exception_ = new RuntimeException("at " + ymd, ex);
 			}
 
-			Map<String, FltFltPair> priceBySymbol_ = priceBySymbol;
-			trades.addAll(Trade_.sellAll(Read.from(trades), symbol -> priceBySymbol_.get(symbol).t1).toList());
+			Map<String, Eod> priceBySymbol_ = priceBySymbol;
+			trades.addAll(Trade_.sellAll(Read.from(trades), symbol -> priceBySymbol_.get(symbol).nextPrice).toList());
 
 			ReturnsStat rs = ts.returnsStatDailyAnnualized(valuations_);
 
