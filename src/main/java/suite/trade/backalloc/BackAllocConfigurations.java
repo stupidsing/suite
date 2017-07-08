@@ -13,7 +13,7 @@ import suite.util.FunUtil.Sink;
 public class BackAllocConfigurations {
 
 	private Configuration cfg;
-	private Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
+	private Fun<Time, Streamlet<Asset>> fun;
 	private Sink<String> log;
 
 	public final Bacs bacs;
