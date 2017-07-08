@@ -14,7 +14,6 @@ import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocator;
-import suite.trade.data.Cleanse;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
@@ -27,7 +26,6 @@ public class Factor {
 	private DataSource ids;
 
 	private Configuration cfg;
-	private Cleanse cleanse = new Cleanse();
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 	private Time now = Time.now();
@@ -51,14 +49,14 @@ public class Factor {
 		AlignKeyDataSource<String> akds = cfg.dataSources(TimeRange.of(Time.MIN, now), indices);
 
 		float[] indexPrices = akds.dsByKey //
-				.map((symbol, ds) -> cleanse.removeZeroes(ds.prices)) //
+				.map((symbol, ds) -> ds.prices) //
 				.fold(new float[akds.ts.length], mtx::add);
 
 		ids = DataSource.of(akds.ts, indexPrices);
 	}
 
 	public List<Pair<Asset, Double>> query(Streamlet<Asset> assets) {
-		TimeRange period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(Time.now()), 250 * 3);
+		TimeRange period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(now), 250 * 3);
 
 		return assets //
 				.map2(asset -> correlate(ids, cfg.dataSource(asset.symbol), period)) //
