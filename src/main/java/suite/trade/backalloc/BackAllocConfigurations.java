@@ -13,12 +13,13 @@ import suite.util.FunUtil.Sink;
 public class BackAllocConfigurations {
 
 	private Configuration cfg;
-	private Fun<Time, Streamlet<Asset>> fun;
 	private Sink<String> log;
 
 	public final Bacs bacs;
 
 	public class Bacs {
+		private Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
+
 		private BackAllocator ba_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9);
 		private BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().longOnly().pick(3).even();
 		private BackAllocator ba_mix = BackAllocator_.sum(ba_bb, ba_facoil);
@@ -45,7 +46,6 @@ public class BackAllocConfigurations {
 
 	public BackAllocConfigurations(Configuration cfg, Sink<String> log) {
 		this.cfg = cfg;
-		fun = cfg::queryCompaniesByMarketCap;
 		this.log = log;
 		bacs = new Bacs();
 	}
