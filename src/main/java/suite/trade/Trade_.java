@@ -130,7 +130,7 @@ public class Trade_ {
 						float price = trade.price;
 						float nextLow = eodBySymbol.get(symbol).nextLow;
 						float nextHigh = eodBySymbol.get(symbol).nextHigh;
-						return isFreePlay || nextLow <= price && nextHigh <= price;
+						return isFreePlay || nextLow <= price && price <= nextHigh;
 					}) //
 					.sortBy(trade -> trade.buySell) // sell first
 					.toList();
