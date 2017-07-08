@@ -55,7 +55,7 @@ public class SingleAllocBackTest {
 
 	private float buySell(DataSource ds, int day, int buySell) {
 		float price = ds.prices[day];
-		account.play(Trade.of(buySell, symbol, price));
+		account.play(Trade.of(buySell, symbol, price), false);
 		float valuation = account.valuation(symbol -> price).sum();
 
 		if (day == 0 || buySell != 0)

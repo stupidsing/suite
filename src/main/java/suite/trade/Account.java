@@ -23,7 +23,7 @@ public class Account {
 
 	public static Account fromHistory(Iterable<Trade> trades) {
 		Account account = new Account(new HashMap<>());
-		account.play(trades);
+		account.play_(trades, false);
 		return account;
 	}
 
@@ -51,15 +51,12 @@ public class Account {
 		return get(symbol);
 	}
 
-	public boolean play(Iterable<Trade> trades) {
-		boolean result = true;
-		for (Trade trade : trades)
-			result &= play_(trade);
-		return result;
+	public boolean play(Trade trade, boolean isValidate) {
+		return play_(trade, isValidate);
 	}
 
-	public boolean play(Trade trade) {
-		return play_(trade);
+	public boolean play(Iterable<Trade> trades) {
+		return play_(trades, !Trade_.isFreePlay);
 	}
 
 	@Override
@@ -118,7 +115,14 @@ public class Account {
 		return get(cashCode);
 	}
 
-	private boolean play_(Trade trade) {
+	private boolean play_(Iterable<Trade> trades, boolean isValidate) {
+		boolean result = true;
+		for (Trade trade : trades)
+			result &= play_(trade, isValidate);
+		return result;
+	}
+
+	private boolean play_(Trade trade, boolean isValidate) {
 		float price = trade.price;
 
 		if (Trade_.negligible < price && price < Trade_.max) {
@@ -130,7 +134,7 @@ public class Account {
 			int cash1 = (int) (cash0 - cost);
 			int nShares0 = get(symbol);
 			int nShares1 = nShares0 + buySell;
-			boolean isPlayable = Trade_.isFreePlay || Trade_.isValidCash(cash1) && Trade_.isValidStock(symbol, nShares1);
+			boolean isPlayable = !isValidate || Trade_.isValidCash(cash1) && Trade_.isValidStock(symbol, nShares1);
 
 			if (isPlayable) {
 				update(cashCode, cash1);
