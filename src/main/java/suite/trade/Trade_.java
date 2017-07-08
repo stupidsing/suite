@@ -126,11 +126,9 @@ public class Trade_ {
 			List<Trade> trades_ = Trade_ //
 					.diff(account.assets(), portfolio, priceFun) //
 					.filter(trade -> { // can be executed in next open price?
-						String symbol = trade.symbol;
+						Eod eod = eodBySymbol.get(trade.symbol);
 						float price = trade.price;
-						float nextLow = eodBySymbol.get(symbol).nextLow;
-						float nextHigh = eodBySymbol.get(symbol).nextHigh;
-						return isFreePlay || nextLow <= price && price <= nextHigh;
+						return isFreePlay || eod.nextLow <= price && price <= eod.nextHigh;
 					}) //
 					.sortBy(trade -> trade.buySell) // sell first
 					.toList();
