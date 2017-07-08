@@ -51,13 +51,15 @@ public class Account {
 		return get(symbol);
 	}
 
-	public void play(Iterable<Trade> trades) {
+	public boolean play(Iterable<Trade> trades) {
+		boolean result = true;
 		for (Trade trade : trades)
-			play_(trade);
+			result &= play_(trade);
+		return result;
 	}
 
-	public void play(Trade trade) {
-		play_(trade);
+	public boolean play(Trade trade) {
+		return play_(trade);
 	}
 
 	@Override
@@ -83,10 +85,10 @@ public class Account {
 
 	public void validate() {
 		int cash = cash_();
-		if (cash < -Trade_.leverageAmount)
+		if (!Trade_.isValidCash(cash))
 			throw new RuntimeException("too much leverage: " + cash);
 		assets.forEach((symbol, nShares) -> {
-			if (!Trade_.isShortSell && !String_.equals(symbol, cashCode) && nShares < 0)
+			if (!Trade_.isValidStock(symbol, nShares))
 				throw new RuntimeException("no short-selling " + symbol + " " + nShares);
 		});
 	}
@@ -116,7 +118,7 @@ public class Account {
 		return get(cashCode);
 	}
 
-	private void play_(Trade trade) {
+	private boolean play_(Trade trade) {
 		float price = trade.price;
 
 		if (Trade_.negligible < price && price < Trade_.max) {
@@ -128,12 +130,17 @@ public class Account {
 			int cash1 = (int) (cash0 - cost);
 			int nShares0 = get(symbol);
 			int nShares1 = nShares0 + buySell;
+			boolean isPlayable = Trade_.isFreePlay || Trade_.isValidCash(cash1) && Trade_.isValidStock(symbol, nShares1);
 
-			update(cashCode, cash1);
-			update(symbol, nShares1);
-			if (buySell != 0)
-				nTransactions++;
-			transactionAmount += Math.abs(cost);
+			if (isPlayable) {
+				update(cashCode, cash1);
+				update(symbol, nShares1);
+				if (buySell != 0)
+					nTransactions++;
+				transactionAmount += Math.abs(cost);
+			}
+
+			return isPlayable;
 		} else
 			throw new RuntimeException("impossible transaction price: " + trade);
 	}

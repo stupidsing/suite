@@ -20,6 +20,7 @@ public class Trade_ {
 
 	public static Set<String> blackList = To.set("N/A"); // "0566.HK"
 	public static boolean isCacheQuotes = true;
+	public static boolean isFreePlay = false;
 	public static boolean isShortSell = false;
 	public static float leverageAmount = 100000f;
 	public static float max = 1E6f;
@@ -129,7 +130,7 @@ public class Trade_ {
 						float price = trade.price;
 						float nextLow = eodBySymbol.get(symbol).nextLow;
 						float nextHigh = eodBySymbol.get(symbol).nextHigh;
-						return nextLow <= price && nextHigh <= price;
+						return isFreePlay || nextLow <= price && nextHigh <= price;
 					}) //
 					.sortBy(trade -> trade.buySell) // sell first
 					.toList();
@@ -138,6 +139,14 @@ public class Trade_ {
 			valuation0 = valuation;
 			trades = trades_;
 		}
+	}
+
+	public static boolean isValidCash(int cash) {
+		return -Trade_.leverageAmount <= cash;
+	}
+
+	public static boolean isValidStock(String symbol, int nShares) {
+		return Trade_.isShortSell || String_.equals(symbol, Asset.cashSymbol) || 0 <= nShares;
 	}
 
 }
