@@ -26,6 +26,7 @@ import suite.trade.Trade_;
 import suite.trade.analysis.Summarize;
 import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocConfigurations;
+import suite.trade.backalloc.BackAllocConfigurations.Bacs;
 import suite.trade.backalloc.BackAllocTester;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator;
@@ -52,7 +53,7 @@ public class DailyMain extends ExecutableProgram {
 	private Sink<String> log = To.sink(sb);
 	private Time today = Time.now();
 
-	private BackAllocConfigurations bacs = new BackAllocConfigurations(cfg, log);
+	private Bacs bacs = new BackAllocConfigurations(cfg, log).bacs;
 
 	private class Result {
 		private String strategy;

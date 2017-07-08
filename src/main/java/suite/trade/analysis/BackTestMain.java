@@ -19,6 +19,7 @@ import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocConfigurations;
+import suite.trade.backalloc.BackAllocConfigurations.Bacs;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator_;
 import suite.trade.data.Configuration;
@@ -33,7 +34,7 @@ public class BackTestMain extends ExecutableProgram {
 	private BackTester runner = new BackTester();
 	private Configuration cfg = new ConfigurationImpl();
 
-	private BackAllocConfigurations bacs = new BackAllocConfigurations(cfg, LogUtil::info);
+	private Bacs bacs = new BackAllocConfigurations(cfg, LogUtil::info).bacs;
 
 	private Map<String, BackAllocConfiguration> bacByTag;
 
