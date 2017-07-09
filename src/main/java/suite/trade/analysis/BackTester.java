@@ -1,6 +1,8 @@
 package suite.trade.analysis;
 
 import suite.math.stat.Statistic;
+import suite.math.stat.Statistic.MeanVariance;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet;
@@ -39,17 +41,20 @@ public class BackTester {
 
 		Streamlet<String> results1 = simulationsByKey //
 				.filterValue(sim -> sim.exception == null) //
-				.groupBy(sims -> stat.meanVariance(sims //
-						.collect(Obj_Flt.lift(sim -> (float) sim.annualReturn)) //
-						.toArray())) //
-				.map((key, mv) -> {
+				.groupBy(sims -> {
+					double txFee = sims.collectAsDouble(Obj_Dbl.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
+
+					MeanVariance mv = stat.meanVariance(sims //
+							.collect(Obj_Flt.lift(sim -> (float) sim.annualReturn)) //
+							.toArray());
+
 					double apr = mv.mean;
-					double sd = mv.standardDeviation();
-					return "\nTEST = " + key //
-							+ " >> apr = " + To.string(apr) //
-							+ ", std dev = " + To.string(sd) //
-							+ ", sharpe = " + To.string(apr / sd);
-				});
+
+					return ">> apr = " + To.string(apr) //
+							+ ", sharpe = " + To.string(apr / mv.standardDeviation()) //
+							+ ", txFee = " + To.string(txFee / sims.size());
+				}) //
+				.map((key, summary) -> "\nTEST = " + key + " " + summary);
 
 		return Streamlet.concat(results0, results1).sort(Object_::compare).collect(As.joined());
 	}
