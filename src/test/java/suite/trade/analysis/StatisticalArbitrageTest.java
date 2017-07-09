@@ -53,6 +53,7 @@ public class StatisticalArbitrageTest {
 				.range(tor, length) //
 				.map(i -> To.arrayOfFloats(tor, j -> prices0[i + j - tor])) //
 				.toArray(float[].class);
+
 		float[] ys = IntStreamlet //
 				.range(tor, length) //
 				.collect(Int_Flt.lift(i -> prices1[i])) //
