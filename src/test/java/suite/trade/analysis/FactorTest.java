@@ -30,9 +30,7 @@ public class FactorTest {
 				.distinct();
 
 		List<Pair<Asset, Double>> pairs = Factor.of(cfg, indices).query(assets);
-
-		for (Pair<Asset, Double> pair : pairs)
-			System.out.println(pair);
+		pairs.forEach(System.out::println);
 	}
 
 }
