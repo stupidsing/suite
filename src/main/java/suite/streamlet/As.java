@@ -1,9 +1,7 @@
 package suite.streamlet;
 
 import java.io.ByteArrayInputStream;
-import java.io.CharArrayReader;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -156,10 +154,6 @@ public class As {
 
 	public static String string(Outlet<Bytes> outlet) {
 		return To.string(Bytes.of(outlet));
-	}
-
-	public Reader asReader(Chars chars) {
-		return new CharArrayReader(chars.cs, chars.start, chars.end - chars.start);
 	}
 
 	public static Streamlet<String[]> table(Outlet<Bytes> outlet) {
