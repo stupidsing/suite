@@ -3,7 +3,6 @@ package suite.math.stat;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.primitive.IntPrimitives.IntObjSource;
-import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
@@ -163,7 +162,7 @@ public class Statistic {
 			});
 		}
 
-		public String toString(Int_Obj<String> coeffFun) {
+		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			float[] tStatistic = tStatistic();
 			for (int i = 0; i < sampleLength; i++)
