@@ -22,11 +22,11 @@ public class BackAllocConfigurations {
 		private Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
 
 		private BackAllocator ba_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9);
-		private BackAllocator ba_donchian = BackAllocator_.donchian(9);
+		private BackAllocator ba_donchian = BackAllocator_.donchian(9).holdMinimum(2);
 		private BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().longOnly().pick(3).even();
 
 		public final BackAllocConfiguration bac_bb = ba_bb.cfgUnl(fun);
-		public final BackAllocConfiguration bac_donchian = ba_donchian.holdMinimum(2).cfgUnl(fun);
+		public final BackAllocConfiguration bac_donchian = ba_donchian.cfgUnl(fun);
 		public final BackAllocConfiguration bac_ema = BackAllocator_.ema().pick(3).cfgUnl(fun);
 		public final BackAllocConfiguration bac_facoil = ba_facoil.cfgUnl(fun);
 		public final BackAllocConfiguration bac_hsi = BackAllocConfiguration.ofSingle(Asset.hsi);
