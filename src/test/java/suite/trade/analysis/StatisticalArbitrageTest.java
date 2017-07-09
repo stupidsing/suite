@@ -2,10 +2,13 @@ package suite.trade.analysis;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 
+import suite.adt.pair.Pair;
+import suite.math.stat.BollingerBands;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.TimeSeries;
@@ -14,6 +17,8 @@ import suite.primitive.Int_Flt;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
+import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
@@ -23,6 +28,8 @@ import suite.util.Object_;
 import suite.util.To;
 
 public class StatisticalArbitrageTest {
+
+	private TimeRange period = TimeRange.threeYears();
 
 	private Configuration cfg = new ConfigurationImpl();
 	private Statistic stat = new Statistic();
@@ -34,7 +41,6 @@ public class StatisticalArbitrageTest {
 		int tor = 8;
 		String symbol0 = "CLQ17.NYM";
 		String symbol1 = "1055.HK";
-		TimeRange period = TimeRange.threeYears();
 
 		AlignKeyDataSource<String> akds = cfg.dataSources(period, Read.each(symbol0, symbol1));
 		Map<String, float[]> pricesBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
@@ -59,7 +65,6 @@ public class StatisticalArbitrageTest {
 	// Naive Bayes return prediction
 	@Test
 	public void testReturnDistribution() {
-		TimeRange period = TimeRange.threeYears();
 		float[] prices = cfg.dataSource("^HSI").range(period).prices;
 		int maxTor = 16;
 
@@ -130,6 +135,26 @@ public class StatisticalArbitrageTest {
 	// any relationship between returns and volatility?
 	@Test
 	public void testVolatility() {
+		BollingerBands bb = new BollingerBands();
+
+		Streamlet<String> symbols = cfg //
+				.queryCompaniesByMarketCap(Time.now()) //
+				.map(asset -> asset.symbol);
+
+		AlignKeyDataSource<String> akds = cfg.dataSources(period, symbols);
+
+		List<Pair<String, Double>> volBySymbol = akds.dsByKey //
+				.map2((symbol, ds) -> {
+					float[] bandwidths0 = bb.bb(ds.prices, 32, 0, 2f).bandwidth;
+					float[] returns0 = ds.returns();
+					float[] bandwidths1 = ts.drop(1, bandwidths0);
+					float[] returns1 = ts.drop(1, returns0);
+					return stat.correlation(bandwidths1, returns1);
+				}) //
+				.sortByValue(Object_::compare) //
+				.toList();
+
+		volBySymbol.forEach(System.out::println);
 	}
 
 }
