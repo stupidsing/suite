@@ -6,10 +6,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -27,6 +25,7 @@ import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
+import suite.util.ParseUtil;
 import suite.util.Rethrow;
 import suite.util.Thread_;
 import suite.util.To;
@@ -70,27 +69,11 @@ public class HttpUtil {
 		String out = get(Rethrow.ex(() -> uri.toURL())).out.collect(As::utf8decode).map(Chars::toString).collect(As.joined());
 		Map<String, URI> links = new HashMap<>();
 		String[] m;
-		while ((m = split(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
+		while ((m = ParseUtil.fit(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
 			links.putIfAbsent(m[4], uri.resolve(m[2]));
 			out = m[5];
 		}
 		return links;
-	}
-
-	private static String[] split(String in, String... parts) {
-		List<String> outs = new ArrayList<>();
-		String inl = in.toLowerCase();
-		int p = 0;
-		for (String part : parts) {
-			int p1 = inl.indexOf(part.toLowerCase(), p);
-			if (0 <= p1) {
-				outs.add(in.substring(p, p1));
-				p = p1 + part.length();
-			} else
-				return null;
-		}
-		outs.add(in.substring(p));
-		return outs.toArray(new String[0]);
 	}
 
 	private static HttpResult http_(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) {

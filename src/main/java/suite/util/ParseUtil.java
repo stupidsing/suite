@@ -9,9 +9,34 @@ import suite.node.io.Operator.Assoc;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.text.Segment;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
 public class ParseUtil {
+
+	public static String[] fit(String in, String... parts) {
+		return fit(in, s -> s, parts);
+	}
+
+	public static String[] fitCaseInsensitive(String in, String... parts) {
+		return fit(in, String::toLowerCase, parts);
+	}
+
+	public static String[] fit(String in, Fun<String, String> lower, String... parts) {
+		List<String> outs = new ArrayList<>();
+		String inl = lower.apply(in);
+		int p = 0;
+		for (String part : parts) {
+			int p1 = inl.indexOf(lower.apply(part), p);
+			if (0 <= p1) {
+				outs.add(in.substring(p, p1));
+				p = p1 + part.length();
+			} else
+				return null;
+		}
+		outs.add(in.substring(p));
+		return outs.toArray(new String[0]);
+	}
 
 	public static List<String> searchn(String s, String name, Assoc assoc) {
 		List<String> list = new ArrayList<>();
