@@ -81,11 +81,11 @@ public class HttpUtil {
 		List<String> outs = new ArrayList<>();
 		String inl = in.toLowerCase();
 		int p = 0;
-		for (String key : parts) {
-			int p1 = inl.indexOf(key.toLowerCase(), p);
+		for (String part : parts) {
+			int p1 = inl.indexOf(part.toLowerCase(), p);
 			if (0 <= p1) {
 				outs.add(in.substring(p, p1));
-				p = p1 + key.length();
+				p = p1 + part.length();
 			} else
 				return null;
 		}

@@ -8,6 +8,17 @@ import java.util.List;
 
 public class List_ {
 
+	public static <T> List<List<T>> chunk(List<T> list, int n) {
+		int s = 0;
+		List<List<T>> subsets = new ArrayList<>();
+		while (s < list.size()) {
+			int s1 = Math.min(s + n, list.size());
+			subsets.add(list.subList(s, s1));
+			s = s1;
+		}
+		return subsets;
+	}
+
 	@SafeVarargs
 	public static <T> List<T> concat(Collection<T>... collections) {
 		List<T> list = new ArrayList<>();
@@ -55,17 +66,6 @@ public class List_ {
 		List<T> list1 = new ArrayList<>(list);
 		Collections.sort(list1, comparator);
 		return list1;
-	}
-
-	public static <T> List<List<T>> splitn(List<T> list, int n) {
-		int s = 0;
-		List<List<T>> subsets = new ArrayList<>();
-		while (s < list.size()) {
-			int s1 = Math.min(s + n, list.size());
-			subsets.add(list.subList(s, s1));
-			s = s1;
-		}
-		return subsets;
 	}
 
 }
