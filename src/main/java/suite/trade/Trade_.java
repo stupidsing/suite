@@ -110,10 +110,7 @@ public class Trade_ {
 					.map2((symbol, potential) -> {
 						float price = eodBySymbol.get(symbol).price;
 						int lotSize = assetBySymbol.get(symbol).lotSize;
-						if (negligible < price)
-							return lotSize * (int) Math.floor(valuation * potential / (price * lotSize));
-						else
-							return 0; // cannot buy liquidated stock
+						return lotSize * (int) Math.floor(valuation * potential / (price * lotSize));
 					}) //
 					.toMap();
 
@@ -128,7 +125,14 @@ public class Trade_ {
 					.filter(trade -> { // can be executed in next open price?
 						Eod eod = eodBySymbol.get(trade.symbol);
 						float price = trade.price;
-						return isFreePlay || eod.nextLow <= price && price <= eod.nextHigh;
+
+						// cannot buy liquidated stock
+						boolean isTradeable = negligible < price;
+
+						// only if trade is within price range of next tick
+						boolean isMatch = isFreePlay || eod.nextLow <= price && price <= eod.nextHigh;
+
+						return isTradeable && isMatch;
 					}) //
 					.sortBy(trade -> trade.buySell) // sell first
 					.toList();
