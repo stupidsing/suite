@@ -8,6 +8,10 @@ import suite.util.To;
 
 public class Matrix {
 
+	public double abs(float[] m) {
+		return abs_(m);
+	}
+
 	public float[] add(float[] m, float[] n) {
 		return addOn(copy(m), n);
 	}
@@ -61,15 +65,12 @@ public class Matrix {
 		return o;
 	}
 
+	public float dot(float[] m) {
+		return dot_(m);
+	}
+
 	public float dot(float[] m, float[] n) {
-		int length = m.length;
-		float sum = 0;
-		if (length == n.length)
-			for (int i = 0; i < length; i++)
-				sum += m[i] * n[i];
-		else
-			throw new RuntimeException("wrong input sizes");
-		return sum;
+		return dot_(m, n);
 	}
 
 	public boolean equals(float[][] m, float[][] n) {
@@ -289,6 +290,10 @@ public class Matrix {
 		return m;
 	}
 
+	public float[] normalize(float[] m) {
+		return scale(m, 1d / abs_(m));
+	}
+
 	public float[] of(float[] m) {
 		return copy(m);
 	}
@@ -449,6 +454,25 @@ public class Matrix {
 	private void addMultipliedRow(float[][] m, int sourceRow, float factor, int targetRow) {
 		for (int col = 0; col < w(m); col++)
 			m[targetRow][col] = m[targetRow][col] + factor * m[sourceRow][col];
+	}
+
+	private double abs_(float[] m) {
+		return Math.sqrt(dot_(m));
+	}
+
+	private float dot_(float[] m) {
+		return dot_(m, m);
+	}
+
+	private float dot_(float[] m, float[] n) {
+		int length = m.length;
+		float sum = 0;
+		if (length == n.length)
+			for (int i = 0; i < length; i++)
+				sum += m[i] * n[i];
+		else
+			throw new RuntimeException("wrong input sizes");
+		return sum;
 	}
 
 	private float[] copy(float[] m) {

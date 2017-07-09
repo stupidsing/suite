@@ -88,7 +88,7 @@ public class KmeansCluster {
 
 	private float sqdist(float[] a, float[] b) {
 		float[] d = mtx.sub(a, b);
-		return mtx.dot(d, d);
+		return mtx.dot(d);
 	}
 
 	private float[] div(float[] a, float b) {
