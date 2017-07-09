@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
-import suite.math.stat.Statistic.MeanVariance;
 import suite.math.stat.TimeSeries;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Int_Flt;
@@ -73,16 +72,8 @@ public class StatisticalArbitrageTest {
 				}) //
 				.toMap();
 
-		for (int tor = 1; tor < maxTor; tor++) {
-			float[] differences = differencesByTor.get(tor);
-			MeanVariance mv = stat.meanVariance(differences);
-
-			System.out.println("tor = " + tor //
-					+ ", mean = " + mv.mean //
-					+ ", variance = " + mv.variance //
-					+ ", skewness = " + stat.skewness(differences) //
-					+ ", kurtosis = " + stat.kurtosis(differences));
-		}
+		for (int tor = 1; tor < maxTor; tor++)
+			System.out.println("tor = " + tor + ", " + stat.moments(differencesByTor.get(tor)));
 
 		Int_Flt predictFun = t -> {
 			double[][] cpsArray = IntStreamlet //
@@ -134,6 +125,11 @@ public class StatisticalArbitrageTest {
 					+ ", actual = " + prices[t] //
 					+ ", predicted = " + predicted);
 		}
+	}
+
+	// any relationship between returns and volatility?
+	@Test
+	public void testVolatility() {
 	}
 
 }

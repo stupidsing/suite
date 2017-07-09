@@ -59,17 +59,7 @@ public class Statistic {
 	}
 
 	public double kurtosis(float[] fs) {
-		MeanVariance mv = meanVariance_(fs);
-		double mean = mv.mean;
-		double sd = mv.standardDeviation();
-		double sum = 0d;
-		for (float f : fs) {
-			double d = f - mean;
-			double d2 = d * d;
-			sum += d2 * d2;
-		}
-		double sd2 = sd * sd;
-		return sum / (fs.length * sd2 * sd2);
+		return kurtosis_(meanVariance_(fs), fs);
 	}
 
 	// ordinary least squares
@@ -214,6 +204,14 @@ public class Statistic {
 		return meanVariance_(fs);
 	}
 
+	public String moments(float[] fs) {
+		MeanVariance mv = meanVariance_(fs);
+		return "mean = " + mv.mean //
+				+ ", variance = " + mv.variance //
+				+ ", skewness = " + skewness_(mv, fs) //
+				+ ", kurtosis = " + kurtosis_(mv, fs);
+	}
+
 	public Obj_Int<int[]> naiveBayes(int[][] x, int[] y) {
 		IntObjMap<int[]> xcounts = new IntObjMap<>();
 		IntObjMap<int[]> ycounts = new IntObjMap<>();
@@ -249,18 +247,7 @@ public class Statistic {
 	}
 
 	public double skewness(float[] fs) {
-		MeanVariance mv = meanVariance_(fs);
-		double mean = mv.mean;
-		double sd = mv.standardDeviation();
-		double sum = 0d;
-		for (float f : fs) {
-			double d = f - mean;
-			sum += d * d * d;
-		}
-		double length = fs.length;
-		double length1 = length - 1;
-		double adjustment = Math.sqrt(length * length1) / length1;
-		return adjustment * sum / (length * sd * sd * sd);
+		return skewness_(meanVariance_(fs), fs);
 	}
 
 	public double variance(float[] fs) {
@@ -326,6 +313,33 @@ public class Statistic {
 
 	private MeanVariance meanVariance_(float[] fs) {
 		return new MeanVariance(fs.length, i -> fs[i]);
+	}
+
+	private double skewness_(MeanVariance mv, float[] fs) {
+		double mean = mv.mean;
+		double sd = mv.standardDeviation();
+		double sum = 0d;
+		for (float f : fs) {
+			double d = f - mean;
+			sum += d * d * d;
+		}
+		double length = fs.length;
+		double length1 = length - 1;
+		double adjustment = Math.sqrt(length * length1) / length1;
+		return adjustment * sum / (length * sd * sd * sd);
+	}
+
+	private double kurtosis_(MeanVariance mv, float[] fs) {
+		double mean = mv.mean;
+		double sd = mv.standardDeviation();
+		double sum = 0d;
+		for (float f : fs) {
+			double d = f - mean;
+			double d2 = d * d;
+			sum += d2 * d2;
+		}
+		double sd2 = sd * sd;
+		return sum / (fs.length * sd2 * sd2);
 	}
 
 }
