@@ -13,19 +13,21 @@ public class Sina {
 
 	public class Factor {
 		public String name;
-		public String open;
-		public String close;
-		public String high;
-		public String low;
-		public String quote;
-		public String change;
-		public String changePercent;
-		public String volumeHkd;
-		public String volume; // in stock
-		public String pe;
-		public String weeklyInterest;
-		public String high52week;
-		public String low52week;
+		public float open;
+		public float close;
+		public float high;
+		public float low;
+		public float quote;
+		public float change;
+		public float changePercent;
+		public float bid;
+		public float ask;
+		public float volumeHkd;
+		public float volume; // in stock
+		public float pe;
+		public float weeklyInterest;
+		public float high52week;
+		public float low52week;
 		public String lastCloseDate; // 2017/07/07
 		public String lastCloseTime; // 16:08:44
 	}
@@ -49,23 +51,36 @@ public class Sina {
 
 		String[] array = ParseUtil.fit(data, "\"", "\"")[1].split(",");
 
+		// HSBC HOLDINGS,XXX,
+		// 73.250,73.350,73.700,73.050, 73.150,
+		// -0.200,-0.273,
+		// 73.150,73.200,
+		// 1439148052.782,19650107,
+		// 77.098,0.697,
+		// 74.500,46.350,
+		// 2017/07/07,16:08:44,
+		// 100|0,N|Y|Y,73.200|69.600|75.450,0|||0.000|0.000|0.000, |0,Y
+
 		Factor factor = new Factor();
 		factor.name = array[0];
-		factor.open = array[2];
-		factor.close = array[3];
-		factor.high = array[4];
-		factor.low = array[5];
-		factor.quote = array[6];
-		factor.change = array[7];
-		factor.changePercent = array[8];
-		factor.volumeHkd = array[11];
-		factor.volume = array[12]; // in stock
-		factor.pe = array[13];
-		factor.weeklyInterest = array[14];
-		factor.high52week = array[15];
-		factor.low52week = array[16];
+		factor.open = Float.parseFloat(array[2]);
+		factor.close = Float.parseFloat(array[3]);
+		factor.high = Float.parseFloat(array[4]);
+		factor.low = Float.parseFloat(array[5]);
+		factor.quote = Float.parseFloat(array[6]);
+		factor.change = Float.parseFloat(array[7]);
+		factor.changePercent = Float.parseFloat(array[8]);
+		factor.bid = Float.parseFloat(array[9]);
+		factor.ask = Float.parseFloat(array[10]);
+		factor.volumeHkd = Float.parseFloat(array[11]);
+		factor.volume = Float.parseFloat(array[12]); // in stock
+		factor.pe = Float.parseFloat(array[13]);
+		factor.weeklyInterest = Float.parseFloat(array[14]);
+		factor.high52week = Float.parseFloat(array[15]);
+		factor.low52week = Float.parseFloat(array[16]);
 		factor.lastCloseDate = array[17]; // 2017/07/07
 		factor.lastCloseTime = array[18]; // 16:08:44
+
 		return factor;
 	}
 
