@@ -3,11 +3,13 @@ package suite.math.stat;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.primitive.IntPrimitives.IntObjSource;
+import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
@@ -73,7 +75,11 @@ public class Statistic {
 
 	// ordinary least squares
 	public LinearRegression linearRegression(float[][] x, float[] y) {
-		return new LinearRegression(x, y);
+		return new LinearRegression(x, y, null);
+	}
+
+	public LinearRegression linearRegression(float[][] x, float[] y, String[] coefficientNames) {
+		return new LinearRegression(x, y, coefficientNames);
 	}
 
 	public class LinearRegression {
@@ -81,17 +87,21 @@ public class Statistic {
 		public final int sampleLength;
 		public final float[][] in;
 		public final float[] coefficients;
+		public final String[] coefficientNames;
 		public final double invn2;
 		public final double sst, sse;
 		public final double r2;
 		public final double standardError;
 
-		private LinearRegression(float[][] x, float[] y) {
+		private LinearRegression(float[][] x, float[] y, String[] coefficientNames_) {
 			int nSamples_ = y.length;
 			int sampleLength_ = mtx.width(x);
 			float[][] xt = mtx.transpose(x);
 			float[][] xtx = mtx.mul(xt, x);
 			coefficients = cholesky.inverseMul(xtx).apply(mtx.mul(xt, y));
+			coefficientNames = coefficientNames_ != null //
+					? coefficientNames_ //
+					: IntStreamlet.range(sampleLength_).map(i -> "c" + i).toArray(String.class);
 
 			float[] estimatedy = To.arrayOfFloats(x, this::predict);
 			double meany = mean_(y);
@@ -153,11 +163,11 @@ public class Statistic {
 			});
 		}
 
-		public String toString() {
+		public String toString(Int_Obj<String> coeffFun) {
 			StringBuilder sb = new StringBuilder();
 			float[] tStatistic = tStatistic();
 			for (int i = 0; i < sampleLength; i++)
-				sb.append("\ncoefficient = " + To.string(coefficients[i]) //
+				sb.append("\n" + coefficientNames[i] + " = " + To.string(coefficients[i]) //
 						+ ", t-statistic = " + To.string(tStatistic[i]));
 			sb.append("\nstandard error = " + To.string(standardError) + ", r2 = " + To.string(r2));
 			return sb.toString();
