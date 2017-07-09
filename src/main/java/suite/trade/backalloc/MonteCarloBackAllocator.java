@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import suite.math.stat.TimeSeries;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
@@ -22,15 +21,11 @@ import suite.util.To;
 public class MonteCarloBackAllocator implements BackAllocator {
 
 	private Random random = new Random(Time.of(2017, 1, 1).epochSec());
-	private TimeSeries ts = new TimeSeries();
 
 	@Override
 	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, long[] ts_) {
 		return (time, index) -> {
-			Map<String, float[]> returnsBySymbol = dsBySymbol //
-					.mapValue(ds -> ts.returns(ds.prices)) //
-					.toMap();
-
+			Map<String, float[]> returnsBySymbol = dsBySymbol.mapValue(DataSource::returns).toMap();
 			String[] symbols = returnsBySymbol.keySet().toArray(new String[0]);
 
 			List<float[]> portfolios = IntStreamlet //

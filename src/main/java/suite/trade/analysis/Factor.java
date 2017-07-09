@@ -7,7 +7,6 @@ import suite.adt.pair.Pair;
 import suite.math.linalg.Matrix;
 import suite.math.stat.Quant;
 import suite.math.stat.Statistic;
-import suite.math.stat.TimeSeries;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -29,7 +28,6 @@ public class Factor {
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 	private Time now = Time.now();
-	private TimeSeries ts = new TimeSeries();
 
 	public static Factor ofCrudeOil(Configuration cfg) {
 		return of(cfg, Read.each("CLQ17.NYM")); // "CL=F"
@@ -85,7 +83,7 @@ public class Factor {
 	private double correlate(DataSource irds0, DataSource rds0, TimeRange period) {
 		DataSource rds1 = rds0.range(period);
 		DataSource irds1 = irds0.range(period).alignBeforePrices(rds1.ts);
-		return stat.correlation(ts.returns(irds1.prices), ts.returns(rds1.prices));
+		return stat.correlation(irds1.returns(), rds1.returns());
 	}
 
 }

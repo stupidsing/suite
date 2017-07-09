@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import suite.math.linalg.Matrix;
+import suite.math.stat.TimeSeries;
 import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
@@ -25,8 +25,8 @@ import suite.util.To;
 
 public class DataSource {
 
-	private Cleanse cleanse = new Cleanse();
-	public static Matrix mtx = new Matrix();
+	private static Cleanse cleanse = new Cleanse();
+	private static TimeSeries timeSeries = new TimeSeries();
 
 	public final long[] ts;
 	public final float[] prices;
@@ -240,6 +240,10 @@ public class DataSource {
 		for (int i = ts.length - size; i < ts.length; i++)
 			sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "] = " + To.string(prices[i]) + "\n");
 		return sb.toString();
+	}
+
+	public float[] returns() {
+		return timeSeries.returns(prices);
 	}
 
 	public void validate() {

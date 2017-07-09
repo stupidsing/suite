@@ -18,6 +18,7 @@ import suite.streamlet.Read;
 import suite.trade.TimeRange;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
+import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.util.Object_;
 import suite.util.To;
@@ -37,10 +38,7 @@ public class StatisticalArbitrageTest {
 		TimeRange period = TimeRange.threeYears();
 
 		AlignKeyDataSource<String> akds = cfg.dataSources(period, Read.each(symbol0, symbol1));
-
-		Map<String, float[]> pricesBySymbol = akds.dsByKey //
-				.mapValue(ds -> ts.returns(ds.prices)) //
-				.toMap();
+		Map<String, float[]> pricesBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
 
 		int length = akds.ts.length;
 		float[] prices0 = pricesBySymbol.get(symbol0);
