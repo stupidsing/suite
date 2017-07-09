@@ -1,4 +1,4 @@
-package suite.trade.backalloc;
+package suite.trade.backalloc.strategy;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,6 +18,7 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.MovingAverage;
 import suite.trade.MovingAverage.MovingRange;
+import suite.trade.backalloc.BackAllocator;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;

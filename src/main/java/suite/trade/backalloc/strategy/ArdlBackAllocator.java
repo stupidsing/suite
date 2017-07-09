@@ -1,4 +1,4 @@
-package suite.trade.backalloc;
+package suite.trade.backalloc.strategy;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,6 +9,7 @@ import suite.math.stat.Ardl;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
+import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.util.To;
 

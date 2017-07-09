@@ -30,7 +30,7 @@ import suite.trade.backalloc.BackAllocConfigurations.Bacs;
 import suite.trade.backalloc.BackAllocTester;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator;
-import suite.trade.backalloc.BackAllocator_;
+import suite.trade.backalloc.strategy.BackAllocator_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;

@@ -19,7 +19,7 @@ import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocConfigurations;
 import suite.trade.backalloc.BackAllocConfigurations.Bacs;
 import suite.trade.backalloc.BackAllocTester.Simulate;
-import suite.trade.backalloc.BackAllocator_;
+import suite.trade.backalloc.strategy.BackAllocator_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.util.FunUtil.Fun;

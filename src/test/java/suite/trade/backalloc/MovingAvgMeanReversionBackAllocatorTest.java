@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.util.FunUtil.Sink;

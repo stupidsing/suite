@@ -1,4 +1,4 @@
-package suite.trade.backalloc;
+package suite.trade.backalloc.strategy;
 
 import java.util.List;
 import java.util.Map;
@@ -8,6 +8,7 @@ import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
+import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.util.Object_;
 import suite.util.To;

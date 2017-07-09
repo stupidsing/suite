@@ -11,6 +11,8 @@ import suite.trade.Trade_;
 import suite.trade.analysis.BackTester;
 import suite.trade.analysis.Summarize;
 import suite.trade.backalloc.BackAllocTester.Simulate;
+import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator;
+import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator0;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.util.FunUtil.Sink;

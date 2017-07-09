@@ -1,4 +1,4 @@
-package suite.trade.backalloc;
+package suite.trade.backalloc.strategy;
 
 import java.util.List;
 import java.util.Map;

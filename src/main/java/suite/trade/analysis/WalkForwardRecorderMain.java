@@ -19,7 +19,7 @@ import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.Trade_;
-import suite.trade.backalloc.BackAllocator_;
+import suite.trade.backalloc.strategy.BackAllocator_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.HkexUtil;
