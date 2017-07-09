@@ -263,34 +263,6 @@ public class Statistic {
 		return adjustment * sum / (length * sd * sd * sd);
 	}
 
-	public String stats(float[] fs) {
-		int length = fs.length;
-		if (0 < length) {
-			float first = fs[0];
-			double min = first, max = first;
-			double sum = first, sumsq = first * first;
-
-			for (int i = 1; i < length; i++) {
-				float f = fs[i];
-				min = Double.min(min, f);
-				max = Double.max(max, f);
-				sum += f;
-				sumsq += f * f;
-			}
-
-			double il = 1d / length;
-			double mean = sum * il;
-			double var = sumsq * il - mean * mean;
-
-			return "(size = " + length //
-					+ ", mean = " + To.string(mean) //
-					+ ", range = " + To.string(min) + "~" + To.string(max) //
-					+ ", sd = " + To.string(Math.sqrt(var)) //
-					+ ")";
-		} else
-			return "size = 0";
-	}
-
 	public double variance(float[] fs) {
 		return meanVariance_(fs).variance;
 	}
