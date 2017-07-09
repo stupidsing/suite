@@ -23,6 +23,7 @@ public class BackAllocConfigurations {
 
 	public class Bacs {
 		private Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
+		private Fun<Time, Streamlet<Asset>> fun_hsi = time -> Read.each(Asset.hsi);
 
 		private BackAllocator ba_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9);
 		private BackAllocator ba_donchian = BackAllocator_.donchian(9).holdMinimum(2);
@@ -32,6 +33,7 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_donchian = ba_donchian.cfgUnl(fun);
 		public final BackAllocConfiguration bac_ema = BackAllocator_.ema().pick(3).cfgUnl(fun);
 		public final BackAllocConfiguration bac_facoil = ba_facoil.cfgUnl(fun);
+		public final BackAllocConfiguration bac_january = BackAllocator_.ofSingle(Asset.hsiSymbol).january().cfgUnl(fun_hsi);
 		public final BackAllocConfiguration bac_hsi = BackAllocConfiguration.ofSingle(Asset.hsi);
 		public final BackAllocConfiguration bac_mix = BackAllocator_.sum(ba_bb, ba_donchian).cfgUnl(fun);
 		public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).cfgUnl(fun);
@@ -39,6 +41,7 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
 		public final BackAllocConfiguration bac_rsi = BackAllocator_.rsi().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sell = BackAllocator_.cash().cfgUnl(fun);
+		public final BackAllocConfiguration bac_sellInMay = BackAllocator_.ofSingle(Asset.hsiSymbol).cfgUnl(fun_hsi);
 		public final BackAllocConfiguration bac_tma = BackAllocator_.tripleMovingAvgs().cfgUnl(fun);
 
 		public final Streamlet2<String, BackAllocConfiguration> bacByName = Read //
@@ -48,12 +51,14 @@ public class BackAllocConfigurations {
 				.cons("donchian", bac_donchian) //
 				.cons("ema", bac_ema) //
 				.cons("facoil", bac_facoil) //
+				.cons("january", bac_january) //
 				.cons("lr", BackAllocator_.lastReturn(0, 2).cfgUnl(fun)) //
 				.cons("mix", bac_mix) //
 				.cons("pmamr", bac_pmamr) //
 				.cons("pmmmr", bac_pmmmr) //
 				.cons("revco", bac_revco) //
 				.cons("rsi", bac_rsi) //
+				.cons("sellInMay", bac_sellInMay) //
 				.cons("tma", bac_tma);
 
 		public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {

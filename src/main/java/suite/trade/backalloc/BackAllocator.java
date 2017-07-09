@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
@@ -46,6 +47,13 @@ public interface BackAllocator {
 		 *         values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(Time time, int index);
+	}
+
+	public default BackAllocator byTime(IntPredicate monthPred) {
+		return (dsBySymbol, ts) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, ts);
+			return (time, index) -> monthPred.test(time.month()) ? onDateTime.onDateTime(time, index) : Collections.emptyList();
+		};
 	}
 
 	public default BackAllocConfiguration cfg(Fun<Time, Streamlet<Asset>> assetsFun) {
@@ -166,6 +174,11 @@ public interface BackAllocator {
 		};
 	}
 
+	public default BackAllocator january() {
+		IntPredicate monthPred = month -> month == 1;
+		return byTime(monthPred);
+	}
+
 	public default BackAllocator longOnly() {
 		return (dsBySymbol, ts) -> {
 			OnDateTime onDateTime = allocate(dsBySymbol, ts);
@@ -243,6 +256,10 @@ public interface BackAllocator {
 
 	public default BackAllocator relativeToIndex(Configuration cfg, String indexSymbol) {
 		return relative(cfg.dataSource(indexSymbol));
+	}
+
+	public default BackAllocator sellInMay() {
+		return byTime(month -> month < 5 || 11 <= month);
 	}
 
 	public default BackAllocator unleverage() {
