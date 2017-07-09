@@ -35,6 +35,7 @@ public class StatisticTest {
 
 		float[] xtest = To.arrayOfFloats(m, j -> random.nextFloat());
 		MathUtil.verifyEquals(mtx.dot(expect, xtest), lr.predict(xtest), .1f);
+		MathUtil.verifyEquals(1f, (float) lr.r2, .1f);
 	}
 
 }
