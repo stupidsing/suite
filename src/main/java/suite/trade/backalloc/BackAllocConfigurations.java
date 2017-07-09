@@ -41,7 +41,7 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
 		public final BackAllocConfiguration bac_rsi = BackAllocator_.rsi().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sell = BackAllocator_.cash().cfgUnl(fun);
-		public final BackAllocConfiguration bac_sellInMay = BackAllocator_.ofSingle(Asset.hsiSymbol).cfgUnl(fun_hsi);
+		public final BackAllocConfiguration bac_sellInMay = BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi);
 		public final BackAllocConfiguration bac_tma = BackAllocator_.tripleMovingAvgs().cfgUnl(fun);
 
 		public final Streamlet2<String, BackAllocConfiguration> bacByName = Read //
