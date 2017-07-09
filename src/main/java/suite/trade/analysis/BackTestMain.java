@@ -1,8 +1,6 @@
 package suite.trade.analysis;
 
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import suite.adt.pair.Pair;
@@ -36,8 +34,6 @@ public class BackTestMain extends ExecutableProgram {
 
 	private Bacs bacs = new BackAllocConfigurations(cfg, LogUtil::info).bacs;
 
-	private Map<String, BackAllocConfiguration> bacByTag;
-
 	public static void main(String[] args) {
 		Util.run(BackTestMain.class, args);
 	}
@@ -45,40 +41,27 @@ public class BackTestMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) {
 		Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
-		Map<String, BackAllocConfiguration> bacByTag_ = new HashMap<>();
+		Streamlet2<String, BackAllocConfiguration> bacByTag0 = bacs.bacByName;
+		Streamlet2<String, BackAllocConfiguration> bacByTag1;
 
-		if (Boolean.FALSE) {
-			bacByTag_.put("donchian9", BackAllocator_.donchian(9).cfgUnl(fun));
-			questoaQuella("0020.HK", "0004.HK");
-			questoaQuella("0052.HK", "0341.HK");
-			questoaQuella("0670.HK", "1055.HK");
-			questoaQuella("0753.HK", "1055.HK");
-		}
+		if (Boolean.TRUE)
+			bacByTag1 = bacByTag0;
+		else
+			bacByTag1 = Streamlet2.concat( //
+					Read.each2("donchian9", BackAllocator_.donchian(9).cfgUnl(fun)), //
+					questoaQuella("0020.HK", "0004.HK"), //
+					questoaQuella("0052.HK", "0341.HK"), //
+					questoaQuella("0670.HK", "1055.HK"), //
+					questoaQuella("0753.HK", "1055.HK"), //
+					bacByTag0);
 
 		// BEGIN
-		bacByTag_.put("hsi", bacs.bac_hsi);
-		bacByTag_.put("bb", bacs.bac_bb);
-		bacByTag_.put("donchian", bacs.bac_donchian);
-		bacByTag_.put("ema", bacs.bac_ema);
-		bacByTag_.put("facoil", bacs.bac_facoil);
-		bacByTag_.put("lr", BackAllocator_.lastReturn(0, 2).cfgUnl(fun));
-		bacByTag_.put("mix", bacs.bac_mix);
-		bacByTag_.put("pmamr", bacs.bac_pmamr);
-		bacByTag_.put("pmmmr", bacs.bac_pmmmr);
-		bacByTag_.put("revco", bacs.bac_revco);
-		bacByTag_.put("rsi", bacs.bac_rsi);
-		bacByTag_.put("tma", bacs.bac_tma);
 		// END
 
 		Set<String> strategyNames = Read.from(args).toSet();
 
-		bacByTag = Read //
-				.from2(bacByTag_) //
+		Streamlet2<String, Simulate> simulationsByKey = bacByTag1 //
 				.filterKey(strategyName -> args.length == 0 || strategyNames.contains(strategyName)) //
-				.toMap();
-
-		Streamlet2<String, Simulate> simulationsByKey = Read //
-				.from2(bacByTag) //
 				.map(Pair::of) //
 				.join2(IntStreamlet //
 						.range(2008, Trade_.thisYear) //
@@ -106,10 +89,12 @@ public class BackTestMain extends ExecutableProgram {
 		return true;
 	}
 
-	private void questoaQuella(String symbol0, String symbol1) {
-		bacByTag.put(symbol0, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol0)));
-		bacByTag.put(symbol1, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol1)));
-		bacByTag.put("pair/" + symbol0 + "/" + symbol1, bacs.questoaQuella(symbol0, symbol1));
+	private Streamlet2<String, BackAllocConfiguration> questoaQuella(String symbol0, String symbol1) {
+		return Read //
+				.<String, BackAllocConfiguration> empty2() //
+				.cons(symbol0, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol0))) //
+				.cons(symbol1, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol1))) //
+				.cons("pair/" + symbol0 + "/" + symbol1, bacs.questoaQuella(symbol0, symbol1));
 	}
 
 }

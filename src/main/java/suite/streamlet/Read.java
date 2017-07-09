@@ -66,6 +66,10 @@ public class Read {
 		return from(ts);
 	}
 
+	public static <K, V> Streamlet2<K, V> each2(K k, V v) {
+		return from2(Arrays.asList(Pair.of(k, v)));
+	}
+
 	public static <T> Streamlet<T> from(T[] ts) {
 		return new Streamlet<>(() -> Outlet.of(ts));
 	}
@@ -84,10 +88,6 @@ public class Read {
 
 	public static <K, V> Streamlet2<K, V> from2(Map<K, V> map) {
 		return new Streamlet2<>(() -> Outlet2.of(map));
-	}
-
-	public static <K, V> Streamlet2<K, V> from2(K k, V v) {
-		return from2(Arrays.asList(Pair.of(k, v)));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Iterable<Pair<K, V>> col) {

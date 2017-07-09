@@ -188,7 +188,7 @@ public class BuildLr {
 		case ENTITY:
 			k = Pair.of(eg.content, nextx.keySet());
 			Transition next1 = transitions.computeIfAbsent(k, k_ -> new Transition());
-			blr = mergeAll.apply(Read.from2(eg.content, next1));
+			blr = mergeAll.apply(Read.each2(eg.content, next1));
 			break;
 		case NAMED_:
 			Reduce reduce = new Reduce();
