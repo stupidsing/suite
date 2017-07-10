@@ -39,7 +39,7 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).cfgUnl(fun);
 		public final BackAllocConfiguration bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdExtend(9).cfgUnl(fun);
 		public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
-		public final BackAllocConfiguration bac_revdd = BackAllocator_.revDrawdown().cfgUnl(fun);
+		public final BackAllocConfiguration bac_revdd = BackAllocator_.revDrawdown().holdExtend(40).cfgUnl(fun);
 		public final BackAllocConfiguration bac_rsi = BackAllocator_.rsi().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sell = BackAllocator_.cash().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sellInMay = BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi);

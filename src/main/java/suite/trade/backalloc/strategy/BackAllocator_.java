@@ -110,9 +110,10 @@ public class BackAllocator_ {
 						float price = prices[i];
 						int dir1 = sign(price, lastPrice);
 
-						if (dir != 0 && dir != dir1)
-							return Quant.return_(priceo, lastPrice) * 32d / (index - io);
-						else
+						if (dir != 0 && dir != dir1) {
+							double r = (index - io) / (double) (index - i);
+							return .36d < r ? Quant.return_(priceo, lastPrice) * r * 4d : 0d;
+						} else
 							dir = dir1;
 
 						if (sign(price, priceo) == dir) {
