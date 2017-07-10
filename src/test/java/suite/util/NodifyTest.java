@@ -15,7 +15,7 @@ import suite.node.util.Singleton;
 
 public class NodifyTest {
 
-	private Nodify nodify = Singleton.get().getNodify();
+	private Nodify nodify = Singleton.me.getNodify();
 
 	public interface I {
 	}

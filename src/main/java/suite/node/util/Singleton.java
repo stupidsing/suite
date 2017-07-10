@@ -7,17 +7,13 @@ import suite.util.Nodify;
 
 public class Singleton {
 
-	private static Singleton instance = new Singleton();
+	public static final Singleton me = new Singleton();
 
 	private Context grandContext = new Context();
 	private Inspect inspect = new Inspect();
 	private Mapify mapify = new Mapify(inspect);
 	private Nodify nodify = new Nodify(inspect);
 	private StoreCache storeCache = new StoreCache();
-
-	public static Singleton get() {
-		return instance;
-	}
 
 	private Singleton() {
 	}

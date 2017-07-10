@@ -54,12 +54,12 @@ public class CompositeRuleSet implements RuleSet {
 
 	@Override
 	public boolean equals(Object object) {
-		return Singleton.get().getInspect().equals(this, object);
+		return Singleton.me.getInspect().equals(this, object);
 	}
 
 	@Override
 	public int hashCode() {
-		return Singleton.get().getInspect().hashCode(this);
+		return Singleton.me.getInspect().hashCode(this);
 	}
 
 }

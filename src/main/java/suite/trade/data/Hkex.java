@@ -414,7 +414,7 @@ public class Hkex {
 		JsonNode json;
 
 		if (Boolean.TRUE)
-			try (InputStream is = Singleton.get().getStoreCache().http(url).collect(To::inputStream)) {
+			try (InputStream is = Singleton.me.getStoreCache().http(url).collect(To::inputStream)) {
 				json = mapper.readTree(is);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);

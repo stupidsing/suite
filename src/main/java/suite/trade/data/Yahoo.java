@@ -43,7 +43,7 @@ public class Yahoo {
 		String urlString = tableUrl(symbol, period);
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
-		Streamlet<String[]> arrays = Singleton.get() //
+		Streamlet<String[]> arrays = Singleton.me //
 				.getStoreCache() //
 				.http(urlString) //
 				.collect(As::csv) //
@@ -190,7 +190,7 @@ public class Yahoo {
 				+ "&callback=";
 
 		return Rethrow.ex(() -> {
-			try (InputStream is = Singleton.get().getStoreCache().http(urlString).collect(To::inputStream)) {
+			try (InputStream is = Singleton.me.getStoreCache().http(urlString).collect(To::inputStream)) {
 				JsonNode json = mapper.readTree(is);
 
 				Streamlet<JsonNode> quotes = Read.each(json) //

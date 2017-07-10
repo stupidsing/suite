@@ -14,7 +14,7 @@ public class Atom extends Node {
 	public static Atom FALSE = of("false");
 
 	public static Atom of(String name) {
-		return of(Singleton.get().getGrandContext(), name);
+		return of(Singleton.me.getGrandContext(), name);
 	}
 
 	public static Atom of(Context context, String name) {

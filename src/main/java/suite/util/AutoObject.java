@@ -10,7 +10,7 @@ import suite.streamlet.Read;
 
 public abstract class AutoObject<T extends AutoObject<T>> implements Comparable<T> {
 
-	private static Inspect inspect = Singleton.get().getInspect();
+	private static Inspect inspect = Singleton.me.getInspect();
 
 	@Override
 	public int compareTo(T t1) {

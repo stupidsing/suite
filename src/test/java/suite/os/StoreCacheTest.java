@@ -9,7 +9,7 @@ public class StoreCacheTest {
 
 	@Test
 	public void test() {
-		int size = Singleton.get().getStoreCache() //
+		int size = Singleton.me.getStoreCache() //
 				.http("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt") //
 				.collect(As::table) //
 				.size();

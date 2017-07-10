@@ -26,7 +26,7 @@ import suite.util.String_;
 
 public class FunExpand extends FunFactory {
 
-	private static Inspect inspect = Singleton.get().getInspect();
+	private static Inspect inspect = Singleton.me.getInspect();
 
 	public FunExpr expand(FunExpr expr0, int depth) {
 		if (0 < depth)

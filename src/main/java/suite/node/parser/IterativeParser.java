@@ -27,7 +27,7 @@ public class IterativeParser {
 	private Operator[] operators;
 
 	public IterativeParser(Operator[] operators) {
-		this(Singleton.get().getGrandContext(), operators);
+		this(Singleton.me.getGrandContext(), operators);
 	}
 
 	private IterativeParser(Context context, Operator[] operators) {

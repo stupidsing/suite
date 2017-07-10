@@ -17,7 +17,7 @@ import suite.util.Thread_;
 
 public class Dump {
 
-	private static Inspect inspect = Singleton.get().getInspect();
+	private static Inspect inspect = Singleton.me.getInspect();
 
 	private Set<Integer> dumpedIds = new HashSet<>();
 	private Sink<String> sink;

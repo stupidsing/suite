@@ -21,7 +21,7 @@ import suite.node.util.Singleton;
 public class RecursiveParser {
 
 	private Operator[] operators;
-	private TerminalParser terminalParser = new TerminalParser(Singleton.get().getGrandContext());
+	private TerminalParser terminalParser = new TerminalParser(Singleton.me.getGrandContext());
 
 	public RecursiveParser(Operator[] operators) {
 		this.operators = operators;

@@ -36,7 +36,7 @@ public class Sina {
 		String urlString = "http://hq.sinajs.cn/?_=1499516355436&list=rt_hk0" + symbol.substring(0, 4);
 
 		String data = Rethrow.ex(() -> {
-			try (InputStream is = Singleton.get().getStoreCache().http(urlString).collect(To::inputStream)) {
+			try (InputStream is = Singleton.me.getStoreCache().http(urlString).collect(To::inputStream)) {
 				return Read //
 						.bytes(is) //
 						.map(bytes -> {

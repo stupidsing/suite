@@ -16,7 +16,7 @@ import suite.node.util.Singleton;
 
 public class MapifyTest {
 
-	private Mapify mapify = Singleton.get().getMapify();
+	private Mapify mapify = Singleton.me.getMapify();
 
 	public interface I {
 	}

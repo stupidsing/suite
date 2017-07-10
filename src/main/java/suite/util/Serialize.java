@@ -31,7 +31,7 @@ import suite.util.FunUtil.Fun;
  */
 public class Serialize {
 
-	private static Inspect inspect = Singleton.get().getInspect();
+	private static Inspect inspect = Singleton.me.getInspect();
 	private static byte[] zeroes = new byte[4096];
 
 	public static Serializer<Boolean> boolean_ = boolean_();

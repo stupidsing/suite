@@ -55,7 +55,7 @@ public class Amd64Assembler {
 				bb.append(bytes);
 				offset += bytes.size();
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + Singleton.get().getInspect().toString(instruction), ex);
+				throw new RuntimeException("for " + Singleton.me.getInspect().toString(instruction), ex);
 			}
 		return bb.toBytes();
 	}

@@ -116,7 +116,7 @@ public class Object_ {
 						return object;
 				});
 			else {
-				Inspect inspect = Singleton.get().getInspect();
+				Inspect inspect = Singleton.me.getInspect();
 
 				List<Pair<String, Field>> sfs = Read.from(inspect.fields(clazz)) //
 						.map(field -> Pair.of(field.getName(), field)) //
