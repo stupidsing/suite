@@ -111,8 +111,7 @@ public class BackAllocator_ {
 						int dir1 = sign(price, lastPrice);
 
 						if (dir != 0 && dir != dir1) {
-							double diff = Quant.return_(priceo, lastPrice);
-							return 0.03d < Math.abs(diff) ? diff / (index - io) : 0d;
+							return Quant.return_(priceo, lastPrice) * 32d / (index - io);
 						} else
 							dir = dir1;
 

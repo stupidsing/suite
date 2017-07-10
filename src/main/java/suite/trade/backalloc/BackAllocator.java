@@ -172,13 +172,13 @@ public interface BackAllocator {
 				while (period < queue.size())
 					queue.removeFirst();
 
-				Map<String, Double> max = new HashMap<>();
+				Map<String, Double> map = new HashMap<>();
 
 				for (Map<String, Double> m : queue)
 					for (Entry<String, Double> e : m.entrySet())
-						max.compute(e.getKey(), (k, v) -> fun.apply(v != null ? v : 0d, e.getValue()));
+						map.compute(e.getKey(), (k, v) -> fun.apply(v != null ? v : 0d, e.getValue()));
 
-				return Read.from2(max).toList();
+				return Read.from2(map).toList();
 			};
 		};
 	}
