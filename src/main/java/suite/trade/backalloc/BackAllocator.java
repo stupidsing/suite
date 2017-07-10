@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
 import suite.math.stat.Quant;
+import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -149,7 +150,15 @@ public interface BackAllocator {
 		};
 	}
 
-	public default BackAllocator holdMinimum(int period) {
+	public default BackAllocator holdDelay(int period) {
+		return hold(period, Math::min);
+	}
+
+	public default BackAllocator holdExtend(int period) {
+		return hold(period, Math::max);
+	}
+
+	public default BackAllocator hold(int period, DblDbl_Dbl fun) {
 		return (dsBySymbol, ts) -> {
 			Deque<Map<String, Double>> queue = new ArrayDeque<>();
 			OnDateTime onDateTime = allocate(dsBySymbol, ts);
@@ -167,7 +176,7 @@ public interface BackAllocator {
 
 				for (Map<String, Double> m : queue)
 					for (Entry<String, Double> e : m.entrySet())
-						max.compute(e.getKey(), (k, v) -> Math.max(v != null ? v : 0d, e.getValue()));
+						max.compute(e.getKey(), (k, v) -> fun.apply(v != null ? v : 0d, e.getValue()));
 
 				return Read.from2(max).toList();
 			};

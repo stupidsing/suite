@@ -25,8 +25,8 @@ public class BackAllocConfigurations {
 		private Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
 		private Fun<Time, Streamlet<Asset>> fun_hsi = time -> Read.each(Asset.hsi);
 
-		private BackAllocator ba_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdMinimum(9);
-		private BackAllocator ba_donchian = BackAllocator_.donchian(9).holdMinimum(2);
+		private BackAllocator ba_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdExtend(9);
+		private BackAllocator ba_donchian = BackAllocator_.donchian(9).holdExtend(2);
 		private BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().longOnly().pick(3).even();
 
 		public final BackAllocConfiguration bac_bb = ba_bb.cfgUnl(fun);
@@ -37,8 +37,9 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_hsi = BackAllocConfiguration.ofSingle(Asset.hsi);
 		public final BackAllocConfiguration bac_mix = BackAllocator_.sum(ba_bb, ba_donchian).cfgUnl(fun);
 		public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).cfgUnl(fun);
-		public final BackAllocConfiguration bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdMinimum(9).cfgUnl(fun);
+		public final BackAllocConfiguration bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdExtend(9).cfgUnl(fun);
 		public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
+		public final BackAllocConfiguration bac_revdd = BackAllocator_.revDrawdown().cfgUnl(fun);
 		public final BackAllocConfiguration bac_rsi = BackAllocator_.rsi().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sell = BackAllocator_.cash().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sellInMay = BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi);
@@ -57,6 +58,7 @@ public class BackAllocConfigurations {
 				.cons("pmamr", bac_pmamr) //
 				.cons("pmmmr", bac_pmmmr) //
 				.cons("revco", bac_revco) //
+				.cons("revdd", bac_revdd) //
 				.cons("rsi", bac_rsi) //
 				.cons("sellInMay", bac_sellInMay) //
 				.cons("tma", bac_tma);

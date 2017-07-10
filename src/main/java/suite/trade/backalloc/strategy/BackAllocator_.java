@@ -91,6 +91,42 @@ public class BackAllocator_ {
 		};
 	}
 
+	// reverse draw-down; trendy strategy
+	public static BackAllocator revDrawdown() {
+		return (dsBySymbol, ts) -> //
+		(time, index) -> Read //
+				.from2(dsBySymbol) //
+				.map2((symbol, ds) -> {
+					int i = index - 1;
+					int i0 = Math.max(0, i - 128);
+					int dir = 0;
+
+					float[] prices = ds.prices;
+					float lastPrice = prices[i];
+					float priceo = lastPrice;
+					int io = i;
+
+					for (; i0 <= i; i--) {
+						float price = prices[i];
+						int dir1 = sign(price, lastPrice);
+
+						if (dir != 0 && dir != dir1) {
+							double diff = Quant.return_(priceo, lastPrice);
+							return 0.03d < Math.abs(diff) ? diff / (index - io) : 0d;
+						} else
+							dir = dir1;
+
+						if (sign(price, priceo) == dir) {
+							priceo = price;
+							io = i;
+						}
+					}
+
+					return 0d;
+				}) //
+				.toList();
+	}
+
 	public static BackAllocator lastReturn(int nWorsts, int nBests) {
 		return (dsBySymbol, ts) -> (time, index) -> {
 			List<String> list = dsBySymbol //
@@ -172,12 +208,9 @@ public class BackAllocator_ {
 						float movingAvg1 = movingAvg1BySymbol.get(symbol)[last];
 						float movingMedian0 = movingRange0BySymbol.get(symbol)[last].median;
 						float movingMedian1 = movingRange1BySymbol.get(symbol)[last].median;
-						if (movingAvg0 < movingMedian0 && movingAvg1 < movingMedian1)
-							return 1d;
-						else if (movingMedian0 < movingAvg0 && movingMedian1 < movingAvg1)
-							return -1d;
-						else
-							return 0d;
+						int sign0 = sign(movingAvg0, movingMedian0);
+						int sign1 = sign(movingAvg1, movingMedian1);
+						return sign0 == sign1 ? (double) sign0 : 0d;
 					}) //
 					.toList();
 		};
@@ -284,12 +317,9 @@ public class BackAllocator_ {
 						float movingAvg0 = movingAvg0BySymbol.get(symbol)[last];
 						float movingAvg1 = movingAvg1BySymbol.get(symbol)[last];
 						float movingAvg2 = movingAvg2BySymbol.get(symbol)[last];
-						if (movingAvg0 < movingAvg1 && movingAvg1 < movingAvg2)
-							return -1d;
-						else if (movingAvg2 < movingAvg1 && movingAvg1 < movingAvg0)
-							return 1d;
-						else
-							return 0d;
+						int sign0 = sign(movingAvg0, movingAvg1);
+						int sign1 = sign(movingAvg1, movingAvg2);
+						return sign0 == sign1 ? (double) -sign0 : 0d;
 					}) //
 					.toList();
 		};
@@ -368,6 +398,15 @@ public class BackAllocator_ {
 						return 0d;
 				}) //
 				.toList();
+	}
+
+	private static int sign(float f0, float f1) {
+		if (f0 < f1)
+			return 1;
+		else if (f1 < f0)
+			return -1;
+		else
+			return 0;
 	}
 
 }
