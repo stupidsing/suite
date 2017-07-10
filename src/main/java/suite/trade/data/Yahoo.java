@@ -26,7 +26,6 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
-import suite.trade.Trade_;
 import suite.util.HomeDir;
 import suite.util.Object_;
 import suite.util.Rethrow;
@@ -38,6 +37,7 @@ public class Yahoo {
 	private static ObjectMapper mapper = new ObjectMapper();
 
 	private Cleanse cleanse = new Cleanse();
+	private QuoteCache<String> quoteCache = new QuoteCache<>(this::quote_);
 
 	public DataSource dataSourceCsv(String symbol, TimeRange period) {
 		String urlString = tableUrl(symbol, period);
@@ -229,15 +229,8 @@ public class Yahoo {
 	}
 
 	private Map<String, Float> quote(Set<String> symbols, String field) {
-		Map<String, Float> quotes = quotesByField.computeIfAbsent(field, f -> new HashMap<>());
-		Streamlet<String> querySymbols = Read.from(symbols) //
-				.filter(symbol -> !Trade_.isCacheQuotes || !quotes.containsKey(symbol)) //
-				.distinct();
-		quotes.putAll(quote_(querySymbols, field));
-		return Read.from(symbols).map2(quotes::get).toMap();
+		return quoteCache.quote(symbols, field);
 	}
-
-	private static Map<String, Map<String, Float>> quotesByField = new HashMap<>();
 
 	private Map<String, Float> quote_(Streamlet<String> symbols, String field) {
 		if (0 < symbols.size()) {
