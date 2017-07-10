@@ -1,15 +1,21 @@
 package suite.trade.data;
 
-import java.io.InputStream;
+import java.util.Map;
+import java.util.Set;
 
+import suite.http.HttpUtil;
 import suite.node.util.Singleton;
+import suite.primitive.Bytes;
 import suite.streamlet.As;
-import suite.streamlet.Read;
+import suite.streamlet.Outlet;
+import suite.streamlet.Streamlet;
 import suite.util.ParseUtil;
 import suite.util.Rethrow;
 import suite.util.To;
 
 public class Sina {
+
+	private QuoteCache<String> quoteCache = new QuoteCache<>(this::quote_);
 
 	public class Factor {
 		public String name;
@@ -32,21 +38,39 @@ public class Sina {
 		public String lastCloseTime; // 16:08:44
 	}
 
+	public synchronized Map<String, Float> quote(Set<String> symbols) {
+		return quoteCache.quote(symbols, "-");
+	}
+
 	public Factor queryFactor(String symbol) {
+		return queryFactor(symbol, true);
+	}
+
+	private Map<String, Float> quote_(Streamlet<String> symbols, String dummy) {
+		return symbols //
+				.map2(symbol -> queryFactor(symbol, false).quote) //
+				.toMap();
+	}
+
+	private Factor queryFactor(String symbol, boolean isCache) {
 		String urlString = "http://hq.sinajs.cn/?_=&list=rt_hk0" + symbol.substring(0, 4);
 
 		String data = Rethrow.ex(() -> {
-			try (InputStream is = Singleton.me.getStoreCache().http(urlString).collect(To::inputStream)) {
-				return Read //
-						.bytes(is) //
-						.map(bytes -> {
-							StringBuilder sb = new StringBuilder();
-							for (int i = 0; i < bytes.size(); i++)
-								sb.append((char) bytes.get(i));
-							return sb.toString();
-						}) //
-						.collect(As.joined());
-			}
+			Outlet<Bytes> in;
+
+			if (isCache)
+				in = Singleton.me.getStoreCache().http(urlString);
+			else
+				in = HttpUtil.get(To.url(urlString)).out;
+
+			return in //
+					.map(bytes -> {
+						StringBuilder sb = new StringBuilder();
+						for (int i = 0; i < bytes.size(); i++)
+							sb.append((char) bytes.get(i));
+						return sb.toString();
+					}) //
+					.collect(As.joined());
 		});
 
 		String[] array = ParseUtil.fit(data, "\"", "\"")[1].split(",");

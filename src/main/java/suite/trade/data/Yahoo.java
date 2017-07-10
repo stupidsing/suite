@@ -223,7 +223,7 @@ public class Yahoo {
 	 * 
 	 * @return quotes of many stock at once.
 	 */
-	public synchronized Map<String, Float> quote(Set<String> symbols) {
+	public Map<String, Float> quote(Set<String> symbols) {
 		return quote(symbols, "l1"); // last price
 		// "o" - open
 	}
