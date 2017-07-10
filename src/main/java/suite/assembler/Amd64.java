@@ -7,6 +7,8 @@ import suite.primitive.streamlet.IntStreamlet;
 
 public class Amd64 {
 
+	public static final Amd64 me = new Amd64();
+
 	public enum Insn {
 		AAA, //
 		ADC, //
@@ -287,6 +289,9 @@ public class Amd64 {
 		return regsByName.get(Atom.of(name));
 	}
 
+	private Amd64() {
+	}
+
 	private OpReg newReg(int size, int reg) {
 		OpReg opReg = new OpReg();
 		opReg.size = size;
@@ -301,10 +306,10 @@ public class Amd64 {
 		return opRegControl;
 	}
 
-	private OpRegSegment newRegSegment(int creg) {
+	private OpRegSegment newRegSegment(int sreg) {
 		OpRegSegment opRegSegment = new OpRegSegment();
 		opRegSegment.size = 2;
-		opRegSegment.sreg = creg;
+		opRegSegment.sreg = sreg;
 		return opRegSegment;
 	}
 

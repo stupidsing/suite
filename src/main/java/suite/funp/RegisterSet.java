@@ -17,7 +17,7 @@ public class RegisterSet {
 	private int flag;
 
 	static {
-		Amd64 amd64 = new Amd64();
+		Amd64 amd64 = Amd64.me;
 
 		Map<Integer, OpReg> map = Read //
 				.from2(amd64.regsByName) //

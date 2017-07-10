@@ -15,7 +15,7 @@ import suite.streamlet.Read;
 
 public class Amd64Dump {
 
-	private Amd64 amd64 = new Amd64();
+	private Amd64 amd64 = Amd64.me;
 
 	public String dump(List<Instruction> instructions) {
 		return Read.from(instructions).map(instruction -> dump(instruction) + "\n").collect(As.joined());
@@ -56,8 +56,8 @@ public class Amd64Dump {
 
 	private String dump(long imm, int size) {
 		String s = "";
-		for (int i = 0; i < size; i++) {
-			s += "0123456789ABCDEF".charAt((int) (imm & 15));
+		for (int i = 0; i < size * 2; i++) {
+			s = "0123456789ABCDEF".charAt((int) (imm & 15)) + s;
 			imm >>= 4;
 		}
 		return s;

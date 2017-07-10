@@ -19,7 +19,7 @@ import suite.streamlet.Streamlet;
 
 public class Amd64Parser {
 
-	private static Amd64 amd64 = new Amd64();
+	private static Amd64 amd64 = Amd64.me;
 
 	public Instruction parse(Node node) {
 		Tree tree = Tree.decompose(node, TermOp.TUPLE_);
