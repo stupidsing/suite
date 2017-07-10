@@ -1,6 +1,5 @@
 package suite.trade.data;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,8 +13,8 @@ import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.data.Broker.Hsbc;
+import suite.util.FunUtil.Fun;
 import suite.util.String_;
-import suite.util.To;
 
 public class ConfigurationImpl implements Configuration {
 
@@ -25,6 +24,7 @@ public class ConfigurationImpl implements Configuration {
 	private Hkex hkex = new Hkex();
 	private HkexFactBook hkexFactBook = new HkexFactBook();
 	private Quandl quandl = new Quandl();
+	private Sina sina = new Sina();
 	private Yahoo yahoo = new Yahoo();
 
 	private enum Source_ {
@@ -67,12 +67,33 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	private Map<String, Float> quote_(Set<String> symbols) {
-		Map<Source_, Set<String>> map = new HashMap<>();
+		Fun<Set<String>, Map<String, Float>> googleQuote = google::quote;
+		Fun<Set<String>, Map<String, Float>> hkdQuote = hkd::quote;
+		Fun<Set<String>, Map<String, Float>> sinaQuote = sina::quote;
+		Fun<Set<String>, Map<String, Float>> yahooQuote = yahoo::quote;
+		Map<Fun<Set<String>, Map<String, Float>>, Set<String>> map = new HashMap<>();
+
 		for (String symbol : symbols)
-			if (filter(symbol))
-				map.computeIfAbsent(source_(symbol), s -> new HashSet<>()).add(symbol);
-		return To.map_(hkd.quote(map.getOrDefault(Source_.HKD___, Collections.emptySet())),
-				google.quote(map.getOrDefault(Source_.YAHOO_, Collections.emptySet())));
+			if (filter(symbol)) {
+				Source_ source_ = source_(symbol);
+				Fun<Set<String>, Map<String, Float>> quoteFun;
+				if (source_ == Source_.YAHOO_)
+					quoteFun = googleQuote;
+				else if (source_ == Source_.HKD___)
+					quoteFun = hkdQuote;
+				else if (Boolean.FALSE)
+					quoteFun = sinaQuote;
+				else if (Boolean.FALSE)
+					quoteFun = yahooQuote;
+				else
+					throw new RuntimeException();
+				map.computeIfAbsent(quoteFun, s -> new HashSet<>()).add(symbol);
+			}
+
+		return Read //
+				.from2(map) //
+				.concatMap2((quoteFun, symbols_) -> Read.from2(quoteFun.apply(symbols_))) //
+				.toMap();
 	}
 
 	private DataSource dataSource_(String symbol, TimeRange period) {
