@@ -4,7 +4,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import suite.inspect.Inspect;
+import suite.node.util.Singleton;
+import suite.streamlet.Read;
+
 public abstract class AutoObject<T extends AutoObject<T>> implements Comparable<T> {
+
+	private static Inspect inspect = Singleton.get().getInspect();
 
 	@Override
 	public int compareTo(T t1) {
@@ -69,12 +75,20 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Comparable<
 		return sb.toString();
 	}
 
+	public List<Comparable<?>> values() {
+		List<?> list0 = Read //
+				.from(inspect.fields(getClass())) //
+				.map(field -> Rethrow.ex(() -> field.get(this))) //
+				.toList();
+		@SuppressWarnings("unchecked")
+		List<Comparable<?>> list1 = (List<Comparable<?>>) list0;
+		return list1;
+	}
+
 	private T self() {
 		@SuppressWarnings("unchecked")
 		T t = (T) this;
 		return t;
 	}
-
-	public abstract List<Comparable<?>> values();
 
 }
