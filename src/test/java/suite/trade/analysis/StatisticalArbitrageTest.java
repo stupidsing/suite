@@ -38,9 +38,12 @@ public class StatisticalArbitrageTest {
 	// Auto-regressive test
 	@Test
 	public void testCointegration() {
+
+		// 0004.HK, 0020.HK
+		// 0011.HK, 0005.HK
 		int tor = 8;
-		String symbol0 = "CLQ17.NYM";
-		String symbol1 = "1055.HK";
+		String symbol0 = "0004.HK";
+		String symbol1 = "0945.HK";
 
 		AlignKeyDataSource<String> akds = cfg.dataSources(period, Read.each(symbol0, symbol1));
 		Map<String, float[]> pricesBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();

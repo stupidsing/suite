@@ -2,9 +2,13 @@ package suite.funp;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import suite.Suite;
+import suite.assembler.Amd64.Instruction;
+import suite.assembler.Amd64Dump;
 import suite.funp.Funp_.Funp;
 import suite.node.Node;
 import suite.node.Reference;
@@ -29,9 +33,15 @@ public class FunpTest {
 	}
 
 	private Bytes compile(Node node) {
-		Funp f0 = new P0Parse().parse(node);
-		Funp f1 = new P1InferType().infer(f0, new Reference());
-		return new P2GenerateCode().compile(f1, 0);
+		P0Parse p0 = new P0Parse();
+		P1InferType p1 = new P1InferType();
+		P2GenerateCode p2 = new P2GenerateCode();
+
+		Funp f0 = p0.parse(node);
+		Funp f1 = p1.infer(f0, new Reference());
+		List<Instruction> instructions = p2.compile0(f1);
+		new Amd64Dump().dump(instructions);
+		return p2.compile1(0, instructions);
 	}
 
 }
