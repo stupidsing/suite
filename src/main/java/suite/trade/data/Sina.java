@@ -33,7 +33,7 @@ public class Sina {
 	}
 
 	public Factor queryFactor(String symbol) {
-		String urlString = "http://hq.sinajs.cn/?_=1499516355436&list=rt_hk0" + symbol.substring(0, 4);
+		String urlString = "http://hq.sinajs.cn/?_=&list=rt_hk0" + symbol.substring(0, 4);
 
 		String data = Rethrow.ex(() -> {
 			try (InputStream is = Singleton.me.getStoreCache().http(urlString).collect(To::inputStream)) {
