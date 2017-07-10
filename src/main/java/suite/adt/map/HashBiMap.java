@@ -22,11 +22,6 @@ public class HashBiMap<K, V> implements BiMap<K, V> {
 	}
 
 	@Override
-	public HashBiMap<V, K> inverse() {
-		return new HashBiMap<>(inverseMap, map);
-	}
-
-	@Override
 	public void clear() {
 		map.clear();
 		inverseMap.clear();
@@ -50,6 +45,11 @@ public class HashBiMap<K, V> implements BiMap<K, V> {
 	@Override
 	public V get(Object key) {
 		return map.get(key);
+	}
+
+	@Override
+	public HashBiMap<V, K> inverse() {
+		return new HashBiMap<>(inverseMap, map);
 	}
 
 	@Override
