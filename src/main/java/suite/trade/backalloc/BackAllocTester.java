@@ -107,22 +107,17 @@ public class BackAllocTester {
 			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol, indices);
 			Map<String, Eod> eodBySymbol = Collections.emptyMap();
 			float[] valuations_ = new float[size];
-			int index = 0;
 			String ymd = null;
 			Exception exception_;
 
 			try {
 				for (int i = 0; i < size; i++) {
+					int index = indices[i];
 					long t = tradeTs[indices[i]];
 					Time time = Time.ofEpochSec(t);
 
-					while (tradeTs[index] != t)
-						index++;
-
-					int index_ = index;
-
 					ymd = time.ymd();
-					eodBySymbol = dsBySymbol.mapValue(ds -> ds.getEod(index_)).toMap();
+					eodBySymbol = dsBySymbol.mapValue(ds -> ds.getEod(index)).toMap();
 
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
 					UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, eodBySymbol);
