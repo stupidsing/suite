@@ -47,9 +47,6 @@ public class StatisticalArbitrageTest {
 		float[] returns = ds.returns();
 		Random random = new Random();
 
-		System.out.println(Arrays.toString(ds.prices));
-		System.out.println(Arrays.toString(returns));
-
 		for (float bet = 0f - 2f; bet < 1f + 2f; bet += .01f) {
 			float notBet = 1f - bet;
 			double sum = 0d;
