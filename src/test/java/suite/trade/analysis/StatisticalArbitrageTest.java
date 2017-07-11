@@ -35,6 +35,7 @@ public class StatisticalArbitrageTest {
 
 	private Cleanse cleanse = new Cleanse();
 	private Configuration cfg = new ConfigurationImpl();
+	private Random random = new Random();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
@@ -45,7 +46,6 @@ public class StatisticalArbitrageTest {
 
 		DataSource ds = cleanse.cleanse(cfg.dataSource("0003.HK"));
 		float[] returns = ds.returns();
-		Random random = new Random();
 
 		for (float bet = 0f - 2f; bet < 1f + 2f; bet += .01f) {
 			float notBet = 1f - bet;
