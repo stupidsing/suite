@@ -5,6 +5,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +105,16 @@ public class Yahoo {
 			Streamlet2<String, Streamlet<JsonNode>> dataJsons0 = Read //
 					.each("open", "close", "high", "low") //
 					.map2(tag -> jsons //
-							.flatMap(json_ -> json_.path("indicators").path("unadjquote")) //
+							.flatMap(json_ -> {
+								JsonNode json0 = json_.path("indicators");
+								JsonNode json1;
+								if (false //
+										|| !(json1 = json0.path("unadjclose")).isMissingNode() //
+										|| !(json1 = json0.path("unadjquote")).isMissingNode())
+									return json1;
+								else
+									return Collections.emptyList();
+							}) //
 							.flatMap(json_ -> json_.path("unadj" + tag)));
 
 			Streamlet2<String, Streamlet<JsonNode>> dataJsons1 = Read //
@@ -115,10 +125,9 @@ public class Yahoo {
 
 			Map<String, LngFltPair[]> data = Streamlet2 //
 					.concat(dataJsons0, dataJsons1) //
-					.mapValue(json_ -> {
-						float[] fs = json_.collect(Obj_Flt.lift(JsonNode::floatValue)).toArray();
-						return To.array(LngFltPair.class, length, i -> LngFltPair.of(ts[i], fs[i]));
-					}) //
+					.mapValue(json_ -> json_.collect(Obj_Flt.lift(JsonNode::floatValue)).toArray()) //
+					.filterValue(fs -> length <= fs.length) //
+					.mapValue(fs -> To.array(LngFltPair.class, length, i -> LngFltPair.of(ts[i], fs[i]))) //
 					.toMap();
 
 			LngFltPair[] dividends = jsons //
@@ -134,10 +143,13 @@ public class Yahoo {
 					.sort(LngFltPair.comparatorByFirst()) //
 					.toArray(LngFltPair.class);
 
-			stockHistory1 = StockHistory //
-					.of(exchange, time, data, dividends, splits) //
-					.merge(stockHistory0) //
-					.alignToDate();
+			if (data.containsKey("close"))
+				stockHistory1 = StockHistory //
+						.of(exchange, time, data, dividends, splits) //
+						.merge(stockHistory0) //
+						.alignToDate();
+			else
+				throw new RuntimeException();
 
 			List<String> lines = stockHistory1.write().toList();
 			Rethrow.ex(() -> Files.write(path, lines));
