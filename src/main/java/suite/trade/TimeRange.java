@@ -48,16 +48,6 @@ public class TimeRange extends Range<Time> {
 		return of_(Time.of(year, 1, 1), Time.of(year + 1, 1, 1));
 	}
 
-	public static TimeRange rangeOf(long[] ts) {
-		long fr = min.epochSec();
-		long to = max.epochSec();
-		for (long t : ts) {
-			fr = fr < t ? fr : t;
-			to = to < t ? t : to;
-		}
-		return of_(Time.ofEpochSec(fr), Time.ofEpochSec(to).addDays(1));
-	}
-
 	public static TimeRange yearsBefore(Time to, int n) {
 		return yearsBefore_(to, n);
 	}

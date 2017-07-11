@@ -57,10 +57,10 @@ public class FactorLr {
 	}
 
 	public BackAllocator backAllocator() {
-		return (dsBySymbol, ts_) -> {
+		return (dsBySymbol, indices) -> {
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
 
-			DataSourceView<String, LinearRegression> dsv = DataSourceView.of(0, 64, dsBySymbol, ts_,
+			DataSourceView<String, LinearRegression> dsv = DataSourceView.of(0, 64, dsBySymbol, indices,
 					(symbol, ds, period) -> ols(dsBySymbol_.get(symbol), period));
 
 			return (time, index) -> {

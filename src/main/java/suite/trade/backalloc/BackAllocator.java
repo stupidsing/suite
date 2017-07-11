@@ -37,7 +37,7 @@ import suite.util.String_;
  */
 public interface BackAllocator {
 
-	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, long[] ts);
+	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, int[] indices);
 
 	public interface OnDateTime {
 
@@ -51,8 +51,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator byTime(IntPredicate monthPred) {
-		return (dsBySymbol, ts) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, ts);
+		return (dsBySymbol, indices) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, indices);
 			return (time, index) -> monthPred.test(time.month()) ? onDateTime.onDateTime(time, index) : Collections.emptyList();
 		};
 	}
@@ -66,8 +66,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator dump() {
-		return (dsBySymbol, ts) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, ts);
+		return (dsBySymbol, indices) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, indices);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
@@ -80,8 +80,8 @@ public interface BackAllocator {
 	public default BackAllocator even() {
 		BackAllocator ba1 = longOnly();
 
-		return (dsBySymbol, ts) -> {
-			OnDateTime onDateTime = ba1.allocate(dsBySymbol, ts);
+		return (dsBySymbol, indices) -> {
+			OnDateTime onDateTime = ba1.allocate(dsBySymbol, indices);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
@@ -100,7 +100,7 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator filterByAsset(Predicate<String> pred) {
-		return (dsBySymbol, ts) -> allocate(dsBySymbol.filterKey(pred), ts)::onDateTime;
+		return (dsBySymbol, indices) -> allocate(dsBySymbol.filterKey(pred), indices)::onDateTime;
 	}
 
 	public default BackAllocator filterByIndex(Configuration cfg) {
@@ -110,8 +110,8 @@ public interface BackAllocator {
 	public default BackAllocator filterByIndexReturn(Configuration cfg, String indexSymbol) {
 		DataSource indexDataSource = cfg.dataSource(indexSymbol);
 
-		return (dsBySymbol, ts) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, ts);
+		return (dsBySymbol, indices) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, indices);
 
 			return (time, index) -> {
 				Time date = time.date();
@@ -131,8 +131,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator frequency(int freq) {
-		return (dsBySymbol, ts) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, ts);
+		return (dsBySymbol, indices) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, indices);
 
 			return new OnDateTime() {
 				private Time time0;
@@ -159,9 +159,9 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator hold(int period, DblDbl_Dbl fun) {
-		return (dsBySymbol, ts) -> {
+		return (dsBySymbol, indices) -> {
 			Deque<Map<String, Double>> queue = new ArrayDeque<>();
-			OnDateTime onDateTime = allocate(dsBySymbol, ts);
+			OnDateTime onDateTime = allocate(dsBySymbol, indices);
 
 			return (time, index) -> {
 				Map<String, Double> ratioBySymbol = Read //
@@ -189,8 +189,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator longOnly() {
-		return (dsBySymbol, ts) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, ts);
+		return (dsBySymbol, indices) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, indices);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
@@ -209,8 +209,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator pick(int top) {
-		return (dsBySymbol, ts) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, ts);
+		return (dsBySymbol, indices) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, indices);
 
 			return (time, index) -> Read //
 					.from2(onDateTime.onDateTime(time, index)) //
@@ -221,8 +221,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator reallocate() {
-		return (dsBySymbol, ts) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, ts);
+		return (dsBySymbol, indices) -> {
+			OnDateTime onDateTime = allocate(dsBySymbol, indices);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
@@ -277,8 +277,8 @@ public interface BackAllocator {
 		BackAllocator ba2;
 
 		if (Trade_.leverageAmount < 999999f)
-			ba2 = (dsBySymbol, ts) -> {
-				OnDateTime onDateTime = ba1.allocate(dsBySymbol, ts);
+			ba2 = (dsBySymbol, indices) -> {
+				OnDateTime onDateTime = ba1.allocate(dsBySymbol, indices);
 
 				return (time, index) -> {
 					List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);

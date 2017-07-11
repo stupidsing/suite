@@ -18,7 +18,7 @@ public class ArdlBackAllocator implements BackAllocator {
 	private Ardl ardl = new Ardl(9, false);
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol0, long[] ts_) {
+	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol0, int[] indices) {
 		Map<String, DataSource> dsBySymbol1 = dsBySymbol0.toMap();
 		String[] symbols = dsBySymbol0.keys().toArray(String.class);
 

@@ -63,10 +63,10 @@ public class Factor {
 	}
 
 	public BackAllocator backAllocator() {
-		return (dsBySymbol, ts_) -> {
+		return (dsBySymbol, indices) -> {
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
 
-			DataSourceView<String, Double> dsv = DataSourceView.of(0, 64, dsBySymbol, ts_,
+			DataSourceView<String, Double> dsv = DataSourceView.of(0, 64, dsBySymbol, indices,
 					(symbol, ds, period) -> correlate(ids, dsBySymbol_.get(symbol), period));
 
 			return (time, index) -> {

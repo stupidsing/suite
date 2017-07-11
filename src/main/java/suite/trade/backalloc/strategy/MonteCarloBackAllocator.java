@@ -24,7 +24,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 	private Random random = new Random(Time.of(2017, 1, 1).epochSec());
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, long[] ts_) {
+	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, int[] indices) {
 		return (time, index) -> {
 			Map<String, float[]> returnsBySymbol = dsBySymbol.mapValue(DataSource::returns).toMap();
 			String[] symbols = returnsBySymbol.keySet().toArray(new String[0]);

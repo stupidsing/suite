@@ -12,7 +12,7 @@ import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.os.LogUtil;
-import suite.primitive.streamlet.LngStreamlet;
+import suite.primitive.Ints.IntsBuilder;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -93,10 +93,18 @@ public class BackAllocTester {
 
 			long t0 = period.from.epochSec();
 			long tx = period.to.epochSec();
-			long[] ts_ = LngStreamlet.of(tradeTs).filter(t -> t0 <= t && t < tx).toArray();
-			int size = ts_.length;
+			IntsBuilder ib = new IntsBuilder();
 
-			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol, ts_);
+			for (int i = 0; i < tradeTs.length; i++) {
+				long t = tradeTs[i];
+				if (t0 <= t && t < tx)
+					ib.append(i);
+			}
+
+			int[] indices = ib.toInts().toArray();
+			int size = indices.length;
+
+			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol, indices);
 			Map<String, Eod> eodBySymbol = Collections.emptyMap();
 			float[] valuations_ = new float[size];
 			int index = 0;
@@ -105,7 +113,7 @@ public class BackAllocTester {
 
 			try {
 				for (int i = 0; i < size; i++) {
-					long t = ts_[i];
+					long t = tradeTs[indices[i]];
 					Time time = Time.ofEpochSec(t);
 
 					while (tradeTs[index] != t)
