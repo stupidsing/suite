@@ -113,7 +113,7 @@ public class BackAllocTester {
 			try {
 				for (int i = 0; i < size; i++) {
 					int index = indices[i];
-					long t = tradeTs[indices[i]];
+					long t = tradeTs[index];
 					Time time = Time.ofEpochSec(t);
 
 					ymd = time.ymd();
