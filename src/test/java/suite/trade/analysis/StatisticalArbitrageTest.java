@@ -44,7 +44,7 @@ public class StatisticalArbitrageTest {
 		int nTrials = 1000;
 		int nBets = 30;
 
-		DataSource ds = cleanse.cleanse(cfg.dataSource("0003.HK"));
+		DataSource ds = cleanse.cleanse(cfg.dataSource("^HSI"));
 		float[] returns = ds.returns();
 
 		for (float bet = 0f - 2f; bet < 1f + 2f; bet += .01f) {
