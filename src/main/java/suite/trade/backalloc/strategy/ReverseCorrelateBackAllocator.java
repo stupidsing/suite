@@ -39,7 +39,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
 		Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 
-		DataSourceView<String, Double> dsv = DataSourceView.of(0, 512, akds, indices, (symbol, ds, samplePeriod) -> {
+		DataSourceView<String, Double> dsv = DataSourceView.of(0, 512, akds, (symbol, ds, samplePeriod) -> {
 			float[] prices = ds.range(samplePeriod).prices;
 			float[] logReturns = ts.logReturns(prices);
 			int ll = logReturns.length;
@@ -51,10 +51,10 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 			return sum / (ll - 2 * tor);
 		});
 
-		return (time, index) -> {
+		return index -> {
 			Map<String, Double> reverseCorrelationBySymbol = dsBySymbol //
 					.map2((symbol, ds) -> {
-						Double reverseCorrelation = dsv.get(symbol, time);
+						Double reverseCorrelation = dsv.get(symbol, index);
 						return reverseCorrelation != null ? reverseCorrelation : Double.NaN;
 					}) //
 					.filterValue(Double::isFinite) //

@@ -12,7 +12,7 @@ import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.os.LogUtil;
-import suite.primitive.Ints.IntsBuilder;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -90,18 +90,17 @@ public class BackAllocTester {
 			AlignKeyDataSource<String> akds = cfg.dataSources(historyPeriod, Read.from(symbols));
 			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 			long[] tradeTs = akds.ts;
-
 			long t0 = period.from.epochSec();
 			long tx = period.to.epochSec();
-			IntsBuilder ib = new IntsBuilder();
 
-			for (int i = 0; i < tradeTs.length; i++) {
-				long t = tradeTs[i];
-				if (t0 <= t && t < tx)
-					ib.append(i);
-			}
+			int[] indices = IntStreamlet //
+					.range(tradeTs.length) //
+					.filter(i -> {
+						long t = tradeTs[i];
+						return t0 <= t && t < tx;
+					}) //
+					.toArray();
 
-			int[] indices = ib.toInts().toArray();
 			int size = indices.length;
 
 			OnDateTime onDateTime = backAllocator.allocate(akds, indices);
@@ -119,7 +118,7 @@ public class BackAllocTester {
 					ymd = time.ymd();
 					eodBySymbol = dsBySymbol.mapValue(ds -> ds.getEod(index)).toMap();
 
-					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
+					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(index);
 					UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, eodBySymbol);
 					float valuation_ = valuations_[i] = up.valuation0;
 

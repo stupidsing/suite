@@ -68,15 +68,15 @@ public class Factor {
 			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
 
-			DataSourceView<String, Double> dsv = DataSourceView.of(0, 64, akds, indices,
+			DataSourceView<String, Double> dsv = DataSourceView.of(0, 64, akds,
 					(symbol, ds, period) -> correlate(ids, dsBySymbol_.get(symbol), period));
 
-			return (time, index) -> {
+			return index -> {
 				float[] indexPrices = ids.prices;
 				double indexReturn = Quant.return_(indexPrices[index - 2], indexPrices[index - 1]);
 
 				return dsBySymbol //
-						.map2((symbol, ds) -> indexReturn * dsv.get(symbol, time)) //
+						.map2((symbol, ds) -> indexReturn * dsv.get(symbol, index)) //
 						.toList();
 			};
 		};

@@ -11,7 +11,7 @@ public interface WalkForwardAllocator {
 	public List<Pair<String, Double>> allocate(AlignKeyDataSource<String> akds, int index);
 
 	public default BackAllocator backAllocator() {
-		return (akds, indices) -> (time, index) -> allocate(akds, index);
+		return (akds, indices) -> index -> allocate(akds, index);
 	}
 
 }

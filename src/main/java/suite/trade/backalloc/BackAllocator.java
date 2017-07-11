@@ -48,13 +48,15 @@ public interface BackAllocator {
 		 *         date. The assets will be allocated according to potential
 		 *         values pro-rata.
 		 */
-		public List<Pair<String, Double>> onDateTime(Time time, int index);
+		public List<Pair<String, Double>> onDateTime(int index);
 	}
 
 	public default BackAllocator byTime(IntPredicate monthPred) {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
-			return (time, index) -> monthPred.test(time.month()) ? onDateTime.onDateTime(time, index) : Collections.emptyList();
+			return index -> monthPred.test(Time.ofEpochSec(akds.ts[index]).month()) //
+					? onDateTime.onDateTime(index) //
+					: Collections.emptyList();
 		};
 	}
 
@@ -70,8 +72,8 @@ public interface BackAllocator {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
 
-			return (time, index) -> {
-				List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
+			return index -> {
+				List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(index);
 				System.out.println("ratioBySymbol = " + ratioBySymbol);
 				return ratioBySymbol;
 			};
@@ -84,8 +86,8 @@ public interface BackAllocator {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = ba1.allocate(akds, indices);
 
-			return (time, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
+			return index -> {
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(index);
 				int size = Read.from2(potentialBySymbol).size();
 
 				if (0 < size) {
@@ -117,8 +119,8 @@ public interface BackAllocator {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
 
-			return (time, index) -> {
-				Time date = time.date();
+			return index -> {
+				Time date = Time.ofEpochSec(akds.ts[index]).date();
 				long t0 = date.addDays(-7).epochSec();
 				long tx = date.epochSec();
 				DataSource ids = indexDataSource.range(t0, tx);
@@ -128,7 +130,7 @@ public interface BackAllocator {
 				double indexReturn = Quant.return_(indexPrice0, indexPricex);
 
 				return -.03f < indexReturn //
-						? onDateTime.onDateTime(time, index) //
+						? onDateTime.onDateTime(index) //
 						: Collections.emptyList();
 			};
 		};
@@ -142,11 +144,12 @@ public interface BackAllocator {
 				private Time time0;
 				private List<Pair<String, Double>> result0;
 
-				public List<Pair<String, Double>> onDateTime(Time time_, int index) {
+				public List<Pair<String, Double>> onDateTime(int index) {
+					Time time_ = Time.ofEpochSec(akds.ts[index]);
 					Time time1 = time_.addDays(-(time_.epochDay() % freq));
 					if (!Objects.equals(time0, time1)) {
 						time0 = time1;
-						result0 = onDateTime.onDateTime(time1, index);
+						result0 = onDateTime.onDateTime(index);
 					}
 					return result0;
 				}
@@ -167,9 +170,9 @@ public interface BackAllocator {
 			Deque<Map<String, Double>> queue = new ArrayDeque<>();
 			OnDateTime onDateTime = allocate(akds, indices);
 
-			return (time, index) -> {
+			return index -> {
 				Map<String, Double> ratioBySymbol = Read //
-						.from2(onDateTime.onDateTime(time, index)) //
+						.from2(onDateTime.onDateTime(index)) //
 						.toMap();
 
 				queue.addLast(ratioBySymbol);
@@ -196,8 +199,8 @@ public interface BackAllocator {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
 
-			return (time, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
+			return index -> {
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(index);
 
 				return Read.from2(potentialBySymbol) //
 						.map2((symbol, potential) -> {
@@ -216,8 +219,8 @@ public interface BackAllocator {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
 
-			return (time, index) -> Read //
-					.from2(onDateTime.onDateTime(time, index)) //
+			return index -> Read //
+					.from2(onDateTime.onDateTime(index)) //
 					.sortByValue((r0, r1) -> Object_.compare(r1, r0)) //
 					.take(top) //
 					.toList();
@@ -228,8 +231,8 @@ public interface BackAllocator {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
 
-			return (time, index) -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
+			return index -> {
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(index);
 				return BackAllocatorUtil.scale(potentialBySymbol, 1d / BackAllocatorUtil.totalPotential(potentialBySymbol));
 			};
 		};
@@ -284,8 +287,8 @@ public interface BackAllocator {
 			ba2 = (akds, indices) -> {
 				OnDateTime onDateTime = ba1.allocate(akds, indices);
 
-				return (time, index) -> {
-					List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
+				return index -> {
+					List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(index);
 					double totalPotential = BackAllocatorUtil.totalPotential(potentialBySymbol);
 					if (1d < totalPotential)
 						return BackAllocatorUtil.scale(potentialBySymbol, 1d / totalPotential);
@@ -300,7 +303,7 @@ public interface BackAllocator {
 	}
 
 	public default WalkForwardAllocator walkForwardAllocator() {
-		return (akds, index) -> allocate(akds, null).onDateTime(null, index);
+		return (akds, index) -> allocate(akds, null).onDateTime(index);
 	}
 
 }

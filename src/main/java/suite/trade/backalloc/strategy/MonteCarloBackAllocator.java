@@ -28,7 +28,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
 		Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 
-		return (time, index) -> {
+		return index -> {
 			Map<String, float[]> returnsBySymbol = dsBySymbol.mapValue(DataSource::returns).toMap();
 			String[] symbols = returnsBySymbol.keySet().toArray(new String[0]);
 

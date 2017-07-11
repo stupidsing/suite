@@ -62,10 +62,10 @@ public class FactorLr {
 			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
 
-			DataSourceView<String, LinearRegression> dsv = DataSourceView.of(0, 64, akds, indices,
+			DataSourceView<String, LinearRegression> dsv = DataSourceView.of(0, 64, akds,
 					(symbol, ds, period) -> ols(dsBySymbol_.get(symbol), period));
 
-			return (time, index) -> {
+			return index -> {
 				float[] xs = IntStreamlet //
 						.range(indexSymbols.size()) //
 						.collect(Int_Flt.lift(i -> {
@@ -75,7 +75,7 @@ public class FactorLr {
 						.toArray();
 
 				return dsBySymbol //
-						.map2((symbol, ds) -> (double) dsv.get(symbol, time).predict(xs)) //
+						.map2((symbol, ds) -> (double) dsv.get(symbol, index).predict(xs)) //
 						.toList();
 			};
 		};

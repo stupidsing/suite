@@ -30,7 +30,7 @@ public class ArdlBackAllocator implements BackAllocator {
 
 		LinearRegression[] lrs = ardl.ardl(fs);
 
-		return (time, index) -> {
+		return index -> {
 			float[] prices = ardl.predict(lrs, fs, index);
 			float[] returns = To.arrayOfFloats(prices.length, i -> prices[i] / fs[i][index]);
 			float maxReturns = 0f;

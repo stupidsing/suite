@@ -15,21 +15,20 @@ public class DataSourceView<K, V> {
 	private int tor;
 	private int nLookbackDays;
 	private int alignment;
+	private AlignKeyDataSource<K> akds;
 	private Map<K, Map<TimeRange, V>> viewByKey;
 
 	public static <K, V> DataSourceView<K, V> of( //
 			int tor, //
 			AlignKeyDataSource<K> akds, //
-			int[] indices, //
 			DataSourceViewFun<K, V> fun) {
-		return of(tor, 256, akds, indices, fun);
+		return of(tor, 256, akds, fun);
 	}
 
 	public static <K, V> DataSourceView<K, V> of( //
 			int tor, //
 			int nLookbackDays, //
 			AlignKeyDataSource<K> akds, //
-			int[] indices, //
 			DataSourceViewFun<K, V> fun) {
 		int alignment;
 		if (nLookbackDays <= 1)
@@ -44,7 +43,7 @@ public class DataSourceView<K, V> {
 			alignment = 16;
 		else
 			alignment = 32;
-		return new DataSourceView<>(tor, nLookbackDays, alignment, akds, indices, fun);
+		return new DataSourceView<>(tor, nLookbackDays, alignment, akds, fun);
 	}
 
 	private DataSourceView( //
@@ -52,7 +51,6 @@ public class DataSourceView<K, V> {
 			int nLookbackDays, //
 			int alignment, //
 			AlignKeyDataSource<K> akds, //
-			int[] indices, //
 			DataSourceViewFun<K, V> fun) {
 		long fr = TimeRange.min.epochSec();
 		long to = TimeRange.max.epochSec();
@@ -67,6 +65,7 @@ public class DataSourceView<K, V> {
 		this.tor = tor;
 		this.nLookbackDays = nLookbackDays;
 		this.alignment = alignment;
+		this.akds = akds;
 		this.viewByKey = akds.dsByKey //
 				.map2((key, ds) -> period //
 						.addDays(-tor) //
@@ -76,14 +75,14 @@ public class DataSourceView<K, V> {
 				.toMap();
 	}
 
-	public V get(String symbol, Time time) {
-		TimeRange period = period(time);
+	public V get(String symbol, int index) {
+		TimeRange period = period(index);
 		Map<TimeRange, V> m = viewByKey.get(symbol);
 		return m != null ? m.get(period) : null;
 	}
 
-	public TimeRange period(Time time) {
-		return TimeRange.backTestDaysBefore(time.addDays(-tor), nLookbackDays, alignment);
+	public TimeRange period(int index) {
+		return TimeRange.backTestDaysBefore(Time.ofEpochSec(akds.ts[index]).addDays(-tor), nLookbackDays, alignment);
 	}
 
 }
