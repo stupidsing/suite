@@ -9,17 +9,17 @@ import suite.trade.TimeRange;
 public class DataSourceView<K, V> {
 
 	public interface DataSourceViewFun<K, V> {
-		public V apply(String symbol, DataSource ds, TimeRange period);
+		public V apply(K key, DataSource ds, TimeRange period);
 	}
 
 	private int tor;
-	private int nDays;
+	private int nLookbackDays;
 	private int alignment;
-	private Map<String, Map<TimeRange, V>> viewBySymbol;
+	private Map<K, Map<TimeRange, V>> viewByKey;
 
 	public static <K, V> DataSourceView<K, V> of( //
 			int tor, //
-			Streamlet2<String, DataSource> dsByKey, //
+			Streamlet2<K, DataSource> dsByKey, //
 			long[] ts, //
 			DataSourceViewFun<K, V> fun) {
 		return of(tor, 256, dsByKey, ts, fun);
@@ -27,54 +27,54 @@ public class DataSourceView<K, V> {
 
 	public static <K, V> DataSourceView<K, V> of( //
 			int tor, //
-			int nDays, //
-			Streamlet2<String, DataSource> dsByKey, //
+			int nLookbackDays, //
+			Streamlet2<K, DataSource> dsByKey, //
 			long[] ts, //
 			DataSourceViewFun<K, V> fun) {
 		int alignment;
-		if (nDays <= 1)
+		if (nLookbackDays <= 1)
 			alignment = 1;
-		else if (nDays <= 4)
+		else if (nLookbackDays <= 4)
 			alignment = 2;
-		else if (nDays <= 16)
+		else if (nLookbackDays <= 16)
 			alignment = 4;
-		else if (nDays <= 64)
+		else if (nLookbackDays <= 64)
 			alignment = 8;
-		else if (nDays <= 256)
+		else if (nLookbackDays <= 256)
 			alignment = 16;
 		else
 			alignment = 32;
-		return new DataSourceView<>(tor, nDays, alignment, dsByKey, ts, fun);
+		return new DataSourceView<>(tor, nLookbackDays, alignment, dsByKey, ts, fun);
 	}
 
 	private DataSourceView( //
 			int tor, //
-			int nDays, //
+			int nLookbackDays, //
 			int alignment, //
-			Streamlet2<String, DataSource> dsByKey, //
+			Streamlet2<K, DataSource> dsByKey, //
 			long[] ts, //
 			DataSourceViewFun<K, V> fun) {
 		this.tor = tor;
-		this.nDays = nDays;
+		this.nLookbackDays = nLookbackDays;
 		this.alignment = alignment;
-		this.viewBySymbol = dsByKey //
-				.map2((symbol, ds) -> TimeRange //
+		this.viewByKey = dsByKey //
+				.map2((key, ds) -> TimeRange //
 						.rangeOf(ts) //
 						.addDays(-tor) //
-						.backTestDaysBefore(nDays, alignment) //
-						.map2(period -> fun.apply(symbol, ds, period)) //
+						.backTestDaysBefore(nLookbackDays, alignment) //
+						.map2(period -> fun.apply(key, ds, period)) //
 						.toMap()) //
 				.toMap();
 	}
 
 	public V get(String symbol, Time time) {
 		TimeRange period = period(time);
-		Map<TimeRange, V> m = viewBySymbol.get(symbol);
+		Map<TimeRange, V> m = viewByKey.get(symbol);
 		return m != null ? m.get(period) : null;
 	}
 
 	public TimeRange period(Time time) {
-		return TimeRange.backTestDaysBefore(time.addDays(-tor), nDays, alignment);
+		return TimeRange.backTestDaysBefore(time.addDays(-tor), nLookbackDays, alignment);
 	}
 
 }
