@@ -6,13 +6,13 @@ import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.MovingAverage;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
+import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
@@ -47,17 +47,17 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 	}
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, int[] indices) {
+	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
+		Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
+
 		log.sink(dsBySymbol.size() + " assets in data source");
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 		DataSourceView<String, MeanReversionStat> dsv = DataSourceView //
-				.of(tor, dsBySymbol, indices, (symbol, ds, period) -> new MeanReversionStat(ds, period));
+				.of(tor, akds, indices, (symbol, ds, period) -> new MeanReversionStat(ds, period));
 
 		return (time, index) -> {
-			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
-
-			Map<String, MeanReversionStat> mrsBySymbol = dsBySymbol //
+			Map<String, MeanReversionStat> mrsBySymbol = akds.dsByKey //
 					.map2((symbol, ds) -> dsv.get(symbol, time)) //
 					.filterValue(mrsReversionStat -> mrsReversionStat != null) //
 					.toMap();
@@ -73,7 +73,7 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 							&& 0d < mrs.varianceRatio //
 							&& mrs.movingAvgMeanReversionRatio() < 0d) //
 					.map2((symbol, mrs) -> {
-						DataSource ds = dsBySymbol_.get(symbol);
+						DataSource ds = dsBySymbol.get(symbol);
 						double price = ds.prices[index - 1];
 
 						double lma = mrs.latestMovingAverage();

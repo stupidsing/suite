@@ -104,7 +104,7 @@ public class BackAllocTester {
 			int[] indices = ib.toInts().toArray();
 			int size = indices.length;
 
-			OnDateTime onDateTime = backAllocator.allocate(dsBySymbol, indices);
+			OnDateTime onDateTime = backAllocator.allocate(akds, indices);
 			Map<String, Eod> eodBySymbol = Collections.emptyMap();
 			float[] valuations_ = new float[size];
 			String ymd = null;

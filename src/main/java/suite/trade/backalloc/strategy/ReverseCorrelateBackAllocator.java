@@ -8,6 +8,7 @@ import suite.streamlet.As;
 import suite.streamlet.Streamlet2;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
+import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
 import suite.util.To;
 
@@ -35,8 +36,10 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 	}
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, int[] indices) {
-		DataSourceView<String, Double> dsv = DataSourceView.of(0, 512, dsBySymbol, indices, (symbol, ds, samplePeriod) -> {
+	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
+		Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
+
+		DataSourceView<String, Double> dsv = DataSourceView.of(0, 512, akds, indices, (symbol, ds, samplePeriod) -> {
 			float[] prices = ds.range(samplePeriod).prices;
 			float[] logReturns = ts.logReturns(prices);
 			int ll = logReturns.length;

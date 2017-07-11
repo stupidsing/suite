@@ -11,6 +11,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
+import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.util.To;
 
 public class ArdlBackAllocator implements BackAllocator {
@@ -18,7 +19,8 @@ public class ArdlBackAllocator implements BackAllocator {
 	private Ardl ardl = new Ardl(9, false);
 
 	@Override
-	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol0, int[] indices) {
+	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
+		Streamlet2<String, DataSource> dsBySymbol0 = akds.dsByKey;
 		Map<String, DataSource> dsBySymbol1 = dsBySymbol0.toMap();
 		String[] symbols = dsBySymbol0.keys().toArray(String.class);
 

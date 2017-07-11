@@ -38,16 +38,16 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator cash() {
-		return (dsBySymbol, indices) -> (time, index) -> Collections.emptyList();
+		return (akds, indices) -> (time, index) -> Collections.emptyList();
 	}
 
 	public static BackAllocator donchian(int window) {
-		return (dsBySymbol, indices) -> {
-			Map<String, MovingRange[]> movingRangeBySymbol = dsBySymbol //
+		return (akds, indices) -> {
+			Map<String, MovingRange[]> movingRangeBySymbol = akds.dsByKey //
 					.mapValue(ds -> ma.movingRange(ds.prices, window)) //
 					.toMap();
 
-			return (time, index) -> dsBySymbol //
+			return (time, index) -> akds.dsByKey//
 					.map2((symbol, ds) -> {
 						MovingRange[] movingRange = movingRangeBySymbol.get(symbol);
 						float price = ds.prices[index - 1];
@@ -75,7 +75,9 @@ public class BackAllocator_ {
 		int halfLife = 2;
 		double scale = 1d / Math.log(.8d);
 
-		return (dsBySymbol, indices) -> {
+		return (akds, indices) -> {
+			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
+
 			Map<String, float[]> ema = dsBySymbol //
 					.mapValue(ds -> ma.exponentialMovingAvg(ds.prices, halfLife)) //
 					.toMap();
@@ -93,9 +95,9 @@ public class BackAllocator_ {
 
 	// reverse draw-down; trendy strategy
 	public static BackAllocator revDrawdown() {
-		return (dsBySymbol, indices) -> //
+		return (akds, indices) -> //
 		(time, index) -> Read //
-				.from2(dsBySymbol) //
+				.from2(akds.dsByKey) //
 				.map2((symbol, ds) -> {
 					int i = index - 1;
 					int i0 = Math.max(0, i - 128);
@@ -128,8 +130,8 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator lastReturn(int nWorsts, int nBests) {
-		return (dsBySymbol, indices) -> (time, index) -> {
-			List<String> list = dsBySymbol //
+		return (akds, indices) -> (time, index) -> {
+			List<String> list = akds.dsByKey //
 					.map2((symbol, ds) -> ds.lastReturn(index)) //
 					.sortBy((symbol, return_) -> return_) //
 					.keys() //
@@ -145,8 +147,8 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator lastReturnsProRata() {
-		return (dsBySymbol, indices) -> (time, index) -> {
-			Streamlet2<String, Double> returns = dsBySymbol //
+		return (akds, indices) -> (time, index) -> {
+			Streamlet2<String, Double> returns = akds.dsByKey //
 					.map2((symbol, ds) -> ds.lastReturn(index)) //
 					.filterValue(return_ -> 0d < return_) //
 					.collect(As::streamlet2);
@@ -163,7 +165,9 @@ public class BackAllocator_ {
 		Strategos strategos = new Strategos();
 		BuySellStrategy mamr = strategos.movingAvgMeanReverting(nPastDays, nHoldDays, threshold);
 
-		return (dsBySymbol, indices) -> {
+		return (akds, indices) -> {
+			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
+
 			Map<String, GetBuySell> getBuySellBySymbol = dsBySymbol //
 					.mapValue(ds -> mamr.analyze(ds.prices)) //
 					.toMap();
@@ -184,7 +188,9 @@ public class BackAllocator_ {
 		int windowSize0 = 4;
 		int windowSize1 = 12;
 
-		return (dsBySymbol, indices) -> {
+		return (akds, indices) -> {
+			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
+
 			Map<String, float[]> movingAvg0BySymbol = dsBySymbol //
 					.mapValue(ds -> ma.movingAvg(ds.prices, windowSize0)) //
 					.toMap();
@@ -220,7 +226,9 @@ public class BackAllocator_ {
 		int windowSize0 = 1;
 		int windowSize1 = 32;
 
-		return (dsBySymbol, indices) -> {
+		return (akds, indices) -> {
+			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
+
 			Map<String, MovingRange[]> movingMedian0BySymbol = dsBySymbol //
 					.mapValue(ds -> ma.movingRange(ds.prices, windowSize0)) //
 					.toMap();
@@ -241,7 +249,7 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator ofSingle(String symbol) {
-		return (dsBySymbol, indices) -> (time, index) -> Arrays.asList(Pair.of(symbol, 1d));
+		return (akds, indices) -> (time, index) -> Arrays.asList(Pair.of(symbol, 1d));
 	}
 
 	public static BackAllocator pairs(Configuration cfg, String symbol0, String symbol1) {
@@ -255,7 +263,8 @@ public class BackAllocator_ {
 		int tor = 64;
 		double threshold = 0d;
 
-		BackAllocator ba0 = (dsBySymbol, indices) -> {
+		BackAllocator ba0 = (akds, indices) -> {
+			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
 			DataSource ds0 = dsBySymbol_.get(symbol0);
 			DataSource ds1 = dsBySymbol_.get(symbol1);
@@ -285,9 +294,9 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator sum(BackAllocator... bas) {
-		return (dsBySymbol, indices) -> {
+		return (akds, indices) -> {
 			Streamlet<OnDateTime> odts = Read.from(bas) //
-					.map(ba -> ba.allocate(dsBySymbol, indices)) //
+					.map(ba -> ba.allocate(akds, indices)) //
 					.collect(As::streamlet);
 
 			return (time, index) -> odts //
@@ -298,7 +307,9 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator tripleMovingAvgs() {
-		return (dsBySymbol, indices) -> {
+		return (akds, indices) -> {
+			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
+
 			Map<String, float[]> movingAvg0BySymbol = dsBySymbol //
 					.mapValue(ds -> ma.exponentialMovingGeometricAvg(ds.prices, 18)) //
 					.toMap();
@@ -326,8 +337,8 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator variableBollingerBands() {
-		return (dsBySymbol, indices) -> {
-			return (time, index) -> dsBySymbol //
+		return (akds, indices) -> {
+			return (time, index) -> akds.dsByKey //
 					.map2((symbol, ds) -> {
 						int last = index - 1;
 						double hold = 0d;
@@ -352,7 +363,9 @@ public class BackAllocator_ {
 	}
 
 	private static BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {
-		return (dsBySymbol, indices) -> {
+		return (akds, indices) -> {
+			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
+
 			Map<String, float[]> percentbBySymbol = dsBySymbol //
 					.mapValue(ds -> bb.bb(ds.prices, backPos0, backPos1, k).percentb) //
 					.toMap();
@@ -379,7 +392,7 @@ public class BackAllocator_ {
 	}
 
 	private static BackAllocator rsi_(int window, double threshold0, double threshold1) {
-		return (dsBySymbol, indices) -> (time, index) -> dsBySymbol //
+		return (akds, indices) -> (time, index) -> akds.dsByKey //
 				.mapValue(ds -> {
 					float[] prices = ds.prices;
 					int gt = 0, ge = 0;

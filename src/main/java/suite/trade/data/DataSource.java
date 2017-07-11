@@ -64,15 +64,15 @@ public class DataSource {
 		return dsByKey0 //
 				.mapValue(alignDataSource::align) //
 				.collect(As::streamlet2) //
-				.apply(st -> new AlignKeyDataSource<>(alignDataSource, st));
+				.apply(st -> new AlignKeyDataSource<>(alignDataSource.ts, st));
 	}
 
 	public static class AlignKeyDataSource<K> {
 		public final long[] ts;
 		public final Streamlet2<K, DataSource> dsByKey;
 
-		private AlignKeyDataSource(AlignDataSource alignDataSource, Streamlet2<K, DataSource> dsByKey) {
-			this.ts = alignDataSource.ts;
+		public AlignKeyDataSource(long[] ts, Streamlet2<K, DataSource> dsByKey) {
+			this.ts = ts;
 			this.dsByKey = dsByKey;
 		}
 	}

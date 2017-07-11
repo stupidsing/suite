@@ -2,9 +2,9 @@ package suite.trade.data;
 
 import java.util.Map;
 
-import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.trade.data.DataSource.AlignKeyDataSource;
 
 public class DataSourceView<K, V> {
 
@@ -19,16 +19,16 @@ public class DataSourceView<K, V> {
 
 	public static <K, V> DataSourceView<K, V> of( //
 			int tor, //
-			Streamlet2<K, DataSource> dsByKey, //
+			AlignKeyDataSource<K> akds, //
 			int[] indices, //
 			DataSourceViewFun<K, V> fun) {
-		return of(tor, 256, dsByKey, indices, fun);
+		return of(tor, 256, akds, indices, fun);
 	}
 
 	public static <K, V> DataSourceView<K, V> of( //
 			int tor, //
 			int nLookbackDays, //
-			Streamlet2<K, DataSource> dsByKey, //
+			AlignKeyDataSource<K> akds, //
 			int[] indices, //
 			DataSourceViewFun<K, V> fun) {
 		int alignment;
@@ -44,38 +44,34 @@ public class DataSourceView<K, V> {
 			alignment = 16;
 		else
 			alignment = 32;
-		return new DataSourceView<>(tor, nLookbackDays, alignment, dsByKey, indices, fun);
+		return new DataSourceView<>(tor, nLookbackDays, alignment, akds, indices, fun);
 	}
 
 	private DataSourceView( //
 			int tor, //
 			int nLookbackDays, //
 			int alignment, //
-			Streamlet2<K, DataSource> dsByKey, //
+			AlignKeyDataSource<K> akds, //
 			int[] indices, //
 			DataSourceViewFun<K, V> fun) {
 		long fr = TimeRange.min.epochSec();
 		long to = TimeRange.max.epochSec();
 
-		for (DataSource ds : dsByKey.values()) {
-			long[] ts = ds.ts;
-			for (int index : indices) {
-				long t = ts[index];
-				fr = Long.min(t, fr);
-				to = Long.max(t, to);
-			}
+		for (long t : akds.ts) {
+			fr = Long.min(t, fr);
+			to = Long.max(t, to);
 		}
 
-		TimeRange period0 = TimeRange.of(Time.ofEpochSec(fr), Time.ofEpochSec(to).addDays(1));
+		TimeRange period = TimeRange.of(Time.ofEpochSec(fr), Time.ofEpochSec(to).addDays(1));
 
 		this.tor = tor;
 		this.nLookbackDays = nLookbackDays;
 		this.alignment = alignment;
-		this.viewByKey = dsByKey //
-				.map2((key, ds) -> period0 //
+		this.viewByKey = akds.dsByKey //
+				.map2((key, ds) -> period //
 						.addDays(-tor) //
 						.backTestDaysBefore(nLookbackDays, alignment) //
-						.map2(period -> fun.apply(key, ds, period)) //
+						.map2(period_ -> fun.apply(key, ds, period_)) //
 						.toMap()) //
 				.toMap();
 	}

@@ -24,6 +24,7 @@ import suite.trade.Time;
 import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
+import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
@@ -37,7 +38,7 @@ import suite.util.String_;
  */
 public interface BackAllocator {
 
-	public OnDateTime allocate(Streamlet2<String, DataSource> dsBySymbol, int[] indices);
+	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices);
 
 	public interface OnDateTime {
 
@@ -51,8 +52,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator byTime(IntPredicate monthPred) {
-		return (dsBySymbol, indices) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, indices);
+		return (akds, indices) -> {
+			OnDateTime onDateTime = allocate(akds, indices);
 			return (time, index) -> monthPred.test(time.month()) ? onDateTime.onDateTime(time, index) : Collections.emptyList();
 		};
 	}
@@ -66,8 +67,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator dump() {
-		return (dsBySymbol, indices) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, indices);
+		return (akds, indices) -> {
+			OnDateTime onDateTime = allocate(akds, indices);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(time, index);
@@ -80,8 +81,8 @@ public interface BackAllocator {
 	public default BackAllocator even() {
 		BackAllocator ba1 = longOnly();
 
-		return (dsBySymbol, indices) -> {
-			OnDateTime onDateTime = ba1.allocate(dsBySymbol, indices);
+		return (akds, indices) -> {
+			OnDateTime onDateTime = ba1.allocate(akds, indices);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
@@ -100,7 +101,10 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator filterByAsset(Predicate<String> pred) {
-		return (dsBySymbol, indices) -> allocate(dsBySymbol.filterKey(pred), indices)::onDateTime;
+		return (akds0, indices) -> {
+			AlignKeyDataSource<String> akds1 = new AlignKeyDataSource<>(akds0.ts, akds0.dsByKey.filterKey(pred));
+			return allocate(akds1, indices)::onDateTime;
+		};
 	}
 
 	public default BackAllocator filterByIndex(Configuration cfg) {
@@ -110,8 +114,8 @@ public interface BackAllocator {
 	public default BackAllocator filterByIndexReturn(Configuration cfg, String indexSymbol) {
 		DataSource indexDataSource = cfg.dataSource(indexSymbol);
 
-		return (dsBySymbol, indices) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, indices);
+		return (akds, indices) -> {
+			OnDateTime onDateTime = allocate(akds, indices);
 
 			return (time, index) -> {
 				Time date = time.date();
@@ -131,8 +135,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator frequency(int freq) {
-		return (dsBySymbol, indices) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, indices);
+		return (akds, indices) -> {
+			OnDateTime onDateTime = allocate(akds, indices);
 
 			return new OnDateTime() {
 				private Time time0;
@@ -159,9 +163,9 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator hold(int period, DblDbl_Dbl fun) {
-		return (dsBySymbol, indices) -> {
+		return (akds, indices) -> {
 			Deque<Map<String, Double>> queue = new ArrayDeque<>();
-			OnDateTime onDateTime = allocate(dsBySymbol, indices);
+			OnDateTime onDateTime = allocate(akds, indices);
 
 			return (time, index) -> {
 				Map<String, Double> ratioBySymbol = Read //
@@ -189,8 +193,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator longOnly() {
-		return (dsBySymbol, indices) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, indices);
+		return (akds, indices) -> {
+			OnDateTime onDateTime = allocate(akds, indices);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
@@ -209,8 +213,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator pick(int top) {
-		return (dsBySymbol, indices) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, indices);
+		return (akds, indices) -> {
+			OnDateTime onDateTime = allocate(akds, indices);
 
 			return (time, index) -> Read //
 					.from2(onDateTime.onDateTime(time, index)) //
@@ -221,8 +225,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator reallocate() {
-		return (dsBySymbol, indices) -> {
-			OnDateTime onDateTime = allocate(dsBySymbol, indices);
+		return (akds, indices) -> {
+			OnDateTime onDateTime = allocate(akds, indices);
 
 			return (time, index) -> {
 				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
@@ -232,8 +236,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator relative(DataSource indexDataSource) {
-		return (dsBySymbol0, times_) -> {
-			Streamlet2<String, DataSource> dsBySymbol1 = dsBySymbol0 //
+		return (akds0, times_) -> {
+			Streamlet2<String, DataSource> dsBySymbol1 = akds0.dsByKey //
 					.mapValue(ds0 -> {
 						long[] times = ds0.ts;
 						float[] prices = ds0.prices;
@@ -255,7 +259,7 @@ public interface BackAllocator {
 					}) //
 					.collect(As::streamlet2);
 
-			return allocate(dsBySymbol1, times_)::onDateTime;
+			return allocate(new AlignKeyDataSource<>(akds0.ts, dsBySymbol1), times_)::onDateTime;
 		};
 	}
 
@@ -277,8 +281,8 @@ public interface BackAllocator {
 		BackAllocator ba2;
 
 		if (Trade_.leverageAmount < 999999f)
-			ba2 = (dsBySymbol, indices) -> {
-				OnDateTime onDateTime = ba1.allocate(dsBySymbol, indices);
+			ba2 = (akds, indices) -> {
+				OnDateTime onDateTime = ba1.allocate(akds, indices);
 
 				return (time, index) -> {
 					List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(time, index);
@@ -296,7 +300,7 @@ public interface BackAllocator {
 	}
 
 	public default WalkForwardAllocator walkForwardAllocator() {
-		return (dsBySymbol, index) -> allocate(dsBySymbol, null).onDateTime(null, index);
+		return (akds, index) -> allocate(akds, null).onDateTime(null, index);
 	}
 
 }
