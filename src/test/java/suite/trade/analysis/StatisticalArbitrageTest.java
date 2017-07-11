@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.junit.Test;
 
@@ -34,6 +35,31 @@ public class StatisticalArbitrageTest {
 	private Configuration cfg = new ConfigurationImpl();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
+
+	@Test
+	public void testMonteCarloBestBet() {
+		int nTrials = 1000;
+		int nBets = 20;
+
+		float[] returns = cfg.dataSource("0005.HK").returns();
+		Random random = new Random();
+
+		for (float bet = 0f - 2f; bet < 1f + 2f; bet += .01f) {
+			float notBet = 1f - bet;
+			double sum = 0d;
+
+			for (int i = 0; i < nTrials; i++) {
+				double account = 1d;
+				for (int j = 0; j < nBets; j++) {
+					double return_ = 1d + returns[random.nextInt(returns.length)];
+					account = notBet * account + bet * account * (1d + return_);
+				}
+				sum += account;
+			}
+
+			System.out.println("bet = " + To.string(bet) + ", avg outcome = " + To.string(sum / nTrials));
+		}
+	}
 
 	// Auto-regressive test
 	@Test
