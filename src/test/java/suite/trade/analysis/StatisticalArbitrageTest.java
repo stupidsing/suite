@@ -21,6 +21,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.trade.data.Cleanse;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -32,6 +33,7 @@ public class StatisticalArbitrageTest {
 
 	private TimeRange period = TimeRange.threeYears();
 
+	private Cleanse cleanse = new Cleanse();
 	private Configuration cfg = new ConfigurationImpl();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
@@ -39,10 +41,14 @@ public class StatisticalArbitrageTest {
 	@Test
 	public void testMonteCarloBestBet() {
 		int nTrials = 1000;
-		int nBets = 20;
+		int nBets = 30;
 
-		float[] returns = cfg.dataSource("0005.HK").returns();
+		DataSource ds = cleanse.cleanse(cfg.dataSource("0003.HK"));
+		float[] returns = ds.returns();
 		Random random = new Random();
+
+		System.out.println(Arrays.toString(ds.prices));
+		System.out.println(Arrays.toString(returns));
 
 		for (float bet = 0f - 2f; bet < 1f + 2f; bet += .01f) {
 			float notBet = 1f - bet;
@@ -51,7 +57,7 @@ public class StatisticalArbitrageTest {
 			for (int i = 0; i < nTrials; i++) {
 				double account = 1d;
 				for (int j = 0; j < nBets; j++) {
-					double return_ = 1d + returns[random.nextInt(returns.length)];
+					double return_ = returns[random.nextInt(returns.length)];
 					account = notBet * account + bet * account * (1d + return_);
 				}
 				sum += account;
