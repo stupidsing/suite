@@ -87,11 +87,10 @@ public class ElfTest {
 		}
 
 		try {
-			Files.setPosixFilePermissions(path,
-					new HashSet<>(Arrays.asList( //
-							PosixFilePermission.GROUP_EXECUTE, //
-							PosixFilePermission.OTHERS_EXECUTE, //
-							PosixFilePermission.OWNER_EXECUTE)));
+			Files.setPosixFilePermissions(path, new HashSet<>(Arrays.asList( //
+					PosixFilePermission.GROUP_EXECUTE, //
+					PosixFilePermission.OTHERS_EXECUTE, //
+					PosixFilePermission.OWNER_EXECUTE)));
 		} catch (UnsupportedOperationException ex) {
 		}
 	}
