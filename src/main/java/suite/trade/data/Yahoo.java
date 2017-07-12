@@ -164,7 +164,7 @@ public class Yahoo {
 		int last = ts.length - 1;
 		ts[last] = getTradeTimeBefore(stockHistory1.exchange, ts[last]);
 
-		return cleanse.cleanse(ds).range(period);
+		return ds.cleanse().range(period);
 	}
 
 	private JsonNode queryL1(String symbol, TimeRange period) {

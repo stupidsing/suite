@@ -186,6 +186,14 @@ public class DataSource {
 		return of(ts1, Read.from(pairs1));
 	}
 
+	public DataSource cleanse() {
+		cleanse.cleanse(prices);
+		cleanse.cleanse(nextOpens);
+		cleanse.cleanse(nextLows);
+		cleanse.cleanse(nextHighs);
+		return this;
+	}
+
 	public DataSource cons(long time, float price) {
 		int length = ts.length;
 		long[] ts1 = Arrays.copyOf(ts, length + 1);

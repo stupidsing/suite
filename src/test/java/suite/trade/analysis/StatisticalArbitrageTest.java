@@ -21,7 +21,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
-import suite.trade.data.Cleanse;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -33,7 +32,6 @@ public class StatisticalArbitrageTest {
 
 	private TimeRange period = TimeRange.threeYears();
 
-	private Cleanse cleanse = new Cleanse();
 	private Configuration cfg = new ConfigurationImpl();
 	private Random random = new Random();
 	private Statistic stat = new Statistic();
@@ -41,13 +39,13 @@ public class StatisticalArbitrageTest {
 
 	@Test
 	public void testMonteCarloBestBet() {
-		int nTrials = 1000;
-		int nBets = 30;
+		int nTrials = 10000;
+		int nBets = 40;
 
-		DataSource ds = cleanse.cleanse(cfg.dataSource("^HSI"));
+		DataSource ds = cfg.dataSource("^HSI").range(period).cleanse();
 		float[] returns = ds.returns();
 
-		for (float bet = 0f - 2f; bet < 1f + 2f; bet += .01f) {
+		for (float bet = 0f - 2f; bet < 1f + 2f; bet += .02f) {
 			float notBet = 1f - bet;
 			double sum = 0d;
 

@@ -62,7 +62,7 @@ public class Keyboard implements Closeable {
 							chs.add(ch_);
 							VK vk;
 
-							if ((t = t.getMap().get(ch_)) != null)
+							if ((t = t.getMap().get((int) ch_)) != null)
 								if ((vk = t.getValue()) != null) {
 									nerve.fire(Pair.of(vk, null));
 									reset();

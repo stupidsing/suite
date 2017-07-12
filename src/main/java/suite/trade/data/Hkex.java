@@ -372,7 +372,7 @@ public class Hkex {
 
 	private Map<String, Integer> queryLotSizeBySymbol_(Streamlet<String> symbols) {
 		Source<Map<String, Integer>> fun = () -> symbols //
-				.map2(symbol -> !delisted.contains(symbols) ? queryBoardLot_(symbol) : null) //
+				.map2(symbol -> !delisted.contains(symbol) ? queryBoardLot_(symbol) : null) //
 				.filterValue(boardLot -> boardLot != null) //
 				.toMap();
 

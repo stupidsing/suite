@@ -11,12 +11,6 @@ import suite.primitive.adt.pair.LngFltPair;
  */
 public class Cleanse {
 
-	public DataSource cleanse(DataSource ds) {
-		cleanse(ds.prices);
-		cleanse(ds.nextOpens);
-		return ds;
-	}
-
 	public float[] cleanse(float[] prices) {
 		cleanse(prices.length, //
 				i -> prices[i], //
