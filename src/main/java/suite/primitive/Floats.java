@@ -46,6 +46,13 @@ public class Floats implements Iterable<Float> {
 		return c != 0 ? c : size0 - size1;
 	};
 
+	public static Floats concat(Floats... array) {
+		FloatsBuilder bb = new FloatsBuilder();
+		for (Floats floats : array)
+			bb.append(floats);
+		return bb.toFloats();
+	}
+
 	public static Floats of(Outlet<Floats> outlet) {
 		FloatsBuilder cb = new FloatsBuilder();
 		outlet.forEach(cb::append);
@@ -85,17 +92,6 @@ public class Floats implements Iterable<Float> {
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
 		return of(nb);
-	}
-
-	public static Floats asList(float... in) {
-		return of(in);
-	}
-
-	public static Floats concat(Floats... array) {
-		FloatsBuilder bb = new FloatsBuilder();
-		for (Floats floats : array)
-			bb.append(floats);
-		return bb.toFloats();
 	}
 
 	public <T> T collect(Fun<Floats, T> fun) {

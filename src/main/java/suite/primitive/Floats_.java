@@ -27,10 +27,25 @@ public class Floats_ {
 		float[] fs1 = new float[length];
 		int i = 0;
 		for (float[] fs : array) {
-			Floats_.copy(fs, 0, fs1, i, fs.length);
-			i += fs.length;
+			int length_ = fs.length;
+			copy(fs, 0, fs1, i, length_);
+			i += length_;
 		}
 		return fs1;
+	}
+
+	public static Floats concat(Floats... array) {
+		int length = 0;
+		for (Floats floats : array)
+			length += floats.size();
+		float[] cs1 = new float[length];
+		int i = 0;
+		for (Floats floats : array) {
+			int size_ = floats.size();
+			copy(floats.cs, floats.start, cs1, i, size_);
+			i += size_;
+		}
+		return Floats.of(cs1);
 	}
 
 	public static void copy(float[] from, int fromIndex, float[] to, int toIndex, int size) {

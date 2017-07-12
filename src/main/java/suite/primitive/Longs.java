@@ -46,6 +46,13 @@ public class Longs implements Iterable<Long> {
 		return c != 0 ? c : size0 - size1;
 	};
 
+	public static Longs concat(Longs... array) {
+		LongsBuilder bb = new LongsBuilder();
+		for (Longs longs : array)
+			bb.append(longs);
+		return bb.toLongs();
+	}
+
 	public static Longs of(Outlet<Longs> outlet) {
 		LongsBuilder cb = new LongsBuilder();
 		outlet.forEach(cb::append);
@@ -85,17 +92,6 @@ public class Longs implements Iterable<Long> {
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
 		return of(nb);
-	}
-
-	public static Longs asList(long... in) {
-		return of(in);
-	}
-
-	public static Longs concat(Longs... array) {
-		LongsBuilder bb = new LongsBuilder();
-		for (Longs longs : array)
-			bb.append(longs);
-		return bb.toLongs();
 	}
 
 	public <T> T collect(Fun<Longs, T> fun) {

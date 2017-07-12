@@ -27,10 +27,25 @@ public class Doubles_ {
 		double[] fs1 = new double[length];
 		int i = 0;
 		for (double[] fs : array) {
-			Doubles_.copy(fs, 0, fs1, i, fs.length);
-			i += fs.length;
+			int length_ = fs.length;
+			copy(fs, 0, fs1, i, length_);
+			i += length_;
 		}
 		return fs1;
+	}
+
+	public static Doubles concat(Doubles... array) {
+		int length = 0;
+		for (Doubles doubles : array)
+			length += doubles.size();
+		double[] cs1 = new double[length];
+		int i = 0;
+		for (Doubles doubles : array) {
+			int size_ = doubles.size();
+			copy(doubles.cs, doubles.start, cs1, i, size_);
+			i += size_;
+		}
+		return Doubles.of(cs1);
 	}
 
 	public static void copy(double[] from, int fromIndex, double[] to, int toIndex, int size) {

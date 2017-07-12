@@ -51,7 +51,7 @@ public class FileSystemKeyUtil {
 	}
 
 	public Bytes toBytes(NameKey key) {
-		return Bytes.concat(toBytes_(key), key.path, Bytes.asList((byte) key.size)).pad(keyLength);
+		return Bytes.concat(toBytes_(key), key.path, Bytes.of((byte) key.size)).pad(keyLength);
 	}
 
 	public Bytes toBytes(DataKey key) {
@@ -60,7 +60,7 @@ public class FileSystemKeyUtil {
 	}
 
 	private Bytes toBytes_(Key key) {
-		return Bytes.concat(key.hash, Bytes.asList((byte) key.id));
+		return Bytes.concat(key.hash, Bytes.of((byte) key.id));
 	}
 
 	public Bytes toName(List<NameKey> keys) {

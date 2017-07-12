@@ -43,6 +43,13 @@ public class Bytes implements Iterable<Byte> {
 		return c != 0 ? c : size0 - size1;
 	};
 
+	public static Bytes concat(Bytes... array) {
+		BytesBuilder bb = new BytesBuilder();
+		for (Bytes bytes : array)
+			bb.append(bytes);
+		return bb.toBytes();
+	}
+
 	public static Bytes of(Outlet<Bytes> outlet) {
 		BytesBuilder bb = new BytesBuilder();
 		outlet.forEach(bb::append);
@@ -82,17 +89,6 @@ public class Bytes implements Iterable<Byte> {
 		System.arraycopy(bs, start, bsx, 0, size0);
 		System.arraycopy(bytes1.bs, bytes1.start, bsx, size0, size1);
 		return of(bsx);
-	}
-
-	public static Bytes asList(byte... in) {
-		return of(in);
-	}
-
-	public static Bytes concat(Bytes... array) {
-		BytesBuilder bb = new BytesBuilder();
-		for (Bytes bytes : array)
-			bb.append(bytes);
-		return bb.toBytes();
 	}
 
 	public <T> T collect(Fun<Bytes, T> fun) {

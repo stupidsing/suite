@@ -27,10 +27,25 @@ public class Longs_ {
 		long[] fs1 = new long[length];
 		int i = 0;
 		for (long[] fs : array) {
-			Longs_.copy(fs, 0, fs1, i, fs.length);
-			i += fs.length;
+			int length_ = fs.length;
+			copy(fs, 0, fs1, i, length_);
+			i += length_;
 		}
 		return fs1;
+	}
+
+	public static Longs concat(Longs... array) {
+		int length = 0;
+		for (Longs longs : array)
+			length += longs.size();
+		long[] cs1 = new long[length];
+		int i = 0;
+		for (Longs longs : array) {
+			int size_ = longs.size();
+			copy(longs.cs, longs.start, cs1, i, size_);
+			i += size_;
+		}
+		return Longs.of(cs1);
 	}
 
 	public static void copy(long[] from, int fromIndex, long[] to, int toIndex, int size) {

@@ -27,10 +27,25 @@ public class Ints_ {
 		int[] fs1 = new int[length];
 		int i = 0;
 		for (int[] fs : array) {
-			Ints_.copy(fs, 0, fs1, i, fs.length);
-			i += fs.length;
+			int length_ = fs.length;
+			copy(fs, 0, fs1, i, length_);
+			i += length_;
 		}
 		return fs1;
+	}
+
+	public static Ints concat(Ints... array) {
+		int length = 0;
+		for (Ints ints : array)
+			length += ints.size();
+		int[] cs1 = new int[length];
+		int i = 0;
+		for (Ints ints : array) {
+			int size_ = ints.size();
+			copy(ints.cs, ints.start, cs1, i, size_);
+			i += size_;
+		}
+		return Ints.of(cs1);
 	}
 
 	public static void copy(int[] from, int fromIndex, int[] to, int toIndex, int size) {

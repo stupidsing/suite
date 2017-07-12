@@ -46,6 +46,13 @@ public class Doubles implements Iterable<Double> {
 		return c != 0 ? c : size0 - size1;
 	};
 
+	public static Doubles concat(Doubles... array) {
+		DoublesBuilder bb = new DoublesBuilder();
+		for (Doubles doubles : array)
+			bb.append(doubles);
+		return bb.toDoubles();
+	}
+
 	public static Doubles of(Outlet<Doubles> outlet) {
 		DoublesBuilder cb = new DoublesBuilder();
 		outlet.forEach(cb::append);
@@ -85,17 +92,6 @@ public class Doubles implements Iterable<Double> {
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
 		return of(nb);
-	}
-
-	public static Doubles asList(double... in) {
-		return of(in);
-	}
-
-	public static Doubles concat(Doubles... array) {
-		DoublesBuilder bb = new DoublesBuilder();
-		for (Doubles doubles : array)
-			bb.append(doubles);
-		return bb.toDoubles();
 	}
 
 	public <T> T collect(Fun<Doubles, T> fun) {

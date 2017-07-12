@@ -46,6 +46,13 @@ public class Chars implements Iterable<Character> {
 		return c != 0 ? c : size0 - size1;
 	};
 
+	public static Chars concat(Chars... array) {
+		CharsBuilder bb = new CharsBuilder();
+		for (Chars chars : array)
+			bb.append(chars);
+		return bb.toChars();
+	}
+
 	public static Chars of(Outlet<Chars> outlet) {
 		CharsBuilder cb = new CharsBuilder();
 		outlet.forEach(cb::append);
@@ -85,17 +92,6 @@ public class Chars implements Iterable<Character> {
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
 		return of(nb);
-	}
-
-	public static Chars asList(char... in) {
-		return of(in);
-	}
-
-	public static Chars concat(Chars... array) {
-		CharsBuilder bb = new CharsBuilder();
-		for (Chars chars : array)
-			bb.append(chars);
-		return bb.toChars();
 	}
 
 	public <T> T collect(Fun<Chars, T> fun) {

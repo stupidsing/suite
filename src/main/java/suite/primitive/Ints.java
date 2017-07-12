@@ -46,6 +46,13 @@ public class Ints implements Iterable<Integer> {
 		return c != 0 ? c : size0 - size1;
 	};
 
+	public static Ints concat(Ints... array) {
+		IntsBuilder bb = new IntsBuilder();
+		for (Ints ints : array)
+			bb.append(ints);
+		return bb.toInts();
+	}
+
 	public static Ints of(Outlet<Ints> outlet) {
 		IntsBuilder cb = new IntsBuilder();
 		outlet.forEach(cb::append);
@@ -85,17 +92,6 @@ public class Ints implements Iterable<Integer> {
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
 		return of(nb);
-	}
-
-	public static Ints asList(int... in) {
-		return of(in);
-	}
-
-	public static Ints concat(Ints... array) {
-		IntsBuilder bb = new IntsBuilder();
-		for (Ints ints : array)
-			bb.append(ints);
-		return bb.toInts();
 	}
 
 	public <T> T collect(Fun<Ints, T> fun) {

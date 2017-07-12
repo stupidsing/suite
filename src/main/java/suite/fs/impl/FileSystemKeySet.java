@@ -87,9 +87,9 @@ public class FileSystemKeySet {
 			Bytes bytes1 = bytes.range(0, -1);
 			byte b1 = (byte) (bytes.get(-1) + 1);
 			if (b1 != 0)
-				return Bytes.concat(bytes1, Bytes.asList(b1));
+				return Bytes.concat(bytes1, Bytes.of(b1));
 			else
-				return Bytes.concat(increment(bytes1), Bytes.asList((byte) 0));
+				return Bytes.concat(increment(bytes1), Bytes.of((byte) 0));
 		} else
 			return bytes;
 	}
