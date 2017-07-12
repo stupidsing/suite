@@ -13,7 +13,8 @@ public class LazyFunTest {
 
 	@Test
 	public void testChunk() {
-		assertEquals(Suite.parse("(0; 1; 2;); (3; 4; 5;); (6; 7; 8;); (9; 10; 11;); (12; 13; 14;); (15;);"),
+		assertEquals( //
+				Suite.parse("(0; 1; 2;); (3; 4; 5;); (6; 7; 8;); (9; 10; 11;); (12; 13; 14;); (15;);"), //
 				eval("range {0} {16} {1} | chunk {3}"));
 	}
 
@@ -24,44 +25,39 @@ public class LazyFunTest {
 
 	@Test
 	public void testCorecursion() {
-		String fp0 = "" //
+		assertEquals(Atom.TRUE, eval("" //
 				+ "define seq := n => n; seq {n} >> \n" //
-				+ "head {seq {0}} = 0";
-		assertEquals(Atom.TRUE, eval(fp0));
+				+ "head {seq {0}} = 0"));
 
-		String fp1 = "" // real co-recursion!
+		assertEquals(Int.of(89), eval("" // real co-recursion!
 				+ "define fib := i1 => i2 => i2; fib {i2} {i1 + i2} >> \n" //
-				+ "fib {0} {1} | get {10}";
-		assertEquals(Int.of(89), eval(fp1));
+				+ "fib {0} {1} | get {10}"));
 	}
 
 	@Test
 	public void testDefines() {
-		String fp0 = "" //
+		assertEquals(Int.of(62), eval("" //
 				+ "lets ( \n" //
 				+ "    a := n => if (0 < n) then (b {n - 1} * 2) else 0 # \n" //
 				+ "    b := n => if (0 < n) then (a {n - 1} + 1) else 0 # \n" //
-				+ ") >> a {10}";
-		assertEquals(Int.of(62), eval(fp0));
+				+ ") >> a {10}"));
 	}
 
 	@Test
 	public void testFibonacci() {
-		String fp0 = "" //
+		assertEquals(Int.of(89), eval("" //
 				+ "define fib := \n" //
 				+ "    1; 1; zip {`+`} {fib} {tail {fib}} \n" //
-				+ ">> fib | get {10}";
-		assertEquals(Int.of(89), eval(fp0));
+				+ ">> fib | get {10}"));
 
-		String fp1 = "" //
+		assertEquals(Int.of(144), eval("" //
 				+ "define fib := x => \n" //
 				+ "    if (x = `$a; $y`) then \n" //
 				+ "        if (y = `$b; $z`) then \n" //
 				+ "            (fib {y} + fib {z}) \n" //
 				+ "        else 1 \n" //
 				+ "    else 0 \n" //
-				+ ">> fib {0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; }";
-		assertEquals(Int.of(144), eval(fp1));
+				+ ">> fib {0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; }"));
 	}
 
 	@Test
@@ -71,10 +67,9 @@ public class LazyFunTest {
 
 	@Test
 	public void testFold() {
-		String fp0 = "" //
+		assertEquals(Suite.parse("0; 1; 2; 3; 4;"), eval("" //
 				+ "define inf-series := n => n; inf-series {n + 1} >> " //
-				+ "0 | inf-series | fold-right {`;`} {} | take {5}";
-		assertEquals(Suite.parse("0; 1; 2; 3; 4;"), eval(fp0));
+				+ "0 | inf-series | fold-right {`;`} {} | take {5}"));
 
 		// on the other hand, same call using fold-left would result in infinite
 		// loop, like this:
@@ -89,7 +84,8 @@ public class LazyFunTest {
 
 	@Test
 	public void testLines() {
-		assertEquals(Suite.parse("(0; 1; 2; 3; 4; 5; 10;); (6; 7; 8; 9; 10;); (2; 3; 4;);"),
+		assertEquals( //
+				Suite.parse("(0; 1; 2; 3; 4; 5; 10;); (6; 7; 8; 9; 10;); (2; 3; 4;);"), //
 				eval("lines {0; 1; 2; 3; 4; 5; 10; 6; 7; 8; 9; 10; 2; 3; 4;}"));
 	}
 
@@ -115,14 +111,20 @@ public class LazyFunTest {
 
 	@Test
 	public void testTakeWhile() {
-		assertEquals(Suite.parse("0; 1; 2; 3;"), eval("take-while {`<= 3`} {0; 1; 2; 3; 4; 5; 6; 7; 8; 9; }"));
-		assertEquals(Suite.parse("0; 1; 2; 3;"), eval("0 | iterate {`+ 1`} | take-while {`<= 3`}"));
+		assertEquals( //
+				Suite.parse("0; 1; 2; 3;"), //
+				eval("take-while {`<= 3`} {0; 1; 2; 3; 4; 5; 6; 7; 8; 9; }"));
+
+		assertEquals( //
+				Suite.parse("0; 1; 2; 3;"), //
+				eval("0 | iterate {`+ 1`} | take-while {`<= 3`}"));
 	}
 
 	@Test
 	public void testTranspose() {
-		String r = "(1; 4; 7;); (2; 5; 8;); (3; 6; 9;);";
-		assertEquals(Suite.parse(r), eval("transpose {(1; 2; 3;); (4; 5; 6;); (7; 8; 9;);}"));
+		assertEquals( //
+				Suite.parse("(1; 4; 7;); (2; 5; 8;); (3; 6; 9;);"), //
+				eval("transpose {(1; 2; 3;); (4; 5; 6;); (7; 8; 9;);}"));
 	}
 
 	private static Node eval(String f) {

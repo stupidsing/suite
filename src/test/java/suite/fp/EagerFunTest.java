@@ -15,7 +15,9 @@ public class EagerFunTest {
 
 	@Test
 	public void testAppend() {
-		assertEquals(Suite.parse("1; 2; 3; 4; 5; 6; 7; 8;"), eval("append {1; 2; 3; 4;} {5; 6; 7; 8;}"));
+		assertEquals( //
+				Suite.parse("1; 2; 3; 4; 5; 6; 7; 8;"), //
+				eval("append {1; 2; 3; 4;} {5; 6; 7; 8;}"));
 	}
 
 	@Test
@@ -26,25 +28,27 @@ public class EagerFunTest {
 
 	@Test
 	public void testBisect() {
-		assertEquals(eval("(0; 2; 4; 6; 8;), (1; 3; 5; 7; 9;)"), eval("0; 1; 2; 3; 4; 5; 6; 7; 8; 9; | bisect {`= 0` . `% 2`}"));
+		assertEquals( //
+				eval("(0; 2; 4; 6; 8;), (1; 3; 5; 7; 9;)"), //
+				eval("0; 1; 2; 3; 4; 5; 6; 7; 8; 9; | bisect {`= 0` . `% 2`}"));
 	}
 
 	@Test
 	public void testClosure() {
-		String fp0 = "" //
-				+ "define add := `+` >> add {3} {4}";
-		assertEquals(Int.of(7), eval(fp0));
+		assertEquals(Int.of(7), eval("" //
+				+ "define add := `+` >> add {3} {4}"));
 
-		String fp1 = "" //
+		assertEquals(Int.of(20), eval("" //
 				+ "define p := `+ 1` >> \n" //
 				+ "define q := n => p {n} * 2 >> \n" //
-				+ "q {9}";
-		assertEquals(Int.of(20), eval(fp1));
+				+ "q {9}"));
 	}
 
 	@Test
 	public void testConcat() {
-		assertEquals(Suite.parse("1; 2; 3; 4; 5; 6;"), eval("concat {(1; 2;); (3; 4;); (5; 6;);}"));
+		assertEquals( //
+				Suite.parse("1; 2; 3; 4; 5; 6;"), //
+				eval("concat {(1; 2;); (3; 4;); (5; 6;);}"));
 	}
 
 	@Test
@@ -57,11 +61,10 @@ public class EagerFunTest {
 	public void testCross() {
 		String fp0 = "" //
 				+ "cross {a => b => a; b;} {7; 8; 9;} {1; 2;}";
-		assertEquals(
-				Suite.parse("" //
-						+ "((7; 1;); (7; 2;);); " //
-						+ "((8; 1;); (8; 2;);); " //
-						+ "((9; 1;); (9; 2;););") //
+		assertEquals(Suite.parse("" //
+				+ "((7; 1;); (7; 2;);); " //
+				+ "((8; 1;); (8; 2;);); " //
+				+ "((9; 1;); (9; 2;););") //
 				, eval(fp0));
 
 		String fp1 = "" //
@@ -92,14 +95,13 @@ public class EagerFunTest {
 
 	@Test
 	public void testFibonacci() {
-		String fp0 = "" //
+		assertEquals(Int.of(89), eval("" //
 				+ "define fib := n => \n" //
 				+ "    if (1 < n) \n" //
 				+ "    then (fib {n - 1} + fib {n - 2}) \n" //
 				+ "    else 1 \n" //
 				+ ">> \n" //
-				+ "fib {10}";
-		assertEquals(Int.of(89), eval(fp0));
+				+ "fib {10}"));
 	}
 
 	@Test
@@ -153,22 +155,20 @@ public class EagerFunTest {
 		assertEquals(Int.of(1), eval("let v := true, 1, 2, >> if-bind (v := true, $i, 2,) then i else 0"));
 		assertEquals(Int.of(1), eval("if-bind (1, 2, := $i, 2,) then i else 0"));
 
-		String fp0 = "" //
+		assertEquals(Int.of(3), eval("" //
 				+ "data T as A >> \n" //
 				+ "data T as B number >> \n" //
 				+ "data T as C boolean >> \n" //
 				+ "let e := B 3 >> \n" //
-				+ "if-bind (e := B $i) then i else 0";
-		assertEquals(Int.of(3), eval(fp0));
+				+ "if-bind (e := B $i) then i else 0"));
 
-		String fp1 = "" //
+		assertEquals(Int.of(0), eval("" //
 				+ "data T as A >> \n" //
 				+ "data T as B number >> \n" //
 				+ "data T as C boolean >> \n" //
 				+ "let e := B 3 >> \n" //
 				+ "let f := C false >> \n" //
-				+ "if-bind (e := f) then 1 else 0";
-		assertEquals(Int.of(0), eval(fp1));
+				+ "if-bind (e := f) then 1 else 0"));
 	}
 
 	// after replacing call stack with activation chain, this test would not
@@ -185,32 +185,28 @@ public class EagerFunTest {
 
 	@Test
 	public void testJoin() {
-		String fp0 = "" //
+		assertEquals(Int.of(19), eval("" //
 				+ "define p := `* 2` >> \n" //
 				+ "define q := `+ 1` >> \n" //
 				+ "define r := q . p >> \n" //
-				+ "r {9}";
-		assertEquals(Int.of(19), eval(fp0));
+				+ "r {9}"));
 
-		String fp1 = "" //
+		assertEquals(Int.of(13), eval("" //
 				+ "define p := `+ 1` >> \n" //
 				+ "define q := `* 2` >> \n" //
 				+ "define r := `- 3` >> \n" //
-				+ "(p . q . r) {9}";
-		assertEquals(Int.of(13), eval(fp1));
+				+ "(p . q . r) {9}"));
 
-		String fp2 = "" //
+		assertEquals(Int.of(17), eval("" //
 				+ "define p := `+ 1` >> \n" //
 				+ "define q := `* 2` >> \n" //
 				+ "define r := `- 3` >> \n" //
-				+ "9 | p | q | r";
-		assertEquals(Int.of(17), eval(fp2));
+				+ "9 | p | q | r"));
 	}
 
 	@Test
 	public void testLength() {
-		assertEquals(Int.of(5), eval("" //
-				+ "length {3; 3; 3; 3; 3;}"));
+		assertEquals(Int.of(5), eval("length {3; 3; 3; 3; 3;}"));
 	}
 
 	@Test
@@ -228,40 +224,47 @@ public class EagerFunTest {
 
 	@Test
 	public void testMergeSort() {
-		assertEquals(Suite.parse("0; 1; 2; 3; 4; 5; 6; 7; 8; 9;"), eval("merge-sort {5; 3; 2; 8; 6; 4; 1; 0; 9; 7;}"));
+		assertEquals( //
+				Suite.parse("0; 1; 2; 3; 4; 5; 6; 7; 8; 9;"), //
+				eval("merge-sort {5; 3; 2; 8; 6; 4; 1; 0; 9; 7;}"));
 	}
 
 	@Test
 	public void testOperator() {
-		String fp0 = "" //
-				+ "and {1 = 1} {or {1 = 0} {1 = 1}}";
-		assertEquals(Atom.TRUE, eval(fp0));
+		assertEquals(Atom.TRUE, eval("" //
+				+ "and {1 = 1} {or {1 = 0} {1 = 1}}"));
 
-		String fp1 = "" //
+		assertEquals(Atom.FALSE, eval("" //
 				+ "data T as A >> \n" //
 				+ "data T as B >> \n" //
-				+ "let list1 := [T] of () >> A = B";
-		assertEquals(Atom.FALSE, eval(fp1));
+				+ "let list1 := [T] of () >> A = B"));
 	}
 
 	@Test
 	public void testPartition() {
-		assertEquals(eval("(1; 3; 0; 2; 4;), (5; 7; 9; 6; 8;)"), eval("partition {`< 5`} {1; 3; 5; 7; 9; 0; 2; 4; 6; 8;}"));
+		assertEquals( //
+				eval("(1; 3; 0; 2; 4;), (5; 7; 9; 6; 8;)"), //
+				eval("partition {`< 5`} {1; 3; 5; 7; 9; 0; 2; 4; 6; 8;}"));
 	}
 
 	@Test
 	public void testQuickSort() {
-		assertEquals(Suite.parse("0; 1; 2; 3; 4; 5; 6; 7; 8; 9;"), eval("quick-sort {`<`} {5; 3; 2; 8; 6; 4; 1; 0; 9; 7;}"));
+		assertEquals( //
+				Suite.parse("0; 1; 2; 3; 4; 5; 6; 7; 8; 9;"), //
+				eval("quick-sort {`<`} {5; 3; 2; 8; 6; 4; 1; 0; 9; 7;}"));
 	}
 
 	@Test
 	public void testRange() {
-		assertEquals(Suite.parse("2; 5; 8; 11;"), eval("range {2} {14} {3}"));
+		assertEquals( //
+				Suite.parse("2; 5; 8; 11;"), //
+				eval("range {2} {14} {3}"));
 	}
 
 	@Test
 	public void testReplace() {
-		assertEquals(eval("\"abcghighijklmnopqrstuvwxyzabcghighi\""),
+		assertEquals( //
+				eval("\"abcghighijklmnopqrstuvwxyzabcghighi\""), //
 				eval("replace {\"def\"} {\"ghi\"} {\"abcdefghijklmnopqrstuvwxyzabcdefghi\"}"));
 	}
 
@@ -290,7 +293,7 @@ public class EagerFunTest {
 
 	@Test
 	public void testSwitch() {
-		String fp0 = "" //
+		assertEquals(eval("\"B\""), eval("" //
 				+ "define switch := \n" //
 				+ "    case \n" //
 				+ "    || 1 => \"A\" \n" //
@@ -298,8 +301,7 @@ public class EagerFunTest {
 				+ "    || 3 => \"C\" \n" //
 				+ "    || anything => \"D\" \n" //
 				+ ">> \n" //
-				+ "switch {2}";
-		assertEquals(eval("\"B\""), eval(fp0));
+				+ "switch {2}"));
 	}
 
 	@Test
@@ -323,25 +325,30 @@ public class EagerFunTest {
 
 	@Test
 	public void testTails() {
-		assertEquals(Suite.parse("(1; 2; 3;); (2; 3;); (3;); ();"), eval("tails {1; 2; 3;}"));
+		assertEquals( //
+				Suite.parse("(1; 2; 3;); (2; 3;); (3;); ();"), //
+				eval("tails {1; 2; 3;}"));
 	}
 
 	@Test
 	public void testTake() {
-		assertEquals(Suite.parse("1; 2; 3; 4;"), eval("take {4} {1; 2; 3; 4; 5; 6; 7;}"));
+		assertEquals( //
+				Suite.parse("1; 2; 3; 4;"), //
+				eval("take {4} {1; 2; 3; 4; 5; 6; 7;}"));
 	}
 
 	@Test
 	public void testUniq() {
-		assertEquals(Suite.parse("1; 2; 3; 5; 2;"), eval("uniq {1; 2; 2; 2; 3; 5; 2;}"));
+		assertEquals( //
+				Suite.parse("1; 2; 3; 5; 2;"), //
+				eval("uniq {1; 2; 2; 2; 3; 5; 2;}"));
 	}
 
 	@Test
 	public void testZip() {
-		String fp0 = "" //
+		assertEquals(Suite.parse("(1; 5;); (2; 6;); (3; 7;);"), eval("" //
 				+ "define zip-up := zip {a => b => a; b;} >> \n" //
-				+ "zip-up {1; 2; 3;} {5; 6; 7;}";
-		assertEquals(Suite.parse("(1; 5;); (2; 6;); (3; 7;);"), eval(fp0));
+				+ "zip-up {1; 2; 3;} {5; 6; 7;}"));
 	}
 
 	private static Node eval(String f) {

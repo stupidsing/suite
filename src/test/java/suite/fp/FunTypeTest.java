@@ -26,19 +26,17 @@ public class FunTypeTest {
 				+ "data Clazz as Link Clazz >> \n" //
 				+ "data Clazz as Leaf number >> \n";
 
-		String fp0 = data //
+		assertType("number", data //
 				+ "let f := v => if-bind (v := Leaf 1) then 1 else if-bind (v := Link Leaf 2) then 2 else 3 >> \n" //
-				+ "f {Leaf 1} \n";
-		assertType("number", fp0);
+				+ "f {Leaf 1} \n");
 
-		String fp1 = data //
+		assertType("number", data //
 				+ "let f := v => \n" //
 				+ "    if (v = `Leaf $i`) then i \n" //
 				+ "    else if (v = `Link Leaf $i`) then i \n" //
 				+ "    else 0 \n" //
 				+ ">> \n" //
-				+ "f {Link Leaf 3} \n";
-		assertType("number", fp1);
+				+ "f {Link Leaf 3} \n");
 	}
 
 	@Test
@@ -49,19 +47,17 @@ public class FunTypeTest {
 
 	@Test
 	public void testClass() {
-		String fp0 = "" //
+		assertType("Clazz atom:()", "" //
 				+ "data Clazz as Empty >> \n" //
 				+ "define add := (Clazz -> Clazz) of (a => a) >> \n" //
-				+ "add | {Empty}";
-		assertType("Clazz atom:()", fp0);
+				+ "add | {Empty}");
 
-		String fp1 = "" //
+		assertType("boolean", "" //
 				+ "data T as Nil >> \n" //
 				+ "data T as BTree (T, T) >> \n" //
 				+ "let u := T of Nil >> \n" //
 				+ "let v := T of Nil >> \n" //
-				+ "v = BTree (BTree (Nil, Nil), Nil)";
-		assertType("boolean", fp1);
+				+ "v = BTree (BTree (Nil, Nil), Nil)");
 	}
 
 	@Test
