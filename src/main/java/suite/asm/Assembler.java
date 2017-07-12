@@ -52,7 +52,8 @@ public class Assembler {
 		if (isLongMode)
 			Suite.addRule(ruleSet, "as-long-mode");
 
-		finder = new SewingProverBuilder2().build(ruleSet)
+		finder = new SewingProverBuilder2() //
+				.build(ruleSet) //
 				.apply(Suite.parse("" //
 						+ "source (.bits, .address, .instruction,)" //
 						+ ", asi:.bits:.address .instruction .code" //

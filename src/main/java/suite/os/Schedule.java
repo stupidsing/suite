@@ -57,16 +57,15 @@ public class Schedule {
 	}
 
 	public Schedule filterTime(Predicate<LocalDateTime> pred) {
-		return Schedule.of(nextRunDateTime,
-				() -> Read //
-						.from(run.source()) //
-						.map(schedule -> {
-							LocalDateTime t = schedule.nextRunDateTime;
-							while (!pred.test(t))
-								t = t.plusHours(1);
-							return Schedule.of(t, schedule.run);
-						}) //
-						.toList());
+		return Schedule.of(nextRunDateTime, () -> Read //
+				.from(run.source()) //
+				.map(schedule -> {
+					LocalDateTime t = schedule.nextRunDateTime;
+					while (!pred.test(t))
+						t = t.plusHours(1);
+					return Schedule.of(t, schedule.run);
+				}) //
+				.toList());
 	}
 
 }

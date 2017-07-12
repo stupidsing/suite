@@ -76,12 +76,11 @@ public class PopupMain extends ExecutableProgram {
 		LayoutCalculator lay = new LayoutCalculator(frame.getContentPane());
 
 		Node layout = lay.box(Orientation.VERTICAL, //
-				lay.fx(32,
-						lay.box(Orientation.HORIZONTAL, //
-								lay.ex(32, lay.c(inTextField)), //
-								lay.fx(64, lay.c(volLabel)), //
-								lay.fx(48, lay.c(volUpButton)), //
-								lay.fx(48, lay.c(volDnButton)))), //
+				lay.fx(32, lay.box(Orientation.HORIZONTAL, //
+						lay.ex(32, lay.c(inTextField)), //
+						lay.fx(64, lay.c(volLabel)), //
+						lay.fx(48, lay.c(volUpButton)), //
+						lay.fx(48, lay.c(volDnButton)))), //
 				lay.ex(32, lay.c(outLabel)));
 
 		Runnable refresh = () -> {

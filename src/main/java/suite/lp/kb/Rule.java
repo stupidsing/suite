@@ -41,20 +41,16 @@ public class Rule {
 		Env env = sewingGeneralizer.env();
 		env.getReference(cutIndex).bound(cut);
 
-		return Tree.of(TermOp.AND___ //
-				,
-				Tree.of(TermOp.EQUAL_ //
-						, query //
-						, headFun.apply(env)) //
-				, tailFun.apply(env));
+		return Tree.of(TermOp.AND___, //
+				Tree.of(TermOp.EQUAL_, //
+						query, //
+						headFun.apply(env)), //
+				tailFun.apply(env));
 
 	}
 
 	public Node clause() {
-		if (tail != Atom.NIL)
-			return Tree.of(TermOp.IS____, head, tail);
-		else
-			return head;
+		return tail != Atom.NIL ? Tree.of(TermOp.IS____, head, tail) : head;
 	}
 
 	@Override

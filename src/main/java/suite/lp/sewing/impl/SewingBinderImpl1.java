@@ -63,11 +63,10 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef = bindRef(compile(node));
 
 			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTree = be -> n_ -> f //
-					.declare(f.invokeStatic(Tree.class, "decompose", n_, f.object(operator)),
-							t -> f.ifNonNullAnd(t, //
-									f.and( //
-											lambda0.invoke(be, t.invoke("getLeft")), //
-											lambda1.invoke(be, t.invoke("getRight")))));
+					.declare(f.invokeStatic(Tree.class, "decompose", n_, f.object(operator)), t -> f //
+							.ifNonNullAnd(t, f.and( //
+									lambda0.invoke(be, t.invoke("getLeft")), //
+									lambda1.invoke(be, t.invoke("getRight")))));
 
 			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTree));
 		} else if (node instanceof Tuple) {
@@ -98,11 +97,10 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 	}
 
 	private LambdaInstance<BindPredicate> compileBindPredicate(BindPredicate pred) {
-		return LambdaInstance.of(
-				LambdaImplementation.of( //
-						lambdaClass, //
-						To.map("pred", Type.getType(BindPredicate.class)), //
-						f.parameter2((be, n) -> f.inject("pred").invoke("test", be, n))), //
+		return LambdaInstance.of(LambdaImplementation.of( //
+				lambdaClass, //
+				To.map("pred", Type.getType(BindPredicate.class)), //
+				f.parameter2((be, n) -> f.inject("pred").invoke("test", be, n))), //
 				To.map("pred", pred));
 	}
 
