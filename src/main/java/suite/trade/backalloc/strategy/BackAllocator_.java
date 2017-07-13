@@ -53,14 +53,12 @@ public class BackAllocator_ {
 						float price = ds.prices[index - 1];
 						double hold = 0d;
 						for (int i = 0; i < index; i++) {
-							float min = movingRange[i].min;
-							float max = movingRange[i].max;
-							float median = movingRange[i].median;
-							if (price <= min)
+							MovingRange range = movingRange[i];
+							if (price <= range.min)
 								hold = 1d;
-							else if (price < median)
+							else if (price < range.median)
 								hold = Math.max(0d, hold);
-							else if (price < max)
+							else if (price < range.max)
 								hold = Math.min(0d, hold);
 							else
 								hold = -1d;
