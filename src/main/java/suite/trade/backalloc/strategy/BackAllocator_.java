@@ -43,15 +43,13 @@ public class BackAllocator_ {
 
 	public static BackAllocator donchian(int window) {
 		return (akds, indices) -> {
-			Map<String, MovingRange[]> movingRangeBySymbol = akds.dsByKey //
-					.mapValue(ds -> ma.movingRange(ds.prices, window)) //
-					.toMap();
-
-			return index -> akds.dsByKey //
-					.map2((symbol, ds) -> {
-						MovingRange[] movingRange = movingRangeBySymbol.get(symbol);
-						double hold = 0d;
-						for (int i = 0; i < index; i++) {
+			Streamlet2<String, float[]> holdsBySymbol = akds.dsByKey //
+					.mapValue(ds -> {
+						MovingRange[] movingRange = ma.movingRange(ds.prices, window);
+						int length = movingRange.length;
+						float[] holds = new float[length];
+						float hold = 0f;
+						for (int i = 0; i < length; i++) {
 							MovingRange range = movingRange[i];
 							double price = ds.prices[i];
 							double min = range.min;
@@ -59,16 +57,21 @@ public class BackAllocator_ {
 							double vol = (max - min) / price;
 							if (.02d < vol)
 								if (price <= min)
-									hold = 1d;
+									hold = 1f;
 								else if (price < range.median)
-									hold = Math.max(0d, hold);
+									hold = (float) Math.max(0f, hold);
 								else if (price < max)
-									hold = Math.min(0d, hold);
+									hold = (float) Math.min(0f, hold);
 								else
-									hold = -1d;
+									hold = -1f;
+							holds[i] = hold;
 						}
-						return hold;
+						return holds;
 					}) //
+					.collect(As::streamlet2);
+
+			return index -> holdsBySymbol //
+					.map2((symbol, holds) -> (double) holds[index - 1]) //
 					.toList();
 		};
 	}
