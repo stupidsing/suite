@@ -25,7 +25,7 @@ public class Quandl {
 		// Date, Open, High, Low, Last, Change, Settle, Volume, Previous Day
 		// Open Interest
 		Streamlet<String[]> arrays = Singleton.me //
-				.getStoreCache() //
+				.storeCache //
 				.http(urlString) //
 				.collect(As::csv) //
 				.skip(1) //

@@ -36,7 +36,7 @@ import suite.util.FunUtil.Source;
 
 public class FunFactory {
 
-	private static Inspect inspect = Singleton.me.getInspect();
+	private static Inspect inspect = Singleton.me.inspect;
 
 	public FunExpr _false() {
 		return int_(0);

@@ -17,7 +17,7 @@ public class SerializedStoreCache<K, V> {
 
 	private Serializer<K> keySerializer;
 	private Serializer<V> valueSerializer;
-	private StoreCache storeCache = Singleton.me.getStoreCache();
+	private StoreCache storeCache = Singleton.me.storeCache;
 
 	public static <V> SerializedStoreCache<String, V> of(Serializer<V> valueSerializer) {
 		return of(Serialize.variableLengthString, valueSerializer);

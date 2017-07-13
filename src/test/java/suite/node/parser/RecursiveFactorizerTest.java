@@ -32,7 +32,7 @@ import suite.util.To;
 
 public class RecursiveFactorizerTest {
 
-	private Nodify nodify = Singleton.me.getNodify();
+	private Nodify nodify = Singleton.me.nodify;
 	private RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 
 	@Test

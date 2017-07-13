@@ -24,7 +24,7 @@ public class Keeper {
 	private Path keeperDir = TempDir.resolve("keeper");
 
 	private ObjectMapper objectMapper;
-	private Mapify mapify = Singleton.me.getMapify();
+	private Mapify mapify = Singleton.me.mapify;
 
 	public Keeper(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;

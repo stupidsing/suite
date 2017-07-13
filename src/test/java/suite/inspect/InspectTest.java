@@ -10,7 +10,7 @@ import suite.node.util.Singleton;
 
 public class InspectTest {
 
-	private Inspect inspect = Singleton.me.getInspect();
+	private Inspect inspect = Singleton.me.inspect;
 	private ProverConfig pc0 = new ProverConfig();
 	private ProverConfig pc1 = new ProverConfig();
 

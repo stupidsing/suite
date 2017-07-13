@@ -21,7 +21,7 @@ import suite.util.Object_;
 
 public class FunExpression {
 
-	private static Inspect inspect = Singleton.me.getInspect();
+	private static Inspect inspect = Singleton.me.inspect;
 
 	public static abstract class FunExpr {
 		public FunExpr apply(FunExpr... parameters) {

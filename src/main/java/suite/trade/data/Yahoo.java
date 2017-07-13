@@ -45,7 +45,7 @@ public class Yahoo {
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
 		Streamlet<String[]> arrays = Singleton.me //
-				.getStoreCache() //
+				.storeCache //
 				.http(urlString) //
 				.collect(As::csv) //
 				.skip(1) //
@@ -202,7 +202,7 @@ public class Yahoo {
 				+ "&callback=";
 
 		return Rethrow.ex(() -> {
-			try (InputStream is = Singleton.me.getStoreCache().http(urlString).collect(To::inputStream)) {
+			try (InputStream is = Singleton.me.storeCache.http(urlString).collect(To::inputStream)) {
 				JsonNode json = mapper.readTree(is);
 
 				Streamlet<JsonNode> quotes = Read.each(json) //

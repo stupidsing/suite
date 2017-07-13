@@ -22,8 +22,8 @@ import suite.util.To;
 
 public class FactorizeResult {
 
-	private static Inspect inspect = Singleton.me.getInspect();
-	private static Nodify nodify = Singleton.me.getNodify();
+	private static Inspect inspect = Singleton.me.inspect;
+	private static Nodify nodify = Singleton.me.nodify;
 
 	public final Chars pre;
 	public final FNode node;

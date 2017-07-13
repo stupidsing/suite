@@ -17,7 +17,7 @@ public class HongKongGovernment {
 		DateTimeFormatter yyyymmdd = DateTimeFormatter.ofPattern("yyyyMMdd", Locale.ENGLISH);
 
 		return Singleton.me //
-				.getStoreCache() //
+				.storeCache //
 				.http("http://www.1823.gov.hk/common/ical/gc/en.ics") //
 				.collect(As::lines) //
 				.map(line -> line.split(":")) //

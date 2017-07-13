@@ -38,12 +38,12 @@ public class Configuration {
 
 		@Override
 		public boolean equals(Object object) {
-			return Singleton.me.getInspect().equals(this, object);
+			return Singleton.me.inspect.equals(this, object);
 		}
 
 		@Override
 		public int hashCode() {
-			return Singleton.me.getInspect().hashCode(this);
+			return Singleton.me.inspect.hashCode(this);
 		}
 
 		public RuleSet ruleSet() {
