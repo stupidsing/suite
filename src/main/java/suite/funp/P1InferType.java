@@ -33,6 +33,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.TermOp;
+import suite.node.util.Singleton;
 
 /**
  * Hindley-Milner type inference.
@@ -46,7 +47,7 @@ public class P1InferType {
 	private Match defLambda = Suite.match("LAMBDA .0 .1");
 	private Match defReference = Suite.match("REF .0");
 
-	private Inspect inspect = new Inspect();
+	private Inspect inspect = Singleton.me.getInspect();
 	private Trail trail = new Trail();
 	private Map<Funp, Node> typeByNode = new HashMap<>();
 
