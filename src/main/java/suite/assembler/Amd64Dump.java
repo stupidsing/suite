@@ -40,8 +40,8 @@ public class Amd64Dump {
 			int baseReg = opMem.baseReg;
 			int indexReg = opMem.indexReg;
 			String s = "" //
-					+ (0 <= baseReg ? " + " + amd64.reg32[baseReg] : "") //
-					+ (0 <= indexReg ? " + " + amd64.reg32[indexReg] + " * " + (1 << opMem.scale) : "") //
+					+ (0 <= baseReg ? " + " + dump(amd64.reg32[baseReg]) : "") //
+					+ (0 <= indexReg ? " + " + dump(amd64.reg32[indexReg]) + " * " + (1 << opMem.scale) : "") //
 					+ (0 <= opMem.dispSize ? " + " + dump(opMem.disp, opMem.dispSize) : "");
 			return "[" + s.substring(3) + "]";
 		} else if (op0 instanceof OpReg)
