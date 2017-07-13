@@ -47,7 +47,7 @@ public class BackAllocator_ {
 					.mapValue(ds -> ma.movingRange(ds.prices, window)) //
 					.toMap();
 
-			return index -> akds.dsByKey//
+			return index -> akds.dsByKey //
 					.map2((symbol, ds) -> {
 						MovingRange[] movingRange = movingRangeBySymbol.get(symbol);
 						float price = ds.prices[index - 1];
