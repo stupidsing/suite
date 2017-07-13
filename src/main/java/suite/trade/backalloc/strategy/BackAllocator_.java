@@ -50,10 +50,10 @@ public class BackAllocator_ {
 			return index -> akds.dsByKey //
 					.map2((symbol, ds) -> {
 						MovingRange[] movingRange = movingRangeBySymbol.get(symbol);
-						float price = ds.prices[index - 1];
 						double hold = 0d;
 						for (int i = 0; i < index; i++) {
 							MovingRange range = movingRange[i];
+							double price = ds.prices[i];
 							double min = range.min;
 							double max = range.max;
 							double vol = (max - min) / price;
