@@ -55,7 +55,7 @@ public class BackAllocator_ {
 							double min = range.min;
 							double max = range.max;
 							double vol = (max - min) / price;
-							if (.02d < vol)
+							if (.05d < vol)
 								if (price <= min)
 									hold = 1f;
 								else if (price < range.median)
