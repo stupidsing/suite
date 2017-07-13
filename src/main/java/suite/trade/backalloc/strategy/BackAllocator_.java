@@ -54,8 +54,8 @@ public class BackAllocator_ {
 							double price = ds.prices[i];
 							double min = range.min;
 							double max = range.max;
-							double vol = (max - min) / price;
-							if (.05d < vol)
+							double vol = (max - min) / (price * .05d);
+							if (1d < vol)
 								if (price <= min)
 									hold = 1f;
 								else if (price < range.median)
