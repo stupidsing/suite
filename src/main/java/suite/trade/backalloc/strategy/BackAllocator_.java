@@ -373,15 +373,13 @@ public class BackAllocator_ {
 		return (akds, indices) -> {
 			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 
-			Map<String, float[]> percentbBySymbol = dsBySymbol //
-					.mapValue(ds -> bb.bb(ds.prices, backPos0, backPos1, k).percentb) //
-					.toMap();
-
-			return index -> dsBySymbol //
-					.map2((symbol, ds) -> {
-						float[] percentbs = percentbBySymbol.get(symbol);
+			Map<String, float[]> holdsBySymbol = dsBySymbol //
+					.mapValue(ds -> {
+						float[] percentbs = bb.bb(ds.prices, backPos0, backPos1, k).percentb;
+						int length = percentbs.length;
+						float[] holds = new float[length];
 						double hold = 0d;
-						for (int i = 0; i < index; i++) {
+						for (int i = 0; i < length; i++) {
 							float percentb = percentbs[i];
 							if (percentb <= 0f)
 								hold = 1d;
@@ -391,9 +389,14 @@ public class BackAllocator_ {
 								hold = Math.min(0d, hold);
 							else
 								hold = -1d;
+							holds[i] = (float) hold;
 						}
-						return hold;
+						return holds;
 					}) //
+					.toMap();
+
+			return index -> dsBySymbol //
+					.map2((symbol, ds) -> (double) holdsBySymbol.get(symbol)[index - 1]) //
 					.toList();
 		};
 	}
