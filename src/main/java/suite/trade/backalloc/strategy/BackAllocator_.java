@@ -48,7 +48,7 @@ public class BackAllocator_ {
 						MovingRange[] movingRange = ma.movingRange(ds.prices, window);
 						int length = movingRange.length;
 						float[] holds = new float[length];
-						float hold = 0f;
+						double hold = 0d;
 						for (int i = 0; i < length; i++) {
 							MovingRange range = movingRange[i];
 							double price = ds.prices[i];
@@ -57,14 +57,14 @@ public class BackAllocator_ {
 							double vol = (max - min) / (price * .05d);
 							if (1d < vol)
 								if (price <= min)
-									hold = 1f;
+									hold = 1d;
 								else if (price < range.median)
-									hold = (float) Math.max(0f, hold);
+									hold = Math.max(0f, hold);
 								else if (price < max)
-									hold = (float) Math.min(0f, hold);
+									hold = Math.min(0f, hold);
 								else
-									hold = -1f;
-							holds[i] = hold;
+									hold = -1d;
+							holds[i] = (float) hold;
 						}
 						return holds;
 					}) //
