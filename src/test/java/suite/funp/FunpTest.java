@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.assembler.Amd64.Instruction;
-import suite.assembler.Amd64Dump;
 import suite.funp.Funp_.Funp;
 import suite.node.Node;
 import suite.node.Reference;
@@ -40,8 +39,7 @@ public class FunpTest {
 		Funp f0 = p0.parse(node);
 		Funp f1 = p1.infer(f0, new Reference());
 		List<Instruction> instructions = p2.compile0(f1);
-		System.out.println(new Amd64Dump().dump(instructions));
-		return p2.compile1(0, instructions);
+		return p2.compile1(0, instructions, true);
 	}
 
 }

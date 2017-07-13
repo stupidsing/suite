@@ -42,8 +42,10 @@ public class Amd64Assembler {
 		private long disp;
 	}
 
-	public Bytes assemble(long offset, List<Instruction> instructions) {
+	public Bytes assemble(long offset, List<Instruction> instructions, boolean dump) {
 		assemblePass(offset, instructions); // first pass
+		if (dump)
+			System.out.println(new Amd64Dump().dump(instructions));
 		return assemblePass(offset, instructions); // second pass
 	}
 

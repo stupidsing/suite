@@ -78,8 +78,8 @@ public class P2GenerateCode {
 		return compile0.instructions;
 	}
 
-	public Bytes compile1(int offset, List<Instruction> instructions) {
-		return asm.assemble(offset, instructions);
+	public Bytes compile1(int offset, List<Instruction> instructions, boolean dump) {
+		return asm.assemble(offset, instructions, dump);
 	}
 
 	private class Compile0 {
