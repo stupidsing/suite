@@ -42,6 +42,8 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator donchian(int window) {
+		float threshold = .05f;
+
 		return (akds, indices) -> {
 			Streamlet2<String, float[]> holdsBySymbol = akds.dsByKey //
 					.mapValue(ds -> {
@@ -54,7 +56,7 @@ public class BackAllocator_ {
 							double price = ds.prices[i];
 							double min = range.min;
 							double max = range.max;
-							double vol = (max - min) / (price * .05d);
+							double vol = (max - min) / (price * threshold);
 							if (1d < vol)
 								if (price <= min)
 									hold = 1d;
