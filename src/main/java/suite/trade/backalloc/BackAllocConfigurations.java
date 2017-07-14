@@ -26,7 +26,7 @@ public class BackAllocConfigurations {
 		private Fun<Time, Streamlet<Asset>> fun_hsi = time -> Read.each(Asset.hsi);
 
 		private BackAllocator ba_bb = BackAllocator_.bollingerBands().filterByIndex(cfg).holdExtend(9);
-		private BackAllocator ba_donchian = BackAllocator_.donchian(9).holdExtend(2);
+		private BackAllocator ba_donchian = BackAllocator_.donchian(9).holdExtend(2).pick(5);
 		private BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().longOnly().pick(3).even();
 
 		public final BackAllocConfiguration bac_bb = ba_bb.cfgUnl(fun);
