@@ -108,10 +108,11 @@ public class BackAllocator_ {
 				.map2((symbol, ds) -> {
 					int i = index - 1;
 					int i0 = Math.max(0, i - 128);
+					int ix = i;
 					int dir = 0;
 
 					float[] prices = ds.prices;
-					float lastPrice = prices[i];
+					float lastPrice = prices[ix];
 					float priceo = lastPrice;
 					int io = i;
 
