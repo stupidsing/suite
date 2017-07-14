@@ -81,10 +81,6 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	private Map<String, Float> quote_(Set<String> symbols) {
-		Fun<Set<String>, Map<String, Float>> googleQuote = google::quote;
-		Fun<Set<String>, Map<String, Float>> hkdQuote = hkd::quote;
-		Fun<Set<String>, Map<String, Float>> sinaQuote = sina::quote;
-		Fun<Set<String>, Map<String, Float>> yahooQuote = yahoo::quote;
 		Map<Fun<Set<String>, Map<String, Float>>, Set<String>> map = new HashMap<>();
 
 		for (String symbol : symbols)
@@ -108,6 +104,8 @@ public class ConfigurationImpl implements Configuration {
 			return srcHkex_;
 		else if (String_.equals(symbol, "CL=F") || symbol.endsWith(".NYM"))
 			return srcNymex;
+		else if (Boolean.FALSE)
+			return srcNone_;
 		else
 			throw new RuntimeException(symbol);
 	}
