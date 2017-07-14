@@ -28,7 +28,7 @@ public class ConfigurationImpl implements Configuration {
 	private Yahoo yahoo = new Yahoo();
 
 	private enum Source_ {
-		HKD___, QUANDL, YAHOO_,
+		HKD___, HKEX__, NYMEX_,
 	};
 
 	public DataSource dataSource(String symbol) {
@@ -77,10 +77,10 @@ public class ConfigurationImpl implements Configuration {
 			if (filter(symbol)) {
 				Source_ source_ = source_(symbol);
 				Fun<Set<String>, Map<String, Float>> quoteFun;
-				if (source_ == Source_.YAHOO_)
-					quoteFun = sinaQuote;
-				else if (source_ == Source_.HKD___)
+				if (source_ == Source_.HKD___)
 					quoteFun = hkdQuote;
+				else if (source_ == Source_.HKEX__)
+					quoteFun = sinaQuote;
 				else if (Boolean.FALSE)
 					quoteFun = googleQuote;
 				else if (Boolean.FALSE)
@@ -102,14 +102,14 @@ public class ConfigurationImpl implements Configuration {
 		case HKD___:
 			ds = hkd.dataSource(symbol, period);
 			break;
-		case QUANDL:
-			ds = quandl.dataSourceCsv(symbol, period);
-			break;
-		case YAHOO_:
+		case HKEX__:
 			ds = yahoo.dataSourceL1(symbol, period);
 			break;
+		case NYMEX_:
+			ds = quandl.dataSourceCsv(symbol, period);
+			break;
 		default:
-			throw new RuntimeException();
+			throw new RuntimeException(symbol);
 		}
 		return ds;
 	}
@@ -117,10 +117,12 @@ public class ConfigurationImpl implements Configuration {
 	private Source_ source_(String symbol) {
 		if (String_.equals(symbol, Asset.cashSymbol))
 			return Source_.HKD___;
-		else if (String_.equals(symbol, "CL=F") || String_.equals(symbol, "CLQ17.NYM"))
-			return Source_.QUANDL;
+		else if (symbol.endsWith(".HK"))
+			return Source_.HKEX__;
+		else if (String_.equals(symbol, "CL=F") || symbol.endsWith(".NYM"))
+			return Source_.NYMEX_;
 		else
-			return Source_.YAHOO_;
+			throw new RuntimeException(symbol);
 	}
 
 	private boolean filter(Asset asset) {
