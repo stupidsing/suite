@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -27,9 +28,22 @@ public class ConfigurationImpl implements Configuration {
 	private Sina sina = new Sina();
 	private Yahoo yahoo = new Yahoo();
 
-	private enum Source_ {
-		HKD___, HKEX__, NYMEX_,
-	};
+	private Src srcHkd__ = new Src(hkd::quote, hkd::dataSource);
+	private Src srcHkex_ = new Src(sina::quote, yahoo::dataSourceL1);
+	private Src srcNymex = new Src(yahoo::quote, quandl::dataSourceCsv);
+	private Src srcNone_ = new Src(google::quote, null);
+
+	private class Src {
+		private Fun<Set<String>, Map<String, Float>> quoteFun;
+		private BiFunction<String, TimeRange, DataSource> dataSourceFun;
+
+		private Src( //
+				Fun<Set<String>, Map<String, Float>> quoteFun, //
+				BiFunction<String, TimeRange, DataSource> dataSourceFun) {
+			this.quoteFun = quoteFun;
+			this.dataSourceFun = dataSourceFun;
+		}
+	}
 
 	public DataSource dataSource(String symbol) {
 		return dataSource_(symbol, TimeRange.ages());
@@ -74,21 +88,8 @@ public class ConfigurationImpl implements Configuration {
 		Map<Fun<Set<String>, Map<String, Float>>, Set<String>> map = new HashMap<>();
 
 		for (String symbol : symbols)
-			if (filter(symbol)) {
-				Source_ source_ = source_(symbol);
-				Fun<Set<String>, Map<String, Float>> quoteFun;
-				if (source_ == Source_.HKD___)
-					quoteFun = hkdQuote;
-				else if (source_ == Source_.HKEX__)
-					quoteFun = sinaQuote;
-				else if (Boolean.FALSE)
-					quoteFun = googleQuote;
-				else if (Boolean.FALSE)
-					quoteFun = yahooQuote;
-				else
-					throw new RuntimeException();
-				map.computeIfAbsent(quoteFun, s -> new HashSet<>()).add(symbol);
-			}
+			if (filter(symbol))
+				map.computeIfAbsent(src(symbol).quoteFun, s -> new HashSet<>()).add(symbol);
 
 		return Read //
 				.from2(map) //
@@ -97,30 +98,16 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	private DataSource dataSource_(String symbol, TimeRange period) {
-		DataSource ds;
-		switch (source_(symbol)) {
-		case HKD___:
-			ds = hkd.dataSource(symbol, period);
-			break;
-		case HKEX__:
-			ds = yahoo.dataSourceL1(symbol, period);
-			break;
-		case NYMEX_:
-			ds = quandl.dataSourceCsv(symbol, period);
-			break;
-		default:
-			throw new RuntimeException(symbol);
-		}
-		return ds;
+		return src(symbol).dataSourceFun.apply(symbol, period);
 	}
 
-	private Source_ source_(String symbol) {
+	private Src src(String symbol) {
 		if (String_.equals(symbol, Asset.cashSymbol))
-			return Source_.HKD___;
+			return srcHkd__;
 		else if (symbol.endsWith(".HK"))
-			return Source_.HKEX__;
+			return srcHkex_;
 		else if (String_.equals(symbol, "CL=F") || symbol.endsWith(".NYM"))
-			return Source_.NYMEX_;
+			return srcNymex;
 		else
 			throw new RuntimeException(symbol);
 	}
