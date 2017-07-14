@@ -54,7 +54,7 @@ public class Sina {
 
 	private Streamlet<Factor> queryFactors(Streamlet<String> symbols, boolean isCache) {
 		String urlString = "http://hq.sinajs.cn/?list=" + symbols //
-				.map(symbol_ -> "rt_hk0" + symbol_.substring(0, 4)) //
+				.map(symbol_ -> toSina(symbol_)) //
 				.collect(As.joined(","));
 
 		String data = Rethrow.ex(() -> {
@@ -92,11 +92,11 @@ public class Sina {
 					// 100|0,N|Y|Y,73.200|69.600|75.450,0|||0.000|0.000|0.000,
 					// |0,Y
 
-					String[] a0 = ParseUtil.fit(line, "var hq_str_rt_hk0", "=\"", "\"");
+					String[] a0 = ParseUtil.fit(line, "var hq_str_", "=\"", "\"");
 					String[] a1 = a0[2].split(",");
 
 					Factor factor = new Factor();
-					factor.symbol = a0[1] + ".HK";
+					factor.symbol = toYahoo(a0[1]);
 					factor.name = a1[0];
 					factor.open = Float.parseFloat(a1[2]);
 					factor.close = Float.parseFloat(a1[3]);
@@ -118,6 +118,18 @@ public class Sina {
 					return factor;
 				}) //
 				.collect(As::streamlet);
+	}
+
+	private String toYahoo(String sina) {
+		String prefix = "rt_hk0";
+		if (sina.startsWith(prefix))
+			return sina.substring(prefix.length()) + ".HK";
+		else
+			throw new RuntimeException(sina);
+	}
+
+	private String toSina(String symbol_) {
+		return "rt_hk0" + symbol_.substring(0, 4);
 	}
 
 }
