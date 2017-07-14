@@ -78,11 +78,11 @@ public class ConfigurationImpl implements Configuration {
 				Source_ source_ = source_(symbol);
 				Fun<Set<String>, Map<String, Float>> quoteFun;
 				if (source_ == Source_.YAHOO_)
-					quoteFun = googleQuote;
+					quoteFun = sinaQuote;
 				else if (source_ == Source_.HKD___)
 					quoteFun = hkdQuote;
 				else if (Boolean.FALSE)
-					quoteFun = sinaQuote;
+					quoteFun = googleQuote;
 				else if (Boolean.FALSE)
 					quoteFun = yahooQuote;
 				else
