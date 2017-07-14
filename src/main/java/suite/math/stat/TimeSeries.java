@@ -5,6 +5,7 @@ import java.util.Arrays;
 import suite.math.linalg.Matrix;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.Statistic.MeanVariance;
+import suite.primitive.Floats;
 import suite.primitive.Floats_;
 import suite.trade.Trade_;
 import suite.util.To;
@@ -20,7 +21,7 @@ public class TimeSeries {
 		float[][] xs = new float[ys.length][];
 		for (int i = tor; i < xs.length; i++)
 			// i - drift term, necessary?
-			xs[i] = Floats_.concat(new float[] { ys[i - 1], 1f, i, }, Arrays.copyOfRange(ydiffs, i - tor, i));
+			xs[i] = Floats.concat(Floats.of(ys[i - 1], 1f, i), Floats.of(ydiffs, i - tor, i)).toArray();
 		float[][] xs1 = drop_(tor, xs);
 		float[] ydiffs1 = drop_(tor, ydiffs);
 		LinearRegression lr = stat.linearRegression(xs1, ydiffs1);
