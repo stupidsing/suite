@@ -30,6 +30,7 @@ public class ConfigurationImpl implements Configuration {
 
 	private Src srcHkd__ = new Src(hkd::quote, hkd::dataSource);
 	private Src srcHkex_ = new Src(sina::quote, yahoo::dataSourceL1);
+	private Src srcIndex = new Src(yahoo::quote, yahoo::dataSourceL1);
 	private Src srcNymex = new Src(yahoo::quote, quandl::dataSourceCsv);
 	private Src srcNone_ = new Src(google::quote, null);
 
@@ -102,6 +103,8 @@ public class ConfigurationImpl implements Configuration {
 			return srcHkd__;
 		else if (symbol.endsWith(".HK"))
 			return srcHkex_;
+		else if (symbol.startsWith("^"))
+			return srcIndex;
 		else if (String_.equals(symbol, "CL=F") || symbol.endsWith(".NYM"))
 			return srcNymex;
 		else if (Boolean.FALSE)
