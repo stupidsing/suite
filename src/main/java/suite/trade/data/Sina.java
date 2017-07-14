@@ -52,6 +52,7 @@ public class Sina {
 		return queryFactors(symbols, false).toMap(factor -> factor.symbol, factor -> factor.quote);
 	}
 
+	// http://blog.sina.com.cn/s/blog_5dc29fcc0101dq5s.html
 	private Streamlet<Factor> queryFactors(Streamlet<String> symbols, boolean isCache) {
 		String urlString = "http://hq.sinajs.cn/?list=" + symbols //
 				.map(symbol_ -> toSina(symbol_)) //
