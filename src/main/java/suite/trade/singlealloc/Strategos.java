@@ -42,7 +42,7 @@ public class Strategos {
 
 	public BuySellStrategy macdSignalLineX(float alpha0, float alpha1, float macdAlpha) {
 		return prices -> {
-			float[] macd = ma.macd(prices, alpha0, alpha1);
+			float[] macd = ma.emacd(prices, alpha0, alpha1);
 			float[] macdEmas = ma.exponentialMovingAvg(macd, macdAlpha);
 			float[] diff = mtx.sub(macd, macdEmas);
 			return crossover(diff);
@@ -51,7 +51,7 @@ public class Strategos {
 
 	// trendy; alpha0 < alpha1
 	public BuySellStrategy macdZeroLineX(float alpha0, float alpha1) {
-		return prices -> crossover(ma.macd(prices, alpha0, alpha1));
+		return prices -> crossover(ma.emacd(prices, alpha0, alpha1));
 	}
 
 	public BuySellStrategy movingAvgMeanReverting(int nPastDays, int nHoldDays, float threshold) {
