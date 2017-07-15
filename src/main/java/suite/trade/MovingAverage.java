@@ -11,11 +11,23 @@ public class MovingAverage {
 	private Matrix mtx = new Matrix();
 	private TimeSeries ts = new TimeSeries();
 
-	// moving average convergence/divergence
-	public float[] macd(float[] prices, double alpha0, double alpha1) {
+	// exponential moving average convergence/divergence
+	public float[] emacd(float[] prices, double alpha0, double alpha1) {
 		float[] emas0 = exponentialMovingAvg(prices, alpha0); // long-term
 		float[] emas1 = exponentialMovingAvg(prices, alpha1); // short-term
 		return mtx.sub(emas1, emas0);
+	}
+
+	// moving average convergence/divergence
+	public float[] macd(float[] prices) {
+		return macd(prices, 26, 12, 9);
+	}
+
+	private float[] macd(float[] prices, int nDays0, int nDays1, int nDays2) {
+		float[] emas0 = movingAvg(prices, nDays0); // long-term
+		float[] emas1 = movingAvg(prices, nDays1); // short-term
+		float[] diffs = mtx.sub(emas1, emas0);
+		return movingAvg(diffs, nDays2);
 	}
 
 	public float[] exponentialMovingGeometricAvg(float[] prices, int halfLife) {
