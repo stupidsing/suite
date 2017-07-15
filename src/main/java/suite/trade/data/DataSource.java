@@ -160,33 +160,33 @@ public class DataSource {
 	public DataSource alignAfterPrices(long[] ts1) {
 		int length0 = ts.length;
 		int length1 = ts1.length;
-		Eod[] pairs1 = new Eod[length1];
+		Eod[] eods1 = new Eod[length1];
 		int si = 0, di = 0;
 		while (di < length1)
 			if (length0 <= si)
 				// avoid division by 0s
-				pairs1[di++] = Eod.of(Trade_.negligible);
+				eods1[di++] = Eod.of(Trade_.negligible);
 			else if (ts1[di] <= ts[si])
-				pairs1[di++] = getEod_(si);
+				eods1[di++] = getEod_(si);
 			else
 				si++;
-		return of(ts1, Read.from(pairs1));
+		return of(ts1, Read.from(eods1));
 	}
 
 	public DataSource alignBeforePrices(long[] ts1) {
 		int length0 = ts.length;
 		int length1 = ts1.length;
-		Eod[] pairs1 = new Eod[length1];
+		Eod[] eods1 = new Eod[length1];
 		int si = length0 - 1, di = length1 - 1;
 		while (0 <= di)
 			if (si < 0)
 				// avoid division by 0s
-				pairs1[di--] = Eod.of(Trade_.max);
+				eods1[di--] = Eod.of(Trade_.max);
 			else if (ts[si] <= ts1[di])
-				pairs1[di--] = getEod_(si);
+				eods1[di--] = getEod_(si);
 			else
 				si--;
-		return of(ts1, Read.from(pairs1));
+		return of(ts1, Read.from(eods1));
 	}
 
 	public DataSource cleanse() {
