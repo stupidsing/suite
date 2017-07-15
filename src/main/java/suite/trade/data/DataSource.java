@@ -146,7 +146,10 @@ public class DataSource {
 		this.nextOpens = nextOpens;
 		this.nextLows = nextLows;
 		this.nextHighs = nextHighs;
-		if (ts.length != prices.length || ts.length != nextOpens.length)
+		if (ts.length != prices.length //
+				|| ts.length != nextOpens.length //
+				|| ts.length != nextLows.length //
+				|| ts.length != nextHighs.length)
 			throw new RuntimeException("mismatched dates and prices");
 	}
 
