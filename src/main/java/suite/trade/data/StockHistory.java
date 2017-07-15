@@ -190,8 +190,8 @@ public class StockHistory {
 	}
 
 	private int scan(LngFltPair[] pairs, int i, long t) {
-		int pength = pairs.length;
-		while (i < pength && pairs[i].t0 < t)
+		int length = pairs.length;
+		while (i < length && pairs[i].t0 < t)
 			i++;
 		return i;
 	}
