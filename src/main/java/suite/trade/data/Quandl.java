@@ -38,7 +38,7 @@ public class Quandl {
 		float[] lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
 		float[] highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
 
-		return DataSource.ofOpenClose(ts, opens, settles, lows, highs).range(period);
+		return DataSource.ofOhlc(ts, opens, settles, lows, highs).range(period);
 	}
 
 }

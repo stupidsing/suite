@@ -108,7 +108,7 @@ public class DataSource {
 	// at the end of the day -
 	// current price = today's closing price;
 	// next price = tomorrow's opening price.
-	public static DataSource ofOpenClose(long[] ts, float[] opens, float[] closes, float[] lows, float[] highs) {
+	public static DataSource ofOhlc(long[] ts, float[] opens, float[] closes, float[] lows, float[] highs) {
 		float[] nextOpens = next(opens, closes);
 		float[] nextLows = next(lows, closes);
 		float[] nextHighs = next(highs, closes);
