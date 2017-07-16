@@ -41,7 +41,7 @@ public class YahooTest {
 		}
 	}
 
-	@Test
+	// @Test
 	public void testYql() {
 		test(yahoo::dataSourceYql);
 	}

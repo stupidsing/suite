@@ -133,7 +133,7 @@ public class DataSource {
 			long t1 = ts1[di];
 			while (0 <= si && t1 <= ts[si])
 				si--;
-			data[di] = getDatum(si + 1, si_ + 1);
+			data[di] = tickDatum(si + 1, si_ + 1);
 		}
 
 		return of(ts1, Read.from(data));
@@ -150,7 +150,7 @@ public class DataSource {
 			long t1 = ts1[di];
 			while (si < length0 && ts[si] + tickDuration <= t1 + tickDuration)
 				si++;
-			data[di] = getDatum(si_, si);
+			data[di] = tickDatum(si_, si);
 		}
 
 		return of(ts1, Read.from(data));
@@ -290,7 +290,7 @@ public class DataSource {
 		List<Datum> data1 = new ArrayList<>();
 
 		for (int i = 0; i < prices.length; i++) {
-			Datum datum = getDatum_(i);
+			Datum datum = datum_(i);
 			long t = ts[i];
 			if (t0 <= t && t < tx) {
 				ts1.append(t);
@@ -307,21 +307,21 @@ public class DataSource {
 		return LngFltPair.of(ts[pos], prices[pos]);
 	}
 
-	private Datum getDatum(int start, int end) {
+	private Datum tickDatum(int start, int end) {
 		if (start <= end)
 			if (end <= 0)
 				return Datum.of(Trade_.max);
 			else if (ts.length <= start) // assume liquidated
 				return Datum.of(Trade_.negligible);
 			else if (start < end)
-				return getDatum_(start, end);
+				return datum_(start, end);
 			else
-				return getDatum_(start);
+				return instant(start);
 		else
 			throw new RuntimeException();
 	}
 
-	private Datum getDatum_(int start, int end) {
+	private Datum datum_(int start, int end) {
 		float lo = Trade_.max;
 		float hi = Trade_.negligible;
 		float volume = 0f;
@@ -333,7 +333,11 @@ public class DataSource {
 		return new Datum(opens[start], closes[end - 1], lo, hi, volume);
 	}
 
-	private Datum getDatum_(int pos) { // instantaneous
+	private Datum datum_(int pos) {
+		return new Datum(opens[pos], closes[pos], lows[pos], highs[pos], volumes[pos]);
+	}
+
+	private Datum instant(int pos) {
 		return Datum.of(opens[pos]);
 	}
 

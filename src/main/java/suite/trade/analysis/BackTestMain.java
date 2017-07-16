@@ -64,7 +64,7 @@ public class BackTestMain extends ExecutableProgram {
 				.filterKey(strategyName -> args.length == 0 || strategyNames.contains(strategyName)) //
 				.map(Pair::of) //
 				.join2(IntStreamlet //
-						.range(2008, Trade_.thisYear) //
+						.range(2007, Trade_.thisYear) //
 						.map(TimeRange::ofYear)) //
 				.map2((pair, period) -> pair.t0, (pair, period) -> {
 					BackAllocConfiguration bac = pair.t1;
