@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.LngFltPair;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -163,35 +165,58 @@ public class StockHistory {
 	}
 
 	public DataSource toDataSource() {
-		LngFltPair[] openPairs = adjustPrices("open");
-		LngFltPair[] closePairs = adjustPrices("close");
-		LngFltPair[] lowPairs_ = adjustPrices("low");
-		LngFltPair[] highPairs = adjustPrices("high");
-		int closeLength = closePairs.length;
-		long[] ts = new long[closeLength];
-		float[] prices = new float[closeLength];
-		float[] nextOpens = new float[closeLength];
-		float[] nextLows_ = new float[closeLength];
-		float[] nextHighs = new float[closeLength];
-		int io = 0, il = 0, ih = 0;
+		LngFltPair[] opPairs = adjustPrices("open");
+		LngFltPair[] clPairs = adjustPrices("close");
+		LngFltPair[] loPairs = adjustPrices("low");
+		LngFltPair[] hiPairs = adjustPrices("high");
+		LngFltPair[] ps = clPairs;
+		int length = ps.length;
 
-		for (int ic = 0; ic < closeLength; ic++) {
-			LngFltPair closePair = closePairs[ic];
-			long t = closePair.t0;
+		long[] ts = new long[length];
+		float[] prices = new float[length];
+		float[] ops = new float[length];
+		float[] cls = new float[length];
+		float[] los = new float[length];
+		float[] his = new float[length];
+		int io = 0, ic = 0, il = 0, ih = 0;
 
-			ts[ic] = t;
-			prices[ic] = closePair.t1;
-			nextOpens[ic] = ((io = scan(openPairs, io, t)) < openPairs.length ? openPairs[io] : closePair).t1;
-			nextLows_[ic] = ((il = scan(lowPairs_, il, t)) < lowPairs_.length ? lowPairs_[il] : closePair).t1;
-			nextHighs[ic] = ((ih = scan(highPairs, ih, t)) < highPairs.length ? highPairs[ih] : closePair).t1;
+		for (int i = 0; i < length; i++) {
+			LngFltPair pair = ps[i];
+			long t = pair.t0;
+			int io1 = scan(opPairs, io, t);
+			int ic1 = scan(clPairs, ic, t);
+			int il1 = scan(loPairs, il, t);
+			int ih1 = scan(hiPairs, ih, t);
+
+			float lo = IntStreamlet //
+					.range(il, il1) //
+					.collect(Int_Flt.lift(i_ -> loPairs[i_].t1)) //
+					.min();
+
+			float hi = IntStreamlet //
+					.range(ih, ih1) //
+					.collect(Int_Flt.lift(i_ -> hiPairs[i_].t1)) //
+					.max();
+
+			ts[i] = t;
+			prices[i] = pair.t1;
+			ops[i] = opPairs[io].t1;
+			cls[i] = clPairs[ic1 - 1].t1;
+			los[i] = lo;
+			his[i] = hi;
+
+			io = io1;
+			ic = ic1;
+			il = il1;
+			ih = ih1;
 		}
 
-		return DataSource.of(ts, prices, nextOpens, nextLows_, nextHighs);
+		return DataSource.ofOhlc(ts, ops, cls, los, his);
 	}
 
 	private int scan(LngFltPair[] pairs, int i, long t) {
 		int length = pairs.length;
-		while (i < length && pairs[i].t0 < t)
+		while (i < length && pairs[i].t0 <= t)
 			i++;
 		return i;
 	}

@@ -25,16 +25,34 @@ import suite.util.To;
 
 public class DataSource {
 
+	private static long tickDuration = 7l * 3600l; // 09:30 to 16:30
 	private static Cleanse cleanse = new Cleanse();
 	private static TimeSeries timeSeries = new TimeSeries();
 
 	public final long[] ts;
 	public final float[] prices;
+	public final float[] opens;
+	public final float[] closes;
+	public final float[] lows;
+	public final float[] highs;
 
-	// prices of next tick, e.g. tomorrow's open
-	public final float[] nextOpens;
-	public final float[] nextLows;
-	public final float[] nextHighs;
+	public static class Datum {
+		public final float open;
+		public final float close;
+		public final float low;
+		public final float high;
+
+		private static Datum of(float price) {
+			return new Datum(price, price, price, price);
+		}
+
+		private Datum(float open, float close, float low, float high) {
+			this.open = open;
+			this.close = close;
+			this.high = high;
+			this.low = low;
+		}
+	}
 
 	public static class Eod {
 		public final float price;
@@ -43,11 +61,7 @@ public class DataSource {
 		public final float nextHigh;
 
 		public static Eod of(float price) {
-			return of(price, price, price, price);
-		}
-
-		public static Eod of(float price, float nextOpen, float nextLow, float nextHigh) {
-			return new Eod(price, nextOpen, nextLow, nextHigh);
+			return new Eod(price, price, price, price);
 		}
 
 		private Eod(float price, float nextOpen, float nextLow, float nextHigh) {
@@ -59,7 +73,7 @@ public class DataSource {
 	}
 
 	public static <K> AlignKeyDataSource<K> alignAll(Streamlet2<K, DataSource> dsByKey0) {
-		AlignDataSource alignDataSource = DataSource.alignAll(dsByKey0.values());
+		AlignDataSource alignDataSource = alignAll(dsByKey0.values());
 
 		return dsByKey0 //
 				.mapValue(alignDataSource::align) //
@@ -101,55 +115,40 @@ public class DataSource {
 		}
 
 		public DataSource align(DataSource ds) {
-			return ds.alignAfterPrices(ts);
+			return ds.alignBeforePrices(ts);
 		}
+	}
+
+	public static DataSource of(long[] ts, Streamlet<Datum> datums) {
+		float[] ops = datums.collect(Obj_Flt.lift(pair -> pair.open)).toArray();
+		float[] cls = datums.collect(Obj_Flt.lift(pair -> pair.close)).toArray();
+		float[] los = datums.collect(Obj_Flt.lift(pair -> pair.low)).toArray();
+		float[] his = datums.collect(Obj_Flt.lift(pair -> pair.high)).toArray();
+		return ofOhlc(ts, ops, cls, los, his);
+	}
+
+	public static DataSource of(long[] ts, float[] prices) {
+		return ofOhlc(ts, prices, prices, prices, prices);
 	}
 
 	// at the end of the day -
 	// current price = today's closing price;
 	// next price = tomorrow's opening price.
 	public static DataSource ofOhlc(long[] ts, float[] opens, float[] closes, float[] lows, float[] highs) {
-		float[] nextOpens = next(opens, closes);
-		float[] nextLows = next(lows, closes);
-		float[] nextHighs = next(highs, closes);
-		return of(ts, closes, nextOpens, nextLows, nextHighs);
+		return new DataSource(ts, opens, closes, lows, highs);
 	}
 
-	private static float[] next(float[] opens, float[] closes) {
-		int length = opens.length;
-		int lengthm1 = length - 1;
-		float[] nextOpens = new float[length];
-		Floats_.copy(opens, 1, nextOpens, 0, lengthm1);
-		nextOpens[lengthm1] = closes[lengthm1];
-		return nextOpens;
-	}
-
-	public static DataSource of(long[] ts, float[] prices) {
-		return of(ts, prices, prices, prices, prices);
-	}
-
-	public static DataSource of(long[] ts, Streamlet<Eod> pairs) {
-		float[] prices = pairs.collect(Obj_Flt.lift(pair -> pair.price)).toArray();
-		float[] nextOpens = pairs.collect(Obj_Flt.lift(pair -> pair.nextOpen)).toArray();
-		float[] nextLows = pairs.collect(Obj_Flt.lift(pair -> pair.nextLow)).toArray();
-		float[] nextHighs = pairs.collect(Obj_Flt.lift(pair -> pair.nextHigh)).toArray();
-		return of(ts, prices, nextOpens, nextLows, nextHighs);
-	}
-
-	public static DataSource of(long[] ts, float[] prices, float[] nextOpens, float[] nextLows, float[] nextHighs) {
-		return new DataSource(ts, prices, nextOpens, nextLows, nextHighs);
-	}
-
-	private DataSource(long[] ts, float[] prices, float[] nextOpens, float[] nextLows, float[] nextHighs) {
+	private DataSource(long[] ts, float[] opens, float[] closes, float[] lows, float[] highs) {
+		super();
 		this.ts = ts;
-		this.prices = prices;
-		this.nextOpens = nextOpens;
-		this.nextLows = nextLows;
-		this.nextHighs = nextHighs;
+		this.prices = closes;
+		this.opens = opens;
+		this.closes = closes;
+		this.lows = lows;
+		this.highs = highs;
 		if (ts.length != prices.length //
-				|| ts.length != nextOpens.length //
-				|| ts.length != nextLows.length //
-				|| ts.length != nextHighs.length)
+				|| ts.length != opens.length || ts.length != closes.length //
+				|| ts.length != lows.length || ts.length != highs.length)
 			throw new RuntimeException("mismatched dates and prices");
 	}
 
@@ -160,40 +159,43 @@ public class DataSource {
 	public DataSource alignAfterPrices(long[] ts1) {
 		int length0 = ts.length;
 		int length1 = ts1.length;
-		Eod[] eods1 = new Eod[length1];
-		int si = 0, di = 0;
-		while (di < length1)
-			if (length0 <= si)
-				// avoid division by 0s
-				eods1[di++] = Eod.of(Trade_.negligible);
-			else if (ts1[di] <= ts[si])
-				eods1[di++] = getEod_(si);
-			else
-				si++;
-		return of(ts1, Read.from(eods1));
+		Datum[] data = new Datum[length1];
+		int si = length0 - 1;
+
+		for (int di = length1 - 1; 0 <= di; di--) {
+			int si_ = si;
+			long t1 = ts1[di];
+			while (0 <= si && t1 <= ts[si])
+				si--;
+			data[di] = getDatum(si + 1, si_ + 1);
+		}
+
+		return of(ts1, Read.from(data));
 	}
 
 	public DataSource alignBeforePrices(long[] ts1) {
 		int length0 = ts.length;
 		int length1 = ts1.length;
-		Eod[] eods1 = new Eod[length1];
-		int si = length0 - 1, di = length1 - 1;
-		while (0 <= di)
-			if (si < 0)
-				// avoid division by 0s
-				eods1[di--] = Eod.of(Trade_.max);
-			else if (ts[si] <= ts1[di])
-				eods1[di--] = getEod_(si);
-			else
-				si--;
-		return of(ts1, Read.from(eods1));
+		Datum[] data = new Datum[length1];
+		int si = 0;
+
+		for (int di = 0; di < length1; di++) {
+			int si_ = si;
+			long t1 = ts1[di];
+			while (si < length0 && ts[si] + tickDuration <= t1 + tickDuration)
+				si++;
+			data[di] = getDatum(si_, si);
+		}
+
+		return of(ts1, Read.from(data));
 	}
 
 	public DataSource cleanse() {
 		cleanse.cleanse(prices);
-		cleanse.cleanse(nextOpens);
-		cleanse.cleanse(nextLows);
-		cleanse.cleanse(nextHighs);
+		cleanse.cleanse(opens);
+		cleanse.cleanse(closes);
+		cleanse.cleanse(lows);
+		cleanse.cleanse(highs);
 		return this;
 	}
 
@@ -201,11 +203,11 @@ public class DataSource {
 		int length = ts.length;
 		long[] ts1 = Arrays.copyOf(ts, length + 1);
 		ts1[length] = time;
-		return of(ts1, //
-				Floats_.concat(prices, new float[] { price, }), //
-				Floats_.concat(nextOpens, new float[] { price, }), //
-				Floats_.concat(nextLows, new float[] { price, }), //
-				Floats_.concat(nextHighs, new float[] { price, }));
+		return ofOhlc(ts1, //
+				Floats_.concat(opens, new float[] { price, }), //
+				Floats_.concat(closes, new float[] { price, }), //
+				Floats_.concat(lows, new float[] { price, }), //
+				Floats_.concat(highs, new float[] { price, }));
 	}
 
 	public LngFltPair first() {
@@ -217,7 +219,11 @@ public class DataSource {
 	}
 
 	public Eod getEod(int pos) {
-		return getEod_(pos);
+		int pos1 = pos + 1;
+		if (pos1 < ts.length)
+			return new Eod(prices[pos], opens[pos1], lows[pos1], highs[pos1]);
+		else
+			return Eod.of(prices[pos]);
 	}
 
 	public LngFltPair last() {
@@ -259,8 +265,9 @@ public class DataSource {
 
 	public void validate() {
 		validate(prices);
-		if (prices != nextOpens)
-			validate(nextOpens);
+		for (float[] prices1 : Arrays.asList(opens, closes, lows, highs))
+			if (prices != prices1)
+				validate(prices1);
 	}
 
 	@Override
@@ -309,18 +316,18 @@ public class DataSource {
 
 	private DataSource range_(long t0, long tx) {
 		LongsBuilder ts1 = new LongsBuilder();
-		List<Eod> pairs1 = new ArrayList<>();
+		List<Datum> data1 = new ArrayList<>();
 
 		for (int i = 0; i < prices.length; i++) {
+			Datum datum = getDatum_(i);
 			long t = ts[i];
-			Eod pair = getEod_(i);
 			if (t0 <= t && t < tx) {
 				ts1.append(t);
-				pairs1.add(pair);
+				data1.add(datum);
 			}
 		}
 
-		return of(ts1.toLongs().toArray(), Read.from(pairs1));
+		return of(ts1.toLongs().toArray(), Read.from(data1));
 	}
 
 	private LngFltPair get_(int pos) {
@@ -329,8 +336,32 @@ public class DataSource {
 		return LngFltPair.of(ts[pos], prices[pos]);
 	}
 
-	private Eod getEod_(int pos) {
-		return Eod.of(prices[pos], nextOpens[pos], nextLows[pos], nextHighs[pos]);
+	private Datum getDatum(int start, int end) {
+		if (start <= end)
+			if (end <= 0)
+				return Datum.of(Trade_.max);
+			else if (ts.length <= start) // assume liquidated
+				return Datum.of(Trade_.negligible);
+			else if (start < end)
+				return getDatum_(start, end);
+			else
+				return getDatum_(start);
+		else
+			throw new RuntimeException();
+	}
+
+	private Datum getDatum_(int start, int end) {
+		float lo = Trade_.max;
+		float hi = Trade_.negligible;
+		for (int i = start; i < end; i++) {
+			lo = Math.min(lo, lows[i]);
+			hi = Math.min(hi, highs[i]);
+		}
+		return new Datum(opens[start], closes[end - 1], lo, hi);
+	}
+
+	private Datum getDatum_(int pos) { // instantaneous
+		return Datum.of(opens[pos]);
 	}
 
 }
