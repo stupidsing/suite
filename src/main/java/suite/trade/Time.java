@@ -63,10 +63,6 @@ public class Time implements Comparable<Time> {
 	}
 
 	public static Time ofEpochSec(long e) {
-		return ofEpochSec(e, timeZone);
-	}
-
-	private static Time ofEpochSec(long e, int timeZone) {
 		return of(LocalDateTime.ofEpochSecond(e, 0, ZoneOffset.ofHours(timeZone)));
 	}
 

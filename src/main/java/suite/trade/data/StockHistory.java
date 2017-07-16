@@ -174,7 +174,6 @@ public class StockHistory {
 		LngFltPair[] ps = clPairs;
 		int length = ps.length;
 
-		long[] ts = new long[length];
 		Datum[] data = new Datum[length];
 		int io = 0, ic = 0, il = 0, ih = 0, iv = 0;
 
@@ -185,8 +184,9 @@ public class StockHistory {
 			io = scan(opPairs, io, t);
 			ic = scan(clPairs, ic, t);
 
-			ts[i] = t;
 			data[i] = new Datum( //
+					t, //
+					t + DataSource.tickDuration, //
 					opPairs[io_].t1, //
 					clPairs[ic - 1].t1, //
 					IntStreamlet.range(il_, il = scan(loPairs, il_, t)).collect(Int_Flt.lift(i_ -> loPairs[i_].t1)).min(), //
@@ -194,7 +194,7 @@ public class StockHistory {
 					IntStreamlet.range(iv_, iv = scan(vlPairs, iv_, t)).collect(Int_Flt.lift(i_ -> vlPairs[i_].t1)).sum());
 		}
 
-		return DataSource.of(ts, Read.from(data));
+		return DataSource.of(Read.from(data));
 	}
 
 	private int scan(LngFltPair[] pairs, int i, long t) {

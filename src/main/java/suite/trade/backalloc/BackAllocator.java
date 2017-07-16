@@ -249,6 +249,8 @@ public interface BackAllocator {
 						for (int i = 0; i < length; i++) {
 							double r = 1d / indexPrices[i];
 							data1[i] = new Datum( //
+									ds0.ts[i], //
+									ds0.ts[i] + DataSource.tickDuration, //
 									(float) (ds0.opens[i] * r), //
 									(float) (ds0.closes[i] * r), //
 									(float) (ds0.lows[i] * r), //
@@ -256,7 +258,7 @@ public interface BackAllocator {
 									ds0.volumes[i]);
 						}
 
-						return DataSource.of(ds0.ts, Read.from(data1));
+						return DataSource.of(Read.from(data1));
 					}) //
 					.collect(As::streamlet2);
 

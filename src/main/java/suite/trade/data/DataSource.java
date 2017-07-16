@@ -9,7 +9,6 @@ import suite.math.stat.TimeSeries;
 import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
-import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.As;
@@ -25,7 +24,8 @@ import suite.util.To;
 
 public class DataSource {
 
-	private static long tickDuration = 7l * 3600l; // 09:30 to 16:30
+	public static long tickDuration = 7l * 3600l; // 09:30 to 16:30
+
 	private static Cleanse cleanse = new Cleanse();
 	private static TimeSeries timeSeries = new TimeSeries();
 
@@ -82,8 +82,13 @@ public class DataSource {
 		}
 	}
 
-	public static DataSource of(long[] ts, Streamlet<Datum> data) {
-		return ofOhlc(ts, //
+	public static DataSource of(Streamlet<Datum> data) {
+		return of(data.collect(Obj_Lng.lift(datum -> datum.t0)).toArray(), data);
+	}
+
+	private static DataSource of(long[] ts, Streamlet<Datum> data) {
+		return ofOhlc( //
+				ts, //
 				data.collect(Obj_Flt.lift(datum -> datum.open)).toArray(), //
 				data.collect(Obj_Flt.lift(datum -> datum.close)).toArray(), //
 				data.collect(Obj_Flt.lift(datum -> datum.low)).toArray(), //
@@ -286,19 +291,15 @@ public class DataSource {
 	}
 
 	private DataSource range_(long t0, long tx) {
-		LongsBuilder ts1 = new LongsBuilder();
 		List<Datum> data1 = new ArrayList<>();
 
 		for (int i = 0; i < prices.length; i++) {
 			Datum datum = datum_(i);
-			long t = ts[i];
-			if (t0 <= t && t < tx) {
-				ts1.append(t);
+			if (t0 <= datum.t0 && datum.tx <= tx)
 				data1.add(datum);
-			}
 		}
 
-		return of(ts1.toLongs().toArray(), Read.from(data1));
+		return of(Read.from(data1));
 	}
 
 	private LngFltPair get_(int pos) {
@@ -309,11 +310,13 @@ public class DataSource {
 
 	private Datum tickDatum(int start, int end) {
 		if (start <= end)
-			if (end <= 0)
-				return Datum.of(Trade_.max);
-			else if (ts.length <= start) // assume liquidated
-				return Datum.of(Trade_.negligible);
-			else if (start < end)
+			if (end <= 0) {
+				long t = TimeRange.min.epochSec();
+				return Datum.of(t, t, Trade_.max);
+			} else if (ts.length <= start) {
+				long t = TimeRange.max.epochSec();
+				return Datum.of(t, t, Trade_.negligible);
+			} else if (start < end)
 				return datum_(start, end);
 			else
 				return instant(start);
@@ -330,29 +333,32 @@ public class DataSource {
 			hi = Math.max(hi, highs[i]);
 			volume += volumes[i];
 		}
-		return new Datum(opens[start], closes[end - 1], lo, hi, volume);
+		return new Datum(ts[start], ts[end - 1] + tickDuration, opens[start], closes[end - 1], lo, hi, volume);
 	}
 
 	private Datum datum_(int pos) {
-		return new Datum(opens[pos], closes[pos], lows[pos], highs[pos], volumes[pos]);
+		long t0 = ts[pos];
+		return new Datum(t0, t0 + tickDuration, opens[pos], closes[pos], lows[pos], highs[pos], volumes[pos]);
 	}
 
 	private Datum instant(int pos) {
-		return Datum.of(opens[pos]);
+		long t0 = ts[pos];
+		return Datum.of(t0, t0, opens[pos]);
 	}
 
 	public static class Datum {
-		public final float open;
-		public final float close;
-		public final float low;
-		public final float high;
+		public final long t0, tx;
+		public final float open, close;
+		public final float low, high;
 		public final float volume;
 
-		private static Datum of(float price) {
-			return new Datum(price, price, price, price, 0f);
+		private static Datum of(long t0, long tx, float price) {
+			return new Datum(t0, tx, price, price, price, price, 0f);
 		}
 
-		public Datum(float open, float close, float low, float high, float volume) {
+		public Datum(long t0, long tx, float open, float close, float low, float high, float volume) {
+			this.t0 = t0;
+			this.tx = tx;
 			this.open = open;
 			this.close = close;
 			this.low = low;
