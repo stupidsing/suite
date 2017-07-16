@@ -60,7 +60,7 @@ public class BackTestMain extends ExecutableProgram {
 
 		Set<String> strategyNames = Read.from(args).toSet();
 
-		Streamlet2<String, Simulate> simulationsByKey = bacByTag1 //
+		Streamlet2<String, Simulate> simulationByKey = bacByTag1 //
 				.filterKey(strategyName -> args.length == 0 || strategyNames.contains(strategyName)) //
 				.map(Pair::of) //
 				.join2(IntStreamlet //
@@ -84,7 +84,7 @@ public class BackTestMain extends ExecutableProgram {
 		String content1 = content0.substring(p1, p2);
 
 		System.out.println(content1);
-		System.out.println(runner.conclude(simulationsByKey));
+		System.out.println(runner.conclude(simulationByKey));
 
 		return true;
 	}
