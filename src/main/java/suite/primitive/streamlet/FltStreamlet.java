@@ -222,12 +222,20 @@ public class FltStreamlet implements Iterable<Float> {
 		return streamlet(() -> FltOutlet.of(list));
 	}
 
+	public float max() {
+		return spawn().max();
+	}
+
+	public float min() {
+		return spawn().min();
+	}
+
 	public float min(FltComparator comparator) {
 		return spawn().min(comparator);
 	}
 
-	public float minOrNull(FltComparator comparator) {
-		return spawn().minOrNull(comparator);
+	public float minOrEmpty(FltComparator comparator) {
+		return spawn().minOrEmpty(comparator);
 	}
 
 	public FltOpt opt() {

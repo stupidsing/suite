@@ -276,15 +276,23 @@ public class FltOutlet implements Iterable<Float> {
 		return Outlet.of(FltFunUtil.mapNonNull(fun, source));
 	}
 
+	public float max() {
+		return min((c0, c1) -> Float.compare(c1, c0));
+	}
+
+	public float min() {
+		return min((c0, c1) -> Float.compare(c0, c1));
+	}
+
 	public float min(FltComparator comparator) {
-		float c = minOrNull(comparator);
+		float c = minOrEmpty(comparator);
 		if (c != FltFunUtil.EMPTYVALUE)
 			return c;
 		else
 			throw new RuntimeException("no result");
 	}
 
-	public float minOrNull(FltComparator comparator) {
+	public float minOrEmpty(FltComparator comparator) {
 		float c = next(), c1;
 		if (c != FltFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != FltFunUtil.EMPTYVALUE)

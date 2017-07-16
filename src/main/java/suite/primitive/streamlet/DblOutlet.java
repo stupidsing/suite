@@ -276,15 +276,23 @@ public class DblOutlet implements Iterable<Double> {
 		return Outlet.of(DblFunUtil.mapNonNull(fun, source));
 	}
 
+	public double max() {
+		return min((c0, c1) -> Double.compare(c1, c0));
+	}
+
+	public double min() {
+		return min((c0, c1) -> Double.compare(c0, c1));
+	}
+
 	public double min(DblComparator comparator) {
-		double c = minOrNull(comparator);
+		double c = minOrEmpty(comparator);
 		if (c != DblFunUtil.EMPTYVALUE)
 			return c;
 		else
 			throw new RuntimeException("no result");
 	}
 
-	public double minOrNull(DblComparator comparator) {
+	public double minOrEmpty(DblComparator comparator) {
 		double c = next(), c1;
 		if (c != DblFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != DblFunUtil.EMPTYVALUE)

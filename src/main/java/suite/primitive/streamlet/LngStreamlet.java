@@ -222,12 +222,20 @@ public class LngStreamlet implements Iterable<Long> {
 		return streamlet(() -> LngOutlet.of(list));
 	}
 
+	public long max() {
+		return spawn().max();
+	}
+
+	public long min() {
+		return spawn().min();
+	}
+
 	public long min(LngComparator comparator) {
 		return spawn().min(comparator);
 	}
 
-	public long minOrNull(LngComparator comparator) {
-		return spawn().minOrNull(comparator);
+	public long minOrEmpty(LngComparator comparator) {
+		return spawn().minOrEmpty(comparator);
 	}
 
 	public LngOpt opt() {

@@ -222,12 +222,20 @@ public class DblStreamlet implements Iterable<Double> {
 		return streamlet(() -> DblOutlet.of(list));
 	}
 
+	public double max() {
+		return spawn().max();
+	}
+
+	public double min() {
+		return spawn().min();
+	}
+
 	public double min(DblComparator comparator) {
 		return spawn().min(comparator);
 	}
 
-	public double minOrNull(DblComparator comparator) {
-		return spawn().minOrNull(comparator);
+	public double minOrEmpty(DblComparator comparator) {
+		return spawn().minOrEmpty(comparator);
 	}
 
 	public DblOpt opt() {

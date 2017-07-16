@@ -276,15 +276,23 @@ public class IntOutlet implements Iterable<Integer> {
 		return Outlet.of(IntFunUtil.mapNonNull(fun, source));
 	}
 
+	public int max() {
+		return min((c0, c1) -> Integer.compare(c1, c0));
+	}
+
+	public int min() {
+		return min((c0, c1) -> Integer.compare(c0, c1));
+	}
+
 	public int min(IntComparator comparator) {
-		int c = minOrNull(comparator);
+		int c = minOrEmpty(comparator);
 		if (c != IntFunUtil.EMPTYVALUE)
 			return c;
 		else
 			throw new RuntimeException("no result");
 	}
 
-	public int minOrNull(IntComparator comparator) {
+	public int minOrEmpty(IntComparator comparator) {
 		int c = next(), c1;
 		if (c != IntFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != IntFunUtil.EMPTYVALUE)

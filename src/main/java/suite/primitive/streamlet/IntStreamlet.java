@@ -222,12 +222,20 @@ public class IntStreamlet implements Iterable<Integer> {
 		return streamlet(() -> IntOutlet.of(list));
 	}
 
+	public int max() {
+		return spawn().max();
+	}
+
+	public int min() {
+		return spawn().min();
+	}
+
 	public int min(IntComparator comparator) {
 		return spawn().min(comparator);
 	}
 
-	public int minOrNull(IntComparator comparator) {
-		return spawn().minOrNull(comparator);
+	public int minOrEmpty(IntComparator comparator) {
+		return spawn().minOrEmpty(comparator);
 	}
 
 	public IntOpt opt() {

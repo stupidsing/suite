@@ -222,12 +222,20 @@ public class ChrStreamlet implements Iterable<Character> {
 		return streamlet(() -> ChrOutlet.of(list));
 	}
 
+	public char max() {
+		return spawn().max();
+	}
+
+	public char min() {
+		return spawn().min();
+	}
+
 	public char min(ChrComparator comparator) {
 		return spawn().min(comparator);
 	}
 
-	public char minOrNull(ChrComparator comparator) {
-		return spawn().minOrNull(comparator);
+	public char minOrEmpty(ChrComparator comparator) {
+		return spawn().minOrEmpty(comparator);
 	}
 
 	public ChrOpt opt() {

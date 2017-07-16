@@ -276,15 +276,23 @@ public class ChrOutlet implements Iterable<Character> {
 		return Outlet.of(ChrFunUtil.mapNonNull(fun, source));
 	}
 
+	public char max() {
+		return min((c0, c1) -> Character.compare(c1, c0));
+	}
+
+	public char min() {
+		return min((c0, c1) -> Character.compare(c0, c1));
+	}
+
 	public char min(ChrComparator comparator) {
-		char c = minOrNull(comparator);
+		char c = minOrEmpty(comparator);
 		if (c != ChrFunUtil.EMPTYVALUE)
 			return c;
 		else
 			throw new RuntimeException("no result");
 	}
 
-	public char minOrNull(ChrComparator comparator) {
+	public char minOrEmpty(ChrComparator comparator) {
 		char c = next(), c1;
 		if (c != ChrFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != ChrFunUtil.EMPTYVALUE)

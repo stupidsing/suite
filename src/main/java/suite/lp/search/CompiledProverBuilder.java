@@ -17,16 +17,16 @@ public class CompiledProverBuilder implements Builder {
 	private Finder compiler;
 
 	/**
-	 * Creates a builder that interpretes the logic compiler to compile the
-	 * given code, then execute.
+	 * Creates a builder that interpretes the logic compiler to compile the given
+	 * code, then execute.
 	 */
 	public static CompiledProverBuilder level1(ProverConfig proverConfig) {
 		return new CompiledProverBuilder(new SewingProverBuilder2(proverConfig), proverConfig);
 	}
 
 	/**
-	 * Creates a builder that compiles the logic compiler, execute it to compile
-	 * the given code, then execute.
+	 * Creates a builder that compiles the logic compiler, execute it to compile the
+	 * given code, then execute.
 	 */
 	public static CompiledProverBuilder level2(ProverConfig proverConfig) {
 		return new CompiledProverBuilder(level1(proverConfig), proverConfig);

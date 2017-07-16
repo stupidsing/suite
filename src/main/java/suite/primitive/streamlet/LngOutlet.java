@@ -276,15 +276,23 @@ public class LngOutlet implements Iterable<Long> {
 		return Outlet.of(LngFunUtil.mapNonNull(fun, source));
 	}
 
+	public long max() {
+		return min((c0, c1) -> Long.compare(c1, c0));
+	}
+
+	public long min() {
+		return min((c0, c1) -> Long.compare(c0, c1));
+	}
+
 	public long min(LngComparator comparator) {
-		long c = minOrNull(comparator);
+		long c = minOrEmpty(comparator);
 		if (c != LngFunUtil.EMPTYVALUE)
 			return c;
 		else
 			throw new RuntimeException("no result");
 	}
 
-	public long minOrNull(LngComparator comparator) {
+	public long minOrEmpty(LngComparator comparator) {
 		long c = next(), c1;
 		if (c != LngFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != LngFunUtil.EMPTYVALUE)

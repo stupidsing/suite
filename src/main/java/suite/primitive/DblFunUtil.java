@@ -232,8 +232,8 @@ public class DblFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static Source<DblSource> split(DblPredicate fun0, DblSource source) {
 		DblPredicate fun1 = fun0.rethrow();
