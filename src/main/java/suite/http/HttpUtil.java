@@ -69,7 +69,7 @@ public class HttpUtil {
 		String out = get(Rethrow.ex(() -> uri.toURL())).out.collect(As::utf8decode).map(Chars::toString).collect(As.joined());
 		Map<String, URI> links = new HashMap<>();
 		String[] m;
-		while ((m = ParseUtil.fit(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
+		while ((m = ParseUtil.fitCaseInsensitive(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
 			links.putIfAbsent(m[4], uri.resolve(m[2]));
 			out = m[5];
 		}
