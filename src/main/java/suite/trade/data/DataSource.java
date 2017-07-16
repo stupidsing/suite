@@ -87,7 +87,7 @@ public class DataSource {
 	}
 
 	private static DataSource of(long[] ts, Streamlet<Datum> data) {
-		return ofOhlc( //
+		return ofOhlcv( //
 				ts, //
 				data.collect(Obj_Flt.lift(datum -> datum.open)).toArray(), //
 				data.collect(Obj_Flt.lift(datum -> datum.close)).toArray(), //
@@ -97,13 +97,13 @@ public class DataSource {
 	}
 
 	public static DataSource of(long[] ts, float[] prices) {
-		return ofOhlc(ts, prices, prices, prices, prices, new float[ts.length]);
+		return ofOhlcv(ts, prices, prices, prices, prices, new float[ts.length]);
 	}
 
 	// at the end of the day -
 	// current price = today's closing price;
 	// next price = tomorrow's opening price.
-	public static DataSource ofOhlc(long[] ts, float[] opens, float[] closes, float[] lows, float[] highs, float[] volumes) {
+	public static DataSource ofOhlcv(long[] ts, float[] opens, float[] closes, float[] lows, float[] highs, float[] volumes) {
 		return new DataSource(ts, opens, closes, lows, highs, volumes);
 	}
 
@@ -174,7 +174,7 @@ public class DataSource {
 		int length = ts.length;
 		long[] ts1 = Arrays.copyOf(ts, length + 1);
 		ts1[length] = time;
-		return ofOhlc(ts1, //
+		return ofOhlcv(ts1, //
 				Floats_.concat(opens, new float[] { price, }), //
 				Floats_.concat(closes, new float[] { price, }), //
 				Floats_.concat(lows, new float[] { price, }), //

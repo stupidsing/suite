@@ -63,7 +63,7 @@ public class Yahoo {
 		adjust(symbol, ts, lows);
 		adjust(symbol, ts, highs);
 
-		return DataSource.ofOhlc( //
+		return DataSource.ofOhlcv( //
 				ts, //
 				cleanse.cleanse(opens), //
 				cleanse.cleanse(closes), //
@@ -227,7 +227,7 @@ public class Yahoo {
 				float[] lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
 				float[] highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
 				float[] volumes = new float[ts.length];
-				return DataSource.ofOhlc(ts, opens, closes, lows, highs, volumes);
+				return DataSource.ofOhlcv(ts, opens, closes, lows, highs, volumes);
 			}
 		});
 	}
