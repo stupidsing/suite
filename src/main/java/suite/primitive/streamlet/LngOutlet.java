@@ -365,6 +365,13 @@ public class LngOutlet implements Iterable<Long> {
 		return Outlet.of(FunUtil.map(LngOutlet::new, LngFunUtil.split(fun, source)));
 	}
 
+	public long sum() {
+		long result = 0, c1;
+		while ((c1 = next()) != LngFunUtil.EMPTYVALUE)
+			result += c1;
+		return result;
+	}
+
 	public LngOutlet take(int n) {
 		return of(new LngSource() {
 			private int count = n;

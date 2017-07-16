@@ -365,6 +365,13 @@ public class ChrOutlet implements Iterable<Character> {
 		return Outlet.of(FunUtil.map(ChrOutlet::new, ChrFunUtil.split(fun, source)));
 	}
 
+	public char sum() {
+		char result = 0, c1;
+		while ((c1 = next()) != ChrFunUtil.EMPTYVALUE)
+			result += c1;
+		return result;
+	}
+
 	public ChrOutlet take(int n) {
 		return of(new ChrSource() {
 			private int count = n;

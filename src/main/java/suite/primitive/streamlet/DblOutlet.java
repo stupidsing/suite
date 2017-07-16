@@ -365,6 +365,13 @@ public class DblOutlet implements Iterable<Double> {
 		return Outlet.of(FunUtil.map(DblOutlet::new, DblFunUtil.split(fun, source)));
 	}
 
+	public double sum() {
+		double result = 0, c1;
+		while ((c1 = next()) != DblFunUtil.EMPTYVALUE)
+			result += c1;
+		return result;
+	}
+
 	public DblOutlet take(int n) {
 		return of(new DblSource() {
 			private int count = n;

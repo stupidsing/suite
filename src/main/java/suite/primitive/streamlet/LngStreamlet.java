@@ -274,6 +274,10 @@ public class LngStreamlet implements Iterable<Long> {
 		return spawn().source();
 	}
 
+	public long sum() {
+		return spawn().sum();
+	}
+
 	public LngStreamlet take(int n) {
 		return streamlet(() -> spawn().take(n));
 	}

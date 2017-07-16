@@ -274,6 +274,10 @@ public class DblStreamlet implements Iterable<Double> {
 		return spawn().source();
 	}
 
+	public double sum() {
+		return spawn().sum();
+	}
+
 	public DblStreamlet take(int n) {
 		return streamlet(() -> spawn().take(n));
 	}

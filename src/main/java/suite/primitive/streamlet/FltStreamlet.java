@@ -274,6 +274,10 @@ public class FltStreamlet implements Iterable<Float> {
 		return spawn().source();
 	}
 
+	public float sum() {
+		return spawn().sum();
+	}
+
 	public FltStreamlet take(int n) {
 		return streamlet(() -> spawn().take(n));
 	}

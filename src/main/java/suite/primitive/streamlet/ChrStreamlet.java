@@ -274,6 +274,10 @@ public class ChrStreamlet implements Iterable<Character> {
 		return spawn().source();
 	}
 
+	public char sum() {
+		return spawn().sum();
+	}
+
 	public ChrStreamlet take(int n) {
 		return streamlet(() -> spawn().take(n));
 	}

@@ -274,6 +274,10 @@ public class IntStreamlet implements Iterable<Integer> {
 		return spawn().source();
 	}
 
+	public int sum() {
+		return spawn().sum();
+	}
+
 	public IntStreamlet take(int n) {
 		return streamlet(() -> spawn().take(n));
 	}

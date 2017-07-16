@@ -365,6 +365,13 @@ public class IntOutlet implements Iterable<Integer> {
 		return Outlet.of(FunUtil.map(IntOutlet::new, IntFunUtil.split(fun, source)));
 	}
 
+	public int sum() {
+		int result = 0, c1;
+		while ((c1 = next()) != IntFunUtil.EMPTYVALUE)
+			result += c1;
+		return result;
+	}
+
 	public IntOutlet take(int n) {
 		return of(new IntSource() {
 			private int count = n;

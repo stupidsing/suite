@@ -365,6 +365,13 @@ public class FltOutlet implements Iterable<Float> {
 		return Outlet.of(FunUtil.map(FltOutlet::new, FltFunUtil.split(fun, source)));
 	}
 
+	public float sum() {
+		float result = 0, c1;
+		while ((c1 = next()) != FltFunUtil.EMPTYVALUE)
+			result += c1;
+		return result;
+	}
+
 	public FltOutlet take(int n) {
 		return of(new FltSource() {
 			private int count = n;
