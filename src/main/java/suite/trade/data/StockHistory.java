@@ -15,6 +15,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.trade.data.DataSource.Datum;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.Set_;
@@ -169,49 +170,31 @@ public class StockHistory {
 		LngFltPair[] clPairs = adjustPrices("close");
 		LngFltPair[] loPairs = adjustPrices("low");
 		LngFltPair[] hiPairs = adjustPrices("high");
+		LngFltPair[] vlPairs = adjustPrices("volume");
 		LngFltPair[] ps = clPairs;
 		int length = ps.length;
 
 		long[] ts = new long[length];
-		float[] prices = new float[length];
-		float[] ops = new float[length];
-		float[] cls = new float[length];
-		float[] los = new float[length];
-		float[] his = new float[length];
-		int io = 0, ic = 0, il = 0, ih = 0;
+		Datum[] data = new Datum[length];
+		int io = 0, ic = 0, il = 0, ih = 0, iv = 0;
 
 		for (int i = 0; i < length; i++) {
-			LngFltPair pair = ps[i];
-			long t = pair.t0;
-			int io1 = scan(opPairs, io, t);
-			int ic1 = scan(clPairs, ic, t);
-			int il1 = scan(loPairs, il, t);
-			int ih1 = scan(hiPairs, ih, t);
+			long t = ps[i].t0;
+			int io_ = io, il_ = il, ih_ = ih, iv_ = iv;
 
-			float lo = IntStreamlet //
-					.range(il, il1) //
-					.collect(Int_Flt.lift(i_ -> loPairs[i_].t1)) //
-					.min();
-
-			float hi = IntStreamlet //
-					.range(ih, ih1) //
-					.collect(Int_Flt.lift(i_ -> hiPairs[i_].t1)) //
-					.max();
+			io = scan(opPairs, io, t);
+			ic = scan(clPairs, ic, t);
 
 			ts[i] = t;
-			prices[i] = pair.t1;
-			ops[i] = opPairs[io].t1;
-			cls[i] = clPairs[ic1 - 1].t1;
-			los[i] = lo;
-			his[i] = hi;
-
-			io = io1;
-			ic = ic1;
-			il = il1;
-			ih = ih1;
+			data[i] = new Datum( //
+					opPairs[io_].t1, //
+					clPairs[ic - 1].t1, //
+					IntStreamlet.range(il_, il = scan(loPairs, il_, t)).collect(Int_Flt.lift(i_ -> loPairs[i_].t1)).min(), //
+					IntStreamlet.range(ih_, ih = scan(hiPairs, ih_, t)).collect(Int_Flt.lift(i_ -> hiPairs[i_].t1)).max(), //
+					IntStreamlet.range(iv_, iv = scan(vlPairs, iv_, t)).collect(Int_Flt.lift(i_ -> vlPairs[i_].t1)).sum());
 		}
 
-		return DataSource.ofOhlc(ts, ops, cls, los, his);
+		return DataSource.of(ts, Read.from(data));
 	}
 
 	private int scan(LngFltPair[] pairs, int i, long t) {

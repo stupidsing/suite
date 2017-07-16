@@ -25,6 +25,7 @@ import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
+import suite.trade.data.DataSource.Datum;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
@@ -241,23 +242,21 @@ public interface BackAllocator {
 		return (akds0, times_) -> {
 			Streamlet2<String, DataSource> dsBySymbol1 = akds0.dsByKey //
 					.mapValue(ds0 -> {
-						long[] times = ds0.ts;
-						float[] prices = ds0.prices;
-						long[] indexDates = indexDataSource.ts;
-						float[] indexPrices = indexDataSource.prices;
-						int length = times.length;
-						int indexLength = indexDates.length;
-						float[] prices1 = new float[length];
-						int ii = 0;
+						float[] indexPrices = indexDataSource.alignBeforePrices(ds0.ts).prices;
+						int length = ds0.ts.length;
+						Datum[] data1 = new Datum[length];
 
-						for (int di = 0; di < length; di++) {
-							long date = times[di];
-							while (ii < indexLength && indexDates[ii] < date)
-								ii++;
-							prices1[di] = prices[di] / indexPrices[ii];
+						for (int i = 0; i < length; i++) {
+							double r = 1d / indexPrices[i];
+							data1[i] = new Datum( //
+									(float) (ds0.opens[i] * r), //
+									(float) (ds0.closes[i] * r), //
+									(float) (ds0.lows[i] * r), //
+									(float) (ds0.highs[i] * r), //
+									ds0.volumes[i]);
 						}
 
-						return DataSource.of(times, prices1);
+						return DataSource.of(ds0.ts, Read.from(data1));
 					}) //
 					.collect(As::streamlet2);
 

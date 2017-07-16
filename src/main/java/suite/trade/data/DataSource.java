@@ -31,46 +31,9 @@ public class DataSource {
 
 	public final long[] ts;
 	public final float[] prices;
-	public final float[] opens;
-	public final float[] closes;
-	public final float[] lows;
-	public final float[] highs;
-
-	public static class Datum {
-		public final float open;
-		public final float close;
-		public final float low;
-		public final float high;
-
-		private static Datum of(float price) {
-			return new Datum(price, price, price, price);
-		}
-
-		private Datum(float open, float close, float low, float high) {
-			this.open = open;
-			this.close = close;
-			this.high = high;
-			this.low = low;
-		}
-	}
-
-	public static class Eod {
-		public final float price;
-		public final float nextOpen;
-		public final float nextLow;
-		public final float nextHigh;
-
-		public static Eod of(float price) {
-			return new Eod(price, price, price, price);
-		}
-
-		private Eod(float price, float nextOpen, float nextLow, float nextHigh) {
-			this.price = price;
-			this.nextOpen = nextOpen;
-			this.nextLow = nextLow;
-			this.nextHigh = nextHigh;
-		}
-	}
+	public final float[] opens, closes;
+	public final float[] lows, highs;
+	public final float[] volumes;
 
 	public static <K> AlignKeyDataSource<K> alignAll(Streamlet2<K, DataSource> dsByKey0) {
 		AlignDataSource alignDataSource = alignAll(dsByKey0.values());
@@ -119,26 +82,27 @@ public class DataSource {
 		}
 	}
 
-	public static DataSource of(long[] ts, Streamlet<Datum> datums) {
-		float[] ops = datums.collect(Obj_Flt.lift(pair -> pair.open)).toArray();
-		float[] cls = datums.collect(Obj_Flt.lift(pair -> pair.close)).toArray();
-		float[] los = datums.collect(Obj_Flt.lift(pair -> pair.low)).toArray();
-		float[] his = datums.collect(Obj_Flt.lift(pair -> pair.high)).toArray();
-		return ofOhlc(ts, ops, cls, los, his);
+	public static DataSource of(long[] ts, Streamlet<Datum> data) {
+		return ofOhlc(ts, //
+				data.collect(Obj_Flt.lift(datum -> datum.open)).toArray(), //
+				data.collect(Obj_Flt.lift(datum -> datum.close)).toArray(), //
+				data.collect(Obj_Flt.lift(datum -> datum.low)).toArray(), //
+				data.collect(Obj_Flt.lift(datum -> datum.high)).toArray(), //
+				data.collect(Obj_Flt.lift(datum -> datum.volume)).toArray());
 	}
 
 	public static DataSource of(long[] ts, float[] prices) {
-		return ofOhlc(ts, prices, prices, prices, prices);
+		return ofOhlc(ts, prices, prices, prices, prices, new float[ts.length]);
 	}
 
 	// at the end of the day -
 	// current price = today's closing price;
 	// next price = tomorrow's opening price.
-	public static DataSource ofOhlc(long[] ts, float[] opens, float[] closes, float[] lows, float[] highs) {
-		return new DataSource(ts, opens, closes, lows, highs);
+	public static DataSource ofOhlc(long[] ts, float[] opens, float[] closes, float[] lows, float[] highs, float[] volumes) {
+		return new DataSource(ts, opens, closes, lows, highs, volumes);
 	}
 
-	private DataSource(long[] ts, float[] opens, float[] closes, float[] lows, float[] highs) {
+	private DataSource(long[] ts, float[] opens, float[] closes, float[] lows, float[] highs, float[] volumes) {
 		super();
 		this.ts = ts;
 		this.prices = closes;
@@ -146,9 +110,11 @@ public class DataSource {
 		this.closes = closes;
 		this.lows = lows;
 		this.highs = highs;
+		this.volumes = volumes;
 		if (ts.length != prices.length //
 				|| ts.length != opens.length || ts.length != closes.length //
-				|| ts.length != lows.length || ts.length != highs.length)
+				|| ts.length != lows.length || ts.length != highs.length //
+				|| ts.length != volumes.length)
 			throw new RuntimeException("mismatched dates and prices");
 	}
 
@@ -207,7 +173,8 @@ public class DataSource {
 				Floats_.concat(opens, new float[] { price, }), //
 				Floats_.concat(closes, new float[] { price, }), //
 				Floats_.concat(lows, new float[] { price, }), //
-				Floats_.concat(highs, new float[] { price, }));
+				Floats_.concat(highs, new float[] { price, }), //
+				Floats_.concat(volumes, new float[] { 0f, }));
 	}
 
 	public LngFltPair first() {
@@ -255,7 +222,11 @@ public class DataSource {
 	public String recent(String prefix, int size) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = ts.length - size; i < ts.length; i++)
-			sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "] = " + To.string(prices[i]) + "\n");
+			sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "]" //
+					+ " o/c:" + To.string(opens[i]) + "/" + To.string(closes[i]) //
+					+ " l/h:" + To.string(lows[i]) + "/" + To.string(highs[i]) //
+					+ " v:" + To.string(volumes[i]) //
+					+ "\n");
 		return sb.toString();
 	}
 
@@ -353,15 +324,55 @@ public class DataSource {
 	private Datum getDatum_(int start, int end) {
 		float lo = Trade_.max;
 		float hi = Trade_.negligible;
+		float volume = 0f;
 		for (int i = start; i < end; i++) {
 			lo = Math.min(lo, lows[i]);
-			hi = Math.min(hi, highs[i]);
+			hi = Math.max(hi, highs[i]);
+			volume += volumes[i];
 		}
-		return new Datum(opens[start], closes[end - 1], lo, hi);
+		return new Datum(opens[start], closes[end - 1], lo, hi, volume);
 	}
 
 	private Datum getDatum_(int pos) { // instantaneous
 		return Datum.of(opens[pos]);
+	}
+
+	public static class Datum {
+		public final float open;
+		public final float close;
+		public final float low;
+		public final float high;
+		public final float volume;
+
+		private static Datum of(float price) {
+			return new Datum(price, price, price, price, 0f);
+		}
+
+		public Datum(float open, float close, float low, float high, float volume) {
+			this.open = open;
+			this.close = close;
+			this.low = low;
+			this.high = high;
+			this.volume = volume;
+		}
+	}
+
+	public static class Eod {
+		public final float price;
+		public final float nextOpen;
+		public final float nextLow;
+		public final float nextHigh;
+
+		public static Eod of(float price) {
+			return new Eod(price, price, price, price);
+		}
+
+		private Eod(float price, float nextOpen, float nextLow, float nextHigh) {
+			this.price = price;
+			this.nextOpen = nextOpen;
+			this.nextLow = nextLow;
+			this.nextHigh = nextHigh;
+		}
 	}
 
 }
