@@ -103,7 +103,7 @@ public class ConfigurationImpl implements Configuration {
 			return srcHkd__;
 		else if (symbol.endsWith(".HK"))
 			return srcHkex_;
-		else if (symbol.startsWith("^"))
+		else if (symbol.startsWith("^") || String_.equals(symbol, "NDAQ"))
 			return srcIndex;
 		else if (String_.equals(symbol, "CL=F") || symbol.endsWith(".NYM"))
 			return srcNymex;
