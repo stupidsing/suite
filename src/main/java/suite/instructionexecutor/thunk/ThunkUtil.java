@@ -39,8 +39,7 @@ public class ThunkUtil {
 	}
 
 	/**
-	 * Evaluates the whole (lazy) term to a list and feed the elements into a
-	 * sink.
+	 * Evaluates the whole (lazy) term to a list and feed the elements into a sink.
 	 */
 	public static void yawnSink(Fun<Node, Node> yawn, Node node, IoSink<Node> sink) throws IOException {
 		Outlet<Node> st = yawnList(yawn, node, true);
