@@ -47,9 +47,11 @@ public class YahooTest {
 	}
 
 	private void test(BiFunction<String, TimeRange, DataSource> fun) {
-		DataSource ds = fun.apply("0005.HK", TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1)));
+		String symbol = "0005.HK";
 
+		DataSource ds = fun.apply(symbol, TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1)));
 		ds.validate();
+		System.out.println(ds.recent(symbol, 9));
 
 		int tsLength = ds.ts.length;
 		int pricesLength = ds.prices.length;
