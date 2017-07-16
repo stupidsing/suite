@@ -248,9 +248,10 @@ public interface BackAllocator {
 
 						for (int i = 0; i < length; i++) {
 							double r = 1d / indexPrices[i];
+							long t = ds0.ts[i];
 							data1[i] = new Datum( //
-									ds0.ts[i], //
-									ds0.ts[i] + DataSource.tickDuration, //
+									t, //
+									t + DataSource.tickDuration, //
 									(float) (ds0.opens[i] * r), //
 									(float) (ds0.closes[i] * r), //
 									(float) (ds0.lows[i] * r), //
