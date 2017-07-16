@@ -25,8 +25,8 @@ public class GameSet1 {
 	}
 
 	/**
-	 * Constructs a "left-over" game. Note that the previous state information
-	 * will be empty, not suitable for real-play scenario.
+	 * Constructs a "left-over" game. Note that the previous state information will
+	 * be empty, not suitable for real-play scenario.
 	 */
 	public GameSet1(Board1 board, Occupation nextPlayer) {
 		this(board, nextPlayer, new HashSet<>());
