@@ -16,8 +16,7 @@ public class HongKongGovernment {
 	public List<Time> queryPublicHolidays() {
 		DateTimeFormatter yyyymmdd = DateTimeFormatter.ofPattern("yyyyMMdd", Locale.ENGLISH);
 
-		return Singleton.me //
-				.storeCache //
+		return Singleton.me.storeCache //
 				.http("http://www.1823.gov.hk/common/ical/gc/en.ics") //
 				.collect(As::lines) //
 				.map(line -> line.split(":")) //
