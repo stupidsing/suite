@@ -44,8 +44,7 @@ public class Yahoo {
 		String urlString = tableUrl(symbol, period);
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
-		Streamlet<String[]> arrays = Singleton.me //
-				.storeCache //
+		Streamlet<String[]> arrays = Singleton.me.storeCache //
 				.http(urlString) //
 				.collect(As::csv) //
 				.skip(1) //
@@ -103,7 +102,7 @@ public class Yahoo {
 			int length = ts.length;
 
 			Streamlet2<String, Streamlet<JsonNode>> dataJsons0 = Read //
-					.each("open", "close", "high", "low") //
+					.each("close") //
 					.map2(tag -> jsons //
 							.flatMap(json_ -> {
 								JsonNode json0 = json_.path("indicators");
@@ -118,7 +117,7 @@ public class Yahoo {
 							.flatMap(json_ -> json_.path("unadj" + tag)));
 
 			Streamlet2<String, Streamlet<JsonNode>> dataJsons1 = Read //
-					.each("volume") //
+					.each("open", "high", "low", "volume") //
 					.map2(tag -> jsons //
 							.flatMap(json_ -> json_.path("indicators").path("quote")) //
 							.flatMap(json_ -> json_.path(tag)));
