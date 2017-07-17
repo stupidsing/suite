@@ -1,8 +1,12 @@
 package suite.trade;
 
+import suite.math.MathUtil;
+import suite.util.String_;
 import suite.util.To;
 
 public class Trade {
+
+	public static String NA = "-";
 
 	public final String date;
 	public final int buySell;
@@ -15,7 +19,7 @@ public class Trade {
 	}
 
 	public static Trade of(int buySell, String symbol, float price) {
-		return of("-", buySell, symbol, price, "-");
+		return of(NA, buySell, symbol, price, "-");
 	}
 
 	public static Trade of(String date, int buySell, String symbol, float price, String strategy) {
@@ -32,7 +36,10 @@ public class Trade {
 
 	@Override
 	public String toString() {
-		return (0 <= buySell ? "+" : "-") + symbol + ":" + To.string(price) + "*" + Math.abs(buySell);
+		return (!String_.equals(date, NA) ? date + " " : "") //
+				+ MathUtil.posNeg(buySell) //
+				+ symbol //
+				+ ":" + To.string(price) + "*" + Math.abs(buySell);
 	}
 
 }

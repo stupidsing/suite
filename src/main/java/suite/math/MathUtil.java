@@ -6,21 +6,12 @@ public class MathUtil {
 
 	public static float epsilon = .00001f;
 
-	public static void verifyEquals(float f0, float f1) {
-		verifyEquals(f0, f1, epsilon);
-	}
-
-	public static void verifyEquals(float f0, float f1, float epsilon) {
-		float diff = Math.abs(f0 - f1);
-		if (!Float.isFinite(diff) || epsilon < diff)
-			throw new RuntimeException("values differ" //
-					+ ": f0 = " + To.string(f0) //
-					+ ", f1 = " + To.string(f1) //
-					+ ", diff = " + diff);
-	}
-
 	public static boolean isPositive(double d) {
-		return Double.isFinite(d) && 0d <= d;
+		return isPositive_(d);
+	}
+
+	public static String posNeg(double d) {
+		return isPositive_(d) ? "+" : "-";
 	}
 
 	public static int steinGcd(int n0, int n1) {
@@ -71,8 +62,25 @@ public class MathUtil {
 			return n0 + n1;
 	}
 
+	public static void verifyEquals(float f0, float f1) {
+		verifyEquals(f0, f1, epsilon);
+	}
+
+	public static void verifyEquals(float f0, float f1, float epsilon) {
+		float diff = Math.abs(f0 - f1);
+		if (!Float.isFinite(diff) || epsilon < diff)
+			throw new RuntimeException("values differ" //
+					+ ": f0 = " + To.string(f0) //
+					+ ", f1 = " + To.string(f1) //
+					+ ", diff = " + diff);
+	}
+
 	private static boolean isEven(int n) {
 		return n % 2 == 0;
+	}
+
+	private static boolean isPositive_(double d) {
+		return Double.isFinite(d) && 0d <= d;
 	}
 
 }

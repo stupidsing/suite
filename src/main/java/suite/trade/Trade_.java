@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.adt.pair.Pair;
+import suite.math.MathUtil;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.As;
@@ -46,7 +47,7 @@ public class Trade_ {
 	public static String format(Map<String, Integer> portfolio) {
 		return Read.from2(portfolio) //
 				.sortBy((code, i) -> !String_.equals(code, Asset.cashSymbol) ? code : "") //
-				.map((code, i) -> (0 <= i ? "+" : "-") + code + "*" + Math.abs(i)) //
+				.map((code, i) -> MathUtil.posNeg(i) + code + "*" + Math.abs(i)) //
 				.collect(As.joined());
 	}
 

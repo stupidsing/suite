@@ -104,7 +104,7 @@ public class Yahoo {
 			int length = ts.length;
 
 			Streamlet2<String, Streamlet<JsonNode>> dataJsons0 = Read //
-					.each("close") //
+					.<String> empty() //
 					.map2(tag -> jsons //
 							.flatMap(json_ -> {
 								JsonNode json0 = json_.path("indicators");
@@ -119,7 +119,7 @@ public class Yahoo {
 							.flatMap(json_ -> json_.path("unadj" + tag)));
 
 			Streamlet2<String, Streamlet<JsonNode>> dataJsons1 = Read //
-					.each("open", "high", "low", "volume") //
+					.each("open", "close", "high", "low", "volume") //
 					.map2(tag -> jsons //
 							.flatMap(json_ -> json_.path("indicators").path("quote")) //
 							.flatMap(json_ -> json_.path(tag)));

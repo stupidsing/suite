@@ -84,7 +84,7 @@ public class Summarize {
 	}
 
 	private Streamlet<Trade> sellAll(Streamlet<Trade> trades, Map<String, Float> priceBySymbol) {
-		return Streamlet.concat(trades, Trade_.sellAll("-", trades, priceBySymbol::get));
+		return Streamlet.concat(trades, Trade_.sellAll(Trade.NA, trades, priceBySymbol::get));
 	}
 
 }
