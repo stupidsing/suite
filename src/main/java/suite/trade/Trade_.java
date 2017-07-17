@@ -38,18 +38,9 @@ public class Trade_ {
 		return Math.expm1(logRiskFreeInterestRate * invTradeDaysPerYear * nDays);
 	}
 
-	public static Streamlet<Trade> diff(Map<String, Integer> assets0, Map<String, Integer> assets1, Obj_Flt<String> priceFun) {
-		Set<String> symbols = Set_.union(assets0.keySet(), assets1.keySet());
-
-		return Read.from(symbols) //
-				.map2(symbol -> {
-					int n0 = assets0.computeIfAbsent(symbol, s -> 0);
-					int n1 = assets1.computeIfAbsent(symbol, s -> 0);
-					return n1 - n0;
-				}) //
-				.filter((symbol, buySell) -> !String_.equals(symbol, Asset.cashSymbol)) //
-				.map((symbol, buySell) -> Trade.of(buySell, symbol, priceFun.apply(symbol))) //
-				.collect(As::streamlet);
+	public static Streamlet<Trade> diff(String time, Map<String, Integer> assets0, Map<String, Integer> assets1,
+			Obj_Flt<String> priceFun) {
+		return diff_(time, assets0, assets1, priceFun);
 	}
 
 	public static String format(Map<String, Integer> portfolio) {
@@ -74,20 +65,21 @@ public class Trade_ {
 				.toMap();
 	}
 
-	public static Streamlet<Trade> sellAll(Streamlet<Trade> trades, Obj_Flt<String> priceFun) {
+	public static Streamlet<Trade> sellAll(String time, Streamlet<Trade> trades, Obj_Flt<String> priceFun) {
 		return trades //
 				.groupBy(trade -> trade.strategy, Trade_::portfolio) //
 				.concatMap((strategy, nSharesBySymbol) -> Read //
 						.from2(nSharesBySymbol) //
-						.map((symbol, size) -> Trade.of(-size, symbol, priceFun.apply(symbol), strategy)));
+						.map((symbol, size) -> Trade.of(time, -size, symbol, priceFun.apply(symbol), strategy)));
 	}
 
 	public static UpdatePortfolio updatePortfolio( //
+			String time, //
 			Account account, //
 			List<Pair<String, Double>> ratioBySymbol, //
 			Map<String, Asset> assetBySymbol, //
 			Map<String, Eod> eodBySymbol) {
-		return new UpdatePortfolio(account, ratioBySymbol, assetBySymbol, eodBySymbol);
+		return new UpdatePortfolio(time, account, ratioBySymbol, assetBySymbol, eodBySymbol);
 	}
 
 	public static class UpdatePortfolio {
@@ -97,6 +89,7 @@ public class Trade_ {
 		public final List<Trade> trades;
 
 		private UpdatePortfolio( //
+				String time, //
 				Account account, //
 				List<Pair<String, Double>> ratioBySymbol, //
 				Map<String, Asset> assetBySymbol, //
@@ -121,16 +114,20 @@ public class Trade_ {
 				priceFun = symbol -> eodBySymbol.get(symbol).price;
 
 			List<Trade> trades_ = Trade_ //
-					.diff(account.assets(), portfolio, priceFun) //
+					.diff(time, account.assets(), portfolio, priceFun) //
 					.filter(trade -> { // can be executed in next open price?
 						Eod eod = eodBySymbol.get(trade.symbol);
 						float price = trade.price;
+						int buySell = trade.buySell;
 
 						// cannot buy liquidated stock
 						boolean isTradeable = negligible < price;
 
 						// only if trade is within price range of next tick
-						boolean isMatch = isFreePlay || eod.nextLow <= price && price <= eod.nextHigh;
+						boolean isMatch = isFreePlay //
+								|| buySell == 0 //
+								|| 0 < buySell && eod.nextLow <= price //
+								|| buySell < 0 && price <= eod.nextHigh;
 
 						return isTradeable && isMatch;
 					}) //
@@ -149,6 +146,24 @@ public class Trade_ {
 
 	public static boolean isValidStock(String symbol, int nShares) {
 		return Trade_.isShortSell || String_.equals(symbol, Asset.cashSymbol) || 0 <= nShares;
+	}
+
+	private static Streamlet<Trade> diff_( //
+			String time, //
+			Map<String, Integer> assets0, //
+			Map<String, Integer> assets1, //
+			Obj_Flt<String> priceFun) {
+		Set<String> symbols = Set_.union(assets0.keySet(), assets1.keySet());
+
+		return Read.from(symbols) //
+				.map2(symbol -> {
+					int n0 = assets0.computeIfAbsent(symbol, s -> 0);
+					int n1 = assets1.computeIfAbsent(symbol, s -> 0);
+					return n1 - n0;
+				}) //
+				.filter((symbol, buySell) -> !String_.equals(symbol, Asset.cashSymbol)) //
+				.map((symbol, buySell) -> Trade.of(time, buySell, symbol, priceFun.apply(symbol), "-")) //
+				.collect(As::streamlet);
 	}
 
 }

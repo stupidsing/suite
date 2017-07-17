@@ -119,7 +119,7 @@ public class BackAllocTester {
 					eodBySymbol = dsBySymbol.mapValue(ds -> ds.getEod(index)).toMap();
 
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(index);
-					UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol, eodBySymbol);
+					UpdatePortfolio up = Trade_.updatePortfolio(ymd, account, ratioBySymbol, assetBySymbol, eodBySymbol);
 					float valuation_ = valuations_[i] = up.valuation0;
 
 					for (Pair<String, Float> e : up.val0.stream())
@@ -139,7 +139,7 @@ public class BackAllocTester {
 			}
 
 			Map<String, Eod> eodBySymbol_ = eodBySymbol;
-			trades.addAll(Trade_.sellAll(Read.from(trades), symbol -> eodBySymbol_.get(symbol).nextOpen).toList());
+			trades.addAll(Trade_.sellAll(ymd, Read.from(trades), symbol -> eodBySymbol_.get(symbol).nextOpen).toList());
 
 			ReturnsStat rs = ts.returnsStatDailyAnnualized(valuations_);
 

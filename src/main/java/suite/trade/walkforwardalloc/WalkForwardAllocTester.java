@@ -87,7 +87,7 @@ public class WalkForwardAllocTester {
 		AlignKeyDataSource<String> akds = new AlignKeyDataSource<>(times, Read.from2(dsBySymbol));
 		List<Pair<String, Double>> ratioBySymbol = wfa.allocate(akds, windowSize);
 
-		UpdatePortfolio up = Trade_.updatePortfolio(account, ratioBySymbol, assetBySymbol,
+		UpdatePortfolio up = Trade_.updatePortfolio(time.ymdHms(), account, ratioBySymbol, assetBySymbol,
 				Read.from2(priceBySymbol).mapValue(Eod::of).toMap());
 
 		float valuation_;

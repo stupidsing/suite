@@ -15,11 +15,11 @@ public class Trade {
 	}
 
 	public static Trade of(int buySell, String symbol, float price) {
-		return of(buySell, symbol, price, "-");
+		return of("-", buySell, symbol, price, "-");
 	}
 
-	public static Trade of(int buySell, String symbol, float price, String strategy) {
-		return new Trade("-", buySell, symbol, price, strategy);
+	public static Trade of(String date, int buySell, String symbol, float price, String strategy) {
+		return new Trade(date, buySell, symbol, price, strategy);
 	}
 
 	private Trade(String date, int buySell, String symbol, float price, String strategy) {
