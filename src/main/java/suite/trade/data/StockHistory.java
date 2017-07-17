@@ -170,7 +170,7 @@ public class StockHistory {
 		LngFltPair[] clPairs = adjustPrices("close");
 		LngFltPair[] loPairs = adjustPrices("low");
 		LngFltPair[] hiPairs = adjustPrices("high");
-		LngFltPair[] vlPairs = adjustPrices("volume");
+		LngFltPair[] vlPairs = data.get("volume");
 		LngFltPair[] ps = clPairs;
 		int length = ps.length;
 
