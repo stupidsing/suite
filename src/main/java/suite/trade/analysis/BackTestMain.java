@@ -4,6 +4,7 @@ import java.nio.file.Paths;
 import java.util.Set;
 
 import suite.adt.pair.Pair;
+import suite.node.io.Operator.Assoc;
 import suite.os.LogUtil;
 import suite.primitive.Chars;
 import suite.primitive.streamlet.IntStreamlet;
@@ -23,6 +24,8 @@ import suite.trade.backalloc.strategy.BackAllocator_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.util.FunUtil.Fun;
+import suite.util.Object_;
+import suite.util.ParseUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
@@ -58,14 +61,21 @@ public class BackTestMain extends ExecutableProgram {
 		// BEGIN
 		// END
 
-		Set<String> strategyNames = Read.from(args).toSet();
+		Set<String> strategyNames = 0 < args.length ? Read.from(args[0].split(",")).toSet() : null;
+		Streamlet<Integer> years = (1 < args.length ? Read //
+				.from(args[1].split(",")).concatMap(s -> {
+					Pair<String, String> pair = ParseUtil.search(s, "-", Assoc.RIGHT);
+					return pair != null //
+							? IntStreamlet.range(Integer.valueOf(pair.t0), Integer.valueOf(pair.t1)).map(i -> i) //
+							: Read.each(Integer.valueOf(s));
+				}) //
+				.sort(Object_::compare) //
+				: IntStreamlet.range(2007, Trade_.thisYear).map(i -> i));
 
 		Streamlet2<String, Simulate> simulationByKey = bacByTag1 //
-				.filterKey(strategyName -> args.length == 0 || strategyNames.contains(strategyName)) //
+				.filterKey(strategyName -> strategyNames == null || strategyNames.contains(strategyName)) //
 				.map(Pair::of) //
-				.join2(IntStreamlet //
-						.range(2007, Trade_.thisYear) //
-						.map(TimeRange::ofYear)) //
+				.join2(years.map(TimeRange::ofYear)) //
 				.map2((pair, period) -> pair.t0, (pair, period) -> {
 					BackAllocConfiguration bac = pair.t1;
 					Streamlet<Asset> assets = bac.assetsFun.apply(period.from);
