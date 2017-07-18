@@ -40,7 +40,10 @@ public class Trade_ {
 		return Math.expm1(logRiskFreeInterestRate * invTradeDaysPerYear * nDays);
 	}
 
-	public static Streamlet<Trade> diff(String time, Map<String, Integer> assets0, Map<String, Integer> assets1,
+	public static Streamlet<Trade> diff( //
+			String time, //
+			Map<String, Integer> assets0, //
+			Map<String, Integer> assets1, //
 			Obj_Flt<String> priceFun) {
 		return diff_(time, assets0, assets1, priceFun);
 	}
