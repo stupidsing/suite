@@ -48,6 +48,7 @@ public class StatisticalArbitrageTest {
 		float[] prices = ds.prices;
 		float[] ma20 = ma.movingAvg(prices, 20);
 		float[] ma50 = ma.movingAvg(prices, 50);
+		double lookback80 = lookback * .8d;
 		String flags0 = "-----";
 
 		for (int i = 0; i < prices.length; i++) {
@@ -61,26 +62,26 @@ public class StatisticalArbitrageTest {
 
 			boolean isStronglyBullish = true //
 					&& lookback <= ma20abovema50 //
-					&& lookback <= past1_i.filter(j -> ma20[j - 1] <= ma20[j]).size() //
-					&& lookback <= past1_i.filter(j -> ma50[j - 1] <= ma50[j]).size() //
+					&& past1_i.isAll(j -> ma20[j - 1] <= ma20[j]) //
+					&& past1_i.isAll(j -> ma50[j - 1] <= ma50[j]) //
 					&& (1.02d * ma50[i] <= ma20[i] || ma20[past] - ma50[past] < ma20[i] - ma50[i]) //
 					&& past_i.isAll(j -> ma20[j] <= prices[j]);
 
 			boolean isWeaklyBullish = true //
-					&& lookback * .8d <= ma20abovema50 //
-					&& lookback * .95d <= past1_i.filter(j -> ma50[j - 1] <= ma50[j]).size() //
+					&& lookback80 <= ma20abovema50 //
+					&& past1_i.isAll(j -> ma50[j - 1] <= ma50[j]) //
 					&& past_i.isAll(j -> ma50[j] <= prices[j]);
 
 			boolean isStronglyBearish = true //
 					&& lookback <= ma50abovema20 //
-					&& lookback <= past1_i.filter(j -> ma20[j] <= ma20[j - 1]).size() //
-					&& lookback <= past1_i.filter(j -> ma50[j] <= ma50[j - 1]).size() //
+					&& past1_i.isAll(j -> ma20[j] <= ma20[j - 1]) //
+					&& past1_i.isAll(j -> ma50[j] <= ma50[j - 1]) //
 					&& (1.02d * ma20[i] <= ma50[i] || ma50[past] - ma20[past] < ma50[i] - ma20[i]) //
 					&& past_i.isAll(j -> prices[j] <= ma20[j]);
 
 			boolean isWeaklyBearish = true //
-					&& lookback * .8d <= ma50abovema20 //
-					&& lookback * .95d <= past1_i.filter(j -> ma50[j] <= ma50[j - 1]).size() //
+					&& lookback80 <= ma50abovema20 //
+					&& past1_i.isAll(j -> ma50[j] <= ma50[j - 1]) //
 					&& past_i.isAll(j -> prices[j] <= ma50[j]);
 
 			boolean isRangeBound = true //
