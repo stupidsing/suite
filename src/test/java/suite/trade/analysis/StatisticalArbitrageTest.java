@@ -27,6 +27,7 @@ import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.util.Object_;
+import suite.util.String_;
 import suite.util.To;
 
 public class StatisticalArbitrageTest {
@@ -47,51 +48,56 @@ public class StatisticalArbitrageTest {
 		float[] prices = ds.prices;
 		float[] ma20 = ma.movingAvg(prices, 20);
 		float[] ma50 = ma.movingAvg(prices, 50);
+		String flags0 = "-----";
 
 		for (int i = 0; i < prices.length; i++) {
 			int past = Math.max(0, i - lookback);
-			float ma20i = ma20[i];
-			float ma50i = ma50[i];
-			int ma20abovema50 = IntStreamlet.range(past, i).filter(j -> ma50[j] < ma20[j]).size();
-			int ma50abovema20 = IntStreamlet.range(past, i).filter(j -> ma20[j] < ma50[j]).size();
+			IntStreamlet past_i = IntStreamlet.range(past, i);
+			IntStreamlet past1_i = past_i.drop(1);
+
+			int ma20abovema50 = past_i.filter(j -> ma50[j] < ma20[j]).size();
+			int ma50abovema20 = past_i.filter(j -> ma20[j] < ma50[j]).size();
 			double r = ma50abovema20 / (double) ma20abovema50;
 
 			boolean isStronglyBullish = true //
 					&& lookback <= ma20abovema50 //
-					&& lookback <= IntStreamlet.range(past + 1, i).filter(j -> ma20[j - 1] <= ma20[j]).size() //
-					&& lookback <= IntStreamlet.range(past + 1, i).filter(j -> ma50[j - 1] <= ma50[j]).size() //
+					&& lookback <= past1_i.filter(j -> ma20[j - 1] <= ma20[j]).size() //
+					&& lookback <= past1_i.filter(j -> ma50[j - 1] <= ma50[j]).size() //
 					&& (1.02d * ma50[i] <= ma20[i] || ma20[past] - ma50[past] < ma20[i] - ma50[i]) //
-					&& IntStreamlet.range(past, i).isAll(j -> ma20i <= prices[j]);
+					&& past_i.isAll(j -> ma20[j] <= prices[j]);
 
 			boolean isWeaklyBullish = true //
-					&& lookback <= ma20abovema50 * .8d //
-					&& lookback <= IntStreamlet.range(past + 1, i).filter(j -> ma50[j - 1] <= ma50[j]).size() * .95d //
-					&& IntStreamlet.range(past, i).isAll(j -> ma50i <= prices[j]);
+					&& lookback * .8d <= ma20abovema50 //
+					&& lookback * .95d <= past1_i.filter(j -> ma50[j - 1] <= ma50[j]).size() //
+					&& past_i.isAll(j -> ma50[j] <= prices[j]);
 
 			boolean isStronglyBearish = true //
 					&& lookback <= ma50abovema20 //
-					&& lookback <= IntStreamlet.range(past + 1, i).filter(j -> ma20[j] <= ma20[j - 1]).size() //
-					&& lookback <= IntStreamlet.range(past + 1, i).filter(j -> ma50[j] <= ma50[j - 1]).size() //
+					&& lookback <= past1_i.filter(j -> ma20[j] <= ma20[j - 1]).size() //
+					&& lookback <= past1_i.filter(j -> ma50[j] <= ma50[j - 1]).size() //
 					&& (1.02d * ma20[i] <= ma50[i] || ma50[past] - ma20[past] < ma50[i] - ma20[i]) //
-					&& IntStreamlet.range(past, i).isAll(j -> prices[j] <= ma20i);
+					&& past_i.isAll(j -> prices[j] <= ma20[j]);
 
 			boolean isWeaklyBearish = true //
-					&& lookback <= ma50abovema20 * .8d //
-					&& lookback <= IntStreamlet.range(past + 1, i).filter(j -> ma50[j] <= ma50[j - 1]).size() * .95d //
-					&& IntStreamlet.range(past, i).isAll(j -> prices[j] <= ma50i);
+					&& lookback * .8d <= ma50abovema20 //
+					&& lookback * .95d <= past1_i.filter(j -> ma50[j] <= ma50[j - 1]).size() //
+					&& past_i.isAll(j -> prices[j] <= ma50[j]);
 
 			boolean isRangeBound = true //
 					&& 4d / 5d <= r && r <= 5d / 4d //
 			;
 
 			String flags = "" //
-					+ (isStronglyBearish ? "+" : ".") //
-					+ (isWeaklyBearish ? "+" : ".") //
-					+ (isRangeBound ? "+" : ".") //
-					+ (isWeaklyBullish ? "+" : ".") //
-					+ (isStronglyBullish ? "+" : ".");
+					+ (isStronglyBearish ? "M" : "-") //
+					+ (isWeaklyBearish ? "M" : "-") //
+					+ (isRangeBound ? "M" : "-") //
+					+ (isWeaklyBullish ? "M" : "-") //
+					+ (isStronglyBullish ? "M" : "-");
 
-			System.out.println(Time.ofEpochSec(ds.ts[i]).ymd() + " " + flags);
+			if (!String_.equals(flags0, flags))
+				System.out.println(Time.ofEpochSec(ds.ts[i]).ymd() + " " + flags);
+
+			flags0 = flags;
 		}
 	}
 
