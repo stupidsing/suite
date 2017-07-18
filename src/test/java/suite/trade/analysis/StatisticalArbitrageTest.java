@@ -19,6 +19,7 @@ import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.trade.MovingAverage;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.Configuration;
@@ -33,9 +34,66 @@ public class StatisticalArbitrageTest {
 	private TimeRange period = TimeRange.threeYears();
 
 	private Configuration cfg = new ConfigurationImpl();
+	private MovingAverage ma = new MovingAverage();
 	private Random random = new Random();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
+
+	@Test
+	public void testMarketDirection() {
+		int lookback = 40;
+
+		DataSource ds = cfg.dataSource("^HSI").cleanse();
+		float[] prices = ds.prices;
+		float[] ma20 = ma.movingAvg(prices, 20);
+		float[] ma50 = ma.movingAvg(prices, 50);
+
+		for (int i = 0; i < prices.length; i++) {
+			int past = Math.max(0, i - lookback);
+			float ma20i = ma20[i];
+			float ma50i = ma50[i];
+			int ma20abovema50 = IntStreamlet.range(past, i).filter(j -> ma50[j] < ma20[j]).size();
+			int ma50abovema20 = IntStreamlet.range(past, i).filter(j -> ma20[j] < ma50[j]).size();
+			double r = ma50abovema20 / (double) ma20abovema50;
+
+			boolean isStronglyBullish = true //
+					&& lookback <= ma20abovema50 //
+					&& lookback <= IntStreamlet.range(past + 1, i).filter(j -> ma20[j - 1] <= ma20[j]).size() //
+					&& lookback <= IntStreamlet.range(past + 1, i).filter(j -> ma50[j - 1] <= ma50[j]).size() //
+					&& (1.02d * ma50[i] <= ma20[i] || ma20[past] - ma50[past] < ma20[i] - ma50[i]) //
+					&& IntStreamlet.range(past, i).isAll(j -> ma20i <= prices[j]);
+
+			boolean isWeaklyBullish = true //
+					&& lookback <= ma20abovema50 * .8d //
+					&& lookback <= IntStreamlet.range(past + 1, i).filter(j -> ma50[j - 1] <= ma50[j]).size() * .95d //
+					&& IntStreamlet.range(past, i).isAll(j -> ma50i <= prices[j]);
+
+			boolean isStronglyBearish = true //
+					&& lookback <= ma50abovema20 //
+					&& lookback <= IntStreamlet.range(past + 1, i).filter(j -> ma20[j] <= ma20[j - 1]).size() //
+					&& lookback <= IntStreamlet.range(past + 1, i).filter(j -> ma50[j] <= ma50[j - 1]).size() //
+					&& (1.02d * ma20[i] <= ma50[i] || ma50[past] - ma20[past] < ma50[i] - ma20[i]) //
+					&& IntStreamlet.range(past, i).isAll(j -> prices[j] <= ma20i);
+
+			boolean isWeaklyBearish = true //
+					&& lookback <= ma50abovema20 * .8d //
+					&& lookback <= IntStreamlet.range(past + 1, i).filter(j -> ma50[j] <= ma50[j - 1]).size() * .95d //
+					&& IntStreamlet.range(past, i).isAll(j -> prices[j] <= ma50i);
+
+			boolean isRangeBound = true //
+					&& 4d / 5d <= r && r <= 5d / 4d //
+			;
+
+			String flags = "" //
+					+ (isStronglyBearish ? "+" : ".") //
+					+ (isWeaklyBearish ? "+" : ".") //
+					+ (isRangeBound ? "+" : ".") //
+					+ (isWeaklyBullish ? "+" : ".") //
+					+ (isStronglyBullish ? "+" : ".");
+
+			System.out.println(Time.ofEpochSec(ds.ts[i]).ymd() + " " + flags);
+		}
+	}
 
 	@Test
 	public void testMonteCarloBestBet() {
