@@ -102,7 +102,8 @@ public class DailyMain extends ExecutableProgram {
 				.collect(As::streamlet2);
 
 		sb.append(strategyTrades //
-				.map((strategy, trade) -> "\n" + (0 <= trade.buySell ? "BUY^" : "SELL") //
+				.map((strategy, trade) -> "\n" //
+						+ (0 <= trade.buySell ? "BUY^" : "SELL") //
 						+ " SIGNAL(" + strategy + ")" + trade //
 						+ " = " + To.string(trade.buySell * trade.price)) //
 				.sortBy(line -> line) //
