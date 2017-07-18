@@ -5,10 +5,14 @@ import java.util.Arrays;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblLngSink;
 import suite.primitive.DblLngSource;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Lng;
 import suite.primitive.LngFunUtil;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.DblLngPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive double key and primitive long value. Long.MIN_VALUE is not
@@ -21,6 +25,18 @@ public class DblLngMap {
 	private int size;
 	private double[] ks;
 	private long[] vs;
+
+	public static <T> Fun<Outlet<T>, DblLngMap> collect(Obj_Dbl<T> kf0, Obj_Lng<T> vf0) {
+		return outlet -> {
+			Obj_Dbl<T> kf1 = kf0.rethrow();
+			Obj_Lng<T> vf1 = vf0.rethrow();
+			DblLngMap map = new DblLngMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public DblLngMap() {
 		this(8);

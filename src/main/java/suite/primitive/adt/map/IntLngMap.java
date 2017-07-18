@@ -5,10 +5,14 @@ import java.util.Arrays;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntLngSink;
 import suite.primitive.IntLngSource;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Lng;
 import suite.primitive.LngFunUtil;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.IntLngPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive int key and primitive long value. Long.MIN_VALUE is not
@@ -21,6 +25,18 @@ public class IntLngMap {
 	private int size;
 	private int[] ks;
 	private long[] vs;
+
+	public static <T> Fun<Outlet<T>, IntLngMap> collect(Obj_Int<T> kf0, Obj_Lng<T> vf0) {
+		return outlet -> {
+			Obj_Int<T> kf1 = kf0.rethrow();
+			Obj_Lng<T> vf1 = vf0.rethrow();
+			IntLngMap map = new IntLngMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public IntLngMap() {
 		this(8);

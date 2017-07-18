@@ -3,12 +3,16 @@ package suite.primitive.adt.map;
 import java.util.Arrays;
 
 import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.DblChrSink;
 import suite.primitive.DblChrSource;
 import suite.primitive.DblFunUtil;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Chr;
 import suite.primitive.adt.pair.DblChrPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive double key and primitive char value. Character.MIN_VALUE
@@ -21,6 +25,18 @@ public class DblChrMap {
 	private int size;
 	private double[] ks;
 	private char[] vs;
+
+	public static <T> Fun<Outlet<T>, DblChrMap> collect(Obj_Dbl<T> kf0, Obj_Chr<T> vf0) {
+		return outlet -> {
+			Obj_Dbl<T> kf1 = kf0.rethrow();
+			Obj_Chr<T> vf1 = vf0.rethrow();
+			DblChrMap map = new DblChrMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public DblChrMap() {
 		this(8);

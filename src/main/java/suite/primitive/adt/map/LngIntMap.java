@@ -3,12 +3,16 @@ package suite.primitive.adt.map;
 import java.util.Arrays;
 
 import suite.primitive.IntFunUtil;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngIntSink;
 import suite.primitive.LngIntSource;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Int;
 import suite.primitive.adt.pair.LngIntPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive long key and primitive int value. Integer.MIN_VALUE is not
@@ -21,6 +25,18 @@ public class LngIntMap {
 	private int size;
 	private long[] ks;
 	private int[] vs;
+
+	public static <T> Fun<Outlet<T>, LngIntMap> collect(Obj_Lng<T> kf0, Obj_Int<T> vf0) {
+		return outlet -> {
+			Obj_Lng<T> kf1 = kf0.rethrow();
+			Obj_Int<T> vf1 = vf0.rethrow();
+			LngIntMap map = new LngIntMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public LngIntMap() {
 		this(8);

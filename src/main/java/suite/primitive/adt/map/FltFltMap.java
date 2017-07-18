@@ -5,8 +5,11 @@ import java.util.Arrays;
 import suite.primitive.FltFltSink;
 import suite.primitive.FltFltSource;
 import suite.primitive.FltFunUtil;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.FltFltPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive float key and primitive float value. Float.MIN_VALUE is
@@ -19,6 +22,18 @@ public class FltFltMap {
 	private int size;
 	private float[] ks;
 	private float[] vs;
+
+	public static <T> Fun<Outlet<T>, FltFltMap> collect(Obj_Flt<T> kf0, Obj_Flt<T> vf0) {
+		return outlet -> {
+			Obj_Flt<T> kf1 = kf0.rethrow();
+			Obj_Flt<T> vf1 = vf0.rethrow();
+			FltFltMap map = new FltFltMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public FltFltMap() {
 		this(8);

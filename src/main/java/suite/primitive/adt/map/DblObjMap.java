@@ -3,10 +3,14 @@ package suite.primitive.adt.map;
 import suite.primitive.DblPrimitives.DblObjSink;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Dbl_Obj;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
+import suite.util.Rethrow;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -19,6 +23,18 @@ public class DblObjMap<V> {
 	private int size;
 	private double[] ks;
 	private Object[] vs;
+
+	public static <T, V> Fun<Outlet<T>, DblObjMap<V>> collect(Obj_Dbl<T> kf0, Fun<T, V> vf0) {
+		return outlet -> {
+			Obj_Dbl<T> kf1 = kf0.rethrow();
+			Fun<T, V> vf1 = Rethrow.fun(vf0);
+			DblObjMap<V> map = new DblObjMap<>();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public DblObjMap() {
 		this(8);

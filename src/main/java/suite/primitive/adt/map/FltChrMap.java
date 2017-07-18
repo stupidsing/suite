@@ -3,12 +3,16 @@ package suite.primitive.adt.map;
 import java.util.Arrays;
 
 import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.FltChrSink;
 import suite.primitive.FltChrSource;
 import suite.primitive.FltFunUtil;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Chr;
 import suite.primitive.adt.pair.FltChrPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive float key and primitive char value. Character.MIN_VALUE is
@@ -21,6 +25,18 @@ public class FltChrMap {
 	private int size;
 	private float[] ks;
 	private char[] vs;
+
+	public static <T> Fun<Outlet<T>, FltChrMap> collect(Obj_Flt<T> kf0, Obj_Chr<T> vf0) {
+		return outlet -> {
+			Obj_Flt<T> kf1 = kf0.rethrow();
+			Obj_Chr<T> vf1 = vf0.rethrow();
+			FltChrMap map = new FltChrMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public FltChrMap() {
 		this(8);

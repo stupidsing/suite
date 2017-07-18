@@ -5,8 +5,11 @@ import java.util.Arrays;
 import suite.primitive.DblDblSink;
 import suite.primitive.DblDblSource;
 import suite.primitive.DblFunUtil;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.DblDblPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive double key and primitive double value. Double.MIN_VALUE is
@@ -19,6 +22,18 @@ public class DblDblMap {
 	private int size;
 	private double[] ks;
 	private double[] vs;
+
+	public static <T> Fun<Outlet<T>, DblDblMap> collect(Obj_Dbl<T> kf0, Obj_Dbl<T> vf0) {
+		return outlet -> {
+			Obj_Dbl<T> kf1 = kf0.rethrow();
+			Obj_Dbl<T> vf1 = vf0.rethrow();
+			DblDblMap map = new DblDblMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public DblDblMap() {
 		this(8);

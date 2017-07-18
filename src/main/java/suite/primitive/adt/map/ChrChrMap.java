@@ -5,8 +5,11 @@ import java.util.Arrays;
 import suite.primitive.ChrChrSink;
 import suite.primitive.ChrChrSource;
 import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.pair.ChrChrPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive char key and primitive char value. Character.MIN_VALUE is
@@ -19,6 +22,18 @@ public class ChrChrMap {
 	private int size;
 	private char[] ks;
 	private char[] vs;
+
+	public static <T> Fun<Outlet<T>, ChrChrMap> collect(Obj_Chr<T> kf0, Obj_Chr<T> vf0) {
+		return outlet -> {
+			Obj_Chr<T> kf1 = kf0.rethrow();
+			Obj_Chr<T> vf1 = vf0.rethrow();
+			ChrChrMap map = new ChrChrMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public ChrChrMap() {
 		this(8);

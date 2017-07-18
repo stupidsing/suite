@@ -3,12 +3,16 @@ package suite.primitive.adt.map;
 import java.util.Arrays;
 
 import suite.primitive.FltFunUtil;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.LngFltSink;
 import suite.primitive.LngFltSource;
 import suite.primitive.LngFunUtil;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Flt;
 import suite.primitive.adt.pair.LngFltPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive long key and primitive float value. Float.MIN_VALUE is not
@@ -21,6 +25,18 @@ public class LngFltMap {
 	private int size;
 	private long[] ks;
 	private float[] vs;
+
+	public static <T> Fun<Outlet<T>, LngFltMap> collect(Obj_Lng<T> kf0, Obj_Flt<T> vf0) {
+		return outlet -> {
+			Obj_Lng<T> kf1 = kf0.rethrow();
+			Obj_Flt<T> vf1 = vf0.rethrow();
+			LngFltMap map = new LngFltMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public LngFltMap() {
 		this(8);

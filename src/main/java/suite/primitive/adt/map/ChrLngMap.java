@@ -5,10 +5,14 @@ import java.util.Arrays;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrLngSink;
 import suite.primitive.ChrLngSource;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Lng;
 import suite.primitive.LngFunUtil;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.ChrLngPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive char key and primitive long value. Long.MIN_VALUE is not
@@ -21,6 +25,18 @@ public class ChrLngMap {
 	private int size;
 	private char[] ks;
 	private long[] vs;
+
+	public static <T> Fun<Outlet<T>, ChrLngMap> collect(Obj_Chr<T> kf0, Obj_Lng<T> vf0) {
+		return outlet -> {
+			Obj_Chr<T> kf1 = kf0.rethrow();
+			Obj_Lng<T> vf1 = vf0.rethrow();
+			ChrLngMap map = new ChrLngMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public ChrLngMap() {
 		this(8);

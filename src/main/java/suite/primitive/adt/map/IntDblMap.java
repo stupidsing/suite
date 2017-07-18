@@ -3,12 +3,16 @@ package suite.primitive.adt.map;
 import java.util.Arrays;
 
 import suite.primitive.DblFunUtil;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntDblSink;
 import suite.primitive.IntDblSource;
 import suite.primitive.IntFunUtil;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
 import suite.primitive.adt.pair.IntDblPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive int key and primitive double value. Double.MIN_VALUE is
@@ -21,6 +25,18 @@ public class IntDblMap {
 	private int size;
 	private int[] ks;
 	private double[] vs;
+
+	public static <T> Fun<Outlet<T>, IntDblMap> collect(Obj_Int<T> kf0, Obj_Dbl<T> vf0) {
+		return outlet -> {
+			Obj_Int<T> kf1 = kf0.rethrow();
+			Obj_Dbl<T> vf1 = vf0.rethrow();
+			IntDblMap map = new IntDblMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public IntDblMap() {
 		this(8);

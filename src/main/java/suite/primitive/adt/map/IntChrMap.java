@@ -3,12 +3,16 @@ package suite.primitive.adt.map;
 import java.util.Arrays;
 
 import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.IntChrSink;
 import suite.primitive.IntChrSource;
 import suite.primitive.IntFunUtil;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Chr;
 import suite.primitive.adt.pair.IntChrPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive int key and primitive char value. Character.MIN_VALUE is
@@ -21,6 +25,18 @@ public class IntChrMap {
 	private int size;
 	private int[] ks;
 	private char[] vs;
+
+	public static <T> Fun<Outlet<T>, IntChrMap> collect(Obj_Int<T> kf0, Obj_Chr<T> vf0) {
+		return outlet -> {
+			Obj_Int<T> kf1 = kf0.rethrow();
+			Obj_Chr<T> vf1 = vf0.rethrow();
+			IntChrMap map = new IntChrMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public IntChrMap() {
 		this(8);

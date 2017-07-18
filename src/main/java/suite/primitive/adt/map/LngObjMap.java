@@ -4,9 +4,13 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.LngPrimitives.LngObjSink;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Lng_Obj;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
+import suite.util.Rethrow;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -19,6 +23,18 @@ public class LngObjMap<V> {
 	private int size;
 	private long[] ks;
 	private Object[] vs;
+
+	public static <T, V> Fun<Outlet<T>, LngObjMap<V>> collect(Obj_Lng<T> kf0, Fun<T, V> vf0) {
+		return outlet -> {
+			Obj_Lng<T> kf1 = kf0.rethrow();
+			Fun<T, V> vf1 = Rethrow.fun(vf0);
+			LngObjMap<V> map = new LngObjMap<>();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public LngObjMap() {
 		this(8);

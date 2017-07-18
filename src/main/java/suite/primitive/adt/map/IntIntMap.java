@@ -5,8 +5,11 @@ import java.util.Arrays;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntIntSink;
 import suite.primitive.IntIntSource;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive int key and primitive int value. Integer.MIN_VALUE is not
@@ -19,6 +22,18 @@ public class IntIntMap {
 	private int size;
 	private int[] ks;
 	private int[] vs;
+
+	public static <T> Fun<Outlet<T>, IntIntMap> collect(Obj_Int<T> kf0, Obj_Int<T> vf0) {
+		return outlet -> {
+			Obj_Int<T> kf1 = kf0.rethrow();
+			Obj_Int<T> vf1 = vf0.rethrow();
+			IntIntMap map = new IntIntMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public IntIntMap() {
 		this(8);

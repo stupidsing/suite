@@ -3,12 +3,16 @@ package suite.primitive.adt.map;
 import java.util.Arrays;
 
 import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.LngChrSink;
 import suite.primitive.LngChrSource;
 import suite.primitive.LngFunUtil;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Chr;
 import suite.primitive.adt.pair.LngChrPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive long key and primitive char value. Character.MIN_VALUE is
@@ -21,6 +25,18 @@ public class LngChrMap {
 	private int size;
 	private long[] ks;
 	private char[] vs;
+
+	public static <T> Fun<Outlet<T>, LngChrMap> collect(Obj_Lng<T> kf0, Obj_Chr<T> vf0) {
+		return outlet -> {
+			Obj_Lng<T> kf1 = kf0.rethrow();
+			Obj_Chr<T> vf1 = vf0.rethrow();
+			LngChrMap map = new LngChrMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public LngChrMap() {
 		this(8);

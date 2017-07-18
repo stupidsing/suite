@@ -3,12 +3,16 @@ package suite.primitive.adt.map;
 import java.util.Arrays;
 
 import suite.primitive.DblFunUtil;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.LngDblSink;
 import suite.primitive.LngDblSource;
 import suite.primitive.LngFunUtil;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Dbl;
 import suite.primitive.adt.pair.LngDblPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive long key and primitive double value. Double.MIN_VALUE is
@@ -21,6 +25,18 @@ public class LngDblMap {
 	private int size;
 	private long[] ks;
 	private double[] vs;
+
+	public static <T> Fun<Outlet<T>, LngDblMap> collect(Obj_Lng<T> kf0, Obj_Dbl<T> vf0) {
+		return outlet -> {
+			Obj_Lng<T> kf1 = kf0.rethrow();
+			Obj_Dbl<T> vf1 = vf0.rethrow();
+			LngDblMap map = new LngDblMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public LngDblMap() {
 		this(8);

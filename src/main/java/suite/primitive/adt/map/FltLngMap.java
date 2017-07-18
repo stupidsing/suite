@@ -5,10 +5,14 @@ import java.util.Arrays;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltLngSink;
 import suite.primitive.FltLngSource;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Lng;
 import suite.primitive.LngFunUtil;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.FltLngPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive float key and primitive long value. Long.MIN_VALUE is not
@@ -21,6 +25,18 @@ public class FltLngMap {
 	private int size;
 	private float[] ks;
 	private long[] vs;
+
+	public static <T> Fun<Outlet<T>, FltLngMap> collect(Obj_Flt<T> kf0, Obj_Lng<T> vf0) {
+		return outlet -> {
+			Obj_Flt<T> kf1 = kf0.rethrow();
+			Obj_Lng<T> vf1 = vf0.rethrow();
+			FltLngMap map = new FltLngMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public FltLngMap() {
 		this(8);

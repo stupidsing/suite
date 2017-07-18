@@ -7,6 +7,9 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjOutlet;
 import suite.primitive.streamlet.IntObjStreamlet;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
+import suite.util.Rethrow;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -19,6 +22,18 @@ public class IntObjMap<V> {
 	private int size;
 	private int[] ks;
 	private Object[] vs;
+
+	public static <T, V> Fun<Outlet<T>, IntObjMap<V>> collect(Obj_Int<T> kf0, Fun<T, V> vf0) {
+		return outlet -> {
+			Obj_Int<T> kf1 = kf0.rethrow();
+			Fun<T, V> vf1 = Rethrow.fun(vf0);
+			IntObjMap<V> map = new IntObjMap<>();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public IntObjMap() {
 		this(8);

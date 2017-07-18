@@ -3,10 +3,14 @@ package suite.primitive.adt.map;
 import suite.primitive.ChrPrimitives.ChrObjSink;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Chr_Obj;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
+import suite.util.Rethrow;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -19,6 +23,18 @@ public class ChrObjMap<V> {
 	private int size;
 	private char[] ks;
 	private Object[] vs;
+
+	public static <T, V> Fun<Outlet<T>, ChrObjMap<V>> collect(Obj_Chr<T> kf0, Fun<T, V> vf0) {
+		return outlet -> {
+			Obj_Chr<T> kf1 = kf0.rethrow();
+			Fun<T, V> vf1 = Rethrow.fun(vf0);
+			ChrObjMap<V> map = new ChrObjMap<>();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public ChrObjMap() {
 		this(8);

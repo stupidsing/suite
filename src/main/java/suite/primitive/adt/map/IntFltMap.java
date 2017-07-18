@@ -3,12 +3,16 @@ package suite.primitive.adt.map;
 import java.util.Arrays;
 
 import suite.primitive.FltFunUtil;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.IntFltSink;
 import suite.primitive.IntFltSource;
 import suite.primitive.IntFunUtil;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.IntFltPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive int key and primitive float value. Float.MIN_VALUE is not
@@ -21,6 +25,18 @@ public class IntFltMap {
 	private int size;
 	private int[] ks;
 	private float[] vs;
+
+	public static <T> Fun<Outlet<T>, IntFltMap> collect(Obj_Int<T> kf0, Obj_Flt<T> vf0) {
+		return outlet -> {
+			Obj_Int<T> kf1 = kf0.rethrow();
+			Obj_Flt<T> vf1 = vf0.rethrow();
+			IntFltMap map = new IntFltMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public IntFltMap() {
 		this(8);

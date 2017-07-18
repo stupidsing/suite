@@ -5,10 +5,14 @@ import java.util.Arrays;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrIntSink;
 import suite.primitive.ChrIntSource;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Int;
 import suite.primitive.IntFunUtil;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.ChrIntPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive char key and primitive int value. Integer.MIN_VALUE is not
@@ -21,6 +25,18 @@ public class ChrIntMap {
 	private int size;
 	private char[] ks;
 	private int[] vs;
+
+	public static <T> Fun<Outlet<T>, ChrIntMap> collect(Obj_Chr<T> kf0, Obj_Int<T> vf0) {
+		return outlet -> {
+			Obj_Chr<T> kf1 = kf0.rethrow();
+			Obj_Int<T> vf1 = vf0.rethrow();
+			ChrIntMap map = new ChrIntMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public ChrIntMap() {
 		this(8);

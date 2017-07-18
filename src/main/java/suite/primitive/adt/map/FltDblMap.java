@@ -3,12 +3,16 @@ package suite.primitive.adt.map;
 import java.util.Arrays;
 
 import suite.primitive.DblFunUtil;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltDblSink;
 import suite.primitive.FltDblSource;
 import suite.primitive.FltFunUtil;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Dbl;
 import suite.primitive.adt.pair.FltDblPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive float key and primitive double value. Double.MIN_VALUE is
@@ -21,6 +25,18 @@ public class FltDblMap {
 	private int size;
 	private float[] ks;
 	private double[] vs;
+
+	public static <T> Fun<Outlet<T>, FltDblMap> collect(Obj_Flt<T> kf0, Obj_Dbl<T> vf0) {
+		return outlet -> {
+			Obj_Flt<T> kf1 = kf0.rethrow();
+			Obj_Dbl<T> vf1 = vf0.rethrow();
+			FltDblMap map = new FltDblMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public FltDblMap() {
 		this(8);

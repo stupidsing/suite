@@ -5,10 +5,14 @@ import java.util.Arrays;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblIntSink;
 import suite.primitive.DblIntSource;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Int;
 import suite.primitive.IntFunUtil;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.DblIntPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive double key and primitive int value. Integer.MIN_VALUE is
@@ -21,6 +25,18 @@ public class DblIntMap {
 	private int size;
 	private double[] ks;
 	private int[] vs;
+
+	public static <T> Fun<Outlet<T>, DblIntMap> collect(Obj_Dbl<T> kf0, Obj_Int<T> vf0) {
+		return outlet -> {
+			Obj_Dbl<T> kf1 = kf0.rethrow();
+			Obj_Int<T> vf1 = vf0.rethrow();
+			DblIntMap map = new DblIntMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public DblIntMap() {
 		this(8);

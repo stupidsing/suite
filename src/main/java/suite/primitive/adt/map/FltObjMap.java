@@ -3,10 +3,14 @@ package suite.primitive.adt.map;
 import suite.primitive.FltPrimitives.FltObjSink;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Flt_Obj;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltObjOutlet;
 import suite.primitive.streamlet.FltObjStreamlet;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
+import suite.util.Rethrow;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -19,6 +23,18 @@ public class FltObjMap<V> {
 	private int size;
 	private float[] ks;
 	private Object[] vs;
+
+	public static <T, V> Fun<Outlet<T>, FltObjMap<V>> collect(Obj_Flt<T> kf0, Fun<T, V> vf0) {
+		return outlet -> {
+			Obj_Flt<T> kf1 = kf0.rethrow();
+			Fun<T, V> vf1 = Rethrow.fun(vf0);
+			FltObjMap<V> map = new FltObjMap<>();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public FltObjMap() {
 		this(8);

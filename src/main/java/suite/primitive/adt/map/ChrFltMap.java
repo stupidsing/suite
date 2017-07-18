@@ -5,10 +5,14 @@ import java.util.Arrays;
 import suite.primitive.ChrFltSink;
 import suite.primitive.ChrFltSource;
 import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Flt;
 import suite.primitive.FltFunUtil;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.ChrFltPair;
+import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive char key and primitive float value. Float.MIN_VALUE is not
@@ -21,6 +25,18 @@ public class ChrFltMap {
 	private int size;
 	private char[] ks;
 	private float[] vs;
+
+	public static <T> Fun<Outlet<T>, ChrFltMap> collect(Obj_Chr<T> kf0, Obj_Flt<T> vf0) {
+		return outlet -> {
+			Obj_Chr<T> kf1 = kf0.rethrow();
+			Obj_Flt<T> vf1 = vf0.rethrow();
+			ChrFltMap map = new ChrFltMap();
+			T t;
+			while ((t = outlet.source().source()) != null)
+				map.put(kf1.apply(t), vf1.apply(t));
+			return map;
+		};
+	}
 
 	public ChrFltMap() {
 		this(8);
