@@ -64,7 +64,8 @@ public class BackTestMain extends ExecutableProgram {
 		Set<String> strategyNames = 0 < args.length ? Read.from(args[0].split(",")).toSet() : null;
 
 		Streamlet<Integer> years = 1 < args.length ? Read //
-				.from(args[1].split(",")).concatMap(s -> {
+				.from(args[1].split(",")) //
+				.concatMap(s -> {
 					Pair<String, String> pair = ParseUtil.search(s, "-", Assoc.RIGHT);
 					return pair != null //
 							? IntStreamlet.range(Integer.valueOf(pair.t0), Integer.valueOf(pair.t1)).map(i -> i) //
