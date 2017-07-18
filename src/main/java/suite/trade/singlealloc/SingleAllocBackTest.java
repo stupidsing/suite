@@ -12,7 +12,7 @@ import suite.util.To;
 
 public class SingleAllocBackTest {
 
-	public final Account account = Account.fromCash(0f);
+	public final Account account = Account.ofCash(0f);
 	public final StringBuilder tradeLog = new StringBuilder();
 	public final StringBuilder concludeLog = new StringBuilder();
 

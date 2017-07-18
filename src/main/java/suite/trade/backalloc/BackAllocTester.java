@@ -79,7 +79,7 @@ public class BackAllocTester {
 		public final Exception exception;
 
 		private Simulate(float fund0) {
-			account = Account.fromCash(fund0);
+			account = Account.ofCash(fund0);
 			trades = new ArrayList<>();
 
 			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);

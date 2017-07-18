@@ -15,19 +15,19 @@ public class Account {
 
 	private static String cashCode = Asset.cashSymbol;
 
-	public static Account fromCash(float cash) {
+	public static Account ofCash(float cash) {
 		Map<String, Integer> assets = new HashMap<>();
 		assets.put(cashCode, (int) cash);
 		return new Account(assets);
 	}
 
-	public static Account fromHistory(Iterable<Trade> trades) {
+	public static Account ofHistory(Iterable<Trade> trades) {
 		Account account = new Account(new HashMap<>());
 		account.play_(trades, false);
 		return account;
 	}
 
-	public static Account fromPortfolio(Iterable<Trade> trades) {
+	public static Account ofPortfolio(Iterable<Trade> trades) {
 		return new Account(Trade_.portfolio(trades));
 	}
 

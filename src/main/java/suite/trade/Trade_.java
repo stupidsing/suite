@@ -129,7 +129,6 @@ public class Trade_ {
 
 						// only if trade is within price range of next tick
 						boolean isMatch = isFreePlay //
-								|| buySell == 0 //
 								|| 0 < buySell && eod.nextLow <= price //
 								|| buySell < 0 && price <= eod.nextHigh;
 

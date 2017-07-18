@@ -51,7 +51,7 @@ public class WalkForwardAllocTester {
 		this.log = System.out::println;
 
 		times = new long[windowSize];
-		account = Account.fromCash(fund0);
+		account = Account.ofCash(fund0);
 		valuations = new FloatsBuilder();
 		trades = new ArrayList<>();
 		holdBySymbol = new HashMap<>();

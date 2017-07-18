@@ -231,7 +231,7 @@ public class DailyMain extends ExecutableProgram {
 	// some orders caused by stupid bugs. need to sell those at suitable times.
 	private Result sellForEarn(String tag) {
 		Streamlet<Trade> history = cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag));
-		Account account = Account.fromPortfolio(history);
+		Account account = Account.ofPortfolio(history);
 
 		Map<String, Float> faceValueBySymbol = history //
 				.groupBy(record -> record.symbol, //
@@ -255,7 +255,7 @@ public class DailyMain extends ExecutableProgram {
 	private Result alloc(String tag, float fund, BackAllocator backAllocator, Streamlet<Asset> assets) {
 		TimeRange period = TimeRange.daysBefore(64);
 		Simulate sim = BackAllocTester.of(cfg, period, assets, backAllocator, log).simulate(fund);
-		Account account0 = Account.fromPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
+		Account account0 = Account.ofPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
 		Account account1 = sim.account;
 		Map<String, Integer> assets0 = account0.assets();
 		Map<String, Integer> assets1 = account1.assets();

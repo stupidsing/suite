@@ -57,15 +57,15 @@ public class Summarize {
 		log.sink("Overall:" + summarize(trades, priceBySymbol));
 
 		return sellAll(trades, priceBySymbol) // profit & loss
-				.groupBy(fun, t -> (double) Account.fromHistory(t).cash()) //
+				.groupBy(fun, t -> (double) Account.ofHistory(t).cash()) //
 				.toMap();
 	}
 
 	private String summarize(Streamlet<Trade> trades_, Map<String, Float> priceBySymbol) {
 		Streamlet<Trade> trades0 = trades_;
 		Streamlet<Trade> trades1 = sellAll(trades0, priceBySymbol);
-		Account account0 = Account.fromHistory(trades0);
-		Account account1 = Account.fromHistory(trades1);
+		Account account0 = Account.ofHistory(trades0);
+		Account account1 = Account.ofHistory(trades1);
 		double amount0 = account0.cash();
 		double amount1 = account1.cash();
 
