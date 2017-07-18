@@ -62,6 +62,7 @@ public class BackTestMain extends ExecutableProgram {
 		// END
 
 		Set<String> strategyNames = 0 < args.length ? Read.from(args[0].split(",")).toSet() : null;
+
 		Streamlet<Integer> years = (1 < args.length ? Read //
 				.from(args[1].split(",")).concatMap(s -> {
 					Pair<String, String> pair = ParseUtil.search(s, "-", Assoc.RIGHT);
@@ -69,13 +70,12 @@ public class BackTestMain extends ExecutableProgram {
 							? IntStreamlet.range(Integer.valueOf(pair.t0), Integer.valueOf(pair.t1)).map(i -> i) //
 							: Read.each(Integer.valueOf(s));
 				}) //
-				.sort(Object_::compare) //
 				: IntStreamlet.range(2007, Trade_.thisYear).map(i -> i));
 
 		Streamlet2<String, Simulate> simulationByKey = bacByTag1 //
 				.filterKey(strategyName -> strategyNames == null || strategyNames.contains(strategyName)) //
 				.map(Pair::of) //
-				.join2(years.map(TimeRange::ofYear)) //
+				.join2(years.sort(Object_::compare).map(TimeRange::ofYear)) //
 				.map2((pair, period) -> pair.t0, (pair, period) -> {
 					BackAllocConfiguration bac = pair.t1;
 					Streamlet<Asset> assets = bac.assetsFun.apply(period.from);
