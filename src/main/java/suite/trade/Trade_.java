@@ -22,7 +22,7 @@ public class Trade_ {
 	public static Set<String> blackList = To.set("N/A"); // "0566.HK"
 	public static boolean isCacheQuotes = true;
 	public static boolean isFreePlay = false;
-	public static boolean isMarketOrder = false;
+	public static boolean isMarketOrder = true;
 	public static boolean isShortSell = false;
 	public static float leverageAmount = 100000f;
 	public static float max = 1E6f;
