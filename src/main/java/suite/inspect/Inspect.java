@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
 import suite.adt.pair.Pair;
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Source2;
 import suite.util.List_;
@@ -318,7 +318,7 @@ public class Inspect {
 	 * @return the input value object recursively rewritten using the input
 	 *         function.
 	 */
-	public <T> T rewrite(Class<T> baseClass, Fun<T, T> fun, T t0) {
+	public <T> T rewrite(Class<T> baseClass, Iterate<T> fun, T t0) {
 		return Rethrow.ex(() -> {
 			T t1 = fun.apply(t0);
 			T t3;
@@ -339,7 +339,7 @@ public class Inspect {
 		});
 	}
 
-	private <T> Object rewriteValue(Class<T> baseClass, Fun<T, T> fun, Object t0) {
+	private <T> Object rewriteValue(Class<T> baseClass, Iterate<T> fun, Object t0) {
 		if (baseClass.isInstance(t0)) {
 			@SuppressWarnings("unchecked")
 			T t1 = rewrite(baseClass, fun, (T) t0);
