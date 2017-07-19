@@ -9,7 +9,7 @@ import suite.net.NetUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Nerve;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 
 public interface NioChannelFactory {
@@ -88,14 +88,14 @@ public interface NioChannelFactory {
 
 	public class BufferedNioChannel extends NioChannel {
 		private Bytes toSend = Bytes.empty;
-		private Fun<Bytes, Bytes> sender;
+		private Iterate<Bytes> sender;
 
 		public void send(Bytes out) {
 			toSend = toSend.append(out);
 			trySend();
 		}
 
-		public void setSender(Fun<Bytes, Bytes> sender) {
+		public void setSender(Iterate<Bytes> sender) {
 			this.sender = sender;
 			trySend();
 		}
@@ -107,7 +107,7 @@ public interface NioChannelFactory {
 	}
 
 	public class NioChannel {
-		public final Nerve<Fun<Bytes, Bytes>> onConnected = new Nerve<>();
+		public final Nerve<Iterate<Bytes>> onConnected = new Nerve<>();
 		public final Nerve<Bytes> onReceive = new Nerve<>();
 		public final Nerve<Boolean> onTrySend = new Nerve<>();
 	}
@@ -116,7 +116,7 @@ public interface NioChannelFactory {
 			C channel0, //
 			RequestResponseMatcher matcher, //
 			ThreadPoolExecutor executor, //
-			Fun<Bytes, Bytes> handler) {
+			Iterate<Bytes> handler) {
 		return requestResponse(channel0, matcher, executor, handler);
 	}
 
@@ -124,7 +124,7 @@ public interface NioChannelFactory {
 			C channel0, //
 			RequestResponseMatcher matcher, //
 			ThreadPoolExecutor executor, //
-			Fun<Bytes, Bytes> handler) {
+			Iterate<Bytes> handler) {
 		C channel = packeted(channel0);
 		channel.onConnected.register(sender -> channel.setConnected(sender != null));
 		channel.onReceivePacket.register(packet -> {

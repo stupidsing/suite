@@ -23,7 +23,7 @@ import suite.net.nio.NioChannelFactory.BufferedNioChannel;
 import suite.net.nio.NioChannelFactory.NioChannel;
 import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
 import suite.primitive.Bytes;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 import suite.util.Thread_;
 import suite.util.To;
@@ -70,7 +70,7 @@ public class NioDispatcherTest {
 	public void testRequestResponse() throws IOException, InterruptedException {
 		RequestResponseMatcher matcher = new RequestResponseMatcher();
 		ThreadPoolExecutor executor = Thread_.newExecutor();
-		Fun<Bytes, Bytes> handler = request -> request;
+		Iterate<Bytes> handler = request -> request;
 
 		NioDispatcher<RequestResponseNioChannel> dispatcher = new NioDispatcherImpl<>(
 				() -> NioChannelFactory.requestResponse(new RequestResponseNioChannel(), matcher, executor, handler));

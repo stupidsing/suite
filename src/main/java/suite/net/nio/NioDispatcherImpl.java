@@ -16,7 +16,7 @@ import suite.net.ThreadService;
 import suite.net.nio.NioChannelFactory.NioChannel;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
 import suite.util.Rethrow;
@@ -165,7 +165,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 			}
 	}
 
-	private Fun<Bytes, Bytes> newSender(SocketChannel sc) {
+	private Iterate<Bytes> newSender(SocketChannel sc) {
 		return in -> {
 
 			// try to send immediately. If cannot sent all, wait for the
