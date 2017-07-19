@@ -1,5 +1,6 @@
 package suite.trade.analysis;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.TimeSeries;
 import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.streamlet.IntStreamlet;
@@ -39,6 +41,26 @@ public class StatisticalArbitrageTest {
 	private Random random = new Random();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
+
+	@Test
+	public void testLinearRegressionPowersOfTwo() {
+		int power = 6;
+
+		DataSource ds = cfg.dataSource("^HSI").cleanse();
+		float[] prices = ds.prices;
+		float[][] mas = To.array(float[].class, power, i -> ma.movingAvg(prices, 1 << i));
+		List<float[]> xsList = new ArrayList<>();
+		FloatsBuilder ys = new FloatsBuilder();
+
+		for (int i = 1 << power; i < prices.length; i++) {
+			int i_ = i;
+			xsList.add(To.arrayOfFloats(power, j -> mas[j][i_ - (1 << j)]));
+			ys.append(prices[i]);
+		}
+
+		LinearRegression lr = stat.linearRegression(xsList.toArray(new float[0][]), ys.toFloats().toArray());
+		System.out.println(lr);
+	}
 
 	@Test
 	public void testMarketDirection() {
