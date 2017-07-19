@@ -121,7 +121,7 @@ public class UctSearch<Move> {
 			while (child != null) {
 				float uct;
 
-				// only calculates UCT when required, that is, if all children
+				// only calculate UCT when required, that is, if all children
 				// have been evaluated at least once
 				if (0 < child.nVisits) {
 					if (bestUct < (uct = uct(child, lnPnVisits, lnPnRaveVisits))) {
@@ -145,7 +145,7 @@ public class UctSearch<Move> {
 		} else
 			outcome = !visitor.evaluateRandomOutcome();
 
-		// updates rave statistics
+		// update rave statistics
 		if (node.move != null && depth < maxRaveDepth) {
 			incrementMoveRave(nRaveVisits, node.move);
 			if (outcome)
