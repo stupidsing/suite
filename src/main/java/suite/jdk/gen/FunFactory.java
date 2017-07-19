@@ -31,7 +31,6 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 
@@ -188,7 +187,7 @@ public class FunFactory {
 		return expr;
 	}
 
-	public FunExpr parameter1(Fun<FunExpr, FunExpr> doFun) {
+	public FunExpr parameter1(Iterate<FunExpr> doFun) {
 		PlaceholderFunExpr parameter = new PlaceholderFunExpr();
 
 		Declare1ParameterFunExpr expr = new Declare1ParameterFunExpr();

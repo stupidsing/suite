@@ -41,6 +41,7 @@ import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.Util;
@@ -82,7 +83,7 @@ public class FunCreator<I> extends FunFactory {
 		return create(parameter0(expr));
 	}
 
-	public Fun<Map<String, Object>, I> create(Fun<FunExpr, FunExpr> expr) {
+	public Fun<Map<String, Object>, I> create(Iterate<FunExpr> expr) {
 		return create(parameter1(expr));
 	}
 
