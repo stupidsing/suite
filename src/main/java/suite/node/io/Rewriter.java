@@ -16,7 +16,7 @@ import suite.node.Tuple;
 import suite.node.util.Comparer;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 
 public class Rewriter {
 
@@ -120,7 +120,7 @@ public class Rewriter {
 		}
 	}
 
-	public static Node map(Node node, Fun<Node, Node> fun) {
+	public static Node map(Node node, Iterate<Node> fun) {
 		NodeRead nr = NodeRead.of(node);
 		List<Pair<Node, Node>> children1 = new ArrayList<>();
 		boolean isSame = true;
