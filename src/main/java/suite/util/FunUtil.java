@@ -12,6 +12,10 @@ import suite.util.FunUtil2.Source2;
 public class FunUtil {
 
 	@FunctionalInterface
+	public interface Iterate<T> extends Fun<T, T> {
+	}
+
+	@FunctionalInterface
 	public interface Source<O> {
 		public O source();
 	}
@@ -222,8 +226,8 @@ public class FunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <T> Source<Source<T>> split(Predicate<T> fun0, Source<T> source) {
 		Predicate<T> fun1 = Rethrow.predicate(fun0);
