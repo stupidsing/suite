@@ -58,6 +58,7 @@ public class StockHistory {
 	private static LngFltPair[] readPairs(int timeZone, Outlet<String> outlet) {
 		List<LngFltPair> pairs = new ArrayList<>();
 		String line;
+
 		if (String_.equals(line = outlet.next(), "{"))
 			while (!String_.equals(line = outlet.next(), "}")) {
 				int p = line.lastIndexOf(":");
@@ -67,6 +68,7 @@ public class StockHistory {
 			}
 		else
 			throw new RuntimeException();
+
 		return pairs.toArray(new LngFltPair[0]);
 	}
 
