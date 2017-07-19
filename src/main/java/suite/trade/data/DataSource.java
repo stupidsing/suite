@@ -9,6 +9,7 @@ import suite.math.stat.TimeSeries;
 import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
+import suite.primitive.Longs_;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.As;
@@ -171,10 +172,7 @@ public class DataSource {
 	}
 
 	public DataSource cons(long time, float price) {
-		int length = ts.length;
-		long[] ts1 = Arrays.copyOf(ts, length + 1);
-		ts1[length] = time;
-		return ofOhlcv(ts1, //
+		return ofOhlcv(Longs_.concat(ts, new long[] { time, }), //
 				Floats_.concat(opens, new float[] { price, }), //
 				Floats_.concat(closes, new float[] { price, }), //
 				Floats_.concat(lows, new float[] { price, }), //
