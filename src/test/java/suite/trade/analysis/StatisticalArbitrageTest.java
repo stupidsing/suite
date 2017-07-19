@@ -48,13 +48,13 @@ public class StatisticalArbitrageTest {
 
 		DataSource ds = cfg.dataSource("^HSI").cleanse();
 		float[] prices = ds.prices;
-		float[][] mas = To.array(float[].class, power, i -> ma.movingAvg(prices, 1 << i));
+		float[][] mas = To.array(float[].class, power, p -> ma.movingAvg(prices, 1 << p));
 		List<float[]> xsList = new ArrayList<>();
 		FloatsBuilder ys = new FloatsBuilder();
 
 		for (int i = 1 << power; i < prices.length; i++) {
 			int i_ = i;
-			xsList.add(To.arrayOfFloats(power, j -> mas[j][i_ - (1 << j)]));
+			xsList.add(To.arrayOfFloats(power, p -> mas[p][i_ - (1 << p)]));
 			ys.append(prices[i]);
 		}
 
