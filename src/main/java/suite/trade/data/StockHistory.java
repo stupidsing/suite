@@ -40,6 +40,7 @@ public class StockHistory {
 			String[] array = line.split("=");
 			properties.put(array[0].trim(), array[1].trim());
 		}
+
 		String exchange = properties.get("exchange");
 		String timeZoneStr = properties.get("timeZone");
 		int timeZone = timeZoneStr != null ? Integer.parseInt(timeZoneStr) : 0;
@@ -47,8 +48,10 @@ public class StockHistory {
 		LngFltPair[] dividends = readPairs(timeZone, outlet);
 		LngFltPair[] splits = readPairs(timeZone, outlet);
 		String tag;
+
 		while ((tag = outlet.next()) != null)
 			data.put(tag, readPairs(timeZone, outlet));
+
 		return StockHistory.of(exchange, time, data, dividends, splits);
 	}
 
