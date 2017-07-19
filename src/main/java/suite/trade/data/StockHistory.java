@@ -16,7 +16,7 @@ import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource.Datum;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 import suite.util.Set_;
 import suite.util.String_;
@@ -103,7 +103,7 @@ public class StockHistory {
 	public StockHistory filter(TimeRange period) {
 		long t0 = period.from.epochSec();
 		long tx = period.to.epochSec();
-		Fun<LngFltPair[], LngFltPair[]> filter_ = pairs0 -> {
+		Iterate<LngFltPair[]> filter_ = pairs0 -> {
 			List<LngFltPair> pairs1 = new ArrayList<>();
 			for (LngFltPair pair : pairs0)
 				if (t0 <= pair.t0 && pair.t0 < tx)
@@ -148,7 +148,7 @@ public class StockHistory {
 	}
 
 	public StockHistory alignToDate() {
-		Fun<LngFltPair[], LngFltPair[]> align_ = pairs0 -> {
+		Iterate<LngFltPair[]> align_ = pairs0 -> {
 			List<LngFltPair> pairs1 = new ArrayList<>();
 			Time date = TimeRange.min;
 			for (LngFltPair pair : pairs0) {
