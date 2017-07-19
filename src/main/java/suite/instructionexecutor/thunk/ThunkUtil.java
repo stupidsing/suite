@@ -9,7 +9,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.primitive.IoSink;
 import suite.streamlet.Outlet;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 
@@ -19,7 +18,7 @@ public class ThunkUtil {
 	 * Evaluates the whole (lazy) term to a list of numbers, and converts to a
 	 * string.
 	 */
-	public static String yawnString(Fun<Node, Node> yawn, Node node) {
+	public static String yawnString(Iterate<Node> yawn, Node node) {
 		Outlet<Node> st = yawnList(yawn, node, false);
 		StringBuilder sb = new StringBuilder();
 		Node n;
@@ -50,7 +49,7 @@ public class ThunkUtil {
 			sink.sink(n);
 	}
 
-	public static Outlet<Node> yawnList(Fun<Node, Node> yawn, Node node, boolean isFacilitateGc) {
+	public static Outlet<Node> yawnList(Iterate<Node> yawn, Node node, boolean isFacilitateGc) {
 		return Outlet.of(new Source<Node>() {
 			private Node node_ = node;
 			private boolean first = true;

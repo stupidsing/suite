@@ -7,7 +7,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 
 public class PredicateUtil {
@@ -54,7 +54,7 @@ public class PredicateUtil {
 		return p1((prover, p0) -> fun.test(p0));
 	}
 
-	public static BuiltinPredicate fun(Fun<Node, Node> fun) {
+	public static BuiltinPredicate fun(Iterate<Node> fun) {
 		return p2((prover, p0, p1) -> prover.bind(p1, fun.apply(p0)));
 	}
 
