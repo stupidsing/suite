@@ -26,6 +26,7 @@ import suite.node.util.TreeRewriter;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 import suite.util.Nodify;
 import suite.util.To;
@@ -69,11 +70,11 @@ public class RecursiveFactorizerTest {
 	private FNode transform(FNode fn0) {
 		FTerminal from = new FTerminal(To.chars("ic-compile-better-option"));
 		FTerminal to = new FTerminal(To.chars("ic-new-compile-better-option"));
-		Fun<FNode, FNode> fun = fn_ -> fn_.equals(from) ? to : null;
+		Iterate<FNode> fun = fn_ -> fn_.equals(from) ? to : null;
 		return transform(fn0, fun);
 	}
 
-	private FNode transform(FNode fn0, Fun<FNode, FNode> fun) {
+	private FNode transform(FNode fn0, Iterate<FNode> fun) {
 		FNode fnx = fun.apply(fn0);
 		if (fnx == null)
 			if (fn0 instanceof FTree) {

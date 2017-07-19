@@ -1,7 +1,7 @@
 package suite.math.linalg;
 
 import suite.adt.pair.Pair;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.To;
 
 public class CholeskyDecomposition {
@@ -13,7 +13,7 @@ public class CholeskyDecomposition {
 	 *            a Hermitian (i.e. symmetric), positive-definite matrix.
 	 * @return a function that calculates x -> m^-1 * x.
 	 */
-	public Fun<float[], float[]> inverseMul(float[][] m) {
+	public Iterate<float[]> inverseMul(float[][] m) {
 		Pair<float[][], float[]> ldlt = ldlt(m);
 		float[][] l = ldlt.t0;
 		float[] d = ldlt.t1;
