@@ -12,29 +12,31 @@ import suite.util.String_;
 public class HkexUtil {
 
 	private static Set<DayOfWeek> weekends = new HashSet<>(Arrays.asList(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
+	private static Predicate<Time> marketOpen_ = HkexUtil::isMarketOpen_;
+	private static Predicate<Time> marketClose = marketOpen_.negate();
 
 	public static boolean isMarketOpen(Time time) {
 		return isMarketOpen_(time);
 	}
 
 	public static Time getOpenTimeBefore(Time time) {
-		time = until(time, -1, HkexUtil::isMarketOpen_);
-		time = until(time, -1, time_ -> !isMarketOpen_(time_));
+		time = until(time, -1, marketOpen_);
+		time = until(time, -1, marketClose);
 		return time.addSeconds(1);
 	}
 
 	public static Time getCloseTimeBefore(Time time) {
-		time = until(time, -1, time_ -> !isMarketOpen_(time_));
-		time = until(time, -1, HkexUtil::isMarketOpen_);
+		time = until(time, -1, marketClose);
+		time = until(time, -1, marketOpen_);
 		return time.addSeconds(1);
 	}
 
 	public static Time getTradeTimeBefore(Time time) {
-		return until(time, -1, HkexUtil::isMarketOpen_);
+		return until(time, -1, marketOpen_);
 	}
 
 	public static Time getTradeTimeAfter(Time time) {
-		return until(time, 1, HkexUtil::isMarketOpen_);
+		return until(time, 1, marketOpen_);
 	}
 
 	public static String toStockCode(String symbol) {
