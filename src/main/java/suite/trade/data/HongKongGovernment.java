@@ -4,11 +4,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import suite.node.util.Singleton;
+import suite.primitive.Floats.FloatsBuilder;
+import suite.primitive.Longs.LongsBuilder;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Time;
+import suite.util.ParseUtil;
 import suite.util.String_;
 
 public class HongKongGovernment {
@@ -30,6 +34,44 @@ public class HongKongGovernment {
 				.keys() //
 				.map(s -> Time.of(LocalDate.parse(s, yyyymmdd).atStartOfDay())) //
 				.toList();
+	}
+
+	public Map<String, DataSource> queryWeather() {
+		long t0 = Time.of(2000, 1, 1).epochSec();
+		long tx = Time.today().epochSec();
+
+		LongsBuilder ts = new LongsBuilder();
+		FloatsBuilder fs0 = new FloatsBuilder();
+		FloatsBuilder fs1 = new FloatsBuilder();
+
+		for (long t = t0; t < tx; t += 86400) {
+			Time time = Time.ofEpochSec(t);
+
+			String html = Singleton.me.storeCache //
+					.http("http://www.hko.gov.hk/cgi-bin/hko/yes.pl" //
+							+ "?year=" + time.year() //
+							+ "&month=" + time.month() //
+							+ "&day=" + time.dayOfMonth() //
+							+ "&language=english&B1=Confirm#") //
+					.collect(As::string);
+
+			String data = ParseUtil.fit(html, "<pre>", "</pre>")[1];
+
+			ts.append(t);
+			fs0.append(getFloatValue(data, "Maximum Air Temperature", "C"));
+			fs1.append(getFloatValue(data, "Rainfall", "mm"));
+		}
+
+		long[] ts_ = ts.toLongs().toArray();
+
+		return Read.<String, DataSource>empty2() //
+				.cons("hko.TEMP", DataSource.of(ts_, fs0.toFloats().toArray())) //
+				.cons("hko.RAIN", DataSource.of(ts_, fs1.toFloats().toArray())) //
+				.toMap();
+	}
+
+	private float getFloatValue(String data, String s0, String s1) {
+		return Float.parseFloat(ParseUtil.fit(data, s0, s1)[1].replace(" ", ""));
 	}
 
 }
