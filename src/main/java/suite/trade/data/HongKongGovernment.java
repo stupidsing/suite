@@ -44,7 +44,7 @@ public class HongKongGovernment {
 		FloatsBuilder fs0 = new FloatsBuilder();
 		FloatsBuilder fs1 = new FloatsBuilder();
 
-		for (long t = t0; t < tx; t += 86400) {
+		for (long t = t0; t < tx; t += 86400l) {
 			Time time = Time.ofEpochSec(t);
 
 			String html = Singleton.me.storeCache //
