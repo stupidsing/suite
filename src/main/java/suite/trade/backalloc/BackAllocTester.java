@@ -153,9 +153,7 @@ public class BackAllocTester {
 
 		private String play(List<Trade> trades_) {
 			trades.addAll(trades_);
-			account.play(trades_);
-			account.validate();
-			return Trade_.format(trades_);
+			return account.playValidate(trades_);
 		}
 
 		public String conclusion() {

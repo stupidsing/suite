@@ -1,6 +1,7 @@
 package suite.trade;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
@@ -55,8 +56,10 @@ public class Account {
 		return play_(trade, isValidate);
 	}
 
-	public boolean play(Iterable<Trade> trades) {
-		return play_(trades, !Trade_.isFreePlay);
+	public String playValidate(List<Trade> trades) {
+		play_(trades, !Trade_.isFreePlay);
+		validate();
+		return Trade_.format(trades);
 	}
 
 	@Override

@@ -100,10 +100,9 @@ public class WalkForwardAllocTester {
 		List<Trade> trades_ = up.trades;
 		String actions;
 
-		if (windowSize <= valuations.size()) {
+		if (windowSize <= valuations.size())
 			actions = play(trades_);
-			trades.addAll(trades_);
-		} else
+		else
 			actions = "wait";
 
 		return time.ymdHms() //
@@ -133,9 +132,7 @@ public class WalkForwardAllocTester {
 
 	private String play(List<Trade> trades_) {
 		trades.addAll(trades_);
-		account.play(trades_);
-		account.validate();
-		return Trade_.format(trades_);
+		return account.playValidate(trades_);
 	}
 
 }
