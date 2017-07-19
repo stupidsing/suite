@@ -8,23 +8,23 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
-import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.BinOp;
 
 public class ArtificialNeuralNetworkTest {
 
 	@Test
 	public void test() {
-		Pair<String, Fun2<Boolean, Boolean, Boolean>> op0 = Pair.of("and", (b0, b1) -> b0 && b1);
-		Pair<String, Fun2<Boolean, Boolean, Boolean>> op1 = Pair.of("or", (b0, b1) -> b0 || b1);
-		Pair<String, Fun2<Boolean, Boolean, Boolean>> op2 = Pair.of("xor", (b0, b1) -> b0 ^ b1);
+		Pair<String, BinOp<Boolean>> op0 = Pair.of("and", (b0, b1) -> b0 && b1);
+		Pair<String, BinOp<Boolean>> op1 = Pair.of("or", (b0, b1) -> b0 || b1);
+		Pair<String, BinOp<Boolean>> op2 = Pair.of("xor", (b0, b1) -> b0 ^ b1);
 		boolean[] booleans = new boolean[] { false, true, };
 		Random random = new Random();
 
 		// random.setSeed(0l);
 
-		for (Pair<String, Fun2<Boolean, Boolean, Boolean>> pair : Arrays.asList(op0, op1, op2)) {
+		for (Pair<String, BinOp<Boolean>> pair : Arrays.asList(op0, op1, op2)) {
 			String name = pair.t0;
-			Fun2<Boolean, Boolean, Boolean> oper = pair.t1;
+			BinOp<Boolean> oper = pair.t1;
 			ArtificialNeuralNetwork ann = new ArtificialNeuralNetwork(Arrays.asList(2, 4, 1), random);
 
 			for (int i = 0; i < 16384; i++) {

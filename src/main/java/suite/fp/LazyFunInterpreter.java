@@ -44,7 +44,7 @@ import suite.node.util.Comparer;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.BiFun;
 import suite.util.To;
 
 public class LazyFunInterpreter {
@@ -310,7 +310,7 @@ public class LazyFunInterpreter {
 		return c;
 	}
 
-	private Thunk_ binary(Fun2<Thunk_, Thunk_, Node> fun) {
+	private Thunk_ binary(BiFun<Thunk_, Node> fun) {
 		return () -> new Fun_(a -> () -> new Fun_(b -> () -> fun.apply(a, b)));
 	}
 

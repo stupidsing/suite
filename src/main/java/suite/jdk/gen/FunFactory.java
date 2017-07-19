@@ -32,7 +32,7 @@ import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.BinOp;
 
 public class FunFactory {
 
@@ -196,7 +196,7 @@ public class FunFactory {
 		return expr;
 	}
 
-	public FunExpr parameter2(Fun2<FunExpr, FunExpr, FunExpr> doFun) {
+	public FunExpr parameter2(BinOp<FunExpr> doFun) {
 		PlaceholderFunExpr p0 = new PlaceholderFunExpr();
 		PlaceholderFunExpr p1 = new PlaceholderFunExpr();
 

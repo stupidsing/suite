@@ -15,6 +15,14 @@ import suite.util.FunUtil.Source;
 public class FunUtil2 {
 
 	@FunctionalInterface
+	public interface BinOp<T> extends BiFun<T, T> {
+	}
+
+	@FunctionalInterface
+	public interface BiFun<I, O> extends Fun2<I, I, O> {
+	}
+
+	@FunctionalInterface
 	public interface Source2<K, V> {
 		public boolean source2(Pair<K, V> pair);
 	}

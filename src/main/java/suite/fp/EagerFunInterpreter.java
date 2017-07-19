@@ -49,7 +49,7 @@ import suite.node.util.Comparer;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.BinOp;
 import suite.util.To;
 
 public class EagerFunInterpreter {
@@ -345,7 +345,7 @@ public class EagerFunInterpreter {
 		return new Fun_(fun);
 	}
 
-	private Node f2(Fun2<Node, Node, Node> fun) {
+	private Node f2(BinOp<Node> fun) {
 		return new Fun_(a -> new Fun_(b -> fun.apply(a, b)));
 	}
 

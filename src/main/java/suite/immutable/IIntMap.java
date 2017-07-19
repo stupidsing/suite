@@ -6,23 +6,18 @@ import java.util.List;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.BinOp;
 
 public class IIntMap<V> {
 
 	private Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> bl0;
 
-	public static <V> IIntMap<V> meld(IIntMap<V> map0, IIntMap<V> map1, Fun2<V, V, V> f) {
-		Fun2<Bl<V>, Bl<V>, Bl<V>> f4 //
-				= (m0, m1) -> Bl.meld(m0, m1, f);
-		Fun2<Bl<Bl<V>>, Bl<Bl<V>>, Bl<Bl<V>>> f3 //
-				= (m0, m1) -> Bl.meld(m0, m1, f4);
-		Fun2<Bl<Bl<Bl<V>>>, Bl<Bl<Bl<V>>>, Bl<Bl<Bl<V>>>> f2 //
-				= (m0, m1) -> Bl.meld(m0, m1, f3);
-		Fun2<Bl<Bl<Bl<Bl<V>>>>, Bl<Bl<Bl<Bl<V>>>>, Bl<Bl<Bl<Bl<V>>>>> f1 //
-				= (m0, m1) -> Bl.meld(m0, m1, f2);
-		Fun2<Bl<Bl<Bl<Bl<Bl<V>>>>>, Bl<Bl<Bl<Bl<Bl<V>>>>>, Bl<Bl<Bl<Bl<Bl<V>>>>>> f0 //
-				= (m0, m1) -> Bl.meld(m0, m1, f1);
+	public static <V> IIntMap<V> meld(IIntMap<V> map0, IIntMap<V> map1, BinOp<V> f) {
+		BinOp<Bl<V>> f4 = (m0, m1) -> Bl.meld(m0, m1, f);
+		BinOp<Bl<Bl<V>>> f3 = (m0, m1) -> Bl.meld(m0, m1, f4);
+		BinOp<Bl<Bl<Bl<V>>>> f2 = (m0, m1) -> Bl.meld(m0, m1, f3);
+		BinOp<Bl<Bl<Bl<Bl<V>>>>> f1 = (m0, m1) -> Bl.meld(m0, m1, f2);
+		BinOp<Bl<Bl<Bl<Bl<Bl<V>>>>>> f0 = (m0, m1) -> Bl.meld(m0, m1, f1);
 		return new IIntMap<>(Bl.meld(map0.bl0, map1.bl0, f0));
 	}
 
