@@ -2,10 +2,10 @@ package suite.adt.pair;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.BiFunction;
 
 import suite.adt.Opt;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 
 public class Pair<T0, T1> {
@@ -50,7 +50,7 @@ public class Pair<T0, T1> {
 		return (pair0, pair1) -> Object_.compare(first_(pair0), first_(pair1));
 	}
 
-	public <O> Opt<O> map(BiFunction<T0, T1, O> fun) {
+	public <O> Opt<O> map(Fun2<T0, T1, O> fun) {
 		return t0 != null ? Opt.of(fun.apply(t0, t1)) : Opt.none();
 	}
 

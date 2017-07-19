@@ -3,7 +3,6 @@ package suite.jdk.gen;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiFunction;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.BasicType;
@@ -33,6 +32,7 @@ import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Fun2;
 
 public class FunFactory {
 
@@ -196,7 +196,7 @@ public class FunFactory {
 		return expr;
 	}
 
-	public FunExpr parameter2(BiFunction<FunExpr, FunExpr, FunExpr> doFun) {
+	public FunExpr parameter2(Fun2<FunExpr, FunExpr, FunExpr> doFun) {
 		PlaceholderFunExpr p0 = new PlaceholderFunExpr();
 		PlaceholderFunExpr p1 = new PlaceholderFunExpr();
 

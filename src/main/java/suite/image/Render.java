@@ -3,18 +3,18 @@ package suite.image;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.function.BiFunction;
 
 import suite.Constants;
 import suite.math.Vector;
 import suite.os.LogUtil;
 import suite.primitive.streamlet.IntStreamlet;
+import suite.util.FunUtil2.Fun2;
 import suite.util.Thread_;
 import suite.util.To;
 
 public class Render {
 
-	public static BufferedImage render(int width, int height, BiFunction<Float, Float, Vector> f) {
+	public static BufferedImage render(int width, int height, Fun2<Float, Float, Vector> f) {
 		int nThreads = Constants.nThreads;
 		int[] xs = To.arrayOfInts(nThreads + 1, i -> width * i / nThreads);
 

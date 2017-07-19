@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiFunction;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +26,7 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.util.FunUtil2.Fun2;
 import suite.util.HomeDir;
 import suite.util.Object_;
 import suite.util.Rethrow;
@@ -270,11 +270,11 @@ public class Yahoo {
 	}
 
 	private void adjust(String symbol, long[] ts, float[] prices) {
-		Map<String, BiFunction<Long, Float, Float>> adjusters = new HashMap<>();
+		Map<String, Fun2<Long, Float, Float>> adjusters = new HashMap<>();
 		adjusters.put("0700.HK", (d, p) -> String_.compare(Time.ofEpochSec(d).ymd(), "2014-05-14") <= 0 ? p * .2f : p);
 		adjusters.put("2318.HK", (d, p) -> String_.compare(Time.ofEpochSec(d).ymd(), "2014-03-23") <= 0 ? p * .5f : p);
 
-		BiFunction<Long, Float, Float> adjuster = adjusters.get(symbol);
+		Fun2<Long, Float, Float> adjuster = adjusters.get(symbol);
 		if (adjuster != null)
 			for (int d = 0; d < prices.length; d++)
 				prices[d] = adjuster.apply(ts[d], prices[d]);

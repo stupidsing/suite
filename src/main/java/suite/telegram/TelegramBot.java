@@ -2,7 +2,6 @@ package suite.telegram;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.BiFunction;
 
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -11,13 +10,14 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import suite.util.FunUtil2.Fun2;
 import suite.util.Rethrow;
 import suite.util.TempDir;
 import suite.util.Thread_;
 
 public class TelegramBot {
 
-	public void bot(BiFunction<Integer, String, String> fun) {
+	public void bot(Fun2<Integer, String, String> fun) {
 		try {
 			new TelegramBotsApi().registerBot(new TelegramLongPollingBot() {
 				public String getBotUsername() {

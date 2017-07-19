@@ -2,12 +2,12 @@ package suite.jdk.lambda;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Fun2;
 
 public class LambdaInstance<I> {
 
@@ -26,7 +26,7 @@ public class LambdaInstance<I> {
 		return of(LambdaInterface.of(clazz), f.parameter1(fun));
 	}
 
-	public static <I> LambdaInstance<I> of(Class<I> clazz, BiFunction<FunExpr, FunExpr, FunExpr> fun) {
+	public static <I> LambdaInstance<I> of(Class<I> clazz, Fun2<FunExpr, FunExpr, FunExpr> fun) {
 		return of(LambdaInterface.of(clazz), f.parameter2(fun));
 	}
 

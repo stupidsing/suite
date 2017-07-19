@@ -3,7 +3,6 @@ package suite.jdk.gen;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -17,6 +16,7 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Fun2;
 import suite.util.Rethrow;
 import suite.util.String_;
 
@@ -43,12 +43,12 @@ public class Type_ {
 	}
 
 	public static Method methodOf(Class<?> clazz) {
-		if (clazz == BiFunction.class)
-			return Rethrow.ex(() -> clazz.getMethod("apply", Object.class, Object.class));
-		else if (clazz == BiPredicate.class)
+		if (clazz == BiPredicate.class)
 			return Rethrow.ex(() -> clazz.getMethod("test", Object.class, Object.class));
 		else if (clazz == Fun.class || clazz == Function.class)
 			return Rethrow.ex(() -> clazz.getMethod("apply", Object.class));
+		else if (clazz == Fun2.class)
+			return Rethrow.ex(() -> clazz.getMethod("apply", Object.class, Object.class));
 		else if (clazz == Predicate.class)
 			return Rethrow.ex(() -> clazz.getMethod("test", Object.class));
 		else if (clazz == Sink.class)

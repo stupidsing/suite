@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
@@ -16,6 +15,7 @@ import suite.concurrent.CasReference;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Fun2;
 import suite.util.NullableSyncQueue;
 
 /**
@@ -51,7 +51,7 @@ public class Nerve<T> {
 		return nerve1;
 	}
 
-	public static <T, U, V> Nerve<V> merge(Nerve<T> n0, Nerve<U> n1, BiFunction<T, U, V> fun) {
+	public static <T, U, V> Nerve<V> merge(Nerve<T> n0, Nerve<U> n1, Fun2<T, U, V> fun) {
 		Nerve<V> nerve1 = new Nerve<>();
 		CasReference<Pair<T, U>> cr = new CasReference<>(Pair.of(null, null));
 		Sink<Pair<T, U>> recalc = pair -> nerve1.fire(fun.apply(pair.t0, pair.t1));
@@ -102,7 +102,7 @@ public class Nerve<T> {
 		receivers.forEach(sink -> sink.sink(t));
 	}
 
-	public <U> Nerve<U> fold(U init, BiFunction<U, T, U> fun) {
+	public <U> Nerve<U> fold(U init, Fun2<U, T, U> fun) {
 		CasReference<U> cr = new CasReference<>(init);
 		return redirect((t1, nerve1) -> nerve1.fire(cr.apply(t0 -> fun.apply(t0, t1))));
 	}

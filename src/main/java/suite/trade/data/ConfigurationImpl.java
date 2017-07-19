@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiFunction;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -15,6 +14,7 @@ import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.data.Broker.Hsbc;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil2.Fun2;
 import suite.util.String_;
 
 public class ConfigurationImpl implements Configuration {
@@ -36,11 +36,11 @@ public class ConfigurationImpl implements Configuration {
 
 	private class Src {
 		private Fun<Set<String>, Map<String, Float>> quoteFun;
-		private BiFunction<String, TimeRange, DataSource> dataSourceFun;
+		private Fun2<String, TimeRange, DataSource> dataSourceFun;
 
 		private Src( //
 				Fun<Set<String>, Map<String, Float>> quoteFun, //
-				BiFunction<String, TimeRange, DataSource> dataSourceFun) {
+				Fun2<String, TimeRange, DataSource> dataSourceFun) {
 			this.quoteFun = quoteFun;
 			this.dataSourceFun = dataSourceFun;
 		}

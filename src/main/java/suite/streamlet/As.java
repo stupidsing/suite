@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiFunction;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
@@ -21,6 +20,7 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Fun2;
 import suite.util.To;
 
 public class As {
@@ -123,7 +123,7 @@ public class As {
 		return new ListMultimap<>(map(outlet));
 	}
 
-	public static <K, V, T> Fun<Outlet2<K, V>, Streamlet<T>> pairMap(BiFunction<K, V, T> fun) {
+	public static <K, V, T> Fun<Outlet2<K, V>, Streamlet<T>> pairMap(Fun2<K, V, T> fun) {
 		return outlet -> new Streamlet<>(() -> outlet.map(fun::apply));
 	}
 

@@ -3,12 +3,12 @@ package suite.util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
 
 import suite.adt.PriorityQueue;
 import suite.adt.pair.Pair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Fun2;
 
 public class Memoize {
 
@@ -19,7 +19,7 @@ public class Memoize {
 	/**
 	 * Cache results of a two-parameters function call, no clean-up.
 	 */
-	public static <I0, I1, O> BiFunction<I0, I1, O> biFunction(BiFunction<I0, I1, O> fun) {
+	public static <I0, I1, O> Fun2<I0, I1, O> biFunction(Fun2<I0, I1, O> fun) {
 		Map<Pair<I0, I1>, O> results = new ConcurrentHashMap<>();
 		return (in0, in1) -> results.computeIfAbsent(Pair.of(in0, in1), p -> fun.apply(in0, in1));
 	}

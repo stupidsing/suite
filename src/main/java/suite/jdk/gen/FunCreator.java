@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.BiFunction;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ConstantPool;
@@ -43,6 +42,7 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Fun2;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -87,7 +87,7 @@ public class FunCreator<I> extends FunFactory {
 		return create(parameter1(expr));
 	}
 
-	public Fun<Map<String, Object>, I> create(BiFunction<FunExpr, FunExpr, FunExpr> expr) {
+	public Fun<Map<String, Object>, I> create(Fun2<FunExpr, FunExpr, FunExpr> expr) {
 		return create(parameter2(expr));
 	}
 

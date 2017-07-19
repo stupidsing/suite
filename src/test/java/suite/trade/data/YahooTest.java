@@ -2,14 +2,13 @@ package suite.trade.data;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.function.BiFunction;
-
 import org.junit.Test;
 
 import suite.inspect.Dump;
 import suite.os.LogUtil;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.util.FunUtil2.Fun2;
 
 public class YahooTest {
 
@@ -46,7 +45,7 @@ public class YahooTest {
 		test(yahoo::dataSourceYql);
 	}
 
-	private void test(BiFunction<String, TimeRange, DataSource> fun) {
+	private void test(Fun2<String, TimeRange, DataSource> fun) {
 		String symbol = "0005.HK";
 
 		DataSource ds = fun.apply(symbol, TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1)));

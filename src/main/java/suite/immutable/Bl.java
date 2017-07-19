@@ -1,12 +1,12 @@
 package suite.immutable;
 
 import java.util.List;
-import java.util.function.BiFunction;
 
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
+import suite.util.FunUtil2.Fun2;
 
 /**
  * Bitmap list.
@@ -30,7 +30,7 @@ public class Bl<T> {
 			return Read.empty();
 	}
 
-	public static <T> Bl<T> meld(Bl<T> bl0, Bl<T> bl1, BiFunction<T, T, T> f) {
+	public static <T> Bl<T> meld(Bl<T> bl0, Bl<T> bl1, Fun2<T, T, T> f) {
 		if (bl0 != null) {
 			if (bl1 != null) {
 				long bitmap0 = bl0.bitmap;

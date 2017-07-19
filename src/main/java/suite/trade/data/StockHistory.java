@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiFunction;
 
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.LngFltPair;
@@ -17,6 +16,7 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource.Datum;
 import suite.util.FunUtil.Iterate;
+import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 import suite.util.Set_;
 import suite.util.String_;
@@ -119,7 +119,7 @@ public class StockHistory {
 	}
 
 	public StockHistory merge(StockHistory other) {
-		BiFunction<LngFltPair[], LngFltPair[], LngFltPair[]> merge_ = (pairs0, pairs1) -> {
+		Fun2<LngFltPair[], LngFltPair[], LngFltPair[]> merge_ = (pairs0, pairs1) -> {
 			List<LngFltPair> pairs = new ArrayList<>();
 			int length1 = pairs1.length;
 			int i1 = 0;

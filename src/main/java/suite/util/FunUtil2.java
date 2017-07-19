@@ -1,6 +1,7 @@
 package suite.util;
 
 import java.util.Iterator;
+import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -31,6 +32,10 @@ public class FunUtil2 {
 				}
 			};
 		}
+	}
+
+	@FunctionalInterface
+	public interface Fun2<I0, I1, O> extends BiFunction<I0, I1, O> {
 	}
 
 	public static <K, V> Source2<K, V> append(K key, V value, Source2<K, V> source) {
