@@ -6,7 +6,7 @@ import java.util.function.BiFunction;
 
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 
 public class IIntMap<V> {
 
@@ -83,7 +83,7 @@ public class IIntMap<V> {
 		return Bl.get(bl5, k5);
 	}
 
-	public IIntMap<V> update(int key, Fun<V, V> fun) {
+	public IIntMap<V> update(int key, Iterate<V> fun) {
 		int k0 = key >>> 30 & 63;
 		int k1 = key >>> 24 & 63;
 		int k2 = key >>> 18 & 63;
