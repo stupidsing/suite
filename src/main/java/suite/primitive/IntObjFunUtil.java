@@ -124,7 +124,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <K, V, R> R fold(Fun<Pair<R, IntObjPair<V>>, R> fun0, R init, IntObjSource<V> source2) {
-		Fun<Pair<R, IntObjPair<V>>, R> fun1 = Rethrow.fun(fun0);
+		Fun<Pair<R, IntObjPair<V>>, R> fun1 = fun0.rethrow();
 		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		while (source2.source2(pair))
 			init = fun1.apply(Pair.of(init, pair));

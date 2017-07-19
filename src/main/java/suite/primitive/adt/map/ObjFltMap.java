@@ -12,7 +12,6 @@ import suite.primitive.streamlet.FltObjOutlet;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
-import suite.util.Rethrow;
 
 /**
  * Map with generic object key and floatacter object value. Float.MIN_VALUE is
@@ -28,7 +27,7 @@ public class ObjFltMap<K> {
 
 	public static <T, K> Fun<Outlet<T>, ObjFltMap<K>> collect(Fun<T, K> kf0, Obj_Flt<T> vf0) {
 		return outlet -> {
-			Fun<T, K> kf1 = Rethrow.fun(kf0);
+			Fun<T, K> kf1 = kf0.rethrow();
 			Obj_Flt<T> vf1 = vf0.rethrow();
 			ObjFltMap<K> map = new ObjFltMap<>();
 			T t;

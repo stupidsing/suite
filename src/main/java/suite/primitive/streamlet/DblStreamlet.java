@@ -21,7 +21,6 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.set.DblSet;
 import suite.streamlet.Outlet;
@@ -31,6 +30,7 @@ import suite.streamlet.Streamlet2;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 
 public class DblStreamlet implements Iterable<Double> {
@@ -160,7 +160,7 @@ public class DblStreamlet implements Iterable<Double> {
 		return spawn().fold(init, fun);
 	}
 
-	public <U, V, W> W forkJoin(Fun<DblStreamlet, U> fork0, Fun<DblStreamlet, V> fork1, ObjObj_Obj<U, V, W> join) {
+	public <U, V, W> W forkJoin(Fun<DblStreamlet, U> fork0, Fun<DblStreamlet, V> fork1, Fun2<U, V, W> join) {
 		return join.apply(fork0.apply(this), fork1.apply(this));
 	}
 

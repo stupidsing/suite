@@ -33,7 +33,8 @@ public class Grammar {
 	public static Map<String, Grammar> parse(Reader reader) {
 		Breakdown breakdown = new Breakdown();
 
-		List<Pair<String, String>> pairs = Read.lines(reader) //
+		List<Pair<String, String>> pairs = Read //
+				.lines(reader) //
 				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
 				.map(line -> line.replace('\t', ' ')) //
 				.split(line -> !line.startsWith(" ")) //

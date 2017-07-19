@@ -4,8 +4,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import suite.util.FunUtil.Fun;
-
 public class Rethrow {
 
 	public interface SourceEx<T, Ex extends Throwable> {
@@ -41,16 +39,6 @@ public class Rethrow {
 			else
 				throw new RuntimeException(ex);
 		}
-	}
-
-	public static <I, O> Fun<I, O> fun(Fun<I, O> fun) {
-		return i -> {
-			try {
-				return fun.apply(i);
-			} catch (Exception ex) {
-				throw new RuntimeException("for " + i, ex);
-			}
-		};
 	}
 
 	public static <T> Predicate<T> predicate(Predicate<T> predicate) {

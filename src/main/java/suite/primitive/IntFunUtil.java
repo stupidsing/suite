@@ -15,7 +15,6 @@ import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Source2;
 import suite.util.NullableSyncQueue;
-import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class IntFunUtil {
@@ -116,7 +115,7 @@ public class IntFunUtil {
 	}
 
 	public static <R> R fold(Fun<IntObjPair<R>, R> fun0, R init, IntSource source) {
-		Fun<IntObjPair<R>, R> fun1 = Rethrow.fun(fun0);
+		Fun<IntObjPair<R>, R> fun1 = fun0.rethrow();
 		int c;
 		while ((c = source.source()) != EMPTYVALUE)
 			init = fun1.apply(IntObjPair.of(c, init));

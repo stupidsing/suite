@@ -12,7 +12,6 @@ import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
-import suite.util.Rethrow;
 
 /**
  * Map with generic object key and doubleacter object value. Double.MIN_VALUE is
@@ -28,7 +27,7 @@ public class ObjDblMap<K> {
 
 	public static <T, K> Fun<Outlet<T>, ObjDblMap<K>> collect(Fun<T, K> kf0, Obj_Dbl<T> vf0) {
 		return outlet -> {
-			Fun<T, K> kf1 = Rethrow.fun(kf0);
+			Fun<T, K> kf1 = kf0.rethrow();
 			Obj_Dbl<T> vf1 = vf0.rethrow();
 			ObjDblMap<K> map = new ObjDblMap<>();
 			T t;

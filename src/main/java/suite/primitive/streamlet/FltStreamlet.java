@@ -21,7 +21,6 @@ import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.set.FltSet;
 import suite.streamlet.Outlet;
@@ -31,6 +30,7 @@ import suite.streamlet.Streamlet2;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 
 public class FltStreamlet implements Iterable<Float> {
@@ -160,7 +160,7 @@ public class FltStreamlet implements Iterable<Float> {
 		return spawn().fold(init, fun);
 	}
 
-	public <U, V, W> W forkJoin(Fun<FltStreamlet, U> fork0, Fun<FltStreamlet, V> fork1, ObjObj_Obj<U, V, W> join) {
+	public <U, V, W> W forkJoin(Fun<FltStreamlet, U> fork0, Fun<FltStreamlet, V> fork1, Fun2<U, V, W> join) {
 		return join.apply(fork0.apply(this), fork1.apply(this));
 	}
 

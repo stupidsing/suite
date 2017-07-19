@@ -12,7 +12,6 @@ import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Source2;
 import suite.util.NullableSyncQueue;
-import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class ChrDblFunUtil {
@@ -121,7 +120,7 @@ public class ChrDblFunUtil {
 	}
 
 	public static <K, V, R> R fold(Fun<Pair<R, ChrDblPair>, R> fun0, R init, ChrDblSource source2) {
-		Fun<Pair<R, ChrDblPair>, R> fun1 = Rethrow.fun(fun0);
+		Fun<Pair<R, ChrDblPair>, R> fun1 = fun0.rethrow();
 		ChrDblPair pair = ChrDblPair.of((char) 0, (double) 0);
 		while (source2.source2(pair))
 			init = fun1.apply(Pair.of(init, pair));

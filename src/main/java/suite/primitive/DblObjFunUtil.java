@@ -124,7 +124,7 @@ public class DblObjFunUtil {
 	}
 
 	public static <K, V, R> R fold(Fun<Pair<R, DblObjPair<V>>, R> fun0, R init, DblObjSource<V> source2) {
-		Fun<Pair<R, DblObjPair<V>>, R> fun1 = Rethrow.fun(fun0);
+		Fun<Pair<R, DblObjPair<V>>, R> fun1 = fun0.rethrow();
 		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
 		while (source2.source2(pair))
 			init = fun1.apply(Pair.of(init, pair));

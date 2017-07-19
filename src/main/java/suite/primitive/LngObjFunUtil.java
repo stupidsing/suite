@@ -124,7 +124,7 @@ public class LngObjFunUtil {
 	}
 
 	public static <K, V, R> R fold(Fun<Pair<R, LngObjPair<V>>, R> fun0, R init, LngObjSource<V> source2) {
-		Fun<Pair<R, LngObjPair<V>>, R> fun1 = Rethrow.fun(fun0);
+		Fun<Pair<R, LngObjPair<V>>, R> fun1 = fun0.rethrow();
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
 		while (source2.source2(pair))
 			init = fun1.apply(Pair.of(init, pair));

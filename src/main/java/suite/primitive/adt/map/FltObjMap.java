@@ -10,7 +10,6 @@ import suite.primitive.streamlet.FltObjOutlet;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
-import suite.util.Rethrow;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -27,7 +26,7 @@ public class FltObjMap<V> {
 	public static <T, V> Fun<Outlet<T>, FltObjMap<V>> collect(Obj_Flt<T> kf0, Fun<T, V> vf0) {
 		return outlet -> {
 			Obj_Flt<T> kf1 = kf0.rethrow();
-			Fun<T, V> vf1 = Rethrow.fun(vf0);
+			Fun<T, V> vf1 = vf0.rethrow();
 			FltObjMap<V> map = new FltObjMap<>();
 			T t;
 			while ((t = outlet.source().source()) != null)

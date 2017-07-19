@@ -10,7 +10,6 @@ import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
-import suite.util.Rethrow;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -27,7 +26,7 @@ public class DblObjMap<V> {
 	public static <T, V> Fun<Outlet<T>, DblObjMap<V>> collect(Obj_Dbl<T> kf0, Fun<T, V> vf0) {
 		return outlet -> {
 			Obj_Dbl<T> kf1 = kf0.rethrow();
-			Fun<T, V> vf1 = Rethrow.fun(vf0);
+			Fun<T, V> vf1 = vf0.rethrow();
 			DblObjMap<V> map = new DblObjMap<>();
 			T t;
 			while ((t = outlet.source().source()) != null)

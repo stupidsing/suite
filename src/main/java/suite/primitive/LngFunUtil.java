@@ -15,7 +15,6 @@ import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Source2;
 import suite.util.NullableSyncQueue;
-import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class LngFunUtil {
@@ -116,7 +115,7 @@ public class LngFunUtil {
 	}
 
 	public static <R> R fold(Fun<LngObjPair<R>, R> fun0, R init, LngSource source) {
-		Fun<LngObjPair<R>, R> fun1 = Rethrow.fun(fun0);
+		Fun<LngObjPair<R>, R> fun1 = fun0.rethrow();
 		long c;
 		while ((c = source.source()) != EMPTYVALUE)
 			init = fun1.apply(LngObjPair.of(c, init));

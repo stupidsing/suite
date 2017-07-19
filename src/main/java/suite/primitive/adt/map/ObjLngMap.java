@@ -12,7 +12,6 @@ import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
-import suite.util.Rethrow;
 
 /**
  * Map with generic object key and longacter object value. Long.MIN_VALUE is not
@@ -28,7 +27,7 @@ public class ObjLngMap<K> {
 
 	public static <T, K> Fun<Outlet<T>, ObjLngMap<K>> collect(Fun<T, K> kf0, Obj_Lng<T> vf0) {
 		return outlet -> {
-			Fun<T, K> kf1 = Rethrow.fun(kf0);
+			Fun<T, K> kf1 = kf0.rethrow();
 			Obj_Lng<T> vf1 = vf0.rethrow();
 			ObjLngMap<K> map = new ObjLngMap<>();
 			T t;

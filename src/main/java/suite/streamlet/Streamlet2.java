@@ -16,11 +16,11 @@ import suite.adt.pair.Pair;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
+import suite.util.FunUtil2.Fun2;
 import suite.util.FunUtil2.Source2;
 import suite.util.Object_;
 
@@ -89,11 +89,11 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return fun.apply(spawn());
 	}
 
-	public <O> Streamlet<O> concatMap(ObjObj_Obj<K, V, Streamlet<O>> fun) {
+	public <O> Streamlet<O> concatMap(Fun2<K, V, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}
 
-	public <K1, V1> Streamlet2<K1, V1> concatMap2(ObjObj_Obj<K, V, Streamlet2<K1, V1>> fun) {
+	public <K1, V1> Streamlet2<K1, V1> concatMap2(Fun2<K, V, Streamlet2<K1, V1>> fun) {
 		return concatMap2_(fun);
 	}
 
@@ -135,7 +135,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return spawn().first();
 	}
 
-	public <O> Streamlet<O> flatMap(ObjObj_Obj<K, V, Iterable<O>> fun) {
+	public <O> Streamlet<O> flatMap(Fun2<K, V, Iterable<O>> fun) {
 		return new Streamlet<>(() -> spawn().flatMap(fun));
 	}
 
@@ -168,15 +168,15 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return spawn().last();
 	}
 
-	public <O> Streamlet<O> map(ObjObj_Obj<K, V, O> fun) {
+	public <O> Streamlet<O> map(Fun2<K, V, O> fun) {
 		return map_(fun);
 	}
 
-	public <V1> Streamlet2<K, V1> map2(ObjObj_Obj<K, V, V1> vf) {
+	public <V1> Streamlet2<K, V1> map2(Fun2<K, V, V1> vf) {
 		return map2_((k, v) -> k, vf);
 	}
 
-	public <K1, V1> Streamlet2<K1, V1> map2(ObjObj_Obj<K, V, K1> kf, ObjObj_Obj<K, V, V1> vf) {
+	public <K1, V1> Streamlet2<K1, V1> map2(Fun2<K, V, K1> kf, Fun2<K, V, V1> vf) {
 		return map2_(kf, vf);
 	}
 
@@ -184,7 +184,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return new Streamlet2<>(() -> spawn().mapKey(fun));
 	}
 
-	public <O> Streamlet<O> mapNonNull(ObjObj_Obj<K, V, O> fun) {
+	public <O> Streamlet<O> mapNonNull(Fun2<K, V, O> fun) {
 		return new Streamlet<>(() -> spawn().mapNonNull(fun));
 	}
 
@@ -236,7 +236,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return streamlet2(() -> spawn().sort(comparator));
 	}
 
-	public <O extends Comparable<? super O>> Streamlet2<K, V> sortBy(ObjObj_Obj<K, V, O> fun) {
+	public <O extends Comparable<? super O>> Streamlet2<K, V> sortBy(Fun2<K, V, O> fun) {
 		return streamlet2(() -> spawn().sortBy(fun));
 	}
 
@@ -296,21 +296,21 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return new Streamlet<>(() -> spawn().values());
 	}
 
-	private <T> Streamlet<T> concatMap_(ObjObj_Obj<K, V, Streamlet<T>> fun) {
-		ObjObj_Obj<K, V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
+	private <T> Streamlet<T> concatMap_(Fun2<K, V, Streamlet<T>> fun) {
+		Fun2<K, V, Outlet<T>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return new Streamlet<>(() -> Outlet.of(spawn().concatMap(bf)));
 	}
 
-	private <K1, V1> Streamlet2<K1, V1> concatMap2_(ObjObj_Obj<K, V, Streamlet2<K1, V1>> fun) {
-		ObjObj_Obj<K, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
+	private <K1, V1> Streamlet2<K1, V1> concatMap2_(Fun2<K, V, Streamlet2<K1, V1>> fun) {
+		Fun2<K, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
 		return streamlet2(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 
-	private <T> Streamlet<T> map_(ObjObj_Obj<K, V, T> fun) {
+	private <T> Streamlet<T> map_(Fun2<K, V, T> fun) {
 		return new Streamlet<>(() -> spawn().map(fun));
 	}
 
-	private <K1, V1> Streamlet2<K1, V1> map2_(ObjObj_Obj<K, V, K1> kf, ObjObj_Obj<K, V, V1> vf) {
+	private <K1, V1> Streamlet2<K1, V1> map2_(Fun2<K, V, K1> kf, Fun2<K, V, V1> vf) {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
 	}
 

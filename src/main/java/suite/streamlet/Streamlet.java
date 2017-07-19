@@ -15,11 +15,11 @@ import suite.adt.pair.Pair;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 
 public class Streamlet<T> implements Iterable<T> {
@@ -99,7 +99,7 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().cons(t));
 	}
 
-	public <U, R> Streamlet<R> cross(Streamlet<U> st1, ObjObj_Obj<T, U, R> fun) {
+	public <U, R> Streamlet<R> cross(Streamlet<U> st1, Fun2<T, U, R> fun) {
 		return streamlet(() -> spawn().cross(st1.toList(), fun));
 	}
 
@@ -128,11 +128,11 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().flatMap(fun));
 	}
 
-	public <R> R fold(R init, ObjObj_Obj<R, T, R> fun) {
+	public <R> R fold(R init, Fun2<R, T, R> fun) {
 		return spawn().fold(init, fun);
 	}
 
-	public <U, V, W> W forkJoin(Fun<Streamlet<T>, U> fork0, Fun<Streamlet<T>, V> fork1, ObjObj_Obj<U, V, W> join) {
+	public <U, V, W> W forkJoin(Fun<Streamlet<T>, U> fork0, Fun<Streamlet<T>, V> fork1, Fun2<U, V, W> join) {
 		return join.apply(fork0.apply(this), fork1.apply(this));
 	}
 

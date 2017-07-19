@@ -37,6 +37,15 @@ public class FunUtil {
 
 	@FunctionalInterface
 	public interface Fun<I, O> extends Function<I, O> {
+		public default Fun<I, O> rethrow() {
+			return i -> {
+				try {
+					return apply(i);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + i, ex);
+				}
+			};
+		}
 	}
 
 	public static <T> Source<T> append(T t, Source<T> source) {
@@ -133,7 +142,7 @@ public class FunUtil {
 	}
 
 	public static <T, R> R fold(Fun<Pair<R, T>, R> fun0, R init, Source<T> source) {
-		Fun<Pair<R, T>, R> fun1 = Rethrow.fun(fun0);
+		Fun<Pair<R, T>, R> fun1 = fun0.rethrow();
 		T t;
 		while ((t = source.source()) != null)
 			init = fun1.apply(Pair.of(init, t));
@@ -181,7 +190,7 @@ public class FunUtil {
 	}
 
 	public static <T0, T1> Source<T1> map(Fun<T0, T1> fun0, Source<T0> source) {
-		Fun<T0, T1> fun1 = Rethrow.fun(fun0);
+		Fun<T0, T1> fun1 = fun0.rethrow();
 		return () -> {
 			T0 t0 = source.source();
 			return t0 != null ? fun1.apply(t0) : null;
@@ -189,8 +198,8 @@ public class FunUtil {
 	}
 
 	public static <T, K, V> Source2<K, V> map2(Fun<T, K> kf0, Fun<T, V> vf0, Source<T> source) {
-		Fun<T, K> kf1 = Rethrow.fun(kf0);
-		Fun<T, V> vf1 = Rethrow.fun(vf0);
+		Fun<T, K> kf1 = kf0.rethrow();
+		Fun<T, V> vf1 = vf0.rethrow();
 		return pair -> {
 			T t = source.source();
 			boolean b = t != null;
@@ -203,7 +212,7 @@ public class FunUtil {
 	}
 
 	public static <T0, T1> Source<T1> mapNonNull(Fun<T0, T1> fun0, Source<T0> source) {
-		Fun<T0, T1> fun1 = Rethrow.fun(fun0);
+		Fun<T0, T1> fun1 = fun0.rethrow();
 		return new Source<T1>() {
 			public T1 source() {
 				T0 t0;

@@ -17,13 +17,13 @@ import suite.adt.Mutable;
 import suite.adt.Opt;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.PrimitiveFun.ObjObj_Obj;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
+import suite.util.FunUtil2.Fun2;
 import suite.util.FunUtil2.Source2;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
@@ -118,7 +118,7 @@ public class Outlet<T> implements Iterable<T> {
 		return i;
 	}
 
-	public <U, R> Outlet<R> cross(List<U> list, ObjObj_Obj<T, U, R> fun) {
+	public <U, R> Outlet<R> cross(List<U> list, Fun2<T, U, R> fun) {
 		return of(new Source<R>() {
 			private T t;
 			private int index = list.size();
@@ -175,7 +175,7 @@ public class Outlet<T> implements Iterable<T> {
 		return of(FunUtil.flatten(FunUtil.map(fun, source)));
 	}
 
-	public <R> R fold(R init, ObjObj_Obj<R, T, R> fun) {
+	public <R> R fold(R init, Fun2<R, T, R> fun) {
 		T t;
 		while ((t = next()) != null)
 			init = fun.apply(init, t);
