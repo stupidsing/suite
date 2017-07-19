@@ -16,7 +16,7 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource.Datum;
 import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.BinOp;
 import suite.util.Object_;
 import suite.util.Set_;
 import suite.util.String_;
@@ -119,7 +119,7 @@ public class StockHistory {
 	}
 
 	public StockHistory merge(StockHistory other) {
-		Fun2<LngFltPair[], LngFltPair[], LngFltPair[]> merge_ = (pairs0, pairs1) -> {
+		BinOp<LngFltPair[]> merge_ = (pairs0, pairs1) -> {
 			List<LngFltPair> pairs = new ArrayList<>();
 			int length1 = pairs1.length;
 			int i1 = 0;
@@ -140,10 +140,13 @@ public class StockHistory {
 				pairs.add(pairs1[i1++]);
 			return pairs.toArray(new LngFltPair[0]);
 		};
+
 		Set<String> keys = Set_.union(data.keySet(), other.data.keySet());
+
 		Map<String, LngFltPair[]> data1 = Read.from(keys) //
 				.map2(key -> merge_.apply(get(key), other.get(key))) //
 				.toMap();
+
 		return of(exchange, time, data1, merge_.apply(dividends, other.dividends), merge_.apply(splits, other.splits));
 	}
 

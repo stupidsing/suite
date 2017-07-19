@@ -1,7 +1,7 @@
 package suite.immutable;
 
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.BinOp;
 
 public class IHashSet<V> {
 
@@ -11,7 +11,7 @@ public class IHashSet<V> {
 		return meld(set0, set1, (v0, v1) -> v0);
 	}
 
-	public static <V> IHashSet<V> meld(IHashSet<V> set0, IHashSet<V> set1, Fun2<V, V, V> f) {
+	public static <V> IHashSet<V> meld(IHashSet<V> set0, IHashSet<V> set1, BinOp<V> f) {
 		return new IHashSet<>(IIntMap.meld(set0.intMap, set1.intMap, (l0, l1) -> {
 			IList<V> list = IList.end();
 			for (V v : l0)
@@ -22,7 +22,7 @@ public class IHashSet<V> {
 		}));
 	}
 
-	private static <V> IList<V> merge(IList<V> list0, V v0, Fun2<V, V, V> f) {
+	private static <V> IList<V> merge(IList<V> list0, V v0, BinOp<V> f) {
 		IList<V> list1 = IList.end();
 		for (V v : list0)
 			if (!v.equals(v0))

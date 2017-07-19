@@ -19,6 +19,10 @@ public class FunUtil2 {
 	}
 
 	@FunctionalInterface
+	public interface FoldOp<I, O> extends Fun2<I, O, O> {
+	}
+
+	@FunctionalInterface
 	public interface BiFun<I, O> extends Fun2<I, I, O> {
 	}
 

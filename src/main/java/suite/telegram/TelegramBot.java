@@ -10,14 +10,14 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.FoldOp;
 import suite.util.Rethrow;
 import suite.util.TempDir;
 import suite.util.Thread_;
 
 public class TelegramBot {
 
-	public void bot(Fun2<Integer, String, String> fun) {
+	public void bot(FoldOp<Integer, String> fun) {
 		try {
 			new TelegramBotsApi().registerBot(new TelegramLongPollingBot() {
 				public String getBotUsername() {

@@ -6,14 +6,14 @@ import suite.adt.pair.Pair;
 import suite.streamlet.Outlet2;
 import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.BinOp;
 import suite.util.FunUtil2.Source2;
 
 public class IHashMap<K, V> {
 
 	private IHashSet<Pair<K, V>> set;
 
-	public static <K, V> IHashMap<K, V> meld(IHashMap<K, V> map0, IHashMap<K, V> map1, Fun2<V, V, V> f) {
+	public static <K, V> IHashMap<K, V> meld(IHashMap<K, V> map0, IHashMap<K, V> map1, BinOp<V> f) {
 		return new IHashMap<>(IHashSet.meld(map0.set, map1.set, (e0, e1) -> Pair.of(e0.t0, f.apply(e0.t1, e1.t1))));
 	}
 
