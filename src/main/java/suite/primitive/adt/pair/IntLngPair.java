@@ -8,7 +8,7 @@ import suite.primitive.IntLng_Obj;
 import suite.primitive.Int_Int;
 import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class IntLngPair {
@@ -18,11 +18,11 @@ public class IntLngPair {
 	public int t0;
 	public long t1;
 
-	public static Fun<IntLngPair, IntLngPair> map0(Int_Int fun) {
+	public static Iterate<IntLngPair> map0(Int_Int fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<IntLngPair, IntLngPair> map1(Lng_Lng fun) {
+	public static Iterate<IntLngPair> map1(Lng_Lng fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

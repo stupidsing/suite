@@ -8,6 +8,7 @@ import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.Int_Int;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class IntObjPair<T> {
@@ -17,7 +18,7 @@ public class IntObjPair<T> {
 	public int t0;
 	public T t1;
 
-	public static <V> Fun<IntObjPair<V>, IntObjPair<V>> map0(Int_Int fun) {
+	public static <V> Iterate<IntObjPair<V>> map0(Int_Int fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 

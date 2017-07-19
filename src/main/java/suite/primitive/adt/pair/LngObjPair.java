@@ -8,6 +8,7 @@ import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.Lng_Lng;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class LngObjPair<T> {
@@ -17,7 +18,7 @@ public class LngObjPair<T> {
 	public long t0;
 	public T t1;
 
-	public static <V> Fun<LngObjPair<V>, LngObjPair<V>> map0(Lng_Lng fun) {
+	public static <V> Iterate<LngObjPair<V>> map0(Lng_Lng fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 

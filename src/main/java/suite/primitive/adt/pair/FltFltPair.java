@@ -6,7 +6,7 @@ import suite.adt.Opt;
 import suite.primitive.FltFlt_Obj;
 import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class FltFltPair {
@@ -16,11 +16,11 @@ public class FltFltPair {
 	public float t0;
 	public float t1;
 
-	public static Fun<FltFltPair, FltFltPair> map0(Flt_Flt fun) {
+	public static Iterate<FltFltPair> map0(Flt_Flt fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<FltFltPair, FltFltPair> map1(Flt_Flt fun) {
+	public static Iterate<FltFltPair> map1(Flt_Flt fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

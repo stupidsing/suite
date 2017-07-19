@@ -8,6 +8,7 @@ import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.Dbl_Dbl;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class DblObjPair<T> {
@@ -17,7 +18,7 @@ public class DblObjPair<T> {
 	public double t0;
 	public T t1;
 
-	public static <V> Fun<DblObjPair<V>, DblObjPair<V>> map0(Dbl_Dbl fun) {
+	public static <V> Iterate<DblObjPair<V>> map0(Dbl_Dbl fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 

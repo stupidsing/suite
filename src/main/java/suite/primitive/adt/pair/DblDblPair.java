@@ -6,7 +6,7 @@ import suite.adt.Opt;
 import suite.primitive.DblDbl_Obj;
 import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class DblDblPair {
@@ -16,11 +16,11 @@ public class DblDblPair {
 	public double t0;
 	public double t1;
 
-	public static Fun<DblDblPair, DblDblPair> map0(Dbl_Dbl fun) {
+	public static Iterate<DblDblPair> map0(Dbl_Dbl fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<DblDblPair, DblDblPair> map1(Dbl_Dbl fun) {
+	public static Iterate<DblDblPair> map1(Dbl_Dbl fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

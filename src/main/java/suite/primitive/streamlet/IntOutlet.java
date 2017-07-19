@@ -12,6 +12,7 @@ import java.util.Set;
 
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
+import suite.adt.pair.Pair;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
@@ -333,6 +334,10 @@ public class IntOutlet implements Iterable<Integer> {
 				throw new RuntimeException("more than one result");
 		else
 			return IntOpt.none();
+	}
+
+	public Pair<IntOutlet, IntOutlet> partition(IntPredicate pred) {
+		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
 	public IntOutlet reverse() {

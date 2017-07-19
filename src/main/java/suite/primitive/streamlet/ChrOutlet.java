@@ -12,6 +12,7 @@ import java.util.Set;
 
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
+import suite.adt.pair.Pair;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrFunUtil;
@@ -333,6 +334,10 @@ public class ChrOutlet implements Iterable<Character> {
 				throw new RuntimeException("more than one result");
 		else
 			return ChrOpt.none();
+	}
+
+	public Pair<ChrOutlet, ChrOutlet> partition(ChrPredicate pred) {
+		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
 	public ChrOutlet reverse() {

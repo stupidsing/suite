@@ -8,7 +8,7 @@ import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
 import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class ChrDblPair {
@@ -18,11 +18,11 @@ public class ChrDblPair {
 	public char t0;
 	public double t1;
 
-	public static Fun<ChrDblPair, ChrDblPair> map0(Chr_Chr fun) {
+	public static Iterate<ChrDblPair> map0(Chr_Chr fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<ChrDblPair, ChrDblPair> map1(Dbl_Dbl fun) {
+	public static Iterate<ChrDblPair> map1(Dbl_Dbl fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

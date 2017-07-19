@@ -12,6 +12,7 @@ import java.util.Set;
 
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
+import suite.adt.pair.Pair;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngOpt;
 import suite.primitive.LngPrimitives.LngComparator;
@@ -333,6 +334,10 @@ public class LngOutlet implements Iterable<Long> {
 				throw new RuntimeException("more than one result");
 		else
 			return LngOpt.none();
+	}
+
+	public Pair<LngOutlet, LngOutlet> partition(LngPredicate pred) {
+		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
 	public LngOutlet reverse() {

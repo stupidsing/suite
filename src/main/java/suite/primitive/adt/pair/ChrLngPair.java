@@ -8,7 +8,7 @@ import suite.primitive.ChrLng_Obj;
 import suite.primitive.Chr_Chr;
 import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class ChrLngPair {
@@ -18,11 +18,11 @@ public class ChrLngPair {
 	public char t0;
 	public long t1;
 
-	public static Fun<ChrLngPair, ChrLngPair> map0(Chr_Chr fun) {
+	public static Iterate<ChrLngPair> map0(Chr_Chr fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<ChrLngPair, ChrLngPair> map1(Lng_Lng fun) {
+	public static Iterate<ChrLngPair> map1(Lng_Lng fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

@@ -8,7 +8,7 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntDbl_Obj;
 import suite.primitive.IntFunUtil;
 import suite.primitive.Int_Int;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class IntDblPair {
@@ -18,11 +18,11 @@ public class IntDblPair {
 	public int t0;
 	public double t1;
 
-	public static Fun<IntDblPair, IntDblPair> map0(Int_Int fun) {
+	public static Iterate<IntDblPair> map0(Int_Int fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<IntDblPair, IntDblPair> map1(Dbl_Dbl fun) {
+	public static Iterate<IntDblPair> map1(Dbl_Dbl fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

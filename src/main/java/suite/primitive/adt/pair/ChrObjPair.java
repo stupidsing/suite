@@ -8,6 +8,7 @@ import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.Chr_Chr;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class ChrObjPair<T> {
@@ -17,7 +18,7 @@ public class ChrObjPair<T> {
 	public char t0;
 	public T t1;
 
-	public static <V> Fun<ChrObjPair<V>, ChrObjPair<V>> map0(Chr_Chr fun) {
+	public static <V> Iterate<ChrObjPair<V>> map0(Chr_Chr fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 

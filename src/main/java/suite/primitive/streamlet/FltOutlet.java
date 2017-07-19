@@ -12,6 +12,7 @@ import java.util.Set;
 
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
+import suite.adt.pair.Pair;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltFunUtil;
@@ -333,6 +334,10 @@ public class FltOutlet implements Iterable<Float> {
 				throw new RuntimeException("more than one result");
 		else
 			return FltOpt.none();
+	}
+
+	public Pair<FltOutlet, FltOutlet> partition(FltPredicate pred) {
+		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
 	public FltOutlet reverse() {

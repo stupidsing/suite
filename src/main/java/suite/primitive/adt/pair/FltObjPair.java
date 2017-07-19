@@ -8,6 +8,7 @@ import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.Flt_Flt;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class FltObjPair<T> {
@@ -17,7 +18,7 @@ public class FltObjPair<T> {
 	public float t0;
 	public T t1;
 
-	public static <V> Fun<FltObjPair<V>, FltObjPair<V>> map0(Flt_Flt fun) {
+	public static <V> Iterate<FltObjPair<V>> map0(Flt_Flt fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 

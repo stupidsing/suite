@@ -8,7 +8,7 @@ import suite.primitive.ChrInt_Obj;
 import suite.primitive.Chr_Chr;
 import suite.primitive.IntFunUtil;
 import suite.primitive.Int_Int;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class ChrIntPair {
@@ -18,11 +18,11 @@ public class ChrIntPair {
 	public char t0;
 	public int t1;
 
-	public static Fun<ChrIntPair, ChrIntPair> map0(Chr_Chr fun) {
+	public static Iterate<ChrIntPair> map0(Chr_Chr fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<ChrIntPair, ChrIntPair> map1(Int_Int fun) {
+	public static Iterate<ChrIntPair> map1(Int_Int fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

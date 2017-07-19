@@ -8,7 +8,7 @@ import suite.primitive.FltInt_Obj;
 import suite.primitive.Flt_Flt;
 import suite.primitive.IntFunUtil;
 import suite.primitive.Int_Int;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class FltIntPair {
@@ -18,11 +18,11 @@ public class FltIntPair {
 	public float t0;
 	public int t1;
 
-	public static Fun<FltIntPair, FltIntPair> map0(Flt_Flt fun) {
+	public static Iterate<FltIntPair> map0(Flt_Flt fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<FltIntPair, FltIntPair> map1(Int_Int fun) {
+	public static Iterate<FltIntPair> map1(Int_Int fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

@@ -232,8 +232,8 @@ public class LngObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <V> Source<LngObjSource<V>> split(LngObjPredicate<V> fun0, LngObjSource<V> source2) {
 		LngObjPredicate<V> fun1 = fun0.rethrow();

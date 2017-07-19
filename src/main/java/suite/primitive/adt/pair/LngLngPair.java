@@ -6,7 +6,7 @@ import suite.adt.Opt;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngLng_Obj;
 import suite.primitive.Lng_Lng;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class LngLngPair {
@@ -16,11 +16,11 @@ public class LngLngPair {
 	public long t0;
 	public long t1;
 
-	public static Fun<LngLngPair, LngLngPair> map0(Lng_Lng fun) {
+	public static Iterate<LngLngPair> map0(Lng_Lng fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<LngLngPair, LngLngPair> map1(Lng_Lng fun) {
+	public static Iterate<LngLngPair> map1(Lng_Lng fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

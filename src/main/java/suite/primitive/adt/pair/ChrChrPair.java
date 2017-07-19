@@ -6,7 +6,7 @@ import suite.adt.Opt;
 import suite.primitive.ChrChr_Obj;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class ChrChrPair {
@@ -16,11 +16,11 @@ public class ChrChrPair {
 	public char t0;
 	public char t1;
 
-	public static Fun<ChrChrPair, ChrChrPair> map0(Chr_Chr fun) {
+	public static Iterate<ChrChrPair> map0(Chr_Chr fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<ChrChrPair, ChrChrPair> map1(Chr_Chr fun) {
+	public static Iterate<ChrChrPair> map1(Chr_Chr fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

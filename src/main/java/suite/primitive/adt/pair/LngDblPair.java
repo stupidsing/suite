@@ -8,7 +8,7 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.LngDbl_Obj;
 import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class LngDblPair {
@@ -18,11 +18,11 @@ public class LngDblPair {
 	public long t0;
 	public double t1;
 
-	public static Fun<LngDblPair, LngDblPair> map0(Lng_Lng fun) {
+	public static Iterate<LngDblPair> map0(Lng_Lng fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<LngDblPair, LngDblPair> map1(Dbl_Dbl fun) {
+	public static Iterate<LngDblPair> map1(Dbl_Dbl fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

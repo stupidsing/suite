@@ -8,7 +8,7 @@ import suite.primitive.Chr_Chr;
 import suite.primitive.FltChr_Obj;
 import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class FltChrPair {
@@ -18,11 +18,11 @@ public class FltChrPair {
 	public float t0;
 	public char t1;
 
-	public static Fun<FltChrPair, FltChrPair> map0(Flt_Flt fun) {
+	public static Iterate<FltChrPair> map0(Flt_Flt fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Fun<FltChrPair, FltChrPair> map1(Chr_Chr fun) {
+	public static Iterate<FltChrPair> map1(Chr_Chr fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

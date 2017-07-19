@@ -12,6 +12,7 @@ import java.util.Set;
 
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
+import suite.adt.pair.Pair;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
@@ -333,6 +334,10 @@ public class DblOutlet implements Iterable<Double> {
 				throw new RuntimeException("more than one result");
 		else
 			return DblOpt.none();
+	}
+
+	public Pair<DblOutlet, DblOutlet> partition(DblPredicate pred) {
+		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
 	public DblOutlet reverse() {
