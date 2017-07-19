@@ -159,8 +159,8 @@ public class ISkewedBinPriorityQueue<T> {
 	}
 
 	/**
-	 * Links three nodes in skewed-binary fashion. Assumes node1 and node2 having
-	 * the same rank.
+	 * Links three nodes in skewed-binary fashion. Assumes node1 and node2
+	 * having the same rank.
 	 */
 	private Node skewLink(Node node0, Node node1, Node node2) {
 		int c01 = comparator.compare(node0.value, node1.value);

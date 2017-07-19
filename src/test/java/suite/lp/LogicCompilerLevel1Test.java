@@ -21,8 +21,8 @@ import suite.node.Node;
 public class LogicCompilerLevel1Test {
 
 	/**
-	 * Compiles the functional compiler and use it to compile a simple functional
-	 * program.
+	 * Compiles the functional compiler and use it to compile a simple
+	 * functional program.
 	 */
 	@Test
 	public void testCompileFunProgram() {

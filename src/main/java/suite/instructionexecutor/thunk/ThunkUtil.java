@@ -10,6 +10,7 @@ import suite.node.Tree;
 import suite.primitive.IoSink;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 
 public class ThunkUtil {
@@ -29,7 +30,7 @@ public class ThunkUtil {
 		return sb.toString();
 	}
 
-	public static void yawnWriter(Fun<Node, Node> yawn, Node node, Writer writer) throws IOException {
+	public static void yawnWriter(Iterate<Node> yawn, Node node, Writer writer) throws IOException {
 		ThunkUtil.yawnSink(yawn, node, n -> {
 			int c = ((Int) n).number;
 			writer.write(c);
@@ -39,9 +40,10 @@ public class ThunkUtil {
 	}
 
 	/**
-	 * Evaluates the whole (lazy) term to a list and feed the elements into a sink.
+	 * Evaluates the whole (lazy) term to a list and feed the elements into a
+	 * sink.
 	 */
-	public static void yawnSink(Fun<Node, Node> yawn, Node node, IoSink<Node> sink) throws IOException {
+	public static void yawnSink(Iterate<Node> yawn, Node node, IoSink<Node> sink) throws IOException {
 		Outlet<Node> st = yawnList(yawn, node, true);
 		Node n;
 		while ((n = st.next()) != null)
@@ -80,7 +82,7 @@ public class ThunkUtil {
 	/**
 	 * Evaluates the whole (lazy) term to actual by invoking all the thunks.
 	 */
-	public static Node yawnFully(Fun<Node, Node> yawn, Node node) {
+	public static Node yawnFully(Iterate<Node> yawn, Node node) {
 		node = yawn.apply(node);
 
 		if (node instanceof Tree) {

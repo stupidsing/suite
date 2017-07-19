@@ -292,6 +292,10 @@ public class Outlet<T> implements Iterable<T> {
 			return Opt.none();
 	}
 
+	public Pair<Outlet<T>, Outlet<T>> partition(Predicate<T> pred) {
+		return Pair.of(filter(pred), filter(pred.negate()));
+	}
+
 	public Outlet<T> reverse() {
 		return of(List_.reverse(toList()));
 	}

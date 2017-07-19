@@ -16,6 +16,7 @@ import suite.node.util.TreeRewriter;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.List_;
 import suite.util.Nodify;
 import suite.util.To;
@@ -110,7 +111,7 @@ public class FactorizeResult {
 		Generalizer generalizer = new Generalizer();
 		TreeRewriter tr = new TreeRewriter();
 
-		Fun<Node, Node> rewrite = n0 -> {
+		Iterate<Node> rewrite = n0 -> {
 			Node[] m = Suite.match(FTerminal.class.getName() + ":.0").apply(n0);
 			Node n1 = m != null ? m[0] : null;
 			Node n2 = n1 instanceof Dict ? ((Dict) n1).map.get(Atom.of("chars")) : null;

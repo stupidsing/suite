@@ -119,7 +119,7 @@ public class Trade_ {
 
 			List<Trade> trades_ = Trade_ //
 					.diff(time, account.assets(), portfolio, priceFun) //
-					.filter(trade -> { // can be executed in next open price?
+					.partition(trade -> { // can be executed in next open price?
 						Eod eod = eodBySymbol.get(trade.symbol);
 						float price = trade.price;
 						int buySell = trade.buySell;
@@ -133,9 +133,9 @@ public class Trade_ {
 								|| buySell < 0 && price <= eod.nextHigh;
 
 						return isTradeable && isMatch;
-					}) //
-					.sortBy(trade -> trade.buySell) // sell first
-					.toList();
+					}).t0 //
+							.sortBy(trade -> trade.buySell) // sell first
+							.toList();
 
 			val0 = val;
 			valuation0 = valuation;

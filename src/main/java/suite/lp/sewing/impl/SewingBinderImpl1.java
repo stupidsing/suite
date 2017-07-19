@@ -23,6 +23,7 @@ import suite.node.Tuple;
 import suite.node.io.Operator;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.To;
 
 public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder {
@@ -60,9 +61,9 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 			Operator operator = tree.getOperator();
 			LambdaInstance<BindPredicate> lambda0 = compileBind_(tree.getLeft());
 			LambdaInstance<BindPredicate> lambda1 = compileBind_(tree.getRight());
-			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef = bindRef(compile(node));
+			Fun<FunExpr, Iterate<FunExpr>> bindRef = bindRef(compile(node));
 
-			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTree = be -> n_ -> f //
+			Fun<FunExpr, Iterate<FunExpr>> bindTree = be -> n_ -> f //
 					.declare(f.invokeStatic(Tree.class, "decompose", n_, f.object(operator)), t -> f //
 							.ifNonNullAnd(t, f.and( //
 									lambda0.invoke(be, t.invoke("getLeft")), //
@@ -75,9 +76,9 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 					.map(this::compileBind_) //
 					.toList();
 
-			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef = bindRef(compile(node));
+			Fun<FunExpr, Iterate<FunExpr>> bindRef = bindRef(compile(node));
 
-			Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTuple = be -> n_ -> f //
+			Fun<FunExpr, Iterate<FunExpr>> bindTuple = be -> n_ -> f //
 					.ifInstanceAnd(Tuple.class, n_, tuple -> f //
 							.declare(tuple.field("nodes"), nodes -> {
 								List<FunExpr> cond = new ArrayList<>();
@@ -124,13 +125,13 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 
 	private static LambdaImplementation<BindPredicate> compileBindAtom_() {
 		Map<String, Type> fieldTypes = To.map(key0, Type.getType(Node.class));
-		Fun<FunExpr, FunExpr> expr = n_ -> f.ifEquals(n_, f.inject(key0), f._true(), f._false());
+		Iterate<FunExpr> expr = n_ -> f.ifEquals(n_, f.inject(key0), f._true(), f._false());
 		return bind(fieldTypes, expr);
 	}
 
 	private static LambdaImplementation<BindPredicate> compileBindInt_() {
 		Map<String, Type> fieldTypes = To.map(key0, Type.getType(Node.class), key1, Type.INT);
-		Fun<FunExpr, FunExpr> expr = n_ -> f.ifInstanceAnd( //
+		Iterate<FunExpr> expr = n_ -> f.ifInstanceAnd( //
 				Int.class, n_, //
 				i -> f.ifEquals(i.field("number"), f.inject(key1), f._true(), f._false()));
 		return bind(fieldTypes, expr);
@@ -138,19 +139,19 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 
 	private static LambdaImplementation<BindPredicate> compileBindStr_() {
 		Map<String, Type> fieldTypes = To.map(key0, Type.getType(Node.class), key1, Type.STRING);
-		Fun<FunExpr, FunExpr> expr = n_ -> f.ifInstanceAnd( //
+		Iterate<FunExpr> expr = n_ -> f.ifInstanceAnd( //
 				Str.class, n_, //
 				i -> f.inject(key1).invoke("equals", i.field("value").cast(Object.class)));
 		return bind(fieldTypes, expr);
 	}
 
-	private static LambdaImplementation<BindPredicate> bind(Map<String, Type> fieldTypes, Fun<FunExpr, FunExpr> compare) {
+	private static LambdaImplementation<BindPredicate> bind(Map<String, Type> fieldTypes, Iterate<FunExpr> compare) {
 		return LambdaImplementation.of(lambdaClass, fieldTypes,
 				ifRef(be -> ref -> bindRef(be, ref, f.inject(key0)), be -> compare));
 	}
 
-	private Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef(Clone_ n_) {
-		Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef;
+	private Fun<FunExpr, Iterate<FunExpr>> bindRef(Clone_ n_) {
+		Fun<FunExpr, Iterate<FunExpr>> bindRef;
 		if (isBindTrees)
 			bindRef = be -> ref -> bindRef(be, ref, f.object(n_).apply(be.invoke("getEnv")));
 		else
@@ -162,7 +163,7 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 		return f.seq(bindEnv.invoke("getTrail").invoke("addBind", ref, n1), f._true());
 	}
 
-	private static FunExpr ifRef(Fun<FunExpr, Fun<FunExpr, FunExpr>> bindRef, Fun<FunExpr, Fun<FunExpr, FunExpr>> bindTree) {
+	private static FunExpr ifRef(Fun<FunExpr, Iterate<FunExpr>> bindRef, Fun<FunExpr, Iterate<FunExpr>> bindTree) {
 		return f.parameter2((be, n) -> f.declare( //
 				n.invoke("finalNode"), //
 				n_ -> f.ifInstance(Reference.class, n_, bindRef.apply(be), bindTree.apply(be).apply(n_))));

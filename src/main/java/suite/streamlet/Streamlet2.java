@@ -213,7 +213,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Pair<Streamlet2<K, V>, Streamlet2<K, V>> partition(BiPredicate<K, V> pred) {
-		return Pair.of(filter(pred), filter((k, v) -> !pred.test(k, v)));
+		return Pair.of(filter(pred), filter(pred.negate()));
 	}
 
 	public Streamlet2<K, V> reverse() {

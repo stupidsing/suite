@@ -10,6 +10,7 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 
 public class LazyFunInterpreter0 {
 
@@ -22,9 +23,9 @@ public class LazyFunInterpreter0 {
 	}
 
 	private static class Fun_ extends Node {
-		private Fun<Thunk_, Thunk_> fun;
+		private Iterate<Thunk_> fun;
 
-		private Fun_(Fun<Thunk_, Thunk_> fun) {
+		private Fun_(Iterate<Thunk_> fun) {
 			this.fun = fun;
 		}
 	}
@@ -112,7 +113,7 @@ public class LazyFunInterpreter0 {
 		return result;
 	}
 
-	private Fun<Thunk_, Thunk_> fun(Node n) {
+	private Iterate<Thunk_> fun(Node n) {
 		return ((Fun_) n).fun;
 	}
 

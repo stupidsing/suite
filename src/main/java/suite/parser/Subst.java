@@ -2,7 +2,7 @@ package suite.parser;
 
 import java.util.Map;
 
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 
 public class Subst {
 
@@ -22,13 +22,13 @@ public class Subst {
 		return subst(s, map::get);
 	}
 
-	public String subst(String s, Fun<String, String> fun) {
+	public String subst(String s, Iterate<String> fun) {
 		StringBuilder sb = new StringBuilder();
 		subst(s, fun, sb);
 		return sb.toString();
 	}
 
-	public void subst(String s, Fun<String, String> fun, StringBuilder sb) {
+	public void subst(String s, Iterate<String> fun, StringBuilder sb) {
 		while (true) {
 			int pos0 = s.indexOf(openSubst);
 			int pos1 = s.indexOf(closeSubst, pos0);

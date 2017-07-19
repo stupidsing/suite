@@ -118,10 +118,12 @@ public class DailyMain extends ExecutableProgram {
 				.collect(As.joined()));
 
 		Streamlet<Trade> trades = strategyTrades.values();
+		float buys_ = trades.collectAsFloat(Obj_Flt.sum(trade -> Math.max(0, trade.buySell) * trade.price));
+		float sells = trades.collectAsFloat(Obj_Flt.sum(trade -> Math.max(0, -trade.buySell) * trade.price));
 
 		sb.append("\n");
-		sb.append("\nTOTAL BUYS = " + trades.collectAsFloat(Obj_Flt.sum(trade -> Math.max(0, trade.buySell) * trade.price)));
-		sb.append("\nTOTAL SELLS = " + trades.collectAsFloat(Obj_Flt.sum(trade -> Math.max(0, -trade.buySell) * trade.price)));
+		sb.append("\nTOTAL BUYS_ = " + buys_);
+		sb.append("\nTOTAL SELLS = " + sells);
 
 		sb.append("\n");
 		sb.append("\nSUGGESTIONS");

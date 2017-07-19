@@ -21,14 +21,15 @@ import suite.jdk.gen.Type_;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 
 public class Object_ {
 
 	public static class Mapper {
-		private Fun<Object, Object> map;
-		private Fun<Object, Object> unmap;
+		private Iterate<Object> map;
+		private Iterate<Object> unmap;
 
-		private Mapper(Fun<Object, Object> map, Fun<Object, Object> unmap) {
+		private Mapper(Iterate<Object> map, Iterate<Object> unmap) {
 			this.map = map;
 			this.unmap = unmap;
 		}
@@ -192,7 +193,7 @@ public class Object_ {
 		}
 	}
 
-	private static Object apply_(Fun<Object, Object> fun, Object object) {
+	private static Object apply_(Iterate<Object> fun, Object object) {
 		return object != null ? fun.apply(object) : null;
 	}
 

@@ -66,8 +66,8 @@ public class FileUtil {
 	}
 
 	/**
-	 * Files.createDirectory() might fail with FileAlreadyExistsException in MacOSX,
-	 * contrary to its documentation. This re-implementation would not.
+	 * Files.createDirectory() might fail with FileAlreadyExistsException in
+	 * MacOSX, contrary to its documentation. This re-implementation would not.
 	 */
 	public static void mkdir(Path path) {
 		if (path != null) {

@@ -10,7 +10,7 @@ import suite.node.Node;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 
 public class InstructionUtil {
 
@@ -169,9 +169,9 @@ public class InstructionUtil {
 	}
 
 	public static class FunComparer extends Comparer {
-		private Fun<Node, Node> yawn;
+		private Iterate<Node> yawn;
 
-		public FunComparer(Fun<Node, Node> yawn) {
+		public FunComparer(Iterate<Node> yawn) {
 			this.yawn = yawn;
 		}
 

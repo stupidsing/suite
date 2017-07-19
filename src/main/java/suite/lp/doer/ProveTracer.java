@@ -13,7 +13,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 
 public class ProveTracer {
@@ -54,7 +54,7 @@ public class ProveTracer {
 		}
 	}
 
-	public Node expandWithTrace(Node query, Prover prover, Fun<Node, Node> expand) {
+	public Node expandWithTrace(Node query, Prover prover, Iterate<Node> expand) {
 		Node query1 = new Cloner().clone(query);
 
 		if (currentDepth < 64) {

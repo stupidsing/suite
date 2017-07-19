@@ -1,13 +1,13 @@
 package suite.parser;
 
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 
 public class Template {
 
 	private static String open = "<%";
 	private static String close = "%>";
 
-	public String render(String in, Fun<String, String> fun) {
+	public String render(String in, Iterate<String> fun) {
 		StringBuilder sb = new StringBuilder();
 		int start = 0;
 

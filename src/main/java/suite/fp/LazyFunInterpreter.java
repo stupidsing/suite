@@ -44,6 +44,7 @@ import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.To;
 
 public class LazyFunInterpreter {
@@ -53,9 +54,9 @@ public class LazyFunInterpreter {
 	}
 
 	private static class Fun_ extends Node {
-		private Fun<Thunk_, Thunk_> fun;
+		private Iterate<Thunk_> fun;
 
-		private Fun_(Fun<Thunk_, Thunk_> fun) {
+		private Fun_(Iterate<Thunk_> fun) {
 			this.fun = fun;
 		}
 	}
@@ -246,7 +247,7 @@ public class LazyFunInterpreter {
 				Fun<Frame, Thunk_> iter_ = lazy_(TCO.iter);
 				Fun<Frame, Thunk_> in_ = lazy_(TCO.in_);
 				result = frame -> {
-					Fun<Thunk_, Thunk_> iter = fun(iter_.apply(frame).get());
+					Iterate<Thunk_> iter = fun(iter_.apply(frame).get());
 					Thunk_ in = in_.apply(frame);
 					Pair_ p0, p1;
 					do {
@@ -280,7 +281,7 @@ public class LazyFunInterpreter {
 		return frame -> frame.get(p);
 	}
 
-	private Fun<Thunk_, Thunk_> fun(Node n) {
+	private Iterate<Thunk_> fun(Node n) {
 		return ((Fun_) n).fun;
 	}
 

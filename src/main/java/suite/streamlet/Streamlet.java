@@ -207,7 +207,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public Pair<Streamlet<T>, Streamlet<T>> partition(Predicate<T> pred) {
-		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
+		return Pair.of(filter(pred), filter(pred.negate()));
 	}
 
 	public Streamlet<T> reverse() {

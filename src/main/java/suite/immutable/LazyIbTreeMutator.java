@@ -4,7 +4,7 @@ import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.fs.KeyValueMutator;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 
 public class LazyIbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 
@@ -43,11 +43,11 @@ public class LazyIbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 		return tree;
 	}
 
-	private synchronized void update(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
+	private synchronized void update(K key, Iterate<Pair<K, V>> fun) {
 		tree = update_(key, fun);
 	}
 
-	private LazyIbTree<Pair<K, V>> update_(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
+	private LazyIbTree<Pair<K, V>> update_(K key, Iterate<Pair<K, V>> fun) {
 		return tree.update(node(key), fun);
 	}
 

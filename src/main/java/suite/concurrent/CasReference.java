@@ -2,7 +2,7 @@ package suite.concurrent;
 
 import java.util.concurrent.atomic.AtomicStampedReference;
 
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 
 /**
  * A compare-and-set atomic reference that also uses stamp to resolve ABA
@@ -23,7 +23,7 @@ public class CasReference<T> {
 		asr = new AtomicStampedReference<>(t, 0);
 	}
 
-	public T apply(Fun<T, T> fun) {
+	public T apply(Iterate<T> fun) {
 		while (true) {
 			int[] arr = new int[1];
 			T t0 = asr.get(arr);

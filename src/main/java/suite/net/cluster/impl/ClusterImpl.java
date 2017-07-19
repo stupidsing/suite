@@ -19,6 +19,7 @@ import suite.net.nio.RequestResponseMatcher;
 import suite.primitive.Bytes;
 import suite.streamlet.Nerve;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 import suite.util.Thread_;
 
@@ -113,7 +114,7 @@ public class ClusterImpl implements Cluster {
 	private Bytes respondToRequest(Bytes req) {
 		Object request = NetUtil.deserialize(req);
 		@SuppressWarnings("unchecked")
-		Fun<Object, Object> handler = (Fun<Object, Object>) onReceive.get(request.getClass());
+		Iterate<Object> handler = (Iterate<Object>) onReceive.get(request.getClass());
 		return NetUtil.serialize(handler.apply(request));
 	}
 

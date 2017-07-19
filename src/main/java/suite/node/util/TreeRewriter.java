@@ -9,6 +9,7 @@ import suite.node.io.Rewriter;
 import suite.node.io.Rewriter.NodeRead;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 
 public class TreeRewriter {
@@ -59,7 +60,7 @@ public class TreeRewriter {
 		}, node);
 	}
 
-	public Node rewrite(Fun<Node, Node> fun, Node node0) {
+	public Node rewrite(Iterate<Node> fun, Node node0) {
 		return fun.apply(Rewriter.map(node0, n -> rewrite(fun, n)));
 	}
 

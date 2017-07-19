@@ -18,6 +18,7 @@ import suite.jdk.lambda.LambdaInterface;
 import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.Int_Int;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 
@@ -68,7 +69,7 @@ public class FunCreatorTest {
 
 	@Test
 	public void testConstant() {
-		Fun<FunExpr, FunExpr> fun = i -> f.int_(1);
+		Iterate<FunExpr> fun = i -> f.int_(1);
 		assertEquals(1, LambdaInstance.of(IntSource.class, fun).newFun().source());
 	}
 
@@ -108,20 +109,20 @@ public class FunCreatorTest {
 
 	@Test
 	public void testLocal() {
-		Fun<FunExpr, FunExpr> fun = p -> f.declare(f.int_(1), l -> f.add(l, p));
+		Iterate<FunExpr> fun = p -> f.declare(f.int_(1), l -> f.add(l, p));
 		assertEquals(4, LambdaInstance.of(Int_Int.class, fun).newFun().apply(3));
 	}
 
 	@Test
 	public void testObject() {
 		Int_Int inc = i -> i + 1;
-		Fun<FunExpr, FunExpr> fun = i -> f.object(inc).invoke("apply", i);
+		Iterate<FunExpr> fun = i -> f.object(inc).invoke("apply", i);
 		assertEquals(3, LambdaInstance.of(Int_Int.class, fun).newFun().apply(2));
 	}
 
 	@Test
 	public void testProfile() {
-		Fun<FunExpr, FunExpr> fun = i -> (ProfileFunExpr) f.profile(f.int_(1));
+		Iterate<FunExpr> fun = i -> (ProfileFunExpr) f.profile(f.int_(1));
 		IntSource instance = LambdaInstance.of(IntSource.class, fun).newFun();
 		assertEquals(1, instance.source());
 		Dump.out(instance);

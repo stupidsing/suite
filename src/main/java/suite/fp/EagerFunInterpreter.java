@@ -48,6 +48,7 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 
@@ -56,9 +57,9 @@ public class EagerFunInterpreter {
 	private boolean isLazyify = false;
 
 	private static class Fun_ extends Node {
-		private Fun<Node, Node> fun;
+		private Iterate<Node> fun;
 
-		private Fun_(Fun<Node, Node> fun) {
+		private Fun_(Iterate<Node> fun) {
 			this.fun = fun;
 		}
 	}
@@ -210,7 +211,7 @@ public class EagerFunInterpreter {
 				Fun<Frame, Node> iter_ = eager_(TCO.iter);
 				Fun<Frame, Node> in_ = eager_(TCO.in_);
 				result = frame -> {
-					Fun<Node, Node> iter = fun(iter_.apply(frame));
+					Iterate<Node> iter = fun(iter_.apply(frame));
 					Node in = in_.apply(frame);
 					Tree p0, p1;
 					do {
@@ -309,7 +310,7 @@ public class EagerFunInterpreter {
 		return frame -> frame.get(p);
 	}
 
-	private Fun<Node, Node> fun(Node n) {
+	private Iterate<Node> fun(Node n) {
 		return ((Fun_) n).fun;
 	}
 
@@ -340,7 +341,7 @@ public class EagerFunInterpreter {
 		return c;
 	}
 
-	private Node f1(Fun<Node, Node> fun) {
+	private Node f1(Iterate<Node> fun) {
 		return new Fun_(fun);
 	}
 

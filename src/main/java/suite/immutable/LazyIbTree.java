@@ -8,7 +8,7 @@ import java.util.List;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
 
@@ -156,8 +156,8 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	/**
-	 * Replaces a value with another. Mainly for dictionary cases to replace stored
-	 * value for the same key.
+	 * Replaces a value with another. Mainly for dictionary cases to replace
+	 * stored value for the same key.
 	 *
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
@@ -169,11 +169,11 @@ public class LazyIbTree<T> implements ITree<T> {
 		return update(t, t_ -> null);
 	}
 
-	public LazyIbTree<T> update(T t, Fun<T, T> fun) {
+	public LazyIbTree<T> update(T t, Iterate<T> fun) {
 		return new LazyIbTree<>(comparator, newRoot(update(root, t, fun)));
 	}
 
-	private List<Slot<T>> update(List<Slot<T>> node0, T t, Fun<T, T> fun) {
+	private List<Slot<T>> update(List<Slot<T>> node0, T t, Iterate<T> fun) {
 
 		// finds appropriate slot
 		FindSlot fs = new FindSlot(node0, t);

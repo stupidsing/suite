@@ -353,7 +353,7 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Pair<Outlet2<K, V>, Outlet2<K, V>> partition(BiPredicate<K, V> pred) {
-		return Pair.of(filter(pred), filter((k, v) -> !pred.test(k, v)));
+		return Pair.of(filter(pred), filter(pred.negate()));
 	}
 
 	public Outlet2<K, V> reverse() {

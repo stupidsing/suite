@@ -20,7 +20,7 @@ import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Thread_;
 import suite.util.To;
 
@@ -235,7 +235,7 @@ public class EditorController {
 			action.run();
 	}
 
-	private void run(Fun<String, String> fun) {
+	private void run(Iterate<String> fun) {
 		JEditorPane editor = view.getEditor();
 		String selectedText = editor.getSelectedText();
 		String text = selectedText != null ? selectedText : editor.getText();

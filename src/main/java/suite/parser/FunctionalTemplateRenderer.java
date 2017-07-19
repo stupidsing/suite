@@ -9,13 +9,13 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.io.Escaper;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 
 public class FunctionalTemplateRenderer {
 
 	public String render(String template, Map<String, Node> inputs) {
-		Fun<String, String> wrapText = s -> " . append {" + Escaper.escape(s, '"') + "}";
-		Fun<String, String> wrapExpression = s -> !s.startsWith("=") ? s : " . append {" + s.substring(1) + "}";
+		Iterate<String> wrapText = s -> " . append {" + Escaper.escape(s, '"') + "}";
+		Iterate<String> wrapExpression = s -> !s.startsWith("=") ? s : " . append {" + s.substring(1) + "}";
 
 		String fps = "id " + new TemplateRenderer(wrapText, wrapExpression).apply(template);
 		Node fp0 = Suite.substitute("() | .0", Suite.parse(fps));

@@ -9,7 +9,7 @@ import suite.node.io.Operator.Assoc;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.text.Segment;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 
 public class ParseUtil {
@@ -22,7 +22,7 @@ public class ParseUtil {
 		return fit(in, String::toLowerCase, parts);
 	}
 
-	public static String[] fit(String in, Fun<String, String> lower, String... parts) {
+	public static String[] fit(String in, Iterate<String> lower, String... parts) {
 		List<String> outs = new ArrayList<>();
 		String inl = lower.apply(in);
 		int p = 0;
@@ -158,8 +158,8 @@ public class ParseUtil {
 	 * characters.
 	 *
 	 * @param isThrow
-	 *            if this is set to true, and the string is deemed unparseable even
-	 *            if more characters are added, throw exception.
+	 *            if this is set to true, and the string is deemed unparseable
+	 *            even if more characters are added, throw exception.
 	 */
 	public static boolean isParseable(String s, boolean isThrow) {
 		int quote = 0, depth = 0;

@@ -32,6 +32,7 @@ import suite.jdk.lambda.LambdaInstance;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 
 public class FunFactory {
@@ -83,7 +84,7 @@ public class FunFactory {
 		return expr;
 	}
 
-	public FunExpr declare(FunExpr value, Fun<FunExpr, FunExpr> doFun) {
+	public FunExpr declare(FunExpr value, Iterate<FunExpr> doFun) {
 		PlaceholderFunExpr var = new PlaceholderFunExpr();
 
 		DeclareLocalFunExpr expr = new DeclareLocalFunExpr();
@@ -123,11 +124,11 @@ public class FunFactory {
 		return expr;
 	}
 
-	public FunExpr ifInstanceAnd(Class<?> clazz, FunExpr object, Fun<FunExpr, FunExpr> then_) {
+	public FunExpr ifInstanceAnd(Class<?> clazz, FunExpr object, Iterate<FunExpr> then_) {
 		return ifInstance(clazz, object, then_, _false());
 	}
 
-	public FunExpr ifInstance(Class<?> clazz, FunExpr object, Fun<FunExpr, FunExpr> then_, FunExpr else_) {
+	public FunExpr ifInstance(Class<?> clazz, FunExpr object, Iterate<FunExpr> then_, FunExpr else_) {
 		return if_(object.instanceOf(clazz), declare(object.checkCast(clazz), o_ -> then_.apply(o_)), else_);
 	}
 
@@ -217,7 +218,7 @@ public class FunFactory {
 		return rewrite(e -> e.equals(from) ? to : null, expr0);
 	}
 
-	public FunExpr rewrite(Fun<FunExpr, FunExpr> fun, FunExpr t0) {
+	public FunExpr rewrite(Iterate<FunExpr> fun, FunExpr t0) {
 		return inspect.rewrite(FunExpr.class, fun, t0);
 	}
 

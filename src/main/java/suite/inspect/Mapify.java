@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Rethrow;
 import suite.util.To;
 
@@ -31,7 +31,7 @@ public class Mapify {
 	private Set<Type> collectionClasses = To.set(ArrayList.class, Collection.class, HashSet.class, List.class, Set.class);
 	private Set<Type> mapClasses = To.set(HashMap.class, Map.class);
 
-	private Fun<Object, Object> id = object -> object;
+	private Iterate<Object> id = object -> object;
 
 	private Map<Type, Mapifier> mapifiers = new ConcurrentHashMap<>();
 
@@ -50,10 +50,10 @@ public class Mapify {
 	}
 
 	private class Mapifier {
-		private Fun<Object, Object> mapify;
-		private Fun<Object, Object> unmapify;
+		private Iterate<Object> mapify;
+		private Iterate<Object> unmapify;
 
-		private Mapifier(Fun<Object, Object> mapify, Fun<Object, Object> unmapify) {
+		private Mapifier(Iterate<Object> mapify, Iterate<Object> unmapify) {
 			this.mapify = mapify;
 			this.unmapify = unmapify;
 		}
@@ -214,7 +214,7 @@ public class Mapify {
 		return t;
 	}
 
-	private Object apply_(Fun<Object, Object> fun, Object object) {
+	private Object apply_(Iterate<Object> fun, Object object) {
 		return object != null ? fun.apply(object) : null;
 	}
 

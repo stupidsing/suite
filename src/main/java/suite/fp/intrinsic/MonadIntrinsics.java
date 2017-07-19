@@ -24,7 +24,7 @@ import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.primitive.Chars;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Rethrow;
 import suite.util.Thread_;
 
@@ -35,7 +35,7 @@ public class MonadIntrinsics {
 	public Intrinsic get = (callback, inputs) -> getFrame(inputs).get(inputs.get(1));
 
 	public Intrinsic popen = (callback, inputs) -> {
-		Fun<Node, Node> yawn = callback::yawn;
+		Iterate<Node> yawn = callback::yawn;
 		String[] array = ThunkUtil.yawnList(yawn, inputs.get(0), false) //
 				.map(node -> ThunkUtil.yawnString(yawn, node)) //
 				.toArray(String.class);

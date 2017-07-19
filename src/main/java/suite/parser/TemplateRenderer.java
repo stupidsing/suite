@@ -1,21 +1,21 @@
 package suite.parser;
 
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 
 /**
  * Render template into pages.
  *
  * @author ywsing
  */
-public class TemplateRenderer implements Fun<String, String> {
+public class TemplateRenderer implements Iterate<String> {
 
 	public static String openTemplate = "<#";
 	public static String closeTemplate = "#>";
 
-	private Fun<String, String> wrapText;
-	private Fun<String, String> wrapExpression;
+	private Iterate<String> wrapText;
+	private Iterate<String> wrapExpression;
 
-	public TemplateRenderer(Fun<String, String> wrapText, Fun<String, String> wrapExpression) {
+	public TemplateRenderer(Iterate<String> wrapText, Iterate<String> wrapExpression) {
 		this.wrapText = wrapText;
 		this.wrapExpression = wrapExpression;
 	}

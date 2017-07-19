@@ -22,7 +22,7 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.primitive.Chars;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.To;
 
 public class FunInstructionExecutor extends InstructionExecutor {
@@ -106,7 +106,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		return comparer;
 	}
 
-	public Fun<Node, Node> getYawnFun() {
+	public Iterate<Node> getYawnFun() {
 		return intrinsicCallback::yawn;
 	}
 
