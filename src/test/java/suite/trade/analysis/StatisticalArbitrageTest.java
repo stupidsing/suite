@@ -49,13 +49,14 @@ public class StatisticalArbitrageTest {
 		DataSource ds = cfg.dataSource("^HSI").cleanse();
 		float[] prices = ds.prices;
 		float[][] mas = To.array(float[].class, power, p -> ma.movingAvg(prices, 1 << p));
+		float[] returns = ts.returns(prices);
 		List<float[]> xsList = new ArrayList<>();
 		FloatsBuilder ys = new FloatsBuilder();
 
 		for (int i = 1 << power; i < prices.length; i++) {
 			int i_ = i;
 			xsList.add(To.arrayOfFloats(power, p -> mas[p][i_ - (1 << p)]));
-			ys.append(prices[i]);
+			ys.append(returns[i]);
 		}
 
 		LinearRegression lr = stat.linearRegression(xsList.toArray(new float[0][]), ys.toFloats().toArray());
