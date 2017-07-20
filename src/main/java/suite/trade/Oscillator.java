@@ -46,6 +46,47 @@ public class Oscillator {
 		return obvs;
 	}
 
+	public float[] sar(DataSource ds) {
+		float alpha = .02f;
+		int length = ds.ts.length;
+		float[] sars = new float[length];
+
+		if (0 < length) {
+			float min = Float.MAX_VALUE;
+			float max = Float.MIN_VALUE;
+			float sar = ds.prices[0];
+			int i = 0;
+
+			while (i < length) {
+				while (i < length) {
+					max = Float.max(max, ds.highs[i]);
+					if (sar < ds.lows[i])
+						sar += alpha * (max - sar);
+					else {
+						min = Float.MAX_VALUE;
+						sar = max;
+						break;
+					}
+					sars[i++] = sar;
+				}
+
+				while (i < length) {
+					min = Float.min(min, ds.lows[i]);
+					if (ds.highs[i] < sar)
+						sar += alpha * (min - sar);
+					else {
+						max = Float.MIN_VALUE;
+						sar = min;
+						break;
+					}
+					sars[i++] = sar;
+				}
+			}
+		}
+
+		return sars;
+	}
+
 	public float[] stochastic(DataSource ds) {
 		int kDays = 5;
 		int dDays = 3;
