@@ -294,6 +294,10 @@ public class Statistic {
 			return Math.sqrt(variance);
 		}
 
+		public double volatility() {
+			return standardDeviation() / mean;
+		}
+
 		public String toString() {
 			return "(size = " + size //
 					+ ", mean = " + To.string(mean) //

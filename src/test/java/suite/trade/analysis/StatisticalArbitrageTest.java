@@ -107,9 +107,11 @@ public class StatisticalArbitrageTest {
 					&& past1_i.isAll(j -> ma50[j] <= ma50[j - 1]) //
 					&& past_i.isAll(j -> prices[j] <= ma50[j]);
 
-			boolean isRangeBound = true //
-					&& 4d / 5d <= r && r <= 5d / 4d //
-			;
+			boolean isRangeBound = true // non-trending
+					&& 2d / 3d <= r && r <= 3d / 2d //
+					&& stat.meanVariance(past_i.collect(Int_Flt.lift(j -> ma50[j])).toArray()).volatility() < .02d //
+					&& .02d < stat.meanVariance(past_i.collect(Int_Flt.lift(j -> ma20[j])).toArray()).volatility() //
+					&& (ma20[i] + ma50[i]) * .02d <= Math.abs(ma20[i] - ma50[i]);
 
 			String flags = "" //
 					+ (isStronglyBearish ? "M" : "-") //
