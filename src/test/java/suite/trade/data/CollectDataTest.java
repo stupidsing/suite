@@ -16,14 +16,18 @@ import suite.util.To;
 
 public class CollectDataTest {
 
+	private Forex forex = new Forex();
+	private Hkex hkex = new Hkex();
+	private Yahoo yahoo = new Yahoo();
+
 	@Test
 	public void test() throws IOException {
 		Streamlet<String> equities = Streamlet.concat( //
-				new Hkex().queryCompanies().map(company -> company.symbol), //
-				new Forex().invertedCurrencies.map((ccy, name) -> ccy));
+				hkex.queryCompanies().map(company -> company.symbol), //
+				forex.invertedCurrencies.map((ccy, name) -> ccy));
 
 		for (String code : equities) {
-			String urlString = new Yahoo().tableUrl(code, TimeRange.ages());
+			String urlString = yahoo.tableUrl(code, TimeRange.ages());
 			URL url = To.url(urlString);
 
 			try (FileOutputStream fos = new FileOutputStream("/data/storey/markets/" + code + ".csv")) {
