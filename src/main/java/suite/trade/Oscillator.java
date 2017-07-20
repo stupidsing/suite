@@ -52,34 +52,25 @@ public class Oscillator {
 		float[] sars = new float[length];
 
 		if (0 < length) {
-			float min = Float.MAX_VALUE;
-			float max = Float.MIN_VALUE;
-			float sar = ds.prices[0];
+			float ep = ds.lows[0];
+			float sar;
 			int i = 0;
 
 			while (i < length) {
-				while (i < length) {
-					max = Float.max(max, ds.highs[i]);
-					if (sar < ds.lows[i])
-						sar += alpha * (max - sar);
-					else {
-						min = Float.MAX_VALUE;
-						sar = max;
-						break;
-					}
-					sars[i++] = sar;
+				sar = ep;
+				ep = Float.MIN_VALUE;
+
+				while (i < length && sar < ds.lows[i]) {
+					ep = Float.max(ep, ds.highs[i]);
+					sars[i++] = sar += alpha * (ep - sar);
 				}
 
-				while (i < length) {
-					min = Float.min(min, ds.lows[i]);
-					if (ds.highs[i] < sar)
-						sar += alpha * (min - sar);
-					else {
-						max = Float.MIN_VALUE;
-						sar = min;
-						break;
-					}
-					sars[i++] = sar;
+				sar = ep;
+				ep = Float.MAX_VALUE;
+
+				while (i < length && ds.highs[i] < sar) {
+					ep = Float.min(ep, ds.lows[i]);
+					sars[i++] = sar += alpha * (ep - sar);
 				}
 			}
 		}
