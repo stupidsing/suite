@@ -1,11 +1,39 @@
 package suite.trade;
 
+import suite.primitive.Int_Flt;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
 public class Oscillator {
 
 	private MovingAverage ma = new MovingAverage();
+
+	// active true range
+	public float[] atr(DataSource ds) {
+		int n = 9;
+		int length = ds.ts.length;
+		float[] trs = new float[length];
+
+		trs[0] = ds.highs[0] - ds.lows[0];
+
+		for (int i = 1; i < length; i++) {
+			float hi = ds.highs[i];
+			float lo = ds.lows[i];
+			float prevClose = ds.closes[i - 1];
+			float max = Math.max(Math.abs(hi - prevClose), Math.abs(lo - prevClose));
+			trs[i] = Math.max(hi - lo, max);
+		}
+
+		float[] atrs = new float[length];
+		float atr = atrs[0] = IntStreamlet.range(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
+		double invn = 1d / n;
+
+		for (int i = 1; i < length; i++)
+			atrs[i] = atr = (float) ((atr * (n - 1) + trs[i]) * invn);
+
+		return atrs;
+	}
 
 	// commodity channel index
 	public float[] cci(DataSource ds) {
