@@ -43,7 +43,7 @@ public class StatisticalArbitrageTest {
 	private TimeSeries ts = new TimeSeries();
 
 	@Test
-	public void testLinearRegressionPowersOfTwo() {
+	public void testAutoRegressivePowersOfTwo() {
 		int power = 6;
 
 		DataSource ds = cfg.dataSource("^HSI").cleanse();
