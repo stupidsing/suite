@@ -13,18 +13,7 @@ public class Oscillator {
 	public float[] atr(DataSource ds) {
 		int n = 9;
 		int length = ds.ts.length;
-		float[] trs = new float[length];
-
-		trs[0] = ds.highs[0] - ds.lows[0];
-
-		for (int i = 1; i < length; i++) {
-			float hi = ds.highs[i];
-			float lo = ds.lows[i];
-			float prevClose = ds.closes[i - 1];
-			float max = Math.max(Math.abs(hi - prevClose), Math.abs(lo - prevClose));
-			trs[i] = Math.max(hi - lo, max);
-		}
-
+		float[] trs = trueRange(ds);
 		float[] atrs = new float[length];
 		float atr = atrs[0] = IntStreamlet.range(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
 		double invn = 1d / n;
@@ -33,6 +22,34 @@ public class Oscillator {
 			atrs[i] = atr = (float) ((atr * (n - 1) + trs[i]) * invn);
 
 		return atrs;
+	}
+
+	// https://www.tradingview.com/wiki/Directional_Movement_(DMI)
+	public float[] dmi(DataSource ds) {
+		int halfLife = 7;
+
+		int length = ds.ts.length;
+		float[] dmUps = new float[length];
+		float[] dmDns = new float[length];
+
+		for (int i = 1; i < length; i++) {
+			float upMove = ds.highs[i] - ds.highs[i - 1];
+			float dnMove = ds.lows[i] - ds.lows[i - 1];
+			dmUps[i] = Math.max(0, dnMove) < upMove ? upMove : 0f;
+			dmDns[i] = Math.max(0, upMove) < dnMove ? dnMove : 0f;
+		}
+
+		float[] maDmUps = ma.exponentialMovingAvg(dmUps, halfLife);
+		float[] maDmDns = ma.exponentialMovingAvg(dmDns, halfLife);
+		float[] invAtrs = To.arrayOfFloats(ma.exponentialMovingAvg(trueRange(ds), halfLife), f -> 1f / f);
+		float[] diUps = To.arrayOfFloats(length, i -> maDmUps[i] * invAtrs[i]);
+		float[] diDns = To.arrayOfFloats(length, i -> maDmDns[i] * invAtrs[i]);
+
+		return To.arrayOfFloats(length, i -> {
+			float diDn = diDns[i];
+			float diUp = diUps[i];
+			return (diUp - diDn) / (diUp + diDn);
+		});
 	}
 
 	// commodity channel index
@@ -116,6 +133,23 @@ public class Oscillator {
 		float[] k = ma.movingAvg(rsv, kDays);
 		float[] d = ma.movingAvg(k, dDays);
 		return d;
+	}
+
+	private float[] trueRange(DataSource ds) {
+		int length = ds.ts.length;
+		float[] trs = new float[length];
+
+		trs[0] = ds.highs[0] - ds.lows[0];
+
+		for (int i = 1; i < length; i++) {
+			float hi = ds.highs[i];
+			float lo = ds.lows[i];
+			float prevClose = ds.closes[i - 1];
+			float max = Math.max(Math.abs(hi - prevClose), Math.abs(lo - prevClose));
+			trs[i] = Math.max(hi - lo, max);
+		}
+
+		return trs;
 	}
 
 }
