@@ -3,9 +3,29 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
+import suite.adt.pair.Fixie_.Get0;
+import suite.adt.pair.Fixie_.Get1;
+import suite.adt.pair.Fixie_.Get2;
+import suite.adt.pair.Fixie_.Get3;
+import suite.adt.pair.Fixie_.Get4;
+import suite.adt.pair.Fixie_.Get5;
+import suite.adt.pair.Fixie_.Get6;
+import suite.adt.pair.Fixie_.Get7;
+import suite.adt.pair.Fixie_.Get8;
+import suite.adt.pair.Fixie_.Get9;
 import suite.util.Object_;
 
-public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
+public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements //
+		Get0<T0>, //
+		Get1<T0, T1>, //
+		Get2<T0, T1, T2>, //
+		Get3<T0, T1, T2, T3>, //
+		Get4<T0, T1, T2, T3, T4>, //
+		Get5<T0, T1, T2, T3, T4, T5>, //
+		Get6<T0, T1, T2, T3, T4, T5, T6>, //
+		Get7<T0, T1, T2, T3, T4, T5, T6, T7>, //
+		Get8<T0, T1, T2, T3, T4, T5, T6, T7, T8>, //
+		Get9<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 
 	private static D_ D = new D_();
 
@@ -180,6 +200,56 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 		if (cont &= t9 != D)
 			sb.append(":" + t9.toString());
 		return sb.toString();
+	}
+
+	@Override
+	public T0 get0() {
+		return t0;
+	}
+
+	@Override
+	public T1 get1() {
+		return t1;
+	}
+
+	@Override
+	public T2 get2() {
+		return t2;
+	}
+
+	@Override
+	public T3 get3() {
+		return t3;
+	}
+
+	@Override
+	public T4 get4() {
+		return t4;
+	}
+
+	@Override
+	public T5 get5() {
+		return t5;
+	}
+
+	@Override
+	public T6 get6() {
+		return t6;
+	}
+
+	@Override
+	public T7 get7() {
+		return t7;
+	}
+
+	@Override
+	public T8 get8() {
+		return t8;
+	}
+
+	@Override
+	public T9 get9() {
+		return t9;
 	}
 
 }
