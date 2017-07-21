@@ -27,9 +27,9 @@ public class LngIntMap {
 	private int[] vs;
 
 	public static <T> Fun<Outlet<T>, LngIntMap> collect(Obj_Lng<T> kf0, Obj_Int<T> vf0) {
+		Obj_Lng<T> kf1 = kf0.rethrow();
+		Obj_Int<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			Obj_Lng<T> kf1 = kf0.rethrow();
-			Obj_Int<T> vf1 = vf0.rethrow();
 			LngIntMap map = new LngIntMap();
 			T t;
 			while ((t = outlet.source().source()) != null)

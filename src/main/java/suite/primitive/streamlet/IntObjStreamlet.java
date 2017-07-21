@@ -18,6 +18,7 @@ import suite.primitive.IntPrimitives.IntObjPredicate;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.IntPredicate;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
@@ -34,6 +35,23 @@ import suite.util.Object_;
 public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 
 	private Source<IntObjOutlet<V>> in;
+
+	public static <T, V> Fun<Outlet<T>, IntObjStreamlet<V>> collect(Obj_Int<T> kf0, Fun<T, V> vf0) {
+		Obj_Int<T> kf1 = kf0.rethrow();
+		Fun<T, V> vf1 = vf0.rethrow();
+		return outlet -> new IntObjStreamlet<>(() -> {
+			Source<T> source = outlet.source();
+			return IntObjOutlet.of(pair -> {
+				T t = source.source();
+				boolean b = t != null;
+				if (b) {
+					pair.t0 = kf1.apply(t);
+					pair.t1 = vf1.apply(t);
+				}
+				return b;
+			});
+		});
+	}
 
 	@SafeVarargs
 	public static <V> IntObjStreamlet<V> concat(IntObjStreamlet<V>... streamlets) {

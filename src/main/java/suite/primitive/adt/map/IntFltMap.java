@@ -27,9 +27,9 @@ public class IntFltMap {
 	private float[] vs;
 
 	public static <T> Fun<Outlet<T>, IntFltMap> collect(Obj_Int<T> kf0, Obj_Flt<T> vf0) {
+		Obj_Int<T> kf1 = kf0.rethrow();
+		Obj_Flt<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			Obj_Int<T> kf1 = kf0.rethrow();
-			Obj_Flt<T> vf1 = vf0.rethrow();
 			IntFltMap map = new IntFltMap();
 			T t;
 			while ((t = outlet.source().source()) != null)

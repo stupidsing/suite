@@ -27,9 +27,9 @@ public class ChrIntMap {
 	private int[] vs;
 
 	public static <T> Fun<Outlet<T>, ChrIntMap> collect(Obj_Chr<T> kf0, Obj_Int<T> vf0) {
+		Obj_Chr<T> kf1 = kf0.rethrow();
+		Obj_Int<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			Obj_Chr<T> kf1 = kf0.rethrow();
-			Obj_Int<T> vf1 = vf0.rethrow();
 			ChrIntMap map = new ChrIntMap();
 			T t;
 			while ((t = outlet.source().source()) != null)

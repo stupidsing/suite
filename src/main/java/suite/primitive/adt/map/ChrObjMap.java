@@ -3,12 +3,10 @@ package suite.primitive.adt.map;
 import suite.primitive.ChrPrimitives.ChrObjSink;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Chr_Obj;
-import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
-import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
@@ -23,14 +21,12 @@ public class ChrObjMap<V> {
 	private char[] ks;
 	private Object[] vs;
 
-	public static <T, V> Fun<Outlet<T>, ChrObjMap<V>> collect(Obj_Chr<T> kf0, Fun<T, V> vf0) {
+	public static <V> Fun<ChrObjOutlet<V>, ChrObjMap<V>> collect() {
 		return outlet -> {
-			Obj_Chr<T> kf1 = kf0.rethrow();
-			Fun<T, V> vf1 = vf0.rethrow();
 			ChrObjMap<V> map = new ChrObjMap<>();
-			T t;
-			while ((t = outlet.source().source()) != null)
-				map.put(kf1.apply(t), vf1.apply(t));
+			ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+			while (outlet.source().source2(pair))
+				map.put(pair.t0, pair.t1);
 			return map;
 		};
 	}

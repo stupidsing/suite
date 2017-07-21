@@ -18,6 +18,7 @@ import suite.primitive.ChrPrimitives.ChrObjPredicate;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.ChrPrimitives.ChrPredicate;
+import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.pair.ChrObjPair;
@@ -34,6 +35,23 @@ import suite.util.Object_;
 public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 
 	private Source<ChrObjOutlet<V>> in;
+
+	public static <T, V> Fun<Outlet<T>, ChrObjStreamlet<V>> collect(Obj_Chr<T> kf0, Fun<T, V> vf0) {
+		Obj_Chr<T> kf1 = kf0.rethrow();
+		Fun<T, V> vf1 = vf0.rethrow();
+		return outlet -> new ChrObjStreamlet<>(() -> {
+			Source<T> source = outlet.source();
+			return ChrObjOutlet.of(pair -> {
+				T t = source.source();
+				boolean b = t != null;
+				if (b) {
+					pair.t0 = kf1.apply(t);
+					pair.t1 = vf1.apply(t);
+				}
+				return b;
+			});
+		});
+	}
 
 	@SafeVarargs
 	public static <V> ChrObjStreamlet<V> concat(ChrObjStreamlet<V>... streamlets) {

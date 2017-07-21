@@ -27,9 +27,9 @@ public class ChrDblMap {
 	private double[] vs;
 
 	public static <T> Fun<Outlet<T>, ChrDblMap> collect(Obj_Chr<T> kf0, Obj_Dbl<T> vf0) {
+		Obj_Chr<T> kf1 = kf0.rethrow();
+		Obj_Dbl<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			Obj_Chr<T> kf1 = kf0.rethrow();
-			Obj_Dbl<T> vf1 = vf0.rethrow();
 			ChrDblMap map = new ChrDblMap();
 			T t;
 			while ((t = outlet.source().source()) != null)

@@ -24,9 +24,9 @@ public class LngLngMap {
 	private long[] vs;
 
 	public static <T> Fun<Outlet<T>, LngLngMap> collect(Obj_Lng<T> kf0, Obj_Lng<T> vf0) {
+		Obj_Lng<T> kf1 = kf0.rethrow();
+		Obj_Lng<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			Obj_Lng<T> kf1 = kf0.rethrow();
-			Obj_Lng<T> vf1 = vf0.rethrow();
 			LngLngMap map = new LngLngMap();
 			T t;
 			while ((t = outlet.source().source()) != null)

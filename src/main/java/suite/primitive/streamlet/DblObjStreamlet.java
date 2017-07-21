@@ -18,6 +18,7 @@ import suite.primitive.DblPrimitives.DblObjPredicate;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.DblPrimitives.DblPredicate;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.pair.DblObjPair;
@@ -34,6 +35,23 @@ import suite.util.Object_;
 public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 
 	private Source<DblObjOutlet<V>> in;
+
+	public static <T, V> Fun<Outlet<T>, DblObjStreamlet<V>> collect(Obj_Dbl<T> kf0, Fun<T, V> vf0) {
+		Obj_Dbl<T> kf1 = kf0.rethrow();
+		Fun<T, V> vf1 = vf0.rethrow();
+		return outlet -> new DblObjStreamlet<>(() -> {
+			Source<T> source = outlet.source();
+			return DblObjOutlet.of(pair -> {
+				T t = source.source();
+				boolean b = t != null;
+				if (b) {
+					pair.t0 = kf1.apply(t);
+					pair.t1 = vf1.apply(t);
+				}
+				return b;
+			});
+		});
+	}
 
 	@SafeVarargs
 	public static <V> DblObjStreamlet<V> concat(DblObjStreamlet<V>... streamlets) {

@@ -24,9 +24,9 @@ public class DblDblMap {
 	private double[] vs;
 
 	public static <T> Fun<Outlet<T>, DblDblMap> collect(Obj_Dbl<T> kf0, Obj_Dbl<T> vf0) {
+		Obj_Dbl<T> kf1 = kf0.rethrow();
+		Obj_Dbl<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			Obj_Dbl<T> kf1 = kf0.rethrow();
-			Obj_Dbl<T> vf1 = vf0.rethrow();
 			DblDblMap map = new DblDblMap();
 			T t;
 			while ((t = outlet.source().source()) != null)

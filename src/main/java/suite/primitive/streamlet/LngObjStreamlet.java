@@ -18,6 +18,7 @@ import suite.primitive.LngPrimitives.LngObjPredicate;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.LngPrimitives.LngPredicate;
+import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.pair.LngObjPair;
@@ -34,6 +35,23 @@ import suite.util.Object_;
 public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
 
 	private Source<LngObjOutlet<V>> in;
+
+	public static <T, V> Fun<Outlet<T>, LngObjStreamlet<V>> collect(Obj_Lng<T> kf0, Fun<T, V> vf0) {
+		Obj_Lng<T> kf1 = kf0.rethrow();
+		Fun<T, V> vf1 = vf0.rethrow();
+		return outlet -> new LngObjStreamlet<>(() -> {
+			Source<T> source = outlet.source();
+			return LngObjOutlet.of(pair -> {
+				T t = source.source();
+				boolean b = t != null;
+				if (b) {
+					pair.t0 = kf1.apply(t);
+					pair.t1 = vf1.apply(t);
+				}
+				return b;
+			});
+		});
+	}
 
 	@SafeVarargs
 	public static <V> LngObjStreamlet<V> concat(LngObjStreamlet<V>... streamlets) {

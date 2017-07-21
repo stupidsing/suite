@@ -3,12 +3,10 @@ package suite.primitive.adt.map;
 import suite.primitive.DblPrimitives.DblObjSink;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Dbl_Obj;
-import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
-import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
@@ -23,14 +21,12 @@ public class DblObjMap<V> {
 	private double[] ks;
 	private Object[] vs;
 
-	public static <T, V> Fun<Outlet<T>, DblObjMap<V>> collect(Obj_Dbl<T> kf0, Fun<T, V> vf0) {
+	public static <V> Fun<DblObjOutlet<V>, DblObjMap<V>> collect() {
 		return outlet -> {
-			Obj_Dbl<T> kf1 = kf0.rethrow();
-			Fun<T, V> vf1 = vf0.rethrow();
 			DblObjMap<V> map = new DblObjMap<>();
-			T t;
-			while ((t = outlet.source().source()) != null)
-				map.put(kf1.apply(t), vf1.apply(t));
+			DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+			while (outlet.source().source2(pair))
+				map.put(pair.t0, pair.t1);
 			return map;
 		};
 	}

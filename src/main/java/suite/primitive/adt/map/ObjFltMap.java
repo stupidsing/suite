@@ -10,7 +10,6 @@ import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltObjOutlet;
 import suite.primitive.streamlet.FltObjStreamlet;
-import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
@@ -25,14 +24,12 @@ public class ObjFltMap<K> {
 	private Object[] ks;
 	private float[] vs;
 
-	public static <T, K> Fun<Outlet<T>, ObjFltMap<K>> collect(Fun<T, K> kf0, Obj_Flt<T> vf0) {
+	public static <K> Fun<FltObjOutlet<K>, ObjFltMap<K>> collect() {
 		return outlet -> {
-			Fun<T, K> kf1 = kf0.rethrow();
-			Obj_Flt<T> vf1 = vf0.rethrow();
 			ObjFltMap<K> map = new ObjFltMap<>();
-			T t;
-			while ((t = outlet.source().source()) != null)
-				map.put(kf1.apply(t), vf1.apply(t));
+			FltObjPair<K> pair = FltObjPair.of((float) 0, null);
+			while (outlet.source().source2(pair))
+				map.put(pair.t1, pair.t0);
 			return map;
 		};
 	}

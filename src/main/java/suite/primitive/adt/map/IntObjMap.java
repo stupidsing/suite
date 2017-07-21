@@ -7,7 +7,6 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjOutlet;
 import suite.primitive.streamlet.IntObjStreamlet;
-import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
@@ -22,14 +21,12 @@ public class IntObjMap<V> {
 	private int[] ks;
 	private Object[] vs;
 
-	public static <T, V> Fun<Outlet<T>, IntObjMap<V>> collect(Obj_Int<T> kf0, Fun<T, V> vf0) {
+	public static <V> Fun<IntObjOutlet<V>, IntObjMap<V>> collect() {
 		return outlet -> {
-			Obj_Int<T> kf1 = kf0.rethrow();
-			Fun<T, V> vf1 = vf0.rethrow();
 			IntObjMap<V> map = new IntObjMap<>();
-			T t;
-			while ((t = outlet.source().source()) != null)
-				map.put(kf1.apply(t), vf1.apply(t));
+			IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+			while (outlet.source().source2(pair))
+				map.put(pair.t0, pair.t1);
 			return map;
 		};
 	}

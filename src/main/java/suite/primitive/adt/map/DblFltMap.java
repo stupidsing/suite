@@ -27,9 +27,9 @@ public class DblFltMap {
 	private float[] vs;
 
 	public static <T> Fun<Outlet<T>, DblFltMap> collect(Obj_Dbl<T> kf0, Obj_Flt<T> vf0) {
+		Obj_Dbl<T> kf1 = kf0.rethrow();
+		Obj_Flt<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			Obj_Dbl<T> kf1 = kf0.rethrow();
-			Obj_Flt<T> vf1 = vf0.rethrow();
 			DblFltMap map = new DblFltMap();
 			T t;
 			while ((t = outlet.source().source()) != null)

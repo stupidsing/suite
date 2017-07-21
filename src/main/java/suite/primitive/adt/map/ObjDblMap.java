@@ -10,7 +10,6 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
-import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
@@ -25,14 +24,12 @@ public class ObjDblMap<K> {
 	private Object[] ks;
 	private double[] vs;
 
-	public static <T, K> Fun<Outlet<T>, ObjDblMap<K>> collect(Fun<T, K> kf0, Obj_Dbl<T> vf0) {
+	public static <K> Fun<DblObjOutlet<K>, ObjDblMap<K>> collect() {
 		return outlet -> {
-			Fun<T, K> kf1 = kf0.rethrow();
-			Obj_Dbl<T> vf1 = vf0.rethrow();
 			ObjDblMap<K> map = new ObjDblMap<>();
-			T t;
-			while ((t = outlet.source().source()) != null)
-				map.put(kf1.apply(t), vf1.apply(t));
+			DblObjPair<K> pair = DblObjPair.of((double) 0, null);
+			while (outlet.source().source2(pair))
+				map.put(pair.t1, pair.t0);
 			return map;
 		};
 	}

@@ -27,9 +27,9 @@ public class ChrFltMap {
 	private float[] vs;
 
 	public static <T> Fun<Outlet<T>, ChrFltMap> collect(Obj_Chr<T> kf0, Obj_Flt<T> vf0) {
+		Obj_Chr<T> kf1 = kf0.rethrow();
+		Obj_Flt<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			Obj_Chr<T> kf1 = kf0.rethrow();
-			Obj_Flt<T> vf1 = vf0.rethrow();
 			ChrFltMap map = new ChrFltMap();
 			T t;
 			while ((t = outlet.source().source()) != null)

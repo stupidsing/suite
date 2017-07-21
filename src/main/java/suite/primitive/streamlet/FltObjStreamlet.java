@@ -18,6 +18,7 @@ import suite.primitive.FltPrimitives.FltObjPredicate;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.FltPrimitives.FltPredicate;
+import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.pair.FltObjPair;
@@ -34,6 +35,23 @@ import suite.util.Object_;
 public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 
 	private Source<FltObjOutlet<V>> in;
+
+	public static <T, V> Fun<Outlet<T>, FltObjStreamlet<V>> collect(Obj_Flt<T> kf0, Fun<T, V> vf0) {
+		Obj_Flt<T> kf1 = kf0.rethrow();
+		Fun<T, V> vf1 = vf0.rethrow();
+		return outlet -> new FltObjStreamlet<>(() -> {
+			Source<T> source = outlet.source();
+			return FltObjOutlet.of(pair -> {
+				T t = source.source();
+				boolean b = t != null;
+				if (b) {
+					pair.t0 = kf1.apply(t);
+					pair.t1 = vf1.apply(t);
+				}
+				return b;
+			});
+		});
+	}
 
 	@SafeVarargs
 	public static <V> FltObjStreamlet<V> concat(FltObjStreamlet<V>... streamlets) {

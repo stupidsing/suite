@@ -24,9 +24,9 @@ public class IntIntMap {
 	private int[] vs;
 
 	public static <T> Fun<Outlet<T>, IntIntMap> collect(Obj_Int<T> kf0, Obj_Int<T> vf0) {
+		Obj_Int<T> kf1 = kf0.rethrow();
+		Obj_Int<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			Obj_Int<T> kf1 = kf0.rethrow();
-			Obj_Int<T> vf1 = vf0.rethrow();
 			IntIntMap map = new IntIntMap();
 			T t;
 			while ((t = outlet.source().source()) != null)

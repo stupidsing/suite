@@ -27,9 +27,9 @@ public class LngChrMap {
 	private char[] vs;
 
 	public static <T> Fun<Outlet<T>, LngChrMap> collect(Obj_Lng<T> kf0, Obj_Chr<T> vf0) {
+		Obj_Lng<T> kf1 = kf0.rethrow();
+		Obj_Chr<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			Obj_Lng<T> kf1 = kf0.rethrow();
-			Obj_Chr<T> vf1 = vf0.rethrow();
 			LngChrMap map = new LngChrMap();
 			T t;
 			while ((t = outlet.source().source()) != null)

@@ -10,7 +10,6 @@ import suite.primitive.Chr_Chr;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
-import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
@@ -25,14 +24,12 @@ public class ObjChrMap<K> {
 	private Object[] ks;
 	private char[] vs;
 
-	public static <T, K> Fun<Outlet<T>, ObjChrMap<K>> collect(Fun<T, K> kf0, Obj_Chr<T> vf0) {
+	public static <K> Fun<ChrObjOutlet<K>, ObjChrMap<K>> collect() {
 		return outlet -> {
-			Fun<T, K> kf1 = kf0.rethrow();
-			Obj_Chr<T> vf1 = vf0.rethrow();
 			ObjChrMap<K> map = new ObjChrMap<>();
-			T t;
-			while ((t = outlet.source().source()) != null)
-				map.put(kf1.apply(t), vf1.apply(t));
+			ChrObjPair<K> pair = ChrObjPair.of((char) 0, null);
+			while (outlet.source().source2(pair))
+				map.put(pair.t1, pair.t0);
 			return map;
 		};
 	}

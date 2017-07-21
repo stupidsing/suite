@@ -65,7 +65,7 @@ public class HongKongGovernment {
 		long[] ts_ = ts.toLongs().toArray();
 
 		return Read //
-				.<String, DataSource>empty2() //
+				.<String, DataSource> empty2() //
 				.cons("hko.TEMP", DataSource.of(ts_, fs0.toFloats().toArray())) //
 				.cons("hko.RAIN", DataSource.of(ts_, fs1.toFloats().toArray())) //
 				.toMap();

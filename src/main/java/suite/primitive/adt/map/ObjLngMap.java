@@ -10,7 +10,6 @@ import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
-import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
@@ -25,14 +24,12 @@ public class ObjLngMap<K> {
 	private Object[] ks;
 	private long[] vs;
 
-	public static <T, K> Fun<Outlet<T>, ObjLngMap<K>> collect(Fun<T, K> kf0, Obj_Lng<T> vf0) {
+	public static <K> Fun<LngObjOutlet<K>, ObjLngMap<K>> collect() {
 		return outlet -> {
-			Fun<T, K> kf1 = kf0.rethrow();
-			Obj_Lng<T> vf1 = vf0.rethrow();
 			ObjLngMap<K> map = new ObjLngMap<>();
-			T t;
-			while ((t = outlet.source().source()) != null)
-				map.put(kf1.apply(t), vf1.apply(t));
+			LngObjPair<K> pair = LngObjPair.of((long) 0, null);
+			while (outlet.source().source2(pair))
+				map.put(pair.t1, pair.t0);
 			return map;
 		};
 	}

@@ -27,9 +27,9 @@ public class LngDblMap {
 	private double[] vs;
 
 	public static <T> Fun<Outlet<T>, LngDblMap> collect(Obj_Lng<T> kf0, Obj_Dbl<T> vf0) {
+		Obj_Lng<T> kf1 = kf0.rethrow();
+		Obj_Dbl<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			Obj_Lng<T> kf1 = kf0.rethrow();
-			Obj_Dbl<T> vf1 = vf0.rethrow();
 			LngDblMap map = new LngDblMap();
 			T t;
 			while ((t = outlet.source().source()) != null)

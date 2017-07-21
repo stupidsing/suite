@@ -27,9 +27,9 @@ public class DblChrMap {
 	private char[] vs;
 
 	public static <T> Fun<Outlet<T>, DblChrMap> collect(Obj_Dbl<T> kf0, Obj_Chr<T> vf0) {
+		Obj_Dbl<T> kf1 = kf0.rethrow();
+		Obj_Chr<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			Obj_Dbl<T> kf1 = kf0.rethrow();
-			Obj_Chr<T> vf1 = vf0.rethrow();
 			DblChrMap map = new DblChrMap();
 			T t;
 			while ((t = outlet.source().source()) != null)

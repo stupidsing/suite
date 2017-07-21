@@ -4,11 +4,9 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.LngPrimitives.LngObjSink;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Lng_Obj;
-import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
-import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
@@ -23,14 +21,12 @@ public class LngObjMap<V> {
 	private long[] ks;
 	private Object[] vs;
 
-	public static <T, V> Fun<Outlet<T>, LngObjMap<V>> collect(Obj_Lng<T> kf0, Fun<T, V> vf0) {
+	public static <V> Fun<LngObjOutlet<V>, LngObjMap<V>> collect() {
 		return outlet -> {
-			Obj_Lng<T> kf1 = kf0.rethrow();
-			Fun<T, V> vf1 = vf0.rethrow();
 			LngObjMap<V> map = new LngObjMap<>();
-			T t;
-			while ((t = outlet.source().source()) != null)
-				map.put(kf1.apply(t), vf1.apply(t));
+			LngObjPair<V> pair = LngObjPair.of((long) 0, null);
+			while (outlet.source().source2(pair))
+				map.put(pair.t0, pair.t1);
 			return map;
 		};
 	}
