@@ -3,6 +3,7 @@ package suite.primitive.streamlet;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -416,8 +417,17 @@ public class DblOutlet implements Iterable<Double> {
 		return toMap(keyFun, value -> (Double) value);
 	}
 
-	public <K, V> Map<K, V> toMap(Dbl_Obj<K> keyFun, Dbl_Obj<V> valueFun) {
-		return map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).uniqueResult()).collect(As::map);
+	public <K, V> Map<K, V> toMap(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0) {
+		Dbl_Obj<K> kf1 = kf0.rethrow();
+		Dbl_Obj<V> vf1 = vf0.rethrow();
+		Map<K, V> map = new HashMap<>();
+		double c;
+		while ((c = next()) != DblFunUtil.EMPTYVALUE) {
+			K key = kf1.apply(c);
+			if (map.put(key, vf1.apply(c)) != null)
+				throw new RuntimeException("duplicate key " + key);
+		}
+		return map;
 	}
 
 	public <K> ListMultimap<K, Double> toMultimap(Dbl_Obj<K> keyFun) {

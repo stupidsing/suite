@@ -22,6 +22,7 @@ import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.FltPrimitives.FltPredicate;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
+import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -451,14 +452,24 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	public FltObjMap<V> toMap() {
+		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
 		FltObjMap<V> map = new FltObjMap<>();
-		groupBy().mapValue(values -> Read.from(values).uniqueResult()).sink(map::put);
+		while (source.source2(pair))
+			map.put(pair.t0, pair.t1);
 		return map;
 	}
 
 	public ListMultimap<Float, V> toMultimap() {
 		ListMultimap<Float, V> map = new ListMultimap<>();
 		groupBy().concatMapValue(Outlet::of).sink(map::put);
+		return map;
+	}
+
+	public ObjFltMap<V> toObjFltMap() {
+		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
+		ObjFltMap<V> map = new ObjFltMap<>();
+		while (source.source2(pair))
+			map.put(pair.t1, pair.t0);
 		return map;
 	}
 

@@ -21,6 +21,7 @@ import suite.primitive.FltPrimitives.FltPredicate;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
+import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -296,6 +297,10 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 
 	public ListMultimap<Float, V> toMultimap() {
 		return spawn().toMultimap();
+	}
+
+	public ObjFltMap<V> toObjFltMap() {
+		return spawn().toObjFltMap();
 	}
 
 	public Set<FltObjPair<V>> toSet() {

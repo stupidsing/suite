@@ -113,7 +113,7 @@ public class FltObjMap<V> {
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
-				throw new RuntimeException("duplicate key");
+				throw new RuntimeException("duplicate key " + key);
 		ks[index] = key;
 		vs[index] = v1;
 		return v0;

@@ -22,6 +22,7 @@ import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.LngPrimitives.LngPredicate;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.map.LngObjMap;
+import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -451,14 +452,24 @@ public class LngObjOutlet<V> implements Iterable<LngObjPair<V>> {
 	}
 
 	public LngObjMap<V> toMap() {
+		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
 		LngObjMap<V> map = new LngObjMap<>();
-		groupBy().mapValue(values -> Read.from(values).uniqueResult()).sink(map::put);
+		while (source.source2(pair))
+			map.put(pair.t0, pair.t1);
 		return map;
 	}
 
 	public ListMultimap<Long, V> toMultimap() {
 		ListMultimap<Long, V> map = new ListMultimap<>();
 		groupBy().concatMapValue(Outlet::of).sink(map::put);
+		return map;
+	}
+
+	public ObjLngMap<V> toObjLngMap() {
+		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
+		ObjLngMap<V> map = new ObjLngMap<>();
+		while (source.source2(pair))
+			map.put(pair.t1, pair.t0);
 		return map;
 	}
 

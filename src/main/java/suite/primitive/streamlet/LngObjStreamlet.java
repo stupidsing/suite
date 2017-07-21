@@ -21,6 +21,7 @@ import suite.primitive.LngPrimitives.LngPredicate;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.map.LngObjMap;
+import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -296,6 +297,10 @@ public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
 
 	public ListMultimap<Long, V> toMultimap() {
 		return spawn().toMultimap();
+	}
+
+	public ObjLngMap<V> toObjLngMap() {
+		return spawn().toObjLngMap();
 	}
 
 	public Set<LngObjPair<V>> toSet() {

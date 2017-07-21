@@ -22,6 +22,7 @@ import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
+import suite.primitive.adt.map.ObjChrMap;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -451,14 +452,24 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	public ChrObjMap<V> toMap() {
+		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		ChrObjMap<V> map = new ChrObjMap<>();
-		groupBy().mapValue(values -> Read.from(values).uniqueResult()).sink(map::put);
+		while (source.source2(pair))
+			map.put(pair.t0, pair.t1);
 		return map;
 	}
 
 	public ListMultimap<Character, V> toMultimap() {
 		ListMultimap<Character, V> map = new ListMultimap<>();
 		groupBy().concatMapValue(Outlet::of).sink(map::put);
+		return map;
+	}
+
+	public ObjChrMap<V> toObjChrMap() {
+		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		ObjChrMap<V> map = new ObjChrMap<>();
+		while (source.source2(pair))
+			map.put(pair.t1, pair.t0);
 		return map;
 	}
 

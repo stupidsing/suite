@@ -22,6 +22,7 @@ import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.IntPredicate;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -451,14 +452,24 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 	}
 
 	public IntObjMap<V> toMap() {
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		IntObjMap<V> map = new IntObjMap<>();
-		groupBy().mapValue(values -> Read.from(values).uniqueResult()).sink(map::put);
+		while (source.source2(pair))
+			map.put(pair.t0, pair.t1);
 		return map;
 	}
 
 	public ListMultimap<Integer, V> toMultimap() {
 		ListMultimap<Integer, V> map = new ListMultimap<>();
 		groupBy().concatMapValue(Outlet::of).sink(map::put);
+		return map;
+	}
+
+	public ObjIntMap<V> toObjIntMap() {
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		ObjIntMap<V> map = new ObjIntMap<>();
+		while (source.source2(pair))
+			map.put(pair.t1, pair.t0);
 		return map;
 	}
 

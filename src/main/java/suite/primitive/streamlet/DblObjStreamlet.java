@@ -21,6 +21,7 @@ import suite.primitive.DblPrimitives.DblPredicate;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.map.DblObjMap;
+import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -296,6 +297,10 @@ public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 
 	public ListMultimap<Double, V> toMultimap() {
 		return spawn().toMultimap();
+	}
+
+	public ObjDblMap<V> toObjDblMap() {
+		return spawn().toObjDblMap();
 	}
 
 	public Set<DblObjPair<V>> toSet() {

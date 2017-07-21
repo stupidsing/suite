@@ -122,7 +122,7 @@ public class IntIntMap1 {
 			if (k(kv) != key)
 				index = index + 1 & mask;
 			else
-				throw new RuntimeException("duplicate key");
+				throw new RuntimeException("duplicate key " + key);
 		kvs[index] = kv(key, v1);
 		return v0;
 	}

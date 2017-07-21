@@ -21,6 +21,7 @@ import suite.primitive.IntPrimitives.IntPredicate;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -296,6 +297,10 @@ public class IntObjStreamlet<V> implements Iterable<IntObjPair<V>> {
 
 	public ListMultimap<Integer, V> toMultimap() {
 		return spawn().toMultimap();
+	}
+
+	public ObjIntMap<V> toObjIntMap() {
+		return spawn().toObjIntMap();
 	}
 
 	public Set<IntObjPair<V>> toSet() {

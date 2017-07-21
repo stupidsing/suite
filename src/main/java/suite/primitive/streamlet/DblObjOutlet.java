@@ -22,6 +22,7 @@ import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.DblPrimitives.DblPredicate;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.map.DblObjMap;
+import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -451,14 +452,24 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	public DblObjMap<V> toMap() {
+		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
 		DblObjMap<V> map = new DblObjMap<>();
-		groupBy().mapValue(values -> Read.from(values).uniqueResult()).sink(map::put);
+		while (source.source2(pair))
+			map.put(pair.t0, pair.t1);
 		return map;
 	}
 
 	public ListMultimap<Double, V> toMultimap() {
 		ListMultimap<Double, V> map = new ListMultimap<>();
 		groupBy().concatMapValue(Outlet::of).sink(map::put);
+		return map;
+	}
+
+	public ObjDblMap<V> toObjDblMap() {
+		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		ObjDblMap<V> map = new ObjDblMap<>();
+		while (source.source2(pair))
+			map.put(pair.t1, pair.t0);
 		return map;
 	}
 

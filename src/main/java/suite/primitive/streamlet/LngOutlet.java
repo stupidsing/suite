@@ -3,6 +3,7 @@ package suite.primitive.streamlet;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -416,8 +417,17 @@ public class LngOutlet implements Iterable<Long> {
 		return toMap(keyFun, value -> (Long) value);
 	}
 
-	public <K, V> Map<K, V> toMap(Lng_Obj<K> keyFun, Lng_Obj<V> valueFun) {
-		return map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).uniqueResult()).collect(As::map);
+	public <K, V> Map<K, V> toMap(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {
+		Lng_Obj<K> kf1 = kf0.rethrow();
+		Lng_Obj<V> vf1 = vf0.rethrow();
+		Map<K, V> map = new HashMap<>();
+		long c;
+		while ((c = next()) != LngFunUtil.EMPTYVALUE) {
+			K key = kf1.apply(c);
+			if (map.put(key, vf1.apply(c)) != null)
+				throw new RuntimeException("duplicate key " + key);
+		}
+		return map;
 	}
 
 	public <K> ListMultimap<K, Long> toMultimap(Lng_Obj<K> keyFun) {

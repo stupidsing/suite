@@ -445,8 +445,11 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public Map<K, V> toMap() {
+		Pair<K, V> pair = Pair.of(null, null);
 		Map<K, V> map = new HashMap<>();
-		groupBy().mapValue(values -> Read.from(values).uniqueResult()).sink(map::put);
+		while (next(pair))
+			if (map.put(pair.t0, pair.t1) != null)
+				throw new RuntimeException("duplicate key " + pair.t0);
 		return map;
 	}
 

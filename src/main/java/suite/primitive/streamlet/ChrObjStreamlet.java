@@ -21,6 +21,7 @@ import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
+import suite.primitive.adt.map.ObjChrMap;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
@@ -296,6 +297,10 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 
 	public ListMultimap<Character, V> toMultimap() {
 		return spawn().toMultimap();
+	}
+
+	public ObjChrMap<V> toObjChrMap() {
+		return spawn().toObjChrMap();
 	}
 
 	public Set<ChrObjPair<V>> toSet() {
