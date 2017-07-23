@@ -452,7 +452,7 @@ public class BackAllocator_ {
 						int last = index - 1;
 						double unit = .01d / atrs[last];
 						int nHold = (!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last];
-						return Math.min(-4, Math.max(4, nHold)) * unit;
+						return Math.max(-4, Math.min(4, nHold)) * unit;
 					}) //
 					.toList();
 		};
