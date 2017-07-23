@@ -467,7 +467,7 @@ public class BackAllocator_ {
 				int sum = 0;
 
 				for (Pair<String, Integer> pair : m0) {
-					int sum1 = Math.max(maxUnitsTotal, sum + pair.t1);
+					int sum1 = Math.min(maxUnitsTotal, sum + pair.t1);
 					m1.add(Pair.of(pair.t0, sum1 - sum));
 					sum1 = sum;
 				}
