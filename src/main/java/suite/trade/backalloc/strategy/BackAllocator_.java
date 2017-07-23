@@ -352,7 +352,13 @@ public class BackAllocator_ {
 		};
 	}
 
+	// http://www.metastocktools.com/downloads/turtlerules.pdf
 	public static BackAllocator turtles() {
+		int maxUnits = 4;
+		int stopN = 2;
+		int sys1EnterDays = 20, sys1ExitDays = 10;
+		int sys2EnterDays = 55, sys2ExitDays = 20;
+
 		return (akds, indices) -> {
 			Streamlet2<String, DataSource> dsByKey = akds.dsByKey;
 			Map<String, float[]> atrBySymbol = dsByKey.mapValue(osc::atr).toMap();
@@ -392,12 +398,12 @@ public class BackAllocator_ {
 
 								if (nEnterDays <= dlo) { // short entry
 									nHold--;
-									stopper = price + 2 * atrs[i];
+									stopper = price + stopN * atrs[i];
 								}
 
 								if (nEnterDays <= dhi) { // long entry
 									nHold++;
-									stopper = price - 2 * atrs[i];
+									stopper = price - stopN * atrs[i];
 								}
 
 								holds[i] = nHold;
@@ -406,8 +412,8 @@ public class BackAllocator_ {
 							return holds;
 						};
 
-						int[] nHolds1 = enterExit.apply(20, 10);
-						int[] nHolds2 = enterExit.apply(55, 20);
+						int[] nHolds1 = enterExit.apply(sys1EnterDays, sys1ExitDays);
+						int[] nHolds2 = enterExit.apply(sys2EnterDays, sys2ExitDays);
 
 						Fun<int[], boolean[]> getWons = nHolds -> {
 							boolean[] wasWons = new boolean[length];
@@ -452,7 +458,7 @@ public class BackAllocator_ {
 						int last = index - 1;
 						double unit = .01d / atrs[last];
 						int nHold = (!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last];
-						return Math.max(-4, Math.min(4, nHold)) * unit;
+						return Math.max(-maxUnits, Math.min(maxUnits, nHold)) * unit;
 					}) //
 					.toList();
 		};
