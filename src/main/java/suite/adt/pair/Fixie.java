@@ -3,6 +3,15 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
+import suite.adt.pair.Fixie_.Fixie0;
+import suite.adt.pair.Fixie_.Fixie1;
+import suite.adt.pair.Fixie_.Fixie2;
+import suite.adt.pair.Fixie_.Fixie3;
+import suite.adt.pair.Fixie_.Fixie4;
+import suite.adt.pair.Fixie_.Fixie5;
+import suite.adt.pair.Fixie_.Fixie6;
+import suite.adt.pair.Fixie_.Fixie7;
+import suite.adt.pair.Fixie_.Fixie8;
 import suite.adt.pair.Fixie_.Fixie9;
 import suite.util.Object_;
 
@@ -21,52 +30,52 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Fixie9<T0,
 	public T8 t8;
 	public T9 t9;
 
-	public static Fixie<D_, D_, D_, D_, D_, D_, D_, D_, D_, D_> //
+	public static Fixie0 //
 			of() {
 		return of(D);
 	}
 
-	public static <T0> Fixie<T0, D_, D_, D_, D_, D_, D_, D_, D_, D_> //
+	public static <T0> Fixie1<T0> //
 			of(T0 t0) {
 		return of(t0, D);
 	}
 
-	public static <T0, T1> Fixie<T0, T1, D_, D_, D_, D_, D_, D_, D_, D_> //
+	public static <T0, T1> Fixie2<T0, T1> //
 			of(T0 t0, T1 t1) {
 		return of(t0, t1, D);
 	}
 
-	public static <T0, T1, T2> Fixie<T0, T1, T2, D_, D_, D_, D_, D_, D_, D_> //
+	public static <T0, T1, T2> Fixie3<T0, T1, T2> //
 			of(T0 t0, T1 t1, T2 t2) {
 		return of(t0, t1, t2, D);
 	}
 
-	public static <T0, T1, T2, T3> Fixie<T0, T1, T2, T3, D_, D_, D_, D_, D_, D_> //
+	public static <T0, T1, T2, T3> Fixie4<T0, T1, T2, T3> //
 			of(T0 t0, T1 t1, T2 t2, T3 t3) {
 		return of(t0, t1, t2, t3, D);
 	}
 
-	public static <T0, T1, T2, T3, T4> Fixie<T0, T1, T2, T3, T4, D_, D_, D_, D_, D_> //
+	public static <T0, T1, T2, T3, T4> Fixie5<T0, T1, T2, T3, T4> //
 			of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4) {
 		return of(t0, t1, t2, t3, t4, D);
 	}
 
-	public static <T0, T1, T2, T3, T4, T5> Fixie<T0, T1, T2, T3, T4, T5, D_, D_, D_, D_> //
+	public static <T0, T1, T2, T3, T4, T5> Fixie6<T0, T1, T2, T3, T4, T5> //
 			of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
 		return of(t0, t1, t2, t3, t4, t5, D);
 	}
 
-	public static <T0, T1, T2, T3, T4, T5, T6> Fixie<T0, T1, T2, T3, T4, T5, T6, D_, D_, D_> //
+	public static <T0, T1, T2, T3, T4, T5, T6> Fixie7<T0, T1, T2, T3, T4, T5, T6> //
 			of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
 		return of(t0, t1, t2, t3, t4, t5, t6, D);
 	}
 
-	public static <T0, T1, T2, T3, T4, T5, T6, T7> Fixie<T0, T1, T2, T3, T4, T5, T6, T7, D_, D_> //
+	public static <T0, T1, T2, T3, T4, T5, T6, T7> Fixie8<T0, T1, T2, T3, T4, T5, T6, T7> //
 			of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
 		return of(t0, t1, t2, t3, t4, t5, t6, t7, D);
 	}
 
-	public static <T0, T1, T2, T3, T4, T5, T6, T7, T8> Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, D_> //
+	public static <T0, T1, T2, T3, T4, T5, T6, T7, T8> Fixie9<T0, T1, T2, T3, T4, T5, T6, T7, T8> //
 			of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
 		return of(t0, t1, t2, t3, t4, t5, t6, t7, t8, D);
 	}

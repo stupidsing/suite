@@ -2,7 +2,10 @@ package suite.adt.pair;
 
 public class Fixie_ {
 
-	public interface Fixie1<T0> {
+	public interface Fixie0 {
+	}
+
+	public interface Fixie1<T0> extends Fixie0 {
 		public T0 get0();
 	}
 
