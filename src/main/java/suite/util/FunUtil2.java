@@ -58,21 +58,6 @@ public class FunUtil2 {
 		}
 	}
 
-	@FunctionalInterface
-	public interface Fun3<W, X, Y, Z> {
-		public Z apply(W w, X x, Y y);
-
-		public default Fun3<W, X, Y, Z> rethrow() {
-			return (w, x, y) -> {
-				try {
-					return apply(w, x, y);
-				} catch (Exception ex) {
-					throw new RuntimeException("for " + w + ":" + x + ":" + y, ex);
-				}
-			};
-		}
-	}
-
 	public static <K, V> Source2<K, V> append(K key, V value, Source2<K, V> source) {
 		return new Source2<K, V>() {
 			private boolean isAppended = false;

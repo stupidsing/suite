@@ -15,6 +15,7 @@ import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.IntInt_Obj;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -30,7 +31,6 @@ import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil2.Fun3;
 import suite.util.String_;
 import suite.util.To;
 
@@ -374,17 +374,15 @@ public class BackAllocator_ {
 						int[] dlos = getDays.apply(-1);
 						int[] dhis = getDays.apply(1);
 
-						Fun3<int[], int[], int[], int[]> enterExit = (enterExitDays, dlos_, dhis_) -> {
-							int nEnterDays = enterExitDays[0];
-							int nExitDays = enterExitDays[1];
+						IntInt_Obj<int[]> enterExit = (nEnterDays, nExitDays) -> {
 							int[] holds = new int[length];
 							float stopper = 0f;
 							int nHold = 0;
 
 							for (int i = 0; i < length; i++) {
 								float price = prices[i];
-								int dlo = dlos_[i];
-								int dhi = dhis_[i];
+								int dlo = dlos[i];
+								int dhi = dhis[i];
 								int sign = sign(nHold);
 
 								if (sign == sign(price, stopper) // stops
@@ -408,8 +406,8 @@ public class BackAllocator_ {
 							return holds;
 						};
 
-						int[] nHolds1 = enterExit.apply(new int[] { 20, 10, }, dlos, dhis);
-						int[] nHolds2 = enterExit.apply(new int[] { 55, 20, }, dlos, dhis);
+						int[] nHolds1 = enterExit.apply(20, 10);
+						int[] nHolds2 = enterExit.apply(55, 20);
 
 						Fun<int[], boolean[]> getWons = nHolds -> {
 							boolean[] wasWons = new boolean[length];
