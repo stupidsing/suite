@@ -7,16 +7,16 @@ import java.util.List;
 import suite.Constants;
 import suite.math.Vector;
 import suite.os.LogUtil;
+import suite.primitive.Ints_;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.util.FunUtil2.BiFun;
 import suite.util.Thread_;
-import suite.util.To;
 
 public class Render {
 
 	public static BufferedImage render(int width, int height, BiFun<Float, Vector> f) {
 		int nThreads = Constants.nThreads;
-		int[] xs = To.arrayOfInts(nThreads + 1, i -> width * i / nThreads);
+		int[] xs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
 
 		Vector pixels[][] = new Vector[width][height];
 		float scale = 1f / Math.max(width, height);

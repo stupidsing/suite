@@ -7,6 +7,7 @@ import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.Floats;
 import suite.primitive.Floats_;
+import suite.primitive.Ints_;
 import suite.trade.Trade_;
 import suite.util.To;
 
@@ -42,7 +43,7 @@ public class TimeSeries {
 		float[][] xs0 = To.array(float[].class, length, i -> copyPadZeroes(ys, i - p, i));
 		LinearRegression lr0 = stat.linearRegression(xs0, ys);
 
-		float[] variances = To.arrayOfFloats(length, i -> {
+		float[] variances = Floats_.toArray(length, i -> {
 			double residual = ys[i] - lr0.predict(xs0[i]);
 			return (float) (residual * residual);
 		});
@@ -132,14 +133,14 @@ public class TimeSeries {
 
 	public double hurst(float[] ys, int tor) {
 		float[] logys = To.arrayOfFloats(ys, price -> (float) Math.log(price));
-		int[] tors = To.arrayOfInts(tor, t -> t + 1);
-		float[] logVrs = To.arrayOfFloats(tor, t -> {
+		int[] tors = Ints_.toArray(tor, t -> t + 1);
+		float[] logVrs = Floats_.toArray(tor, t -> {
 			float[] diffs = dropDiff(tors[t], logys);
 			float[] diffs2 = To.arrayOfFloats(diffs, diff -> diff * diff);
 			return (float) Math.log(stat.variance(diffs2));
 		});
 		float[][] xs = To.array(float[].class, logVrs.length, i -> new float[] { logVrs[i], 1f, });
-		float[] n = To.arrayOfFloats(logVrs.length, i -> (float) Math.log(tors[i]));
+		float[] n = Floats_.toArray(logVrs.length, i -> (float) Math.log(tors[i]));
 		LinearRegression lr = stat.linearRegression(xs, n);
 		float beta0 = lr.coefficients[0];
 		return beta0 / 2d;

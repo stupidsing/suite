@@ -85,6 +85,13 @@ public class Longs_ {
 		});
 	}
 
+	public static long[] toArray(int length, Int_Lng f) {
+		long[] cs = new long[length];
+		for (int i = 0; i < length; i++)
+			cs[i] = f.apply(i);
+		return cs;
+	}
+
 	private static abstract class BufferedSource implements Source<Longs> {
 		protected Outlet<Longs> outlet;
 		protected Longs buffer = Longs.empty;

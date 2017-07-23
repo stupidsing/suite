@@ -1,5 +1,6 @@
 package suite.trade;
 
+import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.trade.data.DataSource;
@@ -42,10 +43,10 @@ public class Oscillator {
 		float[] maDmUps = ma.exponentialMovingAvg(dmUps, halfLife);
 		float[] maDmDns = ma.exponentialMovingAvg(dmDns, halfLife);
 		float[] invAtrs = To.arrayOfFloats(ma.exponentialMovingAvg(trueRange(ds), halfLife), f -> 1f / f);
-		float[] diUps = To.arrayOfFloats(length, i -> maDmUps[i] * invAtrs[i]);
-		float[] diDns = To.arrayOfFloats(length, i -> maDmDns[i] * invAtrs[i]);
+		float[] diUps = Floats_.toArray(length, i -> maDmUps[i] * invAtrs[i]);
+		float[] diDns = Floats_.toArray(length, i -> maDmDns[i] * invAtrs[i]);
 
-		return To.arrayOfFloats(length, i -> {
+		return Floats_.toArray(length, i -> {
 			float diDn = diDns[i];
 			float diUp = diUps[i];
 			return (diUp - diDn) / (diUp + diDn);
@@ -58,7 +59,7 @@ public class Oscillator {
 		double r = 1d / .015d;
 		double i3 = 1d / 3d;
 		int length = ds.ts.length;
-		float[] ps = To.arrayOfFloats(length, i -> (float) ((ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3));
+		float[] ps = Floats_.toArray(length, i -> (float) ((ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3));
 		float[] ccis = new float[length];
 		for (int i = 0; i < length; i++) {
 			int i0 = Math.max(0, i - nDays);
@@ -126,7 +127,7 @@ public class Oscillator {
 	public float[] stochastic(DataSource ds) {
 		int kDays = 5;
 		int dDays = 3;
-		float[] rsv = To.arrayOfFloats(ds.ts.length, i -> {
+		float[] rsv = Floats_.toArray(ds.ts.length, i -> {
 			double low = ds.lows[i];
 			return (float) ((ds.closes[i] - low) / (ds.highs[i] - low));
 		});

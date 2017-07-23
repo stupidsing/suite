@@ -17,6 +17,7 @@ import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.IntInt_Obj;
+import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -33,7 +34,6 @@ import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Fun;
 import suite.util.String_;
-import suite.util.To;
 
 public class BackAllocator_ {
 
@@ -371,7 +371,7 @@ public class BackAllocator_ {
 						float[] prices = ds.prices;
 						int length = prices.length;
 
-						IntFunction<int[]> getDays = c -> To.arrayOfInts(length, i -> {
+						IntFunction<int[]> getDays = c -> Ints_.toArray(length, i -> {
 							float price = prices[i];
 							int j = i, j1;
 							while (0 <= (j1 = j - 1) && sign(prices[j1], price) == c)

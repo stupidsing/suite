@@ -17,6 +17,7 @@ import suite.btree.impl.B_TreeBuilder;
 import suite.file.JournalledPageFile;
 import suite.file.impl.JournalledFileFactory;
 import suite.primitive.Bytes;
+import suite.primitive.Ints_;
 import suite.sample.Profiler;
 import suite.util.Object_;
 import suite.util.Serialize;
@@ -33,7 +34,7 @@ public class B_TreeTest {
 
 	@Before
 	public void before() {
-		keys = To.arrayOfInts(nKeys, i -> i);
+		keys = Ints_.toArray(nKeys, i -> i);
 	}
 
 	@Test
@@ -97,7 +98,7 @@ public class B_TreeTest {
 	@Test
 	public void testInsertPerformance() throws IOException {
 		int nKeys = 16384;
-		keys = To.arrayOfInts(nKeys, i -> i);
+		keys = Ints_.toArray(nKeys, i -> i);
 		int pageSize = 4096;
 		Path path = TempDir.resolve("b_tree-file");
 

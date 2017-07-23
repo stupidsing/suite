@@ -85,6 +85,13 @@ public class Floats_ {
 		});
 	}
 
+	public static float[] toArray(int length, Int_Flt f) {
+		float[] cs = new float[length];
+		for (int i = 0; i < length; i++)
+			cs[i] = f.apply(i);
+		return cs;
+	}
+
 	private static abstract class BufferedSource implements Source<Floats> {
 		protected Outlet<Floats> outlet;
 		protected Floats buffer = Floats.empty;

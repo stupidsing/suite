@@ -6,9 +6,9 @@ import suite.math.linalg.Matrix;
 import suite.math.stat.Quant;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.primitive.Floats_;
+import suite.primitive.Ints_;
 import suite.trade.MovingAverage;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
-import suite.util.To;
 
 public class Strategos {
 
@@ -30,7 +30,7 @@ public class Strategos {
 				Arrays.fill(fs0, nPastDays, windowSize, price0);
 
 				float[] fs1 = dct.dct(fs0);
-				float[] fs2 = To.arrayOfFloats(windowSize, j -> j < nLowPass ? fs1[j] : 0f);
+				float[] fs2 = Floats_.toArray(windowSize, j -> j < nLowPass ? fs1[j] : 0f);
 				float[] fs3 = dct.idct(fs2);
 
 				float predict = fs3[fs3.length - 1];
@@ -71,7 +71,7 @@ public class Strategos {
 
 	// buy/sell if ratio is positive/negative; sell/buy nHoldDays after
 	private GetBuySell holdFixedDays(int nDays, int nHoldDays, GetBuySell gbs) {
-		int[] buySells = To.arrayOfInts(nDays, gbs::get);
+		int[] buySells = Ints_.toArray(nDays, gbs::get);
 
 		return day -> {
 			int buySell0 = nHoldDays < day ? -buySells[day - nHoldDays] : 0;

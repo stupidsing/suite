@@ -4,8 +4,8 @@ import java.util.Random;
 
 import suite.adt.pair.Pair;
 import suite.math.linalg.Matrix;
+import suite.primitive.Floats_;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class Eigen {
 
@@ -28,7 +28,7 @@ public class Eigen {
 		float[][] m = m0;
 		int size = mtx.sqSize(m);
 		float[][] eigenVectors = new float[size][];
-		float[] xs = To.arrayOfFloats(size, i -> random.nextFloat());
+		float[] xs = Floats_.toArray(size, i -> random.nextFloat());
 		float eigenValue = Float.MIN_VALUE;
 
 		for (int v = 0; v < size; v++) {
@@ -69,7 +69,7 @@ public class Eigen {
 			if (0 < j && (beta = mtx.dot(prevw = ws[j - 1])) != 0d)
 				vj = mtx.scale(prevw, 1d / (betas[j] = beta));
 			else
-				vj = mtx.normalize(To.arrayOfFloats(n, i -> random.nextFloat()));
+				vj = mtx.normalize(Floats_.toArray(n, i -> random.nextFloat()));
 
 			float[] wp = mtx.mul(m, vs[j] = vj);
 			float[] sub0 = mtx.scale(vj, alphas[0] = mtx.dot(wp, vj));
@@ -90,7 +90,7 @@ public class Eigen {
 	}
 
 	public float[] values(float[][] m, float[][] vs) {
-		return To.arrayOfFloats(vs.length, i -> {
+		return Floats_.toArray(vs.length, i -> {
 			float[] v = vs[i];
 			return (float) (mtx.abs(mtx.mul(m, v)) / mtx.abs(v));
 		});

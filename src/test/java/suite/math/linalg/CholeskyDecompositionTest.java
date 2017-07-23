@@ -5,6 +5,7 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
+import suite.primitive.Floats_;
 import suite.util.FunUtil.Iterate;
 import suite.util.To;
 
@@ -22,7 +23,7 @@ public class CholeskyDecompositionTest {
 	@Test
 	public void testInverseMul() {
 		Random random = new Random();
-		float[] fs = To.arrayOfFloats(3, i -> random.nextFloat());
+		float[] fs = Floats_.toArray(3, i -> random.nextFloat());
 		Iterate<float[]> invm0 = cholesky.inverseMul(mtx.of(m0));
 		float[] actual0 = mtx.mul(m0, invm0.apply(fs));
 		float[] actual1 = invm0.apply(mtx.mul(m0, fs));

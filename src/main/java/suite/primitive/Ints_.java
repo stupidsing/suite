@@ -85,6 +85,13 @@ public class Ints_ {
 		});
 	}
 
+	public static int[] toArray(int length, Int_Int f) {
+		int[] cs = new int[length];
+		for (int i = 0; i < length; i++)
+			cs[i] = f.apply(i);
+		return cs;
+	}
+
 	private static abstract class BufferedSource implements Source<Ints> {
 		protected Outlet<Ints> outlet;
 		protected Ints buffer = Ints.empty;

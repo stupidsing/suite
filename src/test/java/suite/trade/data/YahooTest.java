@@ -26,7 +26,7 @@ public class YahooTest {
 		Dump.out(yahoo.dataSourceL1("0012.HK", TimeRange.of(time0, timex)));
 	}
 
-	// @Test
+	@Test
 	public void testL1All() {
 		HkexFactBook hkexFactBook = new HkexFactBook();
 		Iterable<String> symbols = hkexFactBook.queryMainBoardCompanies(2016);

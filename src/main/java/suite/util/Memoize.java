@@ -99,8 +99,8 @@ public class Memoize {
 	}
 
 	/**
-	 * Cache results of a function call, removes the least recently used result
-	 * as cache exceeded the given size.
+	 * Cache results of a function call, removes the least recently used result as
+	 * cache exceeded the given size.
 	 */
 	public static <I, O> Fun<I, O> queued(Fun<I, O> fun, int size) {
 		return new Fun<I, O>() {
@@ -138,8 +138,8 @@ public class Memoize {
 	}
 
 	/**
-	 * Thread-safe caching of function call results. Guarantee only one dispatch
-	 * for an input parameter. No clean-up.
+	 * Thread-safe caching of function call results. Guarantee only one dispatch for
+	 * an input parameter. No clean-up.
 	 */
 	public static <I, O> Fun<I, O> reentrant(Fun<I, O> fun) {
 		Map<I, Source<O>> results = new ConcurrentHashMap<>();

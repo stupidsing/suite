@@ -52,9 +52,9 @@ public class Util {
 	}
 
 	/**
-	 * Reads a line from a stream with a maximum line length limit. Removes
-	 * carriage return if it is DOS-mode line feed (CR-LF). Unknown behaviour
-	 * when dealing with non-ASCII encoding characters.
+	 * Reads a line from a stream with a maximum line length limit. Removes carriage
+	 * return if it is DOS-mode line feed (CR-LF). Unknown behaviour when dealing
+	 * with non-ASCII encoding characters.
 	 */
 	public static String readLine(InputStream is) {
 		return Rethrow.ex(() -> {

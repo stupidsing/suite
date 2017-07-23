@@ -85,6 +85,13 @@ public class Chars_ {
 		});
 	}
 
+	public static char[] toArray(int length, Int_Chr f) {
+		char[] cs = new char[length];
+		for (int i = 0; i < length; i++)
+			cs[i] = f.apply(i);
+		return cs;
+	}
+
 	private static abstract class BufferedSource implements Source<Chars> {
 		protected Outlet<Chars> outlet;
 		protected Chars buffer = Chars.empty;

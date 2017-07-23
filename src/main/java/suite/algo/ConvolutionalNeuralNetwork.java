@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Random;
 
 import suite.math.Sigmoid;
+import suite.primitive.Floats_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.util.List_;
-import suite.util.To;
 
 public class ConvolutionalNeuralNetwork {
 
@@ -44,7 +44,7 @@ public class ConvolutionalNeuralNetwork {
 			IntIntPair parameter = parameters.get(layer);
 			int nWeights = parameter.t0;
 			int nOutputs = parameter.t1;
-			float[] weights = To.arrayOfFloats(nWeights, i -> random.nextFloat());
+			float[] weights = Floats_.toArray(nWeights, i -> random.nextFloat());
 			lws.add(new LayerWeight(nInputs, nOutputs, weights));
 			nInputs = nOutputs;
 		}

@@ -7,13 +7,13 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import suite.util.To;
+import suite.primitive.Ints_;
 
 public class DiscreteHaarWaveletTransformTest {
 
 	@Test
 	public void testFft() {
-		int[] data = To.arrayOfInts(16, i -> i);
+		int[] data = Ints_.toArray(16, i -> i);
 
 		for (int i = 0; i < data.length; i++) {
 			int j = new Random().nextInt(data.length);

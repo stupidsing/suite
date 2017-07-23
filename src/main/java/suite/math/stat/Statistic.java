@@ -2,6 +2,7 @@ package suite.math.stat;
 
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
+import suite.primitive.Floats_;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
@@ -140,7 +141,7 @@ public class Statistic {
 
 		// the t statistic is the coefficient divided by its standard error
 		public float[] tStatistic() {
-			return To.arrayOfFloats(sampleLength, i -> {
+			return Floats_.toArray(sampleLength, i -> {
 				MeanVariance mv = new MeanVariance(in.length, j -> in[j][i]);
 				double invsd = Math.sqrt(mv.variance / (sse * invn2));
 				return (float) (coefficients[i] * invsd);
@@ -173,7 +174,7 @@ public class Statistic {
 
 			if (nSamples == bs.length) {
 				float[][] xt = mtx.transpose(x);
-				float[] y = To.arrayOfFloats(nSamples, i -> bs[i] ? 1f : 0f);
+				float[] y = Floats_.toArray(nSamples, i -> bs[i] ? 1f : 0f);
 
 				for (int n = 0; n < 256; n++) {
 					float[] bernoulli = To.arrayOfFloats(x, this::predict);

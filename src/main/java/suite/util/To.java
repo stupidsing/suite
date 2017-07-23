@@ -36,11 +36,10 @@ import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
+import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.IntInt_Flt;
-import suite.primitive.Int_Flt;
-import suite.primitive.Int_Int;
 import suite.primitive.IoSink;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.As;
@@ -78,18 +77,11 @@ public class To {
 	}
 
 	public static float[] arrayOfFloats(float[] fs, Flt_Flt fun) {
-		return arrayOfFloats(fs.length, i -> fun.apply(fs[i]));
+		return Floats_.toArray(fs.length, i -> fun.apply(fs[i]));
 	}
 
 	public static <T> float[] arrayOfFloats(T[] ts, Obj_Flt<T> fun) {
 		return Read.from(ts).collect(FltStreamlet.of(fun)).toArray();
-	}
-
-	public static float[] arrayOfFloats(int length, Int_Flt fun) {
-		float[] floats = new float[length];
-		for (int i = 0; i < length; i++)
-			floats[i] = fun.apply(i);
-		return floats;
 	}
 
 	public static float[][] arrayOfFloats(int height, int width, IntInt_Flt fun) {
@@ -98,13 +90,6 @@ public class To {
 			for (int j = 0; j < width; j++)
 				m[i][j] = fun.apply(i, j);
 		return m;
-	}
-
-	public static int[] arrayOfInts(int length, Int_Int f) {
-		int[] ints = new int[length];
-		for (int i = 0; i < length; i++)
-			ints[i] = f.apply(i);
-		return ints;
 	}
 
 	public static Bytes bytes(String s) {

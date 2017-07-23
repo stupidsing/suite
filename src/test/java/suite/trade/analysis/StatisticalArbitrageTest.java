@@ -18,6 +18,7 @@ import suite.math.transform.DiscreteCosineTransform;
 import suite.os.LogUtil;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats.FloatsBuilder;
+import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.streamlet.IntStreamlet;
@@ -59,7 +60,7 @@ public class StatisticalArbitrageTest {
 
 		for (int i = 1 << power; i < prices.length; i++) {
 			int i_ = i;
-			xsList.add(To.arrayOfFloats(power, p -> mas[p][i_ - (1 << p)]));
+			xsList.add(Floats_.toArray(power, p -> mas[p][i_ - (1 << p)]));
 			ys.append(returns[i]);
 		}
 
@@ -175,7 +176,7 @@ public class StatisticalArbitrageTest {
 
 		float[][] xs = IntStreamlet //
 				.range(tor, length) //
-				.map(i -> To.arrayOfFloats(tor, j -> prices0[i + j - tor])) //
+				.map(i -> Floats_.toArray(tor, j -> prices0[i + j - tor])) //
 				.toArray(float[].class);
 
 		float[] ys = IntStreamlet //

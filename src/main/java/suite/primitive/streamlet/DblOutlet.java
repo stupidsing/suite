@@ -435,7 +435,7 @@ public class DblOutlet implements Iterable<Double> {
 	}
 
 	public <K, V> ListMultimap<K, V> toMultimap(Dbl_Obj<K> keyFun, Dbl_Obj<V> valueFun) {
-		return map2(keyFun, valueFun).groupBy().collect(As::multimap);
+		return map2_(keyFun, valueFun).groupBy().collect(As::multimap);
 	}
 
 	public DblSet toSet() {
@@ -447,7 +447,7 @@ public class DblOutlet implements Iterable<Double> {
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Dbl_Obj<K> keyFun, Dbl_Obj<V> valueFun) {
-		return map2(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
+		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0) {

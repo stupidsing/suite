@@ -7,12 +7,12 @@ import java.util.Map;
 import suite.adt.pair.Pair;
 import suite.math.stat.Ardl;
 import suite.math.stat.Statistic.LinearRegression;
+import suite.primitive.Floats_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
-import suite.util.To;
 
 public class ArdlBackAllocator implements BackAllocator {
 
@@ -32,7 +32,7 @@ public class ArdlBackAllocator implements BackAllocator {
 
 		return index -> {
 			float[] prices = ardl.predict(lrs, fs, index);
-			float[] returns = To.arrayOfFloats(prices.length, i -> prices[i] / fs[i][index]);
+			float[] returns = Floats_.toArray(prices.length, i -> prices[i] / fs[i][index]);
 			float maxReturns = 0f;
 			Integer maxi = null;
 

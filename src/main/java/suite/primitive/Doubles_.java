@@ -85,6 +85,13 @@ public class Doubles_ {
 		});
 	}
 
+	public static double[] toArray(int length, Int_Dbl f) {
+		double[] cs = new double[length];
+		for (int i = 0; i < length; i++)
+			cs[i] = f.apply(i);
+		return cs;
+	}
+
 	private static abstract class BufferedSource implements Source<Doubles> {
 		protected Outlet<Doubles> outlet;
 		protected Doubles buffer = Doubles.empty;

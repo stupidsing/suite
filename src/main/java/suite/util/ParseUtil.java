@@ -158,8 +158,8 @@ public class ParseUtil {
 	 * characters.
 	 *
 	 * @param isThrow
-	 *            if this is set to true, and the string is deemed unparseable
-	 *            even if more characters are added, throw exception.
+	 *            if this is set to true, and the string is deemed unparseable even
+	 *            if more characters are added, throw exception.
 	 */
 	public static boolean isParseable(String s, boolean isThrow) {
 		int quote = 0, depth = 0;

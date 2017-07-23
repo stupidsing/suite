@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import suite.primitive.Floats_;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
@@ -12,7 +13,6 @@ import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.util.Object_;
-import suite.util.To;
 
 /**
  * Genetic programming on asset allocation, and use Monte-carlo simulation to
@@ -81,7 +81,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 	}
 
 	private float[] randomPortfolio(String[] symbols) {
-		return fair(To.arrayOfFloats(symbols.length, i -> random.nextFloat()));
+		return fair(Floats_.toArray(symbols.length, i -> random.nextFloat()));
 	}
 
 	private float[] mutate(String[] symbols, float[] portfolio) {
@@ -93,7 +93,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 	}
 
 	private float[] crossover(float[] p0, float[] p1) {
-		return To.arrayOfFloats(p0.length, i -> (p0[i] + p1[i]) * .5f);
+		return Floats_.toArray(p0.length, i -> (p0[i] + p1[i]) * .5f);
 	}
 
 	private float[] fair(float[] p) {

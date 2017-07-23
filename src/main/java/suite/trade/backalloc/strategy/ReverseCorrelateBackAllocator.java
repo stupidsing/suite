@@ -4,13 +4,13 @@ import java.util.Map;
 
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
+import suite.primitive.Floats_;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet2;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
-import suite.util.To;
 
 public class ReverseCorrelateBackAllocator implements BackAllocator {
 
@@ -66,7 +66,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 					.mapValue(ds -> {
 						float[] prices = ds.prices;
 						int last = index - 1;
-						return To.arrayOfFloats(tor, i -> prices[last - i]);
+						return Floats_.toArray(tor, i -> prices[last - i]);
 					}) //
 					.collect(As::streamlet2);
 

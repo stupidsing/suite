@@ -1,6 +1,7 @@
 package suite.math.linalg;
 
 import suite.adt.pair.Pair;
+import suite.primitive.Floats_;
 import suite.util.FunUtil.Iterate;
 import suite.util.To;
 
@@ -31,7 +32,7 @@ public class CholeskyDecomposition {
 			}
 
 			// will be inverse(D) * fs1
-			float[] fs2 = To.arrayOfFloats(fs1.length, i -> fs1[i] * reciprocalsD[i]);
+			float[] fs2 = Floats_.toArray(fs1.length, i -> fs1[i] * reciprocalsD[i]);
 			float[] fs3 = new float[width]; // will be inverse(L*) * fs2
 
 			for (int i = width - 1; 0 <= i; i--) {

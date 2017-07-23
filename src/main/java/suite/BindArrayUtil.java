@@ -14,6 +14,7 @@ import suite.lp.sewing.impl.VariableMapperImpl.Generalization;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.primitive.Ints_;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Memoize;
@@ -46,7 +47,7 @@ public class BindArrayUtil {
 			indexList.add(index);
 
 		int size = indexList.size();
-		int[] indices = To.arrayOfInts(size, indexList::get);
+		int[] indices = Ints_.toArray(size, indexList::get);
 
 		Source<Generalization> source = SewingGeneralizerImpl.process(fs);
 
