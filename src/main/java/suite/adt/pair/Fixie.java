@@ -168,26 +168,25 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Fixie9<T0,
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		boolean cont = true;
-		if (cont &= t0 != D)
+		if (t0 != D)
 			sb.append(t0.toString());
-		if (cont &= t1 != D)
+		if (t1 != D)
 			sb.append(":" + t1.toString());
-		if (cont &= t2 != D)
+		if (t2 != D)
 			sb.append(":" + t2.toString());
-		if (cont &= t3 != D)
+		if (t3 != D)
 			sb.append(":" + t3.toString());
-		if (cont &= t4 != D)
+		if (t4 != D)
 			sb.append(":" + t4.toString());
-		if (cont &= t5 != D)
+		if (t5 != D)
 			sb.append(":" + t5.toString());
-		if (cont &= t6 != D)
+		if (t6 != D)
 			sb.append(":" + t6.toString());
-		if (cont &= t7 != D)
+		if (t7 != D)
 			sb.append(":" + t7.toString());
-		if (cont &= t8 != D)
+		if (t8 != D)
 			sb.append(":" + t8.toString());
-		if (cont &= t9 != D)
+		if (t9 != D)
 			sb.append(":" + t9.toString());
 		return sb.toString();
 	}
