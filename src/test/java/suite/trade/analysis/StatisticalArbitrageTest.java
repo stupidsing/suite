@@ -14,6 +14,8 @@ import suite.math.stat.BollingerBands;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.TimeSeries;
+import suite.math.transform.DiscreteCosineTransform;
+import suite.os.LogUtil;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Int_Flt;
@@ -21,6 +23,7 @@ import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.trade.Asset;
 import suite.trade.MovingAverage;
 import suite.trade.Time;
 import suite.trade.TimeRange;
@@ -37,6 +40,7 @@ public class StatisticalArbitrageTest {
 	private TimeRange period = TimeRange.threeYears();
 
 	private Configuration cfg = new ConfigurationImpl();
+	private DiscreteCosineTransform dct = new DiscreteCosineTransform();
 	private MovingAverage ma = new MovingAverage();
 	private Random random = new Random();
 	private Statistic stat = new Statistic();
@@ -181,6 +185,37 @@ public class StatisticalArbitrageTest {
 
 		LinearRegression lr = stat.linearRegression(xs, ys);
 		System.out.println(lr);
+	}
+
+	// find the period of various stocks using FFT
+	@Test
+	public void testPeriod() {
+		int minPeriod = 8;
+
+		for (Asset stock : cfg.queryCompanies().take(40)) {
+			String symbol = stock.symbol;
+			DataSource ds = cfg.dataSource(symbol);
+			float[] prices0 = ds.prices;
+			int size = 1, size1;
+
+			while ((size1 = size << 1) <= prices0.length)
+				size = size1;
+
+			float[] prices1 = Arrays.copyOf(prices0, size);
+			float[] fs = dct.dct(prices1);
+			int maxIndex = minPeriod;
+			float maxValue = Math.abs(fs[minPeriod]);
+
+			for (int i = minPeriod; i < size; i++) {
+				float f = Math.abs(fs[i]);
+				if (maxValue < f) {
+					maxIndex = i;
+					maxValue = f;
+				}
+			}
+
+			LogUtil.info(stock + " has period " + maxIndex);
+		}
 	}
 
 	// Naive Bayes return prediction
