@@ -3,27 +3,10 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.adt.pair.Fixie_.Fixie1;
-import suite.adt.pair.Fixie_.Fixie2;
-import suite.adt.pair.Fixie_.Fixie3;
-import suite.adt.pair.Fixie_.Fixie4;
-import suite.adt.pair.Fixie_.Fixie5;
-import suite.adt.pair.Fixie_.Fixie6;
-import suite.adt.pair.Fixie_.Fixie7;
-import suite.adt.pair.Fixie_.Fixie8;
 import suite.adt.pair.Fixie_.Fixie9;
 import suite.util.Object_;
 
-public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements //
-		Fixie1<T0>, //
-		Fixie2<T0, T1>, //
-		Fixie3<T0, T1, T2>, //
-		Fixie4<T0, T1, T2, T3>, //
-		Fixie5<T0, T1, T2, T3, T4>, //
-		Fixie6<T0, T1, T2, T3, T4, T5>, //
-		Fixie7<T0, T1, T2, T3, T4, T5, T6>, //
-		Fixie8<T0, T1, T2, T3, T4, T5, T6, T7>, //
-		Fixie9<T0, T1, T2, T3, T4, T5, T6, T7, T8> {
+public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Fixie9<T0, T1, T2, T3, T4, T5, T6, T7, T8> {
 
 	private static D_ D = new D_();
 
