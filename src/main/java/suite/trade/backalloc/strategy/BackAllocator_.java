@@ -1,5 +1,6 @@
 package suite.trade.backalloc.strategy;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -355,6 +356,7 @@ public class BackAllocator_ {
 	// http://www.metastocktools.com/downloads/turtlerules.pdf
 	public static BackAllocator turtles() {
 		int maxUnits = 4;
+		int maxUnitsTotal = 12;
 		int stopN = 2;
 		int sys1EnterDays = 20, sys1ExitDays = 10;
 		int sys2EnterDays = 55, sys2ExitDays = 20;
@@ -447,20 +449,39 @@ public class BackAllocator_ {
 					}) //
 					.toMap();
 
-			return index -> dsByKey //
-					.keys() //
-					.map2(symbol -> {
-						Fixie4<int[], int[], boolean[], boolean[]> fixie = fixieBySymbol.get(symbol);
-						float[] atrs = atrBySymbol.get(symbol);
-						int[] nHolds1 = fixie.get0();
-						int[] nHolds2 = fixie.get1();
-						boolean[] wasWons1 = fixie.get2();
-						int last = index - 1;
-						double unit = .01d / atrs[last];
-						int nHold = (!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last];
-						return Math.max(-maxUnits, Math.min(maxUnits, nHold)) * unit;
-					}) //
-					.toList();
+			return index -> {
+				List<Pair<String, Integer>> m0 = dsByKey //
+						.keys() //
+						.map2(symbol -> {
+							Fixie4<int[], int[], boolean[], boolean[]> fixie = fixieBySymbol.get(symbol);
+							int[] nHolds1 = fixie.get0();
+							int[] nHolds2 = fixie.get1();
+							boolean[] wasWons1 = fixie.get2();
+							int last = index - 1;
+							return (!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last];
+						}) //
+						.sortByValue((nHold0, nHold1) -> Integer.compare(nHold1, nHold0)) //
+						.toList();
+
+				List<Pair<String, Integer>> m1 = new ArrayList<>();
+				int sum = 0;
+
+				for (Pair<String, Integer> pair : m0) {
+					int sum1 = Math.max(maxUnitsTotal, sum + pair.t1);
+					m1.add(Pair.of(pair.t0, sum1 - sum));
+					sum1 = sum;
+				}
+
+				return Read //
+						.from2(m1) //
+						.map2((symbol, nHold) -> {
+							float[] atrs = atrBySymbol.get(symbol);
+							int last = index - 1;
+							double unit = .01d / atrs[last];
+							return Math.max(-maxUnits, Math.min(maxUnits, nHold)) * unit;
+						}) //
+						.toList();
+			};
 		};
 
 	}
