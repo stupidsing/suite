@@ -43,6 +43,7 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_rsi = BackAllocator_.rsi().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sell = BackAllocator_.cash().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sellInMay = BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi);
+		public final BackAllocConfiguration bac_turtles = BackAllocator_.turtles().cfgUnl(fun);
 		public final BackAllocConfiguration bac_tma = BackAllocator_.tripleMovingAvgs().cfgUnl(fun);
 
 		public final Streamlet2<String, BackAllocConfiguration> bacByName = Read //
@@ -61,6 +62,7 @@ public class BackAllocConfigurations {
 				.cons("revdd", bac_revdd) //
 				.cons("rsi", bac_rsi) //
 				.cons("sellInMay", bac_sellInMay) //
+				.cons("turtles", bac_turtles) //
 				.cons("tma", bac_tma);
 
 		public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {
