@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.IntFunction;
 
 import suite.adt.pair.Fixie;
-import suite.adt.pair.Fixie_.Get3;
+import suite.adt.pair.Fixie_.Fixie4;
 import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.Quant;
@@ -357,7 +357,7 @@ public class BackAllocator_ {
 			Streamlet2<String, DataSource> dsByKey = akds.dsByKey;
 			Map<String, float[]> atrBySymbol = dsByKey.mapValue(osc::atr).toMap();
 
-			Map<String, Get3<int[], int[], boolean[], boolean[]>> fixieBySymbol = dsByKey //
+			Map<String, Fixie4<int[], int[], boolean[], boolean[]>> fixieBySymbol = dsByKey //
 					.map2((symbol, ds) -> {
 						float[] atrs = atrBySymbol.get(symbol);
 						float[] prices = ds.prices;
@@ -439,7 +439,7 @@ public class BackAllocator_ {
 						boolean[] wasWons1 = getWons.apply(nHolds1);
 						boolean[] wasWons2 = getWons.apply(nHolds2);
 
-						Get3<int[], int[], boolean[], boolean[]> result = Fixie.of(nHolds1, nHolds2, wasWons1, wasWons2);
+						Fixie4<int[], int[], boolean[], boolean[]> result = Fixie.of(nHolds1, nHolds2, wasWons1, wasWons2);
 						return result;
 					}) //
 					.toMap();
@@ -447,7 +447,7 @@ public class BackAllocator_ {
 			return index -> dsByKey //
 					.keys() //
 					.map2(symbol -> {
-						Get3<int[], int[], boolean[], boolean[]> fixie = fixieBySymbol.get(symbol);
+						Fixie4<int[], int[], boolean[], boolean[]> fixie = fixieBySymbol.get(symbol);
 						int last = index - 1;
 						double unit = .01d / atrBySymbol.get(symbol)[last];
 						int[] nHolds1 = fixie.get0();
