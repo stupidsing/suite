@@ -4,7 +4,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntFunction;
 
+import suite.adt.pair.Fixie;
+import suite.adt.pair.Fixie_.Get3;
 import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.Quant;
@@ -26,7 +29,11 @@ import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.trade.singlealloc.Strategos;
+import suite.util.FunUtil.Fun;
+import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.Fun3;
 import suite.util.String_;
+import suite.util.To;
 
 public class BackAllocator_ {
 
@@ -346,6 +353,130 @@ public class BackAllocator_ {
 		};
 	}
 
+	public static BackAllocator turtles() {
+		return (akds, indices) -> {
+			Streamlet2<String, DataSource> dsByKey = akds.dsByKey;
+			Map<String, float[]> atrBySymbol = dsByKey.mapValue(osc::atr).toMap();
+
+			Map<String, Get3<int[], int[], boolean[], boolean[]>> fixieBySymbol = dsByKey //
+					.map2((symbol, ds) -> {
+						float[] atrs = atrBySymbol.get(symbol);
+						float[] prices = ds.prices;
+						int length = prices.length;
+
+						IntFunction<int[]> getDays = c -> To.arrayOfInts(length, i -> {
+							float price = prices[i];
+							int j = i, j1;
+							while (0 <= (j1 = j - 1) && sign(prices[j1], price) == c)
+								j = j1;
+							return i - j;
+						});
+
+						int[] dlos = getDays.apply(-1);
+						int[] dhis = getDays.apply(1);
+
+						Fun3<int[], int[], int[], int[]> enterExit = (enterExitDays, dlos_, dhis_) -> {
+							int nEnterDays = enterExitDays[0];
+							int nExitDays = enterExitDays[1];
+							int[] holds = new int[length];
+							float stopper = 0f;
+							int nHold = 0;
+
+							for (int i = 0; i < length; i++) {
+								float price = prices[i];
+								int dlo = dlos_[i];
+								int dhi = dhis_[i];
+
+								if (sign(nHold) == sign(price, stopper) // stops
+										|| 0 < nHold && nExitDays <= dlo // long exit
+										|| nHold < 0 && nExitDays <= dhi) // short exit
+									nHold = 0;
+
+								if (nEnterDays <= dlo) { // short entry
+									nHold--;
+									stopper = price + 2 * atrs[i];
+								}
+
+								if (nEnterDays <= dhi) { // long entry
+									nHold++;
+									stopper = price - 2 * atrs[i];
+								}
+
+								holds[i] = nHold;
+							}
+
+							return holds;
+						};
+
+						int[] nHolds1 = enterExit.apply(new int[] { 20, 10, }, dlos, dhis);
+						int[] nHolds2 = enterExit.apply(new int[] { 55, 20, }, dlos, dhis);
+
+						Fun<int[], boolean[]> getWins = nHolds -> {
+							boolean[] isWins = new boolean[length];
+							int i = 0;
+
+							while (i < length) {
+								int sign = sign(nHolds[i]);
+								int j = i;
+
+								while (j < length && sign == sign(nHolds[j]))
+									j++;
+
+								boolean isWin = j < length && sign == sign(prices[i], prices[j]);
+
+								while (i < j)
+									isWins[i++] = isWin;
+							}
+
+							return isWins;
+						};
+
+						boolean[] isWins1 = getWins.apply(nHolds1);
+						boolean[] isWins2 = getWins.apply(nHolds2);
+
+						Fun2<int[], boolean[], boolean[]> getWons = (nHolds, isWins) -> {
+							boolean[] wasWons = new boolean[length];
+							boolean wasWon = false;
+							boolean isWin = false;
+							int sign0 = 0;
+
+							for (int i = 0; i < length; i++) {
+								int sign = sign(nHolds[i]);
+								if (sign0 != sign) {
+									wasWon = isWin;
+									isWin = sign != 0 ? isWins[i] : isWin;
+								}
+								sign0 = sign;
+								wasWons[i] = wasWon;
+							}
+
+							return wasWons;
+						};
+
+						boolean[] wasWons1 = getWons.apply(nHolds1, isWins1);
+						boolean[] wasWons2 = getWons.apply(nHolds2, isWins2);
+
+						Get3<int[], int[], boolean[], boolean[]> get = Fixie.of(nHolds1, nHolds2, wasWons1, wasWons2);
+						return get;
+					}) //
+					.toMap();
+
+			return index -> dsByKey //
+					.keys() //
+					.map2(symbol -> {
+						Get3<int[], int[], boolean[], boolean[]> fixie = fixieBySymbol.get(symbol);
+						int last = index - 1;
+						double unit = .01d / atrBySymbol.get(symbol)[last];
+						int[] nHolds1 = fixie.get0();
+						int[] nHolds2 = fixie.get1();
+						boolean[] wasWons1 = fixie.get2();
+						return ((!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last]) * unit;
+					}) //
+					.toList();
+		};
+
+	}
+
 	public static BackAllocator variableBollingerBands() {
 		return (akds, indices) -> {
 			return index -> akds.dsByKey //
@@ -424,6 +555,10 @@ public class BackAllocator_ {
 						return 0d;
 				}) //
 				.toList();
+	}
+
+	private static int sign(float f) {
+		return sign(0f, f);
 	}
 
 	private static int sign(float f0, float f1) {
