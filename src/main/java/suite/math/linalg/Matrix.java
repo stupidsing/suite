@@ -21,12 +21,9 @@ public class Matrix {
 	}
 
 	public float[] addOn(float[] m, float[] n) {
-		int length = m.length;
-		if (length == n.length)
-			for (int i = 0; i < length; i++)
-				m[i] += n[i];
-		else
-			throw new RuntimeException("wrong input sizes");
+		int length = sameLength_(m, n);
+		for (int i = 0; i < length; i++)
+			m[i] += n[i];
 		return m;
 	}
 
@@ -43,12 +40,9 @@ public class Matrix {
 	}
 
 	public float[] addScaleOn(float[] m, float[] n, float f) {
-		int length = m.length;
-		if (length == n.length)
-			for (int i = 0; i < length; i++)
-				m[i] += n[i] * f;
-		else
-			throw new RuntimeException("wrong input sizes");
+		int length = sameLength_(m, n);
+		for (int i = 0; i < length; i++)
+			m[i] += n[i] * f;
 		return m;
 	}
 
@@ -214,7 +208,7 @@ public class Matrix {
 	}
 
 	public Vector mul(float[][] m, Vector v) {
-		if (h(m) == 3 && w(m) == 3) {
+		if (sqSize_(m) == 3) {
 			float x1 = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z;
 			float y1 = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z;
 			float z1 = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z;
@@ -330,6 +324,10 @@ public class Matrix {
 		return new float[][] { { cos, -sin, 0f, }, { sin, cos, 0f, }, { 0f, 0f, 0f, }, };
 	}
 
+	public int sameLength(float[] m, float[] n) {
+		return sameLength_(m, n);
+	}
+
 	public float[] scale(float[] m, double d) {
 		return scaleOn(copy(m), d);
 	}
@@ -365,17 +363,18 @@ public class Matrix {
 		return m;
 	}
 
+	public int sqSize(float[][] m) {
+		return sqSize_(m);
+	}
+
 	public float[] sub(float[] m, float[] n) {
 		return subOn(copy(m), n);
 	}
 
 	public float[] subOn(float[] m, float[] n) {
-		int length = m.length;
-		if (length == n.length)
-			for (int i = 0; i < length; i++)
-				m[i] -= n[i];
-		else
-			throw new RuntimeException("wrong input sizes");
+		int length = sameLength_(m, n);
+		for (int i = 0; i < length; i++)
+			m[i] -= n[i];
 		return m;
 	}
 
@@ -388,12 +387,9 @@ public class Matrix {
 	}
 
 	public void verifyEquals(float[] m0, float[] m1, float epsilon) {
-		int length = m0.length;
-		if (length == m1.length)
-			for (int i = 0; i < length; i++)
-				MathUtil.verifyEquals(m0[i], m1[i], epsilon);
-		else
-			throw new RuntimeException("wrong input sizes");
+		int length = sameLength_(m0, m1);
+		for (int i = 0; i < length; i++)
+			MathUtil.verifyEquals(m0[i], m1[i], epsilon);
 	}
 
 	public void verifyEquals(float[][] m0, float[][] m1, float epsilon) {
@@ -465,13 +461,10 @@ public class Matrix {
 	}
 
 	private float dot_(float[] m, float[] n) {
-		int length = m.length;
+		int length = sameLength_(m, n);
 		float sum = 0;
-		if (length == n.length)
-			for (int i = 0; i < length; i++)
-				sum += m[i] * n[i];
-		else
-			throw new RuntimeException("wrong input sizes");
+		for (int i = 0; i < length; i++)
+			sum += m[i] * n[i];
 		return sum;
 	}
 
@@ -501,6 +494,22 @@ public class Matrix {
 		for (float f : m)
 			sb.append(To.string(f) + " ");
 		sb.append("]");
+	}
+
+	private int sameLength_(float[] m, float[] n) {
+		int size = m.length;
+		if (size == n.length)
+			return size;
+		else
+			throw new RuntimeException("wrong input sizes");
+	}
+
+	private int sqSize_(float[][] m) {
+		int height = h(m);
+		if (height == w(m))
+			return height;
+		else
+			throw new RuntimeException("wrong input sizes");
 	}
 
 	private int h(float[][] m) {

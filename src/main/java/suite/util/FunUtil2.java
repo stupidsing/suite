@@ -58,6 +58,21 @@ public class FunUtil2 {
 		}
 	}
 
+	@FunctionalInterface
+	public interface Fun3<W, X, Y, Z> {
+		public Z apply(W w, X x, Y y);
+
+		public default Fun3<W, X, Y, Z> rethrow() {
+			return (w, x, y) -> {
+				try {
+					return apply(w, x, y);
+				} catch (Exception ex) {
+					throw new RuntimeException("for " + w + ":" + x + ":" + y, ex);
+				}
+			};
+		}
+	}
+
 	public static <K, V> Source2<K, V> append(K key, V value, Source2<K, V> source) {
 		return new Source2<K, V>() {
 			private boolean isAppended = false;
@@ -257,8 +272,8 @@ public class FunUtil2 {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static <K, V> Source<Source2<K, V>> split(BiPredicate<K, V> fun0, Source2<K, V> source2) {
 		BiPredicate<K, V> fun1 = Rethrow.biPredicate(fun0);

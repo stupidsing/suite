@@ -11,7 +11,7 @@ public class Oscillator {
 
 	// active true range
 	public float[] atr(DataSource ds) {
-		int n = 9;
+		int n = 20;
 		int length = ds.ts.length;
 		float[] trs = trueRange(ds);
 		float[] atrs = new float[length];

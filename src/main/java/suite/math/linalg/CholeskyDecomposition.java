@@ -55,28 +55,27 @@ public class CholeskyDecomposition {
 	 * @return lower-triangular matrix L that satisfy m = L * L*
 	 */
 	public float[][] decompose(float[][] m) {
-		int length = mtx.height(m);
-		float[][] l = mtx.identity(length);
-		if (length == mtx.width(m))
-			for (int c = 0; c < length; c++) {
-				float mii = m[c][c];
-				double mii_sqrt = Math.sqrt(mii);
-				float imii = 1f / mii;
-				double imii_sqrt = 1f / mii_sqrt;
+		int size = mtx.sqSize(m);
+		float[][] l = mtx.identity(size);
 
-				for (int i = c; i < length; i++) {
-					double sum = l[i][c] * mii_sqrt;
-					for (int j = c + 1; j < length; j++)
-						sum += imii_sqrt * l[i][j] * m[j][c];
-					l[i][c] = (float) sum;
-				}
+		for (int c = 0; c < size; c++) {
+			float mii = m[c][c];
+			double mii_sqrt = Math.sqrt(mii);
+			float imii = 1f / mii;
+			double imii_sqrt = 1f / mii_sqrt;
 
-				for (int i = c + 1; i < length; i++)
-					for (int j = c + 1; j < length; j++)
-						m[i][j] -= imii * m[i][c] * m[j][c];
+			for (int i = c; i < size; i++) {
+				double sum = l[i][c] * mii_sqrt;
+				for (int j = c + 1; j < size; j++)
+					sum += imii_sqrt * l[i][j] * m[j][c];
+				l[i][c] = (float) sum;
 			}
-		else
-			throw new RuntimeException("wrong input sizes");
+
+			for (int i = c + 1; i < size; i++)
+				for (int j = c + 1; j < size; j++)
+					m[i][j] -= imii * m[i][c] * m[j][c];
+		}
+
 		return l;
 	}
 
@@ -91,22 +90,21 @@ public class CholeskyDecomposition {
 	 *         satisfies m = L * D * L*.
 	 */
 	public Pair<float[][], float[]> ldlt(float[][] m) {
-		int length = mtx.height(m);
-		float[][] l = mtx.identity(length);
-		float[] d = new float[length];
-		if (length == mtx.width(m))
-			for (int c = 0; c < length; c++) {
-				float imii = 1f / (d[c] = m[c][c]);
+		int size = mtx.height(m);
+		float[][] l = mtx.identity(size);
+		float[] d = new float[size];
 
-				for (int i = c + 1; i < length; i++)
-					for (int j = c + 1; j < length; j++) {
-						float imii_mjc = imii * m[j][c];
-						l[i][c] += imii_mjc * l[i][j];
-						m[i][j] -= imii_mjc * m[i][c];
-					}
-			}
-		else
-			throw new RuntimeException("wrong input sizes");
+		for (int c = 0; c < size; c++) {
+			float imii = 1f / (d[c] = m[c][c]);
+
+			for (int i = c + 1; i < size; i++)
+				for (int j = c + 1; j < size; j++) {
+					float imii_mjc = imii * m[j][c];
+					l[i][c] += imii_mjc * l[i][j];
+					m[i][j] -= imii_mjc * m[i][c];
+				}
+		}
+
 		return Pair.of(l, d);
 	}
 

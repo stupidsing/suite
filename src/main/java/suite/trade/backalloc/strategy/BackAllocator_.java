@@ -18,6 +18,7 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.MovingAverage;
 import suite.trade.MovingAverage.MovingRange;
+import suite.trade.Oscillator;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
@@ -31,6 +32,7 @@ public class BackAllocator_ {
 
 	private static BollingerBands bb = new BollingerBands();
 	private static MovingAverage ma = new MovingAverage();
+	private static Oscillator osc = new Oscillator();
 	private static Statistic stat = new Statistic();
 
 	public static BackAllocator bollingerBands() {

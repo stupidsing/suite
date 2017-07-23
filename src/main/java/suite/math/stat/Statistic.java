@@ -20,10 +20,8 @@ public class Statistic {
 	public double correlation(float[] xs, float[] ys) {
 		Int_Dbl xf = i -> xs[i];
 		Int_Dbl yf = i -> ys[i];
-		if (xs.length == ys.length)
-			return correlation(xf, yf, xs.length);
-		else
-			throw new RuntimeException("wrong input sizes");
+		mtx.sameLength(xs, ys);
+		return correlation(xf, yf, xs.length);
 	}
 
 	public double correlation(Int_Dbl xf, Int_Dbl yf, int length) {
@@ -42,18 +40,15 @@ public class Statistic {
 	}
 
 	public double covariance(float[] xs, float[] ys) {
-		int length = xs.length;
+		int length = mtx.sameLength(xs, ys);
 		double sumx = 0d, sumy = 0d;
 		double sumxy = 0d;
-		if (length == ys.length)
-			for (int i = 0; i < length; i++) {
-				double x = xs[i], y = ys[i];
-				sumx += x;
-				sumy += y;
-				sumxy += x * y;
-			}
-		else
-			throw new RuntimeException("wrong input sizes");
+		for (int i = 0; i < length; i++) {
+			double x = xs[i], y = ys[i];
+			sumx += x;
+			sumy += y;
+			sumxy += x * y;
+		}
 		double il = 1d / length;
 		return (sumxy - sumx * sumy * il) * il;
 	}

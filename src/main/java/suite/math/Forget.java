@@ -11,12 +11,9 @@ public class Forget {
 	}
 
 	public static float[] forgetOn(float[] m, float[] n) {
-		int length = m.length;
-		if (length == n.length)
-			for (int i = 0; i < length; i++)
-				m[i] *= n[i];
-		else
-			throw new RuntimeException("wrong matrix sizes");
+		int length = mtx.sameLength(m, n);
+		for (int i = 0; i < length; i++)
+			m[i] *= n[i];
 		return m;
 	}
 
