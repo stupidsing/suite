@@ -446,11 +446,11 @@ public class BackAllocator_ {
 					.map2(symbol -> {
 						Fixie4<int[], int[], boolean[], boolean[]> fixie = fixieBySymbol.get(symbol);
 						float[] atrs = atrBySymbol.get(symbol);
-						int last = index - 1;
-						double unit = .01d / atrs[last];
 						int[] nHolds1 = fixie.get0();
 						int[] nHolds2 = fixie.get1();
 						boolean[] wasWons1 = fixie.get2();
+						int last = index - 1;
+						double unit = .01d / atrs[last];
 						int nHold = (!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last];
 						return Math.min(-4, Math.max(4, nHold)) * unit;
 					}) //
