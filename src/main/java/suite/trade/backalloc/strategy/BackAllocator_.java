@@ -386,10 +386,11 @@ public class BackAllocator_ {
 								float price = prices[i];
 								int dlo = dlos_[i];
 								int dhi = dhis_[i];
+								int sign = sign(nHold);
 
-								if (sign(nHold) == sign(price, stopper) // stops
-										|| 0 < nHold && nExitDays <= dlo // long exit
-										|| nHold < 0 && nExitDays <= dhi) // short exit
+								if (sign == sign(price, stopper) // stops
+										|| sign == 1 && nExitDays <= dlo // long exit
+										|| sign == -1 && nExitDays <= dhi) // short exit
 									nHold = 0;
 
 								if (nEnterDays <= dlo) { // short entry
