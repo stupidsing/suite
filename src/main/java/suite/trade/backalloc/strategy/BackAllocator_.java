@@ -439,8 +439,8 @@ public class BackAllocator_ {
 						boolean[] wasWons1 = getWons.apply(nHolds1);
 						boolean[] wasWons2 = getWons.apply(nHolds2);
 
-						Get3<int[], int[], boolean[], boolean[]> get = Fixie.of(nHolds1, nHolds2, wasWons1, wasWons2);
-						return get;
+						Get3<int[], int[], boolean[], boolean[]> result = Fixie.of(nHolds1, nHolds2, wasWons1, wasWons2);
+						return result;
 					}) //
 					.toMap();
 
