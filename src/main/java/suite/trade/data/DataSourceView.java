@@ -82,7 +82,7 @@ public class DataSourceView<K, V> {
 	}
 
 	public TimeRange period(int index) {
-		return TimeRange.backTestDaysBefore(Time.ofEpochSec(akds.ts[index]).addDays(-tor), nLookbackDays, alignment);
+		return TimeRange.backTestDaysBefore(Time.ofEpochSec(akds.ts[index - 1]).addDays(-tor), nLookbackDays, alignment);
 	}
 
 }

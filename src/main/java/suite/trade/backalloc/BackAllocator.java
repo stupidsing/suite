@@ -44,10 +44,9 @@ public interface BackAllocator {
 	public interface OnDateTime {
 
 		/**
-		 * @return a portfolio consisting of list of symbols and potential
-		 *         values, or null if the strategy do not want to trade on that
-		 *         date. The assets will be allocated according to potential
-		 *         values pro-rata.
+		 * @return a portfolio consisting of list of symbols and potential values, or
+		 *         null if the strategy do not want to trade on that date. The assets
+		 *         will be allocated according to potential values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(int index);
 	}
@@ -55,7 +54,7 @@ public interface BackAllocator {
 	public default BackAllocator byTime(IntPredicate monthPred) {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
-			return index -> monthPred.test(Time.ofEpochSec(akds.ts[index]).month()) //
+			return index -> monthPred.test(Time.ofEpochSec(akds.ts[index - 1]).month()) //
 					? onDateTime.onDateTime(index) //
 					: Collections.emptyList();
 		};
@@ -121,7 +120,7 @@ public interface BackAllocator {
 			OnDateTime onDateTime = allocate(akds, indices);
 
 			return index -> {
-				Time date = Time.ofEpochSec(akds.ts[index]).date();
+				Time date = Time.ofEpochSec(akds.ts[index - 1]).date();
 				long t0 = date.addDays(-7).epochSec();
 				long tx = date.epochSec();
 				DataSource ids = indexDataSource.range(t0, tx);
@@ -146,7 +145,7 @@ public interface BackAllocator {
 				private List<Pair<String, Double>> result0;
 
 				public List<Pair<String, Double>> onDateTime(int index) {
-					Time time_ = Time.ofEpochSec(akds.ts[index]);
+					Time time_ = Time.ofEpochSec(akds.ts[index - 1]);
 					Time time1 = time_.addDays(-(time_.epochDay() % freq));
 					if (!Objects.equals(time0, time1)) {
 						time0 = time1;
