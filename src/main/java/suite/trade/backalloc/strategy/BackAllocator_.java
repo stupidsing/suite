@@ -30,7 +30,6 @@ import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil2.Fun2;
 import suite.util.FunUtil2.Fun3;
 import suite.util.String_;
 import suite.util.To;
@@ -412,8 +411,10 @@ public class BackAllocator_ {
 						int[] nHolds1 = enterExit.apply(new int[] { 20, 10, }, dlos, dhis);
 						int[] nHolds2 = enterExit.apply(new int[] { 55, 20, }, dlos, dhis);
 
-						Fun<int[], boolean[]> getWins = nHolds -> {
-							boolean[] isWins = new boolean[length];
+						Fun<int[], boolean[]> getWons = nHolds -> {
+							boolean[] wasWons = new boolean[length];
+							boolean wasWon = false;
+							boolean isWin = false;
 							int i = 0;
 
 							while (i < length) {
@@ -423,39 +424,20 @@ public class BackAllocator_ {
 								while (j < length && sign == sign(nHolds[j]))
 									j++;
 
-								boolean isWin = j < length && sign == sign(prices[i], prices[j]);
+								if (sign != 0) {
+									wasWon = isWin;
+									isWin = j < length && sign == sign(prices[i], prices[j]);
+								}
 
 								while (i < j)
-									isWins[i++] = isWin;
-							}
-
-							return isWins;
-						};
-
-						boolean[] isWins1 = getWins.apply(nHolds1);
-						boolean[] isWins2 = getWins.apply(nHolds2);
-
-						Fun2<int[], boolean[], boolean[]> getWons = (nHolds, isWins) -> {
-							boolean[] wasWons = new boolean[length];
-							boolean wasWon = false;
-							boolean isWin = false;
-							int sign0 = 0;
-
-							for (int i = 0; i < length; i++) {
-								int sign = sign(nHolds[i]);
-								if (sign0 != sign) {
-									wasWon = isWin;
-									isWin = sign != 0 ? isWins[i] : isWin;
-								}
-								sign0 = sign;
-								wasWons[i] = wasWon;
+									wasWons[i++] = wasWon;
 							}
 
 							return wasWons;
 						};
 
-						boolean[] wasWons1 = getWons.apply(nHolds1, isWins1);
-						boolean[] wasWons2 = getWons.apply(nHolds2, isWins2);
+						boolean[] wasWons1 = getWons.apply(nHolds1);
+						boolean[] wasWons2 = getWons.apply(nHolds2);
 
 						Get3<int[], int[], boolean[], boolean[]> get = Fixie.of(nHolds1, nHolds2, wasWons1, wasWons2);
 						return get;
@@ -471,7 +453,8 @@ public class BackAllocator_ {
 						int[] nHolds1 = fixie.get0();
 						int[] nHolds2 = fixie.get1();
 						boolean[] wasWons1 = fixie.get2();
-						return ((!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last]) * unit;
+						int nHold = (!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last];
+						return Math.min(-4, Math.max(4, nHold)) * unit;
 					}) //
 					.toList();
 		};
