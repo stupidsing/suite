@@ -32,39 +32,30 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_bb = ba_bb.cfgUnl(fun);
 		public final BackAllocConfiguration bac_donchian = ba_donchian.cfgUnl(fun);
 		public final BackAllocConfiguration bac_ema = BackAllocator_.ema().pick(3).cfgUnl(fun);
-		public final BackAllocConfiguration bac_facoil = ba_facoil.cfgUnl(fun);
-		public final BackAllocConfiguration bac_january = BackAllocator_.ofSingle(Asset.hsiSymbol).january().cfgUnl(fun_hsi);
-		public final BackAllocConfiguration bac_hsi = BackAllocConfiguration.ofSingle(Asset.hsi);
-		public final BackAllocConfiguration bac_mix = BackAllocator_.sum(ba_bb, ba_donchian).cfgUnl(fun);
 		public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).cfgUnl(fun);
 		public final BackAllocConfiguration bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdExtend(9).cfgUnl(fun);
 		public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
-		public final BackAllocConfiguration bac_revdd = BackAllocator_.revDrawdown().holdExtend(40).cfgUnl(fun);
-		public final BackAllocConfiguration bac_rsi = BackAllocator_.rsi().cfgUnl(fun);
-		public final BackAllocConfiguration bac_sar = BackAllocator_.sar().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sell = BackAllocator_.cash().cfgUnl(fun);
-		public final BackAllocConfiguration bac_sellInMay = BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi);
-		public final BackAllocConfiguration bac_turtles = BackAllocator_.turtles().cfgUnl(fun);
 		public final BackAllocConfiguration bac_tma = BackAllocator_.tripleMovingAvgs().cfgUnl(fun);
 
 		public final Streamlet2<String, BackAllocConfiguration> bacByName = Read //
 				.<String, BackAllocConfiguration> empty2() //
-				.cons("hsi", bac_hsi) //
+				.cons("hsi", BackAllocConfiguration.ofSingle(Asset.hsi)) //
 				.cons("bb", bac_bb) //
 				.cons("donchian", bac_donchian) //
 				.cons("ema", bac_ema) //
-				.cons("facoil", bac_facoil) //
-				.cons("january", bac_january) //
+				.cons("facoil", ba_facoil.cfgUnl(fun)) //
+				.cons("january", BackAllocator_.ofSingle(Asset.hsiSymbol).january().cfgUnl(fun_hsi)) //
 				.cons("lr", BackAllocator_.lastReturn(0, 2).cfgUnl(fun)) //
-				.cons("mix", bac_mix) //
+				.cons("mix", BackAllocator_.sum(ba_bb, ba_donchian).cfgUnl(fun)) //
 				.cons("pmamr", bac_pmamr) //
 				.cons("pmmmr", bac_pmmmr) //
 				.cons("revco", bac_revco) //
-				.cons("revdd", bac_revdd) //
-				.cons("rsi", bac_rsi) //
-				.cons("sar", bac_sar) //
-				.cons("sellInMay", bac_sellInMay) //
-				.cons("turtles", bac_turtles) //
+				.cons("revdd", BackAllocator_.revDrawdown().holdExtend(40).cfgUnl(fun)) //
+				.cons("rsi", BackAllocator_.rsi().cfgUnl(fun)) //
+				.cons("sar", BackAllocator_.sar().cfgUnl(fun)) //
+				.cons("sellInMay", BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi)) //
+				.cons("turtles", BackAllocator_.turtles().cfgUnl(fun)) //
 				.cons("tma", bac_tma);
 
 		public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {
