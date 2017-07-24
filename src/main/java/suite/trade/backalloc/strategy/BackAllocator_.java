@@ -369,12 +369,10 @@ public class BackAllocator_ {
 	}
 
 	// http://www.metastocktools.com/downloads/turtlerules.pdf
-	public static BackAllocator turtles() {
+	public static BackAllocator turtles(int sys1EnterDays, int sys1ExitDays, int sys2EnterDays, int sys2ExitDays) {
 		int maxUnits = 4;
 		int maxUnitsTotal = 12;
 		int stopN = 2;
-		int sys1EnterDays = 20, sys1ExitDays = 10;
-		int sys2EnterDays = 55, sys2ExitDays = 20;
 
 		return (akds, indices) -> {
 			Streamlet2<String, DataSource> dsByKey = akds.dsByKey;
@@ -498,7 +496,6 @@ public class BackAllocator_ {
 						.toList();
 			};
 		};
-
 	}
 
 	public static BackAllocator variableBollingerBands() {

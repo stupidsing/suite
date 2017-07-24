@@ -55,7 +55,7 @@ public class BackAllocConfigurations {
 				.cons("rsi", BackAllocator_.rsi().cfgUnl(fun)) //
 				.cons("sar", BackAllocator_.sar().cfgUnl(fun)) //
 				.cons("sellInMay", BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi)) //
-				.cons("turtles", BackAllocator_.turtles().cfgUnl(fun)) //
+				.cons("turtles", BackAllocator_.turtles(20, 10, 55, 20).cfgUnl(fun)) //
 				.cons("tma", bac_tma);
 
 		public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {
