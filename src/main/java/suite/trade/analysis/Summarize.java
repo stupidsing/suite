@@ -69,7 +69,8 @@ public class Summarize {
 		double amount0 = account0.cash();
 		double amount1 = account1.cash();
 
-		return Read.from2(Trade_.portfolio(trades0)) //
+		return Read //
+				.from2(Trade_.portfolio(trades0)) //
 				.map((symbol, nShares) -> {
 					Asset asset = cfg.queryCompany(symbol);
 					float price = priceBySymbol.get(symbol);
