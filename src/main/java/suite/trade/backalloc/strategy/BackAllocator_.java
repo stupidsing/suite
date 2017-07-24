@@ -394,8 +394,8 @@ public class BackAllocator_ {
 								int sign = sign(nHold);
 
 								if (sign == sign(price, stopper) // stops
-										|| sign == 1 && nExitDays <= dlo // long exit
-										|| sign == -1 && nExitDays <= dhi) // short exit
+										|| sign == 1 && nExitDays <= dlo // exit
+										|| sign == -1 && nExitDays <= dhi) // exit
 									nHold = 0;
 
 								if (nEnterDays <= dlo) { // short entry
