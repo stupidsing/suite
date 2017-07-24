@@ -477,12 +477,14 @@ public class BackAllocator_ {
 						.toList();
 
 				List<Pair<String, Integer>> m1 = new ArrayList<>();
-				int sum = 0;
+				int[] sums = new int[2];
 
 				for (Pair<String, Integer> pair : m0) {
-					int sum1 = Math.min(maxUnitsTotal, sum + pair.t1);
-					m1.add(Pair.of(pair.t0, sum1 - sum));
-					sum1 = sum;
+					int n = pair.t1;
+					int sign = 0 < n ? 0 : 1;
+					int sum0 = sums[sign];
+					int sum1 = Math.max(-maxUnitsTotal, Math.min(maxUnitsTotal, sum0 + n));
+					m1.add(Pair.of(pair.t0, (sums[sign] = sum1) - sum0));
 				}
 
 				return Read //
