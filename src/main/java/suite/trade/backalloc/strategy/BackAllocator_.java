@@ -310,6 +310,21 @@ public class BackAllocator_ {
 		return rsi_(32, .3d, .7d);
 	}
 
+	public static BackAllocator sar() {
+		return (akds, indices) -> {
+			Map<String, float[]> sarsBySymbol = akds.dsByKey //
+					.mapValue(osc::sar) //
+					.toMap();
+
+			return index -> akds.dsByKey //
+					.map2((symbol, ds) -> {
+						int last = index - 1;
+						return (double) sign(sarsBySymbol.get(symbol)[last], ds.prices[last]);
+					}) //
+					.toList();
+		};
+	}
+
 	public static BackAllocator sum(BackAllocator... bas) {
 		return (akds, indices) -> {
 			Streamlet<OnDateTime> odts = Read.from(bas) //

@@ -41,6 +41,7 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
 		public final BackAllocConfiguration bac_revdd = BackAllocator_.revDrawdown().holdExtend(40).cfgUnl(fun);
 		public final BackAllocConfiguration bac_rsi = BackAllocator_.rsi().cfgUnl(fun);
+		public final BackAllocConfiguration bac_sar = BackAllocator_.sar().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sell = BackAllocator_.cash().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sellInMay = BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi);
 		public final BackAllocConfiguration bac_turtles = BackAllocator_.turtles().cfgUnl(fun);
@@ -61,6 +62,7 @@ public class BackAllocConfigurations {
 				.cons("revco", bac_revco) //
 				.cons("revdd", bac_revdd) //
 				.cons("rsi", bac_rsi) //
+				.cons("sar", bac_sar) //
 				.cons("sellInMay", bac_sellInMay) //
 				.cons("turtles", bac_turtles) //
 				.cons("tma", bac_tma);
