@@ -473,7 +473,7 @@ public class BackAllocator_ {
 							int last = index - 1;
 							return (!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last];
 						}) //
-						.sortByValue((nHold0, nHold1) -> Integer.compare(nHold1, nHold0)) //
+						.sortByValue((nHold0, nHold1) -> Integer.compare(Math.abs(nHold1), Math.abs(nHold0))) //
 						.toList();
 
 				List<Pair<String, Integer>> m1 = new ArrayList<>();
