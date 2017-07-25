@@ -14,6 +14,7 @@ import suite.math.stat.BollingerBands;
 import suite.math.stat.Quant;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.MeanVariance;
+import suite.math.stat.TimeSeries;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.IntInt_Obj;
@@ -41,6 +42,34 @@ public class BackAllocator_ {
 	private static MovingAverage ma = new MovingAverage();
 	private static Oscillator osc = new Oscillator();
 	private static Statistic stat = new Statistic();
+	private static TimeSeries ts = new TimeSeries();
+
+	public static BackAllocator bbSlope() {
+		return (akds, indices) -> {
+			Streamlet2<String, Pair<float[], float[]>> pairBySymbol = akds.dsByKey //
+					.mapValue(ds -> {
+						float[] percentbs = bb.bb(ds.prices, 32, 0, 2f).percentbs;
+						float[] ma_ = ma.movingAvg(percentbs, 6);
+						float[] diffs = ts.differences(3, ma_);
+						return Pair.of(percentbs, diffs);
+					}) //
+					.collect(As::streamlet2);
+
+			return index -> pairBySymbol //
+					.mapValue(pair -> {
+						int last = index - 1;
+						float percentb = pair.t0[last];
+						float diff = pair.t1[last];
+						if (percentb < .2d && .015d < diff)
+							return 1d;
+						else if (-.8d < percentb && diff < -.015d)
+							return -1d;
+						else
+							return 0d;
+					}) //
+					.toList();
+		};
+	}
 
 	public static BackAllocator bollingerBands() {
 		return bollingerBands_(32, 0, 2f);
@@ -532,7 +561,7 @@ public class BackAllocator_ {
 
 			Map<String, float[]> holdsBySymbol = dsBySymbol //
 					.mapValue(ds -> {
-						float[] percentbs = bb.bb(ds.prices, backPos0, backPos1, k).percentb;
+						float[] percentbs = bb.bb(ds.prices, backPos0, backPos1, k).percentbs;
 						int length = percentbs.length;
 						float[] holds = new float[length];
 						double hold = 0d;

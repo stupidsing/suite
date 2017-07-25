@@ -42,6 +42,7 @@ public class BackAllocConfigurations {
 				.<String, BackAllocConfiguration> empty2() //
 				.cons("hsi", BackAllocConfiguration.ofSingle(Asset.hsi)) //
 				.cons("bb", bac_bb) //
+				.cons("bbSlope", BackAllocator_.bbSlope().cfgUnl(fun)) //
 				.cons("donchian", bac_donchian) //
 				.cons("ema", bac_ema) //
 				.cons("facoil", ba_facoil.cfgUnl(fun)) //

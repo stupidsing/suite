@@ -302,7 +302,7 @@ public class StatisticalArbitrageTest {
 
 		List<Pair<String, Double>> volBySymbol = akds.dsByKey //
 				.map2((symbol, ds) -> {
-					float[] bandwidths0 = bb.bb(ds.prices, 32, 0, 2f).bandwidth;
+					float[] bandwidths0 = bb.bb(ds.prices, 32, 0, 2f).bandwidths;
 					float[] returns0 = ds.returns();
 					float[] bandwidths1 = ts.drop(1, bandwidths0);
 					float[] returns1 = ts.drop(1, returns0);

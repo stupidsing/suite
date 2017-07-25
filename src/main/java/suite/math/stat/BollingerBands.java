@@ -18,17 +18,17 @@ public class BollingerBands {
 	}
 
 	public class Bb {
-		public final float[] lower;
-		public final float[] upper;
-		public final float[] percentb;
-		public final float[] bandwidth;
+		public final float[] lowers;
+		public final float[] uppers;
+		public final float[] percentbs;
+		public final float[] bandwidths;
 
 		private Bb(float[] fs, int backPos0, int backPos1, float k) {
 			int length = fs.length;
-			lower = new float[length];
-			upper = new float[length];
-			percentb = new float[length];
-			bandwidth = new float[length];
+			lowers = new float[length];
+			uppers = new float[length];
+			percentbs = new float[length];
+			bandwidths = new float[length];
 
 			for (int i = 0; i < length; i++) {
 				int i1 = i + 1;
@@ -39,10 +39,10 @@ public class BollingerBands {
 				double bbl = mv.mean - ksd;
 				double bbu = mv.mean + ksd;
 				double diff = bbu - bbl;
-				lower[i] = (float) bbl;
-				upper[i] = (float) bbu;
-				percentb[i] = (float) ((fs[i] - bbl) / diff);
-				bandwidth[i] = (float) (diff / mv.mean);
+				lowers[i] = (float) bbl;
+				uppers[i] = (float) bbu;
+				percentbs[i] = (float) ((fs[i] - bbl) / diff);
+				bandwidths[i] = (float) (diff / mv.mean);
 			}
 		}
 	}
