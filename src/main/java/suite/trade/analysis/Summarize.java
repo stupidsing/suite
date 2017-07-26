@@ -59,7 +59,7 @@ public class Summarize {
 		}
 
 		Summarize_ overall = summarize_(trades, priceBySymbol);
-		log.sink("Overall:" + overall.out);
+		log.sink("\nOverall:" + overall.out);
 
 		// profit and loss
 		Map<K, Double> pnlByKey = sellAll(trades, priceBySymbol) //
