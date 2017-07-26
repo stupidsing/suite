@@ -28,19 +28,22 @@ public class ConfigurationImpl implements Configuration {
 	private Sina sina = new Sina();
 	private Yahoo yahoo = new Yahoo();
 
-	private Src srcHkd__ = new Src(hkd::quote, hkd::dataSource);
-	private Src srcHkex_ = new Src(sina::quote, yahoo::dataSourceL1);
-	private Src srcIndex = new Src(yahoo::quote, yahoo::dataSourceL1);
-	private Src srcNymex = new Src(yahoo::quote, quandl::dataSourceCsv);
-	private Src srcNone_ = new Src(google::quote, null);
+	private Src srcHkd__ = new Src(hkd::queryCompany, hkd::quote, hkd::dataSource);
+	private Src srcHkex_ = new Src(hkex::queryCompany, sina::quote, yahoo::dataSourceL1);
+	private Src srcIndex = new Src(null, yahoo::quote, yahoo::dataSourceL1);
+	private Src srcNymex = new Src(null, yahoo::quote, quandl::dataSourceCsv);
+	private Src srcNone_ = new Src(null, google::quote, null);
 
 	private class Src {
+		private Fun<String, Asset> queryFun;
 		private Fun<Set<String>, Map<String, Float>> quoteFun;
 		private Fun2<String, TimeRange, DataSource> dataSourceFun;
 
 		private Src( //
+				Fun<String, Asset> queryFun, //
 				Fun<Set<String>, Map<String, Float>> quoteFun, //
 				Fun2<String, TimeRange, DataSource> dataSourceFun) {
+			this.queryFun = queryFun;
 			this.quoteFun = quoteFun;
 			this.dataSourceFun = dataSourceFun;
 		}
@@ -59,7 +62,7 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	public Asset queryCompany(String symbol) {
-		return filter(symbol) ? hkex.queryCompany(symbol) : null;
+		return filter(symbol) ? src(symbol).queryFun.apply(symbol) : null;
 	}
 
 	public Streamlet<Asset> queryCompaniesByMarketCap(Time time) {

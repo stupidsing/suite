@@ -17,6 +17,13 @@ public class Hkd {
 			throw new RuntimeException();
 	}
 
+	public Asset queryCompany(String symbol) {
+		if (String_.equals(symbol, Asset.cashSymbol))
+			return Asset.cash;
+		else
+			throw new RuntimeException();
+	}
+
 	public Map<String, Float> quote(Set<String> symbols) {
 		return Read.from(symbols) //
 				.map2(symbol -> {

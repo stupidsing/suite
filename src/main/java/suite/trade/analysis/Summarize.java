@@ -49,7 +49,7 @@ public class Summarize {
 		Map<K, String> summaryByKey = trades //
 				.groupBy(fun) //
 				.filterKey(key -> key != null) //
-				.mapValue(trades_ -> summarize_(Read.from(trades_), priceBySymbol)) //
+				.mapValue(trades_ -> summarize_(Read.from(trades_), priceBySymbol).out) //
 				.toMap();
 
 		for (Entry<K, String> e : summaryByKey.entrySet()) {
@@ -58,27 +58,30 @@ public class Summarize {
 			log.sink("\nFor strategy " + key + ":" + summary);
 		}
 
-		log.sink("Overall:" + summarize_(trades, priceBySymbol));
+		Summarize_ overall = summarize_(trades, priceBySymbol);
+		log.sink("Overall:" + overall.out);
 
 		// profit and loss
 		Map<K, Double> pnlByKey = sellAll(trades, priceBySymbol) //
 				.groupBy(fun, t -> (double) Account.ofHistory(t).cash()) //
 				.toMap();
 
-		return new SummarizeByStrategy<>(sb.toString(), pnlByKey);
+		return new SummarizeByStrategy<>(sb.toString(), overall.account, pnlByKey);
 	}
 
 	public class SummarizeByStrategy<K> {
 		public final String log;
+		public final Account overall;
 		public final Map<K, Double> pnlByKey;
 
-		private SummarizeByStrategy(String log, Map<K, Double> pnlBySymbol) {
+		private SummarizeByStrategy(String log, Account overall, Map<K, Double> pnlBySymbol) {
 			this.log = log;
+			this.overall = overall;
 			this.pnlByKey = pnlBySymbol;
 		}
 	}
 
-	private String summarize_(Streamlet<Trade> trades_, Map<String, Float> priceBySymbol) {
+	private Summarize_ summarize_(Streamlet<Trade> trades_, Map<String, Float> priceBySymbol) {
 		Streamlet<Trade> trades0 = trades_;
 		Streamlet<Trade> trades1 = sellAll(trades0, priceBySymbol);
 		Account account0 = Account.ofHistory(trades0);
@@ -86,7 +89,7 @@ public class Summarize {
 		double amount0 = account0.cash();
 		double amount1 = account1.cash();
 
-		return Read //
+		String out = Read //
 				.from2(Trade_.portfolio(trades0)) //
 				.map((symbol, nShares) -> {
 					Asset asset = cfg.queryCompany(symbol);
@@ -99,6 +102,18 @@ public class Summarize {
 				.append(account0.transactionSummary(cfg::transactionFee)) //
 				.map(m -> "\n" + m) //
 				.collect(As.joined());
+
+		return new Summarize_(account0, out);
+	}
+
+	private class Summarize_ {
+		public final Account account;
+		public final String out;
+
+		public Summarize_(Account account, String out) {
+			this.account = account;
+			this.out = out;
+		}
 	}
 
 	private Streamlet<Trade> sellAll(Streamlet<Trade> trades, Map<String, Float> priceBySymbol) {
