@@ -95,9 +95,9 @@ public class DailyMain extends ExecutableProgram {
 			sellForEarn("sellpool");
 		}
 
-		SummarizeByStrategy<Object> byStrategy = Summarize.of(cfg).summarize();
-		sb.append(byStrategy.log);
-		sb.append("\n" + byStrategy.pnlByKey + "\n");
+		SummarizeByStrategy<Object> sbs = Summarize.of(cfg).summarize();
+		sb.append(sbs.log);
+		sb.append("\n" + sbs.pnlByKey + "\n");
 
 		Streamlet2<String, Trade> strategyTrades = Read.from(results) //
 				.concatMap2(result -> Read.from(result.trades).map2(trade -> result.strategy, trade -> trade)) //

@@ -31,8 +31,8 @@ public class BackAllocBackTestTest {
 	public void testBackTest() {
 		BackAllocator backAllocator = MovingAvgMeanReversionBackAllocator0.of(log);
 		Simulate sim = runner.backTest(backAllocator, period);
-		SummarizeByStrategy<String> byStrategy = Summarize.of(cfg, Read.from(sim.trades)).summarize(trade -> trade.symbol);
-		System.out.println(byStrategy.log);
+		SummarizeByStrategy<String> sbs = Summarize.of(cfg, Read.from(sim.trades)).summarize(trade -> trade.symbol);
+		System.out.println(sbs.log);
 		assertGrowth(out(sim));
 	}
 
