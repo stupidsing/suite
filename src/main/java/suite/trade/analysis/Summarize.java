@@ -46,8 +46,8 @@ public class Summarize {
 		return summarize(fun, symbol -> {
 			float close_ = cfg.dataSource(symbol).last().t1;
 			float price = priceBySymbol.get(symbol);
-			String percentStr = String.format("%.1f", (price - close_) * 100d / close_) + "%";
-			return (percentStr.startsWith("-") ? "" : "+") + percentStr;
+			String percent = String.format("%.1f", (price - close_) * 100d / close_) + "%";
+			return (percent.startsWith("-") ? "" : "+") + percent;
 		});
 	}
 
