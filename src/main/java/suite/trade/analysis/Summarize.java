@@ -43,15 +43,6 @@ public class Summarize {
 	}
 
 	public <K> SummarizeByStrategy<K> summarize(Fun<Trade, K> fun) {
-		return summarize(fun, symbol -> {
-			float close_ = cfg.dataSource(symbol).last().t1;
-			float price = priceBySymbol.get(symbol);
-			String percent = String.format("%.1f", (price - close_) * 100d / close_) + "%";
-			return (percent.startsWith("-") ? "" : "+") + percent;
-		});
-	}
-
-	private <K> SummarizeByStrategy<K> summarize(Fun<Trade, K> fun, Iterate<String> infoFun) {
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = sb::append;
 
@@ -67,7 +58,13 @@ public class Summarize {
 			log.sink("\nFor strategy " + key + ":" + summary);
 		}
 
-		Summarize_ overall = summarize_(trades, priceBySymbol, infoFun);
+		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
+			float close_ = cfg.dataSource(symbol).last().t1;
+			float price = priceBySymbol.get(symbol);
+			String percent = String.format("%.1f", (price - close_) * 100d / close_) + "%";
+			return (percent.startsWith("-") ? "" : "+") + percent;
+		});
+
 		log.sink("\nOverall:" + overall.out);
 
 		// profit and loss
