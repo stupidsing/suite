@@ -349,7 +349,7 @@ public interface BackAllocator {
 					entriesBySymbol.put(symbol, entries1);
 				}
 
-				mutable.set(potentialBySymbol1);
+				mutable.update(potentialBySymbol1);
 
 				// re-assemble the entries into current profile
 				return Read //
