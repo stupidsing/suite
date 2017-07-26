@@ -285,9 +285,7 @@ public interface BackAllocator {
 		return byTime(month -> month < 5 || 11 <= month);
 	}
 
-	public default BackAllocator stopLoss(float percent) {
-		double stopLoss = .98d;
-
+	public default BackAllocator stopLoss(double percent) {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
 			Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
@@ -300,6 +298,7 @@ public interface BackAllocator {
 				Map<String, Double> potentialBySymbol0 = mutable.get();
 				Map<String, Double> potentialBySymbol1 = Read.from2(potentialBySymbol).toMap();
 
+				// find out the transactions
 				Map<String, Double> diffBySymbol = Read //
 						.from(Set_.union(potentialBySymbol0.keySet(), potentialBySymbol1.keySet())) //
 						.map2(symbol -> {
@@ -309,6 +308,7 @@ public interface BackAllocator {
 						}) //
 						.toMap();
 
+				// check on each stock symbol
 				for (Entry<String, Double> e : diffBySymbol.entrySet()) {
 					String symbol = e.getKey();
 					double diff = e.getValue();
@@ -325,6 +325,8 @@ public interface BackAllocator {
 						float entryPrice = entry0.t1;
 						double cancellation;
 
+						// a recent sell would cancel out the highest price buy
+						// a recent buy would cancel out the lowest price sell
 						if (bs == -1)
 							cancellation = Math.min(0, Math.max(diff, -potential0));
 						else if (bs == 1)
@@ -335,8 +337,9 @@ public interface BackAllocator {
 						double potential1 = potential0 + cancellation;
 						diff -= cancellation;
 
-						if (potential1 < 0 && price < entryPrice * stopLoss //
-								|| 0 < potential1 && entryPrice < price * stopLoss)
+						// drop entries that got past their stopping prices
+						if (potential1 < 0 && price < entryPrice * percent //
+								|| 0 < potential1 && entryPrice < price * percent)
 							entries1.add(DblFltPair.of(potential1, entryPrice));
 					}
 
@@ -348,6 +351,7 @@ public interface BackAllocator {
 
 				mutable.set(potentialBySymbol1);
 
+				// re-assemble the entries into current profile
 				return Read //
 						.multimap(entriesBySymbol) //
 						.groupBy(entries -> entries.collectAsDouble(Obj_Dbl.sum(pair -> pair.t0))) //
