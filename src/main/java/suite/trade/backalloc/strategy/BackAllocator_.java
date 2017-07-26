@@ -156,7 +156,7 @@ public class BackAllocator_ {
 
 					for (; i0 <= i; i--) {
 						float price = prices[i];
-						int dir1 = sign(price, lastPrice);
+						int dir1 = Quant.sign(price, lastPrice);
 
 						if (dir != 0 && dir != dir1) {
 							double r = (index - io) / (double) (index - i);
@@ -164,7 +164,7 @@ public class BackAllocator_ {
 						} else
 							dir = dir1;
 
-						if (sign(price, priceo) == dir) {
+						if (Quant.sign(price, priceo) == dir) {
 							priceo = price;
 							io = i;
 						}
@@ -260,8 +260,8 @@ public class BackAllocator_ {
 						float movingAvg1 = movingAvg1BySymbol.get(symbol)[last];
 						float movingMedian0 = movingRange0BySymbol.get(symbol)[last].median;
 						float movingMedian1 = movingRange1BySymbol.get(symbol)[last].median;
-						int sign0 = sign(movingAvg0, movingMedian0);
-						int sign1 = sign(movingAvg1, movingMedian1);
+						int sign0 = Quant.sign(movingAvg0, movingMedian0);
+						int sign1 = Quant.sign(movingAvg1, movingMedian1);
 						return sign0 == sign1 ? (double) sign0 : 0d;
 					}) //
 					.toList();
@@ -348,7 +348,7 @@ public class BackAllocator_ {
 			return index -> akds.dsByKey //
 					.map2((symbol, ds) -> {
 						int last = index - 1;
-						return (double) sign(sarsBySymbol.get(symbol)[last], ds.prices[last]);
+						return (double) Quant.sign(sarsBySymbol.get(symbol)[last], ds.prices[last]);
 					}) //
 					.toList();
 		};
@@ -389,8 +389,8 @@ public class BackAllocator_ {
 						float movingAvg0 = movingAvg0BySymbol.get(symbol)[last];
 						float movingAvg1 = movingAvg1BySymbol.get(symbol)[last];
 						float movingAvg2 = movingAvg2BySymbol.get(symbol)[last];
-						int sign0 = sign(movingAvg0, movingAvg1);
-						int sign1 = sign(movingAvg1, movingAvg2);
+						int sign0 = Quant.sign(movingAvg0, movingAvg1);
+						int sign1 = Quant.sign(movingAvg1, movingAvg2);
 						return sign0 == sign1 ? (double) -sign0 : 0d;
 					}) //
 					.toList();
@@ -416,7 +416,7 @@ public class BackAllocator_ {
 						IntFunction<int[]> getDays = c -> Ints_.toArray(length, i -> {
 							float price = prices[i];
 							int j = i, j1;
-							while (0 <= (j1 = j - 1) && sign(prices[j1], price) == c)
+							while (0 <= (j1 = j - 1) && Quant.sign(prices[j1], price) == c)
 								j = j1;
 							return i - j;
 						});
@@ -433,9 +433,9 @@ public class BackAllocator_ {
 								float price = prices[i];
 								int dlo = dlos[i];
 								int dhi = dhis[i];
-								int sign = sign(nHold);
+								int sign = Quant.sign(nHold);
 
-								if (sign == sign(price, stopper) // stops
+								if (sign == Quant.sign(price, stopper) // stops
 										|| sign == 1 && nExitDays <= dlo // exit
 										|| sign == -1 && nExitDays <= dhi) // exit
 									nHold = 0;
@@ -466,15 +466,15 @@ public class BackAllocator_ {
 							int i = 0;
 
 							while (i < length) {
-								int sign = sign(nHolds[i]);
+								int sign = Quant.sign(nHolds[i]);
 								int j = i;
 
-								while (j < length && sign == sign(nHolds[j]))
+								while (j < length && sign == Quant.sign(nHolds[j]))
 									j++;
 
 								if (sign != 0) {
 									wasWon = isWin;
-									isWin = j < length && sign == sign(prices[i], prices[j]);
+									isWin = j < length && sign == Quant.sign(prices[i], prices[j]);
 								}
 
 								while (i < j)
@@ -607,19 +607,6 @@ public class BackAllocator_ {
 						return 0d;
 				}) //
 				.toList();
-	}
-
-	private static int sign(float f) {
-		return sign(0f, f);
-	}
-
-	private static int sign(float f0, float f1) {
-		if (f0 < f1)
-			return 1;
-		else if (f1 < f0)
-			return -1;
-		else
-			return 0;
 	}
 
 }

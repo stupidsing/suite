@@ -1,6 +1,7 @@
 package suite.trade.backalloc;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -11,10 +12,13 @@ import java.util.Objects;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 
+import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.math.stat.Quant;
 import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
+import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.adt.pair.DblFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -29,6 +33,7 @@ import suite.trade.data.DataSource.Datum;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
+import suite.util.Set_;
 import suite.util.String_;
 
 /**
@@ -44,9 +49,10 @@ public interface BackAllocator {
 	public interface OnDateTime {
 
 		/**
-		 * @return a portfolio consisting of list of symbols and potential values, or
-		 *         null if the strategy do not want to trade on that date. The assets
-		 *         will be allocated according to potential values pro-rata.
+		 * @return a portfolio consisting of list of symbols and potential
+		 *         values, or null if the strategy do not want to trade on that
+		 *         date. The assets will be allocated according to potential
+		 *         values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(int index);
 	}
@@ -277,6 +283,77 @@ public interface BackAllocator {
 
 	public default BackAllocator sellInMay() {
 		return byTime(month -> month < 5 || 11 <= month);
+	}
+
+	public default BackAllocator stopLoss(float percent) {
+		double stopLoss = .98d;
+
+		return (akds, indices) -> {
+			OnDateTime onDateTime = allocate(akds, indices);
+			Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
+			Mutable<Map<String, Double>> mutable = Mutable.of(new HashMap<>());
+			Map<String, List<DblFltPair>> entriesBySymbol = new HashMap<>();
+
+			return index -> {
+				int last = index - 1;
+				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(index);
+				Map<String, Double> potentialBySymbol0 = mutable.get();
+				Map<String, Double> potentialBySymbol1 = Read.from2(potentialBySymbol).toMap();
+
+				Map<String, Double> diffBySymbol = Read //
+						.from(Set_.union(potentialBySymbol0.keySet(), potentialBySymbol1.keySet())) //
+						.map2(symbol -> {
+							double potential0 = potentialBySymbol0.getOrDefault(symbol, 0d);
+							double potential1 = potentialBySymbol1.getOrDefault(symbol, 0d);
+							return potential1 - potential0;
+						}) //
+						.toMap();
+
+				for (Entry<String, Double> e : diffBySymbol.entrySet()) {
+					String symbol = e.getKey();
+					double diff = e.getValue();
+					int bs = Quant.sign(diff);
+					float price = dsBySymbol.get(symbol).prices[last];
+
+					List<DblFltPair> entries0 = entriesBySymbol.getOrDefault(symbol, new ArrayList<>());
+					List<DblFltPair> entries1 = new ArrayList<>();
+
+					Collections.sort(entries0, (pair0, pair1) -> -bs * Float.compare(pair0.t1, pair1.t1));
+
+					for (DblFltPair entry0 : entries0) {
+						double potential0 = entry0.t0;
+						float entryPrice = entry0.t1;
+						double cancellation;
+
+						if (bs == -1)
+							cancellation = Math.min(0, Math.max(diff, -potential0));
+						else if (bs == 1)
+							cancellation = Math.max(0, Math.min(diff, -potential0));
+						else
+							cancellation = 0d;
+
+						double potential1 = potential0 + cancellation;
+						diff -= cancellation;
+
+						if (potential1 < 0 && price < entryPrice * stopLoss //
+								|| 0 < potential1 && entryPrice < price * stopLoss)
+							entries1.add(DblFltPair.of(potential1, entryPrice));
+					}
+
+					if (diff != 0d)
+						entries1.add(DblFltPair.of(diff, price));
+
+					entriesBySymbol.put(symbol, entries1);
+				}
+
+				mutable.set(potentialBySymbol1);
+
+				return Read //
+						.multimap(entriesBySymbol) //
+						.groupBy(entries -> entries.collectAsDouble(Obj_Dbl.sum(pair -> pair.t0))) //
+						.toList();
+			};
+		};
 	}
 
 	public default BackAllocator unleverage() {

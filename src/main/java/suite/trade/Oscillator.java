@@ -92,6 +92,7 @@ public class Oscillator {
 		return obvs;
 	}
 
+	// Parabolic stop and reverse
 	public float[] sar(DataSource ds) {
 		float alpha = .02f;
 		int length = ds.ts.length;
