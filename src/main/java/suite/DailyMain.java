@@ -95,7 +95,7 @@ public class DailyMain extends ExecutableProgram {
 			sellForEarn("sellpool");
 		}
 
-		SummarizeByStrategy<Object> byStrategy = Summarize.of(cfg).out();
+		SummarizeByStrategy<Object> byStrategy = Summarize.of(cfg).summarize();
 		sb.append(byStrategy.log);
 		sb.append("\n" + byStrategy.pnlByKey + "\n");
 

@@ -38,18 +38,18 @@ public class Summarize {
 		this.priceBySymbol = priceBySymbol;
 	}
 
-	public SummarizeByStrategy<Object> out() {
-		return out(trade -> null);
+	public SummarizeByStrategy<Object> summarize() {
+		return summarize(trade -> null);
 	}
 
-	public <K> SummarizeByStrategy<K> out(Fun<Trade, K> fun) {
+	public <K> SummarizeByStrategy<K> summarize(Fun<Trade, K> fun) {
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = sb::append;
 
 		Map<K, String> summaryByKey = trades //
 				.groupBy(fun) //
 				.filterKey(key -> key != null) //
-				.mapValue(trades_ -> summarize(Read.from(trades_), priceBySymbol)) //
+				.mapValue(trades_ -> summarize_(Read.from(trades_), priceBySymbol)) //
 				.toMap();
 
 		for (Entry<K, String> e : summaryByKey.entrySet()) {
@@ -58,7 +58,7 @@ public class Summarize {
 			log.sink("\nFor strategy " + key + ":" + summary);
 		}
 
-		log.sink("Overall:" + summarize(trades, priceBySymbol));
+		log.sink("Overall:" + summarize_(trades, priceBySymbol));
 
 		// profit and loss
 		Map<K, Double> pnlByKey = sellAll(trades, priceBySymbol) //
@@ -78,7 +78,7 @@ public class Summarize {
 		}
 	}
 
-	private String summarize(Streamlet<Trade> trades_, Map<String, Float> priceBySymbol) {
+	private String summarize_(Streamlet<Trade> trades_, Map<String, Float> priceBySymbol) {
 		Streamlet<Trade> trades0 = trades_;
 		Streamlet<Trade> trades1 = sellAll(trades0, priceBySymbol);
 		Account account0 = Account.ofHistory(trades0);

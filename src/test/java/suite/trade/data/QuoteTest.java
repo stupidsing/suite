@@ -59,13 +59,13 @@ public class QuoteTest {
 	}
 
 	private Map<String, Double> summarizeOut(Fun<Trade, String> fun) {
-		SummarizeByStrategy<String> byStrategy = summarize.out(fun);
+		SummarizeByStrategy<String> byStrategy = summarize.summarize(fun);
 		System.out.println(byStrategy.log);
 		return byStrategy.pnlByKey;
 	}
 
 	private Map<String, Double> summarize(Fun<Trade, String> fun) {
-		return summarize.out(fun).pnlByKey;
+		return summarize.summarize(fun).pnlByKey;
 	}
 
 }

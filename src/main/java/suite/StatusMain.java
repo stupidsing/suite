@@ -21,7 +21,7 @@ public class StatusMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) {
 		Summarize summarize = Summarize.of(cfg);
-		SummarizeByStrategy<String> byStrategy = summarize.out(r -> r.strategy);
+		SummarizeByStrategy<String> byStrategy = summarize.summarize(r -> r.strategy);
 		System.out.println(byStrategy.log);
 		System.out.println(new TreeMap<>(byStrategy.pnlByKey));
 		return true;
