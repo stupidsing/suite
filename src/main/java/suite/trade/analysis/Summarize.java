@@ -3,14 +3,18 @@ package suite.trade.analysis;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.math.stat.Quant;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
 import suite.trade.Asset;
+import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.data.Configuration;
+import suite.trade.data.DataSource;
+import suite.trade.data.HkexUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
@@ -59,9 +63,11 @@ public class Summarize {
 		}
 
 		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
-			float close_ = cfg.dataSource(symbol).last().t1;
-			float price = priceBySymbol.get(symbol);
-			String percent = String.format("%.1f", (price - close_) * 100d / close_) + "%";
+			DataSource ds = cfg.dataSource(symbol);
+			boolean isMarketOpen = HkexUtil.isMarketOpen(Time.now());
+			float price0 = ds.get(isMarketOpen ? -1 : -2).t1;
+			float pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1;
+			String percent = String.format("%.1f", 100d * Quant.return_(price0, pricex)) + "%";
 			return (percent.startsWith("-") ? "" : "+") + percent;
 		});
 
