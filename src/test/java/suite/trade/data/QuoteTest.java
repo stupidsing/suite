@@ -61,11 +61,11 @@ public class QuoteTest {
 	private Map<String, Double> summarizeOut(Fun<Trade, String> fun) {
 		SummarizeByStrategy<String> byStrategy = summarize.out(fun);
 		System.out.println(byStrategy.log);
-		return byStrategy.pnlBySymbol;
+		return byStrategy.pnlByKey;
 	}
 
 	private Map<String, Double> summarize(Fun<Trade, String> fun) {
-		return summarize.out(fun).pnlBySymbol;
+		return summarize.out(fun).pnlByKey;
 	}
 
 }

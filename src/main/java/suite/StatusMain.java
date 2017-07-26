@@ -23,7 +23,7 @@ public class StatusMain extends ExecutableProgram {
 		Summarize summarize = Summarize.of(cfg);
 		SummarizeByStrategy<String> byStrategy = summarize.out(r -> r.strategy);
 		System.out.println(byStrategy.log);
-		System.out.println(new TreeMap<>(byStrategy.pnlBySymbol));
+		System.out.println(new TreeMap<>(byStrategy.pnlByKey));
 		return true;
 	}
 

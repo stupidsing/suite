@@ -38,7 +38,7 @@ public class Summarize {
 		this.priceBySymbol = priceBySymbol;
 	}
 
-	public <K> SummarizeByStrategy<K> out() {
+	public SummarizeByStrategy<Object> out() {
 		return out(trade -> null);
 	}
 
@@ -61,20 +61,20 @@ public class Summarize {
 		log.sink("Overall:" + summarize(trades, priceBySymbol));
 
 		// profit and loss
-		Map<K, Double> pnlBySymbol = sellAll(trades, priceBySymbol) //
+		Map<K, Double> pnlByKey = sellAll(trades, priceBySymbol) //
 				.groupBy(fun, t -> (double) Account.ofHistory(t).cash()) //
 				.toMap();
 
-		return new SummarizeByStrategy<>(sb.toString(), pnlBySymbol);
+		return new SummarizeByStrategy<>(sb.toString(), pnlByKey);
 	}
 
 	public class SummarizeByStrategy<K> {
 		public final String log;
-		public final Map<K, Double> pnlBySymbol;
+		public final Map<K, Double> pnlByKey;
 
 		private SummarizeByStrategy(String log, Map<K, Double> pnlBySymbol) {
 			this.log = log;
-			this.pnlBySymbol = pnlBySymbol;
+			this.pnlByKey = pnlBySymbol;
 		}
 	}
 
