@@ -12,9 +12,9 @@ import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 import suite.util.Object_;
-import suite.util.To;
 
 public class Summarize {
 
@@ -43,13 +43,22 @@ public class Summarize {
 	}
 
 	public <K> SummarizeByStrategy<K> summarize(Fun<Trade, K> fun) {
+		return summarize(fun, symbol -> {
+			float close_ = cfg.dataSource(symbol).last().t1;
+			float price = priceBySymbol.get(symbol);
+			String percentStr = String.format("%.1f", (price - close_) * 100d / close_) + "%";
+			return (percentStr.startsWith("-") ? "" : "+") + percentStr;
+		});
+	}
+
+	private <K> SummarizeByStrategy<K> summarize(Fun<Trade, K> fun, Iterate<String> infoFun) {
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = sb::append;
 
 		Map<K, String> summaryByKey = trades //
 				.groupBy(fun) //
 				.filterKey(key -> key != null) //
-				.mapValue(trades_ -> summarize_(Read.from(trades_), priceBySymbol).out) //
+				.mapValue(trades_ -> summarize_(Read.from(trades_), priceBySymbol, s -> null).out) //
 				.toMap();
 
 		for (Entry<K, String> e : summaryByKey.entrySet()) {
@@ -58,7 +67,7 @@ public class Summarize {
 			log.sink("\nFor strategy " + key + ":" + summary);
 		}
 
-		Summarize_ overall = summarize_(trades, priceBySymbol);
+		Summarize_ overall = summarize_(trades, priceBySymbol, infoFun);
 		log.sink("\nOverall:" + overall.out);
 
 		// profit and loss
@@ -81,7 +90,10 @@ public class Summarize {
 		}
 	}
 
-	private Summarize_ summarize_(Streamlet<Trade> trades_, Map<String, Float> priceBySymbol) {
+	private Summarize_ summarize_( //
+			Streamlet<Trade> trades_, //
+			Map<String, Float> priceBySymbol, //
+			Iterate<String> infoFun) {
 		Streamlet<Trade> trades0 = trades_;
 		Streamlet<Trade> trades1 = sellAll(trades0, priceBySymbol);
 		Account account0 = Account.ofHistory(trades0);
@@ -94,7 +106,11 @@ public class Summarize {
 				.map((symbol, nShares) -> {
 					Asset asset = cfg.queryCompany(symbol);
 					float price = priceBySymbol.get(symbol);
-					return asset + ": " + price + " * " + nShares + " = " + To.string(nShares * price);
+					String info = infoFun.apply(symbol);
+					return asset //
+							+ ": " + price + " * " + nShares //
+							+ " = " + ((long) (nShares * price)) //
+							+ (info != null ? " (" + info + ")" : "");
 				}) //
 				.sort(Object_::compare) //
 				.append("OWN = " + -amount0) //
