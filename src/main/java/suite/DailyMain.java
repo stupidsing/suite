@@ -24,6 +24,7 @@ import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.analysis.Summarize;
+import suite.trade.analysis.Summarize.SummarizeByStrategy;
 import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocConfigurations;
 import suite.trade.backalloc.BackAllocConfigurations.Bacs;
@@ -94,7 +95,9 @@ public class DailyMain extends ExecutableProgram {
 			sellForEarn("sellpool");
 		}
 
-		sb.append("\n" + Summarize.of(cfg).out(log) + "\n");
+		SummarizeByStrategy<Object> byStrategy = Summarize.of(cfg).out();
+		sb.append(byStrategy.log);
+		sb.append("\n" + byStrategy.pnlBySymbol + "\n");
 
 		Streamlet2<String, Trade> strategyTrades = Read.from(results) //
 				.concatMap2(result -> Read.from(result.trades).map2(trade -> result.strategy, trade -> trade)) //

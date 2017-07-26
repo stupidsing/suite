@@ -19,8 +19,9 @@ import suite.util.To;
 public class Summarize {
 
 	private Configuration cfg;
-	private Streamlet<Trade> trades;
-	private Map<String, Float> priceBySymbol;
+
+	public final Streamlet<Trade> trades;
+	public final Map<String, Float> priceBySymbol;
 
 	public static Summarize of(Configuration cfg) {
 		return of(cfg, cfg.queryHistory());
@@ -37,11 +38,14 @@ public class Summarize {
 		this.priceBySymbol = priceBySymbol;
 	}
 
-	public <K> Map<K, Double> out(Sink<String> log) {
-		return out(log, trade -> null);
+	public <K> SummarizeByStrategy<K> out() {
+		return out(trade -> null);
 	}
 
-	public <K> Map<K, Double> out(Sink<String> log, Fun<Trade, K> fun) {
+	public <K> SummarizeByStrategy<K> out(Fun<Trade, K> fun) {
+		StringBuilder sb = new StringBuilder();
+		Sink<String> log = sb::append;
+
 		Map<K, String> summaryByKey = trades //
 				.groupBy(fun) //
 				.filterKey(key -> key != null) //
@@ -56,9 +60,22 @@ public class Summarize {
 
 		log.sink("Overall:" + summarize(trades, priceBySymbol));
 
-		return sellAll(trades, priceBySymbol) // profit & loss
+		// profit and loss
+		Map<K, Double> pnlBySymbol = sellAll(trades, priceBySymbol) //
 				.groupBy(fun, t -> (double) Account.ofHistory(t).cash()) //
 				.toMap();
+
+		return new SummarizeByStrategy<>(sb.toString(), pnlBySymbol);
+	}
+
+	public class SummarizeByStrategy<K> {
+		public final String log;
+		public final Map<K, Double> pnlBySymbol;
+
+		private SummarizeByStrategy(String log, Map<K, Double> pnlBySymbol) {
+			this.log = log;
+			this.pnlBySymbol = pnlBySymbol;
+		}
 	}
 
 	private String summarize(Streamlet<Trade> trades_, Map<String, Float> priceBySymbol) {

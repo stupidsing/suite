@@ -8,17 +8,14 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Trade;
 import suite.trade.analysis.Summarize;
-import suite.util.FunUtil;
+import suite.trade.analysis.Summarize.SummarizeByStrategy;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class QuoteTest {
 
 	private Configuration cfg = new ConfigurationImpl();
 	private Summarize summarize = Summarize.of(cfg);
-
-	private Sink<String> silent = FunUtil.nullSink();
 
 	@Test
 	public void testQuote() {
@@ -40,17 +37,17 @@ public class QuoteTest {
 
 	@Test
 	public void testQuotes() {
-		System.out.println("P/L = " + summarize(r -> "HKEX", silent));
+		System.out.println("P/L = " + summarize(r -> "HKEX"));
 	}
 
 	@Test
 	public void testQuotesDetail() {
-		summarize(r -> "HKEX");
+		summarizeOut(r -> "HKEX");
 	}
 
 	@Test
 	public void testQuotesByStock() {
-		System.out.println(Read.from2(summarize(r -> r.symbol)) //
+		System.out.println(Read.from2(summarizeOut(r -> r.symbol)) //
 				.sortBy((symbol, gain) -> -gain) //
 				.map((symbol, gain) -> symbol + " " + To.string(gain) + "\n") //
 				.collect(As.joined()));
@@ -58,15 +55,17 @@ public class QuoteTest {
 
 	@Test
 	public void testQuotesByStrategies() {
-		System.out.println(summarize(r -> r.strategy));
+		System.out.println(summarizeOut(r -> r.strategy));
+	}
+
+	private Map<String, Double> summarizeOut(Fun<Trade, String> fun) {
+		SummarizeByStrategy<String> byStrategy = summarize.out(fun);
+		System.out.println(byStrategy.log);
+		return byStrategy.pnlBySymbol;
 	}
 
 	private Map<String, Double> summarize(Fun<Trade, String> fun) {
-		return summarize(fun, System.out::println);
-	}
-
-	private Map<String, Double> summarize(Fun<Trade, String> fun, Sink<String> log) {
-		return summarize.out(log, fun);
+		return summarize.out(fun).pnlBySymbol;
 	}
 
 }

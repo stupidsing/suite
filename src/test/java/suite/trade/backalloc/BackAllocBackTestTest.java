@@ -10,6 +10,7 @@ import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.analysis.BackTester;
 import suite.trade.analysis.Summarize;
+import suite.trade.analysis.Summarize.SummarizeByStrategy;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator;
 import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator0;
@@ -30,7 +31,8 @@ public class BackAllocBackTestTest {
 	public void testBackTest() {
 		BackAllocator backAllocator = MovingAvgMeanReversionBackAllocator0.of(log);
 		Simulate sim = runner.backTest(backAllocator, period);
-		Summarize.of(cfg, Read.from(sim.trades)).out(System.out::println, trade -> trade.symbol);
+		SummarizeByStrategy<String> byStrategy = Summarize.of(cfg, Read.from(sim.trades)).out(trade -> trade.symbol);
+		System.out.println(byStrategy.log);
 		assertGrowth(out(sim));
 	}
 
