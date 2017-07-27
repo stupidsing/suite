@@ -281,11 +281,15 @@ public class Yahoo {
 	}
 
 	private long getOpenTimeBefore(String exchange, long t) {
-		return !String_.equals(exchange, "HKG") ? t : HkexUtil.getOpenTimeBefore(Time.ofEpochSec(t)).epochSec();
+		return !isHkg(exchange) ? t : HkexUtil.getOpenTimeBefore(Time.ofEpochSec(t)).epochSec();
 	}
 
 	private long getTradeTimeBefore(String exchange, long t) {
-		return !String_.equals(exchange, "HKG") ? t : HkexUtil.getTradeTimeBefore(Time.ofEpochSec(t)).epochSec();
+		return !isHkg(exchange) ? t : HkexUtil.getTradeTimeBefore(Time.ofEpochSec(t)).epochSec();
+	}
+
+	private boolean isHkg(String exchange) {
+		return String_.equals(exchange, "HKG");
 	}
 
 	private long closeTs(String ymd) {

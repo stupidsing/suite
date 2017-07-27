@@ -284,7 +284,14 @@ public class To {
 	}
 
 	public static String string(double d) {
-		return String.format("%.3f", d);
+		if (d < 1d)
+			return String.format("%.4f", d);
+		if (d < 10d)
+			return String.format("%.3f", d);
+		else if (d < 100d)
+			return String.format("%.2f", d);
+		else
+			return String.format("%.1f", d);
 	}
 
 	public static String string(InputStream in) {
