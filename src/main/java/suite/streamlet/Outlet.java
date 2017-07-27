@@ -17,6 +17,9 @@ import suite.adt.Mutable;
 import suite.adt.Opt;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.primitive.IntPrimitives.IntObjSource;
+import suite.primitive.adt.pair.IntObjPair;
+import suite.primitive.streamlet.IntObjOutlet;
 import suite.util.Array_;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -24,7 +27,6 @@ import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Fun2;
-import suite.util.FunUtil2.Source2;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
 import suite.util.Object_;
@@ -199,11 +201,11 @@ public class Outlet<T> implements Iterable<T> {
 		return hashCode;
 	}
 
-	public Outlet2<Integer, T> index() {
-		return Outlet2.of(new Source2<Integer, T>() {
+	public IntObjOutlet<T> index() {
+		return IntObjOutlet.of(new IntObjSource<T>() {
 			private int i = 0;
 
-			public boolean source2(Pair<Integer, T> pair) {
+			public boolean source2(IntObjPair<T> pair) {
 				T t = next();
 				if (t != null) {
 					pair.t0 = i++;

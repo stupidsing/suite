@@ -10,7 +10,6 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
-import suite.util.FunUtil.Fun;
 
 /**
  * Map with generic object key and doubleacter object value. Double.MIN_VALUE is
@@ -24,14 +23,12 @@ public class ObjDblMap<K> {
 	private Object[] ks;
 	private double[] vs;
 
-	public static <K> Fun<DblObjOutlet<K>, ObjDblMap<K>> collect() {
-		return outlet -> {
-			ObjDblMap<K> map = new ObjDblMap<>();
-			DblObjPair<K> pair = DblObjPair.of((double) 0, null);
-			while (outlet.source().source2(pair))
-				map.put(pair.t1, pair.t0);
-			return map;
-		};
+	public static <K> ObjDblMap<K> collect(DblObjOutlet<K> outlet) {
+		ObjDblMap<K> map = new ObjDblMap<>();
+		DblObjPair<K> pair = DblObjPair.of((double) 0, null);
+		while (outlet.source().source2(pair))
+			map.put(pair.t1, pair.t0);
+		return map;
 	}
 
 	public ObjDblMap() {

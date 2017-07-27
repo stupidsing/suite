@@ -7,7 +7,6 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
-import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -21,14 +20,12 @@ public class DblObjMap<V> {
 	private double[] ks;
 	private Object[] vs;
 
-	public static <V> Fun<DblObjOutlet<V>, DblObjMap<V>> collect() {
-		return outlet -> {
-			DblObjMap<V> map = new DblObjMap<>();
-			DblObjPair<V> pair = DblObjPair.of((double) 0, null);
-			while (outlet.source().source2(pair))
-				map.put(pair.t0, pair.t1);
-			return map;
-		};
+	public static <V> DblObjMap<V> collect(DblObjOutlet<V> outlet) {
+		DblObjMap<V> map = new DblObjMap<>();
+		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		while (outlet.source().source2(pair))
+			map.put(pair.t0, pair.t1);
+		return map;
 	}
 
 	public DblObjMap() {

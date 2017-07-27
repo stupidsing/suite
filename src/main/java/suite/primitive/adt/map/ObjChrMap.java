@@ -10,7 +10,6 @@ import suite.primitive.Chr_Chr;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
-import suite.util.FunUtil.Fun;
 
 /**
  * Map with generic object key and character object value. Character.MIN_VALUE
@@ -24,14 +23,12 @@ public class ObjChrMap<K> {
 	private Object[] ks;
 	private char[] vs;
 
-	public static <K> Fun<ChrObjOutlet<K>, ObjChrMap<K>> collect() {
-		return outlet -> {
-			ObjChrMap<K> map = new ObjChrMap<>();
-			ChrObjPair<K> pair = ChrObjPair.of((char) 0, null);
-			while (outlet.source().source2(pair))
-				map.put(pair.t1, pair.t0);
-			return map;
-		};
+	public static <K> ObjChrMap<K> collect(ChrObjOutlet<K> outlet) {
+		ObjChrMap<K> map = new ObjChrMap<>();
+		ChrObjPair<K> pair = ChrObjPair.of((char) 0, null);
+		while (outlet.source().source2(pair))
+			map.put(pair.t1, pair.t0);
+		return map;
 	}
 
 	public ObjChrMap() {

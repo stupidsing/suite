@@ -7,7 +7,6 @@ import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
-import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -21,14 +20,12 @@ public class LngObjMap<V> {
 	private long[] ks;
 	private Object[] vs;
 
-	public static <V> Fun<LngObjOutlet<V>, LngObjMap<V>> collect() {
-		return outlet -> {
-			LngObjMap<V> map = new LngObjMap<>();
-			LngObjPair<V> pair = LngObjPair.of((long) 0, null);
-			while (outlet.source().source2(pair))
-				map.put(pair.t0, pair.t1);
-			return map;
-		};
+	public static <V> LngObjMap<V> collect(LngObjOutlet<V> outlet) {
+		LngObjMap<V> map = new LngObjMap<>();
+		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
+		while (outlet.source().source2(pair))
+			map.put(pair.t0, pair.t1);
+		return map;
 	}
 
 	public LngObjMap() {

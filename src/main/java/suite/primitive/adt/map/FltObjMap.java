@@ -7,7 +7,6 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltObjOutlet;
 import suite.primitive.streamlet.FltObjStreamlet;
-import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -21,14 +20,12 @@ public class FltObjMap<V> {
 	private float[] ks;
 	private Object[] vs;
 
-	public static <V> Fun<FltObjOutlet<V>, FltObjMap<V>> collect() {
-		return outlet -> {
-			FltObjMap<V> map = new FltObjMap<>();
-			FltObjPair<V> pair = FltObjPair.of((float) 0, null);
-			while (outlet.source().source2(pair))
-				map.put(pair.t0, pair.t1);
-			return map;
-		};
+	public static <V> FltObjMap<V> collect(FltObjOutlet<V> outlet) {
+		FltObjMap<V> map = new FltObjMap<>();
+		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
+		while (outlet.source().source2(pair))
+			map.put(pair.t0, pair.t1);
+		return map;
 	}
 
 	public FltObjMap() {

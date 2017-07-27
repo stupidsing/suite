@@ -10,7 +10,6 @@ import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
-import suite.util.FunUtil.Fun;
 
 /**
  * Map with generic object key and longacter object value. Long.MIN_VALUE is not
@@ -24,14 +23,12 @@ public class ObjLngMap<K> {
 	private Object[] ks;
 	private long[] vs;
 
-	public static <K> Fun<LngObjOutlet<K>, ObjLngMap<K>> collect() {
-		return outlet -> {
-			ObjLngMap<K> map = new ObjLngMap<>();
-			LngObjPair<K> pair = LngObjPair.of((long) 0, null);
-			while (outlet.source().source2(pair))
-				map.put(pair.t1, pair.t0);
-			return map;
-		};
+	public static <K> ObjLngMap<K> collect(LngObjOutlet<K> outlet) {
+		ObjLngMap<K> map = new ObjLngMap<>();
+		LngObjPair<K> pair = LngObjPair.of((long) 0, null);
+		while (outlet.source().source2(pair))
+			map.put(pair.t1, pair.t0);
+		return map;
 	}
 
 	public ObjLngMap() {

@@ -10,7 +10,6 @@ import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjOutlet;
 import suite.primitive.streamlet.IntObjStreamlet;
-import suite.util.FunUtil.Fun;
 
 /**
  * Map with generic object key and intacter object value. Integer.MIN_VALUE is
@@ -24,14 +23,12 @@ public class ObjIntMap<K> {
 	private Object[] ks;
 	private int[] vs;
 
-	public static <K> Fun<IntObjOutlet<K>, ObjIntMap<K>> collect() {
-		return outlet -> {
-			ObjIntMap<K> map = new ObjIntMap<>();
-			IntObjPair<K> pair = IntObjPair.of((int) 0, null);
-			while (outlet.source().source2(pair))
-				map.put(pair.t1, pair.t0);
-			return map;
-		};
+	public static <K> ObjIntMap<K> collect(IntObjOutlet<K> outlet) {
+		ObjIntMap<K> map = new ObjIntMap<>();
+		IntObjPair<K> pair = IntObjPair.of((int) 0, null);
+		while (outlet.source().source2(pair))
+			map.put(pair.t1, pair.t0);
+		return map;
 	}
 
 	public ObjIntMap() {

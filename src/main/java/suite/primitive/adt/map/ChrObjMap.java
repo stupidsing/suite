@@ -7,7 +7,6 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
-import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -21,14 +20,12 @@ public class ChrObjMap<V> {
 	private char[] ks;
 	private Object[] vs;
 
-	public static <V> Fun<ChrObjOutlet<V>, ChrObjMap<V>> collect() {
-		return outlet -> {
-			ChrObjMap<V> map = new ChrObjMap<>();
-			ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-			while (outlet.source().source2(pair))
-				map.put(pair.t0, pair.t1);
-			return map;
-		};
+	public static <V> ChrObjMap<V> collect(ChrObjOutlet<V> outlet) {
+		ChrObjMap<V> map = new ChrObjMap<>();
+		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		while (outlet.source().source2(pair))
+			map.put(pair.t0, pair.t1);
+		return map;
 	}
 
 	public ChrObjMap() {

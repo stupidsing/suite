@@ -15,6 +15,7 @@ import suite.adt.pair.Pair;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.streamlet.IntObjStreamlet;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -149,8 +150,8 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().hashCode();
 	}
 
-	public Streamlet2<Integer, T> index() {
-		return new Streamlet2<>(() -> spawn().index());
+	public IntObjStreamlet<T> index() {
+		return new IntObjStreamlet<>(() -> spawn().index());
 	}
 
 	public boolean isAll(Predicate<T> pred) {
