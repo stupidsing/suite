@@ -18,7 +18,7 @@ public class Execute {
 	public final int code;
 	public final String out;
 	public final String err;
-	private Thread threads[];
+	private Thread[] threads;
 
 	public static String shell(String sh) {
 		String[] command = null;

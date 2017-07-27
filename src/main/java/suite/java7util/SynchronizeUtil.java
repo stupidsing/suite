@@ -11,7 +11,7 @@ public class SynchronizeUtil {
 		@SuppressWarnings("unchecked")
 		Class<I> clazz = (Class<I>) object.getClass();
 		ClassLoader classLoader = clazz.getClassLoader();
-		Class<?> classes[] = { interface_ };
+		Class<?>[] classes = { interface_ };
 
 		InvocationHandler handler = (proxy, method, ps) -> {
 			synchronized (object) {

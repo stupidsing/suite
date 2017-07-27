@@ -18,7 +18,7 @@ public class Render {
 		int nThreads = Constants.nThreads;
 		int[] xs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
 
-		Vector pixels[][] = new Vector[width][height];
+		Vector[][] pixels = new Vector[width][height];
 		float scale = 1f / Math.max(width, height);
 		int centreX = width / 2, centreY = height / 2;
 
