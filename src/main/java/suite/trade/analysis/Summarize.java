@@ -9,10 +9,12 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
 import suite.trade.Asset;
+import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
+import suite.trade.data.HkexUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
@@ -62,7 +64,7 @@ public class Summarize {
 
 		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
 			DataSource ds = cfg.dataSource(symbol);
-			boolean isMarketOpen = true; // HkexUtil.isMarketOpen(Time.now());
+			boolean isMarketOpen = HkexUtil.isMarketOpen(Time.now().addHours(1));
 			float price0 = ds.get(isMarketOpen ? -1 : -2).t1;
 			float pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1;
 			String percent = String.format("%.1f", 100d * Quant.return_(price0, pricex)) + "%";
