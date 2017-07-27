@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.math.linalg.Matrix;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.pair.IntFltPair;
 import suite.streamlet.Read;
 import suite.util.List_;
 import suite.util.To;
@@ -19,11 +20,6 @@ public class KmeansCluster {
 	private class KmeansBin {
 		private float[] sum = new float[dimension];
 		private int count;
-	}
-
-	private class KnnBin {
-		private int category;
-		private float sqdist;
 	}
 
 	public KmeansCluster(int dimension) {
@@ -53,22 +49,18 @@ public class KmeansCluster {
 	}
 
 	public int kNearestNeighbor(List<float[]> points, float[] point0) {
-		List<KnnBin> bins = Read.from(points) //
+		List<IntFltPair> bins = Read //
+				.from(points) //
 				.index() //
-				.map((i, point) -> {
-					KnnBin bin = new KnnBin();
-					bin.category = i;
-					bin.sqdist = sqdist(point0, point);
-					return bin;
-				}) //
+				.map((i, point) -> IntFltPair.of(i, sqdist(point0, point))) //
 				.toList();
 
 		IntObjMap<AtomicInteger> map = new IntObjMap<>();
 
 		Read.from(bins) //
-				.sort((b0, b1) -> Float.compare(b0.sqdist, b1.sqdist)) //
+				.sort((b0, b1) -> Float.compare(b0.t1, b1.t1)) //
 				.take(points.size()) //
-				.forEach(bin -> map.computeIfAbsent(bin.category, c -> new AtomicInteger()).incrementAndGet());
+				.forEach(bin -> map.computeIfAbsent(bin.t0, c -> new AtomicInteger()).incrementAndGet());
 
 		return map.stream().min((k, v) -> -v.t1.get()).t0;
 	}
