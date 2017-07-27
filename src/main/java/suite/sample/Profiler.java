@@ -93,8 +93,8 @@ public class Profiler implements Service {
 		long currentThreadId = Thread.currentThread().getId();
 		ThreadMXBean mx = ManagementFactory.getThreadMXBean();
 
-		long threadIds[] = mx.getAllThreadIds();
-		ThreadInfo threadInfos[] = mx.getThreadInfo(threadIds, stackTraceDepth);
+		long[] threadIds = mx.getAllThreadIds();
+		ThreadInfo[] threadInfos = mx.getThreadInfo(threadIds, stackTraceDepth);
 		count.getAndIncrement();
 
 		for (ThreadInfo threadInfo : threadInfos)
@@ -102,7 +102,7 @@ public class Profiler implements Service {
 					&& threadInfo.getThreadId() != currentThreadId //
 					&& threadInfo.getThreadState() == State.RUNNABLE //
 					&& !String_.equals(threadInfo.getThreadName(), "ReaderThread")) {
-				StackTraceElement stackTrace[] = threadInfo.getStackTrace();
+				StackTraceElement[] stackTrace = threadInfo.getStackTrace();
 				Set<String> elements = new HashSet<>();
 				int i = stackTrace.length;
 				Call call = callRoot;

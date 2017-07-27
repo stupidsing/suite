@@ -106,7 +106,7 @@ public class FunTypeInformation {
 				.toArray(Type.class);
 
 		@SuppressWarnings("rawtypes")
-		Class<?> parameterTypes[] = Read.from(array) //
+		Class<?>[] parameterTypes = Read.from(array) //
 				.<Class> map(Type_::classOf) //
 				.toArray(Class.class);
 

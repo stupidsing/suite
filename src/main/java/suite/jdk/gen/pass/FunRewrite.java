@@ -89,7 +89,7 @@ public class FunRewrite extends FunFactory {
 		if (e0 instanceof ApplyFunExpr) {
 			ApplyFunExpr e1 = (ApplyFunExpr) e0;
 			FunExpr object = rewrite(e1.object);
-			FunExpr parameters[] = Read.from(e1.parameters).map(this::rewrite).toArray(FunExpr.class);
+			FunExpr[] parameters = Read.from(e1.parameters).map(this::rewrite).toArray(FunExpr.class);
 			Method method = fti.methodOf(object);
 			return object.invoke(method.getName(), parameters);
 		} else if (e0 instanceof CastFunExpr) {

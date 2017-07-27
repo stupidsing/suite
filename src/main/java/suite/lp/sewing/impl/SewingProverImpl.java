@@ -584,7 +584,7 @@ public class SewingProverImpl implements SewingProver {
 			Clone_ f = sb.compile(m[1]);
 			tr = rt -> {
 				Iterator<BindPredicate> iter = elems_.iterator();
-				Trampoline alt[] = new Trampoline[1];
+				Trampoline[] alt = new Trampoline[1];
 				Restore restore = save(rt);
 				return alt[0] = rt_ -> {
 					while (iter.hasNext()) {

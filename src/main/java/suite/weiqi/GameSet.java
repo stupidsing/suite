@@ -23,8 +23,8 @@ public class GameSet {
 	}
 
 	/**
-	 * Constructs a "left-over" game. Note that the previous state information will
-	 * be empty, not suitable for real-play scenario.
+	 * Constructs a "left-over" game. Note that the previous state information
+	 * will be empty, not suitable for real-play scenario.
 	 */
 	public GameSet(Board board, Occupation nextPlayer) {
 		this(board, nextPlayer, new HashSet<>());
@@ -43,7 +43,7 @@ public class GameSet {
 	public static class Move {
 		public Coordinate position;
 		public MoveType type;
-		public Occupation neighborColors[] = new Occupation[4];
+		public Occupation[] neighborColors = new Occupation[4];
 
 		public Move() {
 		}
