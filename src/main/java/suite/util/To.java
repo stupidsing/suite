@@ -286,7 +286,7 @@ public class To {
 	public static String string(double d) {
 		if (d < 1d)
 			return String.format("%.4f", d);
-		if (d < 10d)
+		else if (d < 10d)
 			return String.format("%.3f", d);
 		else if (d < 100d)
 			return String.format("%.2f", d);
