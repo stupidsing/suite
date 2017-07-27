@@ -38,9 +38,8 @@ public class HttpServer {
 
 	private void run_(HttpHandler handler) throws IOException {
 		new SocketUtil().listenIo(8051, (is, os) -> {
-			String line, ls[];
-
-			ls = Util.readLine(is).split(" ");
+			String line;
+			String[] ls = Util.readLine(is).split(" ");
 			String method = ls[0], url = ls[1], protocol = ls[2];
 			String server, pqs;
 
