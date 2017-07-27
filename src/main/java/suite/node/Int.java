@@ -8,7 +8,7 @@ public class Int extends Node {
 
 	private static int poolLo = -256;
 	private static int poolHi = 256;
-	private static Int pool[] = new Int[poolHi - poolLo];
+	private static Int[] pool = new Int[poolHi - poolLo];
 
 	public static Int of(int i) {
 		Int ret;
