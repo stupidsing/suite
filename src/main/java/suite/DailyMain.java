@@ -184,9 +184,7 @@ public class DailyMain extends ExecutableProgram {
 		for (Asset asset : assets) {
 			String symbol = asset.symbol;
 
-			if (backTestBySymbol.get(symbol)) {
-				String prefix = asset.toString();
-
+			if (backTestBySymbol.get(symbol))
 				try {
 					DataSource ds0 = cfg.dataSource(symbol, period);
 					Time timex = Time.ofEpochSec(ds0.last().t0);
@@ -211,9 +209,8 @@ public class DailyMain extends ExecutableProgram {
 					if (signal != 0)
 						trades.add(trade);
 				} catch (Exception ex) {
-					LogUtil.warn(ex.getMessage() + " in " + prefix);
+					LogUtil.warn(ex.getMessage() + " in " + asset);
 				}
-			}
 		}
 
 		return new Result(tag, trades);
