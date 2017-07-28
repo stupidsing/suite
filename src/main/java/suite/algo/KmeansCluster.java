@@ -55,7 +55,7 @@ public class KmeansCluster {
 				.from(points) //
 				.index() //
 				.map((i, point) -> IntFltPair.of(i, sqdist(point0, point))) //
-				.sort((b0, b1) -> Float.compare(b0.t1, b1.t1)) //
+				.sortBy(pair -> pair.t1) //
 				.take(points.size()) //
 				.forEach(bin -> map.computeIfAbsent(bin.t0, c -> new AtomicInteger()).incrementAndGet());
 
