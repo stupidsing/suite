@@ -76,7 +76,8 @@ public class Grapher {
 
 			NodeRead nr = NodeRead.of(node);
 
-			List<IntIntPair> children = Read.from(nr.children) //
+			List<IntIntPair> children = Read //
+					.from(nr.children) //
 					.map(p -> IntIntPair.of(graph_(ids, p.t0), graph_(ids, p.t1))) //
 					.toList();
 
@@ -89,7 +90,8 @@ public class Grapher {
 	private Node ungraph_(int id) {
 		int size = gns.size();
 
-		List<Node> nodes = Read.from(gns) //
+		List<Node> nodes = Read //
+				.from(gns) //
 				.map(gn -> {
 					switch (gn.type) {
 					case DICT:
@@ -337,7 +339,7 @@ public class Grapher {
 			case DICT:
 				s = Read.from(gn.children) //
 						.map(p -> p.t0 + ":" + p.t1 + ", ") //
-						.collect(As.joined("dict(", ", ", ")"));
+						.collect(As.joinedBy("dict(", ", ", ")"));
 				break;
 			case TERM:
 				s = Formatter.dump(gn.terminal);
@@ -348,7 +350,7 @@ public class Grapher {
 			case TUPLE:
 				s = Read.from(gn.children) //
 						.map(p -> p.t1 + ", ") //
-						.collect(As.joined("tuple(", ", ", ")"));
+						.collect(As.joinedBy("tuple(", ", ", ")"));
 				break;
 			default:
 				throw new RuntimeException();

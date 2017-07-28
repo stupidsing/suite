@@ -87,7 +87,7 @@ public class BackTestMain extends ExecutableProgram {
 		String content0 = Read.bytes(Paths.get("src/main/java/suite/trade/analysis/BackTestMain.java")) //
 				.collect(As::utf8decode) //
 				.map(Chars::toString) //
-				.collect(As.joined());
+				.collect(As::joined);
 
 		int p0 = 0;
 		int p1 = 0 <= p0 ? content0.indexOf("// BEGIN", p0) + 8 : -1;

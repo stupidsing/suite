@@ -30,7 +30,7 @@ public class StoreCache {
 		LogUtil.info(FileUtil.findPaths(dir) //
 				.filter(path -> !isUpToDate(path, current)) //
 				.map(path -> "\nrm '" + path + "'") //
-				.collect(As.joined()));
+				.collect(As::joined));
 	}
 
 	public Outlet<Bytes> http(String urlString) {

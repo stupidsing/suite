@@ -110,7 +110,7 @@ public class DailyMain extends ExecutableProgram {
 						+ " SIGNAL(" + strategy + ")" + trade //
 						+ " = " + To.string(trade.buySell * trade.price)) //
 				.sortBy(line -> line) //
-				.collect(As.joined()));
+				.collect(As::joined));
 
 		sb.append(strategyTrades //
 				.filterKey(strategy -> !To.set("sellpool").contains(strategy)) //
@@ -118,7 +118,7 @@ public class DailyMain extends ExecutableProgram {
 				.map((strategy, t) -> "" //
 						+ "\n" + ymd + "\t" + t.buySell + "\t" + t.symbol + "\t" + t.price + "\t" + strategy //
 						+ "\n" + ymd + "\t" + (-t.buySell) + "\t" + t.symbol + "\t" + t.price + "\tsellpool") //
-				.collect(As.joined()));
+				.collect(As::joined));
 
 		Streamlet<Trade> trades = strategyTrades.values();
 		float buys_ = trades.collectAsFloat(Obj_Flt.sum(trade -> Math.max(0, trade.buySell) * trade.price));

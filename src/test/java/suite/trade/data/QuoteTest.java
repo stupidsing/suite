@@ -50,7 +50,7 @@ public class QuoteTest {
 		System.out.println(Read.from2(summarizeOut(r -> r.symbol)) //
 				.sortBy((symbol, gain) -> -gain) //
 				.map((symbol, gain) -> symbol + " " + To.string(gain) + "\n") //
-				.collect(As.joined()));
+				.collect(As::joined));
 	}
 
 	@Test

@@ -70,7 +70,7 @@ public class Profiler implements Service {
 		sb.append(Read.from2(records) //
 				.sort((p0, p1) -> p1.t1.count - p0.t1.count) //
 				.map((name, record) -> String.format("%d\t%s\n", record.count, name)) //
-				.collect(As.joined()));
+				.collect(As::joined));
 		sb.append("\n\n");
 
 		sb.append("CALLS\n\n");

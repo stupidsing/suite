@@ -77,7 +77,7 @@ public class Grammar {
 	public String describe() {
 		return type + (content != null ? "." + content : "") //
 				+ (type != GrammarType.NAMED_ //
-						? Read.from(children).map(Grammar::describe).collect(As.joined("(", ",", ")")) //
+						? Read.from(children).map(Grammar::describe).collect(As.joinedBy("(", ",", ")")) //
 						: "");
 	}
 

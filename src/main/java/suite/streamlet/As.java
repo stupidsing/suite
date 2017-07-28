@@ -56,15 +56,15 @@ public class As {
 		return new ByteArrayInputStream(bytes.bs, bytes.start, bytes.end - bytes.start);
 	}
 
-	public static Fun<Outlet<String>, String> joined() {
-		return joined("");
+	public static String joined(Outlet<String> outlet) {
+		return joinedBy("").apply(outlet);
 	}
 
-	public static Fun<Outlet<String>, String> joined(String delimiter) {
-		return joined("", delimiter, "");
+	public static Fun<Outlet<String>, String> joinedBy(String delimiter) {
+		return joinedBy("", delimiter, "");
 	}
 
-	public static Fun<Outlet<String>, String> joined(String before, String delimiter, String after) {
+	public static Fun<Outlet<String>, String> joinedBy(String before, String delimiter, String after) {
 		return outlet -> {
 			StringBuilder sb = new StringBuilder();
 			sb.append(before);

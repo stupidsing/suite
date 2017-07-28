@@ -50,7 +50,7 @@ public class HttpRequest {
 	}
 
 	public String getLogString() {
-		return method + " " + Read.from(path).collect(As.joined("/"));
+		return method + " " + Read.from(path).collect(As.joinedBy("/"));
 	}
 
 }

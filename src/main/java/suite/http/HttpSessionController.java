@@ -116,7 +116,7 @@ public class HttpSessionController {
 		}
 
 		private HttpResponse showLoginPage(IList<String> redirectPath, boolean isLoginFailed) {
-			String redirectPath1 = Read.from(redirectPath).map(p -> "/" + p).collect(As.joined());
+			String redirectPath1 = Read.from(redirectPath).map(p -> "/" + p).collect(As::joined);
 
 			return HttpResponse.of(To.outlet("<html>" //
 					+ "<head><title>Login</title></head>" //

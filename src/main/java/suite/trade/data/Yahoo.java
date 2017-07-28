@@ -249,7 +249,7 @@ public class Yahoo {
 	private Map<String, Float> quote_(Streamlet<String> symbols, String field) {
 		if (0 < symbols.size()) {
 			String urlString = "https://download.finance.yahoo.com/d/quotes.csv" //
-					+ "?s=" + symbols.sort(Object_::compare).map(this::encode).collect(As.joined("+")) //
+					+ "?s=" + symbols.sort(Object_::compare).map(this::encode).collect(As.joinedBy("+")) //
 					+ "&f=s" + field;
 
 			URL url = To.url(urlString);

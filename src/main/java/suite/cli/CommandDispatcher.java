@@ -248,7 +248,7 @@ public class CommandDispatcher {
 	}
 
 	private String parseInput(List<String> inputs) {
-		return Read.from(inputs).collect(As.joined(" "));
+		return Read.from(inputs).collect(As.joinedBy(" "));
 	}
 
 	private void printEvaluated(Writer writer, Node node) throws IOException {

@@ -120,7 +120,7 @@ public class Summarize {
 				.append("P/L = " + amount1) //
 				.append(account0.transactionSummary(cfg::transactionFee)) //
 				.map(m -> "\n" + m) //
-				.collect(As.joined());
+				.collect(As::joined);
 
 		return new Summarize_(account0, out);
 	}

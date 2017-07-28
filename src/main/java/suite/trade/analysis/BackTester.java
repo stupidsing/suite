@@ -56,7 +56,7 @@ public class BackTester {
 				}) //
 				.map((key, summary) -> "\nTEST = " + key + " " + summary);
 
-		return Streamlet.concat(results0, results1).sort(Object_::compare).collect(As.joined());
+		return Streamlet.concat(results0, results1).sort(Object_::compare).collect(As::joined);
 	}
 
 }

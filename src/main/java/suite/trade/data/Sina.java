@@ -60,7 +60,7 @@ public class Sina {
 	private Streamlet<Factor> queryFactor_(Streamlet<String> symbols, boolean isCache) {
 		String urlString = "http://hq.sinajs.cn/?list=" + symbols //
 				.map(symbol_ -> toSina(symbol_)) //
-				.collect(As.joined(","));
+				.collect(As.joinedBy(","));
 
 		String data = Rethrow.ex(() -> {
 			Outlet<Bytes> in;
@@ -77,7 +77,7 @@ public class Sina {
 							sb.append((char) bytes.get(i));
 						return sb.toString();
 					}) //
-					.collect(As.joined());
+					.collect(As::joined);
 		});
 
 		return Read //

@@ -19,7 +19,7 @@ import suite.util.To;
 
 public class Trade_ {
 
-	public static Set<String> blackList = To.set("N/A"); // "0566.HK"
+	public static Set<String> blackList = To.set("N/A", "2973.HK"); // "0566.HK"
 	public static boolean isCacheQuotes = true;
 	public static boolean isFreePlay = false;
 	public static boolean isMarketOrder = true;
@@ -52,14 +52,14 @@ public class Trade_ {
 		return Read.from2(portfolio) //
 				.sortBy((code, i) -> !String_.equals(code, Asset.cashSymbol) ? code : "") //
 				.map((code, i) -> MathUtil.posNeg(i) + code + "*" + Math.abs(i)) //
-				.collect(As.joined());
+				.collect(As::joined);
 	}
 
 	public static String format(List<Trade> trades) {
 		return Read.from(trades) //
 				.filter(trade -> trade.buySell != 0) //
 				.map(Trade::toString) //
-				.collect(As.joined());
+				.collect(As::joined);
 	}
 
 	public static Map<String, Integer> portfolio(Iterable<Trade> trades) {
