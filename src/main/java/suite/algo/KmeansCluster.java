@@ -49,15 +49,12 @@ public class KmeansCluster {
 	}
 
 	public int kNearestNeighbor(List<float[]> points, float[] point0) {
-		List<IntFltPair> bins = Read //
+		IntObjMap<AtomicInteger> map = new IntObjMap<>();
+
+		Read //
 				.from(points) //
 				.index() //
 				.map((i, point) -> IntFltPair.of(i, sqdist(point0, point))) //
-				.toList();
-
-		IntObjMap<AtomicInteger> map = new IntObjMap<>();
-
-		Read.from(bins) //
 				.sort((b0, b1) -> Float.compare(b0.t1, b1.t1)) //
 				.take(points.size()) //
 				.forEach(bin -> map.computeIfAbsent(bin.t0, c -> new AtomicInteger()).incrementAndGet());
