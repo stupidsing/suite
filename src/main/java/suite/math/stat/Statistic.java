@@ -3,6 +3,7 @@ package suite.math.stat;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.primitive.Floats_;
+import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
@@ -209,28 +210,28 @@ public class Statistic {
 	}
 
 	public Obj_Int<int[]> naiveBayes(int[][] x, int[] y) {
-		IntObjMap<int[]> xcounts = new IntObjMap<>();
-		IntObjMap<int[]> ycounts = new IntObjMap<>();
+		IntObjMap<IntMutable> xcounts = new IntObjMap<>();
+		IntObjMap<IntMutable> ycounts = new IntObjMap<>();
 		int ix = x.length; // number of samples
 		int jx = x[0].length; // number of features
 
 		for (int i = 0; i < ix; i++) {
-			ycounts.computeIfAbsent(y[i], y_ -> new int[] { 0, })[0]++;
+			ycounts.computeIfAbsent(y[i], y_ -> IntMutable.of(0)).increment();
 			for (int j = 0; j < jx; j++)
-				xcounts.computeIfAbsent(x[i][j], x_ -> new int[] { 0, })[0]++;
+				xcounts.computeIfAbsent(x[i][j], x_ -> IntMutable.of(0)).increment();
 		}
 
 		return ins -> {
-			IntObjPair<int[]> pair = IntObjPair.of(0, null);
-			IntObjSource<int[]> source2 = ycounts.source();
+			IntObjPair<IntMutable> pair = IntObjPair.of(0, null);
+			IntObjSource<IntMutable> source2 = ycounts.source();
 			int result = 0;
 			double maxp = Double.MIN_VALUE;
 
 			while (source2.source2(pair)) {
-				double p = ((double) pair.t1[0]) / ix;
+				double p = ((double) pair.t1.get()) / ix;
 
 				for (int j = 0; j < jx; j++)
-					p *= xcounts.computeIfAbsent(ins[j], x_ -> new int[] { 0, })[0] / (double) jx;
+					p *= xcounts.computeIfAbsent(ins[j], x_ -> IntMutable.of(0)).get() / (double) jx;
 
 				if (maxp < p) {
 					result = pair.t0;
