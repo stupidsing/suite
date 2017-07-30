@@ -18,6 +18,7 @@ import suite.math.stat.Quant;
 import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.Int_Dbl;
 import suite.primitive.adt.pair.DblFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -56,9 +57,22 @@ public interface BackAllocator {
 		public List<Pair<String, Double>> onDateTime(int index);
 	}
 
+	public static BackAllocator byPrices(Fun<float[], Int_Dbl> fun) {
+		return bySymbol(ds -> fun.apply(ds.prices));
+	}
+
+	public static BackAllocator bySymbol(Fun<DataSource, Int_Dbl> fun) {
+		return (akds, indices) -> {
+			Streamlet2<String, Int_Dbl> allocBySymbol = akds.dsByKey.mapValue(fun).collect(As::streamlet2);
+
+			return index -> allocBySymbol.mapValue(alloc -> alloc.apply(index)).toList();
+		};
+	}
+
 	public default BackAllocator byTime(IntPredicate monthPred) {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
+
 			return index -> monthPred.test(Time.ofEpochSec(akds.ts[index - 1]).month()) //
 					? onDateTime.onDateTime(index) //
 					: Collections.emptyList();
@@ -92,12 +106,16 @@ public interface BackAllocator {
 			OnDateTime onDateTime = ba1.allocate(akds, indices);
 
 			return index -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(index);
-				int size = Read.from2(potentialBySymbol).size();
+				Streamlet2<String, Double> potentialBySymbol = Read //
+						.from2(onDateTime.onDateTime(index)) //
+						.collect(As::streamlet2);
+
+				int size = potentialBySymbol.size();
 
 				if (0 < size) {
 					double each = 1d / size;
-					return Read.from2(potentialBySymbol) //
+
+					return potentialBySymbol //
 							.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
 							.mapValue(potential -> 1d / each) //
 							.toList();
@@ -110,6 +128,7 @@ public interface BackAllocator {
 	public default BackAllocator filterByAsset(Predicate<String> pred) {
 		return (akds0, indices) -> {
 			AlignKeyDataSource<String> akds1 = new AlignKeyDataSource<>(akds0.ts, akds0.dsByKey.filterKey(pred));
+
 			return allocate(akds1, indices)::onDateTime;
 		};
 	}
@@ -152,6 +171,7 @@ public interface BackAllocator {
 				public List<Pair<String, Double>> onDateTime(int index) {
 					Time time_ = Time.ofEpochSec(akds.ts[index - 1]);
 					Time time1 = time_.addDays(-(time_.epochDay() % freq));
+
 					if (!Objects.equals(time0, time1)) {
 						time0 = time1;
 						result0 = onDateTime.onDateTime(index);
@@ -176,11 +196,10 @@ public interface BackAllocator {
 			OnDateTime onDateTime = allocate(akds, indices);
 
 			return index -> {
-				Map<String, Double> ratioBySymbol = Read //
+				queue.addLast(Read //
 						.from2(onDateTime.onDateTime(index)) //
-						.toMap();
+						.toMap());
 
-				queue.addLast(ratioBySymbol);
 				while (period < queue.size())
 					queue.removeFirst();
 
@@ -196,27 +215,23 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator january() {
-		IntPredicate monthPred = month -> month == 1;
-		return byTime(monthPred);
+		return byTime(month -> month == 1);
 	}
 
 	public default BackAllocator longOnly() {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
 
-			return index -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(index);
-
-				return Read.from2(potentialBySymbol) //
-						.map2((symbol, potential) -> {
-							if (Double.isFinite(potential))
-								return potential;
-							else
-								throw new RuntimeException("potential is " + potential);
-						}) //
-						.filterValue(potential -> 0d < potential) //
-						.toList();
-			};
+			return index -> Read //
+					.from2(onDateTime.onDateTime(index)) //
+					.map2((symbol, potential) -> {
+						if (Double.isFinite(potential))
+							return potential;
+						else
+							throw new RuntimeException("potential is " + potential);
+					}) //
+					.filterValue(potential -> 0d < potential) //
+					.toList();
 		};
 	}
 
