@@ -1,9 +1,8 @@
-package suite.math;
+package suite.math.linalg;
 
 import java.util.Random;
 
 import suite.adt.pair.Pair;
-import suite.math.linalg.Matrix;
 import suite.primitive.Floats_;
 import suite.streamlet.Read;
 
@@ -32,7 +31,7 @@ public class Eigen {
 		float eigenValue = Float.MIN_VALUE;
 
 		for (int v = 0; v < size; v++) {
-			for (int iteration = 0; iteration < 20; iteration++) {
+			for (int iteration = 0; iteration < 1024; iteration++) {
 				float[] ys = mtx.mul(m, xs);
 				eigenValue = Float.MIN_VALUE;
 				for (float y : ys)
