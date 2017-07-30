@@ -57,7 +57,8 @@ public class BackAllocConfigurations {
 				.cons("sar", BackAllocator_.sar().cfgUnl(fun)) //
 				.cons("sellInMay", BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi)) //
 				.cons("turtles", BackAllocator_.turtles(20, 10, 55, 20).cfgUnl(fun)) //
-				.cons("tma", bac_tma);
+				.cons("tma", bac_tma) //
+				.cons("xma", BackAllocator_.xma().cfgUnl(fun));
 
 		public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {
 			Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);

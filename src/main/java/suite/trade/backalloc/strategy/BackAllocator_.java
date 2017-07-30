@@ -555,6 +555,32 @@ public class BackAllocator_ {
 		};
 	}
 
+	public static BackAllocator xma() {
+		int halfLife0 = 2;
+		int halfLife1 = 8;
+
+		return (akds, indices) -> {
+			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
+
+			Map<String, float[]> movingAvg0bySymbol = dsBySymbol //
+					.mapValue(ds -> ma.exponentialMovingAvg(ds.prices, halfLife0)) //
+					.toMap();
+
+			Map<String, float[]> movingAvg1bySymbol = dsBySymbol //
+					.mapValue(ds -> ma.exponentialMovingAvg(ds.prices, halfLife1)) //
+					.toMap();
+
+			return index -> dsBySymbol //
+					.map2((symbol, ds) -> {
+						int last = index - 1;
+						float movingAvg0 = movingAvg0bySymbol.get(symbol)[last];
+						float movingAvg1 = movingAvg1bySymbol.get(symbol)[last];
+						return movingAvg0 < movingAvg1 ? -1d : 1d;
+					}) //
+					.toList();
+		};
+	}
+
 	private static BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {
 		return (akds, indices) -> {
 			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
