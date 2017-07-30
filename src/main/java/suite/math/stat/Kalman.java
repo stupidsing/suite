@@ -12,7 +12,7 @@ public class Kalman {
 	private float[][] H; // observation matrix
 	private float[][] Q; // noise
 	private float[][] R; // noise
-	float[][] covariance0;
+	private float[][] covariance0;
 	private float[] estimatedState0;
 
 	public void kalman(float[] input0, float[] observed0) {
