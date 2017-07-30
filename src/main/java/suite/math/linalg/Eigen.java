@@ -12,8 +12,8 @@ public class Eigen {
 	private Random random = new Random();
 
 	public float[][] power(float[][] m0) {
-		float[][] m = mtx.of(m0);
-		for (int i = 0; i < 20; i++) {
+		float[][] m = m0;
+		for (int i = 0; i < 256; i++) {
 			m = Read.from(m).map(mtx::normalize).toArray(float[].class);
 			m = mtx.mul(m, m);
 			m = mtx.mul(m, m0);
@@ -24,18 +24,19 @@ public class Eigen {
 	// Paul Wilmott on Quantitative Finance, Second Edition
 	// 37.13.1 The Power Method, page 620
 	public float[][] powerPca(float[][] m0) {
-		float[][] m = m0;
+		float[][] m = mtx.of(m0);
 		int size = mtx.sqSize(m);
 		float[][] eigenVectors = new float[size][];
-		float[] xs = Floats_.toArray(size, i -> random.nextFloat());
 		float eigenValue = Float.MIN_VALUE;
 
 		for (int v = 0; v < size; v++) {
-			for (int iteration = 0; iteration < 1024; iteration++) {
+			float[] xs = Floats_.toArray(size, i -> random.nextFloat());
+
+			for (int iteration = 0; iteration < 256; iteration++) {
 				float[] ys = mtx.mul(m, xs);
 				eigenValue = Float.MIN_VALUE;
 				for (float y : ys)
-					eigenValue = Math.max(eigenValue, y);
+					eigenValue = Math.max(eigenValue, Math.abs(y));
 				xs = mtx.scale(ys, 1d / eigenValue);
 			}
 
