@@ -16,11 +16,12 @@ public class Kalman {
 	private float[] estimatedState0;
 
 	public void kalman(float[] input0, float[] observed0) {
+		float[][] Ft = mtx.transpose(F);
 		float[][] Ht = mtx.transpose(H);
 
 		// predict
 		float[] predictedState1 = mtx.add(mtx.mul(F, estimatedState0), mtx.mul(B, input0));
-		float[][] predictedCovariance1 = mtx.add(mtx.mul(mtx.mul(F, covariance0), mtx.transpose(F)), Q);
+		float[][] predictedCovariance1 = mtx.add(mul(F, covariance0, Ft), Q);
 
 		// update
 		float[][] kalmanGain = mul(predictedCovariance1, Ht, mtx.inverse(mtx.add(R, mul(H, predictedCovariance1, Ht))));
