@@ -8,7 +8,6 @@ import suite.Constants;
 import suite.math.Vector;
 import suite.os.LogUtil;
 import suite.primitive.Ints_;
-import suite.primitive.streamlet.IntStreamlet;
 import suite.util.FunUtil2.BiFun;
 import suite.util.Thread_;
 
@@ -22,7 +21,7 @@ public class Render {
 		float scale = 1f / Math.max(width, height);
 		int centreX = width / 2, centreY = height / 2;
 
-		List<Thread> threads = IntStreamlet //
+		List<Thread> threads = Ints_ //
 				.range(nThreads) //
 				.map(t -> Thread_.newThread(() -> {
 					for (int x = xs[t]; x < xs[t + 1]; x++)

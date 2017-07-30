@@ -9,7 +9,6 @@ import java.util.Set;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.LngFunUtil;
-import suite.primitive.LngMutable;
 import suite.primitive.LngOpt;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObj_Obj;
@@ -27,13 +26,14 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.streamlet.StreamletDefaults;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 
-public class LngStreamlet implements Iterable<Long> {
+public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 
 	private Source<LngOutlet> in;
 
@@ -62,20 +62,6 @@ public class LngStreamlet implements Iterable<Long> {
 
 	public static LngStreamlet of(long[] ts) {
 		return streamlet(() -> LngOutlet.of(ts));
-	}
-
-	public static LngStreamlet range(long e) {
-		return range((long) 0, e);
-	}
-
-	public static LngStreamlet range(long s, long e) {
-		return streamlet(() -> {
-			LngMutable m = LngMutable.of(s);
-			return LngOutlet.of(() -> {
-				long c = m.increment();
-				return c < e ? c : LngFunUtil.EMPTYVALUE;
-			});
-		});
 	}
 
 	private static LngStreamlet streamlet(Source<LngOutlet> in) {
@@ -331,7 +317,7 @@ public class LngStreamlet implements Iterable<Long> {
 	}
 
 	private <K, V> Streamlet2<K, V> concatMap2_(Lng_Obj<Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).out()));
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet()));
 	}
 
 	private <O> Streamlet<O> map_(Lng_Obj<O> fun) {

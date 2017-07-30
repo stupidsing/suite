@@ -8,7 +8,7 @@ import suite.math.stat.Quant;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Int_Flt;
-import suite.primitive.streamlet.IntStreamlet;
+import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -66,7 +66,7 @@ public class FactorLr {
 					(symbol, ds, period) -> ols(dsBySymbol_.get(symbol), period));
 
 			return index -> {
-				float[] xs = IntStreamlet //
+				float[] xs = Ints_ //
 						.range(indexSymbols.size()) //
 						.collect(Int_Flt.lift(i -> {
 							float[] indexPrices_ = indexPrices.get(i);

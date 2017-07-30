@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.Chars.WriteChar;
+import suite.primitive.streamlet.ChrOutlet;
+import suite.primitive.streamlet.ChrStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -63,6 +65,20 @@ public class Chars_ {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
+	}
+
+	public static ChrStreamlet range(char e) {
+		return range((char) 0, e);
+	}
+
+	public static ChrStreamlet range(char s, char e) {
+		return new ChrStreamlet(() -> {
+			ChrMutable m = ChrMutable.of(s);
+			return ChrOutlet.of(() -> {
+				char c = m.increment();
+				return c < e ? c : ChrFunUtil.EMPTYVALUE;
+			});
+		});
 	}
 
 	public static Fun<Outlet<Chars>, Outlet<Chars>> split(Chars delim) {

@@ -11,7 +11,6 @@ import suite.adt.pair.Pair;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltFunUtil;
-import suite.primitive.FltMutable;
 import suite.primitive.FltOpt;
 import suite.primitive.FltPrimitives.FltComparator;
 import suite.primitive.FltPrimitives.FltObj_Obj;
@@ -27,13 +26,14 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.streamlet.StreamletDefaults;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 
-public class FltStreamlet implements Iterable<Float> {
+public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 
 	private Source<FltOutlet> in;
 
@@ -62,20 +62,6 @@ public class FltStreamlet implements Iterable<Float> {
 
 	public static FltStreamlet of(float[] ts) {
 		return streamlet(() -> FltOutlet.of(ts));
-	}
-
-	public static FltStreamlet range(float e) {
-		return range((float) 0, e);
-	}
-
-	public static FltStreamlet range(float s, float e) {
-		return streamlet(() -> {
-			FltMutable m = FltMutable.of(s);
-			return FltOutlet.of(() -> {
-				float c = m.increment();
-				return c < e ? c : FltFunUtil.EMPTYVALUE;
-			});
-		});
 	}
 
 	private static FltStreamlet streamlet(Source<FltOutlet> in) {
@@ -331,7 +317,7 @@ public class FltStreamlet implements Iterable<Float> {
 	}
 
 	private <K, V> Streamlet2<K, V> concatMap2_(Flt_Obj<Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).out()));
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet()));
 	}
 
 	private <O> Streamlet<O> map_(Flt_Obj<O> fun) {

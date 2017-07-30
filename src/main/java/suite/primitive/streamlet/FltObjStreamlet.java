@@ -28,12 +28,13 @@ import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.streamlet.StreamletDefaults;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
 
-public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
+public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltObjOutlet<V>> {
 
 	private Source<FltObjOutlet<V>> in;
 
@@ -227,7 +228,7 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 		return spawn().opt();
 	}
 
-	public FltObjOutlet<V> out() {
+	public FltObjOutlet<V> outlet() {
 		return spawn();
 	}
 
@@ -329,12 +330,12 @@ public class FltObjStreamlet<V> implements Iterable<FltObjPair<V>> {
 	}
 
 	private <V1, K1> Streamlet2<K1, V1> concatMap2_(FltObj_Obj<V, Streamlet2<K1, V1>> fun) {
-		FltObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
+		FltObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return new Streamlet2<>(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 
 	private <V1> FltObjStreamlet<V1> concatMapFltObj_(FltObj_Obj<V, FltObjStreamlet<V1>> fun) {
-		FltObj_Obj<V, FltObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
+		FltObj_Obj<V, FltObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return fltObjStreamlet(() -> FltObjOutlet.of(spawn().concatMapFltObj(bf)));
 	}
 

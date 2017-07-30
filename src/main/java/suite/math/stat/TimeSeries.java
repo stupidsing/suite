@@ -7,6 +7,8 @@ import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.Floats;
 import suite.primitive.Floats_;
+import suite.primitive.Int_Dbl;
+import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.trade.Trade_;
 import suite.util.To;
@@ -34,6 +36,50 @@ public class TimeSeries {
 		float[][] deps = To.array(float[].class, length - n, i -> Arrays.copyOfRange(ys, i, i + n));
 		float[] ys1 = Arrays.copyOfRange(ys, n, length);
 		return stat.linearRegression(deps, ys1);
+	}
+
+	// Digital Processing of Random Signals, Boaz Porat, page 159
+	public float[] arLevinsonDurbin(float[] ys, int p) {
+		double mean = stat.meanVariance(ys).mean;
+		double mean2 = mean * mean;
+		int length = ys.length;
+
+		float[] r = Ints_ //
+				.range(p + 1) //
+				.collect(Int_Flt.lift(i -> {
+					double sum = Ints_.range(i, length).collectAsDouble(Int_Dbl.sum(j -> ys[j - i] * ys[j]));
+					return (float) (sum - mean2);
+				})) //
+				.toArray();
+
+		double d = r[0];
+		float[] alpha = new float[p];
+		alpha[0] = 1;
+
+		for (int n = 0; n < p; n++) {
+			float[] alpha0 = alpha;
+			int n_ = n;
+
+			double k1 = (1d / d) * Ints_.range(n).collectAsDouble(Int_Dbl.sum(k -> alpha0[k] * r[n_ + 1 - k]));
+			d = d * (1d - k1 * k1);
+
+			float[] alpha1 = new float[p];
+			alpha1[0] = 1f;
+			for (int k = 1; k <= n; k++)
+				alpha1[k] = (float) (alpha0[k] - k1 * alpha0[n + 1 - k]);
+			alpha1[n + 1] = (float) -k1;
+			alpha = alpha1;
+		}
+
+		// for n in 0 until p
+		// K[n + 1] := d[n] ^ -1 summation(k in 0 until n, alpha[n][k] * r[n + 1 - k])
+		// d[n + 1] := d[n] * (1 - K[n + 1] ^ 2)
+		// alpha[n + 1][0] := 1
+		// for k := 1 to n
+		// alpha[n + 1][k] := alpha[n][k] - K[n + 1] * alpha[n][n + 1 - k]
+		// alpha[n + 1][n + 1] := -K[n + 1]
+
+		return alpha;
 	}
 
 	public float[] arch(float[] ys, int p, int q) {

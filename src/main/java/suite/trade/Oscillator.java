@@ -2,7 +2,7 @@ package suite.trade;
 
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
-import suite.primitive.streamlet.IntStreamlet;
+import suite.primitive.Ints_;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
@@ -16,7 +16,7 @@ public class Oscillator {
 		int length = ds.ts.length;
 		float[] trs = trueRange(ds);
 		float[] atrs = new float[length];
-		float atr = atrs[0] = IntStreamlet.range(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
+		float atr = atrs[0] = Ints_.range(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
 		double invn = 1d / n;
 
 		for (int i = 1; i < length; i++)

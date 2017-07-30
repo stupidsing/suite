@@ -28,12 +28,13 @@ import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.streamlet.StreamletDefaults;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
 
-public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
+public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrObjOutlet<V>> {
 
 	private Source<ChrObjOutlet<V>> in;
 
@@ -227,7 +228,7 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 		return spawn().opt();
 	}
 
-	public ChrObjOutlet<V> out() {
+	public ChrObjOutlet<V> outlet() {
 		return spawn();
 	}
 
@@ -329,12 +330,12 @@ public class ChrObjStreamlet<V> implements Iterable<ChrObjPair<V>> {
 	}
 
 	private <V1, K1> Streamlet2<K1, V1> concatMap2_(ChrObj_Obj<V, Streamlet2<K1, V1>> fun) {
-		ChrObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
+		ChrObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return new Streamlet2<>(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 
 	private <V1> ChrObjStreamlet<V1> concatMapChrObj_(ChrObj_Obj<V, ChrObjStreamlet<V1>> fun) {
-		ChrObj_Obj<V, ChrObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
+		ChrObj_Obj<V, ChrObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return chrObjStreamlet(() -> ChrObjOutlet.of(spawn().concatMapChrObj(bf)));
 	}
 

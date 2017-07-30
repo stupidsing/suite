@@ -13,9 +13,6 @@ import java.util.function.Predicate;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.FltPrimitives.Obj_Flt;
-import suite.primitive.IntPrimitives.Obj_Int;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -24,7 +21,7 @@ import suite.util.FunUtil2.Fun2;
 import suite.util.FunUtil2.Source2;
 import suite.util.Object_;
 
-public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
+public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K, V>> {
 
 	private Source<Outlet2<K, V>> in;
 
@@ -74,18 +71,6 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public <R> R collect(Fun<Outlet2<K, V>, R> fun) {
-		return fun.apply(spawn());
-	}
-
-	public double collectAsDouble(Obj_Dbl<Outlet2<K, V>> fun) {
-		return fun.apply(spawn());
-	}
-
-	public float collectAsFloat(Obj_Flt<Outlet2<K, V>> fun) {
-		return fun.apply(spawn());
-	}
-
-	public int collectAsInt(Obj_Int<Outlet2<K, V>> fun) {
 		return fun.apply(spawn());
 	}
 
@@ -204,7 +189,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 		return spawn().opt();
 	}
 
-	public Outlet2<K, V> out() {
+	public Outlet2<K, V> outlet() {
 		return spawn();
 	}
 
@@ -302,7 +287,7 @@ public class Streamlet2<K, V> implements Iterable<Pair<K, V>> {
 	}
 
 	private <K1, V1> Streamlet2<K1, V1> concatMap2_(Fun2<K, V, Streamlet2<K1, V1>> fun) {
-		Fun2<K, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
+		Fun2<K, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return streamlet2(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 

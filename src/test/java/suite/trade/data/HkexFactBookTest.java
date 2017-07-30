@@ -6,7 +6,7 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import suite.primitive.streamlet.IntStreamlet;
+import suite.primitive.Ints_;
 import suite.streamlet.Streamlet;
 import suite.trade.Trade_;
 import suite.util.String_;
@@ -20,7 +20,7 @@ public class HkexFactBookTest {
 		HashSet<String> delisted = new HashSet<>(hkexFactBook.queryDelisted().toList());
 
 		System.out.println(delisted);
-		System.out.println(IntStreamlet //
+		System.out.println(Ints_ //
 				.range(2008, Trade_.thisYear) //
 				.mapIntObj(year -> hkexFactBook //
 						.queryLeadingCompaniesByMarketCap(year - 1) //

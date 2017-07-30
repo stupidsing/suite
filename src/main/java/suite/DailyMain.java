@@ -11,7 +11,6 @@ import suite.math.MathUtil;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.smtp.SmtpSslGmail;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -121,8 +120,8 @@ public class DailyMain extends ExecutableProgram {
 				.collect(As::joined));
 
 		Streamlet<Trade> trades = strategyTrades.values();
-		float buys_ = trades.collectAsFloat(Obj_Flt.sum(trade -> Math.max(0, trade.buySell) * trade.price));
-		float sells = trades.collectAsFloat(Obj_Flt.sum(trade -> Math.max(0, -trade.buySell) * trade.price));
+		double buys_ = trades.collectAsDouble(Obj_Dbl.sum(trade -> Math.max(0, trade.buySell) * trade.price));
+		double sells = trades.collectAsDouble(Obj_Dbl.sum(trade -> Math.max(0, -trade.buySell) * trade.price));
 
 		sb.append("\n");
 		sb.append("\nTOTAL BUYS_ = " + buys_);

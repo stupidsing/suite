@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.Ints.WriteChar;
+import suite.primitive.streamlet.IntOutlet;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -63,6 +65,20 @@ public class Ints_ {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
+	}
+
+	public static IntStreamlet range(int e) {
+		return range((int) 0, e);
+	}
+
+	public static IntStreamlet range(int s, int e) {
+		return new IntStreamlet(() -> {
+			IntMutable m = IntMutable.of(s);
+			return IntOutlet.of(() -> {
+				int c = m.increment();
+				return c < e ? c : IntFunUtil.EMPTYVALUE;
+			});
+		});
 	}
 
 	public static Fun<Outlet<Ints>, Outlet<Ints>> split(Ints delim) {

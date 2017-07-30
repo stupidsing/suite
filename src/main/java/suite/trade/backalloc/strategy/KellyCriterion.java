@@ -7,7 +7,7 @@ import suite.adt.pair.Pair;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
-import suite.primitive.streamlet.IntStreamlet;
+import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Trade_;
@@ -43,7 +43,7 @@ public class KellyCriterion {
 		float[] returns = To.arrayOfFloats(symbols, excessReturnBySymbol::get);
 		float[] allocations = cholesky.inverseMul(cov).apply(returns);
 
-		return IntStreamlet //
+		return Ints_ //
 				.range(nSymbols) //
 				.map2(i -> symbols[i], i -> (double) allocations[i] * kellyReduction) //
 				.toList();

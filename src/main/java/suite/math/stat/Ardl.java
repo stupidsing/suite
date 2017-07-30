@@ -2,7 +2,7 @@ package suite.math.stat;
 
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Floats_;
-import suite.primitive.streamlet.IntStreamlet;
+import suite.primitive.Ints_;
 import suite.util.To;
 
 /**
@@ -26,7 +26,7 @@ public class Ardl {
 		int n = fsList.length;
 		int length = fsList[0].length;
 
-		LinearRegression[] lrs = IntStreamlet //
+		LinearRegression[] lrs = Ints_ //
 				.range(n) //
 				.map(it -> {
 					float[] fs = fsList[it];
@@ -47,7 +47,7 @@ public class Ardl {
 	}
 
 	private float[] getExplanatoryVariables(float[][] fsList, int it, int t) {
-		return Floats_.concat(IntStreamlet //
+		return Floats_.concat(Ints_ //
 				.range(fsList.length) //
 				.map(is -> {
 					float[] fsi = fsList[is];

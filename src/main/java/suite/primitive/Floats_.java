@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Floats.WriteChar;
+import suite.primitive.streamlet.FltOutlet;
+import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -63,6 +65,20 @@ public class Floats_ {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
+	}
+
+	public static FltStreamlet range(float e) {
+		return range((float) 0, e);
+	}
+
+	public static FltStreamlet range(float s, float e) {
+		return new FltStreamlet(() -> {
+			FltMutable m = FltMutable.of(s);
+			return FltOutlet.of(() -> {
+				float c = m.increment();
+				return c < e ? c : FltFunUtil.EMPTYVALUE;
+			});
+		});
 	}
 
 	public static Fun<Outlet<Floats>, Outlet<Floats>> split(Floats delim) {

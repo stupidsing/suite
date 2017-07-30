@@ -6,7 +6,7 @@ import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
-import suite.primitive.streamlet.IntStreamlet;
+import suite.primitive.Ints_;
 import suite.streamlet.Read;
 
 public class RegisterSet {
@@ -26,7 +26,7 @@ public class RegisterSet {
 				.map2(opReg -> opReg.reg, opReg -> opReg) //
 				.toMap();
 
-		registers = IntStreamlet //
+		registers = Ints_ //
 				.range(nRegisters) //
 				.map(map::get) //
 				.toArray(OpReg.class);
@@ -52,7 +52,8 @@ public class RegisterSet {
 	}
 
 	public OpReg[] list() {
-		return IntStreamlet.range(nRegisters) //
+		return Ints_ //
+				.range(nRegisters) //
 				.filter(this::isSet) //
 				.map(r -> registers[r]) //
 				.toArray(OpReg.class);

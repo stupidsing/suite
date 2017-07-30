@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.Longs.WriteChar;
+import suite.primitive.streamlet.LngOutlet;
+import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -63,6 +65,20 @@ public class Longs_ {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
+	}
+
+	public static LngStreamlet range(long e) {
+		return range((long) 0, e);
+	}
+
+	public static LngStreamlet range(long s, long e) {
+		return new LngStreamlet(() -> {
+			LngMutable m = LngMutable.of(s);
+			return LngOutlet.of(() -> {
+				long c = m.increment();
+				return c < e ? c : LngFunUtil.EMPTYVALUE;
+			});
+		});
 	}
 
 	public static Fun<Outlet<Longs>, Outlet<Longs>> split(Longs delim) {

@@ -28,12 +28,13 @@ import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.streamlet.StreamletDefaults;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
 
-public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
+public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblObjOutlet<V>> {
 
 	private Source<DblObjOutlet<V>> in;
 
@@ -227,7 +228,7 @@ public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 		return spawn().opt();
 	}
 
-	public DblObjOutlet<V> out() {
+	public DblObjOutlet<V> outlet() {
 		return spawn();
 	}
 
@@ -329,12 +330,12 @@ public class DblObjStreamlet<V> implements Iterable<DblObjPair<V>> {
 	}
 
 	private <V1, K1> Streamlet2<K1, V1> concatMap2_(DblObj_Obj<V, Streamlet2<K1, V1>> fun) {
-		DblObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
+		DblObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return new Streamlet2<>(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 
 	private <V1> DblObjStreamlet<V1> concatMapDblObj_(DblObj_Obj<V, DblObjStreamlet<V1>> fun) {
-		DblObj_Obj<V, DblObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
+		DblObj_Obj<V, DblObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return dblObjStreamlet(() -> DblObjOutlet.of(spawn().concatMapDblObj(bf)));
 	}
 

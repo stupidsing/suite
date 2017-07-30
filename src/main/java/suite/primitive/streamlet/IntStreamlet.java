@@ -9,7 +9,6 @@ import java.util.Set;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.IntFunUtil;
-import suite.primitive.IntMutable;
 import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
 import suite.primitive.IntPrimitives.IntObj_Obj;
@@ -27,13 +26,14 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.streamlet.StreamletDefaults;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 
-public class IntStreamlet implements Iterable<Integer> {
+public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 
 	private Source<IntOutlet> in;
 
@@ -62,20 +62,6 @@ public class IntStreamlet implements Iterable<Integer> {
 
 	public static IntStreamlet of(int[] ts) {
 		return streamlet(() -> IntOutlet.of(ts));
-	}
-
-	public static IntStreamlet range(int e) {
-		return range((int) 0, e);
-	}
-
-	public static IntStreamlet range(int s, int e) {
-		return streamlet(() -> {
-			IntMutable m = IntMutable.of(s);
-			return IntOutlet.of(() -> {
-				int c = m.increment();
-				return c < e ? c : IntFunUtil.EMPTYVALUE;
-			});
-		});
 	}
 
 	private static IntStreamlet streamlet(Source<IntOutlet> in) {
@@ -331,7 +317,7 @@ public class IntStreamlet implements Iterable<Integer> {
 	}
 
 	private <K, V> Streamlet2<K, V> concatMap2_(Int_Obj<Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).out()));
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet()));
 	}
 
 	private <O> Streamlet<O> map_(Int_Obj<O> fun) {

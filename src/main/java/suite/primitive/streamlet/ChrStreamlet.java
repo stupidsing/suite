@@ -11,7 +11,6 @@ import suite.adt.pair.Pair;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrFunUtil;
-import suite.primitive.ChrMutable;
 import suite.primitive.ChrOpt;
 import suite.primitive.ChrPrimitives.ChrComparator;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
@@ -27,13 +26,14 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.streamlet.StreamletDefaults;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 
-public class ChrStreamlet implements Iterable<Character> {
+public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 
 	private Source<ChrOutlet> in;
 
@@ -62,20 +62,6 @@ public class ChrStreamlet implements Iterable<Character> {
 
 	public static ChrStreamlet of(char[] ts) {
 		return streamlet(() -> ChrOutlet.of(ts));
-	}
-
-	public static ChrStreamlet range(char e) {
-		return range((char) 0, e);
-	}
-
-	public static ChrStreamlet range(char s, char e) {
-		return streamlet(() -> {
-			ChrMutable m = ChrMutable.of(s);
-			return ChrOutlet.of(() -> {
-				char c = m.increment();
-				return c < e ? c : ChrFunUtil.EMPTYVALUE;
-			});
-		});
 	}
 
 	private static ChrStreamlet streamlet(Source<ChrOutlet> in) {
@@ -331,7 +317,7 @@ public class ChrStreamlet implements Iterable<Character> {
 	}
 
 	private <K, V> Streamlet2<K, V> concatMap2_(Chr_Obj<Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).out()));
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet()));
 	}
 
 	private <O> Streamlet<O> map_(Chr_Obj<O> fun) {

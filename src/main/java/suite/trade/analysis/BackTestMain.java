@@ -7,7 +7,7 @@ import suite.adt.pair.Pair;
 import suite.node.io.Operator.Assoc;
 import suite.os.LogUtil;
 import suite.primitive.Chars;
-import suite.primitive.streamlet.IntStreamlet;
+import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -68,10 +68,10 @@ public class BackTestMain extends ExecutableProgram {
 				.concatMap(s -> {
 					Pair<String, String> pair = ParseUtil.search(s, "-", Assoc.RIGHT);
 					return pair != null //
-							? IntStreamlet.range(Integer.valueOf(pair.t0), Integer.valueOf(pair.t1)).map(i -> i) //
+							? Ints_.range(Integer.valueOf(pair.t0), Integer.valueOf(pair.t1)).map(i -> i) //
 							: Read.each(Integer.valueOf(s));
 				}) //
-				: IntStreamlet.range(2007, Trade_.thisYear).map(i -> i);
+				: Ints_.range(2007, Trade_.thisYear).map(i -> i);
 
 		Streamlet2<String, Simulate> simulationByKey = bacByTag1 //
 				.filterKey(strategyName -> strategyNames == null || strategyNames.contains(strategyName)) //

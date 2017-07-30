@@ -12,7 +12,7 @@ import suite.math.stat.Statistic;
 import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.os.LogUtil;
-import suite.primitive.streamlet.IntStreamlet;
+import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -93,7 +93,7 @@ public class BackAllocTester {
 			long t0 = period.from.epochSec();
 			long tx = period.to.epochSec();
 
-			int[] indices = IntStreamlet //
+			int[] indices = Ints_ //
 					.range(tradeTs.length) //
 					.filter(i -> {
 						long t = tradeTs[i];

@@ -20,6 +20,7 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
+import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
@@ -81,7 +82,7 @@ public class StatisticalArbitrageTest {
 
 		for (int i = 0; i < prices.length; i++) {
 			int past = Math.max(0, i - lookback);
-			IntStreamlet past_i = IntStreamlet.range(past, i);
+			IntStreamlet past_i = Ints_.range(past, i);
 			IntStreamlet past1_i = past_i.drop(1);
 
 			int ma20abovema50 = past_i.filter(j -> ma50[j] < ma20[j]).size();
@@ -174,12 +175,12 @@ public class StatisticalArbitrageTest {
 		float[] prices0 = pricesBySymbol.get(symbol0);
 		float[] prices1 = pricesBySymbol.get(symbol1);
 
-		float[][] xs = IntStreamlet //
+		float[][] xs = Ints_ //
 				.range(tor, length) //
 				.map(i -> Floats_.toArray(tor, j -> prices0[i + j - tor])) //
 				.toArray(float[].class);
 
-		float[] ys = IntStreamlet //
+		float[] ys = Ints_ //
 				.range(tor, length) //
 				.collect(Int_Flt.lift(i -> prices1[i])) //
 				.toArray();
@@ -193,8 +194,8 @@ public class StatisticalArbitrageTest {
 	public void testPeriod() {
 		int minPeriod = 8;
 
-		for (Asset stock : cfg.queryCompanies().take(40)) {
-			String symbol = stock.symbol;
+		for (Asset asset : cfg.queryCompanies().take(40)) {
+			String symbol = asset.symbol;
 			DataSource ds = cfg.dataSource(symbol);
 			float[] prices0 = ds.prices;
 			int size = 1, size1;
@@ -215,7 +216,7 @@ public class StatisticalArbitrageTest {
 				}
 			}
 
-			LogUtil.info(stock + " has period " + maxIndex);
+			LogUtil.info(asset + " has period " + maxIndex);
 		}
 	}
 
@@ -225,7 +226,7 @@ public class StatisticalArbitrageTest {
 		float[] prices = cfg.dataSource("^HSI").range(period).prices;
 		int maxTor = 16;
 
-		IntObjMap<float[]> differencesByTor = IntStreamlet //
+		IntObjMap<float[]> differencesByTor = Ints_ //
 				.range(1, maxTor) //
 				.mapIntObj(tor -> {
 					float[] differences = ts.differences(tor, prices);
@@ -238,7 +239,7 @@ public class StatisticalArbitrageTest {
 			System.out.println("tor = " + tor + ", " + stat.moments(differencesByTor.get(tor)));
 
 		Int_Flt predictFun = t -> {
-			double[][] cpsArray = IntStreamlet //
+			double[][] cpsArray = Ints_ //
 					.range(1, maxTor) //
 					.map(tor -> {
 						float[] differences = differencesByTor.get(tor);
@@ -264,7 +265,7 @@ public class StatisticalArbitrageTest {
 			for (int cpsi = 0, predDiff = -500; predDiff < 500; cpsi++, predDiff += 100) {
 				int cpsi_ = cpsi;
 
-				double sum = IntStreamlet //
+				double sum = Ints_ //
 						.range(1, maxTor) //
 						.map(i -> i) //
 						.collectAsDouble(Obj_Dbl.sum(tor -> {

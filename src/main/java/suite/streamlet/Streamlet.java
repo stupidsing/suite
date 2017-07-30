@@ -12,9 +12,6 @@ import java.util.function.Predicate;
 import suite.adt.Opt;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.FltPrimitives.Obj_Flt;
-import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -23,7 +20,7 @@ import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 
-public class Streamlet<T> implements Iterable<T> {
+public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 
 	private Source<Outlet<T>> in;
 
@@ -73,18 +70,6 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <R> R collect(Fun<Outlet<T>, R> fun) {
-		return fun.apply(spawn());
-	}
-
-	public double collectAsDouble(Obj_Dbl<Outlet<T>> fun) {
-		return fun.apply(spawn());
-	}
-
-	public float collectAsFloat(Obj_Flt<Outlet<T>> fun) {
-		return fun.apply(spawn());
-	}
-
-	public int collectAsInt(Obj_Int<Outlet<T>> fun) {
 		return fun.apply(spawn());
 	}
 
@@ -292,7 +277,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	private <K, V> Streamlet2<K, V> concatMap2_(Fun<T, Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).out()));
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet()));
 	}
 
 	private <O> Streamlet<O> map_(Fun<T, O> fun) {

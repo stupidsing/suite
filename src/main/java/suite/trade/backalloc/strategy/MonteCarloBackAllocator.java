@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Random;
 
 import suite.primitive.Floats_;
-import suite.primitive.streamlet.IntStreamlet;
+import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
@@ -32,7 +32,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 			Map<String, float[]> returnsBySymbol = dsBySymbol.mapValue(DataSource::returns).toMap();
 			String[] symbols = returnsBySymbol.keySet().toArray(new String[0]);
 
-			List<float[]> portfolios = IntStreamlet //
+			List<float[]> portfolios = Ints_ //
 					.range(99) //
 					.map(i -> randomPortfolio(symbols)) //
 					.toList();
@@ -63,7 +63,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 
 			float[] portfolio = portfolios.get(0);
 
-			return IntStreamlet //
+			return Ints_ //
 					.range(symbols.length) //
 					.map2(i -> symbols[i], i -> (double) portfolio[i]) //
 					.toList();

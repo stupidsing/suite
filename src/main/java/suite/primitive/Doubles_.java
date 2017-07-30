@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.Doubles.WriteChar;
+import suite.primitive.streamlet.DblOutlet;
+import suite.primitive.streamlet.DblStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -63,6 +65,20 @@ public class Doubles_ {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
+	}
+
+	public static DblStreamlet range(double e) {
+		return range((double) 0, e);
+	}
+
+	public static DblStreamlet range(double s, double e) {
+		return new DblStreamlet(() -> {
+			DblMutable m = DblMutable.of(s);
+			return DblOutlet.of(() -> {
+				double c = m.increment();
+				return c < e ? c : DblFunUtil.EMPTYVALUE;
+			});
+		});
 	}
 
 	public static Fun<Outlet<Doubles>, Outlet<Doubles>> split(Doubles delim) {

@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.primitive.Int_Flt;
+import suite.primitive.Ints_;
 import suite.primitive.adt.pair.LngFltPair;
-import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -197,9 +197,9 @@ public class StockHistory {
 					t + DataSource.tickDuration, //
 					opPairs[io_].t1, //
 					clPairs[ic - 1].t1, //
-					IntStreamlet.range(il_, il = scan(loPairs, il_, t)).collect(Int_Flt.lift(i_ -> loPairs[i_].t1)).min(), //
-					IntStreamlet.range(ih_, ih = scan(hiPairs, ih_, t)).collect(Int_Flt.lift(i_ -> hiPairs[i_].t1)).max(), //
-					IntStreamlet.range(iv_, iv = scan(vlPairs, iv_, t)).collect(Int_Flt.lift(i_ -> vlPairs[i_].t1)).sum());
+					Ints_.range(il_, il = scan(loPairs, il_, t)).collect(Int_Flt.lift(i_ -> loPairs[i_].t1)).min(), //
+					Ints_.range(ih_, ih = scan(hiPairs, ih_, t)).collect(Int_Flt.lift(i_ -> hiPairs[i_].t1)).max(), //
+					Ints_.range(iv_, iv = scan(vlPairs, iv_, t)).collect(Int_Flt.lift(i_ -> vlPairs[i_].t1)).sum());
 		}
 
 		return DataSource.of(Read.from(data));

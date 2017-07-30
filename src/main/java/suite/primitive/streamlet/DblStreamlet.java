@@ -9,7 +9,6 @@ import java.util.Set;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.DblFunUtil;
-import suite.primitive.DblMutable;
 import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObj_Obj;
@@ -27,13 +26,14 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.streamlet.StreamletDefaults;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 
-public class DblStreamlet implements Iterable<Double> {
+public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 
 	private Source<DblOutlet> in;
 
@@ -62,20 +62,6 @@ public class DblStreamlet implements Iterable<Double> {
 
 	public static DblStreamlet of(double[] ts) {
 		return streamlet(() -> DblOutlet.of(ts));
-	}
-
-	public static DblStreamlet range(double e) {
-		return range((double) 0, e);
-	}
-
-	public static DblStreamlet range(double s, double e) {
-		return streamlet(() -> {
-			DblMutable m = DblMutable.of(s);
-			return DblOutlet.of(() -> {
-				double c = m.increment();
-				return c < e ? c : DblFunUtil.EMPTYVALUE;
-			});
-		});
 	}
 
 	private static DblStreamlet streamlet(Source<DblOutlet> in) {
@@ -331,7 +317,7 @@ public class DblStreamlet implements Iterable<Double> {
 	}
 
 	private <K, V> Streamlet2<K, V> concatMap2_(Dbl_Obj<Streamlet2<K, V>> fun) {
-		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).out()));
+		return new Streamlet2<>(() -> spawn().concatMap2(t -> fun.apply(t).outlet()));
 	}
 
 	private <O> Streamlet<O> map_(Dbl_Obj<O> fun) {

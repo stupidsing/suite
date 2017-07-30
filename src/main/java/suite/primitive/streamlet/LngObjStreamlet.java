@@ -28,12 +28,13 @@ import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.streamlet.StreamletDefaults;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
 
-public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
+public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngObjOutlet<V>> {
 
 	private Source<LngObjOutlet<V>> in;
 
@@ -227,7 +228,7 @@ public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
 		return spawn().opt();
 	}
 
-	public LngObjOutlet<V> out() {
+	public LngObjOutlet<V> outlet() {
 		return spawn();
 	}
 
@@ -329,12 +330,12 @@ public class LngObjStreamlet<V> implements Iterable<LngObjPair<V>> {
 	}
 
 	private <V1, K1> Streamlet2<K1, V1> concatMap2_(LngObj_Obj<V, Streamlet2<K1, V1>> fun) {
-		LngObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).out();
+		LngObj_Obj<V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return new Streamlet2<>(() -> Outlet2.of(spawn().concatMap2(bf)));
 	}
 
 	private <V1> LngObjStreamlet<V1> concatMapLngObj_(LngObj_Obj<V, LngObjStreamlet<V1>> fun) {
-		LngObj_Obj<V, LngObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).out();
+		LngObj_Obj<V, LngObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return lngObjStreamlet(() -> LngObjOutlet.of(spawn().concatMapLngObj(bf)));
 	}
 
