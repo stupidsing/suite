@@ -16,6 +16,7 @@ public class Kalman {
 	private float[] estimatedState0;
 
 	public void kalman(float[] input0, float[] observed0) {
+		float[][] identity = mtx.identity(stateSize);
 		float[][] Ft = mtx.transpose(F);
 		float[][] Ht = mtx.transpose(H);
 
@@ -26,7 +27,7 @@ public class Kalman {
 		// update
 		float[][] kalmanGain = mul(predictedCovariance1, Ht, mtx.inverse(mtx.add(R, mul(H, predictedCovariance1, Ht))));
 		float[] estimatedState1 = mtx.add(predictedState1, mtx.mul(kalmanGain, mtx.sub(observed0, mtx.mul(H, predictedState1))));
-		float[][] covariance1 = mtx.mul(mtx.add(mtx.identity(stateSize), mtx.neg(mtx.mul(kalmanGain, H))), predictedCovariance1);
+		float[][] covariance1 = mtx.mul(mtx.add(identity, mtx.neg(mtx.mul(kalmanGain, H))), predictedCovariance1);
 		// residual1 = observed0 - H * estimatedState1
 
 		covariance0 = covariance1;
