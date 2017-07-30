@@ -1,12 +1,17 @@
 package suite.algo;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.math.linalg.Matrix;
+import suite.primitive.Int_Int;
+import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntFltPair;
+import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.util.List_;
 import suite.util.To;
@@ -26,7 +31,14 @@ public class KmeansCluster {
 		this.dimension = dimension;
 	}
 
-	public Collection<List<float[]>> kmeansCluster(List<float[]> points, int k, int nIterations) {
+	public <K> ObjIntMap<K> kmeansCluster(Map<K, float[]> points, int k, int nIterations) {
+		List<K> keys = new ArrayList<>(points.keySet());
+		List<float[]> values = Ints_.range(keys.size()).map(points::get).toList();
+		int[] ks = kmeansCluster(values, k, nIterations);
+		return IntStreamlet.of(ks).mapIntObj(keys::get).collect(ObjIntMap::collect);
+	}
+
+	public int[] kmeansCluster(List<float[]> points, int k, int nIterations) {
 		List<float[]> kmeans = List_.left(points, k);
 		int iteration = 0;
 
@@ -43,7 +55,7 @@ public class KmeansCluster {
 				kmeans = Read.from(bins).map(bin -> div(bin.sum, bin.count)).toList();
 			else {
 				List<float[]> kmeans0 = kmeans;
-				return Read.from(points).toListMap(point -> findNearest(point, kmeans0)).values();
+				return Ints_.range(points.size()).collect(Int_Int.lift(i -> findNearest(points.get(i), kmeans0))).toArray();
 			}
 		}
 	}
@@ -80,8 +92,8 @@ public class KmeansCluster {
 		return mtx.dot(d);
 	}
 
-	private float[] div(float[] a, float b) {
-		return mtx.scale(a, 1f / b);
+	private float[] div(float[] a, double b) {
+		return mtx.scale(a, 1d / b);
 	}
 
 }

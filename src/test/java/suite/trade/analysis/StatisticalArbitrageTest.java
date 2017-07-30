@@ -10,6 +10,7 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
+import suite.algo.KmeansCluster;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
@@ -22,7 +23,10 @@ import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.map.ObjIntMap;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntStreamlet;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -41,6 +45,7 @@ public class StatisticalArbitrageTest {
 
 	private TimeRange period = TimeRange.threeYears();
 
+	BollingerBands bb = new BollingerBands();
 	private Configuration cfg = new ConfigurationImpl();
 	private DiscreteCosineTransform dct = new DiscreteCosineTransform();
 	private MovingAverage ma = new MovingAverage();
@@ -189,6 +194,16 @@ public class StatisticalArbitrageTest {
 		System.out.println(lr);
 	}
 
+	@Test
+	public void testKMeansCluster() {
+		AlignKeyDataSource<String> akds = dataSources();
+		Map<String, float[]> returnsBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
+		ObjIntMap<String> groupBySymbol = new KmeansCluster(akds.ts.length).kmeansCluster(returnsBySymbol, 9, 100);
+
+		for (IntObjPair<List<String>> pair : groupBySymbol.stream().groupBy())
+			System.out.println(Read.from(pair.t1).collect(As.joinedBy(",")));
+	}
+
 	// find the period of various stocks using FFT
 	@Test
 	public void testPeriod() {
@@ -293,13 +308,7 @@ public class StatisticalArbitrageTest {
 	// any relationship between returns and volatility?
 	@Test
 	public void testVolatility() {
-		BollingerBands bb = new BollingerBands();
-
-		Streamlet<String> symbols = cfg //
-				.queryCompaniesByMarketCap(Time.now()) //
-				.map(asset -> asset.symbol);
-
-		AlignKeyDataSource<String> akds = cfg.dataSources(period, symbols);
+		AlignKeyDataSource<String> akds = dataSources();
 
 		List<Pair<String, Double>> volBySymbol = akds.dsByKey //
 				.map2((symbol, ds) -> {
@@ -313,6 +322,15 @@ public class StatisticalArbitrageTest {
 				.toList();
 
 		volBySymbol.forEach(System.out::println);
+	}
+
+	private AlignKeyDataSource<String> dataSources() {
+		Streamlet<String> symbols = cfg //
+				.queryCompaniesByMarketCap(Time.now()) //
+				.map(asset -> asset.symbol);
+
+		AlignKeyDataSource<String> akds = cfg.dataSources(period, symbols);
+		return akds;
 	}
 
 }
