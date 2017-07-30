@@ -12,7 +12,7 @@ public class Eigen {
 	private Random random = new Random();
 
 	public float[][] power(float[][] m0) {
-		float[][] m = m0;
+		float[][] m = mtx.of(m0);
 		for (int i = 0; i < 256; i++) {
 			m = Read.from(m).map(mtx::normalize).toArray(float[].class);
 			m = mtx.mul(m, m);
@@ -27,16 +27,17 @@ public class Eigen {
 		float[][] m = mtx.of(m0);
 		int size = mtx.sqSize(m);
 		float[][] eigenVectors = new float[size][];
-		float eigenValue = Float.MIN_VALUE;
+		float eigenValue = 0f;
 
 		for (int v = 0; v < size; v++) {
 			float[] xs = Floats_.toArray(size, i -> random.nextFloat());
 
 			for (int iteration = 0; iteration < 256; iteration++) {
 				float[] ys = mtx.mul(m, xs);
-				eigenValue = Float.MIN_VALUE;
+				eigenValue = 0f;
 				for (float y : ys)
-					eigenValue = Math.max(eigenValue, Math.abs(y));
+					if (Math.abs(eigenValue) < Math.abs(y))
+						eigenValue = y;
 				xs = mtx.scale(ys, 1d / eigenValue);
 			}
 
