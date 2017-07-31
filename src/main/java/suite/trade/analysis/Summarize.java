@@ -65,8 +65,8 @@ public class Summarize {
 		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
 			Time now = Time.now();
 			boolean isMarketOpen = false //
-					|| HkexUtil.isMarketOpen(now.addHours(1)) //
-					|| HkexUtil.isMarketOpen(now);
+					|| HkexUtil.isMarketOpen(now) //
+					|| HkexUtil.isMarketOpen(now.addHours(1));
 
 			DataSource ds = cfg.dataSource(symbol);
 			float price0 = ds.get(isMarketOpen ? -1 : -2).t1;
