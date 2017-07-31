@@ -19,7 +19,7 @@ public class Render {
 
 		Vector[][] pixels = new Vector[width][height];
 		float scale = 1f / Math.max(width, height);
-		int centreX = width / 2, centreY = height / 2;
+		int centerX = width / 2, centerY = height / 2;
 
 		List<Thread> threads = Ints_ //
 				.range(nThreads) //
@@ -28,7 +28,7 @@ public class Render {
 						for (int y = 0; y < height; y++) {
 							Vector color;
 							try {
-								color = f.apply((x - centreX) * scale, (y - centreY) * scale);
+								color = f.apply((x - centerX) * scale, (y - centerY) * scale);
 							} catch (Exception ex) {
 								LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
 								color = new Vector(1f, 1f, 1f);

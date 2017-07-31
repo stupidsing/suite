@@ -35,7 +35,7 @@ public class KMeansClusterTest {
 				.toMap();
 
 		KmeansCluster kmc = new KmeansCluster(seeds.size());
-		ObjIntMap<String> clusters = kmc.kmeansCluster(points, n, 9);
+		ObjIntMap<String> clusters = kmc.kMeansCluster(points, n, 9);
 
 		assertEquals(9, clusters.size());
 

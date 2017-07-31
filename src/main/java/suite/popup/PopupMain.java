@@ -40,7 +40,7 @@ public class PopupMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) throws Exception {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int centreX = screenSize.width / 2, centreY = screenSize.height / 2;
+		int centerX = screenSize.width / 2, centerY = screenSize.height / 2;
 		int width = screenSize.width / 2, height = screenSize.height / 8;
 
 		JTextField inTextField = new JTextField();
@@ -54,7 +54,7 @@ public class PopupMain extends ExecutableProgram {
 
 		JFrame frame = new JFrame("Pop-up");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		frame.setLocation(centreX - width / 2, centreY - height / 2);
+		frame.setLocation(centerX - width / 2, centerY - height / 2);
 		frame.setSize(new Dimension(width, height));
 		frame.setVisible(true);
 

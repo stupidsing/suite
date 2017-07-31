@@ -30,10 +30,10 @@ public class KmeansCluster {
 		this.dimension = dimension;
 	}
 
-	public <K> ObjIntMap<K> kmeansCluster(Map<K, float[]> points, int k, int nIterations) {
+	public <K> ObjIntMap<K> kMeansCluster(Map<K, float[]> points, int k, int nIterations) {
 		List<K> keys = new ArrayList<>(points.keySet());
 		List<float[]> values = Read.from(keys).map(points::get).toList();
-		int[] ks = kmeansCluster(values, k, nIterations);
+		int[] ks = kMeansCluster(values, k, nIterations);
 		ObjIntMap<K> map = new ObjIntMap<>();
 
 		for (int i : Ints_.range(ks.length))
@@ -42,24 +42,24 @@ public class KmeansCluster {
 		return map;
 	}
 
-	public int[] kmeansCluster(List<float[]> points, int k, int nIterations) {
-		List<float[]> kmeans = List_.left(points, k);
+	public int[] kMeansCluster(List<float[]> points, int k, int nIterations) {
+		List<float[]> centers = List_.left(points, k);
 		int iteration = 0;
 
 		while (true) {
 			KmeansBin[] bins = To.array(KmeansBin.class, k, j -> new KmeansBin());
 
 			for (float[] point : points) {
-				KmeansBin bin = bins[findNearest(point, kmeans)];
+				KmeansBin bin = bins[findNearest(point, centers)];
 				bin.sum = mtx.add(point, bin.sum);
 				bin.count++;
 			}
 
 			if (iteration++ <= nIterations)
-				kmeans = Read.from(bins).map(bin -> div(bin.sum, bin.count)).toList();
+				centers = Read.from(bins).map(bin -> div(bin.sum, bin.count)).toList();
 			else {
-				List<float[]> kmeans0 = kmeans;
-				return Ints_.range(points.size()).collect(Int_Int.lift(i -> findNearest(points.get(i), kmeans0))).toArray();
+				List<float[]> kMeans0 = centers;
+				return Ints_.range(points.size()).collect(Int_Int.lift(i -> findNearest(points.get(i), kMeans0))).toArray();
 			}
 		}
 	}

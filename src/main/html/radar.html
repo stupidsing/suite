@@ -21,7 +21,7 @@
 		canvas.width = width;
 		canvas.height = height;
 
-		var centrex = width / 2, centrey = height / 2;
+		var centerx = width / 2, centery = height / 2;
 		var radius = 250;
 
 		var frame = frp.animframe();
@@ -33,7 +33,7 @@
 			},
 			draw: context => {
 				context.beginPath();
-				context.arc(centrex, centrey, radius, 0, 2 * Math.PI);
+				context.arc(centerx, centery, radius, 0, 2 * Math.PI);
 				context.stroke();
 			},
 		};
@@ -56,22 +56,22 @@
 				},
 				draw: context => {
 					context.beginPath();
-					context.moveTo(centrex, centrey);
-					context.lineTo(centrex + 16 * Math.cos(angle), centrey + 16 * Math.sin(angle));
+					context.moveTo(centerx, centery);
+					context.lineTo(centerx + 16 * Math.cos(angle), centery + 16 * Math.sin(angle));
 					context.stroke();
 
 					if (state != 0) {
 						context.strokeStyle = "#CCCC00";
 						context.beginPath();
-						context.arc(centrex, centrey, radius * fire0, angle - .5, angle + .5);
+						context.arc(centerx, centery, radius * fire0, angle - .5, angle + .5);
 						context.stroke();
 						context.beginPath();
-						context.arc(centrex, centrey, radius * fire1, angle - .5, angle + .5);
+						context.arc(centerx, centery, radius * fire1, angle - .5, angle + .5);
 						context.stroke();
 						/*
 						context.beginPath();
-						context.arc(centrex, centrey, radius * fire0, angle - .5, angle + .5);
-						context.arc(centrex, centrey, radius * fire1, angle - .5, angle + .5);
+						context.arc(centerx, centery, radius * fire0, angle - .5, angle + .5);
+						context.arc(centerx, centery, radius * fire1, angle - .5, angle + .5);
 						context.strokeStyle = "#CCCC00";
 						context.fillStyle = "#CCCC00";
 						context.fill();
@@ -83,8 +83,8 @@
 
 		var enemy_ = () => {
 			var angle = 2 * Math.PI * Math.random();
-			var x = centrex + radius * Math.sin(angle);
-			var y = centrey + radius * Math.cos(angle);
+			var x = centerx + radius * Math.sin(angle);
+			var y = centery + radius * Math.cos(angle);
 
 			return {
 				move: function() {
@@ -92,8 +92,8 @@
 						x += Math.floor(Math.random() * 9) - 4;
 						y += Math.floor(Math.random() * 9) - 4;
 					} else {
-						x += x < centrex ? 1 : -1;
-						y += y < centrey ? 1 : -1;
+						x += x < centerx ? 1 : -1;
+						y += y < centery ? 1 : -1;
 					};
 					return [this];
 				},

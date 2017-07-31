@@ -13,26 +13,26 @@ import suite.rt.RayTracer.RtObject;
 
 public class Sphere implements RtObject {
 
-	private Vector centre;
+	private Vector center;
 	private float radius;
 	private Material material;
 
-	public Sphere(Vector centre, float radius, Material material) {
-		this.centre = centre;
+	public Sphere(Vector center, float radius, Material material) {
+		this.center = center;
 		this.radius = radius;
 		this.material = material;
 	}
 
-	public static RtObject c(Vector centre, float radius, Material material) {
+	public static RtObject c(Vector center, float radius, Material material) {
 		Vector radiusRange = new Vector(radius, radius, radius);
-		Vector min = Vector.sub(centre, radiusRange);
-		Vector max = Vector.add(centre, radiusRange);
-		return new BoundingBox(min, max, new Sphere(centre, radius, material));
+		Vector min = Vector.sub(center, radiusRange);
+		Vector max = Vector.add(center, radiusRange);
+		return new BoundingBox(min, max, new Sphere(center, radius, material));
 	}
 
 	@Override
 	public List<RayHit> hit(Ray ray) {
-		Vector start0 = Vector.sub(ray.startPoint, centre);
+		Vector start0 = Vector.sub(ray.startPoint, center);
 		float a = Vector.abs2(ray.dir);
 		float b = 2f * Vector.dot(start0, ray.dir);
 		float c = Vector.abs2(start0) - radius * radius;
@@ -64,7 +64,7 @@ public class Sphere implements RtObject {
 					}
 
 					public Vector normal() {
-						return Vector.sub(hitPoint, centre);
+						return Vector.sub(hitPoint, center);
 					}
 
 					public Material material() {
