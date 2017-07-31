@@ -63,8 +63,12 @@ public class Summarize {
 		}
 
 		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
+			Time now = Time.now();
+			boolean isMarketOpen = false //
+					|| HkexUtil.isMarketOpen(now.addHours(1)) //
+					|| HkexUtil.isMarketOpen(now);
+
 			DataSource ds = cfg.dataSource(symbol);
-			boolean isMarketOpen = HkexUtil.isMarketOpen(Time.now().addHours(1));
 			float price0 = ds.get(isMarketOpen ? -1 : -2).t1;
 			float pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1;
 			String percent = String.format("%.1f", 100d * Quant.return_(price0, pricex)) + "%";
