@@ -5,12 +5,16 @@ import java.util.Arrays;
 import suite.primitive.ChrDblSink;
 import suite.primitive.ChrDblSource;
 import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Dbl;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.ChrDblPair;
+import suite.primitive.adt.pair.ChrObjPair;
+import suite.primitive.streamlet.ChrObjOutlet;
+import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -104,13 +108,27 @@ public class ChrDblMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public ChrDblSource source() {
 		return source_();
 	}
 
-	// public ChrDblStreamlet stream() {
-	// return new ChrDblStreamlet<>(() -> ChrDblOutlet.of(source_()));
-	// }
+	public ChrObjStreamlet<Double> stream() {
+		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(new ChrObjSource<Double>() {
+			private ChrDblSource source0 = source_();
+			private ChrDblPair pair0 = ChrDblPair.of((char) 0, (double) 0);
+
+			public boolean source2(ChrObjPair<Double> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private double put_(char key, double v1) {
 		int mask = vs.length - 1;

@@ -5,15 +5,19 @@ import java.util.Arrays;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntIntSink;
 import suite.primitive.IntIntSource;
+import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.primitive.adt.pair.IntObjPair;
+import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive int key and primitive int value. Integer.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with primitive int key and primitive int value. Integer.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -101,13 +105,27 @@ public class IntIntMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public IntIntSource source() {
 		return source_();
 	}
 
-	// public IntIntStreamlet stream() {
-	// return new IntIntStreamlet<>(() -> IntIntOutlet.of(source_()));
-	// }
+	public IntObjStreamlet<Integer> stream() {
+		return new IntObjStreamlet<>(() -> IntObjOutlet.of(new IntObjSource<Integer>() {
+			private IntIntSource source0 = source_();
+			private IntIntPair pair0 = IntIntPair.of((int) 0, (int) 0);
+
+			public boolean source2(IntObjPair<Integer> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private int put_(int key, int v1) {
 		int mask = vs.length - 1;

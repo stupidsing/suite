@@ -5,12 +5,16 @@ import java.util.Arrays;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltIntSink;
 import suite.primitive.FltIntSource;
+import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Int;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.FltIntPair;
+import suite.primitive.adt.pair.FltObjPair;
+import suite.primitive.streamlet.FltObjOutlet;
+import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -104,13 +108,27 @@ public class FltIntMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public FltIntSource source() {
 		return source_();
 	}
 
-	// public FltIntStreamlet stream() {
-	// return new FltIntStreamlet<>(() -> FltIntOutlet.of(source_()));
-	// }
+	public FltObjStreamlet<Integer> stream() {
+		return new FltObjStreamlet<>(() -> FltObjOutlet.of(new FltObjSource<Integer>() {
+			private FltIntSource source0 = source_();
+			private FltIntPair pair0 = FltIntPair.of((float) 0, (int) 0);
+
+			public boolean source2(FltObjPair<Integer> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private int put_(float key, int v1) {
 		int mask = vs.length - 1;

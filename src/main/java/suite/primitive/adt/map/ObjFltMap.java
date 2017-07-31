@@ -12,8 +12,8 @@ import suite.primitive.streamlet.FltObjOutlet;
 import suite.primitive.streamlet.FltObjStreamlet;
 
 /**
- * Map with generic object key and floatacter object value. Float.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with generic object key and floatacter object value. Float.MIN_VALUE
+ * is not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -95,6 +95,10 @@ public class ObjFltMap<K> {
 			else
 				break;
 		vs[index] = fun.apply(v);
+	}
+
+	public int size() {
+		return size;
 	}
 
 	public FltObjSource<K> source() {

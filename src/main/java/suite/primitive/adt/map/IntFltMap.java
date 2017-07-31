@@ -8,15 +8,19 @@ import suite.primitive.Flt_Flt;
 import suite.primitive.IntFltSink;
 import suite.primitive.IntFltSource;
 import suite.primitive.IntFunUtil;
+import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.IntFltPair;
+import suite.primitive.adt.pair.IntObjPair;
+import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive int key and primitive float value. Float.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with primitive int key and primitive float value. Float.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -104,13 +108,27 @@ public class IntFltMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public IntFltSource source() {
 		return source_();
 	}
 
-	// public IntFltStreamlet stream() {
-	// return new IntFltStreamlet<>(() -> IntFltOutlet.of(source_()));
-	// }
+	public IntObjStreamlet<Float> stream() {
+		return new IntObjStreamlet<>(() -> IntObjOutlet.of(new IntObjSource<Float>() {
+			private IntFltSource source0 = source_();
+			private IntFltPair pair0 = IntFltPair.of((int) 0, (float) 0);
+
+			public boolean source2(IntObjPair<Float> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private float put_(int key, float v1) {
 		int mask = vs.length - 1;

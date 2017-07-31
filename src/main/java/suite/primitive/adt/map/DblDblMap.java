@@ -5,9 +5,13 @@ import java.util.Arrays;
 import suite.primitive.DblDblSink;
 import suite.primitive.DblDblSource;
 import suite.primitive.DblFunUtil;
+import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.DblDblPair;
+import suite.primitive.adt.pair.DblObjPair;
+import suite.primitive.streamlet.DblObjOutlet;
+import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -101,13 +105,27 @@ public class DblDblMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public DblDblSource source() {
 		return source_();
 	}
 
-	// public DblDblStreamlet stream() {
-	// return new DblDblStreamlet<>(() -> DblDblOutlet.of(source_()));
-	// }
+	public DblObjStreamlet<Double> stream() {
+		return new DblObjStreamlet<>(() -> DblObjOutlet.of(new DblObjSource<Double>() {
+			private DblDblSource source0 = source_();
+			private DblDblPair pair0 = DblDblPair.of((double) 0, (double) 0);
+
+			public boolean source2(DblObjPair<Double> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private double put_(double key, double v1) {
 		int mask = vs.length - 1;

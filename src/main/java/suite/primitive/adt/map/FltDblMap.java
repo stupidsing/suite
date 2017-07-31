@@ -8,9 +8,13 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltDblSink;
 import suite.primitive.FltDblSource;
 import suite.primitive.FltFunUtil;
+import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Dbl;
 import suite.primitive.adt.pair.FltDblPair;
+import suite.primitive.adt.pair.FltObjPair;
+import suite.primitive.streamlet.FltObjOutlet;
+import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -104,13 +108,27 @@ public class FltDblMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public FltDblSource source() {
 		return source_();
 	}
 
-	// public FltDblStreamlet stream() {
-	// return new FltDblStreamlet<>(() -> FltDblOutlet.of(source_()));
-	// }
+	public FltObjStreamlet<Double> stream() {
+		return new FltObjStreamlet<>(() -> FltObjOutlet.of(new FltObjSource<Double>() {
+			private FltDblSource source0 = source_();
+			private FltDblPair pair0 = FltDblPair.of((float) 0, (double) 0);
+
+			public boolean source2(FltObjPair<Double> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private double put_(float key, double v1) {
 		int mask = vs.length - 1;

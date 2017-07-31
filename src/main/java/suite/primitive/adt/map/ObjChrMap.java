@@ -97,6 +97,10 @@ public class ObjChrMap<K> {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public ChrObjSource<K> source() {
 		return source_();
 	}

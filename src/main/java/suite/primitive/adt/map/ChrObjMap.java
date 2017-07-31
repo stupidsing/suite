@@ -94,6 +94,10 @@ public class ChrObjMap<V> {
 		vs[index] = fun.apply(cast(v));
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public ChrObjSource<V> source() {
 		return source_();
 	}

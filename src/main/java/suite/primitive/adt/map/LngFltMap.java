@@ -8,15 +8,19 @@ import suite.primitive.Flt_Flt;
 import suite.primitive.LngFltSink;
 import suite.primitive.LngFltSource;
 import suite.primitive.LngFunUtil;
+import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Flt;
 import suite.primitive.adt.pair.LngFltPair;
+import suite.primitive.adt.pair.LngObjPair;
+import suite.primitive.streamlet.LngObjOutlet;
+import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive long key and primitive float value. Float.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with primitive long key and primitive float value. Float.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -104,13 +108,27 @@ public class LngFltMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public LngFltSource source() {
 		return source_();
 	}
 
-	// public LngFltStreamlet stream() {
-	// return new LngFltStreamlet<>(() -> LngFltOutlet.of(source_()));
-	// }
+	public LngObjStreamlet<Float> stream() {
+		return new LngObjStreamlet<>(() -> LngObjOutlet.of(new LngObjSource<Float>() {
+			private LngFltSource source0 = source_();
+			private LngFltPair pair0 = LngFltPair.of((long) 0, (float) 0);
+
+			public boolean source2(LngObjPair<Float> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private float put_(long key, float v1) {
 		int mask = vs.length - 1;

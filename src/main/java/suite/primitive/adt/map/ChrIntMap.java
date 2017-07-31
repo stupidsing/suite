@@ -5,18 +5,22 @@ import java.util.Arrays;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrIntSink;
 import suite.primitive.ChrIntSource;
+import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Int;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.ChrIntPair;
+import suite.primitive.adt.pair.ChrObjPair;
+import suite.primitive.streamlet.ChrObjOutlet;
+import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive char key and primitive int value. Integer.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with primitive char key and primitive int value. Integer.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -104,13 +108,27 @@ public class ChrIntMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public ChrIntSource source() {
 		return source_();
 	}
 
-	// public ChrIntStreamlet stream() {
-	// return new ChrIntStreamlet<>(() -> ChrIntOutlet.of(source_()));
-	// }
+	public ChrObjStreamlet<Integer> stream() {
+		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(new ChrObjSource<Integer>() {
+			private ChrIntSource source0 = source_();
+			private ChrIntPair pair0 = ChrIntPair.of((char) 0, (int) 0);
+
+			public boolean source2(ChrObjPair<Integer> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private int put_(char key, int v1) {
 		int mask = vs.length - 1;

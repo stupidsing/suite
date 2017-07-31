@@ -5,12 +5,16 @@ import java.util.Arrays;
 import suite.primitive.DblFltSink;
 import suite.primitive.DblFltSource;
 import suite.primitive.DblFunUtil;
+import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Flt;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.DblFltPair;
+import suite.primitive.adt.pair.DblObjPair;
+import suite.primitive.streamlet.DblObjOutlet;
+import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -104,13 +108,27 @@ public class DblFltMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public DblFltSource source() {
 		return source_();
 	}
 
-	// public DblFltStreamlet stream() {
-	// return new DblFltStreamlet<>(() -> DblFltOutlet.of(source_()));
-	// }
+	public DblObjStreamlet<Float> stream() {
+		return new DblObjStreamlet<>(() -> DblObjOutlet.of(new DblObjSource<Float>() {
+			private DblFltSource source0 = source_();
+			private DblFltPair pair0 = DblFltPair.of((double) 0, (float) 0);
+
+			public boolean source2(DblObjPair<Float> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private float put_(double key, float v1) {
 		int mask = vs.length - 1;

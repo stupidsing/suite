@@ -8,15 +8,19 @@ import suite.primitive.Chr_Chr;
 import suite.primitive.DblChrSink;
 import suite.primitive.DblChrSource;
 import suite.primitive.DblFunUtil;
+import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Chr;
 import suite.primitive.adt.pair.DblChrPair;
+import suite.primitive.adt.pair.DblObjPair;
+import suite.primitive.streamlet.DblObjOutlet;
+import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive double key and primitive char value. Character.MIN_VALUE
- * is not allowed in values. Not thread-safe.
+ * Map with primitive double key and primitive char value. Character.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -104,13 +108,27 @@ public class DblChrMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public DblChrSource source() {
 		return source_();
 	}
 
-	// public DblChrStreamlet stream() {
-	// return new DblChrStreamlet<>(() -> DblChrOutlet.of(source_()));
-	// }
+	public DblObjStreamlet<Character> stream() {
+		return new DblObjStreamlet<>(() -> DblObjOutlet.of(new DblObjSource<Character>() {
+			private DblChrSource source0 = source_();
+			private DblChrPair pair0 = DblChrPair.of((double) 0, (char) 0);
+
+			public boolean source2(DblObjPair<Character> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private char put_(double key, char v1) {
 		int mask = vs.length - 1;

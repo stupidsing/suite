@@ -94,6 +94,10 @@ public class LngObjMap<V> {
 		vs[index] = fun.apply(cast(v));
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public LngObjSource<V> source() {
 		return source_();
 	}

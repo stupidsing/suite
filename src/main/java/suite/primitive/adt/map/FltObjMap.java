@@ -94,6 +94,10 @@ public class FltObjMap<V> {
 		vs[index] = fun.apply(cast(v));
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public FltObjSource<V> source() {
 		return source_();
 	}

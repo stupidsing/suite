@@ -12,8 +12,8 @@ import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
 
 /**
- * Map with generic object key and longacter object value. Long.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with generic object key and longacter object value. Long.MIN_VALUE
+ * is not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -95,6 +95,10 @@ public class ObjLngMap<K> {
 			else
 				break;
 		vs[index] = fun.apply(v);
+	}
+
+	public int size() {
+		return size;
 	}
 
 	public LngObjSource<K> source() {

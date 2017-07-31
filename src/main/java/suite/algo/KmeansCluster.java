@@ -11,7 +11,6 @@ import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntFltPair;
-import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.util.List_;
 import suite.util.To;
@@ -33,9 +32,14 @@ public class KmeansCluster {
 
 	public <K> ObjIntMap<K> kmeansCluster(Map<K, float[]> points, int k, int nIterations) {
 		List<K> keys = new ArrayList<>(points.keySet());
-		List<float[]> values = Ints_.range(keys.size()).map(points::get).toList();
+		List<float[]> values = Read.from(keys).map(points::get).toList();
 		int[] ks = kmeansCluster(values, k, nIterations);
-		return IntStreamlet.of(ks).mapIntObj(keys::get).collect(ObjIntMap::collect);
+		ObjIntMap<K> map = new ObjIntMap<>();
+
+		for (int i : Ints_.range(ks.length))
+			map.put(keys.get(i), ks[i]);
+
+		return map;
 	}
 
 	public int[] kmeansCluster(List<float[]> points, int k, int nIterations) {

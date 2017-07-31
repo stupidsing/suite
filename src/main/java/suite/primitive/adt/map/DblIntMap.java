@@ -5,12 +5,16 @@ import java.util.Arrays;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblIntSink;
 import suite.primitive.DblIntSource;
+import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Int;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.DblIntPair;
+import suite.primitive.adt.pair.DblObjPair;
+import suite.primitive.streamlet.DblObjOutlet;
+import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -104,13 +108,27 @@ public class DblIntMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public DblIntSource source() {
 		return source_();
 	}
 
-	// public DblIntStreamlet stream() {
-	// return new DblIntStreamlet<>(() -> DblIntOutlet.of(source_()));
-	// }
+	public DblObjStreamlet<Integer> stream() {
+		return new DblObjStreamlet<>(() -> DblObjOutlet.of(new DblObjSource<Integer>() {
+			private DblIntSource source0 = source_();
+			private DblIntPair pair0 = DblIntPair.of((double) 0, (int) 0);
+
+			public boolean source2(DblObjPair<Integer> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private int put_(double key, int v1) {
 		int mask = vs.length - 1;

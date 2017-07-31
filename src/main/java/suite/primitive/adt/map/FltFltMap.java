@@ -5,9 +5,13 @@ import java.util.Arrays;
 import suite.primitive.FltFltSink;
 import suite.primitive.FltFltSource;
 import suite.primitive.FltFunUtil;
+import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.FltFltPair;
+import suite.primitive.adt.pair.FltObjPair;
+import suite.primitive.streamlet.FltObjOutlet;
+import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -101,13 +105,27 @@ public class FltFltMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public FltFltSource source() {
 		return source_();
 	}
 
-	// public FltFltStreamlet stream() {
-	// return new FltFltStreamlet<>(() -> FltFltOutlet.of(source_()));
-	// }
+	public FltObjStreamlet<Float> stream() {
+		return new FltObjStreamlet<>(() -> FltObjOutlet.of(new FltObjSource<Float>() {
+			private FltFltSource source0 = source_();
+			private FltFltPair pair0 = FltFltPair.of((float) 0, (float) 0);
+
+			public boolean source2(FltObjPair<Float> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private float put_(float key, float v1) {
 		int mask = vs.length - 1;

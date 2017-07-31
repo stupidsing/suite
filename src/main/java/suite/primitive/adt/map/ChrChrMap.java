@@ -5,9 +5,13 @@ import java.util.Arrays;
 import suite.primitive.ChrChrSink;
 import suite.primitive.ChrChrSource;
 import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.pair.ChrChrPair;
+import suite.primitive.adt.pair.ChrObjPair;
+import suite.primitive.streamlet.ChrObjOutlet;
+import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -101,13 +105,27 @@ public class ChrChrMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public ChrChrSource source() {
 		return source_();
 	}
 
-	// public ChrChrStreamlet stream() {
-	// return new ChrChrStreamlet<>(() -> ChrChrOutlet.of(source_()));
-	// }
+	public ChrObjStreamlet<Character> stream() {
+		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(new ChrObjSource<Character>() {
+			private ChrChrSource source0 = source_();
+			private ChrChrPair pair0 = ChrChrPair.of((char) 0, (char) 0);
+
+			public boolean source2(ChrObjPair<Character> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private char put_(char key, char v1) {
 		int mask = vs.length - 1;

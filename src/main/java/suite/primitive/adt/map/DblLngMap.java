@@ -5,18 +5,22 @@ import java.util.Arrays;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblLngSink;
 import suite.primitive.DblLngSource;
+import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Lng;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.DblLngPair;
+import suite.primitive.adt.pair.DblObjPair;
+import suite.primitive.streamlet.DblObjOutlet;
+import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive double key and primitive long value. Long.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with primitive double key and primitive long value. Long.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -104,13 +108,27 @@ public class DblLngMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public DblLngSource source() {
 		return source_();
 	}
 
-	// public DblLngStreamlet stream() {
-	// return new DblLngStreamlet<>(() -> DblLngOutlet.of(source_()));
-	// }
+	public DblObjStreamlet<Long> stream() {
+		return new DblObjStreamlet<>(() -> DblObjOutlet.of(new DblObjSource<Long>() {
+			private DblLngSource source0 = source_();
+			private DblLngPair pair0 = DblLngPair.of((double) 0, (long) 0);
+
+			public boolean source2(DblObjPair<Long> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private long put_(double key, long v1) {
 		int mask = vs.length - 1;

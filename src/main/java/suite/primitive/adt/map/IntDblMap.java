@@ -8,9 +8,13 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntDblSink;
 import suite.primitive.IntDblSource;
 import suite.primitive.IntFunUtil;
+import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
 import suite.primitive.adt.pair.IntDblPair;
+import suite.primitive.adt.pair.IntObjPair;
+import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -104,13 +108,27 @@ public class IntDblMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public IntDblSource source() {
 		return source_();
 	}
 
-	// public IntDblStreamlet stream() {
-	// return new IntDblStreamlet<>(() -> IntDblOutlet.of(source_()));
-	// }
+	public IntObjStreamlet<Double> stream() {
+		return new IntObjStreamlet<>(() -> IntObjOutlet.of(new IntObjSource<Double>() {
+			private IntDblSource source0 = source_();
+			private IntDblPair pair0 = IntDblPair.of((int) 0, (double) 0);
+
+			public boolean source2(IntObjPair<Double> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private double put_(int key, double v1) {
 		int mask = vs.length - 1;

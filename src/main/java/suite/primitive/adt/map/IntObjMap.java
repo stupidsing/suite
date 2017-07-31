@@ -94,6 +94,10 @@ public class IntObjMap<V> {
 		vs[index] = fun.apply(cast(v));
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public IntObjSource<V> source() {
 		return source_();
 	}

@@ -8,9 +8,13 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.LngDblSink;
 import suite.primitive.LngDblSource;
 import suite.primitive.LngFunUtil;
+import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Dbl;
 import suite.primitive.adt.pair.LngDblPair;
+import suite.primitive.adt.pair.LngObjPair;
+import suite.primitive.streamlet.LngObjOutlet;
+import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -104,13 +108,27 @@ public class LngDblMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public LngDblSource source() {
 		return source_();
 	}
 
-	// public LngDblStreamlet stream() {
-	// return new LngDblStreamlet<>(() -> LngDblOutlet.of(source_()));
-	// }
+	public LngObjStreamlet<Double> stream() {
+		return new LngObjStreamlet<>(() -> LngObjOutlet.of(new LngObjSource<Double>() {
+			private LngDblSource source0 = source_();
+			private LngDblPair pair0 = LngDblPair.of((long) 0, (double) 0);
+
+			public boolean source2(LngObjPair<Double> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private double put_(long key, double v1) {
 		int mask = vs.length - 1;

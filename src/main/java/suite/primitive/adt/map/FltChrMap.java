@@ -8,9 +8,13 @@ import suite.primitive.Chr_Chr;
 import suite.primitive.FltChrSink;
 import suite.primitive.FltChrSource;
 import suite.primitive.FltFunUtil;
+import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Chr;
 import suite.primitive.adt.pair.FltChrPair;
+import suite.primitive.adt.pair.FltObjPair;
+import suite.primitive.streamlet.FltObjOutlet;
+import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -104,13 +108,27 @@ public class FltChrMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public FltChrSource source() {
 		return source_();
 	}
 
-	// public FltChrStreamlet stream() {
-	// return new FltChrStreamlet<>(() -> FltChrOutlet.of(source_()));
-	// }
+	public FltObjStreamlet<Character> stream() {
+		return new FltObjStreamlet<>(() -> FltObjOutlet.of(new FltObjSource<Character>() {
+			private FltChrSource source0 = source_();
+			private FltChrPair pair0 = FltChrPair.of((float) 0, (char) 0);
+
+			public boolean source2(FltObjPair<Character> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private char put_(float key, char v1) {
 		int mask = vs.length - 1;

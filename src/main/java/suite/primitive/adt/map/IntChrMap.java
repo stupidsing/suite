@@ -8,9 +8,13 @@ import suite.primitive.Chr_Chr;
 import suite.primitive.IntChrSink;
 import suite.primitive.IntChrSource;
 import suite.primitive.IntFunUtil;
+import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Chr;
 import suite.primitive.adt.pair.IntChrPair;
+import suite.primitive.adt.pair.IntObjPair;
+import suite.primitive.streamlet.IntObjOutlet;
+import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -104,13 +108,27 @@ public class IntChrMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public IntChrSource source() {
 		return source_();
 	}
 
-	// public IntChrStreamlet stream() {
-	// return new IntChrStreamlet<>(() -> IntChrOutlet.of(source_()));
-	// }
+	public IntObjStreamlet<Character> stream() {
+		return new IntObjStreamlet<>(() -> IntObjOutlet.of(new IntObjSource<Character>() {
+			private IntChrSource source0 = source_();
+			private IntChrPair pair0 = IntChrPair.of((int) 0, (char) 0);
+
+			public boolean source2(IntObjPair<Character> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private char put_(int key, char v1) {
 		int mask = vs.length - 1;

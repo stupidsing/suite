@@ -94,6 +94,10 @@ public class DblObjMap<V> {
 		vs[index] = fun.apply(cast(v));
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public DblObjSource<V> source() {
 		return source_();
 	}

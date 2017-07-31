@@ -8,15 +8,19 @@ import suite.primitive.Int_Int;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngIntSink;
 import suite.primitive.LngIntSource;
+import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Int;
 import suite.primitive.adt.pair.LngIntPair;
+import suite.primitive.adt.pair.LngObjPair;
+import suite.primitive.streamlet.LngObjOutlet;
+import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive long key and primitive int value. Integer.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with primitive long key and primitive int value. Integer.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -104,13 +108,27 @@ public class LngIntMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public LngIntSource source() {
 		return source_();
 	}
 
-	// public LngIntStreamlet stream() {
-	// return new LngIntStreamlet<>(() -> LngIntOutlet.of(source_()));
-	// }
+	public LngObjStreamlet<Integer> stream() {
+		return new LngObjStreamlet<>(() -> LngObjOutlet.of(new LngObjSource<Integer>() {
+			private LngIntSource source0 = source_();
+			private LngIntPair pair0 = LngIntPair.of((long) 0, (int) 0);
+
+			public boolean source2(LngObjPair<Integer> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private int put_(long key, int v1) {
 		int mask = vs.length - 1;

@@ -5,18 +5,22 @@ import java.util.Arrays;
 import suite.primitive.ChrFltSink;
 import suite.primitive.ChrFltSource;
 import suite.primitive.ChrFunUtil;
+import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Flt;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.ChrFltPair;
+import suite.primitive.adt.pair.ChrObjPair;
+import suite.primitive.streamlet.ChrObjOutlet;
+import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive char key and primitive float value. Float.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with primitive char key and primitive float value. Float.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -104,13 +108,27 @@ public class ChrFltMap {
 		vs[index] = fun.apply(v);
 	}
 
+	public int size() {
+		return size;
+	}
+
 	public ChrFltSource source() {
 		return source_();
 	}
 
-	// public ChrFltStreamlet stream() {
-	// return new ChrFltStreamlet<>(() -> ChrFltOutlet.of(source_()));
-	// }
+	public ChrObjStreamlet<Float> stream() {
+		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(new ChrObjSource<Float>() {
+			private ChrFltSource source0 = source_();
+			private ChrFltPair pair0 = ChrFltPair.of((char) 0, (float) 0);
+
+			public boolean source2(ChrObjPair<Float> pair) {
+				boolean b = source0.source2(pair0);
+				pair.t0 = pair0.t0;
+				pair.t1 = pair0.t1;
+				return b;
+			}
+		}));
+	}
 
 	private float put_(char key, float v1) {
 		int mask = vs.length - 1;
