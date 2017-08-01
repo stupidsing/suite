@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.IntFunction;
 
 import suite.adt.pair.Fixie;
+import suite.adt.pair.Fixie_.Fixie3;
 import suite.adt.pair.Fixie_.Fixie4;
 import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
@@ -306,21 +307,31 @@ public class BackAllocator_ {
 		};
 	}
 
-	public static BackAllocator tripleMovingAvgs() {
-		return BackAllocator.byPrices(prices -> {
-			float[] movingAvgs0 = ma.exponentialMovingGeometricAvg(prices, 18);
-			float[] movingAvgs1 = ma.exponentialMovingGeometricAvg(prices, 6);
-			float[] movingAvgs2 = ma.exponentialMovingGeometricAvg(prices, 2);
+	public static BackAllocator tripleExpGeometricMovingAvgs() {
+		return tripleMovingAvgs(prices -> Fixie.of( //
+				ma.exponentialGeometricMovingAvg(prices, 18), //
+				ma.exponentialGeometricMovingAvg(prices, 6), //
+				ma.exponentialGeometricMovingAvg(prices, 2)));
+	}
 
-			return index -> {
-				int last = index - 1;
-				float movingAvg0 = movingAvgs0[last];
-				float movingAvg1 = movingAvgs1[last];
-				float movingAvg2 = movingAvgs2[last];
-				int sign0 = Quant.sign(movingAvg0, movingAvg1);
-				int sign1 = Quant.sign(movingAvg1, movingAvg2);
-				return sign0 == sign1 ? (double) -sign0 : 0d;
-			};
+	public static BackAllocator tripleMovingAvgs() {
+		return tripleMovingAvgs(prices -> Fixie.of( //
+				ma.movingAvg(prices, 52), //
+				ma.movingAvg(prices, 26), //
+				ma.movingAvg(prices, 9)));
+	}
+
+	private static BackAllocator tripleMovingAvgs(Fun<float[], Fixie3<float[], float[], float[]>> fun) {
+		return BackAllocator.byPrices(prices -> {
+			Fixie3<float[], float[], float[]> fixie = fun.apply(prices);
+
+			return index -> fixie //
+					.map((movingAvgs0, movingAvgs1, movingAvgs2) -> {
+						int last = index - 1;
+						int sign0 = Quant.sign(movingAvgs0[last], movingAvgs1[last]);
+						int sign1 = Quant.sign(movingAvgs1[last], movingAvgs2[last]);
+						return sign0 == sign1 ? (double) -sign0 : 0d;
+					});
 		});
 	}
 
@@ -418,17 +429,17 @@ public class BackAllocator_ {
 					}) //
 					.toMap();
 
-			return index -> {
+			return index ->
+
+			{
 				List<Pair<String, Integer>> m0 = dsByKey //
 						.keys() //
-						.map2(symbol -> {
-							Fixie4<int[], int[], boolean[], boolean[]> fixie = fixieBySymbol.get(symbol);
-							int[] nHolds1 = fixie.get0();
-							int[] nHolds2 = fixie.get1();
-							boolean[] wasWons1 = fixie.get2();
-							int last = index - 1;
-							return (!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last];
-						}) //
+						.map2(symbol -> fixieBySymbol //
+								.get(symbol) //
+								.map((nHolds1, nHolds2, wasWons1) -> {
+									int last = index - 1;
+									return (!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last];
+								})) //
 						.sortByValue((nHold0, nHold1) -> Integer.compare(Math.abs(nHold1), Math.abs(nHold0))) //
 						.toList();
 

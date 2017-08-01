@@ -30,19 +30,13 @@ public class MovingAverage {
 		return movingAvg(diffs, nDays2);
 	}
 
-	public float[] exponentialMovingGeometricAvg(float[] prices, int halfLife) {
-		return exponentialMovingGeometricAvg(prices, Math.exp(Math.log(.5d) * halfLife));
+	public float[] exponentialGeometricMovingAvg(float[] prices, int halfLife) {
+		return exponentialGeometricMovingAvg(prices, Math.exp(Math.log(.5d) * halfLife));
 	}
 
-	public float[] exponentialMovingGeometricAvg(float[] prices, double alpha) {
+	public float[] exponentialGeometricMovingAvg(float[] prices, double alpha) {
 		float[] logPrices = To.arrayOfFloats(prices, price -> (float) Math.log(price));
 		float[] movingAvgs = exponentialMovingAvg(logPrices, alpha);
-		return To.arrayOfFloats(movingAvgs, lma -> (float) Math.exp(lma));
-	}
-
-	public float[] movingGeometricAvg(float[] prices, int windowSize) {
-		float[] logPrices = To.arrayOfFloats(prices, price -> (float) Math.log(price));
-		float[] movingAvgs = movingAvg(logPrices, windowSize);
 		return To.arrayOfFloats(movingAvgs, lma -> (float) Math.exp(lma));
 	}
 
@@ -57,6 +51,12 @@ public class MovingAverage {
 		for (int day = 0; day < length; day++)
 			emas[day] = (float) (ema += alpha * (prices[day] - ema));
 		return emas;
+	}
+
+	public float[] geometricMovingAvg(float[] prices, int windowSize) {
+		float[] logPrices = To.arrayOfFloats(prices, price -> (float) Math.log(price));
+		float[] movingAvgs = movingAvg(logPrices, windowSize);
+		return To.arrayOfFloats(movingAvgs, lma -> (float) Math.exp(lma));
 	}
 
 	public float[] movingAvg(float[] prices, int windowSize) {

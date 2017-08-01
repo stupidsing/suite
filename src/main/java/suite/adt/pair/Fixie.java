@@ -13,9 +13,20 @@ import suite.adt.pair.Fixie_.Fixie6;
 import suite.adt.pair.Fixie_.Fixie7;
 import suite.adt.pair.Fixie_.Fixie8;
 import suite.adt.pair.Fixie_.Fixie9;
+import suite.adt.pair.Fixie_.FixieA;
+import suite.adt.pair.Fixie_.FixieFun1;
+import suite.adt.pair.Fixie_.FixieFun2;
+import suite.adt.pair.Fixie_.FixieFun3;
+import suite.adt.pair.Fixie_.FixieFun4;
+import suite.adt.pair.Fixie_.FixieFun5;
+import suite.adt.pair.Fixie_.FixieFun6;
+import suite.adt.pair.Fixie_.FixieFun7;
+import suite.adt.pair.Fixie_.FixieFun8;
+import suite.adt.pair.Fixie_.FixieFun9;
+import suite.adt.pair.Fixie_.FixieFunA;
 import suite.util.Object_;
 
-public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Fixie9<T0, T1, T2, T3, T4, T5, T6, T7, T8> {
+public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 
 	private static D_ D = new D_();
 
@@ -99,6 +110,56 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Fixie9<T0,
 		this.t7 = t7;
 		this.t8 = t8;
 		this.t9 = t9;
+	}
+
+	@Override
+	public <R> R map(FixieFun1<T0, R> fun) {
+		return fun.apply(t0);
+	}
+
+	@Override
+	public <R> R map(FixieFun2<T0, T1, R> fun) {
+		return fun.apply(t0, t1);
+	}
+
+	@Override
+	public <R> R map(FixieFun3<T0, T1, T2, R> fun) {
+		return fun.apply(t0, t1, t2);
+	}
+
+	@Override
+	public <R> R map(FixieFun4<T0, T1, T2, T3, R> fun) {
+		return fun.apply(t0, t1, t2, t3);
+	}
+
+	@Override
+	public <R> R map(FixieFun5<T0, T1, T2, T3, T4, R> fun) {
+		return fun.apply(t0, t1, t2, t3, t4);
+	}
+
+	@Override
+	public <R> R map(FixieFun6<T0, T1, T2, T3, T4, T5, R> fun) {
+		return fun.apply(t0, t1, t2, t3, t4, t5);
+	}
+
+	@Override
+	public <R> R map(FixieFun7<T0, T1, T2, T3, T4, T5, T6, R> fun) {
+		return fun.apply(t0, t1, t2, t3, t4, t5, t6);
+	}
+
+	@Override
+	public <R> R map(FixieFun8<T0, T1, T2, T3, T4, T5, T6, T7, R> fun) {
+		return fun.apply(t0, t1, t2, t3, t4, t5, t6, t7);
+	}
+
+	@Override
+	public <R> R map(FixieFun9<T0, T1, T2, T3, T4, T5, T6, T7, T8, R> fun) {
+		return fun.apply(t0, t1, t2, t3, t4, t5, t6, t7, t8);
+	}
+
+	@Override
+	public <R> R map(FixieFunA<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> fun) {
+		return fun.apply(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9);
 	}
 
 	public static //
@@ -234,6 +295,11 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Fixie9<T0,
 	@Override
 	public T8 get8() {
 		return t8;
+	}
+
+	@Override
+	public T9 get9() {
+		return t9;
 	}
 
 }

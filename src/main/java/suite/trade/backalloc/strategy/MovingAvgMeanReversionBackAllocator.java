@@ -132,7 +132,7 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 		public MeanReversionStat(DataSource ds, TimeRange mrsPeriod) {
 			float[] prices = ds.range(mrsPeriod).prices;
 
-			movingAverage = ma.movingGeometricAvg(prices, tor);
+			movingAverage = ma.geometricMovingAvg(prices, tor);
 
 			if (tor <= prices.length) {
 				adf = ts.adf(prices, tor);
