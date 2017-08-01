@@ -7,13 +7,17 @@ public class Kalman {
 	private Matrix mtx = new Matrix();
 
 	private int stateSize = 16;
-	private float[][] F; // state transition matrix
-	private float[][] B; // input control matrix
-	private float[][] H; // observation matrix
-	private float[][] Q; // noise
-	private float[][] R; // noise
+	private float[][] F; // state transition
+	private float[][] B; // input control
+	private float[][] H; // observation
+	private float[][] Q; // state noise
+	private float[][] R; // observation noise
 	private float[][] covariance0;
 	private float[] estimatedState0;
+
+	// hidden equations:
+	// state1 = F * state0 + B * input0 + noise(0, Q)
+	// observation1 = H * state1 + noise(0, R)
 
 	public void kalman(float[] input0, float[] observed0) {
 		float[][] identity = mtx.identity(stateSize);
