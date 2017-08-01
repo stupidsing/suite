@@ -158,13 +158,16 @@ public class Trade_ {
 			Obj_Flt<String> priceFun) {
 		Set<String> symbols = Set_.union(assets0.keySet(), assets1.keySet());
 
-		return Read.from(symbols) //
+		return Read //
+				.from(symbols) //
 				.map2(symbol -> {
-					int n0 = assets0.computeIfAbsent(symbol, s -> 0);
-					int n1 = assets1.computeIfAbsent(symbol, s -> 0);
+					int n0 = assets0.getOrDefault(symbol, 0);
+					int n1 = assets1.getOrDefault(symbol, 0);
 					return n1 - n0;
 				}) //
-				.filter((symbol, buySell) -> !String_.equals(symbol, Asset.cashSymbol)) //
+				.filter((symbol, buySell) -> true //
+						&& !String_.equals(symbol, Asset.cashSymbol) //
+						&& buySell != 0) //
 				.map((symbol, buySell) -> Trade.of(time, buySell, symbol, priceFun.apply(symbol), "-")) //
 				.collect(As::streamlet);
 	}

@@ -62,9 +62,13 @@ public class Account {
 		return Trade_.format(trades);
 	}
 
+	public Streamlet2<String, Integer> portfolio() {
+		return Read.from2(assets).filter((symbol, n) -> n != 0);
+	}
+
 	@Override
 	public String toString() {
-		return Trade_.format(assets());
+		return Trade_.format(assets);
 	}
 
 	public float transactionAmount() {

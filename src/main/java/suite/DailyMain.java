@@ -98,7 +98,8 @@ public class DailyMain extends ExecutableProgram {
 		sb.append(sbs.log);
 		sb.append("\n" + sbs.pnlByKey + "\n");
 
-		Streamlet2<String, Trade> strategyTrades = Read.from(results) //
+		Streamlet2<String, Trade> strategyTrades = Read //
+				.from(results) //
 				.concatMap2(result -> Read.from(result.trades).map2(trade -> result.strategy, trade -> trade)) //
 				.filterValue(trade -> trade.buySell != 0) //
 				.collect(As::streamlet2);
@@ -239,7 +240,8 @@ public class DailyMain extends ExecutableProgram {
 						rs -> (float) (Read.from(rs).collectAsDouble(Obj_Dbl.sum(r -> r.buySell * r.price))))
 				.toMap();
 
-		List<Trade> trades = Read.from2(account.assets()) //
+		List<Trade> trades = account //
+				.portfolio() //
 				.map((symbol, sell) -> {
 					double targetPrice = (1d + 3 * Trade_.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
 					return Trade.of(-sell, symbol, (float) targetPrice);

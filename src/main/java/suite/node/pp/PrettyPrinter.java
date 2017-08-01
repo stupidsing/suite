@@ -201,7 +201,7 @@ public class PrettyPrinter {
 		name = (op == TermOp.BRACES ? " " : "") + name;
 		name += op == TermOp.AND___ || op == TermOp.OR____ ? " " : "";
 		if (isLineBegin())
-			name = FormatUtil.leftTrim(name);
+			name = FormatUtil.trimLeft(name);
 		append(name);
 		return new OperatorPosition(currentLineIndent, getY());
 	}

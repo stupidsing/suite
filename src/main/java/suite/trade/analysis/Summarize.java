@@ -3,10 +3,13 @@ package suite.trade.analysis;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.adt.pair.Fixie;
+import suite.adt.pair.Fixie_.Fixie3;
 import suite.math.stat.Quant;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.Time;
@@ -15,10 +18,12 @@ import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.HkexUtil;
+import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 import suite.util.Object_;
+import suite.util.String_;
 
 public class Summarize {
 
@@ -50,16 +55,28 @@ public class Summarize {
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = sb::append;
 
-		Map<K, String> summaryByKey = trades //
+		Streamlet2<K, Summarize_> summaryByKey = trades //
 				.groupBy(fun) //
 				.filterKey(key -> key != null) //
-				.mapValue(trades_ -> summarize_(Read.from(trades_), priceBySymbol, s -> null).out) //
+				.mapValue(trades_ -> summarize_(Read.from(trades_), priceBySymbol, s -> null)) //
+				.collect(As::streamlet2);
+
+		Map<String, Map<K, Integer>> nSharesByKeyBySymbol = summaryByKey //
+				.concatMap((key, summary) -> summary.account //
+						.portfolio() //
+						.map((symbol, n) -> Fixie.of(symbol, key, n))) //
+				.groupBy(Fixie3::get0, fixies0 -> fixies0 //
+						.groupBy(Fixie3::get1, fixies1 -> fixies1 //
+								.map(Fixie3::get2).uniqueResult())
+						.toMap()) //
 				.toMap();
 
-		for (Entry<K, String> e : summaryByKey.entrySet()) {
+		Map<K, String> outByKey = summaryByKey.mapValue(summary -> summary.out).toMap();
+
+		for (Entry<K, String> e : outByKey.entrySet()) {
 			K key = e.getKey();
-			String summary = e.getValue();
-			log.sink("\nFor strategy " + key + ":" + summary);
+			String out = e.getValue();
+			log.sink("\nFor strategy " + key + ":" + out);
 		}
 
 		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
@@ -72,10 +89,18 @@ public class Summarize {
 			float price0 = ds.get(isMarketOpen ? -1 : -2).t1;
 			float pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1;
 			String percent = String.format("%.1f", 100d * Quant.return_(price0, pricex)) + "%";
-			return (percent.startsWith("-") ? "" : "+") + percent;
+
+			String keys = Read //
+					.from2(nSharesByKeyBySymbol.get(symbol)) //
+					.mapKey(Object::toString) //
+					.keys() //
+					.sort(String_::compare) //
+					.collect(As.joinedBy("/"));
+
+			return (percent.startsWith("-") ? "" : "+") + percent + (!keys.isEmpty() ? ", " + keys : "");
 		});
 
-		log.sink("\nOverall:" + overall.out);
+		log.sink("\nOverall:" + FormatUtil.tablize(overall.out));
 
 		// profit and loss
 		Map<K, Double> pnlByKey = sellAll(trades, priceBySymbol) //
@@ -117,7 +142,7 @@ public class Summarize {
 					return asset //
 							+ ": " + price + " * " + nShares //
 							+ " = " + ((long) (nShares * price)) //
-							+ (info != null ? " (" + info + ")" : "");
+							+ (info != null ? " \t(" + info + ")" : "");
 				}) //
 				.sort(Object_::compare) //
 				.append("OWN = " + -amount0) //
