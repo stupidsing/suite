@@ -1,5 +1,6 @@
 package suite.trade.analysis;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -91,7 +92,7 @@ public class Summarize {
 			String percent = String.format("%.1f", 100d * Quant.return_(price0, pricex)) + "%";
 
 			String keys = Read //
-					.from2(nSharesByKeyBySymbol.get(symbol)) //
+					.from2(nSharesByKeyBySymbol.getOrDefault(symbol, Collections.emptyMap())) //
 					.mapKey(Object::toString) //
 					.keys() //
 					.sort(String_::compare) //
