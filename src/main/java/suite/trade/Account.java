@@ -63,7 +63,7 @@ public class Account {
 	}
 
 	public Streamlet2<String, Integer> portfolio() {
-		return Read.from2(assets).filter((symbol, n) -> n != 0);
+		return Read.from2(assets).filter((symbol, n) -> n.intValue() != 0);
 	}
 
 	@Override
