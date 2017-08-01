@@ -66,7 +66,7 @@ public class Trade_ {
 		return Read.from(trades) //
 				.map2(r -> r.symbol, r -> r.buySell) //
 				.groupBy(sizes -> sizes.collectAsInt(Obj_Int.sum(size -> size))) //
-				.filterValue(size -> size.intValue() != 0) //
+				.filterValue(size -> size != 0) //
 				.toMap();
 	}
 
@@ -167,7 +167,7 @@ public class Trade_ {
 				}) //
 				.filter((symbol, buySell) -> true //
 						&& !String_.equals(symbol, Asset.cashSymbol) //
-						&& buySell.intValue() != 0) //
+						&& buySell != 0) //
 				.map((symbol, buySell) -> Trade.of(time, buySell, symbol, priceFun.apply(symbol), "-")) //
 				.collect(As::streamlet);
 	}

@@ -409,7 +409,7 @@ class BackAllocatorUtil {
 
 	static List<Pair<String, Double>> scale(List<Pair<String, Double>> potentialBySymbol, double scale) {
 		return Read.from2(potentialBySymbol) //
-				.filterValue(potential -> potential.doubleValue() != 0d) //
+				.filterValue(potential -> potential != 0d) //
 				.mapValue(potential -> potential * scale) //
 				.toList();
 	}
