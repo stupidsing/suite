@@ -3,14 +3,18 @@ package suite.trade.data;
 import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
 import suite.trade.Time;
+import suite.util.FunUtil.Source;
+import suite.util.Memoize;
 import suite.util.String_;
 
 public class HkexUtil {
 
+	private static HongKongGovernment hkg = new HongKongGovernment();
 	private static Set<DayOfWeek> weekends = new HashSet<>(Arrays.asList(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
 	private static Predicate<Time> marketOpen_ = HkexUtil::isMarketOpen_;
 	private static Predicate<Time> marketClose = marketOpen_.negate();
@@ -61,8 +65,13 @@ public class HkexUtil {
 	}
 
 	private static boolean isMarketOpen_(Time time) {
+		List<Time> phs = publicHolidays.source();
 		int hhmm = time.hhmm();
-		return !weekends.contains(time.dow()) && 930 <= hhmm && hhmm < 1630;
+		return !weekends.contains(time.dow()) //
+				&& !phs.contains(time.date()) //
+				&& 930 <= hhmm && hhmm < 1630;
 	}
+
+	private static Source<List<Time>> publicHolidays = Memoize.source(hkg::queryPublicHolidays);
 
 }
