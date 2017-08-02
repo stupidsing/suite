@@ -84,9 +84,9 @@ public class BackAllocator_ {
 
 			for (int i = 0; i < length; i++) {
 				MovingRange range = movingRanges[i];
-				double price = prices[i];
 				double min = range.min;
 				double max = range.max;
+				double price = prices[i];
 				double vol = (max - min) / (price * threshold);
 				if (1d < vol)
 					hold = hold(hold, price, min, range.median, max);
