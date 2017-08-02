@@ -7,6 +7,7 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.analysis.Factor;
+import suite.trade.backalloc.strategy.BackAllocatorOld_;
 import suite.trade.backalloc.strategy.BackAllocator_;
 import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator0;
 import suite.trade.backalloc.strategy.ReverseCorrelateBackAllocator;
@@ -33,16 +34,16 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_donchian = ba_donchian.cfgUnl(fun);
 		public final BackAllocConfiguration bac_ema = BackAllocator_.ema().pick(3).cfgUnl(fun);
 		public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).cfgUnl(fun);
-		public final BackAllocConfiguration bac_pmmmr = BackAllocator_.movingMedianMeanRevn().holdExtend(9).cfgUnl(fun);
+		public final BackAllocConfiguration bac_pmmmr = BackAllocatorOld_.movingMedianMeanRevn().holdExtend(9).cfgUnl(fun);
 		public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sell = BackAllocator_.cash().cfgUnl(fun);
 		public final BackAllocConfiguration bac_tma = BackAllocator_.tripleMovingAvgs().cfgUnl(fun);
 
 		public final Streamlet2<String, BackAllocConfiguration> bacByName = Read //
-				.<String, BackAllocConfiguration> empty2() //
+				.<String, BackAllocConfiguration>empty2() //
 				.cons("hsi", BackAllocConfiguration.ofSingle(Asset.hsi)) //
 				.cons("bb", bac_bb) //
-				.cons("bbSlope", BackAllocator_.bbSlope().cfgUnl(fun)) //
+				.cons("bbSlope", BackAllocatorOld_.bbSlope().cfgUnl(fun)) //
 				.cons("donchian", bac_donchian) //
 				.cons("ema", bac_ema) //
 				.cons("facoil", ba_facoil.cfgUnl(fun)) //
@@ -52,7 +53,7 @@ public class BackAllocConfigurations {
 				.cons("pmamr", bac_pmamr) //
 				.cons("pmmmr", bac_pmmmr) //
 				.cons("revco", bac_revco) //
-				.cons("revdd", BackAllocator_.revDrawdown().holdExtend(40).cfgUnl(fun)) //
+				.cons("revdd", BackAllocatorOld_.revDrawdown().holdExtend(40).cfgUnl(fun)) //
 				.cons("rsi", BackAllocator_.rsi().cfgUnl(fun)) //
 				.cons("sar", BackAllocator_.sar().cfgUnl(fun)) //
 				.cons("sellInMay", BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi)) //
@@ -63,7 +64,7 @@ public class BackAllocConfigurations {
 
 		public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {
 			Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
-			BackAllocator backAllocator = BackAllocator_.questoQuella(symbol0, symbol1);
+			BackAllocator backAllocator = BackAllocatorOld_.questoQuella(symbol0, symbol1);
 			return new BackAllocConfiguration(time -> assets, backAllocator);
 		}
 	}
