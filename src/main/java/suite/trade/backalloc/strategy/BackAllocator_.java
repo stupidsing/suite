@@ -89,14 +89,7 @@ public class BackAllocator_ {
 				double max = range.max;
 				double vol = (max - min) / (price * threshold);
 				if (1d < vol)
-					if (price <= min)
-						hold = 1d;
-					else if (price < range.median)
-						hold = Math.max(0f, hold);
-					else if (price < max)
-						hold = Math.min(0f, hold);
-					else
-						hold = -1d;
+					hold = hold(hold, price, min, range.median, max);
 				holds[i] = (float) hold;
 			}
 
@@ -510,18 +503,8 @@ public class BackAllocator_ {
 			float[] holds = new float[length];
 			double hold = 0d;
 
-			for (int i = 0; i < length; i++) {
-				float percentb = percentbs[i];
-				if (percentb <= 0f)
-					hold = 1d;
-				else if (.5f < percentb) // un-short
-					hold = Math.max(0d, hold);
-				else if (percentb < 1f) // un-long
-					hold = Math.min(0d, hold);
-				else
-					hold = -1d;
-				holds[i] = (float) hold;
-			}
+			for (int i = 0; i < length; i++)
+				holds[i] = (float) (hold = hold(hold, percentbs[i], 0f, .5f, 1f));
 
 			return index -> (double) holds[index - 1];
 		});
@@ -544,6 +527,18 @@ public class BackAllocator_ {
 			else
 				return 0d;
 		});
+	}
+
+	private static double hold(double hold, double ind, double th0, double th1, double th2) {
+		if (ind <= th0)
+			hold = 1d;
+		else if (ind < th1)
+			hold = Math.max(0f, hold);
+		else if (ind < th2)
+			hold = Math.min(0f, hold);
+		else
+			hold = -1d;
+		return hold;
 	}
 
 }
