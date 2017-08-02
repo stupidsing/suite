@@ -145,7 +145,8 @@ public class BackAllocator_ {
 
 	public static BackAllocator sum(BackAllocator... bas) {
 		return (akds, indices) -> {
-			Streamlet<OnDateTime> odts = Read.from(bas) //
+			Streamlet<OnDateTime> odts = Read //
+					.from(bas) //
 					.map(ba -> ba.allocate(akds, indices)) //
 					.collect(As::streamlet);
 
