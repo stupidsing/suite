@@ -80,7 +80,7 @@ public class BackAllocator_ {
 			MovingRange[] movingRanges = ma.movingRange(prices, window);
 			int length = movingRanges.length;
 			float[] holds = new float[length];
-			double hold = 0d;
+			float hold = 0f;
 
 			for (int i = 0; i < length; i++) {
 				MovingRange range = movingRanges[i];
@@ -90,7 +90,7 @@ public class BackAllocator_ {
 				double vol = (max - min) / (price * threshold);
 				if (1d < vol)
 					hold = hold(hold, price, min, range.median, max);
-				holds[i] = (float) hold;
+				holds[i] = hold;
 			}
 
 			return index -> (double) holds[index - 1];
@@ -501,10 +501,10 @@ public class BackAllocator_ {
 			float[] percentbs = bb.bb(prices, backPos0, backPos1, k).percentbs;
 			int length = percentbs.length;
 			float[] holds = new float[length];
-			double hold = 0d;
+			float hold = 0f;
 
 			for (int i = 0; i < length; i++)
-				holds[i] = (float) (hold = hold(hold, percentbs[i], 0f, .5f, 1f));
+				holds[i] = (hold = hold(hold, percentbs[i], 0f, .5f, 1f));
 
 			return index -> (double) holds[index - 1];
 		});
@@ -529,15 +529,15 @@ public class BackAllocator_ {
 		});
 	}
 
-	private static double hold(double hold, double ind, double th0, double th1, double th2) {
+	private static float hold(float hold, double ind, double th0, double th1, double th2) {
 		if (ind <= th0)
-			hold = 1d;
+			hold = 1f;
 		else if (ind < th1)
 			hold = Math.max(0f, hold);
 		else if (ind < th2)
 			hold = Math.min(0f, hold);
 		else
-			hold = -1d;
+			hold = -1f;
 		return hold;
 	}
 
