@@ -25,7 +25,7 @@ public class Ssh {
 	}
 
 	public int execute(String command) throws JSchException, SftpException, IOException {
-		return session("kenchi.no-ip.org", 22, "sing", "abc123", session -> channelExec(session, command, channel -> {
+		return session("kenchi.no-ip.org", 22, "ywsing", "abc123", session -> channelExec(session, command, channel -> {
 			while (!channel.isClosed())
 				Thread_.sleepQuietly(100);
 
@@ -38,7 +38,7 @@ public class Ssh {
 	}
 
 	public void putFile(String src, String dest) throws IOException, SftpException, JSchException {
-		session("kenchi.no-ip.org", 22, "sing", "abc123", session -> channelSftp(session, channel -> {
+		session("kenchi.no-ip.org", 22, "ywsing", "abc123", session -> channelSftp(session, channel -> {
 			try (InputStream fis = new FileInputStream(src)) {
 				channel.put(fis, dest);
 				return true;
