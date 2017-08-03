@@ -100,7 +100,7 @@ public class Summarize {
 			return (percent.startsWith("-") ? "" : "+") + percent + (!keys.isEmpty() ? ", " + keys : "");
 		});
 
-		log.sink("\nOverall:" + FormatUtil.tablize(overall.out));
+		log.sink("\nOverall:\t" + Time.now().ymdHms() + FormatUtil.tablize(overall.out));
 
 		// profit and loss
 		Map<K, Double> pnlByKey = sellAll(trades, priceBySymbol) //
