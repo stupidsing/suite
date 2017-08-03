@@ -97,10 +97,6 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		});
 	}
 
-	public <R> R collect(Fun<ChrOutlet, R> fun) {
-		return fun.apply(spawn());
-	}
-
 	public <O> Streamlet<O> concatMap(Chr_Obj<Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}

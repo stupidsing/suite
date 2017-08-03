@@ -100,10 +100,6 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 		});
 	}
 
-	public <R> R collect(Fun<DblObjOutlet<V>, R> fun) {
-		return fun.apply(spawn());
-	}
-
 	public <O> Streamlet<O> concatMap(DblObj_Obj<V, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}

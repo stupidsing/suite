@@ -97,10 +97,6 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		});
 	}
 
-	public <R> R collect(Fun<LngOutlet, R> fun) {
-		return fun.apply(spawn());
-	}
-
 	public <O> Streamlet<O> concatMap(Lng_Obj<Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}

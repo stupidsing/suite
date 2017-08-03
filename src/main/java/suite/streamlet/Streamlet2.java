@@ -70,10 +70,6 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 		});
 	}
 
-	public <R> R collect(Fun<Outlet2<K, V>, R> fun) {
-		return fun.apply(spawn());
-	}
-
 	public <O> Streamlet<O> concatMap(Fun2<K, V, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}

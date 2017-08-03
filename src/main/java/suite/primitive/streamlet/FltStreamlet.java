@@ -97,10 +97,6 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		});
 	}
 
-	public <R> R collect(Fun<FltOutlet, R> fun) {
-		return fun.apply(spawn());
-	}
-
 	public <O> Streamlet<O> concatMap(Flt_Obj<Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}

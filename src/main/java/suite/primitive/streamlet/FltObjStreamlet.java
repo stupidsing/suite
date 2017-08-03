@@ -100,10 +100,6 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		});
 	}
 
-	public <R> R collect(Fun<FltObjOutlet<V>, R> fun) {
-		return fun.apply(spawn());
-	}
-
 	public <O> Streamlet<O> concatMap(FltObj_Obj<V, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}

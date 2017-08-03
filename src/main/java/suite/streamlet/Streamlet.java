@@ -69,10 +69,6 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 		});
 	}
 
-	public <R> R collect(Fun<Outlet<T>, R> fun) {
-		return fun.apply(spawn());
-	}
-
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}

@@ -100,10 +100,6 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		});
 	}
 
-	public <R> R collect(Fun<LngObjOutlet<V>, R> fun) {
-		return fun.apply(spawn());
-	}
-
 	public <O> Streamlet<O> concatMap(LngObj_Obj<V, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}

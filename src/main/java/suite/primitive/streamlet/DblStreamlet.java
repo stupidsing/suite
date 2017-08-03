@@ -97,10 +97,6 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		});
 	}
 
-	public <R> R collect(Fun<DblOutlet, R> fun) {
-		return fun.apply(spawn());
-	}
-
 	public <O> Streamlet<O> concatMap(Dbl_Obj<Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}

@@ -100,10 +100,6 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		});
 	}
 
-	public <R> R collect(Fun<ChrObjOutlet<V>, R> fun) {
-		return fun.apply(spawn());
-	}
-
 	public <O> Streamlet<O> concatMap(ChrObj_Obj<V, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}

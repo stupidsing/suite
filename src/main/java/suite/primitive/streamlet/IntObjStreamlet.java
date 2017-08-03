@@ -100,10 +100,6 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		});
 	}
 
-	public <R> R collect(Fun<IntObjOutlet<V>, R> fun) {
-		return fun.apply(spawn());
-	}
-
 	public <O> Streamlet<O> concatMap(IntObj_Obj<V, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}

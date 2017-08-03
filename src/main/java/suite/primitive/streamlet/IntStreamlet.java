@@ -97,10 +97,6 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		});
 	}
 
-	public <R> R collect(Fun<IntOutlet, R> fun) {
-		return fun.apply(spawn());
-	}
-
 	public <O> Streamlet<O> concatMap(Int_Obj<Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}

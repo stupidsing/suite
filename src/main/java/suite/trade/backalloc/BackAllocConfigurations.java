@@ -40,7 +40,7 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_tma = BackAllocator_.tripleMovingAvgs().cfgUnl(fun);
 
 		public final Streamlet2<String, BackAllocConfiguration> bacByName = Read //
-				.<String, BackAllocConfiguration>empty2() //
+				.<String, BackAllocConfiguration> empty2() //
 				.cons("hsi", BackAllocConfiguration.ofSingle(Asset.hsi)) //
 				.cons("bb", bac_bb) //
 				.cons("bbSlope", BackAllocatorOld_.bbSlope().cfgUnl(fun)) //
