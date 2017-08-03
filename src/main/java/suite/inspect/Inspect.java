@@ -21,6 +21,7 @@ import java.util.function.BiConsumer;
 import suite.adt.pair.Pair;
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Source2;
@@ -210,10 +211,10 @@ public class Inspect {
 				keyClass = String.class;
 
 				if (isDumpGetters) {
-					Source2<String, Method> source = Read.from(clazz.getMethods()) //
+					Source2<String, Method> source = Read //
+							.from(clazz.getMethods()) //
 							.filter(method -> method.getParameterTypes().length == 0) //
-							.groupBy(Method::getName) //
-							.mapValue(methods -> methods.get(0)) //
+							.groupBy(Method::getName, Streamlet::first) //
 							.filterKey(name -> name.startsWith("get")) //
 							.source();
 
@@ -288,8 +289,8 @@ public class Inspect {
 	}
 
 	/**
-	 * @return true if both input value objects are of the same class and having all
-	 *         fields equal.
+	 * @return true if both input value objects are of the same class and having
+	 *         all fields equal.
 	 */
 	public <T> boolean equals(T o0, T o1) {
 		return o0 == o1 || o0 != null && o1 != null //

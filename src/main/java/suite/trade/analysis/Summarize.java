@@ -57,9 +57,8 @@ public class Summarize {
 		Sink<String> log = sb::append;
 
 		Streamlet2<K, Summarize_> summaryByKey = trades //
-				.groupBy(fun) //
+				.groupBy(fun, trades_ -> summarize_(trades_, priceBySymbol, s -> null)) //
 				.filterKey(key -> key != null) //
-				.mapValue(trades_ -> summarize_(Read.from(trades_), priceBySymbol, s -> null)) //
 				.collect(As::streamlet2);
 
 		Map<String, Map<K, Integer>> nSharesByKeyBySymbol = summaryByKey //
