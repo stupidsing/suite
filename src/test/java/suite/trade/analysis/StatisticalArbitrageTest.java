@@ -198,7 +198,7 @@ public class StatisticalArbitrageTest {
 	public void testKMeansCluster() {
 		AlignKeyDataSource<String> akds = dataSources();
 		Map<String, float[]> returnsBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
-		ObjIntMap<String> groupBySymbol = new KmeansCluster(akds.ts.length).kMeansCluster(returnsBySymbol, 9, 100);
+		ObjIntMap<String> groupBySymbol = new KmeansCluster(akds.ts.length).kMeansCluster(returnsBySymbol, 9, 300);
 
 		for (IntObjPair<List<String>> pair : groupBySymbol.stream().groupBy())
 			System.out.println(Read.from(pair.t1).collect(As.joinedBy(",")));
