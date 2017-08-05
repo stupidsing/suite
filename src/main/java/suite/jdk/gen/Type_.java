@@ -12,6 +12,7 @@ import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import javassist.Modifier;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -56,7 +57,9 @@ public class Type_ {
 		else if (clazz == Source.class)
 			return Rethrow.ex(() -> clazz.getMethod("source"));
 		else
-			return Read.from(clazz.getDeclaredMethods()).uniqueResult();
+			return Read.from(clazz.getDeclaredMethods()) //
+					.filter(method -> !method.isDefault() && !method.isSynthetic() && !Modifier.isStatic(method.getModifiers())) //
+					.uniqueResult();
 	}
 
 	private static Class<?> getClassByName(String className) {
