@@ -19,15 +19,25 @@ public class MovingAverage {
 	}
 
 	// moving average convergence/divergence
-	public float[] macd(float[] prices) {
+	public Macd macd(float[] prices) {
 		return macd(prices, 26, 12, 9);
 	}
 
-	private float[] macd(float[] prices, int nDays0, int nDays1, int nDays2) {
-		float[] emas0 = movingAvg(prices, nDays0); // long-term
-		float[] emas1 = movingAvg(prices, nDays1); // short-term
-		float[] diffs = mtx.sub(emas1, emas0);
-		return movingAvg(diffs, nDays2);
+	private Macd macd(float[] prices, int nDays0, int nDays1, int nDays2) {
+		float[] mas0 = movingAvg(prices, nDays0); // long-term
+		float[] mas1 = movingAvg(prices, nDays1); // short-term
+		float[] diffs = mtx.sub(mas1, mas0);
+		return new Macd(diffs, movingAvg(diffs, nDays2));
+	}
+
+	public class Macd {
+		public final float[] macds;
+		public final float[] movingAvgMacds;
+
+		private Macd(float[] macds, float[] movingAvgMacds) {
+			this.macds = macds;
+			this.movingAvgMacds = movingAvgMacds;
+		}
 	}
 
 	public float[] exponentialGeometricMovingAvg(float[] prices, int halfLife) {

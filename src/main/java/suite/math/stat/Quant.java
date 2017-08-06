@@ -1,6 +1,32 @@
 package suite.math.stat;
 
+import suite.primitive.Int_Dbl;
+
 public class Quant {
+
+	public static Int_Dbl filterRange(int start, Int_Dbl fun) {
+		return index -> start <= index ? fun.apply(index) : 0d;
+	}
+
+	public static float hold(float hold, double ind, double th0, double th1) {
+		if (ind <= th0)
+			return 1f;
+		else if (ind < th1)
+			return hold;
+		else
+			return -1f;
+	}
+
+	public static float hold(float hold, double ind, double th0, double th1, double th2) {
+		if (ind <= th0)
+			return 1f;
+		else if (ind < th1)
+			return Math.max(0f, hold);
+		else if (ind < th2)
+			return Math.min(0f, hold);
+		else
+			return -1f;
+	}
 
 	public static double logReturn(double price0, double price1) {
 		return Math.log1p(return_(price0, price1));

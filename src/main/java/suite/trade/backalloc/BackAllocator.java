@@ -50,19 +50,18 @@ public interface BackAllocator {
 	public interface OnDateTime {
 
 		/**
-		 * @return a portfolio consisting of list of symbols and potential
-		 *         values, or null if the strategy do not want to trade on that
-		 *         date. The assets will be allocated according to potential
-		 *         values pro-rata.
+		 * @return a portfolio consisting of list of symbols and potential values, or
+		 *         null if the strategy do not want to trade on that date. The assets
+		 *         will be allocated according to potential values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(int index);
 	}
 
 	public static BackAllocator byPrices(Fun<float[], Int_Dbl> fun) {
-		return bySymbol(ds -> fun.apply(ds.prices));
+		return byDataSource(ds -> fun.apply(ds.prices));
 	}
 
-	public static BackAllocator bySymbol(Fun<DataSource, Int_Dbl> fun) {
+	public static BackAllocator byDataSource(Fun<DataSource, Int_Dbl> fun) {
 		return (akds, indices) -> {
 			Streamlet2<String, Int_Dbl> allocBySymbol = akds.dsByKey.mapValue(fun).collect(As::streamlet2);
 

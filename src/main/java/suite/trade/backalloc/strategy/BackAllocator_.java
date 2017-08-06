@@ -16,7 +16,9 @@ import suite.math.stat.Quant;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.IntFlt_Flt;
 import suite.primitive.IntInt_Obj;
+import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -53,22 +55,15 @@ public class BackAllocator_ {
 
 		return BackAllocator.byPrices(prices -> {
 			MovingRange[] movingRanges = ma.movingRange(prices, window);
-			int length = movingRanges.length;
-			float[] holds = new float[length];
-			float hold = 0f;
 
-			for (int i = 0; i < length; i++) {
+			return fold_(0, movingRanges.length, (i, hold) -> {
 				MovingRange range = movingRanges[i];
 				double min = range.min;
 				double max = range.max;
 				double price = prices[i];
 				double vol = (max - min) / (price * threshold);
-				if (1d < vol)
-					hold = hold(hold, price, min, range.median, max);
-				holds[i] = hold;
-			}
-
-			return index -> (double) holds[index - 1];
+				return 1d < vol ? Quant.hold(hold, price, min, range.median, max) : hold;
+			});
 		});
 	}
 
@@ -79,13 +74,17 @@ public class BackAllocator_ {
 		return BackAllocator.byPrices(prices -> {
 			float[] ema = ma.exponentialMovingAvg(prices, halfLife);
 
-			return index -> {
+			return Quant.filterRange(1, index -> {
 				int last = index - 1;
 				double lastEma = ema[last];
 				double latest = prices[last];
 				return Quant.logReturn(lastEma, latest) * scale;
-			};
+			});
 		});
+	}
+
+	public static Int_Dbl fold(int start, int end, IntFlt_Flt fun) {
+		return fold_(start, end, fun);
 	}
 
 	public static BackAllocator lastReturn(int nWorsts, int nBests) {
@@ -133,13 +132,13 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator sar() {
-		return BackAllocator.bySymbol(ds -> {
+		return BackAllocator.byDataSource(ds -> {
 			float[] sars = osc.sar(ds);
 
-			return index -> {
+			return Quant.filterRange(1, index -> {
 				int last = index - 1;
 				return (double) Quant.sign(sars[last], ds.prices[last]);
-			};
+			});
 		});
 	}
 
@@ -164,24 +163,20 @@ public class BackAllocator_ {
 				ma.exponentialGeometricMovingAvg(prices, 2)));
 	}
 
-	public static BackAllocator tripleMovingAvgs() {
-		return tripleMovingAvgs(prices -> Fixie.of( //
-				ma.movingAvg(prices, 52), //
-				ma.movingAvg(prices, 26), //
-				ma.movingAvg(prices, 9)));
-	}
-
-	private static BackAllocator tripleMovingAvgs(Fun<float[], Fixie3<float[], float[], float[]>> fun) {
+	public static BackAllocator tripleMovingAvgs(Fun<float[], Fixie3<float[], float[], float[]>> fun) {
 		return BackAllocator.byPrices(prices -> {
 			Fixie3<float[], float[], float[]> fixie = fun.apply(prices);
 
-			return index -> fixie //
+			return Quant.filterRange(1, index -> fixie //
 					.map((movingAvgs0, movingAvgs1, movingAvgs2) -> {
 						int last = index - 1;
-						int sign0 = Quant.sign(movingAvgs0[last], movingAvgs1[last]);
-						int sign1 = Quant.sign(movingAvgs1[last], movingAvgs2[last]);
+						float movingAvg0 = movingAvgs0[last];
+						float movingAvg1 = movingAvgs1[last];
+						float movingAvg2 = movingAvgs2[last];
+						int sign0 = Quant.sign(movingAvg0, movingAvg1);
+						int sign1 = Quant.sign(movingAvg1, movingAvg2);
 						return sign0 == sign1 ? (double) -sign0 : 0d;
-					});
+					}));
 		});
 	}
 
@@ -279,9 +274,7 @@ public class BackAllocator_ {
 					}) //
 					.toMap();
 
-			return index ->
-
-			{
+			return index -> {
 				List<Pair<String, Integer>> m0 = dsByKey //
 						.keys() //
 						.map2(symbol -> fixieBySymbol //
@@ -318,7 +311,7 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator variableBollingerBands() {
-		return BackAllocator.byPrices(prices -> index -> {
+		return BackAllocator.byPrices(prices -> Quant.filterRange(1, index -> {
 			int last = index - 1;
 			double hold = 0d;
 
@@ -335,7 +328,7 @@ public class BackAllocator_ {
 			}
 
 			return hold;
-		});
+		}));
 	}
 
 	public static BackAllocator xma() {
@@ -346,29 +339,22 @@ public class BackAllocator_ {
 			float[] movingAvgs0 = ma.exponentialMovingAvg(prices, halfLife0);
 			float[] movingAvgs1 = ma.exponentialMovingAvg(prices, halfLife1);
 
-			return index -> {
+			return Quant.filterRange(1, index -> {
 				int last = index - 1;
 				return movingAvgs0[last] < movingAvgs1[last] ? -1d : 1d;
-			};
+			});
 		});
 	}
 
 	private static BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {
 		return BackAllocator.byPrices(prices -> {
 			float[] percentbs = bb.bb(prices, backPos0, backPos1, k).percentbs;
-			int length = percentbs.length;
-			float[] holds = new float[length];
-			float hold = 0f;
-
-			for (int i = 0; i < length; i++)
-				holds[i] = (hold = hold(hold, percentbs[i], 0f, .5f, 1f));
-
-			return index -> (double) holds[index - 1];
+			return fold_(0, percentbs.length, (i, hold) -> Quant.hold(hold, percentbs[i], 0f, .5f, 1f));
 		});
 	}
 
 	private static BackAllocator rsi_(int window, double threshold0, double threshold1) {
-		return BackAllocator.byPrices(prices -> index -> {
+		return BackAllocator.byPrices(prices -> Quant.filterRange(1, index -> {
 			int gt = 0, ge = 0;
 			for (int i = index - window; i < index; i++) {
 				int compare = Float.compare(prices[i - 1], prices[i]);
@@ -383,19 +369,15 @@ public class BackAllocator_ {
 				return .5d - rsigt;
 			else
 				return 0d;
-		});
+		}));
 	}
 
-	private static float hold(float hold, double ind, double th0, double th1, double th2) {
-		if (ind <= th0)
-			hold = 1f;
-		else if (ind < th1)
-			hold = Math.max(0f, hold);
-		else if (ind < th2)
-			hold = Math.min(0f, hold);
-		else
-			hold = -1f;
-		return hold;
+	private static Int_Dbl fold_(int start, int end, IntFlt_Flt fun) {
+		float[] holds = new float[end];
+		float hold = 0f;
+		for (int i = start; i < end; i++)
+			holds[i] = hold = fun.apply(i, hold);
+		return Quant.filterRange(1, index -> (double) holds[index - 1]);
 	}
 
 }

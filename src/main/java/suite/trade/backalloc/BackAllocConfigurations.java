@@ -7,6 +7,7 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.analysis.Factor;
+import suite.trade.backalloc.strategy.BackAllocatorMech;
 import suite.trade.backalloc.strategy.BackAllocatorOld_;
 import suite.trade.backalloc.strategy.BackAllocator_;
 import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator0;
@@ -37,7 +38,7 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_pmmmr = BackAllocatorOld_.movingMedianMeanRevn().holdExtend(9).cfgUnl(fun);
 		public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sell = BackAllocator_.cash().cfgUnl(fun);
-		public final BackAllocConfiguration bac_tma = BackAllocator_.tripleMovingAvgs().cfgUnl(fun);
+		public final BackAllocConfiguration bac_tma = BackAllocator_.tripleExpGeometricMovingAvgs().cfgUnl(fun);
 
 		public final Streamlet2<String, BackAllocConfiguration> bacByName = Read //
 				.<String, BackAllocConfiguration> empty2() //
@@ -59,7 +60,7 @@ public class BackAllocConfigurations {
 				.cons("sellInMay", BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi)) //
 				.cons("turtles", BackAllocator_.turtles(20, 10, 55, 20).cfgUnl(fun)) //
 				.cons("tma", bac_tma) //
-				.cons("tma1", BackAllocator_.tripleExpGeometricMovingAvgs().cfgUnl(fun)) //
+				.cons("tma1", BackAllocatorMech.ma3().cfgUnl(fun)) //
 				.cons("xma", BackAllocator_.xma().cfgUnl(fun));
 
 		public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {
