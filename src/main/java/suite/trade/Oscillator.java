@@ -75,6 +75,42 @@ public class Oscillator {
 		return ccis;
 	}
 
+	public Movement movement(float[] prices, int window) {
+		int length = prices.length;
+		byte[] cs = new byte[length];
+
+		for (int index = 1; index < length; index++)
+			cs[index] = (byte) Float.compare(prices[index - 1], prices[index]);
+
+		float[] mvmdecs = new float[length];
+		float[] mvmincs = new float[length];
+
+		for (int index = window; index < length; index++) {
+			int decs = 0, incs = 0;
+			for (int i = index - window; i < index; i++) {
+				int compare = cs[i];
+				if (compare < 0)
+					incs++;
+				else if (0 < compare)
+					decs++;
+			}
+			mvmdecs[index] = ((float) decs) / window;
+			mvmincs[index] = ((float) incs) / window;
+		}
+		return new Movement(mvmdecs, mvmincs);
+
+	}
+
+	public class Movement {
+		public final float[] decs;
+		public final float[] incs;
+
+		private Movement(float[] decs, float[] incs) {
+			this.decs = decs;
+			this.incs = incs;
+		}
+	}
+
 	// on-balance volume
 	public float[] obv(DataSource ds) {
 		int length = ds.ts.length;
@@ -90,6 +126,21 @@ public class Oscillator {
 			obvs[i] = (float) obv;
 		}
 		return obvs;
+	}
+
+	public float[] rsi(float[] prices, int nDays) {
+		int length = prices.length;
+		float[] us = new float[length];
+		float[] ds = new float[length];
+		for (int i = 1; i < length; i++) {
+			float diff = prices[i] - prices[i - 1];
+			us[i] = 0f < diff ? diff : 0f;
+			ds[i] = diff < 0f ? -diff : 0f;
+		}
+		double a = 1d / nDays;
+		float[] usMa = ma.exponentialMovingAvg(us, a);
+		float[] dsMa = ma.exponentialMovingAvg(ds, a);
+		return Floats_.toArray(length, i -> (float) (1d - 1d / (1d + usMa[i] / dsMa[i])));
 	}
 
 	// Parabolic stop and reverse

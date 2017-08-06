@@ -1,7 +1,10 @@
 package suite.trade.backalloc.strategy;
 
+import java.util.function.IntPredicate;
+
 import suite.adt.pair.Fixie;
 import suite.math.stat.BollingerBands;
+import suite.math.stat.BollingerBands.Bb;
 import suite.math.stat.Quant;
 import suite.primitive.Floats_;
 import suite.trade.MovingAverage;
@@ -129,6 +132,64 @@ public class BackAllocatorMech {
 				return b1 ? (float) -sign0 : 0f;
 			});
 		});
+	}
+
+	public static BackAllocator mrBbMa200() {
+		return BackAllocator //
+				.byPrices(prices -> {
+					float[] movingAvgs = ma.movingAvg(prices, 200);
+					Bb bb_ = bb.bb(prices, 20, 0, 2f);
+					float[] lowers = bb_.lowers;
+					float[] uppers = bb_.uppers;
+
+					return BackAllocator_.fold(1, prices.length, (i, hold) -> {
+						float movingAvg = movingAvgs[i];
+						float price = prices[i];
+						if (hold < 0f)
+							return price < uppers[i] ? hold : 0f;
+						else if (hold == 0f)
+							if (cross(i, i_ -> uppers[i_] < prices[i_]) && price < movingAvg)
+								return -1f;
+							else if (cross(i, i_ -> prices[i_] < lowers[i_]) && movingAvg < price)
+								return 1f;
+							else
+								return 0f;
+						else
+							return lowers[i] < price ? hold : 0f;
+					});
+				}) //
+				.stopLoss(.975d);
+	}
+
+	public static BackAllocator mrRsiMa200() {
+		return BackAllocator //
+				.byPrices(prices -> {
+					float[] movingAvgs = ma.movingAvg(prices, 200);
+					float[] rsi0 = osc.rsi(prices, 14);
+					float[] rsi1 = osc.rsi(prices, 9);
+
+					return BackAllocator_.fold(1, prices.length, (i, hold) -> {
+						float movingAvg = movingAvgs[i];
+						float price = prices[i];
+						float rsi1_ = rsi1[i];
+						if (hold < 0f)
+							return !cross(i, i_ -> rsi0[i_] < .4f) ? hold : 0f;
+						else if (hold == 0f)
+							if (price < movingAvg && .65f < rsi1_) // over-bought
+								return -1f;
+							else if (movingAvg < price && rsi1_ < .35f) // over-sold
+								return 1f;
+							else
+								return hold;
+						else
+							return !cross(i, i_ -> .6f < rsi0[i_]) ? hold : 0f;
+					});
+				}) //
+				.stopLoss(.975d);
+	}
+
+	private static boolean cross(int i, IntPredicate pred) {
+		return !pred.test(i - 1) && pred.test(i);
 	}
 
 }

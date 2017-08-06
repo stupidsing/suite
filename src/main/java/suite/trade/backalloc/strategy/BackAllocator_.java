@@ -27,6 +27,7 @@ import suite.streamlet.Streamlet2;
 import suite.trade.MovingAverage;
 import suite.trade.MovingAverage.MovingRange;
 import suite.trade.Oscillator;
+import suite.trade.Oscillator.Rsi;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.DataSource;
@@ -128,7 +129,7 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator rsi() {
-		return rsi_(32, .3d, .7d);
+		return rsi_(32, .7d);
 	}
 
 	public static BackAllocator sar() {
@@ -353,23 +354,22 @@ public class BackAllocator_ {
 		});
 	}
 
-	private static BackAllocator rsi_(int window, double threshold0, double threshold1) {
-		return BackAllocator.byPrices(prices -> Quant.filterRange(1, index -> {
-			int gt = 0, ge = 0;
-			for (int i = index - window; i < index; i++) {
-				int compare = Float.compare(prices[i - 1], prices[i]);
-				gt += compare < 0 ? 1 : 0;
-				ge += compare <= 0 ? 1 : 0;
-			}
-			double rsigt = (double) gt / window;
-			double rsige = (double) ge / window;
-			if (rsige < threshold0) // over-sold
-				return .5d - rsige;
-			else if (threshold1 < rsigt) // over-bought
-				return .5d - rsigt;
-			else
-				return 0d;
-		}));
+	private static BackAllocator rsi_(int window, double threshold) {
+		return BackAllocator.byPrices(prices -> {
+			Rsi rsi = osc.rsi(prices, window);
+
+			return Quant.filterRange(0, index -> {
+				int last = index - 1;
+				double dec = rsi.decs[last];
+				double inc = rsi.incs[last];
+				if (threshold < dec) // over-sold
+					return dec - .5d;
+				else if (threshold < inc) // over-bought
+					return .5d - inc;
+				else
+					return 0d;
+			});
+		});
 	}
 
 	private static Int_Dbl fold_(int start, int end, IntFlt_Flt fun) {
