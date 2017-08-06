@@ -26,7 +26,7 @@ public class Oscillator {
 	}
 
 	// https://www.tradingview.com/wiki/Directional_Movement_(DMI)
-	public float[] dmi(DataSource ds) {
+	public Dmi dmi(DataSource ds) {
 		int halfLife = 7;
 
 		int length = ds.ts.length;
@@ -46,11 +46,23 @@ public class Oscillator {
 		float[] diUps = Floats_.toArray(length, i -> maDmUps[i] * invAtrs[i]);
 		float[] diDns = Floats_.toArray(length, i -> maDmDns[i] * invAtrs[i]);
 
-		return Floats_.toArray(length, i -> {
+		return new Dmi(Floats_.toArray(length, i -> {
 			float diDn = diDns[i];
 			float diUp = diUps[i];
 			return (diUp - diDn) / (diUp + diDn);
-		});
+		}));
+	}
+
+	public class Dmi {
+		public final float[] dmi;
+
+		private Dmi(float[] dmi) {
+			this.dmi = dmi;
+		}
+
+		public float[] adx(int nDays) {
+			return ma.movingAvg(Floats_.toArray(dmi.length, Math::abs), nDays);
+		}
 	}
 
 	// commodity channel index

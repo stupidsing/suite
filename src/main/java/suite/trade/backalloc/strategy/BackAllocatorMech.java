@@ -6,11 +6,11 @@ import suite.adt.pair.Fixie;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.BollingerBands.Bb;
 import suite.math.stat.Quant;
-import suite.primitive.Floats_;
 import suite.trade.MovingAverage;
 import suite.trade.MovingAverage.Macd;
 import suite.trade.MovingAverage.MovingRange;
 import suite.trade.Oscillator;
+import suite.trade.Oscillator.Dmi;
 import suite.trade.backalloc.BackAllocator;
 
 /**
@@ -44,7 +44,7 @@ public class BackAllocatorMech {
 
 	public static BackAllocator dmi() {
 		return BackAllocator.byDataSource(ds -> {
-			float[] dmis = osc.dmi(ds);
+			float[] dmis = osc.dmi(ds).dmi;
 			return BackAllocator_.fold(0, dmis.length, (i, hold) -> -Quant.hold(hold, dmis[i], -.2d, 0d, .2d));
 		});
 	}
@@ -52,8 +52,9 @@ public class BackAllocatorMech {
 	public static BackAllocator dmiAdx() {
 		return BackAllocator.byDataSource(ds -> {
 			int length = ds.ts.length;
-			float[] dmis = osc.dmi(ds);
-			float[] adxs = ma.movingAvg(Floats_.toArray(length, Math::abs), 9);
+			Dmi dmi = osc.dmi(ds);
+			float[] dmis = dmi.dmi;
+			float[] adxs = dmi.adx(9);
 
 			return BackAllocator_.fold(1, length, (i, hold) -> .2d <= adxs[i] ? -Quant.hold(hold, dmis[i], -.2d, 0d, .2d) : 0f);
 		});
@@ -134,6 +135,28 @@ public class BackAllocatorMech {
 		});
 	}
 
+	public static BackAllocator mrBbAdx() {
+		return BackAllocator //
+				.byDataSource(ds -> {
+					float[] prices = ds.prices;
+					Bb bb_ = bb.bb(prices, 20, 0, 2f);
+					float[] adxs = osc.dmi(ds).adx(9);
+
+					return BackAllocator_.fold(1, prices.length, (i, hold) -> {
+						if (hold == 0f && adxs[i] < .2f)
+							if (cross(i, bb_.uppers, prices))
+								return -1f;
+							else if (cross(i, prices, bb_.lowers))
+								return 1f;
+							else
+								return hold;
+						else
+							return hold;
+					});
+				}) //
+				.stop(.9875d, .9875d);
+	}
+
 	public static BackAllocator mrBbMa200() {
 		return BackAllocator //
 				.byPrices(prices -> {
@@ -148,12 +171,12 @@ public class BackAllocatorMech {
 						if (hold < 0f)
 							return price < uppers[i] ? hold : 0f;
 						else if (hold == 0f)
-							if (cross(i, i_ -> uppers[i_] < prices[i_]) && price < movingAvg)
+							if (cross(i, uppers, prices) && price < movingAvg)
 								return -1f;
-							else if (cross(i, i_ -> prices[i_] < lowers[i_]) && movingAvg < price)
+							else if (cross(i, prices, lowers) && movingAvg < price)
 								return 1f;
 							else
-								return 0f;
+								return hold;
 						else
 							return lowers[i] < price ? hold : 0f;
 					});
@@ -186,6 +209,10 @@ public class BackAllocatorMech {
 					});
 				}) //
 				.stopLoss(.975d);
+	}
+
+	private static boolean cross(int i, float[] fs0, float[] fs1) {
+		return cross(i, i_ -> fs0[i_] < fs1[i_]);
 	}
 
 	private static boolean cross(int i, IntPredicate pred) {

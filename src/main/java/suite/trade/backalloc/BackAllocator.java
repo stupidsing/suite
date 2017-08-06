@@ -300,6 +300,10 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator stopLoss(double percent) {
+		return stop(percent, 1E6d);
+	}
+
+	public default BackAllocator stop(double stopLoss, double stopGain) {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
 			Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
@@ -351,9 +355,11 @@ public interface BackAllocator {
 						double potential1 = potential0 + cancellation;
 						diff -= cancellation;
 
+						double min = entryPrice * (potential1 < 0 ? stopGain : stopLoss);
+						double max = entryPrice * (potential1 < 0 ? stopLoss : stopGain);
+
 						// drop entries that got past their stopping prices
-						if (potential1 < 0 && price < entryPrice * percent //
-								|| 0 < potential1 && entryPrice < price * percent)
+						if (min < price && price < max)
 							entries1.add(DblFltPair.of(potential1, entryPrice));
 					}
 
