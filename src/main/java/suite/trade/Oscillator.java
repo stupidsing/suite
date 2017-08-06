@@ -67,13 +67,16 @@ public class Oscillator {
 
 	// commodity channel index
 	public float[] cci(DataSource ds) {
-		int nDays = 20;
+		return cci(ds, 20);
+	}
+
+	public float[] cci(DataSource ds, int nDays) {
 		double r = 1d / .015d;
 		double i3 = 1d / 3d;
 		int length = ds.ts.length;
 		float[] ps = Floats_.toArray(length, i -> (float) ((ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3));
-		float[] ccis = new float[length];
-		for (int i = 0; i < length; i++) {
+
+		return Floats_.toArray(length, i -> {
 			int i0 = Math.max(0, i - nDays);
 			double sum = 0d, sumAbsDev = 0d;
 			for (int d = i0; d < nDays; d++)
@@ -82,9 +85,8 @@ public class Oscillator {
 			for (int d = i0; d < nDays; d++)
 				sumAbsDev += Math.abs(ps[i - d] - mean);
 			double meanAbsDev = sumAbsDev / (i - i0);
-			ccis[i] = (float) (r * (ps[i] - mean) / meanAbsDev);
-		}
-		return ccis;
+			return (float) (r * (ps[i] - mean) / meanAbsDev);
+		});
 	}
 
 	public Movement movement(float[] prices, int window) {
@@ -189,15 +191,32 @@ public class Oscillator {
 	}
 
 	public float[] stochastic(DataSource ds) {
-		int kDays = 5;
+		return stochastic(ds, 5);
+	}
+
+	public float[] stochastic(DataSource ds, int kDays) {
 		int dDays = 3;
-		float[] rsv = Floats_.toArray(ds.ts.length, i -> {
-			double low = ds.lows[i];
-			return (float) ((ds.closes[i] - low) / (ds.highs[i] - low));
+		int length = ds.ts.length;
+		float[] los = new float[length];
+		float[] his = new float[length];
+
+		for (int i = 0; i < length; i++) {
+			float lo = Float.MAX_VALUE;
+			float hi = Float.MIN_VALUE;
+			for (int j = Math.max(0, i - kDays + 1); j <= i; j++) {
+				lo = Math.min(lo, ds.lows[j]);
+				hi = Math.max(hi, ds.highs[j]);
+			}
+			los[i] = lo;
+			his[i] = hi;
+		}
+
+		float[] k = Floats_.toArray(length, i -> {
+			double low = los[i];
+			return (float) ((ds.closes[i] - low) / (his[i] - low));
 		});
-		float[] k = ma.movingAvg(rsv, kDays);
-		float[] d = ma.movingAvg(k, dDays);
-		return d;
+
+		return ma.movingAvg(k, dDays);
 	}
 
 	private float[] trueRange(DataSource ds) {

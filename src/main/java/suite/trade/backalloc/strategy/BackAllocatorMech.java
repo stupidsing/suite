@@ -6,6 +6,7 @@ import suite.adt.pair.Fixie;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.BollingerBands.Bb;
 import suite.math.stat.Quant;
+import suite.primitive.IntInt_Int;
 import suite.trade.MovingAverage;
 import suite.trade.MovingAverage.Macd;
 import suite.trade.MovingAverage.MovingRange;
@@ -170,15 +171,14 @@ public class BackAllocatorMech {
 						float price = prices[i];
 						if (hold < 0f)
 							return price < uppers[i] ? hold : 0f;
-						else if (hold == 0f)
-							if (cross(i, uppers, prices) && price < movingAvg)
-								return -1f;
-							else if (cross(i, prices, lowers) && movingAvg < price)
-								return 1f;
-							else
-								return hold;
-						else
+						else if (0f < hold)
 							return lowers[i] < price ? hold : 0f;
+						else if (cross(i, uppers, prices) && price < movingAvg)
+							return -1f;
+						else if (cross(i, prices, lowers) && movingAvg < price)
+							return 1f;
+						else
+							return hold;
 					});
 				}) //
 				.stopLoss(.975d);
@@ -197,18 +197,82 @@ public class BackAllocatorMech {
 						float rsi1_ = rsi1[i];
 						if (hold < 0f)
 							return !cross(i, i_ -> rsi0[i_] < .4f) ? hold : 0f;
-						else if (hold == 0f)
-							if (price < movingAvg && .65f < rsi1_) // over-bought
-								return -1f;
-							else if (movingAvg < price && rsi1_ < .35f) // over-sold
-								return 1f;
-							else
-								return hold;
-						else
+						else if (0f < hold)
 							return !cross(i, i_ -> .6f < rsi0[i_]) ? hold : 0f;
+						else if (price < movingAvg && .65f < rsi1_) // over-bought
+							return -1f;
+						else if (movingAvg < price && rsi1_ < .35f) // over-sold
+							return 1f;
+						else
+							return hold;
 					});
 				}) //
 				.stopLoss(.975d);
+	}
+
+	// slow stochastics extremes with commodity channel index
+	public static BackAllocator mrSseCci() {
+		return mrSseCciTimedExit(Integer.MAX_VALUE);
+	}
+
+	public static BackAllocator mrSseCciTimedExit() {
+		return mrSseCciTimedExit(14);
+	}
+
+	// seven-period reversal
+	public static BackAllocator period7(int timedExit) {
+		return BackAllocator //
+				.byPrices(prices -> {
+					IntInt_Int signs = (s, e) -> {
+						int n = 0;
+						for (int i = s; i < e; i++)
+							n += Quant.sign(prices[i - 1], prices[i]);
+						return n;
+					};
+
+					return BackAllocator_.fold(7, prices.length, (i, hold) -> {
+						if (hold < 0f)
+							return -6 < signs.apply(i - 5, i + 1) ? hold : 0f;
+						else if (0f < hold)
+							return signs.apply(i - 5, i + 1) < 6 ? hold : 0f;
+						else {
+							int n = Quant.sign(prices[i - 1], prices[i]) - signs.apply(i - 6, i);
+							if (n == -7)
+								return -1f;
+							else if (n == 7)
+								return 1f;
+							else
+								return hold;
+						}
+					});
+				}) //
+				.stop(.99f, 1.01f);
+	}
+
+	// eight-days open close
+
+	private static BackAllocator mrSseCciTimedExit(int timedExit) {
+		return BackAllocator //
+				.byDataSource(ds -> {
+					float[] prices = ds.prices;
+					float[] stos = osc.stochastic(ds, 14);
+					float[] stoSlows = ma.movingAvg(stos, 3);
+					float[] ccis = osc.cci(ds, 10);
+
+					return BackAllocator_.fold(1, prices.length, timedExit, (i, hold) -> {
+						if (hold < 0f)
+							return !cross(i, i_ -> stoSlows[i_] < .7f) ? hold : 0f;
+						else if (0f < hold)
+							return !cross(i, i_ -> .3f < stoSlows[i_]) ? hold : 0f;
+						else if (cross(i, i_ -> .85f < stoSlows[i_]) && 1f < ccis[i])
+							return -1f;
+						else if (cross(i, i_ -> stoSlows[i_] < .15f) && ccis[i] < -1f)
+							return 1f;
+						else
+							return hold;
+					});
+				}) //
+				.stopLoss(.985d);
 	}
 
 	private static boolean cross(int i, float[] fs0, float[] fs1) {

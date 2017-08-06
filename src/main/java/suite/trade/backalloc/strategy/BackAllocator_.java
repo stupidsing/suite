@@ -88,6 +88,10 @@ public class BackAllocator_ {
 		return fold_(start, end, fun);
 	}
 
+	public static Int_Dbl fold(int start, int end, int nDaysExit, IntFlt_Flt fun) {
+		return fold_(start, end, nDaysExit, fun);
+	}
+
 	public static BackAllocator lastReturn(int nWorsts, int nBests) {
 		return (akds, indices) -> index -> {
 			List<String> list = akds.dsByKey //
@@ -373,10 +377,22 @@ public class BackAllocator_ {
 	}
 
 	private static Int_Dbl fold_(int start, int end, IntFlt_Flt fun) {
+		return fold_(start, end, Integer.MAX_VALUE, fun);
+	}
+
+	private static Int_Dbl fold_(int start, int end, int nDaysExit, IntFlt_Flt fun) {
+		int nDays = 0;
 		float[] holds = new float[end];
 		float hold = 0f;
-		for (int i = start; i < end; i++)
-			holds[i] = hold = fun.apply(i, hold);
+		for (int i = start; i < end; i++) {
+			float hold1 = fun.apply(i, hold);
+			nDays += hold != hold1 ? 1 : 0;
+			if (nDaysExit < nDays) {
+				hold1 = 0f;
+				nDays = 0;
+			}
+			holds[i] = hold = hold1;
+		}
 		return Quant.filterRange(1, index -> (double) holds[index - 1]);
 	}
 

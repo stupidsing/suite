@@ -29,17 +29,6 @@ public class Cleanse {
 		return isValid_(price0, price1);
 	}
 
-	public float[] removeZeroes(float[] prices0) {
-		int length = prices0.length;
-		float[] prices1 = new float[length];
-		float price0 = 0f;
-		for (int i = 0; i < length; i++) {
-			float price = prices0[i];
-			prices1[i] = price0 = price != 0f ? price : price0;
-		}
-		return prices1;
-	}
-
 	private void cleanse(int length, Int_Flt get, IntFlt_Flt set) {
 
 		// fill zeroes in the middle
