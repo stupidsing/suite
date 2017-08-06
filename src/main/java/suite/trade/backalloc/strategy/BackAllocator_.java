@@ -144,7 +144,7 @@ public class BackAllocator_ {
 						float maOp = movingAvgOps[last];
 						float maCl = movingAvgCls[last];
 						float diff = maCl - maOp;
-						return .01d < Math.abs(diff) / Math.max(maOp, maCl) ? Quant.sign(diff) * 1d : 0d;
+						return Math.max(maOp, maCl) * .01d < Math.abs(diff) ? Quant.sign(diff) * 1d : 0d;
 					};
 				});
 	}
