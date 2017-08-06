@@ -30,37 +30,44 @@ public class Nerve<T> {
 	private Bag<Sink<T>> receivers;
 
 	public interface Redirector<T0, T1> {
-		public void accept(T0 t0, Nerve<T1> nerve);
+		public void accept(T0 t0, Sink<T1> sink);
 	}
 
 	public static <T> Nerve<T> append(Nerve<T> n0, Nerve<T> n1) {
-		Nerve<T> nerve1 = new Nerve<>();
-		Sink<T> sink = nerve1::fire;
-		n0.register(sink);
-		n1.register(sink);
-		return nerve1;
+		return of(fire -> {
+			n0.register(fire);
+			n1.register(fire);
+		});
 	}
 
 	public static <T> Nerve<T> from(Source<T> source) {
-		Nerve<T> nerve1 = new Nerve<>();
-		executor.submit(() -> {
+		return of(fire -> executor.submit(() -> {
 			T t;
 			while ((t = source.source()) != null)
-				nerve1.fire(t);
-		});
-		return nerve1;
+				fire.sink(t);
+		}));
 	}
 
 	public static <T, U, V> Nerve<V> merge(Nerve<T> n0, Nerve<U> n1, Fun2<T, U, V> fun) {
-		Nerve<V> nerve1 = new Nerve<>();
-		CasReference<Pair<T, U>> cr = new CasReference<>(Pair.of(null, null));
-		Sink<Pair<T, U>> recalc = pair -> nerve1.fire(fun.apply(pair.t0, pair.t1));
-		n0.register(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
-		n1.register(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
-		return nerve1;
+		return of(fire -> {
+			CasReference<Pair<T, U>> cr = new CasReference<>(Pair.of(null, null));
+			Sink<Pair<T, U>> recalc = pair -> fire.sink(fun.apply(pair.t0, pair.t1));
+			n0.register(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
+			n1.register(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
+		});
 	}
 
-	public Nerve() {
+	public static <T> Nerve<T> of(Sink<Sink<T>> sink) {
+		Nerve<T> nerve = of();
+		sink.sink(nerve::fire);
+		return nerve;
+	}
+
+	public static <T> Nerve<T> of() {
+		return new Nerve<>();
+	}
+
+	private Nerve() {
 		this(new Bag<>());
 	}
 
@@ -73,28 +80,28 @@ public class Nerve<T> {
 	}
 
 	public <U> Nerve<U> concatMap(Fun<T, Nerve<U>> fun) {
-		return redirect((t, nerve1) -> fun.apply(t).register(nerve1::fire));
+		return redirect((t, fire) -> fun.apply(t).register(fire));
 	}
 
 	public Nerve<T> delay(int milliseconds) {
-		return redirect((t, nerve1) -> executor.schedule(() -> nerve1.fire(t), milliseconds, TimeUnit.MILLISECONDS));
+		return redirect((t, fire) -> executor.schedule(() -> fire.sink(t), milliseconds, TimeUnit.MILLISECONDS));
 	}
 
 	public Nerve<T> edge() {
 		return redirect(new Redirector<T, T>() {
 			private T previous = null;
 
-			public void accept(T t, Nerve<T> nerve1) {
+			public void accept(T t, Sink<T> fire) {
 				if (previous == null || !previous.equals(t))
-					nerve1.fire(t);
+					fire.sink(t);
 			}
 		});
 	}
 
 	public Nerve<T> filter(Predicate<T> pred) {
-		return redirect((t, nerve1) -> {
+		return redirect((t, fire) -> {
 			if (pred.test(t))
-				nerve1.fire(t);
+				fire.sink(t);
 		});
 	}
 
@@ -104,11 +111,11 @@ public class Nerve<T> {
 
 	public <U> Nerve<U> fold(U init, Fun2<U, T, U> fun) {
 		CasReference<U> cr = new CasReference<>(init);
-		return redirect((t1, nerve1) -> nerve1.fire(cr.apply(t0 -> fun.apply(t0, t1))));
+		return redirect((t1, fire) -> fire.sink(cr.apply(t0 -> fun.apply(t0, t1))));
 	}
 
 	public <U> Nerve<U> map(Fun<T, U> fun) {
-		return redirect((t, nerve1) -> nerve1.fire(fun.apply(t)));
+		return redirect((t, sink) -> sink.sink(fun.apply(t)));
 	}
 
 	public Outlet<T> outlet() {
@@ -124,8 +131,8 @@ public class Nerve<T> {
 	}
 
 	public <U> Nerve<U> redirect(Redirector<T, U> redirector) {
-		Nerve<U> nerve1 = new Nerve<>();
-		register(t -> redirector.accept(t, nerve1));
+		Nerve<U> nerve1 = of();
+		register(t -> redirector.accept(t, nerve1::fire));
 		return nerve1;
 	}
 
@@ -141,14 +148,14 @@ public class Nerve<T> {
 		List<T> ts = new ArrayList<>();
 		ts.add(null);
 		register(t -> ts.set(0, t));
-		return event.redirect((e, nerve1) -> nerve1.fire(ts.get(0)));
+		return event.redirect((e, fire) -> fire.sink(ts.get(0)));
 	}
 
 	public Nerve<T> unique() {
 		Set<T> set = new HashSet<>();
-		return redirect((t, nerve1) -> {
+		return redirect((t, fire) -> {
 			if (set.add(t))
-				nerve1.fire(t);
+				fire.sink(t);
 		});
 	}
 

@@ -31,27 +31,23 @@ public class Listen {
 	}
 
 	public static Nerve<ActionEvent> action(AbstractButton component) {
-		Nerve<ActionEvent> nerve = new Nerve<>();
-		component.addActionListener(event -> nerve.fire(event));
-		return nerve;
+		return Nerve.of(fire -> component.addActionListener(event -> fire.sink(event)));
 	}
 
 	public static Nerve<ActionEvent> action(JTextField component) {
-		Nerve<ActionEvent> nerve = new Nerve<>();
-		component.addActionListener(event -> nerve.fire(event));
-		return nerve;
+		return Nerve.of(fire -> component.addActionListener(event -> fire.sink(event)));
 	}
 
 	public static Nerve<ActionEvent> actionPerformed(JComponent component, Object key) {
-		Nerve<ActionEvent> nerve = new Nerve<>();
-		component.getActionMap().put(key, new AbstractAction() {
-			private static final long serialVersionUID = 1l;
+		return Nerve.of(fire -> component //
+				.getActionMap() //
+				.put(key, new AbstractAction() {
+					private static final long serialVersionUID = 1l;
 
-			public void actionPerformed(ActionEvent event) {
-				nerve.fire(event);
-			}
-		});
-		return nerve;
+					public void actionPerformed(ActionEvent event) {
+						fire.sink(event);
+					}
+				}));
 	}
 
 	public static <T, Ex extends Exception> Sink<T> catchAll(SinkEx<T, Ex> sink) {
@@ -65,13 +61,11 @@ public class Listen {
 	}
 
 	public static Nerve<ComponentEvent> componentResized(Component component) {
-		Nerve<ComponentEvent> nerve = new Nerve<>();
-		component.addComponentListener(new ComponentAdapter() {
+		return Nerve.of(fire -> component.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent event) {
-				nerve.fire(event);
+				fire.sink(event);
 			}
-		});
-		return nerve;
+		}));
 	}
 
 	public static Nerve<DocumentEvent> documentChanged(JTextComponent textComponent) {
@@ -79,31 +73,27 @@ public class Listen {
 	}
 
 	public static Nerve<DocumentEvent> documentChanged(Document document) {
-		Nerve<DocumentEvent> nerve = new Nerve<>();
-		document.addDocumentListener(new DocumentListener() {
+		return Nerve.of(fire -> document.addDocumentListener(new DocumentListener() {
 			public void removeUpdate(DocumentEvent event) {
-				nerve.fire(event);
+				fire.sink(event);
 			}
 
 			public void insertUpdate(DocumentEvent event) {
-				nerve.fire(event);
+				fire.sink(event);
 			}
 
 			public void changedUpdate(DocumentEvent event) {
-				nerve.fire(event);
+				fire.sink(event);
 			}
-		});
-		return nerve;
+		}));
 	}
 
 	public static Nerve<KeyEvent> keyPressed(Component component) {
-		Nerve<KeyEvent> nerve = new Nerve<>();
-		component.addKeyListener(new KeyAdapter() {
+		return Nerve.of(fire -> component.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent event) {
-				nerve.fire(event);
+				fire.sink(event);
 			}
-		});
-		return nerve;
+		}));
 	}
 
 	public static Nerve<KeyEvent> keyPressed(Component component, int keyCode) {
@@ -111,13 +101,13 @@ public class Listen {
 	}
 
 	public static Nerve<MouseEvent> mouseClicked(Component component) {
-		Nerve<MouseEvent> nerve = new Nerve<>();
-		component.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent event) {
-				nerve.fire(event);
-			}
+		return Nerve.of(fire -> {
+			component.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent event) {
+					fire.sink(event);
+				}
+			});
 		});
-		return nerve;
 	}
 
 	public static Nerve<MouseEvent> mouseDoubleClicked(Component component) {
@@ -125,13 +115,13 @@ public class Listen {
 	}
 
 	public static Nerve<WindowEvent> windowClosing(Window window) {
-		Nerve<WindowEvent> nerve = new Nerve<>();
-		window.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent event) {
-				nerve.fire(event);
-			}
+		return Nerve.of(fire -> {
+			window.addWindowListener(new WindowAdapter() {
+				public void windowClosing(WindowEvent event) {
+					fire.sink(event);
+				}
+			});
 		});
-		return nerve;
 	}
 
 }

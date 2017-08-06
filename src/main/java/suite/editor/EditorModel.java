@@ -8,9 +8,9 @@ public class EditorModel {
 	private String filename;
 	private String searchText;
 
-	private Nerve<Boolean> modifiedChanged = new Nerve<>();
-	private Nerve<String> filenameChanged = new Nerve<>();
-	private Nerve<String> searchTextChanged = new Nerve<>();
+	private Nerve<Boolean> modifiedChanged = Nerve.of();
+	private Nerve<String> filenameChanged = Nerve.of();
+	private Nerve<String> searchTextChanged = Nerve.of();
 
 	public void changeModified(boolean modified) {
 		setIsModified(modified);

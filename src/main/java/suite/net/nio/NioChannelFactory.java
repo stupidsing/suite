@@ -76,7 +76,7 @@ public interface NioChannelFactory {
 	}
 
 	public class PacketedNioChannel extends BufferedNioChannel {
-		public final Nerve<Bytes> onReceivePacket = new Nerve<>();
+		public final Nerve<Bytes> onReceivePacket = Nerve.of();
 
 		public void sendPacket(Bytes packet) {
 			send(new BytesBuilder() //
@@ -107,9 +107,9 @@ public interface NioChannelFactory {
 	}
 
 	public class NioChannel {
-		public final Nerve<Iterate<Bytes>> onConnected = new Nerve<>();
-		public final Nerve<Bytes> onReceive = new Nerve<>();
-		public final Nerve<Boolean> onTrySend = new Nerve<>();
+		public final Nerve<Iterate<Bytes>> onConnected = Nerve.of();
+		public final Nerve<Bytes> onReceive = Nerve.of();
+		public final Nerve<Boolean> onTrySend = Nerve.of();
 	}
 
 	public static <C extends PersistentNioChannel> C persistent( //

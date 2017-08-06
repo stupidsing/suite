@@ -60,8 +60,8 @@ public class ClusterProbeImpl implements ClusterProbe {
 	 */
 	private Map<String, Long> lastSentTimes = new HashMap<>();
 
-	private Nerve<String> onJoined = new Nerve<>();
-	private Nerve<String> onLeft = new Nerve<>();
+	private Nerve<String> onJoined = Nerve.of();
+	private Nerve<String> onLeft = Nerve.of();
 
 	private enum Command {
 		HELO, FINE, BYEE

@@ -13,6 +13,7 @@ import suite.streamlet.Nerve;
 import suite.streamlet.Nerve.Redirector;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
+import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 
 public class Keyboard implements Closeable {
@@ -52,30 +53,31 @@ public class Keyboard implements Closeable {
 			return 0 <= ch ? (char) ch : null;
 		};
 
-		Outlet<Pair<VK, Character>> keys = Nerve.from(source0) //
+		Outlet<Pair<VK, Character>> keys = Nerve //
+				.from(source0) //
 				.redirect(new Redirector<Character, Pair<VK, Character>>() {
 					private List<Character> chs = new ArrayList<>();
 					private Trie<Integer, VK> t = trie;
 
-					public void accept(Character ch_, Nerve<Pair<VK, Character>> nerve) {
+					public void accept(Character ch_, Sink<Pair<VK, Character>> fire) {
 						if (ch_ != null) {
 							chs.add(ch_);
 							VK vk;
 
 							if ((t = t.getMap().get((int) ch_)) != null)
 								if ((vk = t.getValue()) != null) {
-									nerve.fire(Pair.of(vk, null));
+									fire.sink(Pair.of(vk, null));
 									reset();
 								} else
 									;
 							else
-								flush(nerve);
+								flush(fire);
 						} else
-							flush(nerve);
+							flush(fire);
 					}
 
-					private void flush(Nerve<Pair<VK, Character>> nerve) {
-						Read.from(chs).sink(ch -> nerve.fire(Pair.of(null, ch)));
+					private void flush(Sink<Pair<VK, Character>> fire) {
+						Read.from(chs).sink(ch -> fire.sink(Pair.of(null, ch)));
 						reset();
 					}
 
