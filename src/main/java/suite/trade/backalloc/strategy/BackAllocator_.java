@@ -132,6 +132,23 @@ public class BackAllocator_ {
 		return (akds, indices) -> index -> Arrays.asList(Pair.of(symbol, 1d));
 	}
 
+	// eight-days open close
+	public static BackAllocator openClose8() {
+		return BackAllocator //
+				.byDataSource(ds -> {
+					float[] movingAvgOps = ma.movingAvg(ds.opens, 8);
+					float[] movingAvgCls = ma.movingAvg(ds.closes, 8);
+
+					return index -> {
+						int last = index - 1;
+						float maOp = movingAvgOps[last];
+						float maCl = movingAvgCls[last];
+						float diff = maCl - maOp;
+						return .01d < Math.abs(diff) / Math.max(maOp, maCl) ? Quant.sign(diff) * 1d : 0d;
+					};
+				});
+	}
+
 	public static BackAllocator rsi() {
 		return rsi_(32, .7d);
 	}

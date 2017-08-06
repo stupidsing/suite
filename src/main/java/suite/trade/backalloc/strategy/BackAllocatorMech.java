@@ -219,16 +219,6 @@ public class BackAllocatorMech {
 		return mrSseCciTimedExit(14);
 	}
 
-	// eight-days open close
-	public static BackAllocator openClose8() {
-		return BackAllocator //
-				.byDataSource(ds -> {
-					float[] movingAvgOps = ma.movingAvg(ds.opens, 8);
-					float[] movingAvgCls = ma.movingAvg(ds.closes, 8);
-					return index -> Quant.sign(movingAvgOps[index], movingAvgCls[index]) * 1d;
-				});
-	}
-
 	// seven-period reversal
 	public static BackAllocator period7(int timedExit) {
 		return BackAllocator //
@@ -265,10 +255,11 @@ public class BackAllocatorMech {
 					float[] rsi = osc.rsi(prices, 14);
 
 					return BackAllocator_.fold(1, prices.length, (i, hold) -> {
+						int last = i - 1;
 						if (hold == 0f)
-							if (.75f < rsi[i - 1] && cross(i, i_ -> rsi[i_] < .75f))
+							if (.75f < rsi[last] && cross(i, i_ -> rsi[i_] < .75f))
 								return 1f;
-							else if (rsi[i - 1] < .25f && cross(i, i_ -> .25f < rsi[i_]))
+							else if (rsi[last] < .25f && cross(i, i_ -> .25f < rsi[i_]))
 								return 1f;
 							else
 								return hold;

@@ -51,6 +51,7 @@ public class BackAllocConfigurations {
 				.cons("january", BackAllocator_.ofSingle(Asset.hsiSymbol).january().cfgUnl(fun_hsi)) //
 				.cons("lr", BackAllocator_.lastReturn(0, 2).cfgUnl(fun)) //
 				.cons("mix", BackAllocator_.sum(ba_bb, ba_donchian).cfgUnl(fun)) //
+				.cons("opcl8", BackAllocator_.openClose8().cfgUnl(fun)) //
 				.cons("pmamr", bac_pmamr) //
 				.cons("pmmmr", bac_pmmmr) //
 				.cons("revco", bac_revco) //
