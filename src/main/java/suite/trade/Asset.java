@@ -20,8 +20,8 @@ public class Asset {
 	public final int lotSize;
 	public final int marketCap; // HKD million
 
-	public static Asset of(String code, String name, int lotSize) {
-		return of(code, name, lotSize, 0);
+	public static Asset of(String symbol, String name, int lotSize) {
+		return of(symbol, name, lotSize, 0);
 	}
 
 	public static Asset of(String symbol, String name, int lotSize, int marketCap) {
