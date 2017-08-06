@@ -30,9 +30,10 @@ public class BackAllocatorTest {
 
 		int length = prices.length;
 		long[] ts = Longs_.toArray(length, i -> start.addDays(i).epochSec());
-		int[] indices = Ints_.toArray(length, i -> i);
+
 		DataSource ds = DataSource.of(ts, prices);
 		AlignKeyDataSource<String> akds = DataSource.alignAll(Read.from2(Arrays.asList(Pair.of(symbol, ds))));
+		int[] indices = Ints_.toArray(length, i -> i);
 
 		OnDateTime odt = ba1.allocate(akds, indices);
 
