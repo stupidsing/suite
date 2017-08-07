@@ -31,7 +31,6 @@ public class Oscillator {
 
 	// https://www.tradingview.com/wiki/Directional_Movement_(DMI)
 	public Dmi dmi(DataSource ds, int nDays) {
-		double alpha = 1f / nDays;
 		float[] los = ds.lows;
 		float[] his = ds.highs;
 		int length = ds.ts.length;
@@ -39,15 +38,15 @@ public class Oscillator {
 		float[] dmDns = new float[length];
 
 		for (int i = 1; i < length; i++) {
-			float upMove = his[i] - his[i - 1];
-			float dnMove = los[i] - los[i - 1];
-			dmUps[i] = Math.max(0, dnMove) < upMove ? upMove : 0f;
-			dmDns[i] = Math.max(0, upMove) < dnMove ? dnMove : 0f;
+			float upMove = Math.max(0, his[i] - his[i - 1]);
+			float dnMove = Math.max(0, los[i - 1] - los[i]);
+			dmUps[i] = dnMove < upMove ? upMove : 0f;
+			dmDns[i] = upMove < dnMove ? dnMove : 0f;
 		}
 
-		float[] maDmUps = ma.exponentialMovingAvg(dmUps, alpha);
-		float[] maDmDns = ma.exponentialMovingAvg(dmDns, alpha);
-		float[] invAtrs = To.arrayOfFloats(ma.exponentialMovingAvg(trueRange(ds), alpha), f -> 1f / f);
+		float[] maDmUps = ma.movingAvg(dmUps, nDays);
+		float[] maDmDns = ma.movingAvg(dmDns, nDays);
+		float[] invAtrs = To.arrayOfFloats(ma.movingAvg(trueRange(ds), nDays), f -> 1f / f);
 		float[] diUps = Floats_.toArray(length, i -> maDmUps[i] * invAtrs[i]);
 		float[] diDns = Floats_.toArray(length, i -> maDmDns[i] * invAtrs[i]);
 
