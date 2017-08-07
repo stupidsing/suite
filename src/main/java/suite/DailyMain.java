@@ -75,7 +75,7 @@ public class DailyMain extends ExecutableProgram {
 
 		// perform systematic trading
 		List<Result> results = Arrays.asList( //
-				alloc("bb", 200000f, bacs.bac_bb), //
+				alloc("bb", 200000f, bacs.bac_bbHold), //
 				alloc("bug", 0f, bacs.bac_sell), //
 				alloc("donchian", 100000f, bacs.bac_donHold), //
 				alloc("ema", 200000f, bacs.bac_ema), //

@@ -23,6 +23,8 @@ import suite.trade.backalloc.BackAllocator;
  */
 public class BackAllocatorMech {
 
+	public static BackAllocatorMech me = new BackAllocatorMech();
+
 	public final Streamlet2<String, BackAllocator> baByName = Read //
 			.<String, BackAllocator> empty2() //
 			.cons("bb", bollingerBands()) //
@@ -45,6 +47,9 @@ public class BackAllocatorMech {
 	private BollingerBands bb = new BollingerBands();
 	private MovingAverage ma = new MovingAverage();
 	private Oscillator osc = new Oscillator();
+
+	private BackAllocatorMech() {
+	}
 
 	private BackAllocator bollingerBands() {
 		return BackAllocator.byPrices(prices -> {

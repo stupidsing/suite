@@ -28,14 +28,14 @@ public class BackAllocConfigurations {
 		private Fun<Time, Streamlet<Asset>> fun_hsi = time -> Read.each(Asset.hsi);
 
 		private BackAllocator_ ba_ = BackAllocator_.me;
-		private BackAllocatorMech ba_mech = new BackAllocatorMech();
+		private BackAllocatorMech ba_mech = BackAllocatorMech.me;
 		private BackAllocatorOld_ ba_old = BackAllocatorOld_.me;
 
-		private BackAllocator ba_bb = ba_.bb_.filterByIndex(cfg).holdExtend(8);
+		private BackAllocator ba_bbHold = ba_.bb_.filterByIndex(cfg).holdExtend(8);
 		private BackAllocator ba_donHold = ba_.donHold;
 		private BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().longOnly().pick(3).even();
 
-		public final BackAllocConfiguration bac_bb = ba_bb.cfgUnl(fun);
+		public final BackAllocConfiguration bac_bbHold = ba_bbHold.cfgUnl(fun);
 		public final BackAllocConfiguration bac_donHold = ba_donHold.cfgUnl(fun);
 		public final BackAllocConfiguration bac_ema = ba_.ema.cfgUnl(fun);
 		public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).cfgUnl(fun);
@@ -54,11 +54,11 @@ public class BackAllocConfigurations {
 		private Streamlet2<String, BackAllocConfiguration> bacByName0 = Read //
 				.<String, BackAllocConfiguration> empty2() //
 				.cons("hsi", BackAllocConfiguration.ofSingle(Asset.hsi)) //
-				.cons("bb", bac_bb) //
+				.cons("bb", bac_bbHold) //
 				.cons("bbSlope", ba_old.bbSlope().cfgUnl(fun)) //
 				.cons("facoil", ba_facoil.cfgUnl(fun)) //
 				.cons("january", ba_.ofSingle(Asset.hsiSymbol).january().cfgUnl(fun_hsi)) //
-				.cons("mix", ba_.sum(ba_bb, ba_donHold).cfgUnl(fun)) //
+				.cons("mix", ba_.sum(ba_bbHold, ba_donHold).cfgUnl(fun)) //
 				.cons("pmamr", bac_pmamr) //
 				.cons("pmmmr", bac_pmmmr) //
 				.cons("revco", bac_revco) //
