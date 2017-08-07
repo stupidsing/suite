@@ -77,14 +77,15 @@ public class Oscillator {
 		float[] ps = Floats_.toArray(length, i -> (float) ((ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3));
 
 		return Floats_.toArray(length, i -> {
-			int i0 = Math.max(0, i - nDays);
+			int i0 = Math.max(0, i - nDays + 1);
+			int l = i - i0 + 1;
 			double sum = 0d, sumAbsDev = 0d;
-			for (int d = i0; d < nDays; d++)
-				sum += ps[i - d];
-			double mean = sum / (i - i0);
-			for (int d = i0; d < nDays; d++)
-				sumAbsDev += Math.abs(ps[i - d] - mean);
-			double meanAbsDev = sumAbsDev / (i - i0);
+			for (int d = i0; d <= i; d++)
+				sum += ps[d];
+			double mean = sum / l;
+			for (int d = i0; d <= i; d++)
+				sumAbsDev += Math.abs(ps[d] - mean);
+			double meanAbsDev = sumAbsDev / l;
 			return (float) (r * (ps[i] - mean) / meanAbsDev);
 		});
 	}
