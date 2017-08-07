@@ -20,12 +20,17 @@ import suite.util.String_;
 
 public class BackAllocatorOld_ {
 
-	private static BollingerBands bb = new BollingerBands();
-	private static MovingAverage ma = new MovingAverage();
-	private static Statistic stat = new Statistic();
-	private static TimeSeries ts = new TimeSeries();
+	public static BackAllocatorOld_ me = new BackAllocatorOld_();
 
-	public static BackAllocator bbSlope() {
+	private BollingerBands bb = new BollingerBands();
+	private MovingAverage ma = new MovingAverage();
+	private Statistic stat = new Statistic();
+	private TimeSeries ts = new TimeSeries();
+
+	private BackAllocatorOld_() {
+	}
+
+	public BackAllocator bbSlope() {
 		return BackAllocator.byPrices(prices -> {
 			float[] percentbs = bb.bb(prices, 32, 0, 2f).percentbs;
 			float[] ma_ = ma.movingAvg(percentbs, 6);
@@ -45,7 +50,7 @@ public class BackAllocatorOld_ {
 		});
 	}
 
-	public static BackAllocator bbVariable() {
+	public BackAllocator bbVariable() {
 		return BackAllocator.byPrices(prices -> Quant.filterRange(1, index -> {
 			int last = index - 1;
 			double hold = 0d;
@@ -66,7 +71,7 @@ public class BackAllocatorOld_ {
 		}));
 	}
 
-	public static BackAllocator movingAvgMedian() {
+	public BackAllocator movingAvgMedian() {
 		int windowSize0 = 4;
 		int windowSize1 = 12;
 
@@ -89,7 +94,7 @@ public class BackAllocatorOld_ {
 		});
 	}
 
-	public static BackAllocator movingMedianMeanRevn() {
+	public BackAllocator movingMedianMeanRevn() {
 		int windowSize0 = 1;
 		int windowSize1 = 32;
 
@@ -104,13 +109,13 @@ public class BackAllocatorOld_ {
 		});
 	}
 
-	public static BackAllocator pairs(Configuration cfg, String symbol0, String symbol1) {
+	public BackAllocator pairs(Configuration cfg, String symbol0, String symbol1) {
 		return BackAllocator_.me.rsi //
 				.relativeToIndex(cfg, symbol0) //
 				.filterByAsset(symbol -> String_.equals(symbol, symbol1));
 	}
 
-	public static BackAllocator questoQuella(String symbol0, String symbol1) {
+	public BackAllocator questoQuella(String symbol0, String symbol1) {
 		int tor = 64;
 		double threshold = 0d;
 
@@ -141,7 +146,7 @@ public class BackAllocatorOld_ {
 	}
 
 	// reverse draw-down; trendy strategy
-	public static BackAllocator revDrawdown() {
+	public BackAllocator revDrawdown() {
 		return BackAllocator.byPrices(prices -> index -> {
 			int i = index - 1;
 			int i0 = Math.max(0, i - 128);

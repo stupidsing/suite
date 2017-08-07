@@ -29,6 +29,7 @@ public class BackAllocConfigurations {
 
 		private BackAllocator_ ba_ = BackAllocator_.me;
 		private BackAllocatorMech ba_mech = new BackAllocatorMech();
+		private BackAllocatorOld_ ba_old = BackAllocatorOld_.me;
 
 		private BackAllocator ba_bb = ba_.bb_.filterByIndex(cfg).holdExtend(8);
 		private BackAllocator ba_donHold = ba_.donHold;
@@ -38,7 +39,7 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_donHold = ba_donHold.cfgUnl(fun);
 		public final BackAllocConfiguration bac_ema = ba_.ema.cfgUnl(fun);
 		public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).cfgUnl(fun);
-		public final BackAllocConfiguration bac_pmmmr = BackAllocatorOld_.movingMedianMeanRevn().holdExtend(9).cfgUnl(fun);
+		public final BackAllocConfiguration bac_pmmmr = ba_old.movingMedianMeanRevn().holdExtend(9).cfgUnl(fun);
 		public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sell = ba_.cash().cfgUnl(fun);
 		public final BackAllocConfiguration bac_tma = ba_.tma.cfgUnl(fun);
@@ -54,14 +55,14 @@ public class BackAllocConfigurations {
 				.<String, BackAllocConfiguration> empty2() //
 				.cons("hsi", BackAllocConfiguration.ofSingle(Asset.hsi)) //
 				.cons("bb", bac_bb) //
-				.cons("bbSlope", BackAllocatorOld_.bbSlope().cfgUnl(fun)) //
+				.cons("bbSlope", ba_old.bbSlope().cfgUnl(fun)) //
 				.cons("facoil", ba_facoil.cfgUnl(fun)) //
 				.cons("january", ba_.ofSingle(Asset.hsiSymbol).january().cfgUnl(fun_hsi)) //
 				.cons("mix", ba_.sum(ba_bb, ba_donHold).cfgUnl(fun)) //
 				.cons("pmamr", bac_pmamr) //
 				.cons("pmmmr", bac_pmmmr) //
 				.cons("revco", bac_revco) //
-				.cons("revdd", BackAllocatorOld_.revDrawdown().holdExtend(40).cfgUnl(fun)) //
+				.cons("revdd", ba_old.revDrawdown().holdExtend(40).cfgUnl(fun)) //
 				.cons("sellInMay", ba_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi));
 
 		public final Streamlet2<String, BackAllocConfiguration> bacByName = Streamlet2 //
@@ -69,7 +70,7 @@ public class BackAllocConfigurations {
 
 		public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {
 			Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
-			BackAllocator backAllocator = BackAllocatorOld_.questoQuella(symbol0, symbol1);
+			BackAllocator backAllocator = ba_old.questoQuella(symbol0, symbol1);
 			return new BackAllocConfiguration(time -> assets, backAllocator);
 		}
 	}

@@ -226,7 +226,7 @@ public class DailyMain extends ExecutableProgram {
 
 	public BackAllocConfiguration pairs(String symbol0, String symbol1) {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
-		BackAllocator backAllocator = BackAllocatorOld_.pairs(cfg, symbol0, symbol1).unleverage();
+		BackAllocator backAllocator = BackAllocatorOld_.me.pairs(cfg, symbol0, symbol1).unleverage();
 		return new BackAllocConfiguration(time -> assets, backAllocator);
 	}
 
