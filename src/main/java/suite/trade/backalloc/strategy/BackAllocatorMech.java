@@ -53,8 +53,8 @@ public class BackAllocatorMech {
 
 	private BackAllocator bollingerBands() {
 		return BackAllocator.byPrices(prices -> {
-			float[] percentbs = bb.bb(prices, 20, 0, 2f).percentbs;
-			return Quant.fold(0, percentbs.length, (i, hold) -> -Quant.hold(hold, percentbs[i], 0d, .5d, 1d));
+			float[] sds = bb.bb(prices, 20, 0, 2f).sds;
+			return Quant.fold(0, sds.length, (i, hold) -> -Quant.hold(hold, sds[i], -.5d, 0d, .5d));
 		});
 	}
 

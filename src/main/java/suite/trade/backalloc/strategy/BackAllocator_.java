@@ -45,6 +45,7 @@ public class BackAllocator_ {
 
 	public final Streamlet2<String, BackAllocator> baByName = Read //
 			.<String, BackAllocator> empty2() //
+			.cons("bb1", bollingerBands1()) //
 			.cons("donhold", donHold) //
 			.cons("ema", ema) //
 			.cons("lr", lastReturn(0, 2)) //
@@ -80,7 +81,29 @@ public class BackAllocator_ {
 	}
 
 	private BackAllocator bollingerBands() {
-		return bollingerBands_(32, 0, 2f);
+		return BackAllocator.byPrices(prices -> {
+			float[] sds = bb.bb(prices, 20, 0, 2f).sds;
+			return Quant.fold(0, sds.length, (i, hold) -> -Quant.hold(hold, sds[i], -.5d, 0d, .5d));
+		});
+	}
+
+	private BackAllocator bollingerBands1() {
+		return BackAllocator.byPrices(prices -> {
+			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
+			return Quant.fold(0, sds.length, (i, hold) -> {
+				float sd = sds[i];
+				if (hold < 0f)
+					return -.125f < sd ? hold : 0f;
+				else if (0f < hold)
+					return sd < .125f ? hold : 0f;
+				else if (.8f < sd)
+					return -1f;
+				else if (sd < -.8f)
+					return 1f;
+				else
+					return hold;
+			});
+		});
 	}
 
 	private BackAllocator cash_() {
@@ -372,13 +395,6 @@ public class BackAllocator_ {
 				int last = index - 1;
 				return movingAvgs0[last] < movingAvgs1[last] ? -1d : 1d;
 			});
-		});
-	}
-
-	private BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {
-		return BackAllocator.byPrices(prices -> {
-			float[] percentbs = bb.bb(prices, backPos0, backPos1, k).percentbs;
-			return Quant.fold(0, percentbs.length, (i, hold) -> Quant.hold(hold, percentbs[i], 0f, .5f, 1f));
 		});
 	}
 

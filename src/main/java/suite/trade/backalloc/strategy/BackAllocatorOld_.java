@@ -32,17 +32,17 @@ public class BackAllocatorOld_ {
 
 	public BackAllocator bbSlope() {
 		return BackAllocator.byPrices(prices -> {
-			float[] percentbs = bb.bb(prices, 32, 0, 2f).percentbs;
-			float[] ma_ = ma.movingAvg(percentbs, 6);
+			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
+			float[] ma_ = ma.movingAvg(sds, 6);
 			float[] diffs = ts.differences(3, ma_);
 
 			return index -> {
 				int last = index - 1;
-				float percentb = ma_[last];
+				float sd = ma_[last];
 				float diff = diffs[last];
-				if (percentb < .2d && .015d < diff)
+				if (sd < -.3d && .015d < diff)
 					return 1d;
-				else if (-.8d < percentb && diff < -.015d)
+				else if (.3d < sd && diff < -.015d)
 					return -1d;
 				else
 					return 0d;
