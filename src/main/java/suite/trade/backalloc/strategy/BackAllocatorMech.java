@@ -54,7 +54,7 @@ public class BackAllocatorMech {
 	private BackAllocator bollingerBands() {
 		return BackAllocator.byPrices(prices -> {
 			float[] percentbs = bb.bb(prices, 20, 0, 2f).percentbs;
-			return Quant.fold(0, percentbs.length, (i, hold) -> -Quant.hold(hold, percentbs[i], -1f, 0f, 1f));
+			return Quant.fold(0, percentbs.length, (i, hold) -> -Quant.hold(hold, percentbs[i], 0d, .5d, 1d));
 		});
 	}
 
@@ -78,12 +78,10 @@ public class BackAllocatorMech {
 
 	private BackAllocator dmiAdx() {
 		return BackAllocator.byDataSource(ds -> {
-			int length = ds.ts.length;
 			Dmi dmi = osc.dmi(ds);
 			float[] dmis = dmi.dmi;
 			float[] adxs = dmi.adx(9);
-
-			return Quant.fold(1, length, (i, hold) -> .2d <= adxs[i] ? -Quant.hold(hold, dmis[i], -.2d, 0d, .2d) : 0f);
+			return Quant.fold(0, dmis.length, (i, hold) -> .2d <= adxs[i] ? -Quant.hold(hold, dmis[i], -.2d, 0d, .2d) : 0f);
 		});
 	}
 

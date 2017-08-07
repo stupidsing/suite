@@ -29,13 +29,15 @@ public class Oscillator {
 	public Dmi dmi(DataSource ds) {
 		int halfLife = 7;
 
+		float[] los = ds.lows;
+		float[] his = ds.highs;
 		int length = ds.ts.length;
 		float[] dmUps = new float[length];
 		float[] dmDns = new float[length];
 
 		for (int i = 1; i < length; i++) {
-			float upMove = ds.highs[i] - ds.highs[i - 1];
-			float dnMove = ds.lows[i] - ds.lows[i - 1];
+			float upMove = his[i] - his[i - 1];
+			float dnMove = los[i] - los[i - 1];
 			dmUps[i] = Math.max(0, dnMove) < upMove ? upMove : 0f;
 			dmDns[i] = Math.max(0, upMove) < dnMove ? dnMove : 0f;
 		}
