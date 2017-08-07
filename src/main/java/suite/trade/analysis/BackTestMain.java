@@ -32,6 +32,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.BackTestMain
 public class BackTestMain extends ExecutableProgram {
 
+	private BackAllocator_ ba_ = BackAllocator_.me;
 	private BackTester runner = new BackTester();
 	private Configuration cfg = new ConfigurationImpl();
 
@@ -51,7 +52,7 @@ public class BackTestMain extends ExecutableProgram {
 			bacByTag1 = bacByTag0;
 		else
 			bacByTag1 = Streamlet2.concat( //
-					Read.each2("donchian9", BackAllocator_.donchian(9).cfgUnl(fun)), //
+					Read.each2("donchian9", ba_.don9.cfgUnl(fun)), //
 					questoaQuella("0020.HK", "0004.HK"), //
 					questoaQuella("0052.HK", "0341.HK"), //
 					questoaQuella("0670.HK", "1055.HK"), //

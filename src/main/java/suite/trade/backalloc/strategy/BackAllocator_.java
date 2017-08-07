@@ -13,12 +13,8 @@ import suite.adt.pair.Fixie_.Fixie4;
 import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.Quant;
-import suite.math.stat.Statistic;
-import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.IntFlt_Flt;
 import suite.primitive.IntInt_Obj;
-import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -38,26 +34,66 @@ import suite.util.FunUtil.Fun;
 
 public class BackAllocator_ {
 
-	private static BollingerBands bb = new BollingerBands();
-	private static MovingAverage ma = new MovingAverage();
-	private static Oscillator osc = new Oscillator();
-	private static Statistic stat = new Statistic();
+	public static final BackAllocator_ me = new BackAllocator_();
 
-	public static BackAllocator bollingerBands() {
+	public BackAllocator bb_ = bollingerBands();
+	public BackAllocator don9 = donchian(9);
+	public BackAllocator donHold = don9.holdExtend(2).pick(5);
+	public BackAllocator ema = ema().pick(3);
+	public BackAllocator rsi = rsi();
+	public BackAllocator tma = tripleExpGeometricMovingAvgs();
+
+	public final Streamlet2<String, BackAllocator> baByName = Read //
+			.<String, BackAllocator> empty2() //
+			.cons("donhold", donHold) //
+			.cons("ema", ema) //
+			.cons("lr", lastReturn(0, 2)) //
+			.cons("ma1", movingAvg()) //
+			.cons("opcl8", openClose8()) //
+			.cons("rsi", rsi) //
+			.cons("sar", sar()) //
+			.cons("turtles", turtles(20, 10, 55, 20)) //
+			.cons("tma", tma) //
+			.cons("xma", xma());
+
+	public BackAllocator cash() {
+		return cash_();
+	}
+
+	public BackAllocator ofSingle(String symbol) {
+		return ofSingle_(symbol);
+	}
+
+	public BackAllocator sum(BackAllocator... bas) {
+		return sum_(bas);
+	}
+
+	public BackAllocator tripleMovingAvgs(Fun<float[], Fixie3<float[], float[], float[]>> fun) {
+		return tripleMovingAvgs_(fun);
+	}
+
+	private BollingerBands bb = new BollingerBands();
+	private MovingAverage ma = new MovingAverage();
+	private Oscillator osc = new Oscillator();
+
+	private BackAllocator_() {
+	}
+
+	private BackAllocator bollingerBands() {
 		return bollingerBands_(32, 0, 2f);
 	}
 
-	public static BackAllocator cash() {
+	private BackAllocator cash_() {
 		return (akds, indices) -> index -> Collections.emptyList();
 	}
 
-	public static BackAllocator donchian(int window) {
+	private BackAllocator donchian(int window) {
 		float threshold = .05f;
 
 		return BackAllocator.byPrices(prices -> {
 			MovingRange[] movingRanges = ma.movingRange(prices, window);
 
-			return fold_(0, movingRanges.length, (i, hold) -> {
+			return Quant.fold(0, movingRanges.length, (i, hold) -> {
 				MovingRange range = movingRanges[i];
 				double min = range.min;
 				double max = range.max;
@@ -68,7 +104,7 @@ public class BackAllocator_ {
 		});
 	}
 
-	public static BackAllocator ema() {
+	private BackAllocator ema() {
 		int halfLife = 2;
 		double scale = 1d / Math.log(.8d);
 
@@ -84,15 +120,7 @@ public class BackAllocator_ {
 		});
 	}
 
-	public static Int_Dbl fold(int start, int end, IntFlt_Flt fun) {
-		return fold_(start, end, fun);
-	}
-
-	public static Int_Dbl fold(int start, int end, int nDaysExit, IntFlt_Flt fun) {
-		return fold_(start, end, nDaysExit, fun);
-	}
-
-	public static BackAllocator lastReturn(int nWorsts, int nBests) {
+	private BackAllocator lastReturn(int nWorsts, int nBests) {
 		return (akds, indices) -> index -> {
 			List<String> list = akds.dsByKey //
 					.map2((symbol, ds) -> ds.lastReturn(index)) //
@@ -109,7 +137,7 @@ public class BackAllocator_ {
 		};
 	}
 
-	public static BackAllocator movingAvg() {
+	private BackAllocator movingAvg() {
 		int nPastDays = 64;
 		int nHoldDays = 8;
 		float threshold = .15f;
@@ -128,12 +156,12 @@ public class BackAllocator_ {
 		});
 	}
 
-	public static BackAllocator ofSingle(String symbol) {
+	private BackAllocator ofSingle_(String symbol) {
 		return (akds, indices) -> index -> Arrays.asList(Pair.of(symbol, 1d));
 	}
 
 	// eight-days open close
-	public static BackAllocator openClose8() {
+	private BackAllocator openClose8() {
 		return BackAllocator //
 				.byDataSource(ds -> {
 					float[] movingAvgOps = ma.movingAvg(ds.opens, 8);
@@ -149,11 +177,11 @@ public class BackAllocator_ {
 				});
 	}
 
-	public static BackAllocator rsi() {
+	private BackAllocator rsi() {
 		return rsi_(32, .7d);
 	}
 
-	public static BackAllocator sar() {
+	private BackAllocator sar() {
 		return BackAllocator.byDataSource(ds -> {
 			float[] sars = osc.sar(ds);
 
@@ -164,7 +192,7 @@ public class BackAllocator_ {
 		});
 	}
 
-	public static BackAllocator sum(BackAllocator... bas) {
+	private BackAllocator sum_(BackAllocator... bas) {
 		return (akds, indices) -> {
 			Streamlet<OnDateTime> odts = Read //
 					.from(bas) //
@@ -178,14 +206,14 @@ public class BackAllocator_ {
 		};
 	}
 
-	public static BackAllocator tripleExpGeometricMovingAvgs() {
+	private BackAllocator tripleExpGeometricMovingAvgs() {
 		return tripleMovingAvgs(prices -> Fixie.of( //
 				ma.exponentialGeometricMovingAvg(prices, 18), //
 				ma.exponentialGeometricMovingAvg(prices, 6), //
 				ma.exponentialGeometricMovingAvg(prices, 2)));
 	}
 
-	public static BackAllocator tripleMovingAvgs(Fun<float[], Fixie3<float[], float[], float[]>> fun) {
+	private BackAllocator tripleMovingAvgs_(Fun<float[], Fixie3<float[], float[], float[]>> fun) {
 		return BackAllocator.byPrices(prices -> {
 			Fixie3<float[], float[], float[]> fixie = fun.apply(prices);
 
@@ -203,7 +231,7 @@ public class BackAllocator_ {
 	}
 
 	// http://www.metastocktools.com/downloads/turtlerules.pdf
-	public static BackAllocator turtles(int sys1EnterDays, int sys1ExitDays, int sys2EnterDays, int sys2ExitDays) {
+	private BackAllocator turtles(int sys1EnterDays, int sys1ExitDays, int sys2EnterDays, int sys2ExitDays) {
 		int maxUnits = 4;
 		int maxUnitsTotal = 12;
 		int stopN = 2;
@@ -332,28 +360,7 @@ public class BackAllocator_ {
 		};
 	}
 
-	public static BackAllocator variableBollingerBands() {
-		return BackAllocator.byPrices(prices -> Quant.filterRange(1, index -> {
-			int last = index - 1;
-			double hold = 0d;
-
-			for (int window = 1; hold == 0d && window < 256; window++) {
-				float price = prices[last];
-				MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(prices, last - window, last));
-				double mean = mv.mean;
-				double diff = 3d * mv.standardDeviation();
-
-				if (price < mean - diff)
-					hold = 1d;
-				else if (mean + diff < price)
-					hold = -1d;
-			}
-
-			return hold;
-		}));
-	}
-
-	public static BackAllocator xma() {
+	private BackAllocator xma() {
 		int halfLife0 = 2;
 		int halfLife1 = 8;
 
@@ -368,14 +375,14 @@ public class BackAllocator_ {
 		});
 	}
 
-	private static BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {
+	private BackAllocator bollingerBands_(int backPos0, int backPos1, float k) {
 		return BackAllocator.byPrices(prices -> {
 			float[] percentbs = bb.bb(prices, backPos0, backPos1, k).percentbs;
-			return fold_(0, percentbs.length, (i, hold) -> Quant.hold(hold, percentbs[i], 0f, .5f, 1f));
+			return Quant.fold(0, percentbs.length, (i, hold) -> Quant.hold(hold, percentbs[i], 0f, .5f, 1f));
 		});
 	}
 
-	private static BackAllocator rsi_(int window, double threshold) {
+	private BackAllocator rsi_(int window, double threshold) {
 		return BackAllocator.byPrices(prices -> {
 			Movement movement = osc.movement(prices, window);
 
@@ -391,26 +398,6 @@ public class BackAllocator_ {
 					return 0d;
 			});
 		});
-	}
-
-	private static Int_Dbl fold_(int start, int end, IntFlt_Flt fun) {
-		return fold_(start, end, Integer.MAX_VALUE, fun);
-	}
-
-	private static Int_Dbl fold_(int start, int end, int nDaysExit, IntFlt_Flt fun) {
-		int nDays = 0;
-		float[] holds = new float[end];
-		float hold = 0f;
-		for (int i = start; i < end; i++) {
-			float hold1 = fun.apply(i, hold);
-			nDays += hold != hold1 ? 1 : 0;
-			if (nDaysExit < nDays) {
-				hold1 = 0f;
-				nDays = 0;
-			}
-			holds[i] = hold = hold1;
-		}
-		return Quant.filterRange(1, index -> (double) holds[index - 1]);
 	}
 
 }

@@ -77,7 +77,7 @@ public class DailyMain extends ExecutableProgram {
 		List<Result> results = Arrays.asList( //
 				alloc("bb", 200000f, bacs.bac_bb), //
 				alloc("bug", 0f, bacs.bac_sell), //
-				alloc("donchian", 100000f, bacs.bac_donchian), //
+				alloc("donchian", 100000f, bacs.bac_donHold), //
 				alloc("ema", 200000f, bacs.bac_ema), //
 				mamr(100000f), //
 				alloc("pmamr", 100000f, bacs.bac_pmamr), //
@@ -88,7 +88,7 @@ public class DailyMain extends ExecutableProgram {
 
 		// unused strategies
 		if (Boolean.FALSE) {
-			alloc("donchian", 100000f, bacs.bac_donchian);
+			alloc("donchian", 100000f, bacs.bac_donHold);
 			pairs(0f, "0341.HK", "0052.HK");
 			questoaQuella(200000f, "0670.HK", "1055.HK");
 			sellForEarn("sellpool");

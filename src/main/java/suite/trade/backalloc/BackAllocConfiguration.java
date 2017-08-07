@@ -13,7 +13,7 @@ public class BackAllocConfiguration {
 	public final BackAllocator backAllocator;
 
 	public static BackAllocConfiguration ofSingle(Asset asset) {
-		return new BackAllocConfiguration(time -> Read.each(asset), BackAllocator_.ofSingle(asset.symbol));
+		return new BackAllocConfiguration(time -> Read.each(asset), BackAllocator_.me.ofSingle(asset.symbol));
 	}
 
 	public BackAllocConfiguration(Fun<Time, Streamlet<Asset>> assetsFun, BackAllocator backAllocator) {

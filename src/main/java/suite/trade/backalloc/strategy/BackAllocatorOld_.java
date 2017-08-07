@@ -7,6 +7,8 @@ import java.util.Map;
 import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.Quant;
+import suite.math.stat.Statistic;
+import suite.math.stat.Statistic.MeanVariance;
 import suite.math.stat.TimeSeries;
 import suite.streamlet.Streamlet2;
 import suite.trade.MovingAverage;
@@ -20,6 +22,7 @@ public class BackAllocatorOld_ {
 
 	private static BollingerBands bb = new BollingerBands();
 	private static MovingAverage ma = new MovingAverage();
+	private static Statistic stat = new Statistic();
 	private static TimeSeries ts = new TimeSeries();
 
 	public static BackAllocator bbSlope() {
@@ -40,6 +43,27 @@ public class BackAllocatorOld_ {
 					return 0d;
 			};
 		});
+	}
+
+	public static BackAllocator bbVariable() {
+		return BackAllocator.byPrices(prices -> Quant.filterRange(1, index -> {
+			int last = index - 1;
+			double hold = 0d;
+
+			for (int window = 1; hold == 0d && window < 256; window++) {
+				float price = prices[last];
+				MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(prices, last - window, last));
+				double mean = mv.mean;
+				double diff = 3d * mv.standardDeviation();
+
+				if (price < mean - diff)
+					hold = 1d;
+				else if (mean + diff < price)
+					hold = -1d;
+			}
+
+			return hold;
+		}));
 	}
 
 	public static BackAllocator movingAvgMedian() {
@@ -81,8 +105,7 @@ public class BackAllocatorOld_ {
 	}
 
 	public static BackAllocator pairs(Configuration cfg, String symbol0, String symbol1) {
-		return BackAllocator_ //
-				.rsi() //
+		return BackAllocator_.me.rsi //
 				.relativeToIndex(cfg, symbol0) //
 				.filterByAsset(symbol -> String_.equals(symbol, symbol1));
 	}

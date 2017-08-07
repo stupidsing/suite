@@ -16,6 +16,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.WalkForwardTestMain
 public class WalkForwardTestMain extends ExecutableProgram {
 
+	private BackAllocator_ ba_ = BackAllocator_.me;
 	private Configuration cfg = new ConfigurationImpl();
 
 	public static void main(String[] args) {
@@ -32,7 +33,7 @@ public class WalkForwardTestMain extends ExecutableProgram {
 
 		WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //
 				cfg.queryCompaniesByMarketCap(Time.now()), //
-				BackAllocator_.rsi().unleverage().walkForwardAllocator());
+				ba_.rsi.unleverage().walkForwardAllocator());
 
 		WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
 

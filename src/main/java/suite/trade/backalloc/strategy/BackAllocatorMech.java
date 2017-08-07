@@ -7,6 +7,8 @@ import suite.math.stat.BollingerBands;
 import suite.math.stat.BollingerBands.Bb;
 import suite.math.stat.Quant;
 import suite.primitive.IntInt_Int;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet2;
 import suite.trade.MovingAverage;
 import suite.trade.MovingAverage.Macd;
 import suite.trade.MovingAverage.MovingRange;
@@ -21,47 +23,66 @@ import suite.trade.backalloc.BackAllocator;
  */
 public class BackAllocatorMech {
 
-	private static BollingerBands bb = new BollingerBands();
-	private static MovingAverage ma = new MovingAverage();
-	private static Oscillator osc = new Oscillator();
+	public final Streamlet2<String, BackAllocator> baByName = Read //
+			.<String, BackAllocator> empty2() //
+			.cons("bb", bollingerBands()) //
+			.cons("chanbrk", channelBreakout()) //
+			.cons("dmi", dmi()) //
+			.cons("dmiadx", dmiAdx()) //
+			.cons("ma2", ma2()) //
+			.cons("ma2i", ma2Ichimoku()) //
+			.cons("ma3", ma3()) //
+			.cons("ma3i", ma3ichimoku()) //
+			.cons("macd", macd()) //
+			.cons("bbadx", mrBbAdx()) //
+			.cons("bbma200", mrBbMa200()) //
+			.cons("rsima200", mrRsiMa200()) //
+			.cons("ssecci", mrSseCci()) //
+			.cons("sseccitx", mrSseCciTimedExit()) //
+			.cons("p7rev", period7reversal()) //
+			.cons("rsix", rsiCrossover());
 
-	public static BackAllocator bollingerBands() {
+	private BollingerBands bb = new BollingerBands();
+	private MovingAverage ma = new MovingAverage();
+	private Oscillator osc = new Oscillator();
+
+	private BackAllocator bollingerBands() {
 		return BackAllocator.byPrices(prices -> {
 			float[] percentbs = bb.bb(prices, 20, 0, 2f).percentbs;
-			return BackAllocator_.fold(0, percentbs.length, (i, hold) -> -Quant.hold(hold, percentbs[i], -1f, 0f, 1f));
+			return Quant.fold(0, percentbs.length, (i, hold) -> -Quant.hold(hold, percentbs[i], -1f, 0f, 1f));
 		});
 	}
 
-	public static BackAllocator channelBreakout() {
+	private BackAllocator channelBreakout() {
 		return BackAllocator.byPrices(prices -> {
 			MovingRange[] movingRanges = ma.movingRange(prices, 20);
 
-			return BackAllocator_.fold(0, prices.length, (i, hold) -> {
+			return Quant.fold(0, prices.length, (i, hold) -> {
 				MovingRange movingRange = movingRanges[i];
 				return -Quant.hold(hold, prices[i], movingRange.min, movingRange.max);
 			});
 		});
 	}
 
-	public static BackAllocator dmi() {
+	private BackAllocator dmi() {
 		return BackAllocator.byDataSource(ds -> {
 			float[] dmis = osc.dmi(ds).dmi;
-			return BackAllocator_.fold(0, dmis.length, (i, hold) -> -Quant.hold(hold, dmis[i], -.2d, 0d, .2d));
+			return Quant.fold(0, dmis.length, (i, hold) -> -Quant.hold(hold, dmis[i], -.2d, 0d, .2d));
 		});
 	}
 
-	public static BackAllocator dmiAdx() {
+	private BackAllocator dmiAdx() {
 		return BackAllocator.byDataSource(ds -> {
 			int length = ds.ts.length;
 			Dmi dmi = osc.dmi(ds);
 			float[] dmis = dmi.dmi;
 			float[] adxs = dmi.adx(9);
 
-			return BackAllocator_.fold(1, length, (i, hold) -> .2d <= adxs[i] ? -Quant.hold(hold, dmis[i], -.2d, 0d, .2d) : 0f);
+			return Quant.fold(1, length, (i, hold) -> .2d <= adxs[i] ? -Quant.hold(hold, dmis[i], -.2d, 0d, .2d) : 0f);
 		});
 	}
 
-	public static BackAllocator macd() {
+	private BackAllocator macd() {
 		return BackAllocator.byPrices(prices -> {
 			Macd macd = ma.macd(prices);
 			return index -> {
@@ -75,7 +96,7 @@ public class BackAllocatorMech {
 	}
 
 	// two moving average cross-over
-	public static BackAllocator ma2() {
+	private BackAllocator ma2() {
 		return BackAllocator.byPrices(prices -> {
 			float[] movingAvgs0 = ma.movingAvg(prices, 26);
 			float[] movingAvgs1 = ma.movingAvg(prices, 9);
@@ -87,7 +108,7 @@ public class BackAllocatorMech {
 	}
 
 	// Ichimoku two moving average cross-over
-	public static BackAllocator ma2Ichimoku() {
+	private BackAllocator ma2Ichimoku() {
 		return BackAllocator.byPrices(prices -> {
 			float[] movingAvgs0 = ma.movingAvg(prices, 26);
 			float[] movingAvgs1 = ma.movingAvg(prices, 9);
@@ -95,7 +116,9 @@ public class BackAllocatorMech {
 				int last = index - 1;
 				float movingAvg0 = movingAvgs0[last];
 				float movingAvg1 = movingAvgs1[last];
-				float movingAvg0ytd = movingAvgs0[last - 1]; // all my troubles seem so far away
+				float movingAvg0ytd = movingAvgs0[last - 1]; // all my troubles
+																// seem so far
+																// away
 				int sign = Quant.sign(movingAvg0, movingAvg1);
 				return sign == Quant.sign(movingAvg0ytd, movingAvg0) ? (double) sign : 0d;
 			});
@@ -103,8 +126,8 @@ public class BackAllocatorMech {
 	}
 
 	// three moving average cross-over
-	public static BackAllocator ma3() {
-		return BackAllocator_.tripleMovingAvgs(prices -> Fixie.of( //
+	private BackAllocator ma3() {
+		return BackAllocator_.me.tripleMovingAvgs(prices -> Fixie.of( //
 				ma.movingAvg(prices, 52), //
 				ma.movingAvg(prices, 26), //
 				ma.movingAvg(prices, 9)));
@@ -112,19 +135,20 @@ public class BackAllocatorMech {
 	}
 
 	// Ichimoku three moving average cross-over
-	public static BackAllocator ma3ichimoku() {
+	private BackAllocator ma3ichimoku() {
 		return BackAllocator.byPrices(prices -> {
 			int length = prices.length;
 			float[] movingAvgs0 = ma.movingAvg(prices, 52);
 			float[] movingAvgs1 = ma.movingAvg(prices, 26);
 			float[] movingAvgs2 = ma.movingAvg(prices, 9);
 
-			return BackAllocator_.fold(1, length, (i, hold) -> {
+			return Quant.fold(1, length, (i, hold) -> {
 				int im1 = i - 1;
 				float movingAvg0 = movingAvgs0[i];
 				float movingAvg1 = movingAvgs1[i];
 				float movingAvg2 = movingAvgs2[i];
-				float movingAvg1ytd = movingAvgs1[im1]; // all my troubles seem so far away
+				float movingAvg1ytd = movingAvgs1[im1]; // all my troubles seem
+														// so far away
 				float movingAvg2ytd = movingAvgs2[im1];
 				int sign0 = Quant.sign(movingAvg0, movingAvg1);
 				int sign1 = Quant.sign(movingAvg1, movingAvg2);
@@ -136,14 +160,14 @@ public class BackAllocatorMech {
 		});
 	}
 
-	public static BackAllocator mrBbAdx() {
+	private BackAllocator mrBbAdx() {
 		return BackAllocator //
 				.byDataSource(ds -> {
 					float[] prices = ds.prices;
 					Bb bb_ = bb.bb(prices, 20, 0, 2f);
 					float[] adxs = osc.dmi(ds).adx(9);
 
-					return BackAllocator_.fold(1, prices.length, (i, hold) -> {
+					return Quant.fold(1, prices.length, (i, hold) -> {
 						if (hold == 0f && adxs[i] < .2f)
 							if (cross(i, bb_.uppers, prices))
 								return -1f;
@@ -158,7 +182,7 @@ public class BackAllocatorMech {
 				.stop(.9875d, .9875d);
 	}
 
-	public static BackAllocator mrBbMa200() {
+	private BackAllocator mrBbMa200() {
 		return BackAllocator //
 				.byPrices(prices -> {
 					float[] movingAvgs = ma.movingAvg(prices, 200);
@@ -166,7 +190,7 @@ public class BackAllocatorMech {
 					float[] lowers = bb_.lowers;
 					float[] uppers = bb_.uppers;
 
-					return BackAllocator_.fold(1, prices.length, (i, hold) -> {
+					return Quant.fold(1, prices.length, (i, hold) -> {
 						float movingAvg = movingAvgs[i];
 						float price = prices[i];
 						if (hold < 0f)
@@ -184,14 +208,14 @@ public class BackAllocatorMech {
 				.stopLoss(.975d);
 	}
 
-	public static BackAllocator mrRsiMa200() {
+	private BackAllocator mrRsiMa200() {
 		return BackAllocator //
 				.byPrices(prices -> {
 					float[] movingAvgs = ma.movingAvg(prices, 200);
 					float[] rsi0 = osc.rsi(prices, 14);
 					float[] rsi1 = osc.rsi(prices, 9);
 
-					return BackAllocator_.fold(1, prices.length, (i, hold) -> {
+					return Quant.fold(1, prices.length, (i, hold) -> {
 						float movingAvg = movingAvgs[i];
 						float price = prices[i];
 						float rsi1_ = rsi1[i];
@@ -211,16 +235,16 @@ public class BackAllocatorMech {
 	}
 
 	// slow stochastics extremes with commodity channel index
-	public static BackAllocator mrSseCci() {
+	private BackAllocator mrSseCci() {
 		return mrSseCciTimedExit(Integer.MAX_VALUE);
 	}
 
-	public static BackAllocator mrSseCciTimedExit() {
+	private BackAllocator mrSseCciTimedExit() {
 		return mrSseCciTimedExit(14);
 	}
 
 	// seven-period reversal
-	public static BackAllocator period7(int timedExit) {
+	private BackAllocator period7reversal() {
 		return BackAllocator //
 				.byPrices(prices -> {
 					IntInt_Int signs = (s, e) -> {
@@ -230,7 +254,7 @@ public class BackAllocatorMech {
 						return n;
 					};
 
-					return BackAllocator_.fold(7, prices.length, (i, hold) -> {
+					return Quant.fold(7, prices.length, (i, hold) -> {
 						if (hold < 0f)
 							return -6 < signs.apply(i - 5, i + 1) ? hold : 0f;
 						else if (0f < hold)
@@ -249,12 +273,12 @@ public class BackAllocatorMech {
 				.stop(.99f, 1.01f);
 	}
 
-	public static BackAllocator rsiCrossover() {
+	private BackAllocator rsiCrossover() {
 		return BackAllocator //
 				.byPrices(prices -> {
 					float[] rsi = osc.rsi(prices, 14);
 
-					return BackAllocator_.fold(1, prices.length, (i, hold) -> {
+					return Quant.fold(1, prices.length, (i, hold) -> {
 						int last = i - 1;
 						if (hold == 0f)
 							if (.75f < rsi[last] && cross(i, i_ -> rsi[i_] < .75f))
@@ -270,7 +294,7 @@ public class BackAllocatorMech {
 				.stop(.99f, 1.03f);
 	}
 
-	private static BackAllocator mrSseCciTimedExit(int timedExit) {
+	private BackAllocator mrSseCciTimedExit(int timedExit) {
 		return BackAllocator //
 				.byDataSource(ds -> {
 					float[] prices = ds.prices;
@@ -278,7 +302,7 @@ public class BackAllocatorMech {
 					float[] stoSlows = ma.movingAvg(stos, 3);
 					float[] ccis = osc.cci(ds, 10);
 
-					return BackAllocator_.fold(1, prices.length, timedExit, (i, hold) -> {
+					return Quant.fold(1, prices.length, timedExit, (i, hold) -> {
 						if (hold < 0f)
 							return !cross(i, i_ -> stoSlows[i_] < .7f) ? hold : 0f;
 						else if (0f < hold)
@@ -294,11 +318,11 @@ public class BackAllocatorMech {
 				.stopLoss(.985d);
 	}
 
-	private static boolean cross(int i, float[] fs0, float[] fs1) {
+	private boolean cross(int i, float[] fs0, float[] fs1) {
 		return cross(i, i_ -> fs0[i_] < fs1[i_]);
 	}
 
-	private static boolean cross(int i, IntPredicate pred) {
+	private boolean cross(int i, IntPredicate pred) {
 		return !pred.test(i - 1) && pred.test(i);
 	}
 

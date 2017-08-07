@@ -1,11 +1,32 @@
 package suite.math.stat;
 
+import suite.primitive.IntFlt_Flt;
 import suite.primitive.Int_Dbl;
 
 public class Quant {
 
 	public static Int_Dbl filterRange(int start, Int_Dbl fun) {
 		return index -> start <= index ? fun.apply(index) : 0d;
+	}
+
+	public static Int_Dbl fold(int start, int end, IntFlt_Flt fun) {
+		return fold(start, end, Integer.MAX_VALUE, fun);
+	}
+
+	public static Int_Dbl fold(int start, int end, int nDaysExit, IntFlt_Flt fun) {
+		int nDays = 0;
+		float[] holds = new float[end];
+		float hold = 0f;
+		for (int i = start; i < end; i++) {
+			float hold1 = fun.apply(i, hold);
+			nDays += hold != hold1 ? 1 : 0;
+			if (nDaysExit < nDays) {
+				hold1 = 0f;
+				nDays = 0;
+			}
+			holds[i] = hold = hold1;
+		}
+		return Quant.filterRange(1, index -> (double) holds[index - 1]);
 	}
 
 	public static float hold(float hold, double ind, double th0, double th1) {
