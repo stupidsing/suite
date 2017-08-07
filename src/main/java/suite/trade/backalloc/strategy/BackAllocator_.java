@@ -82,7 +82,7 @@ public class BackAllocator_ {
 
 	private BackAllocator bollingerBands() {
 		return BackAllocator.byPrices(prices -> {
-			float[] sds = bb.bb(prices, 20, 0, 2f).sds;
+			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
 			return Quant.fold(0, sds.length, (i, hold) -> -Quant.hold(hold, sds[i], -.5d, 0d, .5d));
 		});
 	}
@@ -93,12 +93,12 @@ public class BackAllocator_ {
 			return Quant.fold(0, sds.length, (i, hold) -> {
 				float sd = sds[i];
 				if (hold < 0f)
-					return -.125f < sd ? hold : 0f;
+					return -.08f < sd ? hold : 0f;
 				else if (0f < hold)
-					return sd < .125f ? hold : 0f;
-				else if (.8f < sd)
+					return sd < .08f ? hold : 0f;
+				else if (.48f < sd)
 					return -1f;
-				else if (sd < -.8f)
+				else if (sd < -.48f)
 					return 1f;
 				else
 					return hold;
