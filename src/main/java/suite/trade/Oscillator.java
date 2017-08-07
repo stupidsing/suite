@@ -25,10 +25,13 @@ public class Oscillator {
 		return atrs;
 	}
 
-	// https://www.tradingview.com/wiki/Directional_Movement_(DMI)
 	public Dmi dmi(DataSource ds) {
-		int halfLife = 7;
+		return dmi(ds, 14);
+	}
 
+	// https://www.tradingview.com/wiki/Directional_Movement_(DMI)
+	public Dmi dmi(DataSource ds, int nDays) {
+		double alpha = 1f / nDays;
 		float[] los = ds.lows;
 		float[] his = ds.highs;
 		int length = ds.ts.length;
@@ -42,9 +45,9 @@ public class Oscillator {
 			dmDns[i] = Math.max(0, upMove) < dnMove ? dnMove : 0f;
 		}
 
-		float[] maDmUps = ma.exponentialMovingAvg(dmUps, halfLife);
-		float[] maDmDns = ma.exponentialMovingAvg(dmDns, halfLife);
-		float[] invAtrs = To.arrayOfFloats(ma.exponentialMovingAvg(trueRange(ds), halfLife), f -> 1f / f);
+		float[] maDmUps = ma.exponentialMovingAvg(dmUps, alpha);
+		float[] maDmDns = ma.exponentialMovingAvg(dmDns, alpha);
+		float[] invAtrs = To.arrayOfFloats(ma.exponentialMovingAvg(trueRange(ds), alpha), f -> 1f / f);
 		float[] diUps = Floats_.toArray(length, i -> maDmUps[i] * invAtrs[i]);
 		float[] diDns = Floats_.toArray(length, i -> maDmDns[i] * invAtrs[i]);
 

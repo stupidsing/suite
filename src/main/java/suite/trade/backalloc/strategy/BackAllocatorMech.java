@@ -71,14 +71,14 @@ public class BackAllocatorMech {
 
 	private BackAllocator dmi() {
 		return BackAllocator.byDataSource(ds -> {
-			float[] dmis = osc.dmi(ds).dmi;
+			float[] dmis = osc.dmi(ds, 10).dmi;
 			return Quant.fold(0, dmis.length, (i, hold) -> -Quant.hold(hold, dmis[i], -.2d, 0d, .2d));
 		});
 	}
 
 	private BackAllocator dmiAdx() {
 		return BackAllocator.byDataSource(ds -> {
-			Dmi dmi = osc.dmi(ds);
+			Dmi dmi = osc.dmi(ds, 10);
 			float[] dmis = dmi.dmi;
 			float[] adxs = dmi.adx(9);
 			return Quant.fold(0, dmis.length, (i, hold) -> .2d <= adxs[i] ? -Quant.hold(hold, dmis[i], -.2d, 0d, .2d) : 0f);
