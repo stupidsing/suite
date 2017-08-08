@@ -92,19 +92,11 @@ public class BackAllocator_ {
 		return BackAllocator.byPrices(prices -> {
 			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
 
-			return Quant.fold(0, sds.length, (i, hold) -> {
-				float sd = sds[i];
-				if (hold < 0f)
-					return -exit < sd ? hold : 0f;
-				else if (0f < hold)
-					return sd < exit ? hold : 0f;
-				else if (entry < sd)
-					return -1f;
-				else if (sd < -entry)
-					return 1f;
-				else
-					return hold;
-			});
+			return Quant.enterExit(0, sds.length, //
+					i -> entry < sds[i], //
+					i -> sds[i] < -entry, //
+					i -> sds[i] <= -exit, //
+					i -> exit <= sds[i]);
 		});
 	}
 

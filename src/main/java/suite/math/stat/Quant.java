@@ -1,5 +1,7 @@
 package suite.math.stat;
 
+import java.util.function.IntPredicate;
+
 import suite.primitive.IntFlt_Flt;
 import suite.primitive.Int_Dbl;
 
@@ -7,6 +9,29 @@ public class Quant {
 
 	public static Int_Dbl filterRange(int start, Int_Dbl fun) {
 		return index -> start <= index ? fun.apply(index) : 0d;
+	}
+
+	public static Int_Dbl enterExit( //
+			int start, int end, //
+			IntPredicate isEnterShort, IntPredicate isEnterLong, //
+			IntPredicate isExitShort, IntPredicate isExitLong) {
+		return enterExit(start, end, Integer.MAX_VALUE, isEnterShort, isEnterLong, isExitShort, isExitLong);
+	}
+
+	public static Int_Dbl enterExit( //
+			int start, int end, //
+			int timedExit, //
+			IntPredicate isEnterShort, IntPredicate isEnterLong, //
+			IntPredicate isExitShort, IntPredicate isExitLong) {
+		IntPredicate isKeepShort = isExitShort.negate();
+		IntPredicate isKeepLong = isExitLong.negate();
+
+		return fold(start, end, (i, hold) -> {
+			if (hold == 0f)
+				return isEnterShort.test(i) ? -1f : isEnterLong.test(i) ? 1f : hold;
+			else
+				return (hold < 0f ? isKeepShort : isKeepLong).test(i) ? 0f : hold;
+		});
 	}
 
 	public static Int_Dbl fold(int start, int end, IntFlt_Flt fun) {
@@ -26,7 +51,7 @@ public class Quant {
 			}
 			holds[i] = hold = hold1;
 		}
-		return Quant.filterRange(1, index -> (double) holds[index - 1]);
+		return filterRange(1, index -> (double) holds[index - 1]);
 	}
 
 	public static float hold(float hold, double ind, double th0, double th1) {

@@ -119,9 +119,7 @@ public class BackAllocatorMech {
 				int last = index - 1;
 				float movingAvg0 = movingAvgs0[last];
 				float movingAvg1 = movingAvgs1[last];
-				float movingAvg0ytd = movingAvgs0[last - 1]; // all my troubles
-																// seem so far
-																// away
+				float movingAvg0ytd = movingAvgs0[last - 1];
 				int sign = Quant.sign(movingAvg0, movingAvg1);
 				return sign == Quant.sign(movingAvg0ytd, movingAvg0) ? (double) sign : 0d;
 			});
@@ -150,8 +148,7 @@ public class BackAllocatorMech {
 				float movingAvg0 = movingAvgs0[i];
 				float movingAvg1 = movingAvgs1[i];
 				float movingAvg2 = movingAvgs2[i];
-				float movingAvg1ytd = movingAvgs1[im1]; // all my troubles seem
-														// so far away
+				float movingAvg1ytd = movingAvgs1[im1];
 				float movingAvg2ytd = movingAvgs2[im1];
 				int sign0 = Quant.sign(movingAvg0, movingAvg1);
 				int sign1 = Quant.sign(movingAvg1, movingAvg2);
@@ -170,17 +167,11 @@ public class BackAllocatorMech {
 					Bb bb_ = bb.bb(prices, 20, 0, 2f);
 					float[] adxs = osc.dmi(ds).adx(9);
 
-					return Quant.fold(1, prices.length, (i, hold) -> {
-						if (hold == 0f && adxs[i] < .2f)
-							if (cross(i, bb_.uppers, prices))
-								return -1f;
-							else if (cross(i, prices, bb_.lowers))
-								return 1f;
-							else
-								return hold;
-						else
-							return hold;
-					});
+					return Quant.enterExit(1, prices.length, //
+							i -> adxs[i] < .2f && cross(i, bb_.uppers, prices), //
+							i -> adxs[i] < .2f && cross(i, prices, bb_.lowers), //
+							i -> false, //
+							i -> false);
 				}) //
 				.stop(.9875d, .9875d);
 	}
@@ -193,20 +184,11 @@ public class BackAllocatorMech {
 					float[] lowers = bb_.lowers;
 					float[] uppers = bb_.uppers;
 
-					return Quant.fold(1, prices.length, (i, hold) -> {
-						float movingAvg = movingAvgs[i];
-						float price = prices[i];
-						if (hold < 0f)
-							return price < uppers[i] ? hold : 0f;
-						else if (0f < hold)
-							return lowers[i] < price ? hold : 0f;
-						else if (cross(i, uppers, prices) && price < movingAvg)
-							return -1f;
-						else if (cross(i, prices, lowers) && movingAvg < price)
-							return 1f;
-						else
-							return hold;
-					});
+					return Quant.enterExit(1, prices.length, //
+							i -> cross(i, uppers, prices) && prices[i] < movingAvgs[i], //
+							i -> cross(i, prices, lowers) && movingAvgs[i] < prices[i], //
+							i -> uppers[i] <= prices[i], //
+							i -> prices[i] <= lowers[i]);
 				}) //
 				.stopLoss(.975d);
 	}
@@ -218,21 +200,11 @@ public class BackAllocatorMech {
 					float[] rsi0 = osc.rsi(prices, 14);
 					float[] rsi1 = osc.rsi(prices, 9);
 
-					return Quant.fold(1, prices.length, (i, hold) -> {
-						float movingAvg = movingAvgs[i];
-						float price = prices[i];
-						float rsi1_ = rsi1[i];
-						if (hold < 0f)
-							return !cross(i, i_ -> rsi0[i_] < .4f) ? hold : 0f;
-						else if (0f < hold)
-							return !cross(i, i_ -> .6f < rsi0[i_]) ? hold : 0f;
-						else if (price < movingAvg && .65f < rsi1_) // over-bought
-							return -1f;
-						else if (movingAvg < price && rsi1_ < .35f) // over-sold
-							return 1f;
-						else
-							return hold;
-					});
+					return Quant.enterExit(1, prices.length, //
+							i -> prices[i] < movingAvgs[i] && .65f < rsi1[i], //
+							i -> movingAvgs[i] < prices[i] && rsi1[i] < .35f, //
+							i -> cross(i, i_ -> rsi0[i_] < .4f), //
+							i -> cross(i, i_ -> .6f < rsi0[i_]));
 				}) //
 				.stopLoss(.975d);
 	}
@@ -281,18 +253,11 @@ public class BackAllocatorMech {
 				.byPrices(prices -> {
 					float[] rsi = osc.rsi(prices, 14);
 
-					return Quant.fold(1, prices.length, (i, hold) -> {
-						int last = i - 1;
-						if (hold == 0f)
-							if (.75f < rsi[last] && cross(i, i_ -> rsi[i_] < .75f))
-								return 1f;
-							else if (rsi[last] < .25f && cross(i, i_ -> .25f < rsi[i_]))
-								return 1f;
-							else
-								return hold;
-						else
-							return hold;
-					});
+					return Quant.enterExit(1, prices.length, //
+							i -> .75f < rsi[i - 1] && cross(i, i_ -> rsi[i_] < .75f), //
+							i -> rsi[i - 1] < .25f && cross(i, i_ -> .25f < rsi[i_]), //
+							i -> false, //
+							i -> false);
 				}) //
 				.stop(.99f, 1.03f);
 	}
@@ -305,18 +270,11 @@ public class BackAllocatorMech {
 					float[] stoSlows = ma.movingAvg(stos, 3);
 					float[] ccis = osc.cci(ds, 10);
 
-					return Quant.fold(1, prices.length, timedExit, (i, hold) -> {
-						if (hold < 0f)
-							return !cross(i, i_ -> stoSlows[i_] < .7f) ? hold : 0f;
-						else if (0f < hold)
-							return !cross(i, i_ -> .3f < stoSlows[i_]) ? hold : 0f;
-						else if (cross(i, i_ -> .85f < stoSlows[i_]) && 1f < ccis[i])
-							return -1f;
-						else if (cross(i, i_ -> stoSlows[i_] < .15f) && ccis[i] < -1f)
-							return 1f;
-						else
-							return hold;
-					});
+					return Quant.enterExit(1, prices.length, timedExit, //
+							i -> cross(i, i_ -> .85f < stoSlows[i_]) && 1f < ccis[i], //
+							i -> cross(i, i_ -> stoSlows[i_] < .15f) && ccis[i] < -1f, //
+							i -> cross(i, i_ -> stoSlows[i_] < .7f), //
+							i -> cross(i, i_ -> .3f < stoSlows[i_]));
 				}) //
 				.stopLoss(.985d);
 	}
