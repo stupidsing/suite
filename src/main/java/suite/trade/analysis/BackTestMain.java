@@ -13,17 +13,14 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
-import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocConfigurations;
 import suite.trade.backalloc.BackAllocConfigurations.Bacs;
 import suite.trade.backalloc.BackAllocTester.Simulate;
-import suite.trade.backalloc.strategy.BackAllocator_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
-import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
 import suite.util.Util;
@@ -32,7 +29,6 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.BackTestMain
 public class BackTestMain extends ExecutableProgram {
 
-	private BackAllocator_ ba_ = BackAllocator_.me;
 	private BackTester runner = new BackTester();
 	private Configuration cfg = new ConfigurationImpl();
 
@@ -44,7 +40,6 @@ public class BackTestMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
 		Streamlet2<String, BackAllocConfiguration> bacByTag0 = bacs.bacByName;
 		Streamlet2<String, BackAllocConfiguration> bacByTag1;
 
@@ -52,7 +47,6 @@ public class BackTestMain extends ExecutableProgram {
 			bacByTag1 = bacByTag0;
 		else
 			bacByTag1 = Streamlet2.concat( //
-					Read.each2("donchian9", ba_.don9.cfgUnl(fun)), //
 					questoaQuella("0020.HK", "0004.HK"), //
 					questoaQuella("0052.HK", "0341.HK"), //
 					questoaQuella("0670.HK", "1055.HK"), //
@@ -93,10 +87,7 @@ public class BackTestMain extends ExecutableProgram {
 				.map(Chars::toString) //
 				.collect(As::joined);
 
-		int p0 = 0;
-		int p1 = 0 <= p0 ? content0.indexOf("// BEGIN", p0) + 8 : -1;
-		int p2 = 0 <= p1 ? content0.indexOf("// END", p1) : -1;
-		String content1 = content0.substring(p1, p2);
+		String content1 = ParseUtil.fit(content0, "// BEGIN", "// END")[1];
 
 		System.out.println(content1);
 		System.out.println(runner.conclude(simulationByKey));
