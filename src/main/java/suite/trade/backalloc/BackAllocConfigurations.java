@@ -41,7 +41,7 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).cfgUnl(fun);
 		public final BackAllocConfiguration bac_pmmmr = ba_old.movingMedianMeanRevn().holdExtend(9).cfgUnl(fun);
 		public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
-		public final BackAllocConfiguration bac_sell = ba_.cash().cfgUnl(fun);
+		public final BackAllocConfiguration bac_sell = ba_.cash.cfgUnl(fun);
 		public final BackAllocConfiguration bac_tma = ba_.tma.cfgUnl(fun);
 
 		private Streamlet2<String, BackAllocator> bas_ = ba_.baByName;

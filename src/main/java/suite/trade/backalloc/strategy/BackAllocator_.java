@@ -37,15 +37,17 @@ public class BackAllocator_ {
 	public static final BackAllocator_ me = new BackAllocator_();
 
 	public BackAllocator bb_ = bollingerBands();
-	public BackAllocator don9 = donchian(9);
-	public BackAllocator donHold = don9.holdExtend(2).pick(5);
+	public BackAllocator cash = cash();
+	public BackAllocator donHold = donchian().holdExtend(2).pick(5);
 	public BackAllocator ema = ema().pick(3);
 	public BackAllocator rsi = rsi();
 	public BackAllocator tma = tripleExpGeometricMovingAvgs();
 
 	public final Streamlet2<String, BackAllocator> baByName = Read //
 			.<String, BackAllocator> empty2() //
+			.cons("bb", bb_) //
 			.cons("bb1", bollingerBands1()) //
+			.cons("don9", donchian()) //
 			.cons("donhold", donHold) //
 			.cons("ema", ema) //
 			.cons("lr", lastReturn(0, 2)) //
@@ -56,10 +58,6 @@ public class BackAllocator_ {
 			.cons("turtles", turtles(20, 10, 55, 20)) //
 			.cons("tma", tma) //
 			.cons("xma", xma());
-
-	public BackAllocator cash() {
-		return cash_();
-	}
 
 	public BackAllocator ofSingle(String symbol) {
 		return ofSingle_(symbol);
@@ -106,8 +104,12 @@ public class BackAllocator_ {
 		});
 	}
 
-	private BackAllocator cash_() {
+	private BackAllocator cash() {
 		return (akds, indices) -> index -> Collections.emptyList();
+	}
+
+	private BackAllocator donchian() {
+		return donchian(9);
 	}
 
 	private BackAllocator donchian(int window) {
