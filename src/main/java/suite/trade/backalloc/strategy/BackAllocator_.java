@@ -86,17 +86,21 @@ public class BackAllocator_ {
 	}
 
 	private BackAllocator bollingerBands1() {
+		float entry = .48f;
+		float exit = .08f;
+
 		return BackAllocator.byPrices(prices -> {
 			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
+
 			return Quant.fold(0, sds.length, (i, hold) -> {
 				float sd = sds[i];
 				if (hold < 0f)
-					return -.08f < sd ? hold : 0f;
+					return -exit < sd ? hold : 0f;
 				else if (0f < hold)
-					return sd < .08f ? hold : 0f;
-				else if (.48f < sd)
+					return sd < exit ? hold : 0f;
+				else if (entry < sd)
 					return -1f;
-				else if (sd < -.48f)
+				else if (sd < -entry)
 					return 1f;
 				else
 					return hold;
