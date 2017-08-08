@@ -77,6 +77,11 @@ public class TimeRange extends Range<Time> {
 			return false;
 	}
 
+	@Override
+	public String toString() {
+		return from.brief() + "~" + to.brief();
+	}
+
 	private static Streamlet<TimeRange> backTestDaysBefore_(Time frDate, Time toDate, int nDays, int alignment) {
 		long epd0 = frDate.epochDay();
 		long epd1 = toDate.epochDay() - 1;

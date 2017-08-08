@@ -3,7 +3,10 @@ package suite.trade;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Objects;
 
 import suite.util.Object_;
@@ -90,6 +93,23 @@ public class Time implements Comparable<Time> {
 		return new Time(dateTime.plusYears(n));
 	}
 
+	public String brief() {
+		String df;
+		if (dateTime.getSecond() != 0)
+			df = "yyyy-MM-dd HH:mm:ss";
+		else if (dateTime.getMinute() != 0)
+			df = "yyyy-MM-dd HH:mm";
+		else if (dateTime.getHour() != 0)
+			df = "yyyy-MM-dd HH";
+		else if (dateTime.getDayOfMonth() != 1)
+			df = "yyyy-MM-dd";
+		else if (dateTime.getMonth() != Month.JANUARY)
+			df = "yyyy-MM";
+		else
+			df = "yyyy";
+		return DateTimeFormatter.ofPattern(df, Locale.ENGLISH).format(dateTime);
+	}
+
 	public Time date() {
 		return new Time(dateTime.toLocalDate().atStartOfDay());
 	}
@@ -130,6 +150,10 @@ public class Time implements Comparable<Time> {
 		return new Time(dateTime.toLocalDate().withDayOfMonth(1).atStartOfDay());
 	}
 
+	public Time startOfYear() {
+		return new Time(dateTime.toLocalDate().withMonth(1).withDayOfMonth(1).atStartOfDay());
+	}
+
 	public Time thisSecond() {
 		return new Time(dateTime.withNano(0));
 	}
@@ -159,11 +183,6 @@ public class Time implements Comparable<Time> {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(dateTime);
-	}
-
-	@Override
-	public String toString() {
-		return Objects.toString(dateTime);
 	}
 
 }
