@@ -25,8 +25,22 @@ public class Quant {
 			IntPredicate isExitShort, IntPredicate isExitLong) {
 		IntPredicate isKeepShort = isExitShort.negate();
 		IntPredicate isKeepLong = isExitLong.negate();
+		return enterKeep(start, end, timedExit, isEnterShort, isEnterLong, isKeepShort, isKeepLong);
+	}
 
-		return fold(start, end, (i, hold) -> {
+	public static Int_Dbl enterKeep( //
+			int start, int end, //
+			IntPredicate isEnterShort, IntPredicate isEnterLong, //
+			IntPredicate isKeepShort, IntPredicate isKeepLong) {
+		return enterKeep(start, end, Integer.MAX_VALUE, isEnterShort, isEnterLong, isKeepShort, isKeepLong);
+	}
+
+	private static Int_Dbl enterKeep( //
+			int start, int end, //
+			int timedExit, //
+			IntPredicate isEnterShort, IntPredicate isEnterLong, //
+			IntPredicate isKeepShort, IntPredicate isKeepLong) {
+		return fold(start, end, timedExit, (i, hold) -> {
 			if (hold == 0f)
 				return isEnterShort.test(i) ? -1f : isEnterLong.test(i) ? 1f : hold;
 			else

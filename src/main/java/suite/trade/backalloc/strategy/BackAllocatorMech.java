@@ -167,11 +167,11 @@ public class BackAllocatorMech {
 					Bb bb_ = bb.bb(prices, 20, 0, 2f);
 					float[] adxs = osc.dmi(ds).adx(9);
 
-					return Quant.enterExit(1, prices.length, //
+					return Quant.enterKeep(1, prices.length, //
 							i -> adxs[i] < .2f && cross(i, bb_.uppers, prices), //
 							i -> adxs[i] < .2f && cross(i, prices, bb_.lowers), //
-							i -> false, //
-							i -> false);
+							i -> true, //
+							i -> true);
 				}) //
 				.stop(.9875d, .9875d);
 	}
@@ -183,12 +183,13 @@ public class BackAllocatorMech {
 					Bb bb_ = bb.bb(prices, 20, 0, 2f);
 					float[] lowers = bb_.lowers;
 					float[] uppers = bb_.uppers;
+					float[] sds = bb_.sds;
 
-					return Quant.enterExit(1, prices.length, //
+					return Quant.enterKeep(1, prices.length, //
 							i -> cross(i, uppers, prices) && prices[i] < movingAvgs[i], //
 							i -> cross(i, prices, lowers) && movingAvgs[i] < prices[i], //
-							i -> uppers[i] <= prices[i], //
-							i -> prices[i] <= lowers[i]);
+							i -> 0f <= sds[i], //
+							i -> sds[i] <= 0f);
 				}) //
 				.stopLoss(.975d);
 	}
@@ -253,11 +254,11 @@ public class BackAllocatorMech {
 				.byPrices(prices -> {
 					float[] rsi = osc.rsi(prices, 14);
 
-					return Quant.enterExit(1, prices.length, //
+					return Quant.enterKeep(1, prices.length, //
 							i -> .75f < rsi[i - 1] && cross(i, i_ -> rsi[i_] < .75f), //
 							i -> rsi[i - 1] < .25f && cross(i, i_ -> .25f < rsi[i_]), //
-							i -> false, //
-							i -> false);
+							i -> true, //
+							i -> true);
 				}) //
 				.stop(.99f, 1.03f);
 	}

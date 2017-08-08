@@ -87,16 +87,16 @@ public class BackAllocator_ {
 
 	private BackAllocator bollingerBands1() {
 		float entry = .48f;
-		float exit = .08f;
+		float exit = -.08f;
 
 		return BackAllocator.byPrices(prices -> {
 			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
 
-			return Quant.enterExit(0, sds.length, //
+			return Quant.enterKeep(0, sds.length, //
 					i -> entry < sds[i], //
 					i -> sds[i] < -entry, //
-					i -> sds[i] <= -exit, //
-					i -> exit <= sds[i]);
+					i -> exit < sds[i], //
+					i -> sds[i] < -exit);
 		});
 	}
 
