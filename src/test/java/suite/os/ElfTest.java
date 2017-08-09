@@ -1,5 +1,7 @@
 package suite.os;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -66,10 +68,15 @@ public class ElfTest {
 				+ "0; \n" //
 		;
 
-		compileElf(program);
+		String text = "garbage";
+		Path path = compileElf(program);
+		Execute exec = new Execute(new String[] { path.toString(), }, text);
+
+		assertEquals(0, exec.code);
+		assertEquals(text, exec.out);
 	}
 
-	private void compileElf(String program) throws IOException {
+	private Path compileElf(String program) throws IOException {
 		String program1 = "" //
 				+ "asm _ MOV (EBP, ESP);" //
 				+ program //
@@ -93,6 +100,8 @@ public class ElfTest {
 					PosixFilePermission.OWNER_EXECUTE)));
 		} catch (UnsupportedOperationException ex) {
 		}
+
+		return path;
 	}
 
 }
