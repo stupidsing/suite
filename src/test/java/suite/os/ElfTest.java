@@ -21,7 +21,7 @@ import suite.util.TempDir;
 public class ElfTest {
 
 	@Test
-	public void test() throws IOException {
+	public void test() {
 		String program = "" //
 				+ "declare inc = function [i0, out ix,] ( {ix} = i0 + 1; ); \n" //
 				+ "signature j = int; \n" //
@@ -33,7 +33,7 @@ public class ElfTest {
 	}
 
 	@Test
-	public void testCat() throws IOException {
+	public void testCat() {
 		String program = "" //
 				+ "declare linux-read = function [pointer:(byte * 256) buffer, int length,] ( \n" //
 				+ "    buffer; \n" //
@@ -76,7 +76,7 @@ public class ElfTest {
 		assertEquals(text, exec.out);
 	}
 
-	private Path compileElf(String program) throws IOException {
+	private Path compileElf(String program) {
 		String program1 = "" //
 				+ "asm _ MOV (EBP, ESP);" //
 				+ program //
@@ -91,6 +91,8 @@ public class ElfTest {
 
 		try (OutputStream os = FileUtil.out(path); DataOutput_ do_ = DataOutput_.of(os)) {
 			new ElfWriter().write(org, code, do_);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
 		}
 
 		try {
@@ -99,6 +101,8 @@ public class ElfTest {
 					PosixFilePermission.OTHERS_EXECUTE, //
 					PosixFilePermission.OWNER_EXECUTE)));
 		} catch (UnsupportedOperationException ex) {
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
 		}
 
 		return path;
