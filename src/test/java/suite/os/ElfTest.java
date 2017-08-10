@@ -59,10 +59,9 @@ public class ElfTest {
 				+ "); \n" //
 				+ "\n" //
 				+ "signature buffer = byte * 256; \n" //
-				+ "declare nBytesRead = 1; \n" //
+				+ "declare nBytesRead; \n" //
 				+ "\n" //
-				+ "while (nBytesRead != 0) do ( \n" //
-				+ "    {nBytesRead} = linux-read [& buffer, 256,]; \n" //
+				+ "while (({nBytesRead} = linux-read [& buffer, 256,]) != 0) do ( \n" //
 				+ "    linux-write [& buffer, nBytesRead,]; \n" //
 				+ "); \n" //
 				+ "0; \n" //
