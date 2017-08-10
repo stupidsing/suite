@@ -209,7 +209,7 @@ public class Statistic {
 				+ ", kurtosis = " + kurtosis_(mv, fs);
 	}
 
-	public Obj_Int<int[]> naiveBayes(int[][] x, int[] y) {
+	public Obj_Int<int[]> naiveBayes0(int[][] x, int[] y) {
 		IntObjMap<IntMutable> xcounts = new IntObjMap<>();
 		IntObjMap<IntMutable> ycounts = new IntObjMap<>();
 		int ix = x.length; // number of samples
