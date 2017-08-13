@@ -24,12 +24,11 @@ import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
-import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.Asset;
+import suite.streamlet.Streamlet2;
 import suite.trade.MovingAverage;
 import suite.trade.Time;
 import suite.trade.TimeRange;
@@ -198,40 +197,67 @@ public class StatisticalArbitrageTest {
 	public void testKMeansCluster() {
 		AlignKeyDataSource<String> akds = dataSources();
 		Map<String, float[]> returnsBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
-		ObjIntMap<String> groupBySymbol = new KmeansCluster(akds.ts.length).kMeansCluster(returnsBySymbol, 9, 300);
+		System.out.println(kmc(akds.ts.length, returnsBySymbol));
+	}
 
-		for (IntObjPair<List<String>> pair : groupBySymbol.stream().groupBy())
-			System.out.println(Read.from(pair.t1).collect(As.joinedBy(",")));
+	@Test
+	public void testKMeansClusterDct() {
+		DctDataSource dctDataSource = dctDataSources();
+		System.out.println(kmc(dctDataSource.length, dctDataSource.dctByKey.toMap()));
+	}
+
+	private String kmc(int length, Map<String, float[]> ptBySymbol) {
+		ObjIntMap<String> groupBySymbol = new KmeansCluster(length).kMeansCluster(ptBySymbol, 9, 300);
+
+		return groupBySymbol //
+				.stream() //
+				.groupBy() //
+				.map((symbol, groups) -> Read.from(groups).collect(As.joinedBy(",")) + "\n") //
+				.collect(As::joined);
 	}
 
 	// find the period of various stocks using FFT
 	@Test
 	public void testPeriod() {
-		int minPeriod = 8;
+		int minPeriod = 4;
+		DctDataSource dctDataSources = dctDataSources();
 
-		for (Asset asset : cfg.queryCompanies().take(40)) {
-			String symbol = asset.symbol;
-			DataSource ds = cfg.dataSource(symbol);
-			float[] prices0 = ds.prices;
-			int size = 1, size1;
+		for (Pair<String, float[]> e : dctDataSources.dctByKey) {
+			float[] dct = e.t1;
+			int maxIndex = Integer.MIN_VALUE;
+			float maxValue = Float.MIN_VALUE;
 
-			while ((size1 = size << 1) <= prices0.length)
-				size = size1;
-
-			float[] prices1 = Arrays.copyOf(prices0, size);
-			float[] fs = dct.dct(prices1);
-			int maxIndex = minPeriod;
-			float maxValue = Math.abs(fs[minPeriod]);
-
-			for (int i = minPeriod; i < size; i++) {
-				float f = Math.abs(fs[i]);
+			for (int i = minPeriod; i < dctDataSources.length; i++) {
+				float f = Math.abs(dct[i]);
 				if (maxValue < f) {
 					maxIndex = i;
 					maxValue = f;
 				}
 			}
 
-			LogUtil.info(asset + " has period " + maxIndex);
+			LogUtil.info(cfg.queryCompany(e.t0) + " has period " + maxIndex);
+		}
+	}
+
+	private DctDataSource dctDataSources() {
+		AlignKeyDataSource<String> akds = dataSources();
+		int length0 = akds.ts.length;
+		int size = 1, size1;
+
+		while ((size1 = size << 1) <= length0)
+			size = size1;
+
+		int fr = length0 - size;
+		return new DctDataSource(size, akds.dsByKey.mapValue(ds -> dct.dct(Arrays.copyOfRange(ds.prices, fr, length0))));
+	}
+
+	private class DctDataSource {
+		private int length;
+		private Streamlet2<String, float[]> dctByKey;
+
+		private DctDataSource(int t0, Streamlet2<String, float[]> t1) {
+			this.length = t0;
+			this.dctByKey = t1;
 		}
 	}
 
