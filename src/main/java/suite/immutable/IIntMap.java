@@ -54,7 +54,7 @@ public class IIntMap<V> {
 		this.bl0 = Bl;
 	}
 
-	public Streamlet<V> stream() {
+	public Streamlet<V> streamlet() {
 		return Bl.stream(bl0) //
 				.concatMap(Bl::stream) //
 				.concatMap(Bl::stream) //

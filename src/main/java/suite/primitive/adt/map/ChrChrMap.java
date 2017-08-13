@@ -113,7 +113,7 @@ public class ChrChrMap {
 		return source_();
 	}
 
-	public ChrObjStreamlet<Character> stream() {
+	public ChrObjStreamlet<Character> streamlet() {
 		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(new ChrObjSource<Character>() {
 			private ChrChrSource source0 = source_();
 			private ChrChrPair pair0 = ChrChrPair.of((char) 0, (char) 0);

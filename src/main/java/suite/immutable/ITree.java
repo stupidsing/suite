@@ -4,7 +4,7 @@ import suite.streamlet.Streamlet;
 
 public interface ITree<T> {
 
-	public Streamlet<T> stream();
+	public Streamlet<T> streamlet();
 
 	public T find(T t);
 

@@ -94,7 +94,7 @@ public class WalkForwardAllocTester {
 
 		valuations.append(valuation_ = up.valuation0);
 
-		for (Pair<String, Float> e : up.val0.stream())
+		for (Pair<String, Float> e : up.val0.streamlet())
 			holdBySymbol.compute(e.t0, (s, h) -> e.t1 / valuation_ + (h != null ? h : 0d));
 
 		List<Trade> trades_ = up.trades;

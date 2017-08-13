@@ -19,8 +19,8 @@ import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive double key and primitive long value. Long.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with primitive double key and primitive long value. Long.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -116,7 +116,7 @@ public class DblLngMap {
 		return source_();
 	}
 
-	public DblObjStreamlet<Long> stream() {
+	public DblObjStreamlet<Long> streamlet() {
 		return new DblObjStreamlet<>(() -> DblObjOutlet.of(new DblObjSource<Long>() {
 			private DblLngSource source0 = source_();
 			private DblLngPair pair0 = DblLngPair.of((double) 0, (long) 0);

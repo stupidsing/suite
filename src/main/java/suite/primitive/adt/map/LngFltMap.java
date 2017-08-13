@@ -19,8 +19,8 @@ import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive long key and primitive float value. Float.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with primitive long key and primitive float value. Float.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -116,7 +116,7 @@ public class LngFltMap {
 		return source_();
 	}
 
-	public LngObjStreamlet<Float> stream() {
+	public LngObjStreamlet<Float> streamlet() {
 		return new LngObjStreamlet<>(() -> LngObjOutlet.of(new LngObjSource<Float>() {
 			private LngFltSource source0 = source_();
 			private LngFltPair pair0 = LngFltPair.of((long) 0, (float) 0);

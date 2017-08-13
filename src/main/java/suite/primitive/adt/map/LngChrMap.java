@@ -116,7 +116,7 @@ public class LngChrMap {
 		return source_();
 	}
 
-	public LngObjStreamlet<Character> stream() {
+	public LngObjStreamlet<Character> streamlet() {
 		return new LngObjStreamlet<>(() -> LngObjOutlet.of(new LngObjSource<Character>() {
 			private LngChrSource source0 = source_();
 			private LngChrPair pair0 = LngChrPair.of((long) 0, (char) 0);

@@ -102,7 +102,7 @@ public class LngObjMap<V> {
 		return source_();
 	}
 
-	public LngObjStreamlet<V> stream() {
+	public LngObjStreamlet<V> streamlet() {
 		return new LngObjStreamlet<>(() -> LngObjOutlet.of(source_()));
 	}
 

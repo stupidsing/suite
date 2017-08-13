@@ -20,7 +20,7 @@ public class DblSet {
 	private double[] vs;
 
 	public static DblSet intersect(DblSet... sets) {
-		return sets[0].stream().filter(c -> {
+		return sets[0].streamlet().filter(c -> {
 			boolean b = true;
 			for (DblSet set_ : sets)
 				b &= set_.contains(c);
@@ -31,7 +31,7 @@ public class DblSet {
 	public static DblSet union(DblSet... sets) {
 		DblSet set = new DblSet();
 		for (DblSet set_ : sets)
-			set_.stream().sink(set::add);
+			set_.streamlet().sink(set::add);
 		return set;
 	}
 
@@ -77,7 +77,7 @@ public class DblSet {
 		return source_();
 	}
 
-	public DblStreamlet stream() {
+	public DblStreamlet streamlet() {
 		return new DblStreamlet(() -> DblOutlet.of(source_()));
 	}
 

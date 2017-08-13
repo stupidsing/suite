@@ -95,7 +95,7 @@ public class IntIntMap1 {
 		return source_();
 	}
 
-	public IntObjStreamlet<Integer> stream() {
+	public IntObjStreamlet<Integer> streamlet() {
 		return new IntObjStreamlet<>(() -> {
 			IntIntSource source = source_();
 			IntIntPair pair0 = IntIntPair.of(0, 0);

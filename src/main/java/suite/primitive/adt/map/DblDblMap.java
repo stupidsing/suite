@@ -113,7 +113,7 @@ public class DblDblMap {
 		return source_();
 	}
 
-	public DblObjStreamlet<Double> stream() {
+	public DblObjStreamlet<Double> streamlet() {
 		return new DblObjStreamlet<>(() -> DblObjOutlet.of(new DblObjSource<Double>() {
 			private DblDblSource source0 = source_();
 			private DblDblPair pair0 = DblDblPair.of((double) 0, (double) 0);

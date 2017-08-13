@@ -102,7 +102,7 @@ public class FltObjMap<V> {
 		return source_();
 	}
 
-	public FltObjStreamlet<V> stream() {
+	public FltObjStreamlet<V> streamlet() {
 		return new FltObjStreamlet<>(() -> FltObjOutlet.of(source_()));
 	}
 

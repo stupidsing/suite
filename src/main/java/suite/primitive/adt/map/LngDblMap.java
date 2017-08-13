@@ -116,7 +116,7 @@ public class LngDblMap {
 		return source_();
 	}
 
-	public LngObjStreamlet<Double> stream() {
+	public LngObjStreamlet<Double> streamlet() {
 		return new LngObjStreamlet<>(() -> LngObjOutlet.of(new LngObjSource<Double>() {
 			private LngDblSource source0 = source_();
 			private LngDblPair pair0 = LngDblPair.of((long) 0, (double) 0);

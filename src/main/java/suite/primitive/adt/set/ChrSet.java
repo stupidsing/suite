@@ -20,7 +20,7 @@ public class ChrSet {
 	private char[] vs;
 
 	public static ChrSet intersect(ChrSet... sets) {
-		return sets[0].stream().filter(c -> {
+		return sets[0].streamlet().filter(c -> {
 			boolean b = true;
 			for (ChrSet set_ : sets)
 				b &= set_.contains(c);
@@ -31,7 +31,7 @@ public class ChrSet {
 	public static ChrSet union(ChrSet... sets) {
 		ChrSet set = new ChrSet();
 		for (ChrSet set_ : sets)
-			set_.stream().sink(set::add);
+			set_.streamlet().sink(set::add);
 		return set;
 	}
 
@@ -77,7 +77,7 @@ public class ChrSet {
 		return source_();
 	}
 
-	public ChrStreamlet stream() {
+	public ChrStreamlet streamlet() {
 		return new ChrStreamlet(() -> ChrOutlet.of(source_()));
 	}
 

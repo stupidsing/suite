@@ -122,7 +122,7 @@ public class BackAllocTester {
 					UpdatePortfolio up = Trade_.updatePortfolio(ymd, account, ratioBySymbol, assetBySymbol, eodBySymbol);
 					float valuation_ = valuations_[i] = up.valuation0;
 
-					for (Pair<String, Float> e : up.val0.stream())
+					for (Pair<String, Float> e : up.val0.streamlet())
 						holdBySymbol_.compute(e.t0, (s, h) -> e.t1 / (valuation_ * size) + (h != null ? h : 0d));
 
 					String actions = play(up.trades);

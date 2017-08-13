@@ -109,12 +109,12 @@ public class Account {
 			valuationBySymbol = Read.from2(assets).map2((symbol, n) -> priceFun1.apply(symbol) * n).toMap();
 		}
 
-		public Streamlet2<String, Float> stream() {
+		public Streamlet2<String, Float> streamlet() {
 			return Read.from2(valuationBySymbol);
 		}
 
 		public float sum() {
-			return (float) stream().collectAsDouble(ObjObj_Dbl.sum((symbol, v) -> v));
+			return (float) streamlet().collectAsDouble(ObjObj_Dbl.sum((symbol, v) -> v));
 		}
 	}
 

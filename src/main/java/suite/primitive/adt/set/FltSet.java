@@ -20,7 +20,7 @@ public class FltSet {
 	private float[] vs;
 
 	public static FltSet intersect(FltSet... sets) {
-		return sets[0].stream().filter(c -> {
+		return sets[0].streamlet().filter(c -> {
 			boolean b = true;
 			for (FltSet set_ : sets)
 				b &= set_.contains(c);
@@ -31,7 +31,7 @@ public class FltSet {
 	public static FltSet union(FltSet... sets) {
 		FltSet set = new FltSet();
 		for (FltSet set_ : sets)
-			set_.stream().sink(set::add);
+			set_.streamlet().sink(set::add);
 		return set;
 	}
 
@@ -77,7 +77,7 @@ public class FltSet {
 		return source_();
 	}
 
-	public FltStreamlet stream() {
+	public FltStreamlet streamlet() {
 		return new FltStreamlet(() -> FltOutlet.of(source_()));
 	}
 

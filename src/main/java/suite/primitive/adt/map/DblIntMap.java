@@ -116,7 +116,7 @@ public class DblIntMap {
 		return source_();
 	}
 
-	public DblObjStreamlet<Integer> stream() {
+	public DblObjStreamlet<Integer> streamlet() {
 		return new DblObjStreamlet<>(() -> DblObjOutlet.of(new DblObjSource<Integer>() {
 			private DblIntSource source0 = source_();
 			private DblIntPair pair0 = DblIntPair.of((double) 0, (int) 0);

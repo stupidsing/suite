@@ -75,7 +75,7 @@ public class KmeansCluster {
 				.take(points.size()) //
 				.forEach(bin -> map.computeIfAbsent(bin.t0, c -> new AtomicInteger()).incrementAndGet());
 
-		return map.stream().min((k, v) -> -v.t1.get()).t0;
+		return map.streamlet().min((k, v) -> -v.t1.get()).t0;
 	}
 
 	private int findNearest(float[] point, List<float[]> points) {

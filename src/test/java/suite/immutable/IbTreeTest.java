@@ -26,14 +26,14 @@ public class IbTreeTest {
 
 		ibTree.validate();
 		System.out.println(ibTree.toString());
-		assertEquals(max, ibTree.stream().size());
+		assertEquals(max, ibTree.streamlet().size());
 
 		for (int i = 0; i < max; i++)
 			ibTree = ibTree.remove(i);
 
 		ibTree.validate();
 		System.out.println(ibTree.toString());
-		assertEquals(0, ibTree.stream().size());
+		assertEquals(0, ibTree.streamlet().size());
 	}
 
 	@Test
@@ -45,14 +45,14 @@ public class IbTreeTest {
 		for (int i = 1; i < max; i += 2)
 			ibTree = ibTree.add(i);
 		ibTree.validate();
-		assertEquals(max, ibTree.stream().size());
+		assertEquals(max, ibTree.streamlet().size());
 
 		for (int i = 0; i < max; i += 2)
 			ibTree = ibTree.remove(i);
 		for (int i = 1; i < max; i += 2)
 			ibTree = ibTree.remove(i);
 		ibTree.validate();
-		assertEquals(0, ibTree.stream().size());
+		assertEquals(0, ibTree.streamlet().size());
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class IbTreeTest {
 
 		ibTree.validate();
 		System.out.println(ibTree.toString());
-		assertEquals(max, ibTree.stream().size());
+		assertEquals(max, ibTree.streamlet().size());
 
 		Collections.shuffle(list);
 		for (int i : list)
@@ -77,7 +77,7 @@ public class IbTreeTest {
 
 		ibTree.validate();
 		System.out.println(ibTree.toString());
-		assertEquals(0, ibTree.stream().size());
+		assertEquals(0, ibTree.streamlet().size());
 	}
 
 }

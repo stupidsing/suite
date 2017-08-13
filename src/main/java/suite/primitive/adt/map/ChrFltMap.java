@@ -19,8 +19,8 @@ import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive char key and primitive float value. Float.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with primitive char key and primitive float value. Float.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -116,7 +116,7 @@ public class ChrFltMap {
 		return source_();
 	}
 
-	public ChrObjStreamlet<Float> stream() {
+	public ChrObjStreamlet<Float> streamlet() {
 		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(new ChrObjSource<Float>() {
 			private ChrFltSource source0 = source_();
 			private ChrFltPair pair0 = ChrFltPair.of((char) 0, (float) 0);

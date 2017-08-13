@@ -116,7 +116,7 @@ public class FltChrMap {
 		return source_();
 	}
 
-	public FltObjStreamlet<Character> stream() {
+	public FltObjStreamlet<Character> streamlet() {
 		return new FltObjStreamlet<>(() -> FltObjOutlet.of(new FltObjSource<Character>() {
 			private FltChrSource source0 = source_();
 			private FltChrPair pair0 = FltChrPair.of((float) 0, (char) 0);

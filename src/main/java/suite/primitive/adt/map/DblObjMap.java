@@ -102,7 +102,7 @@ public class DblObjMap<V> {
 		return source_();
 	}
 
-	public DblObjStreamlet<V> stream() {
+	public DblObjStreamlet<V> streamlet() {
 		return new DblObjStreamlet<>(() -> DblObjOutlet.of(source_()));
 	}
 

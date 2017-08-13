@@ -129,7 +129,7 @@ public class Chr {
 		Fun<State, Streamlet<State>> fun = state -> {
 			ISet<Node> facts = getFacts(state, prototype);
 			Predicate<Node> bindFun = bindFun(trail, if_);
-			return facts.stream().filter(bindFun).map(node -> setFacts(state, prototype, facts.remove(node)));
+			return facts.streamlet().filter(bindFun).map(node -> setFacts(state, prototype, facts.remove(node)));
 		};
 
 		return states.concatMap(fun);
@@ -141,7 +141,7 @@ public class Chr {
 		return states.mapNonNull(state -> {
 			ISet<Node> facts = getFacts(state, prototype);
 			Predicate<Node> bindFun = bindFun(trail, given);
-			return facts.stream().isAny(bindFun) ? state : null;
+			return facts.streamlet().isAny(bindFun) ? state : null;
 		});
 	}
 
@@ -203,7 +203,7 @@ public class Chr {
 
 	private State setFacts(State state, Prototype prototype, ISet<Node> nodes) {
 		IMap<Prototype, ISet<Node>> facts = state.factsByPrototype;
-		return new State(nodes.stream().first() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
+		return new State(nodes.streamlet().first() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
 	}
 
 }

@@ -116,7 +116,7 @@ public class IntChrMap {
 		return source_();
 	}
 
-	public IntObjStreamlet<Character> stream() {
+	public IntObjStreamlet<Character> streamlet() {
 		return new IntObjStreamlet<>(() -> IntObjOutlet.of(new IntObjSource<Character>() {
 			private IntChrSource source0 = source_();
 			private IntChrPair pair0 = IntChrPair.of((int) 0, (char) 0);

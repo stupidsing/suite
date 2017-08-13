@@ -102,7 +102,7 @@ public class IntObjMap<V> {
 		return source_();
 	}
 
-	public IntObjStreamlet<V> stream() {
+	public IntObjStreamlet<V> streamlet() {
 		return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
 	}
 

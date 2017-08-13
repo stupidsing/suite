@@ -19,11 +19,11 @@ public class ISet<V extends Comparable<V>> implements Iterable<V> {
 
 	@Override
 	public Iterator<V> iterator() {
-		return stream().iterator();
+		return streamlet().iterator();
 	}
 
-	public Streamlet<V> stream() {
-		return tree.stream();
+	public Streamlet<V> streamlet() {
+		return tree.streamlet();
 	}
 
 	public boolean contains(V v) {
@@ -48,12 +48,12 @@ public class ISet<V extends Comparable<V>> implements Iterable<V> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == ISet.class && Objects.equals(stream(), ((ISet<?>) object).stream());
+		return Object_.clazz(object) == ISet.class && Objects.equals(streamlet(), ((ISet<?>) object).streamlet());
 	}
 
 	@Override
 	public int hashCode() {
-		return tree.stream().hashCode();
+		return tree.streamlet().hashCode();
 	}
 
 	@Override

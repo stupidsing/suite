@@ -19,7 +19,7 @@ public class LngSet {
 	private long[] vs;
 
 	public static LngSet intersect(LngSet... sets) {
-		return sets[0].stream().filter(c -> {
+		return sets[0].streamlet().filter(c -> {
 			boolean b = true;
 			for (LngSet set_ : sets)
 				b &= set_.contains(c);
@@ -30,7 +30,7 @@ public class LngSet {
 	public static LngSet union(LngSet... sets) {
 		LngSet set = new LngSet();
 		for (LngSet set_ : sets)
-			set_.stream().sink(set::add);
+			set_.streamlet().sink(set::add);
 		return set;
 	}
 
@@ -76,7 +76,7 @@ public class LngSet {
 		return source_();
 	}
 
-	public LngStreamlet stream() {
+	public LngStreamlet streamlet() {
 		return new LngStreamlet(() -> LngOutlet.of(source_()));
 	}
 

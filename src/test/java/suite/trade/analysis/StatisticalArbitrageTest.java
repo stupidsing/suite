@@ -210,7 +210,7 @@ public class StatisticalArbitrageTest {
 		ObjIntMap<String> groupBySymbol = new KmeansCluster(length).kMeansCluster(ptBySymbol, 9, 300);
 
 		return groupBySymbol //
-				.stream() //
+				.streamlet() //
 				.groupBy() //
 				.map((symbol, groups) -> Read.from(groups).collect(As.joinedBy(",")) + "\n") //
 				.collect(As::joined);

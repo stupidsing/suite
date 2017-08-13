@@ -112,7 +112,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	@Override
-	public Streamlet<T> stream() {
+	public Streamlet<T> streamlet() {
 		return stream(null, null);
 	}
 

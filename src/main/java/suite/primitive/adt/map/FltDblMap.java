@@ -116,7 +116,7 @@ public class FltDblMap {
 		return source_();
 	}
 
-	public FltObjStreamlet<Double> stream() {
+	public FltObjStreamlet<Double> streamlet() {
 		return new FltObjStreamlet<>(() -> FltObjOutlet.of(new FltObjSource<Double>() {
 			private FltDblSource source0 = source_();
 			private FltDblPair pair0 = FltDblPair.of((float) 0, (double) 0);

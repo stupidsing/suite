@@ -25,9 +25,9 @@ public class IHashMap<K, V> {
 		this.set = set;
 	}
 
-	public Streamlet2<K, V> stream() {
+	public Streamlet2<K, V> streamlet() {
 		return new Streamlet2<>(() -> {
-			Source<Pair<K, V>> source = set.stream().source();
+			Source<Pair<K, V>> source = set.streamlet().source();
 			return Outlet2.of(new Source2<K, V>() {
 				public boolean source2(Pair<K, V> pair) {
 					Pair<K, V> pair1 = source.source();

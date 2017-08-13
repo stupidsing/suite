@@ -19,8 +19,8 @@ import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive int key and primitive float value. Float.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with primitive int key and primitive float value. Float.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -116,7 +116,7 @@ public class IntFltMap {
 		return source_();
 	}
 
-	public IntObjStreamlet<Float> stream() {
+	public IntObjStreamlet<Float> streamlet() {
 		return new IntObjStreamlet<>(() -> IntObjOutlet.of(new IntObjSource<Float>() {
 			private IntFltSource source0 = source_();
 			private IntFltPair pair0 = IntFltPair.of((int) 0, (float) 0);

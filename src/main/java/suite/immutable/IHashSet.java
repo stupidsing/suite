@@ -40,8 +40,8 @@ public class IHashSet<V> {
 		this.intMap = intMap;
 	}
 
-	public Streamlet<V> stream() {
-		return intMap.stream().flatMap(iterable -> iterable);
+	public Streamlet<V> streamlet() {
+		return intMap.streamlet().flatMap(iterable -> iterable);
 	}
 
 	public IList<V> get(int hashCode) {

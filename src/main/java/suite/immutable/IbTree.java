@@ -109,7 +109,7 @@ public class IbTree<T> implements ITree<T> {
 	}
 
 	@Override
-	public Streamlet<T> stream() {
+	public Streamlet<T> streamlet() {
 		return stream(root, null, null);
 	}
 

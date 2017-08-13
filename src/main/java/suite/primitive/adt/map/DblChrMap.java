@@ -19,8 +19,8 @@ import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive double key and primitive char value. Character.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with primitive double key and primitive char value. Character.MIN_VALUE
+ * is not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -116,7 +116,7 @@ public class DblChrMap {
 		return source_();
 	}
 
-	public DblObjStreamlet<Character> stream() {
+	public DblObjStreamlet<Character> streamlet() {
 		return new DblObjStreamlet<>(() -> DblObjOutlet.of(new DblObjSource<Character>() {
 			private DblChrSource source0 = source_();
 			private DblChrPair pair0 = DblChrPair.of((double) 0, (char) 0);

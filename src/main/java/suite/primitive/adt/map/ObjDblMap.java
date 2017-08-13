@@ -12,8 +12,8 @@ import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
 
 /**
- * Map with generic object key and doubleacter object value. Double.MIN_VALUE
- * is not allowed in values. Not thread-safe.
+ * Map with generic object key and doubleacter object value. Double.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -105,7 +105,7 @@ public class ObjDblMap<K> {
 		return source_();
 	}
 
-	public DblObjStreamlet<K> stream() {
+	public DblObjStreamlet<K> streamlet() {
 		return new DblObjStreamlet<>(() -> DblObjOutlet.of(source_()));
 	}
 

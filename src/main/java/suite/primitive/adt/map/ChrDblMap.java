@@ -116,7 +116,7 @@ public class ChrDblMap {
 		return source_();
 	}
 
-	public ChrObjStreamlet<Double> stream() {
+	public ChrObjStreamlet<Double> streamlet() {
 		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(new ChrObjSource<Double>() {
 			private ChrDblSource source0 = source_();
 			private ChrDblPair pair0 = ChrDblPair.of((char) 0, (double) 0);

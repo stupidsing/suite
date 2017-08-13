@@ -116,7 +116,7 @@ public class FltIntMap {
 		return source_();
 	}
 
-	public FltObjStreamlet<Integer> stream() {
+	public FltObjStreamlet<Integer> streamlet() {
 		return new FltObjStreamlet<>(() -> FltObjOutlet.of(new FltObjSource<Integer>() {
 			private FltIntSource source0 = source_();
 			private FltIntPair pair0 = FltIntPair.of((float) 0, (int) 0);

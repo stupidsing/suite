@@ -102,7 +102,7 @@ public class ChrObjMap<V> {
 		return source_();
 	}
 
-	public ChrObjStreamlet<V> stream() {
+	public ChrObjStreamlet<V> streamlet() {
 		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(source_()));
 	}
 

@@ -12,8 +12,8 @@ import suite.primitive.streamlet.IntObjOutlet;
 import suite.primitive.streamlet.IntObjStreamlet;
 
 /**
- * Map with generic object key and intacter object value. Integer.MIN_VALUE
- * is not allowed in values. Not thread-safe.
+ * Map with generic object key and intacter object value. Integer.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -105,7 +105,7 @@ public class ObjIntMap<K> {
 		return source_();
 	}
 
-	public IntObjStreamlet<K> stream() {
+	public IntObjStreamlet<K> streamlet() {
 		return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
 	}
 

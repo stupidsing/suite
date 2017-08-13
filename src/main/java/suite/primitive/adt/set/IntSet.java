@@ -20,7 +20,7 @@ public class IntSet {
 	private int[] vs;
 
 	public static IntSet intersect(IntSet... sets) {
-		return sets[0].stream().filter(c -> {
+		return sets[0].streamlet().filter(c -> {
 			boolean b = true;
 			for (IntSet set_ : sets)
 				b &= set_.contains(c);
@@ -31,7 +31,7 @@ public class IntSet {
 	public static IntSet union(IntSet... sets) {
 		IntSet set = new IntSet();
 		for (IntSet set_ : sets)
-			set_.stream().sink(set::add);
+			set_.streamlet().sink(set::add);
 		return set;
 	}
 
@@ -77,7 +77,7 @@ public class IntSet {
 		return source_();
 	}
 
-	public IntStreamlet stream() {
+	public IntStreamlet streamlet() {
 		return new IntStreamlet(() -> IntOutlet.of(source_()));
 	}
 

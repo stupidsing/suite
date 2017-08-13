@@ -113,7 +113,7 @@ public class FltFltMap {
 		return source_();
 	}
 
-	public FltObjStreamlet<Float> stream() {
+	public FltObjStreamlet<Float> streamlet() {
 		return new FltObjStreamlet<>(() -> FltObjOutlet.of(new FltObjSource<Float>() {
 			private FltFltSource source0 = source_();
 			private FltFltPair pair0 = FltFltPair.of((float) 0, (float) 0);

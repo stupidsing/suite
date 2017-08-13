@@ -27,11 +27,11 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
 	@Override
 	public Iterator<Pair<K, V>> iterator() {
-		return stream().iterator();
+		return streamlet().iterator();
 	}
 
-	public Streamlet<Pair<K, V>> stream() {
-		return tree.stream();
+	public Streamlet<Pair<K, V>> streamlet() {
+		return tree.streamlet();
 	}
 
 	public V get(K k) {
@@ -52,12 +52,12 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == IMap.class && Objects.equals(stream(), ((IMap<?, ?>) object).stream());
+		return Object_.clazz(object) == IMap.class && Objects.equals(streamlet(), ((IMap<?, ?>) object).streamlet());
 	}
 
 	@Override
 	public int hashCode() {
-		return tree.stream().hashCode();
+		return tree.streamlet().hashCode();
 	}
 
 	@Override
