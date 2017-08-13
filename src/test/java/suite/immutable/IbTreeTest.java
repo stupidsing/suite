@@ -15,7 +15,7 @@ public class IbTreeTest {
 
 	private int max = 32;
 
-	private Comparator<Integer> comparator = Object_.<Integer> comparator();
+	private Comparator<Integer> comparator = Object_::compare;
 
 	@Test
 	public void test0() {

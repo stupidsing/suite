@@ -28,7 +28,7 @@ public class B_TreeTest {
 
 	private static int nKeys = 1024;
 
-	private Comparator<Integer> comparator = Object_.comparator();
+	private Comparator<Integer> comparator = Object_::compare;
 	private Random random = new Random();
 	private int[] keys;
 

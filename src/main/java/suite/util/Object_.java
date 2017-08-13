@@ -48,10 +48,6 @@ public class Object_ {
 			}
 	}
 
-	public static <T extends Comparable<? super T>> Comparator<T> comparator() {
-		return Object_::compare;
-	}
-
 	public static <T extends Comparable<? super T>> int compare(T t0, T t1) {
 		boolean b0 = t0 != null;
 		boolean b1 = t1 != null;

@@ -23,7 +23,7 @@ public class Database implements Closeable {
 
 		transactionManager = new TransactionManager<>(() -> LazyIbTreeStore.ofExtent( //
 				journalledPageFile, //
-				Object_.comparator(), //
+				Object_::compare, //
 				Serialize.int_, //
 				Serialize.variableLengthString));
 	}

@@ -8,7 +8,7 @@ import suite.util.Object_;
 
 public class ISet<V extends Comparable<V>> implements Iterable<V> {
 
-	private ITree<V> tree = new IbTree<V>(Object_.comparator());
+	private ITree<V> tree = new IbTree<V>(Object_::compare);
 
 	public ISet() {
 	}

@@ -21,7 +21,7 @@ public class IBinPriorityQueueTest {
 			list.add(i);
 		Collections.shuffle(list);
 
-		IBinPriorityQueue<Integer> pq = new IBinPriorityQueue<>(Object_.<Integer> comparator());
+		IBinPriorityQueue<Integer> pq = new IBinPriorityQueue<>(Object_::compare);
 
 		for (int i : list)
 			pq = pq.add(i);
