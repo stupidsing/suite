@@ -23,9 +23,7 @@ import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
-import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -207,13 +205,7 @@ public class StatisticalArbitrageTest {
 	}
 
 	private String kmc(int length, Map<String, float[]> ptBySymbol) {
-		ObjIntMap<String> groupBySymbol = new KmeansCluster(length).kMeansCluster(ptBySymbol, 9, 300);
-
-		return groupBySymbol //
-				.streamlet() //
-				.groupBy() //
-				.map((symbol, groups) -> Read.from(groups).collect(As.joinedBy(",")) + "\n") //
-				.collect(As::joined);
+		return new KmeansCluster(length).result(ptBySymbol, 9, 300);
 	}
 
 	// find the period of various stocks using FFT

@@ -11,6 +11,7 @@ import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntFltPair;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.List_;
 import suite.util.To;
@@ -28,6 +29,14 @@ public class KmeansCluster {
 
 	public KmeansCluster(int dimension) {
 		this.dimension = dimension;
+	}
+
+	public <K> String result(Map<K, float[]> points, int k, int nIterations) {
+		return kMeansCluster(points, k, nIterations) //
+				.streamlet() //
+				.groupBy() //
+				.map((symbol, groups) -> Read.from(groups).map(Object::toString).collect(As.joinedBy(",")) + "\n") //
+				.collect(As::joined);
 	}
 
 	public <K> ObjIntMap<K> kMeansCluster(Map<K, float[]> points, int k, int nIterations) {
