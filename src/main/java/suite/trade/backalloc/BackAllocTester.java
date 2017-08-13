@@ -160,8 +160,8 @@ public class BackAllocTester {
 			StringBuilder sb = new StringBuilder();
 			int length = valuations.length;
 
-			for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value))
-				sb.append(e.t0 + ":" + To.string(e.t1) + ",");
+			for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
+				sb.append(e.t0 + ":" + String.format("%.2f", e.t1) + ",");
 
 			if (exception == null)
 				return "period = " + period //
@@ -170,7 +170,7 @@ public class BackAllocTester {
 						+ ", sharpe = " + To.string(sharpe) //
 						+ ", skewness = " + To.string(skewness) //
 						+ ", " + account.transactionSummary(cfg::transactionFee) //
-						+ ", holds = " + sb;
+						+ ", holds = " + sb + "...";
 			else {
 				LogUtil.error(exception);
 				return "exception = " + exception;

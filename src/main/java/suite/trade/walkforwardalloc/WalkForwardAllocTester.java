@@ -118,8 +118,8 @@ public class WalkForwardAllocTester {
 		ReturnsStat rs = ts.returnsStat(valuations_, deltaMs);
 		StringBuilder sb = new StringBuilder();
 
-		for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value))
-			sb.append(e.t0 + ":" + To.string(e.t1 / length) + ",");
+		for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
+			sb.append(e.t0 + ":" + String.format("%.2f", e.t1 / length) + ",");
 
 		return "nTicks = " + length //
 				+ ", valuation = " + (0 < length ? valuations_[length - 1] : "N/A") //
@@ -127,7 +127,7 @@ public class WalkForwardAllocTester {
 				+ ", sharpe = " + To.string(rs.sharpeRatio()) //
 				+ ", skewness = " + To.string(stat.skewness(valuations_)) //
 				+ ", " + account.transactionSummary(cfg::transactionFee) //
-				+ ", holds = " + sb;
+				+ ", holds = " + sb + "...";
 	}
 
 	private String play(List<Trade> trades_) {
