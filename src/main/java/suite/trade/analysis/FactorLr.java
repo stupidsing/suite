@@ -42,7 +42,7 @@ public class FactorLr {
 		this.cfg = cfg;
 
 		indexSymbols = indexSymbols_.collect(As::streamlet);
-		AlignKeyDataSource<String> akds = cfg.dataSources(TimeRange.threeYears(), indexSymbols_);
+		AlignKeyDataSource<String> akds = cfg.dataSources(TimeRange.ages(), indexSymbols_);
 		Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
 
 		timestamps = akds.ts;
