@@ -38,7 +38,7 @@ public class BackAllocator_ {
 
 	public BackAllocator bb_ = bollingerBands();
 	public BackAllocator cash = cash();
-	public BackAllocator donHold = donchian().holdExtend(2).pick(5);
+	public BackAllocator donHold = donchian(9).holdExtend(2).pick(5);
 	public BackAllocator ema = ema().pick(3);
 	public BackAllocator rsi = rsi();
 	public BackAllocator tma = tripleExpGeometricMovingAvgs();
@@ -47,7 +47,7 @@ public class BackAllocator_ {
 			.<String, BackAllocator> empty2() //
 			.cons("bb", bb_) //
 			.cons("bb1", bollingerBands1()) //
-			.cons("don9", donchian()) //
+			.cons("don9", donchian(9)) //
 			.cons("donhold", donHold) //
 			.cons("ema", ema) //
 			.cons("lr", lastReturn(0, 2)) //
@@ -106,10 +106,6 @@ public class BackAllocator_ {
 		return (akds, indices) -> index -> Collections.emptyList();
 	}
 
-	private BackAllocator donchian() {
-		return donchian(9);
-	}
-
 	private BackAllocator donchian(int window) {
 		float threshold = .05f;
 
@@ -165,7 +161,7 @@ public class BackAllocator_ {
 
 		return BackAllocator.byPrices(prices -> index -> {
 			int last = index - 1;
-			return nDays <= last ? 10d * Quant.return_(prices[last - nDays], prices[last]) : 0d;
+			return nDays <= last ? 30d * Quant.return_(prices[last - nDays], prices[last]) : 0d;
 		});
 	}
 
@@ -179,7 +175,7 @@ public class BackAllocator_ {
 			if (nDays <= last0) {
 				double return0 = Quant.return_(prices[last0 - nDays], prices[last0]);
 				double return1 = Quant.return_(prices[last1 - nDays], prices[last1]);
-				return 10d * (return1 - return0);
+				return 30d * (return1 - return0);
 			} else
 				return 0d;
 		});
