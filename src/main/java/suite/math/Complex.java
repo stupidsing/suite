@@ -4,6 +4,8 @@ import suite.util.Object_;
 
 public class Complex {
 
+	public static final Complex zero = Complex.of(0f, 0f);
+
 	public final float r, i;
 
 	public static Complex add(Complex u, Complex v) {
@@ -18,6 +20,10 @@ public class Complex {
 		return of(u.r * v.r - u.i * v.i, u.r * v.i + u.i * v.r);
 	}
 
+	public static Complex exp(double e) {
+		return new Complex(Math.cos(e), Math.sin(e));
+	}
+
 	public static Complex of(float r, float i) {
 		return new Complex(r, i);
 	}
@@ -27,12 +33,12 @@ public class Complex {
 		MathUtil.verifyEquals(u.i, v.i);
 	}
 
-	private Complex(float r, float i) {
-		this.r = r;
-		this.i = i;
+	private Complex(double r, double i) {
+		this.r = (float) r;
+		this.i = (float) i;
 	}
 
-	public float abs2() {
+	public double abs2() {
 		return abs2_();
 	}
 
@@ -41,16 +47,18 @@ public class Complex {
 	}
 
 	public Complex inverse() {
-		float iabs2 = 1f / abs2_();
-		return of(r * iabs2, -i * iabs2);
+		double iabs2 = 1d / abs2_();
+		return new Complex(r * iabs2, -i * iabs2);
 	}
 
-	public Complex scale(float v) {
-		return of(r * v, i * v);
+	public Complex scale(double v) {
+		return new Complex(r * v, i * v);
 	}
 
-	private float abs2_() {
-		return r * r + i * i;
+	private double abs2_() {
+		double r_ = r;
+		double i_ = i;
+		return r_ * r_ + i_ * i_;
 	}
 
 	@Override
