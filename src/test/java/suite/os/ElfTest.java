@@ -46,14 +46,13 @@ public class ElfTest {
 				+ "    -- length in EAX \n" //
 				+ "); \n" //
 				+ "\n" //
-				+ "\n" //
 				+ "declare linux-write = function [pointer:(byte * 256) buffer, int length,] ( \n" //
 				+ "    buffer; \n" //
 				+ "    asm _ MOV (ECX, EAX); \n" //
 				+ "    length; \n" //
 				+ "    asm _ MOV (EDX, EAX); \n" //
 				+ "    asm _ MOV (EAX, 4); \n" //
-				+ "    asm _ XOR (EBX, EBX); \n" //
+				+ "    asm _ MOV (EBX, 1); \n" //
 				+ "    asm _ INT (-128); \n" //
 				+ "    -- length in EAX \n" //
 				+ "); \n" //
@@ -67,7 +66,7 @@ public class ElfTest {
 				+ "0; \n" //
 		;
 
-		String text = "garbage";
+		String text = "garbage\n";
 		Path path = compileElf(program);
 		Execute exec = new Execute(new String[] { path.toString(), }, text);
 
