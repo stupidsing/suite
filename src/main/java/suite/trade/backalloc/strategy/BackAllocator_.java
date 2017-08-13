@@ -55,6 +55,8 @@ public class BackAllocator_ {
 			.cons("opcl8", openClose8()) //
 			.cons("rsi", rsi) //
 			.cons("sar", sar()) //
+			.cons("tsmom", tsMomentum()) //
+			.cons("tsmomacc", tsMomentumAcceleration()) //
 			.cons("turtles", turtles(20, 10, 55, 20)) //
 			.cons("tma", tma) //
 			.cons("xma", xma());
@@ -248,6 +250,31 @@ public class BackAllocator_ {
 						int sign1 = Quant.sign(movingAvg1, movingAvg2);
 						return sign0 == sign1 ? (double) -sign0 : 0d;
 					}));
+		});
+	}
+
+	private BackAllocator tsMomentum() {
+		int nDays = 8;
+
+		return BackAllocator.byPrices(prices -> index -> {
+			int last = index - 1;
+			return nDays <= last ? 10d * Quant.return_(prices[last - nDays], prices[last]) : 0d;
+		});
+	}
+
+	private BackAllocator tsMomentumAcceleration() {
+		int nDays = 8;
+		int nAccelDays = 24;
+
+		return BackAllocator.byPrices(prices -> index -> {
+			int last1 = index - 1;
+			int last0 = last1 - nAccelDays;
+			if (nDays <= last0) {
+				double return0 = Quant.return_(prices[last0 - nDays], prices[last0]);
+				double return1 = Quant.return_(prices[last1 - nDays], prices[last1]);
+				return 10d * (return1 - return0);
+			} else
+				return 0d;
 		});
 	}
 
