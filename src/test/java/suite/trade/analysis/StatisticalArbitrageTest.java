@@ -335,7 +335,7 @@ public class StatisticalArbitrageTest {
 					float[] returns0 = ds.returns();
 					float[] bandwidths1 = ts.drop(1, bandwidths0);
 					float[] returns1 = ts.drop(1, returns0);
-					return stat.correlation(bandwidths1, returns1);
+					return stat.project(bandwidths1, returns1);
 				}) //
 				.sortByValue(Object_::compare) //
 				.toList();

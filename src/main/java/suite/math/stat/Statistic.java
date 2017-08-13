@@ -243,6 +243,10 @@ public class Statistic {
 		};
 	}
 
+	public double project(float[] fs0, float[] fs1) {
+		return mtx.dot(fs1, fs0) / mtx.dot(fs0);
+	}
+
 	public double skewness(float[] fs) {
 		return skewness_(meanVariance_(fs), fs);
 	}

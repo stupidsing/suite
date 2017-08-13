@@ -6,6 +6,7 @@ import java.util.Map;
 import suite.adt.pair.Pair;
 import suite.math.linalg.Matrix;
 import suite.math.stat.Quant;
+import suite.math.stat.Statistic;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -26,6 +27,7 @@ public class Factor {
 
 	private Configuration cfg;
 	private Matrix mtx = new Matrix();
+	private Statistic stat = new Statistic();
 	private Time now = Time.now();
 
 	public static Factor ofCrudeOil(Configuration cfg) {
@@ -83,9 +85,7 @@ public class Factor {
 	private double project(DataSource irds0, DataSource rds0, TimeRange period) {
 		DataSource rds1 = rds0.range(period);
 		DataSource irds1 = irds0.range(period).alignBeforePrices(rds1.ts);
-		float[] returns = rds1.returns();
-		float[] irReturns = irds1.returns();
-		return mtx.dot(returns, irReturns) / mtx.dot(irReturns);
+		return stat.project(irds1.returns(), rds1.returns());
 	}
 
 }
