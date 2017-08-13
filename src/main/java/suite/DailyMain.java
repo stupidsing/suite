@@ -71,6 +71,7 @@ public class DailyMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
+		String sellPool = "sellpool";
 		String ymd = Time.now().ymd();
 
 		// perform systematic trading
@@ -84,14 +85,14 @@ public class DailyMain extends ExecutableProgram {
 				alloc("pmmmr", 80000f, bacs.bac_pmmmr), //
 				alloc("revco", 0f, bacs.bac_revco), //
 				alloc("tma", 0f, bacs.bac_tma), //
-				alloc("sellpool", 0f, bacs.bac_sell));
+				alloc(sellPool, 0f, bacs.bac_sell));
 
 		// unused strategies
 		if (Boolean.FALSE) {
 			alloc("donchian", 100000f, bacs.bac_donHold);
 			pairs(0f, "0341.HK", "0052.HK");
 			questoaQuella(200000f, "0670.HK", "1055.HK");
-			sellForEarn("sellpool");
+			sellForEarn(sellPool);
 		}
 
 		SummarizeByStrategy<Object> sbs = Summarize.of(cfg).summarize();
@@ -112,12 +113,22 @@ public class DailyMain extends ExecutableProgram {
 				.sortBy(line -> line) //
 				.collect(As::joined));
 
+		sb.append("\n\nBUY REQUESTS");
 		sb.append(strategyTrades //
-				.filterKey(strategy -> !To.set("sellpool").contains(strategy)) //
+				.filterKey(strategy -> !To.set(sellPool).contains(strategy)) //
+				.filterValue(trade -> 0 < trade.buySell) //
+				.map((strategy, t) -> "" //
+						+ "\n" + Trade.of(ymd, -t.buySell, t.symbol, t.price, sellPool).record() //
+						+ "\n" + Trade.of(ymd, t.buySell, t.symbol, t.price, strategy).record()) //
+				.collect(As::joined));
+
+		sb.append("\n\nSELL REQUESTS");
+		sb.append(strategyTrades //
+				.filterKey(strategy -> !To.set(sellPool).contains(strategy)) //
 				.filterValue(trade -> trade.buySell < 0) //
 				.map((strategy, t) -> "" //
-						+ "\n" + ymd + "\t" + t.buySell + "\t" + t.symbol + "\t" + t.price + "\t" + strategy //
-						+ "\n" + ymd + "\t" + (-t.buySell) + "\t" + t.symbol + "\t" + t.price + "\tsellpool") //
+						+ "\n" + Trade.of(ymd, t.buySell, t.symbol, t.price, strategy).record() //
+						+ "\n" + Trade.of(ymd, -t.buySell, t.symbol, t.price, sellPool).record()) //
 				.collect(As::joined));
 
 		Streamlet<Trade> trades = strategyTrades.values();
@@ -133,7 +144,7 @@ public class DailyMain extends ExecutableProgram {
 		sb.append("\n- check your balance");
 		sb.append("\n- get away with the small orders");
 		sb.append("\n- get away with stocks after ex-date");
-		sb.append("\n- sell mamr and sellpool, maximum hold 2 weeks");
+		sb.append("\n- sell mamr and " + sellPool + ", maximum hold 2 weeks");
 		sb.append("\n- for mamr, check actual execution using SingleAllocBackTestTest.testBackTestHkexDetails()");
 
 		sb.append("\n");

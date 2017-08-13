@@ -151,7 +151,7 @@ public class P2GenerateCode {
 			if (n0 instanceof FunpBoolean)
 				return amd64.imm(((FunpBoolean) n0).b ? 1 : 0, Funp_.booleanSize);
 			else if (n0 instanceof FunpFixed)
-				return rs.get(); // TODO
+				throw new RuntimeException();
 			else if (n0 instanceof FunpFramePointer)
 				return ebp;
 			else if (n0 instanceof FunpInvokeInt) {

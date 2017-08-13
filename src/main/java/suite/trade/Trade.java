@@ -34,6 +34,10 @@ public class Trade {
 		this.strategy = strategy;
 	}
 
+	public String record() {
+		return date + "\t" + buySell + "\t" + symbol + "\t" + price + "\t" + strategy;
+	}
+
 	@Override
 	public String toString() {
 		return (!String_.equals(date, NA) ? date + " " : "") //
