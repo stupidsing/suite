@@ -161,7 +161,7 @@ public class BackAllocTester {
 			int length = valuations.length;
 
 			for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
-				sb.append(e.t0 + ":" + String.format("%.2f", e.t1) + ",");
+				sb.append(e.t0 + ":" + String.format("%.0f", e.t1 * 100d) + "%,");
 
 			if (exception == null)
 				return "period = " + period //

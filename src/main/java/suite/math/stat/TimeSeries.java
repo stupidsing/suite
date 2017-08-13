@@ -191,11 +191,13 @@ public class TimeSeries {
 	}
 
 	private float[] differencesOn_(int tor, float[] fs) {
-		int i = fs.length;
-		while (tor <= --i)
-			fs[i] -= fs[i - tor];
-		while (0 <= --i)
-			fs[i] = 0f;
+		int i = fs.length - 1;
+		while (tor <= i) {
+			float f0 = fs[i - tor];
+			fs[i--] -= f0;
+		}
+		while (0 <= i)
+			fs[i--] = 0f;
 		return fs;
 	}
 

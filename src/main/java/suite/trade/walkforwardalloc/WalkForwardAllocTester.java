@@ -119,7 +119,7 @@ public class WalkForwardAllocTester {
 		StringBuilder sb = new StringBuilder();
 
 		for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
-			sb.append(e.t0 + ":" + String.format("%.2f", e.t1 / length) + ",");
+			sb.append(e.t0 + ":" + String.format("%.0f", e.t1 * 100d / length) + "%,");
 
 		return "nTicks = " + length //
 				+ ", valuation = " + (0 < length ? valuations_[length - 1] : "N/A") //

@@ -27,6 +27,7 @@ import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.trade.Asset;
 import suite.trade.MovingAverage;
 import suite.trade.Time;
 import suite.trade.TimeRange;
@@ -54,7 +55,7 @@ public class StatisticalArbitrageTest {
 	public void testAutoRegressivePowersOfTwo() {
 		int power = 6;
 
-		DataSource ds = cfg.dataSource("^HSI").cleanse();
+		DataSource ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
 		float[] prices = ds.prices;
 		float[][] mas = To.array(float[].class, power, p -> ma.movingAvg(prices, 1 << p));
 		float[] returns = ts.returns(prices);
@@ -75,7 +76,7 @@ public class StatisticalArbitrageTest {
 	public void testMarketDirection() {
 		int lookback = 40;
 
-		DataSource ds = cfg.dataSource("^HSI").cleanse();
+		DataSource ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
 		float[] prices = ds.prices;
 		float[] ma20 = ma.movingAvg(prices, 20);
 		float[] ma50 = ma.movingAvg(prices, 50);
@@ -140,7 +141,7 @@ public class StatisticalArbitrageTest {
 		int nTrials = 10000;
 		int nBets = 40;
 
-		DataSource ds = cfg.dataSource("^HSI").range(period).cleanse();
+		DataSource ds = cfg.dataSource(Asset.hsiSymbol).range(period).cleanse();
 		float[] returns = ds.returns();
 
 		for (float bet = 0f - 2f; bet < 1f + 2f; bet += .02f) {
@@ -256,7 +257,7 @@ public class StatisticalArbitrageTest {
 	// Naive Bayes return prediction
 	@Test
 	public void testReturnDistribution() {
-		float[] prices = cfg.dataSource("^HSI").range(period).prices;
+		float[] prices = cfg.dataSource(Asset.hsiSymbol).range(period).prices;
 		int maxTor = 16;
 
 		IntObjMap<float[]> differencesByTor = Ints_ //
