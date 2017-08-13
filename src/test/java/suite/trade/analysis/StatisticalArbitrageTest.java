@@ -348,8 +348,7 @@ public class StatisticalArbitrageTest {
 				.queryCompaniesByMarketCap(Time.now()) //
 				.map(asset -> asset.symbol);
 
-		AlignKeyDataSource<String> akds = cfg.dataSources(period, symbols);
-		return akds;
+		return cfg.dataSources(period, symbols);
 	}
 
 }
