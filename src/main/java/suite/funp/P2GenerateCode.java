@@ -235,7 +235,6 @@ public class P2GenerateCode {
 				FunpAllocStack n1 = (FunpAllocStack) n0;
 				int size = n1.size;
 				Funp value = n1.value;
-
 				Operand imm = amd64.imm(size);
 
 				if (size == is)
