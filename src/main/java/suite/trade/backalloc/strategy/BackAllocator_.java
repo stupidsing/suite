@@ -13,6 +13,7 @@ import suite.adt.pair.Fixie_.Fixie4;
 import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.Quant;
+import suite.math.stat.TimeSeries;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Ints_;
@@ -27,6 +28,7 @@ import suite.trade.Oscillator.Movement;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.DataSource;
+import suite.trade.data.DataSourceView;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.trade.singlealloc.Strategos;
@@ -59,6 +61,7 @@ public class BackAllocator_ {
 			.cons("sar", sar()) //
 			.cons("turtles", turtles(20, 10, 55, 20)) //
 			.cons("tma", tma) //
+			.cons("varratio", varianceRatio()) //
 			.cons("xma", xma());
 
 	public BackAllocator ofSingle(String symbol) {
@@ -76,6 +79,7 @@ public class BackAllocator_ {
 	private BollingerBands bb = new BollingerBands();
 	private MovingAverage ma = new MovingAverage();
 	private Oscillator osc = new Oscillator();
+	private TimeSeries ts = new TimeSeries();
 
 	private BackAllocator_() {
 	}
@@ -401,6 +405,39 @@ public class BackAllocator_ {
 						}) //
 						.toList();
 			};
+		};
+	}
+
+	private BackAllocator varianceRatio() {
+		int tor = 64;
+		double vr = .95d;
+		double threshold = .95d;
+
+		return (akds, indices) -> {
+			DataSourceView<String, Double> dsv = DataSourceView //
+					.of(tor, akds, (symbol, ds, period) -> ts.varianceRatio(ds.prices, tor));
+
+			Map<String, float[]> holdsBySymbol = akds.dsByKey //
+					.map2((symbol, ds) -> {
+						float[] prices = ds.prices;
+						int length = prices.length;
+						float[] holds = new float[length];
+						float hold = 0f;
+						for (int index = tor; index < length; index++) {
+							double return_ = Quant.return_(ds.prices[index - tor], ds.prices[index]);
+							if (dsv.get(symbol, index) < vr)
+								hold = Quant.hold(hold, return_, threshold, 0d, 1d / threshold);
+							else
+								hold = 0f;
+							holds[index] = hold;
+						}
+						return holds;
+					}) //
+					.toMap();
+
+			return index -> akds.dsByKey //
+					.map2((symbol, ds) -> (double) holdsBySymbol.get(symbol)[index - 1]) //
+					.toList();
 		};
 	}
 

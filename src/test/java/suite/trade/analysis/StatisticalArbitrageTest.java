@@ -24,6 +24,7 @@ import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.streamlet.IntStreamlet;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -35,7 +36,7 @@ import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
-import suite.util.Object_;
+import suite.util.FunUtil.Fun;
 import suite.util.String_;
 import suite.util.To;
 
@@ -228,29 +229,7 @@ public class StatisticalArbitrageTest {
 				}
 			}
 
-			LogUtil.info(cfg.queryCompany(e.t0) + " has period " + maxIndex);
-		}
-	}
-
-	private DctDataSource dctDataSources() {
-		AlignKeyDataSource<String> akds = dataSources();
-		int length0 = akds.ts.length;
-		int size = 1, size1;
-
-		while ((size1 = size << 1) <= length0)
-			size = size1;
-
-		int fr = length0 - size;
-		return new DctDataSource(size, akds.dsByKey.mapValue(ds -> dct.dct(Arrays.copyOfRange(ds.prices, fr, length0))));
-	}
-
-	private class DctDataSource {
-		private int length;
-		private Streamlet2<String, float[]> dctByKey;
-
-		private DctDataSource(int t0, Streamlet2<String, float[]> t1) {
-			this.length = t0;
-			this.dctByKey = t1;
+			LogUtil.info(e.t0 + " has period " + maxIndex);
 		}
 	}
 
@@ -311,7 +290,7 @@ public class StatisticalArbitrageTest {
 			}
 
 			return Read.from2(probabilities) //
-					.sortByValue((p0, p1) -> Object_.compare(p1, p0)) //
+					.sortByValue((p0, p1) -> Double.compare(p1, p0)) //
 					.first().t0.floatValue();
 		};
 
@@ -324,23 +303,51 @@ public class StatisticalArbitrageTest {
 		}
 	}
 
+	@Test
+	public void testVarianceRatio() {
+		System.out.println(showStats(ds -> ts.varianceRatio(ds.prices, 64)));
+	}
+
 	// any relationship between returns and volatility?
 	@Test
 	public void testVolatility() {
+		System.out.println(showStats(ds -> {
+			float[] bandwidths0 = bb.bb(ds.prices, 32, 0, 2f).bandwidths;
+			float[] returns0 = ds.returns();
+			float[] bandwidths1 = ts.drop(1, bandwidths0);
+			float[] returns1 = ts.drop(1, returns0);
+			return stat.project(bandwidths1, returns1);
+		}));
+	}
+
+	private DctDataSource dctDataSources() {
 		AlignKeyDataSource<String> akds = dataSources();
+		int length0 = akds.ts.length;
+		int size = 1, size1;
 
-		List<Pair<String, Double>> volBySymbol = akds.dsByKey //
-				.map2((symbol, ds) -> {
-					float[] bandwidths0 = bb.bb(ds.prices, 32, 0, 2f).bandwidths;
-					float[] returns0 = ds.returns();
-					float[] bandwidths1 = ts.drop(1, bandwidths0);
-					float[] returns1 = ts.drop(1, returns0);
-					return stat.project(bandwidths1, returns1);
-				}) //
-				.sortByValue(Object_::compare) //
-				.toList();
+		while ((size1 = size << 1) <= length0)
+			size = size1;
 
-		volBySymbol.forEach(System.out::println);
+		int fr = length0 - size;
+		return new DctDataSource(size, akds.dsByKey.mapValue(ds -> dct.dct(Arrays.copyOfRange(ds.prices, fr, length0))));
+	}
+
+	private class DctDataSource {
+		private int length;
+		private Streamlet2<String, float[]> dctByKey;
+
+		private DctDataSource(int t0, Streamlet2<String, float[]> t1) {
+			this.length = t0;
+			this.dctByKey = t1;
+		}
+	}
+
+	private String showStats(Fun<DataSource, Double> fun) {
+		return dataSources().dsByKey //
+				.mapValue(fun) //
+				.sortByValue(Double::compare) //
+				.map((symbol, value) -> Pair.of(symbol, value).toString()) //
+				.collect(As.joinedBy("\n"));
 	}
 
 	private AlignKeyDataSource<String> dataSources() {
