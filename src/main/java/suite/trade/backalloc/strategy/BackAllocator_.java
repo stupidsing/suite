@@ -409,7 +409,7 @@ public class BackAllocator_ {
 	}
 
 	private BackAllocator varianceRatio() {
-		int tor = 64;
+		int tor = 96;
 		double vr = .95d;
 		double threshold = .95d;
 		double invThreshold = 1d / threshold;
