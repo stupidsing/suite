@@ -412,6 +412,7 @@ public class BackAllocator_ {
 		int tor = 64;
 		double vr = .95d;
 		double threshold = .95d;
+		double invThreshold = 1d / threshold;
 
 		return (akds, indices) -> {
 			DataSourceView<String, Double> dsv = DataSourceView //
@@ -425,8 +426,8 @@ public class BackAllocator_ {
 						float hold = 0f;
 						for (int index = tor; index < length; index++) {
 							if (dsv.get(symbol, index) < vr) {
-								double return_ = Quant.return_(prices[index - tor], prices[index]);
-								hold = Quant.hold(hold, return_, threshold, 0d, 1d / threshold);
+								double return_ = Quant.return_(prices[index - tor / 2], prices[index]);
+								hold = Quant.hold(hold, return_, threshold, 0d, invThreshold);
 							} else
 								hold = 0f;
 							holds[index] = hold;
