@@ -424,10 +424,10 @@ public class BackAllocator_ {
 						float[] holds = new float[length];
 						float hold = 0f;
 						for (int index = tor; index < length; index++) {
-							double return_ = Quant.return_(ds.prices[index - tor], ds.prices[index]);
-							if (dsv.get(symbol, index) < vr)
+							if (dsv.get(symbol, index) < vr) {
+								double return_ = Quant.return_(prices[index - tor], prices[index]);
 								hold = Quant.hold(hold, return_, threshold, 0d, 1d / threshold);
-							else
+							} else
 								hold = 0f;
 							holds[index] = hold;
 						}
