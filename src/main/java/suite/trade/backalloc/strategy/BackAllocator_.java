@@ -427,7 +427,7 @@ public class BackAllocator_ {
 						for (int index = tor; index < length; index++) {
 							if (dsv.get(symbol, index) < vr) {
 								double return_ = Quant.return_(prices[index - tor / 2], prices[index]);
-								hold = Quant.hold(hold, return_, threshold, 0d, invThreshold);
+								hold = Quant.hold(hold, return_, threshold, 1d, invThreshold);
 							} else
 								hold = 0f;
 							holds[index] = hold;
