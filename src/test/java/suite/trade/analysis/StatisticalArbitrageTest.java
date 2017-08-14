@@ -194,6 +194,11 @@ public class StatisticalArbitrageTest {
 	}
 
 	@Test
+	public void testHurstExponent() {
+		System.out.println(showStats(ds -> ts.hurst(ds.prices, 64)));
+	}
+
+	@Test
 	public void testKMeansCluster() {
 		AlignKeyDataSource<String> akds = dataSources();
 		Map<String, float[]> returnsBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
