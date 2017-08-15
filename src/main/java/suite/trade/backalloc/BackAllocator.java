@@ -2,6 +2,7 @@ package suite.trade.backalloc;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.function.Predicate;
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.math.stat.Quant;
+import suite.math.stat.Statistic;
 import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -50,9 +52,10 @@ public interface BackAllocator {
 	public interface OnDateTime {
 
 		/**
-		 * @return a portfolio consisting of list of symbols and potential values, or
-		 *         null if the strategy do not want to trade on that date. The assets
-		 *         will be allocated according to potential values pro-rata.
+		 * @return a portfolio consisting of list of symbols and potential
+		 *         values, or null if the strategy do not want to trade on that
+		 *         date. The assets will be allocated according to potential
+		 *         values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(int index);
 	}
@@ -402,6 +405,25 @@ public interface BackAllocator {
 			ba2 = ba1;
 
 		return ba2;
+	}
+
+	public default BackAllocator unvariance() {
+		Statistic stat = new Statistic();
+		int nDays = 32;
+
+		return (akds, indices) -> {
+			Map<String, DataSource> dsByKey = akds.dsByKey.toMap();
+			OnDateTime ba0 = allocate(akds, indices);
+			return index -> Read //
+					.from2(ba0.onDateTime(index)) //
+					.map2((symbol, potential) -> {
+						int last = index - 1;
+						float[] prices = dsByKey.get(symbol).prices;
+						double r = prices[last] / stat.variance(Arrays.copyOfRange(prices, last - nDays, last));
+						return potential * r;
+					}) //
+					.toList();
+		};
 	}
 
 	public default WalkForwardAllocator walkForwardAllocator() {
