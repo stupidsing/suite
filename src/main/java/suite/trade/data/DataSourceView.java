@@ -20,13 +20,6 @@ public class DataSourceView<K, V> {
 
 	public static <K, V> DataSourceView<K, V> of( //
 			int tor, //
-			AlignKeyDataSource<K> akds, //
-			DataSourceViewFun<K, V> fun) {
-		return of(tor, 256, akds, fun);
-	}
-
-	public static <K, V> DataSourceView<K, V> of( //
-			int tor, //
 			int nLookbackDays, //
 			AlignKeyDataSource<K> akds, //
 			DataSourceViewFun<K, V> fun) {

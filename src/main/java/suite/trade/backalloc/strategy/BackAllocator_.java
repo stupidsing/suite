@@ -416,7 +416,7 @@ public class BackAllocator_ {
 
 		return (akds, indices) -> {
 			DataSourceView<String, Double> dsv = DataSourceView //
-					.of(tor, akds, (symbol, ds, period) -> ts.varianceRatio(ds.prices, tor));
+					.of(0, 256, akds, (symbol, ds, period) -> ts.varianceRatio(ds.prices, tor));
 
 			Map<String, float[]> holdsBySymbol = akds.dsByKey //
 					.map2((symbol, ds) -> {

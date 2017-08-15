@@ -54,7 +54,7 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 		DataSourceView<String, MeanReversionStat> dsv = DataSourceView //
-				.of(tor, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
+				.of(tor, 256, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
 
 		return index -> {
 			Map<String, MeanReversionStat> mrsBySymbol = akds.dsByKey //
