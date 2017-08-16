@@ -9,6 +9,7 @@ import java.util.Set;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.LngFltPair;
+import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -212,14 +213,16 @@ public class StockHistory {
 		return i;
 	}
 
-	public Streamlet<String> write() {
+	public String write() {
 		Streamlet<String> s0 = Read.each( //
 				"exchange = " + exchange, //
 				"timeZone = 8", //
 				time.ymdHms());
 		Streamlet<String> s1 = Read.each(dividends, splits).concatMap(this::concat);
 		Streamlet<String> s2 = Read.from2(data).concatMap((tag, fs) -> concat(fs).cons(tag));
-		return Streamlet.concat(s0, s1, s2);
+		return Streamlet //
+				.concat(s0, s1, s2) //
+				.collect(As.joinedBy("\n"));
 	}
 
 	private Streamlet<String> concat(LngFltPair[] pairs) {

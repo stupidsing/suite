@@ -5,6 +5,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Field;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import suite.Constants;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Rethrow;
@@ -66,8 +68,8 @@ public class FileUtil {
 	}
 
 	/**
-	 * Files.createDirectory() might fail with FileAlreadyExistsException in MacOSX,
-	 * contrary to its documentation. This re-implementation would not.
+	 * Files.createDirectory() might fail with FileAlreadyExistsException in
+	 * MacOSX, contrary to its documentation. This re-implementation would not.
 	 */
 	public static void mkdir(Path path) {
 		if (path != null) {
@@ -116,6 +118,15 @@ public class FileUtil {
 
 	public static String read(String filename) {
 		return To.string(Paths.get(filename));
+	}
+
+	public static void write(Path path, String contents) {
+		try (OutputStream os = FileUtil.out(path); //
+				OutputStreamWriter w = new OutputStreamWriter(os, Constants.charset)) {
+			w.write(contents);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 }

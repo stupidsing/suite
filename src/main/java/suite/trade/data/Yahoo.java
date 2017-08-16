@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import suite.Constants;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
+import suite.os.FileUtil;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.pair.LngFltPair;
@@ -152,8 +153,7 @@ public class Yahoo {
 			else
 				throw new RuntimeException();
 
-			List<String> lines = stockHistory1.write().toList();
-			Rethrow.ex(() -> Files.write(path, lines));
+			FileUtil.write(path, stockHistory1.write());
 		} else
 			stockHistory1 = stockHistory0;
 
