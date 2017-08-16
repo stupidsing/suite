@@ -226,7 +226,24 @@ public class BackAllocator_ {
 	}
 
 	private BackAllocator rsi() {
-		return rsi_(32, .7d);
+		int window = 32;
+		double threshold = .7d;
+
+		return BackAllocator.byPrices(prices -> {
+			Movement movement = osc.movement(prices, window);
+
+			return Quant.filterRange(0, index -> {
+				int last = index - 1;
+				double dec = movement.decs[last];
+				double inc = movement.incs[last];
+				if (threshold < dec) // over-sold
+					return dec - .5d;
+				else if (threshold < inc) // over-bought
+					return .5d - inc;
+				else
+					return 0d;
+			});
+		});
 	}
 
 	private BackAllocator sar() {
@@ -453,24 +470,6 @@ public class BackAllocator_ {
 			return Quant.filterRange(1, index -> {
 				int last = index - 1;
 				return movingAvgs0[last] < movingAvgs1[last] ? -1d : 1d;
-			});
-		});
-	}
-
-	private BackAllocator rsi_(int window, double threshold) {
-		return BackAllocator.byPrices(prices -> {
-			Movement movement = osc.movement(prices, window);
-
-			return Quant.filterRange(0, index -> {
-				int last = index - 1;
-				double dec = movement.decs[last];
-				double inc = movement.incs[last];
-				if (threshold < dec) // over-sold
-					return dec - .5d;
-				else if (threshold < inc) // over-bought
-					return .5d - inc;
-				else
-					return 0d;
 			});
 		});
 	}
