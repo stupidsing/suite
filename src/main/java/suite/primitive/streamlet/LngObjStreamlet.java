@@ -244,10 +244,6 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		spawn().sink(sink);
 	}
 
-	public int size() {
-		return spawn().size();
-	}
-
 	public LngObjStreamlet<V> skip(int n) {
 		return lngObjStreamlet(() -> spawn().skip(n));
 	}

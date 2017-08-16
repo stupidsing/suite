@@ -26,6 +26,7 @@ import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
+import suite.streamlet.OutletDefaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
@@ -39,7 +40,7 @@ import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
 
-public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
+public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	private DblObjSource<V> source;
 
@@ -168,6 +169,14 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 
 	public DblObjOutlet<V> cons(double key, V value) {
 		return of(DblObjFunUtil.cons(key, value, source));
+	}
+
+	public int count() {
+		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		int i = 0;
+		while (next(pair))
+			i++;
+		return i;
 	}
 
 	public DblObjOutlet<V> distinct() {
@@ -372,14 +381,6 @@ public class DblObjOutlet<V> implements Iterable<DblObjPair<V>> {
 		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
-	}
-
-	public int size() {
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
-		int i = 0;
-		while (next(pair))
-			i++;
-		return i;
 	}
 
 	public DblObjOutlet<V> skip(int n) {

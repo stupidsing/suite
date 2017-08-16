@@ -231,8 +231,8 @@ public class ChrFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static Source<ChrSource> split(ChrPredicate fun0, ChrSource source) {
 		ChrPredicate fun1 = fun0.rethrow();

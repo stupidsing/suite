@@ -244,10 +244,6 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		spawn().sink(sink);
 	}
 
-	public int size() {
-		return spawn().size();
-	}
-
 	public FltObjStreamlet<V> skip(int n) {
 		return fltObjStreamlet(() -> spawn().skip(n));
 	}

@@ -26,6 +26,7 @@ import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
+import suite.streamlet.OutletDefaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
@@ -39,7 +40,7 @@ import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
 
-public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
+public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	private IntObjSource<V> source;
 
@@ -168,6 +169,14 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 
 	public IntObjOutlet<V> cons(int key, V value) {
 		return of(IntObjFunUtil.cons(key, value, source));
+	}
+
+	public int count() {
+		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		int i = 0;
+		while (next(pair))
+			i++;
+		return i;
 	}
 
 	public IntObjOutlet<V> distinct() {
@@ -372,14 +381,6 @@ public class IntObjOutlet<V> implements Iterable<IntObjPair<V>> {
 		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
-	}
-
-	public int size() {
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
-		int i = 0;
-		while (next(pair))
-			i++;
-		return i;
 	}
 
 	public IntObjOutlet<V> skip(int n) {

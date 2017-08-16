@@ -32,6 +32,7 @@ import suite.primitive.adt.set.DblSet;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
+import suite.streamlet.OutletDefaults;
 import suite.streamlet.Read;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -50,7 +51,7 @@ import suite.util.To;
  * 
  * @author ywsing
  */
-public class DblOutlet implements Iterable<Double> {
+public class DblOutlet implements OutletDefaults<Double> {
 
 	private DblSource source;
 

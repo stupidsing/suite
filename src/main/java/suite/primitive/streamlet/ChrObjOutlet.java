@@ -26,6 +26,7 @@ import suite.primitive.adt.map.ObjChrMap;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
+import suite.streamlet.OutletDefaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
@@ -39,7 +40,7 @@ import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
 
-public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
+public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	private ChrObjSource<V> source;
 
@@ -168,6 +169,14 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 
 	public ChrObjOutlet<V> cons(char key, V value) {
 		return of(ChrObjFunUtil.cons(key, value, source));
+	}
+
+	public int count() {
+		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		int i = 0;
+		while (next(pair))
+			i++;
+		return i;
 	}
 
 	public ChrObjOutlet<V> distinct() {
@@ -372,14 +381,6 @@ public class ChrObjOutlet<V> implements Iterable<ChrObjPair<V>> {
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
-	}
-
-	public int size() {
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-		int i = 0;
-		while (next(pair))
-			i++;
-		return i;
 	}
 
 	public ChrObjOutlet<V> skip(int n) {

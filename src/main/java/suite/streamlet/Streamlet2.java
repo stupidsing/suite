@@ -205,10 +205,6 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 		spawn().sink(sink);
 	}
 
-	public int size() {
-		return spawn().size();
-	}
-
 	public Streamlet2<K, V> skip(int n) {
 		return streamlet2(() -> spawn().skip(n));
 	}

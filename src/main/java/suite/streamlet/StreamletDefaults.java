@@ -4,7 +4,7 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.util.FunUtil.Fun;
 
-public interface StreamletDefaults<T, Outlet_> extends Iterable<T> {
+public interface StreamletDefaults<T, Outlet_ extends OutletDefaults<T>> extends Iterable<T> {
 
 	public Outlet_ outlet();
 
@@ -18,6 +18,10 @@ public interface StreamletDefaults<T, Outlet_> extends Iterable<T> {
 
 	public default int collectAsInt(Obj_Int<Outlet_> fun) {
 		return fun.apply(outlet());
+	}
+
+	public default int size() {
+		return outlet().count();
 	}
 
 }

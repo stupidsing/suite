@@ -244,10 +244,6 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		spawn().sink(sink);
 	}
 
-	public int size() {
-		return spawn().size();
-	}
-
 	public IntObjStreamlet<V> skip(int n) {
 		return intObjStreamlet(() -> spawn().skip(n));
 	}

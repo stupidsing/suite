@@ -240,10 +240,6 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		spawn().sink(sink);
 	}
 
-	public int size() {
-		return spawn().count();
-	}
-
 	public ChrStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
 	}

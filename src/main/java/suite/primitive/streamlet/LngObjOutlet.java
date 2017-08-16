@@ -26,6 +26,7 @@ import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
+import suite.streamlet.OutletDefaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
@@ -39,7 +40,7 @@ import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
 
-public class LngObjOutlet<V> implements Iterable<LngObjPair<V>> {
+public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	private LngObjSource<V> source;
 
@@ -168,6 +169,14 @@ public class LngObjOutlet<V> implements Iterable<LngObjPair<V>> {
 
 	public LngObjOutlet<V> cons(long key, V value) {
 		return of(LngObjFunUtil.cons(key, value, source));
+	}
+
+	public int count() {
+		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
+		int i = 0;
+		while (next(pair))
+			i++;
+		return i;
 	}
 
 	public LngObjOutlet<V> distinct() {
@@ -372,14 +381,6 @@ public class LngObjOutlet<V> implements Iterable<LngObjPair<V>> {
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
-	}
-
-	public int size() {
-		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
-		int i = 0;
-		while (next(pair))
-			i++;
-		return i;
 	}
 
 	public LngObjOutlet<V> skip(int n) {

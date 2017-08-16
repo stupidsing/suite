@@ -240,10 +240,6 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		spawn().sink(sink);
 	}
 
-	public int size() {
-		return spawn().count();
-	}
-
 	public FltStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
 	}

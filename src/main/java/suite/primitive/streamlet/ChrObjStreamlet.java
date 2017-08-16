@@ -244,10 +244,6 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		spawn().sink(sink);
 	}
 
-	public int size() {
-		return spawn().size();
-	}
-
 	public ChrObjStreamlet<V> skip(int n) {
 		return chrObjStreamlet(() -> spawn().skip(n));
 	}

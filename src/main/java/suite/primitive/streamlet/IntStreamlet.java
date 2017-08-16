@@ -240,10 +240,6 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		spawn().sink(sink);
 	}
 
-	public int size() {
-		return spawn().count();
-	}
-
 	public IntStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
 	}

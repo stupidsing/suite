@@ -200,10 +200,6 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 		spawn().sink(sink);
 	}
 
-	public int size() {
-		return spawn().count();
-	}
-
 	public Streamlet<T> skip(int n) {
 		return streamlet(() -> spawn().skip(n));
 	}

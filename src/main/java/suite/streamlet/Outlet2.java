@@ -31,7 +31,7 @@ import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
 
-public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
+public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	private Source2<K, V> source2;
 
@@ -164,6 +164,14 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 
 	public Outlet2<K, V> cons(K key, V value) {
 		return of(FunUtil2.cons(key, value, source2));
+	}
+
+	public int count() {
+		Pair<K, V> pair = Pair.of(null, null);
+		int i = 0;
+		while (next(pair))
+			i++;
+		return i;
 	}
 
 	public Outlet2<K, V> distinct() {
@@ -365,14 +373,6 @@ public class Outlet2<K, V> implements Iterable<Pair<K, V>> {
 		Pair<K, V> pair = Pair.of(null, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
-	}
-
-	public int size() {
-		Pair<K, V> pair = Pair.of(null, null);
-		int i = 0;
-		while (next(pair))
-			i++;
-		return i;
 	}
 
 	public Outlet2<K, V> skip(int n) {

@@ -38,7 +38,7 @@ import suite.util.To;
  *
  * @author ywsing
  */
-public class Outlet<T> implements Iterable<T> {
+public class Outlet<T> implements OutletDefaults<T> {
 
 	private Source<T> source;
 

@@ -240,10 +240,6 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		spawn().sink(sink);
 	}
 
-	public int size() {
-		return spawn().count();
-	}
-
 	public LngStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
 	}

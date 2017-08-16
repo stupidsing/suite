@@ -244,10 +244,6 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 		spawn().sink(sink);
 	}
 
-	public int size() {
-		return spawn().size();
-	}
-
 	public DblObjStreamlet<V> skip(int n) {
 		return dblObjStreamlet(() -> spawn().skip(n));
 	}

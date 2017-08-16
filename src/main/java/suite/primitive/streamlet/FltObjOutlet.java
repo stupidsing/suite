@@ -26,6 +26,7 @@ import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
+import suite.streamlet.OutletDefaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
@@ -39,7 +40,7 @@ import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
 
-public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
+public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 
 	private FltObjSource<V> source;
 
@@ -168,6 +169,14 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 
 	public FltObjOutlet<V> cons(float key, V value) {
 		return of(FltObjFunUtil.cons(key, value, source));
+	}
+
+	public int count() {
+		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
+		int i = 0;
+		while (next(pair))
+			i++;
+		return i;
 	}
 
 	public FltObjOutlet<V> distinct() {
@@ -372,14 +381,6 @@ public class FltObjOutlet<V> implements Iterable<FltObjPair<V>> {
 		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
-	}
-
-	public int size() {
-		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
-		int i = 0;
-		while (next(pair))
-			i++;
-		return i;
 	}
 
 	public FltObjOutlet<V> skip(int n) {

@@ -32,6 +32,7 @@ import suite.primitive.adt.set.LngSet;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
+import suite.streamlet.OutletDefaults;
 import suite.streamlet.Read;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -50,7 +51,7 @@ import suite.util.To;
  * 
  * @author ywsing
  */
-public class LngOutlet implements Iterable<Long> {
+public class LngOutlet implements OutletDefaults<Long> {
 
 	private LngSource source;
 
