@@ -73,11 +73,8 @@ public class Summarize {
 
 		Map<K, String> outByKey = summaryByKey.mapValue(summary -> summary.out).toMap();
 
-		for (Entry<K, String> e : outByKey.entrySet()) {
-			K key = e.getKey();
-			String out = e.getValue();
-			log.sink("\nFor strategy " + key + ":" + out);
-		}
+		for (Entry<K, String> e : outByKey.entrySet())
+			log.sink("\nFor strategy " + e.getKey() + ":" + e.getValue());
 
 		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
 			Time now = Time.now();
