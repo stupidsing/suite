@@ -188,7 +188,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 	}
 
 	public ChrStreamlet mapChr(Chr_Chr fun) {
-		return new ChrStreamlet(() -> spawn().mapChr(fun));
+		return streamlet(() -> spawn().mapChr(fun));
 	}
 
 	public <K, V> ChrObjStreamlet<V> mapChrObj(Chr_Obj<V> fun0) {

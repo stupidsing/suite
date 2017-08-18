@@ -41,7 +41,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	public static <T, V> Fun<Outlet<T>, LngObjStreamlet<V>> collect(Obj_Lng<T> kf0, Fun<T, V> vf0) {
 		Obj_Lng<T> kf1 = kf0.rethrow();
 		Fun<T, V> vf1 = vf0.rethrow();
-		return outlet -> new LngObjStreamlet<>(() -> {
+		return outlet -> lngObjStreamlet(() -> {
 			Source<T> source = outlet.source();
 			return LngObjOutlet.of(pair -> {
 				T t = source.source();
@@ -156,11 +156,11 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjStreamlet<List<V>> groupBy() {
-		return new LngObjStreamlet<>(() -> spawn().groupBy());
+		return lngObjStreamlet(() -> spawn().groupBy());
 	}
 
 	public <V1> LngObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return new LngObjStreamlet<>(() -> spawn().groupBy(fun));
+		return lngObjStreamlet(() -> spawn().groupBy(fun));
 	}
 
 	@Override
@@ -201,7 +201,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjStreamlet<V> mapKey(Lng_Lng fun) {
-		return new LngObjStreamlet<>(() -> spawn().mapKey(fun));
+		return lngObjStreamlet(() -> spawn().mapKey(fun));
 	}
 
 	public <O> Streamlet<O> mapNonNull(LngObj_Obj<V, O> fun) {
@@ -209,7 +209,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public <V1> LngObjStreamlet<V1> mapValue(Fun<V, V1> fun) {
-		return new LngObjStreamlet<>(() -> spawn().mapValue(fun));
+		return lngObjStreamlet(() -> spawn().mapValue(fun));
 	}
 
 	public LngObjPair<V> min(Comparator<LngObjPair<V>> comparator) {
@@ -340,7 +340,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	private <V1> LngObjStreamlet<V1> mapLngObj_(LngObj_Lng<V> kf, LngObj_Obj<V, V1> vf) {
-		return new LngObjStreamlet<>(() -> spawn().mapLngObj(kf, vf));
+		return lngObjStreamlet(() -> spawn().mapLngObj(kf, vf));
 	}
 
 	private LngObjOutlet<V> spawn() {

@@ -41,7 +41,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	public static <T, V> Fun<Outlet<T>, FltObjStreamlet<V>> collect(Obj_Flt<T> kf0, Fun<T, V> vf0) {
 		Obj_Flt<T> kf1 = kf0.rethrow();
 		Fun<T, V> vf1 = vf0.rethrow();
-		return outlet -> new FltObjStreamlet<>(() -> {
+		return outlet -> fltObjStreamlet(() -> {
 			Source<T> source = outlet.source();
 			return FltObjOutlet.of(pair -> {
 				T t = source.source();
@@ -156,11 +156,11 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	public FltObjStreamlet<List<V>> groupBy() {
-		return new FltObjStreamlet<>(() -> spawn().groupBy());
+		return fltObjStreamlet(() -> spawn().groupBy());
 	}
 
 	public <V1> FltObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return new FltObjStreamlet<>(() -> spawn().groupBy(fun));
+		return fltObjStreamlet(() -> spawn().groupBy(fun));
 	}
 
 	@Override
@@ -201,7 +201,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	public FltObjStreamlet<V> mapKey(Flt_Flt fun) {
-		return new FltObjStreamlet<>(() -> spawn().mapKey(fun));
+		return fltObjStreamlet(() -> spawn().mapKey(fun));
 	}
 
 	public <O> Streamlet<O> mapNonNull(FltObj_Obj<V, O> fun) {
@@ -209,7 +209,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	public <V1> FltObjStreamlet<V1> mapValue(Fun<V, V1> fun) {
-		return new FltObjStreamlet<>(() -> spawn().mapValue(fun));
+		return fltObjStreamlet(() -> spawn().mapValue(fun));
 	}
 
 	public FltObjPair<V> min(Comparator<FltObjPair<V>> comparator) {
@@ -340,7 +340,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	private <V1> FltObjStreamlet<V1> mapFltObj_(FltObj_Flt<V> kf, FltObj_Obj<V, V1> vf) {
-		return new FltObjStreamlet<>(() -> spawn().mapFltObj(kf, vf));
+		return fltObjStreamlet(() -> spawn().mapFltObj(kf, vf));
 	}
 
 	private FltObjOutlet<V> spawn() {

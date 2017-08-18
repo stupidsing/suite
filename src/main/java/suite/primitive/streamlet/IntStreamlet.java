@@ -188,7 +188,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 	}
 
 	public IntStreamlet mapInt(Int_Int fun) {
-		return new IntStreamlet(() -> spawn().mapInt(fun));
+		return streamlet(() -> spawn().mapInt(fun));
 	}
 
 	public <K, V> IntObjStreamlet<V> mapIntObj(Int_Obj<V> fun0) {

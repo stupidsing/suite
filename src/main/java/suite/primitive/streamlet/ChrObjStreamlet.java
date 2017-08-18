@@ -41,7 +41,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	public static <T, V> Fun<Outlet<T>, ChrObjStreamlet<V>> collect(Obj_Chr<T> kf0, Fun<T, V> vf0) {
 		Obj_Chr<T> kf1 = kf0.rethrow();
 		Fun<T, V> vf1 = vf0.rethrow();
-		return outlet -> new ChrObjStreamlet<>(() -> {
+		return outlet -> chrObjStreamlet(() -> {
 			Source<T> source = outlet.source();
 			return ChrObjOutlet.of(pair -> {
 				T t = source.source();
@@ -156,11 +156,11 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	public ChrObjStreamlet<List<V>> groupBy() {
-		return new ChrObjStreamlet<>(() -> spawn().groupBy());
+		return chrObjStreamlet(() -> spawn().groupBy());
 	}
 
 	public <V1> ChrObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return new ChrObjStreamlet<>(() -> spawn().groupBy(fun));
+		return chrObjStreamlet(() -> spawn().groupBy(fun));
 	}
 
 	@Override
@@ -201,7 +201,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	public ChrObjStreamlet<V> mapKey(Chr_Chr fun) {
-		return new ChrObjStreamlet<>(() -> spawn().mapKey(fun));
+		return chrObjStreamlet(() -> spawn().mapKey(fun));
 	}
 
 	public <O> Streamlet<O> mapNonNull(ChrObj_Obj<V, O> fun) {
@@ -209,7 +209,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	public <V1> ChrObjStreamlet<V1> mapValue(Fun<V, V1> fun) {
-		return new ChrObjStreamlet<>(() -> spawn().mapValue(fun));
+		return chrObjStreamlet(() -> spawn().mapValue(fun));
 	}
 
 	public ChrObjPair<V> min(Comparator<ChrObjPair<V>> comparator) {
@@ -340,7 +340,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	private <V1> ChrObjStreamlet<V1> mapChrObj_(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
-		return new ChrObjStreamlet<>(() -> spawn().mapChrObj(kf, vf));
+		return chrObjStreamlet(() -> spawn().mapChrObj(kf, vf));
 	}
 
 	private ChrObjOutlet<V> spawn() {

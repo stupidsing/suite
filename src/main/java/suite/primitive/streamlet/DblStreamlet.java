@@ -188,7 +188,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 	}
 
 	public DblStreamlet mapDbl(Dbl_Dbl fun) {
-		return new DblStreamlet(() -> spawn().mapDbl(fun));
+		return streamlet(() -> spawn().mapDbl(fun));
 	}
 
 	public <K, V> DblObjStreamlet<V> mapDblObj(Dbl_Obj<V> fun0) {

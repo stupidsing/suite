@@ -41,7 +41,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	public static <T, V> Fun<Outlet<T>, DblObjStreamlet<V>> collect(Obj_Dbl<T> kf0, Fun<T, V> vf0) {
 		Obj_Dbl<T> kf1 = kf0.rethrow();
 		Fun<T, V> vf1 = vf0.rethrow();
-		return outlet -> new DblObjStreamlet<>(() -> {
+		return outlet -> dblObjStreamlet(() -> {
 			Source<T> source = outlet.source();
 			return DblObjOutlet.of(pair -> {
 				T t = source.source();
@@ -156,11 +156,11 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	public DblObjStreamlet<List<V>> groupBy() {
-		return new DblObjStreamlet<>(() -> spawn().groupBy());
+		return dblObjStreamlet(() -> spawn().groupBy());
 	}
 
 	public <V1> DblObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return new DblObjStreamlet<>(() -> spawn().groupBy(fun));
+		return dblObjStreamlet(() -> spawn().groupBy(fun));
 	}
 
 	@Override
@@ -201,7 +201,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	public DblObjStreamlet<V> mapKey(Dbl_Dbl fun) {
-		return new DblObjStreamlet<>(() -> spawn().mapKey(fun));
+		return dblObjStreamlet(() -> spawn().mapKey(fun));
 	}
 
 	public <O> Streamlet<O> mapNonNull(DblObj_Obj<V, O> fun) {
@@ -209,7 +209,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	public <V1> DblObjStreamlet<V1> mapValue(Fun<V, V1> fun) {
-		return new DblObjStreamlet<>(() -> spawn().mapValue(fun));
+		return dblObjStreamlet(() -> spawn().mapValue(fun));
 	}
 
 	public DblObjPair<V> min(Comparator<DblObjPair<V>> comparator) {
@@ -340,7 +340,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	private <V1> DblObjStreamlet<V1> mapDblObj_(DblObj_Dbl<V> kf, DblObj_Obj<V, V1> vf) {
-		return new DblObjStreamlet<>(() -> spawn().mapDblObj(kf, vf));
+		return dblObjStreamlet(() -> spawn().mapDblObj(kf, vf));
 	}
 
 	private DblObjOutlet<V> spawn() {

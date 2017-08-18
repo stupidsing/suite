@@ -188,7 +188,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 	}
 
 	public LngStreamlet mapLng(Lng_Lng fun) {
-		return new LngStreamlet(() -> spawn().mapLng(fun));
+		return streamlet(() -> spawn().mapLng(fun));
 	}
 
 	public <K, V> LngObjStreamlet<V> mapLngObj(Lng_Obj<V> fun0) {

@@ -188,7 +188,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 	}
 
 	public FltStreamlet mapFlt(Flt_Flt fun) {
-		return new FltStreamlet(() -> spawn().mapFlt(fun));
+		return streamlet(() -> spawn().mapFlt(fun));
 	}
 
 	public <K, V> FltObjStreamlet<V> mapFltObj(Flt_Obj<V> fun0) {
