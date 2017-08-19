@@ -63,7 +63,7 @@ public interface BackAllocator {
 		int nDays = 32;
 
 		return (akds, indices) -> {
-			Map<String, float[]> returnsByKey = akds.dsByKey.mapValue(ds -> ds.returns()).toMap();
+			Map<String, float[]> returnsByKey = akds.dsByKey.mapValue(DataSource::returns).toMap();
 			OnDateTime ba0 = allocate(akds, indices);
 
 			return index -> Read //
