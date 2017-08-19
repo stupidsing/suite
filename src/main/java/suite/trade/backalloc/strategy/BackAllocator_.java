@@ -21,6 +21,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
+import suite.trade.Asset;
 import suite.trade.MovingAverage;
 import suite.trade.MovingAverage.MovingRange;
 import suite.trade.Oscillator;
@@ -33,6 +34,7 @@ import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Fun;
+import suite.util.String_;
 
 public class BackAllocator_ {
 
@@ -59,6 +61,7 @@ public class BackAllocator_ {
 			.cons("opcl8", openClose8()) //
 			.cons("rsi", rsi) //
 			.cons("sar", sar()) //
+			.cons("shannon", shannon(Asset.hsiSymbol)) //
 			.cons("turtles", turtles(20, 10, 55, 20)) //
 			.cons("tma", tma) //
 			.cons("varratio", varianceRatio()) //
@@ -66,6 +69,17 @@ public class BackAllocator_ {
 
 	public BackAllocator ofSingle(String symbol) {
 		return ofSingle_(symbol);
+	}
+
+	public BackAllocator shannon(String symbol) {
+		return (akds, indices) -> {
+			float[] prices = akds.dsByKey //
+					.filter((symbol_, ds) -> String_.equals(symbol, symbol_)) //
+					.uniqueResult().t1.prices;
+
+			double invTotal = .5d / prices[indices[0]];
+			return index -> Arrays.asList(Pair.of(symbol, 1d - prices[index - 1] * invTotal));
+		};
 	}
 
 	public BackAllocator sum(BackAllocator... bas) {
