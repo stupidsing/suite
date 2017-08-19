@@ -52,14 +52,14 @@ public class BackAllocatorMech {
 	}
 
 	private BackAllocator bollingerBands() {
-		return BackAllocator.byPrices(prices -> {
+		return BackAllocator_.byPrices(prices -> {
 			float[] sds = bb.bb(prices, 20, 0, 2f).sds;
 			return Quant.fold(0, sds.length, (i, hold) -> -Quant.hold(hold, sds[i], -.5d, 0d, .5d));
 		});
 	}
 
 	private BackAllocator channelBreakout() {
-		return BackAllocator.byPrices(prices -> {
+		return BackAllocator_.byPrices(prices -> {
 			MovingRange[] movingRanges = ma.movingRange(prices, 20);
 
 			return Quant.fold(0, prices.length, (i, hold) -> {
@@ -70,14 +70,14 @@ public class BackAllocatorMech {
 	}
 
 	private BackAllocator dmi() {
-		return BackAllocator.byDataSource(ds -> {
+		return BackAllocator_.byDataSource(ds -> {
 			float[] dmis = osc.dmi(ds, 10).dmi;
 			return Quant.fold(0, dmis.length, (i, hold) -> -Quant.hold(hold, dmis[i], -.2d, 0d, .2d));
 		});
 	}
 
 	private BackAllocator dmiAdx() {
-		return BackAllocator.byDataSource(ds -> {
+		return BackAllocator_.byDataSource(ds -> {
 			Dmi dmi = osc.dmi(ds, 10);
 			float[] dmis = dmi.dmi;
 			float[] adxs = dmi.adx(9);
@@ -86,7 +86,7 @@ public class BackAllocatorMech {
 	}
 
 	private BackAllocator macd() {
-		return BackAllocator.byPrices(prices -> {
+		return BackAllocator_.byPrices(prices -> {
 			Macd macd = ma.macd(prices);
 			return index -> {
 				int last = index - 1;
@@ -100,7 +100,7 @@ public class BackAllocatorMech {
 
 	// two moving average cross-over
 	private BackAllocator ma2() {
-		return BackAllocator.byPrices(prices -> {
+		return BackAllocator_.byPrices(prices -> {
 			float[] movingAvgs0 = ma.movingAvg(prices, 26);
 			float[] movingAvgs1 = ma.movingAvg(prices, 9);
 			return Quant.filterRange(1, index -> {
@@ -112,7 +112,7 @@ public class BackAllocatorMech {
 
 	// Ichimoku two moving average cross-over
 	private BackAllocator ma2Ichimoku() {
-		return BackAllocator.byPrices(prices -> {
+		return BackAllocator_.byPrices(prices -> {
 			float[] movingAvgs0 = ma.movingAvg(prices, 26);
 			float[] movingAvgs1 = ma.movingAvg(prices, 9);
 			return Quant.filterRange(2, index -> {
@@ -128,7 +128,7 @@ public class BackAllocatorMech {
 
 	// three moving average cross-over
 	private BackAllocator ma3() {
-		return BackAllocator_.me.tripleMovingAvgs(prices -> Fixie.of( //
+		return BackAllocatorGeneral.me.tripleMovingAvgs(prices -> Fixie.of( //
 				ma.movingAvg(prices, 52), //
 				ma.movingAvg(prices, 26), //
 				ma.movingAvg(prices, 9)));
@@ -137,7 +137,7 @@ public class BackAllocatorMech {
 
 	// Ichimoku three moving average cross-over
 	private BackAllocator ma3ichimoku() {
-		return BackAllocator.byPrices(prices -> {
+		return BackAllocator_.byPrices(prices -> {
 			int length = prices.length;
 			float[] movingAvgs0 = ma.movingAvg(prices, 52);
 			float[] movingAvgs1 = ma.movingAvg(prices, 26);
@@ -161,7 +161,7 @@ public class BackAllocatorMech {
 	}
 
 	private BackAllocator mrBbAdx() {
-		return BackAllocator //
+		return BackAllocator_ //
 				.byDataSource(ds -> {
 					float[] prices = ds.prices;
 					Bb bb_ = bb.bb(prices, 20, 0, 2f);
@@ -177,7 +177,7 @@ public class BackAllocatorMech {
 	}
 
 	private BackAllocator mrBbMa200() {
-		return BackAllocator //
+		return BackAllocator_ //
 				.byPrices(prices -> {
 					float[] movingAvgs = ma.movingAvg(prices, 200);
 					Bb bb_ = bb.bb(prices, 20, 0, 2f);
@@ -195,7 +195,7 @@ public class BackAllocatorMech {
 	}
 
 	private BackAllocator mrRsiMa200() {
-		return BackAllocator //
+		return BackAllocator_ //
 				.byPrices(prices -> {
 					float[] movingAvgs = ma.movingAvg(prices, 200);
 					float[] rsi0 = osc.rsi(prices, 14);
@@ -221,7 +221,7 @@ public class BackAllocatorMech {
 
 	// seven-period reversal
 	private BackAllocator period7reversal() {
-		return BackAllocator //
+		return BackAllocator_ //
 				.byPrices(prices -> {
 					IntInt_Int signs = (s, e) -> {
 						int n = 0;
@@ -250,7 +250,7 @@ public class BackAllocatorMech {
 	}
 
 	private BackAllocator rsiCrossover() {
-		return BackAllocator //
+		return BackAllocator_ //
 				.byPrices(prices -> {
 					float[] rsi = osc.rsi(prices, 14);
 
@@ -264,7 +264,7 @@ public class BackAllocatorMech {
 	}
 
 	private BackAllocator mrSseCciTimedExit(int timedExit) {
-		return BackAllocator //
+		return BackAllocator_ //
 				.byDataSource(ds -> {
 					float[] prices = ds.prices;
 					float[] stos = osc.stochastic(ds, 14);

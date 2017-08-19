@@ -30,7 +30,7 @@ import suite.trade.backalloc.BackAllocConfigurations.Bacs;
 import suite.trade.backalloc.BackAllocTester;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator;
-import suite.trade.backalloc.strategy.BackAllocatorOld_;
+import suite.trade.backalloc.strategy.BackAllocatorOld;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -237,7 +237,7 @@ public class DailyMain extends ExecutableProgram {
 
 	public BackAllocConfiguration pairs(String symbol0, String symbol1) {
 		Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
-		BackAllocator backAllocator = BackAllocatorOld_.me.pairs(cfg, symbol0, symbol1).unleverage();
+		BackAllocator backAllocator = BackAllocatorOld.me.pairs(cfg, symbol0, symbol1).unleverage();
 		return new BackAllocConfiguration(time -> assets, backAllocator);
 	}
 

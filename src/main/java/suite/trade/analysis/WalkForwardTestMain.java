@@ -4,7 +4,7 @@ import suite.os.Schedule;
 import suite.os.Scheduler;
 import suite.trade.Time;
 import suite.trade.Trade_;
-import suite.trade.backalloc.strategy.BackAllocator_;
+import suite.trade.backalloc.strategy.BackAllocatorGeneral;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.HkexUtil;
@@ -16,7 +16,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.WalkForwardTestMain
 public class WalkForwardTestMain extends ExecutableProgram {
 
-	private BackAllocator_ ba_ = BackAllocator_.me;
+	private BackAllocatorGeneral bag = BackAllocatorGeneral.me;
 	private Configuration cfg = new ConfigurationImpl();
 
 	public static void main(String[] args) {
@@ -33,7 +33,7 @@ public class WalkForwardTestMain extends ExecutableProgram {
 
 		WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //
 				cfg.queryCompaniesByMarketCap(Time.now()), //
-				ba_.rsi.unleverage().walkForwardAllocator());
+				bag.rsi.unleverage().walkForwardAllocator());
 
 		WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
 

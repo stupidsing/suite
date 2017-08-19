@@ -20,7 +20,6 @@ import suite.math.stat.Statistic;
 import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.Int_Dbl;
 import suite.primitive.adt.pair.DblFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -52,24 +51,11 @@ public interface BackAllocator {
 	public interface OnDateTime {
 
 		/**
-		 * @return a portfolio consisting of list of symbols and potential
-		 *         values, or null if the strategy do not want to trade on that
-		 *         date. The assets will be allocated according to potential
-		 *         values pro-rata.
+		 * @return a portfolio consisting of list of symbols and potential values, or
+		 *         null if the strategy do not want to trade on that date. The assets
+		 *         will be allocated according to potential values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(int index);
-	}
-
-	public static BackAllocator byPrices(Fun<float[], Int_Dbl> fun) {
-		return byDataSource(ds -> fun.apply(ds.prices));
-	}
-
-	public static BackAllocator byDataSource(Fun<DataSource, Int_Dbl> fun) {
-		return (akds, indices) -> {
-			Streamlet2<String, Int_Dbl> allocBySymbol = akds.dsByKey.mapValue(fun).collect(As::streamlet2);
-
-			return index -> allocBySymbol.mapValue(alloc -> alloc.apply(index)).toList();
-		};
 	}
 
 	public default BackAllocator byTime(IntPredicate monthPred) {
@@ -412,15 +398,15 @@ public interface BackAllocator {
 		int nDays = 32;
 
 		return (akds, indices) -> {
-			Map<String, DataSource> dsByKey = akds.dsByKey.toMap();
+			Map<String, float[]> returnsByKey = akds.dsByKey.mapValue(ds -> ds.returns()).toMap();
 			OnDateTime ba0 = allocate(akds, indices);
+
 			return index -> Read //
 					.from2(ba0.onDateTime(index)) //
 					.map2((symbol, potential) -> {
 						int last = index - 1;
-						float[] prices = dsByKey.get(symbol).prices;
-						double r = prices[last] / stat.variance(Arrays.copyOfRange(prices, last - nDays, last));
-						return potential * r;
+						float[] returns = Arrays.copyOfRange(returnsByKey.get(symbol), last - nDays, last);
+						return potential / stat.variance(returns);
 					}) //
 					.toList();
 		};

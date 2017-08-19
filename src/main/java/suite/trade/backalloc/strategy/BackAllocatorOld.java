@@ -18,20 +18,20 @@ import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.util.String_;
 
-public class BackAllocatorOld_ {
+public class BackAllocatorOld {
 
-	public static BackAllocatorOld_ me = new BackAllocatorOld_();
+	public static BackAllocatorOld me = new BackAllocatorOld();
 
 	private BollingerBands bb = new BollingerBands();
 	private MovingAverage ma = new MovingAverage();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
-	private BackAllocatorOld_() {
+	private BackAllocatorOld() {
 	}
 
 	public BackAllocator bbSlope() {
-		return BackAllocator.byPrices(prices -> {
+		return BackAllocator_.byPrices(prices -> {
 			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
 			float[] ma_ = ma.movingAvg(sds, 6);
 			float[] diffs = ts.differences(3, ma_);
@@ -51,7 +51,7 @@ public class BackAllocatorOld_ {
 	}
 
 	public BackAllocator bbVariable() {
-		return BackAllocator.byPrices(prices -> Quant.filterRange(1, index -> {
+		return BackAllocator_.byPrices(prices -> Quant.filterRange(1, index -> {
 			int last = index - 1;
 			double hold = 0d;
 
@@ -75,7 +75,7 @@ public class BackAllocatorOld_ {
 		int windowSize0 = 4;
 		int windowSize1 = 12;
 
-		return BackAllocator.byPrices(prices -> {
+		return BackAllocator_.byPrices(prices -> {
 			float[] movingAvgs0 = ma.movingAvg(prices, windowSize0);
 			float[] movingAvgs1 = ma.movingAvg(prices, windowSize1);
 			MovingRange[] movingRanges0 = ma.movingRange(prices, windowSize0);
@@ -98,7 +98,7 @@ public class BackAllocatorOld_ {
 		int windowSize0 = 1;
 		int windowSize1 = 32;
 
-		return BackAllocator.byPrices(prices -> {
+		return BackAllocator_.byPrices(prices -> {
 			MovingRange[] movingRanges0 = ma.movingRange(prices, windowSize0);
 			MovingRange[] movingRanges1 = ma.movingRange(prices, windowSize1);
 
@@ -110,7 +110,7 @@ public class BackAllocatorOld_ {
 	}
 
 	public BackAllocator pairs(Configuration cfg, String symbol0, String symbol1) {
-		return BackAllocator_.me.rsi //
+		return BackAllocatorGeneral.me.rsi //
 				.relativeToIndex(cfg, symbol0) //
 				.filterByAsset(symbol -> String_.equals(symbol, symbol1));
 	}
@@ -147,7 +147,7 @@ public class BackAllocatorOld_ {
 
 	// reverse draw-down; trendy strategy
 	public BackAllocator revDrawdown() {
-		return BackAllocator.byPrices(prices -> index -> {
+		return BackAllocator_.byPrices(prices -> index -> {
 			int i = index - 1;
 			int i0 = Math.max(0, i - 128);
 			int ix = i;
