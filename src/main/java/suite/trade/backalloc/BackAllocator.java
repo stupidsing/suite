@@ -69,8 +69,7 @@ public interface BackAllocator {
 			return index -> Read //
 					.from2(ba0.onDateTime(index)) //
 					.map2((symbol, potential) -> {
-						int last = index - 1;
-						float[] returns = Arrays.copyOfRange(returnsByKey.get(symbol), last - nDays, last);
+						float[] returns = Arrays.copyOfRange(returnsByKey.get(symbol), index - nDays, index);
 						return potential / stat.variance(returns);
 					}) //
 					.toList();
