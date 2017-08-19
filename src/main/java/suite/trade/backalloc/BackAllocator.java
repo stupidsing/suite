@@ -58,6 +58,25 @@ public interface BackAllocator {
 		public List<Pair<String, Double>> onDateTime(int index);
 	}
 
+	public default BackAllocator byRiskOfReturn() {
+		Statistic stat = new Statistic();
+		int nDays = 32;
+
+		return (akds, indices) -> {
+			Map<String, float[]> returnsByKey = akds.dsByKey.mapValue(ds -> ds.returns()).toMap();
+			OnDateTime ba0 = allocate(akds, indices);
+
+			return index -> Read //
+					.from2(ba0.onDateTime(index)) //
+					.map2((symbol, potential) -> {
+						int last = index - 1;
+						float[] returns = Arrays.copyOfRange(returnsByKey.get(symbol), last - nDays, last);
+						return potential / stat.variance(returns);
+					}) //
+					.toList();
+		};
+	}
+
 	public default BackAllocator byTime(IntPredicate monthPred) {
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
@@ -391,25 +410,6 @@ public interface BackAllocator {
 			ba2 = ba1;
 
 		return ba2;
-	}
-
-	public default BackAllocator unvariance() {
-		Statistic stat = new Statistic();
-		int nDays = 32;
-
-		return (akds, indices) -> {
-			Map<String, float[]> returnsByKey = akds.dsByKey.mapValue(ds -> ds.returns()).toMap();
-			OnDateTime ba0 = allocate(akds, indices);
-
-			return index -> Read //
-					.from2(ba0.onDateTime(index)) //
-					.map2((symbol, potential) -> {
-						int last = index - 1;
-						float[] returns = Arrays.copyOfRange(returnsByKey.get(symbol), last - nDays, last);
-						return potential / stat.variance(returns);
-					}) //
-					.toList();
-		};
 	}
 
 	public default WalkForwardAllocator walkForwardAllocator() {
