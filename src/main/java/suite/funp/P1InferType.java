@@ -135,7 +135,7 @@ public class P1InferType {
 		} else if (n0 instanceof FunpNumber)
 			return typeNumber;
 		else if (n0 instanceof FunpPolyType)
-			return infer(env, ((FunpPolyType) n0).expr).clone_();
+			return unify.clone(infer(env, ((FunpPolyType) n0).expr));
 		else if (n0 instanceof FunpReference)
 			return cast(TypeReference.class, infer(env, ((FunpReference) n0).expr)).type;
 		else if (n0 instanceof FunpTree) {
