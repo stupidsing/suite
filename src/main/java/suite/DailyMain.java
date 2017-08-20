@@ -142,9 +142,9 @@ public class DailyMain extends ExecutableProgram {
 		sb.append("\n");
 		sb.append("\nSUGGESTIONS");
 		sb.append("\n- check your balance");
-		sb.append("\n- get away with the small orders");
-		sb.append("\n- get away with stocks after ex-date");
-		sb.append("\n- sell mamr and " + sellPool + ", maximum hold 2 weeks");
+		sb.append("\n- sort the orders and get away the small ones");
+		sb.append("\n- get away the stocks after ex-date");
+		sb.append("\n- sell mamr and " + sellPool);
 		sb.append("\n- for mamr, check actual execution using SingleAllocBackTestTest.testBackTestHkexDetails()");
 
 		sb.append("\n");
