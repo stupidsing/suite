@@ -56,9 +56,6 @@ public class P1InferType {
 	private static class TypeBoolean extends Type {
 	}
 
-	private static class TypeNumber extends Type {
-	}
-
 	private static class TypeLambda extends Type {
 		private UnNode<Type> parameterType, returnType;
 
@@ -66,6 +63,9 @@ public class P1InferType {
 			this.parameterType = parameterType;
 			this.returnType = returnType;
 		}
+	}
+
+	private static class TypeNumber extends Type {
 	}
 
 	private static class TypeReference extends Type {
