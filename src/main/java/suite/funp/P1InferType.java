@@ -108,26 +108,21 @@ public class P1InferType {
 		if (n0 instanceof FunpApply) {
 			FunpApply n1 = (FunpApply) n0;
 			TypeLambda tl = cast(TypeLambda.class, infer(env, n1.lambda));
-			if (unify.unify(tl.parameterType, infer(env, n1.value)))
-				return tl.returnType;
-			else
-				throw new RuntimeException("cannot infer type for " + n0);
+			unify(n0, tl.parameterType, infer(env, n1.value));
+			return tl.returnType;
 		} else if (n0 instanceof FunpBoolean)
 			return typeBoolean;
 		else if (n0 instanceof FunpFixed) {
 			FunpFixed n1 = (FunpFixed) n0;
 			UnNode<Type> t = unify.newRef();
-			if (unify.unify(t, infer(env.put(n1.var, t), n1.expr)))
-				return t;
-			else
-				throw new RuntimeException("cannot infer type for " + n0);
+			unify(n0, t, infer(env.put(n1.var, t), n1.expr));
+			return t;
 		} else if (n0 instanceof FunpIf) {
 			FunpIf n1 = (FunpIf) n0;
 			UnNode<Type> t;
-			if (unify.unify(typeBoolean, infer(env, n1.if_)) && unify.unify(t = infer(env, n1.then), infer(env, n1.else_)))
-				return t;
-			else
-				throw new RuntimeException("cannot infer type for " + n0);
+			unify(n0, typeBoolean, infer(env, n1.if_));
+			unify(n0, t = infer(env, n1.then), infer(env, n1.else_));
+			return t;
 		} else if (n0 instanceof FunpLambda) {
 			FunpLambda n1 = (FunpLambda) n0;
 			UnNode<Type> tv = unify.newRef();
@@ -139,15 +134,20 @@ public class P1InferType {
 		else if (n0 instanceof FunpReference)
 			return cast(TypeReference.class, infer(env, ((FunpReference) n0).expr)).type;
 		else if (n0 instanceof FunpTree) {
-			UnNode<Type> t0 = infer_(env, ((FunpTree) n0).left);
-			UnNode<Type> t1 = infer_(env, ((FunpTree) n0).right);
-			if (unify.unify(t0, typeNumber) && unify.unify(t1, typeNumber))
-				return typeNumber;
-			else
-				throw new RuntimeException("cannot infer type for " + n0);
+			FunpTree n1 = (FunpTree) n0;
+			UnNode<Type> t0 = infer_(env, n1.left);
+			UnNode<Type> t1 = infer_(env, n1.right);
+			unify(n0, t0, typeNumber);
+			unify(n0, t1, typeNumber);
+			return typeNumber;
 		} else if (n0 instanceof FunpVariable)
 			return env.get(((FunpVariable) n0).var);
 		else
+			throw new RuntimeException("cannot infer type for " + n0);
+	}
+
+	private void unify(Funp n0, UnNode<Type> type0, UnNode<Type> type1) {
+		if (!unify.unify(type0, type1))
 			throw new RuntimeException("cannot infer type for " + n0);
 	}
 
