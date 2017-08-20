@@ -36,6 +36,7 @@ import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
+import suite.trade.data.Sina;
 import suite.util.FunUtil.Fun;
 import suite.util.String_;
 import suite.util.To;
@@ -49,6 +50,7 @@ public class StatisticalArbitrageTest {
 	private DiscreteCosineTransform dct = new DiscreteCosineTransform();
 	private MovingAverage ma = new MovingAverage();
 	private Random random = new Random();
+	private Sina sina = new Sina();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
@@ -71,6 +73,59 @@ public class StatisticalArbitrageTest {
 
 		LinearRegression lr = stat.linearRegression(xsList.toArray(new float[0][]), ys.toFloats().toArray());
 		System.out.println(lr);
+	}
+
+	// Auto-regressive test
+	@Test
+	public void testCointegration() {
+
+		// 0004.HK, 0020.HK
+		// 0011.HK, 0005.HK
+		int tor = 8;
+		String symbol0 = "0004.HK";
+		String symbol1 = "0945.HK";
+
+		AlignKeyDataSource<String> akds = cfg.dataSources(period, Read.each(symbol0, symbol1));
+		Map<String, float[]> pricesBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
+
+		int length = akds.ts.length;
+		float[] prices0 = pricesBySymbol.get(symbol0);
+		float[] prices1 = pricesBySymbol.get(symbol1);
+
+		float[][] xs = Ints_ //
+				.range(tor, length) //
+				.map(i -> Floats_.toArray(tor, j -> prices0[i + j - tor])) //
+				.toArray(float[].class);
+
+		float[] ys = Ints_ //
+				.range(tor, length) //
+				.collect(Int_Flt.lift(i -> prices1[i])) //
+				.toArray();
+
+		LinearRegression lr = stat.linearRegression(xs, ys);
+		System.out.println(lr);
+	}
+
+	@Test
+	public void testHurstExponent() {
+		System.out.println(showStats(ds -> ts.hurst(ds.prices, 64)));
+	}
+
+	@Test
+	public void testKMeansCluster() {
+		AlignKeyDataSource<String> akds = dataSources();
+		Map<String, float[]> returnsBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
+		System.out.println(kmc(akds.ts.length, returnsBySymbol));
+	}
+
+	@Test
+	public void testKMeansClusterDct() {
+		DctDataSource dctDataSource = dctDataSources();
+		System.out.println(kmc(dctDataSource.length, dctDataSource.dctByKey.toMap()));
+	}
+
+	private String kmc(int length, Map<String, float[]> ptBySymbol) {
+		return new KmeansCluster(length).result(ptBySymbol, 9, 300);
 	}
 
 	@Test
@@ -162,57 +217,17 @@ public class StatisticalArbitrageTest {
 		}
 	}
 
-	// Auto-regressive test
 	@Test
-	public void testCointegration() {
-
-		// 0004.HK, 0020.HK
-		// 0011.HK, 0005.HK
-		int tor = 8;
-		String symbol0 = "0004.HK";
-		String symbol1 = "0945.HK";
-
-		AlignKeyDataSource<String> akds = cfg.dataSources(period, Read.each(symbol0, symbol1));
-		Map<String, float[]> pricesBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
-
-		int length = akds.ts.length;
-		float[] prices0 = pricesBySymbol.get(symbol0);
-		float[] prices1 = pricesBySymbol.get(symbol1);
-
-		float[][] xs = Ints_ //
-				.range(tor, length) //
-				.map(i -> Floats_.toArray(tor, j -> prices0[i + j - tor])) //
-				.toArray(float[].class);
-
-		float[] ys = Ints_ //
-				.range(tor, length) //
-				.collect(Int_Flt.lift(i -> prices1[i])) //
-				.toArray();
-
-		LinearRegression lr = stat.linearRegression(xs, ys);
-		System.out.println(lr);
-	}
-
-	@Test
-	public void testHurstExponent() {
-		System.out.println(showStats(ds -> ts.hurst(ds.prices, 64)));
-	}
-
-	@Test
-	public void testKMeansCluster() {
-		AlignKeyDataSource<String> akds = dataSources();
-		Map<String, float[]> returnsBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
-		System.out.println(kmc(akds.ts.length, returnsBySymbol));
-	}
-
-	@Test
-	public void testKMeansClusterDct() {
-		DctDataSource dctDataSource = dctDataSources();
-		System.out.println(kmc(dctDataSource.length, dctDataSource.dctByKey.toMap()));
-	}
-
-	private String kmc(int length, Map<String, float[]> ptBySymbol) {
-		return new KmeansCluster(length).result(ptBySymbol, 9, 300);
+	public void testPeRatio() {
+		String out = cfg //
+				.queryCompaniesByMarketCap(Time.now()) //
+				.map(asset -> asset.symbol) //
+				.collect(symbols -> sina.queryFactors(As.streamlet(symbols), true)) //
+				.map2(factor -> factor.symbol, factor -> factor.pe) //
+				.sortByValue(Float::compare) //
+				.map((symbol, peRatio) -> Pair.of(symbol, peRatio).toString()) //
+				.collect(As.joinedBy("\n"));
+		System.out.println(out);
 	}
 
 	// find the period of various stocks using FFT
