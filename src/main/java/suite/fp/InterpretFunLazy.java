@@ -47,7 +47,7 @@ import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.BiFun;
 import suite.util.To;
 
-public class FunInterpreterLazy {
+public class InterpretFunLazy {
 
 	public interface Thunk_ {
 		public Node get();

@@ -9,7 +9,7 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 
-public class FunInterpreterEagerTest {
+public class InterpretFunEagerTest {
 
 	@Test
 	public void testGroup() {
@@ -23,7 +23,7 @@ public class FunInterpreterEagerTest {
 	}
 
 	private void expect(String expr, Node expected) {
-		assertEquals(expected, new FunInterpreterEager().eager(Suite.parse(expr)));
+		assertEquals(expected, new InterpretFunEager().eager(Suite.parse(expr)));
 	}
 
 }

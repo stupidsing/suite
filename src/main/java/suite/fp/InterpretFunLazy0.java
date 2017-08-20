@@ -12,7 +12,7 @@ import suite.node.io.TermOp;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 
-public class FunInterpreterLazy0 {
+public class InterpretFunLazy0 {
 
 	private Atom ERROR = Atom.of("error");
 	private Atom FST__ = Atom.of("fst");
