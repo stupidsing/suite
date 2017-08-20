@@ -84,15 +84,15 @@ public class LazyFunInterpreter {
 		Node parsed = parse(node);
 
 		Map<String, Thunk_> df = new HashMap<>();
-		df.put(TermOp.AND___.getName(), binary((a, b) -> new Pair_(a, b)));
-		df.put(TermOp.EQUAL_.getName(), binary((a, b) -> b(compare(a.get(), b.get()) == 0)));
-		df.put(TermOp.NOTEQ_.getName(), binary((a, b) -> b(compare(a.get(), b.get()) != 0)));
-		df.put(TermOp.LE____.getName(), binary((a, b) -> b(compare(a.get(), b.get()) <= 0)));
-		df.put(TermOp.LT____.getName(), binary((a, b) -> b(compare(a.get(), b.get()) < 0)));
-		df.put(TermOp.PLUS__.getName(), binary((a, b) -> Int.of(i(a) + i(b))));
-		df.put(TermOp.MINUS_.getName(), binary((a, b) -> Int.of(i(a) - i(b))));
-		df.put(TermOp.MULT__.getName(), binary((a, b) -> Int.of(i(a) * i(b))));
-		df.put(TermOp.DIVIDE.getName(), binary((a, b) -> Int.of(i(a) / i(b))));
+		df.put(TermOp.AND___.name, binary((a, b) -> new Pair_(a, b)));
+		df.put(TermOp.EQUAL_.name, binary((a, b) -> b(compare(a.get(), b.get()) == 0)));
+		df.put(TermOp.NOTEQ_.name, binary((a, b) -> b(compare(a.get(), b.get()) != 0)));
+		df.put(TermOp.LE____.name, binary((a, b) -> b(compare(a.get(), b.get()) <= 0)));
+		df.put(TermOp.LT____.name, binary((a, b) -> b(compare(a.get(), b.get()) < 0)));
+		df.put(TermOp.PLUS__.name, binary((a, b) -> Int.of(i(a) + i(b))));
+		df.put(TermOp.MINUS_.name, binary((a, b) -> Int.of(i(a) - i(b))));
+		df.put(TermOp.MULT__.name, binary((a, b) -> Int.of(i(a) * i(b))));
+		df.put(TermOp.DIVIDE.name, binary((a, b) -> Int.of(i(a) / i(b))));
 
 		df.put("fst", () -> new Fun_(in -> ((Pair_) in.get()).first_));
 		df.put("if", () -> new Fun_(a -> () -> new Fun_(b -> () -> new Fun_(c -> a.get() == Atom.TRUE ? b : c))));

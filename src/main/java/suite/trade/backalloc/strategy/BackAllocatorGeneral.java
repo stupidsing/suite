@@ -241,17 +241,20 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator shannon(String symbol) {
+		double scale = 320d;
+
 		return (akds, indices) -> {
 			float[] prices = akds.dsByKey //
 					.filter((symbol_, ds) -> String_.equals(symbol, symbol_)) //
 					.uniqueResult().t1.prices;
 
-			double invTotal = .5d / prices[indices[0]];
+			float price0 = prices[indices[0]];
 
 			return index -> {
-				double ratio0 = .5d - prices[index - 1] * invTotal;
-				double ratio1 = Math.sin(ratio0 * Math.PI) * .5d + .5d;
-				return Arrays.asList(Pair.of(symbol, ratio1));
+				double ratio0 = Quant.return_(price0, prices[index - 1]);
+				double ratio1 = scale * ratio0;
+				double ratio2 = .5d + ratio1;
+				return Arrays.asList(Pair.of(symbol, ratio2));
 			};
 		};
 	}

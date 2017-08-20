@@ -251,15 +251,15 @@ public class EagerFunInterpreter {
 		IntrinsicCallback ic = isLazyify ? lazyIntrinsicCallback() : Intrinsics.eagerIntrinsicCallback;
 
 		Map<String, Node> df = new HashMap<>();
-		df.put(TermOp.AND___.getName(), f2((a, b) -> Tree.of(TermOp.AND___, a, b)));
-		df.put(TermOp.EQUAL_.getName(), f2((a, b) -> b(compare(a, b) == 0)));
-		df.put(TermOp.NOTEQ_.getName(), f2((a, b) -> b(compare(a, b) != 0)));
-		df.put(TermOp.LE____.getName(), f2((a, b) -> b(compare(a, b) <= 0)));
-		df.put(TermOp.LT____.getName(), f2((a, b) -> b(compare(a, b) < 0)));
-		df.put(TermOp.PLUS__.getName(), f2((a, b) -> Int.of(i(a) + i(b))));
-		df.put(TermOp.MINUS_.getName(), f2((a, b) -> Int.of(i(a) - i(b))));
-		df.put(TermOp.MULT__.getName(), f2((a, b) -> Int.of(i(a) * i(b))));
-		df.put(TermOp.DIVIDE.getName(), f2((a, b) -> Int.of(i(a) / i(b))));
+		df.put(TermOp.AND___.name, f2((a, b) -> Tree.of(TermOp.AND___, a, b)));
+		df.put(TermOp.EQUAL_.name, f2((a, b) -> b(compare(a, b) == 0)));
+		df.put(TermOp.NOTEQ_.name, f2((a, b) -> b(compare(a, b) != 0)));
+		df.put(TermOp.LE____.name, f2((a, b) -> b(compare(a, b) <= 0)));
+		df.put(TermOp.LT____.name, f2((a, b) -> b(compare(a, b) < 0)));
+		df.put(TermOp.PLUS__.name, f2((a, b) -> Int.of(i(a) + i(b))));
+		df.put(TermOp.MINUS_.name, f2((a, b) -> Int.of(i(a) - i(b))));
+		df.put(TermOp.MULT__.name, f2((a, b) -> Int.of(i(a) * i(b))));
+		df.put(TermOp.DIVIDE.name, f2((a, b) -> Int.of(i(a) / i(b))));
 
 		df.put("+call%i-t1", f1(i -> fn(1, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+call%i-t2", f1(i -> fn(2, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
