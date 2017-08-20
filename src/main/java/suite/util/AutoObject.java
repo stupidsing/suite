@@ -1,5 +1,6 @@
 package suite.util;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -8,9 +9,20 @@ import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
 
-public abstract class AutoObject<T extends AutoObject<T>> implements Comparable<T> {
+public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, Comparable<T> {
 
 	private static Inspect inspect = Singleton.me.inspect;
+
+	@Override
+	public AutoObject<T> clone() {
+		return Rethrow.ex(() -> {
+			@SuppressWarnings("unchecked")
+			AutoObject<T> t1 = (AutoObject<T>) getClass().newInstance();
+			for (Field field : fields_())
+				field.set(t1, field.get(this));
+			return t1;
+		});
+	}
 
 	@Override
 	public int compareTo(T t1) {
@@ -56,6 +68,10 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Comparable<
 		return b;
 	}
 
+	public List<Field> fields() {
+		return fields_();
+	}
+
 	@Override
 	public int hashCode() {
 		int hashCode = 5;
@@ -77,12 +93,16 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Comparable<
 
 	public List<Comparable<?>> values() {
 		List<?> list0 = Read //
-				.from(inspect.fields(getClass())) //
+				.from(fields_()) //
 				.map(field -> Rethrow.ex(() -> field.get(this))) //
 				.toList();
 		@SuppressWarnings("unchecked")
 		List<Comparable<?>> list1 = (List<Comparable<?>>) list0;
 		return list1;
+	}
+
+	private List<Field> fields_() {
+		return inspect.fields(getClass());
 	}
 
 	private T self() {

@@ -3,8 +3,8 @@ package suite.funp;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.BindArrayUtil.Match;
-import suite.Suite;
+import suite.fp.Unify;
+import suite.fp.Unify.UnNode;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
@@ -26,14 +26,11 @@ import suite.funp.P1.FunpSaveFramePointer;
 import suite.funp.P1.FunpSaveRegisters;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
-import suite.lp.Trail;
-import suite.lp.doer.Binder;
-import suite.lp.doer.Cloner;
-import suite.node.Atom;
-import suite.node.Node;
-import suite.node.Reference;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
+import suite.streamlet.Read;
+import suite.util.AutoObject;
+import suite.util.Rethrow;
 
 /**
  * Hindley-Milner type inference.
@@ -42,79 +39,113 @@ import suite.node.util.Singleton;
  */
 public class P1InferType {
 
-	private Atom ftBoolean = Atom.of("BOOLEAN");
-	private Atom ftNumber = Atom.of("NUMBER");
-	private Match defLambda = Suite.match("LAMBDA .0 .1");
-	private Match defReference = Suite.match("REF .0");
+	private static Unify<Type> unify = new Unify<>();
+
+	private static class Type extends AutoObject<Type> implements UnNode<Type> {
+		public boolean unify(UnNode<Type> type) {
+			return getClass() == type.getClass() //
+					&& Read.from(fields()).isAll(field -> Rethrow.ex(() -> {
+						return unify.unify(cast(field.get(this)), cast(field.get(type)));
+					}));
+		}
+
+		private static UnNode<Type> cast(Object object) {
+			@SuppressWarnings("unchecked")
+			UnNode<Type> node = (UnNode<Type>) object;
+			return node;
+		}
+	}
+
+	private static class TypeBoolean extends Type {
+	}
+
+	private static class TypeNumber extends Type {
+	}
+
+	private static class TypeLambda extends Type {
+		private UnNode<Type> parameterType, returnType;
+
+		private TypeLambda(UnNode<Type> parameterType, UnNode<Type> returnType) {
+			this.parameterType = parameterType;
+			this.returnType = returnType;
+		}
+	}
+
+	private static class TypeReference extends Type {
+		private UnNode<Type> type;
+	}
 
 	private Inspect inspect = Singleton.me.inspect;
-	private Trail trail = new Trail();
-	private Map<Funp, Node> typeByNode = new HashMap<>();
 
-	public Funp infer(Funp n0, Node t) {
-		if (bind(t, infer(n0)))
+	private UnNode<Type> typeBoolean = new TypeBoolean();
+	private UnNode<Type> typeNumber = new TypeNumber();
+	private Map<Funp, UnNode<Type>> typeByNode = new HashMap<>();
+
+	public Funp infer(Funp n0) {
+		return infer(n0, unify.newRef());
+	}
+
+	public Funp infer(Funp n0, UnNode<Type> t) {
+		UnNode<Type> t0 = typeNumber;
+		UnNode<Type> t1 = new TypeLambda(typeNumber, t0);
+		UnNode<Type> t2 = new TypeLambda(typeNumber, t1);
+		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>> empty() //
+				.put(TermOp.PLUS__.name, t2) //
+				.put(TermOp.MINUS_.name, t2) //
+				.put(TermOp.MULT__.name, t2);
+
+		if (unify.unify(t, infer(env, n0)))
 			return rewrite(0, IMap.empty(), n0);
 		else
 			throw new RuntimeException("cannot infer type for " + n0);
 	}
 
-	private Node infer(Funp funp) {
-		Node t0 = ftNumber;
-		Node t1 = defLambda.substitute(ftNumber, t0);
-		Node t2 = defLambda.substitute(ftNumber, t1);
-		IMap<String, Node> env = IMap.<String, Node> empty() //
-				.put(TermOp.PLUS__.name, t2) //
-				.put(TermOp.MINUS_.name, t2) //
-				.put(TermOp.MULT__.name, t2);
-		return infer(env, funp);
-	}
-
-	private Node infer(IMap<String, Node> env, Funp n0) {
-		Node t = typeByNode.get(n0);
+	private UnNode<Type> infer(IMap<String, UnNode<Type>> env, Funp n0) {
+		UnNode<Type> t = typeByNode.get(n0);
 		if (t == null)
 			typeByNode.put(n0, t = infer_(env, n0));
 		return t;
 	}
 
-	private Node infer_(IMap<String, Node> env, Funp n0) {
+	private UnNode<Type> infer_(IMap<String, UnNode<Type>> env, Funp n0) {
 		if (n0 instanceof FunpApply) {
 			FunpApply n1 = (FunpApply) n0;
-			Node[] m = defLambda.apply(infer(env, n1.lambda));
-			if (bind(m[0], infer(env, n1.value)))
-				return m[1];
+			TypeLambda tl = cast(TypeLambda.class, infer(env, n1.lambda));
+			if (unify.unify(tl.parameterType, infer(env, n1.value)))
+				return tl.returnType;
 			else
 				throw new RuntimeException("cannot infer type for " + n0);
 		} else if (n0 instanceof FunpBoolean)
-			return ftBoolean;
+			return typeBoolean;
 		else if (n0 instanceof FunpFixed) {
 			FunpFixed n1 = (FunpFixed) n0;
-			Node t = new Reference();
-			if (bind(t, infer(env.put(n1.var, t), n1.expr)))
+			UnNode<Type> t = unify.newRef();
+			if (unify.unify(t, infer(env.put(n1.var, t), n1.expr)))
 				return t;
 			else
 				throw new RuntimeException("cannot infer type for " + n0);
 		} else if (n0 instanceof FunpIf) {
 			FunpIf n1 = (FunpIf) n0;
-			Node t;
-			if (bind(ftBoolean, infer(env, n1.if_)) && bind(t = infer(env, n1.then), infer(env, n1.else_)))
+			UnNode<Type> t;
+			if (unify.unify(typeBoolean, infer(env, n1.if_)) && unify.unify(t = infer(env, n1.then), infer(env, n1.else_)))
 				return t;
 			else
 				throw new RuntimeException("cannot infer type for " + n0);
 		} else if (n0 instanceof FunpLambda) {
 			FunpLambda n1 = (FunpLambda) n0;
-			Node tv = new Reference();
-			return defLambda.substitute(tv, infer(env.put(n1.var, tv), n1.expr));
+			UnNode<Type> tv = unify.newRef();
+			return new TypeLambda(tv, infer(env.put(n1.var, tv), n1.expr));
 		} else if (n0 instanceof FunpNumber)
-			return ftNumber;
+			return typeNumber;
 		else if (n0 instanceof FunpPolyType)
-			return new Cloner().clone(infer(env, ((FunpPolyType) n0).expr));
+			return infer(env, ((FunpPolyType) n0).expr).clone_();
 		else if (n0 instanceof FunpReference)
-			return defReference.apply(infer(((FunpReference) n0).expr))[0];
+			return cast(TypeReference.class, infer(env, ((FunpReference) n0).expr)).type;
 		else if (n0 instanceof FunpTree) {
-			Node t0 = infer_(env, ((FunpTree) n0).left);
-			Node t1 = infer_(env, ((FunpTree) n0).right);
-			if (bind(t0, ftNumber) && bind(t1, ftNumber))
-				return ftNumber;
+			UnNode<Type> t0 = infer_(env, ((FunpTree) n0).left);
+			UnNode<Type> t1 = infer_(env, ((FunpTree) n0).right);
+			if (unify.unify(t0, typeNumber) && unify.unify(t1, typeNumber))
+				return typeNumber;
 			else
 				throw new RuntimeException("cannot infer type for " + n0);
 		} else if (n0 instanceof FunpVariable)
@@ -188,27 +219,33 @@ public class P1InferType {
 		private int is, os;
 
 		private LambdaType(Funp lambda) {
-			Node[] types = defLambda.apply(typeByNode.get(lambda));
-			is = getTypeSize(types[0]);
-			os = getTypeSize(types[1]);
+			TypeLambda lambdaType = (TypeLambda) typeByNode.get(lambda);
+			is = getTypeSize(lambdaType.parameterType);
+			os = getTypeSize(lambdaType.returnType);
 		}
 	}
 
-	private int getTypeSize(Node n0) {
-		if (defLambda.apply(n0) != null)
-			return Funp_.pointerSize + Funp_.pointerSize;
-		else if (defReference.apply(n0) != null)
-			return Funp_.pointerSize;
-		else if (bind(ftBoolean, n0))
-			return Funp_.booleanSize;
-		else if (bind(ftNumber, n0))
-			return Funp_.integerSize;
-		else
-			throw new RuntimeException("cannot infer type for " + n0);
+	private <Type1 extends Type> Type1 cast(Class<Type1> clazz, UnNode<Type> type) {
+		if (type.getClass() == clazz) {
+			@SuppressWarnings("unchecked")
+			Type1 t1 = (Type1) type;
+			return t1;
+		} else
+			return null;
 	}
 
-	private boolean bind(Node t0, Node t1) {
-		return Binder.bind(t0, t1, trail);
+	private int getTypeSize(UnNode<Type> n0) {
+		UnNode<Type> n1 = n0.final_();
+		if (n1 instanceof TypeBoolean)
+			return Funp_.booleanSize;
+		else if (n1 instanceof TypeLambda)
+			return Funp_.pointerSize + Funp_.pointerSize;
+		else if (n1 instanceof TypeNumber)
+			return Funp_.integerSize;
+		else if (n1 instanceof TypeReference)
+			return Funp_.pointerSize;
+		else
+			throw new RuntimeException("cannot infer type for " + n1);
 	}
 
 }

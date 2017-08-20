@@ -10,7 +10,6 @@ import suite.Suite;
 import suite.assembler.Amd64.Instruction;
 import suite.funp.Funp_.Funp;
 import suite.node.Node;
-import suite.node.Reference;
 import suite.primitive.Bytes;
 
 public class FunpTest {
@@ -37,7 +36,7 @@ public class FunpTest {
 		P2GenerateCode p2 = new P2GenerateCode();
 
 		Funp f0 = p0.parse(node);
-		Funp f1 = p1.infer(f0, new Reference());
+		Funp f1 = p1.infer(f0);
 		List<Instruction> instructions = p2.compile0(f1);
 		return p2.compile1(0, instructions, true);
 	}
