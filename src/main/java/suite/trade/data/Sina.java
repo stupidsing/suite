@@ -53,13 +53,13 @@ public class Sina {
 	}
 
 	// http://blog.sina.com.cn/s/blog_5dc29fcc0101dq5s.html
-	private Streamlet<Factor> queryFactors(Streamlet<String> symbols, boolean isCache) {
+	public Streamlet<Factor> queryFactors(Streamlet<String> symbols, boolean isCache) {
 		return 0 < symbols.size() ? queryFactor_(symbols, isCache) : Read.empty();
 	}
 
 	private Streamlet<Factor> queryFactor_(Streamlet<String> symbols, boolean isCache) {
 		String urlString = "http://hq.sinajs.cn/?list=" + symbols //
-				.map(symbol_ -> toSina(symbol_)) //
+				.map(this::toSina) //
 				.collect(As.joinedBy(","));
 
 		String data = Rethrow.ex(() -> {
