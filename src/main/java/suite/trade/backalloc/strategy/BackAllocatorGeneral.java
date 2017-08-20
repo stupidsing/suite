@@ -8,16 +8,13 @@ import java.util.Map;
 import java.util.function.IntFunction;
 
 import suite.adt.pair.Fixie;
-import suite.adt.pair.Fixie_.Fixie3;
 import suite.adt.pair.Fixie_.Fixie4;
 import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.Quant;
 import suite.math.stat.TimeSeries;
-import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Ints_;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -27,7 +24,6 @@ import suite.trade.MovingAverage.MovingRange;
 import suite.trade.Oscillator;
 import suite.trade.Oscillator.Movement;
 import suite.trade.backalloc.BackAllocator;
-import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSourceView;
 import suite.trade.singlealloc.BuySellStrategy;
@@ -45,6 +41,7 @@ public class BackAllocatorGeneral {
 	public BackAllocator donHold = donchian(9).holdExtend(2).pick(5);
 	public BackAllocator ema = ema().pick(3);
 	public BackAllocator rsi = rsi();
+	public BackAllocator shannonHsi = shannon(Asset.hsiSymbol);
 	public BackAllocator tma = tripleExpGeometricMovingAvgs();
 
 	public final Streamlet2<String, BackAllocator> baByName = Read //
@@ -61,35 +58,11 @@ public class BackAllocatorGeneral {
 			.cons("opcl8", openClose8()) //
 			.cons("rsi", rsi) //
 			.cons("sar", sar()) //
-			.cons("shannon", shannon(Asset.hsiSymbol)) //
+			.cons("shannon", shannonHsi) //
 			.cons("turtles", turtles(20, 10, 55, 20)) //
 			.cons("tma", tma) //
 			.cons("varratio", varianceRatio()) //
 			.cons("xma", xma());
-
-	public BackAllocator shannon(String symbol) {
-		return (akds, indices) -> {
-			float[] prices = akds.dsByKey //
-					.filter((symbol_, ds) -> String_.equals(symbol, symbol_)) //
-					.uniqueResult().t1.prices;
-
-			double invTotal = .5d / prices[indices[0]];
-
-			return index -> {
-				double ratio0 = .5d - prices[index - 1] * invTotal;
-				double ratio1 = Math.sin(ratio0 * Math.PI) * .5d + .5d;
-				return Arrays.asList(Pair.of(symbol, ratio1));
-			};
-		};
-	}
-
-	public BackAllocator sum(BackAllocator... bas) {
-		return sum_(bas);
-	}
-
-	public BackAllocator tripleMovingAvgs(Fun<float[], Fixie3<float[], float[], float[]>> fun) {
-		return tripleMovingAvgs_(fun);
-	}
 
 	private BollingerBands bb = new BollingerBands();
 	private MovingAverage ma = new MovingAverage();
@@ -267,42 +240,27 @@ public class BackAllocatorGeneral {
 		});
 	}
 
-	private BackAllocator sum_(BackAllocator... bas) {
+	private BackAllocator shannon(String symbol) {
 		return (akds, indices) -> {
-			Streamlet<OnDateTime> odts = Read //
-					.from(bas) //
-					.map(ba -> ba.allocate(akds, indices)) //
-					.collect(As::streamlet);
+			float[] prices = akds.dsByKey //
+					.filter((symbol_, ds) -> String_.equals(symbol, symbol_)) //
+					.uniqueResult().t1.prices;
 
-			return index -> odts //
-					.flatMap(odt -> odt.onDateTime(index)) //
-					.groupBy(Pair::first_, st -> st.collectAsDouble(Obj_Dbl.sum(Pair::second))) //
-					.toList();
+			double invTotal = .5d / prices[indices[0]];
+
+			return index -> {
+				double ratio0 = .5d - prices[index - 1] * invTotal;
+				double ratio1 = Math.sin(ratio0 * Math.PI) * .5d + .5d;
+				return Arrays.asList(Pair.of(symbol, ratio1));
+			};
 		};
 	}
 
 	private BackAllocator tripleExpGeometricMovingAvgs() {
-		return tripleMovingAvgs(prices -> Fixie.of( //
+		return BackAllocator_.triple(prices -> Fixie.of( //
 				ma.exponentialGeometricMovingAvg(prices, 18), //
 				ma.exponentialGeometricMovingAvg(prices, 6), //
 				ma.exponentialGeometricMovingAvg(prices, 2)));
-	}
-
-	private BackAllocator tripleMovingAvgs_(Fun<float[], Fixie3<float[], float[], float[]>> fun) {
-		return BackAllocator_.byPrices(prices -> {
-			Fixie3<float[], float[], float[]> fixie = fun.apply(prices);
-
-			return Quant.filterRange(1, index -> fixie //
-					.map((movingAvgs0, movingAvgs1, movingAvgs2) -> {
-						int last = index - 1;
-						float movingAvg0 = movingAvgs0[last];
-						float movingAvg1 = movingAvgs1[last];
-						float movingAvg2 = movingAvgs2[last];
-						int sign0 = Quant.sign(movingAvg0, movingAvg1);
-						int sign1 = Quant.sign(movingAvg1, movingAvg2);
-						return sign0 == sign1 ? (double) -sign0 : 0d;
-					}));
-		});
 	}
 
 	// http://www.metastocktools.com/downloads/turtlerules.pdf

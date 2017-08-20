@@ -128,7 +128,7 @@ public class BackAllocatorMech {
 
 	// three moving average cross-over
 	private BackAllocator ma3() {
-		return BackAllocatorGeneral.me.tripleMovingAvgs(prices -> Fixie.of( //
+		return BackAllocator_.triple(prices -> Fixie.of( //
 				ma.movingAvg(prices, 52), //
 				ma.movingAvg(prices, 26), //
 				ma.movingAvg(prices, 9)));
