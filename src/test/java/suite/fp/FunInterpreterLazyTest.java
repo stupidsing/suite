@@ -8,7 +8,7 @@ import suite.Suite;
 import suite.node.Int;
 import suite.node.Node;
 
-public class LazyFunInterpreterTest {
+public class FunInterpreterLazyTest {
 
 	@Test
 	public void testDecons() {
@@ -37,7 +37,7 @@ public class LazyFunInterpreterTest {
 	}
 
 	private void expect(boolean isLazyify, String expr, Node expected) {
-		EagerFunInterpreter interpreter = new EagerFunInterpreter();
+		FunInterpreterEager interpreter = new FunInterpreterEager();
 		interpreter.setLazyify(isLazyify);
 		assertEquals(expected, interpreter.eager(Suite.parse(expr)));
 	}

@@ -9,9 +9,9 @@ import java.util.List;
 
 import suite.Suite;
 import suite.adt.pair.Pair;
-import suite.fp.EagerFunInterpreter;
-import suite.fp.LazyFunInterpreter;
-import suite.fp.LazyFunInterpreter0;
+import suite.fp.FunInterpreterEager;
+import suite.fp.FunInterpreterLazy;
+import suite.fp.FunInterpreterLazy0;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Rule;
@@ -129,15 +129,15 @@ public class CommandDispatcher {
 			printEvaluated(writer, Suite.applyWriter(node));
 			break;
 		case EVALUATEEFI:
-			EagerFunInterpreter efi = new EagerFunInterpreter();
+			FunInterpreterEager efi = new FunInterpreterEager();
 			efi.setLazyify(opt.isLazy());
 			pw.println(efi.eager(node));
 			break;
 		case EVALUATELFI0:
-			pw.println(new LazyFunInterpreter0().lazy(node).get());
+			pw.println(new FunInterpreterLazy0().lazy(node).get());
 			break;
 		case EVALUATELFI:
-			pw.println(new LazyFunInterpreter().lazy(node).get());
+			pw.println(new FunInterpreterLazy().lazy(node).get());
 			break;
 		case EVALUATESTR:
 			node = Suite.substitute("string of .0", node);

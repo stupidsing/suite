@@ -52,7 +52,7 @@ import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.BinOp;
 import suite.util.To;
 
-public class EagerFunInterpreter {
+public class FunInterpreterEager {
 
 	private boolean isLazyify = false;
 

@@ -7,12 +7,12 @@ import org.junit.Test;
 import suite.Suite;
 import suite.node.Int;
 
-public class LazyFunInterpreter0Test {
+public class FunInterpreterLazy0Test {
 
 	@Test
 	public void testFibonacci() {
 		String expr = "define fib := (n => if (1 < n) then (fib {n - 1} + fib {n - 2}) else n) >> fib {12}";
-		assertEquals(Int.of(144), new LazyFunInterpreter0().lazy(Suite.parse(expr)).get());
+		assertEquals(Int.of(144), new FunInterpreterLazy0().lazy(Suite.parse(expr)).get());
 	}
 
 }
