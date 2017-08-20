@@ -28,7 +28,6 @@ import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
-import suite.streamlet.Read;
 import suite.util.AutoObject;
 import suite.util.Rethrow;
 
@@ -44,9 +43,7 @@ public class P1InferType {
 	private static class Type extends AutoObject<Type> implements UnNode<Type> {
 		public boolean unify(UnNode<Type> type) {
 			return getClass() == type.getClass() //
-					&& Read //
-							.from(fields()) //
-							.isAll(field -> Rethrow.ex(() -> unify.unify(cast(field.get(this)), cast(field.get(type)))));
+					&& fields().isAll(field -> Rethrow.ex(() -> unify.unify(cast(field.get(this)), cast(field.get(type)))));
 		}
 
 		private static UnNode<Type> cast(Object object) {

@@ -8,6 +8,7 @@ import java.util.Objects;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 
 public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, Comparable<T> {
 
@@ -68,7 +69,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 		return b;
 	}
 
-	public List<Field> fields() {
+	public Streamlet<Field> fields() {
 		return fields_();
 	}
 
@@ -92,8 +93,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 	}
 
 	public List<Comparable<?>> values() {
-		List<?> list0 = Read //
-				.from(fields_()) //
+		List<?> list0 = fields_() //
 				.map(field -> Rethrow.ex(() -> field.get(this))) //
 				.toList();
 		@SuppressWarnings("unchecked")
@@ -101,8 +101,8 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 		return list1;
 	}
 
-	private List<Field> fields_() {
-		return inspect.fields(getClass());
+	private Streamlet<Field> fields_() {
+		return Read.from(inspect.fields(getClass()));
 	}
 
 	private T self() {
