@@ -13,6 +13,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
+import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.backalloc.BackAllocConfiguration;
@@ -20,6 +21,7 @@ import suite.trade.backalloc.BackAllocConfigurations;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
+import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
 import suite.util.Util;
@@ -37,14 +39,12 @@ public class BackTestMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		BackAllocConfigurations bac_ = new BackAllocConfigurations(cfg, LogUtil::info);
-		Streamlet2<String, BackAllocConfiguration> bacByTag = bac_.bacs().bacByName;
-
 		// BEGIN
 		// END
 
 		String arg0 = 0 < args.length ? args[0] : "";
 		String arg1 = 1 < args.length ? args[1] : "";
+		String arg2 = 2 < args.length ? args[2] : "";
 
 		Set<String> strategyNames = !arg0.isEmpty() ? Read.from(arg0.split(",")).toSet() : null;
 
@@ -57,6 +57,13 @@ public class BackTestMain extends ExecutableProgram {
 							: Read.each(Integer.valueOf(s));
 				}) //
 				: Ints_.range(2007, Trade_.thisYear).map(i -> i);
+
+		Fun<Time, Streamlet<Asset>> fun = !arg2.isEmpty() //
+				? time -> Read.from(arg2.split(",")).map(cfg::queryCompany).collect(As::streamlet) //
+				: cfg::queryCompaniesByMarketCap;
+
+		BackAllocConfigurations bac_ = new BackAllocConfigurations(cfg, fun, LogUtil::info);
+		Streamlet2<String, BackAllocConfiguration> bacByTag = bac_.bacs().bacByName;
 
 		Streamlet2<String, Simulate> simulationByKey = bacByTag //
 				.filterKey(strategyName -> strategyNames == null || strategyNames.contains(strategyName)) //

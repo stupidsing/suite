@@ -69,9 +69,14 @@ public class BackAllocConfigurations {
 	}
 
 	public BackAllocConfigurations(Configuration cfg, Sink<String> log) {
+		this(cfg, cfg::queryCompaniesByMarketCap, log);
+	}
+
+	public BackAllocConfigurations(Configuration cfg, Fun<Time, Streamlet<Asset>> fun, Sink<String> log) {
+		super();
 		this.cfg = cfg;
+		this.fun = fun;
 		this.log = log;
-		fun = cfg::queryCompaniesByMarketCap;
 	}
 
 	public Bacs bacs() {
