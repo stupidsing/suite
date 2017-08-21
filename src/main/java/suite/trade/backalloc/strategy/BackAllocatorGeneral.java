@@ -308,11 +308,11 @@ public class BackAllocatorGeneral {
 				float min = Math.min(minMax[0], price);
 				float max = Math.max(minMax[1], price);
 				if (threshold <= Quant.return_(min, price)) {
-					hold = Math.min(0f, hold + part);
+					hold = Math.max(0f, hold + part);
 					max = price;
 				}
 				if (threshold <= Quant.return_(price, max)) {
-					hold = Math.max(0f, hold - part);
+					hold = Math.min(0f, hold - part);
 					min = price;
 				}
 				minMax[0] = min;
