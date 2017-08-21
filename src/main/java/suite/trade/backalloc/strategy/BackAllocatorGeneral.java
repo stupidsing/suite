@@ -13,7 +13,9 @@ import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.Quant;
 import suite.math.stat.TimeSeries;
+import suite.primitive.IntFltPredicate;
 import suite.primitive.IntInt_Obj;
+import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -48,6 +50,7 @@ public class BackAllocatorGeneral {
 			.<String, BackAllocator> empty2() //
 			.cons("bb", bb_) //
 			.cons("bb1", bollingerBands1()) //
+			.cons("bbtrend", bbTrend()) //
 			.cons("don9", donchian(9)) //
 			.cons("donhold", donHold) //
 			.cons("dontrend", donchianTrend(9)) //
@@ -97,6 +100,17 @@ public class BackAllocatorGeneral {
 		});
 	}
 
+	private BackAllocator bbTrend() {
+		float exitThreshold = .02f;
+
+		return BackAllocator_.byPrices(prices -> {
+			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
+			return captureEnter(prices, exitThreshold, //
+					(i, price) -> sds[i] <= -.5d, //
+					(i, price) -> .5d <= sds[i]);
+		});
+	}
+
 	private BackAllocator cash() {
 		return (akds, indices) -> index -> Collections.emptyList();
 	}
@@ -119,37 +133,13 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator donchianTrend(int window) {
-		float threshold = .02f;
+		float exitThreshold = .02f;
 
 		return BackAllocator_.byPrices(prices -> {
 			MovingRange[] movingRanges = ma.movingRange(prices, window);
-			int length = prices.length;
-			float[] holds = new float[length];
-			float hold = 0f;
-			float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
-
-			for (int i = 0; i < length; i++) {
-				MovingRange range = movingRanges[i];
-				float price = prices[i];
-				min = Float.min(min, price);
-				max = Float.max(max, price);
-				if (hold == 0f)
-					if (price <= range.min) {
-						hold = 1f;
-						max = price;
-					} else if (range.max <= price) {
-						hold = -1f;
-						min = price;
-					} else
-						;
-				else if (false //
-						|| hold < 0f && threshold <= Quant.return_(min, price) //
-						|| 0f < hold && threshold <= Quant.return_(price, max))
-					hold = 0f;
-				holds[i] = hold;
-			}
-
-			return index -> holds[index - 1];
+			return captureEnter(prices, exitThreshold, //
+					(i, price) -> price <= movingRanges[i].min, //
+					(i, price) -> movingRanges[i].max <= price);
 		});
 	}
 
@@ -517,6 +507,39 @@ public class BackAllocatorGeneral {
 				return movingAvgs0[last] < movingAvgs1[last] ? -1d : 1d;
 			});
 		});
+	}
+
+	private Int_Dbl captureEnter( //
+			float[] prices, //
+			float exitThreshold, //
+			IntFltPredicate isEnterLong, //
+			IntFltPredicate isEnterShort) {
+		int length = prices.length;
+		float[] holds = new float[length];
+		float hold = 0f;
+		float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
+
+		for (int i = 0; i < length; i++) {
+			float price = prices[i];
+			min = Float.min(min, price);
+			max = Float.max(max, price);
+			if (hold == 0f)
+				if (isEnterLong.test(i, price)) {
+					hold = 1f;
+					max = price;
+				} else if (isEnterShort.test(i, price)) {
+					hold = -1f;
+					min = price;
+				} else
+					;
+			else if (false //
+					|| hold < 0f && exitThreshold <= Quant.return_(min, price) //
+					|| 0f < hold && exitThreshold <= Quant.return_(price, max))
+				hold = 0f;
+			holds[i] = hold;
+		}
+
+		return index -> holds[index - 1];
 	}
 
 }
