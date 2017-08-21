@@ -32,26 +32,15 @@ public class BackTestMain extends ExecutableProgram {
 	private BackTester runner = new BackTester();
 	private Configuration cfg = new ConfigurationImpl();
 
-	private Bacs bacs = new BackAllocConfigurations(cfg, LogUtil::info).bacs;
-
 	public static void main(String[] args) {
 		Util.run(BackTestMain.class, args);
 	}
 
 	@Override
 	protected boolean run(String[] args) {
-		Streamlet2<String, BackAllocConfiguration> bacByTag0 = bacs.bacByName;
-		Streamlet2<String, BackAllocConfiguration> bacByTag1;
+		Bacs bacs = new BackAllocConfigurations(cfg, LogUtil::info).bacs;
 
-		if (Boolean.TRUE)
-			bacByTag1 = bacByTag0;
-		else
-			bacByTag1 = Streamlet2.concat( //
-					questoaQuella("0020.HK", "0004.HK"), //
-					questoaQuella("0052.HK", "0341.HK"), //
-					questoaQuella("0670.HK", "1055.HK"), //
-					questoaQuella("0753.HK", "1055.HK"), //
-					bacByTag0);
+		Streamlet2<String, BackAllocConfiguration> bacByTag = bacs.bacByName;
 
 		// BEGIN
 		// END
@@ -71,7 +60,7 @@ public class BackTestMain extends ExecutableProgram {
 				}) //
 				: Ints_.range(2007, Trade_.thisYear).map(i -> i);
 
-		Streamlet2<String, Simulate> simulationByKey = bacByTag1 //
+		Streamlet2<String, Simulate> simulationByKey = bacByTag //
 				.filterKey(strategyName -> strategyNames == null || strategyNames.contains(strategyName)) //
 				.map(Pair::of) //
 				.join2(years.sort(Object_::compare).map(TimeRange::ofYear)) //
@@ -93,14 +82,6 @@ public class BackTestMain extends ExecutableProgram {
 		System.out.println(runner.conclude(simulationByKey));
 
 		return true;
-	}
-
-	private Streamlet2<String, BackAllocConfiguration> questoaQuella(String symbol0, String symbol1) {
-		return Read //
-				.<String, BackAllocConfiguration> empty2() //
-				.cons(symbol0, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol0))) //
-				.cons(symbol1, BackAllocConfiguration.ofSingle(cfg.queryCompany(symbol1))) //
-				.cons("pair/" + symbol0 + "/" + symbol1, bacs.questoaQuella(symbol0, symbol1));
 	}
 
 }

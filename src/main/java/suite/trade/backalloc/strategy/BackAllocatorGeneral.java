@@ -59,6 +59,7 @@ public class BackAllocatorGeneral {
 			.cons("rsi", rsi) //
 			.cons("sar", sar()) //
 			.cons("shannon", shannonHsi) //
+			.cons("trend2", trend2()) //
 			.cons("turtles", turtles(20, 10, 55, 20)) //
 			.cons("tma", tma) //
 			.cons("varratio", varianceRatio()) //
@@ -257,6 +258,32 @@ public class BackAllocatorGeneral {
 				return Arrays.asList(Pair.of(symbol, ratio2));
 			};
 		};
+	}
+
+	private BackAllocator trend2() {
+		double threshold = .02d;
+		float part = .1f;
+
+		return BackAllocator_.byPrices(prices -> {
+			float[] minMax = { Float.MAX_VALUE, Float.MIN_VALUE, };
+
+			return Quant.fold(0, prices.length, (i, hold) -> {
+				float price = prices[i];
+				float min = Math.min(minMax[0], price);
+				float max = Math.max(minMax[1], price);
+				if (threshold <= Quant.return_(min, price)) {
+					hold = Math.min(0f, hold + part);
+					max = price;
+				}
+				if (threshold <= Quant.return_(price, max)) {
+					hold = Math.max(0f, hold - part);
+					min = price;
+				}
+				minMax[0] = min;
+				minMax[1] = max;
+				return hold;
+			});
+		});
 	}
 
 	private BackAllocator tripleExpGeometricMovingAvgs() {
