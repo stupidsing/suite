@@ -69,7 +69,8 @@ public class BackTestMain extends ExecutableProgram {
 				}) //
 				.collect(As::streamlet2);
 
-		String content0 = Read.bytes(Paths.get("src/main/java/suite/trade/analysis/BackTestMain.java")) //
+		String content0 = Read //
+				.bytes(Paths.get("src/main/java/suite/trade/analysis/BackTestMain.java")) //
 				.collect(As::utf8decode) //
 				.map(Chars::toString) //
 				.collect(As::joined);
