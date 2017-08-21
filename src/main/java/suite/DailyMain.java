@@ -91,7 +91,6 @@ public class DailyMain extends ExecutableProgram {
 		if (Boolean.FALSE) {
 			alloc("donchian", 100000f, bacs.bac_donHold);
 			pairs(0f, "0341.HK", "0052.HK");
-			questoaQuella(200000f, "0670.HK", "1055.HK");
 			sellForEarn(sellPool);
 		}
 
@@ -229,10 +228,6 @@ public class DailyMain extends ExecutableProgram {
 
 	private Result pairs(float fund, String symbol0, String symbol1) {
 		return alloc("pairs/" + symbol0 + "/" + symbol1, fund, pairs(symbol0, symbol1));
-	}
-
-	private Result questoaQuella(float fund, String symbol0, String symbol1) {
-		return alloc("qq/" + symbol0 + "/" + symbol1, fund, bacs.questoaQuella(symbol0, symbol1));
 	}
 
 	public BackAllocConfiguration pairs(String symbol0, String symbol1) {

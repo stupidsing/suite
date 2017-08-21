@@ -1,6 +1,5 @@
 package suite.trade.backalloc;
 
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -67,12 +66,6 @@ public class BackAllocConfigurations {
 
 		public final Streamlet2<String, BackAllocConfiguration> bacByName = Streamlet2 //
 				.concat(bacs_, bacByName0);
-
-		public BackAllocConfiguration questoaQuella(String symbol0, String symbol1) {
-			Streamlet<Asset> assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
-			BackAllocator backAllocator = baOld.questoQuella(symbol0, symbol1);
-			return new BackAllocConfiguration(time -> assets, backAllocator);
-		}
 	}
 
 	public BackAllocConfigurations(Configuration cfg, Sink<String> log) {
