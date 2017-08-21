@@ -20,12 +20,10 @@ import suite.util.FunUtil.Sink;
 public class BackAllocConfigurations {
 
 	private Configuration cfg;
+	private Fun<Time, Streamlet<Asset>> fun;
 	private Sink<String> log;
 
-	public final Bacs bacs;
-
 	public class Bacs {
-		private Fun<Time, Streamlet<Asset>> fun = cfg::queryCompaniesByMarketCap;
 		private Fun<Time, Streamlet<Asset>> fun_hsi = time -> Read.each(Asset.hsi);
 
 		private BackAllocatorGeneral baGen = BackAllocatorGeneral.me;
@@ -80,7 +78,11 @@ public class BackAllocConfigurations {
 	public BackAllocConfigurations(Configuration cfg, Sink<String> log) {
 		this.cfg = cfg;
 		this.log = log;
-		bacs = new Bacs();
+		fun = cfg::queryCompaniesByMarketCap;
+	}
+
+	public Bacs bacs() {
+		return new Bacs();
 	}
 
 }

@@ -53,7 +53,7 @@ public class DailyMain extends ExecutableProgram {
 	private Sink<String> log = To.sink(sb);
 	private Time today = Time.now();
 
-	private Bacs bacs = new BackAllocConfigurations(cfg, log).bacs;
+	private Bacs bacs = new BackAllocConfigurations(cfg, log).bacs();
 
 	private class Result {
 		private String strategy;

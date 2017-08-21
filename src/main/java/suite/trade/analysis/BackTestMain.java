@@ -17,7 +17,6 @@ import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocConfigurations;
-import suite.trade.backalloc.BackAllocConfigurations.Bacs;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
@@ -38,9 +37,8 @@ public class BackTestMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		Bacs bacs = new BackAllocConfigurations(cfg, LogUtil::info).bacs;
-
-		Streamlet2<String, BackAllocConfiguration> bacByTag = bacs.bacByName;
+		BackAllocConfigurations bac_ = new BackAllocConfigurations(cfg, LogUtil::info);
+		Streamlet2<String, BackAllocConfiguration> bacByTag = bac_.bacs().bacByName;
 
 		// BEGIN
 		// END
