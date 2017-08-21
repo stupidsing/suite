@@ -50,6 +50,7 @@ public class BackAllocatorGeneral {
 			.cons("bb1", bollingerBands1()) //
 			.cons("don9", donchian(9)) //
 			.cons("donhold", donHold) //
+			.cons("dontrend", donchianTrend(9)) //
 			.cons("ema", ema) //
 			.cons("lr", lastReturn(0, 2)) //
 			.cons("ma1", movingAvg()) //
@@ -113,6 +114,41 @@ public class BackAllocatorGeneral {
 				double vol = (max - min) / (price * threshold);
 				return 1d < vol ? Quant.hold(hold, price, min, range.median, max) : hold;
 			});
+		});
+	}
+
+	private BackAllocator donchianTrend(int window) {
+		float threshold = .02f;
+
+		return BackAllocator_.byPrices(prices -> {
+			MovingRange[] movingRanges = ma.movingRange(prices, window);
+			int length = prices.length;
+			float[] holds = new float[length];
+			float hold = 0f;
+			float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
+
+			for (int i = 0; i < length; i++) {
+				MovingRange range = movingRanges[i];
+				float price = prices[i];
+				min = Float.min(min, price);
+				max = Float.max(max, price);
+				if (hold == 0f)
+					if (price <= range.min) {
+						hold = 1f;
+						max = price;
+					} else if (range.max <= price) {
+						hold = -1f;
+						min = price;
+					} else
+						;
+				else if (false //
+						|| hold < 0f && threshold <= Quant.return_(min, price) //
+						|| 0f < hold && threshold <= Quant.return_(price, max))
+					hold = 0f;
+				holds[i] = hold;
+			}
+
+			return index -> holds[index - 1];
 		});
 	}
 
