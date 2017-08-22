@@ -43,7 +43,7 @@ public class BackAllocatorGeneral {
 	public BackAllocator donHold = donchian(9).holdExtend(2).pick(5);
 	public BackAllocator ema = ema().pick(3);
 	public BackAllocator rsi = rsi();
-	public BackAllocator shannonHsi = shannon(Asset.hsiSymbol);
+	public BackAllocator pprHsi = priceProRata(Asset.hsiSymbol);
 	public BackAllocator tma = tripleExpGeometricMovingAvgs();
 
 	public final Streamlet2<String, BackAllocator> baByName = Read //
@@ -61,9 +61,9 @@ public class BackAllocatorGeneral {
 			.cons("mom", momentum()) //
 			.cons("momacc", momentumAcceleration()) //
 			.cons("opcl8", openClose8()) //
+			.cons("ppr", pprHsi) //
 			.cons("rsi", rsi) //
 			.cons("sar", sar()) //
-			.cons("shannon", shannonHsi) //
 			.cons("trend2", trend2()) //
 			.cons("turtles", turtles(20, 10, 55, 20)) //
 			.cons("tma", tma) //
@@ -246,6 +246,25 @@ public class BackAllocatorGeneral {
 		});
 	}
 
+	private BackAllocator priceProRata(String symbol) {
+		double scale = 320d;
+
+		return (akds, indices) -> {
+			float[] prices = akds.dsByKey //
+					.filter((symbol_, ds) -> String_.equals(symbol, symbol_)) //
+					.uniqueResult().t1.prices;
+
+			float price0 = prices[indices[0]];
+
+			return index -> {
+				double ratio0 = Quant.return_(price0, prices[index - 1]);
+				double ratio1 = scale * ratio0;
+				double ratio2 = .5d + ratio1;
+				return Arrays.asList(Pair.of(symbol, ratio2));
+			};
+		};
+	}
+
 	private BackAllocator rsi() {
 		int window = 32;
 		double threshold = .7d;
@@ -276,25 +295,6 @@ public class BackAllocatorGeneral {
 				return (double) Quant.sign(sars[last], ds.prices[last]);
 			});
 		});
-	}
-
-	private BackAllocator shannon(String symbol) {
-		double scale = 320d;
-
-		return (akds, indices) -> {
-			float[] prices = akds.dsByKey //
-					.filter((symbol_, ds) -> String_.equals(symbol, symbol_)) //
-					.uniqueResult().t1.prices;
-
-			float price0 = prices[indices[0]];
-
-			return index -> {
-				double ratio0 = Quant.return_(price0, prices[index - 1]);
-				double ratio1 = scale * ratio0;
-				double ratio2 = .5d + ratio1;
-				return Arrays.asList(Pair.of(symbol, ratio2));
-			};
-		};
 	}
 
 	private BackAllocator trend2() {

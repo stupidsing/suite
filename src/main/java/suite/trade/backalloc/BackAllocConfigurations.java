@@ -52,7 +52,7 @@ public class BackAllocConfigurations {
 		private Streamlet2<String, BackAllocConfiguration> bacByName0 = Read //
 				.<String, BackAllocConfiguration> empty2() //
 				.cons("hsi", BackAllocConfiguration.ofSingle(Asset.hsi)) //
-				.cons("hsi.shannon", baGen.shannonHsi.cfgUnl(fun_hsi)) //
+				.cons("hsi.ppr", baGen.pprHsi.cfgUnl(fun_hsi)) //
 				.cons("bb", bac_bbHold) //
 				.cons("bbSlope", baOld.bbSlope().cfgUnl(fun)) //
 				.cons("facoil", ba_facoil.cfgUnl(fun)) //
