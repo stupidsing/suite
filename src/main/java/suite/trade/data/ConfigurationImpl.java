@@ -30,7 +30,7 @@ public class ConfigurationImpl implements Configuration {
 
 	private Src srcHkd__ = new Src(hkd::queryCompany, hkd::quote, hkd::dataSource);
 	private Src srcHkex_ = new Src(hkex::queryCompany, sina::quote, yahoo::dataSourceL1);
-	private Src srcIndex = new Src(null, yahoo::quote, yahoo::dataSourceL1);
+	private Src srcIndex = new Src(hkd::queryCompany, yahoo::quote, yahoo::dataSourceL1);
 	private Src srcNymex = new Src(null, yahoo::quote, quandl::dataSourceCsv);
 	private Src srcNone_ = new Src(null, google::quote, null);
 

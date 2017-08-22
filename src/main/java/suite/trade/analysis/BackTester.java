@@ -4,6 +4,7 @@ import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.FltPrimitives.Obj_Flt;
+import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -44,14 +45,15 @@ public class BackTester {
 				.groupBy(sims -> {
 					double txFee = sims.collectAsDouble(Obj_Dbl.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
 
-					MeanVariance mv = stat.meanVariance(sims //
+					float[] returns = sims //
 							.collect(Obj_Flt.lift(sim -> (float) sim.annualReturn)) //
-							.toArray());
+							.toArray();
 
-					double apr = mv.mean;
+					MeanVariance mv = stat.meanVariance(returns);
+					double logCagr = FltStreamlet.of(returns).mapFlt(return_ -> (float) Math.log1p(return_)).average();
 
-					return ">> apr = " + To.string(apr) //
-							+ ", sharpe = " + To.string(apr / mv.standardDeviation()) //
+					return ">> cagr = " + To.string(Math.expm1(logCagr)) //
+							+ ", sharpe = " + To.string(mv.mean / mv.standardDeviation()) //
 							+ ", txFee = " + To.string(txFee / sims.size());
 				}) //
 				.map((key, summary) -> "\nTEST = " + key + " " + summary);

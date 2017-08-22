@@ -20,6 +20,8 @@ public class Hkd {
 	public Asset queryCompany(String symbol) {
 		if (String_.equals(symbol, Asset.cashSymbol))
 			return Asset.cash;
+		else if (String_.equals(symbol, Asset.hsiSymbol))
+			return Asset.hsi;
 		else
 			throw new RuntimeException();
 	}
