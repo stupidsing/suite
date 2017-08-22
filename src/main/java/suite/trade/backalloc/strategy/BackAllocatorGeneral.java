@@ -107,8 +107,8 @@ public class BackAllocatorGeneral {
 		return BackAllocator_.byPrices(prices -> {
 			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
 			return captureEnter(prices, exitThreshold, //
-					(i, price) -> sds[i] <= -.5d, //
-					(i, price) -> .5d <= sds[i]);
+					(i, price) -> .5d <= sds[i], //
+					(i, price) -> sds[i] <= -.5d);
 		});
 	}
 
@@ -139,8 +139,8 @@ public class BackAllocatorGeneral {
 		return BackAllocator_.byPrices(prices -> {
 			MovingRange[] movingRanges = ma.movingRange(prices, window);
 			return captureEnter(prices, exitThreshold, //
-					(i, price) -> price <= movingRanges[i].min, //
-					(i, price) -> movingRanges[i].max <= price);
+					(i, price) -> movingRanges[i].max <= price, //
+					(i, price) -> price <= movingRanges[i].min);
 		});
 	}
 
@@ -512,8 +512,8 @@ public class BackAllocatorGeneral {
 	private Int_Dbl captureEnter( //
 			float[] prices, //
 			float exitThreshold, //
-			IntFltPredicate isEnterLong, //
-			IntFltPredicate isEnterShort) {
+			IntFltPredicate isEnterShort, //
+			IntFltPredicate isEnterLong) {
 		int length = prices.length;
 		float[] holds = new float[length];
 		float hold = 0f;
@@ -523,19 +523,17 @@ public class BackAllocatorGeneral {
 			float price = prices[i];
 			min = Float.min(min, price);
 			max = Float.max(max, price);
-			if (hold == 0f)
-				if (isEnterLong.test(i, price)) {
-					hold = 1f;
-					max = price;
-				} else if (isEnterShort.test(i, price)) {
-					hold = -1f;
-					min = price;
-				} else
-					;
-			else if (false //
-					|| hold < 0f && exitThreshold <= Quant.return_(min, price) //
-					|| 0f < hold && exitThreshold <= Quant.return_(price, max))
-				hold = 0f;
+			if (hold < 0f) // exit short
+				hold = Quant.return_(min, price) < exitThreshold ? hold : 0f;
+			else if (0f < hold) // exit long
+				hold = Quant.return_(price, max) < exitThreshold ? hold : 0f;
+			else if (isEnterLong.test(i, price)) {
+				hold = 1f;
+				max = price;
+			} else if (isEnterShort.test(i, price)) {
+				hold = -1f;
+				min = price;
+			}
 			holds[i] = hold;
 		}
 
