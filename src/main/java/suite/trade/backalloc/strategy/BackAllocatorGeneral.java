@@ -55,6 +55,7 @@ public class BackAllocatorGeneral {
 			.cons("donhold", donHold) //
 			.cons("dontrend", donchianTrend(9)) //
 			.cons("ema", ema) //
+			.cons("half", half()) //
 			.cons("hold", hold()) //
 			.cons("lr", lastReturn(0, 2)) //
 			.cons("ma1", movingAvg()) //
@@ -159,14 +160,13 @@ public class BackAllocatorGeneral {
 		});
 	}
 
-	private BackAllocator hold() {
-		return (akds, indices) -> {
-			List<Pair<String, Double>> potentialBySymbol = akds.dsByKey //
-					.map((symbol, ds) -> Pair.of(symbol, 1d)) //
-					.toList();
+	private BackAllocator half() {
+		double r = .5d;
+		return fixed(r);
+	}
 
-			return index -> potentialBySymbol;
-		};
+	private BackAllocator hold() {
+		return fixed(1d);
 	}
 
 	private BackAllocator lastReturn(int nWorsts, int nBests) {
@@ -540,6 +540,16 @@ public class BackAllocatorGeneral {
 		}
 
 		return index -> holds[index - 1];
+	}
+
+	private BackAllocator fixed(double r) {
+		return (akds, indices) -> {
+			List<Pair<String, Double>> potentialBySymbol = akds.dsByKey //
+					.map((symbol, ds) -> Pair.of(symbol, r)) //
+					.toList();
+
+			return index -> potentialBySymbol;
+		};
 	}
 
 }
