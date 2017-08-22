@@ -524,15 +524,15 @@ public class BackAllocatorGeneral {
 			min = Float.min(min, price);
 			max = Float.max(max, price);
 			if (hold < 0f) // exit short
-				hold = Quant.return_(min, price) < exitThreshold ? hold : 0f;
+				hold = exitThreshold < Quant.return_(min, price) ? hold : 0f;
 			else if (0f < hold) // exit long
-				hold = Quant.return_(price, max) < exitThreshold ? hold : 0f;
-			else if (isEnterLong.test(i, price)) {
-				hold = 1f;
-				max = price;
-			} else if (isEnterShort.test(i, price)) {
+				hold = exitThreshold < Quant.return_(price, max) ? hold : 0f;
+			else if (isEnterShort.test(i, price)) {
 				hold = -1f;
 				min = price;
+			} else if (isEnterLong.test(i, price)) {
+				hold = 1f;
+				max = price;
 			}
 			holds[i] = hold;
 		}
