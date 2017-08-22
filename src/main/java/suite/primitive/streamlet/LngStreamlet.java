@@ -85,6 +85,10 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return fun.apply(this);
 	}
 
+	public long average() {
+		return spawn().average();
+	}
+
 	public Streamlet<LngOutlet> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

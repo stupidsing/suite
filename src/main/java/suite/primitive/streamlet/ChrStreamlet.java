@@ -85,6 +85,10 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		return fun.apply(this);
 	}
 
+	public char average() {
+		return spawn().average();
+	}
+
 	public Streamlet<ChrOutlet> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

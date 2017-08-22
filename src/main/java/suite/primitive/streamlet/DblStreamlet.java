@@ -85,6 +85,10 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return fun.apply(this);
 	}
 
+	public double average() {
+		return spawn().average();
+	}
+
 	public Streamlet<DblOutlet> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

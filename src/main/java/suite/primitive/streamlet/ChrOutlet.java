@@ -107,6 +107,16 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		return of(ChrFunUtil.append(c, source));
 	}
 
+	public char average() {
+		int count = 0;
+		char result = 0, c1;
+		while ((c1 = next()) != ChrFunUtil.EMPTYVALUE) {
+			result += c1;
+			count++;
+		}
+		return (char) (result / count);
+	}
+
 	public Outlet<ChrOutlet> chunk(int n) {
 		return Outlet.of(FunUtil.map(ChrOutlet::new, ChrFunUtil.chunk(n, source)));
 	}

@@ -107,6 +107,16 @@ public class FltOutlet implements OutletDefaults<Float> {
 		return of(FltFunUtil.append(c, source));
 	}
 
+	public float average() {
+		int count = 0;
+		float result = 0, c1;
+		while ((c1 = next()) != FltFunUtil.EMPTYVALUE) {
+			result += c1;
+			count++;
+		}
+		return (float) (result / count);
+	}
+
 	public Outlet<FltOutlet> chunk(int n) {
 		return Outlet.of(FunUtil.map(FltOutlet::new, FltFunUtil.chunk(n, source)));
 	}

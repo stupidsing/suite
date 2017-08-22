@@ -85,6 +85,10 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return fun.apply(this);
 	}
 
+	public float average() {
+		return spawn().average();
+	}
+
 	public Streamlet<FltOutlet> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

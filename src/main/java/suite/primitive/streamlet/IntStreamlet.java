@@ -85,6 +85,10 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return fun.apply(this);
 	}
 
+	public int average() {
+		return spawn().average();
+	}
+
 	public Streamlet<IntOutlet> chunk(int n) {
 		return new Streamlet<>(() -> spawn().chunk(n));
 	}

@@ -107,6 +107,16 @@ public class DblOutlet implements OutletDefaults<Double> {
 		return of(DblFunUtil.append(c, source));
 	}
 
+	public double average() {
+		int count = 0;
+		double result = 0, c1;
+		while ((c1 = next()) != DblFunUtil.EMPTYVALUE) {
+			result += c1;
+			count++;
+		}
+		return (double) (result / count);
+	}
+
 	public Outlet<DblOutlet> chunk(int n) {
 		return Outlet.of(FunUtil.map(DblOutlet::new, DblFunUtil.chunk(n, source)));
 	}

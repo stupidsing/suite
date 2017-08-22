@@ -107,6 +107,16 @@ public class LngOutlet implements OutletDefaults<Long> {
 		return of(LngFunUtil.append(c, source));
 	}
 
+	public long average() {
+		int count = 0;
+		long result = 0, c1;
+		while ((c1 = next()) != LngFunUtil.EMPTYVALUE) {
+			result += c1;
+			count++;
+		}
+		return (long) (result / count);
+	}
+
 	public Outlet<LngOutlet> chunk(int n) {
 		return Outlet.of(FunUtil.map(LngOutlet::new, LngFunUtil.chunk(n, source)));
 	}

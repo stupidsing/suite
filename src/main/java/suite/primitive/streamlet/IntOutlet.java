@@ -107,6 +107,16 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		return of(IntFunUtil.append(c, source));
 	}
 
+	public int average() {
+		int count = 0;
+		int result = 0, c1;
+		while ((c1 = next()) != IntFunUtil.EMPTYVALUE) {
+			result += c1;
+			count++;
+		}
+		return (int) (result / count);
+	}
+
 	public Outlet<IntOutlet> chunk(int n) {
 		return Outlet.of(FunUtil.map(IntOutlet::new, IntFunUtil.chunk(n, source)));
 	}
