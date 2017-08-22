@@ -121,13 +121,13 @@ public class WalkForwardAllocTester {
 		for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
 			sb.append(e.t0 + ":" + String.format("%.0f", e.t1 * 100d / length) + "%,");
 
-		return "nTicks: " + length //
-				+ ", val: " + (0 < length ? valuations_[length - 1] : "N/A") //
-				+ ", tick rtn: " + To.string(rs.return_) //
-				+ ", sharpe: " + To.string(rs.sharpeRatio()) //
-				+ ", skew: " + To.string(stat.skewness(valuations_)) //
-				+ ", " + account.transactionSummary(cfg::transactionFee) //
-				+ ", holds = " + sb + "...";
+		return "nTicks:" + length //
+				+ " val:" + (0 < length ? valuations_[length - 1] : "N/A") //
+				+ " tick rtn:" + To.string(rs.return_) //
+				+ " sharpe:" + To.string(rs.sharpeRatio()) //
+				+ " skew:" + To.string(stat.skewness(valuations_)) //
+				+ " " + account.transactionSummary(cfg::transactionFee) //
+				+ " holds = " + sb + "...";
 	}
 
 	private String play(List<Trade> trades_) {
