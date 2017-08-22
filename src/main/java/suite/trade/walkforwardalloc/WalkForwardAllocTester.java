@@ -123,7 +123,7 @@ public class WalkForwardAllocTester {
 
 		return "nTicks:" + length //
 				+ " val:" + (0 < length ? valuations_[length - 1] : "N/A") //
-				+ " tick rtn:" + To.string(rs.return_) //
+				+ " tickRtn:" + To.string(rs.return_) //
 				+ " sharpe:" + To.string(rs.sharpeRatio()) //
 				+ " skew:" + To.string(stat.skewness(valuations_)) //
 				+ " " + account.transactionSummary(cfg::transactionFee) //
