@@ -77,7 +77,7 @@ public class Account {
 
 	public String transactionSummary(Dbl_Dbl transactionFeeFun) {
 		double fee = transactionFeeFun.apply(transactionAmount);
-		return "txns: " + To.string(transactionAmount) + "/" + nTransactions + ", fee: " + To.string(fee);
+		return "txns:" + To.string(transactionAmount) + "/" + nTransactions + " fee:" + To.string(fee);
 	}
 
 	private void update(String code, int amount) {
