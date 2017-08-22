@@ -24,6 +24,7 @@ public class ConfigurationImpl implements Configuration {
 	private Hkd hkd = new Hkd();
 	private Hkex hkex = new Hkex();
 	private HkexFactBook hkexFactBook = new HkexFactBook();
+	private PriceFilter pf = new PriceFilter(this, price -> price / 1000f);
 	private Quandl quandl = new Quandl();
 	private Sina sina = new Sina();
 	private Yahoo yahoo = new Yahoo();
@@ -33,6 +34,7 @@ public class ConfigurationImpl implements Configuration {
 	private Src srcIndex = new Src(hkd::queryCompany, yahoo::quote, yahoo::dataSourceL1);
 	private Src srcNymex = new Src(null, yahoo::quote, quandl::dataSourceCsv);
 	private Src srcNone_ = new Src(null, google::quote, null);
+	private Src srcPf___ = new Src(pf::queryCompany, pf::quote, pf::dataSource);
 
 	private class Src {
 		private Fun<String, Asset> queryFun;
@@ -112,6 +114,8 @@ public class ConfigurationImpl implements Configuration {
 			return srcNymex;
 		else if (Boolean.FALSE)
 			return srcNone_;
+		else if (symbol.startsWith("#"))
+			return srcPf___;
 		else
 			throw new RuntimeException(symbol);
 	}
