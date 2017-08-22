@@ -164,11 +164,11 @@ public class BackAllocTester {
 				sb.append(e.t0 + ":" + String.format("%.0f", e.t1 * 100d) + "%,");
 
 			if (exception == null)
-				return "period = " + period //
-						+ ", valuation = " + (0 < length ? valuations[length - 1] : "N/A") //
-						+ ", annual return = " + To.string(annualReturn) //
-						+ ", sharpe = " + To.string(sharpe) //
-						+ ", skewness = " + To.string(skewness) //
+				return period //
+						+ ", val: " + (0 < length ? valuations[length - 1] : "N/A") //
+						+ ", annual rtn: " + To.string(annualReturn) //
+						+ ", sharpe: " + To.string(sharpe) //
+						+ ", skew: " + To.string(skewness) //
 						+ ", " + account.transactionSummary(cfg::transactionFee) //
 						+ ", holds = " + sb + "...";
 			else {
