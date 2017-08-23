@@ -4,6 +4,7 @@ import suite.os.LogUtil;
 import suite.primitive.IntFlt_Flt;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.LngFltPair;
+import suite.util.To;
 
 /**
  * Eliminate price sparks caused by data source bugs.
@@ -51,7 +52,7 @@ public class Cleanse {
 			float price2 = get.apply(i - 0);
 			if (isValid(price0, price2) && !isValid(price0, price1) && !isValid(price1, price2)) {
 				set.apply(i - 1, price0);
-				LogUtil.warn("price spiked: " + price0 + ", " + price1 + ", " + price2);
+				LogUtil.warn("price spiked: " + To.string(price0) + ", " + To.string(price1) + ", " + To.string(price2));
 			}
 		}
 	}
