@@ -57,7 +57,8 @@ public class BackAllocatorGeneral {
 			.cons("ema", ema) //
 			.cons("half", half()) //
 			.cons("hold", hold()) //
-			.cons("lr", lastReturn(0, 2)) //
+			.cons("lr03", lastReturn(0, 3)) //
+			.cons("lr30", lastReturn(3, 0)) //
 			.cons("ma1", movingAvg()) //
 			.cons("mom", momentum()) //
 			.cons("momacc", momentumAcceleration()) //
@@ -172,7 +173,7 @@ public class BackAllocatorGeneral {
 	private BackAllocator lastReturn(int nWorsts, int nBests) {
 		return (akds, indices) -> index -> {
 			List<String> list = akds.dsByKey //
-					.map2((symbol, ds) -> ds.lastReturn(index)) //
+					.mapValue(ds -> ds.lastReturn(index)) //
 					.sortBy((symbol, return_) -> return_) //
 					.keys() //
 					.toList();
