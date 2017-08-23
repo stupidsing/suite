@@ -126,7 +126,7 @@ public class WalkForwardAllocTester {
 				+ " tickRtn:" + To.string(rs.return_) //
 				+ " sharpe:" + To.string(rs.sharpeRatio()) //
 				+ " skew:" + To.string(stat.skewness(valuations_)) //
-				+ " " + account.transactionSummary(cfg::transactionFee) //
+				+ " " + account.txnSummary(cfg::transactionFee) //
 				+ " holds = " + sb + "...";
 	}
 
