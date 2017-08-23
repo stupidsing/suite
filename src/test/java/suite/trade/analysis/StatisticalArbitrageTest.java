@@ -12,6 +12,7 @@ import org.junit.Test;
 import suite.adt.pair.Pair;
 import suite.algo.KmeansCluster;
 import suite.math.stat.BollingerBands;
+import suite.math.stat.Quant;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.TimeSeries;
@@ -23,6 +24,7 @@ import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.pair.IntFltPair;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -238,18 +240,15 @@ public class StatisticalArbitrageTest {
 
 		for (Pair<String, float[]> e : dctDataSources.dctByKey) {
 			float[] dct = e.t1;
-			int maxIndex = Integer.MIN_VALUE;
-			float maxValue = Float.MIN_VALUE;
+			IntFltPair max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
-			for (int i = minPeriod; i < dctDataSources.length; i++) {
+			for (int i = minPeriod; i < dct.length; i++) {
 				float f = Math.abs(dct[i]);
-				if (maxValue < f) {
-					maxIndex = i;
-					maxValue = f;
-				}
+				if (max.t1 < f)
+					max = IntFltPair.of(i, f);
 			}
 
-			LogUtil.info(e.t0 + " has period " + maxIndex);
+			LogUtil.info(e.t0 + " has period " + max.t0);
 		}
 	}
 
@@ -343,13 +342,9 @@ public class StatisticalArbitrageTest {
 	private DctDataSource dctDataSources() {
 		AlignKeyDataSource<String> akds = dataSources();
 		int length0 = akds.ts.length;
-		int size = 1, size1;
-
-		while ((size1 = size << 1) <= length0)
-			size = size1;
-
-		int fr = length0 - size;
-		return new DctDataSource(size, akds.dsByKey.mapValue(ds -> dct.dct(Arrays.copyOfRange(ds.prices, fr, length0))));
+		int log2 = Quant.log2trunc(length0);
+		int fr = length0 - log2;
+		return new DctDataSource(log2, akds.dsByKey.mapValue(ds -> dct.dct(Arrays.copyOfRange(ds.prices, fr, length0))));
 	}
 
 	private class DctDataSource {

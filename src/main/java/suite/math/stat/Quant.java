@@ -95,6 +95,13 @@ public class Quant {
 			return -1f;
 	}
 
+	public static int log2trunc(int length0) {
+		int size = 1, size1;
+		while ((size1 = size << 1) <= length0)
+			size = size1;
+		return size;
+	}
+
 	public static double logReturn(double price0, double price1) {
 		return Math.log1p(return_(price0, price1));
 	}
