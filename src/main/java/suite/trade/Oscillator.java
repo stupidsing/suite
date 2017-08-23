@@ -1,5 +1,6 @@
 package suite.trade;
 
+import suite.math.stat.Quant;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
@@ -47,14 +48,14 @@ public class Oscillator {
 
 		float[] maDmUps = ma.movingAvg(dmUps, nDays);
 		float[] maDmDns = ma.movingAvg(dmDns, nDays);
-		float[] invAtrs = To.arrayOfFloats(ma.movingAvg(trueRange(ds), nDays), f -> 1f / f);
+		float[] invAtrs = To.arrayOfFloats(ma.movingAvg(trueRange(ds), nDays), f -> Quant.div(1f, f));
 		float[] diUps = Floats_.toArray(length, i -> maDmUps[i] * invAtrs[i]);
 		float[] diDns = Floats_.toArray(length, i -> maDmDns[i] * invAtrs[i]);
 
 		return new Dmi(Floats_.toArray(length, i -> {
 			float diDn = diDns[i];
 			float diUp = diUps[i];
-			return (diUp - diDn) / (diUp + diDn);
+			return Quant.div(diUp - diDn, diUp + diDn);
 		}));
 	}
 

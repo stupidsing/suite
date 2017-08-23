@@ -4,8 +4,19 @@ import java.util.function.IntPredicate;
 
 import suite.primitive.IntFlt_Flt;
 import suite.primitive.Int_Dbl;
+import suite.trade.Trade_;
 
 public class Quant {
+
+	public static double div(double n, double d0) {
+		double d1 = d0 != 0d ? d0 : Trade_.negligible;
+		return n / d1;
+	}
+
+	public static float div(float n, float d0) {
+		float d1 = d0 != 0d ? d0 : Trade_.negligible;
+		return n / d1;
+	}
 
 	public static Int_Dbl filterRange(int start, Int_Dbl fun) {
 		return index -> start <= index ? fun.apply(index) : 0d;
