@@ -17,12 +17,12 @@ import suite.util.FunUtil.Fun;
 
 public class P1GenerateLambda {
 
-	public static class Runtime {
-		private Runtime parent;
+	public static class Rt {
+		private Rt parent;
 		private Object var;
 	}
 
-	public interface Thunk extends Fun<Runtime, Object> {
+	public interface Thunk extends Fun<Rt, Object> {
 	}
 
 	private interface Fun_ extends Fun<Object, Object> {
@@ -50,7 +50,7 @@ public class P1GenerateLambda {
 			int fs1 = fs + 1;
 			Thunk thunk = compile(fs1, env.put(n1.var, fs1), n1.expr);
 			return rt -> (Fun_) p -> {
-				Runtime rt1 = new Runtime();
+				Rt rt1 = new Rt();
 				rt1.parent = rt;
 				rt1.var = p;
 				return thunk.apply(rt1);
@@ -89,11 +89,11 @@ public class P1GenerateLambda {
 			throw new RuntimeException("cannot generate lambda for " + n0);
 	}
 
-	private static int i(Runtime rt, Thunk value) {
+	private static int i(Rt rt, Thunk value) {
 		return (Integer) value.apply(rt);
 	}
 
-	private static boolean isTrue(Runtime rt, Thunk value) {
+	private static boolean isTrue(Rt rt, Thunk value) {
 		return value.apply(rt) == Boolean.TRUE;
 	}
 
