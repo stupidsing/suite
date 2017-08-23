@@ -37,7 +37,7 @@ public class Quant {
 			if (hold == 0f)
 				return isEnterShort.test(i) ? -1f : isEnterLong.test(i) ? 1f : hold;
 			else
-				return (hold < 0f ? isKeepShort : isKeepLong).test(i) ? 0f : hold;
+				return (hold < 0f ? isKeepShort : isKeepLong).test(i) ? hold : 0f;
 		});
 	}
 

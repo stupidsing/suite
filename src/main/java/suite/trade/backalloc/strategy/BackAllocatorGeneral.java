@@ -103,7 +103,7 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator bbTrend() {
-		float exitThreshold = .02f;
+		float exitThreshold = .04f;
 
 		return BackAllocator_.byPrices(prices -> {
 			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
@@ -135,7 +135,7 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator donchianTrend(int window) {
-		float exitThreshold = .02f;
+		float exitThreshold = .04f;
 
 		return BackAllocator_.byPrices(prices -> {
 			MovingRange[] movingRanges = ma.movingRange(prices, window);
