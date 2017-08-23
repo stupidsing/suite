@@ -170,7 +170,7 @@ public class BackAllocTester {
 						+ " sharpe:" + To.string(sharpe) //
 						+ " skew:" + To.string(skewness) //
 						+ " " + account.txnSummary(cfg::transactionFee) //
-						+ " holds = " + sb + "...";
+						+ " holds::" + sb + "...";
 			else {
 				LogUtil.error(exception);
 				return "exception = " + exception;

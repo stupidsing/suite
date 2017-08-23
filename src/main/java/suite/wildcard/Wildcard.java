@@ -9,7 +9,72 @@ import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 import suite.util.String_;
 
-public class Matcher {
+public class Wildcard {
+
+	private static Matcher matcher = new Matcher();
+
+	public static boolean isMatch(String pattern, String s) {
+		if (!pattern.isEmpty()) {
+			char ph = pattern.charAt(0);
+			String pt = pattern.substring(1);
+
+			if (ph != '*')
+				return !s.isEmpty() && s.charAt(0) == ph && isMatch(pt, s.substring(1));
+			else
+				return isMatch(pt, s) || !s.isEmpty() && isMatch(pattern, s.substring(1));
+		} else
+			return s.isEmpty();
+	}
+
+	public static boolean isMatch2(String p0, String p1) {
+		if (!p0.isEmpty() && !p1.isEmpty()) {
+			char h0 = p0.charAt(0), h1 = p1.charAt(0);
+			String t0 = p0.substring(1), t1 = p1.substring(1);
+
+			return h0 == '*' && (isMatch2(t0, p1) || isMatch2(p0, t1)) //
+					|| h1 == '*' && (isMatch2(p0, t1) || isMatch2(t0, p1)) //
+					|| h0 == h1 && isMatch2(t0, t1);
+		} else {
+			boolean isWildcardPatterns = true;
+			for (char c0 : String_.chars(p0))
+				isWildcardPatterns &= c0 == '*';
+			for (char c1 : String_.chars(p1))
+				isWildcardPatterns &= c1 == '*';
+			return isWildcardPatterns;
+		}
+	}
+
+	public static String[] match(String pattern, String input) {
+		List<String[]> matches = matches(pattern, input);
+		return matches.size() == 1 ? matches.get(0) : null;
+	}
+
+	public static List<String[]> matches(String pattern, String input) {
+		return matcher.matches(pattern, input);
+	}
+
+	public static Pair<String[], String> matchStart(String pattern, String input) {
+		return matcher.matchStart(pattern, input);
+	}
+
+	public static String apply(String pattern, String[] input) {
+		StringBuilder sb = new StringBuilder();
+		int i = 0;
+		for (char ch : String_.chars(pattern))
+			switch (ch) {
+			case '*':
+			case '?':
+				sb.append(input[i++]);
+				break;
+			default:
+				sb.append(ch);
+			}
+		return sb.toString();
+	}
+
+}
+
+class Matcher {
 
 	private class State {
 		private String input;
@@ -35,14 +100,14 @@ public class Matcher {
 		}
 	}
 
-	public List<String[]> matches(String pattern, String input) {
+	List<String[]> matches(String pattern, String input) {
 		return applyPattern(pattern, input) //
 				.filter(State::eof) //
 				.map(state -> state.matches.reverse().toArray(new String[0])) //
 				.toList();
 	}
 
-	public Pair<String[], String> matchStart(String pattern, String input) {
+	Pair<String[], String> matchStart(String pattern, String input) {
 		State state = applyPattern(pattern, input).first();
 		return Pair.of(state.matches.reverse().toArray(new String[0]), input.substring(state.pos));
 	}

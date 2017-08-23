@@ -17,7 +17,7 @@ import suite.pkgmanager.action.ExecCommandAction;
 import suite.pkgmanager.action.ExtractFileAction;
 import suite.pkgmanager.action.InstallAction;
 import suite.streamlet.Read;
-import suite.wildcard.WildcardUtil;
+import suite.wildcard.Wildcard;
 
 public class PackageManager {
 
@@ -40,8 +40,8 @@ public class PackageManager {
 						String filename1 = filename0;
 						for (Pair<String, String> filenameMapping : filenameMappings) {
 							String[] match;
-							if ((match = WildcardUtil.match(filenameMapping.t0, filename1)) != null) {
-								filename1 = WildcardUtil.apply(filenameMapping.t1, match);
+							if ((match = Wildcard.match(filenameMapping.t0, filename1)) != null) {
+								filename1 = Wildcard.apply(filenameMapping.t1, match);
 								break;
 							}
 						}

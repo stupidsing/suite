@@ -1,7 +1,6 @@
 package suite.trade.analysis;
 
 import java.nio.file.Paths;
-import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.node.io.Operator.Assoc;
@@ -26,6 +25,7 @@ import suite.util.Object_;
 import suite.util.ParseUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
+import suite.wildcard.Wildcard;
 
 // mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.BackTestMain
 public class BackTestMain extends ExecutableProgram {
@@ -46,7 +46,7 @@ public class BackTestMain extends ExecutableProgram {
 		String arg1 = 1 < args.length ? args[1] : "";
 		String arg2 = 2 < args.length ? args[2] : "";
 
-		Set<String> strategyNames = !arg0.isEmpty() ? Read.from(arg0.split(",")).toSet() : null;
+		Streamlet<String> strategyMatches = !arg0.isEmpty() ? Read.from(arg0.split(",")) : null;
 
 		Streamlet<Integer> years = !arg1.isEmpty() ? Read //
 				.from(arg1.split(",")) //
@@ -66,7 +66,7 @@ public class BackTestMain extends ExecutableProgram {
 		Streamlet2<String, BackAllocConfiguration> bacByTag = bac_.bacs().bacByName;
 
 		Streamlet2<String, Simulate> simulationByKey = bacByTag //
-				.filterKey(strategyName -> strategyNames == null || strategyNames.contains(strategyName)) //
+				.filterKey(n -> strategyMatches == null || strategyMatches.isAny(sm -> Wildcard.match(sm, n) != null)) //
 				.map(Pair::of) //
 				.join2(years.sort(Object_::compare).map(TimeRange::ofYear)) //
 				.map2((pair, period) -> pair.t0, (pair, period) -> {

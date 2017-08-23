@@ -13,7 +13,7 @@ import suite.os.FileUtil;
 import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
-import suite.wildcard.WildcardUtil;
+import suite.wildcard.Wildcard;
 
 // mAIN=suite.node.parser.RecursiveFileFactorizerMain ./run.sh
 public class RecursiveFileFactorizerMain extends ExecutableProgram {
@@ -28,7 +28,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 		);
 
 		FileUtil.findPaths(Paths.get("src/main/ll/fc")) //
-				.filter(path -> WildcardUtil.isMatch("*.sl", path.getFileName().toString())) //
+				.filter(path -> Wildcard.isMatch("*.sl", path.getFileName().toString())) //
 				.forEach(path -> {
 					RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 					String s = To.string(path);
