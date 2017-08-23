@@ -52,7 +52,8 @@ public class Cleanse {
 			float price2 = get.apply(i - 0);
 			if (isValid(price0, price2) && !isValid(price0, price1) && !isValid(price1, price2)) {
 				set.apply(i - 1, price0);
-				LogUtil.warn("price spiked: " + To.string(price0) + ", " + To.string(price1) + ", " + To.string(price2));
+				if (Boolean.FALSE)
+					LogUtil.warn("price spiked: " + To.string(price0) + ", " + To.string(price1) + ", " + To.string(price2));
 			}
 		}
 	}
