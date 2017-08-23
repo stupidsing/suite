@@ -285,10 +285,6 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		return ChrObjOutlet.of(ChrFunUtil.mapChrObj(fun0, source));
 	}
 
-	public <O> Outlet<O> mapNonNull(Chr_Obj<O> fun) {
-		return Outlet.of(ChrFunUtil.mapNonNull(fun, source));
-	}
-
 	public char max() {
 		return min((c0, c1) -> Character.compare(c1, c0));
 	}

@@ -207,20 +207,6 @@ public class FltFunUtil {
 		};
 	}
 
-	public static <T> Source<T> mapNonNull(Flt_Obj<T> fun0, FltSource source) {
-		Flt_Obj<T> fun1 = fun0.rethrow();
-		return new Source<T>() {
-			public T source() {
-				float c;
-				T t;
-				while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
-					if ((t = fun1.apply(c)) != null)
-						return t;
-				return null;
-			}
-		};
-	}
-
 	public static FltSink nullSink() {
 		return i -> {
 		};
@@ -231,8 +217,8 @@ public class FltFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static Source<FltSource> split(FltPredicate fun0, FltSource source) {
 		FltPredicate fun1 = fun0.rethrow();

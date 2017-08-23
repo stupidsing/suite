@@ -285,10 +285,6 @@ public class FltOutlet implements OutletDefaults<Float> {
 		return FltObjOutlet.of(FltFunUtil.mapFltObj(fun0, source));
 	}
 
-	public <O> Outlet<O> mapNonNull(Flt_Obj<O> fun) {
-		return Outlet.of(FltFunUtil.mapNonNull(fun, source));
-	}
-
 	public float max() {
 		return min((c0, c1) -> Float.compare(c1, c0));
 	}

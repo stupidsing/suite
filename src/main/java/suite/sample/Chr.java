@@ -138,10 +138,10 @@ public class Chr {
 	private Streamlet<State> chrGiven(Streamlet<State> states, Trail trail, Node given) {
 		Prototype prototype = Prototype.of(given);
 
-		return states.mapNonNull(state -> {
+		return states.filter(state -> {
 			ISet<Node> facts = getFacts(state, prototype);
 			Predicate<Node> bindFun = bindFun(trail, given);
-			return facts.streamlet().isAny(bindFun) ? state : null;
+			return facts.streamlet().isAny(bindFun);
 		});
 	}
 

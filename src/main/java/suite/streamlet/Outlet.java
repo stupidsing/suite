@@ -240,10 +240,6 @@ public class Outlet<T> implements OutletDefaults<T> {
 		return map2_(kf0, vf0);
 	}
 
-	public <O> Outlet<O> mapNonNull(Fun<T, O> fun) {
-		return of(FunUtil.mapNonNull(fun, source));
-	}
-
 	public T min(Comparator<T> comparator) {
 		T t = minOrNull(comparator);
 		if (t != null)

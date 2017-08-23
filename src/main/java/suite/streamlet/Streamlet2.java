@@ -161,14 +161,6 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 		return map2_(kf, vf);
 	}
 
-	public <K1> Streamlet2<K1, V> mapKey(Fun<K, K1> fun) {
-		return new Streamlet2<>(() -> spawn().mapKey(fun));
-	}
-
-	public <O> Streamlet<O> mapNonNull(Fun2<K, V, O> fun) {
-		return new Streamlet<>(() -> spawn().mapNonNull(fun));
-	}
-
 	public <V1> Streamlet2<K, V1> mapValue(Fun<V, V1> fun) {
 		return new Streamlet2<>(() -> spawn().mapValue(fun));
 	}

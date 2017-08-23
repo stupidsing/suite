@@ -20,7 +20,6 @@ import suite.primitive.IntPrimitives.IntObjPredicate;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.IntPredicate;
-import suite.primitive.Int_Int;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntObjPair;
@@ -286,14 +285,6 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	public <V1> IntObjOutlet<V1> mapIntObj(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
 		return mapIntObj_(kf, vf);
-	}
-
-	public IntObjOutlet<V> mapKey(Int_Int fun) {
-		return mapIntObj_((k, v) -> fun.apply(k), (k, v) -> v);
-	}
-
-	public <O> Outlet<O> mapNonNull(IntObj_Obj<V, O> fun) {
-		return Outlet.of(IntObjFunUtil.mapNonNull(fun, source));
 	}
 
 	public <V1> IntObjOutlet<V1> mapValue(Fun<V, V1> fun) {

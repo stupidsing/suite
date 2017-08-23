@@ -285,10 +285,6 @@ public class DblOutlet implements OutletDefaults<Double> {
 		return DblObjOutlet.of(DblFunUtil.mapDblObj(fun0, source));
 	}
 
-	public <O> Outlet<O> mapNonNull(Dbl_Obj<O> fun) {
-		return Outlet.of(DblFunUtil.mapNonNull(fun, source));
-	}
-
 	public double max() {
 		return min((c0, c1) -> Double.compare(c1, c0));
 	}

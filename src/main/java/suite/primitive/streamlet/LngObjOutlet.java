@@ -20,7 +20,6 @@ import suite.primitive.LngPrimitives.LngObjPredicate;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.LngPrimitives.LngPredicate;
-import suite.primitive.Lng_Lng;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.pair.LngObjPair;
@@ -286,14 +285,6 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	public <V1> LngObjOutlet<V1> mapLngObj(LngObj_Lng<V> kf, LngObj_Obj<V, V1> vf) {
 		return mapLngObj_(kf, vf);
-	}
-
-	public LngObjOutlet<V> mapKey(Lng_Lng fun) {
-		return mapLngObj_((k, v) -> fun.apply(k), (k, v) -> v);
-	}
-
-	public <O> Outlet<O> mapNonNull(LngObj_Obj<V, O> fun) {
-		return Outlet.of(LngObjFunUtil.mapNonNull(fun, source));
 	}
 
 	public <V1> LngObjOutlet<V1> mapValue(Fun<V, V1> fun) {

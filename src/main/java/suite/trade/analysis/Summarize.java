@@ -89,8 +89,8 @@ public class Summarize {
 
 			String keys = Read //
 					.from2(nSharesByKeyBySymbol.getOrDefault(symbol, Collections.emptyMap())) //
-					.mapKey(Object::toString) //
 					.keys() //
+					.map(Object::toString) //
 					.sort(String_::compare) //
 					.collect(As.joinedBy("/"));
 

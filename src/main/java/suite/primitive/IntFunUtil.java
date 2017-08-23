@@ -207,20 +207,6 @@ public class IntFunUtil {
 		};
 	}
 
-	public static <T> Source<T> mapNonNull(Int_Obj<T> fun0, IntSource source) {
-		Int_Obj<T> fun1 = fun0.rethrow();
-		return new Source<T>() {
-			public T source() {
-				int c;
-				T t;
-				while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
-					if ((t = fun1.apply(c)) != null)
-						return t;
-				return null;
-			}
-		};
-	}
-
 	public static IntSink nullSink() {
 		return i -> {
 		};
@@ -231,8 +217,8 @@ public class IntFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static Source<IntSource> split(IntPredicate fun0, IntSource source) {
 		IntPredicate fun1 = fun0.rethrow();

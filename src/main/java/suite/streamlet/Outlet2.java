@@ -280,14 +280,6 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		return map2_(kf, vf);
 	}
 
-	public <K1> Outlet2<K1, V> mapKey(Fun<K, K1> fun) {
-		return map2_((k, v) -> fun.apply(k), (k, v) -> v);
-	}
-
-	public <O> Outlet<O> mapNonNull(Fun2<K, V, O> fun) {
-		return Outlet.of(FunUtil2.mapNonNull(fun, source2));
-	}
-
 	public <V1> Outlet2<K, V1> mapValue(Fun<V, V1> fun) {
 		return map2_((k, v) -> k, (k, v) -> fun.apply(v));
 	}

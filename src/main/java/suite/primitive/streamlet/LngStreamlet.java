@@ -199,10 +199,6 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return new LngObjStreamlet<>(() -> spawn().mapLngObj(fun0));
 	}
 
-	public <O> Streamlet<O> mapNonNull(Lng_Obj<O> fun) {
-		return new Streamlet<>(() -> spawn().mapNonNull(fun));
-	}
-
 	public LngStreamlet memoize() {
 		Longs list = toList().toLongs();
 		return streamlet(() -> LngOutlet.of(list));

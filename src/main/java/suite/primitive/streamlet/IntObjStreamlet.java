@@ -19,7 +19,6 @@ import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.IntPredicate;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.Int_Int;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntObjPair;
@@ -198,14 +197,6 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	public <V1> IntObjStreamlet<V1> mapIntObj(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
 		return mapIntObj_(kf, vf);
-	}
-
-	public IntObjStreamlet<V> mapKey(Int_Int fun) {
-		return intObjStreamlet(() -> spawn().mapKey(fun));
-	}
-
-	public <O> Streamlet<O> mapNonNull(IntObj_Obj<V, O> fun) {
-		return new Streamlet<>(() -> spawn().mapNonNull(fun));
 	}
 
 	public <V1> IntObjStreamlet<V1> mapValue(Fun<V, V1> fun) {

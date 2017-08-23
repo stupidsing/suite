@@ -207,20 +207,6 @@ public class DblFunUtil {
 		};
 	}
 
-	public static <T> Source<T> mapNonNull(Dbl_Obj<T> fun0, DblSource source) {
-		Dbl_Obj<T> fun1 = fun0.rethrow();
-		return new Source<T>() {
-			public T source() {
-				double c;
-				T t;
-				while ((c = source.source()) != DblFunUtil.EMPTYVALUE)
-					if ((t = fun1.apply(c)) != null)
-						return t;
-				return null;
-			}
-		};
-	}
-
 	public static DblSink nullSink() {
 		return i -> {
 		};
@@ -231,8 +217,8 @@ public class DblFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static Source<DblSource> split(DblPredicate fun0, DblSource source) {
 		DblPredicate fun1 = fun0.rethrow();

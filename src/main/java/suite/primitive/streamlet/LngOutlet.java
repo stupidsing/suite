@@ -285,10 +285,6 @@ public class LngOutlet implements OutletDefaults<Long> {
 		return LngObjOutlet.of(LngFunUtil.mapLngObj(fun0, source));
 	}
 
-	public <O> Outlet<O> mapNonNull(Lng_Obj<O> fun) {
-		return Outlet.of(LngFunUtil.mapNonNull(fun, source));
-	}
-
 	public long max() {
 		return min((c0, c1) -> Long.compare(c1, c0));
 	}

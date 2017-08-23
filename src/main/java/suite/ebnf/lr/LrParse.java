@@ -90,7 +90,7 @@ public class LrParse {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{\n");
 		Read.from2(map) //
-				.mapKey(Object::toString) //
+				.map2((k, v) -> k.toString(), (k, v) -> v) //
 				.sortByKey(Object_::compare) //
 				.sink((k, v) -> sb.append(k + " = " + v + "\n"));
 		sb.append("}\n");

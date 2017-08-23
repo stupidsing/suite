@@ -208,20 +208,6 @@ public class ChrObjFunUtil {
 		};
 	}
 
-	public static <V, T1> Source<T1> mapNonNull(ChrObj_Obj<V, T1> fun0, ChrObjSource<V> source) {
-		ChrObj_Obj<V, T1> fun1 = fun0.rethrow();
-		return new Source<T1>() {
-			public T1 source() {
-				ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-				T1 t1 = null;
-				while (source.source2(pair))
-					if ((t1 = fun1.apply(pair.t0, pair.t1)) != null)
-						return t1;
-				return null;
-			}
-		};
-	}
-
 	public static <I> Sink<I> nullSink() {
 		return i -> {
 		};
@@ -232,8 +218,8 @@ public class ChrObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static <V> Source<ChrObjSource<V>> split(ChrObjPredicate<V> fun0, ChrObjSource<V> source2) {
 		ChrObjPredicate<V> fun1 = fun0.rethrow();

@@ -199,10 +199,6 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return new FltObjStreamlet<>(() -> spawn().mapFltObj(fun0));
 	}
 
-	public <O> Streamlet<O> mapNonNull(Flt_Obj<O> fun) {
-		return new Streamlet<>(() -> spawn().mapNonNull(fun));
-	}
-
 	public FltStreamlet memoize() {
 		Floats list = toList().toFloats();
 		return streamlet(() -> FltOutlet.of(list));

@@ -208,20 +208,6 @@ public class DblObjFunUtil {
 		};
 	}
 
-	public static <V, T1> Source<T1> mapNonNull(DblObj_Obj<V, T1> fun0, DblObjSource<V> source) {
-		DblObj_Obj<V, T1> fun1 = fun0.rethrow();
-		return new Source<T1>() {
-			public T1 source() {
-				DblObjPair<V> pair = DblObjPair.of((double) 0, null);
-				T1 t1 = null;
-				while (source.source2(pair))
-					if ((t1 = fun1.apply(pair.t0, pair.t1)) != null)
-						return t1;
-				return null;
-			}
-		};
-	}
-
 	public static <I> Sink<I> nullSink() {
 		return i -> {
 		};
@@ -232,8 +218,8 @@ public class DblObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static <V> Source<DblObjSource<V>> split(DblObjPredicate<V> fun0, DblObjSource<V> source2) {
 		DblObjPredicate<V> fun1 = fun0.rethrow();

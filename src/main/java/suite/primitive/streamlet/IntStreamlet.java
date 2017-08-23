@@ -199,10 +199,6 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return new IntObjStreamlet<>(() -> spawn().mapIntObj(fun0));
 	}
 
-	public <O> Streamlet<O> mapNonNull(Int_Obj<O> fun) {
-		return new Streamlet<>(() -> spawn().mapNonNull(fun));
-	}
-
 	public IntStreamlet memoize() {
 		Ints list = toList().toInts();
 		return streamlet(() -> IntOutlet.of(list));

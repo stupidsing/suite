@@ -204,20 +204,6 @@ public class ChrDblFunUtil {
 		};
 	}
 
-	public static <T> Source<T> mapNonNull(ChrDbl_Obj<T> fun0, ChrDblSource source) {
-		ChrDbl_Obj<T> fun1 = fun0.rethrow();
-		return new Source<T>() {
-			public T source() {
-				ChrDblPair pair = ChrDblPair.of((char) 0, (double) 0);
-				T t1 = null;
-				while (source.source2(pair))
-					if ((t1 = fun1.apply(pair.t0, pair.t1)) != null)
-						return t1;
-				return null;
-			}
-		};
-	}
-
 	public static <I> Sink<I> nullSink() {
 		return i -> {
 		};
@@ -228,8 +214,8 @@ public class ChrDblFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static Source<ChrDblSource> split(ChrDblPredicate fun0, ChrDblSource source2) {
 		ChrDblPredicate fun1 = fun0.rethrow();

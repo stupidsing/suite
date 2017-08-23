@@ -207,20 +207,6 @@ public class LngFunUtil {
 		};
 	}
 
-	public static <T> Source<T> mapNonNull(Lng_Obj<T> fun0, LngSource source) {
-		Lng_Obj<T> fun1 = fun0.rethrow();
-		return new Source<T>() {
-			public T source() {
-				long c;
-				T t;
-				while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
-					if ((t = fun1.apply(c)) != null)
-						return t;
-				return null;
-			}
-		};
-	}
-
 	public static LngSink nullSink() {
 		return i -> {
 		};
@@ -231,8 +217,8 @@ public class LngFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static Source<LngSource> split(LngPredicate fun0, LngSource source) {
 		LngPredicate fun1 = fun0.rethrow();

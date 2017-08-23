@@ -20,7 +20,6 @@ import suite.primitive.DblPrimitives.DblObjPredicate;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.DblPrimitives.DblPredicate;
-import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.pair.DblObjPair;
@@ -286,14 +285,6 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public <V1> DblObjOutlet<V1> mapDblObj(DblObj_Dbl<V> kf, DblObj_Obj<V, V1> vf) {
 		return mapDblObj_(kf, vf);
-	}
-
-	public DblObjOutlet<V> mapKey(Dbl_Dbl fun) {
-		return mapDblObj_((k, v) -> fun.apply(k), (k, v) -> v);
-	}
-
-	public <O> Outlet<O> mapNonNull(DblObj_Obj<V, O> fun) {
-		return Outlet.of(DblObjFunUtil.mapNonNull(fun, source));
 	}
 
 	public <V1> DblObjOutlet<V1> mapValue(Fun<V, V1> fun) {

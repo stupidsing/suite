@@ -43,7 +43,7 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_tma = baGen.tma.cfgUnl(fun);
 
 		private Streamlet2<String, BackAllocator> bas_ = baGen.baByName;
-		private Streamlet2<String, BackAllocator> bas_mech = baMech.baByName.mapKey(n -> "me." + n);
+		private Streamlet2<String, BackAllocator> bas_mech = baMech.baByName.map2((n, ba) -> "me." + n, (n, ba) -> ba);
 
 		private Streamlet2<String, BackAllocConfiguration> bacs_ = Streamlet2 //
 				.concat(bas_, bas_mech) //

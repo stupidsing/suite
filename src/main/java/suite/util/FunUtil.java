@@ -211,20 +211,6 @@ public class FunUtil {
 		};
 	}
 
-	public static <T0, T1> Source<T1> mapNonNull(Fun<T0, T1> fun0, Source<T0> source) {
-		Fun<T0, T1> fun1 = fun0.rethrow();
-		return new Source<T1>() {
-			public T1 source() {
-				T0 t0;
-				T1 t1;
-				while ((t0 = source.source()) != null)
-					if ((t1 = fun1.apply(t0)) != null)
-						return t1;
-				return null;
-			}
-		};
-	}
-
 	public static <I> Sink<I> nullSink() {
 		return i -> {
 		};

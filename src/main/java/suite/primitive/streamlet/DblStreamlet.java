@@ -199,10 +199,6 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return new DblObjStreamlet<>(() -> spawn().mapDblObj(fun0));
 	}
 
-	public <O> Streamlet<O> mapNonNull(Dbl_Obj<O> fun) {
-		return new Streamlet<>(() -> spawn().mapNonNull(fun));
-	}
-
 	public DblStreamlet memoize() {
 		Doubles list = toList().toDoubles();
 		return streamlet(() -> DblOutlet.of(list));

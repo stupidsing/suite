@@ -19,7 +19,6 @@ import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.LngPrimitives.LngPredicate;
 import suite.primitive.LngPrimitives.Obj_Lng;
-import suite.primitive.Lng_Lng;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.pair.LngObjPair;
@@ -198,14 +197,6 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	public <V1> LngObjStreamlet<V1> mapLngObj(LngObj_Lng<V> kf, LngObj_Obj<V, V1> vf) {
 		return mapLngObj_(kf, vf);
-	}
-
-	public LngObjStreamlet<V> mapKey(Lng_Lng fun) {
-		return lngObjStreamlet(() -> spawn().mapKey(fun));
-	}
-
-	public <O> Streamlet<O> mapNonNull(LngObj_Obj<V, O> fun) {
-		return new Streamlet<>(() -> spawn().mapNonNull(fun));
 	}
 
 	public <V1> LngObjStreamlet<V1> mapValue(Fun<V, V1> fun) {

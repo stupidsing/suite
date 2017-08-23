@@ -285,10 +285,6 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		return IntObjOutlet.of(IntFunUtil.mapIntObj(fun0, source));
 	}
 
-	public <O> Outlet<O> mapNonNull(Int_Obj<O> fun) {
-		return Outlet.of(IntFunUtil.mapNonNull(fun, source));
-	}
-
 	public int max() {
 		return min((c0, c1) -> Integer.compare(c1, c0));
 	}

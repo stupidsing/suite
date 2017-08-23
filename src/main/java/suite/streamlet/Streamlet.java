@@ -163,10 +163,6 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 		return map2_(kf, vf);
 	}
 
-	public <O> Streamlet<O> mapNonNull(Fun<T, O> fun) {
-		return new Streamlet<>(() -> spawn().mapNonNull(fun));
-	}
-
 	public Streamlet<T> memoize() {
 		List<T> list = toList();
 		return streamlet(() -> Outlet.of(list));

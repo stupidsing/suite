@@ -67,12 +67,12 @@ public class Matcher {
 				}));
 				break;
 			case '?':
-				st = st.mapNonNull(state -> !state.eof() ? new State(state, 1) : null);
+				st = st.concatMap(state -> !state.eof() ? Read.each(new State(state, 1)) : Read.empty());
 				break;
 			default:
-				st = st.mapNonNull(state -> {
+				st = st.concatMap(state -> {
 					boolean isMatch = !state.eof() && state.input.charAt(state.pos) == ch;
-					return isMatch ? new State(state, 1) : null;
+					return isMatch ? Read.each(new State(state, 1)) : Read.empty();
 				});
 			}
 

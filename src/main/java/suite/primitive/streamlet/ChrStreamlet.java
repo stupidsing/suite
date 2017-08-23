@@ -199,10 +199,6 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		return new ChrObjStreamlet<>(() -> spawn().mapChrObj(fun0));
 	}
 
-	public <O> Streamlet<O> mapNonNull(Chr_Obj<O> fun) {
-		return new Streamlet<>(() -> spawn().mapNonNull(fun));
-	}
-
 	public ChrStreamlet memoize() {
 		Chars list = toList().toChars();
 		return streamlet(() -> ChrOutlet.of(list));
