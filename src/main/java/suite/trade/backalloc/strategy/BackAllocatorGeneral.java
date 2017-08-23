@@ -127,8 +127,8 @@ public class BackAllocatorGeneral {
 				double min = range.min;
 				double max = range.max;
 				double price = prices[i];
-				double vol = (max - min) / (price * threshold);
-				return 1d < vol ? Quant.hold(hold, price, min, range.median, max) : hold;
+				boolean b = price * threshold < (max - min);
+				return b ? Quant.hold(hold, price, min, range.median, max) : hold;
 			});
 		});
 	}
