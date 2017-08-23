@@ -21,7 +21,7 @@ import suite.trade.data.ConfigurationImpl;
 
 public class AnalyzeTimeSeriesTest {
 
-	private String symbol = "0670.HK";
+	private String symbol = "^HSI";
 	private TimeRange period = TimeRange.threeYears();
 
 	BollingerBands bb = new BollingerBands();
@@ -48,6 +48,7 @@ public class AnalyzeTimeSeriesTest {
 				max = IntFltPair.of(i, f);
 		}
 
+		LogUtil.info("symbol = " + symbol);
 		LogUtil.info("length = " + length);
 		LogUtil.info("nYears = " + nYears);
 		LogUtil.info("dct period = " + max.t0);
@@ -62,17 +63,31 @@ public class AnalyzeTimeSeriesTest {
 		for (int d : new int[] { 4, 16, })
 			LogUtil.info("variance ratio, " + d + " days over 1 day = " + ts.varianceRatio(prices, d));
 
-		LogUtil.info("rev strategy outcome = " + outcome(prices, d -> 2 <= d && prices[d - 2] < prices[d - 1] ? -1f : 1f));
-		LogUtil.info("rev long-only strategy outcome = " + outcome(prices, d -> 2 <= d && prices[d - 2] < prices[d - 1] ? 0f : 1f));
+		LogUtil.info("half outcome = " + outcome(prices, d -> .5f));
+		LogUtil.info("rev outcome = " + outcome(prices, d -> 2 <= d && prices[d - 2] < prices[d - 1] ? -1f : 1f));
+		LogUtil.info("rev long-only outcome = " + outcome(prices, d -> 2 <= d && prices[d - 2] < prices[d - 1] ? 0f : 1f));
 	}
 
 	private float outcome(float[] prices, Int_Flt strategy) {
-		int length = prices.length;
-		float[] holds = Floats_.toArray(length, strategy);
+		float[] holds = Floats_.toArray(prices.length, strategy);
+		if (Boolean.TRUE)
+			return investOutcome(prices, holds);
+		else
+			return fixedOutcome(prices, holds);
+	}
+
+	private float fixedOutcome(float[] prices, float[] holds) {
 		float val = 0f;
-		for (int d = 1; d < length; d++)
+		for (int d = 1; d < prices.length; d++)
 			val += holds[d] * (prices[d] - prices[d - 1]);
 		return val;
+	}
+
+	private float investOutcome(float[] prices, float[] holds) {
+		double val = 1d;
+		for (int d = 1; d < prices.length; d++)
+			val *= 1d + holds[d] * Quant.return_(prices[d - 1], prices[d]);
+		return (float) val;
 	}
 
 }

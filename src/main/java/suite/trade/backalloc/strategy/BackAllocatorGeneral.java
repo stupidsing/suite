@@ -48,7 +48,7 @@ public class BackAllocatorGeneral {
 
 	public final Streamlet2<String, BackAllocator> baByName = Read //
 			.<String, BackAllocator> empty2() //
-			.cons("bb", bb_) //
+			.cons("bb0", bb_) //
 			.cons("bb1", bollingerBands1()) //
 			.cons("bbtrend", bbTrend()) //
 			.cons("don9", donchian(9)) //

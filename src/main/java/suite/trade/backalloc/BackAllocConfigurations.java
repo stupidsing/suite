@@ -54,7 +54,7 @@ public class BackAllocConfigurations {
 				.cons("hsi", BackAllocConfiguration.ofSingle(Asset.hsi)) //
 				.cons("hsi.ppr", baGen.pprHsi.cfgUnl(fun_hsi)) //
 				.cons("bb", bac_bbHold) //
-				.cons("bbSlope", baOld.bbSlope().cfgUnl(fun)) //
+				.cons("bbslope", baOld.bbSlope().cfgUnl(fun)) //
 				.cons("facoil", ba_facoil.cfgUnl(fun)) //
 				.cons("january", BackAllocator_.ofSingle(Asset.hsiSymbol).january().cfgUnl(fun_hsi)) //
 				.cons("mix", BackAllocator_.sum(ba_bbHold, ba_donHold).cfgUnl(fun)) //
