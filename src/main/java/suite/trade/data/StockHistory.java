@@ -103,7 +103,17 @@ public class StockHistory {
 	}
 
 	public StockHistory cleanse() {
-		return StockHistory.of(time, Read.from2(data).mapValue(cleanse::cleanse).toMap(), dividends, splits);
+		Map<String, LngFltPair[]> data_ = Read //
+				.from2(data) //
+				.map2((name, pairs) -> {
+					if (!String_.equals(name, "volume"))
+						return cleanse.cleanse(pairs);
+					else
+						return pairs;
+				}) //
+				.toMap();
+
+		return StockHistory.of(time, data_, dividends, splits);
 	}
 
 	public StockHistory filter(TimeRange period) {
