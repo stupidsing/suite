@@ -3,6 +3,7 @@ package suite.trade;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
+import suite.primitive.streamlet.FltStreamlet;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
@@ -65,7 +66,7 @@ public class Oscillator {
 		}
 
 		public float[] adx(int nDays) {
-			return ma.movingAvg(Floats_.toArray(dmi.length, Math::abs), nDays);
+			return ma.movingAvg(FltStreamlet.of(dmi).mapFlt(Math::abs).toArray(), nDays);
 		}
 	}
 
