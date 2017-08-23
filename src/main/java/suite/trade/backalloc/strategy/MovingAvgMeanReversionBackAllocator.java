@@ -65,12 +65,10 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 			// make sure all time-series are mean-reversions:
 			// ensure ADF < 0d: price is not random walk
 			// ensure Hurst exponent < .5d: price is weakly mean reverting
-			// ensure 0d < variance ratio: statistic is significant
 			// ensure 0 < half-life: determine investment period
 			return Read.from2(mrsBySymbol) //
 					.filterValue(mrs -> mrs.adf < 0d //
 							&& mrs.hurst < .5d //
-							&& 0d < mrs.varianceRatio //
 							&& mrs.movingAvgMeanReversionRatio() < 0d) //
 					.map2((symbol, mrs) -> {
 						DataSource ds = dsBySymbol.get(symbol);
@@ -125,7 +123,6 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 		public final float[] movingAverage;
 		public final double adf;
 		public final double hurst;
-		public final double varianceRatio;
 		public final LinearRegression meanReversion;
 		public final LinearRegression movingAvgMeanReversion;
 
@@ -137,12 +134,11 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 			if (tor <= prices.length) {
 				adf = ts.adf(prices, tor);
 				hurst = ts.hurst(prices, tor);
-				varianceRatio = ts.varianceRatio(prices, tor);
 				meanReversion = ts.meanReversion(prices, 1);
 				movingAvgMeanReversion = ts.movingAvgMeanReversion(prices, movingAverage, tor);
 			} else {
 				meanReversion = movingAvgMeanReversion = null;
-				adf = hurst = varianceRatio = 0d;
+				adf = hurst = 0d;
 			}
 		}
 
@@ -169,7 +165,6 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 		public String toString() {
 			return "adf = " + adf //
 					+ ", hurst = " + hurst //
-					+ ", varianceRatio = " + varianceRatio //
 					+ ", halfLife = " + halfLife() //
 					+ ", movingAvgHalfLife = " + movingAvgHalfLife() //
 					+ ", latestMovingAverage = " + latestMovingAverage();
