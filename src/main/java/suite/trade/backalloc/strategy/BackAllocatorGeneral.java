@@ -509,6 +509,7 @@ public class BackAllocatorGeneral {
 		});
 	}
 
+	// manual enter, auto exit when draw-down exceeded threshold
 	private Int_Dbl captureEnter( //
 			float[] prices, //
 			float exitThreshold, //

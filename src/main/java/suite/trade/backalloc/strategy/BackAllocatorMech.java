@@ -202,6 +202,7 @@ public class BackAllocatorMech {
 					float[] rsi1 = osc.rsi(prices, 9);
 
 					return Quant.enterExit(1, prices.length, //
+							Integer.MAX_VALUE, //
 							i -> prices[i] < movingAvgs[i] && .65f < rsi1[i], //
 							i -> movingAvgs[i] < prices[i] && rsi1[i] < .35f, //
 							i -> cross(i, i_ -> rsi0[i_] < .4f), //

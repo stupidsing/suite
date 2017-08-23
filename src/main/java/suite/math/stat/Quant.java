@@ -13,13 +13,6 @@ public class Quant {
 
 	public static Int_Dbl enterExit( //
 			int start, int end, //
-			IntPredicate isEnterShort, IntPredicate isEnterLong, //
-			IntPredicate isExitShort, IntPredicate isExitLong) {
-		return enterExit(start, end, Integer.MAX_VALUE, isEnterShort, isEnterLong, isExitShort, isExitLong);
-	}
-
-	public static Int_Dbl enterExit( //
-			int start, int end, //
 			int timedExit, //
 			IntPredicate isEnterShort, IntPredicate isEnterLong, //
 			IntPredicate isExitShort, IntPredicate isExitLong) {
@@ -52,6 +45,7 @@ public class Quant {
 		return fold(start, end, Integer.MAX_VALUE, fun);
 	}
 
+	// hold with fixed day exit
 	public static Int_Dbl fold(int start, int end, int nDaysExit, IntFlt_Flt fun) {
 		int nDays = 0;
 		float[] holds = new float[end];
@@ -77,6 +71,8 @@ public class Quant {
 			return -1f;
 	}
 
+	// enter long when below low-threshold; exit when reached middle-threshold
+	// enter short when above hi-threshold; exit when reached middle-threshold
 	public static float hold(float hold, double ind, double th0, double th1, double th2) {
 		if (ind <= th0)
 			return 1f;
