@@ -101,11 +101,11 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 	}
 
 	private class PotentialStat {
-		public final double dailyReturn;
-		public final double sharpe;
-		public final double kelly;
+		private final double dailyReturn;
+		private final double sharpe;
+		private final double kelly;
 
-		public PotentialStat(double dailyReturn, double sharpe, double kelly) {
+		private PotentialStat(double dailyReturn, double sharpe, double kelly) {
 			this.dailyReturn = dailyReturn;
 			this.sharpe = sharpe;
 			this.kelly = kelly;
@@ -118,14 +118,14 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 		}
 	}
 
-	public class MeanReversionStat {
-		public final float[] movingAverage;
-		public final double adf;
-		public final double hurst;
-		public final LinearRegression meanReversion;
-		public final LinearRegression movingAvgMeanReversion;
+	private class MeanReversionStat {
+		private final float[] movingAverage;
+		private final double adf;
+		private final double hurst;
+		private final LinearRegression meanReversion;
+		private final LinearRegression movingAvgMeanReversion;
 
-		public MeanReversionStat(DataSource ds, TimeRange mrsPeriod) {
+		private MeanReversionStat(DataSource ds, TimeRange mrsPeriod) {
 			float[] prices = ds.range(mrsPeriod).prices;
 
 			movingAverage = ma.geometricMovingAvg(prices, tor);
@@ -141,23 +141,23 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 			}
 		}
 
-		public float latestMovingAverage() {
+		private float latestMovingAverage() {
 			return movingAverage[movingAverage.length - 1];
 		}
 
-		public double meanReversionRatio() {
+		private double meanReversionRatio() {
 			return meanReversion.coefficients[0];
 		}
 
-		public double movingAvgMeanReversionRatio() {
+		private double movingAvgMeanReversionRatio() {
 			return movingAvgMeanReversion.coefficients[0];
 		}
 
-		public double halfLife() {
+		private double halfLife() {
 			return neglog2 / Math.log1p(meanReversionRatio());
 		}
 
-		public double movingAvgHalfLife() {
+		private double movingAvgHalfLife() {
 			return neglog2 / Math.log1p(movingAvgMeanReversionRatio());
 		}
 
