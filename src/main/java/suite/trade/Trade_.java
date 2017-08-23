@@ -1,5 +1,6 @@
 package suite.trade;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,11 +16,10 @@ import suite.trade.Account.Valuation;
 import suite.trade.data.DataSource.Eod;
 import suite.util.Set_;
 import suite.util.String_;
-import suite.util.To;
 
 public class Trade_ {
 
-	public static Set<String> blackList = To.set("N/A", "1880.HK", "2973.HK"); // "0566.HK"
+	public static Set<String> blackList = Collections.emptySet();
 	public static boolean isCacheQuotes = true;
 	public static boolean isFreePlay = false;
 	public static boolean isMarketOrder = true;

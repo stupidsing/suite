@@ -48,6 +48,8 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain extends ExecutableProgram {
 
+	private Set<String> blackList = To.set("N/A", "1880.HK", "2973.HK"); // "0566.HK"
+
 	private Configuration cfg = new ConfigurationImpl();
 	private StringBuilder sb = new StringBuilder();
 	private Sink<String> log = To.sink(sb);
@@ -71,6 +73,8 @@ public class DailyMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
+		Trade_.blackList = Set_.union(Trade_.blackList, blackList);
+
 		String sellPool = "sellpool";
 		String ymd = Time.now().ymd();
 
