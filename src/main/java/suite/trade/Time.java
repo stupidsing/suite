@@ -58,7 +58,11 @@ public class Time implements Comparable<Time> {
 	}
 
 	public static Time of(int y, int m, int d) {
-		return of(LocalDateTime.of(y, m, d, 0, 0));
+		return of(y, m, d, 0, 0);
+	}
+
+	public static Time of(int y, int m, int d, int h, int m_) {
+		return of(LocalDateTime.of(y, m, d, h, m_));
 	}
 
 	public static Time ofEpochDay(long e) {

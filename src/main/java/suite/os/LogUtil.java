@@ -21,6 +21,7 @@ import suite.util.TempDir;
 public class LogUtil {
 
 	private static int maxStackTraceLength = 99;
+	private static ThreadLocal<String> prefix = ThreadLocal.withInitial(() -> "");
 
 	private static Log_ suiteLog = new Log_() {
 		private Log log0 = LogFactory.getLog("suite");
@@ -35,12 +36,12 @@ public class LogUtil {
 
 		public void error(Throwable th) {
 			boolean isTrimmed = trimStackTrace(th);
-			log0.error(isTrimmed ? "(Trimmed)" : "", th);
+			log0.error(prefix.get() + (isTrimmed ? "(Trimmed)" : ""), th);
 		}
 
 		public void fatal(Throwable th) {
 			boolean isTrimmed = trimStackTrace(th);
-			log0.fatal(isTrimmed ? "(Trimmed)" : "", th);
+			log0.fatal(prefix.get() + (isTrimmed ? "(Trimmed)" : ""), th);
 		}
 	};
 
@@ -86,12 +87,22 @@ public class LogUtil {
 		return tr.result;
 	}
 
+	public static <T> T prefix(String s, Source<T> source) {
+		String prefix0 = prefix.get();
+		prefix.set(prefix0 + s);
+		try {
+			return source.source();
+		} finally {
+			prefix.set(prefix0);
+		}
+	}
+
 	public static void info(String message) {
-		suiteLog.info(message);
+		suiteLog.info(prefix.get() + message);
 	}
 
 	public static void warn(String message) {
-		suiteLog.warn(message);
+		suiteLog.warn(prefix.get() + message);
 	}
 
 	public static void error(Throwable th) {

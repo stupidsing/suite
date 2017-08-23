@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,7 @@ import suite.Constants;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.os.FileUtil;
+import suite.os.LogUtil;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.pair.LngFltPair;
@@ -157,7 +159,28 @@ public class Yahoo {
 		} else
 			stockHistory1 = stockHistory0;
 
-		DataSource ds = stockHistory1.cleanse().filter(period).toDataSource();
+		Predicate<LngFltPair> splitFilter;
+		LngFltPair[] splits2;
+
+		if (String_.equals(symbol, "0700.HK"))
+			splitFilter = pair -> pair.t0 != Time.of(2014, 5, 15, 9, 30).epochSec();
+		else if (String_.equals(symbol, "2318.HK"))
+			splitFilter = pair -> pair.t0 != Time.of(2015, 7, 27, 9, 30).epochSec();
+		else
+			splitFilter = null;
+
+		splits2 = splitFilter != null //
+				? Read.from(stockHistory1.splits).filter(splitFilter).toArray(LngFltPair.class) //
+				: stockHistory1.splits;
+
+		StockHistory stockHistory2 = StockHistory.of( //
+				stockHistory1.exchange, //
+				stockHistory1.time, //
+				stockHistory1.data, //
+				stockHistory1.dividends, //
+				splits2);
+
+		DataSource ds = LogUtil.prefix("for " + symbol + ": ", () -> stockHistory2.cleanse()).filter(period).toDataSource();
 
 		// the latest time stamp may fluctuate; adjust it to previous market
 		// close time
