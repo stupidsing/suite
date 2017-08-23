@@ -48,9 +48,9 @@ public class SingleAllocBackTest {
 		// new TimeSeries().sharpeRatio(valuations, nApproxYears);
 
 		concludeLogSink.sink("" //
-				+ ", " + account.txnSummary(a -> 0d) //
-				+ ", return: " + To.string(return_) //
-				+ ", sharpe: " + To.string(sharpe));
+				+ ", " + account.transactionSummary(a -> 0d) //
+				+ ", return = " + To.string(return_) //
+				+ ", sharpe = " + To.string(sharpe));
 	}
 
 	private float buySell(DataSource ds, int day, int buySell) {
