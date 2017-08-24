@@ -1,5 +1,6 @@
 package suite.funp;
 
+import suite.adt.Mutable;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
@@ -20,6 +21,11 @@ public class P1GenerateLambda {
 	public static class Rt {
 		private Rt parent;
 		private Object var;
+
+		public Rt(Rt parent, Object var) {
+			this.parent = parent;
+			this.var = var;
+		}
 	}
 
 	public interface Thunk extends Fun<Rt, Object> {
@@ -37,9 +43,17 @@ public class P1GenerateLambda {
 		} else if (n0 instanceof FunpBoolean) {
 			Object b = ((FunpBoolean) n0).b;
 			return rt -> b;
-		} else if (n0 instanceof FunpFixed)
-			throw new RuntimeException();
-		else if (n0 instanceof FunpIf) {
+		} else if (n0 instanceof FunpFixed) {
+			FunpLambda n1 = (FunpLambda) n0;
+			int fs1 = fs + 1;
+			Thunk thunk = compile(fs1, env.put(n1.var, fs1), n1.expr);
+			return rt -> {
+				Mutable<Fun_> mut = Mutable.nil();
+				Fun_ fun = p -> thunk.apply(new Rt(rt, mut.get()));
+				mut.set(fun);
+				return fun;
+			};
+		} else if (n0 instanceof FunpIf) {
 			FunpIf n1 = (FunpIf) n0;
 			Thunk if_ = compile(fs, env, n1.if_);
 			Thunk then = compile(fs, env, n1.then);
@@ -49,12 +63,7 @@ public class P1GenerateLambda {
 			FunpLambda n1 = (FunpLambda) n0;
 			int fs1 = fs + 1;
 			Thunk thunk = compile(fs1, env.put(n1.var, fs1), n1.expr);
-			return rt -> (Fun_) p -> {
-				Rt rt1 = new Rt();
-				rt1.parent = rt;
-				rt1.var = p;
-				return thunk.apply(rt1);
-			};
+			return rt -> (Fun_) p -> thunk.apply(new Rt(rt, p));
 		} else if (n0 instanceof FunpNumber) {
 			Object i = ((FunpNumber) n0).i;
 			return rt -> i;

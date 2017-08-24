@@ -55,7 +55,7 @@ public class FunpTest {
 		Funp f0 = p0.parse(node);
 		p1.infer(f0);
 		Thunk thunk = p1g.compile(0, IMap.empty(), f0);
-		return thunk.apply(new Rt());
+		return thunk.apply(new Rt(null, null));
 	}
 
 }
