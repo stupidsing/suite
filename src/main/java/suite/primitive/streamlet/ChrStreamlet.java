@@ -138,8 +138,8 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		return spawn().first();
 	}
 
-	public ChrStreamlet flatMap(Chr_Obj<Iterable<Character>> fun) {
-		return streamlet(() -> spawn().flatMap(fun));
+	public <O> Streamlet<O> flatMap(Chr_Obj<Iterable<O>> fun) {
+		return new Streamlet<>(() -> spawn().flatMap(fun));
 	}
 
 	public <R> R fold(R init, ChrObj_Obj<R, R> fun) {

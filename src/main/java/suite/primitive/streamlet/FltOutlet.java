@@ -210,8 +210,8 @@ public class FltOutlet implements OutletDefaults<Float> {
 		return next();
 	}
 
-	public FltOutlet flatMap(Flt_Obj<Iterable<Float>> fun) {
-		return of(FunUtil.flatten(FltFunUtil.map(fun, source)));
+	public <O> Outlet<O> flatMap(Flt_Obj<Iterable<O>> fun) {
+		return Outlet.of(FunUtil.flatten(FltFunUtil.map(fun, source)));
 	}
 
 	public <R> R fold(R init, FltObj_Obj<R, R> fun) {

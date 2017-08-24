@@ -210,8 +210,8 @@ public class DblOutlet implements OutletDefaults<Double> {
 		return next();
 	}
 
-	public DblOutlet flatMap(Dbl_Obj<Iterable<Double>> fun) {
-		return of(FunUtil.flatten(DblFunUtil.map(fun, source)));
+	public <O> Outlet<O> flatMap(Dbl_Obj<Iterable<O>> fun) {
+		return Outlet.of(FunUtil.flatten(DblFunUtil.map(fun, source)));
 	}
 
 	public <R> R fold(R init, DblObj_Obj<R, R> fun) {

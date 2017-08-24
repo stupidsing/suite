@@ -138,8 +138,8 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return spawn().first();
 	}
 
-	public LngStreamlet flatMap(Lng_Obj<Iterable<Long>> fun) {
-		return streamlet(() -> spawn().flatMap(fun));
+	public <O> Streamlet<O> flatMap(Lng_Obj<Iterable<O>> fun) {
+		return new Streamlet<>(() -> spawn().flatMap(fun));
 	}
 
 	public <R> R fold(R init, LngObj_Obj<R, R> fun) {

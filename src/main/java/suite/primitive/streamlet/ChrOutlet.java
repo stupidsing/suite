@@ -210,8 +210,8 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		return next();
 	}
 
-	public ChrOutlet flatMap(Chr_Obj<Iterable<Character>> fun) {
-		return of(FunUtil.flatten(ChrFunUtil.map(fun, source)));
+	public <O> Outlet<O> flatMap(Chr_Obj<Iterable<O>> fun) {
+		return Outlet.of(FunUtil.flatten(ChrFunUtil.map(fun, source)));
 	}
 
 	public <R> R fold(R init, ChrObj_Obj<R, R> fun) {

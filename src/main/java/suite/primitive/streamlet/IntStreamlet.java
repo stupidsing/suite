@@ -138,8 +138,8 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return spawn().first();
 	}
 
-	public IntStreamlet flatMap(Int_Obj<Iterable<Integer>> fun) {
-		return streamlet(() -> spawn().flatMap(fun));
+	public <O> Streamlet<O> flatMap(Int_Obj<Iterable<O>> fun) {
+		return new Streamlet<>(() -> spawn().flatMap(fun));
 	}
 
 	public <R> R fold(R init, IntObj_Obj<R, R> fun) {

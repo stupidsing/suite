@@ -138,8 +138,8 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return spawn().first();
 	}
 
-	public DblStreamlet flatMap(Dbl_Obj<Iterable<Double>> fun) {
-		return streamlet(() -> spawn().flatMap(fun));
+	public <O> Streamlet<O> flatMap(Dbl_Obj<Iterable<O>> fun) {
+		return new Streamlet<>(() -> spawn().flatMap(fun));
 	}
 
 	public <R> R fold(R init, DblObj_Obj<R, R> fun) {

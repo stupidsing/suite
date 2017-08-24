@@ -210,8 +210,8 @@ public class LngOutlet implements OutletDefaults<Long> {
 		return next();
 	}
 
-	public LngOutlet flatMap(Lng_Obj<Iterable<Long>> fun) {
-		return of(FunUtil.flatten(LngFunUtil.map(fun, source)));
+	public <O> Outlet<O> flatMap(Lng_Obj<Iterable<O>> fun) {
+		return Outlet.of(FunUtil.flatten(LngFunUtil.map(fun, source)));
 	}
 
 	public <R> R fold(R init, LngObj_Obj<R, R> fun) {

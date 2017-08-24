@@ -210,8 +210,8 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		return next();
 	}
 
-	public IntOutlet flatMap(Int_Obj<Iterable<Integer>> fun) {
-		return of(FunUtil.flatten(IntFunUtil.map(fun, source)));
+	public <O> Outlet<O> flatMap(Int_Obj<Iterable<O>> fun) {
+		return Outlet.of(FunUtil.flatten(IntFunUtil.map(fun, source)));
 	}
 
 	public <R> R fold(R init, IntObj_Obj<R, R> fun) {
