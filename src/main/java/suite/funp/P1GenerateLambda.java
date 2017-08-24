@@ -20,18 +20,37 @@ public class P1GenerateLambda {
 
 	public static class Rt {
 		private Rt parent;
-		private Object var;
+		private Value var;
 
-		public Rt(Rt parent, Object var) {
+		public Rt(Rt parent, Value var) {
 			this.parent = parent;
 			this.var = var;
 		}
 	}
 
-	public interface Thunk extends Fun<Rt, Object> {
+	public interface Value {
 	}
 
-	private interface Fun_ extends Fun<Object, Object> {
+	public static class Bool implements Value {
+		public final boolean b;
+
+		private Bool(boolean b) {
+			this.b = b;
+		}
+	}
+
+	public static class Int implements Value {
+		public final int i;
+
+		private Int(int i) {
+			this.i = i;
+		}
+	}
+
+	public interface Thunk extends Fun<Rt, Value>, Value {
+	}
+
+	private interface Fun_ extends Fun<Value, Value>, Value {
 	}
 
 	public Thunk compile(int fs, IMap<String, Integer> env, Funp n0) {
@@ -41,7 +60,7 @@ public class P1GenerateLambda {
 			Thunk value = compile(fs, env, n1.value);
 			return rt -> ((Fun_) lambda.apply(rt)).apply(value.apply(rt));
 		} else if (n0 instanceof FunpBoolean) {
-			Object b = ((FunpBoolean) n0).b;
+			Bool b = new Bool(((FunpBoolean) n0).b);
 			return rt -> b;
 		} else if (n0 instanceof FunpFixed) {
 			FunpLambda n1 = (FunpLambda) n0;
@@ -58,14 +77,14 @@ public class P1GenerateLambda {
 			Thunk if_ = compile(fs, env, n1.if_);
 			Thunk then = compile(fs, env, n1.then);
 			Thunk else_ = compile(fs, env, n1.else_);
-			return rt -> (isTrue(rt, if_) ? then : else_).apply(rt);
+			return rt -> (b(rt, if_) ? then : else_).apply(rt);
 		} else if (n0 instanceof FunpLambda) {
 			FunpLambda n1 = (FunpLambda) n0;
 			int fs1 = fs + 1;
 			Thunk thunk = compile(fs1, env.put(n1.var, fs1), n1.expr);
 			return rt -> (Fun_) p -> thunk.apply(new Rt(rt, p));
 		} else if (n0 instanceof FunpNumber) {
-			Object i = ((FunpNumber) n0).i;
+			Int i = new Int(((FunpNumber) n0).i);
 			return rt -> i;
 		} else if (n0 instanceof FunpPolyType)
 			return compile(fs, env, ((FunpPolyType) n0).expr);
@@ -76,15 +95,15 @@ public class P1GenerateLambda {
 			Thunk v0 = compile(fs, env, n1.left);
 			Thunk v1 = compile(fs, env, n1.right);
 			if (n1.operator == TermOp.BIGAND)
-				return rt -> isTrue(rt, v0) && isTrue(rt, v1);
+				return rt -> new Bool(b(rt, v0) && b(rt, v1));
 			else if (n1.operator == TermOp.BIGOR_)
-				return rt -> isTrue(rt, v0) || isTrue(rt, v1);
+				return rt -> new Bool(b(rt, v0) || b(rt, v1));
 			else if (n1.operator == TermOp.PLUS__)
-				return rt -> i(rt, v0) + i(rt, v1);
+				return rt -> new Int(i(rt, v0) + i(rt, v1));
 			else if (n1.operator == TermOp.MINUS_)
-				return rt -> i(rt, v0) - i(rt, v1);
+				return rt -> new Int(i(rt, v0) - i(rt, v1));
 			else if (n1.operator == TermOp.MULT__)
-				return rt -> i(rt, v0) * i(rt, v1);
+				return rt -> new Int(i(rt, v0) * i(rt, v1));
 			else
 				throw new RuntimeException();
 		} else if (n0 instanceof FunpVariable) {
@@ -99,11 +118,11 @@ public class P1GenerateLambda {
 	}
 
 	private static int i(Rt rt, Thunk value) {
-		return (Integer) value.apply(rt);
+		return ((Int) value.apply(rt)).i;
 	}
 
-	private static boolean isTrue(Rt rt, Thunk value) {
-		return value.apply(rt) == Boolean.TRUE;
+	private static boolean b(Rt rt, Thunk value) {
+		return ((Bool) value.apply(rt)).b;
 	}
 
 }

@@ -10,8 +10,10 @@ import org.junit.Test;
 import suite.Suite;
 import suite.assembler.Amd64.Instruction;
 import suite.funp.Funp_.Funp;
+import suite.funp.P1GenerateLambda.Int;
 import suite.funp.P1GenerateLambda.Rt;
 import suite.funp.P1GenerateLambda.Thunk;
+import suite.funp.P1GenerateLambda.Value;
 import suite.immutable.IMap;
 import suite.node.Node;
 import suite.primitive.Bytes;
@@ -51,11 +53,12 @@ public class FunpTest {
 		return p2.compile1(0, instructions, true);
 	}
 
-	private Object interpret(Node node) {
+	private int interpret(Node node) {
 		Funp f0 = p0.parse(node);
 		p1.infer(f0);
 		Thunk thunk = p1g.compile(0, IMap.empty(), f0);
-		return thunk.apply(new Rt(null, null));
+		Value value = thunk.apply(new Rt(null, null));
+		return ((Int) value).i;
 	}
 
 }
