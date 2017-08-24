@@ -38,7 +38,7 @@ public class BackAllocatorGeneral {
 
 	public static final BackAllocatorGeneral me = new BackAllocatorGeneral();
 
-	public BackAllocator bb_ = bollingerBands();
+	public BackAllocator bb_ = bb();
 	public BackAllocator cash = cash();
 	public BackAllocator donHold = donchian(9).holdExtend(2).pick(5);
 	public BackAllocator ema = ema().pick(3);
@@ -49,7 +49,8 @@ public class BackAllocatorGeneral {
 	public final Streamlet2<String, BackAllocator> baByName = Read //
 			.<String, BackAllocator> empty2() //
 			.cons("bb0", bb_) //
-			.cons("bb1", bollingerBands1()) //
+			.cons("bb1", bb1()) //
+			.cons("bballoc", bbAllocate()) //
 			.cons("bbtrend", bbTrend()) //
 			.cons("don9", donchian(9)) //
 			.cons("donhold", donHold) //
@@ -80,14 +81,14 @@ public class BackAllocatorGeneral {
 	private BackAllocatorGeneral() {
 	}
 
-	private BackAllocator bollingerBands() {
+	private BackAllocator bb() { // Bollingers Band
 		return BackAllocator_.byPrices(prices -> {
 			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
 			return Quant.fold(0, sds.length, (i, hold) -> -Quant.hold(hold, sds[i], -.5d, 0d, .5d));
 		});
 	}
 
-	private BackAllocator bollingerBands1() {
+	private BackAllocator bb1() {
 		float entry = .48f;
 		float exit = -.08f;
 
@@ -99,6 +100,13 @@ public class BackAllocatorGeneral {
 					i -> sds[i] < -entry, //
 					i -> exit < sds[i], //
 					i -> sds[i] < -exit);
+		});
+	}
+
+	private BackAllocator bbAllocate() {
+		return BackAllocator_.byPrices(prices -> {
+			float[] sds = bb.bb(prices, 32, 0, 1f).sds;
+			return index -> .5d - sds[index - 1] * .5d;
 		});
 	}
 
