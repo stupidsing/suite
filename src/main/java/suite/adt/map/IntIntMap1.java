@@ -102,10 +102,8 @@ public class IntIntMap1 {
 			return IntObjOutlet.of(new IntObjSource<Integer>() {
 				public boolean source2(IntObjPair<Integer> pair) {
 					boolean b = source.source2(pair0);
-					if (b) {
-						pair.t0 = pair0.t0;
-						pair.t1 = pair0.t1;
-					}
+					if (b)
+						pair.update(pair0.t0, pair0.t1);
 					return b;
 				}
 			});
@@ -138,8 +136,7 @@ public class IntIntMap1 {
 				while ((v = v(kv = kvs[index])) == IntFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
-				pair.t0 = k(kv);
-				pair.t1 = v;
+				pair.update(k(kv), v);
 				index++;
 				return true;
 			}

@@ -50,16 +50,21 @@ public class Pair<T0, T1> {
 		return (pair0, pair1) -> Object_.compare(first_(pair0), first_(pair1));
 	}
 
-	public <O> Opt<O> map(Fun2<T0, T1, O> fun) {
-		return t0 != null ? Opt.of(fun.apply(t0, t1)) : Opt.none();
-	}
-
 	public static <T0> T0 first_(Pair<T0, ?> pair) {
 		return pair != null ? pair.t0 : null;
 	}
 
 	public static <T1> T1 second(Pair<?, T1> pair) {
 		return pair != null ? pair.t1 : null;
+	}
+
+	public <O> Opt<O> map(Fun2<T0, T1, O> fun) {
+		return t0 != null ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	}
+
+	public void update(T0 t0_, T1 t1_) {
+		t0 = t0_;
+		t1 = t1_;
 	}
 
 	@Override
