@@ -322,8 +322,7 @@ public class BackAllocatorGeneral {
 					hold = Math.min(0f, hold - part);
 					min = price;
 				}
-				minMax.t0 = min;
-				minMax.t1 = max;
+				minMax.update(min, max);
 				return hold;
 			});
 		});

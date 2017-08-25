@@ -66,8 +66,7 @@ public class FunUtil2 {
 				if (!isAppended) {
 					boolean b = source.source2(pair);
 					if (!b) {
-						pair.t0 = key;
-						pair.t1 = value;
+						pair.update(key, value);
 						isAppended = true;
 					}
 					return b;
@@ -84,10 +83,9 @@ public class FunUtil2 {
 			private int i;
 			private Source2<K, V> source_ = pair1 -> {
 				boolean b = (isAvail = isAvail && source2.source2(pair)) && ++i < n;
-				if (b) {
-					pair1.t0 = pair.t0;
-					pair1.t1 = pair.t1;
-				} else
+				if (b)
+					pair1.update(pair.t0, pair.t1);
+				else
 					i = 0;
 				return b;
 			};
@@ -124,8 +122,7 @@ public class FunUtil2 {
 					return source2.source2(pair);
 				else {
 					isFirst = false;
-					pair.t0 = key;
-					pair.t1 = value;
+					pair.update(key, value);
 					return true;
 				}
 			}
@@ -226,8 +223,7 @@ public class FunUtil2 {
 		return pair -> {
 			boolean b = source2.source2(pair1);
 			if (b) {
-				pair.t0 = kf1.apply(pair1.t0, pair1.t1);
-				pair.t1 = vf1.apply(pair1.t0, pair1.t1);
+				pair.update(kf1.apply(pair1.t0, pair1.t1), vf1.apply(pair1.t0, pair1.t1));
 			}
 			return b;
 		};
@@ -282,10 +278,8 @@ public class FunUtil2 {
 			try {
 				Pair<K, V> p = queue.take();
 				boolean b = p != null;
-				if (b) {
-					pair.t0 = p.t0;
-					pair.t1 = p.t1;
-				}
+				if (b)
+					pair.update(p.t0, p.t1);
 				return b;
 			} catch (InterruptedException ex) {
 				thread.interrupt();
