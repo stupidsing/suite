@@ -2,7 +2,6 @@ package suite.trade.backalloc.strategy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.IntFunction;
@@ -15,6 +14,7 @@ import suite.math.stat.Quant;
 import suite.math.stat.TimeSeries;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Ints_;
+import suite.primitive.adt.pair.FltFltPair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -36,41 +36,41 @@ public class BackAllocatorGeneral {
 
 	public static final BackAllocatorGeneral me = new BackAllocatorGeneral();
 
-	public BackAllocator bb_ = bb();
-	public BackAllocator cash = cash();
+	public BackAllocator bb_ = bb(32);
+	public BackAllocator cash = fixed(0f);
 	public BackAllocator donHold = donchian(9).holdExtend(2).pick(5);
-	public BackAllocator ema = ema().pick(3);
-	public BackAllocator rsi = rsi();
+	public BackAllocator ema = ema(2).pick(3);
+	public BackAllocator rsi = rsi(32, .7d);
 	public BackAllocator pprHsi = priceProRata(Asset.hsiSymbol);
-	public BackAllocator tma = tripleExpGeometricMovingAvgs();
+	public BackAllocator tma = tripleExpGeometricMovingAvgs(2, 6, 18);
 
 	public final Streamlet2<String, BackAllocator> baByName = Read //
 			.<String, BackAllocator>empty2() //
 			.cons("bb0", bb_) //
-			.cons("bb1", bb1()) //
-			.cons("bballoc", bbAllocate()) //
-			.cons("bbtrend", bbTrend()) //
+			.cons("bb1", bb1(32)) //
+			.cons("bballoc", bbAllocate(32)) //
+			.cons("bbtrend", bbTrend(32)) //
 			.cons("don9", donchian(9)) //
 			.cons("donalloc", donchianAllocate(9)) //
 			.cons("donhold", donHold) //
 			.cons("dontrend", donchianTrend(9)) //
 			.cons("ema", ema) //
-			.cons("half", half()) //
-			.cons("hold", hold()) //
+			.cons("half", fixed(.5d)) //
+			.cons("hold", fixed(1d)) //
 			.cons("lr03", lastReturn(0, 3)) //
 			.cons("lr30", lastReturn(3, 0)) //
-			.cons("ma1", movingAvg()) //
-			.cons("mom", momentum()) //
-			.cons("momacc", momentumAcceleration()) //
-			.cons("opcl8", openClose8()) //
+			.cons("ma1", movingAvg(64, 8, .15f)) //
+			.cons("mom", momentum(8)) //
+			.cons("momacc", momentumAcceleration(8, 24)) //
+			.cons("opcl8", openClose(8)) //
 			.cons("ppr", pprHsi) //
 			.cons("rsi", rsi) //
 			.cons("sar", sar()) //
 			.cons("trend2", trend2()) //
 			.cons("turtles", turtles(20, 10, 55, 20)) //
 			.cons("tma", tma) //
-			.cons("varratio", varianceRatio()) //
-			.cons("xma", xma());
+			.cons("varratio", varianceRatio(96)) //
+			.cons("xma", xma(2, 8));
 
 	private BollingerBands bb = new BollingerBands();
 	private MovingAverage ma = new MovingAverage();
@@ -80,19 +80,19 @@ public class BackAllocatorGeneral {
 	private BackAllocatorGeneral() {
 	}
 
-	private BackAllocator bb() { // Bollingers Band
+	private BackAllocator bb(int tor) { // Bollingers Band
 		return BackAllocator_.byPrices(prices -> {
-			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
+			float[] sds = bb.bb(prices, tor, 0, 2f).sds;
 			return Quant.fold(0, sds.length, (i, hold) -> -Quant.hold(hold, sds[i], -.5d, 0d, .5d));
 		});
 	}
 
-	private BackAllocator bb1() {
+	private BackAllocator bb1(int tor) {
 		float entry = .48f;
 		float exit = -.08f;
 
 		return BackAllocator_.byPrices(prices -> {
-			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
+			float[] sds = bb.bb(prices, tor, 0, 2f).sds;
 
 			return Quant.enterKeep(0, sds.length, //
 					i -> entry < sds[i], //
@@ -102,26 +102,22 @@ public class BackAllocatorGeneral {
 		});
 	}
 
-	private BackAllocator bbAllocate() {
+	private BackAllocator bbAllocate(int tor) {
 		return BackAllocator_.byPrices(prices -> {
-			float[] sds = bb.bb(prices, 32, 0, 1f).sds;
+			float[] sds = bb.bb(prices, tor, 0, 1f).sds;
 			return index -> .5d - sds[index - 1] * .5d;
 		});
 	}
 
-	private BackAllocator bbTrend() {
+	private BackAllocator bbTrend(int tor) {
 		float exitThreshold = .05f;
 
 		return BackAllocator_.byPrices(prices -> {
-			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
+			float[] sds = bb.bb(prices, tor, 0, 2f).sds;
 			return Quant.enterUntilDrawDown(prices, exitThreshold, //
 					(i, price) -> .5d <= sds[i], //
 					(i, price) -> sds[i] <= -.5d);
 		});
-	}
-
-	private BackAllocator cash() {
-		return (akds, indices) -> index -> Collections.emptyList();
 	}
 
 	private BackAllocator donchian(int window) {
@@ -165,8 +161,7 @@ public class BackAllocatorGeneral {
 		});
 	}
 
-	private BackAllocator ema() {
-		int halfLife = 2;
+	private BackAllocator ema(int halfLife) {
 		double scale = 1d / Math.log(.8d);
 
 		return BackAllocator_.byPrices(prices -> {
@@ -181,12 +176,14 @@ public class BackAllocatorGeneral {
 		});
 	}
 
-	private BackAllocator half() {
-		return fixed(.5d);
-	}
+	private BackAllocator fixed(double r) {
+		return (akds, indices) -> {
+			List<Pair<String, Double>> potentialBySymbol = akds.dsByKey //
+					.map((symbol, ds) -> Pair.of(symbol, r)) //
+					.toList();
 
-	private BackAllocator hold() {
-		return fixed(1d);
+			return index -> potentialBySymbol;
+		};
 	}
 
 	private BackAllocator lastReturn(int nWorsts, int nBests) {
@@ -206,19 +203,14 @@ public class BackAllocatorGeneral {
 		};
 	}
 
-	private BackAllocator momentum() {
-		int nDays = 8;
-
+	private BackAllocator momentum(int nDays) {
 		return BackAllocator_.byPrices(prices -> index -> {
 			int last = index - 1;
 			return nDays <= last ? 30d * Quant.return_(prices[last - nDays], prices[last]) : 0d;
 		});
 	}
 
-	private BackAllocator momentumAcceleration() {
-		int nDays = 8;
-		int nAccelDays = 24;
-
+	private BackAllocator momentumAcceleration(int nDays, int nAccelDays) {
 		return BackAllocator_.byPrices(prices -> index -> {
 			int last1 = index - 1;
 			int last0 = last1 - nAccelDays;
@@ -231,10 +223,7 @@ public class BackAllocatorGeneral {
 		});
 	}
 
-	private BackAllocator movingAvg() {
-		int nPastDays = 64;
-		int nHoldDays = 8;
-		float threshold = .15f;
+	private BackAllocator movingAvg(int nPastDays, int nHoldDays, float threshold) {
 		Strategos strategos = new Strategos();
 		BuySellStrategy mamr = strategos.movingAvgMeanReverting(nPastDays, nHoldDays, threshold);
 
@@ -251,10 +240,10 @@ public class BackAllocatorGeneral {
 	}
 
 	// eight-days open close
-	private BackAllocator openClose8() {
+	private BackAllocator openClose(int tor) {
 		return BackAllocator_.byDataSource(ds -> {
-			float[] movingAvgOps = ma.movingAvg(ds.opens, 8);
-			float[] movingAvgCls = ma.movingAvg(ds.closes, 8);
+			float[] movingAvgOps = ma.movingAvg(ds.opens, tor);
+			float[] movingAvgCls = ma.movingAvg(ds.closes, tor);
 
 			return index -> {
 				int last = index - 1;
@@ -285,10 +274,7 @@ public class BackAllocatorGeneral {
 		};
 	}
 
-	private BackAllocator rsi() {
-		int window = 32;
-		double threshold = .7d;
-
+	private BackAllocator rsi(int window, double threshold) {
 		return BackAllocator_.byPrices(prices -> {
 			Movement movement = osc.movement(prices, window);
 
@@ -322,12 +308,12 @@ public class BackAllocatorGeneral {
 		float part = .1f;
 
 		return BackAllocator_.byPrices(prices -> {
-			float[] minMax = { Float.MAX_VALUE, Float.MIN_VALUE, };
+			FltFltPair minMax = FltFltPair.of(Float.MAX_VALUE, Float.MIN_VALUE);
 
 			return Quant.fold(0, prices.length, (i, hold) -> {
 				float price = prices[i];
-				float min = Math.min(minMax[0], price);
-				float max = Math.max(minMax[1], price);
+				float min = Math.min(minMax.t0, price);
+				float max = Math.max(minMax.t1, price);
 				if (threshold <= Quant.return_(min, price)) {
 					hold = Math.max(0f, hold + part);
 					max = price;
@@ -336,18 +322,18 @@ public class BackAllocatorGeneral {
 					hold = Math.min(0f, hold - part);
 					min = price;
 				}
-				minMax[0] = min;
-				minMax[1] = max;
+				minMax.t0 = min;
+				minMax.t1 = max;
 				return hold;
 			});
 		});
 	}
 
-	private BackAllocator tripleExpGeometricMovingAvgs() {
+	private BackAllocator tripleExpGeometricMovingAvgs(int d2, int d6, int d18) {
 		return BackAllocator_.byPrices(prices -> {
-			float[] movingAvgs0 = ma.exponentialGeometricMovingAvg(prices, 18);
-			float[] movingAvgs1 = ma.exponentialGeometricMovingAvg(prices, 6);
-			float[] movingAvgs2 = ma.exponentialGeometricMovingAvg(prices, 2);
+			float[] movingAvgs0 = ma.exponentialGeometricMovingAvg(prices, d18);
+			float[] movingAvgs1 = ma.exponentialGeometricMovingAvg(prices, d6);
+			float[] movingAvgs2 = ma.exponentialGeometricMovingAvg(prices, d2);
 
 			return Quant.filterRange(1, index -> {
 				int last = index - 1;
@@ -491,8 +477,7 @@ public class BackAllocatorGeneral {
 		};
 	}
 
-	private BackAllocator varianceRatio() {
-		int tor = 96;
+	private BackAllocator varianceRatio(int tor) {
 		double vr = .95d;
 		double threshold = .95d;
 		double invThreshold = 1d / threshold;
@@ -525,10 +510,7 @@ public class BackAllocatorGeneral {
 		};
 	}
 
-	private BackAllocator xma() {
-		int halfLife0 = 2;
-		int halfLife1 = 8;
-
+	private BackAllocator xma(int halfLife0, int halfLife1) {
 		return BackAllocator_.byPrices(prices -> {
 			float[] movingAvgs0 = ma.exponentialMovingAvg(prices, halfLife0);
 			float[] movingAvgs1 = ma.exponentialMovingAvg(prices, halfLife1);
@@ -538,16 +520,6 @@ public class BackAllocatorGeneral {
 				return movingAvgs0[last] < movingAvgs1[last] ? -1d : 1d;
 			});
 		});
-	}
-
-	private BackAllocator fixed(double r) {
-		return (akds, indices) -> {
-			List<Pair<String, Double>> potentialBySymbol = akds.dsByKey //
-					.map((symbol, ds) -> Pair.of(symbol, r)) //
-					.toList();
-
-			return index -> potentialBySymbol;
-		};
 	}
 
 }
