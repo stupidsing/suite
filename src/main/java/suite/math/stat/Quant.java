@@ -62,8 +62,9 @@ public class Quant {
 		float hold = 0f;
 		int nDays = 0;
 		for (int i = start; i < end; i++) {
-			hold = nDays < nDaysExit ? fun.apply(i, hold) : 0f;
-			nDays = (holds[i] = hold) != 0f ? nDays + 1 : 0;
+			float hold1 = nDays < nDaysExit ? fun.apply(i, hold) : 0f;
+			nDays = hold1 != 0f && hold == hold1 ? nDays + 1 : 0;
+			holds[i] = hold = hold1;
 		}
 		return filterRange(1, index -> (double) holds[index - 1]);
 	}
