@@ -47,7 +47,7 @@ public class BackAllocatorGeneral {
 	public BackAllocator tma = tripleExpGeometricMovingAvgs();
 
 	public final Streamlet2<String, BackAllocator> baByName = Read //
-			.<String, BackAllocator> empty2() //
+			.<String, BackAllocator>empty2() //
 			.cons("bb0", bb_) //
 			.cons("bb1", bb1()) //
 			.cons("bballoc", bbAllocate()) //
@@ -333,10 +333,21 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator tripleExpGeometricMovingAvgs() {
-		return BackAllocator_.triple(prices -> Fixie.of( //
-				ma.exponentialGeometricMovingAvg(prices, 18), //
-				ma.exponentialGeometricMovingAvg(prices, 6), //
-				ma.exponentialGeometricMovingAvg(prices, 2)));
+		return BackAllocator_.byPrices(prices -> {
+			float[] movingAvgs0 = ma.exponentialGeometricMovingAvg(prices, 18);
+			float[] movingAvgs1 = ma.exponentialGeometricMovingAvg(prices, 6);
+			float[] movingAvgs2 = ma.exponentialGeometricMovingAvg(prices, 2);
+
+			return Quant.filterRange(1, index -> {
+				int last = index - 1;
+				float movingAvg0 = movingAvgs0[last];
+				float movingAvg1 = movingAvgs1[last];
+				float movingAvg2 = movingAvgs2[last];
+				int sign0 = Quant.sign(movingAvg0, movingAvg1);
+				int sign1 = Quant.sign(movingAvg1, movingAvg2);
+				return sign0 == sign1 ? (double) -sign0 : 0d;
+			});
+		});
 	}
 
 	// http://www.metastocktools.com/downloads/turtlerules.pdf

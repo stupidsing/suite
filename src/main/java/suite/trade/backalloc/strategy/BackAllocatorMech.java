@@ -2,7 +2,6 @@ package suite.trade.backalloc.strategy;
 
 import java.util.function.IntPredicate;
 
-import suite.adt.pair.Fixie;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.BollingerBands.Bb;
 import suite.math.stat.Quant;
@@ -128,10 +127,20 @@ public class BackAllocatorMech {
 
 	// three moving average cross-over
 	private BackAllocator ma3(int d9, int d26, int d52) {
-		return BackAllocator_.triple(prices -> Fixie.of( //
-				ma.movingAvg(prices, d52), //
-				ma.movingAvg(prices, d26), //
-				ma.movingAvg(prices, d9)));
+		return BackAllocator_.byPrices(prices -> {
+			float[] movingAvgs0 = ma.movingAvg(prices, d52);
+			float[] movingAvgs1 = ma.movingAvg(prices, d26);
+			float[] movingAvgs2 = ma.movingAvg(prices, d9);
+			return Quant.filterRange(1, index -> {
+				int last = index - 1;
+				float movingAvg0 = movingAvgs0[last];
+				float movingAvg1 = movingAvgs1[last];
+				float movingAvg2 = movingAvgs2[last];
+				int sign0 = Quant.sign(movingAvg0, movingAvg1);
+				int sign1 = Quant.sign(movingAvg1, movingAvg2);
+				return sign0 == sign1 ? (double) -sign0 : 0d;
+			});
+		});
 	}
 
 	// Ichimoku three moving average cross-over
