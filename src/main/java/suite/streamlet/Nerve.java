@@ -35,8 +35,8 @@ public class Nerve<T> {
 
 	public static <T> Nerve<T> append(Nerve<T> n0, Nerve<T> n1) {
 		return of(fire -> {
-			n0.register(fire);
-			n1.register(fire);
+			n0.register_(fire);
+			n1.register_(fire);
 		});
 	}
 
@@ -52,8 +52,8 @@ public class Nerve<T> {
 		return of(fire -> {
 			CasReference<Pair<T, U>> cr = new CasReference<>(Pair.of(null, null));
 			Sink<Pair<T, U>> recalc = pair -> fire.sink(fun.apply(pair.t0, pair.t1));
-			n0.register(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
-			n1.register(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
+			n0.register_(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
+			n1.register_(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
 		});
 	}
 
@@ -80,7 +80,7 @@ public class Nerve<T> {
 	}
 
 	public <U> Nerve<U> concatMap(Fun<T, Nerve<U>> fun) {
-		return redirect((t, fire) -> fun.apply(t).register(fire));
+		return redirect((t, fire) -> fun.apply(t).register_(fire));
 	}
 
 	public Nerve<T> delay(int milliseconds) {
@@ -120,7 +120,7 @@ public class Nerve<T> {
 
 	public Outlet<T> outlet() {
 		NullableSyncQueue<T> queue = new NullableSyncQueue<>();
-		register(queue::offerQuietly);
+		register_(queue::offerQuietly);
 		return Outlet.of(() -> {
 			try {
 				return queue.take();
@@ -132,7 +132,7 @@ public class Nerve<T> {
 
 	public <U> Nerve<U> redirect(Redirector<T, U> redirector) {
 		Nerve<U> nerve1 = of();
-		register(t -> redirector.accept(t, nerve1::fire));
+		register_(t -> redirector.accept(t, nerve1::fire));
 		return nerve1;
 	}
 
@@ -141,13 +141,13 @@ public class Nerve<T> {
 	}
 
 	public void register(Sink<T> receiver) {
-		receivers.add(receiver);
+		register_(receiver);
 	}
 
 	public Nerve<T> resample(Nerve<?> event) {
 		List<T> ts = new ArrayList<>();
 		ts.add(null);
-		register(t -> ts.set(0, t));
+		register_(t -> ts.set(0, t));
 		return event.redirect((e, fire) -> fire.sink(ts.get(0)));
 	}
 
@@ -157,6 +157,10 @@ public class Nerve<T> {
 			if (set.add(t))
 				fire.sink(t);
 		});
+	}
+
+	private void register_(Sink<T> receiver) {
+		receivers.add(receiver);
 	}
 
 }
