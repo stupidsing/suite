@@ -182,8 +182,7 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator half() {
-		double r = .5d;
-		return fixed(r);
+		return fixed(.5d);
 	}
 
 	private BackAllocator hold() {
