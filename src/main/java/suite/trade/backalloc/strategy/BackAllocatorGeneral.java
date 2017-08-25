@@ -13,9 +13,7 @@ import suite.adt.pair.Pair;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.Quant;
 import suite.math.stat.TimeSeries;
-import suite.primitive.IntFltPredicate;
 import suite.primitive.IntInt_Obj;
-import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -115,7 +113,7 @@ public class BackAllocatorGeneral {
 
 		return BackAllocator_.byPrices(prices -> {
 			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
-			return captureEnter(prices, exitThreshold, //
+			return Quant.enterUntilDrawDown(prices, exitThreshold, //
 					(i, price) -> .5d <= sds[i], //
 					(i, price) -> sds[i] <= -.5d);
 		});
@@ -147,7 +145,7 @@ public class BackAllocatorGeneral {
 
 		return BackAllocator_.byPrices(prices -> {
 			MovingRange[] movingRanges = ma.movingRange(prices, window);
-			return captureEnter(prices, exitThreshold, //
+			return Quant.enterUntilDrawDown(prices, exitThreshold, //
 					(i, price) -> movingRanges[i].max <= price, //
 					(i, price) -> price <= movingRanges[i].min);
 		});
@@ -527,38 +525,6 @@ public class BackAllocatorGeneral {
 				return movingAvgs0[last] < movingAvgs1[last] ? -1d : 1d;
 			});
 		});
-	}
-
-	// manual enter, auto exit when draw-down exceeded threshold
-	private Int_Dbl captureEnter( //
-			float[] prices, //
-			float exitThreshold, //
-			IntFltPredicate isEnterShort, //
-			IntFltPredicate isEnterLong) {
-		int length = prices.length;
-		float[] holds = new float[length];
-		float hold = 0f;
-		float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
-
-		for (int i = 0; i < length; i++) {
-			float price = prices[i];
-			min = Float.min(min, price);
-			max = Float.max(max, price);
-			if (hold < 0f) // exit short
-				hold = Quant.return_(min, price) < exitThreshold ? hold : 0f;
-			else if (0f < hold) // exit long
-				hold = Quant.return_(price, max) < exitThreshold ? hold : 0f;
-			else if (isEnterShort.test(i, price)) {
-				hold = -1f;
-				min = price;
-			} else if (isEnterLong.test(i, price)) {
-				hold = 1f;
-				max = price;
-			}
-			holds[i] = hold;
-		}
-
-		return index -> holds[index - 1];
 	}
 
 	private BackAllocator fixed(double r) {
