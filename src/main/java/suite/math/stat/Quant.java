@@ -58,17 +58,12 @@ public class Quant {
 
 	// hold with fixed day exit
 	public static Int_Dbl fold(int start, int end, int nDaysExit, IntFlt_Flt fun) {
-		int nDays = 0;
 		float[] holds = new float[end];
 		float hold = 0f;
+		int nDays = 0;
 		for (int i = start; i < end; i++) {
-			float hold1 = fun.apply(i, hold);
-			nDays += hold != hold1 ? 1 : 0;
-			if (nDaysExit < nDays) {
-				hold1 = 0f;
-				nDays = 0;
-			}
-			holds[i] = hold = hold1;
+			hold = nDays < nDaysExit ? fun.apply(i, hold) : 0f;
+			nDays = (holds[i] = hold) != 0f ? nDays + 1 : 0;
 		}
 		return filterRange(1, index -> (double) holds[index - 1]);
 	}
