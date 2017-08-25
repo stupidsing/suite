@@ -131,9 +131,7 @@ public class Nerve<T> {
 	}
 
 	public <U> Nerve<U> redirect(Redirector<T, U> redirector) {
-		Nerve<U> nerve1 = of();
-		register_(t -> redirector.accept(t, nerve1::fire));
-		return nerve1;
+		return of(fire -> register_(t -> redirector.accept(t, fire)));
 	}
 
 	public void register(Runnable receiver) {
