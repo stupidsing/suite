@@ -51,6 +51,7 @@ public class BackAllocatorGeneral {
 			.cons("bballoc", bbAllocate()) //
 			.cons("bbtrend", bbTrend()) //
 			.cons("don9", donchian(9)) //
+			.cons("donalloc", donchianAllocate(9)) //
 			.cons("donhold", donHold) //
 			.cons("dontrend", donchianTrend(9)) //
 			.cons("ema", ema) //
@@ -137,6 +138,19 @@ public class BackAllocatorGeneral {
 				boolean b = price * threshold < (max - min);
 				return b ? Quant.hold(hold, price, min, range.median, max) : hold;
 			});
+		});
+	}
+
+	private BackAllocator donchianAllocate(int window) {
+		return BackAllocator_.byPrices(prices -> {
+			MovingRange[] movingRanges = ma.movingRange(prices, window);
+			return index -> {
+				int last = index - 1;
+				MovingRange movingRange = movingRanges[last];
+				double min = movingRange.min;
+				double max = movingRange.max;
+				return (max - prices[last]) / (max - min);
+			};
 		});
 	}
 
