@@ -26,7 +26,7 @@ public class BackAllocatorMech {
 	public static BackAllocatorMech me = new BackAllocatorMech();
 
 	public final Streamlet2<String, BackAllocator> baByName = Read //
-			.<String, BackAllocator> empty2() //
+			.<String, BackAllocator>empty2() //
 			.cons("bb", bollingerBands(20)) //
 			.cons("chanbrk", channelBreakout(20)) //
 			.cons("dmi", dmi(10)) //
@@ -132,7 +132,6 @@ public class BackAllocatorMech {
 				ma.movingAvg(prices, d52), //
 				ma.movingAvg(prices, d26), //
 				ma.movingAvg(prices, d9)));
-
 	}
 
 	// Ichimoku three moving average cross-over
