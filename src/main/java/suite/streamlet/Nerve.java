@@ -80,15 +80,15 @@ public class Nerve<T> {
 	}
 
 	public <U> Nerve<U> concatMap(Fun<T, Nerve<U>> fun) {
-		return redirect((t, fire) -> fun.apply(t).register_(fire));
+		return redirect_((t, fire) -> fun.apply(t).register_(fire));
 	}
 
 	public Nerve<T> delay(int milliseconds) {
-		return redirect((t, fire) -> executor.schedule(() -> fire.sink(t), milliseconds, TimeUnit.MILLISECONDS));
+		return redirect_((t, fire) -> executor.schedule(() -> fire.sink(t), milliseconds, TimeUnit.MILLISECONDS));
 	}
 
 	public Nerve<T> edge() {
-		return redirect(new Redirector<T, T>() {
+		return redirect_(new Redirector<T, T>() {
 			private T previous = null;
 
 			public void accept(T t, Sink<T> fire) {
@@ -99,7 +99,7 @@ public class Nerve<T> {
 	}
 
 	public Nerve<T> filter(Predicate<T> pred) {
-		return redirect((t, fire) -> {
+		return redirect_((t, fire) -> {
 			if (pred.test(t))
 				fire.sink(t);
 		});
@@ -111,11 +111,11 @@ public class Nerve<T> {
 
 	public <U> Nerve<U> fold(U init, Fun2<U, T, U> fun) {
 		CasReference<U> cr = new CasReference<>(init);
-		return redirect((t1, fire) -> fire.sink(cr.apply(t0 -> fun.apply(t0, t1))));
+		return redirect_((t1, fire) -> fire.sink(cr.apply(t0 -> fun.apply(t0, t1))));
 	}
 
 	public <U> Nerve<U> map(Fun<T, U> fun) {
-		return redirect((t, sink) -> sink.sink(fun.apply(t)));
+		return redirect_((t, sink) -> sink.sink(fun.apply(t)));
 	}
 
 	public Outlet<T> outlet() {
@@ -131,7 +131,7 @@ public class Nerve<T> {
 	}
 
 	public <U> Nerve<U> redirect(Redirector<T, U> redirector) {
-		return of(fire -> register_(t -> redirector.accept(t, fire)));
+		return redirect_(redirector);
 	}
 
 	public void register(Runnable receiver) {
@@ -146,15 +146,19 @@ public class Nerve<T> {
 		List<T> ts = new ArrayList<>();
 		ts.add(null);
 		register_(t -> ts.set(0, t));
-		return event.redirect((e, fire) -> fire.sink(ts.get(0)));
+		return event.redirect_((e, fire) -> fire.sink(ts.get(0)));
 	}
 
 	public Nerve<T> unique() {
 		Set<T> set = new HashSet<>();
-		return redirect((t, fire) -> {
+		return redirect_((t, fire) -> {
 			if (set.add(t))
 				fire.sink(t);
 		});
+	}
+
+	private <U> Nerve<U> redirect_(Redirector<T, U> redirector) {
+		return of(fire -> register_(t -> redirector.accept(t, fire)));
 	}
 
 	private void register_(Sink<T> receiver) {
