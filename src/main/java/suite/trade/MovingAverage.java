@@ -19,11 +19,7 @@ public class MovingAverage {
 	}
 
 	// moving average convergence/divergence
-	public Macd macd(float[] prices) {
-		return macd(prices, 26, 12, 9);
-	}
-
-	private Macd macd(float[] prices, int nDays0, int nDays1, int nDays2) {
+	public Macd macd(float[] prices, int nDays0, int nDays1, int nDays2) {
 		float[] mas0 = movingAvg(prices, nDays0); // long-term
 		float[] mas1 = movingAvg(prices, nDays1); // short-term
 		float[] diffs = mtx.sub(mas1, mas0);
