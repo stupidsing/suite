@@ -56,16 +56,21 @@ public class DblChrPair {
 		};
 	}
 
-	public <O> Opt<O> map(DblChr_Obj<O> fun) {
-		return t0 != DblFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
-	}
-
 	public static double first_(DblChrPair pair) {
 		return pair.t0;
 	}
 
 	public static char second(DblChrPair pair) {
 		return pair.t1;
+	}
+
+	public <O> Opt<O> map(DblChr_Obj<O> fun) {
+		return t0 != DblFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	}
+
+	public void update(double t0_, char t1_) {
+		t0 = t0_;
+		t1 = t1_;
 	}
 
 	@Override

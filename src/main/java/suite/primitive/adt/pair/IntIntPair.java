@@ -54,16 +54,21 @@ public class IntIntPair {
 		};
 	}
 
-	public <O> Opt<O> map(IntInt_Obj<O> fun) {
-		return t0 != IntFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
-	}
-
 	public static int first_(IntIntPair pair) {
 		return pair.t0;
 	}
 
 	public static int second(IntIntPair pair) {
 		return pair.t1;
+	}
+
+	public <O> Opt<O> map(IntInt_Obj<O> fun) {
+		return t0 != IntFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	}
+
+	public void update(int t0_, int t1_) {
+		t0 = t0_;
+		t1 = t1_;
 	}
 
 	@Override

@@ -245,8 +245,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 			public boolean source2(LngObjPair<Integer> pair) {
 				long c = next();
 				if (c != LngFunUtil.EMPTYVALUE) {
-					pair.t0 = c;
-					pair.t1 = i++;
+					pair.update(c, i++);
 					return true;
 				} else
 					return false;

@@ -45,10 +45,8 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 			return DblObjOutlet.of(pair -> {
 				T t = source.source();
 				boolean b = t != null;
-				if (b) {
-					pair.t0 = kf1.apply(t);
-					pair.t1 = vf1.apply(t);
-				}
+				if (b)
+					pair.update(kf1.apply(t), vf1.apply(t));
 				return b;
 			});
 		});

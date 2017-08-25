@@ -23,8 +23,7 @@ public class ChrDblFunUtil {
 			public boolean source2(ChrDblPair pair) {
 				if (!isAppended) {
 					if (!source.source2(pair)) {
-						pair.t0 = key;
-						pair.t1 = value;
+						pair.update(key, value);
 						isAppended = true;
 					}
 					return true;
@@ -41,10 +40,9 @@ public class ChrDblFunUtil {
 			private int i;
 			private ChrDblSource source_ = pair1 -> {
 				boolean b = (isAvail = isAvail && source.source2(pair)) && ++i < n;
-				if (b) {
-					pair1.t0 = pair.t0;
-					pair1.t1 = pair.t1;
-				} else
+				if (b)
+					pair1.update(pair.t0, pair.t1);
+				else
 					i = 0;
 				return b;
 			};
@@ -81,8 +79,7 @@ public class ChrDblFunUtil {
 					return source2.source2(pair);
 				else {
 					isFirst = false;
-					pair.t0 = key;
-					pair.t1 = value;
+					pair.update(key, value);
 					return true;
 				}
 			}
@@ -182,10 +179,8 @@ public class ChrDblFunUtil {
 		ChrDblPair pair1 = ChrDblPair.of((char) 0, (double) 0);
 		return pair -> {
 			boolean b = source2.source2(pair1);
-			if (b) {
-				pair.t0 = kf1.apply(pair1.t0, pair1.t1);
-				pair.t1 = vf1.apply(pair1.t0, pair1.t1);
-			}
+			if (b)
+				pair.update(kf1.apply(pair1.t0, pair1.t1), vf1.apply(pair1.t0, pair1.t1));
 			return b;
 		};
 	}
@@ -196,10 +191,8 @@ public class ChrDblFunUtil {
 		ChrDblPair pair1 = ChrDblPair.of((char) 0, (double) 0);
 		return pair -> {
 			boolean b = source2.source2(pair1);
-			if (b) {
-				pair.t0 = kf1.apply(pair1.t0, pair1.t1);
-				pair.t1 = vf1.apply(pair1.t0, pair1.t1);
-			}
+			if (b)
+				pair.update(kf1.apply(pair1.t0, pair1.t1), vf1.apply(pair1.t0, pair1.t1));
 			return b;
 		};
 	}
@@ -253,10 +246,8 @@ public class ChrDblFunUtil {
 			try {
 				ChrDblPair p = queue.take();
 				boolean b = p != null;
-				if (b) {
-					pair.t0 = p.t0;
-					pair.t1 = p.t1;
-				}
+				if (b)
+					pair.update(p.t0, p.t1);
 				return b;
 			} catch (InterruptedException ex) {
 				thread.interrupt();

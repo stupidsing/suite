@@ -130,8 +130,7 @@ public class ChrObjMap<V> {
 				while ((v = vs[index]) == null)
 					if (capacity <= ++index)
 						return false;
-				pair.t0 = ks[index++];
-				pair.t1 = cast(v);
+				pair.update(ks[index++], cast(v));
 				return true;
 			}
 		};

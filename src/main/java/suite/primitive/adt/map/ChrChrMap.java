@@ -16,8 +16,8 @@ import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive char key and primitive char value. Character.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with primitive char key and primitive char value. Character.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -120,8 +120,7 @@ public class ChrChrMap {
 
 			public boolean source2(ChrObjPair<Character> pair) {
 				boolean b = source0.source2(pair0);
-				pair.t0 = pair0.t0;
-				pair.t1 = pair0.t1;
+				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}
 		}));
@@ -151,8 +150,7 @@ public class ChrChrMap {
 				while ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
-				pair.t0 = ks[index++];
-				pair.t1 = v;
+				pair.update(ks[index++], v);
 				return true;
 			}
 		};

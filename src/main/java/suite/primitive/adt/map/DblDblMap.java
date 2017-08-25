@@ -16,8 +16,8 @@ import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive double key and primitive double value. Double.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with primitive double key and primitive double value. Double.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -120,8 +120,7 @@ public class DblDblMap {
 
 			public boolean source2(DblObjPair<Double> pair) {
 				boolean b = source0.source2(pair0);
-				pair.t0 = pair0.t0;
-				pair.t1 = pair0.t1;
+				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}
 		}));
@@ -151,8 +150,7 @@ public class DblDblMap {
 				while ((v = vs[index]) == DblFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
-				pair.t0 = ks[index++];
-				pair.t1 = v;
+				pair.update(ks[index++], v);
 				return true;
 			}
 		};

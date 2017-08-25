@@ -56,16 +56,21 @@ public class FltDblPair {
 		};
 	}
 
-	public <O> Opt<O> map(FltDbl_Obj<O> fun) {
-		return t0 != FltFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
-	}
-
 	public static float first_(FltDblPair pair) {
 		return pair.t0;
 	}
 
 	public static double second(FltDblPair pair) {
 		return pair.t1;
+	}
+
+	public <O> Opt<O> map(FltDbl_Obj<O> fun) {
+		return t0 != FltFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	}
+
+	public void update(float t0_, double t1_) {
+		t0 = t0_;
+		t1 = t1_;
 	}
 
 	@Override

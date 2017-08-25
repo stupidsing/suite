@@ -56,16 +56,21 @@ public class LngChrPair {
 		};
 	}
 
-	public <O> Opt<O> map(LngChr_Obj<O> fun) {
-		return t0 != LngFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
-	}
-
 	public static long first_(LngChrPair pair) {
 		return pair.t0;
 	}
 
 	public static char second(LngChrPair pair) {
 		return pair.t1;
+	}
+
+	public <O> Opt<O> map(LngChr_Obj<O> fun) {
+		return t0 != LngFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	}
+
+	public void update(long t0_, char t1_) {
+		t0 = t0_;
+		t1 = t1_;
 	}
 
 	@Override

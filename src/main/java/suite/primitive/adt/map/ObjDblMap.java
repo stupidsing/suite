@@ -12,8 +12,8 @@ import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
 
 /**
- * Map with generic object key and doubleacter object value. Double.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with generic object key and doubleacter object value. Double.MIN_VALUE
+ * is not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -133,8 +133,7 @@ public class ObjDblMap<K> {
 				while ((v = vs[index]) == DblFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
-				pair.t1 = cast(ks[index++]);
-				pair.t0 = v;
+				pair.update(v, cast(ks[index++]));
 				return true;
 			}
 		};

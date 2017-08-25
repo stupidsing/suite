@@ -56,16 +56,21 @@ public class IntChrPair {
 		};
 	}
 
-	public <O> Opt<O> map(IntChr_Obj<O> fun) {
-		return t0 != IntFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
-	}
-
 	public static int first_(IntChrPair pair) {
 		return pair.t0;
 	}
 
 	public static char second(IntChrPair pair) {
 		return pair.t1;
+	}
+
+	public <O> Opt<O> map(IntChr_Obj<O> fun) {
+		return t0 != IntFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	}
+
+	public void update(int t0_, char t1_) {
+		t0 = t0_;
+		t1 = t1_;
 	}
 
 	@Override

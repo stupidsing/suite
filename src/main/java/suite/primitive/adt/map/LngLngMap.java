@@ -120,8 +120,7 @@ public class LngLngMap {
 
 			public boolean source2(LngObjPair<Long> pair) {
 				boolean b = source0.source2(pair0);
-				pair.t0 = pair0.t0;
-				pair.t1 = pair0.t1;
+				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}
 		}));
@@ -151,8 +150,7 @@ public class LngLngMap {
 				while ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
-				pair.t0 = ks[index++];
-				pair.t1 = v;
+				pair.update(ks[index++], v);
 				return true;
 			}
 		};

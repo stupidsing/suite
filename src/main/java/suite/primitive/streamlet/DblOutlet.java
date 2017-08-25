@@ -245,8 +245,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 			public boolean source2(DblObjPair<Integer> pair) {
 				double c = next();
 				if (c != DblFunUtil.EMPTYVALUE) {
-					pair.t0 = c;
-					pair.t1 = i++;
+					pair.update(c, i++);
 					return true;
 				} else
 					return false;

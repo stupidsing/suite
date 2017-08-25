@@ -56,16 +56,21 @@ public class ChrLngPair {
 		};
 	}
 
-	public <O> Opt<O> map(ChrLng_Obj<O> fun) {
-		return t0 != ChrFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
-	}
-
 	public static char first_(ChrLngPair pair) {
 		return pair.t0;
 	}
 
 	public static long second(ChrLngPair pair) {
 		return pair.t1;
+	}
+
+	public <O> Opt<O> map(ChrLng_Obj<O> fun) {
+		return t0 != ChrFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	}
+
+	public void update(char t0_, long t1_) {
+		t0 = t0_;
+		t1 = t1_;
 	}
 
 	@Override

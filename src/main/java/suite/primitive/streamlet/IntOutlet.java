@@ -245,8 +245,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			public boolean source2(IntObjPair<Integer> pair) {
 				int c = next();
 				if (c != IntFunUtil.EMPTYVALUE) {
-					pair.t0 = c;
-					pair.t1 = i++;
+					pair.update(c, i++);
 					return true;
 				} else
 					return false;

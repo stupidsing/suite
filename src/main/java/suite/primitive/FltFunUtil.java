@@ -177,10 +177,8 @@ public class FltFunUtil {
 		return pair -> {
 			float c = source.source();
 			boolean b = c != EMPTYVALUE;
-			if (b) {
-				pair.t0 = kf1.apply(c);
-				pair.t1 = vf1.apply(c);
-			}
+			if (b)
+				pair.update(kf1.apply(c), vf1.apply(c));
 			return b;
 		};
 	}
@@ -198,8 +196,7 @@ public class FltFunUtil {
 		return pair -> {
 			float c = source.source();
 			if (c != FltFunUtil.EMPTYVALUE) {
-				pair.t0 = c;
-				pair.t1 = fun1.apply(c);
+				pair.update(c, fun1.apply(c));
 				return true;
 			} else
 				return false;

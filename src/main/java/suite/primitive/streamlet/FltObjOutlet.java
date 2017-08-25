@@ -61,8 +61,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 			boolean b = iter.hasNext();
 			if (b) {
 				Pair<Float, List<V>> pair1 = iter.next();
-				pair.t0 = pair1.t0;
-				pair.t1 = pair1.t1;
+				pair.update(pair1.t0, pair1.t1);
 			}
 			return b;
 		});
@@ -81,8 +80,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 				boolean b = i < kvs.length;
 				if (b) {
 					FltObjPair<V> kv = kvs[i];
-					pair.t0 = kv.t0;
-					pair.t1 = kv.t1;
+					pair.update(kv.t0, kv.t1);
 				}
 				return b;
 
@@ -97,8 +95,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 				boolean b = iter.hasNext();
 				if (b) {
 					FltObjPair<V> pair1 = iter.next();
-					pair.t0 = pair1.t0;
-					pair.t1 = pair1.t1;
+					pair.update(pair1.t0, pair1.t1);
 				}
 				return b;
 			}
@@ -157,10 +154,8 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 			return pair -> {
 				V1 value1 = source.source();
 				boolean b = value1 != null;
-				if (b) {
-					pair.t0 = k;
-					pair.t1 = value1;
-				}
+				if (b)
+					pair.update(k, value1);
 				return b;
 			};
 		}, source)));
@@ -305,10 +300,8 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 		boolean b = next(pair);
 		if (b) {
 			while (next(pair1))
-				if (0 < comparator.compare(pair, pair1)) {
-					pair.t0 = pair1.t0;
-					pair.t1 = pair1.t1;
-				}
+				if (0 < comparator.compare(pair, pair1))
+					pair.update(pair1.t0, pair1.t1);
 			return pair;
 		} else
 			return null;
@@ -331,12 +324,9 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 			boolean b = queue.poll(mutable);
 			if (b) {
 				FltObjPair<V> p = mutable.get();
-				pair.t0 = p.t0;
-				pair.t1 = p.t1;
-			} else {
-				pair.t0 = k0;
-				pair.t1 = v0;
-			}
+				pair.update(p.t0, p.t1);
+			} else
+				pair.update(k0, v0);
 			return b;
 		});
 	}

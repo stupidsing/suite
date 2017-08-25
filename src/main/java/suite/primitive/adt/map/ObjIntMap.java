@@ -12,8 +12,8 @@ import suite.primitive.streamlet.IntObjOutlet;
 import suite.primitive.streamlet.IntObjStreamlet;
 
 /**
- * Map with generic object key and intacter object value. Integer.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with generic object key and intacter object value. Integer.MIN_VALUE
+ * is not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -133,8 +133,7 @@ public class ObjIntMap<K> {
 				while ((v = vs[index]) == IntFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
-				pair.t1 = cast(ks[index++]);
-				pair.t0 = v;
+				pair.update(v, cast(ks[index++]));
 				return true;
 			}
 		};

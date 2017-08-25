@@ -56,16 +56,21 @@ public class IntFltPair {
 		};
 	}
 
-	public <O> Opt<O> map(IntFlt_Obj<O> fun) {
-		return t0 != IntFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
-	}
-
 	public static int first_(IntFltPair pair) {
 		return pair.t0;
 	}
 
 	public static float second(IntFltPair pair) {
 		return pair.t1;
+	}
+
+	public <O> Opt<O> map(IntFlt_Obj<O> fun) {
+		return t0 != IntFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	}
+
+	public void update(int t0_, float t1_) {
+		t0 = t0_;
+		t1 = t1_;
 	}
 
 	@Override

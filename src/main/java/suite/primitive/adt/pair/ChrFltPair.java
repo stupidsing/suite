@@ -56,16 +56,21 @@ public class ChrFltPair {
 		};
 	}
 
-	public <O> Opt<O> map(ChrFlt_Obj<O> fun) {
-		return t0 != ChrFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
-	}
-
 	public static char first_(ChrFltPair pair) {
 		return pair.t0;
 	}
 
 	public static float second(ChrFltPair pair) {
 		return pair.t1;
+	}
+
+	public <O> Opt<O> map(ChrFlt_Obj<O> fun) {
+		return t0 != ChrFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	}
+
+	public void update(char t0_, float t1_) {
+		t0 = t0_;
+		t1 = t1_;
 	}
 
 	@Override

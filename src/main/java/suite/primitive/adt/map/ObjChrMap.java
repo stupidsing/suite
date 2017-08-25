@@ -133,8 +133,7 @@ public class ObjChrMap<K> {
 				while ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
 					if (capacity <= ++index)
 						return false;
-				pair.t1 = cast(ks[index++]);
-				pair.t0 = v;
+				pair.update(v, cast(ks[index++]));
 				return true;
 			}
 		};

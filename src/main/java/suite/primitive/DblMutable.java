@@ -3,8 +3,8 @@ package suite.primitive;
 import suite.util.Object_;
 
 /**
- * An indirect reference to a primitive double. Double.MIN_VALUE is not allowed
- * in the value.
+ * An indirect reference to a primitive double. Double.MIN_VALUE is not allowed in
+ * the value.
  * 
  * @author ywsing
  */

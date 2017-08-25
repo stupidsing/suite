@@ -245,8 +245,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 			public boolean source2(FltObjPair<Integer> pair) {
 				float c = next();
 				if (c != FltFunUtil.EMPTYVALUE) {
-					pair.t0 = c;
-					pair.t1 = i++;
+					pair.update(c, i++);
 					return true;
 				} else
 					return false;

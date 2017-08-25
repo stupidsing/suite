@@ -56,16 +56,21 @@ public class LngFltPair {
 		};
 	}
 
-	public <O> Opt<O> map(LngFlt_Obj<O> fun) {
-		return t0 != LngFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
-	}
-
 	public static long first_(LngFltPair pair) {
 		return pair.t0;
 	}
 
 	public static float second(LngFltPair pair) {
 		return pair.t1;
+	}
+
+	public <O> Opt<O> map(LngFlt_Obj<O> fun) {
+		return t0 != LngFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	}
+
+	public void update(long t0_, float t1_) {
+		t0 = t0_;
+		t1 = t1_;
 	}
 
 	@Override

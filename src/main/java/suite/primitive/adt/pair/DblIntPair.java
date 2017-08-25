@@ -56,16 +56,21 @@ public class DblIntPair {
 		};
 	}
 
-	public <O> Opt<O> map(DblInt_Obj<O> fun) {
-		return t0 != DblFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
-	}
-
 	public static double first_(DblIntPair pair) {
 		return pair.t0;
 	}
 
 	public static int second(DblIntPair pair) {
 		return pair.t1;
+	}
+
+	public <O> Opt<O> map(DblInt_Obj<O> fun) {
+		return t0 != DblFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	}
+
+	public void update(double t0_, int t1_) {
+		t0 = t0_;
+		t1 = t1_;
 	}
 
 	@Override
