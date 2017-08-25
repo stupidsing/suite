@@ -32,8 +32,7 @@ public class IHashMap<K, V> {
 				public boolean source2(Pair<K, V> pair) {
 					Pair<K, V> pair1 = source.source();
 					if (pair1 != null) {
-						pair.t0 = pair1.t0;
-						pair.t1 = pair1.t1;
+						pair.update(pair1.t0, pair1.t1);
 						return true;
 					} else
 						return false;

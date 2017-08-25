@@ -53,8 +53,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			boolean b = iter.hasNext();
 			if (b) {
 				Pair<K, List<V>> pair1 = iter.next();
-				pair.t0 = pair1.t0;
-				pair.t1 = pair1.t1;
+				pair.update(pair1.t0, pair1.t1);
 			}
 			return b;
 		});
@@ -66,8 +65,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			boolean b = iter.hasNext();
 			if (b) {
 				Entry<K, V> pair1 = iter.next();
-				pair.t0 = pair1.getKey();
-				pair.t1 = pair1.getValue();
+				pair.update(pair1.getKey(), pair1.getValue());
 			}
 			return b;
 		});
@@ -82,8 +80,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 				boolean b = i < kvs.length;
 				if (b) {
 					Pair<K, V> kv = kvs[i];
-					pair.t0 = kv.t0;
-					pair.t1 = kv.t1;
+					pair.update(kv.t0, kv.t1);
 				}
 				return b;
 			}
@@ -97,8 +94,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 				boolean b = iter.hasNext();
 				if (b) {
 					Pair<K, V> pair1 = iter.next();
-					pair.t0 = pair1.t0;
-					pair.t1 = pair1.t1;
+					pair.update(pair1.t0, pair1.t1);
 				}
 				return b;
 			}
@@ -153,10 +149,8 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			return pair -> {
 				V1 value1 = source.source();
 				boolean b = value1 != null;
-				if (b) {
-					pair.t0 = k;
-					pair.t1 = value1;
-				}
+				if (b)
+					pair.update(k, value1);
 				return b;
 			};
 		}, source2)));
@@ -298,10 +292,8 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		boolean b = next(pair);
 		if (b) {
 			while (next(pair1))
-				if (0 < comparator.compare(pair, pair1)) {
-					pair.t0 = pair1.t0;
-					pair.t1 = pair1.t1;
-				}
+				if (0 < comparator.compare(pair, pair1))
+					pair.update(pair1.t0, pair1.t1);
 			return pair;
 		} else
 			return null;
@@ -324,12 +316,9 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			boolean b = queue.poll(mutable);
 			if (b) {
 				Pair<K, V> p = mutable.get();
-				pair.t0 = p.t0;
-				pair.t1 = p.t1;
-			} else {
-				pair.t0 = k0;
-				pair.t1 = v0;
-			}
+				pair.update(p.t0, p.t1);
+			} else
+				pair.update(k0, v0);
 			return b;
 		});
 	}

@@ -207,12 +207,10 @@ public class Outlet<T> implements OutletDefaults<T> {
 
 			public boolean source2(IntObjPair<T> pair) {
 				T t = next();
-				if (t != null) {
-					pair.t0 = i++;
-					pair.t1 = t;
-					return true;
-				} else
-					return false;
+				boolean b = t != null;
+				if (b)
+					pair.update(i++, t);
+				return b;
 			}
 		});
 	}
