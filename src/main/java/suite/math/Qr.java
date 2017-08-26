@@ -63,13 +63,13 @@ public class Qr {
 						double cos = f0 * ir, sin = f1 * ir;
 
 						for (int j = 0; j < height; j++) {
-							float m0 = r[i0][j];
-							float m1 = r[i1][j];
+							double m0 = r[i0][j];
+							double m1 = r[i1][j];
 							r[i0][j] = (float) (m0 * cos + m1 * sin);
 							r[i1][j] = (float) (m1 * cos - m0 * sin);
 
-							float q0 = q[j][i0];
-							float q1 = q[j][i1];
+							double q0 = q[j][i0];
+							double q1 = q[j][i1];
 							q[j][i0] = (float) (q0 * cos + q1 * sin);
 							q[j][i1] = (float) (q1 * cos - q0 * sin);
 						}

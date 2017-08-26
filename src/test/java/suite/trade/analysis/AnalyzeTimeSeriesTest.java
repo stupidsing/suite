@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import suite.math.Tanh;
 import suite.math.stat.BollingerBands;
 import suite.math.stat.Quant;
 import suite.math.stat.Statistic;
@@ -12,6 +13,7 @@ import suite.math.stat.TimeSeries;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.os.LogUtil;
 import suite.primitive.Floats_;
+import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.IntFltPair;
 import suite.trade.TimeRange;
@@ -40,6 +42,7 @@ public class AnalyzeTimeSeriesTest {
 		float[] fds = dct.dct(Arrays.copyOfRange(prices, length - log2, length));
 		float[] returns = ts.returns(prices);
 		MeanVariance rmv = stat.meanVariance(returns);
+		double kelly = rmv.mean / rmv.variance;
 		IntFltPair max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
 		for (int i = 4; i < fds.length; i++) {
@@ -55,7 +58,8 @@ public class AnalyzeTimeSeriesTest {
 		for (int d = 0; d <= 10; d++)
 			LogUtil.info("dct component, " + d + " days = " + fds[d]);
 		LogUtil.info("return = " + Quant.return_(prices[0], prices[length - 1]));
-		LogUtil.info("return sharpe = " + rmv.mean / rmv.variance); // * Trade_.nTradeDaysPerYear
+		LogUtil.info("return sharpe = " + rmv.mean / rmv.standardDeviation()); // * Trade_.nTradeDaysPerYear
+		LogUtil.info("return kelly = " + kelly);
 		LogUtil.info("return skew = " + stat.skewness(returns));
 		LogUtil.info("return kurt = " + stat.kurtosis(returns));
 		for (int d : new int[] { 1, 2, 4, 8, 16, 32, })
@@ -63,31 +67,57 @@ public class AnalyzeTimeSeriesTest {
 		for (int d : new int[] { 4, 16, })
 			LogUtil.info("variance ratio, " + d + " days over 1 day = " + ts.varianceRatio(prices, d));
 
-		LogUtil.info("half outcome = " + outcome(prices, d -> .5f));
-		LogUtil.info("rev outcome = " + outcome(prices, d -> 2 <= d && prices[d - 2] < prices[d - 1] ? -1f : 1f));
-		LogUtil.info("rev long-only outcome = " + outcome(prices, d -> 2 <= d && prices[d - 2] < prices[d - 1] ? 0f : 1f));
+		BuySell rev = buySell(d -> prices[d - 2] < prices[d - 1] ? -1d : 1d).start(2);
+
+		int d0 = 1 + 12;
+		int d1 = 1;
+		BuySell tanh = buySell(d -> Tanh.tanh(-3.2d * Quant.return_(prices[d - d0], prices[d - d1]))).start(d0);
+
+		LogUtil.info("half outcome = " + buySell(d -> .5d).invest(prices));
+		LogUtil.info("hold outcome = " + buySell(d -> 1d).invest(prices));
+		LogUtil.info("kelly outcome = " + buySell(d -> kelly).invest(prices));
+		LogUtil.info("rev outcome = " + rev.invest(prices));
+		LogUtil.info("rev long-only outcome = " + rev.longOnly().invest(prices));
+		LogUtil.info("tanh outcome = " + tanh.invest(prices));
 	}
 
-	private float outcome(float[] prices, Int_Flt strategy) {
-		float[] holds = Floats_.toArray(prices.length, strategy);
-		if (Boolean.TRUE)
-			return investOutcome(prices, holds);
-		else
-			return fixedOutcome(prices, holds);
+	private BuySell buySell(Int_Dbl fun) {
+		return d -> (float) fun.apply(d);
 	}
 
-	private float fixedOutcome(float[] prices, float[] holds) {
-		float val = 0f;
+	public interface BuySell extends Int_Flt {
+		public default BuySell longOnly() {
+			return d -> {
+				float r = apply(d);
+				return 0f <= r ? r : 0f;
+			};
+		}
+
+		public default BuySell start(int s) {
+			return d -> s <= d ? apply(d) : 0f;
+		}
+
+		public default double engage(float[] prices) {
+			return engage_(prices, Floats_.toArray(prices.length, this));
+		}
+
+		public default double invest(float[] prices) {
+			return invest_(prices, Floats_.toArray(prices.length, this));
+		}
+	}
+
+	private static double engage_(float[] prices, float[] holds) {
+		double val = 0f;
 		for (int d = 1; d < prices.length; d++)
 			val += holds[d] * (prices[d] - prices[d - 1]);
 		return val;
 	}
 
-	private float investOutcome(float[] prices, float[] holds) {
+	private static double invest_(float[] prices, float[] holds) {
 		double val = 1d;
 		for (int d = 1; d < prices.length; d++)
 			val *= 1d + holds[d] * Quant.return_(prices[d - 1], prices[d]);
-		return (float) val;
+		return val;
 	}
 
 }

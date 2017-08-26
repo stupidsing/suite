@@ -60,7 +60,7 @@ public class ArtificialNeuralNetwork {
 			float[] values1 = mtx.mul(values, lw.weights);
 
 			for (int j = 0; j < lw.nOutputs; j++)
-				values1[j] = activationFunction(values1[j]);
+				values1[j] = (float) activationFunction(values1[j]);
 
 			outputs.add(values = values1);
 		}
@@ -90,11 +90,11 @@ public class ArtificialNeuralNetwork {
 		}
 	}
 
-	private float activationFunction(float value) {
+	private double activationFunction(double value) {
 		return Sigmoid.sigmoid(value);
 	}
 
-	private float activationFunctionGradient(float value) {
+	private double activationFunctionGradient(double value) {
 		return Sigmoid.sigmoidGradient(value);
 	}
 

@@ -69,7 +69,7 @@ public class ConvolutionalNeuralNetwork {
 				float sum = 0f;
 				for (int d = 0; d < lw.weights.length; d++)
 					sum += values[lw.b(i + d)] * lw.weights[d];
-				values1[j] = activationFunction(sum);
+				values1[j] = (float) activationFunction(sum);
 			}
 
 			outputs.add(values = values1);
@@ -103,7 +103,7 @@ public class ConvolutionalNeuralNetwork {
 			float[] errors1 = new float[lw0.nOutputs];
 
 			for (int i = lw0.inputStart, j = 0; i < lw0.inputEnd; i += lw0.inputStride, j++) {
-				errors1[j] = diffs[j] * activationFunctionGradient(outs[j]);
+				errors1[j] = (float) (diffs[j] * activationFunctionGradient(outs[j]));
 				for (int d = 0; d < lw0.weights.length; d++)
 					lw0.weights[d] += learningRate * errors1[j] * ins[lw0.b(i + d)] / lw0.nOutputs;
 			}
@@ -112,11 +112,11 @@ public class ConvolutionalNeuralNetwork {
 		}
 	}
 
-	private float activationFunction(float value) {
+	private double activationFunction(double value) {
 		return Sigmoid.sigmoid(value);
 	}
 
-	private float activationFunctionGradient(float value) {
+	private double activationFunctionGradient(double value) {
 		return Sigmoid.sigmoidGradient(value);
 	}
 
