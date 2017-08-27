@@ -1,4 +1,4 @@
-package suite.trade.analysis;
+package suite.trade.walkforwardalloc.run;
 
 import java.io.BufferedReader;
 import java.io.IOException;

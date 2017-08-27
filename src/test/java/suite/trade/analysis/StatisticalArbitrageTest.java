@@ -150,7 +150,7 @@ public class StatisticalArbitrageTest {
 			int ma50abovema20 = past_i.filter(j -> ma20[j] < ma50[j]).size();
 			double r = ma50abovema20 / (double) ma20abovema50;
 
-			boolean isStronglyBullish = true //
+			boolean isStrglyBullish = true //
 					&& lookback <= ma20abovema50 //
 					&& past1_i.isAll(j -> ma20[j - 1] <= ma20[j]) //
 					&& past1_i.isAll(j -> ma50[j - 1] <= ma50[j]) //
@@ -162,7 +162,7 @@ public class StatisticalArbitrageTest {
 					&& past1_i.isAll(j -> ma50[j - 1] <= ma50[j]) //
 					&& past_i.isAll(j -> ma50[j] <= prices[j]);
 
-			boolean isStronglyBearish = true //
+			boolean isStrglyBearish = true //
 					&& lookback <= ma50abovema20 //
 					&& past1_i.isAll(j -> ma20[j] <= ma20[j - 1]) //
 					&& past1_i.isAll(j -> ma50[j] <= ma50[j - 1]) //
@@ -174,18 +174,29 @@ public class StatisticalArbitrageTest {
 					&& past1_i.isAll(j -> ma50[j] <= ma50[j - 1]) //
 					&& past_i.isAll(j -> prices[j] <= ma50[j]);
 
-			boolean isRangeBound = true // non-trending
+			boolean isRangeBound__ = true // non-trending
 					&& 2d / 3d <= r && r <= 3d / 2d //
 					&& stat.meanVariance(past_i.collect(Int_Flt.lift(j -> ma50[j])).toArray()).volatility() < .02d //
 					&& .02d < stat.meanVariance(past_i.collect(Int_Flt.lift(j -> ma20[j])).toArray()).volatility() //
 					&& (ma20[i] + ma50[i]) * .02d <= Math.abs(ma20[i] - ma50[i]);
 
-			String flags = "" //
-					+ (isStronglyBearish ? "M" : "-") //
-					+ (isWeaklyBearish ? "M" : "-") //
-					+ (isRangeBound ? "M" : "-") //
-					+ (isWeaklyBullish ? "M" : "-") //
-					+ (isStronglyBullish ? "M" : "-");
+			int strgBear = 1 << 4;
+			int weakBear = 1 << 3;
+			int rngBound = 1 << 2;
+			int weakBull = 1 << 1;
+			int strgBull = 1 << 0;
+
+			int flag = 0 //
+					+ (isStrglyBearish ? strgBear : 0) //
+					+ (isWeaklyBearish ? weakBear : 0) //
+					+ (isRangeBound__ ? rngBound : 0) //
+					+ (isWeaklyBullish ? weakBull : 0) //
+					+ (isStrglyBullish ? strgBull : 0);
+
+			String flags = String_ //
+					.right("00000" + Integer.toBinaryString(flag), -5) //
+					.replace('0', '-') //
+					.replace('1', 'M');
 
 			if (!String_.equals(flags0, flags))
 				System.out.println(Time.ofEpochSec(ds.ts[i]).ymd() + " " + flags);

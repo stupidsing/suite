@@ -1,4 +1,4 @@
-package suite.trade.analysis;
+package suite.trade.walkforwardalloc.run;
 
 import suite.os.Schedule;
 import suite.os.Scheduler;

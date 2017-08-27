@@ -1,4 +1,4 @@
-package suite.trade.analysis;
+package suite.trade.backalloc.run;
 
 import java.nio.file.Paths;
 

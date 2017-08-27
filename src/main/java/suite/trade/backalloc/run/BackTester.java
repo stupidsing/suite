@@ -1,4 +1,4 @@
-package suite.trade.analysis;
+package suite.trade.backalloc.run;
 
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.MeanVariance;
