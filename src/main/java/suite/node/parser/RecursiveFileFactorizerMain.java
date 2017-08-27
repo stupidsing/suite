@@ -10,10 +10,10 @@ import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
+import suite.parser.Wildcard;
 import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
-import suite.wildcard.Wildcard;
 
 // mAIN=suite.node.parser.RecursiveFileFactorizerMain ./run.sh
 public class RecursiveFileFactorizerMain extends ExecutableProgram {

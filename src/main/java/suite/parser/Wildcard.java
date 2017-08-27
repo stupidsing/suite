@@ -1,4 +1,4 @@
-package suite.wildcard;
+package suite.parser;
 
 import java.util.List;
 

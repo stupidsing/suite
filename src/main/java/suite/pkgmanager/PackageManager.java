@@ -13,11 +13,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import suite.adt.pair.Pair;
 import suite.os.FileUtil;
+import suite.parser.Wildcard;
 import suite.pkgmanager.action.ExecCommandAction;
 import suite.pkgmanager.action.ExtractFileAction;
 import suite.pkgmanager.action.InstallAction;
 import suite.streamlet.Read;
-import suite.wildcard.Wildcard;
 
 public class PackageManager {
 

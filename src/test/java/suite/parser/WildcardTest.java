@@ -1,4 +1,4 @@
-package suite.wildcard;
+package suite.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

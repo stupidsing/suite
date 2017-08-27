@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import suite.adt.pair.Pair;
 import suite.node.io.Operator.Assoc;
 import suite.os.LogUtil;
+import suite.parser.Wildcard;
 import suite.primitive.Chars;
 import suite.primitive.Ints_;
 import suite.streamlet.As;
@@ -25,7 +26,6 @@ import suite.util.Object_;
 import suite.util.ParseUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
-import suite.wildcard.Wildcard;
 
 // mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.BackTestMain
 public class BackTestMain extends ExecutableProgram {
