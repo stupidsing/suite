@@ -25,10 +25,11 @@ import suite.util.To;
 
 public class AnalyzeTimeSeriesTest {
 
+	private static AnalyzeTimeSeriesTest me = new AnalyzeTimeSeriesTest();
+
 	private String symbol = "^HSI";
 	private TimeRange period = TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1)); // TimeRange.threeYears();
 
-	private static AnalyzeTimeSeriesTest me = new AnalyzeTimeSeriesTest();
 	private Configuration cfg = new ConfigurationImpl();
 	private DiscreteCosineTransform dct = new DiscreteCosineTransform();
 	private Statistic stat = new Statistic();
