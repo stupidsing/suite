@@ -2,8 +2,12 @@ package suite.trade.data;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import suite.primitive.Bytes;
+import suite.primitive.IntIntSink;
+import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -11,6 +15,7 @@ import suite.trade.Trade;
 import suite.util.FunUtil.Source;
 import suite.util.HomeDir;
 import suite.util.Memoize;
+import suite.util.String_;
 
 public interface Broker {
 
@@ -27,16 +32,38 @@ public interface Broker {
 		private static Source<Streamlet<Trade>> memoizeHistoryRecords = Memoize.source(Hsbc::queryHistory_);
 
 		private static Streamlet<Trade> queryHistory_() {
+			String url = "https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt";
 			Path path = HomeDir.resolve("workspace").resolve("home-data").resolve("stock.txt");
-			Streamlet<Bytes> bytes;
-			if (Files.exists(path))
-				bytes = Read.bytes(path);
-			else
-				bytes = Read.url("https://raw.githubusercontent.com/stupidsing/home-data/master/stock.txt");
-			return bytes //
-					.collect(As::table) //
-					.map(Trade::of) //
-					.collect(As::streamlet);
+			Streamlet<Bytes> bytes = Files.exists(path) ? Read.bytes(path) : Read.url(url);
+
+			Trade[] trades0 = bytes.collect(As::table).map(Trade::of).toArray(Trade.class);
+			int length0 = trades0.length;
+
+			List<Trade> trades1 = new ArrayList<>();
+
+			IntIntSink tx = (i0, i) -> {
+				if (Ints_.range(i0, i).mapInt(j -> trades0[j].buySell).sum() != 0)
+					while (i0 < i)
+						trades1.add(trades0[i0++]);
+			};
+
+			int i0 = 0;
+
+			for (int i = 1; i < length0; i++) {
+				Trade trade0 = trades0[i0];
+				Trade trade1 = trades0[i];
+				boolean isGroup = true //
+						&& String_.equals(trade0.date, trade1.date) //
+						&& String_.equals(trade0.symbol, trade1.symbol) //
+						&& trade0.price == trade1.price;
+				if (!isGroup) {
+					tx.sink2(i0, i);
+					i0 = i;
+				}
+			}
+
+			tx.sink2(i0, length0);
+			return Read.from(trades1);
 		}
 
 		public double transactionFee(double transactionAmount) {
