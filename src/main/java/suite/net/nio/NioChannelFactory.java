@@ -126,8 +126,8 @@ public interface NioChannelFactory {
 			ThreadPoolExecutor executor, //
 			Iterate<Bytes> handler) {
 		C channel = packeted(channel0);
-		channel.onConnected.register(sender -> channel.setConnected(sender != null));
-		channel.onReceivePacket.register(packet -> {
+		channel.onConnected.wire(sender -> channel.setConnected(sender != null));
+		channel.onReceivePacket.wire(packet -> {
 			if (5 <= packet.size()) {
 				char type = (char) packet.get(0);
 				int token = NetUtil.bytesToInt(packet.range(1, 5));
@@ -144,7 +144,7 @@ public interface NioChannelFactory {
 
 	public static <C extends PacketedNioChannel> C packeted(C channel0) {
 		C channel = buffered(channel0);
-		channel.onReceive.register(new Sink<Bytes>() {
+		channel.onReceive.wire(new Sink<Bytes>() {
 			private Bytes received = Bytes.empty;
 
 			public void sink(Bytes message) {
@@ -166,8 +166,8 @@ public interface NioChannelFactory {
 	}
 
 	public static <C extends BufferedNioChannel> C buffered(C channel) {
-		channel.onConnected.register(channel::setSender);
-		channel.onTrySend.register(channel::trySend);
+		channel.onConnected.wire(channel::setSender);
+		channel.onTrySend.wire(channel::trySend);
 		return channel;
 	}
 

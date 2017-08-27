@@ -37,12 +37,12 @@ public class NioDispatcherTest {
 
 		Source<NioChannel> source = () -> {
 			BufferedNioChannel channel = new BufferedNioChannel();
-			channel.onConnected.register(sender -> {
+			channel.onConnected.wire(sender -> {
 				String s = hello + "\n";
 				channel.send(To.bytes(s));
 
 			});
-			channel.onReceive.register(channel::send);
+			channel.onReceive.wire(channel::send);
 			return NioChannelFactory.buffered(channel);
 		};
 		NioDispatcher<NioChannel> dispatcher = new NioDispatcherImpl<>(source);

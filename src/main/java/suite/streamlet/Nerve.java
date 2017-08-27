@@ -35,8 +35,8 @@ public class Nerve<T> {
 
 	public static <T> Nerve<T> append(Nerve<T> n0, Nerve<T> n1) {
 		return of(fire -> {
-			n0.register_(fire);
-			n1.register_(fire);
+			n0.wire_(fire);
+			n1.wire_(fire);
 		});
 	}
 
@@ -52,8 +52,8 @@ public class Nerve<T> {
 		return of(fire -> {
 			CasReference<Pair<T, U>> cr = new CasReference<>(Pair.of(null, null));
 			Sink<Pair<T, U>> recalc = pair -> fire.sink(fun.apply(pair.t0, pair.t1));
-			n0.register_(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
-			n1.register_(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
+			n0.wire_(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
+			n1.wire_(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
 		});
 	}
 
@@ -80,7 +80,7 @@ public class Nerve<T> {
 	}
 
 	public <U> Nerve<U> concatMap(Fun<T, Nerve<U>> fun) {
-		return redirect_((t, fire) -> fun.apply(t).register_(fire));
+		return redirect_((t, fire) -> fun.apply(t).wire_(fire));
 	}
 
 	public Nerve<T> delay(int milliseconds) {
@@ -120,7 +120,7 @@ public class Nerve<T> {
 
 	public Outlet<T> outlet() {
 		NullableSyncQueue<T> queue = new NullableSyncQueue<>();
-		register_(queue::offerQuietly);
+		wire_(queue::offerQuietly);
 		return Outlet.of(() -> {
 			try {
 				return queue.take();
@@ -134,18 +134,10 @@ public class Nerve<T> {
 		return redirect_(redirector);
 	}
 
-	public void register(Runnable receiver) {
-		receivers.add(dummy -> receiver.run());
-	}
-
-	public void register(Sink<T> receiver) {
-		register_(receiver);
-	}
-
 	public Nerve<T> resample(Nerve<?> event) {
 		List<T> ts = new ArrayList<>();
 		ts.add(null);
-		register_(t -> ts.set(0, t));
+		wire_(t -> ts.set(0, t));
 		return event.redirect_((e, fire) -> fire.sink(ts.get(0)));
 	}
 
@@ -157,11 +149,19 @@ public class Nerve<T> {
 		});
 	}
 
-	private <U> Nerve<U> redirect_(Redirector<T, U> redirector) {
-		return of(fire -> register_(t -> redirector.accept(t, fire)));
+	public void wire(Runnable receiver) {
+		receivers.add(dummy -> receiver.run());
 	}
 
-	private void register_(Sink<T> receiver) {
+	public void wire(Sink<T> receiver) {
+		wire_(receiver);
+	}
+
+	private <U> Nerve<U> redirect_(Redirector<T, U> redirector) {
+		return of(fire -> wire_(t -> redirector.accept(t, fire)));
+	}
+
+	private void wire_(Sink<T> receiver) {
 		receivers.add(receiver);
 	}
 

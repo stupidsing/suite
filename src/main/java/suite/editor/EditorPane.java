@@ -48,13 +48,13 @@ public class EditorPane extends JEditorPane {
 				});
 		};
 
-		bind(KeyEvent.VK_TAB, 0).register(Listen.catchAll(tabize));
-		bind(KeyEvent.VK_TAB, Event.SHIFT_MASK).register(Listen.catchAll(untabize));
-		bind(KeyEvent.VK_Y, Event.CTRL_MASK).register(undoManager::redo);
-		bind(KeyEvent.VK_Z, Event.CTRL_MASK).register(undoManager::undo);
+		bind(KeyEvent.VK_TAB, 0).wire(Listen.catchAll(tabize));
+		bind(KeyEvent.VK_TAB, Event.SHIFT_MASK).wire(Listen.catchAll(untabize));
+		bind(KeyEvent.VK_Y, Event.CTRL_MASK).wire(undoManager::redo);
+		bind(KeyEvent.VK_Z, Event.CTRL_MASK).wire(undoManager::undo);
 
 		document.addUndoableEditListener(event -> undoManager.addEdit(event.getEdit()));
-		Listen.documentChanged(document).register(event -> model.changeModified(true));
+		Listen.documentChanged(document).wire(event -> model.changeModified(true));
 	}
 
 	private void replaceLines(Fun<Segment, String> fun) throws BadLocationException {
