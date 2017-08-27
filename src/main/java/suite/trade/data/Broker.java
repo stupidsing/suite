@@ -37,17 +37,15 @@ public interface Broker {
 			Streamlet<Bytes> bytes = Files.exists(path) ? Read.bytes(path) : Read.url(url);
 
 			Trade[] trades0 = bytes.collect(As::table).map(Trade::of).toArray(Trade.class);
-			int length0 = trades0.length;
-
 			List<Trade> trades1 = new ArrayList<>();
-
-			IntIntSink tx = (i0, i) -> {
-				if (Ints_.range(i0, i).mapInt(j -> trades0[j].buySell).sum() != 0)
-					while (i0 < i)
-						trades1.add(trades0[i0++]);
-			};
-
+			int length0 = trades0.length;
 			int i0 = 0;
+
+			IntIntSink tx = (i0_, i1_) -> {
+				if (Ints_.range(i0_, i1_).mapInt(i -> trades0[i].buySell).sum() != 0)
+					while (i0_ < i1_)
+						trades1.add(trades0[i0_++]);
+			};
 
 			for (int i = 1; i < length0; i++) {
 				Trade trade0 = trades0[i0];
