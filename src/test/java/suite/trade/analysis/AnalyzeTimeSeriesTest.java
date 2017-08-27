@@ -21,6 +21,7 @@ import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
+import suite.util.To;
 
 public class AnalyzeTimeSeriesTest {
 
@@ -58,8 +59,6 @@ public class AnalyzeTimeSeriesTest {
 		float[] returns = ts.returns(prices);
 		MeanVariance rmv = stat.meanVariance(returns);
 		double variance = rmv.variance;
-		double sd = rmv.standardDeviation();
-		double yearlyVariance = variance / nYears;
 		double kelly = rmv.mean / variance;
 		IntFltPair max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
@@ -75,11 +74,7 @@ public class AnalyzeTimeSeriesTest {
 		LogUtil.info("dct period = " + max.t0);
 		for (int d = 0; d <= 10; d++)
 			LogUtil.info("dct component, " + d + " days = " + fds[d]);
-		LogUtil.info("return = " + Quant.return_(prices[0], prices[length - 1]));
-		LogUtil.info("return min = " + rmv.min);
-		LogUtil.info("return max = " + rmv.max);
-		LogUtil.info("return sharpe = " + rmv.mean / sd);
-		LogUtil.info("return yearly sharpe = " + rmv.mean / Math.sqrt(yearlyVariance));
+		LogUtil.info("return yearly sharpe = " + rmv.mean / Math.sqrt(variance / nYears));
 		LogUtil.info("return kelly = " + kelly);
 		LogUtil.info("return skew = " + stat.skewness(returns));
 		LogUtil.info("return kurt = " + stat.kurtosis(returns));
@@ -163,8 +158,9 @@ public class AnalyzeTimeSeriesTest {
 
 		public String toString() {
 			return "outcome" //
-					+ ": return = " + return_() //
-					+ ", sharpe = " + sharpe();
+					+ ": return = " + To.string(return_()) //
+					+ ", sharpe = " + To.string(sharpe()) //
+					+ ", returns = " + rmv;
 		}
 
 		private double return_() {
@@ -172,7 +168,7 @@ public class AnalyzeTimeSeriesTest {
 		}
 
 		private double sharpe() {
-			return rmv.mean / rmv.variance;
+			return rmv.mean / rmv.standardDeviation();
 		}
 	}
 

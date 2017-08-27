@@ -304,10 +304,10 @@ public class Statistic {
 		}
 
 		public String toString() {
-			return "(size = " + size //
-					+ ", mean = " + To.string(mean) //
-					+ ", range = " + To.string(min) + "~" + To.string(max) //
-					+ ", sd = " + To.string(standardDeviation()) //
+			return "(size:" + size //
+					+ " mean:" + To.string(mean) //
+					+ " range:" + To.string(min) + "~" + To.string(max) //
+					+ " sd:" + To.string(standardDeviation()) //
 					+ ")";
 		}
 	}
