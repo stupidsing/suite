@@ -125,6 +125,7 @@ public class Summarize {
 			Iterate<String> infoFun) {
 		Streamlet<Trade> trades0 = trades_;
 		Streamlet<Trade> trades1 = sellAll(trades0, priceBySymbol);
+		Account accountTx = Account.ofHistory(trades0.collect(Trade_::collectBrokeredTrades));
 		Account account0 = Account.ofHistory(trades0);
 		Account account1 = Account.ofHistory(trades1);
 		double amount0 = account0.cash();
@@ -144,7 +145,7 @@ public class Summarize {
 				.sort(Object_::compare) //
 				.append("OWN = " + -amount0) //
 				.append("P/L = " + amount1) //
-				.append(account0.transactionSummary(cfg::transactionFee)) //
+				.append(accountTx.transactionSummary(cfg::transactionFee)) //
 				.map(m -> "\n" + m) //
 				.collect(As::joined);
 

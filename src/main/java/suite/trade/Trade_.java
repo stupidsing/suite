@@ -1,5 +1,6 @@
 package suite.trade;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -8,8 +9,11 @@ import java.util.Set;
 import suite.adt.pair.Pair;
 import suite.math.MathUtil;
 import suite.primitive.FltPrimitives.Obj_Flt;
+import suite.primitive.IntIntSink;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.Ints_;
 import suite.streamlet.As;
+import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account.Valuation;
@@ -38,6 +42,35 @@ public class Trade_ {
 
 	public static double riskFreeInterestRate(int nDays) {
 		return Math.expm1(logRiskFreeInterestRate * invTradeDaysPerYear * nDays);
+	}
+
+	public static Streamlet<Trade> collectBrokeredTrades(Outlet<Trade> trades0_) {
+		Trade[] trades0 = trades0_.toArray(Trade.class);
+		List<Trade> trades1 = new ArrayList<>();
+		int length0 = trades0.length;
+		int i0 = 0;
+
+		IntIntSink tx = (i0_, i1_) -> {
+			if (Ints_.range(i0_, i1_).mapInt(i -> trades0[i].buySell).sum() != 0)
+				while (i0_ < i1_)
+					trades1.add(trades0[i0_++]);
+		};
+
+		for (int i = 1; i < length0; i++) {
+			Trade trade0 = trades0[i0];
+			Trade trade1 = trades0[i];
+			boolean isGroup = true //
+					&& String_.equals(trade0.date, trade1.date) //
+					&& String_.equals(trade0.symbol, trade1.symbol) //
+					&& trade0.price == trade1.price;
+			if (!isGroup) {
+				tx.sink2(i0, i);
+				i0 = i;
+			}
+		}
+
+		tx.sink2(i0, length0);
+		return Read.from(trades1);
 	}
 
 	public static Streamlet<Trade> diff( //
