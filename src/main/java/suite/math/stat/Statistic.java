@@ -197,6 +197,10 @@ public class Statistic {
 		}
 	}
 
+	public double mean(float[] fs) {
+		return mean_(fs);
+	}
+
 	public MeanVariance meanVariance(float[] fs) {
 		return meanVariance_(fs);
 	}
