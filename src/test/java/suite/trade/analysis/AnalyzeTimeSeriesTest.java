@@ -107,10 +107,7 @@ public class AnalyzeTimeSeriesTest {
 
 	public interface BuySell extends Int_Flt {
 		public default BuySell longOnly() {
-			return d -> {
-				float r = apply(d);
-				return 0f <= r ? r : 0f;
-			};
+			return d -> Math.max(0f, apply(d));
 		}
 
 		public default BuySell start(int s) {
