@@ -20,8 +20,8 @@ public class OtfTest {
 		String subfamilyKey = "Subfamily";
 		List<String> keys = Arrays.asList(familyKey, subfamilyKey);
 
-		List<String> commands = Read.<Path> empty() //
-				.cons(Paths.get("/tmp/fonts")) //
+		List<String> commands = Read //
+				.each(Paths.get("/tmp/fonts")) //
 				.concatMap(path -> FileUtil.findPaths(path)) //
 				.map(Path::toString) //
 				.filter(path -> false //
