@@ -56,7 +56,7 @@ public class Quant {
 	// manual enter, auto exit when draw-down exceeded threshold
 	public static Int_Dbl enterUntilDrawDown( //
 			float[] prices, //
-			float exitThreshold, //
+			double exitThreshold, //
 			IntFltPredicate isEnterShort, //
 			IntFltPredicate isEnterLong) {
 		int length = prices.length;

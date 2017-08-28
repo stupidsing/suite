@@ -45,15 +45,15 @@ public class BackAllocatorGeneral {
 	public BackAllocator tma = tripleExpGeometricMovingAvgs(2, 6, 18);
 
 	public final Streamlet2<String, BackAllocator> baByName = Read //
-			.<String, BackAllocator>empty2() //
+			.<String, BackAllocator> empty2() //
 			.cons("bb0", bb_) //
 			.cons("bb1", bb1(32)) //
 			.cons("bballoc", bbAllocate(32)) //
-			.cons("bbtrend", bbTrend(32)) //
+			.cons("bbtrend", bbTrend(32, .05d)) //
 			.cons("don9", donchian(9)) //
 			.cons("donalloc", donchianAllocate(9)) //
 			.cons("donhold", donHold) //
-			.cons("dontrend", donchianTrend(9)) //
+			.cons("dontrend", donchianTrend(9, .05d)) //
 			.cons("ema", ema) //
 			.cons("half", fixed(.5d)) //
 			.cons("hold", fixed(1d)) //
@@ -66,7 +66,7 @@ public class BackAllocatorGeneral {
 			.cons("ppr", pprHsi) //
 			.cons("rsi", rsi) //
 			.cons("sar", sar()) //
-			.cons("trend2", trend2()) //
+			.cons("trend2", trend2(.02d)) //
 			.cons("turtles", turtles(20, 10, 55, 20)) //
 			.cons("tma", tma) //
 			.cons("varratio", varianceRatio(96)) //
@@ -109,9 +109,7 @@ public class BackAllocatorGeneral {
 		});
 	}
 
-	private BackAllocator bbTrend(int tor) {
-		float exitThreshold = .05f;
-
+	private BackAllocator bbTrend(int tor, double exitThreshold) {
 		return BackAllocator_.byPrices(prices -> {
 			float[] sds = bb.bb(prices, tor, 0, 2f).sds;
 			return Quant.enterUntilDrawDown(prices, exitThreshold, //
@@ -150,9 +148,7 @@ public class BackAllocatorGeneral {
 		});
 	}
 
-	private BackAllocator donchianTrend(int window) {
-		float exitThreshold = .05f;
-
+	private BackAllocator donchianTrend(int window, double exitThreshold) {
 		return BackAllocator_.byPrices(prices -> {
 			MovingRange[] movingRanges = ma.movingRange(prices, window);
 			return Quant.enterUntilDrawDown(prices, exitThreshold, //
@@ -303,9 +299,8 @@ public class BackAllocatorGeneral {
 		});
 	}
 
-	private BackAllocator trend2() {
-		double threshold = .02d;
-		float part = .1f;
+	private BackAllocator trend2(double threshold) {
+		float daily = .1f;
 
 		return BackAllocator_.byPrices(prices -> {
 			FltFltPair minMax = FltFltPair.of(Float.MAX_VALUE, Float.MIN_VALUE);
@@ -315,11 +310,11 @@ public class BackAllocatorGeneral {
 				float min = Math.min(minMax.t0, price);
 				float max = Math.max(minMax.t1, price);
 				if (threshold <= Quant.return_(min, price)) {
-					hold = Math.max(0f, hold + part);
+					hold = Math.max(0f, hold + daily);
 					max = price;
 				}
 				if (threshold <= Quant.return_(price, max)) {
-					hold = Math.min(0f, hold - part);
+					hold = Math.min(0f, hold - daily);
 					min = price;
 				}
 				minMax.update(min, max);
