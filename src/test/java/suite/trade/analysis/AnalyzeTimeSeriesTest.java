@@ -155,10 +155,10 @@ public class AnalyzeTimeSeriesTest {
 		}
 
 		public String toString() {
-			return "outcome" //
-					+ ": return = " + To.string(return_()) //
+			return "o/c" //
+					+ ": rtn = " + To.string(return_()) //
 					+ ", sharpe = " + To.string(sharpe()) //
-					+ ", returns = " + rmv;
+					+ ", dist = " + rmv;
 		}
 
 		private double return_() {
