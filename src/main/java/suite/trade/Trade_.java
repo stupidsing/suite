@@ -2,6 +2,7 @@ package suite.trade;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +13,7 @@ import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntIntSink;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints_;
+import suite.primitive.adt.pair.IntFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
@@ -44,8 +46,42 @@ public class Trade_ {
 		return Math.expm1(logRiskFreeInterestRate * invTradeDaysPerYear * nDays);
 	}
 
-	public static Streamlet<Trade> collectBrokeredTrades(Outlet<Trade> trades0_) {
-		Trade[] trades0 = trades0_.toArray(Trade.class);
+	public static Map<String, Float> collectAcquiredPrices(Outlet<Trade> outlet) {
+		Map<String, List<IntFltPair>> acquireBySymbol = new HashMap<>();
+		Trade trade;
+
+		while ((trade = outlet.next()) != null) {
+			String symbol = trade.symbol;
+			int buySell = trade.buySell;
+			float price = trade.price;
+			List<IntFltPair> acquires0 = acquireBySymbol.getOrDefault(symbol, Collections.emptyList());
+			List<IntFltPair> acquires1 = new ArrayList<>();
+
+			for (IntFltPair acquire : acquires0) {
+				int n0 = acquire.t0;
+				int diff = buySell < 0 ? Math.max(0, Math.min(-buySell, n0)) : Math.min(0, Math.max(-buySell, n0));
+				int n1 = n0 - diff;
+				buySell += diff;
+				if (n1 != 0)
+					acquires1.add(IntFltPair.of(n1, price));
+			}
+
+			acquireBySymbol.put(symbol, acquires1);
+		}
+
+		return Read //
+				.from2(acquireBySymbol) //
+				.mapValue(acquires -> {
+					IntFltPair sum = IntFltPair.of(0, 0f);
+					for (IntFltPair acquire : acquires)
+						sum.update(sum.t0 + acquire.t0, sum.t1 + acquire.t1);
+					return sum.t1 / sum.t0;
+				}) //
+				.toMap();
+	}
+
+	public static Streamlet<Trade> collectBrokeredTrades(Outlet<Trade> outlet) {
+		Trade[] trades0 = outlet.toArray(Trade.class);
 		List<Trade> trades1 = new ArrayList<>();
 		int length0 = trades0.length;
 		int i0 = 0;
