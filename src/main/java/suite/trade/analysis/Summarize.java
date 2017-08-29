@@ -25,6 +25,7 @@ import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 import suite.util.Object_;
 import suite.util.String_;
+import suite.util.To;
 
 public class Summarize {
 
@@ -76,6 +77,8 @@ public class Summarize {
 		for (Entry<K, String> e : outByKey.entrySet())
 			log.sink("\nFor strategy " + e.getKey() + ":" + e.getValue());
 
+		Map<String, Float> acquiredPrices = trades.collect(Trade_::collectAcquiredPrices);
+
 		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
 			Time now = Time.now();
 			boolean isMarketOpen = false //
@@ -94,7 +97,9 @@ public class Summarize {
 					.sort(String_::compare) //
 					.collect(As.joinedBy("/"));
 
-			return (percent.startsWith("-") ? "" : "+") + percent + (!keys.isEmpty() ? ", " + keys : "");
+			return (percent.startsWith("-") ? "" : "+") + percent //
+					+ ", (" + To.string(acquiredPrices.get(symbol)) + ")" //
+					+ (!keys.isEmpty() ? ", " + keys : "");
 		});
 
 		log.sink(FormatUtil.tablize("\nOverall:\t" + Time.now().ymdHms() + overall.out));
