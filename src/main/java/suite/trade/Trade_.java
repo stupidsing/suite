@@ -66,6 +66,9 @@ public class Trade_ {
 					acquires1.add(IntFltPair.of(n1, price));
 			}
 
+			if (buySell != 0)
+				acquires1.add(IntFltPair.of(buySell, price));
+
 			acquireBySymbol.put(symbol, acquires1);
 		}
 
