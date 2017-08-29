@@ -25,7 +25,6 @@ import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 import suite.util.Object_;
 import suite.util.String_;
-import suite.util.To;
 
 public class Summarize {
 
@@ -86,9 +85,9 @@ public class Summarize {
 					|| HkexUtil.isMarketOpen(now.addHours(1));
 
 			DataSource ds = cfg.dataSource(symbol);
-			float price0 = acquiredPrices.get(symbol);
-			float price1 = ds.get(isMarketOpen ? -1 : -2).t1;
-			float pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1;
+			float price0 = acquiredPrices.get(symbol); // acquisition price
+			float price1 = ds.get(isMarketOpen ? -1 : -2).t1; // previous close
+			float pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1; // now
 
 			String keys = Read //
 					.from2(nSharesByKeyBySymbol.getOrDefault(symbol, Collections.emptyMap())) //
@@ -98,7 +97,7 @@ public class Summarize {
 					.collect(As.joinedBy("/"));
 
 			return percent(price1, pricex) //
-					+ ", " + To.string(price0) //
+					+ ", " + percent(price0, pricex) //
 					+ (!keys.isEmpty() ? ", " + keys : "");
 		});
 
