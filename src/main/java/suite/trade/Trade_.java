@@ -63,7 +63,7 @@ public class Trade_ {
 				int n1 = n0 - diff;
 				buySell += diff;
 				if (n1 != 0)
-					acquires1.add(IntFltPair.of(n1, price));
+					acquires1.add(IntFltPair.of(n1, acquire.t1));
 			}
 
 			if (buySell != 0)
