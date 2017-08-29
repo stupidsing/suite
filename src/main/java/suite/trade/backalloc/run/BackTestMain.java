@@ -27,7 +27,7 @@ import suite.util.ParseUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
-// mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.BackTestMain
+// mvn compile exec:java -Dexec.mainClass=suite.trade.bcakalloc.run.BackTestMain
 public class BackTestMain extends ExecutableProgram {
 
 	private BackTester runner = new BackTester();
