@@ -15,6 +15,7 @@ import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.IntFltPair;
+import suite.primitive.streamlet.FltStreamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
@@ -72,6 +73,7 @@ public class AnalyzeTimeSeriesTest {
 		LogUtil.info("symbol = " + symbol);
 		LogUtil.info("length = " + length);
 		LogUtil.info("nYears = " + nYears);
+		LogUtil.info("ups = " + FltStreamlet.of(returns).filter(return_ -> 0f <= return_).size());
 		LogUtil.info("dct period = " + max.t0);
 		for (int d = 0; d <= 10; d++)
 			LogUtil.info("dct component, " + d + " days = " + fds[d]);
@@ -84,11 +86,10 @@ public class AnalyzeTimeSeriesTest {
 		for (int d : new int[] { 4, 16, })
 			LogUtil.info("variance ratio, " + d + " days over 1 day = " + ts.varianceRatio(prices, d));
 
-		BuySell revert = buySell(d -> -Quant.sign(prices[d - 2], prices[d - 1])).start(2);
-		BuySell trend_ = buySell(d -> Quant.sign(prices[d - 2], prices[d - 1])).start(2);
-
 		int d0 = 1 + 1;
 		int d1 = 1;
+		BuySell revert = buySell(d -> -Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
+		BuySell trend_ = buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		BuySell tanh = buySell(d -> Tanh.tanh(-3.2d * Quant.return_(prices[d - d0], prices[d - d1]))).start(d0);
 
 		LogUtil.info("half " + buySell(d -> .5d).invest(prices));
