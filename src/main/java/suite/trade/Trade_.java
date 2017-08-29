@@ -77,7 +77,7 @@ public class Trade_ {
 				.mapValue(acquires -> {
 					IntFltPair sum = IntFltPair.of(0, 0f);
 					for (IntFltPair acquire : acquires)
-						sum.update(sum.t0 + acquire.t0, sum.t1 + acquire.t1);
+						sum.update(sum.t0 + acquire.t0, sum.t1 + acquire.t0 * acquire.t1);
 					return sum.t1 / sum.t0;
 				}) //
 				.toMap();

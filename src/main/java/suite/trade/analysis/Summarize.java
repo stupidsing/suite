@@ -86,9 +86,9 @@ public class Summarize {
 					|| HkexUtil.isMarketOpen(now.addHours(1));
 
 			DataSource ds = cfg.dataSource(symbol);
-			float price0 = ds.get(isMarketOpen ? -1 : -2).t1;
+			float price0 = acquiredPrices.get(symbol);
+			float price1 = ds.get(isMarketOpen ? -1 : -2).t1;
 			float pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1;
-			String percent = String.format("%.1f", 100d * Quant.return_(price0, pricex)) + "%";
 
 			String keys = Read //
 					.from2(nSharesByKeyBySymbol.getOrDefault(symbol, Collections.emptyMap())) //
@@ -97,8 +97,8 @@ public class Summarize {
 					.sort(String_::compare) //
 					.collect(As.joinedBy("/"));
 
-			return (percent.startsWith("-") ? "" : "+") + percent //
-					+ ", (" + To.string(acquiredPrices.get(symbol)) + ")" //
+			return percent(price1, pricex) //
+					+ ", " + To.string(price0) //
 					+ (!keys.isEmpty() ? ", " + keys : "");
 		});
 
@@ -165,6 +165,11 @@ public class Summarize {
 			this.account = account;
 			this.out = out;
 		}
+	}
+
+	private String percent(float price1, float pricex) {
+		String pc = String.format("%.1f", 100d * Quant.return_(price1, pricex)) + "%";
+		return (pc.startsWith("-") ? "" : "+") + pc;
 	}
 
 	private Streamlet<Trade> sellAll(Streamlet<Trade> trades, Map<String, Float> priceBySymbol) {
