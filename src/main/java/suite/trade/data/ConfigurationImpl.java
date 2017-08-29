@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -100,7 +101,12 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	private DataSource dataSource_(String symbol, TimeRange period) {
-		return src(symbol).dataSourceFun.apply(symbol, period);
+		DataSource ds = src(symbol).dataSourceFun.apply(symbol, period);
+		long epx = ds.last().t0;
+		long now = Math.min(Time.now().epochSec(), period.to.epochSec());
+		if (epx + 7 * 86400 * 1000l < now)
+			LogUtil.warn("ancient data: " + symbol + " " + Time.ofEpochSec(epx));
+		return ds;
 	}
 
 	private Src src(String symbol) {

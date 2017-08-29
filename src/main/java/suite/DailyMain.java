@@ -2,7 +2,6 @@ package suite;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -177,11 +176,8 @@ public class DailyMain extends ExecutableProgram {
 						.map2(stock -> stock.symbol, stock -> {
 							try {
 								TimeRange period = TimeRange.threeYears();
-								DataSource ds0 = cfg.dataSource(stock.symbol, period);
-								DataSource ds1 = ds0.range(period);
-
-								ds1.validate();
-								SingleAllocBackTest backTest = SingleAllocBackTest.test(ds1, strategy);
+								DataSource ds = cfg.dataSource(stock.symbol, period).range(period).validate();
+								SingleAllocBackTest backTest = SingleAllocBackTest.test(ds, strategy);
 								return MathUtil.isPositive(backTest.account.cash());
 							} catch (Exception ex) {
 								LogUtil.warn(ex + " for " + stock);
@@ -191,7 +187,6 @@ public class DailyMain extends ExecutableProgram {
 						.toMap());
 
 		TimeRange period = TimeRange.daysBefore(128);
-		Time sevenDaysAgo = today.addDays(-7);
 		List<Trade> trades = new ArrayList<>();
 
 		// capture signals
@@ -200,21 +195,10 @@ public class DailyMain extends ExecutableProgram {
 
 			if (backTestBySymbol.get(symbol))
 				try {
-					DataSource ds0 = cfg.dataSource(symbol, period);
-					Time timex = Time.ofEpochSec(ds0.last().t0);
-
-					if (0 <= Time.compare(timex, sevenDaysAgo))
-						ds0.validate();
-					else
-						throw new RuntimeException("ancient data: " + timex);
-
-					Map<String, Float> latest = cfg.quote(Collections.singleton(symbol));
-					long latestDate = today.startOfDay().epochSec();
-					float latestPrice = latest.values().iterator().next();
-
-					DataSource ds1 = ds0.cons(latestDate, latestPrice);
-					float[] prices = ds1.prices;
+					DataSource ds = cfg.dataSource(symbol, period).validate();
+					float[] prices = ds.prices;
 					int last = prices.length - 1;
+					float latestPrice = prices[last];
 
 					int signal = strategy.analyze(prices).get(last);
 					int nShares = signal * asset.lotSize * Math.round(factor / nHoldDays / (asset.lotSize * latestPrice));

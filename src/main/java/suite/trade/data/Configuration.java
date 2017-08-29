@@ -34,9 +34,7 @@ public interface Configuration {
 		return symbols //
 				.map2(symbol -> {
 					try {
-						DataSource ds = dataSource(symbol, period);
-						ds.validate();
-						return ds;
+						return dataSource(symbol, period).validate();
 					} catch (Exception ex) {
 						LogUtil.warn("for " + symbol + " " + ex);
 						return null;
