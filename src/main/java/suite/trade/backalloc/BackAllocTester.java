@@ -112,8 +112,7 @@ public class BackAllocTester {
 			try {
 				for (int i = 0; i < size; i++) {
 					int index = indices[i];
-					long t = tradeTs[index];
-					Time time = Time.ofEpochSec(t);
+					Time time = Time.ofEpochSec(tradeTs[index]);
 
 					ymd = time.ymd();
 					eodBySymbol = dsBySymbol.mapValue(ds -> ds.getEod(index)).toMap();
