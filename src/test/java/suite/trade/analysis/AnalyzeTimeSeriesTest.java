@@ -92,16 +92,6 @@ public class AnalyzeTimeSeriesTest {
 		BuySell trend_ = buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		BuySell tanh = buySell(d -> Tanh.tanh(-3.2d * Quant.return_(prices[d - d0], prices[d - d1]))).start(d0);
 
-		int nTensions = 9;
-		BuySell tension = buySell(d -> {
-			int last = d - 1, nUps = 1, nDns = 1;
-			while (nUps < nTensions && prices[last - nUps] <= prices[d - nUps])
-				nUps++;
-			while (nDns < nTensions && prices[d - nDns] <= prices[last - nDns])
-				nDns++;
-			return (nDns * nDns - nUps * nUps) * .1d;
-		}).start(nTensions);
-
 		LogUtil.info("half " + buySell(d -> .5d).invest(prices));
 		LogUtil.info("hold " + buySell(d -> 1d).invest(prices));
 		LogUtil.info("kelly " + buySell(d -> kelly).invest(prices));
@@ -110,7 +100,6 @@ public class AnalyzeTimeSeriesTest {
 		LogUtil.info("trend_ " + trend_.invest(prices));
 		LogUtil.info("trend_ long-only " + trend_.longOnly().invest(prices));
 		LogUtil.info("tanh " + tanh.invest(prices));
-		LogUtil.info("tension " + tension.invest(prices));
 	}
 
 	private BuySell buySell(Int_Dbl fun) {
