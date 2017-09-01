@@ -7,7 +7,7 @@ import suite.math.stat.Quant;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.primitive.Floats_;
 import suite.primitive.Ints_;
-import suite.trade.MovingAverage;
+import suite.trade.analysis.MovingAverage;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 
 public class Strategos {

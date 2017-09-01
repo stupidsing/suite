@@ -8,11 +8,11 @@ import suite.math.stat.Quant;
 import suite.primitive.IntInt_Int;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.trade.MovingAverage;
-import suite.trade.MovingAverage.Macd;
-import suite.trade.MovingAverage.MovingRange;
-import suite.trade.Oscillator;
-import suite.trade.Oscillator.Dmi;
+import suite.trade.analysis.MovingAverage;
+import suite.trade.analysis.MovingAverage.Macd;
+import suite.trade.analysis.MovingAverage.MovingRange;
+import suite.trade.analysis.Oscillator;
+import suite.trade.analysis.Oscillator.Dmi;
 import suite.trade.backalloc.BackAllocator;
 
 /**

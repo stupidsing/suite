@@ -30,7 +30,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
-import suite.trade.MovingAverage;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.Configuration;

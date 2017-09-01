@@ -4,7 +4,6 @@ import suite.math.stat.Statistic;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.streamlet.IntStreamlet;
-import suite.trade.MovingAverage;
 
 public class MarketTiming {
 

@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.analysis;
 
 import java.util.Arrays;
 

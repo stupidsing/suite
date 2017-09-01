@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade.analysis;
 
 import suite.math.stat.Quant;
 import suite.primitive.Floats_;
