@@ -30,6 +30,7 @@ import suite.util.String_;
 public class Summarize {
 
 	private Configuration cfg;
+	private Dividend dividend = new Dividend();
 	private Yahoo yahoo = new Yahoo();
 
 	public final Streamlet<Trade> trades;
@@ -151,7 +152,7 @@ public class Summarize {
 				.sort(Object_::compare) //
 				.append("OWN = " + -amount0) //
 				.append("P/L = " + amount1) //
-				.append("DVD = " + new Dividend().dividend(trades0, yahoo::dividend)) //
+				.append("DVD = " + dividend.dividend(trades0, yahoo::dividend)) //
 				.append(accountTx.transactionSummary(cfg::transactionFee)) //
 				.map(m -> "\n" + m) //
 				.collect(As::joined);
