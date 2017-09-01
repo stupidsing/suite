@@ -45,7 +45,7 @@ public class StatisticalArbitrageTest {
 
 	private TimeRange period = TimeRange.threeYears();
 
-	BollingerBands bb = new BollingerBands();
+	private BollingerBands bb = new BollingerBands();
 	private Configuration cfg = new ConfigurationImpl();
 	private DiscreteCosineTransform dct = new DiscreteCosineTransform();
 	private MarketTiming mt = new MarketTiming();
