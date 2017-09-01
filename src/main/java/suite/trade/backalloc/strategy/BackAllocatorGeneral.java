@@ -462,8 +462,7 @@ public class BackAllocatorGeneral {
 						.from2(m1) //
 						.map2((symbol, nHold) -> {
 							float[] atrs = atrBySymbol.get(symbol);
-							int last = index - 1;
-							double unit = .01d / atrs[last];
+							double unit = .01d / atrs[index - 1];
 							return Math.max(-maxUnits, Math.min(maxUnits, nHold)) * unit;
 						}) //
 						.toList();
