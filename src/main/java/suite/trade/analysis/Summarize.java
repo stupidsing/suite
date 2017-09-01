@@ -26,6 +26,7 @@ import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 import suite.util.Object_;
 import suite.util.String_;
+import suite.util.To;
 
 public class Summarize {
 
@@ -150,9 +151,9 @@ public class Summarize {
 							+ (info != null ? " \t(" + info + ")" : "");
 				}) //
 				.sort(Object_::compare) //
-				.append("OWN = " + -amount0) //
-				.append("P/L = " + amount1) //
-				.append("DVD = " + dividend.dividend(trades0, yahoo::dividend)) //
+				.append("OWN = " + To.string(-amount0)) //
+				.append("P/L = " + To.string(amount1)) //
+				.append("DVD = " + To.string(dividend.dividend(trades0, yahoo::dividend))) //
 				.append(accountTx.transactionSummary(cfg::transactionFee)) //
 				.map(m -> "\n" + m) //
 				.collect(As::joined);
