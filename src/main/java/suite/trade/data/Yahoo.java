@@ -77,6 +77,23 @@ public class Yahoo {
 
 	// https://l1-query.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com
 	public DataSource dataSourceL1(String symbol, TimeRange period) {
+		StockHistory stockHistory = getStockHistory(symbol);
+		DataSource ds = stockHistory.filter(period).toDataSource();
+
+		// the latest time stamp may fluctuate; adjust it to previous market
+		// close time
+		long[] ts = ds.ts;
+		int last = ts.length - 1;
+		ts[last] = getTradeTimeBefore(stockHistory.exchange, ts[last]);
+
+		return ds.cleanse().range(period);
+	}
+
+	public LngFltPair[] dividend(String symbol) {
+		return getStockHistory(symbol).dividends;
+	}
+
+	private StockHistory getStockHistory(String symbol) {
 		Path path = HomeDir.dir("yahoo").resolve(symbol + ".txt");
 		StockHistory stockHistory0;
 
@@ -180,15 +197,8 @@ public class Yahoo {
 				stockHistory1.dividends, //
 				splits2);
 
-		DataSource ds = LogUtil.prefix("for " + symbol + ": ", () -> stockHistory2.cleanse()).filter(period).toDataSource();
-
-		// the latest time stamp may fluctuate; adjust it to previous market
-		// close time
-		long[] ts = ds.ts;
-		int last = ts.length - 1;
-		ts[last] = getTradeTimeBefore(stockHistory1.exchange, ts[last]);
-
-		return ds.cleanse().range(period);
+		StockHistory stockHistory3 = LogUtil.prefix("for " + symbol + ": ", () -> stockHistory2.cleanse());
+		return stockHistory3;
 	}
 
 	private JsonNode queryL1(String symbol, TimeRange period) {

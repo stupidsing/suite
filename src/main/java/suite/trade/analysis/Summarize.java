@@ -19,6 +19,7 @@ import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.HkexUtil;
+import suite.trade.data.Yahoo;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -29,6 +30,7 @@ import suite.util.String_;
 public class Summarize {
 
 	private Configuration cfg;
+	private Yahoo yahoo = new Yahoo();
 
 	public final Streamlet<Trade> trades;
 	public final Map<String, Float> priceBySymbol;
@@ -149,6 +151,7 @@ public class Summarize {
 				.sort(Object_::compare) //
 				.append("OWN = " + -amount0) //
 				.append("P/L = " + amount1) //
+				.append("DVD = " + new Dividend().dividend(trades0, yahoo::dividend)) //
 				.append(accountTx.transactionSummary(cfg::transactionFee)) //
 				.map(m -> "\n" + m) //
 				.collect(As::joined);
