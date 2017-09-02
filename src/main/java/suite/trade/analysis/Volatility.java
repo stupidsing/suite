@@ -7,7 +7,7 @@ import suite.trade.data.DataSource;
 public class Volatility {
 
 	private double ln2 = Math.log(2d);
-	private double inv4ln2 = 1 / 4d * ln2;
+	private double inv4ln2 = .25d / ln2;
 
 	// 0 < f < 1
 	public float[] vol0(DataSource ds, float f) {
