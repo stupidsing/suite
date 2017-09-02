@@ -31,25 +31,30 @@ import suite.util.FunUtil.Fun;
  */
 public class Serialize {
 
-	private static Inspect inspect = Singleton.me.inspect;
-	private static byte[] zeroes = new byte[4096];
+	public static Serialize me = new Serialize();
 
-	public static Serializer<Boolean> boolean_ = boolean_();
-	public static Serializer<Double> double_ = double_();
-	public static Serializer<Float> float_ = float_();
-	public static Serializer<Integer> int_ = int_();
+	private Inspect inspect = Singleton.me.inspect;
+	private byte[] zeroes = new byte[4096];
 
-	public static <T> Serializer<T> auto(Class<T> clazz) {
+	public Serializer<Boolean> boolean_ = boolean_();
+	public Serializer<Double> double_ = double_();
+	public Serializer<Float> float_ = float_();
+	public Serializer<Integer> int_ = int_();
+
+	private Serialize() {
+	}
+
+	public <T> Serializer<T> auto(Class<T> clazz) {
 		Serializer<?> serializer0 = memoizeAutoSerializers.apply(clazz);
 		@SuppressWarnings("unchecked")
 		Serializer<T> serializer = (Serializer<T>) serializer0;
 		return serializer;
 	}
 
-	private static Fun<Type, Serializer<?>> memoizeAutoSerializers = Memoize.fun(Serialize::auto_);
+	private Fun<Type, Serializer<?>> memoizeAutoSerializers = Memoize.fun(this::auto_);
 
 	// do not handle nulls
-	private static <T> Serializer<?> auto_(Type type) {
+	private <T> Serializer<?> auto_(Type type) {
 		Serializer<?> serializer;
 		if (type instanceof Class) {
 			Class<?> clazz = (Class<?>) type;
@@ -96,7 +101,7 @@ public class Serialize {
 		return serializer;
 	}
 
-	public static <T> Serializer<T> autoFields(Class<T> clazz) {
+	public <T> Serializer<T> autoFields(Class<T> clazz) {
 		Pair<Field, ?>[] pairs = Read.from(inspect.fields(clazz)) //
 				.map2(field -> auto_(field.getGenericType())) //
 				.toArray();
@@ -142,7 +147,7 @@ public class Serialize {
 		return serializer;
 	}
 
-	public static Serializer<Bytes> variableLengthBytes = new Serializer<Bytes>() {
+	public Serializer<Bytes> variableLengthBytes = new Serializer<Bytes>() {
 		public Bytes read(DataInput_ dataInput) throws IOException {
 			int length = dataInput.readInt();
 			byte[] bs = new byte[length];
@@ -156,7 +161,7 @@ public class Serialize {
 		}
 	};
 
-	public static Serializer<String> variableLengthString = new Serializer<String>() {
+	public Serializer<String> variableLengthString = new Serializer<String>() {
 		public String read(DataInput_ dataInput) throws IOException {
 			return dataInput.readUTF();
 		}
@@ -172,10 +177,10 @@ public class Serialize {
 		public void write(DataOutput_ dataOutput, V value) throws IOException;
 	}
 
-	public static <T> Serializer<T[]> array(Class<T> clazz, Serializer<T> serializer) {
+	public <T> Serializer<T[]> array(Class<T> clazz, Serializer<T> serializer) {
 		return new Serializer<T[]>() {
 			public T[] read(DataInput_ dataInput) throws IOException {
-				int size = Serialize.int_.read(dataInput);
+				int size = int_.read(dataInput);
 				T[] array = Array_.newArray(clazz, size);
 				for (int i = 0; i < size; i++)
 					array[i] = serializer.read(dataInput);
@@ -183,16 +188,16 @@ public class Serialize {
 			}
 
 			public void write(DataOutput_ dataOutput, T[] array) throws IOException {
-				Serialize.int_.write(dataOutput, array.length);
+				int_.write(dataOutput, array.length);
 				for (T t : array)
 					serializer.write(dataOutput, t);
 			}
 		};
 	}
 
-	public static Serializer<float[]> arrayOfFloats = new Serializer<float[]>() {
+	public Serializer<float[]> arrayOfFloats = new Serializer<float[]>() {
 		public float[] read(DataInput_ dataInput) throws IOException {
-			int size = Serialize.int_.read(dataInput);
+			int size = int_.read(dataInput);
 			float[] array = new float[size];
 			for (int i = 0; i < size; i++)
 				array[i] = dataInput.readFloat();
@@ -200,15 +205,15 @@ public class Serialize {
 		}
 
 		public void write(DataOutput_ dataOutput, float[] array) throws IOException {
-			Serialize.int_.write(dataOutput, array.length);
+			int_.write(dataOutput, array.length);
 			for (float f : array)
 				dataOutput.writeFloat(f);
 		}
 	};
 
-	public static Serializer<int[]> arrayOfInts = new Serializer<int[]>() {
+	public Serializer<int[]> arrayOfInts = new Serializer<int[]>() {
 		public int[] read(DataInput_ dataInput) throws IOException {
-			int size = Serialize.int_.read(dataInput);
+			int size = int_.read(dataInput);
 			int[] array = new int[size];
 			for (int i = 0; i < size; i++)
 				array[i] = dataInput.readInt();
@@ -216,7 +221,7 @@ public class Serialize {
 		}
 
 		public void write(DataOutput_ dataOutput, int[] array) throws IOException {
-			Serialize.int_.write(dataOutput, array.length);
+			int_.write(dataOutput, array.length);
 			for (int i : array)
 				dataOutput.writeInt(i);
 		}
@@ -227,7 +232,7 @@ public class Serialize {
 	 *
 	 * Size = length
 	 */
-	public static Serializer<Bytes> bytes(int length) {
+	public Serializer<Bytes> bytes(int length) {
 		return new Serializer<Bytes>() {
 			public Bytes read(DataInput_ dataInput) throws IOException {
 				byte[] bs = new byte[length];
@@ -247,10 +252,10 @@ public class Serialize {
 		};
 	}
 
-	public static <T> Serializer<Collection<T>> collection(Serializer<T> serializer) {
+	public <T> Serializer<Collection<T>> collection(Serializer<T> serializer) {
 		return new Serializer<Collection<T>>() {
 			public Collection<T> read(DataInput_ dataInput) throws IOException {
-				int size = Serialize.int_.read(dataInput);
+				int size = int_.read(dataInput);
 				List<T> list = new ArrayList<>();
 				for (int i = 0; i < size; i++)
 					list.add(serializer.read(dataInput));
@@ -258,14 +263,14 @@ public class Serialize {
 			}
 
 			public void write(DataOutput_ dataOutput, Collection<T> list) throws IOException {
-				Serialize.int_.write(dataOutput, list.size());
+				int_.write(dataOutput, list.size());
 				for (T t : list)
 					serializer.write(dataOutput, t);
 			}
 		};
 	}
 
-	public static Serializer<Extent> extent() {
+	public Serializer<Extent> extent() {
 		return new Serializer<Extent>() {
 			public Extent read(DataInput_ dataInput) throws IOException {
 				int start = dataInput.readInt();
@@ -285,10 +290,10 @@ public class Serialize {
 	 *
 	 * Size = 4 + number of elements * size of serializer<T>
 	 */
-	public static <T> Serializer<List<T>> list(Serializer<T> serializer) {
+	public <T> Serializer<List<T>> list(Serializer<T> serializer) {
 		return new Serializer<List<T>>() {
 			public List<T> read(DataInput_ dataInput) throws IOException {
-				int size = Serialize.int_.read(dataInput);
+				int size = int_.read(dataInput);
 				List<T> list = new ArrayList<>();
 				for (int i = 0; i < size; i++)
 					list.add(serializer.read(dataInput));
@@ -296,18 +301,18 @@ public class Serialize {
 			}
 
 			public void write(DataOutput_ dataOutput, List<T> list) throws IOException {
-				Serialize.int_.write(dataOutput, list.size());
+				int_.write(dataOutput, list.size());
 				for (T t : list)
 					serializer.write(dataOutput, t);
 			}
 		};
 	}
 
-	public static <K, V> Serializer<Map<K, V>> map(Serializer<K> ks, Serializer<V> vs) {
+	public <K, V> Serializer<Map<K, V>> map(Serializer<K> ks, Serializer<V> vs) {
 		return map_(ks, vs);
 	}
 
-	public static <V> Serializer<Map<String, V>> mapOfString(Serializer<V> vs) {
+	public <V> Serializer<Map<String, V>> mapOfString(Serializer<V> vs) {
 		return map_(variableLengthString, vs);
 	}
 
@@ -316,7 +321,7 @@ public class Serialize {
 	 *
 	 * Size = 1 + size of serializer<T>
 	 */
-	public static <T> Serializer<T> nullable(Serializer<T> serializer) {
+	public <T> Serializer<T> nullable(Serializer<T> serializer) {
 		return new Serializer<T>() {
 			public T read(DataInput_ dataInput) throws IOException {
 				return boolean_.read(dataInput) ? serializer.read(dataInput) : null;
@@ -332,7 +337,7 @@ public class Serialize {
 		};
 	}
 
-	public static <T0, T1> Serializer<Pair<T0, T1>> pair(Serializer<T0> serializer0, Serializer<T1> serializer1) {
+	public <T0, T1> Serializer<Pair<T0, T1>> pair(Serializer<T0> serializer0, Serializer<T1> serializer1) {
 		return new Serializer<Pair<T0, T1>>() {
 			public Pair<T0, T1> read(DataInput_ dataInput) throws IOException {
 				T0 t0 = serializer0.read(dataInput);
@@ -352,7 +357,7 @@ public class Serialize {
 	 *
 	 * Size = length
 	 */
-	public static Serializer<String> string(int length) {
+	public Serializer<String> string(int length) {
 		return new Serializer<String>() {
 			public String read(DataInput_ dataInput) throws IOException {
 				byte[] bs = new byte[length];
@@ -369,7 +374,7 @@ public class Serialize {
 		};
 	}
 
-	public static <T> Serializer<T> verify(Object o, Serializer<T> serializer) {
+	public <T> Serializer<T> verify(Object o, Serializer<T> serializer) {
 		int c = o.hashCode();
 
 		return new Serializer<T>() {
@@ -392,7 +397,7 @@ public class Serialize {
 	 *
 	 * Size = 1
 	 */
-	private static Serializer<Boolean> boolean_() {
+	private Serializer<Boolean> boolean_() {
 		return new Serializer<Boolean>() {
 			public Boolean read(DataInput_ dataInput) throws IOException {
 				return dataInput.readByte() == -1;
@@ -409,7 +414,7 @@ public class Serialize {
 	 *
 	 * Size = 8
 	 */
-	private static Serializer<Double> double_() {
+	private Serializer<Double> double_() {
 		return new Serializer<Double>() {
 			public Double read(DataInput_ dataInput) throws IOException {
 				return dataInput.readDouble();
@@ -426,7 +431,7 @@ public class Serialize {
 	 *
 	 * Size = 4
 	 */
-	private static Serializer<Float> float_() {
+	private Serializer<Float> float_() {
 		return new Serializer<Float>() {
 			public Float read(DataInput_ dataInput) throws IOException {
 				return dataInput.readFloat();
@@ -443,7 +448,7 @@ public class Serialize {
 	 *
 	 * Size = 4
 	 */
-	private static Serializer<Integer> int_() {
+	private Serializer<Integer> int_() {
 		return new Serializer<Integer>() {
 			public Integer read(DataInput_ dataInput) throws IOException {
 				return dataInput.readInt();
@@ -455,10 +460,10 @@ public class Serialize {
 		};
 	}
 
-	private static <K, V> Serializer<Map<K, V>> map_(Serializer<K> ks, Serializer<V> vs) {
+	private <K, V> Serializer<Map<K, V>> map_(Serializer<K> ks, Serializer<V> vs) {
 		return new Serializer<Map<K, V>>() {
 			public Map<K, V> read(DataInput_ dataInput) throws IOException {
-				int size = Serialize.int_.read(dataInput);
+				int size = int_.read(dataInput);
 				Map<K, V> map = new HashMap<>();
 				for (int i = 0; i < size; i++) {
 					K k = ks.read(dataInput);
@@ -469,7 +474,7 @@ public class Serialize {
 			}
 
 			public void write(DataOutput_ dataOutput, Map<K, V> map) throws IOException {
-				Serialize.int_.write(dataOutput, map.size());
+				int_.write(dataOutput, map.size());
 				for (Entry<K, V> e : map.entrySet()) {
 					ks.write(dataOutput, e.getKey());
 					vs.write(dataOutput, e.getValue());
@@ -478,7 +483,7 @@ public class Serialize {
 		};
 	}
 
-	private static <T> Serializer<T> poly(Class<T> interface_) {
+	private <T> Serializer<T> poly(Class<T> interface_) {
 		return new Serializer<T>() {
 			public T read(DataInput_ dataInput) throws IOException {
 				Class<?> c = Rethrow.ex(() -> Class.forName(dataInput.readUTF()));

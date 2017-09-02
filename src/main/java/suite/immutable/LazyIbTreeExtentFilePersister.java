@@ -32,6 +32,8 @@ import suite.util.To;
 
 public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Extent, T> {
 
+	private Serialize serialize = Serialize.me;
+
 	private SerializedPageFile<Integer> nPagesFile;
 	private ExtentFile extentFile;
 	private Comparator<T> comparator;
@@ -50,10 +52,10 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	public LazyIbTreeExtentFilePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
-		Serializer<T> ts1 = Serialize.nullable(ts);
-		Serializer<Extent> es = Serialize.extent();
-		Serializer<Pair<T, Extent>> ps = Serialize.pair(ts1, es);
-		Serializer<List<Pair<T, Extent>>> lps = Serialize.list(ps);
+		Serializer<T> ts1 = serialize.nullable(ts);
+		Serializer<Extent> es = serialize.extent();
+		Serializer<Pair<T, Extent>> ps = serialize.pair(ts1, es);
+		Serializer<List<Pair<T, Extent>>> lps = serialize.list(ps);
 		serializer = new Serializer<PersistSlot<T>>() {
 			public PersistSlot<T> read(DataInput_ dataInput) throws IOException {
 				return new PersistSlot<>(lps.read(dataInput));
@@ -67,7 +69,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		PageFile[] pfs = FileFactory.subPageFiles(pf, 0, 1, Integer.MAX_VALUE);
 
 		this.comparator = comparator;
-		nPagesFile = SerializedFileFactory.serialized(pfs[0], Serialize.int_);
+		nPagesFile = SerializedFileFactory.serialized(pfs[0], serialize.int_);
 		extentFile = FileFactory.extentFile(pfs[1]);
 		nPages = nPagesFile.load(0);
 	}

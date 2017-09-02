@@ -25,6 +25,8 @@ import suite.util.Serialize.Serializer;
 
 public class B_TreeBuilder<Key, Value> {
 
+	private static Serialize serialize = Serialize.me;
+
 	private static char BRANCH = 'I';
 	private static char LEAF = 'L';
 	private static char PAYLOAD = 'P';
@@ -44,12 +46,12 @@ public class B_TreeBuilder<Key, Value> {
 
 		public B_TreeImpl<Key, Value>.Superblock read(DataInput_ dataInput) throws IOException {
 			B_TreeImpl<Key, Value>.Superblock superblock = b_tree.new Superblock();
-			superblock.root = Serialize.int_.read(dataInput);
+			superblock.root = serialize.int_.read(dataInput);
 			return superblock;
 		}
 
 		public void write(DataOutput_ dataOutput, B_TreeImpl<Key, Value>.Superblock value) throws IOException {
-			Serialize.int_.write(dataOutput, value.root);
+			serialize.int_.write(dataOutput, value.root);
 		}
 	}
 
@@ -119,7 +121,7 @@ public class B_TreeBuilder<Key, Value> {
 			Rethrow.ex(() -> Files.deleteIfExists(path));
 
 		JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-		B_Tree<Key, Integer> b_tree = new B_TreeBuilder<>(ks, Serialize.int_).build(jpf, cmp, nPages);
+		B_Tree<Key, Integer> b_tree = new B_TreeBuilder<>(ks, serialize.int_).build(jpf, cmp, nPages);
 
 		if (isNew) {
 			b_tree.create();
@@ -130,7 +132,7 @@ public class B_TreeBuilder<Key, Value> {
 	}
 
 	public B_TreeBuilder(Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {
-		this.keySerializer = Serialize.nullable(keySerializer);
+		this.keySerializer = serialize.nullable(keySerializer);
 		this.valueSerializer = valueSerializer;
 	}
 
@@ -166,9 +168,9 @@ public class B_TreeBuilder<Key, Value> {
 	private B_Tree<Key, Value> build(Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {
 		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(Object_.nullsFirst(comparator));
 
-		Serializer<Bytes> als = Serialize.bytes(pageSize);
+		Serializer<Bytes> als = serialize.bytes(pageSize);
 		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);
-		Serializer<Bytes> pys = Serialize.bytes(pageSize);
+		Serializer<Bytes> pys = serialize.bytes(pageSize);
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree);
 
 		SerializedPageFile<Bytes> alf = SerializedFileFactory.serialized(alf0, als);

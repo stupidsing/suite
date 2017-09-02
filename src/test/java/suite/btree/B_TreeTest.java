@@ -30,6 +30,7 @@ public class B_TreeTest {
 
 	private Comparator<Integer> comparator = Object_::compare;
 	private Random random = new Random();
+	private Serialize serialize = Serialize.me;
 	private int[] keys;
 
 	@Before
@@ -43,7 +44,7 @@ public class B_TreeTest {
 		Path path = TempDir.resolve("b_tree-dump");
 
 		Files.deleteIfExists(path);
-		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.string(16));
+		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
 
 		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
 				B_Tree<Integer, String> b_tree = builder.build(jpf, comparator, pageSize)) {
@@ -65,7 +66,7 @@ public class B_TreeTest {
 		Path path = TempDir.resolve("b_tree-file");
 
 		Files.deleteIfExists(path);
-		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.string(16));
+		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
 
 		shuffleNumbers();
 
@@ -110,7 +111,7 @@ public class B_TreeTest {
 		}
 
 		Files.deleteIfExists(path);
-		B_TreeBuilder<Integer, Bytes> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.bytes(64));
+		B_TreeBuilder<Integer, Bytes> builder = new B_TreeBuilder<>(serialize.int_, serialize.bytes(64));
 
 		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
 				B_Tree<Integer, Bytes> b_tree = builder.build(jpf, comparator, 9999)) {

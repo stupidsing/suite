@@ -18,6 +18,8 @@ import suite.util.Serialize.Serializer;
 
 public class JournalledFileFactory {
 
+	private static Serialize serialize = Serialize.me;
+
 	public static JournalledPageFile journalled(Path path, int pageSize) {
 		return journalled( //
 				FileFactory.pageFile(path, pageSize), //
@@ -31,7 +33,7 @@ public class JournalledFileFactory {
 			PageFile jpf, //
 			PageFile ppf, //
 			int pageSize) {
-		Serializer<Bytes> bytesSerializer = Serialize.bytes(pageSize);
+		Serializer<Bytes> bytesSerializer = serialize.bytes(pageSize);
 
 		Serializer<JournalEntry> journalEntrySerializer = new Serializer<JournalEntry>() {
 			public JournalEntry read(DataInput_ dataInput) throws IOException {
@@ -48,7 +50,7 @@ public class JournalledFileFactory {
 
 		PageFile dataFile = df;
 		SerializedPageFile<JournalEntry> journalPageFile = SerializedFileFactory.serialized(jpf, journalEntrySerializer);
-		SerializedPageFile<Integer> pointerPageFile = SerializedFileFactory.serialized(ppf, Serialize.int_);
+		SerializedPageFile<Integer> pointerPageFile = SerializedFileFactory.serialized(ppf, serialize.int_);
 		int nCommittedJournalEntries0 = pointerPageFile.load(0);
 
 		List<JournalEntry> journalEntries = new ArrayList<>();
@@ -104,8 +106,8 @@ public class JournalledFileFactory {
 			}
 
 			/**
-			 * Makes sure the current snapshot of data is saved and recoverable on failure,
-			 * upon the return of method call.
+			 * Makes sure the current snapshot of data is saved and recoverable
+			 * on failure, upon the return of method call.
 			 */
 			public synchronized void sync() {
 				journalPageFile.sync();

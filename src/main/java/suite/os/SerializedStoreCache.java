@@ -20,7 +20,7 @@ public class SerializedStoreCache<K, V> {
 	private StoreCache storeCache = Singleton.me.storeCache;
 
 	public static <V> SerializedStoreCache<String, V> of(Serializer<V> valueSerializer) {
-		return of(Serialize.variableLengthString, valueSerializer);
+		return of(Serialize.me.variableLengthString, valueSerializer);
 	}
 
 	public static <K, V> SerializedStoreCache<K, V> of(Serializer<K> keySerializer, Serializer<V> valueSerializer) {

@@ -21,10 +21,11 @@ import suite.util.To;
 public class HkexFactBook {
 
 	private String prefix = getClass().getSimpleName();
+	private Serialize serialize = Serialize.me;
 
 	public Streamlet<String> queryDelisted() {
 		return Read.from(SerializedStoreCache //
-				.of(Serialize.list(Serialize.variableLengthString)) //
+				.of(serialize.list(serialize.variableLengthString)) //
 				.get(prefix + ".queryDelisted()", () -> {
 					String cmd = "" //
 							+ "curl http://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc" //
@@ -40,7 +41,7 @@ public class HkexFactBook {
 
 	public Streamlet<String> queryLeadingCompaniesByMarketCap(int year) {
 		return Read.from(SerializedStoreCache //
-				.of(Serialize.list(Serialize.variableLengthString)) //
+				.of(serialize.list(serialize.variableLengthString)) //
 				.get(prefix + ".queryLeadingCompaniesByMarketCap(" + year + ")", () -> queryLeadingCompaniesByMarketCap_(year)));
 	}
 
@@ -82,7 +83,7 @@ public class HkexFactBook {
 
 	public Streamlet<String> queryMainBoardCompanies(int year) {
 		return Read.from(SerializedStoreCache //
-				.of(Serialize.list(Serialize.variableLengthString)) //
+				.of(serialize.list(serialize.variableLengthString)) //
 				.get(prefix + ".queryMainBoardCompanies(" + year + ")", () -> {
 					String url = getUrl(year, "Appendices");
 					String cmd = "" //

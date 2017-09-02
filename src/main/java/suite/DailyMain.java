@@ -50,6 +50,7 @@ public class DailyMain extends ExecutableProgram {
 	private Set<String> blackList = To.set("N/A", "1880.HK", "2973.HK"); // "0566.HK"
 
 	private Configuration cfg = new ConfigurationImpl();
+	private Serialize serialize = Serialize.me;
 	private StringBuilder sb = new StringBuilder();
 	private Sink<String> log = To.sink(sb);
 	private Time today = Time.now();
@@ -171,7 +172,7 @@ public class DailyMain extends ExecutableProgram {
 
 		// identify stocks that are mean-reverting
 		Map<String, Boolean> backTestBySymbol = SerializedStoreCache //
-				.of(Serialize.mapOfString(Serialize.boolean_)) //
+				.of(serialize.mapOfString(serialize.boolean_)) //
 				.get(getClass().getSimpleName() + ".backTestBySymbol", () -> assets //
 						.map2(stock -> stock.symbol, stock -> {
 							try {

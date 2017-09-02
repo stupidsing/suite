@@ -13,6 +13,8 @@ import suite.util.Serialize.Serializer;
 
 public class FileSystemKeyUtil {
 
+	private Serialize serialize = Serialize.me;
+
 	private int hashOffset = 0;
 	private int idOffset = hashOffset + 256 / 8;
 	private int pathOffset = idOffset + 1;
@@ -123,7 +125,7 @@ public class FileSystemKeyUtil {
 	}
 
 	public Serializer<Bytes> serializer() {
-		return Serialize.bytes(keyLength);
+		return serialize.bytes(keyLength);
 	}
 
 }

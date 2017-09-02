@@ -30,6 +30,7 @@ public class Hkex {
 
 	// .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private static ObjectMapper mapper = new ObjectMapper();
+	private Serialize serialize = Serialize.me;
 
 	private Set<String> delisted = new HashSet<>(Arrays.asList("0013.HK"));
 
@@ -270,7 +271,7 @@ public class Hkex {
 
 	private List<Asset> queryCompanies(int pageNo) {
 		return SerializedStoreCache //
-				.of(Serialize.list(Asset.serializer)) //
+				.of(serialize.list(Asset.serializer)) //
 				.get(getClass().getSimpleName() + ".queryCompanies(" + pageNo + ")", () -> queryCompanies_(pageNo));
 	}
 
@@ -377,7 +378,7 @@ public class Hkex {
 				.toMap();
 
 		return SerializedStoreCache //
-				.of(Serialize.mapOfString(Serialize.int_)) //
+				.of(serialize.mapOfString(serialize.int_)) //
 				.get(getClass().getSimpleName() + ".queryLotSizeBySymbol(" + symbols.collect(As.conc(",")) + ")", fun);
 	}
 

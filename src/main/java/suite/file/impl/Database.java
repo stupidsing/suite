@@ -15,6 +15,8 @@ import suite.util.Serialize;
 
 public class Database implements Closeable {
 
+	private Serialize serialize = Serialize.me;
+
 	private JournalledPageFile journalledPageFile;
 	private TransactionManager<Integer, String> transactionManager;
 
@@ -24,8 +26,8 @@ public class Database implements Closeable {
 		transactionManager = new TransactionManager<>(() -> LazyIbTreeStore.ofExtent( //
 				journalledPageFile, //
 				Object_::compare, //
-				Serialize.int_, //
-				Serialize.variableLengthString));
+				serialize.int_, //
+				serialize.variableLengthString));
 	}
 
 	@Override

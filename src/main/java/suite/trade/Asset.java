@@ -13,7 +13,7 @@ public class Asset {
 	public static Asset cash = new Asset(cashSymbol, "Hong Kong Dollar", 1, Integer.MAX_VALUE);
 	public static Asset hsi = Asset.of(hsiSymbol, "Hang Seng Index", 1);
 
-	public static Serializer<Asset> serializer = Serialize.auto(Asset.class);
+	public static Serializer<Asset> serializer = Serialize.me.auto(Asset.class);
 
 	public final String symbol;
 	public final String name;

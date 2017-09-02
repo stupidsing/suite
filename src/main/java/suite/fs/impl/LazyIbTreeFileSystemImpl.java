@@ -21,6 +21,8 @@ import suite.util.Serialize;
 public class LazyIbTreeFileSystemImpl implements FileSystem {
 
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
+	private Serialize serialize = Serialize.me;
+
 	private JournalledPageFile jpf;
 	private FileSystemMutator mutator;
 
@@ -32,20 +34,20 @@ public class LazyIbTreeFileSystemImpl implements FileSystem {
 			private KeyValueStore<Bytes, Bytes> kvss = LazyIbTreeStore.ofExtent( //
 					pfs[0], //
 					Bytes.comparator, //
-					Serialize.variableLengthBytes, //
-					Serialize.variableLengthBytes);
+					serialize.variableLengthBytes, //
+					serialize.variableLengthBytes);
 
 			private KeyValueStore<Bytes, Integer> kvsis = LazyIbTreeStore.ofExtent( //
 					pfs[1], //
 					Bytes.comparator, //
-					Serialize.variableLengthBytes, //
-					Serialize.int_);
+					serialize.variableLengthBytes, //
+					serialize.int_);
 
 			private KeyValueStore<Bytes, Boolean> kvsbs = LazyIbTreeStore.ofExtent( //
 					pfs[2], //
 					Bytes.comparator, //
-					Serialize.variableLengthBytes, //
-					Serialize.boolean_);
+					serialize.variableLengthBytes, //
+					serialize.boolean_);
 
 			public KeyValueMutator<Bytes, Integer> mutate() {
 				return kvsis.mutate();
