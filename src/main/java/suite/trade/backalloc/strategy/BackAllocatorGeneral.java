@@ -70,6 +70,7 @@ public class BackAllocatorGeneral {
 			.cons("turtles", turtles(20, 10, 55, 20)) //
 			.cons("tma", tma) //
 			.cons("varratio", varianceRatio(96)) //
+			.cons("volatile", volatile_(32)) //
 			.cons("xma", xma(2, 8));
 
 	private BollingerBands bb = new BollingerBands();
@@ -501,6 +502,15 @@ public class BackAllocatorGeneral {
 					.map2((symbol, ds) -> (double) holdsBySymbol.get(symbol)[index - 1]) //
 					.toList();
 		};
+	}
+
+	private BackAllocator volatile_(int nDays) {
+		return BackAllocator_ //
+				.byPrices(prices -> {
+					float[] bandwidths = bb.bb(prices, nDays, 0, .5f).bandwidths;
+					return index -> bandwidths[index - 1];
+				}) //
+				.pick(3);
 	}
 
 	private BackAllocator xma(int halfLife0, int halfLife1) {
