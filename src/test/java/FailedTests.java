@@ -15,14 +15,6 @@ import suite.primitive.Bytes;
 
 public class FailedTests {
 
-	@Test
-	public void test() {
-		float val = 80 * 1000f;
-		for (int i = 35; i < 60; i++)
-			val = val * 1.12f;
-		System.out.println(val);
-	}
-
 	// cannot understand the error message
 	// "Cannot resolve type of (IF (TYPE-CAST I32 VAR f) (NUMBER 1) BOOLEAN 0)"
 	@Test
