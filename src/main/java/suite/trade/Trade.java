@@ -38,6 +38,10 @@ public class Trade {
 		return date + "\t" + buySell + "\t" + symbol + "\t" + price + "\t" + strategy;
 	}
 
+	public float amount() {
+		return buySell * price;
+	}
+
 	@Override
 	public String toString() {
 		return (!String_.equals(date, NA) ? date + " " : "") //

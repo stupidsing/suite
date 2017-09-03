@@ -10,6 +10,7 @@ import suite.math.MathUtil;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
 import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.streamlet.DblStreamlet;
 import suite.smtp.SmtpSslGmail;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -109,11 +110,11 @@ public class DailyMain extends ExecutableProgram {
 				.collect(As::streamlet2);
 
 		sb.append(strategyTrades //
+				.sortBy((strategy, trade) -> trade.amount()) //
 				.map((strategy, trade) -> "\n" //
 						+ (0 <= trade.buySell ? "BUY^" : "SELL") //
 						+ " SIGNAL(" + strategy + ")" + trade //
 						+ " = " + To.string(trade.buySell * trade.price)) //
-				.sortBy(line -> line) //
 				.collect(As::joined));
 
 		sb.append("\n\nBUY REQUESTS");
@@ -134,13 +135,13 @@ public class DailyMain extends ExecutableProgram {
 						+ "\n" + Trade.of(ymd, -t.buySell, t.symbol, t.price, sellPool).record()) //
 				.collect(As::joined));
 
-		Streamlet<Trade> trades = strategyTrades.values();
-		double buys_ = trades.collectAsDouble(Obj_Dbl.sum(trade -> Math.max(0, trade.buySell) * trade.price));
-		double sells = trades.collectAsDouble(Obj_Dbl.sum(trade -> Math.max(0, -trade.buySell) * trade.price));
+		DblStreamlet amounts = strategyTrades.values().collect(Obj_Dbl.lift(Trade::amount));
+		double buys_ = amounts.filter(amount -> 0d < amount).sum();
+		double sells = amounts.filter(amount -> amount < 0d).sum();
 
 		sb.append("\n");
-		sb.append("\nTOTAL BUYS_ = " + buys_);
-		sb.append("\nTOTAL SELLS = " + sells);
+		sb.append("\nTOTAL BUYS_ = " + To.string(buys_));
+		sb.append("\nTOTAL SELLS = " + To.string(sells));
 
 		sb.append("\n");
 		sb.append("\nSUGGESTIONS");
