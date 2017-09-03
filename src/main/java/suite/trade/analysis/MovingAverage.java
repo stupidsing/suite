@@ -106,8 +106,8 @@ public class MovingAverage {
 		int w1 = w + 1;
 		double beta = 1d - alpha;
 		float price0 = prices[0];
-		double[] re = Doubles_.toArray(w1, i -> price0);
 
+		double[] re = Doubles_.toArray(w1, i -> price0);
 		double[] betas = new double[w];
 		double b = beta;
 
