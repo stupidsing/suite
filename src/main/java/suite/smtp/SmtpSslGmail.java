@@ -17,41 +17,36 @@ import suite.Constants;
 public class SmtpSslGmail {
 
 	public void send(String to, String subject, String body) {
-		String[] m;
-		String username, password;
+		Constants.bindSecrets("gmail .0 .1").map((username, password) -> {
+			Properties props = new Properties();
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.host", "smtp.gmail.com");
+			props.put("mail.smtp.port", "465");
+			props.put("mail.smtp.socketFactory.port", "465");
+			props.put("mail.smtp.socketFactory.class", SSLSocketFactory.class.getName());
 
-		if ((m = Constants.secrets("gmail .0 .1")) != null) {
-			username = m[0];
-			password = m[1];
-		} else
-			throw new RuntimeException();
+			Session session = Session.getDefaultInstance(props, new Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
 
-		Properties props = new Properties();
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.host", "smtp.gmail.com");
-		props.put("mail.smtp.port", "465");
-		props.put("mail.smtp.socketFactory.port", "465");
-		props.put("mail.smtp.socketFactory.class", SSLSocketFactory.class.getName());
+			try {
+				String sender = username + "@gmail.com";
 
-		Session session = Session.getDefaultInstance(props, new Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
+				Message message = new MimeMessage(session);
+				message.setFrom(new InternetAddress(sender));
+				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to != null ? to : sender));
+				message.setSubject(subject);
+				message.setText(body);
+
+				Transport.send(message);
+			} catch (MessagingException e) {
+				throw new RuntimeException(e);
 			}
+
+			return true;
 		});
-
-		try {
-			String sender = username + "@gmail.com";
-
-			Message message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(sender));
-			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to != null ? to : sender));
-			message.setSubject(subject);
-			message.setText(body);
-
-			Transport.send(message);
-		} catch (MessagingException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }

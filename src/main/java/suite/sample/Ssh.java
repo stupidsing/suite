@@ -14,7 +14,9 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.UserInfo;
 
+import suite.Constants;
 import suite.util.Copy;
+import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class Ssh {
@@ -25,7 +27,7 @@ public class Ssh {
 	}
 
 	public int execute(String command) throws JSchException, SftpException, IOException {
-		return session("kenchi.no-ip.org", 22, "ywsing", "abc123", session -> channelExec(session, command, channel -> {
+		return session(session -> channelExec(session, command, channel -> {
 			while (!channel.isClosed())
 				Thread_.sleepQuietly(100);
 
@@ -38,7 +40,7 @@ public class Ssh {
 	}
 
 	public void putFile(String src, String dest) throws IOException, SftpException, JSchException {
-		session("kenchi.no-ip.org", 22, "ywsing", "abc123", session -> channelSftp(session, channel -> {
+		session(session -> channelSftp(session, channel -> {
 			try (InputStream fis = new FileInputStream(src)) {
 				channel.put(fis, dest);
 				return true;
@@ -66,6 +68,14 @@ public class Ssh {
 		} finally {
 			channel.disconnect();
 		}
+	}
+
+	private <T> T session(SshFun<Session, T> fun) {
+		return Constants //
+				.bindSecrets("ssh") //
+				.map((host, portString, username, password) -> Rethrow.ex(() -> {
+					return session(host, Integer.valueOf(portString), username, password, fun);
+				}));
 	}
 
 	private <T> T session(String host, int port, String user, String password, SshFun<Session, T> fun)

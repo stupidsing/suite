@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import suite.adt.pair.Fixie;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
@@ -32,12 +33,37 @@ public class Constants {
 	public static boolean testFlag = false; // for controlled experiments
 	public static Path tmp = Paths.get("/tmp");
 
-	private static Source<Prover> memoizeSecrets = Memoize.source(() -> {
-		RuleSet rs = Suite.newRuleSet();
-		String text = To.string(HomeDir.resolve("private/secrets.sl"));
-		Suite.importFrom(rs, Suite.parse(text));
-		return new Prover(rs);
-	});
+	public static Fixie<String, String, String, String, String, String, String, String, String, String> bindSecrets(
+			String pattern) {
+		Generalizer generalizer = new Generalizer();
+		String[] m;
+
+		if (secrets().prove(generalizer.generalize(Suite.parse(pattern)))) {
+			List<String> list = new ArrayList<>();
+			int i = 0;
+			Node n;
+			while (!((n = generalizer.getVariable(Atom.of("." + i++))).finalNode() instanceof Reference))
+				list.add(Formatter.display(n));
+			m = list.toArray(new String[0]);
+		} else
+			m = null;
+
+		if (m != null) {
+			int length = m.length;
+			return Fixie.of( //
+					0 < length ? m[0] : null, //
+					1 < length ? m[1] : null, //
+					2 < length ? m[2] : null, //
+					3 < length ? m[3] : null, //
+					4 < length ? m[4] : null, //
+					5 < length ? m[5] : null, //
+					6 < length ? m[6] : null, //
+					7 < length ? m[7] : null, //
+					8 < length ? m[8] : null, //
+					9 < length ? m[9] : null);
+		} else
+			throw new RuntimeException("Cannot match " + pattern);
+	}
 
 	public static String[] secrets(String pattern) {
 		Generalizer generalizer = new Generalizer();
@@ -56,5 +82,12 @@ public class Constants {
 	public static Prover secrets() {
 		return memoizeSecrets.source();
 	}
+
+	private static Source<Prover> memoizeSecrets = Memoize.source(() -> {
+		RuleSet rs = Suite.newRuleSet();
+		String text = To.string(HomeDir.resolve("private/secrets.sl"));
+		Suite.importFrom(rs, Suite.parse(text));
+		return new Prover(rs);
+	});
 
 }
