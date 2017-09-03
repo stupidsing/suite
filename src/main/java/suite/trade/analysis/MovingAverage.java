@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import suite.math.linalg.Matrix;
 import suite.math.stat.TimeSeries;
+import suite.primitive.Doubles_;
 import suite.util.To;
 
 public class MovingAverage {
@@ -98,6 +99,35 @@ public class MovingAverage {
 			this.max = max;
 			this.median = median;
 		}
+	}
+
+	public float[] reverseEma(float[] prices, double alpha) {
+		int w = 8;
+		int w1 = w + 1;
+		double beta = 1d - alpha;
+		float price0 = prices[0];
+		double[] re = Doubles_.toArray(w1, i -> price0);
+
+		double[] betas = new double[w];
+		double b = beta;
+
+		for (int i = 0; i < w; i++) {
+			betas[i] = b;
+			b *= b;
+		}
+
+		float[] remas = new float[prices.length];
+		remas[0] = price0;
+
+		for (int t = 1; t < prices.length; t++) {
+			double[] re0 = Doubles_.toArray(w1, i -> re[i]);
+			re[0] = beta * re0[0] + alpha * prices[t];
+			for (int j = 0; j < w; j++)
+				re[j + 1] = betas[j] * re[j] + re0[j];
+			remas[t] = (float) (re[0] - alpha * re[w]);
+		}
+
+		return remas;
 	}
 
 }
