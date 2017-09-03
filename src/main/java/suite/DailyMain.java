@@ -114,24 +114,24 @@ public class DailyMain extends ExecutableProgram {
 				.map((strategy, trade) -> "\n" //
 						+ (0 <= trade.buySell ? "BUY^" : "SELL") //
 						+ " SIGNAL(" + strategy + ")" + trade //
-						+ " = " + To.string(trade.buySell * trade.price)) //
+						+ " = " + To.string(trade.amount())) //
 				.collect(As::joined));
 
+		Streamlet2<String, Trade> requestTrades = strategyTrades.filterKey(strategy -> !String_.equals(strategy, sellPool));
+
 		sb.append("\n\nBUY REQUESTS");
-		sb.append(strategyTrades //
-				.filterKey(strategy -> !To.set(sellPool).contains(strategy)) //
+		sb.append(requestTrades //
 				.filterValue(trade -> 0 < trade.buySell) //
 				.map((strategy, t) -> "" //
 						+ "\n" + Trade.of(ymd, -t.buySell, t.symbol, t.price, sellPool).record() //
-						+ "\n" + Trade.of(ymd, t.buySell, t.symbol, t.price, strategy).record()) //
+						+ "\n" + Trade.of(ymd, +t.buySell, t.symbol, t.price, strategy).record()) //
 				.collect(As::joined));
 
 		sb.append("\n\nSELL REQUESTS");
-		sb.append(strategyTrades //
-				.filterKey(strategy -> !To.set(sellPool).contains(strategy)) //
+		sb.append(requestTrades //
 				.filterValue(trade -> trade.buySell < 0) //
 				.map((strategy, t) -> "" //
-						+ "\n" + Trade.of(ymd, t.buySell, t.symbol, t.price, strategy).record() //
+						+ "\n" + Trade.of(ymd, +t.buySell, t.symbol, t.price, strategy).record() //
 						+ "\n" + Trade.of(ymd, -t.buySell, t.symbol, t.price, sellPool).record()) //
 				.collect(As::joined));
 
@@ -233,7 +233,7 @@ public class DailyMain extends ExecutableProgram {
 
 		Map<String, Float> faceValueBySymbol = history //
 				.groupBy(record -> record.symbol, //
-						rs -> (float) (Read.from(rs).collectAsDouble(Obj_Dbl.sum(r -> r.buySell * r.price))))
+						rs -> (float) (Read.from(rs).collectAsDouble(Obj_Dbl.sum(r -> r.amount()))))
 				.toMap();
 
 		List<Trade> trades = account //

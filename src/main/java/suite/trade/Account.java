@@ -138,9 +138,9 @@ public class Account {
 		float price = trade.price;
 
 		if (Trade_.negligible < price && price < Trade_.max) {
-			int buySell = trade.buySell;
 			String symbol = trade.symbol;
-			float cost = buySell * price;
+			int buySell = trade.buySell;
+			float cost = trade.amount();
 
 			int cash0 = get(cashCode);
 			int cash1 = (int) (cash0 - cost);
