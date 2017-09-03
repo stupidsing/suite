@@ -33,6 +33,7 @@ public class AnalyzeTimeSeriesTest {
 
 	private Configuration cfg = new ConfigurationImpl();
 	private DiscreteCosineTransform dct = new DiscreteCosineTransform();
+	private MarketTiming marketTiming = new MarketTiming();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
@@ -91,6 +92,8 @@ public class AnalyzeTimeSeriesTest {
 		BuySell revert = buySell(d -> -Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		BuySell trend_ = buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		BuySell tanh = buySell(d -> Tanh.tanh(-3.2d * Quant.return_(prices[d - d0], prices[d - d1]))).start(d0);
+		float[] holds = marketTiming.hold(prices);
+		BuySell mt_ = buySell(d -> holds[d]).start(d0);
 
 		LogUtil.info("half " + buySell(d -> .5d).invest(prices));
 		LogUtil.info("hold " + buySell(d -> 1d).invest(prices));
@@ -100,6 +103,7 @@ public class AnalyzeTimeSeriesTest {
 		LogUtil.info("trend_ " + trend_.invest(prices));
 		LogUtil.info("trend_ long-only " + trend_.longOnly().invest(prices));
 		LogUtil.info("tanh " + tanh.invest(prices));
+		LogUtil.info("timed " + mt_.invest(prices));
 	}
 
 	private BuySell buySell(Int_Dbl fun) {
