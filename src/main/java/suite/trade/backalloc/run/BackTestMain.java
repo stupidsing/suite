@@ -4,7 +4,6 @@ import java.nio.file.Paths;
 
 import suite.adt.pair.Pair;
 import suite.node.io.Operator.Assoc;
-import suite.os.LogUtil;
 import suite.parser.Wildcard;
 import suite.primitive.Chars;
 import suite.primitive.Ints_;
@@ -62,7 +61,7 @@ public class BackTestMain extends ExecutableProgram {
 				? time -> Read.from(arg2.split(",")).map(cfg::queryCompany).collect(As::streamlet) //
 				: cfg::queryCompaniesByMarketCap;
 
-		BackAllocConfigurations bac_ = new BackAllocConfigurations(cfg, fun, LogUtil::info);
+		BackAllocConfigurations bac_ = new BackAllocConfigurations(cfg, fun);
 		Streamlet2<String, BackAllocConfiguration> bacByTag = bac_.bacs().bacByName;
 
 		Streamlet2<String, Simulate> simulationByKey = bacByTag //

@@ -15,7 +15,6 @@ import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
-import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 /**
@@ -31,27 +30,23 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 	private int tor = 64;
 	private double neglog2 = -Math.log(2d);
 
-	private Sink<String> log;
 	private MovingAverage ma = new MovingAverage();
 	private TimeSeries ts = new TimeSeries();
 
-	public static BackAllocator of(Sink<String> log) {
-		return MovingAvgMeanReversionBackAllocator0.of_(log).frequency(3).reallocate();
+	public static BackAllocator of() {
+		return MovingAvgMeanReversionBackAllocator0.of_().frequency(3).reallocate();
 	}
 
-	public static MovingAvgMeanReversionBackAllocator0 of_(Sink<String> log) {
-		return new MovingAvgMeanReversionBackAllocator0(log);
+	public static MovingAvgMeanReversionBackAllocator0 of_() {
+		return new MovingAvgMeanReversionBackAllocator0();
 	}
 
-	private MovingAvgMeanReversionBackAllocator0(Sink<String> log) {
-		this.log = log;
+	private MovingAvgMeanReversionBackAllocator0() {
 	}
 
 	@Override
 	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
 		Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
-
-		log.sink(dsBySymbol.size() + " assets in data source");
 		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 		DataSourceView<String, MeanReversionStat> dsv = DataSourceView //
@@ -79,16 +74,7 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 						ReturnsStat returnsStat = ts.returnsStatDaily(ds.prices);
 						double sharpe = returnsStat.sharpeRatio();
 						double kelly = returnsStat.kellyCriterion();
-
-						PotentialStat potentialStat = new PotentialStat(dailyReturn, sharpe, kelly);
-
-						log.sink(symbol //
-								+ ", mrRatio = " + To.string(mrs.meanReversionRatio()) //
-								+ ", mamrRatio = " + To.string(mamrRatio) //
-								+ ", " + To.string(price) + " => " + To.string(lma) //
-								+ ", " + potentialStat);
-
-						return potentialStat;
+						return new PotentialStat(dailyReturn, sharpe, kelly);
 					}) //
 					.filterValue(ps -> 0d < ps.dailyReturn) //
 					.filterValue(ps -> 0d < ps.sharpe) //

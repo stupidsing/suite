@@ -14,13 +14,11 @@ import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator0;
 import suite.trade.backalloc.strategy.ReverseCorrelateBackAllocator;
 import suite.trade.data.Configuration;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
 
 public class BackAllocConfigurations {
 
 	private Configuration cfg;
 	private Fun<Time, Streamlet<Asset>> fun;
-	private Sink<String> log;
 
 	public class Bacs {
 		private Fun<Time, Streamlet<Asset>> fun_hsi = time -> Read.each(Asset.hsi);
@@ -36,7 +34,7 @@ public class BackAllocConfigurations {
 		public final BackAllocConfiguration bac_bbHold = ba_bbHold.cfgUnl(fun);
 		public final BackAllocConfiguration bac_donHold = ba_donHold.cfgUnl(fun);
 		public final BackAllocConfiguration bac_ema = baGen.ema.cfgUnl(fun);
-		public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of(log).cfgUnl(fun);
+		public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of().cfgUnl(fun);
 		public final BackAllocConfiguration bac_pmmmr = baOld.movingMedianMeanRevn().holdExtend(9).cfgUnl(fun);
 		public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sell = baGen.cash.cfgUnl(fun);
@@ -68,15 +66,14 @@ public class BackAllocConfigurations {
 				.concat(bacs_, bacByName0);
 	}
 
-	public BackAllocConfigurations(Configuration cfg, Sink<String> log) {
-		this(cfg, cfg::queryCompaniesByMarketCap, log);
+	public BackAllocConfigurations(Configuration cfg) {
+		this(cfg, cfg::queryCompaniesByMarketCap);
 	}
 
-	public BackAllocConfigurations(Configuration cfg, Fun<Time, Streamlet<Asset>> fun, Sink<String> log) {
+	public BackAllocConfigurations(Configuration cfg, Fun<Time, Streamlet<Asset>> fun) {
 		super();
 		this.cfg = cfg;
 		this.fun = fun;
-		this.log = log;
 	}
 
 	public Bacs bacs() {
