@@ -16,6 +16,7 @@ import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
+import suite.trade.data.Broker.Hsbc;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.HkexUtil;
@@ -31,6 +32,7 @@ import suite.util.To;
 public class Summarize {
 
 	private Configuration cfg;
+	private Hsbc hsbc = new Hsbc();
 	private Yahoo yahoo = new Yahoo();
 
 	public final Streamlet<Trade> trades;
@@ -152,7 +154,7 @@ public class Summarize {
 				.sort(Object_::compare) //
 				.append("OWN = " + To.string(-amount0)) //
 				.append("P/L = " + To.string(amount1)) //
-				.append("DIV = " + To.string(Trade_.dividend(trades0, yahoo::dividend))) //
+				.append("DIV = " + To.string(Trade_.dividend(trades0, yahoo::dividend, hsbc::dividendFee))) //
 				.append(accountTx.transactionSummary(cfg::transactionFee)) //
 				.map(m -> "\n" + m) //
 				.collect(As::joined);

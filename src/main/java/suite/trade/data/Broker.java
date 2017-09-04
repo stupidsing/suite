@@ -33,6 +33,10 @@ public interface Broker {
 			return bytes.collect(As::table).map(Trade::of).collect(As::streamlet);
 		}
 
+		public double dividendFee(double dividendAmount) {
+			return Math.min(30d, dividendAmount * .01d * .5d);
+		}
+
 		public double transactionFee(double transactionAmount) {
 
 			// .15d during promotion period

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.math.MathUtil;
+import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntIntSink;
 import suite.primitive.IntPrimitives.Obj_Int;
@@ -124,7 +125,7 @@ public class Trade_ {
 		return diff_(time, assets0, assets1, priceFun);
 	}
 
-	public static float dividend(Streamlet<Trade> trades, Fun<String, LngFltPair[]> fun) {
+	public static float dividend(Streamlet<Trade> trades, Fun<String, LngFltPair[]> fun, Dbl_Dbl fee) {
 		float sum = 0f;
 
 		for (Pair<String, List<Trade>> pair : trades.toMultimap(trade -> trade.symbol).listEntries()) {
@@ -146,7 +147,8 @@ public class Trade_ {
 					tn1 = tradeSource.source();
 				}
 
-				sum += tn.t1 * dividend.t1;
+				float amount = tn.t1 * dividend.t1;
+				sum += amount - fee.apply(amount);
 			}
 		}
 
