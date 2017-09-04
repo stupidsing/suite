@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
 import suite.math.stat.Quant;
+import suite.primitive.Dbl_Dbl;
+import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -32,8 +34,8 @@ import suite.util.To;
 public class Summarize {
 
 	private Configuration cfg;
-	private Hsbc hsbc = new Hsbc();
-	private Yahoo yahoo = new Yahoo();
+	private Fun<String, LngFltPair[]> dividendFun = new Yahoo()::dividend;
+	private Dbl_Dbl dividendFeeFun = new Hsbc()::dividendFee;
 
 	public final Streamlet<Trade> trades;
 	public final Map<String, Float> priceBySymbol;
@@ -154,7 +156,7 @@ public class Summarize {
 				.sort(Object_::compare) //
 				.append("OWN = " + To.string(-amount0)) //
 				.append("P/L = " + To.string(amount1)) //
-				.append("DIV = " + To.string(Trade_.dividend(trades0, yahoo::dividend, hsbc::dividendFee))) //
+				.append("DIV = " + To.string(Trade_.dividend(trades0, dividendFun, dividendFeeFun))) //
 				.append(accountTx.transactionSummary(cfg::transactionFee)) //
 				.map(m -> "\n" + m) //
 				.collect(As::joined);
