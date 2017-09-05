@@ -1,14 +1,14 @@
 package suite.streamlet;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
+import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.concurrent.Bag;
 import suite.concurrent.CasReference;
@@ -57,6 +57,10 @@ public class Nerve<T> {
 		});
 	}
 
+	public static Nerve<Object> ofFixed(int ms) {
+		return of(fire -> executor.scheduleAtFixedRate(() -> fire.sink(null), ms, ms, TimeUnit.MILLISECONDS));
+	}
+
 	public static <T> Nerve<T> of(Sink<Sink<T>> sink) {
 		Nerve<T> nerve = of();
 		sink.sink(nerve::fire);
@@ -83,8 +87,20 @@ public class Nerve<T> {
 		return redirect_((t, fire) -> fun.apply(t).wire_(fire));
 	}
 
-	public Nerve<T> delay(int milliseconds) {
-		return redirect_((t, fire) -> executor.schedule(() -> fire.sink(t), milliseconds, TimeUnit.MILLISECONDS));
+	public Nerve<T> delay(int ms) {
+		return redirect_((t, fire) -> executor.schedule(() -> fire.sink(t), ms, TimeUnit.MILLISECONDS));
+	}
+
+	public Nerve<T> delayAccum(int ms) {
+		AtomicLong al = new AtomicLong();
+		return redirect_((t, fire) -> {
+			long current = System.currentTimeMillis();
+			al.set(current);
+			executor.schedule(() -> {
+				if (al.get() == current)
+					fire.sink(t);
+			}, ms, TimeUnit.MILLISECONDS);
+		});
 	}
 
 	public Nerve<T> edge() {
@@ -114,6 +130,10 @@ public class Nerve<T> {
 		return redirect_((t1, fire) -> fire.sink(cr.apply(t0 -> fun.apply(t0, t1))));
 	}
 
+	public Nerve<T> level(int ms) {
+		return resample(ofFixed(ms));
+	}
+
 	public <U> Nerve<U> map(Fun<T, U> fun) {
 		return redirect_((t, sink) -> sink.sink(fun.apply(t)));
 	}
@@ -135,10 +155,9 @@ public class Nerve<T> {
 	}
 
 	public Nerve<T> resample(Nerve<?> event) {
-		List<T> ts = new ArrayList<>();
-		ts.add(null);
-		wire_(t -> ts.set(0, t));
-		return event.redirect_((e, fire) -> fire.sink(ts.get(0)));
+		Mutable<T> mut = Mutable.nil();
+		wire_(mut::update);
+		return event.redirect_((e, fire) -> fire.sink(mut.get()));
 	}
 
 	public Nerve<T> unique() {
@@ -150,7 +169,7 @@ public class Nerve<T> {
 	}
 
 	public void wire(Runnable receiver) {
-		receivers.add(dummy -> receiver.run());
+		wire_(t -> receiver.run());
 	}
 
 	public void wire(Sink<T> receiver) {
