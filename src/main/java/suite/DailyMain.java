@@ -100,8 +100,6 @@ public class DailyMain extends ExecutableProgram {
 		}
 
 		SummarizeByStrategy<Object> sbs = Summarize.of(cfg).summarize();
-		sb.append(sbs.log);
-		sb.append("\n" + sbs.pnlByKey + "\n");
 
 		Streamlet2<String, Trade> strategyTrades = Read //
 				.from(results) //
@@ -109,49 +107,47 @@ public class DailyMain extends ExecutableProgram {
 				.filterValue(trade -> trade.buySell != 0) //
 				.collect(As::streamlet2);
 
-		sb.append(strategyTrades //
-				.sortBy((strategy, trade) -> trade.amount()) //
-				.map((strategy, trade) -> "\n" //
-						+ (0 <= trade.buySell ? "BUY^" : "SELL") //
-						+ " SIGNAL(" + strategy + ")" + trade //
-						+ " = " + To.string(trade.amount())) //
-				.collect(As::joined));
-
 		Streamlet2<String, Trade> requestTrades = strategyTrades.filterKey(strategy -> !String_.equals(strategy, sellPool));
-
-		sb.append("\n\nBUY REQUESTS");
-		sb.append(requestTrades //
-				.filterValue(trade -> 0 < trade.buySell) //
-				.map((strategy, t) -> "" //
-						+ "\n" + Trade.of(ymd, -t.buySell, t.symbol, t.price, sellPool).record() //
-						+ "\n" + Trade.of(ymd, +t.buySell, t.symbol, t.price, strategy).record()) //
-				.collect(As::joined));
-
-		sb.append("\n\nSELL REQUESTS");
-		sb.append(requestTrades //
-				.filterValue(trade -> trade.buySell < 0) //
-				.map((strategy, t) -> "" //
-						+ "\n" + Trade.of(ymd, +t.buySell, t.symbol, t.price, strategy).record() //
-						+ "\n" + Trade.of(ymd, -t.buySell, t.symbol, t.price, sellPool).record()) //
-				.collect(As::joined));
-
 		DblStreamlet amounts = strategyTrades.values().collect(Obj_Dbl.lift(Trade::amount));
 		double buys_ = amounts.filter(amount -> 0d < amount).sum();
 		double sells = amounts.filter(amount -> amount < 0d).sum();
 
-		sb.append("\n");
-		sb.append("\nTOTAL BUYS_ = " + To.string(buys_));
-		sb.append("\nTOTAL SELLS = " + To.string(sells));
-
-		sb.append("\n");
-		sb.append("\nSUGGESTIONS");
-		sb.append("\n- check your balance");
-		sb.append("\n- sort the orders and get away the small ones");
-		sb.append("\n- get away the stocks after ex-date");
-		sb.append("\n- sell mamr and " + sellPool);
-		sb.append("\n- for mamr, check actual execution using SingleAllocBackTestTest.testBackTestHkexDetails()");
-
-		sb.append("\n");
+		sb.append(sbs.log //
+				+ "\n" + sbs.pnlByKey //
+				+ "\n" + strategyTrades //
+						.sortBy((strategy, trade) -> trade.amount()) //
+						.map((strategy, trade) -> "\n" //
+								+ (0 <= trade.buySell ? "BUY^" : "SELL") //
+								+ " SIGNAL(" + strategy + ")" + trade //
+								+ " = " + To.string(trade.amount())) //
+						.collect(As::joined) //
+				+ "\n" //
+				+ "\nBUY REQUESTS" //
+				+ requestTrades //
+						.filterValue(trade -> 0 < trade.buySell) //
+						.map((strategy, t) -> "" //
+								+ "\n" + Trade.of(ymd, -t.buySell, t.symbol, t.price, sellPool).record() //
+								+ "\n" + Trade.of(ymd, +t.buySell, t.symbol, t.price, strategy).record()) //
+						.collect(As::joined) //
+				+ "\n" //
+				+ "\nSELL REQUESTS" //
+				+ requestTrades //
+						.filterValue(trade -> trade.buySell < 0) //
+						.map((strategy, t) -> "" //
+								+ "\n" + Trade.of(ymd, +t.buySell, t.symbol, t.price, strategy).record() //
+								+ "\n" + Trade.of(ymd, -t.buySell, t.symbol, t.price, sellPool).record()) //
+						.collect(As::joined) //
+				+ "\n" //
+				+ "\nTOTAL BUYS_ = " + To.string(buys_) //
+				+ "\nTOTAL SELLS = " + To.string(sells) //
+				+ "\n" //
+				+ "\nSUGGESTIONS" //
+				+ "\n- check your balance" //
+				+ "\n- sort the orders and get away the small ones" //
+				+ "\n- get away the stocks after ex-date" //
+				+ "\n- sell mamr and " + sellPool //
+				+ "\n- for mamr, check actual execution using SingleAllocBackTestTest.testBackTestHkexDetails()" //
+				+ "\n");
 
 		String result = sb.toString();
 		LogUtil.info(result);
