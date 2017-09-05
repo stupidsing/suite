@@ -29,7 +29,9 @@ public class AnalyzeTimeSeriesTest {
 	private static AnalyzeTimeSeriesTest me = new AnalyzeTimeSeriesTest();
 
 	private String symbol = "^HSI";
-	private TimeRange period = TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1)); // TimeRange.threeYears();
+	private TimeRange period = TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1));
+	// TimeRange.of(Time.of(2005, 1, 1), TimeRange.max);
+	// TimeRange.threeYears();
 
 	private Configuration cfg = new ConfigurationImpl();
 	private DiscreteCosineTransform dct = new DiscreteCosineTransform();
@@ -87,8 +89,8 @@ public class AnalyzeTimeSeriesTest {
 		for (int d : new int[] { 4, 16, })
 			LogUtil.info("variance ratio, " + d + " days over 1 day = " + ts.varianceRatio(prices, d));
 
-		int d0 = 1 + 1;
 		int d1 = 1;
+		int d0 = d1 + 1;
 		BuySell revert = buySell(d -> -Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		BuySell trend_ = buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		BuySell tanh = buySell(d -> Tanh.tanh(-3.2d * Quant.return_(prices[d - d0], prices[d - d1]))).start(d0);
