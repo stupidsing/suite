@@ -61,8 +61,8 @@ public class AnalyzeTimeSeriesTest {
 
 	private void analyze(float[] prices) {
 		int length = prices.length;
-		double nYears = length * Trade_.invTradeDaysPerYear;
 		int log2 = Quant.log2trunc(length);
+		double nYears = length * Trade_.invTradeDaysPerYear;
 
 		float[] fds = dct.dct(Arrays.copyOfRange(prices, length - log2, length));
 		float[] returns = ts.returns(prices);
