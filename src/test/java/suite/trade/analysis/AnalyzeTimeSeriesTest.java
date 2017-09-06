@@ -12,6 +12,7 @@ import suite.math.stat.TimeSeries;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.os.LogUtil;
 import suite.primitive.Floats_;
+import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
@@ -76,13 +77,18 @@ public class AnalyzeTimeSeriesTest {
 				max = IntFltPair.of(i, f);
 		}
 
-		int d1 = 1;
-		int d0 = d1 + 1;
-		BuySell revert = buySell(d -> -Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
-		BuySell trend_ = buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
-		BuySell tanh = buySell(d -> Tanh.tanh(-3.2d * Quant.return_(prices[d - d0], prices[d - d1]))).start(d0);
+		Int_Obj<BuySell> momFun = n -> {
+			int d0 = 1 + n;
+			int d1 = 1;
+			return buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
+		};
+
+		BuySell mom = momFun.apply(1);
+		BuySell revert = mom.scale(-1f);
+		BuySell trend_ = mom.scale(+1f);
+		BuySell tanh = buySell(d -> Tanh.tanh(-3.2d * mom.apply(d)));
 		float[] holds = marketTiming.hold(prices);
-		BuySell mt_ = buySell(d -> holds[d]).start(d0);
+		BuySell mt_ = buySell(d -> holds[d]);
 
 		LogUtil.info("" //
 				+ "\nsymbol = " + symbol //
@@ -124,6 +130,10 @@ public class AnalyzeTimeSeriesTest {
 	public interface BuySell extends Int_Flt {
 		public default BuySell longOnly() {
 			return d -> Math.max(0f, apply(d));
+		}
+
+		public default BuySell scale(float scale) {
+			return d -> scale * apply(d);
 		}
 
 		public default BuySell start(int s) {
