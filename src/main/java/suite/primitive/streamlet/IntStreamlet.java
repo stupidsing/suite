@@ -60,7 +60,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		};
 	}
 
-	public static IntStreamlet of(int[] ts) {
+	public static IntStreamlet of(int... ts) {
 		return streamlet(() -> IntOutlet.of(ts));
 	}
 

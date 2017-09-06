@@ -60,7 +60,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		};
 	}
 
-	public static LngStreamlet of(long[] ts) {
+	public static LngStreamlet of(long... ts) {
 		return streamlet(() -> LngOutlet.of(ts));
 	}
 

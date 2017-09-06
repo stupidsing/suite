@@ -14,8 +14,11 @@ import suite.os.LogUtil;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
+import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntFltPair;
 import suite.primitive.streamlet.FltStreamlet;
+import suite.primitive.streamlet.IntStreamlet;
+import suite.streamlet.As;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
@@ -73,22 +76,6 @@ public class AnalyzeTimeSeriesTest {
 				max = IntFltPair.of(i, f);
 		}
 
-		LogUtil.info("symbol = " + symbol);
-		LogUtil.info("length = " + length);
-		LogUtil.info("nYears = " + nYears);
-		LogUtil.info("ups = " + FltStreamlet.of(returns).filter(return_ -> 0f <= return_).size());
-		LogUtil.info("dct period = " + max.t0);
-		for (int d = 0; d <= 10; d++)
-			LogUtil.info("dct component, " + d + " days = " + fds[d]);
-		LogUtil.info("return yearly sharpe = " + rmv.mean / Math.sqrt(variance / nYears));
-		LogUtil.info("return kelly = " + kelly);
-		LogUtil.info("return skew = " + stat.skewness(returns));
-		LogUtil.info("return kurt = " + stat.kurtosis(returns));
-		for (int d : new int[] { 1, 2, 4, 8, 16, 32, })
-			LogUtil.info("mean reversion ols, " + d + " days = " + ts.meanReversion(prices, d).coefficients[0]);
-		for (int d : new int[] { 4, 16, })
-			LogUtil.info("variance ratio, " + d + " days over 1 day = " + ts.varianceRatio(prices, d));
-
 		int d1 = 1;
 		int d0 = d1 + 1;
 		BuySell revert = buySell(d -> -Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
@@ -97,15 +84,37 @@ public class AnalyzeTimeSeriesTest {
 		float[] holds = marketTiming.hold(prices);
 		BuySell mt_ = buySell(d -> holds[d]).start(d0);
 
-		LogUtil.info("half " + buySell(d -> .5d).invest(prices));
-		LogUtil.info("hold " + buySell(d -> 1d).invest(prices));
-		LogUtil.info("kelly " + buySell(d -> kelly).invest(prices));
-		LogUtil.info("revert " + revert.invest(prices));
-		LogUtil.info("revert long-only " + revert.longOnly().invest(prices));
-		LogUtil.info("trend_ " + trend_.invest(prices));
-		LogUtil.info("trend_ long-only " + trend_.longOnly().invest(prices));
-		LogUtil.info("tanh " + tanh.invest(prices));
-		LogUtil.info("timed " + mt_.invest(prices));
+		LogUtil.info("" //
+				+ "\nsymbol = " + symbol //
+				+ "\nlength = " + length //
+				+ "\nnYears = " + nYears //
+				+ "\nups = " + FltStreamlet.of(returns).filter(return_ -> 0f <= return_).size() //
+				+ "\ndct period = " + max.t0 //
+				+ Ints_ //
+						.range(10) //
+						.map(d -> "\ndct component, " + d + " days = " + fds[d]) //
+						.collect(As::joined) //
+				+ "\nreturn yearly sharpe = " + rmv.mean / Math.sqrt(variance / nYears) //
+				+ "\nreturn kelly = " + kelly //
+				+ "\nreturn skew = " + stat.skewness(returns) //
+				+ "\nreturn kurt = " + stat.kurtosis(returns) //
+				+ IntStreamlet //
+						.of(1, 2, 4, 8, 16, 32) //
+						.map(d -> "\nmean reversion ols, " + d + " days = " + ts.meanReversion(prices, d).coefficients[0]) //
+						.collect(As::joined) //
+				+ IntStreamlet //
+						.of(4, 16) //
+						.map(d -> "\nvariance ratio, " + d + " days over 1 day = " + ts.varianceRatio(prices, d)) //
+						.collect(As::joined) //
+				+ "\nhalf " + buySell(d -> .5d).invest(prices) //
+				+ "\nhold " + buySell(d -> 1d).invest(prices) //
+				+ "\nkelly " + buySell(d -> kelly).invest(prices) //
+				+ "\nrevert " + revert.invest(prices) //
+				+ "\nrevert long-only " + revert.longOnly().invest(prices) //
+				+ "\ntrend_ " + trend_.invest(prices) //
+				+ "\ntrend_ long-only " + trend_.longOnly().invest(prices) //
+				+ "\ntanh " + tanh.invest(prices) //
+				+ "\ntimed " + mt_.invest(prices));
 	}
 
 	private BuySell buySell(Int_Dbl fun) {

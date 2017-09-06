@@ -60,7 +60,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		};
 	}
 
-	public static DblStreamlet of(double[] ts) {
+	public static DblStreamlet of(double... ts) {
 		return streamlet(() -> DblOutlet.of(ts));
 	}
 
