@@ -33,8 +33,8 @@ public class AnalyzeTimeSeriesTest {
 	private static AnalyzeTimeSeriesTest me = new AnalyzeTimeSeriesTest();
 
 	private String symbol = "^HSI";
-	private TimeRange period = TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1));
-	// TimeRange.of(Time.of(2005, 1, 1), TimeRange.max);
+	private TimeRange period = TimeRange.of(Time.of(2005, 1, 1), TimeRange.max);
+	// TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1));
 	// TimeRange.threeYears();
 
 	private Configuration cfg = new ConfigurationImpl();
@@ -181,10 +181,13 @@ public class AnalyzeTimeSeriesTest {
 		}
 
 		public String toString() {
-			return "o/c" //
-					+ ": rtn = " + To.string(return_()) //
-					+ ", sharpe = " + To.string(sharpe()) //
-					+ ", dist = " + rmv;
+			double return_ = return_();
+			double yearPeriod = Trade_.nTradeDaysPerYear / (double) vals.length;
+			return "o/c =" //
+					+ " rtn:" + To.string(return_) //
+					+ " yearRtn:" + To.string(Math.expm1(Math.log1p(return_) * yearPeriod)) //
+					+ " sharpe:" + To.string(sharpe()) //
+					+ " dist:" + rmv;
 		}
 
 		private double return_() {
