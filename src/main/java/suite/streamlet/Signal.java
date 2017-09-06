@@ -79,10 +79,6 @@ public class Signal<T> {
 		this.receivers = receivers;
 	}
 
-	public void close() {
-		receivers = new Bag<>();
-	}
-
 	public <U> Signal<U> concatMap(Fun<T, Signal<U>> fun) {
 		return redirect_((t, fire) -> fun.apply(t).wire_(fire));
 	}

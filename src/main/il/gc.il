@@ -1,5 +1,5 @@
 constant gc-free = 0;
-constant gc-allocated = 1;
+constant gc-occupied = 1;
 constant gc-marked = 2;
 
 constant gc-node_ .gc-class = fix :gc-node struct (
@@ -31,7 +31,7 @@ declare gc-prepare = function [] (
 	declare node1;
 	while ({node1} = node/*/next) do (
 		if (node/*/flag != gc-free) then (
-			{node/*/flag} = gc-allocated;
+			{node/*/flag} = gc-occupied;
 		) else ();
 		{node} = node1;
 	);
@@ -46,7 +46,7 @@ declare gc-mark = function [root,] (
 	while (not (stk-is-empty [& stack,])) do (
 		declare node = stk-pop [& stack,];
 
-		if (node/*/flag = gc-allocated) then (
+		if (node/*/flag = gc-occupied) then (
 			{node/*/flag} = gc-marked;
 			declare class = node/*/class;
 			if class then (
