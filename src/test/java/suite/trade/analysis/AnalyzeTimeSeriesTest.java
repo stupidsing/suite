@@ -32,7 +32,7 @@ public class AnalyzeTimeSeriesTest {
 
 	private static AnalyzeTimeSeriesTest me = new AnalyzeTimeSeriesTest();
 
-	private String symbol = "^HSI";
+	private String symbol = "0011.HK";
 	private TimeRange period = TimeRange.of(Time.of(2005, 1, 1), TimeRange.max);
 	// TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1));
 	// TimeRange.threeYears();
@@ -74,7 +74,7 @@ public class AnalyzeTimeSeriesTest {
 		for (int i = 4; i < fds.length; i++) {
 			float f = Math.abs(fds[i]);
 			if (max.t1 < f)
-				max = IntFltPair.of(i, f);
+				max.update(i, f);
 		}
 
 		Int_Obj<BuySell> momFun = n -> {
