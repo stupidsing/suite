@@ -142,6 +142,13 @@ var frp = function() {
 			requestAnimationFrame(tick);
 			return signal_;
 		},
+		http: url => {
+			var signal_ = signal();
+			var xhr = new XMLHttpRequest();
+			xhr.addEventListener('load', () => { signal_.fire(this.responseText); });
+			xhr.open('GET', url);
+			xhr.send();
+		},
 		kb: {
 			arrowx: keyleftsignal.append(keyrightsignal), // .fold((a, b) => a + b, 0).last();
 			arrowy: keyupsignal.append(keydownsignal), // .fold((a, b) => a + b, 0).last();
