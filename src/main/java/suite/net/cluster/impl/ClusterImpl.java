@@ -17,7 +17,7 @@ import suite.net.nio.NioDispatcher;
 import suite.net.nio.NioDispatcherImpl;
 import suite.net.nio.RequestResponseMatcher;
 import suite.primitive.Bytes;
-import suite.streamlet.Nerve;
+import suite.streamlet.Signal;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
@@ -40,8 +40,8 @@ public class ClusterImpl implements Cluster {
 	 */
 	private Map<String, PersistentNioChannel> channels = new HashMap<>();
 
-	private Nerve<String> onJoined;
-	private Nerve<String> onLeft;
+	private Signal<String> onJoined;
+	private Signal<String> onLeft;
 	private Map<Class<?>, Fun<?, ?>> onReceive = new HashMap<>();
 
 	public ClusterImpl(String me, Map<String, InetSocketAddress> peers) throws IOException {
@@ -129,12 +129,12 @@ public class ClusterImpl implements Cluster {
 	}
 
 	@Override
-	public Nerve<String> getOnJoined() {
+	public Signal<String> getOnJoined() {
 		return onJoined;
 	}
 
 	@Override
-	public Nerve<String> getOnLeft() {
+	public Signal<String> getOnLeft() {
 		return onLeft;
 	}
 

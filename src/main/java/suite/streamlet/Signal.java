@@ -23,7 +23,7 @@ import suite.util.NullableSyncQueue;
  * 
  * @author ywsing
  */
-public class Nerve<T> {
+public class Signal<T> {
 
 	private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(8);
 
@@ -33,14 +33,14 @@ public class Nerve<T> {
 		public void accept(T0 t0, Sink<T1> sink);
 	}
 
-	public static <T> Nerve<T> append(Nerve<T> n0, Nerve<T> n1) {
+	public static <T> Signal<T> append(Signal<T> n0, Signal<T> n1) {
 		return of(fire -> {
 			n0.wire_(fire);
 			n1.wire_(fire);
 		});
 	}
 
-	public static <T> Nerve<T> from(Source<T> source) {
+	public static <T> Signal<T> from(Source<T> source) {
 		return of(fire -> executor.submit(() -> {
 			T t;
 			while ((t = source.source()) != null)
@@ -48,7 +48,7 @@ public class Nerve<T> {
 		}));
 	}
 
-	public static <T, U, V> Nerve<V> merge(Nerve<T> n0, Nerve<U> n1, Fun2<T, U, V> fun) {
+	public static <T, U, V> Signal<V> merge(Signal<T> n0, Signal<U> n1, Fun2<T, U, V> fun) {
 		return of(fire -> {
 			CasReference<Pair<T, U>> cr = new CasReference<>(Pair.of(null, null));
 			Sink<Pair<T, U>> recalc = pair -> fire.sink(fun.apply(pair.t0, pair.t1));
@@ -57,25 +57,25 @@ public class Nerve<T> {
 		});
 	}
 
-	public static Nerve<Object> ofFixed(int ms) {
+	public static Signal<Object> ofFixed(int ms) {
 		return of(fire -> executor.scheduleAtFixedRate(() -> fire.sink(null), ms, ms, TimeUnit.MILLISECONDS));
 	}
 
-	public static <T> Nerve<T> of(Sink<Sink<T>> sink) {
-		Nerve<T> nerve = of();
-		sink.sink(nerve::fire);
-		return nerve;
+	public static <T> Signal<T> of(Sink<Sink<T>> sink) {
+		Signal<T> signal = of();
+		sink.sink(signal::fire);
+		return signal;
 	}
 
-	public static <T> Nerve<T> of() {
-		return new Nerve<>();
+	public static <T> Signal<T> of() {
+		return new Signal<>();
 	}
 
-	private Nerve() {
+	private Signal() {
 		this(new Bag<>());
 	}
 
-	private Nerve(Bag<Sink<T>> receivers) {
+	private Signal(Bag<Sink<T>> receivers) {
 		this.receivers = receivers;
 	}
 
@@ -83,15 +83,15 @@ public class Nerve<T> {
 		receivers = new Bag<>();
 	}
 
-	public <U> Nerve<U> concatMap(Fun<T, Nerve<U>> fun) {
+	public <U> Signal<U> concatMap(Fun<T, Signal<U>> fun) {
 		return redirect_((t, fire) -> fun.apply(t).wire_(fire));
 	}
 
-	public Nerve<T> delay(int ms) {
+	public Signal<T> delay(int ms) {
 		return redirect_((t, fire) -> executor.schedule(() -> fire.sink(t), ms, TimeUnit.MILLISECONDS));
 	}
 
-	public Nerve<T> delayAccum(int ms) {
+	public Signal<T> delayAccum(int ms) {
 		AtomicLong al = new AtomicLong();
 		return redirect_((t, fire) -> {
 			long current = System.currentTimeMillis();
@@ -103,7 +103,7 @@ public class Nerve<T> {
 		});
 	}
 
-	public Nerve<T> edge() {
+	public Signal<T> edge() {
 		return redirect_(new Redirector<T, T>() {
 			private T previous = null;
 
@@ -114,7 +114,7 @@ public class Nerve<T> {
 		});
 	}
 
-	public Nerve<T> filter(Predicate<T> pred) {
+	public Signal<T> filter(Predicate<T> pred) {
 		return redirect_((t, fire) -> {
 			if (pred.test(t))
 				fire.sink(t);
@@ -125,16 +125,16 @@ public class Nerve<T> {
 		receivers.forEach(sink -> sink.sink(t));
 	}
 
-	public <U> Nerve<U> fold(U init, Fun2<U, T, U> fun) {
+	public <U> Signal<U> fold(U init, Fun2<U, T, U> fun) {
 		CasReference<U> cr = new CasReference<>(init);
 		return redirect_((t1, fire) -> fire.sink(cr.apply(t0 -> fun.apply(t0, t1))));
 	}
 
-	public Nerve<T> level(int ms) {
+	public Signal<T> level(int ms) {
 		return resample(ofFixed(ms));
 	}
 
-	public <U> Nerve<U> map(Fun<T, U> fun) {
+	public <U> Signal<U> map(Fun<T, U> fun) {
 		return redirect_((t, sink) -> sink.sink(fun.apply(t)));
 	}
 
@@ -150,17 +150,17 @@ public class Nerve<T> {
 		});
 	}
 
-	public <U> Nerve<U> redirect(Redirector<T, U> redirector) {
+	public <U> Signal<U> redirect(Redirector<T, U> redirector) {
 		return redirect_(redirector);
 	}
 
-	public Nerve<T> resample(Nerve<?> event) {
+	public Signal<T> resample(Signal<?> event) {
 		Mutable<T> mut = Mutable.nil();
 		wire_(mut::update);
 		return event.redirect_((e, fire) -> fire.sink(mut.get()));
 	}
 
-	public Nerve<T> unique() {
+	public Signal<T> unique() {
 		Set<T> set = new HashSet<>();
 		return redirect_((t, fire) -> {
 			if (set.add(t))
@@ -176,7 +176,7 @@ public class Nerve<T> {
 		wire_(receiver);
 	}
 
-	private <U> Nerve<U> redirect_(Redirector<T, U> redirector) {
+	private <U> Signal<U> redirect_(Redirector<T, U> redirector) {
 		return of(fire -> wire_(t -> redirector.accept(t, fire)));
 	}
 

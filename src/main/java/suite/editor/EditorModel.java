@@ -1,6 +1,6 @@
 package suite.editor;
 
-import suite.streamlet.Nerve;
+import suite.streamlet.Signal;
 
 public class EditorModel {
 
@@ -8,9 +8,9 @@ public class EditorModel {
 	private String filename;
 	private String searchText;
 
-	private Nerve<Boolean> modifiedChanged = Nerve.of();
-	private Nerve<String> filenameChanged = Nerve.of();
-	private Nerve<String> searchTextChanged = Nerve.of();
+	private Signal<Boolean> modifiedChanged = Signal.of();
+	private Signal<String> filenameChanged = Signal.of();
+	private Signal<String> searchTextChanged = Signal.of();
 
 	public void changeModified(boolean modified) {
 		setIsModified(modified);
@@ -27,15 +27,15 @@ public class EditorModel {
 		searchTextChanged.fire(searchText);
 	}
 
-	public Nerve<Boolean> getModifiedChanged() {
+	public Signal<Boolean> getModifiedChanged() {
 		return modifiedChanged;
 	}
 
-	public Nerve<String> getFilenameChanged() {
+	public Signal<String> getFilenameChanged() {
 		return filenameChanged;
 	}
 
-	public Nerve<String> getSearchTextChanged() {
+	public Signal<String> getSearchTextChanged() {
 		return searchTextChanged;
 	}
 

@@ -22,7 +22,7 @@ import suite.net.ThreadService;
 import suite.net.cluster.ClusterProbe;
 import suite.os.LogUtil;
 import suite.streamlet.As;
-import suite.streamlet.Nerve;
+import suite.streamlet.Signal;
 import suite.streamlet.Read;
 import suite.util.Object_;
 import suite.util.String_;
@@ -60,8 +60,8 @@ public class ClusterProbeImpl implements ClusterProbe {
 	 */
 	private Map<String, Long> lastSentTimes = new HashMap<>();
 
-	private Nerve<String> onJoined = Nerve.of();
-	private Nerve<String> onLeft = Nerve.of();
+	private Signal<String> onJoined = Signal.of();
+	private Signal<String> onLeft = Signal.of();
 
 	private enum Command {
 		HELO, FINE, BYEE
@@ -303,11 +303,11 @@ public class ClusterProbeImpl implements ClusterProbe {
 			this.peers.put(e.getKey(), new IpPort(e.getValue()));
 	}
 
-	public Nerve<String> getOnJoined() {
+	public Signal<String> getOnJoined() {
 		return onJoined;
 	}
 
-	public Nerve<String> getOnLeft() {
+	public Signal<String> getOnLeft() {
 		return onLeft;
 	}
 

@@ -9,8 +9,8 @@ import com.sun.jna.Native;
 
 import suite.adt.Trie;
 import suite.adt.pair.Pair;
-import suite.streamlet.Nerve;
-import suite.streamlet.Nerve.Redirector;
+import suite.streamlet.Signal;
+import suite.streamlet.Signal.Redirector;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
@@ -53,7 +53,7 @@ public class Keyboard implements Closeable {
 			return 0 <= ch ? (char) ch : null;
 		};
 
-		Outlet<Pair<VK, Character>> keys = Nerve //
+		Outlet<Pair<VK, Character>> keys = Signal //
 				.from(source0) //
 				.redirect(new Redirector<Character, Pair<VK, Character>>() {
 					private List<Character> chs = new ArrayList<>();

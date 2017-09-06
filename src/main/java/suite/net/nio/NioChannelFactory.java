@@ -8,7 +8,7 @@ import suite.concurrent.Condition;
 import suite.net.NetUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.streamlet.Nerve;
+import suite.streamlet.Signal;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 
@@ -76,7 +76,7 @@ public interface NioChannelFactory {
 	}
 
 	public class PacketedNioChannel extends BufferedNioChannel {
-		public final Nerve<Bytes> onReceivePacket = Nerve.of();
+		public final Signal<Bytes> onReceivePacket = Signal.of();
 
 		public void sendPacket(Bytes packet) {
 			send(new BytesBuilder() //
@@ -107,9 +107,9 @@ public interface NioChannelFactory {
 	}
 
 	public class NioChannel {
-		public final Nerve<Iterate<Bytes>> onConnected = Nerve.of();
-		public final Nerve<Bytes> onReceive = Nerve.of();
-		public final Nerve<Boolean> onTrySend = Nerve.of();
+		public final Signal<Iterate<Bytes>> onConnected = Signal.of();
+		public final Signal<Bytes> onReceive = Signal.of();
+		public final Signal<Boolean> onTrySend = Signal.of();
 	}
 
 	public static <C extends PersistentNioChannel> C persistent( //
