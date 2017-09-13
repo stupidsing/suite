@@ -1,4 +1,4 @@
-// mingw64-i686-gcc -mwindows src/main/c/kbhook.c -o target/kbhook
+// gcc -mwindows src/main/c/kbhook.c -o target/kbhook
 #include <stdio.h>
 #include <windows.h>
 
