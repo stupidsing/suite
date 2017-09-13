@@ -15,7 +15,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 		printf("UP %d\n", pressedKey);
 		break;
 	default:
-		return CallNextHookEx(NULL, nCode, wParam, lParam);
+		printf("UNK %d %d %d\n", nCode, wParam, lParam);
 	}
 	return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
