@@ -29,5 +29,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 		DispatchMessage(&msg); /* send message to WndProc */
 	}
 
+	UnhookWindowsHookEx(hook);
 	return msg.wParam;
 }
