@@ -83,7 +83,7 @@ public class AnalyzeTimeSeriesTest {
 			return buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		};
 
-		Int_Obj<BuySell> revert = d -> momFun.apply(d).scale(-1f);
+		Int_Obj<BuySell> revert = d -> momFun.apply(d).scale(0f, -1f);
 		BuySell[] reverts = Ints_.range(8).map(revert).toArray(BuySell.class);
 		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
 		float[] holds = marketTiming.hold(prices);
@@ -134,8 +134,8 @@ public class AnalyzeTimeSeriesTest {
 			return d -> Math.max(0f, apply(d));
 		}
 
-		public default BuySell scale(float scale) {
-			return d -> scale * apply(d);
+		public default BuySell scale(float a, float b) {
+			return d -> a + b * apply(d);
 		}
 
 		public default BuySell start(int s) {
