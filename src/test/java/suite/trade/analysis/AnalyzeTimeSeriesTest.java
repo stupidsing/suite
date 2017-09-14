@@ -32,7 +32,7 @@ public class AnalyzeTimeSeriesTest {
 
 	private static AnalyzeTimeSeriesTest me = new AnalyzeTimeSeriesTest();
 
-	private String symbol = "0011.HK";
+	private String symbol = "JPY=X";
 	private TimeRange period = TimeRange.of(Time.of(2005, 1, 1), TimeRange.max);
 	// TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1));
 	// TimeRange.threeYears();
@@ -85,8 +85,7 @@ public class AnalyzeTimeSeriesTest {
 
 		BuySell mom = momFun.apply(1);
 		BuySell revert = mom.scale(-1f);
-		BuySell trend_ = mom.scale(+1f);
-		BuySell tanh = buySell(d -> Tanh.tanh(-3.2d * mom.apply(d)));
+		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * revert.apply(d)));
 		float[] holds = marketTiming.hold(prices);
 		BuySell mt_ = buySell(d -> holds[d]);
 
@@ -112,13 +111,10 @@ public class AnalyzeTimeSeriesTest {
 						.of(4, 16) //
 						.map(d -> "\nvariance ratio, " + d + " days over 1 day = " + ts.varianceRatio(prices, d)) //
 						.collect(As::joined) //
-				+ "\nhalf " + buySell(d -> .5d).invest(prices) //
 				+ "\nhold " + buySell(d -> 1d).invest(prices) //
 				+ "\nkelly " + buySell(d -> kelly).invest(prices) //
 				+ "\nrevert " + revert.invest(prices) //
 				+ "\nrevert long-only " + revert.longOnly().invest(prices) //
-				+ "\ntrend_ " + trend_.invest(prices) //
-				+ "\ntrend_ long-only " + trend_.longOnly().invest(prices) //
 				+ "\ntanh " + tanh.invest(prices) //
 				+ "\ntimed " + mt_.invest(prices));
 	}
