@@ -83,7 +83,6 @@ public class AnalyzeTimeSeriesTest {
 			return buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		};
 
-		BuySell mom = momFun.apply(1);
 		Int_Obj<BuySell> revert = d -> momFun.apply(d).scale(-1f);
 		BuySell[] reverts = Ints_.range(8).map(revert).toArray(BuySell.class);
 		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
