@@ -32,7 +32,7 @@ public class AnalyzeTimeSeriesTest {
 
 	private static AnalyzeTimeSeriesTest me = new AnalyzeTimeSeriesTest();
 
-	private String symbol = "JPY=X";
+	private String symbol = "^HSI";
 	private TimeRange period = TimeRange.of(Time.of(2005, 1, 1), TimeRange.max);
 	// TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1));
 	// TimeRange.threeYears();
@@ -84,8 +84,9 @@ public class AnalyzeTimeSeriesTest {
 		};
 
 		BuySell mom = momFun.apply(1);
-		BuySell revert = mom.scale(-1f);
-		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * revert.apply(d)));
+		Int_Obj<BuySell> revert = d -> momFun.apply(d).scale(-1f);
+		BuySell[] reverts = Ints_.range(8).map(revert).toArray(BuySell.class);
+		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
 		float[] holds = marketTiming.hold(prices);
 		BuySell mt_ = buySell(d -> holds[d]);
 
@@ -113,8 +114,14 @@ public class AnalyzeTimeSeriesTest {
 						.collect(As::joined) //
 				+ "\nhold " + buySell(d -> 1d).invest(prices) //
 				+ "\nkelly " + buySell(d -> kelly).invest(prices) //
-				+ "\nrevert " + revert.invest(prices) //
-				+ "\nrevert long-only " + revert.longOnly().invest(prices) //
+				+ Ints_//
+						.range(1, 8) //
+						.map(d -> "\nrevert " + d + " " + reverts[d].invest(prices)) //
+						.collect(As::joined) //
+				+ Ints_//
+						.range(1, 8) //
+						.map(d -> "\nrevert " + d + " long-only " + reverts[d].longOnly().invest(prices)) //
+						.collect(As::joined) //
 				+ "\ntanh " + tanh.invest(prices) //
 				+ "\ntimed " + mt_.invest(prices));
 	}
