@@ -30,6 +30,7 @@ public class ConfigurationImpl implements Configuration {
 	private Sina sina = new Sina();
 	private Yahoo yahoo = new Yahoo();
 
+	private Src srcForex = new Src(null, yahoo::quote, yahoo::dataSourceL1);
 	private Src srcHkd__ = new Src(hkd::queryCompany, hkd::quote, hkd::dataSource);
 	private Src srcHkex_ = new Src(hkex::queryCompany, sina::quote, yahoo::dataSourceL1);
 	private Src srcIndex = new Src(hkd::queryCompany, yahoo::quote, yahoo::dataSourceL1);
@@ -111,7 +112,9 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	private Src src(String symbol) {
-		if (String_.equals(symbol, Asset.cashSymbol))
+		if (symbol.endsWith("=X"))
+			return srcForex;
+		else if (String_.equals(symbol, Asset.cashSymbol))
 			return srcHkd__;
 		else if (symbol.endsWith(".HK"))
 			return srcHkex_;
