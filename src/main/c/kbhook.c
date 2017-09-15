@@ -44,7 +44,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 		} else if(vk == -1) {
 			send(0, VK_MENU);
 			rightAlt = 1;
-		} else
+		} else if(vk != VK_NEXT && vk != VK_PRIOR)
 			restore();
 		break;
 	// case WM_SYSKEYDOWN: break;
