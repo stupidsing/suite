@@ -4,6 +4,7 @@
 
 int rightCtrl = 0;
 int rightAlt = 0;
+int isIssued = 0;
 
 void send(int dwf, int vk) {
 	INPUT input;
@@ -18,13 +19,9 @@ void send(int dwf, int vk) {
 }
 
 void restore() {
-	if(rightCtrl) {
-		send(KEYEVENTF_KEYUP, VK_RCONTROL);
-		rightCtrl = 0;
-	} else if(rightAlt) {
-		send(KEYEVENTF_KEYUP, VK_MENU);
-		rightAlt = 0;
-	}
+	if(rightCtrl) send(KEYEVENTF_KEYUP, VK_RCONTROL);
+	else if(rightAlt) send(KEYEVENTF_KEYUP, VK_MENU);
+	isIssued = rightCtrl = rightAlt = 0;
 }
 
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
@@ -32,20 +29,17 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
 	char vk;
 	switch(wParam) {
 	case WM_KEYDOWN:
-		vk = (char) pKeyboard->vkCode;
-		printf("DN %d\n", vk);
+		printf("DN %d\n", vk = (char) pKeyboard->vkCode);
+		if(isIssued)
+			if(vk != VK_NEXT && vk != VK_PRIOR) restore();
+		isIssued = rightCtrl || rightAlt;
 		break;
 	case WM_KEYUP:
-		vk = (char) pKeyboard->vkCode;
-		printf("UP %d\n", vk);
-		if(vk == -23) {
-			send(0, VK_RCONTROL);
-			rightCtrl = 1;
-		} else if(vk == -1) {
-			send(0, VK_MENU);
-			rightAlt = 1;
-		} else if(vk != VK_NEXT && vk != VK_PRIOR)
-			restore();
+		printf("UP %d\n", vk = (char) pKeyboard->vkCode);
+		if(vk == -23) { send(0, VK_RCONTROL); rightCtrl = 1; }
+		else if(vk == -1) { send(0, VK_MENU); rightAlt = 1; }
+		else if(vk != VK_NEXT && vk != VK_PRIOR) restore();
+		else isIssued = rightCtrl || rightAlt;
 		break;
 	// case WM_SYSKEYDOWN: break;
 	// case WM_SYSKEYUP: break;
