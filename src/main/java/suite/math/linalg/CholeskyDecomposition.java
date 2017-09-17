@@ -97,9 +97,10 @@ public class CholeskyDecomposition {
 
 		for (int c = 0; c < size; c++) {
 			float imii = 1f / (d[c] = m[c][c]);
+			int c1 = c + 1;
 
-			for (int i = c + 1; i < size; i++)
-				for (int j = c + 1; j < size; j++) {
+			for (int i = c1; i < size; i++)
+				for (int j = c1; j < size; j++) {
 					float imii_mjc = imii * m[j][c];
 					l[i][c] += imii_mjc * l[i][j];
 					m[i][j] -= imii_mjc * m[i][c];
