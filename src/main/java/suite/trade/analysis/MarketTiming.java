@@ -16,7 +16,7 @@ public class MarketTiming {
 	private MovingAverage ma = new MovingAverage();
 	private Statistic stat = new Statistic();
 
-	public float[] hold(float[] prices) {
+	public float[] hold(float[] prices, float h0, float h1, float h2) {
 		int[] flags = time(prices);
 		int length = flags.length;
 		float[] holds = new float[length];
@@ -24,15 +24,15 @@ public class MarketTiming {
 
 		for (int i = 0; i < length; i++) {
 			if ((flags[i] & strgBear) != 0)
-				hold = -1f;
+				hold = -h2;
 			else if ((flags[i] & strgBull) != 0)
-				hold = +1f;
+				hold = +h2;
 			else if ((flags[i] & weakBear) != 0)
-				hold = -.5f;
+				hold = -h1;
 			else if ((flags[i] & weakBull) != 0)
-				hold = +.5f;
+				hold = +h1;
 			else
-				hold = 0f;
+				hold = h0;
 			holds[i] = hold;
 		}
 

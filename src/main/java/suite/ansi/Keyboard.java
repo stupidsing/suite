@@ -9,10 +9,10 @@ import com.sun.jna.Native;
 
 import suite.adt.Trie;
 import suite.adt.pair.Pair;
-import suite.streamlet.Signal;
-import suite.streamlet.Signal.Redirector;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
+import suite.streamlet.Signal;
+import suite.streamlet.Signal.Redirector;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 

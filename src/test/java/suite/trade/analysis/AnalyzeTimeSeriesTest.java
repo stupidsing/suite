@@ -86,7 +86,7 @@ public class AnalyzeTimeSeriesTest {
 		Int_Obj<BuySell> revert = d -> momFun.apply(d).scale(0f, -1f);
 		BuySell[] reverts = Ints_.range(8).map(revert).toArray(BuySell.class);
 		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
-		float[] holds = marketTiming.hold(prices);
+		float[] holds = marketTiming.hold(prices, 1f, 1f, 1f);
 		BuySell mt_ = buySell(d -> holds[d]);
 
 		LogUtil.info("" //
@@ -122,7 +122,8 @@ public class AnalyzeTimeSeriesTest {
 						.map(d -> "\nrevert " + d + " long-only " + reverts[d].longOnly().invest(prices)) //
 						.collect(As::joined) //
 				+ "\ntanh " + tanh.invest(prices) //
-				+ "\ntimed " + mt_.invest(prices));
+				+ "\ntimed " + mt_.invest(prices) //
+				+ "\ntimed long-only " + mt_.longOnly().invest(prices));
 	}
 
 	private BuySell buySell(Int_Dbl fun) {
