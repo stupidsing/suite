@@ -83,7 +83,7 @@ public class Summarize {
 		for (Entry<K, String> e : outByKey.entrySet())
 			log.sink("\nFor strategy " + e.getKey() + ":" + e.getValue());
 
-		Map<String, Float> acquiredPrices = trades.collect(Trade_::collectAcquiredPrices);
+		Map<String, Float> acquiredPrices = trades.collect(Trade_::collectBrokeredTrades).collect(Trade_::collectAcquiredPrices);
 
 		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
 			Time now = Time.now();

@@ -13,6 +13,7 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.trade.Usex;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
@@ -31,11 +32,11 @@ public class Factor {
 	private Time now = Time.now();
 
 	public static Factor ofCrudeOil(Configuration cfg) {
-		return of(cfg, Read.each("CLQ17.NYM")); // "CL=F"
+		return of(cfg, Read.each(Usex.crudeOil));
 	}
 
 	public static Factor ofUsMarket(Configuration cfg) {
-		return of(cfg, Read.each("^DJI", "^GSPC", "NDAQ"));
+		return of(cfg, Read.each(Usex.dowJones, Usex.nasdaq, Usex.sp500));
 	}
 
 	public static Factor of(Configuration cfg, Streamlet<String> indices) {

@@ -28,6 +28,7 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.Trade_;
+import suite.trade.Usex;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
@@ -51,9 +52,10 @@ public interface BackAllocator {
 	public interface OnDateTime {
 
 		/**
-		 * @return a portfolio consisting of list of symbols and potential values, or
-		 *         null if the strategy do not want to trade on that date. The assets
-		 *         will be allocated according to potential values pro-rata.
+		 * @return a portfolio consisting of list of symbols and potential
+		 *         values, or null if the strategy do not want to trade on that
+		 *         date. The assets will be allocated according to potential
+		 *         values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(int index);
 	}
@@ -141,7 +143,7 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator filterByIndex(Configuration cfg) {
-		return filterByIndexReturn(cfg, "^GSPC");
+		return filterByIndexReturn(cfg, Usex.sp500);
 	}
 
 	public default BackAllocator filterByIndexReturn(Configuration cfg, String indexSymbol) {
