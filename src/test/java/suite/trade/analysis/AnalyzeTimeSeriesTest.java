@@ -49,10 +49,11 @@ public class AnalyzeTimeSeriesTest {
 	}
 
 	private void analyze(DataSource ds) {
+		int length = ds.ts.length;
 		float[] ops = ds.opens;
 		float[] cls = ds.closes;
-		float[] ocgs = Floats_.toArray(ds.ts.length, i -> cls[i] - ops[i]);
-		float[] cogs = Floats_.toArray(ds.ts.length, i -> ops[i] - cls[Math.max(0, i - 1)]);
+		float[] ocgs = Floats_.toArray(length, i -> cls[i] - ops[i]);
+		float[] cogs = Floats_.toArray(length, i -> ops[i] - cls[Math.max(0, i - 1)]);
 		LogUtil.info("open/close gap = " + stat.meanVariance(ocgs));
 		LogUtil.info("close/open gap = " + stat.meanVariance(cogs));
 		LogUtil.info("ocg/cog covariance = " + stat.correlation(ocgs, cogs));
