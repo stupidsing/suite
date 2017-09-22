@@ -332,34 +332,23 @@ public class Matrix {
 		return scaleOn(copy(m), d);
 	}
 
-	public float[] scale(float[] m, float f) {
-		return scaleOn(copy(m), f);
-	}
-
-	public float[][] scale(float[][] m, float f) {
+	public float[][] scale(float[][] m, double f) {
 		return scaleOn(copy(m), f);
 	}
 
 	public float[] scaleOn(float[] m, double d) {
 		int length = m.length;
 		for (int i = 0; i < length; i++)
-			m[i] = (float) (m[i] * d);
+			m[i] *= d;
 		return m;
 	}
 
-	public float[] scaleOn(float[] m, float f) {
-		int length = m.length;
-		for (int i = 0; i < length; i++)
-			m[i] *= f;
-		return m;
-	}
-
-	public float[][] scaleOn(float[][] m, float f) {
+	public float[][] scaleOn(float[][] m, double d) {
 		int height = h(m);
 		int width = w(m);
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
-				m[i][j] *= f;
+				m[i][j] *= d;
 		return m;
 	}
 
