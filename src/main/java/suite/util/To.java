@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
@@ -51,29 +50,12 @@ import suite.util.FunUtil.Source;
 public class To {
 
 	private static String hexDigits = "0123456789ABCDEF";
-	private static Field field;
-
-	static {
-		field = Rethrow.ex(() -> {
-			Field field_ = String.class.getDeclaredField("value");
-			field_.setAccessible(true);
-			return field_;
-		});
-	}
 
 	public static <T> T[] array(Class<T> clazz, int length, IntFunction<T> f) {
 		T[] ts = Array_.newArray(clazz, length);
 		for (int i = 0; i < length; i++)
 			ts[i] = f.apply(i);
 		return ts;
-	}
-
-	/**
-	 * Get characters in a string without copying overhead. Do not modify the
-	 * returned array!
-	 */
-	public static char[] arrayOfChars(String s) {
-		return Rethrow.ex(() -> (char[]) field.get(s)); // s.toCharArray()
 	}
 
 	public static float[] arrayOfFloats(float[] fs, Flt_Flt fun) {
@@ -111,7 +93,7 @@ public class To {
 	}
 
 	public static Chars chars(String s) {
-		return Chars.of(arrayOfChars(s));
+		return Chars.of(s.toCharArray());
 	}
 
 	public static LocalDate date(String s) {

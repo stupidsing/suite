@@ -1,7 +1,6 @@
 package suite.algo;
 
 import suite.util.String_;
-import suite.util.To;
 
 public class SoundEx {
 
@@ -17,7 +16,7 @@ public class SoundEx {
 		word = word.toUpperCase();
 
 		StringBuilder sb = new StringBuilder();
-		char[] a = To.arrayOfChars(word);
+		char[] a = word.toCharArray();
 		int len = a.length;
 		int p = 0;
 
