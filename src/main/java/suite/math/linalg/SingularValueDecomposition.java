@@ -24,7 +24,7 @@ public class SingularValueDecomposition {
 
 		for (int i = 0; i < k; i++) {
 			Fixie3<Double, float[], float[]> fixie = f.apply(a);
-			float[][] a_ = a;
+			float[][] a0 = a;
 			int i_ = i;
 
 			a = fixie.map((s, u, v) -> {
@@ -36,7 +36,7 @@ public class SingularValueDecomposition {
 						.of(u) //
 						.mul(VirtualMatrix.of(v).transpose()) //
 						.scale(-s) //
-						.add(VirtualMatrix.of(a_)) //
+						.add(VirtualMatrix.of(a0)) //
 						.matrix();
 
 				// return mtx.add(a_, mtx.scale(mtx.mul_mnT(new float[][] { u, }, new float[][]
