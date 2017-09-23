@@ -11,6 +11,11 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 
+/**
+ * Radial basis function network with K-means clustering.
+ *
+ * @author ywsing
+ */
 public class RadialBasisFunctionNetwork {
 
 	private CholeskyDecomposition cd = new CholeskyDecomposition();
@@ -38,7 +43,7 @@ public class RadialBasisFunctionNetwork {
 
 		for (int i = 0; i < ins.length; i++) {
 			int cl = kmc[i];
-			variances[cl] += dotSub(ins[i], centers[cl]);
+			variances[cl] += mtx.dotDiff(ins[i], centers[cl]);
 		}
 
 		invVariances = Floats_.toArray(variances.length, i -> 1f / variances[i]);
@@ -52,12 +57,8 @@ public class RadialBasisFunctionNetwork {
 	private float[] evaluateRbfs(float[] in) {
 		return Ints_ //
 				.range(nHiddens) //
-				.collect(Int_Flt.lift(cl -> (float) Math.exp(-.5d * dotSub(in, centers[cl]) * invVariances[cl]))) //
+				.collect(Int_Flt.lift(cl -> (float) Math.exp(-.5d * mtx.dotDiff(in, centers[cl]) * invVariances[cl]))) //
 				.toArray();
-	}
-
-	private float dotSub(float[] a, float[] b) {
-		return mtx.dot(mtx.sub(a, b));
 	}
 
 }

@@ -67,6 +67,16 @@ public class Matrix {
 		return dot_(m, n);
 	}
 
+	public float dotDiff(float[] m, float[] n) {
+		int length = sameLength_(m, n);
+		float sum = 0;
+		for (int i = 0; i < length; i++) {
+			double d = m[i] - n[i];
+			sum += d * d;
+		}
+		return sum;
+	}
+
 	public boolean equals(float[][] m, float[][] n) {
 		int h = h(m);
 		int w = w(m);

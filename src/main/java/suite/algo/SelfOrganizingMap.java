@@ -37,7 +37,7 @@ public class SelfOrganizingMap {
 				new Loop(is -> {
 					int index = index(is);
 					float[] som0 = som[index];
-					float distance = mtx.dot(mtx.sub(in, som0));
+					float distance = mtx.dotDiff(in, som0);
 					if (distance < nearestDistance.get()) {
 						nearestDistance.update(distance);
 						Ints_.copy(is, 0, nearestIndices, 0, nDim);
@@ -50,7 +50,7 @@ public class SelfOrganizingMap {
 				new Loop(is -> {
 					int index = index(is);
 					float[] som0 = som[index];
-					double theta = Math.exp(-mtx.dot(mtx.sub(nearestSom, som0)) / (2d * var));
+					double theta = Math.exp(-mtx.dotDiff(nearestSom, som0) / (2d * var));
 					som[index] = mtx.add(som0, mtx.scale(mtx.sub(in, som0), theta * alpha_));
 				}).updateNeighbours(nearestIndices, nDim);
 
