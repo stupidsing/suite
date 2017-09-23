@@ -6,7 +6,6 @@ import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
 import suite.primitive.Floats_;
 
-// http://www.cs.yale.edu/homes/el327/datamining2013aFiles/07_singular_value_decomposition.pdf
 public class SingularValueDecomposition {
 
 	private int k = 9;
@@ -14,6 +13,7 @@ public class SingularValueDecomposition {
 	private Matrix mtx = new Matrix();
 	private Random random = new Random();
 
+	// http://www.cs.yale.edu/homes/el327/datamining2013aFiles/07_singular_value_decomposition.pdf
 	public Fixie3<float[], float[][], float[][]> svd(float[][] a) {
 		float[] ss = new float[k];
 		float[][] us = new float[k][];

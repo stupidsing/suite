@@ -3,9 +3,9 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.adt.Opt;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.Sink2;
 import suite.util.Object_;
 
 public class Pair<T0, T1> {
@@ -58,8 +58,12 @@ public class Pair<T0, T1> {
 		return pair != null ? pair.t1 : null;
 	}
 
-	public <O> Opt<O> map(Fun2<T0, T1, O> fun) {
-		return t0 != null ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	public <O> O map(Fun2<T0, T1, O> fun) {
+		return fun.apply(t0, t1);
+	}
+
+	public void sink(Sink2<T0, T1> sink) {
+		sink.sink2(t0, t1);
 	}
 
 	public void update(T0 t0_, T1 t1_) {
