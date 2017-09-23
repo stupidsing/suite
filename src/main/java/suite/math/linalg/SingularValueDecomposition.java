@@ -23,9 +23,10 @@ public class SingularValueDecomposition {
 		float[][] vs = new float[k][];
 
 		for (int i = 0; i < k; i++) {
+			Fixie3<Double, float[], float[]> fixie = f.apply(a);
 			float[][] a_ = a;
 			int i_ = i;
-			Fixie3<Double, float[], float[]> fixie = f.apply(a);
+
 			a = fixie.map((s, u, v) -> {
 				ss[i_] = s.floatValue();
 				us[i_] = u;
