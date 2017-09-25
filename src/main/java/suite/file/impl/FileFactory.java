@@ -36,7 +36,7 @@ public class FileFactory {
 		Serializer<Extent> extentSerializer = serialize.extent();
 		Serializer<Bytes> bytesSerializer = serialize.variableLengthBytes;
 
-		SerializedPageFile<Block> pageFile = SerializedFileFactory.serialized(pf, new Serializer<Block>() {
+		SerializedPageFile<Block> pageFile = SerializedFileFactory.serialized(pf, new Serializer<>() {
 			public Block read(DataInput_ dataInput) throws IOException {
 				Extent extent = extentSerializer.read(dataInput);
 				Bytes bytes = bytesSerializer.read(dataInput);
