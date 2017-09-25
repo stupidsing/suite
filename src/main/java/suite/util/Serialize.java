@@ -111,7 +111,7 @@ public class Serialize {
 		Constructor<?> immutableCtor = ctors.min((c0, c1) -> -Integer.compare(c0.getParameterCount(), c1.getParameterCount()));
 		immutableCtor.setAccessible(true);
 
-		Serializer<?> serializer0 = new Serializer<T>() {
+		return new Serializer<>() {
 			public T read(DataInput_ dataInput) throws IOException {
 				return Rethrow.ex(() -> {
 					Object object;
@@ -142,9 +142,6 @@ public class Serialize {
 
 			}
 		};
-		@SuppressWarnings("unchecked")
-		Serializer<T> serializer = (Serializer<T>) serializer0;
-		return serializer;
 	}
 
 	public Serializer<Bytes> variableLengthBytes = new Serializer<Bytes>() {
