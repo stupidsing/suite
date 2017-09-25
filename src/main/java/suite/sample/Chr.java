@@ -155,7 +155,7 @@ public class Chr {
 			Reference from = generalizer.getVariable(a);
 			Reference to = generalizer.getVariable(b);
 
-			states = states.map(new Fun<State, State>() {
+			states = states.map(new Fun<>() {
 				public State apply(State state) {
 					IMap<Prototype, ISet<Node>> factsByPrototype1 = IMap.empty();
 					for (Pair<Prototype, ISet<Node>> e : state.factsByPrototype)
