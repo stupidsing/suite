@@ -144,7 +144,7 @@ public interface NioChannelFactory {
 
 	public static <C extends PacketedNioChannel> C packeted(C channel0) {
 		C channel = buffered(channel0);
-		channel.onReceive.wire(new Sink<Bytes>() {
+		channel.onReceive.wire(new Sink<>() {
 			private Bytes received = Bytes.empty;
 
 			public void sink(Bytes message) {
