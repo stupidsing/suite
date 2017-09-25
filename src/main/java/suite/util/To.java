@@ -225,7 +225,7 @@ public class To {
 
 	@SafeVarargs
 	public static <T> Source<T> source(T... array) {
-		return new Source<T>() {
+		return new Source<>() {
 			private int i;
 
 			public T source() {
