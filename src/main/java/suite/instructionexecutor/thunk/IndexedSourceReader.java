@@ -24,7 +24,7 @@ public class IndexedSourceReader<T> {
 	}
 
 	private IPointer<T> pointer(int position) {
-		return new IPointer<T>() {
+		return new IPointer<>() {
 			public T head() {
 				synchronized (IndexedSourceReader.this) {
 					while (queue.size() <= position - offset) {

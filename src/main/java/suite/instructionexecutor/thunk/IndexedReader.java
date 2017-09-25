@@ -19,7 +19,7 @@ public class IndexedReader<T> {
 	}
 
 	private IPointer<T> pointer(int position) {
-		return new IPointer<T>() {
+		return new IPointer<>() {
 			public T head() {
 				return position < size ? read.apply(position) : null;
 			}
