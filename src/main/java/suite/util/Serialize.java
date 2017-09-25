@@ -144,7 +144,7 @@ public class Serialize {
 		};
 	}
 
-	public Serializer<Bytes> variableLengthBytes = new Serializer<Bytes>() {
+	public Serializer<Bytes> variableLengthBytes = new Serializer<>() {
 		public Bytes read(DataInput_ dataInput) throws IOException {
 			int length = dataInput.readInt();
 			byte[] bs = new byte[length];
@@ -158,7 +158,7 @@ public class Serialize {
 		}
 	};
 
-	public Serializer<String> variableLengthString = new Serializer<String>() {
+	public Serializer<String> variableLengthString = new Serializer<>() {
 		public String read(DataInput_ dataInput) throws IOException {
 			return dataInput.readUTF();
 		}
@@ -175,7 +175,7 @@ public class Serialize {
 	}
 
 	public <T> Serializer<T[]> array(Class<T> clazz, Serializer<T> serializer) {
-		return new Serializer<T[]>() {
+		return new Serializer<>() {
 			public T[] read(DataInput_ dataInput) throws IOException {
 				int size = int_.read(dataInput);
 				T[] array = Array_.newArray(clazz, size);
@@ -192,7 +192,7 @@ public class Serialize {
 		};
 	}
 
-	public Serializer<float[]> arrayOfFloats = new Serializer<float[]>() {
+	public Serializer<float[]> arrayOfFloats = new Serializer<>() {
 		public float[] read(DataInput_ dataInput) throws IOException {
 			int size = int_.read(dataInput);
 			float[] array = new float[size];
@@ -208,7 +208,7 @@ public class Serialize {
 		}
 	};
 
-	public Serializer<int[]> arrayOfInts = new Serializer<int[]>() {
+	public Serializer<int[]> arrayOfInts = new Serializer<>() {
 		public int[] read(DataInput_ dataInput) throws IOException {
 			int size = int_.read(dataInput);
 			int[] array = new int[size];
@@ -230,7 +230,7 @@ public class Serialize {
 	 * Size = length
 	 */
 	public Serializer<Bytes> bytes(int length) {
-		return new Serializer<Bytes>() {
+		return new Serializer<>() {
 			public Bytes read(DataInput_ dataInput) throws IOException {
 				byte[] bs = new byte[length];
 				dataInput.readFully(bs);
@@ -250,7 +250,7 @@ public class Serialize {
 	}
 
 	public <T> Serializer<Collection<T>> collection(Serializer<T> serializer) {
-		return new Serializer<Collection<T>>() {
+		return new Serializer<>() {
 			public Collection<T> read(DataInput_ dataInput) throws IOException {
 				int size = int_.read(dataInput);
 				List<T> list = new ArrayList<>();
@@ -268,7 +268,7 @@ public class Serialize {
 	}
 
 	public Serializer<Extent> extent() {
-		return new Serializer<Extent>() {
+		return new Serializer<>() {
 			public Extent read(DataInput_ dataInput) throws IOException {
 				int start = dataInput.readInt();
 				int end = dataInput.readInt();
@@ -288,7 +288,7 @@ public class Serialize {
 	 * Size = 4 + number of elements * size of serializer<T>
 	 */
 	public <T> Serializer<List<T>> list(Serializer<T> serializer) {
-		return new Serializer<List<T>>() {
+		return new Serializer<>() {
 			public List<T> read(DataInput_ dataInput) throws IOException {
 				int size = int_.read(dataInput);
 				List<T> list = new ArrayList<>();
@@ -319,7 +319,7 @@ public class Serialize {
 	 * Size = 1 + size of serializer<T>
 	 */
 	public <T> Serializer<T> nullable(Serializer<T> serializer) {
-		return new Serializer<T>() {
+		return new Serializer<>() {
 			public T read(DataInput_ dataInput) throws IOException {
 				return boolean_.read(dataInput) ? serializer.read(dataInput) : null;
 			}
@@ -335,7 +335,7 @@ public class Serialize {
 	}
 
 	public <T0, T1> Serializer<Pair<T0, T1>> pair(Serializer<T0> serializer0, Serializer<T1> serializer1) {
-		return new Serializer<Pair<T0, T1>>() {
+		return new Serializer<>() {
 			public Pair<T0, T1> read(DataInput_ dataInput) throws IOException {
 				T0 t0 = serializer0.read(dataInput);
 				T1 t1 = serializer1.read(dataInput);
@@ -355,7 +355,7 @@ public class Serialize {
 	 * Size = length
 	 */
 	public Serializer<String> string(int length) {
-		return new Serializer<String>() {
+		return new Serializer<>() {
 			public String read(DataInput_ dataInput) throws IOException {
 				byte[] bs = new byte[length];
 				int l = dataInput.readInt();
@@ -374,7 +374,7 @@ public class Serialize {
 	public <T> Serializer<T> verify(Object o, Serializer<T> serializer) {
 		int c = o.hashCode();
 
-		return new Serializer<T>() {
+		return new Serializer<>() {
 			public T read(DataInput_ dataInput) throws IOException {
 				if (dataInput.readInt() == c)
 					return serializer.read(dataInput);
@@ -395,7 +395,7 @@ public class Serialize {
 	 * Size = 1
 	 */
 	private Serializer<Boolean> boolean_() {
-		return new Serializer<Boolean>() {
+		return new Serializer<>() {
 			public Boolean read(DataInput_ dataInput) throws IOException {
 				return dataInput.readByte() == -1;
 			}
@@ -412,7 +412,7 @@ public class Serialize {
 	 * Size = 8
 	 */
 	private Serializer<Double> double_() {
-		return new Serializer<Double>() {
+		return new Serializer<>() {
 			public Double read(DataInput_ dataInput) throws IOException {
 				return dataInput.readDouble();
 			}
@@ -429,7 +429,7 @@ public class Serialize {
 	 * Size = 4
 	 */
 	private Serializer<Float> float_() {
-		return new Serializer<Float>() {
+		return new Serializer<>() {
 			public Float read(DataInput_ dataInput) throws IOException {
 				return dataInput.readFloat();
 			}
@@ -446,7 +446,7 @@ public class Serialize {
 	 * Size = 4
 	 */
 	private Serializer<Integer> int_() {
-		return new Serializer<Integer>() {
+		return new Serializer<>() {
 			public Integer read(DataInput_ dataInput) throws IOException {
 				return dataInput.readInt();
 			}
@@ -458,7 +458,7 @@ public class Serialize {
 	}
 
 	private <K, V> Serializer<Map<K, V>> map_(Serializer<K> ks, Serializer<V> vs) {
-		return new Serializer<Map<K, V>>() {
+		return new Serializer<>() {
 			public Map<K, V> read(DataInput_ dataInput) throws IOException {
 				int size = int_.read(dataInput);
 				Map<K, V> map = new HashMap<>();
@@ -481,7 +481,7 @@ public class Serialize {
 	}
 
 	private <T> Serializer<T> poly(Class<T> interface_) {
-		return new Serializer<T>() {
+		return new Serializer<>() {
 			public T read(DataInput_ dataInput) throws IOException {
 				Class<?> c = Rethrow.ex(() -> Class.forName(dataInput.readUTF()));
 				if (interface_.isAssignableFrom(c)) {
