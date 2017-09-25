@@ -48,7 +48,7 @@ public class LcsBfs<T> {
 		int size0 = l0.size();
 		int size1 = l1.size();
 
-		Node node = Search.breadthFirst(new Traverser<Node>() {
+		Node node = Search.breadthFirst(new Traverser<>() {
 			public List<Node> generate(Node node) {
 				List<Node> nodes = new ArrayList<>();
 				if (node.pos0 < size0)

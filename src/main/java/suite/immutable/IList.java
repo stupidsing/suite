@@ -54,7 +54,7 @@ public class IList<T> implements Iterable<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return FunUtil.iterator(new Source<T>() {
+		return FunUtil.iterator(new Source<>() {
 			private IList<T> current = IList.this;
 
 			public T source() {
