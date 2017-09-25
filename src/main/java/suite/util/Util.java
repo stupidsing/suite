@@ -52,9 +52,9 @@ public class Util {
 	}
 
 	/**
-	 * Reads a line from a stream with a maximum line length limit. Removes carriage
-	 * return if it is DOS-mode line feed (CR-LF). Unknown behaviour when dealing
-	 * with non-ASCII encoding characters.
+	 * Reads a line from a stream with a maximum line length limit. Removes
+	 * carriage return if it is DOS-mode line feed (CR-LF). Unknown behaviour
+	 * when dealing with non-ASCII encoding characters.
 	 */
 	public static String readLine(InputStream is) {
 		return Rethrow.ex(() -> {
@@ -94,7 +94,7 @@ public class Util {
 		IntMutable mutableCode = IntMutable.nil();
 
 		Callable<Integer> runnableEx = () -> {
-			try (ExecutableProgram main_ = clazz.newInstance()) {
+			try (ExecutableProgram main_ = Object_.new_(clazz)) {
 				return main_.run(args) ? 0 : 1;
 			} catch (ReflectiveOperationException ex) {
 				LogUtil.fatal(ex);

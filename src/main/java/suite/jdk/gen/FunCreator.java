@@ -43,6 +43,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.BinOp;
+import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -213,8 +214,9 @@ public class FunCreator<I> extends FunFactory {
 		}
 
 		private I create(Map<String, Object> fieldValues) {
+			I t = Object_.new_(clazz);
+
 			return Rethrow.ex(() -> {
-				I t = clazz.newInstance();
 				for (Field field : clazz.getDeclaredFields()) {
 					String fieldName = field.getName();
 					Pair<Type, Object> typeValue;

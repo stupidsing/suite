@@ -18,7 +18,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 	public AutoObject<T> clone() {
 		return Rethrow.ex(() -> {
 			@SuppressWarnings("unchecked")
-			AutoObject<T> t1 = (AutoObject<T>) getClass().newInstance();
+			AutoObject<T> t1 = (AutoObject<T>) Object_.new_(getClass());
 			for (Field field : fields_())
 				field.set(t1, field.get(this));
 			return t1;

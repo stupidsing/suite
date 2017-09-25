@@ -30,14 +30,15 @@ public class Intrinsics {
 	public interface IntrinsicCallback {
 
 		/**
-		 * Encloses an intrinsic function call with given parameter into a lazy result
-		 * node. Becomes immediate evaluation in the eager implementation.
+		 * Encloses an intrinsic function call with given parameter into a lazy
+		 * result node. Becomes immediate evaluation in the eager
+		 * implementation.
 		 */
 		public Node enclose(Intrinsic intrinsic, Node node);
 
 		/**
-		 * Realizes a possibly-lazy node into its bottom value. Returns the input for
-		 * the eager implementation.
+		 * Realizes a possibly-lazy node into its bottom value. Returns the
+		 * input for the eager implementation.
 		 */
 		public Node yawn(Node node);
 	}
@@ -101,7 +102,7 @@ public class Intrinsics {
 				, MonadIntrinsics.class //
 				, SeqIntrinsics.class //
 				, SuiteIntrinsics.class)) {
-			Object instance = Rethrow.ex(() -> clazz.newInstance());
+			Object instance = Object_.new_(clazz);
 
 			for (Field field : clazz.getFields())
 				if (Intrinsic.class.isAssignableFrom(field.getType())) {

@@ -126,7 +126,7 @@ public class Object_ {
 					return map;
 				}), object -> Rethrow.ex(() -> {
 					Map<?, ?> map = (Map<?, ?>) object;
-					Object object1 = clazz.newInstance();
+					Object object1 = new_(clazz);
 					for (Pair<String, Field> sf : sfs)
 						sf.t1.set(object1, map.get(sf.t0));
 					return object1;
@@ -164,6 +164,10 @@ public class Object_ {
 
 	public static <T extends Comparable<? super T>> T min(T t0, T t1) {
 		return compare(t0, t1) < 0 ? t0 : t1;
+	}
+
+	public static <T> T new_(Class<T> clazz) {
+		return Rethrow.ex(() -> clazz.getDeclaredConstructor().newInstance());
 	}
 
 	public static <T> Comparator<T> nullsFirst(Comparator<T> cmp0) {

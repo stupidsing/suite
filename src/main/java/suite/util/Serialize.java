@@ -107,7 +107,7 @@ public class Serialize {
 				.toArray();
 
 		Streamlet<Constructor<?>> ctors = Read.from(clazz.getDeclaredConstructors());
-		boolean isDefaultCtor = 0 < ctors.filter(ctor -> ctor.getParameterCount() == 0).size();
+		Constructor<?> defaultCtor = ctors.filter(ctor -> ctor.getParameterCount() == 0).first();
 		Constructor<?> immutableCtor = ctors.min((c0, c1) -> -Integer.compare(c0.getParameterCount(), c1.getParameterCount()));
 		immutableCtor.setAccessible(true);
 
@@ -115,8 +115,8 @@ public class Serialize {
 			public T read(DataInput_ dataInput) throws IOException {
 				return Rethrow.ex(() -> {
 					Object object;
-					if (isDefaultCtor) {
-						object = clazz.newInstance();
+					if (defaultCtor != null) {
+						object = defaultCtor.newInstance();
 						for (Pair<Field, ?> pair : pairs)
 							pair.t0.set(object, ((Serializer<?>) pair.t1).read(dataInput));
 					} else {
