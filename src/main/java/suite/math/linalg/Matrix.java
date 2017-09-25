@@ -12,6 +12,10 @@ public class Matrix {
 		return abs_(m);
 	}
 
+	public double absDiff(float[] m, float[] n) {
+		return Math.sqrt(dotDiff_(m, n));
+	}
+
 	public float[] add(float[] m, float[] n) {
 		return addOn(copy(m), n);
 	}
@@ -68,13 +72,7 @@ public class Matrix {
 	}
 
 	public float dotDiff(float[] m, float[] n) {
-		int length = sameLength_(m, n);
-		float sum = 0;
-		for (int i = 0; i < length; i++) {
-			double d = m[i] - n[i];
-			sum += d * d;
-		}
-		return sum;
+		return dotDiff_(m, n);
 	}
 
 	public boolean equals(float[][] m, float[][] n) {
@@ -464,6 +462,16 @@ public class Matrix {
 		float sum = 0;
 		for (int i = 0; i < length; i++)
 			sum += m[i] * n[i];
+		return sum;
+	}
+
+	private float dotDiff_(float[] m, float[] n) {
+		int length = sameLength_(m, n);
+		float sum = 0;
+		for (int i = 0; i < length; i++) {
+			double d = m[i] - n[i];
+			sum += d * d;
+		}
 		return sum;
 	}
 
