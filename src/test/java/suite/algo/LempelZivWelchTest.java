@@ -42,7 +42,7 @@ public class LempelZivWelchTest {
 	private String doTest(String s0) {
 		byte[] bs = s0.getBytes(Constants.charset);
 
-		Source<Byte> source0 = new Source<Byte>() {
+		Source<Byte> source0 = new Source<>() {
 			private int index;
 
 			public Byte source() {
