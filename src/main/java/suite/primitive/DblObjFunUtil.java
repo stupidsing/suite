@@ -21,7 +21,7 @@ import suite.util.Thread_;
 public class DblObjFunUtil {
 
 	public static <V> DblObjSource<V> append(double key, V value, DblObjSource<V> source) {
-		return new DblObjSource<V>() {
+		return new DblObjSource<>() {
 			private boolean isAppended = false;
 
 			public boolean source2(DblObjPair<V> pair) {
@@ -38,7 +38,7 @@ public class DblObjFunUtil {
 	}
 
 	public static <V> Source<DblObjSource<V>> chunk(int n, DblObjSource<V> source) {
-		return new Source<DblObjSource<V>>() {
+		return new Source<>() {
 			private DblObjPair<V> pair;
 			private boolean isAvail;
 			private int i;
@@ -62,7 +62,7 @@ public class DblObjFunUtil {
 	}
 
 	public static <V> DblObjSource<V> concat(Source<DblObjSource<V>> source) {
-		return new DblObjSource<V>() {
+		return new DblObjSource<>() {
 			private DblObjSource<V> source2 = nullSource();
 
 			public boolean source2(DblObjPair<V> pair) {
@@ -75,7 +75,7 @@ public class DblObjFunUtil {
 	}
 
 	public static <V> DblObjSource<V> cons(double key, V value, DblObjSource<V> source2) {
-		return new DblObjSource<V>() {
+		return new DblObjSource<>() {
 			private boolean isFirst = true;
 
 			public boolean source2(DblObjPair<V> pair) {
@@ -147,7 +147,7 @@ public class DblObjFunUtil {
 	}
 
 	public static <V> Iterator<DblObjPair<V>> iterator(DblObjSource<V> source2) {
-		return new Iterator<DblObjPair<V>>() {
+		return new Iterator<>() {
 			private DblObjPair<V> next = null;
 
 			public boolean hasNext() {
@@ -211,12 +211,12 @@ public class DblObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <V> Source<DblObjSource<V>> split(DblObjPredicate<V> fun0, DblObjSource<V> source2) {
 		DblObjPredicate<V> fun1 = fun0.rethrow();
-		return new Source<DblObjSource<V>>() {
+		return new Source<>() {
 			private DblObjPair<V> pair = DblObjPair.of((double) 0, null);
 			private boolean isAvailable;
 			private DblObjSource<V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun1.test(pair.t0, pair.t1);

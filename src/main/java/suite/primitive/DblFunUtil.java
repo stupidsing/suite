@@ -41,7 +41,7 @@ public class DblFunUtil {
 	}
 
 	public static Source<DblSource> chunk(int n, DblSource source) {
-		return new Source<DblSource>() {
+		return new Source<>() {
 			private double c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;
 			private int i;
@@ -141,7 +141,7 @@ public class DblFunUtil {
 	}
 
 	public static Iterator<Double> iterator(DblSource source) {
-		return new Iterator<Double>() {
+		return new Iterator<>() {
 			private double next = EMPTYVALUE;
 
 			public boolean hasNext() {
@@ -214,12 +214,12 @@ public class DblFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static Source<DblSource> split(DblPredicate fun0, DblSource source) {
 		DblPredicate fun1 = fun0.rethrow();
-		return new Source<DblSource>() {
+		return new Source<>() {
 			private double c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;
 			private DblSource source_ = () -> (isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && !fun1.test(c) ? c

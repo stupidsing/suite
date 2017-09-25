@@ -34,7 +34,7 @@ public class ChrDblFunUtil {
 	}
 
 	public static <V> Source<ChrDblSource> chunk(int n, ChrDblSource source) {
-		return new Source<ChrDblSource>() {
+		return new Source<>() {
 			private ChrDblPair pair;
 			private boolean isAvail;
 			private int i;
@@ -143,7 +143,7 @@ public class ChrDblFunUtil {
 	}
 
 	public static <V> Iterator<ChrDblPair> iterator(ChrDblSource source2) {
-		return new Iterator<ChrDblPair>() {
+		return new Iterator<>() {
 			private ChrDblPair next = null;
 
 			public boolean hasNext() {
@@ -207,12 +207,12 @@ public class ChrDblFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static Source<ChrDblSource> split(ChrDblPredicate fun0, ChrDblSource source2) {
 		ChrDblPredicate fun1 = fun0.rethrow();
-		return new Source<ChrDblSource>() {
+		return new Source<>() {
 			private ChrDblPair pair = ChrDblPair.of((char) 0, (double) 0);
 			private boolean isAvailable;
 			private ChrDblSource source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun1.test(pair.t0, pair.t1);

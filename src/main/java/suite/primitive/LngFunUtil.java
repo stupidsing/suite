@@ -41,7 +41,7 @@ public class LngFunUtil {
 	}
 
 	public static Source<LngSource> chunk(int n, LngSource source) {
-		return new Source<LngSource>() {
+		return new Source<>() {
 			private long c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;
 			private int i;
@@ -141,7 +141,7 @@ public class LngFunUtil {
 	}
 
 	public static Iterator<Long> iterator(LngSource source) {
-		return new Iterator<Long>() {
+		return new Iterator<>() {
 			private long next = EMPTYVALUE;
 
 			public boolean hasNext() {
@@ -214,12 +214,12 @@ public class LngFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static Source<LngSource> split(LngPredicate fun0, LngSource source) {
 		LngPredicate fun1 = fun0.rethrow();
-		return new Source<LngSource>() {
+		return new Source<>() {
 			private long c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;
 			private LngSource source_ = () -> (isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && !fun1.test(c) ? c

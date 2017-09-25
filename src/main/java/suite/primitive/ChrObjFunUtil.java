@@ -21,7 +21,7 @@ import suite.util.Thread_;
 public class ChrObjFunUtil {
 
 	public static <V> ChrObjSource<V> append(char key, V value, ChrObjSource<V> source) {
-		return new ChrObjSource<V>() {
+		return new ChrObjSource<>() {
 			private boolean isAppended = false;
 
 			public boolean source2(ChrObjPair<V> pair) {
@@ -38,7 +38,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> Source<ChrObjSource<V>> chunk(int n, ChrObjSource<V> source) {
-		return new Source<ChrObjSource<V>>() {
+		return new Source<>() {
 			private ChrObjPair<V> pair;
 			private boolean isAvail;
 			private int i;
@@ -62,7 +62,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> ChrObjSource<V> concat(Source<ChrObjSource<V>> source) {
-		return new ChrObjSource<V>() {
+		return new ChrObjSource<>() {
 			private ChrObjSource<V> source2 = nullSource();
 
 			public boolean source2(ChrObjPair<V> pair) {
@@ -75,7 +75,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> ChrObjSource<V> cons(char key, V value, ChrObjSource<V> source2) {
-		return new ChrObjSource<V>() {
+		return new ChrObjSource<>() {
 			private boolean isFirst = true;
 
 			public boolean source2(ChrObjPair<V> pair) {
@@ -147,7 +147,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> Iterator<ChrObjPair<V>> iterator(ChrObjSource<V> source2) {
-		return new Iterator<ChrObjPair<V>>() {
+		return new Iterator<>() {
 			private ChrObjPair<V> next = null;
 
 			public boolean hasNext() {
@@ -211,12 +211,12 @@ public class ChrObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <V> Source<ChrObjSource<V>> split(ChrObjPredicate<V> fun0, ChrObjSource<V> source2) {
 		ChrObjPredicate<V> fun1 = fun0.rethrow();
-		return new Source<ChrObjSource<V>>() {
+		return new Source<>() {
 			private ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 			private boolean isAvailable;
 			private ChrObjSource<V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun1.test(pair.t0, pair.t1);

@@ -21,7 +21,7 @@ import suite.util.Thread_;
 public class LngObjFunUtil {
 
 	public static <V> LngObjSource<V> append(long key, V value, LngObjSource<V> source) {
-		return new LngObjSource<V>() {
+		return new LngObjSource<>() {
 			private boolean isAppended = false;
 
 			public boolean source2(LngObjPair<V> pair) {
@@ -38,7 +38,7 @@ public class LngObjFunUtil {
 	}
 
 	public static <V> Source<LngObjSource<V>> chunk(int n, LngObjSource<V> source) {
-		return new Source<LngObjSource<V>>() {
+		return new Source<>() {
 			private LngObjPair<V> pair;
 			private boolean isAvail;
 			private int i;
@@ -62,7 +62,7 @@ public class LngObjFunUtil {
 	}
 
 	public static <V> LngObjSource<V> concat(Source<LngObjSource<V>> source) {
-		return new LngObjSource<V>() {
+		return new LngObjSource<>() {
 			private LngObjSource<V> source2 = nullSource();
 
 			public boolean source2(LngObjPair<V> pair) {
@@ -75,7 +75,7 @@ public class LngObjFunUtil {
 	}
 
 	public static <V> LngObjSource<V> cons(long key, V value, LngObjSource<V> source2) {
-		return new LngObjSource<V>() {
+		return new LngObjSource<>() {
 			private boolean isFirst = true;
 
 			public boolean source2(LngObjPair<V> pair) {
@@ -147,7 +147,7 @@ public class LngObjFunUtil {
 	}
 
 	public static <V> Iterator<LngObjPair<V>> iterator(LngObjSource<V> source2) {
-		return new Iterator<LngObjPair<V>>() {
+		return new Iterator<>() {
 			private LngObjPair<V> next = null;
 
 			public boolean hasNext() {
@@ -211,12 +211,12 @@ public class LngObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <V> Source<LngObjSource<V>> split(LngObjPredicate<V> fun0, LngObjSource<V> source2) {
 		LngObjPredicate<V> fun1 = fun0.rethrow();
-		return new Source<LngObjSource<V>>() {
+		return new Source<>() {
 			private LngObjPair<V> pair = LngObjPair.of((long) 0, null);
 			private boolean isAvailable;
 			private LngObjSource<V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun1.test(pair.t0, pair.t1);

@@ -59,7 +59,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> Source2<K, V> append(K key, V value, Source2<K, V> source) {
-		return new Source2<K, V>() {
+		return new Source2<>() {
 			private boolean isAppended = false;
 
 			public boolean source2(Pair<K, V> pair) {
@@ -77,7 +77,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> Source<Source2<K, V>> chunk(int n, Source2<K, V> source2) {
-		return new Source<Source2<K, V>>() {
+		return new Source<>() {
 			private Pair<K, V> pair;
 			private boolean isAvail;
 			private int i;
@@ -101,7 +101,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> Source2<K, V> concat(Source<Source2<K, V>> source) {
-		return new Source2<K, V>() {
+		return new Source2<>() {
 			private Source2<K, V> source2 = nullSource();
 
 			public boolean source2(Pair<K, V> pair) {
@@ -114,7 +114,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> Source2<K, V> cons(K key, V value, Source2<K, V> source2) {
-		return new Source2<K, V>() {
+		return new Source2<>() {
 			private boolean isFirst = true;
 
 			public boolean source2(Pair<K, V> pair) {
@@ -186,7 +186,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> Iterator<Pair<K, V>> iterator(Source2<K, V> source2) {
-		return new Iterator<Pair<K, V>>() {
+		return new Iterator<>() {
 			private Pair<K, V> next = null;
 
 			public boolean hasNext() {
@@ -239,12 +239,12 @@ public class FunUtil2 {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <K, V> Source<Source2<K, V>> split(BiPredicate<K, V> fun0, Source2<K, V> source2) {
 		BiPredicate<K, V> fun1 = Rethrow.biPredicate(fun0);
-		return new Source<Source2<K, V>>() {
+		return new Source<>() {
 			private Pair<K, V> pair = Pair.of(null, null);
 			private boolean isAvailable;
 			private Source2<K, V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun1.test(pair.t0, pair.t1);

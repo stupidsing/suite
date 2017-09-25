@@ -49,7 +49,7 @@ public class FunUtil {
 	}
 
 	public static <T> Source<T> append(T t, Source<T> source) {
-		return new Source<T>() {
+		return new Source<>() {
 			private boolean isAppended = false;
 
 			public T source() {
@@ -68,7 +68,7 @@ public class FunUtil {
 	}
 
 	public static <T> Source<Source<T>> chunk(int n, Source<T> source) {
-		return new Source<Source<T>>() {
+		return new Source<>() {
 			private T t = source.source();
 			private boolean isAvail = t != null;
 			private int i;
@@ -88,7 +88,7 @@ public class FunUtil {
 	}
 
 	public static <T> Source<T> concat(Source<Source<T>> source) {
-		return new Source<T>() {
+		return new Source<>() {
 			private Source<T> source0 = nullSource();
 
 			public T source() {
@@ -101,7 +101,7 @@ public class FunUtil {
 	}
 
 	public static <T> Source<T> cons(T t, Source<T> source) {
-		return new Source<T>() {
+		return new Source<>() {
 			private boolean isFirst = true;
 
 			public T source() {
@@ -126,7 +126,7 @@ public class FunUtil {
 	}
 
 	public static <T> Source<T> flatten(Source<Iterable<T>> source) {
-		return new Source<T>() {
+		return new Source<>() {
 			private Iterator<T> iter = Collections.emptyIterator();
 
 			public T source() {
@@ -168,7 +168,7 @@ public class FunUtil {
 	}
 
 	public static <T> Iterator<T> iterator(Source<T> source) {
-		return new Iterator<T>() {
+		return new Iterator<>() {
 			private T next = null;
 
 			public boolean hasNext() {
@@ -219,12 +219,12 @@ public class FunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <T> Source<Source<T>> split(Predicate<T> fun0, Source<T> source) {
 		Predicate<T> fun1 = Rethrow.predicate(fun0);
-		return new Source<Source<T>>() {
+		return new Source<>() {
 			private T t = source.source();
 			private boolean isAvail = t != null;
 			private Source<T> source_ = () -> (isAvail = isAvail && (t = source.source()) != null) && !fun1.test(t) ? t : null;
