@@ -121,7 +121,7 @@ public class FltObjMap<V> {
 	}
 
 	private FltObjSource<V> source_() {
-		return new FltObjSource<V>() {
+		return new FltObjSource<>() {
 			private int capacity = vs.length;
 			private int index = 0;
 
