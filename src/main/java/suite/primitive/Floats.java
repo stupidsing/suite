@@ -220,7 +220,7 @@ public class Floats implements Iterable<Float> {
 
 	@Override
 	public Iterator<Float> iterator() {
-		return new Iterator<Float>() {
+		return new Iterator<>() {
 			private int pos = start;
 
 			public boolean hasNext() {

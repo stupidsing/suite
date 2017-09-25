@@ -192,7 +192,7 @@ public class Bytes implements Iterable<Byte> {
 
 	@Override
 	public Iterator<Byte> iterator() {
-		return new Iterator<Byte>() {
+		return new Iterator<>() {
 			private int pos = start;
 
 			public boolean hasNext() {

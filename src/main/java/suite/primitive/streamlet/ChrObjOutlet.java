@@ -73,7 +73,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> ChrObjOutlet<V> of(ChrObjPair<V>... kvs) {
-		return of(new ChrObjSource<V>() {
+		return of(new ChrObjSource<>() {
 			private int i;
 
 			public boolean source2(ChrObjPair<V> pair) {
@@ -90,7 +90,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public static <V> ChrObjOutlet<V> of(Iterable<ChrObjPair<V>> col) {
 		Iterator<ChrObjPair<V>> iter = col.iterator();
-		return of(new ChrObjSource<V>() {
+		return of(new ChrObjSource<>() {
 			public boolean source2(ChrObjPair<V> pair) {
 				boolean b = iter.hasNext();
 				if (b) {
@@ -401,7 +401,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjOutlet<V> take(int n) {
-		return of(new ChrObjSource<V>() {
+		return of(new ChrObjSource<>() {
 			private int count = n;
 
 			public boolean source2(ChrObjPair<V> pair) {

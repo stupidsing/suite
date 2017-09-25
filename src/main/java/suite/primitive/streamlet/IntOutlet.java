@@ -158,7 +158,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public <U, O> Outlet<O> cross(List<U> list, IntObj_Obj<U, O> fun) {
-		return Outlet.of(new Source<O>() {
+		return Outlet.of(new Source<>() {
 			private int c;
 			private int index = list.size();
 
@@ -239,7 +239,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public IntObjOutlet<Integer> index() {
-		return IntObjOutlet.of(new IntObjSource<Integer>() {
+		return IntObjOutlet.of(new IntObjSource<>() {
 			private int i = 0;
 
 			public boolean source2(IntObjPair<Integer> pair) {

@@ -73,7 +73,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> FltObjOutlet<V> of(FltObjPair<V>... kvs) {
-		return of(new FltObjSource<V>() {
+		return of(new FltObjSource<>() {
 			private int i;
 
 			public boolean source2(FltObjPair<V> pair) {
@@ -90,7 +90,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 
 	public static <V> FltObjOutlet<V> of(Iterable<FltObjPair<V>> col) {
 		Iterator<FltObjPair<V>> iter = col.iterator();
-		return of(new FltObjSource<V>() {
+		return of(new FltObjSource<>() {
 			public boolean source2(FltObjPair<V> pair) {
 				boolean b = iter.hasNext();
 				if (b) {
@@ -401,7 +401,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public FltObjOutlet<V> take(int n) {
-		return of(new FltObjSource<V>() {
+		return of(new FltObjSource<>() {
 			private int count = n;
 
 			public boolean source2(FltObjPair<V> pair) {

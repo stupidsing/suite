@@ -165,7 +165,7 @@ public class Amd64 {
 	public OpReg esi = reg32[6];
 	public OpReg edi = reg32[7];
 
-	public BiMap<Atom, OpReg> regsByName = new HashBiMap<Atom, OpReg>() {
+	public BiMap<Atom, OpReg> regsByName = new HashBiMap<>() {
 		{
 			put(Atom.of("AL"), al);
 			put(Atom.of("CL"), cl);
@@ -235,7 +235,7 @@ public class Amd64 {
 		}
 	};
 
-	public BiMap<Atom, OpRegControl> cregsByName = new HashBiMap<Atom, OpRegControl>() {
+	public BiMap<Atom, OpRegControl> cregsByName = new HashBiMap<>() {
 		{
 			put(Atom.of("CR0"), newRegControl(0));
 			put(Atom.of("CR2"), newRegControl(2));
@@ -244,7 +244,7 @@ public class Amd64 {
 		}
 	};
 
-	public BiMap<Atom, OpRegSegment> sregsByName = new HashBiMap<Atom, OpRegSegment>() {
+	public BiMap<Atom, OpRegSegment> sregsByName = new HashBiMap<>() {
 		{
 			put(Atom.of("ES"), newRegSegment(0));
 			put(Atom.of("CS"), newRegSegment(1));

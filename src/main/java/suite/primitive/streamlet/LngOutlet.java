@@ -158,7 +158,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public <U, O> Outlet<O> cross(List<U> list, LngObj_Obj<U, O> fun) {
-		return Outlet.of(new Source<O>() {
+		return Outlet.of(new Source<>() {
 			private long c;
 			private int index = list.size();
 
@@ -239,7 +239,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public LngObjOutlet<Integer> index() {
-		return LngObjOutlet.of(new LngObjSource<Integer>() {
+		return LngObjOutlet.of(new LngObjSource<>() {
 			private int i = 0;
 
 			public boolean source2(LngObjPair<Integer> pair) {

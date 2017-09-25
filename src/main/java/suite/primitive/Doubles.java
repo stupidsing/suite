@@ -220,7 +220,7 @@ public class Doubles implements Iterable<Double> {
 
 	@Override
 	public Iterator<Double> iterator() {
-		return new Iterator<Double>() {
+		return new Iterator<>() {
 			private int pos = start;
 
 			public boolean hasNext() {

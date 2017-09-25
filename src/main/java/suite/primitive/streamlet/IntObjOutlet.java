@@ -73,7 +73,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> IntObjOutlet<V> of(IntObjPair<V>... kvs) {
-		return of(new IntObjSource<V>() {
+		return of(new IntObjSource<>() {
 			private int i;
 
 			public boolean source2(IntObjPair<V> pair) {
@@ -90,7 +90,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	public static <V> IntObjOutlet<V> of(Iterable<IntObjPair<V>> col) {
 		Iterator<IntObjPair<V>> iter = col.iterator();
-		return of(new IntObjSource<V>() {
+		return of(new IntObjSource<>() {
 			public boolean source2(IntObjPair<V> pair) {
 				boolean b = iter.hasNext();
 				if (b) {
@@ -401,7 +401,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public IntObjOutlet<V> take(int n) {
-		return of(new IntObjSource<V>() {
+		return of(new IntObjSource<>() {
 			private int count = n;
 
 			public boolean source2(IntObjPair<V> pair) {
