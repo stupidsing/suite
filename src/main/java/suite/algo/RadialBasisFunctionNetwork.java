@@ -1,6 +1,6 @@
 package suite.algo;
 
-import java.util.Arrays;
+import java.util.List;
 
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
@@ -27,7 +27,7 @@ public class RadialBasisFunctionNetwork {
 
 	public Fun<float[], float[]> train(float[][] ins, float[][] outs) {
 		int length = ins[0].length;
-		int[] kmc = new KmeansCluster(length).kMeansCluster(Arrays.asList(ins), nHiddens, nHiddens);
+		int[] kmc = new KmeansCluster(length).kMeansCluster(List.of(ins), nHiddens, nHiddens);
 
 		int[] sizes = new int[nHiddens];
 		float[][] sums = new float[nHiddens][length];

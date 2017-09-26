@@ -1,7 +1,6 @@
 package suite.algo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +68,7 @@ public class LempelZivWelch<Unit> {
 		List<List<Unit>> dict = new ArrayList<>();
 
 		for (Unit unit : units)
-			dict.add(Arrays.asList(unit));
+			dict.add(List.of(unit));
 
 		Integer index;
 

@@ -1,7 +1,6 @@
 package suite.trade.data;
 
 import java.time.DayOfWeek;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +14,7 @@ import suite.util.String_;
 public class HkexUtil {
 
 	private static HongKongGovernment hkg = new HongKongGovernment();
-	private static Set<DayOfWeek> weekends = new HashSet<>(Arrays.asList(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
+	private static Set<DayOfWeek> weekends = new HashSet<>(List.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
 	private static Predicate<Time> marketOpen_ = HkexUtil::isMarketOpen_;
 	private static Predicate<Time> marketClose = marketOpen_.negate();
 

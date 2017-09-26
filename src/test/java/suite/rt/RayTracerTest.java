@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,10 +45,10 @@ public class RayTracerTest {
 		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(.4f)));
 		RtObject sphere0 = Sphere.c(v(-.5f, 0f, 5f), 1f, solid(cb));
 		RtObject sphere1 = Sphere.c(v(.5f, 0f, 5f), 1f, solid(cb));
-		Scene scene = new Scene(Arrays.asList(sky, new Intersect(Arrays.asList(sphere0, sphere1))));
+		Scene scene = new Scene(List.of(sky, new Intersect(List.of(sphere0, sphere1))));
 
 		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
-		List<LightSource> lights = Arrays.asList(light);
+		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -60,10 +59,10 @@ public class RayTracerTest {
 		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(.4f)));
 		RtObject sphere0 = Sphere.c(v(-.5f, 0f, 5f), 1f, solid(cb));
 		RtObject sphere1 = Sphere.c(v(.5f, 0f, 4f), 1f, solid(cb));
-		Scene scene = new Scene(Arrays.asList(sky, new Minus(sphere0, sphere1)));
+		Scene scene = new Scene(List.of(sky, new Minus(sphere0, sphere1)));
 
 		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
-		List<LightSource> lights = Arrays.asList(light);
+		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -74,10 +73,10 @@ public class RayTracerTest {
 		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(.4f)));
 		RtObject sphere0 = Sphere.c(v(-.5f, 0f, 5f), 1f, solid(cb));
 		RtObject sphere1 = Sphere.c(v(.5f, 0f, 5f), 1f, solid(cb));
-		Scene scene = new Scene(Arrays.asList(sky, new Union(Arrays.asList(sphere0, sphere1))));
+		Scene scene = new Scene(List.of(sky, new Union(List.of(sphere0, sphere1))));
 
 		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
-		List<LightSource> lights = Arrays.asList(light);
+		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -93,10 +92,10 @@ public class RayTracerTest {
 		// rtObject sphere5 =
 		// sphere.c(v(0f, -20f, 30f), 3f, solid(v(0f, 0f, 0f)));
 
-		Scene scene = new Scene(Arrays.asList(sphere0, sphere1, sphere2, sphere3, sphere4));
+		Scene scene = new Scene(List.of(sphere0, sphere1, sphere2, sphere3, sphere4));
 
 		LightSource light0 = new PointLightSource(v(0f, -20f, 30f), gray(3f));
-		List<LightSource> lights = Arrays.asList(light0);
+		List<LightSource> lights = List.of(light0);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 		rayTracer.setAmbient(gray(2f));
@@ -107,10 +106,10 @@ public class RayTracerTest {
 	@Test
 	public void testLight() throws IOException {
 		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
-		Scene scene = new Scene(Arrays.asList(sky));
+		Scene scene = new Scene(List.of(sky));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
-		List<LightSource> lights = Arrays.asList(light);
+		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -124,11 +123,11 @@ public class RayTracerTest {
 		RtObject sphere2 = Sphere.c(v(-1f, 1f, 8f), 1f, glassy(cb));
 		RtObject plane0 = new Plane(v(0f, -1f, 0f), 20f, solid(cy));
 		RtObject triangle = Triangle.c(v(.5f, .5f, 3f), v(.5f, 0f, 0f), v(0f, .5f, 0f), glassy(cc));
-		Scene scene = new Scene(Arrays.asList(sky, sphere0, sphere1, sphere2, plane0, triangle));
+		Scene scene = new Scene(List.of(sky, sphere0, sphere1, sphere2, plane0, triangle));
 
 		LightSource light0 = new PointLightSource(v(10f, 10f, -10f), cp);
 		LightSource light1 = new PointLightSource(v(-10f, 10f, -10f), gray(2f));
-		List<LightSource> lights = Arrays.asList(light0, light1);
+		List<LightSource> lights = List.of(light0, light1);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -138,10 +137,10 @@ public class RayTracerTest {
 	public void testSphereMirror() throws IOException {
 		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cb));
 		RtObject mirror = new Plane(v(1f, 0f, 0f), -.3f, glassy(cw));
-		Scene scene = new Scene(Arrays.asList(sphere, mirror));
+		Scene scene = new Scene(List.of(sphere, mirror));
 
 		LightSource light = new PointLightSource(v(10000f, 10000f, -10000f), gray(1.5f));
-		List<LightSource> lights = Arrays.asList(light);
+		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -151,10 +150,10 @@ public class RayTracerTest {
 	public void testSphereReflection() throws IOException {
 		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
 		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, reflective(cb));
-		Scene scene = new Scene(Arrays.asList(sky, sphere));
+		Scene scene = new Scene(List.of(sky, sphere));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
-		List<LightSource> lights = Arrays.asList(light);
+		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -164,10 +163,10 @@ public class RayTracerTest {
 	public void testSphereRefraction() throws IOException {
 		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
 		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, glassy(cb));
-		Scene scene = new Scene(Arrays.asList(sky, sphere));
+		Scene scene = new Scene(List.of(sky, sphere));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
-		List<LightSource> lights = Arrays.asList(light);
+		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -177,10 +176,10 @@ public class RayTracerTest {
 	public void testSphereSolid() throws IOException {
 		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
 		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cb));
-		Scene scene = new Scene(Arrays.asList(sky, sphere));
+		Scene scene = new Scene(List.of(sky, sphere));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
-		List<LightSource> lights = Arrays.asList(light);
+		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -191,10 +190,10 @@ public class RayTracerTest {
 		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(.4f)));
 		RtObject sphere0 = Sphere.c(v(-1.5f, 0f, 5f), 1f, glassy(cb));
 		RtObject sphere1 = Sphere.c(v(1.5f, 0f, 5f), 1f, glassy(cb));
-		Scene scene = new Scene(Arrays.asList(sky, sphere0, sphere1));
+		Scene scene = new Scene(List.of(sky, sphere0, sphere1));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 5f), gray(1.5f));
-		List<LightSource> lights = Arrays.asList(light);
+		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);

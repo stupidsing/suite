@@ -1,7 +1,6 @@
 package suite;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -80,7 +79,7 @@ public class DailyMain extends ExecutableProgram {
 		String ymd = Time.now().ymd();
 
 		// perform systematic trading
-		List<Result> results = Arrays.asList( //
+		List<Result> results = List.of( //
 				alloc("bb", 66666f, bacs.bac_bbHold), //
 				alloc("bug", 0f, bacs.bac_sell), //
 				alloc("donchian", 150000f, bacs.bac_donHold), //

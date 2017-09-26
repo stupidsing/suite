@@ -3,7 +3,7 @@ package suite;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import suite.http.HttpHandler;
 import suite.http.HttpHeaderUtil;
@@ -60,7 +60,7 @@ public class ServerMain extends ExecutableProgram {
 	}
 
 	private void runScheduler() {
-		new Scheduler(Arrays.asList( //
+		new Scheduler(List.of( //
 				Schedule.ofDaily(LocalTime.of(18, 0), () -> DailyMain.main(null)), //
 				Schedule.ofRepeat(5, () -> System.out.println("." + LocalDateTime.now())), //
 				Schedule.of(LocalDateTime.of(2099, 1, 1, 0, 0), ArrayList::new)) //

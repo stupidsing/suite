@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -58,7 +57,7 @@ public class MapifyTest {
 		A a = new A();
 		B b = new B();
 		Container object0 = new Container();
-		object0.is = Arrays.asList(a, b);
+		object0.is = List.of(a, b);
 
 		Object map = mapify.mapify(Container.class, object0);
 		assertNotNull(map);

@@ -1,7 +1,6 @@
 package suite.fp;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -245,7 +244,7 @@ public class InterpretFunEager {
 		Node mode = isLazyify ? Atom.of("LAZY") : Atom.of("EAGER");
 		Node query = Suite.substitute("source .in, fc-process-function .0 .in .out, sink .out", mode);
 
-		RuleSet rs = Suite.newRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
+		RuleSet rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
 		Finder finder = new SewingProverBuilder2().build(rs).apply(query);
 		Node parsed = FindUtil.collectSingle(finder, node);
 		IntrinsicCallback ic = isLazyify ? lazyIntrinsicCallback() : Intrinsics.eagerIntrinsicCallback;
@@ -297,7 +296,7 @@ public class InterpretFunEager {
 	private IntrinsicCallback lazyIntrinsicCallback() {
 		return new IntrinsicCallback() {
 			public Node enclose(Intrinsic intrinsic, Node node) {
-				return new Wrap_(() -> intrinsic.invoke(this, Arrays.asList(node)));
+				return new Wrap_(() -> intrinsic.invoke(this, List.of(node)));
 			}
 
 			public Node yawn(Node node) {

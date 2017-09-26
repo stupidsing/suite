@@ -3,7 +3,6 @@ package suite.node.parser;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 import suite.Constants;
@@ -23,7 +22,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String[] args) throws IOException {
-		List<Pair<String, String>> fts = Arrays.asList( //
+		List<Pair<String, String>> fts = List.of( //
 				Pair.of("fc-define-var-types .0 .1 .2 .3", "fc-define-var-types .1 .2 .3 .0") //
 		);
 

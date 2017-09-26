@@ -1,6 +1,6 @@
 package suite.rt.planar;
 
-import java.util.Arrays;
+import java.util.List;
 
 import suite.math.Vector;
 import suite.rt.BoundingBox;
@@ -18,7 +18,7 @@ public class Parallelogram extends Planar implements RtObject {
 		Vector v1 = Vector.add(origin, axis1);
 		Vector v2 = Vector.add(origin, Vector.add(axis0, axis1));
 		Parallelogram parallelogram = new Parallelogram(origin, axis0, axis1, material);
-		return BoundingBox.bound(Arrays.asList(origin, v0, v1, v2), parallelogram);
+		return BoundingBox.bound(List.of(origin, v0, v1, v2), parallelogram);
 	}
 
 }

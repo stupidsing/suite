@@ -1,8 +1,8 @@
 package suite.immutable;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.file.ExtentAllocator.Extent;
@@ -74,7 +74,7 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 	public synchronized void end(boolean isComplete) {
 		if (isComplete) {
 			Pointer pointer1 = persister.save(mutator.get());
-			Pointer pointerx = persister.gc(Arrays.asList(pointer1), 9).getOrDefault(pointer1, pointer1);
+			Pointer pointerx = persister.gc(List.of(pointer1), 9).getOrDefault(pointer1, pointer1);
 			superblockFile.save(0, pointerx);
 		}
 

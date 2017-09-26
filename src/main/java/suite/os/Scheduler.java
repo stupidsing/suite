@@ -3,7 +3,6 @@ package suite.os;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import suite.streamlet.Read;
@@ -15,7 +14,7 @@ public class Scheduler {
 	private List<Schedule> schedules;
 
 	public static Scheduler of(Schedule... schedules) {
-		return new Scheduler(Arrays.asList(schedules));
+		return new Scheduler(List.of(schedules));
 	}
 
 	public Scheduler(List<Schedule> initialSchedule) {

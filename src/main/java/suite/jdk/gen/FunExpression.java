@@ -1,6 +1,5 @@
 package suite.jdk.gen;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.bcel.generic.ObjectType;
@@ -25,7 +24,7 @@ public class FunExpression {
 
 	public static abstract class FunExpr {
 		public FunExpr apply(FunExpr... parameters) {
-			return apply(Arrays.asList(parameters));
+			return apply(List.of(parameters));
 		}
 
 		public FunExpr apply(List<FunExpr> list) {
@@ -83,7 +82,7 @@ public class FunExpression {
 		}
 
 		public FunExpr invoke(Class<?> clazz, String methodName, FunExpr... parameters) {
-			return invoke(clazz, methodName, Arrays.asList(parameters));
+			return invoke(clazz, methodName, List.of(parameters));
 		}
 
 		public FunExpr invoke(Class<?> clazz, String methodName, List<FunExpr> list) {

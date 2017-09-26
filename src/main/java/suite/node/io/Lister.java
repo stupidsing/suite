@@ -1,6 +1,6 @@
 package suite.node.io;
 
-import java.util.Arrays;
+import java.util.List;
 
 import suite.immutable.IList;
 import suite.node.Atom;
@@ -43,7 +43,7 @@ public class Lister {
 		else if (nr.type != ReadType.TERM)
 			st = Read.from(nr.children).concatMap(p -> leaves(p.t1, IList.cons(p.t0, prefix)));
 		else
-			st = Read.from(Arrays.asList(IList.cons(nr.terminal, prefix)));
+			st = Read.from(List.of(IList.cons(nr.terminal, prefix)));
 
 		if (nr.op != null)
 			st = st.cons(IList.cons(Atom.of(nr.op.toString()), prefix));

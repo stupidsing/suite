@@ -1,7 +1,6 @@
 package suite.trade.data;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -228,7 +227,7 @@ public class DataSource {
 
 	public DataSource validate() {
 		validate(prices);
-		for (float[] prices1 : Arrays.asList(opens, closes, lows, highs))
+		for (float[] prices1 : List.of(opens, closes, lows, highs))
 			if (prices != prices1)
 				validate(prices1);
 		return this;

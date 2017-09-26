@@ -1,7 +1,6 @@
 package suite.asm;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +46,7 @@ public class Assembler {
 	}
 
 	public Assembler(int bits, boolean isLongMode, Fun<List<Pair<Reference, Node>>, List<Pair<Reference, Node>>> preassemble) {
-		ruleSet = Suite.newRuleSet(Arrays.asList("asm.sl", "auto.sl"));
+		ruleSet = Suite.newRuleSet(List.of("asm.sl", "auto.sl"));
 
 		if (isLongMode)
 			Suite.addRule(ruleSet, "as-long-mode");
@@ -68,10 +67,10 @@ public class Assembler {
 		Set<Character> whitespaces = Collections.singleton('\n');
 		Fun<String, List<Run>> gct = CommentPreprocessor.groupCommentPreprocessor(whitespaces);
 		Fun<String, List<Run>> lct = CommentPreprocessor.lineCommentPreprocessor(whitespaces);
-		String in1 = Preprocess.transform(Arrays.asList(gct, lct), in0).t0;
+		String in1 = Preprocess.transform(List.of(gct, lct), in0).t0;
 
 		Generalizer generalizer = new Generalizer();
-		List<String> lines = Arrays.asList(in1.split("\n"));
+		List<String> lines = List.of(in1.split("\n"));
 		Pair<String, String> pe;
 		int start = 0;
 
@@ -147,7 +146,7 @@ public class Assembler {
 
 	private Bytes assemble(boolean isPass2, int address, Node instruction) {
 		try {
-			List<Node> ins = Arrays.asList(Int.of(bits), Int.of(address), instruction);
+			List<Node> ins = List.of(Int.of(bits), Int.of(address), instruction);
 			List<Bytes> bytesList = new ArrayList<>();
 			finder.find(To.source(Tree.of(TermOp.AND___, ins)), node -> bytesList.add(convertByteStream(node)));
 			return Read.from(bytesList).min((bytes0, bytes1) -> bytes0.size() - bytes1.size());

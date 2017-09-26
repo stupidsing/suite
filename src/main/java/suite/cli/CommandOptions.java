@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,11 +52,11 @@ public class CommandOptions {
 		else if (String_.equals(arg, "--editor"))
 			new EditorMain().open();
 		else if (String_.equals(arg, "--imports") && (arg1 = source.source()) != null)
-			imports = Arrays.asList(arg1.split(","));
+			imports = List.of(arg1.split(","));
 		else if (String_.equals(arg, "--lazy"))
 			isLazy = on;
 		else if (String_.equals(arg, "--libraries") && (arg1 = source.source()) != null)
-			libraries = Arrays.asList(arg1.split(","));
+			libraries = List.of(arg1.split(","));
 		else if (arg.startsWith("--no-"))
 			result &= processOption("--" + arg.substring(5), source, false);
 		else if (String_.equals(arg, "--quiet"))
@@ -65,7 +64,7 @@ public class CommandOptions {
 		else if (String_.equals(arg, "--trace"))
 			isTrace = on;
 		else if (String_.equals(arg, "--use") && (arg1 = source.source()) != null)
-			libraries = List_.concat(libraries, Arrays.asList(arg1.split(",")));
+			libraries = List_.concat(libraries, List.of(arg1.split(",")));
 		else
 			throw new RuntimeException("unknown option " + arg);
 

@@ -3,7 +3,6 @@ package suite.btree.impl;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -170,7 +169,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		superblock.root = root;
 		superblockFile.save(0, superblock);
 
-		savePage(new Page(root, Arrays.asList(new KeyPointer(null, new Terminal()))));
+		savePage(new Page(root, List.of(new KeyPointer(null, new Terminal()))));
 	}
 
 	@Override
@@ -280,7 +279,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 					KeyPointer kp = pointerTo(p0);
 
 					create();
-					page = new Page(getRoot(), Arrays.asList(kp, toInsert));
+					page = new Page(getRoot(), List.of(kp, toInsert));
 					savePage(page);
 					done = true;
 				}

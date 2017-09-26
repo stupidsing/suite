@@ -1,6 +1,5 @@
 package suite.game;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Hex {
@@ -17,7 +16,7 @@ public class Hex {
 		}
 	}
 
-	public List<XY> directions = Arrays.asList( //
+	public List<XY> directions = List.of( //
 			XY.of(0, -1), XY.of(0, 1) //
 			, XY.of(-1, 0), XY.of(1, 0) //
 			, XY.of(-1, 1), XY.of(1, -1));

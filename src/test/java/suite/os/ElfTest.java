@@ -7,8 +7,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -94,7 +94,7 @@ public class ElfTest {
 		}
 
 		try {
-			Files.setPosixFilePermissions(path, new HashSet<>(Arrays.asList( //
+			Files.setPosixFilePermissions(path, new HashSet<>(List.of( //
 					PosixFilePermission.GROUP_EXECUTE, //
 					PosixFilePermission.OTHERS_EXECUTE, //
 					PosixFilePermission.OWNER_EXECUTE)));

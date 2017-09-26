@@ -1,7 +1,6 @@
 package suite.immutable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -72,7 +71,7 @@ public class IbTree<T> implements ITree<T> {
 	}
 
 	public IbTree(Comparator<T> comparator) {
-		this.root = Arrays.asList(new Slot(null, null));
+		this.root = List.of(new Slot(null, null));
 		this.comparator = comparator;
 	}
 
@@ -204,11 +203,11 @@ public class IbTree<T> implements ITree<T> {
 
 		// checks if need to split
 		if (slots1.size() < maxBranchFactor)
-			node1 = Arrays.asList(slot(slots1));
+			node1 = List.of(slot(slots1));
 		else { // splits into two if reached maximum number of nodes
 			List<Slot> leftSlots = List_.left(slots1, minBranchFactor);
 			List<Slot> rightSlots = List_.right(slots1, minBranchFactor);
-			node1 = Arrays.asList(slot(leftSlots), slot(rightSlots));
+			node1 = List.of(slot(leftSlots), slot(rightSlots));
 		}
 
 		return node1;
@@ -222,18 +221,18 @@ public class IbTree<T> implements ITree<T> {
 
 			if (minBranchFactor < node0.size()) {
 				leftSlots = List_.left(node0, -1);
-				rightSlots = List_.concat(Arrays.asList(List_.last(node0)), node1);
+				rightSlots = List_.concat(List.of(List_.last(node0)), node1);
 			} else if (minBranchFactor < node1.size()) {
-				leftSlots = List_.concat(node0, Arrays.asList(List_.first(node1)));
+				leftSlots = List_.concat(node0, List.of(List_.first(node1)));
 				rightSlots = List_.right(node1, 1);
 			} else {
 				leftSlots = node0;
 				rightSlots = node1;
 			}
 
-			melded = Arrays.asList(slot(leftSlots), slot(rightSlots));
+			melded = List.of(slot(leftSlots), slot(rightSlots));
 		} else
-			melded = Arrays.asList(slot(List_.concat(node0, node1)));
+			melded = List.of(slot(List_.concat(node0, node1)));
 
 		return melded;
 	}

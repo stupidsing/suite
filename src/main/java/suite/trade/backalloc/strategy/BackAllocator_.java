@@ -1,6 +1,6 @@
 package suite.trade.backalloc.strategy;
 
-import java.util.Arrays;
+import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -25,7 +25,7 @@ public class BackAllocator_ {
 	}
 
 	public static BackAllocator ofSingle(String symbol) {
-		return (akds, indices) -> index -> Arrays.asList(Pair.of(symbol, 1d));
+		return (akds, indices) -> index -> List.of(Pair.of(symbol, 1d));
 	}
 
 	public static BackAllocator sum(BackAllocator... bas) {

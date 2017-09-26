@@ -1,7 +1,6 @@
 package suite.trade.backalloc.strategy;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.IntFunction;
@@ -266,7 +265,7 @@ public class BackAllocatorGeneral {
 				double ratio0 = Quant.return_(price0, prices[index - 1]);
 				double ratio1 = scale * ratio0;
 				double ratio2 = .5d + ratio1;
-				return Arrays.asList(Pair.of(symbol, ratio2));
+				return List.of(Pair.of(symbol, ratio2));
 			};
 		};
 	}

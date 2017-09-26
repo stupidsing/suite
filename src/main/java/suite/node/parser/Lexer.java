@@ -1,7 +1,6 @@
 package suite.node.parser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +89,7 @@ public class Lexer {
 			if (type == LexType.SPACE) {
 				List<Integer> precs = new ArrayList<>();
 
-				for (Token t : Arrays.asList(token0, detect()))
+				for (Token t : List.of(token0, detect()))
 					if (t != null && t.operator != null)
 						precs.add(t.operator.getPrecedence());
 

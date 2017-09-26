@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.codec.digest.Md5Crypt;
@@ -33,7 +32,7 @@ import suite.util.Util.ExecutableProgram;
 public class LibraryMain extends ExecutableProgram {
 
 	private String inputDir = "/data/storey/lg";
-	private List<String> fileExtensions = Arrays.asList("jpg");
+	private List<String> fileExtensions = List.of("jpg");
 	private String libraryDir = "/data/photographs & memories/library";
 	private String tagsDir = "/data/photographs & memories/tags";
 

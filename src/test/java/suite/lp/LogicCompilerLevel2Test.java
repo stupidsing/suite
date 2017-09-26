@@ -1,7 +1,7 @@
 package suite.lp;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ public class LogicCompilerLevel2Test {
 
 	@Test
 	public void test1() throws IOException {
-		RuleSet rs = Suite.newRuleSet(Arrays.asList("auto.sl"));
+		RuleSet rs = Suite.newRuleSet(List.of("auto.sl"));
 		Builder builder = CompiledProverBuilder.level2(new ProverConfig());
 		Suite.evaluateLogic(builder, rs, "(), sink ()");
 	}

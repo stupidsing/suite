@@ -1,6 +1,5 @@
 package suite.immutable;
 
-import java.util.Arrays;
 import java.util.List;
 
 import suite.util.List_;
@@ -87,9 +86,9 @@ public class IRope<T> {
 			if (maxBranchFactor <= ts.size()) {
 				List<T> left = List_.left(ts, minBranchFactor);
 				List<T> right = List_.right(ts, minBranchFactor);
-				nodes = Arrays.asList(new IRope<>(left), new IRope<>(right));
+				nodes = List.of(new IRope<>(left), new IRope<>(right));
 			} else
-				nodes = Arrays.asList(new IRope<>(ts));
+				nodes = List.of(new IRope<>(ts));
 		}
 
 		List<IRope<T>> list;
@@ -98,9 +97,9 @@ public class IRope<T> {
 		if (maxBranchFactor <= size1) {
 			List<IRope<T>> left = List_.left(nodes, minBranchFactor);
 			List<IRope<T>> right = List_.right(nodes, minBranchFactor);
-			list = Arrays.asList(new IRope<>(depth, left), new IRope<>(depth, right));
+			list = List.of(new IRope<>(depth, left), new IRope<>(depth, right));
 		} else
-			list = Arrays.asList(new IRope<>(depth, nodes));
+			list = List.of(new IRope<>(depth, nodes));
 
 		return list;
 	}

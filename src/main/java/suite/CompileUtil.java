@@ -1,6 +1,5 @@
 package suite;
 
-import java.util.Arrays;
 import java.util.List;
 
 import suite.lp.Configuration.ProverConfig;
@@ -15,15 +14,15 @@ public class CompileUtil {
 	private Fun<List<String>, RuleSet> newRuleSetFun = Memoize.fun(Suite::newRuleSet);
 
 	public synchronized RuleSet funCompilerRuleSet() {
-		return newRuleSetFun.apply(Arrays.asList("auto.sl", "fc/fc.sl"));
+		return newRuleSetFun.apply(List.of("auto.sl", "fc/fc.sl"));
 	}
 
 	public synchronized RuleSet imperativeCompilerRuleSet() {
-		return newRuleSetFun.apply(Arrays.asList("asm.sl", "auto.sl", "ic/ic.sl"));
+		return newRuleSetFun.apply(List.of("asm.sl", "auto.sl", "ic/ic.sl"));
 	}
 
 	public synchronized RuleSet logicCompilerRuleSet() {
-		return newRuleSetFun.apply(Arrays.asList("auto.sl", "lc/lc.sl"));
+		return newRuleSetFun.apply(List.of("auto.sl", "lc/lc.sl"));
 	}
 
 	public boolean precompile(String libraryName, ProverConfig pc) {

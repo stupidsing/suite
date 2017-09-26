@@ -1,7 +1,6 @@
 package suite.ebnf.topdown;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,7 @@ public class ReduceHeadRecursion {
 			if (!hrf.listc.isEmpty()) {
 				Grammar enb = new Grammar(GrammarType.OR____, hrf.listb);
 				Grammar enc = new Grammar(GrammarType.OR____, hrf.listc);
-				en3 = new Grammar(GrammarType.REPT0H, entity, Arrays.asList(enb, enc));
+				en3 = new Grammar(GrammarType.REPT0H, entity, List.of(enb, enc));
 			} else
 				en3 = en1;
 
@@ -81,14 +80,14 @@ public class ReduceHeadRecursion {
 
 			hrf = new HeadRecursionForm(fun.apply(hrf0.listb), fun.apply(hrf0.listc));
 		} else if (en.type == GrammarType.NAMED_ && String_.equals(en.content, entity))
-			hrf = new HeadRecursionForm(empty, Arrays.asList(new Grammar(GrammarType.AND___)));
+			hrf = new HeadRecursionForm(empty, List.of(new Grammar(GrammarType.AND___)));
 		else if (en.type == GrammarType.OR____) {
 			List<HeadRecursionForm> hrfs = Read.from(en.children).map(en_ -> getHeadRecursionForm(en_, entity)).toList();
 			List<Grammar> listb = Read.from(hrfs).flatMap(hrf_ -> hrf_.listb).toList();
 			List<Grammar> listc = Read.from(hrfs).flatMap(hrf_ -> hrf_.listc).toList();
 			hrf = new HeadRecursionForm(listb, listc);
 		} else
-			hrf = new HeadRecursionForm(Arrays.asList(en), empty);
+			hrf = new HeadRecursionForm(List.of(en), empty);
 
 		return hrf;
 	}

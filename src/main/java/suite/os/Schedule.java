@@ -3,7 +3,6 @@ package suite.os;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -29,7 +28,7 @@ public class Schedule {
 
 			public List<Schedule> source() {
 				runnable.run();
-				return Arrays.asList(new Schedule(dateTime = dateTime.plusDays(1), m.get()));
+				return List.of(new Schedule(dateTime = dateTime.plusDays(1), m.get()));
 			}
 		});
 
@@ -39,7 +38,7 @@ public class Schedule {
 	public static Schedule ofRepeat(int seconds, Runnable runnable) {
 		Source<List<Schedule>> source = Object_.fix(m -> () -> {
 			runnable.run();
-			return Arrays.asList(new Schedule(LocalDateTime.now().plusSeconds(seconds), m.get()));
+			return List.of(new Schedule(LocalDateTime.now().plusSeconds(seconds), m.get()));
 		});
 		return of(LocalDateTime.now(), source);
 	}

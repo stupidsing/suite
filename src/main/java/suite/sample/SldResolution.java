@@ -1,7 +1,6 @@
 package suite.sample;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,7 @@ public class SldResolution {
 	private static Atom not = Atom.of("NOT");
 
 	public List<Node> resolve(Node node) {
-		RuleSet ruleSet = Suite.newRuleSet(Arrays.asList("auto.sl", "pt.sl"));
+		RuleSet ruleSet = Suite.newRuleSet(List.of("auto.sl", "pt.sl"));
 		CompiledProverBuilder builder = CompiledProverBuilder.level1(new ProverConfig());
 		Finder finder = builder.build(ruleSet).apply(Suite.parse("" //
 				+ "source .n0" //

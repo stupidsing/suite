@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -59,7 +58,7 @@ public class LoadBalancer {
 			try (Socket socket = new Socket(server, port)) {
 				InputStream sis = socket.getInputStream();
 				OutputStream sos = socket.getOutputStream();
-				List<Thread> threads = Arrays.asList(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));
+				List<Thread> threads = List.of(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));
 
 				Thread_.startJoin(threads);
 			}

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -109,7 +108,7 @@ public class RecursiveFactorizerTest {
 				Source<Node> g = To.source(r);
 				Node head = terminalNode(hs);
 				Node n0 = !b ? g.source()
-						: operatorNode(TermOp.TUPLE_, Arrays.asList(g.source(), terminalNode(" "), terminalNode(newArgument)));
+						: operatorNode(TermOp.TUPLE_, List.of(g.source(), terminalNode(" "), terminalNode(newArgument)));
 				Node n1 = operatorNode(g, TermOp.TUPLE_, g.source(), n0);
 				return operatorNode(g, TermOp.TUPLE_, head, n1);
 			};
@@ -137,7 +136,7 @@ public class RecursiveFactorizerTest {
 
 	private Node operatorNode(Source<Node> g, TermOp op, Node n0, Node n1) {
 		Str name = new Str(op.toString());
-		List<Node> nodes = Arrays.asList(n0, terminalNode(op.getName().trim()), n1);
+		List<Node> nodes = List.of(n0, terminalNode(op.getName().trim()), n1);
 		return treeNode(g, name, nodes);
 	}
 

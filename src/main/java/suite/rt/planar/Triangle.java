@@ -1,6 +1,6 @@
 package suite.rt.planar;
 
-import java.util.Arrays;
+import java.util.List;
 
 import suite.math.Vector;
 import suite.rt.BoundingBox;
@@ -17,7 +17,7 @@ public class Triangle extends Planar implements RtObject {
 		Vector v0 = Vector.add(origin, axis0);
 		Vector v1 = Vector.add(origin, axis1);
 		Triangle triangle = new Triangle(origin, axis0, axis1, material);
-		return BoundingBox.bound(Arrays.asList(origin, v0, v1), triangle);
+		return BoundingBox.bound(List.of(origin, v0, v1), triangle);
 	}
 
 }

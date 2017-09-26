@@ -2,7 +2,6 @@ package suite.instructionexecutor;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -68,9 +67,9 @@ public class InstructionExtractor implements AutoCloseable {
 
 					if (rs.get(0) == FRAME)
 						if ((value = label(rs.get(1))) != null) {
-							rsList.add(Arrays.asList(Atom.of("FRAME-BEGIN")));
+							rsList.add(List.of(Atom.of("FRAME-BEGIN")));
 							extractInstructions(value, rsList);
-							rsList.add(Arrays.asList(Atom.of("FRAME-END")));
+							rsList.add(List.of(Atom.of("FRAME-END")));
 						} else
 							throw new RuntimeException("bad frame definition");
 					else {
@@ -81,7 +80,7 @@ public class InstructionExtractor implements AutoCloseable {
 						deque.push(tree.getRight());
 					}
 				} else
-					rsList.add(Arrays.asList(Atom.of("JUMP"), Int.of(ip)));
+					rsList.add(List.of(Atom.of("JUMP"), Int.of(ip)));
 			}
 	}
 

@@ -1,6 +1,5 @@
 package suite.lp.checker;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +18,7 @@ import suite.streamlet.Streamlet;
 
 public class CheckerUtil {
 
-	private List<Match> matchers = Arrays.asList( //
+	private List<Match> matchers = List.of( //
 			Suite.match(".0, .1"), //
 			Suite.match(".0; .1"), //
 			Suite.match("find.all _ .0 _"), //

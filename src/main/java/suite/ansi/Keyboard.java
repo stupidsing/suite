@@ -2,7 +2,6 @@ package suite.ansi;
 
 import java.io.Closeable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.sun.jna.Native;
@@ -31,10 +30,10 @@ public class Keyboard implements Closeable {
 
 	public Keyboard() {
 		List<Pair<List<Integer>, VK>> pairs = new ArrayList<>();
-		pairs.add(Pair.of(Arrays.asList(27, 91, 65), VK.UP___));
-		pairs.add(Pair.of(Arrays.asList(27, 91, 66), VK.DOWN_));
-		pairs.add(Pair.of(Arrays.asList(27, 91, 68), VK.LEFT_));
-		pairs.add(Pair.of(Arrays.asList(27, 91, 67), VK.RIGHT));
+		pairs.add(Pair.of(List.of(27, 91, 65), VK.UP___));
+		pairs.add(Pair.of(List.of(27, 91, 66), VK.DOWN_));
+		pairs.add(Pair.of(List.of(27, 91, 68), VK.LEFT_));
+		pairs.add(Pair.of(List.of(27, 91, 67), VK.RIGHT));
 
 		trie = new Trie<>();
 

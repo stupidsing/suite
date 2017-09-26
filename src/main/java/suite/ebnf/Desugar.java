@@ -1,7 +1,7 @@
 package suite.ebnf;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -27,7 +27,7 @@ public class Desugar {
 
 		switch (eg0.type) {
 		case OPTION:
-			egx = new Grammar(GrammarType.OR____, Arrays.asList(eg0.children.get(0), nil));
+			egx = new Grammar(GrammarType.OR____, List.of(eg0.children.get(0), nil));
 			break;
 		case OR____:
 			egx = eg0;
@@ -39,19 +39,19 @@ public class Desugar {
 			Grammar bs = eg0.children.get(0);
 			Grammar cs = eg0.children.get(1);
 			if (Boolean.TRUE)
-				egx = new Grammar(GrammarType.AND___, Arrays.asList(bs, repeat(cs)));
+				egx = new Grammar(GrammarType.AND___, List.of(bs, repeat(cs)));
 			else {
 				String name = "$" + counter++;
 				Grammar ege = new Grammar(GrammarType.ENTITY, name);
 				egx = new Grammar(GrammarType.NAMED_, name //
 						, new Grammar(GrammarType.OR____, //
-								Arrays.asList(bs, new Grammar(GrammarType.AND___, Arrays.asList(ege, cs)))));
+								List.of(bs, new Grammar(GrammarType.AND___, List.of(ege, cs)))));
 				grammarByEntity.put(name, egx);
 			}
 			break;
 		case REPT1_:
 			Grammar child = eg0.children.get(0);
-			egx = new Grammar(GrammarType.AND___, Arrays.asList(child, repeat(child)));
+			egx = new Grammar(GrammarType.AND___, List.of(child, repeat(child)));
 			break;
 		default:
 			egx = eg0;
@@ -63,8 +63,8 @@ public class Desugar {
 	private Grammar repeat(Grammar child) {
 		String name = "$" + counter++;
 		Grammar ege = new Grammar(GrammarType.ENTITY, name);
-		Grammar ega = new Grammar(GrammarType.AND___, Arrays.asList(child, ege));
-		Grammar ego = new Grammar(GrammarType.OR____, Arrays.asList(nil, ega));
+		Grammar ega = new Grammar(GrammarType.AND___, List.of(child, ege));
+		Grammar ego = new Grammar(GrammarType.OR____, List.of(nil, ega));
 		Grammar egn = new Grammar(GrammarType.NAMED_, name, ego);
 		grammarByEntity.put(name, egn);
 		return egn;

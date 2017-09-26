@@ -2,7 +2,6 @@ package suite.fp.intrinsic;
 
 import java.io.Reader;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class Intrinsics {
 
 	public static IntrinsicCallback eagerIntrinsicCallback = new IntrinsicCallback() {
 		public Node enclose(Intrinsic intrinsic, Node node) {
-			return intrinsic.invoke(this, Arrays.asList(node));
+			return intrinsic.invoke(this, List.of(node));
 		}
 
 		public Node yawn(Node node) {
@@ -95,7 +94,7 @@ public class Intrinsics {
 	}
 
 	static {
-		for (Class<?> clazz : Arrays.asList( //
+		for (Class<?> clazz : List.of( //
 				ArrayIntrinsics.class //
 				, BasicIntrinsics.class //
 				, CharsIntrinsics.class //

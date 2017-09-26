@@ -1,6 +1,5 @@
 package suite.jdk.gen;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -145,7 +144,7 @@ public class FunFactory {
 		InvokeLambdaFunExpr expr = new InvokeLambdaFunExpr();
 		expr.isExpand = false;
 		expr.lambda = lambda;
-		expr.parameters = Arrays.asList(parameters);
+		expr.parameters = List.of(parameters);
 		return expr;
 	}
 
@@ -154,7 +153,7 @@ public class FunFactory {
 		expr.clazz = clazz;
 		expr.methodName = methodName;
 		expr.object = null;
-		expr.parameters = Arrays.asList(parameters);
+		expr.parameters = List.of(parameters);
 		return expr;
 	}
 

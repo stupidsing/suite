@@ -1,7 +1,6 @@
 package suite.fp;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +110,7 @@ public class InterpretFunLazy {
 	}
 
 	private Reference parse(Node node) {
-		Prover prover = new Prover(Suite.newRuleSet(Arrays.asList("auto.sl", "fc/fc.sl")));
+		Prover prover = new Prover(Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl")));
 
 		Reference parsed = new Reference();
 		if (!prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)))

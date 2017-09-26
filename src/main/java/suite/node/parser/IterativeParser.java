@@ -1,8 +1,8 @@
 package suite.node.parser;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
+import java.util.List;
 
 import suite.node.Atom;
 import suite.node.Node;
@@ -112,7 +112,7 @@ public class IterativeParser {
 
 	private class Section {
 		private char kind;
-		private Deque<Tree> list = new ArrayDeque<>(Arrays.asList(Tree.of(null, null, Atom.NIL)));
+		private Deque<Tree> list = new ArrayDeque<>(List.of(Tree.of(null, null, Atom.NIL)));
 		private boolean isDanglingRight = true;
 
 		public Section(char kind) {

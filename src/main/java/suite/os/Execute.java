@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.List;
 
 import suite.Constants;
 import suite.util.Copy;
@@ -23,7 +23,7 @@ public class Execute {
 	public static String shell(String sh) {
 		String[] command = null;
 
-		for (String s : Arrays.asList("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe"))
+		for (String s : List.of("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe"))
 			if (Files.exists(Paths.get(s)))
 				command = new String[] { s, };
 
