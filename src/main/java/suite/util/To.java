@@ -22,16 +22,13 @@ import java.time.ZoneId;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.IntFunction;
 
 import suite.Constants;
-import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
 import suite.primitive.Floats_;
@@ -167,23 +164,6 @@ public class To {
 		while ((t = source.source()) != null)
 			list.add(t);
 		return list;
-	}
-
-	@SafeVarargs
-	public static <K, V> Map<K, V> map(Pair<K, V>... pairs) {
-		Map<K, V> map = new HashMap<>();
-		for (Pair<K, V> pair : pairs)
-			if (pair != null)
-				map.put(pair.t0, pair.t1);
-		return map;
-	}
-
-	@SafeVarargs
-	public static <K, V> Map<K, V> map_(Map<K, V>... maps) {
-		Map<K, V> map = new HashMap<>();
-		for (Map<K, V> m : maps)
-			map.putAll(m);
-		return map;
 	}
 
 	public static Outlet<Bytes> outlet(String data) {
