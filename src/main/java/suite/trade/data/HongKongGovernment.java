@@ -1,5 +1,7 @@
 package suite.trade.data;
 
+import static java.util.Map.entry;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -64,11 +66,9 @@ public class HongKongGovernment {
 
 		long[] ts_ = ts.toLongs().toArray();
 
-		return Read //
-				.<String, DataSource> empty2() //
-				.cons("hko.TEMP", DataSource.of(ts_, fs0.toFloats().toArray())) //
-				.cons("hko.RAIN", DataSource.of(ts_, fs1.toFloats().toArray())) //
-				.toMap();
+		return Map.ofEntries( //
+				entry("hko.TEMP", DataSource.of(ts_, fs0.toFloats().toArray())), //
+				entry("hko.RAIN", DataSource.of(ts_, fs1.toFloats().toArray())));
 	}
 
 	private float getFloatValue(String data, String s0, String s1) {

@@ -1,5 +1,7 @@
 package suite.funp;
 
+import static java.util.Map.entry;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,6 @@ import suite.funp.P1.FunpSaveRegisters;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.primitive.Bytes;
-import suite.streamlet.Read;
 
 /**
  * Hindley-Milner type inference.
@@ -57,13 +58,12 @@ public class P2GenerateCode {
 
 	private RegisterSet registerSet = new RegisterSet().mask(ebp, esp);
 
-	private Map<Operator, Insn> insnByOp = Read.<Operator, Insn> empty2() //
-			.cons(TermOp.BIGOR_, Insn.OR) //
-			.cons(TermOp.BIGAND, Insn.AND) //
-			.cons(TermOp.PLUS__, Insn.ADD) //
-			.cons(TermOp.MINUS_, Insn.SUB) //
-			.cons(TermOp.MULT__, Insn.IMUL) //
-			.toMap();
+	private Map<Operator, Insn> insnByOp = Map.ofEntries( //
+			entry(TermOp.BIGOR_, Insn.OR), //
+			entry(TermOp.BIGAND, Insn.AND), //
+			entry(TermOp.PLUS__, Insn.ADD), //
+			entry(TermOp.MINUS_, Insn.SUB), //
+			entry(TermOp.MULT__, Insn.IMUL));
 
 	private interface CompileSink<T> {
 		public T compile( //
