@@ -1,5 +1,7 @@
 package suite.lp.sewing.impl;
 
+import java.util.Map;
+
 import org.apache.bcel.generic.Type;
 
 import suite.Suite;
@@ -14,7 +16,6 @@ import suite.lp.sewing.SewingCloner.Clone_;
 import suite.lp.sewing.SewingExpression;
 import suite.node.Int;
 import suite.node.Node;
-import suite.util.To;
 
 public class SewingExpressionImpl1 implements SewingExpression {
 
@@ -52,11 +53,11 @@ public class SewingExpressionImpl1 implements SewingExpression {
 		else if ((m = Suite.match(".0 shr .1").apply(node)) != null)
 			return compileOperator(m, ">>");
 		else if (node instanceof Int)
-			return LambdaInstance.of(compiledNumber, To.map(keyNumber, ((Int) node).number));
+			return LambdaInstance.of(compiledNumber, Map.of(keyNumber, ((Int) node).number));
 		else {
 			Clone_ n_ = sc.compile(node);
 			Evaluate evaluate = env -> evalPredicates.evaluate(n_.apply(env));
-			return LambdaInstance.of(compiledEval, To.map(keyEval, evaluate));
+			return LambdaInstance.of(compiledEval, Map.of(keyEval, evaluate));
 		}
 	}
 
@@ -67,12 +68,12 @@ public class SewingExpressionImpl1 implements SewingExpression {
 
 	private static LambdaImplementation<Evaluate> compileEval(String key) {
 		FunExpr expr = f.parameter1(env -> f.inject(keyEval).invoke("evaluate", env));
-		return LambdaImplementation.of(lambdaInterface, To.map(key, Type.getType(Evaluate.class)), expr);
+		return LambdaImplementation.of(lambdaInterface, Map.of(key, Type.getType(Evaluate.class)), expr);
 	}
 
 	private static LambdaImplementation<Evaluate> compileNumber(String key) {
 		FunExpr expr = f.parameter0(() -> f.inject(key));
-		return LambdaImplementation.of(lambdaInterface, To.map(key, Type.INT), expr);
+		return LambdaImplementation.of(lambdaInterface, Map.of(key, Type.INT), expr);
 	}
 
 	private LambdaInstance<Evaluate> compileOperator(Node[] m, String op) {

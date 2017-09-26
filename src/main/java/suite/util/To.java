@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -168,17 +167,6 @@ public class To {
 		while ((t = source.source()) != null)
 			list.add(t);
 		return list;
-	}
-
-	public static <K, V> Map<K, V> map(K k, V v) {
-		return Collections.singletonMap(k, v);
-	}
-
-	public static <K, V> Map<K, V> map(K k0, V v0, K k1, V v1) {
-		HashMap<K, V> map = new HashMap<>();
-		map.put(k0, v0);
-		map.put(k1, v1);
-		return map;
 	}
 
 	@SafeVarargs

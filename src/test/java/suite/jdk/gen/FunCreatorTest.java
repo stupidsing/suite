@@ -20,7 +20,6 @@ import suite.primitive.Int_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
-import suite.util.To;
 
 public class FunCreatorTest {
 
@@ -37,10 +36,10 @@ public class FunCreatorTest {
 		FunCreator<Int_Int> fc1 = intFun(fieldName1, Type.getType(Int_Int.class));
 		Int_Int f0 = fc0 //
 				.create((i -> f.add(fc0.field(fieldName0), i))) //
-				.apply(To.map(fieldName0, 1));
+				.apply(Map.of(fieldName0, 1));
 		Int_Int f1 = fc1 //
 				.create(i -> fc1.field(fieldName1).apply(f.int_(3))) //
-				.apply(To.map(fieldName1, f0));
+				.apply(Map.of(fieldName1, f0));
 		assertEquals(4, f1.apply(5));
 	}
 
@@ -79,7 +78,7 @@ public class FunCreatorTest {
 		FunCreator<Int_Int> fc = intFun(fieldName, Type.INT);
 		int result = fc //
 				.create(i -> f.add(fc.field(fieldName), i)) //
-				.apply(To.map(fieldName, 1)) //
+				.apply(Map.of(fieldName, 1)) //
 				.apply(5);
 		assertEquals(6, result);
 	}
@@ -129,7 +128,7 @@ public class FunCreatorTest {
 	}
 
 	private FunCreator<Int_Int> intFun(String fieldName, Type fieldType) {
-		return FunCreator.of(lambdaClassIntIntFun, To.map(fieldName, fieldType));
+		return FunCreator.of(lambdaClassIntIntFun, Map.of(fieldName, fieldType));
 	}
 
 }
