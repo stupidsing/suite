@@ -38,7 +38,7 @@ public class TelegramBot {
 						sendMessage.setText(fun.apply(message.getFrom().getId(), message.getText()));
 
 						try {
-							sendMessage(sendMessage);
+							sendApiMethod(sendMessage);
 						} catch (TelegramApiException ex) {
 							throw new RuntimeException(ex);
 						}
