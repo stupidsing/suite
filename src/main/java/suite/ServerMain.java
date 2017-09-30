@@ -29,9 +29,9 @@ public class ServerMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		Thread_.startThread(() -> runHttpServer());
-		Thread_.startThread(() -> runScheduler());
-		Thread_.startThread(() -> runTelegramBot());
+		Thread_.startThread(this::runHttpServer);
+		Thread_.startThread(this::runScheduler);
+		Thread_.startThread(this::runTelegramBot);
 		return true;
 	}
 
