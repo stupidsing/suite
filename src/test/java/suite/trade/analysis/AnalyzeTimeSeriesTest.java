@@ -1,6 +1,7 @@
 package suite.trade.analysis;
 
 import java.util.Arrays;
+import java.util.function.IntFunction;
 
 import org.junit.Test;
 
@@ -12,7 +13,6 @@ import suite.math.stat.TimeSeries;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.os.LogUtil;
 import suite.primitive.Floats_;
-import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
@@ -78,14 +78,14 @@ public class AnalyzeTimeSeriesTest {
 				max.update(i, f);
 		}
 
-		Int_Obj<BuySell> momFun = n -> {
+		IntFunction<BuySell> momFun = n -> {
 			int d0 = 1 + n;
 			int d1 = 1;
 			return buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		};
 
-		Int_Obj<BuySell> revert = d -> momFun.apply(d).scale(0f, -1f);
-		BuySell[] reverts = Ints_.range(8).map(revert).toArray(BuySell.class);
+		IntFunction<BuySell> revert = d -> momFun.apply(d).scale(0f, -1f);
+		BuySell[] reverts = To.array(BuySell.class, 8, revert);
 		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
 		float[] holds = marketTiming.hold(prices, 1f, 1f, 1f);
 		BuySell mt_ = buySell(d -> holds[d]);

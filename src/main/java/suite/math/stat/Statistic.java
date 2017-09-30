@@ -9,7 +9,6 @@ import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
-import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.util.FunUtil.Fun;
@@ -89,7 +88,7 @@ public class Statistic {
 			coefficients = cholesky.inverseMul(xtx).apply(mtx.mul(xt, y));
 			coefficientNames = coefficientNames_ != null //
 					? coefficientNames_ //
-					: Ints_.range(sampleLength_).map(i -> "c" + i).toArray(String.class);
+					: To.array(String.class, sampleLength_, i -> "c" + i);
 
 			float[] estimatedy = To.arrayOfFloats(x, this::predict);
 			double meany = mean_(y);

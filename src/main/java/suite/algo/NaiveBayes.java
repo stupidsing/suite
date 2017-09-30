@@ -37,14 +37,11 @@ public class NaiveBayes {
 		length = length_;
 		b = Math.log(threshold) + Math.log(ms[i(true)]) - Math.log(ms[i(false)]);
 
-		ps = Ints_ //
-				.range(nCategories) //
-				.map(i -> {
-					IntStreamlet range = Ints_.range(length_);
-					int[] is_ = is[i];
-					return range.collect(Int_Flt.lift(j -> (float) (is_[j] / ws[i]))).toArray();
-				}) //
-				.toArray(float[].class);
+		ps = To.array(float[].class, nCategories, i -> {
+			IntStreamlet range = Ints_.range(length_);
+			int[] is_ = is[i];
+			return range.collect(Int_Flt.lift(j -> (float) (is_[j] / ws[i]))).toArray();
+		});
 	}
 
 	public boolean classify(int[] record) {

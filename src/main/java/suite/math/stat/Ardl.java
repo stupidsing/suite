@@ -2,7 +2,6 @@ package suite.math.stat;
 
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Floats_;
-import suite.primitive.Ints_;
 import suite.util.To;
 
 /**
@@ -26,20 +25,15 @@ public class Ardl {
 		int n = fsList.length;
 		int length = fsList[0].length;
 
-		LinearRegression[] lrs = Ints_ //
-				.range(n) //
-				.map(it -> {
-					float[] fs = fsList[it];
+		return To.array(LinearRegression.class, n, it -> {
+			float[] fs = fsList[it];
 
-					if (length == fs.length) {
-						float[][] x = To.array(float[].class, length - maxLag, t -> getExplanatoryVariables(fsList, it, t));
-						return stat.linearRegression(x, fs);
-					} else
-						throw new RuntimeException("wrong input sizes");
-				}) //
-				.toArray(LinearRegression.class);
-
-		return lrs;
+			if (length == fs.length) {
+				float[][] x = To.array(float[].class, length - maxLag, t -> getExplanatoryVariables(fsList, it, t));
+				return stat.linearRegression(x, fs);
+			} else
+				throw new RuntimeException("wrong input sizes");
+		});
 	}
 
 	public float[] predict(LinearRegression[] lrs, float[][] fsList, int index) {
@@ -47,17 +41,14 @@ public class Ardl {
 	}
 
 	private float[] getExplanatoryVariables(float[][] fsList, int it, int t) {
-		return Floats_.concat(Ints_ //
-				.range(fsList.length) //
-				.map(is -> {
-					float[] fsi = fsList[is];
-					float[] xs = new float[maxLag + (isIncludeCurrent ? 1 : 0)];
-					Floats_.copy(fsi, t, xs, 0, maxLag);
-					if (isIncludeCurrent)
-						xs[maxLag] = is != it ? fsi[t + maxLag] : 1f;
-					return xs;
-				}) //
-				.toArray(float[].class));
+		return Floats_.concat(To.array(float[].class, fsList.length, is -> {
+			float[] fsi = fsList[is];
+			float[] xs = new float[maxLag + (isIncludeCurrent ? 1 : 0)];
+			Floats_.copy(fsi, t, xs, 0, maxLag);
+			if (isIncludeCurrent)
+				xs[maxLag] = is != it ? fsi[t + maxLag] : 1f;
+			return xs;
+		}));
 	}
 
 }

@@ -3,7 +3,7 @@ package suite.assembler;
 import suite.adt.map.BiMap;
 import suite.adt.map.HashBiMap;
 import suite.node.Atom;
-import suite.primitive.Ints_;
+import suite.util.To;
 
 public class Amd64 {
 
@@ -147,10 +147,10 @@ public class Amd64 {
 
 	public Operand none = new OpNone();
 
-	public OpReg[] reg8 = Ints_.range(16).map(r -> newReg(1, r)).toArray(OpReg.class);
-	public OpReg[] reg16 = Ints_.range(16).map(r -> newReg(2, r)).toArray(OpReg.class);
-	public OpReg[] reg32 = Ints_.range(16).map(r -> newReg(4, r)).toArray(OpReg.class);
-	public OpReg[] reg64 = Ints_.range(16).map(r -> newReg(8, r)).toArray(OpReg.class);
+	public OpReg[] reg8 = To.array(OpReg.class, 16, r -> newReg(1, r));
+	public OpReg[] reg16 = To.array(OpReg.class, 16, r -> newReg(2, r));
+	public OpReg[] reg32 = To.array(OpReg.class, 16, r -> newReg(4, r));
+	public OpReg[] reg64 = To.array(OpReg.class, 16, r -> newReg(8, r));
 
 	public OpReg al = reg8[0];
 	public OpReg cl = reg8[1];

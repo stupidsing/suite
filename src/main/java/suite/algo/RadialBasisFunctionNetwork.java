@@ -11,6 +11,7 @@ import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
+import suite.util.To;
 
 /**
  * Radial basis function network with K-means clustering.
@@ -41,7 +42,7 @@ public class RadialBasisFunctionNetwork {
 			vec.addOn(sums[cl], ins[i]);
 		}
 
-		centers = Ints_.range(nHiddens).map(cl -> vec.scale(sums[cl], 1d / sizes[cl])).toArray(float[].class);
+		centers = To.array(float[].class, nHiddens, cl -> vec.scale(sums[cl], 1d / sizes[cl]));
 
 		for (int i = 0; i < ins.length; i++) {
 			int cl = kmc[i];
