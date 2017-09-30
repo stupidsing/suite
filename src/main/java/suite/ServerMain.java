@@ -46,8 +46,7 @@ public class ServerMain extends ExecutableProgram {
 				+ "<br/>path = " + request.path //
 				+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query) //
 				+ "<br/>headers = " + request.headers //
-				+ "</html>" //
-		));
+				+ "</html>"));
 
 		HttpHandler handler1 = HttpHandler.ofDispatch(IMap //
 				.<String, HttpHandler> empty() //
