@@ -3,7 +3,7 @@ package suite.algo;
 import java.util.List;
 
 import suite.math.linalg.CholeskyDecomposition;
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
@@ -19,7 +19,7 @@ import suite.util.FunUtil.Iterate;
 public class RadialBasisFunctionNetwork {
 
 	private CholeskyDecomposition cd = new CholeskyDecomposition();
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 
 	private int nHiddens = 19;
 	private float[][] centers;

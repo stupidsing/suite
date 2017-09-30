@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.primitive.Int_Int;
 import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
@@ -18,7 +18,7 @@ import suite.util.To;
 
 public class KmeansCluster {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 
 	private int dimension;
 

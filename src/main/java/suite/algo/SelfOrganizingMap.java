@@ -3,7 +3,7 @@ package suite.algo;
 import java.util.List;
 import java.util.Random;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.primitive.Floats_;
 import suite.primitive.FltMutable;
 import suite.primitive.Ints_;
@@ -17,7 +17,7 @@ public class SelfOrganizingMap {
 
 	private int nDim = bounds.length;
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 	private Random random = new Random();
 
 	public void som(List<float[]> ins) {

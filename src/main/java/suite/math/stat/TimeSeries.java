@@ -2,7 +2,7 @@ package suite.math.stat;
 
 import java.util.Arrays;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.Floats;
@@ -13,7 +13,7 @@ import suite.util.To;
 
 public class TimeSeries {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 	private Statistic stat = new Statistic();
 
 	// Augmented Dickey-Fuller test

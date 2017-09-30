@@ -11,7 +11,7 @@ public class SingularValueDecomposition {
 
 	private int k = 9;
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 	private Random random = new Random();
 
 	// http://www.cs.yale.edu/homes/el327/datamining2013aFiles/07_singular_value_decomposition.pdf

@@ -10,7 +10,7 @@ import suite.util.To;
 
 public class MatrixTest {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 
 	@Test
 	public void testInverse() {

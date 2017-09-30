@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Random;
 
 import suite.math.Sigmoid;
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.util.List_;
 
 public class ArtificialNeuralNetwork {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 
 	private float learningRate = 1f;
 	private int nLayers;

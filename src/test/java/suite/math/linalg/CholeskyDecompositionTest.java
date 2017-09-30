@@ -11,7 +11,7 @@ import suite.util.To;
 
 public class CholeskyDecompositionTest {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 
 	private float[][] m0 = { //

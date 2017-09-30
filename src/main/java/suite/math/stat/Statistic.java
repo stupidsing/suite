@@ -1,7 +1,7 @@
 package suite.math.stat;
 
 import suite.math.linalg.CholeskyDecomposition;
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.primitive.Floats_;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntObjSource;
@@ -17,7 +17,7 @@ import suite.util.To;
 public class Statistic {
 
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 
 	public double correlation(float[] xs, float[] ys) {
 		Int_Dbl xf = i -> xs[i];

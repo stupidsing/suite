@@ -1,10 +1,10 @@
 package suite.math;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 
 public class Forget {
 
-	private static Matrix mtx = new Matrix();
+	private static Matrix_ mtx = new Matrix_();
 
 	public static float[] forget(float[] fs, float[] n) {
 		return forgetOn(mtx.of(fs), n);

@@ -27,7 +27,7 @@ public class VirtualMatrix {
 	}
 
 	public static VirtualMatrix of(float[][] matrix) {
-		Matrix mtx = VirtualMatrixUtil.mtx;
+		Matrix_ mtx = VirtualMatrixUtil.mtx;
 		return of(mtx.height(matrix), mtx.width(matrix), (i, j) -> matrix[i][j]);
 	}
 
@@ -144,7 +144,7 @@ public class VirtualMatrix {
 
 class VirtualMatrixUtil {
 
-	public static Matrix mtx = new Matrix();
+	public static Matrix_ mtx = new Matrix_();
 
 	public static VirtualMatrix checkSizes(VirtualMatrix vm0, VirtualMatrix vm1, IntInt_Flt fun) {
 		int height = vm0.height;

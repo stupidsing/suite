@@ -6,14 +6,14 @@ import org.junit.Test;
 
 import suite.inspect.Dump;
 import suite.math.MathUtil;
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.util.To;
 
 public class StatisticTest {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 	private Statistic stat = new Statistic();
 
 	@Test

@@ -7,7 +7,7 @@ import suite.primitive.Floats_;
 
 public class Eigen {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 	private Random random = new Random();
 
 	// Paul Wilmott on Quantitative Finance, Second Edition

@@ -3,12 +3,12 @@ package suite.math;
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.util.FunUtil.Fun;
 
 public class QrTest {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 
 	@Test
 	public void test() {

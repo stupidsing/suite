@@ -5,7 +5,7 @@ import org.junit.Test;
 public class EigenTest {
 
 	private Eigen eigen = new Eigen();
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 
 	@Test
 	public void test2() {

@@ -6,7 +6,7 @@ import suite.math.MathUtil;
 import suite.math.Vector;
 import suite.util.To;
 
-public class Matrix {
+public class Matrix_ {
 
 	public double abs(float[] m) {
 		return abs_(m);

@@ -2,7 +2,7 @@ package suite.trade.singlealloc;
 
 import java.util.Arrays;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.math.stat.Quant;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.primitive.Floats_;
@@ -12,7 +12,7 @@ import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 
 public class Strategos {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 	private MovingAverage ma = new MovingAverage();
 
 	public BuySellStrategy longHold = prices -> day -> day != 0 ? 0 : 1;

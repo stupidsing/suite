@@ -2,7 +2,7 @@ package suite.math.stat;
 
 import java.util.Arrays;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
@@ -12,7 +12,7 @@ import suite.util.To;
 
 public class Arima {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 

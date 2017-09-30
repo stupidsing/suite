@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.math.stat.Quant;
 import suite.math.stat.Statistic;
 import suite.streamlet.Read;
@@ -27,7 +27,7 @@ public class Factor {
 	private DataSource ids;
 
 	private Configuration cfg;
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 	private Statistic stat = new Statistic();
 	private Time now = Time.now();
 

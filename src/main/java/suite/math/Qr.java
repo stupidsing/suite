@@ -1,11 +1,11 @@
 package suite.math;
 
 import suite.adt.pair.Pair;
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 
 public class Qr {
 
-	private static Matrix mtx = new Matrix();
+	private static Matrix_ mtx = new Matrix_();
 
 	public static Pair<float[][], float[][]> decompose(float[][] m0) {
 		Pair<float[][], float[][]> qr = decompose_mT_T(mtx.transpose(m0));

@@ -2,14 +2,14 @@ package suite.trade.analysis;
 
 import java.util.Arrays;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.math.stat.TimeSeries;
 import suite.primitive.Doubles_;
 import suite.util.To;
 
 public class MovingAverage {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 	private TimeSeries ts = new TimeSeries();
 
 	// exponential moving average convergence/divergence

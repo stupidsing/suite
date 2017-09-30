@@ -3,11 +3,11 @@ package suite.algo;
 import org.junit.Test;
 
 import suite.algo.RecurrentNeuralNetwork.Unit;
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 
 public class RecurrentNeuralNetworkTest {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 
 	@Test
 	public void testNoInput() {

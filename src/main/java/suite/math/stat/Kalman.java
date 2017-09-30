@@ -1,10 +1,10 @@
 package suite.math.stat;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 
 public class Kalman {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 
 	private int stateSize = 16;
 	private float[][] F; // state transition

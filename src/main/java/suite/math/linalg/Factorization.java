@@ -7,7 +7,7 @@ import suite.util.To;
 
 public class Factorization {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 	private Random random = new Random();
 
 	public Pair<float[][], float[][]> factorize(float[][] m, int w) {

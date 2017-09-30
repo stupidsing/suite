@@ -5,12 +5,12 @@ import java.util.Random;
 import suite.math.Forget;
 import suite.math.Sigmoid;
 import suite.math.Tanh;
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
 import suite.primitive.Floats_;
 
 public class LongShortTermMemory {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 
 	private float learningRate;
 	private int inputLength;
