@@ -2,6 +2,7 @@ package suite.math.stat;
 
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix_;
+import suite.math.linalg.Vector_;
 import suite.primitive.Floats_;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntObjSource;
@@ -18,11 +19,12 @@ public class Statistic {
 
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
 	private Matrix_ mtx = new Matrix_();
+	private Vector_ vec = new Vector_();
 
 	public double correlation(float[] xs, float[] ys) {
 		Int_Dbl xf = i -> xs[i];
 		Int_Dbl yf = i -> ys[i];
-		mtx.sameLength(xs, ys);
+		vec.sameLength(xs, ys);
 		return correlation(xf, yf, xs.length);
 	}
 
@@ -42,7 +44,7 @@ public class Statistic {
 	}
 
 	public double covariance(float[] xs, float[] ys) {
-		int length = mtx.sameLength(xs, ys);
+		int length = vec.sameLength(xs, ys);
 		double sumx = 0d, sumy = 0d;
 		double sumxy = 0d;
 		for (int i = 0; i < length; i++) {
@@ -119,7 +121,7 @@ public class Statistic {
 		}
 
 		public float predict(float[] x) {
-			return mtx.dot(coefficients, x);
+			return vec.dot(coefficients, x);
 		}
 
 		public double aic() {
@@ -186,14 +188,14 @@ public class Statistic {
 							sx[i][j] *= s[i];
 
 					Fun<float[], float[]> cd = cholesky.inverseMul(mtx.mul_mTn(sx, x));
-					w = cd.apply(mtx.mul(xt, mtx.sub(mtx.add(mtx.mul(sx, w), y), bernoulli)));
+					w = cd.apply(mtx.mul(xt, vec.sub(vec.add(mtx.mul(sx, w), y), bernoulli)));
 				}
 			} else
 				throw new RuntimeException("wrong input sizes");
 		}
 
 		public float predict(float[] x) {
-			return (float) (1d / (1d + Math.exp(-mtx.dot(w, x))));
+			return (float) (1d / (1d + Math.exp(-vec.dot(w, x))));
 		}
 	}
 
@@ -248,7 +250,7 @@ public class Statistic {
 	}
 
 	public double project(float[] fs0, float[] fs1) {
-		return mtx.dot(fs1, fs0) / mtx.dot(fs0);
+		return vec.dot(fs1, fs0) / vec.dot(fs0);
 	}
 
 	public double skewness(float[] fs) {

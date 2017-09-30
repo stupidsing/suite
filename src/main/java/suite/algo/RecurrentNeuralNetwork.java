@@ -5,11 +5,13 @@ import java.util.Random;
 import suite.math.Forget;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix_;
+import suite.math.linalg.Vector_;
 import suite.primitive.Floats_;
 
 public class RecurrentNeuralNetwork {
 
 	private Matrix_ mtx = new Matrix_();
+	private Vector_ vec = new Vector_();
 
 	private float learningRate;
 	private int inputLength;
@@ -71,10 +73,10 @@ public class RecurrentNeuralNetwork {
 			Floats_.copy(memory0, 0, iv, inputLength, memoryLength);
 			iv[ll] = 1f;
 
-			float[] memory1 = copy(memory = Tanh.tanhOn(mtx.mul(weights, iv)));
+			float[] memory1 = vec.of(memory = Tanh.tanhOn(mtx.mul(weights, iv)));
 
 			if (expected != null) {
-				float[] e_memory1 = mtx.sub(expected, memory1);
+				float[] e_memory1 = vec.sub(expected, memory1);
 				float[] e_weights = Forget.forgetOn(e_memory1, Tanh.tanhGradientOn(memory1));
 
 				for (int i = 0; i < memoryLength; i++)
@@ -84,10 +86,6 @@ public class RecurrentNeuralNetwork {
 
 			return memory1;
 		}
-	}
-
-	private float[] copy(float[] m) {
-		return mtx.of(m);
 	}
 
 }

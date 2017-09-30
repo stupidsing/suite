@@ -6,11 +6,13 @@ import suite.math.Forget;
 import suite.math.Sigmoid;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix_;
+import suite.math.linalg.Vector_;
 import suite.primitive.Floats_;
 
 public class LongShortTermMemory {
 
 	private Matrix_ mtx = new Matrix_();
+	private Vector_ vec = new Vector_();
 
 	private float learningRate;
 	private int inputLength;
@@ -93,12 +95,12 @@ public class LongShortTermMemory {
 			float[] sig_is = Sigmoid.sigmoidOn(mtx.mul(wi, iv));
 			float[] tanh_ms = Tanh.tanhOn(mtx.mul(wm, iv));
 			float[] sig_os = Sigmoid.sigmoidOn(mtx.mul(wo, iv));
-			float[] memory1 = copy(memory = mtx.addOn(Forget.forget(memory0, sig_fs), Forget.forget(tanh_ms, sig_is)));
+			float[] memory1 = copy(memory = vec.addOn(Forget.forget(memory0, sig_fs), Forget.forget(tanh_ms, sig_is)));
 			float[] tanh_memory1 = Tanh.tanhOn(memory1);
 			float[] output1 = output = Forget.forget(sig_os, tanh_memory1);
 
 			if (expected != null) {
-				float[] e_output1 = mtx.sub(expected, output1);
+				float[] e_output1 = vec.sub(expected, output1);
 				float[] e_tanh_memory1 = Forget.forgetOn(sig_os, e_output1);
 				float[] e_memory1 = Forget.forgetOn(e_tanh_memory1, Tanh.tanhGradientOn(copy(tanh_memory1)));
 				float[] e_sig_os = Forget.forget(e_output1, tanh_memory1);
@@ -125,7 +127,7 @@ public class LongShortTermMemory {
 	}
 
 	private float[] copy(float[] m) {
-		return mtx.of(m);
+		return vec.of(m);
 	}
 
 }

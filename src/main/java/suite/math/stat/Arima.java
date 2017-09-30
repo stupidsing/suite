@@ -2,7 +2,7 @@ package suite.math.stat;
 
 import java.util.Arrays;
 
-import suite.math.linalg.Matrix_;
+import suite.math.linalg.Vector_;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
@@ -12,9 +12,9 @@ import suite.util.To;
 
 public class Arima {
 
-	private Matrix_ mtx = new Matrix_();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
+	private Vector_ vec = new Vector_();
 
 	public LinearRegression ar(float[] ys, int n) {
 		int length = ys.length;
@@ -87,7 +87,7 @@ public class Arima {
 	}
 
 	public LinearRegression arima(float[] ys, int p, int d, int q) {
-		float[] is = mtx.of(ys);
+		float[] is = vec.of(ys);
 		for (int i = 0; i < d; i++)
 			is = ts.differencesOn(i, is);
 		return arma0(ys, p, q);

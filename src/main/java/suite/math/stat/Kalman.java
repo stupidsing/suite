@@ -1,10 +1,12 @@
 package suite.math.stat;
 
 import suite.math.linalg.Matrix_;
+import suite.math.linalg.Vector_;
 
 public class Kalman {
 
 	private Matrix_ mtx = new Matrix_();
+	private Vector_ vec = new Vector_();
 
 	private int stateSize = 16;
 	private float[][] F; // state transition
@@ -25,12 +27,12 @@ public class Kalman {
 		float[][] Ht = mtx.transpose(H);
 
 		// predict
-		float[] predictedState1 = mtx.add(mtx.mul(F, estimatedState0), mtx.mul(B, input0));
+		float[] predictedState1 = vec.add(mtx.mul(F, estimatedState0), mtx.mul(B, input0));
 		float[][] predictedCovariance1 = mtx.add(mul(F, covariance0, Ft), Q);
 
 		// update
 		float[][] kalmanGain = mul(predictedCovariance1, Ht, mtx.inverse(mtx.add(R, mul(H, predictedCovariance1, Ht))));
-		float[] estimatedState1 = mtx.add(predictedState1, mtx.mul(kalmanGain, mtx.sub(observed0, mtx.mul(H, predictedState1))));
+		float[] estimatedState1 = vec.add(predictedState1, mtx.mul(kalmanGain, vec.sub(observed0, mtx.mul(H, predictedState1))));
 		float[][] covariance1 = mtx.mul(mtx.add(identity, mtx.neg(mtx.mul(kalmanGain, H))), predictedCovariance1);
 		// residual1 = observed0 - H * estimatedState1
 

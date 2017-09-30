@@ -2,12 +2,14 @@ package suite.math;
 
 import suite.adt.pair.Pair;
 import suite.math.linalg.Matrix_;
+import suite.math.linalg.Vector_;
 
 public class Qr {
 
-	private static Matrix_ mtx = new Matrix_();
+	private Matrix_ mtx = new Matrix_();
+	private Vector_ vec = new Vector_();
 
-	public static Pair<float[][], float[][]> decompose(float[][] m0) {
+	public Pair<float[][], float[][]> decompose(float[][] m0) {
 		Pair<float[][], float[][]> qr = decompose_mT_T(mtx.transpose(m0));
 		return qr.map((q, r) -> Pair.of(mtx.transpose(q), mtx.transpose(r)));
 	}
@@ -15,32 +17,32 @@ public class Qr {
 	/**
 	 * Perform QR decomposition by Gram-Schmidt process.
 	 */
-	public static Pair<float[][], float[][]> decompose_mT_T(float[][] m) { // a
+	public Pair<float[][], float[][]> decompose_mT_T(float[][] m) { // a
 		int size = mtx.sqSize(m);
 		float[][] q = new float[size][]; // e
 
 		for (int i = 0; i < size; i++) {
 			float[] a = m[i];
-			float[] u1 = mtx.of(a);
+			float[] u1 = vec.of(a);
 
 			for (int j = 0; j < i; j++) {
 				float[] u = q[j];
-				mtx.addScaleOn(u1, u, -mtx.dot(u, a));
+				vec.addScaleOn(u1, u, -vec.dot(u, a));
 			}
 
-			q[i] = mtx.scaleOn(u1, Math.sqrt(1f / mtx.dot(u1, u1)));
+			q[i] = vec.scaleOn(u1, Math.sqrt(1f / vec.dot(u1, u1)));
 		}
 
 		float[][] r = new float[size][size];
 
 		for (int i = 0; i < size; i++)
 			for (int j = 0; j <= i; j++)
-				r[i][j] = mtx.dot(q[j], m[i]);
+				r[i][j] = vec.dot(q[j], m[i]);
 
 		return Pair.of(q, r);
 	}
 
-	public static Pair<float[][], float[][]> decomposeByGivensRotation(float[][] m) {
+	public Pair<float[][], float[][]> decomposeByGivensRotation(float[][] m) {
 		float[][] r = mtx.of(m);
 		int size = mtx.sqSize(r);
 		float[][] q = mtx.identity(size);

@@ -12,8 +12,9 @@ public class QrTest {
 
 	@Test
 	public void test() {
-		test(Qr::decompose);
-		test(Qr::decomposeByGivensRotation);
+		Qr qr = new Qr();
+		test(qr::decompose);
+		test(qr::decomposeByGivensRotation);
 	}
 
 	private void test(Fun<float[][], Pair<float[][], float[][]>> fun) {

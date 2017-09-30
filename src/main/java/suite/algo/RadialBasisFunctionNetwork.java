@@ -4,6 +4,7 @@ import java.util.List;
 
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix_;
+import suite.math.linalg.Vector_;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
@@ -20,6 +21,7 @@ public class RadialBasisFunctionNetwork {
 
 	private CholeskyDecomposition cd = new CholeskyDecomposition();
 	private Matrix_ mtx = new Matrix_();
+	private Vector_ vec = new Vector_();
 
 	private int nHiddens = 19;
 	private float[][] centers;
@@ -36,14 +38,14 @@ public class RadialBasisFunctionNetwork {
 		for (int i = 0; i < ins.length; i++) {
 			int cl = kmc[i];
 			sizes[cl]++;
-			mtx.addOn(sums[cl], ins[i]);
+			vec.addOn(sums[cl], ins[i]);
 		}
 
-		centers = Ints_.range(nHiddens).map(cl -> mtx.scale(sums[cl], 1d / sizes[cl])).toArray(float[].class);
+		centers = Ints_.range(nHiddens).map(cl -> vec.scale(sums[cl], 1d / sizes[cl])).toArray(float[].class);
 
 		for (int i = 0; i < ins.length; i++) {
 			int cl = kmc[i];
-			variances[cl] += mtx.dotDiff(ins[i], centers[cl]);
+			variances[cl] += vec.dotDiff(ins[i], centers[cl]);
 		}
 
 		invVariances = Floats_.toArray(variances.length, i -> 1f / variances[i]);
@@ -57,7 +59,7 @@ public class RadialBasisFunctionNetwork {
 	private float[] evaluateRbfs(float[] in) {
 		return Ints_ //
 				.range(nHiddens) //
-				.collect(Int_Flt.lift(cl -> (float) Math.exp(-.5d * mtx.dotDiff(in, centers[cl]) * invVariances[cl]))) //
+				.collect(Int_Flt.lift(cl -> (float) Math.exp(-.5d * vec.dotDiff(in, centers[cl]) * invVariances[cl]))) //
 				.toArray();
 	}
 

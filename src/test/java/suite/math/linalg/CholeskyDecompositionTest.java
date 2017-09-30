@@ -13,6 +13,7 @@ public class CholeskyDecompositionTest {
 
 	private Matrix_ mtx = new Matrix_();
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
+	private Vector_ vec = new Vector_();
 
 	private float[][] m0 = { //
 			{ 4f, 12f, -16f, }, //
@@ -27,8 +28,8 @@ public class CholeskyDecompositionTest {
 		Iterate<float[]> invm0 = cholesky.inverseMul(mtx.of(m0));
 		float[] actual0 = mtx.mul(m0, invm0.apply(fs));
 		float[] actual1 = invm0.apply(mtx.mul(m0, fs));
-		mtx.verifyEquals(fs, actual0, .01f);
-		mtx.verifyEquals(fs, actual1, .01f);
+		vec.verifyEquals(fs, actual0, .01f);
+		vec.verifyEquals(fs, actual1, .01f);
 	}
 
 	@Test
@@ -45,7 +46,7 @@ public class CholeskyDecompositionTest {
 		float[][] actuall = ldlt.t0;
 		float[] actuald = ldlt.t1;
 		mtx.verifyEquals(actuall, expectl);
-		mtx.verifyEquals(actuald, expectd);
+		vec.verifyEquals(actuald, expectd);
 
 		float[][] matrixd = To.arrayOfFloats(actuald.length, actuald.length, (i, j) -> i == j ? actuald[i] : 0f);
 		float[][] m1 = mtx.mul(mtx.mul(actuall, matrixd), mtx.transpose(actuall));

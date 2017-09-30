@@ -13,6 +13,7 @@ public class SingularValueDecomposition {
 
 	private Matrix_ mtx = new Matrix_();
 	private Random random = new Random();
+	private Vector_ vec = new Vector_();
 
 	// http://www.cs.yale.edu/homes/el327/datamining2013aFiles/07_singular_value_decomposition.pdf
 	// "Computing the SVD: The power method"
@@ -55,10 +56,10 @@ public class SingularValueDecomposition {
 		for (int i = 0; i < 16; i++)
 			x = mtx.mul(at, mtx.mul(a, x));
 
-		float[] v = mtx.normalize(x);
+		float[] v = vec.normalize(x);
 		float[] av = mtx.mul(a, v);
-		double s = mtx.abs(av);
-		float[] u = mtx.scale(av, 1d / s);
+		double s = vec.abs(av);
+		float[] u = vec.scale(av, 1d / s);
 		return Fixie.of(s, u, v);
 	}
 
@@ -69,12 +70,12 @@ public class SingularValueDecomposition {
 		float[][] at = mtx.transpose(a);
 
 		for (int i = 0; i < 256; i++) {
-			float[] u = mtx.normalize(mtx.mul(a, v));
+			float[] u = vec.normalize(mtx.mul(a, v));
 			float[] z = mtx.mul(at, u);
-			double beta = mtx.abs(z);
+			double beta = vec.abs(z);
 			double invBeta = 1d / beta;
-			v = mtx.scale(z, invBeta);
-			double error = mtx.abs(mtx.sub(mtx.mul(a, v), mtx.scale(u, invBeta)));
+			v = vec.scale(z, invBeta);
+			double error = vec.abs(vec.sub(mtx.mul(a, v), vec.scale(u, invBeta)));
 			if (error < .01d)
 				return Fixie.of(beta, u, v);
 		}
