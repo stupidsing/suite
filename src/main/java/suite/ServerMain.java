@@ -39,8 +39,6 @@ public class ServerMain extends ExecutableProgram {
 		Authenticator authenticator = (username, password) -> Constants.secrets()
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
 
-		IMap<String, HttpHandler> empty = IMap.empty();
-
 		HttpHandler handler0 = request -> HttpResponse.of(To.outlet("" //
 				+ "<html>" //
 				+ "<br/>method = " + request.method //
@@ -51,10 +49,10 @@ public class ServerMain extends ExecutableProgram {
 				+ "</html>" //
 		));
 
-		HttpHandler handler1 = HttpHandler.ofDispatch(empty //
+		HttpHandler handler1 = HttpHandler.ofDispatch(IMap //
+				.<String, HttpHandler> empty() //
 				.put("path", HttpHandler.ofPath(Constants.tmp)) //
-				.put("site", HttpHandler.ofSession(authenticator, handler0)) //
-		);
+				.put("site", HttpHandler.ofSession(authenticator, handler0)));
 
 		new HttpServer().run(handler1);
 	}
