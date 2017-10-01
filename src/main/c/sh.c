@@ -10,11 +10,11 @@
 
 #include "util.c"
 
-#define bufferSize 64
+#define buffersize 64
 #define delimiters " \t\r\n\a"
 
-char *readLine() {
-	int size = bufferSize;
+char *readline() {
+	int size = buffersize;
 	char *buffer = memalloc_(size * sizeof(char));
 	int pos = 0;
 	int c;
@@ -26,14 +26,14 @@ char *readLine() {
 		} else
 			buffer[pos] = c;
 
-		if(size <= ++pos) buffer = memrealloc_(buffer, size <<= 1);
+		if(size <= ++pos) buffer = memrealloc_(buffer, (size <<= 1) * sizeof(char));
 	}
 
 	exit(0);
 }
 
-char **splitLine(char *line) {
-	int size = bufferSize;
+char **splitline(char *line) {
+	int size = buffersize;
 	char **tokens = memalloc_(size * sizeof(char*));
 	int pos = 0;
 	char *source = line;
@@ -73,8 +73,8 @@ void loop() {
 
 	while(status) {
 		printf("> ");
-		char *line = readLine();
-		char **args = splitLine(line);
+		char *line = readline();
+		char **args = splitline(line);
 		status = execute(args);
 		free(args);
 		free(line);
