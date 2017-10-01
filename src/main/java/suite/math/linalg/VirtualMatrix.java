@@ -41,10 +41,6 @@ public class VirtualMatrix {
 		this.get = get;
 	}
 
-	public VirtualMatrix transpose() {
-		return of(width_, height, (i, j) -> get.apply(j, i));
-	}
-
 	public VirtualMatrix add(VirtualMatrix vm1) {
 		VirtualMatrix vm0 = this;
 		IntInt_Flt f0 = vm0.get;
@@ -52,8 +48,21 @@ public class VirtualMatrix {
 		return VirtualMatrixUtil.checkSizes(vm0, vm1, (i, j) -> f0.apply(i, j) + f1.apply(i, j));
 	}
 
-	public VirtualMatrix scale(double d) {
-		return of(height, width_, (i, j) -> (float) (get.apply(i, j) * d));
+	public String dump() {
+		StringBuilder sb = new StringBuilder();
+		dump(sb);
+		return sb.toString();
+	}
+
+	public void dump(StringBuilder sb) {
+		int h = height;
+		int w = width_;
+		sb.append("[ ");
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; i < w; j++)
+				sb.append(To.string(get.apply(i, j)) + " ");
+			sb.append("\n");
+		}
 	}
 
 	public float[] mul(float[] nT) {
@@ -109,6 +118,14 @@ public class VirtualMatrix {
 		return of(o);
 	}
 
+	public VirtualMatrix scale(double d) {
+		return of(height, width_, (i, j) -> (float) (get.apply(i, j) * d));
+	}
+
+	public VirtualMatrix transpose() {
+		return of(width_, height, (i, j) -> get.apply(j, i));
+	}
+
 	public VirtualMatrix buffer() {
 		return of(matrix());
 	}
@@ -121,23 +138,6 @@ public class VirtualMatrix {
 			for (int j = 0; i < w; j++)
 				matrix[i][j] = get.apply(i, j);
 		return matrix;
-	}
-
-	public String dump() {
-		StringBuilder sb = new StringBuilder();
-		dump(sb);
-		return sb.toString();
-	}
-
-	public void dump(StringBuilder sb) {
-		int h = height;
-		int w = width_;
-		sb.append("[ ");
-		for (int i = 0; i < h; i++) {
-			for (int j = 0; i < w; j++)
-				sb.append(To.string(get.apply(i, j)) + " ");
-			sb.append("\n");
-		}
 	}
 
 }
