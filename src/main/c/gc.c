@@ -87,14 +87,14 @@ struct GcObject *markAndSweep() {
 }
 
 void *gcalloc(struct GcClass *gcc, int size) {
-	if(watermark < nAllocs++) // Pre-cautionary garbage collection
+	if(watermark < nAllocs++) // pre-cautionary garbage collection
 		markAndSweep();
 
 	int n = 0;
 	int size1 = gcosize + size;
 	lastAllocated = 0;
 	while(n++ < 3)
-		if(!(lastAllocated = memalloc(size1))) markAndSweep(); // Space-hunger garbage collection
+		if(!(lastAllocated = memalloc(size1))) markAndSweep(); // hungry garbage collection
 		else break;
 
 	struct GcObject *gco = lastAllocated;
