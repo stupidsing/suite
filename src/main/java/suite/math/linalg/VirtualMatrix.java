@@ -1,6 +1,8 @@
 package suite.math.linalg;
 
 import suite.primitive.IntInt_Flt;
+import suite.primitive.Int_Dbl;
+import suite.primitive.Ints_;
 import suite.util.To;
 
 public class VirtualMatrix {
@@ -116,6 +118,19 @@ public class VirtualMatrix {
 			throw new RuntimeException("wrong input sizes");
 
 		return of(o);
+	}
+
+	public VirtualMatrix mulLazy(VirtualMatrix vm1) {
+		VirtualMatrix vm0 = this;
+		IntInt_Flt f0 = vm0.get;
+		IntInt_Flt f1 = vm1.get;
+		int ks = vm0.width_;
+
+		if (ks == vm1.height)
+			return of(vm0.height, vm1.width_,
+					(i, j) -> (float) Ints_.range(ks).collectAsDouble(Int_Dbl.sum(k -> f0.apply(i, k) * f1.apply(k, j))));
+		else
+			throw new RuntimeException("wrong input sizes");
 	}
 
 	public VirtualMatrix scale(double d) {
