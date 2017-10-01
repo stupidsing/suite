@@ -368,10 +368,10 @@ public class Inspect {
 	}
 
 	public List<Method> methods(Class<?> clazz) {
-		List<Method> Methods = methodsByClass.get(clazz);
-		if (Methods == null)
-			methodsByClass.put(clazz, Methods = getMethods_(clazz));
-		return Methods;
+		List<Method> methods = methodsByClass.get(clazz);
+		if (methods == null)
+			methodsByClass.put(clazz, methods = getMethods_(clazz));
+		return methods;
 	}
 
 	public List<Property> properties(Class<?> clazz) {
