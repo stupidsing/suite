@@ -33,9 +33,20 @@ void memdeinit() {
 	!nAllocs || err("some memory not freed");
 }
 
+void *memalloc_(int size) {
+	void *p = malloc(size);
+	if(p) return p;
+	else err("out of memory");
+}
+
+void *memrealloc_(void *p, int size) {
+	if(p = realloc(p, size)) return p;
+	else err("out of memory");
+}
+
 void *memalloc(int size) {
 	nAllocs++;
-	return malloc(size);
+	return memalloc_(size);
 }
 
 void *memalloczeroed(int size) {
