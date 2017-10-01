@@ -4,6 +4,7 @@
 
 #include <ctype.h>
 
+#include "hashtab.c"
 #include "io.c"
 
 const int genHashSize = 256;

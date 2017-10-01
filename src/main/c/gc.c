@@ -1,6 +1,7 @@
 #ifndef gcsource
 #define gcsource
 
+#include "heap.c"
 #include "util.c"
 
 #define FRESH__ 0
