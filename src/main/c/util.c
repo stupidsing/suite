@@ -21,7 +21,7 @@ int fmsg(char *t, int line, char *m) {
 
 #define info(m) msg("INFO", __LINE__, (m))
 #define err(m) msg("ERROR", __LINE__, (m))
-#define fatal(m) fmsg("FATAL", __LINE__, (m));
+#define fatal(m) fmsg("FATAL", __LINE__, (m))
 
 int nAllocs;
 
