@@ -57,6 +57,7 @@ int launch(char **args) {
 		do {
 			waitpid(pid, &status, WUNTRACED);
 		} while(!WIFEXITED(status) && !WIFSIGNALED(status));
+		return WEXITSTATUS(status) == 0;
 	}
 	else perror("fork()");
 
