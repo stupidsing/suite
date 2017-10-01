@@ -29,6 +29,7 @@ char *readline() {
 		if(size <= ++pos) buffer = memrealloc_(buffer, (size <<= 1) * sizeof(char));
 	}
 
+	free(buffer);
 	exit(0);
 }
 
