@@ -6,7 +6,6 @@
 
 #include "io.c"
 
-// adjustable parameters
 const int genHashSize = 256;
 const int handlerHashSize = 1024;
 const int ruleHashSize = 262144;
