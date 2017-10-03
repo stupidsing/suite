@@ -72,38 +72,27 @@ public class VirtualMatrix {
 		}
 	}
 
-	public VirtualVector mul(float[] nT) {
-		VirtualMatrix vm0 = this;
-		int ix = vm0.height;
-		int jx = vm0.width_;
-		IntInt_Flt f0 = vm0.get;
+	public VirtualVector mul(VirtualVector vv) {
+		VirtualMatrix vm = this;
+		int ix = vm.height;
+		int jx = vm.width_;
+		IntInt_Flt f0 = vm.get;
+		Int_Flt f1 = vv.get;
 		float[] o = new float[ix];
 		int i1, j1;
-		if (jx == nT.length)
+		if (jx == vv.length)
 			for (int i0 = 0; i0 < ix; i0 = i1) {
 				i1 = Math.min(i0 + 64, ix);
 				for (int j0 = 0; j0 < jx; j0 = j1) {
 					j1 = Math.min(j0 + 64, jx);
 					for (int i = i0; i < i1; i++)
 						for (int j = j0; j < j1; j++)
-							o[i] += f0.apply(i, j) * nT[j];
+							o[i] += f0.apply(i, j) * f1.apply(j);
 				}
 			}
 		else
 			throw new RuntimeException("wrong input sizes");
 		return VirtualVector.of(o);
-	}
-
-	public VirtualVector mul(VirtualVector vv) {
-		VirtualMatrix vm = this;
-		IntInt_Flt f0 = vm.get;
-		Int_Flt f1 = vv.get;
-		int l = vm.width_;
-		if (l == vv.length)
-			return VirtualVector.of(vm.height,
-					i -> (float) Ints_.range(l).collectAsDouble(Int_Dbl.sum(j -> f0.apply(i, j) * f1.apply(j))));
-		else
-			throw new RuntimeException("wrong input sizes");
 	}
 
 	public VirtualMatrix mul(VirtualMatrix vm1) {
@@ -135,6 +124,18 @@ public class VirtualMatrix {
 			throw new RuntimeException("wrong input sizes");
 
 		return of(o);
+	}
+
+	public VirtualVector mulLazy(VirtualVector vv) {
+		VirtualMatrix vm = this;
+		IntInt_Flt f0 = vm.get;
+		Int_Flt f1 = vv.get;
+		int l = vm.width_;
+		if (l == vv.length)
+			return VirtualVector.of(vm.height,
+					i -> (float) Ints_.range(l).collectAsDouble(Int_Dbl.sum(j -> f0.apply(i, j) * f1.apply(j))));
+		else
+			throw new RuntimeException("wrong input sizes");
 	}
 
 	public VirtualMatrix mulLazy(VirtualMatrix vm1) {
