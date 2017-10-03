@@ -56,7 +56,7 @@ public class KmeansCluster {
 		int iteration = 0;
 
 		while (true) {
-			KmeansBin[] bins = To.array(KmeansBin.class, k, j -> new KmeansBin());
+			KmeansBin[] bins = To.array(k, KmeansBin.class, j -> new KmeansBin());
 
 			for (float[] point : points) {
 				KmeansBin bin = bins[findNearest(point, centers)];

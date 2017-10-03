@@ -18,7 +18,7 @@ public class Arima {
 
 	public LinearRegression ar(float[] ys, int n) {
 		int length = ys.length;
-		float[][] deps = To.array(float[].class, length - n, i -> Arrays.copyOfRange(ys, i, i + n));
+		float[][] deps = To.array(length - n, float[].class, i -> Arrays.copyOfRange(ys, i, i + n));
 		float[] ys1 = Arrays.copyOfRange(ys, n, length);
 		return stat.linearRegression(deps, ys1);
 	}
@@ -71,7 +71,7 @@ public class Arima {
 
 		// auto regressive
 		int length = ys.length;
-		float[][] xs0 = To.array(float[].class, length, i -> copyPadZeroes(ys, i - p, i));
+		float[][] xs0 = To.array(length, float[].class, i -> copyPadZeroes(ys, i - p, i));
 		LinearRegression lr0 = stat.linearRegression(xs0, ys);
 
 		float[] variances = Floats_.toArray(length, i -> {
@@ -80,7 +80,7 @@ public class Arima {
 		});
 
 		// conditional heteroskedasticity
-		float[][] xs1 = To.array(float[].class, length, i -> copyPadZeroes(variances, i - p, i));
+		float[][] xs1 = To.array(length, float[].class, i -> copyPadZeroes(variances, i - p, i));
 		LinearRegression lr1 = stat.linearRegression(xs1, variances);
 
 		return Floats_.concat(lr0.coefficients, lr1.coefficients);
@@ -112,7 +112,7 @@ public class Arima {
 
 			residuals[iter] = yiter;
 
-			float[][] xs = To.array(float[].class, length, i -> {
+			float[][] xs = To.array(length, float[].class, i -> {
 				int p0 = -Math.max(0, i - p);
 				int nr = Math.min(iterp1, q);
 

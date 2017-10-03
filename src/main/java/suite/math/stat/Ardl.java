@@ -25,11 +25,11 @@ public class Ardl {
 		int n = fsList.length;
 		int length = fsList[0].length;
 
-		return To.array(LinearRegression.class, n, it -> {
+		return To.array(n, LinearRegression.class, it -> {
 			float[] fs = fsList[it];
 
 			if (length == fs.length) {
-				float[][] x = To.array(float[].class, length - maxLag, t -> getExplanatoryVariables(fsList, it, t));
+				float[][] x = To.array(length - maxLag, float[].class, t -> getExplanatoryVariables(fsList, it, t));
 				return stat.linearRegression(x, fs);
 			} else
 				throw new RuntimeException("wrong input sizes");
@@ -41,7 +41,7 @@ public class Ardl {
 	}
 
 	private float[] getExplanatoryVariables(float[][] fsList, int it, int t) {
-		return Floats_.concat(To.array(float[].class, fsList.length, is -> {
+		return Floats_.concat(To.array(fsList.length, float[].class, is -> {
 			float[] fsi = fsList[is];
 			float[] xs = new float[maxLag + (isIncludeCurrent ? 1 : 0)];
 			Floats_.copy(fsi, t, xs, 0, maxLag);

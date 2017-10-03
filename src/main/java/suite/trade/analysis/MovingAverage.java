@@ -81,7 +81,7 @@ public class MovingAverage {
 	}
 
 	public MovingRange[] movingRange(float[] prices, int windowSize) {
-		return To.array(MovingRange.class, prices.length, i -> {
+		return To.array(prices.length, MovingRange.class, i -> {
 			float[] window = ts.back(i, windowSize, prices);
 			Arrays.sort(window);
 			int length = window.length;

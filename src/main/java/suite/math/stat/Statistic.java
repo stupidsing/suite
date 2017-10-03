@@ -88,7 +88,7 @@ public class Statistic {
 			coefficients = cholesky.inverseMul(xtx).apply(mtx.mul(xt, y));
 			coefficientNames = coefficientNames_ != null //
 					? coefficientNames_ //
-					: To.array(String.class, sampleLength_, i -> "c" + i);
+					: To.array(sampleLength_, String.class, i -> "c" + i);
 
 			float[] estimatedy = To.arrayOfFloats(x, this::predict);
 			double meany = mean_(y);

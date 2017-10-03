@@ -42,7 +42,7 @@ public class RadialBasisFunctionNetwork {
 			vec.addOn(sums[cl], ins[i]);
 		}
 
-		centers = To.array(float[].class, nHiddens, cl -> vec.scale(sums[cl], 1d / sizes[cl]));
+		centers = To.array(nHiddens, float[].class, cl -> vec.scale(sums[cl], 1d / sizes[cl]));
 
 		for (int i = 0; i < ins.length; i++) {
 			int cl = kmc[i];

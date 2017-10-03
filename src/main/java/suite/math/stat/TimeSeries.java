@@ -62,7 +62,7 @@ public class TimeSeries {
 			float[] diffs2 = To.arrayOfFloats(diffs, diff -> diff * diff);
 			return (float) Math.log(stat.variance(diffs2));
 		});
-		float[][] xs = To.array(float[].class, logVrs.length, i -> new float[] { logVrs[i], 1f, });
+		float[][] xs = To.array(logVrs.length, float[].class, i -> new float[] { logVrs[i], 1f, });
 		float[] n = Floats_.toArray(logVrs.length, i -> (float) Math.log(tors[i]));
 		LinearRegression lr = stat.linearRegression(xs, n);
 		float beta0 = lr.coefficients[0];
@@ -100,14 +100,14 @@ public class TimeSeries {
 	}
 
 	public LinearRegression meanReversion(float[] ys, int tor) {
-		float[][] xs = To.array(float[].class, ys.length - tor, i -> new float[] { ys[i], 1f, });
+		float[][] xs = To.array(ys.length - tor, float[].class, i -> new float[] { ys[i], 1f, });
 		float[] diffs1 = drop_(tor, differences_(1, ys));
 		return stat.linearRegression(xs, diffs1);
 	}
 
 	public LinearRegression movingAvgMeanReversion(float[] ys, float[] movingAvg, int tor) {
 		float[] ma = drop_(tor, movingAvg);
-		float[][] xs = To.array(float[].class, ys.length - tor, i -> new float[] { ma[i], 1f, });
+		float[][] xs = To.array(ys.length - tor, float[].class, i -> new float[] { ma[i], 1f, });
 		float[] diffs1 = drop_(tor, differences_(1, ys));
 		return stat.linearRegression(xs, diffs1);
 	}

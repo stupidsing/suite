@@ -8,7 +8,7 @@ public class FastFourierTransform {
 
 	public Complex[] ifft(Complex[] cs0) {
 		int size = cs0.length;
-		Complex[] cs1 = To.array(Complex.class, size, i -> cs0[i].conjugate());
+		Complex[] cs1 = To.array(size, Complex.class, i -> cs0[i].conjugate());
 		Complex[] cs2 = fft(cs1);
 		float inv = 1.0f / size;
 

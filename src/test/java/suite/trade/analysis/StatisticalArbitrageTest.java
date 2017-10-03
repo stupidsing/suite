@@ -61,7 +61,7 @@ public class StatisticalArbitrageTest {
 
 		DataSource ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
 		float[] prices = ds.prices;
-		float[][] mas = To.array(float[].class, power, p -> ma.movingAvg(prices, 1 << p));
+		float[][] mas = To.array(power, float[].class, p -> ma.movingAvg(prices, 1 << p));
 		float[] returns = ts.returns(prices);
 		List<float[]> xsList = new ArrayList<>();
 		FloatsBuilder ys = new FloatsBuilder();

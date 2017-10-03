@@ -21,7 +21,7 @@ public class NaiveBayes {
 		int length_ = records.get(0).t0.length;
 		int[] ms = new int[nCategories];
 		int[] ws = Ints_.toArray(nCategories, cat -> 1);
-		int[][] is = To.array(int[].class, nCategories, cat -> Ints_.toArray(length_, i -> 1));
+		int[][] is = To.array(nCategories, int[].class, cat -> Ints_.toArray(length_, i -> 1));
 
 		for (Pair<int[], Boolean> record : records) {
 			int[] xs = record.t0;
@@ -37,7 +37,7 @@ public class NaiveBayes {
 		length = length_;
 		b = Math.log(threshold) + Math.log(ms[i(true)]) - Math.log(ms[i(false)]);
 
-		ps = To.array(float[].class, nCategories, i -> {
+		ps = To.array(nCategories, float[].class, i -> {
 			IntStreamlet range = Ints_.range(length_);
 			int[] is_ = is[i];
 			return range.collect(Int_Flt.lift(j -> (float) (is_[j] / ws[i]))).toArray();

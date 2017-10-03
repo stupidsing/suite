@@ -65,7 +65,7 @@ public class BindArrayUtil {
 					}
 				};
 				if (pred.test(be, node))
-					return To.array(Node.class, size, i -> env.get(indices[i]));
+					return To.array(size, Node.class, i -> env.get(indices[i]));
 				else
 					return null;
 

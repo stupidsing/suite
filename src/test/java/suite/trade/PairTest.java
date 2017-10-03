@@ -38,7 +38,7 @@ public class PairTest {
 		float[] prices0 = ds0.alignBeforePrices(tradeTimes).prices;
 		float[] prices1 = ds1.alignBeforePrices(tradeTimes).prices;
 		int length = prices0.length;
-		float[][] x = To.array(float[].class, length, i -> new float[] { prices0[i], 1f, });
+		float[][] x = To.array(length, float[].class, i -> new float[] { prices0[i], 1f, });
 		float[] y = prices1;
 		LinearRegression lr = statistic.linearRegression(x, y);
 		System.out.println(symbol0 + " -> " + symbol1 + lr);

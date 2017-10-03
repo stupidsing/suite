@@ -147,10 +147,10 @@ public class Amd64 {
 
 	public Operand none = new OpNone();
 
-	public OpReg[] reg8 = To.array(OpReg.class, 16, r -> newReg(1, r));
-	public OpReg[] reg16 = To.array(OpReg.class, 16, r -> newReg(2, r));
-	public OpReg[] reg32 = To.array(OpReg.class, 16, r -> newReg(4, r));
-	public OpReg[] reg64 = To.array(OpReg.class, 16, r -> newReg(8, r));
+	public OpReg[] reg8 = To.array(16, OpReg.class, r -> newReg(1, r));
+	public OpReg[] reg16 = To.array(16, OpReg.class, r -> newReg(2, r));
+	public OpReg[] reg32 = To.array(16, OpReg.class, r -> newReg(4, r));
+	public OpReg[] reg64 = To.array(16, OpReg.class, r -> newReg(8, r));
 
 	public OpReg al = reg8[0];
 	public OpReg cl = reg8[1];

@@ -48,7 +48,7 @@ public class To {
 
 	private static String hexDigits = "0123456789ABCDEF";
 
-	public static <T> T[] array(Class<T> clazz, int length, IntFunction<T> f) {
+	public static <T> T[] array(int length, Class<T> clazz, IntFunction<T> f) {
 		T[] ts = Array_.newArray(clazz, length);
 		for (int i = 0; i < length; i++)
 			ts[i] = f.apply(i);

@@ -148,7 +148,7 @@ public class Yahoo {
 					.concat(dataJsons0, dataJsons1) //
 					.mapValue(json_ -> json_.collect(Obj_Flt.lift(JsonNode::floatValue)).toArray()) //
 					.filterValue(fs -> length <= fs.length) //
-					.mapValue(fs -> To.array(LngFltPair.class, length, i -> LngFltPair.of(ts[i], fs[i]))) //
+					.mapValue(fs -> To.array(length, LngFltPair.class, i -> LngFltPair.of(ts[i], fs[i]))) //
 					.toMap();
 
 			LngFltPair[] dividends = jsons //

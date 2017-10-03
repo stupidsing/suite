@@ -86,7 +86,7 @@ public class AnalyzeTimeSeriesTest {
 		};
 
 		IntFunction<BuySell> revert = d -> momFun.apply(d).scale(0f, -1f);
-		BuySell[] reverts = To.array(BuySell.class, 8, revert);
+		BuySell[] reverts = To.array(8, BuySell.class, revert);
 		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
 		float[] holds = marketTiming.hold(prices, 1f, 1f, 1f);
 		BuySell mt_ = buySell(d -> holds[d]);
