@@ -11,6 +11,7 @@
 struct GcObject;
 
 struct GcClass {
+	int size;
 	int *(*refoffsets) (struct GcObject*);
 };
 
@@ -87,7 +88,7 @@ struct GcObject *markAndSweep() {
 	return first;
 }
 
-void *gcalloc(struct GcClass *gcc, int size) {
+void *gcalloc_(struct GcClass *gcc, int size) {
 	if(watermark < nAllocs++) // pre-cautionary garbage collection
 		markAndSweep();
 
@@ -110,8 +111,12 @@ void *gcalloc(struct GcClass *gcc, int size) {
 	return first = p;
 }
 
+void *gcalloc(struct GcClass *gcc) {
+	return gcalloc_(gcc, gcc->size);
+}
+
 void *gcallocleaf(int size) {
-	return gcalloc(0, size);
+	return gcalloc_(0, size);
 }
 
 void gcsetroot(struct GcObject *r) {
