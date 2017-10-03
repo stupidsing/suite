@@ -2,6 +2,7 @@ package suite.math.linalg;
 
 import suite.primitive.IntInt_Flt;
 import suite.primitive.Int_Dbl;
+import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.util.To;
 
@@ -50,6 +51,10 @@ public class VirtualMatrix {
 		return VirtualMatrixUtil.checkSizes(vm0, vm1, (i, j) -> f0.apply(i, j) + f1.apply(i, j));
 	}
 
+	public VirtualMatrix buffer() {
+		return of(matrix());
+	}
+
 	public String dump() {
 		StringBuilder sb = new StringBuilder();
 		dump(sb);
@@ -67,7 +72,7 @@ public class VirtualMatrix {
 		}
 	}
 
-	public float[] mul(float[] nT) {
+	public VirtualVector mul(float[] nT) {
 		VirtualMatrix vm0 = this;
 		int ix = vm0.height;
 		int jx = vm0.width_;
@@ -86,7 +91,19 @@ public class VirtualMatrix {
 			}
 		else
 			throw new RuntimeException("wrong input sizes");
-		return o;
+		return VirtualVector.of(o);
+	}
+
+	public VirtualVector mul(VirtualVector vv) {
+		VirtualMatrix vm = this;
+		IntInt_Flt f0 = vm.get;
+		Int_Flt f1 = vv.get;
+		int l = vm.width_;
+		if (l == vv.length)
+			return VirtualVector.of(vm.height,
+					i -> (float) Ints_.range(l).collectAsDouble(Int_Dbl.sum(j -> f0.apply(i, j) * f1.apply(j))));
+		else
+			throw new RuntimeException("wrong input sizes");
 	}
 
 	public VirtualMatrix mul(VirtualMatrix vm1) {
@@ -139,10 +156,6 @@ public class VirtualMatrix {
 
 	public VirtualMatrix transpose() {
 		return of(width_, height, (i, j) -> get.apply(j, i));
-	}
-
-	public VirtualMatrix buffer() {
-		return of(matrix());
 	}
 
 	public float[][] matrix() {

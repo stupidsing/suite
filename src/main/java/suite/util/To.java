@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.function.IntFunction;
 
 import suite.Constants;
+import suite.math.linalg.VirtualMatrix;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
 import suite.primitive.Floats_;
@@ -63,11 +64,7 @@ public class To {
 	}
 
 	public static float[][] arrayOfFloats(int height, int width, IntInt_Flt fun) {
-		float[][] m = new float[height][width];
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
-				m[i][j] = fun.apply(i, j);
-		return m;
+		return VirtualMatrix.of(height, width, fun).matrix();
 	}
 
 	public static Bytes bytes(String s) {
