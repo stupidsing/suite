@@ -8,6 +8,8 @@
 #define QUEUED_ 1
 #define SCANNED 2
 
+#define offsetof(type, member) __builtin_offsetof(type, member)
+
 struct GcObject;
 
 struct GcClass {

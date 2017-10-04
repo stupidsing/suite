@@ -160,11 +160,9 @@ public class VirtualMatrix {
 	}
 
 	public float[][] matrix() {
-		int h = height;
-		int w = width_;
-		float[][] matrix = new float[h][w];
-		for (int i = 0; i < h; i++)
-			for (int j = 0; i < w; j++)
+		float[][] matrix = new float[height][width_];
+		for (int i = 0; i < height; i++)
+			for (int j = 0; i < width_; j++)
 				matrix[i][j] = get.apply(i, j);
 		return matrix;
 	}
