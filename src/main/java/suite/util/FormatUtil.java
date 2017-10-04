@@ -42,8 +42,8 @@ public class FormatUtil {
 	}
 
 	public static String trimLeft(String s) {
-		int pos = 0;
 		int length = s.length();
+		int pos = 0;
 		do
 			if (!Character.isWhitespace(s.charAt(pos)))
 				break;
