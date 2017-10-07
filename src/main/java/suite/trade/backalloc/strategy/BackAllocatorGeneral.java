@@ -25,8 +25,6 @@ import suite.trade.analysis.Oscillator.Movement;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSourceView;
-import suite.trade.singlealloc.BuySellStrategy;
-import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Fun;
 import suite.util.String_;
@@ -58,7 +56,7 @@ public class BackAllocatorGeneral {
 			.cons("hold", fixed(1d)) //
 			.cons("lr03", lastReturn(0, 3)) //
 			.cons("lr30", lastReturn(3, 0)) //
-			.cons("ma1", movingAvg(64, 8, .15f)) //
+			.cons("ma1", mamr(64, 8, .15f)) //
 			.cons("mom", momentum(8)) //
 			.cons("momacc", momentumAcceleration(8, 24)) //
 			.cons("opcl8", openClose(8)) //
@@ -199,6 +197,11 @@ public class BackAllocatorGeneral {
 		};
 	}
 
+	private BackAllocator mamr(int nPastDays, int nHoldDays, float threshold) {
+		Strategos strategos = new Strategos();
+		return BackAllocator_.by(strategos.movingAvgMeanReverting(nPastDays, nHoldDays, threshold));
+	}
+
 	private BackAllocator momentum(int nDays) {
 		return BackAllocator_.byPrices(prices -> index -> {
 			int last = index - 1;
@@ -216,22 +219,6 @@ public class BackAllocatorGeneral {
 				return 30d * (return1 - return0);
 			} else
 				return 0d;
-		});
-	}
-
-	private BackAllocator movingAvg(int nPastDays, int nHoldDays, float threshold) {
-		Strategos strategos = new Strategos();
-		BuySellStrategy mamr = strategos.movingAvgMeanReverting(nPastDays, nHoldDays, threshold);
-
-		return BackAllocator_.byPrices(prices -> {
-			GetBuySell getBuySell = mamr.analyze(prices);
-
-			return index -> {
-				int hold = 0;
-				for (int i = 0; i < index; i++)
-					hold += getBuySell.get(i);
-				return (double) hold;
-			};
 		});
 	}
 

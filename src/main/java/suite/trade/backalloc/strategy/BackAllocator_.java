@@ -12,9 +12,24 @@ import suite.streamlet.Streamlet2;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.DataSource;
+import suite.trade.singlealloc.BuySellStrategy;
+import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.util.FunUtil.Fun;
 
 public class BackAllocator_ {
+
+	public static BackAllocator by(BuySellStrategy mamr) {
+		return byPrices(prices -> {
+			GetBuySell getBuySell = mamr.analyze(prices);
+
+			return index -> {
+				int hold = 0;
+				for (int i = 0; i < index; i++)
+					hold += getBuySell.get(i);
+				return (double) hold;
+			};
+		});
+	}
 
 	public static BackAllocator byDataSource(Fun<DataSource, Int_Dbl> fun) {
 		return byDataSource_(fun);
