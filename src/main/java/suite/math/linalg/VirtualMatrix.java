@@ -55,6 +55,22 @@ public class VirtualMatrix {
 		return of(matrix());
 	}
 
+	public VirtualMatrix convolute(float[][] k) {
+		Matrix_ mtx = VirtualMatrixUtil.mtx;
+		int kh = mtx.height(k);
+		int kw = mtx.width(k);
+		return VirtualMatrix.of( //
+				height - kh + 1, //
+				width_ - kw + 1, //
+				(i, j) -> {
+					double sum = 0d;
+					for (int di = 0; di < kh; di++)
+						for (int dj = 0; dj < kw; dj++)
+							sum += get.apply(i + di, j + dj) * k[di][dj];
+					return (float) sum;
+				});
+	}
+
 	public String dump() {
 		StringBuilder sb = new StringBuilder();
 		dump(sb);
