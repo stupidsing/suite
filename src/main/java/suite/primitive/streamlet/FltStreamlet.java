@@ -18,7 +18,6 @@ import suite.primitive.FltPrimitives.FltPredicate;
 import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.FltPrimitives.Flt_Obj;
-import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.set.FltSet;
@@ -47,17 +46,6 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 			Source<FltStreamlet> source = streamlets.source();
 			return FltOutlet.of(FltFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
-	}
-
-	public static <T> Fun<Outlet<T>, FltStreamlet> of(Obj_Flt<T> fun0) {
-		Obj_Flt<T> fun1 = fun0.rethrow();
-		return ts -> {
-			FloatsBuilder cb = new FloatsBuilder();
-			T t;
-			while ((t = ts.next()) != null)
-				cb.append(fun1.apply(t));
-			return cb.toFloats().streamlet();
-		};
 	}
 
 	public static FltStreamlet of(float... ts) {

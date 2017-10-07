@@ -16,7 +16,6 @@ import suite.primitive.LngPrimitives.LngPredicate;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.LngPrimitives.Lng_Obj;
-import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Lng_Lng;
 import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
@@ -47,17 +46,6 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 			Source<LngStreamlet> source = streamlets.source();
 			return LngOutlet.of(LngFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
-	}
-
-	public static <T> Fun<Outlet<T>, LngStreamlet> of(Obj_Lng<T> fun0) {
-		Obj_Lng<T> fun1 = fun0.rethrow();
-		return ts -> {
-			LongsBuilder cb = new LongsBuilder();
-			T t;
-			while ((t = ts.next()) != null)
-				cb.append(fun1.apply(t));
-			return cb.toLongs().streamlet();
-		};
 	}
 
 	public static LngStreamlet of(long... ts) {
