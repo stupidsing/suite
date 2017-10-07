@@ -57,6 +57,7 @@ public class BackAllocatorGeneral {
 			.cons("lr03", lastReturn(0, 3)) //
 			.cons("lr30", lastReturn(3, 0)) //
 			.cons("ma1", mamr(64, 8, .15f)) //
+			.cons("ma200", ma(200)) //
 			.cons("mom", momentum(8)) //
 			.cons("momacc", momentumAcceleration(8, 24)) //
 			.cons("opcl8", openClose(8)) //
@@ -195,6 +196,17 @@ public class BackAllocatorGeneral {
 					.map2(symbol -> 1d / (nWorsts + nBests)) //
 					.toList();
 		};
+	}
+
+	private BackAllocator ma(int tor) {
+		return BackAllocator_.byPrices(prices -> {
+			float[] movingAvgs = ma.movingAvg(prices, tor);
+
+			return index -> {
+				int last = index - 1;
+				return movingAvgs[last] < prices[last] ? 1d : -1d;
+			};
+		});
 	}
 
 	private BackAllocator mamr(int nPastDays, int nHoldDays, float threshold) {

@@ -89,7 +89,7 @@ public class AnalyzeTimeSeriesTest {
 		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
 		float[] holds = mt.hold(prices, 1f, 1f, 1f);
 		float[] ma200 = ma.movingAvg(prices, 200);
-		BuySell ma = buySell(d -> ma200[d] < prices[d] ? 1f : -1f).longOnly();
+		BuySell mat = buySell(d -> ma200[d] < prices[d] ? 1f : -1f).longOnly();
 		BuySell mt_ = buySell(d -> holds[d]);
 
 		LogUtil.info("" //
@@ -116,7 +116,7 @@ public class AnalyzeTimeSeriesTest {
 						.collect(As::joined) //
 				+ "\nhold " + buySell(d -> 1d).invest(prices) //
 				+ "\nkelly " + buySell(d -> kelly).invest(prices) //
-				+ "\nma200 " + ma.invest(prices) //
+				+ "\nma200 trend " + mat.invest(prices) //
 				+ Ints_ //
 						.range(1, 8) //
 						.map(d -> "\nrevert " + d + " " + reverts[d].invest(prices)) //
