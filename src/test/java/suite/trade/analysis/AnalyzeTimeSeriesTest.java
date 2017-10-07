@@ -33,14 +33,15 @@ public class AnalyzeTimeSeriesTest {
 
 	private static AnalyzeTimeSeriesTest me = new AnalyzeTimeSeriesTest();
 
-	private String symbol = "0045.HK";
+	private String symbol = "^HSI";
 	private TimeRange period = TimeRange.of(Time.of(2005, 1, 1), TimeRange.max);
 	// TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1));
 	// TimeRange.threeYears();
 
 	private Configuration cfg = new ConfigurationImpl();
 	private DiscreteCosineTransform dct = new DiscreteCosineTransform();
-	private MarketTiming marketTiming = new MarketTiming();
+	private MarketTiming mt = new MarketTiming();
+	private MovingAverage ma = new MovingAverage();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
@@ -88,7 +89,9 @@ public class AnalyzeTimeSeriesTest {
 		IntFunction<BuySell> revert = d -> momFun.apply(d).scale(0f, -1f);
 		BuySell[] reverts = To.array(8, BuySell.class, revert);
 		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
-		float[] holds = marketTiming.hold(prices, 1f, 1f, 1f);
+		float[] holds = mt.hold(prices, 1f, 1f, 1f);
+		float[] ma200 = ma.movingAvg(prices, 200);
+		BuySell ma = buySell(d -> ma200[d] < prices[d] ? 1f : -1f).longOnly();
 		BuySell mt_ = buySell(d -> holds[d]);
 
 		LogUtil.info("" //
@@ -115,6 +118,7 @@ public class AnalyzeTimeSeriesTest {
 						.collect(As::joined) //
 				+ "\nhold " + buySell(d -> 1d).invest(prices) //
 				+ "\nkelly " + buySell(d -> kelly).invest(prices) //
+				+ "\nma200 " + ma.invest(prices) //
 				+ Ints_//
 						.range(1, 8) //
 						.map(d -> "\nrevert " + d + " " + reverts[d].invest(prices)) //
