@@ -67,6 +67,10 @@ public class Chars_ {
 			}
 	}
 
+	public static ChrStreamlet of(char... ts) {
+		return new ChrStreamlet(() -> ChrOutlet.of(ts));
+	}
+
 	public static ChrStreamlet range(char e) {
 		return range((char) 0, e);
 	}

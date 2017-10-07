@@ -3,8 +3,8 @@ package suite.trade.backalloc.run;
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
-import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -50,7 +50,7 @@ public class BackTester {
 							.toArray();
 
 					MeanVariance mv = stat.meanVariance(returns);
-					double logCagr = FltStreamlet.of(returns).mapFlt(return_ -> (float) Math.log1p(return_)).average();
+					double logCagr = Floats_.of(returns).mapFlt(return_ -> (float) Math.log1p(return_)).average();
 
 					return ">> cagr = " + To.string(Math.expm1(logCagr)) //
 							+ ", sharpe = " + To.string(mv.mean / mv.standardDeviation()) //

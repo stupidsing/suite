@@ -48,10 +48,6 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		});
 	}
 
-	public static FltStreamlet of(float... ts) {
-		return streamlet(() -> FltOutlet.of(ts));
-	}
-
 	private static FltStreamlet streamlet(Source<FltOutlet> in) {
 		return new FltStreamlet(in);
 	}

@@ -48,10 +48,6 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		});
 	}
 
-	public static LngStreamlet of(long... ts) {
-		return streamlet(() -> LngOutlet.of(ts));
-	}
-
 	private static LngStreamlet streamlet(Source<LngOutlet> in) {
 		return new LngStreamlet(in);
 	}

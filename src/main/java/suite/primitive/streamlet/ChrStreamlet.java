@@ -48,10 +48,6 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		});
 	}
 
-	public static ChrStreamlet of(char... ts) {
-		return streamlet(() -> ChrOutlet.of(ts));
-	}
-
 	private static ChrStreamlet streamlet(Source<ChrOutlet> in) {
 		return new ChrStreamlet(in);
 	}

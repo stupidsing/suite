@@ -67,6 +67,10 @@ public class Floats_ {
 			}
 	}
 
+	public static FltStreamlet of(float... ts) {
+		return new FltStreamlet(() -> FltOutlet.of(ts));
+	}
+
 	public static FltStreamlet range(float e) {
 		return range((float) 0, e);
 	}

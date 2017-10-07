@@ -67,6 +67,10 @@ public class Doubles_ {
 			}
 	}
 
+	public static DblStreamlet of(double... ts) {
+		return new DblStreamlet(() -> DblOutlet.of(ts));
+	}
+
 	public static DblStreamlet range(double e) {
 		return range((double) 0, e);
 	}

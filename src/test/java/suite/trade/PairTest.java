@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
+import suite.primitive.Longs_;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
@@ -32,8 +33,8 @@ public class PairTest {
 	private void test(TimeRange period, String symbol0, String symbol1) {
 		DataSource ds0 = cfg.dataSource(symbol0, period);
 		DataSource ds1 = cfg.dataSource(symbol1, period);
-		LngStreamlet ts0 = LngStreamlet.of(ds0.ts);
-		LngStreamlet ts1 = LngStreamlet.of(ds1.ts);
+		LngStreamlet ts0 = Longs_.of(ds0.ts);
+		LngStreamlet ts1 = Longs_.of(ds1.ts);
 		long[] tradeTimes = LngStreamlet.concat(ts0, ts1).distinct().sort().toArray();
 		float[] prices0 = ds0.alignBeforePrices(tradeTimes).prices;
 		float[] prices1 = ds1.alignBeforePrices(tradeTimes).prices;

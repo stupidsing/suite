@@ -17,8 +17,6 @@ import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntFltPair;
-import suite.primitive.streamlet.FltStreamlet;
-import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.As;
 import suite.trade.Time;
 import suite.trade.TimeRange;
@@ -98,7 +96,7 @@ public class AnalyzeTimeSeriesTest {
 				+ "\nsymbol = " + symbol //
 				+ "\nlength = " + length //
 				+ "\nnYears = " + nYears //
-				+ "\nups = " + FltStreamlet.of(returns).filter(return_ -> 0f <= return_).size() //
+				+ "\nups = " + Floats_.of(returns).filter(return_ -> 0f <= return_).size() //
 				+ "\ndct period = " + max.t0 //
 				+ Ints_ //
 						.range(10) //
@@ -108,22 +106,22 @@ public class AnalyzeTimeSeriesTest {
 				+ "\nreturn kelly = " + kelly //
 				+ "\nreturn skew = " + stat.skewness(returns) //
 				+ "\nreturn kurt = " + stat.kurtosis(returns) //
-				+ IntStreamlet //
+				+ Ints_ //
 						.of(1, 2, 4, 8, 16, 32) //
 						.map(d -> "\nmean reversion ols, " + d + " days = " + ts.meanReversion(prices, d).coefficients[0]) //
 						.collect(As::joined) //
-				+ IntStreamlet //
+				+ Ints_ //
 						.of(4, 16) //
 						.map(d -> "\nvariance ratio, " + d + " days over 1 day = " + ts.varianceRatio(prices, d)) //
 						.collect(As::joined) //
 				+ "\nhold " + buySell(d -> 1d).invest(prices) //
 				+ "\nkelly " + buySell(d -> kelly).invest(prices) //
 				+ "\nma200 " + ma.invest(prices) //
-				+ Ints_//
+				+ Ints_ //
 						.range(1, 8) //
 						.map(d -> "\nrevert " + d + " " + reverts[d].invest(prices)) //
 						.collect(As::joined) //
-				+ Ints_//
+				+ Ints_ //
 						.range(1, 8) //
 						.map(d -> "\nrevert " + d + " long-only " + reverts[d].longOnly().invest(prices)) //
 						.collect(As::joined) //

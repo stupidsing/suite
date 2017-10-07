@@ -48,10 +48,6 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		});
 	}
 
-	public static IntStreamlet of(int... ts) {
-		return streamlet(() -> IntOutlet.of(ts));
-	}
-
 	private static IntStreamlet streamlet(Source<IntOutlet> in) {
 		return new IntStreamlet(in);
 	}
