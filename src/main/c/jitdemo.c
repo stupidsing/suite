@@ -1,4 +1,4 @@
-// gcc -std=c99 -g src/main/c/jitdemo.c -o target/jitdemo
+// gcc -std=c99 -g src/main/c/jitdemo.c -o target/jitdemo && target/jitdemo
 
 #define _ISOC11_SOURCE
 #define _POSIX_C_SOURCE 199309L

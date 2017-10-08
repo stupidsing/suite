@@ -1,4 +1,4 @@
-// gcc -std=c99 -g src/main/c/sh.c -o target/sh
+// gcc -std=c99 -g src/main/c/sh.c -o target/sh && echo | target/sh
 // reference: https://github.com/brenns10/lsh
 
 #include <stdio.h>
