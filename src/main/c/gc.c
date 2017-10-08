@@ -78,12 +78,17 @@ struct GcObject *markAndSweep() {
 
 	// evict orphan objects
 	struct GcObject **prev = &first;
+	currentmark = 0;
+
 	while(gco) {
 		struct GcObject *next = gco->next;
 		if(gco->flag == FRESH__) {
 			*prev = next;
 			memfree(gco);
-		} else prev = &gco->next;
+		} else {
+			prev = &gco->next;
+			currentmark++;
+		}
 		gco = next;
 	}
 
@@ -130,6 +135,7 @@ void gcsetroot(struct GcObject *r) {
 void gcinit() {
 	meminit();
 	watermark = 256;
+	currentmark = 0;
 	first = 0;
 	lastAllocated = 0;
 }
