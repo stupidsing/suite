@@ -8,6 +8,10 @@ public class VirtualVector {
 	public final int length;
 	public final Int_Flt get;
 
+	public interface Apply<T> {
+		public T apply(int length, Int_Flt get);
+	}
+
 	public static VirtualVector of(float[] fs) {
 		return of(fs.length, i -> fs[i]);
 	}
@@ -28,20 +32,21 @@ public class VirtualVector {
 		return VirtualVectorUtil.checkSizes(vv0, vv1, i -> f0.apply(i) + f1.apply(i));
 	}
 
+	public <T> T apply(Apply<T> apply) {
+		return apply_(apply);
+	}
+
 	public VirtualVector buffer() {
 		return of(matrix());
 	}
 
 	public VirtualVector dot(VirtualVector vv1) {
-		VirtualVector vv0 = this;
-		Int_Flt f0 = vv0.get;
-		Int_Flt f1 = vv1.get;
-		int l = vv0.length;
-
-		if (l == vv1.length)
-			return of(length, i -> f0.apply(l) * f1.apply(l));
-		else
-			throw new RuntimeException("wrong input sizes");
+		return apply((length0, f0) -> apply((length1, f1) -> {
+			if (length0 == length1)
+				return of(length, i -> f0.apply(i) * f1.apply(i));
+			else
+				throw new RuntimeException("wrong input sizes");
+		}));
 	}
 
 	public String dump() {
@@ -51,11 +56,13 @@ public class VirtualVector {
 	}
 
 	public void dump(StringBuilder sb) {
-		int l = length;
-		sb.append("[ ");
-		for (int i = 0; i < l; i++)
-			sb.append(To.string(get.apply(i)) + " ");
-		sb.append("\n");
+		apply((l, f0) -> {
+			sb.append("[ ");
+			for (int i = 0; i < l; i++)
+				sb.append(To.string(get.apply(i)) + " ");
+			sb.append("\n");
+			return sb;
+		});
 	}
 
 	public VirtualVector scale(double d) {
@@ -63,11 +70,16 @@ public class VirtualVector {
 	}
 
 	public float[] matrix() {
-		int l = length;
-		float[] matrix = new float[l];
-		for (int i = 0; i < l; i++)
-			matrix[i] = get.apply(i);
-		return matrix;
+		return apply((l, get) -> {
+			float[] matrix = new float[l];
+			for (int i = 0; i < l; i++)
+				matrix[i] = get.apply(i);
+			return matrix;
+		});
+	}
+
+	private <T> T apply_(Apply<T> apply) {
+		return apply.apply(length, get);
 	}
 
 }
@@ -77,11 +89,12 @@ class VirtualVectorUtil {
 	public static Matrix_ mtx = new Matrix_();
 
 	public static VirtualVector checkSizes(VirtualVector vv0, VirtualVector vv1, Int_Flt fun) {
-		int length = vv0.length;
-		if (length == vv1.length)
-			return VirtualVector.of(length, fun);
-		else
-			throw new RuntimeException("wrong input sizes");
+		return vv0.apply((length0, f0) -> vv1.apply((length1, f1) -> {
+			if (length0 == length1)
+				return VirtualVector.of(length0, fun);
+			else
+				throw new RuntimeException("wrong input sizes");
+		}));
 	}
 
 }
