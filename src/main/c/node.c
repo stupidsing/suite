@@ -11,6 +11,7 @@
 #define INV_ (258) // used by findall etc
 
 typedef struct Node Node;
+typedef struct Tree Tree;
 
 struct Node {
 	int refcount;
@@ -20,7 +21,7 @@ struct Node {
 		Node *target;
 		char *name;
 		int value;
-		struct Tree *tree;
+		Tree *tree;
 	} u;
 };
 
@@ -56,7 +57,7 @@ Node *newNode(int type) {
 
 void deleteNode(Node *node) {
 	Node *n;
-	struct Tree *tree;
+	Tree *tree;
 
 	switch(node->type) {
 	case REF_: case BT__: case CUT_: case INV_: if(n = node->u.target) unref(n); break;
@@ -114,7 +115,7 @@ Node *newString(char *name) {
 }
 
 Node *newTree(char *operator, Node *left, Node *right) {
-	struct Tree *tree = memalloc(sizeof(struct Tree));
+	Tree *tree = memalloc(sizeof(Tree));
 	tree->operator = operator;
 	tree->left = ref(left);
 	tree->right = ref(right);

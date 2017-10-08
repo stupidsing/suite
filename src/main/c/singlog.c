@@ -32,7 +32,7 @@ int compare(Node *node0, Node *node1) {
 	node0 = final(node0);
 	node1 = final(node1);
 
-	struct Tree *tree0, *tree1;
+	Tree *tree0, *tree1;
 	int c = node0->type - node1->type;
 
 	if(!c) {
@@ -56,7 +56,7 @@ int compare(Node *node0, Node *node1) {
 }
 
 Node *clone_(Node *node, Hashtab *hashtab) {
-	struct Tree *tree;
+	Tree *tree;
 	node = final(node);
 
 	switch(node->type) {
@@ -85,7 +85,7 @@ Node *clone(Node *node) {
 }
 
 Node *generalize_(Node *node, Hashtab *hashtab) {
-	struct Tree *tree;
+	Tree *tree;
 	Node *l, *r;
 	char first;
 	node = final(node);
@@ -158,7 +158,7 @@ int bind_(Node *node0, Node *node1, Node ***ptrail) {
 			bindref(node1, node0, ptrail);
 			return 1;
 		} else if(t0 == t1) {
-			struct Tree *tree0, *tree1;
+			Tree *tree0, *tree1;
 
 			switch(t0) {
 			case ATOM: return 0;
@@ -196,7 +196,7 @@ Node *expand(Node *query, Node *cut, Node *rules) {
 	Node *expanded = failAtom;
 
 	while(rules != nilAtom) { // a # b
-		struct Tree *tree = rules->u.tree;
+		Tree *tree = rules->u.tree;
 		Node *rule = ref(generalizeWithCut(tree->left, cut));
 		rules = tree->right;
 
@@ -476,7 +476,7 @@ int eval(Node *expr) {
 	if(expr->type == REF_) return eval(expr->u.target);
 	else if(expr->type == INT_) return expr->u.value;
 	else if(expr->type == TREE) {
-		struct Tree *tree = expr->u.tree;
+		Tree *tree = expr->u.tree;
 		if(strcmp(tree->operator, " + ") == 0) return eval(tree->left) + eval(tree->right);
 		else if(strcmp(tree->operator, " - ") == 0) return eval(tree->left) - eval(tree->right);
 		else if(strcmp(tree->operator, " * ") == 0) return eval(tree->left) * eval(tree->right);
@@ -744,7 +744,7 @@ int handletree(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	node = ps[0];
 
 	if(node->type == TREE) {
-		struct Tree *tree = node->u.tree;
+		Tree *tree = node->u.tree;
 		char *operator = tree->operator;
 		return bind(newAtom(operator, operator + strlen(operator)), ps[1], ptrail)
 			&& bind(tree->left, ps[2], ptrail)
