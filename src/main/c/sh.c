@@ -86,6 +86,8 @@ void loop() {
 }
 
 int main(int argc, char **argv) {
+	meminit();
 	loop();
+	memdeinit();
 	return 0;
 }
