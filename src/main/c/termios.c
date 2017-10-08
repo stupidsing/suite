@@ -10,7 +10,7 @@
 
 static struct termios termios0, termios1;
 
-void termiosinit(int echo) {
+void termioscfg(int echo) {
 	tcgetattr(0, &termios0);
 	termios1 = termios0;
 	termios1.c_lflag &= ~ICANON; // disable buffered I/O
@@ -18,14 +18,14 @@ void termiosinit(int echo) {
 	tcsetattr(0, TCSANOW, &termios1);
 }
 
-void termiosdeinit() {
+void termiosdecfg() {
 	tcsetattr(0, TCSANOW, &termios0);
 }
 
 char getch_(int echo) {
-	termiosinit(echo);
+	termioscfg(echo);
 	char ch = getchar();
-	termiosdeinit();
+	termiosdecfg();
 	return ch;
 }
 
