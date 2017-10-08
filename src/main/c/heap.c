@@ -5,21 +5,23 @@
 
 #define heapMax (65536)
 
+typedef struct Heap Heap;
+
 struct Heap {
 	int size;
 	void *items[heapMax];
 	int (*comparer) (void*, void*);
 };
 
-void heapnew(struct Heap *heap, int (*comparer) (void*, void*)) {
+void heapnew(Heap *heap, int (*comparer) (void*, void*)) {
 	heap->size = 0;
 	heap->comparer = comparer;
 }
 
-void heapdelete(struct Heap *heap) {
+void heapdelete(Heap *heap) {
 }
 
-void heapadd(struct Heap *heap, void *item) {
+void heapadd(Heap *heap, void *item) {
 	int loc = heap->size++;
 	int parentloc;
 	while(0 < loc && heap->comparer(heap->items[parentloc = loc / 2], item) < 0) {
@@ -29,7 +31,7 @@ void heapadd(struct Heap *heap, void *item) {
 	heap->items[loc] = item;
 }
 
-void *heapremove(struct Heap *heap) {
+void *heapremove(Heap *heap) {
 	if(0 < heap->size) {
 		void *taken = heap->items[0];
 		heap->items[0] = heap->items[--heap->size];

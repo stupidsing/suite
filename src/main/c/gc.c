@@ -15,7 +15,7 @@ typedef struct GcObject GcObject;
 
 struct GcClass {
 	int size;
-	int *(*refoffsets) (struct GcObject*);
+	int *(*refoffsets) (GcObject*);
 };
 
 struct GcObject {
@@ -24,7 +24,7 @@ struct GcObject {
 	GcClass *class;
 };
 
-int gcosize = sizeof(struct GcObject);
+int gcosize = sizeof(GcObject);
 
 int watermark;
 int currentmark;
@@ -54,7 +54,7 @@ GcObject *markAndSweep() {
 	}
 
 	// initialize heap and add root into it
-	struct Heap heap;
+	Heap heap;
 	heapnew(&heap, &compareaddresses);
 
 	if(root) heapadd(&heap, root);
