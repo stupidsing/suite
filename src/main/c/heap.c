@@ -1,7 +1,7 @@
 #ifndef heapsource
 #define heapsource
 
-#include "util.c"
+#include "mem.c"
 
 typedef struct Heap Heap;
 

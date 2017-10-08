@@ -24,17 +24,4 @@ int fmsg(char *t, char *fn, int line, char *m) {
 #define fatal(m) fmsg("FATAL", __FILE__, __LINE__, (m))
 #define test(t) (t) || err("test case failed");
 
-#include "mem.c"
-
-char *substr(char *start, char *end) {
-	char *result = memalloc(end - start + 1), *s = start, *d = result;
-	while(s < end) *d++ = *s++;
-	*d = 0;
-	return result;
-}
-
-char *dupstr(char *str) {
-	return substr(str, str + strlen(str));
-}
-
 #endif

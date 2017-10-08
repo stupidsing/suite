@@ -1,7 +1,7 @@
 #ifndef hashtabsource
 #define hashtabsource
 
-#include "util.c"
+#include "mem.c"
 
 typedef struct Hashtab Hashtab;
 

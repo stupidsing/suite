@@ -10,6 +10,17 @@
 #define CUT_ (257)
 #define INV_ (258) // used by findall etc
 
+char *substr(char *start, char *end) {
+	char *result = memalloc(end - start + 1), *s = start, *d = result;
+	while(s < end) *d++ = *s++;
+	*d = 0;
+	return result;
+}
+
+char *dupstr(char *str) {
+	return substr(str, str + strlen(str));
+}
+
 typedef struct Node Node;
 typedef struct Tree Tree;
 

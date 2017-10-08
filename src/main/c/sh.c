@@ -8,7 +8,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "util.c"
+#include "mem.c"
 
 #define buffersize 64
 #define delimiters " \t\r\n\a"

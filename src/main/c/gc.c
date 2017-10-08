@@ -2,7 +2,7 @@
 #define gcsource
 
 #include "heap.c"
-#include "util.c"
+#include "mem.c"
 
 #define FRESH__ 0
 #define QUEUED_ 1
