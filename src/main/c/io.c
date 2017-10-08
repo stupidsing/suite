@@ -1,13 +1,13 @@
 #include "node.c"
 
-struct Node **atomHashes;
+Node **atomHashes;
 int nAtomHashes;
 int atomHashSize; // must be power of 2
 
-struct Node **intNodes;
+Node **intNodes;
 
 int getAtomHashPos_(char *start, char *end) {
-	struct Node *atom;
+	Node *atom;
 	int i = hashstr(start, end);
 
 	while(atom = atomHashes[i &= atomHashSize - 1]) {
@@ -25,19 +25,19 @@ int getAtomHashPos(char *name) {
 	return getAtomHashPos_(name, name + strlen(name));
 }
 
-struct Node *getAtom_(char *start, char *end) {
+Node *getAtom_(char *start, char *end) {
 	int i = getAtomHashPos_(start, end), j;
 
 	if(!atomHashes[i]) {
 		if(atomHashSize * 3 / 4 <= nAtomHashes) { // rehash if looks full
-			struct Node **atomHashes0 = atomHashes;
+			Node **atomHashes0 = atomHashes;
 			int atomHashSize0 = atomHashSize;
 
 			atomHashSize <<= 1;
-			atomHashes = memalloczeroed(atomHashSize * sizeof(struct Node*));
+			atomHashes = memalloczeroed(atomHashSize * sizeof(Node*));
 
 			for(j = 0; j < atomHashSize0; j++) {
-				struct Node *atom = atomHashes0[j];
+				Node *atom = atomHashes0[j];
 				if(atom) atomHashes[getAtomHashPos(atom->u.name)] = atom;
 			}
 
@@ -52,11 +52,11 @@ struct Node *getAtom_(char *start, char *end) {
 	return atomHashes[i];
 }
 
-struct Node *getAtom(char *name) {
+Node *getAtom(char *name) {
 	return getAtom_(name, name + strlen(name));
 }
 
-struct Node *getInt(int value) {
+Node *getInt(int value) {
 	if(-128 <= value && value < 128) return intNodes[value + 128];
 	else return newInt(value);
 }
@@ -155,8 +155,8 @@ char *unescape(char *s) {
 	return s1;
 }
 
-struct Node *parse_(char *start, char *end) {
-	struct Node *node = 0;
+Node *parse_(char *start, char *end) {
+	Node *node = 0;
 	char *last = end - 1;
 	int depth = 0, quote = 0, op;
 
@@ -226,7 +226,7 @@ done:
 	return node;
 }
 
-struct Node *parse(char *s0) {
+Node *parse(char *s0) {
 	char *p0 = s0;
 	char *s1 = memalloc(strlen(s0)), *p1 = s1;
 
@@ -252,12 +252,12 @@ retry:
 	while(start < end && isspace(*start)) start++;
 	while(start < end && isspace(end[-1])) end--;
 
-	struct Node *node = parse_(start, end);
+	Node *node = parse_(start, end);
 	memfree(s1);
 	return node;
 }
 
-char *dump(struct Node *node) {
+char *dump(Node *node) {
 	char buffer[256], *s1, *s2, *operator, *merged;
 	int size;
 

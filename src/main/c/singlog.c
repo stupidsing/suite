@@ -13,22 +13,22 @@ const int ruleHashSize = 262144;
 const int trailSize = 65536;
 const int bufferSize = 65536;
 
-struct Node *nilAtom, *failAtom, *undAtom, *cutAtom;
+Node *nilAtom, *failAtom, *undAtom, *cutAtom;
 
 char *importingpath;
 
-struct Hashtab handlerHashtab;
-struct Hashtab ruleHashtab;
+Hashtab handlerHashtab;
+Hashtab ruleHashtab;
 
 int enabletrace;
 int tracedepth;
 
-struct Node *final(struct Node *node) {
+Node *final(Node *node) {
 	while(node->type == REF_ && node->u.target) node = node->u.target;
 	return node;
 }
 
-int compare(struct Node *node0, struct Node *node1) {
+int compare(Node *node0, Node *node1) {
 	node0 = final(node0);
 	node1 = final(node1);
 
@@ -55,7 +55,7 @@ int compare(struct Node *node0, struct Node *node1) {
 	return c;
 }
 
-struct Node *clone_(struct Node *node, struct Hashtab *hashtab) {
+Node *clone_(Node *node, Hashtab *hashtab) {
 	struct Tree *tree;
 	node = final(node);
 
@@ -63,7 +63,7 @@ struct Node *clone_(struct Node *node, struct Hashtab *hashtab) {
 	case REF_:
 		if(node->u.target) return node->u.target;
 		else {
-			struct Node *ref = htget(hashtab, node);
+			Node *ref = htget(hashtab, node);
 			if(!ref) htput(hashtab, node, ref = newRef());
 			return ref;
 		}
@@ -76,17 +76,17 @@ struct Node *clone_(struct Node *node, struct Hashtab *hashtab) {
 	}
 }
 
-struct Node *clone(struct Node *node) {
-	struct Hashtab hashtab;
+Node *clone(Node *node) {
+	Hashtab hashtab;
 	htnew(&hashtab, genHashSize);
-	struct Node *cloned = clone_(node, &hashtab);
+	Node *cloned = clone_(node, &hashtab);
 	htdelete(hashtab);
 	return cloned;
 }
 
-struct Node *generalize_(struct Node *node, struct Hashtab *hashtab) {
+Node *generalize_(Node *node, Hashtab *hashtab) {
 	struct Tree *tree;
-	struct Node *l, *r;
+	Node *l, *r;
 	char first;
 	node = final(node);
 
@@ -94,7 +94,7 @@ struct Node *generalize_(struct Node *node, struct Hashtab *hashtab) {
 	case ATOM:
 		first = node->u.name[0];
 		if(first == '.' || first == '!') {
-			struct Node *ref = htget(hashtab, node);
+			Node *ref = htget(hashtab, node);
 			if(!ref) htput(hashtab, node, ref = newRef());
 			return ref;
 		} else if(node == undAtom) return newRef();
@@ -108,40 +108,40 @@ struct Node *generalize_(struct Node *node, struct Hashtab *hashtab) {
 	}
 }
 
-struct Node *generalizeWithCut(struct Node *node, struct Node *cut) {
-	struct Hashtab hashtab;
+Node *generalizeWithCut(Node *node, Node *cut) {
+	Hashtab hashtab;
 	htnew(&hashtab, genHashSize);
 	htput(&hashtab, cutAtom, cut);
-	struct Node *generalized = generalize_(node, &hashtab);
+	Node *generalized = generalize_(node, &hashtab);
 	htdelete(hashtab);
 	return generalized;
 }
 
-struct Node *generalize(struct Node *node) {
-	struct Hashtab hashtab;
+Node *generalize(Node *node) {
+	Hashtab hashtab;
 	htnew(&hashtab, genHashSize);
-	struct Node *generalized = generalize_(node, &hashtab);
+	Node *generalized = generalize_(node, &hashtab);
 	htdelete(hashtab);
 	return generalized;
 }
 
-void bindref(struct Node *from, struct Node *to, struct Node ***ptrail) {
+void bindref(Node *from, Node *to, Node ***ptrail) {
 	*(*ptrail)++ = ref(from);
 	from->u.target = ref(to);
 }
 
-void rollback(struct Node ***trail, struct Node **to) {
+void rollback(Node ***trail, Node **to) {
 	while(to < *trail) {
-		struct Node *ref = *--*trail;
+		Node *ref = *--*trail;
 		unref(ref->u.target);
 		ref->u.target = 0;
 		unref(ref);
 	}
 }
 
-int bind(struct Node *node0, struct Node *node1, struct Node ***ptrail);
+int bind(Node *node0, Node *node1, Node ***ptrail);
 
-int bind_(struct Node *node0, struct Node *node1, struct Node ***ptrail) {
+int bind_(Node *node0, Node *node1, Node ***ptrail) {
 	node0 = final(node0);
 	node1 = final(node1);
 
@@ -176,15 +176,15 @@ int bind_(struct Node *node0, struct Node *node1, struct Node ***ptrail) {
 	} else return 1;
 }
 
-int bind(struct Node *node0, struct Node *node1, struct Node ***ptrail) {
-	struct Node **ptrail0 = *ptrail;
+int bind(Node *node0, Node *node1, Node ***ptrail) {
+	Node **ptrail0 = *ptrail;
 	int result = bind_(node0, node1, ptrail);
 	if(!result) rollback(ptrail, ptrail0);
 	return result;
 }
 
-struct Node *prototype(struct Node *node) {
-	struct Node *n;
+Node *prototype(Node *node) {
+	Node *n;
 	switch(node->type) {
 	case REF_: return prototype(node->u.target);
 	case TREE: return prototype(node->u.tree->left);
@@ -192,12 +192,12 @@ struct Node *prototype(struct Node *node) {
 	}
 }
 
-struct Node *expand(struct Node *query, struct Node *cut, struct Node *rules) {
-	struct Node *expanded = failAtom;
+Node *expand(Node *query, Node *cut, Node *rules) {
+	Node *expanded = failAtom;
 
 	while(rules != nilAtom) { // a # b
 		struct Tree *tree = rules->u.tree;
-		struct Node *rule = ref(generalizeWithCut(tree->left, cut));
+		Node *rule = ref(generalizeWithCut(tree->left, cut));
 		rules = tree->right;
 
 		tree = rule->u.tree; // head :- tail
@@ -218,7 +218,7 @@ struct Node *expand(struct Node *query, struct Node *cut, struct Node *rules) {
 	return expanded;
 }
 
-void trace(char *type, struct Node *query) {
+void trace(char *type, Node *query) {
 	if(enabletrace) {
 		int i;
 		char *d = dump(query);
@@ -229,13 +229,13 @@ void trace(char *type, struct Node *query) {
 	}
 }
 
-int prove_(struct Node *goal, struct Node ***ptrail) {
-	struct Node *finally = newInternal(BT__, failAtom, *ptrail);
+int prove_(Node *goal, Node ***ptrail) {
+	Node *finally = newInternal(BT__, failAtom, *ptrail);
 
 	// final result = goal && remaining || alternative
 	goal = ref(goal);
-	struct Node *remaining = ref(nilAtom), *alternative = ref(finally);
-	struct Node *node, *left, *right, *proto, *rule;
+	Node *remaining = ref(nilAtom), *alternative = ref(finally);
+	Node *node, *left, *right, *proto, *rule;
 	char *op;
 	void *ptr;
 	int i, result;
@@ -257,13 +257,13 @@ retry:
 		right = goal->u.tree->right;
 
 		if(op == commaOp) {
-			struct Node *rem1 = remaining != nilAtom ? newTree(commaOp, right, remaining) : right;
+			Node *rem1 = remaining != nilAtom ? newTree(commaOp, right, remaining) : right;
 			assignref(&remaining, rem1);
 			assignref(&goal, left);
 		} else if(op == smcOp) {
-			struct Node *bt = newInternal(BT__, right, *ptrail); // facilitates backtracking
-			struct Node *alt0 = newTree(commaOp, bt, remaining);
-			struct Node *alt1 = alternative != failAtom ? newTree(smcOp, alt0, alternative) : alt0;
+			Node *bt = newInternal(BT__, right, *ptrail); // facilitates backtracking
+			Node *alt0 = newTree(commaOp, bt, remaining);
+			Node *alt1 = alternative != failAtom ? newTree(smcOp, alt0, alternative) : alt0;
 			assignref(&alternative, alt1);
 			assignref(&goal, left);
 		} else if(op == spaceOp) goto invoke;
@@ -277,17 +277,17 @@ invoke:
 	proto = prototype(goal);
 	if(rule = htget(&ruleHashtab, proto)) {
 		if(enabletrace) {
-			int handleexit(struct Node*, struct Node***, struct Node**, struct Node**);
-			struct Node *after = newInternal(INV_, goal, &handleexit);
+			int handleexit(Node*, Node***, Node**, Node**);
+			Node *after = newInternal(INV_, goal, &handleexit);
 			assignref(&alternative, newTree(smcOp, after, alternative));
 		}
 
-		struct Node *cut = ref(newInternal(CUT_, alternative, 0));
-		struct Node *expanded = expand(goal, cut, rule);
+		Node *cut = ref(newInternal(CUT_, alternative, 0));
+		Node *expanded = expand(goal, cut, rule);
 
 		if(enabletrace) {
-			int handleentry(struct Node*, struct Node***, struct Node**, struct Node**);
-			struct Node *before = newInternal(INV_, goal, &handleentry);
+			int handleentry(Node*, Node***, Node**, Node**);
+			Node *before = newInternal(INV_, goal, &handleentry);
 			expanded = newTree(commaOp, before, expanded);
 		}
 
@@ -296,7 +296,7 @@ invoke:
 		goto retry;
 	} else if(ptr = htget(&handlerHashtab, proto)) {
 handle: ;
-		int (*handler)(struct Node*, struct Node***, struct Node**, struct Node**) = ptr;
+		int (*handler)(Node*, Node***, Node**, Node**) = ptr;
 		int result = (*handler)(goal, ptrail, &remaining, &alternative);
 		if(enabletrace && goal->type != INV_) trace("CALL_", goal);
 		if(result) goto okay; else goto fail;
@@ -329,17 +329,17 @@ done:
 	return result;
 }
 
-int prove(struct Node *goal) {
+int prove(Node *goal) {
 	int tracedepth0 = tracedepth;
-	struct Node *trailStack[trailSize], **trail = trailStack;
+	Node *trailStack[trailSize], **trail = trailStack;
 	int result = prove_(goal, &trail);
 	while(trailStack < trail) unref(*--trail);
 	if(enabletrace) tracedepth = tracedepth0;
 	return result;
 }
 
-void assert(struct Node *rule) {
-	struct Node *proto = prototype(rule);
+void assert(Node *rule) {
+	Node *proto = prototype(rule);
 	int i = htgetpos(&ruleHashtab, proto);
 
 	if(!ruleHashtab.keys[i]) {
@@ -350,24 +350,24 @@ void assert(struct Node *rule) {
 	// always in head :- tail form
 	if(rule->type != TREE || rule->u.tree->operator != ruleOp) rule = newTree(ruleOp, rule, nilAtom);
 
-	assignref((struct Node**) ruleHashtab.values + i, newTree(commaOp, rule, ruleHashtab.values[i]));
+	assignref((Node**) ruleHashtab.values + i, newTree(commaOp, rule, ruleHashtab.values[i]));
 }
 
 int nSolutions, lastResult = 0;
-struct Hashtab genHashtab;
+Hashtab genHashtab;
 
 int cmpstr(const void *s0, const void *s1) {
 	return strcmp(*(char**) s0, *(char**) s1);
 }
 
-int handleelaborate(struct Node *query, struct Node ***trail, struct Node **remaining) {
+int handleelaborate(Node *query, Node ***trail, Node **remaining) {
 	const int arraySize = 32, bufferSize = 1024;
 
 	int i, nEntries = 0;
 	char *entries[arraySize];
 
 	for(i = 0; i < genHashtab.size; i++) {
-		struct Node *key = genHashtab.keys[i];
+		Node *key = genHashtab.keys[i];
 
 		if(key && key->u.name[0] == '.') {
 			char *s = memalloc(bufferSize);
@@ -395,7 +395,7 @@ int handleelaborate(struct Node *query, struct Node ***trail, struct Node **rema
 }
 
 void process(char *buffer) {
-	struct Node *node, *cut, *generalized;
+	Node *node, *cut, *generalized;
 	int yesno = buffer[0] == '?', elab = buffer[0] == '/';
 
 	if(yesno || elab) {
@@ -406,7 +406,7 @@ void process(char *buffer) {
 		generalized = ref(generalize_(node, &genHashtab));
 
 		if(elab) {
-			struct Node *inv = newInternal(INV_, nilAtom, &handleelaborate);
+			Node *inv = newInternal(INV_, nilAtom, &handleelaborate);
 			assignref(&generalized, newTree(commaOp, generalized, inv));
 		}
 
@@ -463,7 +463,7 @@ int importfile(char *filename) {
 	return !!file;
 }
 
-int bindfree(struct Node *node0, struct Node *node1, struct Node ***ptrail) {
+int bindfree(Node *node0, Node *node1, Node ***ptrail) {
 	ref(node0);
 	ref(node1);
 	int result = bind(node0, node1, ptrail);
@@ -472,7 +472,7 @@ int bindfree(struct Node *node0, struct Node *node1, struct Node ***ptrail) {
 	return result;
 }
 
-int eval(struct Node *expr) {
+int eval(Node *expr) {
 	if(expr->type == REF_) return eval(expr->u.target);
 	else if(expr->type == INT_) return expr->u.value;
 	else if(expr->type == TREE) {
@@ -485,8 +485,8 @@ int eval(struct Node *expr) {
 	} else err("Cannot evaluate node type");
 }
 
-struct Node *getfirst(struct Node **node) {
-	struct Node *param, *node1 = final(*node);
+Node *getfirst(Node **node) {
+	Node *param, *node1 = final(*node);
 	if(node1->type == TREE && node1->u.tree->operator == spaceOp) {
 		param = node1->u.tree->left;
 		*node = node1->u.tree->right;
@@ -497,62 +497,62 @@ struct Node *getfirst(struct Node **node) {
 	return param;
 }
 
-void getparams(struct Node *node, int n, struct Node **params) {
+void getparams(Node *node, int n, Node **params) {
 	getfirst(&node);
 	while(n--) *params++ = final(getfirst(&node));
 }
 
-void tbc(struct Node **palt, struct Node *cont, struct Node *rem
-	, struct Node **trail) { // to be continued - extends alternative to allow backtracking
-	struct Node *alt1 = newTree(smcOp, newTree(commaOp, cont, rem), *palt);
+void tbc(Node **palt, Node *cont, Node *rem
+	, Node **trail) { // to be continued - extends alternative to allow backtracking
+	Node *alt1 = newTree(smcOp, newTree(commaOp, cont, rem), *palt);
 	assignref(palt, newInternal(BT__, alt1, trail));
 }
 
-int handlefound(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt);
+int handlefound(Node *query, Node ***ptrail, Node **prem, Node **palt);
 
-int handleatomstr(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	struct Node *ps[2];
+int handleatomstr(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	Node *ps[2];
 	getparams(query, 2, ps);
-	struct Node *atom = ps[0], *str = ps[1];
+	Node *atom = ps[0], *str = ps[1];
 
 	if(atom->type == ATOM) return bindfree(str, newString(dupstr(atom->u.name)), ptrail);
 	else if(str->type == STR_) return bindfree(atom, getAtom(str->u.name), ptrail);
 	else return 0;
 }
 
-int handleclone(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	struct Node *ps[2];
+int handleclone(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	Node *ps[2];
 	getparams(query, 2, ps);
 	return bindfree(clone(ps[0]), ps[1], ptrail);
 }
 
-int handledump(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handledump(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	char *s = dump(query->u.tree->right);
 	printf("%s", s);
 	memfree(s);
 	return 1;
 }
 
-int handleentry(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handleentry(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	trace("ENTRY", query->u.target);
 	tracedepth++;
 	return 1;
 }
 
-int handleeof(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handleeof(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	return feof(stdin);
 }
 
-int handleexit(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handleexit(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	tracedepth--;
 	trace("EXIT_", query->u.target);
 	return 0;
 }
 
-int handlefindall(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	struct Node *ps[3];
+int handlefindall(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	Node *ps[3];
 	getparams(query, 3, ps);
-	struct Node *var = ps[0], *pred = ps[1], *list0 = ps[2], *list1 = ref(nilAtom);
+	Node *var = ps[0], *pred = ps[1], *list0 = ps[2], *list1 = ref(nilAtom);
 
 	prove(newTree(commaOp, pred
 		, newInternal(INV_, newInternal(INV_, var, &list1), &handlefound)));
@@ -562,43 +562,43 @@ int handlefindall(struct Node *query, struct Node ***ptrail, struct Node **prem,
 	return result;
 }
 
-int handlefound(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	struct Node *node = query->u.target;
-	struct Node *sublist = newTree(commaOp, clone(node->u.target), nilAtom);
-	assignref((struct Node**) node->internal, sublist);
+int handlefound(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	Node *node = query->u.target;
+	Node *sublist = newTree(commaOp, clone(node->u.target), nilAtom);
+	assignref((Node**) node->internal, sublist);
 	node->internal = &sublist->u.tree->right;
 	return 0;
 }
 
-int handleimport(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handleimport(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	return importfile(final(query->u.tree->right)->u.name);
 }
 
-int handleisatom(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handleisatom(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	return final(query->u.tree->right)->type == ATOM;
 }
 
-int handleisint(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handleisint(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	return final(query->u.tree->right)->type == INT_;
 }
 
-int handleisref(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handleisref(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	return final(query->u.tree->right)->type == REF_;
 }
 
-int handleisstr(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handleisstr(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	return final(query->u.tree->right)->type == STR_;
 }
 
-int handlelet(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	struct Node *ps[2];
+int handlelet(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	Node *ps[2];
 	getparams(query, 2, ps);
 	return bindfree(ps[0], getInt(eval(ps[1])), ptrail);
 }
 
-int handleletint(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handleletint(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	struct LetInt {
-		struct Node *variable;
+		Node *variable;
 		int value, end, inc;
 	} *letInt;
 
@@ -606,7 +606,7 @@ int handleletint(struct Node *query, struct Node ***ptrail, struct Node **prem, 
 		letInt = query->u.target->internal;
 		letInt->value += letInt->inc;
 	} else {
-		struct Node *ps[4];
+		Node *ps[4];
 		getparams(query, 4, ps);
 
 		letInt = memalloc(sizeof(struct LetInt));
@@ -627,15 +627,15 @@ int handleletint(struct Node *query, struct Node ***ptrail, struct Node **prem, 
 	}
 }
 
-int handleliststr(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	struct Node *ps[2];
+int handleliststr(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	Node *ps[2];
 	getparams(query, 2, ps);
-	struct Node *list = ps[0], *str = ps[1], *n;
+	Node *list = ps[0], *str = ps[1], *n;
 	int result;
 
 	if(str->type == STR_) {
 		char *name = str->u.name;
-		struct Node *list1 = ref(nilAtom), **plist1 = &list1;
+		Node *list1 = ref(nilAtom), **plist1 = &list1;
 
 		while(*name) {
 			char s[2] = { *name++, 0 };
@@ -666,37 +666,37 @@ int handleliststr(struct Node *query, struct Node ***ptrail, struct Node **prem,
 	return result;
 }
 
-int handleonce(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handleonce(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	return prove(query->u.tree->right);
 }
 
-int handleord(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	struct Node *ps[2];
+int handleord(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	Node *ps[2];
 	getparams(query, 2, ps);
 	return compare(ps[0], ps[1]) < 0;
 }
 
-int handlenl(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handlenl(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	printf("\n");
 	return 1;
 }
 
-int handlenot(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	struct Node **trail0 = *ptrail;
+int handlenot(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	Node **trail0 = *ptrail;
 	int result = prove_(query->u.tree->right, ptrail);
 	if(result) rollback(ptrail, trail0); // rolls back anyway
 	return !result;
 }
 
-int handleparse(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	struct Node *ps[2];
+int handleparse(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	Node *ps[2];
 	getparams(query, 2, ps);
 	if(ps[1]->type != REF_)
 		return bindfree(ps[0], parse(ps[1]->u.name), ptrail);
 	else return bindfree(newString(dump(ps[0])), ps[1], ptrail);
 }
 
-int handleread(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handleread(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	size_t nBytes = 0;
 	char *line = 0;
 
@@ -706,40 +706,40 @@ int handleread(struct Node *query, struct Node ***ptrail, struct Node **prem, st
 	return result;
 }
 
-int handlereadchar(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handlereadchar(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	char c[] = { fgetc(stdin) };
 	return bindfree(query->u.tree->right, newString(substr(c, c + 1)), ptrail);
 }
 
-int handlereadeach(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handlereadeach(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	if(!feof(stdin)) {
-		struct Node **trail = *ptrail;
+		Node **trail = *ptrail;
 		int result = handleread(query, ptrail, prem, palt);
 		if(result) tbc(palt, query, *prem, trail);
 		return result;
 	} else return 0;
 }
 
-int handlerule(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	struct Node *ps[2], *rules;
+int handlerule(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	Node *ps[2], *rules;
 	getparams(query, 2, ps);
 	rules = htget(&ruleHashtab, ps[1]);
 	return rules ? bindfree(ps[0], rules, ptrail) : 0;
 }
 
-int handlesystem(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	struct Node *ps[2];
+int handlesystem(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	Node *ps[2];
 	getparams(query, 2, ps);
 	return bindfree(ps[0], getInt(system(ps[1]->u.name)), ptrail);
 }
 
-int handletrace(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handletrace(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	enabletrace = 1 - enabletrace;
 	return 1;
 }
 
-int handletree(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	struct Node *ps[4], *node;
+int handletree(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	Node *ps[4], *node;
 	getparams(query, 4, ps);
 	node = ps[0];
 
@@ -755,7 +755,7 @@ int handletree(struct Node *query, struct Node ***ptrail, struct Node **prem, st
 	else return 0;
 }
 
-int handlewrite(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
+int handlewrite(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	printf("%s", query->u.tree->right->u.name);
 	return 1;
 }
@@ -766,9 +766,9 @@ void init() {
 	gcinit();
 	nAtomHashes = 0;
 	atomHashSize = 256;
-	atomHashes = memalloczeroed(atomHashSize * sizeof(struct Node*));
+	atomHashes = memalloczeroed(atomHashSize * sizeof(Node*));
 
-	intNodes = memalloczeroed(256 * sizeof(struct Node*));
+	intNodes = memalloczeroed(256 * sizeof(Node*));
 	for(i = -128; i < 128; i++) intNodes[i + 128] = ref(newInt(i));
 
 	isLeftAssoc = memalloc(nOperators * sizeof(int));
@@ -826,7 +826,7 @@ void init() {
 void deinit() {
 	int i;
 	for(i = 0; i < ruleHashtab.size; i++) {
-		struct Node *proto = ruleHashtab.keys[i], *rule = ruleHashtab.values[i];
+		Node *proto = ruleHashtab.keys[i], *rule = ruleHashtab.values[i];
 		if(proto) unref(proto);
 		if(rule) unref(rule);
 	}
@@ -834,7 +834,7 @@ void deinit() {
 	htdelete(ruleHashtab);
 
 	for(i = 0; i < handlerHashtab.size; i++) {
-		struct Node *proto = handlerHashtab.keys[i];
+		Node *proto = handlerHashtab.keys[i];
 		if(proto) unref(proto);
 	}
 
@@ -850,7 +850,7 @@ void deinit() {
 	memfree(intNodes);
 
 	for(i = 0; i < atomHashSize; i++) {
-		struct Node *atom = atomHashes[i];
+		Node *atom = atomHashes[i];
 		if(atom) unref(atom);
 	}
 
@@ -862,7 +862,7 @@ void deinit() {
 #define test(t) (t) || err("test case failed");
 
 int testmain() {
-	struct Node *n;
+	Node *n;
 	init();
 
 	n = parse("1 + 2 * 3");

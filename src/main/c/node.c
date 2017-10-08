@@ -10,12 +10,14 @@
 #define CUT_ (257)
 #define INV_ (258) // used by findall etc
 
+typedef struct Node Node;
+
 struct Node {
 	int refcount;
 	int type;
 	void *internal;
 	union {
-		struct Node *target;
+		Node *target;
 		char *name;
 		int value;
 		struct Tree *tree;
@@ -24,7 +26,7 @@ struct Node {
 
 struct Tree {
 	char *operator;
-	struct Node *left, *right;
+	Node *left, *right;
 };
 
 char *operators[] = {
@@ -43,17 +45,17 @@ const int nOperators = sizeof(operators) / sizeof(operators[0]);
 
 char *ruleOp, *smcOp, *commaOp, *equalOp, *spaceOp;
 
-void unref(struct Node *node);
+void unref(Node *node);
 
-struct Node *newNode(int type) {
-	struct Node *node = memalloc(sizeof(struct Node));
+Node *newNode(int type) {
+	Node *node = memalloc(sizeof(Node));
 	node->refcount = 0;
 	node->type = type;
 	return node;
 }
 
-void deleteNode(struct Node *node) {
-	struct Node *n;
+void deleteNode(Node *node) {
+	Node *n;
 	struct Tree *tree;
 
 	switch(node->type) {
@@ -72,58 +74,58 @@ void deleteNode(struct Node *node) {
 	memfree(node);
 }
 
-struct Node *ref(struct Node *node) {
+Node *ref(Node *node) {
 	node->refcount++;
 	return node;
 }
 
-void unref(struct Node *node) {
+void unref(Node *node) {
 	if(--node->refcount <= 0) deleteNode(node);
 }
 
-void assignref(struct Node **pto, struct Node *from) {
+void assignref(Node **pto, Node *from) {
 	ref(from);
 	unref(*pto);
 	*pto = from;
 }
 
-struct Node *newRef() {
-	struct Node *node = newNode(REF_);
+Node *newRef() {
+	Node *node = newNode(REF_);
 	node->u.target = 0;
 	return node;
 }
 
-struct Node *newAtom(char *start, char *end) {
-	struct Node *node = newNode(ATOM);
+Node *newAtom(char *start, char *end) {
+	Node *node = newNode(ATOM);
 	node->u.name = substr(start, end);
 	return node;
 }
 
-struct Node *newInt(int value) {
-	struct Node *node = newNode(INT_);
+Node *newInt(int value) {
+	Node *node = newNode(INT_);
 	node->u.value = value;
 	return node;
 }
 
-struct Node *newString(char *name) {
-	struct Node *node = newNode(STR_);
+Node *newString(char *name) {
+	Node *node = newNode(STR_);
 	node->u.name = name;
 	return node;
 }
 
-struct Node *newTree(char *operator, struct Node *left, struct Node *right) {
+Node *newTree(char *operator, Node *left, Node *right) {
 	struct Tree *tree = memalloc(sizeof(struct Tree));
 	tree->operator = operator;
 	tree->left = ref(left);
 	tree->right = ref(right);
 
-	struct Node *node = newNode(TREE);
+	Node *node = newNode(TREE);
 	node->u.tree = tree;
 	return node;
 }
 
-struct Node *newInternal(int type, struct Node *target, void *internal) {
-	struct Node *node = newNode(type);
+Node *newInternal(int type, Node *target, void *internal) {
+	Node *node = newNode(type);
 	node->u.target = ref(target);
 	node->internal = internal;
 	return node;

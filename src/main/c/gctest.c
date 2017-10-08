@@ -6,18 +6,20 @@
 
 #include "gc.c"
 
+typedef struct TestObject TestObject;
+
 struct TestObject {
 	int type;
-	struct TestObject *left;
-	struct TestObject *right;
+	TestObject *left;
+	TestObject *right;
 };
 
-int testRefOffsets[] = { offsetof(struct TestObject, left), offsetof(struct TestObject, right), 0 };
+int testRefOffsets[] = { offsetof(TestObject, left), offsetof(TestObject, right), 0 };
 
-int *testRefOffsetsFunction(struct GcObject *object) { return testRefOffsets; }
+int *testRefOffsetsFunction(GcObject *object) { return testRefOffsets; }
 
-struct GcClass testClass = {
-	.size = sizeof(struct TestObject),
+GcClass testClass = {
+	.size = sizeof(TestObject),
 	.refoffsets = &testRefOffsetsFunction,
 };
 

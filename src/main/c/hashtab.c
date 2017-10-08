@@ -3,6 +3,8 @@
 
 #include "util.c"
 
+typedef struct Hashtab Hashtab;
+
 struct Hashtab {
 	int size;
 	void **keys, **values;
@@ -21,29 +23,29 @@ int hashstr(char *start, char *end) {
 	return hash;
 }
 
-void htnew(struct Hashtab *hashtab, int size) {
+void htnew(Hashtab *hashtab, int size) {
 	hashtab->size = size;
 	hashtab->keys = memalloczeroed(hashtab->size * sizeof(void*));
 	hashtab->values = memalloczeroed(hashtab->size * sizeof(void*));
 }
 
-void htdelete(struct Hashtab hashtab) {
+void htdelete(Hashtab hashtab) {
 	memfree(hashtab.values);
 	memfree(hashtab.keys);
 }
 
-int htgetpos(struct Hashtab *hashtab, void *key) {
+int htgetpos(Hashtab *hashtab, void *key) {
 	void **keys = hashtab->keys, *k;
 	int size = hashtab->size, i = hashptr(key);
 	while((k = keys[i %= size]) && k != key) i++;
 	return i;
 }
 
-void *htget(struct Hashtab *hashtab, void *key) {
+void *htget(Hashtab *hashtab, void *key) {
 	return hashtab->values[htgetpos(hashtab, key)];
 }
 
-void htput(struct Hashtab *hashtab, void *key, void *value) {
+void htput(Hashtab *hashtab, void *key, void *value) {
 	int i = htgetpos(hashtab, key);
 	hashtab->keys[i] = key;
 	hashtab->values[i] = value;
