@@ -77,19 +77,18 @@ struct GcObject *markAndSweep() {
 	heapdelete(&heap);
 
 	// evict orphan objects
-	struct GcObject **prev = &first;
+	struct GcObject **current = &first;
 	currentmark = 0;
 
-	while(gco) {
-		struct GcObject *next = gco->next;
+	while(gco = *current) {
+		struct GcObject **next = &gco->next;
 		if(gco->flag == FRESH__) {
-			*prev = next;
-			memfree(gco);
+			*current = *next;
+			memfree(-gcosize + (void*) gco);
 		} else {
-			prev = &gco->next;
+			current = next;
 			currentmark++;
 		}
-		gco = next;
 	}
 
 	watermark = 32 + currentmark * 3 / 2;
