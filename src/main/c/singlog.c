@@ -597,6 +597,7 @@ int handlelet(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 }
 
 int handleletint(Node *query, Node ***ptrail, Node **prem, Node **palt) {
+	typedef struct LetInt LetInt;
 	struct LetInt {
 		Node *variable;
 		int value, end, inc;
@@ -609,7 +610,7 @@ int handleletint(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 		Node *ps[4];
 		getparams(query, 4, ps);
 
-		letInt = memalloc(sizeof(struct LetInt));
+		letInt = memalloc(sizeof(LetInt));
 		letInt->variable = ps[0];
 		letInt->value = ps[1]->u.value;
 		letInt->end = ps[2]->u.value;
