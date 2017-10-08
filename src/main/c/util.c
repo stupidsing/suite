@@ -39,8 +39,9 @@ void *memalloc_(int size) {
 	else err("out of memory");
 }
 
-void *memrealloc(void *p, int size) {
-	if(p = realloc(p, size)) return p;
+void memrealloc(void *p, int size) {
+	void **p1 = (void**) p;
+	if(*p1 = realloc(*p1, size)) return;
 	else err("out of memory");
 }
 

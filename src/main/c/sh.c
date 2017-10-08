@@ -26,7 +26,7 @@ char *readline() {
 		} else
 			buffer[pos] = c;
 
-		if(size <= ++pos) buffer = memrealloc(buffer, (size <<= 1) * sizeof(char));
+		if(size <= ++pos) memrealloc(&buffer, (size <<= 1) * sizeof(char));
 	}
 
 	memfree(buffer);
@@ -41,7 +41,7 @@ char **splitline(char *line) {
 
 	while(tokens[pos++] = strtok(source, delimiters)) {
 		source = 0;
-		if(size <= pos) tokens = memrealloc(tokens, (size <<= 1) * sizeof(char*));
+		if(size <= pos) memrealloc(&tokens, (size <<= 1) * sizeof(char*));
 	}
 
 	return tokens;
