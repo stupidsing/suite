@@ -15,7 +15,7 @@
 
 char *readline() {
 	int size = buffersize;
-	char *buffer = memalloc_(size * sizeof(char));
+	char *buffer = memalloc(size * sizeof(char));
 	int pos = 0;
 	int c;
 
@@ -35,7 +35,7 @@ char *readline() {
 
 char **splitline(char *line) {
 	int size = buffersize;
-	char **tokens = memalloc_(size * sizeof(char*));
+	char **tokens = memalloc(size * sizeof(char*));
 	int pos = 0;
 	char *source = line;
 
