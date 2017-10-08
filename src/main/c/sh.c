@@ -26,10 +26,10 @@ char *readline() {
 		} else
 			buffer[pos] = c;
 
-		if(size <= ++pos) buffer = memrealloc_(buffer, (size <<= 1) * sizeof(char));
+		if(size <= ++pos) buffer = memrealloc(buffer, (size <<= 1) * sizeof(char));
 	}
 
-	free(buffer);
+	memfree(buffer);
 	exit(0);
 }
 
@@ -41,7 +41,7 @@ char **splitline(char *line) {
 
 	while(tokens[pos++] = strtok(source, delimiters)) {
 		source = 0;
-		if(size <= pos) tokens = memrealloc_(tokens, (size <<= 1) * sizeof(char*));
+		if(size <= pos) tokens = memrealloc(tokens, (size <<= 1) * sizeof(char*));
 	}
 
 	return tokens;
@@ -77,8 +77,8 @@ void loop() {
 		char *line = readline();
 		char **args = splitline(line);
 		status = execute(args);
-		free(args);
-		free(line);
+		memfree(args);
+		memfree(line);
 	}
 }
 

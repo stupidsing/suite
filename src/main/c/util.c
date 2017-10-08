@@ -39,7 +39,7 @@ void *memalloc_(int size) {
 	else err("out of memory");
 }
 
-void *memrealloc_(void *p, int size) {
+void *memrealloc(void *p, int size) {
 	if(p = realloc(p, size)) return p;
 	else err("out of memory");
 }

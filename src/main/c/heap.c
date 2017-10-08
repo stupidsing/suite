@@ -3,19 +3,20 @@
 
 #include "util.c"
 
-#define heapMax (65536)
-
 typedef struct Heap Heap;
 
 struct Heap {
+	int capacity;
 	int size;
 	void **items;
 	int (*comparer) (void*, void*);
 };
 
 void heapnew(Heap *heap, int (*comparer) (void*, void*)) {
+	int capacity = 256;
+	heap->capacity = capacity;
 	heap->size = 0;
-	heap->items = memalloc(heapMax * sizeof(void*));
+	heap->items = memalloc(capacity * sizeof(void*));
 	heap->comparer = comparer;
 }
 
@@ -25,6 +26,8 @@ void heapdelete(Heap *heap) {
 
 void heapadd(Heap *heap, void *item) {
 	int loc = heap->size++;
+	if(heap->capacity < loc) heap->items = memrealloc(heap->items, (heap->capacity <<= 1) * sizeof(void*));
+
 	int parentloc;
 	while(0 < loc && heap->comparer(heap->items[parentloc = loc / 2], item) < 0) {
 		heap->items[loc] = heap->items[parentloc];
