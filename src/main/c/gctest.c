@@ -19,6 +19,7 @@ int testRefOffsets[] = { offsetof(TestObject, left), offsetof(TestObject, right)
 int *testRefOffsetsFunction(GcObject *object) { return testRefOffsets; }
 
 GcClass testClass = {
+	.name = "testClass",
 	.size = sizeof(TestObject),
 	.refoffsets = &testRefOffsetsFunction,
 };

@@ -14,6 +14,7 @@ typedef struct GcClass GcClass;
 typedef struct GcObject GcObject;
 
 struct GcClass {
+	char *name;
 	int size;
 	int *(*refoffsets) (GcObject*);
 };
@@ -63,15 +64,15 @@ GcObject *markAndSweep() {
 	// add child objects into heap
 	while(gco = heapremove(&heap)) {
 		gco->flag = QUEUED_;
+		void *p = gcosize + (void*) gco;
 		int *refoffsets = getrefoffsets(gco);
 		while(*refoffsets) {
-			void *ref = *(void**) (gcosize + *refoffsets + (void*) gco);
+			void *ref = *(void**) (p + *refoffsets++);
 			GcObject *child;
 			if(ref && (child = ref - gcosize)->flag == FRESH__) {
 				child->flag = QUEUED_;
 				heapadd(&heap, child);
 			}
-			refoffsets++;
 		}
 		gco->flag = SCANNED;
 	}
@@ -85,8 +86,8 @@ GcObject *markAndSweep() {
 	while(gco = *current) {
 		GcObject **next = &gco->next;
 		if(gco->flag == FRESH__) {
-			*current = *next;
-			memfree(-gcosize + (void*) gco);
+			*current = *next;			
+			memfree(gco);
 		} else {
 			current = next;
 			currentmark++;
@@ -118,7 +119,8 @@ void *gcalloc_(GcClass *gcc, int size) {
 	int *refoffsets = gcc->refoffsets(gco);
 	while(*refoffsets) *(void**) (p + *refoffsets++) = 0;
 
-	return first = p;
+	first = gco;
+	return p;
 }
 
 void *gcalloc(GcClass *gcc) {
