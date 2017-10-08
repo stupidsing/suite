@@ -24,6 +24,10 @@ int fmsg(char *t, char *fn, int line, char *m) {
 #define fatal(m) fmsg("FATAL", __FILE__, __LINE__, (m))
 #define test(t) (t) || err("test case failed");
 
-#define module(m, c, d) void m##init() { c } void m##deinit() { d }
+#define module(m, c, d) int m##count = 0; \
+int m##initonce() { c } \
+int m##deinitonce() { d } \
+void m##init() { m##count++ || m##initonce(); } \
+void m##deinit() { --m##count || m##deinitonce(); }
 
 #endif
