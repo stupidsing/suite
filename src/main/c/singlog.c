@@ -860,8 +860,6 @@ void deinit() {
 	gcdeinit();
 }
 
-#define test(t) (t) || err("test case failed");
-
 int testmain() {
 	Node *n;
 	init();

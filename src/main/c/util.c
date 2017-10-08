@@ -22,6 +22,7 @@ int fmsg(char *t, char *fn, int line, char *m) {
 #define info(m) msg("INFO", __FILE__, __LINE__, (m))
 #define err(m) msg("ERROR", __FILE__, __LINE__, (m))
 #define fatal(m) fmsg("FATAL", __FILE__, __LINE__, (m))
+#define test(t) (t) || err("test case failed");
 
 #include "mem.c"
 
