@@ -761,7 +761,7 @@ int handlewrite(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	return 1;
 }
 
-void singloginit() {
+void singloginit_() {
 	int i;
 
 	gcinit();
@@ -824,7 +824,7 @@ void singloginit() {
 	enabletrace = tracedepth = 0;
 }
 
-void singlogdeinit() {
+void singlogdeinit_() {
 	int i;
 	for(i = 0; i < ruleHashtab.size; i++) {
 		Node *proto = ruleHashtab.keys[i], *rule = ruleHashtab.values[i];
@@ -859,6 +859,8 @@ void singlogdeinit() {
 	nAtomHashes = 0;
 	gcdeinit();
 }
+
+module(singlog, { singloginit_(); }, { singlogdeinit_(); })
 
 int testmain() {
 	Node *n;
