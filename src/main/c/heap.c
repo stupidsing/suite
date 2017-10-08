@@ -9,16 +9,18 @@ typedef struct Heap Heap;
 
 struct Heap {
 	int size;
-	void *items[heapMax];
+	void **items;
 	int (*comparer) (void*, void*);
 };
 
 void heapnew(Heap *heap, int (*comparer) (void*, void*)) {
 	heap->size = 0;
+	heap->items = memalloc(heapMax * sizeof(void*));
 	heap->comparer = comparer;
 }
 
 void heapdelete(Heap *heap) {
+	memfree(heap->items);
 }
 
 void heapadd(Heap *heap, void *item) {
