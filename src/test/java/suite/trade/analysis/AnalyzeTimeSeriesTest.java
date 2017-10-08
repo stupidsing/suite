@@ -27,7 +27,7 @@ import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
-// mvn -Dtest=AnalyzeTimeSeriesTest#test test
+// mvn test -Dtest=AnalyzeTimeSeriesTest#test
 public class AnalyzeTimeSeriesTest {
 
 	private static AnalyzeTimeSeriesTest me = new AnalyzeTimeSeriesTest();
