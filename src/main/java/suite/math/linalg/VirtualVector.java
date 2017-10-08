@@ -56,13 +56,10 @@ public class VirtualVector {
 	}
 
 	public void dump(StringBuilder sb) {
-		apply((l, f0) -> {
-			sb.append("[ ");
-			for (int i = 0; i < l; i++)
-				sb.append(To.string(get.apply(i)) + " ");
-			sb.append("\n");
-			return sb;
-		});
+		sb.append("[ ");
+		for (int i = 0; i < length; i++)
+			sb.append(To.string(get.apply(i)) + " ");
+		sb.append("\n");
 	}
 
 	public VirtualVector scale(double d) {
