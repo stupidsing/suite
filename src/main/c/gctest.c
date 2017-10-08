@@ -1,4 +1,4 @@
-// gcc -std=c99 -g src/main/c/gctest.c -o target/gctest
+// gcc -std=c99 -g src/main/c/gctest.c -o target/gctest && target/gctest
 
 #define _GNU_SOURCE
 
