@@ -26,6 +26,8 @@ struct GcObject {
 int gcosize = sizeof(struct GcObject);
 
 int watermark;
+int currentmark;
+
 struct GcObject *first;
 struct GcObject *root;
 struct GcObject *lastAllocated;
@@ -85,13 +87,13 @@ struct GcObject *markAndSweep() {
 		gco = next;
 	}
 
-	watermark = 32 + nAllocs * 3 / 2;
-	nAllocs = 0;
+	watermark = 32 + currentmark * 3 / 2;
+	currentmark = 0;
 	return first;
 }
 
 void *gcalloc_(struct GcClass *gcc, int size) {
-	if(watermark < nAllocs++) // pre-cautionary garbage collection
+	if(watermark < currentmark++) // pre-cautionary garbage collection
 		markAndSweep();
 
 	int n = 0;
