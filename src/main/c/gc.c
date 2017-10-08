@@ -135,20 +135,18 @@ void gcsetroot(GcObject *r) {
 	root = r;
 }
 
-void gcinit() {
+module(gc, {
 	meminit();
 	watermark = 256;
 	currentmark = 0;
 	first = 0;
 	lastAllocated = 0;
-}
-
-void gcdeinit() {
+}, {
 	lastAllocated = 0;
 	root = 0;
 	markAndSweep();
 	!first || err("some memory not garbage collected");
 	memdeinit();
-}
+})
 
 #endif

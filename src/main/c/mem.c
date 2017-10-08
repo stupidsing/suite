@@ -5,14 +5,6 @@
 
 int nAllocs;
 
-void meminit() {
-	nAllocs = 0;
-}
-
-void memdeinit() {
-	!nAllocs || err("some memory not freed");
-}
-
 void *memalloc_(int size) {
 	void *p = malloc(size);
 	if(p) return p;
@@ -40,5 +32,11 @@ void memfree(void *p) {
 	free(p);
 	nAllocs--;
 }
+
+module(mem, {
+	nAllocs = 0;
+}, {
+	!nAllocs || err("some memory not freed");
+})
 
 #endif

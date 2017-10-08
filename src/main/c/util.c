@@ -24,4 +24,6 @@ int fmsg(char *t, char *fn, int line, char *m) {
 #define fatal(m) fmsg("FATAL", __FILE__, __LINE__, (m))
 #define test(t) (t) || err("test case failed");
 
+#define module(m, c, d) void m##init() { c } void m##deinit() { d }
+
 #endif

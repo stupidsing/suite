@@ -761,7 +761,7 @@ int handlewrite(Node *query, Node ***ptrail, Node **prem, Node **palt) {
 	return 1;
 }
 
-void init() {
+void singloginit() {
 	int i;
 
 	gcinit();
@@ -824,7 +824,7 @@ void init() {
 	enabletrace = tracedepth = 0;
 }
 
-void deinit() {
+void singlogdeinit() {
 	int i;
 	for(i = 0; i < ruleHashtab.size; i++) {
 		Node *proto = ruleHashtab.keys[i], *rule = ruleHashtab.values[i];
@@ -862,7 +862,7 @@ void deinit() {
 
 int testmain() {
 	Node *n;
-	init();
+	singloginit();
 
 	n = parse("1 + 2 * 3");
 	char *s = dump(n);
@@ -915,7 +915,7 @@ int testmain() {
 	test(prove(generalize(n = ref(parse("cutokay"))))); unref(n);
 	test(!prove(generalize(n = ref(parse("cutfail"))))); unref(n);
 
-	deinit();
+	singlogdeinit();
 	return 0;
 }
 
@@ -923,10 +923,10 @@ int main(int argc, char **argv) {
 	int i;
 	testmain();
 
-	init();
+	singloginit();
 	for(i = 1; i < argc; i++) importfile(argv[i]);
 	import(stdin);
-	deinit();
+	singlogdeinit();
 
 	return !lastResult;
 }
