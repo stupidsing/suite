@@ -353,7 +353,7 @@ void assert(Node *rule) {
 	assignref((Node**) ruleHashtab.values + i, newTree(commaOp, rule, ruleHashtab.values[i]));
 }
 
-int nSolutions, lastResult = 0;
+int nSolutions, lastResult = 1;
 Hashtab genHashtab;
 
 int cmpstr(const void *s0, const void *s1) {
