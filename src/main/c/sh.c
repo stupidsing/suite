@@ -30,7 +30,7 @@ char *readline() {
 	}
 
 	memfree(buffer);
-	exit(0);
+	return 0;
 }
 
 char **splitline(char *line) {
@@ -69,12 +69,15 @@ int execute(char **args) {
 	return args[0] ? launch(args) : 1;
 }
 
+int prompt() {
+	printf("> ");
+}
+
 void loop() {
 	int status = 1;
+	char *line;
 
-	while(status) {
-		printf("> ");
-		char *line = readline();
+	while(status && prompt() && (line = readline())) {
 		char **args = splitline(line);
 		status = execute(args);
 		memfree(args);
