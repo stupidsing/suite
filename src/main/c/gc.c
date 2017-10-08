@@ -110,13 +110,13 @@ void *gcalloc_(GcClass *gcc, int size) {
 		else break;
 
 	GcObject *gco = lastAllocated;
-	void *p = gcosize + (void*) gco;
-	int *refoffsets = gcc->refoffsets(gco);
-	while(*refoffsets) *(void**) (p + *refoffsets++) = 0;
-
 	gco->class = gcc;
 	gco->flag = SCANNED;
 	gco->next = first;
+
+	void *p = gcosize + (void*) gco;
+	int *refoffsets = gcc->refoffsets(gco);
+	while(*refoffsets) *(void**) (p + *refoffsets++) = 0;
 
 	return first = p;
 }

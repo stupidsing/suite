@@ -32,6 +32,9 @@ TestObject *newTest(int type, TestObject *left, TestObject *right) {
 
 int main(int argc, char **argv) {
 	gcinit();
-	newTest(0, 0, 0);
+	TestObject *t0 = newTest(0, 0, 0);
+	TestObject *t1 = newTest(0, 0, 0);
+	TestObject *t2 = newTest(0, t0, t1);
+	TestObject *t3 = newTest(0, 0, t2);
 	gcdeinit();
 }
