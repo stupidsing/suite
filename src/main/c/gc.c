@@ -65,8 +65,9 @@ GcObject *markAndSweep() {
 		gco->flag = QUEUED_;
 		int *refoffsets = getrefoffsets(gco);
 		while(*refoffsets) {
-			GcObject *child = *(void**) (gcosize + *refoffsets + (void*) gco) - gcosize;
-			if(child && child->flag == FRESH__) {
+			void **p = *(void**) (gcosize + *refoffsets + (void*) gco);
+			GcObject *child;
+			if(p && (child = p - gcosize)->flag == FRESH__) {
 				child->flag = QUEUED_;
 				heapadd(&heap, child);
 			}
