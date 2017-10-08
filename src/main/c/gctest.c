@@ -23,8 +23,15 @@ GcClass testClass = {
 	.refoffsets = &testRefOffsetsFunction,
 };
 
+TestObject *newTest(int type, TestObject *left, TestObject *right) {
+	TestObject *test = gcalloc(&testClass);
+	test->type = type;
+	test->left = left;
+	test->right = right;
+}
+
 int main(int argc, char **argv) {
 	gcinit();
-	gcalloc(&testClass);
+	newTest(0, 0, 0);
 	gcdeinit();
 }
