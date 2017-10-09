@@ -824,8 +824,7 @@ void singloginit_() {
 }
 
 void singlogdeinit_() {
-	int i;
-	for(i = 0; i < ruleHashtab.size; i++) {
+	for(int i = 0; i < ruleHashtab.size; i++) {
 		Node *proto = ruleHashtab.keys[i], *rule = ruleHashtab.values[i];
 		if(proto) unref(proto);
 		if(rule) unref(rule);
@@ -833,7 +832,7 @@ void singlogdeinit_() {
 
 	htdelete(ruleHashtab);
 
-	for(i = 0; i < handlerHashtab.size; i++) {
+	for(int i = 0; i < handlerHashtab.size; i++) {
 		Node *proto = handlerHashtab.keys[i];
 		if(proto) unref(proto);
 	}
@@ -846,10 +845,10 @@ void singlogdeinit_() {
 	unref(nilAtom);
 	memfree(isLeftAssoc);
 
-	for(i = 0; i < 256; i++) unref(intNodes[i]);
+	for(int i = 0; i < 256; i++) unref(intNodes[i]);
 	memfree(intNodes);
 
-	for(i = 0; i < atomHashSize; i++) {
+	for(int i = 0; i < atomHashSize; i++) {
 		Node *atom = atomHashes[i];
 		if(atom) unref(atom);
 	}
