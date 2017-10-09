@@ -37,6 +37,9 @@ GcObject *lastAllocated;
 
 int norefoffsets[] = { 0 };
 
+GcObject *toGcObject(void *p) { return (GcObject*) (p - gcosize); }
+void *toObject(GcObject *gco) { return gcosize + (void*) gco; }
+
 int compareaddresses(void *p0, void *p1) {
 	return p0 != p1 ? (p0 < p1 ? -1 : 1) : 0;
 }
@@ -62,12 +65,12 @@ GcObject *markAndSweep() {
 	// add child objects into heap
 	while(gco = heapremove(&heap)) {
 		gco->flag = QUEUED_;
-		void *p = gcosize + (void*) gco;
+		void *p = toObject(gco);
 		int *refoffsets = getrefoffsets(gco);
 		while(*refoffsets) {
 			void *ref = *(void**) (p + *refoffsets++);
 			GcObject *child;
-			if(ref && (child = ref - gcosize)->flag == FRESH__) {
+			if(ref && (child = toGcObject(ref))->flag == FRESH__) {
 				child->flag = QUEUED_;
 				heapadd(&heap, child);
 			}
@@ -117,7 +120,7 @@ void *gcalloc_(GcClass *gcc, int size) {
 	gco->flag = SCANNED;
 	gco->next = first;
 
-	void *p = gcosize + (void*) gco;
+	void *p = toObject(gco);
 	int *refoffsets = gcc->refoffsets(gco);
 	while(*refoffsets) *(void**) (p + *refoffsets++) = 0;
 
