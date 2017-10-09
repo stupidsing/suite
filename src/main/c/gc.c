@@ -7,6 +7,7 @@
 #define FRESH__ 0
 #define QUEUED_ 1
 #define SCANNED 2
+#define UNUSED_ 3
 
 // #define offsetof(type, member) __builtin_offsetof(type, member)
 
@@ -49,10 +50,7 @@ GcObject *markAndSweep() {
 	GcObject *gco = first;
 
 	// mark all as fresh
-	while(gco) {
-		gco->flag = FRESH__;
-		gco = gco->next;
-	}
+	for(gco = first; gco; gco = gco->next) gco->flag = FRESH__;
 
 	// initialize heap and add root into it
 	Heap heap;
@@ -79,23 +77,27 @@ GcObject *markAndSweep() {
 
 	heapdelete(&heap);
 
-	// evict orphan objects
+	// mark fresh as unused
+	int n = 0;
+
+	for(gco = first; gco; gco = gco->next)
+		if(gco->flag != FRESH__) n++;
+		else gco->flag = UNUSED_;
+
+	// evict unused objects
 	GcObject **current = &first;
-	currentmark = 0;
 
 	while(gco = *current) {
 		GcObject **next = &gco->next;
-		if(gco->flag == FRESH__) {
-			*current = *next;			
+		if(gco->flag == UNUSED_) {
+			*current = *next;
 			memfree(gco);
-		} else {
-			current = next;
-			currentmark++;
 		}
+		else current = next;
 	}
 
-	watermark = 32 + currentmark * 3 / 2;
-	currentmark = 0;
+	watermark = 32 + n * 3 / 2;
+	currentmark = n;
 	return first;
 }
 
@@ -145,7 +147,7 @@ module(gc, {
 	lastAllocated = 0;
 	root = 0;
 	markAndSweep();
-	!first || err("some memory not garbage collected");
+	!first || fatal("some memory not garbage collected");
 	memdeinit();
 })
 
