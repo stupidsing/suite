@@ -65,16 +65,19 @@ GcObject *markAndSweep() {
 	// add child objects into heap
 	while(gco = heapremove(&heap)) {
 		gco->flag = QUEUED_;
-		void *p = toObject(gco);
+
+		void *object = toObject(gco);
 		int *refoffsets = getrefoffsets(gco);
-		while(*refoffsets) {
-			void *ref = *(void**) (p + *refoffsets++);
-			GcObject *child;
-			if(ref && (child = toGcObject(ref))->flag == FRESH__) {
-				child->flag = QUEUED_;
-				heapadd(&heap, child);
+		void *ref;
+		GcObject *gco1;
+
+		while(*refoffsets)
+			if((ref = *(void**) (object + *refoffsets++))
+				&& (gco1 = toGcObject(ref))->flag == FRESH__) {
+				gco1->flag = QUEUED_;
+				heapadd(&heap, gco1);
 			}
-		}
+
 		gco->flag = SCANNED;
 	}
 
