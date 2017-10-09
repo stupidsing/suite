@@ -26,19 +26,20 @@ struct GcObject {
 	GcClass *class;
 };
 
-int gcosize = sizeof(GcObject);
+struct {
+	int gcosize;
+	int watermark;
+	int currentmark;
 
-int watermark;
-int currentmark;
-
-GcObject *first;
-GcObject *root;
-GcObject *lastAllocated;
+	GcObject *first;
+	GcObject *root;
+	GcObject *lastAllocated;
+} gc_;
 
 int norefoffsets[] = { 0 };
 
-GcObject *toGcObject(void *p) { return (GcObject*) (p - gcosize); }
-void *toObject(GcObject *gco) { return gcosize + (void*) gco; }
+GcObject *toGcObject(void *p) { return (GcObject*) (p - gc_.gcosize); }
+void *toObject(GcObject *gco) { return gc_.gcosize + (void*) gco; }
 
 int compareaddresses(void *p0, void *p1) {
 	return p0 != p1 ? (p0 < p1 ? -1 : 1) : 0;
@@ -50,17 +51,17 @@ int *getrefoffsets(GcObject *gco) {
 }
 
 GcObject *markAndSweep() {
-	GcObject *gco = first;
+	GcObject *gco = gc_.first;
 
 	// mark all as fresh
-	for(gco = first; gco; gco = gco->next) gco->flag = FRESH__;
+	for(gco = gc_.first; gco; gco = gco->next) gco->flag = FRESH__;
 
 	// initialize heap and add root into it
 	Heap heap;
 	heapnew(&heap, &compareaddresses);
 
-	if(root) heapadd(&heap, root);
-	if(lastAllocated) heapadd(&heap, lastAllocated);
+	if(gc_.root) heapadd(&heap, gc_.root);
+	if(gc_.lastAllocated) heapadd(&heap, gc_.lastAllocated);
 
 	// add child objects into heap
 	while(gco = heapremove(&heap)) {
@@ -84,12 +85,12 @@ GcObject *markAndSweep() {
 	// mark fresh as unused
 	int n = 0;
 
-	for(gco = first; gco; gco = gco->next)
+	for(gco = gc_.first; gco; gco = gco->next)
 		if(gco->flag != FRESH__) n++;
 		else gco->flag = UNUSED_;
 
 	// evict unused objects
-	GcObject **current = &first;
+	GcObject **current = &gc_.first;
 
 	while(gco = *current) {
 		GcObject **next = &gco->next;
@@ -100,32 +101,32 @@ GcObject *markAndSweep() {
 		else current = next;
 	}
 
-	watermark = 32 + n * 3 / 2;
-	currentmark = n;
-	return first;
+	gc_.watermark = 32 + n * 3 / 2;
+	gc_.currentmark = n;
+	return gc_.first;
 }
 
 void *gcalloc_(GcClass *gcc, int size) {
-	if(watermark < currentmark++) // pre-cautionary garbage collection
+	if(gc_.watermark < gc_.currentmark++) // pre-cautionary garbage collection
 		markAndSweep();
 
 	int n = 0;
-	int size1 = gcosize + size;
-	lastAllocated = 0;
+	int size1 = gc_.gcosize + size;
+	gc_.lastAllocated = 0;
 	while(n++ < 3)
-		if(!(lastAllocated = memalloc(size1))) markAndSweep(); // hungry garbage collection
+		if(!(gc_.lastAllocated = memalloc(size1))) markAndSweep(); // hungry garbage collection
 		else break;
 
-	GcObject *gco = lastAllocated;
+	GcObject *gco = gc_.lastAllocated;
 	gco->class = gcc;
 	gco->flag = SCANNED;
-	gco->next = first;
+	gco->next = gc_.first;
 
 	void *p = toObject(gco);
 	int *refoffsets = gcc->refoffsets(gco);
 	while(*refoffsets) *(void**) (p + *refoffsets++) = 0;
 
-	first = gco;
+	gc_.first = gco;
 	return p;
 }
 
@@ -138,20 +139,21 @@ void *gcallocleaf(int size) {
 }
 
 void gcsetroot(GcObject *r) {
-	root = r;
+	gc_.root = r;
 }
 
 module(gc, {
 	meminit();
-	watermark = 256;
-	currentmark = 0;
-	first = 0;
-	lastAllocated = 0;
+	gc_.gcosize = sizeof(GcObject);
+	gc_.watermark = 256;
+	gc_.currentmark = 0;
+	gc_.first = 0;
+	gc_.lastAllocated = 0;
 }, {
-	lastAllocated = 0;
-	root = 0;
+	gc_.lastAllocated = 0;
+	gc_.root = 0;
 	markAndSweep();
-	!first || fatal("some memory not garbage collected");
+	!gc_.first || fatal("some memory not garbage collected");
 	memdeinit();
 })
 

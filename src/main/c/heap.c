@@ -25,7 +25,7 @@ void heapdelete(Heap *heap) {
 }
 
 void heapadd(Heap *heap, void *item) {
-	int loc = ++heap->size;
+	int loc = heap->size++;
 	if(heap->capacity <= loc) memrealloc(&heap->items, (heap->capacity <<= 1) * sizeof(void*));
 
 	int parentloc;
