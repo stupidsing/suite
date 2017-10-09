@@ -365,7 +365,7 @@ int handleelaborate(Node *query, Node ***trail, Node **remaining) {
 	int i, nEntries = 0;
 	char *entries[arraySize];
 
-	for(i = 0; i < genHashtab.size; i++) {
+	for(i = 0; i < genHashtab.capacity; i++) {
 		Node *key = genHashtab.keys[i];
 
 		if(key && key->u.name[0] == '.') {
@@ -824,7 +824,7 @@ void singloginit_() {
 }
 
 void singlogdeinit_() {
-	for(int i = 0; i < ruleHashtab.size; i++) {
+	for(int i = 0; i < ruleHashtab.capacity; i++) {
 		Node *proto = ruleHashtab.keys[i], *rule = ruleHashtab.values[i];
 		if(proto) unref(proto);
 		if(rule) unref(rule);
@@ -832,7 +832,7 @@ void singlogdeinit_() {
 
 	htdelete(ruleHashtab);
 
-	for(int i = 0; i < handlerHashtab.size; i++) {
+	for(int i = 0; i < handlerHashtab.capacity; i++) {
 		Node *proto = handlerHashtab.keys[i];
 		if(proto) unref(proto);
 	}

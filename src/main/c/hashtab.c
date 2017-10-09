@@ -6,6 +6,7 @@
 typedef struct Hashtab Hashtab;
 
 struct Hashtab {
+	int capacity;
 	int size;
 	void **keys, **values;
 };
@@ -23,10 +24,11 @@ int hashstr(char *start, char *end) {
 	return hash;
 }
 
-void htnew(Hashtab *hashtab, int size) {
-	hashtab->size = size;
-	hashtab->keys = memalloczeroed(hashtab->size * sizeof(void*));
-	hashtab->values = memalloczeroed(hashtab->size * sizeof(void*));
+void htnew(Hashtab *hashtab, int capacity) {
+	hashtab->capacity = capacity;
+	hashtab->size = 0;
+	hashtab->keys = memalloczeroed(hashtab->capacity * sizeof(void*));
+	hashtab->values = memalloczeroed(hashtab->capacity * sizeof(void*));
 }
 
 void htdelete(Hashtab hashtab) {
@@ -36,8 +38,8 @@ void htdelete(Hashtab hashtab) {
 
 int htgetpos(Hashtab *hashtab, void *key) {
 	void **keys = hashtab->keys, *k;
-	int size = hashtab->size, i = hashptr(key);
-	while((k = keys[i %= size]) && k != key) i++;
+	int capacity = hashtab->capacity, i = hashptr(key);
+	while((k = keys[i %= capacity]) && k != key) i++;
 	return i;
 }
 
