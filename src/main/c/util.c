@@ -30,4 +30,13 @@ int m##deinitonce() { d } \
 void m##init() { m##count++ || m##initonce(); } \
 void m##deinit() { --m##count || m##deinitonce(); }
 
+typedef struct Closure Closure;
+
+struct Closure {
+	void *frame;
+	void *(*apply) (void*);
+};
+
+void *invoke(Closure closure) { (*closure.apply)(closure.frame); }
+
 #endif
