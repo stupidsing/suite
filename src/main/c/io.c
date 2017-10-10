@@ -160,7 +160,7 @@ Node *parse_(char *start, char *end) {
 	char *last = end - 1;
 	int depth = 0, quote = 0, op;
 
-	if(!node) {
+	if(!node)
 		for(op = 0; op < nOperators; op++) {
 			int assoc = isLeftAssoc[op];
 			char *s = assoc ? end : start;
@@ -195,8 +195,6 @@ Node *parse_(char *start, char *end) {
 				if(!assoc) s++;
 			}
 		}
-	}
-
 
 	if(!node)
 		if(*start == '(' && *last == ')'
