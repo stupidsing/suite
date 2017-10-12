@@ -115,19 +115,18 @@ public class P2GenerateCode {
 		private Pair<Operand, Operand> compileOp2_(RegisterSet rs, int fd, Funp n0) {
 			if (n0 instanceof FunpInvokeInt2) {
 				compileInvoke(rs, fd, ((FunpInvokeInt2) n0).routine);
-				OpReg r0 = rs.get();
-				OpReg r1 = rs.mask(r0).get();
-				emitMov(r0, eax);
-				emitMov(r1, edx);
-				return Pair.of(r0, r1);
+				if (!rs.contains(eax, edx))
+					return Pair.of(eax, edx);
+				else
+					throw new RuntimeException();
 			} else if (n0 instanceof FunpMemory) {
 				FunpMemory n1 = (FunpMemory) n0;
 				int size = n1.size();
-				if (size == is) {
-					OpReg r0 = compileReg(rs, fd, n1.range(0, ps));
-					OpReg r1 = compileReg(rs.mask(r0), fd, n1.range(ps, ps + ps));
+				OpReg r0 = compileReg(rs, fd, n1.range(0, ps));
+				OpReg r1 = compileReg(rs.mask(r0), fd, n1.range(ps, ps + ps));
+				if (size == is)
 					return Pair.of(r0, r1);
-				} else
+				else
 					throw new RuntimeException();
 			} else if (n0 instanceof FunpRoutine)
 				return compileRoutine(() -> emitMov(eax, compileReg(registerSet, ps, ((FunpRoutine) n0).expr)));
@@ -225,10 +224,10 @@ public class P2GenerateCode {
 				compileMove(rs0, r0, target.start, ebp, fd, size);
 			} else if (n0 instanceof FunpMemory) {
 				FunpMemory source = (FunpMemory) n0;
-				if (size == source.size()) {
-					OpReg r1 = compileReg(rs0, fd, source.pointer);
+				OpReg r1 = compileReg(rs0, fd, source.pointer);
+				if (size == source.size())
 					compileMove(rs0.mask(r0), r0, target.start, r1, source.start, size);
-				} else
+				else
 					throw new RuntimeException();
 			} else
 				throw new RuntimeException("cannot assign from " + n0);
@@ -285,7 +284,7 @@ public class P2GenerateCode {
 				OpReg[] opRegs = rs.list();
 				for (int i = 0; i <= opRegs.length - 1; i++)
 					emit(amd64.instruction(Insn.PUSH, opRegs[i]));
-				t = compile(rs, fd - opRegs.length * is, c, ((FunpSaveRegisters) n0).expr);
+				t = compile(registerSet, fd - opRegs.length * is, c, ((FunpSaveRegisters) n0).expr);
 				for (int i = opRegs.length - 1; 0 <= i; i--)
 					emit(amd64.instruction(Insn.POP, opRegs[i]));
 			} else
@@ -327,7 +326,7 @@ public class P2GenerateCode {
 
 		private void saveRegs(RegisterSet rs, Runnable runnable, int index, OpReg... opRegs) {
 			OpReg op;
-			if (index < opRegs.length && rs.isSet(op = opRegs[index])) {
+			if (index < opRegs.length && rs.contains(op = opRegs[index])) {
 				emit(amd64.instruction(Insn.PUSH, op));
 				saveRegs(rs, runnable, index + 1, opRegs);
 				emit(amd64.instruction(Insn.POP, op));

@@ -40,15 +40,18 @@ public class RegisterSet {
 		this.flag = flag;
 	}
 
+	public boolean contains(OpReg... ops) {
+		boolean result = false;
+		for (OpReg op : ops)
+			result |= isSet(op.reg);
+		return result;
+	}
+
 	public OpReg get() {
 		for (int i = 0; i < nRegisters; i++)
 			if (!isSet(i))
 				return registers[i];
 		throw new RuntimeException();
-	}
-
-	public boolean isSet(OpReg op) {
-		return isSet(op.reg);
 	}
 
 	public OpReg[] list() {
