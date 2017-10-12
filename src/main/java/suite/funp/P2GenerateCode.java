@@ -90,29 +90,22 @@ public class P2GenerateCode {
 
 		private Pair<OpReg, OpReg> compileReg2(RegisterSet rs, int fd, Funp n0) {
 			Pair<Operand, Operand> pair = compileOp2(rs, fd, n0);
-			Operand op0 = pair.t0;
-			Operand op1 = pair.t1;
-			OpReg r0, r1;
-			if (op0 instanceof OpReg)
-				r0 = (OpReg) op0;
-			else
-				emitMov(r0 = rs.get(), op0);
-			if (op1 instanceof OpReg)
-				r1 = (OpReg) op1;
-			else
-				emitMov(r1 = rs.mask(r0).get(), op0);
+			OpReg r0 = compileReg(rs, pair.t0);
+			OpReg r1 = compileReg(rs.mask(r0), pair.t1);
 			return Pair.of(r0, r1);
 		}
 
 		private OpReg compileReg(RegisterSet rs, int fd, Funp n0) {
-			Operand op = compileOp(rs, fd, n0);
+			return compileReg(rs, compileOp(rs, fd, n0));
+		}
+
+		private OpReg compileReg(RegisterSet rs, Operand op) {
+			OpReg r0;
 			if (op instanceof OpReg)
-				return (OpReg) op;
-			else {
-				OpReg r0 = rs.get();
-				emitMov(r0, op);
-				return r0;
-			}
+				r0 = (OpReg) op;
+			else
+				emitMov(r0 = rs.get(), op);
+			return r0;
 		}
 
 		private Pair<Operand, Operand> compileOp2(RegisterSet rs, int fd, Funp n0) {
