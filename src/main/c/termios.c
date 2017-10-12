@@ -1,4 +1,4 @@
-// gcc -std=c99 -g src/main/c/termios.c -o target/termios && target/termios
+// gcc -std=c99 -g src/main/c/termios.c -o target/termios
 
 #ifndef termiossource
 #define termiossource
@@ -36,16 +36,5 @@ char getch() {
 char getche() {
 	return getch_(1);
 }
-
-int main() {
-	char c;
-	printf("(getche example) please type a letter: ");
-	c = getche();
-	printf("\nYou typed: %c\n", c);
-	printf("(getch example) please type a letter...");
-	c = getch();
-	printf("\nYou typed: %c\n", c);
-	return 0;
-} 
 
 #endif
