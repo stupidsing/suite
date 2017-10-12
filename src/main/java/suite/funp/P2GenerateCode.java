@@ -262,15 +262,16 @@ public class P2GenerateCode {
 				compileAssign(rs, fd, n1.memory, n1.value);
 				return compile(rs, fd, c, n1.expr);
 			} else if (n0 instanceof FunpIf) {
+				FunpIf n1 = (FunpIf) n0;
 				Operand elseLabel = amd64.imm(0, ps);
 				Operand endLabel = amd64.imm(0, ps);
-				OpReg r0 = compileReg(rs, fd, ((FunpIf) n0).if_);
+				OpReg r0 = compileReg(rs, fd, n1.if_);
 				emit(amd64.instruction(Insn.OR, r0, r0));
 				emit(amd64.instruction(Insn.JZ, elseLabel));
-				T t0 = compile(rs, fd, c, ((FunpIf) n0).then);
+				T t0 = compile(rs, fd, c, n1.then);
 				emit(amd64.instruction(Insn.JMP, endLabel));
 				emit(amd64.instruction(Insn.LABEL, elseLabel));
-				T t1 = compile(rs, fd, c, ((FunpIf) n0).else_);
+				T t1 = compile(rs, fd, c, n1.else_);
 				emit(amd64.instruction(Insn.LABEL, endLabel));
 				if (Objects.equals(t0, t1))
 					t = t0;
