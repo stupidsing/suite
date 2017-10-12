@@ -121,10 +121,14 @@ public class P2GenerateCode {
 				emitMov(r1, edx);
 				return Pair.of(r0, r1);
 			} else if (n0 instanceof FunpMemory) {
-				FunpMemory memory = (FunpMemory) n0;
-				OpReg r0 = compileReg(rs, fd, memory.range(0, ps));
-				OpReg r1 = compileReg(rs.mask(r0), fd, memory.range(ps, ps + ps));
-				return Pair.of(r0, r1);
+				FunpMemory n1 = (FunpMemory) n0;
+				int size = n1.size();
+				if (size == is) {
+					OpReg r0 = compileReg(rs, fd, n1.range(0, ps));
+					OpReg r1 = compileReg(rs.mask(r0), fd, n1.range(ps, ps + ps));
+					return Pair.of(r0, r1);
+				} else
+					throw new RuntimeException();
 			} else if (n0 instanceof FunpRoutine)
 				return compileRoutine(() -> emitMov(eax, compileReg(registerSet, ps, ((FunpRoutine) n0).expr)));
 			else if (n0 instanceof FunpRoutine2)
