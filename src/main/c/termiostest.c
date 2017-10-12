@@ -7,10 +7,8 @@
 
 int main() {
 	printf("getche()");
-	char c0 = getche();
-	printf("\nYou typed: %c\n", c0);
+	printf("\nYou typed: %c\n", getche());
 	printf("getch()");
-	char c1 = getch();
-	printf("\nYou typed: %c\n", c1);
+	printf("\nYou typed: %c\n", getch());
 	return 0;
 }
