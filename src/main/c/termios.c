@@ -33,11 +33,11 @@ char getch() {
 	return getch_(0);
 }
 
-char getche(void) {
+char getche() {
 	return getch_(1);
 }
 
-int main(void) {
+int main() {
 	char c;
 	printf("(getche example) please type a letter: ");
 	c = getche();
