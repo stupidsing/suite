@@ -25,9 +25,11 @@ import suite.funp.P1.FunpAssign;
 import suite.funp.P1.FunpFramePointer;
 import suite.funp.P1.FunpInvokeInt;
 import suite.funp.P1.FunpInvokeInt2;
+import suite.funp.P1.FunpInvokeIo;
 import suite.funp.P1.FunpMemory;
 import suite.funp.P1.FunpRoutine;
 import suite.funp.P1.FunpRoutine2;
+import suite.funp.P1.FunpRoutineIo;
 import suite.funp.P1.FunpSaveFramePointer;
 import suite.funp.P1.FunpSaveRegisters;
 import suite.node.io.Operator;
@@ -82,6 +84,7 @@ public class P2GenerateCode {
 		return asm.assemble(offset, instructions, dump);
 	}
 
+	// invariant: fd = ESP - EBP
 	private class Compile0 {
 		private List<Instruction> instructions = new ArrayList<>();
 
@@ -137,7 +140,11 @@ public class P2GenerateCode {
 					emitMov(eax, pair1.t0);
 					emitMov(edx, pair1.t1);
 				});
-			else {
+			else if (n0 instanceof FunpRoutineIo) {
+				FunpRoutineIo n1 = (FunpRoutineIo) n0;
+				FunpMemory out = FunpMemory.of(new FunpFramePointer(), ps + n1.is, n1.os);
+				return compileRoutine(() -> compileAssign(registerSet, ps, out, n1.expr));
+			} else {
 				Pair<OpReg, OpReg> pair = compileReg2(rs, fd, n0);
 				return Pair.of(pair.t0, pair.t1);
 			}
@@ -215,6 +222,10 @@ public class P2GenerateCode {
 				Pair<Operand, Operand> pair = compileOp2(rs1, fd, n0);
 				emitMov(amd64.mem(r0, target.start, size), pair.t0);
 				emitMov(amd64.mem(r0, target.start + ps, size), pair.t1);
+			} else if (n0 instanceof FunpInvokeIo) {
+				FunpInvokeIo n1 = (FunpInvokeIo) n0;
+				compileInvoke(rs0, fd, n1.routine);
+				compileMove(rs0, r0, target.start, ebp, fd, size);
 			} else if (n0 instanceof FunpMemory) {
 				FunpMemory source = (FunpMemory) n0;
 				if (size == source.size()) {
@@ -237,11 +248,12 @@ public class P2GenerateCode {
 				Funp value = n1.value;
 				Operand imm = amd64.imm(size);
 
-				if (size == is)
+				if (size == is && value != null)
 					emit(amd64.instruction(Insn.PUSH, compileOp(rs, fd, value)));
 				else {
 					emit(amd64.instruction(Insn.SUB, esp, imm));
-					compileAssign(rs, fd, FunpMemory.of(new FunpFramePointer(), fd, fd + size), value);
+					if (value != null)
+						compileAssign(rs, fd, FunpMemory.of(new FunpFramePointer(), fd, fd + size), value);
 				}
 				t = compile(rs, fd - size, c, n1.expr);
 				if (size == is)
@@ -286,29 +298,30 @@ public class P2GenerateCode {
 		}
 
 		private void compileMove(RegisterSet rs, OpReg r0, int start0, OpReg r1, int start1, int size) {
-			if (size <= 16)
-				saveRegs(rs, () -> {
-					int i = 0;
-					while (i < size) {
-						int s = i + is <= size ? is : 1;
-						OpReg r = 1 < s ? ecx : cl;
-						emitMov(r, amd64.mem(r1, start1 + i, s));
-						emitMov(amd64.mem(r0, start0 + i, s), r);
-						i += s;
-					}
-				}, ecx);
-			else
-				saveRegs(rs, () -> {
-					emit(amd64.instruction(Insn.LEA, esi, amd64.mem(r1, start1, is)));
-					emit(amd64.instruction(Insn.LEA, edi, amd64.mem(r0, start0, is)));
-					emitMov(ecx, amd64.imm(size / 4, 4));
-					emit(amd64.instruction(Insn.CLD));
-					emit(amd64.instruction(Insn.REP));
-					emit(amd64.instruction(Insn.MOVSD));
-					for (int i = 0; i < size % 4; i++)
-						emit(amd64.instruction(Insn.MOVSB));
-					emit(amd64.instruction(Insn.POP, esi));
-				}, ecx, esi, edi);
+			if (r0 != r1 || start0 != start1)
+				if (size <= 16)
+					saveRegs(rs, () -> {
+						int i = 0;
+						while (i < size) {
+							int s = i + is <= size ? is : 1;
+							OpReg r = 1 < s ? ecx : cl;
+							emitMov(r, amd64.mem(r1, start1 + i, s));
+							emitMov(amd64.mem(r0, start0 + i, s), r);
+							i += s;
+						}
+					}, ecx);
+				else
+					saveRegs(rs, () -> {
+						emit(amd64.instruction(Insn.LEA, esi, amd64.mem(r1, start1, is)));
+						emit(amd64.instruction(Insn.LEA, edi, amd64.mem(r0, start0, is)));
+						emitMov(ecx, amd64.imm(size / 4, 4));
+						emit(amd64.instruction(Insn.CLD));
+						emit(amd64.instruction(Insn.REP));
+						emit(amd64.instruction(Insn.MOVSD));
+						for (int i = 0; i < size % 4; i++)
+							emit(amd64.instruction(Insn.MOVSB));
+						emit(amd64.instruction(Insn.POP, esi));
+					}, ecx, esi, edi);
 		}
 
 		private void saveRegs(RegisterSet rs, Runnable runnable, OpReg... opRegs) {

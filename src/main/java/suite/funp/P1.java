@@ -58,6 +58,16 @@ public class P1 {
 		}
 	}
 
+	public static class FunpInvokeIo implements Funp, P2.End {
+		public Funp routine;
+
+		public static FunpInvokeIo of(Funp routine) {
+			FunpInvokeIo f = new FunpInvokeIo();
+			f.routine = routine;
+			return f;
+		}
+	}
+
 	public static class FunpMemory implements Funp, P2.End {
 		public Funp pointer;
 		public int start;
@@ -96,6 +106,19 @@ public class P1 {
 		public static FunpRoutine2 of(Funp expr) {
 			FunpRoutine2 f = new FunpRoutine2();
 			f.expr = expr;
+			return f;
+		}
+	}
+
+	public static class FunpRoutineIo implements Funp, P2.End {
+		public Funp expr;
+		public int is, os;
+
+		public static FunpRoutineIo of(Funp expr, int is, int os) {
+			FunpRoutineIo f = new FunpRoutineIo();
+			f.expr = expr;
+			f.is = is;
+			f.os = os;
 			return f;
 		}
 	}

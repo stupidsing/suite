@@ -19,9 +19,12 @@ import suite.funp.P0.FunpVariable;
 import suite.funp.P1.FunpAllocStack;
 import suite.funp.P1.FunpFramePointer;
 import suite.funp.P1.FunpInvokeInt;
+import suite.funp.P1.FunpInvokeInt2;
+import suite.funp.P1.FunpInvokeIo;
 import suite.funp.P1.FunpMemory;
 import suite.funp.P1.FunpRoutine;
 import suite.funp.P1.FunpRoutine2;
+import suite.funp.P1.FunpRoutineIo;
 import suite.funp.P1.FunpSaveFramePointer;
 import suite.funp.P1.FunpSaveRegisters;
 import suite.immutable.IMap;
@@ -162,7 +165,13 @@ public class P1InferType {
 			Funp lambda0 = n1.lambda;
 			LambdaType lt = lambdaType(lambda0);
 			Funp lambda1 = rewrite(scope, env, lambda0);
-			FunpAllocStack invoke = FunpAllocStack.of(lt.is, p, FunpInvokeInt.of(lambda1));
+			Funp invoke;
+			if (lt.os == Funp_.pointerSize)
+				invoke = FunpAllocStack.of(lt.is, p, FunpInvokeInt.of(lambda1));
+			else if (lt.os == Funp_.pointerSize * 2)
+				invoke = FunpAllocStack.of(lt.is, p, FunpInvokeInt2.of(lambda1));
+			else
+				invoke = FunpAllocStack.of(lt.os, null, FunpAllocStack.of(lt.is, p, FunpInvokeIo.of(lambda1)));
 			return FunpSaveFramePointer.of(FunpSaveRegisters.of(invoke));
 		} else if (n0 instanceof FunpLambda) {
 			FunpLambda n1 = (FunpLambda) n0;
@@ -175,7 +184,7 @@ public class P1InferType {
 			else if (lt.os == Funp_.pointerSize * 2)
 				return FunpRoutine2.of(expr);
 			else
-				throw new RuntimeException();
+				return FunpRoutineIo.of(expr, lt.is, lt.os);
 		} else if (n0 instanceof FunpPolyType)
 			return rewrite(scope, env, ((FunpPolyType) n0).expr);
 		else if (n0 instanceof FunpVariable) {
