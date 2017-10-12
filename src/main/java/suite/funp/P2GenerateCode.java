@@ -159,9 +159,10 @@ public class P2GenerateCode {
 				return ebp;
 			else if (n0 instanceof FunpInvokeInt) {
 				compileInvoke(rs, fd, ((FunpInvokeInt) n0).routine);
-				OpReg r0 = rs.get();
-				emitMov(r0, eax);
-				return r0;
+				if (!rs.contains(eax))
+					return eax;
+				else
+					throw new RuntimeException();
 			} else if (n0 instanceof FunpMemory) {
 				FunpMemory n1 = (FunpMemory) n0;
 				int size = n1.size();
