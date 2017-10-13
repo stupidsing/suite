@@ -36,6 +36,7 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 
 /**
  * Hindley-Milner type inference.
@@ -76,36 +77,25 @@ public class P2GenerateCode {
 	}
 
 	public List<Instruction> compile0(Funp funp) {
-		Compile0 compile0 = new Compile0();
-		compile0.compileReg(registerSet, 0, funp);
-		return compile0.instructions;
+		List<Instruction> instructions = new ArrayList<>();
+		Compile0 compile0 = new Compile0(CompileOutType.OPREG, instructions::add);
+		compile0.compile(registerSet, 0, funp);
+		return instructions;
 	}
 
 	public Bytes compile1(int offset, List<Instruction> instructions, boolean dump) {
 		return asm.assemble(offset, instructions, dump);
 	}
 
-	private enum CompileOutType {
-		OP, OPREG, TWOOP, TWOOPREG,
-	};
-
-	private class CompileOut {
-		private Operand op0, op1;
-
-		private CompileOut(Operand op0) {
-			this.op0 = op0;
-		}
-
-		private CompileOut(Operand op0, Operand op1) {
-			this.op0 = op0;
-			this.op1 = op1;
-		}
-	}
-
 	// invariant: fd = ESP - EBP
 	private class Compile0 {
-		private List<Instruction> instructions = new ArrayList<>();
+		private Sink<Instruction> emit;
 		private CompileOutType type;
+
+		private Compile0(CompileOutType type, Sink<Instruction> emit) {
+			this.type = type;
+			this.emit = emit;
+		}
 
 		private CompileOut compile(RegisterSet rs, int fd, Funp n0) {
 			Fun<Operand, CompileOut> returnOp = op -> {
@@ -140,7 +130,7 @@ public class P2GenerateCode {
 				Operand imm = amd64.imm(size);
 
 				if (size == is && value != null)
-					emit(amd64.instruction(Insn.PUSH, compileOp(rs, fd, value)));
+					emit(amd64.instruction(Insn.PUSH, compileOperand(rs, fd, value)));
 				else {
 					emit(amd64.instruction(Insn.SUB, esp, imm));
 					if (value != null)
@@ -167,13 +157,13 @@ public class P2GenerateCode {
 					FunpIf n1 = (FunpIf) n0;
 					Operand elseLabel = amd64.imm(0, ps);
 					Operand endLabel = amd64.imm(0, ps);
-					OpReg r0 = compileReg(rs, fd, n1.if_);
+					OpReg r0 = compileOpReg(rs, fd, n1.if_);
 					emit(amd64.instruction(Insn.OR, r0, r0));
 					emit(amd64.instruction(Insn.JZ, elseLabel));
-					Operand t0 = compileOp(rs, fd, n1.then);
+					Operand t0 = compileOperand(rs, fd, n1.then);
 					emit(amd64.instruction(Insn.JMP, endLabel));
 					emit(amd64.instruction(Insn.LABEL, elseLabel));
-					Operand t1 = compileOp(rs, fd, n1.else_);
+					Operand t1 = compileOperand(rs, fd, n1.else_);
 					emit(amd64.instruction(Insn.LABEL, endLabel));
 					if (Objects.equals(t0, t1))
 						return returnOp.apply(t0);
@@ -197,13 +187,13 @@ public class P2GenerateCode {
 				FunpMemory n1 = (FunpMemory) n0;
 				int size = n1.size();
 				if (type == CompileOutType.OP || type == CompileOutType.OPREG)
-					return returnOp.apply(amd64.mem(compileReg(rs, fd, n1.pointer), n1.start, size));
+					return returnOp.apply(amd64.mem(compileOpReg(rs, fd, n1.pointer), n1.start, size));
 				else if (type == CompileOutType.TWOOP) {
-					Operand op0 = compileReg(rs, fd, n1.range(0, ps));
-					Operand op1 = compileReg(rs.mask(op0), fd, n1.range(ps, ps + ps));
+					Operand op0 = compileOpReg(rs, fd, n1.range(0, ps));
+					Operand op1 = compileOpReg(rs.mask(op0), fd, n1.range(ps, ps + ps));
 					return returnOp2.apply(Pair.of(op0, op1));
 				} else if (type == CompileOutType.TWOOPREG) {
-					OpReg r = compileReg(rs, fd, n1.pointer);
+					OpReg r = compileOpReg(rs, fd, n1.pointer);
 					Operand op0 = amd64.mem(r, n1.start, size);
 					Operand op1 = amd64.mem(r, n1.start + is, size);
 					return returnOp2.apply(Pair.of(op0, op1));
@@ -212,10 +202,10 @@ public class P2GenerateCode {
 			} else if (n0 instanceof FunpNumber)
 				return returnOp.apply(amd64.imm(((FunpNumber) n0).i, is));
 			else if (n0 instanceof FunpRoutine)
-				return returnOp2.apply(compileRoutine(() -> emitMov(eax, compileReg(registerSet, ps, ((FunpRoutine) n0).expr))));
+				return returnOp2.apply(compileRoutine(() -> emitMov(eax, compileOpReg(registerSet, ps, ((FunpRoutine) n0).expr))));
 			else if (n0 instanceof FunpRoutine2)
 				return returnOp2.apply(compileRoutine(() -> {
-					Pair<OpReg, OpReg> pair1 = compileReg2(registerSet, ps, ((FunpRoutine2) n0).expr);
+					Pair<Operand, Operand> pair1 = compileOperand2(registerSet, ps, ((FunpRoutine2) n0).expr);
 					emitMov(eax, pair1.t0);
 					emitMov(edx, pair1.t1);
 				}));
@@ -239,12 +229,25 @@ public class P2GenerateCode {
 			} else if (n0 instanceof FunpTree) {
 				FunpTree n1 = (FunpTree) n0;
 				Operator operator = n1.operator;
-				OpReg r0 = compileReg(rs, fd, n1.getFirst());
-				OpReg r1 = compileReg(rs.mask(r0), fd, n1.getSecond());
+				OpReg r0 = compileOpReg(rs, fd, n1.getFirst());
+				OpReg r1 = compileOpReg(rs.mask(r0), fd, n1.getSecond());
 				emit(amd64.instruction(insnByOp.get(operator), r0, r1));
 				return returnOp.apply(r0);
 			} else
 				throw new RuntimeException();
+		}
+
+		private Operand compileOperand(RegisterSet rs, int fd, Funp n) {
+			return new Compile0(CompileOutType.OP, emit).compile(registerSet, 0, n).op0;
+		}
+
+		private OpReg compileOpReg(RegisterSet rs, int fd, Funp n) {
+			return (OpReg) new Compile0(CompileOutType.OPREG, emit).compile(registerSet, 0, n).op0;
+		}
+
+		private Pair<Operand, Operand> compileOperand2(RegisterSet rs, int fd, Funp n) {
+			CompileOut out = new Compile0(CompileOutType.TWOOP, emit).compile(registerSet, 0, n);
+			return Pair.of(out.op0, out.op1);
 		}
 
 		private Pair<OpReg, OpReg> compileReg2(RegisterSet rs, int fd, Funp n0) {
@@ -501,8 +504,25 @@ public class P2GenerateCode {
 		}
 
 		private void emit(Instruction instruction) {
-			instructions.add(instruction);
+			emit.sink(instruction);
 		}
 	}
+
+	private class CompileOut {
+		private Operand op0, op1;
+
+		private CompileOut(Operand op0) {
+			this.op0 = op0;
+		}
+
+		private CompileOut(Operand op0, Operand op1) {
+			this.op0 = op0;
+			this.op1 = op1;
+		}
+	}
+
+	private enum CompileOutType {
+		OP, OPREG, TWOOP, TWOOPREG,
+	};
 
 }
