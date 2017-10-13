@@ -40,11 +40,8 @@ public class RegisterSet {
 		this.flag = flag;
 	}
 
-	public boolean contains(OpReg... ops) {
-		boolean result = false;
-		for (OpReg op : ops)
-			result |= isSet(op.reg);
-		return result;
+	public boolean contains(Operand... operands) {
+		return (flag & flag(operands)) != 0;
 	}
 
 	public OpReg get() {
@@ -63,22 +60,30 @@ public class RegisterSet {
 	}
 
 	public RegisterSet mask(Operand... operands) {
-		int flag_ = flag;
+		return new RegisterSet(flag | flag(operands));
+	}
+
+	private int flag(Operand... operands) {
+		int flag_ = 0;
 		for (Operand operand : operands)
 			if (operand instanceof OpReg)
-				flag_ = flag_ | 1 << ((OpReg) operand).reg;
+				flag_ |= flag(((OpReg) operand).reg);
 			else if (operand instanceof OpMem) {
 				OpMem operand1 = (OpMem) operand;
 				if (0 <= operand1.baseReg)
-					flag_ |= 1 << operand1.baseReg;
+					flag_ |= flag(operand1.baseReg);
 				if (0 <= operand1.indexReg)
-					flag_ |= 1 << operand1.indexReg;
+					flag_ |= flag(operand1.indexReg);
 			}
-		return new RegisterSet(flag_);
+		return flag_;
 	}
 
 	private boolean isSet(int reg) {
-		return (flag & 1 << reg) != 0;
+		return (flag & flag(reg)) != 0;
+	}
+
+	private int flag(int reg) {
+		return 1 << reg;
 	}
 
 }
