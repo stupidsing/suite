@@ -14,7 +14,7 @@ public class RegisterSet {
 	private static int nRegisters = 8;
 	private static OpReg[] registers;
 
-	private int flag;
+	public final int flag;
 
 	static {
 		Amd64 amd64 = Amd64.me;

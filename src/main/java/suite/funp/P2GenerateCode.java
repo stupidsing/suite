@@ -239,15 +239,15 @@ public class P2GenerateCode {
 		}
 
 		private Operand compileOperand(RegisterSet rs, int fd, Funp n) {
-			return new Compile0(CompileOutType.OP, emit).compile(registerSet, 0, n).op0;
+			return new Compile0(CompileOutType.OP, emit).compile(rs, 0, n).op0;
 		}
 
 		private OpReg compileOpReg(RegisterSet rs, int fd, Funp n) {
-			return (OpReg) new Compile0(CompileOutType.OPREG, emit).compile(registerSet, 0, n).op0;
+			return (OpReg) new Compile0(CompileOutType.OPREG, emit).compile(rs, 0, n).op0;
 		}
 
 		private Pair<Operand, Operand> compileOperand2(RegisterSet rs, int fd, Funp n) {
-			CompileOut out = new Compile0(CompileOutType.TWOOP, emit).compile(registerSet, 0, n);
+			CompileOut out = new Compile0(CompileOutType.TWOOP, emit).compile(rs, 0, n);
 			return Pair.of(out.op0, out.op1);
 		}
 
