@@ -123,16 +123,6 @@ public class P1 {
 		}
 	}
 
-	public static class FunpSaveFramePointer implements Funp, P2.End {
-		public Funp expr;
-
-		public static FunpSaveFramePointer of(Funp expr) {
-			FunpSaveFramePointer f = new FunpSaveFramePointer();
-			f.expr = expr;
-			return f;
-		}
-	}
-
 	public static class FunpSaveRegisters implements Funp, P2.End {
 		public Funp expr;
 

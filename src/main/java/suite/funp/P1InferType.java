@@ -25,7 +25,6 @@ import suite.funp.P1.FunpMemory;
 import suite.funp.P1.FunpRoutine;
 import suite.funp.P1.FunpRoutine2;
 import suite.funp.P1.FunpRoutineIo;
-import suite.funp.P1.FunpSaveFramePointer;
 import suite.funp.P1.FunpSaveRegisters;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
@@ -172,7 +171,7 @@ public class P1InferType {
 				invoke = FunpAllocStack.of(lt.is, p, FunpInvokeInt2.of(lambda1));
 			else
 				invoke = FunpAllocStack.of(lt.os, null, FunpAllocStack.of(lt.is, p, FunpInvokeIo.of(lambda1)));
-			return FunpSaveFramePointer.of(FunpSaveRegisters.of(invoke));
+			return FunpSaveRegisters.of(invoke);
 		} else if (n0 instanceof FunpLambda) {
 			FunpLambda n1 = (FunpLambda) n0;
 			String var = n1.var;

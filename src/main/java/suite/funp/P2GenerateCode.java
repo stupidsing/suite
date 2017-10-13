@@ -30,7 +30,6 @@ import suite.funp.P1.FunpMemory;
 import suite.funp.P1.FunpRoutine;
 import suite.funp.P1.FunpRoutine2;
 import suite.funp.P1.FunpRoutineIo;
-import suite.funp.P1.FunpSaveFramePointer;
 import suite.funp.P1.FunpSaveRegisters;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
@@ -100,23 +99,23 @@ public class P2GenerateCode {
 
 		private CompileOut compile(RegisterSet rs, int fd, Funp n0) {
 			Fun<Operand, CompileOut> returnOp = op -> {
-				Operand op0;
-				if (type == CompileOutType.OP || type == CompileOutType.OPREG && op instanceof OpReg)
-					op0 = op;
-				else if (type == CompileOutType.OPREG)
-					emitMov(op0 = rs.get(), op);
-				else
+				Operand old = op;
+				if (type == CompileOutType.OP || type == CompileOutType.OPREG) {
+					if (type == CompileOutType.OPREG && !(op instanceof OpReg))
+						emitMov(op = rs.get(), old);
+				} else
 					throw new RuntimeException();
-				return new CompileOut(op0);
+				return new CompileOut(op);
 			};
 
 			Fun2<Operand, Operand, CompileOut> returnOp2 = (op0, op1) -> {
+				Operand old0 = op0;
+				Operand old1 = op1;
 				if (type == CompileOutType.TWOOP || type == CompileOutType.TWOOPREG) {
-					RegisterSet rs1 = rs.mask(op0, op1);
-					if (type != CompileOutType.TWOOP && !(op0 instanceof OpReg))
-						emitMov(op0 = rs1.get(), op0);
-					if (type != CompileOutType.TWOOP && !(op1 instanceof OpReg))
-						emitMov(op1 = rs1.get(), op1);
+					if (type == CompileOutType.TWOOPREG && !(op0 instanceof OpReg))
+						emitMov(op0 = rs.mask(op1).get(), old0);
+					if (type == CompileOutType.TWOOPREG && !(op1 instanceof OpReg))
+						emitMov(op1 = rs.mask(op0).get(), old1);
 					return new CompileOut(op0, op1);
 				} else
 					throw new RuntimeException();
@@ -214,19 +213,22 @@ public class P2GenerateCode {
 				FunpRoutineIo n1 = (FunpRoutineIo) n0;
 				FunpMemory out = FunpMemory.of(new FunpFramePointer(), ps + n1.is, n1.os);
 				return returnPair.apply(() -> compileAssign(registerSet, ps, out, n1.expr));
-			} else if (n0 instanceof FunpSaveFramePointer) {
-				emit(amd64.instruction(Insn.PUSH, ebp));
-				CompileOut out = compile(rs, fd - ps, ((FunpSaveFramePointer) n0).expr);
-				emit(amd64.instruction(Insn.POP, ebp));
-				return out;
 			} else if (n0 instanceof FunpSaveRegisters) {
 				OpReg[] opRegs = rs.list();
 				for (int i = 0; i <= opRegs.length - 1; i++)
 					emit(amd64.instruction(Insn.PUSH, opRegs[i]));
-				CompileOut out = compile(registerSet, fd - opRegs.length * is, ((FunpSaveRegisters) n0).expr);
+				CompileOut out0 = compile(registerSet, fd - opRegs.length * is, ((FunpSaveRegisters) n0).expr);
+				Operand op0 = out0.op0;
+				Operand op1 = out0.op1;
+
+				if (op0 != null && rs.contains(op0))
+					emitMov(op0 = rs.mask(op1).get(), out0.op0);
+				if (op1 != null && rs.contains(op1))
+					emitMov(op1 = rs.mask(op0).get(), out0.op1);
+				CompileOut out1 = new CompileOut(op0, op1);
 				for (int i = opRegs.length - 1; 0 <= i; i--)
 					emit(amd64.instruction(Insn.POP, opRegs[i]));
-				return out;
+				return out1;
 			} else if (n0 instanceof FunpTree) {
 				FunpTree n1 = (FunpTree) n0;
 				Operator operator = n1.operator;
@@ -440,11 +442,6 @@ public class P2GenerateCode {
 					t = t0;
 				else
 					throw new RuntimeException();
-			} else if (n0 instanceof FunpSaveFramePointer) {
-				emit(amd64.instruction(Insn.PUSH, ebp));
-				t = compile(rs, fd - ps, c, ((FunpSaveFramePointer) n0).expr);
-				emit(amd64.instruction(Insn.POP, ebp));
-				return t;
 			} else if (n0 instanceof FunpSaveRegisters) {
 				OpReg[] opRegs = rs.list();
 				for (int i = 0; i <= opRegs.length - 1; i++)
