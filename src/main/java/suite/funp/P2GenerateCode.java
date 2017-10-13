@@ -69,13 +69,6 @@ public class P2GenerateCode {
 			entry(TermOp.MINUS_, Insn.SUB), //
 			entry(TermOp.MULT__, Insn.IMUL));
 
-	private interface CompileSink<T> {
-		public T compile( //
-				RegisterSet rs, // register stack pointer
-				int fd, // = ESP - EBP
-				Funp node);
-	}
-
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
 		Compile0 compile0 = new Compile0(CompileOutType.OPREG, instructions::add);
@@ -130,7 +123,7 @@ public class P2GenerateCode {
 				Operand imm = amd64.imm(size);
 
 				if (size == is && value != null)
-					emit(amd64.instruction(Insn.PUSH, compileOperand(rs, fd, value)));
+					emit(amd64.instruction(Insn.PUSH, compileOp(rs, fd, value)));
 				else {
 					emit(amd64.instruction(Insn.SUB, esp, imm));
 					if (value != null)
@@ -157,13 +150,13 @@ public class P2GenerateCode {
 					FunpIf n1 = (FunpIf) n0;
 					Operand elseLabel = amd64.imm(0, ps);
 					Operand endLabel = amd64.imm(0, ps);
-					OpReg r0 = compileOpReg(rs, fd, n1.if_);
+					OpReg r0 = compileReg(rs, fd, n1.if_);
 					emit(amd64.instruction(Insn.OR, r0, r0));
 					emit(amd64.instruction(Insn.JZ, elseLabel));
-					Operand t0 = compileOperand(rs, fd, n1.then);
+					Operand t0 = compileOp(rs, fd, n1.then);
 					emit(amd64.instruction(Insn.JMP, endLabel));
 					emit(amd64.instruction(Insn.LABEL, elseLabel));
-					Operand t1 = compileOperand(rs, fd, n1.else_);
+					Operand t1 = compileOp(rs, fd, n1.else_);
 					emit(amd64.instruction(Insn.LABEL, endLabel));
 					if (Objects.equals(t0, t1))
 						return returnOp.apply(t0);
@@ -187,13 +180,13 @@ public class P2GenerateCode {
 				FunpMemory n1 = (FunpMemory) n0;
 				int size = n1.size();
 				if (type == CompileOutType.OP || type == CompileOutType.OPREG)
-					return returnOp.apply(amd64.mem(compileOpReg(rs, fd, n1.pointer), n1.start, size));
+					return returnOp.apply(amd64.mem(compileReg(rs, fd, n1.pointer), n1.start, size));
 				else if (type == CompileOutType.TWOOP) {
-					Operand op0 = compileOpReg(rs, fd, n1.range(0, ps));
-					Operand op1 = compileOpReg(rs.mask(op0), fd, n1.range(ps, ps + ps));
+					Operand op0 = compileReg(rs, fd, n1.range(0, ps));
+					Operand op1 = compileReg(rs.mask(op0), fd, n1.range(ps, ps + ps));
 					return returnOp2.apply(op0, op1);
 				} else if (type == CompileOutType.TWOOPREG) {
-					OpReg r = compileOpReg(rs, fd, n1.pointer);
+					OpReg r = compileReg(rs, fd, n1.pointer);
 					Operand op0 = amd64.mem(r, n1.start, size);
 					Operand op1 = amd64.mem(r, n1.start + is, size);
 					return returnOp2.apply(op0, op1);
@@ -202,10 +195,10 @@ public class P2GenerateCode {
 			} else if (n0 instanceof FunpNumber)
 				return returnOp.apply(amd64.imm(((FunpNumber) n0).i, is));
 			else if (n0 instanceof FunpRoutine)
-				return returnPair.apply(() -> emitMov(eax, compileOpReg(registerSet, ps, ((FunpRoutine) n0).expr)));
+				return returnPair.apply(() -> emitMov(eax, compileReg(registerSet, ps, ((FunpRoutine) n0).expr)));
 			else if (n0 instanceof FunpRoutine2)
 				return returnPair.apply(() -> {
-					Pair<Operand, Operand> pair1 = compileOperand2(registerSet, ps, ((FunpRoutine2) n0).expr);
+					Pair<Operand, Operand> pair1 = compileOp2(registerSet, ps, ((FunpRoutine2) n0).expr);
 					emitMov(eax, pair1.t0);
 					emitMov(edx, pair1.t1);
 				});
@@ -232,126 +225,12 @@ public class P2GenerateCode {
 			} else if (n0 instanceof FunpTree) {
 				FunpTree n1 = (FunpTree) n0;
 				Operator operator = n1.operator;
-				OpReg r0 = compileOpReg(rs, fd, n1.getFirst());
-				OpReg r1 = compileOpReg(rs.mask(r0), fd, n1.getSecond());
+				OpReg r0 = compileReg(rs, fd, n1.getFirst());
+				OpReg r1 = compileReg(rs.mask(r0), fd, n1.getSecond());
 				emit(amd64.instruction(insnByOp.get(operator), r0, r1));
 				return returnOp.apply(r0);
 			} else
 				throw new RuntimeException();
-		}
-
-		private Operand compileOperand(RegisterSet rs, int fd, Funp n) {
-			return new Compile0(CompileOutType.OP, emit).compile(rs, 0, n).op0;
-		}
-
-		private OpReg compileOpReg(RegisterSet rs, int fd, Funp n) {
-			return (OpReg) new Compile0(CompileOutType.OPREG, emit).compile(rs, 0, n).op0;
-		}
-
-		private Pair<Operand, Operand> compileOperand2(RegisterSet rs, int fd, Funp n) {
-			CompileOut out = new Compile0(CompileOutType.TWOOP, emit).compile(rs, 0, n);
-			return Pair.of(out.op0, out.op1);
-		}
-
-		private Pair<OpReg, OpReg> compileReg2(RegisterSet rs, int fd, Funp n0) {
-			Pair<Operand, Operand> pair = compileOp2(rs, fd, n0);
-			OpReg r0 = compileReg(rs, pair.t0);
-			OpReg r1 = compileReg(rs.mask(r0), pair.t1);
-			return Pair.of(r0, r1);
-		}
-
-		private OpReg compileReg(RegisterSet rs, int fd, Funp n0) {
-			return compileReg(rs, compileOp(rs, fd, n0));
-		}
-
-		private OpReg compileReg(RegisterSet rs, Operand op) {
-			OpReg r0;
-			if (op instanceof OpReg)
-				r0 = (OpReg) op;
-			else
-				emitMov(r0 = rs.get(), op);
-			return r0;
-		}
-
-		private Pair<Operand, Operand> compileOp2(RegisterSet rs, int fd, Funp n0) {
-			return compile(rs, fd, this::compileOp2_, n0);
-		}
-
-		private Pair<Operand, Operand> compileOp2_(RegisterSet rs, int fd, Funp n0) {
-			if (n0 instanceof FunpInvokeInt2) {
-				compileInvoke(rs, fd, ((FunpInvokeInt2) n0).routine);
-				if (!rs.contains(eax, edx))
-					return Pair.of(eax, edx);
-				else
-					throw new RuntimeException();
-			} else if (n0 instanceof FunpMemory) {
-				FunpMemory n1 = (FunpMemory) n0;
-				int size = n1.size();
-				OpReg r0 = compileReg(rs, fd, n1.range(0, ps));
-				OpReg r1 = compileReg(rs.mask(r0), fd, n1.range(ps, ps + ps));
-				if (size == is)
-					return Pair.of(r0, r1);
-				else
-					throw new RuntimeException();
-			} else if (n0 instanceof FunpRoutine)
-				return compileRoutine(() -> emitMov(eax, compileReg(registerSet, ps, ((FunpRoutine) n0).expr)));
-			else if (n0 instanceof FunpRoutine2)
-				return compileRoutine(() -> {
-					Pair<OpReg, OpReg> pair1 = compileReg2(registerSet, ps, ((FunpRoutine2) n0).expr);
-					emitMov(eax, pair1.t0);
-					emitMov(edx, pair1.t1);
-				});
-			else if (n0 instanceof FunpRoutineIo) {
-				FunpRoutineIo n1 = (FunpRoutineIo) n0;
-				FunpMemory out = FunpMemory.of(new FunpFramePointer(), ps + n1.is, n1.os);
-				return compileRoutine(() -> compileAssign(registerSet, ps, out, n1.expr));
-			} else {
-				Pair<OpReg, OpReg> pair = compileReg2(rs, fd, n0);
-				return Pair.of(pair.t0, pair.t1);
-			}
-		}
-
-		private Operand compileOp(RegisterSet rs, int fd, Funp n0) {
-			return compile(rs, fd, this::compileOp_, n0);
-		}
-
-		private Operand compileOp_(RegisterSet rs, int fd, Funp n0) {
-			if (n0 instanceof FunpBoolean)
-				return amd64.imm(((FunpBoolean) n0).b ? 1 : 0, Funp_.booleanSize);
-			else if (n0 instanceof FunpFixed)
-				throw new RuntimeException();
-			else if (n0 instanceof FunpFramePointer)
-				return ebp;
-			else if (n0 instanceof FunpInvokeInt) {
-				compileInvoke(rs, fd, ((FunpInvokeInt) n0).routine);
-				if (!rs.contains(eax))
-					return eax;
-				else
-					throw new RuntimeException();
-			} else if (n0 instanceof FunpMemory) {
-				FunpMemory n1 = (FunpMemory) n0;
-				int size = n1.size();
-				if (size == is)
-					return amd64.mem(compileReg(rs, fd, n1.pointer), n1.start, size);
-				else
-					throw new RuntimeException();
-			} else if (n0 instanceof FunpNumber)
-				return amd64.imm(((FunpNumber) n0).i, is);
-			else if (n0 instanceof FunpTree) {
-				FunpTree n1 = (FunpTree) n0;
-				Operator operator = n1.operator;
-				OpReg r0 = compileReg(rs, fd, n1.getFirst());
-				OpReg r1 = compileReg(rs.mask(r0), fd, n1.getSecond());
-				emit(amd64.instruction(insnByOp.get(operator), r0, r1));
-				return r0;
-			} else
-				throw new RuntimeException("cannot generate code for " + n0);
-		}
-
-		private void compileInvoke(RegisterSet rs, int fd, Funp n0) {
-			Pair<Operand, Operand> pair = compileOp2(rs, fd, n0);
-			emitMov(ebp, pair.t0);
-			emit(amd64.instruction(Insn.CALL, pair.t1));
 		}
 
 		private Pair<Operand, Operand> compileRoutine(Runnable runnable) {
@@ -368,11 +247,7 @@ public class P2GenerateCode {
 			return Pair.of(ebp, routineLabel);
 		}
 
-		private boolean compileAssign(RegisterSet rs, int fd, FunpMemory target, Funp node) {
-			return compile(rs, fd, (sp_, fd_, n_) -> compileAssign_(sp_, fd_, target, n_), node);
-		}
-
-		private boolean compileAssign_(RegisterSet rs0, int fd, FunpMemory target, Funp n0) {
+		private boolean compileAssign(RegisterSet rs0, int fd, FunpMemory target, Funp n0) {
 			int size = target.size();
 			OpReg r0 = compileReg(rs0, fd, target.pointer);
 			RegisterSet rs1 = rs0.mask(r0);
@@ -401,58 +276,23 @@ public class P2GenerateCode {
 			return true;
 		}
 
-		private <T> T compile(RegisterSet rs, int fd, CompileSink<T> c, Funp n0) {
-			T t;
+		private void compileInvoke(RegisterSet rs, int fd, Funp n0) {
+			Pair<Operand, Operand> pair = compileOp2(rs, fd, n0);
+			emitMov(ebp, pair.t0);
+			emit(amd64.instruction(Insn.CALL, pair.t1));
+		}
 
-			if (n0 instanceof FunpAllocStack) {
-				FunpAllocStack n1 = (FunpAllocStack) n0;
-				int size = n1.size;
-				Funp value = n1.value;
-				Operand imm = amd64.imm(size);
+		private Operand compileOp(RegisterSet rs, int fd, Funp n) {
+			return new Compile0(CompileOutType.OP, emit).compile(rs, 0, n).op0;
+		}
 
-				if (size == is && value != null)
-					emit(amd64.instruction(Insn.PUSH, compileOp(rs, fd, value)));
-				else {
-					emit(amd64.instruction(Insn.SUB, esp, imm));
-					if (value != null)
-						compileAssign(rs, fd, FunpMemory.of(new FunpFramePointer(), fd, fd + size), value);
-				}
-				t = compile(rs, fd - size, c, n1.expr);
-				if (size == is)
-					emit(amd64.instruction(Insn.POP, rs.get()));
-				else
-					emit(amd64.instruction(Insn.ADD, esp, imm));
-			} else if (n0 instanceof FunpAssign) {
-				FunpAssign n1 = (FunpAssign) n0;
-				compileAssign(rs, fd, n1.memory, n1.value);
-				return compile(rs, fd, c, n1.expr);
-			} else if (n0 instanceof FunpIf) {
-				FunpIf n1 = (FunpIf) n0;
-				Operand elseLabel = amd64.imm(0, ps);
-				Operand endLabel = amd64.imm(0, ps);
-				OpReg r0 = compileReg(rs, fd, n1.if_);
-				emit(amd64.instruction(Insn.OR, r0, r0));
-				emit(amd64.instruction(Insn.JZ, elseLabel));
-				T t0 = compile(rs, fd, c, n1.then);
-				emit(amd64.instruction(Insn.JMP, endLabel));
-				emit(amd64.instruction(Insn.LABEL, elseLabel));
-				T t1 = compile(rs, fd, c, n1.else_);
-				emit(amd64.instruction(Insn.LABEL, endLabel));
-				if (Objects.equals(t0, t1))
-					t = t0;
-				else
-					throw new RuntimeException();
-			} else if (n0 instanceof FunpSaveRegisters) {
-				OpReg[] opRegs = rs.list();
-				for (int i = 0; i <= opRegs.length - 1; i++)
-					emit(amd64.instruction(Insn.PUSH, opRegs[i]));
-				t = compile(registerSet, fd - opRegs.length * is, c, ((FunpSaveRegisters) n0).expr);
-				for (int i = opRegs.length - 1; 0 <= i; i--)
-					emit(amd64.instruction(Insn.POP, opRegs[i]));
-			} else
-				t = c.compile(rs, fd, n0);
+		private Pair<Operand, Operand> compileOp2(RegisterSet rs, int fd, Funp n) {
+			CompileOut out = new Compile0(CompileOutType.TWOOP, emit).compile(rs, 0, n);
+			return Pair.of(out.op0, out.op1);
+		}
 
-			return t;
+		private OpReg compileReg(RegisterSet rs, int fd, Funp n) {
+			return (OpReg) new Compile0(CompileOutType.OPREG, emit).compile(rs, 0, n).op0;
 		}
 
 		private void compileMove(RegisterSet rs, OpReg r0, int start0, OpReg r1, int start1, int size) {
