@@ -174,10 +174,11 @@ public class P1InferType {
 			return FunpSaveRegisters.of(invoke);
 		} else if (n0 instanceof FunpLambda) {
 			FunpLambda n1 = (FunpLambda) n0;
+			int b = Funp_.pointerSize * 2; // return address and EBP
 			String var = n1.var;
 			int scope1 = scope + 1;
 			LambdaType lt = lambdaType(n0);
-			Funp expr = rewrite(scope1, env.put(var, new Var(scope1, 0, lt.is)), n1.expr);
+			Funp expr = rewrite(scope1, env.put(var, new Var(scope1, b, b + lt.is)), n1.expr);
 			if (lt.os == Funp_.pointerSize)
 				return FunpRoutine.of(expr);
 			else if (lt.os == Funp_.pointerSize * 2)
