@@ -37,6 +37,7 @@ import suite.node.io.TermOp;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
+import suite.util.FunUtil2.Fun2;
 
 /**
  * Hindley-Milner type inference.
@@ -109,19 +110,19 @@ public class P2GenerateCode {
 				return new CompileOut(op0);
 			};
 
-			Fun<Pair<Operand, Operand>, CompileOut> returnOp2 = pair -> {
+			Fun2<Operand, Operand, CompileOut> returnOp2 = (op0, op1) -> {
 				if (type == CompileOutType.TWOOP || type == CompileOutType.TWOOPREG) {
-					Operand op0_ = pair.t0;
-					Operand op1_ = pair.t1;
-					RegisterSet rs1 = rs.mask(op0_, op1_);
-					if (type != CompileOutType.TWOOP && !(op0_ instanceof OpReg))
-						emitMov(op0_ = rs1.get(), op0_);
-					if (type != CompileOutType.TWOOP && !(op1_ instanceof OpReg))
-						emitMov(op1_ = rs1.get(), op1_);
-					return new CompileOut(op0_, op1_);
+					RegisterSet rs1 = rs.mask(op0, op1);
+					if (type != CompileOutType.TWOOP && !(op0 instanceof OpReg))
+						emitMov(op0 = rs1.get(), op0);
+					if (type != CompileOutType.TWOOP && !(op1 instanceof OpReg))
+						emitMov(op1 = rs1.get(), op1);
+					return new CompileOut(op0, op1);
 				} else
 					throw new RuntimeException();
 			};
+
+			Fun<Runnable, CompileOut> returnPair = routine -> compileRoutine(routine).map(returnOp2);
 
 			if (n0 instanceof FunpAllocStack) {
 				FunpAllocStack n1 = (FunpAllocStack) n0;
@@ -180,7 +181,7 @@ public class P2GenerateCode {
 			else if (n0 instanceof FunpInvokeInt2)
 				if (!rs.contains(eax, edx)) {
 					compileInvoke(rs, fd, ((FunpInvokeInt2) n0).routine);
-					return returnOp2.apply(Pair.of(eax, edx));
+					return returnOp2.apply(eax, edx);
 				} else
 					throw new RuntimeException();
 			else if (n0 instanceof FunpMemory) {
@@ -191,28 +192,28 @@ public class P2GenerateCode {
 				else if (type == CompileOutType.TWOOP) {
 					Operand op0 = compileOpReg(rs, fd, n1.range(0, ps));
 					Operand op1 = compileOpReg(rs.mask(op0), fd, n1.range(ps, ps + ps));
-					return returnOp2.apply(Pair.of(op0, op1));
+					return returnOp2.apply(op0, op1);
 				} else if (type == CompileOutType.TWOOPREG) {
 					OpReg r = compileOpReg(rs, fd, n1.pointer);
 					Operand op0 = amd64.mem(r, n1.start, size);
 					Operand op1 = amd64.mem(r, n1.start + is, size);
-					return returnOp2.apply(Pair.of(op0, op1));
+					return returnOp2.apply(op0, op1);
 				} else
 					throw new RuntimeException();
 			} else if (n0 instanceof FunpNumber)
 				return returnOp.apply(amd64.imm(((FunpNumber) n0).i, is));
 			else if (n0 instanceof FunpRoutine)
-				return returnOp2.apply(compileRoutine(() -> emitMov(eax, compileOpReg(registerSet, ps, ((FunpRoutine) n0).expr))));
+				return returnPair.apply(() -> emitMov(eax, compileOpReg(registerSet, ps, ((FunpRoutine) n0).expr)));
 			else if (n0 instanceof FunpRoutine2)
-				return returnOp2.apply(compileRoutine(() -> {
+				return returnPair.apply(() -> {
 					Pair<Operand, Operand> pair1 = compileOperand2(registerSet, ps, ((FunpRoutine2) n0).expr);
 					emitMov(eax, pair1.t0);
 					emitMov(edx, pair1.t1);
-				}));
+				});
 			else if (n0 instanceof FunpRoutineIo) {
 				FunpRoutineIo n1 = (FunpRoutineIo) n0;
 				FunpMemory out = FunpMemory.of(new FunpFramePointer(), ps + n1.is, n1.os);
-				return returnOp2.apply(compileRoutine(() -> compileAssign(registerSet, ps, out, n1.expr)));
+				return returnPair.apply(() -> compileAssign(registerSet, ps, out, n1.expr));
 			} else if (n0 instanceof FunpSaveFramePointer) {
 				emit(amd64.instruction(Insn.PUSH, ebp));
 				CompileOut out = compile(rs, fd - ps, ((FunpSaveFramePointer) n0).expr);
