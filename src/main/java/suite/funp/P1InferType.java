@@ -73,6 +73,10 @@ public class P1InferType {
 
 	private static class TypeReference extends Type {
 		private UnNode<Type> type;
+
+		private TypeReference(UnNode<Type> type) {
+			this.type = type;
+		}
 	}
 
 	private Inspect inspect = Singleton.me.inspect;
@@ -140,7 +144,7 @@ public class P1InferType {
 		else if (n0 instanceof FunpPolyType)
 			return unify.clone(infer(env, ((FunpPolyType) n0).expr));
 		else if (n0 instanceof FunpReference)
-			return cast(TypeReference.class, infer(env, ((FunpReference) n0).expr)).type;
+			return new TypeReference(infer(env, ((FunpReference) n0).expr));
 		else if (n0 instanceof FunpTree) {
 			FunpTree n1 = (FunpTree) n0;
 			UnNode<Type> t0 = infer_(env, n1.left);
