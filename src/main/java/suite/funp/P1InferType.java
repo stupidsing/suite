@@ -101,7 +101,7 @@ public class P1InferType {
 	}
 
 	private UnNode<Type> infer(IMap<String, UnNode<Type>> env, Funp n0) {
-		UnNode<Type> t = typeByNode.get(n0);
+		UnNode<Type> t = typeOf(n0);
 		if (t == null)
 			typeByNode.put(n0, t = infer_(env, n0));
 		return t;
@@ -181,7 +181,7 @@ public class P1InferType {
 		} else if (n0 instanceof FunpDefine) {
 			FunpDefine n1 = (FunpDefine) n0;
 			Funp value = n1.value;
-			int size = getTypeSize(typeByNode.get(value));
+			int size = getTypeSize(typeOf(value));
 			int fs1 = fs - size;
 			return FunpAllocStack.of(size, value, rewrite(scope, fs1, env.put(n1.var, new Var(scope, fs1, fs)), n1.expr));
 		} else if (n0 instanceof FunpLambda) {
@@ -237,7 +237,7 @@ public class P1InferType {
 		private int is, os;
 
 		private LambdaType(Funp lambda) {
-			TypeLambda lambdaType = (TypeLambda) typeByNode.get(lambda);
+			TypeLambda lambdaType = (TypeLambda) typeOf(lambda);
 			is = getTypeSize(lambdaType.parameterType);
 			os = getTypeSize(lambdaType.returnType);
 		}
@@ -250,6 +250,10 @@ public class P1InferType {
 			return t1;
 		} else
 			return null;
+	}
+
+	private UnNode<Type> typeOf(Funp n) {
+		return typeByNode.get(n);
 	}
 
 	private int getTypeSize(UnNode<Type> n0) {
