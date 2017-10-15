@@ -255,7 +255,7 @@ public class P1InferType {
 				FunpIndex n1 = (FunpIndex) n0;
 				Funp array = n1.array;
 				int size = getTypeSize(((TypeArray) typeOf(array)).elementType);
-				Funp address0 = getAddress(scope, env, rewrite(array));
+				Funp address0 = getAddress(rewrite(array));
 				FunpTree inc = FunpTree.of(TermOp.MULT__, rewrite(n1.index), FunpNumber.of(size));
 				Funp address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpDeref.of(address1);
@@ -279,37 +279,33 @@ public class P1InferType {
 			} else if (n0 instanceof FunpReference) {
 				FunpReference n1 = (FunpReference) n0;
 				Funp expr1 = rewrite(n1.expr);
-				return getAddress(scope, env, expr1);
+				return getAddress(expr1);
 			} else if (n0 instanceof FunpVariable) {
 				Var vd = env.get(((FunpVariable) n0).var);
-				System.out.println("env " + env);
-				System.out.println("var " + ((FunpVariable) n0).var);
-				System.out.println("vd " + vd);
-				return getVariable(scope, vd);
+				return getVariable(vd);
 			} else
 				return null;
 		}
-	}
 
-	private Funp getAddress(int scope, IMap<String, Var> env, Funp n0) {
-		if (n0 instanceof FunpDeref)
-			return ((FunpDeref) n0).pointer;
-		else if (n0 instanceof FunpMemory) {
-			FunpMemory n1 = (FunpMemory) n0;
-			return FunpTree.of(TermOp.PLUS__, n1.pointer, FunpNumber.of(n1.start));
-		} else if (n0 instanceof FunpVariable) {
-			Var vd = env.get(((FunpVariable) n0).var);
-			return getAddress(scope, env, getVariable(scope, vd));
-		} else
-			throw new RuntimeException();
-	}
+		private Funp getAddress(Funp n0) {
+			if (n0 instanceof FunpDeref)
+				return ((FunpDeref) n0).pointer;
+			else if (n0 instanceof FunpMemory) {
+				FunpMemory n1 = (FunpMemory) n0;
+				return FunpTree.of(TermOp.PLUS__, n1.pointer, FunpNumber.of(n1.start));
+			} else if (n0 instanceof FunpVariable) {
+				Var vd = env.get(((FunpVariable) n0).var);
+				return getAddress(getVariable(vd));
+			} else
+				throw new RuntimeException();
+		}
 
-	private Funp getVariable(int scope, Var vd) {
-		Funp nfp = new FunpFramePointer();
-		int scope1 = vd.scope;
-		while (scope != scope1--)
-			nfp = FunpDeref.of(nfp);
-		return FunpMemory.of(nfp, vd.start, vd.end);
+		private Funp getVariable(Var vd) {
+			Funp nfp = new FunpFramePointer();
+			for (int i = scope; i < vd.scope; i++)
+				nfp = FunpDeref.of(nfp);
+			return FunpMemory.of(nfp, vd.start, vd.end);
+		}
 	}
 
 	private class Var {
