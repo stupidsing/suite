@@ -31,6 +31,20 @@ public class P0 {
 		}
 	}
 
+	public static class FunpDefine implements Funp, P2.End {
+		public String var;
+		public Funp value;
+		public Funp expr;
+
+		public static FunpDefine of(String var, Funp value, Funp expr) {
+			FunpDefine f = new FunpDefine();
+			f.var = var;
+			f.value = value;
+			f.expr = expr;
+			return f;
+		}
+	}
+
 	public static class FunpFixed implements Funp, P2.End {
 		public String var;
 		public Funp expr;

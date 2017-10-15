@@ -32,6 +32,16 @@ public class Amd64Dump {
 	}
 
 	private String dump(Operand op0) {
+		int pointerSize = 4;
+		OpReg[] regs;
+
+		if (pointerSize == 4)
+			regs = amd64.reg32;
+		else if (pointerSize == 8)
+			regs = amd64.reg64;
+		else
+			throw new RuntimeException();
+
 		if (op0 instanceof OpImm) {
 			OpImm opImm = (OpImm) op0;
 			return dump(opImm.imm, opImm.size);
@@ -40,9 +50,9 @@ public class Amd64Dump {
 			int baseReg = opMem.baseReg;
 			int indexReg = opMem.indexReg;
 			String s = "" //
-					+ (0 <= baseReg ? " + " + dump(amd64.reg32[baseReg]) : "") //
-					+ (0 <= indexReg ? " + " + dump(amd64.reg32[indexReg]) + " * " + (1 << opMem.scale) : "") //
-					+ (0 <= opMem.dispSize ? " + " + dump(opMem.disp, opMem.dispSize) : "");
+					+ (0 <= baseReg ? " + " + dump(regs[baseReg]) : "") //
+					+ (0 <= indexReg ? " + " + dump(regs[indexReg]) + " * " + (1 << opMem.scale) : "") //
+					+ (0 <= opMem.dispSize ? " + " + dump(opMem.disp, pointerSize) : "");
 			return "[" + s.substring(3) + "]";
 		} else if (op0 instanceof OpReg)
 			return amd64.regsByName.inverse().get(op0).name;

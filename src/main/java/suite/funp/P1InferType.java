@@ -8,6 +8,7 @@ import suite.fp.Unify.UnNode;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpLambda;
@@ -94,7 +95,7 @@ public class P1InferType {
 				.put(TermOp.MULT__.name, t2);
 
 		if (unify.unify(t, infer(env, n0)))
-			return rewrite(0, IMap.empty(), n0);
+			return rewrite(0, 0, IMap.empty(), n0);
 		else
 			throw new RuntimeException("cannot infer type for " + n0);
 	}
@@ -114,7 +115,12 @@ public class P1InferType {
 			return tl.returnType;
 		} else if (n0 instanceof FunpBoolean)
 			return typeBoolean;
-		else if (n0 instanceof FunpFixed) {
+		else if (n0 instanceof FunpDefine) {
+			FunpDefine n1 = (FunpDefine) n0;
+			UnNode<Type> tv = unify.newRef();
+			unify(n0, tv, infer(env, n1.value));
+			return infer(env.put(n1.var, tv), n1.expr);
+		} else if (n0 instanceof FunpFixed) {
 			FunpFixed n1 = (FunpFixed) n0;
 			UnNode<Type> t = unify.newRef();
 			unify(n0, t, infer(env.put(n1.var, t), n1.expr));
@@ -153,17 +159,17 @@ public class P1InferType {
 			throw new RuntimeException("cannot infer type for " + n0);
 	}
 
-	private Funp rewrite(int scope, IMap<String, Var> env, Funp n0) {
-		return inspect.rewrite(Funp.class, n -> rewrite_(scope, env, n), n0);
+	private Funp rewrite(int scope, int fs, IMap<String, Var> env, Funp n0) {
+		return inspect.rewrite(Funp.class, n -> rewrite_(scope, fs, env, n), n0);
 	}
 
-	private Funp rewrite_(int scope, IMap<String, Var> env, Funp n0) {
+	private Funp rewrite_(int scope, int fs, IMap<String, Var> env, Funp n0) {
 		if (n0 instanceof FunpApply) {
 			FunpApply n1 = (FunpApply) n0;
 			Funp p = n1.value;
 			Funp lambda0 = n1.lambda;
 			LambdaType lt = lambdaType(lambda0);
-			Funp lambda1 = rewrite(scope, env, lambda0);
+			Funp lambda1 = rewrite(scope, fs, env, lambda0);
 			Funp invoke;
 			if (lt.os == Funp_.pointerSize)
 				invoke = FunpAllocStack.of(lt.is, p, FunpInvokeInt.of(lambda1));
@@ -172,13 +178,19 @@ public class P1InferType {
 			else
 				invoke = FunpAllocStack.of(lt.os, null, FunpAllocStack.of(lt.is, p, FunpInvokeIo.of(lambda1)));
 			return FunpSaveRegisters.of(invoke);
+		} else if (n0 instanceof FunpDefine) {
+			FunpDefine n1 = (FunpDefine) n0;
+			Funp value = n1.value;
+			int size = getTypeSize(typeByNode.get(value));
+			int fs1 = fs - size;
+			return FunpAllocStack.of(size, value, rewrite(scope, fs1, env.put(n1.var, new Var(scope, fs1, fs)), n1.expr));
 		} else if (n0 instanceof FunpLambda) {
 			FunpLambda n1 = (FunpLambda) n0;
 			int b = Funp_.pointerSize * 2; // return address and EBP
 			String var = n1.var;
 			int scope1 = scope + 1;
 			LambdaType lt = lambdaType(n0);
-			Funp expr = rewrite(scope1, env.put(var, new Var(scope1, b, b + lt.is)), n1.expr);
+			Funp expr = rewrite(scope1, 0, env.put(var, new Var(scope1, b, b + lt.is)), n1.expr);
 			if (lt.os == Funp_.pointerSize)
 				return FunpRoutine.of(expr);
 			else if (lt.os == Funp_.pointerSize * 2)
@@ -186,7 +198,7 @@ public class P1InferType {
 			else
 				return FunpRoutineIo.of(expr, lt.is, lt.os);
 		} else if (n0 instanceof FunpPolyType)
-			return rewrite(scope, env, ((FunpPolyType) n0).expr);
+			return rewrite(scope, fs, env, ((FunpPolyType) n0).expr);
 		else if (n0 instanceof FunpVariable) {
 			Var vd = env.get(((FunpVariable) n0).var);
 			int scope1 = vd.scope;

@@ -4,6 +4,7 @@ import suite.Suite;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpLambda;
@@ -28,7 +29,8 @@ public class P0Parse {
 		else if (node == Atom.TRUE)
 			return FunpBoolean.of(true);
 		else if ((m = Suite.match("define .0 := .1 >> .2").apply(node)) != null)
-			return parse(Suite.substitute("poly .1 | (.0 => .2)", m));
+			return FunpDefine.of(name(m[0]), parse(m[1]), parse(m[2]));
+		// return parse(Suite.substitute("poly .1 | (.0 => .2)", m));
 		else if ((m = Suite.match("fixed .0 => .1").apply(node)) != null)
 			return FunpFixed.of(name(m[0]), parse(m[1]));
 		else if ((m = Suite.match("if .0 then .1 else .2").apply(node)) != null)

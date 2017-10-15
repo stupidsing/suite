@@ -26,6 +26,13 @@ public class FunpTest {
 	private P2GenerateCode p2 = new P2GenerateCode();
 
 	@Test
+	public void testDefine() {
+		Bytes bytes = compile("define i := 3 >> i + 1");
+		System.out.println(bytes);
+		assertTrue(bytes != null);
+	}
+
+	@Test
 	public void testExpr() {
 		Bytes bytes = compile("1 + 2 * 3");
 		System.out.println(bytes);
