@@ -103,6 +103,7 @@ public class P1InferType {
 	}
 
 	private static class TypeReference extends Type {
+		@SuppressWarnings("unused")
 		private UnNode<Type> type;
 
 		private TypeReference(UnNode<Type> type) {
