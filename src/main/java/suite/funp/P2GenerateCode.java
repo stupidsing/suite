@@ -354,33 +354,30 @@ public class P2GenerateCode {
 		}
 
 		private OpMem decomposeOpMem(Funp n0, int size) {
-			if (is1248(size)) {
-				OpReg baseReg = null, indexReg = null;
-				int scale = 1, disp = 0;
-				boolean ok = true;
+			OpReg baseReg = null, indexReg = null;
+			int scale = 1, disp = 0;
+			boolean ok = is1248(size);
 
-				for (Funp n1 : unfold(n0, TermOp.PLUS__)) {
-					DecomposeMult dec = new DecomposeMult(n1);
-					if (dec.mults.isEmpty()) {
-						OpReg reg_ = dec.reg;
-						long scale_ = dec.scale;
-						if (reg_ != null) {
-							if (is1248(scale_) && indexReg == null) {
-								indexReg = reg_;
-								scale = (int) scale_;
-							} else if (scale_ == 1 && baseReg == null)
-								baseReg = reg_;
-							else
-								ok = false;
-						} else if (reg_ == null)
-							disp += scale_;
-					} else
-						ok = false;
-				}
+			for (Funp n1 : unfold(n0, TermOp.PLUS__)) {
+				DecomposeMult dec = new DecomposeMult(n1);
+				if (dec.mults.isEmpty()) {
+					OpReg reg_ = dec.reg;
+					long scale_ = dec.scale;
+					if (reg_ != null) {
+						if (is1248(scale_) && indexReg == null) {
+							indexReg = reg_;
+							scale = (int) scale_;
+						} else if (scale_ == 1 && baseReg == null)
+							baseReg = reg_;
+						else
+							ok = false;
+					} else if (reg_ == null)
+						disp += scale_;
+				} else
+					ok = false;
+			}
 
-				return ok ? amd64.mem(indexReg, baseReg, scale, disp, size) : null;
-			} else
-				return null;
+			return ok ? amd64.mem(indexReg, baseReg, scale, disp, size) : null;
 		}
 
 		private boolean is1248(long scale_) {
