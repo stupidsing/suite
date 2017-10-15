@@ -84,7 +84,11 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 	}
 
 	public Streamlet2<K, V> cons(K key, V value) {
-		return streamlet2(() -> spawn().cons(key, value));
+		return cons_(key, value);
+	}
+
+	public Streamlet2<K, V> cons(Pair<K, V> pair) {
+		return pair.map(this::cons_);
 	}
 
 	public Streamlet2<K, V> distinct() {
@@ -273,6 +277,10 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 	private <K1, V1> Streamlet2<K1, V1> concatMap2_(Fun2<K, V, Streamlet2<K1, V1>> fun) {
 		Fun2<K, V, Outlet2<K1, V1>> bf = (k, v) -> fun.apply(k, v).outlet();
 		return streamlet2(() -> Outlet2.of(spawn().concatMap2(bf)));
+	}
+
+	private Streamlet2<K, V> cons_(K key, V value) {
+		return streamlet2(() -> spawn().cons(key, value));
 	}
 
 	private <T> Streamlet<T> map_(Fun2<K, V, T> fun) {
