@@ -41,7 +41,7 @@ public class BackAllocConfigurations {
 		public final Pair<String, BackAllocConfiguration> pair_ema = pair("ema", baGen.ema);
 		public final Pair<String, BackAllocConfiguration> pair_donchian = pair("donchian", ba_donHold);
 		public final Pair<String, BackAllocConfiguration> pair_pmamr = pair("pmamr", ba_pmamr);
-		public final Pair<String, BackAllocConfiguration> pair_pmmmr = pair("pmamr", ba_pmmmr);
+		public final Pair<String, BackAllocConfiguration> pair_pmmmr = pair("pmmmr", ba_pmmmr);
 		public final Pair<String, BackAllocConfiguration> pair_revco = pair("revco", ba_revco);
 		public final Pair<String, BackAllocConfiguration> pair_tma = pair("tma", baGen.tma);
 
