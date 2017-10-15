@@ -52,6 +52,13 @@ public class FunpTest {
 		assertTrue(bytes != null);
 	}
 
+	@Test
+	public void testReference() {
+		Bytes bytes = compile("define i := 3 >> define p := address i >> 2 + ^p");
+		System.out.println(bytes);
+		assertTrue(bytes != null);
+	}
+
 	private Bytes compile(String fp) {
 		Node node = Suite.parse(fp);
 		Funp f0 = p0.parse(node);

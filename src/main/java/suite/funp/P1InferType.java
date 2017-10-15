@@ -157,9 +157,11 @@ public class P1InferType {
 				return tl.returnType;
 			} else if (n0 instanceof FunpBoolean)
 				return typeBoolean;
-			else if (n0 instanceof FunpDeref)
-				return cast(TypeReference.class, infer(((FunpDeref) n0).pointer)).type;
-			else if (n0 instanceof FunpDefine) {
+			else if (n0 instanceof FunpDeref) {
+				UnNode<Type> t = unify.newRef();
+				unify(n0, new TypeReference(t), infer(((FunpDeref) n0).pointer));
+				return t;
+			} else if (n0 instanceof FunpDefine) {
 				FunpDefine n1 = (FunpDefine) n0;
 				UnNode<Type> tv = unify.newRef();
 				unify(n0, tv, infer(n1.value));

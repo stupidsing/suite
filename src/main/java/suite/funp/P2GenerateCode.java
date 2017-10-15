@@ -21,6 +21,7 @@ import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpNumber;
+import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpTree;
 import suite.funp.P1.FunpAllocStack;
 import suite.funp.P1.FunpAssign;
@@ -40,11 +41,6 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Fun2;
 
-/**
- * Hindley-Milner type inference.
- *
- * @author ywsing
- */
 public class P2GenerateCode {
 
 	private int is = Funp_.integerSize;
@@ -133,7 +129,7 @@ public class P2GenerateCode {
 				}
 				CompileOut out = compile(rs, fd - size, n1.expr);
 				if (size == is)
-					emit(amd64.instruction(Insn.POP, rs.get()));
+					emit(amd64.instruction(Insn.POP, rs.mask(out.op0, out.op1).get()));
 				else
 					emit(amd64.instruction(Insn.ADD, esp, imm));
 				return out;
@@ -143,7 +139,23 @@ public class P2GenerateCode {
 				return compile(rs, fd, n1.expr);
 			} else if (n0 instanceof FunpBoolean)
 				return returnOp.apply(amd64.imm(((FunpBoolean) n0).b ? 1 : 0, Funp_.booleanSize));
-			else if (n0 instanceof FunpFixed)
+			else if (n0 instanceof FunpDeref) {
+				FunpDeref n1 = (FunpDeref) n0;
+				if (type == CompileOutType.OP || type == CompileOutType.OPREG)
+					return returnOp.apply(amd64.mem(compileReg(rs, fd, n1.pointer), 0, is));
+				else if (type == CompileOutType.TWOOP) {
+					OpReg r = compileReg(rs, fd, n1.pointer);
+					Operand op0 = amd64.mem(r, 0, ps);
+					Operand op1 = amd64.mem(r, ps, ps);
+					return returnOp2.apply(op0, op1);
+				} else if (type == CompileOutType.TWOOPREG) {
+					FunpReference n2 = FunpReference.of(FunpTree.of(TermOp.PLUS__, n1.pointer, FunpNumber.of(ps)));
+					Operand op0 = compileReg(rs, fd, n1);
+					Operand op1 = compileReg(rs.mask(op0), fd, n2);
+					return returnOp2.apply(op0, op1);
+				} else
+					throw new RuntimeException();
+			} else if (n0 instanceof FunpFixed)
 				throw new RuntimeException();
 			else if (n0 instanceof FunpFramePointer)
 				return returnOp.apply(ebp);
@@ -184,13 +196,13 @@ public class P2GenerateCode {
 				if (type == CompileOutType.OP || type == CompileOutType.OPREG)
 					return returnOp.apply(amd64.mem(compileReg(rs, fd, n1.pointer), n1.start, size));
 				else if (type == CompileOutType.TWOOP) {
-					Operand op0 = compileReg(rs, fd, n1.range(0, ps));
-					Operand op1 = compileReg(rs.mask(op0), fd, n1.range(ps, ps + ps));
+					OpReg r = compileReg(rs, fd, n1.pointer);
+					Operand op0 = amd64.mem(r, n1.start, ps);
+					Operand op1 = amd64.mem(r, n1.start + is, ps);
 					return returnOp2.apply(op0, op1);
 				} else if (type == CompileOutType.TWOOPREG) {
-					OpReg r = compileReg(rs, fd, n1.pointer);
-					Operand op0 = amd64.mem(r, n1.start, size);
-					Operand op1 = amd64.mem(r, n1.start + is, size);
+					Operand op0 = compileReg(rs, fd, n1.range(0, ps));
+					Operand op1 = compileReg(rs.mask(op0), fd, n1.range(ps, ps + ps));
 					return returnOp2.apply(op0, op1);
 				} else
 					throw new RuntimeException();
@@ -225,11 +237,17 @@ public class P2GenerateCode {
 					emit(amd64.instruction(Insn.POP, opRegs[i]));
 				return out1;
 			} else if (n0 instanceof FunpTree) {
-				FunpTree n1 = (FunpTree) n0;
-				Operator operator = n1.operator;
-				OpReg r0 = compileReg(rs, fd, n1.getFirst());
-				OpReg r1 = compileReg(rs.mask(r0), fd, n1.getSecond());
-				emit(amd64.instruction(insnByOp.get(operator), r0, r1));
+				OpMem op = decomposeOpMem(n0, is);
+				OpReg r0, r1;
+				if (op != null)
+					emit(amd64.instruction(Insn.LEA, r0 = rs.get(), op));
+				else {
+					FunpTree n1 = (FunpTree) n0;
+					Operator operator = n1.operator;
+					r0 = compileReg(rs, fd, n1.getFirst());
+					r1 = compileReg(rs.mask(r0), fd, n1.getSecond());
+					emit(amd64.instruction(insnByOp.get(operator), r0, r1));
+				}
 				return returnOp.apply(r0);
 			} else
 				throw new RuntimeException();
