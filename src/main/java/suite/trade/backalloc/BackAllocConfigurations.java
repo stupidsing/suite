@@ -31,19 +31,18 @@ public class BackAllocConfigurations {
 		private BackAllocator ba_bbHold = baGen.bb_.filterByIndex(cfg).holdExtend(8);
 		private BackAllocator ba_donHold = baGen.donHold;
 		private BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().longOnly().pick(3).even();
-
-		private BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of().cfgUnl(fun);
-		private BackAllocConfiguration bac_pmmmr = baOld.movingMedianMeanRevn().holdExtend(9).cfgUnl(fun);
-		private BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
+		private BackAllocator ba_pmamr = MovingAvgMeanReversionBackAllocator0.of();
+		private BackAllocator ba_pmmmr = baOld.movingMedianMeanRevn().holdExtend(9);
+		private BackAllocator ba_revco = ReverseCorrelateBackAllocator.of();
 
 		public final BackAllocConfiguration bac_sell = baGen.cash.cfgUnl(fun);
 
 		public final Pair<String, BackAllocConfiguration> pair_bb = Pair.of("bb", ba_bbHold.cfgUnl(fun));
 		public final Pair<String, BackAllocConfiguration> pair_ema = Pair.of("ema", baGen.ema.cfgUnl(fun));
 		public final Pair<String, BackAllocConfiguration> pair_donchian = Pair.of("donchian", ba_donHold.cfgUnl(fun));
-		public final Pair<String, BackAllocConfiguration> pair_pmamr = Pair.of("pmamr", bac_pmamr);
-		public final Pair<String, BackAllocConfiguration> pair_pmmmr = Pair.of("pmamr", bac_pmmmr);
-		public final Pair<String, BackAllocConfiguration> pair_revco = Pair.of("revco", bac_revco);
+		public final Pair<String, BackAllocConfiguration> pair_pmamr = Pair.of("pmamr", ba_pmamr.cfgUnl(fun));
+		public final Pair<String, BackAllocConfiguration> pair_pmmmr = Pair.of("pmamr", ba_pmmmr.cfgUnl(fun));
+		public final Pair<String, BackAllocConfiguration> pair_revco = Pair.of("revco", ba_revco.cfgUnl(fun));
 		public final Pair<String, BackAllocConfiguration> pair_tma = Pair.of("tma", baGen.tma.cfgUnl(fun));
 
 		private Streamlet2<String, BackAllocator> bas_ = baGen.baByName;
