@@ -114,7 +114,7 @@ public class P2GenerateCode {
 					throw new RuntimeException();
 			};
 
-			Fun<Runnable, CompileOut> returnPair = routine -> compileRoutine(routine).map(returnOp2);
+			Fun<Runnable, CompileOut> returnRoutine = routine -> compileRoutine(routine).map(returnOp2);
 
 			if (n0 instanceof FunpAllocStack) {
 				FunpAllocStack n1 = (FunpAllocStack) n0;
@@ -195,9 +195,9 @@ public class P2GenerateCode {
 			} else if (n0 instanceof FunpNumber)
 				return returnOp.apply(amd64.imm(((FunpNumber) n0).i, is));
 			else if (n0 instanceof FunpRoutine)
-				return returnPair.apply(() -> emitMov(eax, compileReg(registerSet, ps, ((FunpRoutine) n0).expr)));
+				return returnRoutine.apply(() -> emitMov(eax, compileReg(registerSet, ps, ((FunpRoutine) n0).expr)));
 			else if (n0 instanceof FunpRoutine2)
-				return returnPair.apply(() -> {
+				return returnRoutine.apply(() -> {
 					Pair<Operand, Operand> pair1 = compileOp2(registerSet, ps, ((FunpRoutine2) n0).expr);
 					emitMov(eax, pair1.t0);
 					emitMov(edx, pair1.t1);
@@ -205,7 +205,7 @@ public class P2GenerateCode {
 			else if (n0 instanceof FunpRoutineIo) {
 				FunpRoutineIo n1 = (FunpRoutineIo) n0;
 				FunpMemory out = FunpMemory.of(new FunpFramePointer(), ps + n1.is, n1.os);
-				return returnPair.apply(() -> compileAssign(registerSet, ps, out, n1.expr));
+				return returnRoutine.apply(() -> compileAssign(registerSet, ps, out, n1.expr));
 			} else if (n0 instanceof FunpSaveRegisters) {
 				OpReg[] opRegs = rs.list();
 				for (int i = 0; i <= opRegs.length - 1; i++)
