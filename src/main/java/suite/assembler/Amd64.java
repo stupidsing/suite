@@ -275,10 +275,15 @@ public class Amd64 {
 		return instruction;
 	}
 
-	public OpMem mem(OpReg reg, long disp, int size) {
+	public OpMem mem(OpReg baseReg, long disp, int size) {
+		return mem(baseReg, null, 1, disp, size);
+	}
+
+	public OpMem mem(OpReg baseReg, OpReg indexReg, int scale, long disp, int size) {
 		OpMem op = new OpMem();
-		op.baseReg = reg.reg;
-		op.indexReg = -1;
+		op.baseReg = baseReg != null ? baseReg.reg : -1;
+		op.indexReg = indexReg != null ? indexReg.reg : -1;
+		op.scale = scale;
 		op.size = size;
 		op.disp = disp;
 		op.dispSize = size(disp);
