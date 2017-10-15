@@ -1,11 +1,14 @@
 package suite.funp;
 
+import java.lang.reflect.Array;
+
 import suite.adt.Mutable;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
+import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
@@ -78,6 +81,11 @@ public class P1GenerateLambda {
 			Thunk then = compile(fs, env, n1.then);
 			Thunk else_ = compile(fs, env, n1.else_);
 			return rt -> (b(rt, if_) ? then : else_).apply(rt);
+		} else if (n0 instanceof FunpIndex) {
+			FunpIndex n1 = (FunpIndex) n0;
+			Thunk array = compile(fs, env, n1.array);
+			Thunk index = compile(fs, env, n1.index);
+			return rt -> (Value) Array.get(array.apply(rt), i(rt, index));
 		} else if (n0 instanceof FunpLambda) {
 			FunpLambda n1 = (FunpLambda) n0;
 			int fs1 = fs + 1;

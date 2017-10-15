@@ -45,6 +45,16 @@ public class P0 {
 		}
 	}
 
+	public static class FunpDeref implements Funp, P2.End {
+		public Funp pointer;
+
+		public static FunpDeref of(Funp pointer) {
+			FunpDeref f = new FunpDeref();
+			f.pointer = pointer;
+			return f;
+		}
+	}
+
 	public static class FunpFixed implements Funp, P2.End {
 		public String var;
 		public Funp expr;
@@ -67,6 +77,18 @@ public class P0 {
 			f.if_ = if_;
 			f.then = then;
 			f.else_ = else_;
+			return f;
+		}
+	}
+
+	public static class FunpIndex implements Funp, P2.End {
+		public Funp array;
+		public Funp index;
+
+		public static FunpIndex of(Funp array, Funp index) {
+			FunpIndex f = new FunpIndex();
+			f.array = array;
+			f.index = index;
 			return f;
 		}
 	}
@@ -106,9 +128,9 @@ public class P0 {
 	public static class FunpReference implements Funp, P2.End {
 		public Funp expr;
 
-		public static FunpReference of(Funp expr) {
+		public static FunpReference of(Funp pointer) {
 			FunpReference f = new FunpReference();
-			f.expr = expr;
+			f.expr = pointer;
 			return f;
 		}
 	}

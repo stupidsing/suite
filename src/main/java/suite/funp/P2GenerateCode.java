@@ -11,11 +11,13 @@ import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
+import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assembler;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpNumber;
@@ -259,6 +261,17 @@ public class P2GenerateCode {
 				Pair<Operand, Operand> pair = compileOp2(rs1, fd, n0);
 				emitMov(amd64.mem(r0, target.start, ps), pair.t0);
 				emitMov(amd64.mem(r0, target.start + ps, ps), pair.t1);
+			} else if (n0 instanceof FunpDeref) {
+				FunpDeref n1 = (FunpDeref) n0;
+				OpMem op;
+				if (size == is && (op = decomposeOpMem(n1.pointer, size)) != null) {
+					OpReg r = rs0.mask(r0, op).get();
+					emitMov(r, op);
+					emitMov(amd64.mem(r0, target.start, size), r);
+				} else {
+					OpReg r1 = compileReg(rs0, fd, n1.pointer);
+					compileMove(rs0.mask(r0), r0, target.start, r1, 0, size);
+				}
 			} else if (n0 instanceof FunpInvokeIo) {
 				FunpInvokeIo n1 = (FunpInvokeIo) n0;
 				compileInvoke(rs0, fd, n1.routine);
@@ -320,6 +333,67 @@ public class P2GenerateCode {
 							emit(amd64.instruction(Insn.MOVSB));
 						emit(amd64.instruction(Insn.POP, esi));
 					}, ecx, esi, edi);
+		}
+
+		private OpMem decomposeOpMem(Funp n0, int size) {
+			if (is1248(size)) {
+				OpReg baseReg = null, indexReg = null;
+				int scale = 1, disp = 0;
+				boolean ok = true;
+
+				for (Funp n1 : unfold(n0, TermOp.PLUS__)) {
+					DecomposeMult dec = new DecomposeMult(n1);
+					if (dec.mults.isEmpty()) {
+						OpReg reg_ = dec.reg;
+						long scale_ = dec.scale;
+						if (reg_ != null) {
+							if (is1248(scale_) && indexReg == null) {
+								indexReg = reg_;
+								scale = (int) scale_;
+							} else if (scale_ == 1 && baseReg == null)
+								baseReg = reg_;
+							else
+								ok = false;
+						} else if (reg_ == null)
+							disp += scale_;
+					} else
+						ok = false;
+				}
+
+				return ok ? amd64.mem(indexReg, baseReg, scale, disp, size) : null;
+			} else
+				return null;
+		}
+
+		private boolean is1248(long scale_) {
+			return scale_ == 1 || scale_ == 2 || scale_ == 4 || scale_ == 8;
+		}
+
+		private class DecomposeMult {
+			private long scale = 1;
+			private OpReg reg;
+			private List<Funp> mults = new ArrayList<>();
+
+			private DecomposeMult(Funp n0) {
+				for (Funp n1 : unfold(n0, TermOp.MULT__))
+					if (n1 instanceof FunpFramePointer && reg == null)
+						reg = ebp;
+					else if (n1 instanceof FunpNumber)
+						scale *= ((FunpNumber) n1).i;
+					else
+						mults.add(n1);
+			}
+		}
+
+		private List<Funp> unfold(Funp n, Operator op) {
+			List<Funp> list = new ArrayList<>();
+			FunpTree tree;
+			while (n instanceof FunpTree && (tree = (FunpTree) n).operator == op) {
+				list.add(tree.left);
+				n = tree.right;
+			}
+			list.add(n);
+			return list;
 		}
 
 		private void saveRegs(RegisterSet rs, Runnable runnable, OpReg... opRegs) {

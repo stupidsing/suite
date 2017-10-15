@@ -5,11 +5,14 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
+import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
+import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.node.Atom;
@@ -24,6 +27,10 @@ public class P0Parse {
 
 		if ((m = Suite.match(".0 | .1").apply(node)) != null)
 			return FunpApply.of(parse(m[0]), parse(m[1]));
+		else if ((m = Suite.match(".0 {.1}").apply(node)) != null)
+			return FunpIndex.of(parse(m[0]), parse(m[1]));
+		else if ((m = Suite.match("^.0").apply(node)) != null)
+			return FunpDeref.of(parse(m[0]));
 		else if (node == Atom.FALSE)
 			return FunpBoolean.of(false);
 		else if (node == Atom.TRUE)
@@ -43,6 +50,8 @@ public class P0Parse {
 			return FunpNumber.of(((Int) node).number);
 		else if ((m = Suite.match("poly .0").apply(node)) != null)
 			return FunpPolyType.of(parse(m[0]));
+		else if ((m = Suite.match("address .0").apply(node)) != null)
+			return FunpReference.of(parse(m[0]));
 		else if (node instanceof Atom)
 			return FunpVariable.of(name(node));
 		else if (node instanceof Tree) {
