@@ -350,7 +350,7 @@ public class P2GenerateCode {
 		private Operand op0, op1;
 
 		private CompileOut(Operand op0) {
-			this.op0 = op0;
+			this(op0, null);
 		}
 
 		private CompileOut(Operand op0, Operand op1) {
