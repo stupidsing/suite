@@ -27,16 +27,12 @@ public class FunpTest {
 
 	@Test
 	public void testDefine() {
-		Bytes bytes = compile("define i := 3 >> i + 1");
-		System.out.println(bytes);
-		assertTrue(bytes != null);
+		test("define i := 3 >> i + 1");
 	}
 
 	@Test
 	public void testExpr() {
-		Bytes bytes = compile("1 + 2 * 3");
-		System.out.println(bytes);
-		assertTrue(bytes != null);
+		test("1 + 2 * 3");
 	}
 
 	@Test
@@ -47,14 +43,16 @@ public class FunpTest {
 
 	@Test
 	public void testLambda() {
-		Bytes bytes = compile("0 | (a => a + 1)");
-		System.out.println(bytes);
-		assertTrue(bytes != null);
+		test("0 | (a => a + 1)");
 	}
 
 	@Test
 	public void testReference() {
-		Bytes bytes = compile("define i := 3 >> define p := address i >> 2 + ^p");
+		test("define i := 3 >> define p := address i >> 2 + ^p");
+	}
+
+	private void test(String p) {
+		Bytes bytes = compile(p);
 		System.out.println(bytes);
 		assertTrue(bytes != null);
 	}
