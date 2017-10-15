@@ -1,5 +1,7 @@
 package suite.funp;
 
+import java.util.List;
+
 import suite.funp.Funp_.Funp;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
@@ -21,6 +23,16 @@ public class P0 {
 		}
 	}
 
+	public static class FunpArray implements Funp, P1.End {
+		public List<Funp> elements;
+
+		public static FunpArray of(List<Funp> elements) {
+			FunpArray f = new FunpArray();
+			f.elements = elements;
+			return f;
+		}
+	}
+
 	public static class FunpBoolean implements Funp, P2.End {
 		public boolean b;
 
@@ -31,7 +43,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpDefine implements Funp, P2.End {
+	public static class FunpDefine implements Funp, P1.End {
 		public String var;
 		public Funp value;
 		public Funp expr;
@@ -125,7 +137,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpReference implements Funp, P2.End {
+	public static class FunpReference implements Funp, P1.End {
 		public Funp expr;
 
 		public static FunpReference of(Funp pointer) {

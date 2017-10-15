@@ -1,6 +1,9 @@
 package suite.funp;
 
+import java.util.List;
+
 import suite.funp.Funp_.Funp;
+import suite.primitive.adt.pair.IntIntPair;
 
 public class P1 {
 
@@ -31,6 +34,18 @@ public class P1 {
 			f.memory = memory;
 			f.value = value;
 			f.expr = expr;
+			return f;
+		}
+	}
+
+	public static class FunpData implements Funp, P2.End {
+		public List<Funp> data;
+		public IntIntPair[] offsets;
+
+		public static FunpData of(List<Funp> data, IntIntPair[] offsets) {
+			FunpData f = new FunpData();
+			f.data = data;
+			f.offsets = offsets;
 			return f;
 		}
 	}

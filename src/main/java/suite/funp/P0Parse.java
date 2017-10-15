@@ -3,6 +3,7 @@ package suite.funp;
 import suite.Suite;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
+import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDeref;
@@ -19,6 +20,7 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.TermOp;
 
 public class P0Parse {
 
@@ -35,6 +37,8 @@ public class P0Parse {
 			return FunpBoolean.of(false);
 		else if (node == Atom.TRUE)
 			return FunpBoolean.of(true);
+		else if ((m = Suite.match("array .0").apply(node)) != null)
+			return FunpArray.of(Tree.iter(m[0], TermOp.AND___).map(this::parse).toList());
 		else if ((m = Suite.match("define .0 := .1 >> .2").apply(node)) != null)
 			return FunpDefine.of(name(m[0]), parse(m[1]), parse(m[2]));
 		// return parse(Suite.substitute("poly .1 | (.0 => .2)", m));

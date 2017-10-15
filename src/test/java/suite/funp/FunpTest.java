@@ -16,6 +16,7 @@ import suite.funp.P1GenerateLambda.Thunk;
 import suite.funp.P1GenerateLambda.Value;
 import suite.immutable.IMap;
 import suite.node.Node;
+import suite.os.LogUtil;
 import suite.primitive.Bytes;
 
 public class FunpTest {
@@ -24,6 +25,16 @@ public class FunpTest {
 	private P1InferType p1 = new P1InferType();
 	private P1GenerateLambda p1g = new P1GenerateLambda();
 	private P2GenerateCode p2 = new P2GenerateCode();
+
+	@Test
+	public void testArray1() {
+		test("define a := array (0,) >> a {1}");
+	}
+
+	@Test
+	public void testArray3() {
+		test("define a := array (0, 1, 2,) >> a {1}");
+	}
 
 	@Test
 	public void testDefine() {
@@ -52,8 +63,9 @@ public class FunpTest {
 	}
 
 	private void test(String p) {
+		LogUtil.info(p);
 		Bytes bytes = compile(p);
-		System.out.println(bytes);
+		LogUtil.info("Hex" + bytes + "\n\n");
 		assertTrue(bytes != null);
 	}
 

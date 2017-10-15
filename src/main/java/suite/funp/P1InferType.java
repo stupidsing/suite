@@ -1,12 +1,14 @@
 package suite.funp;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import suite.fp.Unify;
 import suite.fp.Unify.UnNode;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
+import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDeref;
@@ -20,6 +22,7 @@ import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P1.FunpAllocStack;
+import suite.funp.P1.FunpData;
 import suite.funp.P1.FunpFramePointer;
 import suite.funp.P1.FunpInvokeInt;
 import suite.funp.P1.FunpInvokeInt2;
@@ -33,6 +36,9 @@ import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
+import suite.primitive.Ints_;
+import suite.primitive.adt.pair.IntIntPair;
+import suite.streamlet.Read;
 import suite.util.AutoObject;
 import suite.util.Rethrow;
 
@@ -74,7 +80,7 @@ public class P1InferType {
 		public boolean unify(UnNode<Type> type) {
 			if (getClass() == type.getClass()) {
 				TypeArray other = (TypeArray) type;
-				if (elementType.unify(other.elementType)) {
+				if (unify.unify(elementType, other.elementType)) {
 					if (size == -1)
 						size = other.size;
 					else if (other.size == -1)
@@ -156,6 +162,12 @@ public class P1InferType {
 				TypeLambda tl = cast(TypeLambda.class, infer(n1.lambda));
 				unify(n0, tl.parameterType, infer(n1.value));
 				return tl.returnType;
+			} else if (n0 instanceof FunpArray) {
+				List<Funp> elements = ((FunpArray) n0).elements;
+				UnNode<Type> te = unify.newRef();
+				for (Funp element : elements)
+					unify(n0, te, infer_(element));
+				return new TypeArray(te, elements.size());
 			} else if (n0 instanceof FunpBoolean)
 				return typeBoolean;
 			else if (n0 instanceof FunpDeref) {
@@ -238,20 +250,31 @@ public class P1InferType {
 				Funp lambda1 = rewrite(lambda);
 				Funp invoke;
 				if (lt.os == Funp_.pointerSize)
-					invoke = FunpAllocStack.of(lt.is, p, FunpInvokeInt.of(lambda1));
+					invoke = allocStack(p, FunpInvokeInt.of(lambda1));
 				else if (lt.os == Funp_.pointerSize * 2)
-					invoke = FunpAllocStack.of(lt.is, p, FunpInvokeInt2.of(lambda1));
+					invoke = allocStack(p, FunpInvokeInt2.of(lambda1));
 				else
-					invoke = FunpAllocStack.of(lt.os, null, FunpAllocStack.of(lt.is, p, FunpInvokeIo.of(lambda1)));
+					invoke = FunpAllocStack.of(lt.os, null, allocStack(p, FunpInvokeIo.of(lambda1)));
 				return FunpSaveRegisters.of(invoke);
+			} else if (n0 instanceof FunpArray) {
+				UnNode<Type> elementType = ((TypeArray) typeOf(n0)).elementType.final_();
+				List<Funp> elements = Read //
+						.from(((FunpArray) n0).elements) //
+						.map(this::rewrite) //
+						.toList();
+				int size = elements.size();
+				int elementSize = getTypeSize(elementType);
+				IntIntPair[] offsets = Ints_ //
+						.range(0, size) //
+						.map(i -> IntIntPair.of(i * elementSize, (i + 1) * elementSize)) //
+						.toArray(IntIntPair.class);
+				return FunpData.of(elements, offsets);
 			} else if (n0 instanceof FunpDefine) {
 				FunpDefine n1 = (FunpDefine) n0;
 				Funp value = n1.value;
-				Funp value1 = rewrite(value);
-				int size = getTypeSize(typeOf(value));
-				int fs1 = fs - size;
+				int fs1 = fs - getTypeSize(typeOf(value));
 				Rewrite rewrite1 = new Rewrite(scope, fs1, env.put(n1.var, new Var(scope, fs1, fs)));
-				return FunpAllocStack.of(size, value1, rewrite1.rewrite(n1.expr));
+				return allocStack(value, rewrite1.rewrite(n1.expr));
 			} else if (n0 instanceof FunpIndex) {
 				FunpIndex n1 = (FunpIndex) n0;
 				Funp array = n1.array;
@@ -277,15 +300,18 @@ public class P1InferType {
 			} else if (n0 instanceof FunpPolyType) {
 				Funp expr = ((FunpPolyType) n0).expr;
 				return rewrite(expr);
-			} else if (n0 instanceof FunpReference) {
-				FunpReference n1 = (FunpReference) n0;
-				Funp expr1 = rewrite(n1.expr);
-				return getAddress(expr1);
-			} else if (n0 instanceof FunpVariable) {
+			} else if (n0 instanceof FunpReference)
+				return getAddress(rewrite(((FunpReference) n0).expr));
+			else if (n0 instanceof FunpVariable) {
 				Var vd = env.get(((FunpVariable) n0).var);
 				return getVariable(vd);
 			} else
 				return null;
+		}
+
+		private Funp allocStack(Funp p, Funp expr) {
+			UnNode<Type> t = typeOf(p);
+			return FunpAllocStack.of(getTypeSize(t), rewrite(p), expr);
 		}
 
 		private Funp getAddress(Funp n0) {
