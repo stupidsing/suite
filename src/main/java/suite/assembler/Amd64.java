@@ -286,7 +286,7 @@ public class Amd64 {
 		op.scale = scale;
 		op.size = size;
 		op.disp = disp;
-		op.dispSize = size(disp);
+		op.dispSize = disp != 0 ? size(disp) : 0;
 		return op;
 	}
 

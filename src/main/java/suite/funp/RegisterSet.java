@@ -6,6 +6,7 @@ import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
+import suite.primitive.IntPrimitives.IntPredicate;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
 
@@ -51,10 +52,11 @@ public class RegisterSet {
 		throw new RuntimeException();
 	}
 
-	public OpReg[] list() {
+	public OpReg[] list(IntPredicate pred) {
 		return Ints_ //
 				.range(nRegisters) //
 				.filter(this::isSet) //
+				.filter(pred) //
 				.map(r -> registers[r]) //
 				.toArray(OpReg.class);
 	}

@@ -288,7 +288,7 @@ public class P2GenerateCode {
 				FunpMemory out = FunpMemory.of(new FunpFramePointer(), ps + n1.is, n1.os);
 				return postRoutine.apply(() -> compileAssignment(registerSet, ps, out, n1.expr));
 			} else if (n0 instanceof FunpSaveRegisters) {
-				OpReg[] opRegs = rs.list();
+				OpReg[] opRegs = rs.list(r -> r != esp.reg);
 				for (int i = 0; i <= opRegs.length - 1; i++)
 					emit(amd64.instruction(Insn.PUSH, opRegs[i]));
 				CompileOut out0 = compile(registerSet, fd - opRegs.length * is, ((FunpSaveRegisters) n0).expr);
