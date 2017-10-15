@@ -37,13 +37,13 @@ public class BackAllocConfigurations {
 
 		public final BackAllocConfiguration bac_sell = baGen.cash.cfgUnl(fun);
 
-		public final Pair<String, BackAllocConfiguration> pair_bb = Pair.of("bb", ba_bbHold.cfgUnl(fun));
-		public final Pair<String, BackAllocConfiguration> pair_ema = Pair.of("ema", baGen.ema.cfgUnl(fun));
-		public final Pair<String, BackAllocConfiguration> pair_donchian = Pair.of("donchian", ba_donHold.cfgUnl(fun));
-		public final Pair<String, BackAllocConfiguration> pair_pmamr = Pair.of("pmamr", ba_pmamr.cfgUnl(fun));
-		public final Pair<String, BackAllocConfiguration> pair_pmmmr = Pair.of("pmamr", ba_pmmmr.cfgUnl(fun));
-		public final Pair<String, BackAllocConfiguration> pair_revco = Pair.of("revco", ba_revco.cfgUnl(fun));
-		public final Pair<String, BackAllocConfiguration> pair_tma = Pair.of("tma", baGen.tma.cfgUnl(fun));
+		public final Pair<String, BackAllocConfiguration> pair_bb = pair("bb", ba_bbHold);
+		public final Pair<String, BackAllocConfiguration> pair_ema = pair("ema", baGen.ema);
+		public final Pair<String, BackAllocConfiguration> pair_donchian = pair("donchian", ba_donHold);
+		public final Pair<String, BackAllocConfiguration> pair_pmamr = pair("pmamr", ba_pmamr);
+		public final Pair<String, BackAllocConfiguration> pair_pmmmr = pair("pmamr", ba_pmmmr);
+		public final Pair<String, BackAllocConfiguration> pair_revco = pair("revco", ba_revco);
+		public final Pair<String, BackAllocConfiguration> pair_tma = pair("tma", baGen.tma);
 
 		private Streamlet2<String, BackAllocator> bas_ = baGen.baByName;
 		private Streamlet2<String, BackAllocator> bas_mech = baMech.baByName.map2((n, ba) -> "me." + n, (n, ba) -> ba);
@@ -69,6 +69,10 @@ public class BackAllocConfigurations {
 
 		public final Streamlet2<String, BackAllocConfiguration> bacByName = Streamlet2 //
 				.concat(bacs_, bacByName0);
+
+		private Pair<String, BackAllocConfiguration> pair(String tag, BackAllocator ba) {
+			return Pair.of(tag, ba.cfgUnl(fun));
+		}
 	}
 
 	public BackAllocConfigurations(Configuration cfg) {
