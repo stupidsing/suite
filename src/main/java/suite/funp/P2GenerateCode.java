@@ -257,8 +257,8 @@ public class P2GenerateCode {
 				emitMov(amd64.mem(r0, target.start, size), r1);
 			} else if (size == ps + ps) {
 				Pair<Operand, Operand> pair = compileOp2(rs1, fd, n0);
-				emitMov(amd64.mem(r0, target.start, size), pair.t0);
-				emitMov(amd64.mem(r0, target.start + ps, size), pair.t1);
+				emitMov(amd64.mem(r0, target.start, ps), pair.t0);
+				emitMov(amd64.mem(r0, target.start + ps, ps), pair.t1);
 			} else if (n0 instanceof FunpInvokeIo) {
 				FunpInvokeIo n1 = (FunpInvokeIo) n0;
 				compileInvoke(rs0, fd, n1.routine);
