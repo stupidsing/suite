@@ -164,9 +164,7 @@ public class P1InferType {
 				return t;
 			} else if (n0 instanceof FunpDefine) {
 				FunpDefine n1 = (FunpDefine) n0;
-				UnNode<Type> tv = unify.newRef();
-				unify(n0, tv, infer(n1.value));
-				return new Infer(env.put(n1.var, tv)).infer(n1.expr);
+				return new Infer(env.put(n1.var, infer(n1.value))).infer(n1.expr);
 			} else if (n0 instanceof FunpFixed) {
 				FunpFixed n1 = (FunpFixed) n0;
 				UnNode<Type> t = unify.newRef();
