@@ -245,7 +245,7 @@ public class P1InferType {
 		private Funp rewrite_(Funp n0) {
 			if (n0 instanceof FunpApply) {
 				FunpApply n1 = (FunpApply) n0;
-				Funp parameter = n1.value;
+				Funp value = n1.value;
 				Funp lambda = n1.lambda;
 
 				if (Boolean.TRUE || !(lambda instanceof FunpLambda)) {
@@ -253,15 +253,15 @@ public class P1InferType {
 					Funp lambda1 = rewrite(lambda);
 					Funp invoke;
 					if (lt.os == Funp_.pointerSize)
-						invoke = allocStack(parameter, FunpInvokeInt.of(lambda1));
+						invoke = allocStack(value, FunpInvokeInt.of(lambda1));
 					else if (lt.os == Funp_.pointerSize * 2)
-						invoke = allocStack(parameter, FunpInvokeInt2.of(lambda1));
+						invoke = allocStack(value, FunpInvokeInt2.of(lambda1));
 					else
-						invoke = FunpAllocStack.of(lt.os, null, allocStack(parameter, FunpInvokeIo.of(lambda1)));
+						invoke = FunpAllocStack.of(lt.os, null, allocStack(value, FunpInvokeIo.of(lambda1)));
 					return FunpSaveRegisters.of(invoke);
 				} else {
 					FunpLambda lambda1 = (FunpLambda) lambda;
-					return rewrite(FunpDefine.of(lambda1.var, parameter, lambda1.expr));
+					return rewrite(FunpDefine.of(lambda1.var, value, lambda1.expr));
 				}
 			} else if (n0 instanceof FunpArray) {
 				UnNode<Type> elementType = ((TypeArray) typeOf(n0)).elementType.final_();
