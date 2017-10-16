@@ -419,7 +419,7 @@ public class P2GenerateCode {
 				if (dec.mults.isEmpty()) {
 					OpReg reg_ = dec.reg;
 					long scale_ = dec.scale;
-					if (reg_ != null) {
+					if (reg_ != null)
 						if (is1248(scale_) && indexReg == null) {
 							indexReg = reg_;
 							scale = (int) scale_;
@@ -427,7 +427,7 @@ public class P2GenerateCode {
 							baseReg = reg_;
 						else
 							ok = false;
-					} else if (reg_ == null)
+					else if (reg_ == null)
 						disp += scale_;
 				} else
 					ok = false;
