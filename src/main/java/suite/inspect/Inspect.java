@@ -355,17 +355,15 @@ public class Inspect {
 
 	private <T> T mapFields(T t0, Fun<Object, Object> mapper)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		T t3;
 		Class<?> clazz = t0.getClass();
 		@SuppressWarnings("unchecked")
-		T t2 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
-		t3 = t2;
+		T t1 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
 		for (Field field : fields(clazz)) {
 			Object v0 = field.get(t0);
 			Object v1 = mapper.apply(v0);
-			field.set(t3, v1);
+			field.set(t1, v1);
 		}
-		return t3;
+		return t1;
 	}
 
 	public List<Field> fields(Class<?> clazz) {
@@ -468,7 +466,7 @@ public class Inspect {
 		propertyNames.retainAll(setMethods.keySet());
 
 		return Read.from(propertyNames) //
-				.<Property> map(propertyName -> {
+				.<Property>map(propertyName -> {
 					Method getMethod = getMethods.get(propertyName);
 					Method setMethod = setMethods.get(propertyName);
 					return new Property() {
