@@ -70,8 +70,7 @@ public class P2GenerateCode {
 
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
-		Compile0 compile0 = new Compile0(CompileOutType.OPREG, instructions::add);
-		compile0.compile(registerSet, 0, funp);
+		new Compile0(CompileOutType.OPREG, instructions::add).compile(registerSet, 0, funp);
 		return instructions;
 	}
 
@@ -173,7 +172,7 @@ public class P2GenerateCode {
 				return out;
 			} else if (n0 instanceof FunpAssign) {
 				FunpAssign n1 = (FunpAssign) n0;
-				new Compile0(CompileOutType.ASSIGN, emit, n1.memory).compile(rs, fd, n1.value);
+				compileAssignment(rs, fd, n1.memory, n1.value);
 				return compile(rs, fd, n1.expr);
 			} else if (n0 instanceof FunpBoolean)
 				return postOp.apply(amd64.imm(((FunpBoolean) n0).b ? 1 : 0, Funp_.booleanSize));
@@ -279,9 +278,9 @@ public class P2GenerateCode {
 				return postRoutine.apply(() -> emitMov(eax, compileReg(registerSet, ps, ((FunpRoutine) n0).expr)));
 			else if (n0 instanceof FunpRoutine2)
 				return postRoutine.apply(() -> {
-					Pair<Operand, Operand> pair1 = compileOp2(registerSet, ps, ((FunpRoutine2) n0).expr);
-					emitMov(eax, pair1.t0);
-					emitMov(edx, pair1.t1);
+					CompileOut out = compileOp2(registerSet, ps, ((FunpRoutine2) n0).expr);
+					emitMov(eax, out.op0);
+					emitMov(edx, out.op1);
 				});
 			else if (n0 instanceof FunpRoutineIo) {
 				FunpRoutineIo n1 = (FunpRoutineIo) n0;
@@ -335,9 +334,9 @@ public class P2GenerateCode {
 		}
 
 		private void compileInvoke(RegisterSet rs, int fd, Funp n0) {
-			Pair<Operand, Operand> pair = compileOp2(rs, fd, n0);
-			emitMov(ebp, pair.t0);
-			emit(amd64.instruction(Insn.CALL, pair.t1));
+			CompileOut out = compileOp2(rs, fd, n0);
+			emitMov(ebp, out.op0);
+			emit(amd64.instruction(Insn.CALL, out.op1));
 		}
 
 		private void compileAssignment(RegisterSet rs, int fd, FunpMemory target, Funp n) {
@@ -352,9 +351,8 @@ public class P2GenerateCode {
 			return (OpReg) new Compile0(CompileOutType.OPREG, emit).compile(rs, fd, n).op0;
 		}
 
-		private Pair<Operand, Operand> compileOp2(RegisterSet rs, int fd, Funp n) {
-			CompileOut out = new Compile0(CompileOutType.TWOOP, emit).compile(rs, fd, n);
-			return Pair.of(out.op0, out.op1);
+		private CompileOut compileOp2(RegisterSet rs, int fd, Funp n) {
+			return new Compile0(CompileOutType.TWOOP, emit).compile(rs, fd, n);
 		}
 
 		private void compileMove(RegisterSet rs, OpReg r0, int start0, OpReg r1, int start1, int size) {
