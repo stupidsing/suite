@@ -336,17 +336,17 @@ public class Inspect {
 		private T rewrite(T t0) {
 			return Rethrow.ex(() -> {
 				T t1 = fun.apply(t0);
-				return t1 != null ? t1 : mapFields(t0, this::rewriteValue);
+				return t1 != null ? t1 : mapFields(t0, this::rewriteField);
 			});
 		}
 
-		private Object rewriteValue(Object t0) {
+		private Object rewriteField(Object t0) {
 			if (baseClass.isInstance(t0)) {
 				@SuppressWarnings("unchecked")
 				T t1 = rewrite((T) t0);
 				return t1;
 			} else if (t0 instanceof Collection)
-				return Read.from((Collection<?>) t0).map(this::rewriteValue).toList();
+				return Read.from((Collection<?>) t0).map(this::rewriteField).toList();
 			else
 				return t0;
 		}
@@ -464,7 +464,7 @@ public class Inspect {
 		propertyNames.retainAll(setMethods.keySet());
 
 		return Read.from(propertyNames) //
-				.<Property>map(propertyName -> {
+				.<Property> map(propertyName -> {
 					Method getMethod = getMethods.get(propertyName);
 					Method setMethod = setMethods.get(propertyName);
 					return new Property() {
