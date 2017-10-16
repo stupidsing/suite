@@ -57,7 +57,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpDeref implements Funp, P2.End {
+	public static class FunpDeref implements Funp, P1.End {
 		public Funp pointer;
 
 		public static FunpDeref of(Funp pointer) {

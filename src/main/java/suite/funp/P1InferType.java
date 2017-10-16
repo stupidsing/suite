@@ -131,7 +131,7 @@ public class P1InferType {
 		UnNode<Type> t0 = typeNumber;
 		UnNode<Type> t1 = new TypeLambda(typeNumber, t0);
 		UnNode<Type> t2 = new TypeLambda(typeNumber, t1);
-		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>> empty() //
+		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>>empty() //
 				.put(TermOp.PLUS__.name, t2) //
 				.put(TermOp.MINUS_.name, t2) //
 				.put(TermOp.MULT__.name, t2);
@@ -262,10 +262,9 @@ public class P1InferType {
 						.from(((FunpArray) n0).elements) //
 						.map(this::rewrite) //
 						.toList();
-				int size = elements.size();
 				int elementSize = getTypeSize(elementType);
 				IntIntPair[] offsets = Ints_ //
-						.range(0, size) //
+						.range(0, elements.size()) //
 						.map(i -> IntIntPair.of(i * elementSize, (i + 1) * elementSize)) //
 						.toArray(IntIntPair.class);
 				return FunpData.of(elements, offsets);
@@ -275,6 +274,9 @@ public class P1InferType {
 				int fs1 = fs - getTypeSize(typeOf(value));
 				Rewrite rewrite1 = new Rewrite(scope, fs1, env.put(n1.var, new Var(scope, fs1, fs)));
 				return allocStack(value, rewrite1.rewrite(n1.expr));
+			} else if (n0 instanceof FunpDeref) {
+				FunpDeref n1 = (FunpDeref) n0;
+				return FunpMemory.of(rewrite(n1.pointer), 0, getTypeSize(typeOf(n1)));
 			} else if (n0 instanceof FunpIndex) {
 				FunpIndex n1 = (FunpIndex) n0;
 				Funp array = n1.array;
@@ -282,7 +284,7 @@ public class P1InferType {
 				Funp address0 = getAddress(rewrite(array));
 				FunpTree inc = FunpTree.of(TermOp.MULT__, rewrite(n1.index), FunpNumber.of(size));
 				Funp address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
-				return FunpDeref.of(address1);
+				return FunpMemory.of(address1, 0, size);
 			} else if (n0 instanceof FunpLambda) {
 				FunpLambda n1 = (FunpLambda) n0;
 				int b = Funp_.pointerSize * 2; // return address and EBP
@@ -315,9 +317,7 @@ public class P1InferType {
 		}
 
 		private Funp getAddress(Funp n0) {
-			if (n0 instanceof FunpDeref)
-				return ((FunpDeref) n0).pointer;
-			else if (n0 instanceof FunpMemory) {
+			if (n0 instanceof FunpMemory) {
 				FunpMemory n1 = (FunpMemory) n0;
 				return FunpTree.of(TermOp.PLUS__, n1.pointer, FunpNumber.of(n1.start));
 			} else if (n0 instanceof FunpVariable) {
@@ -330,7 +330,7 @@ public class P1InferType {
 		private Funp getVariable(Var vd) {
 			Funp nfp = new FunpFramePointer();
 			for (int i = scope; i < vd.scope; i++)
-				nfp = FunpDeref.of(nfp);
+				nfp = FunpMemory.of(nfp, 0, Funp_.pointerSize);
 			return FunpMemory.of(nfp, vd.start, vd.end);
 		}
 	}
