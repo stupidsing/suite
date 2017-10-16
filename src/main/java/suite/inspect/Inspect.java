@@ -2,7 +2,6 @@ package suite.inspect;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -353,8 +352,7 @@ public class Inspect {
 		}
 	}
 
-	private <T> T mapFields(T t0, Fun<Object, Object> mapper)
-			throws InstantiationException, IllegalAccessException, InvocationTargetException {
+	private <T> T mapFields(T t0, Fun<Object, Object> mapper) throws ReflectiveOperationException {
 		Class<?> clazz = t0.getClass();
 		@SuppressWarnings("unchecked")
 		T t1 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
