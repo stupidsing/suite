@@ -42,8 +42,13 @@ public class FunpTest {
 	}
 
 	@Test
-	public void testExpr() {
+	public void testExpr0() {
 		test("1 + 2 * 3");
+	}
+
+	@Test
+	public void testExpr1() {
+		test("1 + 2 * (3 + 4)");
 	}
 
 	@Test

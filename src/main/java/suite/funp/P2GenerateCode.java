@@ -286,7 +286,10 @@ public class P2GenerateCode {
 				OpMem op = decomposeOpMem(n0, is);
 				OpReg r0, r1;
 				if (op != null)
-					emit(amd64.instruction(Insn.LEA, r0 = rs.get(), op));
+					if (op.baseReg < 0 && op.indexReg < 0)
+						emit(amd64.instruction(Insn.MOV, r0 = rs.get(), amd64.imm(op.disp, is)));
+					else
+						emit(amd64.instruction(Insn.LEA, r0 = rs.get(), op));
 				else {
 					FunpTree n1 = (FunpTree) n0;
 					Operator operator = n1.operator;
