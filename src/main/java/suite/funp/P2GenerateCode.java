@@ -34,6 +34,7 @@ import suite.funp.P1.FunpRoutine;
 import suite.funp.P1.FunpRoutine2;
 import suite.funp.P1.FunpRoutineIo;
 import suite.funp.P1.FunpSaveRegisters;
+import suite.lp.predicate.EvalPredicates;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.primitive.Bytes;
@@ -43,6 +44,7 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.Sink2;
 
 public class P2GenerateCode {
 
@@ -60,7 +62,6 @@ public class P2GenerateCode {
 	private OpReg esp = amd64.esp;
 	private OpReg esi = amd64.esi;
 	private OpReg edi = amd64.edi;
-
 	private RegisterSet registerSet = new RegisterSet().mask(ebp, esp);
 
 	private Map<Operator, Insn> insnByOp = Map.ofEntries( //
@@ -69,6 +70,8 @@ public class P2GenerateCode {
 			entry(TermOp.PLUS__, Insn.ADD), //
 			entry(TermOp.MINUS_, Insn.SUB), //
 			entry(TermOp.MULT__, Insn.IMUL));
+
+	private EvalPredicates ep = new EvalPredicates();
 
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
@@ -285,6 +288,13 @@ public class P2GenerateCode {
 					emit(amd64.instruction(Insn.POP, opRegs[i]));
 				return out1;
 			} else if (n0 instanceof FunpTree) {
+				FunpTree n1 = (FunpTree) n0;
+				Operator operator = n1.operator;
+				Funp lhs = n1.left;
+				Funp rhs = n1.right;
+				Integer numLhs = lhs instanceof FunpNumber ? ((FunpNumber) lhs).i : null;
+				Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i : null;
+
 				OpMem op = decomposeOpMem(n0, is);
 				Operand op0, op1;
 
@@ -293,43 +303,49 @@ public class P2GenerateCode {
 						emit(amd64.instruction(Insn.MOV, op0 = rs.get(), amd64.imm(op.disp, is)));
 					else
 						emit(amd64.instruction(Insn.LEA, op0 = rs.get(), op));
+				else if (numLhs != null && numRhs != null)
+					op0 = amd64.imm(ep.evaluate((TermOp) operator, numLhs, numRhs), is);
 				else {
-					FunpTree n1 = (FunpTree) n0;
-					Operator operator = n1.operator;
-					Funp left_ = n1.left;
-					Funp right = n1.right;
-					Integer numLeft_ = left_ instanceof FunpNumber ? ((FunpNumber) left_).i : null;
-					Integer numRight = right instanceof FunpNumber ? ((FunpNumber) right).i : null;
+					Fun2<OpReg, Sink2<? super OpReg, Integer>, OpReg> fun = (op_, f) -> {
+						if (op_ == null && numRhs != null)
+							f.sink2(op_ = compileReg(rs, fd, lhs), numRhs);
+						if (op_ == null && numLhs != null)
+							f.sink2(op_ = compileReg(rs, fd, rhs), numLhs);
+						return op_;
+					};
+
 					OpReg opResult = null;
 
-					if (opResult == null && operator == TermOp.PLUS__ && numRight != null)
-						emitAddImm(opResult = compileReg(rs, fd, left_), numRight);
-					if (opResult == null && operator == TermOp.PLUS__ && numLeft_ != null)
-						emitAddImm(opResult = compileReg(rs, fd, right), numLeft_);
-					if (opResult == null && operator == TermOp.MINUS_ && numLeft_ != null) {
-						emit(amd64.instruction(Insn.NEG, opResult = compileReg(rs, fd, right)));
-						emitAddImm(opResult, numLeft_);
+					opResult = operator == TermOp.BIGAND ? fun.apply(opResult, this::emitAndImm) : opResult;
+					opResult = operator == TermOp.BIGOR_ ? fun.apply(opResult, this::emitOrImm) : opResult;
+					opResult = operator == TermOp.PLUS__ ? fun.apply(opResult, this::emitAddImm) : opResult;
+					opResult = operator == TermOp.MULT__ ? fun.apply(opResult, this::emitImulImm) : opResult;
+
+					if (opResult == null && operator == TermOp.MINUS_ && numLhs != null) {
+						emit(amd64.instruction(Insn.NEG, opResult = compileReg(rs, fd, rhs)));
+						emitAddImm(opResult, numLhs);
 					}
-					if (opResult == null && operator == TermOp.MINUS_ && numRight != null)
-						emitAddImm(opResult = compileReg(rs, fd, left_), -numRight);
-					if (opResult == null && operator == TermOp.MULT__ && numRight != null)
-						emitImulImm(opResult = compileReg(rs, fd, left_), numRight);
-					if (opResult == null && operator == TermOp.MULT__ && numLeft_ != null)
-						emitImulImm(opResult = compileReg(rs, fd, right), numLeft_);
-					if (opResult == null && operator == TermOp.DIVIDE && numRight != null && Integer.bitCount(numRight) == 1) {
-						int z = Integer.numberOfTrailingZeros(numRight);
-						opResult = compileReg(rs, fd, right);
+
+					if (opResult == null && operator == TermOp.MINUS_ && numRhs != null)
+						emitAddImm(opResult = compileReg(rs, fd, lhs), -numRhs);
+
+					if (opResult == null && operator == TermOp.DIVIDE && numRhs != null && Integer.bitCount(numRhs) == 1) {
+						int z = Integer.numberOfTrailingZeros(numRhs);
+						opResult = compileReg(rs, fd, rhs);
 						if (z != 0)
 							emit(amd64.instruction(Insn.SHR, opResult, amd64.imm(z, 1)));
 					}
+
+					if (opResult == null && numRhs != null)
+						emit(amd64.instruction(insnByOp.get(operator), opResult = compileReg(rs, fd, rhs), amd64.imm(numRhs, is)));
 
 					if (opResult == null)
 						if (operator == TermOp.DIVIDE) {
 							boolean isSaveEax = rs.contains(eax);
 							OpReg opResult_ = isSaveEax ? rs.get() : eax;
 							IntSink sink0 = fd_ -> {
-								Operand opLeft_ = compileOp(rs, fd_, left_);
-								Operand opRight = compileOp(rs.mask(opLeft_), fd_, right);
+								Operand opLeft_ = compileOp(rs, fd_, lhs);
+								Operand opRight = compileOp(rs.mask(opLeft_), fd_, rhs);
 								emitMov(eax, opLeft_);
 								emit(amd64.instruction(Insn.XOR, edx, edx));
 								emit(amd64.instruction(Insn.IDIV, opRight));
@@ -339,8 +355,8 @@ public class P2GenerateCode {
 							saveRegs(rs, fd, sink1, edx);
 							opResult = opResult_;
 						} else if (operator == TermOp.MINUS_) {
-							opResult = compileReg(rs, fd, left_);
-							op1 = compileOp(rs.mask(opResult), fd, left_);
+							opResult = compileReg(rs, fd, lhs);
+							op1 = compileOp(rs.mask(opResult), fd, lhs);
 							emit(amd64.instruction(Insn.SUB, opResult, op1));
 						} else {
 							opResult = compileReg(rs, fd, n1.getFirst());
@@ -479,13 +495,23 @@ public class P2GenerateCode {
 				sink.sink(fd);
 		}
 
-		private void emitAddImm(Operand r0, int i) {
+		private void emitAddImm(Operand op0, int i) {
 			if (i == -1)
-				emit(amd64.instruction(Insn.DEC, r0));
+				emit(amd64.instruction(Insn.DEC, op0));
 			else if (i == 1)
-				emit(amd64.instruction(Insn.INC, r0));
+				emit(amd64.instruction(Insn.INC, op0));
 			else if (i != 0)
-				emit(amd64.instruction(Insn.ADD, r0, amd64.imm(i, is)));
+				emit(amd64.instruction(Insn.ADD, op0, amd64.imm(i, is)));
+		}
+
+		private void emitAndImm(Operand op0, int i) {
+			if (i != -1)
+				emit(amd64.instruction(Insn.AND, op0, amd64.imm(i, is)));
+		}
+
+		private void emitOrImm(Operand op0, int i) {
+			if (i != 0)
+				emit(amd64.instruction(Insn.AND, op0, amd64.imm(i, is)));
 		}
 
 		private void emitImulImm(OpReg r0, int i) {

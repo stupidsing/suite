@@ -193,36 +193,46 @@ public class EvalPredicates {
 					result = a >> b;
 				else
 					throw new RuntimeException("cannot evaluate expression: " + node);
-			} else {
-				int a = evaluate(tree.getLeft()), b = evaluate(tree.getRight());
-				switch (op) {
-				case PLUS__:
-					result = a + b;
-					break;
-				case MINUS_:
-					result = a - b;
-					break;
-				case MULT__:
-					result = a * b;
-					break;
-				case DIVIDE:
-					result = a / b;
-					break;
-				case MODULO:
-					result = a % b;
-					break;
-				case POWER_:
-					result = (int) Math.pow(a, b);
-					break;
-				default:
-					throw new RuntimeException("cannot evaluate expression: " + node);
-				}
-			}
+			} else
+				result = evaluate(op, evaluate(tree.getLeft()), evaluate(tree.getRight()));
 		} else if (node instanceof Int)
 			result = ((Int) node).number;
 		else
 			throw new RuntimeException("cannot evaluate expression: " + node);
 
+		return result;
+	}
+
+	public int evaluate(TermOp op, int a, int b) {
+		int result;
+		switch (op) {
+		case BIGAND:
+			result = a & b;
+			break;
+		case BIGOR_:
+			result = a | b;
+			break;
+		case PLUS__:
+			result = a + b;
+			break;
+		case MINUS_:
+			result = a - b;
+			break;
+		case MULT__:
+			result = a * b;
+			break;
+		case DIVIDE:
+			result = a / b;
+			break;
+		case MODULO:
+			result = a % b;
+			break;
+		case POWER_:
+			result = (int) Math.pow(a, b);
+			break;
+		default:
+			throw new RuntimeException("cannot evaluate operator: " + op);
+		}
 		return result;
 	}
 
