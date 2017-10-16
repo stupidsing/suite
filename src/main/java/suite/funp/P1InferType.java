@@ -248,7 +248,7 @@ public class P1InferType {
 				Funp p = n1.value;
 				Funp lambda = n1.lambda;
 
-				if (Boolean.TRUE && lambda instanceof FunpLambda) {
+				if (Boolean.TRUE || !(lambda instanceof FunpLambda)) {
 					LambdaType lt = lambdaType(lambda);
 					Funp lambda1 = rewrite(lambda);
 					Funp invoke;
