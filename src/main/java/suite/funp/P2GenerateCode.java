@@ -166,7 +166,7 @@ public class P2GenerateCode {
 				else {
 					emit(amd64.instruction(Insn.SUB, esp, imm));
 					if (value != null)
-						compileAssignment(rs, fd, FunpMemory.of(new FunpFramePointer(), fd - size, fd), value);
+						compileAssign(rs, fd, FunpMemory.of(new FunpFramePointer(), fd - size, fd), value);
 				}
 				CompileOut out = compile(rs, fd - size, n1.expr);
 				if (size == is)
@@ -176,7 +176,7 @@ public class P2GenerateCode {
 				return out;
 			} else if (n0 instanceof FunpAssign) {
 				FunpAssign n1 = (FunpAssign) n0;
-				compileAssignment(rs, fd, n1.memory, n1.value);
+				compileAssign(rs, fd, n1.memory, n1.value);
 				return compile(rs, fd, n1.expr);
 			} else if (n0 instanceof FunpBoolean)
 				return postOp.apply(amd64.imm(((FunpBoolean) n0).b ? 1 : 0, Funp_.booleanSize));
@@ -188,7 +188,7 @@ public class P2GenerateCode {
 					for (int i = 0; i < data.size(); i++) {
 						IntIntPair offset = offsets[i];
 						FunpMemory target_ = FunpMemory.of(target.pointer, target.start + offset.t0, target.end + offset.t1);
-						compileAssignment(rs, fd1, target_, data.get(i));
+						compileAssign(rs, fd1, target_, data.get(i));
 					}
 				});
 			} else if (n0 instanceof FunpFixed)
@@ -268,7 +268,7 @@ public class P2GenerateCode {
 			else if (n0 instanceof FunpRoutineIo) {
 				FunpRoutineIo n1 = (FunpRoutineIo) n0;
 				FunpMemory out = FunpMemory.of(new FunpFramePointer(), ps + n1.is, n1.os);
-				return postRoutine.apply(() -> compileAssignment(registerSet, ps, out, n1.expr));
+				return postRoutine.apply(() -> compileAssign(registerSet, ps, out, n1.expr));
 			} else if (n0 instanceof FunpSaveRegisters) {
 				OpReg[] opRegs = rs.list(r -> r != esp.reg);
 				for (int i = 0; i <= opRegs.length - 1; i++)
@@ -366,7 +366,7 @@ public class P2GenerateCode {
 			emit(amd64.instruction(Insn.CALL, out.op1));
 		}
 
-		private void compileAssignment(RegisterSet rs, int fd, FunpMemory target, Funp n) {
+		private void compileAssign(RegisterSet rs, int fd, FunpMemory target, Funp n) {
 			new Compile0(CompileOutType.ASSIGN, emit, target).compile(rs, fd, n);
 		}
 
@@ -414,7 +414,7 @@ public class P2GenerateCode {
 			int scale = 1, disp = 0;
 			boolean ok = is1248(size);
 
-			for (Funp n1 : unfold(n0, TermOp.PLUS__)) {
+			for (Funp n1 : FunpTree.unfold(n0, TermOp.PLUS__)) {
 				DecomposeMult dec = new DecomposeMult(n1);
 				if (dec.mults.isEmpty()) {
 					OpReg reg_ = dec.reg;
@@ -436,17 +436,13 @@ public class P2GenerateCode {
 			return ok ? amd64.mem(indexReg, baseReg, scale, disp, size) : null;
 		}
 
-		private boolean is1248(long scale_) {
-			return scale_ == 1 || scale_ == 2 || scale_ == 4 || scale_ == 8;
-		}
-
 		private class DecomposeMult {
 			private long scale = 1;
 			private OpReg reg;
 			private List<Funp> mults = new ArrayList<>();
 
 			private DecomposeMult(Funp n0) {
-				for (Funp n1 : unfold(n0, TermOp.MULT__))
+				for (Funp n1 : FunpTree.unfold(n0, TermOp.MULT__))
 					if (n1 instanceof FunpFramePointer && reg == null)
 						reg = ebp;
 					else if (n1 instanceof FunpNumber)
@@ -454,17 +450,6 @@ public class P2GenerateCode {
 					else
 						mults.add(n1);
 			}
-		}
-
-		private List<Funp> unfold(Funp n, Operator op) {
-			List<Funp> list = new ArrayList<>();
-			FunpTree tree;
-			while (n instanceof FunpTree && (tree = (FunpTree) n).operator == op) {
-				list.add(tree.left);
-				n = tree.right;
-			}
-			list.add(n);
-			return list;
 		}
 
 		private void saveRegs(RegisterSet rs, int fd, IntSink sink, OpReg... opRegs) {
@@ -504,6 +489,10 @@ public class P2GenerateCode {
 
 		private void emit(Instruction instruction) {
 			emit.sink(instruction);
+		}
+
+		private boolean is1248(long scale_) {
+			return scale_ == 1 || scale_ == 2 || scale_ == 4 || scale_ == 8;
 		}
 	}
 

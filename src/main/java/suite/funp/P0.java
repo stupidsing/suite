@@ -1,5 +1,6 @@
 package suite.funp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import suite.funp.Funp_.Funp;
@@ -160,6 +161,17 @@ public class P0 {
 			f.left = left;
 			f.right = right;
 			return f;
+		}
+
+		public static List<Funp> unfold(Funp n, Operator op) {
+			List<Funp> list = new ArrayList<>();
+			FunpTree tree;
+			while (n instanceof FunpTree && (tree = (FunpTree) n).operator == op) {
+				list.add(tree.left);
+				n = tree.right;
+			}
+			list.add(n);
+			return list;
 		}
 
 		public Funp getFirst() {
