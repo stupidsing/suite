@@ -113,7 +113,7 @@ public class P2GenerateCode {
 					throw new RuntimeException();
 			};
 
-			Fun2<Operand, Operand, CompileOut> postOp2 = (op0, op1) -> {
+			Fun2<Operand, Operand, CompileOut> postTwoOp = (op0, op1) -> {
 				Operand old0 = op0;
 				Operand old1 = op1;
 				if (type == CompileOutType.ASSIGN) {
@@ -148,14 +148,14 @@ public class P2GenerateCode {
 					Operand imm = amd64.imm(size);
 					emit(amd64.instruction(Insn.SUB, esp, imm));
 					assign.sink2(fd1, FunpMemory.of(new FunpFramePointer(), fd1, fd));
-					CompileOut out = postOp2.apply(amd64.mem(ebp, fd1, ps), amd64.mem(ebp, fd1 + ps, ps));
+					CompileOut out = postTwoOp.apply(amd64.mem(ebp, fd1, ps), amd64.mem(ebp, fd1 + ps, ps));
 					emit(amd64.instruction(Insn.ADD, esp, imm));
 					return out;
 				} else
 					throw new RuntimeException();
 			};
 
-			Fun<Runnable, CompileOut> postRoutine = routine -> compileRoutine(routine).map(postOp2);
+			Fun<Runnable, CompileOut> postRoutine = routine -> compileRoutine(routine).map(postTwoOp);
 
 			if (n0 instanceof FunpAllocStack) {
 				FunpAllocStack n1 = (FunpAllocStack) n0;
@@ -225,7 +225,7 @@ public class P2GenerateCode {
 			else if (n0 instanceof FunpInvokeInt2)
 				if (!rs.contains(eax, edx)) {
 					compileInvoke(rs, fd, ((FunpInvokeInt2) n0).routine);
-					return postOp2.apply(eax, edx);
+					return postTwoOp.apply(eax, edx);
 				} else
 					throw new RuntimeException();
 			else if (n0 instanceof FunpInvokeIo)
@@ -254,7 +254,7 @@ public class P2GenerateCode {
 					OpReg r = compileReg(rs, fd, n1.pointer);
 					Operand op0 = amd64.mem(r, n1.start, ps);
 					Operand op1 = amd64.mem(r, n1.start + is, ps);
-					return postOp2.apply(op0, op1);
+					return postTwoOp.apply(op0, op1);
 				} else
 					throw new RuntimeException();
 			} else if (n0 instanceof FunpNumber)
@@ -263,7 +263,7 @@ public class P2GenerateCode {
 				return postRoutine.apply(() -> emitMov(eax, compileReg(registerSet, ps, ((FunpRoutine) n0).expr)));
 			else if (n0 instanceof FunpRoutine2)
 				return postRoutine.apply(() -> {
-					CompileOut out = compileOp2(registerSet, ps, ((FunpRoutine2) n0).expr);
+					CompileOut out = compileTwoOp(registerSet, ps, ((FunpRoutine2) n0).expr);
 					emitMov(eax, out.op0);
 					emitMov(edx, out.op1);
 				});
@@ -390,7 +390,7 @@ public class P2GenerateCode {
 		}
 
 		private void compileInvoke(RegisterSet rs, int fd, Funp n0) {
-			CompileOut out = compileOp2(rs, fd, n0);
+			CompileOut out = compileTwoOp(rs, fd, n0);
 			emitMov(ebp, out.op0);
 			emit(amd64.instruction(Insn.CALL, out.op1));
 		}
@@ -407,7 +407,7 @@ public class P2GenerateCode {
 			return (OpReg) new Compile0(CompileOutType.OPREG, emit).compile(rs, fd, n).op0;
 		}
 
-		private CompileOut compileOp2(RegisterSet rs, int fd, Funp n) {
+		private CompileOut compileTwoOp(RegisterSet rs, int fd, Funp n) {
 			return new Compile0(CompileOutType.TWOOP, emit).compile(rs, fd, n);
 		}
 
