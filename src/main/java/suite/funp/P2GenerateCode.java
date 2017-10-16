@@ -293,9 +293,15 @@ public class P2GenerateCode {
 				else {
 					FunpTree n1 = (FunpTree) n0;
 					Operator operator = n1.operator;
-					r0 = compileReg(rs, fd, n1.getFirst());
-					r1 = compileReg(rs.mask(r0), fd, n1.getSecond());
-					emit(amd64.instruction(insnByOp.get(operator), r0, r1));
+					if (operator == TermOp.PLUS__ && n1.left instanceof FunpNumber && ((FunpNumber) n1.left).i == 1) {
+						r0 = compileReg(rs, fd, n1.getFirst());
+						r1 = compileReg(rs.mask(r0), fd, n1.getSecond());
+						emit(amd64.instruction(insnByOp.get(operator), r0, r1));
+					} else {
+						r0 = compileReg(rs, fd, n1.getFirst());
+						r1 = compileReg(rs.mask(r0), fd, n1.getSecond());
+						emit(amd64.instruction(insnByOp.get(operator), r0, r1));
+					}
 				}
 				return postOp.apply(r0);
 			} else

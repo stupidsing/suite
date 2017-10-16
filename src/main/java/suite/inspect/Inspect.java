@@ -2,6 +2,7 @@ package suite.inspect;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -22,6 +23,7 @@ import suite.adt.pair.Pair;
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Source2;
@@ -289,8 +291,8 @@ public class Inspect {
 	}
 
 	/**
-	 * @return true if both input value objects are of the same class and having all
-	 *         fields equal.
+	 * @return true if both input value objects are of the same class and having
+	 *         all fields equal.
 	 */
 	public <T> boolean equals(T o0, T o1) {
 		return o0 == o1 || o0 != null && o1 != null //
@@ -320,37 +322,50 @@ public class Inspect {
 	 *         function.
 	 */
 	public <T> T rewrite(Class<T> baseClass, Iterate<T> fun, T t0) {
-		return Rethrow.ex(() -> {
-			T t1 = fun.apply(t0);
-			T t3;
-			if (t1 != null)
-				t3 = t1;
-			else {
-				Class<?> clazz = t0.getClass();
-				@SuppressWarnings("unchecked")
-				T t2 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
-				t3 = t2;
-				for (Field field : fields(clazz)) {
-					Object v0 = field.get(t0);
-					Object v1 = rewriteValue(baseClass, fun, v0);
-					field.set(t3, v1);
-				}
-			}
-			return t3;
-		});
+		return new Rewrite<>(baseClass, fun).rewrite(t0);
 	}
 
-	private <T> Object rewriteValue(Class<T> baseClass, Iterate<T> fun, Object t0) {
-		if (baseClass.isInstance(t0)) {
-			@SuppressWarnings("unchecked")
-			T t1 = rewrite(baseClass, fun, (T) t0);
-			return t1;
-		} else if (Collection.class.isInstance(t0))
-			return Read.from((Collection<?>) t0) //
-					.map(e -> rewriteValue(baseClass, fun, e)) //
-					.toList();
-		else
-			return t0;
+	private class Rewrite<T> {
+		private Class<T> baseClass;
+		private Iterate<T> fun;
+
+		private Rewrite(Class<T> baseClass, Iterate<T> fun) {
+			this.baseClass = baseClass;
+			this.fun = fun;
+		}
+
+		private T rewrite(T t0) {
+			return Rethrow.ex(() -> {
+				T t1 = fun.apply(t0);
+				return t1 != null ? t1 : mapFields(t0, this::rewriteValue);
+			});
+		}
+
+		private Object rewriteValue(Object t0) {
+			if (baseClass.isInstance(t0)) {
+				@SuppressWarnings("unchecked")
+				T t1 = rewrite((T) t0);
+				return t1;
+			} else if (t0 instanceof Collection)
+				return Read.from((Collection<?>) t0).map(this::rewriteValue).toList();
+			else
+				return t0;
+		}
+	}
+
+	private <T> T mapFields(T t0, Fun<Object, Object> mapper)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException {
+		T t3;
+		Class<?> clazz = t0.getClass();
+		@SuppressWarnings("unchecked")
+		T t2 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
+		t3 = t2;
+		for (Field field : fields(clazz)) {
+			Object v0 = field.get(t0);
+			Object v1 = mapper.apply(v0);
+			field.set(t3, v1);
+		}
+		return t3;
 	}
 
 	public List<Field> fields(Class<?> clazz) {
