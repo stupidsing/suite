@@ -306,6 +306,10 @@ public class P2GenerateCode {
 						emitAddImm(opResult = compileReg(rs, fd, left_), numRight);
 					if (opResult == null && operator == TermOp.PLUS__ && numLeft_ != null)
 						emitAddImm(opResult = compileReg(rs, fd, right), numLeft_);
+					if (opResult == null && operator == TermOp.MINUS_ && numLeft_ != null) {
+						emit(amd64.instruction(Insn.NEG, opResult = compileReg(rs, fd, right)));
+						emitAddImm(opResult, numLeft_);
+					}
 					if (opResult == null && operator == TermOp.MINUS_ && numRight != null)
 						emitAddImm(opResult = compileReg(rs, fd, left_), -numRight);
 					if (opResult == null && operator == TermOp.MULT__ && numRight != null)
@@ -476,22 +480,18 @@ public class P2GenerateCode {
 		}
 
 		private void emitAddImm(Operand r0, int i) {
-			if (i == 0)
-				;
-			else if (i == -1)
+			if (i == -1)
 				emit(amd64.instruction(Insn.DEC, r0));
 			else if (i == 1)
 				emit(amd64.instruction(Insn.INC, r0));
-			else
+			else if (i != 0)
 				emit(amd64.instruction(Insn.ADD, r0, amd64.imm(i, is)));
 		}
 
 		private void emitImulImm(OpReg r0, int i) {
-			if (i == 1)
-				;
-			else if (Integer.bitCount(i) == 1)
+			if (Integer.bitCount(i) == 1)
 				emit(amd64.instruction(Insn.SHL, r0, amd64.imm(Integer.numberOfTrailingZeros(i), 1)));
-			else
+			else if (i != 1)
 				emit(amd64.instruction(Insn.IMUL, r0, r0, amd64.imm(i, is)));
 		}
 

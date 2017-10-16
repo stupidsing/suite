@@ -70,7 +70,9 @@ public class Amd64 {
 		MOVSX, //
 		MOVZX, //
 		MUL, //
+		NEG, //
 		NOP, //
+		NOT, //
 		OR, //
 		OUT, //
 		POP, //

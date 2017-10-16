@@ -324,8 +324,14 @@ public class Amd64Assembler {
 		case MUL:
 			insnCode = assembleByteFlag(instruction.op0, 0xF6, 4);
 			break;
+		case NEG:
+			insnCode = assembleByteFlag(instruction.op0, 0xF6, 3);
+			break;
 		case NOP:
 			insnCode = assemble(instruction, 0x90);
+			break;
+		case NOT:
+			insnCode = assembleByteFlag(instruction.op0, 0xF6, 2);
 			break;
 		case OR:
 			insnCode = assembleRmRegImm(instruction, 0x08, 0x80, 1);
