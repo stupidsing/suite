@@ -17,7 +17,6 @@ import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assembler;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
-import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpNumber;
@@ -187,23 +186,6 @@ public class P2GenerateCode {
 						compileAssignment(rs, fd, target_, data.get(i));
 					}
 				});
-			} else if (n0 instanceof FunpDeref) {
-				FunpDeref n1 = (FunpDeref) n0;
-				if (type == CompileOutType.OP || type == CompileOutType.OPREG)
-					return postOp.apply(amd64.mem(compileReg(rs, fd, n1.pointer), 0, is));
-				else if (type == CompileOutType.TWOOP || type == CompileOutType.TWOOPREG) {
-					OpReg r = compileReg(rs, fd, n1.pointer);
-					Operand op0 = amd64.mem(r, 0, ps);
-					Operand op1 = amd64.mem(r, ps, ps);
-					return postOp2.apply(op0, op1);
-				} else if (type == CompileOutType.ASSIGN)
-					return postAssign.apply(target -> {
-						OpReg r0 = compileReg(rs, fd, target.pointer);
-						OpReg r1 = compileReg(rs.mask(r0), fd, n1.pointer);
-						compileMove(rs.mask(r0, r1), r0, target.start, r1, 0, target.size());
-					});
-				else
-					throw new RuntimeException();
 			} else if (n0 instanceof FunpFixed)
 				throw new RuntimeException();
 			else if (n0 instanceof FunpFramePointer)
@@ -261,14 +243,10 @@ public class P2GenerateCode {
 					});
 				else if (type == CompileOutType.OP || type == CompileOutType.OPREG)
 					return postOp.apply(amd64.mem(compileReg(rs, fd, n1.pointer), n1.start, size));
-				else if (type == CompileOutType.TWOOP) {
+				else if (type == CompileOutType.TWOOP || type == CompileOutType.TWOOPREG) {
 					OpReg r = compileReg(rs, fd, n1.pointer);
 					Operand op0 = amd64.mem(r, n1.start, ps);
 					Operand op1 = amd64.mem(r, n1.start + is, ps);
-					return postOp2.apply(op0, op1);
-				} else if (type == CompileOutType.TWOOPREG) {
-					Operand op0 = compileReg(rs, fd, n1.range(0, ps));
-					Operand op1 = compileReg(rs.mask(op0), fd, n1.range(ps, ps + ps));
 					return postOp2.apply(op0, op1);
 				} else
 					throw new RuntimeException();
