@@ -41,6 +41,7 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.AutoObject;
 import suite.util.Rethrow;
+import suite.util.String_;
 
 /**
  * Hindley-Milner type inference.
@@ -131,7 +132,7 @@ public class P1InferType {
 		UnNode<Type> t0 = typeNumber;
 		UnNode<Type> t1 = new TypeLambda(typeNumber, t0);
 		UnNode<Type> t2 = new TypeLambda(typeNumber, t1);
-		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>>empty() //
+		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>> empty() //
 				.put(TermOp.PLUS__.name, t2) //
 				.put(TermOp.MINUS_.name, t2) //
 				.put(TermOp.MULT__.name, t2);
@@ -246,16 +247,22 @@ public class P1InferType {
 				FunpApply n1 = (FunpApply) n0;
 				Funp p = n1.value;
 				Funp lambda = n1.lambda;
-				LambdaType lt = lambdaType(lambda);
-				Funp lambda1 = rewrite(lambda);
-				Funp invoke;
-				if (lt.os == Funp_.pointerSize)
-					invoke = allocStack(p, FunpInvokeInt.of(lambda1));
-				else if (lt.os == Funp_.pointerSize * 2)
-					invoke = allocStack(p, FunpInvokeInt2.of(lambda1));
-				else
-					invoke = FunpAllocStack.of(lt.os, null, allocStack(p, FunpInvokeIo.of(lambda1)));
-				return FunpSaveRegisters.of(invoke);
+
+				if (Boolean.TRUE && lambda instanceof FunpLambda) {
+					LambdaType lt = lambdaType(lambda);
+					Funp lambda1 = rewrite(lambda);
+					Funp invoke;
+					if (lt.os == Funp_.pointerSize)
+						invoke = allocStack(p, FunpInvokeInt.of(lambda1));
+					else if (lt.os == Funp_.pointerSize * 2)
+						invoke = allocStack(p, FunpInvokeInt2.of(lambda1));
+					else
+						invoke = FunpAllocStack.of(lt.os, null, allocStack(p, FunpInvokeIo.of(lambda1)));
+					return FunpSaveRegisters.of(invoke);
+				} else {
+					FunpLambda lambda1 = (FunpLambda) lambda;
+					return rewrite(FunpDefine.of(lambda1.var, n1.value, lambda1.expr));
+				}
 			} else if (n0 instanceof FunpArray) {
 				UnNode<Type> elementType = ((TypeArray) typeOf(n0)).elementType.final_();
 				List<Funp> elements = Read //
@@ -270,10 +277,16 @@ public class P1InferType {
 				return FunpData.of(elements, offsets);
 			} else if (n0 instanceof FunpDefine) {
 				FunpDefine n1 = (FunpDefine) n0;
+				String var = n1.var;
 				Funp value = n1.value;
-				int fs1 = fs - getTypeSize(typeOf(value));
-				Rewrite rewrite1 = new Rewrite(scope, fs1, env.put(n1.var, new Var(scope, fs1, fs)));
-				return allocStack(value, rewrite1.rewrite(n1.expr));
+				Funp expr = n1.expr;
+
+				if (Boolean.TRUE) {
+					int fs1 = fs - getTypeSize(typeOf(value));
+					Rewrite rewrite1 = new Rewrite(scope, fs1, env.put(var, new Var(scope, fs1, fs)));
+					return allocStack(value, rewrite1.rewrite(expr));
+				} else
+					return new Expand(var, n1.value).expand(expr);
 			} else if (n0 instanceof FunpDeref) {
 				FunpDeref n1 = (FunpDeref) n0;
 				return FunpMemory.of(rewrite(n1.pointer), 0, getTypeSize(typeOf(n1)));
@@ -332,6 +345,29 @@ public class P1InferType {
 			for (int i = scope; i < vd.scope; i++)
 				nfp = FunpMemory.of(nfp, 0, Funp_.pointerSize);
 			return FunpMemory.of(nfp, vd.start, vd.end);
+		}
+	}
+
+	private class Expand {
+		private String var;
+		private Funp value;
+
+		private Expand(String var, Funp value) {
+			this.var = var;
+			this.value = value;
+		}
+
+		private Funp expand(Funp n) {
+			return inspect.rewrite(Funp.class, this::expand_, n);
+		}
+
+		private Funp expand_(Funp n0) {
+			if (n0 instanceof FunpDefine) // variable re-defined
+				return String_.equals(((FunpDefine) n0).var, var) ? n0 : null;
+			else if (n0 instanceof FunpVariable)
+				return String_.equals(((FunpVariable) n0).var, var) ? value : n0;
+			else
+				return null;
 		}
 	}
 
