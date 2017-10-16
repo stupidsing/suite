@@ -304,8 +304,6 @@ public class P2GenerateCode {
 								OpReg r_;
 								if (operator == TermOp.PLUS__)
 									emitAddImm(r_ = compileReg(rs, fd, v), i);
-								else if (operator == TermOp.MINUS_)
-									emitAddImm(r_ = compileReg(rs, fd, v), -i);
 								else if (operator == TermOp.MULT__)
 									emitImulImm(r_ = compileReg(rs, fd, v), i);
 								else
