@@ -18,7 +18,7 @@ public class Amd64Dump {
 	private Amd64 amd64 = Amd64.me;
 
 	public String dump(List<Instruction> instructions) {
-		return Read.from(instructions).map(instruction -> dump(instruction) + "\n").collect(As::joined);
+		return Read.from(instructions).map(instruction -> "\n" + dump(instruction)).collect(As::joined);
 	}
 
 	public String dump(Instruction instruction) {

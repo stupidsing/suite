@@ -36,6 +36,7 @@ import suite.funp.P1.FunpSaveRegisters;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.primitive.Bytes;
+import suite.primitive.IntPrimitives.IntObjSink;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -77,7 +78,6 @@ public class P2GenerateCode {
 		return asm.assemble(offset, instructions, dump);
 	}
 
-	// invariant: fd = ESP - EBP
 	private class Compile0 {
 		private Sink<Instruction> emit;
 		private CompileOutType type;
@@ -93,6 +93,7 @@ public class P2GenerateCode {
 			this.target = target;
 		}
 
+		// invariant: fd = ESP - EBP
 		private CompileOut compile(RegisterSet rs, int fd, Funp n0) {
 			Fun<Operand, CompileOut> postOp = op -> {
 				Operand old = op;
@@ -125,14 +126,15 @@ public class P2GenerateCode {
 					throw new RuntimeException();
 			};
 
-			Fun<Sink<FunpMemory>, CompileOut> postAssign = assign -> {
+			Fun<IntObjSink<FunpMemory>, CompileOut> postAssign = assign -> {
 				if (type == CompileOutType.ASSIGN) {
-					assign.sink(target);
+					assign.sink2(fd, target);
 					return new CompileOut();
 				} else if (type == CompileOutType.OP || type == CompileOutType.OPREG) {
 					emit(amd64.instruction(Insn.PUSH, eax));
-					assign.sink(FunpMemory.of(new FunpFramePointer(), fd - is, fd));
-					CompileOut out = postOp.apply(amd64.mem(ebp, fd - is, is));
+					int fd1 = fd - is;
+					assign.sink2(fd1, FunpMemory.of(new FunpFramePointer(), fd1, fd));
+					CompileOut out = postOp.apply(amd64.mem(ebp, fd1, is));
 					emit(amd64.instruction(Insn.POP, rs.mask(out.op0, out.op1).get()));
 					return out;
 				} else if (type == CompileOutType.TWOOP || type == CompileOutType.TWOOPREG) {
@@ -140,7 +142,7 @@ public class P2GenerateCode {
 					int fd1 = fd - size;
 					Operand imm = amd64.imm(size);
 					emit(amd64.instruction(Insn.SUB, esp, imm));
-					assign.sink(FunpMemory.of(new FunpFramePointer(), fd1, fd));
+					assign.sink2(fd1, FunpMemory.of(new FunpFramePointer(), fd1, fd));
 					CompileOut out = postOp2.apply(amd64.mem(ebp, fd1, ps), amd64.mem(ebp, fd1 + ps, ps));
 					emit(amd64.instruction(Insn.ADD, esp, imm));
 					return out;
@@ -179,11 +181,11 @@ public class P2GenerateCode {
 				FunpData n1 = (FunpData) n0;
 				List<Funp> data = n1.data;
 				IntIntPair[] offsets = n1.offsets;
-				return postAssign.apply(target -> {
+				return postAssign.apply((fd1, target) -> {
 					for (int i = 0; i < data.size(); i++) {
 						IntIntPair offset = offsets[i];
 						FunpMemory target_ = FunpMemory.of(target.pointer, target.start + offset.t0, target.end + offset.t1);
-						compileAssignment(rs, fd, target_, data.get(i));
+						compileAssignment(rs, fd1, target_, data.get(i));
 					}
 				});
 			} else if (n0 instanceof FunpFixed)
@@ -222,20 +224,20 @@ public class P2GenerateCode {
 				} else
 					throw new RuntimeException();
 			else if (n0 instanceof FunpInvokeIo)
-				return postAssign.apply(target -> {
+				return postAssign.apply((fd1, target) -> {
 					FunpInvokeIo n1 = (FunpInvokeIo) n0;
-					OpReg r0 = compileReg(rs, fd, target.pointer);
+					OpReg r0 = compileReg(rs, fd1, target.pointer);
 					RegisterSet rs1 = rs.mask(r0);
-					compileInvoke(rs1, fd, n1.routine);
-					compileMove(rs1, r0, target.start, ebp, fd, target.size());
+					compileInvoke(rs1, fd1, n1.routine);
+					compileMove(rs1, r0, target.start, ebp, fd1, target.size());
 				});
 			else if (n0 instanceof FunpMemory) {
 				FunpMemory n1 = (FunpMemory) n0;
 				int size = n1.size();
 				if (type == CompileOutType.ASSIGN)
-					return postAssign.apply(target -> {
-						OpReg r0 = compileReg(rs, fd, target.pointer);
-						OpReg r1 = compileReg(rs.mask(r0), fd, n1.pointer);
+					return postAssign.apply((fd1, target) -> {
+						OpReg r0 = compileReg(rs, fd1, target.pointer);
+						OpReg r1 = compileReg(rs.mask(r0), fd1, n1.pointer);
 						if (size == target.size())
 							compileMove(rs.mask(r0, r1), r0, target.start, r1, n1.start, size);
 						else
