@@ -11,7 +11,9 @@ import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
+import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
+import suite.assembler.Amd64.OpNone;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assembler;
@@ -37,6 +39,7 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.primitive.Bytes;
 import suite.primitive.IntPrimitives.IntObjSink;
+import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -229,7 +232,7 @@ public class P2GenerateCode {
 					OpReg r0 = compileReg(rs, fd1, target.pointer);
 					RegisterSet rs1 = rs.mask(r0);
 					compileInvoke(rs1, fd1, n1.routine);
-					compileMove(rs1, r0, target.start, ebp, fd1, target.size());
+					compileMove(rs1, fd1, r0, target.start, ebp, fd1, target.size());
 				});
 			else if (n0 instanceof FunpMemory) {
 				FunpMemory n1 = (FunpMemory) n0;
@@ -239,7 +242,7 @@ public class P2GenerateCode {
 						OpReg r0 = compileReg(rs, fd1, target.pointer);
 						OpReg r1 = compileReg(rs.mask(r0), fd1, n1.pointer);
 						if (size == target.size())
-							compileMove(rs.mask(r0, r1), r0, target.start, r1, n1.start, size);
+							compileMove(rs.mask(r0, r1), fd1, r0, target.start, r1, n1.start, size);
 						else
 							throw new RuntimeException();
 					});
@@ -284,26 +287,61 @@ public class P2GenerateCode {
 				return out1;
 			} else if (n0 instanceof FunpTree) {
 				OpMem op = decomposeOpMem(n0, is);
-				OpReg r0, r1;
+				Operand op0, op1;
 				if (op != null)
 					if (op.baseReg < 0 && op.indexReg < 0)
-						emit(amd64.instruction(Insn.MOV, r0 = rs.get(), amd64.imm(op.disp, is)));
+						emit(amd64.instruction(Insn.MOV, op0 = rs.get(), amd64.imm(op.disp, is)));
 					else
-						emit(amd64.instruction(Insn.LEA, r0 = rs.get(), op));
+						emit(amd64.instruction(Insn.LEA, op0 = rs.get(), op));
 				else {
 					FunpTree n1 = (FunpTree) n0;
 					Operator operator = n1.operator;
-					if (operator == TermOp.PLUS__ && n1.left instanceof FunpNumber && ((FunpNumber) n1.left).i == 1) {
-						r0 = compileReg(rs, fd, n1.getFirst());
-						r1 = compileReg(rs.mask(r0), fd, n1.getSecond());
-						emit(amd64.instruction(insnByOp.get(operator), r0, r1));
-					} else {
-						r0 = compileReg(rs, fd, n1.getFirst());
-						r1 = compileReg(rs.mask(r0), fd, n1.getSecond());
-						emit(amd64.instruction(insnByOp.get(operator), r0, r1));
-					}
+					op0 = n1 //
+							.streamlet() //
+							.filterKey(k -> k instanceof FunpNumber) //
+							.map((k, v) -> {
+								int i = ((FunpNumber) k).i;
+								OpReg r_;
+								if (operator == TermOp.PLUS__)
+									emitAddImm(r_ = compileReg(rs, fd, v), i);
+								else if (operator == TermOp.MINUS_)
+									emitAddImm(r_ = compileReg(rs, fd, v), -i);
+								else if (operator == TermOp.MULT__)
+									emitImulImm(r_ = compileReg(rs, fd, v), i);
+								else
+									return amd64.none;
+								return r_;
+							}). //
+							filter(r -> !(r instanceof OpNone)).first();
+					if (op0 == null)
+						if (operator == TermOp.DIVIDE) {
+							boolean isSaveEax = rs.contains(eax);
+							Operand opResult = isSaveEax ? rs.get() : eax;
+							IntSink sink0 = fd_ -> {
+								Operand opl_ = compileOp(rs, fd_, n1.left);
+								Operand opr_ = compileOp(rs.mask(opl_), fd_, n1.right);
+								emitMov(eax, opl_);
+								emit(amd64.instruction(Insn.XOR, edx, edx));
+								emit(amd64.instruction(Insn.IDIV, opr_));
+								emitMov(opResult, eax);
+							};
+							IntSink sink1 = isSaveEax ? fd_ -> saveRegs(rs, fd_, sink0, eax) : sink0;
+							saveRegs(rs, fd, sink1, edx);
+							op0 = opResult;
+						} else if (operator == TermOp.MINUS_) {
+							op0 = compileReg(rs, fd, n1.left);
+							op1 = compileOp(rs.mask(op0), fd, n1.left);
+							emit(amd64.instruction(Insn.SUB, op0, op1));
+						} else {
+							op0 = compileReg(rs, fd, n1.getFirst());
+							op1 = compileOp(rs.mask(op0), fd, n1.getSecond());
+							if (operator == TermOp.MULT__ && op1 instanceof OpImm)
+								emit(amd64.instruction(Insn.IMUL, op0, op0, op1));
+							else
+								emit(amd64.instruction(insnByOp.get(operator), op0, op1));
+						}
 				}
-				return postOp.apply(r0);
+				return postOp.apply(op0);
 			} else
 				throw new RuntimeException("cannot compile " + n0);
 		}
@@ -344,10 +382,10 @@ public class P2GenerateCode {
 			return new Compile0(CompileOutType.TWOOP, emit).compile(rs, fd, n);
 		}
 
-		private void compileMove(RegisterSet rs, OpReg r0, int start0, OpReg r1, int start1, int size) {
+		private void compileMove(RegisterSet rs, int fd, OpReg r0, int start0, OpReg r1, int start1, int size) {
 			if (r0 != r1 || start0 != start1)
 				if (size <= 16)
-					saveRegs(rs, () -> {
+					saveRegs(rs, fd, fd_ -> {
 						int i = 0;
 						while (i < size) {
 							int s = i + is <= size ? is : 1;
@@ -358,7 +396,7 @@ public class P2GenerateCode {
 						}
 					}, ecx);
 				else
-					saveRegs(rs, () -> {
+					saveRegs(rs, fd, fd_ -> {
 						emit(amd64.instruction(Insn.LEA, esi, amd64.mem(r1, start1, is)));
 						emit(amd64.instruction(Insn.LEA, edi, amd64.mem(r0, start0, is)));
 						emitMov(ecx, amd64.imm(size / 4, 4));
@@ -429,18 +467,34 @@ public class P2GenerateCode {
 			return list;
 		}
 
-		private void saveRegs(RegisterSet rs, Runnable runnable, OpReg... opRegs) {
-			saveRegs(rs, runnable, 0, opRegs);
+		private void saveRegs(RegisterSet rs, int fd, IntSink sink, OpReg... opRegs) {
+			saveRegs(rs, fd, sink, 0, opRegs);
 		}
 
-		private void saveRegs(RegisterSet rs, Runnable runnable, int index, OpReg... opRegs) {
+		private void saveRegs(RegisterSet rs, int fd, IntSink sink, int index, OpReg... opRegs) {
 			OpReg op;
 			if (index < opRegs.length && rs.contains(op = opRegs[index])) {
 				emit(amd64.instruction(Insn.PUSH, op));
-				saveRegs(rs, runnable, index + 1, opRegs);
+				saveRegs(rs, fd - op.size, sink, index + 1, opRegs);
 				emit(amd64.instruction(Insn.POP, op));
 			} else
-				runnable.run();
+				sink.sink(fd);
+		}
+
+		private void emitAddImm(OpReg r0, int i) {
+			if (i == -1)
+				emit(amd64.instruction(Insn.DEC, r0));
+			else if (i == 1)
+				emit(amd64.instruction(Insn.INC, r0));
+			else
+				emit(amd64.instruction(Insn.ADD, r0, amd64.imm(i, is)));
+		}
+
+		private void emitImulImm(OpReg r0, int i) {
+			if (Integer.bitCount(i) == 1)
+				emit(amd64.instruction(Insn.SHL, r0, amd64.imm(Integer.numberOfTrailingZeros(i), 1)));
+			else
+				emit(amd64.instruction(Insn.IMUL, r0, r0, amd64.imm(i, is)));
 		}
 
 		private void emitMov(Operand op0, Operand op1) {

@@ -5,6 +5,8 @@ import java.util.List;
 import suite.funp.Funp_.Funp;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet2;
 
 public class P0 {
 
@@ -166,6 +168,10 @@ public class P0 {
 
 		public Funp getSecond() {
 			return operator.getAssoc() == Assoc.RIGHT ? left : right;
+		}
+
+		public Streamlet2<Funp, Funp> streamlet() {
+			return Read.<Funp, Funp> empty2().cons(left, right).cons(right, left);
 		}
 	}
 
