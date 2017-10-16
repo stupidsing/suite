@@ -426,15 +426,16 @@ public class P2GenerateCode {
 					}, ecx);
 				else
 					saveRegs(rs, fd, fd_ -> {
-						emit(amd64.instruction(Insn.LEA, esi, amd64.mem(r1, start1, is)));
+						OpReg r = r0 != esi ? esi : rs.mask(edi, r0).get();
+						emit(amd64.instruction(Insn.LEA, r, amd64.mem(r1, start1, is)));
 						emit(amd64.instruction(Insn.LEA, edi, amd64.mem(r0, start0, is)));
+						emitMov(esi, r);
 						emitMov(ecx, amd64.imm(size / 4, 4));
 						emit(amd64.instruction(Insn.CLD));
 						emit(amd64.instruction(Insn.REP));
 						emit(amd64.instruction(Insn.MOVSD));
 						for (int i = 0; i < size % 4; i++)
 							emit(amd64.instruction(Insn.MOVSB));
-						emit(amd64.instruction(Insn.POP, esi));
 					}, ecx, esi, edi);
 		}
 
