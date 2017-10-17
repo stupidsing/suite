@@ -85,7 +85,7 @@ public class P2GenerateCode {
 		private Sink<Instruction> emit;
 		private CompileOutType type;
 		private FunpMemory target; // only for CompileOutType.ASSIGN
-		private OpReg preferOp0, preferOp1;
+		private OpReg pop0, pop1; // preferred
 
 		private Compile0(CompileOutType type, Sink<Instruction> emit) {
 			this(type, emit, null);
@@ -106,7 +106,7 @@ public class P2GenerateCode {
 					return new CompileOut();
 				} else if (type == CompileOutType.OP || type == CompileOutType.OPREG) {
 					if (type == CompileOutType.OPREG && !(op instanceof OpReg))
-						emitMov(op = rs.get(preferOp0), old);
+						emitMov(op = rs.get(pop0), old);
 					return new CompileOut(op);
 				} else
 					throw new RuntimeException();
@@ -122,9 +122,9 @@ public class P2GenerateCode {
 					return new CompileOut();
 				} else if (type == CompileOutType.TWOOP || type == CompileOutType.TWOOPREG) {
 					if (type == CompileOutType.TWOOPREG && !(op0 instanceof OpReg))
-						emitMov(op0 = rs.mask(op1).get(preferOp0), old0);
+						emitMov(op0 = rs.mask(op1).get(pop0), old0);
 					if (type == CompileOutType.TWOOPREG && !(op1 instanceof OpReg))
-						emitMov(op1 = rs.mask(op0).get(preferOp1), old1);
+						emitMov(op1 = rs.mask(op0).get(pop1), old1);
 					return new CompileOut(op0, op1);
 				} else
 					throw new RuntimeException();
@@ -276,9 +276,9 @@ public class P2GenerateCode {
 				Operand op1 = out0.op1;
 
 				if (op0 != null && rs.contains(op0))
-					emitMov(op0 = rs.mask(op1).get(preferOp0), out0.op0);
+					emitMov(op0 = rs.mask(op1).get(pop0), out0.op0);
 				if (op1 != null && rs.contains(op1))
-					emitMov(op1 = rs.mask(op0).get(preferOp1), out0.op1);
+					emitMov(op1 = rs.mask(op0).get(pop1), out0.op1);
 				CompileOut out1 = new CompileOut(op0, op1);
 				for (int i = opRegs.length - 1; 0 <= i; i--)
 					emit(amd64.instruction(Insn.POP, opRegs[i]));
@@ -296,9 +296,9 @@ public class P2GenerateCode {
 
 				if (op != null)
 					if (op.baseReg < 0 && op.indexReg < 0)
-						emit(amd64.instruction(Insn.MOV, op0 = rs.get(preferOp0), amd64.imm(op.disp, is)));
+						emit(amd64.instruction(Insn.MOV, op0 = rs.get(pop0), amd64.imm(op.disp, is)));
 					else
-						emit(amd64.instruction(Insn.LEA, op0 = rs.get(preferOp0), op));
+						emit(amd64.instruction(Insn.LEA, op0 = rs.get(pop0), op));
 				else if (numLhs != null && numRhs != null)
 					op0 = amd64.imm(TreeUtil.evaluateOp(operator).apply(numLhs, numRhs), is);
 				else {
@@ -338,7 +338,7 @@ public class P2GenerateCode {
 					if (opResult == null)
 						if (operator == TermOp.DIVIDE) {
 							boolean isSaveEax = rs.contains(eax);
-							OpReg opResult_ = isSaveEax ? rs.get(preferOp0) : eax;
+							OpReg opResult_ = isSaveEax ? rs.get(pop0) : eax;
 							IntSink sink0 = fd_ -> {
 								Operand opLeft_ = compileOp(rs, fd_, lhs);
 								Operand opRight = compileOp(rs.mask(opLeft_), fd_, rhs);
