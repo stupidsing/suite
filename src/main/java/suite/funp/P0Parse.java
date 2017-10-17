@@ -40,14 +40,15 @@ public class P0Parse {
 		else if ((m = Suite.match("array .0").apply(node)) != null)
 			return FunpArray.of(Tree.iter(m[0], TermOp.AND___).map(this::parse).toList());
 		else if ((m = Suite.match("define .0 := .1 >> .2").apply(node)) != null)
-			return FunpDefine.of(name(m[0]), parse(m[1]), parse(m[2]));
+			return FunpDefine.of(name(m[0]), FunpPolyType.of(parse(m[1])), parse(m[2]));
 		// return parse(Suite.substitute("poly .1 | (.0 => .2)", m));
 		else if ((m = Suite.match("fixed .0 => .1").apply(node)) != null)
 			return FunpFixed.of(name(m[0]), parse(m[1]));
 		else if ((m = Suite.match("if .0 then .1 else .2").apply(node)) != null)
 			return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
 		else if ((m = Suite.match("let .0 := .1 >> .2").apply(node)) != null)
-			return parse(Suite.substitute(".1 | (.0 => .2)", m));
+			return FunpDefine.of(name(m[0]), parse(m[1]), parse(m[2]));
+		// return parse(Suite.substitute(".1 | (.0 => .2)", m));
 		else if ((m = Suite.match(".0 => .1").apply(node)) != null)
 			return FunpLambda.of(name(m[0]), parse(m[1]));
 		else if (node instanceof Int)

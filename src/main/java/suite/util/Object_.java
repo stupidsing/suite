@@ -3,6 +3,7 @@ package suite.util;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -167,7 +168,11 @@ public class Object_ {
 	}
 
 	public static <T> T new_(Class<T> clazz) {
-		return Rethrow.ex(() -> clazz.getDeclaredConstructor().newInstance());
+		return Rethrow.ex(() -> {
+			Constructor<T> ctor = clazz.getDeclaredConstructor();
+			ctor.setAccessible(true);
+			return ctor.newInstance();
+		});
 	}
 
 	public static <T> Comparator<T> nullsFirst(Comparator<T> cmp0) {

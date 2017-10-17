@@ -69,13 +69,15 @@ public class P1InferType {
 		private UnNode<Type> elementType;
 		private int size;
 
-		private TypeArray(UnNode<Type> elementType) {
-			this(elementType, -1);
+		private static TypeArray of(UnNode<Type> elementType) {
+			return TypeArray.of(elementType, -1);
 		}
 
-		private TypeArray(UnNode<Type> elementType, int size) {
-			this.elementType = elementType;
-			this.size = size;
+		private static TypeArray of(UnNode<Type> elementType, int size) {
+			TypeArray t = new TypeArray();
+			t.elementType = elementType;
+			t.size = size;
+			return t;
 		}
 
 		public boolean unify(UnNode<Type> type) {
@@ -100,9 +102,11 @@ public class P1InferType {
 	private static class TypeLambda extends Type {
 		private UnNode<Type> parameterType, returnType;
 
-		private TypeLambda(UnNode<Type> parameterType, UnNode<Type> returnType) {
-			this.parameterType = parameterType;
-			this.returnType = returnType;
+		private static TypeLambda of(UnNode<Type> parameterType, UnNode<Type> returnType) {
+			TypeLambda t = new TypeLambda();
+			t.parameterType = parameterType;
+			t.returnType = returnType;
+			return t;
 		}
 	}
 
@@ -113,8 +117,10 @@ public class P1InferType {
 		@SuppressWarnings("unused")
 		private UnNode<Type> type;
 
-		private TypeReference(UnNode<Type> type) {
-			this.type = type;
+		private static TypeReference of(UnNode<Type> type) {
+			TypeReference t = new TypeReference();
+			t.type = type;
+			return t;
 		}
 	}
 
@@ -130,8 +136,8 @@ public class P1InferType {
 
 	public Funp infer(Funp n0, UnNode<Type> t) {
 		UnNode<Type> t0 = typeNumber;
-		UnNode<Type> t1 = new TypeLambda(typeNumber, t0);
-		UnNode<Type> t2 = new TypeLambda(typeNumber, t1);
+		UnNode<Type> t1 = TypeLambda.of(typeNumber, t0);
+		UnNode<Type> t2 = TypeLambda.of(typeNumber, t1);
 		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>> empty() //
 				.put(TermOp.PLUS__.name, t2) //
 				.put(TermOp.MINUS_.name, t2) //
@@ -168,12 +174,12 @@ public class P1InferType {
 				UnNode<Type> te = unify.newRef();
 				for (Funp element : elements)
 					unify(n0, te, infer_(element));
-				return new TypeArray(te, elements.size());
+				return TypeArray.of(te, elements.size());
 			} else if (n0 instanceof FunpBoolean)
 				return typeBoolean;
 			else if (n0 instanceof FunpDeref) {
 				UnNode<Type> t = unify.newRef();
-				unify(n0, new TypeReference(t), infer(((FunpDeref) n0).pointer));
+				unify(n0, TypeReference.of(t), infer(((FunpDeref) n0).pointer));
 				return t;
 			} else if (n0 instanceof FunpDefine) {
 				FunpDefine n1 = (FunpDefine) n0;
@@ -192,18 +198,18 @@ public class P1InferType {
 			} else if (n0 instanceof FunpIndex) {
 				FunpIndex n1 = (FunpIndex) n0;
 				UnNode<Type> t = unify.newRef();
-				unify(n0, new TypeArray(t), infer(n1.array));
+				unify(n0, TypeArray.of(t), infer(n1.array));
 				return t;
 			} else if (n0 instanceof FunpLambda) {
 				FunpLambda n1 = (FunpLambda) n0;
 				UnNode<Type> tv = unify.newRef();
-				return new TypeLambda(tv, new Infer(env.put(n1.var, tv)).infer(n1.expr));
+				return TypeLambda.of(tv, new Infer(env.put(n1.var, tv)).infer(n1.expr));
 			} else if (n0 instanceof FunpNumber)
 				return typeNumber;
 			else if (n0 instanceof FunpPolyType)
 				return unify.clone(infer(((FunpPolyType) n0).expr));
 			else if (n0 instanceof FunpReference)
-				return new TypeReference(infer(((FunpReference) n0).expr));
+				return TypeReference.of(infer(((FunpReference) n0).expr));
 			else if (n0 instanceof FunpTree) {
 				FunpTree n1 = (FunpTree) n0;
 				UnNode<Type> t0 = infer(n1.left);
