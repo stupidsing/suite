@@ -84,7 +84,7 @@ public class P2GenerateCode {
 	private class Compile0 {
 		private Sink<Instruction> emit;
 		private CompileOutType type;
-		private FunpMemory target;
+		private FunpMemory target; // only for CompileOutType.ASSIGN
 
 		private Compile0(CompileOutType type, Sink<Instruction> emit) {
 			this(type, emit, null);
