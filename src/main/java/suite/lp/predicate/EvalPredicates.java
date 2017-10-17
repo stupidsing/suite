@@ -242,12 +242,24 @@ public class EvalPredicates {
 			fun = (a, b) -> a % b;
 			break;
 		case POWER_:
-			fun = (a, b) -> (int) Math.pow(a, b);
+			fun = this::intPow;
 			break;
 		default:
 			throw new RuntimeException("cannot evaluate operator: " + op);
 		}
 		return fun;
+	}
+
+	private int intPow(int a, int b) {
+		if (b < 0)
+			throw new RuntimeException();
+		else if (b == 0)
+			return 1;
+		else {
+			int p = intPow(a, b / 2);
+			int pp = p * p;
+			return (b % 2 == 1 ? pp * a : pp);
+		}
 	}
 
 }
