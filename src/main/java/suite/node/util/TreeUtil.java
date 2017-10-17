@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import suite.node.Atom;
+import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
@@ -60,6 +61,35 @@ public class TreeUtil {
 				throw new RuntimeException("not enough parameters in " + node0);
 		params[n - 1] = node;
 		return params;
+	}
+
+	public static int evaluate(Node node) {
+		Tree tree = Tree.decompose(node);
+		int result;
+
+		if (tree != null) {
+			Operator op = tree.getOperator();
+			IntInt_Int fun;
+			int lhs, rhs;
+
+			if (op == TermOp.TUPLE_) {
+				Tree rightTree = Tree.decompose(tree.getRight());
+				lhs = evaluate(tree.getLeft());
+				rhs = evaluate(rightTree.getRight());
+				fun = evaluateOp(rightTree.getLeft());
+			} else {
+				lhs = evaluate(tree.getLeft());
+				rhs = evaluate(tree.getRight());
+				fun = evaluateOp(op);
+			}
+
+			result = fun.apply(lhs, rhs);
+		} else if (node instanceof Int)
+			result = ((Int) node).number;
+		else
+			throw new RuntimeException("cannot evaluate expression: " + node);
+
+		return result;
 	}
 
 	public static IntInt_Int evaluateOp(Node op) {

@@ -1,12 +1,12 @@
 package suite.asm;
 
-import suite.lp.predicate.EvalPredicates;
 import suite.lp.predicate.PredicateUtil;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
 
 public class AssemblePredicates {
 
@@ -18,7 +18,7 @@ public class AssemblePredicates {
 
 	private BuiltinPredicate emitBytes(int n) {
 		return PredicateUtil.p3((prover, n0, p0, px) -> {
-			int i = isPass2 ? new EvalPredicates().evaluate(n0) : 0;
+			int i = isPass2 ? TreeUtil.evaluate(n0) : 0;
 			byte[] bytes = new byte[n];
 			Node p = px;
 

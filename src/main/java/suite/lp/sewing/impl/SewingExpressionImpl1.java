@@ -10,12 +10,12 @@ import suite.jdk.gen.FunFactory;
 import suite.jdk.lambda.LambdaImplementation;
 import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
-import suite.lp.predicate.EvalPredicates;
 import suite.lp.sewing.SewingCloner;
 import suite.lp.sewing.SewingCloner.Clone_;
 import suite.lp.sewing.SewingExpression;
 import suite.node.Int;
 import suite.node.Node;
+import suite.node.util.TreeUtil;
 
 public class SewingExpressionImpl1 implements SewingExpression {
 
@@ -23,7 +23,6 @@ public class SewingExpressionImpl1 implements SewingExpression {
 	private static LambdaInterface<Evaluate> lambdaInterface = LambdaInterface.of(Evaluate.class);
 
 	private SewingCloner sc;
-	private EvalPredicates evalPredicates = new EvalPredicates();
 
 	public SewingExpressionImpl1(SewingCloner sc) {
 		this.sc = sc;
@@ -56,7 +55,7 @@ public class SewingExpressionImpl1 implements SewingExpression {
 			return LambdaInstance.of(compiledNumber, Map.of(keyNumber, ((Int) node).number));
 		else {
 			Clone_ n_ = sc.compile(node);
-			Evaluate evaluate = env -> evalPredicates.evaluate(n_.apply(env));
+			Evaluate evaluate = env -> TreeUtil.evaluate(n_.apply(env));
 			return LambdaInstance.of(compiledEval, Map.of(keyEval, evaluate));
 		}
 	}

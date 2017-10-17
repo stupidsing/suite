@@ -30,7 +30,6 @@ import suite.node.util.Cyclic;
 import suite.node.util.TreeRewriter;
 import suite.node.util.TreeUtil;
 import suite.os.LogUtil;
-import suite.primitive.IntInt_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
 
@@ -135,7 +134,7 @@ public class EvalPredicates {
 		}
 	});
 
-	public BuiltinPredicate let = PredicateUtil.p2((prover, var, expr) -> prover.bind(Int.of(evaluate(expr)), var));
+	public BuiltinPredicate let = PredicateUtil.p2((prover, var, expr) -> prover.bind(Int.of(TreeUtil.evaluate(expr)), var));
 
 	public BuiltinPredicate notEquals = (prover, ps) -> {
 		Tree tree = (Tree) ps;
@@ -169,34 +168,5 @@ public class EvalPredicates {
 		} else
 			return false;
 	});
-
-	public int evaluate(Node node) {
-		Tree tree = Tree.decompose(node);
-		int result;
-
-		if (tree != null) {
-			Operator op = tree.getOperator();
-			IntInt_Int fun;
-			int lhs, rhs;
-
-			if (op == TermOp.TUPLE_) {
-				Tree rightTree = Tree.decompose(tree.getRight());
-				lhs = evaluate(tree.getLeft());
-				rhs = evaluate(rightTree.getRight());
-				fun = TreeUtil.evaluateOp(rightTree.getLeft());
-			} else {
-				lhs = evaluate(tree.getLeft());
-				rhs = evaluate(tree.getRight());
-				fun = TreeUtil.evaluateOp(op);
-			}
-
-			result = fun.apply(lhs, rhs);
-		} else if (node instanceof Int)
-			result = ((Int) node).number;
-		else
-			throw new RuntimeException("cannot evaluate expression: " + node);
-
-		return result;
-	}
 
 }

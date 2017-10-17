@@ -1,6 +1,5 @@
 package suite.lp.sewing.impl;
 
-import suite.lp.predicate.EvalPredicates;
 import suite.lp.sewing.SewingCloner;
 import suite.lp.sewing.SewingCloner.Clone_;
 import suite.lp.sewing.SewingExpression;
@@ -14,7 +13,6 @@ import suite.primitive.IntInt_Int;
 
 public class SewingExpressionImpl0 implements SewingExpression {
 
-	private EvalPredicates ep = new EvalPredicates();
 	private SewingCloner sc;
 
 	public SewingExpressionImpl0(SewingCloner sc) {
@@ -46,7 +44,7 @@ public class SewingExpressionImpl0 implements SewingExpression {
 			return env -> i;
 		} else {
 			Clone_ f = sc.compile(node);
-			return env -> ep.evaluate(f.apply(env));
+			return env -> TreeUtil.evaluate(f.apply(env));
 		}
 	}
 
