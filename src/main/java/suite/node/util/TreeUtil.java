@@ -1,7 +1,10 @@
 package suite.node.util;
 
+import static java.util.Map.entry;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import suite.node.Atom;
 import suite.node.Node;
@@ -14,10 +17,21 @@ import suite.util.Object_;
 
 public class TreeUtil {
 
-	private static Atom AND = Atom.of("and");
-	private static Atom OR_ = Atom.of("or");
-	private static Atom SHL = Atom.of("shl");
-	private static Atom SHR = Atom.of("shr");
+	private static Map<Node, IntInt_Int> nodeOperations = Map.ofEntries( //
+			entry(Atom.of("and"), (a, b) -> a & b), //
+			entry(Atom.of("or"), (a, b) -> a | b), //
+			entry(Atom.of("shl"), (a, b) -> a << b), //
+			entry(Atom.of("shr"), (a, b) -> a >> b));
+
+	private static Map<Operator, IntInt_Int> operatorOperations = Map.ofEntries( //
+			entry(TermOp.BIGAND, (a, b) -> a & b), //
+			entry(TermOp.BIGOR_, (a, b) -> a | b), //
+			entry(TermOp.PLUS__, (a, b) -> a + b), //
+			entry(TermOp.MINUS_, (a, b) -> a - b), //
+			entry(TermOp.MULT__, (a, b) -> a * b), //
+			entry(TermOp.DIVIDE, (a, b) -> a / b), //
+			entry(TermOp.MODULO, (a, b) -> a % b), //
+			entry(TermOp.POWER_, TreeUtil::intPow));
 
 	public static List<Node> breakdown(Operator operator, Node node) {
 		List<Node> list = new ArrayList<>();
@@ -49,39 +63,19 @@ public class TreeUtil {
 	}
 
 	public static IntInt_Int evaluateOp(Node op) {
-		if (op == AND)
-			return (a, b) -> a & b;
-		else if (op == OR_)
-			return (a, b) -> a | b;
-		else if (op == SHL)
-			return (a, b) -> a << b;
-		else if (op == SHR)
-			return (a, b) -> a >> b;
+		IntInt_Int fun = nodeOperations.get(op);
+		if (fun != null)
+			return fun;
 		else
 			throw new RuntimeException("cannot evaluate operator: " + op);
 	}
 
-	public static IntInt_Int evaluateOp(TermOp op) {
-		switch (op) {
-		case BIGAND:
-			return (a, b) -> a & b;
-		case BIGOR_:
-			return (a, b) -> a | b;
-		case PLUS__:
-			return (a, b) -> a + b;
-		case MINUS_:
-			return (a, b) -> a - b;
-		case MULT__:
-			return (a, b) -> a * b;
-		case DIVIDE:
-			return (a, b) -> a / b;
-		case MODULO:
-			return (a, b) -> a % b;
-		case POWER_:
-			return TreeUtil::intPow;
-		default:
+	public static IntInt_Int evaluateOp(Operator op) {
+		IntInt_Int fun = operatorOperations.get(op);
+		if (fun != null)
+			return fun;
+		else
 			throw new RuntimeException("cannot evaluate operator: " + op);
-		}
 	}
 
 	public static boolean isList(Node node, Operator operator) {
