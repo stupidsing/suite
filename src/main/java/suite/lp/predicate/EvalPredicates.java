@@ -175,7 +175,7 @@ public class EvalPredicates {
 		int result;
 
 		if (tree != null) {
-			TermOp op = (TermOp) tree.getOperator();
+			Operator op = tree.getOperator();
 			IntInt_Int fun;
 			int lhs, rhs;
 

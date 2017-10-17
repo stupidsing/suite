@@ -302,7 +302,7 @@ public class P2GenerateCode {
 					else
 						emit(amd64.instruction(Insn.LEA, op0 = rs.get(), op));
 				else if (numLhs != null && numRhs != null)
-					op0 = amd64.imm(TreeUtil.evaluateOp((TermOp) operator).apply(numLhs, numRhs), is);
+					op0 = amd64.imm(TreeUtil.evaluateOp(operator).apply(numLhs, numRhs), is);
 				else {
 					Fun2<OpReg, Sink2<? super OpReg, Integer>, OpReg> fun = (op_, f) -> {
 						if (op_ == null && numRhs != null)

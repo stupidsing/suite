@@ -7,6 +7,7 @@ import suite.lp.sewing.SewingExpression;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.IntInt_Int;
@@ -24,7 +25,7 @@ public class SewingExpressionImpl0 implements SewingExpression {
 		Tree tree = Tree.decompose(node);
 
 		if (tree != null) {
-			TermOp op = (TermOp) tree.getOperator();
+			Operator op = tree.getOperator();
 			Evaluate lhs, rhs;
 			IntInt_Int fun;
 

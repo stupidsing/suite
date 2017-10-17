@@ -142,7 +142,7 @@ public class P1GenerateLambda {
 				else if (n1.operator == TermOp.BIGOR_)
 					return rt -> new Bool(b(rt, v0) || b(rt, v1));
 				else {
-					IntInt_Int fun = TreeUtil.evaluateOp((TermOp) n1.operator);
+					IntInt_Int fun = TreeUtil.evaluateOp(n1.operator);
 					return rt -> new Int(fun.apply(i(rt, v0), i(rt, v1)));
 				}
 			} else if (n0 instanceof FunpVariable) {
