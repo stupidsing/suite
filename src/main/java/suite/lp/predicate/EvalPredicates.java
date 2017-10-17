@@ -29,10 +29,13 @@ import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
 import suite.node.util.TreeRewriter;
 import suite.os.LogUtil;
+import suite.primitive.IntInt_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
 
 public class EvalPredicates {
+
+	private static Random random = new Random();
 
 	private Atom AND = Atom.of("and");
 	private Atom OR_ = Atom.of("or");
@@ -40,8 +43,6 @@ public class EvalPredicates {
 	private Atom SHR = Atom.of("shr");
 	private Comparer comparer = Comparer.comparer;
 	private Fun<String, ScriptEngine> engines = Memoize.fun(new ScriptEngineManager()::getEngineByExtension);
-
-	private static Random random = new Random();
 
 	public BuiltinPredicate bound = PredicateUtil.bool(n -> !(n instanceof Reference));
 
@@ -173,28 +174,26 @@ public class EvalPredicates {
 	});
 
 	public int evaluate(Node node) {
-		int result;
 		Tree tree = Tree.decompose(node);
+		int result;
 
 		if (tree != null) {
 			TermOp op = (TermOp) tree.getOperator();
+			IntInt_Int fun;
+			int lhs, rhs;
 
 			if (op == TermOp.TUPLE_) {
 				Tree rightTree = Tree.decompose(tree.getRight());
-				Node op1 = rightTree.getLeft();
-				int a = evaluate(tree.getLeft()), b = evaluate(rightTree.getRight());
-				if (op1 == AND)
-					result = a & b;
-				else if (op1 == OR_)
-					result = a | b;
-				else if (op1 == SHL)
-					result = a << b;
-				else if (op1 == SHR)
-					result = a >> b;
-				else
-					throw new RuntimeException("cannot evaluate expression: " + node);
-			} else
-				result = evaluate(op, evaluate(tree.getLeft()), evaluate(tree.getRight()));
+				lhs = evaluate(tree.getLeft());
+				rhs = evaluate(rightTree.getRight());
+				fun = evaluate_(rightTree.getLeft());
+			} else {
+				lhs = evaluate(tree.getLeft());
+				rhs = evaluate(tree.getRight());
+				fun = evaluate_(op);
+			}
+
+			result = fun.apply(lhs, rhs);
 		} else if (node instanceof Int)
 			result = ((Int) node).number;
 		else
@@ -203,37 +202,52 @@ public class EvalPredicates {
 		return result;
 	}
 
-	public int evaluate(TermOp op, int a, int b) {
-		int result;
+	public IntInt_Int evaluate_(Node op) {
+		IntInt_Int fun;
+		if (op == AND)
+			fun = (a, b) -> a & b;
+		else if (op == OR_)
+			fun = (a, b) -> a | b;
+		else if (op == SHL)
+			fun = (a, b) -> a << b;
+		else if (op == SHR)
+			fun = (a, b) -> a >> b;
+		else
+			throw new RuntimeException("cannot evaluate operator: " + op);
+		return fun;
+	}
+
+	public IntInt_Int evaluate_(TermOp op) {
+		IntInt_Int fun;
 		switch (op) {
 		case BIGAND:
-			result = a & b;
+			fun = (a, b) -> a & b;
 			break;
 		case BIGOR_:
-			result = a | b;
+			fun = (a, b) -> a | b;
 			break;
 		case PLUS__:
-			result = a + b;
+			fun = (a, b) -> a + b;
 			break;
 		case MINUS_:
-			result = a - b;
+			fun = (a, b) -> a - b;
 			break;
 		case MULT__:
-			result = a * b;
+			fun = (a, b) -> a * b;
 			break;
 		case DIVIDE:
-			result = a / b;
+			fun = (a, b) -> a / b;
 			break;
 		case MODULO:
-			result = a % b;
+			fun = (a, b) -> a % b;
 			break;
 		case POWER_:
-			result = (int) Math.pow(a, b);
+			fun = (a, b) -> (int) Math.pow(a, b);
 			break;
 		default:
 			throw new RuntimeException("cannot evaluate operator: " + op);
 		}
-		return result;
+		return fun;
 	}
 
 }
