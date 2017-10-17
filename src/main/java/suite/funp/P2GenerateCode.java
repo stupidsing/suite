@@ -34,9 +34,9 @@ import suite.funp.P1.FunpRoutine;
 import suite.funp.P1.FunpRoutine2;
 import suite.funp.P1.FunpRoutineIo;
 import suite.funp.P1.FunpSaveRegisters;
-import suite.lp.predicate.EvalPredicates;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
 import suite.primitive.IntPrimitives.IntObjSink;
 import suite.primitive.IntPrimitives.IntSink;
@@ -70,8 +70,6 @@ public class P2GenerateCode {
 			entry(TermOp.PLUS__, Insn.ADD), //
 			entry(TermOp.MINUS_, Insn.SUB), //
 			entry(TermOp.MULT__, Insn.IMUL));
-
-	private EvalPredicates ep = new EvalPredicates();
 
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
@@ -304,7 +302,7 @@ public class P2GenerateCode {
 					else
 						emit(amd64.instruction(Insn.LEA, op0 = rs.get(), op));
 				else if (numLhs != null && numRhs != null)
-					op0 = amd64.imm(ep.evaluateOp((TermOp) operator).apply(numLhs, numRhs), is);
+					op0 = amd64.imm(TreeUtil.evaluateOp((TermOp) operator).apply(numLhs, numRhs), is);
 				else {
 					Fun2<OpReg, Sink2<? super OpReg, Integer>, OpReg> fun = (op_, f) -> {
 						if (op_ == null && numRhs != null)

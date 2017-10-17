@@ -17,8 +17,8 @@ import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
-import suite.lp.predicate.EvalPredicates;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
 import suite.primitive.IntInt_Int;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -142,7 +142,7 @@ public class P1GenerateLambda {
 				else if (n1.operator == TermOp.BIGOR_)
 					return rt -> new Bool(b(rt, v0) || b(rt, v1));
 				else {
-					IntInt_Int fun = new EvalPredicates().evaluateOp((TermOp) n1.operator);
+					IntInt_Int fun = TreeUtil.evaluateOp((TermOp) n1.operator);
 					return rt -> new Int(fun.apply(i(rt, v0), i(rt, v1)));
 				}
 			} else if (n0 instanceof FunpVariable) {

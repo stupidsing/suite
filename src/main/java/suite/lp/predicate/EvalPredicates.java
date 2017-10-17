@@ -28,6 +28,7 @@ import suite.node.util.Comparer;
 import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
 import suite.node.util.TreeRewriter;
+import suite.node.util.TreeUtil;
 import suite.os.LogUtil;
 import suite.primitive.IntInt_Int;
 import suite.util.FunUtil.Fun;
@@ -37,10 +38,6 @@ public class EvalPredicates {
 
 	private static Random random = new Random();
 
-	private Atom AND = Atom.of("and");
-	private Atom OR_ = Atom.of("or");
-	private Atom SHL = Atom.of("shl");
-	private Atom SHR = Atom.of("shr");
 	private Comparer comparer = Comparer.comparer;
 	private Fun<String, ScriptEngine> engines = Memoize.fun(new ScriptEngineManager()::getEngineByExtension);
 
@@ -186,11 +183,11 @@ public class EvalPredicates {
 				Tree rightTree = Tree.decompose(tree.getRight());
 				lhs = evaluate(tree.getLeft());
 				rhs = evaluate(rightTree.getRight());
-				fun = evaluateOp(rightTree.getLeft());
+				fun = TreeUtil.evaluateOp(rightTree.getLeft());
 			} else {
 				lhs = evaluate(tree.getLeft());
 				rhs = evaluate(tree.getRight());
-				fun = evaluateOp(op);
+				fun = TreeUtil.evaluateOp(op);
 			}
 
 			result = fun.apply(lhs, rhs);
@@ -200,54 +197,6 @@ public class EvalPredicates {
 			throw new RuntimeException("cannot evaluate expression: " + node);
 
 		return result;
-	}
-
-	public IntInt_Int evaluateOp(Node op) {
-		if (op == AND)
-			return (a, b) -> a & b;
-		else if (op == OR_)
-			return (a, b) -> a | b;
-		else if (op == SHL)
-			return (a, b) -> a << b;
-		else if (op == SHR)
-			return (a, b) -> a >> b;
-		else
-			throw new RuntimeException("cannot evaluate operator: " + op);
-	}
-
-	public IntInt_Int evaluateOp(TermOp op) {
-		switch (op) {
-		case BIGAND:
-			return (a, b) -> a & b;
-		case BIGOR_:
-			return (a, b) -> a | b;
-		case PLUS__:
-			return (a, b) -> a + b;
-		case MINUS_:
-			return (a, b) -> a - b;
-		case MULT__:
-			return (a, b) -> a * b;
-		case DIVIDE:
-			return (a, b) -> a / b;
-		case MODULO:
-			return (a, b) -> a % b;
-		case POWER_:
-			return this::intPow;
-		default:
-			throw new RuntimeException("cannot evaluate operator: " + op);
-		}
-	}
-
-	private int intPow(int a, int b) {
-		if (b < 0)
-			throw new RuntimeException();
-		else if (b == 0)
-			return 1;
-		else {
-			int p = intPow(a, b / 2);
-			int pp = p * p;
-			return (b % 2 == 1 ? pp * a : pp);
-		}
 	}
 
 }

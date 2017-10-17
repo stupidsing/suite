@@ -8,6 +8,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
 import suite.primitive.IntInt_Int;
 
 public class SewingExpressionImpl0 implements SewingExpression {
@@ -31,11 +32,11 @@ public class SewingExpressionImpl0 implements SewingExpression {
 				Tree rightTree = Tree.decompose(tree.getRight());
 				lhs = compile(tree.getLeft());
 				rhs = compile(rightTree.getRight());
-				fun = ep.evaluateOp(rightTree.getLeft());
+				fun = TreeUtil.evaluateOp(rightTree.getLeft());
 			} else {
 				lhs = compile(tree.getLeft());
 				rhs = compile(tree.getRight());
-				fun = ep.evaluateOp(op);
+				fun = TreeUtil.evaluateOp(op);
 			}
 
 			return env -> fun.apply(lhs.evaluate(env), rhs.evaluate(env));
