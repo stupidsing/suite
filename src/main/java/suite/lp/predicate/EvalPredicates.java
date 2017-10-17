@@ -203,51 +203,39 @@ public class EvalPredicates {
 	}
 
 	public IntInt_Int evaluateOp(Node op) {
-		IntInt_Int fun;
 		if (op == AND)
-			fun = (a, b) -> a & b;
+			return (a, b) -> a & b;
 		else if (op == OR_)
-			fun = (a, b) -> a | b;
+			return (a, b) -> a | b;
 		else if (op == SHL)
-			fun = (a, b) -> a << b;
+			return (a, b) -> a << b;
 		else if (op == SHR)
-			fun = (a, b) -> a >> b;
+			return (a, b) -> a >> b;
 		else
 			throw new RuntimeException("cannot evaluate operator: " + op);
-		return fun;
 	}
 
 	public IntInt_Int evaluateOp(TermOp op) {
-		IntInt_Int fun;
 		switch (op) {
 		case BIGAND:
-			fun = (a, b) -> a & b;
-			break;
+			return (a, b) -> a & b;
 		case BIGOR_:
-			fun = (a, b) -> a | b;
-			break;
+			return (a, b) -> a | b;
 		case PLUS__:
-			fun = (a, b) -> a + b;
-			break;
+			return (a, b) -> a + b;
 		case MINUS_:
-			fun = (a, b) -> a - b;
-			break;
+			return (a, b) -> a - b;
 		case MULT__:
-			fun = (a, b) -> a * b;
-			break;
+			return (a, b) -> a * b;
 		case DIVIDE:
-			fun = (a, b) -> a / b;
-			break;
+			return (a, b) -> a / b;
 		case MODULO:
-			fun = (a, b) -> a % b;
-			break;
+			return (a, b) -> a % b;
 		case POWER_:
-			fun = this::intPow;
-			break;
+			return this::intPow;
 		default:
 			throw new RuntimeException("cannot evaluate operator: " + op);
 		}
-		return fun;
 	}
 
 	private int intPow(int a, int b) {
