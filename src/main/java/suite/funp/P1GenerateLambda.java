@@ -1,11 +1,12 @@
 package suite.funp;
 
-import java.lang.reflect.Array;
-
 import suite.adt.Mutable;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
+import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
@@ -17,6 +18,8 @@ import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.node.io.TermOp;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 
 public class P1GenerateLambda {
@@ -50,6 +53,14 @@ public class P1GenerateLambda {
 		}
 	}
 
+	public static class Vec implements Value {
+		public final Value[] values;
+
+		private Vec(Value[] values) {
+			this.values = values;
+		}
+	}
+
 	public interface Thunk extends Fun<Rt, Value>, Value {
 	}
 
@@ -62,10 +73,19 @@ public class P1GenerateLambda {
 			Thunk lambda = compile(fs, env, n1.lambda);
 			Thunk value = compile(fs, env, n1.value);
 			return rt -> ((Fun_) lambda.apply(rt)).apply(value.apply(rt));
+		} else if (n0 instanceof FunpArray) {
+			FunpArray n1 = (FunpArray) n0;
+			Streamlet<Thunk> thunks = Read.from(n1.elements).map(element -> compile(fs, env, element));
+			return rt -> new Vec(thunks.map(thunk -> thunk.apply(rt)).toArray(Value.class));
 		} else if (n0 instanceof FunpBoolean) {
 			Bool b = new Bool(((FunpBoolean) n0).b);
 			return rt -> b;
-		} else if (n0 instanceof FunpFixed) {
+		} else if (n0 instanceof FunpDefine) {
+			FunpDefine n1 = (FunpDefine) n0;
+			return compile(fs, env, FunpApply.of(n1.value, FunpLambda.of(n1.var, n1.expr)));
+		} else if (n0 instanceof FunpDeref)
+			throw new RuntimeException();
+		else if (n0 instanceof FunpFixed) {
 			FunpLambda n1 = (FunpLambda) n0;
 			int fs1 = fs + 1;
 			Thunk thunk = compile(fs1, env.put(n1.var, fs1), n1.expr);
@@ -85,7 +105,7 @@ public class P1GenerateLambda {
 			FunpIndex n1 = (FunpIndex) n0;
 			Thunk array = compile(fs, env, n1.array);
 			Thunk index = compile(fs, env, n1.index);
-			return rt -> (Value) Array.get(array.apply(rt), i(rt, index));
+			return rt -> ((Vec) array.apply(rt)).values[i(rt, index)];
 		} else if (n0 instanceof FunpLambda) {
 			FunpLambda n1 = (FunpLambda) n0;
 			int fs1 = fs + 1;
