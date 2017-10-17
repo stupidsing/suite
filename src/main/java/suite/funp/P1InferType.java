@@ -138,7 +138,7 @@ public class P1InferType {
 				.put(TermOp.MULT__.name, t2);
 
 		if (unify.unify(t, new Infer(env).infer(n0)))
-			return rewrite(0, 0, IMap.empty(), n0);
+			return erase(0, 0, IMap.empty(), n0);
 		else
 			throw new RuntimeException("cannot infer type for " + n0);
 	}
@@ -223,26 +223,26 @@ public class P1InferType {
 			throw new RuntimeException("cannot infer type for " + n0);
 	}
 
-	private Funp rewrite(int scope, int fs, IMap<String, Var> env, Funp n) {
-		return new Rewrite(scope, fs, env).rewrite(n);
+	private Funp erase(int scope, int fs, IMap<String, Var> env, Funp n) {
+		return new Erase(scope, fs, env).erase(n);
 	}
 
-	private class Rewrite {
+	private class Erase {
 		private int scope;
 		private int fs;
 		private IMap<String, Var> env;
 
-		private Rewrite(int scope, int fs, IMap<String, Var> env) {
+		private Erase(int scope, int fs, IMap<String, Var> env) {
 			this.scope = scope;
 			this.fs = fs;
 			this.env = env;
 		}
 
-		private Funp rewrite(Funp n) {
-			return inspect.rewrite(Funp.class, this::rewrite_, n);
+		private Funp erase(Funp n) {
+			return inspect.rewrite(Funp.class, this::erase_, n);
 		}
 
-		private Funp rewrite_(Funp n0) {
+		private Funp erase_(Funp n0) {
 			if (n0 instanceof FunpApply) {
 				FunpApply n1 = (FunpApply) n0;
 				Funp value = n1.value;
@@ -250,7 +250,7 @@ public class P1InferType {
 
 				if (Boolean.TRUE || !(lambda instanceof FunpLambda)) {
 					LambdaType lt = lambdaType(lambda);
-					Funp lambda1 = rewrite(lambda);
+					Funp lambda1 = erase(lambda);
 					Funp invoke;
 					if (lt.os == Funp_.pointerSize)
 						invoke = allocStack(value, FunpInvokeInt.of(lambda1));
@@ -261,13 +261,13 @@ public class P1InferType {
 					return FunpSaveRegisters.of(invoke);
 				} else {
 					FunpLambda lambda1 = (FunpLambda) lambda;
-					return rewrite(FunpDefine.of(lambda1.var, value, lambda1.expr));
+					return erase(FunpDefine.of(lambda1.var, value, lambda1.expr));
 				}
 			} else if (n0 instanceof FunpArray) {
 				UnNode<Type> elementType = ((TypeArray) typeOf(n0)).elementType.final_();
 				List<Funp> elements = Read //
 						.from(((FunpArray) n0).elements) //
-						.map(this::rewrite) //
+						.map(this::erase) //
 						.toList();
 				int elementSize = getTypeSize(elementType);
 				IntIntPair[] offsets = Ints_ //
@@ -283,19 +283,19 @@ public class P1InferType {
 
 				if (Boolean.TRUE) {
 					int fs1 = fs - getTypeSize(typeOf(value));
-					Rewrite rewrite1 = new Rewrite(scope, fs1, env.put(var, new Var(scope, fs1, fs)));
-					return allocStack(value, rewrite1.rewrite(expr));
+					Erase erase1 = new Erase(scope, fs1, env.put(var, new Var(scope, fs1, fs)));
+					return allocStack(value, erase1.erase(expr));
 				} else
-					return rewrite(new Expand(var, n1.value).expand(expr));
+					return erase(new Expand(var, n1.value).expand(expr));
 			} else if (n0 instanceof FunpDeref) {
 				FunpDeref n1 = (FunpDeref) n0;
-				return FunpMemory.of(rewrite(n1.pointer), 0, getTypeSize(typeOf(n1)));
+				return FunpMemory.of(erase(n1.pointer), 0, getTypeSize(typeOf(n1)));
 			} else if (n0 instanceof FunpIndex) {
 				FunpIndex n1 = (FunpIndex) n0;
 				Funp array = n1.array;
 				int size = getTypeSize(((TypeArray) typeOf(array)).elementType);
-				Funp address0 = getAddress(rewrite(array));
-				FunpTree inc = FunpTree.of(TermOp.MULT__, rewrite(n1.index), FunpNumber.of(size));
+				Funp address0 = getAddress(erase(array));
+				FunpTree inc = FunpTree.of(TermOp.MULT__, erase(n1.index), FunpNumber.of(size));
 				Funp address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
 			} else if (n0 instanceof FunpLambda) {
@@ -304,8 +304,8 @@ public class P1InferType {
 				String var = n1.var;
 				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n0);
-				Rewrite rewrite1 = new Rewrite(scope1, 0, env.put(var, new Var(scope1, b, b + lt.is)));
-				Funp expr = rewrite1.rewrite(n1.expr);
+				Erase erase1 = new Erase(scope1, 0, env.put(var, new Var(scope1, b, b + lt.is)));
+				Funp expr = erase1.erase(n1.expr);
 				if (lt.os == Funp_.pointerSize)
 					return FunpRoutine.of(expr);
 				else if (lt.os == Funp_.pointerSize * 2)
@@ -314,9 +314,9 @@ public class P1InferType {
 					return FunpRoutineIo.of(expr, lt.is, lt.os);
 			} else if (n0 instanceof FunpPolyType) {
 				Funp expr = ((FunpPolyType) n0).expr;
-				return rewrite(expr);
+				return erase(expr);
 			} else if (n0 instanceof FunpReference)
-				return getAddress(rewrite(((FunpReference) n0).expr));
+				return getAddress(erase(((FunpReference) n0).expr));
 			else if (n0 instanceof FunpVariable) {
 				Var vd = env.get(((FunpVariable) n0).var);
 				return getVariable(vd);
@@ -326,7 +326,7 @@ public class P1InferType {
 
 		private Funp allocStack(Funp p, Funp expr) {
 			UnNode<Type> t = typeOf(p);
-			return FunpAllocStack.of(getTypeSize(t), rewrite(p), expr);
+			return FunpAllocStack.of(getTypeSize(t), erase(p), expr);
 		}
 
 		private Funp getAddress(Funp n0) {
