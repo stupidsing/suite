@@ -31,11 +31,11 @@ public class SewingExpressionImpl0 implements SewingExpression {
 				Tree rightTree = Tree.decompose(tree.getRight());
 				lhs = compile(tree.getLeft());
 				rhs = compile(rightTree.getRight());
-				fun = ep.evaluate_(rightTree.getLeft());
+				fun = ep.evaluateOp(rightTree.getLeft());
 			} else {
 				lhs = compile(tree.getLeft());
 				rhs = compile(tree.getRight());
-				fun = ep.evaluate_(op);
+				fun = ep.evaluateOp(op);
 			}
 
 			return env -> fun.apply(lhs.evaluate(env), rhs.evaluate(env));

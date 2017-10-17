@@ -186,11 +186,11 @@ public class EvalPredicates {
 				Tree rightTree = Tree.decompose(tree.getRight());
 				lhs = evaluate(tree.getLeft());
 				rhs = evaluate(rightTree.getRight());
-				fun = evaluate_(rightTree.getLeft());
+				fun = evaluateOp(rightTree.getLeft());
 			} else {
 				lhs = evaluate(tree.getLeft());
 				rhs = evaluate(tree.getRight());
-				fun = evaluate_(op);
+				fun = evaluateOp(op);
 			}
 
 			result = fun.apply(lhs, rhs);
@@ -202,7 +202,7 @@ public class EvalPredicates {
 		return result;
 	}
 
-	public IntInt_Int evaluate_(Node op) {
+	public IntInt_Int evaluateOp(Node op) {
 		IntInt_Int fun;
 		if (op == AND)
 			fun = (a, b) -> a & b;
@@ -217,7 +217,7 @@ public class EvalPredicates {
 		return fun;
 	}
 
-	public IntInt_Int evaluate_(TermOp op) {
+	public IntInt_Int evaluateOp(TermOp op) {
 		IntInt_Int fun;
 		switch (op) {
 		case BIGAND:
