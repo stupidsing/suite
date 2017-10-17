@@ -45,6 +45,10 @@ public class RegisterSet {
 		return (flag & flag(operands)) != 0;
 	}
 
+	public OpReg get(OpReg prefer) {
+		return prefer != null && !isSet(prefer.reg) ? prefer : get();
+	}
+
 	public OpReg get() {
 		for (int i = 0; i < nRegisters; i++)
 			if (!isSet(i))

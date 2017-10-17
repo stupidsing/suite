@@ -85,6 +85,7 @@ public class P2GenerateCode {
 		private Sink<Instruction> emit;
 		private CompileOutType type;
 		private FunpMemory target; // only for CompileOutType.ASSIGN
+		private OpReg preferOp0, preferOp1;
 
 		private Compile0(CompileOutType type, Sink<Instruction> emit) {
 			this(type, emit, null);
@@ -105,7 +106,7 @@ public class P2GenerateCode {
 					return new CompileOut();
 				} else if (type == CompileOutType.OP || type == CompileOutType.OPREG) {
 					if (type == CompileOutType.OPREG && !(op instanceof OpReg))
-						emitMov(op = rs.get(), old);
+						emitMov(op = rs.get(preferOp0), old);
 					return new CompileOut(op);
 				} else
 					throw new RuntimeException();
@@ -121,9 +122,9 @@ public class P2GenerateCode {
 					return new CompileOut();
 				} else if (type == CompileOutType.TWOOP || type == CompileOutType.TWOOPREG) {
 					if (type == CompileOutType.TWOOPREG && !(op0 instanceof OpReg))
-						emitMov(op0 = rs.mask(op1).get(), old0);
+						emitMov(op0 = rs.mask(op1).get(preferOp0), old0);
 					if (type == CompileOutType.TWOOPREG && !(op1 instanceof OpReg))
-						emitMov(op1 = rs.mask(op0).get(), old1);
+						emitMov(op1 = rs.mask(op0).get(preferOp1), old1);
 					return new CompileOut(op0, op1);
 				} else
 					throw new RuntimeException();
@@ -195,26 +196,23 @@ public class P2GenerateCode {
 				throw new RuntimeException();
 			else if (n0 instanceof FunpFramePointer)
 				return postOp.apply(ebp);
-			else if (n0 instanceof FunpIf)
-				if (type == CompileOutType.OP || type == CompileOutType.OPREG) {
-					FunpIf n1 = (FunpIf) n0;
-					Operand elseLabel = amd64.imm(0, ps);
-					Operand endLabel = amd64.imm(0, ps);
-					OpReg r0 = compileReg(rs, fd, n1.if_);
-					emit(amd64.instruction(Insn.OR, r0, r0));
-					emit(amd64.instruction(Insn.JZ, elseLabel));
-					Operand t0 = compileOp(rs, fd, n1.then);
-					emit(amd64.instruction(Insn.JMP, endLabel));
-					emit(amd64.instruction(Insn.LABEL, elseLabel));
-					Operand t1 = compileOp(rs, fd, n1.else_);
-					emit(amd64.instruction(Insn.LABEL, endLabel));
-					if (Objects.equals(t0, t1))
-						return postOp.apply(t0);
-					else
-						throw new RuntimeException();
-				} else
+			else if (n0 instanceof FunpIf) {
+				FunpIf n1 = (FunpIf) n0;
+				Operand elseLabel = amd64.imm(0, ps);
+				Operand endLabel = amd64.imm(0, ps);
+				OpReg r0 = compileReg(rs, fd, n1.if_);
+				emit(amd64.instruction(Insn.OR, r0, r0));
+				emit(amd64.instruction(Insn.JZ, elseLabel));
+				Operand t0 = compileOp(rs, fd, n1.then);
+				emit(amd64.instruction(Insn.JMP, endLabel));
+				emit(amd64.instruction(Insn.LABEL, elseLabel));
+				Operand t1 = compileOp(rs, fd, n1.else_);
+				emit(amd64.instruction(Insn.LABEL, endLabel));
+				if (Objects.equals(t0, t1))
+					return postOp.apply(t0);
+				else
 					throw new RuntimeException();
-			else if (n0 instanceof FunpInvokeInt)
+			} else if (n0 instanceof FunpInvokeInt)
 				if (!rs.contains(eax)) {
 					compileInvoke(rs, fd, ((FunpInvokeInt) n0).routine);
 					return postOp.apply(eax);
@@ -278,9 +276,9 @@ public class P2GenerateCode {
 				Operand op1 = out0.op1;
 
 				if (op0 != null && rs.contains(op0))
-					emitMov(op0 = rs.mask(op1).get(), out0.op0);
+					emitMov(op0 = rs.mask(op1).get(preferOp0), out0.op0);
 				if (op1 != null && rs.contains(op1))
-					emitMov(op1 = rs.mask(op0).get(), out0.op1);
+					emitMov(op1 = rs.mask(op0).get(preferOp1), out0.op1);
 				CompileOut out1 = new CompileOut(op0, op1);
 				for (int i = opRegs.length - 1; 0 <= i; i--)
 					emit(amd64.instruction(Insn.POP, opRegs[i]));
@@ -298,9 +296,9 @@ public class P2GenerateCode {
 
 				if (op != null)
 					if (op.baseReg < 0 && op.indexReg < 0)
-						emit(amd64.instruction(Insn.MOV, op0 = rs.get(), amd64.imm(op.disp, is)));
+						emit(amd64.instruction(Insn.MOV, op0 = rs.get(preferOp0), amd64.imm(op.disp, is)));
 					else
-						emit(amd64.instruction(Insn.LEA, op0 = rs.get(), op));
+						emit(amd64.instruction(Insn.LEA, op0 = rs.get(preferOp0), op));
 				else if (numLhs != null && numRhs != null)
 					op0 = amd64.imm(TreeUtil.evaluateOp(operator).apply(numLhs, numRhs), is);
 				else {
@@ -340,7 +338,7 @@ public class P2GenerateCode {
 					if (opResult == null)
 						if (operator == TermOp.DIVIDE) {
 							boolean isSaveEax = rs.contains(eax);
-							OpReg opResult_ = isSaveEax ? rs.get() : eax;
+							OpReg opResult_ = isSaveEax ? rs.get(preferOp0) : eax;
 							IntSink sink0 = fd_ -> {
 								Operand opLeft_ = compileOp(rs, fd_, lhs);
 								Operand opRight = compileOp(rs.mask(opLeft_), fd_, rhs);
@@ -424,7 +422,7 @@ public class P2GenerateCode {
 					}, ecx);
 				else
 					saveRegs(rs, fd, fd_ -> {
-						OpReg r = r0 != esi ? esi : rs.mask(esi, edi).get();
+						OpReg r = rs.mask(r0, edi).get(esi);
 						emit(amd64.instruction(Insn.LEA, r, amd64.mem(r1, start1, is)));
 						emit(amd64.instruction(Insn.LEA, edi, amd64.mem(r0, start0, is)));
 						emitMov(esi, r);
