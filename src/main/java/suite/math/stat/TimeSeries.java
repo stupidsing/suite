@@ -2,19 +2,37 @@ package suite.math.stat;
 
 import java.util.Arrays;
 
+import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Vector_;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.Floats;
 import suite.primitive.Floats_;
+import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.trade.Trade_;
 import suite.util.To;
 
 public class TimeSeries {
 
+	private CholeskyDecomposition cd = new CholeskyDecomposition();
 	private Statistic stat = new Statistic();
 	private Vector_ vec = new Vector_();
+
+	// autocorrelation function
+	public float[] acf(float[] ys, int n) {
+		double meany = stat.mean(ys);
+		int length = ys.length;
+		float[] ydevs = Floats_.toArray(length, i -> (float) (ys[i] - meany));
+		double avgydev0 = Ints_.range(length).collectAsDouble(Int_Dbl.sum(i -> ydevs[i])) / length;
+		return Floats_.toArray(n, k -> {
+			int lk = length - k;
+			double nom = Ints_.range(lk).collectAsDouble(Int_Dbl.sum(i -> ydevs[i] * ydevs[i + k]));
+			double avgydev1 = Ints_.range(lk).collectAsDouble(Int_Dbl.sum(i -> ydevs[i])) / lk;
+			double denom = Math.sqrt(avgydev0 * avgydev1) * lk;
+			return (float) (nom / denom);
+		});
+	}
 
 	// Augmented Dickey-Fuller test
 	public double adf(float[] ys, int tor) {
@@ -110,6 +128,15 @@ public class TimeSeries {
 		float[][] xs = To.array(ys.length - tor, float[].class, i -> new float[] { ma[i], 1f, });
 		float[] diffs1 = drop_(tor, differences_(1, ys));
 		return stat.linearRegression(xs, diffs1);
+	}
+
+	// partial autocorrelation function
+	// https://stats.stackexchange.com/questions/129052/acf-and-pacf-formula
+	public float[] pacf(float[] ys, int n) {
+		float[] acf = acf(ys, n);
+		float[][] m = To.arrayOfFloats(n, n, (i, j) -> acf[Math.abs(i - j)]);
+		float[] acf1 = Arrays.copyOfRange(acf, 1, n - 1);
+		return cd.inverseMul(m).apply(acf1);
 	}
 
 	public float[] returns(float[] fs) {
