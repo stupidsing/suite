@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import suite.BindArrayUtil.Match;
@@ -38,8 +39,12 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
+import suite.node.util.TreeUtil;
+import suite.node.util.TreeUtil.IntInt_Bool;
+import suite.primitive.IntInt_Int;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -84,18 +89,19 @@ public class InterpretFunLazy {
 
 		Map<String, Thunk_> df = new HashMap<>();
 		df.put(TermOp.AND___.name, binary((a, b) -> new Pair_(a, b)));
-		df.put(TermOp.EQUAL_.name, binary((a, b) -> b(compare(a.get(), b.get()) == 0)));
-		df.put(TermOp.NOTEQ_.name, binary((a, b) -> b(compare(a.get(), b.get()) != 0)));
-		df.put(TermOp.LE____.name, binary((a, b) -> b(compare(a.get(), b.get()) <= 0)));
-		df.put(TermOp.LT____.name, binary((a, b) -> b(compare(a.get(), b.get()) < 0)));
-		df.put(TermOp.PLUS__.name, binary((a, b) -> Int.of(i(a) + i(b))));
-		df.put(TermOp.MINUS_.name, binary((a, b) -> Int.of(i(a) - i(b))));
-		df.put(TermOp.MULT__.name, binary((a, b) -> Int.of(i(a) * i(b))));
-		df.put(TermOp.DIVIDE.name, binary((a, b) -> Int.of(i(a) / i(b))));
-
 		df.put("fst", () -> new Fun_(in -> ((Pair_) in.get()).first_));
 		df.put("if", () -> new Fun_(a -> () -> new Fun_(b -> () -> new Fun_(c -> a.get() == Atom.TRUE ? b : c))));
 		df.put("snd", () -> new Fun_(in -> ((Pair_) in.get()).second));
+
+		for (Entry<Operator, IntInt_Bool> e : TreeUtil.boolOperations.entrySet()) {
+			IntInt_Bool fun = e.getValue();
+			df.put(e.getKey().getName(), binary((a, b) -> b(fun.apply(compare(a.get(), b.get()), 0))));
+		}
+
+		for (Entry<Operator, IntInt_Int> e : TreeUtil.intOperations.entrySet()) {
+			IntInt_Int fun = e.getValue();
+			df.put(e.getKey().getName(), binary((a, b) -> Int.of(fun.apply(i(a), i(b)))));
+		}
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Lazy_ lazy0 = new Lazy_(0, IMap.empty());

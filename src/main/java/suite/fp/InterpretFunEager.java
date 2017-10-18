@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import suite.BindArrayUtil.Match;
@@ -45,6 +46,9 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
+import suite.node.util.TreeUtil;
+import suite.node.util.TreeUtil.IntInt_Bool;
+import suite.primitive.IntInt_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
@@ -251,15 +255,6 @@ public class InterpretFunEager {
 
 		Map<String, Node> df = new HashMap<>();
 		df.put(TermOp.AND___.name, f2((a, b) -> Tree.of(TermOp.AND___, a, b)));
-		df.put(TermOp.EQUAL_.name, f2((a, b) -> b(compare(a, b) == 0)));
-		df.put(TermOp.NOTEQ_.name, f2((a, b) -> b(compare(a, b) != 0)));
-		df.put(TermOp.LE____.name, f2((a, b) -> b(compare(a, b) <= 0)));
-		df.put(TermOp.LT____.name, f2((a, b) -> b(compare(a, b) < 0)));
-		df.put(TermOp.PLUS__.name, f2((a, b) -> Int.of(i(a) + i(b))));
-		df.put(TermOp.MINUS_.name, f2((a, b) -> Int.of(i(a) - i(b))));
-		df.put(TermOp.MULT__.name, f2((a, b) -> Int.of(i(a) * i(b))));
-		df.put(TermOp.DIVIDE.name, f2((a, b) -> Int.of(i(a) / i(b))));
-
 		df.put("+call%i-t1", f1(i -> fn(1, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+call%i-t2", f1(i -> fn(2, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+call%i-t3", f1(i -> fn(3, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
@@ -276,6 +271,16 @@ public class InterpretFunEager {
 		df.put("+pcons", f2((a, b) -> Tree.of(TermOp.AND___, a, b)));
 		df.put("+pleft", f1(a -> Tree.decompose(a).getLeft()));
 		df.put("+pright", f1(a -> Tree.decompose(a).getRight()));
+
+		for (Entry<Operator, IntInt_Bool> e : TreeUtil.boolOperations.entrySet()) {
+			IntInt_Bool fun = e.getValue();
+			df.put(e.getKey().getName(), f2((a, b) -> b(fun.apply(compare(a, b), 0))));
+		}
+
+		for (Entry<Operator, IntInt_Int> e : TreeUtil.intOperations.entrySet()) {
+			IntInt_Int fun = e.getValue();
+			df.put(e.getKey().getName(), f2((a, b) -> Int.of(fun.apply(i(a), i(b)))));
+		}
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Eager_ eager0 = new Eager_(0, IMap.empty());

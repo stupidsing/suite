@@ -18,18 +18,22 @@ import suite.util.Object_;
 
 public class TreeUtil {
 
+	public interface IntInt_Bool {
+		public boolean apply(int a, int b);
+	}
+
 	public static Atom AND = Atom.of("and");
 	public static Atom OR_ = Atom.of("or");
 	public static Atom SHL = Atom.of("shl");
 	public static Atom SHR = Atom.of("shr");
 
-	private static Map<Node, IntInt_Int> nodeOperations = Map.ofEntries( //
-			entry(AND, (a, b) -> a & b), //
-			entry(OR_, (a, b) -> a | b), //
-			entry(SHL, (a, b) -> a << b), //
-			entry(SHR, (a, b) -> a >> b));
+	public static Map<Operator, IntInt_Bool> boolOperations = Map.ofEntries( //
+			entry(TermOp.EQUAL_, (a, b) -> a == b), //
+			entry(TermOp.NOTEQ_, (a, b) -> a != b), //
+			entry(TermOp.LE____, (a, b) -> a <= b), //
+			entry(TermOp.LT____, (a, b) -> a < b));
 
-	private static Map<Operator, IntInt_Int> operatorOperations = Map.ofEntries( //
+	public static Map<Operator, IntInt_Int> intOperations = Map.ofEntries( //
 			entry(TermOp.BIGAND, (a, b) -> a & b), //
 			entry(TermOp.BIGOR_, (a, b) -> a | b), //
 			entry(TermOp.PLUS__, (a, b) -> a + b), //
@@ -38,6 +42,12 @@ public class TreeUtil {
 			entry(TermOp.DIVIDE, (a, b) -> a / b), //
 			entry(TermOp.MODULO, (a, b) -> a % b), //
 			entry(TermOp.POWER_, TreeUtil::intPow));
+
+	private static Map<Node, IntInt_Int> tupleOperations = Map.ofEntries( //
+			entry(AND, (a, b) -> a & b), //
+			entry(OR_, (a, b) -> a | b), //
+			entry(SHL, (a, b) -> a << b), //
+			entry(SHR, (a, b) -> a >> b));
 
 	public static List<Node> breakdown(Operator operator, Node node) {
 		List<Node> list = new ArrayList<>();
@@ -98,7 +108,7 @@ public class TreeUtil {
 	}
 
 	public static IntInt_Int evaluateOp(Node op) {
-		IntInt_Int fun = nodeOperations.get(op);
+		IntInt_Int fun = tupleOperations.get(op);
 		if (fun != null)
 			return fun;
 		else
@@ -106,7 +116,7 @@ public class TreeUtil {
 	}
 
 	public static IntInt_Int evaluateOp(Operator op) {
-		IntInt_Int fun = operatorOperations.get(op);
+		IntInt_Int fun = intOperations.get(op);
 		if (fun != null)
 			return fun;
 		else
