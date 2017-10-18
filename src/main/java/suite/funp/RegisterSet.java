@@ -46,14 +46,11 @@ public class RegisterSet {
 	}
 
 	public OpReg get(OpReg prefer) {
-		return prefer != null && !isSet(prefer.reg) ? prefer : get();
+		return prefer != null && !isSet(prefer.reg) ? prefer : get_();
 	}
 
 	public OpReg get() {
-		for (int i = 0; i < nRegisters; i++)
-			if (!isSet(i))
-				return registers[i];
-		throw new RuntimeException();
+		return get_();
 	}
 
 	public OpReg[] list(IntPredicate pred) {
@@ -82,6 +79,13 @@ public class RegisterSet {
 					flag_ |= flag(operand1.indexReg);
 			}
 		return flag_;
+	}
+
+	private OpReg get_() {
+		for (int i = 0; i < nRegisters; i++)
+			if (!isSet(i))
+				return registers[i];
+		throw new RuntimeException();
 	}
 
 	private boolean isSet(int reg) {
