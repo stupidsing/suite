@@ -73,7 +73,7 @@ public class P2GenerateCode {
 
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
-		new Compile0(CompileOutType.OPREG, instructions::add).new Compile1(registerSet, 0).compile(funp);
+		new Compile0(CompileOut_.OPREG, instructions::add).new Compile1(registerSet, 0).compile(funp);
 		return instructions;
 	}
 
@@ -83,23 +83,23 @@ public class P2GenerateCode {
 
 	private class Compile0 {
 		private Sink<Instruction> emit;
-		private CompileOutType type;
+		private CompileOut_ type;
 		private FunpMemory target; // only for CompileOutType.ASSIGN
 		private OpReg pop0, pop1; // only for CompileOutType.OPSPEC, TWOOPSPEC
 
-		private Compile0(CompileOutType type, Sink<Instruction> emit) {
+		private Compile0(CompileOut_ type, Sink<Instruction> emit) {
 			this(type, emit, null, null, null);
 		}
 
-		private Compile0(CompileOutType type, Sink<Instruction> emit, OpReg pop0) {
+		private Compile0(CompileOut_ type, Sink<Instruction> emit, OpReg pop0) {
 			this(type, emit, null, pop0, null);
 		}
 
-		private Compile0(CompileOutType type, Sink<Instruction> emit, FunpMemory target) {
+		private Compile0(CompileOut_ type, Sink<Instruction> emit, FunpMemory target) {
 			this(type, emit, target, null, null);
 		}
 
-		private Compile0(CompileOutType type, Sink<Instruction> emit, FunpMemory target, OpReg pop0, OpReg pop1) {
+		private Compile0(CompileOut_ type, Sink<Instruction> emit, FunpMemory target, OpReg pop0, OpReg pop1) {
 			this.type = type;
 			this.emit = emit;
 			this.target = target;
@@ -118,17 +118,17 @@ public class P2GenerateCode {
 
 			// invariant: fd = ESP - EBP
 			private CompileOut compile(Funp n0) {
-				boolean isOutSpec = type == CompileOutType.OPSPEC || type == CompileOutType.TWOOPSPEC;
+				boolean isOutSpec = type == CompileOut_.OPSPEC || type == CompileOut_.TWOOPSPEC;
 
 				Fun<Operand, CompileOut> postOp = op -> {
 					Operand old = op;
-					if (type == CompileOutType.ASSIGN)
+					if (type == CompileOut_.ASSIGN)
 						emitMov(amd64.mem(new Compile1(rs.mask(op), fd).compileOpReg(target.pointer), target.start, is), old);
-					else if (type == CompileOutType.OP || type == CompileOutType.OPREG) {
-						if (type == CompileOutType.OPREG && !(op instanceof OpReg))
+					else if (type == CompileOut_.OP || type == CompileOut_.OPREG) {
+						if (type == CompileOut_.OPREG && !(op instanceof OpReg))
 							emitMov(op = rs.get(), old);
 						return new CompileOut(op);
-					} else if (type == CompileOutType.OPSPEC)
+					} else if (type == CompileOut_.OPSPEC)
 						emitMov(pop0, old);
 					else
 						throw new RuntimeException();
@@ -138,17 +138,17 @@ public class P2GenerateCode {
 				Fun2<Operand, Operand, CompileOut> postTwoOp = (op0, op1) -> {
 					Operand old0 = op0;
 					Operand old1 = op1;
-					if (type == CompileOutType.ASSIGN) {
+					if (type == CompileOut_.ASSIGN) {
 						OpReg r = new Compile1(rs.mask(op0, op1), fd).compileOpReg(target.pointer);
 						emitMov(amd64.mem(r, target.start, ps), old0);
 						emitMov(amd64.mem(r, target.start + ps, ps), old1);
-					} else if (type == CompileOutType.TWOOP || type == CompileOutType.TWOOPREG) {
-						if (type == CompileOutType.TWOOPREG && !(op0 instanceof OpReg))
+					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG) {
+						if (type == CompileOut_.TWOOPREG && !(op0 instanceof OpReg))
 							emitMov(op0 = rs.mask(op1).get(), old0);
-						if (type == CompileOutType.TWOOPREG && !(op1 instanceof OpReg))
+						if (type == CompileOut_.TWOOPREG && !(op1 instanceof OpReg))
 							emitMov(op1 = rs.mask(op0).get(), old1);
 						return new CompileOut(op0, op1);
-					} else if (type == CompileOutType.TWOOPSPEC) {
+					} else if (type == CompileOut_.TWOOPSPEC) {
 						OpReg r = rs.mask(old1, pop1).get(pop0);
 						emitMov(r, old0);
 						emitMov(pop1, old1);
@@ -159,18 +159,17 @@ public class P2GenerateCode {
 				};
 
 				Fun<IntObjSink<FunpMemory>, CompileOut> postAssign = assign -> {
-					if (type == CompileOutType.ASSIGN) {
+					if (type == CompileOut_.ASSIGN) {
 						assign.sink2(fd, target);
 						return new CompileOut();
-					} else if (type == CompileOutType.OP || type == CompileOutType.OPREG || type == CompileOutType.OPSPEC) {
+					} else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC) {
 						emit(amd64.instruction(Insn.PUSH, eax));
 						int fd1 = fd - is;
 						assign.sink2(fd1, frame(fd1, fd));
 						CompileOut out = postOp.apply(amd64.mem(ebp, fd1, is));
 						emit(amd64.instruction(Insn.POP, rs.mask(out.op0, out.op1).get()));
 						return out;
-					} else if (type == CompileOutType.TWOOP || type == CompileOutType.TWOOPREG
-							|| type == CompileOutType.TWOOPSPEC) {
+					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG || type == CompileOut_.TWOOPSPEC) {
 						int size = ps * 2;
 						int fd1 = fd - size;
 						Operand imm = amd64.imm(size);
@@ -262,7 +261,7 @@ public class P2GenerateCode {
 				else if (n0 instanceof FunpMemory) {
 					FunpMemory n1 = (FunpMemory) n0;
 					int size = n1.size();
-					if (type == CompileOutType.ASSIGN)
+					if (type == CompileOut_.ASSIGN)
 						return postAssign.apply((fd1, target) -> {
 							OpReg r0 = new Compile1(rs, fd1).compileOpReg(target.pointer);
 							OpReg r1 = new Compile1(rs.mask(r0), fd1).compileOpReg(n1.pointer);
@@ -271,9 +270,9 @@ public class P2GenerateCode {
 							else
 								throw new RuntimeException();
 						});
-					else if (type == CompileOutType.OP || type == CompileOutType.OPREG || type == CompileOutType.OPSPEC)
+					else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC)
 						return postOp.apply(amd64.mem(compileOpReg(n1.pointer), n1.start, size));
-					else if (type == CompileOutType.TWOOP || type == CompileOutType.TWOOPREG || type == CompileOutType.TWOOPSPEC) {
+					else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG || type == CompileOut_.TWOOPSPEC) {
 						OpReg r = compileOpReg(n1.pointer);
 						Operand op0 = amd64.mem(r, n1.start, ps);
 						Operand op1 = amd64.mem(r, n1.start + is, ps);
@@ -286,7 +285,7 @@ public class P2GenerateCode {
 					return postRoutine
 							.apply(() -> emitMov(eax, new Compile1(registerSet, ps).compileOpReg(((FunpRoutine) n0).expr)));
 				else if (n0 instanceof FunpRoutine2)
-					if (type == CompileOutType.TWOOPSPEC)
+					if (type == CompileOut_.TWOOPSPEC)
 						return postRoutine
 								.apply(() -> new Compile1(registerSet, ps).compileTwoOpSpec(((FunpRoutine2) n0).expr, pop0, pop1));
 					else
@@ -433,28 +432,28 @@ public class P2GenerateCode {
 			}
 
 			private void compileAssign(Funp n, FunpMemory target) {
-				new Compile0(CompileOutType.ASSIGN, emit, target, null, null).new Compile1(rs, fd).compile(n);
+				new Compile0(CompileOut_.ASSIGN, emit, target, null, null).new Compile1(rs, fd).compile(n);
 			}
 
 			private Operand compileOp(Funp n) {
-				return new Compile0(CompileOutType.OP, emit).new Compile1(rs, fd).compile(n).op0;
+				return new Compile0(CompileOut_.OP, emit).new Compile1(rs, fd).compile(n).op0;
 			}
 
 			private OpReg compileOpReg(Funp n) {
-				return (OpReg) new Compile0(CompileOutType.OPREG, emit).new Compile1(rs, fd).compile(n).op0;
+				return (OpReg) new Compile0(CompileOut_.OPREG, emit).new Compile1(rs, fd).compile(n).op0;
 			}
 
 			private OpReg compileOpSpec(Funp n, OpReg op) {
-				new Compile0(CompileOutType.OPSPEC, emit, null, op, null).new Compile1(rs, fd).compile(n);
+				new Compile0(CompileOut_.OPSPEC, emit, null, op, null).new Compile1(rs, fd).compile(n);
 				return op;
 			}
 
 			private CompileOut compileTwoOp(Funp n) {
-				return new Compile0(CompileOutType.TWOOP, emit).new Compile1(rs, fd).compile(n);
+				return new Compile0(CompileOut_.TWOOP, emit).new Compile1(rs, fd).compile(n);
 			}
 
 			private CompileOut compileTwoOpSpec(Funp n, OpReg op0, OpReg op1) {
-				new Compile0(CompileOutType.TWOOPSPEC, emit, null, op0, op1).new Compile1(rs, fd).compile(n);
+				new Compile0(CompileOut_.TWOOPSPEC, emit, null, op0, op1).new Compile1(rs, fd).compile(n);
 				return new CompileOut(pop0, pop1);
 			}
 
@@ -601,7 +600,7 @@ public class P2GenerateCode {
 		}
 	}
 
-	private enum CompileOutType {
+	private enum CompileOut_ {
 		ASSIGN, // assign value to certain memory region
 		OP, // put value to an operand (r/m or immediate)
 		OPREG, // put value to a register operand
