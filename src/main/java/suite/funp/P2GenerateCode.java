@@ -92,14 +92,6 @@ public class P2GenerateCode {
 			this(type, emit, null, null, null);
 		}
 
-		private Compile0(CompileOut_ type, Sink<Instruction> emit, OpReg pop0) {
-			this(type, emit, null, pop0, null);
-		}
-
-		private Compile0(CompileOut_ type, Sink<Instruction> emit, FunpMemory target) {
-			this(type, emit, target, null, null);
-		}
-
 		private Compile0(CompileOut_ type, Sink<Instruction> emit, FunpMemory target, OpReg pop0, OpReg pop1) {
 			this.type = type;
 			this.emit = emit;
