@@ -23,7 +23,6 @@ import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P1.FunpAllocStack;
 import suite.funp.P1.FunpData;
-import suite.funp.P1.FunpFramePointer;
 import suite.funp.P1.FunpInvokeInt;
 import suite.funp.P1.FunpInvokeInt2;
 import suite.funp.P1.FunpInvokeIo;
@@ -138,7 +137,7 @@ public class P1InferType {
 		UnNode<Type> t0 = typeNumber;
 		UnNode<Type> t1 = TypeLambda.of(typeNumber, t0);
 		UnNode<Type> t2 = TypeLambda.of(typeNumber, t1);
-		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>> empty() //
+		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>>empty() //
 				.put(TermOp.PLUS__.name, t2) //
 				.put(TermOp.MINUS_.name, t2) //
 				.put(TermOp.MULT__.name, t2);
@@ -347,7 +346,7 @@ public class P1InferType {
 		}
 
 		private Funp getVariable(Var vd) {
-			Funp nfp = new FunpFramePointer();
+			Funp nfp = Funp_.framePointer;
 			for (int i = scope; i < vd.scope; i++)
 				nfp = FunpMemory.of(nfp, 0, Funp_.pointerSize);
 			return FunpMemory.of(nfp, vd.start, vd.end);

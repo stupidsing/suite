@@ -157,7 +157,7 @@ public class P2GenerateCode {
 				} else if (type == CompileOutType.OP || type == CompileOutType.OPREG || type == CompileOutType.OPSPEC) {
 					emit(amd64.instruction(Insn.PUSH, eax));
 					int fd1 = fd - is;
-					assign.sink2(fd1, FunpMemory.of(new FunpFramePointer(), fd1, fd));
+					assign.sink2(fd1, frame(fd1, fd));
 					CompileOut out = postOp.apply(amd64.mem(ebp, fd1, is));
 					emit(amd64.instruction(Insn.POP, rs.mask(out.op0, out.op1).get()));
 					return out;
@@ -166,7 +166,7 @@ public class P2GenerateCode {
 					int fd1 = fd - size;
 					Operand imm = amd64.imm(size);
 					emit(amd64.instruction(Insn.SUB, esp, imm));
-					assign.sink2(fd1, FunpMemory.of(new FunpFramePointer(), fd1, fd));
+					assign.sink2(fd1, frame(fd1, fd));
 					CompileOut out = postTwoOp.apply(amd64.mem(ebp, fd1, ps), amd64.mem(ebp, fd1 + ps, ps));
 					emit(amd64.instruction(Insn.ADD, esp, imm));
 					return out;
@@ -187,7 +187,7 @@ public class P2GenerateCode {
 				else {
 					emit(amd64.instruction(Insn.SUB, esp, imm));
 					if (value != null)
-						compileAssign(rs, fd, FunpMemory.of(new FunpFramePointer(), fd - size, fd), value);
+						compileAssign(rs, fd, frame(fd - size, fd), value);
 				}
 				CompileOut out = compile(rs, fd - size, n1.expr);
 				if (size == is)
@@ -288,7 +288,7 @@ public class P2GenerateCode {
 					});
 			else if (n0 instanceof FunpRoutineIo) {
 				FunpRoutineIo n1 = (FunpRoutineIo) n0;
-				FunpMemory out = FunpMemory.of(new FunpFramePointer(), ps + n1.is, n1.os);
+				FunpMemory out = frame(ps + n1.is, n1.os);
 				return postRoutine.apply(() -> compileAssign(registerSet, ps, out, n1.expr));
 			} else if (n0 instanceof FunpSaveRegisters) {
 				OpReg[] opRegs = rs.list(r -> r != esp.reg);
@@ -518,6 +518,10 @@ public class P2GenerateCode {
 					else
 						mults.add(n1);
 			}
+		}
+
+		private FunpMemory frame(int start, int end) {
+			return FunpMemory.of(Funp_.framePointer, start, end);
 		}
 
 		private void saveRegs(RegisterSet rs, int fd, IntSink sink, OpReg... opRegs) {
