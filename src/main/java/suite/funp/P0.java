@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.funp.Funp_.Funp;
+import suite.node.Atom;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 
@@ -178,6 +179,31 @@ public class P0 {
 
 		public Funp getSecond() {
 			return operator.getAssoc() == Assoc.RIGHT ? left : right;
+		}
+	}
+
+	public static class FunpTree2 implements Funp, P2.End {
+		public Atom operator;
+		public Funp left;
+		public Funp right;
+
+		public static FunpTree2 of(Atom operator, Funp left, Funp right) {
+			FunpTree2 f = new FunpTree2();
+			f.operator = operator;
+			f.left = left;
+			f.right = right;
+			return f;
+		}
+
+		public static List<Funp> unfold(Funp n, Atom op) {
+			List<Funp> list = new ArrayList<>();
+			FunpTree2 tree;
+			while (n instanceof FunpTree && (tree = (FunpTree2) n).operator == op) {
+				list.add(tree.left);
+				n = tree.right;
+			}
+			list.add(n);
+			return list;
 		}
 	}
 

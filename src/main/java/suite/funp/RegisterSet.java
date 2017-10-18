@@ -63,6 +63,10 @@ public class RegisterSet {
 		return new RegisterSet(flag | flag(operands));
 	}
 
+	public RegisterSet unmask(int i) {
+		return new RegisterSet(flag & ~flag(i));
+	}
+
 	private int flag(Operand... operands) {
 		int flag_ = 0;
 		for (Operand operand : operands)
