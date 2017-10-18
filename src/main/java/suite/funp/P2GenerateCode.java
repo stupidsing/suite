@@ -163,21 +163,25 @@ public class P2GenerateCode {
 						assign.sink2(fd, target);
 						return new CompileOut();
 					} else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC) {
+						OpReg op0 = isOutSpec ? pop0 : rs.get();
 						emit(amd64.instruction(Insn.PUSH, eax));
 						int fd1 = fd - is;
 						assign.sink2(fd1, frame(fd1, fd));
-						CompileOut out = postOp.apply(amd64.mem(ebp, fd1, is));
-						emit(amd64.instruction(Insn.POP, rs.mask(out.op0, out.op1).get()));
-						return out;
+						emitMov(op0, amd64.mem(ebp, fd1, is));
+						emit(amd64.instruction(Insn.POP, rs.mask(op0).get()));
+						return postOp.apply(op0);
 					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG || type == CompileOut_.TWOOPSPEC) {
+						OpReg op0 = isOutSpec ? pop0 : rs.get();
+						OpReg op1 = isOutSpec ? pop1 : rs.get(op0);
 						int size = ps * 2;
 						int fd1 = fd - size;
 						Operand imm = amd64.imm(size);
 						emit(amd64.instruction(Insn.SUB, esp, imm));
 						assign.sink2(fd1, frame(fd1, fd));
-						CompileOut out = postTwoOp.apply(amd64.mem(ebp, fd1, ps), amd64.mem(ebp, fd1 + ps, ps));
+						emitMov(op0, amd64.mem(ebp, fd1, ps));
+						emitMov(op1, amd64.mem(ebp, fd1 + ps, ps));
 						emit(amd64.instruction(Insn.ADD, esp, imm));
-						return out;
+						return postTwoOp.apply(op0, op1);
 					} else
 						throw new RuntimeException();
 				};
