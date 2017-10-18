@@ -138,9 +138,12 @@ public class P1InferType {
 		UnNode<Type> t1 = TypeLambda.of(typeNumber, t0);
 		UnNode<Type> t2 = TypeLambda.of(typeNumber, t1);
 		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>>empty() //
+				.put(TermOp.BIGAND.name, t2) //
+				.put(TermOp.BIGOR_.name, t2) //
 				.put(TermOp.PLUS__.name, t2) //
 				.put(TermOp.MINUS_.name, t2) //
-				.put(TermOp.MULT__.name, t2);
+				.put(TermOp.MULT__.name, t2) //
+				.put(TermOp.DIVIDE.name, t2);
 
 		if (unify.unify(t, new Infer(env).infer(n0)))
 			return erase(0, 0, IMap.empty(), n0);
