@@ -4,6 +4,11 @@ import java.util.Arrays;
 
 import suite.math.MathUtil;
 import suite.math.Vector;
+import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.Floats_;
+import suite.primitive.Int_Dbl;
+import suite.primitive.Ints_;
+import suite.streamlet.Read;
 import suite.util.To;
 
 public class Matrix_ {
@@ -35,6 +40,17 @@ public class Matrix_ {
 					for (int dj = 0; dj < kw; dj++)
 						o[i][j] += m[i + di][j + dj] * k[di][dj];
 		return o;
+	}
+
+	// https://en.wikipedia.org/wiki/Covariance_matrix
+	public float[][] covariance(float[][] vs) {
+		int h = h(vs);
+		int w = w(vs);
+		float[] means = Floats_.toArray(h, j -> (float) (Read.from(vs).collectAsDouble(Obj_Dbl.sum(vector -> vector[j])) / w));
+
+		return To.arrayOfFloats(h, h, (i0, i1) -> (float) (Ints_ //
+				.range(0, w) //
+				.collectAsDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]));
 	}
 
 	public boolean equals(float[][] m, float[][] n) {

@@ -6,11 +6,13 @@ import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
 import suite.primitive.Floats_;
 import suite.util.FunUtil.Fun;
+import suite.util.To;
 
 public class SingularValueDecomposition {
 
 	private int k = 9;
 
+	private Eigen eigen = new Eigen();
 	private Matrix_ mtx = new Matrix_();
 	private Random random = new Random();
 	private Vector_ vec = new Vector_();
@@ -40,7 +42,8 @@ public class SingularValueDecomposition {
 						.add(VirtualMatrix.of(a0)) //
 						.matrix();
 
-				// return mtx.add(a_, mtx.scale(mtx.mul_mnT(new float[][] { u, }, new float[][]
+				// return mtx.add(a_, mtx.scale(mtx.mul_mnT(new float[][] { u,
+				// }, new float[][]
 				// { v, }), -s));
 			});
 		}
@@ -81,6 +84,19 @@ public class SingularValueDecomposition {
 		}
 
 		throw new RuntimeException();
+	}
+
+	// http://www.dcs.gla.ac.uk/~vincia/textbook.pdf
+	// Francesca Camastra, Alessandro Vinciarelli, "Machine Learning for Audio,
+	// Image and Video Analysis"
+	// 5.7.3 Whitening Transformation
+	public float[][] whiten(float[][] omega) {
+		float[][] covs = mtx.covariance(omega);
+		float[][] evs = eigen.power(covs);
+		float[] evals = eigen.values(omega, covs);
+		float[] invSqrts = Floats_.toArray(evals.length, i -> (float) (1d / Math.sqrt(evals[i])));
+		float[][] m = To.arrayOfFloats(mtx.height(evs), mtx.width(evs), (i, j) -> (float) (evs[i][j] / Math.sqrt(evals[j])));
+		return mtx.mul(m, omega);
 	}
 
 }
