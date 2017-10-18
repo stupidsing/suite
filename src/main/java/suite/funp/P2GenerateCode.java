@@ -5,7 +5,6 @@ import static java.util.Map.entry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
@@ -218,20 +217,18 @@ public class P2GenerateCode {
 				return postOp.apply(ebp);
 			else if (n0 instanceof FunpIf) {
 				FunpIf n1 = (FunpIf) n0;
+				OpReg op = isOutSpec ? pop0 : rs.get();
 				Operand elseLabel = amd64.imm(0, ps);
 				Operand endLabel = amd64.imm(0, ps);
 				OpReg r0 = compileReg(rs, fd, n1.if_);
 				emit(amd64.instruction(Insn.OR, r0, r0));
 				emit(amd64.instruction(Insn.JZ, elseLabel));
-				Operand t0 = compileOp(rs, fd, n1.then);
+				compileOpSpec(rs, fd, op, n1.then);
 				emit(amd64.instruction(Insn.JMP, endLabel));
 				emit(amd64.instruction(Insn.LABEL, elseLabel));
-				Operand t1 = compileOp(rs, fd, n1.else_);
+				compileOpSpec(rs, fd, op, n1.else_);
 				emit(amd64.instruction(Insn.LABEL, endLabel));
-				if (Objects.equals(t0, t1))
-					return postOp.apply(t0);
-				else
-					throw new RuntimeException();
+				return postOp.apply(op);
 			} else if (n0 instanceof FunpInvokeInt)
 				if (!rs.contains(eax)) {
 					compileInvoke(rs, fd, ((FunpInvokeInt) n0).routine);
