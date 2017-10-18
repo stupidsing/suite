@@ -18,11 +18,16 @@ import suite.util.Object_;
 
 public class TreeUtil {
 
+	private static Atom AND = Atom.of("and");
+	private static Atom OR_ = Atom.of("or");
+	private static Atom SHL = Atom.of("shl");
+	private static Atom SHR = Atom.of("shr");
+
 	private static Map<Node, IntInt_Int> nodeOperations = Map.ofEntries( //
-			entry(Atom.of("and"), (a, b) -> a & b), //
-			entry(Atom.of("or"), (a, b) -> a | b), //
-			entry(Atom.of("shl"), (a, b) -> a << b), //
-			entry(Atom.of("shr"), (a, b) -> a >> b));
+			entry(AND, (a, b) -> a & b), //
+			entry(OR_, (a, b) -> a | b), //
+			entry(SHL, (a, b) -> a << b), //
+			entry(SHR, (a, b) -> a >> b));
 
 	private static Map<Operator, IntInt_Int> operatorOperations = Map.ofEntries( //
 			entry(TermOp.BIGAND, (a, b) -> a & b), //
