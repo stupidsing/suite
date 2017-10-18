@@ -137,7 +137,7 @@ public class P1InferType {
 		UnNode<Type> t0 = typeNumber;
 		UnNode<Type> t1 = TypeLambda.of(typeNumber, t0);
 		UnNode<Type> t2 = TypeLambda.of(typeNumber, t1);
-		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>>empty() //
+		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>> empty() //
 				.put(TermOp.BIGAND.name, t2) //
 				.put(TermOp.BIGOR_.name, t2) //
 				.put(TermOp.PLUS__.name, t2) //
