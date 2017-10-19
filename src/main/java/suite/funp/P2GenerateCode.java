@@ -301,14 +301,16 @@ public class P2GenerateCode {
 				}));
 
 				co = Funp_.applyIf(n0, FunpRoutine2.class, co, t -> t.apply(expr -> {
-					if (type == CompileOut_.TWOOPSPEC)
-						return postRoutine.apply(() -> new Compile1(registerSet, ps).compileTwoOpSpec(expr, pop0, pop1));
-					else
-						return postRoutine.apply(() -> {
-							CompileOut out = new Compile1(registerSet, ps).compileTwoOp(expr);
+					return postRoutine.apply(() -> {
+						Compile1 c1 = new Compile1(registerSet, ps);
+						if (type == CompileOut_.TWOOPSPEC)
+							c1.compileTwoOpSpec(expr, pop0, pop1);
+						else {
+							CompileOut out = c1.compileTwoOp(expr);
 							emitMov(eax, out.op0);
 							emitMov(edx, out.op1);
-						});
+						}
+					});
 				}));
 
 				co = Funp_.applyIf(n0, FunpRoutineIo.class, co, t -> t.apply((expr, is, os) -> {
@@ -318,8 +320,10 @@ public class P2GenerateCode {
 
 				co = Funp_.applyIf(n0, FunpSaveRegisters.class, co, t -> t.apply(expr -> {
 					OpReg[] opRegs = rs.list(r -> r != esp.reg);
+
 					for (int i = 0; i <= opRegs.length - 1; i++)
 						emit(amd64.instruction(Insn.PUSH, opRegs[i]));
+
 					CompileOut out0 = new Compile1(registerSet, fd - opRegs.length * is).compile(expr);
 					Operand op0 = isOutSpec ? pop0 : out0.op0;
 					Operand op1 = isOutSpec ? pop1 : out0.op1;
@@ -335,8 +339,10 @@ public class P2GenerateCode {
 					}
 
 					CompileOut out1 = new CompileOut(op0, op1);
+
 					for (int i = opRegs.length - 1; 0 <= i; i--)
 						emit(amd64.instruction(Insn.POP, opRegs[i]));
+
 					return out1;
 				}));
 
