@@ -15,7 +15,7 @@
 #define delimiters " \t\r\n\a"
 
 int readchar() {
-	return termiosavailable() ? getch() : getchar();
+	return termiosavailable() ? getche() : getchar();
 }
 
 char *readline() {
