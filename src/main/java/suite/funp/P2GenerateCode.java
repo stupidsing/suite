@@ -271,10 +271,10 @@ public class P2GenerateCode {
 				})).applyIf(FunpNumber.class, t -> t.apply(i -> {
 					return postOp.apply(amd64.imm(i, is));
 				})).applyIf(FunpRoutine.class, t -> t.apply(expr -> {
-					return postRoutine.apply(() -> emitMov(eax, new Compile1(registerSet, ps).compileOpReg(expr)));
+					return postRoutine.apply(() -> emitMov(eax, new Compile1(registerSet, 0).compileOpReg(expr)));
 				})).applyIf(FunpRoutine2.class, t -> t.apply(expr -> {
 					return postRoutine.apply(() -> {
-						Compile1 c1 = new Compile1(registerSet, ps);
+						Compile1 c1 = new Compile1(registerSet, 0);
 						if (type == CompileOut_.TWOOPSPEC)
 							c1.compileTwoOpSpec(expr, pop0, pop1);
 						else {
@@ -285,7 +285,7 @@ public class P2GenerateCode {
 					});
 				})).applyIf(FunpRoutineIo.class, t -> t.apply((expr, is, os) -> {
 					FunpMemory out = frame(ps + is, os);
-					return postRoutine.apply(() -> new Compile1(registerSet, ps).compileAssign(expr, out));
+					return postRoutine.apply(() -> new Compile1(registerSet, 0).compileAssign(expr, out));
 				})).applyIf(FunpSaveRegisters.class, t -> t.apply(expr -> {
 					OpReg[] opRegs = rs.list(r -> r != esp.reg);
 
