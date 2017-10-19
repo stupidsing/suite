@@ -217,16 +217,16 @@ public class P0 {
 	}
 
 	public static class FunpStruct implements Funp, P1.End {
-		public List<Pair<String, Funp>> values;
+		public List<Pair<String, Funp>> pairs;
 
-		public static FunpStruct of(List<Pair<String, Funp>> values) {
+		public static FunpStruct of(List<Pair<String, Funp>> pairs) {
 			FunpStruct f = new FunpStruct();
-			f.values = values;
+			f.pairs = pairs;
 			return f;
 		}
 
 		public <R> R apply(FixieFun1<List<Pair<String, Funp>>, R> fun) {
-			return fun.apply(values);
+			return fun.apply(pairs);
 		}
 	}
 

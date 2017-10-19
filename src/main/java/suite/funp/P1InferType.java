@@ -124,7 +124,7 @@ public class P1InferType {
 				return new Infer(env.put(var, infer(value))).infer(expr);
 			})).applyIf(FunpField.class, f -> f.apply((struct, field) -> {
 				return Read //
-						.from(((TypeStruct) infer(struct)).fields) //
+						.from(((TypeStruct) infer(struct)).pairs) //
 						.filter(pair -> String_.equals(pair.t0, field)) //
 						.uniqueResult().t1;
 			})).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
@@ -149,8 +149,8 @@ public class P1InferType {
 				return unify.clone(infer(expr));
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return TypeReference.of(infer(expr));
-			})).applyIf(FunpStruct.class, f -> f.apply(values -> {
-				return TypeStruct.of(Read.from2(values).mapValue(this::infer).toList());
+			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
+				return TypeStruct.of(Read.from2(pairs).mapValue(this::infer).toList());
 			})).applyIf(FunpTree.class, f -> f.apply((operator, left, right) -> {
 				unify(n0, infer(left), typeNumber);
 				unify(n0, infer(right), typeNumber);
@@ -232,9 +232,9 @@ public class P1InferType {
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(typeOf(n0)));
 			})).applyIf(FunpField.class, f -> f.apply((struct, field) -> {
-				List<Pair<String, UnNode<Type>>> fields = ((TypeStruct) typeOf(struct)).fields;
+				List<Pair<String, UnNode<Type>>> pairs = ((TypeStruct) typeOf(struct)).pairs;
 				int offset = 0;
-				for (Pair<String, UnNode<Type>> pair : fields)
+				for (Pair<String, UnNode<Type>> pair : pairs)
 					if (!String_.equals(pair.t0, field))
 						offset += getTypeSize(pair.t1);
 					else
@@ -262,18 +262,18 @@ public class P1InferType {
 				return erase(expr);
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return getAddress(erase(expr));
-			})).applyIf(FunpStruct.class, f -> f.apply(fields -> {
-				List<Pair<String, UnNode<Type>>> nts = ((TypeStruct) typeOf(n0)).fields;
+			})).applyIf(FunpStruct.class, f -> f.apply(fvs -> {
 				List<Funp> elements1 = Read //
-						.from(fields) //
+						.from(fvs) //
 						.map(pair -> erase(pair.t1)) //
 						.toList();
 				int size = elements1.size();
+				List<Pair<String, UnNode<Type>>> fts = ((TypeStruct) typeOf(n0)).pairs;
 				int offset = 0;
 				IntIntPair[] offsets = new IntIntPair[size];
 				for (int i = 0; i < size; i++) {
 					int offset0 = offset;
-					offsets[i] = IntIntPair.of(offset0, offset += getTypeSize(nts.get(i).t1));
+					offsets[i] = IntIntPair.of(offset0, offset += getTypeSize(fts.get(i).t1));
 				}
 				return FunpData.of(elements1, offsets);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
@@ -380,8 +380,8 @@ public class P1InferType {
 			return is;
 		}).applyIf(TypeReference.class, t -> {
 			return ps;
-		}).applyIf(TypeStruct.class, t -> t.apply(fields -> {
-			return Read.from(fields).collectAsInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
+		}).applyIf(TypeStruct.class, t -> t.apply(pairs -> {
+			return Read.from(pairs).collectAsInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
 		}));
 		return sw.result().intValue();
 	}
@@ -441,29 +441,29 @@ public class P1InferType {
 	}
 
 	private static class TypeStruct extends Type {
-		private List<Pair<String, UnNode<Type>>> fields;
+		private List<Pair<String, UnNode<Type>>> pairs;
 
-		private static TypeStruct of(List<Pair<String, UnNode<Type>>> fields) {
+		private static TypeStruct of(List<Pair<String, UnNode<Type>>> pairss) {
 			TypeStruct t = new TypeStruct();
-			t.fields = fields;
+			t.pairs = pairss;
 			return t;
 		}
 
 		private <R> R apply(FixieFun1<List<Pair<String, UnNode<Type>>>, R> fun) {
-			return fun.apply(fields);
+			return fun.apply(pairs);
 		}
 
 		public boolean unify(UnNode<Type> type) {
 			if (getClass() == type.getClass()) {
 				TypeStruct other = (TypeStruct) type;
-				List<Pair<String, UnNode<Type>>> fields0 = fields;
-				List<Pair<String, UnNode<Type>>> fields1 = other.fields;
-				int size = fields0.size();
-				if (size == fields1.size()) {
+				List<Pair<String, UnNode<Type>>> pairs0 = pairs;
+				List<Pair<String, UnNode<Type>>> pairs1 = other.pairs;
+				int size = pairs0.size();
+				if (size == pairs1.size()) {
 					boolean b = true;
 					for (int i = 0; i < size; i++) {
-						Pair<String, UnNode<Type>> pair0 = fields0.get(i);
-						Pair<String, UnNode<Type>> pair1 = fields1.get(i);
+						Pair<String, UnNode<Type>> pair0 = pairs0.get(i);
+						Pair<String, UnNode<Type>> pair1 = pairs1.get(i);
 						b &= String_.equals(pair0.t0, pair1.t0) && unify.unify(pair0.t1, pair1.t1);
 					}
 					return b;
