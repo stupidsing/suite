@@ -75,7 +75,7 @@ public class P1InferType {
 		UnNode<Type> t0 = typeNumber;
 		UnNode<Type> t1 = TypeLambda.of(typeNumber, t0);
 		UnNode<Type> t2 = TypeLambda.of(typeNumber, t1);
-		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>>empty() //
+		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>> empty() //
 				.put(TermOp.BIGAND.name, t2) //
 				.put(TermOp.BIGOR_.name, t2) //
 				.put(TermOp.PLUS__.name, t2) //
@@ -237,7 +237,7 @@ public class P1InferType {
 					if (!String_.equals(pair.t0, field))
 						offset += getTypeSize(pair.t1);
 					else
-						return FunpMemory.of(getAddress(erase(struct)), offset, getTypeSize(pair.t1));
+						return FunpMemory.of(getAddress(erase(struct)), offset, offset + getTypeSize(pair.t1));
 				throw new RuntimeException();
 			})).applyIf(FunpIndex.class, f -> f.apply((array, index) -> {
 				int size = getTypeSize(((TypeArray) typeOf(array)).elementType);

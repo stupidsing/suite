@@ -68,6 +68,11 @@ public class FunpTest {
 		test("define i := 3 >> define p := address i >> 2 + ^p");
 	}
 
+	@Test
+	public void testStruct() {
+		test("define s := struct (a 1, b 2, c 3,) >> s/c");
+	}
+
 	private void test(String p) {
 		LogUtil.info(p);
 		Bytes bytes = compile(p);

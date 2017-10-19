@@ -46,7 +46,7 @@ public class P0Parse {
 		// return parse(Suite.substitute(".1 | (.0 => .2)", m));
 		else if ((m = Suite.match("^.0").apply(node)) != null)
 			return FunpDeref.of(parse(m[0]));
-		else if ((m = Suite.match(".1/.2").apply(node)) != null)
+		else if ((m = Suite.match(".0/.1").apply(node)) != null)
 			return FunpField.of(parse(m[0]), name(m[1]));
 		else if ((m = Suite.match("fixed .0 => .1").apply(node)) != null)
 			return FunpFixed.of(name(m[0]), parse(m[1]));
