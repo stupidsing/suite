@@ -1,6 +1,8 @@
 package suite.funp;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +44,6 @@ import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.AutoObject;
@@ -212,16 +213,14 @@ public class P1InferType {
 				}
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				UnNode<Type> elementType = ((TypeArray) typeOf(n0)).elementType.final_();
-				List<Funp> elements1 = Read //
-						.from(elements) //
-						.map(this::erase) //
-						.toList();
 				int elementSize = getTypeSize(elementType);
-				IntIntPair[] offsets = Ints_ //
-						.range(0, elements1.size()) //
-						.map(i -> IntIntPair.of(i * elementSize, (i + 1) * elementSize)) //
-						.toArray(IntIntPair.class);
-				return FunpData.of(elements1, offsets);
+				int offset = 0;
+				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
+				for (Funp element : elements) {
+					int offset0 = offset;
+					list.add(Pair.of(element, IntIntPair.of(offset0, offset += elementSize)));
+				}
+				return FunpData.of(list);
 			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
 				if (Boolean.TRUE) {
 					int fs1 = fs - getTypeSize(typeOf(value));
@@ -263,19 +262,14 @@ public class P1InferType {
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return getAddress(erase(expr));
 			})).applyIf(FunpStruct.class, f -> f.apply(fvs -> {
-				List<Funp> elements1 = Read //
-						.from(fvs) //
-						.map(pair -> erase(pair.t1)) //
-						.toList();
-				int size = elements1.size();
-				List<Pair<String, UnNode<Type>>> fts = ((TypeStruct) typeOf(n0)).pairs;
+				Iterator<Pair<String, UnNode<Type>>> ftsIter = ((TypeStruct) typeOf(n0)).pairs.iterator();
 				int offset = 0;
-				IntIntPair[] offsets = new IntIntPair[size];
-				for (int i = 0; i < size; i++) {
+				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
+				for (Pair<String, Funp> fv : fvs) {
 					int offset0 = offset;
-					offsets[i] = IntIntPair.of(offset0, offset += getTypeSize(fts.get(i).t1));
+					list.add(Pair.of(fv.t1, IntIntPair.of(offset0, offset += getTypeSize(ftsIter.next().t1))));
 				}
-				return FunpData.of(elements1, offsets);
+				return FunpData.of(list);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(env.get(var));
 			}));

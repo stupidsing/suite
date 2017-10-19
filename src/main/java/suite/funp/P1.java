@@ -3,8 +3,8 @@ package suite.funp;
 import java.util.List;
 
 import suite.adt.pair.Fixie_.FixieFun1;
-import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
+import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
 import suite.primitive.adt.pair.IntIntPair;
 
@@ -50,18 +50,16 @@ public class P1 {
 	}
 
 	public static class FunpData implements Funp, P2.End {
-		public List<Funp> data;
-		public IntIntPair[] offsets;
+		public List<Pair<Funp, IntIntPair>> pairs;
 
-		public static FunpData of(List<Funp> data, IntIntPair[] offsets) {
+		public static FunpData of(List<Pair<Funp, IntIntPair>> pairs) {
 			FunpData f = new FunpData();
-			f.data = data;
-			f.offsets = offsets;
+			f.pairs = pairs;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<List<Funp>, IntIntPair[], R> fun) {
-			return fun.apply(data, offsets);
+		public <R> R apply(FixieFun1<List<Pair<Funp, IntIntPair>>, R> fun) {
+			return fun.apply(pairs);
 		}
 	}
 

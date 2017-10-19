@@ -205,12 +205,12 @@ public class P2GenerateCode {
 					return compile(expr);
 				})).applyIf(FunpBoolean.class, t -> t.apply(b -> {
 					return postOp.apply(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
-				})).applyIf(FunpData.class, t -> t.apply((data, offsets) -> {
+				})).applyIf(FunpData.class, t -> t.apply(pairs -> {
 					return postAssign.apply((c1, target) -> {
-						for (int i = 0; i < data.size(); i++) {
-							IntIntPair offset = offsets[i];
+						for (Pair<Funp, IntIntPair> pair : pairs) {
+							IntIntPair offset = pair.t1;
 							FunpMemory target_ = FunpMemory.of(target.pointer, target.start + offset.t0, target.end + offset.t1);
-							c1.compileAssign(data.get(i), target_);
+							c1.compileAssign(pair.t0, target_);
 						}
 					});
 				})).applyIf(FunpFixed.class, t -> t.apply((var, expr) -> {
