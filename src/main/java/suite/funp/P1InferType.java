@@ -52,85 +52,10 @@ import suite.util.Switch;
  */
 public class P1InferType {
 
-	private static Unify<Type> unify = new Unify<>();
-
-	private static class Type extends AutoObject<Type> implements UnNode<Type> {
-		public boolean unify(UnNode<Type> type) {
-			return getClass() == type.getClass() //
-					&& fields().isAll(field -> Rethrow.ex(() -> unify.unify(cast(field.get(this)), cast(field.get(type)))));
-		}
-
-		private static UnNode<Type> cast(Object object) {
-			@SuppressWarnings("unchecked")
-			UnNode<Type> node = (UnNode<Type>) object;
-			return node;
-		}
-	}
-
-	private static class TypeArray extends Type {
-		private UnNode<Type> elementType;
-		private int size;
-
-		private static TypeArray of(UnNode<Type> elementType) {
-			return TypeArray.of(elementType, -1);
-		}
-
-		private static TypeArray of(UnNode<Type> elementType, int size) {
-			TypeArray t = new TypeArray();
-			t.elementType = elementType;
-			t.size = size;
-			return t;
-		}
-
-		private <R> R apply(FixieFun2<UnNode<Type>, Integer, R> fun) {
-			return fun.apply(elementType, size);
-		}
-
-		public boolean unify(UnNode<Type> type) {
-			if (getClass() == type.getClass()) {
-				TypeArray other = (TypeArray) type;
-				if (unify.unify(elementType, other.elementType)) {
-					if (size == -1)
-						size = other.size;
-					else if (other.size == -1)
-						other.size = size;
-					return size == other.size;
-				} else
-					return false;
-			} else
-				return false;
-		}
-	}
-
-	private static class TypeBoolean extends Type {
-	}
-
-	private static class TypeLambda extends Type {
-		private UnNode<Type> parameterType, returnType;
-
-		private static TypeLambda of(UnNode<Type> parameterType, UnNode<Type> returnType) {
-			TypeLambda t = new TypeLambda();
-			t.parameterType = parameterType;
-			t.returnType = returnType;
-			return t;
-		}
-	}
-
-	private static class TypeNumber extends Type {
-	}
-
-	private static class TypeReference extends Type {
-		@SuppressWarnings("unused")
-		private UnNode<Type> type;
-
-		private static TypeReference of(UnNode<Type> type) {
-			TypeReference t = new TypeReference();
-			t.type = type;
-			return t;
-		}
-	}
-
 	private Inspect inspect = Singleton.me.inspect;
+
+	private int is = Funp_.integerSize;
+	private int ps = Funp_.pointerSize;
 
 	private UnNode<Type> typeBoolean = new TypeBoolean();
 	private UnNode<Type> typeNumber = new TypeNumber();
@@ -262,9 +187,9 @@ public class P1InferType {
 					LambdaType lt = lambdaType(lambda);
 					Funp lambda1 = erase(lambda);
 					Funp invoke;
-					if (lt.os == Funp_.pointerSize)
+					if (lt.os == ps)
 						invoke = allocStack(value, FunpInvokeInt.of(lambda1));
-					else if (lt.os == Funp_.pointerSize * 2)
+					else if (lt.os == ps * 2)
 						invoke = allocStack(value, FunpInvokeInt2.of(lambda1));
 					else
 						invoke = FunpAllocStack.of(lt.os, null, allocStack(value, FunpInvokeIo.of(lambda1)));
@@ -301,14 +226,14 @@ public class P1InferType {
 				Funp address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-				int b = Funp_.pointerSize * 2; // return address and EBP
+				int b = ps * 2; // return address and EBP
 				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n0);
 				Erase erase1 = new Erase(scope1, 0, env.put(var, new Var(scope1, b, b + lt.is)));
 				Funp expr1 = erase1.erase(expr);
-				if (lt.os == Funp_.pointerSize)
+				if (lt.os == ps)
 					return FunpRoutine.of(expr1);
-				else if (lt.os == Funp_.pointerSize * 2)
+				else if (lt.os == ps * 2)
 					return FunpRoutine2.of(expr1);
 				else
 					return FunpRoutineIo.of(expr1, lt.is, lt.os);
@@ -343,7 +268,7 @@ public class P1InferType {
 		private Funp getVariable(Var vd) {
 			Funp nfp = Funp_.framePointer;
 			for (int i = scope; i < vd.scope; i++)
-				nfp = FunpMemory.of(nfp, 0, Funp_.pointerSize);
+				nfp = FunpMemory.of(nfp, 0, ps);
 			return FunpMemory.of(nfp, vd.start, vd.end);
 		}
 	}
@@ -389,7 +314,7 @@ public class P1InferType {
 
 	private LambdaType lambdaType(Funp lambda) {
 		LambdaType lt = new LambdaType(lambda);
-		if (lt.os <= Funp_.integerSize)
+		if (lt.os <= is)
 			return lt;
 		else
 			throw new RuntimeException();
@@ -415,13 +340,91 @@ public class P1InferType {
 		sw.applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
 			return getTypeSize(elementType) * size;
 		})).applyIf(TypeLambda.class, t -> {
-			return Funp_.pointerSize + Funp_.pointerSize;
+			return ps + ps;
 		}).applyIf(TypeNumber.class, t -> {
-			return Funp_.integerSize;
+			return is;
 		}).applyIf(TypeReference.class, t -> {
-			return Funp_.pointerSize;
+			return ps;
 		});
 		return sw.result().intValue();
+	}
+
+	private static Unify<Type> unify = new Unify<>();
+
+	private static class TypeArray extends Type {
+		private UnNode<Type> elementType;
+		private int size;
+
+		private static TypeArray of(UnNode<Type> elementType) {
+			return TypeArray.of(elementType, -1);
+		}
+
+		private static TypeArray of(UnNode<Type> elementType, int size) {
+			TypeArray t = new TypeArray();
+			t.elementType = elementType;
+			t.size = size;
+			return t;
+		}
+
+		private <R> R apply(FixieFun2<UnNode<Type>, Integer, R> fun) {
+			return fun.apply(elementType, size);
+		}
+
+		public boolean unify(UnNode<Type> type) {
+			if (getClass() == type.getClass()) {
+				TypeArray other = (TypeArray) type;
+				if (unify.unify(elementType, other.elementType)) {
+					if (size == -1)
+						size = other.size;
+					else if (other.size == -1)
+						other.size = size;
+					return size == other.size;
+				} else
+					return false;
+			} else
+				return false;
+		}
+	}
+
+	private static class TypeBoolean extends Type {
+	}
+
+	private static class TypeLambda extends Type {
+		private UnNode<Type> parameterType, returnType;
+
+		private static TypeLambda of(UnNode<Type> parameterType, UnNode<Type> returnType) {
+			TypeLambda t = new TypeLambda();
+			t.parameterType = parameterType;
+			t.returnType = returnType;
+			return t;
+		}
+	}
+
+	private static class TypeNumber extends Type {
+	}
+
+	private static class TypeReference extends Type {
+		@SuppressWarnings("unused")
+		private UnNode<Type> type;
+
+		private static TypeReference of(UnNode<Type> type) {
+			TypeReference t = new TypeReference();
+			t.type = type;
+			return t;
+		}
+	}
+
+	private static class Type extends AutoObject<Type> implements UnNode<Type> {
+		public boolean unify(UnNode<Type> type) {
+			return getClass() == type.getClass() //
+					&& fields().isAll(field -> Rethrow.ex(() -> unify.unify(cast(field.get(this)), cast(field.get(type)))));
+		}
+
+		private static UnNode<Type> cast(Object object) {
+			@SuppressWarnings("unchecked")
+			UnNode<Type> node = (UnNode<Type>) object;
+			return node;
+		}
 	}
 
 }
