@@ -1,5 +1,3 @@
-// gcc -std=c99 -g src/main/c/termios.c -o target/termios
-
 #ifndef termiossource
 #define termiossource
 
@@ -10,16 +8,20 @@
 
 static struct termios termios0, termios1;
 
+int termiosavailable() {
+	return tcgetattr(0, &termios0) == 0;
+}
+
 void termioscfg(int echo) {
-	tcgetattr(0, &termios0);
+	if(tcgetattr(0, &termios0)) err("tcgetattr()");
 	termios1 = termios0;
 	termios1.c_lflag &= ~ICANON; // disable buffered I/O
 	termios1.c_lflag &= echo ? ECHO : ~ECHO; // set echo mode
-	tcsetattr(0, TCSANOW, &termios1);
+	if(tcsetattr(0, TCSANOW, &termios1)) err("tcsetattr()");
 }
 
 void termiosdecfg() {
-	tcsetattr(0, TCSANOW, &termios0);
+	if(tcsetattr(0, TCSANOW, &termios0)) err("tcsetattr()");
 }
 
 char getch_(int echo) {
