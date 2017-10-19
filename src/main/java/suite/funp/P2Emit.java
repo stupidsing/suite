@@ -35,10 +35,6 @@ public class P2Emit {
 			private OpReg reg;
 			private List<Funp> mults = new ArrayList<>();
 
-			private DecomposeMult(Funp n0) {
-				decompose(n0);
-			}
-
 			private void decompose(Funp n0) {
 				FunpTree2 tree;
 				Funp r;
@@ -62,7 +58,8 @@ public class P2Emit {
 		boolean ok = is1248(size);
 
 		for (Funp n1 : FunpTree.unfold(n0, TermOp.PLUS__)) {
-			DecomposeMult dec = new DecomposeMult(n1);
+			DecomposeMult dec = new DecomposeMult();
+			dec.decompose(n1);
 			if (dec.mults.isEmpty()) {
 				OpReg reg_ = dec.reg;
 				long scale_ = dec.scale;
