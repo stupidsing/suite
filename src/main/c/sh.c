@@ -14,17 +14,13 @@
 #define buffersize 64
 #define delimiters " \t\r\n\a"
 
-int readchar() {
-	return termiosavailable() ? getche() : getchar();
-}
-
-char *readline() {
+char *readlinestdin() {
 	int size = buffersize;
 	char *buffer = memalloc(size * sizeof(char));
 	int pos = 0;
 	int c;
 
-	while((c = readchar()) != EOF && (pos || c != 4)) {
+	while((c = getchar()) != EOF) {
 		if(c == '\n') {
 			buffer[pos] = '\0';
 			return buffer;
@@ -36,6 +32,30 @@ char *readline() {
 
 	memfree(buffer);
 	return 0;
+}
+
+char *readlinetermios() {
+	int size = buffersize;
+	char *buffer = memalloc(size * sizeof(char));
+	int pos = 0;
+	int c;
+
+	while((c = getche()) != EOF && (pos || c != 4)) {
+		if(c == '\n') {
+			buffer[pos] = '\0';
+			return buffer;
+		} else
+			buffer[pos] = c;
+
+		if(size <= ++pos) memrealloc(&buffer, (size <<= 1) * sizeof(char));
+	}
+
+	memfree(buffer);
+	return 0;
+}
+
+char *readline() {
+	return termiosavailable() ? readlinetermios() : readlinestdin();
 }
 
 char **splitline(char *line) {
