@@ -3,10 +3,12 @@ package suite.funp;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.adt.pair.Fixie_.FixieFun1;
+import suite.adt.pair.Fixie_.FixieFun2;
+import suite.adt.pair.Fixie_.FixieFun3;
 import suite.funp.Funp_.Funp;
 import suite.node.Atom;
 import suite.node.io.Operator;
-import suite.node.io.Operator.Assoc;
 
 public class P0 {
 
@@ -23,6 +25,10 @@ public class P0 {
 			f.lambda = lambda;
 			return f;
 		}
+
+		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
+			return fun.apply(value, lambda);
+		}
 	}
 
 	public static class FunpArray implements Funp, P1.End {
@@ -33,6 +39,10 @@ public class P0 {
 			f.elements = elements;
 			return f;
 		}
+
+		public <R> R apply(FixieFun1<List<Funp>, R> fun) {
+			return fun.apply(elements);
+		}
 	}
 
 	public static class FunpBoolean implements Funp, P2.End {
@@ -42,6 +52,10 @@ public class P0 {
 			FunpBoolean f = new FunpBoolean();
 			f.b = b;
 			return f;
+		}
+
+		public <R> R apply(FixieFun1<Boolean, R> fun) {
+			return fun.apply(b);
 		}
 	}
 
@@ -57,6 +71,10 @@ public class P0 {
 			f.expr = expr;
 			return f;
 		}
+
+		public <R> R apply(FixieFun3<String, Funp, Funp, R> fun) {
+			return fun.apply(var, value, expr);
+		}
 	}
 
 	public static class FunpDeref implements Funp, P1.End {
@@ -66,6 +84,10 @@ public class P0 {
 			FunpDeref f = new FunpDeref();
 			f.pointer = pointer;
 			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(pointer);
 		}
 	}
 
@@ -78,6 +100,10 @@ public class P0 {
 			f.var = var;
 			f.expr = expr;
 			return f;
+		}
+
+		public <R> R apply(FixieFun2<String, Funp, R> fun) {
+			return fun.apply(var, expr);
 		}
 	}
 
@@ -93,6 +119,10 @@ public class P0 {
 			f.else_ = else_;
 			return f;
 		}
+
+		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
+			return fun.apply(if_, then, else_);
+		}
 	}
 
 	public static class FunpIndex implements Funp, P2.End {
@@ -104,6 +134,10 @@ public class P0 {
 			f.array = array;
 			f.index = index;
 			return f;
+		}
+
+		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
+			return fun.apply(array, index);
 		}
 	}
 
@@ -117,6 +151,10 @@ public class P0 {
 			f.expr = expr;
 			return f;
 		}
+
+		public <R> R apply(FixieFun2<String, Funp, R> fun) {
+			return fun.apply(var, expr);
+		}
 	}
 
 	public static class FunpNumber implements Funp, P2.End {
@@ -126,6 +164,10 @@ public class P0 {
 			FunpNumber f = new FunpNumber();
 			f.i = i;
 			return f;
+		}
+
+		public <R> R apply(FixieFun1<Integer, R> fun) {
+			return fun.apply(i);
 		}
 	}
 
@@ -137,6 +179,10 @@ public class P0 {
 			f.expr = expr;
 			return f;
 		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
+		}
 	}
 
 	public static class FunpReference implements Funp, P1.End {
@@ -146,6 +192,10 @@ public class P0 {
 			FunpReference f = new FunpReference();
 			f.expr = pointer;
 			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
 		}
 	}
 
@@ -173,12 +223,8 @@ public class P0 {
 			return list;
 		}
 
-		public Funp getFirst() {
-			return operator.getAssoc() == Assoc.RIGHT ? right : left;
-		}
-
-		public Funp getSecond() {
-			return operator.getAssoc() == Assoc.RIGHT ? left : right;
+		public <R> R apply(FixieFun3<Operator, Funp, Funp, R> fun) {
+			return fun.apply(operator, left, right);
 		}
 	}
 
@@ -205,6 +251,10 @@ public class P0 {
 			list.add(n);
 			return list;
 		}
+
+		public <R> R apply(FixieFun3<Atom, Funp, Funp, R> fun) {
+			return fun.apply(operator, left, right);
+		}
 	}
 
 	public static class FunpVariable implements Funp, P1.End {
@@ -215,6 +265,10 @@ public class P0 {
 			f.var = var;
 			return f;
 		};
+
+		public <R> R apply(FixieFun1<String, R> fun) {
+			return fun.apply(var);
+		}
 	}
 
 }

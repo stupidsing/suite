@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.Fixie_.FixieFun0;
-import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.fp.Unify;
 import suite.fp.Unify.UnNode;
@@ -80,6 +78,10 @@ public class P1InferType {
 			t.elementType = elementType;
 			t.size = size;
 			return t;
+		}
+
+		private <R> R apply(FixieFun2<UnNode<Type>, Integer, R> fun) {
+			return fun.apply(elementType, size);
 		}
 
 		public boolean unify(UnNode<Type> type) {
@@ -426,66 +428,14 @@ public class P1InferType {
 		return typeByNode.get(n);
 	}
 
-	private int getTypeSize(UnNode<Type> n) {
-		return new SwitchType<Integer>(n.final_()) //
-				.ifTypeArray((elementType, size) -> getTypeSize(elementType) * size) //
-				.ifTypeBoolean(() -> Funp_.booleanSize) //
-				.ifTypeLambda((parameterType, returnType) -> Funp_.pointerSize + Funp_.pointerSize) //
-				.ifTypeNumber(() -> Funp_.integerSize) //
-				.ifTypeReference((type) -> Funp_.pointerSize) //
-				.result();
-	}
-
-	private class SwitchType<T> {
-		private UnNode<Type> in;
-		private T result = null;
-
-		private SwitchType(UnNode<Type> in) {
-			this.in = in;
-		}
-
-		private SwitchType<T> ifTypeArray(FixieFun2<UnNode<Type>, Integer, T> fun) {
-			if (in instanceof TypeArray) {
-				TypeArray t = (TypeArray) in;
-				result = fun.apply(t.elementType, t.size);
-			}
-			return this;
-		}
-
-		private SwitchType<T> ifTypeBoolean(FixieFun0<T> fun) {
-			if (in instanceof TypeBoolean)
-				result = fun.apply();
-			return this;
-		}
-
-		private SwitchType<T> ifTypeLambda(FixieFun2<UnNode<Type>, UnNode<Type>, T> fun) {
-			if (in instanceof TypeLambda) {
-				TypeLambda t = (TypeLambda) in;
-				result = fun.apply(t.parameterType, t.returnType);
-			}
-			return this;
-		}
-
-		private SwitchType<T> ifTypeNumber(FixieFun0<T> fun) {
-			if (in instanceof TypeNumber)
-				result = fun.apply();
-			return this;
-		}
-
-		private SwitchType<T> ifTypeReference(FixieFun1<UnNode<Type>, T> fun) {
-			if (in instanceof TypeReference) {
-				TypeReference t = (TypeReference) in;
-				result = fun.apply(t.type);
-			}
-			return this;
-		}
-
-		private T result() {
-			if (result != null)
-				return result;
-			else
-				throw new RuntimeException("cannot handle " + in);
-		}
+	private int getTypeSize(UnNode<Type> n0) {
+		UnNode<Type> n1 = n0.final_();
+		Integer result = null;
+		result = Funp_.applyIf(n1, TypeArray.class, result, t -> t.apply((elementType, size) -> getTypeSize(elementType) * size));
+		result = Funp_.applyIf(n1, TypeLambda.class, result, t -> Funp_.pointerSize + Funp_.pointerSize);
+		result = Funp_.applyIf(n1, TypeNumber.class, result, t -> Funp_.integerSize);
+		result = Funp_.applyIf(n1, TypeReference.class, result, t -> Funp_.pointerSize);
+		return result.intValue();
 	}
 
 }

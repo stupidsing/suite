@@ -2,6 +2,9 @@ package suite.funp;
 
 import java.util.List;
 
+import suite.adt.pair.Fixie_.FixieFun1;
+import suite.adt.pair.Fixie_.FixieFun2;
+import suite.adt.pair.Fixie_.FixieFun3;
 import suite.funp.Funp_.Funp;
 import suite.primitive.adt.pair.IntIntPair;
 
@@ -22,6 +25,10 @@ public class P1 {
 			f.expr = expr;
 			return f;
 		}
+
+		public <R> R apply(FixieFun3<Integer, Funp, Funp, R> fun) {
+			return fun.apply(size, value, expr);
+		}
 	}
 
 	public static class FunpAssign implements Funp, P2.End {
@@ -36,6 +43,10 @@ public class P1 {
 			f.expr = expr;
 			return f;
 		}
+
+		public <R> R apply(FixieFun3<FunpMemory, Funp, Funp, R> fun) {
+			return fun.apply(memory, value, expr);
+		}
 	}
 
 	public static class FunpData implements Funp, P2.End {
@@ -47,6 +58,10 @@ public class P1 {
 			f.data = data;
 			f.offsets = offsets;
 			return f;
+		}
+
+		public <R> R apply(FixieFun2<List<Funp>, IntIntPair[], R> fun) {
+			return fun.apply(data, offsets);
 		}
 	}
 
@@ -61,6 +76,10 @@ public class P1 {
 			f.routine = routine;
 			return f;
 		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(routine);
+		}
 	}
 
 	public static class FunpInvokeInt2 implements Funp, P2.End {
@@ -71,6 +90,10 @@ public class P1 {
 			f.routine = routine;
 			return f;
 		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(routine);
+		}
 	}
 
 	public static class FunpInvokeIo implements Funp, P2.End {
@@ -80,6 +103,10 @@ public class P1 {
 			FunpInvokeIo f = new FunpInvokeIo();
 			f.routine = routine;
 			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(routine);
 		}
 	}
 
@@ -103,6 +130,10 @@ public class P1 {
 		public int size() {
 			return end - start;
 		}
+
+		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
+			return fun.apply(pointer, start, end);
+		}
 	}
 
 	public static class FunpRoutine implements Funp, P2.End {
@@ -112,6 +143,10 @@ public class P1 {
 			FunpRoutine f = new FunpRoutine();
 			f.expr = expr;
 			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
 		}
 	}
 
@@ -123,6 +158,11 @@ public class P1 {
 			f.expr = expr;
 			return f;
 		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
+		}
+
 	}
 
 	public static class FunpRoutineIo implements Funp, P2.End {
@@ -136,6 +176,10 @@ public class P1 {
 			f.os = os;
 			return f;
 		}
+
+		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
+			return fun.apply(expr, is, os);
+		}
 	}
 
 	public static class FunpSaveRegisters implements Funp, P2.End {
@@ -145,6 +189,10 @@ public class P1 {
 			FunpSaveRegisters f = new FunpSaveRegisters();
 			f.expr = expr;
 			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
 		}
 	}
 
