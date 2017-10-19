@@ -16,7 +16,6 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assembler;
 import suite.funp.Funp_.Funp;
-import suite.funp.Funp_.Switch;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
@@ -46,6 +45,7 @@ import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
 import suite.util.FunUtil2.Sink2;
+import suite.util.Switch;
 
 public class P2GenerateCode {
 

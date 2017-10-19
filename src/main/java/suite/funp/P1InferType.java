@@ -8,7 +8,6 @@ import suite.adt.pair.Fixie_.FixieFun2;
 import suite.fp.Unify;
 import suite.fp.Unify.UnNode;
 import suite.funp.Funp_.Funp;
-import suite.funp.Funp_.Switch;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
@@ -44,6 +43,7 @@ import suite.streamlet.Read;
 import suite.util.AutoObject;
 import suite.util.Rethrow;
 import suite.util.String_;
+import suite.util.Switch;
 
 /**
  * Hindley-Milner type inference.
