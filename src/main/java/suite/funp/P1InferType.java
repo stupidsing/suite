@@ -21,6 +21,7 @@ import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpTree;
+import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P1.FunpAllocStack;
 import suite.funp.P1.FunpData;
@@ -171,61 +172,89 @@ public class P1InferType {
 		}
 
 		private UnNode<Type> infer_(Funp n0) {
-			if (n0 instanceof FunpApply) {
-				FunpApply n1 = (FunpApply) n0;
-				TypeLambda tl = cast(TypeLambda.class, infer(n1.lambda));
-				unify(n0, tl.parameterType, infer(n1.value));
+			UnNode<Type> type = null;
+
+			type = Funp_.applyIf(n0, FunpApply.class, type, f -> f.apply((value, lambda) -> {
+				TypeLambda tl = cast(TypeLambda.class, infer(lambda));
+				unify(n0, tl.parameterType, infer(value));
 				return tl.returnType;
-			} else if (n0 instanceof FunpArray) {
-				List<Funp> elements = ((FunpArray) n0).elements;
+			}));
+
+			type = Funp_.applyIf(n0, FunpArray.class, type, f -> f.apply(elements -> {
 				UnNode<Type> te = unify.newRef();
 				for (Funp element : elements)
 					unify(n0, te, infer_(element));
 				return TypeArray.of(te, elements.size());
-			} else if (n0 instanceof FunpBoolean)
-				return typeBoolean;
-			else if (n0 instanceof FunpDeref) {
+			}));
+
+			type = Funp_.applyIf(n0, FunpBoolean.class, type, f -> typeBoolean);
+
+			type = Funp_.applyIf(n0, FunpDeref.class, type, f -> f.apply(pointer -> {
 				UnNode<Type> t = unify.newRef();
-				unify(n0, TypeReference.of(t), infer(((FunpDeref) n0).pointer));
+				unify(n0, TypeReference.of(t), infer(pointer));
 				return t;
-			} else if (n0 instanceof FunpDefine) {
-				FunpDefine n1 = (FunpDefine) n0;
-				return new Infer(env.put(n1.var, infer(n1.value))).infer(n1.expr);
-			} else if (n0 instanceof FunpFixed) {
-				FunpFixed n1 = (FunpFixed) n0;
+			}));
+
+			type = Funp_.applyIf(n0, FunpDefine.class, type, f -> f.apply((var, value, expr) -> {
+				return new Infer(env.put(var, infer(value))).infer(expr);
+			}));
+
+			type = Funp_.applyIf(n0, FunpFixed.class, type, f -> f.apply((var, expr) -> {
 				UnNode<Type> t = unify.newRef();
-				unify(n0, t, new Infer(env.put(n1.var, t)).infer(n1.expr));
+				unify(n0, t, new Infer(env.put(var, t)).infer(expr));
 				return t;
-			} else if (n0 instanceof FunpIf) {
-				FunpIf n1 = (FunpIf) n0;
+			}));
+
+			type = Funp_.applyIf(n0, FunpIf.class, type, f -> f.apply((if_, then, else_) -> {
 				UnNode<Type> t;
-				unify(n0, typeBoolean, infer(n1.if_));
-				unify(n0, t = infer(n1.then), infer(n1.else_));
+				unify(n0, typeBoolean, infer(if_));
+				unify(n0, t = infer(then), infer(else_));
 				return t;
-			} else if (n0 instanceof FunpIndex) {
-				FunpIndex n1 = (FunpIndex) n0;
+			}));
+
+			type = Funp_.applyIf(n0, FunpIndex.class, type, f -> f.apply((array, index) -> {
 				UnNode<Type> t = unify.newRef();
-				unify(n0, TypeArray.of(t), infer(n1.array));
+				unify(n0, TypeArray.of(t), infer(array));
 				return t;
-			} else if (n0 instanceof FunpLambda) {
-				FunpLambda n1 = (FunpLambda) n0;
+			}));
+
+			type = Funp_.applyIf(n0, FunpLambda.class, type, f -> f.apply((var, expr) -> {
 				UnNode<Type> tv = unify.newRef();
-				return TypeLambda.of(tv, new Infer(env.put(n1.var, tv)).infer(n1.expr));
-			} else if (n0 instanceof FunpNumber)
-				return typeNumber;
-			else if (n0 instanceof FunpPolyType)
-				return unify.clone(infer(((FunpPolyType) n0).expr));
-			else if (n0 instanceof FunpReference)
-				return TypeReference.of(infer(((FunpReference) n0).expr));
-			else if (n0 instanceof FunpTree) {
-				FunpTree n1 = (FunpTree) n0;
-				UnNode<Type> t0 = infer(n1.left);
-				UnNode<Type> t1 = infer(n1.right);
+				return TypeLambda.of(tv, new Infer(env.put(var, tv)).infer(expr));
+			}));
+
+			type = Funp_.applyIf(n0, FunpNumber.class, type, f -> typeNumber);
+
+			type = Funp_.applyIf(n0, FunpPolyType.class, type, f -> f.apply(expr -> {
+				return unify.clone(infer(expr));
+			}));
+
+			type = Funp_.applyIf(n0, FunpReference.class, type, f -> f.apply(expr -> {
+				return TypeReference.of(infer(expr));
+			}));
+
+			type = Funp_.applyIf(n0, FunpTree.class, type, f -> f.apply((operator, left, right) -> {
+				UnNode<Type> t0 = infer(left);
+				UnNode<Type> t1 = infer(right);
 				unify(n0, t0, typeNumber);
 				unify(n0, t1, typeNumber);
 				return typeNumber;
-			} else if (n0 instanceof FunpVariable)
-				return env.get(((FunpVariable) n0).var);
+			}));
+
+			type = Funp_.applyIf(n0, FunpTree2.class, type, f -> f.apply((operator, left, right) -> {
+				UnNode<Type> t0 = infer(left);
+				UnNode<Type> t1 = infer(right);
+				unify(n0, t0, typeNumber);
+				unify(n0, t1, typeNumber);
+				return typeNumber;
+			}));
+
+			type = Funp_.applyIf(n0, FunpVariable.class, type, f -> f.apply(var -> {
+				return env.get(var);
+			}));
+
+			if (type != null)
+				return type;
 			else
 				throw new RuntimeException("cannot infer type for " + n0);
 		}
@@ -256,11 +285,9 @@ public class P1InferType {
 		}
 
 		private Funp erase_(Funp n0) {
-			if (n0 instanceof FunpApply) {
-				FunpApply n1 = (FunpApply) n0;
-				Funp value = n1.value;
-				Funp lambda = n1.lambda;
+			Funp result = null;
 
+			result = Funp_.applyIf(n0, FunpApply.class, result, f -> f.apply((value, lambda) -> {
 				if (Boolean.TRUE || !(lambda instanceof FunpLambda)) {
 					LambdaType lt = lambdaType(lambda);
 					Funp lambda1 = erase(lambda);
@@ -276,65 +303,71 @@ public class P1InferType {
 					FunpLambda lambda1 = (FunpLambda) lambda;
 					return erase(FunpDefine.of(lambda1.var, value, lambda1.expr));
 				}
-			} else if (n0 instanceof FunpArray) {
+
+			}));
+
+			result = Funp_.applyIf(n0, FunpArray.class, result, f -> f.apply(elements -> {
 				UnNode<Type> elementType = ((TypeArray) typeOf(n0)).elementType.final_();
-				List<Funp> elements = Read //
-						.from(((FunpArray) n0).elements) //
+				List<Funp> elements1 = Read //
+						.from(elements) //
 						.map(this::erase) //
 						.toList();
 				int elementSize = getTypeSize(elementType);
 				IntIntPair[] offsets = Ints_ //
-						.range(0, elements.size()) //
+						.range(0, elements1.size()) //
 						.map(i -> IntIntPair.of(i * elementSize, (i + 1) * elementSize)) //
 						.toArray(IntIntPair.class);
-				return FunpData.of(elements, offsets);
-			} else if (n0 instanceof FunpDefine) {
-				FunpDefine n1 = (FunpDefine) n0;
-				String var = n1.var;
-				Funp value = n1.value;
-				Funp expr = n1.expr;
+				return FunpData.of(elements1, offsets);
+			}));
 
+			result = Funp_.applyIf(n0, FunpDefine.class, result, f -> f.apply((var, value, expr) -> {
 				if (Boolean.TRUE) {
 					int fs1 = fs - getTypeSize(typeOf(value));
 					Erase erase1 = new Erase(scope, fs1, env.put(var, new Var(scope, fs1, fs)));
 					return allocStack(value, erase1.erase(expr));
 				} else
-					return erase(new Expand(var, n1.value).expand(expr));
-			} else if (n0 instanceof FunpDeref) {
-				FunpDeref n1 = (FunpDeref) n0;
-				return FunpMemory.of(erase(n1.pointer), 0, getTypeSize(typeOf(n1)));
-			} else if (n0 instanceof FunpIndex) {
-				FunpIndex n1 = (FunpIndex) n0;
-				Funp array = n1.array;
+					return erase(new Expand(var, value).expand(expr));
+			}));
+
+			result = Funp_.applyIf(n0, FunpDeref.class, result, f -> f.apply(pointer -> {
+				return FunpMemory.of(erase(pointer), 0, getTypeSize(typeOf(n0)));
+			}));
+
+			result = Funp_.applyIf(n0, FunpIndex.class, result, f -> f.apply((array, index) -> {
 				int size = getTypeSize(((TypeArray) typeOf(array)).elementType);
 				Funp address0 = getAddress(erase(array));
-				FunpTree inc = FunpTree.of(TermOp.MULT__, erase(n1.index), FunpNumber.of(size));
+				FunpTree inc = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.of(size));
 				Funp address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
-			} else if (n0 instanceof FunpLambda) {
-				FunpLambda n1 = (FunpLambda) n0;
+			}));
+
+			result = Funp_.applyIf(n0, FunpLambda.class, result, f -> f.apply((var, expr) -> {
 				int b = Funp_.pointerSize * 2; // return address and EBP
-				String var = n1.var;
 				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n0);
 				Erase erase1 = new Erase(scope1, 0, env.put(var, new Var(scope1, b, b + lt.is)));
-				Funp expr = erase1.erase(n1.expr);
+				Funp expr1 = erase1.erase(expr);
 				if (lt.os == Funp_.pointerSize)
-					return FunpRoutine.of(expr);
+					return FunpRoutine.of(expr1);
 				else if (lt.os == Funp_.pointerSize * 2)
-					return FunpRoutine2.of(expr);
+					return FunpRoutine2.of(expr1);
 				else
-					return FunpRoutineIo.of(expr, lt.is, lt.os);
-			} else if (n0 instanceof FunpPolyType) {
-				Funp expr = ((FunpPolyType) n0).expr;
+					return FunpRoutineIo.of(expr1, lt.is, lt.os);
+			}));
+
+			result = Funp_.applyIf(n0, FunpPolyType.class, result, f -> f.apply(expr -> {
 				return erase(expr);
-			} else if (n0 instanceof FunpReference)
-				return getAddress(erase(((FunpReference) n0).expr));
-			else if (n0 instanceof FunpVariable) {
-				Var vd = env.get(((FunpVariable) n0).var);
-				return getVariable(vd);
-			} else
-				return null;
+			}));
+
+			result = Funp_.applyIf(n0, FunpReference.class, result, f -> f.apply(expr -> {
+				return getAddress(erase(expr));
+			}));
+
+			result = Funp_.applyIf(n0, FunpVariable.class, result, f -> f.apply(var -> {
+				return getVariable(env.get(var));
+			}));
+
+			return result;
 		}
 
 		private Funp allocStack(Funp p, Funp expr) {
@@ -343,14 +376,20 @@ public class P1InferType {
 		}
 
 		private Funp getAddress(Funp n0) {
-			if (n0 instanceof FunpMemory) {
-				FunpMemory n1 = (FunpMemory) n0;
-				return FunpTree.of(TermOp.PLUS__, n1.pointer, FunpNumber.of(n1.start));
-			} else if (n0 instanceof FunpVariable) {
-				Var vd = env.get(((FunpVariable) n0).var);
-				return getAddress(getVariable(vd));
-			} else
-				throw new RuntimeException();
+			Funp result = null;
+
+			result = Funp_.applyIf(n0, FunpMemory.class, result, f -> f.apply((pointer, start, end) -> {
+				return FunpTree.of(TermOp.PLUS__, pointer, FunpNumber.of(start));
+			}));
+
+			result = Funp_.applyIf(n0, FunpVariable.class, result, f -> f.apply(var -> {
+				return getAddress(getVariable(env.get(var)));
+			}));
+
+			if (result != null)
+				return result;
+			else
+				throw new RuntimeException("cannot get address for " + n0);
 		}
 
 		private Funp getVariable(Var vd) {
@@ -375,12 +414,18 @@ public class P1InferType {
 		}
 
 		private Funp expand_(Funp n0) {
-			if (n0 instanceof FunpDefine) // variable re-defined
-				return String_.equals(((FunpDefine) n0).var, var) ? n0 : null;
-			else if (n0 instanceof FunpVariable)
-				return String_.equals(((FunpVariable) n0).var, var) ? value : n0;
-			else
-				return null;
+			Funp result = null;
+
+			// variable re-defined
+			result = Funp_.applyIf(n0, FunpDefine.class, result, f -> f.apply((var_, value, expr) -> {
+				return String_.equals(var_, var) ? n0 : null;
+			}));
+
+			result = Funp_.applyIf(n0, FunpVariable.class, result, f -> f.apply(var_ -> {
+				return String_.equals(var_, var) ? value : n0;
+			}));
+
+			return result;
 		}
 	}
 
