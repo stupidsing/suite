@@ -53,6 +53,33 @@ public class Matrix_ {
 				.collectAsDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]));
 	}
 
+	public double det(float[][] m) {
+		int size = sqSize_(m);
+		int[] cols = Ints_.range(size).toArray();
+
+		class Det {
+			private double sum;
+
+			private void det(int i0, double d) {
+				if (i0 < size) {
+					int col0 = cols[i0];
+					int i1 = i0 + 1;
+					for (int it = i0; it < size; it++) {
+						int colt = cols[it];
+						cols[it] = col0;
+						det(i1, -d * m[i0][colt]);
+						cols[it] = colt;
+					}
+				} else
+					sum += d;
+			}
+		}
+
+		Det det = new Det();
+		det.det(0, 1d);
+		return det.sum;
+	}
+
 	public boolean equals(float[][] m, float[][] n) {
 		int h = h(m);
 		int w = w(m);
