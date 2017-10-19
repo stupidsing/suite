@@ -488,20 +488,16 @@ public class P2GenerateCode {
 			}
 
 			private void compileMove(OpReg r0, int start0, OpReg r1, int start1, int size) {
+				Sink2<Compile1, OpReg> sink = (c1, r) -> {
+					int s = r.size;
+					em.mov(r, amd64.mem(r1, start1, s));
+					em.mov(amd64.mem(r0, start0, s), r);
+					c1.compileMove(r0, start0 + s, r1, start1 + s, size - s);
+				};
+
 				if (r0 != r1 || start0 != start1)
-					if (size <= 16)
-						saveRegs(fd_ -> {
-							int i = 0;
-							while (i < size) {
-								int s = i + is <= size ? is : 1;
-								OpReg r = 1 < s ? ecx : cl;
-								em.mov(r, amd64.mem(r1, start1 + i, s));
-								em.mov(amd64.mem(r0, start0 + i, s), r);
-								i += s;
-							}
-						}, ecx);
-					else
-						saveRegs(fd_ -> {
+					if (16 < size)
+						saveRegs(c1 -> {
 							OpReg r = rs.mask(r0, edi).get(esi);
 							em.emit(amd64.instruction(Insn.LEA, r, amd64.mem(r1, start1, is)));
 							em.emit(amd64.instruction(Insn.LEA, edi, amd64.mem(r0, start0, is)));
@@ -513,6 +509,10 @@ public class P2GenerateCode {
 							for (int i = 0; i < size % 4; i++)
 								em.emit(amd64.instruction(Insn.MOVSB));
 						}, ecx, esi, edi);
+					else if (is <= size)
+						sink.sink2(this, rs.get());
+					else if (0 < size)
+						saveRegs(c1 -> sink.sink2(c1, cl), ecx);
 			}
 
 			private FunpMemory frame(int start, int end) {
