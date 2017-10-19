@@ -172,7 +172,7 @@ public class VirtualMatrix {
 	public float[][] matrix() {
 		float[][] matrix = new float[height][width_];
 		for (int i = 0; i < height; i++)
-			for (int j = 0; i < width_; j++)
+			for (int j = 0; j < width_; j++)
 				matrix[i][j] = get.apply(i, j);
 		return matrix;
 	}

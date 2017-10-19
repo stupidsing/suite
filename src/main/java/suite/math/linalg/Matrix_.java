@@ -67,7 +67,7 @@ public class Matrix_ {
 					for (int it = i0; it < size; it++) {
 						int colt = cols[it];
 						cols[it] = col0;
-						det(i1, -d * m[i0][colt]);
+						det(i1, (it == i0 ? d : -d) * m[i0][colt]);
 						cols[it] = colt;
 					}
 				} else
