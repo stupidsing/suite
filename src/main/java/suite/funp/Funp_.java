@@ -16,9 +16,7 @@ public class Funp_ {
 
 	public static <T, R> R applyIf(Object in, Class<T> c, R result, Fun<T, R> fun) {
 		T t = c.isInstance(in) ? c.cast(in) : null;
-		if (t != null)
-			result = fun.apply(t);
-		return result;
+		return t != null ? fun.apply(t) : result;
 	}
 
 }
