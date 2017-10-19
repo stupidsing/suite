@@ -233,11 +233,13 @@ public class P1InferType {
 			})).applyIf(FunpField.class, f -> f.apply((struct, field) -> {
 				List<Pair<String, UnNode<Type>>> pairs = ((TypeStruct) typeOf(struct)).pairs;
 				int offset = 0;
-				for (Pair<String, UnNode<Type>> pair : pairs)
+				for (Pair<String, UnNode<Type>> pair : pairs) {
+					int offset1 = offset + getTypeSize(pair.t1);
 					if (!String_.equals(pair.t0, field))
-						offset += getTypeSize(pair.t1);
+						offset = offset1;
 					else
-						return FunpMemory.of(getAddress(erase(struct)), offset, offset + getTypeSize(pair.t1));
+						return FunpMemory.of(getAddress(erase(struct)), offset, offset1);
+				}
 				throw new RuntimeException();
 			})).applyIf(FunpIndex.class, f -> f.apply((array, index) -> {
 				int size = getTypeSize(((TypeArray) typeOf(array)).elementType);
