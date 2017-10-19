@@ -165,7 +165,7 @@ public class P2GenerateCode {
 						return postOp.apply(op0);
 					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG || type == CompileOut_.TWOOPSPEC) {
 						OpReg op0 = isOutSpec ? pop0 : rs.get();
-						OpReg op1 = isOutSpec ? pop1 : rs.get(op0);
+						OpReg op1 = isOutSpec ? pop1 : rs.mask(op0).get();
 						int size = ps * 2;
 						int fd1 = fd - size;
 						Operand imm = amd64.imm(size);
