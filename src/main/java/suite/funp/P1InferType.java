@@ -235,18 +235,14 @@ public class P1InferType {
 			}));
 
 			sw.applyIf(FunpTree.class, f -> f.apply((operator, left, right) -> {
-				UnNode<Type> t0 = infer(left);
-				UnNode<Type> t1 = infer(right);
-				unify(n0, t0, typeNumber);
-				unify(n0, t1, typeNumber);
+				unify(n0, infer(left), typeNumber);
+				unify(n0, infer(right), typeNumber);
 				return typeNumber;
 			}));
 
 			sw.applyIf(FunpTree2.class, f -> f.apply((operator, left, right) -> {
-				UnNode<Type> t0 = infer(left);
-				UnNode<Type> t1 = infer(right);
-				unify(n0, t0, typeNumber);
-				unify(n0, t1, typeNumber);
+				unify(n0, infer(left), typeNumber);
+				unify(n0, infer(right), typeNumber);
 				return typeNumber;
 			}));
 
