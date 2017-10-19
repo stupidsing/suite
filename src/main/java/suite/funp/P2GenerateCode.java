@@ -506,7 +506,7 @@ public class P2GenerateCode {
 							em.emit(amd64.instruction(Insn.LEA, r, amd64.mem(r1, start1, is)));
 							em.emit(amd64.instruction(Insn.LEA, edi, amd64.mem(r0, start0, is)));
 							em.mov(esi, r);
-							em.mov(ecx, amd64.imm(size / 4, 4));
+							em.mov(ecx, amd64.imm(size / 4, is));
 							em.emit(amd64.instruction(Insn.CLD));
 							em.emit(amd64.instruction(Insn.REP));
 							em.emit(amd64.instruction(Insn.MOVSD));
