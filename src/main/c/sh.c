@@ -9,9 +9,14 @@
 #include <unistd.h>
 
 #include "mem.c"
+#include "termios.c"
 
 #define buffersize 64
 #define delimiters " \t\r\n\a"
+
+int readchar() {
+	return termiosavailable() ? getch() : getchar();
+}
 
 char *readline() {
 	int size = buffersize;
@@ -19,7 +24,7 @@ char *readline() {
 	int pos = 0;
 	int c;
 
-	while((c = getchar()) != EOF) {
+	while((c = readchar()) != EOF && (pos || c != 4)) {
 		if(c == '\n') {
 			buffer[pos] = '\0';
 			return buffer;

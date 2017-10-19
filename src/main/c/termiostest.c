@@ -6,7 +6,6 @@
 #include "termios.c"
 
 int main() {
-	while(1) printf("\nYou typed: %d\n", getche());
 	printf("getche()");
 	printf("\nYou typed: %c\n", getche());
 	printf("getch()");
