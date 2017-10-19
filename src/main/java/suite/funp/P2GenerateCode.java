@@ -469,12 +469,7 @@ public class P2GenerateCode {
 					return postOp.apply(op0);
 				}));
 
-				CompileOut out = sw.result();
-
-				if (out != null)
-					return out;
-				else
-					throw new RuntimeException("cannot compile " + n0);
+				return sw.nonNullResult();
 			}
 
 			private Pair<Operand, Operand> compileRoutine(Runnable runnable) {

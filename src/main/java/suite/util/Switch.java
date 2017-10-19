@@ -16,6 +16,13 @@ public class Switch<R> {
 		result = t != null ? fun.apply(t) : result;
 	}
 
+	public R nonNullResult() {
+		if (result != null)
+			return result;
+		else
+			throw new RuntimeException("cannot handle " + in);
+	}
+
 	public R result() {
 		return result;
 	}

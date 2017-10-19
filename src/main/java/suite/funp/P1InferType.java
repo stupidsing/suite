@@ -176,7 +176,7 @@ public class P1InferType {
 			Switch<UnNode<Type>> sw = new Switch<>(n0);
 
 			sw.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-				TypeLambda tl = cast(TypeLambda.class, infer(lambda));
+				TypeLambda tl = (TypeLambda) infer(lambda);
 				unify(n0, tl.parameterType, infer(value));
 				return tl.returnType;
 			}));
@@ -254,12 +254,7 @@ public class P1InferType {
 				return env.get(var);
 			}));
 
-			UnNode<Type> type = sw.result();
-
-			if (type != null)
-				return type;
-			else
-				throw new RuntimeException("cannot infer type for " + n0);
+			return sw.nonNullResult();
 		}
 	}
 
@@ -389,12 +384,7 @@ public class P1InferType {
 				return getAddress(getVariable(env.get(var)));
 			}));
 
-			Funp result = sw.result();
-
-			if (result != null)
-				return result;
-			else
-				throw new RuntimeException("cannot get address for " + n0);
+			return sw.nonNullResult();
 		}
 
 		private Funp getVariable(Var vd) {
@@ -463,15 +453,6 @@ public class P1InferType {
 			is = getTypeSize(lambdaType.parameterType);
 			os = getTypeSize(lambdaType.returnType);
 		}
-	}
-
-	private <Type1 extends Type> Type1 cast(Class<Type1> clazz, UnNode<Type> type) {
-		if (type.getClass() == clazz) {
-			@SuppressWarnings("unchecked")
-			Type1 t1 = (Type1) type;
-			return t1;
-		} else
-			return null;
 	}
 
 	private UnNode<Type> typeOf(Funp n) {
