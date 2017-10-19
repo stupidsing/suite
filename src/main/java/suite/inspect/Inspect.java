@@ -347,7 +347,10 @@ public class Inspect {
 				return t1;
 			} else if (t0 instanceof Collection)
 				return Read.from((Collection<?>) t0).map(this::rewriteField).toList();
-			else
+			else if (t0 instanceof Pair) {
+				Pair<?, ?> t1 = (Pair<?, ?>) t0;
+				return Pair.of(rewriteField(t1.t0), rewriteField(t1.t1));
+			} else
 				return t0;
 		}
 	}
@@ -464,7 +467,7 @@ public class Inspect {
 		propertyNames.retainAll(setMethods.keySet());
 
 		return Read.from(propertyNames) //
-				.<Property> map(propertyName -> {
+				.<Property>map(propertyName -> {
 					Method getMethod = getMethods.get(propertyName);
 					Method setMethod = setMethods.get(propertyName);
 					return new Property() {

@@ -6,6 +6,7 @@ import java.util.List;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
+import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
 import suite.node.Atom;
 import suite.node.io.Operator;
@@ -88,6 +89,22 @@ public class P0 {
 
 		public <R> R apply(FixieFun1<Funp, R> fun) {
 			return fun.apply(pointer);
+		}
+	}
+
+	public static class FunpField implements Funp, P1.End {
+		public Funp struct;
+		public String field;
+
+		public static FunpField of(Funp struct, String field) {
+			FunpField f = new FunpField();
+			f.struct = struct;
+			f.field = field;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<Funp, String, R> fun) {
+			return fun.apply(struct, field);
 		}
 	}
 
@@ -196,6 +213,20 @@ public class P0 {
 
 		public <R> R apply(FixieFun1<Funp, R> fun) {
 			return fun.apply(expr);
+		}
+	}
+
+	public static class FunpStruct implements Funp, P1.End {
+		public List<Pair<String, Funp>> values;
+
+		public static FunpStruct of(List<Pair<String, Funp>> values) {
+			FunpStruct f = new FunpStruct();
+			f.values = values;
+			return f;
+		}
+
+		public <R> R apply(FixieFun1<List<Pair<String, Funp>>, R> fun) {
+			return fun.apply(values);
 		}
 	}
 

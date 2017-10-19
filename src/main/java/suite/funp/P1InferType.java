@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
+import suite.adt.pair.Pair;
 import suite.fp.Unify;
 import suite.fp.Unify.UnNode;
 import suite.funp.Funp_.Funp;
@@ -13,6 +15,7 @@ import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDeref;
+import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
@@ -20,6 +23,7 @@ import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpReference;
+import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
@@ -37,6 +41,7 @@ import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
@@ -117,6 +122,11 @@ public class P1InferType {
 				return t;
 			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
 				return new Infer(env.put(var, infer(value))).infer(expr);
+			})).applyIf(FunpField.class, f -> f.apply((struct, field) -> {
+				return Read //
+						.from(((TypeStruct) infer(struct)).fields) //
+						.filter(pair -> String_.equals(pair.t0, field)) //
+						.uniqueResult().t1;
 			})).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> t = unify.newRef();
 				unify(n0, t, new Infer(env.put(var, t)).infer(expr));
@@ -139,6 +149,8 @@ public class P1InferType {
 				return unify.clone(infer(expr));
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return TypeReference.of(infer(expr));
+			})).applyIf(FunpStruct.class, f -> f.apply(values -> {
+				return TypeStruct.of(Read.from2(values).mapValue(this::infer).toList());
 			})).applyIf(FunpTree.class, f -> f.apply((operator, left, right) -> {
 				unify(n0, infer(left), typeNumber);
 				unify(n0, infer(right), typeNumber);
@@ -219,6 +231,15 @@ public class P1InferType {
 					return erase(new Expand(var, value).expand(expr));
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(typeOf(n0)));
+			})).applyIf(FunpField.class, f -> f.apply((struct, field) -> {
+				List<Pair<String, UnNode<Type>>> fields = ((TypeStruct) typeOf(struct)).fields;
+				int offset = 0;
+				for (Pair<String, UnNode<Type>> pair : fields)
+					if (!String_.equals(pair.t0, field))
+						offset += getTypeSize(pair.t1);
+					else
+						return FunpMemory.of(getAddress(erase(struct)), offset, getTypeSize(pair.t1));
+				throw new RuntimeException();
 			})).applyIf(FunpIndex.class, f -> f.apply((array, index) -> {
 				int size = getTypeSize(((TypeArray) typeOf(array)).elementType);
 				Funp address0 = getAddress(erase(array));
@@ -241,6 +262,20 @@ public class P1InferType {
 				return erase(expr);
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return getAddress(erase(expr));
+			})).applyIf(FunpStruct.class, f -> f.apply(fields -> {
+				List<Pair<String, UnNode<Type>>> nts = ((TypeStruct) typeOf(n0)).fields;
+				List<Funp> elements1 = Read //
+						.from(fields) //
+						.map(pair -> erase(pair.t1)) //
+						.toList();
+				int size = elements1.size();
+				int offset = 0;
+				IntIntPair[] offsets = new IntIntPair[size];
+				for (int i = 0; i < size; i++) {
+					int offset0 = offset;
+					offsets[i] = IntIntPair.of(offset0, offset += getTypeSize(nts.get(i).t1));
+				}
+				return FunpData.of(elements1, offsets);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(env.get(var));
 			}));
@@ -345,7 +380,9 @@ public class P1InferType {
 			return is;
 		}).applyIf(TypeReference.class, t -> {
 			return ps;
-		});
+		}).applyIf(TypeStruct.class, t -> t.apply(fields -> {
+			return Read.from(fields).collectAsInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
+		}));
 		return sw.result().intValue();
 	}
 
@@ -401,6 +438,40 @@ public class P1InferType {
 	}
 
 	private static class TypeNumber extends Type {
+	}
+
+	private static class TypeStruct extends Type {
+		private List<Pair<String, UnNode<Type>>> fields;
+
+		private static TypeStruct of(List<Pair<String, UnNode<Type>>> fields) {
+			TypeStruct t = new TypeStruct();
+			t.fields = fields;
+			return t;
+		}
+
+		private <R> R apply(FixieFun1<List<Pair<String, UnNode<Type>>>, R> fun) {
+			return fun.apply(fields);
+		}
+
+		public boolean unify(UnNode<Type> type) {
+			if (getClass() == type.getClass()) {
+				TypeStruct other = (TypeStruct) type;
+				List<Pair<String, UnNode<Type>>> fields0 = fields;
+				List<Pair<String, UnNode<Type>>> fields1 = other.fields;
+				int size = fields0.size();
+				if (size == fields1.size()) {
+					boolean b = true;
+					for (int i = 0; i < size; i++) {
+						Pair<String, UnNode<Type>> pair0 = fields0.get(i);
+						Pair<String, UnNode<Type>> pair1 = fields1.get(i);
+						b &= String_.equals(pair0.t0, pair1.t0) && unify.unify(pair0.t1, pair1.t1);
+					}
+					return b;
+				} else
+					return false;
+			} else
+				return false;
+		}
 	}
 
 	private static class TypeReference extends Type {
