@@ -37,6 +37,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testBind() {
+		test("if (`v` := 1) then v else 0");
+	}
+
+	@Test
 	public void testDefine() {
 		test("define i := 3 >> i + 1");
 		test("define f := i => i + 1 >> 3 | f");
