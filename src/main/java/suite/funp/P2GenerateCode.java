@@ -366,8 +366,9 @@ public class P2GenerateCode {
 								OpReg opResult_ = isOutSpec ? pop0 : rs.get(eax);
 								Sink<Compile1> sink0 = c1 -> {
 									c1.compileOpSpec(lhs, eax);
-									Operand opRhs0 = c1.mask(eax).compileOp(rhs), opRhs1;
-									emitMov(opRhs1 = !(opRhs0 instanceof OpImm) ? opRhs0 : c1.rs.mask(eax, edx).get(), opRhs0);
+									Operand opRhs0 = c1.mask(eax).compileOp(rhs);
+									Operand opRhs1 = !(opRhs0 instanceof OpImm) ? opRhs0 : c1.rs.mask(eax, edx).get();
+									emitMov(opRhs1, opRhs0);
 									emit(amd64.instruction(Insn.XOR, edx, edx));
 									emit(amd64.instruction(Insn.IDIV, opRhs1));
 									emitMov(opResult_, eax);
