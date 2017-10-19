@@ -39,7 +39,6 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
-import suite.primitive.IntPrimitives.IntObjSink;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -151,15 +150,15 @@ public class P2GenerateCode {
 					return new CompileOut();
 				};
 
-				Fun<IntObjSink<FunpMemory>, CompileOut> postAssign = assign -> {
+				Fun<Sink2<Compile1, FunpMemory>, CompileOut> postAssign = assign -> {
 					if (type == CompileOut_.ASSIGN) {
-						assign.sink2(fd, target);
+						assign.sink2(this, target);
 						return new CompileOut();
 					} else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC) {
 						OpReg op0 = isOutSpec ? pop0 : rs.get();
 						emit(amd64.instruction(Insn.PUSH, eax));
 						int fd1 = fd - is;
-						assign.sink2(fd1, frame(fd1, fd));
+						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
 						emitMov(op0, amd64.mem(ebp, fd1, is));
 						emit(amd64.instruction(Insn.POP, rs.mask(op0).get()));
 						return postOp.apply(op0);
@@ -170,7 +169,7 @@ public class P2GenerateCode {
 						int fd1 = fd - size;
 						Operand imm = amd64.imm(size);
 						emit(amd64.instruction(Insn.SUB, esp, imm));
-						assign.sink2(fd1, frame(fd1, fd));
+						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
 						emitMov(op0, amd64.mem(ebp, fd1, ps));
 						emitMov(op1, amd64.mem(ebp, fd1 + ps, ps));
 						emit(amd64.instruction(Insn.ADD, esp, imm));
@@ -211,11 +210,11 @@ public class P2GenerateCode {
 				}));
 
 				co = Funp_.applyIf(n0, FunpData.class, co, t -> t.apply((data, offsets) -> {
-					return postAssign.apply((fd1, target) -> {
+					return postAssign.apply((c1, target) -> {
 						for (int i = 0; i < data.size(); i++) {
 							IntIntPair offset = offsets[i];
 							FunpMemory target_ = FunpMemory.of(target.pointer, target.start + offset.t0, target.end + offset.t1);
-							new Compile1(rs, fd1).compileAssign(data.get(i), target_);
+							c1.compileAssign(data.get(i), target_);
 						}
 					});
 				}));
@@ -260,20 +259,18 @@ public class P2GenerateCode {
 				}));
 
 				co = Funp_.applyIf(n0, FunpInvokeIo.class, co, t -> t.apply(routine -> {
-					return postAssign.apply((fd1, target) -> {
-						Compile1 c1 = new Compile1(rs, fd1);
+					return postAssign.apply((c1, target) -> {
 						OpReg r0 = c1.compileOpReg(target.pointer);
 						Compile1 c2 = c1.mask(r0);
 						c2.compileInvoke(routine);
-						c2.compileMove(r0, target.start, ebp, fd1, target.size());
+						c2.compileMove(r0, target.start, ebp, c1.fd, target.size());
 					});
 				}));
 
 				co = Funp_.applyIf(n0, FunpMemory.class, co, t -> t.apply((pointer, start, end) -> {
 					int size = end - start;
 					if (type == CompileOut_.ASSIGN)
-						return postAssign.apply((fd1, target) -> {
-							Compile1 c1 = new Compile1(rs, fd1);
+						return postAssign.apply((c1, target) -> {
 							OpReg r0 = c1.compileOpReg(target.pointer);
 							OpReg r1 = c1.mask(r0).compileOpReg(pointer);
 							if (size == target.size())
