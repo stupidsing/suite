@@ -14,6 +14,7 @@ import suite.adt.pair.Fixie_.Fixie7;
 import suite.adt.pair.Fixie_.Fixie8;
 import suite.adt.pair.Fixie_.Fixie9;
 import suite.adt.pair.Fixie_.FixieA;
+import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
@@ -110,6 +111,11 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0,
 		this.t7 = t7;
 		this.t8 = t8;
 		this.t9 = t9;
+	}
+
+	@Override
+	public <R> R map(FixieFun0<R> fun) {
+		return fun.apply();
 	}
 
 	@Override
