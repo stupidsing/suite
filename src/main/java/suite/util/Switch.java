@@ -11,9 +11,10 @@ public class Switch<R> {
 		this.in = in;
 	}
 
-	public <T> void applyIf(Class<T> c, Fun<T, R> fun) {
+	public <T> Switch<R> applyIf(Class<T> c, Fun<T, R> fun) {
 		T t = c.isInstance(in) ? c.cast(in) : null;
 		result = t != null ? fun.apply(t) : result;
+		return this;
 	}
 
 	public R nonNullResult() {

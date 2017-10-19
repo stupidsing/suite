@@ -199,18 +199,12 @@ public class P2GenerateCode {
 					else
 						emit(amd64.instruction(Insn.ADD, esp, imm));
 					return out;
-				}));
-
-				sw.applyIf(FunpAssign.class, t -> t.apply((memory, value, expr) -> {
+				})).applyIf(FunpAssign.class, t -> t.apply((memory, value, expr) -> {
 					compileAssign(value, memory);
 					return compile(expr);
-				}));
-
-				sw.applyIf(FunpBoolean.class, t -> t.apply(b -> {
+				})).applyIf(FunpBoolean.class, t -> t.apply(b -> {
 					return postOp.apply(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
-				}));
-
-				sw.applyIf(FunpData.class, t -> t.apply((data, offsets) -> {
+				})).applyIf(FunpData.class, t -> t.apply((data, offsets) -> {
 					return postAssign.apply((c1, target) -> {
 						for (int i = 0; i < data.size(); i++) {
 							IntIntPair offset = offsets[i];
@@ -218,17 +212,11 @@ public class P2GenerateCode {
 							c1.compileAssign(data.get(i), target_);
 						}
 					});
-				}));
-
-				sw.applyIf(FunpFixed.class, t -> t.apply((var, expr) -> {
+				})).applyIf(FunpFixed.class, t -> t.apply((var, expr) -> {
 					throw new RuntimeException();
-				}));
-
-				sw.applyIf(FunpFramePointer.class, t -> {
+				})).applyIf(FunpFramePointer.class, t -> {
 					return postOp.apply(ebp);
-				});
-
-				sw.applyIf(FunpIf.class, t -> t.apply((if_, then, else_) -> {
+				}).applyIf(FunpIf.class, t -> t.apply((if_, then, else_) -> {
 					OpReg op = isOutSpec ? pop0 : rs.get();
 					Operand elseLabel = amd64.imm(0, ps);
 					Operand endLabel = amd64.imm(0, ps);
@@ -241,34 +229,26 @@ public class P2GenerateCode {
 					compileOpSpec(else_, op);
 					emit(amd64.instruction(Insn.LABEL, endLabel));
 					return postOp.apply(op);
-				}));
-
-				sw.applyIf(FunpInvokeInt.class, t -> t.apply(routine -> {
+				})).applyIf(FunpInvokeInt.class, t -> t.apply(routine -> {
 					if (!rs.contains(eax)) {
 						compileInvoke(routine);
 						return postOp.apply(eax);
 					} else
 						throw new RuntimeException();
-				}));
-
-				sw.applyIf(FunpInvokeInt2.class, t -> t.apply(routine -> {
+				})).applyIf(FunpInvokeInt2.class, t -> t.apply(routine -> {
 					if (!rs.contains(eax, edx)) {
 						compileInvoke(routine);
 						return postTwoOp.apply(eax, edx);
 					} else
 						throw new RuntimeException();
-				}));
-
-				sw.applyIf(FunpInvokeIo.class, t -> t.apply(routine -> {
+				})).applyIf(FunpInvokeIo.class, t -> t.apply(routine -> {
 					return postAssign.apply((c1, target) -> {
 						OpReg r0 = c1.compileOpReg(target.pointer);
 						Compile1 c2 = c1.mask(r0);
 						c2.compileInvoke(routine);
 						c2.compileMove(r0, target.start, ebp, c1.fd, target.size());
 					});
-				}));
-
-				sw.applyIf(FunpMemory.class, t -> t.apply((pointer, start, end) -> {
+				})).applyIf(FunpMemory.class, t -> t.apply((pointer, start, end) -> {
 					int size = end - start;
 					if (type == CompileOut_.ASSIGN)
 						return postAssign.apply((c1, target) -> {
@@ -288,17 +268,11 @@ public class P2GenerateCode {
 						return postTwoOp.apply(op0, op1);
 					} else
 						throw new RuntimeException();
-				}));
-
-				sw.applyIf(FunpNumber.class, t -> t.apply(i -> {
+				})).applyIf(FunpNumber.class, t -> t.apply(i -> {
 					return postOp.apply(amd64.imm(i, is));
-				}));
-
-				sw.applyIf(FunpRoutine.class, t -> t.apply(expr -> {
+				})).applyIf(FunpRoutine.class, t -> t.apply(expr -> {
 					return postRoutine.apply(() -> emitMov(eax, new Compile1(registerSet, ps).compileOpReg(expr)));
-				}));
-
-				sw.applyIf(FunpRoutine2.class, t -> t.apply(expr -> {
+				})).applyIf(FunpRoutine2.class, t -> t.apply(expr -> {
 					return postRoutine.apply(() -> {
 						Compile1 c1 = new Compile1(registerSet, ps);
 						if (type == CompileOut_.TWOOPSPEC)
@@ -309,14 +283,10 @@ public class P2GenerateCode {
 							emitMov(edx, out.op1);
 						}
 					});
-				}));
-
-				sw.applyIf(FunpRoutineIo.class, t -> t.apply((expr, is, os) -> {
+				})).applyIf(FunpRoutineIo.class, t -> t.apply((expr, is, os) -> {
 					FunpMemory out = frame(ps + is, os);
 					return postRoutine.apply(() -> new Compile1(registerSet, ps).compileAssign(expr, out));
-				}));
-
-				sw.applyIf(FunpSaveRegisters.class, t -> t.apply(expr -> {
+				})).applyIf(FunpSaveRegisters.class, t -> t.apply(expr -> {
 					OpReg[] opRegs = rs.list(r -> r != esp.reg);
 
 					for (int i = 0; i <= opRegs.length - 1; i++)
@@ -342,9 +312,7 @@ public class P2GenerateCode {
 						emit(amd64.instruction(Insn.POP, opRegs[i]));
 
 					return out1;
-				}));
-
-				sw.applyIf(FunpTree.class, t -> t.apply((operator, lhs, rhs) -> {
+				})).applyIf(FunpTree.class, t -> t.apply((operator, lhs, rhs) -> {
 					Integer numLhs = lhs instanceof FunpNumber ? ((FunpNumber) lhs).i : null;
 					Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i : null;
 
@@ -425,9 +393,7 @@ public class P2GenerateCode {
 					}
 
 					return postOp.apply(op0);
-				}));
-
-				sw.applyIf(FunpTree2.class, t -> t.apply((operator, lhs, rhs) -> {
+				})).applyIf(FunpTree2.class, t -> t.apply((operator, lhs, rhs) -> {
 					Integer numLhs = lhs instanceof FunpNumber ? ((FunpNumber) lhs).i : null;
 					Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i : null;
 
