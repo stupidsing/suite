@@ -123,7 +123,7 @@ public class P0Parse {
 					Funp then_ = then;
 					Int_Obj<Funp> fun;
 
-					if (Boolean.FALSE && elements1 != null && size0 == elements1.size())
+					if (elements1 != null && size0 == elements1.size())
 						fun = elements1::get;
 					else
 						fun = i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
@@ -141,7 +141,7 @@ public class P0Parse {
 					Funp then_ = then;
 					Int_Obj<Funp> fun;
 
-					if (Boolean.FALSE && pairs1 != null && size0 == pairs1.size())
+					if (pairs1 != null && size0 == pairs1.size())
 						fun = i -> pairs1.get(i).t1;
 					else
 						fun = i -> FunpField.of(FunpReference.of(value), pairs0.get(i).t0);
