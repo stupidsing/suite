@@ -106,56 +106,56 @@ public class P0Parse {
 		}
 
 		private Funp bind(Funp be, Funp value, Funp then, Funp else_) {
+			String var;
+
 			if (be instanceof FunpBoolean && value instanceof FunpBoolean)
 				return ((FunpBoolean) be).b == ((FunpBoolean) value).b ? then : else_;
-
-			if (be instanceof FunpNumber && value instanceof FunpNumber)
+			else if (be instanceof FunpNumber && value instanceof FunpNumber)
 				return ((FunpNumber) be).i == ((FunpNumber) value).i ? then : else_;
+			else if (be instanceof FunpVariable && !variables.contains(var = ((FunpVariable) be).var))
+				return FunpDefine.of(var, value, then);
+			else {
+				Switch<Funp> sw0 = new Switch<Funp>(be);
 
-			Switch<Funp> sw0 = new Switch<Funp>(be);
+				sw0.applyIf(FunpArray.class, f -> f.apply(elements0 -> {
+					List<Funp> elements1 = new Switch<List<Funp>>(value).applyIf(FunpArray.class, g -> g.elements).result();
+					int size0 = elements0.size();
+					Funp then_ = then;
+					Int_Obj<Funp> fun;
 
-			sw0.applyIf(FunpArray.class, f -> f.apply(elements0 -> {
-				List<Funp> elements1 = new Switch<List<Funp>>(value).applyIf(FunpArray.class, g -> g.elements).result();
-				int size0 = elements0.size();
-				Funp then_ = then;
-				Int_Obj<Funp> fun;
+					if (Boolean.FALSE && elements1 != null && size0 == elements1.size())
+						fun = elements1::get;
+					else
+						fun = i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
 
-				if (Boolean.FALSE && elements1 != null && size0 == elements1.size())
-					fun = elements1::get;
-				else
-					fun = i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
+					for (int i = 0; i < size0; i++)
+						then_ = bind(elements0.get(i), fun.apply(i), then_, else_);
 
-				for (int i = 0; i < size0; i++)
-					then_ = bind(elements0.get(i), fun.apply(i), then_, else_);
+					return then_;
+				})).applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
+					List<Pair<String, Funp>> pairs1 = new Switch<List<Pair<String, Funp>>>(value)
+							.applyIf(FunpStruct.class, g -> g.pairs) //
+							.result();
 
-				return then_;
-			}));
+					int size0 = pairs0.size();
+					Funp then_ = then;
+					Int_Obj<Funp> fun;
 
-			sw0.applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
-				List<Pair<String, Funp>> pairs1 = new Switch<List<Pair<String, Funp>>>(value)
-						.applyIf(FunpStruct.class, g -> g.pairs).result();
-				int size0 = pairs0.size();
-				Funp then_ = then;
-				Int_Obj<Funp> fun;
+					if (Boolean.FALSE && pairs1 != null && size0 == pairs1.size())
+						fun = i -> pairs1.get(i).t1;
+					else
+						fun = i -> FunpField.of(FunpReference.of(value), pairs0.get(i).t0);
 
-				if (Boolean.FALSE && pairs1 != null && size0 == pairs1.size())
-					fun = i -> pairs1.get(i).t1;
-				else
-					fun = i -> FunpField.of(FunpReference.of(value), pairs0.get(i).t0);
+					for (int i = 0; i < size0; i++)
+						then_ = bind(pairs0.get(i).t1, fun.apply(i), then_, else_);
 
-				for (int i = 0; i < size0; i++)
-					then_ = bind(pairs0.get(i).t1, fun.apply(i), then_, else_);
+					return then_;
+				}));
 
-				return then_;
-			}));
+				Funp result = sw0.result();
 
-			sw0.applyIf(FunpVariable.class, f -> f.apply(var -> {
-				return variables.contains(var) ? be : FunpDefine.of(var, value, then);
-			}));
-
-			Funp result = sw0.result();
-
-			return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);
+				return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);
+			}
 		}
 
 		private Funp parseNewVariable(Node node, String var) {
