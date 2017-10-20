@@ -71,7 +71,7 @@ public class P0Parse {
 			else if ((m = Suite.match("if .0 then .1 else .2").apply(node)) != null)
 				return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
 			else if ((m = Suite.match(".0 {.1}").apply(node)) != null)
-				return FunpIndex.of1(FunpReference.of(parse(m[0])), parse(m[1]));
+				return FunpIndex.of(FunpReference.of(parse(m[0])), parse(m[1]));
 			else if ((m = Suite.match(".0 => .1").apply(node)) != null)
 				return FunpLambda.of(name(m[0]), parse(m[1]));
 			else if (node instanceof Int)
@@ -106,7 +106,7 @@ public class P0Parse {
 				int size = elements.size();
 				Funp then_ = then;
 				for (int i = 0; i < size; i++)
-					then_ = bind(elements.get(i), FunpIndex.of1(FunpReference.of(value), FunpNumber.of(i)), then_, else_);
+					then_ = bind(elements.get(i), FunpIndex.of(FunpReference.of(value), FunpNumber.of(i)), then_, else_);
 				return then_;
 			}));
 

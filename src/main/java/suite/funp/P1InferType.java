@@ -138,7 +138,7 @@ public class P1InferType {
 				unify(n, typeBoolean, infer(if_));
 				unify(n, t = infer(then), infer(else_));
 				return t;
-			})).applyIf(FunpIndex.class, f -> f.apply1((reference, index) -> {
+			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				UnNode<Type> t = unify.newRef();
 				unify(n, TypeReference.of(TypeArray.of(t)), infer(reference));
 				unify(n, infer(index), typeNumber);
@@ -245,7 +245,7 @@ public class P1InferType {
 						return FunpMemory.of(erase(reference), offset, offset1);
 				}
 				throw new RuntimeException();
-			})).applyIf(FunpIndex.class, f -> f.apply1((reference, index) -> {
+			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				int size = getTypeSize(typeOf(reference).cast(TypeReference.class).type.cast(TypeArray.class).elementType);
 				Funp address0 = erase(reference);
 				FunpTree inc = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.of(size));

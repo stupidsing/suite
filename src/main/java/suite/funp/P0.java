@@ -146,14 +146,14 @@ public class P0 {
 		public Funp reference;
 		public Funp index;
 
-		public static FunpIndex of1(Funp reference, Funp index) {
+		public static FunpIndex of(Funp reference, Funp index) {
 			FunpIndex f = new FunpIndex();
 			f.reference = reference;
 			f.index = index;
 			return f;
 		}
 
-		public <R> R apply1(FixieFun2<Funp, Funp, R> fun) {
+		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
 			return fun.apply(reference, index);
 		}
 	}

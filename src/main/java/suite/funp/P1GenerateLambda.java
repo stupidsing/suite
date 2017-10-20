@@ -114,7 +114,7 @@ public class P1GenerateLambda {
 				Thunk then1 = compile_(then);
 				Thunk else1 = compile_(else_);
 				return rt -> (b(rt, if1) ? then1 : else1).apply(rt);
-			})).applyIf(FunpIndex.class, f -> f.apply1((reference, index) -> {
+			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				Thunk array = compile_(FunpDeref.of(reference));
 				Thunk index1 = compile_(index);
 				return rt -> ((Vec) array.apply(rt)).values[i(rt, index1)];
