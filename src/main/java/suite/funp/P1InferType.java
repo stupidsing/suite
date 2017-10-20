@@ -107,7 +107,7 @@ public class P1InferType {
 			Switch<UnNode<Type>> sw = new Switch<>(n);
 
 			sw.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-				TypeLambda tl = (TypeLambda) infer(lambda);
+				TypeLambda tl = infer(lambda).cast(TypeLambda.class);
 				unify(n, tl.parameterType, infer(value));
 				return tl.returnType;
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
@@ -124,7 +124,7 @@ public class P1InferType {
 				unify(n, TypeReference.of(t), infer(pointer));
 				return t;
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				TypeStruct ts = (TypeStruct) ((TypeReference) infer(reference)).type;
+				TypeStruct ts = infer(reference).cast(TypeReference.class).type.cast(TypeStruct.class);
 				return Read //
 						.from(ts.pairs) //
 						.filter(pair -> String_.equals(pair.t0, field)) //
