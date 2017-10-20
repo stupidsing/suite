@@ -121,12 +121,10 @@ public class P0Parse {
 					List<Funp> elements1 = new Switch<List<Funp>>(value).applyIf(FunpArray.class, g -> g.elements).result();
 					int size0 = elements0.size();
 					Funp then_ = then;
-					Int_Obj<Funp> fun;
 
-					if (elements1 != null && size0 == elements1.size())
-						fun = elements1::get;
-					else
-						fun = i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
+					Int_Obj<Funp> fun = elements1 != null && size0 == elements1.size() //
+							? elements1::get //
+							: i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
 
 					for (int i = 0; i < size0; i++)
 						then_ = bind(elements0.get(i), fun.apply(i), then_, else_);
@@ -139,12 +137,10 @@ public class P0Parse {
 
 					int size0 = pairs0.size();
 					Funp then_ = then;
-					Int_Obj<Funp> fun;
 
-					if (pairs1 != null && size0 == pairs1.size())
-						fun = i -> pairs1.get(i).t1;
-					else
-						fun = i -> FunpField.of(FunpReference.of(value), pairs0.get(i).t0);
+					Int_Obj<Funp> fun = pairs1 != null && size0 == pairs1.size() //
+							? i -> pairs1.get(i).t1 //
+							: i -> FunpField.of(FunpReference.of(value), pairs0.get(i).t0);
 
 					for (int i = 0; i < size0; i++)
 						then_ = bind(pairs0.get(i).t1, fun.apply(i), then_, else_);
