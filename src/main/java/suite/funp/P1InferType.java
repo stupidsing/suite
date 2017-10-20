@@ -51,6 +51,7 @@ import suite.util.AutoObject;
 import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.Switch;
+import suite.util.Util;
 
 /**
  * Hindley-Milner type inference.
@@ -72,7 +73,7 @@ public class P1InferType {
 		return infer(n, unify.newRef());
 	}
 
-	private Funp infer(Funp n, UnNode<Type> t) {
+	private Funp infer(Funp n0, UnNode<Type> t) {
 		UnNode<Type> t0 = typeNumber;
 		UnNode<Type> t1 = TypeLambda.of(typeNumber, t0);
 		UnNode<Type> t2 = TypeLambda.of(typeNumber, t1);
@@ -84,10 +85,12 @@ public class P1InferType {
 				.put(TermOp.MULT__.name, t2) //
 				.put(TermOp.DIVIDE.name, t2);
 
-		if (unify.unify(t, new Infer(env).infer(n)))
-			return erase(0, 0, IMap.empty(), n);
+		Funp n1 = new Extract().extract(n0);
+
+		if (unify.unify(t, new Infer(env).infer(n1)))
+			return erase(0, 0, IMap.empty(), n1);
 		else
-			throw new RuntimeException("cannot infer type for " + n);
+			throw new RuntimeException("cannot infer type for " + n0);
 	}
 
 	private class Infer {
@@ -177,6 +180,33 @@ public class P1InferType {
 	private void unify(Funp n, UnNode<Type> type0, UnNode<Type> type1) {
 		if (!unify.unify(type0, type1))
 			throw new RuntimeException("cannot infer type for " + n);
+	}
+
+	private class Extract {
+		List<Pair<String, Funp>> evs = new ArrayList<>();
+
+		private Funp extract(Funp n0) {
+			Funp n1 = extract_(n0);
+			for (Pair<String, Funp> pair : evs)
+				n1 = FunpDefine.of(pair.t0, pair.t1, n1);
+			return n1;
+		}
+
+		private Funp extract_(Funp n) {
+			return inspect.rewrite(Funp.class, n_ -> {
+				Switch<Funp> sw = new Switch<>(n_);
+
+				sw.applyIf(FunpData.class, f -> f.apply(pairs -> {
+					String ev = "ev" + Util.temp();
+					evs.add(Pair.of(ev, n_));
+					return FunpVariable.of(ev);
+				})).applyIf(FunpDefine.class, f -> f.apply((var, value0, expr) -> {
+					return FunpDefine.of(var, new Extract().extract(value0), extract_(expr));
+				}));
+
+				return sw.result();
+			}, n);
+		}
 	}
 
 	private Funp erase(int scope, int fs, IMap<String, Var> env, Funp n) {
