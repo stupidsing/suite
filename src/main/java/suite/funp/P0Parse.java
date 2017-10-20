@@ -106,17 +106,22 @@ public class P0Parse {
 		}
 
 		private Funp bind(Funp be, Funp value, Funp then, Funp else_) {
+			if (be instanceof FunpBoolean && value instanceof FunpBoolean)
+				return ((FunpBoolean) be).b == ((FunpBoolean) value).b ? then : else_;
+
+			if (be instanceof FunpNumber && value instanceof FunpNumber)
+				return ((FunpNumber) be).i == ((FunpNumber) value).i ? then : else_;
+
 			Switch<Funp> sw0 = new Switch<Funp>(be);
 
 			sw0.applyIf(FunpArray.class, f -> f.apply(elements0 -> {
-				Switch<List<Funp>> sw1 = new Switch<List<Funp>>(value);
-				List<Funp> elements1 = sw1.applyIf(FunpArray.class, g -> g.apply(elements -> elements)).result();
+				List<Funp> elements1 = new Switch<List<Funp>>(value).applyIf(FunpArray.class, g -> g.elements).result();
 				int size0 = elements0.size();
 				Funp then_ = then;
 				Int_Obj<Funp> fun;
 
 				if (Boolean.FALSE && elements1 != null && size0 == elements1.size())
-					fun = i -> elements1.get(i);
+					fun = elements1::get;
 				else
 					fun = i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
 
@@ -127,8 +132,8 @@ public class P0Parse {
 			}));
 
 			sw0.applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
-				Switch<List<Pair<String, Funp>>> sw1 = new Switch<List<Pair<String, Funp>>>(value);
-				List<Pair<String, Funp>> pairs1 = sw1.applyIf(FunpStruct.class, g -> g.apply(pairs -> pairs)).result();
+				List<Pair<String, Funp>> pairs1 = new Switch<List<Pair<String, Funp>>>(value)
+						.applyIf(FunpStruct.class, g -> g.pairs).result();
 				int size0 = pairs0.size();
 				Funp then_ = then;
 				Int_Obj<Funp> fun;
