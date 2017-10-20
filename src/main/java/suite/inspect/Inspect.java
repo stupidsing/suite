@@ -321,38 +321,30 @@ public class Inspect {
 	 *         function.
 	 */
 	public <T> T rewrite(Class<T> baseClass, Iterate<T> fun, T t0) {
-		return new Rewrite<>(baseClass, fun).rewrite(t0);
-	}
+		class Rewrite {
+			private T rewrite(T t0) {
+				return Rethrow.ex(() -> {
+					T t1 = fun.apply(t0);
+					return t1 != null ? t1 : mapFields(t0, this::rewriteField);
+				});
+			}
 
-	private class Rewrite<T> {
-		private Class<T> baseClass;
-		private Iterate<T> fun;
-
-		private Rewrite(Class<T> baseClass, Iterate<T> fun) {
-			this.baseClass = baseClass;
-			this.fun = fun;
+			private Object rewriteField(Object t0) {
+				if (baseClass.isInstance(t0)) {
+					@SuppressWarnings("unchecked")
+					T t1 = rewrite((T) t0);
+					return t1;
+				} else if (t0 instanceof Collection)
+					return Read.from((Collection<?>) t0).map(this::rewriteField).toList();
+				else if (t0 instanceof Pair) {
+					Pair<?, ?> t1 = (Pair<?, ?>) t0;
+					return Pair.of(rewriteField(t1.t0), rewriteField(t1.t1));
+				} else
+					return t0;
+			}
 		}
 
-		private T rewrite(T t0) {
-			return Rethrow.ex(() -> {
-				T t1 = fun.apply(t0);
-				return t1 != null ? t1 : mapFields(t0, this::rewriteField);
-			});
-		}
-
-		private Object rewriteField(Object t0) {
-			if (baseClass.isInstance(t0)) {
-				@SuppressWarnings("unchecked")
-				T t1 = rewrite((T) t0);
-				return t1;
-			} else if (t0 instanceof Collection)
-				return Read.from((Collection<?>) t0).map(this::rewriteField).toList();
-			else if (t0 instanceof Pair) {
-				Pair<?, ?> t1 = (Pair<?, ?>) t0;
-				return Pair.of(rewriteField(t1.t0), rewriteField(t1.t1));
-			} else
-				return t0;
-		}
+		return new Rewrite().rewrite(t0);
 	}
 
 	private <T> T mapFields(T t0, Fun<Object, Object> mapper) throws ReflectiveOperationException {

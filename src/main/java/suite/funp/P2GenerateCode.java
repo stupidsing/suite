@@ -111,7 +111,7 @@ public class P2GenerateCode {
 			}
 
 			// invariant: fd = ESP - EBP
-			private CompileOut compile(Funp n0) {
+			private CompileOut compile(Funp n) {
 				boolean isOutSpec = type == CompileOut_.OPSPEC || type == CompileOut_.TWOOPSPEC;
 
 				Fun<Operand, CompileOut> postOp = op -> {
@@ -182,7 +182,7 @@ public class P2GenerateCode {
 
 				Fun<Runnable, CompileOut> postRoutine = routine -> compileRoutine(routine).map(postTwoOp);
 
-				Switch<CompileOut> sw = new Switch<>(n0);
+				Switch<CompileOut> sw = new Switch<>(n);
 
 				sw.applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr) -> {
 					Operand imm = amd64.imm(size);
@@ -317,7 +317,7 @@ public class P2GenerateCode {
 					Integer numLhs = lhs instanceof FunpNumber ? ((FunpNumber) lhs).i : null;
 					Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i : null;
 
-					OpMem op = em.decomposeOpMem(n0, is);
+					OpMem op = em.decomposeOpMem(n, is);
 					Operand op0, op1;
 
 					if (op != null) {
@@ -400,7 +400,7 @@ public class P2GenerateCode {
 					Integer numLhs = lhs instanceof FunpNumber ? ((FunpNumber) lhs).i : null;
 					Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i : null;
 
-					OpMem op = em.decomposeOpMem(n0, is);
+					OpMem op = em.decomposeOpMem(n, is);
 					Operand op0;
 
 					if (op != null) {
@@ -455,8 +455,8 @@ public class P2GenerateCode {
 				return Pair.of(ebp, routineLabel);
 			}
 
-			private void compileInvoke(Funp n0) {
-				CompileOut out = compileTwoOp(n0);
+			private void compileInvoke(Funp n) {
+				CompileOut out = compileTwoOp(n);
 				em.mov(ebp, out.op0);
 				em.emit(amd64.instruction(Insn.CALL, out.op1));
 			}

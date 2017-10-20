@@ -28,7 +28,8 @@ public class Dump {
 	}
 
 	/**
-	 * Dumps object content (public data and getters) through Reflection to a log4j.
+	 * Dumps object content (public data and getters) through Reflection to a
+	 * log4j.
 	 */
 	public static void out(Object object) {
 		StackTraceElement trace = Thread_.getStackTrace(3);
@@ -36,8 +37,8 @@ public class Dump {
 	}
 
 	/**
-	 * Dumps object content (public data and getters) through Reflection to a log4j,
-	 * with a descriptive name which you gave.
+	 * Dumps object content (public data and getters) through Reflection to a
+	 * log4j, with a descriptive name which you gave.
 	 */
 	public static void out(String name, Object object) {
 		StringBuilder sb = new StringBuilder();

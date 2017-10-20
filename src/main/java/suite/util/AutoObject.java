@@ -86,8 +86,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getSimpleName() + "(");
 		for (Object value : values())
-			sb.append(value + ", ");
-		sb.deleteCharAt(sb.length() - 1);
+			sb.append(value + ",");
 		sb.append(")");
 		return sb.toString();
 	}

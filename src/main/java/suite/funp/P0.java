@@ -93,18 +93,18 @@ public class P0 {
 	}
 
 	public static class FunpField implements Funp, P1.End {
-		public Funp struct;
+		public Funp reference;
 		public String field;
 
-		public static FunpField of(Funp struct, String field) {
+		public static FunpField of(Funp reference, String field) {
 			FunpField f = new FunpField();
-			f.struct = struct;
+			f.reference = reference;
 			f.field = field;
 			return f;
 		}
 
 		public <R> R apply(FixieFun2<Funp, String, R> fun) {
-			return fun.apply(struct, field);
+			return fun.apply(reference, field);
 		}
 	}
 
@@ -143,18 +143,18 @@ public class P0 {
 	}
 
 	public static class FunpIndex implements Funp, P2.End {
-		public Funp array;
+		public Funp reference;
 		public Funp index;
 
-		public static FunpIndex of(Funp array, Funp index) {
+		public static FunpIndex of1(Funp reference, Funp index) {
 			FunpIndex f = new FunpIndex();
-			f.array = array;
+			f.reference = reference;
 			f.index = index;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
-			return fun.apply(array, index);
+		public <R> R apply1(FixieFun2<Funp, Funp, R> fun) {
+			return fun.apply(reference, index);
 		}
 	}
 
