@@ -29,6 +29,7 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
+import suite.funp.P0.FunpVerifyType;
 import suite.funp.P1.FunpAllocStack;
 import suite.funp.P1.FunpData;
 import suite.funp.P1.FunpInvokeInt;
@@ -162,6 +163,9 @@ public class P1InferType {
 				unify(n, infer(left), typeNumber);
 				unify(n, infer(right), typeNumber);
 				return typeNumber;
+			})).applyIf(FunpVerifyType.class, f -> f.apply((left, right, expr) -> {
+				unify(n, infer(left), infer(right));
+				return infer(expr);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return env.get(var);
 			}));
@@ -292,6 +296,8 @@ public class P1InferType {
 				return FunpData.of(list);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(env.get(var));
+			})).applyIf(FunpVerifyType.class, f -> f.apply((left, right, expr) -> {
+				return erase(expr);
 			}));
 
 			return sw.result();

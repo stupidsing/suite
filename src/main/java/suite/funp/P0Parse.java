@@ -1,5 +1,7 @@
 package suite.funp;
 
+import java.util.List;
+
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
@@ -19,12 +21,14 @@ import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
+import suite.funp.P0.FunpVerifyType;
 import suite.immutable.ISet;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.primitive.IntPrimitives.Int_Obj;
 import suite.util.Switch;
 
 public class P0Parse {
@@ -66,9 +70,11 @@ public class P0Parse {
 				return FunpField.of(FunpReference.of(parse(m[0])), name(m[1]));
 			else if ((m = Suite.match("fixed .0 => .1").apply(node)) != null)
 				return FunpFixed.of(name(m[0]), parse(m[1]));
-			else if ((m = Suite.match("if (`.0` := .1) then .2 else .3").apply(node)) != null)
-				return bind(parse(m[0]), parse(m[1]), parse(m[2]), parse(m[3]));
-			else if ((m = Suite.match("if .0 then .1 else .2").apply(node)) != null)
+			else if ((m = Suite.match("if (`.0` := .1) then .2 else .3").apply(node)) != null) {
+				Funp v0 = parse(m[0]);
+				Funp v1 = parse(m[1]);
+				return FunpVerifyType.of(v0, v1, bind(v0, v1, parse(m[2]), parse(m[3])));
+			} else if ((m = Suite.match("if .0 then .1 else .2").apply(node)) != null)
 				return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
 			else if ((m = Suite.match(".0 {.1}").apply(node)) != null)
 				return FunpIndex.of(FunpReference.of(parse(m[0])), parse(m[1]));
@@ -100,28 +106,49 @@ public class P0Parse {
 		}
 
 		private Funp bind(Funp be, Funp value, Funp then, Funp else_) {
-			Switch<Funp> sw = new Switch<Funp>(be);
+			Switch<Funp> sw0 = new Switch<Funp>(be);
 
-			sw.applyIf(FunpArray.class, f -> f.apply(elements -> {
-				int size = elements.size();
+			sw0.applyIf(FunpArray.class, f -> f.apply(elements0 -> {
+				Switch<List<Funp>> sw1 = new Switch<List<Funp>>(value);
+				List<Funp> elements1 = sw1.applyIf(FunpArray.class, g -> g.apply(elements -> elements)).result();
+				int size0 = elements0.size();
 				Funp then_ = then;
-				for (int i = 0; i < size; i++)
-					then_ = bind(elements.get(i), FunpIndex.of(FunpReference.of(value), FunpNumber.of(i)), then_, else_);
+				Int_Obj<Funp> fun;
+
+				if (Boolean.FALSE && elements1 != null && size0 == elements1.size())
+					fun = i -> elements1.get(i);
+				else
+					fun = i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
+
+				for (int i = 0; i < size0; i++)
+					then_ = bind(elements0.get(i), fun.apply(i), then_, else_);
+
 				return then_;
 			}));
 
-			sw.applyIf(FunpStruct.class, f -> f.apply(pairs -> {
+			sw0.applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
+				Switch<List<Pair<String, Funp>>> sw1 = new Switch<List<Pair<String, Funp>>>(value);
+				List<Pair<String, Funp>> pairs1 = sw1.applyIf(FunpStruct.class, g -> g.apply(pairs -> pairs)).result();
+				int size0 = pairs0.size();
 				Funp then_ = then;
-				for (Pair<String, Funp> pair : pairs)
-					then_ = bind(pair.t1, FunpField.of(FunpReference.of(value), pair.t0), then_, else_);
+				Int_Obj<Funp> fun;
+
+				if (Boolean.FALSE && pairs1 != null && size0 == pairs1.size())
+					fun = i -> pairs1.get(i).t1;
+				else
+					fun = i -> FunpField.of(FunpReference.of(value), pairs0.get(i).t0);
+
+				for (int i = 0; i < size0; i++)
+					then_ = bind(pairs0.get(i).t1, fun.apply(i), then_, else_);
+
 				return then_;
 			}));
 
-			sw.applyIf(FunpVariable.class, f -> f.apply(var -> {
+			sw0.applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return variables.contains(var) ? be : FunpDefine.of(var, value, then);
 			}));
 
-			Funp result = sw.result();
+			Funp result = sw0.result();
 
 			return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);
 		}

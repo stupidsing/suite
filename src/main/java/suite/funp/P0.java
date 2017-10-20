@@ -288,6 +288,24 @@ public class P0 {
 		}
 	}
 
+	public static class FunpVerifyType implements Funp, P2.End {
+		public Funp left;
+		public Funp right;
+		public Funp expr;
+
+		public static FunpVerifyType of(Funp left, Funp right, Funp expr) {
+			FunpVerifyType f = new FunpVerifyType();
+			f.left = left;
+			f.right = right;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
+			return fun.apply(left, right, expr);
+		}
+	}
+
 	public static class FunpVariable implements Funp, P1.End {
 		public String var;
 
