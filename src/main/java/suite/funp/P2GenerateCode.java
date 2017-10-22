@@ -276,10 +276,9 @@ public class P2GenerateCode {
 							else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
 								return new JumpIf(left).jxxIf(label);
 							else if (jnx != null)
-								jmpIf.apply(jnx, left, right, label);
+								return jmpIf.apply(jnx, left, right, label);
 							else
 								return false;
-							return true;
 						}
 
 						private boolean jxxIf(Operand label) {
@@ -289,10 +288,9 @@ public class P2GenerateCode {
 							else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
 								return new JumpIf(left).jnxIf(label);
 							else if (jxx != null)
-								jmpIf.apply(jxx, left, right, label);
+								return jmpIf.apply(jxx, left, right, label);
 							else
 								return false;
-							return true;
 						}
 					}
 
