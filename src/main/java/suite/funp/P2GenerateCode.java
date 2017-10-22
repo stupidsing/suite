@@ -204,18 +204,21 @@ public class P2GenerateCode {
 
 				Switch<CompileOut> sw = new Switch<>(n);
 
-				sw.applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr) -> {
-					Operand imm = amd64.imm(size);
+				sw.applyIf(FunpAllocStack.class, f -> f.apply((size0, value, expr) -> {
+					int is1 = is - 1;
+					int size1 = (size0 + is1) & ~is1;
+					Operand imm = amd64.imm(size1);
+					int fd1 = fd - size1;
 
-					if (size == is && value != null)
+					if (size1 == is && value != null)
 						em.emit(amd64.instruction(Insn.PUSH, compileOp(value)));
 					else {
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
 						if (value != null)
-							compileAssign(value, frame(fd - size, fd));
+							compileAssign(value, frame(fd1, fd1 + size0));
 					}
-					CompileOut out = new Compile1(rs, fd - size).compile(expr);
-					if (size == is)
+					CompileOut out = new Compile1(rs, fd1).compile(expr);
+					if (size1 == is)
 						em.emit(amd64.instruction(Insn.POP, rs.mask(out.op0, out.op1).get()));
 					else
 						em.emit(amd64.instruction(Insn.ADD, esp, imm));
