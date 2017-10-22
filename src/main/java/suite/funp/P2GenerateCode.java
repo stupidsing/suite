@@ -273,7 +273,7 @@ public class P2GenerateCode {
 							Insn jnx = operator != null ? jnxInsnByOp.get(operator) : null;
 							if (operator == TermOp.BIGAND)
 								return new JumpIf(left).jnxIf(label) && new JumpIf(right).jnxIf(label);
-							else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && !((FunpBoolean) right).b)
+							else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
 								return new JumpIf(left).jxxIf(label);
 							else if (jnx != null)
 								jmpIf.apply(jnx, left, right, label);
@@ -286,7 +286,7 @@ public class P2GenerateCode {
 							Insn jxx = operator != null ? jxxInsnByOp.get(operator) : null;
 							if (operator == TermOp.BIGOR_)
 								return new JumpIf(left).jxxIf(label) && new JumpIf(right).jxxIf(label);
-							else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && !((FunpBoolean) right).b)
+							else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
 								return new JumpIf(left).jnxIf(label);
 							else if (jxx != null)
 								jmpIf.apply(jxx, left, right, label);
