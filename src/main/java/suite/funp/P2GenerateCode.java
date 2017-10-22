@@ -410,7 +410,7 @@ public class P2GenerateCode {
 					if (op != null) {
 						op0 = isOutSpec ? pop0 : rs.get();
 						if (op.baseReg < 0 && op.indexReg < 0)
-							em.emit(amd64.instruction(Insn.MOV, op0, amd64.imm(op.disp, is)));
+							em.mov(op0, amd64.imm(op.disp, is));
 						else
 							em.emit(amd64.instruction(Insn.LEA, op0, op));
 					} else if (numLhs != null && numRhs != null)
@@ -511,7 +511,7 @@ public class P2GenerateCode {
 					if (op != null) {
 						op0 = isOutSpec ? pop0 : rs.get();
 						if (op.baseReg < 0 && op.indexReg < 0)
-							em.emit(amd64.instruction(Insn.MOV, op0, amd64.imm(op.disp, is)));
+							em.mov(op0, amd64.imm(op.disp, is));
 						else
 							em.emit(amd64.instruction(Insn.LEA, op0, op));
 					} else if (numLhs != null && numRhs != null)
