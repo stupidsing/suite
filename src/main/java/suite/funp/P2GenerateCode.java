@@ -16,7 +16,9 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assembler;
+import suite.assembler.Amd64Parser;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.FunpAsm;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpFixed;
@@ -42,6 +44,7 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -222,6 +225,10 @@ public class P2GenerateCode {
 					else
 						em.emit(amd64.instruction(Insn.ADD, esp, imm));
 					return out;
+				})).applyIf(FunpAsm.class, f -> f.apply((asm, expr) -> {
+					Amd64Parser p = new Amd64Parser();
+					Read.from(asm).map(p::parse).sink(em::emit);
+					return compile(expr);
 				})).applyIf(FunpAssign.class, f -> f.apply((memory, value, expr) -> {
 					compileAssign(value, memory);
 					return compile(expr);

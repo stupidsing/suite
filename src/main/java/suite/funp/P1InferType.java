@@ -14,6 +14,7 @@ import suite.fp.Unify.UnNode;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
+import suite.funp.P0.FunpAsm;
 import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefine;
@@ -121,6 +122,8 @@ public class P1InferType {
 				for (Funp element : elements)
 					unify(n, te, infer(element));
 				return TypeArray.of(te, elements.size());
+			})).applyIf(FunpAsm.class, f -> f.apply((asm, expr) -> {
+				return infer(expr);
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), TypeReference.of(infer(value)));
 				return infer(expr);
