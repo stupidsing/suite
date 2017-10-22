@@ -202,9 +202,8 @@ public class P2GenerateCode {
 
 				Fun<Runnable, CompileOut> postRoutine = routine -> compileRoutine(routine).map(postTwoOp);
 
-				Switch<CompileOut> sw = new Switch<>(n);
-
-				sw.applyIf(FunpAllocStack.class, f -> f.apply((size0, value, expr) -> {
+				return new Switch<CompileOut>(n //
+				).applyIf(FunpAllocStack.class, f -> f.apply((size0, value, expr) -> {
 					int is1 = is - 1;
 					int size1 = (size0 + is1) & ~is1;
 					Operand imm = amd64.imm(size1);
@@ -542,9 +541,7 @@ public class P2GenerateCode {
 					}
 
 					return postOp.apply(op0);
-				}));
-
-				return sw.nonNullResult();
+				})).nonNullResult();
 			}
 
 			private Pair<Operand, Operand> compileRoutine(Runnable runnable) {

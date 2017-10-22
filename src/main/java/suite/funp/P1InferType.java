@@ -111,9 +111,8 @@ public class P1InferType {
 		}
 
 		private UnNode<Type> infer_(Funp n) {
-			Switch<UnNode<Type>> sw = new Switch<>(n);
-
-			sw.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
+			return new Switch<UnNode<Type>>(n //
+			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				TypeLambda tl = infer(lambda).cast(TypeLambda.class);
 				unify(n, tl.parameterType, infer(value));
 				return tl.returnType;
@@ -184,9 +183,7 @@ public class P1InferType {
 				return infer(expr);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return env.get(var);
-			}));
-
-			return sw.nonNullResult();
+			})).nonNullResult();
 		}
 	}
 
@@ -207,17 +204,14 @@ public class P1InferType {
 
 		private Funp extract_(Funp n) {
 			return inspect.rewrite(Funp.class, n_ -> {
-				Switch<Funp> sw = new Switch<>(n_);
-
-				sw.applyIf(FunpData.class, f -> f.apply(pairs -> {
+				return new Switch<Funp>(n_ //
+				).applyIf(FunpData.class, f -> f.apply(pairs -> {
 					String ev = "ev" + Util.temp();
 					evs.add(Pair.of(ev, n_));
 					return FunpVariable.of(ev);
 				})).applyIf(FunpDefine.class, f -> f.apply((var, value0, expr) -> {
 					return FunpDefine.of(var, new Extract().extract(value0), extract_(expr));
-				}));
-
-				return sw.result();
+				})).result();
 			}, n);
 		}
 	}
@@ -242,10 +236,10 @@ public class P1InferType {
 		}
 
 		private Funp erase_(Funp n) {
-			Switch<Funp> sw = new Switch<>(n);
 			Type type0 = typeOf(n);
 
-			sw.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
+			return new Switch<Funp>(n //
+			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				if (Boolean.TRUE || !(lambda instanceof FunpLambda)) {
 					LambdaType lt = lambdaType(lambda);
 					Funp lambda1 = erase(lambda);
@@ -318,15 +312,12 @@ public class P1InferType {
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				class GetAddress {
 					private Funp getAddress(Funp n) {
-						Switch<Funp> sw = new Switch<>(n);
-
-						sw.applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
+						return new Switch<Funp>(n //
+						).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 							return FunpTree.of(TermOp.PLUS__, pointer, FunpNumber.of(start));
 						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 							return getAddress(getVariable(env.get(var)));
-						}));
-
-						return sw.nonNullResult();
+						})).nonNullResult();
 					}
 				}
 
@@ -344,9 +335,7 @@ public class P1InferType {
 				return getVariable(env.get(var));
 			})).applyIf(FunpVerifyType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
-			}));
-
-			return sw.result();
+			})).result();
 		}
 
 		private Funp allocStack(Funp p, Funp expr) {
@@ -376,16 +365,14 @@ public class P1InferType {
 		}
 
 		private Funp expand_(Funp n) {
-			Switch<Funp> sw = new Switch<>(n);
+			return new Switch<Funp>(n //
+			).applyIf(FunpDefine.class, f -> f.apply((var_, value, expr) -> {
 
-			// variable re-defined
-			sw.applyIf(FunpDefine.class, f -> f.apply((var_, value, expr) -> {
+				// variable re-defined
 				return String_.equals(var_, var) ? n : null;
 			})).applyIf(FunpVariable.class, f -> f.apply(var_ -> {
 				return String_.equals(var_, var) ? value : n;
-			}));
-
-			return sw.result();
+			})).result();
 		}
 	}
 
@@ -425,8 +412,8 @@ public class P1InferType {
 	}
 
 	private int getTypeSize(UnNode<Type> n) {
-		Switch<Integer> sw = new Switch<>(n.final_());
-		sw.applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
+		return new Switch<Integer>(n.final_() //
+		).applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
 			return getTypeSize(elementType) * size;
 		})).applyIf(TypeBoolean.class, t -> {
 			return Funp_.booleanSize;
@@ -438,8 +425,7 @@ public class P1InferType {
 			return ps;
 		}).applyIf(TypeStruct.class, t -> t.apply(pairs -> {
 			return Read.from(pairs).collectAsInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
-		}));
-		return sw.result().intValue();
+		})).result().intValue();
 	}
 
 	private static Unify<Type> unify = new Unify<>();

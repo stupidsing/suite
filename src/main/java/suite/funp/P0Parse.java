@@ -163,9 +163,8 @@ public class P0Parse {
 			else if (be instanceof FunpNumber && value instanceof FunpNumber)
 				return ((FunpNumber) be).i == ((FunpNumber) value).i ? then : else_;
 			else {
-				Switch<Funp> sw0 = new Switch<Funp>(be);
-
-				sw0.applyIf(FunpArray.class, f -> f.apply(elements0 -> {
+				Funp result = new Switch<Funp>(be //
+				).applyIf(FunpArray.class, f -> f.apply(elements0 -> {
 					List<Funp> elements1 = new Switch<List<Funp>>(value).applyIf(FunpArray.class, g -> g.elements).result();
 					int size0 = elements0.size();
 					Funp then_ = then;
@@ -198,9 +197,7 @@ public class P0Parse {
 					return variables.contains(var) //
 							? FunpAssignReference.of(FunpReference.of(FunpVariable.of(var)), value, then) //
 							: be;
-				}));
-
-				Funp result = sw0.result();
+				})).result();
 
 				return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);
 			}
