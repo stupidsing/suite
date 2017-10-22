@@ -307,9 +307,9 @@ public class P2GenerateCode {
 					JumpIf jumpIf = new JumpIf(if_);
 
 					if (jumpIf.jnxIf(condLabel))
-						thenElse.sink2(else_, then);
-					else if (jumpIf.jxxIf(condLabel))
 						thenElse.sink2(then, else_);
+					else if (jumpIf.jxxIf(condLabel))
+						thenElse.sink2(else_, then);
 					else {
 						OpReg r0 = compileOpReg(if_);
 						em.emit(amd64.instruction(Insn.OR, r0, r0));
