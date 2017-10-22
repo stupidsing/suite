@@ -15,9 +15,11 @@ import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P1.FunpFramePointer;
+import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.util.FunUtil.Sink;
+import suite.util.FunUtil2.Fun2;
 
 public class P2Emit {
 
@@ -31,6 +33,30 @@ public class P2Emit {
 	}
 
 	public OpMem decomposeOpMem(Funp n0, int size) {
+		class Decompose {
+			private Operator operator;
+			private List<Funp> nodes = new ArrayList<>();
+
+			private Decompose(Operator operator) {
+				this.operator = operator;
+			}
+
+			private void decompose(Funp n_) {
+				FunpTree tree;
+				if (n_ instanceof FunpTree && (tree = (FunpTree) n_).operator == operator) {
+					decompose(tree.left);
+					decompose(tree.right);
+				} else
+					nodes.add(n_);
+			}
+		}
+
+		Fun2<Operator, Funp, List<Funp>> decompose = (operator, n_) -> {
+			Decompose dec = new Decompose(operator);
+			dec.decompose(n_);
+			return dec.nodes;
+		};
+
 		class DecomposeMult {
 			private long scale = 1;
 			private OpReg reg;
@@ -39,7 +65,7 @@ public class P2Emit {
 			private void decompose(Funp n0) {
 				FunpTree2 tree;
 				Funp r;
-				for (Funp n1 : FunpTree.unfold(n0, TermOp.MULT__))
+				for (Funp n1 : decompose.apply(TermOp.MULT__, n0))
 					if (n1 instanceof FunpFramePointer && reg == null)
 						reg = amd64.ebp;
 					else if (n1 instanceof FunpTree2 //
@@ -58,7 +84,7 @@ public class P2Emit {
 		int scale = 1, disp = 0;
 		boolean ok = is1248(size);
 
-		for (Funp n1 : FunpTree.unfold(n0, TermOp.PLUS__)) {
+		for (Funp n1 : decompose.apply(TermOp.PLUS__, n0)) {
 			DecomposeMult dec = new DecomposeMult();
 			dec.decompose(n1);
 			if (dec.mults.isEmpty()) {

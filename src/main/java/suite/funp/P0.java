@@ -272,17 +272,6 @@ public class P0 {
 			return f;
 		}
 
-		public static List<Funp> unfold(Funp n, Operator op) {
-			List<Funp> list = new ArrayList<>();
-			FunpTree tree;
-			while (n instanceof FunpTree && (tree = (FunpTree) n).operator == op) {
-				list.add(tree.left);
-				n = tree.right;
-			}
-			list.add(n);
-			return list;
-		}
-
 		public <R> R apply(FixieFun3<Operator, Funp, Funp, R> fun) {
 			return fun.apply(operator, left, right);
 		}
