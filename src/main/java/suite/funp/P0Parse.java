@@ -1,15 +1,19 @@
 package suite.funp;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
+import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDeref;
+import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
@@ -24,15 +28,19 @@ import suite.funp.P0.FunpVariable;
 import suite.funp.P0.FunpVariableNew;
 import suite.funp.P0.FunpVerifyType;
 import suite.immutable.ISet;
+import suite.inspect.Inspect;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.util.Singleton;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.util.Switch;
 
 public class P0Parse {
+
+	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp parse(Node node) {
 		return new Parse(new ISet<>()).parse(node);
@@ -73,9 +81,19 @@ public class P0Parse {
 				String var = name(m[0]);
 				return FunpFixed.of(var, parseNewVariable(m[1], var));
 			} else if ((m = Suite.match("if (`.0` := .1) then .2 else .3").apply(node)) != null) {
-				Funp v0 = parse(m[0]);
-				Funp v1 = parse(m[1]);
-				return FunpVerifyType.of(v0, v1, bind(v0, v1, parse(m[2]), parse(m[3])));
+				ExtractNewVariables env = new ExtractNewVariables();
+				Funp be = env.extract(parse(m[0]));
+				Funp value = parse(m[1]);
+
+				ISet<String> variables1 = new ISet<>();
+				for (String var : env.variables)
+					variables1 = variables1.add(var);
+
+				Bind bind = new Bind(env.variables);
+				Funp f = FunpVerifyType.of(be, value, bind.bind(be, value, new Parse(variables1).parse(m[2]), parse(m[3])));
+				for (String var : env.variables)
+					f = FunpDefine.of(var, FunpDontCare.of(), f);
+				return f;
 			} else if ((m = Suite.match("if .0 then .1 else .2").apply(node)) != null)
 				return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
 			else if ((m = Suite.match(".0 {.1}").apply(node)) != null)
@@ -110,6 +128,33 @@ public class P0Parse {
 					return FunpVariableNew.of(var);
 			} else
 				throw new RuntimeException("cannot parse " + node);
+		}
+
+		private Funp parseNewVariable(Node node, String var) {
+			return new Parse(variables.add(var)).parse(node);
+		}
+	}
+
+	private class ExtractNewVariables {
+		private Set<String> variables = new HashSet<>();
+
+		private Funp extract(Funp be) {
+			return inspect.rewrite(Funp.class, n_ -> {
+				if (n_ instanceof FunpVariableNew) {
+					String var = ((FunpVariableNew) n_).var;
+					variables.add(var);
+					return FunpVariable.of(var);
+				} else
+					return null;
+			}, be);
+		}
+	}
+
+	private class Bind {
+		private Set<String> variables;
+
+		private Bind(Set<String> variables) {
+			this.variables = variables;
 		}
 
 		private Funp bind(Funp be, Funp value, Funp then, Funp else_) {
@@ -149,18 +194,16 @@ public class P0Parse {
 						then_ = bind(pairs0.get(i).t1, fun.apply(i), then_, else_);
 
 					return then_;
-				})).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
-					return FunpDefine.of(var, value, then);
+				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
+					return variables.contains(var) //
+							? FunpAssignReference.of(FunpReference.of(FunpVariable.of(var)), value, then) //
+							: be;
 				}));
 
 				Funp result = sw0.result();
 
 				return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);
 			}
-		}
-
-		private Funp parseNewVariable(Node node, String var) {
-			return new Parse(variables.add(var)).parse(node);
 		}
 	}
 

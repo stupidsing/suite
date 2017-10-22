@@ -14,9 +14,11 @@ import suite.fp.Unify.UnNode;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
+import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDeref;
+import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
@@ -31,6 +33,7 @@ import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P0.FunpVerifyType;
 import suite.funp.P1.FunpAllocStack;
+import suite.funp.P1.FunpAssign;
 import suite.funp.P1.FunpData;
 import suite.funp.P1.FunpInvokeInt;
 import suite.funp.P1.FunpInvokeInt2;
@@ -77,7 +80,7 @@ public class P1InferType {
 		UnNode<Type> t0 = typeNumber;
 		UnNode<Type> t1 = TypeLambda.of(typeNumber, t0);
 		UnNode<Type> t2 = TypeLambda.of(typeNumber, t1);
-		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>>empty() //
+		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>> empty() //
 				.put(TermOp.BIGAND.name, t2) //
 				.put(TermOp.BIGOR_.name, t2) //
 				.put(TermOp.PLUS__.name, t2) //
@@ -119,15 +122,21 @@ public class P1InferType {
 				for (Funp element : elements)
 					unify(n, te, infer(element));
 				return TypeArray.of(te, elements.size());
+			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
+				unify(n, infer(reference), TypeReference.of(infer(value)));
+				return infer(expr);
 			})).applyIf(FunpBoolean.class, f -> {
 				return typeBoolean;
 			}).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-				return new Infer(env.put(var, infer(value))).infer(expr);
+				UnNode<Type> tv = value != null ? infer(value) : unify.newRef();
+				return new Infer(env.put(var, tv)).infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				UnNode<Type> t = unify.newRef();
 				unify(n, TypeReference.of(t), infer(pointer));
 				return t;
-			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
+			})).applyIf(FunpDontCare.class, f -> {
+				return unify.newRef();
+			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
 				TypeStruct ts = infer(reference).cast(TypeReference.class).type.cast(TypeStruct.class);
 				return Read //
 						.from(ts.pairs) //
@@ -158,10 +167,14 @@ public class P1InferType {
 				return TypeReference.of(infer(expr));
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
 				return TypeStruct.of(Read.from2(pairs).mapValue(this::infer).toList());
-			})).applyIf(FunpTree.class, f -> f.apply((operator, left, right) -> {
-				unify(n, infer(left), typeNumber);
-				unify(n, infer(right), typeNumber);
-				return typeNumber;
+			})).applyIf(FunpTree.class, f -> f.apply((op, left, right) -> {
+				UnNode<Type> ti = op == TermOp.BIGAND || op == TermOp.BIGOR_ ? typeBoolean : typeNumber;
+				unify(n, infer(left), ti);
+				unify(n, infer(right), ti);
+				if (op == TermOp.EQUAL_ || op == TermOp.NOTEQ_ || op == TermOp.LE____ || op == TermOp.LT____)
+					return typeBoolean;
+				else
+					return ti;
 			})).applyIf(FunpTree2.class, f -> f.apply((operator, left, right) -> {
 				unify(n, infer(left), typeNumber);
 				unify(n, infer(right), typeNumber);
@@ -258,6 +271,9 @@ public class P1InferType {
 					list.add(Pair.of(element, IntIntPair.of(offset0, offset += elementSize)));
 				}
 				return FunpData.of(list);
+			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
+				int size = getTypeSize(typeOf(reference).cast(TypeReference.class).type);
+				return FunpAssign.of(FunpMemory.of(erase(reference), 0, size), erase(value), erase(expr));
 			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
 				if (Boolean.TRUE) {
 					int fs1 = fs - getTypeSize(typeOf(value));
@@ -412,7 +428,9 @@ public class P1InferType {
 		Switch<Integer> sw = new Switch<>(n.final_());
 		sw.applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
 			return getTypeSize(elementType) * size;
-		})).applyIf(TypeLambda.class, t -> {
+		})).applyIf(TypeBoolean.class, t -> {
+			return Funp_.booleanSize;
+		}).applyIf(TypeLambda.class, t -> {
 			return ps + ps;
 		}).applyIf(TypeNumber.class, t -> {
 			return is;

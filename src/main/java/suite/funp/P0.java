@@ -3,6 +3,7 @@ package suite.funp;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
@@ -43,6 +44,24 @@ public class P0 {
 
 		public <R> R apply(FixieFun1<List<Funp>, R> fun) {
 			return fun.apply(elements);
+		}
+	}
+
+	public static class FunpAssignReference implements Funp, P1.End {
+		public Funp reference;
+		public Funp value;
+		public Funp expr;
+
+		public static FunpAssignReference of(Funp reference, Funp value, Funp expr) {
+			FunpAssignReference f = new FunpAssignReference();
+			f.reference = reference;
+			f.value = value;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
+			return fun.apply(reference, value, expr);
 		}
 	}
 
@@ -89,6 +108,16 @@ public class P0 {
 
 		public <R> R apply(FixieFun1<Funp, R> fun) {
 			return fun.apply(pointer);
+		}
+	}
+
+	public static class FunpDontCare implements Funp, P2.End {
+		public static FunpDontCare of() {
+			return new FunpDontCare();
+		}
+
+		public <R> R apply(FixieFun0<R> fun) {
+			return fun.apply();
 		}
 	}
 

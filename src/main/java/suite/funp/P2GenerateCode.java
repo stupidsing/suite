@@ -17,6 +17,7 @@ import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assembler;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpNumber;
@@ -213,7 +214,14 @@ public class P2GenerateCode {
 							c1.compileAssign(pair.t0, target_);
 						}
 					});
-				})).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
+				})).applyIf(FunpDontCare.class, f -> {
+					if (type == CompileOut_.OP || type == CompileOut_.OPREG)
+						return new CompileOut(eax);
+					else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG)
+						return new CompileOut(eax, edx);
+					else
+						return new CompileOut();
+				}).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
 					throw new RuntimeException();
 				})).applyIf(FunpFramePointer.class, t -> {
 					return postOp.apply(ebp);
@@ -316,9 +324,8 @@ public class P2GenerateCode {
 				})).applyIf(FunpTree.class, f -> f.apply((operator, lhs, rhs) -> {
 					Integer numLhs = lhs instanceof FunpNumber ? ((FunpNumber) lhs).i : null;
 					Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i : null;
-
 					OpMem op = em.decomposeOpMem(n, is);
-					Operand op0, op1;
+					Operand op0;
 
 					if (op != null) {
 						op0 = isOutSpec ? pop0 : rs.get();
@@ -377,15 +384,28 @@ public class P2GenerateCode {
 								Sink<Compile1> sink1 = rs.contains(eax) ? c1 -> c1.saveRegs(sink0, eax) : sink0;
 								saveRegs(sink1, edx);
 								opResult = opResult_;
+							} else if (operator == TermOp.EQUAL_) {
+								OpReg opResult_ = isOutSpec ? pop0 : rs.get();
+								int reg = opResult_.reg;
+								OpReg reg8 = amd64.reg8[reg];
+								OpReg opLhs = compileLhs.source();
+								Operand opRhs = mask(opLhs).compileOp(rhs);
+								em.emit(amd64.instruction(Insn.XOR, opResult_, opResult_));
+								em.emit(amd64.instruction(Insn.CMP, opLhs, opRhs));
+								em.emit(amd64.instruction(Insn.SETE, reg8));
+								if (reg < 4) // AL, BL, CL or DL
+									opResult = opResult_;
+								else
+									throw new RuntimeException();
 							} else if (operator == TermOp.MINUS_) {
 								opResult = compileLhs.source();
-								op1 = new Compile1(rs.mask(opResult), fd).compileOp(lhs);
+								Operand op1 = new Compile1(rs.mask(opResult), fd).compileOp(rhs);
 								em.emit(amd64.instruction(Insn.SUB, opResult, op1));
 							} else {
 								Funp first = operator.getAssoc() == Assoc.RIGHT ? rhs : lhs;
 								Funp second = operator.getAssoc() == Assoc.RIGHT ? lhs : rhs;
 								opResult = isOutSpec ? compileOpSpec(first, pop0) : compileOpReg(first);
-								op1 = mask(opResult).compileOp(second);
+								Operand op1 = mask(opResult).compileOp(second);
 								if (operator == TermOp.MULT__ && op1 instanceof OpImm)
 									em.emit(amd64.instruction(Insn.IMUL, opResult, opResult, op1));
 								else
