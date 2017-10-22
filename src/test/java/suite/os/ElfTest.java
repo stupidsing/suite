@@ -2,19 +2,12 @@ package suite.os;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermission;
-import java.util.HashSet;
-import java.util.List;
 
 import org.junit.Test;
 
 import suite.ip.ImperativeCompiler;
 import suite.primitive.Bytes;
-import suite.util.DataOutput_;
 import suite.util.TempDir;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
@@ -86,23 +79,7 @@ public class ElfTest {
 
 		Bytes code = new ImperativeCompiler().compile(org + 84, program1);
 		Path path = TempDir.resolve("a.out");
-
-		try (OutputStream os = FileUtil.out(path); DataOutput_ do_ = DataOutput_.of(os)) {
-			new ElfWriter().write(org, code, do_);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-
-		try {
-			Files.setPosixFilePermissions(path, new HashSet<>(List.of( //
-					PosixFilePermission.GROUP_EXECUTE, //
-					PosixFilePermission.OTHERS_EXECUTE, //
-					PosixFilePermission.OWNER_EXECUTE)));
-		} catch (UnsupportedOperationException ex) {
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-
+		new ElfWriter().write(org, code, path);
 		return path;
 	}
 
