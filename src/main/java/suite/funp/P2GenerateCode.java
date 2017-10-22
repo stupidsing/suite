@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
@@ -72,6 +73,24 @@ public class P2GenerateCode {
 			entry(TermOp.PLUS__, Insn.ADD), //
 			entry(TermOp.MINUS_, Insn.SUB), //
 			entry(TermOp.MULT__, Insn.IMUL));
+
+	Map<TermOp, Insn> jxxInsnByOp = Map.ofEntries( //
+			entry(TermOp.EQUAL_, Insn.JE), //
+			entry(TermOp.LE____, Insn.JLE), //
+			entry(TermOp.LT____, Insn.JL), //
+			entry(TermOp.NOTEQ_, Insn.JNE));
+
+	Map<TermOp, Insn> jnxInsnByOp = Map.ofEntries( //
+			entry(TermOp.EQUAL_, Insn.JNE), //
+			entry(TermOp.LE____, Insn.JG), //
+			entry(TermOp.LT____, Insn.JGE), //
+			entry(TermOp.NOTEQ_, Insn.JE));
+
+	Map<TermOp, Insn> setInsnByOp = Map.ofEntries( //
+			entry(TermOp.EQUAL_, Insn.SETE), //
+			entry(TermOp.LE____, Insn.SETLE), //
+			entry(TermOp.LT____, Insn.SETL), //
+			entry(TermOp.NOTEQ_, Insn.SETNE));
 
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
@@ -227,16 +246,77 @@ public class P2GenerateCode {
 					return postOp.apply(ebp);
 				}).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 					OpReg op = isOutSpec ? pop0 : rs.get();
-					Operand elseLabel = amd64.imm(0, ps);
+					Operand condLabel = amd64.imm(0, ps);
 					Operand endLabel = amd64.imm(0, ps);
-					OpReg r0 = compileOpReg(if_);
-					em.emit(amd64.instruction(Insn.OR, r0, r0));
-					em.emit(amd64.instruction(Insn.JZ, elseLabel));
-					compileOpSpec(then, op);
-					em.emit(amd64.instruction(Insn.JMP, endLabel));
-					em.emit(amd64.instruction(Insn.LABEL, elseLabel));
-					compileOpSpec(else_, op);
-					em.emit(amd64.instruction(Insn.LABEL, endLabel));
+
+					FixieFun4<Insn, Funp, Funp, Operand, Boolean> jmpIf = (insn, lhs, rhs, label) -> {
+						OpReg op0 = compileOpReg(lhs);
+						Operand op1 = mask(op0).compileOp(rhs);
+						em.emit(amd64.instruction(Insn.CMP, op0, op1));
+						em.emit(amd64.instruction(insn, label));
+						return true;
+					};
+
+					class JumpIf {
+						private FunpTree tree;
+						private Operator operator;
+						private Funp left, right;
+
+						private JumpIf(Funp node) {
+							tree = node instanceof FunpTree ? (FunpTree) node : null;
+							operator = tree != null ? tree.operator : null;
+							left = tree != null ? tree.left : null;
+							right = tree != null ? tree.right : null;
+						}
+
+						private boolean jnxIf(Operand label) {
+							Insn jnx = operator != null ? jnxInsnByOp.get(operator) : null;
+							if (jnx != null)
+								jmpIf.apply(jnx, left, right, label);
+							else if (operator == TermOp.BIGAND)
+								return new JumpIf(left).jnxIf(label) && new JumpIf(right).jnxIf(label);
+							else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && !((FunpBoolean) right).b)
+								return new JumpIf(left).jxxIf(label);
+							else
+								return false;
+							return true;
+						}
+
+						private boolean jxxIf(Operand label) {
+							Insn jxx = operator != null ? jxxInsnByOp.get(operator) : null;
+							if (jxx != null)
+								jmpIf.apply(jxx, left, right, label);
+							else if (operator == TermOp.BIGOR_)
+								return new JumpIf(left).jxxIf(label) && new JumpIf(right).jxxIf(label);
+							else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && !((FunpBoolean) right).b)
+								return new JumpIf(left).jnxIf(label);
+							else
+								return false;
+							return true;
+						}
+					}
+
+					Sink2<Funp, Funp> thenElse = (condt, condf) -> {
+						compileOpSpec(condt, op);
+						em.emit(amd64.instruction(Insn.JMP, endLabel));
+						em.emit(amd64.instruction(Insn.LABEL, condLabel));
+						compileOpSpec(condf, op);
+						em.emit(amd64.instruction(Insn.LABEL, endLabel));
+					};
+
+					JumpIf jumpIf = new JumpIf(if_);
+
+					if (jumpIf.jnxIf(condLabel))
+						thenElse.sink2(else_, then);
+					else if (jumpIf.jxxIf(condLabel))
+						thenElse.sink2(then, else_);
+					else {
+						OpReg r0 = compileOpReg(if_);
+						em.emit(amd64.instruction(Insn.OR, r0, r0));
+						em.emit(amd64.instruction(Insn.JZ, condLabel));
+						thenElse.sink2(then, else_);
+					}
+
 					return postOp.apply(op);
 				})).applyIf(FunpInvokeInt.class, f -> f.apply(routine -> {
 					if (!rs.contains(eax)) {
@@ -369,6 +449,8 @@ public class P2GenerateCode {
 								em.emit(amd64.instruction(Insn.SHR, opResult, amd64.imm(z, 1)));
 						}
 
+						Insn setInsn = setInsnByOp.get(operator);
+
 						if (opResult == null)
 							if (operator == TermOp.DIVIDE) {
 								OpReg opResult_ = isOutSpec ? pop0 : rs.get(eax);
@@ -384,19 +466,22 @@ public class P2GenerateCode {
 								Sink<Compile1> sink1 = rs.contains(eax) ? c1 -> c1.saveRegs(sink0, eax) : sink0;
 								saveRegs(sink1, edx);
 								opResult = opResult_;
-							} else if (operator == TermOp.EQUAL_) {
-								OpReg opResult_ = isOutSpec ? pop0 : rs.get();
-								int reg = opResult_.reg;
-								OpReg reg8 = amd64.reg8[reg];
+							} else if (setInsn != null) {
+								OpReg reg8;
+								if (isOutSpec)
+									reg8 = pop0;
+								else {
+									int reg = rs.get().reg;
+									if (reg < 4) // AL, BL, CL or DL
+										reg8 = amd64.reg8[reg];
+									else
+										throw new RuntimeException();
+								}
 								OpReg opLhs = compileLhs.source();
 								Operand opRhs = mask(opLhs).compileOp(rhs);
-								em.emit(amd64.instruction(Insn.XOR, opResult_, opResult_));
 								em.emit(amd64.instruction(Insn.CMP, opLhs, opRhs));
-								em.emit(amd64.instruction(Insn.SETE, reg8));
-								if (reg < 4) // AL, BL, CL or DL
-									opResult = opResult_;
-								else
-									throw new RuntimeException();
+								em.emit(amd64.instruction(setInsn, reg8));
+								opResult = reg8;
 							} else if (operator == TermOp.MINUS_) {
 								opResult = compileLhs.source();
 								Operand op1 = new Compile1(rs.mask(opResult), fd).compileOp(rhs);
