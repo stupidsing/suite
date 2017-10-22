@@ -320,4 +320,18 @@ public class P0 {
 		}
 	}
 
+	public static class FunpVariableNew implements Funp, P1.End {
+		public String var;
+
+		public static FunpVariableNew of(String var) {
+			FunpVariableNew f = new FunpVariableNew();
+			f.var = var;
+			return f;
+		};
+
+		public <R> R apply(FixieFun1<String, R> fun) {
+			return fun.apply(var);
+		}
+	}
+
 }

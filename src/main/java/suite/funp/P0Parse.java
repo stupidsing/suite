@@ -21,6 +21,7 @@ import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
+import suite.funp.P0.FunpVariableNew;
 import suite.funp.P0.FunpVerifyType;
 import suite.immutable.ISet;
 import suite.node.Atom;
@@ -68,9 +69,10 @@ public class P0Parse {
 				return FunpDeref.of(parse(m[0]));
 			else if ((m = Suite.match(".0/.1").apply(node)) != null)
 				return FunpField.of(FunpReference.of(parse(m[0])), name(m[1]));
-			else if ((m = Suite.match("fixed .0 => .1").apply(node)) != null)
-				return FunpFixed.of(name(m[0]), parse(m[1]));
-			else if ((m = Suite.match("if (`.0` := .1) then .2 else .3").apply(node)) != null) {
+			else if ((m = Suite.match("fixed .0 => .1").apply(node)) != null) {
+				String var = name(m[0]);
+				return FunpFixed.of(var, parseNewVariable(m[1], var));
+			} else if ((m = Suite.match("if (`.0` := .1) then .2 else .3").apply(node)) != null) {
 				Funp v0 = parse(m[0]);
 				Funp v1 = parse(m[1]);
 				return FunpVerifyType.of(v0, v1, bind(v0, v1, parse(m[2]), parse(m[3])));
@@ -78,9 +80,10 @@ public class P0Parse {
 				return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
 			else if ((m = Suite.match(".0 {.1}").apply(node)) != null)
 				return FunpIndex.of(FunpReference.of(parse(m[0])), parse(m[1]));
-			else if ((m = Suite.match(".0 => .1").apply(node)) != null)
-				return FunpLambda.of(name(m[0]), parse(m[1]));
-			else if (node instanceof Int)
+			else if ((m = Suite.match(".0 => .1").apply(node)) != null) {
+				String var = name(m[0]);
+				return FunpLambda.of(var, parseNewVariable(m[1], var));
+			} else if (node instanceof Int)
 				return FunpNumber.of(((Int) node).number);
 			else if ((m = Suite.match("poly .0").apply(node)) != null)
 				return FunpPolyType.of(parse(m[0]));
@@ -99,21 +102,21 @@ public class P0Parse {
 				Funp left = parse(tree.getLeft());
 				Funp right = parse(tree.getRight());
 				return FunpTree.of(tree.getOperator(), left, right);
-			} else if (node instanceof Atom)
-				return FunpVariable.of(name(node));
-			else
+			} else if (node instanceof Atom) {
+				String var = name(node);
+				if (variables.contains(var))
+					return FunpVariable.of(var);
+				else
+					return FunpVariableNew.of(var);
+			} else
 				throw new RuntimeException("cannot parse " + node);
 		}
 
 		private Funp bind(Funp be, Funp value, Funp then, Funp else_) {
-			String var;
-
 			if (be instanceof FunpBoolean && value instanceof FunpBoolean)
 				return ((FunpBoolean) be).b == ((FunpBoolean) value).b ? then : else_;
 			else if (be instanceof FunpNumber && value instanceof FunpNumber)
 				return ((FunpNumber) be).i == ((FunpNumber) value).i ? then : else_;
-			else if (be instanceof FunpVariable && !variables.contains(var = ((FunpVariable) be).var))
-				return FunpDefine.of(var, value, then);
 			else {
 				Switch<Funp> sw0 = new Switch<Funp>(be);
 
@@ -146,6 +149,8 @@ public class P0Parse {
 						then_ = bind(pairs0.get(i).t1, fun.apply(i), then_, else_);
 
 					return then_;
+				})).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
+					return FunpDefine.of(var, value, then);
 				}));
 
 				Funp result = sw0.result();
