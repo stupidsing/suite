@@ -345,31 +345,28 @@ public class P3GenerateCode {
 					});
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 					int size = end - start;
+					Operand op0, op1;
 					if (type == CompileOut_.ASSIGN)
 						return postAssign.apply((c1, target) -> {
-							OpMem op0 = em.decomposeOpMem(target.pointer, target.start, size);
-							OpMem op1 = em.decomposeOpMem(pointer, start, size);
 							if (size != target.size())
 								throw new RuntimeException();
-							else if (op0 != null || op1 != null) {
-								op1 = op1 != null ? op1 : amd64.mem(c1.mask(op0).compileOpReg(pointer), start, size);
-								OpReg r = c1.rs.mask(op0).get();
-								em.mov(r, op1);
-								op0 = op0 != null ? op0 : amd64.mem(c1.mask(r).compileOpReg(target.pointer), target.start, size);
-								em.mov(op0, r);
-							} else {
+							else if (!compileInstruction(Insn.MOV, target, n, size)) {
 								OpReg r0 = c1.compileOpReg(target.pointer);
 								OpReg r1 = c1.mask(r0).compileOpReg(pointer);
 								c1.mask(r0, r1).compileMove(r0, target.start, r1, start, size);
 							}
 						});
+					else if (type == CompileOut_.OP && (op0 = em.decomposeOpMem(pointer, start, size)) != null)
+						return postOp.apply(op0);
 					else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC)
 						return postOp.apply(amd64.mem(compileOpReg(pointer), start, size));
+					else if (type == CompileOut_.TWOOP //
+							&& (op0 = em.decomposeOpMem(pointer, start, ps)) != null //
+							&& (op1 = em.decomposeOpMem(pointer, start + ps, ps)) != null)
+						return postTwoOp.apply(op0, op1);
 					else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG || type == CompileOut_.TWOOPSPEC) {
 						OpReg r = compileOpReg(pointer);
-						Operand op0 = amd64.mem(r, start, ps);
-						Operand op1 = amd64.mem(r, start + is, ps);
-						return postTwoOp.apply(op0, op1);
+						return postTwoOp.apply(amd64.mem(r, start, ps), amd64.mem(r, start + is, ps));
 					} else
 						throw new RuntimeException();
 				})).applyIf(FunpNumber.class, f -> f.apply(i -> {
@@ -476,19 +473,12 @@ public class P3GenerateCode {
 								saveRegs(sink1, edx);
 								opResult = opResult_;
 							} else if (setInsn != null) {
-								OpReg reg8;
-								if (isOutSpec)
-									reg8 = pop0;
-								else {
-									int reg = rs.get().reg;
-									if (reg < 4) // AL, BL, CL or DL
-										reg8 = amd64.reg8[reg];
-									else
-										throw new RuntimeException();
+								if (!compileInstruction(Insn.CMP, lhs, rhs, is)) {
+									OpReg opLhs = compileLhs.source();
+									Operand opRhs = mask(opLhs).compileOp(rhs);
+									em.emit(amd64.instruction(Insn.CMP, opLhs, opRhs));
 								}
-								OpReg opLhs = compileLhs.source();
-								Operand opRhs = mask(opLhs).compileOp(rhs);
-								em.emit(amd64.instruction(Insn.CMP, opLhs, opRhs));
+								OpReg reg8 = isOutSpec ? pop0 : rs.get(1);
 								em.emit(amd64.instruction(setInsn, reg8));
 								opResult = reg8;
 							} else if (operator == TermOp.MINUS_) {
@@ -589,6 +579,18 @@ public class P3GenerateCode {
 			private CompileOut compileTwoOpSpec(Funp n, OpReg op0, OpReg op1) {
 				new Compile0(CompileOut_.TWOOPSPEC, em, null, op0, op1).new Compile1(rs, fd).compile(n);
 				return new CompileOut(pop0, pop1);
+			}
+
+			private boolean compileInstruction(Insn insn, Funp f0, Funp f1, int size) {
+				Operand op0 = em.decomposeOperand(f0);
+				Operand op1 = em.decomposeOperand(f1);
+				if (op0 != null || op1 != null) {
+					OpReg r = rs.mask(op0).get(size);
+					em.emit(amd64.instruction(insn, r, op1 != null ? op1 : mask(op0).compileOp(f1)));
+					em.emit(amd64.instruction(insn, op0 != null ? op0 : mask(r).compileOp(f0), r));
+				} else
+					return false;
+				return true;
 			}
 
 			private void compileMove(OpReg r0, int start0, OpReg r1, int start1, int size) {

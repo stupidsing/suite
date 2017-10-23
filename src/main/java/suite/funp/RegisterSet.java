@@ -12,13 +12,13 @@ import suite.streamlet.Read;
 
 public class RegisterSet {
 
+	private static Amd64 amd64 = Amd64.me;
 	private static int nRegisters = 8;
 	private static OpReg[] registers;
 
 	public final int flag;
 
 	static {
-		Amd64 amd64 = Amd64.me;
 
 		Map<Integer, OpReg> map = Read //
 				.from2(amd64.regsByName) //
@@ -44,6 +44,22 @@ public class RegisterSet {
 
 	public OpReg get(OpReg prefer) {
 		return prefer != null && !isSet(prefer.reg) ? prefer : get_();
+	}
+
+	public OpReg get(int size) {
+		OpReg r = get_();
+		int reg = r.reg;
+		if (size == 1 && reg < 4) // AL, BL, CL or DL
+			return amd64.reg8[reg];
+		else if (size == 2)
+			return amd64.reg16[reg];
+		else if (size == 4)
+			return r;
+		else if (size == 8)
+			return amd64.reg64[reg];
+		else
+			throw new RuntimeException("cannot allocate register with size " + size);
+
 	}
 
 	public OpReg get() {

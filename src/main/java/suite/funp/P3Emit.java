@@ -15,11 +15,13 @@ import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P1.FunpFramePointer;
+import suite.funp.P1.FunpMemory;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Fun2;
+import suite.util.Switch;
 
 public class P3Emit {
 
@@ -30,6 +32,15 @@ public class P3Emit {
 
 	public P3Emit(Sink<Instruction> emit) {
 		this.emit = emit;
+	}
+
+	public Operand decomposeOperand(Funp node) {
+		return new Switch<Operand>(node //
+		).applyIf(FunpNumber.class, f -> {
+			return amd64.imm(f.i, is);
+		}).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
+			return decomposeOpMem(pointer, start, end - start);
+		})).result();
 	}
 
 	public OpMem decomposeOpMem(Funp n0, int disp0, int size) {
