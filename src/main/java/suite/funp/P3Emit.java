@@ -134,7 +134,14 @@ public class P3Emit {
 
 	public void orImm(Operand op0, int i) {
 		if (i != 0)
-			emit(amd64.instruction(Insn.AND, op0, amd64.imm(i, is)));
+			emit(amd64.instruction(Insn.OR, op0, amd64.imm(i, is)));
+	}
+
+	public void xorImm(Operand op0, int i) {
+		if (i == -1)
+			emit(amd64.instruction(Insn.NOT, op0));
+		else if (i != 0)
+			emit(amd64.instruction(Insn.XOR, op0, amd64.imm(i, is)));
 	}
 
 	public void imulImm(OpReg r0, int i) {
