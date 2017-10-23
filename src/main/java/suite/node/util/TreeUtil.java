@@ -43,7 +43,7 @@ public class TreeUtil {
 			entry(TermOp.MODULO, (a, b) -> a % b), //
 			entry(TermOp.POWER_, TreeUtil::intPow));
 
-	private static Map<Node, IntInt_Int> tupleOperations = Map.ofEntries( //
+	public static Map<Node, IntInt_Int> tupleOperations = Map.ofEntries( //
 			entry(AND, (a, b) -> a & b), //
 			entry(OR_, (a, b) -> a | b), //
 			entry(SHL, (a, b) -> a << b), //

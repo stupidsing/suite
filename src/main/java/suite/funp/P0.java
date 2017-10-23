@@ -48,7 +48,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpAsm implements Funp, P2.End {
+	public static class FunpAsm implements Funp, P3.End {
 		public List<Node> asm;
 		public Funp expr;
 
@@ -82,7 +82,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpBoolean implements Funp, P2.End {
+	public static class FunpBoolean implements Funp, P3.End {
 		public boolean b;
 
 		public static FunpBoolean of(boolean b) {
@@ -128,7 +128,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpDontCare implements Funp, P2.End {
+	public static class FunpDontCare implements Funp, P3.End {
 		public static FunpDontCare of() {
 			return new FunpDontCare();
 		}
@@ -154,7 +154,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpFixed implements Funp, P2.End {
+	public static class FunpFixed implements Funp, P3.End {
 		public String var;
 		public Funp expr;
 
@@ -170,7 +170,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpIf implements Funp, P2.End {
+	public static class FunpIf implements Funp, P3.End {
 		public Funp if_;
 		public Funp then;
 		public Funp else_;
@@ -188,7 +188,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpIndex implements Funp, P2.End {
+	public static class FunpIndex implements Funp, P3.End {
 		public Funp reference;
 		public Funp index;
 
@@ -220,7 +220,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpNumber implements Funp, P2.End {
+	public static class FunpNumber implements Funp, P3.End {
 		public int i;
 
 		public static FunpNumber of(int i) {
@@ -276,7 +276,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpTree implements Funp, P2.End {
+	public static class FunpTree implements Funp, P3.End {
 		public Operator operator;
 		public Funp left;
 		public Funp right;
@@ -294,7 +294,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpTree2 implements Funp, P2.End {
+	public static class FunpTree2 implements Funp, P3.End {
 		public Atom operator;
 		public Funp left;
 		public Funp right;
@@ -323,7 +323,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpVerifyType implements Funp, P2.End {
+	public static class FunpVerifyType implements Funp, P3.End {
 		public Funp left;
 		public Funp right;
 		public Funp expr;

@@ -21,14 +21,14 @@ import suite.node.util.TreeUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Fun2;
 
-public class P2Emit {
+public class P3Emit {
 
 	private int is = Funp_.integerSize;
 	private Amd64 amd64 = Amd64.me;
 
 	private Sink<Instruction> emit;
 
-	public P2Emit(Sink<Instruction> emit) {
+	public P3Emit(Sink<Instruction> emit) {
 		this.emit = emit;
 	}
 

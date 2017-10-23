@@ -52,7 +52,7 @@ import suite.util.FunUtil2.Fun2;
 import suite.util.FunUtil2.Sink2;
 import suite.util.Switch;
 
-public class P2GenerateCode {
+public class P3GenerateCode {
 
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
@@ -97,7 +97,7 @@ public class P2GenerateCode {
 
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
-		P2Emit emit = new P2Emit(instructions::add);
+		P3Emit emit = new P3Emit(instructions::add);
 		new Compile0(CompileOut_.OPREG, emit).new Compile1(registerSet, 0).compile(funp);
 		return instructions;
 	}
@@ -107,16 +107,16 @@ public class P2GenerateCode {
 	}
 
 	private class Compile0 {
-		private P2Emit em;
+		private P3Emit em;
 		private CompileOut_ type;
 		private FunpMemory target; // only for CompileOutType.ASSIGN
 		private OpReg pop0, pop1; // only for CompileOutType.OPSPEC, TWOOPSPEC
 
-		private Compile0(CompileOut_ type, P2Emit emit) {
+		private Compile0(CompileOut_ type, P3Emit emit) {
 			this(type, emit, null, null, null);
 		}
 
-		private Compile0(CompileOut_ type, P2Emit emit, FunpMemory target, OpReg pop0, OpReg pop1) {
+		private Compile0(CompileOut_ type, P3Emit emit, FunpMemory target, OpReg pop0, OpReg pop1) {
 			this.type = type;
 			this.em = emit;
 			this.target = target;
@@ -415,8 +415,6 @@ public class P2GenerateCode {
 
 					if (op != null)
 						em.lea(op0 = isOutSpec ? pop0 : rs.get(), op);
-					else if (numLhs != null && numRhs != null)
-						op0 = amd64.imm(TreeUtil.evaluateOp(operator).apply(numLhs, numRhs), is);
 					else {
 						Source<OpReg> compileLhs = () -> isOutSpec ? compileOpSpec(lhs, pop0) : compileOpReg(lhs);
 						Source<OpReg> compileRhs = () -> isOutSpec ? compileOpSpec(rhs, pop0) : compileOpReg(rhs);
@@ -504,7 +502,6 @@ public class P2GenerateCode {
 
 					return postOp.apply(op0);
 				})).applyIf(FunpTree2.class, f -> f.apply((operator, lhs, rhs) -> {
-					Integer numLhs = lhs instanceof FunpNumber ? ((FunpNumber) lhs).i : null;
 					Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i : null;
 
 					OpMem op = em.decomposeOpMem(n, is);
@@ -512,8 +509,6 @@ public class P2GenerateCode {
 
 					if (op != null)
 						em.lea(op0 = isOutSpec ? pop0 : rs.get(), op);
-					else if (numLhs != null && numRhs != null)
-						op0 = amd64.imm(TreeUtil.evaluateOp(operator).apply(numLhs, numRhs), is);
 					else {
 						Insn insn;
 

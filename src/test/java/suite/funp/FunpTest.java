@@ -24,7 +24,8 @@ public class FunpTest {
 	private P0Parse p0 = new P0Parse();
 	private P1InferType p1 = new P1InferType();
 	private P1GenerateLambda p1g = new P1GenerateLambda();
-	private P2GenerateCode p2 = new P2GenerateCode();
+	private P2Optimize p2 = new P2Optimize();
+	private P3GenerateCode p3 = new P3GenerateCode();
 
 	@Test
 	public void testArray1() {
@@ -94,8 +95,9 @@ public class FunpTest {
 		Node node = Suite.parse(fp);
 		Funp f0 = p0.parse(node);
 		Funp f1 = p1.infer(f0);
-		List<Instruction> instructions = p2.compile0(f1);
-		return p2.compile1(0, instructions, true);
+		Funp f2 = p2.optimize(f1);
+		List<Instruction> instructions = p3.compile0(f2);
+		return p3.compile1(0, instructions, true);
 	}
 
 	private int interpret(Node node) {

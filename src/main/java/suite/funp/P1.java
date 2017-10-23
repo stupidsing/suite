@@ -13,7 +13,7 @@ public class P1 {
 	public interface End {
 	}
 
-	public static class FunpAllocStack implements Funp, P2.End {
+	public static class FunpAllocStack implements Funp, P3.End {
 		public int size; // allocate size
 		public Funp value;
 		public Funp expr;
@@ -31,7 +31,7 @@ public class P1 {
 		}
 	}
 
-	public static class FunpAssign implements Funp, P2.End {
+	public static class FunpAssign implements Funp, P3.End {
 		public FunpMemory memory;
 		public Funp value;
 		public Funp expr;
@@ -49,7 +49,7 @@ public class P1 {
 		}
 	}
 
-	public static class FunpData implements Funp, P2.End {
+	public static class FunpData implements Funp, P3.End {
 		public List<Pair<Funp, IntIntPair>> pairs;
 
 		public static FunpData of(List<Pair<Funp, IntIntPair>> pairs) {
@@ -63,10 +63,10 @@ public class P1 {
 		}
 	}
 
-	public static class FunpFramePointer implements Funp, P2.End {
+	public static class FunpFramePointer implements Funp, P3.End {
 	}
 
-	public static class FunpInvokeInt implements Funp, P2.End {
+	public static class FunpInvokeInt implements Funp, P3.End {
 		public Funp routine;
 
 		public static FunpInvokeInt of(Funp routine) {
@@ -80,7 +80,7 @@ public class P1 {
 		}
 	}
 
-	public static class FunpInvokeInt2 implements Funp, P2.End {
+	public static class FunpInvokeInt2 implements Funp, P3.End {
 		public Funp routine;
 
 		public static FunpInvokeInt2 of(Funp routine) {
@@ -94,7 +94,7 @@ public class P1 {
 		}
 	}
 
-	public static class FunpInvokeIo implements Funp, P2.End {
+	public static class FunpInvokeIo implements Funp, P3.End {
 		public Funp routine;
 
 		public static FunpInvokeIo of(Funp routine) {
@@ -108,7 +108,7 @@ public class P1 {
 		}
 	}
 
-	public static class FunpMemory implements Funp, P2.End {
+	public static class FunpMemory implements Funp, P3.End {
 		public Funp pointer;
 		public int start;
 		public int end;
@@ -134,7 +134,7 @@ public class P1 {
 		}
 	}
 
-	public static class FunpRoutine implements Funp, P2.End {
+	public static class FunpRoutine implements Funp, P3.End {
 		public Funp expr;
 
 		public static FunpRoutine of(Funp expr) {
@@ -148,7 +148,7 @@ public class P1 {
 		}
 	}
 
-	public static class FunpRoutine2 implements Funp, P2.End {
+	public static class FunpRoutine2 implements Funp, P3.End {
 		public Funp expr;
 
 		public static FunpRoutine2 of(Funp expr) {
@@ -163,7 +163,7 @@ public class P1 {
 
 	}
 
-	public static class FunpRoutineIo implements Funp, P2.End {
+	public static class FunpRoutineIo implements Funp, P3.End {
 		public Funp expr;
 		public int is, os;
 
@@ -180,7 +180,7 @@ public class P1 {
 		}
 	}
 
-	public static class FunpSaveRegisters implements Funp, P2.End {
+	public static class FunpSaveRegisters implements Funp, P3.End {
 		public Funp expr;
 
 		public static FunpSaveRegisters of(Funp expr) {
