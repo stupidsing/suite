@@ -610,8 +610,8 @@ public class P3GenerateCode {
 					if (16 < size)
 						saveRegs(c1 -> {
 							OpReg r = rs.mask(r0, edi).get(esi);
-							em.emit(amd64.instruction(Insn.LEA, r, amd64.mem(r1, start1, is)));
-							em.emit(amd64.instruction(Insn.LEA, edi, amd64.mem(r0, start0, is)));
+							em.lea(r, amd64.mem(r1, start1, is));
+							em.lea(edi, amd64.mem(r0, start0, is));
 							em.mov(esi, r);
 							em.mov(ecx, amd64.imm(size / 4, is));
 							em.emit(amd64.instruction(Insn.CLD));

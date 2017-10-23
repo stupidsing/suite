@@ -26,6 +26,7 @@ public class TreeUtil {
 	public static Atom OR_ = Atom.of("or");
 	public static Atom SHL = Atom.of("shl");
 	public static Atom SHR = Atom.of("shr");
+	public static Atom XOR = Atom.of("xor");
 
 	public static Map<Operator, IntInt_Bool> boolOperations = Map.ofEntries( //
 			entry(TermOp.EQUAL_, (a, b) -> a == b), //
@@ -47,7 +48,8 @@ public class TreeUtil {
 			entry(AND, (a, b) -> a & b), //
 			entry(OR_, (a, b) -> a | b), //
 			entry(SHL, (a, b) -> a << b), //
-			entry(SHR, (a, b) -> a >> b));
+			entry(SHR, (a, b) -> a >> b), //
+			entry(XOR, (a, b) -> a ^ b));
 
 	public static List<Node> breakdown(Operator operator, Node node) {
 		List<Node> list = new ArrayList<>();
