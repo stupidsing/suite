@@ -1,12 +1,13 @@
 package suite.funp;
 
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
+import suite.funp.P1.FunpMemory;
 import suite.inspect.Inspect;
+import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.primitive.IntInt_Int;
@@ -22,9 +23,14 @@ public class P2Optimize {
 
 	private Funp optimize_(Funp n) {
 		return new Switch<Funp>(n //
-		).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
+		).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 			return new Switch<Funp>(pointer //
-			).applyIf(FunpReference.class, g -> g.expr).result();
+			).applyIf(FunpReference.class, g -> {
+				return FunpTree.of(TermOp.PLUS__, g.expr, FunpNumber.of(start));
+			}).result();
+		})).applyIf(FunpReference.class, f -> f.apply(expr -> {
+			return new Switch<Funp>(expr //
+			).applyIf(FunpMemory.class, g -> g.pointer).result();
 		})).applyIf(FunpTree.class, f -> f.apply((operator, lhs0, rhs0) -> {
 			return evaluate(TreeUtil.intOperations.get(operator), lhs0, rhs0);
 		})).applyIf(FunpTree2.class, f -> f.apply((operator, lhs, rhs) -> {
