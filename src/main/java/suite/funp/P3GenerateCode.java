@@ -478,9 +478,7 @@ public class P3GenerateCode {
 									Operand opRhs = mask(opLhs).compileOp(rhs);
 									em.emit(amd64.instruction(Insn.CMP, opLhs, opRhs));
 								}
-								OpReg reg8 = isOutSpec ? pop0 : rs.get(1);
-								em.emit(amd64.instruction(setInsn, reg8));
-								opResult = reg8;
+								em.emit(amd64.instruction(setInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
 							} else if (operator == TermOp.MINUS_) {
 								opResult = compileLhs.source();
 								Operand op1 = new Compile1(rs.mask(opResult), fd).compileOp(rhs);
