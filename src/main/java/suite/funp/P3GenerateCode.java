@@ -350,7 +350,7 @@ public class P3GenerateCode {
 						return postAssign.apply((c1, target) -> {
 							if (size != target.size())
 								throw new RuntimeException();
-							else if (!compileInstruction(Insn.MOV, target, n, size)) {
+							else if (!c1.compileInstruction(Insn.MOV, target, n, size)) {
 								OpReg r0 = c1.compileOpReg(target.pointer);
 								OpReg r1 = c1.mask(r0).compileOpReg(pointer);
 								c1.mask(r0, r1).compileMove(r0, target.start, r1, start, size);
@@ -486,10 +486,12 @@ public class P3GenerateCode {
 								Operand op1 = new Compile1(rs.mask(opResult), fd).compileOp(rhs);
 								em.emit(amd64.instruction(Insn.SUB, opResult, op1));
 							} else {
-								Funp first = operator.getAssoc() == Assoc.RIGHT ? rhs : lhs;
-								Funp second = operator.getAssoc() == Assoc.RIGHT ? lhs : rhs;
+								Assoc assoc = operator.getAssoc();
+								Funp first = assoc == Assoc.RIGHT ? rhs : lhs;
+								Funp second = assoc == Assoc.RIGHT ? lhs : rhs;
 								opResult = isOutSpec ? compileOpSpec(first, pop0) : compileOpReg(first);
-								Operand op1 = mask(opResult).compileOp(second);
+								Operand op1_ = em.decomposeOperand(second);
+								Operand op1 = op1_ != null ? op1_ : mask(opResult).compileOp(second);
 								if (operator == TermOp.MULT__ && op1 instanceof OpImm)
 									em.emit(amd64.instruction(Insn.IMUL, opResult, opResult, op1));
 								else
@@ -584,13 +586,16 @@ public class P3GenerateCode {
 			private boolean compileInstruction(Insn insn, Funp f0, Funp f1, int size) {
 				Operand op0 = em.decomposeOperand(f0);
 				Operand op1 = em.decomposeOperand(f1);
-				if (op0 != null || op1 != null) {
-					OpReg r = rs.mask(op0).get(size);
-					em.emit(amd64.instruction(insn, r, op1 != null ? op1 : mask(op0).compileOp(f1)));
-					em.emit(amd64.instruction(insn, op0 != null ? op0 : mask(r).compileOp(f0), r));
-				} else
-					return false;
-				return true;
+				boolean b = op0 != null || op1 != null;
+				if (b) {
+					op1 = op1 != null ? op1 : mask(op0).compileOp(f1);
+					if (op0 instanceof OpMem && op1 instanceof OpMem || op0 instanceof OpImm) {
+						Operand oldOp1 = op1;
+						em.emit(amd64.instruction(Insn.MOV, op1 = rs.mask(op0).get(size), oldOp1));
+					}
+					em.emit(amd64.instruction(insn, op0 != null ? op0 : mask(op1).compileOp(f0), op1));
+				}
+				return b;
 			}
 
 			private void compileMove(OpReg r0, int start0, OpReg r1, int start1, int size) {
