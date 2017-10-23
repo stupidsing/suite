@@ -79,14 +79,14 @@ public class P3Emit {
 				for (Funp n1 : decompose.apply(TermOp.MULT__, n0))
 					if (n1 instanceof FunpFramePointer && reg == null)
 						reg = amd64.ebp;
+					else if (n1 instanceof FunpNumber)
+						scale *= ((FunpNumber) n1).i;
 					else if (n1 instanceof FunpTree2 //
 							&& (tree = (FunpTree2) n1).operator == TreeUtil.SHL //
 							&& (r = tree.right) instanceof FunpNumber) {
 						decompose(tree.left);
-						scale <<= 1 << ((FunpNumber) r).i;
-					} else if (n1 instanceof FunpNumber)
-						scale *= ((FunpNumber) n1).i;
-					else
+						scale <<= ((FunpNumber) r).i;
+					} else
 						mults.add(n1);
 			}
 		}
@@ -102,20 +102,20 @@ public class P3Emit {
 				OpReg reg_ = dec.reg;
 				long scale_ = dec.scale;
 				if (reg_ != null)
-					if (is1248(scale_) && indexReg == null) {
+					if (scale_ == 1 && baseReg == null)
+						baseReg = reg_;
+					else if (is1248(scale_) && indexReg == null) {
 						indexReg = reg_;
 						scale = (int) scale_;
-					} else if (scale_ == 1 && baseReg == null)
-						baseReg = reg_;
-					else
+					} else
 						ok = false;
-				else if (reg_ == null)
+				else
 					disp += scale_;
 			} else
 				ok = false;
 		}
 
-		return ok ? amd64.mem(indexReg, baseReg, scale, disp, size) : null;
+		return ok ? amd64.mem(baseReg, indexReg, scale, disp, size) : null;
 	}
 
 	public void addImm(Operand op0, int i) {
@@ -154,6 +154,8 @@ public class P3Emit {
 	public void lea(Operand op0, OpMem op1) {
 		if (op1.baseReg < 0 && op1.indexReg < 0)
 			mov(op0, amd64.imm(op1.disp, is));
+		else if (op1.indexReg < 0 && op1.disp == 0)
+			mov(op0, amd64.reg32[op1.baseReg]);
 		else
 			emit(amd64.instruction(Insn.LEA, op0, op1));
 	}
