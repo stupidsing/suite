@@ -78,20 +78,9 @@ public class P1InferType {
 	}
 
 	private Funp infer(Funp n0, UnNode<Type> t) {
-		UnNode<Type> t0 = typeNumber;
-		UnNode<Type> t1 = TypeLambda.of(typeNumber, t0);
-		UnNode<Type> t2 = TypeLambda.of(typeNumber, t1);
-		IMap<String, UnNode<Type>> env = IMap.<String, UnNode<Type>> empty() //
-				.put(TermOp.BIGAND.name, t2) //
-				.put(TermOp.BIGOR_.name, t2) //
-				.put(TermOp.PLUS__.name, t2) //
-				.put(TermOp.MINUS_.name, t2) //
-				.put(TermOp.MULT__.name, t2) //
-				.put(TermOp.DIVIDE.name, t2);
-
 		Funp n1 = new Extract().extract(n0);
 
-		if (unify.unify(t, new Infer(env).infer(n1)))
+		if (unify.unify(t, new Infer(IMap.empty()).infer(n1)))
 			return erase(0, 0, IMap.empty(), n1);
 		else
 			throw new RuntimeException("cannot infer type for " + n0);
