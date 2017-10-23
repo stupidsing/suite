@@ -133,6 +133,13 @@ public class P2Emit {
 			emit(amd64.instruction(Insn.IMUL, r0, r0, amd64.imm(i, is)));
 	}
 
+	public void lea(Operand op0, OpMem op1) {
+		if (op1.baseReg < 0 && op1.indexReg < 0)
+			mov(op0, amd64.imm(op1.disp, is));
+		else
+			emit(amd64.instruction(Insn.LEA, op0, op1));
+	}
+
 	public void mov(Operand op0, Operand op1) {
 		if (op0 != op1)
 			if (op0 instanceof OpReg && op1 instanceof OpImm && ((OpImm) op1).imm == 0)

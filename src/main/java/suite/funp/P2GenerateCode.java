@@ -414,13 +414,9 @@ public class P2GenerateCode {
 					OpMem op = em.decomposeOpMem(n, is);
 					Operand op0;
 
-					if (op != null) {
-						op0 = isOutSpec ? pop0 : rs.get();
-						if (op.baseReg < 0 && op.indexReg < 0)
-							em.mov(op0, amd64.imm(op.disp, is));
-						else
-							em.emit(amd64.instruction(Insn.LEA, op0, op));
-					} else if (numLhs != null && numRhs != null)
+					if (op != null)
+						em.lea(op0 = isOutSpec ? pop0 : rs.get(), op);
+					else if (numLhs != null && numRhs != null)
 						op0 = amd64.imm(TreeUtil.evaluateOp(operator).apply(numLhs, numRhs), is);
 					else {
 						Source<OpReg> compileLhs = () -> isOutSpec ? compileOpSpec(lhs, pop0) : compileOpReg(lhs);
@@ -515,13 +511,9 @@ public class P2GenerateCode {
 					OpMem op = em.decomposeOpMem(n, is);
 					Operand op0;
 
-					if (op != null) {
-						op0 = isOutSpec ? pop0 : rs.get();
-						if (op.baseReg < 0 && op.indexReg < 0)
-							em.mov(op0, amd64.imm(op.disp, is));
-						else
-							em.emit(amd64.instruction(Insn.LEA, op0, op));
-					} else if (numLhs != null && numRhs != null)
+					if (op != null)
+						em.lea(op0 = isOutSpec ? pop0 : rs.get(), op);
+					else if (numLhs != null && numRhs != null)
 						op0 = amd64.imm(TreeUtil.evaluateOp(operator).apply(numLhs, numRhs), is);
 					else {
 						Insn insn;
