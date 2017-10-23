@@ -2,6 +2,7 @@ package suite.funp;
 
 import java.util.List;
 
+import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Pair;
@@ -64,6 +65,9 @@ public class P1 {
 	}
 
 	public static class FunpFramePointer implements Funp, P3.End {
+		public <R> R apply(FixieFun0<R> fun) {
+			return fun.apply();
+		}
 	}
 
 	public static class FunpInvokeInt implements Funp, P3.End {
