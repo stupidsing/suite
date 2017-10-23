@@ -29,68 +29,72 @@ public class Funp_ {
 	}
 
 	public static void dump(Funp node) {
-		StringBuilder sb = new StringBuilder();
-		dump(sb, node);
-		LogUtil.info(sb.toString());
+		Dump dump = new Dump();
+		dump.dump(node);
+		LogUtil.info(dump.sb.toString());
 	}
 
-	private static void dump(StringBuilder sb, Object object) {
-		if (object instanceof Funp)
-			dump_(sb, (Funp) object);
-		else if (object instanceof Collection<?>) {
-			sb.append("[");
-			for (Object object1 : (Collection<?>) object) {
-				dump(sb, object1);
+	private static class Dump {
+		private StringBuilder sb = new StringBuilder();
+
+		private void dump(Object object) {
+			if (object instanceof Funp)
+				dump_((Funp) object);
+			else if (object instanceof Collection<?>) {
+				sb.append("[");
+				for (Object object1 : (Collection<?>) object) {
+					dump(object1);
+					sb.append(",");
+				}
+				sb.append("]");
+			} else if (object instanceof Pair<?, ?>) {
+				Pair<?, ?> pair = (Pair<?, ?>) object;
+				sb.append("<");
+				dump(pair.t0);
+				sb.append(", ");
+				dump(pair.t1);
+				sb.append(">");
+			} else
+				sb.append(object != null ? object.toString() : "null");
+		}
+
+		private void dump_(Funp node) {
+			Class<? extends Funp> clazz = node.getClass();
+
+			Method m = Read.from(clazz.getMethods()) //
+					.filter(method -> String_.equals(method.getName(), "apply")) //
+					.uniqueResult();
+
+			Class<?> type = m.getParameters()[0].getType();
+			Mutable<Object> mut = Mutable.nil();
+
+			Fun<Object, Object> set = o -> {
+				mut.set(o);
+				return true;
+			};
+
+			Object p;
+			if (type == FixieFun0.class)
+				p = (FixieFun0<?>) () -> set.apply(List.of());
+			else if (type == FixieFun1.class)
+				p = (FixieFun1<?, ?>) (o0) -> set.apply(List.of(o0));
+			else if (type == FixieFun2.class)
+				p = (FixieFun2<?, ?, ?>) (o0, o1) -> set.apply(List.of(o0, o1));
+			else if (type == FixieFun3.class)
+				p = (FixieFun3<?, ?, ?, ?>) (o0, o1, o2) -> set.apply(List.of(o0, o1, o2));
+			else
+				throw new RuntimeException();
+
+			Rethrow.ex(() -> m.invoke(node, p));
+
+			sb.append(clazz.getSimpleName());
+			sb.append("{");
+			for (Object object : (Collection<?>) mut.get()) {
+				dump(object);
 				sb.append(",");
 			}
-			sb.append("]");
-		} else if (object instanceof Pair<?, ?>) {
-			Pair<?, ?> pair = (Pair<?, ?>) object;
-			sb.append("<");
-			dump(sb, pair.t0);
-			sb.append(", ");
-			dump(sb, pair.t1);
-			sb.append(">");
-		} else
-			sb.append(object != null ? object.toString() : "null");
-	}
-
-	private static void dump_(StringBuilder sb, Funp node) {
-		Class<? extends Funp> clazz = node.getClass();
-
-		Method m = Read.from(clazz.getMethods()) //
-				.filter(method -> String_.equals(method.getName(), "apply")) //
-				.uniqueResult();
-
-		Class<?> type = m.getParameters()[0].getType();
-		Mutable<Object> mut = Mutable.nil();
-
-		Fun<Object, Object> set = o -> {
-			mut.set(o);
-			return true;
-		};
-
-		Object p;
-		if (type == FixieFun0.class)
-			p = (FixieFun0<?>) () -> set.apply(List.of());
-		else if (type == FixieFun1.class)
-			p = (FixieFun1<?, ?>) (o0) -> set.apply(List.of(o0));
-		else if (type == FixieFun2.class)
-			p = (FixieFun2<?, ?, ?>) (o0, o1) -> set.apply(List.of(o0, o1));
-		else if (type == FixieFun3.class)
-			p = (FixieFun3<?, ?, ?, ?>) (o0, o1, o2) -> set.apply(List.of(o0, o1, o2));
-		else
-			throw new RuntimeException();
-
-		Rethrow.ex(() -> m.invoke(node, p));
-
-		sb.append(clazz.getSimpleName());
-		sb.append("{");
-		for (Object object : (Collection<?>) mut.get()) {
-			dump(sb, object);
-			sb.append(",");
+			sb.append("}");
 		}
-		sb.append("}");
 	}
 
 }
