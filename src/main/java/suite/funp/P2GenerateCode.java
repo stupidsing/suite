@@ -216,8 +216,7 @@ public class P2GenerateCode {
 						em.emit(amd64.instruction(Insn.PUSH, compileOp(value)));
 					else {
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
-						if (value != null)
-							compileAssign(value, frame(fd1, fd1 + size0));
+						compileAssign(value, frame(fd1, fd1 + size0));
 					}
 					CompileOut out = new Compile1(rs, fd1).compile(expr);
 					if (size1 == is)
