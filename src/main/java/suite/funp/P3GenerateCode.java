@@ -347,12 +347,21 @@ public class P3GenerateCode {
 					int size = end - start;
 					if (type == CompileOut_.ASSIGN)
 						return postAssign.apply((c1, target) -> {
-							OpReg r0 = c1.compileOpReg(target.pointer);
-							OpReg r1 = c1.mask(r0).compileOpReg(pointer);
-							if (size == target.size())
-								c1.mask(r0, r1).compileMove(r0, target.start, r1, start, size);
-							else
+							OpMem op0 = em.decomposeOpMem(target.pointer, target.start, size);
+							OpMem op1 = em.decomposeOpMem(pointer, start, size);
+							if (size != target.size())
 								throw new RuntimeException();
+							else if (op0 != null || op1 != null) {
+								op1 = op1 != null ? op1 : amd64.mem(c1.mask(op0).compileOpReg(pointer), start, size);
+								OpReg r = c1.rs.mask(op0).get();
+								em.mov(r, op1);
+								op0 = op0 != null ? op0 : amd64.mem(c1.mask(r).compileOpReg(target.pointer), target.start, size);
+								em.mov(op0, r);
+							} else {
+								OpReg r0 = c1.compileOpReg(target.pointer);
+								OpReg r1 = c1.mask(r0).compileOpReg(pointer);
+								c1.mask(r0, r1).compileMove(r0, target.start, r1, start, size);
+							}
 						});
 					else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC)
 						return postOp.apply(amd64.mem(compileOpReg(pointer), start, size));
@@ -410,7 +419,7 @@ public class P3GenerateCode {
 				})).applyIf(FunpTree.class, f -> f.apply((operator, lhs, rhs) -> {
 					Integer numLhs = lhs instanceof FunpNumber ? ((FunpNumber) lhs).i : null;
 					Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i : null;
-					OpMem op = em.decomposeOpMem(n, is);
+					OpMem op = em.decomposeOpMem(n, 0, is);
 					Operand op0;
 
 					if (op != null)
@@ -503,8 +512,7 @@ public class P3GenerateCode {
 					return postOp.apply(op0);
 				})).applyIf(FunpTree2.class, f -> f.apply((operator, lhs, rhs) -> {
 					Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i : null;
-
-					OpMem op = em.decomposeOpMem(n, is);
+					OpMem op = em.decomposeOpMem(n, 0, is);
 					Operand op0;
 
 					if (op != null)

@@ -32,7 +32,7 @@ public class P3Emit {
 		this.emit = emit;
 	}
 
-	public OpMem decomposeOpMem(Funp n0, int size) {
+	public OpMem decomposeOpMem(Funp n0, int disp0, int size) {
 		class Decompose {
 			private Operator operator;
 			private List<Funp> nodes = new ArrayList<>();
@@ -81,7 +81,7 @@ public class P3Emit {
 		}
 
 		OpReg baseReg = null, indexReg = null;
-		int scale = 1, disp = 0;
+		int scale = 1, disp = disp0;
 		boolean ok = is1248(size);
 
 		for (Funp n1 : decompose.apply(TermOp.PLUS__, n0)) {
