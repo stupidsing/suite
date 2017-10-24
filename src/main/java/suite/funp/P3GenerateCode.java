@@ -340,7 +340,7 @@ public class P3GenerateCode {
 						OpReg r0 = c1.compileOpReg(target.pointer);
 						Compile1 c2 = c1.mask(r0);
 						c2.compileInvoke(routine);
-						c2.compileMove(r0, target.start, ebp, c1.fd, target.size());
+						c2.compileMove(r0, target.start, ebp, c2.fd, target.size());
 					});
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 					int size = end - start;
@@ -498,7 +498,7 @@ public class P3GenerateCode {
 						em.emit(amd64.instruction(setInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
 					} else if (operator == TermOp.MINUS_) {
 						opResult = cr.apply(lhs);
-						Operand op1 = new Compile1(rs.mask(opResult), fd).compileOp(rhs);
+						Operand op1 = mask(opResult).compileOp(rhs);
 						em.emit(amd64.instruction(Insn.SUB, opResult, op1));
 					} else if (operator == TreeUtil.SHL)
 						opResult = shiftFun.apply(Insn.SHL);
