@@ -465,12 +465,8 @@ public class P3GenerateCode {
 				if (opResult == null && operator == TermOp.MINUS_ && numRhs != null)
 					em.addImm(opResult = cr.apply(lhs), -numRhs);
 
-				if (opResult == null && operator == TermOp.DIVIDE && numRhs != null && Integer.bitCount(numRhs) == 1) {
-					int z = Integer.numberOfTrailingZeros(numRhs);
-					opResult = cr.apply(rhs);
-					if (z != 0)
-						em.emit(amd64.instruction(Insn.SHR, opResult, amd64.imm(z, 1)));
-				}
+				if (opResult == null && operator == TermOp.DIVIDE && numRhs != null && Integer.bitCount(numRhs) == 1)
+					em.shrImm(opResult = cr.apply(rhs), Integer.numberOfTrailingZeros(numRhs));
 
 				Insn setInsn = setInsnByOp.get(operator);
 

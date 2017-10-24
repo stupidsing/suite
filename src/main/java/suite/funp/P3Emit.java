@@ -126,6 +126,11 @@ public class P3Emit {
 		return new DecomposePlus(n0).op();
 	}
 
+	public void shrImm(Operand op0, int z) {
+		if (z != 0)
+			emit(amd64.instruction(Insn.SHR, op0, amd64.imm(z, 1)));
+	}
+
 	public void addImm(Operand op0, int i) {
 		if (i == -1)
 			emit(amd64.instruction(Insn.DEC, op0));
