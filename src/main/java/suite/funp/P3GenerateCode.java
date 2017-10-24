@@ -438,8 +438,7 @@ public class P3GenerateCode {
 				};
 
 				Fun<Insn, OpReg> shiftFun = insn_ -> {
-					Compile1 compile1 = mask(ecx);
-					OpReg opResult_ = isOutSpec ? compile1.compileOpSpec(lhs, pop0) : compile1.compileOpReg(lhs);
+					OpReg opResult_ = isOutSpec ? compileOpSpec(lhs, pop0) : compileOpReg(lhs);
 					if (numRhs != null)
 						em.emit(amd64.instruction(insn_, opResult_, amd64.imm(numRhs, 1)));
 					else
