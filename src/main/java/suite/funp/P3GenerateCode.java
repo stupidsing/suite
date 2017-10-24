@@ -47,7 +47,6 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
 import suite.util.FunUtil2.Sink2;
 import suite.util.Switch;
@@ -427,14 +426,13 @@ public class P3GenerateCode {
 				if (opResult == null && op != null)
 					em.lea(opResult = isOutSpec ? pop0 : rs.get(), op);
 
-				Source<OpReg> compileLhs = () -> isOutSpec ? compileOpSpec(lhs, pop0) : compileOpReg(lhs);
-				Source<OpReg> compileRhs = () -> isOutSpec ? compileOpSpec(rhs, pop0) : compileOpReg(rhs);
+				Fun<Funp, OpReg> cr = n_ -> isOutSpec ? compileOpSpec(n_, pop0) : compileOpReg(n_);
 
 				Fun2<OpReg, Sink2<? super OpReg, Integer>, OpReg> fun = (op_, s) -> {
 					if (op_ == null && numRhs != null)
-						s.sink2(op_ = compileLhs.source(), numRhs);
+						s.sink2(op_ = cr.apply(lhs), numRhs);
 					if (op_ == null && numLhs != null)
-						s.sink2(op_ = compileRhs.source(), numLhs);
+						s.sink2(op_ = cr.apply(rhs), numLhs);
 					return op_;
 				};
 
@@ -460,16 +458,16 @@ public class P3GenerateCode {
 				opResult = operator == TreeUtil.XOR ? fun.apply(opResult, em::xorImm) : opResult;
 
 				if (opResult == null && operator == TermOp.MINUS_ && numLhs != null) {
-					em.emit(amd64.instruction(Insn.NEG, opResult = compileRhs.source()));
+					em.emit(amd64.instruction(Insn.NEG, opResult = cr.apply(rhs)));
 					em.addImm(opResult, numLhs);
 				}
 
 				if (opResult == null && operator == TermOp.MINUS_ && numRhs != null)
-					em.addImm(opResult = compileLhs.source(), -numRhs);
+					em.addImm(opResult = cr.apply(lhs), -numRhs);
 
 				if (opResult == null && operator == TermOp.DIVIDE && numRhs != null && Integer.bitCount(numRhs) == 1) {
 					int z = Integer.numberOfTrailingZeros(numRhs);
-					opResult = compileRhs.source();
+					opResult = cr.apply(rhs);
 					if (z != 0)
 						em.emit(amd64.instruction(Insn.SHR, opResult, amd64.imm(z, 1)));
 				}
@@ -493,13 +491,13 @@ public class P3GenerateCode {
 						opResult = opResult_;
 					} else if (setInsn != null) {
 						if (!compileInstruction(Insn.CMP, lhs, rhs, is)) {
-							OpReg opLhs = compileLhs.source();
+							OpReg opLhs = cr.apply(lhs);
 							Operand opRhs = mask(opLhs).compileOp(rhs);
 							em.emit(amd64.instruction(Insn.CMP, opLhs, opRhs));
 						}
 						em.emit(amd64.instruction(setInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
 					} else if (operator == TermOp.MINUS_) {
-						opResult = compileLhs.source();
+						opResult = cr.apply(lhs);
 						Operand op1 = new Compile1(rs.mask(opResult), fd).compileOp(rhs);
 						em.emit(amd64.instruction(Insn.SUB, opResult, op1));
 					} else if (operator == TreeUtil.SHL)
