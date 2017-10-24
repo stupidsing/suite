@@ -126,11 +126,6 @@ public class P3Emit {
 		return new DecomposePlus(n0).op();
 	}
 
-	public void shrImm(Operand op0, int z) {
-		if (z != 0)
-			emit(amd64.instruction(Insn.SHR, op0, amd64.imm(z, 1)));
-	}
-
 	public void addImm(Operand op0, int i) {
 		if (i == -1)
 			emit(amd64.instruction(Insn.DEC, op0));
@@ -158,10 +153,16 @@ public class P3Emit {
 	}
 
 	public void imulImm(OpReg r0, int i) {
-		if (Integer.bitCount(i) == 1)
-			emit(amd64.instruction(Insn.SHL, r0, amd64.imm(Integer.numberOfTrailingZeros(i), 1)));
-		else if (i != 1)
-			emit(amd64.instruction(Insn.IMUL, r0, r0, amd64.imm(i, is)));
+		if (i != 1)
+			if (Integer.bitCount(i) == 1)
+				shiftImm(Insn.SHL, r0, Integer.numberOfTrailingZeros(i));
+			else
+				emit(amd64.instruction(Insn.IMUL, r0, r0, amd64.imm(i, is)));
+	}
+
+	public void shiftImm(Insn insn, Operand op0, int z) {
+		if (z != 0)
+			emit(amd64.instruction(insn, op0, amd64.imm(z, 1)));
 	}
 
 	public void lea(Operand op0, OpMem op1) {
