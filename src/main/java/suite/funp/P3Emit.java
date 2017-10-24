@@ -91,31 +91,39 @@ public class P3Emit {
 			}
 		}
 
-		OpReg baseReg = null, indexReg = null;
-		int scale = 1, disp = disp0;
-		boolean ok = is1248(size);
+		class DecomposePlus {
+			private OpReg baseReg = null, indexReg = null;
+			private int scale = 1, disp = disp0;
+			private boolean ok = is1248(size);
 
-		for (Funp n1 : decompose.apply(TermOp.PLUS__, n0)) {
-			DecomposeMult dec = new DecomposeMult();
-			dec.decompose(n1);
-			if (dec.mults.isEmpty()) {
-				OpReg reg_ = dec.reg;
-				long scale_ = dec.scale;
-				if (reg_ != null)
-					if (scale_ == 1 && baseReg == null)
-						baseReg = reg_;
-					else if (is1248(scale_) && indexReg == null) {
-						indexReg = reg_;
-						scale = (int) scale_;
+			private DecomposePlus(Funp n0) {
+				for (Funp n1 : decompose.apply(TermOp.PLUS__, n0)) {
+					DecomposeMult dec = new DecomposeMult();
+					dec.decompose(n1);
+					if (dec.mults.isEmpty()) {
+						OpReg reg_ = dec.reg;
+						long scale_ = dec.scale;
+						if (reg_ != null)
+							if (scale_ == 1 && baseReg == null)
+								baseReg = reg_;
+							else if (is1248(scale_) && indexReg == null) {
+								indexReg = reg_;
+								scale = (int) scale_;
+							} else
+								ok = false;
+						else
+							disp += scale_;
 					} else
 						ok = false;
-				else
-					disp += scale_;
-			} else
-				ok = false;
+				}
+			}
+
+			private OpMem op() {
+				return ok ? amd64.mem(baseReg, indexReg, scale, disp, size) : null;
+			}
 		}
 
-		return ok ? amd64.mem(baseReg, indexReg, scale, disp, size) : null;
+		return new DecomposePlus(n0).op();
 	}
 
 	public void addImm(Operand op0, int i) {
