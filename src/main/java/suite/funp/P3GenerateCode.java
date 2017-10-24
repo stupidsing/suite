@@ -210,14 +210,15 @@ public class P3GenerateCode {
 					int size1 = (size0 + is1) & ~is1;
 					Operand imm = amd64.imm(size1);
 					int fd1 = fd - size1;
+					Compile1 c1 = new Compile1(rs, fd1);
 
 					if (size1 == is && value != null)
 						em.emit(amd64.instruction(Insn.PUSH, compileOp(value)));
 					else {
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
-						compileAssign(value, frame(fd1, fd1 + size0));
+						c1.compileAssign(value, frame(fd1, fd1 + size0));
 					}
-					CompileOut out = new Compile1(rs, fd1).compile(expr);
+					CompileOut out = c1.compile(expr);
 					if (size1 == is)
 						em.emit(amd64.instruction(Insn.POP, rs.mask(out.op0, out.op1).get()));
 					else
