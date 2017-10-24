@@ -38,6 +38,7 @@ import suite.funp.P1.FunpRoutine;
 import suite.funp.P1.FunpRoutine2;
 import suite.funp.P1.FunpRoutineIo;
 import suite.funp.P1.FunpSaveRegisters;
+import suite.node.Atom;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
@@ -93,6 +94,10 @@ public class P3GenerateCode {
 			entry(TermOp.LE____, Insn.SETLE), //
 			entry(TermOp.LT____, Insn.SETL), //
 			entry(TermOp.NOTEQ_, Insn.SETNE));
+
+	Map<Atom, Insn> shInsnByOp = Map.ofEntries( //
+			entry(TreeUtil.SHL, Insn.SHL), //
+			entry(TreeUtil.SHR, Insn.SHR));
 
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
@@ -437,18 +442,6 @@ public class P3GenerateCode {
 					return op_;
 				};
 
-				Fun<Insn, OpReg> shiftFun = insn_ -> {
-					OpReg opResult_ = cr.apply(lhs);
-					if (numRhs != null)
-						em.emit(amd64.instruction(insn_, opResult_, amd64.imm(numRhs, 1)));
-					else
-						saveRegs(c1 -> {
-							Operand opRhs = c1.mask(opResult_).compileOpSpec(rhs, cl);
-							em.emit(amd64.instruction(insn_, opResult_, opRhs));
-						}, ecx);
-					return opResult_;
-				};
-
 				opResult = operator == TermOp.BIGAND ? fun.apply(opResult, em::andImm) : opResult;
 				opResult = operator == TermOp.BIGOR_ ? fun.apply(opResult, em::orImm) : opResult;
 				opResult = operator == TermOp.PLUS__ ? fun.apply(opResult, em::addImm) : opResult;
@@ -469,6 +462,7 @@ public class P3GenerateCode {
 					em.shrImm(opResult = cr.apply(rhs), Integer.numberOfTrailingZeros(numRhs));
 
 				Insn setInsn = setInsnByOp.get(operator);
+				Insn shInsn = shInsnByOp.get(operator);
 
 				if (opResult == null)
 					if (operator == TermOp.DIVIDE) {
@@ -485,6 +479,10 @@ public class P3GenerateCode {
 						Sink<Compile1> sink1 = rs.contains(eax) ? c1 -> c1.saveRegs(sink0, eax) : sink0;
 						saveRegs(sink1, edx);
 						opResult = opResult_;
+					} else if (operator == TermOp.MINUS_) {
+						opResult = cr.apply(lhs);
+						Operand op1 = mask(opResult).compileOp(rhs);
+						em.emit(amd64.instruction(Insn.SUB, opResult, op1));
 					} else if (setInsn != null) {
 						if (!compileInstruction(Insn.CMP, lhs, rhs, is)) {
 							OpReg opLhs = cr.apply(lhs);
@@ -492,15 +490,17 @@ public class P3GenerateCode {
 							em.emit(amd64.instruction(Insn.CMP, opLhs, opRhs));
 						}
 						em.emit(amd64.instruction(setInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
-					} else if (operator == TermOp.MINUS_) {
-						opResult = cr.apply(lhs);
-						Operand op1 = mask(opResult).compileOp(rhs);
-						em.emit(amd64.instruction(Insn.SUB, opResult, op1));
-					} else if (operator == TreeUtil.SHL)
-						opResult = shiftFun.apply(Insn.SHL);
-					else if (operator == TreeUtil.SHR)
-						opResult = shiftFun.apply(Insn.SHR);
-					else {
+					} else if (shInsn != null) {
+						OpReg op0 = cr.apply(lhs);
+						if (numRhs != null)
+							em.emit(amd64.instruction(shInsn, op0, amd64.imm(numRhs, 1)));
+						else
+							saveRegs(c1 -> {
+								Operand opRhs = c1.mask(op0).compileOpSpec(rhs, cl);
+								em.emit(amd64.instruction(shInsn, op0, opRhs));
+							}, ecx);
+						opResult = op0;
+					} else {
 						Funp first = assoc == Assoc.RIGHT ? rhs : lhs;
 						Funp second = assoc == Assoc.RIGHT ? lhs : rhs;
 						opResult = isOutSpec ? compileOpSpec(first, pop0) : compileOpReg(first);
