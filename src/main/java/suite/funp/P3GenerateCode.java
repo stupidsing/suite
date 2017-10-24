@@ -508,16 +508,14 @@ public class P3GenerateCode {
 							compileRegInstruction(insn, opResult = opLhsReg, opRhs, rhs);
 						else if (opRhsReg != null && !rs.contains(opRhsReg))
 							compileRegInstruction(insn, opResult = opRhsReg, opLhs, lhs);
-						else if (opLhs != null) {
-							em.mov(opResult = rs.mask(opRhs).get(), opLhs);
-							compileRegInstruction(insn, opResult, opRhs, rhs);
-						} else if (opRhs != null) {
-							em.mov(opResult = rs.mask(opLhs).get(), opRhs);
-							compileRegInstruction(insn, opResult, opLhs, lhs);
-						} else {
+						else if (opLhs != null)
+							compileRegInstruction(insn, opResult = cr.apply(rhs), opLhs);
+						else if (opRhs != null)
+							compileRegInstruction(insn, opResult = cr.apply(lhs), opRhs);
+						else {
 							Funp first = assoc == Assoc.RIGHT ? rhs : lhs;
 							Funp second = assoc == Assoc.RIGHT ? lhs : rhs;
-							opResult = isOutSpec ? compileOpSpec(first, pop0) : compileOpReg(first);
+							opResult = cr.apply(first);
 							Operand op1 = mask(opResult).compileOp(second);
 							compileRegInstruction(insn, opResult, op1);
 						}
