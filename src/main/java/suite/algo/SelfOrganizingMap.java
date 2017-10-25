@@ -3,7 +3,7 @@ package suite.algo;
 import java.util.List;
 import java.util.Random;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Vector_;
 import suite.primitive.Floats_;
 import suite.primitive.FltMutable;
 import suite.primitive.Ints_;
@@ -17,8 +17,8 @@ public class SelfOrganizingMap {
 
 	private int nDim = bounds.length;
 
-	private Matrix mtx = new Matrix();
 	private Random random = new Random();
+	private Vector_ vec = new Vector_();
 
 	public void som(List<float[]> ins) {
 		int length = ins.get(0).length;
@@ -37,7 +37,7 @@ public class SelfOrganizingMap {
 				new Loop(is -> {
 					int index = index(is);
 					float[] som0 = som[index];
-					float distance = mtx.dot(mtx.sub(in, som0));
+					float distance = vec.dotDiff(in, som0);
 					if (distance < nearestDistance.get()) {
 						nearestDistance.update(distance);
 						Ints_.copy(is, 0, nearestIndices, 0, nDim);
@@ -50,8 +50,8 @@ public class SelfOrganizingMap {
 				new Loop(is -> {
 					int index = index(is);
 					float[] som0 = som[index];
-					double theta = Math.exp(-mtx.dot(mtx.sub(nearestSom, som0)) / (2d * var));
-					som[index] = mtx.add(som0, mtx.scale(mtx.sub(in, som0), theta * alpha_));
+					double theta = Math.exp(-vec.dotDiff(nearestSom, som0) / (2d * var));
+					som[index] = vec.add(som0, vec.scale(vec.sub(in, som0), theta * alpha_));
 				}).updateNeighbours(nearestIndices, nDim);
 
 				alpha += .999d;

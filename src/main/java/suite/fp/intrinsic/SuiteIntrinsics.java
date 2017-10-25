@@ -1,6 +1,6 @@
 package suite.fp.intrinsic;
 
-import java.util.Arrays;
+import java.util.List;
 
 import suite.Suite;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
@@ -20,7 +20,7 @@ public class SuiteIntrinsics {
 		if (m != null)
 			return Intrinsics.drain(callback, p -> new Data<>(m[p]), m.length);
 		else
-			return Intrinsics.id_.invoke(callback, Arrays.asList(Atom.NIL));
+			return Intrinsics.id_.invoke(callback, List.of(Atom.NIL));
 	};
 
 	public Intrinsic parse = (callback, inputs) -> {

@@ -3,7 +3,6 @@ package suite.sample;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.script.ScriptEngine;
@@ -22,7 +21,7 @@ import suite.util.Util.ExecutableProgram;
  */
 public class JsMain extends ExecutableProgram {
 
-	private List<String> defaultJsFiles = Arrays.asList("conf/loader.js");
+	private List<String> defaultJsFiles = List.of("conf/loader.js");
 
 	private ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
 

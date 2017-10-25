@@ -3,7 +3,7 @@ package suite.assembler;
 import suite.adt.map.BiMap;
 import suite.adt.map.HashBiMap;
 import suite.node.Atom;
-import suite.primitive.Ints_;
+import suite.util.To;
 
 public class Amd64 {
 
@@ -70,7 +70,9 @@ public class Amd64 {
 		MOVSX, //
 		MOVZX, //
 		MUL, //
+		NEG, //
 		NOP, //
+		NOT, //
 		OR, //
 		OUT, //
 		POP, //
@@ -147,10 +149,10 @@ public class Amd64 {
 
 	public Operand none = new OpNone();
 
-	public OpReg[] reg8 = Ints_.range(16).map(r -> newReg(1, r)).toArray(OpReg.class);
-	public OpReg[] reg16 = Ints_.range(16).map(r -> newReg(2, r)).toArray(OpReg.class);
-	public OpReg[] reg32 = Ints_.range(16).map(r -> newReg(4, r)).toArray(OpReg.class);
-	public OpReg[] reg64 = Ints_.range(16).map(r -> newReg(8, r)).toArray(OpReg.class);
+	public OpReg[] reg8 = To.array(16, OpReg.class, r -> newReg(1, r));
+	public OpReg[] reg16 = To.array(16, OpReg.class, r -> newReg(2, r));
+	public OpReg[] reg32 = To.array(16, OpReg.class, r -> newReg(4, r));
+	public OpReg[] reg64 = To.array(16, OpReg.class, r -> newReg(8, r));
 
 	public OpReg al = reg8[0];
 	public OpReg cl = reg8[1];
@@ -165,7 +167,7 @@ public class Amd64 {
 	public OpReg esi = reg32[6];
 	public OpReg edi = reg32[7];
 
-	public BiMap<Atom, OpReg> regsByName = new HashBiMap<Atom, OpReg>() {
+	public BiMap<Atom, OpReg> regsByName = new HashBiMap<>() {
 		{
 			put(Atom.of("AL"), al);
 			put(Atom.of("CL"), cl);
@@ -235,7 +237,7 @@ public class Amd64 {
 		}
 	};
 
-	public BiMap<Atom, OpRegControl> cregsByName = new HashBiMap<Atom, OpRegControl>() {
+	public BiMap<Atom, OpRegControl> cregsByName = new HashBiMap<>() {
 		{
 			put(Atom.of("CR0"), newRegControl(0));
 			put(Atom.of("CR2"), newRegControl(2));
@@ -244,7 +246,7 @@ public class Amd64 {
 		}
 	};
 
-	public BiMap<Atom, OpRegSegment> sregsByName = new HashBiMap<Atom, OpRegSegment>() {
+	public BiMap<Atom, OpRegSegment> sregsByName = new HashBiMap<>() {
 		{
 			put(Atom.of("ES"), newRegSegment(0));
 			put(Atom.of("CS"), newRegSegment(1));
@@ -275,13 +277,18 @@ public class Amd64 {
 		return instruction;
 	}
 
-	public OpMem mem(OpReg reg, long disp, int size) {
+	public OpMem mem(OpReg baseReg, long disp, int size) {
+		return mem(baseReg, null, 1, disp, size);
+	}
+
+	public OpMem mem(OpReg baseReg, OpReg indexReg, int scale, long disp, int size) {
 		OpMem op = new OpMem();
-		op.baseReg = reg.reg;
-		op.indexReg = -1;
+		op.baseReg = baseReg != null ? baseReg.reg : -1;
+		op.indexReg = indexReg != null ? indexReg.reg : -1;
+		op.scale = scale;
 		op.size = size;
 		op.disp = disp;
-		op.dispSize = size(disp);
+		op.dispSize = disp != 0 ? size(disp) : 0;
 		return op;
 	}
 

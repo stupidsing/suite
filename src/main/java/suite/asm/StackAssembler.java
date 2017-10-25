@@ -10,12 +10,12 @@ import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
-import suite.lp.predicate.EvalPredicates;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.util.TreeRewriter;
+import suite.node.util.TreeUtil;
 
 public class StackAssembler {
 
@@ -89,7 +89,7 @@ public class StackAssembler {
 				fs += int_.number;
 				node1 = Atom.NIL;
 			} else if ((m = LET___.apply(node0)) != null)
-				if (Binder.bind(m[0], Int.of(new EvalPredicates().evaluate(m[1])), trail))
+				if (Binder.bind(m[0], Int.of(TreeUtil.evaluate(m[1])), trail))
 					node1 = Atom.NIL;
 				else
 					throw new RuntimeException("cannot calculate expression");

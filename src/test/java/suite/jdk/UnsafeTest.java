@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import suite.util.Object_;
 import suite.util.Util.ExecutableProgram;
 
 public class UnsafeTest {
@@ -14,7 +15,7 @@ public class UnsafeTest {
 		String className = "suite.cli.Main";
 		byte[] bytes = Files.readAllBytes(Paths.get("target/classes/" + className.replace(".", "/") + ".class"));
 		Class<? extends AutoCloseable> clazz = new UnsafeUtil().defineClass(ExecutableProgram.class, className, bytes);
-		clazz.newInstance().close();
+		Object_.new_(clazz).close();
 	}
 
 }

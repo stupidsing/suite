@@ -6,11 +6,30 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import suite.math.MathUtil;
 import suite.util.To;
 
 public class MatrixTest {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
+
+	@Test
+	public void testDet0() {
+		float[][] m = { //
+				{ 2f, 0f, 0f, }, //
+				{ 0f, 3f, 0f, }, //
+				{ 0f, 0f, 4f, }, };
+		MathUtil.verifyEquals(24f, mtx.det(m));
+	}
+
+	@Test
+	public void testDet1() {
+		float[][] m = { //
+				{ -2f, 2f, -3f, }, //
+				{ -1f, 1f, 3f, }, //
+				{ 2f, 0f, -1f, }, };
+		MathUtil.verifyEquals(18f, mtx.det(m));
+	}
 
 	@Test
 	public void testInverse() {

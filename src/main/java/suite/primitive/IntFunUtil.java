@@ -41,7 +41,7 @@ public class IntFunUtil {
 	}
 
 	public static Source<IntSource> chunk(int n, IntSource source) {
-		return new Source<IntSource>() {
+		return new Source<>() {
 			private int c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;
 			private int i;
@@ -141,7 +141,7 @@ public class IntFunUtil {
 	}
 
 	public static Iterator<Integer> iterator(IntSource source) {
-		return new Iterator<Integer>() {
+		return new Iterator<>() {
 			private int next = EMPTYVALUE;
 
 			public boolean hasNext() {
@@ -214,12 +214,12 @@ public class IntFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static Source<IntSource> split(IntPredicate fun0, IntSource source) {
 		IntPredicate fun1 = fun0.rethrow();
-		return new Source<IntSource>() {
+		return new Source<>() {
 			private int c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;
 			private IntSource source_ = () -> (isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && !fun1.test(c) ? c

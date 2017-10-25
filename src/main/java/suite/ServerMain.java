@@ -3,7 +3,7 @@ package suite;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import suite.http.HttpHandler;
 import suite.http.HttpHeaderUtil;
@@ -29,17 +29,15 @@ public class ServerMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		Thread_.startThread(() -> runHttpServer());
-		Thread_.startThread(() -> runScheduler());
-		Thread_.startThread(() -> runTelegramBot());
+		Thread_.startThread(this::runHttpServer);
+		Thread_.startThread(this::runScheduler);
+		Thread_.startThread(this::runTelegramBot);
 		return true;
 	}
 
 	private void runHttpServer() {
 		Authenticator authenticator = (username, password) -> Constants.secrets()
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
-
-		IMap<String, HttpHandler> empty = IMap.empty();
 
 		HttpHandler handler0 = request -> HttpResponse.of(To.outlet("" //
 				+ "<html>" //
@@ -48,19 +46,18 @@ public class ServerMain extends ExecutableProgram {
 				+ "<br/>path = " + request.path //
 				+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query) //
 				+ "<br/>headers = " + request.headers //
-				+ "</html>" //
-		));
+				+ "</html>"));
 
-		HttpHandler handler1 = HttpHandler.ofDispatch(empty //
+		HttpHandler handler1 = HttpHandler.ofDispatch(IMap //
+				.<String, HttpHandler> empty() //
 				.put("path", HttpHandler.ofPath(Constants.tmp)) //
-				.put("site", HttpHandler.ofSession(authenticator, handler0)) //
-		);
+				.put("site", HttpHandler.ofSession(authenticator, handler0)));
 
 		new HttpServer().run(handler1);
 	}
 
 	private void runScheduler() {
-		new Scheduler(Arrays.asList( //
+		new Scheduler(List.of( //
 				Schedule.ofDaily(LocalTime.of(18, 0), () -> DailyMain.main(null)), //
 				Schedule.ofRepeat(5, () -> System.out.println("." + LocalDateTime.now())), //
 				Schedule.of(LocalDateTime.of(2099, 1, 1, 0, 0), ArrayList::new)) //

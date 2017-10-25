@@ -3,6 +3,7 @@ package suite.util;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -126,7 +127,7 @@ public class Object_ {
 					return map;
 				}), object -> Rethrow.ex(() -> {
 					Map<?, ?> map = (Map<?, ?>) object;
-					Object object1 = clazz.newInstance();
+					Object object1 = new_(clazz);
 					for (Pair<String, Field> sf : sfs)
 						sf.t1.set(object1, map.get(sf.t0));
 					return object1;
@@ -164,6 +165,14 @@ public class Object_ {
 
 	public static <T extends Comparable<? super T>> T min(T t0, T t1) {
 		return compare(t0, t1) < 0 ? t0 : t1;
+	}
+
+	public static <T> T new_(Class<T> clazz) {
+		return Rethrow.ex(() -> {
+			Constructor<T> ctor = clazz.getDeclaredConstructor();
+			ctor.setAccessible(true);
+			return ctor.newInstance();
+		});
 	}
 
 	public static <T> Comparator<T> nullsFirst(Comparator<T> cmp0) {

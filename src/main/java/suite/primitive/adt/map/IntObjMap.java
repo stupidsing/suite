@@ -121,7 +121,7 @@ public class IntObjMap<V> {
 	}
 
 	private IntObjSource<V> source_() {
-		return new IntObjSource<V>() {
+		return new IntObjSource<>() {
 			private int capacity = vs.length;
 			private int index = 0;
 

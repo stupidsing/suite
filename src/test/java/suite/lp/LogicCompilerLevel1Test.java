@@ -3,7 +3,6 @@ package suite.lp;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -26,7 +25,7 @@ public class LogicCompilerLevel1Test {
 	 */
 	@Test
 	public void testCompileFunProgram() {
-		RuleSet rs = Suite.newRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
+		RuleSet rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
 		String gs = "" //
 				+ "source .in" //
 				+ ", compile-function .0 .in .out" //
@@ -42,7 +41,7 @@ public class LogicCompilerLevel1Test {
 
 	@Test
 	public void testMemberOfMember() {
-		RuleSet rs = Suite.newRuleSet(Arrays.asList("auto.sl"));
+		RuleSet rs = Suite.newRuleSet(List.of("auto.sl"));
 		Node goal = Suite.parse("source .lln, member .lln .ln, member .ln .n, sink .n");
 		Node input = Suite.parse("((1, 2,), (3, 4,),)");
 		List<Node> results = FindUtil.collectList(finder(rs, goal), input);

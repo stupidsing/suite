@@ -1,5 +1,6 @@
 package suite.algo;
 
+import static java.util.Map.entry;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
@@ -20,12 +21,10 @@ public class KMeansClusterTest {
 	public void test() {
 		int n = 3;
 
-		Map<String, Source<float[]>> seeds = Read //
-				.<String, Source<float[]>> empty2() //
-				.cons("A", () -> point(-16f, 16f, 16f)) //
-				.cons("B", () -> point(16f, -16f, 16f)) //
-				.cons("C", () -> point(16f, 16f, -16f)) //
-				.toMap();
+		Map<String, Source<float[]>> seeds = Map.ofEntries( //
+				entry("A", () -> point(-16f, 16f, 16f)), //
+				entry("B", () -> point(16f, -16f, 16f)), //
+				entry("C", () -> point(16f, 16f, -16f)));
 
 		Map<String, float[]> points = Read //
 				.from2(seeds) //

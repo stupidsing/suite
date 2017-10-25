@@ -14,10 +14,7 @@ public class FormatUtil {
 		int nColumns = arrays.collect(Obj_Int.lift(array -> array.length)).max();
 
 		Streamlet<String[]> rows = arrays //
-				.map(array -> Ints_ //
-						.range(nColumns) //
-						.map(column -> column < array.length ? array[column] : "") //
-						.toArray(String.class));
+				.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : ""));
 
 		int[] widths = Ints_ //
 				.range(nColumns) //
@@ -45,11 +42,12 @@ public class FormatUtil {
 	}
 
 	public static String trimLeft(String s) {
+		int length = s.length();
 		int pos = 0;
 		do
 			if (!Character.isWhitespace(s.charAt(pos)))
 				break;
-		while (++pos < s.length());
+		while (++pos < length);
 		return s.substring(pos);
 	}
 

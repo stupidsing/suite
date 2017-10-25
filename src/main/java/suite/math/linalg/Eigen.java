@@ -7,8 +7,9 @@ import suite.primitive.Floats_;
 
 public class Eigen {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 	private Random random = new Random();
+	private Vector_ vec = new Vector_();
 
 	// Paul Wilmott on Quantitative Finance, Second Edition
 	// 37.13.1 The Power Method, page 620
@@ -27,10 +28,10 @@ public class Eigen {
 				for (float y : ys)
 					if (Math.abs(eigenValue) < Math.abs(y))
 						eigenValue = y;
-				xs = mtx.scale(ys, 1d / eigenValue);
+				xs = vec.scale(ys, 1d / eigenValue);
 			}
 
-			eigenVectors[v] = mtx.normalize(xs);
+			eigenVectors[v] = vec.normalize(xs);
 
 			for (int i = 0; i < size; i++)
 				m[i][i] -= eigenValue;
@@ -55,17 +56,17 @@ public class Eigen {
 			float[] prevw;
 			float[] vj;
 
-			if (0 < j && (beta = mtx.dot(prevw = ws[j - 1])) != 0d)
-				vj = mtx.scale(prevw, 1d / (betas[j] = beta));
+			if (0 < j && (beta = vec.dot(prevw = ws[j - 1])) != 0d)
+				vj = vec.scale(prevw, 1d / (betas[j] = beta));
 			else
-				vj = mtx.normalize(Floats_.toArray(n, i -> random.nextFloat()));
+				vj = vec.normalize(Floats_.toArray(n, i -> random.nextFloat()));
 
 			float[] wp = mtx.mul(m, vs[j] = vj);
-			float[] sub0 = mtx.scale(vj, alphas[0] = mtx.dot(wp, vj));
-			float[] sub1 = 0 < j ? mtx.add(sub0, mtx.scale(vj1, beta)) : sub0;
+			float[] sub0 = vec.scale(vj, alphas[0] = vec.dot(wp, vj));
+			float[] sub1 = 0 < j ? vec.add(sub0, vec.scale(vj1, beta)) : sub0;
 
 			vj1 = vj;
-			ws[j] = mtx.sub(wp, sub1);
+			ws[j] = vec.sub(wp, sub1);
 		}
 
 		float[][] t = new float[nIterations][nIterations];
@@ -81,7 +82,7 @@ public class Eigen {
 	public float[] values(float[][] m, float[][] vs) {
 		return Floats_.toArray(vs.length, i -> {
 			float[] v = vs[i];
-			return (float) (mtx.abs(mtx.mul(m, v)) / mtx.abs(v));
+			return (float) (vec.abs(mtx.mul(m, v)) / vec.abs(v));
 		});
 	}
 

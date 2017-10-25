@@ -3,7 +3,6 @@ package suite.debian;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,7 @@ public class DependencyMain extends ExecutableProgram {
 	private AptUtil aptUtil = new AptUtil(debianUtil);
 
 	// tools
-	private List<String> baseList = Arrays.asList( //
+	private List<String> baseList = List.of( //
 			"acpi", //
 			"cifs-utils", //
 			"deborphan", //
@@ -49,11 +48,11 @@ public class DependencyMain extends ExecutableProgram {
 			"wpasupplicant", //
 			"zip");
 
-	private List<String> debianList = Arrays.asList( //
+	private List<String> debianList = List.of( //
 			"icedove", // firefox
 			"iceweasel"); // thunderbird
 
-	private List<String> devList = Arrays.asList( //
+	private List<String> devList = List.of( //
 			"bochs", //
 			"build-essential", //
 			"g++", //
@@ -62,14 +61,14 @@ public class DependencyMain extends ExecutableProgram {
 			"libreadline-dev", //
 			"openjdk-8-jdk");
 
-	private List<String> gamesList = Arrays.asList( //
+	private List<String> gamesList = List.of( //
 			"frogatto", //
 			"gnugo", //
 			"supertux", //
 			"torcs", //
 			"xscavenger");
 
-	private List<String> guiList = Arrays.asList( //
+	private List<String> guiList = List.of( //
 			"abiword", //
 			"asunder", //
 			"evince", //
@@ -113,20 +112,20 @@ public class DependencyMain extends ExecutableProgram {
 			"xserver-xorg", //
 			"yeahconsole");
 
-	private List<String> mediaList = Arrays.asList( //
+	private List<String> mediaList = List.of( //
 			"alsa-utils", //
 			"flac", //
 			"mpg321");
 
 	// not a must, but good to have
-	private List<String> supplementaryList = Arrays.asList( //
+	private List<String> supplementaryList = List.of( //
 			"btrfs-tools", //
 			"eject", //
 			"gnupg2", //
 			"gstreamer1.0-plugins-good", //
 			"python-imaging"); // for bitmap2ttf
 
-	private List<String> operatingSystemList = Arrays.asList( //
+	private List<String> operatingSystemList = List.of( //
 			"iamerican", //
 			"ibritish");
 
@@ -175,7 +174,7 @@ public class DependencyMain extends ExecutableProgram {
 
 		List<Map<String, String>> packages;
 		packages = Rethrow.ex(() -> aptUtil.readRepoPackages(repo));
-		Set<String> required = new HashSet<>(Arrays.asList(packageName));
+		Set<String> required = new HashSet<>(List.of(packageName));
 		Set<String> required1 = dpkgUtil.getDependeeSet(packages, required);
 		return Read.from(required1) //
 				.map(packageName_ -> aptUtil.getDownloadUrl(repo, packages, packageName_)) //
@@ -237,7 +236,7 @@ public class DependencyMain extends ExecutableProgram {
 
 	private boolean isEssential(Map<String, String> pm) {
 		return Objects.equals(pm.get("Essential"), "yes") //
-				|| Arrays.asList("important", "required").contains(pm.get("Priority"));
+				|| List.of("important", "required").contains(pm.get("Priority"));
 	}
 
 }

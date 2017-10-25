@@ -5,7 +5,8 @@ import org.junit.Test;
 public class EigenTest {
 
 	private Eigen eigen = new Eigen();
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
+	private Vector_ vec = new Vector_();
 
 	@Test
 	public void test2() {
@@ -28,14 +29,14 @@ public class EigenTest {
 		for (float[] eigenVector : eigenVectors) {
 			float[] n0 = norm(eigenVector);
 			float[] n1 = norm(mtx.mul(m, eigenVector));
-			mtx.verifyEquals(n0, n1, .01f);
+			vec.verifyEquals(n0, n1, .01f);
 		}
 	}
 
 	private float[] norm(float[] v0) {
-		float[] v1 = mtx.normalize(v0);
+		float[] v1 = vec.normalize(v0);
 		if (v1[0] < 0f)
-			return mtx.scale(v1, -1d);
+			return vec.scale(v1, -1d);
 		else
 			return v1;
 	}

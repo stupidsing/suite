@@ -3,8 +3,8 @@ package suite.trade.data;
 import java.util.Map;
 import java.util.Set;
 
+import suite.primitive.Floats_;
 import suite.primitive.Flt_Flt;
-import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.TimeRange;
@@ -22,10 +22,10 @@ public class PriceFilter {
 	public DataSource dataSource(String symbol, TimeRange period) {
 		DataSource ds = cfg.dataSource(s(symbol), period);
 		return DataSource.ofOhlcv(ds.ts, //
-				FltStreamlet.of(ds.opens).mapFlt(priceFun).toArray(), //
-				FltStreamlet.of(ds.closes).mapFlt(priceFun).toArray(), //
-				FltStreamlet.of(ds.lows).mapFlt(priceFun).toArray(), //
-				FltStreamlet.of(ds.highs).mapFlt(priceFun).toArray(), //
+				Floats_.of(ds.opens).mapFlt(priceFun).toArray(), //
+				Floats_.of(ds.closes).mapFlt(priceFun).toArray(), //
+				Floats_.of(ds.lows).mapFlt(priceFun).toArray(), //
+				Floats_.of(ds.highs).mapFlt(priceFun).toArray(), //
 				ds.volumes);
 	}
 

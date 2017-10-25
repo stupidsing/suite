@@ -1,7 +1,6 @@
 package suite.node.parser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import suite.adt.pair.Pair;
@@ -100,7 +99,7 @@ public class RecursiveFactorizer {
 				Chars left = Chars.of(chars.cs, chars.start, chars1.start + 1);
 				Chars middle = Chars.of(chars.cs, chars1.start + 1, chars1.end - 1);
 				Chars right = Chars.of(chars.cs, chars1.end - 1, chars.end);
-				return FactorizeResult.merge("" + first, Arrays.asList(term(left), parse_(middle, 0), term(right)));
+				return FactorizeResult.merge("" + first, List.of(term(left), parse_(middle, 0), term(right)));
 			}
 		}
 

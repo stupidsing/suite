@@ -72,7 +72,7 @@ public class ParseUtil {
 	}
 
 	private static Pair<String, String> search(String s, Segment segment, String name, Assoc assoc, boolean isCheckDepth) {
-		Segment ops = searchPosition(To.arrayOfChars(s), segment, name, assoc, isCheckDepth);
+		Segment ops = searchPosition(s.toCharArray(), segment, name, assoc, isCheckDepth);
 
 		if (ops != null) {
 			String left = s.substring(segment.start, ops.start);
@@ -83,7 +83,7 @@ public class ParseUtil {
 	}
 
 	public static Streamlet<String> split(String in, String name) {
-		char[] chars = To.arrayOfChars(in);
+		char[] chars = in.toCharArray();
 		int length = chars.length;
 
 		return new Streamlet<>(() -> Outlet.of(new Source<String>() {

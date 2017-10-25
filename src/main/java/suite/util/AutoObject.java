@@ -18,7 +18,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 	public AutoObject<T> clone() {
 		return Rethrow.ex(() -> {
 			@SuppressWarnings("unchecked")
-			AutoObject<T> t1 = (AutoObject<T>) getClass().newInstance();
+			AutoObject<T> t1 = (AutoObject<T>) Object_.new_(getClass());
 			for (Field field : fields_())
 				field.set(t1, field.get(this));
 			return t1;
@@ -86,8 +86,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getSimpleName() + "(");
 		for (Object value : values())
-			sb.append(value + ", ");
-		sb.deleteCharAt(sb.length() - 1);
+			sb.append(value + ",");
 		sb.append(")");
 		return sb.toString();
 	}

@@ -14,7 +14,7 @@ public class String_ {
 	}
 
 	public static Iterable<Character> chars(CharSequence s) {
-		return () -> new Iterator<Character>() {
+		return () -> new Iterator<>() {
 			private int index = 0;
 
 			public boolean hasNext() {

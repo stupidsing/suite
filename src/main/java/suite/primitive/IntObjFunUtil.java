@@ -21,7 +21,7 @@ import suite.util.Thread_;
 public class IntObjFunUtil {
 
 	public static <V> IntObjSource<V> append(int key, V value, IntObjSource<V> source) {
-		return new IntObjSource<V>() {
+		return new IntObjSource<>() {
 			private boolean isAppended = false;
 
 			public boolean source2(IntObjPair<V> pair) {
@@ -38,7 +38,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> Source<IntObjSource<V>> chunk(int n, IntObjSource<V> source) {
-		return new Source<IntObjSource<V>>() {
+		return new Source<>() {
 			private IntObjPair<V> pair;
 			private boolean isAvail;
 			private int i;
@@ -62,7 +62,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> IntObjSource<V> concat(Source<IntObjSource<V>> source) {
-		return new IntObjSource<V>() {
+		return new IntObjSource<>() {
 			private IntObjSource<V> source2 = nullSource();
 
 			public boolean source2(IntObjPair<V> pair) {
@@ -75,7 +75,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> IntObjSource<V> cons(int key, V value, IntObjSource<V> source2) {
-		return new IntObjSource<V>() {
+		return new IntObjSource<>() {
 			private boolean isFirst = true;
 
 			public boolean source2(IntObjPair<V> pair) {
@@ -147,7 +147,7 @@ public class IntObjFunUtil {
 	}
 
 	public static <V> Iterator<IntObjPair<V>> iterator(IntObjSource<V> source2) {
-		return new Iterator<IntObjPair<V>>() {
+		return new Iterator<>() {
 			private IntObjPair<V> next = null;
 
 			public boolean hasNext() {
@@ -211,12 +211,12 @@ public class IntObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <V> Source<IntObjSource<V>> split(IntObjPredicate<V> fun0, IntObjSource<V> source2) {
 		IntObjPredicate<V> fun1 = fun0.rethrow();
-		return new Source<IntObjSource<V>>() {
+		return new Source<>() {
 			private IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 			private boolean isAvailable;
 			private IntObjSource<V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun1.test(pair.t0, pair.t1);

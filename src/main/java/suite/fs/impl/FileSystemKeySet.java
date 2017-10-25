@@ -1,6 +1,5 @@
 package suite.fs.impl;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class FileSystemKeySet {
 
 		return st.concatMap(bytes -> {
 			NameKey key = keyUtil.toNameKey(bytes);
-			List<NameKey> prefix1 = List_.concat(prefix, Arrays.asList(key));
+			List<NameKey> prefix1 = List_.concat(prefix, List.of(key));
 
 			if (key.size == 0) {
 				List<NameKey> tailKeys0 = key == minKey ? !keys0.isEmpty() ? List_.right(keys0, 1) : emptyKeys : null;

@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import suite.os.LogUtil;
-import suite.util.Rethrow;
+import suite.util.Object_;
 
 public class JdkUnsafeLoadClassUtil extends JdkUtil {
 
@@ -14,9 +14,7 @@ public class JdkUnsafeLoadClassUtil extends JdkUtil {
 	}
 
 	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) throws IOException {
-		Path path = compile(canonicalName, java);
-		Class<? extends T> clazz = load(interfaceClazz, canonicalName, path);
-		return Rethrow.ex(clazz::newInstance);
+		return Object_.new_(load(interfaceClazz, canonicalName, compile(canonicalName, java)));
 	}
 
 	private <T> Class<? extends T> load(Class<T> interfaceClazz, String canonicalName, Path path) throws IOException {

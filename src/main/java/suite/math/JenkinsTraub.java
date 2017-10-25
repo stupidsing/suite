@@ -15,7 +15,7 @@ public class JenkinsTraub {
 
 	public Complex jt(Complex[] poly0) {
 		Complex inv0 = poly0[0].inverse();
-		Complex[] poly1 = To.array(Complex.class, poly0.length, i -> Complex.mul(poly0[i], inv0));
+		Complex[] poly1 = To.array(poly0.length, Complex.class, i -> Complex.mul(poly0[i], inv0));
 		if (poly0[0].abs2() != 0d)
 			return jt_(poly1);
 		else
@@ -102,7 +102,7 @@ public class JenkinsTraub {
 		Complex[] scaled0 = scale(h, ph);
 		Complex[] scaled1 = Arrays.copyOf(scaled0, scaled0.length + 1);
 		scaled1[h.length] = Complex.zero;
-		Complex[] sub = To.array(Complex.class, poly.length, i -> Complex.sub(poly[i], scaled1[i]));
+		Complex[] sub = To.array(poly.length, Complex.class, i -> Complex.sub(poly[i], scaled1[i]));
 		return Boolean.TRUE ? divXms(sub, s) : div(sub, new Complex[] { s.scale(-1d), Complex.of(1f, 0f), });
 	}
 
@@ -137,7 +137,7 @@ public class JenkinsTraub {
 					scaled1[i] = scaled0[i - diff];
 			}
 			Complex[] nom_ = nom;
-			Complex[] sub = To.array(Complex.class, nomLength, i -> Complex.sub(nom_[i], scaled1[i]));
+			Complex[] sub = To.array(nomLength, Complex.class, i -> Complex.sub(nom_[i], scaled1[i]));
 			nom = Arrays.copyOfRange(sub, 0, nomLength - 1);
 		}
 		return nom;
@@ -148,11 +148,11 @@ public class JenkinsTraub {
 	}
 
 	private Complex[] scale(Complex[] cs, Complex scale) {
-		return To.array(Complex.class, cs.length, i -> Complex.mul(cs[i], scale));
+		return To.array(cs.length, Complex.class, i -> Complex.mul(cs[i], scale));
 	}
 
 	private Complex[] d(Complex[] poly) {
-		return To.array(Complex.class, poly.length - 1, i -> {
+		return To.array(poly.length - 1, Complex.class, i -> {
 			int i1 = i + 1;
 			return poly[i1].scale(i1);
 		});

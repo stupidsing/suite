@@ -1,7 +1,6 @@
 package suite.immutable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -78,7 +77,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public LazyIbTree(Comparator<T> comparator) {
-		this(comparator, Arrays.asList(new Slot<T>(() -> Collections.emptyList(), null)));
+		this(comparator, List.of(new Slot<T>(() -> Collections.emptyList(), null)));
 	}
 
 	public LazyIbTree(Comparator<T> comparator, List<Slot<T>> source) {
@@ -213,11 +212,11 @@ public class LazyIbTree<T> implements ITree<T> {
 
 		// checks if need to split
 		if (slots3.size() < maxBranchFactor)
-			node1 = Arrays.asList(slot(slots3));
+			node1 = List.of(slot(slots3));
 		else { // splits into two if reached maximum number of nodes
 			List<Slot<T>> leftSlots = List_.left(slots3, minBranchFactor);
 			List<Slot<T>> rightSlots = List_.right(slots3, minBranchFactor);
-			node1 = Arrays.asList(slot(leftSlots), slot(rightSlots));
+			node1 = List.of(slot(leftSlots), slot(rightSlots));
 		}
 
 		return node1;
@@ -231,18 +230,18 @@ public class LazyIbTree<T> implements ITree<T> {
 
 			if (minBranchFactor < node0.size()) {
 				leftSlots = List_.left(node0, -1);
-				rightSlots = List_.concat(Arrays.asList(List_.last(node0)), node1);
+				rightSlots = List_.concat(List.of(List_.last(node0)), node1);
 			} else if (minBranchFactor < node1.size()) {
-				leftSlots = List_.concat(node0, Arrays.asList(List_.first(node1)));
+				leftSlots = List_.concat(node0, List.of(List_.first(node1)));
 				rightSlots = List_.right(node1, 1);
 			} else {
 				leftSlots = node0;
 				rightSlots = node1;
 			}
 
-			melded = Arrays.asList(slot(leftSlots), slot(rightSlots));
+			melded = List.of(slot(leftSlots), slot(rightSlots));
 		} else
-			melded = Arrays.asList(slot(List_.concat(node0, node1)));
+			melded = List.of(slot(List_.concat(node0, node1)));
 
 		return melded;
 	}

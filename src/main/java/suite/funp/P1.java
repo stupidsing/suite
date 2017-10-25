@@ -1,13 +1,20 @@
 package suite.funp;
 
+import java.util.List;
+
+import suite.adt.pair.Fixie_.FixieFun0;
+import suite.adt.pair.Fixie_.FixieFun1;
+import suite.adt.pair.Fixie_.FixieFun3;
+import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
+import suite.primitive.adt.pair.IntIntPair;
 
 public class P1 {
 
 	public interface End {
 	}
 
-	public static class FunpAllocStack implements Funp, P2.End {
+	public static class FunpAllocStack implements Funp, P3.End {
 		public int size; // allocate size
 		public Funp value;
 		public Funp expr;
@@ -19,9 +26,13 @@ public class P1 {
 			f.expr = expr;
 			return f;
 		}
+
+		public <R> R apply(FixieFun3<Integer, Funp, Funp, R> fun) {
+			return fun.apply(size, value, expr);
+		}
 	}
 
-	public static class FunpAssign implements Funp, P2.End {
+	public static class FunpAssign implements Funp, P3.End {
 		public FunpMemory memory;
 		public Funp value;
 		public Funp expr;
@@ -33,12 +44,33 @@ public class P1 {
 			f.expr = expr;
 			return f;
 		}
+
+		public <R> R apply(FixieFun3<FunpMemory, Funp, Funp, R> fun) {
+			return fun.apply(memory, value, expr);
+		}
 	}
 
-	public static class FunpFramePointer implements Funp, P2.End {
+	public static class FunpData implements Funp, P3.End {
+		public List<Pair<Funp, IntIntPair>> pairs;
+
+		public static FunpData of(List<Pair<Funp, IntIntPair>> pairs) {
+			FunpData f = new FunpData();
+			f.pairs = pairs;
+			return f;
+		}
+
+		public <R> R apply(FixieFun1<List<Pair<Funp, IntIntPair>>, R> fun) {
+			return fun.apply(pairs);
+		}
 	}
 
-	public static class FunpInvokeInt implements Funp, P2.End {
+	public static class FunpFramePointer implements Funp, P3.End {
+		public <R> R apply(FixieFun0<R> fun) {
+			return fun.apply();
+		}
+	}
+
+	public static class FunpInvokeInt implements Funp, P3.End {
 		public Funp routine;
 
 		public static FunpInvokeInt of(Funp routine) {
@@ -46,9 +78,13 @@ public class P1 {
 			f.routine = routine;
 			return f;
 		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(routine);
+		}
 	}
 
-	public static class FunpInvokeInt2 implements Funp, P2.End {
+	public static class FunpInvokeInt2 implements Funp, P3.End {
 		public Funp routine;
 
 		public static FunpInvokeInt2 of(Funp routine) {
@@ -56,9 +92,27 @@ public class P1 {
 			f.routine = routine;
 			return f;
 		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(routine);
+		}
 	}
 
-	public static class FunpMemory implements Funp, P2.End {
+	public static class FunpInvokeIo implements Funp, P3.End {
+		public Funp routine;
+
+		public static FunpInvokeIo of(Funp routine) {
+			FunpInvokeIo f = new FunpInvokeIo();
+			f.routine = routine;
+			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(routine);
+		}
+	}
+
+	public static class FunpMemory implements Funp, P3.End {
 		public Funp pointer;
 		public int start;
 		public int end;
@@ -78,9 +132,13 @@ public class P1 {
 		public int size() {
 			return end - start;
 		}
+
+		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
+			return fun.apply(pointer, start, end);
+		}
 	}
 
-	public static class FunpRoutine implements Funp, P2.End {
+	public static class FunpRoutine implements Funp, P3.End {
 		public Funp expr;
 
 		public static FunpRoutine of(Funp expr) {
@@ -88,9 +146,13 @@ public class P1 {
 			f.expr = expr;
 			return f;
 		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
+		}
 	}
 
-	public static class FunpRoutine2 implements Funp, P2.End {
+	public static class FunpRoutine2 implements Funp, P3.End {
 		public Funp expr;
 
 		public static FunpRoutine2 of(Funp expr) {
@@ -98,25 +160,41 @@ public class P1 {
 			f.expr = expr;
 			return f;
 		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
+		}
+
 	}
 
-	public static class FunpSaveFramePointer implements Funp, P2.End {
+	public static class FunpRoutineIo implements Funp, P3.End {
 		public Funp expr;
+		public int is, os;
 
-		public static FunpSaveFramePointer of(Funp expr) {
-			FunpSaveFramePointer f = new FunpSaveFramePointer();
+		public static FunpRoutineIo of(Funp expr, int is, int os) {
+			FunpRoutineIo f = new FunpRoutineIo();
 			f.expr = expr;
+			f.is = is;
+			f.os = os;
 			return f;
+		}
+
+		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
+			return fun.apply(expr, is, os);
 		}
 	}
 
-	public static class FunpSaveRegisters implements Funp, P2.End {
+	public static class FunpSaveRegisters implements Funp, P3.End {
 		public Funp expr;
 
 		public static FunpSaveRegisters of(Funp expr) {
 			FunpSaveRegisters f = new FunpSaveRegisters();
 			f.expr = expr;
 			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
 		}
 	}
 

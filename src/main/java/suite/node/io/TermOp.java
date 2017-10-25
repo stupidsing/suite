@@ -1,6 +1,6 @@
 package suite.node.io;
 
-import java.util.Arrays;
+import java.util.List;
 
 import suite.util.String_;
 
@@ -57,11 +57,11 @@ public enum TermOp implements Operator {
 	}
 
 	public static boolean isSpaceBefore(Operator operator) {
-		return Arrays.asList(TermOp.NEXT__).contains(operator);
+		return List.of(TermOp.NEXT__).contains(operator);
 	}
 
 	public static boolean isSpaceAfter(Operator operator) {
-		return Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator);
+		return List.of(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator);
 	}
 
 	public static int getLeftPrec(Operator operator) {

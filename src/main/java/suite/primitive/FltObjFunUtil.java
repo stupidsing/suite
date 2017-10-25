@@ -21,7 +21,7 @@ import suite.util.Thread_;
 public class FltObjFunUtil {
 
 	public static <V> FltObjSource<V> append(float key, V value, FltObjSource<V> source) {
-		return new FltObjSource<V>() {
+		return new FltObjSource<>() {
 			private boolean isAppended = false;
 
 			public boolean source2(FltObjPair<V> pair) {
@@ -38,7 +38,7 @@ public class FltObjFunUtil {
 	}
 
 	public static <V> Source<FltObjSource<V>> chunk(int n, FltObjSource<V> source) {
-		return new Source<FltObjSource<V>>() {
+		return new Source<>() {
 			private FltObjPair<V> pair;
 			private boolean isAvail;
 			private int i;
@@ -62,7 +62,7 @@ public class FltObjFunUtil {
 	}
 
 	public static <V> FltObjSource<V> concat(Source<FltObjSource<V>> source) {
-		return new FltObjSource<V>() {
+		return new FltObjSource<>() {
 			private FltObjSource<V> source2 = nullSource();
 
 			public boolean source2(FltObjPair<V> pair) {
@@ -75,7 +75,7 @@ public class FltObjFunUtil {
 	}
 
 	public static <V> FltObjSource<V> cons(float key, V value, FltObjSource<V> source2) {
-		return new FltObjSource<V>() {
+		return new FltObjSource<>() {
 			private boolean isFirst = true;
 
 			public boolean source2(FltObjPair<V> pair) {
@@ -147,7 +147,7 @@ public class FltObjFunUtil {
 	}
 
 	public static <V> Iterator<FltObjPair<V>> iterator(FltObjSource<V> source2) {
-		return new Iterator<FltObjPair<V>>() {
+		return new Iterator<>() {
 			private FltObjPair<V> next = null;
 
 			public boolean hasNext() {
@@ -211,12 +211,12 @@ public class FltObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <V> Source<FltObjSource<V>> split(FltObjPredicate<V> fun0, FltObjSource<V> source2) {
 		FltObjPredicate<V> fun1 = fun0.rethrow();
-		return new Source<FltObjSource<V>>() {
+		return new Source<>() {
 			private FltObjPair<V> pair = FltObjPair.of((float) 0, null);
 			private boolean isAvailable;
 			private FltObjSource<V> source2_ = pair_ -> (isAvailable &= source2.source2(pair_)) && !fun1.test(pair.t0, pair.t1);

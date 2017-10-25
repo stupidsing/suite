@@ -1,7 +1,6 @@
 package suite.node.io;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +73,7 @@ public class Rewriter {
 				type = ReadType.TREE;
 				terminal = null;
 				op = tree.getOperator();
-				children = Arrays.asList(p0, p1);
+				children = List.of(p0, p1);
 			} else if (node instanceof Tuple) {
 				Node[] nodes = ((Tuple) node).nodes;
 				type = ReadType.TUPLE;

@@ -220,7 +220,7 @@ public class Ints implements Iterable<Integer> {
 
 	@Override
 	public Iterator<Integer> iterator() {
-		return new Iterator<Integer>() {
+		return new Iterator<>() {
 			private int pos = start;
 
 			public boolean hasNext() {

@@ -1,7 +1,7 @@
 package suite.trade.backalloc.strategy;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
@@ -44,7 +44,7 @@ public class ArdlBackAllocator implements BackAllocator {
 				}
 			}
 
-			return maxi != null ? Arrays.asList(Pair.of(symbols[maxi], 1d)) : Collections.emptyList();
+			return maxi != null ? List.of(Pair.of(symbols[maxi], 1d)) : Collections.emptyList();
 		};
 	}
 

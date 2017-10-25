@@ -13,7 +13,7 @@ import suite.util.To;
 public class SerializedFileFactory {
 
 	public static <V> SerializedPageFile<V> serialized(PageFile pageFile, Serializer<V> serializer) {
-		return new SerializedPageFile<V>() {
+		return new SerializedPageFile<>() {
 			public void close() throws IOException {
 				pageFile.close();
 			}

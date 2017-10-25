@@ -158,7 +158,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public <U, O> Outlet<O> cross(List<U> list, ChrObj_Obj<U, O> fun) {
-		return Outlet.of(new Source<O>() {
+		return Outlet.of(new Source<>() {
 			private char c;
 			private int index = list.size();
 
@@ -239,7 +239,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public ChrObjOutlet<Integer> index() {
-		return ChrObjOutlet.of(new ChrObjSource<Integer>() {
+		return ChrObjOutlet.of(new ChrObjSource<>() {
 			private int i = 0;
 
 			public boolean source2(ChrObjPair<Integer> pair) {

@@ -1,6 +1,5 @@
 package suite.node.parser;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +20,7 @@ public class PreprocessorFactory {
 		Fun<String, List<Run>> lct = CommentPreprocessor.lineCommentPreprocessor(whitespaces);
 		Fun<String, List<Run>> it = new IndentationPreprocessor(operators);
 		Fun<String, List<Run>> wt = new WhitespacePreprocessor(whitespaces);
-		return Arrays.asList(gct, lct, it, wt);
+		return List.of(gct, lct, it, wt);
 	}
 
 }

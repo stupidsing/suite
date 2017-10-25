@@ -22,6 +22,7 @@ import suite.adt.pair.Pair;
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Source2;
@@ -289,8 +290,8 @@ public class Inspect {
 	}
 
 	/**
-	 * @return true if both input value objects are of the same class and having all
-	 *         fields equal.
+	 * @return true if both input value objects are of the same class and having
+	 *         all fields equal.
 	 */
 	public <T> boolean equals(T o0, T o1) {
 		return o0 == o1 || o0 != null && o1 != null //
@@ -320,37 +321,42 @@ public class Inspect {
 	 *         function.
 	 */
 	public <T> T rewrite(Class<T> baseClass, Iterate<T> fun, T t0) {
-		return Rethrow.ex(() -> {
-			T t1 = fun.apply(t0);
-			T t3;
-			if (t1 != null)
-				t3 = t1;
-			else {
-				Class<?> clazz = t0.getClass();
-				@SuppressWarnings("unchecked")
-				T t2 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
-				t3 = t2;
-				for (Field field : fields(clazz)) {
-					Object v0 = field.get(t0);
-					Object v1 = rewriteValue(baseClass, fun, v0);
-					field.set(t3, v1);
-				}
+		class Rewrite {
+			private T rewrite(T t0) {
+				return Rethrow.ex(() -> {
+					T t1 = fun.apply(t0);
+					return t1 != null ? t1 : mapFields(t0, this::rewriteField);
+				});
 			}
-			return t3;
-		});
+
+			private Object rewriteField(Object t0) {
+				if (baseClass.isInstance(t0)) {
+					@SuppressWarnings("unchecked")
+					T t1 = rewrite((T) t0);
+					return t1;
+				} else if (t0 instanceof Collection)
+					return Read.from((Collection<?>) t0).map(this::rewriteField).toList();
+				else if (t0 instanceof Pair) {
+					Pair<?, ?> t1 = (Pair<?, ?>) t0;
+					return Pair.of(rewriteField(t1.t0), rewriteField(t1.t1));
+				} else
+					return t0;
+			}
+		}
+
+		return new Rewrite().rewrite(t0);
 	}
 
-	private <T> Object rewriteValue(Class<T> baseClass, Iterate<T> fun, Object t0) {
-		if (baseClass.isInstance(t0)) {
-			@SuppressWarnings("unchecked")
-			T t1 = rewrite(baseClass, fun, (T) t0);
-			return t1;
-		} else if (Collection.class.isInstance(t0))
-			return Read.from((Collection<?>) t0) //
-					.map(e -> rewriteValue(baseClass, fun, e)) //
-					.toList();
-		else
-			return t0;
+	private <T> T mapFields(T t0, Fun<Object, Object> mapper) throws ReflectiveOperationException {
+		Class<?> clazz = t0.getClass();
+		@SuppressWarnings("unchecked")
+		T t1 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
+		for (Field field : fields(clazz)) {
+			Object v0 = field.get(t0);
+			Object v1 = mapper.apply(v0);
+			field.set(t1, v1);
+		}
+		return t1;
 	}
 
 	public List<Field> fields(Class<?> clazz) {
@@ -368,10 +374,10 @@ public class Inspect {
 	}
 
 	public List<Method> methods(Class<?> clazz) {
-		List<Method> Methods = methodsByClass.get(clazz);
-		if (Methods == null)
-			methodsByClass.put(clazz, Methods = getMethods_(clazz));
-		return Methods;
+		List<Method> methods = methodsByClass.get(clazz);
+		if (methods == null)
+			methodsByClass.put(clazz, methods = getMethods_(clazz));
+		return methods;
 	}
 
 	public List<Property> properties(Class<?> clazz) {
@@ -453,7 +459,7 @@ public class Inspect {
 		propertyNames.retainAll(setMethods.keySet());
 
 		return Read.from(propertyNames) //
-				.<Property> map(propertyName -> {
+				.<Property>map(propertyName -> {
 					Method getMethod = getMethods.get(propertyName);
 					Method setMethod = setMethods.get(propertyName);
 					return new Property() {

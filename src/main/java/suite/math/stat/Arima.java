@@ -2,7 +2,7 @@ package suite.math.stat;
 
 import java.util.Arrays;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Vector_;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
@@ -12,13 +12,13 @@ import suite.util.To;
 
 public class Arima {
 
-	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
+	private Vector_ vec = new Vector_();
 
 	public LinearRegression ar(float[] ys, int n) {
 		int length = ys.length;
-		float[][] deps = To.array(float[].class, length - n, i -> Arrays.copyOfRange(ys, i, i + n));
+		float[][] deps = To.array(length - n, float[].class, i -> Arrays.copyOfRange(ys, i, i + n));
 		float[] ys1 = Arrays.copyOfRange(ys, n, length);
 		return stat.linearRegression(deps, ys1);
 	}
@@ -71,7 +71,7 @@ public class Arima {
 
 		// auto regressive
 		int length = ys.length;
-		float[][] xs0 = To.array(float[].class, length, i -> copyPadZeroes(ys, i - p, i));
+		float[][] xs0 = To.array(length, float[].class, i -> copyPadZeroes(ys, i - p, i));
 		LinearRegression lr0 = stat.linearRegression(xs0, ys);
 
 		float[] variances = Floats_.toArray(length, i -> {
@@ -80,14 +80,14 @@ public class Arima {
 		});
 
 		// conditional heteroskedasticity
-		float[][] xs1 = To.array(float[].class, length, i -> copyPadZeroes(variances, i - p, i));
+		float[][] xs1 = To.array(length, float[].class, i -> copyPadZeroes(variances, i - p, i));
 		LinearRegression lr1 = stat.linearRegression(xs1, variances);
 
 		return Floats_.concat(lr0.coefficients, lr1.coefficients);
 	}
 
 	public LinearRegression arima(float[] ys, int p, int d, int q) {
-		float[] is = mtx.of(ys);
+		float[] is = vec.of(ys);
 		for (int i = 0; i < d; i++)
 			is = ts.differencesOn(i, is);
 		return arma0(ys, p, q);
@@ -112,7 +112,7 @@ public class Arima {
 
 			residuals[iter] = yiter;
 
-			float[][] xs = To.array(float[].class, length, i -> {
+			float[][] xs = To.array(length, float[].class, i -> {
 				int p0 = -Math.max(0, i - p);
 				int nr = Math.min(iterp1, q);
 

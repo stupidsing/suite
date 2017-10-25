@@ -16,7 +16,6 @@ import suite.primitive.DblPrimitives.DblPredicate;
 import suite.primitive.DblPrimitives.DblSink;
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.DblPrimitives.Dbl_Obj;
-import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
@@ -47,21 +46,6 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 			Source<DblStreamlet> source = streamlets.source();
 			return DblOutlet.of(DblFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
-	}
-
-	public static <T> Fun<Outlet<T>, DblStreamlet> of(Obj_Dbl<T> fun0) {
-		Obj_Dbl<T> fun1 = fun0.rethrow();
-		return ts -> {
-			DoublesBuilder cb = new DoublesBuilder();
-			T t;
-			while ((t = ts.next()) != null)
-				cb.append(fun1.apply(t));
-			return cb.toDoubles().streamlet();
-		};
-	}
-
-	public static DblStreamlet of(double... ts) {
-		return streamlet(() -> DblOutlet.of(ts));
 	}
 
 	private static DblStreamlet streamlet(Source<DblOutlet> in) {

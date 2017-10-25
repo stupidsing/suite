@@ -1,6 +1,5 @@
 package suite.ebnf;
 
-import java.util.Arrays;
 import java.util.List;
 
 import suite.adt.pair.Pair;
@@ -26,7 +25,7 @@ public class Breakdown {
 		if (1 < (list = ParseUtil.searchn(s, " | ", Assoc.RIGHT)).size())
 			eg = new Grammar(GrammarType.OR____, breakdown(list));
 		else if ((pair = ParseUtil.search(s, " /except/ ", Assoc.RIGHT)) != null)
-			eg = new Grammar(GrammarType.EXCEPT, Arrays.asList(breakdown(pair.t0), breakdown(pair.t1)));
+			eg = new Grammar(GrammarType.EXCEPT, List.of(breakdown(pair.t0), breakdown(pair.t1)));
 		else if (1 < (list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size())
 			eg = new Grammar(GrammarType.AND___, breakdown(list));
 		else if (s.equals(""))

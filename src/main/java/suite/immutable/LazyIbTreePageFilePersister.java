@@ -44,7 +44,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 		Serializer<T> ts1 = serialize.nullable(ts);
 		Serializer<Pair<T, Integer>> ps = serialize.pair(ts1, serialize.int_);
 		Serializer<List<Pair<T, Integer>>> lps = serialize.list(ps);
-		Serializer<PersistSlot<T>> pss = new Serializer<PersistSlot<T>>() {
+		Serializer<PersistSlot<T>> pss = new Serializer<>() {
 			public PersistSlot<T> read(DataInput_ dataInput) throws IOException {
 				return new PersistSlot<>(lps.read(dataInput));
 			}

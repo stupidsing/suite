@@ -121,7 +121,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public <U, R> Outlet<R> cross(List<U> list, Fun2<T, U, R> fun) {
-		return of(new Source<R>() {
+		return of(new Source<>() {
 			private T t;
 			private int index = list.size();
 
@@ -202,7 +202,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public IntObjOutlet<T> index() {
-		return IntObjOutlet.of(new IntObjSource<T>() {
+		return IntObjOutlet.of(new IntObjSource<>() {
 			private int i = 0;
 
 			public boolean source2(IntObjPair<T> pair) {
@@ -327,7 +327,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public Outlet<T> take(int n) {
-		return of(new Source<T>() {
+		return of(new Source<>() {
 			private int count = n;
 
 			public T source() {

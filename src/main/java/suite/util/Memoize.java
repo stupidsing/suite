@@ -36,7 +36,7 @@ public class Memoize {
 	 * Memoizer for a parameterless function, guaranteeing a single call.
 	 */
 	public static <T> Source<T> future(Source<T> source) {
-		return new Source<T>() {
+		return new Source<>() {
 			private volatile T result;
 
 			public T source() {
@@ -59,7 +59,7 @@ public class Memoize {
 	 * exceeded the given size.
 	 */
 	public static <I, O> Fun<I, O> limited(Fun<I, O> fun, int size) {
-		return new Fun<I, O>() {
+		return new Fun<>() {
 			class R {
 				State state = State.EMPTY__;
 				I input;
@@ -103,7 +103,7 @@ public class Memoize {
 	 * cache exceeded the given size.
 	 */
 	public static <I, O> Fun<I, O> queued(Fun<I, O> fun, int size) {
-		return new Fun<I, O>() {
+		return new Fun<>() {
 			class R {
 				int age;
 				int index;
@@ -150,7 +150,7 @@ public class Memoize {
 	 * Simplest memoizer for a parameterless function.
 	 */
 	public static <T> Source<T> source(Source<T> source) {
-		return new Source<T>() {
+		return new Source<>() {
 			private T result;
 
 			public synchronized T source() {
@@ -163,7 +163,7 @@ public class Memoize {
 	 * Time-bounded memoizer for a parameterless function.
 	 */
 	public static <T> Source<T> timed(Source<T> source, long duration) {
-		return new Source<T>() {
+		return new Source<>() {
 			private long timestamp = 0;
 			private T result;
 

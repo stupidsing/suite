@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Iterate;
+import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
 
@@ -147,7 +148,7 @@ public class Mapify {
 					return map;
 				}), object -> Rethrow.ex(() -> {
 					Map<?, ?> map = (Map<?, ?>) object;
-					Object object1 = clazz.newInstance();
+					Object object1 = Object_.new_(clazz);
 					for (FieldInfo fi : fis)
 						fi.field.set(object1, apply_(fi.mapifier.unmapify, map.get(fi.name)));
 					return object1;
@@ -207,7 +208,7 @@ public class Mapify {
 		else if (clazz == HashMap.class || clazz == Map.class)
 			object = new HashMap<>();
 		else
-			return Rethrow.ex(clazz::newInstance);
+			return Object_.new_(clazz);
 
 		@SuppressWarnings("unchecked")
 		T t = (T) object;

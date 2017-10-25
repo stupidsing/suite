@@ -2,6 +2,7 @@ package suite.trade.backalloc.strategy;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
@@ -134,7 +135,7 @@ public class BackAllocatorOld {
 				double qdiff = Quant.return_(q0, qx);
 
 				if (threshold < Math.abs(pdiff - qdiff))
-					return Arrays.asList( //
+					return List.of( //
 							Pair.of(pdiff < qdiff ? symbol0 : symbol1, 1d), //
 							Pair.of(pdiff < qdiff ? symbol1 : symbol0, -1d));
 				else

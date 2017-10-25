@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
@@ -22,18 +21,15 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.IntFunction;
 
 import suite.Constants;
-import suite.adt.pair.Pair;
+import suite.math.linalg.VirtualMatrix;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
 import suite.primitive.Floats_;
@@ -41,7 +37,6 @@ import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.IntInt_Flt;
 import suite.primitive.IoSink;
-import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
@@ -51,29 +46,12 @@ import suite.util.FunUtil.Source;
 public class To {
 
 	private static String hexDigits = "0123456789ABCDEF";
-	private static Field field;
 
-	static {
-		field = Rethrow.ex(() -> {
-			Field field_ = String.class.getDeclaredField("value");
-			field_.setAccessible(true);
-			return field_;
-		});
-	}
-
-	public static <T> T[] array(Class<T> clazz, int length, IntFunction<T> f) {
+	public static <T> T[] array(int length, Class<T> clazz, IntFunction<T> f) {
 		T[] ts = Array_.newArray(clazz, length);
 		for (int i = 0; i < length; i++)
 			ts[i] = f.apply(i);
 		return ts;
-	}
-
-	/**
-	 * Get characters in a string without copying overhead. Do not modify the
-	 * returned array!
-	 */
-	public static char[] arrayOfChars(String s) {
-		return Rethrow.ex(() -> (char[]) field.get(s)); // s.toCharArray()
 	}
 
 	public static float[] arrayOfFloats(float[] fs, Flt_Flt fun) {
@@ -81,15 +59,11 @@ public class To {
 	}
 
 	public static <T> float[] arrayOfFloats(T[] ts, Obj_Flt<T> fun) {
-		return Read.from(ts).collect(FltStreamlet.of(fun)).toArray();
+		return Read.from(ts).collect(Obj_Flt.lift(fun)).toArray();
 	}
 
 	public static float[][] arrayOfFloats(int height, int width, IntInt_Flt fun) {
-		float[][] m = new float[height][width];
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
-				m[i][j] = fun.apply(i, j);
-		return m;
+		return VirtualMatrix.of(height, width, fun).matrix();
 	}
 
 	public static Bytes bytes(String s) {
@@ -111,7 +85,7 @@ public class To {
 	}
 
 	public static Chars chars(String s) {
-		return Chars.of(arrayOfChars(s));
+		return Chars.of(s.toCharArray());
 	}
 
 	public static LocalDate date(String s) {
@@ -188,34 +162,6 @@ public class To {
 		return list;
 	}
 
-	public static <K, V> Map<K, V> map(K k, V v) {
-		return Collections.singletonMap(k, v);
-	}
-
-	public static <K, V> Map<K, V> map(K k0, V v0, K k1, V v1) {
-		HashMap<K, V> map = new HashMap<>();
-		map.put(k0, v0);
-		map.put(k1, v1);
-		return map;
-	}
-
-	@SafeVarargs
-	public static <K, V> Map<K, V> map(Pair<K, V>... pairs) {
-		Map<K, V> map = new HashMap<>();
-		for (Pair<K, V> pair : pairs)
-			if (pair != null)
-				map.put(pair.t0, pair.t1);
-		return map;
-	}
-
-	@SafeVarargs
-	public static <K, V> Map<K, V> map_(Map<K, V>... maps) {
-		Map<K, V> map = new HashMap<>();
-		for (Map<K, V> m : maps)
-			map.putAll(m);
-		return map;
-	}
-
 	public static Outlet<Bytes> outlet(String data) {
 		return outlet(new ByteArrayInputStream(data.getBytes(Constants.charset)));
 	}
@@ -243,7 +189,7 @@ public class To {
 
 	@SafeVarargs
 	public static <T> Source<T> source(T... array) {
-		return new Source<T>() {
+		return new Source<>() {
 			private int i;
 
 			public T source() {

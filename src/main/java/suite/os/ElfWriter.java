@@ -1,6 +1,12 @@
 package suite.os;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.HashSet;
+import java.util.List;
 
 import suite.Constants;
 import suite.primitive.Bytes;
@@ -10,40 +16,25 @@ import suite.util.DataOutput_;
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfWriter {
 
-	private class Writer_ {
-		private BytesBuilder bb = new BytesBuilder();
-
-		public Writer_ db(int i) {
-			return d(1, i);
+	public void write(int org, Bytes code, Path path) {
+		try (OutputStream os = FileUtil.out(path); DataOutput_ do_ = DataOutput_.of(os)) {
+			write(org, code, do_);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
 		}
 
-		public Writer_ dw(int i) {
-			return d(2, i);
-		}
-
-		public Writer_ dd(int i) {
-			return d(4, i);
-		}
-
-		public Writer_ append(byte[] bs) {
-			bb.append(bs);
-			return this;
-		}
-
-		private Writer_ d(int n, int i) {
-			for (int j = 0; j < n; j++) {
-				bb.append((byte) (i & 0xFF));
-				i = i >> 8;
-			}
-			return this;
-		}
-
-		public Bytes toBytes() {
-			return bb.toBytes();
+		try {
+			Files.setPosixFilePermissions(path, new HashSet<>(List.of( //
+					PosixFilePermission.GROUP_EXECUTE, //
+					PosixFilePermission.OTHERS_EXECUTE, //
+					PosixFilePermission.OWNER_EXECUTE)));
+		} catch (UnsupportedOperationException ex) {
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
-	public void write(int org, Bytes code, DataOutput_ do_) throws IOException {
+	private void write(int org, Bytes code, DataOutput_ do_) throws IOException {
 		Bytes header = new Writer_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(Constants.charset)) //
@@ -74,6 +65,39 @@ public class ElfWriter {
 
 		do_.writeBytes(header);
 		do_.writeBytes(code);
+	}
+
+	private class Writer_ {
+		private BytesBuilder bb = new BytesBuilder();
+
+		private Writer_ db(int i) {
+			return d(1, i);
+		}
+
+		private Writer_ dw(int i) {
+			return d(2, i);
+		}
+
+		private Writer_ dd(int i) {
+			return d(4, i);
+		}
+
+		private Writer_ append(byte[] bs) {
+			bb.append(bs);
+			return this;
+		}
+
+		private Writer_ d(int n, int i) {
+			for (int j = 0; j < n; j++) {
+				bb.append((byte) (i & 0xFF));
+				i = i >> 8;
+			}
+			return this;
+		}
+
+		private Bytes toBytes() {
+			return bb.toBytes();
+		}
 	}
 
 }

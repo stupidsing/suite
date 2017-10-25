@@ -41,7 +41,7 @@ public class ChrFunUtil {
 	}
 
 	public static Source<ChrSource> chunk(int n, ChrSource source) {
-		return new Source<ChrSource>() {
+		return new Source<>() {
 			private char c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;
 			private int i;
@@ -141,7 +141,7 @@ public class ChrFunUtil {
 	}
 
 	public static Iterator<Character> iterator(ChrSource source) {
-		return new Iterator<Character>() {
+		return new Iterator<>() {
 			private char next = EMPTYVALUE;
 
 			public boolean hasNext() {
@@ -214,12 +214,12 @@ public class ChrFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static Source<ChrSource> split(ChrPredicate fun0, ChrSource source) {
 		ChrPredicate fun1 = fun0.rethrow();
-		return new Source<ChrSource>() {
+		return new Source<>() {
 			private char c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;
 			private ChrSource source_ = () -> (isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && !fun1.test(c) ? c

@@ -158,7 +158,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public <U, O> Outlet<O> cross(List<U> list, FltObj_Obj<U, O> fun) {
-		return Outlet.of(new Source<O>() {
+		return Outlet.of(new Source<>() {
 			private float c;
 			private int index = list.size();
 
@@ -239,7 +239,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public FltObjOutlet<Integer> index() {
-		return FltObjOutlet.of(new FltObjSource<Integer>() {
+		return FltObjOutlet.of(new FltObjSource<>() {
 			private int i = 0;
 
 			public boolean source2(FltObjPair<Integer> pair) {

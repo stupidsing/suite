@@ -272,7 +272,7 @@ public class TopDownParse {
 		Parser g = build(eg.children.get(0));
 
 		return (parse, st) -> {
-			Outlet<State> states = Outlet.of(new Source<State>() {
+			Outlet<State> states = Outlet.of(new Source<>() {
 				private State state_ = st;
 				private Deque<Outlet<State>> outlets = new ArrayDeque<>();
 

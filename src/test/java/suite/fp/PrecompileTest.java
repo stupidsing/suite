@@ -2,7 +2,6 @@ package suite.fp;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -15,7 +14,7 @@ import suite.streamlet.Read;
 
 public class PrecompileTest {
 
-	private List<String> allLibraries = Arrays.asList( //
+	private List<String> allLibraries = List.of( //
 			"23-TREE" //
 			, "ARRAY" //
 			, "CHARS" //

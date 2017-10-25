@@ -9,6 +9,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.Time;
+import suite.trade.Usex;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 
@@ -18,7 +19,7 @@ public class FactorTest {
 
 	@Test
 	public void test() {
-		Streamlet<String> indices = Read.each("CLQ17.NYM");
+		Streamlet<String> indices = Read.each(Usex.crudeOil);
 
 		Streamlet<Asset> assets0 = cfg.queryCompaniesByMarketCap(Time.now());
 		Streamlet<Asset> assets1 = cfg.queryHistory().map(trade -> trade.symbol).distinct().map(cfg::queryCompany);

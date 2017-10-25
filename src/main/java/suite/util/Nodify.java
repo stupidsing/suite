@@ -161,7 +161,7 @@ public class Nodify {
 					return dict;
 				}), node -> Rethrow.ex(() -> {
 					Map<Node, Reference> map = ((Dict) node).map;
-					Object object1 = clazz.newInstance();
+					Object object1 = Object_.new_(clazz);
 					for (Pair<Atom, FieldInfo> pair : pairs) {
 						FieldInfo fieldInfo = pair.t1;
 						Node value = map.get(pair.t0).finalNode();
@@ -224,7 +224,7 @@ public class Nodify {
 		else if (clazz == HashMap.class || clazz == Map.class)
 			object = new HashMap<>();
 		else
-			return Rethrow.ex(clazz::newInstance);
+			return Object_.new_(clazz);
 
 		@SuppressWarnings("unchecked")
 		T t = (T) object;

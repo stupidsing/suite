@@ -6,11 +6,11 @@ import java.util.List;
 import suite.BindArrayUtil.Match;
 import suite.Suite;
 import suite.adt.pair.Pair;
-import suite.lp.predicate.EvalPredicates;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.node.util.TreeUtil;
 
 public class PeepholeOptimizer {
 
@@ -27,7 +27,7 @@ public class PeepholeOptimizer {
 
 			if ((m = ADDI__.apply(node0)) != null) {
 				Node m0 = m[0];
-				int i = new EvalPredicates().evaluate(m[1]);
+				int i = TreeUtil.evaluate(m[1]);
 				if (i == 1)
 					node1 = Suite.substitute("INC .0", m0);
 				else if (i == -1)

@@ -158,7 +158,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public <U, O> Outlet<O> cross(List<U> list, DblObj_Obj<U, O> fun) {
-		return Outlet.of(new Source<O>() {
+		return Outlet.of(new Source<>() {
 			private double c;
 			private int index = list.size();
 
@@ -239,7 +239,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public DblObjOutlet<Integer> index() {
-		return DblObjOutlet.of(new DblObjSource<Integer>() {
+		return DblObjOutlet.of(new DblObjSource<>() {
 			private int i = 0;
 
 			public boolean source2(DblObjPair<Integer> pair) {

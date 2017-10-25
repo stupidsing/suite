@@ -2,7 +2,6 @@ package suite.font;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -18,7 +17,7 @@ public class OtfTest {
 	public void otfTest() {
 		String familyKey = "Family";
 		String subfamilyKey = "Subfamily";
-		List<String> keys = Arrays.asList(familyKey, subfamilyKey);
+		List<String> keys = List.of(familyKey, subfamilyKey);
 
 		List<String> commands = Read //
 				.each(Paths.get("/tmp/fonts")) //

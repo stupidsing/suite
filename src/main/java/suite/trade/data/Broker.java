@@ -19,7 +19,7 @@ public interface Broker {
 	public double transactionFee(double transactionAmount);
 
 	// https://www.personal.hsbc.com.hk/1/2/hk/investments/stocks/detail
-	public class Hsbc implements Broker {
+	public class Hsbc implements Broker { // bloodsucker
 		public Streamlet<Trade> queryHistory() {
 			return memoizeHistoryRecords.source();
 		}

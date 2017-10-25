@@ -1,6 +1,5 @@
 package suite.rt;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class Sphere implements RtObject {
 		if (0 < discriminant) { // hit?
 			float sqrt = (float) Math.sqrt(discriminant);
 			float denom = 1f / (2f * a);
-			rayHits = Arrays.asList(rayHit(ray, (-b - sqrt) * denom), rayHit(ray, (-b + sqrt) * denom));
+			rayHits = List.of(rayHit(ray, (-b - sqrt) * denom), rayHit(ray, (-b + sqrt) * denom));
 		} else
 			rayHits = Collections.emptyList();
 

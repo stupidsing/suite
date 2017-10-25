@@ -1,5 +1,7 @@
 package suite.node.util;
 
+import java.util.function.Predicate;
+
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Cloner;
@@ -8,24 +10,23 @@ import suite.node.Reference;
 import suite.node.io.Rewriter;
 import suite.node.io.Rewriter.NodeRead;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 
 public class TreeRewriter {
 
 	public boolean contains(Node from, Node node) {
-		return new Fun<Node, Boolean>() {
-			public Boolean apply(Node node) {
+		return new Predicate<Node>() {
+			public boolean test(Node node) {
 				boolean result;
 				if (!eq(node, from)) {
 					NodeRead nr = NodeRead.of(node);
-					result = Read.from(nr.children).isAny(p -> apply(p.t1));
+					result = Read.from(nr.children).isAny(p -> test(p.t1));
 				} else
 					result = true;
 				return result;
 			}
-		}.apply(node);
+		}.test(node);
 	}
 
 	public Node replace(Node from, Node to, Node node0) {

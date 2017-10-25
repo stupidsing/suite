@@ -1,5 +1,6 @@
 package suite.trade.backalloc;
 
+import suite.adt.pair.Pair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -30,15 +31,19 @@ public class BackAllocConfigurations {
 		private BackAllocator ba_bbHold = baGen.bb_.filterByIndex(cfg).holdExtend(8);
 		private BackAllocator ba_donHold = baGen.donHold;
 		private BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().longOnly().pick(3).even();
+		private BackAllocator ba_pmamr = MovingAvgMeanReversionBackAllocator0.of();
+		private BackAllocator ba_pmmmr = baOld.movingMedianMeanRevn().holdExtend(9);
+		private BackAllocator ba_revco = ReverseCorrelateBackAllocator.of();
 
-		public final BackAllocConfiguration bac_bbHold = ba_bbHold.cfgUnl(fun);
-		public final BackAllocConfiguration bac_donHold = ba_donHold.cfgUnl(fun);
-		public final BackAllocConfiguration bac_ema = baGen.ema.cfgUnl(fun);
-		public final BackAllocConfiguration bac_pmamr = MovingAvgMeanReversionBackAllocator0.of().cfgUnl(fun);
-		public final BackAllocConfiguration bac_pmmmr = baOld.movingMedianMeanRevn().holdExtend(9).cfgUnl(fun);
-		public final BackAllocConfiguration bac_revco = ReverseCorrelateBackAllocator.of().cfgUnl(fun);
 		public final BackAllocConfiguration bac_sell = baGen.cash.cfgUnl(fun);
-		public final BackAllocConfiguration bac_tma = baGen.tma.cfgUnl(fun);
+
+		public final Pair<String, BackAllocConfiguration> pair_bb = pair("bb", ba_bbHold);
+		public final Pair<String, BackAllocConfiguration> pair_ema = pair("ema", baGen.ema);
+		public final Pair<String, BackAllocConfiguration> pair_donchian = pair("donchian", ba_donHold);
+		public final Pair<String, BackAllocConfiguration> pair_pmamr = pair("pmamr", ba_pmamr);
+		public final Pair<String, BackAllocConfiguration> pair_pmmmr = pair("pmmmr", ba_pmmmr);
+		public final Pair<String, BackAllocConfiguration> pair_revco = pair("revco", ba_revco);
+		public final Pair<String, BackAllocConfiguration> pair_tma = pair("tma", baGen.tma);
 
 		private Streamlet2<String, BackAllocator> bas_ = baGen.baByName;
 		private Streamlet2<String, BackAllocator> bas_mech = baMech.baByName.map2((n, ba) -> "me." + n, (n, ba) -> ba);
@@ -51,19 +56,23 @@ public class BackAllocConfigurations {
 				.<String, BackAllocConfiguration> empty2() //
 				.cons("hsi", BackAllocConfiguration.ofSingle(Asset.hsi)) //
 				.cons("hsi.ppr", baGen.pprHsi.cfgUnl(fun_hsi)) //
-				.cons("bb", bac_bbHold) //
+				.cons(pair_bb) //
 				.cons("bbslope", baOld.bbSlope().cfgUnl(fun)) //
 				.cons("facoil", ba_facoil.cfgUnl(fun)) //
 				.cons("january", BackAllocator_.ofSingle(Asset.hsiSymbol).january().cfgUnl(fun_hsi)) //
 				.cons("mix", BackAllocator_.sum(ba_bbHold, ba_donHold).cfgUnl(fun)) //
-				.cons("pmamr", bac_pmamr) //
-				.cons("pmmmr", bac_pmmmr) //
-				.cons("revco", bac_revco) //
+				.cons(pair_pmamr) //
+				.cons(pair_pmmmr) //
+				.cons(pair_revco) //
 				.cons("revdd", baOld.revDrawdown().holdExtend(40).cfgUnl(fun)) //
 				.cons("sellInMay", BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi));
 
 		public final Streamlet2<String, BackAllocConfiguration> bacByName = Streamlet2 //
 				.concat(bacs_, bacByName0);
+
+		private Pair<String, BackAllocConfiguration> pair(String tag, BackAllocator ba) {
+			return Pair.of(tag, ba.cfgUnl(fun));
+		}
 	}
 
 	public BackAllocConfigurations(Configuration cfg) {

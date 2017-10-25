@@ -2,7 +2,6 @@ package suite.fp.intrinsic;
 
 import java.io.Reader;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,14 +29,15 @@ public class Intrinsics {
 	public interface IntrinsicCallback {
 
 		/**
-		 * Encloses an intrinsic function call with given parameter into a lazy result
-		 * node. Becomes immediate evaluation in the eager implementation.
+		 * Encloses an intrinsic function call with given parameter into a lazy
+		 * result node. Becomes immediate evaluation in the eager
+		 * implementation.
 		 */
 		public Node enclose(Intrinsic intrinsic, Node node);
 
 		/**
-		 * Realizes a possibly-lazy node into its bottom value. Returns the input for
-		 * the eager implementation.
+		 * Realizes a possibly-lazy node into its bottom value. Returns the
+		 * input for the eager implementation.
 		 */
 		public Node yawn(Node node);
 	}
@@ -46,7 +46,7 @@ public class Intrinsics {
 
 	public static IntrinsicCallback eagerIntrinsicCallback = new IntrinsicCallback() {
 		public Node enclose(Intrinsic intrinsic, Node node) {
-			return intrinsic.invoke(this, Arrays.asList(node));
+			return intrinsic.invoke(this, List.of(node));
 		}
 
 		public Node yawn(Node node) {
@@ -94,14 +94,14 @@ public class Intrinsics {
 	}
 
 	static {
-		for (Class<?> clazz : Arrays.asList( //
+		for (Class<?> clazz : List.of( //
 				ArrayIntrinsics.class //
 				, BasicIntrinsics.class //
 				, CharsIntrinsics.class //
 				, MonadIntrinsics.class //
 				, SeqIntrinsics.class //
 				, SuiteIntrinsics.class)) {
-			Object instance = Rethrow.ex(() -> clazz.newInstance());
+			Object instance = Object_.new_(clazz);
 
 			for (Field field : clazz.getFields())
 				if (Intrinsic.class.isAssignableFrom(field.getType())) {

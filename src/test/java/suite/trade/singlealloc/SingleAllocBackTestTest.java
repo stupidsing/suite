@@ -1,6 +1,6 @@
 package suite.trade.singlealloc;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class SingleAllocBackTestTest {
 
 	@Test
 	public void testBackTestHkex() {
-		for (String code : Arrays.asList( //
+		for (String code : List.of( //
 				"0004", //
 				"0020", //
 				"0175", //

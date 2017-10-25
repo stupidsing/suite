@@ -56,7 +56,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		Serializer<Extent> es = serialize.extent();
 		Serializer<Pair<T, Extent>> ps = serialize.pair(ts1, es);
 		Serializer<List<Pair<T, Extent>>> lps = serialize.list(ps);
-		serializer = new Serializer<PersistSlot<T>>() {
+		serializer = new Serializer<>() {
 			public PersistSlot<T> read(DataInput_ dataInput) throws IOException {
 				return new PersistSlot<>(lps.read(dataInput));
 			}

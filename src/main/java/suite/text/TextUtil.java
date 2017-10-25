@@ -1,7 +1,6 @@
 package suite.text;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,7 +43,7 @@ public class TextUtil {
 			patch.addAll(diff(bytesx.range(x2, xx), bytesy.range(y2, yx)));
 			return patch;
 		} else if (!bytesx.isEmpty() || !bytesy.isEmpty())
-			return Arrays.asList(Pair.of(bytesx, bytesy));
+			return List.of(Pair.of(bytesx, bytesy));
 		else
 			return new ArrayList<>();
 	}
@@ -136,7 +135,7 @@ public class TextUtil {
 
 	private List<Pair<Bytes, Bytes>> cons(Pair<Bytes, Bytes> ph, List<Pair<Bytes, Bytes>> pt) {
 		if (!ph.t0.isEmpty() || !ph.t1.isEmpty())
-			return List_.concat(Arrays.asList(ph), pt);
+			return List_.concat(List.of(ph), pt);
 		else
 			return pt;
 	}

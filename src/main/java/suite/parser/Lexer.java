@@ -3,8 +3,8 @@ package suite.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import suite.util.FunUtil.Source;
@@ -21,7 +21,7 @@ public class Lexer {
 	private Reader reader;
 	private Set<String> operators;
 
-	private static Set<String> javaOperators = new HashSet<>(Arrays.asList( //
+	private static Set<String> javaOperators = new HashSet<>(List.of( //
 			"++", "--", "+", "-", "~", "!", //
 			"*", "/", "%", //
 			"+", "-", //

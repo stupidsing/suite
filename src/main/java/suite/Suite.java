@@ -6,7 +6,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -45,11 +44,11 @@ public class Suite {
 	public static boolean isInstructionTrace = false;
 	public static int stackSize = 16384;
 
-	public static List<String> libraries = Arrays.asList("STANDARD", "CHARS", "TEXT");
+	public static List<String> libraries = List.of("STANDARD", "CHARS", "TEXT");
 	public static TraceLevel traceLevel = TraceLevel.SIMPLE;
 
 	public static Set<String> tracePredicates = null;
-	public static Set<String> noTracePredicates = new HashSet<>(Arrays.asList( //
+	public static Set<String> noTracePredicates = new HashSet<>(List.of( //
 			"member", //
 			"rbt-compare", //
 			"rbt-get", //

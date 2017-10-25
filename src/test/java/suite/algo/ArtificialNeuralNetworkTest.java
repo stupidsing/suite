@@ -2,7 +2,7 @@ package suite.algo;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import org.junit.Test;
@@ -22,10 +22,10 @@ public class ArtificialNeuralNetworkTest {
 
 		// random.setSeed(0l);
 
-		for (Pair<String, BinOp<Boolean>> pair : Arrays.asList(op0, op1, op2)) {
+		for (Pair<String, BinOp<Boolean>> pair : List.of(op0, op1, op2)) {
 			String name = pair.t0;
 			BinOp<Boolean> oper = pair.t1;
-			ArtificialNeuralNetwork ann = new ArtificialNeuralNetwork(Arrays.asList(2, 4, 1), random);
+			ArtificialNeuralNetwork ann = new ArtificialNeuralNetwork(List.of(2, 4, 1), random);
 
 			for (int i = 0; i < 16384; i++) {
 				boolean b0 = random.nextBoolean();

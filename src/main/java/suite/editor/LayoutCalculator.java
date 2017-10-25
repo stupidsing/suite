@@ -5,7 +5,6 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import suite.streamlet.Read;
@@ -131,9 +130,9 @@ public class LayoutCalculator {
 
 	public Node box(Orientation ori, Portion... portions) {
 		if (ori == Orientation.HORIZONTAL)
-			return new HBox(Arrays.asList(portions));
+			return new HBox(List.of(portions));
 		else
-			return new VBox(Arrays.asList(portions));
+			return new VBox(List.of(portions));
 	}
 
 	/**

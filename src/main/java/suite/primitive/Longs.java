@@ -220,7 +220,7 @@ public class Longs implements Iterable<Long> {
 
 	@Override
 	public Iterator<Long> iterator() {
-		return new Iterator<Long>() {
+		return new Iterator<>() {
 			private int pos = start;
 
 			public boolean hasNext() {

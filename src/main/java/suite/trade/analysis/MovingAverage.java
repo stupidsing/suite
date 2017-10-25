@@ -2,28 +2,28 @@ package suite.trade.analysis;
 
 import java.util.Arrays;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Vector_;
 import suite.math.stat.TimeSeries;
 import suite.primitive.Doubles_;
 import suite.util.To;
 
 public class MovingAverage {
 
-	private Matrix mtx = new Matrix();
 	private TimeSeries ts = new TimeSeries();
+	private Vector_ vec = new Vector_();
 
 	// exponential moving average convergence/divergence
 	public float[] emacd(float[] prices, double alpha0, double alpha1) {
 		float[] emas0 = exponentialMovingAvg(prices, alpha0); // long-term
 		float[] emas1 = exponentialMovingAvg(prices, alpha1); // short-term
-		return mtx.sub(emas1, emas0);
+		return vec.sub(emas1, emas0);
 	}
 
 	// moving average convergence/divergence
 	public Macd macd(float[] prices, int nDays0, int nDays1, int nDays2) {
 		float[] mas0 = movingAvg(prices, nDays0); // long-term
 		float[] mas1 = movingAvg(prices, nDays1); // short-term
-		float[] diffs = mtx.sub(mas1, mas0);
+		float[] diffs = vec.sub(mas1, mas0);
 		return new Macd(diffs, movingAvg(diffs, nDays2));
 	}
 
@@ -81,7 +81,7 @@ public class MovingAverage {
 	}
 
 	public MovingRange[] movingRange(float[] prices, int windowSize) {
-		return To.array(MovingRange.class, prices.length, i -> {
+		return To.array(prices.length, MovingRange.class, i -> {
 			float[] window = ts.back(i, windowSize, prices);
 			Arrays.sort(window);
 			int length = window.length;

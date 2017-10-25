@@ -73,7 +73,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	@SafeVarargs
 	public static <K, V> Outlet2<K, V> of(Pair<K, V>... kvs) {
-		return of(new Source2<K, V>() {
+		return of(new Source2<>() {
 			private int i;
 
 			public boolean source2(Pair<K, V> pair) {
@@ -89,7 +89,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	public static <K, V> Outlet2<K, V> of(Iterable<Pair<K, V>> col) {
 		Iterator<Pair<K, V>> iter = col.iterator();
-		return of(new Source2<K, V>() {
+		return of(new Source2<>() {
 			public boolean source2(Pair<K, V> pair) {
 				boolean b = iter.hasNext();
 				if (b) {
@@ -393,7 +393,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Outlet2<K, V> take(int n) {
-		return of(new Source2<K, V>() {
+		return of(new Source2<>() {
 			private int count = n;
 
 			public boolean source2(Pair<K, V> pair) {

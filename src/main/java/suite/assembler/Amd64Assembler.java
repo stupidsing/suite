@@ -11,6 +11,7 @@ import suite.assembler.Amd64.OpRegControl;
 import suite.assembler.Amd64.OpRegSegment;
 import suite.assembler.Amd64.Operand;
 import suite.node.util.Singleton;
+import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 
@@ -45,7 +46,7 @@ public class Amd64Assembler {
 	public Bytes assemble(long offset, List<Instruction> instructions, boolean dump) {
 		assemblePass(offset, instructions); // first pass
 		if (dump)
-			System.out.println(new Amd64Dump().dump(instructions));
+			LogUtil.info(new Amd64Dump().dump(instructions));
 		return assemblePass(offset, instructions); // second pass
 	}
 
@@ -323,8 +324,14 @@ public class Amd64Assembler {
 		case MUL:
 			insnCode = assembleByteFlag(instruction.op0, 0xF6, 4);
 			break;
+		case NEG:
+			insnCode = assembleByteFlag(instruction.op0, 0xF6, 3);
+			break;
 		case NOP:
 			insnCode = assemble(instruction, 0x90);
+			break;
+		case NOT:
+			insnCode = assembleByteFlag(instruction.op0, 0xF6, 2);
 			break;
 		case OR:
 			insnCode = assembleRmRegImm(instruction, 0x08, 0x80, 1);

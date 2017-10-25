@@ -100,7 +100,7 @@ public class Signal<T> {
 	}
 
 	public Signal<T> edge() {
-		return redirect_(new Redirector<T, T>() {
+		return redirect_(new Redirector<>() {
 			private T previous = null;
 
 			public void accept(T t, Sink<T> fire) {

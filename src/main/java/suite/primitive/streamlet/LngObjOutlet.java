@@ -73,7 +73,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> LngObjOutlet<V> of(LngObjPair<V>... kvs) {
-		return of(new LngObjSource<V>() {
+		return of(new LngObjSource<>() {
 			private int i;
 
 			public boolean source2(LngObjPair<V> pair) {
@@ -90,7 +90,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	public static <V> LngObjOutlet<V> of(Iterable<LngObjPair<V>> col) {
 		Iterator<LngObjPair<V>> iter = col.iterator();
-		return of(new LngObjSource<V>() {
+		return of(new LngObjSource<>() {
 			public boolean source2(LngObjPair<V> pair) {
 				boolean b = iter.hasNext();
 				if (b) {
@@ -401,7 +401,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public LngObjOutlet<V> take(int n) {
-		return of(new LngObjSource<V>() {
+		return of(new LngObjSource<>() {
 			private int count = n;
 
 			public boolean source2(LngObjPair<V> pair) {

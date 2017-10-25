@@ -32,7 +32,7 @@ public class As {
 	public static Fun<Outlet<String>, String> conc(String delimiter) {
 		return outlet -> {
 			StringBuilder sb = new StringBuilder();
-			outlet.sink(new Sink<String>() {
+			outlet.sink(new Sink<>() {
 				public void sink(String s) {
 					sb.append(s);
 					sb.append(delimiter);
@@ -68,7 +68,7 @@ public class As {
 		return outlet -> {
 			StringBuilder sb = new StringBuilder();
 			sb.append(before);
-			outlet.sink(new Sink<String>() {
+			outlet.sink(new Sink<>() {
 				private boolean first = true;
 
 				public void sink(String s) {
@@ -128,7 +128,7 @@ public class As {
 	}
 
 	public static <I, O> Fun<Outlet<I>, Outlet<O>> sequenced(Seq<I, O> seq) {
-		return outlet -> Outlet.of(new Source<O>() {
+		return outlet -> Outlet.of(new Source<>() {
 			private int index;
 
 			public O source() {
@@ -165,7 +165,7 @@ public class As {
 	public static Outlet<Chars> utf8decode(Outlet<Bytes> bytesOutlet) {
 		Source<Bytes> source = bytesOutlet.source();
 
-		return Outlet.of(new Source<Chars>() {
+		return Outlet.of(new Source<>() {
 			private BytesBuilder bb = new BytesBuilder();
 
 			public Chars source() {
@@ -234,7 +234,7 @@ public class As {
 	public static Outlet<Bytes> utf8encode(Outlet<Chars> charsOutlet) {
 		Source<Chars> source = charsOutlet.source();
 
-		return Outlet.of(new Source<Bytes>() {
+		return Outlet.of(new Source<>() {
 			public Bytes source() {
 				Chars chars = source.source();
 				if (chars != null) {
@@ -269,7 +269,7 @@ public class As {
 	}
 
 	private static String[] csvLine(String line) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		StringBuilder sb = new StringBuilder();
 		int length = line.length();
 		int p = 0;

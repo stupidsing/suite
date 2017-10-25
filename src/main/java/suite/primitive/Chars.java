@@ -220,7 +220,7 @@ public class Chars implements Iterable<Character> {
 
 	@Override
 	public Iterator<Character> iterator() {
-		return new Iterator<Character>() {
+		return new Iterator<>() {
 			private int pos = start;
 
 			public boolean hasNext() {

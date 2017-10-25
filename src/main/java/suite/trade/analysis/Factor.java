@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Vector_;
 import suite.math.stat.Quant;
 import suite.math.stat.Statistic;
 import suite.streamlet.Read;
@@ -13,6 +13,7 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.trade.Usex;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
@@ -26,16 +27,16 @@ public class Factor {
 	private DataSource ids;
 
 	private Configuration cfg;
-	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 	private Time now = Time.now();
+	private Vector_ vec = new Vector_();
 
 	public static Factor ofCrudeOil(Configuration cfg) {
-		return of(cfg, Read.each("CLQ17.NYM")); // "CL=F"
+		return of(cfg, Read.each(Usex.crudeOil));
 	}
 
 	public static Factor ofUsMarket(Configuration cfg) {
-		return of(cfg, Read.each("^DJI", "^GSPC", "NDAQ"));
+		return of(cfg, Read.each(Usex.dowJones, Usex.nasdaq, Usex.sp500));
 	}
 
 	public static Factor of(Configuration cfg, Streamlet<String> indices) {
@@ -49,7 +50,7 @@ public class Factor {
 
 		float[] indexPrices = akds.dsByKey //
 				.map((symbol, ds) -> ds.prices) //
-				.fold(new float[akds.ts.length], mtx::add);
+				.fold(new float[akds.ts.length], vec::add);
 
 		ids = DataSource.of(akds.ts, indexPrices);
 	}

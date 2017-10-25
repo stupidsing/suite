@@ -24,7 +24,6 @@ import suite.node.io.Operator;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
-import suite.util.To;
 
 public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder {
 
@@ -100,21 +99,21 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 	private LambdaInstance<BindPredicate> compileBindPredicate(BindPredicate pred) {
 		return LambdaInstance.of(LambdaImplementation.of( //
 				lambdaClass, //
-				To.map("pred", Type.getType(BindPredicate.class)), //
+				Map.of("pred", Type.getType(BindPredicate.class)), //
 				f.parameter2((be, n) -> f.inject("pred").invoke("test", be, n))), //
-				To.map("pred", pred));
+				Map.of("pred", pred));
 	}
 
 	private LambdaInstance<BindPredicate> compileBindAtom(Atom a) {
-		return LambdaInstance.of(compiledBindAtom, To.map(key0, a));
+		return LambdaInstance.of(compiledBindAtom, Map.of(key0, a));
 	}
 
 	private LambdaInstance<BindPredicate> compileBindInt(Int i) {
-		return LambdaInstance.of(compiledBindInt, To.map(key0, i, key1, i.number));
+		return LambdaInstance.of(compiledBindInt, Map.of(key0, i, key1, i.number));
 	}
 
 	private LambdaInstance<BindPredicate> compileBindStr(Str s) {
-		return LambdaInstance.of(compiledBindStr, To.map(key0, s, key1, s.value));
+		return LambdaInstance.of(compiledBindStr, Map.of(key0, s, key1, s.value));
 	}
 
 	private static String key0 = "k0";
@@ -124,13 +123,13 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 	private static LambdaImplementation<BindPredicate> compiledBindStr = compileBindStr_();
 
 	private static LambdaImplementation<BindPredicate> compileBindAtom_() {
-		Map<String, Type> fieldTypes = To.map(key0, Type.getType(Node.class));
+		Map<String, Type> fieldTypes = Map.of(key0, Type.getType(Node.class));
 		Iterate<FunExpr> expr = n_ -> f.ifEquals(n_, f.inject(key0), f._true(), f._false());
 		return bind(fieldTypes, expr);
 	}
 
 	private static LambdaImplementation<BindPredicate> compileBindInt_() {
-		Map<String, Type> fieldTypes = To.map(key0, Type.getType(Node.class), key1, Type.INT);
+		Map<String, Type> fieldTypes = Map.of(key0, Type.getType(Node.class), key1, Type.INT);
 		Iterate<FunExpr> expr = n_ -> f.ifInstanceAnd( //
 				Int.class, n_, //
 				i -> f.ifEquals(i.field("number"), f.inject(key1), f._true(), f._false()));
@@ -138,7 +137,7 @@ public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder 
 	}
 
 	private static LambdaImplementation<BindPredicate> compileBindStr_() {
-		Map<String, Type> fieldTypes = To.map(key0, Type.getType(Node.class), key1, Type.STRING);
+		Map<String, Type> fieldTypes = Map.of(key0, Type.getType(Node.class), key1, Type.STRING);
 		Iterate<FunExpr> expr = n_ -> f.ifInstanceAnd( //
 				Str.class, n_, //
 				i -> f.inject(key1).invoke("equals", i.field("value").cast(Object.class)));

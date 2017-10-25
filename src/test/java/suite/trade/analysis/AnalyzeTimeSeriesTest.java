@@ -1,6 +1,7 @@
 package suite.trade.analysis;
 
 import java.util.Arrays;
+import java.util.function.IntFunction;
 
 import org.junit.Test;
 
@@ -12,14 +13,12 @@ import suite.math.stat.TimeSeries;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.os.LogUtil;
 import suite.primitive.Floats_;
-import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntFltPair;
-import suite.primitive.streamlet.FltStreamlet;
-import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.As;
+import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
@@ -28,18 +27,20 @@ import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.util.To;
 
+// mvn test -Dtest=AnalyzeTimeSeriesTest#test
 public class AnalyzeTimeSeriesTest {
 
 	private static AnalyzeTimeSeriesTest me = new AnalyzeTimeSeriesTest();
 
-	private String symbol = "0011.HK";
+	private String symbol = Asset.hsiSymbol;
 	private TimeRange period = TimeRange.of(Time.of(2005, 1, 1), TimeRange.max);
 	// TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1));
 	// TimeRange.threeYears();
 
 	private Configuration cfg = new ConfigurationImpl();
 	private DiscreteCosineTransform dct = new DiscreteCosineTransform();
-	private MarketTiming marketTiming = new MarketTiming();
+	private MarketTiming mt = new MarketTiming();
+	private MovingAverage ma = new MovingAverage();
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
@@ -49,10 +50,11 @@ public class AnalyzeTimeSeriesTest {
 	}
 
 	private void analyze(DataSource ds) {
+		int length = ds.ts.length;
 		float[] ops = ds.opens;
 		float[] cls = ds.closes;
-		float[] ocgs = Floats_.toArray(ds.ts.length, i -> cls[i] - ops[i]);
-		float[] cogs = Floats_.toArray(ds.ts.length, i -> ops[i] - cls[Math.max(0, i - 1)]);
+		float[] ocgs = Floats_.toArray(length, i -> cls[i] - ops[i]);
+		float[] cogs = Floats_.toArray(length, i -> ops[i] - cls[Math.max(0, i - 1)]);
 		LogUtil.info("open/close gap = " + stat.meanVariance(ocgs));
 		LogUtil.info("close/open gap = " + stat.meanVariance(cogs));
 		LogUtil.info("ocg/cog covariance = " + stat.correlation(ocgs, cogs));
@@ -77,50 +79,59 @@ public class AnalyzeTimeSeriesTest {
 				max.update(i, f);
 		}
 
-		Int_Obj<BuySell> momFun = n -> {
+		IntFunction<BuySell> momFun = n -> {
 			int d0 = 1 + n;
 			int d1 = 1;
 			return buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		};
 
-		BuySell mom = momFun.apply(1);
-		BuySell revert = mom.scale(-1f);
-		BuySell trend_ = mom.scale(+1f);
-		BuySell tanh = buySell(d -> Tanh.tanh(-3.2d * mom.apply(d)));
-		float[] holds = marketTiming.hold(prices);
+		IntFunction<BuySell> revert = d -> momFun.apply(d).scale(0f, -1f);
+		BuySell[] reverts = To.array(8, BuySell.class, revert);
+		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
+		float[] holds = mt.hold(prices, 1f, 1f, 1f);
+		float[] ma200 = ma.movingAvg(prices, 200);
+		BuySell mat = buySell(d -> {
+			int last = d - 1;
+			return ma200[last] < prices[last] ? 1f : -1f;
+		}).start(1).longOnly();
 		BuySell mt_ = buySell(d -> holds[d]);
 
 		LogUtil.info("" //
 				+ "\nsymbol = " + symbol //
 				+ "\nlength = " + length //
 				+ "\nnYears = " + nYears //
-				+ "\nups = " + FltStreamlet.of(returns).filter(return_ -> 0f <= return_).size() //
+				+ "\nups = " + Floats_.of(returns).filter(return_ -> 0f <= return_).size() //
 				+ "\ndct period = " + max.t0 //
 				+ Ints_ //
 						.range(10) //
-						.map(d -> "\ndct component, " + d + " days = " + fds[d]) //
+						.map(d -> "\ndct component [" + d + "d] = " + fds[d]) //
 						.collect(As::joined) //
 				+ "\nreturn yearly sharpe = " + rmv.mean / Math.sqrt(variance / nYears) //
 				+ "\nreturn kelly = " + kelly //
 				+ "\nreturn skew = " + stat.skewness(returns) //
 				+ "\nreturn kurt = " + stat.kurtosis(returns) //
-				+ IntStreamlet //
+				+ Ints_ //
 						.of(1, 2, 4, 8, 16, 32) //
-						.map(d -> "\nmean reversion ols, " + d + " days = " + ts.meanReversion(prices, d).coefficients[0]) //
+						.map(d -> "\nmean reversion ols [" + d + "d] = " + ts.meanReversion(prices, d).coefficients[0]) //
 						.collect(As::joined) //
-				+ IntStreamlet //
+				+ Ints_ //
 						.of(4, 16) //
-						.map(d -> "\nvariance ratio, " + d + " days over 1 day = " + ts.varianceRatio(prices, d)) //
+						.map(d -> "\nvariance ratio [" + d + "d over 1d] = " + ts.varianceRatio(prices, d)) //
 						.collect(As::joined) //
-				+ "\nhalf " + buySell(d -> .5d).invest(prices) //
 				+ "\nhold " + buySell(d -> 1d).invest(prices) //
 				+ "\nkelly " + buySell(d -> kelly).invest(prices) //
-				+ "\nrevert " + revert.invest(prices) //
-				+ "\nrevert long-only " + revert.longOnly().invest(prices) //
-				+ "\ntrend_ " + trend_.invest(prices) //
-				+ "\ntrend_ long-only " + trend_.longOnly().invest(prices) //
+				+ "\nma200 trend " + mat.invest(prices) //
+				+ Ints_ //
+						.range(1, 8) //
+						.map(d -> "\nrevert [" + d + "d] " + reverts[d].invest(prices)) //
+						.collect(As::joined) //
+				+ Ints_ //
+						.range(1, 8) //
+						.map(d -> "\nrevert [" + d + "d] long-only " + reverts[d].longOnly().invest(prices)) //
+						.collect(As::joined) //
 				+ "\ntanh " + tanh.invest(prices) //
-				+ "\ntimed " + mt_.invest(prices));
+				+ "\ntimed " + mt_.invest(prices) //
+				+ "\ntimed long-only " + mt_.longOnly().invest(prices));
 	}
 
 	private BuySell buySell(Int_Dbl fun) {
@@ -132,8 +143,8 @@ public class AnalyzeTimeSeriesTest {
 			return d -> Math.max(0f, apply(d));
 		}
 
-		public default BuySell scale(float scale) {
-			return d -> scale * apply(d);
+		public default BuySell scale(float a, float b) {
+			return d -> a + b * apply(d);
 		}
 
 		public default BuySell start(int s) {

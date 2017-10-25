@@ -35,7 +35,7 @@ public class JournalledFileFactory {
 			int pageSize) {
 		Serializer<Bytes> bytesSerializer = serialize.bytes(pageSize);
 
-		Serializer<JournalEntry> journalEntrySerializer = new Serializer<JournalEntry>() {
+		Serializer<JournalEntry> journalEntrySerializer = new Serializer<>() {
 			public JournalEntry read(DataInput_ dataInput) throws IOException {
 				int pointer = dataInput.readInt();
 				Bytes bytes = bytesSerializer.read(dataInput);

@@ -2,7 +2,7 @@ package suite.trade.singlealloc;
 
 import java.util.Arrays;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Vector_;
 import suite.math.stat.Quant;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.primitive.Floats_;
@@ -12,8 +12,8 @@ import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 
 public class Strategos {
 
-	private Matrix mtx = new Matrix();
 	private MovingAverage ma = new MovingAverage();
+	private Vector_ vec = new Vector_();
 
 	public BuySellStrategy longHold = prices -> day -> day != 0 ? 0 : 1;
 
@@ -44,7 +44,7 @@ public class Strategos {
 		return prices -> {
 			float[] macd = ma.emacd(prices, alpha0, alpha1);
 			float[] macdEmas = ma.exponentialMovingAvg(macd, macdAlpha);
-			float[] diff = mtx.sub(macd, macdEmas);
+			float[] diff = vec.sub(macd, macdEmas);
 			return crossover(diff);
 		};
 	}

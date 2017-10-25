@@ -51,6 +51,7 @@ import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
+import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.String_;
 
@@ -470,7 +471,7 @@ public class SewingProverImpl implements SewingProver {
 			String fieldName = ((Atom) m[1]).name;
 			BuiltinPredicate predicate = Rethrow.ex(() -> {
 				Class<?> clazz = Class.forName(className);
-				return (BuiltinPredicate) clazz.getField(fieldName).get(clazz.newInstance());
+				return (BuiltinPredicate) clazz.getField(fieldName).get(Object_.new_(clazz));
 			});
 			tr = compileTrCallPredicate(sb, predicate, m[2]);
 		} else if ((m = Suite.match("find.all .0 .1 .2").apply(node)) != null) {

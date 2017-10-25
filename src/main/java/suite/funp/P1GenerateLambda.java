@@ -3,9 +3,13 @@ package suite.funp;
 import suite.adt.Mutable;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
+import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
+import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
@@ -14,7 +18,12 @@ import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
+import suite.primitive.IntInt_Int;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
+import suite.util.Switch;
 
 public class P1GenerateLambda {
 
@@ -47,74 +56,101 @@ public class P1GenerateLambda {
 		}
 	}
 
+	public static class Vec implements Value {
+		public final Value[] values;
+
+		private Vec(Value[] values) {
+			this.values = values;
+		}
+	}
+
 	public interface Thunk extends Fun<Rt, Value>, Value {
 	}
 
 	private interface Fun_ extends Fun<Value, Value>, Value {
 	}
 
-	public Thunk compile(int fs, IMap<String, Integer> env, Funp n0) {
-		if (n0 instanceof FunpApply) {
-			FunpApply n1 = (FunpApply) n0;
-			Thunk lambda = compile(fs, env, n1.lambda);
-			Thunk value = compile(fs, env, n1.value);
-			return rt -> ((Fun_) lambda.apply(rt)).apply(value.apply(rt));
-		} else if (n0 instanceof FunpBoolean) {
-			Bool b = new Bool(((FunpBoolean) n0).b);
-			return rt -> b;
-		} else if (n0 instanceof FunpFixed) {
-			FunpLambda n1 = (FunpLambda) n0;
-			int fs1 = fs + 1;
-			Thunk thunk = compile(fs1, env.put(n1.var, fs1), n1.expr);
-			return rt -> {
-				Mutable<Fun_> mut = Mutable.nil();
-				Fun_ fun = p -> thunk.apply(new Rt(rt, mut.get()));
-				mut.set(fun);
-				return fun;
-			};
-		} else if (n0 instanceof FunpIf) {
-			FunpIf n1 = (FunpIf) n0;
-			Thunk if_ = compile(fs, env, n1.if_);
-			Thunk then = compile(fs, env, n1.then);
-			Thunk else_ = compile(fs, env, n1.else_);
-			return rt -> (b(rt, if_) ? then : else_).apply(rt);
-		} else if (n0 instanceof FunpLambda) {
-			FunpLambda n1 = (FunpLambda) n0;
-			int fs1 = fs + 1;
-			Thunk thunk = compile(fs1, env.put(n1.var, fs1), n1.expr);
-			return rt -> (Fun_) p -> thunk.apply(new Rt(rt, p));
-		} else if (n0 instanceof FunpNumber) {
-			Int i = new Int(((FunpNumber) n0).i);
-			return rt -> i;
-		} else if (n0 instanceof FunpPolyType)
-			return compile(fs, env, ((FunpPolyType) n0).expr);
-		else if (n0 instanceof FunpReference)
-			throw new RuntimeException();
-		else if (n0 instanceof FunpTree) {
-			FunpTree n1 = (FunpTree) n0;
-			Thunk v0 = compile(fs, env, n1.left);
-			Thunk v1 = compile(fs, env, n1.right);
-			if (n1.operator == TermOp.BIGAND)
-				return rt -> new Bool(b(rt, v0) && b(rt, v1));
-			else if (n1.operator == TermOp.BIGOR_)
-				return rt -> new Bool(b(rt, v0) || b(rt, v1));
-			else if (n1.operator == TermOp.PLUS__)
-				return rt -> new Int(i(rt, v0) + i(rt, v1));
-			else if (n1.operator == TermOp.MINUS_)
-				return rt -> new Int(i(rt, v0) - i(rt, v1));
-			else if (n1.operator == TermOp.MULT__)
-				return rt -> new Int(i(rt, v0) * i(rt, v1));
-			else
+	public Thunk compile(int fs, IMap<String, Integer> env, Funp n) {
+		return new Compile(fs, env).compile_(n);
+	}
+
+	private class Compile {
+		private int fs;
+		private IMap<String, Integer> env;
+
+		private Compile(int fs, IMap<String, Integer> env) {
+			this.fs = fs;
+			this.env = env;
+		}
+
+		private Thunk compile_(Funp n0) {
+			Switch<Thunk> sw = new Switch<>(n0);
+
+			sw.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
+				Thunk lambda1 = compile_(lambda);
+				Thunk value1 = compile_(value);
+				return rt -> ((Fun_) lambda1.apply(rt)).apply(value1.apply(rt));
+			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
+				Streamlet<Thunk> thunks = Read.from(elements).map(element -> compile_(element));
+				return rt -> new Vec(thunks.map(thunk -> thunk.apply(rt)).toArray(Value.class));
+			})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
+				Bool b1 = new Bool(b);
+				return rt -> b1;
+			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
+				return compile_(FunpApply.of(value, FunpLambda.of(var, expr)));
+			})).applyIf(FunpDeref.class, f -> {
 				throw new RuntimeException();
-		} else if (n0 instanceof FunpVariable) {
-			int fd = fs - env.get(((FunpVariable) n0).var);
-			return rt -> {
-				for (int i = 0; i < fd; i++)
-					rt = rt.parent;
-				return rt.var;
-			};
-		} else
-			throw new RuntimeException("cannot generate lambda for " + n0);
+			}).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
+				int fs1 = fs + 1;
+				Thunk thunk = compile(fs1, env.put(var, fs1), expr);
+				return rt -> {
+					Mutable<Fun_> mut = Mutable.nil();
+					Fun_ fun = p -> thunk.apply(new Rt(rt, mut.get()));
+					mut.set(fun);
+					return fun;
+				};
+			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
+				Thunk if1 = compile_(if_);
+				Thunk then1 = compile_(then);
+				Thunk else1 = compile_(else_);
+				return rt -> (b(rt, if1) ? then1 : else1).apply(rt);
+			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
+				Thunk array = compile_(FunpDeref.of(reference));
+				Thunk index1 = compile_(index);
+				return rt -> ((Vec) array.apply(rt)).values[i(rt, index1)];
+			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+				int fs1 = fs + 1;
+				Thunk thunk = compile(fs1, env.put(var, fs1), expr);
+				return rt -> (Fun_) p -> thunk.apply(new Rt(rt, p));
+			})).applyIf(FunpNumber.class, f -> f.apply(i -> {
+				Int i1 = new Int(i);
+				return rt -> i1;
+			})).applyIf(FunpPolyType.class, f -> f.apply(expr -> {
+				return compile_(expr);
+			})).applyIf(FunpReference.class, f -> {
+				throw new RuntimeException();
+			}).applyIf(FunpTree.class, f -> f.apply((operator, left, right) -> {
+				Thunk v0 = compile_(left);
+				Thunk v1 = compile_(right);
+				if (operator == TermOp.BIGAND)
+					return rt -> new Bool(b(rt, v0) && b(rt, v1));
+				else if (operator == TermOp.BIGOR_)
+					return rt -> new Bool(b(rt, v0) || b(rt, v1));
+				else {
+					IntInt_Int fun = TreeUtil.evaluateOp(operator);
+					return rt -> new Int(fun.apply(i(rt, v0), i(rt, v1)));
+				}
+			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
+				int fd = fs - env.get(var);
+				return rt -> {
+					for (int i = 0; i < fd; i++)
+						rt = rt.parent;
+					return rt.var;
+				};
+			}));
+
+			return sw.nonNullResult();
+		}
 	}
 
 	private static int i(Rt rt, Thunk value) {

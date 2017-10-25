@@ -121,7 +121,7 @@ public class DblObjMap<V> {
 	}
 
 	private DblObjSource<V> source_() {
-		return new DblObjSource<V>() {
+		return new DblObjSource<>() {
 			private int capacity = vs.length;
 			private int index = 0;
 

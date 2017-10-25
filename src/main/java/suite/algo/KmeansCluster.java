@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Vector_;
 import suite.primitive.Int_Int;
 import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
@@ -18,7 +18,7 @@ import suite.util.To;
 
 public class KmeansCluster {
 
-	private Matrix mtx = new Matrix();
+	private Vector_ vec = new Vector_();
 
 	private int dimension;
 
@@ -56,11 +56,11 @@ public class KmeansCluster {
 		int iteration = 0;
 
 		while (true) {
-			KmeansBin[] bins = To.array(KmeansBin.class, k, j -> new KmeansBin());
+			KmeansBin[] bins = To.array(k, KmeansBin.class, j -> new KmeansBin());
 
 			for (float[] point : points) {
 				KmeansBin bin = bins[findNearest(point, centers)];
-				bin.sum = mtx.add(point, bin.sum);
+				bin.sum = vec.add(point, bin.sum);
 				bin.count++;
 			}
 
@@ -101,12 +101,12 @@ public class KmeansCluster {
 	}
 
 	private float sqdist(float[] a, float[] b) {
-		float[] d = mtx.sub(a, b);
-		return mtx.dot(d);
+		float[] d = vec.sub(a, b);
+		return vec.dot(d);
 	}
 
 	private float[] div(float[] a, double b) {
-		return mtx.scale(a, 1d / b);
+		return vec.scale(a, 1d / b);
 	}
 
 }

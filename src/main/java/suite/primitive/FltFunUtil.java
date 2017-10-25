@@ -41,7 +41,7 @@ public class FltFunUtil {
 	}
 
 	public static Source<FltSource> chunk(int n, FltSource source) {
-		return new Source<FltSource>() {
+		return new Source<>() {
 			private float c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;
 			private int i;
@@ -141,7 +141,7 @@ public class FltFunUtil {
 	}
 
 	public static Iterator<Float> iterator(FltSource source) {
-		return new Iterator<Float>() {
+		return new Iterator<>() {
 			private float next = EMPTYVALUE;
 
 			public boolean hasNext() {
@@ -214,12 +214,12 @@ public class FltFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static Source<FltSource> split(FltPredicate fun0, FltSource source) {
 		FltPredicate fun1 = fun0.rethrow();
-		return new Source<FltSource>() {
+		return new Source<>() {
 			private float c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;
 			private FltSource source_ = () -> (isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && !fun1.test(c) ? c

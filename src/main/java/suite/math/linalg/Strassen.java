@@ -4,7 +4,7 @@ import suite.primitive.IntInt_Flt;
 
 public class Strassen {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
 
 	// https://en.wikipedia.org/wiki/Strassen_algorithm
 	public float[][] mul(float[][] a, float[][] b) {

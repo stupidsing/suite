@@ -13,6 +13,7 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.Trade_;
+import suite.trade.Usex;
 import suite.trade.data.Broker.Hsbc;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil2.Fun2;
@@ -30,6 +31,7 @@ public class ConfigurationImpl implements Configuration {
 	private Sina sina = new Sina();
 	private Yahoo yahoo = new Yahoo();
 
+	private Src srcForex = new Src(null, yahoo::quote, yahoo::dataSourceL1);
 	private Src srcHkd__ = new Src(hkd::queryCompany, hkd::quote, hkd::dataSource);
 	private Src srcHkex_ = new Src(hkex::queryCompany, sina::quote, yahoo::dataSourceL1);
 	private Src srcIndex = new Src(hkd::queryCompany, yahoo::quote, yahoo::dataSourceL1);
@@ -111,11 +113,13 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	private Src src(String symbol) {
-		if (String_.equals(symbol, Asset.cashSymbol))
+		if (symbol.endsWith("=X"))
+			return srcForex;
+		else if (String_.equals(symbol, Asset.cashSymbol))
 			return srcHkd__;
 		else if (symbol.endsWith(".HK"))
 			return srcHkex_;
-		else if (symbol.startsWith("^") || String_.equals(symbol, "NDAQ"))
+		else if (symbol.startsWith("^") || String_.equals(symbol, Usex.nasdaq))
 			return srcIndex;
 		else if (String_.equals(symbol, "CL=F") || symbol.endsWith(".NYM"))
 			return srcNymex;

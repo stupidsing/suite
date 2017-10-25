@@ -16,7 +16,7 @@ public class IPointerMapper<T0, T1> {
 	}
 
 	public IPointer<T1> map(IPointer<T0> pointer) {
-		return new IPointer<T1>() {
+		return new IPointer<>() {
 			public T1 head() {
 				T0 head = pointer.head();
 				return head != null ? fun.apply(head) : null;

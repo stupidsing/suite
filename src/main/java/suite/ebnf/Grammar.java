@@ -1,7 +1,6 @@
 package suite.ebnf;
 
 import java.io.Reader;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +60,7 @@ public class Grammar {
 	}
 
 	public Grammar(GrammarType type, String content, Grammar child) {
-		this(type, content, Arrays.asList(child));
+		this(type, content, List.of(child));
 	}
 
 	public Grammar(GrammarType type, List<Grammar> children) {

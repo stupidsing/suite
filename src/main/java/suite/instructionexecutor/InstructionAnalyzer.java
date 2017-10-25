@@ -66,8 +66,8 @@ public class InstructionAnalyzer {
 		}
 
 		/**
-		 * Analyzes whether the variable can be stored in a local variable, instead of a
-		 * instance variable in a frame.
+		 * Analyzes whether the variable can be stored in a local variable,
+		 * instead of a instance variable in a frame.
 		 */
 		public boolean isTemporal() {
 			return false;
@@ -245,7 +245,7 @@ public class InstructionAnalyzer {
 	}
 
 	private Source<Instruction> flow(List<Instruction> instructions, int ip) {
-		return new Source<Instruction>() {
+		return new Source<>() {
 			private boolean end = false;
 			private int ip_ = ip;
 

@@ -18,7 +18,6 @@ import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.primitive.ChrPrimitives.ChrSink;
 import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.ChrPrimitives.Chr_Obj;
-import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.set.ChrSet;
@@ -47,21 +46,6 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 			Source<ChrStreamlet> source = streamlets.source();
 			return ChrOutlet.of(ChrFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
-	}
-
-	public static <T> Fun<Outlet<T>, ChrStreamlet> of(Obj_Chr<T> fun0) {
-		Obj_Chr<T> fun1 = fun0.rethrow();
-		return ts -> {
-			CharsBuilder cb = new CharsBuilder();
-			T t;
-			while ((t = ts.next()) != null)
-				cb.append(fun1.apply(t));
-			return cb.toChars().streamlet();
-		};
-	}
-
-	public static ChrStreamlet of(char... ts) {
-		return streamlet(() -> ChrOutlet.of(ts));
 	}
 
 	private static ChrStreamlet streamlet(Source<ChrOutlet> in) {

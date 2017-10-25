@@ -67,6 +67,10 @@ public class Longs_ {
 			}
 	}
 
+	public static LngStreamlet of(long... ts) {
+		return new LngStreamlet(() -> LngOutlet.of(ts));
+	}
+
 	public static LngStreamlet range(long e) {
 		return range((long) 0, e);
 	}

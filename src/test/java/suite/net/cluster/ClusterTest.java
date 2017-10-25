@@ -1,5 +1,6 @@
 package suite.net.cluster;
 
+import static java.util.Map.entry;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -10,10 +11,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
 import suite.net.cluster.impl.ClusterImpl;
 import suite.util.Thread_;
-import suite.util.To;
 
 public class ClusterTest {
 
@@ -21,9 +20,9 @@ public class ClusterTest {
 	public void testCluster() throws IOException {
 		InetAddress localHost = InetAddress.getLocalHost();
 
-		Map<String, InetSocketAddress> peers = To.map(null //
-				, Pair.of("NODE0", new InetSocketAddress(localHost, 3000)) //
-				, Pair.of("NODE1", new InetSocketAddress(localHost, 3001)));
+		Map<String, InetSocketAddress> peers = Map.ofEntries( //
+				entry("NODE0", new InetSocketAddress(localHost, 3000)), //
+				entry("NODE1", new InetSocketAddress(localHost, 3001)));
 
 		Cluster cluster0 = new ClusterImpl("NODE0", peers);
 		Cluster cluster1 = new ClusterImpl("NODE1", peers);

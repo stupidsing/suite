@@ -28,20 +28,17 @@ import suite.node.util.Comparer;
 import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
 import suite.node.util.TreeRewriter;
+import suite.node.util.TreeUtil;
 import suite.os.LogUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
 
 public class EvalPredicates {
 
-	private Atom AND = Atom.of("and");
-	private Atom OR_ = Atom.of("or");
-	private Atom SHL = Atom.of("shl");
-	private Atom SHR = Atom.of("shr");
+	private static Random random = new Random();
+
 	private Comparer comparer = Comparer.comparer;
 	private Fun<String, ScriptEngine> engines = Memoize.fun(new ScriptEngineManager()::getEngineByExtension);
-
-	private static Random random = new Random();
 
 	public BuiltinPredicate bound = PredicateUtil.bool(n -> !(n instanceof Reference));
 
@@ -137,7 +134,7 @@ public class EvalPredicates {
 		}
 	});
 
-	public BuiltinPredicate let = PredicateUtil.p2((prover, var, expr) -> prover.bind(Int.of(evaluate(expr)), var));
+	public BuiltinPredicate let = PredicateUtil.p2((prover, var, expr) -> prover.bind(Int.of(TreeUtil.evaluate(expr)), var));
 
 	public BuiltinPredicate notEquals = (prover, ps) -> {
 		Tree tree = (Tree) ps;
@@ -171,59 +168,5 @@ public class EvalPredicates {
 		} else
 			return false;
 	});
-
-	public int evaluate(Node node) {
-		int result;
-		Tree tree = Tree.decompose(node);
-
-		if (tree != null) {
-			TermOp op = (TermOp) tree.getOperator();
-
-			if (op == TermOp.TUPLE_) {
-				Tree rightTree = Tree.decompose(tree.getRight());
-				Node op1 = rightTree.getLeft();
-				int a = evaluate(tree.getLeft()), b = evaluate(rightTree.getRight());
-				if (op1 == AND)
-					result = a & b;
-				else if (op1 == OR_)
-					result = a | b;
-				else if (op1 == SHL)
-					result = a << b;
-				else if (op1 == SHR)
-					result = a >> b;
-				else
-					throw new RuntimeException("cannot evaluate expression: " + node);
-			} else {
-				int a = evaluate(tree.getLeft()), b = evaluate(tree.getRight());
-				switch (op) {
-				case PLUS__:
-					result = a + b;
-					break;
-				case MINUS_:
-					result = a - b;
-					break;
-				case MULT__:
-					result = a * b;
-					break;
-				case DIVIDE:
-					result = a / b;
-					break;
-				case MODULO:
-					result = a % b;
-					break;
-				case POWER_:
-					result = (int) Math.pow(a, b);
-					break;
-				default:
-					throw new RuntimeException("cannot evaluate expression: " + node);
-				}
-			}
-		} else if (node instanceof Int)
-			result = ((Int) node).number;
-		else
-			throw new RuntimeException("cannot evaluate expression: " + node);
-
-		return result;
-	}
 
 }

@@ -1,5 +1,7 @@
 package suite.fp;
 
+import java.util.Map.Entry;
+
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.immutable.IMap;
@@ -9,6 +11,9 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
+import suite.node.util.TreeUtil.IntInt_Bool;
+import suite.primitive.IntInt_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 
@@ -50,18 +55,19 @@ public class InterpretFunLazy0 {
 		env = env.put(Atom.FALSE.name, () -> Atom.FALSE);
 
 		env = env.put(TermOp.AND___.name, () -> new Fun_(a -> () -> new Fun_(b -> () -> new Pair_(a, b))));
-		env = env.put(TermOp.EQUAL_.name, () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) == i(b)))));
-		env = env.put(TermOp.NOTEQ_.name, () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) != i(b)))));
-		env = env.put(TermOp.LE____.name, () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) <= i(b)))));
-		env = env.put(TermOp.LT____.name, () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) < i(b)))));
-		env = env.put(TermOp.PLUS__.name, () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) + i(b)))));
-		env = env.put(TermOp.MINUS_.name, () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) - i(b)))));
-		env = env.put(TermOp.MULT__.name, () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) * i(b)))));
-		env = env.put(TermOp.DIVIDE.name, () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) / i(b)))));
-
 		env = env.put(ERROR.name, error);
 		env = env.put(FST__.name, () -> new Fun_(in -> ((Pair_) in.get()).first));
 		env = env.put(SND__.name, () -> new Fun_(in -> ((Pair_) in.get()).second));
+
+		for (Entry<Operator, IntInt_Bool> e : TreeUtil.boolOperations.entrySet()) {
+			IntInt_Bool fun = e.getValue();
+			env = env.put(e.getKey().getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(fun.apply(i(a), i(b))))));
+		}
+
+		for (Entry<Operator, IntInt_Int> e : TreeUtil.intOperations.entrySet()) {
+			IntInt_Int fun = e.getValue();
+			env = env.put(e.getKey().getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(fun.apply(i(a), i(b))))));
+		}
 
 		return lazy_(node).apply(env);
 	}

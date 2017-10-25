@@ -70,7 +70,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 	}
 
 	private int findFreeExtentPages(int count) {
-		Int_Obj<Byte> read = new Int_Obj<Byte>() {
+		Int_Obj<Byte> read = new Int_Obj<>() {
 			private int start, end;
 			private Bytes bytes;
 

@@ -1,15 +1,14 @@
 package suite.trade.data;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import suite.math.stat.TimeSeries;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
+import suite.primitive.Longs_;
 import suite.primitive.adt.pair.LngFltPair;
-import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -57,11 +56,11 @@ public class DataSource {
 		Streamlet<Long> tradeTimes;
 		if (Boolean.TRUE)
 			tradeTimes = dataSources // union
-					.concatMap(ds -> LngStreamlet.of(ds.ts).map(t -> t)) //
+					.concatMap(ds -> Longs_.of(ds.ts).map(t -> t)) //
 					.distinct();
 		else
 			tradeTimes = Read.from(Set_.intersect(dataSources // intersect
-					.<Collection<Long>>map(ds -> LngStreamlet.of(ds.ts).map(t -> t).toList()) //
+					.<Collection<Long>> map(ds -> Longs_.of(ds.ts).map(t -> t).toList()) //
 					.toList()));
 		return new AlignDataSource(tradeTimes //
 				.sort(Object_::compare) //
@@ -228,7 +227,7 @@ public class DataSource {
 
 	public DataSource validate() {
 		validate(prices);
-		for (float[] prices1 : Arrays.asList(opens, closes, lows, highs))
+		for (float[] prices1 : List.of(opens, closes, lows, highs))
 			if (prices != prices1)
 				validate(prices1);
 		return this;

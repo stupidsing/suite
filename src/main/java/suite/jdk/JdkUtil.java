@@ -3,7 +3,7 @@ package suite.jdk;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.List;
 
 import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
@@ -43,7 +43,7 @@ public class JdkUtil {
 					null, //
 					null, //
 					null, //
-					Arrays.asList("-d", binDir.toString()), //
+					List.of("-d", binDir.toString()), //
 					null, //
 					sjfm.getJavaFileObjects(srcFilePath.toFile())).call())
 				throw new RuntimeException("Java compilation error");

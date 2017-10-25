@@ -2,7 +2,6 @@ package suite.trade.backalloc;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -25,14 +24,14 @@ public class BackAllocatorTest {
 		String symbol = "S";
 		float[] prices = { 1f, .99f, .98f, .5f, .5f, .5f, 0f, 0f, 0f, };
 
-		BackAllocator ba0 = (akds, ts) -> index -> Arrays.asList(Pair.of(symbol, 1d));
+		BackAllocator ba0 = (akds, ts) -> index -> List.of(Pair.of(symbol, 1d));
 		BackAllocator ba1 = ba0.stopLoss(.98d);
 
 		int length = prices.length;
 		long[] ts = Longs_.toArray(length, i -> start.addDays(i).epochSec());
 
 		DataSource ds = DataSource.of(ts, prices);
-		AlignKeyDataSource<String> akds = DataSource.alignAll(Read.from2(Arrays.asList(Pair.of(symbol, ds))));
+		AlignKeyDataSource<String> akds = DataSource.alignAll(Read.from2(List.of(Pair.of(symbol, ds))));
 		int[] indices = Ints_.toArray(length, i -> i);
 
 		OnDateTime odt = ba1.allocate(akds, indices);
@@ -43,7 +42,7 @@ public class BackAllocatorTest {
 				.map(pairs -> pairs.collectAsDouble(Obj_Dbl.sum(pair -> pair.t1))) //
 				.toList();
 
-		assertEquals(Arrays.asList(0d, 1d, 1d, 1d, 0d, 0d, 0d, 0d, 0d), potentials);
+		assertEquals(List.of(0d, 1d, 1d, 1d, 0d, 0d, 0d, 0d, 0d), potentials);
 	}
 
 }

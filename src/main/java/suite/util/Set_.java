@@ -1,6 +1,5 @@
 package suite.util;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +25,7 @@ public class Set_ {
 
 	@SafeVarargs
 	public static <T> Set<T> union(Collection<T>... collections) {
-		return union_(Arrays.asList(collections));
+		return union_(List.of(collections));
 	}
 
 	private static <T> Set<T> union_(Collection<Collection<T>> collections) {

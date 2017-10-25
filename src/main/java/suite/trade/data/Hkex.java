@@ -2,7 +2,6 @@ package suite.trade.data;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ public class Hkex {
 	private static ObjectMapper mapper = new ObjectMapper();
 	private Serialize serialize = Serialize.me;
 
-	private Set<String> delisted = new HashSet<>(Arrays.asList("0013.HK"));
+	private Set<String> delisted = new HashSet<>(List.of("0013.HK"));
 
 	// https://www.hkex.com.hk/eng/csm/result.htm?location=companySearch&SearchMethod=2&mkt=hk&LangCode=en&StockType=MB&Ranking=ByMC&x=42&y=9
 	// stock code, stock name, market capitalisation (million)
@@ -169,7 +168,7 @@ public class Hkex {
 	private Map<String, Asset> companyBySymbol = Read.from(companies).toMap(company -> company.symbol);
 
 	public static final Set<String> commonFirstNames = new HashSet<>(
-			Arrays.asList("", "China", "Guangdong", "Hang", "HK", "Hongkong", "New", "Standard"));
+			List.of("", "China", "Guangdong", "Hang", "HK", "Hongkong", "New", "Standard"));
 
 	public static class Data {
 		public static class Content {
@@ -201,7 +200,7 @@ public class Hkex {
 				if (table.isArray())
 					return Read.from(table).map(json -> mapper.convertValue(json, Table.class)).toList();
 				else
-					return Arrays.asList(mapper.convertValue(table, Table.class));
+					return List.of(mapper.convertValue(table, Table.class));
 			}
 		}
 

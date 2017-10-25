@@ -1,11 +1,11 @@
 package suite;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import suite.adt.pair.Pair;
 import suite.math.MathUtil;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
@@ -48,7 +48,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain extends ExecutableProgram {
 
-	private Set<String> blackList = To.set("N/A", "1880.HK", "2973.HK"); // "0566.HK"
+	private Set<String> blackList = To.set("2983.HK");
 
 	private Configuration cfg = new ConfigurationImpl();
 	private Serialize serialize = Serialize.me;
@@ -80,21 +80,21 @@ public class DailyMain extends ExecutableProgram {
 		String ymd = Time.now().ymd();
 
 		// perform systematic trading
-		List<Result> results = Arrays.asList( //
-				alloc("bb", 66666f, bacs.bac_bbHold), //
-				alloc("bug", 0f, bacs.bac_sell), //
-				alloc("donchian", 150000f, bacs.bac_donHold), //
-				alloc("ema", 100000f, bacs.bac_ema), //
+		List<Result> results = List.of( //
+				alloc(bacs.pair_bb, 66666f), //
+				alloc("bug", bacs.bac_sell, 0f), //
+				alloc(bacs.pair_donchian, 150000f), //
+				alloc(bacs.pair_ema, 100000f), //
 				mamr(100000f), //
-				alloc("pmamr", 183333f, bacs.bac_pmamr), //
-				alloc("pmmmr", 80000f, bacs.bac_pmmmr), //
-				alloc("revco", 0f, bacs.bac_revco), //
-				alloc("tma", 0f, bacs.bac_tma), //
-				alloc(sellPool, 0f, bacs.bac_sell));
+				alloc(bacs.pair_pmamr, 183333f), //
+				alloc(bacs.pair_pmmmr, 80000f), //
+				alloc(bacs.pair_revco, 0f), //
+				alloc(bacs.pair_tma, 0f), //
+				alloc(sellPool, bacs.bac_sell, 0f));
 
 		// unused strategies
 		if (Boolean.FALSE) {
-			alloc("donchian", 100000f, bacs.bac_donHold);
+			alloc(bacs.pair_donchian, 100000f);
 			pairs(0f, "0341.HK", "0052.HK");
 			sellForEarn(sellPool);
 		}
@@ -213,7 +213,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private Result pairs(float fund, String symbol0, String symbol1) {
-		return alloc("pairs/" + symbol0 + "/" + symbol1, fund, pairs(symbol0, symbol1));
+		return alloc("pairs/" + symbol0 + "/" + symbol1, pairs(symbol0, symbol1), fund);
 	}
 
 	public BackAllocConfiguration pairs(String symbol0, String symbol1) {
@@ -243,7 +243,12 @@ public class DailyMain extends ExecutableProgram {
 		return new Result(tag, trades);
 	}
 
-	private Result alloc(String tag, float fund, BackAllocConfiguration pair) {
+	private Result alloc(Pair<String, BackAllocConfiguration> pair, float fund) {
+		BackAllocConfiguration bac = pair.t1;
+		return alloc(pair.t0, fund, bac.backAllocator, bac.assetsFun.apply(today));
+	}
+
+	private Result alloc(String tag, BackAllocConfiguration pair, float fund) {
 		return alloc(tag, fund, pair.backAllocator, pair.assetsFun.apply(today));
 	}
 

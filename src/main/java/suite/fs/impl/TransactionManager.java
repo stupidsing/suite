@@ -41,7 +41,7 @@ public class TransactionManager<Key, Value> {
 		public KeyValueMutator<Key, Value> mutate() {
 			KeyValueMutator<Key, Value> mutator = store.mutate();
 
-			return new KeyValueMutator<Key, Value>() {
+			return new KeyValueMutator<>() {
 				public Streamlet<Key> keys(Key start, Key end) {
 					return mutator.keys(start, end);
 				}

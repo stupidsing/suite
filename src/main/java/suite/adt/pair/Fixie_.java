@@ -2,7 +2,8 @@ package suite.adt.pair;
 
 public class Fixie_ {
 
-	public interface FixieFun0 {
+	public interface FixieFun0<R> {
+		public R apply();
 	}
 
 	public interface FixieFun1<T0, R> {
@@ -46,6 +47,7 @@ public class Fixie_ {
 	}
 
 	public interface Fixie0 {
+		public <R> R map(FixieFun0<R> fun);
 	}
 
 	public interface Fixie1<T0> extends Fixie0 {

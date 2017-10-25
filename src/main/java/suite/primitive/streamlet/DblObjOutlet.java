@@ -73,7 +73,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> DblObjOutlet<V> of(DblObjPair<V>... kvs) {
-		return of(new DblObjSource<V>() {
+		return of(new DblObjSource<>() {
 			private int i;
 
 			public boolean source2(DblObjPair<V> pair) {
@@ -90,7 +90,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public static <V> DblObjOutlet<V> of(Iterable<DblObjPair<V>> col) {
 		Iterator<DblObjPair<V>> iter = col.iterator();
-		return of(new DblObjSource<V>() {
+		return of(new DblObjSource<>() {
 			public boolean source2(DblObjPair<V> pair) {
 				boolean b = iter.hasNext();
 				if (b) {
@@ -401,7 +401,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjOutlet<V> take(int n) {
-		return of(new DblObjSource<V>() {
+		return of(new DblObjSource<>() {
 			private int count = n;
 
 			public boolean source2(DblObjPair<V> pair) {

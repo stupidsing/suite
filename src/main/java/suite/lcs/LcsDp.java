@@ -2,7 +2,6 @@ package suite.lcs;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -52,7 +51,7 @@ public class LcsDp<T> {
 				T t1 = l1.get(i1);
 				Node lu1 = Objects.equals(t0, t1) ? new Node(t0, lu) : lu;
 
-				dp[i0][i1] = Collections.max(Arrays.asList(u, l, lu1), comparator);
+				dp[i0][i1] = Collections.max(List.of(u, l, lu1), comparator);
 			}
 
 		Node node = dp[size0 - 1][size1 - 1];

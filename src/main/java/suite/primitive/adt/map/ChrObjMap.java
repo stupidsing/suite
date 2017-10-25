@@ -121,7 +121,7 @@ public class ChrObjMap<V> {
 	}
 
 	private ChrObjSource<V> source_() {
-		return new ChrObjSource<V>() {
+		return new ChrObjSource<>() {
 			private int capacity = vs.length;
 			private int index = 0;
 

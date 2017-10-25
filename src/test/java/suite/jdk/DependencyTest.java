@@ -3,7 +3,6 @@ package suite.jdk;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +23,7 @@ import suite.util.Rethrow;
 public class DependencyTest {
 
 	private String dir = FileUtil.homeDir();
-	private List<String> sourceDirs = Arrays.asList(dir + "/src/main/java", dir + "/src/test/java");
+	private List<String> sourceDirs = List.of(dir + "/src/main/java", dir + "/src/test/java");
 
 	@Test
 	public void testDependency() {
@@ -33,7 +32,7 @@ public class DependencyTest {
 
 	@Test
 	public void testStronglyConnectedComponents() {
-		Deque<String> classes = new ArrayDeque<>(Arrays.asList("suite.jdk.DependencyTest"));
+		Deque<String> classes = new ArrayDeque<>(List.of("suite.jdk.DependencyTest"));
 		Map<String, List<String>> dependenciesByClassName = new HashMap<>();
 		String className;
 

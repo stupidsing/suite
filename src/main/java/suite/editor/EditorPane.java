@@ -1,7 +1,7 @@
 package suite.editor;
 
-import java.awt.Event;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JEditorPane;
@@ -49,9 +49,9 @@ public class EditorPane extends JEditorPane {
 		};
 
 		bind(KeyEvent.VK_TAB, 0).wire(Listen.catchAll(tabize));
-		bind(KeyEvent.VK_TAB, Event.SHIFT_MASK).wire(Listen.catchAll(untabize));
-		bind(KeyEvent.VK_Y, Event.CTRL_MASK).wire(undoManager::redo);
-		bind(KeyEvent.VK_Z, Event.CTRL_MASK).wire(undoManager::undo);
+		bind(KeyEvent.VK_TAB, InputEvent.SHIFT_DOWN_MASK).wire(Listen.catchAll(untabize));
+		bind(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK).wire(undoManager::redo);
+		bind(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK).wire(undoManager::undo);
 
 		document.addUndoableEditListener(event -> undoManager.addEdit(event.getEdit()));
 		Listen.documentChanged(document).wire(event -> model.changeModified(true));

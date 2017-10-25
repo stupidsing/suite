@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Random;
 
 import suite.math.Sigmoid;
-import suite.math.linalg.Matrix;
+import suite.math.linalg.Matrix_;
+import suite.math.linalg.Vector_;
 import suite.util.List_;
 
 public class ArtificialNeuralNetwork {
 
-	private Matrix mtx = new Matrix();
+	private Matrix_ mtx = new Matrix_();
+	private Vector_ vec = new Vector_();
 
 	private float learningRate = 1f;
 	private int nLayers;
@@ -77,7 +79,7 @@ public class ArtificialNeuralNetwork {
 
 			float[] ins = activations.get(layer - 1);
 			float[] outs = activations.get(layer);
-			float[] errors1 = lw1 != null ? mtx.mul(lw1.weights, errors) : mtx.sub(expected, outs);
+			float[] errors1 = lw1 != null ? mtx.mul(lw1.weights, errors) : vec.sub(expected, outs);
 
 			for (int j = 0; j < lw0.nOutputs; j++)
 				errors1[j] *= activationFunctionGradient(outs[j]);

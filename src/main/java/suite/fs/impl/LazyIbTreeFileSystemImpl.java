@@ -30,7 +30,7 @@ public class LazyIbTreeFileSystemImpl implements FileSystem {
 		jpf = JournalledFileFactory.journalled(path, pageSize);
 		PageFile[] pfs = FileFactory.subPageFiles(jpf, 0, 10240, 20480, 30720);
 
-		mutator = new FileSystemMutatorImpl(keyUtil, () -> new KeyDataStore<Bytes>() {
+		mutator = new FileSystemMutatorImpl(keyUtil, () -> new KeyDataStore<>() {
 			private KeyValueStore<Bytes, Bytes> kvss = LazyIbTreeStore.ofExtent( //
 					pfs[0], //
 					Bytes.comparator, //
@@ -54,7 +54,7 @@ public class LazyIbTreeFileSystemImpl implements FileSystem {
 			}
 
 			public KeyDataMutator<Bytes> mutateData() {
-				return new KeyDataMutator<Bytes>() {
+				return new KeyDataMutator<>() {
 					public Streamlet<Bytes> keys(Bytes start, Bytes end) {
 						return kvsbs.mutate().keys(start, end);
 					}

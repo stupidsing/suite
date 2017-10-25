@@ -3,7 +3,7 @@ package suite.lp.doer;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -17,13 +17,13 @@ public class RbTreeTest {
 
 	@Test
 	public void test() throws IOException {
-		RuleSet rs = Suite.newRuleSet(Arrays.asList("auto.sl", "rbt.sl"));
+		RuleSet rs = Suite.newRuleSet(List.of("auto.sl", "rbt.sl"));
 		String gs = "" //
 				+ "rbt-insert-list (6, 7, 8, 9, 10, 1, 2, 3, 4, 5,) ()/.t \n" //
 				+ ", rbt-get .t 8" //
 				+ ", rbt-member .t 4";
 
-		for (Builder builder : Arrays.asList(new InterpretedProverBuilder(), new SewingProverBuilder2()))
+		for (Builder builder : List.of(new InterpretedProverBuilder(), new SewingProverBuilder2()))
 			assertTrue(Suite.proveLogic(builder, rs, gs));
 	}
 
