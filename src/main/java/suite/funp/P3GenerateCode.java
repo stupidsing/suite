@@ -453,27 +453,26 @@ public class P3GenerateCode {
 					em.shiftImm(Insn.SHR, opResult = cr.apply(rhs), Integer.numberOfTrailingZeros(numRhs));
 
 				Fun<Insn, Pair<Funp, OpReg>> commutative = insn_ -> {
-					OpReg opResult_;
 					Operand opLhs = em.decomposeOperand(lhs);
 					Operand opRhs = em.decomposeOperand(rhs);
 					OpReg opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
 					OpReg opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
 
 					if (opLhsReg != null && !rs.contains(opLhsReg))
-						return Pair.of(lhs, compileRegInstruction(insn_, opResult_ = opLhsReg, opRhs, lhs));
+						return Pair.of(lhs, compileRegInstruction(insn_, opLhsReg, opRhs, lhs));
 					else if (opRhsReg != null && !rs.contains(opRhsReg))
-						return Pair.of(rhs, compileRegInstruction(insn_, opResult_ = opRhsReg, opLhs, rhs));
+						return Pair.of(rhs, compileRegInstruction(insn_, opRhsReg, opLhs, rhs));
 					else if (opLhs != null)
-						return Pair.of(rhs, em.emitRegInsn(insn_, opResult_ = cr.apply(rhs), opLhs));
+						return Pair.of(rhs, em.emitRegInsn(insn_, cr.apply(rhs), opLhs));
 					else if (opRhs != null)
-						return Pair.of(lhs, em.emitRegInsn(insn_, opResult_ = cr.apply(lhs), opRhs));
+						return Pair.of(lhs, em.emitRegInsn(insn_, cr.apply(lhs), opRhs));
 					else {
 						boolean isRightAssoc = assoc == Assoc.RIGHT;
 						Funp first = isRightAssoc ? rhs : lhs;
 						Funp second = isRightAssoc ? lhs : rhs;
-						opResult_ = cr.apply(first);
-						Operand op1 = mask(opResult_).compileOp(second);
-						return Pair.of(first, em.emitRegInsn(insn_, opResult_, op1));
+						OpReg op0 = cr.apply(first);
+						Operand op1 = mask(op0).compileOp(second);
+						return Pair.of(first, em.emitRegInsn(insn_, op0, op1));
 					}
 				};
 
