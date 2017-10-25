@@ -497,7 +497,6 @@ public class P3GenerateCode {
 						opResult = opResult_;
 					} else if (operator == TermOp.MINUS_) {
 						Pair<Funp, OpReg> pair = commutative.apply(Insn.SUB);
-						compileInstruction(Insn.SUB, opResult = cr.apply(lhs), rhs);
 						if (pair.t1 == rhs)
 							em.emit(amd64.instruction(Insn.NEG, pair.t1));
 					} else if (setInsn != null) {
