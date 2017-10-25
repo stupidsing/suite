@@ -111,9 +111,9 @@ public class P1InferType {
 				for (Funp element : elements)
 					unify(n, te, infer(element));
 				return TypeArray.of(te, elements.size());
-			})).applyIf(FunpAsm.class, f -> f.apply((asm, expr) -> {
-				return infer(expr);
-			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
+			})).applyIf(FunpAsm.class, f -> {
+				return typeNumber;
+			}).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), TypeReference.of(infer(value)));
 				return infer(expr);
 			})).applyIf(FunpBoolean.class, f -> {

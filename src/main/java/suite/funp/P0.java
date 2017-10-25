@@ -50,17 +50,15 @@ public class P0 {
 
 	public static class FunpAsm implements Funp, P3.End {
 		public List<Node> asm;
-		public Funp expr;
 
-		public static FunpAsm of(List<Node> asm, Funp expr) {
+		public static FunpAsm of(List<Node> asm) {
 			FunpAsm f = new FunpAsm();
 			f.asm = asm;
-			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<List<Node>, Funp, R> fun) {
-			return fun.apply(asm, expr);
+		public <R> R apply(FixieFun1<List<Node>, R> fun) {
+			return fun.apply(asm);
 		}
 	}
 

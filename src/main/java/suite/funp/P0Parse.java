@@ -65,8 +65,8 @@ public class P0Parse {
 				return FunpBoolean.of(false);
 			else if (node == Atom.TRUE)
 				return FunpBoolean.of(true);
-			else if ((m = Suite.match("asm .0 .1").apply(node)) != null)
-				return FunpAsm.of(Tree.iter(m[0], TermOp.OR____).toList(), parse(m[1]));
+			else if ((m = Suite.match("asm .0").apply(node)) != null)
+				return FunpAsm.of(Tree.iter(m[0], TermOp.OR____).toList());
 			else if ((m = Suite.match("define .0 := .1 >> .2").apply(node)) != null) {
 				String var = name(m[0]);
 				return FunpDefine.of(var, FunpPolyType.of(parse(m[1])), parseNewVariable(m[2], var));

@@ -238,10 +238,10 @@ public class P3GenerateCode {
 					else
 						em.emit(amd64.instruction(Insn.ADD, esp, imm));
 					return out;
-				})).applyIf(FunpAsm.class, f -> f.apply((asm, expr) -> {
+				})).applyIf(FunpAsm.class, f -> f.apply(asm -> {
 					Amd64Parser p = new Amd64Parser();
 					Read.from(asm).map(p::parse).sink(em::emit);
-					return compile(expr);
+					return postOp.apply(eax);
 				})).applyIf(FunpAssign.class, f -> f.apply((memory, value, expr) -> {
 					compileAssign(value, memory);
 					return compile(expr);
