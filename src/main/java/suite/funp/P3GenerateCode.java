@@ -70,12 +70,15 @@ public class P3GenerateCode {
 	private OpReg edi = amd64.edi;
 	private RegisterSet registerSet = new RegisterSet().mask(ebp, esp);
 
-	private Map<Operator, Insn> insnByOp = Map.ofEntries( //
+	private Map<Object, Insn> insnByOp = Map.ofEntries( //
 			entry(TermOp.BIGOR_, Insn.OR), //
 			entry(TermOp.BIGAND, Insn.AND), //
 			entry(TermOp.PLUS__, Insn.ADD), //
 			entry(TermOp.MINUS_, Insn.SUB), //
-			entry(TermOp.MULT__, Insn.IMUL));
+			entry(TermOp.MULT__, Insn.IMUL), //
+			entry(TreeUtil.AND, Insn.AND), //
+			entry(TreeUtil.OR_, Insn.OR), //
+			entry(TreeUtil.XOR, Insn.XOR));
 
 	Map<TermOp, Insn> jxxInsnByOp = Map.ofEntries( //
 			entry(TermOp.EQUAL_, Insn.JE), //
@@ -94,6 +97,12 @@ public class P3GenerateCode {
 			entry(TermOp.LE____, Insn.SETLE), //
 			entry(TermOp.LT____, Insn.SETL), //
 			entry(TermOp.NOTEQ_, Insn.SETNE));
+
+	Map<TermOp, Insn> setnInsnByOp = Map.ofEntries( //
+			entry(TermOp.EQUAL_, Insn.SETNE), //
+			entry(TermOp.LE____, Insn.SETG), //
+			entry(TermOp.LT____, Insn.SETGE), //
+			entry(TermOp.NOTEQ_, Insn.SETE));
 
 	Map<Atom, Insn> shInsnByOp = Map.ofEntries( //
 			entry(TreeUtil.SHL, Insn.SHL), //
@@ -427,8 +436,11 @@ public class P3GenerateCode {
 
 			private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
 				boolean isOutSpec = type == CompileOut_.OPSPEC || type == CompileOut_.TWOOPSPEC;
-				Integer numLhs = lhs instanceof FunpNumber ? ((FunpNumber) lhs).i : null;
 				Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i : null;
+				Insn insn = insnByOp.get(operator);
+				Insn setInsn = setInsnByOp.get(operator);
+				Insn setnInsn = setnInsnByOp.get(operator);
+				Insn shInsn = shInsnByOp.get(operator);
 				OpMem op = em.decomposeOpMem(n, 0, is);
 				OpReg opResult = null;
 
@@ -437,36 +449,33 @@ public class P3GenerateCode {
 
 				Fun<Funp, OpReg> cr = n_ -> isOutSpec ? compileOpSpec(n_, pop0) : compileOpReg(n_);
 
-				Fun2<OpReg, Sink2<? super OpReg, Integer>, OpReg> fun = (op_, s) -> {
-					if (op_ == null && numRhs != null)
-						s.sink2(op_ = cr.apply(lhs), numRhs);
-					if (op_ == null && numLhs != null)
-						s.sink2(op_ = cr.apply(rhs), numLhs);
-					return op_;
-				};
-
-				opResult = operator == TermOp.BIGAND ? fun.apply(opResult, em::andImm) : opResult;
-				opResult = operator == TermOp.BIGOR_ ? fun.apply(opResult, em::orImm) : opResult;
-				opResult = operator == TermOp.PLUS__ ? fun.apply(opResult, em::addImm) : opResult;
-				opResult = operator == TermOp.MULT__ ? fun.apply(opResult, em::imulImm) : opResult;
-				opResult = operator == TreeUtil.AND ? fun.apply(opResult, em::andImm) : opResult;
-				opResult = operator == TreeUtil.OR_ ? fun.apply(opResult, em::orImm) : opResult;
-				opResult = operator == TreeUtil.XOR ? fun.apply(opResult, em::xorImm) : opResult;
-
-				if (opResult == null && operator == TermOp.MINUS_ && numLhs != null) {
-					em.emit(amd64.instruction(Insn.NEG, opResult = cr.apply(rhs)));
-					em.addImm(opResult, numLhs);
-				}
-
-				if (opResult == null && operator == TermOp.MINUS_ && numRhs != null)
-					em.addImm(opResult = cr.apply(lhs), -numRhs);
-
 				if (opResult == null && operator == TermOp.DIVIDE && numRhs != null && Integer.bitCount(numRhs) == 1)
 					em.shiftImm(Insn.SHR, opResult = cr.apply(rhs), Integer.numberOfTrailingZeros(numRhs));
 
-				Insn insn = insnByOp.get(operator);
-				Insn setInsn = setInsnByOp.get(operator);
-				Insn shInsn = shInsnByOp.get(operator);
+				Fun<Insn, Pair<Funp, OpReg>> commutative = insn_ -> {
+					OpReg opResult_;
+					Operand opLhs = em.decomposeOperand(lhs);
+					Operand opRhs = em.decomposeOperand(rhs);
+					OpReg opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
+					OpReg opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
+
+					if (opLhsReg != null && !rs.contains(opLhsReg))
+						return Pair.of(lhs, compileRegInstruction(insn_, opResult_ = opLhsReg, opRhs, lhs));
+					else if (opRhsReg != null && !rs.contains(opRhsReg))
+						return Pair.of(rhs, compileRegInstruction(insn_, opResult_ = opRhsReg, opLhs, rhs));
+					else if (opLhs != null)
+						return Pair.of(rhs, em.emitRegInsn(insn_, opResult_ = cr.apply(rhs), opLhs));
+					else if (opRhs != null)
+						return Pair.of(lhs, em.emitRegInsn(insn_, opResult_ = cr.apply(lhs), opRhs));
+					else {
+						boolean isRightAssoc = assoc == Assoc.RIGHT;
+						Funp first = isRightAssoc ? rhs : lhs;
+						Funp second = isRightAssoc ? lhs : rhs;
+						opResult_ = cr.apply(first);
+						Operand op1 = mask(opResult_).compileOp(second);
+						return Pair.of(first, em.emitRegInsn(insn_, opResult_, op1));
+					}
+				};
 
 				if (opResult == null)
 					if (operator == TermOp.DIVIDE) {
@@ -483,11 +492,15 @@ public class P3GenerateCode {
 						Sink<Compile1> sink1 = rs.contains(eax) ? c1 -> c1.saveRegs(sink0, eax) : sink0;
 						saveRegs(sink1, edx);
 						opResult = opResult_;
-					} else if (operator == TermOp.MINUS_)
+					} else if (operator == TermOp.MINUS_) {
+						Pair<Funp, OpReg> pair = commutative.apply(Insn.SUB);
 						compileInstruction(Insn.SUB, opResult = cr.apply(lhs), rhs);
-					else if (setInsn != null) {
-						compileInstruction(Insn.CMP, lhs, rhs);
-						em.emit(amd64.instruction(setInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
+						if (pair.t1 == rhs)
+							em.emit(amd64.instruction(Insn.NEG, pair.t1));
+					} else if (setInsn != null) {
+						Pair<Funp, OpReg> pair = commutative.apply(Insn.CMP);
+						opResult = pair.t1;
+						em.emit(amd64.instruction(opResult == lhs ? setInsn : setnInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
 					} else if (shInsn != null) {
 						OpReg op0 = cr.apply(lhs);
 						if (numRhs != null)
@@ -498,28 +511,8 @@ public class P3GenerateCode {
 								em.emit(amd64.instruction(shInsn, op0, opRhs));
 							}, ecx);
 						opResult = op0;
-					} else { // commutative operator
-						Operand opLhs = em.decomposeOperand(lhs);
-						Operand opRhs = em.decomposeOperand(rhs);
-						OpReg opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
-						OpReg opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
-
-						if (opLhsReg != null && !rs.contains(opLhsReg))
-							compileRegInstruction(insn, opResult = opLhsReg, opRhs, rhs);
-						else if (opRhsReg != null && !rs.contains(opRhsReg))
-							compileRegInstruction(insn, opResult = opRhsReg, opLhs, lhs);
-						else if (opLhs != null)
-							compileRegInstruction(insn, opResult = cr.apply(rhs), opLhs);
-						else if (opRhs != null)
-							compileRegInstruction(insn, opResult = cr.apply(lhs), opRhs);
-						else {
-							Funp first = assoc == Assoc.RIGHT ? rhs : lhs;
-							Funp second = assoc == Assoc.RIGHT ? lhs : rhs;
-							opResult = cr.apply(first);
-							Operand op1 = mask(opResult).compileOp(second);
-							compileRegInstruction(insn, opResult, op1);
-						}
-					}
+					} else
+						opResult = commutative.apply(insn).t1;
 
 				return opResult;
 			}
@@ -538,14 +531,6 @@ public class P3GenerateCode {
 				return Pair.of(ebp, routineLabel);
 			}
 
-			private void compileInstruction(Insn insn, Funp f0, Funp f1) {
-				Operand op0 = em.decomposeOperand(f0);
-				Operand op1 = em.decomposeOperand(f1);
-				op1 = op1 != null ? op1 : mask(op0).compileOp(f1);
-				op0 = op0 != null ? op0 : mask(op1).compileOp(f0);
-				compileInstruction(insn, op0, op1);
-			}
-
 			private void compileInstruction(Insn insn, Operand op0, Funp f1) {
 				Operand op1 = em.decomposeOperand(f1);
 				compileInstruction(insn, op0, op1 != null ? op1 : mask(op0).compileOp(f1));
@@ -559,15 +544,8 @@ public class P3GenerateCode {
 				em.emit(amd64.instruction(insn, op0, op1));
 			}
 
-			private void compileRegInstruction(Insn insn, OpReg op0, Operand op1, Funp f1) {
-				compileRegInstruction(insn, op0, op1 != null ? op1 : mask(op0).compileOp(f1));
-			}
-
-			private void compileRegInstruction(Insn insn, OpReg op0, Operand op1) {
-				if (insn == Insn.IMUL && op1 instanceof OpImm)
-					em.emit(amd64.instruction(insn, op0, op0, op1));
-				else
-					em.emit(amd64.instruction(insn, op0, op1));
+			private OpReg compileRegInstruction(Insn insn, OpReg op0, Operand op1, Funp f1) {
+				return em.emitRegInsn(insn, op0, op1 != null ? op1 : mask(op0).compileOp(f1));
 			}
 
 			private void compileInvoke(Funp n) {

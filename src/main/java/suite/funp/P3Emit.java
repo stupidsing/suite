@@ -126,42 +126,68 @@ public class P3Emit {
 		return new DecomposePlus(n0).op();
 	}
 
-	public void addImm(Operand op0, int i) {
-		if (i == -1)
+	public OpReg emitRegInsn(Insn insn, OpReg op0, Operand op1) {
+		if (op1 instanceof OpImm) {
+			long i = ((OpImm) op1).imm;
+			if (insn == Insn.AND)
+				andImm(op0, i);
+			else if (insn == Insn.OR)
+				orImm(op0, i);
+			else if (insn == Insn.XOR)
+				xorImm(op0, i);
+			else if (insn == Insn.ADD)
+				addImm(op0, i);
+			else if (insn == Insn.SUB)
+				addImm(op0, -i);
+			else if (insn == Insn.IMUL)
+				imulImm(op0, i);
+			else if (insn == Insn.SHL)
+				shiftImm(insn, op0, i);
+			else if (insn == Insn.SHR)
+				shiftImm(insn, op0, i);
+			else
+				emit(amd64.instruction(insn, op0, op1));
+		} else
+			emit(amd64.instruction(insn, op0, op1));
+		return op0;
+	}
+
+	private void addImm(Operand op0, long i) {
+		if (i == -1l)
 			emit(amd64.instruction(Insn.DEC, op0));
-		else if (i == 1)
+		else if (i == 1l)
 			emit(amd64.instruction(Insn.INC, op0));
-		else if (i != 0)
+		else if (i != 0l)
 			emit(amd64.instruction(Insn.ADD, op0, amd64.imm(i, is)));
 	}
 
-	public void andImm(Operand op0, int i) {
-		if (i != -1)
+	private void andImm(Operand op0, long i) {
+		if (i != -1l)
 			emit(amd64.instruction(Insn.AND, op0, amd64.imm(i, is)));
 	}
 
-	public void orImm(Operand op0, int i) {
-		if (i != 0)
+	private void orImm(Operand op0, long i) {
+		if (i != 0l)
 			emit(amd64.instruction(Insn.OR, op0, amd64.imm(i, is)));
 	}
 
-	public void xorImm(Operand op0, int i) {
-		if (i == -1)
+	private void xorImm(Operand op0, long i) {
+		if (i == -1l)
 			emit(amd64.instruction(Insn.NOT, op0));
-		else if (i != 0)
+		else if (i != 0l)
 			emit(amd64.instruction(Insn.XOR, op0, amd64.imm(i, is)));
 	}
 
-	public void imulImm(OpReg r0, int i) {
-		if (i != 1)
-			if (Integer.bitCount(i) == 1)
-				shiftImm(Insn.SHL, r0, Integer.numberOfTrailingZeros(i));
+	private void imulImm(OpReg r0, long i) {
+		if (i != 1l)
+			if (Long.bitCount(i) == 1)
+				shiftImm(Insn.SHL, r0, Long.numberOfTrailingZeros(i));
 			else
 				emit(amd64.instruction(Insn.IMUL, r0, r0, amd64.imm(i, is)));
 	}
 
-	public void shiftImm(Insn insn, Operand op0, int z) {
-		if (z != 0)
+	public void shiftImm(Insn insn, Operand op0, long z) {
+		if (z != 0l)
 			emit(amd64.instruction(insn, op0, amd64.imm(z, 1)));
 	}
 
