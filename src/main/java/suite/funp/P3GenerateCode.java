@@ -502,8 +502,7 @@ public class P3GenerateCode {
 							em.emit(amd64.instruction(Insn.NEG, pair.t1));
 					} else if (setInsn != null) {
 						Pair<Funp, OpReg> pair = commutative.apply(Insn.CMP);
-						opResult = pair.t1;
-						em.emit(amd64.instruction(opResult == lhs ? setInsn : setnInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
+						em.emit(amd64.instruction(pair.t1 == lhs ? setInsn : setnInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
 					} else if (shInsn != null) {
 						OpReg op0 = cr.apply(lhs);
 						if (numRhs != null)
