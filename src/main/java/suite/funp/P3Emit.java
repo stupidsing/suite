@@ -209,6 +209,8 @@ public class P3Emit {
 	}
 
 	public void emit(Instruction instruction) {
+		if (instruction.insn == null)
+			throw new RuntimeException();
 		emit.sink(instruction);
 	}
 
