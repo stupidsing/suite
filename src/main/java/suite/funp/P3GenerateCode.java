@@ -462,6 +462,10 @@ public class P3GenerateCode {
 						return Pair.of(lhs, compileRegInstruction(insn_, opLhsReg, opRhs, lhs));
 					else if (opRhsReg != null && !rs.contains(opRhsReg))
 						return Pair.of(rhs, compileRegInstruction(insn_, opRhsReg, opLhs, rhs));
+					else if (opLhs != null && opRhs instanceof OpImm)
+						return Pair.of(lhs, em.emitRegInsn(insn_, cr.apply(lhs), opRhs));
+					else if (opRhs != null && opLhs instanceof OpImm)
+						return Pair.of(rhs, em.emitRegInsn(insn_, cr.apply(rhs), opLhs));
 					else if (opLhs != null)
 						return Pair.of(rhs, em.emitRegInsn(insn_, cr.apply(rhs), opLhs));
 					else if (opRhs != null)
