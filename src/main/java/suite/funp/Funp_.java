@@ -43,13 +43,13 @@ public class Funp_ {
 		private Main() {
 		}
 
-		public Bytes compile(String fp) {
+		public Bytes compile(int offset, String fp) {
 			Node node = Suite.parse(fp);
 			Funp f0 = p0.parse(node);
 			Funp f1 = p1.infer(f0);
 			Funp f2 = p2.optimize(f1);
 			List<Instruction> instructions = p3.compile0(f2);
-			return p3.compile1(0, instructions, true);
+			return p3.compile1(offset, instructions, true);
 		}
 
 		public int interpret(Node node) {

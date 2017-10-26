@@ -31,7 +31,8 @@ public class ElfTest {
 		;
 
 		int org = 0x08048000;
-		Bytes code = Funp_.main().compile(program1);
+
+		Bytes code = Funp_.main().compile(org + 84, program1);
 		Path path = TempDir.resolve("a.out");
 		new ElfWriter().write(org, code, path);
 		return path;

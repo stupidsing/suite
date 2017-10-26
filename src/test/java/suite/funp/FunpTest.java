@@ -70,7 +70,7 @@ public class FunpTest {
 
 	private void test(String p) {
 		LogUtil.info(p);
-		Bytes bytes = Funp_.main().compile(p);
+		Bytes bytes = Funp_.main().compile(0, p);
 		LogUtil.info("Hex" + bytes + "\n\n");
 		assertTrue(bytes != null);
 	}

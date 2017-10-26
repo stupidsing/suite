@@ -275,8 +275,8 @@ public class P3GenerateCode {
 					return postOp.apply(ebp);
 				}).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 					OpReg op = isOutSpec ? pop0 : rs.get();
-					Operand condLabel = amd64.imm(0, ps);
-					Operand endLabel = amd64.imm(0, ps);
+					Operand condLabel = em.label();
+					Operand endLabel = em.label();
 
 					FixieFun4<Insn, Funp, Funp, Operand, Boolean> jmpIf = (insn, lhs, rhs, label) -> {
 						OpReg op0 = compileOpReg(lhs);
@@ -526,8 +526,8 @@ public class P3GenerateCode {
 			}
 
 			private Pair<Operand, Operand> compileRoutine(Runnable runnable) {
-				Operand routineLabel = amd64.imm(0, ps);
-				Operand endLabel = amd64.imm(0, ps);
+				Operand routineLabel = em.label();
+				Operand endLabel = em.label();
 				em.emit(amd64.instruction(Insn.JMP, endLabel));
 				em.emit(amd64.instruction(Insn.LABEL, routineLabel));
 				em.emit(amd64.instruction(Insn.PUSH, ebp));

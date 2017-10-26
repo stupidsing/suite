@@ -214,6 +214,10 @@ public class P3Emit {
 		emit.sink(instruction);
 	}
 
+	public Operand label() {
+		return amd64.imm(-1, Funp_.pointerSize);
+	}
+
 	private boolean is1248(long scale_) {
 		return scale_ == 1 || scale_ == 2 || scale_ == 4 || scale_ == 8;
 	}
