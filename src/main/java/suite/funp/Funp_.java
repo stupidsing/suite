@@ -5,11 +5,17 @@ import java.util.Collection;
 import java.util.List;
 
 import suite.Suite;
-import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
+import suite.adt.pair.Fixie_.FixieFun4;
+import suite.adt.pair.Fixie_.FixieFun5;
+import suite.adt.pair.Fixie_.FixieFun6;
+import suite.adt.pair.Fixie_.FixieFun7;
+import suite.adt.pair.Fixie_.FixieFun8;
+import suite.adt.pair.Fixie_.FixieFun9;
+import suite.adt.pair.Fixie_.FixieFunA;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Instruction;
 import suite.funp.P1.FunpFramePointer;
@@ -22,7 +28,6 @@ import suite.node.Node;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 import suite.util.String_;
 
@@ -108,30 +113,40 @@ public class Funp_ {
 					.uniqueResult();
 
 			Class<?> type = m.getParameters()[0].getType();
-			Mutable<Object> mut = Mutable.nil();
-
-			Fun<Object, Object> set = o -> {
-				mut.set(o);
-				return true;
-			};
 
 			Object p;
+
 			if (type == FixieFun0.class)
-				p = (FixieFun0<?>) () -> set.apply(List.of());
+				p = (FixieFun0<?>) List::of;
 			else if (type == FixieFun1.class)
-				p = (FixieFun1<?, ?>) (o0) -> set.apply(List.of(o0));
+				p = (FixieFun1<?, ?>) List::of;
 			else if (type == FixieFun2.class)
-				p = (FixieFun2<?, ?, ?>) (o0, o1) -> set.apply(List.of(o0, o1));
+				p = (FixieFun2<?, ?, ?>) List::of;
 			else if (type == FixieFun3.class)
-				p = (FixieFun3<?, ?, ?, ?>) (o0, o1, o2) -> set.apply(List.of(o0, o1, o2));
+				p = (FixieFun3<?, ?, ?, ?>) List::of;
+			else if (type == FixieFun4.class)
+				p = (FixieFun4<?, ?, ?, ?, ?>) List::of;
+			else if (type == FixieFun5.class)
+				p = (FixieFun5<?, ?, ?, ?, ?, ?>) List::of;
+			else if (type == FixieFun6.class)
+				p = (FixieFun6<?, ?, ?, ?, ?, ?, ?>) List::of;
+			else if (type == FixieFun7.class)
+				p = (FixieFun7<?, ?, ?, ?, ?, ?, ?, ?>) List::of;
+			else if (type == FixieFun8.class)
+				p = (FixieFun8<?, ?, ?, ?, ?, ?, ?, ?, ?>) List::of;
+			else if (type == FixieFun9.class)
+				p = (FixieFun9<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) List::of;
+			else if (type == FixieFunA.class)
+				p = (FixieFunA<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) List::of;
 			else
 				throw new RuntimeException();
 
-			Rethrow.ex(() -> m.invoke(node, p));
+			@SuppressWarnings("unchecked")
+			List<Object> list = (List<Object>) Rethrow.ex(() -> m.invoke(node, p));
 
 			sb.append(clazz.getSimpleName());
 			sb.append("{");
-			for (Object object : (Collection<?>) mut.get()) {
+			for (Object object : list) {
 				dump(object);
 				sb.append(",");
 			}
