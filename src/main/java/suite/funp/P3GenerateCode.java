@@ -551,8 +551,10 @@ public class P3GenerateCode {
 
 			private void compileInvoke(Funp n) {
 				CompileOut out = compileTwoOp(n);
+				OpReg op = rs.mask(out.op0).get(ebp);
+				em.mov(op, out.op1);
 				em.mov(ebp, out.op0);
-				em.emit(amd64.instruction(Insn.CALL, out.op1));
+				em.emit(amd64.instruction(Insn.CALL, op));
 			}
 
 			private void compileAssign(Funp n, FunpMemory target) {
