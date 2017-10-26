@@ -61,10 +61,7 @@ public class ElfTest0 {
 
 		String text = "garbage\n";
 		Path path = compileElf(program);
-		Execute exec = new Execute(new String[] { path.toString(), }, text);
-
-		assertEquals(0, exec.code);
-		assertEquals(text, exec.out);
+		assertEquals(text, exec(text, path).out);
 	}
 
 	private Path compileElf(String program) {
@@ -81,6 +78,12 @@ public class ElfTest0 {
 		Path path = TempDir.resolve("a.out");
 		new ElfWriter().write(org, code, path);
 		return path;
+	}
+
+	private Execute exec(String text, Path path) {
+		Execute exec = new Execute(new String[] { path.toString(), }, text);
+		assertEquals(0, exec.code);
+		return exec;
 	}
 
 }

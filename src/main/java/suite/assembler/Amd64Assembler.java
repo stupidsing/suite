@@ -379,7 +379,7 @@ public class Amd64Assembler {
 		case PUSH:
 			if (instruction.op0 instanceof OpImm) {
 				insnCode = new InsnCode(instruction.op0.size, (OpImm) instruction.op0);
-				insnCode.bs = bs(0x6A + (1 < instruction.op0.size ? 0 : 2));
+				insnCode.bs = bs(0x68 + (1 < instruction.op0.size ? 0 : 2));
 			} else if (1 < instruction.op0.size)
 				if (isRm(instruction.op0))
 					insnCode = assembleRm(instruction, 0x50, 0xFE, 6);
@@ -871,9 +871,9 @@ public class Amd64Assembler {
 
 	private int rex(int size, int r, int x, int b) {
 		int b04 = ((size != 8 ? 0 : 1) << 3) //
-				+ (((r >> 3) & 1) << 2) //
-				+ (((x >> 3) & 1) << 1) //
-				+ (((b >> 3) & 1) << 0);
+				+ (0 <= r ? (((r >> 3) & 1) << 2) : 0) //
+				+ (0 <= x ? (((x >> 3) & 1) << 1) : 0) //
+				+ (0 <= b ? (((b >> 3) & 1) << 0) : 0);
 		return b04 != 0 ? 0x40 + b04 : -1;
 	}
 

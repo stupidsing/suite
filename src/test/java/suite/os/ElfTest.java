@@ -1,5 +1,7 @@
 package suite.os;
 
+import static org.junit.Assert.assertEquals;
+
 import java.nio.file.Path;
 
 import org.junit.Test;
@@ -13,7 +15,8 @@ public class ElfTest {
 
 	@Test
 	public void test() {
-		compileElf("0");
+		Path path = compileElf("0");
+		assertEquals("", exec("", path).out);
 	}
 
 	private Path compileElf(String program) {
@@ -32,6 +35,12 @@ public class ElfTest {
 		Path path = TempDir.resolve("a.out");
 		new ElfWriter().write(org, code, path);
 		return path;
+	}
+
+	private Execute exec(String text, Path path) {
+		Execute exec = new Execute(new String[] { path.toString(), }, text);
+		assertEquals(0, exec.code);
+		return exec;
 	}
 
 }

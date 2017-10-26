@@ -26,8 +26,12 @@ public class ElfWriter {
 		try {
 			Files.setPosixFilePermissions(path, new HashSet<>(List.of( //
 					PosixFilePermission.GROUP_EXECUTE, //
+					PosixFilePermission.GROUP_READ, //
 					PosixFilePermission.OTHERS_EXECUTE, //
-					PosixFilePermission.OWNER_EXECUTE)));
+					PosixFilePermission.OTHERS_READ, //
+					PosixFilePermission.OWNER_EXECUTE, //
+					PosixFilePermission.OWNER_READ, //
+					PosixFilePermission.OWNER_WRITE)));
 		} catch (UnsupportedOperationException ex) {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
