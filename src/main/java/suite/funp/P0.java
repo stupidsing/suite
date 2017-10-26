@@ -94,6 +94,22 @@ public class P0 {
 		}
 	}
 
+	public static class FunpCoerce implements Funp, P1.End {
+		public String coerce;
+		public Funp expr;
+
+		public static FunpCoerce of(String coerce, Funp expr) {
+			FunpCoerce f = new FunpCoerce();
+			f.coerce = coerce;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<String, Funp, R> fun) {
+			return fun.apply(coerce, expr);
+		}
+	}
+
 	public static class FunpDefine implements Funp, P1.End {
 		public String var;
 		public Funp value;

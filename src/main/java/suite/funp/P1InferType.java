@@ -17,6 +17,7 @@ import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpAsm;
 import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
@@ -70,6 +71,7 @@ public class P1InferType {
 	private int ps = Funp_.pointerSize;
 
 	private UnNode<Type> typeBoolean = new TypeBoolean();
+	private UnNode<Type> typeByte = new TypeByte();
 	private UnNode<Type> typeNumber = new TypeNumber();
 	private Map<Funp, UnNode<Type>> typeByNode = new HashMap<>();
 
@@ -118,7 +120,10 @@ public class P1InferType {
 				return infer(expr);
 			})).applyIf(FunpBoolean.class, f -> {
 				return typeBoolean;
-			}).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
+			}).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
+				unify(n, typeNumber, infer(expr));
+				return typeByte;
+			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
 				UnNode<Type> tv = value != null ? infer(value) : unify.newRef();
 				return new Infer(env.put(var, tv)).infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
@@ -409,6 +414,8 @@ public class P1InferType {
 			return getTypeSize(elementType) * size;
 		})).applyIf(TypeBoolean.class, t -> {
 			return Funp_.booleanSize;
+		}).applyIf(TypeByte.class, t -> {
+			return 1;
 		}).applyIf(TypeLambda.class, t -> {
 			return ps + ps;
 		}).applyIf(TypeNumber.class, t -> {
@@ -458,6 +465,9 @@ public class P1InferType {
 	}
 
 	private static class TypeBoolean extends Type {
+	}
+
+	private static class TypeByte extends Type {
 	}
 
 	private static class TypeLambda extends Type {

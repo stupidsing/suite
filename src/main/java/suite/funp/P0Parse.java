@@ -12,6 +12,7 @@ import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpAsm;
 import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
@@ -62,12 +63,14 @@ public class P0Parse {
 				return FunpApply.of(parse(m[0]), parse(m[1]));
 			else if ((m = Suite.match("array .0").apply(node)) != null)
 				return FunpArray.of(Tree.iter(m[0], TermOp.AND___).map(this::parse).toList());
+			else if ((m = Suite.match("asm {.0}").apply(node)) != null)
+				return FunpAsm.of(Tree.iter(m[0], TermOp.OR____).toList());
 			else if (node == Atom.FALSE)
 				return FunpBoolean.of(false);
 			else if (node == Atom.TRUE)
 				return FunpBoolean.of(true);
-			else if ((m = Suite.match("asm {.0}").apply(node)) != null)
-				return FunpAsm.of(Tree.iter(m[0], TermOp.OR____).toList());
+			else if ((m = Suite.match("byte .0").apply(node)) != null)
+				return FunpCoerce.of("byte", parse(m[0]));
 			else if ((m = Suite.match("define .0 := .1 >> .2").apply(node)) != null) {
 				String var = name(m[0]);
 				return FunpDefine.of(var, FunpPolyType.of(parse(m[1])), parseNewVariable(m[2], var));

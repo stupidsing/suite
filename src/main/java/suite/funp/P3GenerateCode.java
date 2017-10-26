@@ -20,6 +20,7 @@ import suite.assembler.Amd64Parser;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpAsm;
 import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
@@ -68,6 +69,7 @@ public class P3GenerateCode {
 	private OpReg esp = amd64.esp;
 	private OpReg esi = amd64.esi;
 	private OpReg edi = amd64.edi;
+	private OpReg[] integerRegs = is == 4 ? amd64.reg32 : is == 8 ? amd64.reg64 : null;
 	private RegisterSet registerSet = new RegisterSet().mask(ebp, esp);
 
 	private Map<Object, Insn> insnByOp = Map.ofEntries( //
@@ -247,6 +249,11 @@ public class P3GenerateCode {
 					return compile(expr);
 				})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 					return postOp.apply(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
+				})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
+					OpReg r1 = pop1.reg < 4 ? pop1 : rs.get(1);
+					OpReg r0 = integerRegs[r1.reg];
+					compileOpSpec(expr, r0);
+					return postOp.apply(r1);
 				})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 					return postAssign.apply((c1, target) -> {
 						for (Pair<Funp, IntIntPair> pair : pairs) {
