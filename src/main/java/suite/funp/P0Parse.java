@@ -38,6 +38,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
+import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.util.Switch;
 
@@ -170,6 +171,24 @@ public class P0Parse {
 		}
 
 		private Funp bind(Funp be, Funp value, Funp then, Funp else_) {
+			IntObj_Obj<Int_Obj<Funp>, Funp> bindArray = (size0, fun0) -> {
+				Int_Obj<Funp> fun1 = new Switch<Int_Obj<Funp>>(value //
+				).applyIf(FunpArray.class, g -> {
+					List<Funp> elements = g.elements;
+					return size0 == elements.size() ? elements::get : null;
+				}).applyIf(FunpRepeat.class, g -> g.apply((count, expr) -> {
+					Int_Obj<Funp> fun_ = i -> expr;
+					return size0 == count ? fun_ : null;
+				})).applyIf(Funp.class, g -> {
+					return i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
+				}).result();
+
+				Funp then_ = then;
+				for (int i = 0; i < size0; i++)
+					then_ = bind(fun0.apply(i), fun1.apply(i), then_, else_);
+				return then_;
+			};
+
 			if (be instanceof FunpBoolean && value instanceof FunpBoolean)
 				return ((FunpBoolean) be).b == ((FunpBoolean) value).b ? then : else_;
 			else if (be instanceof FunpNumber && value instanceof FunpNumber)
@@ -177,11 +196,11 @@ public class P0Parse {
 			else {
 				Funp result = new Switch<Funp>(be //
 				).applyIf(FunpArray.class, f -> f.apply(elements0 -> {
-					return bindArray(value, elements0.size(), elements0::get, then, else_);
+					return bindArray.apply(elements0.size(), elements0::get);
 				})).applyIf(FunpDontCare.class, f -> {
 					return then;
 				}).applyIf(FunpRepeat.class, f -> f.apply((size0, expr0) -> {
-					return bindArray(value, size0, i -> expr0, then, else_);
+					return bindArray.apply(size0, i -> expr0);
 				})).applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
 					List<Pair<String, Funp>> pairs1 = new Switch<List<Pair<String, Funp>>>(value)
 							.applyIf(FunpStruct.class, g -> g.pairs) //
@@ -206,24 +225,6 @@ public class P0Parse {
 
 				return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);
 			}
-		}
-
-		private Funp bindArray(Funp value, int size0, Int_Obj<Funp> fun0, Funp then, Funp else_) {
-			Int_Obj<Funp> fun1 = new Switch<Int_Obj<Funp>>(value //
-			).applyIf(FunpArray.class, g -> {
-				List<Funp> elements = g.elements;
-				return size0 == elements.size() ? elements::get : null;
-			}).applyIf(FunpRepeat.class, g -> g.apply((count, expr) -> {
-				Int_Obj<Funp> fun_ = i -> expr;
-				return size0 == count ? fun_ : null;
-			})).applyIf(Funp.class, g -> {
-				return i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
-			}).result();
-
-			Funp then_ = then;
-			for (int i = 0; i < size0; i++)
-				then_ = bind(fun0.apply(i), fun1.apply(i), then_, else_);
-			return then_;
 		}
 	}
 
