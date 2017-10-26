@@ -41,6 +41,7 @@ import suite.util.Switch;
 
 public class P0Parse {
 
+	private Atom dontCare = Atom.of("_");
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp parse(Node node) {
@@ -78,6 +79,8 @@ public class P0Parse {
 			// return parse(Suite.substitute(".1 | (.0 => .2)", m));
 			else if ((m = Suite.match("^.0").apply(node)) != null)
 				return FunpDeref.of(parse(m[0]));
+			else if (node == dontCare)
+				return FunpDontCare.of();
 			else if ((m = Suite.match(".0/.1").apply(node)) != null)
 				return FunpField.of(FunpReference.of(parse(m[0])), name(m[1]));
 			else if ((m = Suite.match("fixed .0 => .1").apply(node)) != null) {
@@ -180,7 +183,9 @@ public class P0Parse {
 						then_ = bind(elements0.get(i), fun.apply(i), then_, else_);
 
 					return then_;
-				})).applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
+				})).applyIf(FunpDontCare.class, f -> {
+					return then;
+				}).applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
 					List<Pair<String, Funp>> pairs1 = new Switch<List<Pair<String, Funp>>>(value)
 							.applyIf(FunpStruct.class, g -> g.pairs) //
 							.result();
