@@ -177,11 +177,11 @@ public class P0Parse {
 			else {
 				Funp result = new Switch<Funp>(be //
 				).applyIf(FunpArray.class, f -> f.apply(elements0 -> {
-					return getArrayFun(value, elements0.size(), elements0::get, then, else_);
+					return bindArray(value, elements0.size(), elements0::get, then, else_);
 				})).applyIf(FunpDontCare.class, f -> {
 					return then;
 				}).applyIf(FunpRepeat.class, f -> f.apply((size0, expr0) -> {
-					return getArrayFun(value, size0, i -> expr0, then, else_);
+					return bindArray(value, size0, i -> expr0, then, else_);
 				})).applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
 					List<Pair<String, Funp>> pairs1 = new Switch<List<Pair<String, Funp>>>(value)
 							.applyIf(FunpStruct.class, g -> g.pairs) //
@@ -208,13 +208,13 @@ public class P0Parse {
 			}
 		}
 
-		private Funp getArrayFun(Funp value, int size0, Int_Obj<Funp> fun0, Funp then, Funp else_) {
+		private Funp bindArray(Funp value, int size0, Int_Obj<Funp> fun0, Funp then, Funp else_) {
 			Int_Obj<Funp> fun1 = new Switch<Int_Obj<Funp>>(value //
 			).applyIf(FunpArray.class, g -> {
-				List<Funp> elements1 = g.elements;
-				return size0 == elements1.size() ? elements1::get : null;
+				List<Funp> elements = g.elements;
+				return size0 == elements.size() ? elements::get : null;
 			}).applyIf(FunpRepeat.class, g -> g.apply((count, expr) -> {
-				Int_Obj<Funp> fun_ = i1 -> expr;
+				Int_Obj<Funp> fun_ = i -> expr;
 				return size0 == count ? fun_ : null;
 			})).applyIf(Funp.class, g -> {
 				return i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
