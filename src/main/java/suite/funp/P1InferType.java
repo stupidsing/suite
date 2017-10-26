@@ -29,6 +29,7 @@ import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpReference;
+import suite.funp.P0.FunpRepeat;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
@@ -161,6 +162,8 @@ public class P1InferType {
 				return unify.clone(infer(expr));
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return TypeReference.of(infer(expr));
+			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
+				return TypeArray.of(infer(expr), count);
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
 				return TypeStruct.of(Read.from2(pairs).mapValue(this::infer).toList());
 			})).applyIf(FunpTree.class, f -> f.apply((op, left, right) -> {
@@ -319,6 +322,15 @@ public class P1InferType {
 				}
 
 				return new GetAddress().getAddress(erase(expr));
+			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
+				int elementSize = getTypeSize(typeOf(expr));
+				int offset = 0;
+				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
+				for (int i = 0; i < count; i++) {
+					int offset0 = offset;
+					list.add(Pair.of(expr, IntIntPair.of(offset0, offset += elementSize)));
+				}
+				return FunpData.of(list);
 			})).applyIf(FunpStruct.class, f -> f.apply(fvs -> {
 				Iterator<Pair<String, UnNode<Type>>> ftsIter = (type0.cast(TypeStruct.class)).pairs.iterator();
 				int offset = 0;

@@ -24,6 +24,7 @@ import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpReference;
+import suite.funp.P0.FunpRepeat;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
@@ -116,6 +117,8 @@ public class P0Parse {
 				return FunpPolyType.of(parse(m[0]));
 			else if ((m = Suite.match("address .0").apply(node)) != null)
 				return FunpReference.of(parse(m[0]));
+			else if ((m = Suite.match(".0 * array .1").apply(node)) != null)
+				return FunpRepeat.of(((Int) m[0]).number, parse(m[1]));
 			else if ((m = Suite.match("struct .0").apply(node)) != null)
 				return FunpStruct.of(Tree //
 						.iter(m[0], TermOp.AND___) //
@@ -174,21 +177,12 @@ public class P0Parse {
 			else {
 				Funp result = new Switch<Funp>(be //
 				).applyIf(FunpArray.class, f -> f.apply(elements0 -> {
-					List<Funp> elements1 = new Switch<List<Funp>>(value).applyIf(FunpArray.class, g -> g.elements).result();
-					int size0 = elements0.size();
-					Funp then_ = then;
-
-					Int_Obj<Funp> fun = elements1 != null && size0 == elements1.size() //
-							? elements1::get //
-							: i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
-
-					for (int i = 0; i < size0; i++)
-						then_ = bind(elements0.get(i), fun.apply(i), then_, else_);
-
-					return then_;
+					return getArrayFun(value, elements0.size(), elements0::get, then, else_);
 				})).applyIf(FunpDontCare.class, f -> {
 					return then;
-				}).applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
+				}).applyIf(FunpRepeat.class, f -> f.apply((size0, expr0) -> {
+					return getArrayFun(value, size0, i -> expr0, then, else_);
+				})).applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
 					List<Pair<String, Funp>> pairs1 = new Switch<List<Pair<String, Funp>>>(value)
 							.applyIf(FunpStruct.class, g -> g.pairs) //
 							.result();
@@ -212,6 +206,24 @@ public class P0Parse {
 
 				return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);
 			}
+		}
+
+		private Funp getArrayFun(Funp value, int size0, Int_Obj<Funp> fun0, Funp then, Funp else_) {
+			Int_Obj<Funp> fun1 = new Switch<Int_Obj<Funp>>(value //
+			).applyIf(FunpArray.class, g -> {
+				List<Funp> elements1 = g.elements;
+				return size0 == elements1.size() ? elements1::get : null;
+			}).applyIf(FunpRepeat.class, g -> g.apply((count, expr) -> {
+				Int_Obj<Funp> fun_ = i1 -> expr;
+				return size0 == count ? fun_ : null;
+			})).applyIf(Funp.class, g -> {
+				return i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
+			}).result();
+
+			Funp then_ = then;
+			for (int i = 0; i < size0; i++)
+				then_ = bind(fun0.apply(i), fun1.apply(i), then_, else_);
+			return then_;
 		}
 	}
 

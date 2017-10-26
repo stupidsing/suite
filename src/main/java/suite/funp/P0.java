@@ -276,6 +276,22 @@ public class P0 {
 		}
 	}
 
+	public static class FunpRepeat implements Funp, P1.End {
+		public int count;
+		public Funp expr;
+
+		public static FunpRepeat of(int count, Funp expr) {
+			FunpRepeat f = new FunpRepeat();
+			f.count = count;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<Integer, Funp, R> fun) {
+			return fun.apply(count, expr);
+		}
+	}
+
 	public static class FunpStruct implements Funp, P1.End {
 		public List<Pair<String, Funp>> pairs;
 
