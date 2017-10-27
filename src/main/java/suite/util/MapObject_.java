@@ -25,16 +25,16 @@ public class MapObject_ {
 		Class<?> class1 = t1.getClass();
 		int c;
 		if (class0 == class1) {
-			Iterator<Comparable<?>> iter0 = values(t0).iterator();
-			Iterator<Comparable<?>> iter1 = values(t1).iterator();
+			@SuppressWarnings("unchecked")
+			Iterator<Comparable<Object>> iter0 = (Iterator<Comparable<Object>>) list(t0).iterator();
+			@SuppressWarnings("unchecked")
+			Iterator<Comparable<Object>> iter1 = (Iterator<Comparable<Object>>) list(t1).iterator();
 			boolean b0, b1;
 			c = 0;
 			while (c == 0 && (c = Boolean.compare(b0 = iter0.hasNext(), b1 = iter1.hasNext())) == 0)
 				if (b0 && b1) {
-					@SuppressWarnings("unchecked")
-					Comparable<Object> value0 = (Comparable<Object>) iter0.next();
-					@SuppressWarnings("unchecked")
-					Comparable<Object> value1 = (Comparable<Object>) iter1.next();
+					Comparable<Object> value0 = iter0.next();
+					Comparable<Object> value1 = iter1.next();
 					c = value0.compareTo(value1);
 				}
 		} else
@@ -65,13 +65,6 @@ public class MapObject_ {
 			MapObject<T> t = (MapObject<T>) m.invoke(null, list.toArray());
 			return t;
 		});
-	}
-
-	public static List<Comparable<?>> values(Object object) {
-		List<?> list0 = list(object);
-		@SuppressWarnings("unchecked")
-		List<Comparable<?>> list1 = (List<Comparable<?>>) list0;
-		return list1;
 	}
 
 	public static <T extends MapObject<T>> List<?> list(Object object) {
