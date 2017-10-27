@@ -1,7 +1,9 @@
 package suite.util;
 
 import java.lang.reflect.Method;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
@@ -18,6 +20,41 @@ import suite.streamlet.Read;
 
 public class MapObject_ {
 
+	public static <T extends MapObject<T>> int compare(T t0, T t1) {
+		Class<?> class0 = t0.getClass();
+		Class<?> class1 = t1.getClass();
+		int c;
+		if (class0 == class1) {
+			Iterator<Comparable<?>> iter0 = values(t0).iterator();
+			Iterator<Comparable<?>> iter1 = values(t1).iterator();
+			boolean b0, b1;
+			c = 0;
+			while (c == 0 && (c = Boolean.compare(b0 = iter0.hasNext(), b1 = iter1.hasNext())) == 0)
+				if (b0 && b1) {
+					@SuppressWarnings("unchecked")
+					Comparable<Object> value0 = (Comparable<Object>) iter0.next();
+					@SuppressWarnings("unchecked")
+					Comparable<Object> value1 = (Comparable<Object>) iter1.next();
+					c = value0.compareTo(value1);
+				}
+		} else
+			c = Object_.compare(class0.getName(), class1.getName());
+		return c;
+	}
+
+	public static <T extends MapObject<T>> boolean equals(T t0, T t1) {
+		boolean b;
+		List<?> list0 = list(t0);
+		List<?> list1 = list(t1);
+		int size0 = list0.size();
+		int size1 = list1.size();
+		b = true;
+		if (size0 == size1)
+			for (int i = 0; i < size0; i++)
+				b &= Objects.equals(list0.get(i), list1.get(i));
+		return b;
+	}
+
 	public static <T extends MapObject<T>> MapObject<T> construct(Class<?> clazz, List<?> list) {
 		return Rethrow.ex(() -> {
 			int size = list.size();
@@ -28,6 +65,13 @@ public class MapObject_ {
 			MapObject<T> t = (MapObject<T>) m.invoke(null, list.toArray());
 			return t;
 		});
+	}
+
+	public static List<Comparable<?>> values(Object object) {
+		List<?> list0 = list(object);
+		@SuppressWarnings("unchecked")
+		List<Comparable<?>> list1 = (List<Comparable<?>>) list0;
+		return list1;
 	}
 
 	public static <T extends MapObject<T>> List<?> list(Object object) {

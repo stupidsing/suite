@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Pair;
@@ -71,9 +72,9 @@ public class P1InferType {
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
 
-	private UnNode<Type> typeBoolean = new TypeBoolean();
-	private UnNode<Type> typeByte = new TypeByte();
-	private UnNode<Type> typeNumber = new TypeNumber();
+	private UnNode<Type> typeBoolean = TypeBoolean.of();
+	private UnNode<Type> typeByte = TypeByte.of();
+	private UnNode<Type> typeNumber = TypeNumber.of();
 	private Map<Funp, UnNode<Type>> typeByNode = new HashMap<>();
 
 	public Funp infer(Funp n) {
@@ -424,17 +425,17 @@ public class P1InferType {
 		return new Switch<Integer>(n.final_() //
 		).applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
 			return getTypeSize(elementType) * size;
-		})).applyIf(TypeBoolean.class, t -> {
+		})).applyIf(TypeBoolean.class, t -> t.apply(() -> {
 			return Funp_.booleanSize;
-		}).applyIf(TypeByte.class, t -> {
+		})).applyIf(TypeByte.class, t -> t.apply(() -> {
 			return 1;
-		}).applyIf(TypeLambda.class, t -> {
+		})).applyIf(TypeLambda.class, t -> t.apply((parameterType, returnType) -> {
 			return ps + ps;
-		}).applyIf(TypeNumber.class, t -> {
+		})).applyIf(TypeNumber.class, t -> t.apply(() -> {
 			return is;
-		}).applyIf(TypeReference.class, t -> {
+		})).applyIf(TypeReference.class, t -> t.apply(type -> {
 			return ps;
-		}).applyIf(TypeStruct.class, t -> t.apply(pairs -> {
+		})).applyIf(TypeStruct.class, t -> t.apply(pairs -> {
 			return Read.from(pairs).collectAsInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
 		})).result().intValue();
 	}
@@ -477,9 +478,23 @@ public class P1InferType {
 	}
 
 	private static class TypeBoolean extends Type {
+		private static TypeBoolean of() {
+			return new TypeBoolean();
+		}
+
+		private <R> R apply(FixieFun0<R> fun) {
+			return fun.apply();
+		}
 	}
 
 	private static class TypeByte extends Type {
+		private static TypeByte of() {
+			return new TypeByte();
+		}
+
+		private <R> R apply(FixieFun0<R> fun) {
+			return fun.apply();
+		}
 	}
 
 	private static class TypeLambda extends Type {
@@ -491,17 +506,28 @@ public class P1InferType {
 			t.returnType = returnType;
 			return t;
 		}
+
+		private <R> R apply(FixieFun2<UnNode<Type>, UnNode<Type>, R> fun) {
+			return fun.apply(parameterType, returnType);
+		}
 	}
 
 	private static class TypeNumber extends Type {
+		private static TypeNumber of() {
+			return new TypeNumber();
+		}
+
+		private <R> R apply(FixieFun0<R> fun) {
+			return fun.apply();
+		}
 	}
 
 	private static class TypeStruct extends Type {
 		private List<Pair<String, UnNode<Type>>> pairs;
 
-		private static TypeStruct of(List<Pair<String, UnNode<Type>>> pairss) {
+		private static TypeStruct of(List<Pair<String, UnNode<Type>>> pairs) {
 			TypeStruct t = new TypeStruct();
-			t.pairs = pairss;
+			t.pairs = pairs;
 			return t;
 		}
 
@@ -537,6 +563,10 @@ public class P1InferType {
 			TypeReference t = new TypeReference();
 			t.type = type;
 			return t;
+		}
+
+		private <R> R apply(FixieFun1<UnNode<Type>, R> fun) {
+			return fun.apply(type);
 		}
 	}
 
