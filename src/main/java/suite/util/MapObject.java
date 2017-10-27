@@ -1,67 +1,15 @@
 package suite.util;
 
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import suite.adt.pair.Fixie_.FixieFun0;
-import suite.adt.pair.Fixie_.FixieFun1;
-import suite.adt.pair.Fixie_.FixieFun2;
-import suite.adt.pair.Fixie_.FixieFun3;
-import suite.adt.pair.Fixie_.FixieFun4;
-import suite.adt.pair.Fixie_.FixieFun5;
-import suite.adt.pair.Fixie_.FixieFun6;
-import suite.adt.pair.Fixie_.FixieFun7;
-import suite.adt.pair.Fixie_.FixieFun8;
-import suite.adt.pair.Fixie_.FixieFun9;
-import suite.adt.pair.Fixie_.FixieFunA;
-import suite.streamlet.Read;
-
 public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Comparable<T> {
-
-	public static List<?> list(Object object) {
-		Class<?> clazz = object.getClass();
-
-		Method m = Read.from(clazz.getMethods()) //
-				.filter(method -> String_.equals(method.getName(), "apply")) //
-				.uniqueResult();
-
-		Class<?> type = m.getParameters()[0].getType();
-		Object p;
-
-		if (type == FixieFun0.class)
-			p = (FixieFun0<?>) List::of;
-		else if (type == FixieFun1.class)
-			p = (FixieFun1<?, ?>) List::of;
-		else if (type == FixieFun2.class)
-			p = (FixieFun2<?, ?, ?>) List::of;
-		else if (type == FixieFun3.class)
-			p = (FixieFun3<?, ?, ?, ?>) List::of;
-		else if (type == FixieFun4.class)
-			p = (FixieFun4<?, ?, ?, ?, ?>) List::of;
-		else if (type == FixieFun5.class)
-			p = (FixieFun5<?, ?, ?, ?, ?, ?>) List::of;
-		else if (type == FixieFun6.class)
-			p = (FixieFun6<?, ?, ?, ?, ?, ?, ?>) List::of;
-		else if (type == FixieFun7.class)
-			p = (FixieFun7<?, ?, ?, ?, ?, ?, ?, ?>) List::of;
-		else if (type == FixieFun8.class)
-			p = (FixieFun8<?, ?, ?, ?, ?, ?, ?, ?, ?>) List::of;
-		else if (type == FixieFun9.class)
-			p = (FixieFun9<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) List::of;
-		else if (type == FixieFunA.class)
-			p = (FixieFunA<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) List::of;
-		else
-			throw new RuntimeException();
-
-		return (List<?>) Rethrow.ex(() -> m.invoke(object, p));
-	}
 
 	@Override
 	public MapObject<T> clone() {
 		return Rethrow.ex(() -> {
-			List<?> list = list(this);
+			List<?> list = MapObject_.list(this);
 			@SuppressWarnings("unchecked")
 			MapObject<T> t1 = (MapObject<T>) getClass().getMethod("of").invoke(null, list.toArray());
 			return t1;
@@ -140,7 +88,7 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 	}
 
 	public List<Comparable<?>> values() {
-		List<?> list0 = list(this);
+		List<?> list0 = MapObject_.list(this);
 		@SuppressWarnings("unchecked")
 		List<Comparable<?>> list1 = (List<Comparable<?>>) list0;
 		return list1;
