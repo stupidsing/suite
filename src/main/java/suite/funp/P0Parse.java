@@ -12,6 +12,7 @@ import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpAsm;
 import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDeref;
@@ -29,7 +30,6 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P0.FunpVariableNew;
-import suite.funp.P0.FunpCheckType;
 import suite.immutable.ISet;
 import suite.inspect.Inspect;
 import suite.node.Atom;
@@ -71,6 +71,8 @@ public class P0Parse {
 				return FunpBoolean.of(false);
 			else if (node == Atom.TRUE)
 				return FunpBoolean.of(true);
+			else if ((m = Suite.match("type .0 = .1 >> .2").apply(node)) != null)
+				return FunpCheckType.of(parse(m[0]), parse(m[1]), parse(m[2]));
 			else if ((m = Suite.match("byte .0").apply(node)) != null)
 				return FunpCoerce.of("byte", parse(m[0]));
 			else if ((m = Suite.match("define .0 := .1 >> .2").apply(node)) != null) {
