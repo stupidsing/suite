@@ -29,7 +29,7 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P0.FunpVariableNew;
-import suite.funp.P0.FunpVerifyType;
+import suite.funp.P0.FunpCheckType;
 import suite.immutable.ISet;
 import suite.inspect.Inspect;
 import suite.node.Atom;
@@ -101,7 +101,7 @@ public class P0Parse {
 					variables1 = variables1.add(var);
 
 				Bind bind = new Bind(env.variables);
-				Funp f = FunpVerifyType.of(be, value, bind.bind(be, value, new Parse(variables1).parse(m[2]), parse(m[3])));
+				Funp f = FunpCheckType.of(be, value, bind.bind(be, value, new Parse(variables1).parse(m[2]), parse(m[3])));
 				for (String var : env.variables)
 					f = FunpDefine.of(var, FunpDontCare.of(), f);
 				return f;

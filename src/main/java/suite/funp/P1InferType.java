@@ -18,6 +18,7 @@ import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpAsm;
 import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDeref;
@@ -35,7 +36,6 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
-import suite.funp.P0.FunpVerifyType;
 import suite.funp.P1.FunpAllocStack;
 import suite.funp.P1.FunpAssign;
 import suite.funp.P1.FunpData;
@@ -122,7 +122,10 @@ public class P1InferType {
 				return infer(expr);
 			})).applyIf(FunpBoolean.class, f -> {
 				return typeBoolean;
-			}).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
+			}).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
+				unify(n, infer(left), infer(right));
+				return infer(expr);
+			})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
 				unify(n, typeNumber, infer(expr));
 				return typeByte;
 			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
@@ -179,9 +182,6 @@ public class P1InferType {
 				unify(n, infer(left), typeNumber);
 				unify(n, infer(right), typeNumber);
 				return typeNumber;
-			})).applyIf(FunpVerifyType.class, f -> f.apply((left, right, expr) -> {
-				unify(n, infer(left), infer(right));
-				return infer(expr);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return env.get(var);
 			})).nonNullResult();
@@ -269,6 +269,8 @@ public class P1InferType {
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				int size = getTypeSize(typeOf(reference).cast(TypeReference.class).type);
 				return FunpAssign.of(FunpMemory.of(erase(reference), 0, size), erase(value), erase(expr));
+			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
+				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
 				if (Boolean.TRUE) {
 					int fs1 = fs - getTypeSize(typeOf(value));
@@ -343,8 +345,6 @@ public class P1InferType {
 				return FunpData.of(list);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(env.get(var));
-			})).applyIf(FunpVerifyType.class, f -> f.apply((left, right, expr) -> {
-				return erase(expr);
 			})).result();
 		}
 
