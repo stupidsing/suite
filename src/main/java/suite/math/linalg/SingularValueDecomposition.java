@@ -5,6 +5,8 @@ import java.util.Random;
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
 import suite.primitive.Floats_;
+import suite.primitive.Int_Dbl;
+import suite.primitive.Ints_;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
@@ -16,6 +18,25 @@ public class SingularValueDecomposition {
 	private Matrix_ mtx = new Matrix_();
 	private Random random = new Random();
 	private Vector_ vec = new Vector_();
+
+	// Machine Learning - An Algorithm Perspective
+	// 6.2 Principal Components Analysis
+	public float[] pca(float[][] m0) {
+		float[][] m1 = mtx.of(m0);
+		int height = mtx.height(m1);
+		int width_ = mtx.width(m1);
+
+		for (int j = 0; j < width_; j++) {
+			int j_ = j;
+			double mean = Ints_.range(0, height).collectAsDouble(Int_Dbl.sum(i -> m1[i][j_])) / height;
+			for (int i = 0; i < height; i++)
+				m1[i][j_] -= mean;
+		}
+
+		float[][] cov = mtx.scale(mtx.mul_mTn(m1, m1), 1d / height);
+		float[][] evs = eigen.power(cov);
+		return eigen.values(cov, evs);
+	}
 
 	// http://www.cs.yale.edu/homes/el327/datamining2013aFiles/07_singular_value_decomposition.pdf
 	// "Computing the SVD: The power method"
