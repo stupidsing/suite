@@ -1,13 +1,9 @@
 package suite.fractal;
 
-import java.awt.BorderLayout;
 import java.awt.image.BufferedImage;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
 import suite.image.Render;
+import suite.image.View;
 import suite.math.Complex;
 import suite.math.Vector;
 import suite.util.Util;
@@ -24,15 +20,7 @@ public class MandelbrotMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		BufferedImage image = trace();
-
-		JLabel label = new JLabel(new ImageIcon(image));
-
-		JFrame frame = new JFrame();
-		frame.getContentPane().add(label, BorderLayout.CENTER);
-		frame.setSize(width, height);
-		frame.setVisible(true);
-		return true;
+		return View.image(trace());
 	}
 
 	public BufferedImage trace() {

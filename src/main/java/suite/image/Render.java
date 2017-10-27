@@ -21,7 +21,7 @@ public class Render {
 		float[] xs = Floats_.toArray(width + 1, x -> (x - centerX) * scale);
 		float[] ys = Floats_.toArray(height + 1, y -> (y - centerY) * scale);
 
-		return render(width, height, (IntInt_Obj<Vector>) (x, y) -> {
+		return renderPixels(width, height, (IntInt_Obj<Vector>) (x, y) -> {
 			Vector color;
 			try {
 				color = f.apply(xs[x], ys[y]);
@@ -33,7 +33,7 @@ public class Render {
 		});
 	}
 
-	private static BufferedImage render(int width, int height, IntInt_Obj<Vector> f) {
+	public static BufferedImage renderPixels(int width, int height, IntInt_Obj<Vector> f) {
 		int nThreads = Constants.nThreads;
 
 		int[] txs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
