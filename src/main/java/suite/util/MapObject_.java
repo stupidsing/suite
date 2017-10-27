@@ -43,12 +43,11 @@ public class MapObject_ {
 	}
 
 	public static <T extends MapObject<T>> boolean equals(T t0, T t1) {
-		boolean b;
 		List<?> list0 = list(t0);
 		List<?> list1 = list(t1);
 		int size0 = list0.size();
 		int size1 = list1.size();
-		b = true;
+		boolean b = true;
 		if (size0 == size1)
 			for (int i = 0; i < size0; i++)
 				b &= Objects.equals(list0.get(i), list1.get(i));
