@@ -20,9 +20,13 @@ public class MapObject_ {
 
 	public static <T extends MapObject<T>> MapObject<T> construct(Class<?> clazz, List<?> list) {
 		return Rethrow.ex(() -> {
+			int size = list.size();
+			Method m = Read.from(clazz.getMethods()) //
+					.filter(method -> String_.equals(method.getName(), "of") && method.getParameterCount() == size) //
+					.uniqueResult();
 			@SuppressWarnings("unchecked")
-			MapObject<T> t1 = (MapObject<T>) clazz.getMethod("of").invoke(null, list.toArray());
-			return t1;
+			MapObject<T> t = (MapObject<T>) m.invoke(null, list.toArray());
+			return t;
 		});
 	}
 
