@@ -15,7 +15,7 @@ import suite.immutable.IMap;
 import suite.node.Node;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
-import suite.util.MapObject;
+import suite.util.MapObject_;
 
 public class Funp_ {
 
@@ -92,7 +92,7 @@ public class Funp_ {
 		}
 
 		private void dump_(Funp node) {
-			List<?> list = MapObject.list(node);
+			List<?> list = MapObject_.list(node);
 
 			sb.append(node.getClass().getSimpleName());
 			sb.append("{");

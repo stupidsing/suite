@@ -18,6 +18,14 @@ import suite.streamlet.Read;
 
 public class MapObject_ {
 
+	public static <T extends MapObject<T>> MapObject<T> construct(Class<?> clazz, List<?> list) {
+		return Rethrow.ex(() -> {
+			@SuppressWarnings("unchecked")
+			MapObject<T> t1 = (MapObject<T>) clazz.getMethod("of").invoke(null, list.toArray());
+			return t1;
+		});
+	}
+
 	public static <T extends MapObject<T>> List<?> list(Object object) {
 		Class<?> clazz = object.getClass();
 

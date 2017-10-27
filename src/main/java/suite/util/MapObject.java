@@ -8,12 +8,7 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 
 	@Override
 	public MapObject<T> clone() {
-		return Rethrow.ex(() -> {
-			List<?> list = MapObject_.list(this);
-			@SuppressWarnings("unchecked")
-			MapObject<T> t1 = (MapObject<T>) getClass().getMethod("of").invoke(null, list.toArray());
-			return t1;
-		});
+		return MapObject_.construct(getClass(), MapObject_.list(this));
 	}
 
 	@Override
