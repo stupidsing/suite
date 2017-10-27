@@ -7,6 +7,7 @@ import java.util.List;
 import suite.Constants;
 import suite.math.Vector;
 import suite.os.LogUtil;
+import suite.primitive.Floats_;
 import suite.primitive.Ints_;
 import suite.util.FunUtil2.BiFun;
 import suite.util.Thread_;
@@ -15,20 +16,23 @@ public class Render {
 
 	public static BufferedImage render(int width, int height, BiFun<Float, Vector> f) {
 		int nThreads = Constants.nThreads;
-		int[] xs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
 
-		Vector[][] pixels = new Vector[width][height];
 		float scale = 1f / Math.max(width, height);
 		int centerX = width / 2, centerY = height / 2;
+
+		int[] txs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
+		float[] xs = Floats_.toArray(width + 1, x -> (x - centerX) * scale);
+		float[] ys = Floats_.toArray(height + 1, y -> (y - centerY) * scale);
+		Vector[][] pixels = new Vector[width][height];
 
 		List<Thread> threads = Ints_ //
 				.range(nThreads) //
 				.map(t -> Thread_.newThread(() -> {
-					for (int x = xs[t]; x < xs[t + 1]; x++)
+					for (int x = txs[t]; x < txs[t + 1]; x++)
 						for (int y = 0; y < height; y++) {
 							Vector color;
 							try {
-								color = f.apply((x - centerX) * scale, (y - centerY) * scale);
+								color = f.apply(xs[x], ys[y]);
 							} catch (Exception ex) {
 								LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
 								color = new Vector(1f, 1f, 1f);

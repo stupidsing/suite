@@ -15,17 +15,11 @@ import suite.util.Util.ExecutableProgram;
 
 public class MandelbrotMain extends ExecutableProgram {
 
-	private int width;
-	private int height;
+	private int width = 1024;
+	private int height = 768;
 
 	public static void main(String[] args) {
 		Util.run(MandelbrotMain.class, args);
-	}
-
-	public MandelbrotMain() {
-		super();
-		this.width = 1024;
-		this.height = 768;
 	}
 
 	@Override
@@ -39,11 +33,6 @@ public class MandelbrotMain extends ExecutableProgram {
 		frame.setSize(width, height);
 		frame.setVisible(true);
 		return true;
-	}
-
-	public MandelbrotMain(int width, int height) {
-		this.width = width;
-		this.height = height;
 	}
 
 	public BufferedImage trace() {
