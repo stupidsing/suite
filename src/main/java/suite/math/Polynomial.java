@@ -1,5 +1,8 @@
 package suite.math;
 
+import java.util.Arrays;
+
+import suite.adt.pair.Pair;
 import suite.math.linalg.Vector_;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
@@ -31,6 +34,24 @@ public class Polynomial {
 		return Floats_.toArray(length0 + length1, i -> (float) Ints_ //
 				.range(Math.max(0, i - length1 + 1), Math.min(i + 1, length0)) //
 				.collectAsDouble(Int_Dbl.sum(j -> ps0[j] * ps1[i - j])));
+	}
+
+	public Pair<float[], float[]> div(float[] nom, float[] denom) {
+		float[] rem = vec.of(nom);
+		int denomLength = denom.length;
+		int denomLength1 = denomLength - 1;
+		int pd = rem.length - denomLength;
+		double head = denom[denomLength1], r;
+		float[] dividend = new float[pd];
+
+		while (0 <= pd) {
+			dividend[pd] = (float) (r = rem[pd + denomLength1] / head);
+			for (int i = 0; i < denomLength; i++)
+				rem[i + pd] -= denom[i] * r;
+			pd--;
+		}
+
+		return Pair.of(dividend, Arrays.copyOfRange(rem, 0, denomLength1));
 	}
 
 	public float[] scale(float[] ps, double d) {
