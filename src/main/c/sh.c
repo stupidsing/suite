@@ -69,8 +69,9 @@ char *readlinetermios() {
 				char *buffer0 = buffer;
 				render0(pos);
 				c = getch();
-				if(c == 65) histpos = max(0, histpos - 1);
-				else if(c == 66) histpos = min(histpos + 1, histsize);
+				histpos = c == 65 ? max(0, histpos - 1)
+					: c == 66 ? min(histpos + 1, histsize)
+					: histpos;
 				char *history = histpos < histsize ? histories[histpos] : buffer;
 				strcpy(buffer = memalloc(size = (pos = strlen(history)) + 16), history);
 				render1(buffer, pos);
