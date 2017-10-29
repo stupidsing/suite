@@ -2,12 +2,9 @@ package suite.os;
 
 import static org.junit.Assert.assertEquals;
 
-import java.nio.file.Path;
-
 import org.junit.Test;
 
 import suite.ip.ImperativeCompiler;
-import suite.util.TempDir;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest0 {
@@ -23,7 +20,9 @@ public class ElfTest0 {
 				+ "j; \n" //
 		;
 
-		compileElf(program);
+		Execute exec = test(program, "");
+		assertEquals(42, exec.code);
+		assertEquals("", exec.out);
 	}
 
 	@Test
@@ -61,27 +60,18 @@ public class ElfTest0 {
 		;
 
 		String text = "garbage\n";
-		Path path = compileElf(program);
-		assertEquals(text, exec(text, path).out);
+		Execute exec = test(program, text);
+		assertEquals(0, exec.code);
+		assertEquals(text, exec.out);
 	}
 
-	private Path compileElf(String program) {
-		String program1 = "" //
+	private Execute test(String program, String text) {
+		return elf.exec(text, offset -> new ImperativeCompiler().compile(offset, "" //
 				+ "asm _ MOV (EBP, ESP);" //
 				+ program //
 				+ "asm _ MOV (EBX, EAX);" //
 				+ "asm _ MOV (EAX, 1);" //
-				+ "asm _ INT (-128);";
-
-		Path path = TempDir.resolve("a.out");
-		elf.write(path, offset -> new ImperativeCompiler().compile(offset, program1));
-		return path;
-	}
-
-	private Execute exec(String text, Path path) {
-		Execute exec = new Execute(new String[] { path.toString(), }, text);
-		assertEquals(0, exec.code);
-		return exec;
+				+ "asm _ INT (-128);"));
 	}
 
 }
