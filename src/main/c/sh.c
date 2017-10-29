@@ -63,9 +63,8 @@ char *readlinetermios() {
 			putchar(c);
 			buffer[pos++] = '\0';
 			return buffer;
-		} else {
+		} else
 			putchar(buffer[pos++] = c);
-		}
 	}
 
 	memfree(buffer);
