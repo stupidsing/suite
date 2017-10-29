@@ -13,6 +13,7 @@
 
 #define buffersize 64
 #define delimiters " \t\r\n\a"
+#define histsize 256
 
 char *readlinestdin() {
 	int pos = 0, c, size;
@@ -41,8 +42,19 @@ void render1(char *buffer, int length) {
 	for(int i = 0; i < length; i++) putchar(buffer[i]);
 }
 
+char *histories[histsize];
+
+char *addhistory(char *buffer) {
+	memfree(histories[0]);
+	int i1, histsize1 = histsize - 1;
+	for(int i = 0; i < histsize1; i = i1) histories[i] = histories[i1 = i + 1];
+	char *h = histories[histsize1] = memalloc(strlen(buffer));
+	strcpy(h, buffer);
+	return buffer;
+}
+
 char *readlinetermios() {
-	int pos, c, size;
+	int pos, c, size, histpos = histsize;
 	char *buffer = memalloc((size = buffersize) * sizeof(char));
 	render1(buffer, pos = 0);
 
@@ -52,10 +64,25 @@ char *readlinetermios() {
 		if(c == 21) {
 			render0(pos);
 			render1(buffer, pos = 0);
+		} else if(c == 27) {
+			if(getch() == 91) {
+				char *buffer0 = buffer;
+				render0(pos);
+				c = getch();
+				if(c == 65) histpos = max(0, histpos - 1);
+				else if(c == 66) histpos = min(histpos + 1, histsize);
+				char *history = histpos < histsize ? histories[histpos] : buffer;
+				strcpy(buffer = memalloc(size = (pos = strlen(history)) + 16), history);
+				render1(buffer, pos);
+				memfree(buffer0);				
+			}
+		} else if(c == 127) {
+			render0(pos);
+			render1(buffer, --pos);
 		} else if(c == '\n') {
 			putchar(c);
 			buffer[pos++] = '\0';
-			return buffer;
+			return addhistory(buffer);
 		} else
 			putchar(buffer[pos++] = c);
 	}
@@ -116,9 +143,17 @@ void loop() {
 	}
 }
 
-int main(int argc, char **argv) {
+module(sh, {
 	meminit();
-	loop();
+	for(int i = 0; i < histsize; i++) *(histories[i] = memalloc(1)) = 0;
+}, {
+	for(int i = 0; i < histsize; i++) memfree(histories[i]);
 	memdeinit();
+})
+
+int main(int argc, char **argv) {
+	shinit();
+	loop();
+	shdeinit();
 	return 0;
 }
