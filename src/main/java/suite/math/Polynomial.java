@@ -44,15 +44,14 @@ public class Polynomial {
 			denomLength = denomLength1;
 
 		float[] rem = vec.of(nom);
-		int pd = rem.length - denomLength;
-		float[] dividend = new float[pd + 1];
+		int pd = rem.length - denomLength1;
+		float[] dividend = new float[pd];
 
-		while (0 <= pd) {
+		while (0 <= --pd) {
 			double r = rem[pd + denomLength1] / head;
 			dividend[pd] = (float) r;
 			for (int i = 0; i < denomLength; i++)
 				rem[i + pd] -= denom[i] * r;
-			pd--;
 		}
 
 		return Pair.of(dividend, Arrays.copyOfRange(rem, 0, denomLength1));
