@@ -43,11 +43,6 @@ void render1(char *buffer, int length) {
 	for(int i = 0; i < length; i++) putchar(buffer[i]);
 }
 
-void render(char *buffer, int length) {
-	puts("\x1b[1K");
-	for(int i = 0; i < length; i++) putchar(buffer[i]);
-}
-
 char *readlinetermios() {
 	int pos, c, size;
 	char *buffer = memalloc((size = buffersize) * sizeof(char));
