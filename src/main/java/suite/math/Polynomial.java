@@ -38,17 +38,18 @@ public class Polynomial {
 
 	public Pair<float[], float[]> div(float[] nom, float[] denom) {
 		int denomLength = denom.length, denomLength1;
+		double head;
 
-		while (denom[denomLength1 = denomLength - 1] == 0f)
+		while ((head = denom[denomLength1 = denomLength - 1]) == 0d)
 			denomLength = denomLength1;
 
 		float[] rem = vec.of(nom);
 		int pd = rem.length - denomLength;
-		double head = denom[denomLength1], r;
-		float[] dividend = new float[pd];
+		float[] dividend = new float[pd + 1];
 
 		while (0 <= pd) {
-			dividend[pd] = (float) (r = rem[pd + denomLength1] / head);
+			double r = rem[pd + denomLength1] / head;
+			dividend[pd] = (float) r;
 			for (int i = 0; i < denomLength; i++)
 				rem[i + pd] -= denom[i] * r;
 			pd--;
