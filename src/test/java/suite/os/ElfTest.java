@@ -7,11 +7,12 @@ import java.nio.file.Path;
 import org.junit.Test;
 
 import suite.funp.Funp_;
-import suite.primitive.Bytes;
 import suite.util.TempDir;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest {
+
+	private ElfWriter elf = new ElfWriter();
 
 	@Test
 	public void test() {
@@ -30,11 +31,8 @@ public class ElfTest {
 				+ "}))" //
 		;
 
-		int org = 0x08048000;
-
-		Bytes code = Funp_.main().compile(org + 84, program1);
 		Path path = TempDir.resolve("a.out");
-		new ElfWriter().write(org, code, path);
+		elf.write(path, offset -> Funp_.main().compile(offset, program1));
 		return path;
 	}
 

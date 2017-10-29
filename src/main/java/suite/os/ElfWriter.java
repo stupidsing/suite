@@ -11,10 +11,16 @@ import java.util.List;
 import suite.Constants;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.IntPrimitives.Int_Obj;
 import suite.util.DataOutput_;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfWriter {
+
+	public void write(Path path, Int_Obj<Bytes> source) {
+		int org = 0x08048000;
+		write(org, source.apply(org + 84), path);
+	}
 
 	public void write(int org, Bytes code, Path path) {
 		try (OutputStream os = FileUtil.out(path); DataOutput_ do_ = DataOutput_.of(os)) {

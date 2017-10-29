@@ -7,11 +7,12 @@ import java.nio.file.Path;
 import org.junit.Test;
 
 import suite.ip.ImperativeCompiler;
-import suite.primitive.Bytes;
 import suite.util.TempDir;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest0 {
+
+	private ElfWriter elf = new ElfWriter();
 
 	@Test
 	public void test() {
@@ -72,11 +73,8 @@ public class ElfTest0 {
 				+ "asm _ MOV (EAX, 1);" //
 				+ "asm _ INT (-128);";
 
-		int org = 0x08048000;
-
-		Bytes code = new ImperativeCompiler().compile(org + 84, program1);
 		Path path = TempDir.resolve("a.out");
-		new ElfWriter().write(org, code, path);
+		elf.write(path, offset -> new ImperativeCompiler().compile(offset, program1));
 		return path;
 	}
 
