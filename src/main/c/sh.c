@@ -34,20 +34,38 @@ char *readlinestdin() {
 	return 0;
 }
 
+void render0(int length) {
+	printf("\x1b[%dD\x1b[2K", length + 2);
+}
+
+void render1(char *buffer, int length) {
+	printf("> ");
+	for(int i = 0; i < length; i++) putchar(buffer[i]);
+}
+
+void render(char *buffer, int length) {
+	puts("\x1b[1K");
+	for(int i = 0; i < length; i++) putchar(buffer[i]);
+}
+
 char *readlinetermios() {
-	int size = buffersize;
-	char *buffer = memalloc(size * sizeof(char));
-	int pos = 0;
-	int c;
+	int pos, c, size;
+	char *buffer = memalloc((size = buffersize) * sizeof(char));
+	render1(buffer, pos = 0);
 
-	while((c = getche()) != EOF && (pos || c != 4)) {
-		if(c == '\n') {
-			buffer[pos] = '\0';
+	while((c = getch()) != EOF && (pos || c != 4)) {
+		if(size <= pos) memrealloc(&buffer, (size <<= 1) * sizeof(char));
+
+		if(c == 21) {
+			render0(pos);
+			render1(buffer, pos = 0);
+		} else if(c == '\n') {
+			putchar(c);
+			buffer[pos++] = '\0';
 			return buffer;
-		} else
-			buffer[pos] = c;
-
-		if(size <= ++pos) memrealloc(&buffer, (size <<= 1) * sizeof(char));
+		} else {
+			putchar(buffer[pos++] = c);
+		}
 	}
 
 	memfree(buffer);
@@ -94,15 +112,11 @@ int execute(char **args) {
 	return args[0] ? launch(args) : 1;
 }
 
-int prompt() {
-	printf("> ");
-}
-
 void loop() {
 	int status = 1;
 	char *line;
 
-	while(status && prompt() && (line = readline())) {
+	while(status && (line = readline())) {
 		char **args = splitline(line);
 		status = execute(args);
 		memfree(args);
