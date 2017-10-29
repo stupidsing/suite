@@ -37,9 +37,12 @@ public class Polynomial {
 	}
 
 	public Pair<float[], float[]> div(float[] nom, float[] denom) {
+		int denomLength = denom.length, denomLength1;
+
+		while (denom[denomLength1 = denomLength - 1] == 0f)
+			denomLength = denomLength1;
+
 		float[] rem = vec.of(nom);
-		int denomLength = denom.length;
-		int denomLength1 = denomLength - 1;
 		int pd = rem.length - denomLength;
 		double head = denom[denomLength1], r;
 		float[] dividend = new float[pd];
