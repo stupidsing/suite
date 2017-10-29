@@ -33,25 +33,44 @@ char *readlinestdin() {
 	return 0;
 }
 
+char *prompt = "> ";
+
 void render0(int length) {
-	printf("\x1b[%dD\x1b[2K", length + 2);
+	printf("\x1b[%dD\x1b[2K", length + strlen(prompt));
 }
 
 void render1(char *buffer, int length) {
-	printf("> ");
+	printf(prompt);
 	for(int i = 0; i < length; i++) putchar(buffer[i]);
 }
 
 char *histories[histsize];
 
 char *addhistory(char *buffer) {
-	memfree(histories[0]);
-	int i1, histsize1 = histsize - 1;
-	for(int i = 0; i < histsize1; i = i1) histories[i] = histories[i1 = i + 1];
-	char *h = histories[histsize1] = memalloc(strlen(buffer));
-	strcpy(h, buffer);
+	int isAdd = 1;
+	for(int i = 0; i < histsize; i++) isAdd &= strcmp(buffer, histories[i]) != 0;
+
+	if(isAdd) {
+		memfree(histories[0]);
+		int i1, histsize1 = histsize - 1;
+		for(int i = 0; i < histsize1; i = i1) histories[i] = histories[i1 = i + 1];
+		char *h = histories[histsize1] = memalloc(strlen(buffer));
+		strcpy(h, buffer);
+	}
+
 	return buffer;
 }
+
+char *searchtermios() {
+	int pos, c, size;
+	char *buffer = memalloc((size = buffersize) * sizeof(char));
+
+	while((c = getch()) != EOF) {
+	}
+}
+
+#define resizebuffer (buffer = pos < size ? buffer : memrealloc_(buffer, (size <<= 1) * sizeof(char)))
+#define rewrite(block) { render0(pos0); block; render1(buffer, pos); }
 
 char *readlinetermios() {
 	int pos, c, size, histpos = histsize;
@@ -59,33 +78,33 @@ char *readlinetermios() {
 	render1(buffer, pos = 0);
 
 	while((c = getch()) != EOF && (pos || c != 4)) {
-		if(size <= pos) memrealloc(&buffer, (size <<= 1) * sizeof(char));
+		int pos0 = pos, c1 = c == 27 && getch() == 91 ? getch() : 0;
 
-		if(c == 21) {
-			render0(pos);
-			render1(buffer, pos = 0);
-		} else if(c == 27) {
-			if(getch() == 91) {
-				char *buffer0 = buffer;
-				render0(pos);
-				c = getch();
-				histpos = c == 65 ? max(0, histpos - 1)
-					: c == 66 ? min(histpos + 1, histsize)
-					: histpos;
-				char *history = histpos < histsize ? histories[histpos] : buffer;
-				strcpy(buffer = memalloc(size = (pos = strlen(history)) + 16), history);
-				render1(buffer, pos);
-				memfree(buffer0);				
-			}
-		} else if(c == 127) {
-			render0(pos);
-			render1(buffer, --pos);
-		} else if(c == '\n') {
+		if(c == '\n') {
 			putchar(c);
-			buffer[pos++] = '\0';
+			pos++;
+			resizebuffer[pos0] = '\0';
 			return addhistory(buffer);
-		} else
-			putchar(buffer[pos++] = c);
+		} else if(c < 27 || c1) {
+			char *buffer0 = buffer;
+			render0(pos0);
+			histpos = c1 == 65 ? max(0, histpos - 1) // up
+				: c1 == 66 ? min(histpos + 1, histsize) // down
+				: histpos;
+			char *history = c == 3 || c == 21 ? "" // ctrl-C, ctrl-U
+				: c == 18 ? searchtermios() // ctrl-R
+				: histpos < histsize ? histories[histpos]
+				: buffer;
+			strcpy(buffer = memalloc(size = (pos = strlen(history)) + 16), history);
+			render1(buffer, pos);
+			memfree(buffer0);
+		} else if(c == 127) {
+			render0(pos0);
+			render1(buffer, --pos);
+		} else {
+			pos++;
+			putchar(resizebuffer[pos0] = c);
+		}
 	}
 
 	memfree(buffer);

@@ -11,10 +11,14 @@ void *memalloc_(int size) {
 	else err("out of memory");
 }
 
+void *memrealloc_(void *p, int size) {
+	if(p = realloc(p, size)) return p;
+	else err("out of memory");
+}
+
 void memrealloc(void *p, int size) {
 	void **p1 = (void**) p;
-	if(*p1 = realloc(*p1, size)) return;
-	else err("out of memory");
+	*p1 = memrealloc_(*p1, size);
 }
 
 void *memalloc(int size) {
@@ -24,8 +28,13 @@ void *memalloc(int size) {
 
 void *memalloczeroed(int size) {
 	void *p = memalloc(size);
-	memset(p, 0, size);
-	return p;
+	return memset(p, 0, size);
+}
+
+void *memallocstrdup(char *source) {
+	int length = strlen(source);
+	char *p = memalloc(length);
+	return memcpy(p, source, length);
 }
 
 void memfree(void *p) {
