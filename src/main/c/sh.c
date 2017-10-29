@@ -87,20 +87,19 @@ char *readlinetermios() {
 			return addhistory(buffer);
 		} else if(c < 27 || c1) {
 			char *buffer0 = buffer;
-			render0(pos0);
-			histpos = c1 == 65 ? max(0, histpos - 1) // up
-				: c1 == 66 ? min(histpos + 1, histsize) // down
-				: histpos;
-			char *history = c == 3 || c == 21 ? "" // ctrl-C, ctrl-U
-				: c == 18 ? searchtermios() // ctrl-R
-				: histpos < histsize ? histories[histpos]
-				: buffer;
-			strcpy(buffer = memalloc(size = (pos = strlen(history)) + 16), history);
-			render1(buffer, pos);
+			rewrite({
+				histpos = c1 == 65 ? max(0, histpos - 1) // up
+					: c1 == 66 ? min(histpos + 1, histsize) // down
+					: histpos;
+				char *history = c == 3 || c == 21 ? "" // ctrl-C, ctrl-U
+					: c == 18 ? searchtermios() // ctrl-R
+					: histpos < histsize ? histories[histpos]
+					: buffer;
+				strcpy(buffer = memalloc(size = (pos = strlen(history)) + 16), history);
+			});
 			memfree(buffer0);
 		} else if(c == 127) {
-			render0(pos0);
-			render1(buffer, --pos);
+			rewrite(pos--);
 		} else {
 			pos++;
 			putchar(resizebuffer[pos0] = c);
