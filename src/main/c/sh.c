@@ -34,14 +34,21 @@ char *readlinestdin() {
 }
 
 char *prompt = "> ";
+int linecount = 0;
 
-void render0(int length) {
-	printf("\x1b[%dD\x1b[2K", length + strlen(prompt));
+void render0() {
+	printf("\x1b[%dD\x1b[2K", linecount);
 }
 
 void render1(char *buffer, int length) {
 	printf(prompt);
 	for(int i = 0; i < length; i++) putchar(buffer[i]);
+	linecount = strlen(prompt) + length;
+}
+
+void renderchar(int c) {
+	putchar(c);
+	linecount++;
 }
 
 char *histories[histsize];
@@ -61,16 +68,12 @@ char *addhistory(char *buffer) {
 	return buffer;
 }
 
-char *searchtermios() {
-	int pos, c, size;
-	char *buffer = memalloc((size = buffersize) * sizeof(char));
-
-	while((c = getch()) != EOF) {
-	}
-}
-
 #define resizebuffer (buffer = pos < size ? buffer : memrealloc_(buffer, (size <<= 1) * sizeof(char)))
-#define rewrite(block) { render0(pos0); block; render1(buffer, pos); }
+#define rewrite(block) { render0(); block; render1(buffer, pos); }
+
+char *searchtermios() {
+	return "";
+}
 
 char *readlinetermios() {
 	int pos, c, size, histpos = histsize;
@@ -78,12 +81,12 @@ char *readlinetermios() {
 	render1(buffer, pos = 0);
 
 	while((c = getch()) != EOF && (pos || c != 4)) {
-		int pos0 = pos, c1 = c == 27 && getch() == 91 ? getch() : 0;
+		int c1 = c == 27 && getch() == 91 ? getch() : 0;
 
 		if(c == '\n') {
 			putchar(c);
+			resizebuffer[pos] = '\0';
 			pos++;
-			resizebuffer[pos0] = '\0';
 			return addhistory(buffer);
 		} else if(c < 27 || c1) {
 			char *buffer0 = buffer;
@@ -99,10 +102,10 @@ char *readlinetermios() {
 			});
 			memfree(buffer0);
 		} else if(c == 127) {
-			rewrite(pos--);
+			rewrite(pos = max(0, pos - 1));
 		} else {
+			renderchar(resizebuffer[pos] = c);
 			pos++;
-			putchar(resizebuffer[pos0] = c);
 		}
 	}
 
