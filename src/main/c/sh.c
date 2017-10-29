@@ -15,19 +15,17 @@
 #define delimiters " \t\r\n\a"
 
 char *readlinestdin() {
-	int size = buffersize;
-	char *buffer = memalloc(size * sizeof(char));
-	int pos = 0;
-	int c;
+	int pos = 0, c, size;
+	char *buffer = memalloc((size = buffersize) * sizeof(char));
 
 	while((c = getchar()) != EOF) {
+		if(size <= pos) memrealloc(&buffer, (size <<= 1) * sizeof(char));
+
 		if(c == '\n') {
-			buffer[pos] = '\0';
+			buffer[pos++] = '\0';
 			return buffer;
 		} else
-			buffer[pos] = c;
-
-		if(size <= ++pos) memrealloc(&buffer, (size <<= 1) * sizeof(char));
+			buffer[pos++] = c;
 	}
 
 	memfree(buffer);
