@@ -32,12 +32,12 @@ public class Symbolic {
 		}
 
 		// allowed:
-		// id(PLUS__) := ZERO
-		// id(MULT__) := ONE_
+		// id(PLUS__) := N0
+		// id(MULT__) := N1
 		// PLUS__ := Tree.of(PLUS__, a, b)
 		// MULT__ := Tree.of(MULT__, a, b)
-		// inverse of PLUS__ := Tree.of(MINUS_, ZERO, a)
-		// inverse of MULT__ := Tree.of(DIVIDE, ONE_, a)
+		// inverse of PLUS__ := Tree.of(MINUS_, N0, a)
+		// inverse of MULT__ := Tree.of(DIVIDE, N1, a)
 		// exp a
 		// ln a
 		// sin a
@@ -64,7 +64,7 @@ public class Symbolic {
 				} else
 					return node;
 			else if ((m = Suite.match(".0 .1").apply(node)) != null)
-				return Tree.of(TermOp.TUPLE_, m[0], rewrite(m[1]));
+				return Suite.match(".0 .1").substitute(m[0], rewrite(m[1]));
 			else if ((tree = Tree.decompose(node)) != null)
 				return Tree.of(tree.getOperator(), rewrite(tree.getLeft()), rewrite(tree.getLeft()));
 			else
@@ -121,7 +121,7 @@ public class Symbolic {
 						if (!list.isEmpty()) {
 							n1 = list.get(0);
 							for (int i = 1; i < list.size(); i++)
-								n1 = Tree.of(TermOp.MULT__, n1, list.get(i));
+								n1 = Suite.match(".0 * .1").substitute(n1, list.get(i));
 						} else
 							n1 = N1;
 
@@ -158,7 +158,7 @@ public class Symbolic {
 					if (!list.isEmpty()) {
 						n1 = list.get(0);
 						for (int i = 1; i < list.size(); i++)
-							n1 = Tree.of(TermOp.PLUS__, n1, list.get(i));
+							n1 = Suite.match(".0 + .1").substitute(n1, list.get(i));
 					} else
 						n1 = N1;
 
@@ -218,7 +218,7 @@ public class Symbolic {
 			if ((m = Suite.match(".0 + .1").apply(node)) != null) {
 				Node[] ps0 = polyize(m[0]);
 				Node[] ps1 = polyize(m[1]);
-				return To.array(Math.max(ps0.length, ps1.length), Node.class, i -> Tree.of(TermOp.PLUS__, //
+				return To.array(Math.max(ps0.length, ps1.length), Node.class, i -> Suite.match(".0 + .1").substitute( //
 						i < ps0.length ? ps0[i] : N0, //
 						i < ps1.length ? ps1[i] : N0));
 			} else if ((m = Suite.match(".0 * .1").apply(node)) != null) {
@@ -229,7 +229,7 @@ public class Symbolic {
 				return To.array(length0 + length1 - 1, Node.class, i -> {
 					Node sum = N0;
 					for (int j = Math.max(0, i - length1 + 1); j <= Math.min(i, length0 - 1); j++)
-						sum = Tree.of(TermOp.PLUS__, sum, Tree.of(TermOp.MULT__, ps0[j], ps1[i - j]));
+						sum = Suite.match(".0 * .1 + .2").substitute(ps0[j], ps1[i - j], sum);
 					return sum;
 				});
 			} else if (node == var)
@@ -246,19 +246,17 @@ public class Symbolic {
 			Node[] m;
 
 			if ((m = Suite.match(".0 + .1").apply(node)) != null)
-				return Tree.of(TermOp.PLUS__, d(m[0]), d(m[1]));
+				return Suite.match(".0 + .1").substitute(d(m[0]), d(m[1]));
 			else if ((m = Suite.match("0 - .0").apply(node)) != null)
-				return Tree.of(TermOp.MINUS_, N0, d(m[0]));
+				return Suite.match("0 - .0").substitute(d(m[0]));
 			else if ((m = Suite.match(".0 * .1").apply(node)) != null)
-				return Tree.of(TermOp.PLUS__, Tree.of(TermOp.MULT__, m[0], d(m[1])), Tree.of(TermOp.MULT__, d(m[0]), m[1]));
-			else if ((m = Suite.match("1 / .0").apply(node)) != null) {
-				Tree neg1 = Tree.of(TermOp.MINUS_, N0, N1);
-				Tree d_ = Tree.of(TermOp.MULT__, neg1, Tree.of(TermOp.DIVIDE, N1, Tree.of(TermOp.MULT__, m[0], m[0])));
-				return Tree.of(TermOp.MULT__, d_, d(m[0]));
-			} else if ((m = Suite.match("exp .0").apply(node)) != null)
-				return Tree.of(TermOp.MULT__, node, d(m[0]));
+				return Suite.match(".0 * .1 + .2 * .3").substitute(m[0], d(m[1]), m[1], d(m[0]));
+			else if ((m = Suite.match("1 / .0").apply(node)) != null)
+				return Suite.match("(0 - 1) * 1 / .0 * .1").substitute(m[0], d(m[0]));
+			else if ((m = Suite.match("exp .0").apply(node)) != null)
+				return Suite.match("exp .0 * .1").substitute(m[0], d(m[0]));
 			else if ((m = Suite.match("ln .0").apply(node)) != null)
-				return Tree.of(TermOp.MULT__, Tree.of(TermOp.DIVIDE, N1, m[0]), d(m[0]));
+				return Suite.match("1 / .0 * .1").substitute(m[0], d(m[0]));
 			else if (node == var)
 				return N1;
 			else if (node instanceof Int)
