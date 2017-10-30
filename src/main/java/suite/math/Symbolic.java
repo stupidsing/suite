@@ -1,18 +1,12 @@
 package suite.math;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import suite.Suite;
-import suite.adt.pair.Fixie_.FixieFun3;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.os.LogUtil;
-import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
 import suite.util.To;
 
@@ -21,6 +15,10 @@ public class Symbolic {
 	private Int N0 = Int.of(0);
 	private Int N1 = Int.of(1);
 
+	public class PolynomializeException extends RuntimeException {
+		private static final long serialVersionUID = 1l;
+	}
+
 	public Node d(Node var, Node node0) {
 		Rewrite rewrite = new Rewrite(var);
 		Node node1 = rewrite.rewrite(node0);
@@ -28,8 +26,7 @@ public class Symbolic {
 		Node node3;
 		try {
 			node3 = rewrite.polyize(node2);
-		} catch (RuntimeException ex) {
-			LogUtil.error(ex);
+		} catch (PolynomializeException ex) {
 			node3 = node2;
 		}
 		return node3;
@@ -82,117 +79,7 @@ public class Symbolic {
 				return node;
 		}
 
-		private Node simplify(Node node0) {
-			class Decompose {
-				private Operator operator;
-				private List<Node> nodes = new ArrayList<>();
-
-				private Decompose(Operator operator) {
-					this.operator = operator;
-				}
-
-				private void decompose(Node n_) {
-					Tree tree = Tree.decompose(n_, operator);
-					if (tree != null) {
-						decompose(tree.getLeft());
-						decompose(tree.getRight());
-					} else
-						nodes.add(n_);
-				}
-			}
-
-			Fun2<Operator, Node, List<Node>> decompose = (operator, n_) -> {
-				Decompose dec = new Decompose(operator);
-				dec.decompose(n_);
-				return dec.nodes;
-			};
-
-			FixieFun3<Operator, Node, List<Node>, Node> recompose = (operator, init, list) -> {
-				if (!list.isEmpty()) {
-					Node node = list.get(0);
-					for (int i = 1; i < list.size(); i++)
-						node = Tree.of(operator, list.get(i), node);
-					return node;
-				} else
-					return init;
-			};
-
-			Iterate<Node> decomposeProduct = node -> {
-				List<Node> list = new ArrayList<>();
-				int xn = 0;
-				int constant = 1;
-
-				for (Node child : decompose.apply(TermOp.MULT__, node))
-					if (child instanceof Int)
-						constant *= ((Int) child).number;
-					else if (child == var)
-						xn++;
-					else
-						list.add(child);
-
-				if (constant != 0) {
-					for (int i = 0; i < xn; i++)
-						list.add(var);
-					if (constant != 1)
-						list.add(Int.of(constant));
-
-					return recompose.apply(TermOp.MULT__, N1, list);
-				} else
-					return N0;
-			};
-
-			Iterate<Node> decomposeSum = node -> {
-				List<Node> list = new ArrayList<>();
-				int xn = 0;
-				int constant = 0;
-
-				for (Node child0 : decompose.apply(TermOp.PLUS__, node)) {
-					Node child1 = decomposeProduct.apply(child0);
-					if (child1 instanceof Int)
-						constant += ((Int) child1).number;
-					else if (child1 == var)
-						xn++;
-					else
-						list.add(child1);
-				}
-
-				for (int i = 0; i < xn; i++)
-					list.add(var);
-				if (constant != 0)
-					list.add(Int.of(constant));
-
-				return recompose.apply(TermOp.PLUS__, N0, list);
-			};
-
-			return decomposeSum.apply(node0);
-		}
-
 		private Node polyize(Node node) { // polynomialize
-			class Group implements Fun2<Node, Node, Node> {
-				private Operator op;
-				private Node e;
-
-				private Group(Operator op, Node e) {
-					this.op = op;
-					this.e = e;
-				}
-
-				public Node apply(Node a, Node b) {
-					Tree tree = Tree.of(op, a, b);
-					if (a == e)
-						return b;
-					else if (b == e)
-						return a;
-					else if (!(a instanceof Int) || !(b instanceof Int))
-						return tree;
-					else
-						return Int.of(TreeUtil.evaluate(tree));
-				}
-			}
-
-			Fun2<Node, Node, Node> add = new Group(TermOp.PLUS__, N0);
-			Fun2<Node, Node, Node> mul = new Group(TermOp.MULT__, N1);
-
 			class Poly {
 				private Node[] poly(Node node) { // polynomialize
 					Node[] m;
@@ -221,7 +108,7 @@ public class Symbolic {
 					else if (!isContainsVariable(node))
 						return new Node[] { node, };
 					else
-						throw new RuntimeException();
+						throw new PolynomializeException();
 				}
 			}
 
@@ -269,6 +156,31 @@ public class Symbolic {
 			return tree != null //
 					? isContainsVariable(tree.getLeft()) || isContainsVariable(tree.getRight()) //
 					: node == var;
+		}
+	}
+
+	private Fun2<Node, Node, Node> add = new Group(TermOp.PLUS__, N0);
+	private Fun2<Node, Node, Node> mul = new Group(TermOp.MULT__, N1);
+
+	private class Group implements Fun2<Node, Node, Node> {
+		private Operator op;
+		private Node e;
+
+		private Group(Operator op, Node e) {
+			this.op = op;
+			this.e = e;
+		}
+
+		public Node apply(Node a, Node b) {
+			Tree tree = Tree.of(op, a, b);
+			if (a == e)
+				return b;
+			else if (b == e)
+				return a;
+			else if (a instanceof Int && b instanceof Int)
+				return Int.of(TreeUtil.evaluate(tree));
+			else
+				return tree;
 		}
 	}
 
