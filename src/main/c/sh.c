@@ -9,27 +9,25 @@
 #include <unistd.h>
 
 #include "mem.c"
+#include "append.c"
 #include "termios.c"
 
-#define buffersize 64
 #define delimiters " \t\r\n\a"
 #define histsize 256
 
 char *readlinestdin() {
-	int pos = 0, c, size;
-	char *buffer = memalloc((size = buffersize) * sizeof(char));
+	int c;
+	Appender app;
+	apinit(&app);
 
-	while((c = getchar()) != EOF) {
-		if(size <= pos) memrealloc(&buffer, (size <<= 1) * sizeof(char));
-
+	while((c = getchar()) != EOF)
 		if(c == '\n') {
-			buffer[pos++] = '\0';
-			return buffer;
+			append(&app, 0);
+			return app.buffer;
 		} else
-			buffer[pos++] = c;
-	}
+			append(&app, c);
 
-	memfree(buffer);
+	apdeinit(&app);
 	return 0;
 }
 
@@ -68,28 +66,26 @@ char *addhistory(char *buffer) {
 	return buffer;
 }
 
-#define resizebuffer (buffer = pos < size ? buffer : memrealloc_(buffer, (size <<= 1) * sizeof(char)))
-#define rewrite(block) { render0(); block; render1(buffer, pos); }
+#define rewrite(block) { render0(); block; render1(app.buffer, app.length); }
 
 char *searchtermios() {
 	return "";
 }
 
 char *readlinetermios() {
-	int pos, c, size, histpos = histsize;
-	char *buffer = memalloc((size = buffersize) * sizeof(char));
-	render1(buffer, pos = 0);
+	int c, histpos = histsize;
+	Appender app;
+	apinit(&app);
+	render1(app.buffer, app.length);
 
-	while((c = getch()) != EOF && (pos || c != 4)) {
+	while((c = getch()) != EOF && (app.length || c != 4)) {
 		int c1 = c == 27 && getch() == 91 ? getch() : 0;
 
 		if(c == '\n') {
 			putchar(c);
-			resizebuffer[pos] = '\0';
-			pos++;
-			return addhistory(buffer);
+			append(&app, 0);
+			return addhistory(app.buffer);
 		} else if(c < 27 || c1) {
-			char *buffer0 = buffer;
 			rewrite({
 				histpos = c1 == 65 ? max(0, histpos - 1) // up
 					: c1 == 66 ? min(histpos + 1, histsize) // down
@@ -97,19 +93,18 @@ char *readlinetermios() {
 				char *history = c == 3 || c == 21 ? "" // ctrl-C, ctrl-U
 					: c == 18 ? searchtermios() // ctrl-R
 					: histpos < histsize ? histories[histpos]
-					: buffer;
-				strcpy(buffer = memalloc(size = (pos = strlen(history)) + 16), history);
+					: app.buffer;
+				apcopyfrom(&app, history);
 			});
-			memfree(buffer0);
 		} else if(c == 127) {
-			rewrite(pos = max(0, pos - 1));
+			rewrite(apback(&app, 1));
 		} else {
-			renderchar(resizebuffer[pos] = c);
-			pos++;
+			renderchar(c);
+			append(&app, c);
 		}
 	}
 
-	memfree(buffer);
+	apdeinit(&app);
 	return 0;
 }
 
@@ -118,17 +113,11 @@ char *readline() {
 }
 
 char **splitline(char *line) {
-	int size = buffersize;
-	char **tokens = memalloc(size * sizeof(char*));
-	int pos = 0;
+	Appender app;
+	apinit(&app);
 	char *source = line;
-
-	while(tokens[pos++] = strtok(source, delimiters)) {
-		source = 0;
-		if(size <= pos) memrealloc(&tokens, (size <<= 1) * sizeof(char*));
-	}
-
-	return tokens;
+	while(appendpointer(&app, strtok(source, delimiters))) source = 0;
+	return (char**) app.buffer;
 }
 
 int launch(char **args) {
