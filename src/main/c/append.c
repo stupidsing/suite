@@ -3,7 +3,7 @@
 
 #include "util.c"
 
-#define buffercapacity 64
+#define buffersize 64
 
 typedef struct Appender Appender;
 
@@ -40,15 +40,15 @@ void apback(Appender *app, int length) {
 
 void apcopyfrom(Appender *app, char *buffer) {
 	if(app->buffer != buffer) {
-		int length1 = (app->length = strlen(buffer)) + 1;
-		enlarge(app, length1);
-		memcpy(app->buffer, buffer, length1);
+		int length = app->length = strlen(buffer);
+		enlarge(app, length);
+		memcpy(app->buffer, buffer, length);
 	}
 }
 
 void apinit(Appender *app) {
-	app->buffer = memalloc((app->capacity = buffercapacity) * sizeof(char));
-	app->capacity = buffercapacity;
+	app->buffer = memalloc((app->capacity = buffersize) * sizeof(char));
+	app->capacity = buffersize;
 	app->length = 0;
 }
 
