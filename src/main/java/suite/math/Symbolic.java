@@ -14,6 +14,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
+import suite.util.List_;
 import suite.util.To;
 
 public class Symbolic {
@@ -33,7 +34,7 @@ public class Symbolic {
 		try {
 			node3 = rewrite.polyize(node2);
 		} catch (PolynomializeException ex) {
-			node3 = node2;
+			node3 = rewrite.sumOfProduct(node2);
 		}
 		return node3;
 	}
@@ -111,6 +112,37 @@ public class Symbolic {
 			Iterate<Node> decompose0 = sim.apply(add, decompose1);
 
 			return decompose0.apply(node);
+		}
+
+		private Node sumOfProduct(Node node) {
+			// Node[] m;
+			//
+			// if ((m = Suite.match("(.0 + .1) * .2").apply(node)) != null //
+			// || (m = Suite.match(".2 * (.0 + .1)").apply(node)) != null)
+			// return add.apply(sumOfProduct(mul.apply(m[0], m[2])),
+			// sumOfProduct(mul.apply(m[1], m[2])));
+			// else if ((m = Suite.match("neg .0 * .1").apply(node)) != null //
+			// || (m = Suite.match(".1 * neg .0").apply(node)) != null)
+			// return Suite.match("neg .0").substitute(mul.apply(m[0], m[1]));
+			// else
+			// return node;
+
+			List<List<Node>> prodOfSums = mul //
+					.decompose(node) //
+					.map(node_ -> add.decompose(node_).toList()) //
+					.toList();
+
+			List<List<Node>> sumOfProds = List.of(List.of());
+
+			for (List<Node> sum : prodOfSums) {
+				List<List<Node>> sumOfProds1 = new ArrayList<>();
+				for (Node n0 : sum)
+					for (List<Node> n1 : sumOfProds)
+						sumOfProds1.add(List_.concat(List.of(n0), n1));
+				sumOfProds = sumOfProds1;
+			}
+
+			return add.recompose(Read.from(sumOfProds).map(list -> mul.recompose(Read.from(list))));
 		}
 
 		private Node polyize(Node node) { // polynomialize
@@ -205,6 +237,16 @@ public class Symbolic {
 			this.e = e;
 		}
 
+		private Node recompose(Streamlet<Node> nodes) {
+			Node node = nodes.first();
+			if (node != null)
+				for (Node node1 : nodes.drop(1))
+					node = apply(node1, node);
+			else
+				node = e;
+			return node;
+		}
+
 		public Node apply(Node a, Node b) {
 			Tree tree = Tree.of(op, a, b);
 			if (a == e)
@@ -222,16 +264,6 @@ public class Symbolic {
 			return tree != null //
 					? Streamlet.concat(decompose(tree.getLeft()), decompose(tree.getRight())) //
 					: Read.each(n_);
-		}
-
-		private Node recompose(Streamlet<Node> nodes) {
-			Node node = nodes.first();
-			if (node != null)
-				for (Node node1 : nodes.drop(1))
-					node = apply(node1, node);
-			else
-				node = e;
-			return node;
 		}
 	}
 
