@@ -1,5 +1,8 @@
 package suite.math;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import suite.Suite;
 import suite.node.Int;
 import suite.node.Node;
@@ -7,6 +10,9 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
 import suite.util.To;
 
@@ -77,6 +83,34 @@ public class Symbolic {
 				return Tree.of(tree.getOperator(), rewrite(tree.getLeft()), rewrite(tree.getLeft()));
 			else
 				return node;
+		}
+
+		private Node simplify(Node node) {
+			Fun2<Group, Iterate<Node>, Iterate<Node>> sim = (group, map) -> node_ -> {
+				List<Node> list = new ArrayList<>();
+				int xn = 0;
+				Node constant = group.e;
+
+				for (Node child : group.decompose(node_))
+					if (child instanceof Int)
+						constant = group.apply(child, constant);
+					else if (child == var)
+						xn++;
+					else
+						list.add(child);
+
+				for (int i = 0; i < xn; i++)
+					list.add(var);
+				if (constant != group.e)
+					list.add(constant);
+
+				return group.recompose(Read.from(list).map(map));
+			};
+
+			Iterate<Node> decompose1 = sim.apply(mul, n -> n);
+			Iterate<Node> decompose0 = sim.apply(add, decompose1);
+
+			return decompose0.apply(node);
 		}
 
 		private Node polyize(Node node) { // polynomialize
@@ -159,8 +193,8 @@ public class Symbolic {
 		}
 	}
 
-	private Fun2<Node, Node, Node> add = new Group(TermOp.PLUS__, N0);
-	private Fun2<Node, Node, Node> mul = new Group(TermOp.MULT__, N1);
+	private Group add = new Group(TermOp.PLUS__, N0);
+	private Group mul = new Group(TermOp.MULT__, N1);
 
 	private class Group implements Fun2<Node, Node, Node> {
 		private Operator op;
@@ -181,6 +215,23 @@ public class Symbolic {
 				return Int.of(TreeUtil.evaluate(tree));
 			else
 				return tree;
+		}
+
+		private Streamlet<Node> decompose(Node n_) {
+			Tree tree = Tree.decompose(n_, op);
+			return tree != null //
+					? Streamlet.concat(decompose(tree.getLeft()), decompose(tree.getRight())) //
+					: Read.each(n_);
+		}
+
+		private Node recompose(Streamlet<Node> nodes) {
+			Node node = nodes.first();
+			if (node != null)
+				for (Node node1 : nodes.drop(1))
+					node = apply(node1, node);
+			else
+				node = e;
+			return node;
 		}
 	}
 
