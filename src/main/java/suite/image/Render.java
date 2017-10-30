@@ -1,8 +1,13 @@
 package suite.image;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.List;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import suite.Constants;
 import suite.math.Vector;
@@ -15,7 +20,24 @@ import suite.util.Thread_;
 
 public class Render {
 
-	public static BufferedImage render(int width, int height, BiFun<Float, Vector> f) {
+	public class Image extends BufferedImage {
+		public Image(int width, int height, int type) {
+			super(width, height, type);
+		}
+
+		public boolean view() {
+			BufferedImage image = this;
+			JLabel label = new JLabel(new ImageIcon(image));
+
+			JFrame frame = new JFrame();
+			frame.getContentPane().add(label, BorderLayout.CENTER);
+			frame.setSize(image.getWidth(), image.getHeight());
+			frame.setVisible(true);
+			return true;
+		}
+	}
+
+	public Image render(int width, int height, BiFun<Float, Vector> f) {
 		float scale = 1f / Math.max(width, height);
 		int centerX = width / 2, centerY = height / 2;
 		float[] xs = Floats_.toArray(width + 1, x -> (x - centerX) * scale);
@@ -33,7 +55,7 @@ public class Render {
 		});
 	}
 
-	public static BufferedImage renderPixels(int width, int height, IntInt_Obj<Vector> f) {
+	public Image renderPixels(int width, int height, IntInt_Obj<Vector> f) {
 		int nThreads = Constants.nThreads;
 
 		int[] txs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
@@ -50,22 +72,22 @@ public class Render {
 
 		Thread_.startJoin(threads);
 
-		BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		Image image = new Image(width, height, BufferedImage.TYPE_INT_RGB);
 
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++) {
 				Vector pixel = limit(pixels[x][y]);
-				bufferedImage.setRGB(x, y, new Color(pixel.x, pixel.y, pixel.z).getRGB());
+				image.setRGB(x, y, new Color(pixel.x, pixel.y, pixel.z).getRGB());
 			}
 
-		return bufferedImage;
+		return image;
 	}
 
-	private static Vector limit(Vector u) {
+	private Vector limit(Vector u) {
 		return new Vector(limit(u.x), limit(u.y), limit(u.z));
 	}
 
-	private static float limit(float f) {
+	private float limit(float f) {
 		return Math.min(1f, Math.max(0f, f));
 	}
 

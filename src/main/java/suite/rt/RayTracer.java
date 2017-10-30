@@ -102,7 +102,7 @@ public class RayTracer {
 	public BufferedImage trace(int width, int height, int viewDistance) {
 		float ivd = ((float) viewDistance) / width;
 
-		return Render.render(width, height, (x, y) -> {
+		return new Render().render(width, height, (x, y) -> {
 			Vector dir = new Vector(x, y, ivd);
 			return traceRay(depth, new Ray(Vector.origin, dir));
 		});

@@ -1,9 +1,6 @@
 package suite.fractal;
 
-import java.awt.image.BufferedImage;
-
 import suite.image.Render;
-import suite.image.View;
 import suite.math.Complex;
 import suite.math.Vector;
 import suite.util.Util;
@@ -20,14 +17,12 @@ public class MandelbrotMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		return View.image(trace());
-	}
-
-	public BufferedImage trace() {
-		return Render.render(width, height, (fx, fy) -> {
-			float n = mandelbrot(Complex.of(fx * 4f, fy * 4f)) / 256f;
-			return new Vector(n, n, n);
-		});
+		return new Render() //
+				.render(width, height, (fx, fy) -> {
+					float n = mandelbrot(Complex.of(fx * 4f, fy * 4f)) / 256f;
+					return new Vector(n, n, n);
+				}) //
+				.view();
 	}
 
 	private int mandelbrot(Complex z) {
