@@ -120,18 +120,12 @@ public class Symbolic {
 
 				private Node productOfSum(Node node) {
 					Streamlet<Node> pos = pos(node);
-					if (Boolean.FALSE)
-						return mul.recompose(pos);
-					else
-						return mul.recompose(var, pos);
+					return mul.recompose(var, pos);
 				}
 
 				private Node sumOfProduct(Node node) {
 					Streamlet<Node> sop = sop(node);
-					if (Boolean.FALSE)
-						return add.recompose(sop);
-					else
-						return add.recompose(var, sop);
+					return add.recompose(var, sop);
 				}
 			}
 
@@ -216,24 +210,26 @@ public class Symbolic {
 		}
 	}
 
-	private Group add = new Group(TermOp.PLUS__, N0);
-	private Group mul = new Group(TermOp.MULT__, N1);
+	private Group add = new Group(null, TermOp.PLUS__, N0);
+	private Group mul = new Group(add, TermOp.MULT__, N1);
 
 	private class Group implements Fun2<Node, Node, Node> {
-		private Operator op;
+		private Group group0;
+		private Operator operator;
 		private Node e;
 
-		private Group(Operator op, Node e) {
-			this.op = op;
+		private Group(Group group0, Operator operator, Node e) {
+			this.group0 = group0;
+			this.operator = operator;
 			this.e = e;
 		}
 
-		private Node recompose(Node var, Streamlet<Node> nodes) {
+		private Node recompose(Node var, Streamlet<Node> nodes0) {
 			List<Node> list = new ArrayList<>();
 			int xn = 0;
 			Node constant = e;
 
-			for (Node child : nodes)
+			for (Node child : nodes0)
 				if (child instanceof Int)
 					constant = apply(child, constant);
 				else if (child == var)
@@ -247,13 +243,11 @@ public class Symbolic {
 			if (e != constant)
 				list.add(constant);
 
-			return recompose(Read.from(list));
-		}
+			Streamlet<Node> nodes1 = Read.from(list);
+			Node node = nodes1.first();
 
-		private Node recompose(Streamlet<Node> nodes) {
-			Node node = nodes.first();
 			if (node != null)
-				for (Node node1 : nodes.drop(1))
+				for (Node node1 : nodes1.drop(1))
 					node = apply(node1, node);
 			else
 				node = e;
@@ -261,8 +255,11 @@ public class Symbolic {
 		}
 
 		public Node apply(Node a, Node b) {
-			Tree tree = Tree.of(op, a, b);
-			if (a == e)
+			Tree tree = Tree.of(operator, a, b);
+			Node e0 = group0 != null ? group0.e : null;
+			if (a == e0 || b == e0)
+				return e0;
+			else if (a == e)
 				return b;
 			else if (b == e)
 				return a;
