@@ -22,8 +22,8 @@ public class PlotMain extends ExecutableProgram {
 		};
 
 		IntInt_Int fp = (fx, fy) -> {
-			double x0 = fx * scale - 0.5d;
-			double y0 = fy * scale - 0.5d;
+			double x0 = fx * scale - .5d;
+			double y0 = fy * scale - .5d;
 			double value = variety.apply(x0, y0);
 			if (Double.isNaN(value))
 				return -2;
