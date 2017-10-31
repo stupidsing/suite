@@ -119,13 +119,11 @@ public class Symbolic {
 				}
 
 				private Node productOfSum(Node node) {
-					Streamlet<Node> pos = pos(node);
-					return mul.recompose(var, pos);
+					return mul.recompose(var, pos(node));
 				}
 
 				private Node sumOfProduct(Node node) {
-					Streamlet<Node> sop = sop(node);
-					return add.recompose(var, sop);
+					return add.recompose(var, sop(node));
 				}
 			}
 
