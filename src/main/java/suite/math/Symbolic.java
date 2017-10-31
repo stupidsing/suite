@@ -135,18 +135,17 @@ public class Symbolic {
 		private Node polyize(Node node) { // polynomialize
 			class Poly {
 				private Node[] poly(Node node) {
+					Node[] ps0, ps1;
 					Node[] m;
 					if ((m = matchAdd.apply(node)) != null) {
-						Node[] ps0 = poly(m[0]);
-						Node[] ps1 = poly(m[1]);
-						return To.array(Math.max(ps0.length, ps1.length), Node.class, i -> add.apply( //
-								i < ps0.length ? ps0[i] : N0, //
-								i < ps1.length ? ps1[i] : N0));
+						int length0 = (ps0 = poly(m[0])).length;
+						int length1 = (ps1 = poly(m[1])).length;
+						return To.array(Math.max(length0, length1), Node.class, i -> add.apply( //
+								i < length0 ? ps0[i] : N0, //
+								i < length1 ? ps1[i] : N0));
 					} else if ((m = matchMul.apply(node)) != null) {
-						Node[] ps0 = poly(m[0]);
-						Node[] ps1 = poly(m[1]);
-						int length0 = ps0.length;
-						int length1 = ps1.length;
+						int length0 = (ps0 = poly(m[0])).length;
+						int length1 = (ps1 = poly(m[1])).length;
 						return To.array(length0 + length1 - 1, Node.class, i -> {
 							Node sum = N0;
 							for (int j = Math.max(0, i - length1 + 1); j <= Math.min(i, length0 - 1); j++)
