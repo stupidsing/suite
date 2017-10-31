@@ -50,8 +50,8 @@ public class Symbolic {
 		// id(MULT__) := N1
 		// PLUS__ := Tree.of(PLUS__, a, b)
 		// MULT__ := Tree.of(MULT__, a, b)
-		// inverse of PLUS__ := Tree.of(MINUS_, N0, a)
-		// inverse of MULT__ := Tree.of(DIVIDE, N1, a)
+		// inverse of PLUS__ := neg a
+		// inverse of MULT__ := inv a
 		// exp a
 		// ln a
 		// sin a
@@ -63,20 +63,12 @@ public class Symbolic {
 				return Suite.match(".0 + neg .1").substitute(rewrite(m[0]), rewrite(m[1]));
 			else if ((m = Suite.match(".0 / .1").apply(node)) != null && m[0] != N1)
 				return Suite.match(".0 * inv .1").substitute(rewrite(m[0]), rewrite(m[1]));
-			else if (node instanceof Int)
-				if (Boolean.FALSE) {
-					int n = ((Int) node).number;
-					if (n < 0)
-						return Suite.match("neg 1 + .0").substitute(rewrite(Int.of(n + 1)));
-					else if (n == 0)
-						return N0;
-					else if (n == 1)
-						return N1;
-					else
-						return Suite.match("1 + .0").substitute(rewrite(Int.of(n - 1)));
-				} else
-					return node;
-			else if ((m = Suite.match(".0 .1").apply(node)) != null)
+			else if ((m = matchPow.apply(node)) != null)
+				return Suite.match("exp (ln .0 * .1)").substitute(m[0], m[1]);
+			else if (node instanceof Int) {
+				int n = ((Int) node).number;
+				return n < 0 ? matchNeg.substitute(rewrite(Int.of(-n))) : node;
+			} else if ((m = Suite.match(".0 .1").apply(node)) != null)
 				return Suite.match(".0 .1").substitute(m[0], rewrite(m[1]));
 			else if ((tree = Tree.decompose(node)) != null)
 				return Tree.of(tree.getOperator(), rewrite(tree.getLeft()), rewrite(tree.getLeft()));
@@ -112,6 +104,16 @@ public class Symbolic {
 						return sop(m[0]).join2(sop(m[1])).map(mul::apply);
 					else if ((m = matchLn.apply(node_)) != null)
 						return pos(m[0]).map(matchLn::substitute);
+					else if ((m = Suite.match("sin (.0 + .1)").apply(node_)) != null)
+						return Read.each( //
+								Suite.substitute("sin .0 * cos .1", m), //
+								Suite.substitute("cos .0 * sin .1", m)) //
+								.map(this::productOfSum);
+					else if ((m = Suite.match("cos (.0 + .1)").apply(node_)) != null)
+						return Read.each( //
+								Suite.substitute("cos .0 * cos .1", m), //
+								Suite.substitute("neg sin .0 * sin .1", m)) //
+								.map(this::productOfSum);
 					else if (node_ instanceof Tree)
 						return Read.each(productOfSum(node_));
 					else
