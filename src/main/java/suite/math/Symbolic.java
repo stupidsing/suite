@@ -3,6 +3,7 @@ package suite.math;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.BindArrayUtil.Match;
 import suite.Suite;
 import suite.node.Int;
 import suite.node.Node;
@@ -12,9 +13,7 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
-import suite.util.List_;
 import suite.util.To;
 
 public class Symbolic {
@@ -34,7 +33,7 @@ public class Symbolic {
 		try {
 			node3 = rewrite.polyize(node2);
 		} catch (PolynomializeException ex) {
-			node3 = rewrite.sumOfProduct(node2);
+			node3 = rewrite.sumOfProducts(node2);
 		}
 		return node3;
 	}
@@ -60,7 +59,6 @@ public class Symbolic {
 		private Node rewrite(Node node) {
 			Tree tree;
 			Node[] m;
-
 			if ((m = Suite.match(".0 - .1").apply(node)) != null && m[0] != N0)
 				return Suite.match(".0 + neg .1").substitute(rewrite(m[0]), rewrite(m[1]));
 			else if ((m = Suite.match(".0 / .1").apply(node)) != null && m[0] != N1)
@@ -86,77 +84,71 @@ public class Symbolic {
 				return node;
 		}
 
-		private Node simplify(Node node) {
-			Fun2<Group, Iterate<Node>, Iterate<Node>> sim = (group, map) -> node_ -> {
-				List<Node> list = new ArrayList<>();
-				int xn = 0;
-				Node constant = group.e;
-
-				for (Node child : group.decompose(node_))
-					if (child instanceof Int)
-						constant = group.apply(child, constant);
-					else if (child == var)
-						xn++;
+		private Node sumOfProducts(Node node) {
+			class Recurse {
+				private Streamlet<Node> pos(Node node_) {
+					Node[] m;
+					if ((m = matchMul.apply(node_)) != null)
+						return Streamlet.concat(pos(m[0]), pos(m[1]));
+					else if ((m = matchInv.apply(node_)) != null)
+						return pos(m[0]).map(matchInv::substitute);
+					else if ((m = matchPow.apply(node_)) != null)
+						return pos(m[0]).join2(sop(m[1])).map(matchPow::substitute);
+					else if ((m = matchExp.apply(node_)) != null)
+						return sop(m[0]).map(matchExp::substitute);
+					else if (node_ instanceof Tree)
+						return Read.each(sumOfProduct(node_));
 					else
-						list.add(child);
+						return Read.each(node_);
+				}
 
-				for (int i = 0; i < xn; i++)
-					list.add(var);
-				if (constant != group.e)
-					list.add(constant);
+				private Streamlet<Node> sop(Node node_) {
+					Node[] m;
+					if ((m = matchAdd.apply(node_)) != null)
+						return Streamlet.concat(sop(m[0]), sop(m[1]));
+					else if ((m = matchNeg.apply(node_)) != null)
+						return sop(m[0]).map(matchNeg::substitute);
+					else if ((m = matchMul.apply(node_)) != null)
+						return sop(m[0]).join2(sop(m[1])).map(mul::apply);
+					else if ((m = matchLn.apply(node_)) != null)
+						return pos(m[0]).map(matchLn::substitute);
+					else if (node_ instanceof Tree)
+						return Read.each(productOfSum(node_));
+					else
+						return Read.each(node_);
+				}
 
-				return group.recompose(Read.from(list).map(map));
-			};
+				private Node productOfSum(Node node) {
+					Streamlet<Node> pos = pos(node);
+					if (Boolean.FALSE)
+						return mul.recompose(pos);
+					else
+						return mul.recompose(var, pos);
+				}
 
-			Iterate<Node> decompose1 = sim.apply(mul, n -> n);
-			Iterate<Node> decompose0 = sim.apply(add, decompose1);
-
-			return decompose0.apply(node);
-		}
-
-		private Node sumOfProduct(Node node) {
-			// Node[] m;
-			//
-			// if ((m = Suite.match("(.0 + .1) * .2").apply(node)) != null //
-			// || (m = Suite.match(".2 * (.0 + .1)").apply(node)) != null)
-			// return add.apply(sumOfProduct(mul.apply(m[0], m[2])),
-			// sumOfProduct(mul.apply(m[1], m[2])));
-			// else if ((m = Suite.match("neg .0 * .1").apply(node)) != null //
-			// || (m = Suite.match(".1 * neg .0").apply(node)) != null)
-			// return Suite.match("neg .0").substitute(mul.apply(m[0], m[1]));
-			// else
-			// return node;
-
-			List<List<Node>> prodOfSums = mul //
-					.decompose(node) //
-					.map(node_ -> add.decompose(node_).toList()) //
-					.toList();
-
-			List<List<Node>> sumOfProds = List.of(List.of());
-
-			for (List<Node> sum : prodOfSums) {
-				List<List<Node>> sumOfProds1 = new ArrayList<>();
-				for (Node n0 : sum)
-					for (List<Node> n1 : sumOfProds)
-						sumOfProds1.add(List_.concat(List.of(n0), n1));
-				sumOfProds = sumOfProds1;
+				private Node sumOfProduct(Node node) {
+					Streamlet<Node> sop = sop(node);
+					if (Boolean.FALSE)
+						return add.recompose(sop);
+					else
+						return add.recompose(var, sop);
+				}
 			}
 
-			return add.recompose(Read.from(sumOfProds).map(list -> mul.recompose(Read.from(list))));
+			return new Recurse().sumOfProduct(node);
 		}
 
 		private Node polyize(Node node) { // polynomialize
 			class Poly {
 				private Node[] poly(Node node) {
 					Node[] m;
-
-					if ((m = Suite.match(".0 + .1").apply(node)) != null) {
+					if ((m = matchAdd.apply(node)) != null) {
 						Node[] ps0 = poly(m[0]);
 						Node[] ps1 = poly(m[1]);
 						return To.array(Math.max(ps0.length, ps1.length), Node.class, i -> add.apply( //
 								i < ps0.length ? ps0[i] : N0, //
 								i < ps1.length ? ps1[i] : N0));
-					} else if ((m = Suite.match(".0 * .1").apply(node)) != null) {
+					} else if ((m = matchMul.apply(node)) != null) {
 						Node[] ps0 = poly(m[0]);
 						Node[] ps1 = poly(m[1]);
 						int length0 = ps0.length;
@@ -192,18 +184,17 @@ public class Symbolic {
 
 		private Node d(Node node) { // differentiation
 			Node[] m;
-
-			if ((m = Suite.match(".0 + .1").apply(node)) != null)
-				return Suite.match(".0 + .1").substitute(d(m[0]), d(m[1]));
-			else if ((m = Suite.match("neg .0").apply(node)) != null)
-				return Suite.match("neg .0").substitute(d(m[0]));
-			else if ((m = Suite.match(".0 * .1").apply(node)) != null)
+			if ((m = matchAdd.apply(node)) != null)
+				return matchAdd.substitute(d(m[0]), d(m[1]));
+			else if ((m = matchNeg.apply(node)) != null)
+				return matchNeg.substitute(d(m[0]));
+			else if ((m = matchMul.apply(node)) != null)
 				return Suite.match(".0 * .1 + .2 * .3").substitute(m[0], d(m[1]), m[1], d(m[0]));
-			else if ((m = Suite.match("inv .0").apply(node)) != null)
+			else if ((m = matchInv.apply(node)) != null)
 				return Suite.match("neg 1 * inv (.0 * .0) * .1").substitute(m[0], d(m[0]));
-			else if ((m = Suite.match("exp .0").apply(node)) != null)
+			else if ((m = matchExp.apply(node)) != null)
 				return Suite.match("exp .0 * .1").substitute(m[0], d(m[0]));
-			else if ((m = Suite.match("ln .0").apply(node)) != null)
+			else if ((m = matchLn.apply(node)) != null)
 				return Suite.match("inv .0 * .1").substitute(m[0], d(m[0]));
 			else if ((m = Suite.match("sin .0").apply(node)) != null)
 				return Suite.match("cos .0 * .1").substitute(m[0], d(m[0]));
@@ -237,6 +228,28 @@ public class Symbolic {
 			this.e = e;
 		}
 
+		private Node recompose(Node var, Streamlet<Node> nodes) {
+			List<Node> list = new ArrayList<>();
+			int xn = 0;
+			Node constant = e;
+
+			for (Node child : nodes)
+				if (child instanceof Int)
+					constant = apply(child, constant);
+				else if (child == var)
+					xn++;
+				else
+					list.add(child);
+
+			for (int i = 0; i < xn; i++)
+				list.add(var);
+
+			if (e != constant)
+				list.add(constant);
+
+			return recompose(Read.from(list));
+		}
+
 		private Node recompose(Streamlet<Node> nodes) {
 			Node node = nodes.first();
 			if (node != null)
@@ -258,13 +271,14 @@ public class Symbolic {
 			else
 				return tree;
 		}
-
-		private Streamlet<Node> decompose(Node n_) {
-			Tree tree = Tree.decompose(n_, op);
-			return tree != null //
-					? Streamlet.concat(decompose(tree.getLeft()), decompose(tree.getRight())) //
-					: Read.each(n_);
-		}
 	}
+
+	private Match matchAdd = Suite.match(".0 + .1");
+	private Match matchNeg = Suite.match("neg .0");
+	private Match matchMul = Suite.match(".0 * .1");
+	private Match matchInv = Suite.match("inv .0");
+	private Match matchPow = Suite.match(".0^.1");
+	private Match matchExp = Suite.match("exp .0");
+	private Match matchLn = Suite.match("ln .0");
 
 }
