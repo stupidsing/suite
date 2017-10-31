@@ -89,7 +89,7 @@ public class Symbolic {
 					else if ((m = matchExp.apply(node_)) != null)
 						return sop(m[0]).map(matchExp::substitute);
 					else if (node_ instanceof Tree)
-						return Read.each(sumOfProduct(node_));
+						return Read.each(sumOfProducts(node_));
 					else
 						return Read.each(node_);
 				}
@@ -108,28 +108,28 @@ public class Symbolic {
 						return Read.each( //
 								Suite.substitute("sin .0 * cos .1", m), //
 								Suite.substitute("cos .0 * sin .1", m)) //
-								.map(this::productOfSum);
+								.map(this::productOfSums);
 					else if ((m = Suite.match("cos (.0 + .1)").apply(node_)) != null)
 						return Read.each( //
 								Suite.substitute("cos .0 * cos .1", m), //
 								Suite.substitute("neg sin .0 * sin .1", m)) //
-								.map(this::productOfSum);
+								.map(this::productOfSums);
 					else if (node_ instanceof Tree)
-						return Read.each(productOfSum(node_));
+						return Read.each(productOfSums(node_));
 					else
 						return Read.each(node_);
 				}
 
-				private Node productOfSum(Node node) {
+				private Node productOfSums(Node node) {
 					return mul.recompose(var, pos(node));
 				}
 
-				private Node sumOfProduct(Node node) {
+				private Node sumOfProducts(Node node) {
 					return add.recompose(var, sop(node));
 				}
 			}
 
-			return new Recurse().sumOfProduct(node);
+			return new Recurse().sumOfProducts(node);
 		}
 
 		private Node polyize(Node node) { // polynomialize
