@@ -8,6 +8,8 @@ import java.util.Set;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.primitive.Ints;
+import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
@@ -17,11 +19,8 @@ import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Int;
-import suite.primitive.Ints;
-import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.set.IntSet;
-import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -38,12 +37,8 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 
 	@SafeVarargs
 	public static IntStreamlet concat(IntStreamlet... streamlets) {
-		return Read.from(streamlets).collect(IntStreamlet::concat);
-	}
-
-	public static IntStreamlet concat(Outlet<IntStreamlet> streamlets) {
 		return streamlet(() -> {
-			Source<IntStreamlet> source = streamlets.source();
+			Source<IntStreamlet> source = Read.from(streamlets).outlet().source();
 			return IntOutlet.of(IntFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}

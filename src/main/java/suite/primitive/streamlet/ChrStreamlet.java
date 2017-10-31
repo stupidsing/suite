@@ -21,7 +21,6 @@ import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.set.ChrSet;
-import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -38,12 +37,8 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 
 	@SafeVarargs
 	public static ChrStreamlet concat(ChrStreamlet... streamlets) {
-		return Read.from(streamlets).collect(ChrStreamlet::concat);
-	}
-
-	public static ChrStreamlet concat(Outlet<ChrStreamlet> streamlets) {
 		return streamlet(() -> {
-			Source<ChrStreamlet> source = streamlets.source();
+			Source<ChrStreamlet> source = Read.from(streamlets).outlet().source();
 			return ChrOutlet.of(ChrFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}

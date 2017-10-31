@@ -54,12 +54,8 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	@SafeVarargs
 	public static <V> LngObjStreamlet<V> concat(LngObjStreamlet<V>... streamlets) {
-		return Read.from(streamlets).collect(LngObjStreamlet::concat);
-	}
-
-	public static <U> LngObjStreamlet<U> concat(Outlet<LngObjStreamlet<U>> streamlets) {
 		return lngObjStreamlet(() -> {
-			Source<LngObjStreamlet<U>> source = streamlets.source();
+			Source<LngObjStreamlet<V>> source = Read.from(streamlets).outlet().source();
 			return LngObjOutlet.of(LngObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}

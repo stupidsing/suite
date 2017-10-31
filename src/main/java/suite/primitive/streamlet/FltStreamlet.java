@@ -21,7 +21,6 @@ import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.set.FltSet;
-import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -38,12 +37,8 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 
 	@SafeVarargs
 	public static FltStreamlet concat(FltStreamlet... streamlets) {
-		return Read.from(streamlets).collect(FltStreamlet::concat);
-	}
-
-	public static FltStreamlet concat(Outlet<FltStreamlet> streamlets) {
 		return streamlet(() -> {
-			Source<FltStreamlet> source = streamlets.source();
+			Source<FltStreamlet> source = Read.from(streamlets).outlet().source();
 			return FltOutlet.of(FltFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}

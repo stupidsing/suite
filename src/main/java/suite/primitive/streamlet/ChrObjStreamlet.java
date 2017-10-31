@@ -54,12 +54,8 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 
 	@SafeVarargs
 	public static <V> ChrObjStreamlet<V> concat(ChrObjStreamlet<V>... streamlets) {
-		return Read.from(streamlets).collect(ChrObjStreamlet::concat);
-	}
-
-	public static <U> ChrObjStreamlet<U> concat(Outlet<ChrObjStreamlet<U>> streamlets) {
 		return chrObjStreamlet(() -> {
-			Source<ChrObjStreamlet<U>> source = streamlets.source();
+			Source<ChrObjStreamlet<V>> source = Read.from(streamlets).outlet().source();
 			return ChrObjOutlet.of(ChrObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}

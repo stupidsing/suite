@@ -54,12 +54,8 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 
 	@SafeVarargs
 	public static <V> DblObjStreamlet<V> concat(DblObjStreamlet<V>... streamlets) {
-		return Read.from(streamlets).collect(DblObjStreamlet::concat);
-	}
-
-	public static <U> DblObjStreamlet<U> concat(Outlet<DblObjStreamlet<U>> streamlets) {
 		return dblObjStreamlet(() -> {
-			Source<DblObjStreamlet<U>> source = streamlets.source();
+			Source<DblObjStreamlet<V>> source = Read.from(streamlets).outlet().source();
 			return DblObjOutlet.of(DblObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}

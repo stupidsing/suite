@@ -54,12 +54,8 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	@SafeVarargs
 	public static <V> IntObjStreamlet<V> concat(IntObjStreamlet<V>... streamlets) {
-		return Read.from(streamlets).collect(IntObjStreamlet::concat);
-	}
-
-	public static <U> IntObjStreamlet<U> concat(Outlet<IntObjStreamlet<U>> streamlets) {
 		return intObjStreamlet(() -> {
-			Source<IntObjStreamlet<U>> source = streamlets.source();
+			Source<IntObjStreamlet<V>> source = Read.from(streamlets).outlet().source();
 			return IntObjOutlet.of(IntObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}

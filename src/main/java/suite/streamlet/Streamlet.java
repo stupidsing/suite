@@ -26,12 +26,8 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 
 	@SafeVarargs
 	public static <T> Streamlet<T> concat(Streamlet<T>... streamlets) {
-		return Read.from(streamlets).collect(Streamlet::concat);
-	}
-
-	public static <T> Streamlet<T> concat(Outlet<Streamlet<T>> streamlets) {
 		return streamlet(() -> {
-			Source<Streamlet<T>> source = streamlets.source();
+			Source<Streamlet<T>> source = Read.from(streamlets).outlet().source();
 			return Outlet.of(FunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}

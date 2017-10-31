@@ -54,12 +54,8 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 
 	@SafeVarargs
 	public static <V> FltObjStreamlet<V> concat(FltObjStreamlet<V>... streamlets) {
-		return Read.from(streamlets).collect(FltObjStreamlet::concat);
-	}
-
-	public static <U> FltObjStreamlet<U> concat(Outlet<FltObjStreamlet<U>> streamlets) {
 		return fltObjStreamlet(() -> {
-			Source<FltObjStreamlet<U>> source = streamlets.source();
+			Source<FltObjStreamlet<V>> source = Read.from(streamlets).outlet().source();
 			return FltObjOutlet.of(FltObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
