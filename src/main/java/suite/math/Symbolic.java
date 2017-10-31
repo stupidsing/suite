@@ -182,7 +182,7 @@ public class Symbolic {
 			else if ((m = matchMul.apply(node)) != null)
 				return Suite.match(".0 * .1 + .2 * .3").substitute(m[0], d(m[1]), m[1], d(m[0]));
 			else if ((m = matchInv.apply(node)) != null)
-				return Suite.match("neg 1 * inv (.0 * .0) * .1").substitute(m[0], d(m[0]));
+				return Suite.match("inv (.0 * .0) * neg .1").substitute(m[0], d(m[0]));
 			else if ((m = matchExp.apply(node)) != null)
 				return Suite.match("exp .0 * .1").substitute(m[0], d(m[0]));
 			else if ((m = matchLn.apply(node)) != null)
