@@ -147,7 +147,7 @@ public class Symbolic {
 
 		private Node polyize(Node node) { // polynomialize
 			class Poly {
-				private Node[] poly(Node node) { // polynomialize
+				private Node[] poly(Node node) {
 					Node[] m;
 
 					if ((m = Suite.match(".0 + .1").apply(node)) != null) {
