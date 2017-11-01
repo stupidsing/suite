@@ -108,9 +108,9 @@ public class P1InferType {
 		private UnNode<Type> infer_(Funp n) {
 			return new Switch<UnNode<Type>>(n //
 			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-				TypeLambda tl = infer(lambda).cast(TypeLambda.class);
-				unify(n, tl.parameterType, infer(value));
-				return tl.returnType;
+				UnNode<Type> tr = unify.newRef();
+				unify(n, TypeLambda.of(infer(value), tr), infer(lambda));
+				return tr;
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				UnNode<Type> te = unify.newRef();
 				for (Funp element : elements)
@@ -141,7 +141,9 @@ public class P1InferType {
 			}).applyIf(FunpError.class, f -> {
 				return unify.newRef();
 			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				TypeStruct ts = infer(reference).cast(TypeReference.class).type.cast(TypeStruct.class);
+				UnNode<Type> t = unify.newRef();
+				unify(n, infer(reference), TypeReference.of(t));
+				TypeStruct ts = t.cast(TypeStruct.class);
 				return Read //
 						.from(ts.pairs) //
 						.filter(pair -> String_.equals(pair.t0, field)) //
@@ -156,10 +158,10 @@ public class P1InferType {
 				unify(n, t = infer(then), infer(else_));
 				return t;
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
-				UnNode<Type> t = unify.newRef();
-				unify(n, TypeReference.of(TypeArray.of(t)), infer(reference));
+				UnNode<Type> te = unify.newRef();
+				unify(n, TypeReference.of(TypeArray.of(te)), infer(reference));
 				unify(n, infer(index), typeNumber);
-				return t;
+				return te;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> tv = unify.newRef();
 				return TypeLambda.of(tv, new Infer(env.put(var, tv)).infer(expr));
@@ -260,8 +262,9 @@ public class P1InferType {
 					return erase(FunpDefine.of(lambda1.var, value, lambda1.expr));
 				}
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
-				UnNode<Type> elementType = type0.cast(TypeArray.class).elementType.final_();
-				int elementSize = getTypeSize(elementType);
+				UnNode<Type> te = unify.newRef();
+				unify(n, type0, TypeArray.of(te));
+				int elementSize = getTypeSize(te);
 				int offset = 0;
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
 				for (Funp element : elements) {
@@ -270,7 +273,9 @@ public class P1InferType {
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
-				int size = getTypeSize(typeOf(reference).cast(TypeReference.class).type);
+				UnNode<Type> t = unify.newRef();
+				unify(n, typeOf(reference), TypeReference.of(t));
+				int size = getTypeSize(t);
 				return FunpAssign.of(FunpMemory.of(erase(reference), 0, size), erase(value), erase(expr));
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
@@ -284,8 +289,9 @@ public class P1InferType {
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				TypeReference tr = typeOf(reference).cast(TypeReference.class);
-				TypeStruct ts = tr.type.cast(TypeStruct.class);
+				UnNode<Type> t = unify.newRef();
+				unify(n, typeOf(reference), TypeReference.of(t));
+				TypeStruct ts = t.cast(TypeStruct.class);
 				int offset = 0;
 				for (Pair<String, UnNode<Type>> pair : ts.pairs) {
 					int offset1 = offset + getTypeSize(pair.t1);
@@ -296,7 +302,9 @@ public class P1InferType {
 				}
 				throw new RuntimeException();
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
-				int size = getTypeSize(typeOf(reference).cast(TypeReference.class).type.cast(TypeArray.class).elementType);
+				UnNode<Type> te = unify.newRef();
+				unify(n, typeOf(reference), TypeReference.of(TypeArray.of(te)));
+				int size = getTypeSize(te);
 				Funp address0 = erase(reference);
 				FunpTree inc = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.of(size));
 				Funp address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
@@ -414,9 +422,11 @@ public class P1InferType {
 		private int is, os;
 
 		private LambdaType(Funp lambda) {
-			TypeLambda lambdaType = typeOf(lambda).cast(TypeLambda.class);
-			is = getTypeSize(lambdaType.parameterType);
-			os = getTypeSize(lambdaType.returnType);
+			UnNode<Type> tp = unify.newRef();
+			UnNode<Type> tr = unify.newRef();
+			unify(lambda, typeOf(lambda), TypeLambda.of(tp, tr));
+			is = getTypeSize(tp);
+			os = getTypeSize(tr);
 		}
 	}
 

@@ -13,10 +13,11 @@ public class Unify<T extends UnNode<T>> {
 		public boolean unify(UnNode<T> t);
 
 		public default <U extends UnNode<T>> U cast(Class<U> clazz) {
-			if (clazz.isInstance(this))
-				return clazz.cast(this);
+			UnNode<T> t = final_();
+			if (clazz.isInstance(t))
+				return clazz.cast(t);
 			else
-				throw new RuntimeException("cannot cast " + this + " to " + clazz);
+				throw new RuntimeException("cannot cast " + t + " to " + clazz);
 		}
 
 		public default UnNode<T> final_() {
