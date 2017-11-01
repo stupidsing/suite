@@ -145,9 +145,8 @@ public class P1InferType {
 			}).applyIf(FunpError.class, f -> {
 				return unify.newRef();
 			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				UnNode<Type> t = unify.newRef();
-				unify(n, infer(reference), TypeReference.of(t));
-				TypeStruct ts = t.cast(TypeStruct.class);
+				TypeStruct ts = TypeStruct.of(null);
+				unify(n, infer(reference), TypeReference.of(ts));
 				return Read //
 						.from(ts.pairs) //
 						.filter(pair -> String_.equals(pair.t0, field)) //
@@ -293,9 +292,8 @@ public class P1InferType {
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				UnNode<Type> t = unify.newRef();
-				unify(n, typeOf(reference), TypeReference.of(t));
-				TypeStruct ts = t.cast(TypeStruct.class);
+				TypeStruct ts = TypeStruct.of(null);
+				unify(n, typeOf(reference), TypeReference.of(ts));
 				int offset = 0;
 				for (Pair<String, UnNode<Type>> pair : ts.pairs) {
 					int offset1 = offset + getTypeSize(pair.t1);
@@ -350,7 +348,9 @@ public class P1InferType {
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpStruct.class, f -> f.apply(fvs -> {
-				Iterator<Pair<String, UnNode<Type>>> ftsIter = (type0.cast(TypeStruct.class)).pairs.iterator();
+				TypeStruct ts = TypeStruct.of(null);
+				unify(n, ts, type0);
+				Iterator<Pair<String, UnNode<Type>>> ftsIter = ts.pairs.iterator();
 				int offset = 0;
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
 				for (Pair<String, Funp> fv : fvs) {
@@ -553,23 +553,28 @@ public class P1InferType {
 		}
 
 		public boolean unify(UnNode<Type> type) {
-			if (getClass() == type.getClass()) {
+			boolean b = getClass() == type.getClass();
+			if (b) {
 				TypeStruct other = (TypeStruct) type;
-				List<Pair<String, UnNode<Type>>> pairs0 = pairs;
-				List<Pair<String, UnNode<Type>>> pairs1 = other.pairs;
-				int size = pairs0.size();
-				if (size == pairs1.size()) {
-					boolean b = true;
-					for (int i = 0; i < size; i++) {
-						Pair<String, UnNode<Type>> pair0 = pairs0.get(i);
-						Pair<String, UnNode<Type>> pair1 = pairs1.get(i);
-						b &= String_.equals(pair0.t0, pair1.t0) && unify.unify(pair0.t1, pair1.t1);
-					}
+				if (pairs == null)
+					pairs = other.pairs;
+				else if (other.pairs == null)
+					other.pairs = pairs;
+				else {
+					List<Pair<String, UnNode<Type>>> pairs0 = pairs;
+					List<Pair<String, UnNode<Type>>> pairs1 = other.pairs;
+					int size = pairs0.size();
+					b &= size == pairs1.size();
+					if (b)
+						for (int i = 0; i < size; i++) {
+							Pair<String, UnNode<Type>> pair0 = pairs0.get(i);
+							Pair<String, UnNode<Type>> pair1 = pairs1.get(i);
+							b &= String_.equals(pair0.t0, pair1.t0) && unify.unify(pair0.t1, pair1.t1);
+						}
 					return b;
-				} else
-					return false;
-			} else
-				return false;
+				}
+			}
+			return b;
 		}
 	}
 
