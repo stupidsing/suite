@@ -28,14 +28,10 @@ public class Symbolic {
 	public Node d(Node var, Node node0) {
 		Rewrite rewrite = new Rewrite(var);
 		Node node1 = rewrite.rewrite(node0);
-		Node node2 = rewrite.d(node1);
-		Node node3;
-		try {
-			node3 = rewrite.polyize(node2);
-		} catch (PolynomializeException ex) {
-			node3 = rewrite.sumOfProducts(node2);
-		}
-		return node3;
+		Node node2 = Boolean.TRUE ? rewrite.d(node1) : rewrite.i(node1).uniqueResult();
+		Node node3 = rewrite.polyize(node2);
+		Node node4 = node3 != null ? node3 : rewrite.sumOfProducts(node2);
+		return node4;
 	}
 
 	private class Rewrite {
@@ -133,45 +129,49 @@ public class Symbolic {
 
 		private Node polyize(Node node) { // polynomialize
 			class Poly {
-				private Node[] poly(Node node) {
-					Node[] ps0, ps1;
+				private Streamlet<Node[]> poly(Node node) {
 					Node[] m;
 					if ((m = matchAdd.apply(node)) != null) {
-						int length0 = (ps0 = poly(m[0])).length;
-						int length1 = (ps1 = poly(m[1])).length;
-						return To.array(Math.max(length0, length1), Node.class, i -> add.apply( //
-								i < length0 ? ps0[i] : N0, //
-								i < length1 ? ps1[i] : N0));
+						return poly(m[0]).join2(poly(m[1])).map((ps0, ps1) -> {
+							int length0 = ps0.length;
+							int length1 = ps1.length;
+							return To.array(Math.max(length0, length1), Node.class, i -> add.apply( //
+									i < length0 ? ps0[i] : N0, //
+									i < length1 ? ps1[i] : N0));
+						});
 					} else if ((m = matchMul.apply(node)) != null) {
-						int length0 = (ps0 = poly(m[0])).length;
-						int length1 = (ps1 = poly(m[1])).length;
-						return To.array(length0 + length1 - 1, Node.class, i -> {
-							Node sum = N0;
-							for (int j = Math.max(0, i - length1 + 1); j <= Math.min(i, length0 - 1); j++)
-								sum = add.apply(mul.apply(ps0[j], ps1[i - j]), sum);
-							return sum;
+						return poly(m[0]).join2(poly(m[1])).map((ps0, ps1) -> {
+							int length0 = ps0.length;
+							int length1 = ps1.length;
+							return To.array(length0 + length1 - 1, Node.class, i -> {
+								Node sum = N0;
+								for (int j = Math.max(0, i - length1 + 1); j <= Math.min(i, length0 - 1); j++)
+									sum = add.apply(mul.apply(ps0[j], ps1[i - j]), sum);
+								return sum;
+							});
 						});
 					} else if (node.compareTo(x) == 0)
-						return new Node[] { N0, N1, };
+						return Read.<Node[]> each(new Node[] { N0, N1, });
 					else if (node == N0)
-						return new Node[] {};
+						return Read.<Node[]> each(new Node[] {});
 					else if (!isContains_x(node))
-						return new Node[] { node, };
+						return Read.<Node[]> each(new Node[] { node, });
 					else
-						throw new PolynomializeException();
+						return Read.empty();
 				}
 			}
 
-			Node[] nodes = new Poly().poly(node);
-			Node power = N1;
-			Node sum = N0;
+			return new Poly().poly(node).map(nodes -> {
+				Node power = N1;
+				Node sum = N0;
 
-			for (Node child : nodes) {
-				sum = add.apply(mul.apply(child, power), sum);
-				power = mul.apply(x, power);
-			}
+				for (Node child : nodes) {
+					sum = add.apply(mul.apply(child, power), sum);
+					power = mul.apply(x, power);
+				}
 
-			return sum;
+				return sum;
+			}).first();
 		}
 
 		private Node d(Node node) { // differentiation
