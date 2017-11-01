@@ -13,11 +13,7 @@ public class ElfTest {
 
 	@Test
 	public void test() {
-		assertEquals("", test("0").out);
-	}
-
-	private Execute test(String program) {
-		Execute exec = elf.exec("", offset -> Funp_.main().compile(offset, "" //
+		assertEquals("", test("" //
 				+ "define linux-read := `buffer, length` => (\n" //
 				+ "	type buffer = address (256 * array byte 0) >>\n" //
 				+ "	type length = 0 >>\n" //
@@ -28,9 +24,27 @@ public class ElfTest {
 				+ "		-- length in EAX\n" //
 				+ "	}\n" //
 				+ ") >>\n" //
+				+ "define linux-write := `buffer, length` => (\n" //
+				+ "	type buffer = address (256 * array byte 0) >>\n" //
+				+ "	type length = 0 >>\n" //
+				+ "	asm (ECX = buffer; EDX = length;) {\n" //
+				+ "		MOV (EAX, 4);\n" //
+				+ "		MOV (EBX, 1);\n" //
+				+ "		INT (-128);\n" //
+				+ "		-- length in EAX\n" //
+				+ "	}\n" //
+				+ ") >>\n" //
+				+ "0\n" //
+		).out);
+	}
+
+	private Execute test(String program) {
+		Execute exec = elf.exec("", offset -> Funp_.main().compile(offset, "" //
 				+ "asm () {\n" //
 				+ "	MOV (EBP, ESP);\n" //
-				+ "} / ((" + program + ") | (i => asm () {\n" //
+				+ "} / ((\n" //
+				+ program + "\n" //
+				+ ") | (i => asm () {\n" //
 				+ "	MOV (EBX, `EBP + 8`);\n" //
 				+ "	MOV (EAX, 1);\n" //
 				+ "	INT (-128);\n" //
