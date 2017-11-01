@@ -56,9 +56,9 @@ public class Unify<T extends UnNode<T>> {
 		UnNode<T> target0 = u0.final_();
 		UnNode<T> target1 = u1.final_();
 		if (target0 instanceof UnRef)
-			return addBind((UnRef<T>) u0, target1);
+			return addBind((UnRef<T>) target0, target1);
 		else if (target1 instanceof UnRef)
-			return addBind((UnRef<T>) u1, target0);
+			return addBind((UnRef<T>) target1, target0);
 		else {
 			@SuppressWarnings("unchecked")
 			T t1 = (T) target1;

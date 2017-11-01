@@ -7,6 +7,7 @@ import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDeref;
+import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
@@ -99,6 +100,8 @@ public class P1GenerateLambda {
 			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
 				return compile_(FunpApply.of(value, FunpLambda.of(var, expr)));
 			})).applyIf(FunpDeref.class, f -> {
+				throw new RuntimeException();
+			}).applyIf(FunpError.class, f -> {
 				throw new RuntimeException();
 			}).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
 				int fs1 = fs + 1;

@@ -17,6 +17,7 @@ import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
+import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
@@ -123,6 +124,8 @@ public class P0Parse {
 				return FunpDeref.of(parse(m[0]));
 			else if (node == dontCare)
 				return FunpDontCare.of();
+			else if ((m = Suite.match("error").apply(node)) != null)
+				return FunpError.of();
 			else if ((m = Suite.match(".0/.1").apply(node)) != null)
 				return FunpField.of(FunpReference.of(parse(m[0])), name(m[1]));
 			else if ((m = Suite.match("fixed .0 => .1").apply(node)) != null) {
@@ -147,7 +150,7 @@ public class P0Parse {
 			else if ((m = Suite.match(".0 {.1}").apply(node)) != null)
 				return FunpIndex.of(FunpReference.of(parse(m[0])), parse(m[1]));
 			else if ((m = Suite.match("`.0` => .1").apply(node)) != null)
-				return parse(Suite.match(".2 => if (`.0` = .2) then .1 else asm { HLT; }").substitute(m[0], m[1], Atom.temp()));
+				return parse(Suite.match(".2 => if (`.0` = .2) then .1 else error").substitute(m[0], m[1], Atom.temp()));
 			else if ((m = Suite.match(".0 => .1").apply(node)) != null) {
 				String var = name(m[0]);
 				return FunpLambda.of(var, parseNewVariable(m[1], var));

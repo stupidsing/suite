@@ -170,6 +170,16 @@ public class P0 {
 		}
 	}
 
+	public static class FunpError implements Funp, P3.End {
+		public static FunpError of() {
+			return new FunpError();
+		}
+
+		public <R> R apply(FixieFun0<R> fun) {
+			return fun.apply();
+		}
+	}
+
 	public static class FunpField implements Funp, P1.End {
 		public Funp reference;
 		public String field;

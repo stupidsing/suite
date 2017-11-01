@@ -22,6 +22,7 @@ import suite.funp.P0.FunpAsm;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDontCare;
+import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpNumber;
@@ -269,6 +270,9 @@ public class P3GenerateCode {
 						return new CompileOut(eax, edx);
 					else
 						return new CompileOut();
+				}).applyIf(FunpError.class, f -> {
+					em.emit(amd64.instruction(Insn.HLT));
+					return compile(FunpDontCare.of());
 				}).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
 					throw new RuntimeException();
 				})).applyIf(FunpFramePointer.class, t -> {

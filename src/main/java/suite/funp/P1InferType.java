@@ -23,6 +23,7 @@ import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
+import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
@@ -137,6 +138,8 @@ public class P1InferType {
 				return t;
 			})).applyIf(FunpDontCare.class, f -> {
 				return unify.newRef();
+			}).applyIf(FunpError.class, f -> {
+				return unify.newRef();
 			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
 				TypeStruct ts = infer(reference).cast(TypeReference.class).type.cast(TypeStruct.class);
 				return Read //
@@ -190,7 +193,7 @@ public class P1InferType {
 
 	private void unify(Funp n, UnNode<Type> type0, UnNode<Type> type1) {
 		if (!unify.unify(type0, type1))
-			throw new RuntimeException("cannot infer type for " + n);
+			throw new RuntimeException("cannot unify types in " + n + " between " + type0 + " and " + type1);
 	}
 
 	private class Extract {
