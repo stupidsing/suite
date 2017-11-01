@@ -25,8 +25,8 @@ public class Symbolic {
 		private static final long serialVersionUID = 1l;
 	}
 
-	public Node d(Node var, Node node0) {
-		Rewrite rewrite = new Rewrite(var);
+	public Node d(Node x, Node node0) {
+		Rewrite rewrite = new Rewrite(x);
 		Node node1 = rewrite.rewrite(node0);
 		Node node2 = Boolean.TRUE ? rewrite.d(node1) : rewrite.i(node1).uniqueResult();
 		Node node3 = rewrite.polyize(node2);
