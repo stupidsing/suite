@@ -14,7 +14,7 @@ public class SymbolicTest {
 		Atom x = Atom.of("x");
 		System.out.println(sym.d(x, Suite.parse("1")));
 		System.out.println(sym.d(x, Suite.parse("x")));
-		System.out.println(sym.d(x, Suite.parse("x * x")));
+		System.out.println(sym.d(x, Suite.parse("x * x * x * x")));
 		System.out.println(sym.d(x, Suite.parse("2 / x")));
 	}
 
