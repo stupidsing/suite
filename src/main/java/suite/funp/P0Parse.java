@@ -30,8 +30,12 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P0.FunpVariableNew;
+import suite.immutable.IMap;
 import suite.immutable.ISet;
 import suite.inspect.Inspect;
+import suite.lp.Trail;
+import suite.lp.doer.Binder;
+import suite.lp.doer.Generalizer;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -47,8 +51,39 @@ public class P0Parse {
 	private Atom dontCare = Atom.of("_");
 	private Inspect inspect = Singleton.me.inspect;
 
-	public Funp parse(Node node) {
-		return new Parse(new ISet<>()).parse(node);
+	public Funp parse(Node node0) {
+		class Expand {
+			private IMap<Node, Pair<Node, Node>> macros;
+
+			private Expand(IMap<Node, Pair<Node, Node>> macros) {
+				this.macros = macros;
+			}
+
+			private Node expand(Node node_) {
+				Tree tree;
+				Node[] m;
+				Pair<Node, Node> expand;
+
+				if ((m = Suite.match("expand .0 .1 := .2 >> .3").apply(node_)) != null)
+					return new Expand(macros.put(m[0], Pair.of(m[1], m[2]))).expand(m[3]);
+				else if ((m = Suite.match(".0 .1").apply(node_)) != null //
+						&& (expand = macros.get(m[0])) != null) {
+					Generalizer g = new Generalizer();
+					Node t0_ = g.generalize(expand.t0);
+					Node t1_ = g.generalize(expand.t1);
+					if (Binder.bind(m[1], t0_, new Trail()))
+						return expand(t1_);
+					else
+						throw new RuntimeException();
+				} else if ((tree = Tree.decompose(node_)) != null)
+					return Tree.of(tree.getOperator(), expand(tree.getLeft()), expand(tree.getRight()));
+				else
+					return node_;
+			}
+		}
+
+		Node node1 = new Expand(IMap.empty()).expand(node0);
+		return new Parse(new ISet<>()).parse(node1);
 	}
 
 	private class Parse {
