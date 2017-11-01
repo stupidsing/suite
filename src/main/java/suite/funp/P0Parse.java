@@ -6,6 +6,7 @@ import java.util.Set;
 
 import suite.Suite;
 import suite.adt.pair.Pair;
+import suite.assembler.Amd64;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
@@ -101,8 +102,11 @@ public class P0Parse {
 				return FunpApply.of(parse(m[0]), parse(m[1]));
 			else if ((m = Suite.match("array .0").apply(node)) != null)
 				return FunpArray.of(Tree.iter(m[0], TermOp.AND___).map(this::parse).toList());
-			else if ((m = Suite.match("asm {.0}").apply(node)) != null)
-				return FunpAsm.of(Tree.iter(m[0], TermOp.OR____).toList());
+			else if ((m = Suite.match("asm .0 {.1}").apply(node)) != null)
+				return FunpAsm.of(Tree.iter(m[0], TermOp.OR____).map(n -> {
+					Node[] ma = Suite.match(".0 = .1").apply(n);
+					return Pair.of(Amd64.me.regsByName.get(ma[0]), parse(ma[1]));
+				}).toList(), Tree.iter(m[1], TermOp.OR____).toList());
 			else if (node == Atom.FALSE)
 				return FunpBoolean.of(false);
 			else if (node == Atom.TRUE)

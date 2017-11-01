@@ -8,6 +8,7 @@ import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Pair;
+import suite.assembler.Amd64.OpReg;
 import suite.funp.Funp_.Funp;
 import suite.node.Atom;
 import suite.node.Node;
@@ -49,16 +50,18 @@ public class P0 {
 	}
 
 	public static class FunpAsm implements Funp, P3.End {
+		public List<Pair<OpReg, Funp>> assigns;
 		public List<Node> asm;
 
-		public static FunpAsm of(List<Node> asm) {
+		public static FunpAsm of(List<Pair<OpReg, Funp>> assigns, List<Node> asm) {
 			FunpAsm f = new FunpAsm();
+			f.assigns = assigns;
 			f.asm = asm;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<List<Node>, R> fun) {
-			return fun.apply(asm);
+		public <R> R apply(FixieFun2<List<Pair<OpReg, Funp>>, List<Node>, R> fun) {
+			return fun.apply(assigns, asm);
 		}
 	}
 

@@ -21,11 +21,16 @@ public class ElfTest {
 				+ "define linux-read := `buffer, length` => (\n" //
 				+ "	type buffer = address (256 * array byte 0) >>\n" //
 				+ "	type length = 0 >>\n" //
-				+ "	0\n" //
+				+ "	asm (ECX = buffer; EDX = length;) {\n" //
+				+ "		MOV (EAX, 3);\n" //
+				+ "		XOR (EBX, EBX);\n" //
+				+ "		INT (-128);\n" //
+				+ "		-- length in EAX\n" //
+				+ "	}\n" //
 				+ ") >>\n" //
-				+ "asm {\n" //
+				+ "asm () {\n" //
 				+ "	MOV (EBP, ESP);\n" //
-				+ "} / ((" + program + ") | (i => asm {\n" //
+				+ "} / ((" + program + ") | (i => asm () {\n" //
 				+ "	MOV (EBX, `EBP + 8`);\n" //
 				+ "	MOV (EAX, 1);\n" //
 				+ "	INT (-128);\n" //

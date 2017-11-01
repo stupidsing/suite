@@ -10,6 +10,7 @@ import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Pair;
+import suite.assembler.Amd64.OpReg;
 import suite.fp.Unify;
 import suite.fp.Unify.UnNode;
 import suite.funp.Funp_.Funp;
@@ -116,9 +117,12 @@ public class P1InferType {
 				for (Funp element : elements)
 					unify(n, te, infer(element));
 				return TypeArray.of(te, elements.size());
-			})).applyIf(FunpAsm.class, f -> {
+			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
+				for (Pair<OpReg, Funp> assign : assigns)
+					if (assign.t0.size != getTypeSize(infer(assign.t1)))
+						throw new RuntimeException();
 				return typeNumber;
-			}).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
+			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), TypeReference.of(infer(value)));
 				return infer(expr);
 			})).applyIf(FunpBoolean.class, f -> {

@@ -33,7 +33,7 @@ public class Amd64Parser {
 				2 < operands.size() ? operands.get(2) : amd64.none);
 	}
 
-	private Operand parseOperand(Node node) {
+	public Operand parseOperand(Node node) {
 		Operand operand;
 		Node[] m;
 
