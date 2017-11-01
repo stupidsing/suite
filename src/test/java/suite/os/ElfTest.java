@@ -18,7 +18,11 @@ public class ElfTest {
 
 	private Execute test(String program) {
 		Execute exec = elf.exec("", offset -> Funp_.main().compile(offset, "" //
-				+ "define linux-read := i => (type i = 0 >> 0) >>\n" //
+				+ "define linux-read := `buffer, length` => (\n" //
+				+ "	type buffer = address (256 * array byte 0) >>\n" //
+				+ "	type length = 0 >>\n" //
+				+ "	0\n" //
+				+ ") >>\n" //
 				+ "asm {\n" //
 				+ "	MOV (EBP, ESP);\n" //
 				+ "} / ((" + program + ") | (i => asm {\n" //
