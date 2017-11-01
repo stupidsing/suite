@@ -70,7 +70,7 @@ public class Symbolic {
 			else if ((m = Suite.match(".0 .1").apply(node)) != null)
 				return Suite.match(".0 .1").substitute(m[0], rewrite(m[1]));
 			else if ((tree = Tree.decompose(node)) != null)
-				return Tree.of(tree.getOperator(), rewrite(tree.getLeft()), rewrite(tree.getLeft()));
+				return Tree.of(tree.getOperator(), rewrite(tree.getLeft()), rewrite(tree.getRight()));
 			else
 				return node;
 		}
