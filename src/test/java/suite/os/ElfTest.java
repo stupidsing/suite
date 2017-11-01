@@ -18,12 +18,13 @@ public class ElfTest {
 
 	private Execute test(String program) {
 		Execute exec = elf.exec("", offset -> Funp_.main().compile(offset, "" //
-				+ "asm {" //
-				+ "	MOV (EBP, ESP);" //
-				+ "} / ((" + program + ") | (i => asm {" //
-				+ "	MOV (EBX, `EBP + 8`);" //
-				+ "	MOV (EAX, 1);" //
-				+ "	INT (-128);" //
+				+ "define linux-read := i => (type i = 0 >> 0) >>\n" //
+				+ "asm {\n" //
+				+ "	MOV (EBP, ESP);\n" //
+				+ "} / ((" + program + ") | (i => asm {\n" //
+				+ "	MOV (EBX, `EBP + 8`);\n" //
+				+ "	MOV (EAX, 1);\n" //
+				+ "	INT (-128);\n" //
 				+ "}))"));
 		assertEquals(0, exec.code);
 		return exec;

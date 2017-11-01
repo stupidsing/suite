@@ -146,6 +146,8 @@ public class P0Parse {
 				return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
 			else if ((m = Suite.match(".0 {.1}").apply(node)) != null)
 				return FunpIndex.of(FunpReference.of(parse(m[0])), parse(m[1]));
+			else if ((m = Suite.match("`.0` => .1").apply(node)) != null)
+				return parse(Suite.match(".2 => if (`.0` = .2) then .1 else asm { HLT; }").substitute(m[0], m[1], Atom.temp()));
 			else if ((m = Suite.match(".0 => .1").apply(node)) != null) {
 				String var = name(m[0]);
 				return FunpLambda.of(var, parseNewVariable(m[1], var));
@@ -157,6 +159,8 @@ public class P0Parse {
 				return FunpReference.of(parse(m[0]));
 			else if ((m = Suite.match(".0 * array .1").apply(node)) != null)
 				return FunpRepeat.of(((Int) m[0]).number, parse(m[1]));
+			else if ((m = Suite.match(".0, .1").apply(node)) != null)
+				return FunpStruct.of(List.of(Pair.of("t0", parse(m[0])), Pair.of("t1", parse(m[1]))));
 			else if ((m = Suite.match("struct .0").apply(node)) != null)
 				return FunpStruct.of(Tree //
 						.iter(m[0], TermOp.AND___) //
