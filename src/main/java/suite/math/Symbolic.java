@@ -65,10 +65,9 @@ public class Symbolic {
 				return Suite.match(".0 * inv .1").substitute(rewrite(m[0]), rewrite(m[1]));
 			else if ((m = matchPow.apply(node)) != null)
 				return Suite.match("exp (ln .0 * .1)").substitute(m[0], m[1]);
-			else if (node instanceof Int) {
-				int n = ((Int) node).number;
-				return n < 0 ? matchNeg.substitute(rewrite(Int.of(-n))) : node;
-			} else if ((m = Suite.match(".0 .1").apply(node)) != null)
+			else if (node instanceof Int)
+				return intOf((Int) node);
+			else if ((m = Suite.match(".0 .1").apply(node)) != null)
 				return Suite.match(".0 .1").substitute(m[0], rewrite(m[1]));
 			else if ((tree = Tree.decompose(node)) != null)
 				return Tree.of(tree.getOperator(), rewrite(tree.getLeft()), rewrite(tree.getLeft()));
@@ -101,7 +100,7 @@ public class Symbolic {
 					else if ((m = matchNeg.apply(node_)) != null)
 						return sop(m[0]).map(matchNeg::substitute);
 					else if ((m = matchMul.apply(node_)) != null)
-						return sop(m[0]).join2(sop(m[1])).map(mul::apply);
+						return sop(m[0]).join2(sop(m[1])).map(mul::apply).map(this::productOfSums);
 					else if ((m = matchLn.apply(node_)) != null)
 						return pos(m[0]).map(matchLn::substitute);
 					else if ((m = Suite.match("sin (.0 + .1)").apply(node_)) != null)
@@ -227,10 +226,14 @@ public class Symbolic {
 			List<Node> list = new ArrayList<>();
 			int xn = 0;
 			Node constant = e;
+			Node[] m;
+			Node n;
 
 			for (Node child : nodes0)
 				if (child instanceof Int)
 					constant = apply(child, constant);
+				else if ((m = matchNeg.apply(child)) != null && (n = m[0]) instanceof Int)
+					constant = apply(Int.of(-((Int) n).number), constant);
 				else if (child == var)
 					xn++;
 				else
@@ -240,7 +243,7 @@ public class Symbolic {
 				list.add(var);
 
 			if (e != constant)
-				list.add(constant);
+				list.add(intOf(constant));
 
 			Streamlet<Node> nodes1 = Read.from(list);
 			Node node = nodes1.first();
@@ -267,6 +270,11 @@ public class Symbolic {
 			else
 				return tree;
 		}
+	}
+
+	private Node intOf(Node n) {
+		int i = ((Int) n).number;
+		return i < 0 ? matchNeg.substitute(Int.of(-i)) : n;
 	}
 
 	private Match matchAdd = Suite.match(".0 + .1");
