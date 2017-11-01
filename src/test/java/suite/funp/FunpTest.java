@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Suite;
+import suite.funp.Funp_.Main;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 
@@ -49,8 +50,9 @@ public class FunpTest {
 
 	@Test
 	public void testInterpret() {
-		assertEquals(7, Funp_.main().interpret(Suite.parse("1 + 2 * 3")));
-		assertEquals(1, Funp_.main().interpret(Suite.parse("0 | (a => a + 1)")));
+		Main main = Funp_.main();
+		assertEquals(7, main.interpret(Suite.parse("1 + 2 * 3")));
+		assertEquals(1, main.interpret(Suite.parse("0 | (a => a + 1)")));
 	}
 
 	@Test
