@@ -24,7 +24,7 @@ public class FunpTest {
 
 	@Test
 	public void testBind() {
-		test("define a := array (0, 1,) >> if (`array (0, v,)` := a) then v else 0");
+		test("define a := array (0, 1,) >> if (`array (0, v,)` = a) then v else 0");
 	}
 
 	@Test

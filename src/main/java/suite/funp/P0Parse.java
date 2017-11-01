@@ -128,7 +128,7 @@ public class P0Parse {
 			else if ((m = Suite.match("fixed .0 => .1").apply(node)) != null) {
 				String var = name(m[0]);
 				return FunpFixed.of(var, parseNewVariable(m[1], var));
-			} else if ((m = Suite.match("if (`.0` := .1) then .2 else .3").apply(node)) != null) {
+			} else if ((m = Suite.match("if (`.0` = .1) then .2 else .3").apply(node)) != null) {
 				ExtractNewVariables env = new ExtractNewVariables();
 				Funp be = env.extract(parse(m[0]));
 				Funp value = parse(m[1]);
