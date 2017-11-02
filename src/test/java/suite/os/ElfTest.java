@@ -15,7 +15,7 @@ public class ElfTest {
 	public void test() {
 		assertEquals("", test("" //
 				+ "define linux-read := `buffer, length` => (\n" //
-				+ "	type buffer = address (256 * array byte 0) >>\n" //
+				+ "	type buffer = address (256 * array byte _) >>\n" //
 				+ "	type length = 0 >>\n" //
 				+ "	asm (ECX = buffer; EDX = length;) {\n" //
 				+ "		MOV (EAX, 3);\n" //
@@ -25,7 +25,7 @@ public class ElfTest {
 				+ "	}\n" //
 				+ ") >>\n" //
 				+ "define linux-write := `buffer, length` => (\n" //
-				+ "	type buffer = address (256 * array byte 0) >>\n" //
+				+ "	type buffer = address (256 * array byte _) >>\n" //
 				+ "	type length = 0 >>\n" //
 				+ "	asm (ECX = buffer; EDX = length;) {\n" //
 				+ "		MOV (EAX, 4);\n" //
