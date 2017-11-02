@@ -324,8 +324,9 @@ public class P1InferType {
 				int fs1 = fs - getTypeSize(typeOf(init));
 				Var var_ = new Var(scope, fs1, fs);
 				Erase erase1 = new Erase(scope, fs1, env.put(var, var_));
-				FunpWhile while_ = FunpWhile.of(cond, FunpAssign.of(getVariable(var_), iterate, FunpDontCare.of()));
-				return allocStack(init, erase1.erase(while_));
+				FunpDontCare xxx = FunpDontCare.of();
+				FunpWhile while_ = FunpWhile.of(erase1.erase(cond), FunpAssign.of(getVariable(var_), erase1.erase(iterate), xxx));
+				return allocStack(init, while_);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				int b = ps * 2; // return address and EBP
 				int scope1 = scope + 1;

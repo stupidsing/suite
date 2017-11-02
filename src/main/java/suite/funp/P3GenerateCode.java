@@ -149,7 +149,7 @@ public class P3GenerateCode {
 						em.mov(amd64.mem(mask(op).compileOpReg(target.pointer), target.start, is), old);
 					else if (type == CompileOut_.OP || type == CompileOut_.OPREG) {
 						if (type == CompileOut_.OPREG && !(op instanceof OpReg))
-							em.mov(op = rs.get(), old);
+							em.mov(op = rs.get(old.size), old);
 						return new CompileOut(op);
 					} else if (type == CompileOut_.OPSPEC)
 						em.mov(pop0, old);
@@ -167,9 +167,9 @@ public class P3GenerateCode {
 						em.mov(amd64.mem(r, target.start + ps, ps), old1);
 					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG) {
 						if (type == CompileOut_.TWOOPREG && !(op0 instanceof OpReg))
-							em.mov(op0 = rs.mask(op1).get(), old0);
+							em.mov(op0 = rs.mask(op1).get(old0.size), old0);
 						if (type == CompileOut_.TWOOPREG && !(op1 instanceof OpReg))
-							em.mov(op1 = rs.mask(op0).get(), old1);
+							em.mov(op1 = rs.mask(op0).get(old1.size), old1);
 						return new CompileOut(op0, op1);
 					} else if (type == CompileOut_.TWOOPSPEC) {
 						OpReg r = rs.mask(old1, pop1).get(pop0);
@@ -186,16 +186,16 @@ public class P3GenerateCode {
 						assign.sink2(this, target);
 						return new CompileOut();
 					} else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC) {
-						OpReg op0 = isOutSpec ? pop0 : rs.get();
+						OpReg op0 = isOutSpec ? pop0 : rs.get(is);
 						em.emit(amd64.instruction(Insn.PUSH, eax));
 						int fd1 = fd - is;
 						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
 						em.mov(op0, amd64.mem(ebp, fd1, is));
-						em.emit(amd64.instruction(Insn.POP, rs.mask(op0).get()));
+						em.emit(amd64.instruction(Insn.POP, rs.mask(op0).get(is)));
 						return postOp.apply(op0);
 					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG || type == CompileOut_.TWOOPSPEC) {
-						OpReg op0 = isOutSpec ? pop0 : rs.get();
-						OpReg op1 = isOutSpec ? pop1 : rs.mask(op0).get();
+						OpReg op0 = isOutSpec ? pop0 : rs.get(is);
+						OpReg op1 = isOutSpec ? pop1 : rs.mask(op0).get(is);
 						int size = ps * 2;
 						int fd1 = fd - size;
 						Operand imm = amd64.imm(size);
@@ -244,7 +244,7 @@ public class P3GenerateCode {
 					}
 					CompileOut out = c1.compile(expr);
 					if (size1 == is)
-						em.emit(amd64.instruction(Insn.POP, rs.mask(out.op0, out.op1).get()));
+						em.emit(amd64.instruction(Insn.POP, rs.mask(out.op0, out.op1).get(is)));
 					else
 						em.emit(amd64.instruction(Insn.ADD, esp, imm));
 					return out;
@@ -406,9 +406,9 @@ public class P3GenerateCode {
 					Operand op1 = isOutSpec ? pop1 : out0.op1;
 
 					if (op0 != null)
-						em.mov(op0 = rs.contains(op0) ? rs.mask(op1).get() : op0, out0.op0);
+						em.mov(op0 = rs.contains(op0) ? rs.mask(op1).get(op0.size) : op0, out0.op0);
 					if (op1 != null)
-						em.mov(op1 = rs.contains(op1) ? rs.mask(op0).get() : op1, out0.op1);
+						em.mov(op1 = rs.contains(op1) ? rs.mask(op0).get(op1.size) : op1, out0.op1);
 
 					CompileOut out1 = new CompileOut(op0, op1);
 
@@ -457,7 +457,7 @@ public class P3GenerateCode {
 				OpReg opResult = null;
 
 				if (opResult == null && op != null)
-					em.lea(opResult = isOutSpec ? pop0 : rs.get(), op);
+					em.lea(opResult = isOutSpec ? pop0 : rs.get(ps), op);
 
 				Fun<Funp, OpReg> cr = n_ -> isOutSpec ? compileOpSpec(n_, pop0) : compileOpReg(n_);
 
@@ -498,7 +498,7 @@ public class P3GenerateCode {
 						Sink<Compile1> sink0 = c1 -> {
 							c1.compileOpSpec(lhs, eax);
 							Operand opRhs0 = c1.mask(eax).compileOp(rhs);
-							Operand opRhs1 = !(opRhs0 instanceof OpImm) ? opRhs0 : c1.rs.mask(eax, edx).get();
+							Operand opRhs1 = !(opRhs0 instanceof OpImm) ? opRhs0 : c1.rs.mask(eax, edx).get(is);
 							em.mov(opRhs1, opRhs0);
 							em.emit(amd64.instruction(Insn.XOR, edx, edx));
 							em.emit(amd64.instruction(Insn.IDIV, opRhs1));
@@ -618,7 +618,7 @@ public class P3GenerateCode {
 								em.emit(amd64.instruction(Insn.MOVSB));
 						}, ecx, esi, edi);
 					else if (is <= size)
-						sink.sink2(this, rs.get());
+						sink.sink2(this, rs.get(is));
 					else if (0 < size)
 						saveRegs(c1 -> sink.sink2(c1, cl), ecx);
 			}
