@@ -19,7 +19,6 @@ public class RegisterSet {
 	public final int flag;
 
 	static {
-
 		Map<Integer, OpReg> map = Read //
 				.from2(amd64.regsByName) //
 				.values() //
@@ -43,23 +42,11 @@ public class RegisterSet {
 	}
 
 	public OpReg get(OpReg prefer) {
-		return prefer != null && !isSet(prefer.reg) ? prefer : get_();
+		return prefer != null && !isSet(prefer.reg) ? prefer : get_(prefer.size);
 	}
 
 	public OpReg get(int size) {
-		OpReg r = get_();
-		int reg = r.reg;
-		if (size == 1 && reg < 4) // AL, BL, CL or DL
-			return amd64.reg8[reg];
-		else if (size == 2)
-			return amd64.reg16[reg];
-		else if (size == 4)
-			return r;
-		else if (size == 8)
-			return amd64.reg64[reg];
-		else
-			throw new RuntimeException("cannot allocate register with size " + size);
-
+		return get_(size);
 	}
 
 	public OpReg get() {
@@ -96,6 +83,21 @@ public class RegisterSet {
 					flag_ |= flag(operand1.indexReg);
 			}
 		return flag_;
+	}
+
+	private OpReg get_(int size) {
+		OpReg r = get_();
+		int reg = r.reg;
+		if (size == 1 && reg < 4) // AL, BL, CL or DL
+			return amd64.reg8[reg];
+		else if (size == 2)
+			return amd64.reg16[reg];
+		else if (size == 4)
+			return r;
+		else if (size == 8)
+			return amd64.reg64[reg];
+		else
+			throw new RuntimeException("cannot allocate register with size " + size);
 	}
 
 	private OpReg get_() {
