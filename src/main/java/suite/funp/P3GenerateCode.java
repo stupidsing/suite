@@ -40,8 +40,9 @@ import suite.funp.P1.FunpRoutine;
 import suite.funp.P1.FunpRoutine2;
 import suite.funp.P1.FunpRoutineIo;
 import suite.funp.P1.FunpSaveRegisters;
+import suite.funp.P1.FunpWhile;
+import suite.funp.P3JumpIf.JumpIf;
 import suite.node.Atom;
-import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
@@ -50,6 +51,7 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
+import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
 import suite.util.FunUtil2.Sink2;
 import suite.util.Switch;
@@ -83,31 +85,19 @@ public class P3GenerateCode {
 			entry(TreeUtil.OR_, Insn.OR), //
 			entry(TreeUtil.XOR, Insn.XOR));
 
-	Map<TermOp, Insn> jxxInsnByOp = Map.ofEntries( //
-			entry(TermOp.EQUAL_, Insn.JE), //
-			entry(TermOp.LE____, Insn.JLE), //
-			entry(TermOp.LT____, Insn.JL), //
-			entry(TermOp.NOTEQ_, Insn.JNE));
-
-	Map<TermOp, Insn> jnxInsnByOp = Map.ofEntries( //
-			entry(TermOp.EQUAL_, Insn.JNE), //
-			entry(TermOp.LE____, Insn.JG), //
-			entry(TermOp.LT____, Insn.JGE), //
-			entry(TermOp.NOTEQ_, Insn.JE));
-
-	Map<TermOp, Insn> setInsnByOp = Map.ofEntries( //
+	private Map<TermOp, Insn> setInsnByOp = Map.ofEntries( //
 			entry(TermOp.EQUAL_, Insn.SETE), //
 			entry(TermOp.LE____, Insn.SETLE), //
 			entry(TermOp.LT____, Insn.SETL), //
 			entry(TermOp.NOTEQ_, Insn.SETNE));
 
-	Map<TermOp, Insn> setnInsnByOp = Map.ofEntries( //
+	private Map<TermOp, Insn> setnInsnByOp = Map.ofEntries( //
 			entry(TermOp.EQUAL_, Insn.SETNE), //
 			entry(TermOp.LE____, Insn.SETG), //
 			entry(TermOp.LT____, Insn.SETGE), //
 			entry(TermOp.NOTEQ_, Insn.SETE));
 
-	Map<Atom, Insn> shInsnByOp = Map.ofEntries( //
+	private Map<Atom, Insn> shInsnByOp = Map.ofEntries( //
 			entry(TreeUtil.SHL, Insn.SHL), //
 			entry(TreeUtil.SHR, Insn.SHR));
 
@@ -221,6 +211,23 @@ public class P3GenerateCode {
 
 				Fun<Runnable, CompileOut> postRoutine = routine -> compileRoutine(routine).map(postTwoOp);
 
+				Source<CompileOut> postDontCare = () -> {
+					if (type == CompileOut_.OP || type == CompileOut_.OPREG)
+						return new CompileOut(eax);
+					else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG)
+						return new CompileOut(eax, edx);
+					else
+						return new CompileOut();
+				};
+
+				FixieFun4<Insn, Funp, Funp, Operand, Boolean> cmp = (insn, lhs, rhs, label) -> {
+					OpReg op0 = compileOpReg(lhs);
+					Operand op1 = mask(op0).compileOp(rhs);
+					em.emit(amd64.instruction(Insn.CMP, op0, op1));
+					em.emit(amd64.instruction(insn, label));
+					return true;
+				};
+
 				return new Switch<CompileOut>(n //
 				).applyIf(FunpAllocStack.class, f -> f.apply((size0, value, expr) -> {
 					int is1 = is - 1;
@@ -284,15 +291,10 @@ public class P3GenerateCode {
 						}
 					});
 				})).applyIf(FunpDontCare.class, f -> {
-					if (type == CompileOut_.OP || type == CompileOut_.OPREG)
-						return new CompileOut(eax);
-					else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG)
-						return new CompileOut(eax, edx);
-					else
-						return new CompileOut();
+					return postDontCare.source();
 				}).applyIf(FunpError.class, f -> {
 					em.emit(amd64.instruction(Insn.HLT));
-					return compile(FunpDontCare.of());
+					return postDontCare.source();
 				}).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
 					throw new RuntimeException();
 				})).applyIf(FunpFramePointer.class, t -> {
@@ -302,51 +304,6 @@ public class P3GenerateCode {
 					Operand condLabel = em.label();
 					Operand endLabel = em.label();
 
-					FixieFun4<Insn, Funp, Funp, Operand, Boolean> jmpIf = (insn, lhs, rhs, label) -> {
-						OpReg op0 = compileOpReg(lhs);
-						Operand op1 = mask(op0).compileOp(rhs);
-						em.emit(amd64.instruction(Insn.CMP, op0, op1));
-						em.emit(amd64.instruction(insn, label));
-						return true;
-					};
-
-					class JumpIf {
-						private FunpTree tree;
-						private Operator operator;
-						private Funp left, right;
-
-						private JumpIf(Funp node) {
-							tree = node instanceof FunpTree ? (FunpTree) node : null;
-							operator = tree != null ? tree.operator : null;
-							left = tree != null ? tree.left : null;
-							right = tree != null ? tree.right : null;
-						}
-
-						private boolean jnxIf(Operand label) {
-							Insn jnx = operator != null ? jnxInsnByOp.get(operator) : null;
-							if (operator == TermOp.BIGAND)
-								return new JumpIf(left).jnxIf(label) && new JumpIf(right).jnxIf(label);
-							else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
-								return new JumpIf(left).jxxIf(label);
-							else if (jnx != null)
-								return jmpIf.apply(jnx, left, right, label);
-							else
-								return false;
-						}
-
-						private boolean jxxIf(Operand label) {
-							Insn jxx = operator != null ? jxxInsnByOp.get(operator) : null;
-							if (operator == TermOp.BIGOR_)
-								return new JumpIf(left).jxxIf(label) && new JumpIf(right).jxxIf(label);
-							else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
-								return new JumpIf(left).jnxIf(label);
-							else if (jxx != null)
-								return jmpIf.apply(jxx, left, right, label);
-							else
-								return false;
-						}
-					}
-
 					Sink2<Funp, Funp> thenElse = (condt, condf) -> {
 						compileOpSpec(condt, op);
 						em.emit(amd64.instruction(Insn.JMP, endLabel));
@@ -355,7 +312,7 @@ public class P3GenerateCode {
 						em.emit(amd64.instruction(Insn.LABEL, endLabel));
 					};
 
-					JumpIf jumpIf = new JumpIf(if_);
+					JumpIf jumpIf = new P3JumpIf(cmp).new JumpIf(if_);
 
 					if (jumpIf.jnxIf(condLabel))
 						thenElse.sink2(then, else_);
@@ -462,6 +419,28 @@ public class P3GenerateCode {
 					return postOp.apply(compileTree(n, operator, operator.getAssoc(), lhs, rhs));
 				})).applyIf(FunpTree2.class, f -> f.apply((operator, lhs, rhs) -> {
 					return postOp.apply(compileTree(n, operator, Assoc.RIGHT, lhs, rhs));
+				})).applyIf(FunpWhile.class, f -> f.apply((while_, do_) -> {
+					Operand loopLabel = em.label();
+					Operand exitLabel = em.label();
+					Operand contLabel = em.label();
+
+					em.emit(amd64.instruction(Insn.LABEL, loopLabel));
+					JumpIf jumpIf = new P3JumpIf(cmp).new JumpIf(while_);
+
+					if (jumpIf.jnxIf(exitLabel))
+						;
+					else if (jumpIf.jxxIf(contLabel)) {
+						em.emit(amd64.instruction(Insn.JMP, exitLabel));
+						em.emit(amd64.instruction(Insn.LABEL, contLabel));
+					} else {
+						OpReg r0 = compileOpReg(while_);
+						em.emit(amd64.instruction(Insn.OR, r0, r0));
+						em.emit(amd64.instruction(Insn.JZ, exitLabel));
+					}
+
+					compileOp(do_);
+					em.emit(amd64.instruction(Insn.LABEL, exitLabel));
+					return postDontCare.source();
 				})).nonNullResult();
 			}
 

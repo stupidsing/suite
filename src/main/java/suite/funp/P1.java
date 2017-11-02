@@ -4,6 +4,7 @@ import java.util.List;
 
 import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
+import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
@@ -195,6 +196,22 @@ public class P1 {
 
 		public <R> R apply(FixieFun1<Funp, R> fun) {
 			return fun.apply(expr);
+		}
+	}
+
+	public static class FunpWhile implements Funp, P3.End {
+		public Funp while_;
+		public Funp do_;
+
+		public static FunpWhile of(Funp while_, Funp do_) {
+			FunpWhile f = new FunpWhile();
+			f.while_ = while_;
+			f.do_ = do_;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
+			return fun.apply(while_, do_);
 		}
 	}
 

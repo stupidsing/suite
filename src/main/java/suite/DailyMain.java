@@ -48,7 +48,7 @@ import suite.util.Util.ExecutableProgram;
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain extends ExecutableProgram {
 
-	private Set<String> blackList = To.set("2983.HK");
+	private Set<String> blackList = To.set();
 
 	private Configuration cfg = new ConfigurationImpl();
 	private Serialize serialize = Serialize.me;

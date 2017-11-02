@@ -23,6 +23,7 @@ import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
+import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
@@ -153,6 +154,8 @@ public class P0Parse {
 				return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
 			else if ((m = Suite.match(".0 {.1}").apply(node)) != null)
 				return FunpIndex.of(FunpReference.of(parse(m[0])), parse(m[1]));
+			else if ((m = Suite.match("iterate .0 .1 .2 .3").apply(node)) != null)
+				return FunpIterate.of(name(m[0]), parse(m[1]), parse(m[2]), parse(m[3]));
 			else if ((m = Suite.match("`.0` => .1").apply(node)) != null)
 				return parse(Suite.match(".2 => if (`.0` = .2) then .1 else error").substitute(m[0], m[1], Atom.temp()));
 			else if ((m = Suite.match(".0 => .1").apply(node)) != null) {

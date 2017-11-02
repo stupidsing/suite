@@ -11,6 +11,7 @@ import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
+import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
@@ -121,6 +122,18 @@ public class P1GenerateLambda {
 				Thunk array = compile_(FunpDeref.of(reference));
 				Thunk index1 = compile_(index);
 				return rt -> ((Vec) array.apply(rt)).values[i(rt, index1)];
+			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
+				int fs1 = fs + 1;
+				IMap<String, Integer> env1 = env.put(var, fs1);
+				Thunk init_ = compile_(init);
+				Thunk cond_ = compile(fs1, env1, cond);
+				Thunk iterate_ = compile(fs1, env1, iterate);
+				return rt -> {
+					Rt rt1 = new Rt(rt, init_.apply(rt));
+					while (b(rt1, cond_))
+						rt1.var = iterate_.apply(rt1);
+					return rt1.var;
+				};
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				int fs1 = fs + 1;
 				Thunk thunk = compile(fs1, env.put(var, fs1), expr);

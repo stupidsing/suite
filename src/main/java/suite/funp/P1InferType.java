@@ -29,6 +29,7 @@ import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
+import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
@@ -49,6 +50,7 @@ import suite.funp.P1.FunpRoutine;
 import suite.funp.P1.FunpRoutine2;
 import suite.funp.P1.FunpRoutineIo;
 import suite.funp.P1.FunpSaveRegisters;
+import suite.funp.P1.FunpWhile;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.node.io.TermOp;
@@ -165,6 +167,13 @@ public class P1InferType {
 				unify(n, TypeReference.of(TypeArray.of(te)), infer(reference));
 				unify(n, infer(index), typeNumber);
 				return te;
+			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
+				UnNode<Type> tv = unify.newRef();
+				Infer infer1 = new Infer(env.put(var, tv));
+				unify(n, tv, infer(init));
+				unify(n, typeBoolean, infer1.infer(cond));
+				unify(n, tv, infer1.infer(iterate));
+				return tv;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> tv = unify.newRef();
 				return TypeLambda.of(tv, new Infer(env.put(var, tv)).infer(expr));
@@ -311,6 +320,12 @@ public class P1InferType {
 				FunpTree inc = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.of(size));
 				Funp address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
+			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
+				int fs1 = fs - getTypeSize(typeOf(init));
+				Var var_ = new Var(scope, fs1, fs);
+				Erase erase1 = new Erase(scope, fs1, env.put(var, var_));
+				FunpWhile while_ = FunpWhile.of(cond, FunpAssign.of(getVariable(var_), iterate, FunpDontCare.of()));
+				return allocStack(init, erase1.erase(while_));
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				int b = ps * 2; // return address and EBP
 				int scope1 = scope + 1;
@@ -368,7 +383,7 @@ public class P1InferType {
 			return FunpAllocStack.of(getTypeSize(t), erase(p), expr);
 		}
 
-		private Funp getVariable(Var vd) {
+		private FunpMemory getVariable(Var vd) {
 			Funp nfp = Funp_.framePointer;
 			for (int i = scope; i < vd.scope; i++)
 				nfp = FunpMemory.of(nfp, 0, ps);

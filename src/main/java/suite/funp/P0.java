@@ -7,6 +7,7 @@ import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
+import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.OpReg;
 import suite.funp.Funp_.Funp;
@@ -246,6 +247,26 @@ public class P0 {
 
 		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
 			return fun.apply(reference, index);
+		}
+	}
+
+	public static class FunpIterate implements Funp, P1.End {
+		public String var;
+		public Funp init;
+		public Funp cond;
+		public Funp iterate;
+
+		public static FunpIterate of(String var, Funp init, Funp cond, Funp iterate) {
+			FunpIterate f = new FunpIterate();
+			f.var = var;
+			f.init = init;
+			f.cond = cond;
+			f.iterate = iterate;
+			return f;
+		}
+
+		public <R> R apply(FixieFun4<String, Funp, Funp, Funp, R> fun) {
+			return fun.apply(var, init, cond, iterate);
 		}
 	}
 
