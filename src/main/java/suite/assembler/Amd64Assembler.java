@@ -621,7 +621,7 @@ public class Amd64Assembler {
 	}
 
 	private InsnCode assembleRmRegImm(Instruction instruction, int b_modrm, int b_imm, int num) {
-		return assembleRmRegImm(instruction, b_modrm, b_imm + 4, b_imm, num);
+		return assembleRmRegImm(instruction, b_modrm, b_modrm + 4, b_imm, num);
 	}
 
 	private InsnCode assembleRmRegImm(Instruction instruction, int b_modrm, int b_accImm, int b_rmImm, int num) {
