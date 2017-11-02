@@ -304,21 +304,19 @@ public class P3GenerateCode {
 					Source<CompileOut> out;
 
 					if (type == CompileOut_.ASSIGN || isOutSpec) {
-						compile = node_ -> compile(node_);
-						out = () -> new CompileOut(pop0, pop1);
+						compile = this::compile;
+						out = CompileOut::new;
 					} else if (type == CompileOut_.OP || type == CompileOut_.OPREG) {
-						OpReg op = rs.get();
-						compile = node_ -> compileOpSpec(node_, op);
-						out = () -> postOp.apply(op);
+						OpReg op0 = rs.get(ps);
+						compile = node_ -> compileOpSpec(node_, op0);
+						out = () -> postOp.apply(op0);
 					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG) {
-						OpReg op0 = rs.get();
-						OpReg op1 = rs.mask(op0).get();
+						OpReg op0 = rs.get(ps);
+						OpReg op1 = rs.mask(op0).get(ps);
 						compile = node_ -> compileTwoOpSpec(node_, op0, op1);
 						out = () -> postTwoOp.apply(op0, op1);
-					} else {
-						compile = node_ -> compileAssign(node_, target);
-						out = () -> postAssign.apply((c1, target1) -> c1.compileAssign(target, target1));
-					}
+					} else
+						throw new RuntimeException();
 
 					Operand condLabel = em.label();
 					Operand endLabel = em.label();

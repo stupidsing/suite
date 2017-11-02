@@ -49,10 +49,6 @@ public class RegisterSet {
 		return get_(size);
 	}
 
-	public OpReg get() {
-		return get_();
-	}
-
 	public OpReg[] list(IntPredicate pred) {
 		return Ints_ //
 				.range(nRegisters) //
