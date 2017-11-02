@@ -22,16 +22,17 @@ public class Opt<T> {
 		return p;
 	}
 
-	public boolean isEmpty() {
-		return value == null;
+	@Override
+	public boolean equals(Object object) {
+		return Object_.clazz(object) == Opt.class && Objects.equals(value, ((Opt<?>) object).value);
 	}
 
 	public Opt<T> filter(Predicate<T> pred) {
 		return isEmpty() || pred.test(value) ? this : none();
 	}
 
-	public <U> Opt<U> map(Fun<T, U> fun) {
-		return !isEmpty() ? of(fun.apply(value)) : none();
+	public boolean isEmpty() {
+		return value == null;
 	}
 
 	public T get() {
@@ -42,13 +43,12 @@ public class Opt<T> {
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		return Object_.clazz(object) == Opt.class && Objects.equals(value, ((Opt<?>) object).value);
-	}
-
-	@Override
 	public int hashCode() {
 		return Objects.hashCode(value);
+	}
+
+	public <U> Opt<U> map(Fun<T, U> fun) {
+		return !isEmpty() ? of(fun.apply(value)) : none();
 	}
 
 	@Override

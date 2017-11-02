@@ -313,10 +313,11 @@ public class P3GenerateCode {
 					};
 
 					JumpIf jumpIf = new P3JumpIf(cmp).new JumpIf(if_);
+					Source<Boolean> r;
 
-					if (jumpIf.jnxIf(condLabel))
+					if ((r = jumpIf.jnxIf(condLabel)) != null && r.source())
 						thenElse.sink2(then, else_);
-					else if (jumpIf.jxxIf(condLabel))
+					else if ((r = jumpIf.jxxIf(condLabel)) != null && r.source())
 						thenElse.sink2(else_, then);
 					else {
 						OpReg r0 = compileOpReg(if_);
@@ -421,15 +422,16 @@ public class P3GenerateCode {
 					return postOp.apply(compileTree(n, operator, Assoc.RIGHT, lhs, rhs));
 				})).applyIf(FunpWhile.class, f -> f.apply((while_, do_) -> {
 					Operand loopLabel = em.label();
-					Operand exitLabel = em.label();
 					Operand contLabel = em.label();
+					Operand exitLabel = em.label();
 
 					em.emit(amd64.instruction(Insn.LABEL, loopLabel));
 					JumpIf jumpIf = new P3JumpIf(cmp).new JumpIf(while_);
+					Source<Boolean> r;
 
-					if (jumpIf.jnxIf(exitLabel))
+					if ((r = jumpIf.jnxIf(exitLabel)) != null && r.source())
 						;
-					else if (jumpIf.jxxIf(contLabel)) {
+					else if ((r = jumpIf.jxxIf(contLabel)) != null && r.source()) {
 						em.emit(amd64.instruction(Insn.JMP, exitLabel));
 						em.emit(amd64.instruction(Insn.LABEL, contLabel));
 					} else {
@@ -439,6 +441,7 @@ public class P3GenerateCode {
 					}
 
 					compileOp(do_);
+					em.emit(amd64.instruction(Insn.JMP, loopLabel));
 					em.emit(amd64.instruction(Insn.LABEL, exitLabel));
 					return postDontCare.source();
 				})).nonNullResult();

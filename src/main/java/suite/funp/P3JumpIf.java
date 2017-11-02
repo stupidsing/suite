@@ -12,6 +12,7 @@ import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpTree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.util.FunUtil.Source;
 
 public class P3JumpIf {
 
@@ -45,28 +46,32 @@ public class P3JumpIf {
 			right = tree != null ? tree.right : null;
 		}
 
-		public boolean jnxIf(Operand label) {
+		public Source<Boolean> jnxIf(Operand label) {
 			Insn jnx = operator != null ? jnxInsnByOp.get(operator) : null;
-			if (operator == TermOp.BIGAND)
-				return new JumpIf(left).jnxIf(label) && new JumpIf(right).jnxIf(label);
-			else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
+			if (operator == TermOp.BIGAND) {
+				Source<Boolean> r0 = new JumpIf(left).jnxIf(label);
+				Source<Boolean> r1 = new JumpIf(right).jnxIf(label);
+				return r0 != null && r1 != null ? () -> r0.source() && r1.source() : null;
+			} else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
 				return new JumpIf(left).jxxIf(label);
 			else if (jnx != null)
-				return jmpIf.apply(jnx, left, right, label);
+				return () -> jmpIf.apply(jnx, left, right, label);
 			else
-				return false;
+				return null;
 		}
 
-		public boolean jxxIf(Operand label) {
+		public Source<Boolean> jxxIf(Operand label) {
 			Insn jxx = operator != null ? jxxInsnByOp.get(operator) : null;
-			if (operator == TermOp.BIGOR_)
-				return new JumpIf(left).jxxIf(label) && new JumpIf(right).jxxIf(label);
-			else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
+			if (operator == TermOp.BIGOR_) {
+				Source<Boolean> r0 = new JumpIf(left).jxxIf(label);
+				Source<Boolean> r1 = new JumpIf(right).jxxIf(label);
+				return r0 != null && r1 != null ? () -> r0.source() && r1.source() : null;
+			} else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
 				return new JumpIf(left).jnxIf(label);
 			else if (jxx != null)
-				return jmpIf.apply(jxx, left, right, label);
+				return () -> jmpIf.apply(jxx, left, right, label);
 			else
-				return false;
+				return null;
 		}
 	}
 
