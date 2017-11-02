@@ -307,7 +307,7 @@ public class P3GenerateCode {
 						compile = this::compile;
 						out = CompileOut::new;
 					} else if (type == CompileOut_.OP || type == CompileOut_.OPREG) {
-						OpReg op0 = rs.get(ps);
+						OpReg op0 = rs.get(is);
 						compile = node_ -> compileOpSpec(node_, op0);
 						out = () -> postOp.apply(op0);
 					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG) {
