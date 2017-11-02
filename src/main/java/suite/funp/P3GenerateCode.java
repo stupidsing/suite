@@ -300,15 +300,34 @@ public class P3GenerateCode {
 				})).applyIf(FunpFramePointer.class, t -> {
 					return postOp.apply(ebp);
 				}).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
-					OpReg op = isOutSpec ? pop0 : rs.get();
+					Sink<Funp> compile;
+					Source<CompileOut> out;
+
+					if (type == CompileOut_.ASSIGN || isOutSpec) {
+						compile = node_ -> compile(node_);
+						out = () -> new CompileOut(pop0, pop1);
+					} else if (type == CompileOut_.OP || type == CompileOut_.OPREG) {
+						OpReg op = rs.get();
+						compile = node_ -> compileOpSpec(node_, op);
+						out = () -> postOp.apply(op);
+					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG) {
+						OpReg op0 = rs.get();
+						OpReg op1 = rs.mask(op0).get();
+						compile = node_ -> compileTwoOpSpec(node_, op0, op1);
+						out = () -> postTwoOp.apply(op0, op1);
+					} else {
+						compile = node_ -> compileAssign(node_, target);
+						out = () -> postAssign.apply((c1, target1) -> c1.compileAssign(target, target1));
+					}
+
 					Operand condLabel = em.label();
 					Operand endLabel = em.label();
 
 					Sink2<Funp, Funp> thenElse = (condt, condf) -> {
-						compileOpSpec(condt, op);
+						compile.sink(condt);
 						em.emit(amd64.instruction(Insn.JMP, endLabel));
 						em.emit(amd64.instruction(Insn.LABEL, condLabel));
-						compileOpSpec(condf, op);
+						compile.sink(condf);
 						em.emit(amd64.instruction(Insn.LABEL, endLabel));
 					};
 
@@ -326,7 +345,7 @@ public class P3GenerateCode {
 						thenElse.sink2(then, else_);
 					}
 
-					return postOp.apply(op);
+					return out.source();
 				})).applyIf(FunpInvokeInt.class, f -> f.apply(routine -> {
 					if (!rs.contains(eax)) {
 						compileInvoke(routine);
