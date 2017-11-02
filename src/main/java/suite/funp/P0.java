@@ -150,6 +150,22 @@ public class P0 {
 		}
 	}
 
+	public static class FunpDefineRec implements Funp, P1.End {
+		public List<Pair<String, Funp>> pairs;
+		public Funp expr;
+
+		public static FunpDefineRec of(List<Pair<String, Funp>> pairs, Funp expr) {
+			FunpDefineRec f = new FunpDefineRec();
+			f.pairs = pairs;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<List<Pair<String, Funp>>, Funp, R> fun) {
+			return fun.apply(pairs, expr);
+		}
+	}
+
 	public static class FunpDeref implements Funp, P1.End {
 		public Funp pointer;
 

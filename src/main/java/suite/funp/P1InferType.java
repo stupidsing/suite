@@ -22,6 +22,7 @@ import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
@@ -298,6 +299,27 @@ public class P1InferType {
 					return allocStack(value, erase1.erase(expr));
 				} else
 					return erase(new Expand(var, value).expand(expr));
+			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
+				List<Pair<Var, Funp>> assigns = new ArrayList<>();
+				IMap<String, Var> env1 = env;
+				int fs_ = fs;
+
+				for (Pair<String, Funp> pair : vars) {
+					int fs0 = fs_;
+					Var var = new Var(scope, fs_, fs0);
+					Funp value = pair.t1;
+					fs_ -= getTypeSize(typeOf(value));
+					env = env.put(pair.t0, var);
+					assigns.add(Pair.of(var, value));
+				}
+
+				Erase erase1 = new Erase(scope, fs_, env1);
+				Funp expr_ = erase1.erase(expr);
+
+				for (Pair<Var, Funp> pair : assigns)
+					expr = FunpAssign.of(getVariable(pair.t0), erase1.erase(pair.t1), expr);
+
+				return FunpAllocStack.of(fs - fs_, null, expr_);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {

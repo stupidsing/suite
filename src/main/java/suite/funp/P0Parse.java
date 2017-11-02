@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import suite.BindArrayUtil.Match;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
@@ -16,6 +17,7 @@ import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
@@ -47,6 +49,8 @@ import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
+import suite.streamlet.As;
+import suite.streamlet.Streamlet;
 import suite.util.Switch;
 
 public class P0Parse {
@@ -120,6 +124,22 @@ public class P0Parse {
 				String var = name(m[0]);
 				return FunpDefine.of(var, FunpPolyType.of(parse(m[1])), parseNewVariable(m[2], var));
 				// return parse(Suite.substitute("poly .1 | (.0 => .2)", m));
+			} else if ((m = Suite.match("recurse .0 >> .1").apply(node)) != null) {
+				Match match1 = Suite.match(".0 := .1");
+				Streamlet<Node[]> list = Tree.iter(m[0], TermOp.AND___).map(match1::apply).collect(As::streamlet);
+				ISet<String> variables_ = variables;
+
+				for (Node[] array : list)
+					variables_ = variables_.add(name(array[0]));
+
+				Parse parse1 = new Parse(variables_);
+
+				return FunpDefineRec.of(list //
+						.map(m1 -> {
+							Funp value = FunpPolyType.of(parse1.parse(m1[1]));
+							return Pair.of(name(m1[0]), value);
+						}) //
+						.toList(), parse1.parse(m[1]));
 			} else if ((m = Suite.match("let .0 := .1 >> .2").apply(node)) != null) {
 				String var = name(m[0]);
 				return FunpDefine.of(var, parse(m[1]), parseNewVariable(m[2], var));
