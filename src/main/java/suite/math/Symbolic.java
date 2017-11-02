@@ -5,6 +5,7 @@ import java.util.List;
 
 import suite.BindArrayUtil.Match;
 import suite.Suite;
+import suite.adt.Opt;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
@@ -28,10 +29,9 @@ public class Symbolic {
 	public Node d(Node x, Node node0) {
 		Rewrite rewrite = new Rewrite(x);
 		Node node1 = rewrite.rewrite(node0);
-		Node node2 = Boolean.TRUE ? rewrite.d(node1) : rewrite.i(node1).uniqueResult();
-		Node node3 = rewrite.polyize(node2);
-		Node node4 = node3 != null ? node3 : rewrite.sumOfProducts(node2);
-		return node4;
+		Node node2 = Boolean.TRUE ? rewrite.d(node1) : rewrite.i(node1).get();
+		Node node3 = rewrite.polyize(node2).or(() -> rewrite.sumOfProducts(node2));
+		return node3;
 	}
 
 	private class Rewrite {
@@ -127,12 +127,12 @@ public class Symbolic {
 			return new Recurse().sumOfProducts(node);
 		}
 
-		private Node polyize(Node node) { // polynomialize
+		private Opt<Node> polyize(Node node) { // polynomialize
 			class Poly {
-				private Streamlet<Node[]> poly(Node node) {
+				private Opt<Node[]> poly(Node node) {
 					Node[] m;
 					if ((m = matchAdd.apply(node)) != null) {
-						return poly(m[0]).join2(poly(m[1])).map((ps0, ps1) -> {
+						return poly(m[0]).join(poly(m[1]), (ps0, ps1) -> {
 							int length0 = ps0.length;
 							int length1 = ps1.length;
 							return To.array(Math.max(length0, length1), Node.class, i -> add.apply( //
@@ -140,7 +140,7 @@ public class Symbolic {
 									i < length1 ? ps1[i] : N0));
 						});
 					} else if ((m = matchMul.apply(node)) != null) {
-						return poly(m[0]).join2(poly(m[1])).map((ps0, ps1) -> {
+						return poly(m[0]).join(poly(m[1]), (ps0, ps1) -> {
 							int length0 = ps0.length;
 							int length1 = ps1.length;
 							return To.array(length0 + length1 - 1, Node.class, i -> {
@@ -151,13 +151,13 @@ public class Symbolic {
 							});
 						});
 					} else if (node.compareTo(x) == 0)
-						return Read.<Node[]> each(new Node[] { N0, N1, });
+						return Opt.of(new Node[] { N0, N1, });
 					else if (node == N0)
-						return Read.<Node[]> each(new Node[] {});
+						return Opt.of(new Node[] {});
 					else if (!isContains_x(node))
-						return Read.<Node[]> each(new Node[] { node, });
+						return Opt.of(new Node[] { node, });
 					else
-						return Read.empty();
+						return Opt.none();
 				}
 			}
 
@@ -171,7 +171,7 @@ public class Symbolic {
 				}
 
 				return sum;
-			}).first();
+			});
 		}
 
 		private Node d(Node node) { // differentiation
@@ -200,33 +200,33 @@ public class Symbolic {
 				throw new RuntimeException();
 		}
 
-		private Streamlet<Node> i(Node node) { // integration
+		private Opt<Node> i(Node node) { // integration
 			Node[] m;
 			if ((m = matchAdd.apply(node)) != null) {
-				Streamlet<Node> iudxs = i(m[0]);
-				Streamlet<Node> ivdxs = i(m[1]);
-				return iudxs.join2(ivdxs).map(add::apply);
+				Opt<Node> iudxs = i(m[0]);
+				Opt<Node> ivdxs = i(m[1]);
+				return iudxs.join(ivdxs, add::apply);
 			} else if ((m = matchNeg.apply(node)) != null)
 				return i(m[0]).map(matchNeg::substitute);
 			else if ((m = matchMul.apply(node)) != null) {
 				Node u = m[0];
-				Streamlet<Node> vs = i(m[1]);
+				Opt<Node> vs = i(m[1]);
 				Node dudx = d(u);
 				return vs.concatMap(v -> i(mul.apply(v, dudx)).map(ivdu -> add.apply(mul.apply(u, v), matchNeg.substitute(ivdu))));
 			} else if ((m = matchInv.apply(node)) != null && m[0].compareTo(x) == 0)
-				return Read.each(Suite.match("ln .0").substitute(x));
+				return Opt.of(Suite.match("ln .0").substitute(x));
 			else if ((m = matchExp.apply(node)) != null && m[0].compareTo(x) == 0)
-				return Read.each(node);
+				return Opt.of(node);
 			else if ((m = Suite.match("sin .0").apply(node)) != null && m[0].compareTo(x) == 0)
-				return Read.each(matchNeg.substitute(matchCos.apply(x)));
+				return Opt.of(matchNeg.substitute(matchCos.apply(x)));
 			else if ((m = Suite.match("cos .0").apply(node)) != null && m[0].compareTo(x) == 0)
-				return Read.each(matchSin.apply(x));
+				return Opt.of(matchSin.substitute(x));
 			else if (node.compareTo(x) == 0)
-				return Read.each(mul.apply(matchInv.substitute(Int.of(2)), mul.apply(x, x)));
+				return Opt.of(mul.apply(matchInv.substitute(Int.of(2)), mul.apply(x, x)));
 			else if (node instanceof Int)
-				return Read.each(mul.apply(node, x));
+				return Opt.of(mul.apply(node, x));
 			else
-				return Read.empty();
+				return Opt.none();
 		}
 
 		private boolean isContains_x(Node node) {

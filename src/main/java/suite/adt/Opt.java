@@ -4,6 +4,8 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 
 public class Opt<T> {
@@ -22,6 +24,10 @@ public class Opt<T> {
 		return p;
 	}
 
+	public <U> Opt<U> concatMap(Fun<T, Opt<U>> fun) {
+		return !isEmpty() ? fun.apply(value) : Opt.none();
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		return Object_.clazz(object) == Opt.class && Objects.equals(value, ((Opt<?>) object).value);
@@ -33,6 +39,10 @@ public class Opt<T> {
 
 	public boolean isEmpty() {
 		return value == null;
+	}
+
+	public <U, V> Opt<V> join(Opt<U> opt1, Fun2<T, U, V> fun) {
+		return !isEmpty() && !opt1.isEmpty() ? Opt.of(fun.apply(value, opt1.value)) : Opt.none();
 	}
 
 	public T get() {
@@ -49,6 +59,10 @@ public class Opt<T> {
 
 	public <U> Opt<U> map(Fun<T, U> fun) {
 		return !isEmpty() ? of(fun.apply(value)) : none();
+	}
+
+	public T or(Source<T> or) {
+		return !isEmpty() ? value : or.source();
 	}
 
 	@Override
