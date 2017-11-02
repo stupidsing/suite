@@ -56,6 +56,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testIterate() {
+		test("iterate v 0 (v < 100) (v + 1)");
+	}
+
+	@Test
 	public void testLambda() {
 		test("0 | (a => a + 1)");
 	}
