@@ -4,9 +4,8 @@ import static java.util.Map.entry;
 
 import java.util.Map;
 
-import suite.adt.pair.Fixie_.FixieFun4;
+import suite.adt.pair.Fixie_.FixieFun3;
 import suite.assembler.Amd64.Insn;
-import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpTree;
@@ -16,7 +15,7 @@ import suite.util.FunUtil.Source;
 
 public class P3JumpIf {
 
-	private FixieFun4<Insn, Funp, Funp, Operand, Boolean> jmpIf;
+	private FixieFun3<Insn, Funp, Funp, Boolean> jmpIf;
 
 	private Map<TermOp, Insn> jxxInsnByOp = Map.ofEntries( //
 			entry(TermOp.EQUAL_, Insn.JE), //
@@ -30,7 +29,7 @@ public class P3JumpIf {
 			entry(TermOp.LT____, Insn.JGE), //
 			entry(TermOp.NOTEQ_, Insn.JE));
 
-	public P3JumpIf(FixieFun4<Insn, Funp, Funp, Operand, Boolean> jmpIf) {
+	public P3JumpIf(FixieFun3<Insn, Funp, Funp, Boolean> jmpIf) {
 		this.jmpIf = jmpIf;
 	}
 
@@ -46,30 +45,30 @@ public class P3JumpIf {
 			right = tree != null ? tree.right : null;
 		}
 
-		public Source<Boolean> jnxIf(Operand label) {
+		public Source<Boolean> jnxIf() {
 			Insn jnx = operator != null ? jnxInsnByOp.get(operator) : null;
 			if (operator == TermOp.BIGAND) {
-				Source<Boolean> r0 = new JumpIf(left).jnxIf(label);
-				Source<Boolean> r1 = new JumpIf(right).jnxIf(label);
+				Source<Boolean> r0 = new JumpIf(left).jnxIf();
+				Source<Boolean> r1 = new JumpIf(right).jnxIf();
 				return r0 != null && r1 != null ? () -> r0.source() && r1.source() : null;
 			} else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
-				return new JumpIf(left).jxxIf(label);
+				return new JumpIf(left).jxxIf();
 			else if (jnx != null)
-				return () -> jmpIf.apply(jnx, left, right, label);
+				return () -> jmpIf.apply(jnx, left, right);
 			else
 				return null;
 		}
 
-		public Source<Boolean> jxxIf(Operand label) {
+		public Source<Boolean> jxxIf() {
 			Insn jxx = operator != null ? jxxInsnByOp.get(operator) : null;
 			if (operator == TermOp.BIGOR_) {
-				Source<Boolean> r0 = new JumpIf(left).jxxIf(label);
-				Source<Boolean> r1 = new JumpIf(right).jxxIf(label);
+				Source<Boolean> r0 = new JumpIf(left).jxxIf();
+				Source<Boolean> r1 = new JumpIf(right).jxxIf();
 				return r0 != null && r1 != null ? () -> r0.source() && r1.source() : null;
 			} else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
-				return new JumpIf(left).jnxIf(label);
+				return new JumpIf(left).jnxIf();
 			else if (jxx != null)
-				return () -> jmpIf.apply(jxx, left, right, label);
+				return () -> jmpIf.apply(jxx, left, right);
 			else
 				return null;
 		}

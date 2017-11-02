@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.Fixie_.FixieFun4;
+import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
@@ -220,7 +220,7 @@ public class P3GenerateCode {
 						return new CompileOut();
 				};
 
-				FixieFun4<Insn, Funp, Funp, Operand, Boolean> cmp = (insn, lhs, rhs, label) -> {
+				Fun<Operand, FixieFun3<Insn, Funp, Funp, Boolean>> cmp = label -> (insn, lhs, rhs) -> {
 					OpReg op0 = compileOpReg(lhs);
 					Operand op1 = mask(op0).compileOp(rhs);
 					em.emit(amd64.instruction(Insn.CMP, op0, op1));
@@ -312,12 +312,12 @@ public class P3GenerateCode {
 						em.emit(amd64.instruction(Insn.LABEL, endLabel));
 					};
 
-					JumpIf jumpIf = new P3JumpIf(cmp).new JumpIf(if_);
+					JumpIf jumpIf = new P3JumpIf(cmp.apply(condLabel)).new JumpIf(if_);
 					Source<Boolean> r;
 
-					if ((r = jumpIf.jnxIf(condLabel)) != null && r.source())
+					if ((r = jumpIf.jnxIf()) != null && r.source())
 						thenElse.sink2(then, else_);
-					else if ((r = jumpIf.jxxIf(condLabel)) != null && r.source())
+					else if ((r = jumpIf.jxxIf()) != null && r.source())
 						thenElse.sink2(else_, then);
 					else {
 						OpReg r0 = compileOpReg(if_);
@@ -426,12 +426,11 @@ public class P3GenerateCode {
 					Operand exitLabel = em.label();
 
 					em.emit(amd64.instruction(Insn.LABEL, loopLabel));
-					JumpIf jumpIf = new P3JumpIf(cmp).new JumpIf(while_);
 					Source<Boolean> r;
 
-					if ((r = jumpIf.jnxIf(exitLabel)) != null && r.source())
+					if ((r = new P3JumpIf(cmp.apply(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
 						;
-					else if ((r = jumpIf.jxxIf(contLabel)) != null && r.source()) {
+					else if ((r = new P3JumpIf(cmp.apply(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source()) {
 						em.emit(amd64.instruction(Insn.JMP, exitLabel));
 						em.emit(amd64.instruction(Insn.LABEL, contLabel));
 					} else {
