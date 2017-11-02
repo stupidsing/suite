@@ -300,21 +300,29 @@ public class P3GenerateCode {
 				})).applyIf(FunpFramePointer.class, t -> {
 					return postOp.apply(ebp);
 				}).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
-					Sink<Funp> compile;
+					Sink<Funp> compile0, compile1;
 					Source<CompileOut> out;
 
 					if (type == CompileOut_.ASSIGN || isOutSpec) {
-						compile = this::compile;
+						compile0 = compile1 = this::compile;
 						out = CompileOut::new;
 					} else if (type == CompileOut_.OP || type == CompileOut_.OPREG) {
-						OpReg op0 = rs.get(is);
-						compile = node_ -> compileOpSpec(node_, op0);
-						out = () -> postOp.apply(op0);
+						OpReg[] ops = new OpReg[1];
+						compile0 = node_ -> {
+							Operand op0 = compileOp(node_);
+							em.mov(ops[0] = rs.get(op0), op0);
+						};
+						compile1 = node_ -> compileOpSpec(node_, ops[0]);
+						out = () -> postOp.apply(ops[0]);
 					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG) {
-						OpReg op0 = rs.get(ps);
-						OpReg op1 = rs.mask(op0).get(ps);
-						compile = node_ -> compileTwoOpSpec(node_, op0, op1);
-						out = () -> postTwoOp.apply(op0, op1);
+						OpReg[] ops = new OpReg[2];
+						compile0 = node_ -> {
+							CompileOut co1 = compileTwoOp(node_);
+							em.mov(ops[0] = rs.mask(co1.op1).get(co1.op0), co1.op0);
+							em.mov(ops[1] = rs.mask(ops[0]).get(co1.op1), co1.op1);
+						};
+						compile1 = node_ -> compileTwoOpSpec(node_, ops[0], ops[1]);
+						out = () -> postTwoOp.apply(ops[0], ops[1]);
 					} else
 						throw new RuntimeException();
 
@@ -322,10 +330,10 @@ public class P3GenerateCode {
 					Operand endLabel = em.label();
 
 					Sink2<Funp, Funp> thenElse = (condt, condf) -> {
-						compile.sink(condt);
+						compile0.sink(condt);
 						em.emit(amd64.instruction(Insn.JMP, endLabel));
 						em.emit(amd64.instruction(Insn.LABEL, condLabel));
-						compile.sink(condf);
+						compile1.sink(condf);
 						em.emit(amd64.instruction(Insn.LABEL, endLabel));
 					};
 

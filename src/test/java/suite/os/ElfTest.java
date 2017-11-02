@@ -34,7 +34,7 @@ public class ElfTest {
 				+ "		-- length in EAX\n" //
 				+ "	}\n" //
 				+ ") >>\n" //
-				+ "0\n" //
+				+ "iterate v 0 true 0\n" //
 		).out);
 	}
 

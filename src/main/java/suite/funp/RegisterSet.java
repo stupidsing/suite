@@ -41,8 +41,9 @@ public class RegisterSet {
 		return (flag & flag(operands)) != 0;
 	}
 
-	public OpReg get(OpReg prefer) {
-		return prefer != null && !isSet(prefer.reg) ? prefer : get_(prefer.size);
+	public OpReg get(Operand op) {
+		OpReg prefer = op instanceof OpReg ? (OpReg) op : null;
+		return prefer != null && !isSet(prefer.reg) ? prefer : get_(op.size);
 	}
 
 	public OpReg get(int size) {
