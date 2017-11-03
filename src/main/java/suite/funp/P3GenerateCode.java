@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.Fixie_.FixieFun3;
+import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
@@ -115,6 +115,7 @@ public class P3GenerateCode {
 	private class Compile0 {
 		private P3Emit em;
 		private CompileOut_ type;
+		private boolean isOutSpec;
 		private FunpMemory target; // only for CompileOutType.ASSIGN
 		private OpReg pop0, pop1; // only for CompileOutType.OPSPEC, TWOOPSPEC
 
@@ -123,8 +124,9 @@ public class P3GenerateCode {
 		}
 
 		private Compile0(CompileOut_ type, P3Emit emit, FunpMemory target, OpReg pop0, OpReg pop1) {
-			this.type = type;
 			this.em = emit;
+			this.type = type;
+			this.isOutSpec = type == CompileOut_.OPSPEC || type == CompileOut_.TWOOPSPEC;
 			this.target = target;
 			this.pop0 = pop0;
 			this.pop1 = pop1;
@@ -141,8 +143,6 @@ public class P3GenerateCode {
 
 			// invariant: fd = ESP - EBP
 			private CompileOut compile(Funp n) {
-				boolean isOutSpec = type == CompileOut_.OPSPEC || type == CompileOut_.TWOOPSPEC;
-
 				Fun<Operand, CompileOut> postOp = op -> {
 					Operand old = op;
 					if (type == CompileOut_.ASSIGN)
@@ -220,11 +220,9 @@ public class P3GenerateCode {
 						return new CompileOut();
 				};
 
-				Fun<Operand, FixieFun3<Insn, Funp, Funp, Boolean>> cmp = label -> (insn, lhs, rhs) -> {
-					OpReg op0 = compileOpReg(lhs);
-					Operand op1 = mask(op0).compileOp(rhs);
-					em.emit(amd64.instruction(Insn.CMP, op0, op1));
-					em.emit(amd64.instruction(insn, label));
+				Fun<Operand, FixieFun4<Insn, Insn, Funp, Funp, Boolean>> cmpJmp = label -> (insn, nInsn, lhs, rhs) -> {
+					Pair<Funp, OpReg> pair = compileCommutativeTree(Insn.CMP, Assoc.RIGHT, lhs, rhs);
+					em.emit(amd64.instruction(pair.t0 == lhs ? insn : nInsn, label));
 					return true;
 				};
 
@@ -332,7 +330,7 @@ public class P3GenerateCode {
 						em.emit(amd64.instruction(Insn.LABEL, endLabel));
 					};
 
-					JumpIf jumpIf = new P3JumpIf(cmp.apply(condLabel)).new JumpIf(if_);
+					JumpIf jumpIf = new P3JumpIf(cmpJmp.apply(condLabel)).new JumpIf(if_);
 					Source<Boolean> r;
 
 					if ((r = jumpIf.jnxIf()) != null && r.source())
@@ -448,9 +446,9 @@ public class P3GenerateCode {
 					em.emit(amd64.instruction(Insn.LABEL, loopLabel));
 					Source<Boolean> r;
 
-					if ((r = new P3JumpIf(cmp.apply(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
+					if ((r = new P3JumpIf(cmpJmp.apply(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
 						;
-					else if ((r = new P3JumpIf(cmp.apply(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source()) {
+					else if ((r = new P3JumpIf(cmpJmp.apply(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source()) {
 						em.emit(amd64.instruction(Insn.JMP, exitLabel));
 						em.emit(amd64.instruction(Insn.LABEL, contLabel));
 					} else {
@@ -467,7 +465,6 @@ public class P3GenerateCode {
 			}
 
 			private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
-				boolean isOutSpec = type == CompileOut_.OPSPEC || type == CompileOut_.TWOOPSPEC;
 				Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i : null;
 				Insn insn = insnByOp.get(operator);
 				Insn setInsn = setInsnByOp.get(operator);
@@ -479,38 +476,8 @@ public class P3GenerateCode {
 				if (opResult == null && op != null)
 					em.lea(opResult = isOutSpec ? pop0 : rs.get(ps), op);
 
-				Fun<Funp, OpReg> cr = n_ -> isOutSpec ? compileOpSpec(n_, pop0) : compileOpReg(n_);
-
 				if (opResult == null && operator == TermOp.DIVIDE && numRhs != null && Integer.bitCount(numRhs) == 1)
-					em.shiftImm(Insn.SHR, opResult = cr.apply(rhs), Integer.numberOfTrailingZeros(numRhs));
-
-				Fun<Insn, Pair<Funp, OpReg>> commutative = insn_ -> {
-					Operand opLhs = em.decomposeOperand(lhs);
-					Operand opRhs = em.decomposeOperand(rhs);
-					OpReg opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
-					OpReg opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
-
-					if (opLhsReg != null && !rs.contains(opLhsReg))
-						return Pair.of(lhs, compileRegInstruction(insn_, opLhsReg, opRhs, lhs));
-					else if (opRhsReg != null && !rs.contains(opRhsReg))
-						return Pair.of(rhs, compileRegInstruction(insn_, opRhsReg, opLhs, rhs));
-					else if (opLhs != null && opRhs instanceof OpImm)
-						return Pair.of(lhs, em.emitRegInsn(insn_, cr.apply(lhs), opRhs));
-					else if (opRhs != null && opLhs instanceof OpImm)
-						return Pair.of(rhs, em.emitRegInsn(insn_, cr.apply(rhs), opLhs));
-					else if (opLhs != null)
-						return Pair.of(rhs, em.emitRegInsn(insn_, cr.apply(rhs), opLhs));
-					else if (opRhs != null)
-						return Pair.of(lhs, em.emitRegInsn(insn_, cr.apply(lhs), opRhs));
-					else {
-						boolean isRightAssoc = assoc == Assoc.RIGHT;
-						Funp first = isRightAssoc ? rhs : lhs;
-						Funp second = isRightAssoc ? lhs : rhs;
-						OpReg op0 = cr.apply(first);
-						Operand op1 = mask(op0).compileOp(second);
-						return Pair.of(first, em.emitRegInsn(insn_, op0, op1));
-					}
-				};
+					em.shiftImm(Insn.SHR, opResult = compileLoad(rhs), Integer.numberOfTrailingZeros(numRhs));
 
 				if (opResult == null)
 					if (operator == TermOp.DIVIDE) {
@@ -528,14 +495,14 @@ public class P3GenerateCode {
 						saveRegs(sink1, edx);
 						opResult = opResult_;
 					} else if (operator == TermOp.MINUS_) {
-						Pair<Funp, OpReg> pair = commutative.apply(Insn.SUB);
+						Pair<Funp, OpReg> pair = compileCommutativeTree(Insn.SUB, assoc, lhs, rhs);
 						if (pair.t1 == rhs)
 							em.emit(amd64.instruction(Insn.NEG, pair.t1));
 					} else if (setInsn != null) {
-						Pair<Funp, OpReg> pair = commutative.apply(Insn.CMP);
+						Pair<Funp, OpReg> pair = compileCommutativeTree(Insn.CMP, assoc, lhs, rhs);
 						em.emit(amd64.instruction(pair.t1 == lhs ? setInsn : setnInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
 					} else if (shInsn != null) {
-						OpReg op0 = cr.apply(lhs);
+						OpReg op0 = compileLoad(lhs);
 						if (numRhs != null)
 							em.emit(amd64.instruction(shInsn, op0, amd64.imm(numRhs, 1)));
 						else
@@ -545,9 +512,37 @@ public class P3GenerateCode {
 							}, ecx);
 						opResult = op0;
 					} else
-						opResult = commutative.apply(insn).t1;
+						opResult = compileCommutativeTree(insn, assoc, lhs, rhs).t1;
 
 				return opResult;
+			}
+
+			private Pair<Funp, OpReg> compileCommutativeTree(Insn insn_, Assoc assoc, Funp lhs, Funp rhs) {
+				Operand opLhs = em.decomposeOperand(lhs);
+				Operand opRhs = em.decomposeOperand(rhs);
+				OpReg opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
+				OpReg opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
+
+				if (opLhsReg != null && !rs.contains(opLhsReg))
+					return Pair.of(lhs, compileRegInstruction(insn_, opLhsReg, opRhs, lhs));
+				else if (opRhsReg != null && !rs.contains(opRhsReg))
+					return Pair.of(rhs, compileRegInstruction(insn_, opRhsReg, opLhs, rhs));
+				else if (opLhs != null && opRhs instanceof OpImm)
+					return Pair.of(lhs, em.emitRegInsn(insn_, compileLoad(lhs), opRhs));
+				else if (opRhs != null && opLhs instanceof OpImm)
+					return Pair.of(rhs, em.emitRegInsn(insn_, compileLoad(rhs), opLhs));
+				else if (opLhs != null)
+					return Pair.of(rhs, em.emitRegInsn(insn_, compileLoad(rhs), opLhs));
+				else if (opRhs != null)
+					return Pair.of(lhs, em.emitRegInsn(insn_, compileLoad(lhs), opRhs));
+				else {
+					boolean isRightAssoc = assoc == Assoc.RIGHT;
+					Funp first = isRightAssoc ? rhs : lhs;
+					Funp second = isRightAssoc ? lhs : rhs;
+					OpReg op0 = compileLoad(first);
+					Operand op1 = mask(op0).compileOp(second);
+					return Pair.of(first, em.emitRegInsn(insn_, op0, op1));
+				}
 			}
 
 			private Pair<Operand, Operand> compileRoutine(Runnable runnable) {
@@ -590,6 +585,10 @@ public class P3GenerateCode {
 					em.mov(op = rs.mask(out.op0).get(ps), out.op1);
 				em.mov(ebp, out.op0);
 				em.emit(amd64.instruction(Insn.CALL, op));
+			}
+
+			private OpReg compileLoad(Funp node) {
+				return isOutSpec ? compileOpSpec(node, pop0) : compileOpReg(node);
 			}
 
 			private void compileAssign(Funp n, FunpMemory target) {
