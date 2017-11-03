@@ -160,8 +160,8 @@ public class P0Parse {
 				ExtractNewVariables env = new ExtractNewVariables();
 				Funp be = env.extract(parse(m[0]));
 				Funp value = parse(m[1]);
-
 				ISet<String> variables1 = new ISet<>();
+
 				for (String var : env.variables)
 					variables1 = variables1.add(var);
 
