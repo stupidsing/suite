@@ -299,8 +299,9 @@ public class P1InferType {
 				if (Boolean.TRUE) {
 					int size = getTypeSize(typeOf(value));
 					int fs1 = fs - size;
-					Erase erase1 = new Erase(scope, fs1, env.put(var, new Var(scope, fs1, fs)));
-					return FunpAllocStack.of(size, erase1.erase(value), erase1.erase(expr));
+					return FunpAllocStack.of(size, //
+							new Erase(scope, fs1, env).erase(value), //
+							new Erase(scope, fs1, env.put(var, new Var(scope, fs1, fs))).erase(expr));
 				} else
 					return erase(new Expand(var, value).expand(expr));
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
@@ -353,7 +354,7 @@ public class P1InferType {
 				Erase erase1 = new Erase(scope, fs1, env.put(var, var_));
 				FunpMemory m = getVariable(var_);
 				FunpWhile while_ = FunpWhile.of(erase1.erase(cond), FunpAssign.of(m, erase1.erase(iterate), FunpDontCare.of()), m);
-				return FunpAllocStack.of(size, erase1.erase(init), while_);
+				return FunpAllocStack.of(size, new Erase(scope, fs1, env).erase(init), while_);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				int b = ps * 2; // return address and EBP
 				int scope1 = scope + 1;
