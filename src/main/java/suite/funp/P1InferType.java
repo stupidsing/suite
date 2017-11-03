@@ -347,7 +347,8 @@ public class P1InferType {
 				Var var_ = new Var(scope, fs1, fs);
 				Erase erase1 = new Erase(scope, fs1, env.put(var, var_));
 				FunpDontCare xxx = FunpDontCare.of();
-				FunpWhile while_ = FunpWhile.of(erase1.erase(cond), FunpAssign.of(getVariable(var_), erase1.erase(iterate), xxx));
+				FunpMemory m = getVariable(var_);
+				FunpWhile while_ = FunpWhile.of(erase1.erase(cond), FunpAssign.of(m, erase1.erase(iterate), xxx), m);
 				return allocStack(init, while_);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				int b = ps * 2; // return address and EBP

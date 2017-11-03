@@ -236,8 +236,8 @@ public class P3GenerateCode {
 					int fd1 = fd - size1;
 					Compile1 c1 = new Compile1(rs, fd1);
 
-					if (size1 == is && value != null)
-						em.emit(amd64.instruction(Insn.PUSH, compileOp(value)));
+					if (size1 == is)
+						em.emit(amd64.instruction(Insn.PUSH, value != null ? compileOp(value) : eax));
 					else {
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
 						c1.compileAssign(value, frame(fd1, fd1 + size0));
@@ -439,7 +439,7 @@ public class P3GenerateCode {
 					return postOp.apply(compileTree(n, operator, operator.getAssoc(), lhs, rhs));
 				})).applyIf(FunpTree2.class, f -> f.apply((operator, lhs, rhs) -> {
 					return postOp.apply(compileTree(n, operator, Assoc.RIGHT, lhs, rhs));
-				})).applyIf(FunpWhile.class, f -> f.apply((while_, do_) -> {
+				})).applyIf(FunpWhile.class, f -> f.apply((while_, do_, expr) -> {
 					Operand loopLabel = em.label();
 					Operand contLabel = em.label();
 					Operand exitLabel = em.label();
@@ -461,7 +461,7 @@ public class P3GenerateCode {
 					compileOp(do_);
 					em.emit(amd64.instruction(Insn.JMP, loopLabel));
 					em.emit(amd64.instruction(Insn.LABEL, exitLabel));
-					return postDontCare.source();
+					return compile(expr);
 				})).nonNullResult();
 			}
 
