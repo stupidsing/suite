@@ -583,7 +583,7 @@ public class P3GenerateCode {
 
 			private void compileInvoke(Funp n) {
 				CompileOut out = compileTwoOp(n);
-				OpReg op = rs.mask(out.op0).get(ebp);
+				OpReg op = rs.mask(out.op0).get(ps);
 				em.mov(op, out.op1);
 				em.mov(ebp, out.op0);
 				em.emit(amd64.instruction(Insn.CALL, op));
