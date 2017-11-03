@@ -1,3 +1,6 @@
+#ifndef nodesource
+#define nodesource
+
 #include "gc.c"
 
 #define REF_ (0)
@@ -142,3 +145,5 @@ Node *newInternal(int type, Node *target, void *internal) {
 	node->internal = internal;
 	return node;
 }
+
+#endif

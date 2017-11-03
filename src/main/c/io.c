@@ -1,3 +1,6 @@
+#ifndef iosource
+#define iosource
+
 #include "node.c"
 
 Node **atomHashes;
@@ -285,3 +288,5 @@ char *dump(Node *node) {
 	default: err("Unknown node type"); return dupstr("<unknown>");
 	}
 }
+
+#endif
