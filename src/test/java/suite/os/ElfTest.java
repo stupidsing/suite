@@ -48,7 +48,8 @@ public class ElfTest {
 				+ "	MOV (EBX, `EBP + 8`);\n" //
 				+ "	MOV (EAX, 1);\n" //
 				+ "	INT (-128);\n" //
-				+ "}))"));
+				+ "}))\n" //
+		));
 		assertEquals(0, exec.code);
 		return exec;
 	}
