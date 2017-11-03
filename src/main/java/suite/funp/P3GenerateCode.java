@@ -101,6 +101,8 @@ public class P3GenerateCode {
 			entry(TreeUtil.SHL, Insn.SHL), //
 			entry(TreeUtil.SHR, Insn.SHR));
 
+	private P3DecomposeOperand deOp = new P3DecomposeOperand();
+
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
 		P3Emit emit = new P3Emit(instructions::add);
@@ -369,7 +371,7 @@ public class P3GenerateCode {
 					Operand op0, op1;
 					if (type == CompileOut_.ASSIGN)
 						return postAssign.apply((c1, target) -> {
-							Operand op_ = em.decomposeOperand(target);
+							Operand op_ = deOp.decomposeOperand(target);
 							if (size != target.size())
 								throw new RuntimeException();
 							else if (op_ != null)
@@ -381,13 +383,13 @@ public class P3GenerateCode {
 							}
 						});
 					else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC)
-						if ((op0 = em.decomposeOpMem(pointer, start, size)) != null)
+						if ((op0 = deOp.decomposeOpMem(pointer, start, size)) != null)
 							return postOp.apply(op0);
 						else
 							return postOp.apply(amd64.mem(compileOpReg(pointer), start, size));
 					else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG || type == CompileOut_.TWOOPSPEC)
-						if ((op0 = em.decomposeOpMem(pointer, start, ps)) != null
-								&& (op1 = em.decomposeOpMem(pointer, start + ps, ps)) != null)
+						if ((op0 = deOp.decomposeOpMem(pointer, start, ps)) != null
+								&& (op1 = deOp.decomposeOpMem(pointer, start + ps, ps)) != null)
 							return postTwoOp.apply(op0, op1);
 						else {
 							OpReg r = compileOpReg(pointer);
@@ -470,7 +472,7 @@ public class P3GenerateCode {
 				Insn setInsn = setInsnByOp.get(operator);
 				Insn setnInsn = setnInsnByOp.get(operator);
 				Insn shInsn = shInsnByOp.get(operator);
-				OpMem op = em.decomposeOpMem(n, 0, is);
+				OpMem op = deOp.decomposeOpMem(n, 0, is);
 				OpReg opResult = null;
 
 				if (opResult == null && op != null)
@@ -518,8 +520,8 @@ public class P3GenerateCode {
 			}
 
 			private Pair<Funp, OpReg> compileCommutativeTree(Insn insn_, Assoc assoc, Funp lhs, Funp rhs) {
-				Operand opLhs = em.decomposeOperand(lhs);
-				Operand opRhs = em.decomposeOperand(rhs);
+				Operand opLhs = deOp.decomposeOperand(lhs);
+				Operand opRhs = deOp.decomposeOperand(rhs);
 				OpReg opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
 				OpReg opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
 
@@ -560,7 +562,7 @@ public class P3GenerateCode {
 			}
 
 			private void compileInstruction(Insn insn, Operand op0, Funp f1) {
-				Operand op1 = em.decomposeOperand(f1);
+				Operand op1 = deOp.decomposeOperand(f1);
 				compileInstruction(insn, op0, op1 != null ? op1 : mask(op0).compileOp(f1));
 			}
 
