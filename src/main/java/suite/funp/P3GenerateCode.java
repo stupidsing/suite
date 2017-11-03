@@ -251,7 +251,7 @@ public class P3GenerateCode {
 				})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
 					Amd64Parser p = new Amd64Parser();
 
-					class Assign {
+					new Object() {
 						private void assign(Compile1 c1, int i) {
 							if (i < assigns.size()) {
 								Pair<OpReg, Funp> assign = assigns.get(i);
@@ -262,9 +262,8 @@ public class P3GenerateCode {
 								}, op);
 							}
 						}
-					}
+					}.assign(this, 0);
 
-					new Assign().assign(this, 0);
 					Read.from(asm).map(p::parse).sink(em::emit);
 					return postOp.apply(eax);
 				})).applyIf(FunpAssign.class, f -> f.apply((memory, value, expr) -> {
