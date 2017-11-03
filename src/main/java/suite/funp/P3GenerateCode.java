@@ -232,12 +232,12 @@ public class P3GenerateCode {
 				).applyIf(FunpAllocStack.class, f -> f.apply((size0, value, expr) -> {
 					int is1 = is - 1;
 					int size1 = (size0 + is1) & ~is1;
-					Operand imm = amd64.imm(size1);
+					Operand imm = amd64.imm(size1), op;
 					int fd1 = fd - size1;
 					Compile1 c1 = new Compile1(rs, fd1);
 
-					if (size1 == is)
-						em.emit(amd64.instruction(Insn.PUSH, value != null ? compileOp(value) : eax));
+					if ((op = deOp.decomposeOperand(value)) != null && op.size == is)
+						em.emit(amd64.instruction(Insn.PUSH, value != null ? op : eax));
 					else {
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
 						c1.compileAssign(value, frame(fd1, fd1 + size0));
