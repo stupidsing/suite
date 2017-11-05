@@ -293,22 +293,24 @@ public class P1InferType {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
 				if (Boolean.TRUE) {
+					Mutable<Integer> stack = Mutable.nil();
 					int size0 = getTypeSize(typeOf(value));
 					int size1 = align(size0);
 					int fs1 = fs - size1;
 					Erase erase1 = new Erase(scope, fs1, env);
-					Erase erase2 = new Erase(scope, fs1, env.put(var, new Var(scope, fs1, fs1 + size0)));
-					return FunpAllocStack.of(size1, erase1.erase(value), erase2.erase(expr), Mutable.nil());
+					Erase erase2 = new Erase(scope, fs1, env.put(var, new Var(scope, stack, fs1, fs1 + size0)));
+					return FunpAllocStack.of(size1, erase1.erase(value), erase2.erase(expr), stack);
 				} else
 					return erase(new Expand(var, value).expand(expr));
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				List<Pair<Var, Funp>> assigns = new ArrayList<>();
+				Mutable<Integer> stack = Mutable.nil();
 				IMap<String, Var> env1 = env;
 				int fs_ = fs;
 
 				for (Pair<String, Funp> pair : vars) {
 					int fs0 = fs_;
-					Var var = new Var(scope, fs_, fs0);
+					Var var = new Var(scope, stack, fs_, fs0);
 					Funp value = pair.t1;
 					fs_ -= getTypeSize(typeOf(value));
 					env1 = env1.put(pair.t0, var);
@@ -321,7 +323,7 @@ public class P1InferType {
 				for (Pair<Var, Funp> pair : assigns)
 					expr = FunpAssign.of(erase1.getVariable(pair.t0), erase1.erase(pair.t1), expr);
 
-				return FunpAllocStack.of(align(fs - fs_), null, expr_, Mutable.nil());
+				return FunpAllocStack.of(align(fs - fs_), null, expr_, stack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
@@ -345,18 +347,19 @@ public class P1InferType {
 				Funp address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
+				Mutable<Integer> stack = Mutable.nil();
 				int size = getTypeSize(typeOf(init));
 				int fs1 = fs - size;
-				Var var_ = new Var(scope, fs1, fs);
+				Var var_ = new Var(scope, stack, fs1, fs);
 				Erase erase1 = new Erase(scope, fs1, env.put(var, var_));
 				FunpMemory m = getVariable(var_);
 				FunpWhile while_ = FunpWhile.of(erase1.erase(cond), FunpAssign.of(m, erase1.erase(iterate), FunpDontCare.of()), m);
-				return allocStack(size, init, while_, Mutable.nil());
+				return allocStack(size, init, while_, stack);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				int b = ps * 2; // return address and EBP
 				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n);
-				Funp expr1 = new Erase(scope1, 0, env.put(var, new Var(scope1, b, b + lt.is))).erase(expr);
+				Funp expr1 = new Erase(scope1, 0, env.put(var, new Var(scope1, Mutable.of(0), b, b + lt.is))).erase(expr);
 				if (lt.os == ps)
 					return FunpRoutine.of(expr1);
 				else if (lt.os == ps * 2)
@@ -447,11 +450,13 @@ public class P1InferType {
 
 	private class Var {
 		private int scope;
+		private Mutable<Integer> stack;
 		private int start;
 		private int end;
 
-		public Var(int scope, int start, int end) {
+		public Var(int scope, Mutable<Integer> stack, int start, int end) {
 			this.scope = scope;
+			this.stack = stack;
 			this.start = start;
 			this.end = end;
 		}
