@@ -364,7 +364,7 @@ public class P1InferType {
 			})).applyIf(FunpPolyType.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
-				class GetAddress {
+				return new Object() {
 					private Funp getAddress(Funp n) {
 						return new Switch<Funp>(n //
 						).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
@@ -373,9 +373,7 @@ public class P1InferType {
 							return getAddress(getVariable(env.get(var)));
 						})).nonNullResult();
 					}
-				}
-
-				return new GetAddress().getAddress(erase(expr));
+				}.getAddress(erase(expr));
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				int elementSize = getTypeSize(typeOf(expr));
 				int offset = 0;
