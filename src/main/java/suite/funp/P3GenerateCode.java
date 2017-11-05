@@ -516,12 +516,20 @@ public class P3GenerateCode {
 				OpReg opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
 				boolean isLhsRegModifiable = opLhsReg != null && !rs.contains(opLhsReg);
 				boolean isRhsRegModifiable = opRhsReg != null && !rs.contains(opRhsReg);
+				boolean isLhsModifiable = opLhs != null && insn == Insn.CMP;
+				boolean isRhsModifiable = opRhs != null && insn == Insn.CMP;
 
 				if (isLhsRegModifiable)
 					return Pair.of(lhs, compileRegInstruction(insn, opLhsReg, opRhs, lhs));
 				else if (isRhsRegModifiable)
 					return Pair.of(rhs, compileRegInstruction(insn, opRhsReg, opLhs, rhs));
-				else if (opLhs != null && opRhs instanceof OpImm)
+				else if (isLhsModifiable && opRhs instanceof OpImm) {
+					em.emit(amd64.instruction(insn, opLhs, opRhs));
+					return Pair.of(lhs, null);
+				} else if (isRhsModifiable && opLhs instanceof OpImm) {
+					em.emit(amd64.instruction(insn, opRhs, opLhs));
+					return Pair.of(rhs, null);
+				} else if (opLhs != null && opRhs instanceof OpImm)
 					return Pair.of(lhs, em.emitRegInsn(insn, compileLoad(lhs), opRhs));
 				else if (opRhs != null && opLhs instanceof OpImm)
 					return Pair.of(rhs, em.emitRegInsn(insn, compileLoad(rhs), opLhs));
