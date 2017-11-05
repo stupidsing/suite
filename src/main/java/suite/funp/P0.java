@@ -3,6 +3,7 @@ package suite.funp;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
@@ -303,16 +304,26 @@ public class P0 {
 	}
 
 	public static class FunpNumber implements Funp, P3.End {
-		public int i;
+		public Mutable<Integer> i;
 
-		public static FunpNumber of(int i) {
+		public static FunpNumber of1(Mutable<Integer> i) {
 			FunpNumber f = new FunpNumber();
 			f.i = i;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<Integer, R> fun) {
+		public static FunpNumber of(int i) {
+			FunpNumber f = new FunpNumber();
+			f.i = Mutable.of(i);
+			return f;
+		}
+
+		public <R> R apply1(FixieFun1<Mutable<Integer>, R> fun) {
 			return fun.apply(i);
+		}
+
+		public <R> R apply(FixieFun1<Integer, R> fun) {
+			return fun.apply(i.get());
 		}
 	}
 

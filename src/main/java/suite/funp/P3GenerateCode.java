@@ -455,7 +455,7 @@ public class P3GenerateCode {
 			}
 
 			private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
-				Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i : null;
+				Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i.get() : null;
 				Insn insn = insnByOp.get(operator);
 				Insn setInsn = setInsnByOp.get(operator);
 				Insn setnInsn = setnInsnByOp.get(operator);

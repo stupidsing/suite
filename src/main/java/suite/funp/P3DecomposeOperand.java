@@ -27,7 +27,7 @@ public class P3DecomposeOperand {
 	public Operand decomposeOperand(Funp node) {
 		return new Switch<Operand>(node //
 		).applyIf(FunpNumber.class, f -> {
-			return amd64.imm(f.i, is);
+			return amd64.imm(f.i.get(), is);
 		}).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 			return decomposeOpMem(pointer, start, end - start);
 		})).result();
@@ -70,12 +70,12 @@ public class P3DecomposeOperand {
 					if (n1 instanceof FunpFramePointer && reg == null)
 						reg = amd64.ebp;
 					else if (n1 instanceof FunpNumber)
-						scale *= ((FunpNumber) n1).i;
+						scale *= ((FunpNumber) n1).i.get();
 					else if (n1 instanceof FunpTree2 //
 							&& (tree = (FunpTree2) n1).operator == TreeUtil.SHL //
 							&& (r = tree.right) instanceof FunpNumber) {
 						decompose(tree.left);
-						scale <<= ((FunpNumber) r).i;
+						scale <<= ((FunpNumber) r).i.get();
 					} else
 						mults.add(n1);
 			}
