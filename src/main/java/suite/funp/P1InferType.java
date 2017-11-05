@@ -310,9 +310,8 @@ public class P1InferType {
 
 				for (Pair<String, Funp> pair : vars) {
 					int fs0 = fs_;
-					Var var = new Var(scope, stack, fs_, fs0);
+					Var var = new Var(scope, stack, fs_ -= getTypeSize(typeOf(value)), fs0);
 					Funp value = pair.t1;
-					fs_ -= getTypeSize(typeOf(value));
 					env1 = env1.put(pair.t0, var);
 					assigns.add(Pair.of(var, value));
 				}
