@@ -90,7 +90,7 @@ public class P1InferType {
 		Funp n1 = new Extract().extract(n0);
 
 		if (unify.unify(t, new Infer(IMap.empty()).infer(n1)))
-			return erase(0, 0, IMap.empty(), n1);
+			return new Erase(0, 0, IMap.empty()).erase(n1);
 		else
 			throw new RuntimeException("cannot infer type for " + n0);
 	}
@@ -235,10 +235,6 @@ public class P1InferType {
 		}
 	}
 
-	private Funp erase(int scope, int fs, IMap<String, Var> env, Funp n) {
-		return new Erase(scope, fs, env).erase(n);
-	}
-
 	private class Erase {
 		private int scope;
 		private int fs;
@@ -313,7 +309,7 @@ public class P1InferType {
 					Var var = new Var(scope, fs_, fs0);
 					Funp value = pair.t1;
 					fs_ -= getTypeSize(typeOf(value));
-					env = env.put(pair.t0, var);
+					env1 = env1.put(pair.t0, var);
 					assigns.add(Pair.of(var, value));
 				}
 
