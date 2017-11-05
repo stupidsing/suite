@@ -514,12 +514,12 @@ public class P3GenerateCode {
 				Operand opRhs = deOp.decomposeOperand(rhs);
 				OpReg opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
 				OpReg opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
-				boolean isLhsModifiable = opLhs != null && insn == Insn.CMP || opLhsReg != null && !rs.contains(opLhsReg);
-				boolean isRhsModifiable = opRhs != null && insn == Insn.CMP || opRhsReg != null && !rs.contains(opRhsReg);
+				boolean isLhsRegModifiable = opLhsReg != null && !rs.contains(opLhsReg);
+				boolean isRhsRegModifiable = opRhsReg != null && !rs.contains(opRhsReg);
 
-				if (isLhsModifiable)
+				if (isLhsRegModifiable)
 					return Pair.of(lhs, compileRegInstruction(insn, opLhsReg, opRhs, lhs));
-				else if (isRhsModifiable)
+				else if (isRhsRegModifiable)
 					return Pair.of(rhs, compileRegInstruction(insn, opRhsReg, opLhs, rhs));
 				else if (opLhs != null && opRhs instanceof OpImm)
 					return Pair.of(lhs, em.emitRegInsn(insn, compileLoad(lhs), opRhs));
