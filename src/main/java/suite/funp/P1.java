@@ -2,9 +2,11 @@ package suite.funp;
 
 import java.util.List;
 
+import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun3;
+import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
 import suite.primitive.adt.pair.IntIntPair;
@@ -18,17 +20,19 @@ public class P1 {
 		public int size; // allocate size
 		public Funp value;
 		public Funp expr;
+		public Mutable<Integer> stack;
 
-		public static FunpAllocStack of(int size, Funp value, Funp expr) {
+		public static FunpAllocStack of(int size, Funp value, Funp expr, Mutable<Integer> stack) {
 			FunpAllocStack f = new FunpAllocStack();
 			f.size = size;
 			f.value = value;
 			f.expr = expr;
+			f.stack = stack;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<Integer, Funp, Funp, R> fun) {
-			return fun.apply(size, value, expr);
+		public <R> R apply(FixieFun4<Integer, Funp, Funp, Mutable<Integer>, R> fun) {
+			return fun.apply(size, value, expr, stack);
 		}
 	}
 
