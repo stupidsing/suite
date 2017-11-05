@@ -211,7 +211,7 @@ public class P3GenerateCode {
 						throw new RuntimeException();
 				};
 
-				Fun<Runnable, CompileOut> postRoutine = routine -> compileRoutine(routine).map(postTwoOp);
+				Fun<Sink<Compile1>, CompileOut> postRoutine = routine -> compileRoutine(routine).map(postTwoOp);
 
 				Source<CompileOut> postDontCare = () -> {
 					if (type == CompileOut_.OP || type == CompileOut_.OPREG)
@@ -229,22 +229,20 @@ public class P3GenerateCode {
 				};
 
 				return new Switch<CompileOut>(n //
-				).applyIf(FunpAllocStack.class, f -> f.apply((size0, value, expr) -> {
-					int is1 = is - 1;
-					int size1 = (size0 + is1) & ~is1;
-					Operand imm = amd64.imm(size1), op;
-					int fd1 = fd - size1;
+				).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr) -> {
+					Operand imm = amd64.imm(size), op;
+					int fd1 = fd - size;
 					Compile1 c1 = new Compile1(rs, fd1);
 
 					if ((op = deOp.decomposeOperand(value)) != null && op.size == is)
 						em.emit(amd64.instruction(Insn.PUSH, value != null ? op : eax));
 					else {
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
-						c1.compileAssign(value, frame(fd1, fd1 + size0));
+						c1.compileAssign(value, frame(fd1, fd));
 					}
 					CompileOut out = c1.compile(expr);
-					if (size1 == is)
-						em.emit(amd64.instruction(Insn.POP, rs.mask(out.op0, out.op1).get(is)));
+					if (size == is)
+						em.emit(amd64.instruction(Insn.POP, rs.mask(out.op0, out.op1).get(size)));
 					else
 						em.emit(amd64.instruction(Insn.ADD, esp, imm));
 					return out;
@@ -399,21 +397,12 @@ public class P3GenerateCode {
 				})).applyIf(FunpNumber.class, f -> f.apply(i -> {
 					return postOp.apply(amd64.imm(i, is));
 				})).applyIf(FunpRoutine.class, f -> f.apply(expr -> {
-					return postRoutine.apply(() -> em.mov(eax, new Compile1(registerSet, 0).compileOpReg(expr)));
+					return postRoutine.apply(c1 -> c1.compileOpSpec(expr, eax));
 				})).applyIf(FunpRoutine2.class, f -> f.apply(expr -> {
-					return postRoutine.apply(() -> {
-						Compile1 c1 = new Compile1(registerSet, 0);
-						if (type == CompileOut_.TWOOPSPEC)
-							c1.compileTwoOpSpec(expr, pop0, pop1);
-						else {
-							CompileOut out = c1.compileTwoOp(expr);
-							em.mov(eax, out.op0);
-							em.mov(edx, out.op1);
-						}
-					});
+					return postRoutine.apply(c1 -> c1.compileTwoOpSpec(expr, eax, edx));
 				})).applyIf(FunpRoutineIo.class, f -> f.apply((expr, is, os) -> {
 					FunpMemory out = frame(ps + is, os);
-					return postRoutine.apply(() -> new Compile1(registerSet, 0).compileAssign(expr, out));
+					return postRoutine.apply(c1 -> c1.compileAssign(expr, out));
 				})).applyIf(FunpSaveRegisters.class, f -> f.apply(expr -> {
 					OpReg[] opRegs = rs.list(r -> r != esp.reg);
 
@@ -546,14 +535,14 @@ public class P3GenerateCode {
 				}
 			}
 
-			private Pair<Operand, Operand> compileRoutine(Runnable runnable) {
+			private Pair<Operand, Operand> compileRoutine(Sink<Compile1> sink) {
 				Operand routineLabel = em.label();
 				Operand endLabel = em.label();
 				em.emit(amd64.instruction(Insn.JMP, endLabel));
 				em.emit(amd64.instruction(Insn.LABEL, routineLabel));
 				em.emit(amd64.instruction(Insn.PUSH, ebp));
 				em.mov(ebp, esp);
-				runnable.run();
+				sink.sink(new Compile1(registerSet, 0));
 				em.emit(amd64.instruction(Insn.POP, ebp));
 				em.emit(amd64.instruction(Insn.RET));
 				em.emit(amd64.instruction(Insn.LABEL, endLabel));

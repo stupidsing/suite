@@ -265,13 +265,11 @@ public class P1InferType {
 					int size = getTypeSize(typeOf(value));
 					Funp invoke;
 					if (lt.os == ps)
-						invoke = FunpAllocStack.of(size, new Erase(scope, fs - size, env).erase(value), FunpInvokeInt.of(lambda1));
+						invoke = allocStack(size, value, FunpInvokeInt.of(lambda1));
 					else if (lt.os == ps * 2)
-						invoke = FunpAllocStack.of(size, new Erase(scope, fs - size, env).erase(value), FunpInvokeInt2.of(lambda1));
-					else {
-						Funp value1 = new Erase(scope, fs - lt.os - size, env).erase(value);
-						invoke = FunpAllocStack.of(lt.os, null, FunpAllocStack.of(size, value1, FunpInvokeIo.of(lambda1)));
-					}
+						invoke = allocStack(size, value, FunpInvokeInt2.of(lambda1));
+					else
+						invoke = allocStack(lt.os, null, allocStack(size, value, FunpInvokeIo.of(lambda1)));
 					return FunpSaveRegisters.of(invoke);
 				} else {
 					FunpLambda lambda1 = (FunpLambda) lambda;
@@ -297,11 +295,12 @@ public class P1InferType {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
 				if (Boolean.TRUE) {
-					int size = getTypeSize(typeOf(value));
-					int fs1 = fs - size;
-					return FunpAllocStack.of(size, //
-							new Erase(scope, fs1, env).erase(value), //
-							new Erase(scope, fs1, env.put(var, new Var(scope, fs1, fs))).erase(expr));
+					int size0 = getTypeSize(typeOf(value));
+					int size1 = align(size0);
+					int fs1 = fs - size1;
+					Erase erase1 = new Erase(scope, fs1, env);
+					Erase erase2 = new Erase(scope, fs1, env.put(var, new Var(scope, fs1, fs1 + size0)));
+					return FunpAllocStack.of(size1, erase1.erase(value), erase2.erase(expr));
 				} else
 					return erase(new Expand(var, value).expand(expr));
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
@@ -324,7 +323,7 @@ public class P1InferType {
 				for (Pair<Var, Funp> pair : assigns)
 					expr = FunpAssign.of(erase1.getVariable(pair.t0), erase1.erase(pair.t1), expr);
 
-				return FunpAllocStack.of(fs - fs_, null, expr_);
+				return FunpAllocStack.of(align(fs - fs_), null, expr_);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
@@ -354,7 +353,7 @@ public class P1InferType {
 				Erase erase1 = new Erase(scope, fs1, env.put(var, var_));
 				FunpMemory m = getVariable(var_);
 				FunpWhile while_ = FunpWhile.of(erase1.erase(cond), FunpAssign.of(m, erase1.erase(iterate), FunpDontCare.of()), m);
-				return FunpAllocStack.of(size, new Erase(scope, fs1, env).erase(init), while_);
+				return allocStack(size, init, while_);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				int b = ps * 2; // return address and EBP
 				int scope1 = scope + 1;
@@ -406,11 +405,22 @@ public class P1InferType {
 			})).result();
 		}
 
+		private FunpAllocStack allocStack(int size0, Funp value, Funp expr) {
+			int size1 = align(size0);
+			Erase erase1 = new Erase(scope, fs - size1, env);
+			return FunpAllocStack.of(size1, erase1.erase(value), expr);
+		}
+
 		private FunpMemory getVariable(Var vd) {
 			Funp nfp = Funp_.framePointer;
 			for (int i = scope; i < vd.scope; i++)
 				nfp = FunpMemory.of(nfp, 0, ps);
 			return FunpMemory.of(nfp, vd.start, vd.end);
+		}
+
+		private int align(int size0) {
+			int is1 = is - 1;
+			return (size0 + is1) & ~is1;
 		}
 	}
 
