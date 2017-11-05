@@ -91,7 +91,7 @@ public class P1InferType {
 		Funp n1 = new Extract().extract(n0);
 
 		if (unify.unify(t, new Infer(IMap.empty()).infer(n1)))
-			return new Erase(0, 0, IMap.empty()).erase(n1);
+			return new Erase(0, IMap.empty()).erase(n1);
 		else
 			throw new RuntimeException("cannot infer type for " + n0);
 	}
@@ -238,12 +238,10 @@ public class P1InferType {
 
 	private class Erase {
 		private int scope;
-		private int fs;
 		private IMap<String, Var> env;
 
-		private Erase(int scope, int fs, IMap<String, Var> env) {
+		private Erase(int scope, IMap<String, Var> env) {
 			this.scope = scope;
-			this.fs = fs;
 			this.env = env;
 		}
 
@@ -296,33 +294,31 @@ public class P1InferType {
 					Mutable<Integer> stack = Mutable.nil();
 					int size0 = getTypeSize(typeOf(value));
 					int size1 = align(size0);
-					int fs1 = fs - size1;
-					Erase erase1 = new Erase(scope, fs1, env);
-					Erase erase2 = new Erase(scope, fs1, env.put(var, new Var(scope, stack, fs1, fs1 + size0)));
-					return FunpAllocStack.of(size1, erase1.erase(value), erase2.erase(expr), stack);
+					Erase erase1 = new Erase(scope, env.put(var, new Var(scope, stack, 0, size0)));
+					return FunpAllocStack.of(size1, erase(value), erase1.erase(expr), stack);
 				} else
 					return erase(new Expand(var, value).expand(expr));
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				List<Pair<Var, Funp>> assigns = new ArrayList<>();
 				Mutable<Integer> stack = Mutable.nil();
 				IMap<String, Var> env1 = env;
-				int fs_ = fs;
+				int offset = 0;
 
 				for (Pair<String, Funp> pair : vars) {
-					int fs0 = fs_;
-					Var var = new Var(scope, stack, fs_ -= getTypeSize(typeOf(value)), fs0);
+					int offset0 = offset;
 					Funp value = pair.t1;
+					Var var = new Var(scope, stack, offset0, offset += getTypeSize(typeOf(value)));
 					env1 = env1.put(pair.t0, var);
 					assigns.add(Pair.of(var, value));
 				}
 
-				Erase erase1 = new Erase(scope, fs_, env1);
+				Erase erase1 = new Erase(scope, env1);
 				Funp expr_ = erase1.erase(expr);
 
 				for (Pair<Var, Funp> pair : assigns)
 					expr = FunpAssign.of(erase1.getVariable(pair.t0), erase1.erase(pair.t1), expr);
 
-				return FunpAllocStack.of(align(fs - fs_), null, expr_, stack);
+				return FunpAllocStack.of(align(offset), null, expr_, stack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
@@ -348,9 +344,8 @@ public class P1InferType {
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 				Mutable<Integer> stack = Mutable.nil();
 				int size = getTypeSize(typeOf(init));
-				int fs1 = fs - size;
-				Var var_ = new Var(scope, stack, fs1, fs);
-				Erase erase1 = new Erase(scope, fs1, env.put(var, var_));
+				Var var_ = new Var(scope, stack, 0, size);
+				Erase erase1 = new Erase(scope, env.put(var, var_));
 				FunpMemory m = getVariable(var_);
 				FunpWhile while_ = FunpWhile.of(erase1.erase(cond), FunpAssign.of(m, erase1.erase(iterate), FunpDontCare.of()), m);
 				return allocStack(size, init, while_, stack);
@@ -358,7 +353,7 @@ public class P1InferType {
 				int b = ps * 2; // return address and EBP
 				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n);
-				Funp expr1 = new Erase(scope1, 0, env.put(var, new Var(scope1, Mutable.of(0), b, b + lt.is))).erase(expr);
+				Funp expr1 = new Erase(scope1, env.put(var, new Var(scope1, Mutable.of(0), b, b + lt.is))).erase(expr);
 				if (lt.os == ps)
 					return FunpRoutine.of(expr1);
 				else if (lt.os == ps * 2)
@@ -404,16 +399,14 @@ public class P1InferType {
 		}
 
 		private FunpAllocStack allocStack(int size0, Funp value, Funp expr, Mutable<Integer> stack) {
-			int size1 = align(size0);
-			Erase erase1 = new Erase(scope, fs - size1, env);
-			return FunpAllocStack.of(size1, erase1.erase(value), expr, stack);
+			return FunpAllocStack.of(align(size0), erase(value), expr, stack);
 		}
 
 		private FunpMemory getVariable(Var vd) {
 			Funp nfp = Funp_.framePointer;
 			for (int i = scope; i < vd.scope; i++)
 				nfp = FunpMemory.of(nfp, 0, ps);
-			return FunpMemory.of(nfp, vd.start, vd.end);
+			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp, FunpNumber.of1(vd.stack)), vd.start, vd.end);
 		}
 
 		private int align(int size0) {

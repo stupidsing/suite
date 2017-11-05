@@ -13,10 +13,11 @@ public class ElfTest {
 
 	@Test
 	public void test() {
-		assertEquals("", test("" //
+		Execute exec = test("" //
 				+ "define id := i => i + 1 >>\n" //
-				+ "iterate v 0 (v < 100) (v + 1)\n" //
-		).out);
+				+ "iterate v 0 (v < 100) (v + 1)\n");
+		assertEquals(100, exec.code);
+		assertEquals("", exec.out);
 	}
 
 	private Execute test(String program) {
@@ -31,7 +32,6 @@ public class ElfTest {
 				+ "	INT (-128);\n" //
 				+ "}))\n" //
 		));
-		assertEquals(0, exec.code);
 		return exec;
 	}
 

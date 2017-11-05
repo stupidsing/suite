@@ -232,8 +232,9 @@ public class P3GenerateCode {
 				).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, stack) -> {
 					Operand imm = amd64.imm(size), op;
 					int fd1 = fd - size;
-					stack.update(fd1);
 					Compile1 c1 = new Compile1(rs, fd1);
+
+					stack.update(fd1);
 
 					if ((op = deOp.decomposeOperand(value)) != null && op.size == is)
 						em.emit(amd64.instruction(Insn.PUSH, value != null ? op : eax));
