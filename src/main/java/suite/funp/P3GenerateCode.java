@@ -147,9 +147,14 @@ public class P3GenerateCode {
 			private CompileOut compile(Funp n) {
 				Fun<Operand, CompileOut> postOp = op -> {
 					Operand old = op;
-					if (type == CompileOut_.ASSIGN)
-						em.mov(amd64.mem(mask(op).compileOpReg(target.pointer), target.start, is), old);
-					else if (type == CompileOut_.OP || type == CompileOut_.OPREG) {
+					if (type == CompileOut_.ASSIGN) {
+						OpMem opt = null;
+						if (!(old instanceof OpMem))
+							opt = deOp.decomposeOpMem(target.pointer, target.start, target.size());
+						if (opt == null)
+							opt = amd64.mem(mask(op).compileOpReg(target.pointer), target.start, is);
+						em.mov(opt, old);
+					} else if (type == CompileOut_.OP || type == CompileOut_.OPREG) {
 						if (type == CompileOut_.OPREG && !(op instanceof OpReg))
 							em.mov(op = rs.get(old.size), old);
 						return new CompileOut(op);
@@ -164,9 +169,19 @@ public class P3GenerateCode {
 					Operand old0 = op0;
 					Operand old1 = op1;
 					if (type == CompileOut_.ASSIGN) {
-						OpReg r = mask(op0, op1).compileOpReg(target.pointer);
-						em.mov(amd64.mem(r, target.start, ps), old0);
-						em.mov(amd64.mem(r, target.start + ps, ps), old1);
+						OpMem opt0 = null;
+						OpMem opt1 = null;
+						if (!(old0 instanceof OpMem) && !(old1 instanceof OpMem)) {
+							opt0 = deOp.decomposeOpMem(target.pointer, target.start, ps);
+							opt1 = deOp.decomposeOpMem(target.pointer, target.start + ps, ps);
+						}
+						if (opt0 == null || opt1 == null) {
+							OpReg r = mask(op0, op1).compileOpReg(target.pointer);
+							opt0 = amd64.mem(r, target.start, ps);
+							opt1 = amd64.mem(r, target.start + ps, ps);
+						}
+						em.mov(opt0, old0);
+						em.mov(opt1, old1);
 					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG) {
 						if (type == CompileOut_.TWOOPREG && !(op0 instanceof OpReg))
 							em.mov(op0 = rs.mask(op1).get(old0.size), old0);
@@ -280,7 +295,7 @@ public class P3GenerateCode {
 					return postAssign.apply((c1, target) -> {
 						for (Pair<Funp, IntIntPair> pair : pairs) {
 							IntIntPair offset = pair.t1;
-							FunpMemory target_ = FunpMemory.of(target.pointer, target.start + offset.t0, target.end + offset.t1);
+							FunpMemory target_ = FunpMemory.of(target.pointer, target.start + offset.t0, target.start + offset.t1);
 							c1.compileAssign(pair.t0, target_);
 						}
 					});
