@@ -142,7 +142,7 @@ public class P1GenerateLambda {
 				Thunk thunk = compile(fs1, env.put(var, fs1), expr);
 				return rt -> (Fun_) p -> thunk.apply(new Rt(rt, p));
 			})).applyIf(FunpNumber.class, f -> f.apply(i -> {
-				Int i1 = new Int(i);
+				Int i1 = new Int(i.get());
 				return rt -> i1;
 			})).applyIf(FunpPolyType.class, f -> f.apply(expr -> {
 				return compile_(expr);

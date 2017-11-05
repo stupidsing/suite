@@ -306,24 +306,14 @@ public class P0 {
 	public static class FunpNumber implements Funp, P3.End {
 		public Mutable<Integer> i;
 
-		public static FunpNumber of1(Mutable<Integer> i) {
+		public static FunpNumber of(Mutable<Integer> i) {
 			FunpNumber f = new FunpNumber();
 			f.i = i;
 			return f;
 		}
 
-		public static FunpNumber of(int i) {
-			FunpNumber f = new FunpNumber();
-			f.i = Mutable.of(i);
-			return f;
-		}
-
-		public <R> R apply1(FixieFun1<Mutable<Integer>, R> fun) {
+		public <R> R apply(FixieFun1<Mutable<Integer>, R> fun) {
 			return fun.apply(i);
-		}
-
-		public <R> R apply(FixieFun1<Integer, R> fun) {
-			return fun.apply(i.get());
 		}
 	}
 

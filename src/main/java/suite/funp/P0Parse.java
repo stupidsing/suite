@@ -6,6 +6,7 @@ import java.util.Set;
 
 import suite.BindArrayUtil.Match;
 import suite.Suite;
+import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.funp.Funp_.Funp;
@@ -184,7 +185,7 @@ public class P0Parse {
 				String var = name(m[0]);
 				return FunpLambda.of(var, parseNewVariable(m[1], var));
 			} else if (node instanceof Int)
-				return FunpNumber.of(((Int) node).number);
+				return FunpNumber.of(Mutable.of(((Int) node).number));
 			else if ((m = Suite.match("poly .0").apply(node)) != null)
 				return FunpPolyType.of(parse(m[0]));
 			else if ((m = Suite.match("address .0").apply(node)) != null)
@@ -253,7 +254,7 @@ public class P0Parse {
 					Int_Obj<Funp> fun_ = i -> expr;
 					return size0 == count ? fun_ : null;
 				})).applyIf(Funp.class, g -> {
-					return i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(i));
+					return i -> FunpIndex.of(FunpReference.of(value), FunpNumber.of(Mutable.of(i)));
 				}).result();
 
 				Funp then_ = then;

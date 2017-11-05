@@ -397,7 +397,7 @@ public class P3GenerateCode {
 					else
 						throw new RuntimeException();
 				})).applyIf(FunpNumber.class, f -> f.apply(i -> {
-					return postOp.apply(amd64.imm(i, is));
+					return postOp.apply(amd64.imm(i.get(), is));
 				})).applyIf(FunpRoutine.class, f -> f.apply(expr -> {
 					return postRoutine.apply(c1 -> c1.compileOpSpec(expr, eax));
 				})).applyIf(FunpRoutine2.class, f -> f.apply(expr -> {

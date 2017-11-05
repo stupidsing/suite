@@ -1,5 +1,6 @@
 package suite.funp;
 
+import suite.adt.Mutable;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
@@ -26,7 +27,7 @@ public class P2Optimize {
 		).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 			return new Switch<Funp>(pointer //
 			).applyIf(FunpReference.class, g -> {
-				return FunpTree.of(TermOp.PLUS__, g.expr, FunpNumber.of(start));
+				return FunpTree.of(TermOp.PLUS__, g.expr, FunpNumber.of(Mutable.of(start)));
 			}).result();
 		})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 			return new Switch<Funp>(expr //
@@ -43,7 +44,7 @@ public class P2Optimize {
 		Funp rhs1 = optimize(rhs0);
 		Integer lhs2 = lhs1 instanceof FunpNumber ? ((FunpNumber) lhs1).i.get() : null;
 		Integer rhs2 = rhs1 instanceof FunpNumber ? ((FunpNumber) rhs1).i.get() : null;
-		return fun != null && lhs2 != null && rhs2 != null ? FunpNumber.of(fun.apply(lhs2, rhs2)) : null;
+		return fun != null && lhs2 != null && rhs2 != null ? FunpNumber.of(Mutable.of(fun.apply(lhs2, rhs2))) : null;
 	}
 
 }
