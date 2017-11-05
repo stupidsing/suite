@@ -509,31 +509,31 @@ public class P3GenerateCode {
 				return opResult;
 			}
 
-			private Pair<Funp, OpReg> compileCommutativeTree(Insn insn_, Assoc assoc, Funp lhs, Funp rhs) {
+			private Pair<Funp, OpReg> compileCommutativeTree(Insn insn, Assoc assoc, Funp lhs, Funp rhs) {
 				Operand opLhs = deOp.decomposeOperand(lhs);
 				Operand opRhs = deOp.decomposeOperand(rhs);
 				OpReg opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
 				OpReg opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
 
 				if (opLhsReg != null && !rs.contains(opLhsReg))
-					return Pair.of(lhs, compileRegInstruction(insn_, opLhsReg, opRhs, lhs));
+					return Pair.of(lhs, compileRegInstruction(insn, opLhsReg, opRhs, lhs));
 				else if (opRhsReg != null && !rs.contains(opRhsReg))
-					return Pair.of(rhs, compileRegInstruction(insn_, opRhsReg, opLhs, rhs));
+					return Pair.of(rhs, compileRegInstruction(insn, opRhsReg, opLhs, rhs));
 				else if (opLhs != null && opRhs instanceof OpImm)
-					return Pair.of(lhs, em.emitRegInsn(insn_, compileLoad(lhs), opRhs));
+					return Pair.of(lhs, em.emitRegInsn(insn, compileLoad(lhs), opRhs));
 				else if (opRhs != null && opLhs instanceof OpImm)
-					return Pair.of(rhs, em.emitRegInsn(insn_, compileLoad(rhs), opLhs));
+					return Pair.of(rhs, em.emitRegInsn(insn, compileLoad(rhs), opLhs));
 				else if (opLhs != null)
-					return Pair.of(rhs, em.emitRegInsn(insn_, compileLoad(rhs), opLhs));
+					return Pair.of(rhs, em.emitRegInsn(insn, compileLoad(rhs), opLhs));
 				else if (opRhs != null)
-					return Pair.of(lhs, em.emitRegInsn(insn_, compileLoad(lhs), opRhs));
+					return Pair.of(lhs, em.emitRegInsn(insn, compileLoad(lhs), opRhs));
 				else {
 					boolean isRightAssoc = assoc == Assoc.RIGHT;
 					Funp first = isRightAssoc ? rhs : lhs;
 					Funp second = isRightAssoc ? lhs : rhs;
 					OpReg op0 = compileLoad(first);
 					Operand op1 = mask(op0).compileOp(second);
-					return Pair.of(first, em.emitRegInsn(insn_, op0, op1));
+					return Pair.of(first, em.emitRegInsn(insn, op0, op1));
 				}
 			}
 
