@@ -514,25 +514,23 @@ public class P3GenerateCode {
 				Operand opRhs = deOp.decomposeOperand(rhs);
 				OpReg opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
 				OpReg opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
-				boolean isLhsRegModifiable = opLhsReg != null && !rs.contains(opLhsReg);
-				boolean isRhsRegModifiable = opRhsReg != null && !rs.contains(opRhsReg);
-				boolean isLhsModifiable = opLhs != null && insn == Insn.CMP;
-				boolean isRhsModifiable = opRhs != null && insn == Insn.CMP;
 
-				if (isLhsRegModifiable)
+				if (opLhsReg != null && !rs.contains(opLhsReg))
 					return Pair.of(lhs, compileRegInstruction(insn, opLhsReg, opRhs, lhs));
-				else if (isRhsRegModifiable)
+				else if (opRhsReg != null && !rs.contains(opRhsReg))
 					return Pair.of(rhs, compileRegInstruction(insn, opRhsReg, opLhs, rhs));
-				else if (isLhsModifiable && opRhs instanceof OpImm) {
-					em.emit(amd64.instruction(insn, opLhs, opRhs));
-					return Pair.of(lhs, null);
-				} else if (isRhsModifiable && opLhs instanceof OpImm) {
-					em.emit(amd64.instruction(insn, opRhs, opLhs));
-					return Pair.of(rhs, null);
-				} else if (opLhs != null && opRhs instanceof OpImm)
-					return Pair.of(lhs, em.emitRegInsn(insn, compileLoad(lhs), opRhs));
-				else if (opRhs != null && opLhs instanceof OpImm)
-					return Pair.of(rhs, em.emitRegInsn(insn, compileLoad(rhs), opLhs));
+				else if (opRhs instanceof OpImm)
+					if (insn == Insn.CMP && opLhs != null) {
+						em.emit(amd64.instruction(insn, opLhs, opRhs));
+						return Pair.of(lhs, null);
+					} else
+						return Pair.of(lhs, em.emitRegInsn(insn, compileLoad(lhs), opRhs));
+				else if (opLhs instanceof OpImm)
+					if (insn == Insn.CMP && opRhs != null) {
+						em.emit(amd64.instruction(insn, opRhs, opLhs));
+						return Pair.of(rhs, null);
+					} else
+						return Pair.of(rhs, em.emitRegInsn(insn, compileLoad(rhs), opLhs));
 				else if (opLhs != null)
 					return Pair.of(rhs, em.emitRegInsn(insn, compileLoad(rhs), opLhs));
 				else if (opRhs != null)
