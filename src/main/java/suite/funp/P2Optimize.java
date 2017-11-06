@@ -21,6 +21,8 @@ import suite.node.util.TreeUtil;
 import suite.node.util.TreeUtil.IntInt_Bool;
 import suite.primitive.IntInt_Int;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.Switch;
 
 public class P2Optimize {
@@ -35,6 +37,17 @@ public class P2Optimize {
 		return new Switch<Funp>(n //
 		).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
 			return !(expr instanceof FunpDontCare) ? n : optimize(expr);
+		})).applyIf(FunpData.class, f -> f.apply(pairs -> {
+			return FunpData.of(Read.from2(pairs).concatMap((expr, range) -> {
+				int start = range.t0;
+				Streamlet<Pair<Funp, IntIntPair>> pairsx = new Switch<Streamlet<Pair<Funp, IntIntPair>>>(expr //
+				).applyIf(FunpData.class, g -> g.apply(pairs1 -> {
+					return Read //
+							.from2(pairs1) //
+							.map((expr1, range1) -> Pair.of(expr1, IntIntPair.of(start + range1.t0, start + range1.t1)));
+				})).result();
+				return pairsx != null ? pairsx : Read.each(Pair.of(expr, range));
+			}).toList());
 		})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 			return new Switch<Funp>(optimize(pointer)).applyIf(FunpReference.class, g -> g.expr).result();
 		})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
