@@ -30,11 +30,11 @@ public class P2Optimize {
 		})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 			return new Switch<Funp>(optimize(pointer) //
 			).applyIf(FunpReference.class, g -> {
-				return FunpTree.of(TermOp.PLUS__, optimize(g.expr), FunpNumber.ofNumber(start));
+				return FunpTree.of(TermOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
 			}).result();
 		})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 			return new Switch<Funp>(optimize(expr) //
-			).applyIf(FunpMemory.class, g -> optimize(g.pointer)).result();
+			).applyIf(FunpMemory.class, g -> g.pointer).result();
 		})).applyIf(FunpTree.class, f -> f.apply((operator, lhs, rhs) -> {
 			return evaluate(TreeUtil.intOperations.get(operator), lhs, rhs);
 		})).applyIf(FunpTree2.class, f -> f.apply((operator, lhs, rhs) -> {
