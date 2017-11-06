@@ -60,7 +60,7 @@ public class P2Optimize {
 			IntInt_Int iii = TreeUtil.intOperations.get(operator);
 			if (iib != null)
 				return evaluate(iib, lhs, rhs);
-			if (iii != null)
+			else if (iii != null)
 				return evaluate(iii, lhs, rhs);
 			else
 				return null;
@@ -76,16 +76,16 @@ public class P2Optimize {
 
 	private FunpNumber evaluate(IntInt_Int fun, Funp lhs0, Funp rhs0) {
 		Integer[] pair = evaluate(lhs0, rhs0);
-		Integer lhs3 = pair[0];
-		Integer rhs3 = pair[1];
-		return fun != null && lhs3 != null && rhs3 != null ? FunpNumber.ofNumber(fun.apply(lhs3, rhs3)) : null;
+		Integer lhs1 = pair[0];
+		Integer rhs1 = pair[1];
+		return fun != null && lhs1 != null && rhs1 != null ? FunpNumber.ofNumber(fun.apply(lhs1, rhs1)) : null;
 	}
 
 	private FunpBoolean evaluate(IntInt_Bool fun, Funp lhs0, Funp rhs0) {
 		Integer[] pair = evaluate(lhs0, rhs0);
-		Integer lhs3 = pair[0];
-		Integer rhs3 = pair[1];
-		return fun != null && lhs3 != null && rhs3 != null ? FunpBoolean.of(fun.apply(lhs3, rhs3)) : null;
+		Integer lhs1 = pair[0];
+		Integer rhs1 = pair[1];
+		return fun != null && lhs1 != null && rhs1 != null ? FunpBoolean.of(fun.apply(lhs1, rhs1)) : null;
 	}
 
 	private Integer[] evaluate(Funp lhs0, Funp rhs0) {
