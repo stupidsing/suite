@@ -61,7 +61,8 @@ public class P2Optimize {
 			).applyIf(FunpData.class, g -> g.apply(pairs -> {
 				for (Pair<Funp, IntIntPair> pair : pairs) {
 					IntIntPair range = pair.t1;
-					return start == range.t0 && end == range.t1 ? pair.t0 : null;
+					if (start == range.t0 && end == range.t1)
+						return pair.t0;
 				}
 				return null;
 			})).applyIf(FunpReference.class, g -> {
