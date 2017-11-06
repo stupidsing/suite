@@ -386,9 +386,7 @@ public class P3GenerateCode {
 					if (type == CompileOut_.ASSIGN)
 						return postAssign.apply((c1, target) -> {
 							Operand op_ = deOp.decomposeOperand(target);
-							if (size != target.size())
-								throw new RuntimeException();
-							else if (op_ != null)
+							if (op_ != null)
 								c1.compileInstruction(Insn.MOV, op_, n);
 							else {
 								OpReg r0 = c1.compileOpReg(target.pointer);
