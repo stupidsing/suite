@@ -34,7 +34,10 @@ public class ElfTest {
 				+ "             -- length in EAX\n" //
 				+ "     }\n" //
 				+ ") >>\n" //
-				+ "iterate v 0 (v < 100) (v + 1)\n");
+				+ "iterate v 0 (v < 100) (\n" //
+				+ " let buffer := (256 * array byte _) >>\n" //
+				+ " v + 1\n" //
+				+ ")\n");
 
 		assertEquals(100, exec.code);
 		assertEquals("", exec.out);

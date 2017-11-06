@@ -306,6 +306,10 @@ public class P0 {
 	public static class FunpNumber implements Funp, P3.End {
 		public Mutable<Integer> i;
 
+		public static FunpNumber ofNumber(int i) {
+			return of(Mutable.of(i));
+		}
+
 		public static FunpNumber of(Mutable<Integer> i) {
 			FunpNumber f = new FunpNumber();
 			f.i = i;

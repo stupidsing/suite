@@ -287,7 +287,7 @@ public class P3GenerateCode {
 				})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 					return postOp.apply(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
 				})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
-					OpReg r1 = pop1.reg < 4 ? pop1 : rs.get(1);
+					OpReg r1 = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
 					OpReg r0 = integerRegs[r1.reg];
 					compileOpSpec(expr, r0);
 					return postOp.apply(r1);
@@ -383,8 +383,8 @@ public class P3GenerateCode {
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 					int size = end - start;
 					Operand op0, op1;
-					if (size == target.size())
-						if (type == CompileOut_.ASSIGN)
+					if (type == CompileOut_.ASSIGN)
+						if (size == target.size())
 							return postAssign.apply((c1, target) -> {
 								Operand op_ = deOp.decomposeOperand(target);
 								if (op_ != null)
@@ -395,21 +395,21 @@ public class P3GenerateCode {
 									c1.mask(r0, r1).compileMove(r0, target.start, r1, start, size);
 								}
 							});
-						else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC)
-							if ((op0 = deOp.decomposeOpMem(pointer, start, size)) != null)
-								return postOp.apply(op0);
-							else
-								return postOp.apply(amd64.mem(compileOpReg(pointer), start, size));
-						else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG || type == CompileOut_.TWOOPSPEC)
-							if ((op0 = deOp.decomposeOpMem(pointer, start, ps)) != null
-									&& (op1 = deOp.decomposeOpMem(pointer, start + ps, ps)) != null)
-								return postTwoOp.apply(op0, op1);
-							else {
-								OpReg r = compileOpReg(pointer);
-								return postTwoOp.apply(amd64.mem(r, start, ps), amd64.mem(r, start + is, ps));
-							}
 						else
 							throw new RuntimeException();
+					else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC)
+						if ((op0 = deOp.decomposeOpMem(pointer, start, size)) != null)
+							return postOp.apply(op0);
+						else
+							return postOp.apply(amd64.mem(compileOpReg(pointer), start, size));
+					else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG || type == CompileOut_.TWOOPSPEC)
+						if ((op0 = deOp.decomposeOpMem(pointer, start, ps)) != null
+								&& (op1 = deOp.decomposeOpMem(pointer, start + ps, ps)) != null)
+							return postTwoOp.apply(op0, op1);
+						else {
+							OpReg r = compileOpReg(pointer);
+							return postTwoOp.apply(amd64.mem(r, start, ps), amd64.mem(r, start + is, ps));
+						}
 					else
 						throw new RuntimeException();
 				})).applyIf(FunpNumber.class, f -> f.apply(i -> {

@@ -338,7 +338,7 @@ public class P1InferType {
 				unify(n, typeOf(reference), TypeReference.of(TypeArray.of(te)));
 				int size = getTypeSize(te);
 				Funp address0 = erase(reference);
-				FunpTree inc = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.of(Mutable.of(size)));
+				FunpTree inc = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.ofNumber(size));
 				Funp address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
@@ -367,7 +367,7 @@ public class P1InferType {
 					private Funp getAddress(Funp n) {
 						return new Switch<Funp>(n //
 						).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
-							return FunpTree.of(TermOp.PLUS__, pointer, FunpNumber.of(Mutable.of(start)));
+							return FunpTree.of(TermOp.PLUS__, pointer, FunpNumber.ofNumber(start));
 						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 							return getAddress(getVariable(env.get(var)));
 						})).nonNullResult();
