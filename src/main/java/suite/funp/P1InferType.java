@@ -390,7 +390,7 @@ public class P1InferType {
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
 				for (Pair<String, Funp> fv : fvs) {
 					int offset0 = offset;
-					list.add(Pair.of(fv.t1, IntIntPair.of(offset0, offset += getTypeSize(ftsIter.next().t1))));
+					list.add(Pair.of(erase(fv.t1), IntIntPair.of(offset0, offset += getTypeSize(ftsIter.next().t1))));
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {

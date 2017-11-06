@@ -39,14 +39,15 @@ public class P2Optimize {
 			return !(expr instanceof FunpDontCare) ? n : optimize(expr);
 		})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 			return FunpData.of(Read.from2(pairs).concatMap((expr, range) -> {
+				Funp expr1 = optimize(expr);
 				int start = range.t0;
-				Streamlet<Pair<Funp, IntIntPair>> pairsx = new Switch<Streamlet<Pair<Funp, IntIntPair>>>(expr //
+				Streamlet<Pair<Funp, IntIntPair>> pairsx = new Switch<Streamlet<Pair<Funp, IntIntPair>>>(expr1 //
 				).applyIf(FunpData.class, g -> g.apply(pairs1 -> {
 					return Read //
 							.from2(pairs1) //
-							.map((expr1, range1) -> Pair.of(expr1, IntIntPair.of(start + range1.t0, start + range1.t1)));
+							.map((exprc, range1) -> Pair.of(optimize(exprc), IntIntPair.of(start + range1.t0, start + range1.t1)));
 				})).result();
-				return pairsx != null ? pairsx : Read.each(Pair.of(expr, range));
+				return pairsx != null ? pairsx : Read.each(Pair.of(expr1, range));
 			}).toList());
 		})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 			return new Switch<Funp>(optimize(pointer)).applyIf(FunpReference.class, g -> g.expr).result();

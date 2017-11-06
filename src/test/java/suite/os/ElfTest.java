@@ -36,7 +36,7 @@ public class ElfTest {
 				+ ") >>\n" //
 				+ "iterate v 0 (v < 100) (\n" //
 				+ " let buffer := (256 * array byte _) >>\n" //
-				+ " v + 1\n" //
+				+ " (address buffer, v + 1) | linux-read\n" //
 				+ ")\n");
 
 		assertEquals(100, exec.code);
