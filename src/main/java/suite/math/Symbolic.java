@@ -73,12 +73,17 @@ public class Symbolic {
 
 		private Node sumOfProducts(Node node) {
 			class Recurse {
+				private Node inv(Node node_) {
+					Node[] m = matchInv.apply(node_);
+					return m == null ? matchInv.substitute(node_) : m[0];
+				}
+
 				private Streamlet<Node> pos(Node node_) {
 					Node[] m;
 					if ((m = matchMul.apply(node_)) != null)
 						return Streamlet.concat(pos(m[0]), pos(m[1]));
 					else if ((m = matchInv.apply(node_)) != null)
-						return pos(m[0]).map(matchInv::substitute);
+						return pos(m[0]).map(this::inv);
 					else if ((m = matchPow.apply(node_)) != null)
 						return pos(m[0]).join2(sop(m[1])).map(matchPow::substitute);
 					else if ((m = matchExp.apply(node_)) != null)
@@ -89,12 +94,17 @@ public class Symbolic {
 						return Read.each(node_);
 				}
 
+				private Node neg(Node node_) {
+					Node[] m = matchNeg.apply(node_);
+					return m == null ? matchNeg.substitute(node_) : m[0];
+				}
+
 				private Streamlet<Node> sop(Node node_) {
 					Node[] m;
 					if ((m = matchAdd.apply(node_)) != null)
 						return Streamlet.concat(sop(m[0]), sop(m[1]));
 					else if ((m = matchNeg.apply(node_)) != null)
-						return sop(m[0]).map(matchNeg::substitute);
+						return sop(m[0]).map(this::neg);
 					else if ((m = matchMul.apply(node_)) != null)
 						return sop(m[0]).join2(sop(m[1])).map(mul::apply).map(this::productOfSums);
 					else if ((m = matchLn.apply(node_)) != null)
