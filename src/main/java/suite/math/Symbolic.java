@@ -14,6 +14,7 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
 import suite.util.To;
 
@@ -73,17 +74,12 @@ public class Symbolic {
 
 		private Node sumOfProducts(Node node) {
 			class Recurse {
-				private Node inv(Node node_) {
-					Node[] m = matchInv.apply(node_);
-					return m == null ? matchInv.substitute(node_) : m[0];
-				}
-
 				private Streamlet<Node> pos(Node node_) {
 					Node[] m;
 					if ((m = matchMul.apply(node_)) != null)
 						return Streamlet.concat(pos(m[0]), pos(m[1]));
 					else if ((m = matchInv.apply(node_)) != null)
-						return pos(m[0]).map(this::inv);
+						return pos(m[0]).map(inv::apply);
 					else if ((m = matchPow.apply(node_)) != null)
 						return pos(m[0]).join2(sop(m[1])).map(matchPow::substitute);
 					else if ((m = matchExp.apply(node_)) != null)
@@ -94,31 +90,24 @@ public class Symbolic {
 						return Read.each(node_);
 				}
 
-				private Node neg(Node node_) {
-					Node[] m = matchNeg.apply(node_);
-					return m == null ? matchNeg.substitute(node_) : m[0];
-				}
-
 				private Streamlet<Node> sop(Node node_) {
 					Node[] m;
 					if ((m = matchAdd.apply(node_)) != null)
 						return Streamlet.concat(sop(m[0]), sop(m[1]));
 					else if ((m = matchNeg.apply(node_)) != null)
-						return sop(m[0]).map(this::neg);
+						return sop(m[0]).map(neg::apply);
 					else if ((m = matchMul.apply(node_)) != null)
 						return sop(m[0]).join2(sop(m[1])).map(mul::apply).map(this::productOfSums);
 					else if ((m = matchLn.apply(node_)) != null)
 						return pos(m[0]).map(matchLn::substitute);
 					else if ((m = Suite.match("sin (.0 + .1)").apply(node_)) != null)
 						return Read.each( //
-								mul.apply(matchSin.substitute(m[0]), matchCos.substitute(m[1])), //
-								mul.apply(matchCos.substitute(m[0]), matchSin.substitute(m[1]))) //
-								.map(this::productOfSums);
+								mul.recompose(x, Read.each(matchSin.substitute(m[0]), matchCos.substitute(m[1]))), //
+								mul.recompose(x, Read.each(matchCos.substitute(m[0]), matchSin.substitute(m[1]))));
 					else if ((m = Suite.match("cos (.0 + .1)").apply(node_)) != null)
 						return Read.each( //
-								mul.apply(matchCos.substitute(m[0]), matchCos.substitute(m[1])), //
-								mul.apply(matchNeg.substitute(matchSin.substitute(m[0])), matchSin.substitute(m[1]))) //
-								.map(this::productOfSums);
+								mul.recompose(x, Read.each(matchCos.substitute(m[0]), matchCos.substitute(m[1]))), //
+								mul.recompose(x, Read.each(neg.apply(matchSin.substitute(m[0])), matchSin.substitute(m[1]))));
 					else if (node_ instanceof Tree)
 						return Read.each(productOfSums(node_));
 					else
@@ -131,6 +120,14 @@ public class Symbolic {
 
 				private Node sumOfProducts(Node node) {
 					return add.recompose(x, sop(node));
+				}
+
+				private Iterate<Node> inv = node_ -> applyInv(matchInv, node_);
+				private Iterate<Node> neg = node_ -> applyInv(matchNeg, node_);
+
+				private Node applyInv(Match match, Node node_) {
+					Node[] m = match.apply(node_);
+					return m == null ? match.substitute(node_) : m[0];
 				}
 			}
 
