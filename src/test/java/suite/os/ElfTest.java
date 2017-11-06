@@ -15,24 +15,24 @@ public class ElfTest {
 	public void test() {
 		Execute exec = test("" //
 				+ "define linux-read := `buffer, length` => (\n" //
-				+ "     type buffer = address (256 * array byte _) >>\n" //
-				+ "     type length = 0 >>\n" //
-				+ "     asm (ECX = buffer; EDX = length;) {\n" //
-				+ "             MOV (EAX, 3);\n" //
-				+ "             XOR (EBX, EBX);\n" //
-				+ "             INT (-128);\n" //
-				+ "             -- length in EAX\n" //
-				+ "     }\n" //
+				+ "	type buffer = address (256 * array byte _) >>\n" //
+				+ "	type length = 0 >>\n" //
+				+ "	asm (ECX = buffer; EDX = length;) {\n" //
+				+ "		MOV (EAX, 3);\n" //
+				+ "		XOR (EBX, EBX);\n" //
+				+ "		INT (-128);\n" //
+				+ "		-- length in EAX\n" //
+				+ "	}\n" //
 				+ ") >>\n" //
 				+ "define linux-write := `buffer, length` => (\n" //
-				+ "     type buffer = address (256 * array byte _) >>\n" //
-				+ "     type length = 0 >>\n" //
-				+ "     asm (ECX = buffer; EDX = length;) {\n" //
-				+ "             MOV (EAX, 4);\n" //
-				+ "             MOV (EBX, 1);\n" //
-				+ "             INT (-128);\n" //
-				+ "             -- length in EAX\n" //
-				+ "     }\n" //
+				+ "	type buffer = address (256 * array byte _) >>\n" //
+				+ "	type length = 0 >>\n" //
+				+ "	asm (ECX = buffer; EDX = length;) {\n" //
+				+ "		MOV (EAX, 4);\n" //
+				+ "		MOV (EBX, 1);\n" //
+				+ "		INT (-128);\n" //
+				+ "		-- length in EAX\n" //
+				+ "	}\n" //
 				+ ") >>\n" //
 				+ "iterate v 0 (v < 100) (\n" //
 				+ " let buffer := (256 * array byte _) >>\n" //
