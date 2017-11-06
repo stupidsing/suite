@@ -129,10 +129,6 @@ public class P1 {
 			return f;
 		}
 
-		public FunpMemory range(int s, int e) {
-			return of(pointer, start + s, start + e);
-		}
-
 		public int size() {
 			return end - start;
 		}
