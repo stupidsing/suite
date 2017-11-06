@@ -148,9 +148,9 @@ public class P3GenerateCode {
 				Fun<Operand, CompileOut> postOp = op -> {
 					Operand old = op;
 					if (type == CompileOut_.ASSIGN) {
-						OpMem opt = null;
+						Operand opt = null;
 						if (!(old instanceof OpMem))
-							opt = deOp.decomposeOpMem(target.pointer, target.start, target.size());
+							opt = deOp.decomposeOperand(target);
 						if (opt == null)
 							opt = amd64.mem(mask(op).compileOpReg(target.pointer), target.start, is);
 						em.mov(opt, old);
