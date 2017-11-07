@@ -229,8 +229,12 @@ public class P1InferType {
 					String ev = "ev" + Util.temp();
 					evs.add(Pair.of(ev, n_));
 					return FunpVariable.of(ev);
-				})).applyIf(FunpDefine.class, f -> f.apply((var, value0, expr) -> {
-					return FunpDefine.of(var, new ExtractDefineVariables().extract(value0), extract_(expr));
+				})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
+					return FunpDefine.of(var, new ExtractDefineVariables().extract(value), extract_(expr));
+				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+					return FunpDefineRec.of(
+							Read.from2(pairs).mapValue(value -> new ExtractDefineVariables().extract(value)).toList(),
+							extract_(expr));
 				})).result();
 			}, n);
 		}
