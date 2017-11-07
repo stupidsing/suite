@@ -148,12 +148,11 @@ public class P3GenerateCode {
 				Fun<Operand, CompileOut> postOp = op -> {
 					Operand old = op;
 					if (type == CompileOut_.ASSIGN) {
-						Operand opt = null;
-						if (!(old instanceof OpMem))
-							opt = deOp.decomposeOperand(target);
-						if (opt == null)
-							opt = amd64.mem(mask(op).compileOpReg(target.pointer), target.start, is);
-						em.mov(opt, old);
+						Operand opt = deOp.decomposeOperand(target);
+						opt = opt != null ? opt : amd64.mem(mask(op).compileOpReg(target.pointer), target.start, is);
+						if (op instanceof OpMem)
+							em.mov(op = rs.mask(opt).get(old.size), old);
+						em.mov(opt, op);
 					} else if (type == CompileOut_.OP || type == CompileOut_.OPREG) {
 						if (type == CompileOut_.OPREG && !(op instanceof OpReg))
 							em.mov(op = rs.get(old.size), old);
@@ -169,19 +168,19 @@ public class P3GenerateCode {
 					Operand old0 = op0;
 					Operand old1 = op1;
 					if (type == CompileOut_.ASSIGN) {
-						OpMem opt0 = null;
-						OpMem opt1 = null;
-						if (!(old0 instanceof OpMem) && !(old1 instanceof OpMem)) {
-							opt0 = deOp.decomposeOpMem(target.pointer, target.start, ps);
-							opt1 = deOp.decomposeOpMem(target.pointer, target.start + ps, ps);
-						}
+						OpMem opt0 = deOp.decomposeOpMem(target.pointer, target.start, ps);
+						OpMem opt1 = deOp.decomposeOpMem(target.pointer, target.start + ps, ps);
 						if (opt0 == null || opt1 == null) {
 							OpReg r = mask(op0, op1).compileOpReg(target.pointer);
 							opt0 = amd64.mem(r, target.start, ps);
 							opt1 = amd64.mem(r, target.start + ps, ps);
 						}
-						em.mov(opt0, old0);
-						em.mov(opt1, old1);
+						if (op0 instanceof OpMem)
+							em.mov(op0 = rs.mask(opt0, opt1, op1).get(op0.size), old0);
+						em.mov(opt0, op0);
+						if (op1 instanceof OpMem)
+							em.mov(op1 = rs.mask(opt1).get(op1.size), old1);
+						em.mov(opt1, op1);
 					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG) {
 						if (type == CompileOut_.TWOOPREG && !(op0 instanceof OpReg))
 							em.mov(op0 = rs.mask(op1).get(old0.size), old0);

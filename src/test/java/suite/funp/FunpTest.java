@@ -71,6 +71,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testSeq() {
+		test("0; 1; 2; 3");
+	}
+
+	@Test
 	public void testStruct() {
 		test("define s := struct (a 1, b 2, c 3,) >> s/c");
 	}
