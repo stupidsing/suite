@@ -17,7 +17,7 @@ public class P1Inline {
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp inline(Funp node) {
-		return Boolean.TRUE ? node : inline_(node);
+		return Boolean.FALSE ? inline_(node) : node;
 	}
 
 	private Funp inline_(Funp node) {
@@ -26,17 +26,18 @@ public class P1Inline {
 		new Object() {
 			private Funp count(IMap<String, FunpDefine> vars, Funp node0) {
 				return inspect.rewrite(Funp.class, n_ -> {
-					if (n_ instanceof FunpDefine) {
-						FunpDefine n1 = (FunpDefine) n_;
-						counts.put(n1, IntMutable.of(0));
-						count(vars, n1.value);
-						count(vars.put(n1.var, n1), n1.expr);
-					} else if (n_ instanceof FunpVariable) {
+					return new Switch<Funp>(n_ //
+					).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
+						counts.put(f, IntMutable.of(0));
+						count(vars, value);
+						count(vars.put(var, f), expr);
+						return null;
+					})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 						FunpDefine def = vars.get(((FunpVariable) n_).var);
 						if (def != null)
 							counts.get(def).increment();
-					}
-					return null;
+						return null;
+					})).result();
 				}, node0);
 			}
 		}.count(IMap.empty(), node);
@@ -46,7 +47,7 @@ public class P1Inline {
 				return inspect.rewrite(Funp.class, n_ -> {
 					return new Switch<Funp>(n_ //
 					).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-						IMap<String, Funp> vars1 = vars.put(var, (FunpDefine) n_);
+						IMap<String, Funp> vars1 = vars.put(var, f);
 						return 1 < counts.get(n_).get() //
 								? FunpDefine.of(var, expand(vars, value), expand(vars1, expr)) //
 								: expand(vars1, expr);
