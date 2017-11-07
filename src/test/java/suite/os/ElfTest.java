@@ -14,8 +14,9 @@ public class ElfTest {
 	@Test
 	public void test() {
 		Execute exec = test("" //
+				+ "expand size := 256 >>\n" //
 				+ "define linux-read := `buffer, length` => (\n" //
-				+ "	type buffer = address (256 * array byte _) >>\n" //
+				+ "	type buffer = address (size * array byte _) >>\n" //
 				+ "	type length = 0 >>\n" //
 				+ "	asm (ECX = buffer; EDX = length;) {\n" //
 				+ "		MOV (EAX, 3);\n" //
@@ -25,7 +26,7 @@ public class ElfTest {
 				+ "	}\n" //
 				+ ") >>\n" //
 				+ "define linux-write := `buffer, length` => (\n" //
-				+ "	type buffer = address (256 * array byte _) >>\n" //
+				+ "	type buffer = address (size * array byte _) >>\n" //
 				+ "	type length = 0 >>\n" //
 				+ "	asm (ECX = buffer; EDX = length;) {\n" //
 				+ "		MOV (EAX, 4);\n" //
@@ -34,8 +35,7 @@ public class ElfTest {
 				+ "		-- length in EAX\n" //
 				+ "	}\n" //
 				+ ") >>\n" //
-				+ "iterate v 0 (v < 100) (\n" //
-				+ "	expand size := 256 >>\n" //
+				+ "iterate n 0 (0 < n) (\n" //
 				+ "	let buffer := (size * array byte _) >>\n" //
 				+ "	let nBytesRead := (address buffer, size | linux-read) >>\n" //
 				+ "	(\n" //
