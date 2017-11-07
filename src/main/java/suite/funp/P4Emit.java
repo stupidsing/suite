@@ -9,14 +9,14 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.util.FunUtil.Sink;
 
-public class P3Emit {
+public class P4Emit {
 
 	private int is = Funp_.integerSize;
 	private Amd64 amd64 = Amd64.me;
 
 	private Sink<Instruction> emit;
 
-	public P3Emit(Sink<Instruction> emit) {
+	public P4Emit(Sink<Instruction> emit) {
 		this.emit = emit;
 	}
 

@@ -28,7 +28,7 @@ import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.Switch;
 
-public class P1GenerateLambda {
+public class P2GenerateLambda {
 
 	public static class Rt {
 		private Rt parent;

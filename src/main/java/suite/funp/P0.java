@@ -21,7 +21,7 @@ public class P0 {
 	public interface End {
 	}
 
-	public static class FunpApply implements Funp, P1.End {
+	public static class FunpApply implements Funp, P2.End {
 		public Funp value;
 		public Funp lambda;
 
@@ -37,7 +37,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpArray implements Funp, P1.End {
+	public static class FunpArray implements Funp, P2.End {
 		public List<Funp> elements;
 
 		public static FunpArray of(List<Funp> elements) {
@@ -51,7 +51,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpAsm implements Funp, P3.End {
+	public static class FunpAsm implements Funp, P4.End {
 		public List<Pair<OpReg, Funp>> assigns;
 		public List<Node> asm;
 
@@ -67,7 +67,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpAssignReference implements Funp, P1.End {
+	public static class FunpAssignReference implements Funp, P2.End {
 		public Funp reference;
 		public Funp value;
 		public Funp expr;
@@ -85,7 +85,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpBoolean implements Funp, P3.End {
+	public static class FunpBoolean implements Funp, P4.End {
 		public boolean b;
 
 		public static FunpBoolean of(boolean b) {
@@ -99,7 +99,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpCheckType implements Funp, P3.End {
+	public static class FunpCheckType implements Funp, P4.End {
 		public Funp left;
 		public Funp right;
 		public Funp expr;
@@ -117,7 +117,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpCoerce implements Funp, P1.End {
+	public static class FunpCoerce implements Funp, P2.End {
 		public String coerce;
 		public Funp expr;
 
@@ -133,7 +133,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpDefine implements Funp, P1.End {
+	public static class FunpDefine implements Funp, P2.End {
 		public String var;
 		public Funp value;
 		public Funp expr;
@@ -151,7 +151,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpDefineRec implements Funp, P1.End {
+	public static class FunpDefineRec implements Funp, P2.End {
 		public List<Pair<String, Funp>> pairs;
 		public Funp expr;
 
@@ -167,7 +167,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpDeref implements Funp, P1.End {
+	public static class FunpDeref implements Funp, P2.End {
 		public Funp pointer;
 
 		public static FunpDeref of(Funp pointer) {
@@ -181,7 +181,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpDontCare implements Funp, P3.End {
+	public static class FunpDontCare implements Funp, P4.End {
 		public static FunpDontCare of() {
 			return new FunpDontCare();
 		}
@@ -191,7 +191,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpError implements Funp, P3.End {
+	public static class FunpError implements Funp, P4.End {
 		public static FunpError of() {
 			return new FunpError();
 		}
@@ -201,7 +201,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpField implements Funp, P1.End {
+	public static class FunpField implements Funp, P2.End {
 		public Funp reference;
 		public String field;
 
@@ -217,7 +217,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpFixed implements Funp, P3.End {
+	public static class FunpFixed implements Funp, P4.End {
 		public String var;
 		public Funp expr;
 
@@ -233,7 +233,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpIf implements Funp, P3.End {
+	public static class FunpIf implements Funp, P4.End {
 		public Funp if_;
 		public Funp then;
 		public Funp else_;
@@ -251,7 +251,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpIndex implements Funp, P3.End {
+	public static class FunpIndex implements Funp, P4.End {
 		public Funp reference;
 		public Funp index;
 
@@ -267,7 +267,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpIterate implements Funp, P1.End {
+	public static class FunpIterate implements Funp, P2.End {
 		public String var;
 		public Funp init;
 		public Funp cond;
@@ -287,7 +287,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpLambda implements Funp, P1.End {
+	public static class FunpLambda implements Funp, P2.End {
 		public String var;
 		public Funp expr;
 
@@ -303,7 +303,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpNumber implements Funp, P3.End {
+	public static class FunpNumber implements Funp, P4.End {
 		public Mutable<Integer> i;
 
 		public static FunpNumber ofNumber(int i) {
@@ -321,7 +321,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpPolyType implements Funp, P1.End {
+	public static class FunpPolyType implements Funp, P2.End {
 		public Funp expr;
 
 		public static FunpPolyType of(Funp expr) {
@@ -335,7 +335,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpReference implements Funp, P1.End {
+	public static class FunpReference implements Funp, P2.End {
 		public Funp expr;
 
 		public static FunpReference of(Funp pointer) {
@@ -349,7 +349,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpRepeat implements Funp, P1.End {
+	public static class FunpRepeat implements Funp, P2.End {
 		public int count;
 		public Funp expr;
 
@@ -365,7 +365,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpStruct implements Funp, P1.End {
+	public static class FunpStruct implements Funp, P2.End {
 		public List<Pair<String, Funp>> pairs;
 
 		public static FunpStruct of(List<Pair<String, Funp>> pairs) {
@@ -379,7 +379,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpTree implements Funp, P3.End {
+	public static class FunpTree implements Funp, P4.End {
 		public Operator operator;
 		public Funp left;
 		public Funp right;
@@ -397,7 +397,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpTree2 implements Funp, P3.End {
+	public static class FunpTree2 implements Funp, P4.End {
 		public Atom operator;
 		public Funp left;
 		public Funp right;
@@ -426,7 +426,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpVariable implements Funp, P1.End {
+	public static class FunpVariable implements Funp, P2.End {
 		public String var;
 
 		public static FunpVariable of(String var) {
@@ -440,7 +440,7 @@ public class P0 {
 		}
 	}
 
-	public static class FunpVariableNew implements Funp, P1.End {
+	public static class FunpVariableNew implements Funp, P2.End {
 		public String var;
 
 		public static FunpVariableNew of(String var) {

@@ -13,7 +13,7 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.util.FunUtil.Source;
 
-public class P3JumpIf {
+public class P4JumpIf {
 
 	private FixieFun4<Insn, Insn, Funp, Funp, Boolean> cmpJmp;
 
@@ -29,7 +29,7 @@ public class P3JumpIf {
 			entry(TermOp.LT____, Insn.JGE), //
 			entry(TermOp.NOTEQ_, Insn.JE));
 
-	public P3JumpIf(FixieFun4<Insn, Insn, Funp, Funp, Boolean> cmpJmp) {
+	public P4JumpIf(FixieFun4<Insn, Insn, Funp, Funp, Boolean> cmpJmp) {
 		this.cmpJmp = cmpJmp;
 	}
 

@@ -28,20 +28,20 @@ import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
-import suite.funp.P1.FunpAllocStack;
-import suite.funp.P1.FunpAssign;
-import suite.funp.P1.FunpData;
-import suite.funp.P1.FunpFramePointer;
-import suite.funp.P1.FunpInvokeInt;
-import suite.funp.P1.FunpInvokeInt2;
-import suite.funp.P1.FunpInvokeIo;
-import suite.funp.P1.FunpMemory;
-import suite.funp.P1.FunpRoutine;
-import suite.funp.P1.FunpRoutine2;
-import suite.funp.P1.FunpRoutineIo;
-import suite.funp.P1.FunpSaveRegisters;
-import suite.funp.P1.FunpWhile;
-import suite.funp.P3JumpIf.JumpIf;
+import suite.funp.P2.FunpAllocStack;
+import suite.funp.P2.FunpAssign;
+import suite.funp.P2.FunpData;
+import suite.funp.P2.FunpFramePointer;
+import suite.funp.P2.FunpInvokeInt;
+import suite.funp.P2.FunpInvokeInt2;
+import suite.funp.P2.FunpInvokeIo;
+import suite.funp.P2.FunpMemory;
+import suite.funp.P2.FunpRoutine;
+import suite.funp.P2.FunpRoutine2;
+import suite.funp.P2.FunpRoutineIo;
+import suite.funp.P2.FunpSaveRegisters;
+import suite.funp.P2.FunpWhile;
+import suite.funp.P4JumpIf.JumpIf;
 import suite.node.Atom;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
@@ -56,7 +56,7 @@ import suite.util.FunUtil2.Fun2;
 import suite.util.FunUtil2.Sink2;
 import suite.util.Switch;
 
-public class P3GenerateCode {
+public class P4GenerateCode {
 
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
@@ -101,11 +101,11 @@ public class P3GenerateCode {
 			entry(TreeUtil.SHL, Insn.SHL), //
 			entry(TreeUtil.SHR, Insn.SHR));
 
-	private P3DecomposeOperand deOp = new P3DecomposeOperand();
+	private P4DecomposeOperand deOp = new P4DecomposeOperand();
 
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
-		P3Emit emit = new P3Emit(instructions::add);
+		P4Emit emit = new P4Emit(instructions::add);
 		new Compile0(CompileOut_.OPREG, emit).new Compile1(registerSet, 0).compile(funp);
 		return instructions;
 	}
@@ -115,17 +115,17 @@ public class P3GenerateCode {
 	}
 
 	private class Compile0 {
-		private P3Emit em;
+		private P4Emit em;
 		private CompileOut_ type;
 		private boolean isOutSpec;
 		private FunpMemory target; // only for CompileOutType.ASSIGN
 		private OpReg pop0, pop1; // only for CompileOutType.OPSPEC, TWOOPSPEC
 
-		private Compile0(CompileOut_ type, P3Emit emit) {
+		private Compile0(CompileOut_ type, P4Emit emit) {
 			this(type, emit, null, null, null);
 		}
 
-		private Compile0(CompileOut_ type, P3Emit emit, FunpMemory target, OpReg pop0, OpReg pop1) {
+		private Compile0(CompileOut_ type, P4Emit emit, FunpMemory target, OpReg pop0, OpReg pop1) {
 			this.em = emit;
 			this.type = type;
 			this.isOutSpec = type == CompileOut_.OPSPEC || type == CompileOut_.TWOOPSPEC;
@@ -345,7 +345,7 @@ public class P3GenerateCode {
 						em.emit(amd64.instruction(Insn.LABEL, endLabel));
 					};
 
-					JumpIf jumpIf = new P3JumpIf(cmpJmp.apply(condLabel)).new JumpIf(if_);
+					JumpIf jumpIf = new P4JumpIf(cmpJmp.apply(condLabel)).new JumpIf(if_);
 					Source<Boolean> r;
 
 					if ((r = jumpIf.jnxIf()) != null && r.source())
@@ -453,9 +453,9 @@ public class P3GenerateCode {
 					em.emit(amd64.instruction(Insn.LABEL, loopLabel));
 					Source<Boolean> r;
 
-					if ((r = new P3JumpIf(cmpJmp.apply(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
+					if ((r = new P4JumpIf(cmpJmp.apply(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
 						;
-					else if ((r = new P3JumpIf(cmpJmp.apply(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source()) {
+					else if ((r = new P4JumpIf(cmpJmp.apply(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source()) {
 						em.emit(amd64.instruction(Insn.JMP, exitLabel));
 						em.emit(amd64.instruction(Insn.LABEL, contLabel));
 					} else {

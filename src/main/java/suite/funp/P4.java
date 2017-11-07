@@ -1,6 +1,6 @@
 package suite.funp;
 
-public class P3 {
+public class P4 {
 
 	public interface End {
 	}

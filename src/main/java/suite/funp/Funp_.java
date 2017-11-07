@@ -6,11 +6,11 @@ import java.util.List;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Instruction;
-import suite.funp.P1.FunpFramePointer;
-import suite.funp.P1GenerateLambda.Int;
-import suite.funp.P1GenerateLambda.Rt;
-import suite.funp.P1GenerateLambda.Thunk;
-import suite.funp.P1GenerateLambda.Value;
+import suite.funp.P2.FunpFramePointer;
+import suite.funp.P2GenerateLambda.Int;
+import suite.funp.P2GenerateLambda.Rt;
+import suite.funp.P2GenerateLambda.Thunk;
+import suite.funp.P2GenerateLambda.Value;
 import suite.immutable.IMap;
 import suite.node.Node;
 import suite.os.LogUtil;
@@ -35,10 +35,11 @@ public class Funp_ {
 
 	public class Main {
 		private P0Parse p0 = new P0Parse();
-		private P1InferType p1 = new P1InferType();
-		private P1GenerateLambda p1g = new P1GenerateLambda();
-		private P2Optimize p2 = new P2Optimize();
-		private P3GenerateCode p3 = new P3GenerateCode();
+		private P1Inline p1 = new P1Inline();
+		private P2InferType p2 = new P2InferType();
+		private P2GenerateLambda p2g = new P2GenerateLambda();
+		private P3Optimize p3 = new P3Optimize();
+		private P4GenerateCode p4 = new P4GenerateCode();
 
 		private Main() {
 		}
@@ -46,16 +47,17 @@ public class Funp_ {
 		public Bytes compile(int offset, String fp) {
 			Node node = Suite.parse(fp);
 			Funp f0 = p0.parse(node);
-			Funp f1 = p1.infer(f0);
-			Funp f2 = p2.optimize(f1);
-			List<Instruction> instructions = p3.compile0(f2);
-			return p3.compile1(offset, instructions, true);
+			Funp f1 = p1.inline(f0);
+			Funp f2 = p2.infer(f1);
+			Funp f3 = p3.optimize(f2);
+			List<Instruction> instructions = p4.compile0(f3);
+			return p4.compile1(offset, instructions, true);
 		}
 
 		public int interpret(Node node) {
 			Funp f0 = p0.parse(node);
-			p1.infer(f0);
-			Thunk thunk = p1g.compile(0, IMap.empty(), f0);
+			p2.infer(f0);
+			Thunk thunk = p2g.compile(0, IMap.empty(), f0);
 			Value value = thunk.apply(new Rt(null, null));
 			return ((Int) value).i;
 		}

@@ -11,15 +11,15 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
-import suite.funp.P1.FunpFramePointer;
-import suite.funp.P1.FunpMemory;
+import suite.funp.P2.FunpFramePointer;
+import suite.funp.P2.FunpMemory;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.util.FunUtil2.Fun2;
 import suite.util.Switch;
 
-public class P3DecomposeOperand {
+public class P4DecomposeOperand {
 
 	private int is = Funp_.integerSize;
 	private Amd64 amd64 = Amd64.me;

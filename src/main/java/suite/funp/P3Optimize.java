@@ -11,9 +11,9 @@ import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
-import suite.funp.P1.FunpData;
-import suite.funp.P1.FunpMemory;
-import suite.funp.P1.FunpWhile;
+import suite.funp.P2.FunpData;
+import suite.funp.P2.FunpMemory;
+import suite.funp.P2.FunpWhile;
 import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
@@ -25,7 +25,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Switch;
 
-public class P2Optimize {
+public class P3Optimize {
 
 	private Inspect inspect = Singleton.me.inspect;
 

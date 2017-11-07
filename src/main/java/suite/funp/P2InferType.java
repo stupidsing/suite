@@ -41,18 +41,18 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
-import suite.funp.P1.FunpAllocStack;
-import suite.funp.P1.FunpAssign;
-import suite.funp.P1.FunpData;
-import suite.funp.P1.FunpInvokeInt;
-import suite.funp.P1.FunpInvokeInt2;
-import suite.funp.P1.FunpInvokeIo;
-import suite.funp.P1.FunpMemory;
-import suite.funp.P1.FunpRoutine;
-import suite.funp.P1.FunpRoutine2;
-import suite.funp.P1.FunpRoutineIo;
-import suite.funp.P1.FunpSaveRegisters;
-import suite.funp.P1.FunpWhile;
+import suite.funp.P2.FunpAllocStack;
+import suite.funp.P2.FunpAssign;
+import suite.funp.P2.FunpData;
+import suite.funp.P2.FunpInvokeInt;
+import suite.funp.P2.FunpInvokeInt2;
+import suite.funp.P2.FunpInvokeIo;
+import suite.funp.P2.FunpMemory;
+import suite.funp.P2.FunpRoutine;
+import suite.funp.P2.FunpRoutine2;
+import suite.funp.P2.FunpRoutineIo;
+import suite.funp.P2.FunpSaveRegisters;
+import suite.funp.P2.FunpWhile;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.node.io.TermOp;
@@ -71,7 +71,7 @@ import suite.util.Util;
  *
  * @author ywsing
  */
-public class P1InferType {
+public class P2InferType {
 
 	private Inspect inspect = Singleton.me.inspect;
 
