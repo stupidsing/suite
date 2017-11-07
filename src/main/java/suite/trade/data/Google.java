@@ -2,15 +2,20 @@ package suite.trade.data;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import suite.adt.pair.Fixie;
+import suite.adt.pair.Fixie_.Fixie3;
 import suite.http.HttpUtil;
+import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
@@ -23,6 +28,42 @@ import suite.util.To;
 public class Google {
 
 	private static ObjectMapper mapper = new ObjectMapper();
+
+	public Fixie3<Map<String, String>, String, List<String[]>> historical(String symbol) {
+		String url = "" //
+				+ "http://finance.google.com/finance/getprices" //
+				+ "?q=" + fromSymbol(symbol) //
+				+ "&x=HKG" //
+				+ "&i=86400" //
+				+ "&p=1Y" //
+				+ "&f=d,c,h,l,o,v" //
+		// + "&ts=" //
+		;
+
+		String[] lines = Singleton.me.storeCache //
+				.http(url) //
+				.collect(As::lines) //
+				.toArray(String.class);
+
+		Map<String, String> properties = new HashMap<>();
+		String[] array;
+		int i = 0;
+
+		properties.put("EXCHANGE", lines[i++]);
+
+		while (i < lines.length && 1 < (array = lines[i].split("=")).length) {
+			properties.put(array[0], array[1]);
+			i++;
+		}
+
+		String header = lines[i++];
+		List<String[]> data = new ArrayList<>();
+
+		while (i < lines.length)
+			data.add(lines[i++].split(","));
+
+		return Fixie.of(properties, header, data);
+	}
 
 	// http://www.jarloo.com/real-time-google-stock-api/
 	public Map<String, Float> quote(Set<String> symbols) {
