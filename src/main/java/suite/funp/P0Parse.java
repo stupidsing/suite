@@ -79,8 +79,6 @@ public class P0Parse {
 					Generalizer g = new Generalizer();
 					Node t0_ = g.generalize(expand.t0);
 					Node t1_ = g.generalize(expand.t1);
-					System.out.println(node);
-					System.out.println(t0_);
 					if (Binder.bind(node, t0_, new Trail()))
 						return expand(t1_);
 				}
