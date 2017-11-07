@@ -301,7 +301,22 @@ public class P2InferType {
 					Erase erase1 = new Erase(scope, env.put(var, new Var(scope, stack, 0, size0)));
 					return FunpAllocStack.of(size1, erase(value), erase1.erase(expr), stack);
 				} else
-					return erase(new Expand(var, value).expand(expr));
+					return erase(new Object() {
+						private Funp expand(Funp n) {
+							return inspect.rewrite(Funp.class, this::expand_, n);
+						}
+
+						private Funp expand_(Funp n) {
+							return new Switch<Funp>(n //
+							).applyIf(FunpDefine.class, f -> f.apply((var_, value_, expr_) -> { // re-defined
+								return String_.equals(var_, var) ? n : null;
+							})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr_) -> {
+								return Read.from2(pairs).isAny((var_, value) -> String_.equals(var_, var)) ? n : null;
+							})).applyIf(FunpVariable.class, f -> f.apply(var_ -> {
+								return String_.equals(var_, var) ? value : n;
+							})).result();
+						}
+					}.expand(expr));
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				List<Pair<Var, Funp>> assigns = new ArrayList<>();
 				Mutable<Integer> stack = Mutable.nil();
@@ -416,33 +431,6 @@ public class P2InferType {
 		private int align(int size0) {
 			int is1 = is - 1;
 			return (size0 + is1) & ~is1;
-		}
-	}
-
-	private class Expand {
-		private String var;
-		private Funp value;
-
-		private Expand(String var, Funp value) {
-			this.var = var;
-			this.value = value;
-		}
-
-		private Funp expand(Funp n) {
-			return inspect.rewrite(Funp.class, this::expand_, n);
-		}
-
-		private Funp expand_(Funp n) {
-			return new Switch<Funp>(n //
-			).applyIf(FunpDefine.class, f -> f.apply((var_, value, expr) -> {
-
-				// variable re-defined
-				return String_.equals(var_, var) ? n : null;
-			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-				return Read.from2(pairs).isAny((var_, value) -> String_.equals(var_, var)) ? n : null;
-			})).applyIf(FunpVariable.class, f -> f.apply(var_ -> {
-				return String_.equals(var_, var) ? value : n;
-			})).result();
 		}
 	}
 
