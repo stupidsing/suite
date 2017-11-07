@@ -434,6 +434,8 @@ public class P1InferType {
 
 				// variable re-defined
 				return String_.equals(var_, var) ? n : null;
+			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+				return Read.from2(pairs).isAny((var_, value) -> String_.equals(var_, var)) ? n : null;
 			})).applyIf(FunpVariable.class, f -> f.apply(var_ -> {
 				return String_.equals(var_, var) ? value : n;
 			})).result();
