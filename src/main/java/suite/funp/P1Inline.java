@@ -43,19 +43,18 @@ public class P1Inline {
 		}.count(IMap.empty(), node);
 
 		return new Object() {
-			private Funp expand(IMap<String, Funp> vars, Funp node0) {
+			private Funp expand(IMap<String, FunpDefine> vars, Funp node0) {
 				return inspect.rewrite(Funp.class, n_ -> {
 					return new Switch<Funp>(n_ //
 					).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-						IMap<String, Funp> vars1 = vars.put(var, f);
+						IMap<String, FunpDefine> vars1 = vars.put(var, f);
 						return 1 < counts.get(n_).get() //
 								? FunpDefine.of(var, expand(vars, value), expand(vars1, expr)) //
 								: expand(vars1, expr);
 					})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-						Funp def0 = vars.get(var);
-						FunpDefine def1;
-						if (def0 instanceof FunpDefine && counts.get(def1 = (FunpDefine) def0).get() == 1)
-							return def1.value;
+						FunpDefine def = vars.get(var);
+						if (def != null && counts.get(def).get() == 1)
+							return def.value;
 						else
 							return n_;
 					})).result();
