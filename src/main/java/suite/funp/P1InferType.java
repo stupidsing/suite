@@ -88,7 +88,7 @@ public class P1InferType {
 	}
 
 	private Funp infer(Funp n0, UnNode<Type> t) {
-		Funp n1 = new Extract().extract(n0);
+		Funp n1 = new ExtractDefineVariables().extract(n0);
 
 		if (unify.unify(t, new Infer(IMap.empty()).infer(n1)))
 			return new Erase(0, IMap.empty()).erase(n1);
@@ -212,7 +212,7 @@ public class P1InferType {
 			throw new RuntimeException("cannot unify types in " + n + " between " + type0 + " and " + type1);
 	}
 
-	private class Extract {
+	private class ExtractDefineVariables {
 		List<Pair<String, Funp>> evs = new ArrayList<>();
 
 		private Funp extract(Funp n0) {
@@ -230,7 +230,7 @@ public class P1InferType {
 					evs.add(Pair.of(ev, n_));
 					return FunpVariable.of(ev);
 				})).applyIf(FunpDefine.class, f -> f.apply((var, value0, expr) -> {
-					return FunpDefine.of(var, new Extract().extract(value0), extract_(expr));
+					return FunpDefine.of(var, new ExtractDefineVariables().extract(value0), extract_(expr));
 				})).result();
 			}, n);
 		}
