@@ -47,7 +47,7 @@ public class Funp_ {
 		public Bytes compile(int offset, String fp) {
 			Node node = Suite.parse(fp);
 			Funp f0 = p0.parse(node);
-			Funp f1 = p1.inline(f0);
+			Funp f1 = Boolean.FALSE ? p1.inline(f0) : f0;
 			Funp f2 = p2.infer(f1);
 			Funp f3 = p3.optimize(f2);
 			List<Instruction> instructions = p4.compile0(f3);

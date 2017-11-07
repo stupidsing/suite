@@ -17,10 +17,6 @@ public class P1Inline {
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp inline(Funp node) {
-		return Boolean.FALSE ? inline_(node) : node;
-	}
-
-	private Funp inline_(Funp node) {
 		Map<FunpDefine, IntMutable> counts = new HashMap<>();
 
 		new Object() {
