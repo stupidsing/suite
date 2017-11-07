@@ -479,10 +479,15 @@ public class P3GenerateCode {
 				Insn setnInsn = setnInsnByOp.get(operator);
 				Insn shInsn = shInsnByOp.get(operator);
 				OpMem op = deOp.decomposeOpMem(n, 0, is);
-				OpReg opResult = null;
+				Operand opResult = null;
 
 				if (opResult == null && op != null)
 					em.lea(opResult = isOutSpec ? pop0 : rs.get(ps), op);
+
+				if (opResult == null && operator == TermOp.OR____) {
+					compileLoad(lhs);
+					opResult = compileOp(rhs);
+				}
 
 				if (opResult == null && operator == TermOp.DIVIDE && numRhs != null && Integer.bitCount(numRhs) == 1)
 					em.shiftImm(Insn.SHR, opResult = compileLoad(rhs), Integer.numberOfTrailingZeros(numRhs));
