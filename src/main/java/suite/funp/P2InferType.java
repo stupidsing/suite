@@ -204,11 +204,6 @@ public class P2InferType {
 		}
 	}
 
-	private void unify(Funp n, UnNode<Type> type0, UnNode<Type> type1) {
-		if (!unify.unify(type0, type1))
-			throw new RuntimeException("cannot unify types in " + n + " between " + type0 + " and " + type1);
-	}
-
 	private class Erase {
 		private int scope;
 		private IMap<String, Var> env;
@@ -431,6 +426,11 @@ public class P2InferType {
 			is = getTypeSize(tp);
 			os = getTypeSize(tr);
 		}
+	}
+
+	private void unify(Funp n, UnNode<Type> type0, UnNode<Type> type1) {
+		if (!unify.unify(type0, type1))
+			throw new RuntimeException("cannot unify types in " + n + " between " + type0 + " and " + type1);
 	}
 
 	private Type typeOf(Funp n) {
