@@ -64,7 +64,6 @@ import suite.util.AutoObject;
 import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.Switch;
-import suite.util.Util;
 
 /**
  * Hindley-Milner type inference.
@@ -87,13 +86,11 @@ public class P2InferType {
 		return infer(n, unify.newRef());
 	}
 
-	private Funp infer(Funp n0, UnNode<Type> t) {
-		Funp n1 = new ExtractDefineVariables().extract(n0);
-
-		if (unify.unify(t, new Infer(IMap.empty()).infer(n1)))
-			return new Erase(0, IMap.empty()).erase(n1);
+	private Funp infer(Funp n, UnNode<Type> t) {
+		if (unify.unify(t, new Infer(IMap.empty()).infer(n)))
+			return new Erase(0, IMap.empty()).erase(n);
 		else
-			throw new RuntimeException("cannot infer type for " + n0);
+			throw new RuntimeException("cannot infer type for " + n);
 	}
 
 	private class Infer {
@@ -210,34 +207,6 @@ public class P2InferType {
 	private void unify(Funp n, UnNode<Type> type0, UnNode<Type> type1) {
 		if (!unify.unify(type0, type1))
 			throw new RuntimeException("cannot unify types in " + n + " between " + type0 + " and " + type1);
-	}
-
-	private class ExtractDefineVariables {
-		List<Pair<String, Funp>> evs = new ArrayList<>();
-
-		private Funp extract(Funp n0) {
-			Funp n1 = extract_(n0);
-			for (Pair<String, Funp> pair : evs)
-				n1 = FunpDefine.of(pair.t0, pair.t1, n1);
-			return n1;
-		}
-
-		private Funp extract_(Funp n) {
-			return inspect.rewrite(Funp.class, n_ -> {
-				return new Switch<Funp>(n_ //
-				).applyIf(FunpData.class, f -> f.apply(pairs -> {
-					String ev = "ev" + Util.temp();
-					evs.add(Pair.of(ev, n_));
-					return FunpVariable.of(ev);
-				})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-					return FunpDefine.of(var, new ExtractDefineVariables().extract(value), extract_(expr));
-				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-					return FunpDefineRec.of(
-							Read.from2(pairs).mapValue(value -> new ExtractDefineVariables().extract(value)).toList(),
-							extract_(expr));
-				})).result();
-			}, n);
-		}
 	}
 
 	private class Erase {
