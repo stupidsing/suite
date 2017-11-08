@@ -258,23 +258,18 @@ public class P2InferType {
 
 			return new Switch<Funp>(n //
 			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-				if (Boolean.TRUE || !(lambda instanceof FunpLambda)) {
-					LambdaType lt = lambdaType(lambda);
-					Funp lambda1 = erase(lambda);
-					int size = getTypeSize(typeOf(value));
-					Funp invoke;
-					if (lt.os == ps)
-						invoke = allocStack(size, value, FunpInvokeInt.of(lambda1), Mutable.nil());
-					else if (lt.os == ps * 2)
-						invoke = allocStack(size, value, FunpInvokeInt2.of(lambda1), Mutable.nil());
-					else
-						invoke = allocStack(lt.os, null, allocStack(size, value, FunpInvokeIo.of(lambda1), Mutable.nil()),
-								Mutable.nil());
-					return FunpSaveRegisters.of(invoke);
-				} else {
-					FunpLambda lambda1 = (FunpLambda) lambda;
-					return erase(FunpDefine.of(lambda1.var, value, lambda1.expr));
-				}
+				LambdaType lt = lambdaType(lambda);
+				Funp lambda1 = erase(lambda);
+				int size = getTypeSize(typeOf(value));
+				Funp invoke;
+				if (lt.os == ps)
+					invoke = allocStack(size, value, FunpInvokeInt.of(lambda1), Mutable.nil());
+				else if (lt.os == ps * 2)
+					invoke = allocStack(size, value, FunpInvokeInt2.of(lambda1), Mutable.nil());
+				else
+					invoke = allocStack(lt.os, null, allocStack(size, value, FunpInvokeIo.of(lambda1), Mutable.nil()),
+							Mutable.nil());
+				return FunpSaveRegisters.of(invoke);
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				UnNode<Type> te = unify.newRef();
 				unify(n, type0, TypeArray.of(te));
