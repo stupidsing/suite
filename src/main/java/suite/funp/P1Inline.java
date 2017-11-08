@@ -1,17 +1,21 @@
 package suite.funp;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.primitive.IntMutable;
+import suite.streamlet.Read;
 import suite.util.Switch;
 
 public class P1Inline {
@@ -28,6 +32,17 @@ public class P1Inline {
 							counts.put(f, IntMutable.of(0));
 							count(vars, value);
 							count(vars.put(var, f), expr);
+							return null;
+						})) //
+						.applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+							IMap<String, FunpDefine> vars1 = vars;
+							for (Pair<String, Funp> pair : pairs)
+								vars1 = vars1.remove(pair.t0);
+							count(vars1, expr);
+							return null;
+						})) //
+						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+							count(vars.remove(var), expr);
 							return null;
 						})) //
 						.applyIf(FunpVariable.class, f -> f.apply(var -> {
@@ -48,6 +63,17 @@ public class P1Inline {
 							return 1 < counts.get(n_).get() //
 									? FunpDefine.of(var, expand(vars, value), expand(vars1, expr)) //
 									: expand(vars1, expr);
+						})) //
+						.applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
+							IMap<String, FunpDefine> vars1 = vars;
+							for (Pair<String, Funp> pair : pairs0)
+								vars1 = vars1.remove(pair.t0);
+							IMap<String, FunpDefine> vars2 = vars1;
+							List<Pair<String, Funp>> pairs1 = Read.from2(pairs0).mapValue(c -> expand(vars2, c)).toList();
+							return FunpDefineRec.of(pairs1, expand(vars1, expr));
+						})) //
+						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+							return FunpLambda.of(var, expand(vars.remove(var), expr));
 						})) //
 						.applyIf(FunpVariable.class, f -> f.apply(var -> {
 							FunpDefine def = vars.get(var);
