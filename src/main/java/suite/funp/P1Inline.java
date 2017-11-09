@@ -1,7 +1,6 @@
 package suite.funp;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
@@ -23,72 +22,79 @@ public class P1Inline {
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp inline(Funp node0) {
-		Map<FunpDefine, IntMutable> counts = new HashMap<>();
+		Map<FunpVariable, Funp> defByVariables = new HashMap<>();
 
 		new Object() {
-			private Funp count(IMap<String, FunpDefine> vars, Funp node) {
-				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
+			private Funp associate(IMap<String, Funp> vars, Funp node) {
+				return inspect.rewrite(Funp.class, node_ -> new Switch<Funp>(node_) //
 						.applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-							counts.put(f, IntMutable.of(0));
-							count(vars, value);
-							count(vars.put(var, f), expr);
-							return null;
+							associate(vars, value);
+							associate(vars.put(var, f), expr);
+							return node_;
 						})) //
 						.applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-							IMap<String, FunpDefine> vars1 = vars;
+							IMap<String, Funp> vars1 = vars;
 							for (Pair<String, Funp> pair : pairs)
-								vars1 = vars1.remove(pair.t0);
-							count(vars1, expr);
-							return null;
+								vars1 = vars1.put(pair.t0, f);
+							for (Pair<String, Funp> pair : pairs)
+								associate(vars1, pair.t1);
+							associate(vars1, expr);
+							return node_;
 						})) //
 						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-							count(vars.remove(var), expr);
-							return null;
+							associate(vars.put(var, f), expr);
+							return node_;
 						})) //
 						.applyIf(FunpVariable.class, f -> f.apply(var -> {
-							FunpDefine def = vars.get(((FunpVariable) n_).var);
-							if (def != null)
-								counts.get(def).increment();
-							return null;
+							defByVariables.put(f, vars.get(var));
+							return node_;
 						})) //
 						.result(), node);
 			}
-		}.count(IMap.empty(), node0);
+		}.associate(IMap.empty(), node0);
+
+		Map<Funp, IntMutable> countByDefs = new HashMap<>();
+
+		new Object() {
+			private void count(Funp node) {
+				inspect.rewrite(Funp.class, node_ -> {
+					if (node_ instanceof FunpVariable)
+						countByDefs.computeIfAbsent(defByVariables.get((FunpVariable) node_), v -> IntMutable.of(0)).increment();
+					return null;
+				}, node);
+			}
+		}.count(node0);
+
+		Map<Funp, FunpDefine> defines = Read //
+				.from2(defByVariables) //
+				.values() //
+				.filter(def -> def instanceof FunpDefine && countByDefs.get(def).get() <= 1) //
+				.map2(def -> (FunpDefine) def) //
+				.toMap();
+
+		Map<FunpVariable, FunpDefine> expands = Read //
+				.from2(defByVariables) //
+				.mapValue(defines::get) //
+				.filterValue(def -> def != null) //
+				.toMap();
 
 		Funp node1 = new Object() {
-			private Funp expand(IMap<String, FunpDefine> vars, Funp node) {
-				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
-						.applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-							IMap<String, FunpDefine> vars1 = vars.put(var, f);
-							return 1 < counts.get(n_).get() //
-									? FunpDefine.of(var, expand(vars, value), expand(vars1, expr)) //
-									: expand(vars1, expr);
-						})) //
-						.applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
-							IMap<String, FunpDefine> vars1 = vars;
-							for (Pair<String, Funp> pair : pairs0)
-								vars1 = vars1.remove(pair.t0);
-							IMap<String, FunpDefine> vars2 = vars1;
-							List<Pair<String, Funp>> pairs1 = Read.from2(pairs0).mapValue(c -> expand(vars2, c)).toList();
-							return FunpDefineRec.of(pairs1, expand(vars1, expr));
-						})) //
-						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-							return FunpLambda.of(var, expand(vars.remove(var), expr));
-						})) //
-						.applyIf(FunpVariable.class, f -> f.apply(var -> {
-							FunpDefine def = vars.get(var);
-							if (def != null && counts.get(def).get() == 1)
-								return def.value;
-							else
-								return n_;
-						})) //
-						.result(), node);
+			private Funp expand(Funp node) {
+				return inspect.rewrite(Funp.class, node_ -> {
+					FunpDefine define;
+					if ((define = defines.get(node_)) != null)
+						return expand(define.expr);
+					else if ((define = expands.get(node_)) != null)
+						return expand(define.value);
+					else
+						return null;
+				}, node);
 			}
-		}.expand(IMap.empty(), node0);
+		}.expand(node0);
 
 		return new Object() {
 			private Funp expand(Funp node) {
-				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
+				return inspect.rewrite(Funp.class, node_ -> new Switch<Funp>(node_) //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 							if (lambda instanceof FunpLambda) {
 								FunpLambda lambda1 = (FunpLambda) lambda;
