@@ -41,7 +41,7 @@ public class ElfTest {
 				+ "		-- length in EAX\n" //
 				+ "	}\n" //
 				+ ") >>\n" //
-				+ "iterate n 0 (0 < n) (\n" //
+				+ "iterate n 1 (n != 0) (\n" //
 				+ "	let buffer := (size * array byte _) >>\n" //
 				+ "	let nBytesRead := (address buffer, size | linux-read) >> (\n" //
 				+ "		(address buffer, nBytesRead | linux-write);\n" //
@@ -58,7 +58,7 @@ public class ElfTest {
 		return elf.exec(input, offset -> Funp_.main().compile(offset, "" //
 				+ "asm () {\n" //
 				+ "	MOV (EBP, ESP);\n" //
-				+ "} / ((\n" //
+				+ "}; ((\n" //
 				+ program + "\n" //
 				+ ") | (i => asm (EAX = 1; EBX = i;) { INT (-128); })\n" //
 				+ ")\n" //
