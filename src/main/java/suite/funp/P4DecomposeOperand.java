@@ -25,6 +25,8 @@ public class P4DecomposeOperand {
 	private int is = Funp_.integerSize;
 	private Amd64 amd64 = Amd64.me;
 
+	private boolean isUseEbp = true; // or use ESP directly
+
 	public Operand decomposeOperand(int fd, Funp node) {
 		return new Switch<Operand>(node //
 		).applyIf(FunpDontCare.class, f -> {
@@ -70,7 +72,7 @@ public class P4DecomposeOperand {
 				FunpTree2 tree;
 				Funp r;
 				for (Funp n1 : decompose.apply(TermOp.MULT__, n0))
-					if (n1 instanceof FunpFramePointer && reg == null)
+					if (n1 instanceof FunpFramePointer && isUseEbp && reg == null)
 						reg = amd64.ebp;
 					else if (n1 instanceof FunpNumber)
 						scale *= ((FunpNumber) n1).i.get();
@@ -91,7 +93,7 @@ public class P4DecomposeOperand {
 
 			private DecomposePlus(Funp n0) {
 				for (Funp n1 : decompose.apply(TermOp.PLUS__, n0))
-					if (Boolean.FALSE && n1 instanceof FunpFramePointer) {
+					if (!isUseEbp && n1 instanceof FunpFramePointer) {
 						addReg(amd64.esp, 1);
 						disp -= fd;
 					} else {
