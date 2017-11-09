@@ -150,9 +150,20 @@ public class P2InferType {
 					unify(n, te, infer(element));
 				return TypeArray.of(te, elements.size());
 			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
-				for (Pair<OpReg, Funp> assign : assigns)
-					if (assign.t0.size != getTypeSize(infer(assign.t1)))
+				for (Pair<OpReg, Funp> assign : assigns) {
+					UnNode<Type> tp = infer(assign.t1);
+					if (tp.final_() instanceof Type)
+						if (assign.t0.size == getTypeSize(tp))
+							;
+						else
+							throw new RuntimeException();
+					else if (assign.t0.size == 1)
+						unify(n, typeByte, tp);
+					else if (assign.t0.size == is)
+						unify(n, typeNumber, tp);
+					else
 						throw new RuntimeException();
+				}
 				return typeNumber;
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), TypeReference.of(infer(value)));
@@ -463,7 +474,7 @@ public class P2InferType {
 
 	private void unify(Funp n, UnNode<Type> type0, UnNode<Type> type1) {
 		if (!unify.unify(type0, type1))
-			throw new RuntimeException("cannot unify types in " + n + " between " + type0 + " and " + type1);
+			throw new RuntimeException("cannot unify types in " + n + " between " + type0.final_() + " and " + type1.final_());
 	}
 
 	private Type typeOf(Funp n) {
