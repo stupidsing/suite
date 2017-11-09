@@ -321,7 +321,7 @@ public class Inspect {
 	 *         function.
 	 */
 	public <T> T rewrite(Class<T> baseClass, Iterate<T> fun, T t0) {
-		class Rewrite {
+		return new Object() {
 			private T rewrite(T t0) {
 				return Rethrow.ex(() -> {
 					T t1 = fun.apply(t0);
@@ -342,9 +342,7 @@ public class Inspect {
 				} else
 					return t0;
 			}
-		}
-
-		return new Rewrite().rewrite(t0);
+		}.rewrite(t0);
 	}
 
 	private <T> T mapFields(T t0, Fun<Object, Object> mapper) throws ReflectiveOperationException {
