@@ -258,13 +258,12 @@ public class P4GenerateCode {
 					}
 					CompileOut out = c1.compile(expr);
 					if (size == is)
-						em.emit(amd64.instruction(Insn.POP, rs.mask(out.op0, out.op1).get(size)));
+						em.emit(amd64.instruction(Insn.POP, rs.mask(pop0, pop1, out.op0, out.op1).get(size)));
 					else
 						em.emit(amd64.instruction(Insn.ADD, esp, imm));
 					return out;
 				})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
 					Amd64Parser p = new Amd64Parser();
-					Operand reg = isOutSpec ? rs.get(pop0) : rs.get(is);
 					new Object() {
 						private void assign(Compile1 c1, int i) {
 							if (i < assigns.size()) {
@@ -274,13 +273,12 @@ public class P4GenerateCode {
 									c2.compileOpSpec(assign.t1, op);
 									assign(c2.mask(op), i + 1);
 								}, op);
-							} else {
-								Read.from(asm).map(p::parse).sink(em::emit);
-								em.mov(reg, eax);
 							}
 						}
 					}.assign(this, 0);
-					return postOp.apply(reg);
+
+					Read.from(asm).map(p::parse).sink(em::emit);
+					return postOp.apply(eax);
 				})).applyIf(FunpAssign.class, f -> f.apply((memory, value, expr) -> {
 					compileAssign(value, memory);
 					return compile(expr);
