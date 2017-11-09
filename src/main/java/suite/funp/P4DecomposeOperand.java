@@ -24,16 +24,16 @@ public class P4DecomposeOperand {
 	private int is = Funp_.integerSize;
 	private Amd64 amd64 = Amd64.me;
 
-	public Operand decomposeOperand(Funp node) {
+	public Operand decomposeOperand(int fd, Funp node) {
 		return new Switch<Operand>(node //
 		).applyIf(FunpNumber.class, f -> {
 			return amd64.imm(f.i.get(), is);
 		}).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
-			return decomposeOpMem(pointer, start, end - start);
+			return decomposeOpMem(fd, pointer, start, end - start);
 		})).result();
 	}
 
-	public OpMem decomposeOpMem(Funp n0, int disp0, int size) {
+	public OpMem decomposeOpMem(int fd, Funp n0, int disp0, int size) {
 		class Decompose {
 			private Operator operator;
 			private List<Funp> nodes = new ArrayList<>();
@@ -87,25 +87,33 @@ public class P4DecomposeOperand {
 			private boolean ok = is1248(size);
 
 			private DecomposePlus(Funp n0) {
-				for (Funp n1 : decompose.apply(TermOp.PLUS__, n0)) {
-					DecomposeMult dec = new DecomposeMult();
-					dec.decompose(n1);
-					if (dec.mults.isEmpty()) {
-						OpReg reg_ = dec.reg;
-						long scale_ = dec.scale;
-						if (reg_ != null)
-							if (scale_ == 1 && baseReg == null)
-								baseReg = reg_;
-							else if (is1248(scale_) && indexReg == null) {
-								indexReg = reg_;
-								scale = (int) scale_;
-							} else
-								ok = false;
-						else
-							disp += scale_;
-					} else
-						ok = false;
-				}
+				for (Funp n1 : decompose.apply(TermOp.PLUS__, n0))
+					if (Boolean.FALSE && n1 instanceof FunpFramePointer) {
+						addReg(amd64.esp, 1);
+						disp -= fd;
+					} else {
+						DecomposeMult dec = new DecomposeMult();
+						dec.decompose(n1);
+						if (dec.mults.isEmpty()) {
+							OpReg reg_ = dec.reg;
+							long scale_ = dec.scale;
+							if (reg_ != null)
+								addReg(reg_, scale_);
+							else
+								disp += scale_;
+						} else
+							ok = false;
+					}
+			}
+
+			private void addReg(OpReg reg_, long scale_) {
+				if (scale_ == 1 && baseReg == null)
+					baseReg = reg_;
+				else if (is1248(scale_) && indexReg == null) {
+					indexReg = reg_;
+					scale = (int) scale_;
+				} else
+					ok = false;
 			}
 
 			private OpMem op() {

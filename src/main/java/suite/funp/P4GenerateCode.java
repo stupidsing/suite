@@ -148,7 +148,7 @@ public class P4GenerateCode {
 				Fun<Operand, CompileOut> postOp = op -> {
 					Operand old = op;
 					if (type == CompileOut_.ASSIGN) {
-						Operand opt = deOp.decomposeOperand(target);
+						Operand opt = deOp.decomposeOperand(fd, target);
 						opt = opt != null ? opt : amd64.mem(mask(op).compileOpReg(target.pointer), target.start, is);
 						if (op instanceof OpMem)
 							em.mov(op = rs.mask(opt).get(old.size), old);
@@ -168,8 +168,8 @@ public class P4GenerateCode {
 					Operand old0 = op0;
 					Operand old1 = op1;
 					if (type == CompileOut_.ASSIGN) {
-						OpMem opt0 = deOp.decomposeOpMem(target.pointer, target.start, ps);
-						OpMem opt1 = deOp.decomposeOpMem(target.pointer, target.start + ps, ps);
+						OpMem opt0 = deOp.decomposeOpMem(fd, target.pointer, target.start, ps);
+						OpMem opt1 = deOp.decomposeOpMem(fd, target.pointer, target.start + ps, ps);
 						if (opt0 == null || opt1 == null) {
 							OpReg r = mask(op0, op1).compileOpReg(target.pointer);
 							opt0 = amd64.mem(r, target.start, ps);
@@ -250,7 +250,7 @@ public class P4GenerateCode {
 
 					stack.update(fd1);
 
-					if ((op = deOp.decomposeOperand(value)) != null && op.size == is)
+					if ((op = deOp.decomposeOperand(fd, value)) != null && op.size == is)
 						em.emit(amd64.instruction(Insn.PUSH, value != null ? op : eax));
 					else {
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
@@ -385,7 +385,7 @@ public class P4GenerateCode {
 					if (type == CompileOut_.ASSIGN)
 						if (size == target.size())
 							return postAssign.apply((c1, target) -> {
-								Operand op_ = deOp.decomposeOperand(target);
+								Operand op_ = deOp.decomposeOperand(fd, target);
 								if (op_ != null)
 									c1.compileInstruction(Insn.MOV, op_, n);
 								else {
@@ -397,13 +397,13 @@ public class P4GenerateCode {
 						else
 							throw new RuntimeException();
 					else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC)
-						if ((op0 = deOp.decomposeOpMem(pointer, start, size)) != null)
+						if ((op0 = deOp.decomposeOpMem(fd, pointer, start, size)) != null)
 							return postOp.apply(op0);
 						else
 							return postOp.apply(amd64.mem(compileOpReg(pointer), start, size));
 					else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG || type == CompileOut_.TWOOPSPEC)
-						if ((op0 = deOp.decomposeOpMem(pointer, start, ps)) != null
-								&& (op1 = deOp.decomposeOpMem(pointer, start + ps, ps)) != null)
+						if ((op0 = deOp.decomposeOpMem(fd, pointer, start, ps)) != null
+								&& (op1 = deOp.decomposeOpMem(fd, pointer, start + ps, ps)) != null)
 							return postTwoOp.apply(op0, op1);
 						else {
 							OpReg r = compileOpReg(pointer);
@@ -477,7 +477,7 @@ public class P4GenerateCode {
 				Insn setInsn = setInsnByOp.get(operator);
 				Insn setnInsn = setnInsnByOp.get(operator);
 				Insn shInsn = shInsnByOp.get(operator);
-				OpMem op = deOp.decomposeOpMem(n, 0, is);
+				OpMem op = deOp.decomposeOpMem(fd, n, 0, is);
 				Operand opResult = null;
 
 				if (opResult == null && op != null)
@@ -530,8 +530,8 @@ public class P4GenerateCode {
 			}
 
 			private Pair<Funp, OpReg> compileCommutativeTree(Insn insn, Assoc assoc, Funp lhs, Funp rhs) {
-				Operand opLhs = deOp.decomposeOperand(lhs);
-				Operand opRhs = deOp.decomposeOperand(rhs);
+				Operand opLhs = deOp.decomposeOperand(fd, lhs);
+				Operand opRhs = deOp.decomposeOperand(fd, rhs);
 				OpReg opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
 				OpReg opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
 
@@ -580,7 +580,7 @@ public class P4GenerateCode {
 			}
 
 			private void compileInstruction(Insn insn, Operand op0, Funp f1) {
-				Operand op1 = deOp.decomposeOperand(f1);
+				Operand op1 = deOp.decomposeOperand(fd, f1);
 				compileInstruction(insn, op0, op1 != null ? op1 : mask(op0).compileOp(f1));
 			}
 
