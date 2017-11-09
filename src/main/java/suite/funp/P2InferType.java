@@ -269,12 +269,11 @@ public class P2InferType {
 				int size = getTypeSize(typeOf(value));
 				Funp invoke;
 				if (lt.os == ps)
-					invoke = allocStack(size, value, FunpInvokeInt.of(lambda1), Mutable.nil());
+					invoke = allocStack(size, value, FunpInvokeInt.of(lambda1));
 				else if (lt.os == ps * 2)
-					invoke = allocStack(size, value, FunpInvokeInt2.of(lambda1), Mutable.nil());
+					invoke = allocStack(size, value, FunpInvokeInt2.of(lambda1));
 				else
-					invoke = allocStack(lt.os, null, allocStack(size, value, FunpInvokeIo.of(lambda1), Mutable.nil()),
-							Mutable.nil());
+					invoke = allocStack(lt.os, FunpDontCare.of(), allocStack(size, value, FunpInvokeIo.of(lambda1)));
 				return FunpSaveRegisters.of(invoke);
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				UnNode<Type> te = unify.newRef();
@@ -338,7 +337,7 @@ public class P2InferType {
 				for (Pair<Var, Funp> pair : assigns)
 					expr = FunpAssign.of(erase1.getVariable(pair.t0), erase1.erase(pair.t1), expr);
 
-				return FunpAllocStack.of(align(offset), null, expr_, stack);
+				return FunpAllocStack.of(align(offset), FunpDontCare.of(), expr_, stack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
@@ -418,6 +417,10 @@ public class P2InferType {
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(env.get(var));
 			})).result();
+		}
+
+		private FunpAllocStack allocStack(int size0, Funp value, Funp expr) {
+			return allocStack(size0, value, expr, Mutable.nil());
 		}
 
 		private FunpAllocStack allocStack(int size0, Funp value, Funp expr, Mutable<Integer> stack) {

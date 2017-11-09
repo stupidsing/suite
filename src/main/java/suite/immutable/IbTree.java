@@ -142,7 +142,7 @@ public class IbTree<T> implements ITree<T> {
 			if (t0 == null)
 				return t;
 			else
-				throw new RuntimeException("duplicate key");
+				throw new RuntimeException("duplicate key " + t);
 		});
 	}
 

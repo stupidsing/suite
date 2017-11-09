@@ -251,7 +251,7 @@ public class P4GenerateCode {
 					stack.update(fd1);
 
 					if ((op = deOp.decomposeOperand(fd, value)) != null && op.size == is)
-						em.emit(amd64.instruction(Insn.PUSH, value != null ? op : eax));
+						em.emit(amd64.instruction(Insn.PUSH, op));
 					else {
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
 						c1.compileAssign(value, frame(fd1, fd));

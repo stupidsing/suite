@@ -10,7 +10,7 @@ import suite.util.Object_;
 public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
 	private static IMap<?, ?> empty = new IMap<Integer, Object>();
-	private ITree<Pair<K, V>> tree = new IbTree<>(Pair.<K, V> comparatorByFirst());
+	private ITree<Pair<K, V>> tree = new IbTree<>(Pair.comparatorByFirst());
 
 	public static <K extends Comparable<K>, V> IMap<K, V> empty() {
 		@SuppressWarnings("unchecked")

@@ -8,6 +8,7 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
@@ -26,7 +27,9 @@ public class P4DecomposeOperand {
 
 	public Operand decomposeOperand(int fd, Funp node) {
 		return new Switch<Operand>(node //
-		).applyIf(FunpNumber.class, f -> {
+		).applyIf(FunpDontCare.class, f -> {
+			return amd64.eax;
+		}).applyIf(FunpNumber.class, f -> {
 			return amd64.imm(f.i.get(), is);
 		}).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 			return decomposeOpMem(fd, pointer, start, end - start);
