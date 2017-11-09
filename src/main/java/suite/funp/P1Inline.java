@@ -64,8 +64,7 @@ public class P1Inline {
 
 		inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
 				.applyIf(FunpReference.class, f -> f.apply(expr -> {
-					if (expr instanceof FunpVariable)
-						countByDefs.computeIfAbsent(defByVariables.get(expr), v -> IntMutable.of(0)).update(9999);
+					countByDefs.computeIfAbsent(defByVariables.get(expr), v -> IntMutable.of(0)).update(9999);
 					return null;
 				})) //
 				.applyIf(FunpVariable.class, f -> f.apply(var -> {
@@ -88,34 +87,34 @@ public class P1Inline {
 				.toMap();
 
 		return new Object() {
-			private Funp expand(Funp node_) {
+			private Funp inline(Funp node_) {
 				return inspect.rewrite(Funp.class, n_ -> {
 					FunpDefine define;
 					if ((define = defines.get(n_)) != null)
-						return expand(define.expr);
+						return inline(define.expr);
 					else if ((define = expands.get(n_)) != null)
-						return expand(define.value);
+						return inline(define.value);
 					else
 						return null;
 				}, node_);
 			}
-		}.expand(node);
+		}.inline(node);
 	}
 
 	private Funp inlineLambda(Funp node) {
 		return new Object() {
-			private Funp expand(Funp node_) {
+			private Funp inline(Funp node_) {
 				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 							if (lambda instanceof FunpLambda) {
 								FunpLambda lambda1 = (FunpLambda) lambda;
-								return FunpDefine.of(lambda1.var, expand(value), expand(lambda1.expr));
+								return FunpDefine.of(lambda1.var, inline(value), inline(lambda1.expr));
 							} else
 								return null;
 						})) //
 						.result(), node_);
 			}
-		}.expand(node);
+		}.inline(node);
 	}
 
 }
