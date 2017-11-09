@@ -36,20 +36,20 @@ public class P1Inline {
 				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
 						.applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
 							associate(vars, value);
-							associate(vars.put(var, f), expr);
+							associate(vars.replace(var, f), expr);
 							return n_;
 						})) //
 						.applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 							IMap<String, Funp> vars1 = vars;
 							for (Pair<String, Funp> pair : pairs)
-								vars1 = vars1.put(pair.t0, f);
+								vars1 = vars1.replace(pair.t0, f);
 							for (Pair<String, Funp> pair : pairs)
 								associate(vars1, pair.t1);
 							associate(vars1, expr);
 							return n_;
 						})) //
 						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-							associate(vars.put(var, f), expr);
+							associate(vars.replace(var, f), expr);
 							return n_;
 						})) //
 						.applyIf(FunpVariable.class, f -> f.apply(var -> {

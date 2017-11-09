@@ -178,7 +178,7 @@ public class P2InferType {
 				return typeByte;
 			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
 				UnNode<Type> tv = value != null ? infer(value) : unify.newRef();
-				return new Infer(env.put(var, tv)).infer(expr);
+				return new Infer(env.replace(var, tv)).infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				UnNode<Type> t = unify.newRef();
 				unify(n, TypeReference.of(t), infer(pointer));
@@ -196,7 +196,7 @@ public class P2InferType {
 						.uniqueResult().t1;
 			})).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> t = unify.newRef();
-				unify(n, t, new Infer(env.put(var, t)).infer(expr));
+				unify(n, t, new Infer(env.replace(var, t)).infer(expr));
 				return t;
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				UnNode<Type> t;
@@ -210,14 +210,14 @@ public class P2InferType {
 				return te;
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 				UnNode<Type> tv = unify.newRef();
-				Infer infer1 = new Infer(env.put(var, tv));
+				Infer infer1 = new Infer(env.replace(var, tv));
 				unify(n, tv, infer(init));
 				unify(n, typeBoolean, infer1.infer(cond));
 				unify(n, tv, infer1.infer(iterate));
 				return tv;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> tv = unify.newRef();
-				return TypeLambda.of(tv, new Infer(env.put(var, tv)).infer(expr));
+				return TypeLambda.of(tv, new Infer(env.replace(var, tv)).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
 			}).applyIf(FunpPolyType.class, f -> f.apply(expr -> {
@@ -298,7 +298,7 @@ public class P2InferType {
 					Mutable<Integer> stack = Mutable.nil();
 					int size0 = getTypeSize(typeOf(value));
 					int size1 = align(size0);
-					Erase erase1 = new Erase(scope, env.put(var, new Var(scope, stack, 0, size0)));
+					Erase erase1 = new Erase(scope, env.replace(var, new Var(scope, stack, 0, size0)));
 					return FunpAllocStack.of(size1, erase(value), erase1.erase(expr), stack);
 				} else
 					return erase(new Object() {
@@ -327,7 +327,7 @@ public class P2InferType {
 					int offset0 = offset;
 					Funp value = pair.t1;
 					Var var = new Var(scope, stack, offset0, offset += getTypeSize(typeOf(value)));
-					env1 = env1.put(pair.t0, var);
+					env1 = env1.replace(pair.t0, var);
 					assigns.add(Pair.of(var, value));
 				}
 
@@ -364,7 +364,7 @@ public class P2InferType {
 				Mutable<Integer> stack = Mutable.nil();
 				int size = getTypeSize(typeOf(init));
 				Var var_ = new Var(scope, stack, 0, size);
-				Erase erase1 = new Erase(scope, env.put(var, var_));
+				Erase erase1 = new Erase(scope, env.replace(var, var_));
 				FunpMemory m = getVariable(var_);
 				FunpWhile while_ = FunpWhile.of(erase1.erase(cond), FunpAssign.of(m, erase1.erase(iterate), FunpDontCare.of()), m);
 				return allocStack(size, init, while_, stack);
@@ -372,7 +372,7 @@ public class P2InferType {
 				int b = ps * 2; // return address and EBP
 				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n);
-				Funp expr1 = new Erase(scope1, env.put(var, new Var(scope1, Mutable.of(0), b, b + lt.is))).erase(expr);
+				Funp expr1 = new Erase(scope1, env.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is))).erase(expr);
 				if (lt.os == ps)
 					return FunpRoutine.of(expr1);
 				else if (lt.os == ps * 2)

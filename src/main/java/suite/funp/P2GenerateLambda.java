@@ -109,7 +109,7 @@ public class P2GenerateLambda {
 				throw new RuntimeException();
 			}).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
 				int fs1 = fs + 1;
-				Thunk thunk = compile(fs1, env.put(var, fs1), expr);
+				Thunk thunk = compile(fs1, env.replace(var, fs1), expr);
 				return rt -> {
 					Mutable<Fun_> mut = Mutable.nil();
 					Fun_ fun = p -> thunk.apply(new Rt(rt, mut.get()));
@@ -127,7 +127,7 @@ public class P2GenerateLambda {
 				return rt -> ((Vec) array.apply(rt)).values[i(rt, index1)];
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 				int fs1 = fs + 1;
-				IMap<String, Integer> env1 = env.put(var, fs1);
+				IMap<String, Integer> env1 = env.replace(var, fs1);
 				Thunk init_ = compile_(init);
 				Thunk cond_ = compile(fs1, env1, cond);
 				Thunk iterate_ = compile(fs1, env1, iterate);
@@ -139,7 +139,7 @@ public class P2GenerateLambda {
 				};
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				int fs1 = fs + 1;
-				Thunk thunk = compile(fs1, env.put(var, fs1), expr);
+				Thunk thunk = compile(fs1, env.replace(var, fs1), expr);
 				return rt -> (Fun_) p -> thunk.apply(new Rt(rt, p));
 			})).applyIf(FunpNumber.class, f -> f.apply(i -> {
 				Int i1 = new Int(i.get());

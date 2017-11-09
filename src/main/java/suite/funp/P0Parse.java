@@ -67,24 +67,24 @@ public class P0Parse {
 
 	private Node expandMacros(Node node0) {
 		class Expand {
-			private IMap<Prototype, Pair<Node, Node>> macros;
+			private IMap<Prototype, Node[]> macros;
 
-			private Expand(IMap<Prototype, Pair<Node, Node>> macros) {
+			private Expand(IMap<Prototype, Node[]> macros) {
 				this.macros = macros;
 			}
 
 			private Node expand(Node node) {
 				Tree tree;
 				Node[] m;
-				Pair<Node, Node> expand;
+				Node[] ht;
 
 				if ((m = Suite.match("expand .0 := .1 >> .2").apply(node)) != null) {
 					Node head = m[0];
-					return new Expand(macros.put(Prototype.of(head), Pair.of(head, m[1]))).expand(m[2]);
-				} else if ((expand = macros.get(Prototype.of(node))) != null) {
+					return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1] })).expand(m[2]);
+				} else if ((ht = macros.get(Prototype.of(node))) != null) {
 					Generalizer g = new Generalizer();
-					Node t0_ = g.generalize(expand.t0);
-					Node t1_ = g.generalize(expand.t1);
+					Node t0_ = g.generalize(ht[0]);
+					Node t1_ = g.generalize(ht[1]);
 					if (Binder.bind(node, t0_, new Trail()))
 						return expand(t1_);
 				}
