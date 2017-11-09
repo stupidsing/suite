@@ -35,6 +35,7 @@ import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
+import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpRepeat;
 import suite.funp.P0.FunpStruct;
@@ -64,6 +65,7 @@ import suite.util.AutoObject;
 import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.Switch;
+import suite.util.Util;
 
 /**
  * Hindley-Milner type inference.
@@ -82,15 +84,44 @@ public class P2InferType {
 	private UnNode<Type> typeNumber = TypeNumber.of();
 	private Map<Funp, UnNode<Type>> typeByNode = new HashMap<>();
 
-	public Funp infer(Funp n) {
-		return infer(n, unify.newRef());
+	public Funp infer(Funp n0) {
+		UnNode<Type> t = unify.newRef();
+		Funp n1 = extractPredefine(n0);
+
+		if (unify.unify(t, new Infer(IMap.empty()).infer(n1)))
+			return new Erase(0, IMap.empty()).erase(n1);
+		else
+			throw new RuntimeException("cannot infer type for " + n0);
 	}
 
-	private Funp infer(Funp n, UnNode<Type> t) {
-		if (unify.unify(t, new Infer(IMap.empty()).infer(n)))
-			return new Erase(0, IMap.empty()).erase(n);
-		else
-			throw new RuntimeException("cannot infer type for " + n);
+	private Funp extractPredefine(Funp node0) {
+		List<Pair<String, Funp>> evs = new ArrayList<>();
+
+		Funp node1 = new Object() {
+			private Funp extract_(Funp n) {
+				return inspect.rewrite(Funp.class, n_ -> {
+					return new Switch<Funp>(n_ //
+					).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
+						return FunpDefine.of(var, extractPredefine(value), extract_(expr));
+					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+						return FunpDefineRec.of(Read.from2(pairs).mapValue(P2InferType.this::extractPredefine).toList(),
+								extract_(expr));
+					})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+						return FunpLambda.of(var, extractPredefine(expr));
+					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
+						String ev = "ev" + Util.temp();
+						evs.add(Pair.of(ev, expr));
+						Funp var = FunpVariable.of(ev);
+						return FunpAssignReference.of(FunpReference.of(var), expr, var);
+					})).result();
+				}, n);
+			}
+		}.extract_(node0);
+
+		for (Pair<String, Funp> pair : evs)
+			node1 = FunpDefine.of(pair.t0, FunpDontCare.of(), node1);
+
+		return node1;
 	}
 
 	private class Infer {
@@ -344,7 +375,9 @@ public class P2InferType {
 				return new Object() {
 					private Funp getAddress(Funp n) {
 						return new Switch<Funp>(n //
-						).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
+						).applyIf(FunpAssign.class, f -> f.apply((memory, value, expr) -> {
+							return FunpAssign.of(memory, value, getAddress(expr));
+						})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 							return FunpTree.of(TermOp.PLUS__, pointer, FunpNumber.ofNumber(start));
 						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 							return getAddress(getVariable(env.get(var)));

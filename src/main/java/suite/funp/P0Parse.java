@@ -29,6 +29,7 @@ import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPolyType;
+import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpRepeat;
 import suite.funp.P0.FunpStruct;
@@ -60,6 +61,11 @@ public class P0Parse {
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp parse(Node node0) {
+		Node node1 = expandMacros(node0);
+		return new Parse(new ISet<>()).parse(node1);
+	}
+
+	private Node expandMacros(Node node0) {
 		class Expand {
 			private IMap<Prototype, Pair<Node, Node>> macros;
 
@@ -90,8 +96,7 @@ public class P0Parse {
 			}
 		}
 
-		Node node1 = new Expand(IMap.empty()).expand(node0);
-		return new Parse(new ISet<>()).parse(node1);
+		return new Expand(IMap.empty()).expand(node0);
 	}
 
 	private class Parse {
@@ -125,7 +130,9 @@ public class P0Parse {
 				String var = name(m[0]);
 				return FunpDefine.of(var, FunpPolyType.of(parse(m[1])), parseNewVariable(m[2], var));
 				// return parse(Suite.substitute("poly .1 | (.0 => .2)", m));
-			} else if ((m = Suite.match("recurse .0 >> .1").apply(node)) != null) {
+			} else if ((m = Suite.match("predef .0").apply(node)) != null)
+				return FunpPredefine.of(parse(m[0]));
+			else if ((m = Suite.match("recurse .0 >> .1").apply(node)) != null) {
 				Match match1 = Suite.match(".0 := .1");
 				Streamlet<Node[]> list = Tree.iter(m[0], TermOp.AND___).map(match1::apply).collect(As::streamlet);
 				ISet<String> variables_ = variables;

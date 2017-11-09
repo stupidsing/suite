@@ -335,12 +335,26 @@ public class P0 {
 		}
 	}
 
+	public static class FunpPredefine implements Funp, P2.End {
+		public Funp expr;
+
+		public static FunpPredefine of(Funp expr) {
+			FunpPredefine f = new FunpPredefine();
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
+		}
+	}
+
 	public static class FunpReference implements Funp, P2.End {
 		public Funp expr;
 
-		public static FunpReference of(Funp pointer) {
+		public static FunpReference of(Funp expr) {
 			FunpReference f = new FunpReference();
-			f.expr = pointer;
+			f.expr = expr;
 			return f;
 		}
 

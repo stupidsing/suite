@@ -9,6 +9,7 @@ import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
@@ -61,15 +62,17 @@ public class P1Inline {
 
 		Map<Funp, IntMutable> countByDefs = new HashMap<>();
 
-		new Object() {
-			private void count(Funp node_) {
-				inspect.rewrite(Funp.class, n_ -> {
-					if (n_ instanceof FunpVariable)
-						countByDefs.computeIfAbsent(defByVariables.get((FunpVariable) n_), v -> IntMutable.of(0)).increment();
+		inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
+				.applyIf(FunpReference.class, f -> f.apply(expr -> {
+					if (expr instanceof FunpVariable)
+						countByDefs.computeIfAbsent(defByVariables.get(expr), v -> IntMutable.of(0)).update(9999);
 					return null;
-				}, node_);
-			}
-		}.count(node);
+				})) //
+				.applyIf(FunpVariable.class, f -> f.apply(var -> {
+					countByDefs.computeIfAbsent(defByVariables.get(f), v -> IntMutable.of(0)).increment();
+					return null;
+				})) //
+				.result(), node);
 
 		Map<Funp, FunpDefine> defines = Read //
 				.from2(defByVariables) //
