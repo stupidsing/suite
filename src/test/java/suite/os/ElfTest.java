@@ -12,7 +12,19 @@ public class ElfTest {
 	private ElfWriter elf = new ElfWriter();
 
 	@Test
-	public void test() {
+	public void testCode() {
+		Execute exec = test("" //
+				+ "iterate n 0 (n < 100) (n + 1)\n" //
+				, "");
+
+		assertEquals(100, exec.code);
+		assertEquals("", exec.out);
+	}
+
+	@Test
+	public void testIo() {
+		String text = "garbage\n";
+
 		Execute exec = test("" //
 				+ "expand size := 256 >>\n" //
 				+ "define linux-read := `buffer, length` => (\n" //
@@ -33,30 +45,26 @@ public class ElfTest {
 				+ ") >>\n" //
 				+ "iterate n 0 (0 < n) (\n" //
 				+ "	let buffer := (size * array byte _) >>\n" //
-				+ "	let nBytesRead := (address buffer, size | linux-read) >>\n" //
-				+ "	(\n" //
+				+ "	let nBytesRead := (address buffer, size | linux-read) >> (\n" //
 				+ "		(address buffer, nBytesRead | linux-write);\n" //
 				+ "		nBytesRead" //
 				+ "	)\n" //
-				+ ")\n");
+				+ ")\n" //
+				, text);
 
-		assertEquals(100, exec.code);
-		assertEquals("", exec.out);
+		assertEquals(0, exec.code);
+		assertEquals(text, exec.out);
 	}
 
-	private Execute test(String program) {
-		Execute exec = elf.exec("", offset -> Funp_.main().compile(offset, "" //
+	private Execute test(String program, String input) {
+		return elf.exec(input, offset -> Funp_.main().compile(offset, "" //
 				+ "asm () {\n" //
 				+ "	MOV (EBP, ESP);\n" //
 				+ "} / ((\n" //
 				+ program + "\n" //
-				+ ") | (i => asm () {\n" //
-				+ "	MOV (EBX, `EBP + 8`);\n" //
-				+ "	MOV (EAX, 1);\n" //
-				+ "	INT (-128);\n" //
-				+ "}))\n" //
+				+ ") | (i => asm (EAX = 1; EBX = i;) { INT (-128); })\n" //
+				+ ")\n" //
 		));
-		return exec;
 	}
 
 }

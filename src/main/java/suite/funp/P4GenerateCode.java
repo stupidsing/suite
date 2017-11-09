@@ -264,7 +264,7 @@ public class P4GenerateCode {
 					return out;
 				})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
 					Amd64Parser p = new Amd64Parser();
-
+					Operand reg = isOutSpec ? rs.get(pop0) : rs.get(is);
 					new Object() {
 						private void assign(Compile1 c1, int i) {
 							if (i < assigns.size()) {
@@ -274,12 +274,13 @@ public class P4GenerateCode {
 									c2.compileOpSpec(assign.t1, op);
 									assign(c2.mask(op), i + 1);
 								}, op);
+							} else {
+								Read.from(asm).map(p::parse).sink(em::emit);
+								em.mov(reg, eax);
 							}
 						}
 					}.assign(this, 0);
-
-					Read.from(asm).map(p::parse).sink(em::emit);
-					return postOp.apply(eax);
+					return postOp.apply(reg);
 				})).applyIf(FunpAssign.class, f -> f.apply((memory, value, expr) -> {
 					compileAssign(value, memory);
 					return compile(expr);
