@@ -93,7 +93,7 @@ public class P4DecomposeOperand {
 
 			private DecomposePlus(Funp n0) {
 				for (Funp n1 : decompose.apply(TermOp.PLUS__, n0))
-					if (!isUseEbp && n1 instanceof FunpFramePointer) {
+					if (n1 instanceof FunpFramePointer && !isUseEbp) {
 						addReg(amd64.esp, 1);
 						disp -= fd;
 					} else {
