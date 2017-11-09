@@ -22,15 +22,21 @@ public class P1Inline {
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp inline(Funp node0) {
+		Funp node1 = inlineDefine(node0);
+		Funp node2 = inlineLambda(node1);
+		return node2;
+	}
+
+	private Funp inlineDefine(Funp node) {
 		Map<FunpVariable, Funp> defByVariables = new HashMap<>();
 
 		new Object() {
-			private Funp associate(IMap<String, Funp> vars, Funp node) {
-				return inspect.rewrite(Funp.class, node_ -> new Switch<Funp>(node_) //
+			private Funp associate(IMap<String, Funp> vars, Funp node_) {
+				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
 						.applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
 							associate(vars, value);
 							associate(vars.put(var, f), expr);
-							return node_;
+							return n_;
 						})) //
 						.applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 							IMap<String, Funp> vars1 = vars;
@@ -39,31 +45,31 @@ public class P1Inline {
 							for (Pair<String, Funp> pair : pairs)
 								associate(vars1, pair.t1);
 							associate(vars1, expr);
-							return node_;
+							return n_;
 						})) //
 						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 							associate(vars.put(var, f), expr);
-							return node_;
+							return n_;
 						})) //
 						.applyIf(FunpVariable.class, f -> f.apply(var -> {
 							defByVariables.put(f, vars.get(var));
-							return node_;
+							return n_;
 						})) //
-						.result(), node);
+						.result(), node_);
 			}
-		}.associate(IMap.empty(), node0);
+		}.associate(IMap.empty(), node);
 
 		Map<Funp, IntMutable> countByDefs = new HashMap<>();
 
 		new Object() {
-			private void count(Funp node) {
-				inspect.rewrite(Funp.class, node_ -> {
-					if (node_ instanceof FunpVariable)
-						countByDefs.computeIfAbsent(defByVariables.get((FunpVariable) node_), v -> IntMutable.of(0)).increment();
+			private void count(Funp node_) {
+				inspect.rewrite(Funp.class, n_ -> {
+					if (n_ instanceof FunpVariable)
+						countByDefs.computeIfAbsent(defByVariables.get((FunpVariable) n_), v -> IntMutable.of(0)).increment();
 					return null;
-				}, node);
+				}, node_);
 			}
-		}.count(node0);
+		}.count(node);
 
 		Map<Funp, FunpDefine> defines = Read //
 				.from2(defByVariables) //
@@ -78,23 +84,25 @@ public class P1Inline {
 				.filterValue(def -> def != null) //
 				.toMap();
 
-		Funp node1 = new Object() {
-			private Funp expand(Funp node) {
-				return inspect.rewrite(Funp.class, node_ -> {
+		return new Object() {
+			private Funp expand(Funp node_) {
+				return inspect.rewrite(Funp.class, n_ -> {
 					FunpDefine define;
-					if ((define = defines.get(node_)) != null)
+					if ((define = defines.get(n_)) != null)
 						return expand(define.expr);
-					else if ((define = expands.get(node_)) != null)
+					else if ((define = expands.get(n_)) != null)
 						return expand(define.value);
 					else
 						return null;
-				}, node);
+				}, node_);
 			}
-		}.expand(node0);
+		}.expand(node);
+	}
 
+	private Funp inlineLambda(Funp node) {
 		return new Object() {
-			private Funp expand(Funp node) {
-				return inspect.rewrite(Funp.class, node_ -> new Switch<Funp>(node_) //
+			private Funp expand(Funp node_) {
+				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 							if (lambda instanceof FunpLambda) {
 								FunpLambda lambda1 = (FunpLambda) lambda;
@@ -102,9 +110,9 @@ public class P1Inline {
 							} else
 								return null;
 						})) //
-						.result(), node);
+						.result(), node_);
 			}
-		}.expand(node1);
+		}.expand(node);
 	}
 
 }
