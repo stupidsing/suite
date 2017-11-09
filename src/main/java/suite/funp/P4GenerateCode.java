@@ -428,13 +428,14 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.PUSH, opRegs[i]));
 
 					CompileOut out0 = new Compile1(registerSet, fd - opRegs.length * is).compile(expr);
-					Operand op0 = isOutSpec ? pop0 : out0.op0;
-					Operand op1 = isOutSpec ? pop1 : out0.op1;
+					Operand oldOp0, oldOp1;
+					Operand op0 = oldOp0 = isOutSpec ? pop0 : out0.op0;
+					Operand op1 = oldOp1 = isOutSpec ? pop1 : out0.op1;
 
 					if (op0 != null)
-						em.mov(op0 = rs.contains(op0) ? rs.mask(op1).get(op0.size) : op0, out0.op0);
+						em.mov(op0 = rs.contains(op0) ? rs.mask(op1).get(op0.size) : op0, oldOp0);
 					if (op1 != null)
-						em.mov(op1 = rs.contains(op1) ? rs.mask(op0).get(op1.size) : op1, out0.op1);
+						em.mov(op1 = rs.contains(op1) ? rs.mask(op0).get(op1.size) : op1, oldOp1);
 
 					CompileOut out1 = new CompileOut(op0, op1);
 
