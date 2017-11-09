@@ -22,10 +22,12 @@ public class P1Inline {
 
 	private Inspect inspect = Singleton.me.inspect;
 
-	public Funp inline(Funp node0) {
-		Funp node1 = inlineDefine(node0);
-		Funp node2 = inlineLambda(node1);
-		return node2;
+	public Funp inline(Funp node) {
+		for (int i = 0; i < 3; i++) {
+			node = inlineDefine(node);
+			node = inlineLambda(node);
+		}
+		return node;
 	}
 
 	private Funp inlineDefine(Funp node) {

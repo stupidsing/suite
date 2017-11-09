@@ -165,17 +165,30 @@ public class P0Parse {
 				String var = name(m[0]);
 				return FunpFixed.of(var, parseNewVariable(m[1], var));
 			} else if ((m = Suite.match("if (`.0` = .1) then .2 else .3").apply(node)) != null) {
-				ExtractNewVariables env = new ExtractNewVariables();
-				Funp be = env.extract(parse(m[0]));
+				Set<String> variables = new HashSet<>();
+
+				Funp be = new Object() {
+					private Funp extract(Funp be) {
+						return inspect.rewrite(Funp.class, n_ -> {
+							if (n_ instanceof FunpVariableNew) {
+								String var = ((FunpVariableNew) n_).var;
+								variables.add(var);
+								return FunpVariable.of(var);
+							} else
+								return null;
+						}, be);
+					}
+				}.extract(parse(m[0]));
+
 				Funp value = parse(m[1]);
 				ISet<String> variables1 = new ISet<>();
 
-				for (String var : env.variables)
+				for (String var : variables)
 					variables1 = variables1.add(var);
 
-				Bind bind = new Bind(env.variables);
+				Bind bind = new Bind(variables);
 				Funp f = FunpCheckType.of(be, value, bind.bind(be, value, new Parse(variables1).parse(m[2]), parse(m[3])));
-				for (String var : env.variables)
+				for (String var : variables)
 					f = FunpDefine.of(var, FunpDontCare.of(), f);
 				return f;
 			} else if ((m = Suite.match("if .0 then .1 else .2").apply(node)) != null)
@@ -226,21 +239,6 @@ public class P0Parse {
 
 		private Funp parseNewVariable(Node node, String var) {
 			return new Parse(variables.add(var)).parse(node);
-		}
-	}
-
-	private class ExtractNewVariables {
-		private Set<String> variables = new HashSet<>();
-
-		private Funp extract(Funp be) {
-			return inspect.rewrite(Funp.class, n_ -> {
-				if (n_ instanceof FunpVariableNew) {
-					String var = ((FunpVariableNew) n_).var;
-					variables.add(var);
-					return FunpVariable.of(var);
-				} else
-					return null;
-			}, be);
 		}
 	}
 
