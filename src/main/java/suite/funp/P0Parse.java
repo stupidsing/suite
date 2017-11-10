@@ -187,10 +187,11 @@ public class P0Parse {
 					variables1 = variables1.add(var);
 
 				Bind bind = new Bind(variables);
-				Funp f = FunpCheckType.of(be, value, bind.bind(be, value, new Parse(variables1).parse(m[2]), parse(m[3])));
+				Funp f0 = bind.bind(be, value, new Parse(variables1).parse(m[2]), parse(m[3]));
+				Funp f1 = f0; // FunpCheckType.of(be, value, f0);
 				for (String var : variables)
-					f = FunpDefine.of(var, FunpDontCare.of(), f);
-				return f;
+					f1 = FunpDefine.of(var, FunpDontCare.of(), f1);
+				return f1;
 			} else if ((m = Suite.match("if .0 then .1 else .2").apply(node)) != null)
 				return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
 			else if ((m = Suite.match(".0 {.1}").apply(node)) != null)

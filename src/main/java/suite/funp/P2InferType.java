@@ -2,7 +2,6 @@ package suite.funp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -191,12 +190,11 @@ public class P2InferType {
 			}).applyIf(FunpError.class, f -> {
 				return unify.newRef();
 			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
+				UnNode<Type> tf = unify.newRef();
 				TypeStruct ts = TypeStruct.of();
+				ts.pairs().add(Pair.of(field, tf));
 				unify(n, infer(reference), TypeReference.of(ts));
-				return Read //
-						.from(ts.pairs()) //
-						.filter(pair -> String_.equals(pair.t0, field)) //
-						.uniqueResult().t1;
+				return tf;
 			})).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> t = unify.newRef();
 				unify(n, t, new Infer(env.replace(var, t)).infer(expr));
@@ -346,14 +344,16 @@ public class P2InferType {
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
 				TypeStruct ts = TypeStruct.of();
 				unify(n, typeOf(reference), TypeReference.of(ts));
+				TypeStruct ts1 = ts.finalStruct();
 				int offset = 0;
-				for (Pair<String, UnNode<Type>> pair : ts.pairs()) {
-					int offset1 = offset + getTypeSize(pair.t1);
-					if (!String_.equals(pair.t0, field))
-						offset = offset1;
-					else
-						return FunpMemory.of(erase(reference), offset, offset1);
-				}
+				if (ts1.isCompleted)
+					for (Pair<String, UnNode<Type>> pair : ts1.pairs) {
+						int offset1 = offset + getTypeSize(pair.t1);
+						if (!String_.equals(pair.t0, field))
+							offset = offset1;
+						else
+							return FunpMemory.of(erase(reference), offset, offset1);
+					}
 				throw new RuntimeException();
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				UnNode<Type> te = unify.newRef();
@@ -407,15 +407,22 @@ public class P2InferType {
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpStruct.class, f -> f.apply(fvs -> {
-				TypeStruct ts = TypeStruct.of();
-				unify(n, ts, type0);
-				Iterator<Pair<String, UnNode<Type>>> ftsIter = ts.pairs().iterator();
-				int offset = 0;
+				TypeStruct ts0 = TypeStruct.of();
+				unify(n, ts0, type0);
+
+				TypeStruct ts1 = ts0.finalStruct();
+				Map<String, Funp> values = Read.from2(fvs).toMap();
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
-				for (Pair<String, Funp> fv : fvs) {
-					int offset0 = offset;
-					list.add(Pair.of(erase(fv.t1), IntIntPair.of(offset0, offset += getTypeSize(ftsIter.next().t1))));
-				}
+				int offset = 0;
+
+				if (ts1.isCompleted)
+					for (Pair<String, UnNode<Type>> pair : ts1.pairs) {
+						int offset0 = offset;
+						list.add(Pair.of(erase(values.get(pair.t0)), IntIntPair.of(offset0, offset += getTypeSize(pair.t1))));
+					}
+				else
+					throw new RuntimeException();
+
 				return FunpData.of(list);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(env.get(var));
@@ -624,8 +631,8 @@ public class P2InferType {
 				TypeStruct ts0 = ord ? x : y;
 				TypeStruct ts1 = ord ? y : x;
 
-				Map<String, UnNode<Type>> typeByField0 = Read.from(ts0.pairs).toMap(Pair::first_, Pair::second);
-				Map<String, UnNode<Type>> typeByField1 = Read.from(ts1.pairs).toMap(Pair::first_, Pair::second);
+				Map<String, UnNode<Type>> typeByField0 = Read.from2(ts0.pairs).toMap();
+				Map<String, UnNode<Type>> typeByField1 = Read.from2(ts1.pairs).toMap();
 				Set<String> fields0 = typeByField0.keySet();
 				Set<String> fields1 = typeByField1.keySet();
 				Set<String> commons = Set_.intersect(List.of(fields0, fields1));
