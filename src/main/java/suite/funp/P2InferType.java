@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun0;
@@ -63,6 +65,7 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.AutoObject;
 import suite.util.Rethrow;
+import suite.util.Set_;
 import suite.util.String_;
 import suite.util.Switch;
 import suite.util.Util;
@@ -188,10 +191,10 @@ public class P2InferType {
 			}).applyIf(FunpError.class, f -> {
 				return unify.newRef();
 			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				TypeStruct ts = TypeStruct.of(null);
+				TypeStruct ts = TypeStruct.of();
 				unify(n, infer(reference), TypeReference.of(ts));
 				return Read //
-						.from(ts.pairs) //
+						.from(ts.pairs()) //
 						.filter(pair -> String_.equals(pair.t0, field)) //
 						.uniqueResult().t1;
 			})).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
@@ -341,10 +344,10 @@ public class P2InferType {
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				TypeStruct ts = TypeStruct.of(null);
+				TypeStruct ts = TypeStruct.of();
 				unify(n, typeOf(reference), TypeReference.of(ts));
 				int offset = 0;
-				for (Pair<String, UnNode<Type>> pair : ts.pairs) {
+				for (Pair<String, UnNode<Type>> pair : ts.pairs()) {
 					int offset1 = offset + getTypeSize(pair.t1);
 					if (!String_.equals(pair.t0, field))
 						offset = offset1;
@@ -404,9 +407,9 @@ public class P2InferType {
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpStruct.class, f -> f.apply(fvs -> {
-				TypeStruct ts = TypeStruct.of(null);
+				TypeStruct ts = TypeStruct.of();
 				unify(n, ts, type0);
-				Iterator<Pair<String, UnNode<Type>>> ftsIter = ts.pairs.iterator();
+				Iterator<Pair<String, UnNode<Type>>> ftsIter = ts.pairs().iterator();
 				int offset = 0;
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
 				for (Pair<String, Funp> fv : fvs) {
@@ -586,41 +589,74 @@ public class P2InferType {
 	}
 
 	private static class TypeStruct extends Type {
+		private TypeStruct[] ref = new TypeStruct[] { this, };
 		private List<Pair<String, UnNode<Type>>> pairs;
+		private boolean isCompleted;
+
+		private static TypeStruct of() {
+			return new TypeStruct(new ArrayList<>(), false);
+		}
 
 		private static TypeStruct of(List<Pair<String, UnNode<Type>>> pairs) {
-			TypeStruct t = new TypeStruct();
-			t.pairs = pairs;
-			return t;
+			return new TypeStruct(pairs, true);
+		}
+
+		private TypeStruct() {
+		}
+
+		private TypeStruct(List<Pair<String, UnNode<Type>>> pairs, boolean isCompleted) {
+			this.pairs = pairs;
+			this.isCompleted = isCompleted;
 		}
 
 		private <R> R apply(FixieFun1<List<Pair<String, UnNode<Type>>>, R> fun) {
-			return fun.apply(pairs);
+			return fun.apply(pairs());
 		}
 
 		public boolean unify(UnNode<Type> type) {
 			boolean b = getClass() == type.getClass();
+
 			if (b) {
-				TypeStruct other = (TypeStruct) type;
-				if (pairs == null)
-					pairs = other.pairs;
-				else if (other.pairs == null)
-					other.pairs = pairs;
-				else {
-					List<Pair<String, UnNode<Type>>> pairs0 = pairs;
-					List<Pair<String, UnNode<Type>>> pairs1 = other.pairs;
-					int size = pairs0.size();
-					b &= size == pairs1.size();
-					if (b)
-						for (int i = 0; i < size; i++) {
-							Pair<String, UnNode<Type>> pair0 = pairs0.get(i);
-							Pair<String, UnNode<Type>> pair1 = pairs1.get(i);
-							b &= String_.equals(pair0.t0, pair1.t0) && unify.unify(pair0.t1, pair1.t1);
-						}
-					return b;
+				TypeStruct x = this.finalStruct();
+				TypeStruct y = ((TypeStruct) type).finalStruct();
+
+				boolean ord = System.identityHashCode(x) < System.identityHashCode(y);
+				TypeStruct ts0 = ord ? x : y;
+				TypeStruct ts1 = ord ? y : x;
+
+				Map<String, UnNode<Type>> typeByField0 = Read.from(ts0.pairs).toMap(Pair::first_, Pair::second);
+				Map<String, UnNode<Type>> typeByField1 = Read.from(ts1.pairs).toMap(Pair::first_, Pair::second);
+				Set<String> fields0 = typeByField0.keySet();
+				Set<String> fields1 = typeByField1.keySet();
+				Set<String> commons = Set_.intersect(List.of(fields0, fields1));
+
+				for (String common : commons)
+					b &= unify.unify(typeByField0.get(common), typeByField1.get(common));
+
+				b &= !ts0.isCompleted || Read.from(fields1).isAll(commons::contains);
+				b &= !ts1.isCompleted || Read.from(fields0).isAll(commons::contains);
+
+				for (Entry<String, UnNode<Type>> e : typeByField1.entrySet()) {
+					String field = e.getKey();
+					if (!commons.contains(field))
+						ts0.pairs.add(Pair.of(field, e.getValue()));
 				}
+
+				ts0.isCompleted |= ts1.isCompleted;
+				ts1.ref[0] = ts0;
 			}
+
 			return b;
+		}
+
+		private List<Pair<String, UnNode<Type>>> pairs() {
+			return finalStruct().pairs;
+		}
+
+		private TypeStruct finalStruct() {
+			TypeStruct ref_ = ref[0];
+			return ref_ != this ? ref_.finalStruct() : this;
+
 		}
 	}
 
