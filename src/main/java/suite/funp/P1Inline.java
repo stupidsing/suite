@@ -53,9 +53,6 @@ public class P1Inline {
 						n_ = define.expr;
 					}
 
-					if (!vars.isEmpty())
-						System.out.println(vars);
-
 					if (n_ instanceof FunpAssignReference //
 							&& (ref = (assign = (FunpAssignReference) n_).reference) instanceof FunpReference //
 							&& (var = ((FunpReference) ref).expr) instanceof FunpVariable) {
