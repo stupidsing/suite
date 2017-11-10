@@ -2,9 +2,11 @@ package suite.funp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun0;
@@ -188,7 +190,7 @@ public class P2InferType {
 			}).applyIf(FunpError.class, f -> {
 				return unify.newRef();
 			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				TypeStruct ts = TypeStruct.of(null);
+				TypeStruct ts = TypeStruct.of();
 				unify(n, infer(reference), TypeReference.of(ts));
 				return Read //
 						.from(ts.pairs) //
@@ -341,7 +343,7 @@ public class P2InferType {
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				TypeStruct ts = TypeStruct.of(null);
+				TypeStruct ts = TypeStruct.of();
 				unify(n, typeOf(reference), TypeReference.of(ts));
 				int offset = 0;
 				for (Pair<String, UnNode<Type>> pair : ts.pairs) {
@@ -404,7 +406,7 @@ public class P2InferType {
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpStruct.class, f -> f.apply(fvs -> {
-				TypeStruct ts = TypeStruct.of(null);
+				TypeStruct ts = TypeStruct.of();
 				unify(n, ts, type0);
 				Iterator<Pair<String, UnNode<Type>>> ftsIter = ts.pairs.iterator();
 				int offset = 0;
@@ -587,40 +589,67 @@ public class P2InferType {
 
 	private static class TypeStruct extends Type {
 		private List<Pair<String, UnNode<Type>>> pairs;
+		private boolean isCompleted;
+		private TypeStruct reference;
+
+		private static TypeStruct of() {
+			return new TypeStruct(new ArrayList<>(), false);
+		}
 
 		private static TypeStruct of(List<Pair<String, UnNode<Type>>> pairs) {
-			TypeStruct t = new TypeStruct();
-			t.pairs = pairs;
-			return t;
+			return new TypeStruct(pairs, true);
+		}
+
+		private TypeStruct() {
+		}
+
+		private TypeStruct(List<Pair<String, UnNode<Type>>> pairs, boolean isCompleted) {
+			this.pairs = pairs;
+			this.isCompleted = isCompleted;
 		}
 
 		private <R> R apply(FixieFun1<List<Pair<String, UnNode<Type>>>, R> fun) {
-			return fun.apply(pairs);
+			return fun.apply(finalStruct().pairs);
 		}
 
 		public boolean unify(UnNode<Type> type) {
 			boolean b = getClass() == type.getClass();
+
 			if (b) {
-				TypeStruct other = (TypeStruct) type;
-				if (pairs == null)
-					pairs = other.pairs;
-				else if (other.pairs == null)
-					other.pairs = pairs;
-				else {
-					List<Pair<String, UnNode<Type>>> pairs0 = pairs;
-					List<Pair<String, UnNode<Type>>> pairs1 = other.pairs;
-					int size = pairs0.size();
-					b &= size == pairs1.size();
-					if (b)
-						for (int i = 0; i < size; i++) {
-							Pair<String, UnNode<Type>> pair0 = pairs0.get(i);
-							Pair<String, UnNode<Type>> pair1 = pairs1.get(i);
-							b &= String_.equals(pair0.t0, pair1.t0) && unify.unify(pair0.t1, pair1.t1);
-						}
-					return b;
-				}
+				TypeStruct x = finalStruct();
+				TypeStruct y = ((TypeStruct) type).finalStruct();
+
+				boolean ord = System.identityHashCode(x) < System.identityHashCode(y);
+				TypeStruct ts0 = ord ? x : y;
+				TypeStruct ts1 = ord ? y : x;
+				ts1.reference = ts0;
+
+				Map<String, UnNode<Type>> pairs0 = Read.from(ts0.pairs).toMap(Pair::first_, Pair::second);
+				Map<String, UnNode<Type>> pairs1 = Read.from(ts1.pairs).toMap(Pair::first_, Pair::second);
+				String field;
+
+				Set<String> commons = new HashSet<>(pairs0.keySet());
+				commons.retainAll(pairs1.keySet());
+
+				for (String common : commons)
+					b &= unify.unify(pairs0.get(common), pairs1.get(common));
+
+				for (Pair<String, UnNode<Type>> pair0 : ts0.pairs)
+					if (!commons.contains(field = pair0.t0)) {
+						ts0.pairs.add(Pair.of(field, pairs1.get(field)));
+						b &= !ts0.isCompleted;
+					}
+				for (Pair<String, UnNode<Type>> pair1 : ts1.pairs)
+					if (!commons.contains(field = pair1.t0)) {
+						ts1.pairs.add(Pair.of(field, pairs0.get(field)));
+						b &= !ts1.isCompleted;
+					}
 			}
 			return b;
+		}
+
+		private TypeStruct finalStruct() {
+			return reference != null ? reference.finalStruct() : this;
 		}
 	}
 

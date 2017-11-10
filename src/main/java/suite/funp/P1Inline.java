@@ -1,13 +1,17 @@
 package suite.funp;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
+import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
+import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpVariable;
@@ -16,6 +20,8 @@ import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.primitive.IntMutable;
 import suite.streamlet.Read;
+import suite.util.List_;
+import suite.util.String_;
 import suite.util.Switch;
 
 public class P1Inline {
@@ -24,10 +30,45 @@ public class P1Inline {
 
 	public Funp inline(Funp node) {
 		for (int i = 0; i < 3; i++) {
+			node = inlineDefineAssign(node);
 			node = inlineDefine(node);
 			node = inlineLambda(node);
 		}
 		return node;
+	}
+
+	private Funp inlineDefineAssign(Funp node) {
+		return new Object() {
+			private Funp inline(Funp node_) {
+				return inspect.rewrite(Funp.class, n_ -> {
+					List<String> definedVariables = new ArrayList<>();
+					FunpAssignReference assign;
+					FunpDefine define;
+					Funp ref, var;
+					String vn;
+
+					while (n_ instanceof FunpDefine //
+							&& (define = (FunpDefine) n_).value instanceof FunpDontCare) {
+						definedVariables.add(define.var);
+						n_ = define.expr;
+					}
+
+					if (n_ instanceof FunpAssignReference //
+							&& (ref = (assign = (FunpAssignReference) n_).reference) instanceof FunpReference //
+							&& (var = ((FunpReference) ref).expr) instanceof FunpVariable //
+							&& definedVariables.contains(vn = ((FunpVariable) var).var)) {
+						n_ = inline(assign.expr);
+
+						for (String definedVariable : List_.reverse(definedVariables))
+							if (!String_.equals(vn, definedVariable))
+								n_ = FunpDefine.of(definedVariable, FunpDontCare.of(), n_);
+
+						return FunpDefine.of(vn, inline(assign.value), n_);
+					} else
+						return null;
+				}, node_);
+			}
+		}.inline(node);
 	}
 
 	private Funp inlineDefine(Funp node) {
