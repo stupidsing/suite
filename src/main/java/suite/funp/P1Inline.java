@@ -41,30 +41,31 @@ public class P1Inline {
 	private Funp inlineDefineAssign(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
-				return inspect.rewrite(Funp.class, n_ -> {
+				return inspect.rewrite(Funp.class, n0 -> {
 					List<String> vars = new ArrayList<>();
 					FunpAssignReference assign;
 					FunpDefine define;
 					Funp ref, var;
 
-					while (n_ instanceof FunpDefine //
-							&& (define = (FunpDefine) n_).value instanceof FunpDontCare) {
+					while (n0 instanceof FunpDefine //
+							&& (define = (FunpDefine) n0).value instanceof FunpDontCare) {
 						vars.add(define.var);
-						n_ = define.expr;
+						n0 = define.expr;
 					}
 
-					if (n_ instanceof FunpAssignReference //
-							&& (ref = (assign = (FunpAssignReference) n_).reference) instanceof FunpReference //
+					if (n0 instanceof FunpAssignReference //
+							&& (ref = (assign = (FunpAssignReference) n0).reference) instanceof FunpReference //
 							&& (var = ((FunpReference) ref).expr) instanceof FunpVariable) {
 						String vn = ((FunpVariable) var).var;
+						Funp n1 = assign.expr;
 						boolean b = false;
 
 						for (String var_ : List_.reverse(vars))
 							if (!(b |= String_.equals(vn, var_)))
-								n_ = FunpDefine.of(var_, FunpDontCare.of(), n_);
+								n1 = FunpDefine.of(var_, FunpDontCare.of(), n1);
 
 						if (b)
-							return FunpDefine.of(vn, assign.value, inline(n_));
+							return FunpDefine.of(vn, assign.value, inline(n1));
 					}
 
 					return null;
