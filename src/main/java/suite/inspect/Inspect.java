@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 
 import suite.adt.pair.Pair;
 import suite.jdk.gen.Type_;
@@ -24,7 +23,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Sink;
 import suite.util.FunUtil2.Source2;
 import suite.util.List_;
 import suite.util.Object_;
@@ -53,14 +51,15 @@ public class Inspect {
 		StringBuilder sb = new StringBuilder();
 		Set<Integer> ids = new HashSet<>();
 
-		BiConsumer<Class<?>, Object> append = Object_.fix(m -> (clazz, object_) -> {
-			if (object_ == null)
-				sb.append("null");
-			else if (Type_.isSimple(clazz))
-				sb.append(object_);
-			else {
-				int id = System.identityHashCode(object_);
-				if (ids.add(id))
+		new Object() {
+			private void append(Class<?> clazz, Object object_) {
+				int id;
+
+				if (object_ == null)
+					sb.append("null");
+				else if (Type_.isSimple(clazz))
+					sb.append(object_);
+				else if (ids.add(id = System.identityHashCode(object_)))
 					try {
 						Extract inspect_ = new Extract(object_);
 						String prefix = inspect_.prefix;
@@ -70,7 +69,7 @@ public class Inspect {
 						if (String_.equals(prefix, "[")) {
 							sb.append("[");
 							while (iter.next()) {
-								m.get().accept(keyClass, iter.getKey());
+								append(keyClass, iter.getKey());
 								sb.append(",");
 							}
 							sb.append("]");
@@ -79,9 +78,9 @@ public class Inspect {
 							if (!String_.equals(prefix, "{"))
 								sb.append("{");
 							while (iter.next()) {
-								m.get().accept(keyClass, iter.getKey());
+								append(keyClass, iter.getKey());
 								sb.append("=");
-								m.get().accept(iter.getValueClass(), iter.getValue());
+								append(iter.getValueClass(), iter.getValue());
 								sb.append(",");
 							}
 							sb.append("}");
@@ -92,10 +91,7 @@ public class Inspect {
 				else
 					sb.append("<recurse>");
 			}
-		});
-
-		Sink<Object> app = object_ -> append.accept(Object_.clazz(object_), object_);
-		app.sink(object);
+		}.append(Object_.clazz(object), object);
 
 		return sb.toString();
 	}

@@ -62,17 +62,20 @@ public class Intrinsics {
 	}
 
 	public static Node drain(IntrinsicCallback callback, IPointer<Node> pointer) {
-		Intrinsic drain = Object_.fix(m -> (callback1, inputs) -> {
-			IPointer<Node> pointer1 = Data.get(inputs.get(0));
-			Node head;
+		Intrinsic drain = new Intrinsic() {
+			public Node invoke(IntrinsicCallback callback1, List<Node> inputs) {
+				IPointer<Node> pointer1 = Data.get(inputs.get(0));
+				Node head;
 
-			if ((head = pointer1.head()) != null) {
-				Node left = callback1.enclose(Intrinsics.id_, head);
-				Node right = callback1.enclose(m.get(), new Data<>(pointer1.tail()));
-				return Tree.of(TermOp.OR____, left, right);
-			} else
-				return Atom.NIL;
-		});
+				if ((head = pointer1.head()) != null) {
+					Node left = callback1.enclose(Intrinsics.id_, head);
+					Node right = callback1.enclose(this::invoke, new Data<>(pointer1.tail()));
+					return Tree.of(TermOp.OR____, left, right);
+				} else
+					return Atom.NIL;
+			}
+		};
+
 		return callback.yawn(callback.enclose(drain, new Data<>(pointer)));
 	}
 

@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
-import suite.util.Object_;
 
 public class Schedule {
 
@@ -23,24 +22,25 @@ public class Schedule {
 		else
 			firstRunDateTime1 = firstRunDateTime0;
 
-		Source<List<Schedule>> source = Object_.fix(m -> new Source<List<Schedule>>() {
+		Source<List<Schedule>> source = new Object() {
 			private LocalDateTime dateTime = firstRunDateTime1;
 
-			public List<Schedule> source() {
+			private List<Schedule> source() {
 				runnable.run();
-				return List.of(new Schedule(dateTime = dateTime.plusDays(1), m.get()));
+				return List.of(new Schedule(dateTime = dateTime.plusDays(1), this::source));
 			}
-		});
+		}::source;
 
 		return of(firstRunDateTime1, source);
 	}
 
 	public static Schedule ofRepeat(int seconds, Runnable runnable) {
-		Source<List<Schedule>> source = Object_.fix(m -> () -> {
-			runnable.run();
-			return List.of(new Schedule(LocalDateTime.now().plusSeconds(seconds), m.get()));
-		});
-		return of(LocalDateTime.now(), source);
+		return of(LocalDateTime.now(), new Object() {
+			private List<Schedule> source() {
+				runnable.run();
+				return List.of(new Schedule(LocalDateTime.now().plusSeconds(seconds), this::source));
+			}
+		}::source);
 	}
 
 	public static Schedule of(LocalDateTime nextRunDateTime, Source<List<Schedule>> run) {

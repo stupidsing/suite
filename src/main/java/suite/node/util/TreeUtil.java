@@ -13,8 +13,6 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.primitive.IntInt_Int;
-import suite.util.FunUtil.Sink;
-import suite.util.Object_;
 
 public class TreeUtil {
 
@@ -53,16 +51,16 @@ public class TreeUtil {
 
 	public static List<Node> breakdown(Operator operator, Node node) {
 		List<Node> list = new ArrayList<>();
-		Sink<Node> sink = Object_.fix(m -> node_ -> {
-			Tree tree;
-			if ((tree = Tree.decompose(node_, operator)) != null) {
-				Sink<Node> sink_ = m.get();
-				sink_.sink(tree.getLeft());
-				sink_.sink(tree.getRight());
-			} else
-				list.add(node_);
-		});
-		sink.sink(node);
+		new Object() {
+			private void breakdown(Node node_) {
+				Tree tree;
+				if ((tree = Tree.decompose(node_, operator)) != null) {
+					breakdown(tree.getLeft());
+					breakdown(tree.getRight());
+				} else
+					list.add(node_);
+			}
+		}.breakdown(node);
 		return list;
 	}
 
