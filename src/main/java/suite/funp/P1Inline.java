@@ -60,7 +60,6 @@ public class P1Inline {
 							&& (ref = (assign = (FunpAssignReference) n_).reference) instanceof FunpReference //
 							&& (var = ((FunpReference) ref).expr) instanceof FunpVariable) {
 						String vn = ((FunpVariable) var).var;
-						System.out.println("VN " + vn);
 						boolean b = false;
 
 						for (String var_ : List_.reverse(vars))
