@@ -187,9 +187,13 @@ public class P0Parse {
 					variables1 = variables1.add(var);
 
 				Bind bind = new Bind(variables);
-				Funp f = FunpCheckType.of(be, value, bind.bind(be, value, new Parse(variables1).parse(m[2]), parse(m[3])));
+				Funp then = new Parse(variables1).parse(m[2]);
+				Funp else_ = parse(m[3]);
+				Funp f = FunpCheckType.of(be, value, bind.bind(be, value, then, else_));
+
 				for (String var : variables)
 					f = FunpDefine.of(var, FunpDontCare.of(), f);
+
 				return f;
 			} else if ((m = Suite.match("if .0 then .1 else .2").apply(node)) != null)
 				return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
