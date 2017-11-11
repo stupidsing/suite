@@ -61,8 +61,10 @@ public class P1Inline {
 						boolean b = false;
 
 						for (String var_ : List_.reverse(vars))
-							if (!(b |= String_.equals(vn, var_)))
+							if (!String_.equals(vn, var_))
 								n1 = FunpDefine.of(var_, FunpDontCare.of(), n1);
+							else
+								b = true;
 
 						if (b)
 							return FunpDefine.of(vn, assign.value, inline(n1));
