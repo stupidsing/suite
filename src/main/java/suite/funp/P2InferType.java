@@ -596,7 +596,7 @@ public class P2InferType {
 	}
 
 	private static class TypeStruct extends Type {
-		private TypeStruct[] ref = new TypeStruct[] { this, };
+		private TypeStruct ref = this;
 		private List<Pair<String, UnNode<Type>>> pairs;
 		private boolean isCompleted;
 
@@ -650,7 +650,7 @@ public class P2InferType {
 				}
 
 				ts0.isCompleted |= ts1.isCompleted;
-				ts1.ref[0] = ts0;
+				ts1.ref = ts0;
 			}
 
 			return b;
@@ -661,8 +661,7 @@ public class P2InferType {
 		}
 
 		private TypeStruct finalStruct() {
-			TypeStruct ref_ = ref[0];
-			return ref_ != this ? ref_.finalStruct() : this;
+			return ref != this ? ref.finalStruct() : this;
 
 		}
 	}
