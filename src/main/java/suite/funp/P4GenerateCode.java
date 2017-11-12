@@ -269,10 +269,8 @@ public class P4GenerateCode {
 							if (i < assigns.size()) {
 								Pair<OpReg, Funp> assign = assigns.get(i);
 								OpReg op = assign.t0;
-								c1.saveRegs(c2 -> {
-									c2.compileOpSpec(assign.t1, op);
-									assign(c2.mask(op), i + 1);
-								}, op);
+								c1.compileOpSpec(assign.t1, op);
+								assign(c1.mask(op), i + 1);
 							}
 						}
 					}.assign(this, 0);
