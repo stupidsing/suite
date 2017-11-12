@@ -32,7 +32,7 @@ public class P1Inline {
 	public Funp inline(Funp node) {
 		for (int i = 0; i < 3; i++) {
 			node = inlineDefineAssigns(node);
-			node = inlineDefines(node);
+			node = inlineDefines(node, associateDefinitions(node));
 			node = inlineLambdas(node);
 		}
 		return node;
@@ -85,38 +85,7 @@ public class P1Inline {
 		}.inline(node);
 	}
 
-	private Funp inlineDefines(Funp node) {
-		Map<FunpVariable, Funp> defByVariables = new HashMap<>();
-
-		new Object() {
-			private Funp associate(IMap<String, Funp> vars, Funp node_) {
-				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
-						.applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-							associate(vars, value);
-							associate(vars.replace(var, f), expr);
-							return n_;
-						})) //
-						.applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-							IMap<String, Funp> vars1 = vars;
-							for (Pair<String, Funp> pair : pairs)
-								vars1 = vars1.replace(pair.t0, f);
-							for (Pair<String, Funp> pair : pairs)
-								associate(vars1, pair.t1);
-							associate(vars1, expr);
-							return n_;
-						})) //
-						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-							associate(vars.replace(var, f), expr);
-							return n_;
-						})) //
-						.applyIf(FunpVariable.class, f -> f.apply(var -> {
-							defByVariables.put(f, vars.get(var));
-							return n_;
-						})) //
-						.result(), node_);
-			}
-		}.associate(IMap.empty(), node);
-
+	private Funp inlineDefines(Funp node, Map<FunpVariable, Funp> defByVariables) {
 		Map<Funp, IntMutable> countByDefs = new HashMap<>();
 
 		inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
@@ -172,6 +141,41 @@ public class P1Inline {
 						.result(), node_);
 			}
 		}.inline(node);
+	}
+
+	private Map<FunpVariable, Funp> associateDefinitions(Funp node) {
+		Map<FunpVariable, Funp> defByVariables = new HashMap<>();
+
+		new Object() {
+			private Funp associate(IMap<String, Funp> vars, Funp node_) {
+				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
+						.applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
+							associate(vars, value);
+							associate(vars.replace(var, f), expr);
+							return n_;
+						})) //
+						.applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+							IMap<String, Funp> vars1 = vars;
+							for (Pair<String, Funp> pair : pairs)
+								vars1 = vars1.replace(pair.t0, f);
+							for (Pair<String, Funp> pair : pairs)
+								associate(vars1, pair.t1);
+							associate(vars1, expr);
+							return n_;
+						})) //
+						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+							associate(vars.replace(var, f), expr);
+							return n_;
+						})) //
+						.applyIf(FunpVariable.class, f -> f.apply(var -> {
+							defByVariables.put(f, vars.get(var));
+							return n_;
+						})) //
+						.result(), node_);
+			}
+		}.associate(IMap.empty(), node);
+
+		return defByVariables;
 	}
 
 }
