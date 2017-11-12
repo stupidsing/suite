@@ -46,7 +46,6 @@ public class P1Inline {
 					FunpAssignReference assign;
 					FunpCheckType check;
 					FunpDefine define;
-					FunpReference reference;
 					FunpVariable variable;
 
 					while ((define = n0.cast(FunpDefine.class)) != null //
@@ -62,8 +61,7 @@ public class P1Inline {
 						check = null;
 
 					if ((assign = n0.cast(FunpAssignReference.class)) != null //
-							&& (reference = assign.reference.cast(FunpReference.class)) != null //
-							&& (variable = reference.expr.cast(FunpVariable.class)) != null) {
+							&& (variable = assign.reference.expr.cast(FunpVariable.class)) != null) {
 						String vn = variable.var;
 						Funp n1 = assign.expr;
 						Funp n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;

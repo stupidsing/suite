@@ -68,11 +68,11 @@ public class P0 {
 	}
 
 	public static class FunpAssignReference implements Funp, P2.End {
-		public Funp reference;
+		public FunpReference reference;
 		public Funp value;
 		public Funp expr;
 
-		public static FunpAssignReference of(Funp reference, Funp value, Funp expr) {
+		public static FunpAssignReference of(FunpReference reference, Funp value, Funp expr) {
 			FunpAssignReference f = new FunpAssignReference();
 			f.reference = reference;
 			f.value = value;
@@ -80,7 +80,7 @@ public class P0 {
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
+		public <R> R apply(FixieFun3<FunpReference, Funp, Funp, R> fun) {
 			return fun.apply(reference, value, expr);
 		}
 	}
@@ -204,17 +204,17 @@ public class P0 {
 	}
 
 	public static class FunpField implements Funp, P2.End {
-		public Funp reference;
+		public FunpReference reference;
 		public String field;
 
-		public static FunpField of(Funp reference, String field) {
+		public static FunpField of(FunpReference reference, String field) {
 			FunpField f = new FunpField();
 			f.reference = reference;
 			f.field = field;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Funp, String, R> fun) {
+		public <R> R apply(FixieFun2<FunpReference, String, R> fun) {
 			return fun.apply(reference, field);
 		}
 	}
@@ -254,17 +254,17 @@ public class P0 {
 	}
 
 	public static class FunpIndex implements Funp, P4.End {
-		public Funp reference;
+		public FunpReference reference;
 		public Funp index;
 
-		public static FunpIndex of(Funp reference, Funp index) {
+		public static FunpIndex of(FunpReference reference, Funp index) {
 			FunpIndex f = new FunpIndex();
 			f.reference = reference;
 			f.index = index;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
+		public <R> R apply(FixieFun2<FunpReference, Funp, R> fun) {
 			return fun.apply(reference, index);
 		}
 	}
