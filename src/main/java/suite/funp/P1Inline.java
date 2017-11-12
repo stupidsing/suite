@@ -46,25 +46,25 @@ public class P1Inline {
 					FunpAssignReference assign;
 					FunpCheckType check;
 					FunpDefine define;
-					Funp ref, var;
+					FunpReference reference;
+					FunpVariable variable;
 
-					while (n0 instanceof FunpDefine //
-							&& (define = (FunpDefine) n0).value instanceof FunpDontCare //
+					while ((define = n0.cast(FunpDefine.class)) != null //
+							&& define.value instanceof FunpDontCare //
 							&& !define.isPolyType) {
 						vars.add(define.var);
 						n0 = define.expr;
 					}
 
-					if (n0 instanceof FunpCheckType) {
-						check = (FunpCheckType) n0;
+					if ((check = n0.cast(FunpCheckType.class)) != null)
 						n0 = check.expr;
-					} else
+					else
 						check = null;
 
-					if (n0 instanceof FunpAssignReference //
-							&& (ref = (assign = (FunpAssignReference) n0).reference) instanceof FunpReference //
-							&& (var = ((FunpReference) ref).expr) instanceof FunpVariable) {
-						String vn = ((FunpVariable) var).var;
+					if ((assign = n0.cast(FunpAssignReference.class)) != null //
+							&& (reference = assign.reference.cast(FunpReference.class)) != null //
+							&& (variable = reference.expr.cast(FunpVariable.class)) != null) {
+						String vn = variable.var;
 						Funp n1 = assign.expr;
 						Funp n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;
 						boolean b = false;
@@ -132,11 +132,8 @@ public class P1Inline {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-							if (lambda instanceof FunpLambda) {
-								FunpLambda lambda1 = (FunpLambda) lambda;
-								return FunpDefine.of(false, lambda1.var, inline(value), inline(lambda1.expr));
-							} else
-								return null;
+							FunpLambda lambda1 = lambda.cast(FunpLambda.class);
+							return lambda1 != null ? FunpDefine.of(false, lambda1.var, inline(value), inline(lambda1.expr)) : null;
 						})) //
 						.result(), node_);
 			}
