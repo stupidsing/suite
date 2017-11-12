@@ -495,7 +495,7 @@ public class P2InferType {
 	}
 
 	private int getTypeSize(UnNode<Type> n) {
-		return new Switch<Integer>(n.final_() //
+		Integer result = new Switch<Integer>(n.final_() //
 		).applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
 			return getTypeSize(elementType) * size;
 		})).applyIf(TypeBoolean.class, t -> t.apply(() -> {
@@ -510,7 +510,12 @@ public class P2InferType {
 			return ps;
 		})).applyIf(TypeStruct.class, t -> t.apply(pairs -> {
 			return Read.from(pairs).collectAsInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
-		})).result().intValue();
+		})).result();
+
+		if (result != null)
+			return result.intValue();
+		else
+			throw new RuntimeException("cannot get size of type " + n);
 	}
 
 	private static Unify<Type> unify = new Unify<>();
