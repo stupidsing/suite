@@ -34,10 +34,8 @@ public class P1Inline {
 	public Funp inline(Funp node) {
 		for (int i = 0; i < 3; i++) {
 			node = inlineDefineAssigns(node);
-			Map<FunpVariable, Funp> defByVariables = associateDefinitions(node);
-			node = inlineDefines(node, defByVariables);
-			if (Boolean.FALSE)
-				node = inlineFields(node, defByVariables);
+			node = inlineDefines(node, associateDefinitions(node));
+			node = inlineFields(node, associateDefinitions(node));
 			node = inlineLambdas(node);
 		}
 		return node;
@@ -120,7 +118,7 @@ public class P1Inline {
 					if ((define = defines.get(n_)) != null)
 						return inline(define.expr);
 					else if ((define = expands.get(n_)) != null)
-						return define.value;
+						return inline(define.value);
 					else
 						return null;
 				}, node_);
@@ -131,15 +129,21 @@ public class P1Inline {
 	private Funp inlineFields(Funp node, Map<FunpVariable, Funp> defs) {
 		return new Object() {
 			private Funp inline(Funp node_) {
-				FunpField field;
-				FunpStruct struct;
-				FunpVariable variable;
-				if ((field = node_.cast(FunpField.class)) != null //
-						&& (variable = field.reference.cast(FunpReference.class, n -> n.expr).cast(FunpVariable.class)) != null //
-						&& (struct = defs.get(variable).cast(FunpDefine.class, n -> n.value).cast(FunpStruct.class)) != null)
-					return Read.from2(struct.pairs).filterKey(field_ -> String_.equals(field_, field.field)).uniqueResult().t1;
-				else
-					return null;
+				return inspect.rewrite(Funp.class, n_ -> {
+					FunpField field;
+					FunpStruct struct;
+					FunpVariable variable;
+					if ((field = n_.cast(FunpField.class)) != null //
+							&& (variable = field.reference.cast(FunpReference.class, n -> n.expr).cast(FunpVariable.class)) != null //
+							&& (struct = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpStruct.class))) != null) {
+						Pair<String, Funp> pair = Read //
+								.from2(struct.pairs) //
+								.filterKey(field_ -> String_.equals(field_, field.field)) //
+								.first();
+						return pair != null ? inline(pair.t1) : null;
+					} else
+						return null;
+				}, node_);
 			}
 		}.inline(node);
 	}
