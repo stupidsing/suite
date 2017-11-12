@@ -56,12 +56,9 @@ public class ElfTest {
 
 	private Execute test(String program, String input) {
 		return elf.exec(input, offset -> Funp_.main().compile(offset, "" //
-				+ "asm () {\n" //
-				+ "	MOV (EBP, ESP);\n" //
-				+ "}; ((\n" //
+				+ "(\n" //
 				+ program + "\n" //
 				+ ") | (i => asm (EAX = 1; EBX = i;) { INT (-128); })\n" //
-				+ ")\n" //
 		));
 	}
 

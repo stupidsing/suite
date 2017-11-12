@@ -106,6 +106,7 @@ public class P4GenerateCode {
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
 		P4Emit emit = new P4Emit(instructions::add);
+		emit.mov(ebp, esp);
 		new Compile0(CompileOut_.OPREG, emit).new Compile1(registerSet, 0).compile(funp);
 		return instructions;
 	}

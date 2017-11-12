@@ -287,6 +287,8 @@ public class P2InferType {
 					list.add(Pair.of(element, IntIntPair.of(offset0, offset += elementSize)));
 				}
 				return FunpData.of(list);
+			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
+				return FunpSaveRegisters.of(FunpAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				UnNode<Type> t = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(t));
