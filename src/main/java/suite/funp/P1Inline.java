@@ -13,8 +13,10 @@ import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
+import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
+import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
@@ -32,7 +34,10 @@ public class P1Inline {
 	public Funp inline(Funp node) {
 		for (int i = 0; i < 3; i++) {
 			node = inlineDefineAssigns(node);
-			node = inlineDefines(node, associateDefinitions(node));
+			Map<FunpVariable, Funp> defByVariables = associateDefinitions(node);
+			node = inlineDefines(node, defByVariables);
+			if (Boolean.FALSE)
+				node = inlineFields(node, defByVariables);
 			node = inlineLambdas(node);
 		}
 		return node;
@@ -57,8 +62,6 @@ public class P1Inline {
 
 					if ((check = n0.cast(FunpCheckType.class)) != null)
 						n0 = check.expr;
-					else
-						check = null;
 
 					if ((assign = n0.cast(FunpAssignReference.class)) != null //
 							&& (variable = assign.reference.expr.cast(FunpVariable.class)) != null) {
@@ -125,13 +128,28 @@ public class P1Inline {
 		}.inline(node);
 	}
 
+	private Funp inlineFields(Funp node, Map<FunpVariable, Funp> defs) {
+		return new Object() {
+			private Funp inline(Funp node_) {
+				FunpField field;
+				FunpStruct struct;
+				FunpVariable variable;
+				if ((field = node_.cast(FunpField.class)) != null //
+						&& (variable = field.reference.cast(FunpReference.class, n -> n.expr).cast(FunpVariable.class)) != null //
+						&& (struct = defs.get(variable).cast(FunpDefine.class, n -> n.value).cast(FunpStruct.class)) != null)
+					return Read.from2(struct.pairs).filterKey(field_ -> String_.equals(field_, field.field)).uniqueResult().t1;
+				else
+					return null;
+			}
+		}.inline(node);
+	}
+
 	private Funp inlineLambdas(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-							FunpLambda lambda1 = lambda.cast(FunpLambda.class);
-							return lambda1 != null ? FunpDefine.of(false, lambda1.var, inline(value), inline(lambda1.expr)) : null;
+							return lambda.cast(FunpLambda.class, n -> FunpDefine.of(false, n.var, inline(value), inline(n.expr)));
 						})) //
 						.result(), node_);
 			}
