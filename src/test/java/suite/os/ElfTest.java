@@ -55,11 +55,7 @@ public class ElfTest {
 	}
 
 	private Execute test(String program, String input) {
-		return elf.exec(input, offset -> Funp_.main().compile(offset, "" //
-				+ "(\n" //
-				+ program + "\n" //
-				+ ") | (i => asm (EAX = 1; EBX = i;) { INT (-128); })\n" //
-		));
+		return elf.exec(input, offset -> Funp_.main().compile(offset, program));
 	}
 
 }

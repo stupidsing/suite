@@ -66,6 +66,7 @@ public class P4GenerateCode {
 
 	private OpReg cl = amd64.cl;
 	private OpReg eax = amd64.eax;
+	private OpReg ebx = amd64.ebx;
 	private OpReg ecx = amd64.ecx;
 	private OpReg edx = amd64.edx;
 	private OpReg ebp = amd64.ebp;
@@ -107,7 +108,10 @@ public class P4GenerateCode {
 		List<Instruction> instructions = new ArrayList<>();
 		P4Emit emit = new P4Emit(instructions::add);
 		emit.mov(ebp, esp);
-		new Compile0(CompileOut_.OPREG, emit).new Compile1(registerSet, 0).compile(funp);
+		CompileOut out = new Compile0(CompileOut_.OPREG, emit).new Compile1(registerSet, 0).compile(funp);
+		emit.mov(ebx, out.op0);
+		emit.mov(eax, amd64.imm(1, is));
+		emit.emit(amd64.instruction(Insn.INT, amd64.imm(-128)));
 		return instructions;
 	}
 
