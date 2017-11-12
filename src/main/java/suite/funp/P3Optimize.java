@@ -104,10 +104,8 @@ public class P3Optimize {
 	}
 
 	private Integer[] evaluate(Funp lhs0, Funp rhs0) {
-		Funp lhs1 = optimize(lhs0);
-		Funp rhs1 = optimize(rhs0);
-		Integer lhs2 = lhs1 instanceof FunpNumber ? ((FunpNumber) lhs1).i.get() : null;
-		Integer rhs2 = rhs1 instanceof FunpNumber ? ((FunpNumber) rhs1).i.get() : null;
+		Integer lhs2 = optimize(lhs0).cast(FunpNumber.class, n -> n.i.get());
+		Integer rhs2 = optimize(rhs0).cast(FunpNumber.class, n -> n.i.get());
 		return new Integer[] { lhs2, rhs2, };
 	}
 

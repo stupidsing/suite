@@ -475,7 +475,7 @@ public class P4GenerateCode {
 			}
 
 			private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
-				Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i.get() : null;
+				Integer numRhs = rhs.cast(FunpNumber.class, n_ -> n_.i.get());
 				Insn insn = insnByOp.get(operator);
 				Insn setInsn = setInsnByOp.get(operator);
 				Insn setnInsn = setnInsnByOp.get(operator);
