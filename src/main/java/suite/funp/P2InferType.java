@@ -35,7 +35,6 @@ import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpRepeat;
@@ -103,11 +102,11 @@ public class P2InferType {
 			private Funp extract_(Funp n) {
 				return inspect.rewrite(Funp.class, n_ -> {
 					return new Switch<Funp>(n_ //
-					).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-						return FunpDefine.of(var, extractPredefine(value), extract_(expr));
-					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-						return FunpDefineRec.of(Read.from2(pairs).mapValue(P2InferType.this::extractPredefine).toList(),
-								extract_(expr));
+					).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
+						return FunpDefine.of(isPolyType, var, extractPredefine(value), extract_(expr));
+					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
+						List<Pair<String, Funp>> pairs1 = Read.from2(pairs0).mapValue(P2InferType.this::extractPredefine).toList();
+						return FunpDefineRec.of(pairs1, extract_(expr));
 					})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 						return FunpLambda.of(var, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
@@ -121,15 +120,15 @@ public class P2InferType {
 		}.extract_(node0);
 
 		for (Pair<String, Funp> pair : evs)
-			node1 = FunpDefine.of(pair.t0, FunpDontCare.of(), node1);
+			node1 = FunpDefine.of(false, pair.t0, FunpDontCare.of(), node1);
 
 		return node1;
 	}
 
 	private class Infer {
-		private IMap<String, UnNode<Type>> env;
+		private IMap<String, Pair<Boolean, UnNode<Type>>> env;
 
-		private Infer(IMap<String, UnNode<Type>> env) {
+		private Infer(IMap<String, Pair<Boolean, UnNode<Type>>> env) {
 			this.env = env;
 		}
 
@@ -178,9 +177,12 @@ public class P2InferType {
 			})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
 				unify(n, typeNumber, infer(expr));
 				return typeByte;
-			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-				UnNode<Type> tv = value != null ? infer(value) : unify.newRef();
-				return new Infer(env.replace(var, tv)).infer(expr);
+			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
+				return new Infer(env.replace(var, Pair.of(isPolyType, infer(value)))).infer(expr);
+			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+				for (Pair<String, Funp> pair : pairs)
+					env = env.replace(pair.t0, Pair.of(true, infer(pair.t1)));
+				return new Infer(env).infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				UnNode<Type> t = unify.newRef();
 				unify(n, TypeReference.of(t), infer(pointer));
@@ -197,7 +199,7 @@ public class P2InferType {
 				return tf;
 			})).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> t = unify.newRef();
-				unify(n, t, new Infer(env.replace(var, t)).infer(expr));
+				unify(n, t, new Infer(env.replace(var, Pair.of(true, t))).infer(expr));
 				return t;
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				UnNode<Type> t;
@@ -211,19 +213,17 @@ public class P2InferType {
 				return te;
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 				UnNode<Type> tv = unify.newRef();
-				Infer infer1 = new Infer(env.replace(var, tv));
+				Infer infer1 = new Infer(env.replace(var, Pair.of(false, tv)));
 				unify(n, tv, infer(init));
 				unify(n, typeBoolean, infer1.infer(cond));
 				unify(n, tv, infer1.infer(iterate));
 				return tv;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> tv = unify.newRef();
-				return TypeLambda.of(tv, new Infer(env.replace(var, tv)).infer(expr));
+				return TypeLambda.of(tv, new Infer(env.replace(var, Pair.of(false, tv))).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
-			}).applyIf(FunpPolyType.class, f -> f.apply(expr -> {
-				return unify.clone(infer(expr));
-			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
+			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return TypeReference.of(infer(expr));
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				return TypeArray.of(infer(expr), count);
@@ -242,7 +242,9 @@ public class P2InferType {
 				unify(n, infer(right), typeNumber);
 				return typeNumber;
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-				return env.get(var);
+				Pair<Boolean, UnNode<Type>> pair = env.get(var);
+				UnNode<Type> tv = pair.t1;
+				return pair.t0 ? unify.clone(tv) : tv;
 			})).nonNullResult();
 		}
 	}
@@ -296,30 +298,12 @@ public class P2InferType {
 				return FunpAssign.of(FunpMemory.of(erase(reference), 0, size), erase(value), erase(expr));
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
-			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-				if (Boolean.TRUE) {
-					Mutable<Integer> stack = Mutable.nil();
-					int size0 = getTypeSize(typeOf(value));
-					int size1 = align(size0);
-					Erase erase1 = new Erase(scope, env.replace(var, new Var(scope, stack, 0, size0)));
-					return FunpAllocStack.of(size1, erase(value), erase1.erase(expr), stack);
-				} else
-					return erase(new Object() {
-						private Funp expand(Funp n) {
-							return inspect.rewrite(Funp.class, this::expand_, n);
-						}
-
-						private Funp expand_(Funp n) {
-							return new Switch<Funp>(n //
-							).applyIf(FunpDefine.class, f -> f.apply((var_, value_, expr_) -> { // re-defined
-								return String_.equals(var_, var) ? n : null;
-							})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr_) -> {
-								return Read.from2(pairs).isAny((var_, value) -> String_.equals(var_, var)) ? n : null;
-							})).applyIf(FunpVariable.class, f -> f.apply(var_ -> {
-								return String_.equals(var_, var) ? value : n;
-							})).result();
-						}
-					}.expand(expr));
+			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
+				Mutable<Integer> stack = Mutable.nil();
+				int size0 = getTypeSize(typeOf(value));
+				int size1 = align(size0);
+				Erase erase1 = new Erase(scope, env.replace(var, new Var(scope, stack, 0, size0)));
+				return FunpAllocStack.of(size1, erase(value), erase1.erase(expr), stack);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				List<Pair<Var, Funp>> assigns = new ArrayList<>();
 				Mutable<Integer> stack = Mutable.nil();
@@ -384,8 +368,6 @@ public class P2InferType {
 					return FunpRoutine2.of(expr1);
 				else
 					return FunpRoutineIo.of(expr1, lt.is, lt.os);
-			})).applyIf(FunpPolyType.class, f -> f.apply(expr -> {
-				return erase(expr);
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return new Object() {
 					private Funp getAddress(Funp n) {

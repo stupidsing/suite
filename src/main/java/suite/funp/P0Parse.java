@@ -28,7 +28,6 @@ import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpRepeat;
@@ -128,7 +127,7 @@ public class P0Parse {
 				return FunpCoerce.of("byte", parse(m[0]));
 			else if ((m = Suite.match("define .0 := .1 >> .2").apply(node)) != null) {
 				String var = name(m[0]);
-				return FunpDefine.of(var, FunpPolyType.of(parse(m[1])), parseNewVariable(m[2], var));
+				return FunpDefine.of(true, var, parse(m[1]), parseNewVariable(m[2], var));
 				// return parse(Suite.substitute("poly .1 | (.0 => .2)", m));
 			} else if ((m = Suite.match("predef .0").apply(node)) != null)
 				return FunpPredefine.of(parse(m[0]));
@@ -144,13 +143,12 @@ public class P0Parse {
 
 				return FunpDefineRec.of(list //
 						.map(m1 -> {
-							Funp value = FunpPolyType.of(parse1.parse(m1[1]));
-							return Pair.of(name(m1[0]), value);
+							return Pair.of(name(m1[0]), parse1.parse(m1[1]));
 						}) //
 						.toList(), parse1.parse(m[1]));
 			} else if ((m = Suite.match("let .0 := .1 >> .2").apply(node)) != null) {
 				String var = name(m[0]);
-				return FunpDefine.of(var, parse(m[1]), parseNewVariable(m[2], var));
+				return FunpDefine.of(false, var, parse(m[1]), parseNewVariable(m[2], var));
 			}
 			// return parse(Suite.substitute(".1 | (.0 => .2)", m));
 			else if ((m = Suite.match("^.0").apply(node)) != null)
@@ -190,7 +188,7 @@ public class P0Parse {
 				Funp f0 = bind.bind(be, value, new Parse(variables1).parse(m[2]), parse(m[3]));
 				Funp f1 = FunpCheckType.of(be, value, f0);
 				for (String var : variables)
-					f1 = FunpDefine.of(var, FunpDontCare.of(), f1);
+					f1 = FunpDefine.of(false, var, FunpDontCare.of(), f1);
 				return f1;
 			} else if ((m = Suite.match("if .0 then .1 else .2").apply(node)) != null)
 				return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
@@ -207,8 +205,6 @@ public class P0Parse {
 				return FunpLambda.of(var, parseNewVariable(m[1], var));
 			} else if (node instanceof Int)
 				return FunpNumber.ofNumber(((Int) node).number);
-			else if ((m = Suite.match("poly .0").apply(node)) != null)
-				return FunpPolyType.of(parse(m[0]));
 			else if ((m = Suite.match("address .0").apply(node)) != null)
 				return FunpReference.of(parse(m[0]));
 			else if ((m = Suite.match(".0 * array .1").apply(node)) != null)

@@ -15,7 +15,6 @@ import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
@@ -99,7 +98,7 @@ public class P2GenerateLambda {
 			})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 				Bool b1 = new Bool(b);
 				return rt -> b1;
-			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
+			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				return compile_(FunpApply.of(value, FunpLambda.of(var, expr)));
 			})).applyIf(FunpDefineRec.class, f -> {
 				throw new RuntimeException();
@@ -144,8 +143,6 @@ public class P2GenerateLambda {
 			})).applyIf(FunpNumber.class, f -> f.apply(i -> {
 				Int i1 = new Int(i.get());
 				return rt -> i1;
-			})).applyIf(FunpPolyType.class, f -> f.apply(expr -> {
-				return compile_(expr);
 			})).applyIf(FunpReference.class, f -> {
 				throw new RuntimeException();
 			}).applyIf(FunpTree.class, f -> f.apply((operator, left, right) -> {

@@ -14,7 +14,6 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpLambda;
-import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
@@ -32,14 +31,14 @@ public class P1Inline {
 
 	public Funp inline(Funp node) {
 		for (int i = 0; i < 3; i++) {
-			node = inlineDefineAssign(node);
-			node = inlineDefine(node);
-			node = inlineLambda(node);
+			node = inlineDefineAssigns(node);
+			node = inlineDefines(node);
+			node = inlineLambdas(node);
 		}
 		return node;
 	}
 
-	private Funp inlineDefineAssign(Funp node) {
+	private Funp inlineDefineAssigns(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(Funp.class, n0 -> {
@@ -50,7 +49,8 @@ public class P1Inline {
 					Funp ref, var;
 
 					while (n0 instanceof FunpDefine //
-							&& (define = (FunpDefine) n0).value instanceof FunpDontCare) {
+							&& (define = (FunpDefine) n0).value instanceof FunpDontCare //
+							&& !define.isPolyType) {
 						vars.add(define.var);
 						n0 = define.expr;
 					}
@@ -71,12 +71,12 @@ public class P1Inline {
 
 						for (String var_ : List_.reverse(vars))
 							if (!String_.equals(vn, var_))
-								n2 = FunpDefine.of(var_, FunpDontCare.of(), n2);
+								n2 = FunpDefine.of(false, var_, FunpDontCare.of(), n2);
 							else
 								b = true;
 
 						if (b)
-							return FunpDefine.of(vn, assign.value, inline(n2));
+							return FunpDefine.of(false, vn, assign.value, inline(n2));
 					}
 
 					return null;
@@ -85,13 +85,13 @@ public class P1Inline {
 		}.inline(node);
 	}
 
-	private Funp inlineDefine(Funp node) {
+	private Funp inlineDefines(Funp node) {
 		Map<FunpVariable, Funp> defByVariables = new HashMap<>();
 
 		new Object() {
 			private Funp associate(IMap<String, Funp> vars, Funp node_) {
 				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
-						.applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
+						.applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 							associate(vars, value);
 							associate(vars.replace(var, f), expr);
 							return n_;
@@ -149,24 +149,23 @@ public class P1Inline {
 					FunpDefine define;
 					if ((define = defines.get(n_)) != null)
 						return inline(define.expr);
-					else if ((define = expands.get(n_)) != null) {
-						Funp value = define.value;
-						return inline(value instanceof FunpPolyType ? ((FunpPolyType) value).expr : value);
-					} else
+					else if ((define = expands.get(n_)) != null)
+						return define.value;
+					else
 						return null;
 				}, node_);
 			}
 		}.inline(node);
 	}
 
-	private Funp inlineLambda(Funp node) {
+	private Funp inlineLambdas(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 							if (lambda instanceof FunpLambda) {
 								FunpLambda lambda1 = (FunpLambda) lambda;
-								return FunpDefine.of(lambda1.var, inline(value), inline(lambda1.expr));
+								return FunpDefine.of(false, lambda1.var, inline(value), inline(lambda1.expr));
 							} else
 								return null;
 						})) //

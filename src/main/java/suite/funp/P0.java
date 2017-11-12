@@ -134,20 +134,22 @@ public class P0 {
 	}
 
 	public static class FunpDefine implements Funp, P2.End {
+		public boolean isPolyType;
 		public String var;
 		public Funp value;
 		public Funp expr;
 
-		public static FunpDefine of(String var, Funp value, Funp expr) {
+		public static FunpDefine of(boolean isPolyType, String var, Funp value, Funp expr) {
 			FunpDefine f = new FunpDefine();
+			f.isPolyType = isPolyType;
 			f.var = var;
 			f.value = value;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<String, Funp, Funp, R> fun) {
-			return fun.apply(var, value, expr);
+		public <R> R apply(FixieFun4<Boolean, String, Funp, Funp, R> fun) {
+			return fun.apply(isPolyType, var, value, expr);
 		}
 	}
 
@@ -318,20 +320,6 @@ public class P0 {
 
 		public <R> R apply(FixieFun1<Mutable<Integer>, R> fun) {
 			return fun.apply(i);
-		}
-	}
-
-	public static class FunpPolyType implements Funp, P2.End {
-		public Funp expr;
-
-		public static FunpPolyType of(Funp expr) {
-			FunpPolyType f = new FunpPolyType();
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(expr);
 		}
 	}
 
