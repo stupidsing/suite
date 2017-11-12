@@ -15,8 +15,8 @@ import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
-import suite.assembler.Amd64Assembler;
-import suite.assembler.Amd64Parser;
+import suite.assembler.Amd64Assemble;
+import suite.assembler.Amd64Parse;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpAsm;
 import suite.funp.P0.FunpBoolean;
@@ -62,7 +62,7 @@ public class P4GenerateCode {
 	private int ps = Funp_.pointerSize;
 
 	private Amd64 amd64 = Amd64.me;
-	private Amd64Assembler asm = new Amd64Assembler();
+	private Amd64Assemble asm = new Amd64Assemble();
 
 	private OpReg cl = amd64.cl;
 	private OpReg eax = amd64.eax;
@@ -268,7 +268,7 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.ADD, esp, imm));
 					return out;
 				})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
-					Amd64Parser p = new Amd64Parser();
+					Amd64Parse p = new Amd64Parse();
 					new Object() {
 						private void assign(Compile1 c1, int i) {
 							if (i < assigns.size()) {
