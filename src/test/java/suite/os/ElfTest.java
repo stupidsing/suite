@@ -30,15 +30,13 @@ public class ElfTest {
 				+ "define linux-read := `buffer, length` => (\n" //
 				+ "	type buffer = address (size * array byte _) >>\n" //
 				+ "	asm (EAX = 3; EBX = 0; ECX = buffer; EDX = length;) {\n" //
-				+ "		INT (-128);\n" //
-				+ "		-- length in EAX\n" //
+				+ "		INT (-128); -- length in EAX\n" //
 				+ "	}\n" //
 				+ ") >>\n" //
 				+ "define linux-write := `buffer, length` => (\n" //
 				+ "	type buffer = address (size * array byte _) >>\n" //
 				+ "	asm (EAX = 4; EBX = 1; ECX = buffer; EDX = length;) {\n" //
-				+ "		INT (-128);\n" //
-				+ "		-- length in EAX\n" //
+				+ "		INT (-128); -- length in EAX\n" //
 				+ "	}\n" //
 				+ ") >>\n" //
 				+ "iterate n 1 (n != 0) (\n" //
