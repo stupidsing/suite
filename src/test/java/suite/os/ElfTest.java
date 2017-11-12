@@ -14,7 +14,7 @@ public class ElfTest {
 	@Test
 	public void testCode() {
 		Execute exec = test("" //
-				+ "iterate n 0 (n < 100) (n + 1)\n" //
+				+ "iterate n 0 (n < 100) (n + 1) \n" //
 				, "");
 
 		assertEquals(100, exec.code);
@@ -26,26 +26,26 @@ public class ElfTest {
 		String text = "garbage\n";
 
 		Execute exec = test("" //
-				+ "expand size := 256 >>\n" //
-				+ "define linux-read := `buffer, length` => (\n" //
-				+ "	type buffer = address (size * array byte _) >>\n" //
-				+ "	asm (EAX = 3; EBX = 0; ECX = buffer; EDX = length;) {\n" //
-				+ "		INT (-128); -- length in EAX\n" //
-				+ "	}\n" //
-				+ ") >>\n" //
-				+ "define linux-write := `buffer, length` => (\n" //
-				+ "	type buffer = address (size * array byte _) >>\n" //
-				+ "	asm (EAX = 4; EBX = 1; ECX = buffer; EDX = length;) {\n" //
-				+ "		INT (-128); -- length in EAX\n" //
-				+ "	}\n" //
-				+ ") >>\n" //
-				+ "iterate n 1 (n != 0) (\n" //
-				+ "	let buffer := (size * array byte _) >>\n" //
-				+ "	let nBytesRead := (address buffer, size | linux-read) >> (\n" //
-				+ "		(address buffer, nBytesRead | linux-write);\n" //
+				+ "expand size := 256 >> \n" //
+				+ "define linux-read := `buffer, length` => ( \n" //
+				+ "	type buffer = address (size * array byte _) >> \n" //
+				+ "	asm (EAX = 3; EBX = 0; ECX = buffer; EDX = length;) { \n" //
+				+ "		INT (-128); -- length in EAX \n" //
+				+ "	} \n" //
+				+ ") >> \n" //
+				+ "define linux-write := `buffer, length` => ( \n" //
+				+ "	type buffer = address (size * array byte _) >> \n" //
+				+ "	asm (EAX = 4; EBX = 1; ECX = buffer; EDX = length;) { \n" //
+				+ "		INT (-128); -- length in EAX \n" //
+				+ "	} \n" //
+				+ ") >> \n" //
+				+ "iterate n 1 (n != 0) ( \n" //
+				+ "	let buffer := (size * array byte _) >> \n" //
+				+ "	let nBytesRead := (address buffer, size | linux-read) >> ( \n" //
+				+ "		(address buffer, nBytesRead | linux-write); \n" //
 				+ "		nBytesRead" //
-				+ "	)\n" //
-				+ ")\n" //
+				+ "	) \n" //
+				+ ") \n" //
 				, text);
 
 		assertEquals(0, exec.code);
