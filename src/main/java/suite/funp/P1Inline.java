@@ -9,6 +9,7 @@ import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpAssignReference;
+import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
@@ -30,8 +31,7 @@ public class P1Inline {
 
 	public Funp inline(Funp node) {
 		for (int i = 0; i < 3; i++) {
-			if (Boolean.FALSE)
-				node = inlineDefineAssign(node);
+			node = inlineDefineAssign(node);
 			node = inlineDefine(node);
 			node = inlineLambda(node);
 		}
@@ -44,6 +44,7 @@ public class P1Inline {
 				return inspect.rewrite(Funp.class, n0 -> {
 					List<String> vars = new ArrayList<>();
 					FunpAssignReference assign;
+					FunpCheckType check;
 					FunpDefine define;
 					Funp ref, var;
 
@@ -53,21 +54,28 @@ public class P1Inline {
 						n0 = define.expr;
 					}
 
+					if (n0 instanceof FunpCheckType) {
+						check = (FunpCheckType) n0;
+						n0 = check.expr;
+					} else
+						check = null;
+
 					if (n0 instanceof FunpAssignReference //
 							&& (ref = (assign = (FunpAssignReference) n0).reference) instanceof FunpReference //
 							&& (var = ((FunpReference) ref).expr) instanceof FunpVariable) {
 						String vn = ((FunpVariable) var).var;
 						Funp n1 = assign.expr;
+						Funp n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;
 						boolean b = false;
 
 						for (String var_ : List_.reverse(vars))
 							if (!String_.equals(vn, var_))
-								n1 = FunpDefine.of(var_, FunpDontCare.of(), n1);
+								n2 = FunpDefine.of(var_, FunpDontCare.of(), n2);
 							else
 								b = true;
 
 						if (b)
-							return FunpDefine.of(vn, assign.value, inline(n1));
+							return FunpDefine.of(vn, assign.value, inline(n2));
 					}
 
 					return null;

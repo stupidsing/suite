@@ -188,7 +188,7 @@ public class P0Parse {
 
 				Bind bind = new Bind(variables);
 				Funp f0 = bind.bind(be, value, new Parse(variables1).parse(m[2]), parse(m[3]));
-				Funp f1 = f0; // FunpCheckType.of(be, value, f0);
+				Funp f1 = FunpCheckType.of(be, value, f0);
 				for (String var : variables)
 					f1 = FunpDefine.of(var, FunpDontCare.of(), f1);
 				return f1;
