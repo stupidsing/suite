@@ -14,6 +14,7 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
@@ -148,9 +149,10 @@ public class P1Inline {
 					FunpDefine define;
 					if ((define = defines.get(n_)) != null)
 						return inline(define.expr);
-					else if ((define = expands.get(n_)) != null)
-						return inline(define.value);
-					else
+					else if ((define = expands.get(n_)) != null) {
+						Funp value = define.value;
+						return inline(value instanceof FunpPolyType ? ((FunpPolyType) value).expr : value);
+					} else
 						return null;
 				}, node_);
 			}
