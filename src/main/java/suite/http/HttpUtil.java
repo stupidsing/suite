@@ -70,7 +70,9 @@ public class HttpUtil {
 		Map<String, URI> links = new HashMap<>();
 		String[] m;
 		while ((m = ParseUtil.fitCaseInsensitive(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
-			links.putIfAbsent(m[4], uri.resolve(m[2]));
+			String href = m[2];
+			if (!href.startsWith("javascript:"))
+				links.putIfAbsent(m[4], uri.resolve(href));
 			out = m[5];
 		}
 		return links;
