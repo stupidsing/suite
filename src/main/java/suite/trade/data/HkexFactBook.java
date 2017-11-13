@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import suite.adt.Opt;
 import suite.http.HttpUtil;
+import suite.node.util.Singleton;
 import suite.os.Execute;
 import suite.os.SerializedStoreCache;
 import suite.streamlet.Read;
@@ -24,11 +25,13 @@ public class HkexFactBook {
 	private Serialize serialize = Serialize.me;
 
 	public Streamlet<String> queryDelisted() {
+		String url = "http://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc";
+
 		return Read.from(SerializedStoreCache //
 				.of(serialize.list(serialize.variableLengthString)) //
 				.get(prefix + ".queryDelisted()", () -> {
 					String cmd = "" //
-							+ "curl http://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc" //
+							+ Singleton.me.storeCache.sh("curl " + url) //
 							+ " | catdoc" //
 							+ " | sed -n 's/.*(\\(.*\\)).*/\\1/p'" //
 							+ " | egrep -v '^[A-Za-z]'" //
@@ -49,7 +52,7 @@ public class HkexFactBook {
 		String url = getUrl(year);
 
 		String cmd = "" //
-				+ "curl '" + url + "'" //
+				+ Singleton.me.storeCache.sh("curl '" + url + "'") //
 				+ " | pdftotext -nopgbrk -raw - -" //
 				+ " | sed -e '1,/leading companies in market capitalisation/ d'" //
 				+ " | grep '^[1-9]'" //
@@ -87,7 +90,7 @@ public class HkexFactBook {
 				.get(prefix + ".queryMainBoardCompanies(" + year + ")", () -> {
 					String url = getUrl(year);
 					String cmd = "" //
-							+ "curl '" + url + "'" //
+							+ Singleton.me.storeCache.sh("curl '" + url + "'") //
 							+ " | pdftotext -nopgbrk -raw - -" //
 							+ " | sed -e '1,/List of listed companies on Main Board/ d'" //
 							+ " | sed -n '1,/List of listed companies on GEM/ p'" //
