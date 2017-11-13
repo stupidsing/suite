@@ -46,7 +46,7 @@ public class Time implements Comparable<Time> {
 			else
 				return ofYmdHms(s);
 		else
-			throw new RuntimeException();
+			throw new RuntimeException("invalid time " + s);
 	}
 
 	public static Time ofYmd(String s) {

@@ -46,7 +46,7 @@ public class HkexFactBook {
 	}
 
 	private List<String> queryLeadingCompaniesByMarketCap_(int year) {
-		String url = getUrl(year, "market capitalisation");
+		String url = getUrl(year);
 
 		String cmd = "" //
 				+ "curl '" + url + "'" //
@@ -85,7 +85,7 @@ public class HkexFactBook {
 		return Read.from(SerializedStoreCache //
 				.of(serialize.list(serialize.variableLengthString)) //
 				.get(prefix + ".queryMainBoardCompanies(" + year + ")", () -> {
-					String url = getUrl(year, "Appendices");
+					String url = getUrl(year);
 					String cmd = "" //
 							+ "curl '" + url + "'" //
 							+ " | pdftotext -nopgbrk -raw - -" //
@@ -101,7 +101,24 @@ public class HkexFactBook {
 				}));
 	}
 
-	private String getUrl(int year, String section) {
+	private String getUrl(int year) {
+		if (year == 2011)
+			return "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book/HKEx-Fact-Book-2011/fb_2011.pdf?la=en";
+		else if (year == 2012)
+			return "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book/HKEx-Fact-Book-2012/fb_2012.pdf?la=en";
+		else if (year == 2013)
+			return "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book/HKEx-Fact-Book-2013/fb_2013.pdf?la=en";
+		else if (year == 2014)
+			return "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book/HKEX-Fact-Book-2014/fb_2014.pdf?la=en";
+		else if (year == 2015)
+			return "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book/HKEX-Fact-Book-2015/fb_2015.pdf?la=en";
+		else if (year == 2016)
+			return "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book/HKEX-Fact-Book-2016/FB_2016.pdf?la=en";
+		else
+			throw new RuntimeException();
+	}
+
+	private String getUrl0(int year, String section) {
 		URI uri0 = To.uri("https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook.htm");
 		Map<String, URI> links0 = HttpUtil.resolveLinks(uri0);
 		URI uri1 = links0.get(Integer.toString(year));

@@ -79,12 +79,14 @@ public class Yahoo {
 	public DataSource dataSourceL1(String symbol, TimeRange period) {
 		StockHistory stockHistory = getStockHistory(symbol);
 		DataSource ds = stockHistory.filter(period).toDataSource();
+		long[] ts = ds.ts;
 
 		// the latest time stamp may fluctuate; adjust it to previous market
 		// close time
-		long[] ts = ds.ts;
-		int last = ts.length - 1;
-		ts[last] = getTradeTimeBefore(stockHistory.exchange, ts[last]);
+		if (0 < ts.length) {
+			int last = ts.length - 1;
+			ts[last] = getTradeTimeBefore(stockHistory.exchange, ts[last]);
+		}
 
 		return ds.cleanse().range(period);
 	}
@@ -97,10 +99,14 @@ public class Yahoo {
 		Path path = HomeDir.dir("yahoo").resolve(symbol + ".txt");
 		StockHistory stockHistory0;
 
-		if (Files.exists(path)) {
-			List<String> lines = Rethrow.ex(() -> Files.readAllLines(path));
-			stockHistory0 = StockHistory.of(Read.from(lines).outlet());
-		} else
+		if (Files.exists(path))
+			try {
+				List<String> lines = Rethrow.ex(() -> Files.readAllLines(path));
+				stockHistory0 = StockHistory.of(Read.from(lines).outlet());
+			} catch (Exception ex) {
+				stockHistory0 = StockHistory.new_();
+			}
+		else
 			stockHistory0 = StockHistory.new_();
 
 		Time time = HkexUtil.getCloseTimeBefore(Time.now());
