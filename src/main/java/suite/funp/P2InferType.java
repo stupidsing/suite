@@ -585,6 +585,7 @@ public class P2InferType {
 	}
 
 	private static class TypeStruct extends Type {
+		private int id = Util.temp();
 		private TypeStruct ref = this;
 		private List<Pair<String, UnNode<Type>>> pairs;
 		private boolean isCompleted;
@@ -616,9 +617,10 @@ public class P2InferType {
 				TypeStruct x = finalStruct();
 				TypeStruct y = ((TypeStruct) type).finalStruct();
 
-				boolean ord = System.identityHashCode(x) < System.identityHashCode(y);
+				boolean ord = x.id < y.id;
 				TypeStruct ts0 = ord ? x : y;
 				TypeStruct ts1 = ord ? y : x;
+
 				Map<String, UnNode<Type>> typeByField0 = Read.from2(ts0.pairs).toMap();
 				Map<String, UnNode<Type>> typeByField1 = Read.from2(ts1.pairs).toMap();
 				Set<String> fields0 = typeByField0.keySet();
@@ -650,6 +652,7 @@ public class P2InferType {
 
 		private TypeStruct finalStruct() {
 			return ref != this ? ref.finalStruct() : this;
+
 		}
 	}
 
