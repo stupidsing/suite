@@ -194,7 +194,7 @@ public class P2InferType {
 			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
 				UnNode<Type> tf = unify.newRef();
 				TypeStruct ts = TypeStruct.of();
-				ts.pairs().add(Pair.of(field, tf));
+				ts.pairs.add(Pair.of(field, tf));
 				unify(n, infer(reference), TypeReference.of(ts));
 				return tf;
 			})).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
@@ -607,7 +607,7 @@ public class P2InferType {
 		}
 
 		private <R> R apply(FixieFun1<List<Pair<String, UnNode<Type>>>, R> fun) {
-			return fun.apply(pairs());
+			return fun.apply(finalStruct().pairs);
 		}
 
 		public boolean unify(UnNode<Type> type) {
@@ -641,18 +641,14 @@ public class P2InferType {
 
 				ts0.isCompleted |= ts1.isCompleted;
 				ts1.ref = ts0;
+				ts1.pairs = null;
 			}
 
 			return b;
 		}
 
-		private List<Pair<String, UnNode<Type>>> pairs() {
-			return finalStruct().pairs;
-		}
-
 		private TypeStruct finalStruct() {
 			return ref != this ? ref.finalStruct() : this;
-
 		}
 	}
 
