@@ -86,10 +86,11 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 	@Override
 	public String toString() {
 		IList<AutoObject<?>> recurse0 = recurse.get();
+		StringBuilder sb = new StringBuilder();
+
 		if (!recurse0.contains(this))
 			try {
 				recurse.set(IList.cons(this, recurse0));
-				StringBuilder sb = new StringBuilder();
 				sb.append(getClass().getSimpleName() + "(");
 				for (Object value : values())
 					sb.append(value + ",");

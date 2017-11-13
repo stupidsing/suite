@@ -2,7 +2,11 @@ package suite.util;
 
 import java.util.Objects;
 
+import suite.immutable.IList;
+
 public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Comparable<T> {
+
+	private static ThreadLocal<IList<MapObject<?>>> recurse = ThreadLocal.withInitial(IList::end);
 
 	@Override
 	public MapObject<T> clone() {
@@ -37,12 +41,21 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 
 	@Override
 	public String toString() {
+		IList<MapObject<?>> recurse0 = recurse.get();
 		StringBuilder sb = new StringBuilder();
-		sb.append(getClass().getSimpleName() + "(");
-		for (Object value : MapObject_.list(this))
-			sb.append(value + ",");
-		sb.append(")");
-		return sb.toString();
+
+		if (!recurse0.contains(this))
+			try {
+				sb.append(getClass().getSimpleName() + "(");
+				for (Object value : MapObject_.list(this))
+					sb.append(value + ",");
+				sb.append(")");
+				return sb.toString();
+			} finally {
+				recurse.set(recurse0);
+			}
+		else
+			return "<recurse>";
 	}
 
 	private T self() {
