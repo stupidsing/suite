@@ -51,7 +51,7 @@ public class StoreCache {
 	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {
-		Outlet<Bytes> outlet = getOutlet(key, () -> Outlet.<Bytes>of(source.source()));
+		Outlet<Bytes> outlet = getOutlet(key, () -> Outlet.<Bytes> of(source.source()));
 		return outlet.collect(Bytes::of);
 	}
 
