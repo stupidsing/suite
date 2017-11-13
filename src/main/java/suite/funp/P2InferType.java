@@ -613,7 +613,6 @@ public class P2InferType {
 			if (b) {
 				TypeStruct x = finalStruct();
 				TypeStruct y = ((TypeStruct) type).finalStruct();
-
 				boolean ord = x.id < y.id;
 				TypeStruct ts0 = ord ? x : y;
 				TypeStruct ts1 = ord ? y : x;
@@ -632,13 +631,13 @@ public class P2InferType {
 					}
 				}
 
-				if (ts1.isCompleted) {
-					ts0.isCompleted = true;
-					b &= Read.from2(ts0.pairs).keys().isAll(typeByField1::containsKey);
-				}
+				b &= !ts1.isCompleted || Read.from2(ts0.pairs).keys().isAll(typeByField1::containsKey);
 
-				ts1.ref = ts0;
-				ts1.pairs = null;
+				if (b) {
+					ts0.isCompleted |= ts1.isCompleted;
+					ts1.ref = ts0;
+					ts1.pairs = null;
+				}
 			}
 
 			return b;
