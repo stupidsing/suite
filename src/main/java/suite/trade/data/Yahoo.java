@@ -79,10 +79,10 @@ public class Yahoo {
 	public DataSource dataSourceL1(String symbol, TimeRange period) {
 		StockHistory stockHistory = getStockHistory(symbol);
 		DataSource ds = stockHistory.filter(period).toDataSource();
+		long[] ts = ds.ts;
 
 		// the latest time stamp may fluctuate; adjust it to previous market
 		// close time
-		long[] ts = ds.ts;
 		if (0 < ts.length) {
 			int last = ts.length - 1;
 			ts[last] = getTradeTimeBefore(stockHistory.exchange, ts[last]);
