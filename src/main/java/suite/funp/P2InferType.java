@@ -2,10 +2,9 @@ package suite.funp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.adt.Mutable;
@@ -36,7 +35,6 @@ import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
-import suite.funp.P0.FunpPolyType;
 import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpRepeat;
@@ -65,6 +63,7 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.AutoObject;
 import suite.util.Rethrow;
+import suite.util.Set_;
 import suite.util.String_;
 import suite.util.Switch;
 import suite.util.Util;
@@ -103,11 +102,11 @@ public class P2InferType {
 			private Funp extract_(Funp n) {
 				return inspect.rewrite(Funp.class, n_ -> {
 					return new Switch<Funp>(n_ //
-					).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-						return FunpDefine.of(var, extractPredefine(value), extract_(expr));
-					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-						return FunpDefineRec.of(Read.from2(pairs).mapValue(P2InferType.this::extractPredefine).toList(),
-								extract_(expr));
+					).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
+						return FunpDefine.of(isPolyType, var, extractPredefine(value), extract_(expr));
+					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
+						List<Pair<String, Funp>> pairs1 = Read.from2(pairs0).mapValue(P2InferType.this::extractPredefine).toList();
+						return FunpDefineRec.of(pairs1, extract_(expr));
 					})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 						return FunpLambda.of(var, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
@@ -121,15 +120,15 @@ public class P2InferType {
 		}.extract_(node0);
 
 		for (Pair<String, Funp> pair : evs)
-			node1 = FunpDefine.of(pair.t0, FunpDontCare.of(), node1);
+			node1 = FunpDefine.of(false, pair.t0, FunpDontCare.of(), node1);
 
 		return node1;
 	}
 
 	private class Infer {
-		private IMap<String, UnNode<Type>> env;
+		private IMap<String, Pair<Boolean, UnNode<Type>>> env;
 
-		private Infer(IMap<String, UnNode<Type>> env) {
+		private Infer(IMap<String, Pair<Boolean, UnNode<Type>>> env) {
 			this.env = env;
 		}
 
@@ -178,9 +177,12 @@ public class P2InferType {
 			})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
 				unify(n, typeNumber, infer(expr));
 				return typeByte;
-			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-				UnNode<Type> tv = value != null ? infer(value) : unify.newRef();
-				return new Infer(env.replace(var, tv)).infer(expr);
+			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
+				return new Infer(env.replace(var, Pair.of(isPolyType, infer(value)))).infer(expr);
+			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+				for (Pair<String, Funp> pair : pairs)
+					env = env.replace(pair.t0, Pair.of(true, infer(pair.t1)));
+				return new Infer(env).infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				UnNode<Type> t = unify.newRef();
 				unify(n, TypeReference.of(t), infer(pointer));
@@ -190,15 +192,14 @@ public class P2InferType {
 			}).applyIf(FunpError.class, f -> {
 				return unify.newRef();
 			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
+				UnNode<Type> tf = unify.newRef();
 				TypeStruct ts = TypeStruct.of();
+				ts.pairs().add(Pair.of(field, tf));
 				unify(n, infer(reference), TypeReference.of(ts));
-				return Read //
-						.from(ts.pairs) //
-						.filter(pair -> String_.equals(pair.t0, field)) //
-						.uniqueResult().t1;
+				return tf;
 			})).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> t = unify.newRef();
-				unify(n, t, new Infer(env.replace(var, t)).infer(expr));
+				unify(n, t, new Infer(env.replace(var, Pair.of(true, t))).infer(expr));
 				return t;
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				UnNode<Type> t;
@@ -212,19 +213,17 @@ public class P2InferType {
 				return te;
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 				UnNode<Type> tv = unify.newRef();
-				Infer infer1 = new Infer(env.replace(var, tv));
+				Infer infer1 = new Infer(env.replace(var, Pair.of(false, tv)));
 				unify(n, tv, infer(init));
 				unify(n, typeBoolean, infer1.infer(cond));
 				unify(n, tv, infer1.infer(iterate));
 				return tv;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> tv = unify.newRef();
-				return TypeLambda.of(tv, new Infer(env.replace(var, tv)).infer(expr));
+				return TypeLambda.of(tv, new Infer(env.replace(var, Pair.of(false, tv))).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
-			}).applyIf(FunpPolyType.class, f -> f.apply(expr -> {
-				return unify.clone(infer(expr));
-			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
+			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return TypeReference.of(infer(expr));
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				return TypeArray.of(infer(expr), count);
@@ -243,7 +242,9 @@ public class P2InferType {
 				unify(n, infer(right), typeNumber);
 				return typeNumber;
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-				return env.get(var);
+				Pair<Boolean, UnNode<Type>> pair = env.get(var);
+				UnNode<Type> tv = pair.t1;
+				return pair.t0 ? unify.clone(tv) : tv;
 			})).nonNullResult();
 		}
 	}
@@ -288,6 +289,8 @@ public class P2InferType {
 					list.add(Pair.of(element, IntIntPair.of(offset0, offset += elementSize)));
 				}
 				return FunpData.of(list);
+			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
+				return FunpSaveRegisters.of(FunpAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				UnNode<Type> t = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(t));
@@ -295,30 +298,12 @@ public class P2InferType {
 				return FunpAssign.of(FunpMemory.of(erase(reference), 0, size), erase(value), erase(expr));
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
-			})).applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-				if (Boolean.TRUE) {
-					Mutable<Integer> stack = Mutable.nil();
-					int size0 = getTypeSize(typeOf(value));
-					int size1 = align(size0);
-					Erase erase1 = new Erase(scope, env.replace(var, new Var(scope, stack, 0, size0)));
-					return FunpAllocStack.of(size1, erase(value), erase1.erase(expr), stack);
-				} else
-					return erase(new Object() {
-						private Funp expand(Funp n) {
-							return inspect.rewrite(Funp.class, this::expand_, n);
-						}
-
-						private Funp expand_(Funp n) {
-							return new Switch<Funp>(n //
-							).applyIf(FunpDefine.class, f -> f.apply((var_, value_, expr_) -> { // re-defined
-								return String_.equals(var_, var) ? n : null;
-							})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr_) -> {
-								return Read.from2(pairs).isAny((var_, value) -> String_.equals(var_, var)) ? n : null;
-							})).applyIf(FunpVariable.class, f -> f.apply(var_ -> {
-								return String_.equals(var_, var) ? value : n;
-							})).result();
-						}
-					}.expand(expr));
+			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
+				Mutable<Integer> stack = Mutable.nil();
+				int size0 = getTypeSize(typeOf(value));
+				int size1 = align(size0);
+				Erase erase1 = new Erase(scope, env.replace(var, new Var(scope, stack, 0, size0)));
+				return FunpAllocStack.of(size1, erase(value), erase1.erase(expr), stack);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				List<Pair<Var, Funp>> assigns = new ArrayList<>();
 				Mutable<Integer> stack = Mutable.nil();
@@ -345,14 +330,16 @@ public class P2InferType {
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
 				TypeStruct ts = TypeStruct.of();
 				unify(n, typeOf(reference), TypeReference.of(ts));
+				TypeStruct ts1 = ts.finalStruct();
 				int offset = 0;
-				for (Pair<String, UnNode<Type>> pair : ts.pairs) {
-					int offset1 = offset + getTypeSize(pair.t1);
-					if (!String_.equals(pair.t0, field))
-						offset = offset1;
-					else
-						return FunpMemory.of(erase(reference), offset, offset1);
-				}
+				if (ts1.isCompleted)
+					for (Pair<String, UnNode<Type>> pair : ts1.pairs) {
+						int offset1 = offset + getTypeSize(pair.t1);
+						if (!String_.equals(pair.t0, field))
+							offset = offset1;
+						else
+							return FunpMemory.of(erase(reference), offset, offset1);
+					}
 				throw new RuntimeException();
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				UnNode<Type> te = unify.newRef();
@@ -381,8 +368,6 @@ public class P2InferType {
 					return FunpRoutine2.of(expr1);
 				else
 					return FunpRoutineIo.of(expr1, lt.is, lt.os);
-			})).applyIf(FunpPolyType.class, f -> f.apply(expr -> {
-				return erase(expr);
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return new Object() {
 					private Funp getAddress(Funp n) {
@@ -406,15 +391,22 @@ public class P2InferType {
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpStruct.class, f -> f.apply(fvs -> {
-				TypeStruct ts = TypeStruct.of();
-				unify(n, ts, type0);
-				Iterator<Pair<String, UnNode<Type>>> ftsIter = ts.pairs.iterator();
-				int offset = 0;
+				TypeStruct ts0 = TypeStruct.of();
+				unify(n, ts0, type0);
+
+				TypeStruct ts1 = ts0.finalStruct();
+				Map<String, Funp> values = Read.from2(fvs).toMap();
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
-				for (Pair<String, Funp> fv : fvs) {
-					int offset0 = offset;
-					list.add(Pair.of(erase(fv.t1), IntIntPair.of(offset0, offset += getTypeSize(ftsIter.next().t1))));
-				}
+				int offset = 0;
+
+				if (ts1.isCompleted)
+					for (Pair<String, UnNode<Type>> pair : ts1.pairs) {
+						int offset0 = offset;
+						list.add(Pair.of(erase(values.get(pair.t0)), IntIntPair.of(offset0, offset += getTypeSize(pair.t1))));
+					}
+				else
+					throw new RuntimeException();
+
 				return FunpData.of(list);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(env.get(var));
@@ -487,7 +479,7 @@ public class P2InferType {
 	}
 
 	private int getTypeSize(UnNode<Type> n) {
-		return new Switch<Integer>(n.final_() //
+		Integer result = new Switch<Integer>(n.final_() //
 		).applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
 			return getTypeSize(elementType) * size;
 		})).applyIf(TypeBoolean.class, t -> t.apply(() -> {
@@ -502,7 +494,12 @@ public class P2InferType {
 			return ps;
 		})).applyIf(TypeStruct.class, t -> t.apply(pairs -> {
 			return Read.from(pairs).collectAsInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
-		})).result().intValue();
+		})).result();
+
+		if (result != null)
+			return result.intValue();
+		else
+			throw new RuntimeException("cannot get size of type " + n);
 	}
 
 	private static Unify<Type> unify = new Unify<>();
@@ -588,9 +585,9 @@ public class P2InferType {
 	}
 
 	private static class TypeStruct extends Type {
+		private TypeStruct ref = this;
 		private List<Pair<String, UnNode<Type>>> pairs;
 		private boolean isCompleted;
-		private TypeStruct reference;
 
 		private static TypeStruct of() {
 			return new TypeStruct(new ArrayList<>(), false);
@@ -609,7 +606,7 @@ public class P2InferType {
 		}
 
 		private <R> R apply(FixieFun1<List<Pair<String, UnNode<Type>>>, R> fun) {
-			return fun.apply(finalStruct().pairs);
+			return fun.apply(pairs());
 		}
 
 		public boolean unify(UnNode<Type> type) {
@@ -622,34 +619,37 @@ public class P2InferType {
 				boolean ord = System.identityHashCode(x) < System.identityHashCode(y);
 				TypeStruct ts0 = ord ? x : y;
 				TypeStruct ts1 = ord ? y : x;
-				ts1.reference = ts0;
-
-				Map<String, UnNode<Type>> pairs0 = Read.from(ts0.pairs).toMap(Pair::first_, Pair::second);
-				Map<String, UnNode<Type>> pairs1 = Read.from(ts1.pairs).toMap(Pair::first_, Pair::second);
-				String field;
-
-				Set<String> commons = new HashSet<>(pairs0.keySet());
-				commons.retainAll(pairs1.keySet());
+				Map<String, UnNode<Type>> typeByField0 = Read.from2(ts0.pairs).toMap();
+				Map<String, UnNode<Type>> typeByField1 = Read.from2(ts1.pairs).toMap();
+				Set<String> fields0 = typeByField0.keySet();
+				Set<String> fields1 = typeByField1.keySet();
+				Set<String> commons = Set_.intersect(List.of(fields0, fields1));
 
 				for (String common : commons)
-					b &= unify.unify(pairs0.get(common), pairs1.get(common));
+					b &= unify.unify(typeByField0.get(common), typeByField1.get(common));
 
-				for (Pair<String, UnNode<Type>> pair0 : ts0.pairs)
-					if (!commons.contains(field = pair0.t0)) {
-						ts0.pairs.add(Pair.of(field, pairs1.get(field)));
-						b &= !ts0.isCompleted;
-					}
-				for (Pair<String, UnNode<Type>> pair1 : ts1.pairs)
-					if (!commons.contains(field = pair1.t0)) {
-						ts1.pairs.add(Pair.of(field, pairs0.get(field)));
-						b &= !ts1.isCompleted;
-					}
+				b &= !ts0.isCompleted || Read.from(fields1).isAll(commons::contains);
+				b &= !ts1.isCompleted || Read.from(fields0).isAll(commons::contains);
+
+				for (Entry<String, UnNode<Type>> e : typeByField1.entrySet()) {
+					String field = e.getKey();
+					if (!commons.contains(field))
+						ts0.pairs.add(Pair.of(field, e.getValue()));
+				}
+
+				ts0.isCompleted |= ts1.isCompleted;
+				ts1.ref = ts0;
 			}
+
 			return b;
 		}
 
+		private List<Pair<String, UnNode<Type>>> pairs() {
+			return finalStruct().pairs;
+		}
+
 		private TypeStruct finalStruct() {
-			return reference != null ? reference.finalStruct() : this;
+			return ref != this ? ref.finalStruct() : this;
 		}
 	}
 

@@ -9,11 +9,14 @@ import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpAssignReference;
+import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
+import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
+import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
@@ -30,79 +33,58 @@ public class P1Inline {
 
 	public Funp inline(Funp node) {
 		for (int i = 0; i < 3; i++) {
-			node = inlineDefineAssign(node);
-			node = inlineDefine(node);
-			node = inlineLambda(node);
+			node = inlineDefineAssigns(node);
+			node = inlineDefines(node, associateDefinitions(node));
+			node = inlineFields(node, associateDefinitions(node));
+			node = inlineLambdas(node);
 		}
 		return node;
 	}
 
-	private Funp inlineDefineAssign(Funp node) {
+	private Funp inlineDefineAssigns(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
-				return inspect.rewrite(Funp.class, n_ -> {
-					List<String> definedVariables = new ArrayList<>();
+				return inspect.rewrite(Funp.class, n0 -> {
+					List<String> vars = new ArrayList<>();
 					FunpAssignReference assign;
+					FunpCheckType check;
 					FunpDefine define;
-					Funp ref, var;
-					String vn;
+					FunpVariable variable;
 
-					while (n_ instanceof FunpDefine //
-							&& (define = (FunpDefine) n_).value instanceof FunpDontCare) {
-						definedVariables.add(define.var);
-						n_ = define.expr;
+					while ((define = n0.cast(FunpDefine.class)) != null //
+							&& define.value instanceof FunpDontCare //
+							&& !define.isPolyType) {
+						vars.add(define.var);
+						n0 = define.expr;
 					}
 
-					if (n_ instanceof FunpAssignReference //
-							&& (ref = (assign = (FunpAssignReference) n_).reference) instanceof FunpReference //
-							&& (var = ((FunpReference) ref).expr) instanceof FunpVariable //
-							&& definedVariables.contains(vn = ((FunpVariable) var).var)) {
-						n_ = inline(assign.expr);
+					if ((check = n0.cast(FunpCheckType.class)) != null)
+						n0 = check.expr;
 
-						for (String definedVariable : List_.reverse(definedVariables))
-							if (!String_.equals(vn, definedVariable))
-								n_ = FunpDefine.of(definedVariable, FunpDontCare.of(), n_);
+					if ((assign = n0.cast(FunpAssignReference.class)) != null //
+							&& (variable = assign.reference.expr.cast(FunpVariable.class)) != null) {
+						String vn = variable.var;
+						Funp n1 = assign.expr;
+						Funp n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;
+						boolean b = false;
 
-						return FunpDefine.of(vn, inline(assign.value), n_);
-					} else
-						return null;
+						for (String var_ : List_.reverse(vars))
+							if (!String_.equals(vn, var_))
+								n2 = FunpDefine.of(false, var_, FunpDontCare.of(), n2);
+							else
+								b = true;
+
+						if (b)
+							return FunpDefine.of(false, vn, assign.value, inline(n2));
+					}
+
+					return null;
 				}, node_);
 			}
 		}.inline(node);
 	}
 
-	private Funp inlineDefine(Funp node) {
-		Map<FunpVariable, Funp> defByVariables = new HashMap<>();
-
-		new Object() {
-			private Funp associate(IMap<String, Funp> vars, Funp node_) {
-				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
-						.applyIf(FunpDefine.class, f -> f.apply((var, value, expr) -> {
-							associate(vars, value);
-							associate(vars.replace(var, f), expr);
-							return n_;
-						})) //
-						.applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-							IMap<String, Funp> vars1 = vars;
-							for (Pair<String, Funp> pair : pairs)
-								vars1 = vars1.replace(pair.t0, f);
-							for (Pair<String, Funp> pair : pairs)
-								associate(vars1, pair.t1);
-							associate(vars1, expr);
-							return n_;
-						})) //
-						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-							associate(vars.replace(var, f), expr);
-							return n_;
-						})) //
-						.applyIf(FunpVariable.class, f -> f.apply(var -> {
-							defByVariables.put(f, vars.get(var));
-							return n_;
-						})) //
-						.result(), node_);
-			}
-		}.associate(IMap.empty(), node);
-
+	private Funp inlineDefines(Funp node, Map<FunpVariable, Funp> defByVariables) {
 		Map<Funp, IntMutable> countByDefs = new HashMap<>();
 
 		inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
@@ -144,20 +126,73 @@ public class P1Inline {
 		}.inline(node);
 	}
 
-	private Funp inlineLambda(Funp node) {
+	private Funp inlineFields(Funp node, Map<FunpVariable, Funp> defs) {
+		return new Object() {
+			private Funp inline(Funp node_) {
+				return inspect.rewrite(Funp.class, n_ -> {
+					FunpField field;
+					FunpStruct struct;
+					FunpVariable variable;
+					if ((field = n_.cast(FunpField.class)) != null //
+							&& (variable = field.reference.cast(FunpReference.class, n -> n.expr).cast(FunpVariable.class)) != null //
+							&& (struct = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpStruct.class))) != null) {
+						Pair<String, Funp> pair = Read //
+								.from2(struct.pairs) //
+								.filterKey(field_ -> String_.equals(field_, field.field)) //
+								.first();
+						return pair != null ? inline(pair.t1) : null;
+					} else
+						return null;
+				}, node_);
+			}
+		}.inline(node);
+	}
+
+	private Funp inlineLambdas(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-							if (lambda instanceof FunpLambda) {
-								FunpLambda lambda1 = (FunpLambda) lambda;
-								return FunpDefine.of(lambda1.var, inline(value), inline(lambda1.expr));
-							} else
-								return null;
+							return lambda.cast(FunpLambda.class, n -> FunpDefine.of(false, n.var, inline(value), inline(n.expr)));
 						})) //
 						.result(), node_);
 			}
 		}.inline(node);
+	}
+
+	private Map<FunpVariable, Funp> associateDefinitions(Funp node) {
+		Map<FunpVariable, Funp> defByVariables = new HashMap<>();
+
+		new Object() {
+			private Funp associate(IMap<String, Funp> vars, Funp node_) {
+				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
+						.applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
+							associate(vars, value);
+							associate(vars.replace(var, f), expr);
+							return n_;
+						})) //
+						.applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+							IMap<String, Funp> vars1 = vars;
+							for (Pair<String, Funp> pair : pairs)
+								vars1 = vars1.replace(pair.t0, f);
+							for (Pair<String, Funp> pair : pairs)
+								associate(vars1, pair.t1);
+							associate(vars1, expr);
+							return n_;
+						})) //
+						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+							associate(vars.replace(var, f), expr);
+							return n_;
+						})) //
+						.applyIf(FunpVariable.class, f -> f.apply(var -> {
+							defByVariables.put(f, vars.get(var));
+							return n_;
+						})) //
+						.result(), node_);
+			}
+		}.associate(IMap.empty(), node);
+
+		return defByVariables;
 	}
 
 }

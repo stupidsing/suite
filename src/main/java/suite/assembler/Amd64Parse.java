@@ -17,7 +17,7 @@ import suite.node.io.TermOp;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
-public class Amd64Parser {
+public class Amd64Parse {
 
 	private static Amd64 amd64 = Amd64.me;
 

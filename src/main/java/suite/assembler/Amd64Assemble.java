@@ -17,7 +17,7 @@ import suite.primitive.Bytes.BytesBuilder;
 
 // TODO validate number of operands
 // TODO validate size of operands
-public class Amd64Assembler {
+public class Amd64Assemble {
 
 	private class InsnCode {
 		private int size;

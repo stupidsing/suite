@@ -15,6 +15,7 @@ import suite.immutable.IMap;
 import suite.node.Node;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
+import suite.util.AutoInterface;
 import suite.util.MapObject_;
 
 public class Funp_ {
@@ -26,7 +27,7 @@ public class Funp_ {
 
 	public static FunpFramePointer framePointer = new FunpFramePointer();
 
-	public interface Funp {
+	public interface Funp extends AutoInterface<Funp> {
 	}
 
 	public static Main main() {

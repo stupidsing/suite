@@ -15,8 +15,8 @@ import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
-import suite.assembler.Amd64Assembler;
-import suite.assembler.Amd64Parser;
+import suite.assembler.Amd64Assemble;
+import suite.assembler.Amd64Parse;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpAsm;
 import suite.funp.P0.FunpBoolean;
@@ -62,10 +62,11 @@ public class P4GenerateCode {
 	private int ps = Funp_.pointerSize;
 
 	private Amd64 amd64 = Amd64.me;
-	private Amd64Assembler asm = new Amd64Assembler();
+	private Amd64Assemble asm = new Amd64Assemble();
 
 	private OpReg cl = amd64.cl;
 	private OpReg eax = amd64.eax;
+	private OpReg ebx = amd64.ebx;
 	private OpReg ecx = amd64.ecx;
 	private OpReg edx = amd64.edx;
 	private OpReg ebp = amd64.ebp;
@@ -106,7 +107,11 @@ public class P4GenerateCode {
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
 		P4Emit emit = new P4Emit(instructions::add);
-		new Compile0(CompileOut_.OPREG, emit).new Compile1(registerSet, 0).compile(funp);
+		emit.mov(ebp, esp);
+		CompileOut out = new Compile0(CompileOut_.OPREG, emit).new Compile1(registerSet, 0).compile(funp);
+		emit.mov(ebx, out.op0);
+		emit.mov(eax, amd64.imm(1, is));
+		emit.emit(amd64.instruction(Insn.INT, amd64.imm(-128)));
 		return instructions;
 	}
 
@@ -263,16 +268,14 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.ADD, esp, imm));
 					return out;
 				})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
-					Amd64Parser p = new Amd64Parser();
+					Amd64Parse p = new Amd64Parse();
 					new Object() {
 						private void assign(Compile1 c1, int i) {
 							if (i < assigns.size()) {
 								Pair<OpReg, Funp> assign = assigns.get(i);
 								OpReg op = assign.t0;
-								c1.saveRegs(c2 -> {
-									c2.compileOpSpec(assign.t1, op);
-									assign(c2.mask(op), i + 1);
-								}, op);
+								c1.compileOpSpec(assign.t1, op);
+								assign(c1.mask(op), i + 1);
 							}
 						}
 					}.assign(this, 0);
@@ -472,7 +475,7 @@ public class P4GenerateCode {
 			}
 
 			private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
-				Integer numRhs = rhs instanceof FunpNumber ? ((FunpNumber) rhs).i.get() : null;
+				Integer numRhs = rhs.cast(FunpNumber.class, n_ -> n_.i.get());
 				Insn insn = insnByOp.get(operator);
 				Insn setInsn = setInsnByOp.get(operator);
 				Insn setnInsn = setnInsnByOp.get(operator);
