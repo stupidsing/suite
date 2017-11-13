@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun0;
@@ -63,7 +61,6 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.AutoObject;
 import suite.util.Rethrow;
-import suite.util.Set_;
 import suite.util.String_;
 import suite.util.Switch;
 import suite.util.Util;
@@ -620,26 +617,26 @@ public class P2InferType {
 				boolean ord = x.id < y.id;
 				TypeStruct ts0 = ord ? x : y;
 				TypeStruct ts1 = ord ? y : x;
-
 				Map<String, UnNode<Type>> typeByField0 = Read.from2(ts0.pairs).toMap();
 				Map<String, UnNode<Type>> typeByField1 = Read.from2(ts1.pairs).toMap();
-				Set<String> fields0 = typeByField0.keySet();
-				Set<String> fields1 = typeByField1.keySet();
-				Set<String> commons = Set_.intersect(List.of(fields0, fields1));
 
-				for (String common : commons)
-					b &= unify.unify(typeByField0.get(common), typeByField1.get(common));
-
-				b &= !ts0.isCompleted || Read.from(fields1).isAll(commons::contains);
-				b &= !ts1.isCompleted || Read.from(fields0).isAll(commons::contains);
-
-				for (Entry<String, UnNode<Type>> e : typeByField1.entrySet()) {
-					String field = e.getKey();
-					if (!commons.contains(field))
-						ts0.pairs.add(Pair.of(field, e.getValue()));
+				for (Pair<String, UnNode<Type>> e : ts1.pairs) {
+					String field = e.t0;
+					UnNode<Type> type0 = typeByField0.get(field);
+					UnNode<Type> type1 = e.t1;
+					if (type0 != null)
+						b &= unify.unify(type0, type1);
+					else {
+						b &= !ts0.isCompleted;
+						ts0.pairs.add(Pair.of(field, type1));
+					}
 				}
 
-				ts0.isCompleted |= ts1.isCompleted;
+				if (ts1.isCompleted) {
+					ts0.isCompleted = true;
+					b &= Read.from2(ts0.pairs).keys().isAll(typeByField1::containsKey);
+				}
+
 				ts1.ref = ts0;
 				ts1.pairs = null;
 			}

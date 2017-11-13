@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import suite.immutable.IList;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
@@ -13,6 +14,7 @@ import suite.streamlet.Streamlet;
 public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, Comparable<T> {
 
 	private static Inspect inspect = Singleton.me.inspect;
+	private static ThreadLocal<IList<AutoObject<?>>> recurse = ThreadLocal.withInitial(IList::end);
 
 	@Override
 	public AutoObject<T> clone() {
@@ -83,12 +85,21 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(getClass().getSimpleName() + "(");
-		for (Object value : values())
-			sb.append(value + ",");
-		sb.append(")");
-		return sb.toString();
+		IList<AutoObject<?>> recurse0 = recurse.get();
+		if (!recurse0.contains(this))
+			try {
+				recurse.set(IList.cons(this, recurse0));
+				StringBuilder sb = new StringBuilder();
+				sb.append(getClass().getSimpleName() + "(");
+				for (Object value : values())
+					sb.append(value + ",");
+				sb.append(")");
+				return sb.toString();
+			} finally {
+				recurse.set(recurse0);
+			}
+		else
+			return "<recurse>";
 	}
 
 	public List<Comparable<?>> values() {
