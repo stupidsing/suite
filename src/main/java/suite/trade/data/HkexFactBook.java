@@ -102,18 +102,13 @@ public class HkexFactBook {
 	}
 
 	private String getUrl(int year) {
-		if (year == 2011)
-			return "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book/HKEx-Fact-Book-2011/fb_2011.pdf?la=en";
-		else if (year == 2012)
-			return "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book/HKEx-Fact-Book-2012/fb_2012.pdf?la=en";
-		else if (year == 2013)
-			return "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book/HKEx-Fact-Book-2013/fb_2013.pdf?la=en";
-		else if (year == 2014)
-			return "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book/HKEX-Fact-Book-2014/fb_2014.pdf?la=en";
-		else if (year == 2015)
-			return "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book/HKEX-Fact-Book-2015/fb_2015.pdf?la=en";
+		String dir = "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book";
+		if (year <= 2008)
+			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf?la=en";
+		else if (year <= 2015)
+			return dir + "/HKEx-Fact-Book-" + year + "/fb_" + year + ".pdf?la=en";
 		else if (year == 2016)
-			return "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book/HKEX-Fact-Book-2016/FB_2016.pdf?la=en";
+			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf?la=en";
 		else
 			throw new RuntimeException();
 	}
