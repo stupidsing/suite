@@ -2,8 +2,11 @@ package suite.funp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
@@ -14,6 +17,7 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
+import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
@@ -23,6 +27,7 @@ import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.primitive.IntMutable;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.List_;
 import suite.util.String_;
 import suite.util.Switch;
@@ -32,13 +37,67 @@ public class P1Inline {
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp inline(Funp node) {
-		for (int i = 0; i < 3; i++) {
+		node = renameVariables(node);
+
+		for (int i = 0; i < 30; i++) {
 			node = inlineDefineAssigns(node);
-			node = inlineDefines(node, associateDefinitions(node));
-			node = inlineFields(node, associateDefinitions(node));
+			node = inlineDefines(node);
+			node = inlineFields(node);
 			node = inlineLambdas(node);
 		}
+
 		return node;
+	}
+
+	private Funp renameVariables(Funp node) {
+		Map<FunpVariable, Funp> defByVariables = associateDefinitions(node);
+		Map<Pair<Funp, String>, String> names = new HashMap<>();
+		Set<String> vars = new HashSet<>();
+
+		for (Entry<FunpVariable, Funp> e : defByVariables.entrySet()) {
+			Funp define = e.getValue();
+
+			Streamlet<String> vars_ = new Switch<Streamlet<String>>(define) //
+					.applyIf(FunpDefine.class, f -> Read.each(f.var)) //
+					.applyIf(FunpDefineRec.class, f -> Read.from2(f.pairs).keys()) //
+					.applyIf(FunpIterate.class, f -> Read.each(f.var)) //
+					.applyIf(FunpLambda.class, f -> Read.each(f.var)) //
+					.result();
+
+			for (String var : vars_) {
+				String var1 = var;
+				int i = 0;
+				while (!vars.add(var1))
+					var1 = var + "$" + i++;
+				names.put(Pair.of(define, var), var1);
+			}
+		}
+
+		return new Object() {
+			private Funp rename(Funp node_) {
+				return inspect.rewrite(Funp.class, n -> new Switch<Funp>(n) //
+						.applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
+							return FunpDefine.of(isPolyType, names.get(Pair.of(n, var)), rename(value), rename(expr));
+						})) //
+						.applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
+							List<Pair<String, Funp>> vars1 = Read //
+									.from2(pairs0) //
+									.map2((var, n_) -> names.get(Pair.of(n, var)), (var, n_) -> n_) //
+									.toList();
+							return FunpDefineRec.of(vars1, rename(expr));
+						})) //
+						.applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
+							return FunpIterate.of(names.get(Pair.of(n, var)), rename(init), rename(cond), rename(iterate));
+						})) //
+						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+							return FunpLambda.of(names.get(Pair.of(n, var)), rename(expr));
+						})) //
+						.applyIf(FunpVariable.class, f -> f.apply(var -> {
+							return FunpVariable.of(names.get(Pair.of(defByVariables.get(n), var)));
+						})) //
+						.result(), node_);
+			}
+		}.rename(node);
 	}
 
 	private Funp inlineDefineAssigns(Funp node) {
@@ -84,7 +143,8 @@ public class P1Inline {
 		}.inline(node);
 	}
 
-	private Funp inlineDefines(Funp node, Map<FunpVariable, Funp> defByVariables) {
+	private Funp inlineDefines(Funp node) {
+		Map<FunpVariable, Funp> defByVariables = associateDefinitions(node);
 		Map<Funp, IntMutable> countByDefs = new HashMap<>();
 
 		inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
@@ -126,7 +186,8 @@ public class P1Inline {
 		}.inline(node);
 	}
 
-	private Funp inlineFields(Funp node, Map<FunpVariable, Funp> defs) {
+	private Funp inlineFields(Funp node) {
+		Map<FunpVariable, Funp> defs = associateDefinitions(node);
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(Funp.class, n_ -> {
@@ -180,7 +241,13 @@ public class P1Inline {
 							associate(vars1, expr);
 							return n_;
 						})) //
-						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+						.applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
+							IMap<String, Funp> vars1 = vars.replace(var, f);
+							associate(vars, init);
+							associate(vars1, cond);
+							associate(vars1, iterate);
+							return n_;
+						})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 							associate(vars.replace(var, f), expr);
 							return n_;
 						})) //

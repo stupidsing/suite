@@ -426,7 +426,7 @@ public class Inspect {
 				.toList();
 
 		List<Method> methods = List_.concat(parentMethods, childMethods);
-		methods.forEach(method -> method.setAccessible(true));
+		Read.from(methods).filter(method -> method.getDeclaringClass() != Object.class).sink(method -> method.setAccessible(true));
 		return methods;
 	}
 
