@@ -28,6 +28,7 @@ import suite.node.util.Singleton;
 import suite.primitive.IntMutable;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil2.Fun2;
 import suite.util.List_;
 import suite.util.String_;
 import suite.util.Switch;
@@ -39,7 +40,7 @@ public class P1Inline {
 	public Funp inline(Funp node) {
 		node = renameVariables(node);
 
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 3; i++) {
 			node = inlineDefineAssigns(node);
 			node = inlineDefines(node);
 			node = inlineFields(node);
@@ -73,27 +74,29 @@ public class P1Inline {
 			}
 		}
 
+		Fun2<Funp, String, String> name1 = (node_, var) -> names.get(Pair.of(node_, var));
+
 		return new Object() {
 			private Funp rename(Funp node_) {
 				return inspect.rewrite(Funp.class, n -> new Switch<Funp>(n) //
 						.applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-							return FunpDefine.of(isPolyType, names.get(Pair.of(n, var)), rename(value), rename(expr));
+							return FunpDefine.of(isPolyType, name1.apply(n, var), rename(value), rename(expr));
 						})) //
 						.applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
 							List<Pair<String, Funp>> vars1 = Read //
 									.from2(pairs0) //
-									.map2((var, n_) -> names.get(Pair.of(n, var)), (var, n_) -> n_) //
+									.map2((var, n_) -> name1.apply(n, var), (var, n_) -> n_) //
 									.toList();
 							return FunpDefineRec.of(vars1, rename(expr));
 						})) //
 						.applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-							return FunpIterate.of(names.get(Pair.of(n, var)), rename(init), rename(cond), rename(iterate));
+							return FunpIterate.of(name1.apply(n, var), rename(init), rename(cond), rename(iterate));
 						})) //
 						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-							return FunpLambda.of(names.get(Pair.of(n, var)), rename(expr));
+							return FunpLambda.of(name1.apply(n, var), rename(expr));
 						})) //
 						.applyIf(FunpVariable.class, f -> f.apply(var -> {
-							return FunpVariable.of(names.get(Pair.of(defByVariables.get(n), var)));
+							return FunpVariable.of(name1.apply(defByVariables.get(n), var));
 						})) //
 						.result(), node_);
 			}

@@ -502,6 +502,8 @@ public class P2InferType {
 	private static Unify<Type> unify = new Unify<>();
 
 	private static class TypeArray extends Type {
+		private int id = Util.temp();
+		private TypeArray ref = this;
 		private UnNode<Type> elementType;
 		private int size;
 
@@ -517,22 +519,36 @@ public class P2InferType {
 		}
 
 		private <R> R apply(FixieFun2<UnNode<Type>, Integer, R> fun) {
-			return fun.apply(elementType, size);
+			TypeArray ta = finalArray();
+			return fun.apply(ta.elementType, ta.size);
 		}
 
 		public boolean unify(UnNode<Type> type) {
-			if (getClass() == type.getClass()) {
-				TypeArray other = (TypeArray) type;
-				if (unify.unify(elementType, other.elementType)) {
-					if (size == -1)
-						size = other.size;
-					else if (other.size == -1)
-						other.size = size;
-					return size == other.size;
-				} else
-					return false;
-			} else
-				return false;
+			boolean b = getClass() == type.getClass();
+
+			if (b) {
+				TypeArray x = finalArray();
+				TypeArray y = ((TypeArray) type).finalArray();
+				boolean ord = x.id < y.id;
+				TypeArray ta0 = ord ? x : y;
+				TypeArray ta1 = ord ? y : x;
+
+				if (ta0.size == -1)
+					ta0.size = ta1.size;
+				else if (ta1.size == -1)
+					ta1.size = ta0.size;
+
+				b &= unify.unify(ta0.elementType, ta1.elementType) && ta0.size == ta1.size;
+
+				if (b)
+					ta1.ref = ta0;
+			}
+
+			return b;
+		}
+
+		private TypeArray finalArray() {
+			return ref != this ? ref.finalArray() : this;
 		}
 	}
 
@@ -636,7 +652,6 @@ public class P2InferType {
 				if (b) {
 					ts0.isCompleted |= ts1.isCompleted;
 					ts1.ref = ts0;
-					ts1.pairs = null;
 				}
 			}
 
