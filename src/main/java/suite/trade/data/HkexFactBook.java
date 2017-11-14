@@ -12,14 +12,10 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Object_;
-import suite.util.Serialize;
 import suite.util.To;
 
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
 public class HkexFactBook {
-
-	private String prefix = getClass().getSimpleName();
-	private Serialize serialize = Serialize.me;
 
 	public Streamlet<String> queryDelisted() {
 		String url = "http://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc";
