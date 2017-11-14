@@ -1,6 +1,7 @@
 package suite.trade.data;
 
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.os.Execute;
 import suite.os.SerializedStoreCache;
+import suite.os.StoreCache;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Object_;
@@ -26,18 +28,28 @@ public class HkexFactBook {
 
 	public Streamlet<String> queryDelisted() {
 		String url = "http://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc";
+		StoreCache sc = Singleton.me.storeCache;
 
 		return Read.from(SerializedStoreCache //
 				.of(serialize.list(serialize.variableLengthString)) //
 				.get(prefix + ".queryDelisted()", () -> {
-					String cmd = "" //
-							+ Singleton.me.storeCache.sh("curl " + url) //
-							+ " | catdoc" //
-							+ " | sed -n 's/.*(\\(.*\\)).*/\\1/p'" //
-							+ " | egrep -v '^[A-Za-z]'" //
-							+ " | sort -rn";
-
-					return Opt.of(cmd).map(Execute::shell).map(s -> s.split("\n")).map(Arrays::asList).get();
+					if (Boolean.TRUE) {
+						String filename = Opt.of(sc.sh("echo '" + url + "'")) //
+								.map(sh -> sc.sh(sh + " | catdoc")) //
+								.map(sh -> sc.sh(sh + " | sed -n 's/.*(\\(.*\\)).*/\\1/p'")) //
+								.map(sh -> sc.sh(sh + " | egrep -v '^[A-Za-z]'")) //
+								.map(sh -> sc.sh(sh + " | sort -rn")) //
+								.get();
+						return Read.lines(Paths.get(filename)).toList();
+					} else {
+						String cmd = "" //
+								+ sc.sh("curl " + url) //
+								+ " | catdoc" //
+								+ " | sed -n 's/.*(\\(.*\\)).*/\\1/p'" //
+								+ " | egrep -v '^[A-Za-z]'" //
+								+ " | sort -rn";
+						return Opt.of(cmd).map(Execute::shell).map(s -> s.split("\n")).map(Arrays::asList).get();
+					}
 				})) //
 				.map(HkexUtil::toSymbol);
 	}
@@ -49,19 +61,32 @@ public class HkexFactBook {
 	}
 
 	private List<String> queryLeadingCompaniesByMarketCap_(int year) {
+		StoreCache sc = Singleton.me.storeCache;
 		String url = getUrl(year);
+		Streamlet<String> st;
 
-		String cmd = "" //
-				+ Singleton.me.storeCache.sh("curl '" + url + "'") //
-				+ " | pdftotext -nopgbrk -raw - -" //
-				+ " | sed -e '1,/leading companies in market capitalisation/ d'" //
-				+ " | grep '^[1-9]'" //
-				+ " | cut -d\\, -f1" //
-				+ " | sed 's/\\(.*\\) [0-9]*$/\\1/g'";
+		if (Boolean.TRUE) {
+			String filename = Opt.of(sc.sh("echo '" + url + "'")) //
+					.map(sh -> sc.sh(sh + " | xargs -I {} curl '{}'")) //
+					.map(sh -> sc.sh(sh + " | pdftotext -nopgbrk -raw - -")) //
+					.map(sh -> sc.sh(sh + " | sed -e '1,/leading companies in market capitalisation/ d'")) //
+					.map(sh -> sc.sh(sh + " | grep '^[1-9]'")) //
+					.map(sh -> sc.sh(sh + " | cut -d\\, -f1")) //
+					.map(sh -> sc.sh(sh + " | sed 's/\\(.*\\) [0-9]*$/\\1/g'")) //
+					.get();
+			st = Read.lines(Paths.get(filename));
+		} else {
+			String cmd = "" //
+					+ sc.sh("curl '" + url + "'") //
+					+ " | pdftotext -nopgbrk -raw - -" //
+					+ " | sed -e '1,/leading companies in market capitalisation/ d'" //
+					+ " | grep '^[1-9]'" //
+					+ " | cut -d\\, -f1" //
+					+ " | sed 's/\\(.*\\) [0-9]*$/\\1/g'";
+			st = Read.from(Execute.shell(cmd).split("\n"));
+		}
 
-		String out = Execute.shell(cmd);
-
-		return Read.from(out.split("\n")) //
+		return st //
 				.concatMap(line -> {
 					int p0 = line.indexOf(" ", 0);
 					int p1 = 0 <= p0 ? line.indexOf(" ", p0 + 1) : -1;
@@ -85,19 +110,34 @@ public class HkexFactBook {
 	}
 
 	public Streamlet<String> queryMainBoardCompanies(int year) {
+		StoreCache sc = Singleton.me.storeCache;
+
 		return Read.from(SerializedStoreCache //
 				.of(serialize.list(serialize.variableLengthString)) //
 				.get(prefix + ".queryMainBoardCompanies(" + year + ")", () -> {
 					String url = getUrl(year);
-					String cmd = "" //
-							+ Singleton.me.storeCache.sh("curl '" + url + "'") //
-							+ " | pdftotext -nopgbrk -raw - -" //
-							+ " | sed -e '1,/List of listed companies on Main Board/ d'" //
-							+ " | sed -n '1,/List of listed companies on GEM/ p'" //
-							+ " | egrep '^0'";
-					String out = Execute.shell(cmd);
+					Streamlet<String> st;
 
-					return Read.from(out.split("\n")) //
+					if (Boolean.TRUE) {
+						String filename = Opt.of(sc.sh("echo '" + url + "'")) //
+								.map(sh -> sc.sh(sh + " | xargs -I {} curl '{}'")) //
+								.map(sh -> sc.sh(sh + " | pdftotext -nopgbrk -raw - -")) //
+								.map(sh -> sc.sh(sh + " | sed -e '1,/List of listed companies on Main Board/ d'")) //
+								.map(sh -> sc.sh(sh + " | sed -n '1,/List of listed companies on GEM/ p'")) //
+								.map(sh -> sc.sh(sh + " | egrep '^0'")) //
+								.get();
+						st = Read.lines(Paths.get(filename));
+					} else {
+						String cmd = "" //
+								+ sc.sh("curl '" + url + "'") //
+								+ " | pdftotext -nopgbrk -raw - -" //
+								+ " | sed -e '1,/List of listed companies on Main Board/ d'" //
+								+ " | sed -n '1,/List of listed companies on GEM/ p'" //
+								+ " | egrep '^0'";
+						st = Read.from(Execute.shell(cmd).split("\n"));
+					}
+
+					return st //
 							.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
 							.sort(Object_::compare) //
 							.toList();

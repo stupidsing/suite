@@ -37,12 +37,12 @@ public class StoreCache {
 
 	public String sh(String command) {
 		Bytes key = Bytes.of(command.getBytes(Constants.charset));
-		Pair<Boolean, Path> pair = match(key);
-
-		if (pair.t0)
-			return "cat '" + pair.t1 + "'";
-		else
-			return "(" + command + ") | tee '" + pair.t1 + "'";
+		return match(key).map((isCached, file) -> {
+			if (!isCached)
+				Execute.shell("(" + command + ") > '" + file + "'");
+			return "cat '" + file + "'";
+			// return "(" + command + ") | tee '" + file + "'";
+		});
 	}
 
 	public Outlet<Bytes> http(String urlString) {
@@ -51,7 +51,7 @@ public class StoreCache {
 	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {
-		Outlet<Bytes> outlet = getOutlet(key, () -> Outlet.<Bytes> of(source.source()));
+		Outlet<Bytes> outlet = getOutlet(key, () -> Outlet.<Bytes>of(source.source()));
 		return outlet.collect(Bytes::of);
 	}
 
