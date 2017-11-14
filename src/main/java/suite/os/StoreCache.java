@@ -15,6 +15,7 @@ import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
+import suite.streamlet.Streamlet;
 import suite.util.DataOutput_;
 import suite.util.FunUtil.Source;
 import suite.util.HomeDir;
@@ -26,6 +27,30 @@ public class StoreCache {
 	private int documentAge = 30;
 	private Path dir = HomeDir.resolve("store-cache");
 
+	public class Piper {
+		private String sh;
+
+		private Piper(String sh) {
+			this.sh = sh;
+		}
+
+		public Piper pipe(String command0) {
+			String command1 = sh + " | (" + command0 + ")";
+			Bytes key = Bytes.of(command1.getBytes(Constants.charset));
+
+			return match(key).map((isCached, file) -> {
+				if (!isCached)
+					Execute.shell(command1 + " > '" + file + "'");
+				return new Piper("cat '" + file + "'");
+				// return new Pipe("" + command1 + " | tee '" + file + "'");
+			});
+		}
+
+		public Streamlet<String> read() {
+			return Pipe.shell(sh);
+		}
+	}
+
 	public StoreCache() {
 		long current = System.currentTimeMillis();
 
@@ -35,14 +60,8 @@ public class StoreCache {
 				.collect(As::joined));
 	}
 
-	public String sh(String command) {
-		Bytes key = Bytes.of(command.getBytes(Constants.charset));
-		return match(key).map((isCached, file) -> {
-			if (!isCached)
-				Execute.shell("(" + command + ") > '" + file + "'");
-			return "cat '" + file + "'";
-			// return "(" + command + ") | tee '" + file + "'";
-		});
+	public Piper pipe(String in) {
+		return new Piper("echo '" + in + "'");
 	}
 
 	public Outlet<Bytes> http(String urlString) {
@@ -51,7 +70,7 @@ public class StoreCache {
 	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {
-		Outlet<Bytes> outlet = getOutlet(key, () -> Outlet.<Bytes>of(source.source()));
+		Outlet<Bytes> outlet = getOutlet(key, () -> Outlet.<Bytes> of(source.source()));
 		return outlet.collect(Bytes::of);
 	}
 
@@ -112,8 +131,8 @@ public class StoreCache {
 			while (Files.exists(path = path(key, i, ".k"))) {
 				if (isUpToDate(path, current))
 					try (InputStream kis = Files.newInputStream(path); DataInputStream kdis = new DataInputStream(kis)) {
-						if (isMatch(key, kdis))
-							return Pair.of(false, path(key, i, ".v"));
+						if (isMatch(key, kdis) && Files.exists(path = path(key, i, ".v")))
+							return Pair.of(true, path);
 					}
 				else {
 					Files.delete(path);
@@ -123,7 +142,7 @@ public class StoreCache {
 			}
 
 			writeKey(path, key);
-			return Pair.of(true, path(key, i, ".v"));
+			return Pair.of(false, path(key, i, ".v"));
 		});
 	}
 

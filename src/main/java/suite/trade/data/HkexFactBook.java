@@ -1,19 +1,14 @@
 package suite.trade.data;
 
 import java.net.URI;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import suite.adt.Opt;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
-import suite.os.Execute;
-import suite.os.SerializedStoreCache;
-import suite.os.StoreCache;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Object_;
@@ -28,65 +23,29 @@ public class HkexFactBook {
 
 	public Streamlet<String> queryDelisted() {
 		String url = "http://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc";
-		StoreCache sc = Singleton.me.storeCache;
 
-		return Read.from(SerializedStoreCache //
-				.of(serialize.list(serialize.variableLengthString)) //
-				.get(prefix + ".queryDelisted()", () -> {
-					if (Boolean.TRUE) {
-						String filename = Opt.of(sc.sh("echo '" + url + "'")) //
-								.map(sh -> sc.sh(sh + " | catdoc")) //
-								.map(sh -> sc.sh(sh + " | sed -n 's/.*(\\(.*\\)).*/\\1/p'")) //
-								.map(sh -> sc.sh(sh + " | egrep -v '^[A-Za-z]'")) //
-								.map(sh -> sc.sh(sh + " | sort -rn")) //
-								.get();
-						return Read.lines(Paths.get(filename)).toList();
-					} else {
-						String cmd = "" //
-								+ sc.sh("curl " + url) //
-								+ " | catdoc" //
-								+ " | sed -n 's/.*(\\(.*\\)).*/\\1/p'" //
-								+ " | egrep -v '^[A-Za-z]'" //
-								+ " | sort -rn";
-						return Opt.of(cmd).map(Execute::shell).map(s -> s.split("\n")).map(Arrays::asList).get();
-					}
-				})) //
-				.map(HkexUtil::toSymbol);
+		return Singleton.me.storeCache //
+				.pipe(url) //
+				.pipe("xargs -I {} curl '{}'") //
+				.pipe("catdoc") //
+				.pipe("sed -n 's/.*(\\(.*\\)).*/\\1/p'") //
+				.pipe("egrep -v '^[A-Za-z]'") //
+				.pipe("sort -rn") //
+				.read() //
+				.map(HkexUtil::toSymbol) //
+				.collect(As::streamlet);
 	}
 
 	public Streamlet<String> queryLeadingCompaniesByMarketCap(int year) {
-		return Read.from(SerializedStoreCache //
-				.of(serialize.list(serialize.variableLengthString)) //
-				.get(prefix + ".queryLeadingCompaniesByMarketCap(" + year + ")", () -> queryLeadingCompaniesByMarketCap_(year)));
-	}
-
-	private List<String> queryLeadingCompaniesByMarketCap_(int year) {
-		StoreCache sc = Singleton.me.storeCache;
-		String url = getUrl(year);
-		Streamlet<String> st;
-
-		if (Boolean.TRUE) {
-			String filename = Opt.of(sc.sh("echo '" + url + "'")) //
-					.map(sh -> sc.sh(sh + " | xargs -I {} curl '{}'")) //
-					.map(sh -> sc.sh(sh + " | pdftotext -nopgbrk -raw - -")) //
-					.map(sh -> sc.sh(sh + " | sed -e '1,/leading companies in market capitalisation/ d'")) //
-					.map(sh -> sc.sh(sh + " | grep '^[1-9]'")) //
-					.map(sh -> sc.sh(sh + " | cut -d\\, -f1")) //
-					.map(sh -> sc.sh(sh + " | sed 's/\\(.*\\) [0-9]*$/\\1/g'")) //
-					.get();
-			st = Read.lines(Paths.get(filename));
-		} else {
-			String cmd = "" //
-					+ sc.sh("curl '" + url + "'") //
-					+ " | pdftotext -nopgbrk -raw - -" //
-					+ " | sed -e '1,/leading companies in market capitalisation/ d'" //
-					+ " | grep '^[1-9]'" //
-					+ " | cut -d\\, -f1" //
-					+ " | sed 's/\\(.*\\) [0-9]*$/\\1/g'";
-			st = Read.from(Execute.shell(cmd).split("\n"));
-		}
-
-		return st //
+		List<List<String>> list0 = Singleton.me.storeCache //
+				.pipe(getUrl(year)) //
+				.pipe("xargs -I {} curl '{}'") //
+				.pipe("pdftotext -nopgbrk -raw - -") //
+				.pipe("sed -e '1,/leading companies in market capitalisation/ d'") //
+				.pipe("grep '^[1-9]'") //
+				.pipe("cut -d\\, -f1") //
+				.pipe("sed 's/\\(.*\\) [0-9]*$/\\1/g'") //
+				.read() //
 				.concatMap(line -> {
 					int p0 = line.indexOf(" ", 0);
 					int p1 = 0 <= p0 ? line.indexOf(" ", p0 + 1) : -1;
@@ -99,59 +58,53 @@ public class HkexFactBook {
 							s = p + 1;
 						}
 						list.add(line.substring(s));
-						// Asset asset = new
-						// Asset(HkexUtil.toSymbol(list.get(1).replace("*",
-						// "")), list.get(2));
-						return Read.each(HkexUtil.toSymbol(list.get(1).replace("*", "")));
+						return Read.each(list);
 					} else
 						return Read.empty();
 				}) //
 				.toList();
+
+		List<List<String>> list1 = new ArrayList<>();
+		int i = 1;
+
+		for (List<String> list_ : list0)
+			if (Integer.parseInt(list_.get(0)) == i++)
+				list1.add(list_);
+			else
+				break;
+
+		return Read.from(list1) //
+				.map(list -> {
+					// Asset asset = new
+					// Asset(HkexUtil.toSymbol(list.get(1).replace("*",
+					// "")), list.get(2));
+					return HkexUtil.toSymbol(list.get(1).replace("*", ""));
+				}) //
+				.collect(As::streamlet);
 	}
 
 	public Streamlet<String> queryMainBoardCompanies(int year) {
-		StoreCache sc = Singleton.me.storeCache;
-
-		return Read.from(SerializedStoreCache //
-				.of(serialize.list(serialize.variableLengthString)) //
-				.get(prefix + ".queryMainBoardCompanies(" + year + ")", () -> {
-					String url = getUrl(year);
-					Streamlet<String> st;
-
-					if (Boolean.TRUE) {
-						String filename = Opt.of(sc.sh("echo '" + url + "'")) //
-								.map(sh -> sc.sh(sh + " | xargs -I {} curl '{}'")) //
-								.map(sh -> sc.sh(sh + " | pdftotext -nopgbrk -raw - -")) //
-								.map(sh -> sc.sh(sh + " | sed -e '1,/List of listed companies on Main Board/ d'")) //
-								.map(sh -> sc.sh(sh + " | sed -n '1,/List of listed companies on GEM/ p'")) //
-								.map(sh -> sc.sh(sh + " | egrep '^0'")) //
-								.get();
-						st = Read.lines(Paths.get(filename));
-					} else {
-						String cmd = "" //
-								+ sc.sh("curl '" + url + "'") //
-								+ " | pdftotext -nopgbrk -raw - -" //
-								+ " | sed -e '1,/List of listed companies on Main Board/ d'" //
-								+ " | sed -n '1,/List of listed companies on GEM/ p'" //
-								+ " | egrep '^0'";
-						st = Read.from(Execute.shell(cmd).split("\n"));
-					}
-
-					return st //
-							.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
-							.sort(Object_::compare) //
-							.toList();
-				}));
+		return Singleton.me.storeCache //
+				.pipe(getUrl(year)) //
+				.pipe("xargs -I {} curl '{}'") //
+				.pipe("pdftotext -nopgbrk -raw - -") //
+				.pipe("sed -e '1,/List of listed companies on Main Board/ d'") //
+				.pipe("sed -n '1,/List of listed companies on GEM/ p'") //
+				.pipe("egrep '^0'") //
+				.read() //
+				.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
+				.sort(Object_::compare) //
+				.collect(As::streamlet);
 	}
 
 	private String getUrl(int year) {
 		String dir = "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book";
 		if (year <= 2008)
-			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf?la=en";
+			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
 		else if (year <= 2015)
-			return dir + "/HKEx-Fact-Book-" + year + "/fb_" + year + ".pdf?la=en";
+			return dir + "/HKEx-Fact-Book-" + year + "/fb_" + year + ".pdf";
 		else if (year == 2016)
-			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf?la=en";
+			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
 		else
 			throw new RuntimeException();
 	}

@@ -31,7 +31,7 @@ public class HkexFactBookTest {
 
 	@Test
 	public void testLeadingCompanies() {
-		Streamlet<String> companies = hkexFactBook.queryLeadingCompaniesByMarketCap(2017);
+		Streamlet<String> companies = hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
 		System.out.println(companies.toList());
 		assertTrue(companies.isAny(symbol -> String_.equals(symbol, "0005.HK")));
 	}

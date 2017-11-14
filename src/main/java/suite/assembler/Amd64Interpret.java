@@ -82,7 +82,7 @@ public class Amd64Interpret {
 				c = Integer.compare(source0, source1);
 				break;
 			case INT:
-				if (regs[eax] == 0)
+				if (regs[eax] == 1)
 					return regs[ebx];
 				else
 					throw new RuntimeException();
