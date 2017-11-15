@@ -44,7 +44,7 @@ public class ElfTest {
 				+ "	let pointer := address buffer >> \n" //
 				+ "	let nBytesRead := (pointer, size | linux-read) >> ( \n" //
 				+ "		(pointer, nBytesRead | linux-write); \n" //
-				+ "		nBytesRead" //
+				+ "		nBytesRead \n" //
 				+ "	) \n" //
 				+ ") \n" //
 				, text);
