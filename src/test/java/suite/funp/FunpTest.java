@@ -61,8 +61,13 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testIo() {
+		test(1, "io 0 | io-cat (i => io (i + 1))");
+	}
+
+	@Test
 	public void testIterate() {
-		test(100, "iterate v 0 (v < 100) (v + 1)");
+		test(100, "iterate v 0 (v < 100) (io (v + 1))");
 	}
 
 	@Test

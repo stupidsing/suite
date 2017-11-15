@@ -14,7 +14,7 @@ public class ElfTest {
 	@Test
 	public void testCode() {
 		Execute exec = test("" //
-				+ "iterate n 0 (n < 100) (n + 1) \n" //
+				+ "iterate n 0 (n < 100) (io (n + 1)) \n" //
 				, "");
 
 		assertEquals(100, exec.code);
@@ -42,9 +42,8 @@ public class ElfTest {
 				+ "iterate n 1 (n != 0) ( \n" //
 				+ "	let buffer := (size * array byte _) >> \n" //
 				+ "	let pointer := address buffer >> \n" //
-				+ "	let nBytesRead := (pointer, size | linux-read) >> ( \n" //
-				+ "		(pointer, nBytesRead | linux-write); \n" //
-				+ "		nBytesRead \n" //
+				+ "	pointer, size | linux-read | io-cat ( \n" //
+				+ "		nBytesRead => pointer, nBytesRead | linux-write | io-cat (nBytesWrote => io nBytesRead) \n" //
 				+ "	) \n" //
 				+ ") \n" //
 				, text);
