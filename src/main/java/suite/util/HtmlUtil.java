@@ -33,11 +33,7 @@ public class HtmlUtil {
 						sb.append((char) Integer.parseInt(String_.range(key, 2, -1)));
 					else {
 						String entity = charByEscapeToken.get(key);
-
-						if (entity != null)
-							sb.append(entity);
-						else
-							sb.append(key);
+						sb.append(entity != null ? entity : key);
 					}
 				} else
 					sb.append(ch);
