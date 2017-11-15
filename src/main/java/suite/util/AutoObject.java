@@ -1,10 +1,13 @@
 package suite.util;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import suite.adt.IdentityKey;
 import suite.immutable.IList;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
@@ -18,12 +21,30 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public AutoObject<T> clone() {
+		Map<IdentityKey<?>, AutoObject<?>> map = new HashMap<>();
+
+		class Clone {
+			private AutoObject<?> clone(AutoObject<?> t0) throws IllegalAccessException {
+				IdentityKey<?> key = IdentityKey.of(t0);
+				AutoObject<?> tx = map.get(key);
+				if (tx == null) {
+					map.put(key, tx = Object_.new_(t0.getClass()));
+					@SuppressWarnings("unchecked")
+					AutoObject<T> t1 = (AutoObject<T>) tx;
+					for (Field field : t0.fields_()) {
+						Object v0 = field.get(t0);
+						Object v1 = v0 instanceof AutoObject ? clone((AutoObject<?>) v0) : v0;
+						field.set(t1, v1);
+					}
+				}
+				return tx;
+			}
+		}
+
 		return Rethrow.ex(() -> {
 			@SuppressWarnings("unchecked")
-			AutoObject<T> t1 = (AutoObject<T>) Object_.new_(getClass());
-			for (Field field : fields_())
-				field.set(t1, field.get(this));
-			return t1;
+			AutoObject<T> object = (AutoObject<T>) new Clone().clone(this);
+			return object;
 		});
 	}
 

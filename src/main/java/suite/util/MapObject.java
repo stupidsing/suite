@@ -1,8 +1,14 @@
 package suite.util;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import suite.adt.IdentityKey;
 import suite.immutable.IList;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 
 public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Comparable<T> {
 
@@ -10,7 +16,26 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 
 	@Override
 	public MapObject<T> clone() {
-		return MapObject_.construct(getClass(), MapObject_.list(this));
+		Map<IdentityKey<?>, MapObject<?>> map = new HashMap<>();
+
+		class Clone {
+			private MapObject<?> clone(MapObject<?> t0) throws IllegalAccessException {
+				IdentityKey<?> key = IdentityKey.of(t0);
+				MapObject<?> tx = map.get(key);
+				if (tx == null) {
+					Streamlet<?> list0 = Read.from(MapObject_.list(t0));
+					List<Object> list1 = list0.map(v -> v instanceof MapObject ? ((MapObject<?>) v).clone() : v).toList();
+					map.put(key, tx = MapObject_.construct(getClass(), list1));
+				}
+				return tx;
+			}
+		}
+
+		return Rethrow.ex(() -> {
+			@SuppressWarnings("unchecked")
+			MapObject<T> object = (MapObject<T>) new Clone().clone(this);
+			return object;
+		});
 	}
 
 	@Override
