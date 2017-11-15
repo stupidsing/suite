@@ -92,11 +92,11 @@ public class P4GenerateCode {
 			entry(TermOp.LT____, Insn.SETL), //
 			entry(TermOp.NOTEQ_, Insn.SETNE));
 
-	private Map<TermOp, Insn> setnInsnByOp = Map.ofEntries( //
-			entry(TermOp.EQUAL_, Insn.SETNE), //
-			entry(TermOp.LE____, Insn.SETG), //
-			entry(TermOp.LT____, Insn.SETGE), //
-			entry(TermOp.NOTEQ_, Insn.SETE));
+	private Map<TermOp, Insn> setRevInsnByOp = Map.ofEntries( //
+			entry(TermOp.EQUAL_, Insn.SETE), //
+			entry(TermOp.LE____, Insn.SETGE), //
+			entry(TermOp.LT____, Insn.SETG), //
+			entry(TermOp.NOTEQ_, Insn.SETNE));
 
 	private Map<Atom, Insn> shInsnByOp = Map.ofEntries( //
 			entry(TreeUtil.SHL, Insn.SHL), //
@@ -241,9 +241,9 @@ public class P4GenerateCode {
 						return new CompileOut();
 				};
 
-				Fun<Operand, FixieFun4<Insn, Insn, Funp, Funp, Boolean>> cmpJmp = label -> (insn, nInsn, lhs, rhs) -> {
+				Fun<Operand, FixieFun4<Insn, Insn, Funp, Funp, Boolean>> cmpJmp = label -> (insn, revInsn, lhs, rhs) -> {
 					Pair<Funp, OpReg> pair = compileCommutativeTree(Insn.CMP, Assoc.RIGHT, lhs, rhs);
-					em.emit(amd64.instruction(pair.t0 == lhs ? insn : nInsn, label));
+					em.emit(amd64.instruction(pair.t0 == lhs ? insn : revInsn, label));
 					return true;
 				};
 
@@ -478,7 +478,7 @@ public class P4GenerateCode {
 				Integer numRhs = rhs.cast(FunpNumber.class, n_ -> n_.i.get());
 				Insn insn = insnByOp.get(operator);
 				Insn setInsn = setInsnByOp.get(operator);
-				Insn setnInsn = setnInsnByOp.get(operator);
+				Insn setRevInsn = setRevInsnByOp.get(operator);
 				Insn shInsn = shInsnByOp.get(operator);
 				OpMem op = deOp.decomposeOpMem(fd, n, 0, is);
 				Operand opResult = null;
@@ -515,7 +515,7 @@ public class P4GenerateCode {
 							em.emit(amd64.instruction(Insn.NEG, pair.t1));
 					} else if (setInsn != null) {
 						Pair<Funp, OpReg> pair = compileCommutativeTree(Insn.CMP, assoc, lhs, rhs);
-						em.emit(amd64.instruction(pair.t1 == lhs ? setInsn : setnInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
+						em.emit(amd64.instruction(pair.t1 == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
 					} else if (shInsn != null) {
 						OpReg op0 = compileLoad(lhs);
 						if (numRhs != null)

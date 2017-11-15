@@ -53,7 +53,7 @@ public class ElfTest {
 	}
 
 	private Execute test(String program, String input) {
-		return elf.exec(input, offset -> Funp_.main().compile(offset, program));
+		return elf.exec(input, offset -> Funp_.main().compile(offset, program).t1);
 	}
 
 }

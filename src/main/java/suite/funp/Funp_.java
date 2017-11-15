@@ -45,14 +45,14 @@ public class Funp_ {
 		private Main() {
 		}
 
-		public Bytes compile(int offset, String fp) {
+		public Pair<List<Instruction>, Bytes> compile(int offset, String fp) {
 			Node node = Suite.parse(fp);
 			Funp f0 = p0.parse(node);
 			Funp f1 = p1.inline(f0);
 			Funp f2 = p2.infer(f1);
 			Funp f3 = p3.optimize(f2);
 			List<Instruction> instructions = p4.compile0(f3);
-			return p4.compile1(offset, instructions, true);
+			return Pair.of(instructions, p4.compile1(offset, instructions, true));
 		}
 
 		public int interpret(Node node) {

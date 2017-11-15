@@ -29,6 +29,18 @@ public class P4JumpIf {
 			entry(TermOp.LT____, Insn.JGE), //
 			entry(TermOp.NOTEQ_, Insn.JE));
 
+	private Map<TermOp, Insn> jxxRevInsnByOp = Map.ofEntries( //
+			entry(TermOp.EQUAL_, Insn.JE), //
+			entry(TermOp.LE____, Insn.JGE), //
+			entry(TermOp.LT____, Insn.JG), //
+			entry(TermOp.NOTEQ_, Insn.JNE));
+
+	private Map<TermOp, Insn> jnxRevInsnByOp = Map.ofEntries( //
+			entry(TermOp.EQUAL_, Insn.JNE), //
+			entry(TermOp.LE____, Insn.JL), //
+			entry(TermOp.LT____, Insn.JLE), //
+			entry(TermOp.NOTEQ_, Insn.JE));
+
 	public P4JumpIf(FixieFun4<Insn, Insn, Funp, Funp, Boolean> cmpJmp) {
 		this.cmpJmp = cmpJmp;
 	}
@@ -37,7 +49,7 @@ public class P4JumpIf {
 		private FunpTree tree;
 		private Operator operator;
 		private Funp left, right;
-		private Insn jnx, jxx;
+		private Insn jnx, jxx, jxxRev, jnxRev;
 
 		public JumpIf(Funp node) {
 			tree = node instanceof FunpTree ? (FunpTree) node : null;
@@ -46,6 +58,8 @@ public class P4JumpIf {
 			right = tree != null ? tree.right : null;
 			this.jnx = operator != null ? jnxInsnByOp.get(operator) : null;
 			this.jxx = operator != null ? jxxInsnByOp.get(operator) : null;
+			this.jnxRev = operator != null ? jnxRevInsnByOp.get(operator) : null;
+			this.jxxRev = operator != null ? jxxRevInsnByOp.get(operator) : null;
 		}
 
 		public Source<Boolean> jnxIf() {
@@ -56,7 +70,7 @@ public class P4JumpIf {
 			} else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
 				return new JumpIf(left).jxxIf();
 			else if (jnx != null)
-				return () -> cmpJmp.apply(jnx, jxx, left, right);
+				return () -> cmpJmp.apply(jnx, jnxRev, left, right);
 			else
 				return null;
 		}
@@ -69,7 +83,7 @@ public class P4JumpIf {
 			} else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
 				return new JumpIf(left).jnxIf();
 			else if (jxx != null)
-				return () -> cmpJmp.apply(jxx, jnx, left, right);
+				return () -> cmpJmp.apply(jxx, jxxRev, left, right);
 			else
 				return null;
 		}

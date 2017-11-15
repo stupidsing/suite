@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.adt.pair.Pair;
@@ -27,8 +26,7 @@ import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.primitive.IntMutable;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
-import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil.Iterate;
 import suite.util.List_;
 import suite.util.String_;
 import suite.util.Switch;
@@ -51,56 +49,59 @@ public class P1Inline {
 	}
 
 	private Funp renameVariables(Funp node) {
-		Map<FunpVariable, Funp> defByVariables = associateDefinitions(node);
-		Map<Pair<Funp, String>, String> names = new HashMap<>();
 		Set<String> vars = new HashSet<>();
 
-		for (Entry<FunpVariable, Funp> e : defByVariables.entrySet()) {
-			Funp define = e.getValue();
+		Iterate<String> newVar = var -> {
+			String var1 = var.split("\\$")[0];
+			int i = 0;
+			while (!vars.add(var1))
+				var1 = var + "$" + i++;
+			return var1;
+		};
 
-			Streamlet<String> vars_ = new Switch<Streamlet<String>>(define) //
-					.applyIf(FunpDefine.class, f -> Read.each(f.var)) //
-					.applyIf(FunpDefineRec.class, f -> Read.from2(f.pairs).keys()) //
-					.applyIf(FunpIterate.class, f -> Read.each(f.var)) //
-					.applyIf(FunpLambda.class, f -> Read.each(f.var)) //
-					.result();
+		class Rename {
+			private IMap<String, String> vars;
 
-			for (String var : vars_) {
-				String var1 = var.split("\\$")[0];
-				int i = 0;
-				while (!vars.add(var1))
-					var1 = var + "$" + i++;
-				names.put(Pair.of(define, var), var1);
+			private Rename(IMap<String, String> vars) {
+				this.vars = vars;
 			}
-		}
 
-		Fun2<Funp, String, String> name1 = (node_, var) -> names.get(Pair.of(node_, var));
-
-		return new Object() {
 			private Funp rename(Funp node_) {
-				return inspect.rewrite(Funp.class, n -> new Switch<Funp>(n) //
-						.applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-							return FunpDefine.of(isPolyType, name1.apply(n, var), rename(value), rename(expr));
+				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
+						.applyIf(FunpDefine.class, f -> f.apply((isPolyType, var0, value, expr) -> {
+							String var1 = newVar.apply(var0);
+							Rename r1 = new Rename(vars.replace(var0, var1));
+							return FunpDefine.of(isPolyType, var1, rename(value), r1.rename(expr));
 						})) //
 						.applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
-							List<Pair<String, Funp>> vars1 = Read //
+							IMap<String, String> vars1 = vars;
+							for (Pair<String, Funp> pair : pairs0)
+								vars1 = vars1.replace(pair.t0, newVar.apply(pair.t0));
+							IMap<String, String> vars2 = vars1;
+							Rename r1 = new Rename(vars2);
+							return FunpDefineRec.of(Read //
 									.from2(pairs0) //
-									.map2((var, n_) -> name1.apply(n, var), (var, n_) -> n_) //
-									.toList();
-							return FunpDefineRec.of(vars1, rename(expr));
+									.map2((var, value) -> vars2.get(var), (var, value) -> r1.rename(value)) //
+									.toList(), //
+									r1.rename(expr));
 						})) //
-						.applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-							return FunpIterate.of(name1.apply(n, var), rename(init), rename(cond), rename(iterate));
-						})) //
-						.applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-							return FunpLambda.of(name1.apply(n, var), rename(expr));
+						.applyIf(FunpIterate.class, f -> f.apply((var0, init, cond, iterate) -> {
+							String var1 = newVar.apply(var0);
+							Rename r1 = new Rename(vars.replace(var0, var1));
+							return FunpIterate.of(var1, rename(init), r1.rename(cond), r1.rename(iterate));
+						})).applyIf(FunpLambda.class, f -> f.apply((var0, expr) -> {
+							String var1 = newVar.apply(var0);
+							Rename r1 = new Rename(vars.replace(var0, var1));
+							return FunpLambda.of(var1, r1.rename(expr));
 						})) //
 						.applyIf(FunpVariable.class, f -> f.apply(var -> {
-							return FunpVariable.of(name1.apply(defByVariables.get(n), var));
+							return FunpVariable.of(vars.get(var));
 						})) //
 						.result(), node_);
 			}
-		}.rename(node);
+		}
+
+		return new Rename(IMap.empty()).rename(node);
 	}
 
 	private Funp inlineDefineAssigns(Funp node) {
