@@ -25,6 +25,7 @@ import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
+import suite.funp.P0.FunpIoSeq;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
@@ -195,6 +196,8 @@ public class P0Parse {
 				return FunpIndex.of(FunpReference.of(parse(m[0])), parse(m[1]));
 			else if ((m = Suite.match("io .0").apply(node)) != null)
 				return FunpIo.of(parse(m[0]));
+			else if ((m = Suite.match(".0 | {.1}").apply(node)) != null)
+				return FunpIoSeq.of(parse(m[0]), parse(m[1]));
 			else if ((m = Suite.match("iterate .0 .1 .2 .3").apply(node)) != null) {
 				String var = name(m[0]);
 				Parse parse1 = new Parse(variables.add(var));
@@ -272,7 +275,9 @@ public class P0Parse {
 				return ((FunpBoolean) be).b == ((FunpBoolean) value).b ? then : else_;
 			else if (be instanceof FunpNumber && value instanceof FunpNumber)
 				return ((FunpNumber) be).i == ((FunpNumber) value).i ? then : else_;
-			else {
+			else
+
+			{
 				Funp result = new Switch<Funp>(be //
 				).applyIf(FunpArray.class, f -> f.apply(elements0 -> {
 					return bindArray.apply(elements0.size(), elements0::get);
@@ -305,6 +310,7 @@ public class P0Parse {
 				return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);
 			}
 		}
+
 	}
 
 	private String name(Node node) {

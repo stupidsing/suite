@@ -30,6 +30,7 @@ import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
+import suite.funp.P0.FunpIoSeq;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
@@ -162,7 +163,7 @@ public class P2InferType {
 					else
 						throw new RuntimeException();
 				}
-				return typeNumber;
+				return TypeIo.of(typeNumber);
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), TypeReference.of(infer(value)));
 				return infer(expr);
@@ -201,6 +202,13 @@ public class P2InferType {
 				return t;
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return TypeIo.of(infer(expr));
+			})).applyIf(FunpIoSeq.class, f -> f.apply((left, right) -> {
+				UnNode<Type> ta = unify.newRef();
+				UnNode<Type> tb = unify.newRef();
+				TypeIo tbio = TypeIo.of(tb);
+				unify(n, TypeIo.of(ta), infer(left));
+				unify(n, TypeLambda.of(ta, tbio), infer(right));
+				return tbio;
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				UnNode<Type> te = unify.newRef();
 				unify(n, TypeReference.of(TypeArray.of(te)), infer(reference));
@@ -208,11 +216,12 @@ public class P2InferType {
 				return te;
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 				UnNode<Type> tv = unify.newRef();
+				UnNode<Type> tv1 = TypeIo.of(tv);
 				Infer infer1 = new Infer(env.replace(var, Pair.of(false, tv)));
 				unify(n, tv, infer(init));
 				unify(n, typeBoolean, infer1.infer(cond));
-				unify(n, tv, infer1.infer(iterate));
-				return tv;
+				unify(n, tv1, infer1.infer(iterate));
+				return tv1;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> tv = unify.newRef();
 				return TypeLambda.of(tv, new Infer(env.replace(var, Pair.of(false, tv))).infer(expr));

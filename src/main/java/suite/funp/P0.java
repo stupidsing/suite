@@ -267,6 +267,21 @@ public class P0 {
 		}
 	}
 
+	public static class FunpIoSeq implements Funp, P2.End {
+		public Funp left, right;
+
+		public static FunpIoSeq of(Funp left, Funp right) {
+			FunpIoSeq f = new FunpIoSeq();
+			f.left = left;
+			f.right = right;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
+			return fun.apply(left, right);
+		}
+	}
+
 	public static class FunpIterate implements Funp, P2.End {
 		public String var;
 		public Funp init;
