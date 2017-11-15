@@ -27,22 +27,23 @@ public class ElfTest {
 
 		Execute exec = test("" //
 				+ "expand size := 256 >> \n" //
-				+ "define linux-read := `buffer, length` => ( \n" //
-				+ "	type buffer = address (size * array byte _) >> \n" //
-				+ "	asm (EAX = 3; EBX = 0; ECX = buffer; EDX = length;) { \n" //
+				+ "define linux-read := `pointer, length` => ( \n" //
+				+ "	type pointer = address (size * array byte _) >> \n" //
+				+ "	asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { \n" //
 				+ "		INT (-128); -- length in EAX \n" //
 				+ "	} \n" //
 				+ ") >> \n" //
-				+ "define linux-write := `buffer, length` => ( \n" //
-				+ "	type buffer = address (size * array byte _) >> \n" //
-				+ "	asm (EAX = 4; EBX = 1; ECX = buffer; EDX = length;) { \n" //
+				+ "define linux-write := `pointer, length` => ( \n" //
+				+ "	type pointer = address (size * array byte _) >> \n" //
+				+ "	asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { \n" //
 				+ "		INT (-128); -- length in EAX \n" //
 				+ "	} \n" //
 				+ ") >> \n" //
 				+ "iterate n 1 (n != 0) ( \n" //
 				+ "	let buffer := (size * array byte _) >> \n" //
-				+ "	let nBytesRead := (address buffer, size | linux-read) >> ( \n" //
-				+ "		(address buffer, nBytesRead | linux-write); \n" //
+				+ "	let pointer := address buffer >> \n" //
+				+ "	let nBytesRead := (pointer, size | linux-read) >> ( \n" //
+				+ "		(pointer, nBytesRead | linux-write); \n" //
 				+ "		nBytesRead" //
 				+ "	) \n" //
 				+ ") \n" //
