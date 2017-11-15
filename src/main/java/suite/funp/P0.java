@@ -267,18 +267,17 @@ public class P0 {
 		}
 	}
 
-	public static class FunpIoSeq implements Funp, P2.End {
-		public Funp left, right;
+	public static class FunpIoCat implements Funp, P2.End {
+		public Funp expr;
 
-		public static FunpIoSeq of(Funp left, Funp right) {
-			FunpIoSeq f = new FunpIoSeq();
-			f.left = left;
-			f.right = right;
+		public static FunpIoCat of(Funp expr) {
+			FunpIoCat f = new FunpIoCat();
+			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
-			return fun.apply(left, right);
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
 		}
 	}
 

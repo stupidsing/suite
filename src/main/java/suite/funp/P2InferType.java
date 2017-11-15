@@ -30,7 +30,7 @@ import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
-import suite.funp.P0.FunpIoSeq;
+import suite.funp.P0.FunpIoCat;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
@@ -61,6 +61,7 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.AutoObject;
+import suite.util.FunUtil2.Fun2;
 import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.Switch;
@@ -202,13 +203,12 @@ public class P2InferType {
 				return t;
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return TypeIo.of(infer(expr));
-			})).applyIf(FunpIoSeq.class, f -> f.apply((left, right) -> {
+			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
 				UnNode<Type> ta = unify.newRef();
 				UnNode<Type> tb = unify.newRef();
-				TypeIo tbio = TypeIo.of(tb);
-				unify(n, TypeIo.of(ta), infer(left));
-				unify(n, TypeLambda.of(ta, tbio), infer(right));
-				return tbio;
+				UnNode<Type> tbio = TypeIo.of(tb);
+				unify(n, TypeLambda.of(ta, tbio), infer(expr));
+				return TypeLambda.of(TypeIo.of(ta), tbio);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				UnNode<Type> te = unify.newRef();
 				unify(n, TypeReference.of(TypeArray.of(te)), infer(reference));
@@ -269,8 +269,7 @@ public class P2InferType {
 		private Funp erase_(Funp n) {
 			Type type0 = typeOf(n);
 
-			return new Switch<Funp>(n //
-			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
+			Fun2<Funp, Funp, Funp> apply = (value, lambda) -> {
 				LambdaType lt = lambdaType(lambda);
 				Funp lambda1 = erase(lambda);
 				int size = getTypeSize(typeOf(value));
@@ -282,6 +281,11 @@ public class P2InferType {
 				else
 					invoke = allocStack(lt.os, FunpDontCare.of(), allocStack(size, value, FunpInvokeIo.of(lambda1)));
 				return FunpSaveRegisters.of(invoke);
+			};
+
+			return new Switch<Funp>(n //
+			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
+				return apply.apply(value, lambda);
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				UnNode<Type> te = unify.newRef();
 				unify(n, type0, TypeArray.of(te));
@@ -346,6 +350,8 @@ public class P2InferType {
 					}
 				throw new RuntimeException();
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
+				return erase(expr);
+			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				UnNode<Type> te = unify.newRef();
