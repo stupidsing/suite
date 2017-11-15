@@ -22,9 +22,9 @@ import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
+import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
@@ -129,8 +129,8 @@ public class P0Parse {
 				String var = name(m[0]);
 				return FunpDefine.of(true, var, parse(m[1]), parseNewVariable(m[2], var));
 				// return parse(Suite.substitute("poly .1 | (.0 => .2)", m));
-			} else if ((m = Suite.match("predef .0").apply(node)) != null)
-				return FunpPredefine.of(parse(m[0]));
+			} else if ((m = Suite.match("io .0").apply(node)) != null)
+				return FunpIo.of(parse(m[0]));
 			else if ((m = Suite.match("recurse .0 >> .1").apply(node)) != null) {
 				Match match1 = Suite.match(".0 := .1");
 				Streamlet<Node[]> list = Tree.iter(m[0], TermOp.AND___).map(match1::apply).collect(As::streamlet);
@@ -159,10 +159,7 @@ public class P0Parse {
 				return FunpError.of();
 			else if ((m = Suite.match(".0/.1").apply(node)) != null)
 				return FunpField.of(FunpReference.of(parse(m[0])), name(m[1]));
-			else if ((m = Suite.match("fixed .0 => .1").apply(node)) != null) {
-				String var = name(m[0]);
-				return FunpFixed.of(var, parseNewVariable(m[1], var));
-			} else if ((m = Suite.match("if (`.0` = .1) then .2 else .3").apply(node)) != null) {
+			else if ((m = Suite.match("if (`.0` = .1) then .2 else .3").apply(node)) != null) {
 				Set<String> variables = new HashSet<>();
 
 				Funp be = new Object() {
@@ -209,6 +206,8 @@ public class P0Parse {
 				return FunpLambda.of(var, parseNewVariable(m[1], var));
 			} else if (node instanceof Int)
 				return FunpNumber.ofNumber(((Int) node).number);
+			else if ((m = Suite.match("predef .0").apply(node)) != null)
+				return FunpPredefine.of(parse(m[0]));
 			else if ((m = Suite.match("address .0").apply(node)) != null)
 				return FunpReference.of(parse(m[0]));
 			else if ((m = Suite.match(".0 * array .1").apply(node)) != null)

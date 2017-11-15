@@ -27,9 +27,9 @@ import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
+import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
@@ -194,15 +194,13 @@ public class P2InferType {
 				ts.pairs.add(Pair.of(field, tf));
 				unify(n, infer(reference), TypeReference.of(ts));
 				return tf;
-			})).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
-				UnNode<Type> t = unify.newRef();
-				unify(n, t, new Infer(env.replace(var, Pair.of(true, t))).infer(expr));
-				return t;
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				UnNode<Type> t;
 				unify(n, typeBoolean, infer(if_));
 				unify(n, t = infer(then), infer(else_));
 				return t;
+			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
+				return TypeIo.of(infer(expr));
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				UnNode<Type> te = unify.newRef();
 				unify(n, TypeReference.of(TypeArray.of(te)), infer(reference));
@@ -338,6 +336,8 @@ public class P2InferType {
 							return FunpMemory.of(erase(reference), offset, offset1);
 					}
 				throw new RuntimeException();
+			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
+				return erase(expr);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				UnNode<Type> te = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(TypeArray.of(te)));
@@ -483,6 +483,8 @@ public class P2InferType {
 			return Funp_.booleanSize;
 		})).applyIf(TypeByte.class, t -> t.apply(() -> {
 			return 1;
+		})).applyIf(TypeIo.class, t -> t.apply(type -> {
+			return getTypeSize(type);
 		})).applyIf(TypeLambda.class, t -> t.apply((parameterType, returnType) -> {
 			return ps + ps;
 		})).applyIf(TypeNumber.class, t -> t.apply(() -> {
@@ -569,6 +571,20 @@ public class P2InferType {
 
 		private <R> R apply(FixieFun0<R> fun) {
 			return fun.apply();
+		}
+	}
+
+	private static class TypeIo extends Type {
+		private UnNode<Type> type;
+
+		private static TypeIo of(UnNode<Type> type) {
+			TypeIo t = new TypeIo();
+			t.type = type;
+			return t;
+		}
+
+		private <R> R apply(FixieFun1<UnNode<Type>, R> fun) {
+			return fun.apply(type);
 		}
 	}
 

@@ -1,6 +1,5 @@
 package suite.funp;
 
-import suite.adt.Mutable;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
@@ -9,7 +8,6 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpError;
-import suite.funp.P0.FunpFixed;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIterate;
@@ -106,16 +104,7 @@ public class P2GenerateLambda {
 				throw new RuntimeException();
 			}).applyIf(FunpError.class, f -> {
 				throw new RuntimeException();
-			}).applyIf(FunpFixed.class, f -> f.apply((var, expr) -> {
-				int fs1 = fs + 1;
-				Thunk thunk = compile(fs1, env.replace(var, fs1), expr);
-				return rt -> {
-					Mutable<Fun_> mut = Mutable.nil();
-					Fun_ fun = p -> thunk.apply(new Rt(rt, mut.get()));
-					mut.set(fun);
-					return fun;
-				};
-			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
+			}).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				Thunk if1 = compile_(if_);
 				Thunk then1 = compile_(then);
 				Thunk else1 = compile_(else_);

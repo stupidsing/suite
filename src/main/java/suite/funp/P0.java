@@ -219,22 +219,6 @@ public class P0 {
 		}
 	}
 
-	public static class FunpFixed implements Funp, P4.End {
-		public String var;
-		public Funp expr;
-
-		public static FunpFixed of(String var, Funp expr) {
-			FunpFixed f = new FunpFixed();
-			f.var = var;
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun2<String, Funp, R> fun) {
-			return fun.apply(var, expr);
-		}
-	}
-
 	public static class FunpIf implements Funp, P4.End {
 		public Funp if_;
 		public Funp then;
@@ -266,6 +250,20 @@ public class P0 {
 
 		public <R> R apply(FixieFun2<FunpReference, Funp, R> fun) {
 			return fun.apply(reference, index);
+		}
+	}
+
+	public static class FunpIo implements Funp, P2.End {
+		public Funp expr;
+
+		public static FunpIo of(Funp expr) {
+			FunpIo f = new FunpIo();
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
 		}
 	}
 
