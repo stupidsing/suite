@@ -597,6 +597,20 @@ public class P2InferType {
 		}
 	}
 
+	private static class TypeReference extends Type {
+		private UnNode<Type> type;
+
+		private static TypeReference of(UnNode<Type> type) {
+			TypeReference t = new TypeReference();
+			t.type = type;
+			return t;
+		}
+
+		private <R> R apply(FixieFun1<UnNode<Type>, R> fun) {
+			return fun.apply(type);
+		}
+	}
+
 	private static class TypeStruct extends Type {
 		private int id = Util.temp();
 		private TypeStruct ref = this;
@@ -660,20 +674,6 @@ public class P2InferType {
 
 		private TypeStruct finalStruct() {
 			return ref != this ? ref.finalStruct() : this;
-		}
-	}
-
-	private static class TypeReference extends Type {
-		private UnNode<Type> type;
-
-		private static TypeReference of(UnNode<Type> type) {
-			TypeReference t = new TypeReference();
-			t.type = type;
-			return t;
-		}
-
-		private <R> R apply(FixieFun1<UnNode<Type>, R> fun) {
-			return fun.apply(type);
 		}
 	}
 
