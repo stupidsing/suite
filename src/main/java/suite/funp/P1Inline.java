@@ -66,7 +66,7 @@ public class P1Inline {
 					.result();
 
 			for (String var : vars_) {
-				String var1 = var;
+				String var1 = var.split("\\$")[0];
 				int i = 0;
 				while (!vars.add(var1))
 					var1 = var + "$" + i++;
