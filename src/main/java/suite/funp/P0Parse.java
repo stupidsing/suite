@@ -129,8 +129,11 @@ public class P0Parse {
 				String var = name(m[0]);
 				return FunpDefine.of(true, var, parse(m[1]), parseNewVariable(m[2], var));
 				// return parse(Suite.substitute("poly .1 | (.0 => .2)", m));
-			} else if ((m = Suite.match("io .0").apply(node)) != null)
-				return FunpIo.of(parse(m[0]));
+			} else if ((m = Suite.match("let .0 := .1 >> .2").apply(node)) != null) {
+				String var = name(m[0]);
+				return FunpDefine.of(false, var, parse(m[1]), parseNewVariable(m[2], var));
+			}
+			// return parse(Suite.substitute(".1 | (.0 => .2)", m));
 			else if ((m = Suite.match("recurse .0 >> .1").apply(node)) != null) {
 				Match match1 = Suite.match(".0 := .1");
 				Streamlet<Node[]> list = Tree.iter(m[0], TermOp.AND___).map(match1::apply).collect(As::streamlet);
@@ -146,12 +149,7 @@ public class P0Parse {
 							return Pair.of(name(m1[0]), parse1.parse(m1[1]));
 						}) //
 						.toList(), parse1.parse(m[1]));
-			} else if ((m = Suite.match("let .0 := .1 >> .2").apply(node)) != null) {
-				String var = name(m[0]);
-				return FunpDefine.of(false, var, parse(m[1]), parseNewVariable(m[2], var));
-			}
-			// return parse(Suite.substitute(".1 | (.0 => .2)", m));
-			else if ((m = Suite.match("^.0").apply(node)) != null)
+			} else if ((m = Suite.match("^.0").apply(node)) != null)
 				return FunpDeref.of(parse(m[0]));
 			else if (node == dontCare)
 				return FunpDontCare.of();
@@ -195,6 +193,8 @@ public class P0Parse {
 				return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
 			else if ((m = Suite.match(".0 {.1}").apply(node)) != null)
 				return FunpIndex.of(FunpReference.of(parse(m[0])), parse(m[1]));
+			else if ((m = Suite.match("io .0").apply(node)) != null)
+				return FunpIo.of(parse(m[0]));
 			else if ((m = Suite.match("iterate .0 .1 .2 .3").apply(node)) != null) {
 				String var = name(m[0]);
 				Parse parse1 = new Parse(variables.add(var));
