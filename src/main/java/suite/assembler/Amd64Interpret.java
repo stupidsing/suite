@@ -116,18 +116,22 @@ public class Amd64Interpret {
 					assign.sink(source0 + 1);
 					break;
 				case INT:
-					if (regs[eax] == 1)
-						return regs[ebx];
-					else if (regs[eax] == 3) {
-						int length = Math.min(regs[edx] / 4, input.size());
-						for (int i = 0; i < length; i++)
-							mem[index(regs[ecx]) + i] = input.get(i);
-						input = input.range(length);
-						regs[eax] = length * Funp_.integerSize;
-					} else if (regs[eax] == 4)
-						output.sink(Ints.of(mem, index(regs[ecx]), index(regs[ecx] + regs[edx])));
+					if (source0 == -128)
+						if (regs[eax] == 1)
+							return regs[ebx];
+						else if (regs[eax] == 3) {
+							int length = Math.min(regs[edx] / 4, input.size());
+							for (int i = 0; i < length; i++)
+								mem[index(regs[ecx]) + i] = input.get(i);
+							input = input.range(length);
+							regs[eax] = length * Funp_.integerSize;
+						} else if (regs[eax] == 4)
+							output.sink(Ints.of(mem, index(regs[ecx]), index(regs[ecx] + regs[edx])));
+						else
+							throw new RuntimeException();
 					else
 						throw new RuntimeException();
+					break;
 				case JE:
 					if (c == 0)
 						ip = labels.get(source0);
@@ -212,7 +216,7 @@ public class Amd64Interpret {
 	private String state(Instruction instruction) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 8; i++)
-			sb.append("\n" + amd64.regsByName.inverse().get(amd64.reg32[i]) + " = " + To.hex8(regs[i]));
+			sb.append((i % 2 == 0 ? "\n" : " ") + amd64.regsByName.inverse().get(amd64.reg32[i]) + ":" + To.hex8(regs[i]));
 		sb.append("\nCMP = " + c);
 		sb.append("\nINSTRUCTION = " + dump.dump(instruction));
 		return sb.toString();
