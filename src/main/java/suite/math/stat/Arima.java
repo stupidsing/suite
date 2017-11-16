@@ -210,7 +210,6 @@ public class Arima {
 		float[] ars_ = ars;
 		float[] mas_ = mas;
 		float[] eps_ = eps;
-		int t = xLength;
 
 		// x[t]
 		// = ars[0] * x[t - 1] + ... + ars[p - 1] * x[t - p]
@@ -218,8 +217,8 @@ public class Arima {
 		// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 		// when t = xLength
 		return (float) (0f //
-				+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs_[t - j - 1])) //
-				+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas_[j] * eps_[t - j - 1])));
+				+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs_[xLength - j - 1])) //
+				+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas_[j] * eps_[xLength - j - 1])));
 	}
 
 	// Digital Processing of Random Signals, Boaz Porat, page 190
