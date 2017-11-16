@@ -217,7 +217,7 @@ public class Arima {
 				}
 			}
 
-			return xs[xs.length - 1];
+			return xs[xLength];
 		}
 	}
 
