@@ -309,9 +309,8 @@ public class P2InferType {
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				Mutable<Integer> stack = Mutable.nil();
 				int size0 = getTypeSize(typeOf(value));
-				int size1 = align(size0);
 				Erase erase1 = new Erase(scope, env.replace(var, new Var(scope, stack, 0, size0)));
-				return FunpAllocStack.of(size1, erase(value), erase1.erase(expr), stack);
+				return allocStack(size0, value, erase1.erase(expr), stack);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				List<Pair<Var, Funp>> assigns = new ArrayList<>();
 				Mutable<Integer> stack = Mutable.nil();
