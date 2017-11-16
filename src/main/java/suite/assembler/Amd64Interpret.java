@@ -12,11 +12,14 @@ import suite.funp.Funp_;
 import suite.os.LogUtil;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.Ints;
+import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntIntMap;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class Amd64Interpret {
+
+	public final IntsBuilder out = new IntsBuilder();
 
 	private int offset;
 	private int[] mem = new int[65536];
@@ -34,10 +37,7 @@ public class Amd64Interpret {
 	private int[] scales = new int[] { 1, 2, 4, 8, };
 
 	private Ints input;
-	private Sink<Ints> output = is -> {
-		for (Integer i : is)
-			LogUtil.info("OUT = " + i);
-	};
+	private Sink<Ints> output = out::append;
 
 	public Amd64Interpret() {
 		this(Ints.of());
