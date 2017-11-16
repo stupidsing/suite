@@ -20,27 +20,32 @@ import suite.util.MapObject_;
 
 public class Funp_ {
 
-	public static Funp_ me = new Funp_();
 	public static int booleanSize = 1;
 	public static int integerSize = 4;
 	public static int pointerSize = 4;
 
 	public static FunpFramePointer framePointer = new FunpFramePointer();
 
+	public boolean isOptimize;
+
 	public interface Funp extends AutoInterface<Funp> {
 	}
 
+	private Funp_(boolean isOptimize) {
+		this.isOptimize = isOptimize;
+	}
+
 	public static Main main() {
-		return new Funp_().new Main();
+		return new Funp_(true).new Main();
 	}
 
 	public class Main {
 		private P0Parse p0 = new P0Parse();
-		private P1Inline p1 = new P1Inline(3);
+		private P1Inline p1 = new P1Inline(isOptimize ? 3 : 0);
 		private P2InferType p2 = new P2InferType();
 		private P2GenerateLambda p2g = new P2GenerateLambda();
 		private P3Optimize p3 = new P3Optimize();
-		private P4GenerateCode p4 = new P4GenerateCode(true);
+		private P4GenerateCode p4 = new P4GenerateCode(!isOptimize);
 
 		private Main() {
 		}
