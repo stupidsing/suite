@@ -34,7 +34,10 @@ public class Amd64Interpret {
 	private int[] scales = new int[] { 1, 2, 4, 8, };
 
 	private Ints input;
-	private Sink<Ints> output = System.out::println;
+	private Sink<Ints> output = is -> {
+		for (Integer i : is)
+			LogUtil.info("OUT = " + i);
+	};
 
 	public Amd64Interpret() {
 		this(Ints.of());
@@ -116,10 +119,11 @@ public class Amd64Interpret {
 					if (regs[eax] == 1)
 						return regs[ebx];
 					else if (regs[eax] == 3) {
-						int length = regs[eax] = Math.min(regs[edx] / 4, input.size());
+						int length = Math.min(regs[edx] / 4, input.size());
 						for (int i = 0; i < length; i++)
 							mem[index(regs[ecx]) + i] = input.get(i);
 						input = input.range(length);
+						regs[eax] = length * Funp_.integerSize;
 					} else if (regs[eax] == 4)
 						output.sink(Ints.of(mem, index(regs[ecx]), index(regs[ecx] + regs[edx])));
 					else
