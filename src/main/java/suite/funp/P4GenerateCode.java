@@ -618,7 +618,7 @@ public class P4GenerateCode {
 			}
 
 			private OpMem compileFrame(int start, int size) {
-				return Funp_.isUseEbp ? amd64.mem(ebp, start, size) : amd64.mem(esp, start - fd, size);
+				return deOp.decomposeOpMem(fd, Funp_.framePointer, start, size);
 			}
 
 			private OpReg compileLoad(Funp node) {

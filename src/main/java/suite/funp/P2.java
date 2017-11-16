@@ -69,6 +69,10 @@ public class P2 {
 	}
 
 	public static class FunpFramePointer implements Funp, P4.End {
+		public static FunpFramePointer of() {
+			return new FunpFramePointer();
+		}
+
 		public <R> R apply(FixieFun0<R> fun) {
 			return fun.apply();
 		}
