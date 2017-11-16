@@ -305,7 +305,13 @@ public class P4GenerateCode {
 					em.emit(amd64.instruction(Insn.HLT));
 					return postDontCare.source();
 				}).applyIf(FunpFramePointer.class, t -> {
-					return postOp.apply(ebp);
+					if (Funp_.isUseEbp)
+						return postOp.apply(ebp);
+					else {
+						OpReg op = isOutSpec ? pop0 : rs.get(is);
+						em.lea(op, amd64.mem(esp, -fd, is));
+						return postOp.apply(ebp);
+					}
 				}).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 					Sink<Funp> compile0, compile1;
 					Source<CompileOut> out;

@@ -25,6 +25,7 @@ public class Funp_ {
 	public static int integerSize = 4;
 	public static int pointerSize = 4;
 
+	public static boolean isUseEbp = true; // or use ESP directly
 	public static FunpFramePointer framePointer = new FunpFramePointer();
 
 	public interface Funp extends AutoInterface<Funp> {
