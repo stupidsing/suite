@@ -23,10 +23,9 @@ public class Funp_ {
 	public static int booleanSize = 1;
 	public static int integerSize = 4;
 	public static int pointerSize = 4;
-
 	public static FunpFramePointer framePointer = new FunpFramePointer();
 
-	public boolean isOptimize;
+	private boolean isOptimize;
 
 	public interface Funp extends AutoInterface<Funp> {
 	}
