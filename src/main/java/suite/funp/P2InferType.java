@@ -164,7 +164,7 @@ public class P2InferType {
 					else
 						throw new RuntimeException();
 				}
-				return TypeIo.of(typeNumber);
+				return typeNumber;
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), TypeReference.of(infer(value)));
 				return infer(expr);
