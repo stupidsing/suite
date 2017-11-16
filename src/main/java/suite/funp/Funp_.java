@@ -25,7 +25,6 @@ public class Funp_ {
 	public static int integerSize = 4;
 	public static int pointerSize = 4;
 
-	public static boolean isUseEbp = true; // or use ESP directly
 	public static FunpFramePointer framePointer = new FunpFramePointer();
 
 	public interface Funp extends AutoInterface<Funp> {
@@ -37,11 +36,11 @@ public class Funp_ {
 
 	public class Main {
 		private P0Parse p0 = new P0Parse();
-		private P1Inline p1 = new P1Inline();
+		private P1Inline p1 = new P1Inline(3);
 		private P2InferType p2 = new P2InferType();
 		private P2GenerateLambda p2g = new P2GenerateLambda();
 		private P3Optimize p3 = new P3Optimize();
-		private P4GenerateCode p4 = new P4GenerateCode();
+		private P4GenerateCode p4 = new P4GenerateCode(true);
 
 		private Main() {
 		}

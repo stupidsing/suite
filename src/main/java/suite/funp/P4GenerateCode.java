@@ -73,7 +73,8 @@ public class P4GenerateCode {
 	private OpReg esi = amd64.esi;
 	private OpReg edi = amd64.edi;
 	private OpReg[] integerRegs = is == 4 ? amd64.reg32 : is == 8 ? amd64.reg64 : null;
-	private RegisterSet registerSet = new RegisterSet().mask(Funp_.isUseEbp ? ebp : null, esp);
+	private RegisterSet registerSet;
+	private boolean isUseEbp;
 
 	private Map<Object, Insn> insnByOp = Map.ofEntries( //
 			entry(TermOp.BIGOR_, Insn.OR), //
@@ -101,12 +102,18 @@ public class P4GenerateCode {
 			entry(TreeUtil.SHL, Insn.SHL), //
 			entry(TreeUtil.SHR, Insn.SHR));
 
-	private P4DecomposeOperand deOp = new P4DecomposeOperand();
+	private P4DecomposeOperand deOp;
+
+	public P4GenerateCode(boolean isUseEbp) { // or use ESP directly
+		this.isUseEbp = isUseEbp;
+		registerSet = new RegisterSet().mask(isUseEbp ? ebp : null, esp);
+		deOp = new P4DecomposeOperand(isUseEbp);
+	}
 
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
 		P4Emit emit = new P4Emit(instructions::add);
-		if (Funp_.isUseEbp)
+		if (isUseEbp)
 			emit.mov(ebp, esp);
 		CompileOut out = new Compile0(CompileOut_.OPREG, emit).new Compile1(registerSet, 0).compile(funp);
 		emit.mov(ebx, out.op0);
@@ -572,7 +579,7 @@ public class P4GenerateCode {
 				em.emit(amd64.instruction(Insn.JMP, endLabel));
 				em.emit(amd64.instruction(Insn.LABEL, routineLabel));
 				em.emit(amd64.instruction(Insn.PUSH, ebp));
-				if (Funp_.isUseEbp)
+				if (isUseEbp)
 					em.mov(ebp, esp);
 				sink.sink(new Compile1(registerSet, 0));
 				em.emit(amd64.instruction(Insn.POP, ebp));
@@ -607,7 +614,7 @@ public class P4GenerateCode {
 					em.mov(op = rs.mask(out.op0).get(ps), out.op1);
 				em.mov(ebp, out.op0);
 				em.emit(amd64.instruction(Insn.CALL, op));
-				if (Funp_.isUseEbp && out.op0 != ebp)
+				if (isUseEbp && out.op0 != ebp)
 					em.lea(ebp, amd64.mem(esp, -fd, is));
 			}
 

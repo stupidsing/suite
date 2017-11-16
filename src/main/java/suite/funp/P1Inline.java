@@ -34,11 +34,16 @@ import suite.util.Switch;
 public class P1Inline {
 
 	private Inspect inspect = Singleton.me.inspect;
+	private int rounds;
+
+	public P1Inline(int rounds) {
+		this.rounds = rounds;
+	}
 
 	public Funp inline(Funp node) {
 		node = renameVariables(node);
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < rounds; i++) {
 			node = inlineDefineAssigns(node);
 			node = inlineDefines(node);
 			node = inlineFields(node);
