@@ -192,33 +192,31 @@ public class Arima {
 			}
 		}
 
-		{
-			float[] ars_ = ars;
-			float[] mas_ = mas;
-			float[] eps_ = eps;
-			int t = xLength;
+		float[] ars_ = ars;
+		float[] mas_ = mas;
+		float[] eps_ = eps;
+		int t = xLength;
 
-			// x[t]
-			// = ars[0] * x[t - 1] + ... + ars[p - 1] * x[t - p]
-			// + eps[t]
-			// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
-			// when t = xLength
-			double x1 = 0f //
-					+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs_[t - j - 1])) //
-					+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas_[j] * eps_[t - j - 1]));
+		// x[t]
+		// = ars[0] * x[t - 1] + ... + ars[p - 1] * x[t - p]
+		// + eps[t]
+		// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
+		// when t = xLength
+		double x1 = 0f //
+				+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs_[t - j - 1])) //
+				+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas_[j] * eps_[t - j - 1]));
 
-			float[] xs1 = Floats_.concat(xs, new float[] { (float) x1, });
+		float[] xs1 = Floats_.concat(xs, new float[] { (float) x1, });
 
-			for (int i = 0; i < d; i++) {
-				int l = xLength;
-				for (int j = i; j < d; j++) {
-					int l0 = l;
-					xs1[l0] += xs1[--l];
-				}
+		for (int i = 0; i < d; i++) {
+			int l = xLength;
+			for (int j = i; j < d; j++) {
+				int l0 = l;
+				xs1[l0] += xs1[--l];
 			}
-
-			return xs1[xLength];
 		}
+
+		return xs1[xLength];
 	}
 
 	// Digital Processing of Random Signals, Boaz Porat, page 190
