@@ -73,7 +73,7 @@ public class P4GenerateCode {
 	private OpReg esi = amd64.esi;
 	private OpReg edi = amd64.edi;
 	private OpReg[] integerRegs = is == 4 ? amd64.reg32 : is == 8 ? amd64.reg64 : null;
-	private RegisterSet registerSet = new RegisterSet().mask(Funp_.isUseEbp ? ebp : null, esp);
+	private RegisterSet registerSet = new RegisterSet().mask(ebp, esp);
 
 	private Map<Object, Insn> insnByOp = Map.ofEntries( //
 			entry(TermOp.BIGOR_, Insn.OR), //
