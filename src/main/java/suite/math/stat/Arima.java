@@ -129,14 +129,29 @@ public class Arima {
 		return lr;
 	}
 
+	public float em(float[] xs, int p, int d, int q) { // ARIMA
+		for (int i = 0; i < d; i++)
+			xs = ts.dropDiff(1, xs);
+
+		float[] xs1 = Floats_.concat(xs, new float[] { em(xs, p, q), });
+		int xLength = xs.length;
+
+		for (int i = 0; i < d; i++) {
+			int l = xLength;
+			for (int j = i; j < d; j++) {
+				int l0 = l;
+				xs1[l0] += xs1[--l];
+			}
+		}
+
+		return xs1[xLength];
+	}
+
 	// xs[t]
 	// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 	// = eps[t]
 	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
-	public float em(float[] xs, int p, int d, int q) {
-		for (int i = 0; i < d; i++)
-			xs = ts.dropDiff(1, xs);
-
+	private float em(float[] xs, int p, int q) { // ARMA
 		int maxpq = Math.max(p, q);
 		int xLength = xs.length;
 		int tsLength = xLength - maxpq;
@@ -202,21 +217,10 @@ public class Arima {
 		// + eps[t]
 		// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 		// when t = xLength
-		double x1 = 0f //
+		float x1 = (float) (0f //
 				+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs_[t - j - 1])) //
-				+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas_[j] * eps_[t - j - 1]));
-
-		float[] xs1 = Floats_.concat(xs, new float[] { (float) x1, });
-
-		for (int i = 0; i < d; i++) {
-			int l = xLength;
-			for (int j = i; j < d; j++) {
-				int l0 = l;
-				xs1[l0] += xs1[--l];
-			}
-		}
-
-		return xs1[xLength];
+				+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas_[j] * eps_[t - j - 1])));
+		return x1;
 	}
 
 	// Digital Processing of Random Signals, Boaz Porat, page 190
