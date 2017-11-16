@@ -612,13 +612,9 @@ public class P4GenerateCode {
 			}
 
 			private OpReg compileFramePointer() {
-				if (Funp_.isUseEbp)
-					return ebp;
-				else {
-					OpReg op = isOutSpec ? pop0 : rs.get(is);
-					em.lea(op, compileFrame(0, is));
-					return op;
-				}
+				OpReg op = rs.get(isOutSpec ? pop0 : ebp);
+				em.lea(op, compileFrame(0, is));
+				return op;
 			}
 
 			private OpMem compileFrame(int start, int size) {
