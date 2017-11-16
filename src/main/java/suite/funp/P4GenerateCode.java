@@ -607,6 +607,8 @@ public class P4GenerateCode {
 					em.mov(op = rs.mask(out.op0).get(ps), out.op1);
 				em.mov(ebp, out.op0);
 				em.emit(amd64.instruction(Insn.CALL, op));
+				if (Funp_.isUseEbp && out.op0 != ebp)
+					em.lea(ebp, amd64.mem(esp, -fd, is));
 			}
 
 			private OpReg compileFramePointer() {
