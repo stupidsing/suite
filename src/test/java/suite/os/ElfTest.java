@@ -51,7 +51,8 @@ public class ElfTest {
 				+ "	pointer, size | linux-read | io-cat ( \n" //
 				+ "		nBytesRead => pointer, nBytesRead | linux-write | io-cat (nBytesWrote => io nBytesRead) \n" //
 				+ "	) \n" //
-				+ ") \n";
+				+ ") \n" //
+		;
 
 		if (Boolean.TRUE) {
 			Execute exec = test(program, text);
