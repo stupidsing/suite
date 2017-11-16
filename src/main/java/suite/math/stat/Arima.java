@@ -155,10 +155,9 @@ public class Arima {
 		int maxpq = Math.max(p, q);
 		int xLength = xs.length;
 		int tsLength = xLength - maxpq;
-		float[] xs_ = xs;
-		float[] ars = new float[p];
-		float[] mas = new float[q];
-		float[] eps = new float[q + 1];
+		float[] ars = Floats_.toArray(p, i -> (float) Math.scalb(1d, -i));
+		float[] mas = Floats_.toArray(q, i -> (float) Math.scalb(1d, -i));
+		float[] eps = Floats_.toArray(q + 1, i -> .1f);
 
 		for (int iter = 0; iter < 9; iter++) {
 
@@ -200,7 +199,7 @@ public class Arima {
 					for (int j = 0; j < q; j++)
 						lrxs[--t_] = mas[j];
 					lrxss[i] = mas;
-					lrys[i] = (float) (xs[t] - eps[t] - Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs_[t - j - 1])));
+					lrys[i] = (float) (xs[t] - eps[t] - Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs[t - j - 1])));
 
 					eps = stat.linearRegression(lrxss, lrys).coefficients;
 				}
@@ -217,7 +216,7 @@ public class Arima {
 		// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 		// when t = xLength
 		return (float) (0f //
-				+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs_[xLength - j - 1])) //
+				+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs[xLength - j - 1])) //
 				+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas_[j] * eps_[xLength - j - 1])));
 	}
 
