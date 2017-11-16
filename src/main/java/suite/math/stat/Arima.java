@@ -129,6 +129,98 @@ public class Arima {
 		return lr;
 	}
 
+	// xs[t]
+	// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
+	// = eps[t]
+	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
+	public float em(float[] xs, int p, int d, int q) {
+		for (int i = 0; i < d; i++)
+			xs = ts.dropDiff(1, xs);
+
+		int maxpq = Math.max(p, q);
+		int xLength = xs.length;
+		int tsLength = xLength - maxpq;
+		float[] xs_ = xs;
+		float[] ars = new float[p];
+		float[] mas = new float[q];
+		float[] eps = new float[q + 1];
+
+		for (int iter = 0; iter < 9; iter++) {
+
+			// xs[t] - eps[t]
+			// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
+			// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
+			{
+				float[][] lrxss = new float[tsLength][p + q];
+				float[] lrys = new float[tsLength];
+
+				for (int i = 0; i < tsLength; i++) {
+					float[] lrxs = lrxss[i];
+					int t = i + maxpq;
+					int k = 0;
+					for (int j = 1; j <= p; j++)
+						lrxs[k++] = xs[t - j];
+					for (int j = 1; j <= q; j++)
+						lrxs[k++] = eps[t - j];
+					lrys[i] = xs[t] - eps[t];
+				}
+
+				float[] coeffs = stat.linearRegression(lrxss, lrys).coefficients;
+				ars = Arrays.copyOfRange(coeffs, 0, p);
+				mas = Arrays.copyOfRange(coeffs, p, p + q);
+			}
+
+			// xs[t] - eps[t]
+			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
+			// = eps[t - 1] * mas[0] + ... + eps[t - q] * mas[q - 1]
+			{
+				float[][] lrxss = new float[tsLength][xLength];
+				float[] lrys = new float[tsLength];
+
+				for (int i = 0; i < tsLength; i++) {
+					float[] lrxs = lrxss[i];
+					float[] ars_ = ars;
+					int t = i + maxpq;
+					int t_ = t;
+					for (int j = 0; j < q; j++)
+						lrxs[--t_] = mas[j];
+					lrxss[i] = mas;
+					lrys[i] = (float) (xs[t] - eps[t] - Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs_[t - j - 1])));
+
+					eps = stat.linearRegression(lrxss, lrys).coefficients;
+				}
+			}
+		}
+
+		{
+			float[] ars_ = ars;
+			float[] mas_ = mas;
+			float[] eps_ = eps;
+			int t = xLength;
+
+			// x[t]
+			// = ars[0] * x[t - 1] + ... + ars[p - 1] * x[t - p]
+			// + eps[t]
+			// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
+			// when t = xLength
+			double x1 = 0f //
+					+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs_[t - j - 1])) //
+					+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas_[j] * eps_[t - j - 1]));
+
+			xs = Floats_.concat(xs, new float[] { (float) x1, });
+
+			for (int i = 0; i < d; i++) {
+				int l = xLength;
+				for (int j = i; j < d; j++) {
+					int l0 = l;
+					xs[l0] += xs[--l];
+				}
+			}
+
+			return xs[xs.length - 1];
+		}
+	}
+
 	// Digital Processing of Random Signals, Boaz Porat, page 190
 	// q << l << fs.length
 	public float[] maDurbin(float[] ys, int q, int l) {
