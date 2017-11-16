@@ -435,7 +435,7 @@ public class P2InferType {
 
 		private FunpMemory getVariable(Var vd) {
 			Funp nfp = Funp_.framePointer;
-			for (int i = scope; i < vd.scope; i++)
+			for (int i = vd.scope; i < scope; i++)
 				nfp = FunpMemory.of(nfp, 0, ps);
 			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp, FunpNumber.of(vd.stack)), vd.start, vd.end);
 		}
