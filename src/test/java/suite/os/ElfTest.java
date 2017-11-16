@@ -19,12 +19,7 @@ public class ElfTest {
 
 	@Test
 	public void testCode() {
-		Execute exec = test("" //
-				+ "iterate n 0 (n < 100) (io (n + 1)) \n" //
-				, "");
-
-		assertEquals(100, exec.code);
-		assertEquals("", exec.out);
+		test("iterate n 0 (n < 100) (io (n + 1)) \n", "", 100);
 	}
 
 	@Test
@@ -54,19 +49,22 @@ public class ElfTest {
 				+ ") \n" //
 		;
 
-		if (Boolean.TRUE) {
-			Execute exec = test(program, text);
-			assertEquals(0, exec.code);
-			assertEquals(text, exec.out);
-		} else {
-			Ints array = Ints.of(Ints_.toArray(text.length(), text::charAt));
-			List<Instruction> instructions = Funp_.main().compile(0, program).t0;
-			assertEquals(0, new Amd64Interpret(array).interpret(instructions));
-		}
+		test(program, text, 0);
 	}
 
-	private Execute test(String program, String input) {
-		return elf.exec(input, offset -> Funp_.main().compile(offset, program).t1);
+	private void test(String program, String input, int code) {
+		if (Boolean.TRUE) {
+			Execute exec = elf.exec(input, offset -> Funp_.main().compile(offset, program).t1);
+			assertEquals(code, exec.code);
+			assertEquals(input, exec.out);
+		} else {
+			Ints array = Ints.of(Ints_.toArray(input.length(), input::charAt));
+			List<Instruction> instructions = Funp_.main().compile(code, program).t0;
+
+			Amd64Interpret interpret = new Amd64Interpret(array);
+			assertEquals(code, interpret.interpret(instructions));
+			assertEquals(array, interpret.out.toInts());
+		}
 	}
 
 }
