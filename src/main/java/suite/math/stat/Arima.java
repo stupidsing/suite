@@ -207,17 +207,17 @@ public class Arima {
 					+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs_[t - j - 1])) //
 					+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas_[j] * eps_[t - j - 1]));
 
-			xs = Floats_.concat(xs, new float[] { (float) x1, });
+			float[] xs1 = Floats_.concat(xs, new float[] { (float) x1, });
 
 			for (int i = 0; i < d; i++) {
 				int l = xLength;
 				for (int j = i; j < d; j++) {
 					int l0 = l;
-					xs[l0] += xs[--l];
+					xs1[l0] += xs1[--l];
 				}
 			}
 
-			return xs[xLength];
+			return xs1[xLength];
 		}
 	}
 
