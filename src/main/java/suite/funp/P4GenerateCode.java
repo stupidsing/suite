@@ -106,7 +106,8 @@ public class P4GenerateCode {
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
 		P4Emit emit = new P4Emit(instructions::add);
-		emit.mov(ebp, esp);
+		if (Funp_.isUseEbp)
+			emit.mov(ebp, esp);
 		CompileOut out = new Compile0(CompileOut_.OPREG, emit).new Compile1(registerSet, 0).compile(funp);
 		emit.mov(ebx, out.op0);
 		emit.mov(eax, amd64.imm(1, is));
@@ -210,7 +211,7 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.PUSH, eax));
 						int fd1 = fd - is;
 						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
-						em.mov(op0, amd64.mem(ebp, fd1, is));
+						em.mov(op0, compileFrame(fd1, is));
 						em.emit(amd64.instruction(Insn.POP, rs.mask(op0).get(is)));
 						return postOp.apply(op0);
 					} else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG || type == CompileOut_.TWOOPSPEC) {
@@ -221,8 +222,8 @@ public class P4GenerateCode {
 						Operand imm = amd64.imm(size);
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
 						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
-						em.mov(op0, amd64.mem(ebp, fd1, ps));
-						em.mov(op1, amd64.mem(ebp, fd1 + ps, ps));
+						em.mov(op0, compileFrame(fd1, ps));
+						em.mov(op1, compileFrame(fd1 + ps, ps));
 						em.emit(amd64.instruction(Insn.ADD, esp, imm));
 						return postTwoOp.apply(op0, op1);
 					} else
@@ -305,13 +306,7 @@ public class P4GenerateCode {
 					em.emit(amd64.instruction(Insn.HLT));
 					return postDontCare.source();
 				}).applyIf(FunpFramePointer.class, t -> {
-					if (Funp_.isUseEbp)
-						return postOp.apply(ebp);
-					else {
-						OpReg op = isOutSpec ? pop0 : rs.get(is);
-						em.lea(op, amd64.mem(esp, -fd, is));
-						return postOp.apply(ebp);
-					}
+					return postOp.apply(compileFramePointer());
 				}).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 					Sink<Funp> compile0, compile1;
 					Source<CompileOut> out;
@@ -382,7 +377,7 @@ public class P4GenerateCode {
 						OpReg r0 = c1.compileOpReg(target.pointer);
 						Compile1 c2 = c1.mask(r0);
 						c2.compileInvoke(routine);
-						c2.compileMove(r0, target.start, ebp, c2.fd, target.size());
+						c2.compileMove(r0, target.start, c2.compileFramePointer(), c2.fd, target.size());
 					});
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 					int size = end - start;
@@ -577,12 +572,13 @@ public class P4GenerateCode {
 				em.emit(amd64.instruction(Insn.JMP, endLabel));
 				em.emit(amd64.instruction(Insn.LABEL, routineLabel));
 				em.emit(amd64.instruction(Insn.PUSH, ebp));
-				em.mov(ebp, esp);
+				if (Funp_.isUseEbp)
+					em.mov(ebp, esp);
 				sink.sink(new Compile1(registerSet, 0));
 				em.emit(amd64.instruction(Insn.POP, ebp));
 				em.emit(amd64.instruction(Insn.RET));
 				em.emit(amd64.instruction(Insn.LABEL, endLabel));
-				return Pair.of(ebp, routineLabel);
+				return Pair.of(compileFramePointer(), routineLabel);
 			}
 
 			private void compileInstruction(Insn insn, Operand op0, Funp f1) {
@@ -611,6 +607,16 @@ public class P4GenerateCode {
 					em.mov(op = rs.mask(out.op0).get(ps), out.op1);
 				em.mov(ebp, out.op0);
 				em.emit(amd64.instruction(Insn.CALL, op));
+			}
+
+			private OpReg compileFramePointer() {
+				OpReg op = Funp_.isUseEbp ? ebp : isOutSpec ? pop0 : rs.get(is);
+				em.lea(op, compileFrame(-fd, is));
+				return op;
+			}
+
+			private OpMem compileFrame(int start, int size) {
+				return Funp_.isUseEbp ? amd64.mem(ebp, start, size) : amd64.mem(esp, start - fd, size);
 			}
 
 			private OpReg compileLoad(Funp node) {
