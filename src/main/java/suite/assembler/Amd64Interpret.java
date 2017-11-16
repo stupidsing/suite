@@ -11,7 +11,9 @@ import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
 import suite.os.LogUtil;
 import suite.primitive.IntPrimitives.IntSink;
+import suite.primitive.Ints;
 import suite.primitive.adt.map.IntIntMap;
+import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class Amd64Interpret {
@@ -25,11 +27,21 @@ public class Amd64Interpret {
 	private Amd64Dump dump = new Amd64Dump();
 	private int eax = amd64.eax.reg;
 	private int ebx = amd64.ebx.reg;
+	private int ecx = amd64.ecx.reg;
+	private int edx = amd64.edx.reg;
 	private int esp = amd64.esp.reg;
 
 	private int[] scales = new int[] { 1, 2, 4, 8, };
 
+	private Ints input;
+	private Sink<Ints> output = System.out::println;
+
 	public Amd64Interpret() {
+		this(Ints.of());
+	}
+
+	public Amd64Interpret(Ints input) {
+		this.input = input;
 		offset = (regs[esp] = 0xF0000000) - mem.length;
 	}
 
@@ -103,6 +115,13 @@ public class Amd64Interpret {
 				case INT:
 					if (regs[eax] == 1)
 						return regs[ebx];
+					else if (regs[eax] == 3) {
+						int length = regs[eax] = Math.min(regs[edx] / 4, input.size());
+						for (int i = 0; i < length; i++)
+							mem[index(regs[ecx]) + i] = input.get(i);
+						input = input.range(length);
+					} else if (regs[eax] == 4)
+						output.sink(Ints.of(mem, index(regs[ecx]), index(regs[ecx] + regs[edx])));
 					else
 						throw new RuntimeException();
 				case JE:
