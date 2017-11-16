@@ -73,7 +73,7 @@ public class P4GenerateCode {
 	private OpReg esi = amd64.esi;
 	private OpReg edi = amd64.edi;
 	private OpReg[] integerRegs = is == 4 ? amd64.reg32 : is == 8 ? amd64.reg64 : null;
-	private RegisterSet registerSet = new RegisterSet().mask(ebp, esp);
+	private RegisterSet registerSet = new RegisterSet().mask(Funp_.isUseEbp ? ebp : null, esp);
 
 	private Map<Object, Insn> insnByOp = Map.ofEntries( //
 			entry(TermOp.BIGOR_, Insn.OR), //
@@ -421,7 +421,7 @@ public class P4GenerateCode {
 					FunpMemory out = frame(ps + is, os);
 					return postRoutine.apply(c1 -> c1.compileAssign(expr, out));
 				})).applyIf(FunpSaveRegisters.class, f -> f.apply(expr -> {
-					OpReg[] opRegs = rs.list(r -> r != esp.reg);
+					OpReg[] opRegs = rs.list(r -> r != ebp.reg && r != esp.reg);
 
 					for (int i = 0; i <= opRegs.length - 1; i++)
 						em.emit(amd64.instruction(Insn.PUSH, opRegs[i]));
