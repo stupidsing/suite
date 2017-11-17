@@ -16,25 +16,34 @@ public class ArimaTest {
 	private Random random = new Random();
 
 	@Test
-	public void testArma() {
+	public void testAr() {
+		test(new float[] { .5f, .5f, }, new float[] {});
+	}
+
+	@Test
+	public void testMa() {
+		test(new float[] {}, new float[] { .5f, .5f, });
+	}
+
+	private void test(float[] ars, float[] mas) {
 		int length = 128;
-		float[] ars = new float[] { .5f, .5f, };
-		float[] mas = new float[] {};
+		int p = ars.length;
+		int q = mas.length;
 		float[] xs = new float[length];
 		float[] eps = Floats_.toArray(length, i -> (float) random.nextGaussian());
 		int i = 0;
 
-		while (i < ars.length)
-			xs[i++] = random.nextFloat();
+		while (i < Math.max(p, q))
+			xs[i++] = 8f * random.nextFloat();
 
 		while (i < length) {
 			int im1 = i - 1;
 			xs[i++] = (float) (0d //
-					+ Ints_.range(ars.length).collectAsDouble(Int_Dbl.sum(j -> ars[j] * xs[im1 - j])) //
-					+ Ints_.range(mas.length).collectAsDouble(Int_Dbl.sum(j -> mas[j] * eps[im1 - j])));
+					+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars[j] * xs[im1 - j])) //
+					+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas[j] * eps[im1 - j])));
 		}
 
-		Em em = arima.em(xs, ars.length, mas.length);
+		Em em = arima.em(xs, p, q);
 		System.out.println(Arrays.toString(em.ars));
 		System.out.println(Arrays.toString(em.mas));
 		System.out.println(Arrays.toString(xs));
