@@ -1,5 +1,6 @@
 package suite.assembler;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 
 import suite.assembler.Amd64.Insn;
@@ -10,19 +11,19 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
 import suite.os.LogUtil;
+import suite.primitive.Bytes;
+import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntPrimitives.IntSink;
-import suite.primitive.Ints;
-import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntIntMap;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class Amd64Interpret {
 
-	public final IntsBuilder out = new IntsBuilder();
+	public final BytesBuilder out = new BytesBuilder();
 
 	private int offset;
-	private int[] mem = new int[65536];
+	private ByteBuffer mem = ByteBuffer.allocate(262144);
 	private int[] regs = new int[16];
 	private int c;
 
@@ -36,16 +37,16 @@ public class Amd64Interpret {
 
 	private int[] scales = new int[] { 1, 2, 4, 8, };
 
-	private Ints input;
-	private Sink<Ints> output = out::append;
+	private Bytes input;
+	private Sink<Bytes> output = out::append;
 
 	public Amd64Interpret() {
-		this(Ints.of());
+		this(Bytes.of());
 	}
 
-	public Amd64Interpret(Ints input) {
+	public Amd64Interpret(Bytes input) {
 		this.input = input;
-		offset = (regs[esp] = 0xF0000000) - mem.length;
+		offset = (regs[esp] = 0xF0000000) - mem.capacity() + 16;
 	}
 
 	public int interpret(List<Instruction> instructions) {
@@ -76,8 +77,8 @@ public class Amd64Interpret {
 					assign = null;
 				} else if (op0 instanceof OpMem) {
 					int index = index(address((OpMem) op0));
-					source0 = mem[index];
-					assign = i -> mem[index] = i;
+					source0 = mem.getInt(index);
+					assign = i -> mem.putInt(index, i);
 				} else if (op0 instanceof OpReg) {
 					int reg = ((OpReg) op0).reg;
 					source0 = regs[reg];
@@ -92,7 +93,7 @@ public class Amd64Interpret {
 				if (op1 instanceof OpImm)
 					source1 = (int) ((OpImm) op1).imm;
 				else if (op1 instanceof OpMem)
-					source1 = mem[index(address((OpMem) op1))];
+					source1 = mem.getInt(index(address((OpMem) op1)));
 				else if (op1 instanceof OpReg)
 					source1 = regs[((OpReg) op1).reg];
 				else
@@ -120,14 +121,20 @@ public class Amd64Interpret {
 						if (regs[eax] == 1)
 							return regs[ebx];
 						else if (regs[eax] == 3) {
-							int length = Math.min(regs[edx] / 4, input.size());
+							int length = Math.min(regs[edx], input.size());
+							int di = index(regs[ecx]);
 							for (int i = 0; i < length; i++)
-								mem[index(regs[ecx]) + i] = input.get(i);
+								mem.put(di++, input.get(i));
 							input = input.range(length);
-							regs[eax] = length * Funp_.integerSize;
-						} else if (regs[eax] == 4)
-							output.sink(Ints.of(mem, index(regs[ecx]), index(regs[ecx] + regs[edx])));
-						else
+							regs[eax] = length;
+						} else if (regs[eax] == 4) {
+							int length = regs[edx];
+							int si = index(regs[ecx]);
+							byte[] bs = new byte[length];
+							for (int i = 0; i < length; i++)
+								bs[i] = mem.get(si++);
+							output.sink(Bytes.of(bs));
+						} else
 							throw new RuntimeException();
 					else
 						throw new RuntimeException();
@@ -194,11 +201,11 @@ public class Amd64Interpret {
 
 	private void push(int value) {
 		regs[esp] -= Funp_.integerSize;
-		mem[index(regs[esp])] = value;
+		mem.putInt(index(regs[esp]), value);
 	}
 
 	private int pop() {
-		int i = mem[index(regs[esp])];
+		int i = mem.getInt(index(regs[esp]));
 		regs[esp] += Funp_.integerSize;
 		return i;
 	}
@@ -210,7 +217,7 @@ public class Amd64Interpret {
 	}
 
 	private int index(int address) {
-		return (address - offset) / Funp_.integerSize;
+		return address - offset;
 	}
 
 	private String state(Instruction instruction) {

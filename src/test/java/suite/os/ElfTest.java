@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import suite.Constants;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Interpret;
 import suite.funp.Funp_;
-import suite.primitive.Ints;
-import suite.primitive.Ints_;
+import suite.primitive.Bytes;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest {
@@ -53,17 +53,17 @@ public class ElfTest {
 	}
 
 	private void test(String program, String input, int code) {
-		if (Boolean.TRUE) {
+		if (System.getenv("COMPUTERNAME") == null) { // not Windows => run ELF
 			Execute exec = elf.exec(input, offset -> Funp_.main().compile(offset, program).t1);
 			assertEquals(code, exec.code);
 			assertEquals(input, exec.out);
-		} else {
-			Ints array = Ints.of(Ints_.toArray(input.length(), input::charAt));
+		} else { // Windows => interpret assembly
+			Bytes array = Bytes.of(input.getBytes(Constants.charset));
 			List<Instruction> instructions = Funp_.main().compile(code, program).t0;
 
 			Amd64Interpret interpret = new Amd64Interpret(array);
 			assertEquals(code, interpret.interpret(instructions));
-			assertEquals(array, interpret.out.toInts());
+			assertEquals(array, interpret.out.toBytes());
 		}
 	}
 
