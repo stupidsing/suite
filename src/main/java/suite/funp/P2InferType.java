@@ -217,10 +217,10 @@ public class P2InferType {
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 				UnNode<Type> tv = unify.newRef();
 				UnNode<Type> tv1 = TypeIo.of(tv);
-				Infer infer1 = new Infer(env.replace(var, Pair.of(false, tv)));
+				Infer i1 = new Infer(env.replace(var, Pair.of(false, tv)));
 				unify(n, tv, infer(init));
-				unify(n, typeBoolean, infer1.infer(cond));
-				unify(n, tv1, infer1.infer(iterate));
+				unify(n, typeBoolean, i1.infer(cond));
+				unify(n, tv1, i1.infer(iterate));
 				return tv1;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> tv = unify.newRef();
@@ -309,8 +309,8 @@ public class P2InferType {
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				Mutable<Integer> stack = Mutable.nil();
 				int size0 = getTypeSize(typeOf(value));
-				Erase erase1 = new Erase(scope, env.replace(var, new Var(scope, stack, 0, size0)));
-				return allocStack(size0, value, erase1.erase(expr), stack);
+				Erase e1 = new Erase(scope, env.replace(var, new Var(scope, stack, 0, size0)));
+				return allocStack(size0, value, e1.erase(expr), stack);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				List<Pair<Var, Funp>> assigns = new ArrayList<>();
 				Mutable<Integer> stack = Mutable.nil();
@@ -325,11 +325,11 @@ public class P2InferType {
 					assigns.add(Pair.of(var, value));
 				}
 
-				Erase erase1 = new Erase(scope, env1);
-				Funp expr_ = erase1.erase(expr);
+				Erase e1 = new Erase(scope, env1);
+				Funp expr_ = e1.erase(expr);
 
 				for (Pair<Var, Funp> pair : assigns)
-					expr = FunpAssign.of(erase1.getVariable(pair.t0), erase1.erase(pair.t1), expr);
+					expr = FunpAssign.of(e1.getVariable(pair.t0), e1.erase(pair.t1), expr);
 
 				return FunpAllocStack.of(align(offset), FunpDontCare.of(), expr_, stack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
@@ -364,9 +364,9 @@ public class P2InferType {
 				Mutable<Integer> stack = Mutable.nil();
 				int size = getTypeSize(typeOf(init));
 				Var var_ = new Var(scope, stack, 0, size);
-				Erase erase1 = new Erase(scope, env.replace(var, var_));
+				Erase e1 = new Erase(scope, env.replace(var, var_));
 				FunpMemory m = getVariable(var_);
-				FunpWhile while_ = FunpWhile.of(erase1.erase(cond), FunpAssign.of(m, erase1.erase(iterate), FunpDontCare.of()), m);
+				FunpWhile while_ = FunpWhile.of(e1.erase(cond), FunpAssign.of(m, e1.erase(iterate), FunpDontCare.of()), m);
 				return allocStack(size, init, while_, stack);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				int b = ps * 2; // return address and EBP
